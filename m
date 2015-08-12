@@ -1,188 +1,192 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58184 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58191 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751078AbbHLVOs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 17:14:48 -0400
-Subject: Re: [PATCH v2 8/8] iio:adc:berlin2-adc: coding style cleanup
+	with ESMTP id S1751078AbbHLVQP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 17:16:15 -0400
+Subject: Re: [PATCH v2 3/5] iio:light:stk3310: add more error handling
 To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-References: <cover.1438035998.git.knaack.h@gmx.de>
- <cd3906aa7d64636cef9fd2f4f39e8efac983205a.1438035998.git.knaack.h@gmx.de>
+References: <cover.1436398691.git.knaack.h@gmx.de>
+ <0df74702f9f60f359d29dee4201a2ac3a999df94.1436398691.git.knaack.h@gmx.de>
+ <55ABACC5.7050601@kernel.org>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antoine Tenart <antoine.tenart@free-electrons.com>
+	Tiberiu Breana <tiberiu.a.breana@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55CBB746.4070200@kernel.org>
-Date: Wed, 12 Aug 2015 22:14:46 +0100
+Message-ID: <55CBB79E.8080704@kernel.org>
+Date: Wed, 12 Aug 2015 22:16:14 +0100
 MIME-Version: 1.0
-In-Reply-To: <cd3906aa7d64636cef9fd2f4f39e8efac983205a.1438035998.git.knaack.h@gmx.de>
+In-Reply-To: <55ABACC5.7050601@kernel.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/07/15 23:39, Hartmut Knaack wrote:
-> Some adjustment of indentation to make checkpatch.pl happy in strict mode.
-> 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> Acked-by: Antoine Tenart <antoine.tenart@free-electrons.com>
+On 19/07/15 14:57, Jonathan Cameron wrote:
+> On 09/07/15 22:51, Hartmut Knaack wrote:
+>> Check for the following error cases:
+>>   * lower boundary for val in _write_event
+>>   * return value of regmap_(field_)read
+>>   * possible values for chan->type
+>>   * return value of stk3310_gpio_probe
+>>
+>> Also add an error path in _probe to put the sensor back into stand-by mode
+>> in case of serious errors.
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+> looks good.  Will have to hold it until the fixes have worked there way
+> through though.
 Applied.
-
-Jonathan
-> ---
->  drivers/iio/adc/berlin2-adc.c | 64 +++++++++++++++++++++++--------------------
->  1 file changed, 35 insertions(+), 29 deletions(-)
+>> ---
+>>  drivers/iio/light/stk3310.c | 59 ++++++++++++++++++++++++++++++++++-----------
+>>  1 file changed, 45 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+>> index 11a027adc204..d6df40220007 100644
+>> --- a/drivers/iio/light/stk3310.c
+>> +++ b/drivers/iio/light/stk3310.c
+>> @@ -241,8 +241,11 @@ static int stk3310_write_event(struct iio_dev *indio_dev,
+>>  	struct stk3310_data *data = iio_priv(indio_dev);
+>>  	struct i2c_client *client = data->client;
+>>  
+>> -	regmap_field_read(data->reg_ps_gain, &index);
+>> -	if (val > stk3310_ps_max[index])
+>> +	ret = regmap_field_read(data->reg_ps_gain, &index);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	if (val < 0 || val > stk3310_ps_max[index])
+>>  		return -EINVAL;
+>>  
+>>  	if (dir == IIO_EV_DIR_RISING)
+>> @@ -266,9 +269,12 @@ static int stk3310_read_event_config(struct iio_dev *indio_dev,
+>>  				     enum iio_event_direction dir)
+>>  {
+>>  	unsigned int event_val;
+>> +	int ret;
+>>  	struct stk3310_data *data = iio_priv(indio_dev);
+>>  
+>> -	regmap_field_read(data->reg_int_ps, &event_val);
+>> +	ret = regmap_field_read(data->reg_int_ps, &event_val);
+>> +	if (ret < 0)
+>> +		return ret;
+>>  
+>>  	return event_val;
+>>  }
+>> @@ -307,14 +313,16 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
+>>  	struct stk3310_data *data = iio_priv(indio_dev);
+>>  	struct i2c_client *client = data->client;
+>>  
+>> +	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
+>> +		return -EINVAL;
+>> +
+>>  	switch (mask) {
+>>  	case IIO_CHAN_INFO_RAW:
+>>  		if (chan->type == IIO_LIGHT)
+>>  			reg = STK3310_REG_ALS_DATA_MSB;
+>> -		else if (chan->type == IIO_PROXIMITY)
+>> -			reg = STK3310_REG_PS_DATA_MSB;
+>>  		else
+>> -			return -EINVAL;
+>> +			reg = STK3310_REG_PS_DATA_MSB;
+>> +
+>>  		mutex_lock(&data->lock);
+>>  		ret = regmap_bulk_read(data->regmap, reg, &buf, 2);
+>>  		if (ret < 0) {
+>> @@ -327,17 +335,23 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
+>>  		return IIO_VAL_INT;
+>>  	case IIO_CHAN_INFO_INT_TIME:
+>>  		if (chan->type == IIO_LIGHT)
+>> -			regmap_field_read(data->reg_als_it, &index);
+>> +			ret = regmap_field_read(data->reg_als_it, &index);
+>>  		else
+>> -			regmap_field_read(data->reg_ps_it, &index);
+>> +			ret = regmap_field_read(data->reg_ps_it, &index);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +
+>>  		*val = stk3310_it_table[index][0];
+>>  		*val2 = stk3310_it_table[index][1];
+>>  		return IIO_VAL_INT_PLUS_MICRO;
+>>  	case IIO_CHAN_INFO_SCALE:
+>>  		if (chan->type == IIO_LIGHT)
+>> -			regmap_field_read(data->reg_als_gain, &index);
+>> +			ret = regmap_field_read(data->reg_als_gain, &index);
+>>  		else
+>> -			regmap_field_read(data->reg_ps_gain, &index);
+>> +			ret = regmap_field_read(data->reg_ps_gain, &index);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +
+>>  		*val = stk3310_scale_table[index][0];
+>>  		*val2 = stk3310_scale_table[index][1];
+>>  		return IIO_VAL_INT_PLUS_MICRO;
+>> @@ -354,6 +368,9 @@ static int stk3310_write_raw(struct iio_dev *indio_dev,
+>>  	int index;
+>>  	struct stk3310_data *data = iio_priv(indio_dev);
+>>  
+>> +	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
+>> +		return -EINVAL;
+>> +
+>>  	switch (mask) {
+>>  	case IIO_CHAN_INFO_INT_TIME:
+>>  		index = stk3310_get_index(stk3310_it_table,
+>> @@ -435,7 +452,10 @@ static int stk3310_init(struct iio_dev *indio_dev)
+>>  	struct stk3310_data *data = iio_priv(indio_dev);
+>>  	struct i2c_client *client = data->client;
+>>  
+>> -	regmap_read(data->regmap, STK3310_REG_ID, &chipid);
+>> +	ret = regmap_read(data->regmap, STK3310_REG_ID, &chipid);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>>  	if (chipid != STK3310_CHIP_ID_VAL &&
+>>  	    chipid != STK3311_CHIP_ID_VAL) {
+>>  		dev_err(&client->dev, "invalid chip id: 0x%x\n", chipid);
+>> @@ -608,8 +628,13 @@ static int stk3310_probe(struct i2c_client *client,
+>>  	if (ret < 0)
+>>  		return ret;
+>>  
+>> -	if (client->irq < 0)
+>> +	if (client->irq < 0) {
+>>  		client->irq = stk3310_gpio_probe(client);
+>> +		if (client->irq < 0) {
+>> +			ret = client->irq;
+>> +			goto err_standby;
+>> +		}
+>> +	}
+>>  
+>>  	if (client->irq >= 0) {
+>>  		ret = devm_request_threaded_irq(&client->dev, client->irq,
+>> @@ -618,17 +643,23 @@ static int stk3310_probe(struct i2c_client *client,
+>>  						IRQF_TRIGGER_FALLING |
+>>  						IRQF_ONESHOT,
+>>  						STK3310_EVENT, indio_dev);
+>> -		if (ret < 0)
+>> +		if (ret < 0) {
+>>  			dev_err(&client->dev, "request irq %d failed\n",
+>>  					client->irq);
+>> +			goto err_standby;
+>> +		}
+>>  	}
+>>  
+>>  	ret = iio_device_register(indio_dev);
+>>  	if (ret < 0) {
+>>  		dev_err(&client->dev, "device_register failed\n");
+>> -		stk3310_set_state(data, STK3310_STATE_STANDBY);
+>> +		goto err_standby;
+>>  	}
+>>  
+>> +	return 0;
+>> +
+>> +err_standby:
+>> +	stk3310_set_state(data, STK3310_STATE_STANDBY);
+>>  	return ret;
+>>  }
+>>  
+>>
 > 
-> diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
-> index 13cfeb494e34..71c806ecc722 100644
-> --- a/drivers/iio/adc/berlin2-adc.c
-> +++ b/drivers/iio/adc/berlin2-adc.c
-> @@ -78,13 +78,13 @@ struct berlin2_adc_priv {
->  };
->  
->  #define BERLIN2_ADC_CHANNEL(n, t)					\
-> -		{							\
-> -			.channel	= n,				\
-> -			.datasheet_name	= "channel"#n,			\
-> -			.type		= t,				\
-> -			.indexed	= 1,				\
-> -			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> -		}
-> +	{								\
-> +		.channel		= n,				\
-> +		.datasheet_name		= "channel"#n,			\
-> +		.type			= t,				\
-> +		.indexed		= 1,				\
-> +		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),	\
-> +	}
->  
->  static const struct iio_chan_spec berlin2_adc_channels[] = {
->  	BERLIN2_ADC_CHANNEL(0, IIO_VOLTAGE),	/* external input */
-> @@ -117,16 +117,18 @@ static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
->  
->  	/* Configure the ADC */
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> -			BERLIN2_SM_CTRL_ADC_RESET | BERLIN2_SM_CTRL_ADC_SEL_MASK
-> -			| BERLIN2_SM_CTRL_ADC_START,
-> -			BERLIN2_SM_CTRL_ADC_SEL(channel) | BERLIN2_SM_CTRL_ADC_START);
-> +			   BERLIN2_SM_CTRL_ADC_RESET |
-> +			   BERLIN2_SM_CTRL_ADC_SEL_MASK |
-> +			   BERLIN2_SM_CTRL_ADC_START,
-> +			   BERLIN2_SM_CTRL_ADC_SEL(channel) |
-> +			   BERLIN2_SM_CTRL_ADC_START);
->  
->  	ret = wait_event_interruptible_timeout(priv->wq, priv->data_available,
-> -			msecs_to_jiffies(1000));
-> +					       msecs_to_jiffies(1000));
->  
->  	/* Disable the interrupts */
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_ADC_STATUS,
-> -			BERLIN2_SM_ADC_STATUS_INT_EN(channel), 0);
-> +			   BERLIN2_SM_ADC_STATUS_INT_EN(channel), 0);
->  
->  	if (ret == 0)
->  		ret = -ETIMEDOUT;
-> @@ -136,7 +138,7 @@ static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
->  	}
->  
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> -			BERLIN2_SM_CTRL_ADC_START, 0);
-> +			   BERLIN2_SM_CTRL_ADC_START, 0);
->  
->  	data = priv->data;
->  	priv->data_available = false;
-> @@ -159,22 +161,25 @@ static int berlin2_adc_tsen_read(struct iio_dev *indio_dev)
->  
->  	/* Configure the ADC */
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> -			BERLIN2_SM_CTRL_TSEN_RESET | BERLIN2_SM_CTRL_ADC_ROTATE,
-> -			BERLIN2_SM_CTRL_ADC_ROTATE);
-> +			   BERLIN2_SM_CTRL_TSEN_RESET |
-> +			   BERLIN2_SM_CTRL_ADC_ROTATE,
-> +			   BERLIN2_SM_CTRL_ADC_ROTATE);
->  
->  	/* Configure the temperature sensor */
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_TSEN_CTRL,
-> -			BERLIN2_SM_TSEN_CTRL_TRIM_MASK | BERLIN2_SM_TSEN_CTRL_SETTLING_MASK
-> -			| BERLIN2_SM_TSEN_CTRL_START,
-> -			BERLIN2_SM_TSEN_CTRL_TRIM(3) | BERLIN2_SM_TSEN_CTRL_SETTLING_12
-> -			| BERLIN2_SM_TSEN_CTRL_START);
-> +			   BERLIN2_SM_TSEN_CTRL_TRIM_MASK |
-> +			   BERLIN2_SM_TSEN_CTRL_SETTLING_MASK |
-> +			   BERLIN2_SM_TSEN_CTRL_START,
-> +			   BERLIN2_SM_TSEN_CTRL_TRIM(3) |
-> +			   BERLIN2_SM_TSEN_CTRL_SETTLING_12 |
-> +			   BERLIN2_SM_TSEN_CTRL_START);
->  
->  	ret = wait_event_interruptible_timeout(priv->wq, priv->data_available,
-> -			msecs_to_jiffies(1000));
-> +					       msecs_to_jiffies(1000));
->  
->  	/* Disable interrupts */
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_TSEN_STATUS,
-> -			BERLIN2_SM_TSEN_STATUS_INT_EN, 0);
-> +			   BERLIN2_SM_TSEN_STATUS_INT_EN, 0);
->  
->  	if (ret == 0)
->  		ret = -ETIMEDOUT;
-> @@ -184,7 +189,7 @@ static int berlin2_adc_tsen_read(struct iio_dev *indio_dev)
->  	}
->  
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_TSEN_CTRL,
-> -			BERLIN2_SM_TSEN_CTRL_START, 0);
-> +			   BERLIN2_SM_TSEN_CTRL_START, 0);
->  
->  	data = priv->data;
->  	priv->data_available = false;
-> @@ -195,8 +200,8 @@ static int berlin2_adc_tsen_read(struct iio_dev *indio_dev)
->  }
->  
->  static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
-> -		struct iio_chan_spec const *chan, int *val, int *val2,
-> -		long mask)
-> +				struct iio_chan_spec const *chan, int *val,
-> +				int *val2, long mask)
->  {
->  	int temp;
->  
-> @@ -305,12 +310,12 @@ static int berlin2_adc_probe(struct platform_device *pdev)
->  		return tsen_irq;
->  
->  	ret = devm_request_irq(&pdev->dev, irq, berlin2_adc_irq, 0,
-> -			pdev->dev.driver->name, indio_dev);
-> +			       pdev->dev.driver->name, indio_dev);
->  	if (ret)
->  		return ret;
->  
->  	ret = devm_request_irq(&pdev->dev, tsen_irq, berlin2_adc_tsen_irq,
-> -			0, pdev->dev.driver->name, indio_dev);
-> +			       0, pdev->dev.driver->name, indio_dev);
->  	if (ret)
->  		return ret;
->  
-> @@ -327,13 +332,14 @@ static int berlin2_adc_probe(struct platform_device *pdev)
->  
->  	/* Power up the ADC */
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> -			BERLIN2_SM_CTRL_ADC_POWER, BERLIN2_SM_CTRL_ADC_POWER);
-> +			   BERLIN2_SM_CTRL_ADC_POWER,
-> +			   BERLIN2_SM_CTRL_ADC_POWER);
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret) {
->  		/* Power down the ADC */
->  		regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> -				BERLIN2_SM_CTRL_ADC_POWER, 0);
-> +				   BERLIN2_SM_CTRL_ADC_POWER, 0);
->  		return ret;
->  	}
->  
-> @@ -349,7 +355,7 @@ static int berlin2_adc_remove(struct platform_device *pdev)
->  
->  	/* Power down the ADC */
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> -			BERLIN2_SM_CTRL_ADC_POWER, 0);
-> +			   BERLIN2_SM_CTRL_ADC_POWER, 0);
->  
->  	return 0;
->  }
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
