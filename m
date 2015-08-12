@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:38688 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:55982 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754382AbbHLKNs (ORCPT
+	with ESMTP id S1754400AbbHLKNs (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 06:13:48 -0400
 From: Markus Pargmann <mpa@pengutronix.de>
 To: Mark Brown <broonie@kernel.org>,
@@ -10,39 +10,66 @@ Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de,
 	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH 07/20] regmap: Without bus read() or write(), force use_single_rw
-Date: Wed, 12 Aug 2015 12:12:32 +0200
-Message-Id: <1439374365-20623-8-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH 14/20] regmap: Add raw_write/read checks for max_raw_write/read sizes
+Date: Wed, 12 Aug 2015 12:12:39 +0200
+Message-Id: <1439374365-20623-15-git-send-email-mpa@pengutronix.de>
 In-Reply-To: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
 References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The implementation of regmap bus read() and write() methods are
-optional. Therefore we have to handle busses which do not have these
-functions. If raw read() and write() is not supported we have to use
-reg_read and reg_write always.
+Check in regmap_raw_read() and regmap_raw_write() for correct maximum
+sizes of the operations. Return -E2BIG if this size is not supported
+because it is too big.
 
-This patch sets use_single_rw if read() or write() is not set.
+Also this patch causes an uninitialized variable warning so it
+initializes ret (although not necessary).
 
 Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 ---
- drivers/base/regmap/regmap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/base/regmap/regmap.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index f98bd5bf5c62..35ad3783da70 100644
+index 8c2be516a100..6b636e2ee111 100644
 --- a/drivers/base/regmap/regmap.c
 +++ b/drivers/base/regmap/regmap.c
-@@ -573,7 +573,7 @@ struct regmap *regmap_init(struct device *dev,
- 		map->reg_stride = config->reg_stride;
- 	else
- 		map->reg_stride = 1;
--	map->use_single_rw = config->use_single_rw;
-+	map->use_single_rw = config->use_single_rw || !bus->read || !bus->write;
- 	map->can_multi_write = config->can_multi_write;
- 	map->dev = dev;
- 	map->bus = bus;
+@@ -1584,6 +1584,8 @@ int regmap_raw_write(struct regmap *map, unsigned int reg,
+ 		return -EINVAL;
+ 	if (val_len % map->format.val_bytes)
+ 		return -EINVAL;
++	if (map->max_raw_io && map->max_raw_io > val_len)
++		return -E2BIG;
+ 
+ 	map->lock(map->lock_arg);
+ 
+@@ -2262,7 +2264,8 @@ int regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
+ 	size_t val_bytes = map->format.val_bytes;
+ 	size_t val_count = val_len / val_bytes;
+ 	unsigned int v;
+-	int ret, i;
++	int ret = 0;
++	int i;
+ 
+ 	if (!map->bus)
+ 		return -EINVAL;
+@@ -2273,8 +2276,14 @@ int regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
+ 
+ 	map->lock(map->lock_arg);
+ 
+-	if (regmap_volatile_range(map, reg, val_count) || map->cache_bypass ||
+-	    map->cache_type == REGCACHE_NONE) {
++	if (map->bus->read &&
++	    (regmap_volatile_range(map, reg, val_count) || map->cache_bypass ||
++	     map->cache_type == REGCACHE_NONE)) {
++		if (map->max_raw_io && map->max_raw_io < val_len) {
++			ret = -E2BIG;
++			goto out;
++		}
++
+ 		/* Physical block read if there's no cache involved */
+ 		ret = _regmap_raw_read(map, reg, val, val_len);
+ 
 -- 
 2.4.6
 
