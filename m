@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:46073 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:57220 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750912AbbHLKN4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 06:13:56 -0400
+	with ESMTP id S1751473AbbHLKNs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 06:13:48 -0400
 From: Markus Pargmann <mpa@pengutronix.de>
 To: Mark Brown <broonie@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>
@@ -10,39 +10,87 @@ Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de,
 	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH 16/20] iio: bmc150: Fix irq checks
-Date: Wed, 12 Aug 2015 12:12:41 +0200
-Message-Id: <1439374365-20623-17-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH 05/20] regmap: Restructure writes in _regmap_raw_write()
+Date: Wed, 12 Aug 2015 12:12:30 +0200
+Message-Id: <1439374365-20623-6-git-send-email-mpa@pengutronix.de>
 In-Reply-To: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
 References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Valid irqs are > 0. This patch fixes the check which fails for the new
-spi driver part if no interrupt was given.
+Currently we try to write the data without copying directly using
+bus->write() or bus->gather_write() if it exists. If one of the previous
+tries to write reported -ENOTSUPP or none of them were usable, we copy
+the data into a buffer and use bus->write().
+
+However it does not make sense to try bus->write() a second time with a
+copied buffer if it didn't work the first time.
+
+This patch restructures this if/else block to make it clear that this is
+not intended for the case where bus->write() returns -ENOTSUPP.
 
 Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 ---
- drivers/iio/accel/bmc150-accel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/base/regmap/regmap.c | 40 ++++++++++++++++++++++------------------
+ 1 file changed, 22 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index 4e70f51c2370..fe2d2316158f 100644
---- a/drivers/iio/accel/bmc150-accel.c
-+++ b/drivers/iio/accel/bmc150-accel.c
-@@ -1660,10 +1660,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 		return ret;
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index 86e94be3c749..f6bd3517a472 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -1340,30 +1340,34 @@ int _regmap_raw_write(struct regmap *map, unsigned int reg,
+ 	 * send the work_buf directly, otherwise try to do a gather
+ 	 * write.
+ 	 */
+-	if (val == work_val)
++	if (val == work_val) {
+ 		ret = map->bus->write(map->bus_context, map->work_buf,
+ 				      map->format.reg_bytes +
+ 				      map->format.pad_bytes +
+ 				      val_len);
+-	else if (map->bus->gather_write)
+-		ret = map->bus->gather_write(map->bus_context, map->work_buf,
+-					     map->format.reg_bytes +
+-					     map->format.pad_bytes,
+-					     val, val_len);
+-
+-	/* If that didn't work fall back on linearising by hand. */
+-	if (ret == -ENOTSUPP) {
+-		len = map->format.reg_bytes + map->format.pad_bytes + val_len;
+-		buf = kzalloc(len, GFP_KERNEL);
+-		if (!buf)
+-			return -ENOMEM;
++	} else {
++		if (map->bus->gather_write)
++			ret = map->bus->gather_write(map->bus_context,
++						     map->work_buf,
++						     map->format.reg_bytes +
++						     map->format.pad_bytes,
++						     val, val_len);
++
++		/* If that didn't work fall back on linearising by hand. */
++		if (ret == -ENOTSUPP) {
++			len = map->format.reg_bytes + map->format.pad_bytes +
++				val_len;
++			buf = kzalloc(len, GFP_KERNEL);
++			if (!buf)
++				return -ENOMEM;
+ 
+-		memcpy(buf, map->work_buf, map->format.reg_bytes);
+-		memcpy(buf + map->format.reg_bytes + map->format.pad_bytes,
+-		       val, val_len);
+-		ret = map->bus->write(map->bus_context, buf, len);
++			memcpy(buf, map->work_buf, map->format.reg_bytes);
++			memcpy(buf + map->format.reg_bytes +
++			       map->format.pad_bytes, val, val_len);
++			ret = map->bus->write(map->bus_context, buf, len);
+ 
+-		kfree(buf);
++			kfree(buf);
++		}
  	}
  
--	if (client->irq < 0)
-+	if (client->irq <= 0)
- 		client->irq = bmc150_accel_gpio_probe(client, data);
- 
--	if (client->irq >= 0) {
-+	if (client->irq > 0) {
- 		ret = devm_request_threaded_irq(
- 						&client->dev, client->irq,
- 						bmc150_accel_irq_handler,
+ 	trace_regmap_hw_write_done(map, reg, val_len / map->format.val_bytes);
 -- 
 2.4.6
 
