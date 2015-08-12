@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:50416 "EHLO mga03.intel.com"
+Received: from mga03.intel.com ([134.134.136.65]:48341 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754660AbbHLOc3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 12 Aug 2015 10:32:29 -0400
+	id S1755378AbbHLOdh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 12 Aug 2015 10:33:37 -0400
 From: Irina Tirdea <irina.tirdea@intel.com>
 To: Wolfram Sang <wsa@the-dreams.de>,
 	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
@@ -10,85 +10,80 @@ To: Wolfram Sang <wsa@the-dreams.de>,
 Cc: linux-kernel@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
+	Adriana Reus <adriana.reus@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v5 2/8] eeprom: at24: use i2c_smbus_read_i2c_block_data_or_emulated
-Date: Wed, 12 Aug 2015 17:31:34 +0300
-Message-Id: <1439389900-10108-3-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH v5 8/8] iio: accel: kxcjk-1013: optimize i2c transfers in trigger handler
+Date: Wed, 12 Aug 2015 17:31:40 +0300
+Message-Id: <1439389900-10108-9-git-send-email-irina.tirdea@intel.com>
 In-Reply-To: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
 References: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-For i2c busses that support only SMBUS extensions, the eeprom at24
-driver reads data from the device using the SMBus block, word or byte
-read protocols depending on availability.
+From: Adriana Reus <adriana.reus@intel.com>
 
-Replace the block read emulation from the driver with the
-i2c_smbus_read_i2c_block_data_or_emulated call from i2c core.
+Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
+enable/disable the bus at each i2c transfer and must wait for
+the enable/disable to happen before sending the data.
 
+When reading data in the trigger handler, the kxcjk-1013 accel driver
+does one i2c transfer for each axis. This has an impact on the
+frequency of the accelerometer at high sample rates due to additional
+delays introduced by the i2c bus at each transfer.
+
+Reading all axis values in one i2c transfer reduces the delays
+introduced by the i2c bus. Uses i2c_smbus_read_i2c_block_data_or_emulated
+that will fallback to reading each axis as a separate word in case i2c
+block read is not supported.
+
+Signed-off-by: Adriana Reus <adriana.reus@intel.com>
 Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/misc/eeprom/at24.c | 37 ++++++-------------------------------
- 1 file changed, 6 insertions(+), 31 deletions(-)
+ drivers/iio/accel/kxcjk-1013.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/misc/eeprom/at24.c b/drivers/misc/eeprom/at24.c
-index 2b254f3..c6cb7f8 100644
---- a/drivers/misc/eeprom/at24.c
-+++ b/drivers/misc/eeprom/at24.c
-@@ -186,19 +186,11 @@ static ssize_t at24_eeprom_read(struct at24_data *at24, char *buf,
- 	if (count > io_limit)
- 		count = io_limit;
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index d4b80e7..e8f7b45 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -926,7 +926,7 @@ static const struct iio_event_spec kxcjk1013_event = {
+ 		.realbits = 12,						\
+ 		.storagebits = 16,					\
+ 		.shift = 4,						\
+-		.endianness = IIO_CPU,					\
++		.endianness = IIO_LE,					\
+ 	},								\
+ 	.event_spec = &kxcjk1013_event,				\
+ 	.num_event_specs = 1						\
+@@ -964,19 +964,16 @@ static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct kxcjk1013_data *data = iio_priv(indio_dev);
+-	int bit, ret, i = 0;
++	int ret;
  
--	switch (at24->use_smbus) {
--	case I2C_SMBUS_I2C_BLOCK_DATA:
-+	if (at24->use_smbus) {
- 		/* Smaller eeproms can work given some SMBus extension calls */
- 		if (count > I2C_SMBUS_BLOCK_MAX)
- 			count = I2C_SMBUS_BLOCK_MAX;
--		break;
--	case I2C_SMBUS_WORD_DATA:
--		count = 2;
--		break;
--	case I2C_SMBUS_BYTE_DATA:
--		count = 1;
--		break;
--	default:
-+	} else {
- 		/*
- 		 * When we have a better choice than SMBus calls, use a
- 		 * combined I2C message. Write address; then read up to
-@@ -229,27 +221,10 @@ static ssize_t at24_eeprom_read(struct at24_data *at24, char *buf,
- 	timeout = jiffies + msecs_to_jiffies(write_timeout);
- 	do {
- 		read_time = jiffies;
--		switch (at24->use_smbus) {
--		case I2C_SMBUS_I2C_BLOCK_DATA:
--			status = i2c_smbus_read_i2c_block_data(client, offset,
--					count, buf);
--			break;
--		case I2C_SMBUS_WORD_DATA:
--			status = i2c_smbus_read_word_data(client, offset);
--			if (status >= 0) {
--				buf[0] = status & 0xff;
--				buf[1] = status >> 8;
--				status = count;
--			}
--			break;
--		case I2C_SMBUS_BYTE_DATA:
--			status = i2c_smbus_read_byte_data(client, offset);
--			if (status >= 0) {
--				buf[0] = status;
--				status = count;
--			}
--			break;
--		default:
-+		if (at24->use_smbus) {
-+			status = i2c_smbus_read_i2c_block_data_or_emulated(client, offset,
-+									   count, buf);
-+		} else {
- 			status = i2c_transfer(client->adapter, msg, 2);
- 			if (status == 2)
- 				status = count;
+ 	mutex_lock(&data->mutex);
+-
+-	for (bit = 0; bit < AXIS_MAX; bit++) {
+-		ret = kxcjk1013_get_acc_reg(data, bit);
+-		if (ret < 0) {
+-			mutex_unlock(&data->mutex);
+-			goto err;
+-		}
+-		data->buffer[i++] = ret;
+-	}
++	ret = i2c_smbus_read_i2c_block_data_or_emulated(data->client,
++							KXCJK1013_REG_XOUT_L,
++							AXIS_MAX * 2,
++							(u8 *)data->buffer);
+ 	mutex_unlock(&data->mutex);
++	if (ret < 0)
++		goto err;
+ 
+ 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+ 					   data->timestamp);
 -- 
 1.9.1
 
