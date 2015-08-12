@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:52918 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:56117 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932153AbbHLOu1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 10:50:27 -0400
+	with ESMTP id S1753745AbbHLOuf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 10:50:35 -0400
 From: Markus Pargmann <mpa@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
@@ -10,71 +10,56 @@ Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	Paul Bolle <pebolle@tiscali.nl>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, kernel@pengutronix.de,
 	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v3 3/6] iio: bmg160: Use generic dev_drvdata
-Date: Wed, 12 Aug 2015 16:50:06 +0200
-Message-Id: <1439391009-6051-4-git-send-email-mpa@pengutronix.de>
-In-Reply-To: <1439391009-6051-1-git-send-email-mpa@pengutronix.de>
-References: <1439391009-6051-1-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH v3 0/6] iio: bmg160: Add SPI connection
+Date: Wed, 12 Aug 2015 16:50:03 +0200
+Message-Id: <1439391009-6051-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-i2c_get_clientdata() is specifically for i2c. Replace it with the
-generic dev_get/set_drvdata() to support different protocols.
+Hi,
 
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
----
- drivers/iio/gyro/bmg160.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+bmg160 and bmi055 can be used via I2C and SPI. This series converts the driver
+to regmap and splits core driver and I2C/SPI.
 
-diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-index 4701ea17baea..6eab91ba8977 100644
---- a/drivers/iio/gyro/bmg160.c
-+++ b/drivers/iio/gyro/bmg160.c
-@@ -1020,7 +1020,7 @@ static int bmg160_probe(struct i2c_client *client,
- 		return -ENOMEM;
- 
- 	data = iio_priv(indio_dev);
--	i2c_set_clientdata(client, indio_dev);
-+	dev_set_drvdata(&client->dev, indio_dev);
- 	data->dev = &client->dev;
- 
- 	ret = bmg160_chip_init(data);
-@@ -1154,7 +1154,7 @@ static int bmg160_remove(struct i2c_client *client)
- #ifdef CONFIG_PM_SLEEP
- static int bmg160_suspend(struct device *dev)
- {
--	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct bmg160_data *data = iio_priv(indio_dev);
- 
- 	mutex_lock(&data->mutex);
-@@ -1166,7 +1166,7 @@ static int bmg160_suspend(struct device *dev)
- 
- static int bmg160_resume(struct device *dev)
- {
--	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct bmg160_data *data = iio_priv(indio_dev);
- 
- 	mutex_lock(&data->mutex);
-@@ -1182,7 +1182,7 @@ static int bmg160_resume(struct device *dev)
- #ifdef CONFIG_PM
- static int bmg160_runtime_suspend(struct device *dev)
- {
--	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct bmg160_data *data = iio_priv(indio_dev);
- 	int ret;
- 
-@@ -1197,7 +1197,7 @@ static int bmg160_runtime_suspend(struct device *dev)
- 
- static int bmg160_runtime_resume(struct device *dev)
- {
--	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct bmg160_data *data = iio_priv(indio_dev);
- 	int ret;
- 
+Changes in v3:
+ - removed 'select REGMAP' as it is selected by REGMAP_I2C
+ - added EXPORT_SYMBOL_GPL for the core functions
+ - removed default values from regmap_config
+ - Added max_register and unset use_single_rw in regmap_config
+ - Changed Makefile to always compile bmg160-core with either spi or i2c. It is
+   not possible now to compile the core alone.
+
+Changes in v2:
+ - Added the id->name from the SPI driver to be used as iio device name
+ - Fixed Kconfig in patch 2 to add selects for REGMAP_I2C
+ - Fixed regmap configs to be static const
+
+
+Best regards,
+
+Markus
+
+
+Markus Pargmann (6):
+  iio: bmg160: Use i2c regmap instead of direct i2c access
+  iio: bmg160: Remove i2c_client from data struct
+  iio: bmg160: Use generic dev_drvdata
+  iio: bmg160: Remove remaining uses of i2c_client
+  iio: bmg160: Separate i2c and core driver
+  iio: bmg160: Add SPI driver
+
+ drivers/iio/gyro/Kconfig                     |  28 ++-
+ drivers/iio/gyro/Makefile                    |   3 +-
+ drivers/iio/gyro/bmg160.h                    |  10 +
+ drivers/iio/gyro/{bmg160.c => bmg160_core.c} | 358 +++++++++++----------------
+ drivers/iio/gyro/bmg160_i2c.c                |  71 ++++++
+ drivers/iio/gyro/bmg160_spi.c                |  57 +++++
+ 6 files changed, 306 insertions(+), 221 deletions(-)
+ create mode 100644 drivers/iio/gyro/bmg160.h
+ rename drivers/iio/gyro/{bmg160.c => bmg160_core.c} (74%)
+ create mode 100644 drivers/iio/gyro/bmg160_i2c.c
+ create mode 100644 drivers/iio/gyro/bmg160_spi.c
+
 -- 
 2.4.6
 
