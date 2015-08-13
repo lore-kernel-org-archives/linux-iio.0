@@ -1,100 +1,224 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58229 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751050AbbHLVVF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 17:21:05 -0400
-Subject: Re: [PATCH 2/2] iio:adc:cc10001_adc: resort entry in Kconfig and
- Makefile
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-References: <cover.1434844874.git.knaack.h@gmx.de>
- <8b5a272b03bdf2c039edf722b8179690be8909de.1434844874.git.knaack.h@gmx.de>
- <5586D576.1050508@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
+Return-Path: <cmo@melexis.com>
+From: Crt Mori <cmo@melexis.com>
+To: Vianney le Clement de Saint-Marcq <vianney.leclement@essensium.com>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
-	Naidu Tellapati <naidu.tellapati@imgtec.com>,
-	Phani Movva <Phani.Movva@imgtec.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55CBB8BF.5020503@kernel.org>
-Date: Wed, 12 Aug 2015 22:21:03 +0100
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH] iio: mlx90614: Implement filter configuration
+Date: Thu, 13 Aug 2015 09:14:39 +0200
+Message-Id: <1439450079-2703-1-git-send-email-cmo@melexis.com>
 MIME-Version: 1.0
-In-Reply-To: <5586D576.1050508@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 21/06/15 16:17, Jonathan Cameron wrote:
-> On 21/06/15 11:15, Hartmut Knaack wrote:
->> Move the entry for the CC 10001 ADC driver in Kconfig and Makefile up to
->> maintain alphabetic order.
->>
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> As you might have guessed, will have to hold this one for now to let
-> the fix get through to my togreg tree.
-> Same for the other patch you sent.
-> 
-> Give me a poke if I look to have forgotten either of them!
-Applied (with fuzz)
-> 
-> Jonathan
->> ---
->>  drivers/iio/adc/Kconfig  | 18 +++++++++---------
->>  drivers/iio/adc/Makefile |  2 +-
->>  2 files changed, 10 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index eb0cd89..4790071 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -142,15 +142,6 @@ config BERLIN2_ADC
->>  	  Marvell Berlin2 ADC driver. This ADC has 8 channels, with one used for
->>  	  temperature measurement.
->>  
->> -config DA9150_GPADC
->> -	tristate "Dialog DA9150 GPADC driver support"
->> -	depends on MFD_DA9150
->> -	help
->> -	  Say yes here to build support for Dialog DA9150 GPADC.
->> -
->> -	  This driver can also be built as a module. If chosen, the module name
->> -	  will be da9150-gpadc.
->> -
->>  config CC10001_ADC
->>  	tristate "Cosmic Circuits 10001 ADC driver"
->>  	depends on HAS_IOMEM && HAVE_CLK && REGULATOR
->> @@ -162,6 +153,15 @@ config CC10001_ADC
->>  	  This driver can also be built as a module. If so, the module will be
->>  	  called cc10001_adc.
->>  
->> +config DA9150_GPADC
->> +	tristate "Dialog DA9150 GPADC driver support"
->> +	depends on MFD_DA9150
->> +	help
->> +	  Say yes here to build support for Dialog DA9150 GPADC.
->> +
->> +	  This driver can also be built as a module. If chosen, the module name
->> +	  will be da9150-gpadc.
->> +
->>  config EXYNOS_ADC
->>  	tristate "Exynos ADC driver support"
->>  	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
->> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->> index a096210..fa5723a 100644
->> --- a/drivers/iio/adc/Makefile
->> +++ b/drivers/iio/adc/Makefile
->> @@ -16,8 +16,8 @@ obj-$(CONFIG_AD799X) += ad799x.o
->>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
->>  obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
->>  obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
->> -obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->>  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
->> +obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->>  obj-$(CONFIG_MAX1027) += max1027.o
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> 
+Implemented Low pass 3db frequency filter which configures
+FIR and IIR values within the configuration register of EEPROM.
+For more standardized interface we have fixed the FIR value
+to 1024, while changes in IIR value are directly connected to
+filter responses. The new datasheet version will provide a
+simplified table (also in reStructured text format below) with
+this change, to provide quick overview of possible settings.
 
+Below sensor timings (bandwidth) are calculated for 3db frequency
+low pass filter.
+
++--------------------+-----------------+
+| Filter setting (%) | Band width (Hz) |
+|  (rounded to 1.0)  |                 |
++====================+=================+
+|         13         |      0.15       |
++--------------------+-----------------+
+|         17         |      0.20       |
++--------------------+-----------------+
+|         25         |      0.31       |
++--------------------+-----------------+
+|         50         |      0.77       |
++--------------------+-----------------+
+|         57         |      0.86       |
++--------------------+-----------------+
+|         67         |      1.10       |
++--------------------+-----------------+
+|         80         |      1.53       |
++--------------------+-----------------+
+|        100         |      7.23       |
++--------------------+-----------------+
+
+The diff is made towards togreg branch. Added myself to MAINTAINERS and authors
+as per discussion with Jonathan.
+
+Signed-off-by: Crt Mori <cmo@melexis.com>
+---
+ MAINTAINERS                        |  7 ++++
+ drivers/iio/temperature/mlx90614.c | 76 ++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 80 insertions(+), 3 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8133cef..f658890 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6739,6 +6739,13 @@ S:	Supported
+ F:	include/linux/mlx5/
+ F:	drivers/infiniband/hw/mlx5/
+ 
++MELEXIS MLX90614 DRIVER
++M:	Crt Mori <cmo@melexis.com>
++L:	linux-iio@vger.kernel.org
++W:	http://www.melexis.com
++S:	Supported
++F:	drivers/iio/temperature/mlx90614.c
++
+ MN88472 MEDIA DRIVER
+ M:	Antti Palosaari <crope@iki.fi>
+ L:	linux-media@vger.kernel.org
+diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+index 5d033a5..c03cbb4 100644
+--- a/drivers/iio/temperature/mlx90614.c
++++ b/drivers/iio/temperature/mlx90614.c
+@@ -3,6 +3,7 @@
+  *
+  * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
+  * Copyright (c) 2015 Essensium NV
++ * Copyright (c) 2015 Melexis
+  *
+  * This file is subject to the terms and conditions of version 2 of
+  * the GNU General Public License.  See the file COPYING in the main
+@@ -20,7 +21,6 @@
+  * always has a pull-up so we do not need an extra GPIO to drive it high.  If
+  * the "wakeup" GPIO is not given, power management will be disabled.
+  *
+- * TODO: filter configuration
+  */
+ 
+ #include <linux/err.h>
+@@ -79,6 +79,26 @@ struct mlx90614_data {
+ 	unsigned long ready_timestamp; /* in jiffies */
+ };
+ 
++/* Allowed percentage values for IIR filtering */
++static const u8 mlx90614_iir_values[] = {50, 25, 17, 13, 100, 80, 67, 57};
++
++/*
++ * Find the IIR value inside mlx90614_iir_values array and return its position
++ * which is equivalent of the bit value in sensor register
++ */
++static inline s32 mlx90614_iir_search(int value)
++{
++	u8 i;
++	if (value < 0 || value > 100)
++		return -EINVAL;
++
++	for (i=0; i < ARRAY_SIZE(mlx90614_iir_values); ++i) {
++		if (value == mlx90614_iir_values[i])
++			return i;
++	}
++	return -EINVAL;
++}
++
+ /*
+  * Erase an address and write word.
+  * The mutex must be locked before calling.
+@@ -236,6 +256,19 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+ 			*val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
+ 		}
+ 		return IIO_VAL_INT_PLUS_NANO;
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* IIR setting with
++							     FIR = 1024 */
++		mlx90614_power_get(data, false);
++		mutex_lock(&data->lock);
++		ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
++		mutex_unlock(&data->lock);
++		mlx90614_power_put(data);
++
++		if (ret < 0)
++			return ret;
++
++		*val = mlx90614_iir_values[ret & MLX90614_CONFIG_IIR_MASK];
++		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -263,6 +296,37 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+ 		mlx90614_power_put(data);
+ 
+ 		return ret;
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* IIR Filter setting */
++		mlx90614_power_get(data, false);
++		mutex_lock(&data->lock);
++
++		ret = mlx90614_iir_search(val);
++		if (ret >= 0) {
++			/* If there is no error, then we have a sensor
++			 * equivalent value in ret. We need to store it
++			 * temporary to val, as we still have more data
++			 * to save in ret before we can actually write*/
++			val = ret;
++
++			/* CONFIG register values must not be changed so
++			 * we must read them before we actually write
++			 * changes*/
++			ret = i2c_smbus_read_word_data(data->client,
++						       MLX90614_CONFIG);
++			if (ret >= 0) {
++				/* Write changed values */
++				ret = mlx90614_write_word(data->client,
++					MLX90614_CONFIG,
++					(val << MLX90614_CONFIG_IIR_SHIFT) |
++					(((u16) ((0x7 << MLX90614_CONFIG_FIR_SHIFT) |
++					((u16) ret & (~((u16) MLX90614_CONFIG_FIR_MASK))))) &
++					(~(u16) MLX90614_CONFIG_IIR_MASK)));
++			}
++		}
++		mutex_unlock(&data->lock);
++		mlx90614_power_put(data);
++
++		return ret;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -275,6 +339,8 @@ static int mlx90614_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_CALIBEMISSIVITY:
+ 		return IIO_VAL_INT_PLUS_NANO;
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++		return IIO_VAL_INT_PLUS_MICRO;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -294,7 +360,8 @@ static const struct iio_chan_spec mlx90614_channels[] = {
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_TEMP_OBJECT,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-		    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
++		    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
++			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+ 		    BIT(IIO_CHAN_INFO_SCALE),
+ 	},
+@@ -305,7 +372,8 @@ static const struct iio_chan_spec mlx90614_channels[] = {
+ 		.channel = 1,
+ 		.channel2 = IIO_MOD_TEMP_OBJECT,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-		    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
++		    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
++			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+ 		    BIT(IIO_CHAN_INFO_SCALE),
+ 	},
+@@ -559,6 +627,7 @@ static const struct dev_pm_ops mlx90614_pm_ops = {
+ static struct i2c_driver mlx90614_driver = {
+ 	.driver = {
+ 		.name	= "mlx90614",
++		.owner	= THIS_MODULE,
+ 		.pm	= &mlx90614_pm_ops,
+ 	},
+ 	.probe = mlx90614_probe,
+@@ -569,5 +638,6 @@ module_i2c_driver(mlx90614_driver);
+ 
+ MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+ MODULE_AUTHOR("Vianney le Clément de Saint-Marcq <vianney.leclement@essensium.com>");
++MODULE_AUTHOR("Crt Mori <cmo@melexis.com>");
+ MODULE_DESCRIPTION("Melexis MLX90614 contactless IR temperature sensor driver");
+ MODULE_LICENSE("GPL");
+-- 
+2.1.4
