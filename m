@@ -1,83 +1,45 @@
-Return-Path: <adriana.reus@intel.com>
-From: Adriana Reus <adriana.reus@intel.com>
-To: jic23@kernel.org,
-	pmeerw@pmeerw.net,
-	daniel.baluta@intel.com
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Adriana Reus <adriana.reus@intel.com>
-Subject: [PATCH v3 2/2] devicetree: Add documentation for UPISEMI us5182d ALS and Proximity sensor
-Date: Fri, 14 Aug 2015 12:29:40 +0300
-Message-Id: <1439544580-21179-3-git-send-email-adriana.reus@intel.com>
-In-Reply-To: <1439544580-21179-1-git-send-email-adriana.reus@intel.com>
-References: <1439544580-21179-1-git-send-email-adriana.reus@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-208.synserver.de ([212.40.185.208]:1056 "EHLO
+	smtp-out-208.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755197AbbHNOzD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Aug 2015 10:55:03 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 0/2] iio: One more buffer cleanup
+Date: Fri, 14 Aug 2015 16:54:53 +0200
+Message-Id: <1439564095-7352-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Added entries in trivial-devices and i2c/vendor-prefixes for
-the us5182d als and proximity sensor. Also added a documentation file for
-this sensor's properties.
+Hi,
 
-Signed-off-by: Adriana Reus <adriana.reus@intel.com>
----
-  No changes - resending because I forgot to cc devicetree.
- .../devicetree/bindings/i2c/trivial-devices.txt    |  1 +
- .../devicetree/bindings/iio/light/us5182d.txt      | 24 ++++++++++++++++++++++
- .../devicetree/bindings/vendor-prefixes.txt        |  1 +
- 3 files changed, 26 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/us5182d.txt
+One more buffer cleanup moving the generic buffer implementations to a
+common sub-directory before we start adding new generic buffer
+implementations in form of the DMA buffer.
 
-diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-index 00f8652..96d3b9c 100644
---- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-@@ -99,4 +99,5 @@ ti,tsc2003		I2C Touch-Screen Controller
- ti,tmp102		Low Power Digital Temperature Sensor with SMBUS/Two Wire Serial Interface
- ti,tmp103		Low Power Digital Temperature Sensor with SMBUS/Two Wire Serial Interface
- ti,tmp275		Digital Temperature Sensor
-+upisemi,usd5182		Als and Proximity Sensor
- winbond,wpct301		i2c trusted platform module (TPM)
-diff --git a/Documentation/devicetree/bindings/iio/light/us5182d.txt b/Documentation/devicetree/bindings/iio/light/us5182d.txt
-new file mode 100644
-index 0000000..9ac3336
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/us5182d.txt
-@@ -0,0 +1,24 @@
-+* UPISEMI us5182d I2C ALS and Proximity sensor
-+
-+Required properties:
-+- compatible: must be "upisemi,usd5182"
-+- reg: the I2C address of the device
-+
-+Optional properties:
-+- upisemi,glass-coef: glass attenuation factor
-+- upisemi,dark-ths: array of thresholds corresponding to every scale
-+- upisemi,upper-dark-gain: tuning factor applied when light > th
-+- upisemi,lower-dark-gain: tuning factor applied when light < th
-+
-+Example:
-+
-+    usd5182@39 {
-+                compatible = "upisemi,usd5182";
-+                reg = <0x39>;
-+                upisemi,glass-coef = < 1000 >;
-+                upisemi,dark-ths = /bits/ 16 <170 200 512 512 800 2000 4000 8000>;
-+                upisemi,upper-dark-gain = /bits/ 8 <0x00>;
-+                upisemi,lower-dark-gain = /bits/ 8 <0x16>;
-+    };
-+
-+
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index d444757..5b40bab 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -211,6 +211,7 @@ toshiba	Toshiba Corporation
- toumaz	Toumaz
- tplink	TP-LINK Technologies Co., Ltd.
- truly	Truly Semiconductors Limited
-+upisemi	uPI Semiconductor Corp.
- usi	Universal Scientific Industrial Co., Ltd.
- v3	V3 Semiconductor
- variscite	Variscite Ltd.
+- Lars
+
+Lars-Peter Clausen (2):
+  iio: Move callback buffer to its own module
+  iio: Move generic buffer implementations to sub-directory
+
+ drivers/iio/Kconfig                                | 22 +-------------------
+ drivers/iio/Makefile                               |  5 +----
+ drivers/iio/buffer/Kconfig                         | 24 ++++++++++++++++++++++
+ drivers/iio/buffer/Makefile                        |  8 ++++++++
+ .../industrialio-buffer-cb.c}                      | 12 +++++++++++
+ .../{ => buffer}/industrialio-triggered-buffer.c   |  0
+ drivers/iio/{ => buffer}/kfifo_buf.c               |  0
+ 7 files changed, 46 insertions(+), 25 deletions(-)
+ create mode 100644 drivers/iio/buffer/Kconfig
+ create mode 100644 drivers/iio/buffer/Makefile
+ rename drivers/iio/{buffer_cb.c => buffer/industrialio-buffer-cb.c} (89%)
+ rename drivers/iio/{ => buffer}/industrialio-triggered-buffer.c (100%)
+ rename drivers/iio/{ => buffer}/kfifo_buf.c (100%)
+
 -- 
-1.9.1
+2.1.4
+
