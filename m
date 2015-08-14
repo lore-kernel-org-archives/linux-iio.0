@@ -1,73 +1,54 @@
-Return-Path: <broonie@sirena.org.uk>
-Date: Fri, 14 Aug 2015 17:40:00 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:44315 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754527AbbHOCMU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Aug 2015 22:12:20 -0400
+Date: Fri, 14 Aug 2015 17:34:51 +0100
 From: Mark Brown <broonie@kernel.org>
 To: Markus Pargmann <mpa@pengutronix.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>, kernel@pengutronix.de,
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-arm-kernel@lists.infradead.org
-Message-ID: <20150814164000.GZ10748@sirena.org.uk>
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Message-ID: <20150814163451.GX10748@sirena.org.uk>
 References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
- <1439374365-20623-10-git-send-email-mpa@pengutronix.de>
- <20150812112035.GX10748@sirena.org.uk>
- <20150812122011.GE19600@pengutronix.de>
- <20150812123406.GG10748@sirena.org.uk>
- <20150812130518.GM19600@pengutronix.de>
+ <1439374365-20623-12-git-send-email-mpa@pengutronix.de>
+ <20150812112707.GY10748@sirena.org.uk>
+ <20150812123412.GG19600@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="1RuPiyELjUd36Oro"
-In-Reply-To: <20150812130518.GM19600@pengutronix.de>
-Subject: Re: [PATCH 09/20] regmap: _regmap_raw_write fix for busses without
- write()
-List-ID: <linux-iio@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="8QANErTbuLtKTfKg"
+In-Reply-To: <20150812123412.GG19600@pengutronix.de>
+Subject: Re: [PATCH 11/20] regmap: _regmap_raw_read: Add handling of busses
+ without bus->read()
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
---1RuPiyELjUd36Oro
+--8QANErTbuLtKTfKg
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Wed, Aug 12, 2015 at 03:05:18PM +0200, Markus Pargmann wrote:
-> On Wed, Aug 12, 2015 at 01:34:06PM +0100, Mark Brown wrote:
+On Wed, Aug 12, 2015 at 02:34:12PM +0200, Markus Pargmann wrote:
 
-> > > Yes right. On the other hand if bus->read() and bus->write() was not set
-> > > in the init method (before this patch series) no formatting functions at
-> > > all were assigned. So it was always ignored for bus->reg_read() and
-> > > bus->reg_write()?!
+> Is -EINVAL the right thing to return or would you prefer -ENOTSUPP?
 
-> > I'm not sure what the "it" you're talking about here is, sorry.  There
-> > are unsupported features in the API especially for cases that don't make
-> > a huge amount of sense, the error handling isn't always complete.  It
-> > sounds like you might be trying to support one of these nonsensical
-> > cases - it's not obvious what raw I/O on a device where we don't know
-> > the raw format of the device should mean or how anything could sensibly
-> > use that.
+-ENOTSUPP is going to be better.
 
-> The bus and the regmap user are separate. So as a regmap user, I am not
-> able to know if the bus the device is connected to actually supports raw
-> reads/writes. At least it should not fail with a null pointer when using
-
-You should generally have a pretty good idea simply by knowing which
-device you're working with - unless you're writing generic code you know
-which device you're working with and what it's capabilities are.  A
-driver that doesn't know these things should never be trying to do raw
-I/O, and a driver that is doing raw I/O clearly depends on having the
-ability to get a bytestream to and from the device since that's what raw
-I/O does.
-
---1RuPiyELjUd36Oro
+--8QANErTbuLtKTfKg
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJVzhnfAAoJECTWi3JdVIfQ4hkH/Rs/IXiiK8Ih2ZA6vzaipvCo
-PI/3N5LV8lB9Jb4TB5EJsC+af5sDMuqfwEboiiTBpBj68Kan5U+46uQ/HqWlvu4O
-/Z/8dEaIBlFVFhOpVfXE7u/YSsC8FT/Zfy0YRyTMFUG3UZQd7BxEyZb9vDxuPjFf
-Jey1pujo9x2gs+v53C9NEvdjwphyv4ahfkAnL6awUkuKsJz3gV9Xu1AWo+pnjlyH
-ie1LnQweXRwe/TYIH/nW1V/pY0ZR6LhuPfujILSfxFfZkANC5kuSbUZs0+rZqXcG
-4F5Ly3acpjCyCfUKWil0xN9jRapkcEOaO/U4pCMqKLIUAASm0vSroi3qSPd/Mfs=
-=xPKo
+iQEcBAEBCAAGBQJVzhirAAoJECTWi3JdVIfQgUsH/iCKVKEJ65MlXmdEbm4pRx7h
+/dZA/C+s9Uzm+RsH7bLYYqWOv7R80mS+v4LWW5M3DNSgJoXXyyo5rBApUonkdKS0
+O31xzOfVyn/aKWXNRjqyq4ay0h+gYFh2h6GC50FbUuHLwcXYbvujafiS8zKdVCT0
+WiH1x79uCyFIkIc1GbCaExDArgWpY4zdRKS4DXb1sFN7lmLxgSB9V0VuAyPTusWi
+FK6HwfrB7wdPz8assF0t5l3WQyYHdWBAQYgN9vplXy0ez3aTIputZ5nIyJgss6mR
+22PGN7Q8sVC2tFcXvm2KgFz03FxO5RdJX4avwcez+RLkRLy+QbTe3ub5Hv9Qde8=
+=/7s+
 -----END PGP SIGNATURE-----
 
---1RuPiyELjUd36Oro--
+--8QANErTbuLtKTfKg--
