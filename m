@@ -1,37 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-230.synserver.de ([212.40.185.230]:1042 "EHLO
-	smtp-out-230.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752442AbbHOUFS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Aug 2015 16:05:18 -0400
-Message-ID: <55CF9B79.60400@metafoo.de>
-Date: Sat, 15 Aug 2015 22:05:13 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, Joe Perches <joe@perches.com>,
-	devel@driverdev.osuosl.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49137 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753281AbbHOUF4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Aug 2015 16:05:56 -0400
+Subject: Re: [patch] iio: accel: sca3000: memory corruption in
+ sca3000_read_first_n_hw_rb()
+To: Dan Carpenter <dan.carpenter@oracle.com>
+References: <20150808191642.GD8034@mwanda>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/19] staging: iio: Remove unnecessary externs
-References: <cover.1439241825.git.joe@perches.com> <fba2902597293652f4d8561730c0cf16cd4369a0.1439241825.git.joe@perches.com> <55CA424F.1030704@metafoo.de> <55CF99A1.1000701@kernel.org>
-In-Reply-To: <55CF99A1.1000701@kernel.org>
+	Octavian Purdila <octavian.purdila@intel.com>,
+	Aybuke Ozdemir <aybuke.147@gmail.com>,
+	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	kernel-janitors@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <55CF9BA1.7020804@kernel.org>
+Date: Sat, 15 Aug 2015 21:05:53 +0100
+MIME-Version: 1.0
+In-Reply-To: <20150808191642.GD8034@mwanda>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/15/2015 09:57 PM, Jonathan Cameron wrote:
-> On 11/08/15 19:43, Lars-Peter Clausen wrote:
->> On 08/10/2015 11:51 PM, Joe Perches wrote:
->>> Using 'extern' is not necessary for function prototypes.
->>>
->>> Signed-off-by: Joe Perches <joe@perches.com>
->>
->> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
->>
-> Applied to the togreg branch of iio.git.  4.4 material now
-> probably.
+On 08/08/15 20:16, Dan Carpenter wrote:
+> "num_read" is in byte units but we are write u16s so we end up write
+> twice as much as intended.
+> 
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Hi Dan,
 
-Greg already picked the patch up earlier today on his own.
+This is fine. Given it's an old bug, Greg is not going to take this
+sort of fix until after the merge window.   I won't be doing another
+pull to him to go in during the merge window.  Hence fastest route
+will be as a fix post 4.3-rc1.
+
+Give me a poke if I haven't picked it up and sent it on by rc2 or so.
+
+Thanks and good find.
+
+Jonathan
+> 
+> diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
+> index 23685e7..bd2c69f 100644
+> --- a/drivers/staging/iio/accel/sca3000_ring.c
+> +++ b/drivers/staging/iio/accel/sca3000_ring.c
+> @@ -116,7 +116,7 @@ static int sca3000_read_first_n_hw_rb(struct iio_buffer *r,
+>  	if (ret)
+>  		goto error_ret;
+>  
+> -	for (i = 0; i < num_read; i++)
+> +	for (i = 0; i < num_read / sizeof(u16); i++)
+>  		*(((u16 *)rx) + i) = be16_to_cpup((__be16 *)rx + i);
+>  
+>  	if (copy_to_user(buf, rx, num_read))
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
