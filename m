@@ -1,88 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f170.google.com ([209.85.213.170]:37923 "EHLO
-	mail-ig0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751172AbbHNXqQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Aug 2015 19:46:16 -0400
-Received: by igfj19 with SMTP id j19so22382493igf.1
-        for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2015 16:46:16 -0700 (PDT)
-Date: Fri, 14 Aug 2015 18:46:07 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-Cc: Michael Welling <mwelling@ieee.org>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: BBB IIO ADC access not working
-Message-ID: <20150814234606.GA4286@deathstar>
-References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB0937F@sfamail.SAKURAUS.LOCAL>
- <20150810223338.GA23548@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD3DB3@sfamail.SAKURAUS.LOCAL>
- <20150811170233.GA1872@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD3DD8@sfamail.SAKURAUS.LOCAL>
- <20150811174347.GA7777@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4046@sfamail.SAKURAUS.LOCAL>
- <20150814183950.GA22068@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD40FB@sfamail.SAKURAUS.LOCAL>
- <20150814204016.GA7070@deathstar>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46988 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751319AbbHOM4q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Aug 2015 08:56:46 -0400
+Subject: Re: [PATCH v5 2/8] eeprom: at24: use
+ i2c_smbus_read_i2c_block_data_or_emulated
+To: Wolfram Sang <wsa@the-dreams.de>,
+	Irina Tirdea <irina.tirdea@intel.com>
+References: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
+ <1439389900-10108-3-git-send-email-irina.tirdea@intel.com>
+ <20150814182404.GC1822@katana>
+Cc: linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <55CF370A.2020006@kernel.org>
+Date: Sat, 15 Aug 2015 13:56:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20150814204016.GA7070@deathstar>
+In-Reply-To: <20150814182404.GC1822@katana>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Aug 14, 2015 at 03:40:18PM -0500, Michael Welling wrote:
-> On Fri, Aug 14, 2015 at 11:43:52AM -0700, Greg Wilson-Lindberg wrote:
-> > Thank you very much,
-> > Regards, Greg 
-> >
+On 14/08/15 19:24, Wolfram Sang wrote:
+> On Wed, Aug 12, 2015 at 05:31:34PM +0300, Irina Tirdea wrote:
+>> For i2c busses that support only SMBUS extensions, the eeprom at24
+>> driver reads data from the device using the SMBus block, word or byte
+>> read protocols depending on availability.
+>>
+>> Replace the block read emulation from the driver with the
+>> i2c_smbus_read_i2c_block_data_or_emulated call from i2c core.
+>>
+>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 > 
-> To replicate the issue I did the following:
-> 
-> - Started a touchscreen enabled application
-> ts_test
-> 
-> - In another terminal started a dump of /dev/iio:device0
-> hexdump -C /dev/iio\:device0
-> 
-> - In yet another terminal enable the buffer
-> cd /sys/bus/iio/devices/iio\:device0
-> echo 1 > scan_elements/in_voltage4_en
-> echo 1 > buffer/enable
-> 
-> Once the buffer is enabled the hexdump window starts spewing out readings as
-> expected. The touchscreen is unresponsive as expected.
-> 
-> Then I started occassionally enabling and disabling the buffer and noticed
-> something very off. When enabling the buffer sometimes the readings from
-> the hexdump would start and abruptly stop. In this state the entire system
-> is nonresponsive. None of the terminals are excepting input and the system is
-> in complete deadlock. Then I touched the screen and the deadlock is lifted
-> and readings started again.
-> 
-> As if the behavior was not weird enough, occassionally after the buffer is
-> disabled, the touchscreen readings are mangled.
-> 
-> Next step, figure out what is going wrong.
->
+> Applied to for-next, thanks!
+Cool.  These will presumably make it in during the coming
+merge window.  I'll pick up the IIO ones next cycle
+(IIO merge is probably now closed anyway as Linus is talking about
+merge window opening next week I think).
 
-It seems the drivers are being flooded with IRQENB_EOS interrupts causing
-the lockup.
+Good work Irina,
 
-By adding the following to the tiadc_irq_h function the lockup stops.
-
-.
-.
-        if (status & IRQENB_EOS) {
-                tiadc_writel(adc_dev, REG_IRQCLR, IRQENB_EOS);
-                return IRQ_HANDLED;
-        }
-.
-.
-
-Now the IRQENB_EOS is also handled in the touchscreen driver so this is
-may not be an appropriate fix but at least it fixes the lockup.
-
-Try adding the snippet above to ti_am335x_adc.c and see if it makes
-your program stop locking up.
-
-Then we need to find a solution that makes the maintainers happy.
+Jonathan
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
