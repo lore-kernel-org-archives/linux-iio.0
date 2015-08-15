@@ -1,158 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47649 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47667 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753316AbbHOPPC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Aug 2015 11:15:02 -0400
-Subject: Re: [PATCH v2] iio: st_sensors: add debugfs register read hook
-To: Denis CIOCCA <denis.ciocca@st.com>,
-	Linus Walleij <linus.walleij@linaro.org>
-References: <1439367761-16975-1-git-send-email-linus.walleij@linaro.org>
- <8193DC26-31D2-468C-918F-2584DF30F47A@st.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+	with ESMTP id S1751408AbbHOPRM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Aug 2015 11:17:12 -0400
+Subject: Re: [PATCH] iio: event_monitor: report unsupported events
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	linux-iio@vger.kernel.org
+References: <1439296478-19567-1-git-send-email-linus.walleij@linaro.org>
+ <55CA4302.8080609@gmx.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55CF5773.6080002@kernel.org>
-Date: Sat, 15 Aug 2015 16:14:59 +0100
+Message-ID: <55CF57F7.3040108@kernel.org>
+Date: Sat, 15 Aug 2015 16:17:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <8193DC26-31D2-468C-918F-2584DF30F47A@st.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <55CA4302.8080609@gmx.de>
+Content-Type: text/plain; charset=iso-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/08/15 12:15, Denis CIOCCA wrote:
-> Looks good to me.
-> 
-> Acked-by: Denis Ciocca <denis.ciocca@st.com>
-> 
-> Denis
-Applied to the togreg branch of iio.git - initially pushed out
-as testing.
+On 11/08/15 19:46, Hartmut Knaack wrote:
+> Linus Walleij schrieb am 11.08.2015 um 14:34:
+>> This makes the event monitor bail out with a helpful error
+>> message if a device does not support events, as a related
+>> fix to iio core now makes it return -ENODEV properly.
+>>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to the togreg branch of iio.git
 
 Thanks,
 
 Jonathan
-> 
-> 
-> 
->> On Aug 12, 2015, at 16:22, Linus Walleij <linus.walleij@linaro.org> wrote:
->>
->> This adds a debugfs hook to read/write registers in the ST
->> sensors using debugfs. Proved to be awesome help when trying
->> to debug why IRQs do not arrive.
->>
->> Cc: Denis Ciocca <denis.ciocca@st.com>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 >> ---
->> ChangeLog v1->v2:
->> - User &ampersand i front of function name for debugfs helper
->> - EXPORT the debugfs regread symbol so modules work
->> ---
->> drivers/iio/accel/st_accel_core.c               |  1 +
->> drivers/iio/common/st_sensors/st_sensors_core.c | 22 ++++++++++++++++++++++
->> drivers/iio/gyro/st_gyro_core.c                 |  1 +
->> drivers/iio/magnetometer/st_magn_core.c         |  1 +
->> drivers/iio/pressure/st_pressure_core.c         |  1 +
->> include/linux/iio/common/st_sensors.h           |  4 ++++
->> 6 files changed, 30 insertions(+)
+>>  tools/iio/iio_event_monitor.c | 6 +++++-
+>>  1 file changed, 5 insertions(+), 1 deletion(-)
 >>
->> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
->> index 6617e779aa87..058c87d9f564 100644
->> --- a/drivers/iio/accel/st_accel_core.c
->> +++ b/drivers/iio/accel/st_accel_core.c
->> @@ -612,6 +612,7 @@ static const struct iio_info accel_info = {
->>    .attrs = &st_accel_attribute_group,
->>    .read_raw = &st_accel_read_raw,
->>    .write_raw = &st_accel_write_raw,
->> +    .debugfs_reg_access = &st_sensors_debugfs_reg_access,
->> };
+>> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+>> index cd3fd41b481d..d51eb04202e9 100644
+>> --- a/tools/iio/iio_event_monitor.c
+>> +++ b/tools/iio/iio_event_monitor.c
+>> @@ -284,7 +284,11 @@ int main(int argc, char **argv)
+>>  	ret = ioctl(fd, IIO_GET_EVENT_FD_IOCTL, &event_fd);
+>>  	if (ret == -1 || event_fd == -1) {
+>>  		ret = -errno;
+>> -		fprintf(stderr, "Failed to retrieve event fd\n");
+>> +		if (ret == -ENODEV)
+>> +			fprintf(stderr,
+>> +				"This device does not support events\n");
+>> +		else
+>> +			fprintf(stderr, "Failed to retrieve event fd\n");
+>>  		if (close(fd) == -1)
+>>  			perror("Failed to close character device file");
+>>  
 >>
->> #ifdef CONFIG_IIO_TRIGGER
->> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
->> index 8086cbcff87d..3129128857ea 100644
->> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
->> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
->> @@ -44,6 +44,28 @@ st_sensors_write_data_with_mask_error:
->>    return err;
->> }
->>
->> +int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
->> +                  unsigned reg, unsigned writeval,
->> +                  unsigned *readval)
->> +{
->> +    struct st_sensor_data *sdata = iio_priv(indio_dev);
->> +    u8 readdata;
->> +    int err;
->> +
->> +    if (!readval)
->> +        return sdata->tf->write_byte(&sdata->tb, sdata->dev,
->> +                         (u8)reg, (u8)writeval);
->> +
->> +    err = sdata->tf->read_byte(&sdata->tb, sdata->dev, (u8)reg, &readdata);
->> +    if (err < 0)
->> +        return err;
->> +
->> +    *readval = (unsigned)readdata;
->> +
->> +    return 0;
->> +}
->> +EXPORT_SYMBOL(st_sensors_debugfs_reg_access);
->> +
->> static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
->>            unsigned int odr, struct st_sensor_odr_avl *odr_out)
->> {
->> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
->> index ffe96642b6d0..3bbe63117175 100644
->> --- a/drivers/iio/gyro/st_gyro_core.c
->> +++ b/drivers/iio/gyro/st_gyro_core.c
->> @@ -380,6 +380,7 @@ static const struct iio_info gyro_info = {
->>    .attrs = &st_gyro_attribute_group,
->>    .read_raw = &st_gyro_read_raw,
->>    .write_raw = &st_gyro_write_raw,
->> +    .debugfs_reg_access = &st_sensors_debugfs_reg_access,
->> };
->>
->> #ifdef CONFIG_IIO_TRIGGER
->> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
->> index b4bcfb790f49..d612069e4e70 100644
->> --- a/drivers/iio/magnetometer/st_magn_core.c
->> +++ b/drivers/iio/magnetometer/st_magn_core.c
->> @@ -475,6 +475,7 @@ static const struct iio_info magn_info = {
->>    .attrs = &st_magn_attribute_group,
->>    .read_raw = &st_magn_read_raw,
->>    .write_raw = &st_magn_write_raw,
->> +    .debugfs_reg_access = &st_sensors_debugfs_reg_access,
->> };
->>
->> int st_magn_common_probe(struct iio_dev *indio_dev)
->> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
->> index e881fa6291e9..84f965deff80 100644
->> --- a/drivers/iio/pressure/st_pressure_core.c
->> +++ b/drivers/iio/pressure/st_pressure_core.c
->> @@ -397,6 +397,7 @@ static const struct iio_info press_info = {
->>    .attrs = &st_press_attribute_group,
->>    .read_raw = &st_press_read_raw,
->>    .write_raw = &st_press_write_raw,
->> +    .debugfs_reg_access = &st_sensors_debugfs_reg_access,
->> };
->>
->> #ifdef CONFIG_IIO_TRIGGER
->> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
->> index 2c476acb87d9..d8b4a7bc4029 100644
->> --- a/include/linux/iio/common/st_sensors.h
->> +++ b/include/linux/iio/common/st_sensors.h
->> @@ -269,6 +269,10 @@ void st_sensors_power_enable(struct iio_dev *indio_dev);
->>
->> void st_sensors_power_disable(struct iio_dev *indio_dev);
->>
->> +int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
->> +                  unsigned reg, unsigned writeval,
->> +                  unsigned *readval);
->> +
->> int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr);
->>
->> int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
->> -- 
->> 2.4.3
->>
+> 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
