@@ -1,61 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49059 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49067 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751927AbbHOTz0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Aug 2015 15:55:26 -0400
-Subject: Re: [PATCH v4] iio: adc: xilinx-xadc: Push interrupts into hardirq
- context
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Xander Huff <xander.huff@ni.com>
-References: <55C07160.5040907@metafoo.de>
- <1439334049-28671-1-git-send-email-xander.huff@ni.com>
- <55CB6391.7060502@metafoo.de> <55CB7558.3090608@linutronix.de>
-Cc: knaack.h@gmx.de, pmeerw@pmeerw.net, michal.simek@xilinx.com,
-	soren.brinkmann@xilinx.com, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-	joe.hershberger@ni.com, joshc@ni.com, nathan.sullivan@ni.com,
-	jaeden.amero@ni.com
+	with ESMTP id S1752659AbbHOT5Y (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Aug 2015 15:57:24 -0400
+Subject: Re: [PATCH 05/19] staging: iio: Remove unnecessary externs
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Joe Perches <joe@perches.com>, devel@driverdev.osuosl.org,
+	Michael Hennerich <Michael.Hennerich@analog.com>
+References: <cover.1439241825.git.joe@perches.com>
+ <fba2902597293652f4d8561730c0cf16cd4369a0.1439241825.git.joe@perches.com>
+ <55CA424F.1030704@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55CF992A.5040505@kernel.org>
-Date: Sat, 15 Aug 2015 20:55:22 +0100
+Message-ID: <55CF99A1.1000701@kernel.org>
+Date: Sat, 15 Aug 2015 20:57:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <55CB7558.3090608@linutronix.de>
+In-Reply-To: <55CA424F.1030704@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/08/15 17:33, Sebastian Andrzej Siewior wrote:
-> On 08/12/2015 05:17 PM, Lars-Peter Clausen wrote:
->> On 08/12/2015 01:00 AM, Xander Huff wrote:
->>> Unfortunately, this breaks PREEMPT_RT builds, where a spinlock can sleep,
->>> and is thus not able to be acquired from a hardirq handler. This patch gets
->>> rid of the threaded handler and pushes all interrupt handling into the
->>> hardirq context, and uses request_irq().
->>>
->>> To validate that this change has no impact on RT performance, here are
->>> cyclictest values with no processes running:
+On 11/08/15 19:43, Lars-Peter Clausen wrote:
+> On 08/10/2015 11:51 PM, Joe Perches wrote:
+>> Using 'extern' is not necessary for function prototypes.
 >>
->> Looks good, thanks.
->>
->> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+>> Signed-off-by: Joe Perches <joe@perches.com>
 > 
-> Yes, I'm fine with the rework, too.
-Formal Acked-by would be good but I'll take this on the basis of Lars' one
-and that the code clearly should work from a read through.
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> 
+Applied to the togreg branch of iio.git.  4.4 material now
+probably.
 
-Applied to the togreg branch of iio.git.  Thanks for following through
-the various twists of this one. Will initially be pushed out as testing.
-Note this has almost certainly (unless Linus announces a delay) missed the
-upcoming merge window so will be lined up for the 4.4 one.
+Thanks,
 
 Jonathan
+> Thanks.
 > 
-> Sebastian
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> ---
+>>  drivers/staging/iio/meter/ade7854.h | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/meter/ade7854.h b/drivers/staging/iio/meter/ade7854.h
+>> index 52ca541..52f4195 100644
+>> --- a/drivers/staging/iio/meter/ade7854.h
+>> +++ b/drivers/staging/iio/meter/ade7854.h
+>> @@ -168,7 +168,7 @@ struct ade7854_state {
+>>  
+>>  };
+>>  
+>> -extern int ade7854_probe(struct iio_dev *indio_dev, struct device *dev);
+>> -extern int ade7854_remove(struct iio_dev *indio_dev);
+>> +int ade7854_probe(struct iio_dev *indio_dev, struct device *dev);
+>> +int ade7854_remove(struct iio_dev *indio_dev);
+>>  
+>>  #endif
+>>
 > 
 
