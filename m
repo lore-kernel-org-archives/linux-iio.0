@@ -1,320 +1,264 @@
-Return-Path: <cmo@melexis.com>
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1508171524300.23302@pmeerw.net>
-References: <1439817150-26467-1-git-send-email-cmo@melexis.com> <alpine.DEB.2.02.1508171524300.23302@pmeerw.net>
-From: Crt Mori <cmo@melexis.com>
-Date: Mon, 17 Aug 2015 15:42:57 +0200
-Message-ID: <CAKv63uuDP1pM5A9pcEtoQuWw7W+XM2P=BG+C-bB1aEAUBD8WpQ@mail.gmail.com>
-Subject: Re: [PATCH v4] iio: mlx90614: Implement filter configuration
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Vianney le Clement de Saint-Marcq <vianney.leclement@essensium.com>, Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wi0-f172.google.com ([209.85.212.172]:37797 "EHLO
+	mail-wi0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753615AbbHQPzA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Aug 2015 11:55:00 -0400
+From: Sanchayan Maity <maitysanchayan@gmail.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: stefan@agner.ch, B38611@freescale.com, pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Sanchayan Maity <maitysanchayan@gmail.com>
+Subject: [PATCH v4] iio: adc: vf610: Add IIO buffer support for Vybrid ADC
+Date: Mon, 17 Aug 2015 21:21:40 +0530
+Message-Id: <9be567ec7d6f6370dd42a41438d64cf7aaa47635.1439826018.git.maitysanchayan@gmail.com>
+In-Reply-To: <d556443a26070be505f9a5f5f0999253b73d9b71.1439283162.git.maitysanchayan@gmail.com>
+References: <d556443a26070be505f9a5f5f0999253b73d9b71.1439283162.git.maitysanchayan@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 17 August 2015 at 15:29, Peter Meerwald <pmeerw@pmeerw.net> wrote:
-> On Mon, 17 Aug 2015, Crt Mori wrote:
->
->> Implemented Low pass 3db frequency filter which configures
->> FIR and IIR values within the configuration register of EEPROM.
->> For more standardized interface we have fixed the FIR value
->> to 1024, while changes in IIR value are directly connected to
->> filter responses. The new datasheet version will provide a
->> simplified table (also in reStructured text format below) with
->> this change, to provide quick overview of possible settings.
->
-> see comment below
->
-Thanks for checking. My replies inline below.
+This patch adds support for IIO buffer to the Vybrid ADC driver.
+IIO triggered buffer infrastructure along with iio sysfs trigger
+is used to leverage continuous sampling support provided by the
+ADC block.
 
->> Below sensor timings (bandwidth) are calculated for 3db frequency
->> low pass filter.
->>
->> +--------------------+-----------------+
->> | Filter setting (%) | Band width (Hz) |
->> |  (rounded to 1.0)  |                 |
->> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D+=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D+
->> |         13         |      0.15       |
->> +--------------------+-----------------+
->> |         17         |      0.20       |
->> +--------------------+-----------------+
->> |         25         |      0.31       |
->> +--------------------+-----------------+
->> |         50         |      0.77       |
->> +--------------------+-----------------+
->> |         57         |      0.86       |
->> +--------------------+-----------------+
->> |         67         |      1.10       |
->> +--------------------+-----------------+
->> |         80         |      1.53       |
->> +--------------------+-----------------+
->> |        100         |      7.23       |
->> +--------------------+-----------------+
->>
->> The diff is made towards togreg branch. Added myself to MAINTAINERS and
->> authors as per discussion with Jonathan.
->>
->> Signed-off-by: Crt Mori <cmo@melexis.com>
->> ---
->>  MAINTAINERS                        |  7 +++
->>  drivers/iio/temperature/mlx90614.c | 89 +++++++++++++++++++++++++++++++=
-+++++--
->>  2 files changed, 93 insertions(+), 3 deletions(-)
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 8133cef..f658890 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -6739,6 +6739,13 @@ S:     Supported
->>  F:   include/linux/mlx5/
->>  F:   drivers/infiniband/hw/mlx5/
->>
->> +MELEXIS MLX90614 DRIVER
->> +M:   Crt Mori <cmo@melexis.com>
->> +L:   linux-iio@vger.kernel.org
->> +W:   http://www.melexis.com
->> +S:   Supported
->> +F:   drivers/iio/temperature/mlx90614.c
->> +
->>  MN88472 MEDIA DRIVER
->>  M:   Antti Palosaari <crope@iki.fi>
->>  L:   linux-media@vger.kernel.org
->> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperatur=
-e/mlx90614.c
->> index 5d033a5..08e2bbf 100644
->> --- a/drivers/iio/temperature/mlx90614.c
->> +++ b/drivers/iio/temperature/mlx90614.c
->> @@ -3,6 +3,7 @@
->>   *
->>   * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
->>   * Copyright (c) 2015 Essensium NV
->> + * Copyright (c) 2015 Melexis
->>   *
->>   * This file is subject to the terms and conditions of version 2 of
->>   * the GNU General Public License.  See the file COPYING in the main
->> @@ -20,7 +21,6 @@
->>   * always has a pull-up so we do not need an extra GPIO to drive it hig=
-h.  If
->>   * the "wakeup" GPIO is not given, power management will be disabled.
->>   *
->> - * TODO: filter configuration
->>   */
->>
->>  #include <linux/err.h>
->> @@ -32,6 +32,7 @@
->>  #include <linux/pm_runtime.h>
->>
->>  #include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->>
->>  #define MLX90614_OP_RAM              0x00
->>  #define MLX90614_OP_EEPROM   0x20
->> @@ -79,6 +80,20 @@ struct mlx90614_data {
->>       unsigned long ready_timestamp; /* in jiffies */
->>  };
->>
->> +/* Bandwidth values for IIR filtering */
->> +static const int mlx90614_iir_values[] =3D {77, 31, 20, 15, 723, 153, 1=
-10, 86};
->> +static IIO_CONST_ATTR(in_temp_object_filter_low_pass_3db_frequency_avai=
-lable,
->> +                   "0.15 0.20 0.31 0.77 0.86 1.10 1.53 7.23");
->> +
->> +static struct attribute *mlx90614_attributes[] =3D {
->> +     &iio_const_attr_in_temp_object_filter_low_pass_3db_frequency_avail=
-able.dev_attr.attr,
->> +     NULL,
->> +};
->> +
->> +static const struct attribute_group mlx90614_attr_group =3D {
->> +     .attrs =3D mlx90614_attributes,
->> +};
->> +
->>  /*
->>   * Erase an address and write word.
->>   * The mutex must be locked before calling.
->> @@ -117,6 +132,41 @@ static s32 mlx90614_write_word(const struct i2c_cli=
-ent *client, u8 command,
->>       return ret;
->>  }
->>
->> +/*
->> + * Find the IIR value inside mlx90614_iir_values array and return its p=
-osition
->> + * which is equivalent to the bit value in sensor register
->> + */
->> +static inline s32 mlx90614_iir_search(const struct i2c_client *client,
->> +                                   int value)
->> +{
->> +     u8 i;
->
-> I'd rather use int for the loop variable
->
-ok, bad habbit of mine to use minimal stuff.
->> +     s32 ret;
->> +
->> +     for (i =3D 0; i < ARRAY_SIZE(mlx90614_iir_values); ++i) {
->> +             if (value =3D=3D mlx90614_iir_values[i])
->> +                     break;
->> +     }
->> +
->> +     if (value !=3D mlx90614_iir_values[i])
->
-> this is an out-of-bound access beyond _iir_values
->
-will change to something like i =3D=3D ARRAY_SIZE(mlx90614_iir_values)
->> +             return -EINVAL;
->> +
->> +     /*
->> +      * CONFIG register values must not be changed so
->> +      * we must read them before we actually write
->> +      * changes
->> +      */
->> +     ret =3D i2c_smbus_read_word_data(client, MLX90614_CONFIG);
->
-> I'd rather do
-> if (ret < 0)
->    return ret;
->
-thanks - slipped my view.
->> +     if (ret >=3D 0) {
->> +             /* Write changed values */
->> +             ret =3D mlx90614_write_word(client, MLX90614_CONFIG,
->> +                             (i << MLX90614_CONFIG_IIR_SHIFT) |
->> +                             (((u16) ((0x7 << MLX90614_CONFIG_FIR_SHIFT=
-) |
->> +                             ((u16) ret & (~((u16) MLX90614_CONFIG_FIR_=
-MASK))))) &
->> +                             (~(u16) MLX90614_CONFIG_IIR_MASK)));
->
-> this is still a mess, ehm, not very readable
->
-Except for splitting this up (fir shift and mask in separate variable)
-or as nested macro
-I doubt I can make it more readable. I also think compiler does handle
-this nicely without
-additional variables.
-I could add a comment up there which explains that we fix FIR to 1024,
-with that 0x7
-and shift and application of FIR mask, then afterwards we apply IIR
-value with IIR mask.
->> +     }
->> +     return ret;
->> +}
->> +
->>  #ifdef CONFIG_PM
->>  /*
->>   * If @startup is true, make sure MLX90614_TIMING_STARTUP ms have elaps=
-ed since
->> @@ -236,6 +286,21 @@ static int mlx90614_read_raw(struct iio_dev *indio_=
-dev,
->>                       *val2 =3D ret * MLX90614_CONST_EMISSIVITY_RESOLUTI=
-ON;
->>               }
->>               return IIO_VAL_INT_PLUS_NANO;
->> +     case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* IIR setting w=
-ith
->> +                                                          FIR =3D 1024 =
-*/
->> +             mlx90614_power_get(data, false);
->> +             mutex_lock(&data->lock);
->> +             ret =3D i2c_smbus_read_word_data(data->client, MLX90614_CO=
-NFIG);
->> +             mutex_unlock(&data->lock);
->> +             mlx90614_power_put(data);
->> +
->> +             if (ret < 0)
->> +                     return ret;
->> +
->> +             *val =3D mlx90614_iir_values[ret & MLX90614_CONFIG_IIR_MAS=
-K] / 100;
->> +             *val2 =3D mlx90614_iir_values[ret & MLX90614_CONFIG_IIR_MA=
-SK] % 100 *
->
-> probably add parenthesis and don't rely on operator precedence for clarit=
-y
->
-OK, I thought point was to rely on operator precedence to avoid
-additional parenthesis.
->> +                     10000;
->> +             return IIO_VAL_INT_PLUS_MICRO;
->>       default:
->>               return -EINVAL;
->>       }
->> @@ -263,6 +328,18 @@ static int mlx90614_write_raw(struct iio_dev *indio=
-_dev,
->>               mlx90614_power_put(data);
->>
->>               return ret;
->> +     case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* IIR Filter se=
-tting */
->> +             if (val < 0 || val2 < 0)
->> +                     return -EINVAL;
->> +
->> +             mlx90614_power_get(data, false);
->> +             mutex_lock(&data->lock);
->> +             ret =3D mlx90614_iir_search(data->client,
->> +                                       val * 100 + val2 / 10000);
->> +             mutex_unlock(&data->lock);
->> +             mlx90614_power_put(data);
->> +
->> +             return ret;
->>       default:
->>               return -EINVAL;
->>       }
->> @@ -275,6 +352,8 @@ static int mlx90614_write_raw_get_fmt(struct iio_dev=
- *indio_dev,
->>       switch (mask) {
->>       case IIO_CHAN_INFO_CALIBEMISSIVITY:
->>               return IIO_VAL_INT_PLUS_NANO;
->> +     case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->> +             return IIO_VAL_INT_PLUS_MICRO;
->>       default:
->>               return -EINVAL;
->>       }
->> @@ -294,7 +373,8 @@ static const struct iio_chan_spec mlx90614_channels[=
-] =3D {
->>               .modified =3D 1,
->>               .channel2 =3D IIO_MOD_TEMP_OBJECT,
->>               .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
->> -                 BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
->> +                 BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
->> +                     BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
->>               .info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_OFFSET) |
->>                   BIT(IIO_CHAN_INFO_SCALE),
->>       },
->> @@ -305,7 +385,8 @@ static const struct iio_chan_spec mlx90614_channels[=
-] =3D {
->>               .channel =3D 1,
->>               .channel2 =3D IIO_MOD_TEMP_OBJECT,
->>               .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
->> -                 BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
->> +                 BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
->> +                     BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
->>               .info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_OFFSET) |
->>                   BIT(IIO_CHAN_INFO_SCALE),
->>       },
->> @@ -315,6 +396,7 @@ static const struct iio_info mlx90614_info =3D {
->>       .read_raw =3D mlx90614_read_raw,
->>       .write_raw =3D mlx90614_write_raw,
->>       .write_raw_get_fmt =3D mlx90614_write_raw_get_fmt,
->> +     .attrs =3D &mlx90614_attr_group,
->>       .driver_module =3D THIS_MODULE,
->>  };
->>
->> @@ -569,5 +651,6 @@ module_i2c_driver(mlx90614_driver);
->>
->>  MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
->>  MODULE_AUTHOR("Vianney le Cl=C3=A9ment de Saint-Marcq <vianney.leclemen=
-t@essensium.com>");
->> +MODULE_AUTHOR("Crt Mori <cmo@melexis.com>");
->>  MODULE_DESCRIPTION("Melexis MLX90614 contactless IR temperature sensor =
-driver");
->>  MODULE_LICENSE("GPL");
->>
->
-> --
->
-> Peter Meerwald
-> +43-664-2444418 (mobile)
+Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+---
+
+Changes since v3:
+Fix iio_buffer_setup_ops for postenable and predisable functions
+to match pairwise. Before this the predisable work was being done
+in postdisable.
+
+Changes since v2:
+1. Fix the wrong buffer size for statically allocated buffer
+2. Drop the use of .address field from the iio_chan_spec
+3. Use iio_buffer_enabled call inside the lock
+4. Drop wrapper function around iio_trigered_* function calls
+5. Drop Kconfig select of sysfs trigger
+6. Drop Kconfig select IIO_TRIGGER as it is already selected by
+IIO_TRIGGERED_BUFFER
+
+Changes since v1:
+1. Use a fixed size buffer instead of kmalloc allocated during update
+scan mode
+2. Remove a write to read only register ADC_HS (COCO bit)
+
+ drivers/iio/adc/Kconfig     |   2 +
+ drivers/iio/adc/vf610_adc.c | 105 +++++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 100 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7c55658..660f790 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -337,6 +337,8 @@ config TWL6030_GPADC
+ config VF610_ADC
+ 	tristate "Freescale vf610 ADC driver"
+ 	depends on OF
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to support for Vybrid board analog-to-digital converter.
+ 	  Since the IP is used for i.MX6SLX, the driver also support i.MX6SLX.
+diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+index 23b8fb9..887a7ba 100644
+--- a/drivers/iio/adc/vf610_adc.c
++++ b/drivers/iio/adc/vf610_adc.c
+@@ -34,8 +34,11 @@
+ #include <linux/err.h>
+ 
+ #include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/sysfs.h>
+-#include <linux/iio/driver.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ /* This will be the driver name the kernel reports */
+ #define DRIVER_NAME "vf610-adc"
+@@ -170,6 +173,7 @@ struct vf610_adc {
+ 	u32 sample_freq_avail[5];
+ 
+ 	struct completion completion;
++	u16 buffer[8];
+ };
+ 
+ static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
+@@ -505,12 +509,24 @@ static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+ 				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+ 	.ext_info = vf610_ext_info,				\
++	.scan_index = (_idx),			\
++	.scan_type = {					\
++		.sign = 'u',				\
++		.realbits = 12,				\
++		.storagebits = 16,			\
++	},						\
+ }
+ 
+ #define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
+ 	.type = (_chan_type),	\
+ 	.channel = (_idx),		\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
++	.scan_index = (_idx),					\
++	.scan_type = {						\
++		.sign = 'u',					\
++		.realbits = 12,					\
++		.storagebits = 16,				\
++	},							\
+ }
+ 
+ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+@@ -531,6 +547,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+ 	VF610_ADC_CHAN(14, IIO_VOLTAGE),
+ 	VF610_ADC_CHAN(15, IIO_VOLTAGE),
+ 	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
++	IIO_CHAN_SOFT_TIMESTAMP(32),
+ 	/* sentinel */
+ };
+ 
+@@ -559,13 +576,20 @@ static int vf610_adc_read_data(struct vf610_adc *info)
+ 
+ static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
+ {
+-	struct vf610_adc *info = (struct vf610_adc *)dev_id;
++	struct iio_dev *indio_dev = (struct iio_dev *)dev_id;
++	struct vf610_adc *info = iio_priv(indio_dev);
+ 	int coco;
+ 
+ 	coco = readl(info->regs + VF610_REG_ADC_HS);
+ 	if (coco & VF610_ADC_HS_COCO0) {
+ 		info->value = vf610_adc_read_data(info);
+-		complete(&info->completion);
++		if (iio_buffer_enabled(indio_dev)) {
++			info->buffer[0] = info->value;
++			iio_push_to_buffers_with_timestamp(indio_dev,
++					info->buffer, iio_get_time_ns());
++			iio_trigger_notify_done(indio_dev->trig);
++		} else
++			complete(&info->completion);
+ 	}
+ 
+ 	return IRQ_HANDLED;
+@@ -613,8 +637,12 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_RAW:
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		mutex_lock(&indio_dev->mlock);
+-		reinit_completion(&info->completion);
++		if (iio_buffer_enabled(indio_dev)) {
++			mutex_unlock(&indio_dev->mlock);
++			return -EBUSY;
++		}
+ 
++		reinit_completion(&info->completion);
+ 		hc_cfg = VF610_ADC_ADCHC(chan->channel);
+ 		hc_cfg |= VF610_ADC_AIEN;
+ 		writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
+@@ -694,6 +722,60 @@ static int vf610_write_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static int vf610_adc_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct vf610_adc *info = iio_priv(indio_dev);
++	unsigned int channel;
++	int ret;
++	int val;
++
++	ret = iio_triggered_buffer_postenable(indio_dev);
++	if (ret)
++		return ret;
++
++	val = readl(info->regs + VF610_REG_ADC_GC);
++	val |= VF610_ADC_ADCON;
++	writel(val, info->regs + VF610_REG_ADC_GC);
++
++	channel = find_first_bit(indio_dev->active_scan_mask,
++						indio_dev->masklength);
++
++	val = VF610_ADC_ADCHC(channel);
++	val |= VF610_ADC_AIEN;
++
++	writel(val, info->regs + VF610_REG_ADC_HC0);
++
++	return 0;
++}
++
++static int vf610_adc_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct vf610_adc *info = iio_priv(indio_dev);
++	unsigned int hc_cfg = 0;
++	int val, ret;
++
++	val = readl(info->regs + VF610_REG_ADC_GC);
++	val &= ~VF610_ADC_ADCON;
++	writel(val, info->regs + VF610_REG_ADC_GC);
++
++	hc_cfg |= VF610_ADC_CONV_DISABLE;
++	hc_cfg &= ~VF610_ADC_AIEN;
++
++	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
++
++	ret = iio_triggered_buffer_predisable(indio_dev);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
++	.postenable = &vf610_adc_buffer_postenable,
++	.predisable = &vf610_adc_buffer_predisable,
++	.validate_scan_mask = &iio_validate_scan_mask_onehot,
++};
++
+ static int vf610_adc_reg_access(struct iio_dev *indio_dev,
+ 			unsigned reg, unsigned writeval,
+ 			unsigned *readval)
+@@ -753,7 +835,7 @@ static int vf610_adc_probe(struct platform_device *pdev)
+ 
+ 	ret = devm_request_irq(info->dev, irq,
+ 				vf610_adc_isr, 0,
+-				dev_name(&pdev->dev), info);
++				dev_name(&pdev->dev), indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
+ 		return ret;
+@@ -806,15 +888,23 @@ static int vf610_adc_probe(struct platform_device *pdev)
+ 	vf610_adc_cfg_init(info);
+ 	vf610_adc_hw_init(info);
+ 
++	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
++					NULL, &iio_triggered_buffer_setup_ops);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Couldn't initialise the buffer\n");
++		goto error_iio_device_register;
++	}
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Couldn't register the device.\n");
+-		goto error_iio_device_register;
++		goto error_adc_buffer_init;
+ 	}
+ 
+ 	return 0;
+ 
+-
++error_adc_buffer_init:
++	iio_triggered_buffer_cleanup(indio_dev);
+ error_iio_device_register:
+ 	clk_disable_unprepare(info->clk);
+ error_adc_clk_enable:
+@@ -829,6 +919,7 @@ static int vf610_adc_remove(struct platform_device *pdev)
+ 	struct vf610_adc *info = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
+ 	regulator_disable(info->vref);
+ 	clk_disable_unprepare(info->clk);
+ 
+-- 
+2.5.0
+
