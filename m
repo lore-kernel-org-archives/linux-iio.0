@@ -1,450 +1,283 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:45258 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750759AbbHQNmu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 17 Aug 2015 09:42:50 -0400
-Date: Mon, 17 Aug 2015 16:42:30 +0300
-From: Teodora Baluta <teodora.baluta@intel.com>
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:38390 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750892AbbHQN7X (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Aug 2015 09:59:23 -0400
+Date: Mon, 17 Aug 2015 19:26:06 +0530
+From: maitysanchayan@gmail.com
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	daniel.baluta@intel.com, dan.carpenter@oracle.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: magnetometer: add mmc34160 magnetometer
- driver
-Message-ID: <20150817134230.GA21849@hard-bop>
-References: <1438352845-11540-1-git-send-email-teodora.baluta@intel.com>
- <1438352845-11540-3-git-send-email-teodora.baluta@intel.com>
- <55BE4802.3050609@kernel.org>
- <55BE48CB.2010709@kernel.org>
- <55CFA57B.6010103@kernel.org>
- <55CFA704.8040502@kernel.org>
+Cc: linux-iio@vger.kernel.org, stefan@agner.ch, B38611@freescale.com,
+	pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3] iio: adc: vf610: Add IIO buffer support for Vybrid ADC
+Message-ID: <20150817135606.GB2940@Sanchayan-Arch.toradex.int>
+References: <cover.1439283162.git.maitysanchayan@gmail.com>
+ <d556443a26070be505f9a5f5f0999253b73d9b71.1439283162.git.maitysanchayan@gmail.com>
+ <55CF9FE1.3000103@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <55CFA704.8040502@kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <55CF9FE1.3000103@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Aug 15, 2015 at 09:54:28PM +0100, Jonathan Cameron wrote:
-> On 15/08/15 21:47, Jonathan Cameron wrote:
-> > On 02/08/15 17:43, Jonathan Cameron wrote:
-> >> On 02/08/15 17:40, Jonathan Cameron wrote:
-> >>> On 31/07/15 15:27, Teodora Baluta wrote:
-> >>>> This patch adds support for the MMC34160 3-axis magnetometer driver. The
-> >>>> MMC31460 magnetometer driver uses the same register map as MMC35240 with
-> >>>> different specifications for sensitivity.
-> >>>>
-> >>>> According to Memsic specification, for the MMC31460 sensor, there is no
-> >>>> need to apply compensation to the read values. Also, the MMC34160 sensor
-> >>>> does not use the same formula as MMC35240 for transforming raw data into
-> >>>> mgauss, and the current formula is based on the input driver (mmc3416x)
-> >>>> provided by Memsic.
-> >>>>
-> >>>> Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
-> >>> Couple of comments inline.
-> >>>
-> >>> Applied to the togreg branch of iio.git - initially pushed out as testing
-> >>> for the autobuilders to play with it.
-> >>>
-> >> oops, didn't check it had actually applied cleanly.  Right now it doesn't.
-> >> Perhaps connected to various fixes working there way through.  I'll hold
-> >> this patch back for now on the basis it'll probably work itself out
-> >> as they hit the togreg branch (hopefully later this week).
-> >>
-> >> Jonathan
+Hello Jonathan,
+
+On 15-08-15 21:24:01, Jonathan Cameron wrote:
+> On 11/08/15 10:05, Sanchayan Maity wrote:
+> > This patch adds support for IIO buffer to the Vybrid ADC driver.
+> > IIO triggered buffer infrastructure along with iio sysfs trigger
+> > is used to leverage continuous sampling support provided by the
+> > ADC block.
 > > 
-> > Applied to the togreg branch of iio.git (with some fuzz).
-> Spoke too soon.  The result doesn't build (id undefined at line 414).  Could
-> you rebase and send me an updated version against my testing branch?
-
-Sure, will send a single v4 patch rebased against the testing branch.
-There's a comment inline.
-
-Thanks for the review & patience,
-Teodora
-
+> > Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+> Hi Sanchayan,
 > 
-> Thanks,
+> Very nearly there. One little point to do with the buffer handling.
+> Basically I don't think you want anything in the preenable or
+> postdisable hooks, just in the 'internal' ones.
 > 
 > Jonathan
+> > ---
+> >  drivers/iio/adc/Kconfig     |   2 +
+> >  drivers/iio/adc/vf610_adc.c | 102 +++++++++++++++++++++++++++++++++++++++++---
+> >  2 files changed, 97 insertions(+), 7 deletions(-)
 > > 
-> > Thanks,
-> > 
-> > Jonathan
-> >>> Thanks,
-> >>>
-> >>> Jonathan
-> >>>> ---
-> >>>>  drivers/iio/magnetometer/Kconfig    |   5 +-
-> >>>>  drivers/iio/magnetometer/mmc35240.c | 203 ++++++++++++++++++++++++++++--------
-> >>>>  2 files changed, 161 insertions(+), 47 deletions(-)
-> >>>>
-> >>>> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> >>>> index dcadfc4..baf59d9 100644
-> >>>> --- a/drivers/iio/magnetometer/Kconfig
-> >>>> +++ b/drivers/iio/magnetometer/Kconfig
-> >>>> @@ -52,8 +52,9 @@ config MMC35240
-> >>>>  	select REGMAP_I2C
-> >>>>  	depends on I2C
-> >>>>  	help
-> >>>> -	  Say yes here to build support for the MEMSIC MMC35240 3-axis
-> >>>> -	  magnetic sensor.
-> >>>> +	  Say yes here to build support for the MEMSIC MMC35240 3-axis magnetic
-> >>>> +	  sensor. This driver also adds support for the MEMSIC MMC34160 3-axis magnetic
-> >>>> +	  sensor.
-> >>> Sometimes I wonder if we should have a standard form for multi device supporting
-> >>> driver Kconfig help text.  This one seems rather unwieldy!  Anyhow we don't
-> >>> so until we do it can be like this.
+> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> > index 7c55658..660f790 100644
+> > --- a/drivers/iio/adc/Kconfig
+> > +++ b/drivers/iio/adc/Kconfig
+> > @@ -337,6 +337,8 @@ config TWL6030_GPADC
+> >  config VF610_ADC
+> >  	tristate "Freescale vf610 ADC driver"
+> >  	depends on OF
+> > +	select IIO_BUFFER
+> > +	select IIO_TRIGGERED_BUFFER
+> >  	help
+> >  	  Say yes here to support for Vybrid board analog-to-digital converter.
+> >  	  Since the IP is used for i.MX6SLX, the driver also support i.MX6SLX.
+> > diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> > index 23b8fb9..de62c48 100644
+> > --- a/drivers/iio/adc/vf610_adc.c
+> > +++ b/drivers/iio/adc/vf610_adc.c
+> > @@ -34,8 +34,11 @@
+> >  #include <linux/err.h>
+> >  
+> >  #include <linux/iio/iio.h>
+> > +#include <linux/iio/buffer.h>
+> >  #include <linux/iio/sysfs.h>
+> > -#include <linux/iio/driver.h>
+> > +#include <linux/iio/trigger.h>
+> > +#include <linux/iio/trigger_consumer.h>
+> > +#include <linux/iio/triggered_buffer.h>
+> >  
+> >  /* This will be the driver name the kernel reports */
+> >  #define DRIVER_NAME "vf610-adc"
+> > @@ -170,6 +173,7 @@ struct vf610_adc {
+> >  	u32 sample_freq_avail[5];
+> >  
+> >  	struct completion completion;
+> > +	u16 buffer[8];
+> >  };
+> >  
+> >  static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
+> > @@ -505,12 +509,24 @@ static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
+> >  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+> >  				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> >  	.ext_info = vf610_ext_info,				\
+> > +	.scan_index = (_idx),			\
+> > +	.scan_type = {					\
+> > +		.sign = 'u',				\
+> > +		.realbits = 12,				\
+> > +		.storagebits = 16,			\
+> > +	},						\
+> >  }
+> >  
+> >  #define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
+> >  	.type = (_chan_type),	\
+> >  	.channel = (_idx),		\
+> >  	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
+> > +	.scan_index = (_idx),					\
+> > +	.scan_type = {						\
+> > +		.sign = 'u',					\
+> > +		.realbits = 12,					\
+> > +		.storagebits = 16,				\
+> > +	},							\
+> >  }
+> >  
+> >  static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+> > @@ -531,6 +547,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+> >  	VF610_ADC_CHAN(14, IIO_VOLTAGE),
+> >  	VF610_ADC_CHAN(15, IIO_VOLTAGE),
+> >  	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
+> > +	IIO_CHAN_SOFT_TIMESTAMP(32),
+> >  	/* sentinel */
+> >  };
+> >  
+> > @@ -559,13 +576,20 @@ static int vf610_adc_read_data(struct vf610_adc *info)
+> >  
+> >  static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
+> >  {
+> > -	struct vf610_adc *info = (struct vf610_adc *)dev_id;
+> > +	struct iio_dev *indio_dev = (struct iio_dev *)dev_id;
+> > +	struct vf610_adc *info = iio_priv(indio_dev);
+> >  	int coco;
+> >  
+> >  	coco = readl(info->regs + VF610_REG_ADC_HS);
+> >  	if (coco & VF610_ADC_HS_COCO0) {
+> >  		info->value = vf610_adc_read_data(info);
+> > -		complete(&info->completion);
+> > +		if (iio_buffer_enabled(indio_dev)) {
+> > +			info->buffer[0] = info->value;
+> > +			iio_push_to_buffers_with_timestamp(indio_dev,
+> > +					info->buffer, iio_get_time_ns());
+> > +			iio_trigger_notify_done(indio_dev->trig);
+> > +		} else
+> > +			complete(&info->completion);
+> >  	}
+> >  
+> >  	return IRQ_HANDLED;
+> > @@ -613,8 +637,12 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+> >  	case IIO_CHAN_INFO_RAW:
+> >  	case IIO_CHAN_INFO_PROCESSED:
+> >  		mutex_lock(&indio_dev->mlock);
+> > -		reinit_completion(&info->completion);
+> > +		if (iio_buffer_enabled(indio_dev)) {
+> > +			mutex_unlock(&indio_dev->mlock);
+> > +			return -EBUSY;
+> > +		}
+> >  
+> > +		reinit_completion(&info->completion);
+> >  		hc_cfg = VF610_ADC_ADCHC(chan->channel);
+> >  		hc_cfg |= VF610_ADC_AIEN;
+> >  		writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
+> > @@ -694,6 +722,57 @@ static int vf610_write_raw(struct iio_dev *indio_dev,
+> >  	return -EINVAL;
+> >  }
+> >  
+> > +static int vf610_adc_buffer_postenable(struct iio_dev *indio_dev)
+> > +{
+> > +	struct vf610_adc *info = iio_priv(indio_dev);
+> > +	unsigned int channel;
+> > +	int ret;
+> > +	int val;
+> > +
+> > +	ret = iio_triggered_buffer_postenable(indio_dev);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	val = readl(info->regs + VF610_REG_ADC_GC);
+> > +	val |= VF610_ADC_ADCON;
+> > +	writel(val, info->regs + VF610_REG_ADC_GC);
+> > +
+> > +	channel = find_first_bit(indio_dev->active_scan_mask,
+> > +						indio_dev->masklength);
+> > +
+> > +	val = VF610_ADC_ADCHC(channel);
+> > +	val |= VF610_ADC_AIEN;
+> > +
+> > +	writel(val, info->regs + VF610_REG_ADC_HC0);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> 
+> These are suppose to be pair wise matched, so anything set up
+> in postenable has to be torn down in predisable.
+> Likewise, preenable setup torn down in postdisable.
+> 
+> The distinction is meant to be that a query will return that the
+> buffer is enabled from a point between the pre and post enable
+> and return that it is disabled from a point between the pre and
+> post disable.  Actually locks are held so there may no longer
+> be a window where it matters, but best to keep to convention.
+> 
+> I think you want the postdisable -> predisable and then call the
+> standard predisable from there.
 
-Actually, the second version had this somehow fixed (by using 'and'
-instead of a new sentence thus shortening the Kconfig description) as
-per your suggestion. It slipped out of version 3.
+Ok. I guess I understood. So the postdisable code actually should
+go into predisable and while taking care of mutex locking.
 
-> >>>>  
-> >>>>  	  To compile this driver as a module, choose M here: the module
-> >>>>  	  will be called mmc35240.
-> >>>> diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
-> >>>> index a4259bf..7a5921b 100644
-> >>>> --- a/drivers/iio/magnetometer/mmc35240.c
-> >>>> +++ b/drivers/iio/magnetometer/mmc35240.c
-> >>>> @@ -83,6 +83,20 @@
-> >>>>  
-> >>>>  #define MMC35240_OTP_START_ADDR		0x1B
-> >>>>  
-> >>>> +#define MMC35240_CHIP_ID	0x08
-> >>>> +#define MMC34160_CHIP_ID	0x06
-> >>>> +
-> >>>> +enum mmc35240_chipset {
-> >>>> +	MMC35240,
-> >>>> +	MMC34160,
-> >>>> +	MMC_MAX_CHIPS
-> >>>> +};
-> >>>> +
-> >>>> +static u8 chip_ids[MMC_MAX_CHIPS] = {
-> >>>> +	MMC35240_CHIP_ID,
-> >>>> +	MMC34160_CHIP_ID,
-> >>>> +};
-> >>>> +
-> >>>>  enum mmc35240_resolution {
-> >>>>  	MMC35240_16_BITS_SLOW = 0, /* 7.92 ms */
-> >>>>  	MMC35240_16_BITS_FAST,     /* 4.08 ms */
-> >>>> @@ -99,27 +113,53 @@ enum mmc35240_axis {
-> >>>>  static const struct {
-> >>>>  	int sens[3]; /* sensitivity per X, Y, Z axis */
-> >>>>  	int nfo; /* null field output */
-> >>>> -} mmc35240_props_table[] = {
-> >>>> -	/* 16 bits, 125Hz ODR */
-> >>>> -	{
-> >>>> -		{1024, 1024, 1024},
-> >>>> -		32768,
-> >>>> -	},
-> >>>> -	/* 16 bits, 250Hz ODR */
-> >>>> -	{
-> >>>> -		{1024, 1024, 770},
-> >>>> -		32768,
-> >>>> -	},
-> >>>> -	/* 14 bits, 450Hz ODR */
-> >>>> +} mmc35240_props_table[MMC_MAX_CHIPS][4] = {
-> >>>> +	/* MMC35240 */
-> >>>>  	{
-> >>>> -		{256, 256, 193},
-> >>>> -		8192,
-> >>>> +		/* 16 bits, 125Hz ODR */
-> >>>> +		{
-> >>>> +			{1024, 1024, 1024},
-> >>>> +			32768,
-> >>>> +		},
-> >>>> +		/* 16 bits, 250Hz ODR */
-> >>>> +		{
-> >>>> +			{1024, 1024, 770},
-> >>>> +			32768,
-> >>>> +		},
-> >>>> +		/* 14 bits, 450Hz ODR */
-> >>>> +		{
-> >>>> +			{256, 256, 193},
-> >>>> +			8192,
-> >>>> +		},
-> >>>> +		/* 12 bits, 800Hz ODR */
-> >>>> +		{
-> >>>> +			{64, 64, 48},
-> >>>> +			2048,
-> >>>> +		},
-> >>>>  	},
-> >>>> -	/* 12 bits, 800Hz ODR */
-> >>>> +	/* MMC34160 */
-> >>>>  	{
-> >>>> -		{64, 64, 48},
-> >>>> -		2048,
-> >>>> -	},
-> >>>> +		/* 16 bits, 125Hz ODR */
-> >>>> +		{
-> >>>> +			{2048, 2048, 2048},
-> >>>> +			32768,
-> >>>> +		},
-> >>>> +		/* 16 bits, 250Hz ODR */
-> >>>> +		{
-> >>>> +			{2048, 2048, 2048},
-> >>>> +			32768,
-> >>>> +		},
-> >>>> +		/* 14 bits, 450Hz ODR */
-> >>>> +		{
-> >>>> +			{512, 512, 512},
-> >>>> +			8192,
-> >>>> +		},
-> >>>> +		/* 12 bits, 800Hz ODR */
-> >>>> +		{
-> >>>> +			{128, 128, 128},
-> >>>> +			2048,
-> >>>> +		},
-> >>>> +	}
-> >>>>  };
-> >>>>  
-> >>>>  struct mmc35240_data {
-> >>>> @@ -131,6 +171,7 @@ struct mmc35240_data {
-> >>>>  	/* OTP compensation */
-> >>>>  	int axis_coef[3];
-> >>>>  	int axis_scale[3];
-> >>>> +	enum mmc35240_chipset chipset;
-> >>>>  };
-> >>>>  
-> >>>>  static const struct {
-> >>>> @@ -206,6 +247,16 @@ static int mmc35240_hw_set(struct mmc35240_data *data, bool set)
-> >>>>  				  coil_bit);
-> >>>>  }
-> >>>>  
-> >>>> +static inline bool mmc35240_needs_compensation(enum mmc35240_chipset chipset)
-> >>>> +{
-> >>>> +	switch (chipset) {
-> >>>> +	case MMC35240:
-> >>>> +		return true;
-> >>>> +	default:
-> >>>> +		return false;
-> >>>> +	}
-> >>>> +}
-> >>>> +
-> >>>>  static int mmc35240_init(struct mmc35240_data *data)
-> >>>>  {
-> >>>>  	int ret, y_convert, z_convert;
-> >>>> @@ -220,6 +271,10 @@ static int mmc35240_init(struct mmc35240_data *data)
-> >>>>  
-> >>>>  	dev_dbg(&data->client->dev, "MMC35240 chip id %x\n", reg_id);
-> >>>>  
-> >>>> +	if (reg_id != chip_ids[data->chipset]) {
-> >>>> +		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
-> >>>> +		return -ENODEV;
-> >>>> +	}
-> >>>>  	/*
-> >>>>  	 * make sure we restore sensor characteristics, by doing
-> >>>>  	 * a RESET/SET sequence
-> >>>> @@ -240,6 +295,9 @@ static int mmc35240_init(struct mmc35240_data *data)
-> >>>>  	if (ret < 0)
-> >>>>  		return ret;
-> >>>>  
-> >>>> +	if (!mmc35240_needs_compensation(data->chipset))
-> >>>> +		return 0;
-> >>>> +
-> >>>>  	ret = regmap_bulk_read(data->regmap, MMC35240_OTP_START_ADDR,
-> >>>>  			       (u8 *)otp_data, sizeof(otp_data));
-> >>>>  	if (ret < 0)
-> >>>> @@ -301,9 +359,38 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
-> >>>>  				3 * sizeof(__le16));
-> >>>>  }
-> >>>>  
-> >>>> +static int mmc34160_raw_to_mgauss(int raw[3], int sens[3], int nfo,
-> >>>> +				  int index, int *val)
-> >>>> +{
-> >>>> +	*val = (raw[index] - nfo) * 1000 / sens[index];
-> >>>> +	return 0;
-> >>>> +}
-> >>>> +
-> >>>> +static int mmc35240_raw_to_mgauss(int raw[3], int sens[3], int nfo,
-> >>>> +				  int index, int *val)
-> >>>> +{
-> >>>> +	switch (index) {
-> >>>> +	case AXIS_X:
-> >>>> +		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
-> >>>> +		break;
-> >>>> +	case AXIS_Y:
-> >>>> +		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] -
-> >>>> +			(raw[AXIS_Z] - nfo)  * 1000 / sens[AXIS_Z];
-> >>>> +		break;
-> >>>> +	case AXIS_Z:
-> >>>> +		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] +
-> >>>> +			(raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
-> >>>> +		break;
-> >>>> +	default:
-> >>>> +		return -EINVAL;
-> >>>> +	}
-> >>>> +
-> >>>> +	return 0;
-> >>>> +}
-> >>>> +
-> >>>>  /**
-> >>>> - * mmc35240_raw_to_mgauss - convert raw readings to milli gauss. Also apply
-> >>>> -			    compensation for output value.
-> >>>> + * memsic_raw_to_mgauss - convert raw readings to milli gauss. Also apply
-> >>>> +			  compensation for output value.
-> >>>>   *
-> >>>>   * @data: device private data
-> >>>>   * @index: axis index for which we want the conversion
-> >>>> @@ -312,8 +399,8 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
-> >>>>   *
-> >>>>   * Returns: 0 in case of success, -EINVAL when @index is not valid
-> >>>>   */
-> >>>> -static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
-> >>>> -				  __le16 buf[], int *val)
-> >>>> +static int memsic_raw_to_mgauss(struct mmc35240_data *data, int index,
-> >>> Awkward.  Normally I'd argue in favour of keeping the original prefix
-> >>> (in keeping with the driver name) but here you have reused that name
-> >>> as was obviously appropriate.  Ah well I guess memsic_ will have
-> >>> to do as a prefix!
-> >>>> +				__le16 buf[], int *val)
-> >>>>  {
-> >>>>  	int raw[3];
-> >>>>  	int sens[3];
-> >>>> @@ -323,29 +410,29 @@ static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
-> >>>>  	raw[AXIS_Y] = le16_to_cpu(buf[AXIS_Y]);
-> >>>>  	raw[AXIS_Z] = le16_to_cpu(buf[AXIS_Z]);
-> >>>>  
-> >>>> -	sens[AXIS_X] = mmc35240_props_table[data->res].sens[AXIS_X];
-> >>>> -	sens[AXIS_Y] = mmc35240_props_table[data->res].sens[AXIS_Y];
-> >>>> -	sens[AXIS_Z] = mmc35240_props_table[data->res].sens[AXIS_Z];
-> >>>> +	sens[AXIS_X] = mmc35240_props_table[id][data->res].sens[AXIS_X];
-> >>>> +	sens[AXIS_Y] = mmc35240_props_table[id][data->res].sens[AXIS_Y];
-> >>>> +	sens[AXIS_Z] = mmc35240_props_table[id][data->res].sens[AXIS_Z];
-> >>>>  
-> >>>> -	nfo = mmc35240_props_table[data->res].nfo;
-> >>>>  
-> >>>> -	switch (index) {
-> >>>> -	case AXIS_X:
-> >>>> -		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
-> >>>> -		break;
-> >>>> -	case AXIS_Y:
-> >>>> -		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] -
-> >>>> -			(raw[AXIS_Z] - nfo)  * 1000 / sens[AXIS_Z];
-> >>>> -		break;
-> >>>> -	case AXIS_Z:
-> >>>> -		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] +
-> >>>> -			(raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
-> >>>> -		break;
-> >>>> +	nfo = mmc35240_props_table[id][data->res].nfo;
-> >>>> +
-> >>>> +	switch (id) {
-> >>>> +	case MMC35240:
-> >>>> +		ret = mmc35240_raw_to_mgauss(raw, sens, nfo, index, val);
-> >>>> +		if (ret < 0)
-> >>>> +			return ret;
-> >>>> +
-> >>>> +		/* apply OTP compensation */
-> >>>> +		*val = (*val) * data->axis_coef[index] /
-> >>>> +			data->axis_scale[index];
-> >>>> +
-> >>>> +		return 0;
-> >>>> +	case MMC34160:
-> >>>> +		return mmc34160_raw_to_mgauss(raw, sens, nfo, index, val);
-> >>>>  	default:
-> >>>>  		return -EINVAL;
-> >>>>  	}
-> >>>> -	/* apply OTP compensation */
-> >>>> -	*val = (*val) * data->axis_coef[index] / data->axis_scale[index];
-> >>>>  
-> >>>>  	return 0;
-> >>>>  }
-> >>>> @@ -366,7 +453,7 @@ static int mmc35240_read_raw(struct iio_dev *indio_dev,
-> >>>>  		mutex_unlock(&data->mutex);
-> >>>>  		if (ret < 0)
-> >>>>  			return ret;
-> >>>> -		ret = mmc35240_raw_to_mgauss(data, chan->address, buf, val);
-> >>>> +		ret = memsic_raw_to_mgauss(data, chan->address, buf, val);
-> >>>>  		if (ret < 0)
-> >>>>  			return ret;
-> >>>>  		return IIO_VAL_INT;
-> >>>> @@ -484,12 +571,27 @@ static const struct regmap_config mmc35240_regmap_config = {
-> >>>>  	.num_reg_defaults = ARRAY_SIZE(mmc35240_reg_defaults),
-> >>>>  };
-> >>>>  
-> >>>> +static const char *mmc35240_match_acpi_device(struct device *dev,
-> >>>> +					      enum mmc35240_chipset *chipset)
-> >>>> +{
-> >>>> +	const struct acpi_device_id *id;
-> >>>> +
-> >>>> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> >>>> +	if (!id)
-> >>>> +		return NULL;
-> >>>> +
-> >>>> +	*chipset = (enum mmc35240_chipset)id->driver_data;
-> >>>> +
-> >>>> +	return dev_name(dev);
-> >>>> +}
-> >>>> +
-> >>>>  static int mmc35240_probe(struct i2c_client *client,
-> >>>>  			  const struct i2c_device_id *id)
-> >>>>  {
-> >>>>  	struct mmc35240_data *data;
-> >>>>  	struct iio_dev *indio_dev;
-> >>>>  	struct regmap *regmap;
-> >>>> +	const char *name;
-> >>>>  	int ret;
-> >>>>  
-> >>>>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> >>>> @@ -507,11 +609,20 @@ static int mmc35240_probe(struct i2c_client *client,
-> >>>>  	data->regmap = regmap;
-> >>>>  	data->res = MMC35240_16_BITS_SLOW;
-> >>>>  
-> >>>> +	if (id) {
-> >>>> +		data->chipset = (enum mmc35240_chipset)(id->driver_data);
-> >>>> +		name = id->name;
-> >>>> +	} else if (ACPI_HANDLE(&client->dev)) {
-> >>>> +		name = mmc35240_match_acpi_device(&client->dev,
-> >>>> +						  &data->chipset);
-> >>>> +	} else
-> >>>> +		return -ENODEV;
-> >>>> +
-> >>>>  	mutex_init(&data->mutex);
-> >>>>  
-> >>>>  	indio_dev->dev.parent = &client->dev;
-> >>>>  	indio_dev->info = &mmc35240_info;
-> >>>> -	indio_dev->name = MMC35240_DRV_NAME;
-> >>>> +	indio_dev->name = name;
-> >>>>  	indio_dev->channels = mmc35240_channels;
-> >>>>  	indio_dev->num_channels = ARRAY_SIZE(mmc35240_channels);
-> >>>>  	indio_dev->modes = INDIO_DIRECT_MODE;
-> >>>> @@ -564,14 +675,16 @@ static const struct of_device_id mmc35240_of_match[] = {
-> >>>>  MODULE_DEVICE_TABLE(of, mmc35240_of_match);
-> >>>>  
-> >>>>  static const struct acpi_device_id mmc35240_acpi_match[] = {
-> >>>> -	{"MMC35240", 0},
-> >>>> +	{"MMC35240", MMC35240},
-> >>>> +	{"MMC34160", MMC34160},
-> >>>>  	{ },
-> >>>>  };
-> >>>>  MODULE_DEVICE_TABLE(acpi, mmc35240_acpi_match);
-> >>>>  
-> >>>>  static const struct i2c_device_id mmc35240_id[] = {
-> >>>> -	{"mmc35240", 0},
-> >>>> -	{}
-> >>>> +	{"mmc35240", MMC35240},
-> >>>> +	{"mmc34160", MMC34160},
-> >>>> +	{ }
-> >>>>  };
-> >>>>  MODULE_DEVICE_TABLE(i2c, mmc35240_id);
-> >>>>  
-> >>>>
-> >>>
-> >>> --
-> >>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> >>> the body of a message to majordomo@vger.kernel.org
-> >>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >>>
-> >>
-> >> --
-> >> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> >> the body of a message to majordomo@vger.kernel.org
-> >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >>
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+The way I was reasoning wanting to enable the continuous sampling
+after the buffer is enabled and then after buffer is disabled,
+stopping it. With your explanation it makes sense that I should
+have it in predisable.
+
+Thank you for the feedback. I will incoporate the above change
+and send the new version.
+
+- Sanchayan.
+
+> 
+> > +static int vf610_adc_buffer_postdisable(struct iio_dev *indio_dev)
+> > +{
+> > +	struct vf610_adc *info = iio_priv(indio_dev);
+> > +	unsigned int hc_cfg = 0;
+> > +	int val;
+> > +
+> > +	val = readl(info->regs + VF610_REG_ADC_GC);
+> > +	val &= ~VF610_ADC_ADCON;
+> > +	writel(val, info->regs + VF610_REG_ADC_GC);
+> > +
+> > +	hc_cfg |= VF610_ADC_CONV_DISABLE;
+> > +	hc_cfg &= ~VF610_ADC_AIEN;
+> > +
+> > +	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
+> > +	.postenable = &vf610_adc_buffer_postenable,
+> > +	.predisable = &iio_triggered_buffer_predisable,
+> > +	.postdisable = &vf610_adc_buffer_postdisable,
+> > +	.validate_scan_mask = &iio_validate_scan_mask_onehot,
+> > +};
+> > +
+> >  static int vf610_adc_reg_access(struct iio_dev *indio_dev,
+> >  			unsigned reg, unsigned writeval,
+> >  			unsigned *readval)
+> > @@ -753,7 +832,7 @@ static int vf610_adc_probe(struct platform_device *pdev)
+> >  
+> >  	ret = devm_request_irq(info->dev, irq,
+> >  				vf610_adc_isr, 0,
+> > -				dev_name(&pdev->dev), info);
+> > +				dev_name(&pdev->dev), indio_dev);
+> >  	if (ret < 0) {
+> >  		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
+> >  		return ret;
+> > @@ -806,15 +885,23 @@ static int vf610_adc_probe(struct platform_device *pdev)
+> >  	vf610_adc_cfg_init(info);
+> >  	vf610_adc_hw_init(info);
+> >  
+> > +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+> > +					NULL, &iio_triggered_buffer_setup_ops);
+> > +	if (ret < 0) {
+> > +		dev_err(&pdev->dev, "Couldn't initialise the buffer\n");
+> > +		goto error_iio_device_register;
+> > +	}
+> > +
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret) {
+> >  		dev_err(&pdev->dev, "Couldn't register the device.\n");
+> > -		goto error_iio_device_register;
+> > +		goto error_adc_buffer_init;
+> >  	}
+> >  
+> >  	return 0;
+> >  
+> > -
+> > +error_adc_buffer_init:
+> > +	iio_triggered_buffer_cleanup(indio_dev);
+> >  error_iio_device_register:
+> >  	clk_disable_unprepare(info->clk);
+> >  error_adc_clk_enable:
+> > @@ -829,6 +916,7 @@ static int vf610_adc_remove(struct platform_device *pdev)
+> >  	struct vf610_adc *info = iio_priv(indio_dev);
+> >  
+> >  	iio_device_unregister(indio_dev);
+> > +	iio_triggered_buffer_cleanup(indio_dev);
+> >  	regulator_disable(info->vref);
+> >  	clk_disable_unprepare(info->clk);
+> >  
 > > 
 > 
