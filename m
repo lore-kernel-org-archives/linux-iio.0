@@ -1,401 +1,556 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:37148 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750873AbbHQT2o (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 17 Aug 2015 15:28:44 -0400
-Date: Mon, 17 Aug 2015 21:28:41 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Teodora Baluta <teodora.baluta@intel.com>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	daniel.baluta@intel.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] iio: magnetometer: add mmc34160 magnetometer driver
-In-Reply-To: <1439826269-14849-1-git-send-email-teodora.baluta@intel.com>
-Message-ID: <alpine.DEB.2.02.1508172124490.5283@pmeerw.net>
-References: <1439826269-14849-1-git-send-email-teodora.baluta@intel.com>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: edubezval@gmail.com,
+	rui.zhang@intel.com,
+	jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [RFC PATCH 1/2] thermal: iio device for thermal sensor
+Date: Mon, 17 Aug 2015 16:52:56 -0700
+Message-Id: <1439855577-17114-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 17 Aug 2015, Teodora Baluta wrote:
+The only method to read temperature of a thermal zone is by reading sysfs
+entry "temp". This works well when kernel is primarily doing thermal
+control and user mode tools/applications are reading temperature for
+display or debug purposes. But when user mode is doing primary thermal
+control using a "user space" governor, this model causes performance
+issues and have limitations. For example Linux thermal daemon or Intel®
+Dynamic Platform and Thermal Framework (DPTF) for Chromium/Chrome OS are
+currently used as user space thermal controllers in several products.
+We have platforms with 10+ thermal sensors and thermal conditions are not
+an isolated cases, so it is important to manage thermal conditions without
+significantly degrading user experience. So we need an efficient way to
+read temperature and events, by
+- Not using polling from user space
+- Avoid sysfs string read for temperature and convert to decimal
+- Push model, so that driver can push changes when some temperature
+change event occurs, which needs attention
+- Let user space registers for some thresholds without using some
+passive trips
+- Avoid string based kobject uevent notifications
+- Able to use different external trigger (data ready indications) and push
+temperature samples
 
-> This patch adds support for the MMC34160 3-axis magnetometer driver. The
-> MMC31460 magnetometer driver uses the same register map as MMC35240 with
-> different specifications for sensitivity.
-> 
-> According to Memsic specification, for the MMC31460 sensor, there is no
-> need to apply compensation to the read values. Also, the MMC34160 sensor
-> does not use the same formula as MMC35240 for transforming raw data into
-> mgauss, and the current formula is based on the input driver (mmc3416x)
-> provided by Memsic.
+There are some ways to achieve this using thermal sysfs 2.0, but still
+doesn't meet all requirements and will introduce backward compatibility
+issues. Other option is to enhance thermal sysfs by adding a sensor
+abstractions and providing a dev interface for poll/select. But since
+since Linux IIO already provides above capabilities, it is better we
+reuse IIO temperature sensor device. This change proposes use of IIO
+temperature sensor device for a thermal zone. Here IIO capabilities
+of triggered buffer and events are utilized.
 
-comments below
+The iio device created during call to thermal_zone_device_register.
+Samples are pushed to iio buffers when thermal_zone_device_update is
+called from client drivers and user space governor is selected for the
+thermal zone. Only two additional callbacks for client driver to get/set
+thermal temperature thresholds.
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/thermal/Kconfig        |  11 ++
+ drivers/thermal/Makefile       |   1 +
+ drivers/thermal/thermal_core.c |   9 +-
+ drivers/thermal/thermal_iio.c  | 333 +++++++++++++++++++++++++++++++++++++++++
+ drivers/thermal/user_space.c   |   1 +
+ include/linux/thermal.h        |  46 ++++++
+ 6 files changed, 399 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/thermal/thermal_iio.c
+
+diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
+index 118938e..0ea9d8b 100644
+--- a/drivers/thermal/Kconfig
++++ b/drivers/thermal/Kconfig
+@@ -29,6 +29,17 @@ config THERMAL_HWMON
+ 	  Say 'Y' here if you want all thermal sensors to
+ 	  have hwmon sysfs interface too.
  
-> Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
-> ---
-> Changes since v3:
-> - rebased to apply correctly
-> - include bits that went missing from v2 to v3
-> - remove return variable from mmc34160_raw_to_mgauss function
-> 
->  drivers/iio/magnetometer/Kconfig    |   4 +-
->  drivers/iio/magnetometer/mmc35240.c | 205 ++++++++++++++++++++++++++++--------
->  2 files changed, 162 insertions(+), 47 deletions(-)
-> 
-> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> index 868abad..df3f4cc 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -70,8 +70,8 @@ config MMC35240
->  	select REGMAP_I2C
->  	depends on I2C
->  	help
-> -	  Say yes here to build support for the MEMSIC MMC35240 3-axis
-> -	  magnetic sensor.
-> +	  Say yes here to build support for the MEMSIC MMC35240 and MMC34160
-> +	  3-axis magnetic sensors.
->  
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called mmc35240.
-> diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
-> index 176e14a..e4fc5e4 100644
-> --- a/drivers/iio/magnetometer/mmc35240.c
-> +++ b/drivers/iio/magnetometer/mmc35240.c
-> @@ -83,6 +83,20 @@
->  
->  #define MMC35240_OTP_START_ADDR		0x1B
->  
-> +#define MMC35240_CHIP_ID	0x08
-> +#define MMC34160_CHIP_ID	0x06
-> +
-> +enum mmc35240_chipset {
-> +	MMC35240,
-> +	MMC34160,
-> +	MMC_MAX_CHIPS
-> +};
-> +
-> +static u8 chip_ids[MMC_MAX_CHIPS] = {
-
-mmc35240_ prefix missing
-
-> +	MMC35240_CHIP_ID,
-> +	MMC34160_CHIP_ID,
-> +};
-> +
->  enum mmc35240_resolution {
->  	MMC35240_16_BITS_SLOW = 0, /* 7.92 ms */
->  	MMC35240_16_BITS_FAST,     /* 4.08 ms */
-> @@ -99,27 +113,53 @@ enum mmc35240_axis {
->  static const struct {
->  	int sens[3]; /* sensitivity per X, Y, Z axis */
->  	int nfo; /* null field output */
-> -} mmc35240_props_table[] = {
-> -	/* 16 bits, 125Hz ODR */
-> -	{
-> -		{1024, 1024, 1024},
-> -		32768,
-> -	},
-> -	/* 16 bits, 250Hz ODR */
-> -	{
-> -		{1024, 1024, 770},
-> -		32768,
-> -	},
-> -	/* 14 bits, 450Hz ODR */
-> +} mmc35240_props_table[MMC_MAX_CHIPS][4] = {
-> +	/* MMC35240 */
->  	{
-> -		{256, 256, 193},
-> -		8192,
-> +		/* 16 bits, 125Hz ODR */
-> +		{
-> +			{1024, 1024, 1024},
-> +			32768,
-> +		},
-> +		/* 16 bits, 250Hz ODR */
-> +		{
-> +			{1024, 1024, 770},
-> +			32768,
-> +		},
-> +		/* 14 bits, 450Hz ODR */
-> +		{
-> +			{256, 256, 193},
-> +			8192,
-> +		},
-> +		/* 12 bits, 800Hz ODR */
-> +		{
-> +			{64, 64, 48},
-> +			2048,
-> +		},
->  	},
-> -	/* 12 bits, 800Hz ODR */
-> +	/* MMC34160 */
->  	{
-> -		{64, 64, 48},
-> -		2048,
-> -	},
-> +		/* 16 bits, 125Hz ODR */
-> +		{
-> +			{2048, 2048, 2048},
-> +			32768,
-> +		},
-> +		/* 16 bits, 250Hz ODR */
-> +		{
-> +			{2048, 2048, 2048},
-> +			32768,
-> +		},
-> +		/* 14 bits, 450Hz ODR */
-> +		{
-> +			{512, 512, 512},
-> +			8192,
-> +		},
-> +		/* 12 bits, 800Hz ODR */
-> +		{
-> +			{128, 128, 128},
-> +			2048,
-> +		},
-> +	}
->  };
->  
->  struct mmc35240_data {
-> @@ -131,6 +171,7 @@ struct mmc35240_data {
->  	/* OTP compensation */
->  	int axis_coef[3];
->  	int axis_scale[3];
-> +	enum mmc35240_chipset chipset;
->  };
->  
->  static const struct {
-> @@ -206,6 +247,16 @@ static int mmc35240_hw_set(struct mmc35240_data *data, bool set)
->  
->  }
->  
-> +static inline bool mmc35240_needs_compensation(enum mmc35240_chipset chipset)
-
-maybe drop inline and let the compiler figure out
-
-> +{
-> +	switch (chipset) {
-> +	case MMC35240:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
->  static int mmc35240_init(struct mmc35240_data *data)
->  {
->  	int ret, y_convert, z_convert;
-> @@ -220,6 +271,11 @@ static int mmc35240_init(struct mmc35240_data *data)
->  
->  	dev_dbg(&data->client->dev, "MMC35240 chip id %x\n", reg_id);
->  
-> +	if (reg_id != chip_ids[data->chipset]) {
-> +		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
-> +		return -ENODEV;
-> +	}
-> +
->  	/*
->  	 * make sure we restore sensor characteristics, by doing
->  	 * a SET/RESET sequence, the axis polarity being naturally
-> @@ -241,6 +297,9 @@ static int mmc35240_init(struct mmc35240_data *data)
->  	if (ret < 0)
->  		return ret;
->  
-> +	if (!mmc35240_needs_compensation(data->chipset))
-> +		return 0;
-> +
->  	ret = regmap_bulk_read(data->regmap, MMC35240_OTP_START_ADDR,
->  			       (u8 *)otp_data, sizeof(otp_data));
->  	if (ret < 0)
-> @@ -302,9 +361,37 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
->  				3 * sizeof(__le16));
->  }
->  
-> +static int mmc34160_raw_to_mgauss(int raw[3], int sens[3], int nfo,
-> +				  int index, int *val)
-> +{
-> +	return (raw[index] - nfo) * 1000 / sens[index];
-> +}
-> +
-> +static int mmc35240_raw_to_mgauss(int raw[3], int sens[3], int nfo,
-> +				  int index, int *val)
-> +{
-> +	switch (index) {
-> +	case AXIS_X:
-> +		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
-> +		break;
-> +	case AXIS_Y:
-> +		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] -
-> +			(raw[AXIS_Z] - nfo)  * 1000 / sens[AXIS_Z];
-> +		break;
-> +	case AXIS_Z:
-> +		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] +
-> +			(raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  /**
-> - * mmc35240_raw_to_mgauss - convert raw readings to milli gauss. Also apply
-> -			    compensation for output value.
-> + * memsic_raw_to_mgauss - convert raw readings to milli gauss. Also apply
-> +			  compensation for output value.
-
-why the name change?
-
->   *
->   * @data: device private data
->   * @index: axis index for which we want the conversion
-> @@ -313,40 +400,42 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
->   *
->   * Returns: 0 in case of success, -EINVAL when @index is not valid
->   */
-> -static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
-> -				  __le16 buf[], int *val)
-> +static int memsic_raw_to_mgauss(struct mmc35240_data *data, int index,
-> +				__le16 buf[], int *val)
->  {
->  	int raw[3];
->  	int sens[3];
->  	int nfo;
-> +	int ret;
-> +	int id = data->chipset;
->  
->  	raw[AXIS_X] = le16_to_cpu(buf[AXIS_X]);
->  	raw[AXIS_Y] = le16_to_cpu(buf[AXIS_Y]);
->  	raw[AXIS_Z] = le16_to_cpu(buf[AXIS_Z]);
->  
-> -	sens[AXIS_X] = mmc35240_props_table[data->res].sens[AXIS_X];
-> -	sens[AXIS_Y] = mmc35240_props_table[data->res].sens[AXIS_Y];
-> -	sens[AXIS_Z] = mmc35240_props_table[data->res].sens[AXIS_Z];
-> +	sens[AXIS_X] = mmc35240_props_table[id][data->res].sens[AXIS_X];
-> +	sens[AXIS_Y] = mmc35240_props_table[id][data->res].sens[AXIS_Y];
-> +	sens[AXIS_Z] = mmc35240_props_table[id][data->res].sens[AXIS_Z];
->  
-> -	nfo = mmc35240_props_table[data->res].nfo;
->  
-> -	switch (index) {
-> -	case AXIS_X:
-> -		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
-> -		break;
-> -	case AXIS_Y:
-> -		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] -
-> -			(raw[AXIS_Z] - nfo)  * 1000 / sens[AXIS_Z];
-> -		break;
-> -	case AXIS_Z:
-> -		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] +
-> -			(raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
-> -		break;
-> +	nfo = mmc35240_props_table[id][data->res].nfo;
-> +
-> +	switch (id) {
-> +	case MMC35240:
-> +		ret = mmc35240_raw_to_mgauss(raw, sens, nfo, index, val);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		/* apply OTP compensation */
-> +		*val = (*val) * data->axis_coef[index] /
-> +			data->axis_scale[index];
-> +
-> +		return 0;
-> +	case MMC34160:
-> +		return mmc34160_raw_to_mgauss(raw, sens, nfo, index, val);
->  	default:
->  		return -EINVAL;
->  	}
-> -	/* apply OTP compensation */
-> -	*val = (*val) * data->axis_coef[index] / data->axis_scale[index];
->  
->  	return 0;
->  }
-> @@ -367,7 +456,7 @@ static int mmc35240_read_raw(struct iio_dev *indio_dev,
->  		mutex_unlock(&data->mutex);
->  		if (ret < 0)
->  			return ret;
-> -		ret = mmc35240_raw_to_mgauss(data, chan->address, buf, val);
-> +		ret = memsic_raw_to_mgauss(data, chan->address, buf, val);
->  		if (ret < 0)
->  			return ret;
->  		return IIO_VAL_INT;
-> @@ -485,12 +574,27 @@ static const struct regmap_config mmc35240_regmap_config = {
->  	.num_reg_defaults = ARRAY_SIZE(mmc35240_reg_defaults),
->  };
->  
-> +static const char *mmc35240_match_acpi_device(struct device *dev,
-> +					      enum mmc35240_chipset *chipset)
-> +{
-> +	const struct acpi_device_id *id;
-> +
-> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +	if (!id)
-> +		return NULL;
-> +
-> +	*chipset = (enum mmc35240_chipset)id->driver_data;
-> +
-> +	return dev_name(dev);
-> +}
-> +
->  static int mmc35240_probe(struct i2c_client *client,
->  			  const struct i2c_device_id *id)
->  {
->  	struct mmc35240_data *data;
->  	struct iio_dev *indio_dev;
->  	struct regmap *regmap;
-> +	const char *name;
->  	int ret;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> @@ -509,11 +613,20 @@ static int mmc35240_probe(struct i2c_client *client,
->  	data->regmap = regmap;
->  	data->res = MMC35240_16_BITS_SLOW;
->  
-> +	if (id) {
-> +		data->chipset = (enum mmc35240_chipset)(id->driver_data);
-> +		name = id->name;
-> +	} else if (ACPI_HANDLE(&client->dev)) {
-> +		name = mmc35240_match_acpi_device(&client->dev,
-> +						  &data->chipset);
-> +	} else
-> +		return -ENODEV;
-> +
->  	mutex_init(&data->mutex);
->  
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->info = &mmc35240_info;
-> -	indio_dev->name = MMC35240_DRV_NAME;
-> +	indio_dev->name = name;
->  	indio_dev->channels = mmc35240_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(mmc35240_channels);
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> @@ -566,14 +679,16 @@ static const struct of_device_id mmc35240_of_match[] = {
->  MODULE_DEVICE_TABLE(of, mmc35240_of_match);
->  
->  static const struct acpi_device_id mmc35240_acpi_match[] = {
-> -	{"MMC35240", 0},
-> +	{"MMC35240", MMC35240},
-> +	{"MMC34160", MMC34160},
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, mmc35240_acpi_match);
->  
->  static const struct i2c_device_id mmc35240_id[] = {
-> -	{"mmc35240", 0},
-> -	{}
-> +	{"mmc35240", MMC35240},
-> +	{"mmc34160", MMC34160},
-> +	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, mmc35240_id);
->  
-> 
-
++config THERMAL_IIO
++	tristate "Thermal sensor from a zone as IIO device"
++	select IIO
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  This will register thermal sensor in a zone as an IIO temperature
++	  sensor device.
++	  This will help user space thermal controllers to use IIO ABI to
++	  get events and buffered acces to temperature samples.
++
+ config THERMAL_OF
+ 	bool
+ 	prompt "APIs to parse thermal data out of device tree"
+diff --git a/drivers/thermal/Makefile b/drivers/thermal/Makefile
+index 535dfee..4b42734 100644
+--- a/drivers/thermal/Makefile
++++ b/drivers/thermal/Makefile
+@@ -7,6 +7,7 @@ thermal_sys-y			+= thermal_core.o
+ 
+ # interface to/from other layers providing sensors
+ thermal_sys-$(CONFIG_THERMAL_HWMON)		+= thermal_hwmon.o
++thermal_sys-$(CONFIG_THERMAL_IIO)		+= thermal_iio.o
+ thermal_sys-$(CONFIG_THERMAL_OF)		+= of-thermal.o
+ 
+ # governors
+diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+index 04659bf..483a4a1 100644
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -1833,10 +1833,15 @@ struct thermal_zone_device *thermal_zone_device_register(const char *type,
+ 
+ 	mutex_unlock(&thermal_governor_lock);
+ 
++	if (thermal_iio_sensor_register(tz))
++		goto unregister;
++
+ 	if (!tz->tzp || !tz->tzp->no_hwmon) {
+ 		result = thermal_add_hwmon_sysfs(tz);
+-		if (result)
++		if (result) {
++			thermal_iio_sensor_unregister(tz);
+ 			goto unregister;
++		}
+ 	}
+ 
+ 	mutex_lock(&thermal_list_lock);
+@@ -1919,7 +1924,7 @@ void thermal_zone_device_unregister(struct thermal_zone_device *tz)
+ 	device_remove_file(&tz->device, &dev_attr_policy);
+ 	remove_trip_attrs(tz);
+ 	thermal_set_governor(tz, NULL);
+-
++	thermal_iio_sensor_unregister(tz);
+ 	thermal_remove_hwmon_sysfs(tz);
+ 	release_idr(&thermal_tz_idr, &thermal_idr_lock, tz->id);
+ 	idr_destroy(&tz->idr);
+diff --git a/drivers/thermal/thermal_iio.c b/drivers/thermal/thermal_iio.c
+new file mode 100644
+index 0000000..e36ad90
+--- /dev/null
++++ b/drivers/thermal/thermal_iio.c
+@@ -0,0 +1,333 @@
++/*
++ * thermal iio interface driver
++ * Copyright (c) 2015, Intel Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ */
++
++#include <linux/thermal.h>
++
++struct thermal_iio_data {
++	struct thermal_zone_device *tz;
++	struct iio_trigger *dready_trig;
++	s16 buffer[8];
++	bool enable;
++	long temp_thres;
++	bool ev_enable_state;
++	struct mutex mutex;
++
++};
++
++static const struct iio_event_spec thermal_event = {
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++				 BIT(IIO_EV_INFO_ENABLE)
++};
++
++#define THERMAL_TEMP_CHANNELS {					\
++	{								\
++		.type = IIO_TEMP,					\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++		.scan_index = 0,					\
++		.scan_type = {						\
++			.sign = 'u',					\
++			.realbits = 32,				\
++			.storagebits = 32,				\
++			.shift = 0,					\
++			.endianness = IIO_CPU,				\
++		},							\
++		.event_spec = &thermal_event,				\
++		.num_event_specs = 1					\
++	},								\
++}
++
++static const struct iio_chan_spec thermal_iio_channels[] =
++							THERMAL_TEMP_CHANNELS;
++
++static int thermal_iio_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	struct thermal_iio_data *iio_data = iio_priv(indio_dev);
++	long temp;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = thermal_zone_get_temp(iio_data->tz, &temp);
++		if (ret)
++			return ret;
++		*val = (int) temp;
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static irqreturn_t thermal_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct thermal_iio_data *iio_data = iio_priv(indio_dev);
++	long temp;
++	int ret;
++
++	ret = thermal_zone_get_temp(iio_data->tz, &temp);
++	if (ret)
++		goto err_read;
++
++	*(s32 *)iio_data->buffer = (s32)temp;
++	iio_push_to_buffers(indio_dev, iio_data->buffer);
++err_read:
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
++static int thermal_data_rdy_trigger_set_state(struct iio_trigger *trig,
++					      bool state)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
++	struct thermal_iio_data *iio_data = iio_priv(indio_dev);
++
++	mutex_lock(&iio_data->mutex);
++	iio_data->enable = state;
++	mutex_unlock(&iio_data->mutex);
++
++	return 0;
++}
++
++static const struct iio_trigger_ops thermal_trigger_ops = {
++	.set_trigger_state = thermal_data_rdy_trigger_set_state,
++	.owner = THIS_MODULE,
++};
++
++static int thermal_iio_read_event(struct iio_dev *indio_dev,
++				  const struct iio_chan_spec *chan,
++				  enum iio_event_type type,
++				  enum iio_event_direction dir,
++				  enum iio_event_info info,
++				  int *val, int *val2)
++{
++	struct thermal_iio_data *iio_data = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&iio_data->mutex);
++	*val2 = 0;
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		*val = iio_data->temp_thres;
++		ret = IIO_VAL_INT;
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++	mutex_unlock(&iio_data->mutex);
++
++	return ret;
++}
++
++static int thermal_iio_write_event(struct iio_dev *indio_dev,
++				   const struct iio_chan_spec *chan,
++				   enum iio_event_type type,
++				   enum iio_event_direction dir,
++				   enum iio_event_info info,
++				   int val, int val2)
++{
++	struct thermal_iio_data *iio_data = iio_priv(indio_dev);
++	int ret = 0;
++
++	mutex_lock(&iio_data->mutex);
++	if (iio_data->ev_enable_state) {
++		ret = -EBUSY;
++		goto done_write_event;
++	}
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		iio_data->temp_thres = val;
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++done_write_event:
++	mutex_unlock(&iio_data->mutex);
++
++	return ret;
++}
++
++static int thermal_iio_read_event_config(struct iio_dev *indio_dev,
++					 const struct iio_chan_spec *chan,
++					 enum iio_event_type type,
++					 enum iio_event_direction dir)
++{
++
++	struct thermal_iio_data *iio_data = iio_priv(indio_dev);
++	bool state;
++
++	mutex_lock(&iio_data->mutex);
++	state = iio_data->ev_enable_state;
++	mutex_unlock(&iio_data->mutex);
++
++	return state;
++}
++
++static int thermal_iio_write_event_config(struct iio_dev *indio_dev,
++					  const struct iio_chan_spec *chan,
++					  enum iio_event_type type,
++					  enum iio_event_direction dir,
++					  int state)
++{
++	struct thermal_iio_data *iio_data = iio_priv(indio_dev);
++	int ret = 0;
++
++	mutex_lock(&iio_data->mutex);
++	if (state && iio_data->ev_enable_state)
++		goto done_write_event;
++
++	if (iio_data->tz->ops->set_threshold_temp)
++		ret = iio_data->tz->ops->set_threshold_temp(iio_data->tz, 0,
++							iio_data->temp_thres);
++	iio_data->ev_enable_state = state;
++
++done_write_event:
++	mutex_unlock(&iio_data->mutex);
++
++	return ret;
++}
++
++static const struct iio_info thermal_iio_info = {
++	.read_raw		= thermal_iio_read_raw,
++	.read_event_value	= thermal_iio_read_event,
++	.write_event_value	= thermal_iio_write_event,
++	.write_event_config	= thermal_iio_write_event_config,
++	.read_event_config	= thermal_iio_read_event_config,
++	.driver_module		= THIS_MODULE,
++};
++
++int thermal_iio_sensor_register(struct thermal_zone_device *tz)
++{
++	struct thermal_iio_data *iio_data;
++	int ret;
++
++	tz->indio_dev = devm_iio_device_alloc(&tz->device, sizeof(*iio_data));
++	if (!tz->indio_dev)
++		return -ENOMEM;
++
++	iio_data = iio_priv(tz->indio_dev);
++	iio_data->tz = tz;
++	mutex_init(&iio_data->mutex);
++
++	tz->indio_dev->dev.parent = &tz->device;
++	tz->indio_dev->channels = thermal_iio_channels;
++	tz->indio_dev->num_channels = ARRAY_SIZE(thermal_iio_channels);
++	tz->indio_dev->name = tz->type;
++	tz->indio_dev->info = &thermal_iio_info;
++	tz->indio_dev->modes = INDIO_DIRECT_MODE;
++
++	iio_data->dready_trig = devm_iio_trigger_alloc(&tz->device, "%s-dev%d",
++						       tz->type,
++						       tz->indio_dev->id);
++	if (iio_data->dready_trig == NULL) {
++		dev_err(&tz->device, "Trigger Allocate Failed\n");
++		return -ENOMEM;
++	}
++
++	iio_data->dready_trig->dev.parent = &tz->device;
++	iio_data->dready_trig->ops = &thermal_trigger_ops;
++	iio_trigger_set_drvdata(iio_data->dready_trig, tz->indio_dev);
++	tz->indio_dev->trig = iio_data->dready_trig;
++	iio_trigger_get(tz->indio_dev->trig);
++	ret = iio_trigger_register(iio_data->dready_trig);
++	if (ret) {
++		dev_err(&tz->device, "Trigger Allocate Failed\n");
++		return ret;
++	}
++
++	ret = iio_triggered_buffer_setup(tz->indio_dev,
++					 &iio_pollfunc_store_time,
++					 thermal_trigger_handler, NULL);
++	if (ret) {
++		dev_err(&tz->device, "failed to initialize trigger buffer\n");
++		goto err_unreg_trig;
++	}
++
++	ret = iio_device_register(tz->indio_dev);
++	if (ret < 0) {
++		dev_err(&tz->device, "unable to register iio device\n");
++		goto err_cleanup_trig;
++	}
++
++	return 0;
++
++err_cleanup_trig:
++	iio_triggered_buffer_cleanup(tz->indio_dev);
++err_unreg_trig:
++	iio_device_unregister(tz->indio_dev);
++
++	return ret;
++}
++
++int thermal_iio_sensor_unregister(struct thermal_zone_device *tz)
++{
++	struct thermal_iio_data *iio_data = iio_priv(tz->indio_dev);
++
++	iio_device_unregister(tz->indio_dev);
++	iio_triggered_buffer_cleanup(tz->indio_dev);
++	iio_trigger_unregister(iio_data->dready_trig);
++
++	return 0;
++}
++
++#define IIO_EVENT_CODE_THERMAL_THRES IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,\
++							  IIO_EV_TYPE_THRESH,\
++							  IIO_EV_DIR_EITHER)
++
++#define IIO_EVENT_CODE_TRIP_UPDATE IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,\
++							IIO_EV_TYPE_CHANGE,\
++							IIO_EV_DIR_NONE)
++
++int thermal_iio_sensor_notify(struct thermal_zone_device *tz,
++			      enum thermal_zone_event_type event)
++{
++	struct thermal_iio_data *iio_data = iio_priv(tz->indio_dev);
++	long temp = 0;
++	int ret;
++
++	mutex_lock(&iio_data->mutex);
++	if (iio_data->ev_enable_state) {
++		if (event == THERMAL_TEMP_THRESHOLD)
++			iio_push_event(tz->indio_dev,
++				       IIO_EVENT_CODE_THERMAL_THRES,
++				       iio_get_time_ns());
++		else if (event == THERMAL_TRIP_UPDATE)
++			iio_push_event(tz->indio_dev,
++				       IIO_EVENT_CODE_TRIP_UPDATE,
++				       iio_get_time_ns());
++		else
++			dev_err(&tz->device, "invalid event\n");
++	}
++	if (iio_data->enable) {
++		ret = thermal_zone_get_temp(iio_data->tz, &temp);
++		if (ret)
++			goto err_read;
++		*(u32 *)iio_data->buffer = (u32)temp;
++		iio_push_to_buffers(tz->indio_dev, iio_data->buffer);
++	}
++	mutex_unlock(&iio_data->mutex);
++
++	return 0;
++err_read:
++	mutex_unlock(&iio_data->mutex);
++	return ret;
++}
+diff --git a/drivers/thermal/user_space.c b/drivers/thermal/user_space.c
+index 10adcdd..742adec 100644
+--- a/drivers/thermal/user_space.c
++++ b/drivers/thermal/user_space.c
+@@ -34,6 +34,7 @@
+  */
+ static int notify_user_space(struct thermal_zone_device *tz, int trip)
+ {
++	thermal_iio_sensor_notify(tz, THERMAL_TEMP_THRESHOLD);
+ 	mutex_lock(&tz->lock);
+ 	kobject_uevent(&tz->device.kobj, KOBJ_CHANGE);
+ 	mutex_unlock(&tz->lock);
+diff --git a/include/linux/thermal.h b/include/linux/thermal.h
+index 037e9df..4c4c487 100644
+--- a/include/linux/thermal.h
++++ b/include/linux/thermal.h
+@@ -31,6 +31,16 @@
+ #include <linux/workqueue.h>
+ #include <uapi/linux/thermal.h>
+ 
++#if IS_ENABLED(CONFIG_THERMAL_IIO)
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/events.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#endif
++
+ #define THERMAL_TRIPS_NONE	-1
+ #define THERMAL_MAX_TRIPS	12
+ 
+@@ -111,6 +121,10 @@ struct thermal_zone_device_ops {
+ 	int (*set_emul_temp) (struct thermal_zone_device *, unsigned long);
+ 	int (*get_trend) (struct thermal_zone_device *, int,
+ 			  enum thermal_trend *);
++	int (*get_threshold_temp)(struct thermal_zone_device *, int,
++				  unsigned long *);
++	int (*set_threshold_temp)(struct thermal_zone_device *, int,
++				  unsigned long);
+ 	int (*notify) (struct thermal_zone_device *, int,
+ 		       enum thermal_trip_type);
+ };
+@@ -205,6 +219,9 @@ struct thermal_zone_device {
+ 	struct mutex lock;
+ 	struct list_head node;
+ 	struct delayed_work poll_queue;
++#ifdef CONFIG_THERMAL_IIO
++	struct iio_dev *indio_dev;
++#endif
+ };
+ 
+ /**
+@@ -483,4 +500,33 @@ static inline int thermal_generate_netlink_event(struct thermal_zone_device *tz,
+ }
+ #endif
+ 
++enum thermal_zone_event_type {
++	THERMAL_TEMP_THRESHOLD,
++	THERMAL_TRIP_UPDATE,
++	THERMAL_EVENT_TYPE_MAX,
++};
++
++#if IS_ENABLED(CONFIG_THERMAL) && IS_ENABLED(CONFIG_THERMAL_IIO)
++int thermal_iio_sensor_register(struct thermal_zone_device *tz);
++int thermal_iio_sensor_unregister(struct thermal_zone_device *tz);
++int thermal_iio_sensor_notify(struct thermal_zone_device *tz,
++			      enum thermal_zone_event_type event);
++#else
++static int thermal_iio_sensor_register(struct thermal_zone_device *tz)
++{
++	return 0;
++}
++
++static int thermal_iio_sensor_unregister(struct thermal_zone_device *tz)
++{
++	return 0;
++}
++
++static int thermal_iio_sensor_notify(struct thermal_zone_device *tz
++				     enum thermal_zone_event_type event)
++{
++	return 0;
++}
++#endif
++
+ #endif /* __THERMAL_H__ */
 -- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+2.4.3
