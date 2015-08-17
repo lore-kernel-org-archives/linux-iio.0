@@ -1,111 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:30033 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754505AbbHQJsp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 17 Aug 2015 05:48:45 -0400
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Markus Pargmann <mpa@pengutronix.de>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: Wolfram Sang <wsa@the-dreams.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: RE: [PATCH v5 6/8] iio: gyro: bmg160: optimize i2c transfers in
- trigger handler
-Date: Mon, 17 Aug 2015 09:48:42 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F2F0B1F7F@irsmsx105.ger.corp.intel.com>
-References: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
- <1439389900-10108-7-git-send-email-irina.tirdea@intel.com>
- <55D056DF.5020201@kernel.org> <20150817090943.GO19600@pengutronix.de>
-In-Reply-To: <20150817090943.GO19600@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
+Received: from down.free-electrons.com ([37.187.137.238]:44712 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755237AbbHQM52 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Aug 2015 08:57:28 -0400
+Date: Mon, 17 Aug 2015 14:57:25 +0200
+From: Antoine Tenart <antoine.tenart@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antoine Tenart <antoine.tenart@free-electrons.com>
+Subject: Re: [PATCH v2 7/8] iio:adc:berlin2-adc: enable interrupts with mutex
+ locked
+Message-ID: <20150817125725.GA3261@kwain>
+References: <cover.1438035998.git.knaack.h@gmx.de>
+ <0c150ffa3c97b5dc7b691efa8ba474e43c282519.1438035998.git.knaack.h@gmx.de>
+ <55BC0ABF.5080204@gmx.de>
+ <55CBB703.9050506@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <55CBB703.9050506@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWFya3VzIFBhcmdtYW5u
-IFttYWlsdG86bXBhQHBlbmd1dHJvbml4LmRlXQ0KPiBTZW50OiAxNyBBdWd1c3QsIDIwMTUgMTI6
-MTANCj4gVG86IEpvbmF0aGFuIENhbWVyb24NCj4gQ2M6IFRpcmRlYSwgSXJpbmE7IFdvbGZyYW0g
-U2FuZzsgbGludXgtaWlvQHZnZXIua2VybmVsLm9yZzsgbGludXgtaTJjQHZnZXIua2VybmVsLm9y
-ZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgUGFuZHJ1dmFkYSwNCj4gU3Jpbml2YXM7
-IFBldGVyIE1lZXJ3YWxkDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjUgNi84XSBpaW86IGd5cm86
-IGJtZzE2MDogb3B0aW1pemUgaTJjIHRyYW5zZmVycyBpbiB0cmlnZ2VyIGhhbmRsZXINCj4gDQo+
-IE9uIFN1biwgQXVnIDE2LCAyMDE1IGF0IDEwOjI0OjQ3QU0gKzAxMDAsIEpvbmF0aGFuIENhbWVy
-b24gd3JvdGU6DQo+ID4gT24gMTIvMDgvMTUgMTU6MzEsIElyaW5hIFRpcmRlYSB3cm90ZToNCj4g
-PiA+IFNvbWUgaTJjIGJ1c3NlcyAoZS5nLjogU3lub3BzeXMgRGVzaWduV2FyZSBJMkMgYWRhcHRl
-cikgbmVlZCB0bw0KPiA+ID4gZW5hYmxlL2Rpc2FibGUgdGhlIGJ1cyBhdCBlYWNoIGkyYyB0cmFu
-c2ZlciBhbmQgbXVzdCB3YWl0IGZvcg0KPiA+ID4gdGhlIGVuYWJsZS9kaXNhYmxlIHRvIGhhcHBl
-biBiZWZvcmUgc2VuZGluZyB0aGUgZGF0YS4NCj4gPiA+DQo+ID4gPiBXaGVuIHJlYWRpbmcgZGF0
-YSBpbiB0aGUgdHJpZ2dlciBoYW5kbGVyLCB0aGUgYm1nMTYwIGRyaXZlciBkb2VzDQo+ID4gPiBv
-bmUgaTJjIHRyYW5zZmVyIGZvciBlYWNoIGF4aXMuIFRoaXMgaGFzIGFuIGltcGFjdCBvbiB0aGUg
-ZnJlcXVlbmN5DQo+ID4gPiBvZiB0aGUgZ3lyb3Njb3BlIGF0IGhpZ2ggc2FtcGxlIHJhdGVzIGR1
-ZSB0byBhZGRpdGlvbmFsIGRlbGF5cw0KPiA+ID4gaW50cm9kdWNlZCBieSB0aGUgaTJjIGJ1cyBh
-dCBlYWNoIHRyYW5zZmVyLg0KPiA+ID4NCj4gPiA+IFJlYWRpbmcgYWxsIGF4aXMgdmFsdWVzIGlu
-IG9uZSBpMmMgdHJhbnNmZXIgcmVkdWNlcyB0aGUgZGVsYXlzDQo+ID4gPiBpbnRyb2R1Y2VkIGJ5
-IHRoZSBpMmMgYnVzLiBVc2VzIGkyY19zbWJ1c19yZWFkX2kyY19ibG9ja19kYXRhX29yX2VtdWxh
-dGVkDQo+ID4gPiB0aGF0IHdpbGwgZmFsbGJhY2sgdG8gcmVhZGluZyBlYWNoIGF4aXMgYXMgYSBz
-ZXBhcmF0ZSB3b3JkIGluIGNhc2UgaTJjDQo+ID4gPiBibG9jayByZWFkIGlzIG5vdCBzdXBwb3J0
-ZWQuDQo+ID4gPg0KPiA+ID4gU2lnbmVkLW9mZi1ieTogSXJpbmEgVGlyZGVhIDxpcmluYS50aXJk
-ZWFAaW50ZWwuY29tPg0KPiA+ID4gQWNrZWQtYnk6IEpvbmF0aGFuIENhbWVyb24gPGppYzIzQGtl
-cm5lbC5vcmc+DQo+ID4gPiBBY2tlZC1ieTogU3Jpbml2YXMgUGFuZHJ1dmFkYSA8c3Jpbml2YXMu
-cGFuZHJ1dmFkYUBsaW51eC5pbnRlbC5jb20+DQo+ID4gTm90ZSwgdGhhdCBpbiB0aGUgbWVhbnRp
-bWUgdGhlIGJtZzE2MCBkcml2ZXIganVzdCB3ZW50IGFsbCByZWdtYXANCj4gPiBvbiB1cyAoYXMg
-cGFydCBvZiBhZGRpbmcgU1BJIHN1cHBvcnQgLSB0aG91Z2ggdGhhdCBzdGVwIGhhc24ndA0KPiA+
-IGhhcHBlbmVkIHlldCkuICBIZW5jZSB3ZSdsbCBuZWVkIGEgbWVhbnMgb2YgdGVsbGluZyByZWdt
-YXAgYWJvdXQgdGhpcw0KPiA+IHBvc3NpYmlsaXR5Lg0KPiANCj4gUGVyaGFwcyB0aGlzIGlzIGNv
-dmVyZWQgYnkgYSByZWdtYXBfYnVsa19yZWFkKCk/DQoNCkkgdGhpbmsgaXQgaXMuIEhvd2V2ZXIs
-IGlmIHRoYXQgZG9lcyBub3Qgd29yayBmb3IgdGhlIGkyYyBjb250cm9sbGVycyBJJ20NCnRlc3Rp
-bmcgd2l0aCBJJ2xsIHRha2UgYSBsb29rIGF0IHRoZSBwYXRjaGVzIHlvdSBtZW50aW9uIGJlbG93
-Lg0KSSdsbCByZWJhc2UgdGhpcyBwYXRjaCBvbiB0b3Agb2YgeW91ciBuZXh0IHZlcnNpb24gZm9y
-IGJtZzE2MCBhbmQNCnJlc2VuZC4NCg0KVGhhbmtzLA0KSXJpbmENCg0KPiANCj4gVGhlIHNlcmll
-c1sxXSBJIGFtIHdvcmtpbmcgb24gaW1wbGVtZW50cyBhIGkyYyBzbWJ1cyBibG9jayBkYXRhIHJl
-Z21hcA0KPiBidXMgZHJpdmVyLiBSZWdtYXAgc2hvdWxkIHRoZW4gYXV0b21hdGljYWxseSBkbyBh
-IGJsb2NrIHJlYWQgaW4NCj4gcmVnbWFwX2J1bGtfcmVhZC4NCj4gDQo+IFBhdGNoIDE1IGludHJv
-ZHVjZXMgdGhlIGkyYyBibG9jayBkYXRhIHJlZ21hcCBidXMgZHJpdmVyWzJdLg0KPiBJIGFtIG9u
-bHkgaW1wbGVtZW50aW5nIHRoaXMgc28gSSBkb24ndCBicmVhayBibWMxNTAgYmVoYXZpb3IuIEkg
-ZG8gbm90DQo+IGhhdmUgdGhlIGhhcmR3YXJlIGF2YWlsYWJsZSB0byB0ZXN0IHRoaXMgcmVnbWFw
-IGRyaXZlciBzbyBpdCB3b3VsZCBiZSBncmVhdA0KPiBpZiBzb21lb25lIGVsc2UgY291bGQgdGVz
-dCBvbmUgb2YgdGhlIG5leHQgdmVyc2lvbnMgb2YgdGhpcyBidXMgZHJpdmVyLg0KPiANCj4gQmVz
-dCByZWdhcmRzLA0KPiANCj4gTWFya3VzDQo+IA0KPiBbMV0gaHR0cDovL3RocmVhZC5nbWFuZS5v
-cmcvZ21hbmUubGludXgua2VybmVsLzIwMTg2NDMNCj4gWzJdIGh0dHA6Ly90aHJlYWQuZ21hbmUu
-b3JnL2dtYW5lLmxpbnV4Lmtlcm5lbC8yMDE4NjM5DQo+IA0KPiA+DQo+ID4gPiAtLS0NCj4gPiA+
-ICBkcml2ZXJzL2lpby9neXJvL2JtZzE2MC5jIHwgMTggKysrKysrKystLS0tLS0tLS0tDQo+ID4g
-PiAgMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKSwgMTAgZGVsZXRpb25zKC0pDQo+ID4g
-Pg0KPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2d5cm8vYm1nMTYwLmMgYi9kcml2ZXJz
-L2lpby9neXJvL2JtZzE2MC5jDQo+ID4gPiBpbmRleCBiMmE2Y2NiLi4xZmYzMDZkIDEwMDY0NA0K
-PiA+ID4gLS0tIGEvZHJpdmVycy9paW8vZ3lyby9ibWcxNjAuYw0KPiA+ID4gKysrIGIvZHJpdmVy
-cy9paW8vZ3lyby9ibWcxNjAuYw0KPiA+ID4gQEAgLTc3Miw2ICs3NzIsNyBAQCBzdGF0aWMgY29u
-c3Qgc3RydWN0IGlpb19ldmVudF9zcGVjIGJtZzE2MF9ldmVudCA9IHsNCj4gPiA+ICAJCS5zaWdu
-ID0gJ3MnLAkJCQkJCVwNCj4gPiA+ICAJCS5yZWFsYml0cyA9IDE2LAkJCQkJXA0KPiA+ID4gIAkJ
-LnN0b3JhZ2ViaXRzID0gMTYsCQkJCQlcDQo+ID4gPiArCQkuZW5kaWFubmVzcyA9IElJT19MRSwJ
-CQkJCVwNCj4gPiA+ICAJfSwJCQkJCQkJCVwNCj4gPiA+ICAJLmV2ZW50X3NwZWMgPSAmYm1nMTYw
-X2V2ZW50LAkJCQkJXA0KPiA+ID4gIAkubnVtX2V2ZW50X3NwZWNzID0gMQkJCQkJCVwNCj4gPiA+
-IEBAIC04MDksMTkgKzgxMCwxNiBAQCBzdGF0aWMgaXJxcmV0dXJuX3QgYm1nMTYwX3RyaWdnZXJf
-aGFuZGxlcihpbnQgaXJxLCB2b2lkICpwKQ0KPiA+ID4gIAlzdHJ1Y3QgaWlvX3BvbGxfZnVuYyAq
-cGYgPSBwOw0KPiA+ID4gIAlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gcGYtPmluZGlvX2Rl
-djsNCj4gPiA+ICAJc3RydWN0IGJtZzE2MF9kYXRhICpkYXRhID0gaWlvX3ByaXYoaW5kaW9fZGV2
-KTsNCj4gPiA+IC0JaW50IGJpdCwgcmV0LCBpID0gMDsNCj4gPiA+ICsJaW50IHJldCA9IDA7DQo+
-ID4gPg0KPiA+ID4gIAltdXRleF9sb2NrKCZkYXRhLT5tdXRleCk7DQo+ID4gPiAtCWZvciAoYml0
-ID0gMDsgYml0IDwgQVhJU19NQVg7IGJpdCsrKSB7DQo+ID4gPiAtCQlyZXQgPSBpMmNfc21idXNf
-cmVhZF93b3JkX2RhdGEoZGF0YS0+Y2xpZW50LA0KPiA+ID4gLQkJCQkJICAgICAgIEJNRzE2MF9B
-WElTX1RPX1JFRyhiaXQpKTsNCj4gPiA+IC0JCWlmIChyZXQgPCAwKSB7DQo+ID4gPiAtCQkJbXV0
-ZXhfdW5sb2NrKCZkYXRhLT5tdXRleCk7DQo+ID4gPiAtCQkJZ290byBlcnI7DQo+ID4gPiAtCQl9
-DQo+ID4gPiAtCQlkYXRhLT5idWZmZXJbaSsrXSA9IHJldDsNCj4gPiA+IC0JfQ0KPiA+ID4gKwly
-ZXQgPSBpMmNfc21idXNfcmVhZF9pMmNfYmxvY2tfZGF0YV9vcl9lbXVsYXRlZChkYXRhLT5jbGll
-bnQsDQo+ID4gPiArCQkJCQkJCUJNRzE2MF9SRUdfWE9VVF9MLA0KPiA+ID4gKwkJCQkJCQlBWElT
-X01BWCAqIDIsDQo+ID4gPiArCQkJCQkJCSh1OCAqKWRhdGEtPmJ1ZmZlcik7DQo+ID4gPiAgCW11
-dGV4X3VubG9jaygmZGF0YS0+bXV0ZXgpOw0KPiA+ID4gKwlpZiAocmV0IDwgMCkNCj4gPiA+ICsJ
-CWdvdG8gZXJyOw0KPiA+ID4NCj4gPiA+ICAJaWlvX3B1c2hfdG9fYnVmZmVyc193aXRoX3RpbWVz
-dGFtcChpbmRpb19kZXYsIGRhdGEtPmJ1ZmZlciwNCj4gPiA+ICAJCQkJCSAgIHBmLT50aW1lc3Rh
-bXApOw0KPiA+ID4NCj4gPg0KPiA+IC0tDQo+ID4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxp
-c3Q6IHNlbmQgdGhlIGxpbmUgInVuc3Vic2NyaWJlIGxpbnV4LWlpbyIgaW4NCj4gPiB0aGUgYm9k
-eSBvZiBhIG1lc3NhZ2UgdG8gbWFqb3Jkb21vQHZnZXIua2VybmVsLm9yZw0KPiA+IE1vcmUgbWFq
-b3Jkb21vIGluZm8gYXQgIGh0dHA6Ly92Z2VyLmtlcm5lbC5vcmcvbWFqb3Jkb21vLWluZm8uaHRt
-bA0KPiA+DQo+IA0KPiAtLQ0KPiBQZW5ndXRyb25peCBlLksuICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfA0KPiBJbmR1c3RyaWFsIExpbnV4
-IFNvbHV0aW9ucyAgICAgICAgICAgICAgICAgfCBodHRwOi8vd3d3LnBlbmd1dHJvbml4LmRlLyAg
-fA0KPiBQZWluZXIgU3RyLiA2LTgsIDMxMTM3IEhpbGRlc2hlaW0sIEdlcm1hbnkgfCBQaG9uZTog
-KzQ5LTUxMjEtMjA2OTE3LTAgICAgfA0KPiBBbXRzZ2VyaWNodCBIaWxkZXNoZWltLCBIUkEgMjY4
-NiAgICAgICAgICAgfCBGYXg6ICAgKzQ5LTUxMjEtMjA2OTE3LTU1NTUgfA0K
+On Wed, Aug 12, 2015 at 10:13:39PM +0100, Jonathan Cameron wrote:
+> On 01/08/15 00:54, Hartmut Knaack wrote:
+> > Antoine, any opinion about this one?
+
+Yes, sorry for the long delay... This is perfectly fine.
+
+> > Hartmut Knaack schrieb am 28.07.2015 um 00:39:
+> >> Move the call to enable channel interrupts into its _read() function to
+> >> have it protected by a mutex. This ensures that only one channel is
+> >> sampled at a time.
+> >>
+> >> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+> Looks fine to me and Antoine has had a while to confirm.
+> 
+> Applied to the togreg branch of iio.git
+
+Thanks!
+
+Antoine
+
+-- 
+Antoine Ténart, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
