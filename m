@@ -1,398 +1,423 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f178.google.com ([209.85.217.178]:34035 "EHLO
-	mail-lb0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751118AbbHRCdI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Aug 2015 22:33:08 -0400
+Received: from mga11.intel.com ([192.55.52.93]:17754 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750928AbbHRLcb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 18 Aug 2015 07:32:31 -0400
+Date: Tue, 18 Aug 2015 14:32:15 +0300
+From: Teodora Baluta <teodora.baluta@intel.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	daniel.baluta@intel.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] iio: magnetometer: add mmc34160 magnetometer driver
+Message-ID: <20150818113215.GA22724@hard-bop>
+References: <1439826269-14849-1-git-send-email-teodora.baluta@intel.com>
+ <alpine.DEB.2.02.1508172124490.5283@pmeerw.net>
 MIME-Version: 1.0
-In-Reply-To: <55D048A9.8060109@kernel.org>
-References: <1439359276-19028-1-git-send-email-mranostay@gmail.com>
-	<1439359276-19028-3-git-send-email-mranostay@gmail.com>
-	<55D048A9.8060109@kernel.org>
-Date: Mon, 17 Aug 2015 19:33:06 -0700
-Message-ID: <CAKzfze9oNv5ghLfXQp0F=eKgsh+WobaUnfSLarr81eu1tRcFLQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: proximity: add support for PulsedLight LIDAR
-From: Matt Ranostay <mranostay@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <alpine.DEB.2.02.1508172124490.5283@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Aug 16, 2015 at 1:24 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 12/08/15 07:01, Matt Ranostay wrote:
->> Add support for the PulsedLight LIDAR rangefinder sensor which allows
->> high speed (over 300Hz) distance measurements using Barker Coding within
->> 40 meter range.
->>
->> Support only tested on the "blue label" rev 2, but may work using low
->> sample frequencies on the original version.
->>
->> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-> You missed a few cases of the name lidar being used for device
-> matching.
->
-> Also, just noticed you are holding a local lock only when checking if
-> bufferred capture is enabled.  You need to hold the indio_dev->mlock to
-> avoid racing with a buffer enable.
->
-> Mostly there now though.
->
-> Jonathan
->> ---
->>  drivers/iio/proximity/Kconfig                     |  12 +
->>  drivers/iio/proximity/Makefile                    |   1 +
->>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 292 ++++++++++++++++++++++
->>  3 files changed, 305 insertions(+)
->>  create mode 100644 drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->>
->> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
->> index 41a8d8f..e64fc5b 100644
->> --- a/drivers/iio/proximity/Kconfig
->> +++ b/drivers/iio/proximity/Kconfig
->> @@ -20,6 +20,18 @@ endmenu
->>
->>  menu "Proximity sensors"
->>
->> +config LIDAR
-> The config symbol needs more detail as well as it's not a unique
-> part number.
->> +     tristate "PulsedLight LIDAR sensor"
->> +     select IIO_BUFFER
->> +     select IIO_TRIGGERED_BUFFER
->> +     depends on I2C
->> +     help
->> +       Say Y to build a driver for PulsedLight LIDAR range finding
->> +       sensor.
->> +
->> +       To compile this driver as a module, choose M here: the
->> +       module will be called lidar.
-> Not any more it won't.
->> +
->>  config SX9500
->>       tristate "SX9500 Semtech proximity sensor"
->>       select IIO_BUFFER
->> diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
->> index 9818dc5..081ae33 100644
->> --- a/drivers/iio/proximity/Makefile
->> +++ b/drivers/iio/proximity/Makefile
->> @@ -4,4 +4,5 @@
->>
->>  # When adding new entries keep the list in alphabetical order
->>  obj-$(CONFIG_AS3935)         += as3935.o
->> +obj-$(CONFIG_LIDAR)          += pulsedlight-lidar-lite-v2.o
->>  obj-$(CONFIG_SX9500)         += sx9500.o
->> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> new file mode 100644
->> index 0000000..ff0681b
->> --- /dev/null
->> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> @@ -0,0 +1,292 @@
->> +/*
->> + * pulsedlight-lidar-lite-v2.c - Support for PulsedLight LIDAR sensor
->> + *
->> + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->> + * GNU General Public License for more details.
->> + *
->> + * TODO: runtime pm, interrupt mode, and signal strength reporting
->> + *
-> No blank line here.
->> + */
->> +
->> +#include <linux/err.h>
->> +#include <linux/init.h>
->> +#include <linux/i2c.h>
->> +#include <linux/delay.h>
->> +#include <linux/mutex.h>
->> +#include <linux/module.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/trigger.h>
->> +#include <linux/iio/triggered_buffer.h>
->> +#include <linux/iio/trigger_consumer.h>
->> +
->> +#define LIDAR_REG_CONTROL            0x00
->> +#define LIDAR_REG_CONTROL_ACQUIRE    BIT(2)
->> +
->> +#define LIDAR_REG_STATUS             0x01
->> +#define LIDAR_REG_STATUS_INVALID     BIT(3)
->> +#define LIDAR_REG_STATUS_READY               BIT(0)
->> +
->> +#define LIDAR_REG_DATA_HBYTE 0x0f
->> +#define LIDAR_REG_DATA_LBYTE 0x10
->> +
->> +#define LIDAR_DRV_NAME "lidar"
->> +
->> +struct lidar_data {
->> +     struct mutex lock;
->> +     struct iio_dev *indio_dev;
->> +     struct i2c_client *client;
->> +
->> +     u16 buffer[8]; /* 2 byte distance + 8 byte timestamp */
->> +};
->> +
->> +static const struct iio_chan_spec lidar_channels[] = {
->> +     {
->> +             .type = IIO_DISTANCE,
->> +             .info_mask_separate =
->> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->> +             .scan_index = 0,
->> +             .scan_type = {
->> +                     .sign = 'u',
->> +                     .realbits = 16,
->> +                     .storagebits = 16,
->> +             },
->> +     },
->> +     IIO_CHAN_SOFT_TIMESTAMP(1),
->> +};
->> +
->> +static int lidar_read_byte(struct lidar_data *data, int reg)
->> +{
->> +     struct i2c_client *client = data->client;
->> +     int ret;
->> +
->> +     /*
->> +      * Device needs a STOP condition between address write, and data read
->> +      * so in turn i2c_smbus_read_byte_data cannot be used
->> +      */
->> +
->> +     ret = i2c_smbus_write_byte(client, reg);
->> +     if (ret < 0) {
->> +             dev_err(&client->dev, "cannot write addr value");
->> +             return ret;
->> +     }
->> +
->> +     ret = i2c_smbus_read_byte(client);
->> +     if (ret < 0)
->> +             dev_err(&client->dev, "cannot read data value");
->> +
->> +     return ret;
->> +}
->> +
->> +static inline int lidar_write_control(struct lidar_data *data, int val)
->> +{
->> +     return i2c_smbus_write_byte_data(data->client, LIDAR_REG_CONTROL, val);
->> +}
->> +
->> +static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
->> +{
->> +     int ret;
->> +     int val;
->> +
->> +     ret = lidar_read_byte(data, LIDAR_REG_DATA_HBYTE);
->> +     if (ret < 0)
->> +             return ret;
->> +     val = ret << 8;
->> +
->> +     ret = lidar_read_byte(data, LIDAR_REG_DATA_LBYTE);
->> +     if (ret < 0)
->> +             return ret;
->> +
->> +     val |= ret;
->> +     *reg = val;
->> +
->> +     return 0;
->> +}
->> +
->> +static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
->> +{
->> +     struct i2c_client *client = data->client;
->> +     int tries = 10;
->> +     int ret;
->> +
->> +     /* start sample */
->> +     ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
->> +     if (ret < 0) {
->> +             dev_err(&client->dev, "cannot send start measurement command");
->> +             return ret;
->> +     }
->> +
->> +     while (tries--) {
->> +             usleep_range(1000, 2000);
->> +
->> +             ret = lidar_read_byte(data, LIDAR_REG_STATUS);
->> +             if (ret < 0)
->> +                     break;
->> +
->> +             /* return 0 since laser is likely pointed out of range */
->> +             if (ret & LIDAR_REG_STATUS_INVALID) {
->> +                     *reg = 0;
->> +                     ret = 0;
->> +                     break;
->> +             }
->> +
->> +             /* sample ready to read */
->> +             if (!(ret & LIDAR_REG_STATUS_READY)) {
->> +                     ret = lidar_read_measurement(data, reg);
->> +                     break;
->> +             }
->> +             ret = -EIO;
->> +     }
->> +
->> +     return ret;
->> +}
->> +
->> +static int lidar_read_raw(struct iio_dev *indio_dev,
->> +                       struct iio_chan_spec const *chan,
->> +                       int *val, int *val2, long mask)
->> +{
->> +     struct lidar_data *data = iio_priv(indio_dev);
->> +     int ret = -EINVAL;
->> +
->> +     mutex_lock(&data->lock);
->> +
->
-> This particular check needs to hold the indio_dev->mlock as that
-> is the one that protects core state changes (enabling and disabling the
-> buffer).  You want to hang on to that lock until the read is done.
+On Mon, Aug 17, 2015 at 09:28:41PM +0200, Peter Meerwald wrote:
+> On Mon, 17 Aug 2015, Teodora Baluta wrote:
+> 
+> > This patch adds support for the MMC34160 3-axis magnetometer driver. The
+> > MMC31460 magnetometer driver uses the same register map as MMC35240 with
+> > different specifications for sensitivity.
+> > 
+> > According to Memsic specification, for the MMC31460 sensor, there is no
+> > need to apply compensation to the read values. Also, the MMC34160 sensor
+> > does not use the same formula as MMC35240 for transforming raw data into
+> > mgauss, and the current formula is based on the input driver (mmc3416x)
+> > provided by Memsic.
+> 
+> comments below
 
-So I guess I can get rid of the data->lock? Since it really isn't used
-anywhere else?
+Hi Peter,
 
->
->> +     if (iio_buffer_enabled(indio_dev) && mask == IIO_CHAN_INFO_RAW) {
->> +             ret = -EBUSY;
->> +             goto error_busy;
->> +     }
->> +
->> +     switch (mask) {
->> +     case IIO_CHAN_INFO_RAW: {
->> +             u16 reg;
->> +
->> +             ret = lidar_get_measurement(data, &reg);
->> +             if (!ret) {
->> +                     *val = reg;
->> +                     ret = IIO_VAL_INT;
->> +             }
->> +             break;
->> +     }
->> +     case IIO_CHAN_INFO_SCALE:
->> +             *val = 0;
->> +             *val2 = 10000;
->> +             ret = IIO_VAL_INT_PLUS_MICRO;
->> +             break;
->> +     }
->> +
->> +error_busy:
->> +     mutex_unlock(&data->lock);
->> +
->> +     return ret;
->> +}
->> +
->> +static irqreturn_t lidar_trigger_handler(int irq, void *private)
->> +{
->> +     struct iio_poll_func *pf = private;
->> +     struct iio_dev *indio_dev = pf->indio_dev;
->> +     struct lidar_data *data = iio_priv(indio_dev);
->> +     int ret;
->> +
->> +     ret = lidar_get_measurement(data, data->buffer);
->> +     if (!ret) {
->> +             iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->> +                                                iio_get_time_ns());
->> +     } else {
->> +             dev_err(&data->client->dev, "cannot read LIDAR measurement");
->> +     }
->> +
->> +     iio_trigger_notify_done(indio_dev->trig);
->> +
->> +     return IRQ_HANDLED;
->> +}
->> +
->> +static const struct iio_info lidar_info = {
->> +     .driver_module = THIS_MODULE,
->> +     .read_raw = lidar_read_raw,
->> +};
->> +
->> +static int lidar_probe(struct i2c_client *client,
->> +                    const struct i2c_device_id *id)
->> +{
->> +     struct lidar_data *data;
->> +     struct iio_dev *indio_dev;
->> +     int ret;
->> +
->> +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> +     if (!indio_dev)
->> +             return -ENOMEM;
->> +
->> +     indio_dev->info = &lidar_info;
->> +     indio_dev->name = LIDAR_DRV_NAME;
->> +     indio_dev->channels = lidar_channels;
->> +     indio_dev->num_channels = ARRAY_SIZE(lidar_channels);
->> +     indio_dev->modes = INDIO_DIRECT_MODE;
->> +
->> +     data = iio_priv(indio_dev);
->> +     i2c_set_clientdata(client, indio_dev);
->> +
->> +     data->client = client;
->> +     data->indio_dev = indio_dev;
->> +     mutex_init(&data->lock);
->> +
->> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
->> +                                      lidar_trigger_handler, NULL);
->> +     if (ret)
->> +             return ret;
->> +
->> +     ret = iio_device_register(indio_dev);
->> +     if (ret)
->> +             goto error_unreg_buffer;
->> +
->> +     return 0;
->> +
->> +error_unreg_buffer:
->> +     iio_triggered_buffer_cleanup(indio_dev);
->> +
->> +     return ret;
->> +}
->> +
->> +static int lidar_remove(struct i2c_client *client)
->> +{
->> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +
->> +     iio_device_unregister(indio_dev);
->> +     iio_triggered_buffer_cleanup(indio_dev);
->> +
->> +     return 0;
->> +}
->> +
->> +static const struct i2c_device_id lidar_id[] = {
->> +     {"lidar", 0},
->
-> This one wants a longer name as well. It's afterall used for
-> matching in some circumstances.
->
->> +     { },
->> +};
->> +MODULE_DEVICE_TABLE(i2c, lidar_id);
->> +
->> +static const struct of_device_id lidar_dt_ids[] = {
->> +     { .compatible = "pulsedlight,lidar-lite-v2" },
->> +     { }
->> +};
->> +
->> +static struct i2c_driver lidar_driver = {
->> +     .driver = {
->> +             .name   = LIDAR_DRV_NAME,
->> +             .of_match_table = of_match_ptr(lidar_dt_ids),
->> +     },
->> +     .probe          = lidar_probe,
->> +     .remove         = lidar_remove,
->> +     .id_table       = lidar_id,
->> +};
->> +module_i2c_driver(lidar_driver);
->> +
->> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
->> +MODULE_DESCRIPTION("PulsedLight LIDAR sensor");
->> +MODULE_LICENSE("GPL");
->>
->
+Thanks for the review! I'll address the comments in a v5 patch. Some
+answers below.
+
+>  
+> > Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
+> > ---
+> > Changes since v3:
+> > - rebased to apply correctly
+> > - include bits that went missing from v2 to v3
+> > - remove return variable from mmc34160_raw_to_mgauss function
+> > 
+> >  drivers/iio/magnetometer/Kconfig    |   4 +-
+> >  drivers/iio/magnetometer/mmc35240.c | 205 ++++++++++++++++++++++++++++--------
+> >  2 files changed, 162 insertions(+), 47 deletions(-)
+> > 
+> > diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+> > index 868abad..df3f4cc 100644
+> > --- a/drivers/iio/magnetometer/Kconfig
+> > +++ b/drivers/iio/magnetometer/Kconfig
+> > @@ -70,8 +70,8 @@ config MMC35240
+> >  	select REGMAP_I2C
+> >  	depends on I2C
+> >  	help
+> > -	  Say yes here to build support for the MEMSIC MMC35240 3-axis
+> > -	  magnetic sensor.
+> > +	  Say yes here to build support for the MEMSIC MMC35240 and MMC34160
+> > +	  3-axis magnetic sensors.
+> >  
+> >  	  To compile this driver as a module, choose M here: the module
+> >  	  will be called mmc35240.
+> > diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
+> > index 176e14a..e4fc5e4 100644
+> > --- a/drivers/iio/magnetometer/mmc35240.c
+> > +++ b/drivers/iio/magnetometer/mmc35240.c
+> > @@ -83,6 +83,20 @@
+> >  
+> >  #define MMC35240_OTP_START_ADDR		0x1B
+> >  
+> > +#define MMC35240_CHIP_ID	0x08
+> > +#define MMC34160_CHIP_ID	0x06
+> > +
+> > +enum mmc35240_chipset {
+> > +	MMC35240,
+> > +	MMC34160,
+> > +	MMC_MAX_CHIPS
+> > +};
+> > +
+> > +static u8 chip_ids[MMC_MAX_CHIPS] = {
+> 
+> mmc35240_ prefix missing
+> 
+> > +	MMC35240_CHIP_ID,
+> > +	MMC34160_CHIP_ID,
+> > +};
+> > +
+> >  enum mmc35240_resolution {
+> >  	MMC35240_16_BITS_SLOW = 0, /* 7.92 ms */
+> >  	MMC35240_16_BITS_FAST,     /* 4.08 ms */
+> > @@ -99,27 +113,53 @@ enum mmc35240_axis {
+> >  static const struct {
+> >  	int sens[3]; /* sensitivity per X, Y, Z axis */
+> >  	int nfo; /* null field output */
+> > -} mmc35240_props_table[] = {
+> > -	/* 16 bits, 125Hz ODR */
+> > -	{
+> > -		{1024, 1024, 1024},
+> > -		32768,
+> > -	},
+> > -	/* 16 bits, 250Hz ODR */
+> > -	{
+> > -		{1024, 1024, 770},
+> > -		32768,
+> > -	},
+> > -	/* 14 bits, 450Hz ODR */
+> > +} mmc35240_props_table[MMC_MAX_CHIPS][4] = {
+> > +	/* MMC35240 */
+> >  	{
+> > -		{256, 256, 193},
+> > -		8192,
+> > +		/* 16 bits, 125Hz ODR */
+> > +		{
+> > +			{1024, 1024, 1024},
+> > +			32768,
+> > +		},
+> > +		/* 16 bits, 250Hz ODR */
+> > +		{
+> > +			{1024, 1024, 770},
+> > +			32768,
+> > +		},
+> > +		/* 14 bits, 450Hz ODR */
+> > +		{
+> > +			{256, 256, 193},
+> > +			8192,
+> > +		},
+> > +		/* 12 bits, 800Hz ODR */
+> > +		{
+> > +			{64, 64, 48},
+> > +			2048,
+> > +		},
+> >  	},
+> > -	/* 12 bits, 800Hz ODR */
+> > +	/* MMC34160 */
+> >  	{
+> > -		{64, 64, 48},
+> > -		2048,
+> > -	},
+> > +		/* 16 bits, 125Hz ODR */
+> > +		{
+> > +			{2048, 2048, 2048},
+> > +			32768,
+> > +		},
+> > +		/* 16 bits, 250Hz ODR */
+> > +		{
+> > +			{2048, 2048, 2048},
+> > +			32768,
+> > +		},
+> > +		/* 14 bits, 450Hz ODR */
+> > +		{
+> > +			{512, 512, 512},
+> > +			8192,
+> > +		},
+> > +		/* 12 bits, 800Hz ODR */
+> > +		{
+> > +			{128, 128, 128},
+> > +			2048,
+> > +		},
+> > +	}
+> >  };
+> >  
+> >  struct mmc35240_data {
+> > @@ -131,6 +171,7 @@ struct mmc35240_data {
+> >  	/* OTP compensation */
+> >  	int axis_coef[3];
+> >  	int axis_scale[3];
+> > +	enum mmc35240_chipset chipset;
+> >  };
+> >  
+> >  static const struct {
+> > @@ -206,6 +247,16 @@ static int mmc35240_hw_set(struct mmc35240_data *data, bool set)
+> >  
+> >  }
+> >  
+> > +static inline bool mmc35240_needs_compensation(enum mmc35240_chipset chipset)
+> 
+> maybe drop inline and let the compiler figure out
+
+Did not take into account that the compiler can decide this for us,
+though it seems pretty straight-forward it will inline it. I'll drop the
+inline then.
+
+> 
+> > +{
+> > +	switch (chipset) {
+> > +	case MMC35240:
+> > +		return true;
+> > +	default:
+> > +		return false;
+> > +	}
+> > +}
+> > +
+> >  static int mmc35240_init(struct mmc35240_data *data)
+> >  {
+> >  	int ret, y_convert, z_convert;
+> > @@ -220,6 +271,11 @@ static int mmc35240_init(struct mmc35240_data *data)
+> >  
+> >  	dev_dbg(&data->client->dev, "MMC35240 chip id %x\n", reg_id);
+> >  
+> > +	if (reg_id != chip_ids[data->chipset]) {
+> > +		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
+> > +		return -ENODEV;
+> > +	}
+> > +
+> >  	/*
+> >  	 * make sure we restore sensor characteristics, by doing
+> >  	 * a SET/RESET sequence, the axis polarity being naturally
+> > @@ -241,6 +297,9 @@ static int mmc35240_init(struct mmc35240_data *data)
+> >  	if (ret < 0)
+> >  		return ret;
+> >  
+> > +	if (!mmc35240_needs_compensation(data->chipset))
+> > +		return 0;
+> > +
+> >  	ret = regmap_bulk_read(data->regmap, MMC35240_OTP_START_ADDR,
+> >  			       (u8 *)otp_data, sizeof(otp_data));
+> >  	if (ret < 0)
+> > @@ -302,9 +361,37 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
+> >  				3 * sizeof(__le16));
+> >  }
+> >  
+> > +static int mmc34160_raw_to_mgauss(int raw[3], int sens[3], int nfo,
+> > +				  int index, int *val)
+> > +{
+> > +	return (raw[index] - nfo) * 1000 / sens[index];
+> > +}
+> > +
+> > +static int mmc35240_raw_to_mgauss(int raw[3], int sens[3], int nfo,
+> > +				  int index, int *val)
+> > +{
+> > +	switch (index) {
+> > +	case AXIS_X:
+> > +		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
+> > +		break;
+> > +	case AXIS_Y:
+> > +		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] -
+> > +			(raw[AXIS_Z] - nfo)  * 1000 / sens[AXIS_Z];
+> > +		break;
+> > +	case AXIS_Z:
+> > +		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] +
+> > +			(raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
+> > +		break;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  /**
+> > - * mmc35240_raw_to_mgauss - convert raw readings to milli gauss. Also apply
+> > -			    compensation for output value.
+> > + * memsic_raw_to_mgauss - convert raw readings to milli gauss. Also apply
+> > +			  compensation for output value.
+> 
+> why the name change?
+
+Used the prefix for chip specific conversion - see
+mmc35240_raw_to_mgauss and mmc34160_raw_to_mgauss.
+
+I could keep the prefix for this one function and rename it to
+mmc35240_raw_to_mgauss_comp (since it applies compensation as well),
+remove the mmc34160_raw_to_mgauss function and put the formula directly
+and keep the mmc35240_raw_to_mgauss as it is. Would that be better?
+
+> 
+> >   *
+> >   * @data: device private data
+> >   * @index: axis index for which we want the conversion
+> > @@ -313,40 +400,42 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
+> >   *
+> >   * Returns: 0 in case of success, -EINVAL when @index is not valid
+> >   */
+> > -static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
+> > -				  __le16 buf[], int *val)
+> > +static int memsic_raw_to_mgauss(struct mmc35240_data *data, int index,
+> > +				__le16 buf[], int *val)
+> >  {
+> >  	int raw[3];
+> >  	int sens[3];
+> >  	int nfo;
+> > +	int ret;
+> > +	int id = data->chipset;
+> >  
+> >  	raw[AXIS_X] = le16_to_cpu(buf[AXIS_X]);
+> >  	raw[AXIS_Y] = le16_to_cpu(buf[AXIS_Y]);
+> >  	raw[AXIS_Z] = le16_to_cpu(buf[AXIS_Z]);
+> >  
+> > -	sens[AXIS_X] = mmc35240_props_table[data->res].sens[AXIS_X];
+> > -	sens[AXIS_Y] = mmc35240_props_table[data->res].sens[AXIS_Y];
+> > -	sens[AXIS_Z] = mmc35240_props_table[data->res].sens[AXIS_Z];
+> > +	sens[AXIS_X] = mmc35240_props_table[id][data->res].sens[AXIS_X];
+> > +	sens[AXIS_Y] = mmc35240_props_table[id][data->res].sens[AXIS_Y];
+> > +	sens[AXIS_Z] = mmc35240_props_table[id][data->res].sens[AXIS_Z];
+> >  
+> > -	nfo = mmc35240_props_table[data->res].nfo;
+> >  
+> > -	switch (index) {
+> > -	case AXIS_X:
+> > -		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
+> > -		break;
+> > -	case AXIS_Y:
+> > -		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] -
+> > -			(raw[AXIS_Z] - nfo)  * 1000 / sens[AXIS_Z];
+> > -		break;
+> > -	case AXIS_Z:
+> > -		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] +
+> > -			(raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
+> > -		break;
+> > +	nfo = mmc35240_props_table[id][data->res].nfo;
+> > +
+> > +	switch (id) {
+> > +	case MMC35240:
+> > +		ret = mmc35240_raw_to_mgauss(raw, sens, nfo, index, val);
+> > +		if (ret < 0)
+> > +			return ret;
+> > +
+> > +		/* apply OTP compensation */
+> > +		*val = (*val) * data->axis_coef[index] /
+> > +			data->axis_scale[index];
+> > +
+> > +		return 0;
+> > +	case MMC34160:
+> > +		return mmc34160_raw_to_mgauss(raw, sens, nfo, index, val);
+> >  	default:
+> >  		return -EINVAL;
+> >  	}
+> > -	/* apply OTP compensation */
+> > -	*val = (*val) * data->axis_coef[index] / data->axis_scale[index];
+> >  
+> >  	return 0;
+> >  }
+> > @@ -367,7 +456,7 @@ static int mmc35240_read_raw(struct iio_dev *indio_dev,
+> >  		mutex_unlock(&data->mutex);
+> >  		if (ret < 0)
+> >  			return ret;
+> > -		ret = mmc35240_raw_to_mgauss(data, chan->address, buf, val);
+> > +		ret = memsic_raw_to_mgauss(data, chan->address, buf, val);
+> >  		if (ret < 0)
+> >  			return ret;
+> >  		return IIO_VAL_INT;
+> > @@ -485,12 +574,27 @@ static const struct regmap_config mmc35240_regmap_config = {
+> >  	.num_reg_defaults = ARRAY_SIZE(mmc35240_reg_defaults),
+> >  };
+> >  
+> > +static const char *mmc35240_match_acpi_device(struct device *dev,
+> > +					      enum mmc35240_chipset *chipset)
+> > +{
+> > +	const struct acpi_device_id *id;
+> > +
+> > +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> > +	if (!id)
+> > +		return NULL;
+> > +
+> > +	*chipset = (enum mmc35240_chipset)id->driver_data;
+> > +
+> > +	return dev_name(dev);
+> > +}
+> > +
+> >  static int mmc35240_probe(struct i2c_client *client,
+> >  			  const struct i2c_device_id *id)
+> >  {
+> >  	struct mmc35240_data *data;
+> >  	struct iio_dev *indio_dev;
+> >  	struct regmap *regmap;
+> > +	const char *name;
+> >  	int ret;
+> >  
+> >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> > @@ -509,11 +613,20 @@ static int mmc35240_probe(struct i2c_client *client,
+> >  	data->regmap = regmap;
+> >  	data->res = MMC35240_16_BITS_SLOW;
+> >  
+> > +	if (id) {
+> > +		data->chipset = (enum mmc35240_chipset)(id->driver_data);
+> > +		name = id->name;
+> > +	} else if (ACPI_HANDLE(&client->dev)) {
+> > +		name = mmc35240_match_acpi_device(&client->dev,
+> > +						  &data->chipset);
+> > +	} else
+> > +		return -ENODEV;
+> > +
+> >  	mutex_init(&data->mutex);
+> >  
+> >  	indio_dev->dev.parent = &client->dev;
+> >  	indio_dev->info = &mmc35240_info;
+> > -	indio_dev->name = MMC35240_DRV_NAME;
+> > +	indio_dev->name = name;
+> >  	indio_dev->channels = mmc35240_channels;
+> >  	indio_dev->num_channels = ARRAY_SIZE(mmc35240_channels);
+> >  	indio_dev->modes = INDIO_DIRECT_MODE;
+> > @@ -566,14 +679,16 @@ static const struct of_device_id mmc35240_of_match[] = {
+> >  MODULE_DEVICE_TABLE(of, mmc35240_of_match);
+> >  
+> >  static const struct acpi_device_id mmc35240_acpi_match[] = {
+> > -	{"MMC35240", 0},
+> > +	{"MMC35240", MMC35240},
+> > +	{"MMC34160", MMC34160},
+> >  	{ },
+> >  };
+> >  MODULE_DEVICE_TABLE(acpi, mmc35240_acpi_match);
+> >  
+> >  static const struct i2c_device_id mmc35240_id[] = {
+> > -	{"mmc35240", 0},
+> > -	{}
+> > +	{"mmc35240", MMC35240},
+> > +	{"mmc34160", MMC34160},
+> > +	{ }
+> >  };
+> >  MODULE_DEVICE_TABLE(i2c, mmc35240_id);
+> >  
+> > 
+> 
+> -- 
+> 
+> Peter Meerwald
+> +43-664-2444418 (mobile)
