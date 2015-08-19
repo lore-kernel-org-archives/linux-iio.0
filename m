@@ -1,135 +1,336 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:41029 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752779AbbHSMNF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Aug 2015 08:13:05 -0400
-From: Markus Pargmann <mpa@pengutronix.de>
+Received: from mga02.intel.com ([134.134.136.20]:28623 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753884AbbHSMbQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 19 Aug 2015 08:31:16 -0400
+Date: Wed, 19 Aug 2015 15:31:01 +0300
+From: Teodora Baluta <teodora.baluta@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v4 2/2] iio: bmg160: Add SPI driver
-Date: Wed, 19 Aug 2015 14:12:46 +0200
-Message-Id: <1439986366-25291-3-git-send-email-mpa@pengutronix.de>
-In-Reply-To: <1439986366-25291-1-git-send-email-mpa@pengutronix.de>
-References: <1439986366-25291-1-git-send-email-mpa@pengutronix.de>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	daniel.baluta@intel.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] iio: mxc4005: add data ready trigger for mxc4005
+Message-ID: <20150819123101.GC27721@hard-bop>
+References: <1439487101-13085-1-git-send-email-teodora.baluta@intel.com>
+ <1439487101-13085-4-git-send-email-teodora.baluta@intel.com>
+ <55D04363.4040101@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <55D04363.4040101@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
----
- drivers/iio/gyro/Kconfig      |  7 +++++-
- drivers/iio/gyro/Makefile     |  1 +
- drivers/iio/gyro/bmg160_spi.c | 57 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 64 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iio/gyro/bmg160_spi.c
+On Sun, Aug 16, 2015 at 09:01:39AM +0100, Jonathan Cameron wrote:
+> On 13/08/15 18:31, Teodora Baluta wrote:
+> > Add iio trigger for the data ready interrupt that signals new
+> > measurements for the X, Y and Z axes.
+> > 
+> > Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
+> Various bits inline.
 
-diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-index 94526b13d49f..e816d29d6a62 100644
---- a/drivers/iio/gyro/Kconfig
-+++ b/drivers/iio/gyro/Kconfig
-@@ -56,18 +56,23 @@ config BMG160
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	select BMG160_I2C if (I2C)
-+	select BMG160_SPI if (SPI)
- 	help
- 	  Say yes here to build support for BOSCH BMG160 Tri-axis Gyro Sensor
- 	  driver connected via I2C or SPI. This driver also supports BMI055
- 	  gyroscope.
- 
- 	  This driver can also be built as a module.  If so, the module
--	  will be called bmg160_i2c.
-+	  will be called bmg160_i2c or bmg160_spi.
- 
- config BMG160_I2C
- 	tristate
- 	select REGMAP_I2C
- 
-+config BMG160_SPI
-+	tristate
-+	select REGMAP_SPI
-+
- config HID_SENSOR_GYRO_3D
- 	depends on HID_SENSOR_HUB
- 	select IIO_BUFFER
-diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-index 608401041550..f866a4be0667 100644
---- a/drivers/iio/gyro/Makefile
-+++ b/drivers/iio/gyro/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_ADIS16260) += adis16260.o
- obj-$(CONFIG_ADXRS450) += adxrs450.o
- obj-$(CONFIG_BMG160) += bmg160_core.o
- obj-$(CONFIG_BMG160_I2C) += bmg160_i2c.o
-+obj-$(CONFIG_BMG160_SPI) += bmg160_spi.o
- 
- obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
- 
-diff --git a/drivers/iio/gyro/bmg160_spi.c b/drivers/iio/gyro/bmg160_spi.c
-new file mode 100644
-index 000000000000..021ea5fe6a37
---- /dev/null
-+++ b/drivers/iio/gyro/bmg160_spi.c
-@@ -0,0 +1,57 @@
-+#include <linux/spi/spi.h>
-+#include <linux/regmap.h>
-+#include <linux/iio/iio.h>
-+#include <linux/module.h>
-+
-+#include "bmg160.h"
-+
-+static const struct regmap_config bmg160_regmap_spi_conf = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = 0x3f,
-+};
-+
-+static int bmg160_spi_probe(struct spi_device *spi)
-+{
-+	struct regmap *regmap;
-+	const struct spi_device_id *id = spi_get_device_id(spi);
-+
-+	regmap = devm_regmap_init_spi(spi, &bmg160_regmap_spi_conf);
-+	if (IS_ERR(regmap)) {
-+		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
-+			(int)PTR_ERR(regmap));
-+		return PTR_ERR(regmap);
-+	}
-+
-+	return bmg160_core_probe(&spi->dev, regmap, spi->irq, id->name);
-+}
-+
-+static int bmg160_spi_remove(struct spi_device *spi)
-+{
-+	bmg160_core_remove(&spi->dev);
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id bmg160_spi_id[] = {
-+	{"bmg160", 0},
-+	{"bmi055_gyro", 0},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(spi, bmg160_spi_id);
-+
-+static struct spi_driver bmg160_spi_driver = {
-+	.driver = {
-+		.name	= "bmg160_spi",
-+		.pm	= &bmg160_pm_ops,
-+	},
-+	.probe		= bmg160_spi_probe,
-+	.remove		= bmg160_spi_remove,
-+	.id_table	= bmg160_spi_id,
-+};
-+module_spi_driver(bmg160_spi_driver);
-+
-+MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("BMG160 SPI Gyro driver");
--- 
-2.4.6
+Thanks for the review!
 
+> 
+> Jonathan
+> > ---
+> >  drivers/iio/accel/mxc4005.c | 159 +++++++++++++++++++++++++++++++++++++++++++-
+> >  1 file changed, 158 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
+> > index 5f4813d..0c47bfe 100644
+> > --- a/drivers/iio/accel/mxc4005.c
+> > +++ b/drivers/iio/accel/mxc4005.c
+> > @@ -17,13 +17,16 @@
+> >  #include <linux/i2c.h>
+> >  #include <linux/iio/iio.h>
+> >  #include <linux/acpi.h>
+> > +#include <linux/gpio/consumer.h>
+> >  #include <linux/regmap.h>
+> >  #include <linux/iio/sysfs.h>
+> > +#include <linux/iio/trigger.h>
+> >  #include <linux/iio/buffer.h>
+> >  #include <linux/iio/triggered_buffer.h>
+> >  #include <linux/iio/trigger_consumer.h>
+> >  
+> >  #define MXC4005_DRV_NAME		"mxc4005"
+> > +#define MXC4005_IRQ_NAME		"mxc4005_event"
+> >  #define MXC4005_REGMAP_NAME		"mxc4005_regmap"
+> >  
+> >  #define MXC4005_REG_XOUT_UPPER		0x03
+> > @@ -33,6 +36,15 @@
+> >  #define MXC4005_REG_ZOUT_UPPER		0x07
+> >  #define MXC4005_REG_ZOUT_LOWER		0x08
+> >  
+> > +#define MXC4005_REG_INT_SRC1		0x01
+> > +#define MXC4005_REG_INT_SRC2_BIT_DRDY	0x01
+> > +
+> > +#define MXC4005_REG_INT_MASK1		0x0B
+> > +#define MXC4005_REG_INT_MASK1_BIT_DRDYE	0x01
+> > +
+> > +#define MXC4005_REG_INT_CLR1		0x01
+> > +#define MXC4005_REG_INT_CLR1_BIT_DRDYC	0x01
+> > +
+> >  #define MXC4005_REG_CONTROL		0x0D
+> >  #define MXC4005_REG_CONTROL_MASK_FSR	GENMASK(6, 5)
+> >  #define MXC4005_CONTROL_FSR_SHIFT	5
+> > @@ -55,7 +67,10 @@ struct mxc4005_data {
+> >  	struct i2c_client *client;
+> >  	struct mutex mutex;
+> >  	struct regmap *regmap;
+> > +	struct iio_trigger *dready_trig;
+> 
+> As mentioned below, use the pf->timestamp or you'll get in a mess if for
+> example you driver the capture from this via a slow sysfs trigger.
+> > +	int64_t timestamp;
+> >  	__be16 buffer[3];
+> > +	bool trigger_enabled;
+> >  };
+> >  
+> >  /*
+> > @@ -97,6 +112,7 @@ static bool mxc4005_is_readable_reg(struct device *dev, unsigned int reg)
+> >  	case MXC4005_REG_ZOUT_UPPER:
+> >  	case MXC4005_REG_ZOUT_LOWER:
+> >  	case MXC4005_REG_DEVICE_ID:
+> > +	case MXC4005_REG_INT_SRC1:
+> >  	case MXC4005_REG_CONTROL:
+> >  		return true;
+> >  	default:
+> > @@ -107,6 +123,8 @@ static bool mxc4005_is_readable_reg(struct device *dev, unsigned int reg)
+> >  static bool mxc4005_is_writeable_reg(struct device *dev, unsigned int reg)
+> >  {
+> >  	switch (reg) {
+> > +	case MXC4005_REG_INT_CLR1:
+> > +	case MXC4005_REG_INT_MASK1:
+> >  	case MXC4005_REG_CONTROL:
+> >  		return true;
+> >  	default:
+> > @@ -300,7 +318,7 @@ static irqreturn_t mxc4005_trigger_handler(int irq, void *private)
+> >  		goto err;
+> >  
+> >  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> > -					   iio_get_time_ns());
+> > +					   data->timestamp);
+> Who said this was being triggered by the devices own trigger?  If
+> you want to do this, then use pull the timestamp save in the pollfunc
+> top half. (iio_pollfunc_store_time is available for this).
+> 
+
+Ok, thanks!
+
+> >  
+> >  err:
+> >  	iio_trigger_notify_done(indio_dev->trig);
+> > @@ -308,6 +326,103 @@ err:
+> >  	return IRQ_HANDLED;
+> >  }
+> >  
+> > +static int mxc4005_set_trigger_state(struct iio_trigger *trig,
+> > +				     bool state)
+> > +{
+> > +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> > +	struct mxc4005_data *data = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	mutex_lock(&data->mutex);
+> > +	if (state) {
+> > +		ret = regmap_write(data->regmap, MXC4005_REG_INT_MASK1,
+> > +				   MXC4005_REG_INT_MASK1_BIT_DRDYE);
+> > +	} else {
+> > +		ret = regmap_write(data->regmap, MXC4005_REG_INT_MASK1,
+> > +				   ~MXC4005_REG_INT_MASK1_BIT_DRDYE);
+> > +	}
+> > +
+> > +	if (ret < 0) {
+> > +		mutex_unlock(&data->mutex);
+> > +		dev_err(&data->client->dev,
+> > +			"failed to update reg_int_mask1");
+> > +		return ret;
+> > +	}
+> > +
+> > +	data->trigger_enabled = state;
+> > +	mutex_unlock(&data->mutex);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static const struct iio_trigger_ops mxc4005_trigger_ops = {
+> > +	.set_trigger_state = mxc4005_set_trigger_state,
+> > +	.owner = THIS_MODULE,
+> > +};
+> > +
+> > +static irqreturn_t mxc4005_irq_thrd_handler(int irq, void *private)
+> > +{
+> > +	struct iio_dev *indio_dev = private;
+> > +	struct mxc4005_data *data = iio_priv(indio_dev);
+> > +	unsigned int reg;
+> > +	int ret;
+> > +
+> > +	ret = regmap_read(data->regmap, MXC4005_REG_INT_SRC1, &reg);
+> > +	if (ret < 0) {
+> > +		dev_err(&data->client->dev, "failed to read reg_int_src1\n");
+> > +		goto exit;
+> > +	}
+> Guessing you have to read the interrupt source to get it clear?  If so
+> please comment it.  If not, don't bother reading it :)
+
+The datasheet says that just reading the interrupt source doesn't clear
+the interrupt but I'll have to test this. There could be other interrupt
+sources - the device has support for shake and tilt events. I guess when
+support for these is added it will make sense to read the INT_SRCx
+registers.
+
+> > +
+> > +	/* clear interrupt */
+> > +	ret = regmap_write(data->regmap, MXC4005_REG_INT_CLR1,
+> > +			   MXC4005_REG_INT_CLR1_BIT_DRDYC);
+> > +	if (ret < 0) {
+> > +		dev_err(&data->client->dev, "failed to write to reg_int_clr1\n");
+> > +		goto exit;
+> > +	}
+> 
+> This is what the try_to_reenable callback is meant for.  That will clear
+> the interrupt, only when all child interrupts are done (i.e. all
+> triggers consumers are ready for the next one).  Here you clear it immediately
+> and hence could end up feeding interrupts into that system faster than they
+> can be handled (though the masking that occurs should prevent that actually
+> causing too much trouble).
+> 
+
+I'll look into this and fix it.
+
+> > +
+> > +exit:
+> > +	return IRQ_HANDLED;
+> > +}
+> > +
+> > +static irqreturn_t mxc4005_irq_handler(int irq, void *private)
+> > +{
+> > +	struct iio_dev *indio_dev = private;
+> > +	struct mxc4005_data *data = iio_priv(indio_dev);
+> > +
+> > +	data->timestamp = iio_get_time_ns();
+> > +
+> Right now you don't need this as this is the only supported interrupt.
+> I'm guessing you have some events to come though?
+> > +	if (data->trigger_enabled)
+> > +		iio_trigger_poll(data->dready_trig);
+> > +
+> Unusual to have a thread handler here when only one interrupt type is possible.
+
+There are the shake, tilt functions of the device which make sense to be
+events, but I am not going to add these anytime soon so you're right.
+At this level, I don't think the handler is necessary. I'll rework this
+code as per your suggestion.
+
+> > +	return IRQ_WAKE_THREAD;
+> > +}
+> > +
+> > +static int mxc4005_gpio_probe(struct i2c_client *client,
+> > +			      struct mxc4005_data *data)
+> > +{
+> > +	struct device *dev;
+> > +	struct gpio_desc *gpio;
+> > +	int ret;
+> > +
+> > +	if (!client)
+> > +		return -EINVAL;
+> > +
+> > +	dev = &client->dev;
+> > +
+> > +	gpio = devm_gpiod_get_index(dev, "mxc4005_int", 0, GPIOD_IN);
+> > +	if (IS_ERR(gpio)) {
+> > +		dev_err(dev, "failed to get acpi gpio index\n");
+> > +		return PTR_ERR(gpio);
+> > +	}
+> > +
+> > +	ret = gpiod_to_irq(gpio);
+> > +
+> > +	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> >  static int mxc4005_chip_init(struct mxc4005_data *data)
+> >  {
+> >  	int ret;
+> > @@ -373,6 +488,43 @@ static int mxc4005_probe(struct i2c_client *client,
+> >  		return ret;
+> >  	}
+> >  
+> > +	if (client->irq < 0)
+> > +		client->irq = mxc4005_gpio_probe(client, data);
+> > +
+> > +	if (client->irq >= 0) {
+> Should be > 0.
+> 
+> IRQ of 0 is nolonger considered valid (used to indicate a specified not
+> connected IRQ which isn't going to be useful here!)
+> 
+> Had a patch set correcting all remaining cases of this in IIO the other
+> day.  Quite a few years ago now, IRQ 0 was valid on arm, but that was
+> changed.
+> 
+
+Ok.
+
+> > +		ret = devm_request_threaded_irq(&client->dev, client->irq,
+> > +						mxc4005_irq_handler,
+> > +						mxc4005_irq_thrd_handler,
+> > +						IRQF_TRIGGER_FALLING |
+> > +						IRQF_ONESHOT,
+> > +						MXC4005_IRQ_NAME,
+> > +						indio_dev);
+> > +		if (ret) {
+> > +			dev_err(&client->dev,
+> > +				"failed to init threaded irq\n");
+> > +			goto err_buffer_cleanup;
+> > +		}
+> > +
+> > +		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+> > +							   "%s-dev%d",
+> > +							   indio_dev->name,
+> > +							   indio_dev->id);
+> > +		if (!data->dready_trig)
+> > +			return -ENOMEM;
+> > +
+> > +		data->dready_trig->dev.parent = &client->dev;
+> > +		data->dready_trig->ops = &mxc4005_trigger_ops;
+> > +		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+> > +		indio_dev->trig = data->dready_trig;
+> > +		iio_trigger_get(indio_dev->trig);
+> > +		ret = iio_trigger_register(data->dready_trig);
+> > +		if (ret) {
+> > +			dev_err(&client->dev,
+> > +				"failed to register trigger\n");
+> > +			goto err_trigger_unregister;
+> > +		}
+> > +	}
+> > +
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret < 0) {
+> >  		dev_err(&client->dev,
+> > @@ -382,6 +534,8 @@ static int mxc4005_probe(struct i2c_client *client,
+> >  
+> >  	return 0;
+> >  
+> > +err_trigger_unregister:
+> > +	iio_trigger_unregister(data->dready_trig);
+> >  err_buffer_cleanup:
+> >  	iio_triggered_buffer_cleanup(indio_dev);
+> >  
+> > @@ -391,10 +545,13 @@ err_buffer_cleanup:
+> >  static int mxc4005_remove(struct i2c_client *client)
+> >  {
+> >  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> > +	struct mxc4005_data *data = iio_priv(indio_dev);
+> >  
+> >  	iio_device_unregister(indio_dev);
+> >  
+> >  	iio_triggered_buffer_cleanup(indio_dev);
+> > +	if (data->dready_trig)
+> > +		iio_trigger_unregister(data->dready_trig);
+> >  
+> >  	return 0;
+> >  }
+> > 
+> 
