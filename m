@@ -1,18 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 19pmail.ess.barracuda.com ([64.235.154.230]:48267 "EHLO
-	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750767AbbHSVNX convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Aug 2015 17:13:23 -0400
-From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-To: Michael Welling <mwelling@ieee.org>
-CC: Daniel Baluta <daniel.baluta@gmail.com>,
+Received: from mail-io0-f178.google.com ([209.85.223.178]:36703 "EHLO
+	mail-io0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752574AbbHSV3N (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Aug 2015 17:29:13 -0400
+Received: by iodv127 with SMTP id v127so24733566iod.3
+        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2015 14:29:12 -0700 (PDT)
+Date: Wed, 19 Aug 2015 16:29:07 -0500
+From: Michael Welling <mwelling@ieee.org>
+To: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+Cc: Daniel Baluta <daniel.baluta@gmail.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Wed, 19 Aug 2015 14:13:10 -0700
-Subject: RE: BBB IIO ADC access not working
-Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4454@sfamail.SAKURAUS.LOCAL>
-References: <20150818162851.GA27380@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD42C4@sfamail.SAKURAUS.LOCAL>
- <20150818173703.GA5096@deathstar>
+Subject: Re: BBB IIO ADC access not working
+Message-ID: <20150819212906.GC29773@deathstar>
+References: <20150818173703.GA5096@deathstar>
  <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD42D8@sfamail.SAKURAUS.LOCAL>
  <20150818181324.GC5096@deathstar>
  <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4340@sfamail.SAKURAUS.LOCAL>
@@ -21,154 +21,36 @@ References: <20150818162851.GA27380@deathstar>
  <20150819175230.GA29773@deathstar>
  <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD444B@sfamail.SAKURAUS.LOCAL>
  <20150819204847.GA28779@deathstar>
-In-Reply-To: <20150819204847.GA28779@deathstar>
-Content-Type: text/plain; charset="us-ascii"
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4454@sfamail.SAKURAUS.LOCAL>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4454@sfamail.SAKURAUS.LOCAL>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Wed, Aug 19, 2015 at 02:13:10PM -0700, Greg Wilson-Lindberg wrote:
+> 
+> I'm not using /sys/bus/iio/devices/iio:device0/in_voltageX_raw in my program, 
+> I'm using the iio buffer system.
+> 
+> I tried using cat /sys/bus/iio/devices/iio:device0/in_voltageX_raw while my
+> program was running and it worked a couple of times, and got busy a bit also,
+> then the touch screen locked up.
+
+This is expected because when the buffer is enabled the device IS busy.
+> 
+> I have not tried to use /sys/bus/iio/devices/iio:device0/in_voltageX_raw from
+> in my program, I was hoping for a lighter weight access that didn't require 
+> so many opens & closes. I'm under the impression that I can only get one 
+> reading per open if I try to read /sys/bus/iio/devices/iio:device0/in_voltageX_raw.
+> Or can I get multiple readings if I do multiple reads.
+>
+
+You should be able to keep the file descriptor open and perform multiple reads.
+
+It is necessary lseek before reading from the same channel again.
+
+lseek(fd, 0, SEEK_SET);
+
+You will need a separate file descriptor for each channel.
  
-
-> -----Original Message-----
-> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf 
-> Of Michael Welling
-> Sent: Wednesday, August 19, 2015 1:49 PM
-> To: Greg Wilson-Lindberg
-> Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> Subject: Re: BBB IIO ADC access not working
-> 
-> On Wed, Aug 19, 2015 at 01:35:10PM -0700, Greg Wilson-Lindberg wrote:
-> >  
-> > 
-> > > -----Original Message-----
-> > > From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf Of 
-> > > Michael Welling
-> > > Sent: Wednesday, August 19, 2015 10:53 AM
-> > > To: Greg Wilson-Lindberg
-> > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > Subject: Re: BBB IIO ADC access not working
-> > > 
-> > > On Wed, Aug 19, 2015 at 09:27:02AM -0700, Greg 
-> Wilson-Lindberg wrote:
-> > > >  
-> > > > 
-> > > > > -----Original Message-----
-> > > > > From: Michael Welling [mailto:mwelling79@gmail.com] 
-> On Behalf Of 
-> > > > > Michael Welling
-> > > > > Sent: Tuesday, August 18, 2015 3:31 PM
-> > > > > To: Greg Wilson-Lindberg
-> > > > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > > > Subject: Re: BBB IIO ADC access not working
-> > > > > 
-> > > > > On Tue, Aug 18, 2015 at 03:11:13PM -0700, Greg
-> > > Wilson-Lindberg wrote:
-> > > > > >  
-> > > > > > 
-> > > > > > > I found that handling the IRQENB_EOS interrupt in the ADC
-> > > > > is causing
-> > > > > > > an undesired effect. After enabling the ADC 
-> buffer mode and 
-> > > > > > > disabling it the coordinate readings work but the touch
-> > > > > release is
-> > > > > > > no longer detected.
-> > > > > > 
-> > > > > > Can we put your code in the touch screen handler? The tsc
-> > > > > code is writing to the IRQSTATUS register, not the IRQCLR
-> > > register.
-> > > > > > 
-> > > > > 
-> > > > > Actually using the IRQCLR disables the IRQ instead of 
-> clearing 
-> > > > > it and that was not my intent. This is why the pen releases
-> > > where not
-> > > > > working, the tsc driver relies on the EOS interrupt 
-> to write the 
-> > > > > step register because it is using a one shot hardware mode.
-> > > > > 
-> > > > > Since the IRQENB_EOS is not used by the ADC driver it can be 
-> > > > > disabled when in buffered mode which is triggering faster
-> > > than the
-> > > > > isr can handle it.
-> > > > > 
-> > > > > See patch below.
-> > > > > 
-> > > > > Though it allows for the repeated enabling and 
-> disabling of the 
-> > > > > buffer the touchscreen gets a bunch of unexpected
-> > > releases and the
-> > > > > readings are very jittery.
-> > > > > 
-> > > > > diff --git a/drivers/iio/adc/ti_am335x_adc.c 
-> > > > > b/drivers/iio/adc/ti_am335x_adc.c index 
-> a0e7161..9945e4a 100644
-> > > > > --- a/drivers/iio/adc/ti_am335x_adc.c
-> > > > > +++ b/drivers/iio/adc/ti_am335x_adc.c
-> > > > > @@ -177,6 +177,7 @@ static int
-> > > tiadc_buffer_preenable(struct iio_dev
-> > > > > *indio_dev)
-> > > > >  				IRQENB_FIFO1OVRRUN |
-> > > > >  				IRQENB_FIFO1UNDRFLW));
-> > > > >  
-> > > > > +	tiadc_writel(adc_dev, REG_IRQCLR, IRQENB_EOS);
-> > > > >  	/* Flush FIFO. Needed in corner cases in simultaneous
-> > > tsc/adc use
-> > > > > */
-> > > > >  	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-> > > > >  	for (i = 0; i < fifo1count; i++) @@ -213,6 
-> +214,7 @@ static 
-> > > > > int tiadc_buffer_predisable(struct iio_dev *indio_dev)
-> > > > >  
-> > > > >  	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
-> > > > >  				IRQENB_FIFO1OVRRUN |
-> > > > > IRQENB_FIFO1UNDRFLW));
-> > > > > +	tiadc_writel(adc_dev, REG_IRQENABLE, IRQENB_EOS);
-> > > > >  	am335x_tsc_se_clr(adc_dev->mfd_tscadc,
-> > > > > adc_dev->buffer_en_ch_steps);
-> > > > >  	adc_dev->buffer_en_ch_steps = 0;
-> > > > >  
-> > > > > 
-> > > > 
-> > > > I'm not sure that it's better, but it is different.  The
-> > > touch screen still locks up, but mouse clicks work.
-> > > 
-> > > This is very disappointing.
-> > > 
-> > > Have you tried reading the ADCs using one shot mode recently?
-> > > 
-> > > IE cat /sys/bus/iio/devices/iio:device0/in_voltageX_raw
-> > 
-> > I tried that after the system had locked up and what I get 
-> back is the 
-> > Device or resource is busy.  I restarted the BBB and tried before 
-> > starting my application and it worked just fine. I started 
-> up the app 
-> > and the touch screen was locked up immediately, mouse 
-> clicks delayed about 1/2 second. And I get Device or resource 
-> busy from the cat.
-> >
-> 
-> Is the using while using 
-> /sys/bus/iio/devices/iio:device0/in_voltageX_raw in your program?
-
-I'm not using /sys/bus/iio/devices/iio:device0/in_voltageX_raw in my program, 
-I'm using the iio buffer system.
-
-I tried using cat /sys/bus/iio/devices/iio:device0/in_voltageX_raw while my
-program was running and it worked a couple of times, and got busy a bit also,
-then the touch screen locked up.
-
-I have not tried to use /sys/bus/iio/devices/iio:device0/in_voltageX_raw from
-in my program, I was hoping for a lighter weight access that didn't require 
-so many opens & closes. I'm under the impression that I can only get one 
-reading per open if I try to read /sys/bus/iio/devices/iio:device0/in_voltageX_raw.
-Or can I get multiple readings if I do multiple reads.
-
->  
-> > > 
-> > > > 
-> > > > > 
-> > > > > 
-> > > > > 
-> > > 
-> 
