@@ -1,89 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lists.s-osg.org ([54.187.51.154]:58901 "EHLO lists.s-osg.org"
+Received: from lists.s-osg.org ([54.187.51.154]:58922 "EHLO lists.s-osg.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751955AbbHTVvE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 20 Aug 2015 17:51:04 -0400
-Subject: Re: [PATCH 00/18] Export SPI and OF module aliases in missing drivers
-To: Brian Norris <computersforpeace@gmail.com>
+	id S1752757AbbHTWCq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 20 Aug 2015 18:02:46 -0400
+Subject: Re: [PATCH 13/18] iio: adc: mcp320x: Set struct spi_driver
+ .of_match_table
+To: Michael Welling <mwelling@ieee.org>
 References: <1440054451-1223-1-git-send-email-javier@osg.samsung.com>
- <20150820211152.GI74600@google.com>
+ <1440054451-1223-14-git-send-email-javier@osg.samsung.com>
+ <20150820200912.GA2866@deathstar>
 From: Javier Martinez Canillas <javier@osg.samsung.com>
-Cc: linux-kernel@vger.kernel.org, Andrzej Hajda <a.hajda@samsung.com>,
-	linux-fbdev@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	linux-iio@vger.kernel.org, linux-wireless@vger.kernel.org,
-	Lee Jones <lee.jones@linaro.org>,
-	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	linux-mtd@lists.infradead.org,
-	Lauro Ramos Venancio <lauro.venancio@openbossa.org>,
-	=?UTF-8?Q?S=c3=b8ren_Andersen?= <san@rosetechnology.dk>,
-	devel@driverdev.osuosl.org, Randy Dunlap <rdunlap@infradead.org>,
-	Masanari Iida <standby24x7@gmail.com>,
-	Jiri Kosina <jkosina@suse.cz>,
-	Devendra Naga <devendra.aaru@gmail.com>,
-	Tomi Valkeinen <tomi.valkeinen@ti.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Aloisio Almeida Jr <aloisio.almeida@openbossa.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Stephen Warren <swarren@nvidia.com>,
-	=?UTF-8?Q?Urs_F=c3=a4ssler?= <urs.fassler@bytesatwork.ch>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Aya Mahfouz <mahfouz.saif.elyazal@gmail.com>,
-	George McCollister <george.mccollister@gmail.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
+Cc: linux-kernel@vger.kernel.org, Andrea Galbusera <gizero@gmail.com>,
+	linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Manfred Schlaegl <manfred.schlaegl@gmx.at>,
-	linux-omap@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Antonio Borneo <borneo.antonio@gmail.com>,
-	Andrea Galbusera <gizero@gmail.com>,
-	Michael Welling <mwelling@ieee.org>,
-	Fabian Frederick <fabf@skynet.be>,
-	Mark Brown <broonie@kernel.org>, linux-mmc@vger.kernel.org,
-	linux-spi@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org,
-	linux-media@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Message-ID: <55D64BBA.7070802@osg.samsung.com>
-Date: Thu, 20 Aug 2015 23:50:50 +0200
+	=?UTF-8?Q?S=c3=b8ren_Andersen?= <san@rosetechnology.dk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Message-ID: <55D64E80.4050502@osg.samsung.com>
+Date: Fri, 21 Aug 2015 00:02:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <20150820211152.GI74600@google.com>
+In-Reply-To: <20150820200912.GA2866@deathstar>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Brian,
+Hello Michael,
 
-On 08/20/2015 11:11 PM, Brian Norris wrote:
-> On Thu, Aug 20, 2015 at 09:07:13AM +0200, Javier Martinez Canillas wrote:
->> Patches #1 and #2 solves a), patches #3 to #8 solves b) and patches
+On 08/20/2015 10:09 PM, Michael Welling wrote:
+> On Thu, Aug 20, 2015 at 09:07:26AM +0200, Javier Martinez Canillas wrote:
+>> The driver has an OF id table but the .of_match_table is not set so
+>> the SPI core can't do an OF style match and the table was unused.
+>>
 > 
-> ^^^ I'm dying to know how this sentence ends :)
+> Is an OF style match necessary?
 >
 
-Sigh, I did some last minute restructuring of the cover letter and
-seems I missed a sentence. I meant to said:
+Did you read the cover letter [0] on which I explain why is needed to
+avoid breaking module autoloading in the future? Once the SPI core is
+changed by RFC patch 18/18? (you were cc'ed in the cover letter BTW).
 
-"and patches #9 to #17 solves c)."
- 
->> Patch #18 changes the logic of spi_uevent() to report an OF modalias if
->> the device was registered using OF. But this patch is included in the
->> series only as an RFC for illustration purposes since changing that
->> without first applying all the other patches in this series, will break
->> module autoloading for the drivers of devices registered using OF but
->> that lacks an of_match_table. I'll repost patch #18 once all the patches
->> in this series have landed.
-> 
-> On a more productive note, the patches I've looked at look good to me.
-> The missing aliases are a problem enough that should be fixed (i.e.,
-> part (b)). I'll leave the SPI framework changes to others to comment on.
+> I have been using devicetree and it matches based on the .id_table.
 >
 
-Great, thanks a lot for your feedback.
- 
-> Brian
-> 
+Yes it fallbacks to the .id_table or the driver name but the correct
+thing to do for devices registered by OF, is to match using the
+compatible string.
+
+> Couldn't we just remove the mcp320x_dt_ids table instead?
+>
+
+No, that is the wrong thing to do IMHO since the compatible string
+contains both vendor and device name whle the .id_table only contains
+a device name.
+
+So it makes sense to match using the compatible string and also report
+the OF modalias information to user-space.
+
+Otherwise what's the point of the vendor in the compatible string for
+SPI devices? You can just use "bar" instead of "foo,bar" as a string.
+
+[0]: https://lkml.org/lkml/2015/8/20/109
 
 Best regards,
 -- 
