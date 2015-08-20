@@ -1,58 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f178.google.com ([209.85.223.178]:33897 "EHLO
-	mail-io0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751804AbbHTUJ0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 16:09:26 -0400
-Date: Thu, 20 Aug 2015 15:09:17 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Javier Martinez Canillas <javier@osg.samsung.com>
-Cc: linux-kernel@vger.kernel.org, Andrea Galbusera <gizero@gmail.com>,
-	linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Manfred Schlaegl <manfred.schlaegl@gmx.at>,
-	=?iso-8859-1?Q?S=F8ren?= Andersen <san@rosetechnology.dk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH 13/18] iio: adc: mcp320x: Set struct spi_driver
- .of_match_table
-Message-ID: <20150820200912.GA2866@deathstar>
-References: <1440054451-1223-1-git-send-email-javier@osg.samsung.com>
- <1440054451-1223-14-git-send-email-javier@osg.samsung.com>
+Received: from mout.gmx.net ([212.227.17.21]:51937 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752234AbbHTUto (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 20 Aug 2015 16:49:44 -0400
+Message-ID: <55D63D5E.8050000@gmx.de>
+Date: Thu, 20 Aug 2015 22:49:34 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1440054451-1223-14-git-send-email-javier@osg.samsung.com>
+To: Nicola Corna <nicola@corna.info>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio:humidity:si7020: replaced bitmask on
+ humidity values with range check
+References: <1440079909-1337-1-git-send-email-nicola@corna.info>
+In-Reply-To: <1440079909-1337-1-git-send-email-nicola@corna.info>
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Aug 20, 2015 at 09:07:26AM +0200, Javier Martinez Canillas wrote:
-> The driver has an OF id table but the .of_match_table is not set so
-> the SPI core can't do an OF style match and the table was unused.
+Nicola Corna schrieb am 20.08.2015 um 16:11:
+> The maximum possible value for the relative humidity is 55575 (100%RH).
+> This value, if shifted right by 2 bits, uses 14 bits and masking it with
+> a 12 bit mask removes 2 meaningful bits.
+> The masking has been replaced with a range check that sets the minimum
+> value at 3194 (0%RH) and the maximum at 55575 (100%RH).
+
+Hmm, I guess the mask should have been applied for bits 13:2, but your
+solution confirms better to the data sheet. Just one essential detail:
+The raw sensor data has already been divided by 4 when you do the boundary
+check. So, you need to divide the boundaries, as well.
+Btw, you can make this a one-liner using clamp_val, check it out: [1]
+
+[1]http://lxr.free-electrons.com/source/include/linux/kernel.h#L795
+
 > 
-
-Is an OF style match necessary?
-
-I have been using devicetree and it matches based on the .id_table.
-
-Couldn't we just remove the mcp320x_dt_ids table instead?
-
-> Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
+> Signed-off-by: Nicola Corna <nicola@corna.info>
 > ---
+>  drivers/iio/humidity/si7020.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
 > 
->  drivers/iio/adc/mcp320x.c | 1 +
->  1 file changed, 1 insertion(+)
+> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+> index fa3b809..62fdbcf 100644
+> --- a/drivers/iio/humidity/si7020.c
+> +++ b/drivers/iio/humidity/si7020.c
+> @@ -57,8 +57,16 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+>  		if (ret < 0)
+>  			return ret;
+>  		*val = ret >> 2;
+> -		if (chan->type == IIO_HUMIDITYRELATIVE)
+> -			*val &= GENMASK(11, 0);
+> +		/*
+> +		 * Humidity values can sligthly exceed the 0-100%RH
+> +		 * range and should be corrected by software
+> +		 */
+> +		if (chan->type == IIO_HUMIDITYRELATIVE) {
+> +			if (*val < 3194) /* 0%RH */
+> +				*val = 3194;
+> +			else if (*val > 55575) /* 100%RH */
+> +				*val = 55575;
+> +		}
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+>  		if (chan->type == IIO_TEMP)
 > 
-> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-> index b19e4f9d16e0..41a21e986c1a 100644
-> --- a/drivers/iio/adc/mcp320x.c
-> +++ b/drivers/iio/adc/mcp320x.c
-> @@ -404,6 +404,7 @@ MODULE_DEVICE_TABLE(spi, mcp320x_id);
->  static struct spi_driver mcp320x_driver = {
->  	.driver = {
->  		.name = "mcp320x",
-> +		.of_match_table = of_match_ptr(mcp320x_dt_ids),
->  		.owner = THIS_MODULE,
->  	},
->  	.probe = mcp320x_probe,
-> -- 
-> 2.4.3
-> 
+
