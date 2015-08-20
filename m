@@ -1,166 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f182.google.com ([209.85.213.182]:36330 "EHLO
-	mail-ig0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750986AbbHTTXP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 15:23:15 -0400
-Received: by igxp17 with SMTP id p17so136928500igx.1
-        for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2015 12:23:14 -0700 (PDT)
-Date: Thu, 20 Aug 2015 14:23:05 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-Cc: Daniel Baluta <daniel.baluta@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: BBB IIO ADC access not working
-Message-ID: <20150820192304.GA835@deathstar>
-References: <20150819204847.GA28779@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4454@sfamail.SAKURAUS.LOCAL>
- <20150819212906.GC29773@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD445E@sfamail.SAKURAUS.LOCAL>
- <20150819214242.GB28779@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD44D6@sfamail.SAKURAUS.LOCAL>
- <20150820161359.GA5167@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4502@sfamail.SAKURAUS.LOCAL>
- <20150820173101.GB5167@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4519@sfamail.SAKURAUS.LOCAL>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4519@sfamail.SAKURAUS.LOCAL>
+Received: from mail-wi0-f173.google.com ([209.85.212.173]:34534 "EHLO
+	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752537AbbHTThN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 15:37:13 -0400
+Received: by wicne3 with SMTP id ne3so1996566wic.1
+        for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2015 12:37:12 -0700 (PDT)
+From: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, cory.tusar@pid1solutions.com
+Subject: [PATCH v4 0/4] iio: adc: hi8435: Add Holt HI-8435 threshold detector
+Date: Thu, 20 Aug 2015 22:37:01 +0300
+Message-Id: <1440099421-4762-1-git-send-email-vladimir.barinov@cogentembedded.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Aug 20, 2015 at 11:41:03AM -0700, Greg Wilson-Lindberg wrote:
->  
-> 
-> > -----Original Message-----
-> > From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf 
-> > Of Michael Welling
-> > Sent: Thursday, August 20, 2015 10:31 AM
-> > To: Greg Wilson-Lindberg
-> > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > Subject: Re: BBB IIO ADC access not working
-> > 
-> > On Thu, Aug 20, 2015 at 10:27:30AM -0700, Greg Wilson-Lindberg wrote:
-> > > 
-> > > 
-> > > > -----Original Message-----
-> > > > From: Greg Wilson-Lindberg
-> > > > Sent: Thursday, August 20, 2015 9:19 AM
-> > > > To: 'Michael Welling'
-> > > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > > Subject: RE: BBB IIO ADC access not working
-> > > > 
-> > > >  
-> > > > 
-> > > > > -----Original Message-----
-> > > > > From: Michael Welling [mailto:mwelling79@gmail.com] On 
-> > Behalf Of 
-> > > > > Michael Welling
-> > > > > Sent: Thursday, August 20, 2015 9:14 AM
-> > > > > To: Greg Wilson-Lindberg
-> > > > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > > > Subject: Re: BBB IIO ADC access not working
-> > > > > 
-> > > > > On Thu, Aug 20, 2015 at 08:50:28AM -0700, Greg
-> > > > Wilson-Lindberg wrote:
-> > > > > >  
-> > > > > > 
-> > > > > > > -----Original Message-----
-> > > > > > > From: Michael Welling [mailto:mwelling79@gmail.com] On
-> > > > Behalf Of
-> > > > > > > Michael Welling
-> > > > > > > Sent: Wednesday, August 19, 2015 2:43 PM
-> > > > > > > To: Greg Wilson-Lindberg
-> > > > > > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > > > > > Subject: Re: BBB IIO ADC access not working
-> > > > > > > 
-> > > > > > > On Wed, Aug 19, 2015 at 02:34:39PM -0700, Greg
-> > > > > Wilson-Lindberg wrote:
-> > > > > > > > 
-> > > > > > > > So, in that case, can I just open it once and 
-> > leave it open?
-> > > > > > > 
-> > > > > > > Yes.
-> > > > > > > 
-> > > > > > > > Is it reading from a buffer, or is it reading what is
-> > > > > > > current in the ADC? 
-> > > > > > > 
-> > > > > > > It is the current reading.
-> > > > > > > 
-> > > > > > > > Can I just set up a timer to get readings to average then?
-> > > > > > > 
-> > > > > > > Sure.
-> > > > > > > 
-> > > > > > > Here are some helper functions:
-> > > > > > > 
-> > > > > > > int iio_adc_open_channel(int dev_num, int chan_num) {
-> > > > > > > 	char filename[255];
-> > > > > > > 
-> > > > > > > 	sprintf(filename,
-> > > > > > > "/sys/bus/iio/devices/iio:device%d/in_voltage%d_raw",
-> > > > > > > 			dev_num, chan_num);
-> > > > > > > 
-> > > > > > > 	return open(filename, O_RDONLY); }
-> > > > > > > 
-> > > > > > > int iio_adc_read_channel(int fd) {
-> > > > > > > 	int count;
-> > > > > > > 	char buffer[255];
-> > > > > > > 	int value = -1;
-> > > > > > > 
-> > > > > > > 	lseek(fd,0,SEEK_SET);
-> > > > > > > 
-> > > > > > > 	count = read(fd, buffer, 255);
-> > > > > > > 
-> > > > > > > 	if (count > 0)
-> > > > > > > 		value = strtoul(buffer, NULL, 10);
-> > > > > > > 
-> > > > > > > 	return value;
-> > > > > > > }
-> > > > > > > 
-> > > > > > > Example usage:
-> > > > > > > 
-> > > > > > > int fd;
-> > > > > > > .
-> > > > > > > .
-> > > > > > > 
-> > > > > > > fd = iio_adc_open_channel(0, 4); .
-> > > > > > > .
-> > > > > > > 
-> > > > > > > while (1)
-> > > > > > > {
-> > > > > > > 	printf("ADC = %x\n", iio_adc_read_channel(fd)); }
-> > > > > > > 
-> > > > > > > 
-> > > > > > 
-> > > > > > I converted to using this interface and left the 
-> > system running 
-> > > > > > overnight and the touch screen was locked up this morning.
-> > > > > 
-> > > > > This is without any modifications to the kernel?
-> > > > > 
-> > > > 
-> > > > This was still running the kernel modifications.  I've 
-> > restarted it 
-> > > > this morning without the kernel modifications.
-> > > 
-> > > I just dumped what I'm reading from the sys fs and all I'm 
-> > getting back is -1.
-> > 
-> > Are you doing error checking on the file descriptor on open?
-> > > 
-> > 
-> 
-> You were right, I had gone back to the original kernel that RCN shipped with 
-> the image and it doesn't export /sys/bus/iio.
-> 
-> I rebuilt the 3.14.49-ti-r62 kernel, which is the same release as the kernel in the image, but it does export /sys/bus/iio, so that much is working better.
-> 
-> But (there's always a but, isn't there), I'm reading three channels from the ADC, 4, 5, & 6. Channel 4 gets a good reading maybe 60% of the time I read it. Channel 5 
-> gets a good reading maybe every 40-50 tries. Channel 6 hardly ever gets a good
-> reading.
-> 
-> I guess I could just loop if I get a busy response, although I don't know how many 
-> times I will get that return before I get a good reading.
->
+Hello,
 
-What is the indicator that the reading is bad?
- 
+This adds the folowing:
+- Support triggered events
+- Add Holt vendor prefix
+- Holt threshold detector driver for HI-8435 chip
+- Document HI-8435 DT bindings
+
+PDF file can be found here:
+http://www.holtic.com/products/3081-hi-8435.aspx
+
+Vladimir Barinov (4):
+[1/4] iio: Support triggered events
+[2/4] dt: Add vendor prefix 'holt'
+[3/4] iio: adc: hi8435: Holt HI-8435 threshold detector
+[4/4] dt: Document Holt HI-8435 bindings
+
+---
+This patchset is against the 'kernel/git/jic23/iio.git' repo, 'togreg' branch.
+
+ Documentation/ABI/testing/sysfs-bus-iio               |    1 
+ Documentation/ABI/testing/sysfs-bus-iio-adc-hi8435    |   39 +
+ Documentation/devicetree/bindings/iio/adc/hi8435.txt  |   21 
+ Documentation/devicetree/bindings/vendor-prefixes.txt |    1 
+ drivers/iio/Kconfig                                   |    6 
+ drivers/iio/Makefile                                  |    1 
+ drivers/iio/adc/Kconfig                               |   11 
+ drivers/iio/adc/Makefile                              |    1 
+ drivers/iio/adc/hi8435.c                              |  535 ++++++++++++++++++
+ drivers/iio/industrialio-core.c                       |    4 
+ drivers/iio/industrialio-trigger.c                    |   12 
+ drivers/iio/industrialio-triggered-event.c            |   68 ++
+ include/linux/iio/iio.h                               |    3 
+ include/linux/iio/triggered_event.h                   |   11 
+ 14 files changed, 710 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-hi8435
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/hi8435.txt
+ create mode 100644 drivers/iio/adc/hi8435.c
+ create mode 100644 drivers/iio/industrialio-triggered-event.c
+ create mode 100644 include/linux/iio/triggered_event.h
