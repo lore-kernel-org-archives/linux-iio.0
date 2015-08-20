@@ -1,65 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn1on0136.outbound.protection.outlook.com ([157.56.110.136]:65445
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751087AbbHTGuz convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 02:50:55 -0400
-From: Duan Andy <fugang.duan@freescale.com>
-To: Sanchayan Maity <maitysanchayan@gmail.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "stefan@agner.ch" <stefan@agner.ch>,
-	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH v4] iio: adc: vf610: Add IIO buffer support for Vybrid ADC
-Date: Thu, 20 Aug 2015 06:50:53 +0000
-Message-ID: <BN3PR0301MB121977040608F337E69ADADEF5660@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <d556443a26070be505f9a5f5f0999253b73d9b71.1439283162.git.maitysanchayan@gmail.com>
- <9be567ec7d6f6370dd42a41438d64cf7aaa47635.1439826018.git.maitysanchayan@gmail.com>
-In-Reply-To: <9be567ec7d6f6370dd42a41438d64cf7aaa47635.1439826018.git.maitysanchayan@gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Received: from lists.s-osg.org ([54.187.51.154]:58789 "EHLO lists.s-osg.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752865AbbHTHIj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 20 Aug 2015 03:08:39 -0400
+From: Javier Martinez Canillas <javier@osg.samsung.com>
+To: linux-kernel@vger.kernel.org
+Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Subject: [PATCH 16/18] iio: frequency: adf4350: Add OF match table
+Date: Thu, 20 Aug 2015 09:07:29 +0200
+Message-Id: <1440054451-1223-17-git-send-email-javier@osg.samsung.com>
+In-Reply-To: <1440054451-1223-1-git-send-email-javier@osg.samsung.com>
+References: <1440054451-1223-1-git-send-email-javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Sanchayan Maity <maitysanchayan@gmail.com> Sent: Monday, August 17, 2015 11:52 PM
-> To: jic23@kernel.org; linux-iio@vger.kernel.org
-> Cc: stefan@agner.ch; Duan Fugang-B38611; pmeerw@pmeerw.net; linux-
-> kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org; Sanchayan
-> Maity
-> Subject: [PATCH v4] iio: adc: vf610: Add IIO buffer support for Vybrid
-> ADC
-> 
-> This patch adds support for IIO buffer to the Vybrid ADC driver.
-> IIO triggered buffer infrastructure along with iio sysfs trigger is used
-> to leverage continuous sampling support provided by the ADC block.
-> 
-> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
-> ---
-> 
-> Changes since v3:
-> Fix iio_buffer_setup_ops for postenable and predisable functions to match
-> pairwise. Before this the predisable work was being done in postdisable.
-> 
-> Changes since v2:
-> 1. Fix the wrong buffer size for statically allocated buffer 2. Drop the
-> use of .address field from the iio_chan_spec 3. Use iio_buffer_enabled
-> call inside the lock 4. Drop wrapper function around iio_trigered_*
-> function calls 5. Drop Kconfig select of sysfs trigger 6. Drop Kconfig
-> select IIO_TRIGGER as it is already selected by IIO_TRIGGERED_BUFFER
-> 
-> Changes since v1:
-> 1. Use a fixed size buffer instead of kmalloc allocated during update
-> scan mode 2. Remove a write to read only register ADC_HS (COCO bit)
-> 
->  drivers/iio/adc/Kconfig     |   2 +
->  drivers/iio/adc/vf610_adc.c | 105
-> +++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 100 insertions(+), 7 deletions(-)
-> 
+The Documentation/devicetree/bindings/iio/frequency/adf4350.txt DT binding
+doc lists "adi,adf4350" or "adi,adf4351" as compatible strings but the
+corresponding driver does not have an OF match table. Add the table to the
+driver so the SPI core can do an OF style match.
 
-The version is fine for me. Thanks for your effort.
+Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
+---
 
-Acked-by: Fugang Duan <B38611@freescale.com>
+ drivers/iio/frequency/adf4350.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index 8bd873fc3787..73f27e0a08dd 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -616,6 +616,13 @@ static int adf4350_remove(struct spi_device *spi)
+ 	return 0;
+ }
+ 
++static const struct of_device_id adf4350_of_match[] = {
++	{ .compatible = "adi,adf4350", },
++	{ .compatible = "adi,adf4351", },
++	{ /* sentinel */ },
++};
++MODULE_DEVICE_TABLE(of, adf4350_of_match);
++
+ static const struct spi_device_id adf4350_id[] = {
+ 	{"adf4350", 4350},
+ 	{"adf4351", 4351},
+@@ -626,6 +633,7 @@ MODULE_DEVICE_TABLE(spi, adf4350_id);
+ static struct spi_driver adf4350_driver = {
+ 	.driver = {
+ 		.name	= "adf4350",
++		.of_match_table = of_match_ptr(adf4350_of_match),
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= adf4350_probe,
+-- 
+2.4.3
+
