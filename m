@@ -1,21 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lists.s-osg.org ([54.187.51.154]:58706 "EHLO lists.s-osg.org"
+Received: from lists.s-osg.org ([54.187.51.154]:58698 "EHLO lists.s-osg.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752491AbbHTHIB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 20 Aug 2015 03:08:01 -0400
+	id S1752399AbbHTHH6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 20 Aug 2015 03:07:58 -0400
 From: Javier Martinez Canillas <javier@osg.samsung.com>
 To: linux-kernel@vger.kernel.org
 Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
-	devel@driverdev.osuosl.org, linux-iio@vger.kernel.org,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>
-Subject: [PATCH 02/18] staging: iio: hmc5843: Export missing SPI module alias information
-Date: Thu, 20 Aug 2015 09:07:15 +0200
-Message-Id: <1440054451-1223-3-git-send-email-javier@osg.samsung.com>
+Subject: [PATCH 01/18] iio: Export SPI module alias information in missing drivers
+Date: Thu, 20 Aug 2015 09:07:14 +0200
+Message-Id: <1440054451-1223-2-git-send-email-javier@osg.samsung.com>
 In-Reply-To: <1440054451-1223-1-git-send-email-javier@osg.samsung.com>
 References: <1440054451-1223-1-git-send-email-javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -33,21 +31,34 @@ the needed driver module when the device is added.
 Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
 ---
 
- drivers/staging/iio/magnetometer/hmc5843_spi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/amplifiers/ad8366.c | 1 +
+ drivers/iio/frequency/adf4350.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-index 8e658f736e1f..4dfb372d2fec 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_spi.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-@@ -81,6 +81,7 @@ static const struct spi_device_id hmc5843_id[] = {
- 	{ "hmc5983", HMC5983_ID },
- 	{ }
+diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
+index c0d364ebaea8..32b82a2dc894 100644
+--- a/drivers/iio/amplifiers/ad8366.c
++++ b/drivers/iio/amplifiers/ad8366.c
+@@ -195,6 +195,7 @@ static const struct spi_device_id ad8366_id[] = {
+ 	{"ad8366", 0},
+ 	{}
  };
-+MODULE_DEVICE_TABLE(spi, hmc5843_id);
++MODULE_DEVICE_TABLE(spi, ad8366_id);
  
- static struct spi_driver hmc5843_driver = {
- 		.driver = {
+ static struct spi_driver ad8366_driver = {
+ 	.driver = {
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index 9890c81c027d..8bd873fc3787 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -621,6 +621,7 @@ static const struct spi_device_id adf4350_id[] = {
+ 	{"adf4351", 4351},
+ 	{}
+ };
++MODULE_DEVICE_TABLE(spi, adf4350_id);
+ 
+ static struct spi_driver adf4350_driver = {
+ 	.driver = {
 -- 
 2.4.3
 
