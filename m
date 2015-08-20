@@ -1,158 +1,198 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:51488 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751249AbbHTMuP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 08:50:15 -0400
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel@pengutronix.de, Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v2 4/4] iio: bmc150: Add SPI driver
-Date: Thu, 20 Aug 2015 14:49:46 +0200
-Message-Id: <1440074986-28716-5-git-send-email-mpa@pengutronix.de>
-In-Reply-To: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
-References: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
+Received: from mga11.intel.com ([192.55.52.93]:50506 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752937AbbHTOhy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 20 Aug 2015 10:37:54 -0400
+From: Teodora Baluta <teodora.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	daniel.baluta@intel.com, teodora.baluta@intel.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 2/3] iio: mxc4005: add triggered buffer mode for mxc4005
+Date: Thu, 20 Aug 2015 17:37:32 +0300
+Message-Id: <1440081453-12600-3-git-send-email-teodora.baluta@intel.com>
+In-Reply-To: <1440081453-12600-1-git-send-email-teodora.baluta@intel.com>
+References: <1440081453-12600-1-git-send-email-teodora.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add a simple SPI driver which initializes the spi regmap for the bmc150
-core driver.
+This patch adds support for buffered readings for the 3-axis
+accelerometer mxc4005.
 
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
 ---
- drivers/iio/accel/Kconfig            |  5 +++
- drivers/iio/accel/Makefile           |  1 +
- drivers/iio/accel/bmc150-accel-spi.c | 83 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 89 insertions(+)
- create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
+ drivers/iio/accel/Kconfig   |  2 ++
+ drivers/iio/accel/mxc4005.c | 79 +++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 78 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 6da4eb0db57b..56d24fa3d34a 100644
+index 69302be..cd5cd24 100644
 --- a/drivers/iio/accel/Kconfig
 +++ b/drivers/iio/accel/Kconfig
-@@ -23,6 +23,7 @@ config BMC150_ACCEL
- 	select IIO_TRIGGERED_BUFFER
- 	select REGMAP
- 	select BMC150_ACCEL_I2C if I2C
-+	select BMC150_ACCEL_SPI if SPI
- 	help
- 	  Say yes here to build support for the following Bosch accelerometers:
- 	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
-@@ -35,6 +36,10 @@ config BMC150_ACCEL_I2C
- 	tristate
+@@ -140,6 +140,8 @@ config MMA9553
+ config MXC4005
+ 	tristate "Memsic MXC4005XC 3-Axis Accelerometer Driver"
+ 	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
  	select REGMAP_I2C
+ 	help
+ 	  Say yes here to build support for the Memsic MXC4005XC 3-axis
+diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
+index e15c1bd..95b91b5 100644
+--- a/drivers/iio/accel/mxc4005.c
++++ b/drivers/iio/accel/mxc4005.c
+@@ -19,6 +19,9 @@
+ #include <linux/acpi.h>
+ #include <linux/regmap.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
  
-+config BMC150_ACCEL_SPI
-+	tristate
-+	select REGMAP_SPI
-+
- config HID_SENSOR_ACCEL_3D
- 	depends on HID_SENSOR_HUB
- 	select IIO_BUFFER
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-index 5ef8bdbad092..e579e93bf022 100644
---- a/drivers/iio/accel/Makefile
-+++ b/drivers/iio/accel/Makefile
-@@ -6,6 +6,7 @@
- obj-$(CONFIG_BMA180) += bma180.o
- obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
- obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
-+obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
- obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
- obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
- obj-$(CONFIG_KXSD9)	+= kxsd9.o
-diff --git a/drivers/iio/accel/bmc150-accel-spi.c b/drivers/iio/accel/bmc150-accel-spi.c
-new file mode 100644
-index 000000000000..1c2a4f683da4
---- /dev/null
-+++ b/drivers/iio/accel/bmc150-accel-spi.c
-@@ -0,0 +1,83 @@
-+/*
-+ * 3-axis accelerometer driver supporting following I2C Bosch-Sensortec chips:
-+ *  - BMC150
-+ *  - BMI055
-+ *  - BMA255
-+ *  - BMA250E
-+ *  - BMA222E
-+ *  - BMA280
-+ *
-+ * Copyright (c) 2014, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/acpi.h>
-+#include <linux/regmap.h>
-+#include <linux/spi/spi.h>
-+
-+#include "bmc150-accel.h"
-+
-+static const struct regmap_config bmc150_spi_regmap_conf = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = 0x3f,
-+};
-+
-+static int bmc150_accel_probe(struct spi_device *spi)
+ #define MXC4005_DRV_NAME		"mxc4005"
+ #define MXC4005_REGMAP_NAME		"mxc4005_regmap"
+@@ -52,6 +55,7 @@ struct mxc4005_data {
+ 	struct device *dev;
+ 	struct mutex mutex;
+ 	struct regmap *regmap;
++	__be16 buffer[8];
+ };
+ 
+ /*
+@@ -122,6 +126,20 @@ static const struct regmap_config mxc4005_regmap_config = {
+ 	.writeable_reg = mxc4005_is_writeable_reg,
+ };
+ 
++static int mxc4005_read_xyz(struct mxc4005_data *data)
 +{
-+	struct regmap *regmap;
-+	const struct spi_device_id *id = spi_get_device_id(spi);
++	int ret;
 +
-+	regmap = devm_regmap_init_spi(spi, &bmc150_spi_regmap_conf);
-+	if (IS_ERR(regmap)) {
-+		dev_err(&spi->dev, "Failed to initialize spi regmap\n");
-+		return PTR_ERR(regmap);
++	ret = regmap_bulk_read(data->regmap, MXC4005_REG_XOUT_UPPER,
++			       (u8 *) data->buffer, sizeof(data->buffer));
++	if (ret < 0) {
++		dev_err(data->dev, "failed to read axes\n");
++		return ret;
 +	}
 +
-+	return bmc150_accel_core_probe(&spi->dev, regmap, spi->irq,
-+				       id->name, id->driver_data, true);
++	return 0;
 +}
 +
-+static int bmc150_accel_remove(struct spi_device *spi)
+ static int mxc4005_read_axis(struct mxc4005_data *data,
+ 			     unsigned int addr)
+ {
+@@ -197,7 +215,8 @@ static int mxc4005_read_raw(struct iio_dev *indio_dev,
+ 			ret = mxc4005_read_axis(data, chan->address);
+ 			if (ret < 0)
+ 				return ret;
+-			*val = sign_extend32(ret >> 4, 11);
++			*val = sign_extend32(ret >> chan->scan_type.shift,
++					     chan->scan_type.realbits - 1);
+ 			return IIO_VAL_INT;
+ 		default:
+ 			return -EINVAL;
+@@ -239,6 +258,11 @@ static const struct iio_info mxc4005_info = {
+ 	.attrs		= &mxc4005_attrs_group,
+ };
+ 
++static const unsigned long mxc4005_scan_masks[] = {
++	BIT(AXIS_X) | BIT(AXIS_Y) | BIT(AXIS_Z),
++	0
++};
++
+ #define MXC4005_CHANNEL(_axis, _addr) {				\
+ 	.type = IIO_ACCEL,					\
+ 	.modified = 1,						\
+@@ -246,14 +270,43 @@ static const struct iio_info mxc4005_info = {
+ 	.address = _addr,					\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.scan_index = AXIS_##_axis,				\
++	.scan_type = {						\
++		.sign = 's',					\
++		.realbits = 12,					\
++		.storagebits = 16,				\
++		.shift = 4,					\
++		.endianness = IIO_BE,				\
++	},							\
+ }
+ 
+ static const struct iio_chan_spec mxc4005_channels[] = {
+ 	MXC4005_CHANNEL(X, MXC4005_REG_XOUT_UPPER),
+ 	MXC4005_CHANNEL(Y, MXC4005_REG_YOUT_UPPER),
+ 	MXC4005_CHANNEL(Z, MXC4005_REG_ZOUT_UPPER),
++	IIO_CHAN_SOFT_TIMESTAMP(3),
+ };
+ 
++static irqreturn_t mxc4005_trigger_handler(int irq, void *private)
 +{
-+	return bmc150_accel_core_remove(&spi->dev);
++	struct iio_poll_func *pf = private;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct mxc4005_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = mxc4005_read_xyz(data);
++	if (ret < 0)
++		goto err;
++
++	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
++					   iio_get_time_ns());
++
++err:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
 +}
 +
-+static const struct spi_device_id bmc150_accel_id[] = {
-+	{"bmc150_accel",	bmc150},
-+	{"bmi055_accel",	bmi055},
-+	{"bma255",		bma255},
-+	{"bma250e",		bma250e},
-+	{"bma222e",		bma222e},
-+	{"bma280",		bma280},
-+	{}
-+};
+ static int mxc4005_chip_init(struct mxc4005_data *data)
+ {
+ 	int ret;
+@@ -304,23 +357,43 @@ static int mxc4005_probe(struct i2c_client *client,
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->channels = mxc4005_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(mxc4005_channels);
++	indio_dev->available_scan_masks = mxc4005_scan_masks;
+ 	indio_dev->name = MXC4005_DRV_NAME;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &mxc4005_info;
+ 
++	ret = iio_triggered_buffer_setup(indio_dev,
++					 &iio_pollfunc_store_time,
++					 mxc4005_trigger_handler,
++					 NULL);
++	if (ret < 0) {
++		dev_err(&client->dev,
++			"failed to setup iio triggered buffer\n");
++		return ret;
++	}
 +
-+MODULE_DEVICE_TABLE(spi, bmc150_accel_id);
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev,
+ 			"unable to register iio device %d\n", ret);
+-		return ret;
++		goto err_buffer_cleanup;
+ 	}
+ 
+ 	return 0;
 +
-+static struct spi_driver bmc150_accel_driver = {
-+	.driver = {
-+		.name	= "bmc150_accel_spi",
-+		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
-+		.pm	= &bmc150_accel_pm_ops,
-+	},
-+	.probe		= bmc150_accel_probe,
-+	.remove		= bmc150_accel_remove,
-+	.id_table	= bmc150_accel_id,
-+};
-+module_spi_driver(bmc150_accel_driver);
++err_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
 +
-+MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("BMC150 SPI accelerometer driver");
++	return ret;
+ }
+ 
+ static int mxc4005_remove(struct i2c_client *client)
+ {
+-	iio_device_unregister(i2c_get_clientdata(client));
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++
++	iio_triggered_buffer_cleanup(indio_dev);
+ 
+ 	return 0;
+ }
 -- 
-2.4.6
+1.9.1
 
