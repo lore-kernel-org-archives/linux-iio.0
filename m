@@ -1,35 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:16102 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751203AbbHTKMT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 20 Aug 2015 06:12:19 -0400
-From: Adriana Reus <adriana.reus@intel.com>
-To: jic23@kernel.org, pmeerw@pmeerw.net, daniel.baluta@intel.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, Adriana Reus <adriana.reus@intel.com>
-Subject: [PATCH v6 0/2] Add support and documentation for UPISEMI us5182d als and proximity sensor
-Date: Thu, 20 Aug 2015 13:12:12 +0300
-Message-Id: <1440065534-8601-1-git-send-email-adriana.reus@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <nicola@corna.info>
+From: Nicola Corna <nicola@corna.info>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org,
+	Nicola Corna <nicola@corna.info>
+Subject: [PATCH 1/3] iio:humidity:si7020: replaced bitmask on humidity values with range check
+Date: Thu, 20 Aug 2015 16:11:47 +0200
+Message-Id: <1440079909-1337-1-git-send-email-nicola@corna.info>
+List-ID: <linux-iio@vger.kernel.org>
 
-This series adds basic support for this als and proximity sensor
-and devicetree docs.
+The maximum possible value for the relative humidity is 55575 (100%RH).
+This value, if shifted right by 2 bits, uses 14 bits and masking it with
+a 12 bit mask removes 2 meaningful bits.
+The masking has been replaced with a range check that sets the minimum
+value at 3194 (0%RH) and the maximum at 55575 (100%RH).
 
-Adriana Reus (2):
-  iio: light: Add support for UPISEMI uS5182d als and proximity sensor
-  devicetree: Add documentation for UPISEMI us5182d ALS and Proximity
-    sensor
+Signed-off-by: Nicola Corna <nicola@corna.info>
+---
+ drivers/iio/humidity/si7020.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
- .../devicetree/bindings/iio/light/us5182d.txt      |  23 +
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/light/Kconfig                          |  10 +
- drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/us5182d.c                        | 507 +++++++++++++++++++++
- 5 files changed, 542 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/us5182d.txt
- create mode 100644 drivers/iio/light/us5182d.c
-
+diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+index fa3b809..62fdbcf 100644
+--- a/drivers/iio/humidity/si7020.c
++++ b/drivers/iio/humidity/si7020.c
+@@ -57,8 +57,16 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			return ret;
+ 		*val = ret >> 2;
+-		if (chan->type == IIO_HUMIDITYRELATIVE)
+-			*val &= GENMASK(11, 0);
++		/*
++		 * Humidity values can sligthly exceed the 0-100%RH
++		 * range and should be corrected by software
++		 */
++		if (chan->type == IIO_HUMIDITYRELATIVE) {
++			if (*val < 3194) /* 0%RH */
++				*val = 3194;
++			else if (*val > 55575) /* 100%RH */
++				*val = 55575;
++		}
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (chan->type == IIO_TEMP)
 -- 
-1.9.1
-
+2.5.0
