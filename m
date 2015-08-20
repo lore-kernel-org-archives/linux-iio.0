@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:39456 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:44433 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752528AbbHTMuX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 08:50:23 -0400
+	with ESMTP id S1751428AbbHTMuP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 08:50:15 -0400
 From: Markus Pargmann <mpa@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
@@ -10,387 +10,511 @@ Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	kernel@pengutronix.de, Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v2 3/4] iio: bmc150: Split the driver into core and i2c
-Date: Thu, 20 Aug 2015 14:49:45 +0200
-Message-Id: <1440074986-28716-4-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH v2 1/4] iio: bmc150: Use i2c regmap
+Date: Thu, 20 Aug 2015 14:49:43 +0200
+Message-Id: <1440074986-28716-2-git-send-email-mpa@pengutronix.de>
 In-Reply-To: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
 References: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This replaces all usage of direct i2c accesses with regmap accesses.
+
 Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 ---
- drivers/iio/accel/Kconfig                          |  9 +-
- drivers/iio/accel/Makefile                         |  3 +-
- .../accel/{bmc150-accel.c => bmc150-accel-core.c}  | 95 ++++-----------------
- drivers/iio/accel/bmc150-accel-i2c.c               | 99 ++++++++++++++++++++++
- drivers/iio/accel/bmc150-accel.h                   | 21 +++++
- 5 files changed, 144 insertions(+), 83 deletions(-)
- rename drivers/iio/accel/{bmc150-accel.c => bmc150-accel-core.c} (95%)
- create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
- create mode 100644 drivers/iio/accel/bmc150-accel.h
+ drivers/iio/accel/Kconfig        |   2 +
+ drivers/iio/accel/bmc150-accel.c | 219 +++++++++++++++++----------------------
+ 2 files changed, 95 insertions(+), 126 deletions(-)
 
 diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 01dd03d194d1..6da4eb0db57b 100644
+index 00e7bcbdbe24..01dd03d194d1 100644
 --- a/drivers/iio/accel/Kconfig
 +++ b/drivers/iio/accel/Kconfig
-@@ -19,21 +19,22 @@ config BMA180
- 
- config BMC150_ACCEL
- 	tristate "Bosch BMC150 Accelerometer Driver"
--	depends on I2C
+@@ -22,6 +22,8 @@ config BMC150_ACCEL
+ 	depends on I2C
  	select IIO_BUFFER
  	select IIO_TRIGGERED_BUFFER
- 	select REGMAP
--	select REGMAP_I2C
-+	select BMC150_ACCEL_I2C if I2C
++	select REGMAP
++	select REGMAP_I2C
  	help
  	  Say yes here to build support for the following Bosch accelerometers:
  	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
- 
--	  Currently this only supports the device via an i2c interface.
--
- 	  This is a combo module with both accelerometer and magnetometer.
- 	  This driver is only implementing accelerometer part, which has
- 	  its own address and register map.
- 
-+config BMC150_ACCEL_I2C
-+	tristate
-+	select REGMAP_I2C
-+
- config HID_SENSOR_ACCEL_3D
- 	depends on HID_SENSOR_HUB
- 	select IIO_BUFFER
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-index ebd2675b2a02..5ef8bdbad092 100644
---- a/drivers/iio/accel/Makefile
-+++ b/drivers/iio/accel/Makefile
-@@ -4,7 +4,8 @@
- 
- # When adding new entries keep the list in alphabetical order
- obj-$(CONFIG_BMA180) += bma180.o
--obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel.o
-+obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
-+obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
- obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
- obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
- obj-$(CONFIG_KXSD9)	+= kxsd9.o
-diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel-core.c
-similarity index 95%
-rename from drivers/iio/accel/bmc150-accel.c
-rename to drivers/iio/accel/bmc150-accel-core.c
-index e4a0691d9b88..614cf61f0110 100644
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 55751d9e1ade..c5c773e75173 100644
 --- a/drivers/iio/accel/bmc150-accel.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -37,6 +37,8 @@
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -35,6 +35,7 @@
+ #include <linux/iio/trigger.h>
+ #include <linux/iio/trigger_consumer.h>
  #include <linux/iio/triggered_buffer.h>
- #include <linux/regmap.h>
++#include <linux/regmap.h>
  
-+#include "bmc150-accel.h"
-+
  #define BMC150_ACCEL_DRV_NAME			"bmc150_accel"
  #define BMC150_ACCEL_IRQ_NAME			"bmc150_accel_event"
- #define BMC150_ACCEL_GPIO_NAME			"bmc150_accel_int"
-@@ -187,7 +189,6 @@ enum bmc150_accel_trigger_id {
+@@ -185,6 +186,8 @@ enum bmc150_accel_trigger_id {
+ 
  struct bmc150_accel_data {
- 	struct regmap *regmap;
- 	struct device *dev;
--	int irq;
+ 	struct i2c_client *client;
++	struct regmap *regmap;
++	struct device *dev;
  	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
  	atomic_t active_intr;
  	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
-@@ -201,6 +202,7 @@ struct bmc150_accel_data {
- 	int ev_enable_state;
- 	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
- 	const struct bmc150_accel_chip_info *chip_info;
-+	int irq;
- };
+@@ -241,6 +244,11 @@ static const struct {
+ 				       {500000, BMC150_ACCEL_SLEEP_500_MS},
+ 				       {1000000, BMC150_ACCEL_SLEEP_1_SEC} };
  
- static const struct {
-@@ -1070,15 +1072,6 @@ static const struct iio_chan_spec bmc150_accel_channels[] =
- static const struct iio_chan_spec bma280_accel_channels[] =
- 	BMC150_ACCEL_CHANNELS(14);
- 
--enum {
--	bmc150,
--	bmi055,
--	bma255,
--	bma250e,
--	bma222e,
--	bma280,
--};
--
- static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
- 	[bmc150] = {
- 		.chip_id = 0xFA,
-@@ -1567,36 +1560,22 @@ static const struct iio_buffer_setup_ops bmc150_accel_buffer_ops = {
- 	.postdisable = bmc150_accel_buffer_postdisable,
- };
- 
--static int bmc150_accel_probe(struct i2c_client *client,
--			      const struct i2c_device_id *id)
-+int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
-+			    const char *name, int chip_id, bool block_supported)
- {
- 	struct bmc150_accel_data *data;
- 	struct iio_dev *indio_dev;
- 	int ret;
--	const char *name = NULL;
--	int chip_id = 0;
--	struct device *dev;
- 
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
- 	data = iio_priv(indio_dev);
--	i2c_set_clientdata(client, indio_dev);
--	data->dev = &client->dev;
--	dev = &client->dev;
--	data->irq = client->irq;
--
--	data->regmap = devm_regmap_init_i2c(client, &bmc150_i2c_regmap_conf);
--	if (IS_ERR(data->regmap)) {
--		dev_err(dev, "Failed to initialize i2c regmap\n");
--		return PTR_ERR(data->regmap);
--	}
--
--	if (id) {
--		name = id->name;
--		chip_id = id->driver_data;
--	}
-+	dev_set_drvdata(dev, indio_dev);
-+	data->dev = dev;
-+	data->irq = irq;
-+	data->regmap = regmap;
- 
- 	if (ACPI_HANDLE(dev))
- 		name = bmc150_accel_match_acpi_device(dev, &chip_id);
-@@ -1658,9 +1637,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 		if (ret)
- 			goto err_buffer_cleanup;
- 
--		if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
--		    i2c_check_functionality(client->adapter,
--					    I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
-+		if (block_supported) {
- 			indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
- 			indio_dev->info = &bmc150_accel_info_fifo;
- 			indio_dev->buffer->attrs = bmc150_accel_fifo_attributes;
-@@ -1669,7 +1646,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0) {
--		dev_err(data->dev, "Unable to register iio device\n");
-+		dev_err(dev, "Unable to register iio device\n");
- 		goto err_trigger_unregister;
- 	}
- 
-@@ -1692,10 +1669,11 @@ err_buffer_cleanup:
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(bmc150_accel_core_probe);
- 
--static int bmc150_accel_remove(struct i2c_client *client)
-+int bmc150_accel_core_remove(struct device *dev)
- {
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
- 
- 	pm_runtime_disable(data->dev);
-@@ -1714,6 +1692,7 @@ static int bmc150_accel_remove(struct i2c_client *client)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(bmc150_accel_core_remove);
- 
- #ifdef CONFIG_PM_SLEEP
- static int bmc150_accel_suspend(struct device *dev)
-@@ -1784,48 +1763,8 @@ static int bmc150_accel_runtime_resume(struct device *dev)
- }
- #endif
- 
--static const struct dev_pm_ops bmc150_accel_pm_ops = {
-+const struct dev_pm_ops bmc150_accel_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(bmc150_accel_suspend, bmc150_accel_resume)
- 	SET_RUNTIME_PM_OPS(bmc150_accel_runtime_suspend,
- 			   bmc150_accel_runtime_resume, NULL)
- };
--
--static const struct acpi_device_id bmc150_accel_acpi_match[] = {
--	{"BSBA0150",	bmc150},
--	{"BMC150A",	bmc150},
--	{"BMI055A",	bmi055},
--	{"BMA0255",	bma255},
--	{"BMA250E",	bma250e},
--	{"BMA222E",	bma222e},
--	{"BMA0280",	bma280},
--	{ },
--};
--MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
--
--static const struct i2c_device_id bmc150_accel_id[] = {
--	{"bmc150_accel",	bmc150},
--	{"bmi055_accel",	bmi055},
--	{"bma255",		bma255},
--	{"bma250e",		bma250e},
--	{"bma222e",		bma222e},
--	{"bma280",		bma280},
--	{}
--};
--
--MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
--
--static struct i2c_driver bmc150_accel_driver = {
--	.driver = {
--		.name	= BMC150_ACCEL_DRV_NAME,
--		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
--		.pm	= &bmc150_accel_pm_ops,
--	},
--	.probe		= bmc150_accel_probe,
--	.remove		= bmc150_accel_remove,
--	.id_table	= bmc150_accel_id,
--};
--module_i2c_driver(bmc150_accel_driver);
--
--MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
--MODULE_LICENSE("GPL v2");
--MODULE_DESCRIPTION("BMC150 accelerometer driver");
-diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
-new file mode 100644
-index 000000000000..e4dd596ba8f2
---- /dev/null
-+++ b/drivers/iio/accel/bmc150-accel-i2c.c
-@@ -0,0 +1,99 @@
-+/*
-+ * 3-axis accelerometer driver supporting following I2C Bosch-Sensortec chips:
-+ *  - BMC150
-+ *  - BMI055
-+ *  - BMA255
-+ *  - BMA250E
-+ *  - BMA222E
-+ *  - BMA280
-+ *
-+ * Copyright (c) 2014, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/acpi.h>
-+#include <linux/regmap.h>
-+
-+#include "bmc150-accel.h"
-+
 +static const struct regmap_config bmc150_i2c_regmap_conf = {
 +	.reg_bits = 8,
 +	.val_bits = 8,
++	.max_register = 0x3f,
 +};
+ 
+ static int bmc150_accel_set_mode(struct bmc150_accel_data *data,
+ 				 enum bmc150_power_modes mode,
+@@ -270,8 +278,7 @@ static int bmc150_accel_set_mode(struct bmc150_accel_data *data,
+ 
+ 	dev_dbg(&data->client->dev, "Set Mode bits %x\n", lpw_bits);
+ 
+-	ret = i2c_smbus_write_byte_data(data->client,
+-					BMC150_ACCEL_REG_PMU_LPW, lpw_bits);
++	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_PMU_LPW, lpw_bits);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_pmu_lpw\n");
+ 		return ret;
+@@ -289,8 +296,7 @@ static int bmc150_accel_set_bw(struct bmc150_accel_data *data, int val,
+ 	for (i = 0; i < ARRAY_SIZE(bmc150_accel_samp_freq_table); ++i) {
+ 		if (bmc150_accel_samp_freq_table[i].val == val &&
+ 				bmc150_accel_samp_freq_table[i].val2 == val2) {
+-			ret = i2c_smbus_write_byte_data(
+-				data->client,
++			ret = regmap_write(data->regmap,
+ 				BMC150_ACCEL_REG_PMU_BW,
+ 				bmc150_accel_samp_freq_table[i].bw_bits);
+ 			if (ret < 0)
+@@ -307,26 +313,19 @@ static int bmc150_accel_set_bw(struct bmc150_accel_data *data, int val,
+ 
+ static int bmc150_accel_update_slope(struct bmc150_accel_data *data)
+ {
+-	int ret, val;
++	int ret;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, BMC150_ACCEL_REG_INT_6,
++	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_6,
+ 					data->slope_thres);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_int_6\n");
+ 		return ret;
+ 	}
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_INT_5);
++	ret = regmap_update_bits(data->regmap, BMC150_ACCEL_REG_INT_5,
++				 BMC150_ACCEL_SLOPE_DUR_MASK, data->slope_dur);
+ 	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error reading reg_int_5\n");
+-		return ret;
+-	}
+-
+-	val = (ret & ~BMC150_ACCEL_SLOPE_DUR_MASK) | data->slope_dur;
+-	ret = i2c_smbus_write_byte_data(data->client, BMC150_ACCEL_REG_INT_5,
+-					val);
+-	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error write reg_int_5\n");
++		dev_err(&data->client->dev, "Error updating reg_int_5\n");
+ 		return ret;
+ 	}
+ 
+@@ -348,17 +347,18 @@ static int bmc150_accel_any_motion_setup(struct bmc150_accel_trigger *t,
+ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+ {
+ 	int ret;
++	unsigned int val;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_CHIP_ID);
++	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID, &val);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 			"Error: Reading chip id\n");
+ 		return ret;
+ 	}
+ 
+-	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
+-	if (ret != data->chip_info->chip_id) {
+-		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
++	dev_dbg(&data->client->dev, "Chip Id %x\n", val);
++	if (val != data->chip_info->chip_id) {
++		dev_err(&data->client->dev, "Invalid chip %x\n", val);
+ 		return -ENODEV;
+ 	}
+ 
+@@ -372,9 +372,8 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+ 		return ret;
+ 
+ 	/* Set Default Range */
+-	ret = i2c_smbus_write_byte_data(data->client,
+-					BMC150_ACCEL_REG_PMU_RANGE,
+-					BMC150_ACCEL_DEF_RANGE_4G);
++	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_PMU_RANGE,
++			   BMC150_ACCEL_DEF_RANGE_4G);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 					"Error writing reg_pmu_range\n");
+@@ -391,10 +390,9 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+ 		return ret;
+ 
+ 	/* Set default as latched interrupts */
+-	ret = i2c_smbus_write_byte_data(data->client,
+-					BMC150_ACCEL_REG_INT_RST_LATCH,
+-					BMC150_ACCEL_INT_MODE_LATCH_INT |
+-					BMC150_ACCEL_INT_MODE_LATCH_RESET);
++	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_RST_LATCH,
++			   BMC150_ACCEL_INT_MODE_LATCH_INT |
++			   BMC150_ACCEL_INT_MODE_LATCH_RESET);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 			"Error writing reg_int_rst_latch\n");
+@@ -527,38 +525,18 @@ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data, int i,
+ 		return ret;
+ 
+ 	/* map the interrupt to the appropriate pins */
+-	ret = i2c_smbus_read_byte_data(data->client, info->map_reg);
++	ret = regmap_update_bits(data->regmap, info->map_reg, info->map_bitmask,
++				 (state ? info->map_bitmask : 0));
+ 	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error reading reg_int_map\n");
+-		goto out_fix_power_state;
+-	}
+-	if (state)
+-		ret |= info->map_bitmask;
+-	else
+-		ret &= ~info->map_bitmask;
+-
+-	ret = i2c_smbus_write_byte_data(data->client, info->map_reg,
+-					ret);
+-	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error writing reg_int_map\n");
++		dev_err(&data->client->dev, "Error updating reg_int_map\n");
+ 		goto out_fix_power_state;
+ 	}
+ 
+ 	/* enable/disable the interrupt */
+-	ret = i2c_smbus_read_byte_data(data->client, info->en_reg);
++	ret = regmap_update_bits(data->regmap, info->en_reg, info->en_bitmask,
++				 (state ? info->en_bitmask : 0));
+ 	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error reading reg_int_en\n");
+-		goto out_fix_power_state;
+-	}
+-
+-	if (state)
+-		ret |= info->en_bitmask;
+-	else
+-		ret &= ~info->en_bitmask;
+-
+-	ret = i2c_smbus_write_byte_data(data->client, info->en_reg, ret);
+-	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error writing reg_int_en\n");
++		dev_err(&data->client->dev, "Error updating reg_int_en\n");
+ 		goto out_fix_power_state;
+ 	}
+ 
+@@ -581,8 +559,7 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+ 
+ 	for (i = 0; i < ARRAY_SIZE(data->chip_info->scale_table); ++i) {
+ 		if (data->chip_info->scale_table[i].scale == val) {
+-			ret = i2c_smbus_write_byte_data(
+-				     data->client,
++			ret = regmap_write(data->regmap,
+ 				     BMC150_ACCEL_REG_PMU_RANGE,
+ 				     data->chip_info->scale_table[i].reg_range);
+ 			if (ret < 0) {
+@@ -602,16 +579,17 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
+ {
+ 	int ret;
++	unsigned int value;
+ 
+ 	mutex_lock(&data->mutex);
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_TEMP);
++	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_TEMP, &value);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_temp\n");
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+-	*val = sign_extend32(ret, 7);
++	*val = sign_extend32(value, 7);
+ 
+ 	mutex_unlock(&data->mutex);
+ 
+@@ -624,6 +602,7 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+ {
+ 	int ret;
+ 	int axis = chan->scan_index;
++	unsigned int raw_val;
+ 
+ 	mutex_lock(&data->mutex);
+ 	ret = bmc150_accel_set_power_state(data, true);
+@@ -632,15 +611,15 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+ 		return ret;
+ 	}
+ 
+-	ret = i2c_smbus_read_word_data(data->client,
+-				       BMC150_ACCEL_AXIS_TO_REG(axis));
++	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_AXIS_TO_REG(axis),
++			       &raw_val, 2);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading axis %d\n", axis);
+ 		bmc150_accel_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+-	*val = sign_extend32(ret >> chan->scan_type.shift,
++	*val = sign_extend32(raw_val >> chan->scan_type.shift,
+ 			     chan->scan_type.realbits - 1);
+ 	ret = bmc150_accel_set_power_state(data, false);
+ 	mutex_unlock(&data->mutex);
+@@ -904,52 +883,34 @@ static int bmc150_accel_set_watermark(struct iio_dev *indio_dev, unsigned val)
+  * We must read at least one full frame in one burst, otherwise the rest of the
+  * frame data is discarded.
+  */
+-static int bmc150_accel_fifo_transfer(const struct i2c_client *client,
++static int bmc150_accel_fifo_transfer(struct bmc150_accel_data *data,
+ 				      char *buffer, int samples)
+ {
+ 	int sample_length = 3 * 2;
+-	u8 reg_fifo_data = BMC150_ACCEL_REG_FIFO_DATA;
+-	int ret = -EIO;
+-
+-	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
+-		struct i2c_msg msg[2] = {
+-			{
+-				.addr = client->addr,
+-				.flags = 0,
+-				.buf = &reg_fifo_data,
+-				.len = sizeof(reg_fifo_data),
+-			},
+-			{
+-				.addr = client->addr,
+-				.flags = I2C_M_RD,
+-				.buf = (u8 *)buffer,
+-				.len = samples * sample_length,
+-			}
+-		};
++	int ret;
++	int total_length = samples * sample_length;
++	int i;
++	int step = regmap_get_raw_read_max(data->regmap);
+ 
+-		ret = i2c_transfer(client->adapter, msg, 2);
+-		if (ret != 2)
+-			ret = -EIO;
+-		else
+-			ret = 0;
+-	} else {
+-		int i, step = I2C_SMBUS_BLOCK_MAX / sample_length;
+-
+-		for (i = 0; i < samples * sample_length; i += step) {
+-			ret = i2c_smbus_read_i2c_block_data(client,
+-							    reg_fifo_data, step,
+-							    &buffer[i]);
+-			if (ret != step) {
+-				ret = -EIO;
+-				break;
+-			}
++	if (!step || step > total_length)
++		step = total_length;
++	else if (step < total_length)
++		step = sample_length;
+ 
+-			ret = 0;
+-		}
++	/*
++	 * Seems we have a bus with size limitation so we have to execute
++	 * multiple reads
++	 */
++	for (i = 0; i < total_length; i += step) {
++		ret = regmap_raw_read(data->regmap, BMC150_ACCEL_REG_FIFO_DATA,
++				      &buffer[i], step);
++		if (ret)
++			break;
+ 	}
+ 
+ 	if (ret)
+-		dev_err(&client->dev, "Error transferring data from fifo\n");
++		dev_err(data->dev, "Error transferring data from fifo in single steps of %zu\n",
++			step);
+ 
+ 	return ret;
+ }
+@@ -963,14 +924,15 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+ 	u16 buffer[BMC150_ACCEL_FIFO_LENGTH * 3];
+ 	int64_t tstamp;
+ 	uint64_t sample_period;
+-	ret = i2c_smbus_read_byte_data(data->client,
+-				       BMC150_ACCEL_REG_FIFO_STATUS);
++	unsigned int val;
 +
-+static int bmc150_accel_probe(struct i2c_client *client,
-+			      const struct i2c_device_id *id)
-+{
-+	struct regmap *regmap;
-+	bool block_supported =
-+		i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
-+		i2c_check_functionality(client->adapter,
-+					I2C_FUNC_SMBUS_READ_I2C_BLOCK);
++	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_FIFO_STATUS, &val);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_fifo_status\n");
+ 		return ret;
+ 	}
+ 
+-	count = ret & 0x7F;
++	count = val & 0x7F;
+ 
+ 	if (!count)
+ 		return 0;
+@@ -1009,7 +971,7 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+ 	if (samples && count > samples)
+ 		count = samples;
+ 
+-	ret = bmc150_accel_fifo_transfer(data->client, (u8 *)buffer, count);
++	ret = bmc150_accel_fifo_transfer(data, (u8 *)buffer, count);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1206,17 +1168,19 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+ 	int bit, ret, i = 0;
++	unsigned int raw_val;
+ 
+ 	mutex_lock(&data->mutex);
+ 	for_each_set_bit(bit, indio_dev->active_scan_mask,
+ 			 indio_dev->masklength) {
+-		ret = i2c_smbus_read_word_data(data->client,
+-					       BMC150_ACCEL_AXIS_TO_REG(bit));
++		ret = regmap_bulk_read(data->regmap,
++				       BMC150_ACCEL_AXIS_TO_REG(bit), &raw_val,
++				       2);
+ 		if (ret < 0) {
+ 			mutex_unlock(&data->mutex);
+ 			goto err_read;
+ 		}
+-		data->buffer[i++] = ret;
++		data->buffer[i++] = raw_val;
+ 	}
+ 	mutex_unlock(&data->mutex);
+ 
+@@ -1240,10 +1204,9 @@ static int bmc150_accel_trig_try_reen(struct iio_trigger *trig)
+ 
+ 	mutex_lock(&data->mutex);
+ 	/* clear any latched interrupt */
+-	ret = i2c_smbus_write_byte_data(data->client,
+-					BMC150_ACCEL_REG_INT_RST_LATCH,
+-					BMC150_ACCEL_INT_MODE_LATCH_INT |
+-					BMC150_ACCEL_INT_MODE_LATCH_RESET);
++	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_RST_LATCH,
++			   BMC150_ACCEL_INT_MODE_LATCH_INT |
++			   BMC150_ACCEL_INT_MODE_LATCH_RESET);
+ 	mutex_unlock(&data->mutex);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+@@ -1300,34 +1263,34 @@ static int bmc150_accel_handle_roc_event(struct iio_dev *indio_dev)
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+ 	int dir;
+ 	int ret;
++	unsigned int val;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client,
+-				       BMC150_ACCEL_REG_INT_STATUS_2);
++	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_INT_STATUS_2, &val);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_int_status_2\n");
+ 		return ret;
+ 	}
+ 
+-	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_SIGN)
++	if (val & BMC150_ACCEL_ANY_MOTION_BIT_SIGN)
+ 		dir = IIO_EV_DIR_FALLING;
+ 	else
+ 		dir = IIO_EV_DIR_RISING;
+ 
+-	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_X)
++	if (val & BMC150_ACCEL_ANY_MOTION_BIT_X)
+ 		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 							0,
+ 							IIO_MOD_X,
+ 							IIO_EV_TYPE_ROC,
+ 							dir),
+ 							data->timestamp);
+-	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_Y)
++	if (val & BMC150_ACCEL_ANY_MOTION_BIT_Y)
+ 		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 							0,
+ 							IIO_MOD_Y,
+ 							IIO_EV_TYPE_ROC,
+ 							dir),
+ 							data->timestamp);
+-	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_Z)
++	if (val & BMC150_ACCEL_ANY_MOTION_BIT_Z)
+ 		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 							0,
+ 							IIO_MOD_Z,
+@@ -1360,10 +1323,9 @@ static irqreturn_t bmc150_accel_irq_thread_handler(int irq, void *private)
+ 	}
+ 
+ 	if (ack) {
+-		ret = i2c_smbus_write_byte_data(data->client,
+-					BMC150_ACCEL_REG_INT_RST_LATCH,
+-					BMC150_ACCEL_INT_MODE_LATCH_INT |
+-					BMC150_ACCEL_INT_MODE_LATCH_RESET);
++		ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_RST_LATCH,
++				   BMC150_ACCEL_INT_MODE_LATCH_INT |
++				   BMC150_ACCEL_INT_MODE_LATCH_RESET);
+ 		if (ret)
+ 			dev_err(&data->client->dev, "Error writing reg_int_rst_latch\n");
+ 		ret = IRQ_HANDLED;
+@@ -1516,7 +1478,7 @@ static int bmc150_accel_fifo_set_mode(struct bmc150_accel_data *data)
+ 	u8 reg = BMC150_ACCEL_REG_FIFO_CONFIG1;
+ 	int ret;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, reg, data->fifo_mode);
++	ret = regmap_write(data->regmap, reg, data->fifo_mode);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_fifo_config1\n");
+ 		return ret;
+@@ -1525,9 +1487,8 @@ static int bmc150_accel_fifo_set_mode(struct bmc150_accel_data *data)
+ 	if (!data->fifo_mode)
+ 		return 0;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client,
+-					BMC150_ACCEL_REG_FIFO_CONFIG0,
+-					data->watermark);
++	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_FIFO_CONFIG0,
++			   data->watermark);
+ 	if (ret < 0)
+ 		dev_err(&data->client->dev, "Error writing reg_fifo_config0\n");
+ 
+@@ -1627,6 +1588,13 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	data = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
++	data->dev = &client->dev;
 +
-+	regmap = devm_regmap_init_i2c(client, &bmc150_i2c_regmap_conf);
-+	if (IS_ERR(regmap)) {
++	data->regmap = devm_regmap_init_i2c(client, &bmc150_i2c_regmap_conf);
++	if (IS_ERR(data->regmap)) {
 +		dev_err(&client->dev, "Failed to initialize i2c regmap\n");
-+		return PTR_ERR(regmap);
++		return PTR_ERR(data->regmap);
 +	}
-+
-+	return bmc150_accel_core_probe(&client->dev, regmap, client->irq,
-+				       id->name, id->driver_data,
-+				       block_supported);
-+}
-+
-+static int bmc150_accel_remove(struct i2c_client *client)
-+{
-+	return bmc150_accel_core_remove(&client->dev);
-+}
-+
-+static const struct acpi_device_id bmc150_accel_acpi_match[] = {
-+	{"BSBA0150",	bmc150},
-+	{"BMC150A",	bmc150},
-+	{"BMI055A",	bmi055},
-+	{"BMA0255",	bma255},
-+	{"BMA250E",	bma250e},
-+	{"BMA222E",	bma222e},
-+	{"BMA0280",	bma280},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
-+
-+static const struct i2c_device_id bmc150_accel_id[] = {
-+	{"bmc150_accel",	bmc150},
-+	{"bmi055_accel",	bmi055},
-+	{"bma255",		bma255},
-+	{"bma250e",		bma250e},
-+	{"bma222e",		bma222e},
-+	{"bma280",		bma280},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
-+
-+static struct i2c_driver bmc150_accel_driver = {
-+	.driver = {
-+		.name	= "bmc150_accel_i2c",
-+		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
-+		.pm	= &bmc150_accel_pm_ops,
-+	},
-+	.probe		= bmc150_accel_probe,
-+	.remove		= bmc150_accel_remove,
-+	.id_table	= bmc150_accel_id,
-+};
-+module_i2c_driver(bmc150_accel_driver);
-+
-+MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("BMC150 I2C accelerometer driver");
-diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
-new file mode 100644
-index 000000000000..988b57573d0c
---- /dev/null
-+++ b/drivers/iio/accel/bmc150-accel.h
-@@ -0,0 +1,21 @@
-+#ifndef _BMC150_ACCEL_H_
-+#define _BMC150_ACCEL_H_
-+
-+struct regmap;
-+
-+enum {
-+	bmc150,
-+	bmi055,
-+	bma255,
-+	bma250e,
-+	bma222e,
-+	bma280,
-+};
-+
-+int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
-+			    const char *name, int chip_id,
-+			    bool block_supported);
-+int bmc150_accel_core_remove(struct device *dev);
-+extern const struct dev_pm_ops bmc150_accel_pm_ops;
-+
-+#endif  /* _BMC150_ACCEL_H_ */
+ 
+ 	if (id) {
+ 		name = id->name;
+@@ -1680,9 +1648,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 		 * want to use latch mode when we can to prevent interrupt
+ 		 * flooding.
+ 		 */
+-		ret = i2c_smbus_write_byte_data(data->client,
+-						BMC150_ACCEL_REG_INT_RST_LATCH,
+-					     BMC150_ACCEL_INT_MODE_LATCH_RESET);
++		ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_RST_LATCH,
++				   BMC150_ACCEL_INT_MODE_LATCH_RESET);
+ 		if (ret < 0) {
+ 			dev_err(&data->client->dev, "Error writing reg_int_rst_latch\n");
+ 			goto err_buffer_cleanup;
 -- 
 2.4.6
 
