@@ -1,106 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f170.google.com ([209.85.213.170]:33869 "EHLO
-	mail-ig0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751699AbbHTXxv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 19:53:51 -0400
-Date: Thu, 20 Aug 2015 18:53:41 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Javier Martinez Canillas <javier@osg.samsung.com>
-Cc: linux-kernel@vger.kernel.org, Andrea Galbusera <gizero@gmail.com>,
-	linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Manfred Schlaegl <manfred.schlaegl@gmx.at>,
-	=?iso-8859-1?Q?S=F8ren?= Andersen <san@rosetechnology.dk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH 13/18] iio: adc: mcp320x: Set struct spi_driver
- .of_match_table
-Message-ID: <20150820235340.GA31967@deathstar>
-References: <1440054451-1223-1-git-send-email-javier@osg.samsung.com>
- <1440054451-1223-14-git-send-email-javier@osg.samsung.com>
- <20150820200912.GA2866@deathstar>
- <55D64E80.4050502@osg.samsung.com>
- <20150820222906.GB28249@deathstar>
- <55D65937.6070909@osg.samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <55D65937.6070909@osg.samsung.com>
+Received: from 5.mo4.mail-out.ovh.net ([188.165.44.50]:55445 "EHLO
+	5.mo4.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751136AbbHUA1M convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 20:27:12 -0400
+Received: from mail21.ha.ovh.net (b6.ovh.net [213.186.33.56])
+	by mo4.mail-out.ovh.net (Postfix) with SMTP id A1DC1FFB095
+	for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2015 23:58:03 +0200 (CEST)
+Mime-Version: 1.0
+Date: Thu, 20 Aug 2015 21:57:55 +0000
+Content-Type: text/plain; charset="utf-8"
+Message-ID: <bab6a87a8de5af06403a6f593e91ce02@rainloop.corna.info>
+From: "Nicola Corna" <nicola@corna.info>
+Subject: Re: [PATCH 1/3] iio:humidity:si7020: replaced bitmask on humidity
+ values with range check
+To: "Hartmut Knaack" <knaack.h@gmx.de>,
+	"Jonathan Cameron" <jic23@kernel.org>,
+	"Lars-Peter Clausen" <lars@metafoo.de>,
+	"Peter Meerwald" <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+In-Reply-To: <55D63D5E.8050000@gmx.de>
+References: <55D63D5E.8050000@gmx.de>
+ <1440079909-1337-1-git-send-email-nicola@corna.info>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Aug 21, 2015 at 12:48:23AM +0200, Javier Martinez Canillas wrote:
-> Hello Michael,
+August 20 2015 10:49 PM, "Hartmut Knaack" <knaack.h@gmx.de> wrote:
+> Nicola Corna schrieb am 20.08.2015 um 16:11:
 > 
-> On 08/21/2015 12:29 AM, Michael Welling wrote:
-> > On Fri, Aug 21, 2015 at 12:02:40AM +0200, Javier Martinez Canillas wrote:
-> >> Hello Michael,
-> >>
-> >> On 08/20/2015 10:09 PM, Michael Welling wrote:
-> >>> On Thu, Aug 20, 2015 at 09:07:26AM +0200, Javier Martinez Canillas wrote:
-> >>>> The driver has an OF id table but the .of_match_table is not set so
-> >>>> the SPI core can't do an OF style match and the table was unused.
-> >>>>
-> >>>
-> >>> Is an OF style match necessary?
-> >>>
-> >>
-> >> Did you read the cover letter [0] on which I explain why is needed to
-> >> avoid breaking module autoloading in the future? Once the SPI core is
-> >> changed by RFC patch 18/18? (you were cc'ed in the cover letter BTW).
-> > 
-> > Well I have read it now. :)
-> >
+>> The maximum possible value for the relative humidity is 55575 (100%RH).
+>> This value, if shifted right by 2 bits, uses 14 bits and masking it with
+>> a 12 bit mask removes 2 meaningful bits.
+>> The masking has been replaced with a range check that sets the minimum
+>> value at 3194 (0%RH) and the maximum at 55575 (100%RH).
 > 
-> Great :)
->  
-> >>
-> >>> I have been using devicetree and it matches based on the .id_table.
-> >>>
-> >>
-> >> Yes it fallbacks to the .id_table or the driver name but the correct
-> >> thing to do for devices registered by OF, is to match using the
-> >> compatible string.
-> >>
-> >>> Couldn't we just remove the mcp320x_dt_ids table instead?
-> >>>
-> >>
-> >> No, that is the wrong thing to do IMHO since the compatible string
-> >> contains both vendor and device name whle the .id_table only contains
-> >> a device name.
-> >>
-> >> So it makes sense to match using the compatible string and also report
-> >> the OF modalias information to user-space.
-> >>
-> >> Otherwise what's the point of the vendor in the compatible string for
-> >> SPI devices? You can just use "bar" instead of "foo,bar" as a string.
-> >>
-> > 
-> > Well then shouldn't the patch include adding the vendor to the compatible
-> > string?
-> >
+> Hmm, I guess the mask should have been applied for bits 13:2, but your
+> solution confirms better to the data sheet. Just one essential detail:
+> The raw sensor data has already been divided by 4 when you do the boundary
+> check. So, you need to divide the boundaries, as well.
+> Btw, you can make this a one-liner using clamp_val, check it out: [1]
 > 
-> Well, I was talking in general. You are right that this specific driver does
-> not have a vendor prefix for the compatible strings. This is incorrect
-> according to the ePAPR document [0].
+> [1]http://lxr.free-electrons.com/source/include/linux/kernel.h#L795
 > 
-> However, these compatible strings are already documented as a DT binding doc
-> in Documentation/devicetree/bindings/iio/adc/mcp320x.txt so I don't know
-> what is the correct thing to do in this situation.
-> 
-> Changing the compatible string will break old DTB with newer kernels and that
-> is a no go. But that doesn't invalidate what I said since once the SPI core
-> is changed and report OF modalias, you will need a MODULE_DEVICE_TABLE(of,...)
-> regardless if the compatible string has a vendor prefix or not.
->
 
-Okay.
+Yes, you're right. Thanks.
+Forgive me for my ignorance, but do I have now to upload the [PATCH v2] for
+all the three patches?
 
-Acked-by: Michael Welling <mwelling@ieee.org>
- 
-> [0]: https://www.power.org/documentation/epapr-version-1-1/
-> 
-> Best regards,
-> -- 
-> Javier Martinez Canillas
-> Open Source Group
-> Samsung Research America
+>> Signed-off-by: Nicola Corna <nicola@corna.info>
+>> ---
+>> drivers/iio/humidity/si7020.c | 12 ++++++++++--
+>> 1 file changed, 10 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+>> index fa3b809..62fdbcf 100644
+>> --- a/drivers/iio/humidity/si7020.c
+>> +++ b/drivers/iio/humidity/si7020.c
+>> @@ -57,8 +57,16 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+>> if (ret < 0)
+>> return ret;
+>> *val = ret >> 2;
+>> - if (chan->type == IIO_HUMIDITYRELATIVE)
+>> - *val &= GENMASK(11, 0);
+>> + /*
+>> + * Humidity values can sligthly exceed the 0-100%RH
+>> + * range and should be corrected by software
+>> + */
+>> + if (chan->type == IIO_HUMIDITYRELATIVE) {
+>> + if (*val < 3194) /* 0%RH */
+>> + *val = 3194;
+>> + else if (*val > 55575) /* 100%RH */
+>> + *val = 55575;
+>> + }
+>> return IIO_VAL_INT;
+>> case IIO_CHAN_INFO_SCALE:
+>> if (chan->type == IIO_TEMP)
