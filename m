@@ -1,57 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:21261 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752881AbbHTOht (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 20 Aug 2015 10:37:49 -0400
-From: Teodora Baluta <teodora.baluta@intel.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	daniel.baluta@intel.com, teodora.baluta@intel.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/3] iio: accel: add support for Memsic MXC4005
-Date: Thu, 20 Aug 2015 17:37:30 +0300
-Message-Id: <1440081453-12600-1-git-send-email-teodora.baluta@intel.com>
+Received: from 4.mo3.mail-out.ovh.net ([178.33.46.10]:56644 "EHLO
+	4.mo3.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753973AbbHTOsj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 10:48:39 -0400
+Received: from mail638.ha.ovh.net (gw6.ovh.net [213.251.189.206])
+	by mo3.mail-out.ovh.net (Postfix) with SMTP id 1E3AEFF94D0
+	for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2015 16:13:16 +0200 (CEST)
+From: Nicola Corna <nicola@corna.info>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, Nicola Corna <nicola@corna.info>
+Subject: [PATCH 3/3] iio:humidity:si7020: added processed data
+Date: Thu, 20 Aug 2015 16:11:49 +0200
+Message-Id: <1440079909-1337-3-git-send-email-nicola@corna.info>
+In-Reply-To: <1440079909-1337-1-git-send-email-nicola@corna.info>
+References: <1440079909-1337-1-git-send-email-nicola@corna.info>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch set adds support for Memsic MXC4005XC 3-axis accelerometer
-sensor. The first patch adds basic support for the accelerometer, with
-raw readings, the second patch adds support for buffer mode and the last
-one adds the data ready trigger.
+The value given by the Si7013/20/21 modules needs a conversion using a
+small expression in order to obtain the measurement in °C or %RH. This
+patch adds the computation inside the si7020 module, allowing the user to
+obtain the measurement in m°C and 10E-3%RH without any additional
+calculation.
 
+Signed-off-by: Nicola Corna <nicola@corna.info>
 ---
-Changes since v1:
-- fixes for the comments (coding style, proper buffer length,
-  available_scan_masks)
-- remove unnecessary locking for regmap operations since regmap has an
-  internal locking mechanism
-- keep the mutex for set_trigger_state operation to protect the state
-  variable trigger_enabled
+ drivers/iio/humidity/si7020.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-Changes since v2:
- - use the MXC4005_REGMAP_NAME for regmap_config instead of REGMAP_DRV_NAME
- - replace struct i2c_client *client with struct device *dev
- - remove redundant REGCACHE_NONE option from regmap_config
- - other small style fixes
- - fix buffer size
- - remove read interrupt source register
- - remove the thread handler since we only have one interrupt
- - make irq->client > 0 since IRQ 0 is not valid
- - rework the irq handler by adding try_to_reenable callback
- - use iio_pollfunc_store_time for timestamps
-
-
-Teodora Baluta (3):
-  iio: accel: add support for mxc4005 accelerometer
-  iio: mxc4005: add triggered buffer mode for mxc4005
-  iio: mxc4005: add data ready trigger for mxc4005
-
- drivers/iio/accel/Kconfig   |  13 +
- drivers/iio/accel/Makefile  |   2 +
- drivers/iio/accel/mxc4005.c | 567 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 582 insertions(+)
- create mode 100644 drivers/iio/accel/mxc4005.c
-
+diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+index a8bad04..c534706 100644
+--- a/drivers/iio/humidity/si7020.c
++++ b/drivers/iio/humidity/si7020.c
+@@ -70,6 +70,7 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_PROCESSED:
+ 		if (holdmode) {
+ 			ret = i2c_smbus_read_word_data(*client,
+ 						       chan->type == IIO_TEMP ?
+@@ -108,6 +109,17 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+ 			else if (*val > 55575) /* 100%RH */
+ 				*val = 55575;
+ 		}
++		if (mask == IIO_CHAN_INFO_PROCESSED) {
++			/*
++			 * To avoid overflows the fractions can be simplified:
++			 * temperature --> 175720 / (65536 >> 2) = 21965 / 2048
++			 * humidity    --> 125000 / (65536 >> 2) = 15625 / 2048
++			 */
++			if (chan->type == IIO_TEMP)
++				*val = (*val - 4368) * 21965 / 2048;
++			else
++				*val = (*val - 768) * 15625 / 2048;
++		}
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (chan->type == IIO_TEMP)
+@@ -142,12 +154,14 @@ static const struct iio_chan_spec si7020_channels[] = {
+ 	{
+ 		.type = IIO_HUMIDITYRELATIVE,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
++			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET) |
++			BIT(IIO_CHAN_INFO_PROCESSED),
+ 	},
+ 	{
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
++			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET) |
++			BIT(IIO_CHAN_INFO_PROCESSED),
+ 	}
+ };
+ 
 -- 
-1.9.1
+2.5.0
 
