@@ -1,76 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 5.mo4.mail-out.ovh.net ([188.165.44.50]:55445 "EHLO
-	5.mo4.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751136AbbHUA1M convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Aug 2015 20:27:12 -0400
-Received: from mail21.ha.ovh.net (b6.ovh.net [213.186.33.56])
-	by mo4.mail-out.ovh.net (Postfix) with SMTP id A1DC1FFB095
-	for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2015 23:58:03 +0200 (CEST)
-Mime-Version: 1.0
-Date: Thu, 20 Aug 2015 21:57:55 +0000
-Content-Type: text/plain; charset="utf-8"
-Message-ID: <bab6a87a8de5af06403a6f593e91ce02@rainloop.corna.info>
-From: "Nicola Corna" <nicola@corna.info>
-Subject: Re: [PATCH 1/3] iio:humidity:si7020: replaced bitmask on humidity
- values with range check
-To: "Hartmut Knaack" <knaack.h@gmx.de>,
-	"Jonathan Cameron" <jic23@kernel.org>,
-	"Lars-Peter Clausen" <lars@metafoo.de>,
-	"Peter Meerwald" <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org
-In-Reply-To: <55D63D5E.8050000@gmx.de>
-References: <55D63D5E.8050000@gmx.de>
- <1440079909-1337-1-git-send-email-nicola@corna.info>
+Received: from mail-yk0-f179.google.com ([209.85.160.179]:35254 "EHLO
+	mail-yk0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751693AbbHUHfH convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Aug 2015 03:35:07 -0400
+Received: by ykbi184 with SMTP id i184so62494229ykb.2
+        for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2015 00:35:05 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1440079909-1337-3-git-send-email-nicola@corna.info>
+References: <1440079909-1337-1-git-send-email-nicola@corna.info> <1440079909-1337-3-git-send-email-nicola@corna.info>
+From: Crt Mori <cmo@melexis.com>
+Date: Fri, 21 Aug 2015 09:34:26 +0200
+Message-ID: <CAKv63utEjV7SxYd279=D3W0FbYM9kCOFzkXDPcb=yxQr6D6OFA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] iio:humidity:si7020: added processed data
+To: Nicola Corna <nicola@corna.info>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-August 20 2015 10:49 PM, "Hartmut Knaack" <knaack.h@gmx.de> wrote:
-> Nicola Corna schrieb am 20.08.2015 um 16:11:
-> 
->> The maximum possible value for the relative humidity is 55575 (100%RH).
->> This value, if shifted right by 2 bits, uses 14 bits and masking it with
->> a 12 bit mask removes 2 meaningful bits.
->> The masking has been replaced with a range check that sets the minimum
->> value at 3194 (0%RH) and the maximum at 55575 (100%RH).
-> 
-> Hmm, I guess the mask should have been applied for bits 13:2, but your
-> solution confirms better to the data sheet. Just one essential detail:
-> The raw sensor data has already been divided by 4 when you do the boundary
-> check. So, you need to divide the boundaries, as well.
-> Btw, you can make this a one-liner using clamp_val, check it out: [1]
-> 
-> [1]http://lxr.free-electrons.com/source/include/linux/kernel.h#L795
-> 
-
-Yes, you're right. Thanks.
-Forgive me for my ignorance, but do I have now to upload the [PATCH v2] for
-all the three patches?
-
->> Signed-off-by: Nicola Corna <nicola@corna.info>
->> ---
->> drivers/iio/humidity/si7020.c | 12 ++++++++++--
->> 1 file changed, 10 insertions(+), 2 deletions(-)
->> 
->> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
->> index fa3b809..62fdbcf 100644
->> --- a/drivers/iio/humidity/si7020.c
->> +++ b/drivers/iio/humidity/si7020.c
->> @@ -57,8 +57,16 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
->> if (ret < 0)
->> return ret;
->> *val = ret >> 2;
->> - if (chan->type == IIO_HUMIDITYRELATIVE)
->> - *val &= GENMASK(11, 0);
->> + /*
->> + * Humidity values can sligthly exceed the 0-100%RH
->> + * range and should be corrected by software
->> + */
->> + if (chan->type == IIO_HUMIDITYRELATIVE) {
->> + if (*val < 3194) /* 0%RH */
->> + *val = 3194;
->> + else if (*val > 55575) /* 100%RH */
->> + *val = 55575;
->> + }
->> return IIO_VAL_INT;
->> case IIO_CHAN_INFO_SCALE:
->> if (chan->type == IIO_TEMP)
+One comment inline.
+On 20 August 2015 at 16:11, Nicola Corna <nicola@corna.info> wrote:
+>
+> The value given by the
+> Si7013/20/21 modules needs a conversion using a
+> small expression in order to obtain the measurement in °C or %RH. This
+> patch adds the computation inside the si7020 module, allowing the user to
+> obtain the measurement in m°C and 10E-3%RH without any additional
+> calculation.
+>
+> Signed-off-by: Nicola Corna <nicola@corna.info>
+Acked-by: Crt Mori <cmo@melexis.com>
+>
+> ---
+>  drivers/iio/humidity/si7020.c | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+> index a8bad04..c534706 100644
+> --- a/drivers/iio/humidity/si7020.c
+> +++ b/drivers/iio/humidity/si7020.c
+> @@ -70,6 +70,7 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+>
+>         switch (mask) {
+>         case IIO_CHAN_INFO_RAW:
+> +       case IIO_CHAN_INFO_PROCESSED:
+>                 if (holdmode) {
+>                         ret = i2c_smbus_read_word_data(*client,
+>                                                        chan->type == IIO_TEMP ?
+> @@ -108,6 +109,17 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+>                         else if (*val > 55575) /* 100%RH */
+>                                 *val = 55575;
+>                 }
+> +               if (mask == IIO_CHAN_INFO_PROCESSED) {
+> +                       /*
+> +                        * To avoid overflows the fractions can be simplified:
+> +                        * temperature --> 175720 / (65536 >> 2) = 21965 / 2048
+> +                        * humidity    --> 125000 / (65536 >> 2) = 15625 / 2048
+> +                        */
+> +                       if (chan->type == IIO_TEMP)
+> +                               *val = (*val - 4368) * 21965 / 2048;
+I was suggested by Peter Meerwald to use parenthesis in case like this
+(and below).
+>
+> +                       else
+> +                               *val = (*val - 768) * 15625 / 2048;
+> +               }
+>                 return IIO_VAL_INT;
+>         case IIO_CHAN_INFO_SCALE:
+>                 if (chan->type == IIO_TEMP)
+> @@ -142,12 +154,14 @@ static const struct iio_chan_spec si7020_channels[] = {
+>         {
+>                 .type = IIO_HUMIDITYRELATIVE,
+>                 .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> -                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET) |
+> +                       BIT(IIO_CHAN_INFO_PROCESSED),
+>         },
+>         {
+>                 .type = IIO_TEMP,
+>                 .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> -                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET) |
+> +                       BIT(IIO_CHAN_INFO_PROCESSED),
+>         }
+>  };
+>
+> --
+> 2.5.0
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
