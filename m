@@ -1,95 +1,65 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Fri, 21 Aug 2015 12:21:25 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Markus Pargmann <mpa@pengutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+Return-Path: <srinivas.pandruvada@intel.com>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "wsa@the-dreams.de" <wsa@the-dreams.de>, "mpa@pengutronix.de"
+	<mpa@pengutronix.de>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "jic23@kernel.org" <jic23@kernel.org>, "Tirdea,
+ Irina" <irina.tirdea@intel.com>, "linux-i2c@vger.kernel.org"
+	<linux-i2c@vger.kernel.org>
 Subject: Re: [PATCH v5 6/8] iio: gyro: bmg160: optimize i2c transfers in
  trigger handler
-Message-ID: <20150821102125.GA1656@katana>
+Date: Fri, 21 Aug 2015 15:59:05 +0000
+Message-ID: <1440172701.4081.1.camel@intel.com>
 References: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
- <1439389900-10108-7-git-send-email-irina.tirdea@intel.com>
- <55D056DF.5020201@kernel.org>
- <20150817090943.GO19600@pengutronix.de>
+	 <1439389900-10108-7-git-send-email-irina.tirdea@intel.com>
+	 <55D056DF.5020201@kernel.org> <20150817090943.GO19600@pengutronix.de>
+	 <20150821102125.GA1656@katana>
+In-Reply-To: <20150821102125.GA1656@katana>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="k1lZvvs/B4yU6o8G"
-In-Reply-To: <20150817090943.GO19600@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-
---k1lZvvs/B4yU6o8G
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Aug 17, 2015 at 11:09:43AM +0200, Markus Pargmann wrote:
-> On Sun, Aug 16, 2015 at 10:24:47AM +0100, Jonathan Cameron wrote:
-> > On 12/08/15 15:31, Irina Tirdea wrote:
-> > > Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
-> > > enable/disable the bus at each i2c transfer and must wait for
-> > > the enable/disable to happen before sending the data.
-> > >=20
-> > > When reading data in the trigger handler, the bmg160 driver does
-> > > one i2c transfer for each axis. This has an impact on the frequency
-> > > of the gyroscope at high sample rates due to additional delays
-> > > introduced by the i2c bus at each transfer.
-> > >=20
-> > > Reading all axis values in one i2c transfer reduces the delays
-> > > introduced by the i2c bus. Uses i2c_smbus_read_i2c_block_data_or_emul=
-ated
-> > > that will fallback to reading each axis as a separate word in case i2c
-> > > block read is not supported.
-> > >=20
-> > > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> > > Acked-by: Jonathan Cameron <jic23@kernel.org>
-> > > Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> > Note, that in the meantime the bmg160 driver just went all regmap
-> > on us (as part of adding SPI support - though that step hasn't
-> > happened yet).  Hence we'll need a means of telling regmap about this
-> > possibility.
->=20
-> Perhaps this is covered by a regmap_bulk_read()?
->=20
-> The series[1] I am working on implements a i2c smbus block data regmap
-> bus driver. Regmap should then automatically do a block read in
-> regmap_bulk_read.
-
-Hmm, so doesn't your series make Irina's series obsolete? It addresses
-the same problem only at a different layer (i2c core vs. regmap), or? It
-would mean that i2c client drivers which want to support byte, word, or
-block transfers should be converted to regmap. I assume most of the
-potential candidates are register based devices anyhow. Then, regmap
-would be the proper abstraction layer. Have I overlooked something?
-
-Thanks,
-
-   Wolfram
-
-
---k1lZvvs/B4yU6o8G
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJV1vulAAoJEBQN5MwUoCm2xwgP/RFR33g5ljIF455p2gWLM0DM
-xAuO3AN6WEPymGCUztOI42kpoDH/vc37D6DVEbLH+K7o8gn+e51S0XS+kQqRpo/F
-5hZ60wp01SbmJ5R5i0uwyYL6yA4avXj6/5jSZeDvz01Jd70BLMdf3kNEezkcW0hm
-5yiVOxL/TpAEgXMDnpeYa8WTLuGE2HRfLwcF2iOwVHHOW+bHZK8dLB4foh+BXowp
-WgqlPHnZcWS6/iSQ5BZ/Il7lbcTRto6LfxTRmx3d9TvlvNGXAVGPYOUVDc82pN+l
-DYzykrZOQ1dlV7h8+gmpZwEkSg8+OkyHTziI7CkidMUtYPn1Lt51FunaTqmyUQDy
-za2hKW0hEdsLrhAUYoMbWUPZ7nJnSUMH4wnQiuGvucKzw7eGxvCDjInPZaMAkSV3
-fN1W00foAA1F0PEEb4+KPBYhnqeDh7QddmycKilIzEbpw14/9Z9UmXynZMc/bqfO
-TCNW/d/2Fm5sMMd32p6V6wrdpCqnoZCywHLVxvNJ5VIKIBuJa4UghOYqdzJnWtz7
-wbfebXYZY/kEJoa34g4s952SmUiBK1Bul0CNgXYQ0oFi6py8H+CFKfT6jBX5QQe6
-2GYpGktj8xzuQpS+pEa1ro9LhJdw3hzjMtH6/dZY3i0mlGZ/bjadyxG4fiNsR+6P
-fVVfkKaeieC8iSwdopUl
-=gEBN
------END PGP SIGNATURE-----
-
---k1lZvvs/B4yU6o8G--
+T24gRnJpLCAyMDE1LTA4LTIxIGF0IDEyOjIxICswMjAwLCBXb2xmcmFtIFNhbmcgd3JvdGU6DQo+
+IE9uIE1vbiwgQXVnIDE3LCAyMDE1IGF0IDExOjA5OjQzQU0gKzAyMDAsIE1hcmt1cyBQYXJnbWFu
+biB3cm90ZToNCj4gPiBPbiBTdW4sIEF1ZyAxNiwgMjAxNSBhdCAxMDoyNDo0N0FNICswMTAwLCBK
+b25hdGhhbiBDYW1lcm9uIHdyb3RlOg0KPiA+ID4gT24gMTIvMDgvMTUgMTU6MzEsIElyaW5hIFRp
+cmRlYSB3cm90ZToNCj4gPiA+ID4gU29tZSBpMmMgYnVzc2VzIChlLmcuOiBTeW5vcHN5cyBEZXNp
+Z25XYXJlIEkyQyBhZGFwdGVyKSBuZWVkIHRvDQo+ID4gPiA+IGVuYWJsZS9kaXNhYmxlIHRoZSBi
+dXMgYXQgZWFjaCBpMmMgdHJhbnNmZXIgYW5kIG11c3Qgd2FpdCBmb3INCj4gPiA+ID4gdGhlIGVu
+YWJsZS9kaXNhYmxlIHRvIGhhcHBlbiBiZWZvcmUgc2VuZGluZyB0aGUgZGF0YS4NCj4gPiA+ID4g
+DQo+ID4gPiA+IFdoZW4gcmVhZGluZyBkYXRhIGluIHRoZSB0cmlnZ2VyIGhhbmRsZXIsIHRoZSBi
+bWcxNjAgZHJpdmVyIA0KPiA+ID4gPiBkb2VzDQo+ID4gPiA+IG9uZSBpMmMgdHJhbnNmZXIgZm9y
+IGVhY2ggYXhpcy4gVGhpcyBoYXMgYW4gaW1wYWN0IG9uIHRoZSANCj4gPiA+ID4gZnJlcXVlbmN5
+DQo+ID4gPiA+IG9mIHRoZSBneXJvc2NvcGUgYXQgaGlnaCBzYW1wbGUgcmF0ZXMgZHVlIHRvIGFk
+ZGl0aW9uYWwgZGVsYXlzDQo+ID4gPiA+IGludHJvZHVjZWQgYnkgdGhlIGkyYyBidXMgYXQgZWFj
+aCB0cmFuc2Zlci4NCj4gPiA+ID4gDQo+ID4gPiA+IFJlYWRpbmcgYWxsIGF4aXMgdmFsdWVzIGlu
+IG9uZSBpMmMgdHJhbnNmZXIgcmVkdWNlcyB0aGUgZGVsYXlzDQo+ID4gPiA+IGludHJvZHVjZWQg
+YnkgdGhlIGkyYyBidXMuIFVzZXMgDQo+ID4gPiA+IGkyY19zbWJ1c19yZWFkX2kyY19ibG9ja19k
+YXRhX29yX2VtdWxhdGVkDQo+ID4gPiA+IHRoYXQgd2lsbCBmYWxsYmFjayB0byByZWFkaW5nIGVh
+Y2ggYXhpcyBhcyBhIHNlcGFyYXRlIHdvcmQgaW4gDQo+ID4gPiA+IGNhc2UgaTJjDQo+ID4gPiA+
+IGJsb2NrIHJlYWQgaXMgbm90IHN1cHBvcnRlZC4NCj4gPiA+ID4gDQo+ID4gPiA+IFNpZ25lZC1v
+ZmYtYnk6IElyaW5hIFRpcmRlYSA8aXJpbmEudGlyZGVhQGludGVsLmNvbT4NCj4gPiA+ID4gQWNr
+ZWQtYnk6IEpvbmF0aGFuIENhbWVyb24gPGppYzIzQGtlcm5lbC5vcmc+DQo+ID4gPiA+IEFja2Vk
+LWJ5OiBTcmluaXZhcyBQYW5kcnV2YWRhIDwNCj4gPiA+ID4gc3Jpbml2YXMucGFuZHJ1dmFkYUBs
+aW51eC5pbnRlbC5jb20+DQo+ID4gPiBOb3RlLCB0aGF0IGluIHRoZSBtZWFudGltZSB0aGUgYm1n
+MTYwIGRyaXZlciBqdXN0IHdlbnQgYWxsIHJlZ21hcA0KPiA+ID4gb24gdXMgKGFzIHBhcnQgb2Yg
+YWRkaW5nIFNQSSBzdXBwb3J0IC0gdGhvdWdoIHRoYXQgc3RlcCBoYXNuJ3QNCj4gPiA+IGhhcHBl
+bmVkIHlldCkuICBIZW5jZSB3ZSdsbCBuZWVkIGEgbWVhbnMgb2YgdGVsbGluZyByZWdtYXAgYWJv
+dXQgDQo+ID4gPiB0aGlzDQo+ID4gPiBwb3NzaWJpbGl0eS4NCj4gPiANCj4gPiBQZXJoYXBzIHRo
+aXMgaXMgY292ZXJlZCBieSBhIHJlZ21hcF9idWxrX3JlYWQoKT8NCj4gPiANCj4gPiBUaGUgc2Vy
+aWVzWzFdIEkgYW0gd29ya2luZyBvbiBpbXBsZW1lbnRzIGEgaTJjIHNtYnVzIGJsb2NrIGRhdGEg
+DQo+ID4gcmVnbWFwDQo+ID4gYnVzIGRyaXZlci4gUmVnbWFwIHNob3VsZCB0aGVuIGF1dG9tYXRp
+Y2FsbHkgZG8gYSBibG9jayByZWFkIGluDQo+ID4gcmVnbWFwX2J1bGtfcmVhZC4NCj4gDQo+IEht
+bSwgc28gZG9lc24ndCB5b3VyIHNlcmllcyBtYWtlIElyaW5hJ3Mgc2VyaWVzIG9ic29sZXRlPyBJ
+dCANCj4gYWRkcmVzc2VzDQo+IHRoZSBzYW1lIHByb2JsZW0gb25seSBhdCBhIGRpZmZlcmVudCBs
+YXllciAoaTJjIGNvcmUgdnMuIHJlZ21hcCksIG9yPyANCj4gSXQNCj4gd291bGQgbWVhbiB0aGF0
+IGkyYyBjbGllbnQgZHJpdmVycyB3aGljaCB3YW50IHRvIHN1cHBvcnQgYnl0ZSwgd29yZCwgDQo+
+IG9yDQo+IGJsb2NrIHRyYW5zZmVycyBzaG91bGQgYmUgY29udmVydGVkIHRvIHJlZ21hcC4gSSBh
+c3N1bWUgbW9zdCBvZiB0aGUNCj4gcG90ZW50aWFsIGNhbmRpZGF0ZXMgYXJlIHJlZ2lzdGVyIGJh
+c2VkIGRldmljZXMgYW55aG93LiBUaGVuLCByZWdtYXANCj4gd291bGQgYmUgdGhlIHByb3BlciBh
+YnN0cmFjdGlvbiBsYXllci4gSGF2ZSBJIG92ZXJsb29rZWQgc29tZXRoaW5nPw0KPiANClRoaXMg
+aXMgdGhlIG9ubHkgZHJpdmVyIGNvbnZlcnRlZCB0byB1c2UgcmVnbWFwLCBiZWNhdXNlIG9mIFNQ
+SSBtb2RlDQpzdXBwb3J0LiBUaGUgb3RoZXIgZHJpdmVycyB3aWxsIHN0aWxsIHVzZSBJcmluYSdz
+IGNoYW5nZXMuDQoNClRoYW5rcw0KU3Jpbml2YXMNCg0KDQo+IFRoYW5rcywNCj4gDQo+ICAgIFdv
+bGZyYW0NCj4g
