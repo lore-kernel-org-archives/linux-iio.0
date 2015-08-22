@@ -1,91 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37966 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38006 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752795AbbHVRV6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Aug 2015 13:21:58 -0400
-Subject: Re: [PATCH 3/3] iio:humidity:si7020: added processed data
-To: Nicola Corna <nicola@corna.info>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-References: <1440079909-1337-1-git-send-email-nicola@corna.info>
- <1440079909-1337-3-git-send-email-nicola@corna.info>
-Cc: linux-iio@vger.kernel.org
+	with ESMTP id S1753643AbbHVR30 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Aug 2015 13:29:26 -0400
+Subject: Re: [PATCH v5 6/8] iio: gyro: bmg160: optimize i2c transfers in
+ trigger handler
+To: Wolfram Sang <wsa@the-dreams.de>,
+	"Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+References: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
+ <1439389900-10108-7-git-send-email-irina.tirdea@intel.com>
+ <55D056DF.5020201@kernel.org> <20150817090943.GO19600@pengutronix.de>
+ <20150821102125.GA1656@katana> <1440172701.4081.1.camel@intel.com>
+ <20150822040258.GA1605@katana>
+Cc: "mpa@pengutronix.de" <mpa@pengutronix.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Tirdea, Irina" <irina.tirdea@intel.com>,
+	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55D8AFB3.6010603@kernel.org>
-Date: Sat, 22 Aug 2015 18:21:55 +0100
+Message-ID: <55D8B174.1010403@kernel.org>
+Date: Sat, 22 Aug 2015 18:29:24 +0100
 MIME-Version: 1.0
-In-Reply-To: <1440079909-1337-3-git-send-email-nicola@corna.info>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20150822040258.GA1605@katana>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/08/15 15:11, Nicola Corna wrote:
-> The value given by the Si7013/20/21 modules needs a conversion using a
-> small expression in order to obtain the measurement in °C or %RH. This
-> patch adds the computation inside the si7020 module, allowing the user to
-> obtain the measurement in m°C and 10E-3%RH without any additional
-> calculation.
+On 22/08/15 05:02, Wolfram Sang wrote:
 > 
-> Signed-off-by: Nicola Corna <nicola@corna.info>
-What is the benefit in doing this?  Userspace already has all the numbers
-to calculate the value?  The calculation is trivial to do in userspace.
-The basic principle of IIO is to do as little as possible in the driver
-and to leave such calculations to userspace which has the benefit of
-easy access to floating point calculations if desired.
+>>>> The series[1] I am working on implements a i2c smbus block data 
+>>>> regmap
+>>>> bus driver. Regmap should then automatically do a block read in
+>>>> regmap_bulk_read.
+>>>
+>>> Hmm, so doesn't your series make Irina's series obsolete? It 
+>>> addresses
+>>> the same problem only at a different layer (i2c core vs. regmap), or? 
+>>> It
+>>> would mean that i2c client drivers which want to support byte, word, 
+>>> or
+>>> block transfers should be converted to regmap. I assume most of the
+>>> potential candidates are register based devices anyhow. Then, regmap
+>>> would be the proper abstraction layer. Have I overlooked something?
+>>>
+>> This is the only driver converted to use regmap, because of SPI mode
+>> support. The other drivers will still use Irina's changes.
+> 
+> The question is if they should. Or rather be converted to regmap. It is
+> an open question and I am seeking for further input.
+> 
+There are a fairly large number of legacy drivers where this might apply.
+Do we have any real idea of how many?  I'm assuming Irina only made use
+of it in ones that were of personal interest.  A quick grep suggests
+10's of drivers use the block call. I'm guessing quite a few would use
+it if needed for a particular board.
 
-So sorry, not taking this one.
+Do we want to insist on a much larger change (conversion to regmap)
+when if this in place, a simple single functional call change will do the
+job?
 
 Jonathan
-> ---
->  drivers/iio/humidity/si7020.c | 18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-> index a8bad04..c534706 100644
-> --- a/drivers/iio/humidity/si7020.c
-> +++ b/drivers/iio/humidity/si7020.c
-> @@ -70,6 +70,7 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> +	case IIO_CHAN_INFO_PROCESSED:
->  		if (holdmode) {
->  			ret = i2c_smbus_read_word_data(*client,
->  						       chan->type == IIO_TEMP ?
-> @@ -108,6 +109,17 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
->  			else if (*val > 55575) /* 100%RH */
->  				*val = 55575;
->  		}
-> +		if (mask == IIO_CHAN_INFO_PROCESSED) {
-> +			/*
-> +			 * To avoid overflows the fractions can be simplified:
-> +			 * temperature --> 175720 / (65536 >> 2) = 21965 / 2048
-> +			 * humidity    --> 125000 / (65536 >> 2) = 15625 / 2048
-> +			 */
-> +			if (chan->type == IIO_TEMP)
-> +				*val = (*val - 4368) * 21965 / 2048;
-> +			else
-> +				*val = (*val - 768) * 15625 / 2048;
-> +		}
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
->  		if (chan->type == IIO_TEMP)
-> @@ -142,12 +154,14 @@ static const struct iio_chan_spec si7020_channels[] = {
->  	{
->  		.type = IIO_HUMIDITYRELATIVE,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-> +			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET) |
-> +			BIT(IIO_CHAN_INFO_PROCESSED),
->  	},
->  	{
->  		.type = IIO_TEMP,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-> +			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET) |
-> +			BIT(IIO_CHAN_INFO_PROCESSED),
->  	}
->  };
->  
-> 
-
