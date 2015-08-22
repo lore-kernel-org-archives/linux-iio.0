@@ -1,243 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 19pmail.ess.barracuda.com ([64.235.150.245]:53159 "EHLO
-	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751337AbbHURhO convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Aug 2015 13:37:14 -0400
-From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-To: Michael Welling <mwelling@ieee.org>
-CC: Daniel Baluta <daniel.baluta@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Fri, 21 Aug 2015 10:36:51 -0700
-Subject: RE: BBB IIO ADC access not working
-Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD45D9@sfamail.SAKURAUS.LOCAL>
-References: <20150819212906.GC29773@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD445E@sfamail.SAKURAUS.LOCAL>
- <20150819214242.GB28779@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD44D6@sfamail.SAKURAUS.LOCAL>
- <20150820161359.GA5167@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4502@sfamail.SAKURAUS.LOCAL>
- <20150820173101.GB5167@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4519@sfamail.SAKURAUS.LOCAL>
- <20150820192304.GA835@deathstar>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD452C@sfamail.SAKURAUS.LOCAL>
- <20150820204853.GA14530@deathstar>
-In-Reply-To: <20150820204853.GA14530@deathstar>
-Content-Type: text/plain; charset="us-ascii"
+Received: from sauhun.de ([89.238.76.85]:36617 "EHLO pokefinder.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750744AbbHVEDS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 22 Aug 2015 00:03:18 -0400
+Date: Sat, 22 Aug 2015 06:02:59 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Cc: "mpa@pengutronix.de" <mpa@pengutronix.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"Tirdea, Irina" <irina.tirdea@intel.com>,
+	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>
+Subject: Re: [PATCH v5 6/8] iio: gyro: bmg160: optimize i2c transfers in
+ trigger handler
+Message-ID: <20150822040258.GA1605@katana>
+References: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
+ <1439389900-10108-7-git-send-email-irina.tirdea@intel.com>
+ <55D056DF.5020201@kernel.org>
+ <20150817090943.GO19600@pengutronix.de>
+ <20150821102125.GA1656@katana>
+ <1440172701.4081.1.camel@intel.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="azLHFNyN32YCQGCU"
+In-Reply-To: <1440172701.4081.1.camel@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
- 
 
-> -----Original Message-----
-> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf 
-> Of Michael Welling
-> Sent: Thursday, August 20, 2015 1:49 PM
-> To: Greg Wilson-Lindberg
-> Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> Subject: Re: BBB IIO ADC access not working
-> 
-> On Thu, Aug 20, 2015 at 01:21:17PM -0700, Greg Wilson-Lindberg wrote:
-> >  
-> > 
-> > > -----Original Message-----
-> > > From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf Of 
-> > > Michael Welling
-> > > Sent: Thursday, August 20, 2015 12:23 PM
-> > > To: Greg Wilson-Lindberg
-> > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > Subject: Re: BBB IIO ADC access not working
-> > > 
-> > > On Thu, Aug 20, 2015 at 11:41:03AM -0700, Greg 
-> Wilson-Lindberg wrote:
-> > > >  
-> > > > 
-> > > > > -----Original Message-----
-> > > > > From: Michael Welling [mailto:mwelling79@gmail.com] 
-> On Behalf Of 
-> > > > > Michael Welling
-> > > > > Sent: Thursday, August 20, 2015 10:31 AM
-> > > > > To: Greg Wilson-Lindberg
-> > > > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > > > Subject: Re: BBB IIO ADC access not working
-> > > > > 
-> > > > > On Thu, Aug 20, 2015 at 10:27:30AM -0700, Greg
-> > > Wilson-Lindberg wrote:
-> > > > > > 
-> > > > > > 
-> > > > > > > -----Original Message-----
-> > > > > > > From: Greg Wilson-Lindberg
-> > > > > > > Sent: Thursday, August 20, 2015 9:19 AM
-> > > > > > > To: 'Michael Welling'
-> > > > > > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > > > > > Subject: RE: BBB IIO ADC access not working
-> > > > > > > 
-> > > > > > >  
-> > > > > > > 
-> > > > > > > > -----Original Message-----
-> > > > > > > > From: Michael Welling [mailto:mwelling79@gmail.com] On
-> > > > > Behalf Of
-> > > > > > > > Michael Welling
-> > > > > > > > Sent: Thursday, August 20, 2015 9:14 AM
-> > > > > > > > To: Greg Wilson-Lindberg
-> > > > > > > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > > > > > > Subject: Re: BBB IIO ADC access not working
-> > > > > > > > 
-> > > > > > > > On Thu, Aug 20, 2015 at 08:50:28AM -0700, Greg
-> > > > > > > Wilson-Lindberg wrote:
-> > > > > > > > >  
-> > > > > > > > > 
-> > > > > > > > > > -----Original Message-----
-> > > > > > > > > > From: Michael Welling 
-> [mailto:mwelling79@gmail.com] On
-> > > > > > > Behalf Of
-> > > > > > > > > > Michael Welling
-> > > > > > > > > > Sent: Wednesday, August 19, 2015 2:43 PM
-> > > > > > > > > > To: Greg Wilson-Lindberg
-> > > > > > > > > > Cc: Daniel Baluta; linux-iio@vger.kernel.org
-> > > > > > > > > > Subject: Re: BBB IIO ADC access not working
-> > > > > > > > > > 
-> > > > > > > > > > On Wed, Aug 19, 2015 at 02:34:39PM -0700, Greg
-> > > > > > > > Wilson-Lindberg wrote:
-> > > > > > > > > > > 
-> > > > > > > > > > > So, in that case, can I just open it once and
-> > > > > leave it open?
-> > > > > > > > > > 
-> > > > > > > > > > Yes.
-> > > > > > > > > > 
-> > > > > > > > > > > Is it reading from a buffer, or is it 
-> reading what 
-> > > > > > > > > > > is
-> > > > > > > > > > current in the ADC? 
-> > > > > > > > > > 
-> > > > > > > > > > It is the current reading.
-> > > > > > > > > > 
-> > > > > > > > > > > Can I just set up a timer to get readings to
-> > > average then?
-> > > > > > > > > > 
-> > > > > > > > > > Sure.
-> > > > > > > > > > 
-> > > > > > > > > > Here are some helper functions:
-> > > > > > > > > > 
-> > > > > > > > > > int iio_adc_open_channel(int dev_num, int 
-> chan_num) {
-> > > > > > > > > > 	char filename[255];
-> > > > > > > > > > 
-> > > > > > > > > > 	sprintf(filename,
-> > > > > > > > > > 
-> "/sys/bus/iio/devices/iio:device%d/in_voltage%d_raw",
-> > > > > > > > > > 			dev_num, chan_num);
-> > > > > > > > > > 
-> > > > > > > > > > 	return open(filename, O_RDONLY); }
-> > > > > > > > > > 
-> > > > > > > > > > int iio_adc_read_channel(int fd) {
-> > > > > > > > > > 	int count;
-> > > > > > > > > > 	char buffer[255];
-> > > > > > > > > > 	int value = -1;
-> > > > > > > > > > 
-> > > > > > > > > > 	lseek(fd,0,SEEK_SET);
-> > > > > > > > > > 
-> > > > > > > > > > 	count = read(fd, buffer, 255);
-> > > > > > > > > > 
-> > > > > > > > > > 	if (count > 0)
-> > > > > > > > > > 		value = strtoul(buffer, NULL, 10);
-> > > > > > > > > > 
-> > > > > > > > > > 	return value;
-> > > > > > > > > > }
-> > > > > > > > > > 
-> > > > > > > > > > Example usage:
-> > > > > > > > > > 
-> > > > > > > > > > int fd;
-> > > > > > > > > > .
-> > > > > > > > > > .
-> > > > > > > > > > 
-> > > > > > > > > > fd = iio_adc_open_channel(0, 4); .
-> > > > > > > > > > .
-> > > > > > > > > > 
-> > > > > > > > > > while (1)
-> > > > > > > > > > {
-> > > > > > > > > > 	printf("ADC = %x\n",
-> > > iio_adc_read_channel(fd)); }
-> > > > > > > > > > 
-> > > > > > > > > > 
-> > > > > > > > > 
-> > > > > > > > > I converted to using this interface and left the
-> > > > > system running
-> > > > > > > > > overnight and the touch screen was locked up 
-> this morning.
-> > > > > > > > 
-> > > > > > > > This is without any modifications to the kernel?
-> > > > > > > > 
-> > > > > > > 
-> > > > > > > This was still running the kernel modifications.  I've
-> > > > > restarted it
-> > > > > > > this morning without the kernel modifications.
-> > > > > > 
-> > > > > > I just dumped what I'm reading from the sys fs and all I'm
-> > > > > getting back is -1.
-> > > > > 
-> > > > > Are you doing error checking on the file descriptor on open?
-> > > > > > 
-> > > > > 
-> > > > 
-> > > > You were right, I had gone back to the original kernel that RCN 
-> > > > shipped with the image and it doesn't export /sys/bus/iio.
-> > > > 
-> > > > I rebuilt the 3.14.49-ti-r62 kernel, which is the same
-> > > release as the kernel in the image, but it does export 
-> /sys/bus/iio, 
-> > > so that much is working better.
-> > > > 
-> > > > But (there's always a but, isn't there), I'm reading three 
-> > > > channels from the ADC, 4, 5, & 6. Channel 4 gets a good reading 
-> > > > maybe 60% of the time I read it. Channel 5 gets a good reading 
-> > > > maybe
-> > > every 40-50 tries. Channel 6 hardly ever gets a good reading.
-> > > > 
-> > > > I guess I could just loop if I get a busy response,
-> > > although I don't
-> > > > know how many times I will get that return before I get a
-> > > good reading.
-> > > >
-> > > 
-> > > What is the indicator that the reading is bad?
-> > >  
-> > 
-> > I get back -1 if the channel is busy.
-> > I just put in a loop and for channel 4 I get either 1 or 2 tries to 
-> > get a good sample. Channels 5 & 6 are always returning a 
-> good sample on the second read.
-> > 
-> > I'll have to leave this on for overnight to see if the 
-> touch screen will lock up.
-> 
-> You could try adding a poll to the read function to wait for 
-> readings to be ready.
-> 
-> int iio_adc_read_channel(int fd)
-> {
-> 	int count;
-> 	char buffer[255];
-> 	int value = -1;
-> 	struct pollfd pfd;
-> 
-> 	pfd.fd = fd;
-> 	pfd.events = POLLIN;
-> 	pfd.revents = POLLIN;
-> 
-> 	lseek(fd,0,SEEK_SET);
-> 	poll(&pfd, 1, -1);
-> 	count = read(fd, buffer, 255);
-> 
-> 	if (count > 0)
-> 		value = strtoul(buffer, NULL, 10);
-> 
-> 	return value;
-> }
-> 
-> 
-I left my multiple read loop in. In the captures that I have done, I've not seen it take more than two reads to get a good result.
-The touch screen was locked up this morning though.
+--azLHFNyN32YCQGCU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I think that I'm going to have to recommend that we switch to an external ADC to solve these problems.
 
+> > > The series[1] I am working on implements a i2c smbus block data=20
+> > > regmap
+> > > bus driver. Regmap should then automatically do a block read in
+> > > regmap_bulk_read.
+> >=20
+> > Hmm, so doesn't your series make Irina's series obsolete? It=20
+> > addresses
+> > the same problem only at a different layer (i2c core vs. regmap), or?=
+=20
+> > It
+> > would mean that i2c client drivers which want to support byte, word,=20
+> > or
+> > block transfers should be converted to regmap. I assume most of the
+> > potential candidates are register based devices anyhow. Then, regmap
+> > would be the proper abstraction layer. Have I overlooked something?
+> >=20
+> This is the only driver converted to use regmap, because of SPI mode
+> support. The other drivers will still use Irina's changes.
+
+The question is if they should. Or rather be converted to regmap. It is
+an open question and I am seeking for further input.
+
+
+--azLHFNyN32YCQGCU
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJV1/RxAAoJEBQN5MwUoCm2Y28P/2AnnqIsvBK2u0QO/Y755hcx
+/gJeEsVQBqh9cAx5fr5jpV94IDpHvgsD8LNRBUV7KbtmZelawTS8t140ucaG7h17
+UdYimIJBByXT4b8/Zf+qlh2u/fjHFCHQDO2gaNCOvXzTZr8qJLnqv5N6EyTdVlUQ
+e2fZPvmBxdeUk3ndMqPr0kPo9pR+jB5Dfh556/0RjkVXXNZQNfryuV3Qia00H3o9
+hvxLN+TPx0hGo03MeeBCxDQ3iwNbqLyYvHHe7QEEfa/GmxEP8b8FHRuODNYbgBAB
+s/7coH0yY6UCyH1GGm1uRIXAUOXjdd5dg127OZexynLGEv7Pjwb0xv2XNYD9Jl4U
++2Dp5LaNVXaArRuwKlq6Y2LHiZU7BTd1fTfy8RkI+Jtecp9ZBCS+fpRAMYrJbtSu
+Ing2+mdqVqQ9BchoYyaLkUGqjeMbis4mSemFC/JdqQaqa9I6naLi/F6F8Nj7g9Gw
+KGRmNDcNS+G3NdGgLoq7yXvBRGx/rb2CTUAEy8Wh6reGtU9qUKWkWIHTUpD6YX/g
+2Im0CAt1byCMJ+jyawjlCD9CiMuCAN8gXrXJAsW0HVkMtoWdIrhcr01hpvQV3jOr
++BctbS8NsyP9vhCnXZKNPjQ6Qah/mDwzQMQNXD/JC+DaHSTd9780GhjX5hjogm3h
+bm23kO7ceqBMPL28uT/Q
+=XcGM
+-----END PGP SIGNATURE-----
+
+--azLHFNyN32YCQGCU--
