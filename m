@@ -1,54 +1,385 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38944 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751549AbbH0FmO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Aug 2015 01:42:14 -0400
-In-Reply-To: <CAKzfze8Qt99iUDyamy9bhxGHN3tJpMPVi6yMwe7zUfeF2YFO7Q@mail.gmail.com>
-References: <CAKzfze8Qt99iUDyamy9bhxGHN3tJpMPVi6yMwe7zUfeF2YFO7Q@mail.gmail.com>
+Received: from mail-bn1bon0071.outbound.protection.outlook.com ([157.56.111.71]:50236
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752279AbbH0GMQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 27 Aug 2015 02:12:16 -0400
+From: Chee Nouk Phoo <cnphoon@altera.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<devicetree@vger.kernel.org>
+CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+	<cnphoon.linux@gmail.com>, Chee Nouk Phoon <cnphoon@altera.com>
+Subject: [PATCH] Altera Modular ADC driver support
+Date: Wed, 26 Aug 2015 09:03:28 -0700
+Message-ID: <1440605008-30021-1-git-send-email-cnphoon@altera.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [RFC] Air quality sensor channel type
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Thu, 27 Aug 2015 06:41:48 +0100
-To: Matt Ranostay <mranostay@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Message-ID: <A4AD71F9-277A-4483-A656-CFBC482F0AF6@jic23.retrosnub.co.uk>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Chee Nouk Phoon <cnphoon@altera.com>
 
+Altera Modular ADC is soft IP that wraps the hardened ADC block in a Max10
+device. It can be configured to dual ADC mode that supports two channel
+synchronous sampling or independent single ADCs. ADC sampled values will be
+written into memory slots in sequence determined by a user configurable
+sequencer block.
 
-On 27 August 2015 05:55:39 BST, Matt Ranostay <mranostay@gmail.com> wrote:
->Jonathan et all,
->
->Shortly going to be working an i2c air quality sensor and noticed
->there is no current IIO_* channel attribute for anything VOC (volatile
->organic compound) or CO2 readings. The data that this sensor would
->report back is the parts per million of particles, so my first thought
->is something like IIO_VOCPPM.
-Sounds sensible. Maybe throw together ABI docs in advance of driver.
+This patch adds Altera Modular ADC driver support
 
->
->Also which subdirectory would make sense in? Or a new one like
->drivers/iio/voc ?
+Signed-off-by: Chee Nouk Phoon <cnphoon@altera.com>
+---
+ drivers/iio/adc/Kconfig           |   12 ++
+ drivers/iio/adc/Makefile          |    1 +
+ drivers/iio/adc/alt_modular_adc.c |  307 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 320 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/iio/adc/alt_modular_adc.c
 
-New directory. Are there other forms of air quality sensor? Perhaps even
- something general like IIO/chemical?
-
-
-
->
->MICS-VZ-89T I2C Datasheet:
->* http://sgx.cdistore.com/datasheets/sgx/VZ-89-I2C-Specs.pdf
->
->
->Thoughts? Comments?
->
->Thanks,
->
->Matt
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index eb0cd89..b0b1cff 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -117,6 +117,18 @@ config AD799X
+ 	  i2c analog to digital converters (ADC). Provides direct access
+ 	  via sysfs.
+ 
++config ALT_MODULAR_ADC
++	tristate "Altera Modular ADC driver"
++	depends on NIOS2
++	select ANON_INODES
++
++	help
++	  Say yes here to have support for Altera Modular ADC. The driver
++	  supports both Altera Modular ADC and Altera Modular Dual ADC.
++
++	  The driver can also be build as a module. If so the module will be
++	  called alt_modular_adc.
++
+ config AT91_ADC
+ 	tristate "Atmel AT91 ADC"
+ 	depends on ARCH_AT91
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index a096210..d7f10e0 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -38,3 +38,4 @@ obj-$(CONFIG_VF610_ADC) += vf610_adc.o
+ obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+ xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
+ obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
++obj-$(CONFIG_ALT_MODULAR_ADC) += alt_modular_adc.o
+diff --git a/drivers/iio/adc/alt_modular_adc.c b/drivers/iio/adc/alt_modular_adc.c
+new file mode 100644
+index 0000000..a5649d7
+--- /dev/null
++++ b/drivers/iio/adc/alt_modular_adc.c
+@@ -0,0 +1,307 @@
++/*
++ * Copyright (C) 2015 Altera Corporation. All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++
++#include <linux/iio/iio.h>
++
++/* Constant Definitions */
++#define MODE_MAX_SLOT		64
++#define MODE_MAX_ADC		2
++#define MODE_MAX_CHANNEL	18
++#define MODE_SINGLE_ADC		1
++#define MODE_DUAL_ADC		2
++#define MODE_ADC_BITS		12
++#define MODE_ADC_STORE_BITS	16
++
++/* Register Definitions */
++#define ADC_CMD_REG		0x0
++#define ADC_IER_REG		0x100
++#define ADC_ISR_REG		0x104
++
++#define ADC_RUN_MSK		0x1
++#define ADC_SINGLE_MKS		0x2
++#define ADC_STOP_MSK		0x0
++#define ADC_LOW_MSK		0xFFF
++#define ADC_HIGH_MSK		0xFFF0000
++
++struct altera_adc {
++	void __iomem		*seq_regs;
++	void __iomem		*sample_regs;
++
++	unsigned int		mode;
++	unsigned int		slot_count;
++	unsigned int		slot_sequence[MODE_MAX_ADC][MODE_MAX_SLOT];
++	unsigned int		adc_number;
++
++	u32			value;
++	u32			address;
++};
++
++static int alt_modular_adc_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val,
++				int *val2,
++				long mask)
++{
++	struct altera_adc *adc = iio_priv(indio_dev);
++	int ret = -EINVAL;
++
++	if (mask != IIO_CHAN_INFO_RAW)
++		return -EINVAL;
++
++	adc->value = readl(adc->sample_regs + (chan->address * 4));
++
++	if (adc->mode == MODE_SINGLE_ADC) {
++		*val = (adc->value & ADC_LOW_MSK);
++		ret = IIO_VAL_INT;
++	} else if (adc->mode == MODE_DUAL_ADC) {
++		*val = (adc->value & ADC_LOW_MSK);
++		*val2 = ((adc->value & ADC_HIGH_MSK) >> 16);
++		ret = IIO_VAL_INT_MULTIPLE;
++	}
++
++	return ret;
++}
++
++static const struct iio_info adc_iio_info = {
++	.read_raw = &alt_modular_adc_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int alt_modular_adc_channel_init(struct iio_dev *indio_dev)
++{
++	struct altera_adc *adc = iio_priv(indio_dev);
++	struct iio_chan_spec *chan_array;
++	struct iio_chan_spec *chan;
++	char str[20];
++	int i;
++
++	chan_array = kcalloc(adc->slot_count,
++		sizeof(struct iio_chan_spec), GFP_KERNEL);
++
++	if (chan_array == NULL)
++		return -ENOMEM;
++
++	chan = chan_array;
++	for (i = 0; i < adc->slot_count; i++, chan++) {
++		chan->type = IIO_VOLTAGE;
++		chan->indexed = 1;
++		chan->channel = i;
++		chan->address = i;
++
++		/* Construct iio sysfs name*/
++		if (adc->mode == MODE_SINGLE_ADC) {
++			sprintf(str, "adc%d-ch%d", adc->adc_number,
++				adc->slot_sequence[0][i]);
++		} else if (adc->mode == MODE_DUAL_ADC) {
++			sprintf(str, "adc1-ch%d_adc2-ch%d",
++				adc->slot_sequence[0][i],
++				adc->slot_sequence[1][i]);
++		} else {
++			return -EINVAL;
++		}
++
++		chan->datasheet_name = str;
++		chan->extend_name = str,
++		chan->scan_index = i;
++		chan->scan_type.sign = 'u';
++		chan->scan_type.realbits = MODE_ADC_BITS;
++		chan->scan_type.storagebits = MODE_ADC_STORE_BITS;
++		chan->scan_type.endianness = IIO_CPU;
++		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
++	}
++
++	indio_dev->channels = chan_array;
++
++	return 0;
++}
++
++static const struct of_device_id alt_modular_adc_match[] = {
++	{ .compatible = "altr,modular-adc-1.0" },
++	{ .compatible = "altr,modular-dual-adc-1.0" },
++	{ /* Sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, alt_modular_adc_match);
++
++static int alt_modular_adc_parse_dt(struct iio_dev *indio_dev,
++				struct device *dev)
++{
++	struct altera_adc *adc = iio_priv(indio_dev);
++	struct device_node *np = dev->of_node;
++	u32 value;
++	int ret, i, j;
++	char str[50];
++
++	ret = of_property_read_u32(np, "altr,adc-mode", &value);
++	if (ret < 0)
++		return ret;
++	if (value > MODE_MAX_ADC) {
++		dev_err(dev, "Invalid ADC mode value");
++		return -EINVAL;
++	}
++	adc->mode = value;
++
++
++	ret = of_property_read_u32(np, "altr,adc-slot-count", &value);
++	if (ret < 0)
++		return ret;
++	if (value > MODE_MAX_SLOT) {
++		dev_err(dev, "Invalid ADC slot count value");
++		return -EINVAL;
++	}
++	adc->slot_count = value;
++
++	ret = of_property_read_u32(np, "altr,adc-number", &value);
++	if (ret < 0)
++		return ret;
++	if (value > MODE_MAX_ADC) {
++		dev_err(dev, "Invalid ADC number value");
++		return -EINVAL;
++	}
++	adc->adc_number = value;
++
++	/* Device tree lookup for channels for each memory slots */
++	for (j = 0; j < adc->mode; j++) {
++		for (i = 0; i < adc->slot_count; i++) {
++			str[0] = '\0';
++
++			sprintf(str, "altr,adc%d-slot-sequence-%d",
++				(j + 1), (i + 1));
++
++			ret = of_property_read_u32(np, str, &value);
++			if (ret < 0)
++				return ret;
++			if (value > MODE_MAX_CHANNEL) {
++				dev_err(dev, "Invalid ADC channel value");
++				return -EINVAL;
++			}
++			adc->slot_sequence[j][i] = value;
++		}
++	}
++
++	return 0;
++}
++
++static int alt_modular_adc_probe(struct platform_device *pdev)
++{
++	struct altera_adc *adc = NULL;
++	struct device_node *np = pdev->dev.of_node;
++	struct iio_dev *indio_dev = NULL;
++	struct resource *mem;
++	int ret = -ENODEV;
++
++	if (!np)
++		return ret;
++
++	indio_dev = iio_device_alloc(sizeof(struct altera_adc));
++	if (!indio_dev) {
++		dev_err(&pdev->dev, "failed allocating iio device\n");
++		return -ENOMEM;
++	}
++
++	adc = iio_priv(indio_dev);
++
++	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	adc->seq_regs = devm_ioremap_resource(&pdev->dev, mem);
++	if (!adc->seq_regs) {
++		ret = -ENOMEM;
++		goto err_iio;
++	}
++
++	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
++	adc->sample_regs = devm_ioremap_resource(&pdev->dev, mem);
++	if (!adc->sample_regs) {
++		ret = -ENOMEM;
++		goto err_iio;
++	}
++
++	ret = alt_modular_adc_parse_dt(indio_dev, &pdev->dev);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed to parse device tree\n");
++		goto err_iio;
++	}
++
++	ret = alt_modular_adc_channel_init(indio_dev);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed initialize ADC channels\n");
++		goto err_iio;
++	}
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	indio_dev->name = dev_name(&pdev->dev);
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->dev.of_node = pdev->dev.of_node;
++	indio_dev->info = &adc_iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->num_channels = adc->slot_count;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto err_iio;
++
++	/* Disable Interrupt */
++	writel(0, (adc->sample_regs + ADC_IER_REG));
++
++	/* Start Continuous Sampling */
++	writel((ADC_RUN_MSK), (adc->seq_regs + ADC_CMD_REG));
++
++	return 0;
++
++
++err_iio:
++	iio_device_free(indio_dev);
++	return ret;
++}
++
++static int alt_modular_adc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct altera_adc *adc = iio_priv(indio_dev);
++
++	/* Stop ADC */
++	writel((ADC_STOP_MSK), (adc->seq_regs + ADC_CMD_REG));
++
++	/* Unregister ADC */
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
++static struct platform_driver altr_modular_adc_driver = {
++	.probe		= alt_modular_adc_probe,
++	.remove		= alt_modular_adc_remove,
++	.driver		= {
++		.name	= "alt-modular-adc",
++		.owner	= THIS_MODULE,
++		.of_match_table = alt_modular_adc_match,
++	},
++};
++
++
++module_platform_driver(altr_modular_adc_driver);
++
++MODULE_DESCRIPTION("Altera Modular ADC Driver");
++MODULE_AUTHOR("Chee Nouk Phoon <cnphoon@altera.com>");
++MODULE_LICENSE("GPL v2");
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+1.7.1
+
