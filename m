@@ -1,58 +1,65 @@
 Return-Path: <mranostay@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <A4AD71F9-277A-4483-A656-CFBC482F0AF6@jic23.retrosnub.co.uk>
-References: <CAKzfze8Qt99iUDyamy9bhxGHN3tJpMPVi6yMwe7zUfeF2YFO7Q@mail.gmail.com>
-	<A4AD71F9-277A-4483-A656-CFBC482F0AF6@jic23.retrosnub.co.uk>
-Date: Wed, 26 Aug 2015 23:31:26 -0700
-Message-ID: <CAKzfze_RxUYWrqFNgo3boQ_u1tBZYgXpGaC9SkqHVMqYCujcvA@mail.gmail.com>
-Subject: Re: [RFC] Air quality sensor channel type
 From: Matt Ranostay <mranostay@gmail.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [RFC] iio: ppm: Add IIO_PPM channel type
+Date: Wed, 26 Aug 2015 23:45:30 -0700
+Message-Id: <1440657930-14871-1-git-send-email-mranostay@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Aug 26, 2015 at 10:41 PM, Jonathan Cameron
-<jic23@jic23.retrosnub.co.uk> wrote:
->
->
-> On 27 August 2015 05:55:39 BST, Matt Ranostay <mranostay@gmail.com> wrote:
->>Jonathan et all,
->>
->>Shortly going to be working an i2c air quality sensor and noticed
->>there is no current IIO_* channel attribute for anything VOC (volatile
->>organic compound) or CO2 readings. The data that this sensor would
->>report back is the parts per million of particles, so my first thought
->>is something like IIO_VOCPPM.
-> Sounds sensible. Maybe throw together ABI docs in advance of driver.
+There are air quality sensors that report data back in parts per million
+of VOC (Volatile Organic Compounds) which are usually indexed from CO2
+or another common pollutant.
 
-Second thought a more generic IIO_PPM or IIO_PARTSPERMILLION makes
-more sense since it couldn't always be VOC reported back. Like in this
-sensor case it reports CO2 and VOC data differently.
+This patchset adds an IIO_PPM type because no other channels types fit
+this use case.
 
-I'll submit a RFC patch either tonight or tomorrow  to the list.
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+ drivers/iio/industrialio-core.c         | 1 +
+ include/uapi/linux/iio/types.h          | 1 +
+ 3 files changed, 9 insertions(+)
 
->
->>
->>Also which subdirectory would make sense in? Or a new one like
->>drivers/iio/voc ?
->
-> New directory. Are there other forms of air quality sensor? Perhaps even
->  something general like IIO/chemical?
->
->
->
->>
->>MICS-VZ-89T I2C Datasheet:
->>* http://sgx.cdistore.com/datasheets/sgx/VZ-89-I2C-Specs.pdf
->>
->>
->>Thoughts? Comments?
->>
->>Thanks,
->>
->>Matt
->
-> --
-> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 42d360f..79366a3 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1459,3 +1459,10 @@ Description:
+ 		measurements and return the average value as output data. Each
+ 		value resulted from <type>[_name]_oversampling_ratio measurements
+ 		is considered as one sample for <type>[_name]_sampling_frequency.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_ppm_raw
++KernelVersion:	4.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled no offset etc.) parts per million measure reading
++		of data like CO2 or VOC (Volatile Organic Compounds) substances.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index b3fcc2c..65285c7 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -75,6 +75,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_ENERGY] = "energy",
+ 	[IIO_DISTANCE] = "distance",
+ 	[IIO_VELOCITY] = "velocity",
++	[IIO_PPM] = "ppm",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 2f8b117..7113f9b 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -35,6 +35,7 @@ enum iio_chan_type {
+ 	IIO_ENERGY,
+ 	IIO_DISTANCE,
+ 	IIO_VELOCITY,
++	IIO_PPM,
+ };
+ 
+ enum iio_modifier {
+-- 
+1.9.1
