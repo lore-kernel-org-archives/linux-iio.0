@@ -1,67 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f43.google.com ([209.85.215.43]:34633 "EHLO
-	mail-la0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752565AbbHaM6P (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 08:58:15 -0400
-Received: by laba3 with SMTP id a3so70208204lab.1
-        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2015 05:58:14 -0700 (PDT)
+Received: from 19pmail.ess.barracuda.com ([64.235.150.244]:58912 "EHLO
+	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751604AbbH0Ukd convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Aug 2015 16:40:33 -0400
+From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+To: Michael Welling <mwelling@ieee.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Thu, 27 Aug 2015 13:40:24 -0700
+Subject: RE: Adding MAX1363 to BBB
+Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD49A5@sfamail.SAKURAUS.LOCAL>
+References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4699@sfamail.SAKURAUS.LOCAL>
+ <20150824165433.GA3398@deathstar>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD498E@sfamail.SAKURAUS.LOCAL>
+ <20150827191616.GA8285@deathstar>
+In-Reply-To: <20150827191616.GA8285@deathstar>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <20f1a555b8a1d2f7967041de85ee4335b1ff549d.1440459082.git.knaack.h@gmx.de>
-References: <cover.1440459082.git.knaack.h@gmx.de>
-	<20f1a555b8a1d2f7967041de85ee4335b1ff549d.1440459082.git.knaack.h@gmx.de>
-Date: Mon, 31 Aug 2015 15:58:14 +0300
-Message-ID: <CAEnQRZDnFUKpRNS0Qs+cg0dhnp3Uy==pZ8qp6wss=U8B_yn5LQ@mail.gmail.com>
-Subject: Re: [PATCH 3/6] iio:dac:m62332: use ARRAY_SIZE
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Aug 29, 2015 at 12:59 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
-> Make use of ARRAY_SIZE to prevent buffer issues.
->
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+ 
 
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+> -----Original Message-----
+> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf 
+> Of Michael Welling
+> Sent: Thursday, August 27, 2015 12:16 PM
+> To: Greg Wilson-Lindberg
+> Cc: linux-iio@vger.kernel.org
+> Subject: Re: Adding MAX1363 to BBB
+> 
+> On Thu, Aug 27, 2015 at 12:10:06PM -0700, Greg Wilson-Lindberg wrote:
+> >  
+> > 
+> > > -----Original Message-----
+> > > From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf Of 
+> > > Michael Welling
+> > > Sent: Monday, August 24, 2015 9:55 AM
+> > > To: Greg Wilson-Lindberg
+> > > Cc: linux-iio@vger.kernel.org
+> > > Subject: Re: Adding MAX1363 to BBB
+> > > 
+> > > On Mon, Aug 24, 2015 at 09:26:53AM -0700, Greg 
+> Wilson-Lindberg wrote:
+> > > > I don't know if anybody on this list can answer this, we
+> > > are going to add an IIO compatible Maxim MAX1363 4 channel ADC to 
+> > > our BBB cape and I am not sure how to specify in the dts 
+> file that 
+> > > it is connected to the I2C channel.
+> > > > If anyone can give me suggestions, it would be greatly 
+> appreciated.
+> > > >  
+> > > 
+> > > Give this a try:
+> > > 
+> > > &i2c1 {
+> > > 	status = "okay";
+> > > 
+> > > 	adc@34 {
+> > > 		compatible = "maxim,max1363";
+> > > 		vcc-supply = <&reg_3v3>;
+> > > 		reg = <0x34>;
+> > > 	};
+> > > };
+> > > 
+> > > This assume you have an i2c1 and reg_3v3 defined.
+> > > 
+> > > Here is a real example that looks like it uses the same driver:
+> > > http://lxr.free-electrons.com/source/arch/arm/boot/dts/imx27-p
+> > > hytec-phycard-s-rdk.dts?v=3.14#L56
+> > > 
+> > 
+> > I've got the max1363 installed on a board and it is showing 
+> up as an I2C device, but not as an IIO device. I used your 
+> example above for the dts file.
+> > 
+> > Any thoughts?
+> 
+> Try using the following instead:
+> &i2c1 {
+> 	status = "okay";
+> 
+> 	adc@34 {
+> 		compatible = "max1363";
+> 		vcc-supply = <&reg_3v3>;
+> 		reg = <0x34>;
+> 	};
+> };
 
-> ---
->  drivers/iio/dac/m62332.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-> index c61720de8606..fe750982b502 100644
-> --- a/drivers/iio/dac/m62332.c
-> +++ b/drivers/iio/dac/m62332.c
-> @@ -62,8 +62,8 @@ static int m62332_set_value(struct iio_dev *indio_dev,
->                         goto out;
->         }
->
-> -       res = i2c_master_send(client, outbuf, 2);
-> -       if (res >= 0 && res != 2)
-> +       res = i2c_master_send(client, outbuf, ARRAY_SIZE(outbuf));
-> +       if (res >= 0 && res != ARRAY_SIZE(outbuf))
->                 res = -EIO;
->         if (res < 0)
->                 goto out;
-> @@ -212,7 +212,7 @@ static int m62332_probe(struct i2c_client *client,
->         /* establish that the iio_dev is a child of the i2c device */
->         indio_dev->dev.parent = &client->dev;
->
-> -       indio_dev->num_channels = M62332_CHANNELS;
-> +       indio_dev->num_channels = ARRAY_SIZE(m62332_channels);
->         indio_dev->channels = m62332_channels;
->         indio_dev->modes = INDIO_DIRECT_MODE;
->         indio_dev->info = &m62332_info;
-> --
-> 2.4.6
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I changed the dts to "max1363", but that didn't get it to show up under iio devices.
+
+> 
+> > 
+> > > 
+> > > > Greg Wilson-Lindberg
+> > > > Sakura Finetek
+> > > > 310-783-5075
+> > > > --
+> > > > To unsubscribe from this list: send the line "unsubscribe
+> > > linux-iio" 
+> > > > in the body of a message to majordomo@vger.kernel.org More
+> > > majordomo
+> > > > info at  http://vger.kernel.org/majordomo-info.html
+> > > 
+> 
