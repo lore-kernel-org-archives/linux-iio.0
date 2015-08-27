@@ -1,266 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42695 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751276AbbH0Shf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Aug 2015 14:37:35 -0400
-Subject: Re: [PATCH v5] iio: mlx90614: Implement filter configuration
-To: Crt Mori <cmo@melexis.com>,
-	Vianney le Clement de Saint-Marcq
-	<vianney.leclement@essensium.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-References: <1439832873-3351-1-git-send-email-cmo@melexis.com>
-Cc: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55DF58EB.7090409@kernel.org>
-Date: Thu, 27 Aug 2015 19:37:31 +0100
+Received: from 19pmail.ess.barracuda.com ([64.235.154.230]:56086 "EHLO
+	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751667AbbH0TN4 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Aug 2015 15:13:56 -0400
+From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+To: Michael Welling <mwelling@ieee.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Thu, 27 Aug 2015 12:10:06 -0700
+Subject: RE: Adding MAX1363 to BBB
+Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD498E@sfamail.SAKURAUS.LOCAL>
+References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4699@sfamail.SAKURAUS.LOCAL>
+ <20150824165433.GA3398@deathstar>
+In-Reply-To: <20150824165433.GA3398@deathstar>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <1439832873-3351-1-git-send-email-cmo@melexis.com>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/08/15 18:34, Crt Mori wrote:
-> Implemented Low pass 3db frequency filter which configures
-> FIR and IIR values within the configuration register of EEPROM.
-> For more standardized interface we have fixed the FIR value
-> to 1024, while changes in IIR value are directly connected to
-> filter responses. The new datasheet version will provide a
-> simplified table (also in reStructured text format below) with
-> this change, to provide quick overview of possible settings.
-> 
-> Below sensor timings (bandwidth) are calculated for 3db frequency
-> low pass filter.
-> 
-> +--------------------+-----------------+
-> | Filter setting (%) | Band width (Hz) |
-> |  (rounded to 1.0)  |                 |
-> +====================+=================+
-> |         13         |      0.15       |
-> +--------------------+-----------------+
-> |         17         |      0.20       |
-> +--------------------+-----------------+
-> |         25         |      0.31       |
-> +--------------------+-----------------+
-> |         50         |      0.77       |
-> +--------------------+-----------------+
-> |         57         |      0.86       |
-> +--------------------+-----------------+
-> |         67         |      1.10       |
-> +--------------------+-----------------+
-> |         80         |      1.53       |
-> +--------------------+-----------------+
-> |        100         |      7.23       |
-> +--------------------+-----------------+
-> 
-> The diff is made towards togreg branch. Added myself to MAINTAINERS and
-> authors as per discussion with Jonathan.
-> 
-> Signed-off-by: Crt Mori <cmo@melexis.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.
+ 
 
-Thanks,
-
-Jonathan
-> ---
->  MAINTAINERS                        |  7 +++
->  drivers/iio/temperature/mlx90614.c | 90 ++++++++++++++++++++++++++++++++++++--
->  2 files changed, 94 insertions(+), 3 deletions(-)
+> -----Original Message-----
+> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf 
+> Of Michael Welling
+> Sent: Monday, August 24, 2015 9:55 AM
+> To: Greg Wilson-Lindberg
+> Cc: linux-iio@vger.kernel.org
+> Subject: Re: Adding MAX1363 to BBB
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 8133cef..f658890 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -6739,6 +6739,13 @@ S:	Supported
->  F:	include/linux/mlx5/
->  F:	drivers/infiniband/hw/mlx5/
->  
-> +MELEXIS MLX90614 DRIVER
-> +M:	Crt Mori <cmo@melexis.com>
-> +L:	linux-iio@vger.kernel.org
-> +W:	http://www.melexis.com
-> +S:	Supported
-> +F:	drivers/iio/temperature/mlx90614.c
-> +
->  MN88472 MEDIA DRIVER
->  M:	Antti Palosaari <crope@iki.fi>
->  L:	linux-media@vger.kernel.org
-> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
-> index 5d033a5..3fd3ba4 100644
-> --- a/drivers/iio/temperature/mlx90614.c
-> +++ b/drivers/iio/temperature/mlx90614.c
-> @@ -3,6 +3,7 @@
->   *
->   * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
->   * Copyright (c) 2015 Essensium NV
-> + * Copyright (c) 2015 Melexis
->   *
->   * This file is subject to the terms and conditions of version 2 of
->   * the GNU General Public License.  See the file COPYING in the main
-> @@ -20,7 +21,6 @@
->   * always has a pull-up so we do not need an extra GPIO to drive it high.  If
->   * the "wakeup" GPIO is not given, power management will be disabled.
->   *
-> - * TODO: filter configuration
->   */
->  
->  #include <linux/err.h>
-> @@ -32,6 +32,7 @@
->  #include <linux/pm_runtime.h>
->  
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
->  
->  #define MLX90614_OP_RAM		0x00
->  #define MLX90614_OP_EEPROM	0x20
-> @@ -79,6 +80,20 @@ struct mlx90614_data {
->  	unsigned long ready_timestamp; /* in jiffies */
->  };
->  
-> +/* Bandwidth values for IIR filtering */
-> +static const int mlx90614_iir_values[] = {77, 31, 20, 15, 723, 153, 110, 86};
-> +static IIO_CONST_ATTR(in_temp_object_filter_low_pass_3db_frequency_available,
-> +		      "0.15 0.20 0.31 0.77 0.86 1.10 1.53 7.23");
-> +
-> +static struct attribute *mlx90614_attributes[] = {
-> +	&iio_const_attr_in_temp_object_filter_low_pass_3db_frequency_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group mlx90614_attr_group = {
-> +	.attrs = mlx90614_attributes,
-> +};
-> +
->  /*
->   * Erase an address and write word.
->   * The mutex must be locked before calling.
-> @@ -117,6 +132,42 @@ static s32 mlx90614_write_word(const struct i2c_client *client, u8 command,
->  	return ret;
->  }
->  
-> +/*
-> + * Find the IIR value inside mlx90614_iir_values array and return its position
-> + * which is equivalent to the bit value in sensor register
-> + */
-> +static inline s32 mlx90614_iir_search(const struct i2c_client *client,
-> +				      int value)
-> +{
-> +	int i;
-> +	s32 ret;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(mlx90614_iir_values); ++i) {
-> +		if (value == mlx90614_iir_values[i])
-> +			break;
-> +	}
-> +
-> +	if (i == ARRAY_SIZE(mlx90614_iir_values))
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * CONFIG register values must not be changed so
-> +	 * we must read them before we actually write
-> +	 * changes
-> +	 */
-> +	ret = i2c_smbus_read_word_data(client, MLX90614_CONFIG);
-> +	if (ret > 0)
-> +		return ret;
-> +
-> +	/* Write changed values */
-> +	ret = mlx90614_write_word(client, MLX90614_CONFIG,
-> +			(i << MLX90614_CONFIG_IIR_SHIFT) |
-> +			(((u16) ((0x7 << MLX90614_CONFIG_FIR_SHIFT) |
-> +			((u16) ret & (~((u16) MLX90614_CONFIG_FIR_MASK))))) &
-> +			(~(u16) MLX90614_CONFIG_IIR_MASK)));
-> +	return ret;
-> +}
-> +
->  #ifdef CONFIG_PM
->  /*
->   * If @startup is true, make sure MLX90614_TIMING_STARTUP ms have elapsed since
-> @@ -236,6 +287,21 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
->  			*val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
->  		}
->  		return IIO_VAL_INT_PLUS_NANO;
-> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* IIR setting with
-> +							     FIR = 1024 */
-> +		mlx90614_power_get(data, false);
-> +		mutex_lock(&data->lock);
-> +		ret = i2c_smbus_read_word_data(data->client, MLX90614_CONFIG);
-> +		mutex_unlock(&data->lock);
-> +		mlx90614_power_put(data);
-> +
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = mlx90614_iir_values[ret & MLX90614_CONFIG_IIR_MASK] / 100;
-> +		*val2 = (mlx90614_iir_values[ret & MLX90614_CONFIG_IIR_MASK] % 100) *
-> +			10000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -263,6 +329,18 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
->  		mlx90614_power_put(data);
->  
->  		return ret;
-> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* IIR Filter setting */
-> +		if (val < 0 || val2 < 0)
-> +			return -EINVAL;
-> +
-> +		mlx90614_power_get(data, false);
-> +		mutex_lock(&data->lock);
-> +		ret = mlx90614_iir_search(data->client,
-> +					  val * 100 + val2 / 10000);
-> +		mutex_unlock(&data->lock);
-> +		mlx90614_power_put(data);
-> +
-> +		return ret;
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -275,6 +353,8 @@ static int mlx90614_write_raw_get_fmt(struct iio_dev *indio_dev,
->  	switch (mask) {
->  	case IIO_CHAN_INFO_CALIBEMISSIVITY:
->  		return IIO_VAL_INT_PLUS_NANO;
-> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -294,7 +374,8 @@ static const struct iio_chan_spec mlx90614_channels[] = {
->  		.modified = 1,
->  		.channel2 = IIO_MOD_TEMP_OBJECT,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -		    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
-> +		    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
-> +			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
->  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->  		    BIT(IIO_CHAN_INFO_SCALE),
->  	},
-> @@ -305,7 +386,8 @@ static const struct iio_chan_spec mlx90614_channels[] = {
->  		.channel = 1,
->  		.channel2 = IIO_MOD_TEMP_OBJECT,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -		    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
-> +		    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
-> +			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
->  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->  		    BIT(IIO_CHAN_INFO_SCALE),
->  	},
-> @@ -315,6 +397,7 @@ static const struct iio_info mlx90614_info = {
->  	.read_raw = mlx90614_read_raw,
->  	.write_raw = mlx90614_write_raw,
->  	.write_raw_get_fmt = mlx90614_write_raw_get_fmt,
-> +	.attrs = &mlx90614_attr_group,
->  	.driver_module = THIS_MODULE,
->  };
->  
-> @@ -569,5 +652,6 @@ module_i2c_driver(mlx90614_driver);
->  
->  MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
->  MODULE_AUTHOR("Vianney le Clément de Saint-Marcq <vianney.leclement@essensium.com>");
-> +MODULE_AUTHOR("Crt Mori <cmo@melexis.com>");
->  MODULE_DESCRIPTION("Melexis MLX90614 contactless IR temperature sensor driver");
->  MODULE_LICENSE("GPL");
+> On Mon, Aug 24, 2015 at 09:26:53AM -0700, Greg Wilson-Lindberg wrote:
+> > I don't know if anybody on this list can answer this, we 
+> are going to add an IIO compatible Maxim MAX1363 4 channel 
+> ADC to our BBB cape and I am not sure how to specify in the 
+> dts file that it is connected to the I2C channel.
+> > If anyone can give me suggestions, it would be greatly appreciated.
+> >  
+> 
+> Give this a try:
+> 
+> &i2c1 {
+> 	status = "okay";
+> 
+> 	adc@34 {
+> 		compatible = "maxim,max1363";
+> 		vcc-supply = <&reg_3v3>;
+> 		reg = <0x34>;
+> 	};
+> };
+> 
+> This assume you have an i2c1 and reg_3v3 defined.
+> 
+> Here is a real example that looks like it uses the same driver:
+> http://lxr.free-electrons.com/source/arch/arm/boot/dts/imx27-p
+> hytec-phycard-s-rdk.dts?v=3.14#L56
 > 
 
+I've got the max1363 installed on a board and it is showing up as an I2C device, but not as an IIO device. I used your example above for the dts file.
+
+Any thoughts?
+
+> 
+> > Greg Wilson-Lindberg
+> > Sakura Finetek
+> > 310-783-5075
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe 
+> linux-iio" 
+> > in the body of a message to majordomo@vger.kernel.org More 
+> majordomo 
+> > info at  http://vger.kernel.org/majordomo-info.html
+> 
