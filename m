@@ -1,92 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43256 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751051AbbH0UXF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Aug 2015 16:23:05 -0400
-Subject: Re: [PATCH v6 2/2] devicetree: Add documentation for UPISEMI us5182d
- ALS and Proximity sensor
-To: Adriana Reus <adriana.reus@intel.com>, pmeerw@pmeerw.net,
-	daniel.baluta@intel.com
-References: <1440065534-8601-1-git-send-email-adriana.reus@intel.com>
- <1440065534-8601-3-git-send-email-adriana.reus@intel.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55DF71A5.1010705@kernel.org>
-Date: Thu, 27 Aug 2015 21:23:01 +0100
+Received: from smtp-out-220.synserver.de ([212.40.185.220]:1086 "EHLO
+	smtp-out-200.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751389AbbH1Geu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 28 Aug 2015 02:34:50 -0400
+Message-ID: <55E000F2.9000403@metafoo.de>
+Date: Fri, 28 Aug 2015 08:34:26 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <1440065534-8601-3-git-send-email-adriana.reus@intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: Matt Ranostay <mranostay@gmail.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [RFC] iio: ppm: Add IIO_PPM channel type
+References: <1440657930-14871-1-git-send-email-mranostay@gmail.com>	<55DF2F67.3000209@metafoo.de>	<55DF33BF.7080808@metafoo.de> <CAKzfze_ySetkta6cAHo7yg4mJ49UC+ymdcj6u04xs0rYe8PA_A@mail.gmail.com>
+In-Reply-To: <CAKzfze_ySetkta6cAHo7yg4mJ49UC+ymdcj6u04xs0rYe8PA_A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/08/15 11:12, Adriana Reus wrote:
-> Added entries in i2c/vendor-prefixes for the us5182d als and proximity sensor.
-> Also added a documentation file for this sensor's properties.
+On 08/27/2015 11:40 PM, Matt Ranostay wrote:
+> On Thu, Aug 27, 2015 at 8:58 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> On 08/27/2015 05:40 PM, Lars-Peter Clausen wrote:
+>>> On 08/27/2015 08:45 AM, Matt Ranostay wrote:
+>>>> There are air quality sensors that report data back in parts per million
+>>>> of VOC (Volatile Organic Compounds) which are usually indexed from CO2
+>>>> or another common pollutant.
+>>>>
+>>>> This patchset adds an IIO_PPM type because no other channels types fit
+>>>> this use case.
+>>>
+>>> Hm, I'm not sure if parts-per-million is a good channel type. It's more of a
+>>> scale. The type would be concentration.[...]
+>>
+>> Reading a bit more[1], concentration doesn't actually seem to be the right
+>> term in this case, the correct term is mole fraction. Maybe we can use that
+>> as the type. That also makes it clear that the unit is molecules per molecule.
+>>
+> Actually we can't use mole fraction for this because we aren't in a
+> chemistry lab, and know the other compounds that make up the local
+> atmosphere. Besides you'd have to include some insane lookup table for
+> molar mass of carbon or whatever VOC being measured :)
+
+I don't think you'd need that. Mole fraction tells you the number of
+molecules of something per total number of molecules. You don't need the
+mass for this.
+
+But what exactly is the sensor measuring? CO2 (or VOC) molecules per total
+number of molecules or number of CO2 molecules in a particular volume?
+
 > 
-> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
-This isn't that trivial so I'd like some device tree maintainer
-input if possible.
-
-For now I've backed out the driver from my tree (given timing we have
-loads of time to sort this out!)
-
-Anyhow, anyone device tree related able to take a look at this.
-
-Adriana, btw these should be cc'd to the device tree maintainers in
-the first place (now added).
-
-Jonathan
-> ---
->  .../devicetree/bindings/iio/light/us5182d.txt      | 23 ++++++++++++++++++++++
->  .../devicetree/bindings/vendor-prefixes.txt        |  1 +
->  2 files changed, 24 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/us5182d.txt
+> IIO_CONCENTRATION could be useful since you could just change the
+> scale to make it ppm or ppb or whatever.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/light/us5182d.txt b/Documentation/devicetree/bindings/iio/light/us5182d.txt
-> new file mode 100644
-> index 0000000..7785c56
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/us5182d.txt
-> @@ -0,0 +1,23 @@
-> +* UPISEMI us5182d I2C ALS and Proximity sensor
-> +
-> +Required properties:
-> +- compatible: must be "upisemi,usd5182"
-> +- reg: the I2C address of the device
-> +
-> +Optional properties:
-> +- upisemi,glass-coef: glass attenuation factor
-> +- upisemi,dark-ths: array of thresholds (adc counts) corresponding to every scale
-> +- upisemi,upper-dark-gain: tuning factor(4 int and 4 fractional bits - Q4.4) applied when light > threshold
-> +- upisemi,lower-dark-gain: tuning factor(4 int and 4 fractional bits - Q4.4) applied when light < threshold
-> +
-> +Example:
-> +
-> +    usd5182@39 {
-> +                compatible = "upisemi,usd5182";
-> +                reg = <0x39>;
-> +                upisemi,glass-coef = < 1000 >;
-> +                upisemi,dark-ths = /bits/ 16 <170 200 512 512 800 2000 4000 8000>;
-> +                upisemi,upper-dark-gain = /bits/ 8 <0x00>;
-> +                upisemi,lower-dark-gain = /bits/ 8 <0x16>;
-> +    };
-> +
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> index d444757..5b40bab 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> @@ -211,6 +211,7 @@ toshiba	Toshiba Corporation
->  toumaz	Toumaz
->  tplink	TP-LINK Technologies Co., Ltd.
->  truly	Truly Semiconductors Limited
-> +upisemi	uPI Semiconductor Corp.
->  usi	Universal Scientific Industrial Co., Ltd.
->  v3	V3 Semiconductor
->  variscite	Variscite Ltd.
+>> - Lars
+>>
+>> [1] https://en.wikipedia.org/wiki/Concentration
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
