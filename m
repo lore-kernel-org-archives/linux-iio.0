@@ -1,74 +1,188 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:60872 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752856AbbH1WAY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 28 Aug 2015 18:00:24 -0400
-From: Hartmut Knaack <knaack.h@gmx.de>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-Subject: [PATCH 6/6] iio:dac:m62332: use dynamic scale
-Date: Fri, 28 Aug 2015 23:59:58 +0200
-Message-Id: <59133cb6c4c826e9fff4ab5504eb42c16d40fe70.1440459082.git.knaack.h@gmx.de>
-In-Reply-To: <cover.1440459082.git.knaack.h@gmx.de>
-References: <cover.1440459082.git.knaack.h@gmx.de>
-In-Reply-To: <cover.1440459082.git.knaack.h@gmx.de>
-References: <cover.1440459082.git.knaack.h@gmx.de>
+Received: from 19pmail.ess.barracuda.com ([64.235.154.230]:57568 "EHLO
+	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752898AbbH1X4a convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 28 Aug 2015 19:56:30 -0400
+From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+To: Greg Wilson-Lindberg <GWilson@sakuraus.com>,
+	Michael Welling <mwelling@ieee.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Fri, 28 Aug 2015 16:56:20 -0700
+Subject: RE: Adding MAX1363 to BBB
+Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4A61@sfamail.SAKURAUS.LOCAL>
+References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4699@sfamail.SAKURAUS.LOCAL>
+ <20150824165433.GA3398@deathstar>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD498E@sfamail.SAKURAUS.LOCAL>
+ <20150827191616.GA8285@deathstar>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD49A5@sfamail.SAKURAUS.LOCAL>
+ <20150827204225.GA3789@deathstar>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD49AB@sfamail.SAKURAUS.LOCAL>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD49B7@sfamail.SAKURAUS.LOCAL>
+In-Reply-To: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD49B7@sfamail.SAKURAUS.LOCAL>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some regulators can supply multiple voltages. To take changing voltages
-into account, the scale needs to be calculated on every read access.
+ 
 
-Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
----
- drivers/iio/dac/m62332.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+> -----Original Message-----
+> From: Greg Wilson-Lindberg 
+> Sent: Thursday, August 27, 2015 2:44 PM
+> To: Greg Wilson-Lindberg; Michael Welling
+> Cc: linux-iio@vger.kernel.org
+> Subject: RE: Adding MAX1363 to BBB
+> 
+>  
+> 
+> > -----Original Message-----
+> > From: linux-iio-owner@vger.kernel.org 
+> > [mailto:linux-iio-owner@vger.kernel.org] On Behalf Of Greg 
+> > Wilson-Lindberg
+> > Sent: Thursday, August 27, 2015 2:06 PM
+> > To: Michael Welling
+> > Cc: linux-iio@vger.kernel.org
+> > Subject: RE: Adding MAX1363 to BBB
+> > 
+> >  
+> > 
+> > > -----Original Message-----
+> > > From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf Of 
+> > > Michael Welling
+> > > Sent: Thursday, August 27, 2015 1:42 PM
+> > > To: Greg Wilson-Lindberg
+> > > Cc: linux-iio@vger.kernel.org
+> > > Subject: Re: Adding MAX1363 to BBB
+> > > 
+> > > On Thu, Aug 27, 2015 at 01:40:24PM -0700, Greg
+> > Wilson-Lindberg wrote:
+> > > >  
+> > > > 
+> > > > > -----Original Message-----
+> > > > > From: Michael Welling [mailto:mwelling79@gmail.com] On
+> > Behalf Of
+> > > > > Michael Welling
+> > > > > Sent: Thursday, August 27, 2015 12:16 PM
+> > > > > To: Greg Wilson-Lindberg
+> > > > > Cc: linux-iio@vger.kernel.org
+> > > > > Subject: Re: Adding MAX1363 to BBB
+> > > > > 
+> > > > > On Thu, Aug 27, 2015 at 12:10:06PM -0700, Greg
+> > > Wilson-Lindberg wrote:
+> > > > > >  
+> > > > > > 
+> > > > > > > -----Original Message-----
+> > > > > > > From: Michael Welling [mailto:mwelling79@gmail.com]
+> > > On Behalf Of
+> > > > > > > Michael Welling
+> > > > > > > Sent: Monday, August 24, 2015 9:55 AM
+> > > > > > > To: Greg Wilson-Lindberg
+> > > > > > > Cc: linux-iio@vger.kernel.org
+> > > > > > > Subject: Re: Adding MAX1363 to BBB
+> > > > > > > 
+> > > > > > > On Mon, Aug 24, 2015 at 09:26:53AM -0700, Greg
+> > > > > Wilson-Lindberg wrote:
+> > > > > > > > I don't know if anybody on this list can answer this, we
+> > > > > > > are going to add an IIO compatible Maxim MAX1363 4
+> > > channel ADC
+> > > > > > > to our BBB cape and I am not sure how to specify 
+> in the dts
+> > > > > file that
+> > > > > > > it is connected to the I2C channel.
+> > > > > > > > If anyone can give me suggestions, it would be greatly
+> > > > > appreciated.
+> > > > > > > >  
+> > > > > > > 
+> > > > > > > Give this a try:
+> > > > > > > 
+> > > > > > > &i2c1 {
+> > > > > > > 	status = "okay";
+> > > > > > > 
+> > > > > > > 	adc@34 {
+> > > > > > > 		compatible = "maxim,max1363";
+> > > > > > > 		vcc-supply = <&reg_3v3>;
+> > > > > > > 		reg = <0x34>;
+> > > > > > > 	};
+> > > > > > > };
+> > > > > > > 
+> > > > > > > This assume you have an i2c1 and reg_3v3 defined.
+> > > > > > > 
+> > > > > > > Here is a real example that looks like it uses the
+> > > same driver:
+> > > > > > > 
+> > http://lxr.free-electrons.com/source/arch/arm/boot/dts/imx27-p
+> > > > > > > hytec-phycard-s-rdk.dts?v=3.14#L56
+> > > > > > > 
+> > > > > > 
+> > > > > > I've got the max1363 installed on a board and it is showing
+> > > > > up as an I2C device, but not as an IIO device. I used
+> > > your example
+> > > > > above for the dts file.
+> > > > > > 
+> > > > > > Any thoughts?
+> > > > > 
+> > > > > Try using the following instead:
+> > > > > &i2c1 {
+> > > > > 	status = "okay";
+> > > > > 
+> > > > > 	adc@34 {
+> > > > > 		compatible = "max1363";
+> > > > > 		vcc-supply = <&reg_3v3>;
+> > > > > 		reg = <0x34>;
+> > > > > 	};
+> > > > > };
+> > > > 
+> > > > I changed the dts to "max1363", but that didn't get it to
+> > > show up under iio devices.
+> > > > 
+> > > 
+> > > Is the driver compiled into the kernel or a module?
+> > 
+> > Duh, surprisingly, it was not compiled in at all, that's what I get 
+> > for thinking everything was enabled.
+> > 
+> > I compiled it as a module and then I tested it both with 
+> the dts set 
+> > to "max1363" and "maxim,max1363" and lsmod says the module isn't 
+> > loaded. I think that I'll build the kernel with it compiled in.
+> > 
+> 
+> I compiled in the max1363 and tsadc drivers (and IIO 
+> subsystem) and with the dts set to "maxim,max1363" the 
+> max1363 is showing up as 
+> /sys/devices/ocp/4819c000.i2c/i2c-2/2-0034/iio:device0.
+> 
+> So now all I have to do is get the read routines working with it.
+> 
+> Again, thanks for all of your help.
+> 
 
-diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-index fdb3e042c14d..76e8b044b979 100644
---- a/drivers/iio/dac/m62332.c
-+++ b/drivers/iio/dac/m62332.c
-@@ -31,7 +31,6 @@
- 
- struct m62332_data {
- 	struct i2c_client	*client;
--	u16			vref_mv;
- 	struct regulator	*vcc;
- 	struct mutex		mutex;
- 	u8			raw[M62332_CHANNELS];
-@@ -89,11 +88,16 @@ static int m62332_read_raw(struct iio_dev *indio_dev,
- 			   long mask)
- {
- 	struct m62332_data *data = iio_priv(indio_dev);
-+	int ret;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SCALE:
- 		/* Corresponds to Vref / 2^(bits) */
--		*val = data->vref_mv;
-+		ret = regulator_get_voltage(data->vcc);
-+		if (ret < 0)
-+			return ret;
-+
-+		*val = ret / 1000; /* mV */
- 		*val2 = 8;
- 
- 		return IIO_VAL_FRACTIONAL_LOG2;
-@@ -218,11 +222,6 @@ static int m62332_probe(struct i2c_client *client,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &m62332_info;
- 
--	ret = regulator_get_voltage(data->vcc);
--	if (ret < 0)
--		return ret;
--	data->vref_mv = ret / 1000; /* mV */
--
- 	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
- 	if (ret < 0)
- 		return ret;
--- 
-2.4.6
+I've got the system running, but I get an invalid argument error on the call to iio_buffer_refill().  I'm basically using the same code as for the tsadc, just added in a fourth channel, and none of the setup calls are returning errors, but the first iio_buffer_refill() call returns an error.  I've dumped out the parameter that is being passed to the iio_buffer_refill() call and it is the same as the value that was returned from the iio_device_create_buffer() call.
 
+I've looked at the libiio source and I don't see anything obvious that should return invalid argument for the iio_buffer_refill() call.
+
+
+> > > 
+> > > > > 
+> > > > > > 
+> > > > > > > 
+> > > > > > > > Greg Wilson-Lindberg
+> > > > > > > > Sakura Finetek
+> > > > > > > > 310-783-5075
+> > > > > > > > --
+> > > > > > > > To unsubscribe from this list: send the line 
+> "unsubscribe
+> > > > > > > linux-iio" 
+> > > > > > > > in the body of a message to 
+> majordomo@vger.kernel.org More
+> > > > > > > majordomo
+> > > > > > > > info at  http://vger.kernel.org/majordomo-info.html
+> > > > > > > 
+> > > > > 
+> > > --
+> > To unsubscribe from this list: send the line "unsubscribe 
+> linux-iio" 
+> > in the body of a message to majordomo@vger.kernel.org More 
+> majordomo 
+> > info at http://vger.kernel.org/majordomo-info.html
+> > 
