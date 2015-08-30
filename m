@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f175.google.com ([209.85.217.175]:34570 "EHLO
-	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750870AbbH3UcM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 30 Aug 2015 16:32:12 -0400
-Received: by lbbtg9 with SMTP id tg9so51055717lbb.1
-        for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2015 13:32:10 -0700 (PDT)
+Received: from mail-la0-f48.google.com ([209.85.215.48]:35830 "EHLO
+	mail-la0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751704AbbH3VB2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 30 Aug 2015 17:01:28 -0400
+Received: by lanb10 with SMTP id b10so24889729lan.2
+        for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2015 14:01:26 -0700 (PDT)
 MIME-Version: 1.0
 In-Reply-To: <alpine.DEB.2.02.1508301121360.6516@pmeerw.net>
 References: <1440890684-21310-1-git-send-email-mranostay@gmail.com>
 	<alpine.DEB.2.02.1508301121360.6516@pmeerw.net>
-Date: Sun, 30 Aug 2015 13:32:10 -0700
-Message-ID: <CAKzfze-K+gssgPoh2nZjTzvOgiBMPwgMgZNQX2xk9wW8doXTxg@mail.gmail.com>
+Date: Sun, 30 Aug 2015 14:01:25 -0700
+Message-ID: <CAKzfze-iQLYpUZbpBnqce8GkMFqGAjwL8zVdbOXTTCwwYOdXYw@mail.gmail.com>
 Subject: Re: [PATCH] iio: humidity: add HDC100x support
 From: Matt Ranostay <mranostay@gmail.com>
 To: Peter Meerwald <pmeerw@pmeerw.net>
@@ -54,9 +54,6 @@ On Sun, Aug 30, 2015 at 2:43 AM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
 >
 > the description explains the purpose, but not what shall be actually
 > written to the file; is it on/off, a current, a temperature?
-
-Will make more clear  in v2
-
 >
 >> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
 >> index 688c0d1..01906c8 100644
@@ -179,8 +176,6 @@ Will make more clear  in v2
 >> +             .channel = 0,
 >
 > channel is not needed (no plurality of channels of the same type)
-ok got it.
-
 >
 >> +             .address = HDC100X_REG_TEMP,
 >> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
@@ -217,8 +212,6 @@ ok got it.
 > strictly, data->config should be updated after having successfully written
 > to register
 >
-Got it!
-
 >> +}
 >> +
 >> +static int hdc100x_set_it_time(struct hdc100x_data *data, int chan, int val2)
@@ -263,11 +256,6 @@ Got it!
 >
 > huh? is there a _read_byte() missing?
 > could a word transfer be used?
-Oops I dropped first read  accidently in my checkpatch.pl check cleanup
-
-Sadly you have to use two read requests because word transfer would
-triggers another measurement.
-
 >
 >> +             dev_err(&client->dev, "cannot read low byte measurement");
 >> +             return ret;
@@ -310,7 +298,8 @@ triggers another measurement.
 >> +                             ret = IIO_VAL_INT;
 >
 > ret < 0 would be an error condition, don't overwrite with VAL_INT
-Ok.
+
+Sorry not sure I follow. If ret is 0 it sets IIO_VAL_INT
 >
 >> +             } else {
 >> +                     *val = get_heater_status(data);
