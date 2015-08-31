@@ -1,92 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-224.synserver.de ([212.40.185.224]:1090 "EHLO
-	smtp-out-200.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750812AbbHaIGW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 04:06:22 -0400
-Message-ID: <55E40AF7.8040707@metafoo.de>
-Date: Mon, 31 Aug 2015 10:06:15 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-la0-f41.google.com ([209.85.215.41]:34976 "EHLO
+	mail-la0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752565AbbHaM4a (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 08:56:30 -0400
+Received: by lanb10 with SMTP id b10so35194000lan.2
+        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2015 05:56:29 -0700 (PDT)
 MIME-Version: 1.0
-To: Matt Ranostay <mranostay@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [RFC] iio: ppm: Add IIO_PPM channel type
-References: <1440657930-14871-1-git-send-email-mranostay@gmail.com>	<55DF2F67.3000209@metafoo.de>	<55DF33BF.7080808@metafoo.de>	<CAKzfze_ySetkta6cAHo7yg4mJ49UC+ymdcj6u04xs0rYe8PA_A@mail.gmail.com>	<55E000F2.9000403@metafoo.de>	<CAKzfze_sOrrj4vQa4Ld0y4Q8aX7W3QogAKMhUU=8oU9Aqy3Mmg@mail.gmail.com>	<55E026FD.80107@metafoo.de> <CAKzfze8R+sRxTh4YR6YT22YBrT6TzXgYYPwjm5moxcBQ-20Wcg@mail.gmail.com>
-In-Reply-To: <CAKzfze8R+sRxTh4YR6YT22YBrT6TzXgYYPwjm5moxcBQ-20Wcg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <17d2da9c4c05f45dce7aa81362770f9bdeae0bed.1440459082.git.knaack.h@gmx.de>
+References: <cover.1440459082.git.knaack.h@gmx.de>
+	<17d2da9c4c05f45dce7aa81362770f9bdeae0bed.1440459082.git.knaack.h@gmx.de>
+Date: Mon, 31 Aug 2015 15:56:29 +0300
+Message-ID: <CAEnQRZCbn5w9GczdcHHBAYrxoPi8n_5m=yLU6QDO0sEcP-HxXA@mail.gmail.com>
+Subject: Re: [PATCH 2/6] iio:dac:m62332: shutdown on remove
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/28/2015 06:27 PM, Matt Ranostay wrote:
-> Ah true but we could add a few IIO_MOD* modifiers for CO2, tVOC, VOC,
-> etc, etc. I think Jonathan was suggesting that.
+On Sat, Aug 29, 2015 at 12:59 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+> The regulator framework requests to balance regulator_enable() calls with
+> regulator_disable() calls. To meet this requirement, set channels to 0 on
+> remove, which implies a regulator_disable() call in case that channel was
+> enabled.
+>
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 
-What I meant was CO2 measured in what unit per what unit.
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
 
-Like is it weight per volume or volume per volume or weight per weight or
-molecules per volume ...
+> ---
+>  drivers/iio/dac/m62332.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
+> index cffc0630ed32..c61720de8606 100644
+> --- a/drivers/iio/dac/m62332.c
+> +++ b/drivers/iio/dac/m62332.c
+> @@ -243,6 +243,8 @@ static int m62332_remove(struct i2c_client *client)
+>
+>         iio_device_unregister(indio_dev);
+>         iio_map_array_unregister(indio_dev);
+> +       m62332_set_value(indio_dev, 0, 0);
+> +       m62332_set_value(indio_dev, 0, 1);
+>
+>         return 0;
+>  }
 
-- Lars
+Wouldn't be nice to factor this two calls in a separate function?
 
-> 
-> Thanks,
-> 
-> Matt
-> 
-> On Fri, Aug 28, 2015 at 2:16 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 08/28/2015 11:05 AM, Matt Ranostay wrote:
->>> On Thu, Aug 27, 2015 at 11:34 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>> On 08/27/2015 11:40 PM, Matt Ranostay wrote:
->>>>> On Thu, Aug 27, 2015 at 8:58 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>>>> On 08/27/2015 05:40 PM, Lars-Peter Clausen wrote:
->>>>>>> On 08/27/2015 08:45 AM, Matt Ranostay wrote:
->>>>>>>> There are air quality sensors that report data back in parts per million
->>>>>>>> of VOC (Volatile Organic Compounds) which are usually indexed from CO2
->>>>>>>> or another common pollutant.
->>>>>>>>
->>>>>>>> This patchset adds an IIO_PPM type because no other channels types fit
->>>>>>>> this use case.
->>>>>>>
->>>>>>> Hm, I'm not sure if parts-per-million is a good channel type. It's more of a
->>>>>>> scale. The type would be concentration.[...]
->>>>>>
->>>>>> Reading a bit more[1], concentration doesn't actually seem to be the right
->>>>>> term in this case, the correct term is mole fraction. Maybe we can use that
->>>>>> as the type. That also makes it clear that the unit is molecules per molecule.
->>>>>>
->>>>> Actually we can't use mole fraction for this because we aren't in a
->>>>> chemistry lab, and know the other compounds that make up the local
->>>>> atmosphere. Besides you'd have to include some insane lookup table for
->>>>> molar mass of carbon or whatever VOC being measured :)
->>>>
->>>> I don't think you'd need that. Mole fraction tells you the number of
->>>> molecules of something per total number of molecules. You don't need the
->>>> mass for this.
->>>>
->>>> But what exactly is the sensor measuring? CO2 (or VOC) molecules per total
->>>> number of molecules or number of CO2 molecules in a particular volume?
->>>>
->>> CC'ed my Swiss colleague on this because he knows much on the
->>> interworkings of VOC sensors than I could hope to.
->>> So simply these sensors are finding VOCs (which the sensor in question
->>> does CO2 and tVOC indexes.. probably not too independent of  each
->>> other)
->>>
->>> But molecules are not parts.. think of taking an X volume of air and
->>> figuring what is precent of oxygen is verses nitrogen, argon, etc,
->>> etc. Sure the highest is nitrogen at atomic weight 14.01 with ~78% of
->>> the "air", oxygen is ~20% at the weight of 16.00, and etc.
->>>
->>> Think about cutting cube into a millions of pieces and figuring an X%
->>> is Y substance which you can detect, but can't detect X, Y, and Z
->>> (think any particles in 'air' that aren't bonded with carbon). So mole
->>> fractions are impossible here, and you could only take a parts in a
->>> known volume.
->>>
->>> Most VOCs (if not all, bit of newbie here) use UV LEDs to ionize
->>> particles, and with some maths calculate the parts-per-million.
->>
->> But what per what? PPM is a completely ambiguous unit if you don't specify
->> parts of what per million of what.
->>
-
+thanks,
+Daniel.
