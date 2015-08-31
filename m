@@ -1,216 +1,271 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38354 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38368 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753679AbbHaQgq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 12:36:46 -0400
-Subject: Re: [PATCH v3 2/3] iio: mxc4005: add triggered buffer mode for
- mxc4005
+	with ESMTP id S1753422AbbHaQlY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 12:41:24 -0400
+Subject: Re: [PATCH v3 3/3] iio: mxc4005: add data ready trigger for mxc4005
 To: Teodora Baluta <teodora.baluta@intel.com>
 References: <1440081453-12600-1-git-send-email-teodora.baluta@intel.com>
- <1440081453-12600-3-git-send-email-teodora.baluta@intel.com>
+ <1440081453-12600-4-git-send-email-teodora.baluta@intel.com>
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	daniel.baluta@intel.com, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55E4829C.40303@kernel.org>
-Date: Mon, 31 Aug 2015 17:36:44 +0100
+Message-ID: <55E483B2.5030705@kernel.org>
+Date: Mon, 31 Aug 2015 17:41:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <1440081453-12600-3-git-send-email-teodora.baluta@intel.com>
+In-Reply-To: <1440081453-12600-4-git-send-email-teodora.baluta@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 20/08/15 15:37, Teodora Baluta wrote:
-> This patch adds support for buffered readings for the 3-axis
-> accelerometer mxc4005.
+> Add iio trigger for the data ready interrupt that signals new
+> measurements for the X, Y and Z axes.
 > 
 > Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
-Hi Teodora,
+Or alternatively you lost a stray line into this patch from the
+previous one (the pollfunc line!)  Anyhow, all's well that ends
+well!
 
-You rather missed the point on using the iio_pollfunc_store_time function.
-See below.  Anyhow, as that was on the only issue, I've fixed it up.
-Please check the results.
-
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.
+Applied this one (with predictable fuzz) to the togreg branch of
+iio.git - initially pushed out as testing for the autobuilders to
+play with it.
 
 Thanks,
 
 Jonathan
 > ---
->  drivers/iio/accel/Kconfig   |  2 ++
->  drivers/iio/accel/mxc4005.c | 79 +++++++++++++++++++++++++++++++++++++++++++--
->  2 files changed, 78 insertions(+), 3 deletions(-)
+>  drivers/iio/accel/mxc4005.c | 144 +++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 142 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 69302be..cd5cd24 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -140,6 +140,8 @@ config MMA9553
->  config MXC4005
->  	tristate "Memsic MXC4005XC 3-Axis Accelerometer Driver"
->  	depends on I2C
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
->  	select REGMAP_I2C
->  	help
->  	  Say yes here to build support for the Memsic MXC4005XC 3-axis
 > diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
-> index e15c1bd..95b91b5 100644
+> index 95b91b5..e72e218 100644
 > --- a/drivers/iio/accel/mxc4005.c
 > +++ b/drivers/iio/accel/mxc4005.c
-> @@ -19,6 +19,9 @@
+> @@ -17,13 +17,16 @@
+>  #include <linux/i2c.h>
+>  #include <linux/iio/iio.h>
 >  #include <linux/acpi.h>
+> +#include <linux/gpio/consumer.h>
 >  #include <linux/regmap.h>
 >  #include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/trigger.h>
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/iio/trigger_consumer.h>
 >  
 >  #define MXC4005_DRV_NAME		"mxc4005"
+> +#define MXC4005_IRQ_NAME		"mxc4005_event"
 >  #define MXC4005_REGMAP_NAME		"mxc4005_regmap"
-> @@ -52,6 +55,7 @@ struct mxc4005_data {
+>  
+>  #define MXC4005_REG_XOUT_UPPER		0x03
+> @@ -33,6 +36,12 @@
+>  #define MXC4005_REG_ZOUT_UPPER		0x07
+>  #define MXC4005_REG_ZOUT_LOWER		0x08
+>  
+> +#define MXC4005_REG_INT_MASK1		0x0B
+> +#define MXC4005_REG_INT_MASK1_BIT_DRDYE	0x01
+> +
+> +#define MXC4005_REG_INT_CLR1		0x01
+> +#define MXC4005_REG_INT_CLR1_BIT_DRDYC	0x01
+> +
+>  #define MXC4005_REG_CONTROL		0x0D
+>  #define MXC4005_REG_CONTROL_MASK_FSR	GENMASK(6, 5)
+>  #define MXC4005_CONTROL_FSR_SHIFT	5
+> @@ -55,7 +64,9 @@ struct mxc4005_data {
 >  	struct device *dev;
 >  	struct mutex mutex;
 >  	struct regmap *regmap;
-> +	__be16 buffer[8];
+> +	struct iio_trigger *dready_trig;
+>  	__be16 buffer[8];
+> +	bool trigger_enabled;
 >  };
 >  
 >  /*
-> @@ -122,6 +126,20 @@ static const struct regmap_config mxc4005_regmap_config = {
->  	.writeable_reg = mxc4005_is_writeable_reg,
->  };
+> @@ -107,6 +118,8 @@ static bool mxc4005_is_readable_reg(struct device *dev, unsigned int reg)
+>  static bool mxc4005_is_writeable_reg(struct device *dev, unsigned int reg)
+>  {
+>  	switch (reg) {
+> +	case MXC4005_REG_INT_CLR1:
+> +	case MXC4005_REG_INT_MASK1:
+>  	case MXC4005_REG_CONTROL:
+>  		return true;
+>  	default:
+> @@ -299,7 +312,7 @@ static irqreturn_t mxc4005_trigger_handler(int irq, void *private)
+>  		goto err;
 >  
-> +static int mxc4005_read_xyz(struct mxc4005_data *data)
+>  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -					   iio_get_time_ns());
+> +					   pf->timestamp);
+>  
+>  err:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> @@ -307,6 +320,91 @@ err:
+>  	return IRQ_HANDLED;
+>  }
+>  
+> +static int mxc4005_clr_intr(struct mxc4005_data *data)
 > +{
 > +	int ret;
 > +
-> +	ret = regmap_bulk_read(data->regmap, MXC4005_REG_XOUT_UPPER,
-> +			       (u8 *) data->buffer, sizeof(data->buffer));
+> +	/* clear interrupt */
+> +	ret = regmap_write(data->regmap, MXC4005_REG_INT_CLR1,
+> +			   MXC4005_REG_INT_CLR1_BIT_DRDYC);
 > +	if (ret < 0) {
-> +		dev_err(data->dev, "failed to read axes\n");
+> +		dev_err(data->dev, "failed to write to reg_int_clr1\n");
 > +		return ret;
 > +	}
 > +
 > +	return 0;
 > +}
 > +
->  static int mxc4005_read_axis(struct mxc4005_data *data,
->  			     unsigned int addr)
->  {
-> @@ -197,7 +215,8 @@ static int mxc4005_read_raw(struct iio_dev *indio_dev,
->  			ret = mxc4005_read_axis(data, chan->address);
->  			if (ret < 0)
->  				return ret;
-> -			*val = sign_extend32(ret >> 4, 11);
-> +			*val = sign_extend32(ret >> chan->scan_type.shift,
-> +					     chan->scan_type.realbits - 1);
->  			return IIO_VAL_INT;
->  		default:
->  			return -EINVAL;
-> @@ -239,6 +258,11 @@ static const struct iio_info mxc4005_info = {
->  	.attrs		= &mxc4005_attrs_group,
->  };
->  
-> +static const unsigned long mxc4005_scan_masks[] = {
-> +	BIT(AXIS_X) | BIT(AXIS_Y) | BIT(AXIS_Z),
-> +	0
-> +};
-> +
->  #define MXC4005_CHANNEL(_axis, _addr) {				\
->  	.type = IIO_ACCEL,					\
->  	.modified = 1,						\
-> @@ -246,14 +270,43 @@ static const struct iio_info mxc4005_info = {
->  	.address = _addr,					\
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +	.scan_index = AXIS_##_axis,				\
-> +	.scan_type = {						\
-> +		.sign = 's',					\
-> +		.realbits = 12,					\
-> +		.storagebits = 16,				\
-> +		.shift = 4,					\
-> +		.endianness = IIO_BE,				\
-> +	},							\
->  }
->  
->  static const struct iio_chan_spec mxc4005_channels[] = {
->  	MXC4005_CHANNEL(X, MXC4005_REG_XOUT_UPPER),
->  	MXC4005_CHANNEL(Y, MXC4005_REG_YOUT_UPPER),
->  	MXC4005_CHANNEL(Z, MXC4005_REG_ZOUT_UPPER),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
->  };
->  
-> +static irqreturn_t mxc4005_trigger_handler(int irq, void *private)
+> +static int mxc4005_set_trigger_state(struct iio_trigger *trig,
+> +				     bool state)
 > +{
-> +	struct iio_poll_func *pf = private;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
 > +	struct mxc4005_data *data = iio_priv(indio_dev);
 > +	int ret;
 > +
-> +	ret = mxc4005_read_xyz(data);
-> +	if (ret < 0)
-> +		goto err;
+> +	mutex_lock(&data->mutex);
+> +	if (state) {
+> +		ret = regmap_write(data->regmap, MXC4005_REG_INT_MASK1,
+> +				   MXC4005_REG_INT_MASK1_BIT_DRDYE);
+> +	} else {
+> +		ret = regmap_write(data->regmap, MXC4005_REG_INT_MASK1,
+> +				   ~MXC4005_REG_INT_MASK1_BIT_DRDYE);
+> +	}
 > +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-> +					   iio_get_time_ns());
-The whole purpose of the storetime pollfunc is to ensure we get a
-timestamp as close as possible to the time of the interrupt.  Reading
-the time again instead of using the stashed version is not a good plan!
-
+> +	if (ret < 0) {
+> +		mutex_unlock(&data->mutex);
+> +		dev_err(data->dev, "failed to update reg_int_mask1");
+> +		return ret;
+> +	}
 > +
-> +err:
-> +	iio_trigger_notify_done(indio_dev->trig);
+> +	data->trigger_enabled = state;
+> +	mutex_unlock(&data->mutex);
 > +
-> +	return IRQ_HANDLED;
+> +	return 0;
+> +}
+> +
+> +static int mxc4005_trigger_try_reen(struct iio_trigger *trig)
+> +{
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> +	struct mxc4005_data *data = iio_priv(indio_dev);
+> +
+> +	if (!data->dready_trig)
+> +		return 0;
+> +
+> +	return mxc4005_clr_intr(data);
+> +}
+> +
+> +static const struct iio_trigger_ops mxc4005_trigger_ops = {
+> +	.set_trigger_state = mxc4005_set_trigger_state,
+> +	.try_reenable = mxc4005_trigger_try_reen,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static int mxc4005_gpio_probe(struct i2c_client *client,
+> +			      struct mxc4005_data *data)
+> +{
+> +	struct device *dev;
+> +	struct gpio_desc *gpio;
+> +	int ret;
+> +
+> +	if (!client)
+> +		return -EINVAL;
+> +
+> +	dev = &client->dev;
+> +
+> +	gpio = devm_gpiod_get_index(dev, "mxc4005_int", 0, GPIOD_IN);
+> +	if (IS_ERR(gpio)) {
+> +		dev_err(dev, "failed to get acpi gpio index\n");
+> +		return PTR_ERR(gpio);
+> +	}
+> +
+> +	ret = gpiod_to_irq(gpio);
+> +
+> +	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+> +
+> +	return ret;
 > +}
 > +
 >  static int mxc4005_chip_init(struct mxc4005_data *data)
 >  {
 >  	int ret;
-> @@ -304,23 +357,43 @@ static int mxc4005_probe(struct i2c_client *client,
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->channels = mxc4005_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(mxc4005_channels);
-> +	indio_dev->available_scan_masks = mxc4005_scan_masks;
->  	indio_dev->name = MXC4005_DRV_NAME;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
+> @@ -363,7 +461,7 @@ static int mxc4005_probe(struct i2c_client *client,
 >  	indio_dev->info = &mxc4005_info;
 >  
-> +	ret = iio_triggered_buffer_setup(indio_dev,
-> +					 &iio_pollfunc_store_time,
-> +					 mxc4005_trigger_handler,
-> +					 NULL);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev,
-> +			"failed to setup iio triggered buffer\n");
-> +		return ret;
+>  	ret = iio_triggered_buffer_setup(indio_dev,
+> -					 &iio_pollfunc_store_time,
+> +					 iio_pollfunc_store_time,
+>  					 mxc4005_trigger_handler,
+>  					 NULL);
+>  	if (ret < 0) {
+> @@ -372,6 +470,43 @@ static int mxc4005_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  
+> +	if (client->irq < 0)
+> +		client->irq = mxc4005_gpio_probe(client, data);
+> +
+> +	if (client->irq > 0) {
+> +		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+> +							   "%s-dev%d",
+> +							   indio_dev->name,
+> +							   indio_dev->id);
+> +		if (!data->dready_trig)
+> +			return -ENOMEM;
+> +
+> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
+> +						iio_trigger_generic_data_rdy_poll,
+> +						NULL,
+> +						IRQF_TRIGGER_FALLING |
+> +						IRQF_ONESHOT,
+> +						MXC4005_IRQ_NAME,
+> +						data->dready_trig);
+> +		if (ret) {
+> +			dev_err(&client->dev,
+> +				"failed to init threaded irq\n");
+> +			goto err_buffer_cleanup;
+> +		}
+> +
+> +		data->dready_trig->dev.parent = &client->dev;
+> +		data->dready_trig->ops = &mxc4005_trigger_ops;
+> +		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+> +		indio_dev->trig = data->dready_trig;
+> +		iio_trigger_get(indio_dev->trig);
+> +		ret = iio_trigger_register(data->dready_trig);
+> +		if (ret) {
+> +			dev_err(&client->dev,
+> +				"failed to register trigger\n");
+> +			goto err_trigger_unregister;
+> +		}
 > +	}
 > +
 >  	ret = iio_device_register(indio_dev);
 >  	if (ret < 0) {
 >  		dev_err(&client->dev,
->  			"unable to register iio device %d\n", ret);
-> -		return ret;
-> +		goto err_buffer_cleanup;
->  	}
+> @@ -381,6 +516,8 @@ static int mxc4005_probe(struct i2c_client *client,
 >  
 >  	return 0;
-> +
-> +err_buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +
-> +	return ret;
->  }
 >  
+> +err_trigger_unregister:
+> +	iio_trigger_unregister(data->dready_trig);
+>  err_buffer_cleanup:
+>  	iio_triggered_buffer_cleanup(indio_dev);
+>  
+> @@ -390,10 +527,13 @@ err_buffer_cleanup:
 >  static int mxc4005_remove(struct i2c_client *client)
 >  {
-> -	iio_device_unregister(i2c_get_clientdata(client));
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	iio_triggered_buffer_cleanup(indio_dev);
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct mxc4005_data *data = iio_priv(indio_dev);
+>  
+>  	iio_device_unregister(indio_dev);
+>  
+>  	iio_triggered_buffer_cleanup(indio_dev);
+> +	if (data->dready_trig)
+> +		iio_trigger_unregister(data->dready_trig);
 >  
 >  	return 0;
 >  }
