@@ -1,40 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37869 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37900 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752959AbbHaPAX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 11:00:23 -0400
-Subject: Re: [PATCH 0/6] fixes, cleanup and improvements for m62332
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-References: <cover.1440459082.git.knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	with ESMTP id S1753128AbbHaPFR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 11:05:17 -0400
+Subject: Re: IIO: ak8975: Why adding OF compatible string without vendor
+ prefix?
+To: Axel Lin <axel.lin@ingics.com>, linux-iio@vger.kernel.org
+References: <1440996094.1500.1.camel@ingics.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Olof Johansson <olof@lixom.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55E46C08.80602@kernel.org>
-Date: Mon, 31 Aug 2015 16:00:24 +0100
+Message-ID: <55E46D2D.1030303@kernel.org>
+Date: Mon, 31 Aug 2015 16:05:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <cover.1440459082.git.knaack.h@gmx.de>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <1440996094.1500.1.camel@ingics.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/08/15 22:59, Hartmut Knaack wrote:
-> A set of patches to address some issues I spotted during review.
+On 31/08/15 05:41, Axel Lin wrote:
+> Hi,
+> I just found the ak8975_of_match table has compatible string without vendor
+> prefix.
 > 
-> Hartmut Knaack (6):
->   iio:dac:m62332: share scale and offset
->   iio:dac:m62332: shutdown on remove
->   iio:dac:m62332: use ARRAY_SIZE
->   iio:dac:m62332: drop unrequired variable
->   iio:dac:m62332: address some style issues
->   iio:dac:m62332: use dynamic scale
+> static const struct of_device_id ak8975_of_match[] = {
+>         { .compatible = "asahi-kasei,ak8975", },
+>         { .compatible = "ak8975", },
+>         { .compatible = "asahi-kasei,ak8963", },
+>         { .compatible = "ak8963", },
+>         { .compatible = "asahi-kasei,ak09911", },
+>         { .compatible = "ak09911", },
+>         { .compatible = "asahi-kasei,ak09912", },
+>         { .compatible = "ak09912", },
+>         {}
+> };
 > 
->  drivers/iio/dac/m62332.c | 63 +++++++++++++++++++++++++-----------------------
->  1 file changed, 33 insertions(+), 30 deletions(-)
+> This seems unusual, just curious why below compatible strings are required?
+>         { .compatible = "ak8975", },
+>         { .compatible = "ak8963", },
+>         { .compatible = "ak09911", },
+>         { .compatible = "ak09912", },
 > 
-Other than letting this series sit on the list a few days longer,
-for Dmitry or others to take a look at it, I'm happy with this series.
+> Regards,
+> Axel
+> 
+This is an historical artefact.  I2C (and for that matter SPI) 
+subsystems handled device tree registration in their cores.
+Unfortunately they did it by matching against the registered
+driver names and those don't include vendors.
 
-Thanks,
+This is still being unwound, but the upshot is that we have
+boards with device trees out in the wild using the version without
+a vendor string.  Hence for backwards compatibility, both need
+to be in the table.
 
 Jonathan
