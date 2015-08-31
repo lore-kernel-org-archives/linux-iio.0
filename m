@@ -1,167 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38272 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38286 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753119AbbHaQSK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 12:18:10 -0400
-Subject: Re: [PATCH v2 4/4] iio: bmc150: Add SPI driver
-To: Markus Pargmann <mpa@pengutronix.de>
-References: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
- <1440074986-28716-5-git-send-email-mpa@pengutronix.de>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel@pengutronix.de
+	with ESMTP id S1752749AbbHaQYX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 12:24:23 -0400
+Subject: Re: Adding MAX1363 to BBB
+To: Greg Wilson-Lindberg <GWilson@sakuraus.com>,
+	Michael Welling <mwelling@ieee.org>
+References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4699@sfamail.SAKURAUS.LOCAL>
+ <20150824165433.GA3398@deathstar>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD498E@sfamail.SAKURAUS.LOCAL>
+ <20150827191616.GA8285@deathstar>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD49A5@sfamail.SAKURAUS.LOCAL>
+ <20150827204225.GA3789@deathstar>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD49AB@sfamail.SAKURAUS.LOCAL>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD49B7@sfamail.SAKURAUS.LOCAL>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4A61@sfamail.SAKURAUS.LOCAL>
+ <20150829003143.GA21865@deathstar>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4AB2@sfamail.SAKURAUS.LOCAL>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55E47E40.30207@kernel.org>
-Date: Mon, 31 Aug 2015 17:18:08 +0100
+Message-ID: <55E47FB5.7030401@kernel.org>
+Date: Mon, 31 Aug 2015 17:24:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <1440074986-28716-5-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD4AB2@sfamail.SAKURAUS.LOCAL>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/08/15 13:49, Markus Pargmann wrote:
-> Add a simple SPI driver which initializes the spi regmap for the bmc150
-> core driver.
+On 31/08/15 17:01, Greg Wilson-Lindberg wrote:
+>  
 > 
-> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-Looks good to me, but clearly will have to wait for the earlier
-patches in the series.
+>> -----Original Message-----
+>> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf 
+>> Of Michael Welling
+>> Sent: Friday, August 28, 2015 5:32 PM
+>> To: Greg Wilson-Lindberg
+>> Cc: linux-iio@vger.kernel.org
+>> Subject: Re: Adding MAX1363 to BBB
+>>
+>> On Fri, Aug 28, 2015 at 04:56:20PM -0700, Greg Wilson-Lindberg wrote:
+>>>
+>>> I've got the system running, but I get an invalid argument 
+>> error on the call to iio_buffer_refill().  I'm basically 
+>> using the same code as for the tsadc, just added in a fourth 
+>> channel, and none of the setup calls are returning errors, 
+>> but the first iio_buffer_refill() call returns an error.  
+>> I've dumped out the parameter that is being passed to the 
+>> iio_buffer_refill() call and it is the same as the value that 
+>> was returned from the iio_device_create_buffer() call.
+>>>
+>>> I've looked at the libiio source and I don't see anything 
+>> obvious that should return invalid argument for the 
+>> iio_buffer_refill() call.
+>>>
+>>
+>> I believe that you need to register an interrupt for buffered 
+>> access to work.
+>>
+>> Do you have an interrupt connected and registered?
+>>
+> 
+> Nope, no interrupt.  So I guess I would need to ask, how would I register the interrupt in the Device Tree?
+The max1363 (and similar) don't have a dataready interrupt as they
+are clocked of the actual clock cycles of the i2c transfers.  So
+they only read on demand.
 
-Nearly there!
+> 
+> Or, alternatively, can I just get individual readings through IIO?
+Either via sysfs, or by adding a sysfs trigger and poking that.
+To add a sysfs trigger you'll need to probe the module, then poke
+a number into the add_trigger attribute to create a trigger which can
+then be associated with the max1363 (as normal).
+
+Then to 'fire' the trigger write to the trigger_now attribute of the
+relevant trigger.
+
+Ideally Daniel will be back soonish with a final version of the
+high resolution timer trigger that would also work well here.
+(it's rather tied up with some configfs support which wis
+trickier!).
 
 Jonathan
-> ---
->  drivers/iio/accel/Kconfig            |  5 +++
->  drivers/iio/accel/Makefile           |  1 +
->  drivers/iio/accel/bmc150-accel-spi.c | 83 ++++++++++++++++++++++++++++++++++++
->  3 files changed, 89 insertions(+)
->  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
-> 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 6da4eb0db57b..56d24fa3d34a 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -23,6 +23,7 @@ config BMC150_ACCEL
->  	select IIO_TRIGGERED_BUFFER
->  	select REGMAP
->  	select BMC150_ACCEL_I2C if I2C
-> +	select BMC150_ACCEL_SPI if SPI
->  	help
->  	  Say yes here to build support for the following Bosch accelerometers:
->  	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
-> @@ -35,6 +36,10 @@ config BMC150_ACCEL_I2C
->  	tristate
->  	select REGMAP_I2C
->  
-> +config BMC150_ACCEL_SPI
-> +	tristate
-> +	select REGMAP_SPI
-> +
->  config HID_SENSOR_ACCEL_3D
->  	depends on HID_SENSOR_HUB
->  	select IIO_BUFFER
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index 5ef8bdbad092..e579e93bf022 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -6,6 +6,7 @@
->  obj-$(CONFIG_BMA180) += bma180.o
->  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
->  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
-> +obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
->  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> diff --git a/drivers/iio/accel/bmc150-accel-spi.c b/drivers/iio/accel/bmc150-accel-spi.c
-> new file mode 100644
-> index 000000000000..1c2a4f683da4
-> --- /dev/null
-> +++ b/drivers/iio/accel/bmc150-accel-spi.c
-> @@ -0,0 +1,83 @@
-> +/*
-> + * 3-axis accelerometer driver supporting following I2C Bosch-Sensortec chips:
-> + *  - BMC150
-> + *  - BMI055
-> + *  - BMA255
-> + *  - BMA250E
-> + *  - BMA222E
-> + *  - BMA280
-> + *
-> + * Copyright (c) 2014, Intel Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + */
-> +
-> +#include <linux/device.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/acpi.h>
-> +#include <linux/regmap.h>
-> +#include <linux/spi/spi.h>
-> +
-> +#include "bmc150-accel.h"
-> +
-> +static const struct regmap_config bmc150_spi_regmap_conf = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.max_register = 0x3f,
-> +};
-> +
-> +static int bmc150_accel_probe(struct spi_device *spi)
-> +{
-> +	struct regmap *regmap;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +
-> +	regmap = devm_regmap_init_spi(spi, &bmc150_spi_regmap_conf);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&spi->dev, "Failed to initialize spi regmap\n");
-> +		return PTR_ERR(regmap);
-> +	}
-> +
-> +	return bmc150_accel_core_probe(&spi->dev, regmap, spi->irq,
-> +				       id->name, id->driver_data, true);
-> +}
-> +
-> +static int bmc150_accel_remove(struct spi_device *spi)
-> +{
-> +	return bmc150_accel_core_remove(&spi->dev);
-> +}
-> +
-> +static const struct spi_device_id bmc150_accel_id[] = {
-> +	{"bmc150_accel",	bmc150},
-> +	{"bmi055_accel",	bmi055},
-> +	{"bma255",		bma255},
-> +	{"bma250e",		bma250e},
-> +	{"bma222e",		bma222e},
-> +	{"bma280",		bma280},
-> +	{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(spi, bmc150_accel_id);
-> +
-> +static struct spi_driver bmc150_accel_driver = {
-> +	.driver = {
-> +		.name	= "bmc150_accel_spi",
-> +		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
-> +		.pm	= &bmc150_accel_pm_ops,
-> +	},
-> +	.probe		= bmc150_accel_probe,
-> +	.remove		= bmc150_accel_remove,
-> +	.id_table	= bmc150_accel_id,
-> +};
-> +module_spi_driver(bmc150_accel_driver);
-> +
-> +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_DESCRIPTION("BMC150 SPI accelerometer driver");
+>  --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
