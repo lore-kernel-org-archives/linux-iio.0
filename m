@@ -1,56 +1,38 @@
-Return-Path: <van.freenix@gmail.com>
-From: Peng Fan <van.freenix@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jic23@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	van.freenix@gmail.com,
-	devel@driverdev.osuosl.org,
-	linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tapasweni Pathak <tapaswenipathak@gmail.com>
-Subject: [PATCH] staging: iio: adc: lpc32xx: use correct reutrn value
-Date: Sun, 30 Aug 2015 16:12:57 +0800
-Message-Id: <1440922377-16938-1-git-send-email-van.freenix@gmail.com>
+Return-Path: <axel.lin@ingics.com>
+Message-ID: <1440996094.1500.1.camel@ingics.com>
+Subject: IIO: ak8975: Why adding OF compatible string without vendor prefix?
+From: Axel Lin <axel.lin@ingics.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen
+	 <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Laxman Dewangan
+	 <ldewangan@nvidia.com>, Olof Johansson <olof@lixom.net>
+Date: Mon, 31 Aug 2015 12:41:34 +0800
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-To lpc32xx_adc driver, when platform_get_resource or
-platform_get_irq failed, we should use -ENXIO as a
-return value, but not -EBUSY.
+Hi,
+I just found the ak8975_of_match table has compatible string without vendor
+prefix.
 
-Signed-off-by: Peng Fan <van.freenix@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Tapasweni Pathak <tapaswenipathak@gmail.com>
----
- drivers/staging/iio/adc/lpc32xx_adc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+static const struct of_device_id ak8975_of_match[] = {
+        { .compatible = "asahi-kasei,ak8975", },
+        { .compatible = "ak8975", },
+        { .compatible = "asahi-kasei,ak8963", },
+        { .compatible = "ak8963", },
+        { .compatible = "asahi-kasei,ak09911", },
+        { .compatible = "ak09911", },
+        { .compatible = "asahi-kasei,ak09912", },
+        { .compatible = "ak09912", },
+        {}
+};
 
-diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
-index 5331c44..bcf4ebb 100644
---- a/drivers/staging/iio/adc/lpc32xx_adc.c
-+++ b/drivers/staging/iio/adc/lpc32xx_adc.c
-@@ -137,7 +137,7 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res) {
- 		dev_err(&pdev->dev, "failed to get platform I/O memory\n");
--		return -EBUSY;
-+		return -ENXIO;
- 	}
- 
- 	iodev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-@@ -162,7 +162,7 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq <= 0) {
- 		dev_err(&pdev->dev, "failed getting interrupt resource\n");
--		return -EINVAL;
-+		return -ENXIO;
- 	}
- 
- 	retval = devm_request_irq(&pdev->dev, irq, lpc32xx_adc_isr, 0,
--- 
-1.8.4
+This seems unusual, just curious why below compatible strings are required?
+        { .compatible = "ak8975", },
+        { .compatible = "ak8963", },
+        { .compatible = "ak09911", },
+        { .compatible = "ak09912", },
+
+Regards,
+Axel
