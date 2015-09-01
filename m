@@ -1,424 +1,467 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:50823 "EHLO mout01.posteo.de"
+Received: from mga03.intel.com ([134.134.136.65]:18635 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755721AbbIALyR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 1 Sep 2015 07:54:17 -0400
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id 0D57D20B62
-	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2015 13:47:09 +0200 (CEST)
-From: Martin Kepplinger <martink@posteo.de>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, mfuzzey@parkeon.com, roberta.dobrescu@gmail.com,
-	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org
-Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	christoph.muellner@theobroma-systems.com,
-	Martin Kepplinger <martink@posteo.de>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: [PATCH 1/6] iio: mma8452: refactor for seperating chip specific data
-Date: Tue,  1 Sep 2015 13:45:08 +0200
-Message-Id: <1441107913-4112-2-git-send-email-martink@posteo.de>
-In-Reply-To: <1441107913-4112-1-git-send-email-martink@posteo.de>
-References: <1441107913-4112-1-git-send-email-martink@posteo.de>
+	id S1752280AbbIAOIh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 1 Sep 2015 10:08:37 -0400
+Message-ID: <1441116460.3143.3.camel@linux.intel.com>
+Subject: Re: [PATCH v2 3/4] iio: bmc150: Split the driver into core and i2c
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Markus Pargmann <mpa@pengutronix.de>
+Cc: Irina Tirdea <irina.tirdea@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	kernel@pengutronix.de
+Date: Tue, 01 Sep 2015 07:07:40 -0700
+In-Reply-To: <55E47D98.4010608@kernel.org>
+References: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
+	 <1440074986-28716-4-git-send-email-mpa@pengutronix.de>
+	 <55E47D98.4010608@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds a struct mma_chip_info to hold data that will remain specific to
-the chip in use. It is provided during probe() and linked in
-struct of_device_id.
+On Mon, 2015-08-31 at 17:15 +0100, Jonathan Cameron wrote:
+> On 20/08/15 13:49, Markus Pargmann wrote:
+> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> A couple of little bits inline.  Again would like Srinivas to
+> take a quick look at this patch as well.
+Once your comments are addressed, it looks fine to me.
 
-Also this suggests that the driver is called "mma8452" and now handles the
-MMA8452Q device, but is not limited to it.
-
-Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
----
- drivers/iio/accel/mma8452.c | 183 ++++++++++++++++++++++++++++++++------------
- 1 file changed, 134 insertions(+), 49 deletions(-)
-
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index b921d84..f28428fa 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -22,6 +22,7 @@
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/events.h>
- #include <linux/delay.h>
-+#include <linux/of_device.h>
- 
- #define MMA8452_STATUS				0x00
- #define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
-@@ -74,6 +75,52 @@ struct mma8452_data {
- 	struct mutex lock;
- 	u8 ctrl_reg1;
- 	u8 data_cfg;
-+	const struct mma_chip_info *chip_info;
-+};
-+
-+/**
-+ * struct mma_chip_info - chip specific data for Freescale's accelerometers
-+ * @chip_id:			WHO_AM_I register's value
-+ * @channels:			struct iio_chan_spec matching the device's
-+ *				capabilities
-+ * @num_channels:		number of channels
-+ * @mma_scales:			scale factors for converting register values
-+ *				to m/s^2; 3 modes: 2g, 4g, 8g; 2 integers
-+ *				per mode: m/s^2 and micro m/s^2
-+ * @ev_cfg:			event config register address
-+ * @ev_cfg_ele:			latch bit in event config register
-+ * @ev_cfg_chan_shift:		number of the bit to enable events in X
-+ *				direction; in event config register
-+ * @ev_src:			event source register address
-+ * @ev_src_xe:			bit in event source register that indicates
-+ *				an event in X direction
-+ * @ev_src_ye:			bit in event source register that indicates
-+ *				an event in Y direction
-+ * @ev_src_ze:			bit in event source register that indicates
-+ *				an event in Z direction
-+ * @ev_ths:			event threshold register address
-+ * @ev_ths_mask:		mask for the threshold value
-+ * @ev_count:			event count (period) register address
-+ *
-+ * Since not all chips supported by the driver support comparing high pass
-+ * filtered data for events (interrupts), different interrupt sources are
-+ * used for different chips and the relevant registers are included here.
-+ */
-+struct mma_chip_info {
-+	u8 chip_id;
-+	const struct iio_chan_spec *channels;
-+	int num_channels;
-+	const int mma_scales[3][2];
-+	u8 ev_cfg;
-+	u8 ev_cfg_ele;
-+	u8 ev_cfg_chan_shift;
-+	u8 ev_src;
-+	u8 ev_src_xe;
-+	u8 ev_src_ye;
-+	u8 ev_src_ze;
-+	u8 ev_ths;
-+	u8 ev_ths_mask;
-+	u8 ev_count;
- };
- 
- static int mma8452_drdy(struct mma8452_data *data)
-@@ -143,16 +190,6 @@ static const int mma8452_samp_freq[8][2] = {
- 	{6, 250000}, {1, 560000}
- };
- 
--/*
-- * Hardware has fullscale of -2G, -4G, -8G corresponding to raw value -2048
-- * The userspace interface uses m/s^2 and we declare micro units
-- * So scale factor is given by:
-- *	g * N * 1000000 / 2048 for N = 2, 4, 8 and g = 9.80665
-- */
--static const int mma8452_scales[3][2] = {
--	{0, 9577}, {0, 19154}, {0, 38307}
--};
--
- /* Datasheet table 35  (step time vs sample frequency) */
- static const int mma8452_transient_time_step_us[8] = {
- 	1250,
-@@ -189,8 +226,11 @@ static ssize_t mma8452_show_scale_avail(struct device *dev,
- 					struct device_attribute *attr,
- 					char *buf)
- {
--	return mma8452_show_int_plus_micros(buf, mma8452_scales,
--					    ARRAY_SIZE(mma8452_scales));
-+	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
-+					     to_i2c_client(dev)));
-+
-+	return mma8452_show_int_plus_micros(buf, data->chip_info->mma_scales,
-+		ARRAY_SIZE(data->chip_info->mma_scales));
- }
- 
- static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
-@@ -221,9 +261,8 @@ static int mma8452_get_samp_freq_index(struct mma8452_data *data,
- 
- static int mma8452_get_scale_index(struct mma8452_data *data, int val, int val2)
- {
--	return mma8452_get_int_plus_micros_index(mma8452_scales,
--						 ARRAY_SIZE(mma8452_scales),
--						 val, val2);
-+	return mma8452_get_int_plus_micros_index(data->chip_info->mma_scales,
-+			ARRAY_SIZE(data->chip_info->mma_scales), val, val2);
- }
- 
- static int mma8452_get_hp_filter_index(struct mma8452_data *data,
-@@ -270,14 +309,15 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			return ret;
- 
--		*val = sign_extend32(be16_to_cpu(buffer[chan->scan_index]) >> 4,
--				     11);
-+		*val = sign_extend32(be16_to_cpu(
-+			buffer[chan->scan_index]) >> chan->scan_type.shift,
-+			chan->scan_type.realbits - 1);
- 
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		i = data->data_cfg & MMA8452_DATA_CFG_FS_MASK;
--		*val = mma8452_scales[i][0];
--		*val2 = mma8452_scales[i][1];
-+		*val = data->chip_info->mma_scales[i][0];
-+		*val2 = data->chip_info->mma_scales[i][1];
- 
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
-@@ -439,17 +479,17 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
- 	switch (info) {
- 	case IIO_EV_INFO_VALUE:
- 		ret = i2c_smbus_read_byte_data(data->client,
--					       MMA8452_TRANSIENT_THS);
-+					       data->chip_info->ev_ths);
- 		if (ret < 0)
- 			return ret;
- 
--		*val = ret & MMA8452_TRANSIENT_THS_MASK;
-+		*val = ret & data->chip_info->ev_ths_mask;
- 
- 		return IIO_VAL_INT;
- 
- 	case IIO_EV_INFO_PERIOD:
- 		ret = i2c_smbus_read_byte_data(data->client,
--					       MMA8452_TRANSIENT_COUNT);
-+					       data->chip_info->ev_count);
- 		if (ret < 0)
- 			return ret;
- 
-@@ -497,7 +537,8 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
- 		if (val < 0 || val > MMA8452_TRANSIENT_THS_MASK)
- 			return -EINVAL;
- 
--		return mma8452_change_config(data, MMA8452_TRANSIENT_THS, val);
-+		return mma8452_change_config(data, data->chip_info->ev_ths,
-+					     val);
- 
- 	case IIO_EV_INFO_PERIOD:
- 		steps = (val * USEC_PER_SEC + val2) /
-@@ -507,7 +548,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
- 		if (steps < 0 || steps > 0xff)
- 			return -EINVAL;
- 
--		return mma8452_change_config(data, MMA8452_TRANSIENT_COUNT,
-+		return mma8452_change_config(data, data->chip_info->ev_count,
- 					     steps);
- 
- 	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
-@@ -538,13 +579,15 @@ static int mma8452_read_event_config(struct iio_dev *indio_dev,
- 				     enum iio_event_direction dir)
- {
- 	struct mma8452_data *data = iio_priv(indio_dev);
-+	const struct mma_chip_info *chip = data->chip_info;
- 	int ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
-+	ret = i2c_smbus_read_byte_data(data->client,
-+				       data->chip_info->ev_cfg);
- 	if (ret < 0)
- 		return ret;
- 
--	return ret & MMA8452_TRANSIENT_CFG_CHAN(chan->scan_index) ? 1 : 0;
-+	return !!(ret & BIT(chan->scan_index + chip->ev_cfg_chan_shift));
- }
- 
- static int mma8452_write_event_config(struct iio_dev *indio_dev,
-@@ -554,20 +597,21 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 				      int state)
- {
- 	struct mma8452_data *data = iio_priv(indio_dev);
-+	const struct mma_chip_info *chip = data->chip_info;
- 	int val;
- 
--	val = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
-+	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
- 	if (val < 0)
- 		return val;
- 
- 	if (state)
--		val |= MMA8452_TRANSIENT_CFG_CHAN(chan->scan_index);
-+		val |= BIT(chan->scan_index + chip->ev_cfg_chan_shift);
- 	else
--		val &= ~MMA8452_TRANSIENT_CFG_CHAN(chan->scan_index);
-+		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
- 
- 	val |= MMA8452_TRANSIENT_CFG_ELE;
- 
--	return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, val);
-+	return mma8452_change_config(data, chip->ev_cfg, val);
- }
- 
- static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
-@@ -576,25 +620,25 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
- 	s64 ts = iio_get_time_ns();
- 	int src;
- 
--	src = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_SRC);
-+	src = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_src);
- 	if (src < 0)
- 		return;
- 
--	if (src & MMA8452_TRANSIENT_SRC_XTRANSE)
-+	if (src & data->chip_info->ev_src_xe)
- 		iio_push_event(indio_dev,
- 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
- 						  IIO_EV_TYPE_MAG,
- 						  IIO_EV_DIR_RISING),
- 			       ts);
- 
--	if (src & MMA8452_TRANSIENT_SRC_YTRANSE)
-+	if (src & data->chip_info->ev_src_ye)
- 		iio_push_event(indio_dev,
- 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Y,
- 						  IIO_EV_TYPE_MAG,
- 						  IIO_EV_DIR_RISING),
- 			       ts);
- 
--	if (src & MMA8452_TRANSIENT_SRC_ZTRANSE)
-+	if (src & data->chip_info->ev_src_ze)
- 		iio_push_event(indio_dev,
- 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Z,
- 						  IIO_EV_TYPE_MAG,
-@@ -696,7 +740,7 @@ static struct attribute_group mma8452_event_attribute_group = {
- 	.name = "events",
- };
- 
--#define MMA8452_CHANNEL(axis, idx) { \
-+#define MMA8452_CHANNEL(axis, idx, bits) { \
- 	.type = IIO_ACCEL, \
- 	.modified = 1, \
- 	.channel2 = IIO_MOD_##axis, \
-@@ -708,9 +752,9 @@ static struct attribute_group mma8452_event_attribute_group = {
- 	.scan_index = idx, \
- 	.scan_type = { \
- 		.sign = 's', \
--		.realbits = 12, \
-+		.realbits = (bits), \
- 		.storagebits = 16, \
--		.shift = 4, \
-+		.shift = 16 - (bits), \
- 		.endianness = IIO_BE, \
- 	}, \
- 	.event_spec = mma8452_transient_event, \
-@@ -718,12 +762,42 @@ static struct attribute_group mma8452_event_attribute_group = {
- }
- 
- static const struct iio_chan_spec mma8452_channels[] = {
--	MMA8452_CHANNEL(X, 0),
--	MMA8452_CHANNEL(Y, 1),
--	MMA8452_CHANNEL(Z, 2),
-+	MMA8452_CHANNEL(X, 0, 12),
-+	MMA8452_CHANNEL(Y, 1, 12),
-+	MMA8452_CHANNEL(Z, 2, 12),
- 	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
-+enum {
-+	mma8452,
-+};
-+
-+static const struct mma_chip_info mma_chip_info_table[] = {
-+	[mma8452] = {
-+		.chip_id = MMA8452_DEVICE_ID,
-+		.channels = mma8452_channels,
-+		.num_channels = ARRAY_SIZE(mma8452_channels),
-+		/*
-+		 * Hardware has fullscale of -2G, -4G, -8G corresponding to
-+		 * raw value -2048 for 12 bit or -512 for 10 bit.
-+		 * The userspace interface uses m/s^2 and we declare micro units
-+		 * So scale factor for 12 bit here is given by:
-+		 *	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
-+		 */
-+		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
-+		.ev_cfg = MMA8452_TRANSIENT_CFG,
-+		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
-+		.ev_cfg_chan_shift = 1,
-+		.ev_src = MMA8452_TRANSIENT_SRC,
-+		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
-+		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
-+		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
-+		.ev_ths = MMA8452_TRANSIENT_THS,
-+		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
-+		.ev_count = MMA8452_TRANSIENT_COUNT,
-+	},
-+};
-+
- static struct attribute *mma8452_attributes[] = {
- 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-@@ -841,12 +915,19 @@ static int mma8452_reset(struct i2c_client *client)
- 	return -ETIMEDOUT;
- }
- 
-+static const struct of_device_id mma8452_dt_ids[] = {
-+	{ .compatible = "fsl,mma8452", .data = &mma_chip_info_table[mma8452] },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
-+
- static int mma8452_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
- {
- 	struct mma8452_data *data;
- 	struct iio_dev *indio_dev;
- 	int ret;
-+	const struct of_device_id *match;
- 
- 	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
- 	if (ret < 0)
-@@ -854,6 +935,12 @@ static int mma8452_probe(struct i2c_client *client,
- 	if (ret != MMA8452_DEVICE_ID)
- 		return -ENODEV;
- 
-+	match = of_match_device(mma8452_dt_ids, &client->dev);
-+	if (!match) {
-+		dev_err(&client->dev, "unknown device model\n");
-+		return -ENODEV;
-+	}
-+
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
-@@ -861,14 +948,18 @@ static int mma8452_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	data->client = client;
- 	mutex_init(&data->lock);
-+	data->chip_info = match->data;
-+
-+	dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
-+		 match->compatible, data->chip_info->chip_id);
- 
- 	i2c_set_clientdata(client, indio_dev);
- 	indio_dev->info = &mma8452_info;
- 	indio_dev->name = id->name;
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	indio_dev->channels = mma8452_channels;
--	indio_dev->num_channels = ARRAY_SIZE(mma8452_channels);
-+	indio_dev->channels = data->chip_info->channels;
-+	indio_dev->num_channels = data->chip_info->num_channels;
- 	indio_dev->available_scan_masks = mma8452_scan_masks;
- 
- 	ret = mma8452_reset(client);
-@@ -987,17 +1078,11 @@ static SIMPLE_DEV_PM_OPS(mma8452_pm_ops, mma8452_suspend, mma8452_resume);
- #endif
- 
- static const struct i2c_device_id mma8452_id[] = {
--	{ "mma8452", 0 },
-+	{ "mma8452", mma8452 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, mma8452_id);
- 
--static const struct of_device_id mma8452_dt_ids[] = {
--	{ .compatible = "fsl,mma8452" },
--	{ }
--};
--MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
--
- static struct i2c_driver mma8452_driver = {
- 	.driver = {
- 		.name	= "mma8452",
--- 
-2.1.4
-
+Thanks,
+Srinivas
+> 
+> Jonathan
+> > ---
+> >  drivers/iio/accel/Kconfig                          |  9 +-
+> >  drivers/iio/accel/Makefile                         |  3 +-
+> >  .../accel/{bmc150-accel.c => bmc150-accel-core.c}  | 95 ++++------
+> > -----------
+> >  drivers/iio/accel/bmc150-accel-i2c.c               | 99 
+> > ++++++++++++++++++++++
+> >  drivers/iio/accel/bmc150-accel.h                   | 21 +++++
+> >  5 files changed, 144 insertions(+), 83 deletions(-)
+> >  rename drivers/iio/accel/{bmc150-accel.c => bmc150-accel-core.c} 
+> > (95%)
+> >  create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
+> >  create mode 100644 drivers/iio/accel/bmc150-accel.h
+> > 
+> > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> > index 01dd03d194d1..6da4eb0db57b 100644
+> > --- a/drivers/iio/accel/Kconfig
+> > +++ b/drivers/iio/accel/Kconfig
+> > @@ -19,21 +19,22 @@ config BMA180
+> >  
+> >  config BMC150_ACCEL
+> >  	tristate "Bosch BMC150 Accelerometer Driver"
+> > -	depends on I2C
+> >  	select IIO_BUFFER
+> >  	select IIO_TRIGGERED_BUFFER
+> >  	select REGMAP
+> > -	select REGMAP_I2C
+> > +	select BMC150_ACCEL_I2C if I2C
+> >  	help
+> >  	  Say yes here to build support for the following Bosch 
+> > accelerometers:
+> >  	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
+> >  
+> > -	  Currently this only supports the device via an i2c 
+> > interface.
+> > -
+> Well technically this is true until the next patch ;)  I'll let that 
+> one go
+> though....
+> >  	  This is a combo module with both accelerometer and 
+> > magnetometer.
+> >  	  This driver is only implementing accelerometer part, 
+> > which has
+> >  	  its own address and register map.
+> >  
+> > +config BMC150_ACCEL_I2C
+> > +	tristate
+> > +	select REGMAP_I2C
+> > +
+> >  config HID_SENSOR_ACCEL_3D
+> >  	depends on HID_SENSOR_HUB
+> >  	select IIO_BUFFER
+> > diff --git a/drivers/iio/accel/Makefile 
+> > b/drivers/iio/accel/Makefile
+> > index ebd2675b2a02..5ef8bdbad092 100644
+> > --- a/drivers/iio/accel/Makefile
+> > +++ b/drivers/iio/accel/Makefile
+> > @@ -4,7 +4,8 @@
+> >  
+> >  # When adding new entries keep the list in alphabetical order
+> >  obj-$(CONFIG_BMA180) += bma180.o
+> > -obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel.o
+> > +obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+> > +obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+> >  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+> >  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+> >  obj-$(CONFIG_KXSD9)	+= kxsd9.o
+> > diff --git a/drivers/iio/accel/bmc150-accel.c 
+> > b/drivers/iio/accel/bmc150-accel-core.c
+> > similarity index 95%
+> > rename from drivers/iio/accel/bmc150-accel.c
+> > rename to drivers/iio/accel/bmc150-accel-core.c
+> > index e4a0691d9b88..614cf61f0110 100644
+> > --- a/drivers/iio/accel/bmc150-accel.c
+> > +++ b/drivers/iio/accel/bmc150-accel-core.c
+> > @@ -37,6 +37,8 @@
+> >  #include <linux/iio/triggered_buffer.h>
+> >  #include <linux/regmap.h>
+> >  
+> > +#include "bmc150-accel.h"
+> > +
+> >  #define BMC150_ACCEL_DRV_NAME			"bmc150_accel
+> > "
+> >  #define BMC150_ACCEL_IRQ_NAME			"bmc150_accel
+> > _event"
+> >  #define BMC150_ACCEL_GPIO_NAME			"bmc150_acce
+> > l_int"
+> > @@ -187,7 +189,6 @@ enum bmc150_accel_trigger_id {
+> >  struct bmc150_accel_data {
+> >  	struct regmap *regmap;
+> >  	struct device *dev;
+> > -	int irq;
+> >  	struct bmc150_accel_interrupt 
+> > interrupts[BMC150_ACCEL_INTERRUPTS];
+> >  	atomic_t active_intr;
+> >  	struct bmc150_accel_trigger 
+> > triggers[BMC150_ACCEL_TRIGGERS];
+> > @@ -201,6 +202,7 @@ struct bmc150_accel_data {
+> >  	int ev_enable_state;
+> >  	int64_t timestamp, old_timestamp; /* Only used in hw fifo 
+> > mode. */
+> >  	const struct bmc150_accel_chip_info *chip_info;
+> > +	int irq;
+> Why move the location of this element of the structure?
+> 
+> >  };
+> >  
+> >  static const struct {
+> > @@ -1070,15 +1072,6 @@ static const struct iio_chan_spec 
+> > bmc150_accel_channels[] =
+> >  static const struct iio_chan_spec bma280_accel_channels[] =
+> >  	BMC150_ACCEL_CHANNELS(14);
+> >  
+> > -enum {
+> > -	bmc150,
+> > -	bmi055,
+> > -	bma255,
+> > -	bma250e,
+> > -	bma222e,
+> > -	bma280,
+> > -};
+> > -
+> >  static const struct bmc150_accel_chip_info 
+> > bmc150_accel_chip_info_tbl[] = {
+> >  	[bmc150] = {
+> >  		.chip_id = 0xFA,
+> > @@ -1567,36 +1560,22 @@ static const struct iio_buffer_setup_ops 
+> > bmc150_accel_buffer_ops = {
+> >  	.postdisable = bmc150_accel_buffer_postdisable,
+> >  };
+> >  
+> > -static int bmc150_accel_probe(struct i2c_client *client,
+> > -			      const struct i2c_device_id *id)
+> > +int bmc150_accel_core_probe(struct device *dev, struct regmap 
+> > *regmap, int irq,
+> > +			    const char *name, int chip_id, bool 
+> > block_supported)
+> >  {
+> >  	struct bmc150_accel_data *data;
+> >  	struct iio_dev *indio_dev;
+> >  	int ret;
+> > -	const char *name = NULL;
+> > -	int chip_id = 0;
+> > -	struct device *dev;
+> >  
+> > -	indio_dev = devm_iio_device_alloc(&client->dev, 
+> > sizeof(*data));
+> > +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> >  	if (!indio_dev)
+> >  		return -ENOMEM;
+> >  
+> >  	data = iio_priv(indio_dev);
+> > -	i2c_set_clientdata(client, indio_dev);
+> > -	data->dev = &client->dev;
+> > -	dev = &client->dev;
+> > -	data->irq = client->irq;
+> > -
+> > -	data->regmap = devm_regmap_init_i2c(client, 
+> > &bmc150_i2c_regmap_conf);
+> > -	if (IS_ERR(data->regmap)) {
+> > -		dev_err(dev, "Failed to initialize i2c regmap\n");
+> > -		return PTR_ERR(data->regmap);
+> > -	}
+> > -
+> > -	if (id) {
+> > -		name = id->name;
+> > -		chip_id = id->driver_data;
+> > -	}
+> > +	dev_set_drvdata(dev, indio_dev);
+> > +	data->dev = dev;
+> > +	data->irq = irq;
+> > +	data->regmap = regmap;
+> >  
+> >  	if (ACPI_HANDLE(dev))
+> >  		name = bmc150_accel_match_acpi_device(dev, 
+> > &chip_id);
+> > @@ -1658,9 +1637,7 @@ static int bmc150_accel_probe(struct 
+> > i2c_client *client,
+> >  		if (ret)
+> >  			goto err_buffer_cleanup;
+> >  
+> > -		if (i2c_check_functionality(client->adapter, 
+> > I2C_FUNC_I2C) ||
+> > -		    i2c_check_functionality(client->adapter,
+> > -					   
+> >  I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
+> > +		if (block_supported) {
+> >  			indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
+> >  			indio_dev->info = &bmc150_accel_info_fifo;
+> >  			indio_dev->buffer->attrs = 
+> > bmc150_accel_fifo_attributes;
+> > @@ -1669,7 +1646,7 @@ static int bmc150_accel_probe(struct 
+> > i2c_client *client,
+> >  
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret < 0) {
+> > -		dev_err(data->dev, "Unable to register iio 
+> > device\n");
+> > +		dev_err(dev, "Unable to register iio device\n");
+> >  		goto err_trigger_unregister;
+> >  	}
+> >  
+> > @@ -1692,10 +1669,11 @@ err_buffer_cleanup:
+> >  
+> >  	return ret;
+> >  }
+> > +EXPORT_SYMBOL_GPL(bmc150_accel_core_probe);
+> >  
+> > -static int bmc150_accel_remove(struct i2c_client *client)
+> > +int bmc150_accel_core_remove(struct device *dev)
+> >  {
+> > -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> >  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> >  
+> >  	pm_runtime_disable(data->dev);
+> > @@ -1714,6 +1692,7 @@ static int bmc150_accel_remove(struct 
+> > i2c_client *client)
+> >  
+> >  	return 0;
+> >  }
+> > +EXPORT_SYMBOL_GPL(bmc150_accel_core_remove);
+> >  
+> >  #ifdef CONFIG_PM_SLEEP
+> >  static int bmc150_accel_suspend(struct device *dev)
+> > @@ -1784,48 +1763,8 @@ static int 
+> > bmc150_accel_runtime_resume(struct device *dev)
+> >  }
+> >  #endif
+> >  
+> > -static const struct dev_pm_ops bmc150_accel_pm_ops = {
+> > +const struct dev_pm_ops bmc150_accel_pm_ops = {
+> >  	SET_SYSTEM_SLEEP_PM_OPS(bmc150_accel_suspend, 
+> > bmc150_accel_resume)
+> >  	SET_RUNTIME_PM_OPS(bmc150_accel_runtime_suspend,
+> >  			   bmc150_accel_runtime_resume, NULL)
+> >  };
+> > -
+> > -static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+> > -	{"BSBA0150",	bmc150},
+> > -	{"BMC150A",	bmc150},
+> > -	{"BMI055A",	bmi055},
+> > -	{"BMA0255",	bma255},
+> > -	{"BMA250E",	bma250e},
+> > -	{"BMA222E",	bma222e},
+> > -	{"BMA0280",	bma280},
+> > -	{ },
+> > -};
+> > -MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+> > -
+> > -static const struct i2c_device_id bmc150_accel_id[] = {
+> > -	{"bmc150_accel",	bmc150},
+> > -	{"bmi055_accel",	bmi055},
+> > -	{"bma255",		bma255},
+> > -	{"bma250e",		bma250e},
+> > -	{"bma222e",		bma222e},
+> > -	{"bma280",		bma280},
+> > -	{}
+> > -};
+> > -
+> > -MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
+> > -
+> > -static struct i2c_driver bmc150_accel_driver = {
+> > -	.driver = {
+> > -		.name	= BMC150_ACCEL_DRV_NAME,
+> > -		.acpi_match_table = 
+> > ACPI_PTR(bmc150_accel_acpi_match),
+> > -		.pm	= &bmc150_accel_pm_ops,
+> > -	},
+> > -	.probe		= bmc150_accel_probe,
+> > -	.remove		= bmc150_accel_remove,
+> > -	.id_table	= bmc150_accel_id,
+> > -};
+> > -module_i2c_driver(bmc150_accel_driver);
+> > -
+> > -MODULE_AUTHOR("Srinivas Pandruvada <
+> > srinivas.pandruvada@linux.intel.com>");
+> > -MODULE_LICENSE("GPL v2");
+> > -MODULE_DESCRIPTION("BMC150 accelerometer driver");
+> Note we have a core module now so it wants this stuff to still be 
+> there.
+> 
+> > diff --git a/drivers/iio/accel/bmc150-accel-i2c.c 
+> > b/drivers/iio/accel/bmc150-accel-i2c.c
+> > new file mode 100644
+> > index 000000000000..e4dd596ba8f2
+> > --- /dev/null
+> > +++ b/drivers/iio/accel/bmc150-accel-i2c.c
+> > @@ -0,0 +1,99 @@
+> > +/*
+> > + * 3-axis accelerometer driver supporting following I2C Bosch
+> > -Sensortec chips:
+> > + *  - BMC150
+> > + *  - BMI055
+> > + *  - BMA255
+> > + *  - BMA250E
+> > + *  - BMA222E
+> > + *  - BMA280
+> > + *
+> > + * Copyright (c) 2014, Intel Corporation.
+> > + *
+> > + * This program is free software; you can redistribute it and/or 
+> > modify it
+> > + * under the terms and conditions of the GNU General Public 
+> > License,
+> > + * version 2, as published by the Free Software Foundation.
+> > + *
+> > + * This program is distributed in the hope it will be useful, but 
+> > WITHOUT
+> > + * ANY WARRANTY; without even the implied warranty of 
+> > MERCHANTABILITY or
+> > + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public 
+> > License for
+> > + * more details.
+> > + */
+> > +
+> > +#include <linux/device.h>
+> > +#include <linux/mod_devicetable.h>
+> > +#include <linux/i2c.h>
+> > +#include <linux/module.h>
+> > +#include <linux/acpi.h>
+> > +#include <linux/regmap.h>
+> > +
+> > +#include "bmc150-accel.h"
+> > +
+> > +static const struct regmap_config bmc150_i2c_regmap_conf = {
+> > +	.reg_bits = 8,
+> > +	.val_bits = 8,
+> > +};
+> > +
+> > +static int bmc150_accel_probe(struct i2c_client *client,
+> > +			      const struct i2c_device_id *id)
+> > +{
+> > +	struct regmap *regmap;
+> > +	bool block_supported =
+> > +		i2c_check_functionality(client->adapter, 
+> > I2C_FUNC_I2C) ||
+> > +		i2c_check_functionality(client->adapter,
+> > +					I2C_FUNC_SMBUS_READ_I2C_BL
+> > OCK);
+> > +
+> > +	regmap = devm_regmap_init_i2c(client, 
+> > &bmc150_i2c_regmap_conf);
+> > +	if (IS_ERR(regmap)) {
+> > +		dev_err(&client->dev, "Failed to initialize i2c 
+> > regmap\n");
+> > +		return PTR_ERR(regmap);
+> > +	}
+> > +
+> > +	return bmc150_accel_core_probe(&client->dev, regmap, 
+> > client->irq,
+> > +				       id->name, id->driver_data,
+> > +				       block_supported);
+> > +}
+> > +
+> > +static int bmc150_accel_remove(struct i2c_client *client)
+> > +{
+> > +	return bmc150_accel_core_remove(&client->dev);
+> > +}
+> > +
+> > +static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+> > +	{"BSBA0150",	bmc150},
+> > +	{"BMC150A",	bmc150},
+> > +	{"BMI055A",	bmi055},
+> > +	{"BMA0255",	bma255},
+> > +	{"BMA250E",	bma250e},
+> > +	{"BMA222E",	bma222e},
+> > +	{"BMA0280",	bma280},
+> > +	{ },
+> > +};
+> > +MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+> > +
+> > +static const struct i2c_device_id bmc150_accel_id[] = {
+> > +	{"bmc150_accel",	bmc150},
+> > +	{"bmi055_accel",	bmi055},
+> > +	{"bma255",		bma255},
+> > +	{"bma250e",		bma250e},
+> > +	{"bma222e",		bma222e},
+> > +	{"bma280",		bma280},
+> > +	{}
+> > +};
+> > +
+> > +MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
+> > +
+> > +static struct i2c_driver bmc150_accel_driver = {
+> > +	.driver = {
+> > +		.name	= "bmc150_accel_i2c",
+> > +		.acpi_match_table = 
+> > ACPI_PTR(bmc150_accel_acpi_match),
+> > +		.pm	= &bmc150_accel_pm_ops,
+> > +	},
+> > +	.probe		= bmc150_accel_probe,
+> > +	.remove		= bmc150_accel_remove,
+> > +	.id_table	= bmc150_accel_id,
+> > +};
+> > +module_i2c_driver(bmc150_accel_driver);
+> > +
+> > +MODULE_AUTHOR("Srinivas Pandruvada <
+> > srinivas.pandruvada@linux.intel.com>");
+> > +MODULE_LICENSE("GPL v2");
+> > +MODULE_DESCRIPTION("BMC150 I2C accelerometer driver");
+> > diff --git a/drivers/iio/accel/bmc150-accel.h 
+> > b/drivers/iio/accel/bmc150-accel.h
+> > new file mode 100644
+> > index 000000000000..988b57573d0c
+> > --- /dev/null
+> > +++ b/drivers/iio/accel/bmc150-accel.h
+> > @@ -0,0 +1,21 @@
+> > +#ifndef _BMC150_ACCEL_H_
+> > +#define _BMC150_ACCEL_H_
+> > +
+> > +struct regmap;
+> > +
+> > +enum {
+> > +	bmc150,
+> > +	bmi055,
+> > +	bma255,
+> > +	bma250e,
+> > +	bma222e,
+> > +	bma280,
+> > +};
+> > +
+> > +int bmc150_accel_core_probe(struct device *dev, struct regmap 
+> > *regmap, int irq,
+> > +			    const char *name, int chip_id,
+> > +			    bool block_supported);
+> > +int bmc150_accel_core_remove(struct device *dev);
+> > +extern const struct dev_pm_ops bmc150_accel_pm_ops;
+> > +
+> > +#endif  /* _BMC150_ACCEL_H_ */
+> > 
+> 
