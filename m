@@ -1,404 +1,246 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f53.google.com ([209.85.220.53]:34359 "EHLO
-	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752216AbbIAGjk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Sep 2015 02:39:40 -0400
-Received: by pabzx8 with SMTP id zx8so165975511pab.1
-        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2015 23:39:39 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v2 1/1] iio: humidity: add HDC100x support
-Date: Mon, 31 Aug 2015 23:39:45 -0700
-Message-Id: <1441089585-26486-2-git-send-email-mranostay@gmail.com>
-In-Reply-To: <1441089585-26486-1-git-send-email-mranostay@gmail.com>
-References: <1441089585-26486-1-git-send-email-mranostay@gmail.com>
+Received: from mout01.posteo.de ([185.67.36.65]:39780 "EHLO mout01.posteo.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752900AbbIALwQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 1 Sep 2015 07:52:16 -0400
+Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
+	by mout01.posteo.de (Postfix) with ESMTPS id 8C07E20BBE
+	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2015 13:47:14 +0200 (CEST)
+From: Martin Kepplinger <martink@posteo.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, mfuzzey@parkeon.com, roberta.dobrescu@gmail.com,
+	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org
+Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	christoph.muellner@theobroma-systems.com,
+	Martin Kepplinger <martink@posteo.de>,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: [PATCH 4/6] iio: mma8452: add support for MMA8652FC and MMA8653FC
+Date: Tue,  1 Sep 2015 13:45:11 +0200
+Message-Id: <1441107913-4112-5-git-send-email-martink@posteo.de>
+In-Reply-To: <1441107913-4112-1-git-send-email-martink@posteo.de>
+References: <1441107913-4112-1-git-send-email-martink@posteo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add support for the HDC100x temperature and humidity sensors
-including the resistive heater element.
+MMA8652FC and MMA8653FC don't provide the transient interrupt source, so
+the motion interrupt source is used by providing a new iio_chan_spec
+definition, so that other supported devices are not affected by this.
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+Datasheets for the newly supported devices are available at Freescale's
+website:
+
+http://cache.freescale.com/files/sensors/doc/data_sheet/MMA8652FC.pdf
+http://cache.freescale.com/files/sensors/doc/data_sheet/MMA8653FC.pdf
+
+Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
 ---
- .../ABI/testing/sysfs-bus-iio-humidity-hdc100x     |   9 +
- drivers/iio/humidity/Kconfig                       |  10 +
- drivers/iio/humidity/Makefile                      |   1 +
- drivers/iio/humidity/hdc100x.c                     | 317 +++++++++++++++++++++
- 4 files changed, 337 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
- create mode 100644 drivers/iio/humidity/hdc100x.c
+ .../devicetree/bindings/iio/accel/mma8452.txt      |  4 +-
+ drivers/iio/accel/Kconfig                          |  2 +-
+ drivers/iio/accel/mma8452.c                        | 98 ++++++++++++++++++++--
+ 3 files changed, 95 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x b/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
-new file mode 100644
-index 0000000..6901e1f
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
-@@ -0,0 +1,9 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_current_heater_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/out_current_heater_raw_available
-+KernelVersion:	4.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Controls the heater device within the humidity sensor to get
-+		rid of excess condensation.
-+
-+		Valid control values are 0 = OFF, and 1 = ON.
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index 688c0d1..353ee9a 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -12,6 +12,16 @@ config DHT11
- 	  Other sensors should work as well as long as they speak the
- 	  same protocol.
+diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+index c3bc272..e3c3746 100644
+--- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
++++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+@@ -1,10 +1,12 @@
+-Freescale MMA8452Q or MMA8453Q triaxial accelerometer
++Freescale MMA8452Q, MMA8453Q, MMA8652FC or MMA8653FC triaxial accelerometer
  
-+config HDC100X
-+	tristate "TI HDC100x relative humidity and temperature sensor"
-+	depends on I2C
-+	help
-+	 Say yes here to build support for the TI HDC100x series of
-+	 relative humidity and temperature sensors.
-+
-+	 To compile this driver as a module, choose M here: the module
-+	 will be called hdc100x.
-+
- config SI7005
- 	tristate "SI7005 relative humidity and temperature sensor"
- 	depends on I2C
-diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
-index 86e2d26..3e62c0a 100644
---- a/drivers/iio/humidity/Makefile
-+++ b/drivers/iio/humidity/Makefile
-@@ -3,5 +3,6 @@
- #
+ Required properties:
  
- obj-$(CONFIG_DHT11) += dht11.o
-+obj-$(CONFIG_HDC100X) += hdc100x.o
- obj-$(CONFIG_SI7005) += si7005.o
- obj-$(CONFIG_SI7020) += si7020.o
-diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-new file mode 100644
-index 0000000..6a14ff9
---- /dev/null
-+++ b/drivers/iio/humidity/hdc100x.c
-@@ -0,0 +1,317 @@
-+/*
-+ * hdc100x.c - Support for the TI HDC100x temperature + humidity sensors
-+ *
-+ * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/i2c.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#define HDC100X_REG_TEMP			0x00
-+#define HDC100X_REG_HUMIDITY			0x01
-+
-+#define HDC100X_REG_CONFIG			0x02
-+#define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
-+
-+struct hdc100x_data {
-+	struct i2c_client *client;
-+	struct mutex lock;
-+	u16 config;
-+
-+	/* integration time of the sensor */
-+	int adc_int_us[2];
-+};
-+
-+/* integration time in us */
-+static const int hdc100x_int_time[][3] = {
-+	{ 6350, 3650, 0 },	/* IIO_TEMP channel*/
-+	{ 6500, 3850, 2500 },	/* IIO_HUMIDITYRELATIVE channel */
-+};
-+
-+/* HDC100X_REG_CONFIG shift and mask values */
-+static const struct {
-+	int shift;
-+	int mask;
-+} hdc100x_resolution_shift[2] = {
-+	{ /* IIO_TEMP channel */
-+		.shift = 10,
-+		.mask = 1
-+	},
-+	{ /* IIO_HUMIDITYRELATIVE channel */
-+		.shift = 8,
-+		.mask = 2,
-+	},
-+};
-+
-+static IIO_CONST_ATTR(temp_integration_time_available,
-+		"0.00365 0.00635");
-+
-+static IIO_CONST_ATTR(humidityrelative_integration_time_available,
-+		"0.0025 0.00385 0.0065");
-+
-+static IIO_CONST_ATTR(out_current_heater_raw_available,
-+		"0 1");
-+
-+static struct attribute *hdc100x_attributes[] = {
-+	&iio_const_attr_temp_integration_time_available.dev_attr.attr,
-+	&iio_const_attr_humidityrelative_integration_time_available.dev_attr.attr,
-+	&iio_const_attr_out_current_heater_raw_available.dev_attr.attr,
-+	NULL
-+};
-+
-+static struct attribute_group hdc100x_attribute_group = {
-+	.attrs = hdc100x_attributes,
-+};
-+
-+static const struct iio_chan_spec hdc100x_channels[] = {
-+	{
-+		.type = IIO_TEMP,
-+		.address = HDC100X_REG_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_INT_TIME) |
-+			BIT(IIO_CHAN_INFO_OFFSET),
-+	},
-+	{
-+		.type = IIO_HUMIDITYRELATIVE,
-+		.address = HDC100X_REG_HUMIDITY,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_INT_TIME)
-+	},
-+
-+	{
-+		.type = IIO_CURRENT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.extend_name = "heater",
-+		.output = 1,
-+	},
-+};
-+
-+static int hdc100x_update_config(struct hdc100x_data *data, int mask, int val)
-+{
-+	int tmp = (~mask & data->config) | val;
-+	int ret;
-+
-+	ret = i2c_smbus_write_word_swapped(data->client,
-+						HDC100X_REG_CONFIG, tmp);
-+	if (!ret)
-+		data->config = tmp;
-+
-+	return ret;
+   - compatible: should contain one of
+     * "fsl,mma8452"
+     * "fsl,mma8453"
++    * "fsl,mma8652"
++    * "fsl,mma8653"
+   - reg: the I2C address of the chip
+ 
+ Optional properties:
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index e4075a0..a37155d 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -106,7 +106,7 @@ config MMA8452
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to build support for the following Freescale 3-axis
+-	  accelerometers: MMA8452Q, MMA8453Q.
++	  accelerometers: MMA8452Q, MMA8453Q, MMA8652FC, MMA8653FC.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called mma8452.
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 6b1a862..59b4455 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -3,6 +3,8 @@
+  *
+  * MMA8452Q (12 bit)
+  * MMA8453Q (10 bit)
++ * MMA8652FC (12 bit)
++ * MMA8653FC (10 bit)
+  *
+  * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
+  *
+@@ -84,6 +86,8 @@
+ 
+ #define  MMA8452_DEVICE_ID			0x2a
+ #define  MMA8453_DEVICE_ID			0x3a
++#define MMA8652_DEVICE_ID			0x4a
++#define MMA8653_DEVICE_ID			0x5a
+ 
+ struct mma8452_data {
+ 	struct i2c_client *client;
+@@ -791,6 +795,26 @@ static struct attribute_group mma8452_event_attribute_group = {
+ 	.num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
+ }
+ 
++#define MMA8652_CHANNEL(axis, idx, bits) { \
++	.type = IIO_ACCEL, \
++	.modified = 1, \
++	.channel2 = IIO_MOD_##axis, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++		BIT(IIO_CHAN_INFO_CALIBBIAS), \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
++		BIT(IIO_CHAN_INFO_SCALE), \
++	.scan_index = idx, \
++	.scan_type = { \
++		.sign = 's', \
++		.realbits = (bits), \
++		.storagebits = 16, \
++		.shift = 16 - (bits), \
++		.endianness = IIO_BE, \
++	}, \
++	.event_spec = mma8452_motion_event, \
++	.num_event_specs = ARRAY_SIZE(mma8452_motion_event), \
 +}
 +
-+static int hdc100x_set_it_time(struct hdc100x_data *data, int chan, int val2)
-+{
-+	int shift = hdc100x_resolution_shift[chan].shift;
-+	int ret = -EINVAL;
-+	int i;
+ static const struct iio_chan_spec mma8452_channels[] = {
+ 	MMA8452_CHANNEL(X, 0, 12),
+ 	MMA8452_CHANNEL(Y, 1, 12),
+@@ -805,9 +829,25 @@ static const struct iio_chan_spec mma8453_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(3),
+ };
+ 
++static const struct iio_chan_spec mma8652_channels[] = {
++	MMA8652_CHANNEL(X, 0, 12),
++	MMA8652_CHANNEL(Y, 1, 12),
++	MMA8652_CHANNEL(Z, 2, 12),
++	IIO_CHAN_SOFT_TIMESTAMP(3),
++};
 +
-+	for (i = 0; i < ARRAY_SIZE(hdc100x_int_time[chan]); i++) {
-+		if (val2 && val2 == hdc100x_int_time[chan][i]) {
-+			ret = hdc100x_update_config(data,
-+				hdc100x_resolution_shift[chan].mask << shift,
-+				i << shift);
-+			data->adc_int_us[chan] = val2;
++static const struct iio_chan_spec mma8653_channels[] = {
++	MMA8652_CHANNEL(X, 0, 10),
++	MMA8652_CHANNEL(Y, 1, 10),
++	MMA8652_CHANNEL(Z, 2, 10),
++	IIO_CHAN_SOFT_TIMESTAMP(3),
++};
++
+ enum {
+ 	mma8452,
+ 	mma8453,
++	mma8652,
++	mma8653,
+ };
+ 
+ static const struct mma_chip_info mma_chip_info_table[] = {
+@@ -850,6 +890,38 @@ static const struct mma_chip_info mma_chip_info_table[] = {
+ 		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+ 		.ev_count = MMA8452_TRANSIENT_COUNT,
+ 	},
++	[mma8652] = {
++		.chip_id = MMA8652_DEVICE_ID,
++		.channels = mma8652_channels,
++		.num_channels = ARRAY_SIZE(mma8652_channels),
++		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
++		.ev_cfg = MMA8452_FF_MT_CFG,
++		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
++		.ev_cfg_chan_shift = 3,
++		.ev_src = MMA8452_FF_MT_SRC,
++		.ev_src_xe = MMA8452_FF_MT_SRC_XHE,
++		.ev_src_ye = MMA8452_FF_MT_SRC_YHE,
++		.ev_src_ze = MMA8452_FF_MT_SRC_ZHE,
++		.ev_ths = MMA8452_FF_MT_THS,
++		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
++		.ev_count = MMA8452_FF_MT_COUNT,
++	},
++	[mma8653] = {
++		.chip_id = MMA8653_DEVICE_ID,
++		.channels = mma8653_channels,
++		.num_channels = ARRAY_SIZE(mma8653_channels),
++		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
++		.ev_cfg = MMA8452_FF_MT_CFG,
++		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
++		.ev_cfg_chan_shift = 3,
++		.ev_src = MMA8452_FF_MT_SRC,
++		.ev_src_xe = MMA8452_FF_MT_SRC_XHE,
++		.ev_src_ye = MMA8452_FF_MT_SRC_YHE,
++		.ev_src_ze = MMA8452_FF_MT_SRC_ZHE,
++		.ev_ths = MMA8452_FF_MT_THS,
++		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
++		.ev_count = MMA8452_FF_MT_COUNT,
++	},
+ };
+ 
+ static struct attribute *mma8452_attributes[] = {
+@@ -972,6 +1044,8 @@ static int mma8452_reset(struct i2c_client *client)
+ static const struct of_device_id mma8452_dt_ids[] = {
+ 	{ .compatible = "fsl,mma8452", .data = &mma_chip_info_table[mma8452] },
+ 	{ .compatible = "fsl,mma8453", .data = &mma_chip_info_table[mma8453] },
++	{ .compatible = "fsl,mma8652", .data = &mma_chip_info_table[mma8652] },
++	{ .compatible = "fsl,mma8653", .data = &mma_chip_info_table[mma8653] },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
+@@ -984,13 +1058,6 @@ static int mma8452_probe(struct i2c_client *client,
+ 	int ret;
+ 	const struct of_device_id *match;
+ 
+-	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
+-	if (ret < 0)
+-		return ret;
+-
+-	if (ret != MMA8452_DEVICE_ID && ret != MMA8453_DEVICE_ID)
+-		return -ENODEV;
+-
+ 	match = of_match_device(mma8452_dt_ids, &client->dev);
+ 	if (!match) {
+ 		dev_err(&client->dev, "unknown device model\n");
+@@ -1006,6 +1073,21 @@ static int mma8452_probe(struct i2c_client *client,
+ 	mutex_init(&data->lock);
+ 	data->chip_info = match->data;
+ 
++	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
++	if (ret < 0)
++		return ret;
++
++	switch (ret) {
++	case MMA8452_DEVICE_ID:
++	case MMA8453_DEVICE_ID:
++	case MMA8652_DEVICE_ID:
++	case MMA8653_DEVICE_ID:
++		if (ret == data->chip_info->chip_id)
 +			break;
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+static int hdc100x_get_measurement(struct hdc100x_data *data,
-+				   struct iio_chan_spec const *chan)
-+{
-+	struct i2c_client *client = data->client;
-+	int delay = data->adc_int_us[chan->address];
-+	int ret;
-+	int val;
-+
-+	/* start measurement */
-+	ret = i2c_smbus_write_byte(client, chan->address);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "cannot start measurement");
-+		return ret;
-+	}
-+
-+	/* wait for integration time to pass */
-+	usleep_range(delay, delay + 1000);
-+
-+	ret = i2c_smbus_read_byte(client);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "cannot read high byte measurement");
-+		return ret;
-+	}
-+	val = ret << 6;
-+
-+	ret = i2c_smbus_read_byte(client);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "cannot read low byte measurement");
-+		return ret;
-+	}
-+	val |= ret >> 2;
-+
-+	return val;
-+}
-+
-+static int hdc100x_get_heater_status(struct hdc100x_data *data)
-+{
-+	return !!(data->config & HDC100X_REG_CONFIG_HEATER_EN);
-+}
-+
-+static int hdc100x_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan, int *val,
-+			    int *val2, long mask)
-+{
-+	struct hdc100x_data *data = iio_priv(indio_dev);
-+	int ret = -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&data->lock);
-+		if (chan->type == IIO_CURRENT) {
-+			*val = hdc100x_get_heater_status(data);
-+			ret = IIO_VAL_INT;
-+		} else {
-+			ret = hdc100x_get_measurement(data, chan);
-+			if (ret > 0) {
-+				*val = ret;
-+				ret = IIO_VAL_INT;
-+			}
-+		}
-+		mutex_unlock(&data->lock);
-+		break;
-+	case IIO_CHAN_INFO_INT_TIME:
-+		*val = 0;
-+		*val2 = data->adc_int_us[chan->address];
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_SCALE:
-+		if (chan->type == IIO_TEMP) {
-+			*val = 165;
-+			*val2 = 65536 >> 2;
-+			ret = IIO_VAL_FRACTIONAL;
-+		} else {
-+			*val = 0;
-+			*val2 = 10000;
-+			ret = IIO_VAL_INT_PLUS_MICRO;
-+		}
-+		break;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val = -40;
-+		return IIO_VAL_INT;
 +	default:
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static int hdc100x_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long mask)
-+{
-+	struct hdc100x_data *data = iio_priv(indio_dev);
-+	int ret = -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_INT_TIME:
-+		if (val != 0)
-+			return -EINVAL;
-+
-+		mutex_lock(&data->lock);
-+		ret = hdc100x_set_it_time(data, chan->address, val2);
-+		mutex_unlock(&data->lock);
-+		break;
-+	case IIO_CHAN_INFO_RAW:
-+		if (chan->type == IIO_CURRENT) {
-+			if (val2 != 0)
-+				return -EINVAL;
-+
-+			mutex_lock(&data->lock);
-+			ret = hdc100x_update_config(data,
-+					HDC100X_REG_CONFIG_HEATER_EN,
-+					val ? HDC100X_REG_CONFIG_HEATER_EN : 0);
-+			mutex_unlock(&data->lock);
-+		}
-+		return ret;
-+	}
-+
-+	return ret;
-+}
-+
-+static const struct iio_info hdc100x_info = {
-+	.read_raw = hdc100x_read_raw,
-+	.write_raw = hdc100x_write_raw,
-+	.attrs = &hdc100x_attribute_group,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int hdc100x_probe(struct i2c_client *client,
-+			 const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct hdc100x_data *data;
-+
-+	if (!i2c_check_functionality(client->adapter,
-+				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
 +		return -ENODEV;
++	}
 +
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+	mutex_init(&data->lock);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = dev_name(&client->dev);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &hdc100x_info;
-+
-+	indio_dev->channels = hdc100x_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(hdc100x_channels);
-+
-+	/* be sure we are in a known state */
-+	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
-+	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
-+
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
-+
-+static const struct i2c_device_id hdc100x_id[] = {
-+	{ "hdc100x", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, hdc100x_id);
-+
-+static struct i2c_driver hdc100x_driver = {
-+	.driver = {
-+		.name	= "hdc100x",
-+	},
-+	.probe = hdc100x_probe,
-+	.id_table = hdc100x_id,
-+};
-+module_i2c_driver(hdc100x_driver);
-+
-+MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-+MODULE_DESCRIPTION("TI HDC100x humidity and temperature sensor driver");
-+MODULE_LICENSE("GPL");
+ 	dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
+ 		 match->compatible, data->chip_info->chip_id);
+ 
+@@ -1138,6 +1220,8 @@ static SIMPLE_DEV_PM_OPS(mma8452_pm_ops, mma8452_suspend, mma8452_resume);
+ static const struct i2c_device_id mma8452_id[] = {
+ 	{ "mma8452", mma8452 },
+ 	{ "mma8453", mma8453 },
++	{ "mma8652", mma8652 },
++	{ "mma8653", mma8653 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, mma8452_id);
 -- 
-1.9.1
+2.1.4
 
