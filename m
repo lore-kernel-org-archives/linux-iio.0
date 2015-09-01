@@ -1,74 +1,404 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f177.google.com ([209.85.217.177]:35041 "EHLO
-	mail-lb0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752380AbbHaTqo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2015 15:46:44 -0400
-Received: by lbcbn3 with SMTP id bn3so66446831lbc.2
-        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2015 12:46:43 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <9a834bd03fd40333cb6e9935e51ecf801c81d38b.1440459082.git.knaack.h@gmx.de>
-References: <cover.1440459082.git.knaack.h@gmx.de>
-	<9a834bd03fd40333cb6e9935e51ecf801c81d38b.1440459082.git.knaack.h@gmx.de>
-Date: Mon, 31 Aug 2015 22:46:43 +0300
-Message-ID: <CAEnQRZBm8DDpe82Pju+xF0yLqsuhPnvVXShQvEGHisPymxUkag@mail.gmail.com>
-Subject: Re: [PATCH 4/6] iio:dac:m62332: drop unrequired variable
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-pa0-f53.google.com ([209.85.220.53]:34359 "EHLO
+	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752216AbbIAGjk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Sep 2015 02:39:40 -0400
+Received: by pabzx8 with SMTP id zx8so165975511pab.1
+        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2015 23:39:39 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v2 1/1] iio: humidity: add HDC100x support
+Date: Mon, 31 Aug 2015 23:39:45 -0700
+Message-Id: <1441089585-26486-2-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1441089585-26486-1-git-send-email-mranostay@gmail.com>
+References: <1441089585-26486-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Aug 29, 2015 at 12:59 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
-> A return variable is not required in _write_raw(), and dropping it reduces
-> complexity, as well.
->
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Add support for the HDC100x temperature and humidity sensors
+including the resistive heater element.
 
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ .../ABI/testing/sysfs-bus-iio-humidity-hdc100x     |   9 +
+ drivers/iio/humidity/Kconfig                       |  10 +
+ drivers/iio/humidity/Makefile                      |   1 +
+ drivers/iio/humidity/hdc100x.c                     | 317 +++++++++++++++++++++
+ 4 files changed, 337 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
+ create mode 100644 drivers/iio/humidity/hdc100x.c
 
-Initially forgot to CC linux-iio.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x b/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
+new file mode 100644
+index 0000000..6901e1f
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
+@@ -0,0 +1,9 @@
++What:		/sys/bus/iio/devices/iio:deviceX/out_current_heater_raw
++What:		/sys/bus/iio/devices/iio:deviceX/out_current_heater_raw_available
++KernelVersion:	4.2
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Controls the heater device within the humidity sensor to get
++		rid of excess condensation.
++
++		Valid control values are 0 = OFF, and 1 = ON.
+diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+index 688c0d1..353ee9a 100644
+--- a/drivers/iio/humidity/Kconfig
++++ b/drivers/iio/humidity/Kconfig
+@@ -12,6 +12,16 @@ config DHT11
+ 	  Other sensors should work as well as long as they speak the
+ 	  same protocol.
+ 
++config HDC100X
++	tristate "TI HDC100x relative humidity and temperature sensor"
++	depends on I2C
++	help
++	 Say yes here to build support for the TI HDC100x series of
++	 relative humidity and temperature sensors.
++
++	 To compile this driver as a module, choose M here: the module
++	 will be called hdc100x.
++
+ config SI7005
+ 	tristate "SI7005 relative humidity and temperature sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
+index 86e2d26..3e62c0a 100644
+--- a/drivers/iio/humidity/Makefile
++++ b/drivers/iio/humidity/Makefile
+@@ -3,5 +3,6 @@
+ #
+ 
+ obj-$(CONFIG_DHT11) += dht11.o
++obj-$(CONFIG_HDC100X) += hdc100x.o
+ obj-$(CONFIG_SI7005) += si7005.o
+ obj-$(CONFIG_SI7020) += si7020.o
+diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+new file mode 100644
+index 0000000..6a14ff9
+--- /dev/null
++++ b/drivers/iio/humidity/hdc100x.c
+@@ -0,0 +1,317 @@
++/*
++ * hdc100x.c - Support for the TI HDC100x temperature + humidity sensors
++ *
++ * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#include <linux/delay.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/i2c.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define HDC100X_REG_TEMP			0x00
++#define HDC100X_REG_HUMIDITY			0x01
++
++#define HDC100X_REG_CONFIG			0x02
++#define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
++
++struct hdc100x_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	u16 config;
++
++	/* integration time of the sensor */
++	int adc_int_us[2];
++};
++
++/* integration time in us */
++static const int hdc100x_int_time[][3] = {
++	{ 6350, 3650, 0 },	/* IIO_TEMP channel*/
++	{ 6500, 3850, 2500 },	/* IIO_HUMIDITYRELATIVE channel */
++};
++
++/* HDC100X_REG_CONFIG shift and mask values */
++static const struct {
++	int shift;
++	int mask;
++} hdc100x_resolution_shift[2] = {
++	{ /* IIO_TEMP channel */
++		.shift = 10,
++		.mask = 1
++	},
++	{ /* IIO_HUMIDITYRELATIVE channel */
++		.shift = 8,
++		.mask = 2,
++	},
++};
++
++static IIO_CONST_ATTR(temp_integration_time_available,
++		"0.00365 0.00635");
++
++static IIO_CONST_ATTR(humidityrelative_integration_time_available,
++		"0.0025 0.00385 0.0065");
++
++static IIO_CONST_ATTR(out_current_heater_raw_available,
++		"0 1");
++
++static struct attribute *hdc100x_attributes[] = {
++	&iio_const_attr_temp_integration_time_available.dev_attr.attr,
++	&iio_const_attr_humidityrelative_integration_time_available.dev_attr.attr,
++	&iio_const_attr_out_current_heater_raw_available.dev_attr.attr,
++	NULL
++};
++
++static struct attribute_group hdc100x_attribute_group = {
++	.attrs = hdc100x_attributes,
++};
++
++static const struct iio_chan_spec hdc100x_channels[] = {
++	{
++		.type = IIO_TEMP,
++		.address = HDC100X_REG_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_INT_TIME) |
++			BIT(IIO_CHAN_INFO_OFFSET),
++	},
++	{
++		.type = IIO_HUMIDITYRELATIVE,
++		.address = HDC100X_REG_HUMIDITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_INT_TIME)
++	},
++
++	{
++		.type = IIO_CURRENT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.extend_name = "heater",
++		.output = 1,
++	},
++};
++
++static int hdc100x_update_config(struct hdc100x_data *data, int mask, int val)
++{
++	int tmp = (~mask & data->config) | val;
++	int ret;
++
++	ret = i2c_smbus_write_word_swapped(data->client,
++						HDC100X_REG_CONFIG, tmp);
++	if (!ret)
++		data->config = tmp;
++
++	return ret;
++}
++
++static int hdc100x_set_it_time(struct hdc100x_data *data, int chan, int val2)
++{
++	int shift = hdc100x_resolution_shift[chan].shift;
++	int ret = -EINVAL;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(hdc100x_int_time[chan]); i++) {
++		if (val2 && val2 == hdc100x_int_time[chan][i]) {
++			ret = hdc100x_update_config(data,
++				hdc100x_resolution_shift[chan].mask << shift,
++				i << shift);
++			data->adc_int_us[chan] = val2;
++			break;
++		}
++	}
++
++	return ret;
++}
++
++static int hdc100x_get_measurement(struct hdc100x_data *data,
++				   struct iio_chan_spec const *chan)
++{
++	struct i2c_client *client = data->client;
++	int delay = data->adc_int_us[chan->address];
++	int ret;
++	int val;
++
++	/* start measurement */
++	ret = i2c_smbus_write_byte(client, chan->address);
++	if (ret < 0) {
++		dev_err(&client->dev, "cannot start measurement");
++		return ret;
++	}
++
++	/* wait for integration time to pass */
++	usleep_range(delay, delay + 1000);
++
++	ret = i2c_smbus_read_byte(client);
++	if (ret < 0) {
++		dev_err(&client->dev, "cannot read high byte measurement");
++		return ret;
++	}
++	val = ret << 6;
++
++	ret = i2c_smbus_read_byte(client);
++	if (ret < 0) {
++		dev_err(&client->dev, "cannot read low byte measurement");
++		return ret;
++	}
++	val |= ret >> 2;
++
++	return val;
++}
++
++static int hdc100x_get_heater_status(struct hdc100x_data *data)
++{
++	return !!(data->config & HDC100X_REG_CONFIG_HEATER_EN);
++}
++
++static int hdc100x_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan, int *val,
++			    int *val2, long mask)
++{
++	struct hdc100x_data *data = iio_priv(indio_dev);
++	int ret = -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&data->lock);
++		if (chan->type == IIO_CURRENT) {
++			*val = hdc100x_get_heater_status(data);
++			ret = IIO_VAL_INT;
++		} else {
++			ret = hdc100x_get_measurement(data, chan);
++			if (ret > 0) {
++				*val = ret;
++				ret = IIO_VAL_INT;
++			}
++		}
++		mutex_unlock(&data->lock);
++		break;
++	case IIO_CHAN_INFO_INT_TIME:
++		*val = 0;
++		*val2 = data->adc_int_us[chan->address];
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_SCALE:
++		if (chan->type == IIO_TEMP) {
++			*val = 165;
++			*val2 = 65536 >> 2;
++			ret = IIO_VAL_FRACTIONAL;
++		} else {
++			*val = 0;
++			*val2 = 10000;
++			ret = IIO_VAL_INT_PLUS_MICRO;
++		}
++		break;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = -40;
++		return IIO_VAL_INT;
++	default:
++		break;
++	}
++
++	return ret;
++}
++
++static int hdc100x_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct hdc100x_data *data = iio_priv(indio_dev);
++	int ret = -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		if (val != 0)
++			return -EINVAL;
++
++		mutex_lock(&data->lock);
++		ret = hdc100x_set_it_time(data, chan->address, val2);
++		mutex_unlock(&data->lock);
++		break;
++	case IIO_CHAN_INFO_RAW:
++		if (chan->type == IIO_CURRENT) {
++			if (val2 != 0)
++				return -EINVAL;
++
++			mutex_lock(&data->lock);
++			ret = hdc100x_update_config(data,
++					HDC100X_REG_CONFIG_HEATER_EN,
++					val ? HDC100X_REG_CONFIG_HEATER_EN : 0);
++			mutex_unlock(&data->lock);
++		}
++		return ret;
++	}
++
++	return ret;
++}
++
++static const struct iio_info hdc100x_info = {
++	.read_raw = hdc100x_read_raw,
++	.write_raw = hdc100x_write_raw,
++	.attrs = &hdc100x_attribute_group,
++	.driver_module = THIS_MODULE,
++};
++
++static int hdc100x_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct iio_dev *indio_dev;
++	struct hdc100x_data *data;
++
++	if (!i2c_check_functionality(client->adapter,
++				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
++		return -ENODEV;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = dev_name(&client->dev);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &hdc100x_info;
++
++	indio_dev->channels = hdc100x_channels;
++	indio_dev->num_channels = ARRAY_SIZE(hdc100x_channels);
++
++	/* be sure we are in a known state */
++	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
++	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static const struct i2c_device_id hdc100x_id[] = {
++	{ "hdc100x", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, hdc100x_id);
++
++static struct i2c_driver hdc100x_driver = {
++	.driver = {
++		.name	= "hdc100x",
++	},
++	.probe = hdc100x_probe,
++	.id_table = hdc100x_id,
++};
++module_i2c_driver(hdc100x_driver);
++
++MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
++MODULE_DESCRIPTION("TI HDC100x humidity and temperature sensor driver");
++MODULE_LICENSE("GPL");
+-- 
+1.9.1
 
-> ---
->  drivers/iio/dac/m62332.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-> index fe750982b502..1b65fc007bce 100644
-> --- a/drivers/iio/dac/m62332.c
-> +++ b/drivers/iio/dac/m62332.c
-> @@ -112,21 +112,17 @@ static int m62332_read_raw(struct iio_dev *indio_dev,
->  static int m62332_write_raw(struct iio_dev *indio_dev,
->         struct iio_chan_spec const *chan, int val, int val2, long mask)
->  {
-> -       int ret;
-> -
->         switch (mask) {
->         case IIO_CHAN_INFO_RAW:
->                 if (val < 0 || val > 255)
->                         return -EINVAL;
->
-> -               ret = m62332_set_value(indio_dev, val, chan->channel);
-> -               break;
-> +               return m62332_set_value(indio_dev, val, chan->channel);
->         default:
-> -               ret = -EINVAL;
->                 break;
->         }
->
-> -       return ret;
-> +       return -EINVAL;
->  }
->
->  #ifdef CONFIG_PM_SLEEP
-> --
-> 2.4.6
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
