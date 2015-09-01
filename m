@@ -1,17 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn1bon0099.outbound.protection.outlook.com ([157.56.111.99]:35947
+Received: from mail-bn1bon0067.outbound.protection.outlook.com ([157.56.111.67]:23328
 	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1753715AbbICJ7a (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 3 Sep 2015 05:59:30 -0400
+	id S1752518AbbICKRU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 3 Sep 2015 06:17:20 -0400
 From: Chee Nouk Phoo <cnphoon@altera.com>
 To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<devicetree@vger.kernel.org>
 CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
 	<cnphoon.linux@gmail.com>, <cnphoon@altera.com>
-Subject: [[PATCH v2] 0/2] Add Altera Modular ADC Driver
-Date: Tue, 1 Sep 2015 14:49:57 -0700
-Message-ID: <1441144199-20231-1-git-send-email-cnphoon@altera.com>
+Subject: [[PATCH v2] 1/2] Altera Modular ADC driver device binding
+Date: Tue, 1 Sep 2015 14:49:58 -0700
+Message-ID: <1441144199-20231-2-git-send-email-cnphoon@altera.com>
+In-Reply-To: <1441144199-20231-1-git-send-email-cnphoon@altera.com>
+References: <1441144199-20231-1-git-send-email-cnphoon@altera.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
@@ -19,26 +21,90 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Chee Nouk Phoon <cnphoon@altera.com>
 
-This is 2nd version of the patch set to add support for Altera Modular ADC and
-Altera Modular Dual ADC in MAX10 device family. This patch combines two separate
-patches of driver and device tree binding. 
+Altera Modular ADC is soft IP that wraps the hardened ADC block in a Max10
+device. It can be configured to dual ADC mode that supports two channel
+synchronous sampling or independent single ADCs. ADC sampled values will be
+written into memory slots in sequence determined by a user configurable
+sequencer block.
 
-v1->v2 changes:
-- update compatibility string
-- update macros naming
-- remove Nios2 arch dependency
-- using snprintf instead of sprintf
-- improve error handing
-- parse resource using reg-name instead of index
-- use _relaxed version of writel and readl
-- remove uncessary private data
+This patch adds Altera Modular ADC driver device tree binding
 
-History:
---------
-[v1]https://lkml.org/lkml/2015/8/27/32
-    https://lkml.org/lkml/2015/8/20/227
+Signed-off-by: Chee Nouk Phoon <cnphoon@altera.com>
+---
+ .../bindings/iio/adc/altr,modular-adc.txt          |   63 ++++++++++++++++++++
+ 1 files changed, 63 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/altr,modular-adc.txt
 
-Chee Nouk Phoon (2):
-  Altera Modular ADC driver device binding
-  Altera Modular ADC driver support
+diff --git a/Documentation/devicetree/bindings/iio/adc/altr,modular-adc.txt b/Documentation/devicetree/bindings/iio/adc/altr,modular-adc.txt
+new file mode 100644
+index 0000000..faafcac
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/altr,modular-adc.txt
+@@ -0,0 +1,63 @@
++Altera Modular (Dual) ADC
++
++This binding document describes both Altera Modular ADC and Altera Modular Dual
++ADC. Both options can be configured during generation time in Qsys. This driver
++only supports standard sequencer with Avalon-MM sample storage with up to 64
++memory slots.
++
++Required properties:
++- compatible: must be one of the following strings
++  "altr,modular-adc-1.0": single ADC configuration
++  "altr,modular-dual-adc-1.0": dual ADC configuration
++
++- reg: Address and length of the register set for the device. It contains the
++  information of registers in the same order as described by reg-names
++
++- reg-names: Should contain the reg names
++  "sequencer_csr": register region for adc sequencer block
++  "sample_store_csr": register region for sample store block
++
++- interrupts: interrupt line for ADC
++
++- altr,adc-mode : ADC configuration
++  1: single ADC mode
++  2: dual ADC mode
++
++- altr,adc-slot-count : specify number of conversion slot in use
++
++- altr,adc<ADC index>-slot-sequence-<slot index>: specify ADC channel
++  conversion sequence
++  <ADC index>: instantiated ADC number
++  <slot index>: slot index for ADC memory slot
++
++- altr,adc-number : specify ADC number when single ADC mode is selected
++  1: 1st ADC
++  2: 2nd ACD
++
++Example: single ADC
++modular_adc_0: adc@0x20000200 {
++  compatible = "altr,modular-adc";
++  reg = <0x20000000 0x00000008>,
++    <0x20000200 0x00000200>;
++  reg-names = "sequencer_csr", "sample_store_csr";
++  interrupt-parent = <&cpu>;
++  interrupts = <8>;
++  altr,adc-mode = <1>;
++  altr,adc-slot-count = <2>;
++  altr,adc1-slot-sequence-1 = <1>;
++  altr,adc-number = <1>;
++};
++
++Example: dual ADC
++modular_adc_1: adc@0x18002200 {
++  compatible = "altr,modular-dual-adc";
++  reg = <0x18002000 0x00000008>,
++    <0x18002200 0x00000200>;
++  reg-names = "sequencer_csr", "sample_store_csr";
++  interrupt-parent = <&cpu>;
++  interrupts = <8>;
++  altr,adc-mode = <2>;
++  altr,adc-slot-count = <1>;
++  altr,adc1-slot-sequence-1 = <6>;
++  altr,adc2-slot-sequence-1 = <6>;
++};
+\ No newline at end of file
+-- 
+1.7.1
 
