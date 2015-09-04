@@ -1,98 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f51.google.com ([209.85.220.51]:34308 "EHLO
-	mail-pa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752287AbbIDHbO convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Sep 2015 03:31:14 -0400
-Received: by padhy16 with SMTP id hy16so14068443pad.1
-        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2015 00:31:13 -0700 (PDT)
-References: <1440657930-14871-1-git-send-email-mranostay@gmail.com> <55DF2F67.3000209@metafoo.de> <55DF33BF.7080808@metafoo.de> <CAKzfze_ySetkta6cAHo7yg4mJ49UC+ymdcj6u04xs0rYe8PA_A@mail.gmail.com> <55E000F2.9000403@metafoo.de> <CAKzfze_sOrrj4vQa4Ld0y4Q8aX7W3QogAKMhUU=8oU9Aqy3Mmg@mail.gmail.com> <55E026FD.80107@metafoo.de> <CAKzfze8R+sRxTh4YR6YT22YBrT6TzXgYYPwjm5moxcBQ-20Wcg@mail.gmail.com> <55E40AF7.8040707@metafoo.de>
-Mime-Version: 1.0 (1.0)
-In-Reply-To: <55E40AF7.8040707@metafoo.de>
-Content-Type: text/plain;
-	charset=us-ascii
-Message-Id: <21A7B2EF-A631-48E1-9942-02613B2F3CB7@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-From: Matt Ranostay <mranostay@gmail.com>
-Subject: Re: [RFC] iio: ppm: Add IIO_PPM channel type
-Date: Fri, 4 Sep 2015 00:30:48 -0700
-To: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-ig0-f195.google.com ([209.85.213.195]:35937 "EHLO
+	mail-ig0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755494AbbIDMVW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Sep 2015 08:21:22 -0400
+MIME-Version: 1.0
+In-Reply-To: <1441144199-20231-3-git-send-email-cnphoon@altera.com>
+References: <1441144199-20231-1-git-send-email-cnphoon@altera.com>
+	<1441144199-20231-3-git-send-email-cnphoon@altera.com>
+Date: Fri, 4 Sep 2015 17:51:21 +0530
+Message-ID: <CAKfKVtH1_wb2MLEgw0uf61tcoC7P2Uz6hC_GmP8vRakLnArB=A@mail.gmail.com>
+Subject: Re: [[PATCH v2] 2/2] Altera Modular ADC driver support
+From: Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+To: Chee Nouk Phoo <cnphoon@altera.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Michael.Hennerich@analog.com, cnphoon.linux@gmail.com
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Ok that is pretty sane. I'll submit my full patchset for the driver marked RFC to see if my use of types and modifiers makes sense. Well once I get the module off the slow boat from Taiwan and test it
+> +static int alt_modular_adc_probe(struct platform_device *pdev)
+> +{
+> +       struct altera_adc *adc;
+> +       struct device_node *np = pdev->dev.of_node;
+> +       struct iio_dev *indio_dev;
+> +       struct resource *mem;
+> +       int ret;
+> +
+> +       if (!np)
+> +               return -ENODEV;
+> +
+> +       indio_dev = iio_device_alloc(sizeof(struct altera_adc));
+> +       if (!indio_dev) {
+> +               dev_err(&pdev->dev, "failed allocating iio device\n");
+> +               return -ENOMEM;
+> +       }
+> +
+> +       adc = iio_priv(indio_dev);
+> +
+> +       mem = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+> +               "sequencer_csr");
+> +       adc->seq_regs = devm_ioremap_resource(&pdev->dev, mem);
+> +       if (IS_ERR(adc->seq_regs)) {
+> +               ret = PTR_ERR(adc->seq_regs);
+> +               goto err_iio;
+> +       }
+> +
+> +       mem = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+> +               "sample_store_csr");
+> +       adc->sample_regs = devm_ioremap_resource(&pdev->dev, mem);
+> +       if (IS_ERR(adc->sample_regs)) {
+> +               ret = PTR_ERR(adc->sample_regs);
+> +               goto err_iio;
+> +       }
+> +
+> +       ret = alt_modular_adc_parse_dt(indio_dev, &pdev->dev);
+> +       if (ret < 0) {
+> +               dev_err(&pdev->dev, "failed to parse device tree\n");
+> +               goto err_iio;
+> +       }
+> +
+> +       ret = alt_modular_adc_channel_init(indio_dev);
+> +       if (ret < 0) {
+> +               dev_err(&pdev->dev, "failed initialize ADC channels\n");
+> +               goto err_iio;
+> +       }
+> +
+> +       platform_set_drvdata(pdev, indio_dev);
+> +
+> +       indio_dev->name = dev_name(&pdev->dev);
+> +       indio_dev->dev.parent = &pdev->dev;
+> +       indio_dev->dev.of_node = pdev->dev.of_node;
+> +       indio_dev->info = &adc_iio_info;
+> +       indio_dev->modes = INDIO_DIRECT_MODE;
+> +       indio_dev->num_channels = adc->slot_count;
+> +
+> +       ret = iio_device_register(indio_dev);
+> +       if (ret)
+> +               goto err_iio;
+> +
+> +       /* Disable Interrupt */
+> +       writel_relaxed(0, (adc->sample_regs + ADC_IER_REG));
 
-Sent from my iPhone
+Why disable interrupts?
 
-> On Aug 31, 2015, at 01:06, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> 
->> On 08/28/2015 06:27 PM, Matt Ranostay wrote:
->> Ah true but we could add a few IIO_MOD* modifiers for CO2, tVOC, VOC,
->> etc, etc. I think Jonathan was suggesting that.
-> 
-> What I meant was CO2 measured in what unit per what unit.
-> 
-> Like is it weight per volume or volume per volume or weight per weight or
-> molecules per volume ...
-> 
-> - Lars
-> 
->> 
->> Thanks,
->> 
->> Matt
->> 
->>> On Fri, Aug 28, 2015 at 2:16 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>> On 08/28/2015 11:05 AM, Matt Ranostay wrote:
->>>>> On Thu, Aug 27, 2015 at 11:34 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>>>> On 08/27/2015 11:40 PM, Matt Ranostay wrote:
->>>>>>> On Thu, Aug 27, 2015 at 8:58 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>>>>>> On 08/27/2015 05:40 PM, Lars-Peter Clausen wrote:
->>>>>>>>> On 08/27/2015 08:45 AM, Matt Ranostay wrote:
->>>>>>>>> There are air quality sensors that report data back in parts per million
->>>>>>>>> of VOC (Volatile Organic Compounds) which are usually indexed from CO2
->>>>>>>>> or another common pollutant.
->>>>>>>>> 
->>>>>>>>> This patchset adds an IIO_PPM type because no other channels types fit
->>>>>>>>> this use case.
->>>>>>>> 
->>>>>>>> Hm, I'm not sure if parts-per-million is a good channel type. It's more of a
->>>>>>>> scale. The type would be concentration.[...]
->>>>>>> 
->>>>>>> Reading a bit more[1], concentration doesn't actually seem to be the right
->>>>>>> term in this case, the correct term is mole fraction. Maybe we can use that
->>>>>>> as the type. That also makes it clear that the unit is molecules per molecule.
->>>>>> Actually we can't use mole fraction for this because we aren't in a
->>>>>> chemistry lab, and know the other compounds that make up the local
->>>>>> atmosphere. Besides you'd have to include some insane lookup table for
->>>>>> molar mass of carbon or whatever VOC being measured :)
->>>>> 
->>>>> I don't think you'd need that. Mole fraction tells you the number of
->>>>> molecules of something per total number of molecules. You don't need the
->>>>> mass for this.
->>>>> 
->>>>> But what exactly is the sensor measuring? CO2 (or VOC) molecules per total
->>>>> number of molecules or number of CO2 molecules in a particular volume?
->>>> CC'ed my Swiss colleague on this because he knows much on the
->>>> interworkings of VOC sensors than I could hope to.
->>>> So simply these sensors are finding VOCs (which the sensor in question
->>>> does CO2 and tVOC indexes.. probably not too independent of  each
->>>> other)
->>>> 
->>>> But molecules are not parts.. think of taking an X volume of air and
->>>> figuring what is precent of oxygen is verses nitrogen, argon, etc,
->>>> etc. Sure the highest is nitrogen at atomic weight 14.01 with ~78% of
->>>> the "air", oxygen is ~20% at the weight of 16.00, and etc.
->>>> 
->>>> Think about cutting cube into a millions of pieces and figuring an X%
->>>> is Y substance which you can detect, but can't detect X, Y, and Z
->>>> (think any particles in 'air' that aren't bonded with carbon). So mole
->>>> fractions are impossible here, and you could only take a parts in a
->>>> known volume.
->>>> 
->>>> Most VOCs (if not all, bit of newbie here) use UV LEDs to ionize
->>>> particles, and with some maths calculate the parts-per-million.
->>> 
->>> But what per what? PPM is a completely ambiguous unit if you don't specify
->>> parts of what per million of what.
-> 
+> +
+> +       /* Start Continuous Sampling */
+> +       writel_relaxed((ADC_RUN_MSK), (adc->seq_regs + ADC_CMD_REG));
+> +
+> +       return 0;
+> +
+> +
+> +err_iio:
+> +       iio_device_free(indio_dev);
+> +       return ret;
+> +}
+> +
+> +static int alt_modular_adc_remove(struct platform_device *pdev)
+> +{
+> +       struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +       struct altera_adc *adc = iio_priv(indio_dev);
+> +
+> +       /* Stop ADC */
+> +       writel((ADC_STOP_MSK), (adc->seq_regs + ADC_CMD_REG));
+> +
+> +       /* Unregister ADC */
+> +       iio_device_unregister(indio_dev);
+> +
+> +       return 0;
+> +}
+> +
+> +static struct platform_driver altr_modular_adc_driver = {
+> +       .probe          = alt_modular_adc_probe,
+> +       .remove         = alt_modular_adc_remove,
+> +       .driver         = {
+> +               .name   = "alt-modular-adc",
+> +               .owner  = THIS_MODULE,
+> +               .of_match_table = alt_modular_adc_match,
+> +       },
+> +};
+> +
+> +
+> +module_platform_driver(altr_modular_adc_driver);
+> +
+> +MODULE_DESCRIPTION("Altera Modular ADC Driver");
+> +MODULE_AUTHOR("Chee Nouk Phoon <cnphoon@altera.com>");
+> +MODULE_LICENSE("GPL v2");
+> --
+> 1.7.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
