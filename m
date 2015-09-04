@@ -1,89 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:33199 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752903AbbICUBZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 3 Sep 2015 16:01:25 -0400
-Message-ID: <1441310422.3164.1.camel@linux.intel.com>
-Subject: Re: [PATCH v1] HID: sensor-hub: Fixup for Lenovo ThinkPad Helix 2
- sensor hub report
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Fernando D S Lima <fernandodsl@gmail.com>
-Cc: Jiri Kosina <jkosina@suse.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Date: Thu, 03 Sep 2015 13:00:22 -0700
-In-Reply-To: <1441295896-23314-1-git-send-email-fernandodsl@gmail.com>
-References: <1441295896-23314-1-git-send-email-fernandodsl@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mail-pa0-f51.google.com ([209.85.220.51]:34308 "EHLO
+	mail-pa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752287AbbIDHbO convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Sep 2015 03:31:14 -0400
+Received: by padhy16 with SMTP id hy16so14068443pad.1
+        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2015 00:31:13 -0700 (PDT)
+References: <1440657930-14871-1-git-send-email-mranostay@gmail.com> <55DF2F67.3000209@metafoo.de> <55DF33BF.7080808@metafoo.de> <CAKzfze_ySetkta6cAHo7yg4mJ49UC+ymdcj6u04xs0rYe8PA_A@mail.gmail.com> <55E000F2.9000403@metafoo.de> <CAKzfze_sOrrj4vQa4Ld0y4Q8aX7W3QogAKMhUU=8oU9Aqy3Mmg@mail.gmail.com> <55E026FD.80107@metafoo.de> <CAKzfze8R+sRxTh4YR6YT22YBrT6TzXgYYPwjm5moxcBQ-20Wcg@mail.gmail.com> <55E40AF7.8040707@metafoo.de>
+Mime-Version: 1.0 (1.0)
+In-Reply-To: <55E40AF7.8040707@metafoo.de>
+Content-Type: text/plain;
+	charset=us-ascii
+Message-Id: <21A7B2EF-A631-48E1-9942-02613B2F3CB7@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Matt Ranostay <mranostay@gmail.com>
+Subject: Re: [RFC] iio: ppm: Add IIO_PPM channel type
+Date: Fri, 4 Sep 2015 00:30:48 -0700
+To: Lars-Peter Clausen <lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 2015-09-03 at 12:56 -0300, Fernando D S Lima wrote:
-> There is an error in the report descriptor of the Thinkpad Helix 2 
-> where
-> logical minimum value (557376) is greater than logical maximum 
-> (491200)
-> for all of the magnetic flux axis data fields. This error results in 
-> a
-> report descriptor parsing failure that causes the sensors attached to 
-> the
-> hub not to be detected.
-> 
-> dmesg excerpt:
-> [   19.866905] drivers/hid/hid-core.c: logical range invalid 0x88140 
-> 0x77ec0
-> [   19.866914] hid-sensor-hub 0018:2047:0855.0007: item 0 1 0 8 
-> parsing failed
-> [   19.866926] hid-sensor-hub 0018:2047:0855.0007: parse failed
-> [   19.866933] hid-sensor-hub: probe of 0018:2047:0855.0007 failed 
-> with error -22
-> 
-> Add a report fixup to change magnetic flux logical minimums to 
-> -557376
-> for the parsing to succeed and the sensors to get detected.
-> After applying the fix the sensors get detected, with corresponding 
-> drivers
-> (hid-accel-3d,hid-gyro-3d,etc) loaded, and its possible to read their 
-> values.
-> 
-> Signed-off-by: Fernando D S Lima <fernandodsl@gmail.com>
-Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Ok that is pretty sane. I'll submit my full patchset for the driver marked RFC to see if my use of types and modifiers makes sense. Well once I get the module off the slow boat from Taiwan and test it
 
-> ---
->  drivers/hid/hid-sensor-hub.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
+Sent from my iPhone
+
+> On Aug 31, 2015, at 01:06, Lars-Peter Clausen <lars@metafoo.de> wrote:
 > 
-> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor
-> -hub.c
-> index 090a1ba..6c94257 100644
-> --- a/drivers/hid/hid-sensor-hub.c
-> +++ b/drivers/hid/hid-sensor-hub.c
-> @@ -593,6 +593,20 @@ static __u8 *sensor_hub_report_fixup(struct 
-> hid_device *hdev, __u8 *rdesc,
->  		}
->  	}
->  
-> +	/* Checks if the report descriptor of Thinkpad Helix 2 has a 
-> logical
-> +	 * minimum for magnetic flux axis greater than the maximum 
-> */
-> +	if (hdev->product == 
-> USB_DEVICE_ID_TEXAS_INSTRUMENTS_LENOVO_YOGA &&
-> +		*rsize == 2558 && rdesc[913] == 0x17 && rdesc[914] 
-> == 0x40 &&
-> +		rdesc[915] == 0x81 && rdesc[916] == 0x08 &&
-> +		rdesc[917] == 0x00 && rdesc[918] == 0x27 &&
-> +		rdesc[921] == 0x07 && rdesc[922] == 0x00) {
-> +		/* Sets negative logical minimum for mag x, y and z 
-> */
-> +		rdesc[914] = rdesc[935] = rdesc[956] = 0xc0;
-> +		rdesc[915] = rdesc[936] = rdesc[957] = 0x7e;
-> +		rdesc[916] = rdesc[937] = rdesc[958] = 0xf7;
-> +		rdesc[917] = rdesc[938] = rdesc[959] = 0xff;
-> +	}
-> +
->  	return rdesc;
->  }
->  
+>> On 08/28/2015 06:27 PM, Matt Ranostay wrote:
+>> Ah true but we could add a few IIO_MOD* modifiers for CO2, tVOC, VOC,
+>> etc, etc. I think Jonathan was suggesting that.
+> 
+> What I meant was CO2 measured in what unit per what unit.
+> 
+> Like is it weight per volume or volume per volume or weight per weight or
+> molecules per volume ...
+> 
+> - Lars
+> 
+>> 
+>> Thanks,
+>> 
+>> Matt
+>> 
+>>> On Fri, Aug 28, 2015 at 2:16 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>>> On 08/28/2015 11:05 AM, Matt Ranostay wrote:
+>>>>> On Thu, Aug 27, 2015 at 11:34 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>>>>> On 08/27/2015 11:40 PM, Matt Ranostay wrote:
+>>>>>>> On Thu, Aug 27, 2015 at 8:58 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>>>>>>> On 08/27/2015 05:40 PM, Lars-Peter Clausen wrote:
+>>>>>>>>> On 08/27/2015 08:45 AM, Matt Ranostay wrote:
+>>>>>>>>> There are air quality sensors that report data back in parts per million
+>>>>>>>>> of VOC (Volatile Organic Compounds) which are usually indexed from CO2
+>>>>>>>>> or another common pollutant.
+>>>>>>>>> 
+>>>>>>>>> This patchset adds an IIO_PPM type because no other channels types fit
+>>>>>>>>> this use case.
+>>>>>>>> 
+>>>>>>>> Hm, I'm not sure if parts-per-million is a good channel type. It's more of a
+>>>>>>>> scale. The type would be concentration.[...]
+>>>>>>> 
+>>>>>>> Reading a bit more[1], concentration doesn't actually seem to be the right
+>>>>>>> term in this case, the correct term is mole fraction. Maybe we can use that
+>>>>>>> as the type. That also makes it clear that the unit is molecules per molecule.
+>>>>>> Actually we can't use mole fraction for this because we aren't in a
+>>>>>> chemistry lab, and know the other compounds that make up the local
+>>>>>> atmosphere. Besides you'd have to include some insane lookup table for
+>>>>>> molar mass of carbon or whatever VOC being measured :)
+>>>>> 
+>>>>> I don't think you'd need that. Mole fraction tells you the number of
+>>>>> molecules of something per total number of molecules. You don't need the
+>>>>> mass for this.
+>>>>> 
+>>>>> But what exactly is the sensor measuring? CO2 (or VOC) molecules per total
+>>>>> number of molecules or number of CO2 molecules in a particular volume?
+>>>> CC'ed my Swiss colleague on this because he knows much on the
+>>>> interworkings of VOC sensors than I could hope to.
+>>>> So simply these sensors are finding VOCs (which the sensor in question
+>>>> does CO2 and tVOC indexes.. probably not too independent of  each
+>>>> other)
+>>>> 
+>>>> But molecules are not parts.. think of taking an X volume of air and
+>>>> figuring what is precent of oxygen is verses nitrogen, argon, etc,
+>>>> etc. Sure the highest is nitrogen at atomic weight 14.01 with ~78% of
+>>>> the "air", oxygen is ~20% at the weight of 16.00, and etc.
+>>>> 
+>>>> Think about cutting cube into a millions of pieces and figuring an X%
+>>>> is Y substance which you can detect, but can't detect X, Y, and Z
+>>>> (think any particles in 'air' that aren't bonded with carbon). So mole
+>>>> fractions are impossible here, and you could only take a parts in a
+>>>> known volume.
+>>>> 
+>>>> Most VOCs (if not all, bit of newbie here) use UV LEDs to ionize
+>>>> particles, and with some maths calculate the parts-per-million.
+>>> 
+>>> But what per what? PPM is a completely ambiguous unit if you don't specify
+>>> parts of what per million of what.
+> 
