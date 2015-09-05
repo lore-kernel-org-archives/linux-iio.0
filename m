@@ -1,61 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx2.suse.de ([195.135.220.15]:36172 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755310AbbIDMsm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 4 Sep 2015 08:48:42 -0400
-Date: Fri, 4 Sep 2015 14:48:41 +0200 (CEST)
-From: Jiri Kosina <jikos@kernel.org>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-cc: Fernando D S Lima <fernandodsl@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] HID: sensor-hub: Fixup for Lenovo ThinkPad Helix 2
- sensor hub report
-In-Reply-To: <1441310422.3164.1.camel@linux.intel.com>
-Message-ID: <alpine.LNX.2.00.1509041448230.30132@pobox.suse.cz>
-References: <1441295896-23314-1-git-send-email-fernandodsl@gmail.com> <1441310422.3164.1.camel@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:34085 "EHLO
+	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751619AbbIEFxR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Sep 2015 01:53:17 -0400
+From: Matt Ranostay <mranostay@gmail.com>
+To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [RFC v1 0/4] iio: new chemical sensor framework and channel types
+Date: Fri,  4 Sep 2015 22:53:22 -0700
+Message-Id: <1441432406-4761-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 3 Sep 2015, Srinivas Pandruvada wrote:
+Initial RFC for new chemical sensor framework, IIO_CONCENTRATION,
+and IIO_RESISTANCE channel types.
 
-> On Thu, 2015-09-03 at 12:56 -0300, Fernando D S Lima wrote:
-> > There is an error in the report descriptor of the Thinkpad Helix 2 
-> > where
-> > logical minimum value (557376) is greater than logical maximum 
-> > (491200)
-> > for all of the magnetic flux axis data fields. This error results in 
-> > a
-> > report descriptor parsing failure that causes the sensors attached to 
-> > the
-> > hub not to be detected.
-> > 
-> > dmesg excerpt:
-> > [   19.866905] drivers/hid/hid-core.c: logical range invalid 0x88140 
-> > 0x77ec0
-> > [   19.866914] hid-sensor-hub 0018:2047:0855.0007: item 0 1 0 8 
-> > parsing failed
-> > [   19.866926] hid-sensor-hub 0018:2047:0855.0007: parse failed
-> > [   19.866933] hid-sensor-hub: probe of 0018:2047:0855.0007 failed 
-> > with error -22
-> > 
-> > Add a report fixup to change magnetic flux logical minimums to 
-> > -557376
-> > for the parsing to succeed and the sensors to get detected.
-> > After applying the fix the sensors get detected, with corresponding 
-> > drivers
-> > (hid-accel-3d,hid-gyro-3d,etc) loaded, and its possible to read their 
-> > values.
-> > 
-> > Signed-off-by: Fernando D S Lima <fernandodsl@gmail.com>
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Important notes:
+* Not been tested on real hardware yet but that isn't the main RFC reason and
+  once hardware is in hand it will be verified
+* Reason the IIO_CONCENTRATION type isn't in percent but has modifiers for ppm
+  and ppb is the scale value for the latter would cause a integer overflow
+  using IIO_VAL_FRACTIONAL
 
-Applied to for-4.3/upstream-fixes. Thanks,
+Matt Ranostay (4):
+  iio: chemical: Add IIO_CONCENTRATION channel type
+  iio: resistance: add IIO_RESISTANCE channel type
+  devicetree: add SGX Sensortech vendor id
+  iio: chemical: add SGX VZ89x VOC sensor support
+
+ Documentation/ABI/testing/sysfs-bus-iio            |  16 ++
+ .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/chemical/Makefile                      |   6 +
+ drivers/iio/chemical/vz89x.c                       | 237 +++++++++++++++++++++
+ drivers/iio/industrialio-core.c                    |   4 +
+ include/uapi/linux/iio/types.h                     |   4 +
+ 9 files changed, 271 insertions(+)
+ create mode 100644 drivers/iio/chemical/Makefile
+ create mode 100644 drivers/iio/chemical/vz89x.c
 
 -- 
-Jiri Kosina
-SUSE Labs
+1.9.1
 
