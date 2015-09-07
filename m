@@ -1,19 +1,26 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:34919 "EHLO
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:34783 "EHLO
 	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753599AbbIGCi7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Sep 2015 22:38:59 -0400
+	with ESMTP id S1753425AbbIGCi5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Sep 2015 22:38:57 -0400
 From: Matt Ranostay <mranostay@gmail.com>
 To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	devicetree@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [RFC v2 2/4] iio: resistance: add IIO_RESISTANCE channel type
-Date: Sun,  6 Sep 2015 19:39:05 -0700
-Message-Id: <1441593547-10896-3-git-send-email-mranostay@gmail.com>
+Subject: [RFC v2 1/4] iio: chemical: Add IIO_CONCENTRATION channel type
+Date: Sun,  6 Sep 2015 19:39:04 -0700
+Message-Id: <1441593547-10896-2-git-send-email-mranostay@gmail.com>
 In-Reply-To: <1441593547-10896-1-git-send-email-mranostay@gmail.com>
 References: <1441593547-10896-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
+
+There are air quality sensors that report data back in parts per million
+of VOC (Volatile Organic Compounds) which are usually indexed from CO2
+or another common pollutant.
+
+This patchset adds an IIO_CONCENTRATION type that returns a percentage
+of substance because no other channels types fit this use case.
 
 Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
@@ -23,41 +30,41 @@ Signed-off-by: Matt Ranostay <mranostay@gmail.com>
  3 files changed, 9 insertions(+)
 
 diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 48080b7..0f683ed 100644
+index 42d360f..48080b7 100644
 --- a/Documentation/ABI/testing/sysfs-bus-iio
 +++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1466,3 +1466,10 @@ KernelVersion:	4.3
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Raw (unscaled no offset etc.) precentage reading of a substance.
+@@ -1459,3 +1459,10 @@ Description:
+ 		measurements and return the average value as output data. Each
+ 		value resulted from <type>[_name]_oversampling_ratio measurements
+ 		is considered as one sample for <type>[_name]_sampling_frequency.
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/in_resistance_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_resistanceX_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_concentrationX_raw
 +KernelVersion:	4.3
 +Contact:	linux-iio@vger.kernel.org
 +Description:
-+		Raw (unscaled no offset etc.) resistance reading in ohms.
++		Raw (unscaled no offset etc.) precentage reading of a substance.
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 58a60a1..d61a363 100644
+index b3fcc2c..58a60a1 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -76,6 +76,7 @@ static const char * const iio_chan_type_name_spec[] = {
+@@ -75,6 +75,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_ENERGY] = "energy",
  	[IIO_DISTANCE] = "distance",
  	[IIO_VELOCITY] = "velocity",
- 	[IIO_CONCENTRATION] = "concentration",
-+	[IIO_RESISTANCE] = "resistance",
++	[IIO_CONCENTRATION] = "concentration",
  };
  
  static const char * const iio_modifier_names[] = {
 diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index c5a0e3f..d58319c 100644
+index 2f8b117..c5a0e3f 100644
 --- a/include/uapi/linux/iio/types.h
 +++ b/include/uapi/linux/iio/types.h
-@@ -36,6 +36,7 @@ enum iio_chan_type {
+@@ -35,6 +35,7 @@ enum iio_chan_type {
+ 	IIO_ENERGY,
  	IIO_DISTANCE,
  	IIO_VELOCITY,
- 	IIO_CONCENTRATION,
-+	IIO_RESISTANCE,
++	IIO_CONCENTRATION,
  };
  
  enum iio_modifier {
