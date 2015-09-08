@@ -1,129 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:17270 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750953AbbIGOAI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 7 Sep 2015 10:00:08 -0400
-Message-ID: <55ED985E.8070806@intel.com>
-Date: Mon, 07 Sep 2015 16:59:58 +0300
-From: Adriana Reus <adriana.reus@intel.com>
-MIME-Version: 1.0
-To: Rob Herring <robherring2@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, daniel.baluta@intel.com,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH v6 2/2] devicetree: Add documentation for UPISEMI us5182d
- ALS and Proximity sensor
-References: <1440065534-8601-1-git-send-email-adriana.reus@intel.com> <1440065534-8601-3-git-send-email-adriana.reus@intel.com> <55DF71A5.1010705@kernel.org> <CAL_Jsq+uvhaE77yXqKGXF_p6gAV5F+rPwnT547ym-o23=3fR+w@mail.gmail.com>
-In-Reply-To: <CAL_Jsq+uvhaE77yXqKGXF_p6gAV5F+rPwnT547ym-o23=3fR+w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:35059 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754180AbbIHMcu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Sep 2015 08:32:50 -0400
+Received: by pacfv12 with SMTP id fv12so126261619pac.2
+        for <linux-iio@vger.kernel.org>; Tue, 08 Sep 2015 05:32:50 -0700 (PDT)
+From: Shraddha Barke <shraddha.6596@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Cc: Shraddha Barke <shraddha.6596@gmail.com>
+Subject: [PATCH] Staging: iio: addac: adt7316.c : Prefer using BIT macro
+Date: Tue,  8 Sep 2015 18:02:32 +0530
+Message-Id: <1441715552-7705-1-git-send-email-shraddha.6596@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Thanks for your feedback, some comments inline.
+This patch replaces bit shifting on 1 with the BIT(x) macro
+as it's extensively used by other function in this driver.
 
-On 31.08.2015 18:38, Rob Herring wrote:
-> On Thu, Aug 27, 2015 at 3:23 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 20/08/15 11:12, Adriana Reus wrote:
->>> Added entries in i2c/vendor-prefixes for the us5182d als and proximity sensor.
->>> Also added a documentation file for this sensor's properties.
->>>
->>> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
->> This isn't that trivial so I'd like some device tree maintainer
->> input if possible.
->
-> It seems fairly reasonable to me. Would other ALS or proximity sensors
-> need similar properties?
-The "glass-coef" is intended to compensate for the material (glass) that 
-may be covering the sensor if it's integrated in a phone, tablet etc. I 
-chose 1000 as resolution for this scaling factor (i'll add a more 
-detailed description). So possibly similar properties could be used for 
-other als sensors as well.
+This was done with coccinelle:
+@@ int g; @@
 
-The last 3 tuning parameters are specific to this particular sensor.
->
->> For now I've backed out the driver from my tree (given timing we have
->> loads of time to sort this out!)
->>
->> Anyhow, anyone device tree related able to take a look at this.
->>
->> Adriana, btw these should be cc'd to the device tree maintainers in
->> the first place (now added).
->>
->> Jonathan
->>> ---
->>>   .../devicetree/bindings/iio/light/us5182d.txt      | 23 ++++++++++++++++++++++
->>>   .../devicetree/bindings/vendor-prefixes.txt        |  1 +
->>>   2 files changed, 24 insertions(+)
->>>   create mode 100644 Documentation/devicetree/bindings/iio/light/us5182d.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/light/us5182d.txt b/Documentation/devicetree/bindings/iio/light/us5182d.txt
->>> new file mode 100644
->>> index 0000000..7785c56
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/light/us5182d.txt
->>> @@ -0,0 +1,23 @@
->>> +* UPISEMI us5182d I2C ALS and Proximity sensor
->>> +
->>> +Required properties:
->>> +- compatible: must be "upisemi,usd5182"
->>> +- reg: the I2C address of the device
->>> +
->>> +Optional properties:
->
-> Do you expect certain defaults if not present? Some description of how
-> all these values are determined would be useful.
-Yes, if not present they will fall back to default values - the values 
-in the example.
-- the glass-coef one is 1000 by default - so no glass compensation by 
-default (lux = lux * 1000/1000)
-- the others were determined experimentally - by fine tuning starting 
-from the default values in those registers).
->
->
->>> +- upisemi,glass-coef: glass attenuation factor
->>> +- upisemi,dark-ths: array of thresholds (adc counts) corresponding to every scale
->
-> What is the size of the array and valid range of values?
->
-> Be specific this is 16-bit property.
-Ok, I'll add this info in a following patch set.
->
->>> +- upisemi,upper-dark-gain: tuning factor(4 int and 4 fractional bits - Q4.4) applied when light > threshold
->>> +- upisemi,lower-dark-gain: tuning factor(4 int and 4 fractional bits - Q4.4) applied when light < threshold
->
-> Be specific this is an 8-bit property.
-ok
->
->>> +
->>> +Example:
->>> +
->>> +    usd5182@39 {
->>> +                compatible = "upisemi,usd5182";
->>> +                reg = <0x39>;
->>> +                upisemi,glass-coef = < 1000 >;
->>> +                upisemi,dark-ths = /bits/ 16 <170 200 512 512 800 2000 4000 8000>;
->>> +                upisemi,upper-dark-gain = /bits/ 8 <0x00>;
->>> +                upisemi,lower-dark-gain = /bits/ 8 <0x16>;
->>> +    };
->>> +
->>> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
->>> index d444757..5b40bab 100644
->>> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
->>> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
->>> @@ -211,6 +211,7 @@ toshiba   Toshiba Corporation
->>>   toumaz       Toumaz
->>>   tplink       TP-LINK Technologies Co., Ltd.
->>>   truly        Truly Semiconductors Limited
->>> +upisemi      uPI Semiconductor Corp.
->>>   usi  Universal Scientific Industrial Co., Ltd.
->>>   v3   V3 Semiconductor
->>>   variscite    Variscite Ltd.
->>>
->>
+-(1 << g)
++BIT(g)
+
+Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
+---
+ drivers/staging/iio/addac/adt7316.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 5b11b42..a1dd745 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -1756,43 +1756,43 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+ 			stat1 &= 0x1F;
+ 
+ 		time = iio_get_time_ns();
+-		if (stat1 & (1 << 0))
++		if (stat1 & BIT(0))
+ 			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_RISING),
+ 				       time);
+-		if (stat1 & (1 << 1))
++		if (stat1 & BIT(1))
+ 			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_FALLING),
+ 				       time);
+-		if (stat1 & (1 << 2))
++		if (stat1 & BIT(2))
+ 			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_RISING),
+ 				       time);
+-		if (stat1 & (1 << 3))
++		if (stat1 & BIT(3))
+ 			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_FALLING),
+ 				       time);
+-		if (stat1 & (1 << 5))
++		if (stat1 & BIT(5))
+ 			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, 1,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_EITHER),
+ 				       time);
+-		if (stat1 & (1 << 6))
++		if (stat1 & BIT(6))
+ 			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, 2,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_EITHER),
+ 				       time);
+-		if (stat1 & (1 << 7))
++		if (stat1 & BIT(7))
+ 			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, 3,
+ 							    IIO_EV_TYPE_THRESH,
+-- 
+2.1.4
+
