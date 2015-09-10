@@ -1,45 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f53.google.com ([209.85.220.53]:34180 "EHLO
-	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750831AbbIJGbW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2015 02:31:22 -0400
-Received: by padhy16 with SMTP id hy16so33731879pad.1
-        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2015 23:31:22 -0700 (PDT)
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:35784 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751668AbbIJGbY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2015 02:31:24 -0400
+Received: by pacfv12 with SMTP id fv12so34268957pac.2
+        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2015 23:31:24 -0700 (PDT)
 From: Matt Ranostay <mranostay@gmail.com>
 To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [RFC v4 0/4] iio: new chemical sensor framework and channel types
-Date: Wed,  9 Sep 2015 23:30:50 -0700
-Message-Id: <1441866654-10381-1-git-send-email-mranostay@gmail.com>
+Subject: [RFC v4 1/4] iio: chemical: Add IIO_CONCENTRATION channel type
+Date: Wed,  9 Sep 2015 23:30:51 -0700
+Message-Id: <1441866654-10381-2-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1441866654-10381-1-git-send-email-mranostay@gmail.com>
+References: <1441866654-10381-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes from RFC v3:
-* Add missing Kconfig
+There are air quality sensors that report data back in parts per million
+of VOC (Volatile Organic Compounds) which are usually indexed from CO2
+or another common pollutant.
 
-Matt Ranostay (4):
-  iio: chemical: Add IIO_CONCENTRATION channel type
-  iio: resistance: add IIO_RESISTANCE channel type
-  devicetree: add SGX Sensortech vendor id
-  iio: chemical: add SGX VZ89x VOC sensor support
+This patchset adds an IIO_CONCENTRATION type that returns a percentage
+of substance because no other channels types fit this use case.
 
- Documentation/ABI/testing/sysfs-bus-iio            |  14 ++
- .../ABI/testing/sysfs-bus-iio-chemical-vz89x       |  30 +++
- .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/Kconfig                                |   1 +
- drivers/iio/Makefile                               |   1 +
- drivers/iio/chemical/Kconfig                       |  15 ++
- drivers/iio/chemical/Makefile                      |   6 +
- drivers/iio/chemical/vz89x.c                       | 245 +++++++++++++++++++++
- drivers/iio/industrialio-core.c                    |   2 +
- include/uapi/linux/iio/types.h                     |   2 +
- 11 files changed, 318 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
- create mode 100644 drivers/iio/chemical/Kconfig
- create mode 100644 drivers/iio/chemical/Makefile
- create mode 100644 drivers/iio/chemical/vz89x.c
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+ drivers/iio/industrialio-core.c         | 1 +
+ include/uapi/linux/iio/types.h          | 1 +
+ 3 files changed, 9 insertions(+)
 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 42d360f..48080b7 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1459,3 +1459,10 @@ Description:
+ 		measurements and return the average value as output data. Each
+ 		value resulted from <type>[_name]_oversampling_ratio measurements
+ 		is considered as one sample for <type>[_name]_sampling_frequency.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_concentrationX_raw
++KernelVersion:	4.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled no offset etc.) precentage reading of a substance.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index b3fcc2c..58a60a1 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -75,6 +75,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_ENERGY] = "energy",
+ 	[IIO_DISTANCE] = "distance",
+ 	[IIO_VELOCITY] = "velocity",
++	[IIO_CONCENTRATION] = "concentration",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 2f8b117..c5a0e3f 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -35,6 +35,7 @@ enum iio_chan_type {
+ 	IIO_ENERGY,
+ 	IIO_DISTANCE,
+ 	IIO_VELOCITY,
++	IIO_CONCENTRATION,
+ };
+ 
+ enum iio_modifier {
 -- 
 1.9.1
 
