@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:33970 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753666AbbIJQa5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2015 12:30:57 -0400
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:35513 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754011AbbIJQbG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2015 12:31:06 -0400
 From: Shraddha Barke <shraddha.6596@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Julia Lawall <julia.lawall@lip6.fr>,
@@ -11,16 +11,17 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc: Ian Abbott <abbotti@mev.co.uk>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Shraddha Barke <shraddha.6596@gmail.com>
-Subject: [PATCH 1/6] Staging: iio: addac: Prefer using the BIT macro
-Date: Thu, 10 Sep 2015 22:00:29 +0530
-Message-Id: <1441902634-11129-1-git-send-email-shraddha.6596@gmail.com>
+Subject: [PATCH 3/6] Staging: lustre: libcfs: Prefer using the BIT macro
+Date: Thu, 10 Sep 2015 22:00:31 +0530
+Message-Id: <1441902634-11129-3-git-send-email-shraddha.6596@gmail.com>
+In-Reply-To: <1441902634-11129-1-git-send-email-shraddha.6596@gmail.com>
+References: <1441902634-11129-1-git-send-email-shraddha.6596@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch replaces bit shifting on 1 with the BIT(x) macro.
+This patch replaces bit shifting on 1 with the BIT(x) macro
 
 This was done with coccinelle:
-
 @@ int g; @@
 
 -(1 << g)
@@ -28,64 +29,31 @@ This was done with coccinelle:
 
 Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
 ---
- drivers/staging/iio/addac/adt7316.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/staging/lustre/lustre/libcfs/hash.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 5b11b42..a1dd745 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -1756,43 +1756,43 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
- 			stat1 &= 0x1F;
+diff --git a/drivers/staging/lustre/lustre/libcfs/hash.c b/drivers/staging/lustre/lustre/libcfs/hash.c
+index 0ed0631..e5a5036 100644
+--- a/drivers/staging/lustre/lustre/libcfs/hash.c
++++ b/drivers/staging/lustre/lustre/libcfs/hash.c
+@@ -588,13 +588,13 @@ EXPORT_SYMBOL(cfs_hash_bd_move_locked);
  
- 		time = iio_get_time_ns();
--		if (stat1 & (1 << 0))
-+		if (stat1 & BIT(0))
- 			iio_push_event(indio_dev,
- 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
- 							    IIO_EV_TYPE_THRESH,
- 							    IIO_EV_DIR_RISING),
- 				       time);
--		if (stat1 & (1 << 1))
-+		if (stat1 & BIT(1))
- 			iio_push_event(indio_dev,
- 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
- 							    IIO_EV_TYPE_THRESH,
- 							    IIO_EV_DIR_FALLING),
- 				       time);
--		if (stat1 & (1 << 2))
-+		if (stat1 & BIT(2))
- 			iio_push_event(indio_dev,
- 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
- 							    IIO_EV_TYPE_THRESH,
- 							    IIO_EV_DIR_RISING),
- 				       time);
--		if (stat1 & (1 << 3))
-+		if (stat1 & BIT(3))
- 			iio_push_event(indio_dev,
- 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
- 							    IIO_EV_TYPE_THRESH,
- 							    IIO_EV_DIR_FALLING),
- 				       time);
--		if (stat1 & (1 << 5))
-+		if (stat1 & BIT(5))
- 			iio_push_event(indio_dev,
- 				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, 1,
- 							    IIO_EV_TYPE_THRESH,
- 							    IIO_EV_DIR_EITHER),
- 				       time);
--		if (stat1 & (1 << 6))
-+		if (stat1 & BIT(6))
- 			iio_push_event(indio_dev,
- 				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, 2,
- 							    IIO_EV_TYPE_THRESH,
- 							    IIO_EV_DIR_EITHER),
- 				       time);
--		if (stat1 & (1 << 7))
-+		if (stat1 & BIT(7))
- 			iio_push_event(indio_dev,
- 				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, 3,
- 							    IIO_EV_TYPE_THRESH,
+ enum {
+ 	/** always set, for sanity (avoid ZERO intent) */
+-	CFS_HS_LOOKUP_MASK_FIND     = 1 << 0,
++	CFS_HS_LOOKUP_MASK_FIND     = BIT(0),
+ 	/** return entry with a ref */
+-	CFS_HS_LOOKUP_MASK_REF      = 1 << 1,
++	CFS_HS_LOOKUP_MASK_REF      = BIT(1),
+ 	/** add entry if not existing */
+-	CFS_HS_LOOKUP_MASK_ADD      = 1 << 2,
++	CFS_HS_LOOKUP_MASK_ADD      = BIT(2),
+ 	/** delete entry, ignore other masks */
+-	CFS_HS_LOOKUP_MASK_DEL      = 1 << 3,
++	CFS_HS_LOOKUP_MASK_DEL      = BIT(3),
+ };
+ 
+ typedef enum cfs_hash_lookup_intent {
 -- 
 2.1.4
 
