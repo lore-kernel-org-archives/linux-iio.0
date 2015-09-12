@@ -1,178 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55704 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55714 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754031AbbILJeR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Sep 2015 05:34:17 -0400
-Subject: Re: [RFC v4 4/4] iio: chemical: add SGX VZ89x VOC sensor support
+	with ESMTP id S1751003AbbILJgb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Sep 2015 05:36:31 -0400
+Subject: Re: [PATCH v4 1/1] iio: humidity: add HDC100x support
 To: Matt Ranostay <mranostay@gmail.com>, lars@metafoo.de,
 	pmeerw@pmeerw.net
-References: <1441866654-10381-1-git-send-email-mranostay@gmail.com>
- <1441866654-10381-5-git-send-email-mranostay@gmail.com>
+References: <1441571259-29334-1-git-send-email-mranostay@gmail.com>
+ <1441571259-29334-2-git-send-email-mranostay@gmail.com>
 Cc: linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55F3F196.2060101@kernel.org>
-Date: Sat, 12 Sep 2015 10:34:14 +0100
+Message-ID: <55F3F21D.1080806@kernel.org>
+Date: Sat, 12 Sep 2015 10:36:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <1441866654-10381-5-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1441571259-29334-2-git-send-email-mranostay@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/09/15 07:30, Matt Ranostay wrote:
-> Add support for VZ89X sensors VOC and CO2 reporting channels in
-> percentage which can be converted to part per million.
+On 06/09/15 21:27, Matt Ranostay wrote:
+> Add support for the HDC100x temperature and humidity sensors
+> including the resistive heater element.
 > 
 > Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-Coming along nicely.  My main comment in here is that the chemical type
-can easily enough be a modifier (except for the odd 'short' case)
-Hence I think they should be.
+Applied to the togreg branch of iio.git.
+Pushed out as testing for the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
 > ---
->  .../ABI/testing/sysfs-bus-iio-chemical-vz89x       |  30 +++
->  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
->  drivers/iio/Kconfig                                |   1 +
->  drivers/iio/Makefile                               |   1 +
->  drivers/iio/chemical/Kconfig                       |  15 ++
->  drivers/iio/chemical/Makefile                      |   6 +
->  drivers/iio/chemical/vz89x.c                       | 245 +++++++++++++++++++++
->  7 files changed, 299 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
->  create mode 100644 drivers/iio/chemical/Kconfig
->  create mode 100644 drivers/iio/chemical/Makefile
->  create mode 100644 drivers/iio/chemical/vz89x.c
+>  .../ABI/testing/sysfs-bus-iio-humidity-hdc100x     |   9 +
+>  drivers/iio/humidity/Kconfig                       |  10 +
+>  drivers/iio/humidity/Makefile                      |   1 +
+>  drivers/iio/humidity/hdc100x.c                     | 319 +++++++++++++++++++++
+>  4 files changed, 339 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
+>  create mode 100644 drivers/iio/humidity/hdc100x.c
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x b/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x b/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
 > new file mode 100644
-> index 0000000..74f2a35
+> index 0000000..b72bb62
 > --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
-> @@ -0,0 +1,30 @@
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_CO2_raw
-> +Date:		September 2015
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
+> @@ -0,0 +1,9 @@
+> +What:		/sys/bus/iio/devices/iio:deviceX/out_current_heater_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/out_current_heater_raw_available
 > +KernelVersion:	4.3
-> +Contact:	Matt Ranostay <mranostay@gmail.com>
+> +Contact:	linux-iio@vger.kernel.org
 > +Description:
-> +		Get the unscaled, and no offset applied CO2 gas percentage
-> +		value.
+> +		Controls the heater device within the humidity sensor to get
+> +		rid of excess condensation.
 > +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_VOC_short_raw
-> +Date:		September 2015
-> +KernelVersion:	4.3
-> +Contact:	Matt Ranostay <mranostay@gmail.com>
-> +Description:
-> +		Get the raw calibration VOC value from the sensor.
-> +		This value has little application outside of calibration.
-So is this something that people are likely to need direct access to?
-Perhaps it is better placed in debugfs.
-If not I'd be tempted to do this one with a modifier of IIO_MOD_VOC and
-because it's a wierd bit of non standard abi use an extended name to
-say what it is.
-
-(comments about using modifiers later in review).
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_tVOC_raw
-> +Date:		September 2015
-> +KernelVersion:	4.3
-> +Contact:	Matt Ranostay <mranostay@gmail.com>
-> +Description:
-> +		Get the unscaled, and no offset applied total VOC gas
-> +		percentage value.
-I'd imagine anyone would assume that an undecorated VOC would be the total
-so I'd drop the t designation.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_resistance_raw
-> +Date:		September 2015
-> +KernelVersion:	4.3
-> +Contact:	Matt Ranostay <mranostay@gmail.com>
-> +Description:
-> +		Get the unscaled sensor resistance value.
-You've already documented this in the main ABI.  Doesn't need to be here.
-
-Actually if you add modifiers for C02 / VOC then they should be in the main
-ABI docs rather than here.  I'd imagine you'll just end up with the
-'special' raw VOC reading in this doc.
-
-> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> index d77d412..a550216 100644
-> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> @@ -88,6 +88,7 @@ ricoh,rs5c372b		I2C bus SERIAL INTERFACE REAL-TIME CLOCK IC
->  ricoh,rv5c386		I2C bus SERIAL INTERFACE REAL-TIME CLOCK IC
->  ricoh,rv5c387a		I2C bus SERIAL INTERFACE REAL-TIME CLOCK IC
->  samsung,24ad0xd1	S524AD0XF1 (128K/256K-bit Serial EEPROM for Low Power)
-> +sgx,vz89x		SGX Sensortech VZ89X Sensors
->  sii,s35390a		2-wire CMOS real-time clock
->  skyworks,sky81452	Skyworks SKY81452: Six-Channel White LED Driver with Touch Panel Bias Supply
->  st-micro,24c256		i2c serial eeprom  (24cxx)
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index 4011eff..9664e9c 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -61,6 +61,7 @@ config IIO_CONSUMERS_PER_TRIGGER
->  source "drivers/iio/accel/Kconfig"
->  source "drivers/iio/adc/Kconfig"
->  source "drivers/iio/amplifiers/Kconfig"
-> +source "drivers/iio/chemical/Kconfig"
->  source "drivers/iio/common/Kconfig"
->  source "drivers/iio/dac/Kconfig"
->  source "drivers/iio/frequency/Kconfig"
-> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-> index 698afc2..2288684 100644
-> --- a/drivers/iio/Makefile
-> +++ b/drivers/iio/Makefile
-> @@ -14,6 +14,7 @@ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
->  obj-y += accel/
->  obj-y += adc/
->  obj-y += amplifiers/
-> +obj-y += chemical/
->  obj-y += common/
->  obj-y += dac/
->  obj-y += gyro/
-> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-> new file mode 100644
-> index 0000000..8fb44e5
-> --- /dev/null
-> +++ b/drivers/iio/chemical/Kconfig
-> @@ -0,0 +1,15 @@
-> +#
-> +# Chemical sensors
-> +#
-> +
-> +menu "AQI VOC sensors"
-As Peter picked up on, expand your acronyms to make life easy for readers.
-I'm going to hazard a guess that at we'll end up with a more generic
-menu name to cover the other types of related sensors but that can change
-when it needs to.
-
-> +
-> +config VZ89X
-> +	tristate "SGX Sensortech MiCS VZ89X VOC sensor"
+> +		Valid control values are 0 = OFF, and 1 = ON.
+> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+> index 688c0d1..353ee9a 100644
+> --- a/drivers/iio/humidity/Kconfig
+> +++ b/drivers/iio/humidity/Kconfig
+> @@ -12,6 +12,16 @@ config DHT11
+>  	  Other sensors should work as well as long as they speak the
+>  	  same protocol.
+>  
+> +config HDC100X
+> +	tristate "TI HDC100x relative humidity and temperature sensor"
 > +	depends on I2C
 > +	help
-> +	  Say Y here to build I2C interface support for the SGX
-> +	  Sensortech MiCS VZ89X VOC (Volatile Organic Compounds) 
-> +	  sensors 
+> +	 Say yes here to build support for the TI HDC100x series of
+> +	 relative humidity and temperature sensors.
 > +
-> +endmenu
-> diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
-> new file mode 100644
-> index 0000000..7292f2d
-> --- /dev/null
-> +++ b/drivers/iio/chemical/Makefile
-> @@ -0,0 +1,6 @@
-> +#
-> +# Makefile for IIO chemical sensors
-> +#
+> +	 To compile this driver as a module, choose M here: the module
+> +	 will be called hdc100x.
 > +
-> +# When adding new entries keep the list in alphabetical order
-> +obj-$(CONFIG_VZ89X)		+= vz89x.o
-> diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
+>  config SI7005
+>  	tristate "SI7005 relative humidity and temperature sensor"
+>  	depends on I2C
+> diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
+> index 86e2d26..3e62c0a 100644
+> --- a/drivers/iio/humidity/Makefile
+> +++ b/drivers/iio/humidity/Makefile
+> @@ -3,5 +3,6 @@
+>  #
+>  
+>  obj-$(CONFIG_DHT11) += dht11.o
+> +obj-$(CONFIG_HDC100X) += hdc100x.o
+>  obj-$(CONFIG_SI7005) += si7005.o
+>  obj-$(CONFIG_SI7020) += si7020.o
+> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
 > new file mode 100644
-> index 0000000..847f853
+> index 0000000..2824578
 > --- /dev/null
-> +++ b/drivers/iio/chemical/vz89x.c
-> @@ -0,0 +1,245 @@
+> +++ b/drivers/iio/humidity/hdc100x.c
+> @@ -0,0 +1,319 @@
 > +/*
-> + * vz89x.c - Support for SGX Sensortech MiCS VZ89X VOC sensors
+> + * hdc100x.c - Support for the TI HDC100x temperature + humidity sensors
 > + *
 > + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
 > + *
@@ -188,210 +108,264 @@ when it needs to.
 > + *
 > + */
 > +
+> +#include <linux/delay.h>
 > +#include <linux/module.h>
-> +#include <linux/mutex.h>
 > +#include <linux/init.h>
 > +#include <linux/i2c.h>
 > +
 > +#include <linux/iio/iio.h>
 > +#include <linux/iio/sysfs.h>
 > +
-> +#define VZ89X_REG_MEASUREMENT		0x09
-> +#define VZ89X_REG_MEASUREMENT_SIZE	6
+> +#define HDC100X_REG_TEMP			0x00
+> +#define HDC100X_REG_HUMIDITY			0x01
 > +
-> +#define VZ89X_VOC_CO2_IDX		0
-> +#define VZ89X_VOC_SHORT_IDX		1
-> +#define VZ89X_VOC_TVOC_IDX		2
-> +#define VZ89X_VOC_RESISTANCE_IDX	3
+> +#define HDC100X_REG_CONFIG			0x02
+> +#define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
 > +
-> +struct vz89x_data {
+> +struct hdc100x_data {
 > +	struct i2c_client *client;
 > +	struct mutex lock;
-> +	unsigned long last_update;
+> +	u16 config;
 > +
-> +	u8 buffer[VZ89X_REG_MEASUREMENT_SIZE];
+> +	/* integration time of the sensor */
+> +	int adc_int_us[2];
 > +};
 > +
-> +static const struct iio_chan_spec vz89x_channels[] = {
+> +/* integration time in us */
+> +static const int hdc100x_int_time[][3] = {
+> +	{ 6350, 3650, 0 },	/* IIO_TEMP channel*/
+> +	{ 6500, 3850, 2500 },	/* IIO_HUMIDITYRELATIVE channel */
+> +};
+> +
+> +/* HDC100X_REG_CONFIG shift and mask values */
+> +static const struct {
+> +	int shift;
+> +	int mask;
+> +} hdc100x_resolution_shift[2] = {
+> +	{ /* IIO_TEMP channel */
+> +		.shift = 10,
+> +		.mask = 1
+> +	},
+> +	{ /* IIO_HUMIDITYRELATIVE channel */
+> +		.shift = 8,
+> +		.mask = 2,
+> +	},
+> +};
+> +
+> +static IIO_CONST_ATTR(temp_integration_time_available,
+> +		"0.00365 0.00635");
+> +
+> +static IIO_CONST_ATTR(humidityrelative_integration_time_available,
+> +		"0.0025 0.00385 0.0065");
+> +
+> +static IIO_CONST_ATTR(out_current_heater_raw_available,
+> +		"0 1");
+> +
+> +static struct attribute *hdc100x_attributes[] = {
+> +	&iio_const_attr_temp_integration_time_available.dev_attr.attr,
+> +	&iio_const_attr_humidityrelative_integration_time_available.dev_attr.attr,
+> +	&iio_const_attr_out_current_heater_raw_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static struct attribute_group hdc100x_attribute_group = {
+> +	.attrs = hdc100x_attributes,
+> +};
+> +
+> +static const struct iio_chan_spec hdc100x_channels[] = {
 > +	{
-> +		.type = IIO_CONCENTRATION,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_OFFSET) |
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +		.address = VZ89X_VOC_CO2_IDX,
-> +		.extend_name = "CO2",
-I think that the gas types we are likely to seen sensors for are actually
-relatively few in number so we should effectively enforce the ABI by
-using modifiers for these.
-
-IIO_MOD_CO2
-IIO_MOD_VOC
-and for the _short one that's wierd and likely to be device specific so
-using an extended name on top of the VOC modifier is fine.
-
-The other big reason for this is when you get a threshold sensor for these
-(I'm sure one will be along at somepoint).  The event codes do not encode
-the extended name in anyway so both the C02 and VOC sensors would give
-the same code.  Use a modifier and it all becomes straight forward.
-
-Note that adding modifiers also includes updating the bits in tools/iio
-to understand the new modifiers.
-
+> +		.type = IIO_TEMP,
+> +		.address = HDC100X_REG_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +			BIT(IIO_CHAN_INFO_SCALE) |
+> +			BIT(IIO_CHAN_INFO_INT_TIME) |
+> +			BIT(IIO_CHAN_INFO_OFFSET),
 > +	},
 > +	{
-> +		.type = IIO_CONCENTRATION,
+> +		.type = IIO_HUMIDITYRELATIVE,
+> +		.address = HDC100X_REG_HUMIDITY,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +			BIT(IIO_CHAN_INFO_SCALE) |
+> +			BIT(IIO_CHAN_INFO_INT_TIME)
+> +	},
+> +	{
+> +		.type = IIO_CURRENT,
 > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.address = VZ89X_VOC_SHORT_IDX,
-> +		.extend_name = "VOC_short",
-> +	},
-> +	{
-> +		.type = IIO_CONCENTRATION,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_OFFSET) |
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +		.address = VZ89X_VOC_TVOC_IDX,
-> +		.extend_name = "tVOC",
-> +	},
-> +	{
-> +		.type = IIO_RESISTANCE,
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +		.address = VZ89X_VOC_RESISTANCE_IDX,
+> +		.extend_name = "heater",
+> +		.output = 1,
 > +	},
 > +};
 > +
-> +static int vz89x_get_measurement(struct vz89x_data *data)
+> +static int hdc100x_update_config(struct hdc100x_data *data, int mask, int val)
 > +{
+> +	int tmp = (~mask & data->config) | val;
 > +	int ret;
+> +
+> +	ret = i2c_smbus_write_word_swapped(data->client,
+> +						HDC100X_REG_CONFIG, tmp);
+> +	if (!ret)
+> +		data->config = tmp;
+> +
+> +	return ret;
+> +}
+> +
+> +static int hdc100x_set_it_time(struct hdc100x_data *data, int chan, int val2)
+> +{
+> +	int shift = hdc100x_resolution_shift[chan].shift;
+> +	int ret = -EINVAL;
 > +	int i;
 > +
-> +	/* sensor can only be polled once a second max per datasheet */
-> +	if (!time_after(jiffies, data->last_update + HZ))
-> +		return 0;
-> +
-> +	ret = i2c_smbus_write_word_data(data->client,
-> +					VZ89X_REG_MEASUREMENT, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	for (i = 0; i < VZ89X_REG_MEASUREMENT_SIZE; i++) {
-> +		ret = i2c_smbus_read_byte(data->client);
-> +		if (ret < 0)
-> +			return ret;
-> +		data->buffer[i] = ret;
-> +	}
-> +
-> +	data->last_update = jiffies;
-> +
-> +	return 0;
-> +}
-> +
-> +static int vz89x_get_resistance_reading(struct vz89x_data *data)
-> +{
-> +	u8 *buf = &data->buffer[VZ89X_VOC_TVOC_IDX];
-> +
-> +	return buf[0] | ((u16)buf[1] << 8) | ((u32)buf[2] << 16);
-> +}
-> +
-> +static int vz89x_get_channel_scale(struct iio_chan_spec const *chan,
-> +				   int *val, int *val2)
-> +{
-> +	switch (chan->address) {
-> +	case VZ89X_VOC_CO2_IDX:
-> +		*val = 1600;
-> +		*val2 = 229;
-> +		return IIO_VAL_FRACTIONAL;
-> +	case VZ89X_VOC_TVOC_IDX:
-> +		*val = 1000;
-> +		*val2 = 229;
-> +		return IIO_VAL_FRACTIONAL;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int vz89x_read_raw(struct iio_dev *indio_dev,
-> +			  struct iio_chan_spec const *chan, int *val,
-> +			  int *val2, long mask)
-> +{
-> +	struct vz89x_data *data = iio_priv(indio_dev);
-> +	int ret = -EINVAL;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&data->lock);
-> +		ret = vz89x_get_measurement(data);
-> +		mutex_unlock(&data->lock);
-> +
-> +		if (ret)
-> +			return ret;
-> +
-> +		switch (chan->address) {
-> +		case VZ89X_VOC_CO2_IDX:
-> +			*val = 0;
-> +			*val2 = data->buffer[chan->address];
-> +			return IIO_VAL_INT_PLUS_MICRO;
-
-This is unusual for a raw reading.  Normally you'd output it as
-IIO_VAL_INT and take up the device by 1e6 in the scale factor.
-(mainly because you can only output integer values via the buffered
-interface - but it's become a convention in general).
-I wouldn't guarantee all tools will cope with it otherwise.
-> +		case VZ89X_VOC_SHORT_IDX:
-> +			*val = data->buffer[chan->address];
-> +			return IIO_VAL_INT;
-> +		case VZ89X_VOC_TVOC_IDX:
-> +			*val = 0;
-> +			*val2 = data->buffer[chan->address];
-Same is true for this one.
-> +			return IIO_VAL_INT_PLUS_NANO;
-> +		case VZ89X_VOC_RESISTANCE_IDX:
-> +			*val = vz89x_get_resistance_reading(data);
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_RESISTANCE:
-> +			*val = 10;
-> +			return IIO_VAL_INT;
-> +		case IIO_CONCENTRATION:
-> +			return vz89x_get_channel_scale(chan, val, val2);
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		switch (chan->address) {
-> +		case VZ89X_VOC_CO2_IDX:
-> +			*val = 0;
-> +			*val2 = 44250;
-> +			return IIO_VAL_INT_PLUS_NANO;
-> +		case VZ89X_VOC_TVOC_IDX:
-> +			*val = 0;
-> +			*val2 = -13;
-> +			return IIO_VAL_INT_PLUS_NANO;
-> +		default:
-> +			return -EINVAL;
+> +	for (i = 0; i < ARRAY_SIZE(hdc100x_int_time[chan]); i++) {
+> +		if (val2 && val2 == hdc100x_int_time[chan][i]) {
+> +			ret = hdc100x_update_config(data,
+> +				hdc100x_resolution_shift[chan].mask << shift,
+> +				i << shift);
+> +			if (!ret)
+> +				data->adc_int_us[chan] = val2;
+> +			break;
 > +		}
 > +	}
 > +
 > +	return ret;
 > +}
 > +
-> +static const struct iio_info vz89x_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= vz89x_read_raw,
+> +static int hdc100x_get_measurement(struct hdc100x_data *data,
+> +				   struct iio_chan_spec const *chan)
+> +{
+> +	struct i2c_client *client = data->client;
+> +	int delay = data->adc_int_us[chan->address];
+> +	int ret;
+> +	int val;
+> +
+> +	/* start measurement */
+> +	ret = i2c_smbus_write_byte(client, chan->address);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "cannot start measurement");
+> +		return ret;
+> +	}
+> +
+> +	/* wait for integration time to pass */
+> +	usleep_range(delay, delay + 1000);
+> +
+> +	/*
+> +	 * i2c_smbus_read_word_data cannot() be used here due to the command
+> +	 * value not being understood and causes NAKs preventing any reading
+> +	 * from being accessed.
+> +	 */
+> +	ret = i2c_smbus_read_byte(client);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "cannot read high byte measurement");
+> +		return ret;
+> +	}
+> +	val = ret << 6;
+> +
+> +	ret = i2c_smbus_read_byte(client);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "cannot read low byte measurement");
+> +		return ret;
+> +	}
+> +	val |= ret >> 2;
+> +
+> +	return val;
+> +}
+> +
+> +static int hdc100x_get_heater_status(struct hdc100x_data *data)
+> +{
+> +	return !!(data->config & HDC100X_REG_CONFIG_HEATER_EN);
+> +}
+> +
+> +static int hdc100x_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan, int *val,
+> +			    int *val2, long mask)
+> +{
+> +	struct hdc100x_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW: {
+> +		int ret;
+> +
+> +		mutex_lock(&data->lock);
+> +		if (chan->type == IIO_CURRENT) {
+> +			*val = hdc100x_get_heater_status(data);
+> +			ret = IIO_VAL_INT;
+> +		} else {
+> +			ret = hdc100x_get_measurement(data, chan);
+> +			if (ret >= 0) {
+> +				*val = ret;
+> +				ret = IIO_VAL_INT;
+> +			}
+> +		}
+> +		mutex_unlock(&data->lock);
+> +		return ret;
+> +	}
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*val = 0;
+> +		*val2 = data->adc_int_us[chan->address];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (chan->type == IIO_TEMP) {
+> +			*val = 165;
+> +			*val2 = 65536 >> 2;
+> +			return IIO_VAL_FRACTIONAL;
+> +		} else {
+> +			*val = 0;
+> +			*val2 = 10000;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		}
+> +		break;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		*val = -40;
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int hdc100x_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct hdc100x_data *data = iio_priv(indio_dev);
+> +	int ret = -EINVAL;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		if (val != 0)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&data->lock);
+> +		ret = hdc100x_set_it_time(data, chan->address, val2);
+> +		mutex_unlock(&data->lock);
+> +		return ret;
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (chan->type != IIO_CURRENT || val2 != 0)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&data->lock);
+> +		ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_HEATER_EN,
+> +					val ? HDC100X_REG_CONFIG_HEATER_EN : 0);
+> +		mutex_unlock(&data->lock);
+> +		return ret;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info hdc100x_info = {
+> +	.read_raw = hdc100x_read_raw,
+> +	.write_raw = hdc100x_write_raw,
+> +	.attrs = &hdc100x_attribute_group,
+> +	.driver_module = THIS_MODULE,
 > +};
 > +
-> +static int vz89x_probe(struct i2c_client *client,
-> +		       const struct i2c_device_id *id)
+> +static int hdc100x_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
 > +{
 > +	struct iio_dev *indio_dev;
-> +	struct vz89x_data *data;
+> +	struct hdc100x_data *data;
 > +
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
-> +				     I2C_FUNC_SMBUS_BYTE))
+> +	if (!i2c_check_functionality(client->adapter,
+> +				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
 > +		return -ENODEV;
 > +
 > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
@@ -401,44 +375,40 @@ Same is true for this one.
 > +	data = iio_priv(indio_dev);
 > +	i2c_set_clientdata(client, indio_dev);
 > +	data->client = client;
-> +	data->last_update = jiffies - HZ;
 > +	mutex_init(&data->lock);
 > +
 > +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &vz89x_info,
 > +	indio_dev->name = dev_name(&client->dev);
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &hdc100x_info;
 > +
-> +	indio_dev->channels = vz89x_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(vz89x_channels);
+> +	indio_dev->channels = hdc100x_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(hdc100x_channels);
+> +
+> +	/* be sure we are in a known state */
+> +	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
+> +	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
 > +
 > +	return devm_iio_device_register(&client->dev, indio_dev);
 > +}
 > +
-> +static const struct i2c_device_id vz89x_id[] = {
-> +	{ "vz89x", 0 },
+> +static const struct i2c_device_id hdc100x_id[] = {
+> +	{ "hdc100x", 0 },
 > +	{ }
 > +};
-> +MODULE_DEVICE_TABLE(i2c, vz89x_id);
+> +MODULE_DEVICE_TABLE(i2c, hdc100x_id);
 > +
-> +static const struct of_device_id vz89x_dt_ids[] = {
-> +	{ .compatible = "sgx,vz89x" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, vz89x_dt_ids);
-> +
-> +static struct i2c_driver vz89x_driver = {
+> +static struct i2c_driver hdc100x_driver = {
 > +	.driver = {
-> +		.name	= "vz89x",
-> +		.of_match_table = of_match_ptr(vz89x_dt_ids),
+> +		.name	= "hdc100x",
 > +	},
-> +	.probe = vz89x_probe,
-> +	.id_table = vz89x_id,
+> +	.probe = hdc100x_probe,
+> +	.id_table = hdc100x_id,
 > +};
-> +module_i2c_driver(vz89x_driver);
+> +module_i2c_driver(hdc100x_driver);
 > +
 > +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_DESCRIPTION("SGX Sensortech MiCS VZ89X VOC sensors");
-> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("TI HDC100x humidity and temperature sensor driver");
+> +MODULE_LICENSE("GPL");
 > 
 
