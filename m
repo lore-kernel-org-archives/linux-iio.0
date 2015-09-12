@@ -1,103 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56011 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754324AbbILKOv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Sep 2015 06:14:51 -0400
-Subject: Re: [PATCH 1/6] iio:dac:m62332: share scale and offset
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-References: <cover.1440459082.git.knaack.h@gmx.de>
- <1d2903d19cf988620b155b16ea58dd13d392f598.1440459082.git.knaack.h@gmx.de>
- <55E46A68.5080906@kernel.org> <55F3FA53.60104@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55F3FB19.6070705@kernel.org>
-Date: Sat, 12 Sep 2015 11:14:49 +0100
-MIME-Version: 1.0
-In-Reply-To: <55F3FA53.60104@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Received: from mx1.redhat.com ([209.132.183.28]:47369 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751768AbbILKwz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 12 Sep 2015 06:52:55 -0400
+From: Hans de Goede <hdegoede@redhat.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, plaes@plaes.org,
+	linux-iio@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
+	Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH] devicetree: bindings: Extend the bma180 bindings with bma250 info
+Date: Sat, 12 Sep 2015 12:52:49 +0200
+Message-Id: <1442055169-16966-1-git-send-email-hdegoede@redhat.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/09/15 11:11, Jonathan Cameron wrote:
-> On 31/08/15 15:53, Jonathan Cameron wrote:
->> On 28/08/15 22:59, Hartmut Knaack wrote:
->>> This device simply uses its Vcc as reference voltage, so the same scale
->>> applies for all channels. Also offset doesn't appear to be different for
->>> any channel. Represent this by switching these two attributes to
->>> info_mask_shared_by_type.
->>>
->>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
->> This sort of tidy up is always a little interesting.  Technically it
->> is an ABI change (be it one that changes from one possible representation
->> to a better one).  Unfortunately technically we can't rely on users
->> using a library or similar that would hide this detail for them.
->>
->> Still we can make the change if no one notices.  Perhaps
->> Dmitry will want to comment on this however, so I'll let it sit for a while
->> longer.
->>
->> Jonathan
-> Applied to the togreg branch of iio.git.  As ever, pushed out first as
-> testing for the autobuilders to play with it.
-Oops, had forgotten these were waiting on a tested-by from Dmitry.
-Backed out again for now.
+The bma180 / bma250 accelerometers share a driver (at least under Linux),
+so it makes sense to also have their bindings info in a single .txt.
 
-Sorry about that.
+This commit extends the bma180 bindings with bma250 bindings, specifically
+it specifies how the 2 seperate interrupts the bma250 has must be listed
+in devicetree. The existing bma180 driver is already fully compatible
+with the specified bindings.
 
-Jonathan
-> 
-> Thanks,
-> 
-> Jonathan
->>> ---
->>> Hope you don't mind too much, that I inserted an extra tab in the whole
->>> block rather than messing up style and cleaning it up later.
->>>
->>>  drivers/iio/dac/m62332.c | 18 +++++++++---------
->>>  1 file changed, 9 insertions(+), 9 deletions(-)
->>>
->>> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
->>> index c23d7fa889ee..cffc0630ed32 100644
->>> --- a/drivers/iio/dac/m62332.c
->>> +++ b/drivers/iio/dac/m62332.c
->>> @@ -173,15 +173,15 @@ static const struct iio_info m62332_info = {
->>>  	.driver_module = THIS_MODULE,
->>>  };
->>>  
->>> -#define M62332_CHANNEL(chan) {				\
->>> -	.type = IIO_VOLTAGE,				\
->>> -	.indexed = 1,					\
->>> -	.output = 1,					\
->>> -	.channel = (chan),				\
->>> -	.datasheet_name = "CH" #chan,			\
->>> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
->>> -		BIT(IIO_CHAN_INFO_SCALE) |		\
->>> -		BIT(IIO_CHAN_INFO_OFFSET),		\
->>> +#define M62332_CHANNEL(chan) {					\
->>> +	.type = IIO_VOLTAGE,					\
->>> +	.indexed = 1,						\
->>> +	.output = 1,						\
->>> +	.channel = (chan),					\
->>> +	.datasheet_name = "CH" #chan,				\
->>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
->>> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
->>> +				    BIT(IIO_CHAN_INFO_OFFSET),	\
->>>  }
->>>  
->>>  static const struct iio_chan_spec m62332_channels[M62332_CHANNELS] = {
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ Documentation/devicetree/bindings/iio/accel/bma180.txt | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/accel/bma180.txt b/Documentation/devicetree/bindings/iio/accel/bma180.txt
+index c593357..4a3679d 100644
+--- a/Documentation/devicetree/bindings/iio/accel/bma180.txt
++++ b/Documentation/devicetree/bindings/iio/accel/bma180.txt
+@@ -1,10 +1,11 @@
+-* Bosch BMA180 triaxial acceleration sensor
++* Bosch BMA180 / BMA250 triaxial acceleration sensor
+ 
+ http://omapworld.com/BMA180_111_1002839.pdf
++http://ae-bst.resource.bosch.com/media/products/dokumente/bma250/bst-bma250-ds002-05.pdf
+ 
+ Required properties:
+ 
+-  - compatible : should be "bosch,bma180"
++  - compatible : should be "bosch,bma180" or "bosch,bma250"
+   - reg : the I2C address of the sensor
+ 
+ Optional properties:
+@@ -13,6 +14,9 @@ Optional properties:
+ 
+   - interrupts : interrupt mapping for GPIO IRQ, it should by configured with
+ 		flags IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_EDGE_RISING
++		For the bma250 the first interrupt listed must be the one
++		connected to the INT1 pin, the second (optional) interrupt
++		listed must be the one connected to the INT2 pin.
+ 
+ Example:
+ 
+-- 
+2.4.3
 
