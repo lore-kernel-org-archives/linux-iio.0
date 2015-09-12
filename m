@@ -1,90 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55979 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55995 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754324AbbILKLd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Sep 2015 06:11:33 -0400
-Subject: Re: [PATCH 1/6] iio:dac:m62332: share scale and offset
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-References: <cover.1440459082.git.knaack.h@gmx.de>
- <1d2903d19cf988620b155b16ea58dd13d392f598.1440459082.git.knaack.h@gmx.de>
- <55E46A68.5080906@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+	with ESMTP id S1754324AbbILKNj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Sep 2015 06:13:39 -0400
+Subject: Re: [PATCH 0/6] fixes, cleanup and improvements for m62332
+To: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+References: <cover.1440459082.git.knaack.h@gmx.de> <55E46C08.80602@kernel.org>
+ <CALT56yOWN5U5gcmGo=PfGBDUxMpNpVDhUYshF3B+KV39598Qqw@mail.gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55F3FA53.60104@kernel.org>
-Date: Sat, 12 Sep 2015 11:11:31 +0100
+Message-ID: <55F3FAD1.1040703@kernel.org>
+Date: Sat, 12 Sep 2015 11:13:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <55E46A68.5080906@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CALT56yOWN5U5gcmGo=PfGBDUxMpNpVDhUYshF3B+KV39598Qqw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 31/08/15 15:53, Jonathan Cameron wrote:
-> On 28/08/15 22:59, Hartmut Knaack wrote:
->> This device simply uses its Vcc as reference voltage, so the same scale
->> applies for all channels. Also offset doesn't appear to be different for
->> any channel. Represent this by switching these two attributes to
->> info_mask_shared_by_type.
->>
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> This sort of tidy up is always a little interesting.  Technically it
-> is an ABI change (be it one that changes from one possible representation
-> to a better one).  Unfortunately technically we can't rely on users
-> using a library or similar that would hide this detail for them.
+On 31/08/15 17:09, Dmitry Eremin-Solenikov wrote:
+> Hello,
 > 
-> Still we can make the change if no one notices.  Perhaps
-> Dmitry will want to comment on this however, so I'll let it sit for a while
-> longer.
+> 2015-08-31 18:00 GMT+03:00 Jonathan Cameron <jic23@kernel.org>:
+>> On 28/08/15 22:59, Hartmut Knaack wrote:
+>>> A set of patches to address some issues I spotted during review.
+>>>
+>>> Hartmut Knaack (6):
+>>>   iio:dac:m62332: share scale and offset
+>>>   iio:dac:m62332: shutdown on remove
+>>>   iio:dac:m62332: use ARRAY_SIZE
+>>>   iio:dac:m62332: drop unrequired variable
+>>>   iio:dac:m62332: address some style issues
+>>>   iio:dac:m62332: use dynamic scale
+>>>
+>>>  drivers/iio/dac/m62332.c | 63 +++++++++++++++++++++++++-----------------------
+>>>  1 file changed, 33 insertions(+), 30 deletions(-)
+>>>
+>> Other than letting this series sit on the list a few days longer,
+>> for Dmitry or others to take a look at it, I'm happy with this series.
 > 
-> Jonathan
-Applied to the togreg branch of iio.git.  As ever, pushed out first as
-testing for the autobuilders to play with it.
+> The changes look good, however I'd like to test them on my hardware first.
+> 
+Hi Dmitry,
+
+Sorry I'd forgotten you sent this so have just backed out the first couple
+for now.  Any idea when you might get a chance to test these out?  We
+aren't in a rush given timing relative to the cycle, but always
+good to have some idea of how long things are likely to take!
 
 Thanks,
 
 Jonathan
->> ---
->> Hope you don't mind too much, that I inserted an extra tab in the whole
->> block rather than messing up style and cleaning it up later.
->>
->>  drivers/iio/dac/m62332.c | 18 +++++++++---------
->>  1 file changed, 9 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
->> index c23d7fa889ee..cffc0630ed32 100644
->> --- a/drivers/iio/dac/m62332.c
->> +++ b/drivers/iio/dac/m62332.c
->> @@ -173,15 +173,15 @@ static const struct iio_info m62332_info = {
->>  	.driver_module = THIS_MODULE,
->>  };
->>  
->> -#define M62332_CHANNEL(chan) {				\
->> -	.type = IIO_VOLTAGE,				\
->> -	.indexed = 1,					\
->> -	.output = 1,					\
->> -	.channel = (chan),				\
->> -	.datasheet_name = "CH" #chan,			\
->> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
->> -		BIT(IIO_CHAN_INFO_SCALE) |		\
->> -		BIT(IIO_CHAN_INFO_OFFSET),		\
->> +#define M62332_CHANNEL(chan) {					\
->> +	.type = IIO_VOLTAGE,					\
->> +	.indexed = 1,						\
->> +	.output = 1,						\
->> +	.channel = (chan),					\
->> +	.datasheet_name = "CH" #chan,				\
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
->> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
->> +				    BIT(IIO_CHAN_INFO_OFFSET),	\
->>  }
->>  
->>  static const struct iio_chan_spec m62332_channels[M62332_CHANNELS] = {
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
