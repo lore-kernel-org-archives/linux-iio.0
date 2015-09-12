@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55798 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55833 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754031AbbILJxM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Sep 2015 05:53:12 -0400
+	with ESMTP id S1754491AbbILJ53 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Sep 2015 05:57:29 -0400
 Subject: Re: [PATCH 1/6] Staging: iio: addac: Prefer using the BIT macro
 To: Shraddha Barke <shraddha.6596@gmail.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -13,8 +13,8 @@ References: <1441902634-11129-1-git-send-email-shraddha.6596@gmail.com>
 Cc: Ian Abbott <abbotti@mev.co.uk>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55F3F604.3030008@kernel.org>
-Date: Sat, 12 Sep 2015 10:53:08 +0100
+Message-ID: <55F3F707.6030908@kernel.org>
+Date: Sat, 12 Sep 2015 10:57:27 +0100
 MIME-Version: 1.0
 In-Reply-To: <1441902634-11129-1-git-send-email-shraddha.6596@gmail.com>
 Content-Type: text/plain; charset=windows-1252
@@ -32,12 +32,15 @@ On 10/09/15 17:30, Shraddha Barke wrote:
 > +BIT(g)
 > 
 > Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
-Good straight forward cases.  Applied to the togreg branch of iio.git.
-Will be initially pushed out as testing for the autobuilders to play with
-it.
+A small process related point.  These are reworked versions of your
+earlier series.  Please make that obvious with a V2 in the patch name.
+A cover letter explaining what the changes were is also a useful addition.
+
+I suspect a lot of reviewers do what I do and work backwards through their
+email and hence need the indication that there is an earlier thread they
+should be cross referring to.
 
 Thanks,
-
 Jonathan
 > ---
 >  drivers/staging/iio/addac/adt7316.c | 14 +++++++-------
