@@ -1,422 +1,386 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:54046 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751901AbbINO0P (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Sep 2015 10:26:15 -0400
-Date: Mon, 14 Sep 2015 16:26:05 +0200
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH v4 1/2] iio: bmg160: Separate i2c and core driver
-Message-ID: <20150914142605.GJ18484@pengutronix.de>
-References: <1439986366-25291-1-git-send-email-mpa@pengutronix.de>
- <1439986366-25291-2-git-send-email-mpa@pengutronix.de>
- <55E47B37.8010703@kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="jIYo0VRlfdMI9fLa"
-In-Reply-To: <55E47B37.8010703@kernel.org>
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:36608 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755449AbbINPWX convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Sep 2015 11:22:23 -0400
+Received: by padhk3 with SMTP id hk3so146759686pad.3
+        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2015 08:22:22 -0700 (PDT)
+References: <1442201174-10975-1-git-send-email-mranostay@gmail.com> <1442201174-10975-5-git-send-email-mranostay@gmail.com> <alpine.DEB.2.02.1509141032260.16992@pmeerw.net>
+Mime-Version: 1.0 (1.0)
+In-Reply-To: <alpine.DEB.2.02.1509141032260.16992@pmeerw.net>
+Content-Type: text/plain;
+	charset=us-ascii
+Message-Id: <AD9DFCA3-2263-4798-8F45-BFD94EBB1F2B@gmail.com>
+Cc: "jic23@kernel.org" <jic23@kernel.org>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Matt Ranostay <mranostay@gmail.com>
+Subject: Re: [PATCH v5 4/4] iio: chemical: add SGX VZ89x VOC sensor support
+Date: Mon, 14 Sep 2015 08:22:04 -0700
+To: Peter Meerwald <pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---jIYo0VRlfdMI9fLa
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi Jonathon,
-
-Sorry for the late response I was on vacation.
-
-On Mon, Aug 31, 2015 at 05:05:11PM +0100, Jonathan Cameron wrote:
-> On 19/08/15 13:12, Markus Pargmann wrote:
-> > This patch separates the core driver using regmap and the i2c driver
-> > which creates the i2c regmap. Also in the Kconfig file BMG160 and
-> > BMG160_I2C are separate now.
-> >=20
-> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> Hi Markus,
->=20
-> This didn't exactly go in cleanly.
-> THe resulting core driver had no author or licence block
-> so I put that back from the original.  Also as bmg160.h
-> was not included in that driver, All sorts of fun warnings
-> about non static, not exported symbols came up.  Added
-> in the #include "bmg160.h"
->=20
-> There was also some fuzz in the driver.  Could you check it
-> went in correctly for me?
-
-Thanks. I just looked at it and it seems to be correct.
-
-Best Regards,
-
-Markus
-
->=20
-> Applied to the togreg branch of iio.git - initially pushed out
-> as testing for the autobuilders to play with it.
->=20
-> I also took the view that the changes in how it was built
-> were not an issue for taking Srinivas' previous reviewed-by
-> and so applied that as well.
->=20
-> Thanks,
->=20
-> Jonathan
->=20
-> > ---
-> >  drivers/iio/gyro/Kconfig                     | 15 ++++--
-> >  drivers/iio/gyro/Makefile                    |  3 +-
-> >  drivers/iio/gyro/bmg160.h                    | 10 ++++
-> >  drivers/iio/gyro/{bmg160.c =3D> bmg160_core.c} | 79 +++++-------------=
-----------
-> >  drivers/iio/gyro/bmg160_i2c.c                | 71 ++++++++++++++++++++=
-+++++
-> >  5 files changed, 107 insertions(+), 71 deletions(-)
-> >  create mode 100644 drivers/iio/gyro/bmg160.h
-> >  rename drivers/iio/gyro/{bmg160.c =3D> bmg160_core.c} (94%)
-> >  create mode 100644 drivers/iio/gyro/bmg160_i2c.c
-> >=20
-> > diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> > index cf82d74139a2..94526b13d49f 100644
-> > --- a/drivers/iio/gyro/Kconfig
-> > +++ b/drivers/iio/gyro/Kconfig
-> > @@ -52,16 +52,21 @@ config ADXRS450
-> > =20
-> >  config BMG160
-> >  	tristate "BOSCH BMG160 Gyro Sensor"
-> > -	depends on I2C
-> > +	depends on (I2C || SPI_MASTER)
-> >  	select IIO_BUFFER
-> >  	select IIO_TRIGGERED_BUFFER
-> > -	select REGMAP_I2C
-> > +	select BMG160_I2C if (I2C)
-> >  	help
-> > -	  Say yes here to build support for Bosch BMG160 Tri-axis Gyro Sensor
-> > -	  driver. This driver also supports BMI055 gyroscope.
-> > +	  Say yes here to build support for BOSCH BMG160 Tri-axis Gyro Sensor
-> > +	  driver connected via I2C or SPI. This driver also supports BMI055
-> > +	  gyroscope.
-> > =20
-> >  	  This driver can also be built as a module.  If so, the module
-> > -	  will be called bmg160.
-> > +	  will be called bmg160_i2c.
-> > +
-> > +config BMG160_I2C
-> > +	tristate
-> > +	select REGMAP_I2C
-> > =20
-> >  config HID_SENSOR_GYRO_3D
-> >  	depends on HID_SENSOR_HUB
-> > diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-> > index f46341b39139..608401041550 100644
-> > --- a/drivers/iio/gyro/Makefile
-> > +++ b/drivers/iio/gyro/Makefile
-> > @@ -8,7 +8,8 @@ obj-$(CONFIG_ADIS16130) +=3D adis16130.o
-> >  obj-$(CONFIG_ADIS16136) +=3D adis16136.o
-> >  obj-$(CONFIG_ADIS16260) +=3D adis16260.o
-> >  obj-$(CONFIG_ADXRS450) +=3D adxrs450.o
-> > -obj-$(CONFIG_BMG160) +=3D bmg160.o
-> > +obj-$(CONFIG_BMG160) +=3D bmg160_core.o
-> > +obj-$(CONFIG_BMG160_I2C) +=3D bmg160_i2c.o
-> > =20
-> >  obj-$(CONFIG_HID_SENSOR_GYRO_3D) +=3D hid-sensor-gyro-3d.o
-> > =20
-> > diff --git a/drivers/iio/gyro/bmg160.h b/drivers/iio/gyro/bmg160.h
-> > new file mode 100644
-> > index 000000000000..72db723c8fb6
-> > --- /dev/null
-> > +++ b/drivers/iio/gyro/bmg160.h
-> > @@ -0,0 +1,10 @@
-> > +#ifndef BMG160_H_
-> > +#define BMG160_H_
-> > +
-> > +extern const struct dev_pm_ops bmg160_pm_ops;
-> > +
-> > +int bmg160_core_probe(struct device *dev, struct regmap *regmap, int i=
-rq,
-> > +		      const char *name);
-> > +void bmg160_core_remove(struct device *dev);
-> > +
-> > +#endif  /* BMG160_H_ */
-> > diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160_core.c
-> > similarity index 94%
-> > rename from drivers/iio/gyro/bmg160.c
-> > rename to drivers/iio/gyro/bmg160_core.c
-> > index 39df64fb4262..7366cb9f613d 100644
-> > --- a/drivers/iio/gyro/bmg160.c
-> > +++ b/drivers/iio/gyro/bmg160_core.c
-> > @@ -13,7 +13,6 @@
-> >   */
-> > =20
-> >  #include <linux/module.h>
-> > -#include <linux/i2c.h>
-> >  #include <linux/interrupt.h>
-> >  #include <linux/delay.h>
-> >  #include <linux/slab.h>
-> > @@ -30,7 +29,6 @@
-> >  #include <linux/iio/triggered_buffer.h>
-> >  #include <linux/regmap.h>
-> > =20
-> > -#define BMG160_DRV_NAME		"bmg160"
-> >  #define BMG160_IRQ_NAME		"bmg160_event"
-> >  #define BMG160_GPIO_NAME		"gpio_int"
-> > =20
-> > @@ -137,12 +135,6 @@ static const struct {
-> >  			   { 133, BMG160_RANGE_250DPS},
-> >  			   { 66, BMG160_RANGE_125DPS} };
-> > =20
-> > -struct regmap_config bmg160_regmap_i2c_conf =3D {
-> > -	.reg_bits =3D 8,
-> > -	.val_bits =3D 8,
-> > -	.max_register =3D 0x3f
-> > -};
-> > -
-> >  static int bmg160_set_mode(struct bmg160_data *data, u8 mode)
-> >  {
-> >  	int ret;
-> > @@ -996,31 +988,22 @@ static const char *bmg160_match_acpi_device(struc=
-t device *dev)
-> >  	return dev_name(dev);
-> >  }
-> > =20
-> > -static int bmg160_probe(struct i2c_client *client,
-> > -			const struct i2c_device_id *id)
-> > +int bmg160_core_probe(struct device *dev, struct regmap *regmap, int i=
-rq,
-> > +		      const char *name)
-> >  {
-> >  	struct bmg160_data *data;
-> >  	struct iio_dev *indio_dev;
-> >  	int ret;
-> > -	const char *name =3D NULL;
-> > -	struct regmap *regmap;
-> > -	struct device *dev =3D &client->dev;
-> > -
-> > -	regmap =3D devm_regmap_init_i2c(client, &bmg160_regmap_i2c_conf);
-> > -	if (IS_ERR(regmap)) {
-> > -		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
-> > -			(int)PTR_ERR(regmap));
-> > -		return PTR_ERR(regmap);
-> > -	}
-> > =20
-> > -	indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > +	indio_dev =3D devm_iio_device_alloc(dev, sizeof(*data));
-> >  	if (!indio_dev)
-> >  		return -ENOMEM;
-> > =20
-> >  	data =3D iio_priv(indio_dev);
-> >  	dev_set_drvdata(dev, indio_dev);
-> >  	data->dev =3D dev;
-> > -	data->irq =3D client->irq;
-> > +	data->irq =3D irq;
-> > +	data->regmap =3D regmap;
-> > =20
-> >  	ret =3D bmg160_chip_init(data);
-> >  	if (ret < 0)
-> > @@ -1028,9 +1011,6 @@ static int bmg160_probe(struct i2c_client *client,
-> > =20
-> >  	mutex_init(&data->mutex);
-> > =20
-> > -	if (id)
-> > -		name =3D id->name;
-> > -
-> >  	if (ACPI_HANDLE(dev))
-> >  		name =3D bmg160_match_acpi_device(dev);
-> > =20
-> > @@ -1125,15 +1105,16 @@ err_trigger_unregister:
-> > =20
-> >  	return ret;
-> >  }
-> > +EXPORT_SYMBOL_GPL(bmg160_core_probe);
-> > =20
-> > -static int bmg160_remove(struct i2c_client *client)
-> > +void bmg160_core_remove(struct device *dev)
-> >  {
-> > -	struct iio_dev *indio_dev =3D i2c_get_clientdata(client);
-> > +	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-> >  	struct bmg160_data *data =3D iio_priv(indio_dev);
-> > =20
-> > -	pm_runtime_disable(&client->dev);
-> > -	pm_runtime_set_suspended(&client->dev);
-> > -	pm_runtime_put_noidle(&client->dev);
-> > +	pm_runtime_disable(dev);
-> > +	pm_runtime_set_suspended(dev);
-> > +	pm_runtime_put_noidle(dev);
-> > =20
-> >  	iio_device_unregister(indio_dev);
-> >  	iio_triggered_buffer_cleanup(indio_dev);
-> > @@ -1146,9 +1127,8 @@ static int bmg160_remove(struct i2c_client *clien=
-t)
-> >  	mutex_lock(&data->mutex);
-> >  	bmg160_set_mode(data, BMG160_MODE_DEEP_SUSPEND);
-> >  	mutex_unlock(&data->mutex);
-> > -
-> > -	return 0;
-> >  }
-> > +EXPORT_SYMBOL_GPL(bmg160_core_remove);
-> > =20
-> >  #ifdef CONFIG_PM_SLEEP
-> >  static int bmg160_suspend(struct device *dev)
-> > @@ -1210,40 +1190,9 @@ static int bmg160_runtime_resume(struct device *=
-dev)
-> >  }
-> >  #endif
-> > =20
-> > -static const struct dev_pm_ops bmg160_pm_ops =3D {
-> > +const struct dev_pm_ops bmg160_pm_ops =3D {
-> >  	SET_SYSTEM_SLEEP_PM_OPS(bmg160_suspend, bmg160_resume)
-> >  	SET_RUNTIME_PM_OPS(bmg160_runtime_suspend,
-> >  			   bmg160_runtime_resume, NULL)
-> >  };
-> > -
-> > -static const struct acpi_device_id bmg160_acpi_match[] =3D {
-> > -	{"BMG0160", 0},
-> > -	{"BMI055B", 0},
-> > -	{},
-> > -};
-> > -
-> > -MODULE_DEVICE_TABLE(acpi, bmg160_acpi_match);
-> > -
-> > -static const struct i2c_device_id bmg160_id[] =3D {
-> > -	{"bmg160", 0},
-> > -	{"bmi055_gyro", 0},
-> > -	{}
-> > -};
-> > -
-> > -MODULE_DEVICE_TABLE(i2c, bmg160_id);
-> > -
-> > -static struct i2c_driver bmg160_driver =3D {
-> > -	.driver =3D {
-> > -		.name	=3D BMG160_DRV_NAME,
-> > -		.acpi_match_table =3D ACPI_PTR(bmg160_acpi_match),
-> > -		.pm	=3D &bmg160_pm_ops,
-> > -	},
-> > -	.probe		=3D bmg160_probe,
-> > -	.remove		=3D bmg160_remove,
-> > -	.id_table	=3D bmg160_id,
-> > -};
-> > -module_i2c_driver(bmg160_driver);
-> > -
-> > -MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.co=
-m>");
-> > -MODULE_LICENSE("GPL v2");
-> > -MODULE_DESCRIPTION("BMG160 Gyro driver");
-> > +EXPORT_SYMBOL_GPL(bmg160_pm_ops);
-> > diff --git a/drivers/iio/gyro/bmg160_i2c.c b/drivers/iio/gyro/bmg160_i2=
-c.c
-> > new file mode 100644
-> > index 000000000000..90126a5a7663
-> > --- /dev/null
-> > +++ b/drivers/iio/gyro/bmg160_i2c.c
-> > @@ -0,0 +1,71 @@
-> > +#include <linux/i2c.h>
-> > +#include <linux/regmap.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/module.h>
-> > +#include <linux/acpi.h>
-> > +
-> > +#include "bmg160.h"
-> > +
-> > +static const struct regmap_config bmg160_regmap_i2c_conf =3D {
-> > +	.reg_bits =3D 8,
-> > +	.val_bits =3D 8,
-> > +	.max_register =3D 0x3f
-> > +};
-> > +
-> > +static int bmg160_i2c_probe(struct i2c_client *client,
-> > +			    const struct i2c_device_id *id)
-> > +{
-> > +	struct regmap *regmap;
-> > +	const char *name =3D NULL;
-> > +
-> > +	regmap =3D devm_regmap_init_i2c(client, &bmg160_regmap_i2c_conf);
-> > +	if (IS_ERR(regmap)) {
-> > +		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
-> > +			(int)PTR_ERR(regmap));
-> > +		return PTR_ERR(regmap);
-> > +	}
-> > +
-> > +	if (id)
-> > +		name =3D id->name;
-> > +
-> > +	return bmg160_core_probe(&client->dev, regmap, client->irq, name);
-> > +}
-> > +
-> > +static int bmg160_i2c_remove(struct i2c_client *client)
-> > +{
-> > +	bmg160_core_remove(&client->dev);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct acpi_device_id bmg160_acpi_match[] =3D {
-> > +	{"BMG0160", 0},
-> > +	{"BMI055B", 0},
-> > +	{},
-> > +};
-> > +
-> > +MODULE_DEVICE_TABLE(acpi, bmg160_acpi_match);
-> > +
-> > +static const struct i2c_device_id bmg160_i2c_id[] =3D {
-> > +	{"bmg160", 0},
-> > +	{"bmi055_gyro", 0},
-> > +	{}
-> > +};
-> > +
-> > +MODULE_DEVICE_TABLE(i2c, bmg160_i2c_id);
-> > +
-> > +static struct i2c_driver bmg160_i2c_driver =3D {
-> > +	.driver =3D {
-> > +		.name	=3D "bmg160_i2c",
-> > +		.acpi_match_table =3D ACPI_PTR(bmg160_acpi_match),
-> > +		.pm	=3D &bmg160_pm_ops,
-> > +	},
-> > +	.probe		=3D bmg160_i2c_probe,
-> > +	.remove		=3D bmg160_i2c_remove,
-> > +	.id_table	=3D bmg160_i2c_id,
-> > +};
-> > +module_i2c_driver(bmg160_i2c_driver);
-> > +
-> > +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.co=
-m>");
-> > +MODULE_LICENSE("GPL v2");
-> > +MODULE_DESCRIPTION("BMG160 I2C Gyro driver");
-> >=20
->=20
->=20
-
---=20
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---jIYo0VRlfdMI9fLa
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJV9tj9AAoJEEpcgKtcEGQQXwsP/2tp3KL7D/XUoufr5Zww5yKH
-0DOLw3/fS0Kbdfcrqu+VOPrCstCpGihUN3dEjzlOEAuuz+gJCw8uHM7/Bxy0dpnZ
-3IhFxx9U/NQNwK1t4D5EFB5BPJitC9bf75b8BGlPcsn815Qa5cZdXP2TxIFYLfnQ
-ZIOTk4CDWH9fcjxY3NdJpCvrkOhavcn5GCYC714tVGyeLgX4KtiMLtv5yGsWrAOA
-MaGFd7dcT1IwS1pBc+JWTc7S33F06lMLLYH1aHEFydnaBxtYO9miQR9Bvw2qtRtm
-Yg1nfVHLVMBiB+8Pqr/g/X877eJ2R1cRUTrY+l9Kd0pzPyENcKYM+CpduK6kCj3g
-kwWIctw5HhzyIq8y6qJ0CXw/W3cJoMB99gCEtqO7Z0tKoeczQ41BozGu7uffuxzF
-lkqtv+hW7mlXwUaCpB1fLdnB/TmWAIO+flgqXIfMm/chQJeFe5JD+9t7vlEM7Cbt
-6MUf4N4dxyENF2zWdUXyZmXjXOULkIgnlvjdoLzkvXrgChnE32Vk0FO6Mgy5aJLr
-62azqOLRPu8ztNNrCyxQeHlkmplhPg6o2KLqrGFoJd0CpvZziTBpO1EdHxqry6Ph
-vIxX2mgNmL1DAtuH97jngMfDUjp/1Z/36zdqdw3DhphSZdSxmVCMk0X5CES5Y21u
-VtthUffrqsunTaRRcqsz
-=NDwv
------END PGP SIGNATURE-----
-
---jIYo0VRlfdMI9fLa--
+> On Sep 14, 2015, at 01:35, Peter Meerwald <pmeerw@pmeerw.net> wrote:
+> 
+> 
+>> Add support for VZ89X sensors VOC and CO2 reporting channels in
+>> percentage which can be converted to part per million.
+> 
+> can you make the proper changes for _CONCENTRATION etc. also for 
+> tools/iio/iio_event_monitor.c?
+> 
+> and comment below
+> 
+>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>> ---
+>> .../ABI/testing/sysfs-bus-iio-chemical-vz89x       |   7 +
+>> .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+>> drivers/iio/Kconfig                                |   1 +
+>> drivers/iio/Makefile                               |   1 +
+>> drivers/iio/chemical/Kconfig                       |  15 ++
+>> drivers/iio/chemical/Makefile                      |   6 +
+>> drivers/iio/chemical/vz89x.c                       | 237 +++++++++++++++++++++
+>> 7 files changed, 268 insertions(+)
+>> create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
+>> create mode 100644 drivers/iio/chemical/Kconfig
+>> create mode 100644 drivers/iio/chemical/Makefile
+>> create mode 100644 drivers/iio/chemical/vz89x.c
+>> 
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x b/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
+>> new file mode 100644
+>> index 0000000..c0c1ea9
+>> --- /dev/null
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
+>> @@ -0,0 +1,7 @@
+>> +What:        /sys/bus/iio/devices/iio:deviceX/in_concentration_VOC_short_raw
+>> +Date:        September 2015
+>> +KernelVersion:    4.3
+>> +Contact:    Matt Ranostay <mranostay@gmail.com>
+>> +Description:
+>> +        Get the raw calibration VOC value from the sensor.
+>> +        This value has little application outside of calibration.
+>> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> index d77d412..a550216 100644
+>> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> @@ -88,6 +88,7 @@ ricoh,rs5c372b        I2C bus SERIAL INTERFACE REAL-TIME CLOCK IC
+>> ricoh,rv5c386        I2C bus SERIAL INTERFACE REAL-TIME CLOCK IC
+>> ricoh,rv5c387a        I2C bus SERIAL INTERFACE REAL-TIME CLOCK IC
+>> samsung,24ad0xd1    S524AD0XF1 (128K/256K-bit Serial EEPROM for Low Power)
+>> +sgx,vz89x        SGX Sensortech VZ89X Sensors
+>> sii,s35390a        2-wire CMOS real-time clock
+>> skyworks,sky81452    Skyworks SKY81452: Six-Channel White LED Driver with Touch Panel Bias Supply
+>> st-micro,24c256        i2c serial eeprom  (24cxx)
+>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>> index 4011eff..9664e9c 100644
+>> --- a/drivers/iio/Kconfig
+>> +++ b/drivers/iio/Kconfig
+>> @@ -61,6 +61,7 @@ config IIO_CONSUMERS_PER_TRIGGER
+>> source "drivers/iio/accel/Kconfig"
+>> source "drivers/iio/adc/Kconfig"
+>> source "drivers/iio/amplifiers/Kconfig"
+>> +source "drivers/iio/chemical/Kconfig"
+>> source "drivers/iio/common/Kconfig"
+>> source "drivers/iio/dac/Kconfig"
+>> source "drivers/iio/frequency/Kconfig"
+>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>> index 698afc2..2288684 100644
+>> --- a/drivers/iio/Makefile
+>> +++ b/drivers/iio/Makefile
+>> @@ -14,6 +14,7 @@ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+>> obj-y += accel/
+>> obj-y += adc/
+>> obj-y += amplifiers/
+>> +obj-y += chemical/
+>> obj-y += common/
+>> obj-y += dac/
+>> obj-y += gyro/
+>> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+>> new file mode 100644
+>> index 0000000..04906af
+>> --- /dev/null
+>> +++ b/drivers/iio/chemical/Kconfig
+>> @@ -0,0 +1,15 @@
+>> +#
+>> +# Chemical sensors
+>> +#
+>> +
+>> +menu "Indoor Air Quality sensors"
+> 
+> the comment above says 'Chemical sensors', the menu item 'Indoor Air 
+> Quality sensors' -- I guess an outdoor sensor would fit here as well...
+Yeah I don't really care what the menu item is named.   Any thoughts on just Chemical Sensors ?
+> 
+>> +
+>> +config VZ89X
+>> +    tristate "SGX Sensortech MiCS VZ89X VOC sensor"
+>> +    depends on I2C
+>> +    help
+>> +      Say Y here to build I2C interface support for the SGX
+>> +      Sensortech MiCS VZ89X VOC (Volatile Organic Compounds)
+>> +      sensors
+>> +
+>> +endmenu
+>> diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
+>> new file mode 100644
+>> index 0000000..7292f2d
+>> --- /dev/null
+>> +++ b/drivers/iio/chemical/Makefile
+>> @@ -0,0 +1,6 @@
+>> +#
+>> +# Makefile for IIO chemical sensors
+>> +#
+>> +
+>> +# When adding new entries keep the list in alphabetical order
+>> +obj-$(CONFIG_VZ89X)        += vz89x.o
+>> diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
+>> new file mode 100644
+>> index 0000000..b454200
+>> --- /dev/null
+>> +++ b/drivers/iio/chemical/vz89x.c
+>> @@ -0,0 +1,237 @@
+>> +/*
+>> + * vz89x.c - Support for SGX Sensortech MiCS VZ89X VOC sensors
+>> + *
+>> + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License as published by
+>> + * the Free Software Foundation; either version 2 of the License, or
+>> + * (at your option) any later version.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+>> + * GNU General Public License for more details.
+>> + *
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/mutex.h>
+>> +#include <linux/init.h>
+>> +#include <linux/i2c.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +
+>> +#define VZ89X_REG_MEASUREMENT        0x09
+>> +#define VZ89X_REG_MEASUREMENT_SIZE    6
+>> +
+>> +#define VZ89X_VOC_CO2_IDX        0
+>> +#define VZ89X_VOC_SHORT_IDX        1
+>> +#define VZ89X_VOC_TVOC_IDX        2
+>> +#define VZ89X_VOC_RESISTANCE_IDX    3
+>> +
+>> +struct vz89x_data {
+>> +    struct i2c_client *client;
+>> +    struct mutex lock;
+>> +    unsigned long last_update;
+>> +
+>> +    u8 buffer[VZ89X_REG_MEASUREMENT_SIZE];
+>> +};
+>> +
+>> +static const struct iio_chan_spec vz89x_channels[] = {
+>> +    {
+>> +        .type = IIO_CONCENTRATION,
+>> +        .channel2 = IIO_MOD_CO2,
+>> +        .modified = 1,
+>> +        .info_mask_separate =
+>> +            BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_RAW),
+>> +        .address = VZ89X_VOC_CO2_IDX,
+>> +    },
+>> +    {
+>> +        .type = IIO_CONCENTRATION,
+>> +        .channel2 = IIO_MOD_VOC,
+>> +        .modified = 1,
+>> +        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> +        .address = VZ89X_VOC_SHORT_IDX,
+>> +        .extend_name = "short",
+>> +    },
+>> +    {
+>> +        .type = IIO_CONCENTRATION,
+>> +        .channel2 = IIO_MOD_VOC,
+>> +        .modified = 1,
+>> +        .info_mask_separate =
+>> +            BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_RAW),
+>> +        .address = VZ89X_VOC_TVOC_IDX,
+>> +    },
+>> +    {
+>> +        .type = IIO_RESISTANCE,
+>> +        .info_mask_separate =
+>> +            BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>> +        .address = VZ89X_VOC_RESISTANCE_IDX,
+>> +    },
+>> +};
+>> +
+>> +static IIO_CONST_ATTR(in_concentration_co2_scale, "0.00000698689");
+>> +static IIO_CONST_ATTR(in_concentration_voc_scale, "0.00000000436681223");
+>> +
+>> +static struct attribute *vz89x_attributes[] = {
+>> +    &iio_const_attr_in_concentration_co2_scale.dev_attr.attr,
+>> +    &iio_const_attr_in_concentration_voc_scale.dev_attr.attr,
+>> +    NULL,
+>> +};
+>> +
+>> +static const struct attribute_group vz89x_attrs_group = {
+>> +    .attrs = vz89x_attributes,
+>> +};
+>> +
+>> +static int vz89x_get_measurement(struct vz89x_data *data)
+>> +{
+>> +    int ret;
+>> +    int i;
+>> +
+>> +    /* sensor can only be polled once a second max per datasheet */
+>> +    if (!time_after(jiffies, data->last_update + HZ))
+>> +        return 0;
+>> +
+>> +    ret = i2c_smbus_write_word_data(data->client,
+>> +                    VZ89X_REG_MEASUREMENT, 0);
+>> +    if (ret < 0)
+>> +        return ret;
+>> +
+>> +    for (i = 0; i < VZ89X_REG_MEASUREMENT_SIZE; i++) {
+>> +        ret = i2c_smbus_read_byte(data->client);
+>> +        if (ret < 0)
+>> +            return ret;
+>> +        data->buffer[i] = ret;
+>> +    }
+>> +
+>> +    data->last_update = jiffies;
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static int vz89x_get_resistance_reading(struct vz89x_data *data)
+>> +{
+>> +    u8 *buf = &data->buffer[VZ89X_VOC_TVOC_IDX];
+>> +
+>> +    return buf[0] | (buf[1] << 8) | (buf[2] << 16);
+>> +}
+>> +
+>> +static int vz89x_read_raw(struct iio_dev *indio_dev,
+>> +              struct iio_chan_spec const *chan, int *val,
+>> +              int *val2, long mask)
+>> +{
+>> +    struct vz89x_data *data = iio_priv(indio_dev);
+>> +    int ret = -EINVAL;
+>> +
+>> +    switch (mask) {
+>> +    case IIO_CHAN_INFO_RAW:
+>> +        mutex_lock(&data->lock);
+>> +        ret = vz89x_get_measurement(data);
+>> +        mutex_unlock(&data->lock);
+>> +
+>> +        if (ret)
+>> +            return ret;
+>> +
+>> +        switch (chan->address) {
+>> +        case VZ89X_VOC_CO2_IDX:
+>> +        case VZ89X_VOC_SHORT_IDX:
+>> +        case VZ89X_VOC_TVOC_IDX:
+>> +            *val = data->buffer[chan->address];
+>> +            return IIO_VAL_INT;
+>> +        case VZ89X_VOC_RESISTANCE_IDX:
+>> +            *val = vz89x_get_resistance_reading(data);
+>> +            return IIO_VAL_INT;
+>> +        default:
+>> +            return -EINVAL;
+>> +        }
+>> +        break;
+>> +    case IIO_CHAN_INFO_SCALE:
+>> +        switch (chan->type) {
+>> +        case IIO_RESISTANCE:
+>> +            *val = 10;
+>> +            return IIO_VAL_INT;
+>> +        default:
+>> +            return -EINVAL;
+>> +        }
+>> +        break;
+>> +    case IIO_CHAN_INFO_OFFSET:
+>> +        switch (chan->address) {
+>> +        case VZ89X_VOC_CO2_IDX:
+>> +            *val = 44;
+>> +            *val2 = 250000;
+>> +            return IIO_VAL_INT_PLUS_MICRO;
+>> +        case VZ89X_VOC_TVOC_IDX:
+>> +            *val = -13;
+>> +            return IIO_VAL_INT;
+>> +        default:
+>> +            return -EINVAL;
+>> +        }
+>> +    }
+>> +
+>> +    return ret;
+>> +}
+>> +
+>> +static const struct iio_info vz89x_info = {
+>> +    .attrs        = &vz89x_attrs_group,
+>> +    .read_raw    = vz89x_read_raw,
+>> +    .driver_module    = THIS_MODULE,
+>> +};
+>> +
+>> +static int vz89x_probe(struct i2c_client *client,
+>> +               const struct i2c_device_id *id)
+>> +{
+>> +    struct iio_dev *indio_dev;
+>> +    struct vz89x_data *data;
+>> +
+>> +    if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
+>> +                     I2C_FUNC_SMBUS_BYTE))
+>> +        return -ENODEV;
+>> +
+>> +    indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> +    if (!indio_dev)
+>> +        return -ENOMEM;
+>> +
+>> +    data = iio_priv(indio_dev);
+>> +    i2c_set_clientdata(client, indio_dev);
+>> +    data->client = client;
+>> +    data->last_update = jiffies - HZ;
+>> +    mutex_init(&data->lock);
+>> +
+>> +    indio_dev->dev.parent = &client->dev;
+>> +    indio_dev->info = &vz89x_info,
+>> +    indio_dev->name = dev_name(&client->dev);
+>> +    indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +    indio_dev->channels = vz89x_channels;
+>> +    indio_dev->num_channels = ARRAY_SIZE(vz89x_channels);
+>> +
+>> +    return devm_iio_device_register(&client->dev, indio_dev);
+>> +}
+>> +
+>> +static const struct i2c_device_id vz89x_id[] = {
+>> +    { "vz89x", 0 },
+>> +    { }
+>> +};
+>> +MODULE_DEVICE_TABLE(i2c, vz89x_id);
+>> +
+>> +static const struct of_device_id vz89x_dt_ids[] = {
+>> +    { .compatible = "sgx,vz89x" },
+>> +    { }
+>> +};
+>> +MODULE_DEVICE_TABLE(of, vz89x_dt_ids);
+>> +
+>> +static struct i2c_driver vz89x_driver = {
+>> +    .driver = {
+>> +        .name    = "vz89x",
+>> +        .of_match_table = of_match_ptr(vz89x_dt_ids),
+>> +    },
+>> +    .probe = vz89x_probe,
+>> +    .id_table = vz89x_id,
+>> +};
+>> +module_i2c_driver(vz89x_driver);
+>> +
+>> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+>> +MODULE_DESCRIPTION("SGX Sensortech MiCS VZ89X VOC sensors");
+>> +MODULE_LICENSE("GPL v2");
+> 
+> -- 
+> 
+> Peter Meerwald
+> +43-664-2444418 (mobile)
