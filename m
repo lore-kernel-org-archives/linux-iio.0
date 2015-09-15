@@ -1,66 +1,48 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:35015 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754778AbbINQIy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Sep 2015 12:08:54 -0400
-Date: Mon, 14 Sep 2015 21:38:49 +0530
-From: Vaishali Thakkar <vthakkar1994@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: gyro: ssp_gyro_sensor: Use devm_iio_device_register
-Message-ID: <20150914160849.GA21748@localhost>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <linus.walleij@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: [RESEND PATCH 1/4] iio: st_accel: set up available scan masks
+Date: Tue, 15 Sep 2015 09:49:16 +0200
+Message-Id: <1442303356-11764-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Use resourced managed function devm_iio_device_register to
-make error path simpler. To be compatible with the change,
-the remove function is removed as it is now redundant.
+In order to enable triggered buffered input, IIO needs to
+know what channels can be enabled for buffered input.
+Set up a scan mask for X/Y/Z.
 
-Signed-off-by: Vaishali Thakkar <vthakkar1994@gmail.com>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/gyro/ssp_gyro_sensor.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ drivers/iio/accel/st_accel_core.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iio/gyro/ssp_gyro_sensor.c b/drivers/iio/gyro/ssp_gyro_sensor.c
-index 0a8afdd..ac88de7 100644
---- a/drivers/iio/gyro/ssp_gyro_sensor.c
-+++ b/drivers/iio/gyro/ssp_gyro_sensor.c
-@@ -134,7 +134,7 @@ static int ssp_gyro_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index ff30f8806880..b9a7b5c7c5e7 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -630,6 +630,12 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
+ #define ST_ACCEL_TRIGGER_OPS NULL
+ #endif
  
- 	platform_set_drvdata(pdev, indio_dev);
++/* Bits 0,1,2, = channels 0,1,2 = x,y,z */
++static const unsigned long st_sensors_scan_masks[] = {
++	ST_SENSORS_ENABLE_ALL_AXIS,
++	0, /* Sentinel */
++};
++
+ int st_accel_common_probe(struct iio_dev *indio_dev)
+ {
+ 	struct st_sensor_data *adata = iio_priv(indio_dev);
+@@ -652,6 +658,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+ 	adata->multiread_bit = adata->sensor_settings->multi_read_bit;
+ 	indio_dev->channels = adata->sensor_settings->ch;
+ 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
++	indio_dev->available_scan_masks = st_sensors_scan_masks;
  
--	ret = iio_device_register(indio_dev);
-+	ret = devm_iio_device_register(&pdev->dev, indio_dev);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -144,21 +144,11 @@ static int ssp_gyro_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
--static int ssp_gyro_remove(struct platform_device *pdev)
--{
--	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--
--	iio_device_unregister(indio_dev);
--
--	return 0;
--}
--
- static struct platform_driver ssp_gyro_driver = {
- 	.driver = {
- 		.name = SSP_GYROSCOPE_NAME,
- 	},
- 	.probe = ssp_gyro_probe,
--	.remove = ssp_gyro_remove,
- };
- 
- module_platform_driver(ssp_gyro_driver);
+ 	adata->current_fullscale = (struct st_sensor_fullscale_avl *)
+ 					&adata->sensor_settings->fs.fs_avl[0];
 -- 
-1.9.1
-
+2.4.3
