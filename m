@@ -1,581 +1,234 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:35721 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752706AbbIPIPL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 Sep 2015 04:15:11 -0400
-From: Adriana Reus <adriana.reus@intel.com>
-To: robherring2@gmail.com, jic23@kernel.org
-Cc: pmeerw@pmeerw.net, daniel.baluta@intel.com,
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:60301 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752900AbbIPKB2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2015 06:01:28 -0400
+Date: Wed, 16 Sep 2015 12:01:19 +0200
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, robh+dt@kernel.org, pawel.moll@arm.com,
-	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org, Adriana Reus <adriana.reus@intel.com>
-Subject: [v7 PATCH 1/2] iio: light: Add support for UPISEMI uS5182d als and proximity sensor
-Date: Wed, 16 Sep 2015 11:14:11 +0300
-Message-Id: <1442391252-7368-2-git-send-email-adriana.reus@intel.com>
-In-Reply-To: <1442391252-7368-1-git-send-email-adriana.reus@intel.com>
-References: <1442391252-7368-1-git-send-email-adriana.reus@intel.com>
+	kernel@pengutronix.de
+Subject: Re: [PATCH v2 4/4] iio: bmc150: Add SPI driver
+Message-ID: <20150916100119.GI1537@pengutronix.de>
+References: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
+ <1440074986-28716-5-git-send-email-mpa@pengutronix.de>
+ <55E47E40.30207@kernel.org>
+ <1441116657.3143.6.camel@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="S5HS5MvDw4DmbRmb"
+In-Reply-To: <1441116657.3143.6.camel@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add support for UPISEMI us5182d als and proximity sensor.
-Supports raw readings.
-Data sheet for this device can be found here:
-http://www.upi-semi.com/temp/uS5182D-DS-P0103-temp.pdf
 
-Signed-off-by: Adriana Reus <adriana.reus@intel.com>
----
- No changes since v6
- drivers/iio/light/Kconfig   |  10 +
- drivers/iio/light/Makefile  |   1 +
- drivers/iio/light/us5182d.c | 507 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 518 insertions(+)
- create mode 100644 drivers/iio/light/us5182d.c
+--S5HS5MvDw4DmbRmb
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 19b9a17..cfd3df8 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -300,6 +300,16 @@ config TSL4531
- 	 To compile this driver as a module, choose M here: the
- 	 module will be called tsl4531.
- 
-+config US5182D
-+	tristate "UPISEMI light and proximity sensor"
-+	depends on I2C
-+	help
-+	 If you say yes here you get support for the UPISEMI US5182D
-+	 ambient light and proximity sensor.
-+
-+	 This driver can also be built as a module.  If so, the module
-+	 will be called us5182d.
-+
- config VCNL4000
- 	tristate "VCNL4000 combined ALS and proximity sensor"
- 	depends on I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index 7b22445..b2c3105 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -28,4 +28,5 @@ obj-$(CONFIG_STK3310)          += stk3310.o
- obj-$(CONFIG_TCS3414)		+= tcs3414.o
- obj-$(CONFIG_TCS3472)		+= tcs3472.o
- obj-$(CONFIG_TSL4531)		+= tsl4531.o
-+obj-$(CONFIG_US5182D)		+= us5182d.o
- obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
-diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-new file mode 100644
-index 0000000..49dab3c
---- /dev/null
-+++ b/drivers/iio/light/us5182d.c
-@@ -0,0 +1,507 @@
-+/*
-+ * Copyright (c) 2015 Intel Corporation
-+ *
-+ * Driver for UPISEMI us5182d Proximity and Ambient Light Sensor.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * To do: Interrupt support.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/acpi.h>
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/mutex.h>
-+
-+#define US5182D_REG_CFG0				0x00
-+#define US5182D_CFG0_ONESHOT_EN				BIT(6)
-+#define US5182D_CFG0_SHUTDOWN_EN			BIT(7)
-+#define US5182D_CFG0_WORD_ENABLE			BIT(0)
-+
-+#define US5182D_REG_CFG1				0x01
-+#define US5182D_CFG1_ALS_RES16				BIT(4)
-+#define US5182D_CFG1_AGAIN_DEFAULT			0x00
-+
-+#define US5182D_REG_CFG2				0x02
-+#define US5182D_CFG2_PX_RES16				BIT(4)
-+#define US5182D_CFG2_PXGAIN_DEFAULT			BIT(2)
-+
-+#define US5182D_REG_CFG3				0x03
-+#define US5182D_CFG3_LED_CURRENT100			(BIT(4) | BIT(5))
-+
-+#define US5182D_REG_CFG4				0x10
-+
-+/*
-+ * Registers for tuning the auto dark current cancelling feature.
-+ * DARK_TH(reg 0x27,0x28) - threshold (counts) for auto dark cancelling.
-+ * when ALS  > DARK_TH --> ALS_Code = ALS - Upper(0x2A) * Dark
-+ * when ALS < DARK_TH --> ALS_Code = ALS - Lower(0x29) * Dark
-+ */
-+#define US5182D_REG_UDARK_TH			0x27
-+#define US5182D_REG_DARK_AUTO_EN		0x2b
-+#define US5182D_REG_AUTO_LDARK_GAIN		0x29
-+#define US5182D_REG_AUTO_HDARK_GAIN		0x2a
-+
-+#define US5182D_OPMODE_ALS			0x01
-+#define US5182D_OPMODE_PX			0x02
-+#define US5182D_OPMODE_SHIFT			4
-+
-+#define US5182D_REG_DARK_AUTO_EN_DEFAULT	0x80
-+#define US5182D_REG_AUTO_LDARK_GAIN_DEFAULT	0x16
-+#define US5182D_REG_AUTO_HDARK_GAIN_DEFAULT	0x00
-+
-+#define US5182D_REG_ADL				0x0c
-+#define US5182D_REG_PDL				0x0e
-+
-+#define US5182D_REG_MODE_STORE			0x21
-+#define US5182D_STORE_MODE			0x01
-+
-+#define US5182D_REG_CHIPID			0xb2
-+
-+#define US5182D_OPMODE_MASK			GENMASK(5, 4)
-+#define US5182D_AGAIN_MASK			0x07
-+#define US5182D_RESET_CHIP			0x01
-+
-+#define US5182D_CHIPID				0x26
-+#define US5182D_DRV_NAME			"us5182d"
-+
-+#define US5182D_GA_RESOLUTION			1000
-+
-+#define US5182D_READ_BYTE			1
-+#define US5182D_READ_WORD			2
-+#define US5182D_OPSTORE_SLEEP_TIME		20 /* ms */
-+
-+/* Available ranges: [12354, 7065, 3998, 2202, 1285, 498, 256, 138] lux */
-+static const int us5182d_scales[] = {188500, 107800, 61000, 33600, 19600, 7600,
-+				     3900, 2100};
-+
-+/*
-+ * Experimental thresholds that work with US5182D sensor on evaluation board
-+ * roughly between 12-32 lux
-+ */
-+static u16 us5182d_dark_ths_vals[] = {170, 200, 512, 512, 800, 2000, 4000,
-+				      8000};
-+
-+enum mode {
-+	US5182D_ALS_PX,
-+	US5182D_ALS_ONLY,
-+	US5182D_PX_ONLY
-+};
-+
-+struct us5182d_data {
-+	struct i2c_client *client;
-+	struct mutex lock;
-+
-+	/* Glass attenuation factor */
-+	u32 ga;
-+
-+	/* Dark gain tuning */
-+	u8 lower_dark_gain;
-+	u8 upper_dark_gain;
-+	u16 *us5182d_dark_ths;
-+
-+	u8 opmode;
-+};
-+
-+static IIO_CONST_ATTR(in_illuminance_scale_available,
-+		      "0.0021 0.0039 0.0076 0.0196 0.0336 0.061 0.1078 0.1885");
-+
-+static struct attribute *us5182d_attrs[] = {
-+	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group us5182d_attr_group = {
-+	.attrs = us5182d_attrs,
-+};
-+
-+static const struct {
-+	u8 reg;
-+	u8 val;
-+} us5182d_regvals[] = {
-+	{US5182D_REG_CFG0, (US5182D_CFG0_SHUTDOWN_EN |
-+			    US5182D_CFG0_WORD_ENABLE)},
-+	{US5182D_REG_CFG1, US5182D_CFG1_ALS_RES16},
-+	{US5182D_REG_CFG2, (US5182D_CFG2_PX_RES16 |
-+			    US5182D_CFG2_PXGAIN_DEFAULT)},
-+	{US5182D_REG_CFG3, US5182D_CFG3_LED_CURRENT100},
-+	{US5182D_REG_MODE_STORE, US5182D_STORE_MODE},
-+	{US5182D_REG_CFG4, 0x00},
-+};
-+
-+static const struct iio_chan_spec us5182d_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+	},
-+	{
-+		.type = IIO_PROXIMITY,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	}
-+};
-+
-+static int us5182d_get_als(struct us5182d_data *data)
-+{
-+	int ret;
-+	unsigned long result;
-+
-+	ret = i2c_smbus_read_word_data(data->client,
-+				       US5182D_REG_ADL);
-+	if (ret < 0)
-+		return ret;
-+
-+	result = ret * data->ga / US5182D_GA_RESOLUTION;
-+	if (result > 0xffff)
-+		result = 0xffff;
-+
-+	return result;
-+}
-+
-+static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
-+{
-+	int ret;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, US5182D_REG_CFG0);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * In oneshot mode the chip will power itself down after taking the
-+	 * required measurement.
-+	 */
-+	ret = ret | US5182D_CFG0_ONESHOT_EN;
-+
-+	/* update mode */
-+	ret = ret & ~US5182D_OPMODE_MASK;
-+	ret = ret | (mode << US5182D_OPMODE_SHIFT);
-+
-+	/*
-+	 * After updating the operating mode, the chip requires that
-+	 * the operation is stored, by writing 1 in the STORE_MODE
-+	 * register (auto-clearing).
-+	 */
-+	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0, ret);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (mode == data->opmode)
-+		return 0;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_MODE_STORE,
-+					US5182D_STORE_MODE);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->opmode = mode;
-+	msleep(US5182D_OPSTORE_SLEEP_TIME);
-+
-+	return 0;
-+}
-+
-+static int us5182d_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan, int *val,
-+			    int *val2, long mask)
-+{
-+	struct us5182d_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			mutex_lock(&data->lock);
-+			ret = us5182d_set_opmode(data, US5182D_OPMODE_ALS);
-+			if (ret < 0)
-+				goto out_err;
-+
-+			ret = us5182d_get_als(data);
-+			if (ret < 0)
-+				goto out_err;
-+			mutex_unlock(&data->lock);
-+			*val = ret;
-+			return IIO_VAL_INT;
-+		case IIO_PROXIMITY:
-+			mutex_lock(&data->lock);
-+			ret = us5182d_set_opmode(data, US5182D_OPMODE_PX);
-+			if (ret < 0)
-+				goto out_err;
-+
-+			ret = i2c_smbus_read_word_data(data->client,
-+						       US5182D_REG_PDL);
-+			if (ret < 0)
-+				goto out_err;
-+			mutex_unlock(&data->lock);
-+			*val = ret;
-+			return  IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = i2c_smbus_read_byte_data(data->client, US5182D_REG_CFG1);
-+		if (ret < 0)
-+			return ret;
-+
-+		*val = 0;
-+		*val2 = us5182d_scales[ret & US5182D_AGAIN_MASK];
-+
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return -EINVAL;
-+out_err:
-+	mutex_unlock(&data->lock);
-+	return ret;
-+}
-+
-+/**
-+ * us5182d_update_dark_th - update Darh_Th registers
-+ * @data	us5182d_data structure
-+ * @index	index in us5182d_dark_ths array to use for the updated value
-+ *
-+ * Function needs to be called with a lock held because it needs two i2c write
-+ * byte operations as these registers (0x27 0x28) don't work in word mode
-+ * accessing.
-+ */
-+static int us5182d_update_dark_th(struct us5182d_data *data, int index)
-+{
-+	__be16 dark_th = cpu_to_be16(data->us5182d_dark_ths[index]);
-+	int ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_UDARK_TH,
-+					((u8 *)&dark_th)[0]);
-+	if (ret < 0)
-+		return ret;
-+
-+	return i2c_smbus_write_byte_data(data->client, US5182D_REG_UDARK_TH + 1,
-+					((u8 *)&dark_th)[1]);
-+}
-+
-+/**
-+ * us5182d_apply_scale - update the ALS scale
-+ * @data	us5182d_data structure
-+ * @index	index in us5182d_scales array to use for the updated value
-+ *
-+ * Function needs to be called with a lock held as we're having more than one
-+ * i2c operation.
-+ */
-+static int us5182d_apply_scale(struct us5182d_data *data, int index)
-+{
-+	int ret;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, US5182D_REG_CFG1);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ret & (~US5182D_AGAIN_MASK);
-+	ret |= index;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG1, ret);
-+	if (ret < 0)
-+		return ret;
-+
-+	return us5182d_update_dark_th(data, index);
-+}
-+
-+static int us5182d_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan, int val,
-+			     int val2, long mask)
-+{
-+	struct us5182d_data *data = iio_priv(indio_dev);
-+	int ret, i;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val != 0)
-+			return -EINVAL;
-+		for (i = 0; i < ARRAY_SIZE(us5182d_scales); i++)
-+			if (val2 == us5182d_scales[i]) {
-+				mutex_lock(&data->lock);
-+				ret = us5182d_apply_scale(data, i);
-+				mutex_unlock(&data->lock);
-+				return ret;
-+			}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info us5182d_info = {
-+	.driver_module	= THIS_MODULE,
-+	.read_raw = us5182d_read_raw,
-+	.write_raw = us5182d_write_raw,
-+	.attrs = &us5182d_attr_group,
-+};
-+
-+static int us5182d_reset(struct iio_dev *indio_dev)
-+{
-+	struct us5182d_data *data = iio_priv(indio_dev);
-+
-+	return i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG3,
-+					 US5182D_RESET_CHIP);
-+}
-+
-+static int us5182d_init(struct iio_dev *indio_dev)
-+{
-+	struct us5182d_data *data = iio_priv(indio_dev);
-+	int i, ret;
-+
-+	ret = us5182d_reset(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->opmode = 0;
-+	for (i = 0; i < ARRAY_SIZE(us5182d_regvals); i++) {
-+		ret = i2c_smbus_write_byte_data(data->client,
-+						us5182d_regvals[i].reg,
-+						us5182d_regvals[i].val);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void us5182d_get_platform_data(struct iio_dev *indio_dev)
-+{
-+	struct us5182d_data *data = iio_priv(indio_dev);
-+
-+	if (device_property_read_u32(&data->client->dev, "upisemi,glass-coef",
-+				     &data->ga))
-+		data->ga = US5182D_GA_RESOLUTION;
-+	if (device_property_read_u16_array(&data->client->dev,
-+					   "upisemi,dark-ths",
-+					   data->us5182d_dark_ths,
-+					   ARRAY_SIZE(us5182d_dark_ths_vals)))
-+		data->us5182d_dark_ths = us5182d_dark_ths_vals;
-+	if (device_property_read_u8(&data->client->dev,
-+				    "upisemi,upper-dark-gain",
-+				    &data->upper_dark_gain))
-+		data->upper_dark_gain = US5182D_REG_AUTO_HDARK_GAIN_DEFAULT;
-+	if (device_property_read_u8(&data->client->dev,
-+				    "upisemi,lower-dark-gain",
-+				    &data->lower_dark_gain))
-+		data->lower_dark_gain = US5182D_REG_AUTO_LDARK_GAIN_DEFAULT;
-+}
-+
-+static int  us5182d_dark_gain_config(struct iio_dev *indio_dev)
-+{
-+	struct us5182d_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = us5182d_update_dark_th(data, US5182D_CFG1_AGAIN_DEFAULT);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client,
-+					US5182D_REG_AUTO_LDARK_GAIN,
-+					data->lower_dark_gain);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client,
-+					US5182D_REG_AUTO_HDARK_GAIN,
-+					data->upper_dark_gain);
-+	if (ret < 0)
-+		return ret;
-+
-+	return i2c_smbus_write_byte_data(data->client, US5182D_REG_DARK_AUTO_EN,
-+					 US5182D_REG_DARK_AUTO_EN_DEFAULT);
-+}
-+
-+static int us5182d_probe(struct i2c_client *client,
-+			 const struct i2c_device_id *id)
-+{
-+	struct us5182d_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+
-+	mutex_init(&data->lock);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &us5182d_info;
-+	indio_dev->name = US5182D_DRV_NAME;
-+	indio_dev->channels = us5182d_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(us5182d_channels);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, US5182D_REG_CHIPID);
-+	if (ret != US5182D_CHIPID) {
-+		dev_err(&data->client->dev,
-+			"Failed to detect US5182 light chip\n");
-+		return (ret < 0) ? ret : -ENODEV;
-+	}
-+
-+	us5182d_get_platform_data(indio_dev);
-+	ret = us5182d_init(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = us5182d_dark_gain_config(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	return iio_device_register(indio_dev);
-+}
-+
-+static int us5182d_remove(struct i2c_client *client)
-+{
-+	iio_device_unregister(i2c_get_clientdata(client));
-+	return i2c_smbus_write_byte_data(client, US5182D_REG_CFG0,
-+					 US5182D_CFG0_SHUTDOWN_EN);
-+}
-+
-+static const struct acpi_device_id us5182d_acpi_match[] = {
-+	{ "USD5182", 0},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(acpi, us5182d_acpi_match);
-+
-+static const struct i2c_device_id us5182d_id[] = {
-+		{"usd5182", 0},
-+		{}
-+};
-+
-+MODULE_DEVICE_TABLE(i2c, us5182d_id);
-+
-+static struct i2c_driver us5182d_driver = {
-+	.driver = {
-+		.name = US5182D_DRV_NAME,
-+		.acpi_match_table = ACPI_PTR(us5182d_acpi_match),
-+	},
-+	.probe = us5182d_probe,
-+	.remove = us5182d_remove,
-+	.id_table = us5182d_id,
-+
-+};
-+module_i2c_driver(us5182d_driver);
-+
-+MODULE_AUTHOR("Adriana Reus <adriana.reus@intel.com>");
-+MODULE_DESCRIPTION("Driver for us5182d Proximity and Light Sensor");
-+MODULE_LICENSE("GPL v2");
--- 
-1.9.1
+On Tue, Sep 01, 2015 at 07:10:57AM -0700, Srinivas Pandruvada wrote:
+> On Mon, 2015-08-31 at 17:18 +0100, Jonathan Cameron wrote:
+> > On 20/08/15 13:49, Markus Pargmann wrote:
+> > > Add a simple SPI driver which initializes the spi regmap for the=20
+> > > bmc150
+> > > core driver.
+> > >=20
+> > > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> > Looks good to me, but clearly will have to wait for the earlier
+> > patches in the series.
+> >=20
+> > Nearly there!
+> >=20
+> > Jonathan
+> > > ---
+> > >  drivers/iio/accel/Kconfig            |  5 +++
+> > >  drivers/iio/accel/Makefile           |  1 +
+> > >  drivers/iio/accel/bmc150-accel-spi.c | 83=20
+> > > ++++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 89 insertions(+)
+> > >  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
+> > >=20
+> > > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> > > index 6da4eb0db57b..56d24fa3d34a 100644
+> > > --- a/drivers/iio/accel/Kconfig
+> > > +++ b/drivers/iio/accel/Kconfig
+> > > @@ -23,6 +23,7 @@ config BMC150_ACCEL
+> > >  	select IIO_TRIGGERED_BUFFER
+> > >  	select REGMAP
+> > >  	select BMC150_ACCEL_I2C if I2C
+> > > +	select BMC150_ACCEL_SPI if SPI
+> > >  	help
+> > >  	  Say yes here to build support for the following Bosch=20
+> > > accelerometers:
+> > >  	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
+> > > @@ -35,6 +36,10 @@ config BMC150_ACCEL_I2C
+> > >  	tristate
+> > >  	select REGMAP_I2C
+> > > =20
+> > > +config BMC150_ACCEL_SPI
+> > > +	tristate
+> > > +	select REGMAP_SPI
+> > > +
+> > >  config HID_SENSOR_ACCEL_3D
+> > >  	depends on HID_SENSOR_HUB
+> > >  	select IIO_BUFFER
+> > > diff --git a/drivers/iio/accel/Makefile=20
+> > > b/drivers/iio/accel/Makefile
+> > > index 5ef8bdbad092..e579e93bf022 100644
+> > > --- a/drivers/iio/accel/Makefile
+> > > +++ b/drivers/iio/accel/Makefile
+> > > @@ -6,6 +6,7 @@
+> > >  obj-$(CONFIG_BMA180) +=3D bma180.o
+> > >  obj-$(CONFIG_BMC150_ACCEL) +=3D bmc150-accel-core.o
+> > >  obj-$(CONFIG_BMC150_ACCEL_I2C) +=3D bmc150-accel-i2c.o
+> > > +obj-$(CONFIG_BMC150_ACCEL_SPI) +=3D bmc150-accel-spi.o
+> > >  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) +=3D hid-sensor-accel-3d.o
+> > >  obj-$(CONFIG_KXCJK1013) +=3D kxcjk-1013.o
+> > >  obj-$(CONFIG_KXSD9)	+=3D kxsd9.o
+> > > diff --git a/drivers/iio/accel/bmc150-accel-spi.c=20
+> > > b/drivers/iio/accel/bmc150-accel-spi.c
+> > > new file mode 100644
+> > > index 000000000000..1c2a4f683da4
+> > > --- /dev/null
+> > > +++ b/drivers/iio/accel/bmc150-accel-spi.c
+> > > @@ -0,0 +1,83 @@
+> > > +/*
+> > > + * 3-axis accelerometer driver supporting following I2C Bosch
+> > > -Sensortec chips:
+> > > + *  - BMC150
+> > > + *  - BMI055
+> > > + *  - BMA255
+> > > + *  - BMA250E
+> > > + *  - BMA222E
+> > > + *  - BMA280
+> > > + *
+> > > + * Copyright (c) 2014, Intel Corporation.
+> > > + *
+> > > + * This program is free software; you can redistribute it and/or=20
+> > > modify it
+> > > + * under the terms and conditions of the GNU General Public=20
+> > > License,
+> > > + * version 2, as published by the Free Software Foundation.
+> > > + *
+> > > + * This program is distributed in the hope it will be useful, but=20
+> > > WITHOUT
+> > > + * ANY WARRANTY; without even the implied warranty of=20
+> > > MERCHANTABILITY or
+> > > + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public=20
+> > > License for
+> > > + * more details.
+> > > + */
+> Not sure If you want to carry Intel Copyright for SPI driver part. If
+> you want to use change the year to 2015.
 
+Thanks, will replace that.
+
+Best Regards,
+
+Markus
+
+> > > +
+> > > +#include <linux/device.h>
+> > > +#include <linux/mod_devicetable.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/acpi.h>
+> > > +#include <linux/regmap.h>
+> > > +#include <linux/spi/spi.h>
+> > > +
+> > > +#include "bmc150-accel.h"
+> > > +
+> > > +static const struct regmap_config bmc150_spi_regmap_conf =3D {
+> > > +	.reg_bits =3D 8,
+> > > +	.val_bits =3D 8,
+> > > +	.max_register =3D 0x3f,
+> > > +};
+> > > +
+> > > +static int bmc150_accel_probe(struct spi_device *spi)
+> > > +{
+> > > +	struct regmap *regmap;
+> > > +	const struct spi_device_id *id =3D spi_get_device_id(spi);
+> > > +
+> > > +	regmap =3D devm_regmap_init_spi(spi,=20
+> > > &bmc150_spi_regmap_conf);
+> > > +	if (IS_ERR(regmap)) {
+> > > +		dev_err(&spi->dev, "Failed to initialize spi=20
+> > > regmap\n");
+> > > +		return PTR_ERR(regmap);
+> > > +	}
+> > > +
+> > > +	return bmc150_accel_core_probe(&spi->dev, regmap, spi
+> > > ->irq,
+> > > +				       id->name, id->driver_data,=20
+> > > true);
+> > > +}
+> > > +
+> > > +static int bmc150_accel_remove(struct spi_device *spi)
+> > > +{
+> > > +	return bmc150_accel_core_remove(&spi->dev);
+> > > +}
+> > > +
+> > > +static const struct spi_device_id bmc150_accel_id[] =3D {
+> > > +	{"bmc150_accel",	bmc150},
+> > > +	{"bmi055_accel",	bmi055},
+> > > +	{"bma255",		bma255},
+> > > +	{"bma250e",		bma250e},
+> > > +	{"bma222e",		bma222e},
+> > > +	{"bma280",		bma280},
+> > > +	{}
+> > > +};
+> > > +
+> > > +MODULE_DEVICE_TABLE(spi, bmc150_accel_id);
+> > > +
+> > > +static struct spi_driver bmc150_accel_driver =3D {
+> > > +	.driver =3D {
+> > > +		.name	=3D "bmc150_accel_spi",
+> > > +		.acpi_match_table =3D=20
+> > > ACPI_PTR(bmc150_accel_acpi_match),
+> > > +		.pm	=3D &bmc150_accel_pm_ops,
+> > > +	},
+> > > +	.probe		=3D bmc150_accel_probe,
+> > > +	.remove		=3D bmc150_accel_remove,
+> > > +	.id_table	=3D bmc150_accel_id,
+> > > +};
+> > > +module_spi_driver(bmc150_accel_driver);
+> > > +
+> > > +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
+> > > +MODULE_LICENSE("GPL v2");
+> > > +MODULE_DESCRIPTION("BMC150 SPI accelerometer driver");
+> > >=20
+> >=20
+>=20
+
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--S5HS5MvDw4DmbRmb
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJV+T3uAAoJEEpcgKtcEGQQSEkP/itDVOUfASIeokNDRVierhrt
++pAROHhe/MdiW2spYN1/GcBk9NkMkt1SsJTa7cTtEuzdr060hVGI+vuTxYrIZyCC
+Ng2H5R4+QoDF9p6Tlpl3wum4YE0/sqtN0c+WH/dX7CafIgVrgoK/NtVZQEd/4xgI
+fud+9DYOchBMCacPV6fV3hQcs2dez8g74X2rYOlYLyW+JBHWrddjrAil0kZxtMFT
+A66U3XoEJwXsFRERf/fVWCPPA+07XXY9aCZfPD6D1nLgj0OTSZ6v1fnswUtH+0Le
+uqicd5lrJiMncUB8VqxV9vnWsypmdR4G5L516tRltrGyYKNMvazJBEAQS6thLx6m
+20rbs+9bRmHF/c1C1FouftZuxS46IaIFkUGlVqUyfZGBk3bjWc2MY7h6Jv5AAs/x
+Cfzo4j4LHkObHANajwRc9Lgq76wYWva69Git5SPFmFBmI+X4rj3i/vdddAeXbZdz
+E12rKxqCKtMJcQw4lYTaezHIQqE7NlJ0LECQLB0UOFHYJdPczh8ckRPff2FtezQb
+3dZMbswbQUqrqRAXij6XHCVAl/0DM08TB9QtQqa6/j6nrGm74PbwS60AnOzACl0b
+6P9NRIMAM6bqu01k6PGW/XmzCx9ud+ib8iTqLiuCAHl2cad+GpxPCwf8ZYFwDL2N
+TzA8S1YuaZSF5huIKvan
+=Gwgq
+-----END PGP SIGNATURE-----
+
+--S5HS5MvDw4DmbRmb--
