@@ -1,206 +1,135 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:60301 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:54712 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752900AbbIPKB2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2015 06:01:28 -0400
-Date: Wed, 16 Sep 2015 12:01:19 +0200
+	with ESMTP id S1753725AbbIPKN3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2015 06:13:29 -0400
+Date: Wed, 16 Sep 2015 12:13:22 +0200
 From: Markus Pargmann <mpa@pengutronix.de>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: "Tirdea, Irina" <irina.tirdea@intel.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Irina Tirdea <irina.tirdea@intel.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel@pengutronix.de
-Subject: Re: [PATCH v2 4/4] iio: bmc150: Add SPI driver
-Message-ID: <20150916100119.GI1537@pengutronix.de>
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kernel@pengutronix.de" <kernel@pengutronix.de>
+Subject: Re: [PATCH v2 0/4] iio: bmc150 regmap and SPI
+Message-ID: <20150916101322.GJ1537@pengutronix.de>
 References: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
- <1440074986-28716-5-git-send-email-mpa@pengutronix.de>
- <55E47E40.30207@kernel.org>
- <1441116657.3143.6.camel@linux.intel.com>
+ <1F3AC3675D538145B1661F571FE1805F2F0C833A@irsmsx105.ger.corp.intel.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="S5HS5MvDw4DmbRmb"
-In-Reply-To: <1441116657.3143.6.camel@linux.intel.com>
+	protocol="application/pgp-signature"; boundary="0XhtP95kHFp3KGBe"
+In-Reply-To: <1F3AC3675D538145B1661F571FE1805F2F0C833A@irsmsx105.ger.corp.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---S5HS5MvDw4DmbRmb
+--0XhtP95kHFp3KGBe
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 01, 2015 at 07:10:57AM -0700, Srinivas Pandruvada wrote:
-> On Mon, 2015-08-31 at 17:18 +0100, Jonathan Cameron wrote:
-> > On 20/08/15 13:49, Markus Pargmann wrote:
-> > > Add a simple SPI driver which initializes the spi regmap for the=20
-> > > bmc150
-> > > core driver.
-> > >=20
-> > > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> > Looks good to me, but clearly will have to wait for the earlier
-> > patches in the series.
-> >=20
-> > Nearly there!
-> >=20
-> > Jonathan
-> > > ---
-> > >  drivers/iio/accel/Kconfig            |  5 +++
-> > >  drivers/iio/accel/Makefile           |  1 +
-> > >  drivers/iio/accel/bmc150-accel-spi.c | 83=20
-> > > ++++++++++++++++++++++++++++++++++++
-> > >  3 files changed, 89 insertions(+)
-> > >  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
-> > >=20
-> > > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> > > index 6da4eb0db57b..56d24fa3d34a 100644
-> > > --- a/drivers/iio/accel/Kconfig
-> > > +++ b/drivers/iio/accel/Kconfig
-> > > @@ -23,6 +23,7 @@ config BMC150_ACCEL
-> > >  	select IIO_TRIGGERED_BUFFER
-> > >  	select REGMAP
-> > >  	select BMC150_ACCEL_I2C if I2C
-> > > +	select BMC150_ACCEL_SPI if SPI
-> > >  	help
-> > >  	  Say yes here to build support for the following Bosch=20
-> > > accelerometers:
-> > >  	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
-> > > @@ -35,6 +36,10 @@ config BMC150_ACCEL_I2C
-> > >  	tristate
-> > >  	select REGMAP_I2C
-> > > =20
-> > > +config BMC150_ACCEL_SPI
-> > > +	tristate
-> > > +	select REGMAP_SPI
-> > > +
-> > >  config HID_SENSOR_ACCEL_3D
-> > >  	depends on HID_SENSOR_HUB
-> > >  	select IIO_BUFFER
-> > > diff --git a/drivers/iio/accel/Makefile=20
-> > > b/drivers/iio/accel/Makefile
-> > > index 5ef8bdbad092..e579e93bf022 100644
-> > > --- a/drivers/iio/accel/Makefile
-> > > +++ b/drivers/iio/accel/Makefile
-> > > @@ -6,6 +6,7 @@
-> > >  obj-$(CONFIG_BMA180) +=3D bma180.o
-> > >  obj-$(CONFIG_BMC150_ACCEL) +=3D bmc150-accel-core.o
-> > >  obj-$(CONFIG_BMC150_ACCEL_I2C) +=3D bmc150-accel-i2c.o
-> > > +obj-$(CONFIG_BMC150_ACCEL_SPI) +=3D bmc150-accel-spi.o
-> > >  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) +=3D hid-sensor-accel-3d.o
-> > >  obj-$(CONFIG_KXCJK1013) +=3D kxcjk-1013.o
-> > >  obj-$(CONFIG_KXSD9)	+=3D kxsd9.o
-> > > diff --git a/drivers/iio/accel/bmc150-accel-spi.c=20
-> > > b/drivers/iio/accel/bmc150-accel-spi.c
-> > > new file mode 100644
-> > > index 000000000000..1c2a4f683da4
-> > > --- /dev/null
-> > > +++ b/drivers/iio/accel/bmc150-accel-spi.c
-> > > @@ -0,0 +1,83 @@
-> > > +/*
-> > > + * 3-axis accelerometer driver supporting following I2C Bosch
-> > > -Sensortec chips:
-> > > + *  - BMC150
-> > > + *  - BMI055
-> > > + *  - BMA255
-> > > + *  - BMA250E
-> > > + *  - BMA222E
-> > > + *  - BMA280
-> > > + *
-> > > + * Copyright (c) 2014, Intel Corporation.
-> > > + *
-> > > + * This program is free software; you can redistribute it and/or=20
-> > > modify it
-> > > + * under the terms and conditions of the GNU General Public=20
-> > > License,
-> > > + * version 2, as published by the Free Software Foundation.
-> > > + *
-> > > + * This program is distributed in the hope it will be useful, but=20
-> > > WITHOUT
-> > > + * ANY WARRANTY; without even the implied warranty of=20
-> > > MERCHANTABILITY or
-> > > + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public=20
-> > > License for
-> > > + * more details.
-> > > + */
-> Not sure If you want to carry Intel Copyright for SPI driver part. If
-> you want to use change the year to 2015.
+Hi Irina,
 
-Thanks, will replace that.
+On Wed, Sep 09, 2015 at 02:30:30PM +0000, Tirdea, Irina wrote:
+>=20
+>=20
+> > -----Original Message-----
+> > From: Markus Pargmann [mailto:mpa@pengutronix.de]
+> > Sent: 20 August, 2015 15:50
+> > To: Jonathan Cameron
+> > Cc: Srinivas Pandruvada; Tirdea, Irina; Lars-Peter Clausen; linux-iio@v=
+ger.kernel.org; linux-kernel@vger.kernel.org;
+> > kernel@pengutronix.de; Markus Pargmann
+> > Subject: [PATCH v2 0/4] iio: bmc150 regmap and SPI
+> >=20
+> > Hi,
+> >=20
+>=20
+> Hi Markus,
+>=20
+> I tested your patches with my BMA250E driver connected on the i2c bus .
+> The code looks good and most of it works. There are a couple of issues I =
+will mention
+> below and in the individual patches.
+>=20
+> The patches in this version no longer apply cleanly on the togreg branch =
+of the iio tree.
+> I did the rebase myself, but since there were many conflicts I will do an=
+other test
+> when you send the new rebased v3.
+
+Thank you for review and testing. I will integrate your comments and
+send a rebased v3.
+
+>=20
+> > this series converts the bmc150 driver to use regmap and adds an SPI in=
+terface.
+> >=20
+> > In v1 this was part of the series "Regmap max_raw_io and bmc150 SPI sup=
+port".
+> > It now depends on "regmap: i2c block support".
+> >=20
+>=20
+> I used the patches that were already merged in the regmap tree. This bmc1=
+50 series should
+> probably wait until the regmap patches end up in Jonathan's tree, otherwi=
+se they will
+> break the build.
+
+It seems the necessary patches are already in v4.3-rc1:
+	29332534e2b6 (regmap-i2c: Add smbus i2c block support)
 
 Best Regards,
 
 Markus
 
-> > > +
-> > > +#include <linux/device.h>
-> > > +#include <linux/mod_devicetable.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/acpi.h>
-> > > +#include <linux/regmap.h>
-> > > +#include <linux/spi/spi.h>
-> > > +
-> > > +#include "bmc150-accel.h"
-> > > +
-> > > +static const struct regmap_config bmc150_spi_regmap_conf =3D {
-> > > +	.reg_bits =3D 8,
-> > > +	.val_bits =3D 8,
-> > > +	.max_register =3D 0x3f,
-> > > +};
-> > > +
-> > > +static int bmc150_accel_probe(struct spi_device *spi)
-> > > +{
-> > > +	struct regmap *regmap;
-> > > +	const struct spi_device_id *id =3D spi_get_device_id(spi);
-> > > +
-> > > +	regmap =3D devm_regmap_init_spi(spi,=20
-> > > &bmc150_spi_regmap_conf);
-> > > +	if (IS_ERR(regmap)) {
-> > > +		dev_err(&spi->dev, "Failed to initialize spi=20
-> > > regmap\n");
-> > > +		return PTR_ERR(regmap);
-> > > +	}
-> > > +
-> > > +	return bmc150_accel_core_probe(&spi->dev, regmap, spi
-> > > ->irq,
-> > > +				       id->name, id->driver_data,=20
-> > > true);
-> > > +}
-> > > +
-> > > +static int bmc150_accel_remove(struct spi_device *spi)
-> > > +{
-> > > +	return bmc150_accel_core_remove(&spi->dev);
-> > > +}
-> > > +
-> > > +static const struct spi_device_id bmc150_accel_id[] =3D {
-> > > +	{"bmc150_accel",	bmc150},
-> > > +	{"bmi055_accel",	bmi055},
-> > > +	{"bma255",		bma255},
-> > > +	{"bma250e",		bma250e},
-> > > +	{"bma222e",		bma222e},
-> > > +	{"bma280",		bma280},
-> > > +	{}
-> > > +};
-> > > +
-> > > +MODULE_DEVICE_TABLE(spi, bmc150_accel_id);
-> > > +
-> > > +static struct spi_driver bmc150_accel_driver =3D {
-> > > +	.driver =3D {
-> > > +		.name	=3D "bmc150_accel_spi",
-> > > +		.acpi_match_table =3D=20
-> > > ACPI_PTR(bmc150_accel_acpi_match),
-> > > +		.pm	=3D &bmc150_accel_pm_ops,
-> > > +	},
-> > > +	.probe		=3D bmc150_accel_probe,
-> > > +	.remove		=3D bmc150_accel_remove,
-> > > +	.id_table	=3D bmc150_accel_id,
-> > > +};
-> > > +module_spi_driver(bmc150_accel_driver);
-> > > +
-> > > +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
-> > > +MODULE_LICENSE("GPL v2");
-> > > +MODULE_DESCRIPTION("BMC150 SPI accelerometer driver");
-> > >=20
+>=20
+> Thanks,
+> Irina
+>=20
+> > Changes in v2:
+> > - Removed default values for regmap_config fields.
+> > - Redesigned the fifo_transfer function to avoid running in errors firs=
+t.
+> > - Dropped irq checks patch as it is already mainline
+> > - Core can now be built as module with autoselection of i2c and spi par=
+ts
 > >=20
+> > As my hardware is missing an interrupt line from the SPI connected bmc1=
+50 I am
+> > not able to test the iio buffer code path and the i2c code path. Tests =
+would be
+> > appreciated.
+> >=20
+> > Best regards,
+> >=20
+> > Markus
+> >=20
+> >=20
+> > Markus Pargmann (4):
+> >   iio: bmc150: Use i2c regmap
+> >   iio: bcm150: Remove i2c_client from private data
+> >   iio: bmc150: Split the driver into core and i2c
+> >   iio: bmc150: Add SPI driver
+> >=20
+> >  drivers/iio/accel/Kconfig                          |  14 +-
+> >  drivers/iio/accel/Makefile                         |   4 +-
+> >  .../accel/{bmc150-accel.c =3D> bmc150-accel-core.c}  | 398 ++++++++---=
+----------
+> >  drivers/iio/accel/bmc150-accel-i2c.c               |  99 +++++
+> >  drivers/iio/accel/bmc150-accel-spi.c               |  83 +++++
+> >  drivers/iio/accel/bmc150-accel.h                   |  21 ++
+> >  6 files changed, 367 insertions(+), 252 deletions(-)
+> >  rename drivers/iio/accel/{bmc150-accel.c =3D> bmc150-accel-core.c} (81=
+%)
+> >  create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
+> >  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
+> >  create mode 100644 drivers/iio/accel/bmc150-accel.h
+> >=20
+> > --
+> > 2.4.6
+>=20
 >=20
 
 --=20
@@ -209,26 +138,26 @@ Industrial Linux Solutions                 | http://www.pengutronix.de/  |
 Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
 Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
---S5HS5MvDw4DmbRmb
+--0XhtP95kHFp3KGBe
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJV+T3uAAoJEEpcgKtcEGQQSEkP/itDVOUfASIeokNDRVierhrt
-+pAROHhe/MdiW2spYN1/GcBk9NkMkt1SsJTa7cTtEuzdr060hVGI+vuTxYrIZyCC
-Ng2H5R4+QoDF9p6Tlpl3wum4YE0/sqtN0c+WH/dX7CafIgVrgoK/NtVZQEd/4xgI
-fud+9DYOchBMCacPV6fV3hQcs2dez8g74X2rYOlYLyW+JBHWrddjrAil0kZxtMFT
-A66U3XoEJwXsFRERf/fVWCPPA+07XXY9aCZfPD6D1nLgj0OTSZ6v1fnswUtH+0Le
-uqicd5lrJiMncUB8VqxV9vnWsypmdR4G5L516tRltrGyYKNMvazJBEAQS6thLx6m
-20rbs+9bRmHF/c1C1FouftZuxS46IaIFkUGlVqUyfZGBk3bjWc2MY7h6Jv5AAs/x
-Cfzo4j4LHkObHANajwRc9Lgq76wYWva69Git5SPFmFBmI+X4rj3i/vdddAeXbZdz
-E12rKxqCKtMJcQw4lYTaezHIQqE7NlJ0LECQLB0UOFHYJdPczh8ckRPff2FtezQb
-3dZMbswbQUqrqRAXij6XHCVAl/0DM08TB9QtQqa6/j6nrGm74PbwS60AnOzACl0b
-6P9NRIMAM6bqu01k6PGW/XmzCx9ud+ib8iTqLiuCAHl2cad+GpxPCwf8ZYFwDL2N
-TzA8S1YuaZSF5huIKvan
-=Gwgq
+iQIcBAEBAgAGBQJV+UDCAAoJEEpcgKtcEGQQw28P/AgRG9u0vL+RQ60QivSD+1VX
+D8bGlw4zHXwPlka4ZY+ZHoX5VmjQsUDtw0RNeeZU9Zq6aO0Izy6Sl2jy4tWmZvlM
+0SO9kxpbEtrMEi0PgMfrHCgleSHfwBapoxdT8hRHdsZrap+KyAjz7be3weuV5p6h
+RqUHAUrN7MbFCNSntHFPdumXuMlse0/q0Xn2LmKEYl1GuE9XJ0h0qhpYtHmnN2xA
+gwt3XE+7nC5k2ye+a5szDpfNvIGrC6KJqSCu9B37vKrDAfnArieFb6NvDBlx7J4H
+c6Pbs7AVyVoEvhy3lzk5dACYISK5f5gGIzbVMm5mtULjyFDT8MDzfVieDlCgaOx5
+kymf9a0RWdUnuoeJ0zjOW/ilaGONq2ayrzVcHa5dOwkm0LlX9TvEBjTAK3d/cHXR
+ItRgp7LwJA+HS7ZKezBUGKeDKI4Sxqsk0w9h1UkbtUaSHC7c5TMWOHInjXVlF7vA
+hVTxE70Am7QWlJy3hlovzkwIEA5WFwWkTnVJeTObzniAHNEnjFl/a38D/BDxe8JX
+olDXkwmQI7CYIiOV4sikifvt+TXWANVoWatvQNkwNbM/pvDlKe1QODUQc+3L6M2w
+7p2T4rIVXi47lymbDkCpHI56oP7IkuNyoge2CDX0FDN7yihakr9OoHMi3PYg96k/
+ChsA8j9pREKsHJOcdB4a
+=LzDo
 -----END PGP SIGNATURE-----
 
---S5HS5MvDw4DmbRmb--
+--0XhtP95kHFp3KGBe--
