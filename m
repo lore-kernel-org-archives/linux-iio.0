@@ -1,85 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f177.google.com ([209.85.217.177]:35784 "EHLO
-	mail-lb0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751929AbbIQVHQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Sep 2015 17:07:16 -0400
-Received: by lbpo4 with SMTP id o4so15899152lbp.2
-        for <linux-iio@vger.kernel.org>; Thu, 17 Sep 2015 14:07:15 -0700 (PDT)
+Received: from mga09.intel.com ([134.134.136.24]:28277 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751797AbbIQWbZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 17 Sep 2015 18:31:25 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org, rui.zhang@intel.com, edubezval@gmail.com
+Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [RFC PATCH v2 0/4] thermal: iio bindings
+Date: Thu, 17 Sep 2015 15:30:50 -0700
+Message-Id: <1442529054-25803-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-Date: Thu, 17 Sep 2015 16:07:15 -0500
-Message-ID: <CAF8px547WhBsfmV8K8OLbqTbADWbu0sD1jUjrGEPHVZfEzrP6w@mail.gmail.com>
-Subject: [PATCH] Asus T300CHI.
-From: Mike Mestnik <cheako@mikemestnik.net>
-To: linux-iio@vger.kernel.org
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
-  I'm looking to know the result of adding ACPI support for a new
-tablet, the existing support shouldn't work because of a misplaced
-__init that causes the function to be removed prior to being called.
-After applying this patch I feel that I've moved support for the
-T300CHI backwards.  What should be the intended effect of using the
-ACPI interface?
+v2
+- Rebase to 4.3.rc1
+- Additional parameter to thermal_zone_device_update for event type
+- Moved the dummy IIO callbacks to local include file, in this
+way "not used" warnings can be avoided
+- Remove changes from user space governor, rather notify from core
+- Validate the trigger, so that when thermal device supports async
+notifications, this will be exclusive trigger
+- Use new thermal core event type to differentiate events for iio
+threshold notification
 
-Index: linux-4.1.3/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-===================================================================
---- linux-4.1.3.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-+++ linux-4.1.3/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-@@ -23,27 +23,44 @@
- enum inv_mpu_product_name {
-  INV_MPU_NOT_MATCHED,
-  INV_MPU_ASUS_T100TA,
-+ INV_MPU_ASUS_T300CHI,
- };
+v1
+- Change commit message to be more clear
+- Split in three patches (First for thermal_iio.c, second to integrate
+to thermal_core and third for user space governor).
+- Removed IIO defines in thermal.h
+- Removed direct push to buffers
+- Other comments from Jonathan except introduce validate_trigger
 
- static enum inv_mpu_product_name matched_product_name;
+v0
+Base version for first review
 
--static int __init asus_t100_matched(const struct dmi_system_id *d)
-+static int asus_t100ta_matched(const struct dmi_system_id *d)
- {
-  matched_product_name = INV_MPU_ASUS_T100TA;
 
-  return 0;
- }
+Srinivas Pandruvada (4):
+  thermal: core: enhance thermal_zone_device_update
+  thermal: iio device for thermal sensor
+  thermal: use iio binding calls
+  thermal: x86_pkg_temp: Register threshold callbacks
 
-+static int asus_t300chi_matched(const struct dmi_system_id *d)
-+{
-+ matched_product_name = INV_MPU_ASUS_T300CHI;
-+
-+ return 0;
-+}
-+
- static const struct dmi_system_id inv_mpu_dev_list[] = {
-  {
-- .callback = asus_t100_matched,
-- .ident = "Asus Transformer Book T100",
-+ .callback = asus_t100ta_matched,
-+ .ident = "Asus Transformer Book T100TA",
-  .matches = {
-  DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC"),
-  DMI_MATCH(DMI_PRODUCT_NAME, "T100TA"),
-  DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
-  },
-  },
-+ {
-+ .callback = asus_t300chi_matched,
-+ .ident = "Asus Transformer Book T300CHI",
-+ .matches = {
-+ DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC"),
-+ DMI_MATCH(DMI_PRODUCT_NAME, "T300CHI"),
-+ DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
-+ },
-+ },
-  /* Add more matching tables here..*/
-  {}
- };
-@@ -154,6 +171,7 @@ int inv_mpu_acpi_create_mux_client(struc
-  dmi_check_system(inv_mpu_dev_list);
-  switch (matched_product_name) {
-  case INV_MPU_ASUS_T100TA:
-+ case INV_MPU_ASUS_T300CHI:
-  ret = asus_acpi_get_sensor_info(adev, st->client,
-  &info);
-  break;
+ drivers/acpi/thermal.c                             |   2 +-
+ drivers/platform/x86/acerhdf.c                     |   2 +-
+ drivers/thermal/Kconfig                            |  12 +
+ drivers/thermal/Makefile                           |   1 +
+ drivers/thermal/db8500_thermal.c                   |   2 +-
+ drivers/thermal/hisi_thermal.c                     |   3 +-
+ drivers/thermal/imx_thermal.c                      |   4 +-
+ .../thermal/int340x_thermal/int340x_thermal_zone.h |   2 +-
+ drivers/thermal/intel_soc_dts_iosf.c               |   3 +-
+ drivers/thermal/of-thermal.c                       |   2 +-
+ drivers/thermal/qcom-spmi-temp-alarm.c             |   2 +-
+ drivers/thermal/rcar_thermal.c                     |   3 +-
+ drivers/thermal/rockchip_thermal.c                 |   3 +-
+ drivers/thermal/samsung/exynos_tmu.c               |   2 +-
+ drivers/thermal/st/st_thermal_memmap.c             |   3 +-
+ drivers/thermal/thermal_core.c                     |  21 +-
+ drivers/thermal/thermal_iio.c                      | 375 +++++++++++++++++++++
+ drivers/thermal/thermal_iio.h                      |  45 +++
+ drivers/thermal/ti-soc-thermal/ti-thermal-common.c |   4 +-
+ drivers/thermal/x86_pkg_temp_thermal.c             |  11 +-
+ include/linux/thermal.h                            |  26 +-
+ 21 files changed, 503 insertions(+), 25 deletions(-)
+ create mode 100644 drivers/thermal/thermal_iio.c
+ create mode 100644 drivers/thermal/thermal_iio.h
+
+-- 
+1.9.3
+
