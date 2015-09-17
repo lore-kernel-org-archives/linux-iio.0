@@ -1,44 +1,38 @@
-Return-Path: <nicola@corna.info>
-From: Nicola Corna <nicola@corna.info>
-To: Wolfram Sang <wsa@the-dreams.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <bethencourt@gmail.com>
+Sender: Luis de Bethencourt <bethencourt@gmail.com>
+From: Luis de Bethencourt <luis@debethencourt.com>
+Date: Thu, 17 Sep 2015 19:02:00 +0200
+To: linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-i2c@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Nicola Corna <nicola@corna.info>
-Subject: [RESEND PATCH 2/3] i2c: added I2C_FUNC_NO_CLK_STRETCH to i2c-algo-bit.c
-Date: Wed, 16 Sep 2015 15:35:46 +0200
-Message-Id: <1442410547-9952-1-git-send-email-nicola@corna.info>
+	Peter Meerwald <pmeerw@pmeerw.net>, Axel Lin <axel.lin@ingics.com>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH 1/2] iio: adc: twl6030-gpadc: Fix module autoload for OF
+ platform driver
+Message-ID: <20150917170200.GA27396@goodgumbo.baconseed.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-Added I2C_FUNC_NO_CLK_STRETCH to drivers/i2c/algos/i2c-algo-bit.c when
-getscl is not available.
+This platform driver has a OF device ID table but the OF module
+alias information is not created so module autoloading won't work.
 
-Signed-off-by: Nicola Corna <nicola@corna.info>
+Signed-off-by: Luis de Bethencourt <luisbg@osg.samsung.com>
 ---
- drivers/i2c/algos/i2c-algo-bit.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iio/adc/twl6030-gpadc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/i2c/algos/i2c-algo-bit.c b/drivers/i2c/algos/i2c-algo-bit.c
-index 899bede..82cad0b 100644
---- a/drivers/i2c/algos/i2c-algo-bit.c
-+++ b/drivers/i2c/algos/i2c-algo-bit.c
-@@ -602,10 +602,13 @@ bailout:
+diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
+index df12c57..becbb0a 100644
+--- a/drivers/iio/adc/twl6030-gpadc.c
++++ b/drivers/iio/adc/twl6030-gpadc.c
+@@ -875,6 +875,7 @@ static const struct of_device_id of_twl6030_match_tbl[] = {
+ 	},
+ 	{ /* end */ }
+ };
++MODULE_DEVICE_TABLE(of, of_twl6030_match_tbl);
  
- static u32 bit_func(struct i2c_adapter *adap)
+ static int twl6030_gpadc_probe(struct platform_device *pdev)
  {
-+	struct i2c_algo_bit_data *bit_adap = adap->algo_data;
-+
- 	return I2C_FUNC_I2C | I2C_FUNC_NOSTART | I2C_FUNC_SMBUS_EMUL |
- 	       I2C_FUNC_SMBUS_READ_BLOCK_DATA |
- 	       I2C_FUNC_SMBUS_BLOCK_PROC_CALL |
--	       I2C_FUNC_10BIT_ADDR | I2C_FUNC_PROTOCOL_MANGLING;
-+	       I2C_FUNC_10BIT_ADDR | I2C_FUNC_PROTOCOL_MANGLING |
-+	       (bit_adap->getscl ? 0 : I2C_FUNC_NO_CLK_STRETCH);
- }
- 
- 
 -- 
-2.5.1
+2.4.6
