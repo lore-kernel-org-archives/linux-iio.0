@@ -1,255 +1,930 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52166 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52322 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753056AbbITT1x (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Sep 2015 15:27:53 -0400
-Subject: Re: [PATCH v2] Staging: iio: Move evgen interrupt generation to
- irq_work
-To: Daniel Baluta <daniel.baluta@intel.com>
-References: <57d42c1c73d5d9103fc95ceee5e4f30ec9538e5b.1441895141.git.cristina.opriceana@gmail.com>
- <55F3ED00.2060707@kernel.org>
- <CAEnQRZB0XQ0Fr+OqK-oB4aWqR0ayoTm1yN70pO9yP4uP9giNNg@mail.gmail.com>
-Cc: Cristina Opriceana <cristina.opriceana@gmail.com>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+	with ESMTP id S1755298AbbITUGO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Sep 2015 16:06:14 -0400
+Subject: Re: [PATCH] Staging: iio: cdc: Remove unused macro
+To: Shraddha Barke <shraddha.6596@gmail.com>
+References: <1442407453-6030-1-git-send-email-shraddha.6596@gmail.com>
+ <55FE8DD8.10809@kernel.org>
+ <alpine.DEB.2.11.1509202212320.5075@shraddha-370R4E-370R4V-370R5E-3570RE-370R5V>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55FF08B6.5090304@kernel.org>
-Date: Sun, 20 Sep 2015 20:27:50 +0100
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Julia Lawall <julia.lawall@lip6.fr>, linux-iio@vger.kernel.org
+Message-ID: <55FF11B0.8070407@kernel.org>
+Date: Sun, 20 Sep 2015 21:06:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZB0XQ0Fr+OqK-oB4aWqR0ayoTm1yN70pO9yP4uP9giNNg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <alpine.DEB.2.11.1509202212320.5075@shraddha-370R4E-370R4V-370R5E-3570RE-370R5V>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/09/15 11:57, Daniel Baluta wrote:
-> On Sat, Sep 12, 2015 at 12:14 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 11/09/15 14:59, Cristina Opriceana wrote:
->>> Enhance interrupt generation in the dummy driver and expand its usage
->>> by introducing the irq_work infrastructure to trigger an interrupt.
->>>
->>> This way, the irq_work_queue() wrapper permits calling both of the top
->>> half and threaded part from a hard irq context, unlike handle_nested_irq(),
->>> which only calls the threaded part.
->>>
->>> As an outcome, the driver succeeds in simulating real hardware
->>> interrupts, while keeping the normal interrupt flow.
->>>
->>> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
-> 
-> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.
-> 
->>
->> Looks good to me.  Will let this sit on the list for a little while
->> though to give others plenty of time to comment.
->>
->> Thanks for doing this, ended up simpler than I thought it would
->> be which is always nice ;)
-> 
-> Indeed!
-> 
-> Jonathan, let us now if there are any other things to be done
-> in order to move this out of staging.
-I think that was the last thing I'd picked up on.  Go ahead with proposing the
-move.  Chances are that might provoke a thorough review of the whole driver
-which is always useful!
 
+Hi Shraddha,
 
-> 
-> Cristina also worked on removing the hard coded number of device instances
-> and replaced it by adding support to configfs, but we'll have to wait a little
-> bit more for that until I get some time to finally finish the configfs patches.
-That's another good step.  I'm less fussy about changes to the dummy code
-than pretty much anything else in the subsystem, so I'll let the two of you decide
-whether to wait to move it out of staging until this stuff is in place, or to
-propose moving it now and cleanup the registration stuff later.
+To get you started, I've quickly faked up a patch of the driver
+in it's current location to let me 'review' it. Note this was
+a very quick review so I may well have missed lots. Lars
+may have more comments and Michael may hopefully surface as well.
 
-Thanks,
+The biggest bit in here is probably the lack of documented
+ABI for the 'calibration' attributes.  Off the top of my
+head I have no clear idea of what they are for.  Then again
+I've never used a CDC and haven't read for this one in years
+which probably doesn't help.
+
+Anyhow, lots of coding style related stuff as well similar to
+what you found in your initial patch.
+
+Hopefully something to get you started.
+
+Good luck.
 
 Jonathan
-> 
-> Daniel.
-> 
->>
->> Jonathan
->>> ---
->>>  Changes since v1:
->>>   - keep irq_chip and the normal interrupt flow
->>>   - run top half and threaded part from hardirq context
->>>   - add demo function that registers current timestamp and uses it in the
->>>   threaded interrupt handler
->>>
->>>  drivers/staging/iio/iio_dummy_evgen.c         | 26 +++++++++++++++++++++++++-
->>>  drivers/staging/iio/iio_simple_dummy.h        |  1 +
->>>  drivers/staging/iio/iio_simple_dummy_events.c | 19 ++++++++++++++-----
->>>  3 files changed, 40 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/iio_dummy_evgen.c b/drivers/staging/iio/iio_dummy_evgen.c
->>> index 6d38854..2bb4350 100644
->>> --- a/drivers/staging/iio/iio_dummy_evgen.c
->>> +++ b/drivers/staging/iio/iio_dummy_evgen.c
->>> @@ -24,9 +24,21 @@
->>>  #include "iio_dummy_evgen.h"
->>>  #include <linux/iio/iio.h>
->>>  #include <linux/iio/sysfs.h>
->>> +#include <linux/irq_work.h>
->>>
->>>  /* Fiddly bit of faking and irq without hardware */
->>>  #define IIO_EVENTGEN_NO 10
->>> +
->>> +/**
->>> + * struct iio_dummy_handle_irq - helper struct to simulate interrupt generation
->>> + * @work: irq_work used to run handlers from hardirq context
->>> + * @irq: fake irq line number to trigger an interrupt
->>> + */
->>> +struct iio_dummy_handle_irq {
->>> +     struct irq_work work;
->>> +     int irq;
->>> +};
->>> +
->>>  /**
->>>   * struct iio_dummy_evgen - evgen state
->>>   * @chip: irq chip we are faking
->>> @@ -35,6 +47,7 @@
->>>   * @inuse: mask of which irqs are connected
->>>   * @regs: irq regs we are faking
->>>   * @lock: protect the evgen state
->>> + * @handler: helper for a 'hardware-like' interrupt simulation
->>>   */
->>>  struct iio_dummy_eventgen {
->>>       struct irq_chip chip;
->>> @@ -43,6 +56,7 @@ struct iio_dummy_eventgen {
->>>       bool inuse[IIO_EVENTGEN_NO];
->>>       struct iio_dummy_regs regs[IIO_EVENTGEN_NO];
->>>       struct mutex lock;
->>> +     struct iio_dummy_handle_irq handler;
->>>  };
->>>
->>>  /* We can only ever have one instance of this 'device' */
->>> @@ -67,6 +81,14 @@ static void iio_dummy_event_irqunmask(struct irq_data *d)
->>>       evgen->enabled[d->irq - evgen->base] = true;
->>>  }
->>>
->>> +void iio_dummy_work_handler(struct irq_work *work)
->>> +{
->>> +     struct iio_dummy_handle_irq *irq_handler;
->>> +
->>> +     irq_handler = container_of(work, struct iio_dummy_handle_irq, work);
->>> +     handle_simple_irq(irq_handler->irq, irq_to_desc(irq_handler->irq));
->>> +}
->>> +
->>>  static int iio_dummy_evgen_create(void)
->>>  {
->>>       int ret, i;
->>> @@ -91,6 +113,7 @@ static int iio_dummy_evgen_create(void)
->>>                                 IRQ_NOREQUEST | IRQ_NOAUTOEN,
->>>                                 IRQ_NOPROBE);
->>>       }
->>> +     init_irq_work(&iio_evgen->handler.work, iio_dummy_work_handler);
->>>       mutex_init(&iio_evgen->lock);
->>>       return 0;
->>>  }
->>> @@ -169,8 +192,9 @@ static ssize_t iio_evgen_poke(struct device *dev,
->>>       iio_evgen->regs[this_attr->address].reg_id   = this_attr->address;
->>>       iio_evgen->regs[this_attr->address].reg_data = event;
->>>
->>> +     iio_evgen->handler.irq = iio_evgen->base + this_attr->address;
->>>       if (iio_evgen->enabled[this_attr->address])
->>> -             handle_nested_irq(iio_evgen->base + this_attr->address);
->>> +             irq_work_queue(&iio_evgen->handler.work);
->>>
->>>       return len;
->>>  }
->>> diff --git a/drivers/staging/iio/iio_simple_dummy.h b/drivers/staging/iio/iio_simple_dummy.h
->>> index 8d00224..5c2f4d0 100644
->>> --- a/drivers/staging/iio/iio_simple_dummy.h
->>> +++ b/drivers/staging/iio/iio_simple_dummy.h
->>> @@ -46,6 +46,7 @@ struct iio_dummy_state {
->>>       int event_irq;
->>>       int event_val;
->>>       bool event_en;
->>> +     s64 event_timestamp;
->>>  #endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
->>>  };
->>>
->>> diff --git a/drivers/staging/iio/iio_simple_dummy_events.c b/drivers/staging/iio/iio_simple_dummy_events.c
->>> index 73108ba..bfbf1c5 100644
->>> --- a/drivers/staging/iio/iio_simple_dummy_events.c
->>> +++ b/drivers/staging/iio/iio_simple_dummy_events.c
->>> @@ -153,6 +153,15 @@ int iio_simple_dummy_write_event_value(struct iio_dev *indio_dev,
->>>       return 0;
->>>  }
->>>
->>> +static irqreturn_t iio_simple_dummy_get_timestamp(int irq, void *private)
->>> +{
->>> +     struct iio_dev *indio_dev = private;
->>> +     struct iio_dummy_state *st = iio_priv(indio_dev);
->>> +
->>> +     st->event_timestamp = iio_get_time_ns();
->>> +     return IRQ_HANDLED;
->>> +}
->>> +
->>>  /**
->>>   * iio_simple_dummy_event_handler() - identify and pass on event
->>>   * @irq: irq of event line
->>> @@ -177,7 +186,7 @@ static irqreturn_t iio_simple_dummy_event_handler(int irq, void *private)
->>>                              IIO_EVENT_CODE(IIO_VOLTAGE, 0, 0,
->>>                                             IIO_EV_DIR_RISING,
->>>                                             IIO_EV_TYPE_THRESH, 0, 0, 0),
->>> -                            iio_get_time_ns());
->>> +                            st->event_timestamp);
->>>               break;
->>>       case 1:
->>>               if (st->activity_running > st->event_val)
->>> @@ -187,7 +196,7 @@ static irqreturn_t iio_simple_dummy_event_handler(int irq, void *private)
->>>                                                     IIO_EV_DIR_RISING,
->>>                                                     IIO_EV_TYPE_THRESH,
->>>                                                     0, 0, 0),
->>> -                                    iio_get_time_ns());
->>> +                                    st->event_timestamp);
->>>               break;
->>>       case 2:
->>>               if (st->activity_walking < st->event_val)
->>> @@ -197,14 +206,14 @@ static irqreturn_t iio_simple_dummy_event_handler(int irq, void *private)
->>>                                                     IIO_EV_DIR_FALLING,
->>>                                                     IIO_EV_TYPE_THRESH,
->>>                                                     0, 0, 0),
->>> -                                    iio_get_time_ns());
->>> +                                    st->event_timestamp);
->>>               break;
->>>       case 3:
->>>               iio_push_event(indio_dev,
->>>                              IIO_EVENT_CODE(IIO_STEPS, 0, IIO_NO_MOD,
->>>                                             IIO_EV_DIR_NONE,
->>>                                             IIO_EV_TYPE_CHANGE, 0, 0, 0),
->>> -                            iio_get_time_ns());
->>> +                            st->event_timestamp);
->>>               break;
->>>       default:
->>>               break;
->>> @@ -238,7 +247,7 @@ int iio_simple_dummy_events_register(struct iio_dev *indio_dev)
->>>       st->regs = iio_dummy_evgen_get_regs(st->event_irq);
->>>
->>>       ret = request_threaded_irq(st->event_irq,
->>> -                                NULL,
->>> +                                &iio_simple_dummy_get_timestamp,
->>>                                  &iio_simple_dummy_event_handler,
->>>                                  IRQF_ONESHOT,
->>>                                  "iio_simple_event",
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+
+p.s. Actually, other than the fact we've gotten tighter on
+coding style stuff etc, this driver is in a pretty good state
+making a good target for finally getting out of staging.
+
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+new file mode 100644
+index 000000000000..e6e9eaa9eab5
+--- /dev/null
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -0,0 +1,791 @@
++/*
++ * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/interrupt.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
++#include <linux/module.h>
++#include <linux/stat.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#include "ad7746.h"
++
++/*
++ * AD7746 Register Definition
++ */
+Single line comment probably should have single line comment syntax.
++
++#define AD7746_REG_STATUS		0
++#define AD7746_REG_CAP_DATA_HIGH	1
++#define AD7746_REG_CAP_DATA_MID		2
++#define AD7746_REG_CAP_DATA_LOW		3
++#define AD7746_REG_VT_DATA_HIGH		4
++#define AD7746_REG_VT_DATA_MID		5
++#define AD7746_REG_VT_DATA_LOW		6
++#define AD7746_REG_CAP_SETUP		7
++#define AD7746_REG_VT_SETUP		8
++#define AD7746_REG_EXC_SETUP		9
++#define AD7746_REG_CFG			10
++#define AD7746_REG_CAPDACA		11
++#define AD7746_REG_CAPDACB		12
++#define AD7746_REG_CAP_OFFH		13
++#define AD7746_REG_CAP_OFFL		14
++#define AD7746_REG_CAP_GAINH		15
++#define AD7746_REG_CAP_GAINL		16
++#define AD7746_REG_VOLT_GAINH		17
++#define AD7746_REG_VOLT_GAINL		18
++
++/* Status Register Bit Designations (AD7746_REG_STATUS) */
++#define AD7746_STATUS_EXCERR		(1 << 3)
++#define AD7746_STATUS_RDY		(1 << 2)
++#define AD7746_STATUS_RDYVT		(1 << 1)
++#define AD7746_STATUS_RDYCAP		(1 << 0)
++
++/* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
++#define AD7746_CAPSETUP_CAPEN		(1 << 7)
++#define AD7746_CAPSETUP_CIN2		(1 << 6) /* AD7746 only */
++#define AD7746_CAPSETUP_CAPDIFF		(1 << 5)
++#define AD7746_CAPSETUP_CACHOP		(1 << 0)
++
++/* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
++#define AD7746_VTSETUP_VTEN		(1 << 7)
++#define AD7746_VTSETUP_VTMD_INT_TEMP	(0 << 5)
++#define AD7746_VTSETUP_VTMD_EXT_TEMP	(1 << 5)
++#define AD7746_VTSETUP_VTMD_VDD_MON	(2 << 5)
++#define AD7746_VTSETUP_VTMD_EXT_VIN	(3 << 5)
++#define AD7746_VTSETUP_EXTREF		(1 << 4)
++#define AD7746_VTSETUP_VTSHORT		(1 << 1)
++#define AD7746_VTSETUP_VTCHOP		(1 << 0)
+In mixed cases like this, sometimes using the BIT macro
+makes sense, sometimes not. Depends on the use.  So
+I'd epect the bottom 3 to us BIm, but not the ones
+shifted by 5.  That might benefit from a macro though
+to wrap up the shift and make it obvious all those shift by 5 elements
+are actually in the same 2 bit field.
+
++
++/* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
++#define AD7746_EXCSETUP_CLKCTRL		(1 << 7)
++#define AD7746_EXCSETUP_EXCON		(1 << 6)
++#define AD7746_EXCSETUP_EXCB		(1 << 5)
++#define AD7746_EXCSETUP_NEXCB		(1 << 4)
++#define AD7746_EXCSETUP_EXCA		(1 << 3)
++#define AD7746_EXCSETUP_NEXCA		(1 << 2)
+This lot are probably a good place to use the BIT macro.
++#define AD7746_EXCSETUP_EXCLVL(x)	(((x) & 0x3) << 0)
++
++/* Config Register Bit Designations (AD7746_REG_CFG) */
++#define AD7746_CONF_VTFS(x)		((x) << 6)
++#define AD7746_CONF_CAPFS(x)		((x) << 3)
++#define AD7746_CONF_MODE_IDLE		(0 << 0)
++#define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
++#define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
++#define AD7746_CONF_MODE_PWRDN		(3 << 0)
++#define AD7746_CONF_MODE_OFFS_CAL	(5 << 0)
++#define AD7746_CONF_MODE_GAIN_CAL	(6 << 0)
+Hmm. Not sure shifting by 0 is all that informative...
++
++/* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
++#define AD7746_CAPDAC_DACEN		(1 << 7)
++#define AD7746_CAPDAC_DACP(x)		((x) & 0x7F)
++
++/*
++ * struct ad7746_chip_info - chip specific information
++ */
+Single line should probably have single line comment syntax.
++
++struct ad7746_chip_info {
++	struct i2c_client *client;
++	/*
++	 * Capacitive channel digital filter setup;
++	 * conversion time/update rate setup per channel
++	 */
++	u8	config;
++	u8	cap_setup;
++	u8	vt_setup;
++	u8	capdac[2][2];
++	s8	capdac_set;
++
++	union {
++		__be32 d32;
++		u8 d8[4];
++	} data ____cacheline_aligned;
++};
++
++enum ad7746_chan {
++	VIN,
++	VIN_VDD,
++	TEMP_INT,
++	TEMP_EXT,
++	CIN1,
++	CIN1_DIFF,
++	CIN2,
++	CIN2_DIFF,
++};
++
++static const struct iio_chan_spec ad7746_channels[] = {
++	[VIN] = {
++		.type = IIO_VOLTAGE,
++		.indexed = 1,
++		.channel = 0,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++		.address = AD7746_REG_VT_DATA_HIGH << 8 |
++			AD7746_VTSETUP_VTMD_EXT_VIN,
++	},
++	[VIN_VDD] = {
++		.type = IIO_VOLTAGE,
++		.indexed = 1,
++		.channel = 1,
++		.extend_name = "supply",
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++		.address = AD7746_REG_VT_DATA_HIGH << 8 |
++			AD7746_VTSETUP_VTMD_VDD_MON,
++	},
++	[TEMP_INT] = {
++		.type = IIO_TEMP,
++		.indexed = 1,
++		.channel = 0,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++		.address = AD7746_REG_VT_DATA_HIGH << 8 |
++			AD7746_VTSETUP_VTMD_INT_TEMP,
+These address fields clearly combine multiple elements.  whilst
+concise, this doesn't ease readablility of the code.  See below
+for a suggestion on this.
++	},
++	[TEMP_EXT] = {
++		.type = IIO_TEMP,
++		.indexed = 1,
++		.channel = 1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++		.address = AD7746_REG_VT_DATA_HIGH << 8 |
++			AD7746_VTSETUP_VTMD_EXT_TEMP,
++	},
++	[CIN1] = {
++		.type = IIO_CAPACITANCE,
++		.indexed = 1,
++		.channel = 0,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
++		BIT(IIO_CHAN_INFO_SCALE),
++		.address = AD7746_REG_CAP_DATA_HIGH << 8,
++	},
++	[CIN1_DIFF] = {
++		.type = IIO_CAPACITANCE,
++		.differential = 1,
++		.indexed = 1,
++		.channel = 0,
++		.channel2 = 2,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
++		BIT(IIO_CHAN_INFO_SCALE),
++		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
++			AD7746_CAPSETUP_CAPDIFF
++	},
++	[CIN2] = {
++		.type = IIO_CAPACITANCE,
++		.indexed = 1,
++		.channel = 1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
++		BIT(IIO_CHAN_INFO_SCALE),
++		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
++			AD7746_CAPSETUP_CIN2,
++	},
++	[CIN2_DIFF] = {
++		.type = IIO_CAPACITANCE,
++		.differential = 1,
++		.indexed = 1,
++		.channel = 1,
++		.channel2 = 3,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
++		BIT(IIO_CHAN_INFO_SCALE),
++		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
++			AD7746_CAPSETUP_CAPDIFF | AD7746_CAPSETUP_CIN2,
++	}
++};
++
++/* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
++static const unsigned char ad7746_vt_filter_rate_table[][2] = {
++	{50, 20 + 1}, {31, 32 + 1}, {16, 62 + 1}, {8, 122 + 1},
++};
++
++static const unsigned char ad7746_cap_filter_rate_table[][2] = {
++	{91, 11 + 1}, {84, 12 + 1}, {50, 20 + 1}, {26, 38 + 1},
++	{16, 62 + 1}, {13, 77 + 1}, {11, 92 + 1}, {9, 110 + 1},
++};
++
++static int ad7746_select_channel(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan)
++{
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	int ret, delay;
++	u8 vt_setup, cap_setup;
++
++	switch (chan->type) {
++	case IIO_CAPACITANCE:
+This use of part of address strikes me as messy.  I'd have address
+hold a look up index that allows the various things combined in address
+to be held in a nice easy to follow enumerated array of a structures.
+Will give more readable code throughout.
++		cap_setup = (chan->address & 0xFF) | AD7746_CAPSETUP_CAPEN;
++		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
++		delay = ad7746_cap_filter_rate_table[(chip->config >> 3) &
++			0x7][1];
++
++		if (chip->capdac_set != chan->channel) {
++			ret = i2c_smbus_write_byte_data(chip->client,
++				AD7746_REG_CAPDACA,
++				chip->capdac[chan->channel][0]);
++			if (ret < 0)
++				return ret;
++			ret = i2c_smbus_write_byte_data(chip->client,
++				AD7746_REG_CAPDACB,
++				chip->capdac[chan->channel][1]);
++			if (ret < 0)
++				return ret;
++
++			chip->capdac_set = chan->channel;
++		}
++		break;
++	case IIO_VOLTAGE:
++	case IIO_TEMP:
++		vt_setup = (chan->address & 0xFF) | AD7746_VTSETUP_VTEN;
++		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
++		delay = ad7746_cap_filter_rate_table[(chip->config >> 6) &
++			0x3][1];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if (chip->cap_setup != cap_setup) {
++		ret = i2c_smbus_write_byte_data(chip->client,
++						AD7746_REG_CAP_SETUP,
++						cap_setup);
++		if (ret < 0)
++			return ret;
++
++		chip->cap_setup = cap_setup;
++	}
++
++	if (chip->vt_setup != vt_setup) {
++		ret = i2c_smbus_write_byte_data(chip->client,
++						AD7746_REG_VT_SETUP,
++						vt_setup);
++		if (ret < 0)
++			return ret;
++
++		chip->vt_setup = vt_setup;
++	}
++
++	return delay;
++}
++
++static inline ssize_t ad7746_start_calib(struct device *dev,
++					 struct device_attribute *attr,
++					 const char *buf,
++					 size_t len,
++					 u8 regval)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	bool doit;
++	int ret, timeout = 10;
++
++	ret = strtobool(buf, &doit);
++	if (ret < 0)
++		return ret;
++
++	if (!doit)
++		return 0;
++
++	mutex_lock(&indio_dev->mlock);
++	regval |= chip->config;
++	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG, regval);
++	if (ret < 0) {
++		mutex_unlock(&indio_dev->mlock);
++		return ret;
++	}
++
++	do {
++		msleep(20);
++		ret = i2c_smbus_read_byte_data(chip->client, AD7746_REG_CFG);
++		if (ret < 0) {
++			mutex_unlock(&indio_dev->mlock);
++			return ret;
++		}
++	} while ((ret == regval) && timeout--);
++
++	mutex_unlock(&indio_dev->mlock);
++
++	return len;
++}
++
++static ssize_t ad7746_start_offset_calib(struct device *dev,
++					 struct device_attribute *attr,
++					 const char *buf,
++					 size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	int ret = ad7746_select_channel(indio_dev,
++			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
++	if (ret < 0)
++		return ret;
++
++	return ad7746_start_calib(dev, attr, buf, len,
++				  AD7746_CONF_MODE_OFFS_CAL);
++}
++
++static ssize_t ad7746_start_gain_calib(struct device *dev,
++				       struct device_attribute *attr,
++				       const char *buf,
++				       size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	int ret = ad7746_select_channel(indio_dev,
++			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
++	if (ret < 0)
++		return ret;
++
++	return ad7746_start_calib(dev, attr, buf, len,
++				  AD7746_CONF_MODE_GAIN_CAL);
++}
++
++static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
++		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN1);
++static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
++		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN2);
++static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
++		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN1);
++static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
++		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN2);
++static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
++		       S_IWUSR, NULL, ad7746_start_gain_calib, VIN);
++
++static ssize_t ad7746_show_cap_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", ad7746_cap_filter_rate_table[
++			(chip->config >> 3) & 0x7][0]);
++}
++
++static ssize_t ad7746_store_cap_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	u8 data;
++	int ret, i;
++
++	ret = kstrtou8(buf, 10, &data);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < ARRAY_SIZE(ad7746_cap_filter_rate_table); i++)
++		if (data >= ad7746_cap_filter_rate_table[i][0])
++			break;
++
++	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
++		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
++
++	mutex_lock(&indio_dev->mlock);
++	chip->config &= ~AD7746_CONF_CAPFS(0x7);
++	chip->config |= AD7746_CONF_CAPFS(i);
++	mutex_unlock(&indio_dev->mlock);
++
++	return len;
++}
++
++static ssize_t ad7746_show_vt_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", ad7746_vt_filter_rate_table[
++			(chip->config >> 6) & 0x3][0]);
++}
++
++static ssize_t ad7746_store_vt_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	u8 data;
++	int ret, i;
++
++	ret = kstrtou8(buf, 10, &data);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < ARRAY_SIZE(ad7746_vt_filter_rate_table); i++)
++		if (data >= ad7746_vt_filter_rate_table[i][0])
++			break;
++
++	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
++		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
++
++	mutex_lock(&indio_dev->mlock);
++	chip->config &= ~AD7746_CONF_VTFS(0x3);
++	chip->config |= AD7746_CONF_VTFS(i);
++	mutex_unlock(&indio_dev->mlock);
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(in_capacitance_sampling_frequency,
++		       S_IRUGO | S_IWUSR, ad7746_show_cap_filter_rate_setup,
++			ad7746_store_cap_filter_rate_setup, 0);
++
++static IIO_DEVICE_ATTR(in_voltage_sampling_frequency,
++		       S_IRUGO | S_IWUSR, ad7746_show_vt_filter_rate_setup,
++		       ad7746_store_vt_filter_rate_setup, 0);
++
++static IIO_CONST_ATTR(in_voltage_sampling_frequency_available, "50 31 16 8");
++static IIO_CONST_ATTR(in_capacitance_sampling_frequency_available,
++		       "91 84 50 26 16 13 11 9");
++
++static struct attribute *ad7746_attributes[] = {
++	&iio_dev_attr_in_capacitance_sampling_frequency.dev_attr.attr,
++	&iio_dev_attr_in_voltage_sampling_frequency.dev_attr.attr,
+Can now be done as a standard info_mask element - in this case
+these would be shared_by_type.
+
++	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
+These need docummenting / understanding which I don't have right now!
++	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
++	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
++	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
++	&iio_dev_attr_in_voltage0_calibscale_calibration.dev_attr.attr,
+
++	&iio_const_attr_in_voltage_sampling_frequency_available.dev_attr.attr,
++	&iio_const_attr_in_capacitance_sampling_frequency_available.
++	dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ad7746_attribute_group = {
++	.attrs = ad7746_attributes,
++};
++
++static int ad7746_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val,
++			    int val2,
++			    long mask)
++{
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	int ret, reg;
++
++	mutex_lock(&indio_dev->mlock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_CALIBSCALE:
++		if (val != 1) {
++			ret = -EINVAL;
++			goto out;
++		}
++
++		val = (val2 * 1024) / 15625;
++
++		switch (chan->type) {
++		case IIO_CAPACITANCE:
++			reg = AD7746_REG_CAP_GAINH;
++			break;
++		case IIO_VOLTAGE:
++			reg = AD7746_REG_VOLT_GAINH;
++			break;
++		default:
++			ret = -EINVAL;
++			goto out;
++		}
++
++		ret = i2c_smbus_write_word_data(chip->client, reg, swab16(val));
+If you introduced the swapped version suggested below for read add this
+paired write function as well.  Its not as important but makes for
+easier to follow code once you know all the registers are reversed.
+
++		if (ret < 0)
++			goto out;
++
++		ret = 0;
++		break;
++	case IIO_CHAN_INFO_CALIBBIAS:
++		if ((val < 0) | (val > 0xFFFF)) {
++			ret = -EINVAL;
++			goto out;
++		}
++		ret = i2c_smbus_write_word_data(chip->client,
++				AD7746_REG_CAP_OFFH, swab16(val));
++		if (ret < 0)
++			goto out;
++
++		ret = 0;
++		break;
++	case IIO_CHAN_INFO_OFFSET:
++		if ((val < 0) | (val > 43008000)) { /* 21pF */
++			ret = -EINVAL;
++			goto out;
++		}
++
++		/* CAPDAC Scale = 21pF_typ / 127
+As below, this isn't standard kernel comment formatting.
++		 * CIN Scale = 8.192pF / 2^24
++		 * Offset Scale = CAPDAC Scale / CIN Scale = 338646
++		 * */
++
++		val /= 338646;
++
++		chip->capdac[chan->channel][chan->differential] = (val > 0 ?
++			AD7746_CAPDAC_DACP(val) | AD7746_CAPDAC_DACEN : 0);
++
++		ret = i2c_smbus_write_byte_data(chip->client,
++			AD7746_REG_CAPDACA,
++			chip->capdac[chan->channel][0]);
++		if (ret < 0)
++			goto out;
++		ret = i2c_smbus_write_byte_data(chip->client,
++			AD7746_REG_CAPDACB,
++			chip->capdac[chan->channel][1]);
++		if (ret < 0)
++			goto out;
++
++		chip->capdac_set = chan->channel;
++
++		ret = 0;
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++out:
++	mutex_unlock(&indio_dev->mlock);
++	return ret;
++}
++
++static int ad7746_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2,
++			   long mask)
++{
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	int ret, delay;
++	u8 regval, reg;
++
++	mutex_lock(&indio_dev->mlock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_PROCESSED:
++		ret = ad7746_select_channel(indio_dev, chan);
++		if (ret < 0)
++			goto out;
++		delay = ret;
++
++		regval = chip->config | AD7746_CONF_MODE_SINGLE_CONV;
++		ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG,
++				regval);
++		if (ret < 0)
++			goto out;
++
++		msleep(delay);
++		/* Now read the actual register */
++
++		ret = i2c_smbus_read_i2c_block_data(chip->client,
++			chan->address >> 8, 3, &chip->data.d8[1]);
++
++		if (ret < 0)
++			goto out;
++
++		*val = (be32_to_cpu(chip->data.d32) & 0xFFFFFF) - 0x800000;
++
++		switch (chan->type) {
++		case IIO_TEMP:
+Kernel comment format is
+/*
+* Temp...
+*/
++		/* temperature in milli degrees Celsius
++		 * T = ((*val / 2048) - 4096) * 1000
++		 */
++			*val = (*val * 125) / 256;
++			break;
++		case IIO_VOLTAGE:
++			if (chan->channel == 1) /* supply_raw*/
++				*val = *val * 6;
++			break;
++		default:
++			break;
++		}
++
++		ret = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_CALIBSCALE:
++		switch (chan->type) {
++		case IIO_CAPACITANCE:
++			reg = AD7746_REG_CAP_GAINH;
++			break;
++		case IIO_VOLTAGE:
++			reg = AD7746_REG_VOLT_GAINH;
++			break;
++		default:
++			ret = -EINVAL;
++			goto out;
++		}
++
++		ret = i2c_smbus_read_word_data(chip->client, reg);
++		if (ret < 0)
++			goto out;
++		/* 1 + gain_val / 2^16 */
++		*val = 1;
+Interesting.  There is no explicit i2c_smbus_read_word_data for the
+swapped case (unliked i2c_smbus_read_word_swapped).  Perhaps one should
+be added?  Not sure how common this particular case is.. One to look at?
+There are some hidden cases, such as the lm73 driver btw.
+Actually a couple of the lm* drivers in hwmon have crazy comparison code
+to avoid the fact the data is reversed (worth a look and wince)
+
++		*val2 = (15625 * swab16(ret)) / 1024;
++
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
++	case IIO_CHAN_INFO_CALIBBIAS:
++		ret = i2c_smbus_read_word_data(chip->client,
++					       AD7746_REG_CAP_OFFH);
++		if (ret < 0)
++			goto out;
++		*val = swab16(ret);
++
++		ret = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = AD7746_CAPDAC_DACP(chip->capdac[chan->channel]
++			[chan->differential]) * 338646;
++
++		ret = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_CAPACITANCE:
++			/* 8.192pf / 2^24 */
++			*val =  0;
++			*val2 = 488;
++			ret = IIO_VAL_INT_PLUS_NANO;
++			break;
++		case IIO_VOLTAGE:
++			/* 1170mV / 2^23 */
++			*val = 1170;
++			*val2 = 23;
++			ret = IIO_VAL_FRACTIONAL_LOG2;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++
++		break;
++	default:
++		ret = -EINVAL;
++	}
++out:
++	mutex_unlock(&indio_dev->mlock);
++	return ret;
++}
++
++static const struct iio_info ad7746_info = {
++	.attrs = &ad7746_attribute_group,
++	.read_raw = &ad7746_read_raw,
++	.write_raw = &ad7746_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++/*
++ * device probe and remove
++ */
++
++static int ad7746_probe(struct i2c_client *client,
++		const struct i2c_device_id *id)
++{
++	struct ad7746_platform_data *pdata = client->dev.platform_data;
++	struct ad7746_chip_info *chip;
++	struct iio_dev *indio_dev;
++	int ret = 0;
+This assignement is unnecessary as ret is always assigned in relevant paths
+below.
++	unsigned char regval = 0;
+I'd be tempted to move the assignement into the single path where it matters
+below.
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
++	if (!indio_dev)
++		return -ENOMEM;
++	chip = iio_priv(indio_dev);
++	/* this is only used for device removal purposes */
++	i2c_set_clientdata(client, indio_dev);
++
++	chip->client = client;
++	chip->capdac_set = -1;
++
++	/* Establish that the iio_dev is a child of the i2c device */
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &ad7746_info;
++	indio_dev->channels = ad7746_channels;
++	if (id->driver_data == 7746)
++		indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
++	else
++		indio_dev->num_channels =  ARRAY_SIZE(ad7746_channels) - 2;
++	indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	if (pdata) {
++		if (pdata->exca_en) {
++			if (pdata->exca_inv_en)
++				regval |= AD7746_EXCSETUP_NEXCA;
++			else
++				regval |= AD7746_EXCSETUP_EXCA;
++		}
++
++		if (pdata->excb_en) {
++			if (pdata->excb_inv_en)
++				regval |= AD7746_EXCSETUP_NEXCB;
++			else
++				regval |= AD7746_EXCSETUP_EXCB;
++		}
++
++		regval |= AD7746_EXCSETUP_EXCLVL(pdata->exclvl);
++	} else {
++		dev_warn(&client->dev, "No platform data? using default\n");
++		regval = AD7746_EXCSETUP_EXCA | AD7746_EXCSETUP_EXCB |
++			AD7746_EXCSETUP_EXCLVL(3);
++	}
++
++	ret = i2c_smbus_write_byte_data(chip->client,
++					AD7746_REG_EXC_SETUP, regval);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		return ret;
++
+I'd drop the devinfo that follows.  Doesn't add anything that isn't easy
+to check via other means.  Then you can return iio_device_register(...)
+directly.
+
++	dev_info(&client->dev, "%s capacitive sensor registered\n", id->name);
++
++	return 0;
++}
++
++static int ad7746_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
++static const struct i2c_device_id ad7746_id[] = {
++	{ "ad7745", 7745 },
++	{ "ad7746", 7746 },
++	{ "ad7747", 7747 },
++	{}
++};
++
++MODULE_DEVICE_TABLE(i2c, ad7746_id);
++
++static struct i2c_driver ad7746_driver = {
++	.driver = {
++		.name = KBUILD_MODNAME,
++	},
++	.probe = ad7746_probe,
++	.remove = ad7746_remove,
++	.id_table = ad7746_id,
++};
++module_i2c_driver(ad7746_driver);
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_DESCRIPTION("Analog Devices AD7746/5/7 capacitive sensor driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/staging/iio/cdc/ad7746.h b/drivers/staging/iio/cdc/ad7746.h
+new file mode 100644
+index 000000000000..ea8572d1df02
+--- /dev/null
++++ b/drivers/staging/iio/cdc/ad7746.h
+@@ -0,0 +1,29 @@
++/*
++ * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#ifndef IIO_CDC_AD7746_H_
++#define IIO_CDC_AD7746_H_
++
++/*
++ * TODO: struct ad7746_platform_data needs to go into include/linux/iio
++ */
++
++#define AD7466_EXCLVL_0		0 /* +-VDD/8 */
++#define AD7466_EXCLVL_1		1 /* +-VDD/4 */
++#define AD7466_EXCLVL_2		2 /* +-VDD * 3/8 */
++#define AD7466_EXCLVL_3		3 /* +-VDD/2 */
++
++struct ad7746_platform_data {
++	unsigned char exclvl;	/*Excitation Voltage Level */
++	bool exca_en;		/* enables EXCA pin as the excitation output */
++	bool exca_inv_en;	/* enables /EXCA pin as the excitation output */
++	bool excb_en;		/* enables EXCB pin as the excitation output */
++	bool excb_inv_en;	/* enables /EXCB pin as the excitation output */
++};
++
++#endif /* IIO_CDC_AD7746_H_ */
+
 
