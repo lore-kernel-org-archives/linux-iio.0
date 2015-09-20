@@ -1,141 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49991 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754851AbbITKyX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Sep 2015 06:54:23 -0400
-Subject: Re: [RESEND PATCH 3/4] iio: st_sensors: add debugfs register read
- hook
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1442303377-11858-1-git-send-email-linus.walleij@linaro.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>
+Return-Path: <jic23@kernel.org>
+Subject: Re: [PATCH] iio: st_common: use standard trigger suffix
+To: Linus Walleij <linus.walleij@linaro.org>,
+ Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+References: <1438766895-15824-1-git-send-email-linus.walleij@linaro.org>
+ <9F97DF0A-7CD3-4A1B-8B41-9B060A080F47@jic23.retrosnub.co.uk>
+ <CACRpkdauLeQbVpOiN3G6dttRKrhV4yyu_K-how-hHHXjSQN9dA@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ Denis Ciocca <denis.ciocca@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55FE905E.7070604@kernel.org>
-Date: Sun, 20 Sep 2015 11:54:22 +0100
+Message-ID: <55FE914A.1090908@kernel.org>
+Date: Sun, 20 Sep 2015 11:58:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <1442303377-11858-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <CACRpkdauLeQbVpOiN3G6dttRKrhV4yyu_K-how-hHHXjSQN9dA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 15/09/15 08:49, Linus Walleij wrote:
-> This adds a debugfs hook to read/write registers in the ST
-> sensors using debugfs. Proved to be awesome help when trying
-> to debug why IRQs do not arrive.
+On 06/08/15 16:03, Linus Walleij wrote:
+> On Wed, Aug 5, 2015 at 10:15 PM, Jonathan Cameron
+> <jic23@jic23.retrosnub.co.uk> wrote:
+>> On 5 August 2015 10:28:15 BST, Linus Walleij <linus.walleij@linaro.org> wrote:
+>>>
+>>> The triggers from ST sensors are named <iio_device_name>-trigger
+>>> instead of the standard <iio_device_name>-dev<iio_dev_id> as
+>>> used by most and also in the iio-tools. Change this to match
+>>> the norm.
+>>>
+>>> After this I can do tests with generic_buffer -n <dev_name>
+>>> without having to manually specify the trigger with the -t
+>>> option.
+>>
+>> Hmm ABI change... Not a requirement that this naming be followed...
 > 
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-This one is already in my tree as well. Will be doing a pull shortly
-so should turn up in linux next fairly soon.
+> Unless someone can provide a userspace that actually have the
+> ST sensors working (with mainline) I think we can make this change.
+> 
+> I've really struggled to get generic_buffer going with the ST sensors
+> to no avail. Right now it seems to be because the *_en files in
+> /scan_elements are not ever written with "1" so consequently
+> iio_buffer_store_enable
+> __iio_update_buffers
+> iio_buffer_request_update
+> iio_buffer_update_bytes_per_datum
+> 
+> Doesn't happen and bytes per datum is zero and it bails out.
+> 
+> I don't know if it's a problem with generic_buffer though, is there
+> another userspace that everyone is using without telling me?
+> 
+>> Could register the trigger twice I suppose so as to keep old name available....
+> 
+> Hm there are a couple of more actually using -trigger if there is a
+> single one.
+> 
+> Maybe we should have generic_buffer looking for both rather, or
+> do you want to keep that tool simple?
+> 
+sorry Linus, I completely failed to come back to you on this.
+I'd have no problem with generic-buffer looking for both as long
+as the code is commented to say the 'unusual' one is not
+the preferred choice and is for legacy parts.
+
+I guess we also need some documentation to specify preferred naming
+of triggers.  As Lars pointed out the various libraries out there
+tend to deal with these cases anyway (often by navigating the sysfs
+tree to find associated triggers provided by a given device).
 
 Jonathan
-> ---
-> ChangeLog v1->v2:
-> - User &ampersand i front of function name for debugfs helper
-> - EXPORT the debugfs regread symbol so modules work
-> ---
->  drivers/iio/accel/st_accel_core.c               |  1 +
->  drivers/iio/common/st_sensors/st_sensors_core.c | 22 ++++++++++++++++++++++
->  drivers/iio/gyro/st_gyro_core.c                 |  1 +
->  drivers/iio/magnetometer/st_magn_core.c         |  1 +
->  drivers/iio/pressure/st_pressure_core.c         |  1 +
->  include/linux/iio/common/st_sensors.h           |  4 ++++
->  6 files changed, 30 insertions(+)
-> 
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index b9a7b5c7c5e7..44321ded84cd 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -618,6 +618,7 @@ static const struct iio_info accel_info = {
->  	.attrs = &st_accel_attribute_group,
->  	.read_raw = &st_accel_read_raw,
->  	.write_raw = &st_accel_write_raw,
-> +	.debugfs_reg_access = &st_sensors_debugfs_reg_access,
->  };
->  
->  #ifdef CONFIG_IIO_TRIGGER
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index 2e7fdb502645..25258e2c1a82 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -44,6 +44,28 @@ st_sensors_write_data_with_mask_error:
->  	return err;
->  }
->  
-> +int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
-> +				  unsigned reg, unsigned writeval,
-> +				  unsigned *readval)
-> +{
-> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +	u8 readdata;
-> +	int err;
-> +
-> +	if (!readval)
-> +		return sdata->tf->write_byte(&sdata->tb, sdata->dev,
-> +					     (u8)reg, (u8)writeval);
-> +
-> +	err = sdata->tf->read_byte(&sdata->tb, sdata->dev, (u8)reg, &readdata);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	*readval = (unsigned)readdata;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL(st_sensors_debugfs_reg_access);
-> +
->  static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
->  			unsigned int odr, struct st_sensor_odr_avl *odr_out)
->  {
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index 4b993a5bc9a1..02eddcebeea3 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -383,6 +383,7 @@ static const struct iio_info gyro_info = {
->  	.attrs = &st_gyro_attribute_group,
->  	.read_raw = &st_gyro_read_raw,
->  	.write_raw = &st_gyro_write_raw,
-> +	.debugfs_reg_access = &st_sensors_debugfs_reg_access,
->  };
->  
->  #ifdef CONFIG_IIO_TRIGGER
-> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-> index f8dc4b85d70c..b27f0146647b 100644
-> --- a/drivers/iio/magnetometer/st_magn_core.c
-> +++ b/drivers/iio/magnetometer/st_magn_core.c
-> @@ -560,6 +560,7 @@ static const struct iio_info magn_info = {
->  	.attrs = &st_magn_attribute_group,
->  	.read_raw = &st_magn_read_raw,
->  	.write_raw = &st_magn_write_raw,
-> +	.debugfs_reg_access = &st_sensors_debugfs_reg_access,
->  };
->  
->  #ifdef CONFIG_IIO_TRIGGER
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index eb41d2b92c24..b39a2fb0671c 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -400,6 +400,7 @@ static const struct iio_info press_info = {
->  	.attrs = &st_press_attribute_group,
->  	.read_raw = &st_press_read_raw,
->  	.write_raw = &st_press_write_raw,
-> +	.debugfs_reg_access = &st_sensors_debugfs_reg_access,
->  };
->  
->  #ifdef CONFIG_IIO_TRIGGER
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index 3c17cd7fdf06..2fe939c73cd2 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -271,6 +271,10 @@ void st_sensors_power_enable(struct iio_dev *indio_dev);
->  
->  void st_sensors_power_disable(struct iio_dev *indio_dev);
->  
-> +int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
-> +				  unsigned reg, unsigned writeval,
-> +				  unsigned *readval);
-> +
->  int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr);
->  
->  int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
-> 
-
