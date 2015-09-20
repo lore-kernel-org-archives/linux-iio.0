@@ -1,59 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49945 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49984 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754833AbbITKnj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Sep 2015 06:43:39 -0400
-Subject: Re: [PATCH] Staging: iio: cdc: Remove unused macro
-To: Shraddha Barke <shraddha.6596@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Julia Lawall <julia.lawall@lip6.fr>
-References: <1442407453-6030-1-git-send-email-shraddha.6596@gmail.com>
-Cc: linux-iio@vger.kernel.org
+	with ESMTP id S1754851AbbITKxc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Sep 2015 06:53:32 -0400
+Subject: Re: [RESEND PATCH 2/4] iio: percolate error if event fd fails
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1442303365-11811-1-git-send-email-linus.walleij@linaro.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55FE8DD8.10809@kernel.org>
-Date: Sun, 20 Sep 2015 11:43:36 +0100
+Message-ID: <55FE9029.9000302@kernel.org>
+Date: Sun, 20 Sep 2015 11:53:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <1442407453-6030-1-git-send-email-shraddha.6596@gmail.com>
+In-Reply-To: <1442303365-11811-1-git-send-email-linus.walleij@linaro.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/09/15 13:44, Shraddha Barke wrote:
-> Remove the macro since it's not used anywhere throughout the kernel
+On 15/09/15 08:49, Linus Walleij wrote:
+> This makes the error from iio_event_getfd() percolate up
+> to userspace properly so we can know for sure there is no
+> events on this device (-ENODEV returned). Before this patch
+> we would bail out looking for the unsupported evens on the
+> erroneous (negative) file descriptor.
 > 
-> Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
-Whilst I have no objection to cleanup patches like this in general,
-I would prefer a more thorough look at the driver.  For example, the
-macro 2 lines above isn't used either.
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Hi Linus,
 
-So I'm not going to take this patch as it adds unnecessary noise.
-If you want to take a good look at the whole driver and see what
-else needs cleaning up then that would be great!
-
-Speaking of which.  Lars, do you guys have any plans to get these devices
-out of staging anytime soon? (or know of anyone else who does).
-If not perhaps some guidance would help Shradda make that move if he is
-interested in doing so?
-
-Thanks,
+I applied this one a while back - will be going upstream to Greg shortly.
+Got delayed I think by just missing the merge window close.
 
 Jonathan
 > ---
->  drivers/staging/iio/cdc/ad7746.c | 1 -
->  1 file changed, 1 deletion(-)
+>  drivers/iio/industrialio-core.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> index 10fa372..f5a807c 100644
-> --- a/drivers/staging/iio/cdc/ad7746.c
-> +++ b/drivers/staging/iio/cdc/ad7746.c
-> @@ -43,7 +43,6 @@
->  #define AD7746_REG_CAP_GAINH		15
->  #define AD7746_REG_CAP_GAINL		16
->  #define AD7746_REG_VOLT_GAINH		17
-> -#define AD7746_REG_VOLT_GAINL		18
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index b3fcc2c449d8..b347524d1b6d 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1153,6 +1153,8 @@ static long iio_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 >  
->  /* Status Register Bit Designations (AD7746_REG_STATUS) */
->  #define AD7746_STATUS_EXCERR		BIT(3)
+>  	if (cmd == IIO_GET_EVENT_FD_IOCTL) {
+>  		fd = iio_event_getfd(indio_dev);
+> +		if (fd < 0)
+> +			return fd;
+>  		if (copy_to_user(ip, &fd, sizeof(fd)))
+>  			return -EFAULT;
+>  		return 0;
 > 
 
