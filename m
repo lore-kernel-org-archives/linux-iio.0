@@ -1,121 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52078 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52118 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755456AbbITTIj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Sep 2015 15:08:39 -0400
-Subject: Re: [PATCH] Asus T300CHI.
-To: Mike Mestnik <cheako@mikemestnik.net>,
-	Daniel Baluta <daniel.baluta@gmail.com>
-References: <CAF8px547WhBsfmV8K8OLbqTbADWbu0sD1jUjrGEPHVZfEzrP6w@mail.gmail.com>
- <CAEnQRZAX1=Y4SaOrpfbWRLR1kYmNKJjeKKouS6pkeb2BBDzr-g@mail.gmail.com>
- <CAF8px56ehuZxcP9EJ3d+M68CdYJKdkiaRs_g1+S8euiFKA5pkA@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Bastien Nocera <hadess@hadess.net>
+	with ESMTP id S1755343AbbITTSg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Sep 2015 15:18:36 -0400
+Subject: Re: [PATCH] iio: gyro: ssp_gyro_sensor: Use devm_iio_device_register
+To: Vaishali Thakkar <vthakkar1994@gmail.com>
+References: <20150914160849.GA21748@localhost>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Karol Wrona <k.wrona@samsung.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55FF0433.6050900@kernel.org>
-Date: Sun, 20 Sep 2015 20:08:35 +0100
+Message-ID: <55FF068A.30302@kernel.org>
+Date: Sun, 20 Sep 2015 20:18:34 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAF8px56ehuZxcP9EJ3d+M68CdYJKdkiaRs_g1+S8euiFKA5pkA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20150914160849.GA21748@localhost>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/09/15 20:03, Mike Mestnik wrote:
-> On Sat, Sep 19, 2015 at 1:48 PM, Daniel Baluta <daniel.baluta@gmail.com> wrote:
->> On Fri, Sep 18, 2015 at 12:07 AM, Mike Mestnik <cheako@mikemestnik.net> wrote:
->>> Hello,
->>>   I'm looking to know the result of adding ACPI support for a new
->>> tablet, the existing support shouldn't work because of a misplaced
->>> __init that causes the function to be removed prior to being called.
->>
->> Are you sure about this? It seems that the existing support doesn't work
->> because you have different product ids.
->>
-> The driver worked much better prior to me adding the product ids.  The
-> sensors were exposed to sysfs and all the data they collected seemed
-> correct to me.  The big issue is that there is no software, even
-> iio-sensor-proxy didn't know how to access the data.
-Cc'd Bastien Nocera.
+On 14/09/15 17:08, Vaishali Thakkar wrote:
+> Use resourced managed function devm_iio_device_register to
+> make error path simpler. To be compatible with the change,
+> the remove function is removed as it is now redundant.
 > 
->>
->>> After applying this patch I feel that I've moved support for the
->>> T300CHI backwards.  What should be the intended effect of using the
->>> ACPI interface?
->>>
->>> Index: linux-4.1.3/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
->>> ===================================================================
->>> --- linux-4.1.3.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
->>> +++ linux-4.1.3/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
->>> @@ -23,27 +23,44 @@
->>>  enum inv_mpu_product_name {
->>>   INV_MPU_NOT_MATCHED,
->>>   INV_MPU_ASUS_T100TA,
->>> + INV_MPU_ASUS_T300CHI,
->>>  };
->>>
->>>  static enum inv_mpu_product_name matched_product_name;
->>>
->>> -static int __init asus_t100_matched(const struct dmi_system_id *d)
->>> +static int asus_t100ta_matched(const struct dmi_system_id *d)
->>>  {
->>>   matched_product_name = INV_MPU_ASUS_T100TA;
->>>
->>>   return 0;
->>>  }
->>>
->>> +static int asus_t300chi_matched(const struct dmi_system_id *d)
->>> +{
->>> + matched_product_name = INV_MPU_ASUS_T300CHI;
->>> +
->>> + return 0;
->>> +}
->>> +
->>>  static const struct dmi_system_id inv_mpu_dev_list[] = {
->>>   {
->>> - .callback = asus_t100_matched,
->>> - .ident = "Asus Transformer Book T100",
->>> + .callback = asus_t100ta_matched,
->>> + .ident = "Asus Transformer Book T100TA",
->>>   .matches = {
->>>   DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC"),
->>>   DMI_MATCH(DMI_PRODUCT_NAME, "T100TA"),
->>>   DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
->>>   },
->>>   },
->>> + {
->>> + .callback = asus_t300chi_matched,
->>> + .ident = "Asus Transformer Book T300CHI",
->>> + .matches = {
->>> + DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC"),
->>> + DMI_MATCH(DMI_PRODUCT_NAME, "T300CHI"),
->>> + DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
->>> + },
->>> + },
->>>   /* Add more matching tables here..*/
->>>   {}
->>>  };
->>> @@ -154,6 +171,7 @@ int inv_mpu_acpi_create_mux_client(struc
->>>   dmi_check_system(inv_mpu_dev_list);
->>>   switch (matched_product_name) {
->>>   case INV_MPU_ASUS_T100TA:
->>> + case INV_MPU_ASUS_T300CHI:
->>>   ret = asus_acpi_get_sensor_info(adev, st->client,
->>>   &info);
->>>   break;
->>
->> This looks good to me. Care to send a formal patch?
->>
-> I would if the changes do what they are intended to do.  With this
-> patch applied there is no longer entries for the device in sysfs and
-> iio-sensor-proxy is still unable to access the device.  I'm wondering
-> how I'd be able to know if this change worked?
+> Signed-off-by: Vaishali Thakkar <vthakkar1994@gmail.com>
+This patch is reasonable, but makes me wonder if there is an issue
+in the remove path for this driver.  It relies on the ssp_sensors common
+module.  That in ssp_spi.c uses the fact ssp_register_consumer
+has saved the struct iio_dev into a local array in the core driver.
+I think this means that a remove of this function will leave a possible
+null pointer de reference.
+
+Now I suspect that case doesn't actually occur because the relevant
+device elements are disabled whenever this module is removed.  Having
+said that we might expect an ssp_unregister_consumer function that
+sets the relevant pointer back to null on removal so as to avoid
+any possible race conditions around driver removal / reprobing.
+A spot of defensive programming rather than necessarily a bug to be
+fixed!
+
+One little process thing. This driver was written by Karol so patches
+should probably always cc Karol as well as the more general
+maintainer / reviewers for IIO.  Added cc.
+
+Jonathan
+> ---
+>  drivers/iio/gyro/ssp_gyro_sensor.c | 12 +-----------
+>  1 file changed, 1 insertion(+), 11 deletions(-)
 > 
->> thanks,
->> Daniel.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/gyro/ssp_gyro_sensor.c b/drivers/iio/gyro/ssp_gyro_sensor.c
+> index 0a8afdd..ac88de7 100644
+> --- a/drivers/iio/gyro/ssp_gyro_sensor.c
+> +++ b/drivers/iio/gyro/ssp_gyro_sensor.c
+> @@ -134,7 +134,7 @@ static int ssp_gyro_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, indio_dev);
+>  
+> -	ret = iio_device_register(indio_dev);
+> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> @@ -144,21 +144,11 @@ static int ssp_gyro_probe(struct platform_device *pdev)
+>  	return 0;
+>  }
+>  
+> -static int ssp_gyro_remove(struct platform_device *pdev)
+> -{
+> -	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> -
+> -	iio_device_unregister(indio_dev);
+> -
+> -	return 0;
+> -}
+> -
+>  static struct platform_driver ssp_gyro_driver = {
+>  	.driver = {
+>  		.name = SSP_GYROSCOPE_NAME,
+>  	},
+>  	.probe = ssp_gyro_probe,
+> -	.remove = ssp_gyro_remove,
+>  };
+>  
+>  module_platform_driver(ssp_gyro_driver);
 > 
 
