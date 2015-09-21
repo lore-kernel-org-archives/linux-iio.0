@@ -1,82 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f169.google.com ([209.85.213.169]:33248 "EHLO
-	mail-ig0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932270AbbIUO0I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Sep 2015 10:26:08 -0400
-Received: by igbkq10 with SMTP id kq10so79605918igb.0
-        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2015 07:26:07 -0700 (PDT)
-Date: Mon, 21 Sep 2015 09:26:04 -0500
-From: Mike Mestnik <cheako@mikemestnik.net>
-To: Bastien Nocera <hadess@hadess.net>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Daniel Baluta <daniel.baluta@gmail.com>
-Subject: Re: [PATCH] Asus T300CHI.
-Message-ID: <20150921142604.GA12821@localhost>
-References: <CAF8px547WhBsfmV8K8OLbqTbADWbu0sD1jUjrGEPHVZfEzrP6w@mail.gmail.com>
- <CAEnQRZAX1=Y4SaOrpfbWRLR1kYmNKJjeKKouS6pkeb2BBDzr-g@mail.gmail.com>
- <CAF8px56ehuZxcP9EJ3d+M68CdYJKdkiaRs_g1+S8euiFKA5pkA@mail.gmail.com>
- <55FF0433.6050900@kernel.org>
- <1442788960.1030.11.camel@hadess.net>
+Received: from mail-pa0-f54.google.com ([209.85.220.54]:34999 "EHLO
+	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932421AbbIUS5T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Sep 2015 14:57:19 -0400
+Subject: Re: [v7 PATCH 2/2] devicetree: Add documentation for UPISEMI us5182d
+ ALS and Proximity sensor
+To: Adriana Reus <adriana.reus@intel.com>
+References: <1442391252-7368-1-git-send-email-adriana.reus@intel.com>
+ <1442391252-7368-3-git-send-email-adriana.reus@intel.com>
+Cc: jic23@kernel.org, pmeerw@pmeerw.net, daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, robh+dt@kernel.org, pawel.moll@arm.com,
+	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
+	galak@codeaurora.org
+From: Rob Herring <robh@kernel.org>
+Message-ID: <56001C07.5040802@kernel.org>
+Date: Mon, 21 Sep 2015 10:02:31 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1442788960.1030.11.camel@hadess.net>
+In-Reply-To: <1442391252-7368-3-git-send-email-adriana.reus@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sep 20, 2015 5:42 PM, "Bastien Nocera" <hadess@hadess.net> wrote:
->
-> On Sun, 2015-09-20 at 20:08 +0100, Jonathan Cameron wrote:
-> > On 19/09/15 20:03, Mike Mestnik wrote:
-> > > On Sat, Sep 19, 2015 at 1:48 PM, Daniel Baluta <
-> > > daniel.baluta@gmail.com> wrote:
-> > > > On Fri, Sep 18, 2015 at 12:07 AM, Mike Mestnik <
-> > > > cheako@mikemestnik.net> wrote:
-> > > > > Hello,
-> > > > >   I'm looking to know the result of adding ACPI support for a
-> > > > > new
-> > > > > tablet, the existing support shouldn't work because of a
-> > > > > misplaced
-> > > > > __init that causes the function to be removed prior to being
-> > > > > called.
-> > > >
-> > > > Are you sure about this? It seems that the existing support
-> > > > doesn't work
-> > > > because you have different product ids.
-> > > >
-> > > The driver worked much better prior to me adding the product ids.
-> > >  The
-> > > sensors were exposed to sysfs and all the data they collected
-> > > seemed
-> > > correct to me.  The big issue is that there is no software, even
-> > > iio-sensor-proxy didn't know how to access the data.
-> > Cc'd Bastien Nocera.
->
-> iio-sensor-proxy not finding the sensor, and with it working otherwise,
-> would be an iio-sensor-proxy bug. I have one of those already for the
-> accelerometer in the WinBook TW100 that I haven't had time to root down
-> though. See:
-> https://github.com/hadess/iio-sensor-proxy/issues/39
->
-> The main problem being that sensor types are already hard to detect,
-> and the iio subsystem doesn't make it any easier to check whether
-> there's buffered output available, or the application needs to poll.
->
-> If anyone wants to fix that in the kernel, that would certainly make my
-> life easier.
->
-I only kind of understand the reasoning for iio, but for the case of
-devices used for instructing application behaviour I can't help but think
-this would be better served using/extending input events.
+On 09/16/2015 03:14 AM, Adriana Reus wrote:
+> Added entries in i2c/vendor-prefixes for the us5182d als and proximity sensor.
+> Also added a documentation file for this sensor's properties.
+> 
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+> ---
+>  Changes since v6:
+>  * Added some aditional clarifications on the optional
+>    properties, as suggested by Rob.
 
-That would seam to cover the above issues, in exchange for having to add
-support for a few new tricks.
+Acked-by: Rob Herring <robh@kernel.org>
 
-1. An axis where max and min are actually one 'step' apart.
-2. Double axis for xyz, 6 instead of 3.  Perhaps this can be handled with
-extra event nodes, but then there may be sync issues.
-3. Integrating iio data into input events.  I don't even understand what
-this would mean.
+> 
+>  .../devicetree/bindings/iio/light/us5182d.txt      | 34 ++++++++++++++++++++++
+>  .../devicetree/bindings/vendor-prefixes.txt        |  1 +
+>  2 files changed, 35 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/us5182d.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/us5182d.txt b/Documentation/devicetree/bindings/iio/light/us5182d.txt
+> new file mode 100644
+> index 0000000..6f0a530
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/us5182d.txt
+> @@ -0,0 +1,34 @@
+> +* UPISEMI us5182d I2C ALS and Proximity sensor
+> +
+> +Required properties:
+> +- compatible: must be "upisemi,usd5182"
+> +- reg: the I2C address of the device
+> +
+> +Optional properties:
+> +- upisemi,glass-coef: glass attenuation factor - compensation factor of
+> +                      resolution 1000 for material transmittance.
+> +- upisemi,dark-ths: array of 8 elements containing 16-bit thresholds (adc
+> +                    counts) corresponding to every scale.
+> +- upisemi,upper-dark-gain: 8-bit dark gain compensation factor(4 int and 4
+> +                           fractional bits - Q4.4) applied when light > threshold
+> +- upisemi,lower-dark-gain: 8-bit dark gain compensation factor(4 int and 4
+> +                           fractional bits - Q4.4) applied when light < threshold
+> +
+> +If the optional properties are not specified these factors will default to the
+> +values in the below example.
+> +The glass-coef defaults to no compensation for the covering material.
+> +The threshold array defaults to experimental values that work with US5182D
+> +sensor on evaluation board - roughly between 12-32 lux.
+> +There will be no dark-gain compensation by default when ALS > thresh
+> +(0 * dark-gain), and a 1.35 compensation factor when ALS < thresh.
+> +
+> +Example:
+> +
+> +    usd5182@39 {
+> +                compatible = "upisemi,usd5182";
+> +                reg = <0x39>;
+> +                upisemi,glass-coef = < 1000 >;
+> +                upisemi,dark-ths = /bits/ 16 <170 200 512 512 800 2000 4000 8000>;
+> +                upisemi,upper-dark-gain = /bits/ 8 <0x00>;
+> +                upisemi,lower-dark-gain = /bits/ 8 <0x16>;
+> +    };
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> index 341695b..85ba915 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -213,6 +213,7 @@ toshiba	Toshiba Corporation
+>  toumaz	Toumaz
+>  tplink	TP-LINK Technologies Co., Ltd.
+>  truly	Truly Semiconductors Limited
+> +upisemi	uPI Semiconductor Corp.
+>  usi	Universal Scientific Industrial Co., Ltd.
+>  v3	V3 Semiconductor
+>  variscite	Variscite Ltd.
+> 
 
-> Cheers
