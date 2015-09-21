@@ -1,120 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55621 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751505AbbIUJxr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Sep 2015 05:53:47 -0400
-In-Reply-To: <55FFBD5F.5020304@samsung.com>
-References: <20150914160849.GA21748@localhost> <55FF068A.30302@kernel.org> <55FFBD5F.5020304@samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] iio: gyro: ssp_gyro_sensor: Use devm_iio_device_register
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Mon, 21 Sep 2015 10:53:29 +0100
-To: Karol Wrona <k.wrona@samsung.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Vaishali Thakkar <vthakkar1994@gmail.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:45967 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932184AbbIUKzm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Sep 2015 06:55:42 -0400
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Irina Tirdea <irina.tirdea@intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Message-ID: <664C26F2-9F25-4D1F-9A3A-986471CEAD57@jic23.retrosnub.co.uk>
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	kernel@pengutronix.de, Markus Pargmann <mpa@pengutronix.de>
+Subject: [PATCH v3 0/4] iio: bmc150 regmap and SPI
+Date: Mon, 21 Sep 2015 12:55:12 +0200
+Message-Id: <1442832916-30774-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi,
+
+this series converts the bmc150 driver to use regmap and adds an SPI interface.
+
+Thanks for testing and review so far. I rebased the series onto v4.3-rc2 now
+(the togreg branch seems to be on v4.2).
+It still works for me but there were some differences regarding the chip id.
+
+Changes in v3:
+- Fixed type of variable 'step' which lead to compile warnings. Type is now
+  size_t.
+- Fixed patch that moved irq variable without reason
+- Readded MODULE_* to the core driver
+- Reintroduced check id NULL check
+
+Changes in v2:
+- Removed default values for regmap_config fields.
+- Redesigned the fifo_transfer function to avoid running in errors first.
+- Dropped irq checks patch as it is already mainline
+- Core can now be built as module with autoselection of i2c and spi parts
+
+As my hardware is missing an interrupt line from the SPI connected bmc150 I am
+not able to test the iio buffer code path and the i2c code path. Tests would be
+appreciated.
+
+@Srinivas:
+As there were some rebase conflicts on the first patch, I removed your
+reviewed-by tag again for the moment.
+
+Best regards,
+
+Markus
 
 
-On 21 September 2015 09:18:39 BST, Karol Wrona <k.wrona@samsung.com> wrote:
->On 09/20/2015 09:18 PM, Jonathan Cameron wrote:
->> On 14/09/15 17:08, Vaishali Thakkar wrote:
->>> Use resourced managed function devm_iio_device_register to
->>> make error path simpler. To be compatible with the change,
->>> the remove function is removed as it is now redundant.
->>>
->>> Signed-off-by: Vaishali Thakkar <vthakkar1994@gmail.com>
->> This patch is reasonable, but makes me wonder if there is an issue
->> in the remove path for this driver.  It relies on the ssp_sensors
->common
->> module.  That in ssp_spi.c uses the fact ssp_register_consumer
->> has saved the struct iio_dev into a local array in the core driver.
->> I think this means that a remove of this function will leave a
->possible
->> null pointer de reference.
->You are right. In this case we need something like
->ssp_deregister_consumer(...) in ssp_dev.c. So I think that "remove
->func"
->should stay. Of course we can switch to devm iio register.
-Not if you want to remove the userspace interface before doing you new function call.  Doing so gives a nasty race.
->
->Also the same can (rather should) be done for accelerometer sensor
->(ssp_accel_sensor.c).
->
->Vaishali, if you want please feel free and send patch.
->
->> 
->> Now I suspect that case doesn't actually occur because the relevant
->> device elements are disabled whenever this module is removed.  Having
->> said that we might expect an ssp_unregister_consumer function that
->> sets the relevant pointer back to null on removal so as to avoid
->> any possible race conditions around driver removal / reprobing.
->> A spot of defensive programming rather than necessarily a bug to be
->> fixed!
->> 
->> One little process thing. This driver was written by Karol so patches
->> should probably always cc Karol as well as the more general
->> maintainer / reviewers for IIO.  Added cc.
->> 
->> Jonathan
->>> ---
->>>  drivers/iio/gyro/ssp_gyro_sensor.c | 12 +-----------
->>>  1 file changed, 1 insertion(+), 11 deletions(-)
->>>
->>> diff --git a/drivers/iio/gyro/ssp_gyro_sensor.c
->b/drivers/iio/gyro/ssp_gyro_sensor.c
->>> index 0a8afdd..ac88de7 100644
->>> --- a/drivers/iio/gyro/ssp_gyro_sensor.c
->>> +++ b/drivers/iio/gyro/ssp_gyro_sensor.c
->>> @@ -134,7 +134,7 @@ static int ssp_gyro_probe(struct platform_device
->*pdev)
->>>  
->>>  	platform_set_drvdata(pdev, indio_dev);
->>>  
->>> -	ret = iio_device_register(indio_dev);
->>> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
->>>  	if (ret < 0)
->>>  		return ret;
->>>  
->>> @@ -144,21 +144,11 @@ static int ssp_gyro_probe(struct
->platform_device *pdev)
->>>  	return 0;
->>>  }
->>>  
->>> -static int ssp_gyro_remove(struct platform_device *pdev)
->>> -{
->>> -	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->>> -
->>> -	iio_device_unregister(indio_dev);
->>> -
->>> -	return 0;
->>> -}
->>> -
->>>  static struct platform_driver ssp_gyro_driver = {
->>>  	.driver = {
->>>  		.name = SSP_GYROSCOPE_NAME,
->>>  	},
->>>  	.probe = ssp_gyro_probe,
->>> -	.remove = ssp_gyro_remove,
->>>  };
->>>  
->>>  module_platform_driver(ssp_gyro_driver);
->>>
->> 
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->> 
+Markus Pargmann (4):
+  iio: bmc150: Use i2c regmap
+  iio: bcm150: Remove i2c_client from private data
+  iio: bmc150: Split the driver into core and i2c
+  iio: bmc150: Add SPI driver
+
+ drivers/iio/accel/Kconfig                          |  14 +-
+ drivers/iio/accel/Makefile                         |   4 +-
+ .../accel/{bmc150-accel.c => bmc150-accel-core.c}  | 388 ++++++++-------------
+ drivers/iio/accel/bmc150-accel-i2c.c               | 102 ++++++
+ drivers/iio/accel/bmc150-accel-spi.c               |  80 +++++
+ drivers/iio/accel/bmc150-accel.h                   |  20 ++
+ 6 files changed, 366 insertions(+), 242 deletions(-)
+ rename drivers/iio/accel/{bmc150-accel.c => bmc150-accel-core.c} (82%)
+ create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
+ create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
+ create mode 100644 drivers/iio/accel/bmc150-accel.h
 
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+2.5.1
+
