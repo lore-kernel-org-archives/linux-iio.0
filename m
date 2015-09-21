@@ -1,98 +1,153 @@
-Return-Path: <k.wrona@samsung.com>
-Subject: Re: [PATCH] iio: gyro: ssp_gyro_sensor: Use devm_iio_device_register
-To: Jonathan Cameron <jic23@kernel.org>,
- Vaishali Thakkar <vthakkar1994@gmail.com>
-References: <20150914160849.GA21748@localhost> <55FF068A.30302@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-From: Karol Wrona <k.wrona@samsung.com>
-Message-id: <55FFBD5F.5020304@samsung.com>
-Date: Mon, 21 Sep 2015 10:18:39 +0200
-MIME-version: 1.0
-In-reply-to: <55FF068A.30302@kernel.org>
-Content-type: text/plain; charset=windows-1252
+Return-Path: <mpa@pengutronix.de>
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	kernel@pengutronix.de,
+	Markus Pargmann <mpa@pengutronix.de>
+Subject: [PATCH v3 4/4] iio: bmc150: Add SPI driver
+Date: Mon, 21 Sep 2015 12:55:16 +0200
+Message-Id: <1442832916-30774-5-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <1442832916-30774-1-git-send-email-mpa@pengutronix.de>
+References: <1442832916-30774-1-git-send-email-mpa@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 09/20/2015 09:18 PM, Jonathan Cameron wrote:
-> On 14/09/15 17:08, Vaishali Thakkar wrote:
->> Use resourced managed function devm_iio_device_register to
->> make error path simpler. To be compatible with the change,
->> the remove function is removed as it is now redundant.
->>
->> Signed-off-by: Vaishali Thakkar <vthakkar1994@gmail.com>
-> This patch is reasonable, but makes me wonder if there is an issue
-> in the remove path for this driver.  It relies on the ssp_sensors common
-> module.  That in ssp_spi.c uses the fact ssp_register_consumer
-> has saved the struct iio_dev into a local array in the core driver.
-> I think this means that a remove of this function will leave a possible
-> null pointer de reference.
-You are right. In this case we need something like
-ssp_deregister_consumer(...) in ssp_dev.c. So I think that "remove func"
-should stay. Of course we can switch to devm iio register.
+Add a simple SPI driver which initializes the spi regmap for the bmc150
+core driver.
 
-Also the same can (rather should) be done for accelerometer sensor
-(ssp_accel_sensor.c).
+Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+---
+ drivers/iio/accel/Kconfig            |  5 +++
+ drivers/iio/accel/Makefile           |  1 +
+ drivers/iio/accel/bmc150-accel-spi.c | 80 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 86 insertions(+)
+ create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
 
-Vaishali, if you want please feel free and send patch.
-
-> 
-> Now I suspect that case doesn't actually occur because the relevant
-> device elements are disabled whenever this module is removed.  Having
-> said that we might expect an ssp_unregister_consumer function that
-> sets the relevant pointer back to null on removal so as to avoid
-> any possible race conditions around driver removal / reprobing.
-> A spot of defensive programming rather than necessarily a bug to be
-> fixed!
-> 
-> One little process thing. This driver was written by Karol so patches
-> should probably always cc Karol as well as the more general
-> maintainer / reviewers for IIO.  Added cc.
-> 
-> Jonathan
->> ---
->>  drivers/iio/gyro/ssp_gyro_sensor.c | 12 +-----------
->>  1 file changed, 1 insertion(+), 11 deletions(-)
->>
->> diff --git a/drivers/iio/gyro/ssp_gyro_sensor.c b/drivers/iio/gyro/ssp_gyro_sensor.c
->> index 0a8afdd..ac88de7 100644
->> --- a/drivers/iio/gyro/ssp_gyro_sensor.c
->> +++ b/drivers/iio/gyro/ssp_gyro_sensor.c
->> @@ -134,7 +134,7 @@ static int ssp_gyro_probe(struct platform_device *pdev)
->>  
->>  	platform_set_drvdata(pdev, indio_dev);
->>  
->> -	ret = iio_device_register(indio_dev);
->> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
->>  	if (ret < 0)
->>  		return ret;
->>  
->> @@ -144,21 +144,11 @@ static int ssp_gyro_probe(struct platform_device *pdev)
->>  	return 0;
->>  }
->>  
->> -static int ssp_gyro_remove(struct platform_device *pdev)
->> -{
->> -	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->> -
->> -	iio_device_unregister(indio_dev);
->> -
->> -	return 0;
->> -}
->> -
->>  static struct platform_driver ssp_gyro_driver = {
->>  	.driver = {
->>  		.name = SSP_GYROSCOPE_NAME,
->>  	},
->>  	.probe = ssp_gyro_probe,
->> -	.remove = ssp_gyro_remove,
->>  };
->>  
->>  module_platform_driver(ssp_gyro_driver);
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 280635545240..a010329f7d06 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -23,6 +23,7 @@ config BMC150_ACCEL
+ 	select IIO_TRIGGERED_BUFFER
+ 	select REGMAP
+ 	select BMC150_ACCEL_I2C if I2C
++	select BMC150_ACCEL_SPI if SPI
+ 	help
+ 	  Say yes here to build support for the following Bosch accelerometers:
+ 	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
+@@ -35,6 +36,10 @@ config BMC150_ACCEL_I2C
+ 	tristate
+ 	select REGMAP_I2C
+ 
++config BMC150_ACCEL_SPI
++	tristate
++	select REGMAP_SPI
++
+ config HID_SENSOR_ACCEL_3D
+ 	depends on HID_SENSOR_HUB
+ 	select IIO_BUFFER
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index 5ef8bdbad092..e579e93bf022 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -6,6 +6,7 @@
+ obj-$(CONFIG_BMA180) += bma180.o
+ obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+ obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
++obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+ obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+ obj-$(CONFIG_KXSD9)	+= kxsd9.o
+diff --git a/drivers/iio/accel/bmc150-accel-spi.c b/drivers/iio/accel/bmc150-accel-spi.c
+new file mode 100644
+index 000000000000..41dd842996b0
+--- /dev/null
++++ b/drivers/iio/accel/bmc150-accel-spi.c
+@@ -0,0 +1,80 @@
++/*
++ * 3-axis accelerometer driver supporting SPI Bosch-Sensortec accelerometer chip
++ * Copyright © 2015 Pengutronix, Markus Pargmann <mpa@pengutronix.de>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <linux/device.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/acpi.h>
++#include <linux/regmap.h>
++#include <linux/spi/spi.h>
++
++#include "bmc150-accel.h"
++
++static const struct regmap_config bmc150_spi_regmap_conf = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0x3f,
++};
++
++static int bmc150_accel_probe(struct spi_device *spi)
++{
++	struct regmap *regmap;
++	const struct spi_device_id *id = spi_get_device_id(spi);
++
++	regmap = devm_regmap_init_spi(spi, &bmc150_spi_regmap_conf);
++	if (IS_ERR(regmap)) {
++		dev_err(&spi->dev, "Failed to initialize spi regmap\n");
++		return PTR_ERR(regmap);
++	}
++
++	return bmc150_accel_core_probe(&spi->dev, regmap, spi->irq, id->name,
++				       true);
++}
++
++static int bmc150_accel_remove(struct spi_device *spi)
++{
++	return bmc150_accel_core_remove(&spi->dev);
++}
++
++static const struct spi_device_id bmc150_accel_id[] = {
++	{"bmc150_accel",	bmc150},
++	{"bmi055_accel",	bmi055},
++	{"bma255",		bma255},
++	{"bma250e",		bma250e},
++	{"bma222e",		bma222e},
++	{"bma280",		bma280},
++	{}
++};
++
++MODULE_DEVICE_TABLE(spi, bmc150_accel_id);
++
++static struct spi_driver bmc150_accel_driver = {
++	.driver = {
++		.name	= "bmc150_accel_spi",
++		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
++		.pm	= &bmc150_accel_pm_ops,
++	},
++	.probe		= bmc150_accel_probe,
++	.remove		= bmc150_accel_remove,
++	.id_table	= bmc150_accel_id,
++};
++module_spi_driver(bmc150_accel_driver);
++
++MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("BMC150 SPI accelerometer driver");
+-- 
+2.5.1
