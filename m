@@ -1,126 +1,944 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:28074 "EHLO
-	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754021AbbIULS5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Sep 2015 07:18:57 -0400
-Subject: Re: [PATCH] iio: gyro: ssp_gyro_sensor: Use devm_iio_device_register
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Vaishali Thakkar <vthakkar1994@gmail.com>
-References: <20150914160849.GA21748@localhost> <55FF068A.30302@kernel.org>
- <55FFBD5F.5020304@samsung.com>
- <664C26F2-9F25-4D1F-9A3A-986471CEAD57@jic23.retrosnub.co.uk>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-pa0-f52.google.com ([209.85.220.52]:34665 "EHLO
+	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932649AbbIUOIQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Sep 2015 10:08:16 -0400
+Received: by padhy16 with SMTP id hy16so117674701pad.1
+        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2015 07:08:15 -0700 (PDT)
+Date: Mon, 21 Sep 2015 19:38:08 +0530 (IST)
+From: Shraddha Barke <shraddha.6596@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: Shraddha Barke <shraddha.6596@gmail.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-From: Karol Wrona <k.wrona@samsung.com>
-Message-id: <55FFE7A1.3040202@samsung.com>
-Date: Mon, 21 Sep 2015 13:18:57 +0200
-MIME-version: 1.0
-In-reply-to: <664C26F2-9F25-4D1F-9A3A-986471CEAD57@jic23.retrosnub.co.uk>
-Content-type: text/plain; charset=utf-8
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Julia Lawall <julia.lawall@lip6.fr>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] Staging: iio: cdc: Remove unused macro
+In-Reply-To: <55FF11B0.8070407@kernel.org>
+Message-ID: <alpine.DEB.2.11.1509211935550.6038@shraddha-370R4E-370R4V-370R5E-3570RE-370R5V>
+References: <1442407453-6030-1-git-send-email-shraddha.6596@gmail.com> <55FE8DD8.10809@kernel.org> <alpine.DEB.2.11.1509202212320.5075@shraddha-370R4E-370R4V-370R5E-3570RE-370R5V> <55FF11B0.8070407@kernel.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/21/2015 11:53 AM, Jonathan Cameron wrote:
-> 
-> 
-> On 21 September 2015 09:18:39 BST, Karol Wrona <k.wrona@samsung.com> wrote:
->> On 09/20/2015 09:18 PM, Jonathan Cameron wrote:
->>> On 14/09/15 17:08, Vaishali Thakkar wrote:
->>>> Use resourced managed function devm_iio_device_register to
->>>> make error path simpler. To be compatible with the change,
->>>> the remove function is removed as it is now redundant.
->>>>
->>>> Signed-off-by: Vaishali Thakkar <vthakkar1994@gmail.com>
->>> This patch is reasonable, but makes me wonder if there is an issue
->>> in the remove path for this driver.  It relies on the ssp_sensors
->> common
->>> module.  That in ssp_spi.c uses the fact ssp_register_consumer
->>> has saved the struct iio_dev into a local array in the core driver.
->>> I think this means that a remove of this function will leave a
->> possible
->>> null pointer de reference.
->> You are right. In this case we need something like
->> ssp_deregister_consumer(...) in ssp_dev.c. So I think that "remove
->> func"
->> should stay. Of course we can switch to devm iio register.
-> Not if you want to remove the userspace interface before doing you new function call.  Doing so gives a nasty race.
-So better leave it out:
-iio_device_unregister(indio_dev) will disable the buffers and through
-ops disables the sensor and than remove iio dev ptr from the internal table.
 
 
->>
->> Also the same can (rather should) be done for accelerometer sensor
->> (ssp_accel_sensor.c).
->>
->> Vaishali, if you want please feel free and send patch.
->>
->>>
->>> Now I suspect that case doesn't actually occur because the relevant
->>> device elements are disabled whenever this module is removed.  Having
->>> said that we might expect an ssp_unregister_consumer function that
->>> sets the relevant pointer back to null on removal so as to avoid
->>> any possible race conditions around driver removal / reprobing.
->>> A spot of defensive programming rather than necessarily a bug to be
->>> fixed!
->>>
->>> One little process thing. This driver was written by Karol so patches
->>> should probably always cc Karol as well as the more general
->>> maintainer / reviewers for IIO.  Added cc.
->>>
->>> Jonathan
->>>> ---
->>>>  drivers/iio/gyro/ssp_gyro_sensor.c | 12 +-----------
->>>>  1 file changed, 1 insertion(+), 11 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/gyro/ssp_gyro_sensor.c
->> b/drivers/iio/gyro/ssp_gyro_sensor.c
->>>> index 0a8afdd..ac88de7 100644
->>>> --- a/drivers/iio/gyro/ssp_gyro_sensor.c
->>>> +++ b/drivers/iio/gyro/ssp_gyro_sensor.c
->>>> @@ -134,7 +134,7 @@ static int ssp_gyro_probe(struct platform_device
->> *pdev)
->>>>  
->>>>  	platform_set_drvdata(pdev, indio_dev);
->>>>  
->>>> -	ret = iio_device_register(indio_dev);
->>>> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
->>>>  	if (ret < 0)
->>>>  		return ret;
->>>>  
->>>> @@ -144,21 +144,11 @@ static int ssp_gyro_probe(struct
->> platform_device *pdev)
->>>>  	return 0;
->>>>  }
->>>>  
->>>> -static int ssp_gyro_remove(struct platform_device *pdev)
->>>> -{
->>>> -	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->>>> -
->>>> -	iio_device_unregister(indio_dev);
->>>> -
->>>> -	return 0;
->>>> -}
->>>> -
->>>>  static struct platform_driver ssp_gyro_driver = {
->>>>  	.driver = {
->>>>  		.name = SSP_GYROSCOPE_NAME,
->>>>  	},
->>>>  	.probe = ssp_gyro_probe,
->>>> -	.remove = ssp_gyro_remove,
->>>>  };
->>>>  
->>>>  module_platform_driver(ssp_gyro_driver);
->>>>
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->> in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
-> 
+On Sun, 20 Sep 2015, Jonathan Cameron wrote:
 
+>
+> Hi Shraddha,
+>
+> To get you started, I've quickly faked up a patch of the driver
+> in it's current location to let me 'review' it. Note this was
+> a very quick review so I may well have missed lots. Lars
+> may have more comments and Michael may hopefully surface as well.
+>
+> The biggest bit in here is probably the lack of documented
+> ABI for the 'calibration' attributes.  Off the top of my
+> head I have no clear idea of what they are for.  Then again
+> I've never used a CDC and haven't read for this one in years
+> which probably doesn't help.
+>
+> Anyhow, lots of coding style related stuff as well similar to
+> what you found in your initial patch.
+>
+> Hopefully something to get you started.
+>
+
+Thanks it helped a lot. You can expect patches from me based on this
+soon :)
+
+Thanks,
+
+Shraddha
+
+> Good luck.
+>
+> Jonathan
+>
+> p.s. Actually, other than the fact we've gotten tighter on
+> coding style stuff etc, this driver is in a pretty good state
+> making a good target for finally getting out of staging.
+>
+> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+> new file mode 100644
+> index 000000000000..e6e9eaa9eab5
+> --- /dev/null
+> +++ b/drivers/staging/iio/cdc/ad7746.c
+> @@ -0,0 +1,791 @@
+> +/*
+> + * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
+> + *
+> + * Copyright 2011 Analog Devices Inc.
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/i2c.h>
+> +#include <linux/delay.h>
+> +#include <linux/module.h>
+> +#include <linux/stat.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +#include "ad7746.h"
+> +
+> +/*
+> + * AD7746 Register Definition
+> + */
+> Single line comment probably should have single line comment syntax.
+> +
+> +#define AD7746_REG_STATUS		0
+> +#define AD7746_REG_CAP_DATA_HIGH	1
+> +#define AD7746_REG_CAP_DATA_MID		2
+> +#define AD7746_REG_CAP_DATA_LOW		3
+> +#define AD7746_REG_VT_DATA_HIGH		4
+> +#define AD7746_REG_VT_DATA_MID		5
+> +#define AD7746_REG_VT_DATA_LOW		6
+> +#define AD7746_REG_CAP_SETUP		7
+> +#define AD7746_REG_VT_SETUP		8
+> +#define AD7746_REG_EXC_SETUP		9
+> +#define AD7746_REG_CFG			10
+> +#define AD7746_REG_CAPDACA		11
+> +#define AD7746_REG_CAPDACB		12
+> +#define AD7746_REG_CAP_OFFH		13
+> +#define AD7746_REG_CAP_OFFL		14
+> +#define AD7746_REG_CAP_GAINH		15
+> +#define AD7746_REG_CAP_GAINL		16
+> +#define AD7746_REG_VOLT_GAINH		17
+> +#define AD7746_REG_VOLT_GAINL		18
+> +
+> +/* Status Register Bit Designations (AD7746_REG_STATUS) */
+> +#define AD7746_STATUS_EXCERR		(1 << 3)
+> +#define AD7746_STATUS_RDY		(1 << 2)
+> +#define AD7746_STATUS_RDYVT		(1 << 1)
+> +#define AD7746_STATUS_RDYCAP		(1 << 0)
+> +
+> +/* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
+> +#define AD7746_CAPSETUP_CAPEN		(1 << 7)
+> +#define AD7746_CAPSETUP_CIN2		(1 << 6) /* AD7746 only */
+> +#define AD7746_CAPSETUP_CAPDIFF		(1 << 5)
+> +#define AD7746_CAPSETUP_CACHOP		(1 << 0)
+> +
+> +/* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
+> +#define AD7746_VTSETUP_VTEN		(1 << 7)
+> +#define AD7746_VTSETUP_VTMD_INT_TEMP	(0 << 5)
+> +#define AD7746_VTSETUP_VTMD_EXT_TEMP	(1 << 5)
+> +#define AD7746_VTSETUP_VTMD_VDD_MON	(2 << 5)
+> +#define AD7746_VTSETUP_VTMD_EXT_VIN	(3 << 5)
+> +#define AD7746_VTSETUP_EXTREF		(1 << 4)
+> +#define AD7746_VTSETUP_VTSHORT		(1 << 1)
+> +#define AD7746_VTSETUP_VTCHOP		(1 << 0)
+> In mixed cases like this, sometimes using the BIT macro
+> makes sense, sometimes not. Depends on the use.  So
+> I'd epect the bottom 3 to us BIm, but not the ones
+> shifted by 5.  That might benefit from a macro though
+> to wrap up the shift and make it obvious all those shift by 5 elements
+> are actually in the same 2 bit field.
+>
+> +
+> +/* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
+> +#define AD7746_EXCSETUP_CLKCTRL		(1 << 7)
+> +#define AD7746_EXCSETUP_EXCON		(1 << 6)
+> +#define AD7746_EXCSETUP_EXCB		(1 << 5)
+> +#define AD7746_EXCSETUP_NEXCB		(1 << 4)
+> +#define AD7746_EXCSETUP_EXCA		(1 << 3)
+> +#define AD7746_EXCSETUP_NEXCA		(1 << 2)
+> This lot are probably a good place to use the BIT macro.
+> +#define AD7746_EXCSETUP_EXCLVL(x)	(((x) & 0x3) << 0)
+> +
+> +/* Config Register Bit Designations (AD7746_REG_CFG) */
+> +#define AD7746_CONF_VTFS(x)		((x) << 6)
+> +#define AD7746_CONF_CAPFS(x)		((x) << 3)
+> +#define AD7746_CONF_MODE_IDLE		(0 << 0)
+> +#define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
+> +#define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
+> +#define AD7746_CONF_MODE_PWRDN		(3 << 0)
+> +#define AD7746_CONF_MODE_OFFS_CAL	(5 << 0)
+> +#define AD7746_CONF_MODE_GAIN_CAL	(6 << 0)
+> Hmm. Not sure shifting by 0 is all that informative...
+> +
+> +/* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
+> +#define AD7746_CAPDAC_DACEN		(1 << 7)
+> +#define AD7746_CAPDAC_DACP(x)		((x) & 0x7F)
+> +
+> +/*
+> + * struct ad7746_chip_info - chip specific information
+> + */
+> Single line should probably have single line comment syntax.
+> +
+> +struct ad7746_chip_info {
+> +	struct i2c_client *client;
+> +	/*
+> +	 * Capacitive channel digital filter setup;
+> +	 * conversion time/update rate setup per channel
+> +	 */
+> +	u8	config;
+> +	u8	cap_setup;
+> +	u8	vt_setup;
+> +	u8	capdac[2][2];
+> +	s8	capdac_set;
+> +
+> +	union {
+> +		__be32 d32;
+> +		u8 d8[4];
+> +	} data ____cacheline_aligned;
+> +};
+> +
+> +enum ad7746_chan {
+> +	VIN,
+> +	VIN_VDD,
+> +	TEMP_INT,
+> +	TEMP_EXT,
+> +	CIN1,
+> +	CIN1_DIFF,
+> +	CIN2,
+> +	CIN2_DIFF,
+> +};
+> +
+> +static const struct iio_chan_spec ad7746_channels[] = {
+> +	[VIN] = {
+> +		.type = IIO_VOLTAGE,
+> +		.indexed = 1,
+> +		.channel = 0,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+> +			AD7746_VTSETUP_VTMD_EXT_VIN,
+> +	},
+> +	[VIN_VDD] = {
+> +		.type = IIO_VOLTAGE,
+> +		.indexed = 1,
+> +		.channel = 1,
+> +		.extend_name = "supply",
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+> +			AD7746_VTSETUP_VTMD_VDD_MON,
+> +	},
+> +	[TEMP_INT] = {
+> +		.type = IIO_TEMP,
+> +		.indexed = 1,
+> +		.channel = 0,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+> +			AD7746_VTSETUP_VTMD_INT_TEMP,
+> These address fields clearly combine multiple elements.  whilst
+> concise, this doesn't ease readablility of the code.  See below
+> for a suggestion on this.
+> +	},
+> +	[TEMP_EXT] = {
+> +		.type = IIO_TEMP,
+> +		.indexed = 1,
+> +		.channel = 1,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+> +			AD7746_VTSETUP_VTMD_EXT_TEMP,
+> +	},
+> +	[CIN1] = {
+> +		.type = IIO_CAPACITANCE,
+> +		.indexed = 1,
+> +		.channel = 0,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
+> +		BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = AD7746_REG_CAP_DATA_HIGH << 8,
+> +	},
+> +	[CIN1_DIFF] = {
+> +		.type = IIO_CAPACITANCE,
+> +		.differential = 1,
+> +		.indexed = 1,
+> +		.channel = 0,
+> +		.channel2 = 2,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
+> +		BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
+> +			AD7746_CAPSETUP_CAPDIFF
+> +	},
+> +	[CIN2] = {
+> +		.type = IIO_CAPACITANCE,
+> +		.indexed = 1,
+> +		.channel = 1,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
+> +		BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
+> +			AD7746_CAPSETUP_CIN2,
+> +	},
+> +	[CIN2_DIFF] = {
+> +		.type = IIO_CAPACITANCE,
+> +		.differential = 1,
+> +		.indexed = 1,
+> +		.channel = 1,
+> +		.channel2 = 3,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
+> +		BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
+> +			AD7746_CAPSETUP_CAPDIFF | AD7746_CAPSETUP_CIN2,
+> +	}
+> +};
+> +
+> +/* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
+> +static const unsigned char ad7746_vt_filter_rate_table[][2] = {
+> +	{50, 20 + 1}, {31, 32 + 1}, {16, 62 + 1}, {8, 122 + 1},
+> +};
+> +
+> +static const unsigned char ad7746_cap_filter_rate_table[][2] = {
+> +	{91, 11 + 1}, {84, 12 + 1}, {50, 20 + 1}, {26, 38 + 1},
+> +	{16, 62 + 1}, {13, 77 + 1}, {11, 92 + 1}, {9, 110 + 1},
+> +};
+> +
+> +static int ad7746_select_channel(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan)
+> +{
+> +	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> +	int ret, delay;
+> +	u8 vt_setup, cap_setup;
+> +
+> +	switch (chan->type) {
+> +	case IIO_CAPACITANCE:
+> This use of part of address strikes me as messy.  I'd have address
+> hold a look up index that allows the various things combined in address
+> to be held in a nice easy to follow enumerated array of a structures.
+> Will give more readable code throughout.
+> +		cap_setup = (chan->address & 0xFF) | AD7746_CAPSETUP_CAPEN;
+> +		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
+> +		delay = ad7746_cap_filter_rate_table[(chip->config >> 3) &
+> +			0x7][1];
+> +
+> +		if (chip->capdac_set != chan->channel) {
+> +			ret = i2c_smbus_write_byte_data(chip->client,
+> +				AD7746_REG_CAPDACA,
+> +				chip->capdac[chan->channel][0]);
+> +			if (ret < 0)
+> +				return ret;
+> +			ret = i2c_smbus_write_byte_data(chip->client,
+> +				AD7746_REG_CAPDACB,
+> +				chip->capdac[chan->channel][1]);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			chip->capdac_set = chan->channel;
+> +		}
+> +		break;
+> +	case IIO_VOLTAGE:
+> +	case IIO_TEMP:
+> +		vt_setup = (chan->address & 0xFF) | AD7746_VTSETUP_VTEN;
+> +		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
+> +		delay = ad7746_cap_filter_rate_table[(chip->config >> 6) &
+> +			0x3][1];
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (chip->cap_setup != cap_setup) {
+> +		ret = i2c_smbus_write_byte_data(chip->client,
+> +						AD7746_REG_CAP_SETUP,
+> +						cap_setup);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		chip->cap_setup = cap_setup;
+> +	}
+> +
+> +	if (chip->vt_setup != vt_setup) {
+> +		ret = i2c_smbus_write_byte_data(chip->client,
+> +						AD7746_REG_VT_SETUP,
+> +						vt_setup);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		chip->vt_setup = vt_setup;
+> +	}
+> +
+> +	return delay;
+> +}
+> +
+> +static inline ssize_t ad7746_start_calib(struct device *dev,
+> +					 struct device_attribute *attr,
+> +					 const char *buf,
+> +					 size_t len,
+> +					 u8 regval)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> +	bool doit;
+> +	int ret, timeout = 10;
+> +
+> +	ret = strtobool(buf, &doit);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (!doit)
+> +		return 0;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	regval |= chip->config;
+> +	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG, regval);
+> +	if (ret < 0) {
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return ret;
+> +	}
+> +
+> +	do {
+> +		msleep(20);
+> +		ret = i2c_smbus_read_byte_data(chip->client, AD7746_REG_CFG);
+> +		if (ret < 0) {
+> +			mutex_unlock(&indio_dev->mlock);
+> +			return ret;
+> +		}
+> +	} while ((ret == regval) && timeout--);
+> +
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t ad7746_start_offset_calib(struct device *dev,
+> +					 struct device_attribute *attr,
+> +					 const char *buf,
+> +					 size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	int ret = ad7746_select_channel(indio_dev,
+> +			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return ad7746_start_calib(dev, attr, buf, len,
+> +				  AD7746_CONF_MODE_OFFS_CAL);
+> +}
+> +
+> +static ssize_t ad7746_start_gain_calib(struct device *dev,
+> +				       struct device_attribute *attr,
+> +				       const char *buf,
+> +				       size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	int ret = ad7746_select_channel(indio_dev,
+> +			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return ad7746_start_calib(dev, attr, buf, len,
+> +				  AD7746_CONF_MODE_GAIN_CAL);
+> +}
+> +
+> +static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
+> +		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN1);
+> +static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
+> +		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN2);
+> +static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
+> +		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN1);
+> +static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
+> +		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN2);
+> +static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
+> +		       S_IWUSR, NULL, ad7746_start_gain_calib, VIN);
+> +
+> +static ssize_t ad7746_show_cap_filter_rate_setup(struct device *dev,
+> +		struct device_attribute *attr,
+> +		char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> +
+> +	return sprintf(buf, "%d\n", ad7746_cap_filter_rate_table[
+> +			(chip->config >> 3) & 0x7][0]);
+> +}
+> +
+> +static ssize_t ad7746_store_cap_filter_rate_setup(struct device *dev,
+> +		struct device_attribute *attr,
+> +		const char *buf,
+> +		size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> +	u8 data;
+> +	int ret, i;
+> +
+> +	ret = kstrtou8(buf, 10, &data);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ad7746_cap_filter_rate_table); i++)
+> +		if (data >= ad7746_cap_filter_rate_table[i][0])
+> +			break;
+> +
+> +	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
+> +		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	chip->config &= ~AD7746_CONF_CAPFS(0x7);
+> +	chip->config |= AD7746_CONF_CAPFS(i);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t ad7746_show_vt_filter_rate_setup(struct device *dev,
+> +		struct device_attribute *attr,
+> +		char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> +
+> +	return sprintf(buf, "%d\n", ad7746_vt_filter_rate_table[
+> +			(chip->config >> 6) & 0x3][0]);
+> +}
+> +
+> +static ssize_t ad7746_store_vt_filter_rate_setup(struct device *dev,
+> +		struct device_attribute *attr,
+> +		const char *buf,
+> +		size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> +	u8 data;
+> +	int ret, i;
+> +
+> +	ret = kstrtou8(buf, 10, &data);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ad7746_vt_filter_rate_table); i++)
+> +		if (data >= ad7746_vt_filter_rate_table[i][0])
+> +			break;
+> +
+> +	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
+> +		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	chip->config &= ~AD7746_CONF_VTFS(0x3);
+> +	chip->config |= AD7746_CONF_VTFS(i);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return len;
+> +}
+> +
+> +static IIO_DEVICE_ATTR(in_capacitance_sampling_frequency,
+> +		       S_IRUGO | S_IWUSR, ad7746_show_cap_filter_rate_setup,
+> +			ad7746_store_cap_filter_rate_setup, 0);
+> +
+> +static IIO_DEVICE_ATTR(in_voltage_sampling_frequency,
+> +		       S_IRUGO | S_IWUSR, ad7746_show_vt_filter_rate_setup,
+> +		       ad7746_store_vt_filter_rate_setup, 0);
+> +
+> +static IIO_CONST_ATTR(in_voltage_sampling_frequency_available, "50 31 16 8");
+> +static IIO_CONST_ATTR(in_capacitance_sampling_frequency_available,
+> +		       "91 84 50 26 16 13 11 9");
+> +
+> +static struct attribute *ad7746_attributes[] = {
+> +	&iio_dev_attr_in_capacitance_sampling_frequency.dev_attr.attr,
+> +	&iio_dev_attr_in_voltage_sampling_frequency.dev_attr.attr,
+> Can now be done as a standard info_mask element - in this case
+> these would be shared_by_type.
+>
+> +	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
+> These need docummenting / understanding which I don't have right now!
+> +	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
+> +	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
+> +	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
+> +	&iio_dev_attr_in_voltage0_calibscale_calibration.dev_attr.attr,
+>
+> +	&iio_const_attr_in_voltage_sampling_frequency_available.dev_attr.attr,
+> +	&iio_const_attr_in_capacitance_sampling_frequency_available.
+> +	dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group ad7746_attribute_group = {
+> +	.attrs = ad7746_attributes,
+> +};
+> +
+> +static int ad7746_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val,
+> +			    int val2,
+> +			    long mask)
+> +{
+> +	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> +	int ret, reg;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_CALIBSCALE:
+> +		if (val != 1) {
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+> +
+> +		val = (val2 * 1024) / 15625;
+> +
+> +		switch (chan->type) {
+> +		case IIO_CAPACITANCE:
+> +			reg = AD7746_REG_CAP_GAINH;
+> +			break;
+> +		case IIO_VOLTAGE:
+> +			reg = AD7746_REG_VOLT_GAINH;
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+> +
+> +		ret = i2c_smbus_write_word_data(chip->client, reg, swab16(val));
+> If you introduced the swapped version suggested below for read add this
+> paired write function as well.  Its not as important but makes for
+> easier to follow code once you know all the registers are reversed.
+>
+> +		if (ret < 0)
+> +			goto out;
+> +
+> +		ret = 0;
+> +		break;
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		if ((val < 0) | (val > 0xFFFF)) {
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+> +		ret = i2c_smbus_write_word_data(chip->client,
+> +				AD7746_REG_CAP_OFFH, swab16(val));
+> +		if (ret < 0)
+> +			goto out;
+> +
+> +		ret = 0;
+> +		break;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		if ((val < 0) | (val > 43008000)) { /* 21pF */
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+> +
+> +		/* CAPDAC Scale = 21pF_typ / 127
+> As below, this isn't standard kernel comment formatting.
+> +		 * CIN Scale = 8.192pF / 2^24
+> +		 * Offset Scale = CAPDAC Scale / CIN Scale = 338646
+> +		 * */
+> +
+> +		val /= 338646;
+> +
+> +		chip->capdac[chan->channel][chan->differential] = (val > 0 ?
+> +			AD7746_CAPDAC_DACP(val) | AD7746_CAPDAC_DACEN : 0);
+> +
+> +		ret = i2c_smbus_write_byte_data(chip->client,
+> +			AD7746_REG_CAPDACA,
+> +			chip->capdac[chan->channel][0]);
+> +		if (ret < 0)
+> +			goto out;
+> +		ret = i2c_smbus_write_byte_data(chip->client,
+> +			AD7746_REG_CAPDACB,
+> +			chip->capdac[chan->channel][1]);
+> +		if (ret < 0)
+> +			goto out;
+> +
+> +		chip->capdac_set = chan->channel;
+> +
+> +		ret = 0;
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +	}
+> +
+> +out:
+> +	mutex_unlock(&indio_dev->mlock);
+> +	return ret;
+> +}
+> +
+> +static int ad7746_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2,
+> +			   long mask)
+> +{
+> +	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> +	int ret, delay;
+> +	u8 regval, reg;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		ret = ad7746_select_channel(indio_dev, chan);
+> +		if (ret < 0)
+> +			goto out;
+> +		delay = ret;
+> +
+> +		regval = chip->config | AD7746_CONF_MODE_SINGLE_CONV;
+> +		ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG,
+> +				regval);
+> +		if (ret < 0)
+> +			goto out;
+> +
+> +		msleep(delay);
+> +		/* Now read the actual register */
+> +
+> +		ret = i2c_smbus_read_i2c_block_data(chip->client,
+> +			chan->address >> 8, 3, &chip->data.d8[1]);
+> +
+> +		if (ret < 0)
+> +			goto out;
+> +
+> +		*val = (be32_to_cpu(chip->data.d32) & 0xFFFFFF) - 0x800000;
+> +
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> Kernel comment format is
+> /*
+> * Temp...
+> */
+> +		/* temperature in milli degrees Celsius
+> +		 * T = ((*val / 2048) - 4096) * 1000
+> +		 */
+> +			*val = (*val * 125) / 256;
+> +			break;
+> +		case IIO_VOLTAGE:
+> +			if (chan->channel == 1) /* supply_raw*/
+> +				*val = *val * 6;
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +	case IIO_CHAN_INFO_CALIBSCALE:
+> +		switch (chan->type) {
+> +		case IIO_CAPACITANCE:
+> +			reg = AD7746_REG_CAP_GAINH;
+> +			break;
+> +		case IIO_VOLTAGE:
+> +			reg = AD7746_REG_VOLT_GAINH;
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+> +
+> +		ret = i2c_smbus_read_word_data(chip->client, reg);
+> +		if (ret < 0)
+> +			goto out;
+> +		/* 1 + gain_val / 2^16 */
+> +		*val = 1;
+> Interesting.  There is no explicit i2c_smbus_read_word_data for the
+> swapped case (unliked i2c_smbus_read_word_swapped).  Perhaps one should
+> be added?  Not sure how common this particular case is.. One to look at?
+> There are some hidden cases, such as the lm73 driver btw.
+> Actually a couple of the lm* drivers in hwmon have crazy comparison code
+> to avoid the fact the data is reversed (worth a look and wince)
+>
+> +		*val2 = (15625 * swab16(ret)) / 1024;
+> +
+> +		ret = IIO_VAL_INT_PLUS_MICRO;
+> +		break;
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		ret = i2c_smbus_read_word_data(chip->client,
+> +					       AD7746_REG_CAP_OFFH);
+> +		if (ret < 0)
+> +			goto out;
+> +		*val = swab16(ret);
+> +
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		*val = AD7746_CAPDAC_DACP(chip->capdac[chan->channel]
+> +			[chan->differential]) * 338646;
+> +
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_CAPACITANCE:
+> +			/* 8.192pf / 2^24 */
+> +			*val =  0;
+> +			*val2 = 488;
+> +			ret = IIO_VAL_INT_PLUS_NANO;
+> +			break;
+> +		case IIO_VOLTAGE:
+> +			/* 1170mV / 2^23 */
+> +			*val = 1170;
+> +			*val2 = 23;
+> +			ret = IIO_VAL_FRACTIONAL_LOG2;
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +	}
+> +out:
+> +	mutex_unlock(&indio_dev->mlock);
+> +	return ret;
+> +}
+> +
+> +static const struct iio_info ad7746_info = {
+> +	.attrs = &ad7746_attribute_group,
+> +	.read_raw = &ad7746_read_raw,
+> +	.write_raw = &ad7746_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +/*
+> + * device probe and remove
+> + */
+> +
+> +static int ad7746_probe(struct i2c_client *client,
+> +		const struct i2c_device_id *id)
+> +{
+> +	struct ad7746_platform_data *pdata = client->dev.platform_data;
+> +	struct ad7746_chip_info *chip;
+> +	struct iio_dev *indio_dev;
+> +	int ret = 0;
+> This assignement is unnecessary as ret is always assigned in relevant paths
+> below.
+> +	unsigned char regval = 0;
+> I'd be tempted to move the assignement into the single path where it matters
+> below.
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +	chip = iio_priv(indio_dev);
+> +	/* this is only used for device removal purposes */
+> +	i2c_set_clientdata(client, indio_dev);
+> +
+> +	chip->client = client;
+> +	chip->capdac_set = -1;
+> +
+> +	/* Establish that the iio_dev is a child of the i2c device */
+> +	indio_dev->name = id->name;
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &ad7746_info;
+> +	indio_dev->channels = ad7746_channels;
+> +	if (id->driver_data == 7746)
+> +		indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
+> +	else
+> +		indio_dev->num_channels =  ARRAY_SIZE(ad7746_channels) - 2;
+> +	indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	if (pdata) {
+> +		if (pdata->exca_en) {
+> +			if (pdata->exca_inv_en)
+> +				regval |= AD7746_EXCSETUP_NEXCA;
+> +			else
+> +				regval |= AD7746_EXCSETUP_EXCA;
+> +		}
+> +
+> +		if (pdata->excb_en) {
+> +			if (pdata->excb_inv_en)
+> +				regval |= AD7746_EXCSETUP_NEXCB;
+> +			else
+> +				regval |= AD7746_EXCSETUP_EXCB;
+> +		}
+> +
+> +		regval |= AD7746_EXCSETUP_EXCLVL(pdata->exclvl);
+> +	} else {
+> +		dev_warn(&client->dev, "No platform data? using default\n");
+> +		regval = AD7746_EXCSETUP_EXCA | AD7746_EXCSETUP_EXCB |
+> +			AD7746_EXCSETUP_EXCLVL(3);
+> +	}
+> +
+> +	ret = i2c_smbus_write_byte_data(chip->client,
+> +					AD7746_REG_EXC_SETUP, regval);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> I'd drop the devinfo that follows.  Doesn't add anything that isn't easy
+> to check via other means.  Then you can return iio_device_register(...)
+> directly.
+>
+> +	dev_info(&client->dev, "%s capacitive sensor registered\n", id->name);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad7746_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id ad7746_id[] = {
+> +	{ "ad7745", 7745 },
+> +	{ "ad7746", 7746 },
+> +	{ "ad7747", 7747 },
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(i2c, ad7746_id);
+> +
+> +static struct i2c_driver ad7746_driver = {
+> +	.driver = {
+> +		.name = KBUILD_MODNAME,
+> +	},
+> +	.probe = ad7746_probe,
+> +	.remove = ad7746_remove,
+> +	.id_table = ad7746_id,
+> +};
+> +module_i2c_driver(ad7746_driver);
+> +
+> +MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+> +MODULE_DESCRIPTION("Analog Devices AD7746/5/7 capacitive sensor driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/staging/iio/cdc/ad7746.h b/drivers/staging/iio/cdc/ad7746.h
+> new file mode 100644
+> index 000000000000..ea8572d1df02
+> --- /dev/null
+> +++ b/drivers/staging/iio/cdc/ad7746.h
+> @@ -0,0 +1,29 @@
+> +/*
+> + * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
+> + *
+> + * Copyright 2011 Analog Devices Inc.
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#ifndef IIO_CDC_AD7746_H_
+> +#define IIO_CDC_AD7746_H_
+> +
+> +/*
+> + * TODO: struct ad7746_platform_data needs to go into include/linux/iio
+> + */
+> +
+> +#define AD7466_EXCLVL_0		0 /* +-VDD/8 */
+> +#define AD7466_EXCLVL_1		1 /* +-VDD/4 */
+> +#define AD7466_EXCLVL_2		2 /* +-VDD * 3/8 */
+> +#define AD7466_EXCLVL_3		3 /* +-VDD/2 */
+> +
+> +struct ad7746_platform_data {
+> +	unsigned char exclvl;	/*Excitation Voltage Level */
+> +	bool exca_en;		/* enables EXCA pin as the excitation output */
+> +	bool exca_inv_en;	/* enables /EXCA pin as the excitation output */
+> +	bool excb_en;		/* enables EXCB pin as the excitation output */
+> +	bool excb_inv_en;	/* enables /EXCB pin as the excitation output */
+> +};
+> +
+> +#endif /* IIO_CDC_AD7746_H_ */
+>
+>
+>
