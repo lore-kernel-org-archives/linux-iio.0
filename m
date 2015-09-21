@@ -1,83 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from muru.com ([72.249.23.125]:53675 "EHLO muru.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755258AbbIWQ4V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 23 Sep 2015 12:56:21 -0400
-Date: Wed, 23 Sep 2015 09:56:14 -0700
-From: Tony Lindgren <tony@atomide.com>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	=?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Marek Belisko <marek@goldelico.com>,
-	Pradeep Goudagunta <pgoudagunta@nvidia.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>, gg@slimlogic.co.uk,
-	jic23@jic23.retrosnub.co.uk, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-	linux-iio@vger.kernel.org, notaz@openpandora.org
-Subject: Re: [PATCH 3/3] ARM: dts: omap5-uevm: enable iio gpadc for Palmas
-Message-ID: <20150923165613.GG23801@atomide.com>
-References: <1437657169.3419965.331206849.51D66A2E@webmail.messagingengine.com>
- <cover.1443012491.git.hns@goldelico.com>
- <4254897D-374E-4122-A1A6-269A22C2D622@goldelico.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4254897D-374E-4122-A1A6-269A22C2D622@goldelico.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <peda@lysator.liu.se>
+From: Peter Rosin <peda@lysator.liu.se>
+To: linux-iio@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	linux-kernel@vger.kernel.org
+Subject: Driver for Microchip digital potentiometers, v2
+Date: Mon, 21 Sep 2015 23:18:25 +0200
+Message-Id: <1442870306-26128-1-git-send-email-peda@lysator.liu.se>
+List-ID: <linux-iio@vger.kernel.org>
 
-* H. Nikolaus Schaller <hns@goldelico.com> [150923 05:53]:
+From: Peter Rosin <peda@axentia.se>
 
-Missing description? BTW, this I want to queue separately
-as I have patches in works to support omap5 variants with
-omap5-board-common.dtsi to avoid duplicating things as
-we get omap5 better supported for things like regulators.
+Hi!
 
-Regards,
+This is a new attempt for a driver for these chips. It is a
+complete rewrite since the first version which was a dirty
+misc driver (plagiarized from another misc driver) that got
+shredded in review.
 
-Tony
+I don't know if I should have added a new unit "ohms", or if
+it is ok to only provide "steps"? One could also imagine that
+a digital pot can be used to implement a DAC, or something
+else, so maybe the actual unit should be somehow configurable?
+On the other hand, all of that could in theory be handled
+later.
 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
-> arch/arm/boot/dts/omap5-uevm.dts | 22 ++++++++++++++++++++++
-> 1 file changed, 22 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/omap5-uevm.dts b/arch/arm/boot/dts/omap5-uevm.dts
-> index 3b16e8f..0d4c8ff 100644
-> --- a/arch/arm/boot/dts/omap5-uevm.dts
-> +++ b/arch/arm/boot/dts/omap5-uevm.dts
-> @@ -342,6 +342,28 @@
-> 
-> 			ti,ldo6-vibrator;
-> 
-> +			gpadc {
-> +				compatible = "ti,palmas-gpadc";
-> +				interrupts = <18 0
-> +					      16 0
-> +					      17 0>;
-> +				ti,channel0-current-microamp = <5>;
-> +				ti,channel3-current-microamp = <10>;
-> +				iio_map {
-> +					ch1 {
-> +						ti,adc-channel-number = <1>;
-> +						ti,adc-consumer-device = "generic-adc-thermal.0";
-> +						ti,adc-consumer-channel ="battery-temp-channel";
-> +					};
-> +
-> +					ch6 {
-> +						ti,adc-channel-number = <6>;
-> +						ti,adc-consumer-device = "palmas-battery";
-> +						ti,adc-consumer-channel ="vbat_channel";
-> +					};
-> +				};
-> +			};
-> +
-> 			regulators {
-> 				smps123_reg: smps123 {
-> 					/* VDD_OPP_MPU */
-> -- 
-> 2.5.1
-> 
+Was it right to add the drivers/iio/pot directory? Should it
+have been drivers/iio/potentiometer? What about rheostats
+which are very similar? Anyway, I just wanted to say that
+I'm not attached to the naming.
+
+This is my first interaction with IIO, please bear with me.
+
+I have admittedly only tested the driver with a MCP4651 chip,
+but that one is the biggest in the family...
+
+Changes since v1:
+- Make it an IIO driver instead
+- Don't convolute the code with big obscure macros
+- Inline the bits from mcp4xxx_dpot.h that are actually used
+  and drop that file
+- Better Changelog
+
+Cheers,
+Peter
+
+Peter Rosin (1):
+  iio: mcp4xxx_dpot: Driver for Microchip digital potentiometers
+
+ MAINTAINERS                    |    5 +
+ drivers/iio/Kconfig            |    1 +
+ drivers/iio/Makefile           |    1 +
+ drivers/iio/pot/Kconfig        |   20 ++++
+ drivers/iio/pot/Makefile       |    6 ++
+ drivers/iio/pot/mcp4xxx_dpot.c |  218 ++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 251 insertions(+)
+ create mode 100644 drivers/iio/pot/Kconfig
+ create mode 100644 drivers/iio/pot/Makefile
+ create mode 100644 drivers/iio/pot/mcp4xxx_dpot.c
+
+-- 
+1.7.10.4
