@@ -1,43 +1,30 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f53.google.com ([209.85.215.53]:33107 "EHLO
-	mail-la0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757425AbbIVH2J (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2015 03:28:09 -0400
-Received: by lamp12 with SMTP id p12so1662145lam.0
-        for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2015 00:28:08 -0700 (PDT)
+Received: from mail-la0-f65.google.com ([209.85.215.65]:33726 "EHLO
+	mail-la0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932115AbbIVHm5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2015 03:42:57 -0400
 MIME-Version: 1.0
 In-Reply-To: <1442870306-26128-2-git-send-email-peda@lysator.liu.se>
-References: <1442870306-26128-1-git-send-email-peda@lysator.liu.se> <1442870306-26128-2-git-send-email-peda@lysator.liu.se>
-From: Crt Mori <cmo@melexis.com>
-Date: Tue, 22 Sep 2015 09:27:28 +0200
-Message-ID: <CAKv63usCLv=dbmHQPdK89WVEwq5UvSgR5RsMb3SXuJdthXbn0A@mail.gmail.com>
+References: <1442870306-26128-1-git-send-email-peda@lysator.liu.se>
+	<1442870306-26128-2-git-send-email-peda@lysator.liu.se>
+Date: Tue, 22 Sep 2015 10:42:55 +0300
+Message-ID: <CAEnQRZAg44U+G0yoOW281zdwo-iT98XahZSssDsdoqYTHMqvbg@mail.gmail.com>
 Subject: Re: [PATCH v2] iio: mcp4xxx_dpot: Driver for Microchip digital potentiometers
+From: Daniel Baluta <daniel.baluta@gmail.com>
 To: Peter Rosin <peda@lysator.liu.se>
-Cc: linux-iio@vger.kernel.org, Peter Rosin <peda@axentia.se>,
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Peter Rosin <peda@axentia.se>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-kernel@vger.kernel.org
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
-Just follow advice and it will get better. Maybe a bit of naming
-advice since that needs to be fixed all over.
-Usual naming convention is chipname_function_name not
-chipname_part_function_name as you have
-now. There was a newly added  IIO_RESISTANCE channel in case you would
-think of the change (more
-depends on what you would rather expect as input/output of your driver
-to user-space).
-
-Few more comments inline.
-
-On 21 September 2015 at 23:18, Peter Rosin <peda@lysator.liu.se> wrote:
->
+On Tue, Sep 22, 2015 at 12:18 AM, Peter Rosin <peda@lysator.liu.se> wrote:
 > From: Peter Rosin <peda@axentia.se>
 >
 > Add support for Microchip digital potentiometers and rheostats
@@ -48,6 +35,9 @@ On 21 September 2015 at 23:18, Peter Rosin <peda@lysator.liu.se> wrote:
 > 129 (4x3x) or 257 (4x5x) steps, and configured either as
 > potentiometers (4xx1) or rheostats (4xx2).
 >
+
+Nice to have some links to datasheet(s).
+
 > Signed-off-by: Peter Rosin <peda@axentia.se>
 > ---
 >  MAINTAINERS                    |    5 +
@@ -56,6 +46,20 @@ On 21 September 2015 at 23:18, Peter Rosin <peda@lysator.liu.se> wrote:
 >  drivers/iio/pot/Kconfig        |   20 ++++
 >  drivers/iio/pot/Makefile       |    6 ++
 >  drivers/iio/pot/mcp4xxx_dpot.c |  218 ++++++++++++++++++++++++++++++++++++++++
+
+I would really prefer to call this potentiometer instead of pot
+because is clearer.
+
+Also, naming convention for a driver supporting multiple devices is to
+use the first device name
+as driver name.
+
+mcp4xxx_dpot.c -> mcp4531.c, the reason behind this is that you can
+have a total different
+device that falls into mcp4xxx which needs a separate file.
+
+
+
 >  6 files changed, 251 insertions(+)
 >  create mode 100644 drivers/iio/pot/Kconfig
 >  create mode 100644 drivers/iio/pot/Makefile
@@ -71,10 +75,8 @@ On 21 September 2015 at 23:18, Peter Rosin <peda@lysator.liu.se> wrote:
 >
 > +MCP4XXX MICROCHIP DIGITAL POTENTIOMETER DRIVER
 > +M:     Peter Rosin <peda@axentia.se>
-You are missing +L: linux-iio@vger.kernel.org
 > +S:     Maintained
 > +F:     drivers/iio/pot/mcp4xxx_dpot.*
-I would put a .c here since you do not have a .h anymore?
 > +
 >  MEDIA DRIVERS FOR RENESAS - VSP1
 >  M:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
@@ -253,11 +255,6 @@ I would put a .c here since you do not have a .h anymore?
 > +
 > +       switch (mask) {
 > +       case IIO_CHAN_INFO_RAW:
-
-I would expect an actual read here rather than something from cache?
-Imagine two applications are
-reading and setting the output...
-
 > +               *val = data->cache[chan->channel];
 > +               return IIO_VAL_INT;
 > +       }
@@ -370,10 +367,3 @@ reading and setting the output...
 > +MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
 > +MODULE_DESCRIPTION("MCP4XXX digital potentiometer");
 > +MODULE_LICENSE("GPL");
-> --
-> 1.7.10.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
