@@ -1,102 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:64444 "EHLO mga02.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:41333 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753824AbbIWMoL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 23 Sep 2015 08:44:11 -0400
+	id S1753068AbbIWMqU convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2015 08:46:20 -0400
 From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Markus Pargmann <mpa@pengutronix.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+To: Markus Pargmann <mpa@pengutronix.de>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	"Lars-Peter Clausen" <lars@metafoo.de>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"kernel@pengutronix.de" <kernel@pengutronix.de>
-Subject: RE: [PATCH v2 0/4] iio: bmc150 regmap and SPI
-Date: Wed, 23 Sep 2015 12:44:06 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F2F0E78BA@irsmsx105.ger.corp.intel.com>
-References: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
- <1F3AC3675D538145B1661F571FE1805F2F0C833A@irsmsx105.ger.corp.intel.com>
- <20150916101322.GJ1537@pengutronix.de>
-In-Reply-To: <20150916101322.GJ1537@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
+Subject: RE: [PATCH v3 0/4] iio: bmc150 regmap and SPI
+Date: Wed, 23 Sep 2015 12:46:04 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F2F0E78D7@irsmsx105.ger.corp.intel.com>
+References: <1442832916-30774-1-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <1442832916-30774-1-git-send-email-mpa@pengutronix.de>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWFya3VzIFBhcmdtYW5u
-IFttYWlsdG86bXBhQHBlbmd1dHJvbml4LmRlXQ0KPiBTZW50OiAxNiBTZXB0ZW1iZXIsIDIwMTUg
-MTM6MTMNCj4gVG86IFRpcmRlYSwgSXJpbmENCj4gQ2M6IEpvbmF0aGFuIENhbWVyb247IFNyaW5p
-dmFzIFBhbmRydXZhZGE7IExhcnMtUGV0ZXIgQ2xhdXNlbjsgbGludXgtaWlvQHZnZXIua2VybmVs
-Lm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsNCj4ga2VybmVsQHBlbmd1dHJvbml4
-LmRlDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjIgMC80XSBpaW86IGJtYzE1MCByZWdtYXAgYW5k
-IFNQSQ0KPiANCj4gSGkgSXJpbmEsDQo+IA0KPiBPbiBXZWQsIFNlcCAwOSwgMjAxNSBhdCAwMjoz
-MDozMFBNICswMDAwLCBUaXJkZWEsIElyaW5hIHdyb3RlOg0KPiA+DQo+ID4NCj4gPiA+IC0tLS0t
-T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiBGcm9tOiBNYXJrdXMgUGFyZ21hbm4gW21haWx0
-bzptcGFAcGVuZ3V0cm9uaXguZGVdDQo+ID4gPiBTZW50OiAyMCBBdWd1c3QsIDIwMTUgMTU6NTAN
-Cj4gPiA+IFRvOiBKb25hdGhhbiBDYW1lcm9uDQo+ID4gPiBDYzogU3Jpbml2YXMgUGFuZHJ1dmFk
-YTsgVGlyZGVhLCBJcmluYTsgTGFycy1QZXRlciBDbGF1c2VuOyBsaW51eC1paW9Admdlci5rZXJu
-ZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOw0KPiA+ID4ga2VybmVsQHBlbmd1
-dHJvbml4LmRlOyBNYXJrdXMgUGFyZ21hbm4NCj4gPiA+IFN1YmplY3Q6IFtQQVRDSCB2MiAwLzRd
-IGlpbzogYm1jMTUwIHJlZ21hcCBhbmQgU1BJDQo+ID4gPg0KPiA+ID4gSGksDQo+ID4gPg0KPiA+
-DQo+ID4gSGkgTWFya3VzLA0KPiA+DQo+ID4gSSB0ZXN0ZWQgeW91ciBwYXRjaGVzIHdpdGggbXkg
-Qk1BMjUwRSBkcml2ZXIgY29ubmVjdGVkIG9uIHRoZSBpMmMgYnVzIC4NCj4gPiBUaGUgY29kZSBs
-b29rcyBnb29kIGFuZCBtb3N0IG9mIGl0IHdvcmtzLiBUaGVyZSBhcmUgYSBjb3VwbGUgb2YgaXNz
-dWVzIEkgd2lsbCBtZW50aW9uDQo+ID4gYmVsb3cgYW5kIGluIHRoZSBpbmRpdmlkdWFsIHBhdGNo
-ZXMuDQo+ID4NCj4gPiBUaGUgcGF0Y2hlcyBpbiB0aGlzIHZlcnNpb24gbm8gbG9uZ2VyIGFwcGx5
-IGNsZWFubHkgb24gdGhlIHRvZ3JlZyBicmFuY2ggb2YgdGhlIGlpbyB0cmVlLg0KPiA+IEkgZGlk
-IHRoZSByZWJhc2UgbXlzZWxmLCBidXQgc2luY2UgdGhlcmUgd2VyZSBtYW55IGNvbmZsaWN0cyBJ
-IHdpbGwgZG8gYW5vdGhlciB0ZXN0DQo+ID4gd2hlbiB5b3Ugc2VuZCB0aGUgbmV3IHJlYmFzZWQg
-djMuDQo+IA0KPiBUaGFuayB5b3UgZm9yIHJldmlldyBhbmQgdGVzdGluZy4gSSB3aWxsIGludGVn
-cmF0ZSB5b3VyIGNvbW1lbnRzIGFuZA0KPiBzZW5kIGEgcmViYXNlZCB2My4NCj4gDQo+ID4NCj4g
-PiA+IHRoaXMgc2VyaWVzIGNvbnZlcnRzIHRoZSBibWMxNTAgZHJpdmVyIHRvIHVzZSByZWdtYXAg
-YW5kIGFkZHMgYW4gU1BJIGludGVyZmFjZS4NCj4gPiA+DQo+ID4gPiBJbiB2MSB0aGlzIHdhcyBw
-YXJ0IG9mIHRoZSBzZXJpZXMgIlJlZ21hcCBtYXhfcmF3X2lvIGFuZCBibWMxNTAgU1BJIHN1cHBv
-cnQiLg0KPiA+ID4gSXQgbm93IGRlcGVuZHMgb24gInJlZ21hcDogaTJjIGJsb2NrIHN1cHBvcnQi
-Lg0KPiA+ID4NCj4gPg0KPiA+IEkgdXNlZCB0aGUgcGF0Y2hlcyB0aGF0IHdlcmUgYWxyZWFkeSBt
-ZXJnZWQgaW4gdGhlIHJlZ21hcCB0cmVlLiBUaGlzIGJtYzE1MCBzZXJpZXMgc2hvdWxkDQo+ID4g
-cHJvYmFibHkgd2FpdCB1bnRpbCB0aGUgcmVnbWFwIHBhdGNoZXMgZW5kIHVwIGluIEpvbmF0aGFu
-J3MgdHJlZSwgb3RoZXJ3aXNlIHRoZXkgd2lsbA0KPiA+IGJyZWFrIHRoZSBidWlsZC4NCj4gDQo+
-IEl0IHNlZW1zIHRoZSBuZWNlc3NhcnkgcGF0Y2hlcyBhcmUgYWxyZWFkeSBpbiB2NC4zLXJjMToN
-Cj4gCTI5MzMyNTM0ZTJiNiAocmVnbWFwLWkyYzogQWRkIHNtYnVzIGkyYyBibG9jayBzdXBwb3J0
-KQ0KPiANCg0KQUZBSUssIEpvbmF0aGFuIHdhaXRzIHVudGlsIGNoYW5nZXMgZnJvbSB0aGUgbWFp
-biBrZXJuZWwgZ2V0IG1lcmdlZCBiYWNrDQppbnRvIGhpcyB0b2dyZWcgYnJhbmNoLiBTaW5jZSB5
-b3UgYXJlIHVzaW5nIHJlZ21hcF9nZXRfcmF3X3JlYWRfbWF4IHRoYXQNCmlzIGludHJvZHVjZWQg
-aW4gdGhlIHJlZ21hcCBwYXRjaGVzLCB0aGUgZHJpdmVyIHdvbid0IGJ1aWxkIHdpdGhvdXQgdGhl
-bQ0KKGlmIHRoZXkgYXJlIG1lcmdlZCBub3cgaW4gdGhlIGlpbyB0cmVlKS4NCg0KSG93ZXZlciwg
-dGhhdCBkb2VzIG5vdCBwcmV2ZW50IG1lIGZyb20gdGVzdGluZyB0aGUgY2hhbmdlcyB1c2luZw0K
-dGhlIHJlZ21hcCBjaGFuZ2VzIGZyb20gdjQuMy1yYzEuDQoNClRoYW5rcywNCklyaW5hDQoNCj4g
-QmVzdCBSZWdhcmRzLA0KPiANCj4gTWFya3VzDQo+IA0KPiA+DQo+ID4gVGhhbmtzLA0KPiA+IEly
-aW5hDQo+ID4NCj4gPiA+IENoYW5nZXMgaW4gdjI6DQo+ID4gPiAtIFJlbW92ZWQgZGVmYXVsdCB2
-YWx1ZXMgZm9yIHJlZ21hcF9jb25maWcgZmllbGRzLg0KPiA+ID4gLSBSZWRlc2lnbmVkIHRoZSBm
-aWZvX3RyYW5zZmVyIGZ1bmN0aW9uIHRvIGF2b2lkIHJ1bm5pbmcgaW4gZXJyb3JzIGZpcnN0Lg0K
-PiA+ID4gLSBEcm9wcGVkIGlycSBjaGVja3MgcGF0Y2ggYXMgaXQgaXMgYWxyZWFkeSBtYWlubGlu
-ZQ0KPiA+ID4gLSBDb3JlIGNhbiBub3cgYmUgYnVpbHQgYXMgbW9kdWxlIHdpdGggYXV0b3NlbGVj
-dGlvbiBvZiBpMmMgYW5kIHNwaSBwYXJ0cw0KPiA+ID4NCj4gPiA+IEFzIG15IGhhcmR3YXJlIGlz
-IG1pc3NpbmcgYW4gaW50ZXJydXB0IGxpbmUgZnJvbSB0aGUgU1BJIGNvbm5lY3RlZCBibWMxNTAg
-SSBhbQ0KPiA+ID4gbm90IGFibGUgdG8gdGVzdCB0aGUgaWlvIGJ1ZmZlciBjb2RlIHBhdGggYW5k
-IHRoZSBpMmMgY29kZSBwYXRoLiBUZXN0cyB3b3VsZCBiZQ0KPiA+ID4gYXBwcmVjaWF0ZWQuDQo+
-ID4gPg0KPiA+ID4gQmVzdCByZWdhcmRzLA0KPiA+ID4NCj4gPiA+IE1hcmt1cw0KPiA+ID4NCj4g
-PiA+DQo+ID4gPiBNYXJrdXMgUGFyZ21hbm4gKDQpOg0KPiA+ID4gICBpaW86IGJtYzE1MDogVXNl
-IGkyYyByZWdtYXANCj4gPiA+ICAgaWlvOiBiY20xNTA6IFJlbW92ZSBpMmNfY2xpZW50IGZyb20g
-cHJpdmF0ZSBkYXRhDQo+ID4gPiAgIGlpbzogYm1jMTUwOiBTcGxpdCB0aGUgZHJpdmVyIGludG8g
-Y29yZSBhbmQgaTJjDQo+ID4gPiAgIGlpbzogYm1jMTUwOiBBZGQgU1BJIGRyaXZlcg0KPiA+ID4N
-Cj4gPiA+ICBkcml2ZXJzL2lpby9hY2NlbC9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgICAg
-ICB8ICAxNCArLQ0KPiA+ID4gIGRyaXZlcnMvaWlvL2FjY2VsL01ha2VmaWxlICAgICAgICAgICAg
-ICAgICAgICAgICAgIHwgICA0ICstDQo+ID4gPiAgLi4uL2FjY2VsL3tibWMxNTAtYWNjZWwuYyA9
-PiBibWMxNTAtYWNjZWwtY29yZS5jfSAgfCAzOTggKysrKysrKystLS0tLS0tLS0tLS0tDQo+ID4g
-PiAgZHJpdmVycy9paW8vYWNjZWwvYm1jMTUwLWFjY2VsLWkyYy5jICAgICAgICAgICAgICAgfCAg
-OTkgKysrKysNCj4gPiA+ICBkcml2ZXJzL2lpby9hY2NlbC9ibWMxNTAtYWNjZWwtc3BpLmMgICAg
-ICAgICAgICAgICB8ICA4MyArKysrKw0KPiA+ID4gIGRyaXZlcnMvaWlvL2FjY2VsL2JtYzE1MC1h
-Y2NlbC5oICAgICAgICAgICAgICAgICAgIHwgIDIxICsrDQo+ID4gPiAgNiBmaWxlcyBjaGFuZ2Vk
-LCAzNjcgaW5zZXJ0aW9ucygrKSwgMjUyIGRlbGV0aW9ucygtKQ0KPiA+ID4gIHJlbmFtZSBkcml2
-ZXJzL2lpby9hY2NlbC97Ym1jMTUwLWFjY2VsLmMgPT4gYm1jMTUwLWFjY2VsLWNvcmUuY30gKDgx
-JSkNCj4gPiA+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9paW8vYWNjZWwvYm1jMTUwLWFj
-Y2VsLWkyYy5jDQo+ID4gPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaWlvL2FjY2VsL2Jt
-YzE1MC1hY2NlbC1zcGkuYw0KPiA+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby9h
-Y2NlbC9ibWMxNTAtYWNjZWwuaA0KPiA+ID4NCj4gPiA+IC0tDQo+ID4gPiAyLjQuNg0KPiA+DQo+
-ID4NCj4gDQo+IC0tDQo+IFBlbmd1dHJvbml4IGUuSy4gICAgICAgICAgICAgICAgICAgICAgICAg
-ICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8DQo+IEluZHVzdHJpYWwgTGludXggU29s
-dXRpb25zICAgICAgICAgICAgICAgICB8IGh0dHA6Ly93d3cucGVuZ3V0cm9uaXguZGUvICB8DQo+
-IFBlaW5lciBTdHIuIDYtOCwgMzExMzcgSGlsZGVzaGVpbSwgR2VybWFueSB8IFBob25lOiArNDkt
-NTEyMS0yMDY5MTctMCAgICB8DQo+IEFtdHNnZXJpY2h0IEhpbGRlc2hlaW0sIEhSQSAyNjg2ICAg
-ICAgICAgICB8IEZheDogICArNDktNTEyMS0yMDY5MTctNTU1NSB8DQo=
+
+
+> -----Original Message-----
+> From: Markus Pargmann [mailto:mpa@pengutronix.de]
+> Sent: 21 September, 2015 13:55
+> To: Jonathan Cameron
+> Cc: Srinivas Pandruvada; Tirdea, Irina; Lars-Peter Clausen; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org;
+> kernel@pengutronix.de; Markus Pargmann
+> Subject: [PATCH v3 0/4] iio: bmc150 regmap and SPI
+> 
+> Hi,
+> 
+
+Hi Markus,
+
+I tested the new version of you patches and everything works fine.
+
+I used a BMA250E chip connected on the i2c bus.
+The tests included the iio buffer code path and the i2c code path
+(including using the fifo and forcing the i2c bus to use
+the regmap_i2c_smbus_i2c_block calls you added to regmap).
+
+> this series converts the bmc150 driver to use regmap and adds an SPI interface.
+> 
+> Thanks for testing and review so far. I rebased the series onto v4.3-rc2 now
+> (the togreg branch seems to be on v4.2).
+> It still works for me but there were some differences regarding the chip id.
+> 
+
+I actually used the togreg branch (to get the latest bmc150 driver changes) and
+cherry-picked the regmap patches. Everything applied without any conflicts.
+
+Thanks,
+Irina
+
+> Changes in v3:
+> - Fixed type of variable 'step' which lead to compile warnings. Type is now
+>   size_t.
+> - Fixed patch that moved irq variable without reason
+> - Readded MODULE_* to the core driver
+> - Reintroduced check id NULL check
+> 
+> Changes in v2:
+> - Removed default values for regmap_config fields.
+> - Redesigned the fifo_transfer function to avoid running in errors first.
+> - Dropped irq checks patch as it is already mainline
+> - Core can now be built as module with autoselection of i2c and spi parts
+> 
+> As my hardware is missing an interrupt line from the SPI connected bmc150 I am
+> not able to test the iio buffer code path and the i2c code path. Tests would be
+> appreciated.
+> 
+> @Srinivas:
+> As there were some rebase conflicts on the first patch, I removed your
+> reviewed-by tag again for the moment.
+> 
+> Best regards,
+> 
+> Markus
+> 
+> 
+> Markus Pargmann (4):
+>   iio: bmc150: Use i2c regmap
+>   iio: bcm150: Remove i2c_client from private data
+>   iio: bmc150: Split the driver into core and i2c
+>   iio: bmc150: Add SPI driver
+> 
+>  drivers/iio/accel/Kconfig                          |  14 +-
+>  drivers/iio/accel/Makefile                         |   4 +-
+>  .../accel/{bmc150-accel.c => bmc150-accel-core.c}  | 388 ++++++++-------------
+>  drivers/iio/accel/bmc150-accel-i2c.c               | 102 ++++++
+>  drivers/iio/accel/bmc150-accel-spi.c               |  80 +++++
+>  drivers/iio/accel/bmc150-accel.h                   |  20 ++
+>  6 files changed, 366 insertions(+), 242 deletions(-)
+>  rename drivers/iio/accel/{bmc150-accel.c => bmc150-accel-core.c} (82%)
+>  create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
+>  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
+>  create mode 100644 drivers/iio/accel/bmc150-accel.h
+> 
+> --
+> 2.5.1
+
