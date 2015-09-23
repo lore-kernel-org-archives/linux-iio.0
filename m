@@ -1,74 +1,75 @@
-Return-Path: <mwelling79@gmail.com>
-Sender: Michael Welling <mwelling79@gmail.com>
-Date: Wed, 23 Sep 2015 02:45:14 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org
-Subject: Re: ADS1018 ADC driver
-Message-ID: <20150923071958.GA30278@deathstar>
-References: <20150921220648.GA12569@deathstar>
- <5600A924.1090303@roeck-us.net>
- <20150922012707.GA20799@deathstar>
- <5600B726.2010900@roeck-us.net>
- <2A0E464E-DAA5-4326-8E94-78F17913AD51@ieee.org>
- <131939B9-E3B7-4E98-B0E2-7DF8F2C081BC@jic23.retrosnub.co.uk>
+Return-Path: <lars@metafoo.de>
+Message-ID: <560265E0.9010502@metafoo.de>
+Date: Wed, 23 Sep 2015 10:42:08 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <131939B9-E3B7-4E98-B0E2-7DF8F2C081BC@jic23.retrosnub.co.uk>
+To: Peter Rosin <peda@lysator.liu.se>,
+ Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ linux-iio@vger.kernel.org
+CC: Peter Rosin <peda@axentia.se>, Crt Mori <cmo@melexis.com>,
+ Daniel Baluta <daniel.baluta@gmail.com>,
+ Andreas Dannenberg <dannenberg@ti.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: mcp4531: Driver for Microchip digital potentiometers
+References: <1442936209-27057-1-git-send-email-peda@lysator.liu.se> <1442936209-27057-3-git-send-email-peda@lysator.liu.se> <B61434B3-133C-4B9C-B451-85B90E55D77A@jic23.retrosnub.co.uk> <5602574B.5020205@lysator.liu.se>
+In-Reply-To: <5602574B.5020205@lysator.liu.se>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Sep 23, 2015 at 06:59:56AM +0100, Jonathan Cameron wrote:
-> There is a rather slow process to separate entirely the back and front end
->  of IIO.  This would get you to what you are describing (with a bit of front end
->  work to set up the mapping to joystick axes).  This was driven initially by the soc
->  guys who have one multichannel ADC doing a dozen unconnected things. Mark Brown in particular.
+On 09/23/2015 09:39 AM, Peter Rosin wrote:
+> On 2015-09-22 20:22, Jonathan Cameron wrote:
+>> On 22 September 2015 16:36:49 BST, Peter Rosin <peda@lysator.liu.se> wrote:
 > 
-> Right now all IIO drivers still instantiate the userspace interface (for now users
->  who don't care ignore it). We then had in kernel channel mappings to allow client
->  drivers access to most OHIO hardware interfaces.  The classic example is iio-hwmon
->  though there are other users all over the place. The input bridge (which is too
->  simple to support you joystick example at the mo) has been languishing outside
-> Mainline for years due issues with the mapping and instantiation interfaces.
->
- 
-This is further along than I realized.
+> *snip* lots of cosmetics that I'll fix in the next spin...
+> 
+>>> +
+>>> +static int mcp4531_read_raw(struct iio_dev *indio_dev,
+>>> +			    struct iio_chan_spec const *chan,
+>>> +			    int *val, int *val2, long mask)
+>>> +{
+>>> +	int err;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_RAW:
+>>> +		err = mcp4531_get_value(indio_dev, chan->address, val);
+>>> +		if (err < 0)
+>>> +			return err;
+>>> +		return IIO_VAL_INT;
+>>> +	}
+>> No scale known? Be nice to relate to real world values.  I gather this may need
+>>  platform data of some type (can't open data sheet on phone for some reason)
+> 
+> ...but I need more input on this.
+> 
+> Yes, it would be nice and yes it requires platform data, as there is
+> no way to retrieve if the driver is dealing with a 5, 10, 50 or 100 kOhms
+> pot/rheostat.
 
-Looking at inkern.c and drivers that use the interface should get me started.
+You should use the full product name in the ID table for device, it includes
+what the resistance is.
 
-I will also look further into the input bridge and uinput.
 
-> Hopefully the addition of config fs support for instantiation of 'virtual'
->  hardware in IIO will finally give us a way around that.
-> 
-> Anyhow what works now:
-> 
-> 1. polled channel value and basic property reading (eg iio-hwmon)
->
-> 2. Pushed (historically called buffered in IIO) data flows with channel demux (so clients only get a stream of data covering what they requested.  Actually the demux is widely used by the IIO frontend as well.
-> 
-> What is missing.
-> 1. Event support for stuff like thresholds. Not hard to add but not done yet.  Could initially skip demuxing events and specify filtering must be done in the client.
-> 
-> Interface gets a little fiddly as necessary to lock which events are enabled in some
->  cases to stop another client disabling them as a side effect. Lots of hardware
->  has complex constraints on which events are enabled. Traditionally with only 
-> one userspace this was userspace problem to deal with!
-> 
-> 2. Property range exporting. This is useful for IIO userspace as well.
-> 
-> 3. Allowing IIO on top of iio.
-> 
-> 4. Dropping always having IIO userspace.
-> 
-> Mostly this work has stalled as I have very little time to work on it anymore.
-> If you are interested then ask for more details on any of the above.
+> You would also have to expose both the resistance between
+> A to W and between W to B, as you have no way to know how it's been
+> connected (or you'd need more platform data). Ok, for rheostats you
+> know how it's connected, since A isn't available, but for pots there
+> are two resistance values controlled with a single value X i.e.
+> X*scale/max and (max-X)*scale/max (ignoring the 75 Ohm wiper resistance).
 
-First I will focus on constructing the new driver for the ADS1018.
+I don't think that is a problem. The scale is still the same for both of
+them. Even if you don't provide the scale the user still has to know which
+of the terminals uses the inversed and which one uses the non-inversed raw
+value for their resistance. So nothing really changes in that regard by
+providing the scale or not.
 
-Which of these missing pieces would find the most use?
+> But, I'd rather not go there, as I don't need any of it. Is it Ok to not
+> provide scaling?
 
-> 
-> >
-> >>
-> >>Guenter
->
+Having scaling is not required, but strongly encouraged. It allows creating
+generic userspace applications that do not require specific knowledge about
+the part they are talking to. Which is one of the main points for having a
+framework. Otherwise you could just go with a driver with a custom ABI, or
+even implement all the interface logic in userspace using /dev/i2c.
