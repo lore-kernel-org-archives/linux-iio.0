@@ -1,47 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:33577 "EHLO
-	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754944AbbIWO1U (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2015 10:27:20 -0400
-From: Peter Rosin <peda@lysator.liu.se>
-To: linux-iio@vger.kernel.org
-Cc: Peter Rosin <peda@axentia.se>, Crt Mori <cmo@melexis.com>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
-	Andreas Dannenberg <dannenberg@ti.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Peter Rosin <peda@lysator.liu.se>, linux-kernel@vger.kernel.org
-Subject: [PATCH v6 1/2] iio: resistance: Document that resistance can be output
-Date: Wed, 23 Sep 2015 16:26:22 +0200
-Message-Id: <1443018383-16578-2-git-send-email-peda@lysator.liu.se>
-In-Reply-To: <1443018383-16578-1-git-send-email-peda@lysator.liu.se>
-References: <1443018383-16578-1-git-send-email-peda@lysator.liu.se>
+Received: from muru.com ([72.249.23.125]:53675 "EHLO muru.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755258AbbIWQ4V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Sep 2015 12:56:21 -0400
+Date: Wed, 23 Sep 2015 09:56:14 -0700
+From: Tony Lindgren <tony@atomide.com>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	=?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Marek Belisko <marek@goldelico.com>,
+	Pradeep Goudagunta <pgoudagunta@nvidia.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>, gg@slimlogic.co.uk,
+	jic23@jic23.retrosnub.co.uk, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-iio@vger.kernel.org, notaz@openpandora.org
+Subject: Re: [PATCH 3/3] ARM: dts: omap5-uevm: enable iio gpadc for Palmas
+Message-ID: <20150923165613.GG23801@atomide.com>
+References: <1437657169.3419965.331206849.51D66A2E@webmail.messagingengine.com>
+ <cover.1443012491.git.hns@goldelico.com>
+ <4254897D-374E-4122-A1A6-269A22C2D622@goldelico.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <4254897D-374E-4122-A1A6-269A22C2D622@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Peter Rosin <peda@axentia.se>
+* H. Nikolaus Schaller <hns@goldelico.com> [150923 05:53]:
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- Documentation/ABI/testing/sysfs-bus-iio |    2 ++
- 1 file changed, 2 insertions(+)
+Missing description? BTW, this I want to queue separately
+as I have patches in works to support omap5 variants with
+omap5-board-common.dtsi to avoid duplicating things as
+we get omap5 better supported for things like regulators.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 9398484196c4..2eea468f704d 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1475,6 +1475,8 @@ Description:
- 
- What:		/sys/bus/iio/devices/iio:deviceX/in_resistance_raw
- What:		/sys/bus/iio/devices/iio:deviceX/in_resistanceX_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/out_resistance_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/out_resistanceX_raw
- KernelVersion:	4.3
- Contact:	linux-iio@vger.kernel.org
- Description:
--- 
-1.7.10.4
+Regards,
 
+Tony
+
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> ---
+> arch/arm/boot/dts/omap5-uevm.dts | 22 ++++++++++++++++++++++
+> 1 file changed, 22 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/omap5-uevm.dts b/arch/arm/boot/dts/omap5-uevm.dts
+> index 3b16e8f..0d4c8ff 100644
+> --- a/arch/arm/boot/dts/omap5-uevm.dts
+> +++ b/arch/arm/boot/dts/omap5-uevm.dts
+> @@ -342,6 +342,28 @@
+> 
+> 			ti,ldo6-vibrator;
+> 
+> +			gpadc {
+> +				compatible = "ti,palmas-gpadc";
+> +				interrupts = <18 0
+> +					      16 0
+> +					      17 0>;
+> +				ti,channel0-current-microamp = <5>;
+> +				ti,channel3-current-microamp = <10>;
+> +				iio_map {
+> +					ch1 {
+> +						ti,adc-channel-number = <1>;
+> +						ti,adc-consumer-device = "generic-adc-thermal.0";
+> +						ti,adc-consumer-channel ="battery-temp-channel";
+> +					};
+> +
+> +					ch6 {
+> +						ti,adc-channel-number = <6>;
+> +						ti,adc-consumer-device = "palmas-battery";
+> +						ti,adc-consumer-channel ="vbat_channel";
+> +					};
+> +				};
+> +			};
+> +
+> 			regulators {
+> 				smps123_reg: smps123 {
+> 					/* VDD_OPP_MPU */
+> -- 
+> 2.5.1
+> 
