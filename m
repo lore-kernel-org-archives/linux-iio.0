@@ -1,997 +1,407 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.217]:32900 "EHLO
-	mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754800AbbIWMs7 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2015 08:48:59 -0400
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Subject: [PATCH 1/3] iio:adc: add iio driver for Palmas (twl6035/7) gpadc
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <cover.1443012491.git.hns@goldelico.com>
-Date: Wed, 23 Sep 2015 14:48:55 +0200
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	notaz@openpandora.org
-Message-Id: <F03BBE76-3F7D-4995-810E-6E2E98FC156C@goldelico.com>
-References: <1437657169.3419965.331206849.51D66A2E@webmail.messagingengine.com> <cover.1443012491.git.hns@goldelico.com>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	=?iso-8859-1?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Marek Belisko <marek@goldelico.com>,
-	Pradeep Goudagunta <pgoudagunta@nvidia.com>,
-	Nikolaus Schaller <hns@goldelico.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>, gg@slimlogic.co.uk,
-	jic23@jic23.retrosnub.co.uk
+Received: from mga02.intel.com ([134.134.136.20]:59960 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753922AbbIWMvy convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2015 08:51:54 -0400
+From: "Tirdea, Irina" <irina.tirdea@intel.com>
+To: Markus Pargmann <mpa@pengutronix.de>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	"Lars-Peter Clausen" <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kernel@pengutronix.de" <kernel@pengutronix.de>
+Subject: RE: [PATCH v3 3/4] iio: bmc150: Split the driver into core and i2c
+Date: Wed, 23 Sep 2015 12:51:50 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F2F0E793F@irsmsx105.ger.corp.intel.com>
+References: <1442832916-30774-1-git-send-email-mpa@pengutronix.de>
+ <1442832916-30774-4-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <1442832916-30774-4-git-send-email-mpa@pengutronix.de>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This driver code was found as:
 
-https://android.googlesource.com/kernel/tegra/+/aaabb2e045f31e5a970109ffdaae900dd403d17e/drivers/staging/iio/adc
 
-Fixed various compilation issues and test this driver on omap5 evm.
+> -----Original Message-----
+> From: Markus Pargmann [mailto:mpa@pengutronix.de]
+> Sent: 21 September, 2015 13:55
+> To: Jonathan Cameron
+> Cc: Srinivas Pandruvada; Tirdea, Irina; Lars-Peter Clausen; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org;
+> kernel@pengutronix.de; Markus Pargmann
+> Subject: [PATCH v3 3/4] iio: bmc150: Split the driver into core and i2c
+> 
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 
-Signed-off-by: Pradeep Goudagunta <pgoudagunta@nvidia.com>
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Signed-off-by: Marek Belisko <marek@goldelico.com>
----
-drivers/iio/adc/Kconfig        |   9 +
-drivers/iio/adc/Makefile       |   1 +
-drivers/iio/adc/palmas_gpadc.c | 797 +++++++++++++++++++++++++++++++++++++++++
-include/linux/mfd/palmas.h     |  59 ++-
-4 files changed, 862 insertions(+), 4 deletions(-)
-create mode 100644 drivers/iio/adc/palmas_gpadc.c
+Tested-by: Irina Tirdea <irina.tirdea@intel.com>
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index eb0cd89..f6df9db 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -242,6 +242,15 @@ config NAU7802
-	  To compile this driver as a module, choose M here: the
-	  module will be called nau7802.
+> ---
+>  drivers/iio/accel/Kconfig                          |   9 +-
+>  drivers/iio/accel/Makefile                         |   3 +-
+>  .../accel/{bmc150-accel.c => bmc150-accel-core.c}  |  85 ++++-------------
+>  drivers/iio/accel/bmc150-accel-i2c.c               | 102 +++++++++++++++++++++
+>  drivers/iio/accel/bmc150-accel.h                   |  20 ++++
+>  5 files changed, 145 insertions(+), 74 deletions(-)
+>  rename drivers/iio/accel/{bmc150-accel.c => bmc150-accel-core.c} (96%)
+>  create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
+>  create mode 100644 drivers/iio/accel/bmc150-accel.h
+> 
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index 3ff2c83f7492..280635545240 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -19,21 +19,22 @@ config BMA180
+> 
+>  config BMC150_ACCEL
+>  	tristate "Bosch BMC150 Accelerometer Driver"
+> -	depends on I2C
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	select REGMAP
+> -	select REGMAP_I2C
+> +	select BMC150_ACCEL_I2C if I2C
+>  	help
+>  	  Say yes here to build support for the following Bosch accelerometers:
+>  	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
+> 
+> -	  Currently this only supports the device via an i2c interface.
+> -
+>  	  This is a combo module with both accelerometer and magnetometer.
+>  	  This driver is only implementing accelerometer part, which has
+>  	  its own address and register map.
+> 
+> +config BMC150_ACCEL_I2C
+> +	tristate
+> +	select REGMAP_I2C
+> +
+>  config HID_SENSOR_ACCEL_3D
+>  	depends on HID_SENSOR_HUB
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> index ebd2675b2a02..5ef8bdbad092 100644
+> --- a/drivers/iio/accel/Makefile
+> +++ b/drivers/iio/accel/Makefile
+> @@ -4,7 +4,8 @@
+> 
+>  # When adding new entries keep the list in alphabetical order
+>  obj-$(CONFIG_BMA180) += bma180.o
+> -obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel.o
+> +obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+> +obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+>  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+>  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+>  obj-$(CONFIG_KXSD9)	+= kxsd9.o
+> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel-core.c
+> similarity index 96%
+> rename from drivers/iio/accel/bmc150-accel.c
+> rename to drivers/iio/accel/bmc150-accel-core.c
+> index 425885dc6800..f492d2a4bce5 100644
+> --- a/drivers/iio/accel/bmc150-accel.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -37,6 +37,8 @@
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/regmap.h>
+> 
+> +#include "bmc150-accel.h"
+> +
+>  #define BMC150_ACCEL_DRV_NAME			"bmc150_accel"
+>  #define BMC150_ACCEL_IRQ_NAME			"bmc150_accel_event"
+>  #define BMC150_ACCEL_GPIO_NAME			"bmc150_accel_int"
+> @@ -1015,15 +1017,6 @@ static const struct iio_chan_spec bmc150_accel_channels[] =
+>  static const struct iio_chan_spec bma280_accel_channels[] =
+>  	BMC150_ACCEL_CHANNELS(14);
+> 
+> -enum {
+> -	bmc150,
+> -	bmi055,
+> -	bma255,
+> -	bma250e,
+> -	bma222e,
+> -	bma280,
+> -};
+> -
+>  static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+>  	[bmc150] = {
+>  		.name = "BMC150A",
+> @@ -1576,33 +1569,23 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+>  	return 0;
+>  }
+> 
+> -static int bmc150_accel_probe(struct i2c_client *client,
+> -			      const struct i2c_device_id *id)
+> +int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+> +			    const char *name, bool block_supported)
+>  {
+>  	struct bmc150_accel_data *data;
+>  	struct iio_dev *indio_dev;
+>  	int ret;
+> -	const char *name = NULL;
+> -	struct device *dev;
+> 
+> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+> 
+>  	data = iio_priv(indio_dev);
+> -	i2c_set_clientdata(client, indio_dev);
+> -	data->dev = &client->dev;
+> -	dev = &client->dev;
+> -	data->irq = client->irq;
+> -
+> -	data->regmap = devm_regmap_init_i2c(client, &bmc150_i2c_regmap_conf);
+> -	if (IS_ERR(data->regmap)) {
+> -		dev_err(dev, "Failed to initialize i2c regmap\n");
+> -		return PTR_ERR(data->regmap);
+> -	}
+> +	dev_set_drvdata(dev, indio_dev);
+> +	data->dev = dev;
+> +	data->irq = irq;
+> 
+> -	if (id)
+> -		name = id->name;
+> +	data->regmap = regmap;
+> 
+>  	ret = bmc150_accel_chip_init(data);
+>  	if (ret < 0)
+> @@ -1659,9 +1642,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>  		if (ret)
+>  			goto err_buffer_cleanup;
+> 
+> -		if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
+> -		    i2c_check_functionality(client->adapter,
+> -					    I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
+> +		if (block_supported) {
+>  			indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
+>  			indio_dev->info = &bmc150_accel_info_fifo;
+>  			indio_dev->buffer->attrs = bmc150_accel_fifo_attributes;
+> @@ -1670,7 +1651,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+> 
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Unable to register iio device\n");
+> +		dev_err(dev, "Unable to register iio device\n");
+>  		goto err_trigger_unregister;
+>  	}
+> 
+> @@ -1693,10 +1674,11 @@ err_buffer_cleanup:
+> 
+>  	return ret;
+>  }
+> +EXPORT_SYMBOL_GPL(bmc150_accel_core_probe);
+> 
+> -static int bmc150_accel_remove(struct i2c_client *client)
+> +int bmc150_accel_core_remove(struct device *dev)
+>  {
+> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> 
+>  	pm_runtime_disable(data->dev);
+> @@ -1715,6 +1697,7 @@ static int bmc150_accel_remove(struct i2c_client *client)
+> 
+>  	return 0;
+>  }
+> +EXPORT_SYMBOL_GPL(bmc150_accel_core_remove);
+> 
+>  #ifdef CONFIG_PM_SLEEP
+>  static int bmc150_accel_suspend(struct device *dev)
+> @@ -1785,48 +1768,12 @@ static int bmc150_accel_runtime_resume(struct device *dev)
+>  }
+>  #endif
+> 
+> -static const struct dev_pm_ops bmc150_accel_pm_ops = {
+> +const struct dev_pm_ops bmc150_accel_pm_ops = {
+>  	SET_SYSTEM_SLEEP_PM_OPS(bmc150_accel_suspend, bmc150_accel_resume)
+>  	SET_RUNTIME_PM_OPS(bmc150_accel_runtime_suspend,
+>  			   bmc150_accel_runtime_resume, NULL)
+>  };
+> 
+> -static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+> -	{"BSBA0150",	bmc150},
+> -	{"BMC150A",	bmc150},
+> -	{"BMI055A",	bmi055},
+> -	{"BMA0255",	bma255},
+> -	{"BMA250E",	bma250e},
+> -	{"BMA222E",	bma222e},
+> -	{"BMA0280",	bma280},
+> -	{ },
+> -};
+> -MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+> -
+> -static const struct i2c_device_id bmc150_accel_id[] = {
+> -	{"bmc150_accel",	bmc150},
+> -	{"bmi055_accel",	bmi055},
+> -	{"bma255",		bma255},
+> -	{"bma250e",		bma250e},
+> -	{"bma222e",		bma222e},
+> -	{"bma280",		bma280},
+> -	{}
+> -};
+> -
+> -MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
+> -
+> -static struct i2c_driver bmc150_accel_driver = {
+> -	.driver = {
+> -		.name	= BMC150_ACCEL_DRV_NAME,
+> -		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
+> -		.pm	= &bmc150_accel_pm_ops,
+> -	},
+> -	.probe		= bmc150_accel_probe,
+> -	.remove		= bmc150_accel_remove,
+> -	.id_table	= bmc150_accel_id,
+> -};
+> -module_i2c_driver(bmc150_accel_driver);
+> -
+>  MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
+>  MODULE_LICENSE("GPL v2");
+>  MODULE_DESCRIPTION("BMC150 accelerometer driver");
+> diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
+> new file mode 100644
+> index 000000000000..b41404ba32fc
+> --- /dev/null
+> +++ b/drivers/iio/accel/bmc150-accel-i2c.c
+> @@ -0,0 +1,102 @@
+> +/*
+> + * 3-axis accelerometer driver supporting following I2C Bosch-Sensortec chips:
+> + *  - BMC150
+> + *  - BMI055
+> + *  - BMA255
+> + *  - BMA250E
+> + *  - BMA222E
+> + *  - BMA280
+> + *
+> + * Copyright (c) 2014, Intel Corporation.
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +#include <linux/acpi.h>
+> +#include <linux/regmap.h>
+> +
+> +#include "bmc150-accel.h"
+> +
+> +static const struct regmap_config bmc150_i2c_regmap_conf = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +};
 
-+config PALMAS_GPADC
-+	tristate "TI Palmas General Purpose ADC"
-+	depends on MFD_PALMAS
-+	help
-+	  Palmas series pmic chip by texas Instruments (twl6035/6037)
-+	  is used in smartphones and tablets and supports a 16 channel
-+	  general purpose ADC. Add iio driver to read different channel
-+	  of the GPADCs.
-+
-config QCOM_SPMI_IADC
-	tristate "Qualcomm SPMI PMIC current ADC"
-	depends on SPMI
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index a096210..716f112 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -26,6 +26,7 @@ obj-$(CONFIG_MCP320X) += mcp320x.o
-obj-$(CONFIG_MCP3422) += mcp3422.o
-obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
-obj-$(CONFIG_NAU7802) += nau7802.o
-+obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
-obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
-obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
-obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
-diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
-new file mode 100644
-index 0000000..17abb28
---- /dev/null
-+++ b/drivers/iio/adc/palmas_gpadc.c
-@@ -0,0 +1,797 @@
-+/*
-+ * palmas-adc.c -- TI PALMAS GPADC.
-+ *
-+ * Copyright (c) 2013, NVIDIA Corporation. All rights reserved.
-+ *
-+ * Author: Pradeep Goudagunta <pgoudagunta@nvidia.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation version 2.
-+ */
-+#include <linux/module.h>
-+#include <linux/err.h>
-+#include <linux/irq.h>
-+#include <linux/interrupt.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/pm.h>
-+#include <linux/mfd/palmas.h>
-+#include <linux/completion.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/machine.h>
-+#include <linux/iio/driver.h>
-+
-+#define MOD_NAME "palmas-gpadc"
-+#define ADC_CONVERSION_TIMEOUT	(msecs_to_jiffies(5000))
-+#define TO_BE_CALCULATED 0
-+
-+struct palmas_gpadc_info {
-+/* calibration codes and regs */
-+	int x1;
-+	int x2;
-+	int v1;
-+	int v2;
-+	u8 trim1_reg;
-+	u8 trim2_reg;
-+	int gain;
-+	int offset;
-+	int gain_error;
-+	bool is_correct_code;
-+};
-+
-+#define PALMAS_ADC_INFO(_chan, _x1, _x2, _v1, _v2, _t1, _t2, _is_correct_code)\
-+[PALMAS_ADC_CH_##_chan] = {						\
-+		.x1 = _x1,						\
-+		.x2 = _x2,						\
-+		.v1 = _v1,						\
-+		.v2 = _v2,						\
-+		.gain = TO_BE_CALCULATED,				\
-+		.offset = TO_BE_CALCULATED,				\
-+		.gain_error = TO_BE_CALCULATED,				\
-+		.trim1_reg = PALMAS_GPADC_TRIM##_t1,			\
-+		.trim2_reg = PALMAS_GPADC_TRIM##_t2,			\
-+		.is_correct_code = _is_correct_code			\
-+	}
-+
-+static struct palmas_gpadc_info palmas_gpadc_info[] = {
-+	PALMAS_ADC_INFO(IN0, 2064, 3112, 630, 950, 1, 2, false),
-+	PALMAS_ADC_INFO(IN1, 2064, 3112, 630, 950, 1, 2, false),
-+	PALMAS_ADC_INFO(IN2, 2064, 3112, 1260, 1900, 3, 4, false),
-+	PALMAS_ADC_INFO(IN3, 2064, 3112, 630, 950, 1, 2, false),
-+	PALMAS_ADC_INFO(IN4, 2064, 3112, 630, 950, 1, 2, false),
-+	PALMAS_ADC_INFO(IN5, 2064, 3112, 630, 950, 1, 2, false),
-+	PALMAS_ADC_INFO(IN6, 2064, 3112, 2520, 3800, 5, 6, false),
-+	PALMAS_ADC_INFO(IN7, 2064, 3112, 2520, 3800, 7, 8, false),
-+	PALMAS_ADC_INFO(IN8, 2064, 3112, 3150, 4750, 9, 10, false),
-+	PALMAS_ADC_INFO(IN9, 2064, 3112, 5670, 8550, 11, 12, false),
-+	PALMAS_ADC_INFO(IN10, 2064, 3112, 3465, 5225, 13, 14, false),
-+	PALMAS_ADC_INFO(IN11, 0, 0, 0, 0, INVALID, INVALID, true),
-+	PALMAS_ADC_INFO(IN12, 0, 0, 0, 0, INVALID, INVALID, true),
-+	PALMAS_ADC_INFO(IN13, 0, 0, 0, 0, INVALID, INVALID, true),
-+	PALMAS_ADC_INFO(IN14, 2064, 3112, 3645, 5225, 15, 16, false),
-+	PALMAS_ADC_INFO(IN15, 0, 0, 0, 0, INVALID, INVALID, true),
-+};
-+
-+struct palmas_gpadc {
-+	struct device			*dev;
-+	struct palmas			*palmas;
-+	u8				ch0_current;
-+	u8				ch3_current;
-+	bool				extended_delay;
-+	int				irq;
-+	int				irq_auto_0;
-+	int				irq_auto_1;
-+	struct palmas_gpadc_info	*adc_info;
-+	struct completion		conv_completion;
-+	struct palmas_adc_wakeup_property wakeup1_data;
-+	struct palmas_adc_wakeup_property wakeup2_data;
-+	bool				wakeup1_enable;
-+	bool				wakeup2_enable;
-+	int				auto_conversion_period;
-+};
-+
-+/*
-+ * GPADC lock issue in AUTO mode.
-+ * Impact: In AUTO mode, GPADC conversion can be locked after disabling AUTO
-+ *	   mode feature.
-+ * Details:
-+ *	When the AUTO mode is the only conversion mode enabled, if the AUTO
-+ *	mode feature is disabled with bit GPADC_AUTO_CTRL.  AUTO_CONV1_EN = 0
-+ *	or bit GPADC_AUTO_CTRL.  AUTO_CONV0_EN = 0 during a conversion, the
-+ *	conversion mechanism can be seen as locked meaning that all following
-+ *	conversion will give 0 as a result.  Bit GPADC_STATUS.GPADC_AVAILABLE
-+ *	will stay at 0 meaning that GPADC is busy.  An RT conversion can unlock
-+ *	the GPADC.
-+ *
-+ * Workaround(s):
-+ *	To avoid the lock mechanism, the workaround to follow before any stop
-+ *	conversion request is:
-+ *	Force the GPADC state machine to be ON by using the GPADC_CTRL1.
-+ *		GPADC_FORCE bit = 1
-+ *	Shutdown the GPADC AUTO conversion using
-+ *		GPADC_AUTO_CTRL.SHUTDOWN_CONV[01] = 0.
-+ *	After 100us, force the GPADC state machine to be OFF by using the
-+ *		GPADC_CTRL1.  GPADC_FORCE bit = 0
-+ */
-+static int palmas_disable_auto_conversion(struct palmas_gpadc *adc)
-+{
-+	int ret;
-+
-+	ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+			PALMAS_GPADC_CTRL1,
-+			PALMAS_GPADC_CTRL1_GPADC_FORCE,
-+			PALMAS_GPADC_CTRL1_GPADC_FORCE);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "GPADC_CTRL1 update failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+			PALMAS_GPADC_AUTO_CTRL,
-+			PALMAS_GPADC_AUTO_CTRL_SHUTDOWN_CONV1 |
-+			PALMAS_GPADC_AUTO_CTRL_SHUTDOWN_CONV0,
-+			0);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "AUTO_CTRL update failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	udelay(100);
-+
-+	ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+			PALMAS_GPADC_CTRL1,
-+			PALMAS_GPADC_CTRL1_GPADC_FORCE, 0);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "GPADC_CTRL1 update failed: %d\n", ret);
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+static irqreturn_t palmas_gpadc_irq(int irq, void *data)
-+{
-+	struct palmas_gpadc *adc = data;
-+
-+	complete(&adc->conv_completion);
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t palmas_gpadc_irq_auto(int irq, void *data)
-+{
-+	struct palmas_gpadc *adc = data;
-+
-+	dev_info(adc->dev, "Threshold interrupt %d occurs\n", irq);
-+	palmas_disable_auto_conversion(adc);
-+	return IRQ_HANDLED;
-+}
-+
-+static int palmas_gpadc_start_mask_interrupt(struct palmas_gpadc *adc, int mask)
-+{
-+	int ret;
-+
-+	if (!mask)
-+		ret = palmas_update_bits(adc->palmas, PALMAS_INTERRUPT_BASE,
-+					PALMAS_INT3_MASK,
-+					PALMAS_INT3_MASK_GPADC_EOC_SW, 0);
-+	else
-+		ret = palmas_update_bits(adc->palmas, PALMAS_INTERRUPT_BASE,
-+					PALMAS_INT3_MASK,
-+					PALMAS_INT3_MASK_GPADC_EOC_SW,
-+					PALMAS_INT3_MASK_GPADC_EOC_SW);
-+	if (ret < 0)
-+		dev_err(adc->dev, "GPADC INT MASK update failed: %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static int palmas_gpadc_enable(struct palmas_gpadc *adc, int adc_chan,
-+			       int enable)
-+{
-+	unsigned int mask, val;
-+	int ret;
-+
-+	if (enable) {
-+		val = (adc->extended_delay
-+			<< PALMAS_GPADC_RT_CTRL_EXTEND_DELAY_SHIFT);
-+		ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+					PALMAS_GPADC_RT_CTRL,
-+					PALMAS_GPADC_RT_CTRL_EXTEND_DELAY, val);
-+		if (ret < 0) {
-+			dev_err(adc->dev, "RT_CTRL update failed: %d\n", ret);
-+			return ret;
-+		}
-+
-+		mask = (PALMAS_GPADC_CTRL1_CURRENT_SRC_CH0_MASK |
-+			PALMAS_GPADC_CTRL1_CURRENT_SRC_CH3_MASK |
-+			PALMAS_GPADC_CTRL1_GPADC_FORCE);
-+		val = (adc->ch0_current
-+			<< PALMAS_GPADC_CTRL1_CURRENT_SRC_CH0_SHIFT);
-+		val |= (adc->ch3_current
-+			<< PALMAS_GPADC_CTRL1_CURRENT_SRC_CH3_SHIFT);
-+		val |= PALMAS_GPADC_CTRL1_GPADC_FORCE;
-+		ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_CTRL1, mask, val);
-+		if (ret < 0) {
-+			dev_err(adc->dev,
-+				"Failed to update current setting: %d\n", ret);
-+			return ret;
-+		}
-+
-+		mask = (PALMAS_GPADC_SW_SELECT_SW_CONV0_SEL_MASK |
-+			PALMAS_GPADC_SW_SELECT_SW_CONV_EN);
-+		val = (adc_chan | PALMAS_GPADC_SW_SELECT_SW_CONV_EN);
-+		ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_SW_SELECT, mask, val);
-+		if (ret < 0) {
-+			dev_err(adc->dev, "SW_SELECT update failed: %d\n", ret);
-+			return ret;
-+		}
-+	} else {
-+		ret = palmas_write(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_SW_SELECT, 0);
-+		if (ret < 0)
-+			dev_err(adc->dev, "SW_SELECT write failed: %d\n", ret);
-+
-+		ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_CTRL1,
-+				PALMAS_GPADC_CTRL1_GPADC_FORCE, 0);
-+		if (ret < 0) {
-+			dev_err(adc->dev, "CTRL1 update failed: %d\n", ret);
-+			return ret;
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+static int palmas_gpadc_read_prepare(struct palmas_gpadc *adc, int adc_chan)
-+{
-+	int ret;
-+
-+	ret = palmas_gpadc_enable(adc, adc_chan, true);
-+	if (ret < 0)
-+		return ret;
-+
-+	return palmas_gpadc_start_mask_interrupt(adc, 0);
-+}
-+
-+static void palmas_gpadc_read_done(struct palmas_gpadc *adc, int adc_chan)
-+{
-+	palmas_gpadc_start_mask_interrupt(adc, 1);
-+	palmas_gpadc_enable(adc, adc_chan, false);
-+}
-+
-+static int palmas_gpadc_calibrate(struct palmas_gpadc *adc, int adc_chan)
-+{
-+	int k;
-+	int d1;
-+	int d2;
-+	int ret;
-+	int gain;
-+	int x1 =  adc->adc_info[adc_chan].x1;
-+	int x2 =  adc->adc_info[adc_chan].x2;
-+	int v1 = adc->adc_info[adc_chan].v1;
-+	int v2 = adc->adc_info[adc_chan].v2;
-+
-+	ret = palmas_read(adc->palmas, PALMAS_TRIM_GPADC_BASE,
-+				adc->adc_info[adc_chan].trim1_reg, &d1);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "TRIM read failed: %d\n", ret);
-+		goto scrub;
-+	}
-+
-+	ret = palmas_read(adc->palmas, PALMAS_TRIM_GPADC_BASE,
-+				adc->adc_info[adc_chan].trim2_reg, &d2);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "TRIM read failed: %d\n", ret);
-+		goto scrub;
-+	}
-+
-+	/*Gain error Calculation*/
-+	k = (1000 + (1000 * (d2 - d1)) / (x2 - x1));
-+
-+	/*Gain Calculation*/
-+	gain = ((v2 - v1) * 1000) / (x2 - x1);
-+
-+	adc->adc_info[adc_chan].gain_error = k;
-+	adc->adc_info[adc_chan].gain = gain;
-+	/*offset Calculation*/
-+	adc->adc_info[adc_chan].offset = (d1 * 1000) - ((k - 1000) * x1);
-+
-+scrub:
-+	return ret;
-+}
-+
-+static int palmas_gpadc_start_conversion(struct palmas_gpadc *adc, int adc_chan)
-+{
-+	unsigned int val;
-+	int ret;
-+
-+	init_completion(&adc->conv_completion);
-+	ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_SW_SELECT,
-+				PALMAS_GPADC_SW_SELECT_SW_START_CONV0,
-+				PALMAS_GPADC_SW_SELECT_SW_START_CONV0);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "ADC_SW_START write failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = wait_for_completion_timeout(&adc->conv_completion,
-+				ADC_CONVERSION_TIMEOUT);
-+	if (ret == 0) {
-+		dev_err(adc->dev, "ADC conversion not completed\n");
-+		ret = -ETIMEDOUT;
-+		return ret;
-+	}
-+
-+	ret = palmas_bulk_read(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_SW_CONV0_LSB, &val, 2);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "ADCDATA read failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = (val & 0xFFF);
-+	return ret;
-+}
-+
-+static int palmas_gpadc_get_calibrated_code(struct palmas_gpadc *adc,
-+						int adc_chan, int val)
-+{
-+	if (((val*1000) - adc->adc_info[adc_chan].offset) < 0) {
-+		dev_err(adc->dev, "No Input Connected\n");
-+		return 0;
-+	}
-+
-+	if (!(adc->adc_info[adc_chan].is_correct_code))
-+		val  = ((val*1000) - adc->adc_info[adc_chan].offset) /
-+					adc->adc_info[adc_chan].gain_error;
-+
-+	val = (val * adc->adc_info[adc_chan].gain) / 1000;
-+	return val;
-+}
-+
-+static int palmas_gpadc_read_raw(struct iio_dev *indio_dev,
-+	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
-+{
-+	struct  palmas_gpadc *adc = iio_priv(indio_dev);
-+	int adc_chan = chan->channel;
-+	int ret = 0;
-+
-+	if (adc_chan > PALMAS_ADC_CH_MAX)
-+		return -EINVAL;
-+
-+	mutex_lock(&indio_dev->mlock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
-+		ret = palmas_gpadc_read_prepare(adc, adc_chan);
-+		if (ret < 0)
-+			goto out;
-+
-+		ret = palmas_gpadc_start_conversion(adc, adc_chan);
-+		if (ret < 0) {
-+			dev_err(adc->dev,
-+			"ADC start coversion failed\n");
-+			goto out;
-+		}
-+
-+		if (mask == IIO_CHAN_INFO_PROCESSED)
-+			ret = palmas_gpadc_get_calibrated_code(
-+							adc, adc_chan, ret);
-+
-+		*val = ret;
-+
-+		ret = IIO_VAL_INT;
-+		goto out;
-+	}
-+
-+	mutex_unlock(&indio_dev->mlock);
-+	return ret;
-+
-+out:
-+	palmas_gpadc_read_done(adc, adc_chan);
-+	mutex_unlock(&indio_dev->mlock);
-+	return ret;
-+}
-+
-+static const struct iio_info palmas_gpadc_iio_info = {
-+	.read_raw = palmas_gpadc_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+#define PALMAS_ADC_CHAN_IIO(chan, _type)			\
-+{									\
-+	.datasheet_name = PALMAS_DATASHEET_NAME(chan),			\
-+	.type = _type,							\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
-+			BIT(IIO_CHAN_INFO_PROCESSED),			\
-+	.indexed = 1,							\
-+	.channel = PALMAS_ADC_CH_##chan,				\
-+}
-+
-+static const struct iio_chan_spec palmas_gpadc_iio_channel[] = {
-+	PALMAS_ADC_CHAN_IIO(IN0, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN1, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN2, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN3, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN4, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN5, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN6, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN7, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN8, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN9, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN10, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN11, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN12, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN13, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN14, IIO_VOLTAGE),
-+	PALMAS_ADC_CHAN_IIO(IN15, IIO_VOLTAGE),
-+};
-+
-+static int palmas_gpadc_probe(struct platform_device *pdev)
-+{
-+	struct palmas_gpadc *adc;
-+	struct palmas_platform_data *pdata;
-+	struct palmas_gpadc_platform_data *adc_pdata;
-+	struct iio_dev *iodev;
-+	int ret, i;
-+
-+	pdata = dev_get_platdata(pdev->dev.parent);
-+	if (!pdata || !pdata->gpadc_pdata) {
-+		dev_err(&pdev->dev, "No platform data\n");
-+		return -ENODEV;
-+	}
-+	adc_pdata = pdata->gpadc_pdata;
-+
-+	iodev = iio_device_alloc(sizeof(*adc));
-+	if (!iodev) {
-+		dev_err(&pdev->dev, "iio_device_alloc failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	if (adc_pdata->iio_maps) {
-+		ret = iio_map_array_register(iodev, adc_pdata->iio_maps);
-+		if (ret < 0) {
-+			dev_err(&pdev->dev, "iio_map_array_register failed\n");
-+			goto out;
-+		}
-+	}
-+
-+	adc = iio_priv(iodev);
-+	adc->dev = &pdev->dev;
-+	adc->palmas = dev_get_drvdata(pdev->dev.parent);
-+	adc->adc_info = palmas_gpadc_info;
-+	init_completion(&adc->conv_completion);
-+	dev_set_drvdata(&pdev->dev, iodev);
-+
-+	adc->auto_conversion_period = adc_pdata->auto_conversion_period_ms;
-+	adc->irq = palmas_irq_get_virq(adc->palmas, PALMAS_GPADC_EOC_SW_IRQ);
-+	ret = request_threaded_irq(adc->irq, NULL,
-+		palmas_gpadc_irq,
-+		IRQF_ONESHOT | IRQF_EARLY_RESUME, dev_name(adc->dev),
-+		adc);
-+	if (ret < 0) {
-+		dev_err(adc->dev,
-+			"request irq %d failed: %dn", adc->irq, ret);
-+		goto out_unregister_map;
-+	}
-+
-+	if (adc_pdata->adc_wakeup1_data) {
-+		memcpy(&adc->wakeup1_data, adc_pdata->adc_wakeup1_data,
-+			sizeof(adc->wakeup1_data));
-+		adc->wakeup1_enable = true;
-+		adc->irq_auto_0 =  platform_get_irq(pdev, 1);
-+		ret = request_threaded_irq(adc->irq_auto_0, NULL,
-+				palmas_gpadc_irq_auto,
-+				IRQF_ONESHOT | IRQF_EARLY_RESUME,
-+				"palmas-adc-auto-0", adc);
-+		if (ret < 0) {
-+			dev_err(adc->dev, "request auto0 irq %d failed: %dn",
-+				adc->irq_auto_0, ret);
-+			goto out_irq_free;
-+		}
-+	}
-+
-+	if (adc_pdata->adc_wakeup2_data) {
-+		memcpy(&adc->wakeup2_data, adc_pdata->adc_wakeup2_data,
-+				sizeof(adc->wakeup2_data));
-+		adc->wakeup2_enable = true;
-+		adc->irq_auto_1 =  platform_get_irq(pdev, 2);
-+		ret = request_threaded_irq(adc->irq_auto_1, NULL,
-+				palmas_gpadc_irq_auto,
-+				IRQF_ONESHOT | IRQF_EARLY_RESUME,
-+				"palmas-adc-auto-1", adc);
-+		if (ret < 0) {
-+			dev_err(adc->dev, "request auto1 irq %d failed: %dn",
-+				adc->irq_auto_1, ret);
-+			goto out_irq_auto0_free;
-+		}
-+	}
-+
-+	if (adc_pdata->ch0_current == 0)
-+		adc->ch0_current = PALMAS_ADC_CH0_CURRENT_SRC_0;
-+	else if (adc_pdata->ch0_current <= 5)
-+		adc->ch0_current = PALMAS_ADC_CH0_CURRENT_SRC_5;
-+	else if (adc_pdata->ch0_current <= 15)
-+		adc->ch0_current = PALMAS_ADC_CH0_CURRENT_SRC_15;
-+	else
-+		adc->ch0_current = PALMAS_ADC_CH0_CURRENT_SRC_20;
-+
-+	if (adc_pdata->ch3_current == 0)
-+		adc->ch3_current = PALMAS_ADC_CH3_CURRENT_SRC_0;
-+	else if (adc_pdata->ch3_current <= 10)
-+		adc->ch3_current = PALMAS_ADC_CH3_CURRENT_SRC_10;
-+	else if (adc_pdata->ch3_current <= 400)
-+		adc->ch3_current = PALMAS_ADC_CH3_CURRENT_SRC_400;
-+	else
-+		adc->ch3_current = PALMAS_ADC_CH3_CURRENT_SRC_800;
-+
-+	adc->extended_delay = adc_pdata->extended_delay;
-+
-+	iodev->name = MOD_NAME;
-+	iodev->dev.parent = &pdev->dev;
-+	iodev->info = &palmas_gpadc_iio_info;
-+	iodev->modes = INDIO_DIRECT_MODE;
-+	iodev->channels = palmas_gpadc_iio_channel;
-+	iodev->num_channels = ARRAY_SIZE(palmas_gpadc_iio_channel);
-+
-+	ret = iio_device_register(iodev);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "iio_device_register() failed: %d\n", ret);
-+		goto out_irq_auto1_free;
-+	}
-+
-+	device_set_wakeup_capable(&pdev->dev, 1);
-+	for (i = 0; i < PALMAS_ADC_CH_MAX; i++) {
-+		if (!(adc->adc_info[i].is_correct_code))
-+			palmas_gpadc_calibrate(adc, i);
-+	}
-+
-+	if (adc->wakeup1_enable || adc->wakeup2_enable)
-+		device_wakeup_enable(&pdev->dev);
-+
-+	return 0;
-+
-+out_irq_auto1_free:
-+	if (adc_pdata->adc_wakeup2_data)
-+		free_irq(adc->irq_auto_1, adc);
-+out_irq_auto0_free:
-+	if (adc_pdata->adc_wakeup1_data)
-+		free_irq(adc->irq_auto_0, adc);
-+out_irq_free:
-+	free_irq(adc->irq, adc);
-+out_unregister_map:
-+	if (adc_pdata->iio_maps)
-+		iio_map_array_unregister(iodev);
-+out:
-+	iio_device_free(iodev);
-+	return ret;
-+}
-+
-+static int palmas_gpadc_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *iodev = dev_to_iio_dev(&pdev->dev);
-+	struct palmas_gpadc *adc = iio_priv(iodev);
-+	struct palmas_platform_data *pdata = dev_get_platdata(pdev->dev.parent);
-+
-+	if (pdata->gpadc_pdata->iio_maps)
-+		iio_map_array_unregister(iodev);
-+	iio_device_unregister(iodev);
-+	free_irq(adc->irq, adc);
-+	if (adc->wakeup1_enable)
-+		free_irq(adc->irq_auto_0, adc);
-+	if (adc->wakeup2_enable)
-+		free_irq(adc->irq_auto_1, adc);
-+	iio_device_free(iodev);
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int palmas_adc_wakeup_configure(struct palmas_gpadc *adc)
-+{
-+	int adc_period, conv;
-+	int i;
-+	int ch0 = 0, ch1 = 0;
-+	int thres;
-+	int ret;
-+
-+	adc_period = adc->auto_conversion_period;
-+	for (i = 0; i < 16; ++i) {
-+		if (((1000 * (1 << i))/32) < adc_period)
-+			continue;
-+	}
-+	if (i > 0)
-+		i--;
-+	adc_period = i;
-+	ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+			PALMAS_GPADC_AUTO_CTRL,
-+			PALMAS_GPADC_AUTO_CTRL_COUNTER_CONV_MASK,
-+			adc_period);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "AUTO_CTRL write failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	conv = 0;
-+	if (adc->wakeup1_enable) {
-+		int is_high;
-+
-+		ch0 = adc->wakeup1_data.adc_channel_number;
-+		conv |= PALMAS_GPADC_AUTO_CTRL_AUTO_CONV0_EN;
-+		if (adc->wakeup1_data.adc_high_threshold > 0) {
-+			thres = adc->wakeup1_data.adc_high_threshold;
-+			is_high = 0;
-+		} else {
-+			thres = adc->wakeup1_data.adc_low_threshold;
-+			is_high = BIT(7);
-+		}
-+
-+		ret = palmas_write(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_THRES_CONV0_LSB, thres & 0xFF);
-+		if (ret < 0) {
-+			dev_err(adc->dev,
-+				"THRES_CONV0_LSB write failed: %d\n", ret);
-+			return ret;
-+		}
-+
-+		ret = palmas_write(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_THRES_CONV0_MSB,
-+				((thres >> 8) & 0xF) | is_high);
-+		if (ret < 0) {
-+			dev_err(adc->dev,
-+				"THRES_CONV0_MSB write failed: %d\n", ret);
-+			return ret;
-+		}
-+	}
-+
-+	if (adc->wakeup2_enable) {
-+		int is_high;
-+
-+		ch1 = adc->wakeup2_data.adc_channel_number;
-+		conv |= PALMAS_GPADC_AUTO_CTRL_AUTO_CONV1_EN;
-+		if (adc->wakeup2_data.adc_high_threshold > 0) {
-+			thres = adc->wakeup2_data.adc_high_threshold;
-+			is_high = 0;
-+		} else {
-+			thres = adc->wakeup2_data.adc_low_threshold;
-+			is_high = BIT(7);
-+		}
-+
-+		ret = palmas_write(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_THRES_CONV1_LSB, thres & 0xFF);
-+		if (ret < 0) {
-+			dev_err(adc->dev,
-+				"THRES_CONV1_LSB write failed: %d\n", ret);
-+			return ret;
-+		}
-+
-+		ret = palmas_write(adc->palmas, PALMAS_GPADC_BASE,
-+				PALMAS_GPADC_THRES_CONV1_MSB,
-+				((thres >> 8) & 0xF) | is_high);
-+		if (ret < 0) {
-+			dev_err(adc->dev,
-+				"THRES_CONV1_MSB write failed: %d\n", ret);
-+			return ret;
-+		}
-+	}
-+
-+	ret = palmas_write(adc->palmas, PALMAS_GPADC_BASE,
-+			PALMAS_GPADC_AUTO_SELECT, (ch1 << 4) | ch0);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "AUTO_SELECT write failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = palmas_update_bits(adc->palmas, PALMAS_GPADC_BASE,
-+			PALMAS_GPADC_AUTO_CTRL,
-+			PALMAS_GPADC_AUTO_CTRL_AUTO_CONV1_EN |
-+			PALMAS_GPADC_AUTO_CTRL_AUTO_CONV0_EN, conv);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "AUTO_CTRL write failed: %d\n", ret);
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+static int palmas_adc_wakeup_reset(struct palmas_gpadc *adc)
-+{
-+	int ret;
-+
-+	ret = palmas_write(adc->palmas, PALMAS_GPADC_BASE,
-+			PALMAS_GPADC_AUTO_SELECT, 0);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "AUTO_SELECT write failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = palmas_disable_auto_conversion(adc);
-+	if (ret < 0) {
-+		dev_err(adc->dev, "Disable auto conversion failed: %d\n", ret);
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+static int palmas_gpadc_suspend(struct device *dev)
-+{
-+	struct iio_dev *iodev = dev_to_iio_dev(dev);
-+	struct palmas_gpadc *adc = iio_priv(iodev);
-+	int wakeup = adc->wakeup1_enable || adc->wakeup2_enable;
-+	int ret;
-+
-+	if (!device_may_wakeup(dev) || !wakeup)
-+		return 0;
-+
-+	ret = palmas_adc_wakeup_configure(adc);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (adc->wakeup1_enable)
-+		enable_irq_wake(adc->irq_auto_0);
-+
-+	if (adc->wakeup2_enable)
-+		enable_irq_wake(adc->irq_auto_1);
-+	return 0;
-+}
-+
-+static int palmas_gpadc_resume(struct device *dev)
-+{
-+	struct iio_dev *iodev = dev_to_iio_dev(dev);
-+	struct palmas_gpadc *adc = iio_priv(iodev);
-+	int wakeup = adc->wakeup1_enable || adc->wakeup2_enable;
-+	int ret;
-+
-+	if (!device_may_wakeup(dev) || !wakeup)
-+		return 0;
-+
-+	ret = palmas_adc_wakeup_reset(adc);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (adc->wakeup1_enable)
-+		disable_irq_wake(adc->irq_auto_0);
-+
-+	if (adc->wakeup2_enable)
-+		disable_irq_wake(adc->irq_auto_1);
-+
-+	return 0;
-+};
-+#endif
-+
-+static const struct dev_pm_ops palmas_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(palmas_gpadc_suspend,
-+				palmas_gpadc_resume)
-+};
-+
-+static struct platform_driver palmas_gpadc_driver = {
-+	.probe = palmas_gpadc_probe,
-+	.remove = palmas_gpadc_remove,
-+	.driver = {
-+		.name = MOD_NAME,
-+		.owner = THIS_MODULE,
-+		.pm = &palmas_pm_ops,
-+	},
-+};
-+
-+static int __init palmas_gpadc_init(void)
-+{
-+	return platform_driver_register(&palmas_gpadc_driver);
-+}
-+module_init(palmas_gpadc_init);
-+
-+static void __exit palmas_gpadc_exit(void)
-+{
-+	platform_driver_unregister(&palmas_gpadc_driver);
-+}
-+module_exit(palmas_gpadc_exit);
-+
-+MODULE_DESCRIPTION("palmas GPADC driver");
-+MODULE_AUTHOR("Pradeep Goudagunta<pgoudagunta@nvidia.com>");
-+MODULE_ALIAS("platform:palmas-gpadc");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/mfd/palmas.h b/include/linux/mfd/palmas.h
-index bb270bd..60acfa2 100644
---- a/include/linux/mfd/palmas.h
-+++ b/include/linux/mfd/palmas.h
-@@ -133,21 +133,32 @@ struct palmas_pmic_driver_data {
-			    struct regulator_config config);
-};
+Just one minor comment here. You forgot to remove the definition
+for bmc150_i2c_regmap_conf from bmc150-accel-core.c. The
+definition from bmc150-accel-core.c also sets max_register, so
+you might want to add it here as well.
 
-+struct palmas_adc_wakeup_property {
-+	int adc_channel_number;
-+	int adc_high_threshold;
-+	int adc_low_threshold;
-+};
-+
-struct palmas_gpadc_platform_data {
-	/* Channel 3 current source is only enabled during conversion */
-	int ch3_current;
--
-	/* Channel 0 current source can be used for battery detection.
--	 * If used for battery detection this will cause a permanent current
-+	* If used for battery detection this will cause a permanent current
-	 * consumption depending on current level set here.
--	 */
-+		 */
-	int ch0_current;
-+	bool extended_delay;
+You can keep my Tested-by tag if you only make this change.
 
-	/* default BAT_REMOVAL_DAT setting on device probe */
-	int bat_removal;
+Thanks,
+Irina
 
-	/* Sets the START_POLARITY bit in the RT_CTRL register */
-	int start_polarity;
-+
-+	struct iio_map *iio_maps;
-+	int auto_conversion_period_ms;
-+	struct palmas_adc_wakeup_property *adc_wakeup1_data;
-+	struct palmas_adc_wakeup_property *adc_wakeup2_data;
-};
-
-struct palmas_reg_init {
-@@ -403,7 +414,7 @@ struct palmas_gpadc_calibration {
-	s32 gain_error;
-	s32 offset_error;
-};
--
-+/*
-struct palmas_gpadc {
-	struct device *dev;
-	struct palmas *palmas;
-@@ -426,6 +437,9 @@ struct palmas_gpadc {
-	int conv1_channel;
-	int rt_channel;
-};
-+*/
-+
-+#define PALMAS_DATASHEET_NAME(_name)	"palmas-gpadc-chan-"#_name
-
-struct palmas_gpadc_result {
-	s32 raw_code;
-@@ -519,6 +533,42 @@ enum palmas_irqs {
-	PALMAS_NUM_IRQ,
-};
-
-+/* Palma GPADC Channels */
-+enum {
-+	PALMAS_ADC_CH_IN0,
-+	PALMAS_ADC_CH_IN1,
-+	PALMAS_ADC_CH_IN2,
-+	PALMAS_ADC_CH_IN3,
-+	PALMAS_ADC_CH_IN4,
-+	PALMAS_ADC_CH_IN5,
-+	PALMAS_ADC_CH_IN6,
-+	PALMAS_ADC_CH_IN7,
-+	PALMAS_ADC_CH_IN8,
-+	PALMAS_ADC_CH_IN9,
-+	PALMAS_ADC_CH_IN10,
-+	PALMAS_ADC_CH_IN11,
-+	PALMAS_ADC_CH_IN12,
-+	PALMAS_ADC_CH_IN13,
-+	PALMAS_ADC_CH_IN14,
-+	PALMAS_ADC_CH_IN15,
-+	PALMAS_ADC_CH_MAX,
-+};
-+
-+/* Palma GPADC Channel0 Current Source */
-+enum {
-+	PALMAS_ADC_CH0_CURRENT_SRC_0,
-+	PALMAS_ADC_CH0_CURRENT_SRC_5,
-+	PALMAS_ADC_CH0_CURRENT_SRC_15,
-+	PALMAS_ADC_CH0_CURRENT_SRC_20,
-+};
-+/* Palma GPADC Channel3 Current Source */
-+enum {
-+	PALMAS_ADC_CH3_CURRENT_SRC_0,
-+	PALMAS_ADC_CH3_CURRENT_SRC_10,
-+	PALMAS_ADC_CH3_CURRENT_SRC_400,
-+	PALMAS_ADC_CH3_CURRENT_SRC_800,
-+};
-+
-struct palmas_pmic {
-	struct palmas *palmas;
-	struct device *dev;
-@@ -2999,6 +3049,7 @@ enum usb_irq_events {
-#define PALMAS_GPADC_TRIM14					0x0D
-#define PALMAS_GPADC_TRIM15					0x0E
-#define PALMAS_GPADC_TRIM16					0x0F
-+#define PALMAS_GPADC_TRIMINVALID				-1
-
-/* TPS659038 regen2_ctrl offset iss different from palmas */
-#define TPS659038_REGEN2_CTRL					0x12
--- 
-2.5.1
-
+> +
+> +static int bmc150_accel_probe(struct i2c_client *client,
+> +			      const struct i2c_device_id *id)
+> +{
+> +	struct regmap *regmap;
+> +	const char *name = NULL;
+> +	bool block_supported =
+> +		i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
+> +		i2c_check_functionality(client->adapter,
+> +					I2C_FUNC_SMBUS_READ_I2C_BLOCK);
+> +
+> +	regmap = devm_regmap_init_i2c(client, &bmc150_i2c_regmap_conf);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&client->dev, "Failed to initialize i2c regmap\n");
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	if (id)
+> +		name = id->name;
+> +
+> +	return bmc150_accel_core_probe(&client->dev, regmap, client->irq, name,
+> +				       block_supported);
+> +}
+> +
+> +static int bmc150_accel_remove(struct i2c_client *client)
+> +{
+> +	return bmc150_accel_core_remove(&client->dev);
+> +}
+> +
+> +static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+> +	{"BSBA0150",	bmc150},
+> +	{"BMC150A",	bmc150},
+> +	{"BMI055A",	bmi055},
+> +	{"BMA0255",	bma255},
+> +	{"BMA250E",	bma250e},
+> +	{"BMA222E",	bma222e},
+> +	{"BMA0280",	bma280},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+> +
+> +static const struct i2c_device_id bmc150_accel_id[] = {
+> +	{"bmc150_accel",	bmc150},
+> +	{"bmi055_accel",	bmi055},
+> +	{"bma255",		bma255},
+> +	{"bma250e",		bma250e},
+> +	{"bma222e",		bma222e},
+> +	{"bma280",		bma280},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
+> +
+> +static struct i2c_driver bmc150_accel_driver = {
+> +	.driver = {
+> +		.name	= "bmc150_accel_i2c",
+> +		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
+> +		.pm	= &bmc150_accel_pm_ops,
+> +	},
+> +	.probe		= bmc150_accel_probe,
+> +	.remove		= bmc150_accel_remove,
+> +	.id_table	= bmc150_accel_id,
+> +};
+> +module_i2c_driver(bmc150_accel_driver);
+> +
+> +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("BMC150 I2C accelerometer driver");
+> diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
+> new file mode 100644
+> index 000000000000..ba0335987f94
+> --- /dev/null
+> +++ b/drivers/iio/accel/bmc150-accel.h
+> @@ -0,0 +1,20 @@
+> +#ifndef _BMC150_ACCEL_H_
+> +#define _BMC150_ACCEL_H_
+> +
+> +struct regmap;
+> +
+> +enum {
+> +	bmc150,
+> +	bmi055,
+> +	bma255,
+> +	bma250e,
+> +	bma222e,
+> +	bma280,
+> +};
+> +
+> +int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+> +			    const char *name, bool block_supported);
+> +int bmc150_accel_core_remove(struct device *dev);
+> +extern const struct dev_pm_ops bmc150_accel_pm_ops;
+> +
+> +#endif  /* _BMC150_ACCEL_H_ */
+> --
+> 2.5.1
 
