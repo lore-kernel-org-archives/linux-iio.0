@@ -1,91 +1,82 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-198.synserver.de ([212.40.185.198]:1206 "EHLO
-	smtp-out-190.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754940AbbIWN3A (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2015 09:29:00 -0400
-Message-ID: <5602A8F6.5060403@metafoo.de>
-Date: Wed, 23 Sep 2015 15:28:22 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <bhuvanchandra.dv@toradex.com>
+From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+To: <linux-iio@vger.kernel.org>, <jic23@kernel.org>
+CC: <stefan@agner.ch>, <maitysanchayan@gmail.com>, <B38611@freescale.com>,
+	<knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+	<shawn.guo@linaro.org>, <linux-kernel@vger.kernel.org>, Bhuvanchandra DV
+	<bhuvanchandra.dv@toradex.com>
+Subject: [PATCH] vf610_adc: Fix internal temperature calculation
+Date: Wed, 23 Sep 2015 19:13:27 +0530
+Message-ID: <1443015807-17764-1-git-send-email-bhuvanchandra.dv@toradex.com>
 MIME-Version: 1.0
-To: Peter Rosin <peda@lysator.liu.se>, linux-iio@vger.kernel.org
-CC: Peter Rosin <peda@axentia.se>, Crt Mori <cmo@melexis.com>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
-	Andreas Dannenberg <dannenberg@ti.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: mcp4531: Driver for Microchip digital potentiometers
-References: <1443009454-14310-1-git-send-email-peda@lysator.liu.se> <1443009454-14310-3-git-send-email-peda@lysator.liu.se>
-In-Reply-To: <1443009454-14310-3-git-send-email-peda@lysator.liu.se>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/23/2015 01:57 PM, Peter Rosin wrote:
-[...]
+There is an observed temperature difference of ~20°C with the
+internal temperature reading and the temperature measured on
+SoC package. Existing calculations consider the typical values
+provided in datasheet. Those typical values are valid for
+VREFH_ADC at 3.0V. Voltage at 25°C is different for different
+VREFH_ADC voltages. With VREFH_ADC at 3.3V, voltage at 25°C is
+0.699V. Hence update the VTEMP25 to 0.699V which gives ADCR@Temp25
+as 867 and the final temperature readings differs with ~5°C from
+the external readings.
 
-Looks pretty good.
+Formula for finding ADCR@Temp25:
+ADCR@Temp25 = (ADCR@Vdd * V@TEMP25 * 10) / VDDconv
 
-One thing I'm concerned about is that this array
+ADCR@Vdd for 12-Bit ADC = 4095
+VDDconv = VREFH_ADC * 10
 
-> +static const struct mcp4531_cfg mcp4531_cfg[] = {
-> +	{ /* MCP4531-502 */ .wipers = 1, .max_pos = 128, .kohms =   5, },
-> +	{ /* MCP4531-103 */ .wipers = 1, .max_pos = 128, .kohms =  10, },
-> +	{ /* MCP4531-503 */ .wipers = 1, .max_pos = 128, .kohms =  50, },
-> +	{ /* MCP4531-104 */ .wipers = 1, .max_pos = 128, .kohms = 100, },
-[...]
-> +};
-> +
+VREFH_ADC@3.3V
+ADCR@Temp25 = (4095 * .699 * 10) / 33
+ADCR@Temp25 ~= 867
 
-And the indices into the array defined here need to stay in sync. It is
-really easy to mess this up by accident when a new entry is added. And it
-will probably take a while to notice when this happens.
+| VREFH_ADC | V@TEMP25 | VDDconv | ADCR@Temp25 |
+|   3.0V    | 0.696mV  |    30   |     950     |
+|   3.3V    | 0.699mV  |    33   |     867     |
 
-> +static const struct i2c_device_id mcp4531_id[] = {
-> +	{ "mcp4531-502",  0 },
-> +	{ "mcp4531-103",  1 },
-> +	{ "mcp4531-503",  2 },
-> +	{ "mcp4531-104",  3 },
-[...]
-> +	{}
-> +};
+Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+---
+ drivers/iio/adc/vf610_adc.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-I see two options to solve this. Either define a enum with all the different
-devices and use a symbolic name for the indices.
-
-E.g.
-
-enum mcp4531_type {
-	MCP4531_502,
-	MCP4531_103,
-	...
-};
-
-static const struct mcp5431_cfg mcp5431_cfg[] = {
-	[MCP4531_502] = {.wipers = 1, .max_pos = 128, .kohms =   5, },
-	[MCP4531_103] = {.wipers = 1, .max_pos = 128, .kohms =  10, },
-	...
-};
-
-static const struct i2c_device_id mcp4531_id[] = {
-	{ "mcp4531-502",  MCP4531_502 },
-	{ "mcp4531-103",  MCP4531_103 },
-	...
-};
-
-Or the second option is to directly assign the cfg struct as the driver data
-in the device ID table.
-
-E.g.
-
-#define MCP4531_CFG(_wipers, _max_pos, _kohms) \
-	(kernel_ulong_t)&(struct mcp4531_cfg) { \
-		.wipers = _wipers, .max_pos = _max_pos, .kohms = _kohms }
-
-static const struct i2c_device_id mcp4531_id[] = {
-	{ "mcp4531-502",  MCP4531_CFG(1, 128, 5) },
-	{ "mcp4531-103",  MCP4531_CFG(1, 128, 10) },
-	...
-};
+diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+index f4df2a7..e7abc13 100644
+--- a/drivers/iio/adc/vf610_adc.c
++++ b/drivers/iio/adc/vf610_adc.c
+@@ -103,6 +103,13 @@
+ 
+ #define DEFAULT_SAMPLE_TIME		1000
+ 
++/* V at 25°C of 696 mV */
++#define VF610_VTEMP25_3V0		950
++/* V at 25°C of 699 mV */
++#define VF610_VTEMP25_3V3		867
++/* Typical sensor slope coefficient at all temperatures */
++#define VF610_TEMP_SLOPE_COEFF		1840
++
+ enum clk_sel {
+ 	VF610_ADCIOC_BUSCLK_SET,
+ 	VF610_ADCIOC_ALTCLK_SET,
+@@ -636,11 +643,13 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+ 			break;
+ 		case IIO_TEMP:
+ 			/*
+-			* Calculate in degree Celsius times 1000
+-			* Using sensor slope of 1.84 mV/°C and
+-			* V at 25°C of 696 mV
+-			*/
+-			*val = 25000 - ((int)info->value - 864) * 1000000 / 1840;
++			 * Calculate in degree Celsius times 1000
++			 * Using the typical sensor slope of 1.84 mV/°C
++			 * and VREFH_ADC at 3.3V, V at 25°C of 699 mV
++			 */
++			*val = 25000 - ((int)info->value - VF610_VTEMP25_3V3) *
++					1000000 / VF610_TEMP_SLOPE_COEFF;
++
+ 			break;
+ 		default:
+ 			mutex_unlock(&indio_dev->mlock);
+-- 
+2.5.0
