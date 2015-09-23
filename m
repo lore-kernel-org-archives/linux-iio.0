@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:55697 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:33577 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755149AbbIWO1L (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2015 10:27:11 -0400
+	with ESMTP id S1754944AbbIWO1U (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2015 10:27:20 -0400
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-iio@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Crt Mori <cmo@melexis.com>,
@@ -14,74 +14,34 @@ Cc: Peter Rosin <peda@axentia.se>, Crt Mori <cmo@melexis.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Peter Rosin <peda@lysator.liu.se>, linux-kernel@vger.kernel.org
-Subject: [PATCH v6 0/2] Driver for Microchip digital potentiometers
-Date: Wed, 23 Sep 2015 16:26:21 +0200
-Message-Id: <1443018383-16578-1-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v6 1/2] iio: resistance: Document that resistance can be output
+Date: Wed, 23 Sep 2015 16:26:22 +0200
+Message-Id: <1443018383-16578-2-git-send-email-peda@lysator.liu.se>
+In-Reply-To: <1443018383-16578-1-git-send-email-peda@lysator.liu.se>
+References: <1443018383-16578-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 From: Peter Rosin <peda@axentia.se>
 
-This is the sixth attempt for a driver for these chips.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ Documentation/ABI/testing/sysfs-bus-iio |    2 ++
+ 1 file changed, 2 insertions(+)
 
-Thanks for review comments from Greg Kroah-Hartman, Crt Mori,
-Daniel Baluta, Lars-Peter Clauson, Andreas Dannenberg, Peter
-Meerwald and Jonathan Cameron. I think and hope I got it all sorted.
-
-Changes since v5:
-- Use a symbolic name to index the cfg array (Lars-Peter)
-- Consolidate handling of MCP4xx1 and MCP4xx2 (me)
-
-Changes since v4:
-- Less convoluted changelog (Jonathan)
-- Use an index into an array of configs as dev_id (Jonathan)
-- Drop .address and use .channel (Jonathan)
-- Remove one layer of wrappers (Jonathan)
-- Provide a scale (Jonathan, Lars-Peter)
-
-Changes since v3:
-- Use i2c_smbus_read_word_swapped (Peter)
-- Use devm_iio_device_register and drop the mcp4531_remove op (Peter)
-- Add defines for a few magic numbers (Peter)
-- Deduplicate channel params with a macro (Peter)
-- Mention the i2c client address options (Peter)
-- Whitespace and other trivial nits (Peter)
-
-Changes since v2:
-- Change naming from mcp4xxx_dpot to mcp4531 (Daniel)
-- Added links to datasheet in commit message and source (Daniel)
-- Rename from pot to potentiometer (Daniel, Crt)
-- Use IIO_RESISTANCE instead of IIO_STEPS (Crt, Lars-Peter)
-- Don't use wildcards in MAINTAINERS and point to the iio list (Crt)
-- Avoid races by not caching values (Crt)
-- Spell Microchip correctly (Andreas)
-
-Changes since v1:
-- Make it an IIO driver instead (Greg)
-- Don't convolute the code with big obscure macros (Greg)
-- Inline the bits from mcp4xxx_dpot.h that are actually used
-  and drop that file (me)
-- Better Changelog (Greg)
-
-Cheers,
-Peter
-
-Peter Rosin (2):
-  iio: resistance: Document that resistance can be output
-  iio: mcp4531: Driver for Microchip digital potentiometers
-
- Documentation/ABI/testing/sysfs-bus-iio |    2 +
- MAINTAINERS                             |    6 +
- drivers/iio/Kconfig                     |    1 +
- drivers/iio/Makefile                    |    1 +
- drivers/iio/potentiometer/Kconfig       |   20 +++
- drivers/iio/potentiometer/Makefile      |    6 +
- drivers/iio/potentiometer/mcp4531.c     |  231 +++++++++++++++++++++++++++++++
- 7 files changed, 267 insertions(+)
- create mode 100644 drivers/iio/potentiometer/Kconfig
- create mode 100644 drivers/iio/potentiometer/Makefile
- create mode 100644 drivers/iio/potentiometer/mcp4531.c
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 9398484196c4..2eea468f704d 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1475,6 +1475,8 @@ Description:
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/in_resistance_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_resistanceX_raw
++What:		/sys/bus/iio/devices/iio:deviceX/out_resistance_raw
++What:		/sys/bus/iio/devices/iio:deviceX/out_resistanceX_raw
+ KernelVersion:	4.3
+ Contact:	linux-iio@vger.kernel.org
+ Description:
 -- 
 1.7.10.4
 
