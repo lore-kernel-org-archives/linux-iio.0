@@ -1,69 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:53673 "EHLO
-	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751894AbbIWHkD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2015 03:40:03 -0400
-Subject: Re: [PATCH v4 2/2] iio: mcp4531: Driver for Microchip digital
- potentiometers
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	linux-iio@vger.kernel.org
-References: <1442936209-27057-1-git-send-email-peda@lysator.liu.se>
- <1442936209-27057-3-git-send-email-peda@lysator.liu.se>
- <B61434B3-133C-4B9C-B451-85B90E55D77A@jic23.retrosnub.co.uk>
-Cc: Peter Rosin <peda@axentia.se>, Crt Mori <cmo@melexis.com>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
-	Andreas Dannenberg <dannenberg@ti.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-kernel@vger.kernel.org
-From: Peter Rosin <peda@lysator.liu.se>
-Message-ID: <5602574B.5020205@lysator.liu.se>
-Date: Wed, 23 Sep 2015 09:39:55 +0200
-MIME-Version: 1.0
-In-Reply-To: <B61434B3-133C-4B9C-B451-85B90E55D77A@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8
+Received: from mga09.intel.com ([134.134.136.24]:55671 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753117AbbIWJCV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Sep 2015 05:02:21 -0400
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: srinivas.pandruvada@linux.intel.com, hadess@hadess.net,
+	daniel.baluta@intel.com, irina.tirdea@intel.com, ao2@ao2.it,
+	u.kleine-koenig@pengutronix.de, vlad.dogaru@intel.com,
+	linus.walleij@linaro.org, tiberiu.a.breana@intel.com,
+	javier@osg.samsung.com, dan.carpenter@oracle.com,
+	geert@linux-m68k.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Octavian Purdila <octavian.purdila@intel.com>
+Subject: [PATCH 1/2] iio: fix drivers that use 0 as a valid IRQ in client->irq (part 2)
+Date: Wed, 23 Sep 2015 12:02:00 +0300
+Message-Id: <1442998921-17665-2-git-send-email-octavian.purdila@intel.com>
+In-Reply-To: <1442998921-17665-1-git-send-email-octavian.purdila@intel.com>
+References: <1442998921-17665-1-git-send-email-octavian.purdila@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2015-09-22 20:22, Jonathan Cameron wrote:
-> On 22 September 2015 16:36:49 BST, Peter Rosin <peda@lysator.liu.se> wrote:
+Since commit dab472eb931bc291 ("i2c / ACPI: Use 0 to indicate that
+device does not have interrupt assigned") 0 is not a valid i2c
+client irq anymore, so change all driver's checks accordingly.
 
-*snip* lots of cosmetics that I'll fix in the next spin...
+The same issue occurs when the device is instantiated via device tree
+with no IRQ, or from the i2c sysfs interface, even before the patch
+above.
 
->> +
->> +static int mcp4531_read_raw(struct iio_dev *indio_dev,
->> +			    struct iio_chan_spec const *chan,
->> +			    int *val, int *val2, long mask)
->> +{
->> +	int err;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		err = mcp4531_get_value(indio_dev, chan->address, val);
->> +		if (err < 0)
->> +			return err;
->> +		return IIO_VAL_INT;
->> +	}
-> No scale known? Be nice to relate to real world values.  I gather this may need
->  platform data of some type (can't open data sheet on phone for some reason)
+Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+---
+ drivers/iio/accel/stk8312.c  | 2 +-
+ drivers/iio/accel/stk8ba50.c | 2 +-
+ drivers/iio/light/stk3310.c  | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-...but I need more input on this.
-
-Yes, it would be nice and yes it requires platform data, as there is
-no way to retrieve if the driver is dealing with a 5, 10, 50 or 100 kOhms
-pot/rheostat. You would also have to expose both the resistance between
-A to W and between W to B, as you have no way to know how it's been
-connected (or you'd need more platform data). Ok, for rheostats you
-know how it's connected, since A isn't available, but for pots there
-are two resistance values controlled with a single value X i.e.
-X*scale/max and (max-X)*scale/max (ignoring the 75 Ohm wiper resistance).
-
-But, I'd rather not go there, as I don't need any of it. Is it Ok to not
-provide scaling?
-
-Cheers,
-Peter
+diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+index c764af2..a578694 100644
+--- a/drivers/iio/accel/stk8312.c
++++ b/drivers/iio/accel/stk8312.c
+@@ -572,7 +572,7 @@ static int stk8312_probe(struct i2c_client *client,
+ 	if (client->irq < 0)
+ 		client->irq = stk8312_gpio_probe(client);
+ 
+-	if (client->irq >= 0) {
++	if (client->irq > 0) {
+ 		ret = devm_request_threaded_irq(&client->dev, client->irq,
+ 						stk8312_data_rdy_trig_poll,
+ 						NULL,
+diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
+index 80f77d8..a59f5d8 100644
+--- a/drivers/iio/accel/stk8ba50.c
++++ b/drivers/iio/accel/stk8ba50.c
+@@ -468,7 +468,7 @@ static int stk8ba50_probe(struct i2c_client *client,
+ 	if (client->irq < 0)
+ 		client->irq = stk8ba50_gpio_probe(client);
+ 
+-	if (client->irq >= 0) {
++	if (client->irq > 0) {
+ 		ret = devm_request_threaded_irq(&client->dev, client->irq,
+ 						stk8ba50_data_rdy_trig_poll,
+ 						NULL,
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index 25c6a71..4e56c90 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -636,7 +636,7 @@ static int stk3310_probe(struct i2c_client *client,
+ 		}
+ 	}
+ 
+-	if (client->irq >= 0) {
++	if (client->irq > 0) {
+ 		ret = devm_request_threaded_irq(&client->dev, client->irq,
+ 						stk3310_irq_handler,
+ 						stk3310_irq_event_handler,
+-- 
+1.9.1
 
