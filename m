@@ -1,365 +1,400 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35987 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759243AbbIVSX1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2015 14:23:27 -0400
-In-Reply-To: <1442936209-27057-3-git-send-email-peda@lysator.liu.se>
-References: <1442936209-27057-1-git-send-email-peda@lysator.liu.se> <1442936209-27057-3-git-send-email-peda@lysator.liu.se>
+Received: from mail-la0-f53.google.com ([209.85.215.53]:36425 "EHLO
+	mail-la0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S935015AbbIWDms (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2015 23:42:48 -0400
+Received: by lacao8 with SMTP id ao8so12581432lac.3
+        for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2015 20:42:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v4 2/2] iio: mcp4531: Driver for Microchip digital potentiometers
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Tue, 22 Sep 2015 19:22:39 +0100
-To: Peter Rosin <peda@lysator.liu.se>, linux-iio@vger.kernel.org
-CC: Peter Rosin <peda@axentia.se>, Crt Mori <cmo@melexis.com>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
-	Andreas Dannenberg <dannenberg@ti.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+In-Reply-To: <55FF02CB.4050101@kernel.org>
+References: <1442201174-10975-1-git-send-email-mranostay@gmail.com>
+	<1442201174-10975-5-git-send-email-mranostay@gmail.com>
+	<alpine.DEB.2.02.1509141032260.16992@pmeerw.net>
+	<55FF02CB.4050101@kernel.org>
+Date: Tue, 22 Sep 2015 20:42:46 -0700
+Message-ID: <CAKzfze-7R+TVFvejnoUDNYuyv7Or3xTw=5_rF7-O_T1S3m3rHg@mail.gmail.com>
+Subject: Re: [PATCH v5 4/4] iio: chemical: add SGX VZ89x VOC sensor support
+From: Matt Ranostay <mranostay@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-kernel@vger.kernel.org
-Message-ID: <B61434B3-133C-4B9C-B451-85B90E55D77A@jic23.retrosnub.co.uk>
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Sun, Sep 20, 2015 at 12:02 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 14/09/15 09:35, Peter Meerwald wrote:
+>>
+>>> Add support for VZ89X sensors VOC and CO2 reporting channels in
+>>> percentage which can be converted to part per million.
+>>
+>> can you make the proper changes for _CONCENTRATION etc. also for
+>> tools/iio/iio_event_monitor.c?
+> Rather than going through another complete version of this series,
+> would you mind doing that as a follow up patch?
+I'll do it as a follow on unless see below....  should IIO_RESISTANCE
+to iio_event_monitor.c be added as well?
 
 
-On 22 September 2015 16:36:49 BST, Peter Rosin <peda@lysator.liu.se> wrote:
->From: Peter Rosin <peda@axentia.se>
 >
->Add support for Microchip digital potentiometers and rheostats
->	MCP4531, MCP4532, MCP4551, MCP4552
->	MCP4631, MCP4632, MCP4651, MCP4652
+>>
+>> and comment below
+> I've fixed this up as chemical sensors when applying.
+
+Actually have found a HW bug that affects one in like 1000 reads. Need
+to submit one more series to workaround it.... so should I add the
+previous to the next version?
+
+>>
+>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>>> ---
+>>>  .../ABI/testing/sysfs-bus-iio-chemical-vz89x       |   7 +
+>>>  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+>>>  drivers/iio/Kconfig                                |   1 +
+>>>  drivers/iio/Makefile                               |   1 +
+>>>  drivers/iio/chemical/Kconfig                       |  15 ++
+>>>  drivers/iio/chemical/Makefile                      |   6 +
+>>>  drivers/iio/chemical/vz89x.c                       | 237 +++++++++++++++++++++
+>>>  7 files changed, 268 insertions(+)
+>>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
+>>>  create mode 100644 drivers/iio/chemical/Kconfig
+>>>  create mode 100644 drivers/iio/chemical/Makefile
+>>>  create mode 100644 drivers/iio/chemical/vz89x.c
+>>>
+>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x b/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
+>>> new file mode 100644
+>>> index 0000000..c0c1ea9
+>>> --- /dev/null
+>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
+>>> @@ -0,0 +1,7 @@
+>>> +What:               /sys/bus/iio/devices/iio:deviceX/in_concentration_VOC_short_raw
+>>> +Date:               September 2015
+>>> +KernelVersion:      4.3
+>>> +Contact:    Matt Ranostay <mranostay@gmail.com>
+>>> +Description:
+>>> +            Get the raw calibration VOC value from the sensor.
+>>> +            This value has little application outside of calibration.
+>>> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>>> index d77d412..a550216 100644
+>>> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>>> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>>> @@ -88,6 +88,7 @@ ricoh,rs5c372b             I2C bus SERIAL INTERFACE REAL-TIME CLOCK IC
+>>>  ricoh,rv5c386               I2C bus SERIAL INTERFACE REAL-TIME CLOCK IC
+>>>  ricoh,rv5c387a              I2C bus SERIAL INTERFACE REAL-TIME CLOCK IC
+>>>  samsung,24ad0xd1    S524AD0XF1 (128K/256K-bit Serial EEPROM for Low Power)
+>>> +sgx,vz89x           SGX Sensortech VZ89X Sensors
+>>>  sii,s35390a         2-wire CMOS real-time clock
+>>>  skyworks,sky81452   Skyworks SKY81452: Six-Channel White LED Driver with Touch Panel Bias Supply
+>>>  st-micro,24c256             i2c serial eeprom  (24cxx)
+>>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>>> index 4011eff..9664e9c 100644
+>>> --- a/drivers/iio/Kconfig
+>>> +++ b/drivers/iio/Kconfig
+>>> @@ -61,6 +61,7 @@ config IIO_CONSUMERS_PER_TRIGGER
+>>>  source "drivers/iio/accel/Kconfig"
+>>>  source "drivers/iio/adc/Kconfig"
+>>>  source "drivers/iio/amplifiers/Kconfig"
+>>> +source "drivers/iio/chemical/Kconfig"
+>>>  source "drivers/iio/common/Kconfig"
+>>>  source "drivers/iio/dac/Kconfig"
+>>>  source "drivers/iio/frequency/Kconfig"
+>>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>>> index 698afc2..2288684 100644
+>>> --- a/drivers/iio/Makefile
+>>> +++ b/drivers/iio/Makefile
+>>> @@ -14,6 +14,7 @@ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+>>>  obj-y += accel/
+>>>  obj-y += adc/
+>>>  obj-y += amplifiers/
+>>> +obj-y += chemical/
+>>>  obj-y += common/
+>>>  obj-y += dac/
+>>>  obj-y += gyro/
+>>> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+>>> new file mode 100644
+>>> index 0000000..04906af
+>>> --- /dev/null
+>>> +++ b/drivers/iio/chemical/Kconfig
+>>> @@ -0,0 +1,15 @@
+>>> +#
+>>> +# Chemical sensors
+>>> +#
+>>> +
+>>> +menu "Indoor Air Quality sensors"
+>>
+>> the comment above says 'Chemical sensors', the menu item 'Indoor Air
+>> Quality sensors' -- I guess an outdoor sensor would fit here as well...
+> Lets just go with Chemical sensors.
+
+
+
+>>
+>>> +
+>>> +config VZ89X
+>>> +    tristate "SGX Sensortech MiCS VZ89X VOC sensor"
+>>> +    depends on I2C
+>>> +    help
+>>> +      Say Y here to build I2C interface support for the SGX
+>>> +      Sensortech MiCS VZ89X VOC (Volatile Organic Compounds)
+>>> +      sensors
+>>> +
+>>> +endmenu
+>>> diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
+>>> new file mode 100644
+>>> index 0000000..7292f2d
+>>> --- /dev/null
+>>> +++ b/drivers/iio/chemical/Makefile
+>>> @@ -0,0 +1,6 @@
+>>> +#
+>>> +# Makefile for IIO chemical sensors
+>>> +#
+>>> +
+>>> +# When adding new entries keep the list in alphabetical order
+>>> +obj-$(CONFIG_VZ89X)         += vz89x.o
+>>> diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
+>>> new file mode 100644
+>>> index 0000000..b454200
+>>> --- /dev/null
+>>> +++ b/drivers/iio/chemical/vz89x.c
+>>> @@ -0,0 +1,237 @@
+>>> +/*
+>>> + * vz89x.c - Support for SGX Sensortech MiCS VZ89X VOC sensors
+>>> + *
+>>> + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or modify
+>>> + * it under the terms of the GNU General Public License as published by
+>>> + * the Free Software Foundation; either version 2 of the License, or
+>>> + * (at your option) any later version.
+>>> + *
+>>> + * This program is distributed in the hope that it will be useful,
+>>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+>>> + * GNU General Public License for more details.
+>>> + *
+>>> + */
+>>> +
+>>> +#include <linux/module.h>
+>>> +#include <linux/mutex.h>
+>>> +#include <linux/init.h>
+>>> +#include <linux/i2c.h>
+>>> +
+>>> +#include <linux/iio/iio.h>
+>>> +#include <linux/iio/sysfs.h>
+>>> +
+>>> +#define VZ89X_REG_MEASUREMENT               0x09
+>>> +#define VZ89X_REG_MEASUREMENT_SIZE  6
+>>> +
+>>> +#define VZ89X_VOC_CO2_IDX           0
+>>> +#define VZ89X_VOC_SHORT_IDX         1
+>>> +#define VZ89X_VOC_TVOC_IDX          2
+>>> +#define VZ89X_VOC_RESISTANCE_IDX    3
+>>> +
+>>> +struct vz89x_data {
+>>> +    struct i2c_client *client;
+>>> +    struct mutex lock;
+>>> +    unsigned long last_update;
+>>> +
+>>> +    u8 buffer[VZ89X_REG_MEASUREMENT_SIZE];
+>>> +};
+>>> +
+>>> +static const struct iio_chan_spec vz89x_channels[] = {
+>>> +    {
+>>> +            .type = IIO_CONCENTRATION,
+>>> +            .channel2 = IIO_MOD_CO2,
+>>> +            .modified = 1,
+>>> +            .info_mask_separate =
+>>> +                    BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_RAW),
+>>> +            .address = VZ89X_VOC_CO2_IDX,
+>>> +    },
+>>> +    {
+>>> +            .type = IIO_CONCENTRATION,
+>>> +            .channel2 = IIO_MOD_VOC,
+>>> +            .modified = 1,
+>>> +            .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>> +            .address = VZ89X_VOC_SHORT_IDX,
+>>> +            .extend_name = "short",
+>>> +    },
+>>> +    {
+>>> +            .type = IIO_CONCENTRATION,
+>>> +            .channel2 = IIO_MOD_VOC,
+>>> +            .modified = 1,
+>>> +            .info_mask_separate =
+>>> +                    BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_RAW),
+>>> +            .address = VZ89X_VOC_TVOC_IDX,
+>>> +    },
+>>> +    {
+>>> +            .type = IIO_RESISTANCE,
+>>> +            .info_mask_separate =
+>>> +                    BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>>> +            .address = VZ89X_VOC_RESISTANCE_IDX,
+>>> +    },
+>>> +};
+>>> +
+>>> +static IIO_CONST_ATTR(in_concentration_co2_scale, "0.00000698689");
+>>> +static IIO_CONST_ATTR(in_concentration_voc_scale, "0.00000000436681223");
+>>> +
+>>> +static struct attribute *vz89x_attributes[] = {
+>>> +    &iio_const_attr_in_concentration_co2_scale.dev_attr.attr,
+>>> +    &iio_const_attr_in_concentration_voc_scale.dev_attr.attr,
+>>> +    NULL,
+>>> +};
+>>> +
+>>> +static const struct attribute_group vz89x_attrs_group = {
+>>> +    .attrs = vz89x_attributes,
+>>> +};
+>>> +
+>>> +static int vz89x_get_measurement(struct vz89x_data *data)
+>>> +{
+>>> +    int ret;
+>>> +    int i;
+>>> +
+>>> +    /* sensor can only be polled once a second max per datasheet */
+>>> +    if (!time_after(jiffies, data->last_update + HZ))
+>>> +            return 0;
+>>> +
+>>> +    ret = i2c_smbus_write_word_data(data->client,
+>>> +                                    VZ89X_REG_MEASUREMENT, 0);
+>>> +    if (ret < 0)
+>>> +            return ret;
+>>> +
+>>> +    for (i = 0; i < VZ89X_REG_MEASUREMENT_SIZE; i++) {
+>>> +            ret = i2c_smbus_read_byte(data->client);
+>>> +            if (ret < 0)
+>>> +                    return ret;
+>>> +            data->buffer[i] = ret;
+>>> +    }
+>>> +
+>>> +    data->last_update = jiffies;
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static int vz89x_get_resistance_reading(struct vz89x_data *data)
+>>> +{
+>>> +    u8 *buf = &data->buffer[VZ89X_VOC_TVOC_IDX];
+>>> +
+>>> +    return buf[0] | (buf[1] << 8) | (buf[2] << 16);
+>>> +}
+>>> +
+>>> +static int vz89x_read_raw(struct iio_dev *indio_dev,
+>>> +                      struct iio_chan_spec const *chan, int *val,
+>>> +                      int *val2, long mask)
+>>> +{
+>>> +    struct vz89x_data *data = iio_priv(indio_dev);
+>>> +    int ret = -EINVAL;
+>>> +
+>>> +    switch (mask) {
+>>> +    case IIO_CHAN_INFO_RAW:
+>>> +            mutex_lock(&data->lock);
+>>> +            ret = vz89x_get_measurement(data);
+>>> +            mutex_unlock(&data->lock);
+>>> +
+>>> +            if (ret)
+>>> +                    return ret;
+>>> +
+>>> +            switch (chan->address) {
+>>> +            case VZ89X_VOC_CO2_IDX:
+>>> +            case VZ89X_VOC_SHORT_IDX:
+>>> +            case VZ89X_VOC_TVOC_IDX:
+>>> +                    *val = data->buffer[chan->address];
+>>> +                    return IIO_VAL_INT;
+>>> +            case VZ89X_VOC_RESISTANCE_IDX:
+>>> +                    *val = vz89x_get_resistance_reading(data);
+>>> +                    return IIO_VAL_INT;
+>>> +            default:
+>>> +                    return -EINVAL;
+>>> +            }
+>>> +            break;
+>>> +    case IIO_CHAN_INFO_SCALE:
+>>> +            switch (chan->type) {
+>>> +            case IIO_RESISTANCE:
+>>> +                    *val = 10;
+>>> +                    return IIO_VAL_INT;
+>>> +            default:
+>>> +                    return -EINVAL;
+>>> +            }
+>>> +            break;
+>>> +    case IIO_CHAN_INFO_OFFSET:
+>>> +            switch (chan->address) {
+>>> +            case VZ89X_VOC_CO2_IDX:
+>>> +                    *val = 44;
+>>> +                    *val2 = 250000;
+>>> +                    return IIO_VAL_INT_PLUS_MICRO;
+>>> +            case VZ89X_VOC_TVOC_IDX:
+>>> +                    *val = -13;
+>>> +                    return IIO_VAL_INT;
+>>> +            default:
+>>> +                    return -EINVAL;
+>>> +            }
+>>> +    }
+>>> +
+>>> +    return ret;
+>>> +}
+>>> +
+>>> +static const struct iio_info vz89x_info = {
+>>> +    .attrs          = &vz89x_attrs_group,
+>>> +    .read_raw       = vz89x_read_raw,
+>>> +    .driver_module  = THIS_MODULE,
+>>> +};
+>>> +
+>>> +static int vz89x_probe(struct i2c_client *client,
+>>> +                   const struct i2c_device_id *id)
+>>> +{
+>>> +    struct iio_dev *indio_dev;
+>>> +    struct vz89x_data *data;
+>>> +
+>>> +    if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
+>>> +                                 I2C_FUNC_SMBUS_BYTE))
+>>> +            return -ENODEV;
+>>> +
+>>> +    indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>>> +    if (!indio_dev)
+>>> +            return -ENOMEM;
+>>> +
+>>> +    data = iio_priv(indio_dev);
+>>> +    i2c_set_clientdata(client, indio_dev);
+>>> +    data->client = client;
+>>> +    data->last_update = jiffies - HZ;
+>>> +    mutex_init(&data->lock);
+>>> +
+>>> +    indio_dev->dev.parent = &client->dev;
+>>> +    indio_dev->info = &vz89x_info,
+>>> +    indio_dev->name = dev_name(&client->dev);
+>>> +    indio_dev->modes = INDIO_DIRECT_MODE;
+>>> +
+>>> +    indio_dev->channels = vz89x_channels;
+>>> +    indio_dev->num_channels = ARRAY_SIZE(vz89x_channels);
+>>> +
+>>> +    return devm_iio_device_register(&client->dev, indio_dev);
+>>> +}
+>>> +
+>>> +static const struct i2c_device_id vz89x_id[] = {
+>>> +    { "vz89x", 0 },
+>>> +    { }
+>>> +};
+>>> +MODULE_DEVICE_TABLE(i2c, vz89x_id);
+>>> +
+>>> +static const struct of_device_id vz89x_dt_ids[] = {
+>>> +    { .compatible = "sgx,vz89x" },
+>>> +    { }
+>>> +};
+>>> +MODULE_DEVICE_TABLE(of, vz89x_dt_ids);
+>>> +
+>>> +static struct i2c_driver vz89x_driver = {
+>>> +    .driver = {
+>>> +            .name   = "vz89x",
+>>> +            .of_match_table = of_match_ptr(vz89x_dt_ids),
+>>> +    },
+>>> +    .probe = vz89x_probe,
+>>> +    .id_table = vz89x_id,
+>>> +};
+>>> +module_i2c_driver(vz89x_driver);
+>>> +
+>>> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+>>> +MODULE_DESCRIPTION("SGX Sensortech MiCS VZ89X VOC sensors");
+>>> +MODULE_LICENSE("GPL v2");
+>>>
+>>
 >
->These are either single (45xx) or dual (46xx) wipers with either
->129 (4x3x) or 257 (4x5x) steps, and configured either as
->potentiometers (4xx1) or rheostats (4xx2). They all use i2c
->client addresses of the 0101xxx form.
->
->Datasheet: http://www.microchip.com/downloads/en/DeviceDoc/22096b.pdf
->
->Signed-off-by: Peter Rosin <peda@axentia.se>
-
-Mostly fine though I think you may have gone a bit too much for conciseness over
- clarity.  Also the scale appears known so should be exposed to userspace.
->---
-> MAINTAINERS                         |    6 ++
-> drivers/iio/Kconfig                 |    1 +
-> drivers/iio/Makefile                |    1 +
-> drivers/iio/potentiometer/Kconfig   |   20 ++++
-> drivers/iio/potentiometer/Makefile  |    6 ++
->drivers/iio/potentiometer/mcp4531.c |  196
->+++++++++++++++++++++++++++++++++++
-> 6 files changed, 230 insertions(+)
-> create mode 100644 drivers/iio/potentiometer/Kconfig
-> create mode 100644 drivers/iio/potentiometer/Makefile
-> create mode 100644 drivers/iio/potentiometer/mcp4531.c
->
->diff --git a/MAINTAINERS b/MAINTAINERS
->index b60e2b2369d2..27862156c7a7 100644
->--- a/MAINTAINERS
->+++ b/MAINTAINERS
->@@ -6600,6 +6600,12 @@ W:	http://linuxtv.org
-> S:	Maintained
-> F:	drivers/media/radio/radio-maxiradio*
-> 
->+MCP4531 MICROCHIP DIGITAL POTENTIOMETER DRIVER
->+M:	Peter Rosin <peda@axentia.se>
->+L:	linux-iio@vger.kernel.org
->+S:	Maintained
->+F:	drivers/iio/potentiometer/mcp4531.c
->+
-> MEDIA DRIVERS FOR RENESAS - VSP1
-> M:	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> L:	linux-media@vger.kernel.org
->diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->index 4011effe4c05..7cc87f322655 100644
->--- a/drivers/iio/Kconfig
->+++ b/drivers/iio/Kconfig
->@@ -73,6 +73,7 @@ source "drivers/iio/orientation/Kconfig"
-> if IIO_TRIGGER
->    source "drivers/iio/trigger/Kconfig"
-> endif #IIO_TRIGGER
->+source "drivers/iio/potentiometer/Kconfig"
-> source "drivers/iio/pressure/Kconfig"
-> source "drivers/iio/proximity/Kconfig"
-> source "drivers/iio/temperature/Kconfig"
->diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
->index 698afc2d17ce..121c814e366b 100644
->--- a/drivers/iio/Makefile
->+++ b/drivers/iio/Makefile
->@@ -23,6 +23,7 @@ obj-y += imu/
-> obj-y += light/
-> obj-y += magnetometer/
-> obj-y += orientation/
->+obj-y += potentiometer/
-> obj-y += pressure/
-> obj-y += proximity/
-> obj-y += temperature/
->diff --git a/drivers/iio/potentiometer/Kconfig
->b/drivers/iio/potentiometer/Kconfig
->new file mode 100644
->index 000000000000..fd75db73e582
->--- /dev/null
->+++ b/drivers/iio/potentiometer/Kconfig
->@@ -0,0 +1,20 @@
->+#
->+# Potentiometer drivers
->+#
->+# When adding new entries keep the list in alphabetical order
->+
->+menu "Digital potentiometers"
->+
->+config MCP4531
->+	tristate "Microchip MCP45xx/MCP46xx Digital Potentiometer driver"
->+	depends on I2C
->+	help
->+	  Say yes here to build support for the Microchip
->+	  MCP4531, MCP4532, MCP4551, MCP4552,
->+	  MCP4631, MCP4632, MCP4651, MCP4652
->+	  digital potentiomenter chips.
->+
->+	  To compile this driver as a module, choose M here: the
->+	  module will be called mcp4531.
->+
->+endmenu
->diff --git a/drivers/iio/potentiometer/Makefile
->b/drivers/iio/potentiometer/Makefile
->new file mode 100644
->index 000000000000..8afe49227012
->--- /dev/null
->+++ b/drivers/iio/potentiometer/Makefile
->@@ -0,0 +1,6 @@
->+#
->+# Makefile for industrial I/O potentiometer drivers
->+#
->+
->+# When adding new entries keep the list in alphabetical order
->+obj-$(CONFIG_MCP4531) += mcp4531.o
->diff --git a/drivers/iio/potentiometer/mcp4531.c
->b/drivers/iio/potentiometer/mcp4531.c
->new file mode 100644
->index 000000000000..04faf56dabe0
->--- /dev/null
->+++ b/drivers/iio/potentiometer/mcp4531.c
->@@ -0,0 +1,196 @@
->+/*
->+ * Industrial I/O driver for Microchip digital potentiometers
->+ * Copyright (c) 2015  Axentia Technologies AB
->+ * Author: Peter Rosin <peda@axentia.se>
->+ *
->+ * Datasheet:
->http://www.microchip.com/downloads/en/DeviceDoc/22096b.pdf
->+ *
->+ * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
->+ * mcp4531	1	129		5, 10, 50, 100          010111x
->+ * mcp4532	1	129		5, 10, 50, 100          01011xx
->+ * mcp4551	1	257		5, 10, 50, 100          010111x
->+ * mcp4552	1	257		5, 10, 50, 100          01011xx
->+ * mcp4631	2	129		5, 10, 50, 100          0101xxx
->+ * mcp4632	2	129		5, 10, 50, 100          01011xx
->+ * mcp4651	2	257		5, 10, 50, 100          0101xxx
->+ * mcp4652	2	257		5, 10, 50, 100          01011xx
->+ *
->+ * This program is free software; you can redistribute it and/or
->modify it
->+ * under the terms of the GNU General Public License version 2 as
->published by
->+ * the Free Software Foundation.
->+ */
->+
->+#include <linux/module.h>
->+#include <linux/i2c.h>
->+#include <linux/err.h>
->+
->+#include <linux/iio/iio.h>
->+
->+#define MCP4531_CONF(wipers, max_pos, uid) \
->+	((((wipers) & 0xf) << 10) | \
->+	 (((max_pos) & 0xf) << 6) | \
->+	 ((uid) & 0x3f))
-
-This strike me as harder to read than it need be. I think I would be clearer done 
-By setting dev_id to an index into an array to static const structs with the various 
-parts explicitly brought out as fields.
-Preferably assigned with c99 syntax for really easy reading :)
-
->+
->+#define MCP4531_UID(conf)     ((conf) & 0x3f)
->+#define MCP4531_MAX_POS(conf) (((conf) >> 6) & 0xf)
->+#define MCP4531_WIPERS(conf)  (((conf) >> 10) & 0xf)
->+
->+#define MCP4531_WRITE (0 << 2)
->+#define MCP4531_INCR  (1 << 2)
->+#define MCP4531_DECR  (2 << 2)
->+#define MCP4531_READ  (3 << 2)
->+
->+#define MCP4531_WIPER_SHIFT (4)
->+
->+enum mcp4531_devid {
->+	MCP4531_ID = MCP4531_CONF(1, 7, 0),
->+	MCP4532_ID = MCP4531_CONF(1, 7, 1),
->+	MCP4551_ID = MCP4531_CONF(1, 8, 2),
->+	MCP4552_ID = MCP4531_CONF(1, 8, 3),
->+	MCP4631_ID = MCP4531_CONF(2, 7, 4),
->+	MCP4632_ID = MCP4531_CONF(2, 7, 5),
->+	MCP4651_ID = MCP4531_CONF(2, 8, 6),
->+	MCP4652_ID = MCP4531_CONF(2, 8, 7),
->+};
->+
->+struct mcp4531_data {
->+	struct i2c_client *client;
->+	unsigned int max_pos;
->+	unsigned long devid;
->+};
->+
->+#define MCP4531_CHANNEL(ch) {				\
->+	.type = IIO_RESISTANCE,				\
->+	.indexed = 1,					\
->+	.output = 1,					\
->+	.channel = (ch),				\
->+	.address = (ch) << MCP4531_WIPER_SHIFT,		\
-Why not drop specifying address and use channel with the shift applied at call site?
-
->+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
->+}
->+
->+static const struct iio_chan_spec mcp4531_channels[] = {
->+	MCP4531_CHANNEL(0),
->+	MCP4531_CHANNEL(1),
->+};
->+
->+static int mcp4531_get_value(struct iio_dev *indio_dev,
->+			     int address, int *val)
->+{
->+	struct mcp4531_data *data = iio_priv(indio_dev);
->+	s32 ret;
->+
->+	ret = i2c_smbus_read_word_swapped(data->client,
->+					  MCP4531_READ | address);
->+	if (ret < 0)
->+		return ret;
->+	*val = ret;
->+	return 0;
->+}
->+
->+static int mcp4531_set_value(struct iio_dev *indio_dev,
->+			     int address, int val)
->+{
->+	struct mcp4531_data *data = iio_priv(indio_dev);
->+
->+	if (val >= data->max_pos || val < 0)
->+		return -EINVAL;
->+
->+	return i2c_smbus_write_byte_data(data->client,
->+					 MCP4531_WRITE | address | (val >> 8),
->+					 val & 0xff);
->+}
-As each of these wrappers is so brief and only used once I would favour just merging them in where called.
-
->+
->+static int mcp4531_read_raw(struct iio_dev *indio_dev,
->+			    struct iio_chan_spec const *chan,
->+			    int *val, int *val2, long mask)
->+{
->+	int err;
->+
->+	switch (mask) {
->+	case IIO_CHAN_INFO_RAW:
->+		err = mcp4531_get_value(indio_dev, chan->address, val);
->+		if (err < 0)
->+			return err;
->+		return IIO_VAL_INT;
->+	}
-No scale known? Be nice to relate to real world values.  I gather this may need
- platform data of some type (can't open data sheet on phone for some reason)
-
->+
->+	return -EINVAL;
->+}
->+
->+static int mcp4531_write_raw(struct iio_dev *indio_dev,
->+			     struct iio_chan_spec const *chan,
->+			     int val, int val2, long mask)
->+{
->+	switch (mask) {
->+	case IIO_CHAN_INFO_RAW:
->+		return mcp4531_set_value(indio_dev, chan->address, val);
->+	}
->+
->+	return -EINVAL;
->+}
->+
->+static const struct iio_info mcp4531_info = {
->+	.read_raw = mcp4531_read_raw,
->+	.write_raw = mcp4531_write_raw,
->+	.driver_module = THIS_MODULE,
->+};
->+
->+static int mcp4531_probe(struct i2c_client *client,
->+			 const struct i2c_device_id *id)
->+{
->+	struct device *dev = &client->dev;
->+	unsigned long devid = id->driver_data;
->+	struct mcp4531_data *data;
->+	struct iio_dev *indio_dev;
->+
->+	if (!i2c_check_functionality(client->adapter,
->+				     I2C_FUNC_SMBUS_WORD_DATA)) {
->+		dev_err(dev, "SMBUS Word Data not supported\n");
->+		return -EIO;
->+	}
->+
->+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
->+	if (!indio_dev)
->+		return -ENOMEM;
->+	data = iio_priv(indio_dev);
->+	i2c_set_clientdata(client, indio_dev);
->+	data->client = client;
->+	data->devid = devid;
->+
->+	data->max_pos = (1 << MCP4531_MAX_POS(devid)) + 1;
-Derive at use site rather than here.
-
->+
->+	indio_dev->dev.parent = dev;
->+	indio_dev->info = &mcp4531_info;
->+	indio_dev->channels = mcp4531_channels;
->+	indio_dev->num_channels = MCP4531_WIPERS(devid);
->+	indio_dev->name = client->name;
->+
->+	return devm_iio_device_register(dev, indio_dev);
->+}
->+
->+static const struct i2c_device_id mcp4531_id[] = {
->+	{ "mcp4531", MCP4531_ID },
->+	{ "mcp4532", MCP4532_ID },
->+	{ "mcp4551", MCP4551_ID },
->+	{ "mcp4552", MCP4552_ID },
->+	{ "mcp4631", MCP4631_ID },
->+	{ "mcp4632", MCP4632_ID },
->+	{ "mcp4651", MCP4651_ID },
->+	{ "mcp4652", MCP4652_ID },
->+	{}
->+};
->+MODULE_DEVICE_TABLE(i2c, mcp4531_id);
->+
->+static struct i2c_driver mcp4531_driver = {
->+	.driver = {
->+		.name	= "mcp4531",
->+	},
->+	.probe		= mcp4531_probe,
->+	.id_table	= mcp4531_id,
->+};
->+
->+module_i2c_driver(mcp4531_driver);
->+
->+MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
->+MODULE_DESCRIPTION("MCP4531 digital potentiometer");
->+MODULE_LICENSE("GPL");
-
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
