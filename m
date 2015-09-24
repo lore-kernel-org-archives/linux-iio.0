@@ -1,142 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46209 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752470AbbIXLas (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Sep 2015 07:30:48 -0400
-In-Reply-To: <20150924071107.GV32203@pengutronix.de>
-References: <1442832916-30774-1-git-send-email-mpa@pengutronix.de> <1F3AC3675D538145B1661F571FE1805F2F0E78D7@irsmsx105.ger.corp.intel.com> <20150924071107.GV32203@pengutronix.de>
+Received: from mail-io0-f173.google.com ([209.85.223.173]:33184 "EHLO
+	mail-io0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754047AbbIXP5H (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Sep 2015 11:57:07 -0400
+Received: by iofh134 with SMTP id h134so81359061iof.0
+        for <linux-iio@vger.kernel.org>; Thu, 24 Sep 2015 08:57:07 -0700 (PDT)
+Date: Thu, 24 Sep 2015 10:57:04 -0500
+From: Mike Mestnik <cheako@mikemestnik.net>
+To: Bastien Nocera <hadess@hadess.net>,
+	Daniel Baluta <daniel.baluta@gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH] Asus T300CHI.
+Message-ID: <20150924155704.GA6388@localhost>
+References: <CAF8px547WhBsfmV8K8OLbqTbADWbu0sD1jUjrGEPHVZfEzrP6w@mail.gmail.com>
+ <CAEnQRZAX1=Y4SaOrpfbWRLR1kYmNKJjeKKouS6pkeb2BBDzr-g@mail.gmail.com>
+ <CAF8px56ehuZxcP9EJ3d+M68CdYJKdkiaRs_g1+S8euiFKA5pkA@mail.gmail.com>
+ <55FF0433.6050900@kernel.org>
+ <1442788960.1030.11.camel@hadess.net>
+ <20150921142604.GA12821@localhost>
+ <56005E7A.9060304@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v3 0/4] iio: bmc150 regmap and SPI
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Thu, 24 Sep 2015 12:30:21 +0100
-To: Markus Pargmann <mpa@pengutronix.de>,
-	"Tirdea, Irina" <irina.tirdea@intel.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"kernel@pengutronix.de" <kernel@pengutronix.de>
-Message-ID: <A703BDB3-CDD6-4095-BC4F-32AF79DBBE39@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <56005E7A.9060304@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Mon, Sep 21, 2015 at 2:46 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 21/09/15 15:26, Mike Mestnik wrote:
+>> On Sep 20, 2015 5:42 PM, "Bastien Nocera" <hadess@hadess.net> wrote:
+>>>
+>>> On Sun, 2015-09-20 at 20:08 +0100, Jonathan Cameron wrote:
+>>>> On 19/09/15 20:03, Mike Mestnik wrote:
+>>>>> On Sat, Sep 19, 2015 at 1:48 PM, Daniel Baluta <
+>>>>> daniel.baluta@gmail.com> wrote:
+>>>>>> On Fri, Sep 18, 2015 at 12:07 AM, Mike Mestnik <
+>>>>>> cheako@mikemestnik.net> wrote:
+>>>>>>> Hello,
+>>>>>>>   I'm looking to know the result of adding ACPI support for a
+>>>>>>> new
+>>>>>>> tablet, the existing support shouldn't work because of a
+>>>>>>> misplaced
+>>>>>>> __init that causes the function to be removed prior to being
+>>>>>>> called.
+>>>>>>
+>>>>>> Are you sure about this? It seems that the existing support
+>>>>>> doesn't work
+>>>>>> because you have different product ids.
+>>>>>>
+>>>>> The driver worked much better prior to me adding the product ids.
+>>>>>  The
+>>>>> sensors were exposed to sysfs and all the data they collected
+>>>>> seemed
+>>>>> correct to me.  The big issue is that there is no software, even
+>>>>> iio-sensor-proxy didn't know how to access the data.
+>>>> Cc'd Bastien Nocera.
+>>>
+>>> iio-sensor-proxy not finding the sensor, and with it working otherwise,
+>>> would be an iio-sensor-proxy bug. I have one of those already for the
+>>> accelerometer in the WinBook TW100 that I haven't had time to root down
+>>> though. See:
+>>> https://github.com/hadess/iio-sensor-proxy/issues/39
+>>>
+>>> The main problem being that sensor types are already hard to detect,
+>>> and the iio subsystem doesn't make it any easier to check whether
+>>> there's buffered output available, or the application needs to poll.
+> I dispute this one.  It's not exactly hard to check for the buffer
+> directory in sysfs and to evaluate if there is a trigger provided by
+> the device (again a simple directory presence check).
+> It gets harder if there is more than one trigger provided, but inherently
+> there isn't much we can do to suggest the best one.  If there are two
+> then there are two usecases that demand different choices.
+>
+>>>
+>>> If anyone wants to fix that in the kernel, that would certainly make my
+>>> life easier.
+>>>
+>> I only kind of understand the reasoning for iio, but for the case of
+>> devices used for instructing application behaviour I can't help but think
+>> this would be better served using/extending input events.
+> Indeed, the IIO side of things is about providing generic support
+> for lots of use cases whereas in your case you are looking at something
+> which is naturally quite specific.
+>
+I just found a copy of this driver in the input tree:
+drivers/input/misc/mpu3050.c
 
+Perhaps "indexing" drivers by userspace API is the wrong approach as
+it's logical that a device my be accessible from userspace via
+multiple APIs and applicable for lots of reasons.  Splinting drivers
+into directories because of how userspace communicates with the driver
+is just asking for duplication or problems with bringing in the
+appropriate code.
 
-On 24 September 2015 08:11:07 BST, Markus Pargmann <mpa@pengutronix.de> wrote:
->Hi Irina,
->
->On Wed, Sep 23, 2015 at 12:46:04PM +0000, Tirdea, Irina wrote:
->> 
->> 
->> > -----Original Message-----
->> > From: Markus Pargmann [mailto:mpa@pengutronix.de]
->> > Sent: 21 September, 2015 13:55
->> > To: Jonathan Cameron
->> > Cc: Srinivas Pandruvada; Tirdea, Irina; Lars-Peter Clausen;
->linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org;
->> > kernel@pengutronix.de; Markus Pargmann
->> > Subject: [PATCH v3 0/4] iio: bmc150 regmap and SPI
->> > 
->> > Hi,
->> > 
->> 
->> Hi Markus,
->> 
->> I tested the new version of you patches and everything works fine.
->> 
->> I used a BMA250E chip connected on the i2c bus.
->> The tests included the iio buffer code path and the i2c code path
->> (including using the fifo and forcing the i2c bus to use
->> the regmap_i2c_smbus_i2c_block calls you added to regmap).
->> 
->> > this series converts the bmc150 driver to use regmap and adds an
->SPI interface.
->> > 
->> > Thanks for testing and review so far. I rebased the series onto
->v4.3-rc2 now
->> > (the togreg branch seems to be on v4.2).
->> > It still works for me but there were some differences regarding the
->chip id.
->> > 
->> 
->> I actually used the togreg branch (to get the latest bmc150 driver
->changes) and
->> cherry-picked the regmap patches. Everything applied without any
->conflicts.
->
->Thank you.
->
->It is probably best if I rebase this onto togreg then as soon as it is
->based on v4.3 to have the necessary regmap dependencies.
-I will hopefully get a pull request off to Greg this evening then fast forward that branch sometime over the weekend.
->
->Best Regards,
->
->Markus
->
->> 
->> Thanks,
->> Irina
->> 
->> > Changes in v3:
->> > - Fixed type of variable 'step' which lead to compile warnings.
->Type is now
->> >   size_t.
->> > - Fixed patch that moved irq variable without reason
->> > - Readded MODULE_* to the core driver
->> > - Reintroduced check id NULL check
->> > 
->> > Changes in v2:
->> > - Removed default values for regmap_config fields.
->> > - Redesigned the fifo_transfer function to avoid running in errors
->first.
->> > - Dropped irq checks patch as it is already mainline
->> > - Core can now be built as module with autoselection of i2c and spi
->parts
->> > 
->> > As my hardware is missing an interrupt line from the SPI connected
->bmc150 I am
->> > not able to test the iio buffer code path and the i2c code path.
->Tests would be
->> > appreciated.
->> > 
->> > @Srinivas:
->> > As there were some rebase conflicts on the first patch, I removed
->your
->> > reviewed-by tag again for the moment.
->> > 
->> > Best regards,
->> > 
->> > Markus
->> > 
->> > 
->> > Markus Pargmann (4):
->> >   iio: bmc150: Use i2c regmap
->> >   iio: bcm150: Remove i2c_client from private data
->> >   iio: bmc150: Split the driver into core and i2c
->> >   iio: bmc150: Add SPI driver
->> > 
->> >  drivers/iio/accel/Kconfig                          |  14 +-
->> >  drivers/iio/accel/Makefile                         |   4 +-
->> >  .../accel/{bmc150-accel.c => bmc150-accel-core.c}  | 388
->++++++++-------------
->> >  drivers/iio/accel/bmc150-accel-i2c.c               | 102 ++++++
->> >  drivers/iio/accel/bmc150-accel-spi.c               |  80 +++++
->> >  drivers/iio/accel/bmc150-accel.h                   |  20 ++
->> >  6 files changed, 366 insertions(+), 242 deletions(-)
->> >  rename drivers/iio/accel/{bmc150-accel.c => bmc150-accel-core.c}
->(82%)
->> >  create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
->> >  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
->> >  create mode 100644 drivers/iio/accel/bmc150-accel.h
->> > 
->> > --
->> > 2.5.1
->> 
->> 
+>>
+>> That would seam to cover the above issues, in exchange for having to add
+>> support for a few new tricks.
+>>
+>> 1. An axis where max and min are actually one 'step' apart.
+>> 2. Double axis for xyz, 6 instead of 3.  Perhaps this can be handled with
+>> extra event nodes, but then there may be sync issues.
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+At first glance it seems that these are still outstanding, needing a
+proposed userspace API.
