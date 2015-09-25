@@ -1,563 +1,462 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:36577 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752726AbbIYGwi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 25 Sep 2015 02:52:38 -0400
-Date: Fri, 25 Sep 2015 08:52:35 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCHv2 1/2] iio: adc: Add TI ADS868X
-In-Reply-To: <1443162580-28293-1-git-send-email-sean.nyekjaer@prevas.dk>
-Message-ID: <alpine.DEB.2.02.1509250842470.2707@pmeerw.net>
-References: <1443162580-28293-1-git-send-email-sean.nyekjaer@prevas.dk>
-MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="324295856-1461148541-1443163955=:2707"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---324295856-1461148541-1443163955=:2707
-Content-Type: TEXT/PLAIN; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Return-Path: <ludovic.tancerel@maplehightech.com>
+Content-Type: multipart/alternative; boundary="Apple-Mail=_908AFBD0-8B8E-44A3-8401-79A9566083F1"
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+Subject: Re: [PATCH V2 6/6] iio: Add ms8607 meas-spec driver support
+From: "ludovic.tancerel@maplehightech.com" <ludovic.tancerel@maplehightech.com>
+In-Reply-To: <55C63AD1.90004@kernel.org>
+Date: Fri, 25 Sep 2015 11:25:50 +0200
+Cc: knaack.h@gmx.de,
+ lars@metafoo.de,
+ pmeerw@pmeerw.net,
+ linux-iio@vger.kernel.org,
+ William.Markezana@meas-spec.com
+Message-Id: <D50518AF-C9FC-43A0-8C08-7A1E5F648988@maplehightech.com>
+References: <1438248345-25820-1-git-send-email-ludovic.tancerel@maplehightech.com> <1438248345-25820-7-git-send-email-ludovic.tancerel@maplehightech.com> <55C63AD1.90004@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
 
-> This patch adds support for the Texas Intruments ADS868x ADC.
+--Apple-Mail=_908AFBD0-8B8E-44A3-8401-79A9566083F1
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=windows-1252
 
-looks good, some minor comments below
-maybe add link to datasheet
- 
-> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-> Reviewed-by: Martin Hundebøll <martin.hundeboll@prevas.dk>
-> ---
-> Changes since v1:
-> - Now possible to read and write the actual offset and scale values
-> - Removed unused includes
-> - Removed unused buffer references
-> 
->  drivers/iio/adc/Kconfig      |  10 +
->  drivers/iio/adc/Makefile     |   1 +
->  drivers/iio/adc/ti-ads868x.c | 456 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 467 insertions(+)
->  create mode 100644 drivers/iio/adc/ti-ads868x.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index deea62c..39924d5 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -322,6 +322,16 @@ config TI_ADC128S052
->  	  This driver can also be built as a module. If so, the module will be
->  	  called ti-adc128s052.
->  
-> +config TI_ADS868X
-> +	tristate "Texas Instruments ADS8684/8"
-> +	depends on SPI && OF
-> +	help
-> +	  If you say yes here you get support for Texas Instruments ADS8684 and
-> +	  and ADS8688 ADC chips
-> +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called ti-ads868x.
-> +
->  config TI_AM335X_ADC
->  	tristate "TI's AM335X ADC driver"
->  	depends on MFD_TI_AM335X_TSCADC
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index fa5723a..75170d2 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -31,6 +31,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
->  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
->  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
->  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
-> +obj-$(CONFIG_TI_ADS868X) += ti-ads868x.o
->  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
->  obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
-> diff --git a/drivers/iio/adc/ti-ads868x.c b/drivers/iio/adc/ti-ads868x.c
-> new file mode 100644
-> index 0000000..66d9b64
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-ads868x.c
-> @@ -0,0 +1,456 @@
-> +/*
-> + * Copyright (C) 2015 Prevas A/S
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/device.h>
-> +#include <linux/kernel.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/err.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define ADS868X_CMD_REG(x)		(x << 8)
-> +#define ADS868X_CMD_REG_NOOP		0x00
-> +#define ADS868X_CMD_REG_RST		0x85
-> +#define ADS868X_CMD_REG_MAN_CH(chan)	(0xC0 | (4 * chan))
-> +#define ADS868X_CMD_DONT_CARE_BITS	16
-> +
-> +#define ADS868X_PROG_REG(x)		(x << 9)
-> +#define ADS868X_PROG_REG_RANGE_CH(chan)	(0x05 + chan)
-> +#define ADS868X_PROG_WR_BIT		BIT(8)
-> +#define ADS868X_PROG_DONT_CARE_BITS	8
-> +
-> +#define ADS868X_VREF_MV			4096
-> +#define ADS868X_REALBITS		16
-> +
-> +struct ads868x_chip_info {
-> +	unsigned int id;
-> +	const struct iio_chan_spec *channels;
-> +	unsigned int num_channels;
-> +	unsigned int flags;
-> +	const struct iio_info *iio_info;
-> +};
-> +
-> +struct ads868x_state {
-> +	const struct ads868x_chip_info	*chip_info;
-> +	struct spi_device		*spi;
-> +	struct regulator		*reg;
-> +	unsigned int			vref_mv;
-> +	char				range[8];
-> +	union {
-> +		__be32 d32;
-> +		u8 d8[4];
-> +	} data[2] ____cacheline_aligned;
-> +};
-> +
-> +enum ads868x_id {
-> +	ID_ADS8684,
-> +	ID_ADS8688,
-> +};
-> +
-> +enum ads868x_range {
-> +	ADS868X_PLUSMINUS25VREF		= 0x00,
-> +	ADS868X_PLUSMINUS125VREF	= 0x01,
-> +	ADS868X_PLUSMINUS0625VREF	= 0x02,
-> +	ADS868X_PLUS25VREF		= 0x05,
-> +	ADS868X_PLUS125VREF		= 0x06,
-> +};
-> +
-> +struct ads868x_ranges {
-> +	enum ads868x_range range;
-> +	unsigned int scale;
-> +	int offset;
-> +};
-> +
-> +static struct ads868x_ranges ads868x_range_def[5] = {
+Jonathan,
+some quick feedback on one of the comments below.
 
-can be const?
+Please let me know if you disagree.
 
-> +	{
-> +		.range = ADS868X_PLUSMINUS25VREF,
-> +		.scale = 76295,
-> +		.offset = -(1 << (ADS868X_REALBITS - 1)),
-> +	}, {
-> +		.range = ADS868X_PLUSMINUS125VREF,
-> +		.scale = 38148,
-> +		.offset = -(1 << (ADS868X_REALBITS - 1)),
-> +	}, {
-> +		.range = ADS868X_PLUSMINUS0625VREF,
-> +		.scale = 19074,
-> +		.offset = -(1 << (ADS868X_REALBITS - 1)),
-> +	}, {
-> +		.range = ADS868X_PLUS25VREF,
-> +		.scale = 38148,
-> +		.offset = 0,
-> +	}, {
-> +		.range = ADS868X_PLUS125VREF,
-> +		.scale = 19074,
-> +		.offset = 0,
-> +	}
-> +};
-> +
-> +static ssize_t ads868x_show_scales(struct device *dev,
-> +				   struct device_attribute *attr, char *buf)
-> +{
-> +	struct ads868x_state *st = iio_priv(dev_to_iio_dev(dev));
-> +
-> +	return sprintf(buf, "0.%09u 0.%09u 0.%09u\n",
-> +		       ads868x_range_def[0].scale * st->vref_mv,
-> +		       ads868x_range_def[1].scale * st->vref_mv,
-> +		       ads868x_range_def[2].scale * st->vref_mv);
-> +}
-> +
-> +static ssize_t ads868x_show_offsets(struct device *dev,
-> +				    struct device_attribute *attr, char *buf)
-> +{
-> +	return sprintf(buf, "%d %d\n", ads868x_range_def[0].offset,
-> +		       ads868x_range_def[3].offset);
-> +}
-> +
-> +static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
-> +		       ads868x_show_scales, NULL, 0);
-> +static IIO_DEVICE_ATTR(in_voltage_offset_available, S_IRUGO,
-> +		       ads868x_show_offsets, NULL, 0);
-> +
-> +static struct attribute *ads868x_attributes[] = {
-> +	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
-> +	&iio_dev_attr_in_voltage_offset_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group ads868x_attribute_group = {
-> +	.attrs = ads868x_attributes,
-> +};
-> +
-> +#define ADS868X_CHAN(index)					\
-> +{								\
-> +	.type = IIO_VOLTAGE,					\
-> +	.indexed = 1,						\
-> +	.channel = index,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
-> +			      | BIT(IIO_CHAN_INFO_SCALE)	\
-> +			      | BIT(IIO_CHAN_INFO_OFFSET),	\
-> +}
-> +
-> +static const struct iio_chan_spec ads8684_channels[] = {
-> +	ADS868X_CHAN(0),
-> +	ADS868X_CHAN(1),
-> +	ADS868X_CHAN(2),
-> +	ADS868X_CHAN(3),
-> +};
-> +
-> +static const struct iio_chan_spec ads8688_channels[] = {
-> +	ADS868X_CHAN(0),
-> +	ADS868X_CHAN(1),
-> +	ADS868X_CHAN(2),
-> +	ADS868X_CHAN(3),
-> +	ADS868X_CHAN(4),
-> +	ADS868X_CHAN(5),
-> +	ADS868X_CHAN(6),
-> +	ADS868X_CHAN(7),
-> +};
-> +
-> +static int ads868x_prog_write(struct iio_dev *indio_dev, unsigned int addr,
-> +			      unsigned int val)
-> +{
-> +	struct ads868x_state *st = iio_priv(indio_dev);
-> +	unsigned int tmp;
+Regards,
+Ludovic
 
-tmp could be u32 to make it clear that it is turned into a 32-bit values
 
-> +
-> +	tmp = ADS868X_PROG_REG(addr) | ADS868X_PROG_WR_BIT | val;
-> +	tmp <<= ADS868X_PROG_DONT_CARE_BITS;
-> +	st->data[0].d32 = cpu_to_be32(tmp);
-> +
-> +	return spi_write(st->spi, &st->data[0].d8[1], 3);
-> +}
-> +
-> +static int ads868x_reset(struct iio_dev *indio_dev)
-> +{
-> +	struct ads868x_state *st = iio_priv(indio_dev);
-> +	unsigned int tmp;
-> +
-> +	tmp = ADS868X_CMD_REG(ADS868X_CMD_REG_RST);
-> +	tmp <<= ADS868X_CMD_DONT_CARE_BITS;
-> +	st->data[0].d32 = cpu_to_be32(tmp);
-> +
-> +	return spi_write(st->spi, &st->data[0].d8[0], 4);
-> +}
-> +
-> +static int ads868x_read(struct iio_dev *indio_dev, unsigned int chan)
-> +{
-> +	struct ads868x_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +	unsigned int tmp;
-> +	struct spi_transfer t[] = {
-> +		{
-> +			.tx_buf = &st->data[0].d8[0],
-> +			.len = 4,
-> +			.cs_change = 1,
-> +		}, {
-> +			.tx_buf = &st->data[1].d8[0],
-> +			.rx_buf = &st->data[1].d8[0],
-> +			.len = 4,
-> +		},
-> +	};
-> +
-> +	tmp = ADS868X_CMD_REG(ADS868X_CMD_REG_MAN_CH(chan));
-> +	tmp <<= ADS868X_CMD_DONT_CARE_BITS;
-> +	st->data[0].d32 = cpu_to_be32(tmp);
-> +
-> +	tmp = ADS868X_CMD_REG(ADS868X_CMD_REG_NOOP);
-> +	tmp <<= ADS868X_CMD_DONT_CARE_BITS;
-> +	st->data[1].d32 = cpu_to_be32(tmp);
-> +
-> +	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return be32_to_cpu(st->data[1].d32) & 0xffff;
-> +}
-> +
-> +static int ads868x_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long m)
-> +{
-> +	int ret, offset, i;
-> +	unsigned long scale_mv;
-> +
-> +	struct ads868x_state *st = iio_priv(indio_dev);
-> +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&indio_dev->mlock);
-> +		ret = ads868x_read(indio_dev, chan->channel);
-> +		mutex_unlock(&indio_dev->mlock);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = ret;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		scale_mv = st->vref_mv;
-> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++) {
-> +			if (st->range[chan->channel] == ads868x_range_def[i].range)
-> +				scale_mv *= ads868x_range_def[i].scale;
-> +		}
-> +		*val = 0;
-> +		*val2 = scale_mv;
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++) {
-> +			if (st->range[chan->channel] == ads868x_range_def[i].range)
-> +				offset = ads868x_range_def[i].offset;
-> +		}
-> +		*val = offset;
-> +		return IIO_VAL_INT;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int ads868x_write_reg_range(struct iio_dev *indio_dev,
-> +				   struct iio_chan_spec const *chan,
-> +				   enum ads868x_range range)
-> +{
-> +	unsigned int tmp;
-> +	int ret;
-> +
-> +	tmp = ADS868X_PROG_REG_RANGE_CH(chan->channel);
-> +	mutex_lock(&indio_dev->mlock);
-> +	ret = ads868x_prog_write(indio_dev, tmp, range);
-> +	mutex_unlock(&indio_dev->mlock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ads868x_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct ads868x_state *st = iio_priv(indio_dev);
-> +	unsigned int scale = 0;
-> +	int ret = -EINVAL, i, offset = 0;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++)
-> +			if (st->range[chan->channel] ==
-> +			    ads868x_range_def[i].range) {
-> +				offset = ads868x_range_def[i].offset;
-> +				if (offset == 0 &&
-> +				    val2 == ads868x_range_def[0].scale *
-> +				    st->vref_mv / 1000)
-> +					return ret;
-> +				break;
-> +			}
-> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++)
-> +			if (val2 ==
-> +			    ads868x_range_def[i].scale * st->vref_mv / 1000 &&
-> +			    offset == ads868x_range_def[i].offset) {
-> +				ret = ads868x_write_reg_range(indio_dev, chan,
-> +					ads868x_range_def[i].range);
-> +			}
-> +		break;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		if (!(ads868x_range_def[0].offset == val ||
-> +		    ads868x_range_def[3].offset == val))
-> +			return ret;
-> +		if (0 == val &&
-> +		    st->range[chan->channel] == ADS868X_PLUSMINUS25VREF)
-> +			return ret;
-> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++)
-> +			if (st->range[chan->channel] ==
-> +			    ads868x_range_def[i].range)
-> +				scale = ads868x_range_def[i].scale;
-> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++)
-> +			if (val == ads868x_range_def[i].offset &&
-> +			    scale == ads868x_range_def[i].scale) {
-> +				ret = ads868x_write_reg_range(indio_dev, chan,
-> +					ads868x_range_def[i].range);
-> +			}
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
+Le 8 ao=FBt 2015 =E0 19:22, Jonathan Cameron <jic23@kernel.org> a =E9crit =
+:
 
-ret already is -EINVAL
+> On 30/07/15 10:25, Ludovic Tancerel wrote:
+>> Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
+> Little bits inline.
+>=20
+> A nice looking patch set.  I was unsure the division made sense =
+between the
+> core and the drivers, but it seems to work well.
+> Will be interesting to see what other parts measurement specialties =
+comes out
+> with in the future!
+>=20
+> Jonathan
+>> ---
+>> Documentation/ABI/testing/sysfs-bus-iio-meas-spec |  1 +
+>> drivers/iio/humidity/htu21.c                      | 32 =
+++++++++++++++++++++---
+>> drivers/iio/pressure/Kconfig                      | 13 +++++++++
+>> drivers/iio/pressure/ms5637.c                     |  6 ++++-
+>> 4 files changed, 48 insertions(+), 4 deletions(-)
+>>=20
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec =
+b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>> index 7b09d3a..df70dda6 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>> @@ -12,3 +12,4 @@ Description:
+>>                 Enable or disable heater function by writing either
+>> 		'1' or '0'.
+>>                 Same reading values apply
+>> +		This ABI is available for htu21, ms8607
+>> diff --git a/drivers/iio/humidity/htu21.c =
+b/drivers/iio/humidity/htu21.c
+>> index 870b631..4720cbc 100644
+>> --- a/drivers/iio/humidity/htu21.c
+>> +++ b/drivers/iio/humidity/htu21.c
+>> @@ -1,6 +1,7 @@
+>> /*
+>>  * htu21.c - Support for Measurement-Specialties
+>>  *           htu21 temperature & humidity sensor
+>> + *	     and humidity part of MS8607 sensor
+>>  *
+>>  * Copyright (c) 2014 Measurement-Specialties
+>>  *
+>> @@ -10,6 +11,8 @@
+>>  *
+>>  * Datasheet:
+>>  *  http://www.meas-spec.com/downloads/HTU21D.pdf
+>> + * Datasheet:
+>> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
+>>  *
+>>  */
+>>=20
+>> @@ -25,6 +28,11 @@
+>>=20
+>> #define HTU21_RESET				0xFE
+>>=20
+>> +enum {
+>> +	HTU21,
+>> +	MS8607
+>> +};
+>> +
+>> static const int htu21_samp_freq[4] =3D { 20, 40, 70, 120 };
+>> /* String copy of the above const for readability purpose */
+>> static const char htu21_show_samp_freq[] =3D "20 40 70 120";
+>> @@ -107,6 +115,17 @@ static const struct iio_chan_spec =
+htu21_channels[] =3D {
+>> 	 }
+>> };
+>>=20
+>> +/* Meas Spec recommendation is to not read temperature
+> /*
+> * Meas
+>> + * on this driver part for MS8607
+>> + */
+>> +static const struct iio_chan_spec ms8607_channels[] =3D {
+>> +	{
+>> +		.type =3D IIO_HUMIDITYRELATIVE,
+>> +		.info_mask_shared_by_type =3D =
+BIT(IIO_CHAN_INFO_PROCESSED),
+>> +		.info_mask_shared_by_all =3D =
+BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>> +	 }
+>> +};
+>> +
+>> static ssize_t htu21_show_battery_low(struct device *dev,
+>> 				      struct device_attribute *attr, =
+char *buf)
+>> {
+>> @@ -189,8 +208,14 @@ int htu21_probe(struct i2c_client *client,
+>> 	indio_dev->name =3D id->name;
+>> 	indio_dev->dev.parent =3D &client->dev;
+>> 	indio_dev->modes =3D INDIO_DIRECT_MODE;
+>> -	indio_dev->channels =3D htu21_channels;
+>> -	indio_dev->num_channels =3D ARRAY_SIZE(htu21_channels);
+>> +
+>> +	if (id->driver_data =3D=3D MS8607) {
+>> +		indio_dev->channels =3D ms8607_channels;
+>> +		indio_dev->num_channels =3D ARRAY_SIZE(ms8607_channels);
+>> +	} else {
+>> +		indio_dev->channels =3D htu21_channels;
+>> +		indio_dev->num_channels =3D ARRAY_SIZE(htu21_channels);
+>> +	}
+>>=20
+>> 	i2c_set_clientdata(client, indio_dev);
+>>=20
+>> @@ -207,7 +232,8 @@ int htu21_probe(struct i2c_client *client,
+>> }
+>>=20
+>> static const struct i2c_device_id htu21_id[] =3D {
+>> -	{"htu21", 0},
+>> +	{"htu21", HTU21},
+>> +	{"ms8607-h", MS8607},
+> perhaps -humidity for clarity if not already in use out in the field.
 
-> +	}
-> +
-> +	if (!ret)
-> +		st->range[chan->channel] = ads868x_range_def[i].range;
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info ads868x_info = {
-> +	.read_raw = &ads868x_read_raw,
-> +	.write_raw = &ads868x_write_raw,
-> +	.attrs = &ads868x_attribute_group,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static const struct ads868x_chip_info ads868x_chip_info_tbl[] = {
-> +	[ID_ADS8684] = {
-> +		.channels = ads8684_channels,
-> +		.num_channels = ARRAY_SIZE(ads8684_channels),
-> +		.iio_info = &ads868x_info,
-> +	},
-> +	[ID_ADS8688] = {
-> +		.channels = ads8688_channels,
-> +		.num_channels = ARRAY_SIZE(ads8688_channels),
-> +		.iio_info = &ads868x_info,
-> +	},
-> +};
-> +
-> +static int ads868x_probe(struct spi_device *spi)
-> +{
-> +	struct ads868x_state *st;
-> +	struct iio_dev *indio_dev;
-> +	bool ext_ref;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (indio_dev == NULL)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(indio_dev);
-> +
-> +	if (spi->dev.of_node)
-> +		ext_ref = of_property_read_bool(spi->dev.of_node,
-> +						"vref-supply");
-> +	else
-> +		ext_ref = false;
-> +
-> +	if (ext_ref) {
-> +		st->reg = devm_regulator_get(&spi->dev, "vref");
-> +		if (!IS_ERR(st->reg)) {
-> +			ret = regulator_enable(st->reg);
-> +			if (ret)
-> +				return ret;
-> +
-> +			ret = regulator_get_voltage(st->reg);
-> +			if (ret < 0)
-> +				goto error_out;
-> +		st->vref_mv = ret / 1000;
+h stands for humidity
+tp for temperature and pressure.
 
-indentation
+ms8607-temperaturepressure seems too long to me, so I prefer to keep =
+ms8607-tp and keep ms8607-h for consistancy
 
-> +		}
-> +	} else {
-> +		/* Use internal reference */
-> +		st->vref_mv = ADS868X_VREF_MV;
-> +	}
-> +
-> +	st->chip_info =	&ads868x_chip_info_tbl[spi_get_device_id(spi)->driver_data];
-> +
-> +	spi->mode = SPI_MODE_1;
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	st->spi = spi;
-> +
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = st->chip_info->channels;
-> +	indio_dev->num_channels = st->chip_info->num_channels;
-> +	indio_dev->info = st->chip_info->iio_info;
-> +
-> +	/* Reset ADS868x */
+>> 	{}
+>> };
+>>=20
+>> diff --git a/drivers/iio/pressure/Kconfig =
+b/drivers/iio/pressure/Kconfig
+>> index 8142cfe..e6a7fd5 100644
+>> --- a/drivers/iio/pressure/Kconfig
+>> +++ b/drivers/iio/pressure/Kconfig
+>> @@ -90,6 +90,19 @@ config MS5637
+>> 	  This driver can also be built as a module. If so, the module =
+will
+>> 	  be called ms5637.
+>>=20
+>> +config MS8607
+>> +	tristate "Measurement Specialties MS8607 pressure, temperature & =
+humidity sensor"
+>> +	depends on I2C
+>> +        select IIO_MS_SENSORS_I2C
+>> +        select HTU21
+>> +        select MS5637
+>> +	help
+>> +	  If you say yes here you get support for the Measurement =
+Specialties
+>> +	  MS8607 pressure, temperature and humidity sensor.
+>> +
+>> +	  This is based on HTU21 and MS5637 drivers. If built as a =
+module,
+>> +	  modules to load will be htu21 and ms5637.
+>> +
+> Don't bother with the separate kconfig entry.  Just make sure the help =
+texts for
+> the other two make it clear that they also support part of this =
+device.
+>=20
+>> config IIO_ST_PRESS
+>> 	tristate "STMicroelectronics pressure sensor Driver"
+>> 	depends on (I2C || SPI_MASTER) && SYSFS
+>> diff --git a/drivers/iio/pressure/ms5637.c =
+b/drivers/iio/pressure/ms5637.c
+>> index e2073fd..c185aa0 100644
+>> --- a/drivers/iio/pressure/ms5637.c
+>> +++ b/drivers/iio/pressure/ms5637.c
+>> @@ -1,5 +1,5 @@
+>> /*
+>> - * ms5637.c - Support for Measurement-Specialties ms5637
+>> + * ms5637.c - Support for Measurement-Specialties ms5637 and ms8607
+>>  *            pressure & temperature sensor
+>>  *
+>>  * Copyright (c) 2015 Measurement-Specialties
+>> @@ -10,8 +10,11 @@
+>>  *
+>>  * Datasheet:
+>>  *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
+>> + * Datasheet:
+>> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
+>>  *
+>>  */
+>> +
+>> #include <linux/init.h>
+>> #include <linux/device.h>
+>> #include <linux/kernel.h>
+>> @@ -168,6 +171,7 @@ static int ms5637_probe(struct i2c_client =
+*client,
+>>=20
+>> static const struct i2c_device_id ms5637_id[] =3D {
+>> 	{"ms5637", 0},
+>> +	{"ms8607-tp", 1},
+> Perhaps -temp for extra clarity (or are there devices out there =
+already
+> using this naming?)
+>> 	{}
+>> };
+>>=20
+>>=20
+>=20
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" =
+in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-drop comment, pretty obvious what's going on next :)
-locking is probably not needed in _probe()
 
-> +	mutex_lock(&indio_dev->mlock);
-> +	ads868x_reset(indio_dev);
-> +	mutex_unlock(&indio_dev->mlock);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret)
-> +		goto error_out;
-> +
-> +	return 0;
-> +
-> +error_out:
-> +	if (!IS_ERR_OR_NULL(st->reg))
-> +		regulator_disable(st->reg);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ads868x_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +	struct ads868x_state *st = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	if (!IS_ERR_OR_NULL(st->reg))
-> +		regulator_disable(st->reg);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id ads868x_id[] = {
-> +	{"ads8684", ID_ADS8684},
-> +	{"ads8688", ID_ADS8688},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, ads868x_id);
-> +
-> +static const struct of_device_id ads868x_of_match[] = {
-> +	{ .compatible = "ti,ads8684" },
-> +	{ .compatible = "ti,ads8688" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, ads868x_of_match);
-> +
-> +static struct spi_driver ads868x_driver = {
-> +	.driver = {
-> +		.name	= "ads868x",
-> +		.owner	= THIS_MODULE,
-> +	},
-> +	.probe		= ads868x_probe,
-> +	.remove		= ads868x_remove,
-> +	.id_table	= ads868x_id,
-> +};
-> +module_spi_driver(ads868x_driver);
-> +
-> +MODULE_AUTHOR("Sean Nyekjaer <sean.nyekjaer@prevas.dk>");
-> +MODULE_DESCRIPTION("Texas Instruments ADS868x driver");
-> +MODULE_LICENSE("GPL v2");
-> 
+--Apple-Mail=_908AFBD0-8B8E-44A3-8401-79A9566083F1
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html;
+	charset=windows-1252
 
--- 
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html =
+charset=3Dwindows-1252"></head><body style=3D"word-wrap: break-word; =
+-webkit-nbsp-mode: space; -webkit-line-break: =
+after-white-space;">Jonathan,<div>some quick feedback on one of the =
+comments below.</div><div><br></div><div>Please let me know if you =
+disagree.</div><div><br></div><div>Regards,</div><div>Ludovic<br><div =
+apple-content-edited=3D"true"><br></div>
+<br><div><div>Le 8 ao=FBt 2015 =E0 19:22, Jonathan Cameron &lt;<a =
+href=3D"mailto:jic23@kernel.org">jic23@kernel.org</a>&gt; a =E9crit =
+:</div><br class=3D"Apple-interchange-newline"><blockquote =
+type=3D"cite"><div style=3D"font-size: 12px; font-style: normal; =
+font-variant: normal; font-weight: normal; letter-spacing: normal; =
+line-height: normal; orphans: auto; text-align: start; text-indent: 0px; =
+text-transform: none; white-space: normal; widows: auto; word-spacing: =
+0px; -webkit-text-stroke-width: 0px;">On 30/07/15 10:25, Ludovic =
+Tancerel wrote:<br><blockquote type=3D"cite">Signed-off-by: Ludovic =
+Tancerel &lt;<a =
+href=3D"mailto:ludovic.tancerel@maplehightech.com">ludovic.tancerel@mapleh=
+ightech.com</a>&gt;<br></blockquote>Little bits inline.<br><br>A nice =
+looking patch set. &nbsp;I was unsure the division made sense between =
+the<br>core and the drivers, but it seems to work well.<br>Will be =
+interesting to see what other parts measurement specialties comes =
+out<br>with in the future!<br><br>Jonathan<br><blockquote =
+type=3D"cite">---<br>Documentation/ABI/testing/sysfs-bus-iio-meas-spec | =
+&nbsp;1 +<br>drivers/iio/humidity/htu21.c =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 32 =
+++++++++++++++++++++---<br>drivers/iio/pressure/Kconfig =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 13 =
++++++++++<br>drivers/iio/pressure/ms5637.c =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;6 ++++-<br>4 files =
+changed, 48 insertions(+), 4 deletions(-)<br><br>diff --git =
+a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec =
+b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec<br>index =
+7b09d3a..df70dda6 100644<br>--- =
+a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec<br>+++ =
+b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec<br>@@ -12,3 +12,4 @@ =
+Description:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enable or disable heater function =
+by writing either<br><span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span><span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span>'1' or =
+'0'.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Same reading values apply<br>+<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span>This ABI =
+is available for htu21, ms8607<br>diff --git =
+a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c<br>index =
+870b631..4720cbc 100644<br>--- a/drivers/iio/humidity/htu21.c<br>+++ =
+b/drivers/iio/humidity/htu21.c<br>@@ -1,6 +1,7 @@<br>/*<br>&nbsp;* =
+htu21.c - Support for Measurement-Specialties<br>&nbsp;* =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;htu21 =
+temperature &amp; humidity sensor<br>+ *<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-converted-space">&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;and =
+humidity part of MS8607 sensor<br>&nbsp;*<br>&nbsp;* Copyright (c) 2014 =
+Measurement-Specialties<br>&nbsp;*<br>@@ -10,6 +11,8 =
+@@<br>&nbsp;*<br>&nbsp;* Datasheet:<br>&nbsp;* &nbsp;<a =
+href=3D"http://www.meas-spec.com/downloads/HTU21D.pdf">http://www.meas-spe=
+c.com/downloads/HTU21D.pdf</a><br>+ * Datasheet:<br>+ * &nbsp;<a =
+href=3D"http://www.meas-spec.com/downloads/MS8607-02BA01.pdf">http://www.m=
+eas-spec.com/downloads/MS8607-02BA01.pdf</a><br>&nbsp;*<br>&nbsp;*/<br><br=
+>@@ -25,6 +28,11 @@<br><br>#define HTU21_RESET<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>0xFE<br><br>+enum {<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>HTU21,<br>+<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>MS8607<br>+};<br>+<br>static const int htu21_samp_freq[4] =3D { =
+20, 40, 70, 120 };<br>/* String copy of the above const for readability =
+purpose */<br>static const char htu21_show_samp_freq[] =3D "20 40 70 =
+120";<br>@@ -107,6 +115,17 @@ static const struct iio_chan_spec =
+htu21_channels[] =3D {<br><span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-converted-space">&nbsp;</span>}<br>};<br><br>+/* Meas =
+Spec recommendation is to not read temperature<br></blockquote>/*<br>* =
+Meas<br><blockquote type=3D"cite">+ * on this driver part for =
+MS8607<br>+ */<br>+static const struct iio_chan_spec ms8607_channels[] =3D=
+ {<br>+<span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>{<br>+<span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span><span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>.type =3D IIO_HUMIDITYRELATIVE,<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span><span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>.info_mask_shared_by_type =3D =
+BIT(IIO_CHAN_INFO_PROCESSED),<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span><span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>.info_mask_shared_by_all =3D =
+BIT(IIO_CHAN_INFO_SAMP_FREQ),<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-converted-space">&nbsp;</span>}<br>+};<br>+<br>static =
+ssize_t htu21_show_battery_low(struct device *dev,<br><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-converted-space">&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;struct device_attribute *attr, char *buf)<br>{<br>@@ -189,8 +208,14 @@ =
+int htu21_probe(struct i2c_client *client,<br><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>indio_dev-&gt;name =3D id-&gt;name;<br><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>indio_dev-&gt;dev.parent =3D &amp;client-&gt;dev;<br><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>indio_dev-&gt;modes =3D INDIO_DIRECT_MODE;<br>-<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>indio_dev-&gt;channels =3D htu21_channels;<br>-<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>indio_dev-&gt;num_channels =3D =
+ARRAY_SIZE(htu21_channels);<br>+<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>if (id-&gt;driver_data =3D=3D =
+MS8607) {<br>+<span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span><span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span>indio_dev-&gt;channels =3D ms8607_channels;<br>+<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>indio_dev-&gt;num_channels =3D =
+ARRAY_SIZE(ms8607_channels);<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>} else {<br>+<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>indio_dev-&gt;channels =3D htu21_channels;<br>+<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>indio_dev-&gt;num_channels =3D =
+ARRAY_SIZE(htu21_channels);<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>}<br><br><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>i2c_set_clientdata(client, indio_dev);<br><br>@@ -207,7 +232,8 @@ =
+int htu21_probe(struct i2c_client *client,<br>}<br><br>static const =
+struct i2c_device_id htu21_id[] =3D {<br>-<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>{"htu21", 0},<br>+<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span>{"htu21", =
+HTU21},<br>+<span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>{"ms8607-h", MS8607},<br></blockquote>perhaps -humidity for =
+clarity if not already in use out in the =
+field.<br></div></blockquote><div><br></div></div><div>h stands for =
+humidity</div><div>tp for temperature and =
+pressure.</div><div><br></div><div>ms8607-temperaturepressure seems too =
+long to me, so I prefer to keep ms8607-tp and keep ms8607-h for =
+consistancy</div><div><br><blockquote type=3D"cite"><div =
+style=3D"font-size: 12px; font-style: normal; font-variant: normal; =
+font-weight: normal; letter-spacing: normal; line-height: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px;"><blockquote type=3D"cite"><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>{}<br>};<br><br>diff --git a/drivers/iio/pressure/Kconfig =
+b/drivers/iio/pressure/Kconfig<br>index 8142cfe..e6a7fd5 100644<br>--- =
+a/drivers/iio/pressure/Kconfig<br>+++ =
+b/drivers/iio/pressure/Kconfig<br>@@ -90,6 +90,19 @@ config =
+MS5637<br><span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span><span class=3D"Apple-converted-space">&nbsp;</span>&nbsp;This =
+driver can also be built as a module. If so, the module will<br><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-converted-space">&nbsp;</span>&nbsp;be called =
+ms5637.<br><br>+config MS8607<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>tristate "Measurement Specialties =
+MS8607 pressure, temperature &amp; humidity sensor"<br>+<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span>depends =
+on I2C<br>+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;select =
+IIO_MS_SENSORS_I2C<br>+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;select =
+HTU21<br>+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;select =
+MS5637<br>+<span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>help<br>+<span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span><span class=3D"Apple-converted-space">&nbsp;</span>&nbsp;If=
+ you say yes here you get support for the Measurement =
+Specialties<br>+<span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span><span =
+class=3D"Apple-converted-space">&nbsp;</span>&nbsp;MS8607 pressure, =
+temperature and humidity sensor.<br>+<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-converted-space">&nbsp;</span>&nbsp;This is based on =
+HTU21 and MS5637 drivers. If built as a module,<br>+<span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span =
+class=3D"Apple-converted-space">&nbsp;</span>&nbsp;modules to load will =
+be htu21 and ms5637.<br>+<br></blockquote>Don't bother with the separate =
+kconfig entry. &nbsp;Just make sure the help texts for<br>the other two =
+make it clear that they also support part of this =
+device.<br><br><blockquote type=3D"cite">config IIO_ST_PRESS<br><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span>tristate =
+"STMicroelectronics pressure sensor Driver"<br><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span>depends =
+on (I2C || SPI_MASTER) &amp;&amp; SYSFS<br>diff --git =
+a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c<br>index =
+e2073fd..c185aa0 100644<br>--- a/drivers/iio/pressure/ms5637.c<br>+++ =
+b/drivers/iio/pressure/ms5637.c<br>@@ -1,5 +1,5 @@<br>/*<br>- * ms5637.c =
+- Support for Measurement-Specialties ms5637<br>+ * ms5637.c - Support =
+for Measurement-Specialties ms5637 and ms8607<br>&nbsp;* =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pressure=
+ &amp; temperature sensor<br>&nbsp;*<br>&nbsp;* Copyright (c) 2015 =
+Measurement-Specialties<br>@@ -10,8 +10,11 @@<br>&nbsp;*<br>&nbsp;* =
+Datasheet:<br>&nbsp;* &nbsp;<a =
+href=3D"http://www.meas-spec.com/downloads/MS5637-02BA03.pdf">http://www.m=
+eas-spec.com/downloads/MS5637-02BA03.pdf</a><br>+ * Datasheet:<br>+ * =
+&nbsp;<a =
+href=3D"http://www.meas-spec.com/downloads/MS8607-02BA01.pdf">http://www.m=
+eas-spec.com/downloads/MS8607-02BA01.pdf</a><br>&nbsp;*<br>&nbsp;*/<br>+<b=
+r>#include &lt;linux/init.h&gt;<br>#include =
+&lt;linux/device.h&gt;<br>#include &lt;linux/kernel.h&gt;<br>@@ -168,6 =
++171,7 @@ static int ms5637_probe(struct i2c_client =
+*client,<br><br>static const struct i2c_device_id ms5637_id[] =3D =
+{<br><span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>{"ms5637", 0},<br>+<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>{"ms8607-tp", =
+1},<br></blockquote>Perhaps -temp for extra clarity (or are there =
+devices out there already<br>using this naming?)<br><blockquote =
+type=3D"cite"><span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span>{}<br>};<br><br><br></blockquote><br>--<br>To unsubscribe =
+from this list: send the line "unsubscribe linux-iio" in<br>the body of =
+a message to<span class=3D"Apple-converted-space">&nbsp;</span><a =
+href=3D"mailto:majordomo@vger.kernel.org">majordomo@vger.kernel.org</a><br=
+>More majordomo info at &nbsp;<a =
+href=3D"http://vger.kernel.org/majordomo-info.html">http://vger.kernel.org=
+/majordomo-info.html</a></div></blockquote></div><br></div></body></html>=
 
-Peter Meerwald
-+43-664-2444418 (mobile)
---324295856-1461148541-1443163955=:2707--
+--Apple-Mail=_908AFBD0-8B8E-44A3-8401-79A9566083F1--
