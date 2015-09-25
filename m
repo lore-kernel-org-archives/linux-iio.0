@@ -1,253 +1,266 @@
 Return-Path: <ludovic.tancerel@maplehightech.com>
-Content-Type: multipart/alternative; boundary="Apple-Mail=_908AFBD0-8B8E-44A3-8401-79A9566083F1"
+Content-Type: multipart/alternative; boundary="Apple-Mail=_B2BB5F2F-9957-4614-8A97-CDBC2CCF315F"
 Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
 Subject: Re: [PATCH V2 6/6] iio: Add ms8607 meas-spec driver support
 From: "ludovic.tancerel@maplehightech.com" <ludovic.tancerel@maplehightech.com>
-In-Reply-To: <55C63AD1.90004@kernel.org>
-Date: Fri, 25 Sep 2015 11:25:50 +0200
+In-Reply-To: <D50518AF-C9FC-43A0-8C08-7A1E5F648988@maplehightech.com>
+Date: Fri, 25 Sep 2015 11:31:53 +0200
 Cc: knaack.h@gmx.de,
  lars@metafoo.de,
  pmeerw@pmeerw.net,
  linux-iio@vger.kernel.org,
  William.Markezana@meas-spec.com
-Message-Id: <D50518AF-C9FC-43A0-8C08-7A1E5F648988@maplehightech.com>
-References: <1438248345-25820-1-git-send-email-ludovic.tancerel@maplehightech.com> <1438248345-25820-7-git-send-email-ludovic.tancerel@maplehightech.com> <55C63AD1.90004@kernel.org>
+Message-Id: <939F5CDA-AEBD-4060-8B15-FCD4D9424B6F@maplehightech.com>
+References: <1438248345-25820-1-git-send-email-ludovic.tancerel@maplehightech.com> <1438248345-25820-7-git-send-email-ludovic.tancerel@maplehightech.com> <55C63AD1.90004@kernel.org> <D50518AF-C9FC-43A0-8C08-7A1E5F648988@maplehightech.com>
 To: Jonathan Cameron <jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
 
---Apple-Mail=_908AFBD0-8B8E-44A3-8401-79A9566083F1
+--Apple-Mail=_B2BB5F2F-9957-4614-8A97-CDBC2CCF315F
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain;
 	charset=windows-1252
 
-Jonathan,
-some quick feedback on one of the comments below.
-
-Please let me know if you disagree.
+Resend as for some reason, there was a problem with mail server
 
 Regards,
 Ludovic
 
-
-Le 8 ao=FBt 2015 =E0 19:22, Jonathan Cameron <jic23@kernel.org> a =E9crit =
-:
-
-> On 30/07/15 10:25, Ludovic Tancerel wrote:
->> Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
-> Little bits inline.
+> Jonathan,
+> some quick feedback on one of the comments below.
 >=20
-> A nice looking patch set.  I was unsure the division made sense =
+> Please let me know if you disagree.
+>=20
+> Regards,
+> Ludovic
+>=20
+>=20
+> Le 8 ao=FBt 2015 =E0 19:22, Jonathan Cameron <jic23@kernel.org> a =
+=E9crit :
+>=20
+>> On 30/07/15 10:25, Ludovic Tancerel wrote:
+>>> Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
+>> Little bits inline.
+>>=20
+>> A nice looking patch set.  I was unsure the division made sense =
 between the
-> core and the drivers, but it seems to work well.
-> Will be interesting to see what other parts measurement specialties =
+>> core and the drivers, but it seems to work well.
+>> Will be interesting to see what other parts measurement specialties =
 comes out
-> with in the future!
->=20
-> Jonathan
->> ---
->> Documentation/ABI/testing/sysfs-bus-iio-meas-spec |  1 +
->> drivers/iio/humidity/htu21.c                      | 32 =
+>> with in the future!
+>>=20
+>> Jonathan
+>>> ---
+>>> Documentation/ABI/testing/sysfs-bus-iio-meas-spec |  1 +
+>>> drivers/iio/humidity/htu21.c                      | 32 =
 ++++++++++++++++++++---
->> drivers/iio/pressure/Kconfig                      | 13 +++++++++
->> drivers/iio/pressure/ms5637.c                     |  6 ++++-
->> 4 files changed, 48 insertions(+), 4 deletions(-)
->>=20
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec =
+>>> drivers/iio/pressure/Kconfig                      | 13 +++++++++
+>>> drivers/iio/pressure/ms5637.c                     |  6 ++++-
+>>> 4 files changed, 48 insertions(+), 4 deletions(-)
+>>>=20
+>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec =
 b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
->> index 7b09d3a..df70dda6 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
->> @@ -12,3 +12,4 @@ Description:
->>                 Enable or disable heater function by writing either
->> 		'1' or '0'.
->>                 Same reading values apply
->> +		This ABI is available for htu21, ms8607
->> diff --git a/drivers/iio/humidity/htu21.c =
+>>> index 7b09d3a..df70dda6 100644
+>>> --- a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>>> @@ -12,3 +12,4 @@ Description:
+>>>                 Enable or disable heater function by writing either
+>>> 		'1' or '0'.
+>>>                 Same reading values apply
+>>> +		This ABI is available for htu21, ms8607
+>>> diff --git a/drivers/iio/humidity/htu21.c =
 b/drivers/iio/humidity/htu21.c
->> index 870b631..4720cbc 100644
->> --- a/drivers/iio/humidity/htu21.c
->> +++ b/drivers/iio/humidity/htu21.c
->> @@ -1,6 +1,7 @@
->> /*
->>  * htu21.c - Support for Measurement-Specialties
->>  *           htu21 temperature & humidity sensor
->> + *	     and humidity part of MS8607 sensor
->>  *
->>  * Copyright (c) 2014 Measurement-Specialties
->>  *
->> @@ -10,6 +11,8 @@
->>  *
->>  * Datasheet:
->>  *  http://www.meas-spec.com/downloads/HTU21D.pdf
->> + * Datasheet:
->> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
->>  *
->>  */
->>=20
->> @@ -25,6 +28,11 @@
->>=20
->> #define HTU21_RESET				0xFE
->>=20
->> +enum {
->> +	HTU21,
->> +	MS8607
->> +};
->> +
->> static const int htu21_samp_freq[4] =3D { 20, 40, 70, 120 };
->> /* String copy of the above const for readability purpose */
->> static const char htu21_show_samp_freq[] =3D "20 40 70 120";
->> @@ -107,6 +115,17 @@ static const struct iio_chan_spec =
+>>> index 870b631..4720cbc 100644
+>>> --- a/drivers/iio/humidity/htu21.c
+>>> +++ b/drivers/iio/humidity/htu21.c
+>>> @@ -1,6 +1,7 @@
+>>> /*
+>>>  * htu21.c - Support for Measurement-Specialties
+>>>  *           htu21 temperature & humidity sensor
+>>> + *	     and humidity part of MS8607 sensor
+>>>  *
+>>>  * Copyright (c) 2014 Measurement-Specialties
+>>>  *
+>>> @@ -10,6 +11,8 @@
+>>>  *
+>>>  * Datasheet:
+>>>  *  http://www.meas-spec.com/downloads/HTU21D.pdf
+>>> + * Datasheet:
+>>> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
+>>>  *
+>>>  */
+>>>=20
+>>> @@ -25,6 +28,11 @@
+>>>=20
+>>> #define HTU21_RESET				0xFE
+>>>=20
+>>> +enum {
+>>> +	HTU21,
+>>> +	MS8607
+>>> +};
+>>> +
+>>> static const int htu21_samp_freq[4] =3D { 20, 40, 70, 120 };
+>>> /* String copy of the above const for readability purpose */
+>>> static const char htu21_show_samp_freq[] =3D "20 40 70 120";
+>>> @@ -107,6 +115,17 @@ static const struct iio_chan_spec =
 htu21_channels[] =3D {
->> 	 }
->> };
->>=20
->> +/* Meas Spec recommendation is to not read temperature
-> /*
-> * Meas
->> + * on this driver part for MS8607
->> + */
->> +static const struct iio_chan_spec ms8607_channels[] =3D {
->> +	{
->> +		.type =3D IIO_HUMIDITYRELATIVE,
->> +		.info_mask_shared_by_type =3D =
-BIT(IIO_CHAN_INFO_PROCESSED),
->> +		.info_mask_shared_by_all =3D =
-BIT(IIO_CHAN_INFO_SAMP_FREQ),
->> +	 }
->> +};
->> +
->> static ssize_t htu21_show_battery_low(struct device *dev,
->> 				      struct device_attribute *attr, =
-char *buf)
->> {
->> @@ -189,8 +208,14 @@ int htu21_probe(struct i2c_client *client,
->> 	indio_dev->name =3D id->name;
->> 	indio_dev->dev.parent =3D &client->dev;
->> 	indio_dev->modes =3D INDIO_DIRECT_MODE;
->> -	indio_dev->channels =3D htu21_channels;
->> -	indio_dev->num_channels =3D ARRAY_SIZE(htu21_channels);
->> +
->> +	if (id->driver_data =3D=3D MS8607) {
->> +		indio_dev->channels =3D ms8607_channels;
->> +		indio_dev->num_channels =3D ARRAY_SIZE(ms8607_channels);
->> +	} else {
->> +		indio_dev->channels =3D htu21_channels;
->> +		indio_dev->num_channels =3D ARRAY_SIZE(htu21_channels);
->> +	}
->>=20
->> 	i2c_set_clientdata(client, indio_dev);
->>=20
->> @@ -207,7 +232,8 @@ int htu21_probe(struct i2c_client *client,
->> }
->>=20
->> static const struct i2c_device_id htu21_id[] =3D {
->> -	{"htu21", 0},
->> +	{"htu21", HTU21},
->> +	{"ms8607-h", MS8607},
-> perhaps -humidity for clarity if not already in use out in the field.
-
-h stands for humidity
-tp for temperature and pressure.
-
-ms8607-temperaturepressure seems too long to me, so I prefer to keep =
-ms8607-tp and keep ms8607-h for consistancy
-
->> 	{}
->> };
->>=20
->> diff --git a/drivers/iio/pressure/Kconfig =
-b/drivers/iio/pressure/Kconfig
->> index 8142cfe..e6a7fd5 100644
->> --- a/drivers/iio/pressure/Kconfig
->> +++ b/drivers/iio/pressure/Kconfig
->> @@ -90,6 +90,19 @@ config MS5637
->> 	  This driver can also be built as a module. If so, the module =
-will
->> 	  be called ms5637.
->>=20
->> +config MS8607
->> +	tristate "Measurement Specialties MS8607 pressure, temperature & =
-humidity sensor"
->> +	depends on I2C
->> +        select IIO_MS_SENSORS_I2C
->> +        select HTU21
->> +        select MS5637
->> +	help
->> +	  If you say yes here you get support for the Measurement =
-Specialties
->> +	  MS8607 pressure, temperature and humidity sensor.
->> +
->> +	  This is based on HTU21 and MS5637 drivers. If built as a =
-module,
->> +	  modules to load will be htu21 and ms5637.
->> +
-> Don't bother with the separate kconfig entry.  Just make sure the help =
-texts for
-> the other two make it clear that they also support part of this =
-device.
->=20
->> config IIO_ST_PRESS
->> 	tristate "STMicroelectronics pressure sensor Driver"
->> 	depends on (I2C || SPI_MASTER) && SYSFS
->> diff --git a/drivers/iio/pressure/ms5637.c =
-b/drivers/iio/pressure/ms5637.c
->> index e2073fd..c185aa0 100644
->> --- a/drivers/iio/pressure/ms5637.c
->> +++ b/drivers/iio/pressure/ms5637.c
->> @@ -1,5 +1,5 @@
+>>> 	 }
+>>> };
+>>>=20
+>>> +/* Meas Spec recommendation is to not read temperature
 >> /*
->> - * ms5637.c - Support for Measurement-Specialties ms5637
->> + * ms5637.c - Support for Measurement-Specialties ms5637 and ms8607
->>  *            pressure & temperature sensor
->>  *
->>  * Copyright (c) 2015 Measurement-Specialties
->> @@ -10,8 +10,11 @@
->>  *
->>  * Datasheet:
->>  *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
->> + * Datasheet:
->> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
->>  *
->>  */
->> +
->> #include <linux/init.h>
->> #include <linux/device.h>
->> #include <linux/kernel.h>
->> @@ -168,6 +171,7 @@ static int ms5637_probe(struct i2c_client =
-*client,
->>=20
->> static const struct i2c_device_id ms5637_id[] =3D {
->> 	{"ms5637", 0},
->> +	{"ms8607-tp", 1},
-> Perhaps -temp for extra clarity (or are there devices out there =
-already
-> using this naming?)
->> 	{}
->> };
->>=20
->>=20
+>> * Meas
+>>> + * on this driver part for MS8607
+>>> + */
+>>> +static const struct iio_chan_spec ms8607_channels[] =3D {
+>>> +	{
+>>> +		.type =3D IIO_HUMIDITYRELATIVE,
+>>> +		.info_mask_shared_by_type =3D =
+BIT(IIO_CHAN_INFO_PROCESSED),
+>>> +		.info_mask_shared_by_all =3D =
+BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>>> +	 }
+>>> +};
+>>> +
+>>> static ssize_t htu21_show_battery_low(struct device *dev,
+>>> 				      struct device_attribute *attr, =
+char *buf)
+>>> {
+>>> @@ -189,8 +208,14 @@ int htu21_probe(struct i2c_client *client,
+>>> 	indio_dev->name =3D id->name;
+>>> 	indio_dev->dev.parent =3D &client->dev;
+>>> 	indio_dev->modes =3D INDIO_DIRECT_MODE;
+>>> -	indio_dev->channels =3D htu21_channels;
+>>> -	indio_dev->num_channels =3D ARRAY_SIZE(htu21_channels);
+>>> +
+>>> +	if (id->driver_data =3D=3D MS8607) {
+>>> +		indio_dev->channels =3D ms8607_channels;
+>>> +		indio_dev->num_channels =3D ARRAY_SIZE(ms8607_channels);
+>>> +	} else {
+>>> +		indio_dev->channels =3D htu21_channels;
+>>> +		indio_dev->num_channels =3D ARRAY_SIZE(htu21_channels);
+>>> +	}
+>>>=20
+>>> 	i2c_set_clientdata(client, indio_dev);
+>>>=20
+>>> @@ -207,7 +232,8 @@ int htu21_probe(struct i2c_client *client,
+>>> }
+>>>=20
+>>> static const struct i2c_device_id htu21_id[] =3D {
+>>> -	{"htu21", 0},
+>>> +	{"htu21", HTU21},
+>>> +	{"ms8607-h", MS8607},
+>> perhaps -humidity for clarity if not already in use out in the field.
 >=20
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" =
+> h stands for humidity
+> tp for temperature and pressure.
+>=20
+> ms8607-temperaturepressure seems too long to me, so I prefer to keep =
+ms8607-tp and keep ms8607-h for consistancy
+>=20
+>>> 	{}
+>>> };
+>>>=20
+>>> diff --git a/drivers/iio/pressure/Kconfig =
+b/drivers/iio/pressure/Kconfig
+>>> index 8142cfe..e6a7fd5 100644
+>>> --- a/drivers/iio/pressure/Kconfig
+>>> +++ b/drivers/iio/pressure/Kconfig
+>>> @@ -90,6 +90,19 @@ config MS5637
+>>> 	  This driver can also be built as a module. If so, the module =
+will
+>>> 	  be called ms5637.
+>>>=20
+>>> +config MS8607
+>>> +	tristate "Measurement Specialties MS8607 pressure, temperature & =
+humidity sensor"
+>>> +	depends on I2C
+>>> +        select IIO_MS_SENSORS_I2C
+>>> +        select HTU21
+>>> +        select MS5637
+>>> +	help
+>>> +	  If you say yes here you get support for the Measurement =
+Specialties
+>>> +	  MS8607 pressure, temperature and humidity sensor.
+>>> +
+>>> +	  This is based on HTU21 and MS5637 drivers. If built as a =
+module,
+>>> +	  modules to load will be htu21 and ms5637.
+>>> +
+>> Don't bother with the separate kconfig entry.  Just make sure the =
+help texts for
+>> the other two make it clear that they also support part of this =
+device.
+>>=20
+>>> config IIO_ST_PRESS
+>>> 	tristate "STMicroelectronics pressure sensor Driver"
+>>> 	depends on (I2C || SPI_MASTER) && SYSFS
+>>> diff --git a/drivers/iio/pressure/ms5637.c =
+b/drivers/iio/pressure/ms5637.c
+>>> index e2073fd..c185aa0 100644
+>>> --- a/drivers/iio/pressure/ms5637.c
+>>> +++ b/drivers/iio/pressure/ms5637.c
+>>> @@ -1,5 +1,5 @@
+>>> /*
+>>> - * ms5637.c - Support for Measurement-Specialties ms5637
+>>> + * ms5637.c - Support for Measurement-Specialties ms5637 and ms8607
+>>>  *            pressure & temperature sensor
+>>>  *
+>>>  * Copyright (c) 2015 Measurement-Specialties
+>>> @@ -10,8 +10,11 @@
+>>>  *
+>>>  * Datasheet:
+>>>  *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
+>>> + * Datasheet:
+>>> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
+>>>  *
+>>>  */
+>>> +
+>>> #include <linux/init.h>
+>>> #include <linux/device.h>
+>>> #include <linux/kernel.h>
+>>> @@ -168,6 +171,7 @@ static int ms5637_probe(struct i2c_client =
+*client,
+>>>=20
+>>> static const struct i2c_device_id ms5637_id[] =3D {
+>>> 	{"ms5637", 0},
+>>> +	{"ms8607-tp", 1},
+>> Perhaps -temp for extra clarity (or are there devices out there =
+already
+>> using this naming?)
+>>> 	{}
+>>> };
+>>>=20
+>>>=20
+>>=20
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" =
 in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 
---Apple-Mail=_908AFBD0-8B8E-44A3-8401-79A9566083F1
+--Apple-Mail=_B2BB5F2F-9957-4614-8A97-CDBC2CCF315F
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/html;
 	charset=windows-1252
 
 <html><head><meta http-equiv=3D"Content-Type" content=3D"text/html =
 charset=3Dwindows-1252"></head><body style=3D"word-wrap: break-word; =
--webkit-nbsp-mode: space; -webkit-line-break: =
+-webkit-nbsp-mode: space; -webkit-line-break: after-white-space;">Resend =
+as for some reason, there was a problem with mail server<br>
+<br>Regards,<div>Ludovic<br><div><div><br></div><blockquote =
+type=3D"cite"><div style=3D"font-family: Helvetica; font-size: 12px; =
+font-style: normal; font-variant: normal; font-weight: normal; =
+letter-spacing: normal; line-height: normal; orphans: auto; text-align: =
+start; text-indent: 0px; text-transform: none; white-space: normal; =
+widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-line-break: =
 after-white-space;">Jonathan,<div>some quick feedback on one of the =
 comments below.</div><div><br></div><div>Please let me know if you =
 disagree.</div><div><br></div><div>Regards,</div><div>Ludovic<br><div =
-apple-content-edited=3D"true"><br></div>
-<br><div><div>Le 8 ao=FBt 2015 =E0 19:22, Jonathan Cameron &lt;<a =
+apple-content-edited=3D"true"><br></div><br><div><div>Le 8 ao=FBt 2015 =E0=
+ 19:22, Jonathan Cameron &lt;<a =
 href=3D"mailto:jic23@kernel.org">jic23@kernel.org</a>&gt; a =E9crit =
 :</div><br class=3D"Apple-interchange-newline"><blockquote =
 type=3D"cite"><div style=3D"font-size: 12px; font-style: normal; =
@@ -457,6 +470,7 @@ a message to<span class=3D"Apple-converted-space">&nbsp;</span><a =
 href=3D"mailto:majordomo@vger.kernel.org">majordomo@vger.kernel.org</a><br=
 >More majordomo info at &nbsp;<a =
 href=3D"http://vger.kernel.org/majordomo-info.html">http://vger.kernel.org=
-/majordomo-info.html</a></div></blockquote></div><br></div></body></html>=
+/majordomo-info.html</a></div></blockquote></div></div></div></blockquote>=
+</div><br></div></body></html>=
 
---Apple-Mail=_908AFBD0-8B8E-44A3-8401-79A9566083F1--
+--Apple-Mail=_B2BB5F2F-9957-4614-8A97-CDBC2CCF315F--
