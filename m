@@ -1,42 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:43194 "EHLO mout01.posteo.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752308AbbIYJzm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 25 Sep 2015 05:55:42 -0400
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id 9801D209FD
-	for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2015 11:55:40 +0200 (CEST)
-From: Martin Kepplinger <martink@posteo.de>
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Martin Kepplinger <martink@posteo.de>
-Subject: [PATCH] iio: adc: ad799x: leave sysfs naming to the core
-Date: Fri, 25 Sep 2015 11:54:01 +0200
-Message-Id: <1443174841-25782-1-git-send-email-martink@posteo.de>
+Received: from mail.assembling.jabatus.fr ([109.234.163.60]:47466 "EHLO
+	mail.assembling.jabatus.fr" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932302AbbIYN5G (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Sep 2015 09:57:06 -0400
+From: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	ludovic.tancerel@maplehightech.com, William.Markezana@meas-spec.com
+Subject: [PATCH v3 0/6] iio: TSYS01, TSYS02D, HTU21, MS5637, MS8607, Measurement Specialties driver developments
+Date: Fri, 25 Sep 2015 15:56:39 +0200
+Message-Id: <1443189405-18516-1-git-send-email-ludovic.tancerel@maplehightech.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This shouldn't change anything since the core calls the events folder
-"events" anyways.
+This is the resubmission of patches for measurement specialties drivers.
+	- TSYS01 : Temperature sensor
+	- TSYS02D : Temperature sensor
+	- HTU21 : Temperature & Humidity sensor
+	- MS5637 : Temperature & Pressure sensor
+	- MS8607 : Temperature, Pressure & Humidity sensor
 
-Signed-off-by: Martin Kepplinger <martink@posteo.de>
----
- drivers/iio/adc/ad799x.c | 1 -
- 1 file changed, 1 deletion(-)
+The list of changes are :
+	- Remove ms8607 from Kconfig and document ms5637 and htu21 accordingly
+	- Move heater_enable in sysfs-bus-iio
+	- Minor corrections
+	- Modify patchset presentation
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index b99de00..01d7158 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -528,7 +528,6 @@ static struct attribute *ad799x_event_attributes[] = {
- 
- static struct attribute_group ad799x_event_attrs_group = {
- 	.attrs = ad799x_event_attributes,
--	.name = "events",
- };
- 
- static const struct iio_info ad7991_info = {
+Thanks a lot for your feedback.
+
+Regards,
+Ludovic
+
+revision history
+----------------
+v3      Minor corrections. Remove ms8607 Kconfig
+v2      Split ms8607/Align units/Document private ABI/ kernel-doc ABI
+v1      initial post
+
+Ludovic Tancerel (6):
+  Add meas-spec sensors common part
+  Add tsys01 meas-spec driver support
+  Add tsys02d meas-spec driver support
+  Add htu21 meas-spec driver support
+  Add ms5637 meas-spec driver support
+  Add ms8607 meas-spec driver support
+
+ Documentation/ABI/testing/sysfs-bus-iio           |  10 +
+ Documentation/ABI/testing/sysfs-bus-iio-meas-spec |   8 +
+ drivers/iio/common/Kconfig                        |   1 +
+ drivers/iio/common/Makefile                       |   1 +
+ drivers/iio/common/ms_sensors/Kconfig             |   6 +
+ drivers/iio/common/ms_sensors/Makefile            |   5 +
+ drivers/iio/common/ms_sensors/ms_sensors_i2c.c    | 645 ++++++++++++++++++++++
+ drivers/iio/common/ms_sensors/ms_sensors_i2c.h    |  53 ++
+ drivers/iio/humidity/Kconfig                      |  13 +
+ drivers/iio/humidity/Makefile                     |   1 +
+ drivers/iio/humidity/htu21.c                      | 254 +++++++++
+ drivers/iio/pressure/Kconfig                      |  17 +-
+ drivers/iio/pressure/Makefile                     |   1 +
+ drivers/iio/pressure/ms5637.c                     | 191 +++++++
+ drivers/iio/temperature/Kconfig                   |  22 +
+ drivers/iio/temperature/Makefile                  |   2 +
+ drivers/iio/temperature/tsys01.c                  | 231 ++++++++
+ drivers/iio/temperature/tsys02d.c                 | 192 +++++++
+ 18 files changed, 1651 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+ create mode 100644 drivers/iio/common/ms_sensors/Kconfig
+ create mode 100644 drivers/iio/common/ms_sensors/Makefile
+ create mode 100644 drivers/iio/common/ms_sensors/ms_sensors_i2c.c
+ create mode 100644 drivers/iio/common/ms_sensors/ms_sensors_i2c.h
+ create mode 100644 drivers/iio/humidity/htu21.c
+ create mode 100644 drivers/iio/pressure/ms5637.c
+ create mode 100644 drivers/iio/temperature/tsys01.c
+ create mode 100644 drivers/iio/temperature/tsys02d.c
+
 -- 
-2.1.4
+2.3.7
 
