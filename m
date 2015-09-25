@@ -1,178 +1,152 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.coeur.jabatus.fr ([109.234.163.50]:45778 "EHLO
-	mail.coeur.jabatus.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932266AbbIYN6L (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Sep 2015 09:58:11 -0400
-From: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	ludovic.tancerel@maplehightech.com, William.Markezana@meas-spec.com
-Subject: [PATCH v3 6/6] Add ms8607 meas-spec driver support
-Date: Fri, 25 Sep 2015 15:56:45 +0200
-Message-Id: <1443189405-18516-7-git-send-email-ludovic.tancerel@maplehightech.com>
-In-Reply-To: <1443189405-18516-1-git-send-email-ludovic.tancerel@maplehightech.com>
-References: <1443189405-18516-1-git-send-email-ludovic.tancerel@maplehightech.com>
+Received: from mail-la0-f42.google.com ([209.85.215.42]:36670 "EHLO
+	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932467AbbIYQkP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Sep 2015 12:40:15 -0400
+Received: by laclj5 with SMTP id lj5so9321435lac.3
+        for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2015 09:40:13 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1443190753.3825.5.camel@linux.intel.com>
+References: <CAF8px547WhBsfmV8K8OLbqTbADWbu0sD1jUjrGEPHVZfEzrP6w@mail.gmail.com>
+	<CAEnQRZAX1=Y4SaOrpfbWRLR1kYmNKJjeKKouS6pkeb2BBDzr-g@mail.gmail.com>
+	<CAF8px56ehuZxcP9EJ3d+M68CdYJKdkiaRs_g1+S8euiFKA5pkA@mail.gmail.com>
+	<55FF0433.6050900@kernel.org>
+	<1442788960.1030.11.camel@hadess.net>
+	<20150921142604.GA12821@localhost>
+	<56005E7A.9060304@kernel.org>
+	<20150924155704.GA6388@localhost>
+	<1443190753.3825.5.camel@linux.intel.com>
+Date: Fri, 25 Sep 2015 11:40:13 -0500
+Message-ID: <CAF8px55s9Gk-DS9HB1ERQ8ZXD7o-OL00Meq5T65yoCO0_mskAA@mail.gmail.com>
+Subject: Re: [PATCH] Asus T300CHI.
+From: Mike Mestnik <cheako@mikemestnik.net>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Bastien Nocera <hadess@hadess.net>,
+	Daniel Baluta <daniel.baluta@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	linux-input@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Support for MS8607 temperature, pressure & humidity sensor.
-This part is using functions from MS5637 for temperature and pressure
-and HTU21 for humidity
+On Fri, Sep 25, 2015 at 9:19 AM, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+> On Thu, 2015-09-24 at 10:57 -0500, Mike Mestnik wrote:
+>> On Mon, Sep 21, 2015 at 2:46 PM, Jonathan Cameron <jic23@kernel.org>
+>> wrote:
+>> > On 21/09/15 15:26, Mike Mestnik wrote:
+>> > > On Sep 20, 2015 5:42 PM, "Bastien Nocera" <hadess@hadess.net>
+>> > > wrote:
+>> > > >
+>> > > > On Sun, 2015-09-20 at 20:08 +0100, Jonathan Cameron wrote:
+>> > > > > On 19/09/15 20:03, Mike Mestnik wrote:
+>> > > > > > On Sat, Sep 19, 2015 at 1:48 PM, Daniel Baluta <
+>> > > > > > daniel.baluta@gmail.com> wrote:
+>> > > > > > > On Fri, Sep 18, 2015 at 12:07 AM, Mike Mestnik <
+>> > > > > > > cheako@mikemestnik.net> wrote:
+>> > > > > > > > Hello,
+>> > > > > > > >   I'm looking to know the result of adding ACPI support
+>> > > > > > > > for a
+>> > > > > > > > new
+>> > > > > > > > tablet, the existing support shouldn't work because of
+>> > > > > > > > a
+>> > > > > > > > misplaced
+>> > > > > > > > __init that causes the function to be removed prior to
+>> > > > > > > > being
+>> > > > > > > > called.
+>> > > > > > >
+>> > > > > > > Are you sure about this? It seems that the existing
+>> > > > > > > support
+>> > > > > > > doesn't work
+>> > > > > > > because you have different product ids.
+>> > > > > > >
+>> > > > > > The driver worked much better prior to me adding the
+>> > > > > > product ids.
+>> > > > > >  The
+>> > > > > > sensors were exposed to sysfs and all the data they
+>> > > > > > collected
+>> > > > > > seemed
+>> > > > > > correct to me.  The big issue is that there is no software,
+>> > > > > > even
+>> > > > > > iio-sensor-proxy didn't know how to access the data.
+>> > > > > Cc'd Bastien Nocera.
+>> > > >
+>> > > > iio-sensor-proxy not finding the sensor, and with it working
+>> > > > otherwise,
+>> > > > would be an iio-sensor-proxy bug. I have one of those already
+>> > > > for the
+>> > > > accelerometer in the WinBook TW100 that I haven't had time to
+>> > > > root down
+>> > > > though. See:
+>> > > > https://github.com/hadess/iio-sensor-proxy/issues/39
+>> > > >
+>> > > > The main problem being that sensor types are already hard to
+>> > > > detect,
+>> > > > and the iio subsystem doesn't make it any easier to check
+>> > > > whether
+>> > > > there's buffered output available, or the application needs to
+>> > > > poll.
+>> > I dispute this one.  It's not exactly hard to check for the buffer
+>> > directory in sysfs and to evaluate if there is a trigger provided
+>> > by
+>> > the device (again a simple directory presence check).
+>> > It gets harder if there is more than one trigger provided, but
+>> > inherently
+>> > there isn't much we can do to suggest the best one.  If there are
+>> > two
+>> > then there are two usecases that demand different choices.
+>> >
+>> > > >
+>> > > > If anyone wants to fix that in the kernel, that would certainly
+>> > > > make my
+>> > > > life easier.
+>> > > >
+>> > > I only kind of understand the reasoning for iio, but for the case
+>> > > of
+>> > > devices used for instructing application behaviour I can't help
+>> > > but think
+>> > > this would be better served using/extending input events.
+>> > Indeed, the IIO side of things is about providing generic support
+>> > for lots of use cases whereas in your case you are looking at
+>> > something
+>> > which is naturally quite specific.
+>> >
+>> I just found a copy of this driver in the input tree:
+>> drivers/input/misc/mpu3050.c
+> This was done in 2011 time frame, when IIO was still in staging, I
+> guess.
+> Using input driver is not good idea as we need some special sysfs
+> entries for control.
+It has a configurable trigger and several power levels depending on
+the events needing to be generated.
 
-Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
----
- Documentation/ABI/testing/sysfs-bus-iio-meas-spec |  1 +
- drivers/iio/humidity/Kconfig                      |  2 ++
- drivers/iio/humidity/htu21.c                      | 33 ++++++++++++++++++++---
- drivers/iio/pressure/Kconfig                      |  2 ++
- drivers/iio/pressure/ms5637.c                     |  6 ++++-
- 5 files changed, 40 insertions(+), 4 deletions(-)
+> There was some proposal for IIO input driver bridge.
+>
+Testing for this driver isn't as promising as the iio.  I'm getting a
+better feel for talking to this device and implementing the hardware
+side of a driver.  Though I've no direction for implementing the
+userspace api, see below.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
-index 6d47e54..1a6265e 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
-@@ -5,3 +5,4 @@ Description:
-                 Reading returns either '1' or '0'. '1' means that the
-                 battery level supplied to sensor is below 2.25V.
-                 This ABI is available for tsys02d, htu21, ms8607
-+		This ABI is available for htu21, ms8607
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index 3fab60c..75ca043 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -19,6 +19,8 @@ config HTU21
- 	help
- 	  If you say yes here you get support for the Measurement Specialties
- 	  HTU21 humidity and temperature sensor.
-+	  This driver is also used for MS8607 temperature, pressure & humidity
-+	  sensor
- 
- 	  This driver can also be built as a module. If so, the module will
- 	  be called htu21.
-diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
-index 706faff..0530545 100644
---- a/drivers/iio/humidity/htu21.c
-+++ b/drivers/iio/humidity/htu21.c
-@@ -1,6 +1,7 @@
- /*
-  * htu21.c - Support for Measurement-Specialties
-  *           htu21 temperature & humidity sensor
-+ *	     and humidity part of MS8607 sensor
-  *
-  * Copyright (c) 2014 Measurement-Specialties
-  *
-@@ -10,6 +11,8 @@
-  *
-  * Datasheet:
-  *  http://www.meas-spec.com/downloads/HTU21D.pdf
-+ * Datasheet:
-+ *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
-  *
-  */
- 
-@@ -25,6 +28,11 @@
- 
- #define HTU21_RESET				0xFE
- 
-+enum {
-+	HTU21,
-+	MS8607
-+};
-+
- static const int htu21_samp_freq[4] = { 20, 40, 70, 120 };
- /* String copy of the above const for readability purpose */
- static const char htu21_show_samp_freq[] = "20 40 70 120";
-@@ -107,6 +115,18 @@ static const struct iio_chan_spec htu21_channels[] = {
- 	 }
- };
- 
-+/*
-+ * Meas Spec recommendation is to not read temperature
-+ * on this driver part for MS8607
-+ */
-+static const struct iio_chan_spec ms8607_channels[] = {
-+	{
-+		.type = IIO_HUMIDITYRELATIVE,
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+	 }
-+};
-+
- static ssize_t htu21_show_battery_low(struct device *dev,
- 				      struct device_attribute *attr, char *buf)
- {
-@@ -189,8 +209,14 @@ int htu21_probe(struct i2c_client *client,
- 	indio_dev->name = id->name;
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	indio_dev->channels = htu21_channels;
--	indio_dev->num_channels = ARRAY_SIZE(htu21_channels);
-+
-+	if (id->driver_data == MS8607) {
-+		indio_dev->channels = ms8607_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(ms8607_channels);
-+	} else {
-+		indio_dev->channels = htu21_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(htu21_channels);
-+	}
- 
- 	i2c_set_clientdata(client, indio_dev);
- 
-@@ -207,7 +233,8 @@ int htu21_probe(struct i2c_client *client,
- }
- 
- static const struct i2c_device_id htu21_id[] = {
--	{"htu21", 0},
-+	{"htu21", HTU21},
-+	{"ms8607-h", MS8607},
- 	{}
- };
- 
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index 8142cfe..53f9a44 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -86,6 +86,8 @@ config MS5637
- 	help
- 	  If you say yes here you get support for the Measurement Specialties
- 	  MS5637 pressure and temperature sensor.
-+	  This driver is also used for MS8607 temperature, pressure & humidity
-+	  sensor
- 
- 	  This driver can also be built as a module. If so, the module will
- 	  be called ms5637.
-diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
-index 0dbbd4e..f6b5544 100644
---- a/drivers/iio/pressure/ms5637.c
-+++ b/drivers/iio/pressure/ms5637.c
-@@ -1,5 +1,5 @@
- /*
-- * ms5637.c - Support for Measurement-Specialties ms5637
-+ * ms5637.c - Support for Measurement-Specialties ms5637 and ms8607
-  *            pressure & temperature sensor
-  *
-  * Copyright (c) 2015 Measurement-Specialties
-@@ -10,8 +10,11 @@
-  *
-  * Datasheet:
-  *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
-+ * Datasheet:
-+ *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
-  *
-  */
-+
- #include <linux/init.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
-@@ -168,6 +171,7 @@ static int ms5637_probe(struct i2c_client *client,
- 
- static const struct i2c_device_id ms5637_id[] = {
- 	{"ms5637", 0},
-+	{"ms8607-tp", 1},
- 	{}
- };
- 
--- 
-2.3.7
-
+> Thanks,
+> Srinivas
+>
+>> Perhaps "indexing" drivers by userspace API is the wrong approach as
+>> it's logical that a device my be accessible from userspace via
+>> multiple APIs and applicable for lots of reasons.  Splinting drivers
+>> into directories because of how userspace communicates with the
+>> driver
+>> is just asking for duplication or problems with bringing in the
+>> appropriate code.
+>>
+>> > >
+>> > > That would seam to cover the above issues, in exchange for having
+>> > > to add
+>> > > support for a few new tricks.
+>> > >
+>> > > 1. An axis where max and min are actually one 'step' apart.
+>> > > 2. Double axis for xyz, 6 instead of 3.  Perhaps this can be
+>> > > handled with
+>> > > extra event nodes, but then there may be sync issues.
+>>
+>> At first glance it seems that these are still outstanding, needing a
+>> proposed userspace API.
