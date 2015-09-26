@@ -1,52 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:17552 "EHLO mga02.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:4616 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932651AbbIZWFo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 26 Sep 2015 18:05:44 -0400
+	id S932491AbbIZWFm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 26 Sep 2015 18:05:42 -0400
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org, rui.zhang@intel.com, edubezval@gmail.com,
 	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org
 Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 6/6] thermal: x86_pkg_temp: Register threshold callbacks
-Date: Sat, 26 Sep 2015 15:05:11 -0700
-Message-Id: <1443305111-28272-7-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 2/6] thermal: documentation update
+Date: Sat, 26 Sep 2015 15:05:07 -0700
+Message-Id: <1443305111-28272-3-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1443305111-28272-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1443305111-28272-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Register callbacks to get/set temperature thresholds.
+Added description for thermal_zone_device_update, which is
+already used by thermal core and client drivers.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/thermal/x86_pkg_temp_thermal.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ Documentation/thermal/sysfs-api.txt | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/thermal/x86_pkg_temp_thermal.c b/drivers/thermal/x86_pkg_temp_thermal.c
-index 849f682..58d0770 100644
---- a/drivers/thermal/x86_pkg_temp_thermal.c
-+++ b/drivers/thermal/x86_pkg_temp_thermal.c
-@@ -273,12 +273,20 @@ static int sys_get_trip_type(struct thermal_zone_device *thermal,
- 	return 0;
- }
- 
-+static bool sys_check_notify_support(struct thermal_zone_device *tz)
-+{
-+	return true;
-+}
+diff --git a/Documentation/thermal/sysfs-api.txt b/Documentation/thermal/sysfs-api.txt
+index 10f062e..16770f0 100644
+--- a/Documentation/thermal/sysfs-api.txt
++++ b/Documentation/thermal/sysfs-api.txt
+@@ -494,3 +494,13 @@ platform data is provided, this uses the step_wise throttling policy.
+ This function serves as an arbitrator to set the state of a cooling
+ device. It sets the cooling device to the deepest cooling state if
+ possible.
 +
- /* Thermal zone callback registry */
- static struct thermal_zone_device_ops tzone_ops = {
- 	.get_temp = sys_get_curr_temp,
- 	.get_trip_temp = sys_get_trip_temp,
- 	.get_trip_type = sys_get_trip_type,
- 	.set_trip_temp = sys_set_trip_temp,
-+	.get_threshold_temp = sys_get_trip_temp,
-+	.set_threshold_temp = sys_set_trip_temp,
-+	.check_notification_support = sys_check_notify_support,
- };
- 
- static bool pkg_temp_thermal_platform_thermal_rate_control(void)
++5.5:thermal_zone_device_update:
++This function is used by thermal core and thermal client drivers to trigger
++temperature read and governor specific processing for thermal trip violation.
++Using event type parameter, the caller can specify the reason for this call.
++This reason can be
++THERMAL_DEVICE_EVENT_NONE for unspecified reason
++THERMAL_DEVICE_EVENT_THRESHOLD for temp threshold event
++THERMAL_DEVICE_EVENT_TEMP_SAMPLE for new temperature sample notification
++THERMAL_DEVICE_TRIP_TEMP_CHANGE for notifying trip point temperature change
 -- 
 2.4.3
 
