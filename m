@@ -1,41 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36703 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36739 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755611AbbI0Nrt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Sep 2015 09:47:49 -0400
-Subject: Re: [PATCH 2/2] Staging: iio: cdc: Remove unnecessary dev_info
+	with ESMTP id S1755658AbbI0N4N (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Sep 2015 09:56:13 -0400
+Subject: Re: [PATCH] iio: adc: ad799x: leave sysfs naming to the core
 To: Lars-Peter Clausen <lars@metafoo.de>,
-	Shraddha Barke <shraddha.6596@gmail.com>
-References: <1443201782-25863-1-git-send-email-shraddha.6596@gmail.com>
- <1443201782-25863-3-git-send-email-shraddha.6596@gmail.com>
- <5606D26C.2000405@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org
+	Martin Kepplinger <martink@posteo.de>,
+	Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net
+References: <1443174841-25782-1-git-send-email-martink@posteo.de>
+ <56052F05.90807@metafoo.de>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5607F383.6000701@kernel.org>
-Date: Sun, 27 Sep 2015 14:47:47 +0100
+Message-ID: <5607F578.1050906@kernel.org>
+Date: Sun, 27 Sep 2015 14:56:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <5606D26C.2000405@metafoo.de>
+In-Reply-To: <56052F05.90807@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/09/15 18:14, Lars-Peter Clausen wrote:
-> On 09/25/2015 07:23 PM, Shraddha Barke wrote:
->> Remove dev_info as the information can be obtained by other means
+On 25/09/15 12:24, Lars-Peter Clausen wrote:
+> On 09/25/2015 11:54 AM, Martin Kepplinger wrote:
+>> This shouldn't change anything since the core calls the events folder
+>> "events" anyways.
 >>
->> Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
+>> Signed-off-by: Martin Kepplinger <martink@posteo.de>
 > 
 > Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied, thanks Shraddha,
+> 
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
-Keep up the good work, these drivers have been in staging way too long!
+Thanks,
 
 Jonathan
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
