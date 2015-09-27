@@ -1,151 +1,224 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37327 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37346 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756156AbbI0P6Y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Sep 2015 11:58:24 -0400
-Subject: Re: [PATCH v2 0/4] iio: bmc150 regmap and SPI
-To: "Tirdea, Irina" <irina.tirdea@intel.com>,
-	Markus Pargmann <mpa@pengutronix.de>
-References: <1440074986-28716-1-git-send-email-mpa@pengutronix.de>
- <1F3AC3675D538145B1661F571FE1805F2F0C833A@irsmsx105.ger.corp.intel.com>
- <20150916101322.GJ1537@pengutronix.de>
- <1F3AC3675D538145B1661F571FE1805F2F0E78BA@irsmsx105.ger.corp.intel.com>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"kernel@pengutronix.de" <kernel@pengutronix.de>
+	with ESMTP id S1756178AbbI0QBf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Sep 2015 12:01:35 -0400
+Subject: Re: [PATCH V2 6/6] iio: Add ms8607 meas-spec driver support
+To: "ludovic.tancerel@maplehightech.com"
+	<ludovic.tancerel@maplehightech.com>
+References: <1438248345-25820-1-git-send-email-ludovic.tancerel@maplehightech.com>
+ <1438248345-25820-7-git-send-email-ludovic.tancerel@maplehightech.com>
+ <55C63AD1.90004@kernel.org>
+ <D50518AF-C9FC-43A0-8C08-7A1E5F648988@maplehightech.com>
+ <939F5CDA-AEBD-4060-8B15-FCD4D9424B6F@maplehightech.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, William.Markezana@meas-spec.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5608121E.4050305@kernel.org>
-Date: Sun, 27 Sep 2015 16:58:22 +0100
+Message-ID: <560812DA.7030004@kernel.org>
+Date: Sun, 27 Sep 2015 17:01:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <1F3AC3675D538145B1661F571FE1805F2F0E78BA@irsmsx105.ger.corp.intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <939F5CDA-AEBD-4060-8B15-FCD4D9424B6F@maplehightech.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/09/15 13:44, Tirdea, Irina wrote:
+On 25/09/15 10:31, ludovic.tancerel@maplehightech.com wrote:
+> Resend as for some reason, there was a problem with mail server
 > 
+> Regards,
+> Ludovic
 > 
->> -----Original Message-----
->> From: Markus Pargmann [mailto:mpa@pengutronix.de]
->> Sent: 16 September, 2015 13:13
->> To: Tirdea, Irina
->> Cc: Jonathan Cameron; Srinivas Pandruvada; Lars-Peter Clausen; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org;
->> kernel@pengutronix.de
->> Subject: Re: [PATCH v2 0/4] iio: bmc150 regmap and SPI
+>> Jonathan,
+>> some quick feedback on one of the comments below.
 >>
->> Hi Irina,
+>> Please let me know if you disagree.
 >>
->> On Wed, Sep 09, 2015 at 02:30:30PM +0000, Tirdea, Irina wrote:
->>>
->>>
->>>> -----Original Message-----
->>>> From: Markus Pargmann [mailto:mpa@pengutronix.de]
->>>> Sent: 20 August, 2015 15:50
->>>> To: Jonathan Cameron
->>>> Cc: Srinivas Pandruvada; Tirdea, Irina; Lars-Peter Clausen; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org;
->>>> kernel@pengutronix.de; Markus Pargmann
->>>> Subject: [PATCH v2 0/4] iio: bmc150 regmap and SPI
->>>>
->>>> Hi,
->>>>
->>>
->>> Hi Markus,
->>>
->>> I tested your patches with my BMA250E driver connected on the i2c bus .
->>> The code looks good and most of it works. There are a couple of issues I will mention
->>> below and in the individual patches.
->>>
->>> The patches in this version no longer apply cleanly on the togreg branch of the iio tree.
->>> I did the rebase myself, but since there were many conflicts I will do another test
->>> when you send the new rebased v3.
+>> Regards,
+>> Ludovic
 >>
->> Thank you for review and testing. I will integrate your comments and
->> send a rebased v3.
 >>
->>>
->>>> this series converts the bmc150 driver to use regmap and adds an SPI interface.
->>>>
->>>> In v1 this was part of the series "Regmap max_raw_io and bmc150 SPI support".
->>>> It now depends on "regmap: i2c block support".
->>>>
->>>
->>> I used the patches that were already merged in the regmap tree. This bmc150 series should
->>> probably wait until the regmap patches end up in Jonathan's tree, otherwise they will
->>> break the build.
+>> Le 8 août 2015 à 19:22, Jonathan Cameron <jic23@kernel.org <mailto:jic23@kernel.org>> a écrit :
 >>
->> It seems the necessary patches are already in v4.3-rc1:
->> 	29332534e2b6 (regmap-i2c: Add smbus i2c block support)
->>
-> 
-> AFAIK, Jonathan waits until changes from the main kernel get merged back
-> into his togreg branch. Since you are using regmap_get_raw_read_max that
-> is introduced in the regmap patches, the driver won't build without them
-> (if they are merged now in the iio tree).
-Exactly, I tend not to explicitly pull other trees into mine other than my
-upstream (staging-next currently).  Those merges tend to only occur as fast
-forward merges after Greg has accepted a pull request from me.  Right
-now I have one outstanding.  After / if he takes that I can then fast forward
-to a tree based on 4.3-rcX and apply these patches.
-> 
-> However, that does not prevent me from testing the changes using
-> the regmap changes from v4.3-rc1.
-> 
-> Thanks,
-> Irina
-> 
->> Best Regards,
->>
->> Markus
->>
+>>> On 30/07/15 10:25, Ludovic Tancerel wrote:
+>>>> Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com <mailto:ludovic.tancerel@maplehightech.com>>
+>>> Little bits inline.
 >>>
->>> Thanks,
->>> Irina
+>>> A nice looking patch set.  I was unsure the division made sense between the
+>>> core and the drivers, but it seems to work well.
+>>> Will be interesting to see what other parts measurement specialties comes out
+>>> with in the future!
 >>>
->>>> Changes in v2:
->>>> - Removed default values for regmap_config fields.
->>>> - Redesigned the fifo_transfer function to avoid running in errors first.
->>>> - Dropped irq checks patch as it is already mainline
->>>> - Core can now be built as module with autoselection of i2c and spi parts
+>>> Jonathan
+>>>> ---
+>>>> Documentation/ABI/testing/sysfs-bus-iio-meas-spec |  1 +
+>>>> drivers/iio/humidity/htu21.c                      | 32 ++++++++++++++++++++---
+>>>> drivers/iio/pressure/Kconfig                      | 13 +++++++++
+>>>> drivers/iio/pressure/ms5637.c                     |  6 ++++-
+>>>> 4 files changed, 48 insertions(+), 4 deletions(-)
 >>>>
->>>> As my hardware is missing an interrupt line from the SPI connected bmc150 I am
->>>> not able to test the iio buffer code path and the i2c code path. Tests would be
->>>> appreciated.
+>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>>>> index 7b09d3a..df70dda6 100644
+>>>> --- a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>>>> @@ -12,3 +12,4 @@ Description:
+>>>>                 Enable or disable heater function by writing either
+>>>> '1' or '0'.
+>>>>                 Same reading values apply
+>>>> +This ABI is available for htu21, ms8607
+>>>> diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
+>>>> index 870b631..4720cbc 100644
+>>>> --- a/drivers/iio/humidity/htu21.c
+>>>> +++ b/drivers/iio/humidity/htu21.c
+>>>> @@ -1,6 +1,7 @@
+>>>> /*
+>>>>  * htu21.c - Support for Measurement-Specialties
+>>>>  *           htu21 temperature & humidity sensor
+>>>> + *     and humidity part of MS8607 sensor
+>>>>  *
+>>>>  * Copyright (c) 2014 Measurement-Specialties
+>>>>  *
+>>>> @@ -10,6 +11,8 @@
+>>>>  *
+>>>>  * Datasheet:
+>>>>  *  http://www.meas-spec.com/downloads/HTU21D.pdf
+>>>> + * Datasheet:
+>>>> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
+>>>>  *
+>>>>  */
 >>>>
->>>> Best regards,
+>>>> @@ -25,6 +28,11 @@
 >>>>
->>>> Markus
+>>>> #define HTU21_RESET0xFE
 >>>>
+>>>> +enum {
+>>>> +HTU21,
+>>>> +MS8607
+>>>> +};
+>>>> +
+>>>> static const int htu21_samp_freq[4] = { 20, 40, 70, 120 };
+>>>> /* String copy of the above const for readability purpose */
+>>>> static const char htu21_show_samp_freq[] = "20 40 70 120";
+>>>> @@ -107,6 +115,17 @@ static const struct iio_chan_spec htu21_channels[] = {
+>>>>  }
+>>>> };
 >>>>
->>>> Markus Pargmann (4):
->>>>   iio: bmc150: Use i2c regmap
->>>>   iio: bcm150: Remove i2c_client from private data
->>>>   iio: bmc150: Split the driver into core and i2c
->>>>   iio: bmc150: Add SPI driver
+>>>> +/* Meas Spec recommendation is to not read temperature
+>>> /*
+>>> * Meas
+>>>> + * on this driver part for MS8607
+>>>> + */
+>>>> +static const struct iio_chan_spec ms8607_channels[] = {
+>>>> +{
+>>>> +.type = IIO_HUMIDITYRELATIVE,
+>>>> +.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
+>>>> +.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>>>> + }
+>>>> +};
+>>>> +
+>>>> static ssize_t htu21_show_battery_low(struct device *dev,
+>>>>       struct device_attribute *attr, char *buf)
+>>>> {
+>>>> @@ -189,8 +208,14 @@ int htu21_probe(struct i2c_client *client,
+>>>> indio_dev->name = id->name;
+>>>> indio_dev->dev.parent = &client->dev;
+>>>> indio_dev->modes = INDIO_DIRECT_MODE;
+>>>> -indio_dev->channels = htu21_channels;
+>>>> -indio_dev->num_channels = ARRAY_SIZE(htu21_channels);
+>>>> +
+>>>> +if (id->driver_data == MS8607) {
+>>>> +indio_dev->channels = ms8607_channels;
+>>>> +indio_dev->num_channels = ARRAY_SIZE(ms8607_channels);
+>>>> +} else {
+>>>> +indio_dev->channels = htu21_channels;
+>>>> +indio_dev->num_channels = ARRAY_SIZE(htu21_channels);
+>>>> +}
 >>>>
->>>>  drivers/iio/accel/Kconfig                          |  14 +-
->>>>  drivers/iio/accel/Makefile                         |   4 +-
->>>>  .../accel/{bmc150-accel.c => bmc150-accel-core.c}  | 398 ++++++++-------------
->>>>  drivers/iio/accel/bmc150-accel-i2c.c               |  99 +++++
->>>>  drivers/iio/accel/bmc150-accel-spi.c               |  83 +++++
->>>>  drivers/iio/accel/bmc150-accel.h                   |  21 ++
->>>>  6 files changed, 367 insertions(+), 252 deletions(-)
->>>>  rename drivers/iio/accel/{bmc150-accel.c => bmc150-accel-core.c} (81%)
->>>>  create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
->>>>  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
->>>>  create mode 100644 drivers/iio/accel/bmc150-accel.h
+>>>> i2c_set_clientdata(client, indio_dev);
 >>>>
->>>> --
->>>> 2.4.6
->>>
->>>
+>>>> @@ -207,7 +232,8 @@ int htu21_probe(struct i2c_client *client,
+>>>> }
+>>>>
+>>>> static const struct i2c_device_id htu21_id[] = {
+>>>> -{"htu21", 0},
+>>>> +{"htu21", HTU21},
+>>>> +{"ms8607-h", MS8607},
+>>> perhaps -humidity for clarity if not already in use out in the field.
 >>
->> --
->> Pengutronix e.K.                           |                             |
->> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
->> Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
->> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-> Nï¿½ï¿½ï¿½ï¿½ï¿½rï¿½ï¿½yï¿½ï¿½ï¿½bï¿½Xï¿½ï¿½Ç§vï¿½^ï¿½)Þº{.nï¿½+ï¿½ï¿½ï¿½ï¿½{ï¿½ï¿½*"ï¿½ï¿½^nï¿½rï¿½ï¿½ï¿½zï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½&ï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½hï¿½(ï¿½éšŽï¿½Ý¢j"ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½ï¿½zï¿½Þ–ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½hï¿½ï¿½ï¿½~ï¿½mml==
+>> h stands for humidity
+>> tp for temperature and pressure.
+>>
+>> ms8607-temperaturepressure seems too long to me, so I prefer to keep ms8607-tp and keep ms8607-h for consistancy
+hmm. Rather feels like there might be a middle ground such as -temppres which still makes it more obvious than the
+single letter!
+>>
+>>>> {}
+>>>> };
+>>>>
+>>>> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+>>>> index 8142cfe..e6a7fd5 100644
+>>>> --- a/drivers/iio/pressure/Kconfig
+>>>> +++ b/drivers/iio/pressure/Kconfig
+>>>> @@ -90,6 +90,19 @@ config MS5637
+>>>>   This driver can also be built as a module. If so, the module will
+>>>>   be called ms5637.
+>>>>
+>>>> +config MS8607
+>>>> +tristate "Measurement Specialties MS8607 pressure, temperature & humidity sensor"
+>>>> +depends on I2C
+>>>> +        select IIO_MS_SENSORS_I2C
+>>>> +        select HTU21
+>>>> +        select MS5637
+>>>> +help
+>>>> +  If you say yes here you get support for the Measurement Specialties
+>>>> +  MS8607 pressure, temperature and humidity sensor.
+>>>> +
+>>>> +  This is based on HTU21 and MS5637 drivers. If built as a module,
+>>>> +  modules to load will be htu21 and ms5637.
+>>>> +
+>>> Don't bother with the separate kconfig entry.  Just make sure the help texts for
+>>> the other two make it clear that they also support part of this device.
+>>>
+>>>> config IIO_ST_PRESS
+>>>> tristate "STMicroelectronics pressure sensor Driver"
+>>>> depends on (I2C || SPI_MASTER) && SYSFS
+>>>> diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
+>>>> index e2073fd..c185aa0 100644
+>>>> --- a/drivers/iio/pressure/ms5637.c
+>>>> +++ b/drivers/iio/pressure/ms5637.c
+>>>> @@ -1,5 +1,5 @@
+>>>> /*
+>>>> - * ms5637.c - Support for Measurement-Specialties ms5637
+>>>> + * ms5637.c - Support for Measurement-Specialties ms5637 and ms8607
+>>>>  *            pressure & temperature sensor
+>>>>  *
+>>>>  * Copyright (c) 2015 Measurement-Specialties
+>>>> @@ -10,8 +10,11 @@
+>>>>  *
+>>>>  * Datasheet:
+>>>>  *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
+>>>> + * Datasheet:
+>>>> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
+>>>>  *
+>>>>  */
+>>>> +
+>>>> #include <linux/init.h>
+>>>> #include <linux/device.h>
+>>>> #include <linux/kernel.h>
+>>>> @@ -168,6 +171,7 @@ static int ms5637_probe(struct i2c_client *client,
+>>>>
+>>>> static const struct i2c_device_id ms5637_id[] = {
+>>>> {"ms5637", 0},
+>>>> +{"ms8607-tp", 1},
+>>> Perhaps -temp for extra clarity (or are there devices out there already
+>>> using this naming?)
+>>>> {}
+>>>> };
+>>>>
+>>>>
+>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org <mailto:majordomo@vger.kernel.org>
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
