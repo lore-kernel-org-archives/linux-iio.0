@@ -1,831 +1,617 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:60332 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932297AbbI1L2W (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 28 Sep 2015 07:28:22 -0400
-Date: Mon, 28 Sep 2015 13:28:18 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Suresh Rajashekara <sureshraj@google.com>
-cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] CHROMIUM: iio: Add Dyna-Image AP3223 ambient light and
- proximity driver
-In-Reply-To: <1443416401-20417-1-git-send-email-sureshraj@google.com>
-Message-ID: <alpine.DEB.2.02.1509281309400.15941@pmeerw.net>
-References: <1443416401-20417-1-git-send-email-sureshraj@google.com>
+Return-Path: <prvs=706c1e439=Sean.Nyekjaer@prevas.dk>
+Subject: Re: [PATCHv2 1/2] iio: adc: Add TI ADS868X
+To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
+References: <1443162580-28293-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <5607FF50.9070207@kernel.org>
+CC: <devicetree@vger.kernel.org>
+From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
+Message-ID: <56096A51.7020803@prevas.dk>
+Date: Mon, 28 Sep 2015 18:26:57 +0200
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <5607FF50.9070207@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
+Hi
 
-> Minimal implementation. This is based on the driver provided by
-> the vendor (which wasn't in the IIO framework). Authors of the
-> driver from the vendor included
-> * John Huang <john.huang@dyna-image.com>
-> * Templeton Tsai <templeton.tsai@dyna-image.com>
-> * Vic Lee <Vic_Lee@asus.com>
+Just to clear thing up :-)
 
-some comments below, the driver doesn't look finished yet :)
+All the mess in the write_raw functions are from the allowed scales.
+if you are in ±0.625×Vref mode you are not allowed set an offset value of 0.
 
-link to datasheet missing
- 
-> Signed-off-by: Suresh Rajashekara <sureshraj@google.com>
-> ---
->  .../devicetree/bindings/iio/light/ap3223.txt       |  18 +
->  .../devicetree/bindings/vendor-prefixes.txt        |   1 +
->  drivers/iio/light/Kconfig                          |  10 +
->  drivers/iio/light/Makefile                         |   1 +
->  drivers/iio/light/ap3223.c                         | 394 +++++++++++++++++++++
->  drivers/iio/light/ap3223.h                         | 227 ++++++++++++
->  6 files changed, 651 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/ap3223.txt
->  create mode 100644 drivers/iio/light/ap3223.c
->  create mode 100644 drivers/iio/light/ap3223.h
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/ap3223.txt b/Documentation/devicetree/bindings/iio/light/ap3223.txt
-> new file mode 100644
-> index 0000000..b255d27
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/ap3223.txt
-> @@ -0,0 +1,18 @@
-> +* Dyna Image AP3223 ambient light sensor and proximity sensor
-> +
-> +http://www.dyna-image.com/english/product/optical-sensor-detail.php?cpid=2&dpid=8
-> +
-> +Required properties:
-> +
-> +  - compatible : should be "dynaimage,ap3223"
-> +  - reg : the I2C address of the sensor
-> +
-> +Example:
-> +
-> +ap3223@1c {
-> +	compatible = "dynaimage,ap3223";
-> +	reg = <0x1c>;
-> +
-> +	pinctrl-0 = <&ap3223_pins>;
-> +	pinctrl-names = "default";
-> +};
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> index 5f20add..704da45 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> @@ -46,6 +46,7 @@ digilent	Diglent, Inc.
->  dlg	Dialog Semiconductor
->  dlink	D-Link Corporation
->  dmo	Data Modul AG
-> +dynaimage	Dyna-Image
->  ebv	EBV Elektronik
->  edt	Emerging Display Technologies
->  elan	Elan Microelectronic Corp.
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index ae68c64..5255aa2 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -27,6 +27,16 @@ config AL3320A
->  	 To compile this driver as a module, choose M here: the
->  	 module will be called al3320a.
->  
-> +config AP3223
-> +	tristate "AP3223 ambient light and proximity sensor"
-> +	depends on I2C
-> +	help
-> +	 Say Y here if you want to build a driver for the Dyna Image AP3223
-> +	 ambient light and proximity sensor.
-> +
-> +	 To compile this driver as a module, choose M here: the
-> +	 module will be called ap3223.
-> +
->  config APDS9300
->  	tristate "APDS9300 ambient light sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index b12a516..13a74f9 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -5,6 +5,7 @@
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
->  obj-$(CONFIG_AL3320A)		+= al3320a.o
-> +obj-$(CONFIG_AP3223)		+= ap3223.o
->  obj-$(CONFIG_APDS9300)		+= apds9300.o
->  obj-$(CONFIG_CM32181)		+= cm32181.o
->  obj-$(CONFIG_CM3232)		+= cm3232.o
-> diff --git a/drivers/iio/light/ap3223.c b/drivers/iio/light/ap3223.c
-> new file mode 100644
-> index 0000000..55bbcdd
-> --- /dev/null
-> +++ b/drivers/iio/light/ap3223.c
-> @@ -0,0 +1,394 @@
-> +/*
-> + * ap3223.c
-> + *
-> + * Copyright (C) 2015 Google, Inc.
-> + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + * Note about the original authors:
-> + *
-> + * The driver for AP3223 was originally distributed by dyna image in a
-> + * different framework. This driver uses code from that driver and converts
-> + * it to iio framework. The non-iio driver from dyna image is not available
-> + * online anywhere, so there is no reference for it here. However, that driver
-> + * is also GPLv2. The following is part of the header found in that file
-> + * (The GPL notice from the original header is removed)
-> + *
-> + * >> This file is part of the AP3223, AP3212C and AP3216C sensor driver.
-> + * >> AP3426 is combined proximity and ambient light sensor.
-> + * >> AP3216C is combined proximity, ambient light sensor and IRLED.
-> + * >>
-> + * >> Contact: John Huang <john.huang@dyna-image.com>
-> + * >>	       Templeton Tsai <templeton.tsai@dyna-image.com>
-> + *
-> + * Another author initials mentioned in that file was just YC (and no name).
-> + *
-> + * Not sure for what kernel version the driver from dyna image was written for.
-> + * Vic Lee <Vic_Lee@asus.com> made modifications to it to run on 3.14.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/mutex.h>
-> +#include <linux/delay.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/of_gpio.h>
-> +#include <linux/timer.h>
-> +#include <linux/gpio.h>
-> +#include <linux/device.h>
-> +
-> +#include "ap3223.h"
-> +
-> +#define AP3223_DRV_NAME "ap3223"
-> +
-> +struct ap3223_data {
-> +	struct i2c_client *client;
-> +	u8 reg_cache[AP3223_NUM_CACHABLE_REGS];
-> +	int cali;
-> +};
-> +
-> +static u8 ap3223_regs[AP3223_NUM_CACHABLE_REGS] = {
+INPUT RANGE POSITIVE FULL SCALE NEGATIVE FULL SCALE FULL-SCALE RANGE
+±2.5 × V REF 10.24 V –10.24 V 20.48 V
+±1.25 × V REF 5.12 V –5.12 V 10.24 V
+±0.625 × V REF 2.56 V –2.56 V 5.12 V
+0 to 2.5 × V REF 10.24 V 0V 10.24 V
+0 to 1.25 × V REF 5.12 V 0V 5.12 V
 
-const
-use regmap?
+I will update the driver with your comments :-)
 
-> +	0x00, 0x01, 0x02, 0x06, 0x0A,
-> +	0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-> +	0x10, 0x14, 0x1A, 0x1B, 0x1C,
-> +	0x1D, 0x20, 0x21, 0x22, 0x23,
-> +	0x24, 0x25, 0x26, 0x28, 0x29,
-> +	0x2A, 0x2B, 0x2C, 0x2D, 0x30,
-> +	0x32
-> +};
-> +
-> +static u8 init_reg_config[] = {
+/Sean
 
-ap3223_ prefix
-lot of disgusting magic values
-
-> +	0x00, 0x03,
-> +	0x10, 0x20,
-> +	0X1A, 0xE8,
-> +	0x1B, 0x03,
-> +	0x1C, 0xD0,
-> +	0x1D, 0x07,
-> +	0x20, 0x04,
-> +	0x21, 0x03,
-> +	0x22, 0x01,
-> +	0x23, 0x03,
-> +	0x25, 0x0B,
-> +	0x2A, 0x64,
-> +	0x2C, 0xF4,
-> +	0x2D, 0x00
-> +};
-> +
-> +static int ap3223_range[] = { 65535, 16383, 4095, 1023 };
-
-const
-
-> +
-> +#define FIND_REG_IDX(addr, regs, idx)	{ \
-
-AP3223_ prefix
-
-> +	int i; \
-> +	for (i = 0; i < sizeof(ap3223_regs); i++) { \
-
-use ARRAY_SIZE
-
-> +		if (addr == regs[i]) { \
-> +			idx = i; \
-> +			break; \
-> +		} \
-> +	} \
-> +}
-> +
-> +#define AP3223_LIGHT_CHANNEL {				\
-> +	.type = IIO_LIGHT,				\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +}
-> +
-> +#define AP3223_PROXIMITY_CHANNEL {			\
-> +	.type = IIO_PROXIMITY,				\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +}
-> +
-> +static const struct iio_chan_spec ap3223_channels[] = {
-> +	AP3223_LIGHT_CHANNEL,
-> +	AP3223_PROXIMITY_CHANNEL,
-> +};
-> +
-> +static int __ap3223_read_reg(struct i2c_client *client,
-
-prefix
-
-> +			     u32 reg, u8 mask, u8 shift)
-> +{
-> +	struct ap3223_data *data = iio_priv(i2c_get_clientdata(client));
-> +	u8 idx = 0xff;
-> +
-> +	FIND_REG_IDX(reg, ap3223_regs, idx);
-
-ugly
-if reg is not found, we do an out-of-bound access on reg_cache?!
-
-> +
-> +	return (data->reg_cache[idx] & mask) >> shift;
-> +}
-> +
-> +static int __ap3223_write_reg(struct i2c_client *client,
-> +			      u32 reg, u8 mask, u8 shift, u8 val)
-> +{
-> +	struct ap3223_data *data = iio_priv(i2c_get_clientdata(client));
-> +	int ret = 0;
-> +	u8 tmp;
-> +	u8 idx = 0xff;
-> +
-> +	FIND_REG_IDX(reg, ap3223_regs, idx);
-> +
-> +	if (idx >= sizeof(ap3223_regs))
-> +		return -EINVAL;
-> +
-> +	tmp = data->reg_cache[idx];
-> +	tmp &= ~mask;
-> +	tmp |= val << shift;
-> +
-> +	ret = i2c_smbus_write_byte_data(client, reg, tmp);
-> +	if (!ret)
-> +		data->reg_cache[idx] = tmp;
-> +
-> +	return ret;
-> +}
-> +
-> +static int ap3223_get_mode(struct i2c_client *client)
-> +{
-> +	return __ap3223_read_reg(client, AP3223_REG_SYS_CONF,
-> +				 AP3223_REG_SYS_CONF_MASK,
-> +				 AP3223_REG_SYS_CONF_SHIFT);
-> +}
-> +
-> +static int ap3223_set_mode(struct i2c_client *client, int mode)
-> +{
-> +	return __ap3223_write_reg(client, AP3223_REG_SYS_CONF,
-> +				  AP3223_REG_SYS_CONF_MASK,
-> +				  AP3223_REG_SYS_CONF_SHIFT, mode);
-> +}
-> +
-> +static int ap3223_get_range(struct i2c_client *client)
-> +{
-> +	u8 idx = __ap3223_read_reg(client, AP3223_REG_ALS_CONF,
-> +				   AP3223_ALS_RANGE_MASK,
-> +				   AP3223_ALS_RANGE_SHIFT);
-> +	return ap3223_range[idx];
-> +}
-> +
-> +static int ap3223_set_range(struct i2c_client *client, int range)
-> +{
-> +	return __ap3223_write_reg(client, AP3223_REG_ALS_CONF,
-> +				  AP3223_ALS_RANGE_MASK,
-> +				  AP3223_ALS_RANGE_SHIFT, range);
-> +}
-> +
-> +static int ap3223_get_adc_value(struct i2c_client *client)
-> +{
-> +	unsigned int lsb, msb, val;
-> +	unsigned int tmp, range;
-> +	struct ap3223_data *data = iio_priv(i2c_get_clientdata(client));
-> +
-> +	lsb = i2c_smbus_read_byte_data(client, AP3223_REG_ALS_DATA_LOW);
-
-use i2c_smbus_read_word_data() or _swapped()
-
-> +
-> +	if (lsb < 0)
-
-lsb is unsigned int?!
-
-> +		return lsb;
-> +
-> +	msb = i2c_smbus_read_byte_data(client, AP3223_REG_ALS_DATA_HIGH);
-> +
-> +	if (msb < 0)
-> +		return msb;
-> +
-> +	range = ap3223_get_range(client);
-> +
-> +	tmp = (((msb << 8) | lsb) * range) >> 16;
-> +	tmp = tmp * data->cali / 100;
-> +	val = tmp;
-
-what is the purpose of val?
-
-> +
-> +	return val;
-> +}
-> +
-> +static int ap3223_get_object(struct i2c_client *client)
-> +{
-> +	int val;
-> +
-> +	val = i2c_smbus_read_byte_data(client, AP3223_OBJ_COMMAND);
-> +	val &= AP3223_OBJ_MASK;
-> +
-> +	return val >> AP3223_OBJ_SHIFT;
-> +}
-> +
-> +/* Software Reset */
-
-drop comment, obvious from function name
-
-> +static inline void ap3223_sw_reset(struct i2c_client *client)
-
-drop inline
-
-> +{
-> +	i2c_smbus_write_byte_data(client, 0x0, 0x4);
-
-magic values, no retval checking
-
-> +}
-> +
-> +static int ap3223_init_client(struct i2c_client *client)
-> +{
-> +	struct ap3223_data *data = iio_priv(i2c_get_clientdata(client));
-> +	int i;
-> +
-> +	dev_dbg(&client->dev, "AP3223 : Initializing Client ..\n");
-
-needed?
-
-> +
-> +	/* Read all the registers once to fill the cache.
-> +	 * Even if one of the read fails, we consider the init failed */
-
-multi-line comment style
-
-> +	for (i = 0; i < sizeof(ap3223_regs); i++) {
-
-ARRAY_SIZE
-
-> +		int v = i2c_smbus_read_byte_data(client, ap3223_regs[i]);
-> +
-> +		if (v < 0)
-> +			return -ENODEV;
-> +
-> +		data->reg_cache[i] = v;
-> +	}
-> +
-> +	/* set defaults */
-> +	ap3223_set_range(client, AP3223_ALS_RANGE_0);
-> +	ap3223_set_mode(data->client, AP3223_SYS_DEV_DOWN);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ap3223_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan, int *val,
-> +			   int *val2, long mask)
-> +{
-> +	struct ap3223_data *data = iio_priv(indio_dev);
-> +
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		switch (mask) {
-> +		case IIO_CHAN_INFO_RAW:
-> +			if (ap3223_get_mode(data->client) ==
-> +			    AP3223_SYS_DEV_DOWN) {
-> +				dev_err(&indio_dev->dev,
-> +					"Please power up first\n");
-
-huh?
-isn't the driver responsible to power up?
-
-> +				return -EINVAL;
-> +			}
-> +			*val = ap3223_get_adc_value(data->client);
-
-error handling?
-
-> +			return IIO_VAL_INT;
-> +		}
-> +		break;
-> +
-> +	case IIO_PROXIMITY:
-> +		switch (mask) {
-> +		case IIO_CHAN_INFO_RAW:
-> +			*val = ap3223_get_object(data->client);
-
-error checking?!
-
-> +			dev_info(&data->client->dev,
-> +				 "%s\n", *val ? "Object Near" : "Object Far");
-
-no output here please
-
-> +			return IIO_VAL_INT;
-> +		}
-> +		break;
-> +
-> +	default:
-> +		break;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info ap3223_info = {
-> +	.driver_module  = THIS_MODULE,
-> +	.read_raw       = ap3223_read_raw,
-> +};
-> +
-> +static void ap3223_init_reg_config(struct i2c_client *client)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < sizeof(init_reg_config); i += 2) {
-> +		__ap3223_write_reg(client, init_reg_config[i], 0xff,
-> +					 0, init_reg_config[i + 1]);
-> +	}
-> +}
-> +
-> +static int ap3223_init(struct ap3223_data *data)
-> +{
-> +	struct i2c_client *client = data->client;
-> +	struct i2c_adapter *adapter = to_i2c_adapter(client->dev.parent);
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(data->client);
-> +	int err = 0;
-> +
-> +	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE)) {
-> +		err = -EIO;
-> +		goto exit_free_gpio;
-> +	}
-> +
-> +	ap3223_sw_reset(client);
-> +
-> +	err = ap3223_init_client(client);
-> +	if (err)
-> +		goto exit_free;
-> +
-> +	ap3223_init_reg_config(client);
-
-error checking
-
-> +
-> +	dev_info(&client->dev, "%s : driver enabled\n", AP3223_DRV_NAME);
-> +
-> +	return 0;
-> +
-> +exit_free:
-> +	devm_iio_device_free(&client->dev, indio_dev);
-
-no need to call this explicitly
-
-> +
-> +exit_free_gpio:
-> +	return err;
-> +}
-> +
-> +static int ap3223_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	struct ap3223_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	data->cali = AP3223_DEFAULT_CAL;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &ap3223_info;
-> +	indio_dev->name = AP3223_DRV_NAME;
-> +	indio_dev->channels = ap3223_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(ap3223_channels);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	ret = ap3223_init(data);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "ap3223 chip init failed\n");
-> +		return ret;
-> +	}
-> +
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
-> +static int ap3223_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct ap3223_data *data = iio_priv(indio_dev);
-> +
-> +	ap3223_sw_reset(data->client);
-> +	ap3223_set_mode(data->client, 0);
-> +
-> +	devm_iio_device_unregister(&client->dev, indio_dev);
-> +	devm_iio_device_free(&client->dev, indio_dev);
-
-don't call these explicitly
-
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id ap3223_id[] = {
-> +	{AP3223_DRV_NAME, 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, ap3223_id);
-> +
-> +static struct i2c_driver ap3223_driver = {
-> +	.driver = {
-> +		.name = AP3223_DRV_NAME,
-> +		.owner = THIS_MODULE,
-> +	},
-> +	.probe          = ap3223_probe,
-> +	.remove         = ap3223_remove,
-> +	.id_table       = ap3223_id,
-> +};
-> +
-> +module_i2c_driver(ap3223_driver);
-> +
-> +MODULE_AUTHOR("Suresh Rajashekara <sureshraj@google.com>");
-> +MODULE_DESCRIPTION("AP3223 Ambient Light and Proximity Sensor Driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/light/ap3223.h b/drivers/iio/light/ap3223.h
-> new file mode 100644
-> index 0000000..0cc88e4
-> --- /dev/null
-> +++ b/drivers/iio/light/ap3223.h
-> @@ -0,0 +1,227 @@
-> +/*
-> + * ap3223.h
-> + *
-> + * Copyright (C) 2015 Google, Inc.
-> + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + * Note about the original authors:
-> + *
-> + * The driver for AP3223 was originally distributed by dyna image in a
-> + * different framework. This driver uses code from that driver and converts
-> + * it to iio framework. The non-iio driver from dyna image is not available
-> + * online anywhere, so there is no reference for it here. However, that driver
-> + * is also GPLv2. The following is part of the header found in that file
-> + * (The GPL notice from the original header is removed)
-> + *
-> + * >> This file is part of the AP3223, AP3212C and AP3216C sensor driver.
-> + * >> AP3426 is combined proximity and ambient light sensor.
-> + * >> AP3216C is combined proximity, ambient light sensor and IRLED.
-> + * >>
-> + * >> Contact: John Huang <john.huang@dyna-image.com>
-> + * >>	       Templeton Tsai <templeton.tsai@dyna-image.com>
-> + *
-> + * Another author initials mentioned in that file was just YC (and no name).
-> + *
-> + * Not sure for what kernel version the driver from dyna image was written for.
-> + * Vic Lee <Vic_Lee@asus.com> made modifications to it to run on 3.14.
-> + */
-> +
-> +#ifndef __AP3223_H__
-> +#define __AP3223_H__
-> +
-> +#include <linux/ioctl.h>
-
-mostly not needed
-
-> +
-> +#define AP3223_SUCCESS					0
-> +#define AP3223_ERR_I2C					-1
-> +#define AP3223_ERR_STATUS				-3
-> +#define AP3223_ERR_SETUP_FAILURE			-4
-> +#define AP3223_ERR_GETGSENSORDATA			-5
-> +#define AP3223_ERR_IDENTIFICATION			-6
-> +
-
-extra newline
-
-> +
-> +#define AP3223_NUM_CACHABLE_REGS	31
-> +
-> +/* No adjustment to lux value reading */
-> +#define AP3223_DEFAULT_CAL		100
-> +
-> +/* ap3223 control registers */
-> +#define AP3223_REG_SYS_CONF		0x00
-> +#define AP3223_REG_SYS_CONF_SHIFT	(0)
-> +#define AP3223_REG_SYS_CONF_MASK	0x07
-> +
-> +#define AP3223_REG_SYS_INTSTATUS	0x01
-> +#define AP3223_REG_SYS_INT_SHIFT	(0)
-> +#define AP3223_REG_SYS_INT_PS_SHIFT	(1)
-> +#define AP3223_REG_SYS_INT_LS_SHIFT	(0)
-> +#define AP3223_REG_SYS_INT_MASK		0x03
-> +#define AP3223_REG_SYS_INT_PMASK	0x02
-> +#define AP3223_REG_SYS_INT_AMASK	0x01
-> +
-> +#define AP3223_OBJ_COMMAND	0x01
-> +#define AP3223_OBJ_MASK		0x10
-> +#define AP3223_OBJ_SHIFT	(4)
-> +
-> +#define AP3223_REG_SYS_INTCTRL	   0x02
-> +#define AP3223_REG_SYS_WAITTIME    0x06
-> +
-> +/* ap3223 data registers */
-> +#define AP3223_REG_IR_DATA_LOW		0x0A
-> +#define AP3223_REG_IR_DATA_LOW_SHIFT	(0)
-> +#define AP3223_REG_IR_DATA_LOW_MASK	0xFF
-> +
-> +#define AP3223_REG_IR_DATA_HIGH		0x0B
-> +#define AP3223_REG_IR_DATA_HIGH_SHIFT	(0)
-> +#define AP3223_REG_IR_DATA_HIGH_MASK	0x03
-> +
-> +#define AP3223_REG_ALS_DATA_LOW    0x0C
-> +#define AP3223_REG_ALS_DATA_HIGH   0x0D
-> +
-> +#define AP3223_REG_PS_DATA_LOW		0x0E
-> +#define AP3223_REG_PS_DATA_LOW_SHIFT	(0)
-> +#define	AL3223_REG_PS_DATA_LOW_MASK	0xFF
-> +#define AP3223_REG_PS_DATA_HIGH		0x0F
-> +#define AP3223_REG_PS_DATA_HIGH_SHIFT	(0)
-> +#define	AL3223_REG_PS_DATA_HIGH_MASK	0x03
-> +
-> +#define AP3223_REG_ALS_CONF		   0x10	/*ALS GAIN */
-> +
-> +#define AP3223_REG_ALS_PERSIS		0x14
-> +#define AP3223_REG_ALS_PERSIS_SHIFT	(0)
-> +#define AP3223_REG_ALS_PERSIS_MASK	0x3F
-> +/* #define AP3223_REG_ALS_CAL		  0x19 */
-> +
-> +#define AP3223_REG_ALS_THDL_L		0x1A
-> +#define AP3223_REG_ALS_THDL_L_SHIFT	(0)
-> +#define AP3223_REG_ALS_THDL_L_MASK	0xFF
-> +
-> +#define AP3223_REG_ALS_THDL_H		0x1B
-> +#define AP3223_REG_ALS_THDL_H_SHIFT	(0)
-> +#define AP3223_REG_ALS_THDL_H_MASK	0xFF
-> +
-> +#define AP3223_REG_ALS_THDH_L		0x1C
-> +#define AP3223_REG_ALS_THDH_L_SHIFT	(0)
-> +#define AP3223_REG_ALS_THDH_L_MASK	0xFF
-> +
-> +#define AP3223_REG_ALS_THDH_H		0x1D
-> +#define AP3223_REG_ALS_THDH_H_SHIFT	(0)
-> +#define AP3223_REG_ALS_THDH_H_MASK	0xFF
-> +
-> +
-> +/* ap3223 PS CONFIG registers */
-> +#define AP3223_REG_PS_CONF		0x20	/*PS GAIN */
-> +#define AP3223_REG_PS_CONF_SHIFT	(2)
-> +#define AP3223_REG_PS_CONF_MASK		0x0C
-> +
-> +#define AP3223_REG_PS_LEDD		0x21	/*PS LED DRIVER */
-> +#define AP3223_REG_PS_LEDD_SHIFT	(0)
-> +#define AP3223_REG_PS_LEDD_MASK		0x03
-> +
-> +#define AP3223_REG_PS_IFORM		0x22	/* PS INT Mode */
-> +
-> +#define AP3223_REG_PS_MEAN		0x23
-> +#define AP3223_REG_PS_MEAN_SHIFT	(0)
-> +#define AP3223_REG_PS_MEAN_MASK		0x03
-> +
-> +#define AP3223_REG_PS_SMARTINT	   0x24	/* PS Smart INT for low power */
-> +#define AP3223_REG_PS_INTEGR	   0x25
-> +#define AP3223_REG_PS_PERSIS	   0x26
-> +#define AP3223_REG_PS_PERSIS_SHIFT	(0)
-> +#define AP3223_REG_PS_PERSIS_MASK	0x3F
-> +#define AP3223_REG_PS_CAL_L		0x28
-> +#define AP3223_REG_PS_CAL_L_SHIFT	(0)
-> +#define AP3223_REG_PS_CAL_L_MASK	0xFF
-> +#define AP3223_REG_PS_CAL_H		0x29
-> +#define AP3223_REG_PS_CAL_H_SHIFT	(0)
-> +#define AP3223_REG_PS_CAL_H_MASK	0x01
-> +
-> +#define AP3223_REG_PS_THDL_L		0x2A
-> +#define AP3223_REG_PS_THDL_L_SHIFT	(0)
-> +#define AP3223_REG_PS_THDL_L_MASK	0xFF
-> +
-> +#define AP3223_REG_PS_THDL_H		0x2B
-> +#define AP3223_REG_PS_THDL_H_SHIFT	(0)
-> +#define AP3223_REG_PS_THDL_H_MASK	0x03
-> +
-> +#define AP3223_REG_PS_THDH_L		0x2C
-> +#define AP3223_REG_PS_THDH_L_SHIFT	(0)
-> +#define AP3223_REG_PS_THDH_L_MASK	0xFF
-> +
-> +#define AP3223_REG_PS_THDH_H		0x2D
-> +#define AP3223_REG_PS_THDH_H_SHIFT	(0)
-> +#define AP3223_REG_PS_THDH_H_MASK	0x03
-> +
-> +
-> +/* SYSTEM MODE (AP3223_REG_SYS_CONF) */
-> +#define	AP3223_SYS_DEV_DOWN		0x00
-> +#define	AP3223_SYS_ALS_ENABLE		0x01
-> +#define	AP3223_SYS_PS_ENABLE		0x02
-> +#define	AP3223_SYS_ALS_PS_ENABLE	0x03
-> +#define	AP3223_SYS_DEV_RESET		0x04
-> +
-> +/* INT FLAG BIT MASK */
-> +#define	AP3223_SYS_ALS_INT_TRI	   0x01
-> +#define	AP3223_SYS_PS_INT_TRI	   0x02
-> +#define	AP3223_SYS_PS_INT_OBJ	   0x10
-> +#define	AP3223_SYS_PS_INT_IROV	   0x20
-> +
-> +/* INT CLEAN Mode */
-> +#define	AP3223_SYS_ICLEAN_AUTO	   0x00
-> +#define	AP3223_SYS_ICLEAN_MANUAL   0x01
-> +
-> +/* ALS CONFIG */
-> +#define AP3223_ALS_RANGE_0	0x00	/* Full range 32768 lux(0.5lux/count) */
-> +#define AP3223_ALS_RANGE_1	0x01	/* Full range 8192 lux */
-> +#define AP3223_ALS_RANGE_2	0x02	/* Full range 2048 lux */
-> +#define AP3223_ALS_RANGE_3	0x03	/* Full range 512 lux */
-> +#define AP3223_ALS_RANGE_MASK	0x30
-> +#define AP3223_ALS_RANGE_SHIFT	(4)
-> +#define AP3223_ALS_PERSIST_MASK	0x0F
-> +
-> +/* PS CONFIG */
-> +#define AP3223_PS_GAIN_1		0x00	/* PS resulation * 1 */
-> +#define AP3223_PS_GAIN_2		0x01	/* PS resulation * 2 */
-> +#define AP3223_PS_GAIN_4		0x02	/* PS resulation * 4 */
-> +#define AP3223_PS_GAIN_8		0x03	/* PS resulation * 8 */
-> +#define AP3223_PS_PERSIST_1		0x00
-> +#define AP3223_PS_PERSIST_2		0x01
-> +#define AP3223_PS_PERSIST_4		0x02
-> +#define AP3223_PS_PERSIST_8		0x03
-> +
-> +/* PS LED Control */
-> +#define AP3223_PS_LED_P0		0x00	/* 0 puls */
-> +#define AP3223_PS_LED_P1		0x01	/* 1 puls (default) */
-> +#define AP3223_PS_LED_P2		0x02	/* 2 puls  */
-> +#define AP3223_PS_LED_P3		0x03	/* 3 puls  */
-> +#define AP3223_PS_DEIVER_167		0x00	/* 16.7% */
-> +#define AP3223_PS_DEIVER_333		0x01	/* 33.3% */
-> +#define AP3223_PS_DEIVER_667		0x02	/* 66.7% */
-> +#define AP3223_PS_DEIVER_1000		0x03	/* 100% (default) */
-> +
-> +/* PS MEAN */
-> +#define AP3223_PS_MEAN_0		0x00	/* 5ms @2T */
-> +#define AP3223_PS_MEAN_1		0x01	/* 9.6ms @2T */
-> +#define AP3223_PS_MEAN_2		0x02	/* 14.1ms @2T */
-> +#define AP3223_PS_MEAN_3		0x03	/* 18.7ms @2T */
-> +
-> +#define DISABLE				0x00
-> +#define ENABLE				0x01
-> +
-> +/* PS Engineering Registers */
-> +#define AP3223_REG_PS_DC_1		0x30	/* Only in Engineering chip,
-> +						couldn't find in datasheet */
-> +#define AP3223_REG_PS_DC_1_SHIFT	(0)
-> +#define AP3223_REG_PS_DC_1_MASK		0xFF
-> +#define AP3223_REG_PS_DC_2		0x32	/* Only in Engineering chip,
-> +						couldn't find in datasheet */
-> +#define AP3223_REG_PS_DC_2_SHIFT	(0)
-> +#define AP3223_REG_PS_DC_2_MASK		0xFF
-> +
-> +#endif /* __AP3223_H__ */
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+On 2015-09-27 16:38, Jonathan Cameron wrote:
+> On 25/09/15 07:29, Sean Nyekjaer wrote:
+>> This patch adds support for the Texas Intruments ADS868x ADC.
+>>
+>> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+>> Reviewed-by: Martin Hundebøll <martin.hundeboll@prevas.dk>
+> Hi
+>
+> The driver is fundamentally good, but I think a few small changes would make
+> it less complex to read which is always a good thing!
+>
+> Comments inline.
+>
+> Jonathan
+>> ---
+>> Changes since v1:
+>> - Now possible to read and write the actual offset and scale values
+>> - Removed unused includes
+>> - Removed unused buffer references
+>>
+>>   drivers/iio/adc/Kconfig      |  10 +
+>>   drivers/iio/adc/Makefile     |   1 +
+>>   drivers/iio/adc/ti-ads868x.c | 456 +++++++++++++++++++++++++++++++++++++++++++
+>>   3 files changed, 467 insertions(+)
+>>   create mode 100644 drivers/iio/adc/ti-ads868x.c
+>>
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index deea62c..39924d5 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -322,6 +322,16 @@ config TI_ADC128S052
+>>   	  This driver can also be built as a module. If so, the module will be
+>>   	  called ti-adc128s052.
+>>   
+>> +config TI_ADS868X
+>> +	tristate "Texas Instruments ADS8684/8"
+>> +	depends on SPI && OF
+>> +	help
+>> +	  If you say yes here you get support for Texas Instruments ADS8684 and
+>> +	  and ADS8688 ADC chips
+>> +
+>> +	  This driver can also be built as a module. If so, the module will be
+>> +	  called ti-ads868x.
+>> +
+>>   config TI_AM335X_ADC
+>>   	tristate "TI's AM335X ADC driver"
+>>   	depends on MFD_TI_AM335X_TSCADC
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index fa5723a..75170d2 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -31,6 +31,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+>>   obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>>   obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>>   obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+>> +obj-$(CONFIG_TI_ADS868X) += ti-ads868x.o
+>>   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>>   obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+>>   obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+>> diff --git a/drivers/iio/adc/ti-ads868x.c b/drivers/iio/adc/ti-ads868x.c
+>> new file mode 100644
+>> index 0000000..66d9b64
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/ti-ads868x.c
+>> @@ -0,0 +1,456 @@
+>> +/*
+>> + * Copyright (C) 2015 Prevas A/S
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License version 2 as
+>> + * published by the Free Software Foundation.
+>> + */
+>> +
+>> +#include <linux/device.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/sysfs.h>
+>> +#include <linux/spi/spi.h>
+>> +#include <linux/regulator/consumer.h>
+>> +#include <linux/err.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +
+>> +#define ADS868X_CMD_REG(x)		(x << 8)
+>> +#define ADS868X_CMD_REG_NOOP		0x00
+>> +#define ADS868X_CMD_REG_RST		0x85
+>> +#define ADS868X_CMD_REG_MAN_CH(chan)	(0xC0 | (4 * chan))
+>> +#define ADS868X_CMD_DONT_CARE_BITS	16
+>> +
+>> +#define ADS868X_PROG_REG(x)		(x << 9)
+>> +#define ADS868X_PROG_REG_RANGE_CH(chan)	(0x05 + chan)
+>> +#define ADS868X_PROG_WR_BIT		BIT(8)
+>> +#define ADS868X_PROG_DONT_CARE_BITS	8
+>> +
+>> +#define ADS868X_VREF_MV			4096
+>> +#define ADS868X_REALBITS		16
+>> +
+>> +struct ads868x_chip_info {
+>> +	unsigned int id;
+>> +	const struct iio_chan_spec *channels;
+>> +	unsigned int num_channels;
+>> +	unsigned int flags;
+> flags isn't used that I can see.
+>> +	const struct iio_info *iio_info;
+> Why bother? Right now you only have one iio_info structure for both
+> supported parts.  Just use it directly and drop it form this structure.
+>> +};
+>> +
+>> +struct ads868x_state {
+>> +	const struct ads868x_chip_info	*chip_info;
+>> +	struct spi_device		*spi;
+>> +	struct regulator		*reg;
+>> +	unsigned int			vref_mv;
+> prefer u8 type to a char as it clearly isn't actually a character.
+>
+> See below for more detail, but I'd suggest having a contiguous enum to
+> reference into the below ranges structure then store that in your
+> device instance specific structure rather than these values.
+> It avoids a fair bit of searching!  That would also change the type
+> of this to be an array of enums rather than u8/chars.
+>
+>> +	char				range[8];
+>> +	union {
+>> +		__be32 d32;
+>> +		u8 d8[4];
+>> +	} data[2] ____cacheline_aligned;
+>> +};
+>> +
+>> +enum ads868x_id {
+>> +	ID_ADS8684,
+>> +	ID_ADS8688,
+>> +};
+>> +
+>> +enum ads868x_range {
+>> +	ADS868X_PLUSMINUS25VREF		= 0x00,
+>> +	ADS868X_PLUSMINUS125VREF	= 0x01,
+>> +	ADS868X_PLUSMINUS0625VREF	= 0x02,
+>> +	ADS868X_PLUS25VREF		= 0x05,
+>> +	ADS868X_PLUS125VREF		= 0x06,
+>> +};
+>> +
+>> +struct ads868x_ranges {
+>> +	enum ads868x_range range;
+>> +	unsigned int scale;
+>> +	int offset;
+>> +};
+>> +
+> const
+>> +static struct ads868x_ranges ads868x_range_def[5] = {
+>> +	{
+>> +		.range = ADS868X_PLUSMINUS25VREF,
+>> +		.scale = 76295,
+>> +		.offset = -(1 << (ADS868X_REALBITS - 1)),
+>> +	}, {
+>> +		.range = ADS868X_PLUSMINUS125VREF,
+>> +		.scale = 38148,
+>> +		.offset = -(1 << (ADS868X_REALBITS - 1)),
+>> +	}, {
+>> +		.range = ADS868X_PLUSMINUS0625VREF,
+>> +		.scale = 19074,
+>> +		.offset = -(1 << (ADS868X_REALBITS - 1)),
+>> +	}, {
+>> +		.range = ADS868X_PLUS25VREF,
+>> +		.scale = 38148,
+>> +		.offset = 0,
+>> +	}, {
+>> +		.range = ADS868X_PLUS125VREF,
+>> +		.scale = 19074,
+>> +		.offset = 0,
+>> +	}
+>> +};
+>> +
+>> +static ssize_t ads868x_show_scales(struct device *dev,
+>> +				   struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct ads868x_state *st = iio_priv(dev_to_iio_dev(dev));
+>> +
+>> +	return sprintf(buf, "0.%09u 0.%09u 0.%09u\n",
+>> +		       ads868x_range_def[0].scale * st->vref_mv,
+>> +		       ads868x_range_def[1].scale * st->vref_mv,
+>> +		       ads868x_range_def[2].scale * st->vref_mv);
+>> +}
+>> +
+>> +static ssize_t ads868x_show_offsets(struct device *dev,
+>> +				    struct device_attribute *attr, char *buf)
+>> +{
+>> +	return sprintf(buf, "%d %d\n", ads868x_range_def[0].offset,
+>> +		       ads868x_range_def[3].offset);
+>> +}
+>> +
+>> +static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
+>> +		       ads868x_show_scales, NULL, 0);
+>> +static IIO_DEVICE_ATTR(in_voltage_offset_available, S_IRUGO,
+>> +		       ads868x_show_offsets, NULL, 0);
+>> +
+>> +static struct attribute *ads868x_attributes[] = {
+>> +	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+>> +	&iio_dev_attr_in_voltage_offset_available.dev_attr.attr,
+>> +	NULL,
+>> +};
+>> +
+>> +static const struct attribute_group ads868x_attribute_group = {
+>> +	.attrs = ads868x_attributes,
+>> +};
+>> +
+>> +#define ADS868X_CHAN(index)					\
+>> +{								\
+>> +	.type = IIO_VOLTAGE,					\
+>> +	.indexed = 1,						\
+>> +	.channel = index,					\
+>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
+>> +			      | BIT(IIO_CHAN_INFO_SCALE)	\
+>> +			      | BIT(IIO_CHAN_INFO_OFFSET),	\
+>> +}
+>> +
+>> +static const struct iio_chan_spec ads8684_channels[] = {
+>> +	ADS868X_CHAN(0),
+>> +	ADS868X_CHAN(1),
+>> +	ADS868X_CHAN(2),
+>> +	ADS868X_CHAN(3),
+>> +};
+>> +
+>> +static const struct iio_chan_spec ads8688_channels[] = {
+>> +	ADS868X_CHAN(0),
+>> +	ADS868X_CHAN(1),
+>> +	ADS868X_CHAN(2),
+>> +	ADS868X_CHAN(3),
+>> +	ADS868X_CHAN(4),
+>> +	ADS868X_CHAN(5),
+>> +	ADS868X_CHAN(6),
+>> +	ADS868X_CHAN(7),
+>> +};
+>> +
+>> +static int ads868x_prog_write(struct iio_dev *indio_dev, unsigned int addr,
+>> +			      unsigned int val)
+>> +{
+>> +	struct ads868x_state *st = iio_priv(indio_dev);
+>> +	unsigned int tmp;
+>> +
+>> +	tmp = ADS868X_PROG_REG(addr) | ADS868X_PROG_WR_BIT | val;
+>> +	tmp <<= ADS868X_PROG_DONT_CARE_BITS;
+>> +	st->data[0].d32 = cpu_to_be32(tmp);
+>> +
+>> +	return spi_write(st->spi, &st->data[0].d8[1], 3);
+>> +}
+>> +
+>> +static int ads868x_reset(struct iio_dev *indio_dev)
+>> +{
+>> +	struct ads868x_state *st = iio_priv(indio_dev);
+>> +	unsigned int tmp;
+>> +
+>> +	tmp = ADS868X_CMD_REG(ADS868X_CMD_REG_RST);
+>> +	tmp <<= ADS868X_CMD_DONT_CARE_BITS;
+>> +	st->data[0].d32 = cpu_to_be32(tmp);
+>> +
+>> +	return spi_write(st->spi, &st->data[0].d8[0], 4);
+>> +}
+>> +
+>> +static int ads868x_read(struct iio_dev *indio_dev, unsigned int chan)
+>> +{
+>> +	struct ads868x_state *st = iio_priv(indio_dev);
+>> +	int ret;
+>> +	unsigned int tmp;
+>> +	struct spi_transfer t[] = {
+>> +		{
+>> +			.tx_buf = &st->data[0].d8[0],
+>> +			.len = 4,
+>> +			.cs_change = 1,
+>> +		}, {
+>> +			.tx_buf = &st->data[1].d8[0],
+>> +			.rx_buf = &st->data[1].d8[0],
+>> +			.len = 4,
+>> +		},
+>> +	};
+>> +
+>> +	tmp = ADS868X_CMD_REG(ADS868X_CMD_REG_MAN_CH(chan));
+>> +	tmp <<= ADS868X_CMD_DONT_CARE_BITS;
+>> +	st->data[0].d32 = cpu_to_be32(tmp);
+>> +
+>> +	tmp = ADS868X_CMD_REG(ADS868X_CMD_REG_NOOP);
+>> +	tmp <<= ADS868X_CMD_DONT_CARE_BITS;
+>> +	st->data[1].d32 = cpu_to_be32(tmp);
+>> +
+>> +	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	return be32_to_cpu(st->data[1].d32) & 0xffff;
+>> +}
+>> +
+>> +static int ads868x_read_raw(struct iio_dev *indio_dev,
+>> +			    struct iio_chan_spec const *chan,
+>> +			    int *val, int *val2, long m)
+>> +{
+>> +	int ret, offset, i;
+>> +	unsigned long scale_mv;
+>> +
+>> +	struct ads868x_state *st = iio_priv(indio_dev);
+>> +
+>> +	switch (m) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		mutex_lock(&indio_dev->mlock);
+>> +		ret = ads868x_read(indio_dev, chan->channel);
+>> +		mutex_unlock(&indio_dev->mlock);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +		*val = ret;
+>> +		return IIO_VAL_INT;
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		scale_mv = st->vref_mv;
+>> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++) {
+> Having this lookup in several places seems overly complex.
+>
+> If there weren't gaps in the ads868x_range, I'd suggest just using
+> that as an index, but clearly that's awkward here.
+>
+> Perhaps you just need to define a new enum which doesn't correspond
+> directly to the register value and having a reg_value field in your
+> indexed structure alongside range etc.
+>
+> That way your stored channel range enum entries will allow a direct
+> lookup rather than searching on each read for the right entry.
+>
+>> +			if (st->range[chan->channel] == ads868x_range_def[i].range)
+>> +				scale_mv *= ads868x_range_def[i].scale;
+>> +		}
+>> +		*val = 0;
+>> +		*val2 = scale_mv;
+>> +		return IIO_VAL_INT_PLUS_NANO;
+>> +	case IIO_CHAN_INFO_OFFSET:
+>> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++) {
+>> +			if (st->range[chan->channel] == ads868x_range_def[i].range)
+>> +				offset = ads868x_range_def[i].offset;
+>> +		}
+>> +		*val = offset;
+>> +		return IIO_VAL_INT;
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static int ads868x_write_reg_range(struct iio_dev *indio_dev,
+>> +				   struct iio_chan_spec const *chan,
+>> +				   enum ads868x_range range)
+>> +{
+>> +	unsigned int tmp;
+>> +	int ret;
+>> +
+>> +	tmp = ADS868X_PROG_REG_RANGE_CH(chan->channel);
+> Technically this lock is really meant to be device state changes (moving
+> in and out of buffered mode for example) rather than use in drivers to
+> protect bus accesses which is a much lower level.  It probably doesn't actually
+> matter, but I'd prefer a locally defined lock for this.
+>
+>> +	mutex_lock(&indio_dev->mlock);
+>> +	ret = ads868x_prog_write(indio_dev, tmp, range);
+>> +	mutex_unlock(&indio_dev->mlock);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int ads868x_write_raw(struct iio_dev *indio_dev,
+>> +			     struct iio_chan_spec const *chan,
+>> +			     int val, int val2, long mask)
+>> +{
+>> +	struct ads868x_state *st = iio_priv(indio_dev);
+>> +	unsigned int scale = 0;
+>> +	int ret = -EINVAL, i, offset = 0;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++)
+>> +			if (st->range[chan->channel] ==
+>> +			    ads868x_range_def[i].range) {
+>> +				offset = ads868x_range_def[i].offset;
+>> +				if (offset == 0 &&
+>> +				    val2 == ads868x_range_def[0].scale *
+>> +				    st->vref_mv / 1000)
+> Is this a nasty trick of mess to avoid having iio_val_int_plus nano
+> on the write?  Just provide the callback write_raw_get_fmt and keep
+> all your units the same across _avail, _read_raw and _write_raw.
+>
+>> +					return ret;
+>> +				break;
+>> +			}
+>> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++)
+>> +			if (val2 ==
+>> +			    ads868x_range_def[i].scale * st->vref_mv / 1000 &&
+>> +			    offset == ads868x_range_def[i].offset) {
+>> +				ret = ads868x_write_reg_range(indio_dev, chan,
+>> +					ads868x_range_def[i].range);
+>> +			}
+>> +		break;
+>> +	case IIO_CHAN_INFO_OFFSET:
+> The depth of nesting here is making this next block rather hard to read.
+> I'd be tempted to try breaking it out to a utility function  thus dropping
+> at least one level of indentation.
+>
+> A comment here to explain why only the two values are of interest.
+> (clearly these are the only choiced, but it's not obvious without searching
+> around for where they are defined).
+>
+>> +		if (!(ads868x_range_def[0].offset == val ||
+>> +		    ads868x_range_def[3].offset == val))
+>> +			return ret;
+> return -EINVAL to make it obvious that we have an error here rather than
+> an uninteresting good return path.
+>
+>> +		if (0 == val &&
+>> +		    st->range[chan->channel] == ADS868X_PLUSMINUS25VREF)
+>> +			return ret;
+> same here.
+> I'd also like a comment or two in here to help me understand what is happening.
+> First check is about establishing if we have a valid range and picking the
+> scale from that, the second about finding the right one to get the offset
+> as well?  I can't see why these are separate or for that matter why you
+> don't stop looking once a good answer has been found.
+> Basically I'm confused :(
+>
+>
+>> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++)
+>> +			if (st->range[chan->channel] ==
+>> +			    ads868x_range_def[i].range)
+>> +				scale = ads868x_range_def[i].scale;
+> Found a scale for the current range?
+>> +		for (i = 0; i < ARRAY_SIZE(ads868x_range_def); i++)
+>> +			if (val == ads868x_range_def[i].offset &&
+>> +			    scale == ads868x_range_def[i].scale) {
+> Found an offset compatible with the current scale and hence range?
+> I'm clearly missing something here!
+>> +				ret = ads868x_write_reg_range(indio_dev, chan,
+>> +					ads868x_range_def[i].range);
+>> +			}
+>> +		break;
+>> +	default:
+>> +		ret = -EINVAL;
+> return -EINVAL then you don't need the if (!ret) below.
+>> +	}
+>> +
+>> +	if (!ret)
+>> +		st->range[chan->channel] = ads868x_range_def[i].range;
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static const struct iio_info ads868x_info = {
+>> +	.read_raw = &ads868x_read_raw,
+>> +	.write_raw = &ads868x_write_raw,
+>> +	.attrs = &ads868x_attribute_group,
+>> +	.driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +static const struct ads868x_chip_info ads868x_chip_info_tbl[] = {
+>> +	[ID_ADS8684] = {
+>> +		.channels = ads8684_channels,
+>> +		.num_channels = ARRAY_SIZE(ads8684_channels),
+>> +		.iio_info = &ads868x_info,
+>> +	},
+>> +	[ID_ADS8688] = {
+>> +		.channels = ads8688_channels,
+>> +		.num_channels = ARRAY_SIZE(ads8688_channels),
+>> +		.iio_info = &ads868x_info,
+>> +	},
+>> +};
+>> +
+>> +static int ads868x_probe(struct spi_device *spi)
+>> +{
+>> +	struct ads868x_state *st;
+>> +	struct iio_dev *indio_dev;
+>> +	bool ext_ref;
+>> +	int ret;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>> +	if (indio_dev == NULL)
+>> +		return -ENOMEM;
+>> +
+>> +	st = iio_priv(indio_dev);
+>> +
+>> +	if (spi->dev.of_node)
+>> +		ext_ref = of_property_read_bool(spi->dev.of_node,
+>> +						"vref-supply");
+>> +	else
+>> +		ext_ref = false;
+>> +
+> Could do this as
+>          if (spi->dev.of_node && of_property_read_bool(spi->dev.of_node,
+> 	                                              "vref-supply"))
+>
+> I'm not entirely sure it's a good idea even if it saves introducing
+> a local variable. Up to you.
+>> +	if (ext_ref) {
+>> +		st->reg = devm_regulator_get(&spi->dev, "vref");
+>> +		if (!IS_ERR(st->reg)) {
+>> +			ret = regulator_enable(st->reg);
+>> +			if (ret)
+>> +				return ret;
+>> +
+>> +			ret = regulator_get_voltage(st->reg);
+>> +			if (ret < 0)
+>> +				goto error_out;
+>> +		st->vref_mv = ret / 1000;
+>> +		}
+>> +	} else {
+>> +		/* Use internal reference */
+>> +		st->vref_mv = ADS868X_VREF_MV;
+>> +	}
+>> +
+>> +	st->chip_info =	&ads868x_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+>> +
+>> +	spi->mode = SPI_MODE_1;
+>> +
+>> +	spi_set_drvdata(spi, indio_dev);
+>> +
+>> +	st->spi = spi;
+>> +
+>> +	indio_dev->name = spi_get_device_id(spi)->name;
+>> +	indio_dev->dev.parent = &spi->dev;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->channels = st->chip_info->channels;
+>> +	indio_dev->num_channels = st->chip_info->num_channels;
+>> +	indio_dev->info = st->chip_info->iio_info;
+>> +
+>> +	/* Reset ADS868x */
+>> +	mutex_lock(&indio_dev->mlock);
+>> +	ads868x_reset(indio_dev);
+>> +	mutex_unlock(&indio_dev->mlock);
+>> +
+>> +	ret = iio_device_register(indio_dev);
+>> +	if (ret)
+>> +		goto error_out;
+>> +
+>> +	return 0;
+>> +
+>> +error_out:
+>> +	if (!IS_ERR_OR_NULL(st->reg))
+>> +		regulator_disable(st->reg);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int ads868x_remove(struct spi_device *spi)
+>> +{
+>> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>> +	struct ads868x_state *st = iio_priv(indio_dev);
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +
+>> +	if (!IS_ERR_OR_NULL(st->reg))
+>> +		regulator_disable(st->reg);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct spi_device_id ads868x_id[] = {
+>> +	{"ads8684", ID_ADS8684},
+>> +	{"ads8688", ID_ADS8688},
+>> +	{}
+>> +};
+>> +MODULE_DEVICE_TABLE(spi, ads868x_id);
+>> +
+>> +static const struct of_device_id ads868x_of_match[] = {
+>> +	{ .compatible = "ti,ads8684" },
+>> +	{ .compatible = "ti,ads8688" },
+>> +	{ }
+>> +};
+>> +MODULE_DEVICE_TABLE(of, ads868x_of_match);
+>> +
+>> +static struct spi_driver ads868x_driver = {
+>> +	.driver = {
+>> +		.name	= "ads868x",
+>> +		.owner	= THIS_MODULE,
+>> +	},
+>> +	.probe		= ads868x_probe,
+>> +	.remove		= ads868x_remove,
+>> +	.id_table	= ads868x_id,
+>> +};
+>> +module_spi_driver(ads868x_driver);
+>> +
+>> +MODULE_AUTHOR("Sean Nyekjaer <sean.nyekjaer@prevas.dk>");
+>> +MODULE_DESCRIPTION("Texas Instruments ADS868x driver");
+>> +MODULE_LICENSE("GPL v2");
+>>
