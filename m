@@ -1,88 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44985 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753809AbbI1VPH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Sep 2015 17:15:07 -0400
-Subject: Re: [PATCH v6 2/2] iio: mcp4531: Driver for Microchip digital
- potentiometers
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
-	Peter Rosin <peda@lysator.liu.se>
-References: <1443018383-16578-1-git-send-email-peda@lysator.liu.se>
- <1443018383-16578-3-git-send-email-peda@lysator.liu.se>
- <56081053.2080209@kernel.org> <5608F375.6030808@lysator.liu.se>
- <CAEnQRZD-xAAWWD7De6KfNWA6OTCxX3t1Pw2Mv5HozPehvUCWnw@mail.gmail.com>
- <A33F263C-A366-4ED3-AA62-F464C02F4232@jic23.retrosnub.co.uk>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Peter Rosin <peda@axentia.se>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5609ADD7.3040509@kernel.org>
-Date: Mon, 28 Sep 2015 22:15:03 +0100
+Received: from mail-am1on0134.outbound.protection.outlook.com ([157.56.112.134]:56480
+	"EHLO emea01-am1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750993AbbI2FHw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Sep 2015 01:07:52 -0400
+Subject: Re: [PATCH] vf610_adc: Fix internal temperature calculation
+To: <fugang.duan@freescale.com>, <linux-iio@vger.kernel.org>
+References: <1443015807-17764-1-git-send-email-bhuvanchandra.dv@toradex.com>
+ <560810DD.5030900@kernel.org>
+CC: <stefan@agner.ch>, <maitysanchayan@gmail.com>,
+	<B38611@freescale.com>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+	<pmeerw@pmeerw.net>, <shawn.guo@linaro.org>,
+	<linux-kernel@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
+From: Bhuvanchandra <bhuvanchandra.dv@toradex.com>
+Message-ID: <560A1929.3010303@toradex.com>
+Date: Tue, 29 Sep 2015 10:22:57 +0530
 MIME-Version: 1.0
-In-Reply-To: <A33F263C-A366-4ED3-AA62-F464C02F4232@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <560810DD.5030900@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/09/15 10:01, Jonathan Cameron wrote:
-> 
-> 
-> On 28 September 2015 09:11:09 BST, Daniel Baluta <daniel.baluta@gmail.com> wrote:
-> 
->     On Mon, Sep 28, 2015 at 10:59 AM, Peter Rosin <peda@lysator.liu.se> wrote:
-> 
->         On 2015-09-27 17:50, Jonathan Cameron wrote:
-> 
->             On 23/09/15 15:26, Peter Rosin wrote:
-> 
->                 From: Peter Rosin <peda@axentia.se>
-> 
->                 Add support for Microchip digital potentiometers and rheostats
->                 MCP4531, MCP4532, MCP4551, MCP4552
->                 MCP4631, MCP4632, MCP4651, MCP4652
-> 
->                 DEVICE Wipers Steps Resistor Opts (kOhm) i2c address
->                 MCP4531 1 129 5, 10, 50, 100 010111x
->                 MCP4532 1 129 5, 10, 50, 100 01011xx
->                 MCP4551 1 257 5, 10 , 50, 100 010111x
->                 MCP4552 1 257 5, 10, 50, 100 01011xx
->                 MCP4631 2 129 5, 10, 50, 100 0101xxx
->                 MCP4632 2 129 5, 10, 50, 100 01011xx
->                 MCP4651 2 257 5, 10, 50, 100 0101xxx
->                 MCP4652 2 257 5, 10, 50, 100 01011xx
-> 
->                 Datasheet: http://www.microchip.com/downloads/en/DeviceDoc/22096b.pdf
-> 
->             Applied to the togreg branch of iio.git - initially pushed out as
->             testing for the autobuilders to play with it.
-> 
->             If anyone wants to add reviewed-by / acked-by then as I'll be
->             rebasing sometime in next few days anyway there is still time!
-> 
-> 
->         Great, thanks,
-> 
->         but I don't see this where I expected it[1]. So, the question is if I'm
->         too impatient, if am I looking in the wrong place or if you perhaps forgot
->         to actually push it out? Or if something went totally wrong and the patches
->         got lost...
-> 
-> 
->     Make sure you look for the testing branch. Also, do not worry about this.
-> 
->     Sometimes, Jonathan  pushes the patches locally to his setup and later
->     syncs with the remote repo.
-> 
-> 
-> What Daniel is politely saying is sometimes I forget to push them out!
-> Oops. Machine is at home and powered down so should push testing branch this
-> evening if I remember.
-Should be there (in the testing branch) now.
+Hi Fugang,
 
+On 09/27/2015 09:23 PM, Jonathan Cameron wrote:
 
-J
-> 
-> -- 
-> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+> On 23/09/15 14:43, Bhuvanchandra DV wrote:
+>> There is an observed temperature difference of ~20°C with the
+>> internal temperature reading and the temperature measured on
+>> SoC package. Existing calculations consider the typical values
+>> provided in datasheet. Those typical values are valid for
+>> VREFH_ADC at 3.0V. Voltage at 25°C is different for different
+>> VREFH_ADC voltages. With VREFH_ADC at 3.3V, voltage at 25°C is
+>> 0.699V. Hence update the VTEMP25 to 0.699V which gives ADCR@Temp25
+>> as 867 and the final temperature readings differs with ~5°C from
+>> the external readings.
+>>
+>> Formula for finding ADCR@Temp25:
+>> ADCR@Temp25 = (ADCR@Vdd * V@TEMP25 * 10) / VDDconv
+>>
+>> ADCR@Vdd for 12-Bit ADC = 4095
+>> VDDconv = VREFH_ADC * 10
+>>
+>> VREFH_ADC@3.3V
+>> ADCR@Temp25 = (4095 * .699 * 10) / 33
+>> ADCR@Temp25 ~= 867
+>>
+>> | VREFH_ADC | V@TEMP25 | VDDconv | ADCR@Temp25 |
+>> |   3.0V    | 0.696mV  |    30   |     950     |
+>> |   3.3V    | 0.699mV  |    33   |     867     |
+>>
+>> Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+> Looks fine to me, but I'll need an Ack from Fugang on this one
+> as I don't know or have the part I'm afraid.
+
+Can you please give your ACK if the patch looks fine.
+
+Best regards,
+Bhuvan
+
+>
+> Jonathan
+>> ---
+>>   drivers/iio/adc/vf610_adc.c | 19 ++++++++++++++-----
+>>   1 file changed, 14 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+>> index f4df2a7..e7abc13 100644
+>> --- a/drivers/iio/adc/vf610_adc.c
+>> +++ b/drivers/iio/adc/vf610_adc.c
+>> @@ -103,6 +103,13 @@
+>>   
+>>   #define DEFAULT_SAMPLE_TIME		1000
+>>   
+>> +/* V at 25°C of 696 mV */
+>> +#define VF610_VTEMP25_3V0		950
+>> +/* V at 25°C of 699 mV */
+>> +#define VF610_VTEMP25_3V3		867
+>> +/* Typical sensor slope coefficient at all temperatures */
+>> +#define VF610_TEMP_SLOPE_COEFF		1840
+>> +
+>>   enum clk_sel {
+>>   	VF610_ADCIOC_BUSCLK_SET,
+>>   	VF610_ADCIOC_ALTCLK_SET,
+>> @@ -636,11 +643,13 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+>>   			break;
+>>   		case IIO_TEMP:
+>>   			/*
+>> -			* Calculate in degree Celsius times 1000
+>> -			* Using sensor slope of 1.84 mV/°C and
+>> -			* V at 25°C of 696 mV
+>> -			*/
+>> -			*val = 25000 - ((int)info->value - 864) * 1000000 / 1840;
+>> +			 * Calculate in degree Celsius times 1000
+>> +			 * Using the typical sensor slope of 1.84 mV/°C
+>> +			 * and VREFH_ADC at 3.3V, V at 25°C of 699 mV
+>> +			 */
+>> +			*val = 25000 - ((int)info->value - VF610_VTEMP25_3V3) *
+>> +					1000000 / VF610_TEMP_SLOPE_COEFF;
+>> +
+>>   			break;
+>>   		default:
+>>   			mutex_unlock(&indio_dev->mlock);
+>>
 
