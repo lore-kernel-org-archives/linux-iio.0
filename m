@@ -1,58 +1,249 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.gravity.jabatus.fr ([109.234.163.67]:53639 "EHLO
-	mail.gravity.jabatus.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933513AbbI2Jg1 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Sep 2015 05:36:27 -0400
+Received: from mail.correction.jabatus.fr ([109.234.163.62]:57184 "EHLO
+	mail.correction.jabatus.fr" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S933513AbbI2JlB convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Sep 2015 05:41:01 -0400
 Content-Type: text/plain; charset=windows-1252
 Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Subject: Re: [PATCH v3 2/6] Add tsys01 meas-spec driver support
+Subject: Re: [PATCH v3 3/6] Add tsys02d meas-spec driver support
 From: "ludovic.tancerel@maplehightech.com"
 	<ludovic.tancerel@maplehightech.com>
-In-Reply-To: <56081F9C.7070500@kernel.org>
-Date: Tue, 29 Sep 2015 11:36:01 +0200
+In-Reply-To: <56082C9A.3030106@kernel.org>
+Date: Tue, 29 Sep 2015 11:40:48 +0200
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
 	William.Markezana@meas-spec.com
-Message-Id: <896942C8-3780-4758-920F-6FFBA2078A43@maplehightech.com>
-References: <1443189405-18516-1-git-send-email-ludovic.tancerel@maplehightech.com> <1443189405-18516-3-git-send-email-ludovic.tancerel@maplehightech.com> <56081F9C.7070500@kernel.org>
+Message-Id: <D44DD5FE-7123-4E07-8DE0-1CD64EF9A8AE@maplehightech.com>
+References: <1443189405-18516-1-git-send-email-ludovic.tancerel@maplehightech.com> <1443189405-18516-4-git-send-email-ludovic.tancerel@maplehightech.com> <56082C9A.3030106@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
-Thank you for reviewing
-Please have a look at comments below,
+Thanks again …
+There is no request from measurement specialties to handle this as poll threshold event.
+This can definitely evolve if anyone needs it, or if an equivalent ABI parameter becomes available in IIO.
+I will leave as it is.
 
-Regards,
+Thanks,
 Ludovic
 
-Le 27 sept. 2015 à 18:55, Jonathan Cameron <jic23@kernel.org> a écrit :
+
+Le 27 sept. 2015 à 19:51, Jonathan Cameron <jic23@kernel.org> a écrit :
 
 > On 25/09/15 14:56, Ludovic Tancerel wrote:
->> Support for TSYS01 temperature sensor
+>> Support for TSYS02D temperature sensor
 >> 
 >> Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
-> This is fine as far as i am concerned, though I would like to leave it
-> on the list for a little while for others to have a chance to comment.
+> Nice straight forward driver.  I'm happy with this, though one
+> possible suggestion to consider for the battery low interface.
+> 
+> Amazing how different two devices that sound roughly the same from the same
+> company can be!
+> 
+> Jonathan
 >> ---
->> drivers/iio/temperature/Kconfig  |  11 ++
->> drivers/iio/temperature/Makefile |   1 +
->> drivers/iio/temperature/tsys01.c | 231 +++++++++++++++++++++++++++++++++++++++
->> 3 files changed, 243 insertions(+)
->> create mode 100644 drivers/iio/temperature/tsys01.c
+>> Documentation/ABI/testing/sysfs-bus-iio-meas-spec |   7 +
+>> drivers/iio/temperature/Kconfig                   |  11 ++
+>> drivers/iio/temperature/Makefile                  |   1 +
+>> drivers/iio/temperature/tsys02d.c                 | 192 ++++++++++++++++++++++
+>> 4 files changed, 211 insertions(+)
+>> create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>> create mode 100644 drivers/iio/temperature/tsys02d.c
 >> 
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>> new file mode 100644
+>> index 0000000..6d47e54
+>> --- /dev/null
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+>> @@ -0,0 +1,7 @@
+>> +What:           /sys/bus/iio/devices/iio:deviceX/battery_low
+>> +KernelVersion:  4.1.0
+>> +Contact:        linux-iio@vger.kernel.org
+>> +Description:
+>> +                Reading returns either '1' or '0'. '1' means that the
+>> +                battery level supplied to sensor is below 2.25V.
+>> +                This ABI is available for tsys02d, htu21, ms8607
+> I'm wondering if we can come up with a nicer interface for this.  Either
+> support it as a polled threshold event or consider other options.
+> I guess it's a one off at the moment and hardly painful to keep around
+> for compatability if we come up with something else better later.
+> So inconclusion, I'm fine for now with leaving this as it is.
+> 
+> 
+>> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+>> index 35712032..c4664e5 100644
+>> --- a/drivers/iio/temperature/Kconfig
+>> +++ b/drivers/iio/temperature/Kconfig
+>> @@ -34,4 +34,15 @@ config TSYS01
+>> 	  This driver can also be built as a module. If so, the module will
+>> 	  be called tsys01.
 >> 
-…
-
->> +static int tsys01_i2c_probe(struct i2c_client *client,
->> +			    const struct i2c_device_id *id)
+>> +config TSYS02D
+>> +	tristate "Measurement Specialties TSYS02D temperature sensor"
+>> +	depends on I2C
+>> +	select IIO_MS_SENSORS_I2C
+>> +	help
+>> +	  If you say yes here you get support for the Measurement Specialties
+>> +	  TSYS02D temperature sensor.
+>> +
+>> +	  This driver can also be built as a module. If so, the module will
+>> +	  be called tsys02d.
+>> +
+>> endmenu
+>> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+>> index 368a2a2..02bc79d 100644
+>> --- a/drivers/iio/temperature/Makefile
+>> +++ b/drivers/iio/temperature/Makefile
+>> @@ -5,3 +5,4 @@
+>> obj-$(CONFIG_MLX90614) += mlx90614.o
+>> obj-$(CONFIG_TMP006) += tmp006.o
+>> obj-$(CONFIG_TSYS01) += tsys01.o
+>> +obj-$(CONFIG_TSYS02D) += tsys02d.o
+>> diff --git a/drivers/iio/temperature/tsys02d.c b/drivers/iio/temperature/tsys02d.c
+>> new file mode 100644
+>> index 0000000..f8940d6
+>> --- /dev/null
+>> +++ b/drivers/iio/temperature/tsys02d.c
+>> @@ -0,0 +1,192 @@
+>> +/*
+>> + * tsys02d.c - Support for Measurement-Specialties tsys02d temperature sensor
+>> + *
+>> + * Copyright (c) 2015 Measurement-Specialties
+>> + *
+>> + * Licensed under the GPL-2.
+>> + *
+>> + * (7-bit I2C slave address 0x40)
+>> + *
+>> + * Datasheet:
+>> + *  http://www.meas-spec.com/downloads/Digital_Sensor_TSYS02D.pdf
+>> + *
+>> + */
+>> +
+>> +#include <linux/init.h>
+>> +#include <linux/device.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/stat.h>
+>> +#include <linux/module.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +
+>> +#include "../common/ms_sensors/ms_sensors_i2c.h"
+>> +
+>> +#define TSYS02D_RESET				0xFE
+>> +
+>> +static const int tsys02d_samp_freq[4] = { 20, 40, 70, 140 };
+>> +/* String copy of the above const for readability purpose */
+>> +static const char tsys02d_show_samp_freq[] = "20 40 70 140";
+>> +
+>> +static int tsys02d_read_raw(struct iio_dev *indio_dev,
+>> +			    struct iio_chan_spec const *channel, int *val,
+>> +			    int *val2, long mask)
 >> +{
->> +	struct tsys01_dev *dev_data;
+>> +	int ret;
+>> +	s32 temperature;
+>> +	struct ms_ht_dev *dev_data = iio_priv(indio_dev);
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_PROCESSED:
+>> +		switch (channel->type) {
+>> +		case IIO_TEMP:	/* in milli °C */
+>> +			ret = ms_sensors_i2c_ht_read_temperature(dev_data,
+>> +								 &temperature);
+>> +			if (ret)
+>> +				return ret;
+>> +			*val = temperature;
+>> +
+>> +			return IIO_VAL_INT;
+>> +		default:
+>> +			return -EINVAL;
+>> +		}
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		*val = tsys02d_samp_freq[dev_data->res_index];
+>> +
+>> +		return IIO_VAL_INT;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>> +static int tsys02d_write_raw(struct iio_dev *indio_dev,
+>> +			     struct iio_chan_spec const *chan,
+>> +			     int val, int val2, long mask)
+>> +{
+>> +	struct ms_ht_dev *dev_data = iio_priv(indio_dev);
+>> +	int i, ret;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		i = ARRAY_SIZE(tsys02d_samp_freq);
+>> +		while (i-- > 0)
+>> +			if (val == tsys02d_samp_freq[i])
+>> +				break;
+>> +		if (i < 0)
+>> +			return -EINVAL;
+>> +		mutex_lock(&dev_data->lock);
+>> +		dev_data->res_index = i;
+>> +		ret = ms_sensors_i2c_write_resolution(dev_data, i);
+>> +		mutex_unlock(&dev_data->lock);
+>> +
+>> +		return ret;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>> +static const struct iio_chan_spec tsys02d_channels[] = {
+>> +	{
+>> +		.type = IIO_TEMP,
+>> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
+>> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>> +	}
+>> +};
+>> +
+>> +static ssize_t tsys02_read_battery_low(struct device *dev,
+>> +				       struct device_attribute *attr,
+>> +				       char *buf)
+>> +{
+>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> +	struct ms_ht_dev *dev_data = iio_priv(indio_dev);
+>> +
+>> +	return ms_sensors_i2c_show_battery_low(dev_data, buf);
+>> +}
+>> +
+>> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(tsys02d_show_samp_freq);
+>> +static IIO_DEVICE_ATTR(battery_low, S_IRUGO,
+>> +		       tsys02_read_battery_low, NULL, 0);
+>> +
+>> +static struct attribute *tsys02d_attributes[] = {
+>> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>> +	&iio_dev_attr_battery_low.dev_attr.attr,
+>> +	NULL,
+>> +};
+>> +
+>> +static const struct attribute_group tsys02d_attribute_group = {
+>> +	.attrs = tsys02d_attributes,
+>> +};
+>> +
+>> +static const struct iio_info tsys02d_info = {
+>> +	.read_raw = tsys02d_read_raw,
+>> +	.write_raw = tsys02d_write_raw,
+>> +	.attrs = &tsys02d_attribute_group,
+>> +	.driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +int tsys02d_probe(struct i2c_client *client,
+>> +		  const struct i2c_device_id *id)
+>> +{
+>> +	struct ms_ht_dev *dev_data;
 >> +	struct iio_dev *indio_dev;
+>> +	int ret;
+>> +	u64 serial_number;
 >> +
 >> +	if (!i2c_check_functionality(client->adapter,
->> +				     I2C_FUNC_SMBUS_WORD_DATA |
+>> +				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA |
 >> +				     I2C_FUNC_SMBUS_WRITE_BYTE |
 >> +				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
 >> +		dev_err(&client->dev,
@@ -66,43 +257,46 @@ Le 27 sept. 2015 à 18:55, Jonathan Cameron <jic23@kernel.org> a écrit :
 >> +
 >> +	dev_data = iio_priv(indio_dev);
 >> +	dev_data->client = client;
->> +	dev_data->reset = ms_sensors_i2c_reset;
->> +	dev_data->read_prom_word = ms_sensors_i2c_read_prom_word;
->> +	dev_data->convert_and_read = ms_sensors_i2c_convert_and_read;
+>> +	dev_data->res_index = 0;
+>> +	mutex_init(&dev_data->lock);
+>> +
+>> +	indio_dev->info = &tsys02d_info;
+>> +	indio_dev->name = id->name;
+>> +	indio_dev->dev.parent = &client->dev;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->channels = tsys02d_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(tsys02d_channels);
 >> +
 >> +	i2c_set_clientdata(client, indio_dev);
 >> +
-> This separation into i2c probe and main probe is something one would
-> generally only introduce at the point of adding support for another bus.
-> It just adds complexity here for little gain.  If there is intent
-> to add spi support shortly then fair enough, leave it as it is.
-
-I don’t plan on doing the SPI stuff myself,
-so if you feel I should simplify as there is no plan to do it, please let me know.
-
-I prefer to keep it as I made this change especially to comply a request to have this similar to other existing meas-spec drivers (ms5611).
-
-
->> +	return tsys01_probe(indio_dev, &client->dev);
+>> +	ret = ms_sensors_i2c_reset(client, TSYS02D_RESET, 15000);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret = ms_sensors_i2c_read_serial(client, &serial_number);
+>> +	if (ret)
+>> +		return ret;
+>> +	dev_info(&client->dev, "Serial number : %llx", serial_number);
+>> +
+>> +	return devm_iio_device_register(&client->dev, indio_dev);
 >> +}
 >> +
->> +static const struct i2c_device_id tsys01_id[] = {
->> +	{"tsys01", 0},
+>> +static const struct i2c_device_id tsys02d_id[] = {
+>> +	{"tsys02d", 0},
 >> +	{}
 >> +};
->> +MODULE_DEVICE_TABLE(i2c, tsys01_id);
 >> +
->> +static struct i2c_driver tsys01_driver = {
->> +	.probe = tsys01_i2c_probe,
->> +	.id_table = tsys01_id,
+>> +static struct i2c_driver tsys02d_driver = {
+>> +	.probe = tsys02d_probe,
+>> +	.id_table = tsys02d_id,
 >> +	.driver = {
->> +		   .name = "tsys01",
+>> +		   .name = "tsys02d",
 >> +		   },
 >> +};
 >> +
->> +module_i2c_driver(tsys01_driver);
+>> +module_i2c_driver(tsys02d_driver);
 >> +
->> +MODULE_DESCRIPTION("Measurement-Specialties tsys01 temperature driver");
+>> +MODULE_DESCRIPTION("Measurement-Specialties tsys02d temperature driver");
 >> +MODULE_AUTHOR("William Markezana <william.markezana@meas-spec.com>");
 >> +MODULE_AUTHOR("Ludovic Tancerel <ludovic.tancerel@maplehightech.com>");
 >> +MODULE_LICENSE("GPL v2");
