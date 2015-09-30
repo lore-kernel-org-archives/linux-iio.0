@@ -1,83 +1,49 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Wed, 30 Sep 2015 07:44:10 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Suresh Rajashekara <sureshraj@google.com>
-cc: linux-iio@vger.kernel.org, robh+dt@kernel.org, pawel.moll@arm.com,
-    mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-    devicetree@vger.kernel.org, matthias.bgg@gmail.com,
-    linux-kernel@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH v2 2/2] iio:light:tsl2563: Add DT support
-In-Reply-To: <1443576270-36548-2-git-send-email-sureshraj@google.com>
-Message-ID: <alpine.DEB.2.02.1509300740590.5858@pmeerw.net>
-References: <1443576270-36548-1-git-send-email-sureshraj@google.com> <1443576270-36548-2-git-send-email-sureshraj@google.com>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <20150930014927.GA5399@kroah.com>
+References: <56043868.1090601@kernel.org>
+	<56043907.1020701@kernel.org>
+	<20150930014927.GA5399@kroah.com>
+Date: Wed, 30 Sep 2015 10:26:09 +0300
+Message-ID: <CAEnQRZDamVs91F02tkzsLyoBRUK47O5ZKMzmdHXR9nx8okdBJA@mail.gmail.com>
+Subject: Re: [PULL] 1st set of IIO new drivers, functionality and cleanups for
+ the 4.4 cycle.
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Suresh,
+On Wed, Sep 30, 2015 at 4:49 AM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> On Thu, Sep 24, 2015 at 06:55:19PM +0100, Jonathan Cameron wrote:
+>> On 24/09/15 18:52, Jonathan Cameron wrote:
+>> > The following changes since commit 1c46ae0af6df0bbde66c5e868563be57f18a27b4:
+>> >
+>> >   Merge tag 'iio-for-4.3b-2' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2015-08-12 12:43:41 -0700)
+>> >
+>> > are available in the git repository at:
+>> >
+>> >   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.4a
+>> >
+>> > for you to fetch changes up to 1d2f1e084b7386b4082ebc2490ce0ddc8efe5667:
+>> >
+>> >   iio: light: apds9960: fix platform_no_drv_owner.cocci warnings (2015-09-23 20:23:30 +0100)
+>> >
+>> > ----------------------------------------------------------------
+>> Just to note, there will be a few automerges.  The only manual one that
+>> will need doing is in the devicetree vendors list file and is trivial.
+>>
+>> Bit of a mammoth set this time round!
+>
+> I've fixed up the vendor list file, that was easy, but the
+> handle_simple_irq() api changed recently, so I had to add a patch to
+> prevent things from breaking with this pull request.  If you could
+> verify that I got everything right, that would be great as I've now
+> pushed this out.
 
-> * Add Device Tree support for the Dyna Image AP3223 ambient light sensor and
-> * proximity driver,
-> * Document the binding and
-> * Add a vendor prefix for Dyna Image
+handle_simple_irq() api change looks good to me.
 
-the mail's subject line should read something like
-iio: light: Add AP3223 DT support
+Thanks Greg!
 
-tsl2563 is a different driver
-
-> v2
-> * Seperating the device tree changes from code
-
-Separating
-
-> 
-> Signed-off-by: Suresh Rajashekara <sureshraj@google.com>
-> ---
->  Documentation/devicetree/bindings/iio/light/ap3223.txt | 18 ++++++++++++++++++
->  Documentation/devicetree/bindings/vendor-prefixes.txt  |  1 +
->  2 files changed, 19 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/ap3223.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/ap3223.txt b/Documentation/devicetree/bindings/iio/light/ap3223.txt
-> new file mode 100644
-> index 0000000..b255d27
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/ap3223.txt
-> @@ -0,0 +1,18 @@
-> +* Dyna Image AP3223 ambient light sensor and proximity sensor
-> +
-> +http://www.dyna-image.com/english/product/optical-sensor-detail.php?cpid=2&dpid=8
-> +
-> +Required properties:
-> +
-> +  - compatible : should be "dynaimage,ap3223"
-> +  - reg : the I2C address of the sensor
-> +
-> +Example:
-> +
-> +ap3223@1c {
-> +	compatible = "dynaimage,ap3223";
-> +	reg = <0x1c>;
-> +
-> +	pinctrl-0 = <&ap3223_pins>;
-> +	pinctrl-names = "default";
-> +};
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> index 5f20add..704da45 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> @@ -46,6 +46,7 @@ digilent	Diglent, Inc.
->  dlg	Dialog Semiconductor
->  dlink	D-Link Corporation
->  dmo	Data Modul AG
-> +dynaimage	Dyna-Image
->  ebv	EBV Elektronik
->  edt	Emerging Display Technologies
->  elan	Elan Microelectronic Corp.
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+Daniel.
