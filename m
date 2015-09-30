@@ -1,76 +1,59 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:33320 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752269AbbI3BYg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Sep 2015 21:24:36 -0400
-Received: by pacex6 with SMTP id ex6so22325700pac.0
-        for <linux-iio@vger.kernel.org>; Tue, 29 Sep 2015 18:24:35 -0700 (PDT)
+Return-Path: <sureshraj@google.com>
+MIME-Version: 1.0
+In-Reply-To: <1443576270-36548-2-git-send-email-sureshraj@google.com>
+References: <1443576270-36548-1-git-send-email-sureshraj@google.com> <1443576270-36548-2-git-send-email-sureshraj@google.com>
 From: Suresh Rajashekara <sureshraj@google.com>
+Date: Tue, 29 Sep 2015 18:29:19 -0700
+Message-ID: <CACVnMDpj5qXxCi5B140CvzUNROtoy4fMPmA1P06pKQ3kdzoN0w@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] iio:light:tsl2563: Add DT support
 To: linux-iio@vger.kernel.org
 Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
 	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
 	devicetree@vger.kernel.org, matthias.bgg@gmail.com,
 	linux-kernel@vger.kernel.org, jic23@kernel.org,
 	Suresh Rajashekara <sureshraj@google.com>
-Subject: [PATCH v2 2/2] iio:light:tsl2563: Add DT support
-Date: Tue, 29 Sep 2015 18:24:30 -0700
-Message-Id: <1443576270-36548-2-git-send-email-sureshraj@google.com>
-In-Reply-To: <1443576270-36548-1-git-send-email-sureshraj@google.com>
-References: <1443576270-36548-1-git-send-email-sureshraj@google.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/alternative; boundary=001a113971805d53080520ecde5c
+List-ID: <linux-iio@vger.kernel.org>
 
-* Add Device Tree support for the Dyna Image AP3223 ambient light sensor and
-* proximity driver,
-* Document the binding and
-* Add a vendor prefix for Dyna Image
+--001a113971805d53080520ecde5c
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-v2
-* Seperating the device tree changes from code
+On Tue, Sep 29, 2015 at 6:24 PM, Suresh Rajashekara <sureshraj@google.com>
+wrote:
+>
+> * Add Device Tree support for the Dyna Image AP3223 ambient light sensor
+and
+> * proximity driver,
+> * Document the binding and
+> * Add a vendor prefix for Dyna Image
+>
+> v2
+> * Seperating the device tree changes from code
+>
+> Signed-off-by: Suresh Rajashekara <sureshraj@google.com>
 
-Signed-off-by: Suresh Rajashekara <sureshraj@google.com>
----
- Documentation/devicetree/bindings/iio/light/ap3223.txt | 18 ++++++++++++++++++
- Documentation/devicetree/bindings/vendor-prefixes.txt  |  1 +
- 2 files changed, 19 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/ap3223.txt
+=E2=80=8BPlease ignore this patch. I have a typo in subject. Will fix and r=
+esubmit
 
-diff --git a/Documentation/devicetree/bindings/iio/light/ap3223.txt b/Documentation/devicetree/bindings/iio/light/ap3223.txt
-new file mode 100644
-index 0000000..b255d27
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/ap3223.txt
-@@ -0,0 +1,18 @@
-+* Dyna Image AP3223 ambient light sensor and proximity sensor
-+
-+http://www.dyna-image.com/english/product/optical-sensor-detail.php?cpid=2&dpid=8
-+
-+Required properties:
-+
-+  - compatible : should be "dynaimage,ap3223"
-+  - reg : the I2C address of the sensor
-+
-+Example:
-+
-+ap3223@1c {
-+	compatible = "dynaimage,ap3223";
-+	reg = <0x1c>;
-+
-+	pinctrl-0 = <&ap3223_pins>;
-+	pinctrl-names = "default";
-+};
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index 5f20add..704da45 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -46,6 +46,7 @@ digilent	Diglent, Inc.
- dlg	Dialog Semiconductor
- dlink	D-Link Corporation
- dmo	Data Modul AG
-+dynaimage	Dyna-Image
- ebv	EBV Elektronik
- edt	Emerging Display Technologies
- elan	Elan Microelectronic Corp.
--- 
-2.6.0.rc2.230.g3dd15c0
+Suresh=E2=80=8B
 
+--001a113971805d53080520ecde5c
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br>On Tue, Sep 29, 2015 at 6:24 PM, Suresh Rajashekara &l=
+t;<a href=3D"mailto:sureshraj@google.com">sureshraj@google.com</a>&gt; wrot=
+e:<br>&gt;<br>&gt; * Add Device Tree support for the Dyna Image AP3223 ambi=
+ent light sensor and<br>&gt; * proximity driver,<br>&gt; * Document the bin=
+ding and<br>&gt; * Add a vendor prefix for Dyna Image<br>&gt;<br>&gt; v2<br=
+>&gt; * Seperating the device tree changes from code<br>&gt;<br>&gt; Signed=
+-off-by: Suresh Rajashekara &lt;<a href=3D"mailto:sureshraj@google.com">sur=
+eshraj@google.com</a>&gt;<div><br></div><div><div class=3D"gmail_default" s=
+tyle=3D"font-family:&#39;trebuchet ms&#39;,sans-serif">=E2=80=8BPlease igno=
+re this patch. I have a typo in subject. Will fix and resubmit</div><div cl=
+ass=3D"gmail_default" style=3D"font-family:&#39;trebuchet ms&#39;,sans-seri=
+f"><br></div><div class=3D"gmail_default" style=3D"font-family:&#39;trebuch=
+et ms&#39;,sans-serif">Suresh=E2=80=8B</div><br></div></div>
+
+--001a113971805d53080520ecde5c--
