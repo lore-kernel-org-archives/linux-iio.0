@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-198.synserver.de ([212.40.185.198]:1082 "EHLO
+Received: from smtp-out-198.synserver.de ([212.40.185.198]:1090 "EHLO
 	smtp-out-190.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752334AbbJBOpt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Oct 2015 10:45:49 -0400
+	by vger.kernel.org with ESMTP id S1752128AbbJBOpu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Oct 2015 10:45:50 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -10,74 +10,37 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: Octavian Purdila <octavian.purdila@intel.com>,
 	Andrey Yurovsky <andrey@snupi.com>, linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/7] iio: Set device watermark based on watermark of all attached buffers
-Date: Fri,  2 Oct 2015 16:45:01 +0200
-Message-Id: <1443797107-13391-2-git-send-email-lars@metafoo.de>
+Subject: [PATCH 2/7] iio:iio_buffer_init(): Only set watermark if not already set
+Date: Fri,  2 Oct 2015 16:45:02 +0200
+Message-Id: <1443797107-13391-3-git-send-email-lars@metafoo.de>
 In-Reply-To: <1443797107-13391-1-git-send-email-lars@metafoo.de>
 References: <1443797107-13391-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently the watermark of the device is only set based on the watermark
-that is set for the user space buffer. This doesn't consider the watermarks
-set on any attached in-kernel buffers.
-
-Change this so that the watermark of the device should be the minimum of
-the watermarks over all attached buffers.
+Only initialize the watermark field if it is still 0. This allows drivers
+to provide a custom default watermark value. E.g. some driver might have a
+fixed watermark or can only support watermarks within a certain range and
+the initial value for the watermark should be within this range.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/industrialio-buffer.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/iio/industrialio-buffer.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index d7e908a..7340922 100644
+index 7340922..5f2c8c8 100644
 --- a/drivers/iio/industrialio-buffer.c
 +++ b/drivers/iio/industrialio-buffer.c
-@@ -610,6 +610,7 @@ static void iio_free_scan_mask(struct iio_dev *indio_dev,
- 
- struct iio_device_config {
- 	unsigned int mode;
-+	unsigned int watermark;
- 	const unsigned long *scan_mask;
- 	unsigned int scan_bytes;
- 	bool scan_timestamp;
-@@ -642,10 +643,14 @@ static int iio_verify_update(struct iio_dev *indio_dev,
- 		if (buffer == remove_buffer)
- 			continue;
- 		modes &= buffer->access->modes;
-+		config->watermark = min(config->watermark, buffer->watermark);
- 	}
- 
--	if (insert_buffer)
-+	if (insert_buffer) {
- 		modes &= insert_buffer->access->modes;
-+		config->watermark = min(config->watermark,
-+			insert_buffer->watermark);
-+	}
- 
- 	/* Definitely possible for devices to support both of these. */
- 	if ((modes & INDIO_BUFFER_TRIGGERED) && indio_dev->trig) {
-@@ -743,6 +748,10 @@ static int iio_enable_buffers(struct iio_dev *indio_dev,
- 		}
- 	}
- 
-+	if (indio_dev->info->hwfifo_set_watermark)
-+		indio_dev->info->hwfifo_set_watermark(indio_dev,
-+			config->watermark);
-+
- 	indio_dev->currentmode = config->mode;
- 
- 	if (indio_dev->setup_ops->postenable) {
-@@ -974,9 +983,6 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
- 	}
- 
- 	buffer->watermark = val;
--
--	if (indio_dev->info->hwfifo_set_watermark)
--		indio_dev->info->hwfifo_set_watermark(indio_dev, val);
- out:
- 	mutex_unlock(&indio_dev->mlock);
+@@ -193,7 +193,8 @@ void iio_buffer_init(struct iio_buffer *buffer)
+ 	INIT_LIST_HEAD(&buffer->buffer_list);
+ 	init_waitqueue_head(&buffer->pollq);
+ 	kref_init(&buffer->ref);
+-	buffer->watermark = 1;
++	if (!buffer->watermark)
++		buffer->watermark = 1;
+ }
+ EXPORT_SYMBOL(iio_buffer_init);
  
 -- 
 2.1.4
