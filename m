@@ -1,318 +1,183 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-198.synserver.de ([212.40.185.198]:1123 "EHLO
-	smtp-out-190.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752717AbbJBOp4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Oct 2015 10:45:56 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Octavian Purdila <octavian.purdila@intel.com>,
-	Andrey Yurovsky <andrey@snupi.com>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 7/7] iio: Add a DMAengine framework based buffer
-Date: Fri,  2 Oct 2015 16:45:07 +0200
-Message-Id: <1443797107-13391-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1443797107-13391-1-git-send-email-lars@metafoo.de>
-References: <1443797107-13391-1-git-send-email-lars@metafoo.de>
+Received: from mga01.intel.com ([192.55.52.88]:1728 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750846AbbJBRBc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 2 Oct 2015 13:01:32 -0400
+Message-ID: <1443805273.3085.3.camel@linux.intel.com>
+Subject: Re: [PATCH 5/6] thermal: iio Documentation
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, rui.zhang@intel.com,
+	edubezval@gmail.com, linux-pm@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Date: Fri, 02 Oct 2015 10:01:13 -0700
+In-Reply-To: <5608340F.8060406@kernel.org>
+References: <1443305111-28272-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <1443305111-28272-6-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <5608340F.8060406@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add a generic fully device independent DMA buffer implementation that uses
-the DMAegnine framework to perform the DMA transfers. This can be used by
-converter drivers that whish to provide a DMA buffer for converters that
-are connected to a DMA core that implements the DMAengine API.
+On Sun, 2015-09-27 at 19:23 +0100, Jonathan Cameron wrote:
+> On 26/09/15 23:05, Srinivas Pandruvada wrote:
+> > An overview document about thermal iio binding.
+> > 
+> > Signed-off-by: Srinivas Pandruvada <
+> > srinivas.pandruvada@linux.intel.com>
+> > ---
+> >  Documentation/thermal/thermal_iio_binding | 88
+> > +++++++++++++++++++++++++++++++
+> >  1 file changed, 88 insertions(+)
+> >  create mode 100644 Documentation/thermal/thermal_iio_binding
+> > 
+> > diff --git a/Documentation/thermal/thermal_iio_binding
+> > b/Documentation/thermal/thermal_iio_binding
+> > new file mode 100644
+> > index 0000000..df501f1
+> > --- /dev/null
+> > +++ b/Documentation/thermal/thermal_iio_binding
+> > @@ -0,0 +1,88 @@
+> > +
+> > +Thermal IIO Bindings
+> > +
+> > +When CONFIG_THERMAL_IIO is enabled, in addition to the regular
+> > thermal
+> > +zone attributes, an additional entry for an IIO device is created.
+> > +IIO sysfs ABI documents is available at Documentation/ABI/sysfs
+> > -bus-iio.
+> > +
+> > +The following example shows the contents of the IIO:device in a
+> > thermal
+> > +zone.
+> > +
+> > +thermal_zoneX
+> > +├── iio:device9
+> > +│   ├── buffer
+> > +│   │   ├── enable
+> > +│   │   ├── length
+> > +│   │   └── watermark
+> > +│   ├── events
+> > +│   │   ├── in_temp_thresh_either_en
+> > +│   │   └── in_temp_thresh_either_value
+> > +│   ├── in_temp_raw
+> > +│   ├── name
+> > +│   ├── scan_elements
+> > +│   │   ├── in_temp_en
+> > +│   │   ├── in_temp_index
+> > +│   │   ├── in_temp_type
+> > +│   │   ├── in_timestamp_en
+> > +│   │   ├── in_timestamp_index
+> > +│   │   └── in_timestamp_type
+> > +│   ├── subsystem -> ../../../../../bus/iio
+> > +│   ├── trigger0
+> > +│   │   └── name
+> > +│   ├── trigger
+> > +│   │   └── current_trigger
+> > +│   └── uevent
+> > +├── integral_cutoff
+> > +...
+> > +... other thermal_zone attributes
+> > +...
+> > +
+> > +
+> > +IIO Attributes
+> > +
+> > +name: This shows iio device name, which will match
+> > thermal_zone/type attribute
+> > +in_temp_raw: This will show raw temperature values same as
+> > thermal_zone/temp
+> > +attribute.
+> > +
+> > +trigger/current_trigger: This is IIO way of specifying data ready
+> > indication.
+> Kind of, given it's not exposed to userspace to read, but rather
+> hooked directly
+> to the filling of the buffer.  You might want to reword to not imply
+> userspace can
+> discover that it has fired directly.
+OK
+> > +If the thermal client can provide asynchronous notifications, then
+> > a iio trigger
+> > +device is created under trigger0. The name of this trigger will be
+> > thermal
+> > +device name suffixed with devX. To enable iio buffer
+> > notifications,
+> > +trigger/current_trigger cab be updated with this trigger. For
+> > example
+> > +
+> > +#echo "x86_pkg_temp-dev9" > trigger/current_trigger
+> > +
+> > +In addition of samples can be pushed to iio buffers with external
+> > standard IIO
+> > +device triggers, E.g. sysfs trigger.
+> > +
+> > +How to enable events?
+> > +To enable events a suitable threshold temperature can be written
+> > to
+> > +in_temp_thresh_either_value
+> > +and enable by writing 1 to in_temp_thresh_either_en.
+> > +
+> > +To monitor events a good user space program is here:
+> > +tools/iio/iio_event_monitor.c
+> > +
+> > +For example
+> > +# echo 50000 >
+> > /sys/devices/virtual/thermal/thermal_zone9/iio:device9/events/in_te
+> > mp_thresh_either_value
+> > +# echo 1 >
+> > /sys/devices/virtual/thermal/thermal_zone9/iio:device9/events/in_te
+> > mp_thresh_either_en
+> > +# ./iio_event_monitor x86_pkg_temp
+> > +Found IIO device with name x86_pkg_temp with device number 9
+> > +Event: time: 1443297126626859289, type: temp, channel: 0, evtype:
+> > thresh, direction: either
+> > +
+> > +How to read temperature samples?
+> > +When thermal client or core driver calls
+> > thermal_zone_device_update, this will
+> > +result in sample pushed to iio buffers. These samples can be read
+> > from
+> > +/dev/iio:deviceX file.
+> > +
+> > +To enable buffer select scan_elements
+> > +# echo 1 > scan_elements/in_temp_en
+> > +
+> > +Set buffer length to n samples and enable buffer.
+> > +# echo 2 > buffer/length
+> > +# echo 1 > buffer/enable
+> > +
+> > +Then user can poll/select or /dev/iio:deviceX (Here X correspond
+> > to iio device number),
+> > +and read temperature samples. A good example is at
+> > tools/iio/generic_buffer.c.
+> > +
+> One too many blank lines at the end.
+> > +
+> Reasonable docs to get people started I think, but whether they are
+> detailed enough is
+> going to be a question for the thermal guys!
+> 
+Idea here is to just give pointers to the IIO documentation and
+examples to get developers to explore if they want to use this I/F.
 
-Apart from allocating the buffer using iio_dmaengine_buffer_alloc() and
-freeing it using iio_dmaengine_buffer_free() no additional converter driver
-specific code is required when using this DMA buffer implementation.
+> Also, perhaps a cross reference to Daniel's doc book on IIO?
+> Documentation/DocBook/iio/
+> 
+> As that expands in detail it might include lots of stuff that isn't
+> relevant
+> to thermal, but it might also fill in details that we don't want to
+> explicitly
+> layout here.
+> 
+Thanks for your reviews.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/buffer/Kconfig                         |  11 ++
- drivers/iio/buffer/Makefile                        |   1 +
- drivers/iio/buffer/industrialio-buffer-dmaengine.c | 213 +++++++++++++++++++++
- include/linux/iio/buffer-dmaengine.h               |  18 ++
- 4 files changed, 243 insertions(+)
- create mode 100644 drivers/iio/buffer/industrialio-buffer-dmaengine.c
- create mode 100644 include/linux/iio/buffer-dmaengine.h
+-Srinivas
 
-diff --git a/drivers/iio/buffer/Kconfig b/drivers/iio/buffer/Kconfig
-index b2fda1a..4ffd3db 100644
---- a/drivers/iio/buffer/Kconfig
-+++ b/drivers/iio/buffer/Kconfig
-@@ -18,6 +18,17 @@ config IIO_BUFFER_DMA
- 	  Should be selected by drivers that want to use the generic DMA buffer
- 	  infrastructure.
- 
-+config IIO_BUFFER_DMAENGINE
-+	tristate
-+	select IIO_BUFFER_DMA
-+	help
-+	  Provides a bonding of the generic IIO DMA buffer infrastructure with the
-+	  DMAengine framework. This can be used by converter drivers with a DMA port
-+	  connected to an external DMA controller which is supported by the
-+	  DMAengine framework.
-+
-+	  Should be selected by drivers that want to use this functionality.
-+
- config IIO_KFIFO_BUF
- 	tristate "Industrial I/O buffering based on kfifo"
- 	help
-diff --git a/drivers/iio/buffer/Makefile b/drivers/iio/buffer/Makefile
-index bda3f11..85beaae 100644
---- a/drivers/iio/buffer/Makefile
-+++ b/drivers/iio/buffer/Makefile
-@@ -5,5 +5,6 @@
- # When adding new entries keep the list in alphabetical order
- obj-$(CONFIG_IIO_BUFFER_CB) += industrialio-buffer-cb.o
- obj-$(CONFIG_IIO_BUFFER_DMA) += industrialio-buffer-dma.o
-+obj-$(CONFIG_IIO_BUFFER_DMAENGINE) += industrialio-buffer-dmaengine.o
- obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
- obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
-diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-new file mode 100644
-index 0000000..ebdb838
---- /dev/null
-+++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-@@ -0,0 +1,213 @@
-+/*
-+ * Copyright 2014-2015 Analog Devices Inc.
-+ *  Author: Lars-Peter Clausen <lars@metafoo.de>
-+ *
-+ * Licensed under the GPL-2 or later.
-+ */
-+
-+#include <linux/slab.h>
-+#include <linux/kernel.h>
-+#include <linux/dmaengine.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/spinlock.h>
-+#include <linux/err.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/buffer-dma.h>
-+#include <linux/iio/buffer-dmaengine.h>
-+
-+/*
-+ * The IIO DMAengine buffer combines the generic IIO DMA buffer infrastructure
-+ * with the DMAengine framework. The generic IIO DMA buffer infrastructure is
-+ * used to manage the buffer memory and implement the IIO buffer operations
-+ * while the DMAengine framework is used to perform the DMA transfers. Combined
-+ * this results in a device independent fully functional DMA buffer
-+ * implementation that can be used by device drivers for peripherals which are
-+ * connected to a DMA controller which has a DMAengine driver implementation.
-+ */
-+
-+struct dmaengine_buffer {
-+	struct iio_dma_buffer_queue queue;
-+
-+	struct dma_chan *chan;
-+	struct list_head active;
-+
-+	size_t align;
-+	size_t max_size;
-+};
-+
-+static struct dmaengine_buffer *iio_buffer_to_dmaengine_buffer(
-+		struct iio_buffer *buffer)
-+{
-+	return container_of(buffer, struct dmaengine_buffer, queue.buffer);
-+}
-+
-+static void iio_dmaengine_buffer_block_done(void *data)
-+{
-+	struct iio_dma_buffer_block *block = data;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&block->queue->list_lock, flags);
-+	list_del(&block->head);
-+	spin_unlock_irqrestore(&block->queue->list_lock, flags);
-+	iio_dma_buffer_block_done(block);
-+}
-+
-+static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
-+	struct iio_dma_buffer_block *block)
-+{
-+	struct dmaengine_buffer *dmaengine_buffer =
-+		iio_buffer_to_dmaengine_buffer(&queue->buffer);
-+	struct dma_async_tx_descriptor *desc;
-+	dma_cookie_t cookie;
-+
-+	block->bytes_used = min(block->size, dmaengine_buffer->max_size);
-+	block->bytes_used = rounddown(block->bytes_used,
-+			dmaengine_buffer->align);
-+
-+	desc = dmaengine_prep_slave_single(dmaengine_buffer->chan,
-+		block->phys_addr, block->bytes_used, DMA_DEV_TO_MEM,
-+		DMA_PREP_INTERRUPT);
-+	if (!desc)
-+		return -ENOMEM;
-+
-+	desc->callback = iio_dmaengine_buffer_block_done;
-+	desc->callback_param = block;
-+
-+	cookie = dmaengine_submit(desc);
-+	if (dma_submit_error(cookie))
-+		return dma_submit_error(cookie);
-+
-+	spin_lock_irq(&dmaengine_buffer->queue.list_lock);
-+	list_add_tail(&block->head, &dmaengine_buffer->active);
-+	spin_unlock_irq(&dmaengine_buffer->queue.list_lock);
-+
-+	dma_async_issue_pending(dmaengine_buffer->chan);
-+
-+	return 0;
-+}
-+
-+static void iio_dmaengine_buffer_abort(struct iio_dma_buffer_queue *queue)
-+{
-+	struct dmaengine_buffer *dmaengine_buffer =
-+		iio_buffer_to_dmaengine_buffer(&queue->buffer);
-+
-+	dmaengine_terminate_all(dmaengine_buffer->chan);
-+	/* FIXME: There is a slight chance of a race condition here.
-+	 * dmaengine_terminate_all() does not guarantee that all transfer
-+	 * callbacks have finished running. Need to introduce a
-+	 * dmaengine_terminate_all_sync().
-+	 */
-+	iio_dma_buffer_block_list_abort(queue, &dmaengine_buffer->active);
-+}
-+
-+static void iio_dmaengine_buffer_release(struct iio_buffer *buf)
-+{
-+	struct dmaengine_buffer *dmaengine_buffer =
-+		iio_buffer_to_dmaengine_buffer(buf);
-+
-+	iio_dma_buffer_release(&dmaengine_buffer->queue);
-+	kfree(dmaengine_buffer);
-+}
-+
-+static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
-+	.read_first_n = iio_dma_buffer_read,
-+	.set_bytes_per_datum = iio_dma_buffer_set_bytes_per_datum,
-+	.set_length = iio_dma_buffer_set_length,
-+	.request_update = iio_dma_buffer_request_update,
-+	.enable = iio_dma_buffer_enable,
-+	.disable = iio_dma_buffer_disable,
-+	.data_available = iio_dma_buffer_data_available,
-+	.release = iio_dmaengine_buffer_release,
-+
-+	.modes = INDIO_BUFFER_HARDWARE,
-+	.flags = INDIO_BUFFER_FLAG_FIXED_WATERMARK,
-+};
-+
-+static const struct iio_dma_buffer_ops iio_dmaengine_default_ops = {
-+	.submit = iio_dmaengine_buffer_submit_block,
-+	.abort = iio_dmaengine_buffer_abort,
-+};
-+
-+/**
-+ * iio_dmaengine_buffer_alloc() - Allocate new buffer which uses DMAengine
-+ * @dev: Parent device for the buffer
-+ * @channel: DMA channel name, typically "rx".
-+ *
-+ * This allocates a new IIO buffer which internally uses the DMAengine framework
-+ * to perform its transfers. The parent device will be used to request the DMA
-+ * channel.
-+ *
-+ * Once done using the buffer iio_dmaengine_buffer_free() should be used to
-+ * release it.
-+ */
-+struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
-+	const char *channel)
-+{
-+	struct dmaengine_buffer *dmaengine_buffer;
-+	unsigned int width, src_width, dest_width;
-+	struct dma_slave_caps caps;
-+	struct dma_chan *chan;
-+	int ret;
-+
-+	dmaengine_buffer = kzalloc(sizeof(*dmaengine_buffer), GFP_KERNEL);
-+	if (!dmaengine_buffer)
-+		return ERR_PTR(-ENOMEM);
-+
-+	chan = dma_request_slave_channel_reason(dev, channel);
-+	if (IS_ERR(chan)) {
-+		ret = PTR_ERR(chan);
-+		goto err_free;
-+	}
-+
-+	ret = dma_get_slave_caps(chan, &caps);
-+	if (ret < 0)
-+		goto err_free;
-+
-+	/* Needs to be aligned to the maximum of the minimums */
-+	if (caps.src_addr_widths)
-+		src_width = __ffs(caps.src_addr_widths);
-+	else
-+		src_width = 1;
-+	if (caps.dst_addr_widths)
-+		dest_width = __ffs(caps.dst_addr_widths);
-+	else
-+		dest_width = 1;
-+	width = max(src_width, dest_width);
-+
-+	INIT_LIST_HEAD(&dmaengine_buffer->active);
-+	dmaengine_buffer->chan = chan;
-+	dmaengine_buffer->align = width;
-+	dmaengine_buffer->max_size = dma_get_max_seg_size(chan->device->dev);
-+
-+	iio_dma_buffer_init(&dmaengine_buffer->queue, chan->device->dev,
-+		&iio_dmaengine_default_ops);
-+
-+	dmaengine_buffer->queue.buffer.access = &iio_dmaengine_buffer_ops;
-+
-+	return &dmaengine_buffer->queue.buffer;
-+
-+err_free:
-+	kfree(dmaengine_buffer);
-+	return ERR_PTR(ret);
-+}
-+EXPORT_SYMBOL(iio_dmaengine_buffer_alloc);
-+
-+/**
-+ * iio_dmaengine_buffer_free() - Free dmaengine buffer
-+ * @buffer: Buffer to free
-+ *
-+ * Frees a buffer previously allocated with iio_dmaengine_buffer_alloc().
-+ */
-+void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
-+{
-+	struct dmaengine_buffer *dmaengine_buffer =
-+		iio_buffer_to_dmaengine_buffer(buffer);
-+
-+	iio_dma_buffer_exit(&dmaengine_buffer->queue);
-+	dma_release_channel(dmaengine_buffer->chan);
-+
-+	iio_buffer_put(buffer);
-+}
-+EXPORT_SYMBOL_GPL(iio_dmaengine_buffer_free);
-diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
-new file mode 100644
-index 0000000..ac0ca55
---- /dev/null
-+++ b/include/linux/iio/buffer-dmaengine.h
-@@ -0,0 +1,18 @@
-+/*
-+ * Copyright 2014-2015 Analog Devices Inc.
-+ *  Author: Lars-Peter Clausen <lars@metafoo.de>
-+ *
-+ * Licensed under the GPL-2 or later.
-+ */
-+
-+#ifndef __IIO_DMAENGINE_H__
-+#define __IIO_DMAENGINE_H__
-+
-+struct iio_buffer;
-+struct devive;
-+
-+struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
-+	const char *channel);
-+void iio_dmaengine_buffer_free(struct iio_buffer *buffer);
-+
-+#endif
--- 
-2.1.4
-
+> Jonathan
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-pm"
+> in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
