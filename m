@@ -1,55 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:23503 "EHLO
-	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751633AbbJAWQW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Oct 2015 18:16:22 -0400
-Date: Fri, 2 Oct 2015 01:16:09 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: cmo@melexis.com
-Cc: linux-iio@vger.kernel.org
-Subject: re: iio: mlx90614: Implement filter configuration
-Message-ID: <20151001221609.GA3694@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <cmo@melexis.com>
+From: Crt Mori <cmo@melexis.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Dan Carpenter <dan.carpenter@oracle.com>,
+	Vianney le Clement de Saint-Marcq <vianney.leclement@essensium.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH] [BUGFIX] iio: mlx96014: Error checking from positive to negative
+Date: Fri,  2 Oct 2015 11:14:03 +0200
+Message-Id: <1443777243-5095-1-git-send-email-cmo@melexis.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello Crt Mori,
+Dan Carpenter reported a static checker report and after his mail I
+noticed that we actually return from function if positive value is
+obtained from i2c read. This was remainder from when code was not in
+separate function (which I changed during the review process).
 
-The patch 764589b688a1: "iio: mlx90614: Implement filter
-configuration" from Aug 17, 2015, leads to the following static
-checker warning:
+Static checker reported
+  drivers/iio/temperature/mlx90614.c:167
+  mlx90614_iir_search()
+    warn: this cast is a no-op
+which meant that cast before negating is useless.
 
-	drivers/iio/temperature/mlx90614.c:167 mlx90614_iir_search()
-	warn: this cast is a no-op
+Also changed magic number to macro in process as that was confusing.
 
-drivers/iio/temperature/mlx90614.c
-   158          ret = i2c_smbus_read_word_data(client, MLX90614_CONFIG);
-   159          if (ret > 0)
-   160                  return ret;
-   161  
-   162          /* Write changed values */
-   163          ret = mlx90614_write_word(client, MLX90614_CONFIG,
-   164                          (i << MLX90614_CONFIG_IIR_SHIFT) |
-   165                          (((u16) ((0x7 << MLX90614_CONFIG_FIR_SHIFT) |
-   166                          ((u16) ret & (~((u16) MLX90614_CONFIG_FIR_MASK))))) &
-   167                          (~(u16) MLX90614_CONFIG_IIR_MASK)));
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Crt Mori <cmo@melexis.com>
+---
+ drivers/iio/temperature/mlx90614.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Quite a few of these casts make no sense.  It's not clear what was
-intended.
-
-	(~(u16) MLX90614_CONFIG_IIR_MASK)
-
-So we take int 0x7 and cast it to u16, then because of type promotion
-we convert it to int and do a bitwise negate.  The static checker
-warning is because often that means (u16)~MLX90614_CONFIG_IIR_MASK is
-intended instead.  In this case it looks like we could just remove the
-cast with no harm done.
-
-But why are we ANDing it with "ret" which is a negative error code???
-I think there is some other typo here beyond the extra casts.
-
-   168          return ret;
-
-regards,
-dan carpenter
+diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+index 3fd3ba4..78d4a15 100644
+--- a/drivers/iio/temperature/mlx90614.c
++++ b/drivers/iio/temperature/mlx90614.c
+@@ -72,6 +72,7 @@
+ #define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
+ #define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for emissivity */
+ #define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~ 0.000015259 */
++#define MLX90614_CONST_FIR 0x7 /* Fixed value for FIR part of low pass filter */
+ 
+ struct mlx90614_data {
+ 	struct i2c_client *client;
+@@ -156,15 +157,15 @@ static inline s32 mlx90614_iir_search(const struct i2c_client *client,
+ 	 * changes
+ 	 */
+ 	ret = i2c_smbus_read_word_data(client, MLX90614_CONFIG);
+-	if (ret > 0)
++	if (ret < 0)
+ 		return ret;
+ 
+ 	/* Write changed values */
+ 	ret = mlx90614_write_word(client, MLX90614_CONFIG,
+ 			(i << MLX90614_CONFIG_IIR_SHIFT) |
+-			(((u16) ((0x7 << MLX90614_CONFIG_FIR_SHIFT) |
+-			((u16) ret & (~((u16) MLX90614_CONFIG_FIR_MASK))))) &
+-			(~(u16) MLX90614_CONFIG_IIR_MASK)));
++			(((u16) ((MLX90614_CONST_FIR << MLX90614_CONFIG_FIR_SHIFT) |
++			((u16) ret & ((u16) ~MLX90614_CONFIG_FIR_MASK)))) &
++			((u16) ~MLX90614_CONFIG_IIR_MASK)));
+ 	return ret;
+ }
+ 
+-- 
+2.1.4
