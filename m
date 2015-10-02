@@ -1,35 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f42.google.com ([209.85.215.42]:36827 "EHLO
-	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751723AbbJBJF2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Oct 2015 05:05:28 -0400
-Received: by laclj5 with SMTP id lj5so88974596lac.3
-        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2015 02:05:27 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <20151002085612.GK7289@mwanda>
-References: <20151001221609.GA3694@mwanda> <CAKv63usH0CoupUtoAsGjUXUojCJ9sCbK9cN85rz3SS8C0QUWLw@mail.gmail.com>
- <20151002070006.GI7289@mwanda> <CAKv63uuxuKJ5QY_jpxVe895+AMhyxWWrCWim6BgeB8kLsoNB-A@mail.gmail.com>
- <20151002083224.GJ7289@mwanda> <CAKv63utyg0KwwC0UO+81D2=mQxYVOC0nCjxRB8BNempNEzdx1w@mail.gmail.com>
- <20151002085612.GK7289@mwanda>
+Received: from mail-wi0-f171.google.com ([209.85.212.171]:32926 "EHLO
+	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751029AbbJBMis (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Oct 2015 08:38:48 -0400
+Received: by wiclk2 with SMTP id lk2so31967528wic.0
+        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2015 05:38:46 -0700 (PDT)
 From: Crt Mori <cmo@melexis.com>
-Date: Fri, 2 Oct 2015 11:04:47 +0200
-Message-ID: <CAKv63uvj_UXxL31eXMTPw6ahs0YEWNkdDnXrHY3e5FN-TxZa4Q@mail.gmail.com>
-Subject: Re: iio: mlx90614: Implement filter configuration
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Dan Carpenter <dan.carpenter@oracle.com>,
+	Vianney le Clement de Saint-Marcq
+	<vianney.leclement@essensium.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Crt Mori <cmo@melexis.com>
+Subject: [PATCH v2] [BUGFIX] iio: mlx96014: Error checking from positive to negative
+Date: Fri,  2 Oct 2015 14:24:21 +0200
+Message-Id: <1443788661-31167-1-git-send-email-cmo@melexis.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2 October 2015 at 10:56, Dan Carpenter <dan.carpenter@oracle.com> wrote:
-> Ok.  Hm...  Then what are the possible positive values of:
->
->         ret = i2c_smbus_read_word_data(client, MLX90614_CONFIG)
->
+Dan Carpenter reported a static checker report and after his mail I
+noticed that we actually return from function if positive value is
+obtained from i2c read. This was remainder from when code was not in
+separate function (which I changed during the review process).
 
-16 bit Config register value, which has some bits fixed to maintain
-calibration (14...11;7;3).
+Static checker reported
+  drivers/iio/temperature/mlx90614.c:167
+  mlx90614_iir_search()
+    warn: this cast is a no-op
+which meant that cast before negating is useless. Dan also proposed a
+solution on nicer bit operation form.
 
-> regards,
-> dan carpenter
->
+Also changed magic number to macro in process as that was confusing.
+
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Crt Mori <cmo@melexis.com>
+---
+ drivers/iio/temperature/mlx90614.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+index 3fd3ba4..a570c2e 100644
+--- a/drivers/iio/temperature/mlx90614.c
++++ b/drivers/iio/temperature/mlx90614.c
+@@ -72,6 +72,7 @@
+ #define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
+ #define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for emissivity */
+ #define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~ 0.000015259 */
++#define MLX90614_CONST_FIR 0x7 /* Fixed value for FIR part of low pass filter */
+ 
+ struct mlx90614_data {
+ 	struct i2c_client *client;
+@@ -156,15 +157,16 @@ static inline s32 mlx90614_iir_search(const struct i2c_client *client,
+ 	 * changes
+ 	 */
+ 	ret = i2c_smbus_read_word_data(client, MLX90614_CONFIG);
+-	if (ret > 0)
++	if (ret < 0)
+ 		return ret;
+ 
++	ret &= ~MLX90614_CONFIG_FIR_MASK;
++	ret |= MLX90614_CONST_FIR << MLX90614_CONFIG_FIR_SHIFT;
++	ret &= ~MLX90614_CONFIG_IIR_MASK;
++	ret |= i << MLX90614_CONFIG_IIR_SHIFT;
++
+ 	/* Write changed values */
+-	ret = mlx90614_write_word(client, MLX90614_CONFIG,
+-			(i << MLX90614_CONFIG_IIR_SHIFT) |
+-			(((u16) ((0x7 << MLX90614_CONFIG_FIR_SHIFT) |
+-			((u16) ret & (~((u16) MLX90614_CONFIG_FIR_MASK))))) &
+-			(~(u16) MLX90614_CONFIG_IIR_MASK)));
++	ret = mlx90614_write_word(client, MLX90614_CONFIG, ret);
+ 	return ret;
+ }
+ 
+-- 
+2.1.4
+
