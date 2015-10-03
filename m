@@ -1,153 +1,337 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44424 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44436 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751810AbbJCLE5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Oct 2015 07:04:57 -0400
-Subject: Re: [PATCH v3 4/4] iio: bmc150: Add SPI driver
+	with ESMTP id S1751810AbbJCLHC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Oct 2015 07:07:02 -0400
+Subject: Re: [PATCH v3 3/4] iio: bmc150: Split the driver into core and i2c
 To: Markus Pargmann <mpa@pengutronix.de>
 References: <1442832916-30774-1-git-send-email-mpa@pengutronix.de>
- <1442832916-30774-5-git-send-email-mpa@pengutronix.de>
+ <1442832916-30774-4-git-send-email-mpa@pengutronix.de>
 Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	kernel@pengutronix.de
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <560FB654.7060009@kernel.org>
-Date: Sat, 3 Oct 2015 12:04:52 +0100
+Message-ID: <560FB6D4.6060301@kernel.org>
+Date: Sat, 3 Oct 2015 12:07:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <1442832916-30774-5-git-send-email-mpa@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1442832916-30774-4-git-send-email-mpa@pengutronix.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 21/09/15 11:55, Markus Pargmann wrote:
-> Add a simple SPI driver which initializes the spi regmap for the bmc150
-> core driver.
-> 
 > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-After applying this one to latest togreg I get:
-drivers/iio/accel/bmc150-accel-spi.c:69:37: error: undefined identifier 'bmc150_accel_acpi_match'
-  CC [M]  drivers/iio/accel/bmc150-accel-spi.o
-In file included from drivers/iio/accel/bmc150-accel-spi.c:22:0:
-drivers/iio/accel/bmc150-accel-spi.c:69:32: error: ‘bmc150_accel_acpi_match’ undeclared here (not in a function)
-   .acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
-                                ^
-include/linux/acpi.h:446:25: note: in definition of macro ‘ACPI_PTR’
- #define ACPI_PTR(_ptr) (_ptr)
-                         ^
-As per the other table I cut and paste it across from the i2c driver and
-all now looks good.
+You didn't have the pm_ops structure exported which gave:
+ERROR: "bmc150_accel_pm_ops" [drivers/iio/accel/bmc150-accel-i2c.ko] undefined!
+scripts/Makefile.modpost:90: recipe for target '__modpost' failed
 
-It might make sense to do a follow up patch moving both the match tables into
-the core driver.  However, we may end up with a divergence in them if ST ever
-release an i2c or SPI only part...
-Up to you.
-
-Jonathan
+I added an EXPORT_SYMBOL_GPL to it and all seems fine.
 
 > ---
->  drivers/iio/accel/Kconfig            |  5 +++
->  drivers/iio/accel/Makefile           |  1 +
->  drivers/iio/accel/bmc150-accel-spi.c | 80 ++++++++++++++++++++++++++++++++++++
->  3 files changed, 86 insertions(+)
->  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
+>  drivers/iio/accel/Kconfig                          |   9 +-
+>  drivers/iio/accel/Makefile                         |   3 +-
+>  .../accel/{bmc150-accel.c => bmc150-accel-core.c}  |  85 ++++-------------
+>  drivers/iio/accel/bmc150-accel-i2c.c               | 102 +++++++++++++++++++++
+>  drivers/iio/accel/bmc150-accel.h                   |  20 ++++
+>  5 files changed, 145 insertions(+), 74 deletions(-)
+>  rename drivers/iio/accel/{bmc150-accel.c => bmc150-accel-core.c} (96%)
+>  create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
+>  create mode 100644 drivers/iio/accel/bmc150-accel.h
 > 
 > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 280635545240..a010329f7d06 100644
+> index 3ff2c83f7492..280635545240 100644
 > --- a/drivers/iio/accel/Kconfig
 > +++ b/drivers/iio/accel/Kconfig
-> @@ -23,6 +23,7 @@ config BMC150_ACCEL
+> @@ -19,21 +19,22 @@ config BMA180
+>  
+>  config BMC150_ACCEL
+>  	tristate "Bosch BMC150 Accelerometer Driver"
+> -	depends on I2C
+>  	select IIO_BUFFER
 >  	select IIO_TRIGGERED_BUFFER
 >  	select REGMAP
->  	select BMC150_ACCEL_I2C if I2C
-> +	select BMC150_ACCEL_SPI if SPI
+> -	select REGMAP_I2C
+> +	select BMC150_ACCEL_I2C if I2C
 >  	help
 >  	  Say yes here to build support for the following Bosch accelerometers:
 >  	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
-> @@ -35,6 +36,10 @@ config BMC150_ACCEL_I2C
->  	tristate
->  	select REGMAP_I2C
 >  
-> +config BMC150_ACCEL_SPI
+> -	  Currently this only supports the device via an i2c interface.
+> -
+>  	  This is a combo module with both accelerometer and magnetometer.
+>  	  This driver is only implementing accelerometer part, which has
+>  	  its own address and register map.
+>  
+> +config BMC150_ACCEL_I2C
 > +	tristate
-> +	select REGMAP_SPI
+> +	select REGMAP_I2C
 > +
 >  config HID_SENSOR_ACCEL_3D
 >  	depends on HID_SENSOR_HUB
 >  	select IIO_BUFFER
 > diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index 5ef8bdbad092..e579e93bf022 100644
+> index ebd2675b2a02..5ef8bdbad092 100644
 > --- a/drivers/iio/accel/Makefile
 > +++ b/drivers/iio/accel/Makefile
-> @@ -6,6 +6,7 @@
+> @@ -4,7 +4,8 @@
+>  
+>  # When adding new entries keep the list in alphabetical order
 >  obj-$(CONFIG_BMA180) += bma180.o
->  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
->  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
-> +obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+> -obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel.o
+> +obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+> +obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
 >  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
 >  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
 >  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> diff --git a/drivers/iio/accel/bmc150-accel-spi.c b/drivers/iio/accel/bmc150-accel-spi.c
+> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel-core.c
+> similarity index 96%
+> rename from drivers/iio/accel/bmc150-accel.c
+> rename to drivers/iio/accel/bmc150-accel-core.c
+> index 425885dc6800..f492d2a4bce5 100644
+> --- a/drivers/iio/accel/bmc150-accel.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -37,6 +37,8 @@
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/regmap.h>
+>  
+> +#include "bmc150-accel.h"
+> +
+>  #define BMC150_ACCEL_DRV_NAME			"bmc150_accel"
+>  #define BMC150_ACCEL_IRQ_NAME			"bmc150_accel_event"
+>  #define BMC150_ACCEL_GPIO_NAME			"bmc150_accel_int"
+> @@ -1015,15 +1017,6 @@ static const struct iio_chan_spec bmc150_accel_channels[] =
+>  static const struct iio_chan_spec bma280_accel_channels[] =
+>  	BMC150_ACCEL_CHANNELS(14);
+>  
+> -enum {
+> -	bmc150,
+> -	bmi055,
+> -	bma255,
+> -	bma250e,
+> -	bma222e,
+> -	bma280,
+> -};
+> -
+>  static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+>  	[bmc150] = {
+>  		.name = "BMC150A",
+> @@ -1576,33 +1569,23 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+>  	return 0;
+>  }
+>  
+> -static int bmc150_accel_probe(struct i2c_client *client,
+> -			      const struct i2c_device_id *id)
+> +int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+> +			    const char *name, bool block_supported)
+>  {
+>  	struct bmc150_accel_data *data;
+>  	struct iio_dev *indio_dev;
+>  	int ret;
+> -	const char *name = NULL;
+> -	struct device *dev;
+>  
+> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+>  
+>  	data = iio_priv(indio_dev);
+> -	i2c_set_clientdata(client, indio_dev);
+> -	data->dev = &client->dev;
+> -	dev = &client->dev;
+> -	data->irq = client->irq;
+> -
+> -	data->regmap = devm_regmap_init_i2c(client, &bmc150_i2c_regmap_conf);
+> -	if (IS_ERR(data->regmap)) {
+> -		dev_err(dev, "Failed to initialize i2c regmap\n");
+> -		return PTR_ERR(data->regmap);
+> -	}
+> +	dev_set_drvdata(dev, indio_dev);
+> +	data->dev = dev;
+> +	data->irq = irq;
+>  
+> -	if (id)
+> -		name = id->name;
+> +	data->regmap = regmap;
+>  
+>  	ret = bmc150_accel_chip_init(data);
+>  	if (ret < 0)
+> @@ -1659,9 +1642,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>  		if (ret)
+>  			goto err_buffer_cleanup;
+>  
+> -		if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
+> -		    i2c_check_functionality(client->adapter,
+> -					    I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
+> +		if (block_supported) {
+>  			indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
+>  			indio_dev->info = &bmc150_accel_info_fifo;
+>  			indio_dev->buffer->attrs = bmc150_accel_fifo_attributes;
+> @@ -1670,7 +1651,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Unable to register iio device\n");
+> +		dev_err(dev, "Unable to register iio device\n");
+>  		goto err_trigger_unregister;
+>  	}
+>  
+> @@ -1693,10 +1674,11 @@ err_buffer_cleanup:
+>  
+>  	return ret;
+>  }
+> +EXPORT_SYMBOL_GPL(bmc150_accel_core_probe);
+>  
+> -static int bmc150_accel_remove(struct i2c_client *client)
+> +int bmc150_accel_core_remove(struct device *dev)
+>  {
+> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+>  
+>  	pm_runtime_disable(data->dev);
+> @@ -1715,6 +1697,7 @@ static int bmc150_accel_remove(struct i2c_client *client)
+>  
+>  	return 0;
+>  }
+> +EXPORT_SYMBOL_GPL(bmc150_accel_core_remove);
+>  
+>  #ifdef CONFIG_PM_SLEEP
+>  static int bmc150_accel_suspend(struct device *dev)
+> @@ -1785,48 +1768,12 @@ static int bmc150_accel_runtime_resume(struct device *dev)
+>  }
+>  #endif
+>  
+> -static const struct dev_pm_ops bmc150_accel_pm_ops = {
+> +const struct dev_pm_ops bmc150_accel_pm_ops = {
+>  	SET_SYSTEM_SLEEP_PM_OPS(bmc150_accel_suspend, bmc150_accel_resume)
+>  	SET_RUNTIME_PM_OPS(bmc150_accel_runtime_suspend,
+>  			   bmc150_accel_runtime_resume, NULL)
+>  };
+>  
+> -static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+> -	{"BSBA0150",	bmc150},
+> -	{"BMC150A",	bmc150},
+> -	{"BMI055A",	bmi055},
+> -	{"BMA0255",	bma255},
+> -	{"BMA250E",	bma250e},
+> -	{"BMA222E",	bma222e},
+> -	{"BMA0280",	bma280},
+> -	{ },
+> -};
+> -MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+> -
+> -static const struct i2c_device_id bmc150_accel_id[] = {
+> -	{"bmc150_accel",	bmc150},
+> -	{"bmi055_accel",	bmi055},
+> -	{"bma255",		bma255},
+> -	{"bma250e",		bma250e},
+> -	{"bma222e",		bma222e},
+> -	{"bma280",		bma280},
+> -	{}
+> -};
+> -
+> -MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
+> -
+> -static struct i2c_driver bmc150_accel_driver = {
+> -	.driver = {
+> -		.name	= BMC150_ACCEL_DRV_NAME,
+> -		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
+> -		.pm	= &bmc150_accel_pm_ops,
+> -	},
+> -	.probe		= bmc150_accel_probe,
+> -	.remove		= bmc150_accel_remove,
+> -	.id_table	= bmc150_accel_id,
+> -};
+> -module_i2c_driver(bmc150_accel_driver);
+> -
+>  MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
+>  MODULE_LICENSE("GPL v2");
+>  MODULE_DESCRIPTION("BMC150 accelerometer driver");
+> diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
 > new file mode 100644
-> index 000000000000..41dd842996b0
+> index 000000000000..b41404ba32fc
 > --- /dev/null
-> +++ b/drivers/iio/accel/bmc150-accel-spi.c
-> @@ -0,0 +1,80 @@
+> +++ b/drivers/iio/accel/bmc150-accel-i2c.c
+> @@ -0,0 +1,102 @@
 > +/*
-> + * 3-axis accelerometer driver supporting SPI Bosch-Sensortec accelerometer chip
-> + * Copyright © 2015 Pengutronix, Markus Pargmann <mpa@pengutronix.de>
+> + * 3-axis accelerometer driver supporting following I2C Bosch-Sensortec chips:
+> + *  - BMC150
+> + *  - BMI055
+> + *  - BMA255
+> + *  - BMA250E
+> + *  - BMA222E
+> + *  - BMA280
 > + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
+> + * Copyright (c) 2014, Intel Corporation.
 > + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> + * GNU General Public License for more details.
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
 > + *
-> + * You should have received a copy of the GNU General Public License
-> + * along with this program; if not, see <http://www.gnu.org/licenses/>.
+> + * This program is distributed in the hope it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
 > + */
 > +
 > +#include <linux/device.h>
 > +#include <linux/mod_devicetable.h>
+> +#include <linux/i2c.h>
 > +#include <linux/module.h>
 > +#include <linux/acpi.h>
 > +#include <linux/regmap.h>
-> +#include <linux/spi/spi.h>
 > +
 > +#include "bmc150-accel.h"
 > +
-> +static const struct regmap_config bmc150_spi_regmap_conf = {
+> +static const struct regmap_config bmc150_i2c_regmap_conf = {
 > +	.reg_bits = 8,
 > +	.val_bits = 8,
-> +	.max_register = 0x3f,
 > +};
 > +
-> +static int bmc150_accel_probe(struct spi_device *spi)
+> +static int bmc150_accel_probe(struct i2c_client *client,
+> +			      const struct i2c_device_id *id)
 > +{
 > +	struct regmap *regmap;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +	const char *name = NULL;
+> +	bool block_supported =
+> +		i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
+> +		i2c_check_functionality(client->adapter,
+> +					I2C_FUNC_SMBUS_READ_I2C_BLOCK);
 > +
-> +	regmap = devm_regmap_init_spi(spi, &bmc150_spi_regmap_conf);
+> +	regmap = devm_regmap_init_i2c(client, &bmc150_i2c_regmap_conf);
 > +	if (IS_ERR(regmap)) {
-> +		dev_err(&spi->dev, "Failed to initialize spi regmap\n");
+> +		dev_err(&client->dev, "Failed to initialize i2c regmap\n");
 > +		return PTR_ERR(regmap);
 > +	}
 > +
-> +	return bmc150_accel_core_probe(&spi->dev, regmap, spi->irq, id->name,
-> +				       true);
+> +	if (id)
+> +		name = id->name;
+> +
+> +	return bmc150_accel_core_probe(&client->dev, regmap, client->irq, name,
+> +				       block_supported);
 > +}
 > +
-> +static int bmc150_accel_remove(struct spi_device *spi)
+> +static int bmc150_accel_remove(struct i2c_client *client)
 > +{
-> +	return bmc150_accel_core_remove(&spi->dev);
+> +	return bmc150_accel_core_remove(&client->dev);
 > +}
 > +
-> +static const struct spi_device_id bmc150_accel_id[] = {
+> +static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+> +	{"BSBA0150",	bmc150},
+> +	{"BMC150A",	bmc150},
+> +	{"BMI055A",	bmi055},
+> +	{"BMA0255",	bma255},
+> +	{"BMA250E",	bma250e},
+> +	{"BMA222E",	bma222e},
+> +	{"BMA0280",	bma280},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+> +
+> +static const struct i2c_device_id bmc150_accel_id[] = {
 > +	{"bmc150_accel",	bmc150},
 > +	{"bmi055_accel",	bmi055},
 > +	{"bma255",		bma255},
@@ -157,11 +341,11 @@ Jonathan
 > +	{}
 > +};
 > +
-> +MODULE_DEVICE_TABLE(spi, bmc150_accel_id);
+> +MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
 > +
-> +static struct spi_driver bmc150_accel_driver = {
+> +static struct i2c_driver bmc150_accel_driver = {
 > +	.driver = {
-> +		.name	= "bmc150_accel_spi",
+> +		.name	= "bmc150_accel_i2c",
 > +		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
 > +		.pm	= &bmc150_accel_pm_ops,
 > +	},
@@ -169,10 +353,36 @@ Jonathan
 > +	.remove		= bmc150_accel_remove,
 > +	.id_table	= bmc150_accel_id,
 > +};
-> +module_spi_driver(bmc150_accel_driver);
+> +module_i2c_driver(bmc150_accel_driver);
 > +
-> +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
+> +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
 > +MODULE_LICENSE("GPL v2");
-> +MODULE_DESCRIPTION("BMC150 SPI accelerometer driver");
+> +MODULE_DESCRIPTION("BMC150 I2C accelerometer driver");
+> diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
+> new file mode 100644
+> index 000000000000..ba0335987f94
+> --- /dev/null
+> +++ b/drivers/iio/accel/bmc150-accel.h
+> @@ -0,0 +1,20 @@
+> +#ifndef _BMC150_ACCEL_H_
+> +#define _BMC150_ACCEL_H_
+> +
+> +struct regmap;
+> +
+> +enum {
+> +	bmc150,
+> +	bmi055,
+> +	bma255,
+> +	bma250e,
+> +	bma222e,
+> +	bma280,
+> +};
+> +
+> +int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+> +			    const char *name, bool block_supported);
+> +int bmc150_accel_core_remove(struct device *dev);
+> +extern const struct dev_pm_ops bmc150_accel_pm_ops;
+> +
+> +#endif  /* _BMC150_ACCEL_H_ */
 > 
 
