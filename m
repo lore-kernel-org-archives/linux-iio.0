@@ -1,195 +1,134 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44470 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44482 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752002AbbJCLLG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Oct 2015 07:11:06 -0400
-Subject: Re: [PATCH v3 4/4] iio: bmc150: Add SPI driver
-To: Markus Pargmann <mpa@pengutronix.de>
+	with ESMTP id S1751807AbbJCLM5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Oct 2015 07:12:57 -0400
+Subject: Re: [PATCH v3 0/4] iio: bmc150 regmap and SPI
+To: Markus Pargmann <mpa@pengutronix.de>,
+	"Tirdea, Irina" <irina.tirdea@intel.com>
 References: <1442832916-30774-1-git-send-email-mpa@pengutronix.de>
- <1442832916-30774-5-git-send-email-mpa@pengutronix.de>
- <560FB654.7060009@kernel.org>
+ <1F3AC3675D538145B1661F571FE1805F2F0E78D7@irsmsx105.ger.corp.intel.com>
+ <20150924071107.GV32203@pengutronix.de>
 Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Irina Tirdea <irina.tirdea@intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel@pengutronix.de
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kernel@pengutronix.de" <kernel@pengutronix.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <560FB7C9.7080109@kernel.org>
-Date: Sat, 3 Oct 2015 12:11:05 +0100
+Message-ID: <560FB837.6070808@kernel.org>
+Date: Sat, 3 Oct 2015 12:12:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <560FB654.7060009@kernel.org>
+In-Reply-To: <20150924071107.GV32203@pengutronix.de>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/10/15 12:04, Jonathan Cameron wrote:
-> On 21/09/15 11:55, Markus Pargmann wrote:
->> Add a simple SPI driver which initializes the spi regmap for the bmc150
->> core driver.
->>
->> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> After applying this one to latest togreg I get:
-> drivers/iio/accel/bmc150-accel-spi.c:69:37: error: undefined identifier 'bmc150_accel_acpi_match'
->   CC [M]  drivers/iio/accel/bmc150-accel-spi.o
-> In file included from drivers/iio/accel/bmc150-accel-spi.c:22:0:
-> drivers/iio/accel/bmc150-accel-spi.c:69:32: error: ‘bmc150_accel_acpi_match’ undeclared here (not in a function)
->    .acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
->                                 ^
-> include/linux/acpi.h:446:25: note: in definition of macro ‘ACPI_PTR’
->  #define ACPI_PTR(_ptr) (_ptr)
->                          ^
-> As per the other table I cut and paste it across from the i2c driver and
-> all now looks good.
+On 24/09/15 08:11, Markus Pargmann wrote:
+> Hi Irina,
 > 
-> It might make sense to do a follow up patch moving both the match tables into
-> the core driver.  However, we may end up with a divergence in them if ST ever
-> release an i2c or SPI only part...
-> Up to you.
+> On Wed, Sep 23, 2015 at 12:46:04PM +0000, Tirdea, Irina wrote:
+>>
+>>
+>>> -----Original Message-----
+>>> From: Markus Pargmann [mailto:mpa@pengutronix.de]
+>>> Sent: 21 September, 2015 13:55
+>>> To: Jonathan Cameron
+>>> Cc: Srinivas Pandruvada; Tirdea, Irina; Lars-Peter Clausen; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org;
+>>> kernel@pengutronix.de; Markus Pargmann
+>>> Subject: [PATCH v3 0/4] iio: bmc150 regmap and SPI
+>>>
+>>> Hi,
+>>>
+>>
+>> Hi Markus,
+>>
+>> I tested the new version of you patches and everything works fine.
+>>
+>> I used a BMA250E chip connected on the i2c bus.
+>> The tests included the iio buffer code path and the i2c code path
+>> (including using the fifo and forcing the i2c bus to use
+>> the regmap_i2c_smbus_i2c_block calls you added to regmap).
+>>
+>>> this series converts the bmc150 driver to use regmap and adds an SPI interface.
+>>>
+>>> Thanks for testing and review so far. I rebased the series onto v4.3-rc2 now
+>>> (the togreg branch seems to be on v4.2).
+>>> It still works for me but there were some differences regarding the chip id.
+>>>
+>>
+>> I actually used the togreg branch (to get the latest bmc150 driver changes) and
+>> cherry-picked the regmap patches. Everything applied without any conflicts.
+> 
+> Thank you.
+> 
+> It is probably best if I rebase this onto togreg then as soon as it is
+> based on v4.3 to have the necessary regmap dependencies.
+As Irina said it went on fairly clean I applied it from these
+(before making my  v4.3 tree available publicly - it is now).
 
-Forgot to say - applied to the togreg branch of iio.git - initially pushed out
-as testing for the autobuilders to play with it.
+Anyhow, was fairly straight forward (I think) as such things
+go.
 
-Let me know if I messed anything up in the merge.
-
-Thanks,
+Thanks Irina for testing and Markus for your hard work getting
+this in.
 
 Jonathan
 > 
-> Jonathan
+> Best Regards,
 > 
->> ---
->>  drivers/iio/accel/Kconfig            |  5 +++
->>  drivers/iio/accel/Makefile           |  1 +
->>  drivers/iio/accel/bmc150-accel-spi.c | 80 ++++++++++++++++++++++++++++++++++++
->>  3 files changed, 86 insertions(+)
->>  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
->>
->> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
->> index 280635545240..a010329f7d06 100644
->> --- a/drivers/iio/accel/Kconfig
->> +++ b/drivers/iio/accel/Kconfig
->> @@ -23,6 +23,7 @@ config BMC150_ACCEL
->>  	select IIO_TRIGGERED_BUFFER
->>  	select REGMAP
->>  	select BMC150_ACCEL_I2C if I2C
->> +	select BMC150_ACCEL_SPI if SPI
->>  	help
->>  	  Say yes here to build support for the following Bosch accelerometers:
->>  	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
->> @@ -35,6 +36,10 @@ config BMC150_ACCEL_I2C
->>  	tristate
->>  	select REGMAP_I2C
->>  
->> +config BMC150_ACCEL_SPI
->> +	tristate
->> +	select REGMAP_SPI
->> +
->>  config HID_SENSOR_ACCEL_3D
->>  	depends on HID_SENSOR_HUB
->>  	select IIO_BUFFER
->> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
->> index 5ef8bdbad092..e579e93bf022 100644
->> --- a/drivers/iio/accel/Makefile
->> +++ b/drivers/iio/accel/Makefile
->> @@ -6,6 +6,7 @@
->>  obj-$(CONFIG_BMA180) += bma180.o
->>  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
->>  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
->> +obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
->>  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->>  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->>  obj-$(CONFIG_KXSD9)	+= kxsd9.o
->> diff --git a/drivers/iio/accel/bmc150-accel-spi.c b/drivers/iio/accel/bmc150-accel-spi.c
->> new file mode 100644
->> index 000000000000..41dd842996b0
->> --- /dev/null
->> +++ b/drivers/iio/accel/bmc150-accel-spi.c
->> @@ -0,0 +1,80 @@
->> +/*
->> + * 3-axis accelerometer driver supporting SPI Bosch-Sensortec accelerometer chip
->> + * Copyright © 2015 Pengutronix, Markus Pargmann <mpa@pengutronix.de>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->> + * GNU General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License
->> + * along with this program; if not, see <http://www.gnu.org/licenses/>.
->> + */
->> +
->> +#include <linux/device.h>
->> +#include <linux/mod_devicetable.h>
->> +#include <linux/module.h>
->> +#include <linux/acpi.h>
->> +#include <linux/regmap.h>
->> +#include <linux/spi/spi.h>
->> +
->> +#include "bmc150-accel.h"
->> +
->> +static const struct regmap_config bmc150_spi_regmap_conf = {
->> +	.reg_bits = 8,
->> +	.val_bits = 8,
->> +	.max_register = 0x3f,
->> +};
->> +
->> +static int bmc150_accel_probe(struct spi_device *spi)
->> +{
->> +	struct regmap *regmap;
->> +	const struct spi_device_id *id = spi_get_device_id(spi);
->> +
->> +	regmap = devm_regmap_init_spi(spi, &bmc150_spi_regmap_conf);
->> +	if (IS_ERR(regmap)) {
->> +		dev_err(&spi->dev, "Failed to initialize spi regmap\n");
->> +		return PTR_ERR(regmap);
->> +	}
->> +
->> +	return bmc150_accel_core_probe(&spi->dev, regmap, spi->irq, id->name,
->> +				       true);
->> +}
->> +
->> +static int bmc150_accel_remove(struct spi_device *spi)
->> +{
->> +	return bmc150_accel_core_remove(&spi->dev);
->> +}
->> +
->> +static const struct spi_device_id bmc150_accel_id[] = {
->> +	{"bmc150_accel",	bmc150},
->> +	{"bmi055_accel",	bmi055},
->> +	{"bma255",		bma255},
->> +	{"bma250e",		bma250e},
->> +	{"bma222e",		bma222e},
->> +	{"bma280",		bma280},
->> +	{}
->> +};
->> +
->> +MODULE_DEVICE_TABLE(spi, bmc150_accel_id);
->> +
->> +static struct spi_driver bmc150_accel_driver = {
->> +	.driver = {
->> +		.name	= "bmc150_accel_spi",
->> +		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
->> +		.pm	= &bmc150_accel_pm_ops,
->> +	},
->> +	.probe		= bmc150_accel_probe,
->> +	.remove		= bmc150_accel_remove,
->> +	.id_table	= bmc150_accel_id,
->> +};
->> +module_spi_driver(bmc150_accel_driver);
->> +
->> +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
->> +MODULE_LICENSE("GPL v2");
->> +MODULE_DESCRIPTION("BMC150 SPI accelerometer driver");
->>
+> Markus
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>> Thanks,
+>> Irina
+>>
+>>> Changes in v3:
+>>> - Fixed type of variable 'step' which lead to compile warnings. Type is now
+>>>   size_t.
+>>> - Fixed patch that moved irq variable without reason
+>>> - Readded MODULE_* to the core driver
+>>> - Reintroduced check id NULL check
+>>>
+>>> Changes in v2:
+>>> - Removed default values for regmap_config fields.
+>>> - Redesigned the fifo_transfer function to avoid running in errors first.
+>>> - Dropped irq checks patch as it is already mainline
+>>> - Core can now be built as module with autoselection of i2c and spi parts
+>>>
+>>> As my hardware is missing an interrupt line from the SPI connected bmc150 I am
+>>> not able to test the iio buffer code path and the i2c code path. Tests would be
+>>> appreciated.
+>>>
+>>> @Srinivas:
+>>> As there were some rebase conflicts on the first patch, I removed your
+>>> reviewed-by tag again for the moment.
+>>>
+>>> Best regards,
+>>>
+>>> Markus
+>>>
+>>>
+>>> Markus Pargmann (4):
+>>>   iio: bmc150: Use i2c regmap
+>>>   iio: bcm150: Remove i2c_client from private data
+>>>   iio: bmc150: Split the driver into core and i2c
+>>>   iio: bmc150: Add SPI driver
+>>>
+>>>  drivers/iio/accel/Kconfig                          |  14 +-
+>>>  drivers/iio/accel/Makefile                         |   4 +-
+>>>  .../accel/{bmc150-accel.c => bmc150-accel-core.c}  | 388 ++++++++-------------
+>>>  drivers/iio/accel/bmc150-accel-i2c.c               | 102 ++++++
+>>>  drivers/iio/accel/bmc150-accel-spi.c               |  80 +++++
+>>>  drivers/iio/accel/bmc150-accel.h                   |  20 ++
+>>>  6 files changed, 366 insertions(+), 242 deletions(-)
+>>>  rename drivers/iio/accel/{bmc150-accel.c => bmc150-accel-core.c} (82%)
+>>>  create mode 100644 drivers/iio/accel/bmc150-accel-i2c.c
+>>>  create mode 100644 drivers/iio/accel/bmc150-accel-spi.c
+>>>  create mode 100644 drivers/iio/accel/bmc150-accel.h
+>>>
+>>> --
+>>> 2.5.1
+>>
+>>
 > 
 
