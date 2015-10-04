@@ -1,260 +1,191 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50938 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50955 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751507AbbJDOWK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Oct 2015 10:22:10 -0400
-Subject: Re: [PATCH v4 5/7] Add ms5637 meas-spec driver support
+	with ESMTP id S1751453AbbJDO0K (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Oct 2015 10:26:10 -0400
+Subject: Re: [PATCH v4 6/7] Add ms8607 meas-spec driver support
 To: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
 	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	linux-iio@vger.kernel.org, William.Markezana@meas-spec.com
 References: <1443708822-8580-1-git-send-email-ludovic.tancerel@maplehightech.com>
- <1443708822-8580-6-git-send-email-ludovic.tancerel@maplehightech.com>
+ <1443708822-8580-7-git-send-email-ludovic.tancerel@maplehightech.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56113610.3000907@kernel.org>
-Date: Sun, 4 Oct 2015 15:22:08 +0100
+Message-ID: <56113700.7040403@kernel.org>
+Date: Sun, 4 Oct 2015 15:26:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <1443708822-8580-6-git-send-email-ludovic.tancerel@maplehightech.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1443708822-8580-7-git-send-email-ludovic.tancerel@maplehightech.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 01/10/15 15:13, Ludovic Tancerel wrote:
-> Support for MS5637 temperature & pressure sensor
+> Support for MS8607 temperature, pressure & humidity sensor.
+> This part is using functions from MS5637 for temperature and pressure
+> and HTU21 for humidity
 > 
 > Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
-Applied,
+Applied to the togreg branch of iio.git.
+
+Whilst I'll throw in the fact I'd still have preferred these as a pair of
+drivers I do appreciate that sometimes customer requirements do result
+in less than ideal engineering design!
+
+Anyhow, lets see what the autobuilders make of them ;)
+
+Thanks,
+
+Jonathan
 > ---
->  drivers/iio/pressure/Kconfig  |  11 +++
->  drivers/iio/pressure/Makefile |   1 +
->  drivers/iio/pressure/ms5637.c | 186 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 198 insertions(+)
->  create mode 100644 drivers/iio/pressure/ms5637.c
+>  Documentation/ABI/testing/sysfs-bus-iio-meas-spec |  1 +
+>  drivers/iio/humidity/Kconfig                      |  2 ++
+>  drivers/iio/humidity/htu21.c                      | 33 ++++++++++++++++++++---
+>  drivers/iio/pressure/Kconfig                      |  2 ++
+>  drivers/iio/pressure/ms5637.c                     |  6 ++++-
+>  5 files changed, 40 insertions(+), 4 deletions(-)
 > 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+> index 6d47e54..1a6265e 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-meas-spec
+> @@ -5,3 +5,4 @@ Description:
+>                  Reading returns either '1' or '0'. '1' means that the
+>                  battery level supplied to sensor is below 2.25V.
+>                  This ABI is available for tsys02d, htu21, ms8607
+> +		This ABI is available for htu21, ms8607
+> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+> index 3fab60c..75ca043 100644
+> --- a/drivers/iio/humidity/Kconfig
+> +++ b/drivers/iio/humidity/Kconfig
+> @@ -19,6 +19,8 @@ config HTU21
+>  	help
+>  	  If you say yes here you get support for the Measurement Specialties
+>  	  HTU21 humidity and temperature sensor.
+> +	  This driver is also used for MS8607 temperature, pressure & humidity
+> +	  sensor
+>  
+>  	  This driver can also be built as a module. If so, the module will
+>  	  be called htu21.
+> diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
+> index 4406b61..20689c3 100644
+> --- a/drivers/iio/humidity/htu21.c
+> +++ b/drivers/iio/humidity/htu21.c
+> @@ -1,6 +1,7 @@
+>  /*
+>   * htu21.c - Support for Measurement-Specialties
+>   *           htu21 temperature & humidity sensor
+> + *	     and humidity part of MS8607 sensor
+>   *
+>   * Copyright (c) 2014 Measurement-Specialties
+>   *
+> @@ -10,6 +11,8 @@
+>   *
+>   * Datasheet:
+>   *  http://www.meas-spec.com/downloads/HTU21D.pdf
+> + * Datasheet:
+> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
+>   */
+>  
+>  #include <linux/init.h>
+> @@ -24,6 +27,11 @@
+>  
+>  #define HTU21_RESET				0xFE
+>  
+> +enum {
+> +	HTU21,
+> +	MS8607
+> +};
+> +
+>  static const int htu21_samp_freq[4] = { 20, 40, 70, 120 };
+>  /* String copy of the above const for readability purpose */
+>  static const char htu21_show_samp_freq[] = "20 40 70 120";
+> @@ -106,6 +114,18 @@ static const struct iio_chan_spec htu21_channels[] = {
+>  	 }
+>  };
+>  
+> +/*
+> + * Meas Spec recommendation is to not read temperature
+> + * on this driver part for MS8607
+> + */
+> +static const struct iio_chan_spec ms8607_channels[] = {
+> +	{
+> +		.type = IIO_HUMIDITYRELATIVE,
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +	 }
+> +};
+> +
+>  static ssize_t htu21_show_battery_low(struct device *dev,
+>  				      struct device_attribute *attr, char *buf)
+>  {
+> @@ -188,8 +208,14 @@ int htu21_probe(struct i2c_client *client,
+>  	indio_dev->name = id->name;
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> -	indio_dev->channels = htu21_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(htu21_channels);
+> +
+> +	if (id->driver_data == MS8607) {
+> +		indio_dev->channels = ms8607_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(ms8607_channels);
+> +	} else {
+> +		indio_dev->channels = htu21_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(htu21_channels);
+> +	}
+>  
+>  	i2c_set_clientdata(client, indio_dev);
+>  
+> @@ -206,7 +232,8 @@ int htu21_probe(struct i2c_client *client,
+>  }
+>  
+>  static const struct i2c_device_id htu21_id[] = {
+> -	{"htu21", 0},
+> +	{"htu21", HTU21},
+> +	{"ms8607-humidity", MS8607},
+>  	{}
+>  };
+>  
 > diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index fa62950..dd12d52 100644
+> index dd12d52..01e0b6a 100644
 > --- a/drivers/iio/pressure/Kconfig
 > +++ b/drivers/iio/pressure/Kconfig
-> @@ -79,6 +79,17 @@ config MS5611_SPI
->  	  To compile this driver as a module, choose M here: the module will
->  	  be called ms5611_spi.
+> @@ -86,6 +86,8 @@ config MS5637
+>  	help
+>  	  If you say yes here you get support for the Measurement Specialties
+>  	  MS5637 pressure and temperature sensor.
+> +	  This driver is also used for MS8607 temperature, pressure & humidity
+> +	  sensor
 >  
-> +config MS5637
-> +	tristate "Measurement Specialties MS5637 pressure & temperature sensor"
-> +	depends on I2C
-> +        select IIO_MS_SENSORS_I2C
-> +	help
-> +	  If you say yes here you get support for the Measurement Specialties
-> +	  MS5637 pressure and temperature sensor.
-> +
-> +	  This driver can also be built as a module. If so, the module will
-> +	  be called ms5637.
-> +
->  config IIO_ST_PRESS
->  	tristate "STMicroelectronics pressure sensor Driver"
->  	depends on (I2C || SPI_MASTER) && SYSFS
-> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-> index a4f98f8..46571c96 100644
-> --- a/drivers/iio/pressure/Makefile
-> +++ b/drivers/iio/pressure/Makefile
-> @@ -10,6 +10,7 @@ obj-$(CONFIG_MPL3115) += mpl3115.o
->  obj-$(CONFIG_MS5611) += ms5611_core.o
->  obj-$(CONFIG_MS5611_I2C) += ms5611_i2c.o
->  obj-$(CONFIG_MS5611_SPI) += ms5611_spi.o
-> +obj-$(CONFIG_MS5637) += ms5637.o
->  obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
->  st_pressure-y := st_pressure_core.o
->  st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
+>  	  This driver can also be built as a module. If so, the module will
+>  	  be called ms5637.
 > diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
-> new file mode 100644
-> index 0000000..e3ad9d3
-> --- /dev/null
+> index e3ad9d3..e8d0e0d 100644
+> --- a/drivers/iio/pressure/ms5637.c
 > +++ b/drivers/iio/pressure/ms5637.c
-> @@ -0,0 +1,186 @@
-> +/*
-> + * ms5637.c - Support for Measurement-Specialties ms5637
-> + *            pressure & temperature sensor
-> + *
-> + * Copyright (c) 2015 Measurement-Specialties
-> + *
-> + * Licensed under the GPL-2.
-> + *
-> + * (7-bit I2C slave address 0x76)
-> + *
+> @@ -1,5 +1,5 @@
+>  /*
+> - * ms5637.c - Support for Measurement-Specialties ms5637
+> + * ms5637.c - Support for Measurement-Specialties ms5637 and ms8607
+>   *            pressure & temperature sensor
+>   *
+>   * Copyright (c) 2015 Measurement-Specialties
+> @@ -10,7 +10,10 @@
+>   *
+>   * Datasheet:
+>   *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
 > + * Datasheet:
-> + *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
-> + */
-> +#include <linux/init.h>
-> +#include <linux/device.h>
-> +#include <linux/kernel.h>
-> +#include <linux/stat.h>
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/mutex.h>
+> + *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
+>   */
 > +
-> +#include "../common/ms_sensors/ms_sensors_i2c.h"
-> +
-> +static const int ms5637_samp_freq[6] = { 960, 480, 240, 120, 60, 30 };
-> +/* String copy of the above const for readability purpose */
-> +static const char ms5637_show_samp_freq[] = "960 480 240 120 60 30";
-> +
-> +static int ms5637_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *channel, int *val,
-> +			   int *val2, long mask)
-> +{
-> +	int ret;
-> +	int temperature;
-> +	unsigned int pressure;
-> +	struct ms_tp_dev *dev_data = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		ret = ms_sensors_read_temp_and_pressure(dev_data,
-> +							&temperature,
-> +							&pressure);
-> +		if (ret)
-> +			return ret;
-> +
-> +		switch (channel->type) {
-> +		case IIO_TEMP:	/* in milli °C */
-> +			*val = temperature;
-> +
-> +			return IIO_VAL_INT;
-> +		case IIO_PRESSURE:	/* in kPa */
-> +			*val = pressure / 1000;
-> +			*val2 = (pressure % 1000) * 1000;
-> +
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = ms5637_samp_freq[dev_data->res_index];
-> +
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ms5637_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val, int val2, long mask)
-> +{
-> +	struct ms_tp_dev *dev_data = iio_priv(indio_dev);
-> +	int i;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		i = ARRAY_SIZE(ms5637_samp_freq);
-> +		while (i-- > 0)
-> +			if (val == ms5637_samp_freq[i])
-> +				break;
-> +		if (i < 0)
-> +			return -EINVAL;
-> +		dev_data->res_index = i;
-> +
-> +		return 0;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_chan_spec ms5637_channels[] = {
-> +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +	},
-> +	{
-> +		.type = IIO_PRESSURE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +	}
-> +};
-> +
-> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(ms5637_show_samp_freq);
-> +
-> +static struct attribute *ms5637_attributes[] = {
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group ms5637_attribute_group = {
-> +	.attrs = ms5637_attributes,
-> +};
-> +
-> +static const struct iio_info ms5637_info = {
-> +	.read_raw = ms5637_read_raw,
-> +	.write_raw = ms5637_write_raw,
-> +	.attrs = &ms5637_attribute_group,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int ms5637_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	struct ms_tp_dev *dev_data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	if (!i2c_check_functionality(client->adapter,
-> +				     I2C_FUNC_SMBUS_READ_WORD_DATA |
-> +				     I2C_FUNC_SMBUS_WRITE_BYTE |
-> +				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
-> +		dev_err(&client->dev,
-> +			"Adapter does not support some i2c transaction\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dev_data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	dev_data = iio_priv(indio_dev);
-> +	dev_data->client = client;
-> +	dev_data->res_index = 5;
-> +	mutex_init(&dev_data->lock);
-> +
-> +	indio_dev->info = &ms5637_info;
-> +	indio_dev->name = id->name;
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = ms5637_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(ms5637_channels);
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	ret = ms_sensors_reset(client, 0x1E, 3000);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ms_sensors_tp_read_prom(dev_data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
-> +static const struct i2c_device_id ms5637_id[] = {
-> +	{"ms5637", 0},
-> +	{}
-> +};
-> +
-> +static struct i2c_driver ms5637_driver = {
-> +	.probe = ms5637_probe,
-> +	.id_table = ms5637_id,
-> +	.driver = {
-> +		   .name = "ms5637"
-> +		   },
-> +};
-> +
-> +module_i2c_driver(ms5637_driver);
-> +
-> +MODULE_DESCRIPTION("Measurement-Specialties ms5637 temperature & pressure driver");
-> +MODULE_AUTHOR("William Markezana <william.markezana@meas-spec.com>");
-> +MODULE_AUTHOR("Ludovic Tancerel <ludovic.tancerel@maplehightech.com>");
-> +MODULE_LICENSE("GPL v2");
+>  #include <linux/init.h>
+>  #include <linux/device.h>
+>  #include <linux/kernel.h>
+> @@ -167,6 +170,7 @@ static int ms5637_probe(struct i2c_client *client,
+>  
+>  static const struct i2c_device_id ms5637_id[] = {
+>  	{"ms5637", 0},
+> +	{"ms8607-temppressure", 1},
+>  	{}
+>  };
+>  
 > 
 
