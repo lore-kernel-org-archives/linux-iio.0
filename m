@@ -1,77 +1,449 @@
 Return-Path: <hns@goldelico.com>
-Subject: [PATCH v2 0/3] Add Palmas iio gpadc
+Content-Type: text/plain; charset=windows-1252
 Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [PATCH 2/3] iio:adc:palmas: add DT support
 From: H. Nikolaus Schaller <hns@goldelico.com>
-In-Reply-To: <86F849CB-1A50-4BEB-99C6-79FF97971DCB@goldelico.com>
-Date: Sun, 4 Oct 2015 18:05:46 +0200
-Cc: devicetree@vger.kernel.org,
- LKML <linux-kernel@vger.kernel.org>,
- linux-omap <linux-omap@vger.kernel.org>,
- linux-iio@vger.kernel.org,
- Grazvydas Ignotas <notasas@gmail.com>
-Message-Id: <08A14DB0-0A79-42F4-A0D2-9BEAB3328405@goldelico.com>
-References: <86F849CB-1A50-4BEB-99C6-79FF97971DCB@goldelico.com>
-To: Rob Herring <robh+dt@kernel.org>,
+In-Reply-To: <56080D2B.8030608@kernel.org>
+Date: Sun, 4 Oct 2015 18:05:06 +0200
+Cc: Rob Herring <robh+dt@kernel.org>,
  Pawel Moll <pawel.moll@arm.com>,
  Mark Rutland <mark.rutland@arm.com>,
  Ian Campbell <ijc+devicetree@hellion.org.uk>,
  Kumar Gala <galak@codeaurora.org>,
- =?iso-8859-1?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
+ =?windows-1252?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
  Tony Lindgren <tony@atomide.com>,
  Russell King <linux@arm.linux.org.uk>,
  Marek Belisko <marek@goldelico.com>,
  Pradeep Goudagunta <pgoudagunta@nvidia.com>,
- Nikolaus Schaller <hns@goldelico.com>,
  Laxman Dewangan <ldewangan@nvidia.com>,
  gg@slimlogic.co.uk,
- jic23@jic23.retrosnub.co.uk
+ jic23@jic23.retrosnub.co.uk,
+ devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-omap@vger.kernel.org,
+ linux-iio@vger.kernel.org,
+ notaz@openpandora.org
+Message-Id: <ED063BA4-4A6D-4ACA-A0E5-B037E6075D79@goldelico.com>
+References: <1437657169.3419965.331206849.51D66A2E@webmail.messagingengine.com> <cover.1443012491.git.hns@goldelico.com> <0A17C76F-3E8F-430E-BDED-506CC9C2E2AC@goldelico.com> <56080D2B.8030608@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-V2 changes:
-- worked in review comments by Peter Meerwald
-- made channels 1 and 3 report (raw) temperature values
-- moved PALMAS_GPADC_TRIMINVALID to driver core
-- worked in review comments by Jonathan Cameron
-- iio_map removed
 
-Add iio driver for the TI Palmas (twl6035, 6037) including device tree =
-bindings.
-It enables the gpadc for the OMAP5 uevm.
+Am 27.09.2015 um 17:37 schrieb Jonathan Cameron <jic23@kernel.org>:
 
-This patch series is based on original code taken from Android Tegra =
-kernels:
-=
-(https://android.googlesource.com/kernel/tegra/+/aaabb2e045f31e5a970109ffd=
-aae900dd403d17e/drivers/staging/iio/adc)
-
-Tegra code was developed by:
-Pradeep Goudagunta <pgoudagunta@nvidia.com>
-Laxman Dewangan <ldewangan@nvidia.com>
-
-Edited and extended for mainline by:
-H. Nikolaus Schaller <hns@goldelico.com>
-Marek Belisko <marek@goldelico.com>
-
-
-H. Nikolaus Schaller (2):
- iio:adc: add iio driver for Palmas (twl6035/7) gpadc
- ARM: dts: omap5-uevm: enable iio gpadc for Palmas
-
-Marek Belisko (1):
- iio:adc:palmas: add DT support
-
-.../devicetree/bindings/iio/adc/palmas-gpadc.txt   |  46 ++
-arch/arm/boot/dts/omap5-uevm.dts                   |   9 +
-drivers/iio/adc/Kconfig                            |   9 +
-drivers/iio/adc/Makefile                           |   1 +
-drivers/iio/adc/palmas_gpadc.c                     | 860 =
-+++++++++++++++++++++
-include/linux/mfd/palmas.h                         |  75 +-
-6 files changed, 976 insertions(+), 24 deletions(-)
-create mode 100644 =
+> On 23/09/15 13:49, H. Nikolaus Schaller wrote:
+>> From: Marek Belisko <marek@goldelico.com>
+>>=20
+>> Code was found at:
+>> =
+https://android.googlesource.com/kernel/tegra/+/a90856a6626d502d42c6e7abcc=
+bdf9d730b36270%5E%21/#F1
+>>=20
+>> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+>> [Fixed minor typos + add channels list to documentation]
+>> Signed-off-by: Marek Belisko <marek@goldelico.com>
+> Various commments inline.  You've run into the region of previous =
+arguments
+> over driver bindings...  Mark Rutland, one for you to comment on as I =
+know
+> you love our bindings ;) and yes we haven't done anything about them =
+in two
+> years or so since you last moaned about them to me :(
+>=20
+>> ---
+>> .../devicetree/bindings/iio/adc/palmas-gpadc.txt   |  67 +++++++++++
+>> drivers/iio/adc/palmas_gpadc.c                     | 130 =
++++++++++++++++++----
+>> 2 files changed, 175 insertions(+), 22 deletions(-)
+>> create mode 100644 =
 Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt
-create mode 100644 drivers/iio/adc/palmas_gpadc.c
+>>=20
+>> diff --git =
+a/Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt =
+b/Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt
+>> new file mode 100644
+>> index 0000000..a5a33ba
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt
+>> @@ -0,0 +1,67 @@
+>> +* Palmas general purpose ADC IP block devicetree bindings
+>> +
+>> +Channels list:
+>> +	0 battery type
+>> +        1 battery temp NTC
+> tab vs space fun.
+>> +	2 GP
+>> +	3 temp (with ext. diode)
+>> +	4 GP
+>> +	5 GP
+>> +	6 VBAT_SENSE
+>> +	7 VCC_SENSE
+>> +	8 Backup Battery voltage
+>> +	9 external charger (VCHG)
+>> +	10 VBUS
+>> +	11 DC-DC current probe (how does this work?)
+>> +	12 internal die temp
+>> +	13 internal die temp
+>> +	14 USB ID pin voltage
+>> +	15 test network
+>> +
+>> +Required properties:
+>> +- compatible : Must be "ti,palmas-gpadc".
+>> +
+>> +Optional sub-nodes:
+>> +ti,channel0-current-microamp: Channel 0 current in uA.
+>> +	Valid values 0uA, 5uA, 15uA, 20uA.
+>> +ti,channel3-current-microamp: Channel 3 current in uA.
+>> +	Valid value 0uA, 10uA, 400uA, 800uA.
+>> +ti,enable-channel3-dual-current: Enable dual current on channel 3.
+>> +ti,enable-extended-delay: Enable extended delay.
+>> +
+>> +Optional sub-node:
+>> +The Palmas ADC node has optional subnode to define the iio mapping.
+>> +It is the name with "iio_map". This node has again subnode to define
+>> +the property of the channel. The sub subnode has following =
+properties:
+>> +- ti,adc-channel-number: ADC channel number.
+>> +- ti,adc-consumer-device: Consumer device name.
+>> +- ti,adc-consumer-channel: ADC consumer channel name.
+>> +
+>> +Example:
+>> +
+>> +pmic {
+>> +	compatible =3D "ti,twl6035-pmic", "ti,palmas-pmic";
+>> +	...
+>> +	gpadc {
+>> +		compatible =3D "ti,palmas-gpadc";
+>> +		interrupts =3D <18 0
+>> +			      16 0
+>> +			      17 0>;
+>> +		ti,channel0-current-microamp =3D <5>;
+>> +		ti,channel3-current-microamp =3D <10>;
+>> +		iio_map {
+>> +			ch1 {
+>> +				ti,adc-channel-number =3D <1>;
+>> +				ti,adc-consumer-device =3D =
+"generic-adc-thermal.0";
+>> +				ti,adc-consumer-channel =
+=3D"battery-temp-channel";
+>> +			};
+>> +
+>> +			ch6 {
+>> +				ti,adc-channel-number =3D <6>;
+>> +				ti,adc-consumer-device =3D =
+"palmas-battery";
+>> +				ti,adc-consumer-channel =3D"vbat_channel";=
 
---=20
-2.5.1
+>> +			};
+> See comments below.  There is an existing iio-consumer binding.
+> Various uses of it have caused complaints from the device tree guys in =
+the
+> past.  I'd be interested to get their feedback on this use case.
+
+We just were not aware what it really means. iiomapping was available =
+through
+the pdata of the original driver, but we have no real use-case.
+
+>> +		};
+>> +	};
+>> +	...
+>> +};
+>> diff --git a/drivers/iio/adc/palmas_gpadc.c =
+b/drivers/iio/adc/palmas_gpadc.c
+>> index 17abb28..bc4db43 100644
+>> --- a/drivers/iio/adc/palmas_gpadc.c
+>> +++ b/drivers/iio/adc/palmas_gpadc.c
+>> @@ -20,6 +20,8 @@
+>> #include <linux/pm.h>
+>> #include <linux/mfd/palmas.h>
+>> #include <linux/completion.h>
+>> +#include <linux/of.h>
+>> +#include <linux/of_device.h>
+>> #include <linux/iio/iio.h>
+>> #include <linux/iio/machine.h>
+>> #include <linux/iio/driver.h>
+>> @@ -434,20 +436,97 @@ static const struct iio_chan_spec =
+palmas_gpadc_iio_channel[] =3D {
+>> 	PALMAS_ADC_CHAN_IIO(IN15, IIO_VOLTAGE),
+>> };
+>>=20
+>> +static int palmas_gpadc_get_adc_dt_data(struct platform_device =
+*pdev,
+>> +	struct palmas_gpadc_platform_data **gpadc_pdata)
+>> +{
+>> +	struct device_node *np =3D pdev->dev.of_node;
+>> +	struct palmas_gpadc_platform_data *gp_data;
+>> +	struct device_node *map_node;
+>> +	struct device_node *child;
+>> +	struct iio_map *palmas_iio_map;
+>> +	int ret;
+>> +	u32 pval;
+>> +	int nmap, nvalid_map;
+>> +
+>> +	gp_data =3D devm_kzalloc(&pdev->dev, sizeof(*gp_data), =
+GFP_KERNEL);
+>> +	if (!gp_data)
+>> +		return -ENOMEM;
+>> +
+>> +	ret =3D of_property_read_u32(np, "ti,channel0-current-microamp", =
+&pval);
+>> +	if (!ret)
+>> +		gp_data->ch0_current =3D pval;
+>> +
+>> +	ret =3D of_property_read_u32(np, "ti,channel3-current-microamp", =
+&pval);
+>> +	if (!ret)
+>> +		gp_data->ch3_current =3D pval;
+>> +
+>> +	gp_data->extended_delay =3D of_property_read_bool(np,
+>> +					"ti,enable-extended-delay");
+>> +
+>> +	map_node =3D of_get_child_by_name(np, "iio_map");
+>> +	if (!map_node) {
+>> +		dev_warn(&pdev->dev, "IIO map table not found\n");
+>> +		goto done;
+>> +	}
+>> +
+>> +	nmap =3D of_get_child_count(map_node);
+>> +	if (!nmap)
+>> +		goto done;
+>> +
+>> +	nmap++;
+>> +	palmas_iio_map =3D devm_kzalloc(&pdev->dev,
+>> +				sizeof(*palmas_iio_map) * nmap, =
+GFP_KERNEL);
+>> +	if (!palmas_iio_map)
+>> +		goto done;
+>> +
+>> +	nvalid_map =3D 0;
+>> +	for_each_child_of_node(map_node, child) {
+>> +		ret =3D of_property_read_u32(child, =
+"ti,adc-channel-number",
+>> +					&pval);
+>> +		if (!ret && pval < ARRAY_SIZE(palmas_gpadc_iio_channel))
+>> +			palmas_iio_map[nvalid_map].adc_channel_label =3D
+>> +				=
+palmas_gpadc_iio_channel[pval].datasheet_name;
+>> +		of_property_read_string(child, "ti,adc-consumer-device",
+>> +				=
+&palmas_iio_map[nvalid_map].consumer_dev_name);
+>> +		of_property_read_string(child, =
+"ti,adc-consumer-channel",
+>> +				=
+&palmas_iio_map[nvalid_map].consumer_channel);
+> Hmm.  These aren't TI specific, and there are already IIO bindings
+> documented for consumers at =
+Documentation/devicetree/bindings/iio/iio-bindings.txt.
+>=20
+> They have caused some issues in the past due to binding to devices =
+that are
+> linux specific convenience functions.  I fear that is sort of the case =
+here
+> with your thermal binding, but we can see what response we get.
+>=20
+> Mark Rutland is IIRC the most vocal on this :)
+>=20
+> The current plan for iio-hwmon which caused all the controversy is to =
+look
+> at moving the decision to create the mapping entirely into userspace
+> via configfs and hence make it a clear policy decision rather than =
+claiming
+> that changing user interface is a hardware mapping.
+
+we have removed iio mapping completely. It appears that it is only used =
+by
+5 other drivers and none of the cousins of the Palmas (twl4030, twl6030, =
+tps65950 etc.).
+
+>=20
+>> +		dev_dbg(&pdev->dev,
+>> +			"Channel %s consumer dev %s and consumer channel =
+%s\n",
+>> +				=
+palmas_iio_map[nvalid_map].adc_channel_label,
+>> +				=
+palmas_iio_map[nvalid_map].consumer_dev_name,
+>> +				=
+palmas_iio_map[nvalid_map].consumer_channel);
+>> +		nvalid_map++;
+>> +	}
+>> +	palmas_iio_map[nvalid_map].adc_channel_label =3D NULL;
+>> +	palmas_iio_map[nvalid_map].consumer_dev_name =3D NULL;
+>> +	palmas_iio_map[nvalid_map].consumer_channel =3D NULL;
+>> +
+>> +	gp_data->iio_maps =3D palmas_iio_map;
+>> +
+>> +done:
+>> +	*gpadc_pdata =3D gp_data;
+> blank line here.
+>> +	return 0;
+>> +}
+>> +
+>> static int palmas_gpadc_probe(struct platform_device *pdev)
+>> {
+>> 	struct palmas_gpadc *adc;
+>> 	struct palmas_platform_data *pdata;
+>> -	struct palmas_gpadc_platform_data *adc_pdata;
+>> +	struct palmas_gpadc_platform_data *gpadc_pdata =3D NULL;
+> This rename should not be here. It adds a lot of churn to the patch
+> and makes it harder to review.  Fix it in the previous patch.
+
+Well, the first patch was intended to stay as close to the original as
+possible, but here it is indeed very reasonable to start with renamed
+variables.
+
+>=20
+>> 	struct iio_dev *iodev;
+>> 	int ret, i;
+>>=20
+>> 	pdata =3D dev_get_platdata(pdev->dev.parent);
+>> -	if (!pdata || !pdata->gpadc_pdata) {
+>> -		dev_err(&pdev->dev, "No platform data\n");
+>> -		return -ENODEV;
+>> +	if (pdata && pdata->gpadc_pdata)
+>> +		gpadc_pdata =3D pdata->gpadc_pdata;
+>> +
+>> +	if (!gpadc_pdata && pdev->dev.of_node) {
+>> +		ret =3D palmas_gpadc_get_adc_dt_data(pdev, =
+&gpadc_pdata);
+>> +		if (ret < 0)
+>> +			return ret;
+>> 	}
+>> -	adc_pdata =3D pdata->gpadc_pdata;
+>> +	if (!gpadc_pdata)
+>> +		return -EINVAL;
+>>=20
+>> 	iodev =3D iio_device_alloc(sizeof(*adc));
+>> 	if (!iodev) {
+>> @@ -455,8 +534,8 @@ static int palmas_gpadc_probe(struct =
+platform_device *pdev)
+>> 		return -ENOMEM;
+>> 	}
+>>=20
+>> -	if (adc_pdata->iio_maps) {
+>> -		ret =3D iio_map_array_register(iodev, =
+adc_pdata->iio_maps);
+>> +	if (gpadc_pdata->iio_maps) {
+>> +		ret =3D iio_map_array_register(iodev, =
+gpadc_pdata->iio_maps);
+>> 		if (ret < 0) {
+>> 			dev_err(&pdev->dev, "iio_map_array_register =
+failed\n");
+>> 			goto out;
+>> @@ -470,7 +549,7 @@ static int palmas_gpadc_probe(struct =
+platform_device *pdev)
+>> 	init_completion(&adc->conv_completion);
+>> 	dev_set_drvdata(&pdev->dev, iodev);
+>>=20
+>> -	adc->auto_conversion_period =3D =
+adc_pdata->auto_conversion_period_ms;
+>> +	adc->auto_conversion_period =3D =
+gpadc_pdata->auto_conversion_period_ms;
+>> 	adc->irq =3D palmas_irq_get_virq(adc->palmas, =
+PALMAS_GPADC_EOC_SW_IRQ);
+>> 	ret =3D request_threaded_irq(adc->irq, NULL,
+>> 		palmas_gpadc_irq,
+>> @@ -482,8 +561,8 @@ static int palmas_gpadc_probe(struct =
+platform_device *pdev)
+>> 		goto out_unregister_map;
+>> 	}
+>>=20
+>> -	if (adc_pdata->adc_wakeup1_data) {
+>> -		memcpy(&adc->wakeup1_data, adc_pdata->adc_wakeup1_data,
+>> +	if (gpadc_pdata->adc_wakeup1_data) {
+>> +		memcpy(&adc->wakeup1_data, =
+gpadc_pdata->adc_wakeup1_data,
+>> 			sizeof(adc->wakeup1_data));
+>> 		adc->wakeup1_enable =3D true;
+>> 		adc->irq_auto_0 =3D  platform_get_irq(pdev, 1);
+>> @@ -498,8 +577,8 @@ static int palmas_gpadc_probe(struct =
+platform_device *pdev)
+>> 		}
+>> 	}
+>>=20
+>> -	if (adc_pdata->adc_wakeup2_data) {
+>> -		memcpy(&adc->wakeup2_data, adc_pdata->adc_wakeup2_data,
+>> +	if (gpadc_pdata->adc_wakeup2_data) {
+>> +		memcpy(&adc->wakeup2_data, =
+gpadc_pdata->adc_wakeup2_data,
+>> 				sizeof(adc->wakeup2_data));
+>> 		adc->wakeup2_enable =3D true;
+>> 		adc->irq_auto_1 =3D  platform_get_irq(pdev, 2);
+>> @@ -514,25 +593,25 @@ static int palmas_gpadc_probe(struct =
+platform_device *pdev)
+>> 		}
+>> 	}
+>>=20
+>> -	if (adc_pdata->ch0_current =3D=3D 0)
+>> +	if (gpadc_pdata->ch0_current =3D=3D 0)
+>> 		adc->ch0_current =3D PALMAS_ADC_CH0_CURRENT_SRC_0;
+>> -	else if (adc_pdata->ch0_current <=3D 5)
+>> +	else if (gpadc_pdata->ch0_current <=3D 5)
+>> 		adc->ch0_current =3D PALMAS_ADC_CH0_CURRENT_SRC_5;
+>> -	else if (adc_pdata->ch0_current <=3D 15)
+>> +	else if (gpadc_pdata->ch0_current <=3D 15)
+>> 		adc->ch0_current =3D PALMAS_ADC_CH0_CURRENT_SRC_15;
+>> 	else
+>> 		adc->ch0_current =3D PALMAS_ADC_CH0_CURRENT_SRC_20;
+>>=20
+>> -	if (adc_pdata->ch3_current =3D=3D 0)
+>> +	if (gpadc_pdata->ch3_current =3D=3D 0)
+>> 		adc->ch3_current =3D PALMAS_ADC_CH3_CURRENT_SRC_0;
+>> -	else if (adc_pdata->ch3_current <=3D 10)
+>> +	else if (gpadc_pdata->ch3_current <=3D 10)
+>> 		adc->ch3_current =3D PALMAS_ADC_CH3_CURRENT_SRC_10;
+>> -	else if (adc_pdata->ch3_current <=3D 400)
+>> +	else if (gpadc_pdata->ch3_current <=3D 400)
+>> 		adc->ch3_current =3D PALMAS_ADC_CH3_CURRENT_SRC_400;
+>> 	else
+>> 		adc->ch3_current =3D PALMAS_ADC_CH3_CURRENT_SRC_800;
+>>=20
+>> -	adc->extended_delay =3D adc_pdata->extended_delay;
+>> +	adc->extended_delay =3D gpadc_pdata->extended_delay;
+>>=20
+>> 	iodev->name =3D MOD_NAME;
+>> 	iodev->dev.parent =3D &pdev->dev;
+>> @@ -559,15 +638,15 @@ static int palmas_gpadc_probe(struct =
+platform_device *pdev)
+>> 	return 0;
+>>=20
+>> out_irq_auto1_free:
+>> -	if (adc_pdata->adc_wakeup2_data)
+>> +	if (gpadc_pdata->adc_wakeup2_data)
+>> 		free_irq(adc->irq_auto_1, adc);
+>> out_irq_auto0_free:
+>> -	if (adc_pdata->adc_wakeup1_data)
+>> +	if (gpadc_pdata->adc_wakeup1_data)
+>> 		free_irq(adc->irq_auto_0, adc);
+>> out_irq_free:
+>> 	free_irq(adc->irq, adc);
+>> out_unregister_map:
+>> -	if (adc_pdata->iio_maps)
+>> +	if (gpadc_pdata->iio_maps)
+>> 		iio_map_array_unregister(iodev);
+>> out:
+>> 	iio_device_free(iodev);
+>> @@ -769,6 +848,12 @@ static const struct dev_pm_ops palmas_pm_ops =3D =
+{
+>> 				palmas_gpadc_resume)
+>> };
+>>=20
+>> +static const struct of_device_id of_palmas_gpadc_match_tbl[] =3D {
+>> +	{ .compatible =3D "ti,palmas-gpadc", },
+>> +	{ /* end */ }
+>> +};
+>> +MODULE_DEVICE_TABLE(of, of_palmas_gpadc_match_tbl);
+>> +
+>> static struct platform_driver palmas_gpadc_driver =3D {
+>> 	.probe =3D palmas_gpadc_probe,
+>> 	.remove =3D palmas_gpadc_remove,
+>> @@ -776,6 +861,7 @@ static struct platform_driver palmas_gpadc_driver =
+=3D {
+>> 		.name =3D MOD_NAME,
+>> 		.owner =3D THIS_MODULE,
+>> 		.pm =3D &palmas_pm_ops,
+>> +		.of_match_table =3D of_palmas_gpadc_match_tbl,
+>> 	},
+>> };
+>>=20
+>=20
