@@ -1,1004 +1,668 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51276 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51383 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751368AbbJDPew (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Oct 2015 11:34:52 -0400
-Subject: Re: [PATCH 5/7] iio: Add generic DMA buffer infrastructure
+	with ESMTP id S1751506AbbJDP5s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Oct 2015 11:57:48 -0400
+Subject: Re: [PATCH 6/7] staging:iio:dummy: Add DMA buffer support
 To: Lars-Peter Clausen <lars@metafoo.de>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
 References: <1443797107-13391-1-git-send-email-lars@metafoo.de>
- <1443797107-13391-6-git-send-email-lars@metafoo.de>
+ <1443797107-13391-7-git-send-email-lars@metafoo.de>
 Cc: Octavian Purdila <octavian.purdila@intel.com>,
 	Andrey Yurovsky <andrey@snupi.com>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56114716.4040504@kernel.org>
-Date: Sun, 4 Oct 2015 16:34:46 +0100
+Message-ID: <56114C77.3070909@kernel.org>
+Date: Sun, 4 Oct 2015 16:57:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <1443797107-13391-6-git-send-email-lars@metafoo.de>
+In-Reply-To: <1443797107-13391-7-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 02/10/15 15:45, Lars-Peter Clausen wrote:
-> The traditional approach used in IIO to implement buffered capture requires
-> the generation of at least one interrupt per sample. In the interrupt
-> handler the driver reads the sample from the device and copies it to a
-> software buffer. This approach has a rather large per sample overhead
-> associated with it. And while it works fine for samplerates in the range of
-> up to 1000 samples per second it starts to consume a rather large share of
-> the available CPU processing time once we go beyond that, this is
-> especially true on an embedded system with limited processing power. The
-> regular interrupt also causes increased power consumption by not allowing
-> the hardware into deeper sleep states, which is something that becomes more
-> and more important on mobile battery powered devices.
+> Add a DMA buffer implementation to the IIO dummy driver. Similar to the
+> existing kfifo based dummy buffer implementation the buffer is not
+> connected to any real hardware, but rather emulates its behavior.
 > 
-> And while the recently added watermark support mitigates some of the issues
-> by allowing the device to generate interrupts at a rate lower than the data
-> output rate, this still requires a storage buffer inside the device and
-> even if it exists it is only a few 100 samples deep at most.
+> The dummy DMA buffer is meant to be used as a template for implementing DMA
+> buffer support and can also be used to test the generic IIO DMA buffer
+> infrastructure without having access to hardware that has DMA capabilities.
 > 
-> DMA support on the other hand allows to capture multiple millions or even
-> more samples without any CPU interaction. This allows the CPU to either go
-> to sleep for longer periods or focus on other tasks which increases overall
-> system performance and power consumption. In addition to that some devices
-> might not even offer a way to read the data other than using DMA, which
-> makes DMA mandatory to use for them.
+> The dummy driver is split into two parts. The first part emulates the
+> behavior of a typical DMA controller and converter while the second part
+> implement a typical device driver for such a system. The separation of the
+> two parts is intentionally kept very strict to be to make it clear which
+> parts will be found in a driver for real hardware and which parts will be
+> performed by the hardware and will not be part of the driver.
 > 
-> The tasks involved in implementing a DMA buffer can be divided into two
-> categories. The first category is memory buffer management (allocation,
-> mapping, etc.) and hooking this up the IIO buffer callbacks like read(),
-> enable(), disable(), etc. The second category of tasks is to setup the
-> DMA hardware and manage the DMA transfers. Tasks from the first category
-> will be very similar for all IIO drivers supporting DMA buffers, while the
-> tasks from the second category will be hardware specific.
-> 
-> This patch implements a generic infrastructure that takes care of the
-> former tasks. It provides a set of functions that implement the standard
-> IIO buffer iio_buffer_access_funcs callbacks. These can either be used as
-> is or be overloaded and augmented with driver specific code where
-> necessary.
-> 
-> For the DMA buffer support infrastructure that is introduced in this patch
-> sample data is grouped by so called blocks. A block is the basic unit at
-> which data is exchanged between the application and the hardware. The
-> application is responsible for allocating the memory associated with the
-> block and then passes the block to the hardware. When the hardware has
-> captured the amount of samples equal to size of a block it will notify the
-> application, which can then read the data from the block and process it.
-> The block size can be freely chosen (within the constraints of the
-> hardware). This allows to make a trade-off between latency and management
-> overhead. The larger the block size the lower the per sample overhead but
-> the latency between when the data was captured and when the application
-> will be able to access it increases, in a similar way smaller block sizes
-> have a larger per sample management overhead but a lower latency. The ideal
-> block size thus depends on system and application requirements.
-> 
-> For the time being the infrastructure only implements a simple double
-> buffered scheme which allocates two blocks each with half the size of the
-> configured buffer size. This provides basic support for capturing
-> continuous uninterrupted data over the existing file-IO ABI. Future
-> extensions to the DMA buffer infrastructure will give applications a more
-> fine grained control over how many blocks are allocated and the size of
-> each block. But this requires userspace ABI additions which are
-> intentionally not part of this patch and will be added separately.
-> 
-> Tasks of the second category need to be implemented by a device specific
-> driver. They can be hooked up into the generic infrastructure using two
-> simple callbacks, submit() and abort().
-> 
-> The submit() callback is used to schedule DMA transfers for blocks. Once a
-> DMA transfer has been completed it is expected that the buffer driver calls
-> iio_dma_buffer_block_done() to notify. The abort() callback is used for
-> stopping all pending and active DMA transfers when the buffer is disabled.
+> The type of the buffer used by the IIO dummy device has to be chosen at
+> compile time and can either be the old FIFO based software triggered buffer
+> or the DMA buffer. Given that the dummy device driver is mainly intended
+> for testing the framework and providing a simple example to be used as a
+> template for new drivers it is not critical that the buffer type can be
+> chosen or changed at runtime.
+I almost wonder if it's worth building two modules. One with the kfifo and
+one with the dma buffer.
+
+This is mainly to avoid confusing the distros who will wonder which
+'fake' option to chose.
+
+Whilst most people who will be looking at building this will be driver
+developers wanting an example to mess around with, I can also see
+userspace developers wanting to mess around with both options.  The flow
+of data out of them is obviously very different.
+
+Not sure how fiddly it would be to do though...
+
+Perhaps lets leave it like this for now and see if we get anyone
+asking to be able to use both.
+
+Very nice bit of example code.  Thanks for doing this alongside
+the 'real' versions.
+
+This whole series clearly wants to be on the list for a while.
+With this in place I might actually fire up a VM and mess around with it :)
+
+J
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-This is nice and clean.  It might take me a little time to mull
-it over in detail for now, I've just pointed out a few typos in comments :)
-The fun question is who is going to dive in and review it?
-
-Beautifully presented series!
-
-Thanks,
-
-Jonathan
-
-p.s. Almost years since we sat down and talked this through ;)
-Hmm. That was the same day Greg asked me when we were finally going
-to get the remaining drivers out of staging on the basis they'd been
-there a while by then. Ooops.
-
 > ---
->  drivers/iio/buffer/Kconfig                   |   9 +
->  drivers/iio/buffer/Makefile                  |   1 +
->  drivers/iio/buffer/industrialio-buffer-dma.c | 683 +++++++++++++++++++++++++++
->  include/linux/iio/buffer-dma.h               | 150 ++++++
->  4 files changed, 843 insertions(+)
->  create mode 100644 drivers/iio/buffer/industrialio-buffer-dma.c
->  create mode 100644 include/linux/iio/buffer-dma.h
+>  drivers/staging/iio/Kconfig                       |  31 +-
+>  drivers/staging/iio/Makefile                      |   3 +-
+>  drivers/staging/iio/iio_simple_dummy.c            |   3 +
+>  drivers/staging/iio/iio_simple_dummy.h            |   8 +
+>  drivers/staging/iio/iio_simple_dummy_buffer_dma.c | 470 ++++++++++++++++++++++
+>  5 files changed, 513 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/staging/iio/iio_simple_dummy_buffer_dma.c
 > 
-> diff --git a/drivers/iio/buffer/Kconfig b/drivers/iio/buffer/Kconfig
-> index 0a7b2fd..b2fda1a 100644
-> --- a/drivers/iio/buffer/Kconfig
-> +++ b/drivers/iio/buffer/Kconfig
-> @@ -9,6 +9,15 @@ config IIO_BUFFER_CB
->  	  Should be selected by any drivers that do in-kernel push
->  	  usage.  That is, those where the data is pushed to the consumer.
->  
-> +config IIO_BUFFER_DMA
-> +	tristate
+> diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+> index 6d5b38d..166bad1 100644
+> --- a/drivers/staging/iio/Kconfig
+> +++ b/drivers/staging/iio/Kconfig
+> @@ -38,10 +38,39 @@ config IIO_SIMPLE_DUMMY_EVENTS
+>  config IIO_SIMPLE_DUMMY_BUFFER
+>  	bool "Buffered capture support"
+>  	select IIO_BUFFER
 > +	help
-> +	  Provides the generic IIO DMA buffer infrastructure that can be used by
-> +	  drivers for devices with DMA support to implement the IIO buffer.
+> +	  Add buffered data capture to the simple dummy driver.
 > +
-> +	  Should be selected by drivers that want to use the generic DMA buffer
-> +	  infrastructure.
+> +choice
+> +	prompt "Buffer type"
+> +	default IIO_SIMPLE_DUMMY_BUFFER_KFIFO
+> +	depends on IIO_SIMPLE_DUMMY_BUFFER
+> +	help
+> +	  Select the type of the buffer used by the simple dummy driver.
 > +
->  config IIO_KFIFO_BUF
->  	tristate "Industrial I/O buffering based on kfifo"
+> +config IIO_SIMPLE_DUMMY_BUFFER_KFIFO
+> +	bool "Triggered FIFO"
+>  	select IIO_TRIGGER
+>  	select IIO_KFIFO_BUF
 >  	help
-> diff --git a/drivers/iio/buffer/Makefile b/drivers/iio/buffer/Makefile
-> index 4d193b9..bda3f11 100644
-> --- a/drivers/iio/buffer/Makefile
-> +++ b/drivers/iio/buffer/Makefile
-> @@ -4,5 +4,6 @@
+> -	  Add buffered data capture to the simple dummy driver.
+> +	  Triggered buffer utilizing a software FIFO where a software routine is
+> +	  responsible for transferring data between the converter and the FIFO.
+> +
+> +	  No real hardware is used for the dummy driver and the converter is
+> +	  emulated by software.
+> +
+> +config IIO_SIMPLE_DUMMY_BUFFER_DMA
+> +	bool "DMA"
+> +	depends on HAS_DMA
+> +	select IIO_BUFFER_DMA
+> +	help
+> +	  DMA buffer where a DMA controller is responsible for transferring data
+> +	  between the data and the buffers memory region.
+> +
+> +	  No real hardware is used for the dummy driver and the converter as well as
+> +	  the DMA controller are emulated by software.
+> +
+> +endchoice
 >  
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_IIO_BUFFER_CB) += industrialio-buffer-cb.o
-> +obj-$(CONFIG_IIO_BUFFER_DMA) += industrialio-buffer-dma.o
->  obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
->  obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
-> diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
+>  endif # IIO_SIMPLE_DUMMY
+>  
+> diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+> index d871061..3e27056 100644
+> --- a/drivers/staging/iio/Makefile
+> +++ b/drivers/staging/iio/Makefile
+> @@ -5,7 +5,8 @@
+>  obj-$(CONFIG_IIO_SIMPLE_DUMMY) += iio_dummy.o
+>  iio_dummy-y := iio_simple_dummy.o
+>  iio_dummy-$(CONFIG_IIO_SIMPLE_DUMMY_EVENTS) += iio_simple_dummy_events.o
+> -iio_dummy-$(CONFIG_IIO_SIMPLE_DUMMY_BUFFER) += iio_simple_dummy_buffer.o
+> +iio_dummy-$(CONFIG_IIO_SIMPLE_DUMMY_BUFFER_KFIFO) += iio_simple_dummy_buffer.o
+> +iio_dummy-$(CONFIG_IIO_SIMPLE_DUMMY_BUFFER_DMA) += iio_simple_dummy_buffer_dma.o
+>  
+>  obj-$(CONFIG_IIO_DUMMY_EVGEN) += iio_dummy_evgen.o
+>  
+> diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
+> index 381f90f..1302c63 100644
+> --- a/drivers/staging/iio/iio_simple_dummy.c
+> +++ b/drivers/staging/iio/iio_simple_dummy.c
+> @@ -229,11 +229,13 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
+>  			.shift = 0, /* zero shift */
+>  		},
+>  	},
+> +#ifdef CONFIG_IIO_SIMPLE_DUMMY_BUFFER_KFIFO
+>  	/*
+>  	 * Convenience macro for timestamps. 4 is the index in
+>  	 * the buffer.
+>  	 */
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
+> +#endif
+>  	/* DAC channel out_voltage0_raw */
+>  	{
+>  		.type = IIO_VOLTAGE,
+> @@ -531,6 +533,7 @@ static const struct iio_info iio_dummy_info = {
+>  	.driver_module = THIS_MODULE,
+>  	.read_raw = &iio_dummy_read_raw,
+>  	.write_raw = &iio_dummy_write_raw,
+> +	.update_scan_mode = iio_simple_dummy_update_scan_mode,
+>  #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
+>  	.read_event_config = &iio_simple_dummy_read_event_config,
+>  	.write_event_config = &iio_simple_dummy_write_event_config,
+> diff --git a/drivers/staging/iio/iio_simple_dummy.h b/drivers/staging/iio/iio_simple_dummy.h
+> index 5c2f4d0..339b22f 100644
+> --- a/drivers/staging/iio/iio_simple_dummy.h
+> +++ b/drivers/staging/iio/iio_simple_dummy.h
+> @@ -126,4 +126,12 @@ void iio_simple_dummy_unconfigure_buffer(struct iio_dev *indio_dev)
+>  {};
+>  
+>  #endif /* CONFIG_IIO_SIMPLE_DUMMY_BUFFER */
+> +
+> +#ifdef CONFIG_IIO_SIMPLE_DUMMY_BUFFER_DMA
+> +int iio_simple_dummy_update_scan_mode(struct iio_dev *indio_dev,
+> +	const unsigned long *scan_mask);
+> +#else
+> +#define iio_simple_dummy_update_scan_mode NULL
+> +#endif
+> +
+>  #endif /* _IIO_SIMPLE_DUMMY_H_ */
+> diff --git a/drivers/staging/iio/iio_simple_dummy_buffer_dma.c b/drivers/staging/iio/iio_simple_dummy_buffer_dma.c
 > new file mode 100644
-> index 0000000..ffc3a32
+> index 0000000..f4bdcbb
 > --- /dev/null
-> +++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-> @@ -0,0 +1,683 @@
+> +++ b/drivers/staging/iio/iio_simple_dummy_buffer_dma.c
+> @@ -0,0 +1,470 @@
 > +/*
 > + * Copyright 2013-2015 Analog Devices Inc.
 > + *  Author: Lars-Peter Clausen <lars@metafoo.de>
+> + * based on iio_simple_dummy_buffer.c
+> + *  Copyright (c) 2011 Jonathan Cameron
 > + *
 > + * Licensed under the GPL-2.
-> + */
+> +  */
 > +
-> +#include <linux/slab.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/device.h>
-> +#include <linux/workqueue.h>
-> +#include <linux/mutex.h>
-> +#include <linux/sched.h>
-> +#include <linux/poll.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/buffer-dma.h>
+> +#include <linux/bitmap.h>
 > +#include <linux/dma-mapping.h>
-> +#include <linux/sizes.h>
+> +#include <linux/export.h>
+> +#include <linux/fixp-arith.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/workqueue.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/buffer-dma.h>
+> +
+> +#include "iio_simple_dummy.h"
 > +
 > +/*
-> + * For DMA buffers the storage is sub-divided into so called blocks. Each block
-> + * has its own memory buffer. The size of the block is the granularity at which
-> + * memory is exchanged between the hardware and the application. Increasing the
-> + * basic unit of data exchange from one sample to one block decreases the
-> + * management overhead that is associated with each sample. E.g. if we say the
-> + * management overhead for one exchange is x and the unit of exchange is one
-> + * sample the overhead will be x for each sample. Whereas when using a block
-> + * which contains n samples the overhead per sample is reduced to x/n. This
-> + * allows to achieve much higher samplerates than what can be sustained with
-> + * the one sample approach.
+> + * The dummy DMA buffer driver implements a buffer for the IIO simple dummy
+> + * device driver. The buffer driver uses the generic IIO DMA buffer
+> + * infrastructure and can be used as a template when implementing drivers using
+> + * this infrastructure as well as for testing the infrastructure without any
+> + * actual DMA capable hardware being present.
 > + *
-> + * Blocks are exchanged between the DMA controller and the application via the
-> + * means of two queues. The incoming queue and the outgoing queue. Blocks on the
-> + * incoming queue are waiting for the DMA controller to pick them up and fill
-> + * them with data. Block on the outgoing queue have been filled with data and
-> + * are waiting for the application to dequeue them and read the data.
+> + * This dummy driver is divided into two sections. The first part emulates the
+> + * behavior of a multi-channel converter and the attached DMA filling a buffer
+> + * with waveforms from the enabled channels. This part provides functions for
+> + * setting up the "DMA" and the "converter".
 > + *
-> + * A block can be in one of the following states:
-> + *  * Owned by the application. In this state the application can read data from
-> + *    the block.
-> + *  * On the incoming list: Blocks on the incoming list are queued up to be
-> + *    processed by the DMA controller.
-> + *  * Owned by the DMA controller: The DMA controller is processing the block
-> + *    and filling it with data.
-> + *  * On the outgoing list: Blocks on the outgoing list have been successfully
-> + *    processed by the DMA controller and contain data. They can be dequeued by
-> + *    the application.
-> + *  * Dead: A block that is dead has been marked as to be freed. It might still
-> + *    be owned by either the application or the DMA controller at the moment.
-> + *    But once they are done processing it instead of going to either the
-> + *    incoming or outgoing queue the block will be freed.
+> + * The second part implements the typical driver structure that you'd expect
+> + * from a DMA buffer driver. It uses the functions provided by part 1 to perform
+> + * the "hardware" access.
 > + *
-> + * In addition to this blocks are reference counted and the memory associated
-> + * with both the block structure as well as the storage memory for the block
-> + * will be freed when the last reference to the block is dropped. This means a
-> + * block must not be accessed without holding a reference.
-> + *
-> + * The iio_dma_buffer implementation provides a generic infrastructure for
-> + * managing the blocks.
-> + *
-> + * A driver for a specific piece of hardware that has DMA capabilities need to
-> + * implement the submit() callback from the iio_dma_buffer_ops structure. This
-> + * callback is supposed to initiate the DMA transfer copying data from the
-> + * converter to the memory region of the block. Once the DMA transfer has been
-> + * completed the driver must call iio_dma_buffer_block_done() for the completed
-> + * block.
-> + *
-> + * Prior to this it must set the bytes_used field of the block contains
-> + * the actual number of bytes in the buffer. Typically this will be equal to the
-> + * size of the block, but if the DMA hardware has certain alignment requirements
-> + * for the transfer length it might choose to use less than the full size. In
-> + * either case it is expected that bytes_used is a multiple of the bytes per
-> + * datum, i.e. the block must not contain partial samples.
-> + *
-> + * The driver must call iio_dma_buffer_block_done() for each block it has
-> + * received through its submit_block() callback, even if it does not actually
-> + * perform a DMA transfer for the block, e.g. because the buffer was disabled
-> + * before the block transfer was started. In this case it should set bytes_used
-> + * to 0.
-> + *
-> + * In addition it is recommended that a driver implements the abort() callback.
-> + * It will be called when the buffer is disabled and can be used to cancel
-> + * pending and stop active transfers.
-> + *
-> + * The specific driver implementation should use the default callback
-> + * implementations provided by this module for the iio_buffer_access_funcs
-> + * struct. It may overload some callbacks with custom variants if the hardware
-> + * has special requirements that are not handled by the generic functions. If a
-> + * driver chooses to overload a callback it has to ensure that the generic
-> + * callback is called from within the custom callback.
+> + * When using this driver as a template part 1 can be ignored.
 > + */
 > +
-> +static void iio_buffer_block_release(struct kref *kref)
+> +typedef void (*iio_dummy_dma_source_fn)(unsigned int, unsigned int, void *);
+> +
+> +struct iio_dummy_dma_source {
+> +	iio_dummy_dma_source_fn fn;
+> +	unsigned int period;
+> +	unsigned int pos;
+> +};
+> +
+> +struct iio_dummy_dma_transfer {
+> +	struct list_head head;
+> +
+> +	/* Memory address and length of the transfer */
+> +	void *addr;
+> +	unsigned int length;
+> +
+> +	/* Data passed to the IRQ callback when the transfer completes */
+> +	void *irq_data;
+> +};
+> +
+> +struct iio_dummy_dma {
+> +	/* IRQ routine for the dummy DMA */
+> +	void (*irq_fn)(unsigned int, void *);
+> +
+> +	/* Pending DMA transfers */
+> +	struct mutex transfer_list_lock;
+> +	struct list_head transfer_list;
+> +
+> +	/* Used to emulate periodic completion of DMA transfers */
+> +	struct delayed_work work;
+> +
+> +	/* Information about the connected data sources */
+> +	unsigned int num_sources;
+> +	struct iio_dummy_dma_source sources[4];
+> +};
+> +
+> +static void iio_dummy_dma_buffer_fn_rect(unsigned int n, unsigned int period,
+> +	void *data)
 > +{
-> +	struct iio_dma_buffer_block *block = container_of(kref,
-> +		struct iio_dma_buffer_block, kref);
-> +
-> +	WARN_ON(block->state != IIO_BLOCK_STATE_DEAD);
-> +
-> +	dma_free_coherent(block->queue->dev, PAGE_ALIGN(block->size),
-> +					block->vaddr, block->phys_addr);
-> +
-> +	iio_buffer_put(&block->queue->buffer);
-> +	kfree(block);
+> +	/* 13 bit unsigned */
+> +	if (n > period / 2)
+> +		*(uint16_t *)data = 1 << 12;
+> +	else
+> +		*(uint16_t *)data = 0;
 > +}
 > +
-> +static void iio_buffer_block_get(struct iio_dma_buffer_block *block)
+> +static void iio_dummy_dma_buffer_fn_sine(unsigned int n, unsigned int period,
+> +	void *data)
 > +{
-> +	kref_get(&block->kref);
+> +	/* 12 bit signed */
+> +	*(int16_t *)data = fixp_sin32_rad(n, period) >> 20;
 > +}
 > +
-> +static void iio_buffer_block_put(struct iio_dma_buffer_block *block)
+> +static void iio_dummy_dma_buffer_fn_tri(unsigned int n, unsigned int period,
+> +	void *data)
 > +{
-> +	kref_put(&block->kref, iio_buffer_block_release);
+> +	unsigned int x;
+> +
+> +	if (n > period / 2)
+> +		x = period - n;
+> +	else
+> +		x = n;
+> +
+> +	/* 11 bit signed */
+> +	*(int16_t *)data = ((((1 << 11) - 1) * x) / (period / 2)) - (1 << 10);
 > +}
 > +
-> +/*
-> + * dma_free_coherent can sleep, hence we need to take some special care to be
-> + * able to drop a reference from an atomic context.
-> + */
-> +static LIST_HEAD(iio_dma_buffer_dead_blocks);
-> +static DEFINE_SPINLOCK(iio_dma_buffer_dead_blocks_lock);
-> +
-> +static void iio_dma_buffer_cleanup_worker(struct work_struct *work)
+> +static void iio_dummy_dma_buffer_fn_saw(unsigned int n, unsigned int period,
+> +	void *data)
 > +{
-> +	struct iio_dma_buffer_block *block, *_block;
-> +	LIST_HEAD(block_list);
-> +
-> +	spin_lock_irq(&iio_dma_buffer_dead_blocks_lock);
-> +	list_splice_tail_init(&iio_dma_buffer_dead_blocks, &block_list);
-> +	spin_unlock_irq(&iio_dma_buffer_dead_blocks_lock);
-> +
-> +	list_for_each_entry_safe(block, _block, &block_list, head)
-> +		iio_buffer_block_release(&block->kref);
-> +}
-> +static DECLARE_WORK(iio_dma_buffer_cleanup_work, iio_dma_buffer_cleanup_worker);
-> +
-> +static void iio_buffer_block_release_atomic(struct kref *kref)
-> +{
-> +	struct iio_dma_buffer_block *block;
-> +	unsigned long flags;
-> +
-> +	block = container_of(kref, struct iio_dma_buffer_block, kref);
-> +
-> +	spin_lock_irqsave(&iio_dma_buffer_dead_blocks_lock, flags);
-> +	list_add_tail(&block->head, &iio_dma_buffer_dead_blocks);
-> +	spin_unlock_irqrestore(&iio_dma_buffer_dead_blocks_lock, flags);
-> +
-> +	schedule_work(&iio_dma_buffer_cleanup_work);
+> +	/* 16 bit signed */
+> +	*(int16_t *)data = ((((1 << 16) - 1) * n) / period) - (1 << 15);
 > +}
 > +
-> +/*
-> + * Version of iio_buffer_block_put() that can be called from atomic context
-> + */
-> +static void iio_buffer_block_put_atomic(struct iio_dma_buffer_block *block)
+> +static const struct iio_dummy_dma_source iio_dummy_dma_sources[] = {
+> +	{
+> +		.fn = iio_dummy_dma_buffer_fn_rect,
+> +		.period = 1000,
+> +	}, {
+> +		.fn = iio_dummy_dma_buffer_fn_sine,
+> +		.period = 2000,
+> +	}, {
+> +		.fn = iio_dummy_dma_buffer_fn_tri,
+> +		.period = 5000,
+> +	}, {
+> +		.fn = iio_dummy_dma_buffer_fn_saw,
+> +		.period = 6789,
+> +	},
+> +};
+> +
+> +static void iio_dummy_dma_schedule_next(struct iio_dummy_dma *dma)
 > +{
-> +	kref_put(&block->kref, iio_buffer_block_release_atomic);
-> +}
+> +	struct iio_dummy_dma_transfer *transfer;
+> +	unsigned int num_samples;
 > +
-> +static struct iio_dma_buffer_queue *iio_buffer_to_queue(struct iio_buffer *buf)
-> +{
-> +	return container_of(buf, struct iio_dma_buffer_queue, buffer);
-> +}
-> +
-> +static struct iio_dma_buffer_block *iio_dma_buffer_alloc_block(
-> +	struct iio_dma_buffer_queue *queue, size_t size)
-> +{
-> +	struct iio_dma_buffer_block *block;
-> +
-> +	block = kzalloc(sizeof(*block), GFP_KERNEL);
-> +	if (!block)
-> +		return NULL;
-> +
-> +	block->vaddr = dma_alloc_coherent(queue->dev, PAGE_ALIGN(size),
-> +		&block->phys_addr, GFP_KERNEL);
-> +	if (!block->vaddr) {
-> +		kfree(block);
-> +		return NULL;
-> +	}
-> +
-> +	block->size = size;
-> +	block->state = IIO_BLOCK_STATE_DEQUEUED;
-> +	block->queue = queue;
-> +	INIT_LIST_HEAD(&block->head);
-> +	kref_init(&block->kref);
-> +
-> +	iio_buffer_get(&queue->buffer);
-> +
-> +	return block;
-> +}
-> +
-> +static void _iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
-> +{
-> +	struct iio_dma_buffer_queue *queue = block->queue;
-> +
-> +	/*
-> +	 * The buffer has already been freed by the application, just drop the
-> +	 * reference.
-> +	 */
-> +	if (block->state != IIO_BLOCK_STATE_DEAD) {
-> +		block->state = IIO_BLOCK_STATE_DONE;
-> +		list_add_tail(&block->head, &queue->outgoing);
-> +	}
-> +}
-> +
-> +/**
-> + * iio_dma_buffer_block_done() - Indicate that a block has been completed
-> + * @block: The completed block
-> + *
-> + * Should be called when the DMA controller has finished handling the block to
-> + * pass back ownership of the block to the queue.
-> + */
-> +void iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
-> +{
-> +	struct iio_dma_buffer_queue *queue = block->queue;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&queue->list_lock, flags);
-> +	_iio_dma_buffer_block_done(block);
-> +	spin_unlock_irqrestore(&queue->list_lock, flags);
-> +
-> +	iio_buffer_block_put_atomic(block);
-> +	wake_up_interruptible_poll(&queue->buffer.pollq, POLLIN | POLLRDNORM);
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_block_done);
-> +
-> +/**
-> + * iio_dma_buffer_block_list_abort() - Indicate that a list block has been
-> + *   aborted
-> + * @queue: Queue for which to complete blocks.
-> + * @list: List of aborted blocks. All blocks in this list must be from @queue.
-> + *
-> + * Typically called from the abort() callback after the DMA controller has been
-> + * stopped. This will set bytes_used to 0 for each block in the list and then
-> + * hand the blocks back to the queue.
-> + */
-> +void iio_dma_buffer_block_list_abort(struct iio_dma_buffer_queue *queue,
-> +	struct list_head *list)
-> +{
-> +	struct iio_dma_buffer_block *block, *_block;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&queue->list_lock, flags);
-> +	list_for_each_entry_safe(block, _block, list, head) {
-> +		list_del(&block->head);
-> +		block->bytes_used = 0;
-> +		_iio_dma_buffer_block_done(block);
-> +		iio_buffer_block_put_atomic(block);
-> +	}
-> +	spin_unlock_irqrestore(&queue->list_lock, flags);
-> +
-> +	wake_up_interruptible_poll(&queue->buffer.pollq, POLLIN | POLLRDNORM);
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_block_list_abort);
-> +
-> +static bool iio_dma_block_reusable(struct iio_dma_buffer_block *block)
-> +{
-> +	/*
-> +	 * If the core owns the block it can be re-used. This should be the
-> +	 * default case when enabling the buffer, unless the DMA controller does
-> +	 * not support abort and has not given back the block yet.
-> +	 */
-> +	switch (block->state) {
-> +	case IIO_BLOCK_STATE_DEQUEUED:
-> +	case IIO_BLOCK_STATE_QUEUED:
-> +	case IIO_BLOCK_STATE_DONE:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +/**
-> + * iio_dma_buffer_request_update() - DMA buffer request_update callback
-> + * @buffer: The buffer which to request an update
-> + *
-> + * Should be used as the iio_dma_buffer_request_update() callback for
-> + * iio_buffer_access_ops struct for DMA buffers.
-> + */
-> +int iio_dma_buffer_request_update(struct iio_buffer *buffer)
-> +{
-> +	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-> +	struct iio_dma_buffer_block *block;
-> +	bool try_reuse = false;
-> +	size_t size;
-> +	int ret = 0;
-> +	int i;
-> +
-> +	/*
-> +	 * Split the buffer into two even parts. This is used as a double
-> +	 * buffering scheme with usually one block at a time being used by the
-> +	 * DMA and the other one by the application.
-> +	 */
-> +	size = DIV_ROUND_UP(queue->buffer.bytes_per_datum *
-> +		queue->buffer.length, 2);
-> +
-> +	mutex_lock(&queue->lock);
-> +
-> +	/* Allocations are page aligend */
-aligned
-> +	if (PAGE_ALIGN(queue->fileio.block_size) == PAGE_ALIGN(size))
-> +		try_reuse = true;
-> +
-> +	queue->fileio.block_size = size;
-> +	queue->fileio.active_block = NULL;
-> +
-> +	spin_lock_irq(&queue->list_lock);
-> +	for (i = 0; i < 2; i++) {
-> +		block = queue->fileio.blocks[i];
-> +
-> +		/* If we can't re-use it free it */
-> +		if (block && (!iio_dma_block_reusable(block) || !try_reuse))
-> +			block->state = IIO_BLOCK_STATE_DEAD;
-> +	}
-> +
-> +	/*
-> +	 * At this point all blocks are either owned by the core or marked as
-> +	 * dead. This means we can reset the lists without having to fear
-> +	 * corrution.
-> +	 */
-> +	INIT_LIST_HEAD(&queue->outgoing);
-> +	spin_unlock_irq(&queue->list_lock);
-I see from the docs that this protects only the outgoing queue.
-Perhaps the naming could reflect that?
-> +
-> +	INIT_LIST_HEAD(&queue->incoming);
-> +
-> +	for (i = 0; i < 2; i++) {
-> +		if (queue->fileio.blocks[i]) {
-> +			block = queue->fileio.blocks[i];
-> +			if (block->state == IIO_BLOCK_STATE_DEAD) {
-> +				/* Could not reuse it */
-> +				iio_buffer_block_put(block);
-> +				block = NULL;
-> +			} else {
-> +				block->size = size;
-> +			}
-> +		} else {
-> +			block = NULL;
-> +		}
-> +
-> +		if (!block) {
-> +			block = iio_dma_buffer_alloc_block(queue, size);
-> +			if (!block) {
-> +				ret = -ENOMEM;
-> +				goto out_unlock;
-> +			}
-> +			queue->fileio.blocks[i] = block;
-> +		}
-> +
-> +		block->state = IIO_BLOCK_STATE_QUEUED;
-> +		list_add_tail(&block->head, &queue->incoming);
-> +	}
-> +
-> +out_unlock:
-> +	mutex_unlock(&queue->lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_request_update);
-> +
-> +static void iio_dma_buffer_submit_block(struct iio_dma_buffer_queue *queue,
-> +	struct iio_dma_buffer_block *block)
-> +{
-> +	int ret;
-> +
-> +	/*
-> +	 * If the hardware has already been removed we put the block into
-> +	 * limbo. It will neither be on the incoming nor outgoing list, nor will
-> +	 * it ever complete. It will just wait to be freed eventually.
-> +	 */
-> +	if (!queue->ops)
+> +	if (list_empty(&dma->transfer_list))
 > +		return;
 > +
-> +	block->state = IIO_BLOCK_STATE_ACTIVE;
-> +	iio_buffer_block_get(block);
-> +	ret = queue->ops->submit(queue, block);
-> +	if (ret) {
-> +		/*
-> +		 * This is a bit of a problem and there is not much we can do
-> +		 * other then wait for the buffer to be disabled and re-enabled
-> +		 * and try again. But it should not really happen unless we run
-> +		 * out of memory or something similar.
-> +		 *
-> +		 * TODO: Implement support in the IIO core to allow buffers to
-> +		 * notify consumers that something went wrong and the buffer
-> +		 * should be disabled.
-> +		 */
-> +		iio_buffer_block_put(block);
-> +	}
+> +	transfer = list_first_entry(&dma->transfer_list,
+> +		struct iio_dummy_dma_transfer, head);
+> +
+> +	num_samples = transfer->length / (dma->num_sources * sizeof(uint16_t));
+> +
+> +	/* 10000 SPS */
+> +	schedule_delayed_work(&dma->work, msecs_to_jiffies(num_samples / 10));
 > +}
 > +
-> +/**
-> + * iio_dma_buffer_enable() - Enable DMA buffer
-> + * @buffer: IIO buffer to enable
-> + * @indio_dev: IIO device the buffer is attached to
-> + *
-> + * Needs to be called when the device that the buffer is attached to starts
-> + * sampling. Typically should be the iio_buffer_access_ops enable callback.
-> + *
-> + * This will allocate the DMA buffers and start the DMA transfers.
-> + */
-> +int iio_dma_buffer_enable(struct iio_buffer *buffer,
-> +	struct iio_dev *indio_dev)
+> +static void iio_dummy_dma_work(struct work_struct *work)
 > +{
-> +	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-> +	struct iio_dma_buffer_block *block, *_block;
+> +	struct iio_dummy_dma *dma = container_of(work, struct iio_dummy_dma,
+> +		work.work);
+> +	struct iio_dummy_dma_transfer *transfer;
+> +	struct iio_dummy_dma_source *src;
+> +	unsigned int num_samples;
+> +	unsigned int i, j;
+> +	void *data;
 > +
-> +	mutex_lock(&queue->lock);
-> +	queue->active = true;
-> +	list_for_each_entry_safe(block, _block, &queue->incoming, head) {
-> +		list_del(&block->head);
-> +		iio_dma_buffer_submit_block(queue, block);
+> +	/* Get the next pending transfer and then fill it with data. */
+> +	mutex_lock(&dma->transfer_list_lock);
+> +	transfer = list_first_entry(&dma->transfer_list,
+> +		struct iio_dummy_dma_transfer, head);
+> +	list_del(&transfer->head);
+> +	iio_dummy_dma_schedule_next(dma);
+> +	mutex_unlock(&dma->transfer_list_lock);
+> +
+> +	/*
+> +	 * For real hardware copying of the data will be done by the DMA in the
+> +	 * background. Here it is done in software.
+> +	 */
+> +	num_samples = transfer->length / (dma->num_sources * sizeof(uint16_t));
+> +	data = transfer->addr;
+> +	for (i = 0; i < num_samples; i++) {
+> +		for (j = 0; j < dma->num_sources; j++) {
+> +			src = &dma->sources[j];
+> +			src->fn(src->pos, src->period, data);
+> +			src->pos = (src->pos + 1) % src->period;
+> +			data += 2;
+> +		}
 > +	}
-> +	mutex_unlock(&queue->lock);
+> +
+> +	/* Generate "interrupt" */
+> +	dma->irq_fn(num_samples * dma->num_sources * sizeof(uint16_t),
+> +		transfer->irq_data);
+> +	kfree(transfer);
+> +}
+> +
+> +static int iio_dummy_dma_issue_transfer(struct iio_dummy_dma *dma, void *addr,
+> +	unsigned int length, void *irq_data)
+> +{
+> +	struct iio_dummy_dma_transfer *transfer;
+> +
+> +	transfer = kzalloc(sizeof(*transfer), GFP_KERNEL);
+> +	if (!transfer)
+> +		return -ENOMEM;
+> +
+> +	transfer->addr = addr;
+> +	transfer->length = length;
+> +	transfer->irq_data = irq_data;
+> +
+> +	mutex_lock(&dma->transfer_list_lock);
+> +	list_add_tail(&transfer->head, &dma->transfer_list);
+> +
+> +	/* Start "DMA" transfer */
+> +	iio_dummy_dma_schedule_next(dma);
+> +	mutex_unlock(&dma->transfer_list_lock);
 > +
 > +	return 0;
 > +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_enable);
 > +
-> +/**
-> + * iio_dma_buffer_disable() - Disable DMA buffer
-> + * @buffer: IIO DMA buffer to disable
-> + * @indio_dev: IIO device the buffer is attached to
-> + *
-> + * Needs to be called when the device that the buffer is attached to stops
-> + * sampling. Typically should be the iio_buffer_access_ops disable callback.
-> + */
-> +int iio_dma_buffer_disable(struct iio_buffer *buffer,
-> +	struct iio_dev *indio_dev)
+> +static void iio_dummy_dma_stop(struct iio_dummy_dma *dma)
 > +{
-> +	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-> +
-> +	mutex_lock(&queue->lock);
-> +	queue->active = false;
-> +
-> +	if (queue->ops && queue->ops->abort)
-> +		queue->ops->abort(queue);
-> +	mutex_unlock(&queue->lock);
-> +
-> +	return 0;
+> +	mutex_lock(&dma->transfer_list_lock);
+> +	cancel_delayed_work(&dma->work);
+> +	INIT_LIST_HEAD(&dma->transfer_list);
+> +	mutex_unlock(&dma->transfer_list_lock);
 > +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_disable);
 > +
-> +static void iio_dma_buffer_enqueue(struct iio_dma_buffer_queue *queue,
+> +static void iio_dummy_dma_setup(struct iio_dummy_dma *dma,
+> +	void (*irq_fn)(unsigned int, void *))
+> +{
+> +	INIT_LIST_HEAD(&dma->transfer_list);
+> +	mutex_init(&dma->transfer_list_lock);
+> +	INIT_DELAYED_WORK(&dma->work, iio_dummy_dma_work);
+> +	dma->irq_fn = irq_fn;
+We could make this look even closer to real dma by
+using an irq_work like we are doing in the event simulator...
+
+Only really makes sense to do that if we split the 'fake dma
+engine out to a separate file / module'.  Mind you I think
+most people can get the idea without needing the formal
+split. Lets see what others think.
+> +}
+> +
+> +/*
+> + * Part two: Typical DMA driver implementation.
+> + */
+> +
+> +struct iio_dummy_dma_buffer {
+> +	/* Generic IIO DMA buffer base struct */
+> +	struct iio_dma_buffer_queue queue;
+> +
+> +	/* Handle to the "DMA" controller */
+> +	struct iio_dummy_dma dma;
+> +
+> +	/* List of submitted blocks */
+> +	struct list_head block_list;
+> +};
+> +
+> +static struct iio_dummy_dma_buffer *iio_buffer_to_dummy_dma_buffer(
+> +	struct iio_buffer *buffer)
+> +{
+> +	return container_of(buffer, struct iio_dummy_dma_buffer, queue.buffer);
+> +}
+> +
+> +static void iio_dummy_dma_buffer_irq(unsigned int bytes_transferred,
+> +	void *data)
+> +{
+> +	struct iio_dma_buffer_block *block = data;
+> +	struct iio_dma_buffer_queue *queue = block->queue;
+> +	unsigned long flags;
+> +
+> +	/* Protect against races with submit() */
+> +	spin_lock_irqsave(&queue->list_lock, flags);
+> +	list_del(&block->head);
+> +	spin_unlock_irqrestore(&queue->list_lock, flags);
+> +
+> +	/*
+> +	 * Update actual number of bytes transferred. This might be less than
+> +	 * the requested number, e.g. due to alignment requirements of the
+> +	 * controller, but must be a multiple of the sample size.
+> +	 */
+> +	block->bytes_used = bytes_transferred;
+> +
+> +	/*
+> +	 * iio_dma_buffer_block_done() must be called after the DMA transfer for
+> +	 * the block that has been completed. This will typically be done from
+> +	 * some kind of completion interrupt routine or callback.
+> +	 */
+> +	iio_dma_buffer_block_done(block);
+> +}
+> +
+> +static int iio_dummy_dma_buffer_submit(struct iio_dma_buffer_queue *queue,
 > +	struct iio_dma_buffer_block *block)
 > +{
-> +	if (block->state == IIO_BLOCK_STATE_DEAD) {
-> +		iio_buffer_block_put(block);
-> +	} else if (queue->active) {
-> +		iio_dma_buffer_submit_block(queue, block);
-> +	} else {
-> +		block->state = IIO_BLOCK_STATE_QUEUED;
-> +		list_add_tail(&block->head, &queue->incoming);
-> +	}
-> +}
-> +
-> +static struct iio_dma_buffer_block *iio_dma_buffer_dequeue(
-> +	struct iio_dma_buffer_queue *queue)
-> +{
-> +	struct iio_dma_buffer_block *block;
-> +
-> +	spin_lock_irq(&queue->list_lock);
-> +	block = list_first_entry_or_null(&queue->outgoing, struct
-> +		iio_dma_buffer_block, head);
-> +	if (block != NULL) {
-> +		list_del(&block->head);
-> +		block->state = IIO_BLOCK_STATE_DEQUEUED;
-> +	}
-> +	spin_unlock_irq(&queue->list_lock);
-> +
-> +	return block;
-> +}
-> +
-> +/**
-> + * iio_dma_buffer_read() - DMA buffer read callback
-> + * @buffer: Buffer to read form
-> + * @n: Number of bytes to read
-> + * @user_buffer: Userspace buffer to copy the data to
-> + *
-> + * Should be used as the read_first_n callback for iio_buffer_access_ops
-> + * struct for DMA buffers.
-> + */
-> +int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
-> +	char __user *user_buffer)
-> +{
-> +	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-> +	struct iio_dma_buffer_block *block;
+> +	struct iio_dummy_dma_buffer *buffer =
+> +		iio_buffer_to_dummy_dma_buffer(&queue->buffer);
+> +	unsigned long flags;
 > +	int ret;
 > +
-> +	if (n < buffer->bytes_per_datum)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&queue->lock);
-> +
-> +	if (!queue->fileio.active_block) {
-> +		block = iio_dma_buffer_dequeue(queue);
-> +		if (block == NULL) {
-> +			ret = 0;
-> +			goto out_unlock;
-> +		}
-> +		queue->fileio.pos = 0;
-> +		queue->fileio.active_block = block;
-> +	} else {
-> +		block = queue->fileio.active_block;
-> +	}
-> +
-> +	n = rounddown(n, buffer->bytes_per_datum);
-> +	if (n > block->bytes_used - queue->fileio.pos)
-> +		n = block->bytes_used - queue->fileio.pos;
-> +
-> +	if (copy_to_user(user_buffer, block->vaddr + queue->fileio.pos, n)) {
-> +		ret = -EFAULT;
-> +		goto out_unlock;
-> +	}
-> +
-> +	queue->fileio.pos += n;
-> +
-> +	if (queue->fileio.pos == block->bytes_used) {
-> +		queue->fileio.active_block = NULL;
-> +		iio_dma_buffer_enqueue(queue, block);
-> +	}
-> +
-> +	ret = n;
-> +
-> +out_unlock:
-> +	mutex_unlock(&queue->lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_read);
-> +
-> +/**
-> + * iio_dma_buffer_data_available() - DMA buffer data_available callback
-> + * @buf: Buffer to check for data availability
-> + *
-> + * Should be used as the data_available callback for iio_buffer_access_ops
-> + * struct for DMA buffers.
-> + */
-> +size_t iio_dma_buffer_data_available(struct iio_buffer *buf)
-> +{
-> +	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buf);
-> +	struct iio_dma_buffer_block *block;
-> +	size_t data_available = 0;
-> +
 > +	/*
-> +	 * For counting the available bytes we'll use the size of the block not
-> +	 * the number of actual bytes available in the block. Otherwise it is
-> +	 * possible that we end up with a value that is lower than the watermark
-> +	 * but wont increase since all blocks are in use.
-won't
+> +	 * submit() is called when the buffer is active and a block becomes
+> +	 * available. It should start a DMA transfer for the submitted block as
+> +	 * soon as possible. submit() can be called even when a DMA transfer is
+> +	 * already active. This gives the driver to prepare and setup the next
+This tells (or allows?) the driver
+> +	 * transfer to allow a seamless switch to the next block without losing
+> +	 * any samples.
 > +	 */
 > +
-> +	mutex_lock(&queue->lock);
-> +	if (queue->fileio.active_block)
-> +		data_available += queue->fileio.active_block->size;
+> +	spin_lock_irqsave(&queue->list_lock, flags);
+> +	list_add(&block->head, &buffer->block_list);
+> +	spin_unlock_irqrestore(&queue->list_lock, flags);
 > +
-> +	spin_lock_irq(&queue->list_lock);
-> +	list_for_each_entry(block, &queue->outgoing, head)
-> +		data_available += block->size;
-> +	spin_unlock_irq(&queue->list_lock);
-> +	mutex_unlock(&queue->lock);
-> +
-> +	return data_available;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_data_available);
-> +
-> +/**
-> + * iio_dma_buffer_set_bytes_per_datum() - DMA buffer set_bytes_per_datum callback
-> + * @buffer: Buffer to set the bytes-per-datum for
-> + * @bpd: The new bytes-per-datum value
-> + *
-> + * Should be used as the set_bytes_per_datum callback for iio_buffer_access_ops
-> + * struct for DMA buffers.
-> + */
-> +int iio_dma_buffer_set_bytes_per_datum(struct iio_buffer *buffer, size_t bpd)
-> +{
-> +	buffer->bytes_per_datum = bpd;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_set_bytes_per_datum);
-> +
-> +/**
-> + * iio_dma_buffer_set_length - DMA buffer set_length callback
-> + * @buffer: Buffer to set the length for
-> + * @length: The new buffer length
-> + *
-> + * Should be used as the set_length callback for iio_buffer_access_ops
-> + * struct for DMA buffers.
-> + */
-> +int iio_dma_buffer_set_length(struct iio_buffer *buffer, int length)
-> +{
-> +	/* Avoid an invalid state */
-> +	if (length < 2)
-> +		length = 2;
-> +	buffer->length = length;
-> +	buffer->watermark = length / 2;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_set_length);
-> +
-> +/**
-> + * iio_dma_buffer_init() - Initialize DMA buffer queue
-> + * @queue: Buffer to initialize
-> + * @dev: DMA device
-> + * @ops: DMA buffer queue callback operations
-> + *
-> + * The DMA device will be used by the queue to do DMA memory allocations. So it
-> + * should refer to the device that will perform the DMA to ensure that
-> + * allocations are done from a memory region that can be accessed by the device.
-> + */
-> +int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
-> +	struct device *dev, const struct iio_dma_buffer_ops *ops)
-> +{
-> +	iio_buffer_init(&queue->buffer);
-> +	queue->buffer.length = PAGE_SIZE;
-> +	queue->buffer.watermark = queue->buffer.length / 2;
-> +	queue->dev = dev;
-> +	queue->ops = ops;
-> +
-> +	INIT_LIST_HEAD(&queue->incoming);
-> +	INIT_LIST_HEAD(&queue->outgoing);
-> +
-> +	mutex_init(&queue->lock);
-> +	spin_lock_init(&queue->list_lock);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_init);
-> +
-> +/**
-> + * iio_dma_buffer_exit() - Cleanup DMA buffer queue
-> + * @queue: Buffer to cleanup
-> + *
-> + * After this function has completed it is save to free any resources that are
-save -> safe?
-> + * associated with the buffer and are accessed inside the callback operations.
-> + */
-> +void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue)
-> +{
-> +	unsigned int i;
-> +
-> +	mutex_lock(&queue->lock);
-> +
-> +	spin_lock_irq(&queue->list_lock);
-> +	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
-> +		if (!queue->fileio.blocks[i])
-> +			continue;
-> +		queue->fileio.blocks[i]->state = IIO_BLOCK_STATE_DEAD;
+> +	ret = iio_dummy_dma_issue_transfer(&buffer->dma, block->vaddr,
+> +		block->size, block);
+> +	if (ret) {
+> +		spin_lock_irqsave(&queue->list_lock, flags);
+> +		list_del(&block->head);
+> +		spin_unlock_irqrestore(&queue->list_lock, flags);
+> +		return ret;
 > +	}
-> +	INIT_LIST_HEAD(&queue->outgoing);
-> +	spin_unlock_irq(&queue->list_lock);
 > +
-> +	INIT_LIST_HEAD(&queue->incoming);
-> +
-> +	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
-> +		if (!queue->fileio.blocks[i])
-> +			continue;
-> +		iio_buffer_block_put(queue->fileio.blocks[i]);
-> +		queue->fileio.blocks[i] = NULL;
-> +	}
-> +	queue->fileio.active_block = NULL;
-> +	queue->ops = NULL;
-> +
-> +	mutex_unlock(&queue->lock);
+> +	return 0;
 > +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_exit);
 > +
-> +/**
-> + * iio_dma_buffer_release() - Release final buffer resources
-> + * @queue: Buffer to release
-> + *
-> + * Frees resources that can't yet be freed in iio_dma_buffer_exit(). Should be
-> + * called in the buffers release callback implementation right before freeing
-> + * the memory associated with the buffer.
-> + */
-> +void iio_dma_buffer_release(struct iio_dma_buffer_queue *queue)
+> +static void iio_dummy_dma_buffer_abort(struct iio_dma_buffer_queue *queue)
 > +{
-> +	mutex_destroy(&queue->lock);
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dma_buffer_release);
+> +	struct iio_dummy_dma_buffer *buffer =
+> +		iio_buffer_to_dummy_dma_buffer(&queue->buffer);
 > +
-> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
-> +MODULE_DESCRIPTION("DMA buffer for the IIO framework");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
-> new file mode 100644
-> index 0000000..479e4bb
-> --- /dev/null
-> +++ b/include/linux/iio/buffer-dma.h
-> @@ -0,0 +1,150 @@
+> +	/*
+> +	 * When abort() is called is is guaranteed that that submit() is not
+> +	 * called again until abort() has completed. This means no new blocks
+> +	 * will be added to the list. Once the pending DMA transfers are
+> +	 * canceled no blocks will be removed either. So it is save to release
+> +	 * the uncompleted blocks still on the list.
+> +	 *
+> +	 * If a DMA does not support aborting transfers it is OK to keep the
+> +	 * currently active transfers running. In that case the blocks
+> +	 * associated with the transfer must not be marked as done until they
+> +	 * are completed.  Otherwise their memory might be freed while the DMA
+> +	 * transfer is still in progress.
+> +	 *
+> +	 * Special care needs to be taken if the DMA controller does not
+> +	 * support aborting transfers but the converter will stop sending
+> +	 * samples once disabled. In this case the DMA might get stuck until the
+> +	 * converter is re-enabled.
+> +	 */
+> +	iio_dummy_dma_stop(&buffer->dma);
+> +
+> +	/*
+> +	 * None of the blocks are any longer in use at this point, give them
+At this point, none of the blocks are still in use... (original doesn't
+parse well!)
+> +	 * back.
+> +	 */
+> +	iio_dma_buffer_block_list_abort(queue, &buffer->block_list);
+> +}
+> +
+> +static void iio_dummy_dma_buffer_release(struct iio_buffer *buf)
+> +{
+> +	struct iio_dummy_dma_buffer *buffer =
+> +		iio_buffer_to_dummy_dma_buffer(buf);
+> +
+> +	/*
+> +	 * This function is called when all references to the buffer have been
+> +	 * dropped should free any memory or other resources associated with the
+> +	 * buffer.
+> +	 */
+> +
+> +	/*
+> +	 * iio_dma_buffer_release() must be called right before freeing the
+> +	 * memory.
+> +	 */
+> +	iio_dma_buffer_release(&buffer->queue);
+> +	kfree(buffer);
+> +}
+> +
 > +/*
-> + * Copyright 2013-2015 Analog Devices Inc.
-> + *  Author: Lars-Peter Clausen <lars@metafoo.de>
-> + *
-> + * Licensed under the GPL-2.
+> + * Most drivers will be able to use the default DMA buffer callbacks. But if
+> + * necessary it is possible to overwrite certain functions with custom
+> + * implementations. One exception is the release callback, which always needs to
+> + * be implemented.
 > + */
+> +static const struct iio_buffer_access_funcs iio_dummy_dma_buffer_ops = {
+> +	.read_first_n = iio_dma_buffer_read,
+> +	.set_bytes_per_datum = iio_dma_buffer_set_bytes_per_datum,
+> +	.set_length = iio_dma_buffer_set_length,
+> +	.request_update = iio_dma_buffer_request_update,
+> +	.enable = iio_dma_buffer_enable,
+> +	.disable = iio_dma_buffer_disable,
+> +	.data_available = iio_dma_buffer_data_available,
+> +	.release = iio_dummy_dma_buffer_release,
 > +
-> +#ifndef __INDUSTRIALIO_DMA_BUFFER_H__
-> +#define __INDUSTRIALIO_DMA_BUFFER_H__
+> +	.modes = INDIO_BUFFER_HARDWARE,
+> +	.flags = INDIO_BUFFER_FLAG_FIXED_WATERMARK,
+> +};
 > +
-> +#include <linux/list.h>
-> +#include <linux/kref.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/mutex.h>
-> +#include <linux/iio/buffer.h>
-> +
-> +struct iio_dma_buffer_queue;
-> +struct iio_dma_buffer_ops;
-> +struct device;
-> +
-> +struct iio_buffer_block {
-> +	u32 size;
-> +	u32 bytes_used;
+> +static const struct iio_dma_buffer_ops iio_dummy_dma_buffer_dma_ops = {
+> +	.submit = iio_dummy_dma_buffer_submit,
+> +	.abort = iio_dummy_dma_buffer_abort,
 > +};
 > +
 > +/**
-> + * enum iio_block_state - State of a struct iio_dma_buffer_block
-> + * @IIO_BLOCK_STATE_DEQUEUED: Block is not queued
-> + * @IIO_BLOCK_STATE_QUEUED: Block is on the incoming queue
-> + * @IIO_BLOCK_STATE_ACTIVE: Block is currently being processed by the DMA
-> + * @IIO_BLOCK_STATE_DONE: Block is on the outgoing queue
-> + * @IIO_BLOCK_STATE_DEAD: Block has been marked as to be freed
+> + * iio_simple_dummy_update_scan_mode() - Update active channels
+> + * @indio_dev: The IIO device
+> + * @scan_mask: Scan mask with the new active channels
 > + */
-> +enum iio_block_state {
-> +	IIO_BLOCK_STATE_DEQUEUED,
-> +	IIO_BLOCK_STATE_QUEUED,
-> +	IIO_BLOCK_STATE_ACTIVE,
-> +	IIO_BLOCK_STATE_DONE,
-> +	IIO_BLOCK_STATE_DEAD,
-> +};
-> +
-> +/**
-> + * struct iio_dma_buffer_block - IIO buffer block
-> + * @head: List head
-> + * @size: Total size of the block in bytes
-> + * @bytes_used: Number of bytes that contain valid data
-> + * @vaddr: Virutal address of the blocks memory
-> + * @phys_addr: Physical address of the blocks memory
-> + * @queue: Parent DMA buffer queue
-> + * @kref: kref used to manage the lifetime of block
-> + * @state: Current state of the block
-> + */
-> +struct iio_dma_buffer_block {
-> +	/* May only be accessed by the owner of the block */
-> +	struct list_head head;
-> +	size_t bytes_used;
+> +int iio_simple_dummy_update_scan_mode(struct iio_dev *indio_dev,
+> +	const unsigned long *scan_mask)
+> +{
+> +	struct iio_dummy_dma_buffer *buffer =
+> +		iio_buffer_to_dummy_dma_buffer(indio_dev->buffer);
+> +	struct iio_dummy_dma *dma = &buffer->dma;
+> +	unsigned int i, j;
 > +
 > +	/*
-> +	 * Set during allocation, constant thereafter. May be accessed read-only
-> +	 * by anybody holding a reference to the block.
+> +	 * Setup the converter to output the selected channels to the DMA. For
+> +	 * real hardware the connection between the converter and the DMA will
+> +	 * be in hardware, here we use the struct to exchange this information.
 > +	 */
-> +	void *vaddr;
-> +	dma_addr_t phys_addr;
-> +	size_t size;
-> +	struct iio_dma_buffer_queue *queue;
+> +	j = 0;
+> +	for_each_set_bit(i, scan_mask, indio_dev->masklength) {
+> +		dma->sources[j] = iio_dummy_dma_sources[i];
+> +		j++;
+> +	}
 > +
-> +	/* Must not be accessed outside the core. */
-> +	struct kref kref;
+> +	dma->num_sources = j;
+> +
+> +	return 0;
+> +}
+> +
+> +int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev)
+> +{
+> +	struct iio_dummy_dma_buffer *buffer;
+> +
+> +	buffer = kzalloc(sizeof(*buffer), GFP_KERNEL);
+> +	if (!buffer)
+> +		return -ENOMEM;
+> +
 > +	/*
-> +	 * Must not be accessed outside the core. Access needs to hold
-> +	 * queue->list_lock if the block is not owned by the core.
+> +	 * Setup DMA controller. For real hardware this should acquire and setup
+> +	 * all resources that are necessary to operate the DMA controller, like
+> +	 * IRQs, clocks, IO mem regions, etc.
 > +	 */
-> +	enum iio_block_state state;
-> +};
+> +	iio_dummy_dma_setup(&buffer->dma, iio_dummy_dma_buffer_irq);
+> +
+> +	/*
+> +	 * For a real device the device passed to iio_dma_buffer_init() must be
+> +	 * the device that performs the DMA transfers. Often this is not the
+> +	 * device for the converter, but a dedicated DMA controller.
+> +	 */
+> +	dma_coerce_mask_and_coherent(&indio_dev->dev, DMA_BIT_MASK(32));
+> +	iio_dma_buffer_init(&buffer->queue, &indio_dev->dev,
+> +		&iio_dummy_dma_buffer_dma_ops);
+> +	buffer->queue.buffer.access = &iio_dummy_dma_buffer_ops;
+> +
+> +	INIT_LIST_HEAD(&buffer->block_list);
+> +
+> +	indio_dev->buffer = &buffer->queue.buffer;
+> +	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
+> +
+> +	return 0;
+> +}
 > +
 > +/**
-> + * struct iio_dma_buffer_queue_fileio - FileIO state for the DMA buffer
-> + * @blocks: Buffer blocks used for fileio
-> + * @active_block: Block being used in read()
-> + * @pos: Read offset in the active block
-> + * @block_size: Size of each block
+> + * iio_dummy_dma_unconfigure_buffer() - release buffer resources
+> + * @indio_dev: device instance state
 > + */
-> +struct iio_dma_buffer_queue_fileio {
-> +	struct iio_dma_buffer_block *blocks[2];
-> +	struct iio_dma_buffer_block *active_block;
-> +	size_t pos;
-> +	size_t block_size;
-> +};
+> +void iio_simple_dummy_unconfigure_buffer(struct iio_dev *indio_dev)
+> +{
+> +	struct iio_dummy_dma_buffer *buffer =
+> +		iio_buffer_to_dummy_dma_buffer(indio_dev->buffer);
 > +
-> +/**
-> + * struct iio_dma_buffer_queue - DMA buffer base structure
-> + * @buffer: IIO buffer base structure
-> + * @dev: Parent device
-> + * @ops: DMA buffer callbacks
-> + * @lock: Protects the incoming list, active and the fields in the fileio
-> + *   substruct
-> + * @list_lock: Protects the outgoing queue as well as blocks on
-> + *   those queues
-Just wondering if you'd be better renaming this to make it clear
-it only locks the outgoing queue...?  
-> + * @incoming: List of buffers on the incoming queue
-> + * @outgoing: List of buffers on the outgoing queue
-> + * @active: Whether the buffer is currently active
-> + * @fileio: FileIO state
-> + */
-> +struct iio_dma_buffer_queue {
-> +	struct iio_buffer buffer;
-> +	struct device *dev;
-> +	const struct iio_dma_buffer_ops *ops;
+> +	/*
+> +	 * Once iio_dma_buffer_exit() has been called none of the DMA buffer
+> +	 * callbacks will be called. This means it is save to free any resources
+> +	 * that are only used in those callbacks at this point. The memory for
+> +	 * the buffer struct must not be freed since it might be still in use
+> +	 * elsewhere. It will be freed in the buffers release callback.
+> +	 */
+> +	iio_dma_buffer_exit(&buffer->queue);
 > +
-> +	struct mutex lock;
-> +	spinlock_t list_lock;
-> +	struct list_head incoming;
-> +	struct list_head outgoing;
-> +
-> +	bool active;
-> +
-> +	struct iio_dma_buffer_queue_fileio fileio;
-> +};
-> +
-> +/**
-> + * struct iio_dma_buffer_ops - DMA buffer callback operations
-> + * @submit: Called when a block is submitted to the DMA controller
-> + * @abort: Should abort all pending transfers
-> + */
-> +struct iio_dma_buffer_ops {
-> +	int (*submit)(struct iio_dma_buffer_queue *queue,
-> +		struct iio_dma_buffer_block *block);
-> +	void (*abort)(struct iio_dma_buffer_queue *queue);
-> +};
-> +
-> +void iio_dma_buffer_block_done(struct iio_dma_buffer_block *block);
-> +void iio_dma_buffer_block_list_abort(struct iio_dma_buffer_queue *queue,
-> +	struct list_head *list);
-> +
-> +int iio_dma_buffer_enable(struct iio_buffer *buffer,
-> +	struct iio_dev *indio_dev);
-> +int iio_dma_buffer_disable(struct iio_buffer *buffer,
-> +	struct iio_dev *indio_dev);
-> +int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
-> +	char __user *user_buffer);
-> +size_t iio_dma_buffer_data_available(struct iio_buffer *buffer);
-> +int iio_dma_buffer_set_bytes_per_datum(struct iio_buffer *buffer, size_t bpd);
-> +int iio_dma_buffer_set_length(struct iio_buffer *buffer, int length);
-> +int iio_dma_buffer_request_update(struct iio_buffer *buffer);
-> +
-> +int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
-> +	struct device *dma_dev, const struct iio_dma_buffer_ops *ops);
-> +void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue);
-> +void iio_dma_buffer_release(struct iio_dma_buffer_queue *queue);
-> +
-> +#endif
+> +	/*
+> +	 * Drop our reference to the buffer. Since this might be the last one
+> +	 * the buffer structure must no longer be accessed after this.
+> +	 */
+> +	iio_buffer_put(&buffer->queue.buffer);
+> +}
 > 
 
