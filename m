@@ -1,53 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-229.synserver.de ([212.40.185.229]:1047 "EHLO
+Received: from smtp-out-229.synserver.de ([212.40.185.229]:1245 "EHLO
 	smtp-out-190.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751566AbbJDRXb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Oct 2015 13:23:31 -0400
-Message-ID: <5611608B.2040105@metafoo.de>
-Date: Sun, 04 Oct 2015 19:23:23 +0200
+	by vger.kernel.org with ESMTP id S1751528AbbJDR1b (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Oct 2015 13:27:31 -0400
+Message-ID: <56116180.1010303@metafoo.de>
+Date: Sun, 04 Oct 2015 19:27:28 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
 CC: Octavian Purdila <octavian.purdila@intel.com>,
-	Andrey Yurovsky <andrey@snupi.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 6/7] staging:iio:dummy: Add DMA buffer support
-References: <1443797107-13391-1-git-send-email-lars@metafoo.de> <1443797107-13391-7-git-send-email-lars@metafoo.de> <56114C77.3070909@kernel.org>
-In-Reply-To: <56114C77.3070909@kernel.org>
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 7/7] iio: Add a DMAengine framework based buffer
+References: <1443797107-13391-1-git-send-email-lars@metafoo.de> <1443797107-13391-8-git-send-email-lars@metafoo.de> <56114EDA.70505@kernel.org>
+In-Reply-To: <56114EDA.70505@kernel.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/04/2015 05:57 PM, Jonathan Cameron wrote:
+On 10/04/2015 06:07 PM, Jonathan Cameron wrote:
 > On 02/10/15 15:45, Lars-Peter Clausen wrote:
->> Add a DMA buffer implementation to the IIO dummy driver. Similar to the
->> existing kfifo based dummy buffer implementation the buffer is not
->> connected to any real hardware, but rather emulates its behavior.
+>> Add a generic fully device independent DMA buffer implementation that uses
+>> the DMAegnine framework to perform the DMA transfers. This can be used by
+>> converter drivers that whish to provide a DMA buffer for converters that
+>> are connected to a DMA core that implements the DMAengine API.
 >>
->> The dummy DMA buffer is meant to be used as a template for implementing DMA
->> buffer support and can also be used to test the generic IIO DMA buffer
->> infrastructure without having access to hardware that has DMA capabilities.
+>> Apart from allocating the buffer using iio_dmaengine_buffer_alloc() and
+>> freeing it using iio_dmaengine_buffer_free() no additional converter driver
+>> specific code is required when using this DMA buffer implementation.
 >>
->> The dummy driver is split into two parts. The first part emulates the
->> behavior of a typical DMA controller and converter while the second part
->> implement a typical device driver for such a system. The separation of the
->> two parts is intentionally kept very strict to be to make it clear which
->> parts will be found in a driver for real hardware and which parts will be
->> performed by the hardware and will not be part of the driver.
->>
->> The type of the buffer used by the IIO dummy device has to be chosen at
->> compile time and can either be the old FIFO based software triggered buffer
->> or the DMA buffer. Given that the dummy device driver is mainly intended
->> for testing the framework and providing a simple example to be used as a
->> template for new drivers it is not critical that the buffer type can be
->> chosen or changed at runtime.
-> I almost wonder if it's worth building two modules. One with the kfifo and
-> one with the dma buffer.
-> 
-> This is mainly to avoid confusing the distros who will wonder which
-> 'fake' option to chose.
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Clearly you have a FIXME in the code. Is this something we want to wait
+> for or is the race short enough we can ignore it for now?
 
-Ideally distros shouldn't ship this at all. But we could allow to built both
-and then use a module parameter to choose which one to use when both are
-built into the module.
+
+Yeah, that's a problem with the DMAengine API in general. All users, e.g.
+ALSA, V4L, suffer from this problem. It needs to be fixed but it's not
+critical. The race can happen, but it is really hard to trigger and also
+depends a bit on the DMAengine driver implementation. I've not yet seen it
+in the wild.
+
+The note is a reminder to fix this once the proper API becomes available
+
+
+>> diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
+>> new file mode 100644
+>> index 0000000..ac0ca55
+>> --- /dev/null
+>> +++ b/include/linux/iio/buffer-dmaengine.h
+>> @@ -0,0 +1,18 @@
+>> +/*
+>> + * Copyright 2014-2015 Analog Devices Inc.
+>> + *  Author: Lars-Peter Clausen <lars@metafoo.de>
+>> + *
+>> + * Licensed under the GPL-2 or later.
+>> + */
+>> +
+>> +#ifndef __IIO_DMAENGINE_H__
+>> +#define __IIO_DMAENGINE_H__
+>> +
+>> +struct iio_buffer;
+>> +struct devive;
+> That seems unlikely to be right :)
+> device?
+
+Yes
