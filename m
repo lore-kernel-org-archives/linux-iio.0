@@ -1,51 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50963 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751453AbbJDO05 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Oct 2015 10:26:57 -0400
-Subject: Re: [PATCH v4 7/7] Typo correction in ms5611 Kconfig
-To: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, William.Markezana@meas-spec.com
-References: <1443708822-8580-1-git-send-email-ludovic.tancerel@maplehightech.com>
- <1443708822-8580-8-git-send-email-ludovic.tancerel@maplehightech.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5611372F.2070003@kernel.org>
-Date: Sun, 4 Oct 2015 15:26:55 +0100
-MIME-Version: 1.0
-In-Reply-To: <1443708822-8580-8-git-send-email-ludovic.tancerel@maplehightech.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <hugo.camboulive@gmail.com>
+From: Hugo Camboulive <hugo.camboulive@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Hugo Camboulive <hugo.camboulive@gmail.com>
+Subject: [PATCH v2] staging: iio: adc: fix comment block coding style issue
+Date: Sun,  4 Oct 2015 16:30:45 +0000
+Message-Id: <1443976245-869-1-git-send-email-hugo.camboulive@gmail.com>
+In-Reply-To: <56111433.4090904@metafoo.de>
+References: <56111433.4090904@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/10/15 15:13, Ludovic Tancerel wrote:
-> Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
-Hmm. I applied this yesterday, but seem to have failed to email to say
-that I had!
+This patch to ad7746.c makes the comment blocks end with a */
+on a separate line, and start with a /* on an empty line.
 
-So... Applied to the togreg branch of iio.git, initially pushed out as
-testing for the autobuilders to completely ignore given it's a help
-comment fix.
+Signed-off-by: Hugo Camboulive <hugo.camboulive@gmail.com>
+---
+ drivers/staging/iio/cdc/ad7746.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-> ---
->  drivers/iio/pressure/Kconfig | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index 01e0b6a..53f9a44 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -53,9 +53,9 @@ config MPL3115
->            will be called mpl3115.
->  
->  config MS5611
-> -	tristate "Measurement Specialities MS5611 pressure sensor driver"
-> +	tristate "Measurement Specialties MS5611 pressure sensor driver"
->  	help
-> -	  Say Y here to build support for the Measurement Specialities
-> +	  Say Y here to build support for the Measurement Specialties
->  	  MS5611 pressure and temperature sensor.
->  
->  	  To compile this driver as a module, choose M here: the module will
-> 
-
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index 10fa372..e8eab25 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -528,10 +528,11 @@ static int ad7746_write_raw(struct iio_dev *indio_dev,
+ 			goto out;
+ 		}
+ 
+-		/* CAPDAC Scale = 21pF_typ / 127
++		/*
++		 * CAPDAC Scale = 21pF_typ / 127
+ 		 * CIN Scale = 8.192pF / 2^24
+ 		 * Offset Scale = CAPDAC Scale / CIN Scale = 338646
+-		 * */
++		 */
+ 
+ 		val /= 338646;
+ 
+@@ -600,7 +601,8 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 
+ 		switch (chan->type) {
+ 		case IIO_TEMP:
+-		/* temperature in milli degrees Celsius
++		/*
++		 * temperature in milli degrees Celsius
+ 		 * T = ((*val / 2048) - 4096) * 1000
+ 		 */
+ 			*val = (*val * 125) / 256;
+-- 
+2.6.0
