@@ -1,117 +1,110 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-229.synserver.de ([212.40.185.229]:1032 "EHLO
-	smtp-out-190.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751584AbbJDRa2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Oct 2015 13:30:28 -0400
-Message-ID: <5611622D.7060504@metafoo.de>
-Date: Sun, 04 Oct 2015 19:30:21 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-lb0-f173.google.com ([209.85.217.173]:35398 "EHLO
+	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751540AbbJEF5I (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Oct 2015 01:57:08 -0400
+Received: by lbwr8 with SMTP id r8so51722119lbw.2
+        for <linux-iio@vger.kernel.org>; Sun, 04 Oct 2015 22:57:06 -0700 (PDT)
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: Octavian Purdila <octavian.purdila@intel.com>,
-	Andrey Yurovsky <andrey@snupi.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 5/7] iio: Add generic DMA buffer infrastructure
-References: <1443797107-13391-1-git-send-email-lars@metafoo.de> <1443797107-13391-6-git-send-email-lars@metafoo.de> <56114716.4040504@kernel.org>
-In-Reply-To: <56114716.4040504@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <560ACB52.8020800@kernel.org>
+References: <1443334737-3772-1-git-send-email-mranostay@gmail.com>
+	<5607EF50.6020102@kernel.org>
+	<CAKzfze_1ArXEoyRtChEABh7EZrWa4MP9UD-xKocJT3YMbpNJmQ@mail.gmail.com>
+	<4BD54C39-DF0B-4F44-9597-A62674FAA21A@jic23.retrosnub.co.uk>
+	<CAKzfze_LiXDPLj=jNsT-+-9iNPUDC8tQ2HC82Q+Cihb3xPxM6g@mail.gmail.com>
+	<560ACB52.8020800@kernel.org>
+Date: Sun, 4 Oct 2015 22:57:06 -0700
+Message-ID: <CAKzfze94uQuG9OeyP8yMsR=Zfe94tzBScHTvPJ8g0ppcKv60Lg@mail.gmail.com>
+Subject: Re: [PATCH] iio: hdc100x: correct IIO_CHAN_INFO_OFFSET value
+From: Matt Ranostay <mranostay@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/04/2015 05:34 PM, Jonathan Cameron wrote:
-> On 02/10/15 15:45, Lars-Peter Clausen wrote:
->> The traditional approach used in IIO to implement buffered capture requires
->> the generation of at least one interrupt per sample. In the interrupt
->> handler the driver reads the sample from the device and copies it to a
->> software buffer. This approach has a rather large per sample overhead
->> associated with it. And while it works fine for samplerates in the range of
->> up to 1000 samples per second it starts to consume a rather large share of
->> the available CPU processing time once we go beyond that, this is
->> especially true on an embedded system with limited processing power. The
->> regular interrupt also causes increased power consumption by not allowing
->> the hardware into deeper sleep states, which is something that becomes more
->> and more important on mobile battery powered devices.
+On Tue, Sep 29, 2015 at 10:33 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 29/09/15 05:19, Matt Ranostay wrote:
+>> On Mon, Sep 28, 2015 at 2:08 AM, Jonathan Cameron
+>> <jic23@jic23.retrosnub.co.uk> wrote:
+>>>
+>>>
+>>> On 27 September 2015 23:35:29 BST, Matt Ranostay <mranostay@gmail.com> wrote:
+>>>> On Sun, Sep 27, 2015 at 6:29 AM, Jonathan Cameron <jic23@kernel.org>
+>>>> wrote:
+>>>>> On 27/09/15 07:18, Matt Ranostay wrote:
+>>>>>> Previous offset wasn't applied in the correct order and invalid.
+>>>>>> This patchset fixes this issue, and also has the correct scale value
+>>>>>> applied to the offset.
+>>>>>>
+>>>>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>>>>> Oops, missed that.
+>>>>>
+>>>>> Given it's provided in the datasheet as effectively a fractional
+>>>> value
+>>>>> would val = -40000, val2 = 65536 and type = IIO_FRACTIONAL not be
+>>>> cleaner
+>>>>> and give the same answer?
+>>>>>
+>>>> Actually not because the way the datasheet states it  ((value / 2**16)
+>>>> * 165) - 40,   so the scale value needs to be applied to the -40
+>>>> offset (165/65536)
+>>> Good point.  Can't we do (-40*165)/65536 ?
 >>
->> And while the recently added watermark support mitigates some of the issues
->> by allowing the device to generate interrupts at a rate lower than the data
->> output rate, this still requires a storage buffer inside the device and
->> even if it exists it is only a few 100 samples deep at most.
+>> Nope.
 >>
->> DMA support on the other hand allows to capture multiple millions or even
->> more samples without any CPU interaction. This allows the CPU to either go
->> to sleep for longer periods or focus on other tasks which increases overall
->> system performance and power consumption. In addition to that some devices
->> might not even offer a way to read the data other than using DMA, which
->> makes DMA mandatory to use for them.
+>> scale = 165<<2 / 65536
+>> offset = 40 / scale
 >>
->> The tasks involved in implementing a DMA buffer can be divided into two
->> categories. The first category is memory buffer management (allocation,
->> mapping, etc.) and hooking this up the IIO buffer callbacks like read(),
->> enable(), disable(), etc. The second category of tasks is to setup the
->> DMA hardware and manage the DMA transfers. Tasks from the first category
->> will be very similar for all IIO drivers supporting DMA buffers, while the
->> tasks from the second category will be hardware specific.
->>
->> This patch implements a generic infrastructure that takes care of the
->> former tasks. It provides a set of functions that implement the standard
->> IIO buffer iio_buffer_access_funcs callbacks. These can either be used as
->> is or be overloaded and augmented with driver specific code where
->> necessary.
->>
->> For the DMA buffer support infrastructure that is introduced in this patch
->> sample data is grouped by so called blocks. A block is the basic unit at
->> which data is exchanged between the application and the hardware. The
->> application is responsible for allocating the memory associated with the
->> block and then passes the block to the hardware. When the hardware has
->> captured the amount of samples equal to size of a block it will notify the
->> application, which can then read the data from the block and process it.
->> The block size can be freely chosen (within the constraints of the
->> hardware). This allows to make a trade-off between latency and management
->> overhead. The larger the block size the lower the per sample overhead but
->> the latency between when the data was captured and when the application
->> will be able to access it increases, in a similar way smaller block sizes
->> have a larger per sample management overhead but a lower latency. The ideal
->> block size thus depends on system and application requirements.
->>
->> For the time being the infrastructure only implements a simple double
->> buffered scheme which allocates two blocks each with half the size of the
->> configured buffer size. This provides basic support for capturing
->> continuous uninterrupted data over the existing file-IO ABI. Future
->> extensions to the DMA buffer infrastructure will give applications a more
->> fine grained control over how many blocks are allocated and the size of
->> each block. But this requires userspace ABI additions which are
->> intentionally not part of this patch and will be added separately.
->>
->> Tasks of the second category need to be implemented by a device specific
->> driver. They can be hooked up into the generic infrastructure using two
->> simple callbacks, submit() and abort().
->>
->> The submit() callback is used to schedule DMA transfers for blocks. Once a
->> DMA transfer has been completed it is expected that the buffer driver calls
->> iio_dma_buffer_block_done() to notify. The abort() callback is used for
->> stopping all pending and active DMA transfers when the buffer is disabled.
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> This is nice and clean.  It might take me a little time to mull
-> it over in detail for now, I've just pointed out a few typos in comments :)
-> The fun question is who is going to dive in and review it?
-> 
-> Beautifully presented series!
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> p.s. Almost years since we sat down and talked this through ;)
-> Hmm. That was the same day Greg asked me when we were finally going
-> to get the remaining drivers out of staging on the basis they'd been
-> there a while by then. Ooops.
+>> Maybe we should add a new IIO_CHAN_INFO_SCALED_OFFSET that uses the
+>> scale value and a divisor that returns an IIO_FRACTIONAL?
+> Hmm. Would get messy fast.
+>
+> Lets just go with your original fixed point option below.  If someone later figures
+> out a neater way of doing it, good for them ;)
 
-Yeah, two years next week, it was during ELCE2013, I'm at the airport on my
-way to ELCE2015 right now. Writing the documentation for all of this took a
-while ;)
-
-Thanks for having a look.
-
-- Lars
+Ok that works.
+>
+> J
+>>
+>>
+>>>>
+>>>>> Speaking of which, for the scale are we loosing any precision by
+>>>> shifting
+>>>>> the bottom of the fraction right 2 rather than the top left 2 which
+>>>> would have
+>>>>> the same result?
+>>>>
+>>>> Ah possibly. But I suspect isn't anything measurable...
+>>>>
+>>>>>
+>>>>> Jonathan
+>>>>>> ---
+>>>>>>  drivers/iio/humidity/hdc100x.c | 5 +++--
+>>>>>>  1 file changed, 3 insertions(+), 2 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/iio/humidity/hdc100x.c
+>>>> b/drivers/iio/humidity/hdc100x.c
+>>>>>> index 2824578..a7f61e8 100644
+>>>>>> --- a/drivers/iio/humidity/hdc100x.c
+>>>>>> +++ b/drivers/iio/humidity/hdc100x.c
+>>>>>> @@ -221,8 +221,9 @@ static int hdc100x_read_raw(struct iio_dev
+>>>> *indio_dev,
+>>>>>>               }
+>>>>>>               break;
+>>>>>>       case IIO_CHAN_INFO_OFFSET:
+>>>>>> -             *val = -40;
+>>>>>> -             return IIO_VAL_INT;
+>>>>>> +             *val = -3971;
+>>>>>> +             *val2 = 879096;
+>>>>>> +             return IIO_VAL_INT_PLUS_MICRO;
+>>>>>>       default:
+>>>>>>               return -EINVAL;
+>>>>>>       }
+>>>>>>
+>>>>>
+>>>
+>>> --
+>>> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+>
