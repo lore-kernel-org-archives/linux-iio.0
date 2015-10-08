@@ -1,99 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:51567 "EHLO
-	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751104AbbJHGRC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 Oct 2015 02:17:02 -0400
+Return-Path: <Haibo.Chen@freescale.com>
+From: Haibo Chen <haibo.chen@freescale.com>
+To: <robh+dt@kernel.org>, <pawel.moll@arm.com>, <mark.rutland@arm.com>,
+	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
+	<shawnguo@kernel.org>, <kernel@pengutronix.de>, <mturquette@baylibre.com>,
+	<sboyd@codeaurora.org>, <jic23@kernel.org>
+CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-clk@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>
+Subject: [PATCH 2/5] Documentation: add the binding file for Freescale imx7d ADC driver
+Date: Thu, 8 Oct 2015 18:59:05 +0800
+Message-ID: <1444301948-21721-2-git-send-email-haibo.chen@freescale.com>
+In-Reply-To: <1444301948-21721-1-git-send-email-haibo.chen@freescale.com>
+References: <1444301948-21721-1-git-send-email-haibo.chen@freescale.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 07 Oct 2015 23:16:10 -0700
-From: Stefan Agner <stefan@agner.ch>
-To: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org,
-	maitysanchayan@gmail.com, B38611@freescale.com, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, shawn.guo@linaro.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vf610_adc: Fix internal temperature calculation
-In-Reply-To: <1443015807-17764-1-git-send-email-bhuvanchandra.dv@toradex.com>
-References: <1443015807-17764-1-git-send-email-bhuvanchandra.dv@toradex.com>
-Message-ID: <0b977c21c414aef0c250755c9d772ead@agner.ch>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Bhuvan,
+The patch adds the binding file for Freescale imx7d ADC driver.
 
-On 2015-09-23 06:43, Bhuvanchandra DV wrote:
-> There is an observed temperature difference of ~20°C with the
-> internal temperature reading and the temperature measured on
-> SoC package. Existing calculations consider the typical values
-> provided in datasheet. Those typical values are valid for
-> VREFH_ADC at 3.0V. Voltage at 25°C is different for different
-> VREFH_ADC voltages. With VREFH_ADC at 3.3V, voltage at 25°C is
-> 0.699V. Hence update the VTEMP25 to 0.699V which gives ADCR@Temp25
-> as 867 and the final temperature readings differs with ~5°C from
-> the external readings.
+Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
+---
+ .../devicetree/bindings/iio/adc/imx7d-adc.txt      | 26 ++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
 
-I am not entirely happy with the message. The proposed changes seem not
-to alter the offset which would explain a ~20°C difference... Where do
-this 20°C come from?
-
---
-Stefan
-
-> 
-> Formula for finding ADCR@Temp25:
-> ADCR@Temp25 = (ADCR@Vdd * V@TEMP25 * 10) / VDDconv
-> 
-> ADCR@Vdd for 12-Bit ADC = 4095
-> VDDconv = VREFH_ADC * 10
-> 
-> VREFH_ADC@3.3V
-> ADCR@Temp25 = (4095 * .699 * 10) / 33
-> ADCR@Temp25 ~= 867
-> 
-> | VREFH_ADC | V@TEMP25 | VDDconv | ADCR@Temp25 |
-> |   3.0V    | 0.696mV  |    30   |     950     |
-> |   3.3V    | 0.699mV  |    33   |     867     |
-> 
-> Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-> ---
->  drivers/iio/adc/vf610_adc.c | 19 ++++++++++++++-----
->  1 file changed, 14 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index f4df2a7..e7abc13 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -103,6 +103,13 @@
->  
->  #define DEFAULT_SAMPLE_TIME		1000
->  
-> +/* V at 25°C of 696 mV */
-> +#define VF610_VTEMP25_3V0		950
-> +/* V at 25°C of 699 mV */
-> +#define VF610_VTEMP25_3V3		867
-> +/* Typical sensor slope coefficient at all temperatures */
-> +#define VF610_TEMP_SLOPE_COEFF		1840
-> +
->  enum clk_sel {
->  	VF610_ADCIOC_BUSCLK_SET,
->  	VF610_ADCIOC_ALTCLK_SET,
-> @@ -636,11 +643,13 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
->  			break;
->  		case IIO_TEMP:
->  			/*
-> -			* Calculate in degree Celsius times 1000
-> -			* Using sensor slope of 1.84 mV/°C and
-> -			* V at 25°C of 696 mV
-> -			*/
-> -			*val = 25000 - ((int)info->value - 864) * 1000000 / 1840;
-> +			 * Calculate in degree Celsius times 1000
-> +			 * Using the typical sensor slope of 1.84 mV/°C
-> +			 * and VREFH_ADC at 3.3V, V at 25°C of 699 mV
-> +			 */
-> +			*val = 25000 - ((int)info->value - VF610_VTEMP25_3V3) *
-> +					1000000 / VF610_TEMP_SLOPE_COEFF;
-> +
->  			break;
->  		default:
->  			mutex_unlock(&indio_dev->mlock);
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt b/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
+new file mode 100644
+index 0000000..6b21fd27
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
+@@ -0,0 +1,26 @@
++Freescale imx7d ADC bindings
++
++The devicetree bingdings are for the nwe ADC driver written for
++imx7d SoC.
++
++Required properties:
++- compatible: Should be "fsl,imx7d-adc"
++- reg: Offset and length of the register set for the ADC device
++- interrupts: The interrupt number for the ADC device
++- clocks: The root clock of the ADC controller
++- clock-names: Must contain "adc", matching entry in the clocks property
++- vref-supply: The regulator supply ADC reference voltage
++
++Optional properties:
++- num-channels: the number of channels used
++
++Example:
++adc1: adc@30610000 {
++	compatible = "fsl,imx7d-adc";
++	reg = <0x30610000 0x10000>;
++	interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
++	clocks = <&clks IMX7D_ADC_ROOT_CLK>;
++	clock-names = "adc";
++	num-channels = <4>;
++	vref-supply = <&reg_vcc_3v3_mcu>;
++};
+-- 
+1.9.1
