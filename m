@@ -1,77 +1,201 @@
-Return-Path: <fugang.duan@freescale.com>
-From: Duan Andy <fugang.duan@freescale.com>
-To: Jonathan Cameron <jic23@kernel.org>, Bhuvanchandra DV
-	<bhuvanchandra.dv@toradex.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-CC: "stefan@agner.ch" <stefan@agner.ch>, "maitysanchayan@gmail.com"
-	<maitysanchayan@gmail.com>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"shawn.guo@linaro.org" <shawn.guo@linaro.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] vf610_adc: Fix internal temperature calculation
-Date: Thu, 8 Oct 2015 02:01:47 +0000
-Message-ID: <BN3PR0301MB12193E5AE29F8FBCF0308D15F5350@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <1443015807-17764-1-git-send-email-bhuvanchandra.dv@toradex.com>
- <560810DD.5030900@kernel.org>
-In-Reply-To: <560810DD.5030900@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <jennifer.lin@dyna-image.com>
+Message-ID: <5615dc75.42a3440a.bae2.ffff8411@mx.google.com>
+From: "Jennifer Lin" <jennifer.lin@dyna-image.com>
+To: <linux-iio@vger.kernel.org>,
+	<jic23@kernel.org>
+Subject: hello
+Date: Thu, 8 Oct 2015 11:01:06 +0800
 MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0068_01D101B8.A336E8B0"
 List-ID: <linux-iio@vger.kernel.org>
 
-RnJvbTogSm9uYXRoYW4gQ2FtZXJvbiA8amljMjNAa2VybmVsLm9yZz4gU2VudDogU3VuZGF5LCBT
-ZXB0ZW1iZXIgMjcsIDIwMTUgMTE6NTMgUE0NCj4gVG86IEJodXZhbmNoYW5kcmEgRFY7IGxpbnV4
-LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IHN0ZWZhbkBhZ25lci5jaDsgbWFpdHlzYW5jaGF5
-YW5AZ21haWwuY29tOyBEdWFuIEZ1Z2FuZy1CMzg2MTE7DQo+IGtuYWFjay5oQGdteC5kZTsgbGFy
-c0BtZXRhZm9vLmRlOyBwbWVlcndAcG1lZXJ3Lm5ldDsgc2hhd24uZ3VvQGxpbmFyby5vcmc7DQo+
-IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IER1YW4gRnVnYW5nLUIzODYxMQ0KPiBTdWJq
-ZWN0OiBSZTogW1BBVENIXSB2ZjYxMF9hZGM6IEZpeCBpbnRlcm5hbCB0ZW1wZXJhdHVyZSBjYWxj
-dWxhdGlvbg0KPiANCj4gT24gMjMvMDkvMTUgMTQ6NDMsIEJodXZhbmNoYW5kcmEgRFYgd3JvdGU6
-DQo+ID4gVGhlcmUgaXMgYW4gb2JzZXJ2ZWQgdGVtcGVyYXR1cmUgZGlmZmVyZW5jZSBvZiB+MjDC
-sEMgd2l0aCB0aGUgaW50ZXJuYWwNCj4gPiB0ZW1wZXJhdHVyZSByZWFkaW5nIGFuZCB0aGUgdGVt
-cGVyYXR1cmUgbWVhc3VyZWQgb24gU29DIHBhY2thZ2UuDQo+ID4gRXhpc3RpbmcgY2FsY3VsYXRp
-b25zIGNvbnNpZGVyIHRoZSB0eXBpY2FsIHZhbHVlcyBwcm92aWRlZCBpbg0KPiA+IGRhdGFzaGVl
-dC4gVGhvc2UgdHlwaWNhbCB2YWx1ZXMgYXJlIHZhbGlkIGZvciBWUkVGSF9BREMgYXQgMy4wVi4N
-Cj4gPiBWb2x0YWdlIGF0IDI1wrBDIGlzIGRpZmZlcmVudCBmb3IgZGlmZmVyZW50IFZSRUZIX0FE
-QyB2b2x0YWdlcy4gV2l0aA0KPiA+IFZSRUZIX0FEQyBhdCAzLjNWLCB2b2x0YWdlIGF0IDI1wrBD
-IGlzIDAuNjk5Vi4gSGVuY2UgdXBkYXRlIHRoZSBWVEVNUDI1DQo+ID4gdG8gMC42OTlWIHdoaWNo
-IGdpdmVzIEFEQ1JAVGVtcDI1IGFzIDg2NyBhbmQgdGhlIGZpbmFsIHRlbXBlcmF0dXJlDQo+ID4g
-cmVhZGluZ3MgZGlmZmVycyB3aXRoIH41wrBDIGZyb20gdGhlIGV4dGVybmFsIHJlYWRpbmdzLg0K
-PiA+DQo+ID4gRm9ybXVsYSBmb3IgZmluZGluZyBBRENSQFRlbXAyNToNCj4gPiBBRENSQFRlbXAy
-NSA9IChBRENSQFZkZCAqIFZAVEVNUDI1ICogMTApIC8gVkREY29udg0KPiA+DQo+ID4gQURDUkBW
-ZGQgZm9yIDEyLUJpdCBBREMgPSA0MDk1DQo+ID4gVkREY29udiA9IFZSRUZIX0FEQyAqIDEwDQo+
-ID4NCj4gPiBWUkVGSF9BRENAMy4zVg0KPiA+IEFEQ1JAVGVtcDI1ID0gKDQwOTUgKiAuNjk5ICog
-MTApIC8gMzMNCj4gPiBBRENSQFRlbXAyNSB+PSA4NjcNCj4gPg0KPiA+IHwgVlJFRkhfQURDIHwg
-VkBURU1QMjUgfCBWRERjb252IHwgQURDUkBUZW1wMjUgfA0KPiA+IHwgICAzLjBWICAgIHwgMC42
-OTZtViAgfCAgICAzMCAgIHwgICAgIDk1MCAgICAgfA0KPiA+IHwgICAzLjNWICAgIHwgMC42OTlt
-ViAgfCAgICAzMyAgIHwgICAgIDg2NyAgICAgfA0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogQmh1
-dmFuY2hhbmRyYSBEViA8Ymh1dmFuY2hhbmRyYS5kdkB0b3JhZGV4LmNvbT4NCj4gTG9va3MgZmlu
-ZSB0byBtZSwgYnV0IEknbGwgbmVlZCBhbiBBY2sgZnJvbSBGdWdhbmcgb24gdGhpcyBvbmUgYXMg
-SSBkb24ndA0KPiBrbm93IG9yIGhhdmUgdGhlIHBhcnQgSSdtIGFmcmFpZC4NCj4gDQo+IEpvbmF0
-aGFuDQoNClRoZSBwYXRjaCBpcyBmaW5lIGZvciBtZS4gU29ycnkgZm9yIHRoZSBsYXRlIHJlc3Bv
-bnNlIGR1ZSB0byB2YWNhdGlvbi4NCg0KQWNrZWQtYnk6IEZ1Z2FuZyBEdWFuIDxCMzg2MTFAZnJl
-ZXNjYWxlLmNvbT4NCg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL2lpby9hZGMvdmY2MTBfYWRjLmMg
-fCAxOSArKysrKysrKysrKysrKy0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxNCBpbnNlcnRp
-b25zKCspLCA1IGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlv
-L2FkYy92ZjYxMF9hZGMuYyBiL2RyaXZlcnMvaWlvL2FkYy92ZjYxMF9hZGMuYw0KPiA+IGluZGV4
-IGY0ZGYyYTcuLmU3YWJjMTMgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9paW8vYWRjL3ZmNjEw
-X2FkYy5jDQo+ID4gKysrIGIvZHJpdmVycy9paW8vYWRjL3ZmNjEwX2FkYy5jDQo+ID4gQEAgLTEw
-Myw2ICsxMDMsMTMgQEANCj4gPg0KPiA+ICAjZGVmaW5lIERFRkFVTFRfU0FNUExFX1RJTUUJCTEw
-MDANCj4gPg0KPiA+ICsvKiBWIGF0IDI1wrBDIG9mIDY5NiBtViAqLw0KPiA+ICsjZGVmaW5lIFZG
-NjEwX1ZURU1QMjVfM1YwCQk5NTANCj4gPiArLyogViBhdCAyNcKwQyBvZiA2OTkgbVYgKi8NCj4g
-PiArI2RlZmluZSBWRjYxMF9WVEVNUDI1XzNWMwkJODY3DQo+ID4gKy8qIFR5cGljYWwgc2Vuc29y
-IHNsb3BlIGNvZWZmaWNpZW50IGF0IGFsbCB0ZW1wZXJhdHVyZXMgKi8NCj4gPiArI2RlZmluZSBW
-RjYxMF9URU1QX1NMT1BFX0NPRUZGCQkxODQwDQo+ID4gKw0KPiA+ICBlbnVtIGNsa19zZWwgew0K
-PiA+ICAJVkY2MTBfQURDSU9DX0JVU0NMS19TRVQsDQo+ID4gIAlWRjYxMF9BRENJT0NfQUxUQ0xL
-X1NFVCwNCj4gPiBAQCAtNjM2LDExICs2NDMsMTMgQEAgc3RhdGljIGludCB2ZjYxMF9yZWFkX3Jh
-dyhzdHJ1Y3QgaWlvX2Rldg0KPiAqaW5kaW9fZGV2LA0KPiA+ICAJCQlicmVhazsNCj4gPiAgCQlj
-YXNlIElJT19URU1QOg0KPiA+ICAJCQkvKg0KPiA+IC0JCQkqIENhbGN1bGF0ZSBpbiBkZWdyZWUg
-Q2Vsc2l1cyB0aW1lcyAxMDAwDQo+ID4gLQkJCSogVXNpbmcgc2Vuc29yIHNsb3BlIG9mIDEuODQg
-bVYvwrBDIGFuZA0KPiA+IC0JCQkqIFYgYXQgMjXCsEMgb2YgNjk2IG1WDQo+ID4gLQkJCSovDQo+
-ID4gLQkJCSp2YWwgPSAyNTAwMCAtICgoaW50KWluZm8tPnZhbHVlIC0gODY0KSAqIDEwMDAwMDAg
-Lw0KPiAxODQwOw0KPiA+ICsJCQkgKiBDYWxjdWxhdGUgaW4gZGVncmVlIENlbHNpdXMgdGltZXMg
-MTAwMA0KPiA+ICsJCQkgKiBVc2luZyB0aGUgdHlwaWNhbCBzZW5zb3Igc2xvcGUgb2YgMS44NCBt
-Vi/CsEMNCj4gPiArCQkJICogYW5kIFZSRUZIX0FEQyBhdCAzLjNWLCBWIGF0IDI1wrBDIG9mIDY5
-OSBtVg0KPiA+ICsJCQkgKi8NCj4gPiArCQkJKnZhbCA9IDI1MDAwIC0gKChpbnQpaW5mby0+dmFs
-dWUgLSBWRjYxMF9WVEVNUDI1XzNWMykgKg0KPiA+ICsJCQkJCTEwMDAwMDAgLyBWRjYxMF9URU1Q
-X1NMT1BFX0NPRUZGOw0KPiA+ICsNCj4gPiAgCQkJYnJlYWs7DQo+ID4gIAkJZGVmYXVsdDoNCj4g
-PiAgCQkJbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gPg0K
+此為 MIME 格式的多重部份郵件。
+
+------=_NextPart_000_0068_01D101B8.A336E8B0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+=20
+
+Hello All=20
+
+=20
+
+I'm Dyna-image Software FAE Jennifer
+
+This Driver Code http://marc.info/?l=3Dlinux-iio =
+<http://marc.info/?l=3Dlinux-iio&m=3D144357627901252&w=3D2> =
+&m=3D144357627901252&w=3D2 copyright & license is correct.
+
+Dyna-image provided original driver is GPLv2.
+
+then Driver Code provided this mail: templeton.tsai@dyna-image.com was =
+resign .
+
+Thank you.
+
+=20
+
+=20
+
+Best Regards,
+
+Jennifer Lin
+
+SW FAE
+
+Sales & Marketing Dept.
+
+DYNA IMAGE Corporation
+
+Office: +886-2-2916-1968 #541
+
+Mobile: +886-10457099
+
+8F, 233-2, Pao-Chiao Rd., Hsin-Tien, New Taipei City 23145, Taiwan
+
+=20
+
+
+------=_NextPart_000_0068_01D101B8.A336E8B0
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; charset=3Dutf-8">
+<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:=E6=96=B0=E7=B4=B0=E6=98=8E=E9=AB=94;
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:"\@=E6=96=B0=E7=B4=B0=E6=98=8E=E9=AB=94";
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+ /* Page Definitions */
+ @page Section1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext=3D"edit">
+  <o:idmap v:ext=3D"edit" data=3D"1" />
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=3DZH-TW link=3Dblue vlink=3Dpurple =
+style=3D'text-justify-trim:punctuation'>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>Hello All <o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>I'm Dyna-image Software FAE =
+Jennifer<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>This Driver Code <a
+href=3D"http://marc.info/?l=3Dlinux-iio&amp;m=3D144357627901252&amp;w=3D2=
+">http://marc.info/?l=3Dlinux-iio&amp;m=3D144357627901252&amp;w=3D2</a>
+copyright &amp; license is correct.<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>Dyna-image provided original =
+driver is
+GPLv2.<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>then Driver Code provided this =
+mail: <a
+href=3D"mailto:templeton.tsai@dyna-image.com">templeton.tsai@dyna-image.c=
+om</a>
+was resign .<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>Thank you.<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>Best =
+Regards,<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><b><span lang=3DEN-US>Jennifer =
+Lin<o:p></o:p></span></b></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'color:#4F81BD'>SW =
+FAE<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'color:#4F81BD'>Sales =
+&amp; Marketing
+Dept.<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'color:#17365D'>DYNA =
+IMAGE
+Corporation<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'color:#4F81BD'>Office: =
+</span><span
+lang=3DEN-US style=3D'color:#17365D'>+886-2-2916-1968 #541</span><span =
+lang=3DEN-US
+style=3D'color:#4F81BD'><o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'color:#4F81BD'>Mobile: =
+</span><span
+lang=3DEN-US style=3D'color:#17365D'>+886-10457099<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US style=3D'color:#4F81BD'>8F, =
+233-2, Pao-Chiao
+Rd., Hsin-Tien, New Taipei City 23145, Taiwan<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
+
+</div>
+
+</body>
+
+</html>
+
+------=_NextPart_000_0068_01D101B8.A336E8B0--
