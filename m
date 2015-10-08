@@ -1,58 +1,56 @@
-Return-Path: <Haibo.Chen@freescale.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-bn1on0132.outbound.protection.outlook.com ([157.56.110.132]:24886
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S932336AbbJHLLe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 8 Oct 2015 07:11:34 -0400
 From: Haibo Chen <haibo.chen@freescale.com>
 To: <robh+dt@kernel.org>, <pawel.moll@arm.com>, <mark.rutland@arm.com>,
 	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
-	<shawnguo@kernel.org>, <kernel@pengutronix.de>, <mturquette@baylibre.com>,
-	<sboyd@codeaurora.org>, <jic23@kernel.org>
+	<shawnguo@kernel.org>, <kernel@pengutronix.de>,
+	<mturquette@baylibre.com>, <sboyd@codeaurora.org>,
+	<jic23@kernel.org>
 CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-clk@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-Subject: [PATCH 4/5] ARM: dts: imx7d.dtsi: add ADC support
-Date: Thu, 8 Oct 2015 18:59:07 +0800
-Message-ID: <1444301948-21721-4-git-send-email-haibo.chen@freescale.com>
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-clk@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: [PATCH 5/5] ARM: dts: imx7d-sdb: add ADC support
+Date: Thu, 8 Oct 2015 18:59:08 +0800
+Message-ID: <1444301948-21721-5-git-send-email-haibo.chen@freescale.com>
 In-Reply-To: <1444301948-21721-1-git-send-email-haibo.chen@freescale.com>
 References: <1444301948-21721-1-git-send-email-haibo.chen@freescale.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add imx7d ADC support.
+Add ADC support for imx7d-sdb board.
 
 Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
 ---
- arch/arm/boot/dts/imx7d.dtsi | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ arch/arm/boot/dts/imx7d-sdb.dts | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx7d.dtsi b/arch/arm/boot/dts/imx7d.dtsi
-index ebc053a..87c3319 100644
---- a/arch/arm/boot/dts/imx7d.dtsi
-+++ b/arch/arm/boot/dts/imx7d.dtsi
-@@ -583,6 +583,26 @@
- 			reg = <0x30400000 0x400000>;
- 			ranges;
+diff --git a/arch/arm/boot/dts/imx7d-sdb.dts b/arch/arm/boot/dts/imx7d-sdb.dts
+index 432aaf5..b2c4536 100644
+--- a/arch/arm/boot/dts/imx7d-sdb.dts
++++ b/arch/arm/boot/dts/imx7d-sdb.dts
+@@ -97,6 +97,16 @@
+ 	};
+ };
  
-+			adc1: adc@30610000 {
-+				compatible = "fsl,imx7d-adc";
-+				reg = <0x30610000 0x10000>;
-+				interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&clks IMX7D_ADC_ROOT_CLK>;
-+				num-channels = <4>;
-+				clock-names = "adc";
-+				status = "disabled";
-+			};
++&adc1 {
++	vref-supply = <&reg_vref_1v8>;
++	status = "okay";
++};
 +
-+			adc2: adc@30620000 {
-+				compatible = "fsl,imx7d-adc";
-+				reg = <0x30620000 0x10000>;
-+				interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&clks IMX7D_ADC_ROOT_CLK>;
-+				num-channels = <4>;
-+				clock-names = "adc";
-+				status = "disabled";
-+			};
++&adc2 {
++	vref-supply = <&reg_vref_1v8>;
++	status = "okay";
++};
 +
- 			pwm1: pwm@30660000 {
- 				compatible = "fsl,imx7d-pwm", "fsl,imx27-pwm";
- 				reg = <0x30660000 0x10000>;
+ &cpu0 {
+ 	arm-supply = <&sw1a_reg>;
+ };
 -- 
 1.9.1
+
