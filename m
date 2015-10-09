@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:37193 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.136]:37287 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932587AbbJIDEW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 8 Oct 2015 23:04:22 -0400
-Date: Fri, 9 Oct 2015 11:04:06 +0800
+	id S1750760AbbJIDFh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 8 Oct 2015 23:05:37 -0400
+Date: Fri, 9 Oct 2015 11:05:23 +0800
 From: Shawn Guo <shawnguo@kernel.org>
 To: Stephen Boyd <sboyd@codeaurora.org>
 Cc: Haibo Chen <haibo.chen@freescale.com>, robh+dt@kernel.org,
@@ -14,7 +14,7 @@ Cc: Haibo Chen <haibo.chen@freescale.com>, robh+dt@kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
 	linux-iio@vger.kernel.org
 Subject: Re: [PATCH 3/5] clk: imx7d: add ADC root clock
-Message-ID: <20151009030406.GF22673@tiger>
+Message-ID: <20151009030523.GG22673@tiger>
 References: <1444301948-21721-1-git-send-email-haibo.chen@freescale.com>
  <1444301948-21721-3-git-send-email-haibo.chen@freescale.com>
  <20151008183556.GI26883@codeaurora.org>
@@ -35,6 +35,7 @@ On Thu, Oct 08, 2015 at 11:35:56AM -0700, Stephen Boyd wrote:
 > 
 > Acked-by: Stephen Boyd <sboyd@codeaurora.org>
 
-Applied on IMX tree.
+To clarify, I applied it on my imx/clk branch, which will be sent to you
+and Mike later.
 
 Shawn
