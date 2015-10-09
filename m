@@ -1,52 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:45857 "EHLO
-	relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751903AbbJIQ1V (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 9 Oct 2015 12:27:21 -0400
-Received: from mfilter25-d.gandi.net (mfilter25-d.gandi.net [217.70.178.153])
-	by relay6-d.mail.gandi.net (Postfix) with ESMTP id 88767FBDBA
-	for <linux-iio@vger.kernel.org>; Fri,  9 Oct 2015 18:27:19 +0200 (CEST)
-Received: from relay6-d.mail.gandi.net ([IPv6:::ffff:217.70.183.198])
-	by mfilter25-d.gandi.net (mfilter25-d.gandi.net [::ffff:10.0.15.180]) (amavisd-new, port 10024)
-	with ESMTP id mKDCbr_6LSHr for <linux-iio@vger.kernel.org>;
-	Fri,  9 Oct 2015 18:27:18 +0200 (CEST)
-Received: from coal (mon69-7-83-155-44-161.fbx.proxad.net [83.155.44.161])
-	(Authenticated sender: hadess@hadess.net)
-	by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id AE8CEFBDDE
-	for <linux-iio@vger.kernel.org>; Fri,  9 Oct 2015 18:27:17 +0200 (CEST)
-Message-ID: <1444408033.28661.43.camel@hadess.net>
-Subject: User-space API again, detecting devices
-From: Bastien Nocera <hadess@hadess.net>
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Fri, 09 Oct 2015 18:27:13 +0200
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mout.gmx.net ([212.227.15.19]:56782 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750913AbbJIVN2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 9 Oct 2015 17:13:28 -0400
+Subject: Re: Industrial I/O presentation at LinuxCon Europe
+To: Daniel Baluta <daniel.baluta@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <CAEnQRZAf3Sp=NrC5S+4pW6=N4kS4cmqbXCesdd7e1b6mfKc-zA@mail.gmail.com>
+From: Hartmut Knaack <knaack.h@gmx.de>
+Message-ID: <56182DF5.2070507@gmx.de>
+Date: Fri, 9 Oct 2015 23:13:25 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAEnQRZAf3Sp=NrC5S+4pW6=N4kS4cmqbXCesdd7e1b6mfKc-zA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hey,
+Daniel Baluta schrieb am 09.10.2015 um 11:06:
+> Hi all,
+> 
+> This Monday I presented an introduction to IIO at LinuxCon.
+> 
+> The slides can be found here:
+> 
+> * https://www.overleaf.com/articles/industrial-i-slash-o/dmqjqpzswtvb.pdf
+> 
+> and soon they will be uploaded to Linux foundation site.
+> 
 
-I have a couple of bugs filed against iio-sensor-proxy where the
-problem is in my code's wrong way of doing device detection.
+Awesome. Looks very good overall. But before uploading to Linux foundation,
+please consider the following remarks (I hope my brief notes make sense to you):
 
-I want to detect compasses, accelerometers, and ambient light sensors,
-both those using triggers, and those that require polling. I'll try to
-answer my own questions, and you can tell me whether I'm wrong.
+Page 10: IIO_CHAN_PROCESSED => IIO_CHAN_INFO_PROCESSED
+Page 16: temp_channel => accel_channels? fill empty comment, IIO_CPU => IIO_LE?
+Page 21: several io => iio, highlighted "enable" in last line intended?
+Pages 20 and 25: deprecate terms "top half" and "bottom half" (IIRC there is now
+handler [h] for timing critical IRQ handling and thread [th] for uncritical work)?
 
-To detect accelerometers:
-- Check whether in_accel_x, in_accel_y and in_accel_z files exist
+Thanks,
 
-To detect ambient light sensors:
-- Check whether in_intensity_both, or in_illuminance_input or
-in_illuminance_raw exists (the intensity one looks wrong...)
+Hartmut
 
-To detect compasses:
-- Check whether in_rot_from_north_magnetic_tilt_comp exists
+> I hope this presentation helped people to have an idea about
+> what IIO is and how they can start to write drivers for sensors.
+> 
+> Taking in account the number of questions received I think that we'll
+> soon see an increase in the number of drivers submitted :).
+> 
+> thanks,
+> Daniel.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-To detect whether the device needs polling, or has a trigger, construct
-a trigger name like <name>-dev<device number> for example, magn_3d-
-dev0.
-
-Is that all correct?
-
-Cheers
