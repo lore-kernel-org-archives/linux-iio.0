@@ -1,106 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41815 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41825 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751563AbbJKOpI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 10:45:08 -0400
-Subject: Re: [PATCH 5/6] iio:dac:m62332: address some style issues
+	with ESMTP id S1751585AbbJKOqC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 10:46:02 -0400
+Subject: Re: [PATCH 6/6] iio:dac:m62332: use dynamic scale
 To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
 References: <cover.1440459082.git.knaack.h@gmx.de>
- <b13c6db25dbc9e82017692089b0bf26795f1deba.1440459082.git.knaack.h@gmx.de>
+ <59133cb6c4c826e9fff4ab5504eb42c16d40fe70.1440459082.git.knaack.h@gmx.de>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <561A75F3.5090109@kernel.org>
-Date: Sun, 11 Oct 2015 15:45:07 +0100
+Message-ID: <561A7628.4020203@kernel.org>
+Date: Sun, 11 Oct 2015 15:46:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <b13c6db25dbc9e82017692089b0bf26795f1deba.1440459082.git.knaack.h@gmx.de>
+In-Reply-To: <59133cb6c4c826e9fff4ab5504eb42c16d40fe70.1440459082.git.knaack.h@gmx.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 28/08/15 22:59, Hartmut Knaack wrote:
-> Fix some indentation issues and separate returns by empty lines (IIO
-> style). Also rename the channel mask in _read_raw() to mask.
+> Some regulators can supply multiple voltages. To take changing voltages
+> into account, the scale needs to be calculated on every read access.
 > 
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-Applied to the togreg branch of iio.git
+This is a pretty common situation, but just because it is done
+less than ideally in a lot of places, doesn't mean we shouldn't
+fix this one!
 
-Thanks,
+Applied.
 
 Jonathan
 > ---
->  drivers/iio/dac/m62332.c | 16 +++++++++++-----
->  1 file changed, 11 insertions(+), 5 deletions(-)
+>  drivers/iio/dac/m62332.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
 > 
 > diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-> index 1b65fc007bce..fdb3e042c14d 100644
+> index fdb3e042c14d..76e8b044b979 100644
 > --- a/drivers/iio/dac/m62332.c
 > +++ b/drivers/iio/dac/m62332.c
-> @@ -40,8 +40,7 @@ struct m62332_data {
->  #endif
->  };
+> @@ -31,7 +31,6 @@
 >  
-> -static int m62332_set_value(struct iio_dev *indio_dev,
-> -	u8 val, int channel)
-> +static int m62332_set_value(struct iio_dev *indio_dev, u8 val, int channel)
+>  struct m62332_data {
+>  	struct i2c_client	*client;
+> -	u16			vref_mv;
+>  	struct regulator	*vcc;
+>  	struct mutex		mutex;
+>  	u8			raw[M62332_CHANNELS];
+> @@ -89,11 +88,16 @@ static int m62332_read_raw(struct iio_dev *indio_dev,
+>  			   long mask)
 >  {
 >  	struct m62332_data *data = iio_priv(indio_dev);
->  	struct i2c_client *client = data->client;
-> @@ -87,30 +86,35 @@ static int m62332_read_raw(struct iio_dev *indio_dev,
->  			   struct iio_chan_spec const *chan,
->  			   int *val,
->  			   int *val2,
-> -			   long m)
-> +			   long mask)
->  {
->  	struct m62332_data *data = iio_priv(indio_dev);
+> +	int ret;
 >  
-> -	switch (m) {
-> +	switch (mask) {
+>  	switch (mask) {
 >  	case IIO_CHAN_INFO_SCALE:
 >  		/* Corresponds to Vref / 2^(bits) */
->  		*val = data->vref_mv;
+> -		*val = data->vref_mv;
+> +		ret = regulator_get_voltage(data->vcc);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		*val = ret / 1000; /* mV */
 >  		*val2 = 8;
-> +
+>  
 >  		return IIO_VAL_FRACTIONAL_LOG2;
->  	case IIO_CHAN_INFO_RAW:
->  		*val = data->raw[chan->channel];
-> +
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_OFFSET:
->  		*val = 1;
-> +
->  		return IIO_VAL_INT;
->  	default:
->  		break;
->  	}
-> +
->  	return -EINVAL;
->  }
+> @@ -218,11 +222,6 @@ static int m62332_probe(struct i2c_client *client,
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &m62332_info;
 >  
->  static int m62332_write_raw(struct iio_dev *indio_dev,
-> -	struct iio_chan_spec const *chan, int val, int val2, long mask)
-> +			    struct iio_chan_spec const *chan, int val, int val2,
-> +			    long mask)
->  {
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> @@ -195,6 +199,7 @@ static int m62332_probe(struct i2c_client *client,
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
->  		return -ENOMEM;
-> +
->  	data = iio_priv(indio_dev);
->  	i2c_set_clientdata(client, indio_dev);
->  	data->client = client;
-> @@ -230,6 +235,7 @@ static int m62332_probe(struct i2c_client *client,
->  
->  err:
->  	iio_map_array_unregister(indio_dev);
-> +
->  	return ret;
->  }
->  
+> -	ret = regulator_get_voltage(data->vcc);
+> -	if (ret < 0)
+> -		return ret;
+> -	data->vref_mv = ret / 1000; /* mV */
+> -
+>  	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
+>  	if (ret < 0)
+>  		return ret;
 > 
 
