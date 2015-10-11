@@ -1,55 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41578 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41595 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751141AbbJKOJK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 10:09:10 -0400
-Subject: Re: Hello
-To: Jennifer Lin <jennifer.lin@dyna-image.com>,
-	linux-iio@vger.kernel.org
-References: <5615e9de.11b9420a.f1509.ffff9053@mx.google.com>
+	with ESMTP id S1750803AbbJKOK5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 10:10:57 -0400
+Subject: Re: [PATCH] Staging: iio: cdc: Remove unused macros
+To: Shraddha Barke <shraddha.6596@gmail.com>,
+	outreachy-kernel@googlegroups.com,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+References: <1444250290-32700-1-git-send-email-shraddha.6596@gmail.com>
+ <561A6DCD.8000505@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <561A6D82.3090505@kernel.org>
-Date: Sun, 11 Oct 2015 15:09:06 +0100
+Message-ID: <561A6DF0.4050502@kernel.org>
+Date: Sun, 11 Oct 2015 15:10:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <5615e9de.11b9420a.f1509.ffff9053@mx.google.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <561A6DCD.8000505@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/10/15 04:58, Jennifer Lin wrote:
-> Hello All
+On 11/10/15 15:10, Jonathan Cameron wrote:
+> On 07/10/15 21:38, Shraddha Barke wrote:
+>> Remove the macros since they are not used anywhere throughout the
+>> kernel.
+>>
+>> Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
+> Hi Shraddha,
 > 
-> I'm Dyna-image Software FAE Jennifer
-> This Driver Code http://marc.info/?l=linux-iio&m=144357627901252&w=2 copyright & license is correct.
-> Dyna-image provided original driver is GPLv2.
-> then Driver Code provided this mail: templeton.tsai@dyna-image.com was resign .
-> Thank you.
-Hi Jennifer.
+> This should have been cc'd to linux-iio and Lars-Peter Clausen
+> (who maintains all the Analog devices drivers).
+> 
+> It's straightforward, but worth checking that they are fine with this.
+That would have worked better if I'd then remembered to CC them myself.
 
-As I read this you are happy with the statement in the driver header,
-but are just providing information that templeton tsai is no longer
-with dyna-image?  
-
-Have I understood you correctly?
-
-Thanks,
-
-Jonathan
+Sorry!
 > 
-> Best Regards,
-> Jennifer Lin
-> SW FAE
-> Sales & Marketing Dept.
-> DYNA IMAGE Corporation
-> Office: +886-2-2916-1968 #541
-> Mobile: +886-10457099
-> 8F, 233-2, Pao-Chiao Rd., Hsin-Tien, New Taipei City 23145, Taiwan
-> 
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Jonathan
+>> ---
+>>  drivers/staging/iio/cdc/ad7746.c | 7 -------
+>>  1 file changed, 7 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+>> index 028b4e8..a4bb152 100644
+>> --- a/drivers/staging/iio/cdc/ad7746.c
+>> +++ b/drivers/staging/iio/cdc/ad7746.c
+>> @@ -27,11 +27,7 @@
+>>  
+>>  #define AD7746_REG_STATUS		0
+>>  #define AD7746_REG_CAP_DATA_HIGH	1
+>> -#define AD7746_REG_CAP_DATA_MID		2
+>> -#define AD7746_REG_CAP_DATA_LOW		3
+>>  #define AD7746_REG_VT_DATA_HIGH		4
+>> -#define AD7746_REG_VT_DATA_MID		5
+>> -#define AD7746_REG_VT_DATA_LOW		6
+>>  #define AD7746_REG_CAP_SETUP		7
+>>  #define AD7746_REG_VT_SETUP		8
+>>  #define AD7746_REG_EXC_SETUP		9
+>> @@ -39,11 +35,8 @@
+>>  #define AD7746_REG_CAPDACA		11
+>>  #define AD7746_REG_CAPDACB		12
+>>  #define AD7746_REG_CAP_OFFH		13
+>> -#define AD7746_REG_CAP_OFFL		14
+>>  #define AD7746_REG_CAP_GAINH		15
+>> -#define AD7746_REG_CAP_GAINL		16
+>>  #define AD7746_REG_VOLT_GAINH		17
+>> -#define AD7746_REG_VOLT_GAINL		18
+>>  
+>>  /* Status Register Bit Designations (AD7746_REG_STATUS) */
+>>  #define AD7746_STATUS_EXCERR		BIT(3)
+>>
 > 
 
