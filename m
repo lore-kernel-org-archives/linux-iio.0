@@ -1,57 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:56782 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750913AbbJIVN2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 9 Oct 2015 17:13:28 -0400
-Subject: Re: Industrial I/O presentation at LinuxCon Europe
-To: Daniel Baluta <daniel.baluta@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <CAEnQRZAf3Sp=NrC5S+4pW6=N4kS4cmqbXCesdd7e1b6mfKc-zA@mail.gmail.com>
-From: Hartmut Knaack <knaack.h@gmx.de>
-Message-ID: <56182DF5.2070507@gmx.de>
-Date: Fri, 9 Oct 2015 23:13:25 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40103 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751304AbbJKJcH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 05:32:07 -0400
+Subject: Re: [PATCH] iio: bmc150: Fix type of step transfer variable
+To: Markus Pargmann <mpa@pengutronix.de>
+References: <201510032331.iV9fviPZ%fengguang.wu@intel.com>
+ <1444156299-14316-1-git-send-email-mpa@pengutronix.de>
+Cc: "linux-iio @ vger . kernel . org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <561A2C92.5060006@kernel.org>
+Date: Sun, 11 Oct 2015 10:32:02 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZAf3Sp=NrC5S+4pW6=N4kS4cmqbXCesdd7e1b6mfKc-zA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <1444156299-14316-1-git-send-email-mpa@pengutronix.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Daniel Baluta schrieb am 09.10.2015 um 11:06:
-> Hi all,
+On 06/10/15 19:31, Markus Pargmann wrote:
+> regmap_get_raw_read_max() returns type size_t. Also the later dev_err()
+> already uses the correct printk format "%zu".
 > 
-> This Monday I presented an introduction to IIO at LinuxCon.
+> This patch changes the type of 'step' to size_t.
 > 
-> The slides can be found here:
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> ---
+> Hi,
 > 
-> * https://www.overleaf.com/articles/industrial-i-slash-o/dmqjqpzswtvb.pdf
+> this problem was reported by the kbuild robot. This should fix the warning. I
+> am not sure if the patches are already in some public tree, otherwise this
+> could directly be squashed into the commit directly.
 > 
-> and soon they will be uploaded to Linux foundation site.
+> Thanks,
 > 
+> Markus
+I'm not sure what happened here.  I haven't touched the tree since this report,
+but the type is already size_t in my local tree. 
 
-Awesome. Looks very good overall. But before uploading to Linux foundation,
-please consider the following remarks (I hope my brief notes make sense to you):
+Anyhow, the issues seems not to exist anymore for some reason.
 
-Page 10: IIO_CHAN_PROCESSED => IIO_CHAN_INFO_PROCESSED
-Page 16: temp_channel => accel_channels? fill empty comment, IIO_CPU => IIO_LE?
-Page 21: several io => iio, highlighted "enable" in last line intended?
-Pages 20 and 25: deprecate terms "top half" and "bottom half" (IIRC there is now
-handler [h] for timing critical IRQ handling and thread [th] for uncritical work)?
-
-Thanks,
-
-Hartmut
-
-> I hope this presentation helped people to have an idea about
-> what IIO is and how they can start to write drivers for sensors.
+J
 > 
-> Taking in account the number of questions received I think that we'll
-> soon see an increase in the number of drivers submitted :).
 > 
-> thanks,
-> Daniel.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>  drivers/iio/accel/bmc150-accel-core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index 614cf61f0110..dc89cf8b7603 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -891,7 +891,7 @@ static int bmc150_accel_fifo_transfer(struct bmc150_accel_data *data,
+>  	int ret;
+>  	int total_length = samples * sample_length;
+>  	int i;
+> -	int step = regmap_get_raw_read_max(data->regmap);
+> +	size_t step = regmap_get_raw_read_max(data->regmap);
+>  
+>  	if (!step || step > total_length)
+>  		step = total_length;
 > 
 
