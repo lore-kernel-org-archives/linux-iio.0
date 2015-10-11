@@ -1,67 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41804 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41810 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751685AbbJKOnQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 10:43:16 -0400
-Subject: Re: [PATCH 3/6] iio:dac:m62332: use ARRAY_SIZE
+	with ESMTP id S1751563AbbJKOoM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 10:44:12 -0400
+Subject: Re: [PATCH 4/6] iio:dac:m62332: drop unrequired variable
 To: Daniel Baluta <daniel.baluta@gmail.com>,
 	Hartmut Knaack <knaack.h@gmx.de>
 References: <cover.1440459082.git.knaack.h@gmx.de>
- <20f1a555b8a1d2f7967041de85ee4335b1ff549d.1440459082.git.knaack.h@gmx.de>
- <CAEnQRZDnFUKpRNS0Qs+cg0dhnp3Uy==pZ8qp6wss=U8B_yn5LQ@mail.gmail.com>
+ <9a834bd03fd40333cb6e9935e51ecf801c81d38b.1440459082.git.knaack.h@gmx.de>
+ <CAEnQRZBm8DDpe82Pju+xF0yLqsuhPnvVXShQvEGHisPymxUkag@mail.gmail.com>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <561A7583.3070709@kernel.org>
-Date: Sun, 11 Oct 2015 15:43:15 +0100
+Message-ID: <561A75BB.8040200@kernel.org>
+Date: Sun, 11 Oct 2015 15:44:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZDnFUKpRNS0Qs+cg0dhnp3Uy==pZ8qp6wss=U8B_yn5LQ@mail.gmail.com>
+In-Reply-To: <CAEnQRZBm8DDpe82Pju+xF0yLqsuhPnvVXShQvEGHisPymxUkag@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 31/08/15 13:58, Daniel Baluta wrote:
+On 31/08/15 20:46, Daniel Baluta wrote:
 > On Sat, Aug 29, 2015 at 12:59 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
->> Make use of ARRAY_SIZE to prevent buffer issues.
+>> A return variable is not required in _write_raw(), and dropping it reduces
+>> complexity, as well.
 >>
 >> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 > 
 > Acked-by: Daniel Baluta <daniel.baluta@intel.com>
-Applied to the togreg branch of iio.git - pushed out as testing
-for now.
-
-J
+> 
+> Initially forgot to CC linux-iio.
+Applied.
 > 
 >> ---
->>  drivers/iio/dac/m62332.c | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>  drivers/iio/dac/m62332.c | 8 ++------
+>>  1 file changed, 2 insertions(+), 6 deletions(-)
 >>
 >> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
->> index c61720de8606..fe750982b502 100644
+>> index fe750982b502..1b65fc007bce 100644
 >> --- a/drivers/iio/dac/m62332.c
 >> +++ b/drivers/iio/dac/m62332.c
->> @@ -62,8 +62,8 @@ static int m62332_set_value(struct iio_dev *indio_dev,
->>                         goto out;
+>> @@ -112,21 +112,17 @@ static int m62332_read_raw(struct iio_dev *indio_dev,
+>>  static int m62332_write_raw(struct iio_dev *indio_dev,
+>>         struct iio_chan_spec const *chan, int val, int val2, long mask)
+>>  {
+>> -       int ret;
+>> -
+>>         switch (mask) {
+>>         case IIO_CHAN_INFO_RAW:
+>>                 if (val < 0 || val > 255)
+>>                         return -EINVAL;
+>>
+>> -               ret = m62332_set_value(indio_dev, val, chan->channel);
+>> -               break;
+>> +               return m62332_set_value(indio_dev, val, chan->channel);
+>>         default:
+>> -               ret = -EINVAL;
+>>                 break;
 >>         }
 >>
->> -       res = i2c_master_send(client, outbuf, 2);
->> -       if (res >= 0 && res != 2)
->> +       res = i2c_master_send(client, outbuf, ARRAY_SIZE(outbuf));
->> +       if (res >= 0 && res != ARRAY_SIZE(outbuf))
->>                 res = -EIO;
->>         if (res < 0)
->>                 goto out;
->> @@ -212,7 +212,7 @@ static int m62332_probe(struct i2c_client *client,
->>         /* establish that the iio_dev is a child of the i2c device */
->>         indio_dev->dev.parent = &client->dev;
+>> -       return ret;
+>> +       return -EINVAL;
+>>  }
 >>
->> -       indio_dev->num_channels = M62332_CHANNELS;
->> +       indio_dev->num_channels = ARRAY_SIZE(m62332_channels);
->>         indio_dev->channels = m62332_channels;
->>         indio_dev->modes = INDIO_DIRECT_MODE;
->>         indio_dev->info = &m62332_info;
+>>  #ifdef CONFIG_PM_SLEEP
 >> --
 >> 2.4.6
 >>
