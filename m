@@ -1,67 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41532 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41557 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750803AbbJKOD2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 10:03:28 -0400
-Subject: Re: [PATCH] iio: mxs-lradc: Fix temperature offset
-To: Marek Vasut <marex@denx.de>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-References: <1444141347-15301-1-git-send-email-alexandre.belloni@free-electrons.com>
- <561455AC.60504@denx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+	with ESMTP id S1751141AbbJKOFq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 10:05:46 -0400
+Subject: Re: [PATCH] vf610_adc: Fix internal temperature calculation
+To: Duan Andy <fugang.duan@freescale.com>,
+	Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <1443015807-17764-1-git-send-email-bhuvanchandra.dv@toradex.com>
+ <560810DD.5030900@kernel.org>
+ <BN3PR0301MB12193E5AE29F8FBCF0308D15F5350@BN3PR0301MB1219.namprd03.prod.outlook.com>
+Cc: "stefan@agner.ch" <stefan@agner.ch>,
+	"maitysanchayan@gmail.com" <maitysanchayan@gmail.com>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"shawn.guo@linaro.org" <shawn.guo@linaro.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <561A6C2E.4080800@kernel.org>
-Date: Sun, 11 Oct 2015 15:03:26 +0100
+Message-ID: <561A6CB7.6010700@kernel.org>
+Date: Sun, 11 Oct 2015 15:05:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <561455AC.60504@denx.de>
+In-Reply-To: <BN3PR0301MB12193E5AE29F8FBCF0308D15F5350@BN3PR0301MB1219.namprd03.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/10/15 00:13, Marek Vasut wrote:
-> On 10/06/2015 16:22, Alexandre Belloni wrote:
->> 0° Kelvin is actually −273.15°C, not -272.15°C. Fix the temperature offset.
+On 08/10/15 03:01, Duan Andy wrote:
+> From: Jonathan Cameron <jic23@kernel.org> Sent: Sunday, September 27, 2015 11:53 PM
+>> To: Bhuvanchandra DV; linux-iio@vger.kernel.org
+>> Cc: stefan@agner.ch; maitysanchayan@gmail.com; Duan Fugang-B38611;
+>> knaack.h@gmx.de; lars@metafoo.de; pmeerw@pmeerw.net; shawn.guo@linaro.org;
+>> linux-kernel@vger.kernel.org; Duan Fugang-B38611
+>> Subject: Re: [PATCH] vf610_adc: Fix internal temperature calculation
 >>
->> Reported-by: Janusz Użycki <j.uzycki@elpromaelectronics.com>
->> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> 
-> Nice find :-)
-> 
-> Acked-by: Marek Vasut <marex@denx.de>
-Ah, missed this when applying.  Have added your Ack to the V2 and will
-push it out later.
-
-J
-> 
-> (I am using different MUA, please pardon the possible issues)
-> 
->> ---
->>   drivers/staging/iio/adc/mxs-lradc.c | 6 +++---
->>   1 file changed, 3 insertions(+), 3 deletions(-)
+>> On 23/09/15 14:43, Bhuvanchandra DV wrote:
+>>> There is an observed temperature difference of ~20°C with the internal
+>>> temperature reading and the temperature measured on SoC package.
+>>> Existing calculations consider the typical values provided in
+>>> datasheet. Those typical values are valid for VREFH_ADC at 3.0V.
+>>> Voltage at 25°C is different for different VREFH_ADC voltages. With
+>>> VREFH_ADC at 3.3V, voltage at 25°C is 0.699V. Hence update the VTEMP25
+>>> to 0.699V which gives ADCR@Temp25 as 867 and the final temperature
+>>> readings differs with ~5°C from the external readings.
+>>>
+>>> Formula for finding ADCR@Temp25:
+>>> ADCR@Temp25 = (ADCR@Vdd * V@TEMP25 * 10) / VDDconv
+>>>
+>>> ADCR@Vdd for 12-Bit ADC = 4095
+>>> VDDconv = VREFH_ADC * 10
+>>>
+>>> VREFH_ADC@3.3V
+>>> ADCR@Temp25 = (4095 * .699 * 10) / 33
+>>> ADCR@Temp25 ~= 867
+>>>
+>>> | VREFH_ADC | V@TEMP25 | VDDconv | ADCR@Temp25 |
+>>> |   3.0V    | 0.696mV  |    30   |     950     |
+>>> |   3.3V    | 0.699mV  |    33   |     867     |
+>>>
+>>> Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+>> Looks fine to me, but I'll need an Ack from Fugang on this one as I don't
+>> know or have the part I'm afraid.
 >>
->> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
->> index 3f7715c9968b..67bfa54c4fb1 100644
->> --- a/drivers/staging/iio/adc/mxs-lradc.c
->> +++ b/drivers/staging/iio/adc/mxs-lradc.c
->> @@ -916,10 +916,10 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->>           if (chan->type == IIO_TEMP) {
->>               /* The calculated value from the ADC is in Kelvin, we
->>                * want Celsius for hwmon so the offset is
->> -             * -272.15 * scale
->> +             * -273.15 * scale
->>                */
->> -            *val = -1075;
->> -            *val2 = 691699;
->> +            *val = -1079;
->> +            *val2 = 644268;
->>
->>               return IIO_VAL_INT_PLUS_MICRO;
->>           }
->>
+>> Jonathan
 > 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> The patch is fine for me. Sorry for the late response due to vacation.
+> 
+> Acked-by: Fugang Duan <B38611@freescale.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+Thanks,
+Jonathan
+> 
+>>> ---
+>>>  drivers/iio/adc/vf610_adc.c | 19 ++++++++++++++-----
+>>>  1 file changed, 14 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+>>> index f4df2a7..e7abc13 100644
+>>> --- a/drivers/iio/adc/vf610_adc.c
+>>> +++ b/drivers/iio/adc/vf610_adc.c
+>>> @@ -103,6 +103,13 @@
+>>>
+>>>  #define DEFAULT_SAMPLE_TIME		1000
+>>>
+>>> +/* V at 25°C of 696 mV */
+>>> +#define VF610_VTEMP25_3V0		950
+>>> +/* V at 25°C of 699 mV */
+>>> +#define VF610_VTEMP25_3V3		867
+>>> +/* Typical sensor slope coefficient at all temperatures */
+>>> +#define VF610_TEMP_SLOPE_COEFF		1840
+>>> +
+>>>  enum clk_sel {
+>>>  	VF610_ADCIOC_BUSCLK_SET,
+>>>  	VF610_ADCIOC_ALTCLK_SET,
+>>> @@ -636,11 +643,13 @@ static int vf610_read_raw(struct iio_dev
+>> *indio_dev,
+>>>  			break;
+>>>  		case IIO_TEMP:
+>>>  			/*
+>>> -			* Calculate in degree Celsius times 1000
+>>> -			* Using sensor slope of 1.84 mV/°C and
+>>> -			* V at 25°C of 696 mV
+>>> -			*/
+>>> -			*val = 25000 - ((int)info->value - 864) * 1000000 /
+>> 1840;
+>>> +			 * Calculate in degree Celsius times 1000
+>>> +			 * Using the typical sensor slope of 1.84 mV/°C
+>>> +			 * and VREFH_ADC at 3.3V, V at 25°C of 699 mV
+>>> +			 */
+>>> +			*val = 25000 - ((int)info->value - VF610_VTEMP25_3V3) *
+>>> +					1000000 / VF610_TEMP_SLOPE_COEFF;
+>>> +
+>>>  			break;
+>>>  		default:
+>>>  			mutex_unlock(&indio_dev->mlock);
+>>>
 
