@@ -1,119 +1,191 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41133 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41326 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751585AbbJKMxt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 08:53:49 -0400
-Subject: Re: [PATCH] iio: hdc100x: correct IIO_CHAN_INFO_OFFSET value
-To: Matt Ranostay <mranostay@gmail.com>
-References: <1443334737-3772-1-git-send-email-mranostay@gmail.com>
- <5607EF50.6020102@kernel.org>
- <CAKzfze_1ArXEoyRtChEABh7EZrWa4MP9UD-xKocJT3YMbpNJmQ@mail.gmail.com>
- <4BD54C39-DF0B-4F44-9597-A62674FAA21A@jic23.retrosnub.co.uk>
- <CAKzfze_LiXDPLj=jNsT-+-9iNPUDC8tQ2HC82Q+Cihb3xPxM6g@mail.gmail.com>
- <560ACB52.8020800@kernel.org>
- <CAKzfze94uQuG9OeyP8yMsR=Zfe94tzBScHTvPJ8g0ppcKv60Lg@mail.gmail.com>
-Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+	with ESMTP id S1751872AbbJKN3q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 09:29:46 -0400
+Subject: Re: [PATCH] iio:measurement specialties core: Fix endian sparse
+ warnings.
+To: "ludovic.tancerel@maplehightech.com"
+	<ludovic.tancerel@maplehightech.com>
+References: <1444564511-30310-1-git-send-email-jic23@kernel.org>
+ <561A4E8F.7020300@kernel.org>
+ <59857F91-5574-4FD3-ACC9-E82814E601D2@maplehightech.com>
+Cc: linux-iio@vger.kernel.org, kbuild-all@01.org,
+	fengguang.wu@intel.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <561A5BDB.6050401@kernel.org>
-Date: Sun, 11 Oct 2015 13:53:47 +0100
+Message-ID: <561A6448.5090505@kernel.org>
+Date: Sun, 11 Oct 2015 14:29:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze94uQuG9OeyP8yMsR=Zfe94tzBScHTvPJ8g0ppcKv60Lg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <59857F91-5574-4FD3-ACC9-E82814E601D2@maplehightech.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/10/15 06:57, Matt Ranostay wrote:
-> On Tue, Sep 29, 2015 at 10:33 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 29/09/15 05:19, Matt Ranostay wrote:
->>> On Mon, Sep 28, 2015 at 2:08 AM, Jonathan Cameron
->>> <jic23@jic23.retrosnub.co.uk> wrote:
->>>>
->>>>
->>>> On 27 September 2015 23:35:29 BST, Matt Ranostay <mranostay@gmail.com> wrote:
->>>>> On Sun, Sep 27, 2015 at 6:29 AM, Jonathan Cameron <jic23@kernel.org>
->>>>> wrote:
->>>>>> On 27/09/15 07:18, Matt Ranostay wrote:
->>>>>>> Previous offset wasn't applied in the correct order and invalid.
->>>>>>> This patchset fixes this issue, and also has the correct scale value
->>>>>>> applied to the offset.
->>>>>>>
->>>>>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->>>>>> Oops, missed that.
->>>>>>
->>>>>> Given it's provided in the datasheet as effectively a fractional
->>>>> value
->>>>>> would val = -40000, val2 = 65536 and type = IIO_FRACTIONAL not be
->>>>> cleaner
->>>>>> and give the same answer?
->>>>>>
->>>>> Actually not because the way the datasheet states it  ((value / 2**16)
->>>>> * 165) - 40,   so the scale value needs to be applied to the -40
->>>>> offset (165/65536)
->>>> Good point.  Can't we do (-40*165)/65536 ?
->>>
->>> Nope.
->>>
->>> scale = 165<<2 / 65536
->>> offset = 40 / scale
->>>
->>> Maybe we should add a new IIO_CHAN_INFO_SCALED_OFFSET that uses the
->>> scale value and a divisor that returns an IIO_FRACTIONAL?
->> Hmm. Would get messy fast.
->>
->> Lets just go with your original fixed point option below.  If someone later figures
->> out a neater way of doing it, good for them ;)
+On 11/10/15 13:16, ludovic.tancerel@maplehightech.com wrote:
+> Hello Jonathan
 > 
-> Ok that works.
-Applied to the togreg branch of iio.git - initially pushed out as testing for the
-autobuilders to play with it.
+> I often work on Sunday, so it is not a pb.
+> 
+> I apologize for not correcting this myself, I was not sure what had to be done …
+That's quite alright.  I'm rubbish at spotting this particular issue in drivers
+or we'd have dealt with it earlier + my sparse was out of date (now it reports
+the same as the autobuilder one).
 
-Thanks,
-
-Jonathan
+> I had a look and this looks ok.
+Cool
+> 
+> I cannot test this today as I do not have access to HW, but can surely test the patch tomorrow morning.
+I'll probably set up my pull request then but not actually send it until I get an OK from
+you.
+> 
+> Thanks a lot for doing the change,
+> regards,
+> Ludo
+> 
+> 
+> 
+>> Le 11 oct. 2015 à 13:57, Jonathan Cameron <jic23@kernel.org> a écrit :
 >>
->> J
+>> If anyone can take a quick look at this today (ideally Ludovic! but I appreciate it's a Sunday)
+>> that would be great as this is stalling my sending pull request to Greg.
+>>
+>> I 'might' apply it anyway on the basis it is straight forward but
+>> nice to have a sanity check from someone!
+>>
+>> Jonathan
+>>
+>>
+>> On 11/10/15 12:55, Jonathan Cameron wrote:
+>>> This patch changes various types to the appropriate endian specific
+>>> versions.  Also introduces an additional local variable to avoid
+>>> a single variable being used for both be and cpu endianness.
+>>>
+>>> These aren't bugs as such, but clearing them up does make the code
+>>> clearer.
+>>>
+>>> Warning was:
+>>> sparse warnings: (new ones prefixed by >>)
+>>>
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18: sparse: incorrect type in assignment (different base types)
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18:    expected unsigned short [unsigned] [addressable] [usertype] send_buf
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18:    got restricted __be16 [usertype] <noident>
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18: sparse: incorrect type in assignment (different base types)
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18:    expected unsigned short [unsigned] [addressable] [usertype] send_buf
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18:    got restricted __be16 [usertype] <noident>
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
+>>>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
 >>>
 >>>
->>>>>
->>>>>> Speaking of which, for the scale are we loosing any precision by
->>>>> shifting
->>>>>> the bottom of the fraction right 2 rather than the top left 2 which
->>>>> would have
->>>>>> the same result?
->>>>>
->>>>> Ah possibly. But I suspect isn't anything measurable...
->>>>>
->>>>>>
->>>>>> Jonathan
->>>>>>> ---
->>>>>>>  drivers/iio/humidity/hdc100x.c | 5 +++--
->>>>>>>  1 file changed, 3 insertions(+), 2 deletions(-)
->>>>>>>
->>>>>>> diff --git a/drivers/iio/humidity/hdc100x.c
->>>>> b/drivers/iio/humidity/hdc100x.c
->>>>>>> index 2824578..a7f61e8 100644
->>>>>>> --- a/drivers/iio/humidity/hdc100x.c
->>>>>>> +++ b/drivers/iio/humidity/hdc100x.c
->>>>>>> @@ -221,8 +221,9 @@ static int hdc100x_read_raw(struct iio_dev
->>>>> *indio_dev,
->>>>>>>               }
->>>>>>>               break;
->>>>>>>       case IIO_CHAN_INFO_OFFSET:
->>>>>>> -             *val = -40;
->>>>>>> -             return IIO_VAL_INT;
->>>>>>> +             *val = -3971;
->>>>>>> +             *val2 = 879096;
->>>>>>> +             return IIO_VAL_INT_PLUS_MICRO;
->>>>>>>       default:
->>>>>>>               return -EINVAL;
->>>>>>>       }
->>>>>>>
->>>>>>
->>>>
->>>> --
->>>> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+>>> Reported-by: kbuild test robot <fengguang.wu@intel.com>
+>>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>>> ---
+>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c | 29 +++++++++++++-------------
+>>> 1 file changed, 15 insertions(+), 14 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
+>>> index 056c4f3bf497..669dc7c270f5 100644
+>>> --- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
+>>> +++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
+>>> @@ -106,7 +106,7 @@ int ms_sensors_convert_and_read(void *cli, u8 conv, u8 rd,
+>>> 				unsigned int delay, u32 *adc)
+>>> {
+>>> 	int ret;
+>>> -	u32 buf = 0;
+>>> +        __be32 buf = 0;
+>>> 	struct i2c_client *client = (struct i2c_client *)cli;
+>>>
+>>> 	/* Trigger conversion */
+>>> @@ -186,8 +186,9 @@ static bool ms_sensors_crc_valid(u32 value)
+>>> int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
+>>> {
+>>> 	u8 i;
+>>> -	u64 rcv_buf = 0;
+>>> -	u16 send_buf;
+>>> +	__be64 rcv_buf = 0;
+>>> +	u64 rcv_val;
+>>> +	__be16 send_buf;
+>>> 	int ret;
+>>>
+>>> 	struct i2c_msg msg[2] = {
+>>> @@ -213,18 +214,18 @@ int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
+>>> 		return ret;
+>>> 	}
+>>>
+>>> -	rcv_buf = be64_to_cpu(rcv_buf);
+>>> -	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_buf);
+>>> +	rcv_val = be64_to_cpu(rcv_buf);
+>>> +	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_val);
+>>>
+>>> 	for (i = 0; i < 64; i += 16) {
+>>> -		if (!ms_sensors_crc_valid((rcv_buf >> i) & 0xFFFF))
+>>> +		if (!ms_sensors_crc_valid((rcv_val >> i) & 0xFFFF))
+>>> 			return -ENODEV;
+>>> 	}
+>>>
+>>> -	*sn = (((rcv_buf >> 32) & 0xFF000000) |
+>>> -	       ((rcv_buf >> 24) & 0x00FF0000) |
+>>> -	       ((rcv_buf >> 16) & 0x0000FF00) |
+>>> -	       ((rcv_buf >> 8) & 0x000000FF)) << 16;
+>>> +	*sn = (((rcv_val >> 32) & 0xFF000000) |
+>>> +	       ((rcv_val >> 24) & 0x00FF0000) |
+>>> +	       ((rcv_val >> 16) & 0x0000FF00) |
+>>> +	       ((rcv_val >> 8) & 0x000000FF)) << 16;
+>>>
+>>> 	/* Read LSB part of serial number */
+>>> 	send_buf = cpu_to_be16(MS_SENSORS_SERIAL_READ_LSB);
+>>> @@ -236,15 +237,15 @@ int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
+>>> 		return ret;
+>>> 	}
+>>>
+>>> -	rcv_buf = be64_to_cpu(rcv_buf) >> 16;
+>>> -	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_buf);
+>>> +	rcv_val = be64_to_cpu(rcv_buf) >> 16;
+>>> +	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_val);
+>>>
+>>> 	for (i = 0; i < 48; i += 24) {
+>>> -		if (!ms_sensors_crc_valid((rcv_buf >> i) & 0xFFFFFF))
+>>> +		if (!ms_sensors_crc_valid((rcv_val >> i) & 0xFFFFFF))
+>>> 			return -ENODEV;
+>>> 	}
+>>>
+>>> -	*sn |= (rcv_buf & 0xFFFF00) << 40 | (rcv_buf >> 32);
+>>> +	*sn |= (rcv_val & 0xFFFF00) << 40 | (rcv_val >> 32);
+>>>
+>>> 	return 0;
+>>> }
+>>>
 >>
+> 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
