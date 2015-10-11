@@ -1,177 +1,111 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.many.jabatus.fr ([109.234.163.77]:38228 "EHLO
-	mail.many.jabatus.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751226AbbJKMQb convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 08:16:31 -0400
-Content-Type: text/plain; charset=windows-1252
-Mime-Version: 1.0 (Mac OS X Mail 9.0 \(3094\))
-Subject: Re: [PATCH] iio:measurement specialties core: Fix endian sparse warnings.
-From: "ludovic.tancerel@maplehightech.com"
-	<ludovic.tancerel@maplehightech.com>
-In-Reply-To: <561A4E8F.7020300@kernel.org>
-Date: Sun, 11 Oct 2015 14:16:24 +0200
-Cc: linux-iio@vger.kernel.org, kbuild-all@01.org,
-	fengguang.wu@intel.com
-Message-Id: <59857F91-5574-4FD3-ACC9-E82814E601D2@maplehightech.com>
-References: <1444564511-30310-1-git-send-email-jic23@kernel.org> <561A4E8F.7020300@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40989 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751282AbbJKM0g (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2015 08:26:36 -0400
+Subject: Re: User-space API again, detecting devices
+To: Bastien Nocera <hadess@hadess.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <1444408033.28661.43.camel@hadess.net>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <561A5579.6030701@kernel.org>
+Date: Sun, 11 Oct 2015 13:26:33 +0100
+MIME-Version: 1.0
+In-Reply-To: <1444408033.28661.43.camel@hadess.net>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Jonathan
-
-I often work on Sunday, so it is not a pb.
-
-I apologize for not correcting this myself, I was not sure what had to be done …
-I had a look and this looks ok.
-
-I cannot test this today as I do not have access to HW, but can surely test the patch tomorrow morning.
-
-Thanks a lot for doing the change,
-regards,
-Ludo
-
-
-
-> Le 11 oct. 2015 à 13:57, Jonathan Cameron <jic23@kernel.org> a écrit :
+On 09/10/15 17:27, Bastien Nocera wrote:
+> Hey,
 > 
-> If anyone can take a quick look at this today (ideally Ludovic! but I appreciate it's a Sunday)
-> that would be great as this is stalling my sending pull request to Greg.
+> I have a couple of bugs filed against iio-sensor-proxy where the
+> problem is in my code's wrong way of doing device detection.
 > 
-> I 'might' apply it anyway on the basis it is straight forward but
-> nice to have a sanity check from someone!
+> I want to detect compasses, accelerometers, and ambient light sensors,
+> both those using triggers, and those that require polling. I'll try to
+> answer my own questions, and you can tell me whether I'm wrong.
 > 
-> Jonathan
+> To detect accelerometers:
+> - Check whether in_accel_x, in_accel_y and in_accel_z files exist
+yes
 > 
+> To detect ambient light sensors:
+> - Check whether in_intensity_both, or in_illuminance_input or
+> in_illuminance_raw exists (the intensity one looks wrong...)
+Yes - intensity is exported mostly because a lot of ambient light sensors
+used to do their events stuff against only one of the two channels used
+to find the value converted to a human eye matched illuminance.
+
+There is no way of mapping backwards to know what to set the threshold
+to without knowing the current value of one of the underlying intensity
+measures (behind a particular optical filter - in the case of the _both
+form it's an infrared and visible light passing filter).
+
+So the illuminance ones are the 'right' option for detecting a useful
+ambient light sensor.
+
+The nasty corner case is colour light sensors in which there often isn't
+a way of getting a true 'illuminance' value but rather you get various
+colour filtered values loosely associated with it (sometime chip manufacturers
+say helpful things like 'use the green' it's close to an illuminance
+value - which it might be depending on the type of artificial lighting present).
+
+Having just checked the existing drivers, we have 
+
+6 colour sensors where the best option might be in_intensity_clear_raw
+but who knows how to scale it (if it's present isl29125 just has RGB)
+
+We also have the hid-sensors-als which looks to be doing a visible / infrared
+only reading which is odd given the channel scan index name is illuminance...
+
+rpr0521 doesn't provides the two signals usually used to figure out the illuminance
+but doesn't actually provide any info on how to do it...  Not datasheet seems
+to be available and the newer ROHM parts output (or the one I checked anyway) output
+illuminance directly... Not much we can do about this one.
+
+
 > 
-> On 11/10/15 12:55, Jonathan Cameron wrote:
->> This patch changes various types to the appropriate endian specific
->> versions.  Also introduces an additional local variable to avoid
->> a single variable being used for both be and cpu endianness.
->> 
->> These aren't bugs as such, but clearing them up does make the code
->> clearer.
->> 
->> Warning was:
->> sparse warnings: (new ones prefixed by >>)
->> 
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18: sparse: incorrect type in assignment (different base types)
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18:    expected unsigned short [unsigned] [addressable] [usertype] send_buf
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18:    got restricted __be16 [usertype] <noident>
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18: sparse: incorrect type in assignment (different base types)
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18:    expected unsigned short [unsigned] [addressable] [usertype] send_buf
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18:    got restricted __be16 [usertype] <noident>
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->> 
->> 
->> Reported-by: kbuild test robot <fengguang.wu@intel.com>
->> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->> ---
->> drivers/iio/common/ms_sensors/ms_sensors_i2c.c | 29 +++++++++++++-------------
->> 1 file changed, 15 insertions(+), 14 deletions(-)
->> 
->> diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->> index 056c4f3bf497..669dc7c270f5 100644
->> --- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->> +++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->> @@ -106,7 +106,7 @@ int ms_sensors_convert_and_read(void *cli, u8 conv, u8 rd,
->> 				unsigned int delay, u32 *adc)
->> {
->> 	int ret;
->> -	u32 buf = 0;
->> +        __be32 buf = 0;
->> 	struct i2c_client *client = (struct i2c_client *)cli;
->> 
->> 	/* Trigger conversion */
->> @@ -186,8 +186,9 @@ static bool ms_sensors_crc_valid(u32 value)
->> int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
->> {
->> 	u8 i;
->> -	u64 rcv_buf = 0;
->> -	u16 send_buf;
->> +	__be64 rcv_buf = 0;
->> +	u64 rcv_val;
->> +	__be16 send_buf;
->> 	int ret;
->> 
->> 	struct i2c_msg msg[2] = {
->> @@ -213,18 +214,18 @@ int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
->> 		return ret;
->> 	}
->> 
->> -	rcv_buf = be64_to_cpu(rcv_buf);
->> -	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_buf);
->> +	rcv_val = be64_to_cpu(rcv_buf);
->> +	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_val);
->> 
->> 	for (i = 0; i < 64; i += 16) {
->> -		if (!ms_sensors_crc_valid((rcv_buf >> i) & 0xFFFF))
->> +		if (!ms_sensors_crc_valid((rcv_val >> i) & 0xFFFF))
->> 			return -ENODEV;
->> 	}
->> 
->> -	*sn = (((rcv_buf >> 32) & 0xFF000000) |
->> -	       ((rcv_buf >> 24) & 0x00FF0000) |
->> -	       ((rcv_buf >> 16) & 0x0000FF00) |
->> -	       ((rcv_buf >> 8) & 0x000000FF)) << 16;
->> +	*sn = (((rcv_val >> 32) & 0xFF000000) |
->> +	       ((rcv_val >> 24) & 0x00FF0000) |
->> +	       ((rcv_val >> 16) & 0x0000FF00) |
->> +	       ((rcv_val >> 8) & 0x000000FF)) << 16;
->> 
->> 	/* Read LSB part of serial number */
->> 	send_buf = cpu_to_be16(MS_SENSORS_SERIAL_READ_LSB);
->> @@ -236,15 +237,15 @@ int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
->> 		return ret;
->> 	}
->> 
->> -	rcv_buf = be64_to_cpu(rcv_buf) >> 16;
->> -	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_buf);
->> +	rcv_val = be64_to_cpu(rcv_buf) >> 16;
->> +	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_val);
->> 
->> 	for (i = 0; i < 48; i += 24) {
->> -		if (!ms_sensors_crc_valid((rcv_buf >> i) & 0xFFFFFF))
->> +		if (!ms_sensors_crc_valid((rcv_val >> i) & 0xFFFFFF))
->> 			return -ENODEV;
->> 	}
->> 
->> -	*sn |= (rcv_buf & 0xFFFF00) << 40 | (rcv_buf >> 32);
->> +	*sn |= (rcv_val & 0xFFFF00) << 40 | (rcv_val >> 32);
->> 
->> 	return 0;
->> }
->> 
+> To detect compasses:
+> - Check whether in_rot_from_north_magnetic_tilt_comp exists
+If you are lucky enough to have a sophisticated one that will work.
+A raw magnetometer combined with an accelerometer should allow the
+equivalent to be worked out (IIRC - it's been a while since I did
+much stuff with magnetometers!)
+
+> 
+> To detect whether the device needs polling, or has a trigger, construct
+> a trigger name like <name>-dev<device number> for example, magn_3d-
+> dev0.
+> 
+> Is that all correct?
+The trigger name isn't that controlled.  Some devices have a number of
+different triggers..  We also have a few existing drivers that don't
+keep to this form even though they don't have multiple triggers..
+Trying to fix that up but sadly they are in the ABI now so we need to
+support the existing names (yup, we missed this one when they first
+went it. oops).
+
+The more reliable alternative to find available triggers is to navigate
+up the tree from the device to it's parent.  That will then have
+any triggers it supplies as children.
+
+It won't always be obvious to a generic program which one to use though
+I'm afraid.
+
+Pesky hardware guys are always coming up with something new to make
+it really hard to have true generic interfaces.  As a kernel subsystem
+all we can do is provide as much information as we can about what is
+happening to userspace.  Sometimes this doesn't work as well as 
+everyone would like!
+
+Jonathan
+
+> 
+> Cheers
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
