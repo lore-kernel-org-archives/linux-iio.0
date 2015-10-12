@@ -1,207 +1,670 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.sixth.jabatus.fr ([109.234.163.84]:44207 "EHLO
-	mail.sixth.jabatus.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751146AbbJLJgt convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 12 Oct 2015 05:36:49 -0400
-Content-Type: text/plain; charset=windows-1252
-Mime-Version: 1.0 (Mac OS X Mail 9.0 \(3094\))
-Subject: Re: [PATCH] iio:measurement specialties core: Fix endian sparse warnings.
-From: "ludovic.tancerel@maplehightech.com"
-	<ludovic.tancerel@maplehightech.com>
-In-Reply-To: <561A6448.5090505@kernel.org>
-Date: Mon, 12 Oct 2015 11:36:06 +0200
-Cc: linux-iio@vger.kernel.org, kbuild-all@01.org,
-	fengguang.wu@intel.com
-Message-Id: <A04E1290-0840-4B33-835D-35607476352E@maplehightech.com>
-References: <1444564511-30310-1-git-send-email-jic23@kernel.org> <561A4E8F.7020300@kernel.org> <59857F91-5574-4FD3-ACC9-E82814E601D2@maplehightech.com> <561A6448.5090505@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+Date: Mon, 12 Oct 2015 12:08:41 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Marc Andre <marc.andre@netline.ch>
+cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+    linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: Add support for LTC26xx I2C DAC
+In-Reply-To: <1444639977-42834-1-git-send-email-marc.andre@netline.ch>
+Message-ID: <alpine.DEB.2.02.1510121138430.25972@pmeerw.net>
+References: <1444639977-42834-1-git-send-email-marc.andre@netline.ch>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello Jonathan,
+Hello,
 
-I was able to test the patch, and checked items impacted with your change.
->From my prospective it is ok to apply.
+> This driver adds support for the Linear LTC26x6, LTC26x7 and LTC26x9 I2C
+> DAC chips. The driver exposes as iio device. It provides interface to all
+> channels of the DAC plus an additional channel (channel 15) which allows
+> writing to all channels simultanously.
 
-Regards,
-Ludovic
+currently there is no way in IIO to express such "virtual" channels
 
+> The scale factor is calculated based on the reference voltage. The
+> reference voltage is set through a regulator in the device-tree.
 
-> Le 11 oct. 2015 à 15:29, Jonathan Cameron <jic23@kernel.org> a écrit :
+link to datasheet would be nice
+ 
+> Binding documentation is provided in ltc26xx.txt.
 > 
-> On 11/10/15 13:16, ludovic.tancerel@maplehightech.com wrote:
->> Hello Jonathan
->> 
->> I often work on Sunday, so it is not a pb.
->> 
->> I apologize for not correcting this myself, I was not sure what had to be done …
-> That's quite alright.  I'm rubbish at spotting this particular issue in drivers
-> or we'd have dealt with it earlier + my sparse was out of date (now it reports
-> the same as the autobuilder one).
+> Signed-off-by: Marc Andre <marc.andre@netline.ch>
+> ---
+>  .../devicetree/bindings/iio/dac/ltc26xx.txt        |  50 +++
+>  drivers/iio/dac/Kconfig                            |  12 +
+>  drivers/iio/dac/Makefile                           |   1 +
+>  drivers/iio/dac/ltc26xx.c                          | 457 +++++++++++++++++++++
+>  4 files changed, 520 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/ltc26xx.txt
+>  create mode 100644 drivers/iio/dac/ltc26xx.c
 > 
->> I had a look and this looks ok.
-> Cool
->> 
->> I cannot test this today as I do not have access to HW, but can surely test the patch tomorrow morning.
-> I'll probably set up my pull request then but not actually send it until I get an OK from
-> you.
->> 
->> Thanks a lot for doing the change,
->> regards,
->> Ludo
->> 
->> 
->> 
->>> Le 11 oct. 2015 à 13:57, Jonathan Cameron <jic23@kernel.org> a écrit :
->>> 
->>> If anyone can take a quick look at this today (ideally Ludovic! but I appreciate it's a Sunday)
->>> that would be great as this is stalling my sending pull request to Greg.
->>> 
->>> I 'might' apply it anyway on the basis it is straight forward but
->>> nice to have a sanity check from someone!
->>> 
->>> Jonathan
->>> 
->>> 
->>> On 11/10/15 12:55, Jonathan Cameron wrote:
->>>> This patch changes various types to the appropriate endian specific
->>>> versions.  Also introduces an additional local variable to avoid
->>>> a single variable being used for both be and cpu endianness.
->>>> 
->>>> These aren't bugs as such, but clearing them up does make the code
->>>> clearer.
->>>> 
->>>> Warning was:
->>>> sparse warnings: (new ones prefixed by >>)
->>>> 
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse: cast to restricted __be32
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse: cast to restricted __be32
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18: sparse: incorrect type in assignment (different base types)
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18:    expected unsigned short [unsigned] [addressable] [usertype] send_buf
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18:    got restricted __be16 [usertype] <noident>
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18: sparse: incorrect type in assignment (different base types)
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18:    expected unsigned short [unsigned] [addressable] [usertype] send_buf
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18:    got restricted __be16 [usertype] <noident>
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse: cast to restricted __be64
->>>> 
->>>> 
->>>> Reported-by: kbuild test robot <fengguang.wu@intel.com>
->>>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->>>> ---
->>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c | 29 +++++++++++++-------------
->>>> 1 file changed, 15 insertions(+), 14 deletions(-)
->>>> 
->>>> diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->>>> index 056c4f3bf497..669dc7c270f5 100644
->>>> --- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->>>> +++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->>>> @@ -106,7 +106,7 @@ int ms_sensors_convert_and_read(void *cli, u8 conv, u8 rd,
->>>> 				unsigned int delay, u32 *adc)
->>>> {
->>>> 	int ret;
->>>> -	u32 buf = 0;
->>>> +        __be32 buf = 0;
->>>> 	struct i2c_client *client = (struct i2c_client *)cli;
->>>> 
->>>> 	/* Trigger conversion */
->>>> @@ -186,8 +186,9 @@ static bool ms_sensors_crc_valid(u32 value)
->>>> int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
->>>> {
->>>> 	u8 i;
->>>> -	u64 rcv_buf = 0;
->>>> -	u16 send_buf;
->>>> +	__be64 rcv_buf = 0;
->>>> +	u64 rcv_val;
->>>> +	__be16 send_buf;
->>>> 	int ret;
->>>> 
->>>> 	struct i2c_msg msg[2] = {
->>>> @@ -213,18 +214,18 @@ int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
->>>> 		return ret;
->>>> 	}
->>>> 
->>>> -	rcv_buf = be64_to_cpu(rcv_buf);
->>>> -	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_buf);
->>>> +	rcv_val = be64_to_cpu(rcv_buf);
->>>> +	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_val);
->>>> 
->>>> 	for (i = 0; i < 64; i += 16) {
->>>> -		if (!ms_sensors_crc_valid((rcv_buf >> i) & 0xFFFF))
->>>> +		if (!ms_sensors_crc_valid((rcv_val >> i) & 0xFFFF))
->>>> 			return -ENODEV;
->>>> 	}
->>>> 
->>>> -	*sn = (((rcv_buf >> 32) & 0xFF000000) |
->>>> -	       ((rcv_buf >> 24) & 0x00FF0000) |
->>>> -	       ((rcv_buf >> 16) & 0x0000FF00) |
->>>> -	       ((rcv_buf >> 8) & 0x000000FF)) << 16;
->>>> +	*sn = (((rcv_val >> 32) & 0xFF000000) |
->>>> +	       ((rcv_val >> 24) & 0x00FF0000) |
->>>> +	       ((rcv_val >> 16) & 0x0000FF00) |
->>>> +	       ((rcv_val >> 8) & 0x000000FF)) << 16;
->>>> 
->>>> 	/* Read LSB part of serial number */
->>>> 	send_buf = cpu_to_be16(MS_SENSORS_SERIAL_READ_LSB);
->>>> @@ -236,15 +237,15 @@ int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
->>>> 		return ret;
->>>> 	}
->>>> 
->>>> -	rcv_buf = be64_to_cpu(rcv_buf) >> 16;
->>>> -	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_buf);
->>>> +	rcv_val = be64_to_cpu(rcv_buf) >> 16;
->>>> +	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_val);
->>>> 
->>>> 	for (i = 0; i < 48; i += 24) {
->>>> -		if (!ms_sensors_crc_valid((rcv_buf >> i) & 0xFFFFFF))
->>>> +		if (!ms_sensors_crc_valid((rcv_val >> i) & 0xFFFFFF))
->>>> 			return -ENODEV;
->>>> 	}
->>>> 
->>>> -	*sn |= (rcv_buf & 0xFFFF00) << 40 | (rcv_buf >> 32);
->>>> +	*sn |= (rcv_val & 0xFFFF00) << 40 | (rcv_val >> 32);
->>>> 
->>>> 	return 0;
->>>> }
->>>> 
->>> 
->> 
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/Documentation/devicetree/bindings/iio/dac/ltc26xx.txt b/Documentation/devicetree/bindings/iio/dac/ltc26xx.txt
+> new file mode 100644
+> index 0000000..9b51aae
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/dac/ltc26xx.txt
+> @@ -0,0 +1,50 @@
+> +Driver for LTC2606, LTC2616, LTC2626, LTC2607, LTC2617, LTC2627,
+> +LTC2609, LTC2619 and LTC2629 DAC with I2C interface
+> +
+> +Required properties:
+> +- compatible: e.g. lltc,ltc2617
+> +- reg: i2c address
+> +
+> +Required parameters for ltc26x6 and ltc26x7:
+> +- vref-supply: Reference voltage supply
+> +
+> +Required parameters for ltc26x9:
+> +- vref_a-supply: Reference voltage supply channel A
+> +- vref_b-supply: Reference voltage supply channel B
+> +- vref_c-supply: Reference voltage supply channel C
+> +- vref_d-supply: Reference voltage supply channel D
+> +
+> +Available compatible strings. (defines the number of channels exposed)
+> +lltc,ltc2606
+> +lltc,ltc2616
+> +lltc,ltc2626
+> +lltc,ltc2607
+> +lltc,ltc2617
+> +lltc,ltc2627
+> +lltc,ltc2609
+> +lltc,ltc2619
+> +lltc,ltc2629
+> +
+> +The driver registers a iio_device. The number of iio channels registered is
 
+an iio_device
+
+> +the number of channels available by the chip plus 1. The additional
+> +channel (channel 15) can be used to write to all output simultanously.
+
+outputs
+
+it is not clear why channel 15 is the virtual channel; why 15?
+MAX_CHANNEL is 4
+is 15 an arbitraty number >= 4?
+
+> +The scale parameter of channel 15 is always 0.
+
+the value 1 might make more sense or no scale at all
+
+> +
+> +Example
+> +	i2c@7000c400 {
+> +		ltc2617: ltc2617@10 {
+> +			compatible = "lltc,ltc2617";
+> +			reg = <0x10>;
+> +			vref-supply = <&vdd_ltc_vref>;
+> +		};
+> +	};
+> +
+> +	regulators {
+> +		vdd_ltc_vref: regulator@100 {
+> +			compatible = "regulator-fixed";
+> +			reg = <100>;
+> +			regulator-name = "LTC26xx VREF";
+> +			regulator-min-microvolt = <2500000>;
+> +			regulator-max-microvolt = <2500000>;
+> +		};
+> +	};
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index e701e28..aa3e637 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -142,6 +142,18 @@ config AD7303
+>  	  To compile this driver as module choose M here: the module will be called
+>  	  ad7303.
+>  
+> +config LTC26xx
+> +	tristate "LTC26x6, LTC26x7 and LTC26x9 DAC driver"
+> +	depends on I2C
+> +	---help---
+> +	  Say Y here if you want to build a driver for the Linear
+> +	  LTC2606, LTC2616, LTC2626, LTC2607, LTC2617, LTC2627,
+> +	  LTC2609, LTC2619 or LTC2629 digital-to-analog converter (DAC)
+> +	  with I2C interface
+> +
+> +	  To compile this driver as a module chose M here: the module
+> +	  will be called ltc26xx
+
+often we have a full stop (.) at the end :)
+
+> +
+>  config M62332
+>  	tristate "Mitsubishi M62332 DAC driver"
+>  	depends on I2C
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index 63ae056..74bc8cc 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
+>  obj-$(CONFIG_AD5791) += ad5791.o
+>  obj-$(CONFIG_AD5686) += ad5686.o
+>  obj-$(CONFIG_AD7303) += ad7303.o
+> +obj-$(CONFIG_LTC26xx) += ltc26xx.o
+>  obj-$(CONFIG_M62332) += m62332.o
+>  obj-$(CONFIG_MAX517) += max517.o
+>  obj-$(CONFIG_MAX5821) += max5821.o
+> diff --git a/drivers/iio/dac/ltc26xx.c b/drivers/iio/dac/ltc26xx.c
+> new file mode 100644
+> index 0000000..4f9b381
+> --- /dev/null
+> +++ b/drivers/iio/dac/ltc26xx.c
+> @@ -0,0 +1,457 @@
+> +/*
+> + *  ltc26xx.c - Support for LTC26x6, LTC26x7 and LTC26x9 I2C DAC chips
+> + *
+> + *  Copyright (C) 2015 Marc Andre <marc.andre@netline.ch>
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License as published by
+> + *  the Free Software Foundation; either version 2 of the License, or
+> + *  (at your option) any later version.
+> + *
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/slab.h>
+> +#include <linux/jiffies.h>
+> +#include <linux/i2c.h>
+> +#include <linux/err.h>
+> +#include <linux/regulator/consumer.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +#define LTC26xx_DRV_NAME	"ltc26xx"
+
+XX maybe?
+
+> +
+> +#define MAX_CHANNEL		4
+
+LTC26XX_ prefix please
+
+> +
+> +/* Commands to LTC26xx */
+> +#define COMMAND_WR		0x00 /* Write only */
+> +#define COMMAND_UP		0x01 /* Update only */
+> +#define COMMAND_WR_UP		0x03 /* Write & Update */
+> +#define COMMAND_PD		0x04 /* Power Down */
+
+LTC26XX_ prefix please
+
+> +
+> +static int ltc26xx_suspend(struct device *dev);
+> +static int ltc26xx_resume(struct device *dev);
+
+I don't think these forward decls are needed
+
+> +
+> +enum ltc26xx_device_ids {
+> +	ID_LTC2606,
+> +	ID_LTC2616,
+> +	ID_LTC2626,
+> +	ID_LTC2607,
+> +	ID_LTC2617,
+> +	ID_LTC2627,
+> +	ID_LTC2609,
+> +	ID_LTC2619,
+> +	ID_LTC2629
+> +};
+> +
+> +struct ltc26xx_data {
+> +	struct i2c_client	*client;
+> +	struct regulator	*reg_vref[MAX_CHANNEL];
+> +	int channels;
+> +};
+> +
+> +static long ltc26xx_get_scale_nv(struct ltc26xx_data *data,
+> +				 int channel)
+> +{
+> +	long long vref_nv;
+> +	long scale_nv;
+> +
+> +	/* The generic channel 15 always returns 0 scale */
+> +	if (channel > MAX_CHANNEL)
+
+should be >=?
+
+> +		return 0;
+> +
+> +	if (data->reg_vref[channel]) {
+> +		vref_nv = regulator_get_voltage(data->reg_vref[channel]);
+> +	} else {
+> +		/* no regulator for the channel. This means we have a single
+> +		 * reference supply.
+> +		 */
+> +		vref_nv = regulator_get_voltage(data->reg_vref[0]);
+> +	}
+> +	vref_nv *= 1000;
+> +
+> +	/* Corresponds to Vref / 2^(bits) */
+> +	scale_nv = vref_nv >> 16;
+> +
+> +	return scale_nv;
+> +}
+> +
+> +/*
+
+this is not a proper kerneldoc comment
+
+> + * channel: channel no or 0xf for all channels
+> + * command: Command to LTC26xx
+> + */
+> +static int ltc26xx_set_value(struct iio_dev *indio_dev,
+> +			     long val, int channel, int command)
+> +{
+> +	struct ltc26xx_data *data = iio_priv(indio_dev);
+> +	struct i2c_client *client = data->client;
+> +	u8 outbuf[3];
+> +	int res;
+> +
+> +	if (val < 0 || val >= 65536)
+> +		return -EINVAL;
+> +
+> +	outbuf[0] = (channel & 0xf) | ((command & 0x0f) << 4);
+> +	outbuf[1] = (val >> 8) & 0xff;
+> +	outbuf[2] = (val & 0xff);
+> +
+> +	res = i2c_master_send(client, outbuf, 3);
+> +	if (res < 0)
+> +		return res;
+> +	else if (res != 3)
+> +		return -EIO;
+> +	else
+> +		return 0;
+> +}
+> +
+> +static int ltc26xx_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val,
+> +			    int *val2,
+> +			    long m)
+> +{
+> +	struct ltc26xx_data *data = iio_priv(indio_dev);
+> +	unsigned long scale_nv;
+> +	int channel = chan->channel;
+> +
+> +	switch (m) {
+
+maybe support read on _RAW as well
+
+> +	case IIO_CHAN_INFO_SCALE:
+> +		scale_nv = ltc26xx_get_scale_nv(data, channel);
+> +		*val =  scale_nv / 1000000000;
+> +		*val2 = scale_nv % 1000000000;
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	default:
+> +		break;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int ltc26xx_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+
+check that val2 is 0
+maybe do the validation of val here as well...
+
+> +		ret = ltc26xx_set_value(indio_dev, val, chan->channel,
+> +					COMMAND_WR_UP);
+
+just return, drop ret temporary variable
+
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int ltc26xx_suspend(struct device *dev)
+> +{
+> +	u8 outbuf[3];
+> +	int ret;
+> +	int i;
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +	struct iio_dev *indio_dev =
+> +		(struct iio_dev *)i2c_get_clientdata(client);
+> +	struct ltc26xx_data *data = iio_priv(indio_dev);
+> +
+> +	outbuf[0] = (COMMAND_PD << 4) | 0xf; /* Suspend all channels */
+> +	outbuf[1] = 0;
+> +	outbuf[2] = 0;
+> +
+> +	/* Send DAC into suspend */
+> +	ret = i2c_master_send(client, outbuf, 3);
+> +	if (ret != 3) {
+> +		dev_err(dev, "Error sending suspend i2c command: %d", ret);
+> +		goto exit;
+> +	}
+> +	ret = 0;
+> +
+> +	/* Disable vref regulators */
+> +	for (i = 0; i < MAX_CHANNEL; i++) {
+> +		if (data->reg_vref[i]) {
+> +			ret = regulator_disable(data->reg_vref[i]);
+> +			if (ret) {
+> +				dev_err(dev,
+> +					"Error disabling regulator %d: %d",
+> +					i, ret);
+> +				goto exit;
+> +			}
+> +		}
+> +	}
+> +
+> +exit:
+> +	return ret;
+> +}
+> +
+> +static int ltc26xx_resume(struct device *dev)
+> +{
+> +	u8 outbuf[3];
+> +	int ret;
+> +	int i;
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +	struct iio_dev *indio_dev =
+> +		(struct iio_dev *)i2c_get_clientdata(client);
+> +	struct ltc26xx_data *data = iio_priv(indio_dev);
+> +
+> +	/* Enable all vref regulators */
+> +	for (i = 0; i < MAX_CHANNEL; i++) {
+> +		if (data->reg_vref[i]) {
+> +			ret = regulator_enable(data->reg_vref[i]);
+> +			if (ret) {
+> +				dev_err(dev,
+> +					"Error enabling regulator %d: %d",
+> +					i, ret);
+> +				goto exit;
+> +			}
+> +		}
+> +	}
+> +
+> +	/* Resume DAC */
+> +	outbuf[0] = (COMMAND_UP << 4) | 0xf; /* Resume all channels */
+> +	outbuf[1] = 0;
+> +	outbuf[2] = 0;
+> +
+> +	ret = i2c_master_send(to_i2c_client(dev), outbuf, 3);
+> +	if (ret != 3) {
+> +		dev_err(dev, "Error sending resume i2c command: %d", ret);
+> +		goto exit;
+> +	}
+> +	ret = 0;
+> +
+> +exit:
+> +	return ret;
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(ltc26xx_pm_ops, ltc26xx_suspend, ltc26xx_resume);
+> +#define LTC26xx_PM_OPS (&ltc26xx_pm_ops)
+> +#else
+> +#define LTC26xx_PM_OPS NULL
+> +#endif
+> +
+> +static const struct iio_info ltc26xx_info = {
+> +	.read_raw = ltc26xx_read_raw,
+> +	.write_raw = ltc26xx_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +#define LTC26xx_CHANNEL(chan) {				\
+> +	.type = IIO_VOLTAGE,				\
+> +	.indexed = 1,					\
+> +	.output = 1,					\
+> +	.channel = (chan),				\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+> +	BIT(IIO_CHAN_INFO_SCALE),			\
+> +}
+> +
+> +static const struct iio_chan_spec ltc26xx_channels[] = {
+> +	LTC26xx_CHANNEL(15), /* All channels simultanously */
+> +	LTC26xx_CHANNEL(0),
+> +	LTC26xx_CHANNEL(1),
+> +	LTC26xx_CHANNEL(2),
+> +	LTC26xx_CHANNEL(3),
+> +};
+> +
+> +static int ltc26xx_get_regulators(struct i2c_client *client)
+> +{
+> +	int err = 0;
+> +	int i;
+> +	struct regulator *reg;
+> +	struct iio_dev *indio_dev =
+> +		(struct iio_dev *)i2c_get_clientdata(client);
+> +	struct ltc26xx_data *data = iio_priv(indio_dev);
+> +
+> +	for (i = 0; i < MAX_CHANNEL; i++)
+> +		data->reg_vref[i] = 0;
+> +
+> +	/* LTC26x6 and LTCx7 have only one reference voltage */
+> +	if (data->channels == 1 || data->channels == 2) {
+
+this could also go into a chip properties table
+
+> +		reg = devm_regulator_get(&client->dev, "vref");
+
+lot of duplicate code (_get, _enable, log) here, put in a separate 
+function?
+
+> +		if (IS_ERR(reg)) {
+> +			dev_err(&client->dev,
+> +				"Can't get regulator vref: %ld\n",
+> +				PTR_ERR(reg));
+> +			err = PTR_ERR(reg);
+> +			goto exit_cleanup;
+> +		}
+> +
+> +		err = regulator_enable(reg);
+> +		if (err < 0) {
+> +			dev_err(&client->dev,
+> +				"Error enabling regulator vref: %d\n",
+> +				err);
+> +			goto exit_cleanup;
+> +		}
+> +
+> +		dev_info(&client->dev,
+> +			 "Using voltage reference %duV",
+> +			 regulator_get_voltage(reg));
+> +
+> +		data->reg_vref[0] = reg;
+> +	}
+> +	/* LTC26x9 have 4 separate reference voltages */
+> +	else {
+> +		for (i = 0; i < 4; i++) {
+> +			char *name = "vref_a";
+> +
+> +			name[5] = i + 'a';
+
+efficielt, but a sprintf() might be clearer
+
+> +			reg = devm_regulator_get(&client->dev, name);
+> +			if (IS_ERR(reg)) {
+> +				dev_err(&client->dev,
+> +					"Can't get regulator %s: %ld\n",
+> +					name,
+> +					PTR_ERR(reg));
+> +				err = PTR_ERR(reg);
+> +				goto exit_cleanup;
+> +			}
+> +
+> +			err = regulator_enable(reg);
+> +			if (err < 0) {
+> +				dev_err(&client->dev,
+> +					"Error enabling regulator %s: %d\n",
+> +					name,
+> +					err);
+> +				goto exit_cleanup;
+> +			}
+> +
+> +			dev_info(&client->dev,
+> +				 "Using voltage reference for %s: %duV",
+> +				 name,
+> +				regulator_get_voltage(reg));
+> +
+> +			data->reg_vref[i] = reg;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +
+> +exit_cleanup:
+> +	for (i = 0; i < MAX_CHANNEL; i++) {
+> +		if (data->reg_vref[i]) {
+> +			regulator_disable(data->reg_vref[i]);
+> +			devm_regulator_put(data->reg_vref[i]);
+> +		}
+> +	}
+> +	return err;
+> +}
+> +
+> +static int ltc26xx_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+> +	struct ltc26xx_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int err;
+> +
+> +	indio_dev = iio_device_alloc(sizeof(*data));
+
+devm_iio_device_alloc()
+
+> +	if (!indio_dev) {
+> +		err = -ENOMEM;
+
+just return?
+
+> +		goto exit;
+> +	}
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +
+> +	/* establish that the iio_dev is a child of the i2c device */
+> +	indio_dev->dev.parent = &client->dev;
+> +
+> +	/* Define channel count based on DAC type */
+
+please use a static const table to record chip properties and look up by 
+ID
+
+> +	if (id->driver_data == ID_LTC2606 ||
+> +	    id->driver_data == ID_LTC2616 ||
+> +	    id->driver_data == ID_LTC2626) {
+> +		indio_dev->num_channels = 2;
+> +		data->channels = 1;
+> +	} else if (id->driver_data == ID_LTC2607 ||
+> +		   id->driver_data == ID_LTC2617 ||
+> +		   id->driver_data == ID_LTC2627) {
+> +		indio_dev->num_channels = 3;
+> +		data->channels = 2;
+> +	} else {
+> +		indio_dev->num_channels = 5;
+> +		data->channels = 4;
+> +	}
+> +	indio_dev->channels = ltc26xx_channels;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &ltc26xx_info;
+> +
+> +	err = ltc26xx_get_regulators(client);
+> +	if (err) {
+> +		dev_err(&client->dev,
+> +			"Failed to initialized vref: %d. Aborting.",
+
+drop "Aborting"
+
+> +			err);
+> +		goto exit_free_device;
+> +	}
+> +
+> +	err = iio_device_register(indio_dev);
+> +	if (err) {
+> +		dev_err(&client->dev,
+> +			"Failed to register iio device: %d. Aborting.",
+> +			err);
+> +		goto exit_free_device;
+> +	}
+> +
+> +	dev_info(&client->dev, "LTC26xx DAC registered\n");
+> +
+> +	return 0;
+> +
+> +exit_free_device:
+> +	iio_device_free(indio_dev);
+> +exit:
+> +	return err;
+> +}
+> +
+> +static int ltc26xx_remove(struct i2c_client *client)
+> +{
+> +	iio_device_unregister(i2c_get_clientdata(client));
+> +	iio_device_free(i2c_get_clientdata(client));
+> +
+> +	dev_dbg(&client->dev, "LTC26xx DAC unregistered\n");
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id ltc26xx_id[] = {
+> +	{ "ltc2606", ID_LTC2606 },
+> +	{ "ltc2616", ID_LTC2616 },
+> +	{ "ltc2626", ID_LTC2626 },
+> +	{ "ltc2607", ID_LTC2607 },
+> +	{ "ltc2617", ID_LTC2617 },
+> +	{ "ltc2627", ID_LTC2627 },
+> +	{ "ltc2609", ID_LTC2609 },
+> +	{ "ltc2619", ID_LTC2619 },
+> +	{ "ltc2629", ID_LTC2629 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, ltc26xx_id);
+> +
+> +static const struct of_device_id ltc26xx_dt_ids[] = {
+> +	{ .compatible = "lltc,ltc2606", .data = (void *)&ltc26xx_id[0] },
+
+.data = ... is ugly, really needed?
+
+> +	{ .compatible = "lltc,ltc2616", .data = (void *)&ltc26xx_id[1] },
+> +	{ .compatible = "lltc,ltc2626", .data = (void *)&ltc26xx_id[2] },
+> +	{ .compatible = "lltc,ltc2607", .data = (void *)&ltc26xx_id[3] },
+> +	{ .compatible = "lltc,ltc2617", .data = (void *)&ltc26xx_id[4] },
+> +	{ .compatible = "lltc,ltc2627", .data = (void *)&ltc26xx_id[5] },
+> +	{ .compatible = "lltc,ltc2609", .data = (void *)&ltc26xx_id[6] },
+> +	{ .compatible = "lltc,ltc2619", .data = (void *)&ltc26xx_id[7] },
+> +	{ .compatible = "lltc,ltc2629", .data = (void *)&ltc26xx_id[8] },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, ltc26xx_dt_ids);
+> +
+> +static struct i2c_driver ltc26xx_driver = {
+> +	.driver = {
+> +		.name	= LTC26xx_DRV_NAME,
+> +		.pm	= LTC26xx_PM_OPS,
+> +		.of_match_table = of_match_ptr(ltc26xx_dt_ids),
+> +	},
+> +	.probe		= ltc26xx_probe,
+> +	.remove		= ltc26xx_remove,
+> +	.id_table	= ltc26xx_id,
+> +};
+> +module_i2c_driver(ltc26xx_driver);
+> +
+> +MODULE_AUTHOR("Marc Andre <marc.andre@netline.ch>");
+> +MODULE_DESCRIPTION("LTC26x6, LTC26x7 and LTC26x9 DAC driver");
+> +MODULE_LICENSE("GPL");
+> 
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
