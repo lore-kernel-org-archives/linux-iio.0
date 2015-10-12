@@ -1,52 +1,104 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <561BBF1D.8070001@metafoo.de>
-Date: Mon, 12 Oct 2015 16:09:33 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from foss.arm.com ([217.140.101.70]:48010 "EHLO foss.arm.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751041AbbJLPTV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 12 Oct 2015 11:19:21 -0400
+Date: Mon, 12 Oct 2015 16:18:57 +0100
+From: Mark Rutland <mark.rutland@arm.com>
+To: Paul Cercueil <paul.cercueil@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCHv2 1/3] Documentation: ad5064: Added devicetree bindings
+ documentation
+Message-ID: <20151012151857.GC7452@leverpostej>
+References: <1444650634-12025-1-git-send-email-paul.cercueil@analog.com>
 MIME-Version: 1.0
-To: Marc Andre <marc.andre@netline.ch>, jic23@kernel.org
-CC: knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Add support for LTC26xx I2C DAC
-References: <1444639977-42834-1-git-send-email-marc.andre@netline.ch> <561B8AE1.9040408@metafoo.de> <561BAD5F.7040209@netline.ch>
-In-Reply-To: <561BAD5F.7040209@netline.ch>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1444650634-12025-1-git-send-email-paul.cercueil@analog.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10/12/2015 02:53 PM, Marc Andre wrote:
-> On 12.10.2015 12:26, Lars-Peter Clausen wrote:
->> On 10/12/2015 10:52 AM, Marc Andre wrote:
->>> This driver adds support for the Linear LTC26x6, LTC26x7 and LTC26x9 I2C
->>> DAC chips.
->> Those look like they are very much register map compatible to what is
->> supported by the AD5064 driver.    It makes sense to add support for them
->> there
->> instead of having a separate driver.
-> I see that the interfaces are similar. Not all features of the ADxxxx are
-> supported by the LTC26XX. e.g. it doesn't support the different power down
-> modes. It also doesn't support the configuration register.
-> Other features available to AD which are not available to the LTC are LDAC
-> by software, RESET and CLEAR commands. Those commands are currently not in
-> use by the driver, but in the future, if those commands are used, a
-> separation would have to be done to avoid issues with the LTC.
+On Mon, Oct 12, 2015 at 01:50:32PM +0200, Paul Cercueil wrote:
+> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
+> ---
+>  .../devicetree/bindings/iio/dac/ad5064.txt         | 48 ++++++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5064.txt
 > 
-> I first also thought that the address / command location is different as the
-> AD5064 sends 4 bytes and "AD5064_ADDR(x)" is "((x) << 20)". By further
-> reviewing I see that this only applies to SPI connected devices, while I2C
-> connected devices have 3 bytes as LTC26xx.
+>  v2: No change in this patch
 > 
-> I am quite open. I have the tendency to suggest a separate ltc26xx driver,
-> also because it would allow simpler identification of the driver and
-> separate evolution. (Someone would need to know that AD4064 is compatible to
-> LTC26xx) I also think large drivers containing many separations between
-> similar, but not equal devices are more risky to break on changes. No one
-> has all those devices available for test. But I am a new contributor to the
-> Kernel, thus I am interested to listen to the experts... :-)
+> diff --git a/Documentation/devicetree/bindings/iio/dac/ad5064.txt b/Documentation/devicetree/bindings/iio/dac/ad5064.txt
+> new file mode 100644
+> index 0000000..fa2d328
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/dac/ad5064.txt
+> @@ -0,0 +1,48 @@
+> +Analog Devices AD5064 DAC device driver
+> +
+> +Required properties:
+> +	- compatible: Must be one of:
+> +		* "adi,ad5024"
+> +		* "adi,ad5025"
+> +		* "adi,ad5044"
+> +		* "adi,ad5045"
+> +		* "adi,ad5064"
+> +		* "adi,ad5064-1"
+> +		* "adi,ad5065"
+> +		* "adi,ad5628-1"
+> +		* "adi,ad5628-2"
+> +		* "adi,ad5648-1"
+> +		* "adi,ad5648-2"
+> +		* "adi,ad5666-1"
+> +		* "adi,ad5666-2"
+> +		* "adi,ad5668-1"
+> +		* "adi,ad5668-2"
+> +		* "adi,ad5668-3"
+> +	- reg: SPI chip select number for the device
+> +	- spi-max-frequency: Max SPI frequency to use (< 30000000)
+> +	- vrefA-supply, vrefB-supply: phandles to external reference voltage
+> +	  supplies for channels 0 and 1 respectively.
+> +	  This property must be present for ad5024, ad5025, ad5044, ad5045,
+> +	  ad5064, ad5065.
+> +	- vrefC-supply, vrefD-supply: phandles to external reference voltage
+> +	  supplies for channels 2 and 3 respectively.
+> +	  This property must be present for ad5024, ad5044, ad5064.
 
-It's a subset, but it is a clean subset. The LTC26xx don't have any extra
-functionality not yet supported by the AD5064 driver.
+Nit: please don't use CamelCase property names. just have vref-a-supply
+and so on.
 
-And I'm pretty convinced the chip was purposefully designed to be register
-map compatible, would be a shame not to make use of that. Means we only have
-to fix things in one driver if we find a bug, or e.g. if we want the feature
-of being able to update all channels at the same time.
+> +
+> +Optional properties:
+> +	- vref-supply: phandle to the external reference voltage supply.
+> +	  This should only be set if there is an external reference voltage
+> +	  connected to the vref or vref[A-D] pins.
 
-- Lars
+I don't understand. Surely the latter case means you're describing the
+same supply twice (as it should already be in vref*-supply)?
+
+What vref pins does the HW actually have?
+
+> +	  If the property is not set, the internal reference voltage supply
+> +	  is used if present.
+> +	  This property can be used with ad5064-1, ad5628-1, ad5628-2, ad5648-1,
+> +	  ad5648-2, ad5666-1, ad5666-2, ad5668-1, ad5668-2, ad5668-3.
+> +
+> +Example:
+> +
+> +		ad5668-2@4 {
+> +			compatible = "adi,ad5668-2";
+> +			reg = <4>;
+> +			spi-max-frequency = <10000000>;
+> +			adi,use-external-reference;
+
+This is undocumented (and unused by the driver?).
+
+Thanks,
+Mark.
