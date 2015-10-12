@@ -1,44 +1,39 @@
-Return-Path: <marc.andre@netline.ch>
-Subject: Re: [PATCH] iio: Add support for LTC26xx I2C DAC
-To: Lars-Peter Clausen <lars@metafoo.de>, jic23@kernel.org
-References: <1444639977-42834-1-git-send-email-marc.andre@netline.ch>
- <561B8AE1.9040408@metafoo.de>
-Cc: knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-From: Marc Andre <marc.andre@netline.ch>
-Message-ID: <561BAD5F.7040209@netline.ch>
-Date: Mon, 12 Oct 2015 14:53:51 +0200
-MIME-Version: 1.0
-In-Reply-To: <561B8AE1.9040408@metafoo.de>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio:ad7793: Fix ad7785 product ID
+Date: Mon, 12 Oct 2015 14:56:28 +0200
+Message-Id: <1444654588-25350-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 12.10.2015 12:26, Lars-Peter Clausen wrote:
-> On 10/12/2015 10:52 AM, Marc Andre wrote:
->> This driver adds support for the Linear LTC26x6, LTC26x7 and LTC26x9 I2C
->> DAC chips.
-> Those look like they are very much register map compatible to what is
-> supported by the AD5064 driver.	It makes sense to add support for them there
-> instead of having a separate driver.
-I see that the interfaces are similar. Not all features of the ADxxxx 
-are supported by the LTC26XX. e.g. it doesn't support the different 
-power down modes. It also doesn't support the configuration register.
-Other features available to AD which are not available to the LTC are 
-LDAC by software, RESET and CLEAR commands. Those commands are currently 
-not in use by the driver, but in the future, if those commands are used, 
-a separation would have to be done to avoid issues with the LTC.
+While the datasheet for the AD7785 lists 0xXB as the product ID the actual
+product ID is 0xX3.
 
-I first also thought that the address / command location is different as 
-the AD5064 sends 4 bytes and "AD5064_ADDR(x)" is "((x) << 20)". By 
-further reviewing I see that this only applies to SPI connected devices, 
-while I2C connected devices have 3 bytes as LTC26xx.
+Fix the product ID otherwise the driver will reject the device due to non
+matching IDs.
 
-I am quite open. I have the tendency to suggest a separate ltc26xx 
-driver, also because it would allow simpler identification of the driver 
-and separate evolution. (Someone would need to know that AD4064 is 
-compatible to LTC26xx) I also think large drivers containing many 
-separations between similar, but not equal devices are more risky to 
-break on changes. No one has all those devices available for test. But I 
-am a new contributor to the Kernel, thus I am interested to listen to 
-the experts... :-)
+Fixes: e786cc26dcc5 ("staging:iio:ad7793: Implement stricter id checking")
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/ad7793.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Marc
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index b84922a..710aee8 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -101,7 +101,7 @@
+ #define AD7795_CH_AIN1M_AIN1M	8 /* AIN1(-) - AIN1(-) */
+ 
+ /* ID Register Bit Designations (AD7793_REG_ID) */
+-#define AD7785_ID		0xB
++#define AD7785_ID		0x3
+ #define AD7792_ID		0xA
+ #define AD7793_ID		0xB
+ #define AD7794_ID		0xF
+-- 
+2.1.4
