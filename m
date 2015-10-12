@@ -1,278 +1,75 @@
-Return-Path: <jic23@kernel.org>
-Subject: Re: [PATCH] iio:measurement specialties core: Fix endian sparse
- warnings.
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- "ludovic.tancerel@maplehightech.com" <ludovic.tancerel@maplehightech.com>
-References: <1444564511-30310-1-git-send-email-jic23@kernel.org>
- <561A4E8F.7020300@kernel.org>
- <59857F91-5574-4FD3-ACC9-E82814E601D2@maplehightech.com>
- <561A6448.5090505@kernel.org>
- <A04E1290-0840-4B33-835D-35607476352E@maplehightech.com>
- <72A2CCB3-B985-490D-B2DC-CBA1D112F0A6@jic23.retrosnub.co.uk>
-Cc: linux-iio@vger.kernel.org, kbuild-all@01.org, fengguang.wu@intel.com
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49998 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751760AbbJLRZ7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 12 Oct 2015 13:25:59 -0400
+Subject: Re: [PATCH] iio: Add support for LTC26xx I2C DAC
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Marc Andre <marc.andre@netline.ch>
+References: <1444639977-42834-1-git-send-email-marc.andre@netline.ch>
+ <561B8AE1.9040408@metafoo.de> <561BAD5F.7040209@netline.ch>
+ <561BBF1D.8070001@metafoo.de>
+Cc: knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <561BEC81.9050800@kernel.org>
-Date: Mon, 12 Oct 2015 18:23:13 +0100
+Message-ID: <561BED24.4010906@kernel.org>
+Date: Mon, 12 Oct 2015 18:25:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <72A2CCB3-B985-490D-B2DC-CBA1D112F0A6@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <561BBF1D.8070001@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 12/10/15 17:12, Jonathan Cameron wrote:
-> 
-> 
-> On 12 October 2015 10:36:06 BST, "ludovic.tancerel@maplehightech.com" <ludovic.tancerel@maplehightech.com> wrote:
->> Hello Jonathan,
+On 12/10/15 15:09, Lars-Peter Clausen wrote:
+> On 10/12/2015 02:53 PM, Marc Andre wrote:
+>> On 12.10.2015 12:26, Lars-Peter Clausen wrote:
+>>> On 10/12/2015 10:52 AM, Marc Andre wrote:
+>>>> This driver adds support for the Linear LTC26x6, LTC26x7 and LTC26x9 I2C
+>>>> DAC chips.
+>>> Those look like they are very much register map compatible to what is
+>>> supported by the AD5064 driver.    It makes sense to add support for them
+>>> there
+>>> instead of having a separate driver.
+>> I see that the interfaces are similar. Not all features of the ADxxxx are
+>> supported by the LTC26XX. e.g. it doesn't support the different power down
+>> modes. It also doesn't support the configuration register.
+>> Other features available to AD which are not available to the LTC are LDAC
+>> by software, RESET and CLEAR commands. Those commands are currently not in
+>> use by the driver, but in the future, if those commands are used, a
+>> separation would have to be done to avoid issues with the LTC.
 >>
->> I was able to test the patch, and checked items impacted with your
->> change.
->>>From my prospective it is ok to apply.
+>> I first also thought that the address / command location is different as the
+>> AD5064 sends 4 bytes and "AD5064_ADDR(x)" is "((x) << 20)". By further
+>> reviewing I see that this only applies to SPI connected devices, while I2C
+>> connected devices have 3 bytes as LTC26xx.
 >>
->> Regards,
->> Ludovic
-> Thanks
+>> I am quite open. I have the tendency to suggest a separate ltc26xx driver,
+>> also because it would allow simpler identification of the driver and
+>> separate evolution. (Someone would need to know that AD4064 is compatible to
+>> LTC26xx) I also think large drivers containing many separations between
+>> similar, but not equal devices are more risky to break on changes. No one
+>> has all those devices available for test. But I am a new contributor to the
+>> Kernel, thus I am interested to listen to the experts... :-)
 > 
-> A formal Acked-by always appreciated with patches like this one...
-Applied.
+> It's a subset, but it is a clean subset. The LTC26xx don't have any extra
+> functionality not yet supported by the AD5064 driver.
 > 
-> J
->>
->>
->>> Le 11 oct. 2015 à 15:29, Jonathan Cameron <jic23@kernel.org> a écrit
->> :
->>>
->>> On 11/10/15 13:16, ludovic.tancerel@maplehightech.com wrote:
->>>> Hello Jonathan
->>>>
->>>> I often work on Sunday, so it is not a pb.
->>>>
->>>> I apologize for not correcting this myself, I was not sure what had
->> to be done …
->>> That's quite alright.  I'm rubbish at spotting this particular issue
->> in drivers
->>> or we'd have dealt with it earlier + my sparse was out of date (now
->> it reports
->>> the same as the autobuilder one).
->>>
->>>> I had a look and this looks ok.
->>> Cool
->>>>
->>>> I cannot test this today as I do not have access to HW, but can
->> surely test the patch tomorrow morning.
->>> I'll probably set up my pull request then but not actually send it
->> until I get an OK from
->>> you.
->>>>
->>>> Thanks a lot for doing the change,
->>>> regards,
->>>> Ludo
->>>>
->>>>
->>>>
->>>>> Le 11 oct. 2015 à 13:57, Jonathan Cameron <jic23@kernel.org> a
->> écrit :
->>>>>
->>>>> If anyone can take a quick look at this today (ideally Ludovic! but
->> I appreciate it's a Sunday)
->>>>> that would be great as this is stalling my sending pull request to
->> Greg.
->>>>>
->>>>> I 'might' apply it anyway on the basis it is straight forward but
->>>>> nice to have a sanity check from someone!
->>>>>
->>>>> Jonathan
->>>>>
->>>>>
->>>>> On 11/10/15 12:55, Jonathan Cameron wrote:
->>>>>> This patch changes various types to the appropriate endian
->> specific
->>>>>> versions.  Also introduces an additional local variable to avoid
->>>>>> a single variable being used for both be and cpu endianness.
->>>>>>
->>>>>> These aren't bugs as such, but clearing them up does make the code
->>>>>> clearer.
->>>>>>
->>>>>> Warning was:
->>>>>> sparse warnings: (new ones prefixed by >>)
->>>>>>
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse:
->> cast to restricted __be32
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse:
->> cast to restricted __be32
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse:
->> cast to restricted __be32
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse:
->> cast to restricted __be32
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse:
->> cast to restricted __be32
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:126:9: sparse:
->> cast to restricted __be32
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse:
->> cast to restricted __be32
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse:
->> cast to restricted __be32
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse:
->> cast to restricted __be32
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse:
->> cast to restricted __be32
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse:
->> cast to restricted __be32
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:127:16: sparse:
->> cast to restricted __be32
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18: sparse:
->> incorrect type in assignment (different base types)
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18:   
->> expected unsigned short [unsigned] [addressable] [usertype] send_buf
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:208:18:    got
->> restricted __be16 [usertype] <noident>
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c:216:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18: sparse:
->> incorrect type in assignment (different base types)
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18:   
->> expected unsigned short [unsigned] [addressable] [usertype] send_buf
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:230:18:    got
->> restricted __be16 [usertype] <noident>
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>  drivers/iio/common/ms_sensors/ms_sensors_i2c.c:239:19: sparse:
->> cast to restricted __be64
->>>>>>
->>>>>>
->>>>>> Reported-by: kbuild test robot <fengguang.wu@intel.com>
->>>>>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->>>>>> ---
->>>>>> drivers/iio/common/ms_sensors/ms_sensors_i2c.c | 29
->> +++++++++++++-------------
->>>>>> 1 file changed, 15 insertions(+), 14 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->> b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->>>>>> index 056c4f3bf497..669dc7c270f5 100644
->>>>>> --- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->>>>>> +++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
->>>>>> @@ -106,7 +106,7 @@ int ms_sensors_convert_and_read(void *cli, u8
->> conv, u8 rd,
->>>>>> 				unsigned int delay, u32 *adc)
->>>>>> {
->>>>>> 	int ret;
->>>>>> -	u32 buf = 0;
->>>>>> +        __be32 buf = 0;
->>>>>> 	struct i2c_client *client = (struct i2c_client *)cli;
->>>>>>
->>>>>> 	/* Trigger conversion */
->>>>>> @@ -186,8 +186,9 @@ static bool ms_sensors_crc_valid(u32 value)
->>>>>> int ms_sensors_read_serial(struct i2c_client *client, u64 *sn)
->>>>>> {
->>>>>> 	u8 i;
->>>>>> -	u64 rcv_buf = 0;
->>>>>> -	u16 send_buf;
->>>>>> +	__be64 rcv_buf = 0;
->>>>>> +	u64 rcv_val;
->>>>>> +	__be16 send_buf;
->>>>>> 	int ret;
->>>>>>
->>>>>> 	struct i2c_msg msg[2] = {
->>>>>> @@ -213,18 +214,18 @@ int ms_sensors_read_serial(struct i2c_client
->> *client, u64 *sn)
->>>>>> 		return ret;
->>>>>> 	}
->>>>>>
->>>>>> -	rcv_buf = be64_to_cpu(rcv_buf);
->>>>>> -	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_buf);
->>>>>> +	rcv_val = be64_to_cpu(rcv_buf);
->>>>>> +	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_val);
->>>>>>
->>>>>> 	for (i = 0; i < 64; i += 16) {
->>>>>> -		if (!ms_sensors_crc_valid((rcv_buf >> i) & 0xFFFF))
->>>>>> +		if (!ms_sensors_crc_valid((rcv_val >> i) & 0xFFFF))
->>>>>> 			return -ENODEV;
->>>>>> 	}
->>>>>>
->>>>>> -	*sn = (((rcv_buf >> 32) & 0xFF000000) |
->>>>>> -	       ((rcv_buf >> 24) & 0x00FF0000) |
->>>>>> -	       ((rcv_buf >> 16) & 0x0000FF00) |
->>>>>> -	       ((rcv_buf >> 8) & 0x000000FF)) << 16;
->>>>>> +	*sn = (((rcv_val >> 32) & 0xFF000000) |
->>>>>> +	       ((rcv_val >> 24) & 0x00FF0000) |
->>>>>> +	       ((rcv_val >> 16) & 0x0000FF00) |
->>>>>> +	       ((rcv_val >> 8) & 0x000000FF)) << 16;
->>>>>>
->>>>>> 	/* Read LSB part of serial number */
->>>>>> 	send_buf = cpu_to_be16(MS_SENSORS_SERIAL_READ_LSB);
->>>>>> @@ -236,15 +237,15 @@ int ms_sensors_read_serial(struct i2c_client
->> *client, u64 *sn)
->>>>>> 		return ret;
->>>>>> 	}
->>>>>>
->>>>>> -	rcv_buf = be64_to_cpu(rcv_buf) >> 16;
->>>>>> -	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_buf);
->>>>>> +	rcv_val = be64_to_cpu(rcv_buf) >> 16;
->>>>>> +	dev_dbg(&client->dev, "Serial MSB raw : %llx\n", rcv_val);
->>>>>>
->>>>>> 	for (i = 0; i < 48; i += 24) {
->>>>>> -		if (!ms_sensors_crc_valid((rcv_buf >> i) & 0xFFFFFF))
->>>>>> +		if (!ms_sensors_crc_valid((rcv_val >> i) & 0xFFFFFF))
->>>>>> 			return -ENODEV;
->>>>>> 	}
->>>>>>
->>>>>> -	*sn |= (rcv_buf & 0xFFFF00) << 40 | (rcv_buf >> 32);
->>>>>> +	*sn |= (rcv_val & 0xFFFF00) << 40 | (rcv_val >> 32);
->>>>>>
->>>>>> 	return 0;
->>>>>> }
->>>>>>
->>>>>
->>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->> in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->> in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> And I'm pretty convinced the chip was purposefully designed to be register
+> map compatible, would be a shame not to make use of that. Means we only have
+> to fix things in one driver if we find a bug, or e.g. if we want the feature
+> of being able to update all channels at the same time.
+I would also favour adding the additional device support to the ad5064 driver
+for all the reasons Lars stated.
+
+As an aside, if you have a driver supporting multiple parts please just name
+it after one of them.  The wild card thing goes wrong so often. In this
+case there is an LTC2641 for starters that this doesn't support.
+
+If you want a mega case of this see something like the max1363 which supports
+a 'few' parts ;)  Actually I should do another browse to find out what Maxim
+have brought out more recently that is compatible.
+
+Jonathan
 > 
+> - Lars
+> 
+
