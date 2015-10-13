@@ -6,36 +6,136 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: Octavian Purdila <octavian.purdila@intel.com>,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v3 2/6] iio:iio_buffer_init(): Only set watermark if not already set
-Date: Tue, 13 Oct 2015 18:10:25 +0200
-Message-Id: <1444752629-3532-3-git-send-email-lars@metafoo.de>
+Subject: [PATCH v3 4/6] iio: Add buffer enable/disable callbacks
+Date: Tue, 13 Oct 2015 18:10:27 +0200
+Message-Id: <1444752629-3532-5-git-send-email-lars@metafoo.de>
 In-Reply-To: <1444752629-3532-1-git-send-email-lars@metafoo.de>
 References: <1444752629-3532-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Only initialize the watermark field if it is still 0. This allows drivers
-to provide a custom default watermark value. E.g. some driver might have a
-fixed watermark or can only support watermarks within a certain range and
-the initial value for the watermark should be within this range.
+This patch adds a enable and disable callback that is called when the
+buffer is enabled/disabled. This can be used by buffer implementations that
+need to do some setup or teardown work. E.g. a DMA based buffer can use
+this to start/stop the DMA transfer.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/industrialio-buffer.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/industrialio-buffer.c | 36 +++++++++++++++++++++++++++++++++++-
+ include/linux/iio/buffer.h        |  8 ++++++++
+ 2 files changed, 43 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 7340922..5f2c8c8 100644
+index 98a6447..a4b164a 100644
 --- a/drivers/iio/industrialio-buffer.c
 +++ b/drivers/iio/industrialio-buffer.c
-@@ -193,7 +193,8 @@ void iio_buffer_init(struct iio_buffer *buffer)
- 	INIT_LIST_HEAD(&buffer->buffer_list);
- 	init_waitqueue_head(&buffer->pollq);
- 	kref_init(&buffer->ref);
--	buffer->watermark = 1;
-+	if (!buffer->watermark)
-+		buffer->watermark = 1;
+@@ -568,6 +568,22 @@ static void iio_buffer_deactivate_all(struct iio_dev *indio_dev)
+ 		iio_buffer_deactivate(buffer);
  }
- EXPORT_SYMBOL(iio_buffer_init);
  
++static int iio_buffer_enable(struct iio_buffer *buffer,
++	struct iio_dev *indio_dev)
++{
++	if (!buffer->access->enable)
++		return 0;
++	return buffer->access->enable(buffer, indio_dev);
++}
++
++static int iio_buffer_disable(struct iio_buffer *buffer,
++	struct iio_dev *indio_dev)
++{
++	if (!buffer->access->disable)
++		return 0;
++	return buffer->access->disable(buffer, indio_dev);
++}
++
+ static void iio_buffer_update_bytes_per_datum(struct iio_dev *indio_dev,
+ 	struct iio_buffer *buffer)
+ {
+@@ -719,6 +735,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+ static int iio_enable_buffers(struct iio_dev *indio_dev,
+ 	struct iio_device_config *config)
+ {
++	struct iio_buffer *buffer;
+ 	int ret;
+ 
+ 	indio_dev->active_scan_mask = config->scan_mask;
+@@ -753,6 +770,12 @@ static int iio_enable_buffers(struct iio_dev *indio_dev,
+ 		indio_dev->info->hwfifo_set_watermark(indio_dev,
+ 			config->watermark);
+ 
++	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list) {
++		ret = iio_buffer_enable(buffer, indio_dev);
++		if (ret)
++			goto err_disable_buffers;
++	}
++
+ 	indio_dev->currentmode = config->mode;
+ 
+ 	if (indio_dev->setup_ops->postenable) {
+@@ -760,12 +783,16 @@ static int iio_enable_buffers(struct iio_dev *indio_dev,
+ 		if (ret) {
+ 			dev_dbg(&indio_dev->dev,
+ 			       "Buffer not started: postenable failed (%d)\n", ret);
+-			goto err_run_postdisable;
++			goto err_disable_buffers;
+ 		}
+ 	}
+ 
+ 	return 0;
+ 
++err_disable_buffers:
++	list_for_each_entry_continue_reverse(buffer, &indio_dev->buffer_list,
++					     buffer_list)
++		iio_buffer_disable(buffer, indio_dev);
+ err_run_postdisable:
+ 	indio_dev->currentmode = INDIO_DIRECT_MODE;
+ 	if (indio_dev->setup_ops->postdisable)
+@@ -778,6 +805,7 @@ err_undo_config:
+ 
+ static int iio_disable_buffers(struct iio_dev *indio_dev)
+ {
++	struct iio_buffer *buffer;
+ 	int ret = 0;
+ 	int ret2;
+ 
+@@ -798,6 +826,12 @@ static int iio_disable_buffers(struct iio_dev *indio_dev)
+ 			ret = ret2;
+ 	}
+ 
++	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list) {
++		ret2 = iio_buffer_disable(buffer, indio_dev);
++		if (ret2 && !ret)
++			ret = ret2;
++	}
++
+ 	indio_dev->currentmode = INDIO_DIRECT_MODE;
+ 
+ 	if (indio_dev->setup_ops->postdisable) {
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index 4d99a53..2ec3ad5 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -33,6 +33,11 @@ struct iio_buffer;
+  *			storage.
+  * @set_bytes_per_datum:set number of bytes per datum
+  * @set_length:		set number of datums in buffer
++ * @enable:             called if the buffer is attached to a device and the
++ *                      device starts sampling. Calls are balanced with
++ *                      @disable.
++ * @disable:            called if the buffer is attached to a device and the
++ *                      device stops sampling. Calles are balanced with @enable.
+  * @release:		called when the last reference to the buffer is dropped,
+  *			should free all resources allocated by the buffer.
+  * @modes:		Supported operating modes by this buffer type
+@@ -58,6 +63,9 @@ struct iio_buffer_access_funcs {
+ 	int (*set_bytes_per_datum)(struct iio_buffer *buffer, size_t bpd);
+ 	int (*set_length)(struct iio_buffer *buffer, int length);
+ 
++	int (*enable)(struct iio_buffer *buffer, struct iio_dev *indio_dev);
++	int (*disable)(struct iio_buffer *buffer, struct iio_dev *indio_dev);
++
+ 	void (*release)(struct iio_buffer *buffer);
+ 
+ 	unsigned int modes;
 -- 
 2.1.4
