@@ -1,43 +1,106 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f178.google.com ([209.85.212.178]:36631 "EHLO
-	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751643AbbJLR77 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 12 Oct 2015 13:59:59 -0400
+Return-Path: <bhuvanchandra.dv@toradex.com>
+From: Bhuvanchandra <bhuvanchandra.dv@toradex.com>
+Subject: Re: [PATCH] vf610_adc: Fix internal temperature calculation
+To: Stefan Agner <stefan@agner.ch>
+References: <1443015807-17764-1-git-send-email-bhuvanchandra.dv@toradex.com>
+ <0b977c21c414aef0c250755c9d772ead@agner.ch>
+CC: <linux-iio@vger.kernel.org>, <jic23@kernel.org>,
+	<maitysanchayan@gmail.com>, <B38611@freescale.com>, <knaack.h@gmx.de>,
+	<lars@metafoo.de>, <pmeerw@pmeerw.net>, <shawn.guo@linaro.org>,
+	<linux-kernel@vger.kernel.org>, <bhuvanchandra.dv@toradex.com>
+Message-ID: <561C7C93.4090608@toradex.com>
+Date: Tue, 13 Oct 2015 09:07:55 +0530
 MIME-Version: 1.0
-In-Reply-To: <561A63EE.5040206@kernel.org>
-References: <33d5396ef3a2c8ebe9a076a611bda60f9a1ae1e0.1444396827.git.cristina.opriceana@gmail.com>
-	<561A63EE.5040206@kernel.org>
-Date: Mon, 12 Oct 2015 20:59:57 +0300
-Message-ID: <CAEnQRZDanmW90PifFcsTWLEzFNBUK25vDbcR9_iYVCJh3w4FYA@mail.gmail.com>
-Subject: Re: [PATCH] iio: Move IIO Dummy Driver out of staging
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Cristina Opriceana <cristina.opriceana@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <0b977c21c414aef0c250755c9d772ead@agner.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-<snip>
+Hi Stefan,
 
->> +static unsigned instances = 1;
->> +module_param(instances, uint, 0);
+Sorry! for the delay.
 
-One concern about this. We will still create a default number of 'instances'
-when using configuration via configfs?
+On 10/08/2015 11:46 AM, Stefan Agner wrote:
 
-I'm not sure we can remove this parameter once the module is moved
-out of staging, since we break the ABI (?)
+> Hi Bhuvan,
+>
+> On 2015-09-23 06:43, Bhuvanchandra DV wrote:
+>> There is an observed temperature difference of ~20°C with the
+>> internal temperature reading and the temperature measured on
+>> SoC package. Existing calculations consider the typical values
+>> provided in datasheet. Those typical values are valid for
+>> VREFH_ADC at 3.0V. Voltage at 25°C is different for different
+>> VREFH_ADC voltages. With VREFH_ADC at 3.3V, voltage at 25°C is
+>> 0.699V. Hence update the VTEMP25 to 0.699V which gives ADCR@Temp25
+>> as 867 and the final temperature readings differs with ~5°C from
+>> the external readings.
+> I am not entirely happy with the message. The proposed changes seem not
+> to alter the offset which would explain a ~20°C difference... Where do
+> this 20°C come from?
 
-The rest looks good to me. I'm pretty sure that moving this out of staging
-will make the module more visible and people will jump with enhancements.
+The ~20°C difference is observed at higher temperatures when VTEMP25
+at VREDH_ADC of 3V0 is considered. Will update the comment according
+to the updated VTEMP25 constant instead of the 20°C difference which
+is confusing wrt the changes done here.
 
+Best regards,
+Bhuvan
 
-thanks,
-Daniel
+> --
+> Stefan
+>
+>> Formula for finding ADCR@Temp25:
+>> ADCR@Temp25 = (ADCR@Vdd * V@TEMP25 * 10) / VDDconv
+>>
+>> ADCR@Vdd for 12-Bit ADC = 4095
+>> VDDconv = VREFH_ADC * 10
+>>
+>> VREFH_ADC@3.3V
+>> ADCR@Temp25 = (4095 * .699 * 10) / 33
+>> ADCR@Temp25 ~= 867
+>>
+>> | VREFH_ADC | V@TEMP25 | VDDconv | ADCR@Temp25 |
+>> |   3.0V    | 0.696mV  |    30   |     950     |
+>> |   3.3V    | 0.699mV  |    33   |     867     |
+>>
+>> Signed-off-by: Bhuvanchandra DV<bhuvanchandra.dv@toradex.com>
+>> ---
+>>   drivers/iio/adc/vf610_adc.c | 19 ++++++++++++++-----
+>>   1 file changed, 14 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+>> index f4df2a7..e7abc13 100644
+>> --- a/drivers/iio/adc/vf610_adc.c
+>> +++ b/drivers/iio/adc/vf610_adc.c
+>> @@ -103,6 +103,13 @@
+>>   
+>>   #define DEFAULT_SAMPLE_TIME		1000
+>>   
+>> +/* V at 25°C of 696 mV */
+>> +#define VF610_VTEMP25_3V0		950
+>> +/* V at 25°C of 699 mV */
+>> +#define VF610_VTEMP25_3V3		867
+>> +/* Typical sensor slope coefficient at all temperatures */
+>> +#define VF610_TEMP_SLOPE_COEFF		1840
+>> +
+>>   enum clk_sel {
+>>   	VF610_ADCIOC_BUSCLK_SET,
+>>   	VF610_ADCIOC_ALTCLK_SET,
+>> @@ -636,11 +643,13 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+>>   			break;
+>>   		case IIO_TEMP:
+>>   			/*
+>> -			* Calculate in degree Celsius times 1000
+>> -			* Using sensor slope of 1.84 mV/°C and
+>> -			* V at 25°C of 696 mV
+>> -			*/
+>> -			*val = 25000 - ((int)info->value - 864) * 1000000 / 1840;
+>> +			 * Calculate in degree Celsius times 1000
+>> +			 * Using the typical sensor slope of 1.84 mV/°C
+>> +			 * and VREFH_ADC at 3.3V, V at 25°C of 699 mV
+>> +			 */
+>> +			*val = 25000 - ((int)info->value - VF610_VTEMP25_3V3) *
+>> +					1000000 / VF610_TEMP_SLOPE_COEFF;
+>> +
+>>   			break;
+>>   		default:
+>>   			mutex_unlock(&indio_dev->mlock);
