@@ -1,67 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-116.synserver.de ([212.40.185.116]:1428 "EHLO
-	smtp-out-112.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753090AbbJMQ0H (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Oct 2015 12:26:07 -0400
-Message-ID: <561D3008.2010902@metafoo.de>
-Date: Tue, 13 Oct 2015 18:23:36 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from foss.arm.com ([217.140.101.70]:54043 "EHLO foss.arm.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752906AbbJMQdc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 13 Oct 2015 12:33:32 -0400
+Date: Tue, 13 Oct 2015 17:33:26 +0100
+From: Mark Rutland <mark.rutland@arm.com>
+To: Martin Kepplinger <martink@posteo.de>
+Cc: robh+dt@kernel.org, pawel.moll@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, mfuzzey@parkeon.com, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: Re: [PATCH] iio: mma8452: support either of the available interrupt
+ pins
+Message-ID: <20151013163326.GE24353@leverpostej>
+References: <1444751908-18242-1-git-send-email-martink@posteo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: Marc Andre <marc.andre@netline.ch>, linux-iio@vger.kernel.org,
-	Michael Hennerich <michael.hennerich@analog.com>
-Subject: Re: [PATCH 1/2] iio:ad5064: Make sure ad5064_i2c_write() returns
- 0 on success
-References: <1444752938-4680-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1444752938-4680-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1444751908-18242-1-git-send-email-martink@posteo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/13/2015 06:15 PM, Lars-Peter Clausen wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
+On Tue, Oct 13, 2015 at 05:58:28PM +0200, Martin Kepplinger wrote:
+> This change is important in order for everyone to be easily able to use the
+> driver for one of the supported accelerometer chips!
 > 
-> i2c_master_send() returns the number of bytes transferred on success while
-> the ad5064 driver expects that the write() callback returns 0 on success.
-> Fix that by translating any non negative return value of i2c_master_send()
-> to 0.
+> Until now, the driver blindly assumed that the INT1 interrupt line is wired
+> on a user's board. But these devices have 2 interrupt lines and can route
+> their different interrupt sources to one of them. Since only their motion
+> detection interrupt source is implemented as IIO events, users just use
+> either one of the pins.
 > 
-> Fixes: commit 6a17a0768f77 ("iio:dac:ad5064: Add support for the ad5629r and ad5669r")
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> client->irq is not changed because only one interrupt line is supported.
+> The user is warned if she describes both interrupt pins in the dts.
 
-And obviously
+If the hardware has both wired up, the DT should describe both.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+The fact that a kernel might only use one is irrelevant to the binding.
 
-Sorry for that.
+You need to handle the case that both are wired up.
 
-> ---
->  drivers/iio/dac/ad5064.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-> index c067e68..7e7ebf3 100644
-> --- a/drivers/iio/dac/ad5064.c
-> +++ b/drivers/iio/dac/ad5064.c
-> @@ -598,10 +598,16 @@ static int ad5064_i2c_write(struct ad5064_state *st, unsigned int cmd,
->  	unsigned int addr, unsigned int val)
->  {
->  	struct i2c_client *i2c = to_i2c_client(st->dev);
-> +	int ret;
+[...]
+
+> +  - interrupt-names: should contain "INT1" or "INT2", the accelerometer's
+> +		     interrupt line in use.
+
+This "or" should be "and/or".
+
+[...]
+
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 1eccc2d..dbfd0b4 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/iio/events.h>
+>  #include <linux/delay.h>
+>  #include <linux/of_device.h>
+> +#include <linux/of_irq.h>
 >  
->  	st->data.i2c[0] = (cmd << 4) | addr;
->  	put_unaligned_be16(val, &st->data.i2c[1]);
-> -	return i2c_master_send(i2c, st->data.i2c, 3);
-> +
-> +	ret = i2c_master_send(i2c, st->data.i2c, 3);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
->  }
+>  #define MMA8452_STATUS				0x00
+>  #define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
+> @@ -1130,13 +1131,26 @@ static int mma8452_probe(struct i2c_client *client,
+>  					   MMA8452_INT_FF_MT;
+>  		int enabled_interrupts = MMA8452_INT_TRANS |
+>  					 MMA8452_INT_FF_MT;
+> +		int irq1, irq2;
 >  
->  static int ad5064_i2c_probe(struct i2c_client *i2c,
-> 
+> -		/* Assume wired to INT1 pin */
+> -		ret = i2c_smbus_write_byte_data(client,
+> -						MMA8452_CTRL_REG5,
+> -						supported_interrupts);
+> -		if (ret < 0)
+> -			return ret;
+> +		irq1 = of_irq_get_byname(client->dev.of_node, "INT1");
+> +		irq2 = of_irq_get_byname(client->dev.of_node, "INT2");
+> +
+> +		if (irq1 > 0 && irq2 > 0)
+> +			dev_warn(&client->dev,
+> +				 "only one interrupt line supported\n");
 
+	dev_info(&client->dev, "INT1 and INT2 present.");
+
+This is a  valid case, and does not require a warning.
+
+Thanks,
+Mark.
