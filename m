@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-112.synserver.de ([212.40.185.112]:1093 "EHLO
+Received: from smtp-out-112.synserver.de ([212.40.185.112]:1158 "EHLO
 	smtp-out-100.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752321AbbJMQRd (ORCPT
+	by vger.kernel.org with ESMTP id S1753051AbbJMQRd (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Oct 2015 12:17:33 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -9,146 +9,309 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Peter Meerwald <pmeerw@pmeerw.net>
 Cc: Octavian Purdila <octavian.purdila@intel.com>,
 	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v3 0/6] iio: Add DMA buffer support
-Date: Tue, 13 Oct 2015 18:10:23 +0200
-Message-Id: <1444752629-3532-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH v3 6/6] iio: Add a DMAengine framework based buffer
+Date: Tue, 13 Oct 2015 18:10:29 +0200
+Message-Id: <1444752629-3532-7-git-send-email-lars@metafoo.de>
+In-Reply-To: <1444752629-3532-1-git-send-email-lars@metafoo.de>
+References: <1444752629-3532-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes since v2:
-	* Forgot to commit some of the changes for v2, sorry for the noise
+Add a generic fully device independent DMA buffer implementation that uses
+the DMAegnine framework to perform the DMA transfers. This can be used by
+converter drivers that whish to provide a DMA buffer for converters that
+are connected to a DMA core that implements the DMAengine API.
 
-Changes since v1:
-	* Typo fixes and some comment rewording
-	* Dropped the dummy DMA driver until the dummy IIO driver has moved out
-	  of staging
+Apart from allocating the buffer using iio_dmaengine_buffer_alloc() and
+freeing it using iio_dmaengine_buffer_free() no additional converter driver
+specific code is required when using this DMA buffer implementation.
 
-Original cover letter below:
-
-This series contains phase 1 of adding DMA buffer support to the IIO
-framework. It adds the necessary in-kernel infrastructure to support DMA
-buffers, but does not yet modify the userspace ABI.
-
-The traditional approach used in IIO to implement buffered capture requires
-the generation of at least one interrupt per sample. In the interrupt
-handler the driver reads the sample from the device and copies it to a
-software buffer. This approach has a rather large per sample overhead
-associated with it. And while it works fine for samplerates in the range of
-up to 1000 samples per second it starts to consume a rather large share of
-the available CPU processing time once we go beyond that, this is
-especially true on an embedded system with limited processing power. The
-regular interrupt also causes increased power consumption by not allowing
-the hardware into deeper sleep states, which is something that becomes more
-and more important on mobile battery powered devices.
-
-And while the recently added watermark support mitigates some of the issues
-by allowing the device to generate interrupts at a rate lower than the data
-output rate, this still requires a storage buffer inside the device and
-even if it exists it is only a few 100 samples deep at most.
-
-DMA support on the other hand allows to capture multiple millions or even
-more samples without any CPU interaction. This allows the CPU to either go
-to sleep for longer periods or focus on other tasks which increases overall
-system performance and power consumption. In addition to that some devices
-might not even offer a way to read the data other than using DMA, which
-makes DMA mandatory to use for them.
-
-For the DMA buffer support that is introduced in this series sample data is
-grouped in so called blocks. A block is the basic unit at which data is
-exchanged between the application and the hardware. The application is
-responsible for allocating the memory associated with the block and then
-passes the block to the hardware. When the hardware has captured the amount
-of samples equal to size of a block it will notify the application, which
-can then read the data from the block and process it. The block size can be
-freely chosen (within the constraints of the hardware). This allows to make
-a trade-off between latency and management overhead. The larger the block
-size the lower the per sample overhead but the latency between when the
-data was captured and when the application will be able to access it
-increases, in a similar way smaller block sizes have a larger per sample
-management overhead but a lower latency. The ideal block size thus depends
-on system and application requirements.
-
-The series starts with some minor modifications to the watermark handling
-code, primarily for dealing with fixed watermarks. It then adds support for
-enable()/disable() callbacks to the iio_buffer_access_ops. This allows the
-DMA buffer support to start and stop the DMA controller when the buffer is
-enabled and disabled.
-
-The next patch after that contains the core of this series. It adds a
-generic infrastructure for managing DMA buffers and while this is not a
-complete buffer implementation on its own it contains support for all the
-management work that is necessary to support DMA buffers, i.e. implementing
-the IIO buffer callbacks. The only thing not part of this infrastructure
-is configuring and setting up the DMA controller hardware itself. This is
-left to be implemented by a device driver which wants to support DMA buffer
-support and can be hooked up into the generic infrastructure by two simple
-callbacks. This minimizes the per driver code that is necessary to
-implement a DMA buffer.
-
-On top of that the series adds support for DMA buffers to the IIO dummy
-simple driver. This code can be used as a template for implementing new DMA
-buffer drivers as well as for testing the generic DMA buffer infrastructure
-in absence of hardware with DMA capabilities.
-
-Finally this series introduces a fully functional and completely hardware
-independent DMA buffer implementation which binds the previously introduced
-generic IIO DMA buffer infrastructure to the DMAengine framework. Which is
-used setup the actual hardware transfers. This reduces the amount of driver
-specific code for implementing a DMA buffer to two lines. One for
-registering the buffer and one for unregistering it. This makes using the
-DMAengine based buffer implementation the recommended way of implementing a
-DMA buffer for a device.
-
-The DMA buffer support has been successfully used and tested at Analog
-Devices for a while now with a wide variety of high speed data acquisition
-and processing systems with sample rates going up to multiple giga samples
-per second. Andrey Yurovsky has also successfully added DMA buffer support
-to the existing AT91 ADC driver allowing faster and more efficient data
-capture.
-
-The next step after this series and phase 2 is to extend the DMA buffer
-support with some userspace ABI additions, this includes support for giving
-userspace a more fine grained control over buffer allocation and management
-as well as support for mmap() and splice(). mmap() allows to access the
-buffer data from userspace without having to copy it which additionally
-reduces the management overhead. While splice() allows to exchange data
-with other kernel buffers without having to copy it, this can for example
-be used to send the data to a network or storage disk controller.
-
-For more background information on using IIO for high-speed data
-acquisition and using the DMA buffer support please also refer to [1] and
-[2] as well as [3].
-
-- Lars
-
-[1] http://events.linuxfoundation.org/sites/events/files/slides/iio_high_speed.pdf
-[2] https://wiki.analog.com/resources/tools-software/linux-software/libiio_internals#high-speed_mmap_interface
-[3] https://wiki.analog.com/resources/tools-software/linux-software/libiio_internals#zerocopy
-
-
-
-Lars-Peter Clausen (6):
-  iio: Set device watermark based on watermark of all attached buffers
-  iio:iio_buffer_init(): Only set watermark if not already set
-  iio: Add support for indicating fixed watermarks
-  iio: Add buffer enable/disable callbacks
-  iio: Add generic DMA buffer infrastructure
-  iio: Add a DMAengine framework based buffer
-
- drivers/iio/buffer/Kconfig                         |  20 +
- drivers/iio/buffer/Makefile                        |   2 +
- drivers/iio/buffer/industrialio-buffer-dma.c       | 683 +++++++++++++++++++++
- drivers/iio/buffer/industrialio-buffer-dmaengine.c | 213 +++++++
- drivers/iio/industrialio-buffer.c                  |  58 +-
- include/linux/iio/buffer-dma.h                     | 152 +++++
- include/linux/iio/buffer-dmaengine.h               |  18 +
- include/linux/iio/buffer.h                         |  16 +
- 8 files changed, 1156 insertions(+), 6 deletions(-)
- create mode 100644 drivers/iio/buffer/industrialio-buffer-dma.c
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/buffer/Kconfig                         |  11 ++
+ drivers/iio/buffer/Makefile                        |   1 +
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c | 213 +++++++++++++++++++++
+ include/linux/iio/buffer-dmaengine.h               |  18 ++
+ 4 files changed, 243 insertions(+)
  create mode 100644 drivers/iio/buffer/industrialio-buffer-dmaengine.c
- create mode 100644 include/linux/iio/buffer-dma.h
  create mode 100644 include/linux/iio/buffer-dmaengine.h
 
+diff --git a/drivers/iio/buffer/Kconfig b/drivers/iio/buffer/Kconfig
+index b2fda1a..4ffd3db 100644
+--- a/drivers/iio/buffer/Kconfig
++++ b/drivers/iio/buffer/Kconfig
+@@ -18,6 +18,17 @@ config IIO_BUFFER_DMA
+ 	  Should be selected by drivers that want to use the generic DMA buffer
+ 	  infrastructure.
+ 
++config IIO_BUFFER_DMAENGINE
++	tristate
++	select IIO_BUFFER_DMA
++	help
++	  Provides a bonding of the generic IIO DMA buffer infrastructure with the
++	  DMAengine framework. This can be used by converter drivers with a DMA port
++	  connected to an external DMA controller which is supported by the
++	  DMAengine framework.
++
++	  Should be selected by drivers that want to use this functionality.
++
+ config IIO_KFIFO_BUF
+ 	tristate "Industrial I/O buffering based on kfifo"
+ 	help
+diff --git a/drivers/iio/buffer/Makefile b/drivers/iio/buffer/Makefile
+index bda3f11..85beaae 100644
+--- a/drivers/iio/buffer/Makefile
++++ b/drivers/iio/buffer/Makefile
+@@ -5,5 +5,6 @@
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_IIO_BUFFER_CB) += industrialio-buffer-cb.o
+ obj-$(CONFIG_IIO_BUFFER_DMA) += industrialio-buffer-dma.o
++obj-$(CONFIG_IIO_BUFFER_DMAENGINE) += industrialio-buffer-dmaengine.o
+ obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
+ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+new file mode 100644
+index 0000000..ebdb838
+--- /dev/null
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -0,0 +1,213 @@
++/*
++ * Copyright 2014-2015 Analog Devices Inc.
++ *  Author: Lars-Peter Clausen <lars@metafoo.de>
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#include <linux/slab.h>
++#include <linux/kernel.h>
++#include <linux/dmaengine.h>
++#include <linux/dma-mapping.h>
++#include <linux/spinlock.h>
++#include <linux/err.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/buffer-dma.h>
++#include <linux/iio/buffer-dmaengine.h>
++
++/*
++ * The IIO DMAengine buffer combines the generic IIO DMA buffer infrastructure
++ * with the DMAengine framework. The generic IIO DMA buffer infrastructure is
++ * used to manage the buffer memory and implement the IIO buffer operations
++ * while the DMAengine framework is used to perform the DMA transfers. Combined
++ * this results in a device independent fully functional DMA buffer
++ * implementation that can be used by device drivers for peripherals which are
++ * connected to a DMA controller which has a DMAengine driver implementation.
++ */
++
++struct dmaengine_buffer {
++	struct iio_dma_buffer_queue queue;
++
++	struct dma_chan *chan;
++	struct list_head active;
++
++	size_t align;
++	size_t max_size;
++};
++
++static struct dmaengine_buffer *iio_buffer_to_dmaengine_buffer(
++		struct iio_buffer *buffer)
++{
++	return container_of(buffer, struct dmaengine_buffer, queue.buffer);
++}
++
++static void iio_dmaengine_buffer_block_done(void *data)
++{
++	struct iio_dma_buffer_block *block = data;
++	unsigned long flags;
++
++	spin_lock_irqsave(&block->queue->list_lock, flags);
++	list_del(&block->head);
++	spin_unlock_irqrestore(&block->queue->list_lock, flags);
++	iio_dma_buffer_block_done(block);
++}
++
++static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
++	struct iio_dma_buffer_block *block)
++{
++	struct dmaengine_buffer *dmaengine_buffer =
++		iio_buffer_to_dmaengine_buffer(&queue->buffer);
++	struct dma_async_tx_descriptor *desc;
++	dma_cookie_t cookie;
++
++	block->bytes_used = min(block->size, dmaengine_buffer->max_size);
++	block->bytes_used = rounddown(block->bytes_used,
++			dmaengine_buffer->align);
++
++	desc = dmaengine_prep_slave_single(dmaengine_buffer->chan,
++		block->phys_addr, block->bytes_used, DMA_DEV_TO_MEM,
++		DMA_PREP_INTERRUPT);
++	if (!desc)
++		return -ENOMEM;
++
++	desc->callback = iio_dmaengine_buffer_block_done;
++	desc->callback_param = block;
++
++	cookie = dmaengine_submit(desc);
++	if (dma_submit_error(cookie))
++		return dma_submit_error(cookie);
++
++	spin_lock_irq(&dmaengine_buffer->queue.list_lock);
++	list_add_tail(&block->head, &dmaengine_buffer->active);
++	spin_unlock_irq(&dmaengine_buffer->queue.list_lock);
++
++	dma_async_issue_pending(dmaengine_buffer->chan);
++
++	return 0;
++}
++
++static void iio_dmaengine_buffer_abort(struct iio_dma_buffer_queue *queue)
++{
++	struct dmaengine_buffer *dmaengine_buffer =
++		iio_buffer_to_dmaengine_buffer(&queue->buffer);
++
++	dmaengine_terminate_all(dmaengine_buffer->chan);
++	/* FIXME: There is a slight chance of a race condition here.
++	 * dmaengine_terminate_all() does not guarantee that all transfer
++	 * callbacks have finished running. Need to introduce a
++	 * dmaengine_terminate_all_sync().
++	 */
++	iio_dma_buffer_block_list_abort(queue, &dmaengine_buffer->active);
++}
++
++static void iio_dmaengine_buffer_release(struct iio_buffer *buf)
++{
++	struct dmaengine_buffer *dmaengine_buffer =
++		iio_buffer_to_dmaengine_buffer(buf);
++
++	iio_dma_buffer_release(&dmaengine_buffer->queue);
++	kfree(dmaengine_buffer);
++}
++
++static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
++	.read_first_n = iio_dma_buffer_read,
++	.set_bytes_per_datum = iio_dma_buffer_set_bytes_per_datum,
++	.set_length = iio_dma_buffer_set_length,
++	.request_update = iio_dma_buffer_request_update,
++	.enable = iio_dma_buffer_enable,
++	.disable = iio_dma_buffer_disable,
++	.data_available = iio_dma_buffer_data_available,
++	.release = iio_dmaengine_buffer_release,
++
++	.modes = INDIO_BUFFER_HARDWARE,
++	.flags = INDIO_BUFFER_FLAG_FIXED_WATERMARK,
++};
++
++static const struct iio_dma_buffer_ops iio_dmaengine_default_ops = {
++	.submit = iio_dmaengine_buffer_submit_block,
++	.abort = iio_dmaengine_buffer_abort,
++};
++
++/**
++ * iio_dmaengine_buffer_alloc() - Allocate new buffer which uses DMAengine
++ * @dev: Parent device for the buffer
++ * @channel: DMA channel name, typically "rx".
++ *
++ * This allocates a new IIO buffer which internally uses the DMAengine framework
++ * to perform its transfers. The parent device will be used to request the DMA
++ * channel.
++ *
++ * Once done using the buffer iio_dmaengine_buffer_free() should be used to
++ * release it.
++ */
++struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
++	const char *channel)
++{
++	struct dmaengine_buffer *dmaengine_buffer;
++	unsigned int width, src_width, dest_width;
++	struct dma_slave_caps caps;
++	struct dma_chan *chan;
++	int ret;
++
++	dmaengine_buffer = kzalloc(sizeof(*dmaengine_buffer), GFP_KERNEL);
++	if (!dmaengine_buffer)
++		return ERR_PTR(-ENOMEM);
++
++	chan = dma_request_slave_channel_reason(dev, channel);
++	if (IS_ERR(chan)) {
++		ret = PTR_ERR(chan);
++		goto err_free;
++	}
++
++	ret = dma_get_slave_caps(chan, &caps);
++	if (ret < 0)
++		goto err_free;
++
++	/* Needs to be aligned to the maximum of the minimums */
++	if (caps.src_addr_widths)
++		src_width = __ffs(caps.src_addr_widths);
++	else
++		src_width = 1;
++	if (caps.dst_addr_widths)
++		dest_width = __ffs(caps.dst_addr_widths);
++	else
++		dest_width = 1;
++	width = max(src_width, dest_width);
++
++	INIT_LIST_HEAD(&dmaengine_buffer->active);
++	dmaengine_buffer->chan = chan;
++	dmaengine_buffer->align = width;
++	dmaengine_buffer->max_size = dma_get_max_seg_size(chan->device->dev);
++
++	iio_dma_buffer_init(&dmaengine_buffer->queue, chan->device->dev,
++		&iio_dmaengine_default_ops);
++
++	dmaengine_buffer->queue.buffer.access = &iio_dmaengine_buffer_ops;
++
++	return &dmaengine_buffer->queue.buffer;
++
++err_free:
++	kfree(dmaengine_buffer);
++	return ERR_PTR(ret);
++}
++EXPORT_SYMBOL(iio_dmaengine_buffer_alloc);
++
++/**
++ * iio_dmaengine_buffer_free() - Free dmaengine buffer
++ * @buffer: Buffer to free
++ *
++ * Frees a buffer previously allocated with iio_dmaengine_buffer_alloc().
++ */
++void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
++{
++	struct dmaengine_buffer *dmaengine_buffer =
++		iio_buffer_to_dmaengine_buffer(buffer);
++
++	iio_dma_buffer_exit(&dmaengine_buffer->queue);
++	dma_release_channel(dmaengine_buffer->chan);
++
++	iio_buffer_put(buffer);
++}
++EXPORT_SYMBOL_GPL(iio_dmaengine_buffer_free);
+diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
+new file mode 100644
+index 0000000..5dcddf4
+--- /dev/null
++++ b/include/linux/iio/buffer-dmaengine.h
+@@ -0,0 +1,18 @@
++/*
++ * Copyright 2014-2015 Analog Devices Inc.
++ *  Author: Lars-Peter Clausen <lars@metafoo.de>
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#ifndef __IIO_DMAENGINE_H__
++#define __IIO_DMAENGINE_H__
++
++struct iio_buffer;
++struct device;
++
++struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
++	const char *channel);
++void iio_dmaengine_buffer_free(struct iio_buffer *buffer);
++
++#endif
 -- 
 2.1.4
 
