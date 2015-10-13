@@ -1,126 +1,150 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:57569 "EHLO mout01.posteo.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752962AbbJMQAf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 13 Oct 2015 12:00:35 -0400
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id ECED820A28
-	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2015 18:00:32 +0200 (CEST)
-From: Martin Kepplinger <martink@posteo.de>
-To: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, mfuzzey@parkeon.com
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, Martin Kepplinger <martink@posteo.de>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: [PATCH] iio: mma8452: support either of the available interrupt pins
-Date: Tue, 13 Oct 2015 17:58:28 +0200
-Message-Id: <1444751908-18242-1-git-send-email-martink@posteo.de>
+Received: from smtp-out-108.synserver.de ([212.40.185.108]:1026 "EHLO
+	smtp-out-100.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752501AbbJMQFi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Oct 2015 12:05:38 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Octavian Purdila <octavian.purdila@intel.com>,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 0/6] iio: Add DMA buffer support
+Date: Tue, 13 Oct 2015 18:05:21 +0200
+Message-Id: <1444752327-2629-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This change is important in order for everyone to be easily able to use the
-driver for one of the supported accelerometer chips!
+Changes since v1:
+	* Typo fixes and some comment rewording
+	* Dropped the dummy DMA driver until the dummy IIO driver has moved out
+	  of staging
 
-Until now, the driver blindly assumed that the INT1 interrupt line is wired
-on a user's board. But these devices have 2 interrupt lines and can route
-their different interrupt sources to one of them. Since only their motion
-detection interrupt source is implemented as IIO events, users just use
-either one of the pins.
+Original cover letter below:
 
-client->irq is not changed because only one interrupt line is supported.
-The user is warned if she describes both interrupt pins in the dts.
+This series contains phase 1 of adding DMA buffer support to the IIO
+framework. It adds the necessary in-kernel infrastructure to support DMA
+buffers, but does not yet modify the userspace ABI.
 
-If possibly in the future more interrupt sources might be available,
-additional DT properties will be added.
+The traditional approach used in IIO to implement buffered capture requires
+the generation of at least one interrupt per sample. In the interrupt
+handler the driver reads the sample from the device and copies it to a
+software buffer. This approach has a rather large per sample overhead
+associated with it. And while it works fine for samplerates in the range of
+up to 1000 samples per second it starts to consume a rather large share of
+the available CPU processing time once we go beyond that, this is
+especially true on an embedded system with limited processing power. The
+regular interrupt also causes increased power consumption by not allowing
+the hardware into deeper sleep states, which is something that becomes more
+and more important on mobile battery powered devices.
 
-Of course, this also falls back to assuming INT1, so for existing users
-nothing will break. The new functionality is described in the bindings doc.
+And while the recently added watermark support mitigates some of the issues
+by allowing the device to generate interrupts at a rate lower than the data
+output rate, this still requires a storage buffer inside the device and
+even if it exists it is only a few 100 samples deep at most.
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
----
-this applies to the current -next. thanks in advance for your review!
+DMA support on the other hand allows to capture multiple millions or even
+more samples without any CPU interaction. This allows the CPU to either go
+to sleep for longer periods or focus on other tasks which increases overall
+system performance and power consumption. In addition to that some devices
+might not even offer a way to read the data other than using DMA, which
+makes DMA mandatory to use for them.
+
+For the DMA buffer support that is introduced in this series sample data is
+grouped in so called blocks. A block is the basic unit at which data is
+exchanged between the application and the hardware. The application is
+responsible for allocating the memory associated with the block and then
+passes the block to the hardware. When the hardware has captured the amount
+of samples equal to size of a block it will notify the application, which
+can then read the data from the block and process it. The block size can be
+freely chosen (within the constraints of the hardware). This allows to make
+a trade-off between latency and management overhead. The larger the block
+size the lower the per sample overhead but the latency between when the
+data was captured and when the application will be able to access it
+increases, in a similar way smaller block sizes have a larger per sample
+management overhead but a lower latency. The ideal block size thus depends
+on system and application requirements.
+
+The series starts with some minor modifications to the watermark handling
+code, primarily for dealing with fixed watermarks. It then adds support for
+enable()/disable() callbacks to the iio_buffer_access_ops. This allows the
+DMA buffer support to start and stop the DMA controller when the buffer is
+enabled and disabled.
+
+The next patch after that contains the core of this series. It adds a
+generic infrastructure for managing DMA buffers and while this is not a
+complete buffer implementation on its own it contains support for all the
+management work that is necessary to support DMA buffers, i.e. implementing
+the IIO buffer callbacks. The only thing not part of this infrastructure
+is configuring and setting up the DMA controller hardware itself. This is
+left to be implemented by a device driver which wants to support DMA buffer
+support and can be hooked up into the generic infrastructure by two simple
+callbacks. This minimizes the per driver code that is necessary to
+implement a DMA buffer.
+
+On top of that the series adds support for DMA buffers to the IIO dummy
+simple driver. This code can be used as a template for implementing new DMA
+buffer drivers as well as for testing the generic DMA buffer infrastructure
+in absence of hardware with DMA capabilities.
+
+Finally this series introduces a fully functional and completely hardware
+independent DMA buffer implementation which binds the previously introduced
+generic IIO DMA buffer infrastructure to the DMAengine framework. Which is
+used setup the actual hardware transfers. This reduces the amount of driver
+specific code for implementing a DMA buffer to two lines. One for
+registering the buffer and one for unregistering it. This makes using the
+DMAengine based buffer implementation the recommended way of implementing a
+DMA buffer for a device.
+
+The DMA buffer support has been successfully used and tested at Analog
+Devices for a while now with a wide variety of high speed data acquisition
+and processing systems with sample rates going up to multiple giga samples
+per second. Andrey Yurovsky has also successfully added DMA buffer support
+to the existing AT91 ADC driver allowing faster and more efficient data
+capture.
+
+The next step after this series and phase 2 is to extend the DMA buffer
+support with some userspace ABI additions, this includes support for giving
+userspace a more fine grained control over buffer allocation and management
+as well as support for mmap() and splice(). mmap() allows to access the
+buffer data from userspace without having to copy it which additionally
+reduces the management overhead. While splice() allows to exchange data
+with other kernel buffers without having to copy it, this can for example
+be used to send the data to a network or storage disk controller.
+
+For more background information on using IIO for high-speed data
+acquisition and using the DMA buffer support please also refer to [1] and
+[2] as well as [3].
+
+- Lars
+
+[1] http://events.linuxfoundation.org/sites/events/files/slides/iio_high_speed.pdf
+[2] https://wiki.analog.com/resources/tools-software/linux-software/libiio_internals#high-speed_mmap_interface
+[3] https://wiki.analog.com/resources/tools-software/linux-software/libiio_internals#zerocopy
 
 
- .../devicetree/bindings/iio/accel/mma8452.txt      |  6 +++++
- drivers/iio/accel/mma8452.c                        | 26 +++++++++++++++++-----
- 2 files changed, 26 insertions(+), 6 deletions(-)
+Lars-Peter Clausen (6):
+  iio: Set device watermark based on watermark of all attached buffers
+  iio:iio_buffer_init(): Only set watermark if not already set
+  iio: Add support for indicating fixed watermarks
+  iio: Add buffer enable/disable callbacks
+  iio: Add generic DMA buffer infrastructure
+  iio: Add a DMAengine framework based buffer
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-index e3c3746..6e42c23 100644
---- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-+++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-@@ -7,13 +7,18 @@ Required properties:
-     * "fsl,mma8453"
-     * "fsl,mma8652"
-     * "fsl,mma8653"
-+
-   - reg: the I2C address of the chip
- 
- Optional properties:
- 
-   - interrupt-parent: should be the phandle for the interrupt controller
-+
-   - interrupts: interrupt mapping for GPIO IRQ
- 
-+  - interrupt-names: should contain "INT1" or "INT2", the accelerometer's
-+		     interrupt line in use.
-+
- Example:
- 
- 	mma8453fc@1d {
-@@ -21,4 +26,5 @@ Example:
- 		reg = <0x1d>;
- 		interrupt-parent = <&gpio1>;
- 		interrupts = <5 0>;
-+		interrupt-names = "INT2";
- 	};
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 1eccc2d..dbfd0b4 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -29,6 +29,7 @@
- #include <linux/iio/events.h>
- #include <linux/delay.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
- 
- #define MMA8452_STATUS				0x00
- #define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
-@@ -1130,13 +1131,26 @@ static int mma8452_probe(struct i2c_client *client,
- 					   MMA8452_INT_FF_MT;
- 		int enabled_interrupts = MMA8452_INT_TRANS |
- 					 MMA8452_INT_FF_MT;
-+		int irq1, irq2;
- 
--		/* Assume wired to INT1 pin */
--		ret = i2c_smbus_write_byte_data(client,
--						MMA8452_CTRL_REG5,
--						supported_interrupts);
--		if (ret < 0)
--			return ret;
-+		irq1 = of_irq_get_byname(client->dev.of_node, "INT1");
-+		irq2 = of_irq_get_byname(client->dev.of_node, "INT2");
-+
-+		if (irq1 > 0 && irq2 > 0)
-+			dev_warn(&client->dev,
-+				 "only one interrupt line supported\n");
-+
-+		/* if INT2 is found, use it. Otherwise INT1 */
-+		if (!(irq2 > 0 && irq1 < 0)) {
-+			ret = i2c_smbus_write_byte_data(client,
-+							MMA8452_CTRL_REG5,
-+							supported_interrupts);
-+			if (ret < 0)
-+				return ret;
-+			dev_info(&client->dev, "using interrupt line INT1\n");
-+		} else {
-+			dev_info(&client->dev, "using interrupt line INT2\n");
-+		}
- 
- 		ret = i2c_smbus_write_byte_data(client,
- 						MMA8452_CTRL_REG4,
+ drivers/iio/buffer/Kconfig                         |  20 +
+ drivers/iio/buffer/Makefile                        |   2 +
+ drivers/iio/buffer/industrialio-buffer-dma.c       | 683 +++++++++++++++++++++
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c | 213 +++++++
+ drivers/iio/industrialio-buffer.c                  |  58 +-
+ include/linux/iio/buffer-dma.h                     | 150 +++++
+ include/linux/iio/buffer-dmaengine.h               |  18 +
+ include/linux/iio/buffer.h                         |  16 +
+ 8 files changed, 1154 insertions(+), 6 deletions(-)
+ create mode 100644 drivers/iio/buffer/industrialio-buffer-dma.c
+ create mode 100644 drivers/iio/buffer/industrialio-buffer-dmaengine.c
+ create mode 100644 include/linux/iio/buffer-dma.h
+ create mode 100644 include/linux/iio/buffer-dmaengine.h
+
 -- 
 2.1.4
 
