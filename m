@@ -1,123 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:35169 "EHLO mout01.posteo.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753475AbbJNNdM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 14 Oct 2015 09:33:12 -0400
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id E99B920932
-	for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2015 15:33:08 +0200 (CEST)
-From: Martin Kepplinger <martink@posteo.de>
-To: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, mfuzzey@parkeon.com
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, Martin Kepplinger <martink@posteo.de>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: [PATCH v3] iio: mma8452: support either of the available interrupt pins
-Date: Wed, 14 Oct 2015 15:15:42 +0200
-Message-Id: <1444828542-28861-1-git-send-email-martink@posteo.de>
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:35053 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932436AbbJNOEH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 14 Oct 2015 10:04:07 -0400
+Received: by wicge5 with SMTP id ge5so238799690wic.0
+        for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2015 07:04:05 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1444752327-2629-4-git-send-email-lars@metafoo.de>
+References: <1444752327-2629-1-git-send-email-lars@metafoo.de>
+	<1444752327-2629-4-git-send-email-lars@metafoo.de>
+Date: Wed, 14 Oct 2015 17:04:02 +0300
+Message-ID: <CAEnQRZBaVnf4NGHAwmFigWNnirAgNsczSQTfUGAY4fcvn3Edyg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/6] iio: Add support for indicating fixed watermarks
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Octavian Purdila <octavian.purdila@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This change is important in order for everyone to be easily able to use the
-driver for one of the supported accelerometer chips!
+On Tue, Oct 13, 2015 at 7:05 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> For buffers which have a fixed wake-up watermark the watermark attribute
+> should be read-only. Add a new FIXED_WATERMARK flag to the
+> struct iio_buffer_access_funcs, which can be set by a buffer
+> implementation.
+>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>  drivers/iio/industrialio-buffer.c | 5 +++++
+>  include/linux/iio/buffer.h        | 8 ++++++++
+>  2 files changed, 13 insertions(+)
+>
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index 5f2c8c8..98a6447 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -998,6 +998,8 @@ static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
+>                    iio_buffer_show_enable, iio_buffer_store_enable);
+>  static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
+>                    iio_buffer_show_watermark, iio_buffer_store_watermark);
+> +static struct device_attribute dev_attr_watermark_ro = __ATTR(watermark,
+> +       S_IRUGO, iio_buffer_show_watermark, NULL);
 
-Until now, the driver blindly assumed that the INT1 interrupt line is wired
-on a user's board. But these devices have 2 interrupt lines and can route
-their different interrupt sources to one of them. Since only their motion
-detection interrupt source is implemented as IIO events, users just use
-either one of the pins.
+I think we can use DEVICE_ATTR_RO here.
 
-Of course, this also falls back to assuming INT1, so for existing users
-nothing will break. The new functionality is described in the bindings doc.
+>
+>  static struct attribute *iio_buffer_attrs[] = {
+>         &dev_attr_length.attr,
+> @@ -1040,6 +1042,9 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+>         if (!buffer->access->set_length)
+>                 attr[0] = &dev_attr_length_ro.attr;
+>
+> +       if (buffer->access->flags & INDIO_BUFFER_FLAG_FIXED_WATERMARK)
+> +               attr[2] = &dev_attr_watermark_ro.attr;
+> +
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
----
-changelog:
-v3: correctly assign irq if both pins are described in DT. thanks again
-v2: don't warn but normally handle if both pins are described in dts
-    thanks Mark Rutland
-v1: initial post
+Ok, this works :).  Let's hope iio_buffer_attrs array new elements
+will be always added at the end.
 
- .../devicetree/bindings/iio/accel/mma8452.txt      |  6 +++++
- drivers/iio/accel/mma8452.c                        | 26 +++++++++++++++++-----
- 2 files changed, 26 insertions(+), 6 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-index e3c3746..3c10e85 100644
---- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-+++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-@@ -7,13 +7,18 @@ Required properties:
-     * "fsl,mma8453"
-     * "fsl,mma8652"
-     * "fsl,mma8653"
-+
-   - reg: the I2C address of the chip
- 
- Optional properties:
- 
-   - interrupt-parent: should be the phandle for the interrupt controller
-+
-   - interrupts: interrupt mapping for GPIO IRQ
- 
-+  - interrupt-names: should contain "INT1" and/or "INT2", the accelerometer's
-+		     interrupt line in use.
-+
- Example:
- 
- 	mma8453fc@1d {
-@@ -21,4 +26,5 @@ Example:
- 		reg = <0x1d>;
- 		interrupt-parent = <&gpio1>;
- 		interrupts = <5 0>;
-+		interrupt-names = "INT2";
- 	};
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 1eccc2d..6b9b360 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -29,6 +29,7 @@
- #include <linux/iio/events.h>
- #include <linux/delay.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
- 
- #define MMA8452_STATUS				0x00
- #define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
-@@ -1130,13 +1131,26 @@ static int mma8452_probe(struct i2c_client *client,
- 					   MMA8452_INT_FF_MT;
- 		int enabled_interrupts = MMA8452_INT_TRANS |
- 					 MMA8452_INT_FF_MT;
-+		int irq1, irq2;
- 
--		/* Assume wired to INT1 pin */
--		ret = i2c_smbus_write_byte_data(client,
--						MMA8452_CTRL_REG5,
--						supported_interrupts);
--		if (ret < 0)
--			return ret;
-+		irq1 = of_irq_get_byname(client->dev.of_node, "INT1");
-+		irq2 = of_irq_get_byname(client->dev.of_node, "INT2");
-+
-+		/* if INT2 is found, use it. Otherwise INT1 */
-+		if (!(irq2 > 0 && irq1 < 0)) {
-+			ret = i2c_smbus_write_byte_data(client,
-+							MMA8452_CTRL_REG5,
-+							supported_interrupts);
-+			if (ret < 0)
-+				return ret;
-+
-+			if (irq1 > 0)
-+				client->irq = irq1;
-+			dev_info(&client->dev, "using interrupt line INT1\n");
-+		} else {
-+			client->irq = irq2;
-+			dev_info(&client->dev, "using interrupt line INT2\n");
-+		}
- 
- 		ret = i2c_smbus_write_byte_data(client,
- 						MMA8452_CTRL_REG4,
--- 
-2.1.4
-
+>         if (buffer->attrs)
+>                 memcpy(&attr[ARRAY_SIZE(iio_buffer_attrs)], buffer->attrs,
+>                        sizeof(struct attribute *) * attrcount);
+> diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+> index 1600c55..4d99a53 100644
+> --- a/include/linux/iio/buffer.h
+> +++ b/include/linux/iio/buffer.h
+> @@ -18,6 +18,12 @@
+>  struct iio_buffer;
+>
+>  /**
+> + * INDIO_BUFFER_FLAG_FIXED_WATERMARK - Watermark level of the buffer can not be
+> + *   configured. It has a fixed value which will be buffer specific.
+> + */
+> +#define INDIO_BUFFER_FLAG_FIXED_WATERMARK BIT(0)
+> +
+> +/**
+>   * struct iio_buffer_access_funcs - access functions for buffers.
+>   * @store_to:          actually store stuff to the buffer
+>   * @read_first_n:      try to get a specified number of bytes (must exist)
+> @@ -30,6 +36,7 @@ struct iio_buffer;
+>   * @release:           called when the last reference to the buffer is dropped,
+>   *                     should free all resources allocated by the buffer.
+>   * @modes:             Supported operating modes by this buffer type
+> + * @flags:             A bitmask combination of INDIO_BUFFER_FLAG_*
+>   *
+>   * The purpose of this structure is to make the buffer element
+>   * modular as event for a given driver, different usecases may require
+> @@ -54,6 +61,7 @@ struct iio_buffer_access_funcs {
+>         void (*release)(struct iio_buffer *buffer);
+>
+>         unsigned int modes;
+> +       unsigned int flags;
+>  };
+>
+>  /**
+> --
