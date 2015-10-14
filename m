@@ -1,120 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:57740 "EHLO mout01.posteo.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752130AbbJNJyY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 14 Oct 2015 05:54:24 -0400
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id 22AB320898
-	for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2015 11:54:20 +0200 (CEST)
-From: Martin Kepplinger <martink@posteo.de>
-To: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, mfuzzey@parkeon.com
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, Martin Kepplinger <martink@posteo.de>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: [PATCH v2] iio: mma8452: support either of the available interrupt pins
-Date: Wed, 14 Oct 2015 11:52:29 +0200
-Message-Id: <1444816349-25103-1-git-send-email-martink@posteo.de>
+Received: from mail-wi0-f181.google.com ([209.85.212.181]:33683 "EHLO
+	mail-wi0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753025AbbJNLWO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 14 Oct 2015 07:22:14 -0400
+Received: by wicge5 with SMTP id ge5so96245923wic.0
+        for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2015 04:22:13 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <56182DF5.2070507@gmx.de>
+References: <CAEnQRZAf3Sp=NrC5S+4pW6=N4kS4cmqbXCesdd7e1b6mfKc-zA@mail.gmail.com>
+	<56182DF5.2070507@gmx.de>
+Date: Wed, 14 Oct 2015 14:22:12 +0300
+Message-ID: <CAEnQRZCh-TKko++4BktBEFuD3OSu4zBMFb76hBYehDbrkX25ww@mail.gmail.com>
+Subject: Re: Industrial I/O presentation at LinuxCon Europe
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This change is important in order for everyone to be easily able to use the
-driver for one of the supported accelerometer chips!
+On Sat, Oct 10, 2015 at 12:13 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+> Daniel Baluta schrieb am 09.10.2015 um 11:06:
+>> Hi all,
+>>
+>> This Monday I presented an introduction to IIO at LinuxCon.
+>>
+>> The slides can be found here:
+>>
+>> * https://www.overleaf.com/articles/industrial-i-slash-o/dmqjqpzswtvb.pdf
+>>
+>> and soon they will be uploaded to Linux foundation site.
+>>
+>
+> Awesome. Looks very good overall. But before uploading to Linux foundation,
+> please consider the following remarks (I hope my brief notes make sense to you):
+>
+> Page 10: IIO_CHAN_PROCESSED => IIO_CHAN_INFO_PROCESSED
+> Page 16: temp_channel => accel_channels? fill empty comment, IIO_CPU => IIO_LE?
+> Page 21: several io => iio, highlighted "enable" in last line intended?
+> Pages 20 and 25: deprecate terms "top half" and "bottom half" (IIRC there is now
+> handler [h] for timing critical IRQ handling and thread [th] for uncritical work)?
 
-Until now, the driver blindly assumed that the INT1 interrupt line is wired
-on a user's board. But these devices have 2 interrupt lines and can route
-their different interrupt sources to one of them. Since only their motion
-detection interrupt source is implemented as IIO events, users just use
-either one of the pins.
+Thanks Hartmut,
 
-Of course, this also falls back to assuming INT1, so for existing users
-nothing will break. The new functionality is described in the bindings doc.
+Fixed all of the above (except enable - which is reserved keyword in bash).
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
----
-changelog:
-v2: don't warn but normally handle if both pins are described in dts
-    thanks Mark Rutland
-v1: initial post
+Slides are now on Linux Foundation website:
 
+http://events.linuxfoundation.org/sites/events/files/slides/lceu15_baluta.pdf
 
- .../devicetree/bindings/iio/accel/mma8452.txt      |  7 +++++++
- drivers/iio/accel/mma8452.c                        | 22 ++++++++++++++++------
- 2 files changed, 23 insertions(+), 6 deletions(-)
+Thanks all for the review.
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-index e3c3746..f06ed87 100644
---- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-+++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-@@ -7,13 +7,19 @@ Required properties:
-     * "fsl,mma8453"
-     * "fsl,mma8652"
-     * "fsl,mma8653"
-+
-   - reg: the I2C address of the chip
- 
- Optional properties:
- 
-   - interrupt-parent: should be the phandle for the interrupt controller
-+
-   - interrupts: interrupt mapping for GPIO IRQ
- 
-+  - interrupt-names: should contain "INT1" and/or "INT2", the accelerometer's
-+		     interrupt line in use. If only "INT2" is present, INT2 is
-+		     used; otherwise INT1.
-+
- Example:
- 
- 	mma8453fc@1d {
-@@ -21,4 +27,5 @@ Example:
- 		reg = <0x1d>;
- 		interrupt-parent = <&gpio1>;
- 		interrupts = <5 0>;
-+		interrupt-names = "INT2";
- 	};
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 1eccc2d..4d69c3d 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -29,6 +29,7 @@
- #include <linux/iio/events.h>
- #include <linux/delay.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
- 
- #define MMA8452_STATUS				0x00
- #define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
-@@ -1130,13 +1131,22 @@ static int mma8452_probe(struct i2c_client *client,
- 					   MMA8452_INT_FF_MT;
- 		int enabled_interrupts = MMA8452_INT_TRANS |
- 					 MMA8452_INT_FF_MT;
-+		int irq1, irq2;
- 
--		/* Assume wired to INT1 pin */
--		ret = i2c_smbus_write_byte_data(client,
--						MMA8452_CTRL_REG5,
--						supported_interrupts);
--		if (ret < 0)
--			return ret;
-+		irq1 = of_irq_get_byname(client->dev.of_node, "INT1");
-+		irq2 = of_irq_get_byname(client->dev.of_node, "INT2");
-+
-+		/* if INT2 is found, use it. Otherwise INT1 */
-+		if (!(irq2 > 0 && irq1 < 0)) {
-+			ret = i2c_smbus_write_byte_data(client,
-+							MMA8452_CTRL_REG5,
-+							supported_interrupts);
-+			if (ret < 0)
-+				return ret;
-+			dev_info(&client->dev, "using interrupt line INT1\n");
-+		} else {
-+			dev_info(&client->dev, "using interrupt line INT2\n");
-+		}
- 
- 		ret = i2c_smbus_write_byte_data(client,
- 						MMA8452_CTRL_REG4,
--- 
-2.1.4
-
+Daniel.
