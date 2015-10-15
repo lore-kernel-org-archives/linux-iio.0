@@ -1,307 +1,121 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from netline-mail3.netline.ch ([78.47.214.34]:53580 "EHLO
-	netline-mail3.netline.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752671AbbJOMb1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 15 Oct 2015 08:31:27 -0400
-From: Marc Andre <marc.andre@netline.ch>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, marc.andre@netline.ch
-Subject: [PATCH v2 2/2] iio:ad5064: Fix power down operation with LTC2617
-Date: Thu, 15 Oct 2015 14:31:04 +0200
-Message-Id: <1444912264-44606-3-git-send-email-marc.andre@netline.ch>
-In-Reply-To: <1444912264-44606-1-git-send-email-marc.andre@netline.ch>
-References: <CAEnQRZC4sxWXkUgz7316NrzHYa9GkfneG82PcPKgK00S76W=GA@mail.gmail.com>
- <1444912264-44606-1-git-send-email-marc.andre@netline.ch>
+Received: from mout01.posteo.de ([185.67.36.65]:33066 "EHLO mout01.posteo.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752755AbbJONOV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 15 Oct 2015 09:14:21 -0400
+Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
+	by mout01.posteo.de (Postfix) with ESMTPS id CC74F209E5
+	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2015 15:14:16 +0200 (CEST)
+From: Martin Kepplinger <martink@posteo.de>
+To: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, mfuzzey@parkeon.com
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, Martin Kepplinger <martink@posteo.de>,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: [PATCH v4] iio: mma8452: support either of the available interrupt pins
+Date: Thu, 15 Oct 2015 15:10:32 +0200
+Message-Id: <1444914632-4486-1-git-send-email-martink@posteo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-LTC2617 device (and the other devices from Linear Technology) have
-a different behavior for power down than the Analog Device devices.
-The command must be addressed with the right channel address. Also,
-only a single power down mode (90k to ground) is available.
+This change is important in order for everyone to be easily able to use the
+driver for one of the supported accelerometer chips!
 
-This patch adjusts the driver to handle the LTC case specifically.
+Until now, the driver blindly assumed that the INT1 interrupt line is wired
+on a user's board. But these devices have 2 interrupt lines and can route
+their interrupt sources to one of them. Now, if "INT2" is found and matches
+i2c_client->irq, INT2 will be used.
 
-I decided to implement the different power down modes as a
-separate iio_ext_info structure. An alternative implementation
-would be to set the iio_ext_info structure not const
-and then adjust the enum in the probe() function based on a
-chip_info setting. In my view this would be less ideal because
-it uses more memory for the kernel.
+The chip's default actually is INT2, which is why probably many boards will
+have it wired and can make use of this.
 
-The different addressing is handled with a flag in the chip_info
-structure. Alternatively we could implement a copy of all
-set_powerdown_...() functions. I think this is less nice.
+Of course, this also falls back to assuming INT1, so for existing users
+nothing will break. The new functionality is described in the bindings doc.
 
-I've added the new setting 90kohm_to_gnd to the ABI sysfs-bus-iio
-documentation.
-
-Signed-off-by: Marc Andre <marc.andre@netline.ch>
+Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio |   1 +
- drivers/iio/dac/ad5064.c                | 120 ++++++++++++++++++++++----------
- 2 files changed, 83 insertions(+), 38 deletions(-)
+changelog:
+v4: use irq that matches client->irq, backwards compatible
+v3: correctly assign irq if both pins are described in DT
+v2: don't warn but normally handle if both pins are described in dts
+    thanks Mark Rutland
+v1: initial post
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 42d360f..3e8b778 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -496,6 +496,7 @@ Description:
- 		1kohm_to_gnd: connected to ground via an 1kOhm resistor,
- 		6kohm_to_gnd: connected to ground via a 6kOhm resistor,
- 		20kohm_to_gnd: connected to ground via a 20kOhm resistor,
-+		90kohm_to_gnd: connected to ground via a 90kOhm resistor,
- 		100kohm_to_gnd: connected to ground via an 100kOhm resistor,
- 		500kohm_to_gnd: connected to ground via a 500kOhm resistor,
- 		three_state: left floating.
-diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index a76f4cf..1b89625 100644
---- a/drivers/iio/dac/ad5064.c
-+++ b/drivers/iio/dac/ad5064.c
-@@ -1,8 +1,8 @@
- /*
-  * AD5024, AD5025, AD5044, AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R,
-  * AD5648, AD5666, AD5668, AD5669R, LTC2606, LTC2607, LTC2609, LTC2616,
-- * LTC2617, LTC2619, LTC2626, LTC2627, LTC2629
-- * Digital to analog converters driver
-+ * LTC2617, LTC2619, LTC2626, LTC2627, LTC2629 Digital to analog converters
-+ * driver
-  *
-  * Copyright 2011 Analog Devices Inc.
-  *
-@@ -52,10 +52,12 @@
- /**
-  * struct ad5064_chip_info - chip specific information
-  * @shared_vref:	whether the vref supply is shared between channels
-- * @internal_vref:	internal reference voltage. 0 if the chip has no internal
-- *			vref.
-+ * @internal_vref:	internal reference voltage. 0 if the chip has no
-+			internal vref.
-  * @channel:		channel specification
-  * @num_channels:	number of channels
-+ * @powerdown_ltc:	Use alternative power down addressing as required by
-+ *			ltc2617 and others.
-  */
- 
- struct ad5064_chip_info {
-@@ -63,6 +65,7 @@ struct ad5064_chip_info {
- 	unsigned long internal_vref;
- 	const struct iio_chan_spec *channels;
- 	unsigned int num_channels;
-+	bool powerdown_ltc;
- };
- 
- struct ad5064_state;
-@@ -147,15 +150,21 @@ static int ad5064_write(struct ad5064_state *st, unsigned int cmd,
- static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
- 	const struct iio_chan_spec *chan)
- {
--	unsigned int val;
-+	unsigned int val, address;
- 	int ret;
- 
--	val = (0x1 << chan->address);
-+	if (st->chip_info->powerdown_ltc) {
-+		val = 0;
-+		address = chan->address;
-+	} else {
-+		address = 0;
-+		val = (0x1 << chan->address);
- 
--	if (st->pwr_down[chan->channel])
--		val |= st->pwr_down_mode[chan->channel] << 8;
-+		if (st->pwr_down[chan->channel])
-+			val |= st->pwr_down_mode[chan->channel] << 8;
-+	}
- 
--	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, 0, val, 0);
-+	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, address, val, 0);
- 
- 	return ret;
- }
-@@ -166,6 +175,10 @@ static const char * const ad5064_powerdown_modes[] = {
- 	"three_state",
- };
- 
-+static const char * const ltc2617_powerdown_modes[] = {
-+	"90kohm_to_gnd",
-+};
+ .../devicetree/bindings/iio/accel/mma8452.txt       |  6 ++++++
+ drivers/iio/accel/mma8452.c                         | 21 +++++++++++++++------
+ 2 files changed, 21 insertions(+), 6 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+index e3c3746..3c10e85 100644
+--- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
++++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+@@ -7,13 +7,18 @@ Required properties:
+     * "fsl,mma8453"
+     * "fsl,mma8652"
+     * "fsl,mma8653"
 +
- static int ad5064_get_powerdown_mode(struct iio_dev *indio_dev,
- 	const struct iio_chan_spec *chan)
- {
-@@ -196,6 +209,13 @@ static const struct iio_enum ad5064_powerdown_mode_enum = {
- 	.set = ad5064_set_powerdown_mode,
- };
+   - reg: the I2C address of the chip
  
-+static const struct iio_enum ltc2617_powerdown_mode_enum = {
-+	.items = ltc2617_powerdown_modes,
-+	.num_items = ARRAY_SIZE(ltc2617_powerdown_modes),
-+	.get = ad5064_get_powerdown_mode,
-+	.set = ad5064_set_powerdown_mode,
-+};
+ Optional properties:
+ 
+   - interrupt-parent: should be the phandle for the interrupt controller
 +
- static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
- 	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
-@@ -306,7 +326,19 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
- 	{ },
- };
+   - interrupts: interrupt mapping for GPIO IRQ
  
--#define AD5064_CHANNEL(chan, addr, bits, _shift) {		\
-+static const struct iio_chan_spec_ext_info ltc2617_ext_info[] = {
-+	{
-+		.name = "powerdown",
-+		.read = ad5064_read_dac_powerdown,
-+		.write = ad5064_write_dac_powerdown,
-+		.shared = IIO_SEPARATE,
-+	},
-+	IIO_ENUM("powerdown_mode", IIO_SEPARATE, &ltc2617_powerdown_mode_enum),
-+	IIO_ENUM_AVAILABLE("powerdown_mode", &ltc2617_powerdown_mode_enum),
-+	{ },
-+};
++  - interrupt-names: should contain "INT1" and/or "INT2", the accelerometer's
++		     interrupt line in use.
 +
-+#define AD5064_CHANNEL(chan, addr, bits, _shift, _ext_info) {		\
- 	.type = IIO_VOLTAGE,					\
- 	.indexed = 1,						\
- 	.output = 1,						\
-@@ -320,38 +352,41 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
- 		.storagebits = 16,				\
- 		.shift = (_shift),				\
- 	},							\
--	.ext_info = ad5064_ext_info,				\
-+	.ext_info = (_ext_info),				\
- }
+ Example:
  
--#define DECLARE_AD5064_CHANNELS(name, bits, shift) \
-+#define DECLARE_AD5064_CHANNELS(name, bits, shift, ext_info) \
- const struct iio_chan_spec name[] = { \
--	AD5064_CHANNEL(0, 0, bits, shift), \
--	AD5064_CHANNEL(1, 1, bits, shift), \
--	AD5064_CHANNEL(2, 2, bits, shift), \
--	AD5064_CHANNEL(3, 3, bits, shift), \
--	AD5064_CHANNEL(4, 4, bits, shift), \
--	AD5064_CHANNEL(5, 5, bits, shift), \
--	AD5064_CHANNEL(6, 6, bits, shift), \
--	AD5064_CHANNEL(7, 7, bits, shift), \
-+	AD5064_CHANNEL(0, 0, bits, shift, ext_info), \
-+	AD5064_CHANNEL(1, 1, bits, shift, ext_info), \
-+	AD5064_CHANNEL(2, 2, bits, shift, ext_info), \
-+	AD5064_CHANNEL(3, 3, bits, shift, ext_info), \
-+	AD5064_CHANNEL(4, 4, bits, shift, ext_info), \
-+	AD5064_CHANNEL(5, 5, bits, shift, ext_info), \
-+	AD5064_CHANNEL(6, 6, bits, shift, ext_info), \
-+	AD5064_CHANNEL(7, 7, bits, shift, ext_info), \
- }
+ 	mma8453fc@1d {
+@@ -21,4 +26,5 @@ Example:
+ 		reg = <0x1d>;
+ 		interrupt-parent = <&gpio1>;
+ 		interrupts = <5 0>;
++		interrupt-names = "INT2";
+ 	};
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 1eccc2d..116a6e4 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -29,6 +29,7 @@
+ #include <linux/iio/events.h>
+ #include <linux/delay.h>
+ #include <linux/of_device.h>
++#include <linux/of_irq.h>
  
--#define DECLARE_AD5065_CHANNELS(name, bits, shift) \
-+#define DECLARE_AD5065_CHANNELS(name, bits, shift, ext_info) \
- const struct iio_chan_spec name[] = { \
--	AD5064_CHANNEL(0, 0, bits, shift), \
--	AD5064_CHANNEL(1, 3, bits, shift), \
-+	AD5064_CHANNEL(0, 0, bits, shift, ext_info), \
-+	AD5064_CHANNEL(1, 3, bits, shift, ext_info), \
- }
+ #define MMA8452_STATUS				0x00
+ #define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
+@@ -1130,13 +1131,21 @@ static int mma8452_probe(struct i2c_client *client,
+ 					   MMA8452_INT_FF_MT;
+ 		int enabled_interrupts = MMA8452_INT_TRANS |
+ 					 MMA8452_INT_FF_MT;
++		int irq2;
  
--static DECLARE_AD5064_CHANNELS(ad5024_channels, 12, 8);
--static DECLARE_AD5064_CHANNELS(ad5044_channels, 14, 6);
--static DECLARE_AD5064_CHANNELS(ad5064_channels, 16, 4);
-+static DECLARE_AD5064_CHANNELS(ad5024_channels, 12, 8, ad5064_ext_info);
-+static DECLARE_AD5064_CHANNELS(ad5044_channels, 14, 6, ad5064_ext_info);
-+static DECLARE_AD5064_CHANNELS(ad5064_channels, 16, 4, ad5064_ext_info);
+-		/* Assume wired to INT1 pin */
+-		ret = i2c_smbus_write_byte_data(client,
+-						MMA8452_CTRL_REG5,
+-						supported_interrupts);
+-		if (ret < 0)
+-			return ret;
++		irq2 = of_irq_get_byname(client->dev.of_node, "INT2");
 +
-+static DECLARE_AD5065_CHANNELS(ad5025_channels, 12, 8, ad5064_ext_info);
-+static DECLARE_AD5065_CHANNELS(ad5045_channels, 14, 6, ad5064_ext_info);
-+static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4, ad5064_ext_info);
++		if (irq2 == client->irq) {
++			dev_dbg(&client->dev, "using interrupt line INT2\n");
++		} else {
++			ret = i2c_smbus_write_byte_data(client,
++							MMA8452_CTRL_REG5,
++							supported_interrupts);
++			if (ret < 0)
++				return ret;
++
++			dev_dbg(&client->dev, "using interrupt line INT1\n");
++		}
  
--static DECLARE_AD5065_CHANNELS(ad5025_channels, 12, 8);
--static DECLARE_AD5065_CHANNELS(ad5045_channels, 14, 6);
--static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4);
-+static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4, ad5064_ext_info);
-+static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0, ad5064_ext_info);
- 
--static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4);
--static DECLARE_AD5064_CHANNELS(ltc2617_channels, 14, 2);
--static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0);
-+static DECLARE_AD5064_CHANNELS(ltc2607_channels, 16, 0, ltc2617_ext_info);
-+static DECLARE_AD5064_CHANNELS(ltc2617_channels, 14, 2, ltc2617_ext_info);
-+static DECLARE_AD5064_CHANNELS(ltc2627_channels, 12, 4, ltc2617_ext_info);
- 
- static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
- 	[ID_AD5024] = {
-@@ -464,56 +499,65 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
- 	[ID_LTC2606] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
--		.channels = ad5669_channels,
-+		.channels = ltc2607_channels,
- 		.num_channels = 1,
-+		.powerdown_ltc = true,
- 	},
- 	[ID_LTC2607] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
--		.channels = ad5669_channels,
-+		.channels = ltc2607_channels,
- 		.num_channels = 2,
-+		.powerdown_ltc = true,
- 	},
- 	[ID_LTC2609] = {
- 		.shared_vref = false,
- 		.internal_vref = 0,
--		.channels = ad5669_channels,
-+		.channels = ltc2607_channels,
- 		.num_channels = 4,
-+		.powerdown_ltc = true,
- 	},
- 	[ID_LTC2616] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
- 		.channels = ltc2617_channels,
- 		.num_channels = 1,
-+		.powerdown_ltc = true,
- 	},
- 	[ID_LTC2617] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
- 		.channels = ltc2617_channels,
- 		.num_channels = 2,
-+		.powerdown_ltc = true,
- 	},
- 	[ID_LTC2619] = {
- 		.shared_vref = false,
- 		.internal_vref = 0,
- 		.channels = ltc2617_channels,
- 		.num_channels = 4,
-+		.powerdown_ltc = true,
- 	},
- 	[ID_LTC2626] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
--		.channels = ad5629_channels,
-+		.channels = ltc2627_channels,
- 		.num_channels = 1,
-+		.powerdown_ltc = true,
- 	},
- 	[ID_LTC2627] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
--		.channels = ad5629_channels,
-+		.channels = ltc2627_channels,
- 		.num_channels = 2,
-+		.powerdown_ltc = true,
- 	},
- 	[ID_LTC2629] = {
- 		.shared_vref = false,
- 		.internal_vref = 0,
--		.channels = ad5629_channels,
-+		.channels = ltc2627_channels,
- 		.num_channels = 4,
-+		.powerdown_ltc = true,
- 	},
- };
- 
+ 		ret = i2c_smbus_write_byte_data(client,
+ 						MMA8452_CTRL_REG4,
 -- 
-1.9.1
+2.1.4
 
