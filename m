@@ -1,51 +1,83 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.18]:63571 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751209AbbJSTFY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 19 Oct 2015 15:05:24 -0400
-Subject: Re: [PATCH] adc: correctly check return value
-To: Insu Yun <wuninsu@gmail.com>, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: taesoo@gatech.edu, yeongjin.jang@gatech.edu, insu@gatech.edu,
-	changwoo@gatech.edu
-References: <1445270931-24109-1-git-send-email-wuninsu@gmail.com>
-From: Hartmut Knaack <knaack.h@gmx.de>
-Message-ID: <56253EE7.5050107@gmx.de>
-Date: Mon, 19 Oct 2015 21:05:11 +0200
+Return-Path: <manabian@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1445270931-24109-1-git-send-email-wuninsu@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1445281210-3936-1-git-send-email-manabian@gmail.com>
+References: <1445120719-29685-1-git-send-email-manabian@gmail.com>
+	<1445281210-3936-1-git-send-email-manabian@gmail.com>
+Date: Mon, 19 Oct 2015 23:07:26 +0200
+Message-ID: <CAGhQ9Vz6O-SK15U6vng1Zv=gKiY4mSu-RenyYrpQN67YEEP0sA@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: accel: add Freescale MMA7455L/MMA7456L 3-axis
+ accelerometer driver
+From: Joachim  Eastwood <manabian@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Joachim Eastwood <manabian@gmail.com>, martink@posteo.de, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Insu Yun schrieb am 19.10.2015 um 18:08:
-> Since devm_regulator_get returns address or error, not NULL,
-> it needs to be checked with IS_ERR, not IS_ERR_OR_NULL.
-> 
-
-Actually, it does return NULL, if regulator support is disabled
-(see [1]).
-
-[1]http://lxr.free-electrons.com/source/include/linux/regulator/consumer.h#L286
-
-> Signed-off-by: Insu Yun <wuninsu@gmail.com>
+On 19 October 2015 at 21:00, Joachim Eastwood <manabian@gmail.com> wrote:
+> Add support for Freescale MMA7455L/MMA7456L 3-axis in 10-bit mode for
+> I2C and SPI bus. This rather simple driver that currently doesn't
+> support all the hardware features of MMA7455L/MMA7456L.
+>
+> Tested on Embedded Artist's LPC4357 Dev Kit with MMA7455L on I2C bus.
+>
+> Data sheets for the two devices can be found here:
+> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7455L.pdf
+> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7456L.pdf
+>
+> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
 > ---
->  drivers/iio/adc/ad7266.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-> index 70f78c3..26cd54b 100644
-> --- a/drivers/iio/adc/ad7266.c
-> +++ b/drivers/iio/adc/ad7266.c
-> @@ -397,7 +397,7 @@ static int ad7266_probe(struct spi_device *spi)
->  	st = iio_priv(indio_dev);
->  
->  	st->reg = devm_regulator_get(&spi->dev, "vref");
-> -	if (!IS_ERR_OR_NULL(st->reg)) {
-> +	if (!IS_ERR(st->reg)) {
->  		ret = regulator_enable(st->reg);
->  		if (ret)
->  			return ret;
-> 
+> Hi,
+>
+> This version address the comments from Lars-Peter Clausen, Peter
+> Meerwald and Martin Kepplinger. Thanks for all the constructive
+> feedback!
+>
+> Changes since v1:
+> * limit retries to 3 in mma7455_drdy
+> * remove mma7455_show_scale_avail
+> * use chan->address instead of chan->scan_index for reg addr
+> * check that val2 is 0 when setting sample freq
+> * use __le16 to hint about endianess in mma7455_trigger_handler
+> * fix endianess in mma7455_read_raw function
+> * add mma7456 id
+> * split it into several source files to support both i2c and spi
+>
+> I compared the register summary for MMA7455L/MMA7456L and I am
+> unable to find any difference at all.
+>
+>  drivers/iio/accel/Kconfig        |  22 +++
+>  drivers/iio/accel/Makefile       |   5 +
+>  drivers/iio/accel/mma7455.h      |  20 +++
+>  drivers/iio/accel/mma7455_core.c | 321 +++++++++++++++++++++++++++++++++++++++
+>  drivers/iio/accel/mma7455_i2c.c  |  57 +++++++
+>  drivers/iio/accel/mma7455_spi.c  |  53 +++++++
+>  6 files changed, 478 insertions(+)
+>  create mode 100644 drivers/iio/accel/mma7455.h
+>  create mode 100644 drivers/iio/accel/mma7455_core.c
+>  create mode 100644 drivers/iio/accel/mma7455_i2c.c
+>  create mode 100644 drivers/iio/accel/mma7455_spi.c
 
+> +static const struct i2c_device_id mma7455_i2c_ids[] = {
+> +       { "mma7455", 0 },
+> +       { "mma7456", 0 },
+> +       { }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, mma7455_i2c_id);
+
+> +static const struct spi_device_id mma7455_spi_ids[] = {
+> +       { "mma7455", 0 },
+> +       { "mma7456", 0 },
+> +       { }
+> +};
+> +MODULE_DEVICE_TABLE(spi, mma7455_spi_id);
+
+Seems like I forgot to do a modular and the kbuild bot caught me.
+Renamed to *_ids, but forgot to update variable in MODULE_DEVICE_TABLE macro...
+
+I'll send out a new version after people have had a chance to comment
+on any other issues.
+
+
+regards,
+Joachim Eastwood
