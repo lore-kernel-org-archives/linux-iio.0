@@ -1,529 +1,309 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:55429 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([84.19.176.92]:55815 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750904AbbJSLA7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 19 Oct 2015 07:00:59 -0400
-Date: Mon, 19 Oct 2015 13:00:56 +0200 (CEST)
+	id S1750784AbbJSLIv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 19 Oct 2015 07:08:51 -0400
+Date: Mon, 19 Oct 2015 13:08:50 +0200 (CEST)
 From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Joachim Eastwood <manabian@gmail.com>
+To: Teodora Baluta <teodora.baluta@intel.com>
 cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: add Freescale MMA7455L 3-axis accelerometer
- driver
-In-Reply-To: <1445120719-29685-1-git-send-email-manabian@gmail.com>
-Message-ID: <alpine.DEB.2.02.1510191249580.9654@pmeerw.net>
-References: <1445120719-29685-1-git-send-email-manabian@gmail.com>
+	daniel.baluta@intel.com, dan.carpenter@oracle.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: add support for Memsic MXC6255XC sensor
+In-Reply-To: <1444991368-14609-1-git-send-email-teodora.baluta@intel.com>
+Message-ID: <alpine.DEB.2.02.1510191301560.9654@pmeerw.net>
+References: <1444991368-14609-1-git-send-email-teodora.baluta@intel.com>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Fri, 16 Oct 2015, Teodora Baluta wrote:
 
-> Add support for Freescale MMA7455L 3-axis in 10-bit mode with both
-> I2C and SPI bus support. This is a rather simple driver that
-> currently doesn't support all the hardware features of MMA7455L.
+> This patch adds a minimal implementation for the Memsic MXC6255XC
+> orientation sensing accelerometer. The supported operations are reading
+> raw acceleration values for X/Y axis that can be scaled using the
+> exposed scale.
 
-please add a link to the datasheet
-
-comments below
+minor comments below
+link to datasheet?
  
-> Tested on Embedded Artists' LPC4357 Dev Kit using I2C bus.
-> 
-> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
+> Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
 > ---
-> 
->  drivers/iio/accel/Kconfig   |  14 ++
+>  drivers/iio/accel/Kconfig   |  11 +++
 >  drivers/iio/accel/Makefile  |   1 +
->  drivers/iio/accel/mma7455.c | 424 ++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 439 insertions(+)
->  create mode 100644 drivers/iio/accel/mma7455.c
+>  drivers/iio/accel/mxc6255.c | 210 ++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 222 insertions(+)
+>  create mode 100644 drivers/iio/accel/mxc6255.c
 > 
 > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index a59047d7657e..8ccb3de85484 100644
+> index 969428d..75ac087 100644
 > --- a/drivers/iio/accel/Kconfig
 > +++ b/drivers/iio/accel/Kconfig
-> @@ -99,6 +99,20 @@ config KXCJK1013
->  	  To compile this driver as a module, choose M here: the module will
->  	  be called kxcjk-1013.
+> @@ -158,6 +158,17 @@ config MXC4005
+>  	  To compile this driver as a module, choose M. The module will be
+>  	  called mxc4005.
 >  
-> +config MMA7455
-> +	tristate "Freescale MMA7455L Accelerometer Driver"
-> +	depends on I2C || SPI_MASTER
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	select REGMAP_I2C if I2C
-> +	select REGMAP_SPI if SPI_MASTER
+> +config MXC6255
+> +	tristate "Memsic MXC6255 Orientation Sensing Accelerometer Driver"
+> +	depends on I2C
+> +	select REGMAP_I2C
 > +	help
-> +	  Say yes here to build support for the Freescale MMA7455L 3-axis
-> +	  accelerometer.
+> +	  Say yes here to build support for the Memsic MXC6255 Orientation
+> +	  Sensing Accelerometer Driver.
 > +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called mma7455.
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called mxc6255.
 > +
->  config MMA8452
->  	tristate "Freescale MMA8452Q Accelerometer Driver"
+>  config STK8312
+>  	tristate "Sensortek STK8312 3-Axis Accelerometer Driver"
 >  	depends on I2C
 > diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index ebd2675b2a02..6ac9382761f8 100644
+> index 7925f16..525ed52 100644
 > --- a/drivers/iio/accel/Makefile
 > +++ b/drivers/iio/accel/Makefile
-> @@ -8,6 +8,7 @@ obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel.o
->  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> +obj-$(CONFIG_MMA7455)	+= mma7455.o
->  obj-$(CONFIG_MMA8452)	+= mma8452.o
+> @@ -17,6 +17,7 @@ obj-$(CONFIG_MMA9551)		+= mma9551.o
+>  obj-$(CONFIG_MMA9553)		+= mma9553.o
 >  
->  obj-$(CONFIG_MMA9551_CORE)	+= mma9551_core.o
-> diff --git a/drivers/iio/accel/mma7455.c b/drivers/iio/accel/mma7455.c
+>  obj-$(CONFIG_MXC4005)		+= mxc4005.o
+> +obj-$(CONFIG_MXC6255)		+= mxc6255.o
+>  
+>  obj-$(CONFIG_STK8312)		+= stk8312.o
+>  obj-$(CONFIG_STK8BA50)		+= stk8ba50.o
+> diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
 > new file mode 100644
-> index 000000000000..fa62f2bcb54a
+> index 0000000..ed0f1ab
 > --- /dev/null
-> +++ b/drivers/iio/accel/mma7455.c
-> @@ -0,0 +1,424 @@
+> +++ b/drivers/iio/accel/mxc6255.c
+> @@ -0,0 +1,210 @@
 > +/*
-> + * mma7455.c - Support for Freescale MMA7455L 3-axis 10-bit accelerometer
-> + * Copyright 2015 Joachim Eastwood <manabian@gmail.com>
+> + * MXC6255 - MEMSIC orientation sensing accelerometer
 > + *
-> + * Based on MMA8452Q IIO driver
-> + * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
+> + * Copyright (c) 2015, Intel Corporation.
 > + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
 > + *
-> + * UNSUPPORTED hardware features:
-> + *  - 8-bit mode with different scales
-> + *  - INT1/INT2 interrupts
-> + *  - Offset calibration
-> + *  - Events
+> + * IIO driver for MXC6255 (7-bit I2C slave address 0x15).
+> + *
 > + */
 > +
-> +#include <linux/delay.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
 > +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/init.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/delay.h>
+> +#include <linux/acpi.h>
 > +#include <linux/regmap.h>
-> +#include <linux/spi/spi.h>
+> +#include <linux/iio/sysfs.h>
 > +
-> +#define MMA7455_REG_XOUTL		0x00
-> +#define MMA7455_REG_XOUTH		0x01
-> +#define MMA7455_REG_YOUTL		0x02
-> +#define MMA7455_REG_YOUTH		0x03
-> +#define MMA7455_REG_ZOUTL		0x04
-> +#define MMA7455_REG_ZOUTH		0x05
-> +#define MMA7455_REG_STATUS		0x09
-> +#define  MMA7455_STATUS_DRDY		BIT(0)
-
-whitespace inconsistencies
-
-> +#define MMA7455_REG_WHOAMI		0x0f
-> +#define  MMA7455_WHOAMI_ID		0x55
-> +#define MMA7455_REG_MCTL		0x16
-> +#define  MMA7455_MCTL_MODE_STANDBY	0x00
-> +#define  MMA7455_MCTL_MODE_MEASURE	0x01
-> +#define MMA7455_REG_CTL1		0x18
-> +#define  MMA7455_CTL1_DFBW_MASK		BIT(7)
-> +#define  MMA7455_CTL1_DFBW_125HZ	BIT(7)
-> +#define  MMA7455_CTL1_DFBW_62_5HZ	0
-> +#define MMA7455_REG_TW			0x1e
+> +#define MXC6255_DRV_NAME		"mxc6255"
+> +#define MXC6255_REGMAP_NAME		"mxc6255_regmap"
+> +
+> +#define MXC6255_REG_XOUT		0x00
+> +#define MXC6255_REG_YOUT		0x01
+> +#define MXC6255_REG_CHIP_ID		0x08
+> +
+> +#define MXC6255_AXIS_TO_REG(axis)	(MXC6255_REG_XOUT + axis)
 > +
 > +/*
-> + * When MMA7455 is used in 10-bit it has a fullscale of -8g
-> + * corresponding to raw value -512. The userspace interface
-> + * uses m/s^2 and we declare micro units.
-> + * So scale factor is given by:
-> + *       g * 8 * 1e6 / 512 = 153228.90625, with g = 9.80665
+> + * MXC6255 has only one measurement range: +/- 2G.
+> + * The acceleration output is an 8-bit value.
+
+is a
+
+> + *
+> + * Scale is calculated as following:
+
+as follows
+
+> + * (2 + 2) * 9.80665 / (2^8 - 1) = 0.153829
+> + *
 > + */
-> +#define MMA7455_10BIT_SCALE	153229
+> +#define MXC6255_SCALE_AVAIL		"0.153829"
 > +
-> +struct mma7455_data {
-> +	struct regmap *regmap;
-> +	struct device *dev;
+> +enum mxc6255_axis {
+> +	AXIS_X,
+> +	AXIS_Y,
 > +};
 > +
-> +static int mma7455_drdy(struct mma7455_data *mma7455)
-> +{
-> +	unsigned int reg;
-> +	int tries = 10;
-> +	int ret;
+> +struct mxc6255_data {
+> +	struct i2c_client *client;
+> +	struct regmap *regmap;
+> +};
 > +
-> +	while (tries-- > 0) {
-> +		ret = regmap_read(mma7455->regmap, MMA7455_REG_STATUS, &reg);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (reg & MMA7455_STATUS_DRDY)
-> +			return 0;
-> +
-> +		msleep(20);
-> +	}
-> +
-> +	dev_warn(mma7455->dev, "data not ready\n");
-> +
-> +	return -EIO;
-> +}
-> +
-> +static irqreturn_t mma7455_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct mma7455_data *mma7455 = iio_priv(indio_dev);
-> +	u8 buf[16]; /* 3 x 16-bit channels + padding + ts */
-> +	int ret;
-> +
-> +	ret = mma7455_drdy(mma7455);
-> +	if (ret)
-> +		goto done;
-> +
-> +	ret = regmap_bulk_read(mma7455->regmap, MMA7455_REG_XOUTL, buf,
-> +			       sizeof(s16) * 3);
+> +/* scale value for +/- 2G measurement range */
+> +static const int mxc6255_scale = 153829;
 
-use le16 to hint which endianness the device registers have
+it is customary to use a #define
 
-> +	if (ret)
-> +		goto done;
 > +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+> +static IIO_CONST_ATTR(in_accel_scale_available, MXC6255_SCALE_AVAIL);
 > +
-> +done:
-> +	iio_trigger_notify_done(indio_dev->trig);
+> +static struct attribute *mxc6255_attributes[] = {
+> +	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
+> +	NULL,
+> +};
 > +
-> +	return IRQ_HANDLED;
-> +}
+> +static const struct attribute_group mxc6255_attribute_group = {
+> +	.attrs = mxc6255_attributes
+> +};
 > +
-> +static int mma7455_read_raw(struct iio_dev *indio_dev,
+> +static int mxc6255_read_raw(struct iio_dev *indio_dev,
 > +			    struct iio_chan_spec const *chan,
 > +			    int *val, int *val2, long mask)
 > +{
-> +	struct mma7455_data *mma7455 = iio_priv(indio_dev);
-> +	unsigned int reg = 0;
-
-initialization not needed
-
+> +	struct mxc6255_data *data = iio_priv(indio_dev);
+> +	unsigned int reg;
+> +	int axis = chan->channel2 - 1;
 > +	int ret;
 > +
 > +	switch (mask) {
 > +	case IIO_CHAN_INFO_RAW:
-> +		if (iio_buffer_enabled(indio_dev))
-> +			return -EBUSY;
-> +
-> +		ret = mma7455_drdy(mma7455);
-> +		if (ret)
+> +		ret = regmap_read(data->regmap,
+> +				  MXC6255_AXIS_TO_REG(axis), &reg);
+
+use chan->address, and drop the _AXIS_TO_REG macro and axis variable
+
+> +		if (ret < 0) {
+> +			dev_err(&data->client->dev,
+> +				"Error reading axis %d\n", axis);
 > +			return ret;
+> +		}
 > +
-> +		ret = regmap_bulk_read(mma7455->regmap, chan->scan_index * 2,
-
-it would be clearer to use chan->address instead of computing the register
-
-instead of s16 I suggest to use le16
-
-using regmap_bulk_read(), there is no endianness conversion; the driver 
-will only work when chip endianness equals CPU endianness 
-
-> +				       &reg, sizeof(s16));
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = sign_extend32(reg, 9);
-> +
+> +		*val = sign_extend32(reg, 7);
 > +		return IIO_VAL_INT;
-> +
 > +	case IIO_CHAN_INFO_SCALE:
 > +		*val = 0;
-> +		*val2 = MMA7455_10BIT_SCALE;
-> +
+> +		*val2 = mxc6255_scale;
 > +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = regmap_read(mma7455->regmap, MMA7455_REG_CTL1, &reg);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (reg & MMA7455_CTL1_DFBW_MASK)
-> +			*val = 250;
-> +		else
-> +			*val = 125;
-> +
-> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
 > +	}
-> +
-> +	return -EINVAL;
 > +}
 > +
-> +static int mma7455_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
+> +static const struct iio_info mxc6255_info = {
+> +	.driver_module	= THIS_MODULE,
+> +	.read_raw	= mxc6255_read_raw,
+> +	.attrs		= &mxc6255_attribute_group,
+> +};
+> +
+> +#define MXC6255_CHANNEL(_axis) {				\
+> +	.type = IIO_ACCEL,					\
+> +	.modified = 1,						\
+> +	.channel2 = IIO_MOD_##_axis,				\
+> +	.address = AXIS_##_axis,				\
+
+put MXC6255_REG_XOUT / MXC6255_REG_YOUT here, add parameter to _CHANNEL 
+macro
+
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +}
+> +
+> +static const struct iio_chan_spec mxc6255_channels[] = {
+> +	MXC6255_CHANNEL(X),
+> +	MXC6255_CHANNEL(Y),
+> +};
+> +
+> +static bool mxc6255_is_readable_reg(struct device *dev, unsigned int reg)
 > +{
-> +	struct mma7455_data *mma7455 = iio_priv(indio_dev);
-> +	int i;
-> +
-> +	if (iio_buffer_enabled(indio_dev))
-> +		return -EBUSY;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-
-check val2 == 0
-
-> +		if (val == 250)
-> +			i = MMA7455_CTL1_DFBW_125HZ;
-> +		else if (val == 125)
-> +			i = MMA7455_CTL1_DFBW_62_5HZ;
-> +		else
-> +			return -EINVAL;
-> +
-> +		return regmap_update_bits(mma7455->regmap, MMA7455_REG_CTL1,
-> +					  MMA7455_CTL1_DFBW_MASK, i);
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* In 10-bit mode there is only one scale available */
-> +		if (val == 0 && val2 == MMA7455_10BIT_SCALE)
-> +			return 0;
-> +		break;
+> +	switch (reg) {
+> +	case MXC6255_REG_XOUT:
+> +	case MXC6255_REG_YOUT:
+> +	case MXC6255_REG_CHIP_ID:
+> +		return true;
+> +	default:
+> +		return false;
 > +	}
-> +
-> +	return -EINVAL;
 > +}
 > +
-> +static ssize_t mma7455_show_samp_freq_avail(struct device *dev,
-> +					    struct device_attribute *attr,
-> +					    char *buf)
+> +static const struct regmap_config mxc6255_regmap_config = {
+> +	.name = MXC6255_REGMAP_NAME,
+> +
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +
+> +	.readable_reg = mxc6255_is_readable_reg,
+> +};
+> +
+> +static int mxc6255_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
 > +{
-> +	return scnprintf(buf, PAGE_SIZE, "125 250\n");
-> +}
-> +
-> +static ssize_t mma7455_show_scale_avail(struct device *dev,
-> +					struct device_attribute *attr,
-> +					char *buf)
-> +{
-> +	return scnprintf(buf, PAGE_SIZE, "0.%u\n", MMA7455_10BIT_SCALE);
-> +}
-> +
-> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma7455_show_samp_freq_avail);
-> +static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
-> +		       mma7455_show_scale_avail, NULL, 0);
-> +
-> +static struct attribute *mma7455_attributes[] = {
-> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-> +	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group mma7455_group = {
-> +	.attrs = mma7455_attributes,
-> +};
-> +
-> +static const struct iio_info mma7455_info = {
-> +	.attrs = &mma7455_group,
-> +	.read_raw = mma7455_read_raw,
-> +	.write_raw = mma7455_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +#define MMA7455_CHANNEL(axis, idx) { \
-> +	.type = IIO_ACCEL, \
-> +	.modified = 1, \
-> +	.channel2 = IIO_MOD_##axis, \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
-> +				    BIT(IIO_CHAN_INFO_SCALE), \
-> +	.scan_index = idx, \
-> +	.scan_type = { \
-> +		.sign = 's', \
-> +		.realbits = 10, \
-> +		.storagebits = 16, \
-> +		.shift = 0, \
-> +		.endianness = IIO_LE, \
-> +	}, \
-> +}
-> +
-> +static const struct iio_chan_spec mma7455_channels[] = {
-> +	MMA7455_CHANNEL(X, 0),
-> +	MMA7455_CHANNEL(Y, 1),
-> +	MMA7455_CHANNEL(Z, 2),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> +};
-> +
-> +static const unsigned long mma7455_scan_masks[] = {0x7, 0};
-> +
-> +static int mma7455_probe(struct device *dev, struct regmap *regmap)
-> +{
-> +	struct mma7455_data *mma7455;
+> +	struct mxc6255_data *data;
 > +	struct iio_dev *indio_dev;
-> +	unsigned int reg;
+> +	struct regmap *regmap;
+> +	unsigned int chip_id;
 > +	int ret;
 > +
-> +	ret = regmap_read(regmap, MMA7455_REG_WHOAMI, &reg);
-> +	if (ret) {
-> +		dev_err(dev, "unable to read reg\n");
-> +		return ret;
-> +	}
-> +
-> +	if (reg != MMA7455_WHOAMI_ID) {
-> +		dev_err(dev, "device id mismatch\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*mma7455));
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	dev_set_drvdata(dev, indio_dev);
-> +	mma7455 = iio_priv(indio_dev);
-> +	mma7455->regmap = regmap;
-> +	mma7455->dev = dev;
+> +	regmap = devm_regmap_init_i2c(client, &mxc6255_regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&client->dev, "Error initializing regmap\n");
+> +		return PTR_ERR(regmap);
+> +	}
 > +
-> +	indio_dev->info = &mma7455_info;
-> +	indio_dev->name = "mma7455l";
-> +	indio_dev->dev.parent = dev;
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +	data->regmap = regmap;
+> +
+> +	indio_dev->name = MXC6255_DRV_NAME;
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->channels = mxc6255_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(mxc6255_channels);
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mma7455_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mma7455_channels);
-> +	indio_dev->available_scan_masks = mma7455_scan_masks;
+> +	indio_dev->info = &mxc6255_info;
 > +
-> +	regmap_write(mma7455->regmap, MMA7455_REG_MCTL,
-> +		     MMA7455_MCTL_MODE_MEASURE);
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 mma7455_trigger_handler, NULL);
-> +	if (ret) {
-> +		dev_err(dev, "unable to setup triggered buffer\n");
+> +	ret = regmap_read(data->regmap, MXC6255_REG_CHIP_ID, &chip_id);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "Error reading chip id %d\n", ret);
 > +		return ret;
 > +	}
 > +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(dev, "unable to register device\n");
-> +		iio_triggered_buffer_cleanup(indio_dev);
+> +	dev_dbg(&client->dev, "Chip id %x\n", chip_id);
+
+maybe check chip id?
+
+> +
+> +	ret = devm_iio_device_register(&client->dev, indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "Could not register IIO device\n");
 > +		return ret;
 > +	}
 > +
 > +	return 0;
 > +}
 > +
-> +static int mma7455_remove(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct mma7455_data *mma7455 = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +
-> +	regmap_write(mma7455->regmap, MMA7455_REG_MCTL,
-> +		     MMA7455_MCTL_MODE_STANDBY);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct regmap_config mma7455_regmap = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.max_register = MMA7455_REG_TW,
-> +};
-> +
-> +#if IS_ENABLED(CONFIG_SPI_MASTER)
-> +static int mma7455_spi_probe(struct spi_device *spi)
-> +{
-> +	struct regmap *regmap;
-> +
-> +	regmap = devm_regmap_init_spi(spi, &mma7455_regmap);
-> +	if (IS_ERR(regmap))
-> +		return PTR_ERR(regmap);
-> +
-> +	return mma7455_probe(&spi->dev, regmap);
-> +}
-> +
-> +static int mma7455_spi_remove(struct spi_device *spi)
-> +{
-> +	return mma7455_remove(&spi->dev);
-> +}
-> +
-> +static const struct spi_device_id mma7455_spi_id[] = {
-> +	{ "mma7455", 0 },
+> +static const struct acpi_device_id mxc6255_acpi_match[] = {
+> +	{"MXC6255",	0},
 > +	{ }
 > +};
-> +MODULE_DEVICE_TABLE(spi, mma7455_spi_id);
+> +MODULE_DEVICE_TABLE(acpi, mxc6255_acpi_match);
 > +
-> +static struct spi_driver mma7455_spi_driver = {
-> +	.probe = mma7455_spi_probe,
-> +	.remove = mma7455_spi_remove,
-> +	.id_table = mma7455_spi_id,
-> +	.driver = {
-> +		.name = "mma7455-spi",
-> +	},
-> +};
-> +#endif
-> +
-> +#if IS_ENABLED(CONFIG_I2C)
-> +static int mma7455_i2c_probe(struct i2c_client *i2c,
-> +			     const struct i2c_device_id *id)
-> +{
-> +	struct regmap *regmap;
-> +
-> +	regmap = devm_regmap_init_i2c(i2c, &mma7455_regmap);
-> +	if (IS_ERR(regmap))
-> +		return PTR_ERR(regmap);
-> +
-> +	return mma7455_probe(&i2c->dev, regmap);
-> +}
-> +
-> +static int mma7455_i2c_remove(struct i2c_client *i2c)
-> +{
-> +	return mma7455_remove(&i2c->dev);
-> +}
-> +
-> +static const struct i2c_device_id mma7455_i2c_id[] = {
-> +	{ "mma7455", 0 },
+> +static const struct i2c_device_id mxc6255_id[] = {
+> +	{"mxc6255",	0},
 > +	{ }
 > +};
-> +MODULE_DEVICE_TABLE(i2c, mma7455_i2c_id);
+> +MODULE_DEVICE_TABLE(i2c, mxc6255_id);
 > +
-> +static struct i2c_driver mma7455_i2c_driver = {
-> +	.probe = mma7455_i2c_probe,
-> +	.remove = mma7455_i2c_remove,
-> +	.id_table = mma7455_i2c_id,
+> +static struct i2c_driver mxc6255_driver = {
 > +	.driver = {
-> +		.name	= "mma7455-i2c",
+> +		.name = MXC6255_DRV_NAME,
+> +		.acpi_match_table = ACPI_PTR(mxc6255_acpi_match),
 > +	},
+> +	.probe		= mxc6255_probe,
+> +	.id_table	= mxc6255_id,
 > +};
-> +#endif
 > +
-> +static int __init mma7455_modinit(void)
-> +{
-> +	int ret;
-> +#if IS_ENABLED(CONFIG_I2C)
-> +	ret = i2c_add_driver(&mma7455_i2c_driver);
-> +	if (ret)
-> +		pr_err("failed to register MMA7455L I2C driver: %d\n", ret);
-> +#endif
-> +#if IS_ENABLED(CONFIG_SPI_MASTER)
-> +	ret = spi_register_driver(&mma7455_spi_driver);
-> +	if (ret)
-> +		pr_err("failed to register MMA7455L SPI driver: %d\n", ret);
-> +#endif
-> +	return ret;
-> +}
-> +module_init(mma7455_modinit);
+> +module_i2c_driver(mxc6255_driver);
 > +
-> +static void __exit mma7455_exit(void)
-> +{
-> +#if IS_ENABLED(CONFIG_I2C)
-> +	i2c_del_driver(&mma7455_i2c_driver);
-> +#endif
-> +#if IS_ENABLED(CONFIG_SPI_MASTER)
-> +	spi_unregister_driver(&mma7455_spi_driver);
-> +#endif
-> +}
-> +module_exit(mma7455_exit);
-> +
-> +MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
-> +MODULE_DESCRIPTION("Freescale MMA7455L I2C/SPI accelerometer driver");
+> +MODULE_AUTHOR("Teodora Baluta <teodora.baluta@intel.com>");
+> +MODULE_DESCRIPTION("MEMSIC MXC6255 orientation sensing accelerometer driver");
 > +MODULE_LICENSE("GPL v2");
 > 
 
