@@ -1,41 +1,590 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yk0-f180.google.com ([209.85.160.180]:33677 "EHLO
-	mail-yk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751358AbbJSQHd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 19 Oct 2015 12:07:33 -0400
-From: Insu Yun <wuninsu@gmail.com>
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: taesoo@gatech.edu, yeongjin.jang@gatech.edu, insu@gatech.edu,
-	changwoo@gatech.edu, Insu Yun <wuninsu@gmail.com>
-Subject: [PATCH] adc: correctly check return value
-Date: Mon, 19 Oct 2015 16:08:51 +0000
-Message-Id: <1445270931-24109-1-git-send-email-wuninsu@gmail.com>
+Received: from mail-lb0-f170.google.com ([209.85.217.170]:34474 "EHLO
+	mail-lb0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751209AbbJSTA1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 19 Oct 2015 15:00:27 -0400
+Received: by lbbwb3 with SMTP id wb3so91322096lbb.1
+        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2015 12:00:26 -0700 (PDT)
+From: Joachim Eastwood <manabian@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: Joachim Eastwood <manabian@gmail.com>, martink@posteo.de,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2] iio: accel: add Freescale MMA7455L/MMA7456L 3-axis accelerometer driver
+Date: Mon, 19 Oct 2015 21:00:10 +0200
+Message-Id: <1445281210-3936-1-git-send-email-manabian@gmail.com>
+In-Reply-To: <1445120719-29685-1-git-send-email-manabian@gmail.com>
+References: <1445120719-29685-1-git-send-email-manabian@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Since devm_regulator_get returns address or error, not NULL,
-it needs to be checked with IS_ERR, not IS_ERR_OR_NULL.
+Add support for Freescale MMA7455L/MMA7456L 3-axis in 10-bit mode for
+I2C and SPI bus. This rather simple driver that currently doesn't
+support all the hardware features of MMA7455L/MMA7456L.
 
-Signed-off-by: Insu Yun <wuninsu@gmail.com>
+Tested on Embedded Artist's LPC4357 Dev Kit with MMA7455L on I2C bus.
+
+Data sheets for the two devices can be found here:
+http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7455L.pdf
+http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7456L.pdf
+
+Signed-off-by: Joachim Eastwood <manabian@gmail.com>
 ---
- drivers/iio/adc/ad7266.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi,
 
-diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-index 70f78c3..26cd54b 100644
---- a/drivers/iio/adc/ad7266.c
-+++ b/drivers/iio/adc/ad7266.c
-@@ -397,7 +397,7 @@ static int ad7266_probe(struct spi_device *spi)
- 	st = iio_priv(indio_dev);
+This version address the comments from Lars-Peter Clausen, Peter
+Meerwald and Martin Kepplinger. Thanks for all the constructive
+feedback!
+
+Changes since v1:
+* limit retries to 3 in mma7455_drdy
+* remove mma7455_show_scale_avail
+* use chan->address instead of chan->scan_index for reg addr
+* check that val2 is 0 when setting sample freq
+* use __le16 to hint about endianess in mma7455_trigger_handler
+* fix endianess in mma7455_read_raw function
+* add mma7456 id
+* split it into several source files to support both i2c and spi
+
+I compared the register summary for MMA7455L/MMA7456L and I am
+unable to find any difference at all.
+
+ drivers/iio/accel/Kconfig        |  22 +++
+ drivers/iio/accel/Makefile       |   5 +
+ drivers/iio/accel/mma7455.h      |  20 +++
+ drivers/iio/accel/mma7455_core.c | 321 +++++++++++++++++++++++++++++++++++++++
+ drivers/iio/accel/mma7455_i2c.c  |  57 +++++++
+ drivers/iio/accel/mma7455_spi.c  |  53 +++++++
+ 6 files changed, 478 insertions(+)
+ create mode 100644 drivers/iio/accel/mma7455.h
+ create mode 100644 drivers/iio/accel/mma7455_core.c
+ create mode 100644 drivers/iio/accel/mma7455_i2c.c
+ create mode 100644 drivers/iio/accel/mma7455_spi.c
+
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index a59047d7657e..3c87a4ae317a 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -99,6 +99,28 @@ config KXCJK1013
+ 	  To compile this driver as a module, choose M here: the module will
+ 	  be called kxcjk-1013.
  
- 	st->reg = devm_regulator_get(&spi->dev, "vref");
--	if (!IS_ERR_OR_NULL(st->reg)) {
-+	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
- 			return ret;
++config MMA7455
++	tristate "Freescale MMA7455L/MMA7456L Accelerometer Driver"
++	depends on I2C || SPI_MASTER
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	select MMA7455_I2C if I2C
++	select MMA7455_SPI if SPI
++	help
++	  Say yes here to build support for the Freescale MMA7455L and
++	  MMA7456L 3-axis accelerometer.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called mma7455_i2c or mma7455_spi.
++
++config MMA7455_I2C
++	tristate
++	select REGMAP_I2C
++
++config MMA7455_SPI
++	tristate
++	select REGMAP_SPI
++
+ config MMA8452
+ 	tristate "Freescale MMA8452Q Accelerometer Driver"
+ 	depends on I2C
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index ebd2675b2a02..dfb9289393fb 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -8,6 +8,11 @@ obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel.o
+ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+ obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+ obj-$(CONFIG_KXSD9)	+= kxsd9.o
++
++obj-$(CONFIG_MMA7455)		+= mma7455_core.o
++obj-$(CONFIG_MMA7455_I2C)	+= mma7455_i2c.o
++obj-$(CONFIG_MMA7455_SPI)	+= mma7455_spi.o
++
+ obj-$(CONFIG_MMA8452)	+= mma8452.o
+ 
+ obj-$(CONFIG_MMA9551_CORE)	+= mma9551_core.o
+diff --git a/drivers/iio/accel/mma7455.h b/drivers/iio/accel/mma7455.h
+new file mode 100644
+index 000000000000..8fae9345da88
+--- /dev/null
++++ b/drivers/iio/accel/mma7455.h
+@@ -0,0 +1,20 @@
++/*
++ * IIO accel header for Freescale MMA7455L 3-axis 10-bit accelerometer
++ * Copyright 2015 Joachim Eastwood <manabian@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++
++#ifndef __MMA7455_H
++#define __MMA7455_H
++
++extern const struct regmap_config mma7455_core_regmap;
++
++int mma7455_core_probe(struct device *dev, struct regmap *regmap,
++		       const char *name);
++int mma7455_core_remove(struct device *dev);
++
++#endif
+diff --git a/drivers/iio/accel/mma7455_core.c b/drivers/iio/accel/mma7455_core.c
+new file mode 100644
+index 000000000000..dbe5db9a8322
+--- /dev/null
++++ b/drivers/iio/accel/mma7455_core.c
+@@ -0,0 +1,321 @@
++/*
++ * IIO accel core driver for Freescale MMA7455L 3-axis 10-bit accelerometer
++ * Copyright 2015 Joachim Eastwood <manabian@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * UNSUPPORTED hardware features:
++ *  - 8-bit mode with different scales
++ *  - INT1/INT2 interrupts
++ *  - Offset calibration
++ *  - Events
++ */
++
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++
++#include "mma7455.h"
++
++#define MMA7455_REG_XOUTL		0x00
++#define MMA7455_REG_XOUTH		0x01
++#define MMA7455_REG_YOUTL		0x02
++#define MMA7455_REG_YOUTH		0x03
++#define MMA7455_REG_ZOUTL		0x04
++#define MMA7455_REG_ZOUTH		0x05
++#define MMA7455_REG_STATUS		0x09
++#define  MMA7455_STATUS_DRDY		BIT(0)
++#define MMA7455_REG_WHOAMI		0x0f
++#define  MMA7455_WHOAMI_ID		0x55
++#define MMA7455_REG_MCTL		0x16
++#define  MMA7455_MCTL_MODE_STANDBY	0x00
++#define  MMA7455_MCTL_MODE_MEASURE	0x01
++#define MMA7455_REG_CTL1		0x18
++#define  MMA7455_CTL1_DFBW_MASK		BIT(7)
++#define  MMA7455_CTL1_DFBW_125HZ	BIT(7)
++#define  MMA7455_CTL1_DFBW_62_5HZ	0
++#define MMA7455_REG_TW			0x1e
++
++/*
++ * When MMA7455 is used in 10-bit it has a fullscale of -8g
++ * corresponding to raw value -512. The userspace interface
++ * uses m/s^2 and we declare micro units.
++ * So scale factor is given by:
++ *       g * 8 * 1e6 / 512 = 153228.90625, with g = 9.80665
++ */
++#define MMA7455_10BIT_SCALE	153229
++
++struct mma7455_data {
++	struct regmap *regmap;
++	struct device *dev;
++};
++
++static int mma7455_drdy(struct mma7455_data *mma7455)
++{
++	unsigned int reg;
++	int tries = 3;
++	int ret;
++
++	while (tries-- > 0) {
++		ret = regmap_read(mma7455->regmap, MMA7455_REG_STATUS, &reg);
++		if (ret)
++			return ret;
++
++		if (reg & MMA7455_STATUS_DRDY)
++			return 0;
++
++		msleep(20);
++	}
++
++	dev_warn(mma7455->dev, "data not ready\n");
++
++	return -EIO;
++}
++
++static irqreturn_t mma7455_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct mma7455_data *mma7455 = iio_priv(indio_dev);
++	u8 buf[16]; /* 3 x 16-bit channels + padding + ts */
++	int ret;
++
++	ret = mma7455_drdy(mma7455);
++	if (ret)
++		goto done;
++
++	ret = regmap_bulk_read(mma7455->regmap, MMA7455_REG_XOUTL, buf,
++			       sizeof(__le16) * 3);
++	if (ret)
++		goto done;
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
++
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int mma7455_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct mma7455_data *mma7455 = iio_priv(indio_dev);
++	unsigned int reg;
++	__le16 data;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (iio_buffer_enabled(indio_dev))
++			return -EBUSY;
++
++		ret = mma7455_drdy(mma7455);
++		if (ret)
++			return ret;
++
++		ret = regmap_bulk_read(mma7455->regmap, chan->address, &data,
++				       sizeof(data));
++		if (ret)
++			return ret;
++
++		*val = sign_extend32(le16_to_cpu(data), 9);
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = 0;
++		*val2 = MMA7455_10BIT_SCALE;
++
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = regmap_read(mma7455->regmap, MMA7455_REG_CTL1, &reg);
++		if (ret)
++			return ret;
++
++		if (reg & MMA7455_CTL1_DFBW_MASK)
++			*val = 250;
++		else
++			*val = 125;
++
++		return IIO_VAL_INT;
++	}
++
++	return -EINVAL;
++}
++
++static int mma7455_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct mma7455_data *mma7455 = iio_priv(indio_dev);
++	int i;
++
++	if (iio_buffer_enabled(indio_dev))
++		return -EBUSY;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (val == 250 && val2 == 0)
++			i = MMA7455_CTL1_DFBW_125HZ;
++		else if (val == 125 && val2 == 0)
++			i = MMA7455_CTL1_DFBW_62_5HZ;
++		else
++			return -EINVAL;
++
++		return regmap_update_bits(mma7455->regmap, MMA7455_REG_CTL1,
++					  MMA7455_CTL1_DFBW_MASK, i);
++
++	case IIO_CHAN_INFO_SCALE:
++		/* In 10-bit mode there is only one scale available */
++		if (val == 0 && val2 == MMA7455_10BIT_SCALE)
++			return 0;
++		break;
++	}
++
++	return -EINVAL;
++}
++
++static ssize_t mma7455_show_samp_freq_avail(struct device *dev,
++					    struct device_attribute *attr,
++					    char *buf)
++{
++	return scnprintf(buf, PAGE_SIZE, "125 250\n");
++}
++
++static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma7455_show_samp_freq_avail);
++
++static struct attribute *mma7455_attributes[] = {
++	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group mma7455_group = {
++	.attrs = mma7455_attributes,
++};
++
++static const struct iio_info mma7455_info = {
++	.attrs = &mma7455_group,
++	.read_raw = mma7455_read_raw,
++	.write_raw = mma7455_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++#define MMA7455_CHANNEL(axis, idx) { \
++	.type = IIO_ACCEL, \
++	.modified = 1, \
++	.address = MMA7455_REG_##axis##OUTL,\
++	.channel2 = IIO_MOD_##axis, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
++				    BIT(IIO_CHAN_INFO_SCALE), \
++	.scan_index = idx, \
++	.scan_type = { \
++		.sign = 's', \
++		.realbits = 10, \
++		.storagebits = 16, \
++		.endianness = IIO_LE, \
++	}, \
++}
++
++static const struct iio_chan_spec mma7455_channels[] = {
++	MMA7455_CHANNEL(X, 0),
++	MMA7455_CHANNEL(Y, 1),
++	MMA7455_CHANNEL(Z, 2),
++	IIO_CHAN_SOFT_TIMESTAMP(3),
++};
++
++static const unsigned long mma7455_scan_masks[] = {0x7, 0};
++
++const struct regmap_config mma7455_core_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = MMA7455_REG_TW,
++};
++EXPORT_SYMBOL_GPL(mma7455_core_regmap);
++
++int mma7455_core_probe(struct device *dev, struct regmap *regmap,
++		       const char *name)
++{
++	struct mma7455_data *mma7455;
++	struct iio_dev *indio_dev;
++	unsigned int reg;
++	int ret;
++
++	ret = regmap_read(regmap, MMA7455_REG_WHOAMI, &reg);
++	if (ret) {
++		dev_err(dev, "unable to read reg\n");
++		return ret;
++	}
++
++	if (reg != MMA7455_WHOAMI_ID) {
++		dev_err(dev, "device id mismatch\n");
++		return -ENODEV;
++	}
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*mma7455));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	dev_set_drvdata(dev, indio_dev);
++	mma7455 = iio_priv(indio_dev);
++	mma7455->regmap = regmap;
++	mma7455->dev = dev;
++
++	indio_dev->info = &mma7455_info;
++	indio_dev->name = name;
++	indio_dev->dev.parent = dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = mma7455_channels;
++	indio_dev->num_channels = ARRAY_SIZE(mma7455_channels);
++	indio_dev->available_scan_masks = mma7455_scan_masks;
++
++	regmap_write(mma7455->regmap, MMA7455_REG_MCTL,
++		     MMA7455_MCTL_MODE_MEASURE);
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++					 mma7455_trigger_handler, NULL);
++	if (ret) {
++		dev_err(dev, "unable to setup triggered buffer\n");
++		return ret;
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(dev, "unable to register device\n");
++		iio_triggered_buffer_cleanup(indio_dev);
++		return ret;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(mma7455_core_probe);
++
++int mma7455_core_remove(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct mma7455_data *mma7455 = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++
++	regmap_write(mma7455->regmap, MMA7455_REG_MCTL,
++		     MMA7455_MCTL_MODE_STANDBY);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(mma7455_core_remove);
++
++MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
++MODULE_DESCRIPTION("Freescale MMA7455L core accelerometer driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/accel/mma7455_i2c.c b/drivers/iio/accel/mma7455_i2c.c
+new file mode 100644
+index 000000000000..2363d96718ef
+--- /dev/null
++++ b/drivers/iio/accel/mma7455_i2c.c
+@@ -0,0 +1,57 @@
++/*
++ * IIO accel I2C driver for Freescale MMA7455L 3-axis 10-bit accelerometer
++ * Copyright 2015 Joachim Eastwood <manabian@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++
++#include "mma7455.h"
++
++static int mma7455_i2c_probe(struct i2c_client *i2c,
++			     const struct i2c_device_id *id)
++{
++	struct regmap *regmap;
++	const char *name = NULL;
++
++	regmap = devm_regmap_init_i2c(i2c, &mma7455_core_regmap);
++	if (IS_ERR(regmap))
++		return PTR_ERR(regmap);
++
++	if (id)
++		name = id->name;
++
++	return mma7455_core_probe(&i2c->dev, regmap, name);
++}
++
++static int mma7455_i2c_remove(struct i2c_client *i2c)
++{
++	return mma7455_core_remove(&i2c->dev);
++}
++
++static const struct i2c_device_id mma7455_i2c_ids[] = {
++	{ "mma7455", 0 },
++	{ "mma7456", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, mma7455_i2c_id);
++
++static struct i2c_driver mma7455_i2c_driver = {
++	.probe = mma7455_i2c_probe,
++	.remove = mma7455_i2c_remove,
++	.id_table = mma7455_i2c_ids,
++	.driver = {
++		.name	= "mma7455-i2c",
++	},
++};
++module_i2c_driver(mma7455_i2c_driver);
++
++MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
++MODULE_DESCRIPTION("Freescale MMA7455L I2C accelerometer driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/accel/mma7455_spi.c b/drivers/iio/accel/mma7455_spi.c
+new file mode 100644
+index 000000000000..a84d6707cf6e
+--- /dev/null
++++ b/drivers/iio/accel/mma7455_spi.c
+@@ -0,0 +1,53 @@
++/*
++ * IIO accel SPI driver for Freescale MMA7455L 3-axis 10-bit accelerometer
++ * Copyright 2015 Joachim Eastwood <manabian@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/spi/spi.h>
++
++#include "mma7455.h"
++
++static int mma7455_spi_probe(struct spi_device *spi)
++{
++	const struct spi_device_id *id = spi_get_device_id(spi);
++	struct regmap *regmap;
++
++	regmap = devm_regmap_init_spi(spi, &mma7455_core_regmap);
++	if (IS_ERR(regmap))
++		return PTR_ERR(regmap);
++
++	return mma7455_core_probe(&spi->dev, regmap, id->name);
++}
++
++static int mma7455_spi_remove(struct spi_device *spi)
++{
++	return mma7455_core_remove(&spi->dev);
++}
++
++static const struct spi_device_id mma7455_spi_ids[] = {
++	{ "mma7455", 0 },
++	{ "mma7456", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, mma7455_spi_id);
++
++static struct spi_driver mma7455_spi_driver = {
++	.probe = mma7455_spi_probe,
++	.remove = mma7455_spi_remove,
++	.id_table = mma7455_spi_ids,
++	.driver = {
++		.name = "mma7455-spi",
++	},
++};
++module_spi_driver(mma7455_spi_driver);
++
++MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
++MODULE_DESCRIPTION("Freescale MMA7455L SPI accelerometer driver");
++MODULE_LICENSE("GPL v2");
 -- 
-1.9.1
+1.8.0
 
