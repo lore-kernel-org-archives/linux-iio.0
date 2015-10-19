@@ -1,130 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-193.synserver.de ([212.40.185.193]:1064 "EHLO
+Received: from smtp-out-193.synserver.de ([212.40.185.193]:1075 "EHLO
 	smtp-out-188.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751206AbbJSKpc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 19 Oct 2015 06:45:32 -0400
-Message-ID: <5624C9C5.6000002@metafoo.de>
-Date: Mon, 19 Oct 2015 12:45:25 +0200
+	by vger.kernel.org with ESMTP id S1751737AbbJSKwy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 19 Oct 2015 06:52:54 -0400
+Message-ID: <5624CB82.4000600@metafoo.de>
+Date: Mon, 19 Oct 2015 12:52:50 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Joachim Eastwood <manabian@gmail.com>, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: add Freescale MMA7455L 3-axis accelerometer
- driver
-References: <1445120719-29685-1-git-send-email-manabian@gmail.com>
-In-Reply-To: <1445120719-29685-1-git-send-email-manabian@gmail.com>
+To: Teodora Baluta <teodora.baluta@intel.com>, jic23@kernel.org
+CC: knaack.h@gmx.de, pmeerw@pmeerw.net, daniel.baluta@intel.com,
+	dan.carpenter@oracle.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: add support for Memsic MXC6255XC sensor
+References: <1444991368-14609-1-git-send-email-teodora.baluta@intel.com>
+In-Reply-To: <1444991368-14609-1-git-send-email-teodora.baluta@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/18/2015 12:25 AM, Joachim Eastwood wrote:
-> Add support for Freescale MMA7455L 3-axis in 10-bit mode with both
-> I2C and SPI bus support. This is a rather simple driver that
-> currently doesn't support all the hardware features of MMA7455L.
+On 10/16/2015 12:29 PM, Teodora Baluta wrote:
+> This patch adds a minimal implementation for the Memsic MXC6255XC
+> orientation sensing accelerometer. The supported operations are reading
+> raw acceleration values for X/Y axis that can be scaled using the
+> exposed scale.
 > 
-> Tested on Embedded Artists' LPC4357 Dev Kit using I2C bus.
-> 
-> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
+> Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
 
-Looks pretty good in general.
+Looks quite good in general, a few minor things inline.
 
-[...];
-> +
-> +static int mma7455_drdy(struct mma7455_data *mma7455)
-> +{
-> +	unsigned int reg;
-> +	int tries = 10;
-> +	int ret;
-> +
-> +	while (tries-- > 0) {
-> +		ret = regmap_read(mma7455->regmap, MMA7455_REG_STATUS, &reg);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (reg & MMA7455_STATUS_DRDY)
-> +			return 0;
-> +
-> +		msleep(20);
-
-I'm not to sure about this, when the IRQ fires the data should either be
-ready or not, no? Are there any corner cases where waiting for up to 200 ms
-will generate valid data, whereas not waiting wont?
-
-> +	}
-> +
-> +	dev_warn(mma7455->dev, "data not ready\n");
-> +
-> +	return -EIO;
-> +}
-> +
 [...]
-> +static int mma7455_read_raw(struct iio_dev *indio_dev,
+> +/* scale value for +/- 2G measurement range */
+> +static const int mxc6255_scale = 153829;
+> +
+> +static IIO_CONST_ATTR(in_accel_scale_available, MXC6255_SCALE_AVAIL);
+
+If there is only one scale available it does not make too much sense to have
+a scale_available attribute.
+
+[..]
+> +static int mxc6255_read_raw(struct iio_dev *indio_dev,
 > +			    struct iio_chan_spec const *chan,
 > +			    int *val, int *val2, long mask)
 > +{
-> +	struct mma7455_data *mma7455 = iio_priv(indio_dev);
-> +	unsigned int reg = 0;
+> +	struct mxc6255_data *data = iio_priv(indio_dev);
+> +	unsigned int reg;
+> +	int axis = chan->channel2 - 1;
+
+1 is a bit of a magic constant here. Use IIO_MOD_X instead. Or even better
+use chan->address.
+
 > +	int ret;
 > +
 > +	switch (mask) {
 > +	case IIO_CHAN_INFO_RAW:
-> +		if (iio_buffer_enabled(indio_dev))
-> +			return -EBUSY;
-> +
-> +		ret = mma7455_drdy(mma7455);
-> +		if (ret)
+> +		ret = regmap_read(data->regmap,
+> +				  MXC6255_AXIS_TO_REG(axis), &reg);
+> +		if (ret < 0) {
+> +			dev_err(&data->client->dev,
+> +				"Error reading axis %d\n", axis);
 > +			return ret;
+> +		}
 > +
-> +		ret = regmap_bulk_read(mma7455->regmap, chan->scan_index * 2,
-> +				       &reg, sizeof(s16));
-
-reg is unsigned int while you only read 16 bit. This will cause endianess
-issues. If you read a hardware register from a external peripheral always
-use __{be,le}{8,16,32} according to the hardware layout and then use the
-proper conversion functions {be,le}{8,16,32}_to_cpu() to convert the value
-to CPU endianness.
-
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = sign_extend32(reg, 9);
-> +
+> +		*val = sign_extend32(reg, 7);
 > +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0;
+> +		*val2 = mxc6255_scale;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+[...]
+> +static int mxc6255_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+[...]
+> +	ret = regmap_read(data->regmap, MXC6255_REG_CHIP_ID, &chip_id);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "Error reading chip id %d\n", ret);
+> +		return ret;
+> +	}
+
+Does it make sense to check whether chip ID matches the expected value, to
+catch mistakes where the I2C address is incorrect?
+
 > +
-[...]
-> +static ssize_t mma7455_show_scale_avail(struct device *dev,
-> +					struct device_attribute *attr,
-> +					char *buf)
-> +{
-> +	return scnprintf(buf, PAGE_SIZE, "0.%u\n", MMA7455_10BIT_SCALE);
+> +	dev_dbg(&client->dev, "Chip id %x\n", chip_id);
+> +
+> +	ret = devm_iio_device_register(&client->dev, indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "Could not register IIO device\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
 > +}
-
-It doesn't make sense to have this at the moment when there is only one
-valid scale available.
-
 [...]
-> +static int __init mma7455_modinit(void)
-> +{
-> +	int ret;
-> +#if IS_ENABLED(CONFIG_I2C)
-> +	ret = i2c_add_driver(&mma7455_i2c_driver);
-> +	if (ret)
-> +		pr_err("failed to register MMA7455L I2C driver: %d\n", ret);
-> +#endif
-> +#if IS_ENABLED(CONFIG_SPI_MASTER)
-> +	ret = spi_register_driver(&mma7455_spi_driver);
-> +	if (ret)
-> +		pr_err("failed to register MMA7455L SPI driver: %d\n", ret);
-> +#endif
-
-I know there are a fair amount of bad examples in the IIO tree for this,
-which do the same thing. But the SPI and the I2C parts should go into
-different modules, otherwise you run into issues if one of them is built-in
-while the other is built as a module. The bmg160 gyro driver is a good
-example on how to do handle this.
-
-> +	return ret;
-> +}
-> +module_init(mma7455_modinit);
-
