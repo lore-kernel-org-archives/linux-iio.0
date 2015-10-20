@@ -1,57 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-210.synserver.de ([212.40.185.210]:1048 "EHLO
-	smtp-out-188.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751793AbbJTRbe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Oct 2015 13:31:34 -0400
-Message-ID: <56267A73.2060900@metafoo.de>
-Date: Tue, 20 Oct 2015 19:31:31 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from muru.com ([72.249.23.125]:42055 "EHLO muru.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752982AbbJTReW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 20 Oct 2015 13:34:22 -0400
+Date: Tue, 20 Oct 2015 10:34:18 -0700
+From: Tony Lindgren <tony@atomide.com>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	=?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Marek Belisko <marek@goldelico.com>,
+	Pradeep Goudagunta <pgoudagunta@nvidia.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Graeme Gregory <gg@slimlogic.co.uk>,
+	jic23@jic23.retrosnub.co.uk, devicetree@vger.kernel.org,
+	LKML <linux-kernel@vger.kernel.org>,
+	linux-omap <linux-omap@vger.kernel.org>,
+	linux-iio@vger.kernel.org, Grazvydas Ignotas <notasas@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>
+Subject: Re: [PATCH v3 3/3] ARM: dts: omap5-uevm: enable iio gpadc for Palmas
+Message-ID: <20151020173418.GL3078@atomide.com>
+References: <cover.1445000017.git.hns@goldelico.com>
+ <05c57453151c9e2cbd3f15145f1e15223410cd87.1445000017.git.hns@goldelico.com>
+ <20151020162425.GH3078@atomide.com>
+ <A872C46B-C0CF-4C67-9615-0A46EDAE9A57@goldelico.com>
 MIME-Version: 1.0
-To: Matthias Meier <matthias.j.meier@gmx.net>,
-	linux-iio@vger.kernel.org
-Subject: Re: iio_interrupt_trigger
-References: <5623962F.6040105@gmx.net> <5624BB59.20003@metafoo.de> <56267467.10605@gmx.net>
-In-Reply-To: <56267467.10605@gmx.net>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <A872C46B-C0CF-4C67-9615-0A46EDAE9A57@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/20/2015 07:05 PM, Matthias Meier wrote:
-> Just for information...
+* H. Nikolaus Schaller <hns@goldelico.com> [151020 09:48]:
 > 
-> I estimated the max ISR rate and sampling accuracy when using iio buffering
-> triggered by a hardware PWM timer on a IMX6 dl board:
-> 
-> Up to a ISR rate of ~5kHz the accuracy of the sampling time is about +/-25us
-> (measured over several seconds).
-> 
-> Above 10kHz, interrupts are lost (but CPU load still <25%).
-> 
-> Test conditions:
-> 
-> For this test I modified 'generic_buffer' so I could estimate the accuracy
-> of the sampling point (by calculating min/max/mean of the time difference.
-> The kernel was 4.2.1 with CONFIG_PREEMPT=y
-> The ADC device I used is a AD7476 connected via SPI bus.
-> The scaling_governor was set to performance.
-> No additional load (buildroot rfs).
-> The results are about same when using a 4.1 TT-patched kernel with
-> CONFIG_PREEMPT_RT_FULL=y (without special isr priority).
-> 
-> Conclusion: accurate high(er) speed sampling seems not to be possible this
-> way (without dma buffered continuous sampling)
+> We have our own OMAP5 board in the pipeline and there it will help
+> as well to rebase it using arch/arm/boot/dts/omap5-board-common.dts
 
-Yeah, that is similar to my findings. 5kHz-10kHz is around the maximum you
-can do with interrupt driven capture. For higher datarates you'll have to
-dedicate a full CPU to polling the data, which is kind of sub-optimal.
+Yes and then we can hopefully fix up the regulators properly and get
+rid of the fixed-regulator flags..
 
-I've been working on the concept of SPI offloading, which allows to
-pre-program the SPI message to the controller and let the controller execute
-it when the interrupt happens. But this required dedicated hardware support
-and is not available with all SPI controllers.
+Regards,
 
-The SPI Engine framework allows to create controller that support this type
-of offloading, see https://wiki.analog.com/resources/fpga/peripherals/spi_engine
-
-- Lars
-
+Tony
