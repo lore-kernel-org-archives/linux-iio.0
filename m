@@ -1,78 +1,25 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:55105 "EHLO mout01.posteo.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753440AbbJTHtr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 20 Oct 2015 03:49:47 -0400
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id CDCD32086A
-	for <linux-iio@vger.kernel.org>; Tue, 20 Oct 2015 09:49:43 +0200 (CEST)
-Message-ID: <5625F1B5.8000400@posteo.de>
-Date: Tue, 20 Oct 2015 09:48:05 +0200
-From: Martin Kepplinger <martink@posteo.de>
+Received: from smtp-out-200.synserver.de ([212.40.185.200]:1054 "EHLO
+	smtp-out-188.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752897AbbJTIF3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Oct 2015 04:05:29 -0400
+Message-ID: <5625F5C4.7020200@metafoo.de>
+Date: Tue, 20 Oct 2015 10:05:24 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
 To: Joachim Eastwood <manabian@gmail.com>, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-CC: linux-iio@vger.kernel.org
+	knaack.h@gmx.de, pmeerw@pmeerw.net
+CC: martink@posteo.de, linux-iio@vger.kernel.org
 Subject: Re: [PATCH v2] iio: accel: add Freescale MMA7455L/MMA7456L 3-axis
  accelerometer driver
 References: <1445120719-29685-1-git-send-email-manabian@gmail.com> <1445281210-3936-1-git-send-email-manabian@gmail.com>
 In-Reply-To: <1445281210-3936-1-git-send-email-manabian@gmail.com>
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 2015-10-19 um 21:00 schrieb Joachim Eastwood:
-> Add support for Freescale MMA7455L/MMA7456L 3-axis in 10-bit mode for
-> I2C and SPI bus. This rather simple driver that currently doesn't
-> support all the hardware features of MMA7455L/MMA7456L.
-> 
-> Tested on Embedded Artist's LPC4357 Dev Kit with MMA7455L on I2C bus.
-> 
-> Data sheets for the two devices can be found here:
-> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7455L.pdf
-> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7456L.pdf
-> 
-> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
-> ---
-> Hi,
-> 
-> This version address the comments from Lars-Peter Clausen, Peter
-> Meerwald and Martin Kepplinger. Thanks for all the constructive
-> feedback!
-> 
-> Changes since v1:
-> * limit retries to 3 in mma7455_drdy
-> * remove mma7455_show_scale_avail
-> * use chan->address instead of chan->scan_index for reg addr
-> * check that val2 is 0 when setting sample freq
-> * use __le16 to hint about endianess in mma7455_trigger_handler
-> * fix endianess in mma7455_read_raw function
-> * add mma7456 id
-> * split it into several source files to support both i2c and spi
-> 
-> I compared the register summary for MMA7455L/MMA7456L and I am
-> unable to find any difference at all.
-> 
->  drivers/iio/accel/Kconfig        |  22 +++
->  drivers/iio/accel/Makefile       |   5 +
->  drivers/iio/accel/mma7455.h      |  20 +++
->  drivers/iio/accel/mma7455_core.c | 321 +++++++++++++++++++++++++++++++++++++++
->  drivers/iio/accel/mma7455_i2c.c  |  57 +++++++
->  drivers/iio/accel/mma7455_spi.c  |  53 +++++++
->  6 files changed, 478 insertions(+)
->  create mode 100644 drivers/iio/accel/mma7455.h
->  create mode 100644 drivers/iio/accel/mma7455_core.c
->  create mode 100644 drivers/iio/accel/mma7455_i2c.c
->  create mode 100644 drivers/iio/accel/mma7455_spi.c
-> 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index a59047d7657e..3c87a4ae317a 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -99,6 +99,28 @@ config KXCJK1013
->  	  To compile this driver as a module, choose M here: the module will
->  	  be called kxcjk-1013.
->  
+On 10/19/2015 09:00 PM, Joachim Eastwood wrote:
+[...]
 > +config MMA7455
 > +	tristate "Freescale MMA7455L/MMA7456L Accelerometer Driver"
 > +	depends on I2C || SPI_MASTER
@@ -80,6 +27,19 @@ Am 2015-10-19 um 21:00 schrieb Joachim Eastwood:
 > +	select IIO_TRIGGERED_BUFFER
 > +	select MMA7455_I2C if I2C
 > +	select MMA7455_SPI if SPI
+
+Ah, damm, I shouldn't have said bmg160 is a good example without actually
+looking at its Kconfig entry. Only saw the C files and those looked good.
+
+This is still problematic. The depends on clause allows this driver to be
+built-in if either I2C is built-in or SPI_MASTER is built-in. And then the
+respective I2C and SPI modules will also be selected as built-in even though
+the I2C symbol is only selected as a module. So you now have built-in code
+that tries to reference code that is only available as a module.
+
+A better solution is to make the Kconfig entries for the I2C and SPI modules
+user selectable and then let them select the main module.
+
 > +	help
 > +	  Say yes here to build support for the Freescale MMA7455L and
 > +	  MMA7456L 3-axis accelerometer.
@@ -95,14 +55,4 @@ Am 2015-10-19 um 21:00 schrieb Joachim Eastwood:
 > +	tristate
 > +	select REGMAP_SPI
 > +
->  config MMA8452
->  	tristate "Freescale MMA8452Q Accelerometer Driver"
->  	depends on I2C
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index ebd2675b2a02..dfb9289393fb 100644
-> --- a/drivers/iio/accel/Makefile
-
-You don't base your work on top of the current -next tree. But that's
-where this most likely will go, if integrated. Please make it apply to
-linux-next.
 
