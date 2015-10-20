@@ -1,83 +1,79 @@
-Return-Path: <manabian@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from netline-mail3.netline.ch ([78.47.214.34]:41461 "EHLO
+	netline-mail3.netline.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750796AbbJTF7t (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Oct 2015 01:59:49 -0400
+Subject: Re: iio:ad5064: Add support for LTC2617
+To: Lars-Peter Clausen <lars@metafoo.de>, jic23@kernel.org
+References: <CAEnQRZC4sxWXkUgz7316NrzHYa9GkfneG82PcPKgK00S76W=GA@mail.gmail.com>
+ <1444912264-44606-1-git-send-email-marc.andre@netline.ch>
+ <5624D136.9030100@metafoo.de>
+Cc: knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+From: Marc Andre <marc.andre@netline.ch>
+Message-ID: <5625D850.7060201@netline.ch>
+Date: Tue, 20 Oct 2015 07:59:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <1445281210-3936-1-git-send-email-manabian@gmail.com>
-References: <1445120719-29685-1-git-send-email-manabian@gmail.com>
-	<1445281210-3936-1-git-send-email-manabian@gmail.com>
-Date: Mon, 19 Oct 2015 23:07:26 +0200
-Message-ID: <CAGhQ9Vz6O-SK15U6vng1Zv=gKiY4mSu-RenyYrpQN67YEEP0sA@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: accel: add Freescale MMA7455L/MMA7456L 3-axis
- accelerometer driver
-From: Joachim  Eastwood <manabian@gmail.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Joachim Eastwood <manabian@gmail.com>, martink@posteo.de, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
-
-On 19 October 2015 at 21:00, Joachim Eastwood <manabian@gmail.com> wrote:
-> Add support for Freescale MMA7455L/MMA7456L 3-axis in 10-bit mode for
-> I2C and SPI bus. This rather simple driver that currently doesn't
-> support all the hardware features of MMA7455L/MMA7456L.
->
-> Tested on Embedded Artist's LPC4357 Dev Kit with MMA7455L on I2C bus.
->
-> Data sheets for the two devices can be found here:
-> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7455L.pdf
-> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7456L.pdf
->
-> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
-> ---
-> Hi,
->
-> This version address the comments from Lars-Peter Clausen, Peter
-> Meerwald and Martin Kepplinger. Thanks for all the constructive
-> feedback!
->
-> Changes since v1:
-> * limit retries to 3 in mma7455_drdy
-> * remove mma7455_show_scale_avail
-> * use chan->address instead of chan->scan_index for reg addr
-> * check that val2 is 0 when setting sample freq
-> * use __le16 to hint about endianess in mma7455_trigger_handler
-> * fix endianess in mma7455_read_raw function
-> * add mma7456 id
-> * split it into several source files to support both i2c and spi
->
-> I compared the register summary for MMA7455L/MMA7456L and I am
-> unable to find any difference at all.
->
->  drivers/iio/accel/Kconfig        |  22 +++
->  drivers/iio/accel/Makefile       |   5 +
->  drivers/iio/accel/mma7455.h      |  20 +++
->  drivers/iio/accel/mma7455_core.c | 321 +++++++++++++++++++++++++++++++++++++++
->  drivers/iio/accel/mma7455_i2c.c  |  57 +++++++
->  drivers/iio/accel/mma7455_spi.c  |  53 +++++++
->  6 files changed, 478 insertions(+)
->  create mode 100644 drivers/iio/accel/mma7455.h
->  create mode 100644 drivers/iio/accel/mma7455_core.c
->  create mode 100644 drivers/iio/accel/mma7455_i2c.c
->  create mode 100644 drivers/iio/accel/mma7455_spi.c
-
-> +static const struct i2c_device_id mma7455_i2c_ids[] = {
-> +       { "mma7455", 0 },
-> +       { "mma7456", 0 },
-> +       { }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, mma7455_i2c_id);
-
-> +static const struct spi_device_id mma7455_spi_ids[] = {
-> +       { "mma7455", 0 },
-> +       { "mma7456", 0 },
-> +       { }
-> +};
-> +MODULE_DEVICE_TABLE(spi, mma7455_spi_id);
-
-Seems like I forgot to do a modular and the kbuild bot caught me.
-Renamed to *_ids, but forgot to update variable in MODULE_DEVICE_TABLE macro...
-
-I'll send out a new version after people have had a chance to comment
-on any other issues.
+In-Reply-To: <5624D136.9030100@metafoo.de>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
-regards,
-Joachim Eastwood
+
+On 19.10.2015 13:17, Lars-Peter Clausen wrote:
+> On 10/15/2015 02:31 PM, Marc Andre wrote:
+>> I've updated the patches according to the feedback of Peter and Daniel.
+>> - Added datasheet links to the description of patch 1/2.
+>> - Added 90kohm_to_gnd to ABI documentation sysfs-bus-iio
+>>
+> Looks good to me. You can add
+>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+>
+> I'd prefer though if you change the order of the patches. Patch 1 refactor
+> the macros so you can specify the ext_info. Patch 2 add support for the LTC
+> devices, this way we don't end up with a intermediate step where power-down
+> is broken.
+I will do that, but I am currently traveling on a business trip, I will 
+send it towards the end of the week. I assume I can put the Acked-by on 
+as long as the code doesn't change.
+
+>> **** Original intro *****
+>>
+>> Based on the discussion after submitting my patch to add a new driver
+>> for LTC2617, I've now implemented the support for the LTC2617 (and
+>> similar) devices into the AD5064 driver.
+>>
+>> I've split the implementation into two patches. The first patch adds
+>> basic support for LTC2617. The second patch fixes the power down
+>> functionality because the LTC handle that differently than the AD
+>> devices.
+>>
+>> [PATCH v2 1/2] iio:ad5064: Add support for ltc2617 and similar devices
+>> [PATCH v2 2/2] iio:ad5064: Fix power down operation with LTC2617
+>>
+>> Best Regards,
+>> Marc
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+-- 
+Marc André, André-Netline
+eBusiness-Solutions
+
+André-Netline
+Könizstr. 161
+CH-3097 Liebefeld
+
+Tel. 031 974 16 66
+Fax: 031 974 16 65
+marc.andre@netline.ch
+http://www.netline.ch
+
