@@ -1,221 +1,281 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from netline-mail3.netline.ch ([78.47.214.34]:58315 "EHLO
-	netline-mail3.netline.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750786AbbJVEfO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 22 Oct 2015 00:35:14 -0400
-From: Marc Andre <marc.andre@netline.ch>
+Received: from mga01.intel.com ([192.55.52.88]:56788 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756802AbbJVMpo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 22 Oct 2015 08:45:44 -0400
+From: Teodora Baluta <teodora.baluta@intel.com>
 To: jic23@kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, marc.andre@netline.ch
-Subject: [PATCH v3 2/2] iio:ad5064: Add support for ltc2617 and similar devices
-Date: Thu, 22 Oct 2015 06:34:31 +0200
-Message-Id: <1445488471-16568-3-git-send-email-marc.andre@netline.ch>
-In-Reply-To: <1445488471-16568-1-git-send-email-marc.andre@netline.ch>
-References: <1445488471-16568-1-git-send-email-marc.andre@netline.ch>
+	daniel.baluta@intel.com, teodora.baluta@intel.com,
+	dan.carpenter@oracle.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: accel: add support for Memsic MXC6255XC sensor
+Date: Thu, 22 Oct 2015 15:44:50 +0300
+Message-Id: <1445517890-24938-1-git-send-email-teodora.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Linear Technology LTC2606, LTC2607, LTC2609, LTC2616, LTC2617,
-LTC2619, LTC2626, LTC2627 and LTC2629 devices are very similar
-to the AD5064 device.
+This patch adds a minimal implementation for the Memsic MXC6255XC
+orientation sensing accelerometer. The supported operations are reading
+raw acceleration values for X/Y axis that can be scaled using the
+exposed scale.
 
-This patch adds support for those devices.
-
-Datasheet for LTC devices:
-LTC2606, LTC2616, LTC2626: http://www.linear.com/docs/6398
-LTC2607, LTC2617, LTC2627: http://www.linear.com/docs/8977
-LTC2709, LTC2619, LTC2629: http://www.linear.com/docs/8477
-
-Signed-off-by: Marc Andre <marc.andre@netline.ch>
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio |   1 +
- drivers/iio/dac/ad5064.c                | 112 +++++++++++++++++++++++++++++++-
- 2 files changed, 112 insertions(+), 1 deletion(-)
+Changes since v1:
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 42d360f..3e8b778 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -496,6 +496,7 @@ Description:
- 		1kohm_to_gnd: connected to ground via an 1kOhm resistor,
- 		6kohm_to_gnd: connected to ground via a 6kOhm resistor,
- 		20kohm_to_gnd: connected to ground via a 20kOhm resistor,
-+		90kohm_to_gnd: connected to ground via a 90kOhm resistor,
- 		100kohm_to_gnd: connected to ground via an 100kOhm resistor,
- 		500kohm_to_gnd: connected to ground via a 500kOhm resistor,
- 		three_state: left floating.
-diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index 3bb0312..1b89625 100644
---- a/drivers/iio/dac/ad5064.c
-+++ b/drivers/iio/dac/ad5064.c
-@@ -1,6 +1,8 @@
- /*
-  * AD5024, AD5025, AD5044, AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R,
-- * AD5648, AD5666, AD5668, AD5669R Digital to analog converters driver
-+ * AD5648, AD5666, AD5668, AD5669R, LTC2606, LTC2607, LTC2609, LTC2616,
-+ * LTC2617, LTC2619, LTC2626, LTC2627, LTC2629 Digital to analog converters
-+ * driver
-  *
-  * Copyright 2011 Analog Devices Inc.
-  *
-@@ -126,6 +128,15 @@ enum ad5064_type {
- 	ID_AD5668_2,
- 	ID_AD5669_1,
- 	ID_AD5669_2,
-+	ID_LTC2606,
-+	ID_LTC2607,
-+	ID_LTC2609,
-+	ID_LTC2616,
-+	ID_LTC2617,
-+	ID_LTC2619,
-+	ID_LTC2626,
-+	ID_LTC2627,
-+	ID_LTC2629,
- };
+- remove scale_available attribute
+- use chan->address instead
+- drop _AXIS_TO_REG macro
+- put register address in .address field of MXC6255_CHANNEL macro
+- check chip id
+- use "as follows" instead of "as following"
+
+ drivers/iio/accel/Kconfig   |  11 +++
+ drivers/iio/accel/Makefile  |   1 +
+ drivers/iio/accel/mxc6255.c | 199 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 211 insertions(+)
+ create mode 100644 drivers/iio/accel/mxc6255.c
+
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 969428d..75ac087 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -158,6 +158,17 @@ config MXC4005
+ 	  To compile this driver as a module, choose M. The module will be
+ 	  called mxc4005.
  
- static int ad5064_write(struct ad5064_state *st, unsigned int cmd,
-@@ -164,6 +175,10 @@ static const char * const ad5064_powerdown_modes[] = {
- 	"three_state",
- };
++config MXC6255
++	tristate "Memsic MXC6255 Orientation Sensing Accelerometer Driver"
++	depends on I2C
++	select REGMAP_I2C
++	help
++	  Say yes here to build support for the Memsic MXC6255 Orientation
++	  Sensing Accelerometer Driver.
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called mxc6255.
++
+ config STK8312
+ 	tristate "Sensortek STK8312 3-Axis Accelerometer Driver"
+ 	depends on I2C
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index 7925f16..525ed52 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_MMA9551)		+= mma9551.o
+ obj-$(CONFIG_MMA9553)		+= mma9553.o
  
-+static const char * const ltc2617_powerdown_modes[] = {
-+	"90kohm_to_gnd",
+ obj-$(CONFIG_MXC4005)		+= mxc4005.o
++obj-$(CONFIG_MXC6255)		+= mxc6255.o
+ 
+ obj-$(CONFIG_STK8312)		+= stk8312.o
+ obj-$(CONFIG_STK8BA50)		+= stk8ba50.o
+diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
+new file mode 100644
+index 0000000..b853ff0
+--- /dev/null
++++ b/drivers/iio/accel/mxc6255.c
+@@ -0,0 +1,199 @@
++/*
++ * MXC6255 - MEMSIC orientation sensing accelerometer
++ *
++ * Copyright (c) 2015, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO driver for MXC6255 (7-bit I2C slave address 0x15).
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/init.h>
++#include <linux/iio/iio.h>
++#include <linux/delay.h>
++#include <linux/acpi.h>
++#include <linux/regmap.h>
++#include <linux/iio/sysfs.h>
++
++#define MXC6255_DRV_NAME		"mxc6255"
++#define MXC6255_REGMAP_NAME		"mxc6255_regmap"
++
++#define MXC6255_REG_XOUT		0x00
++#define MXC6255_REG_YOUT		0x01
++#define MXC6255_REG_CHIP_ID		0x08
++
++#define MXC6255_CHIP_ID			0x05
++
++/*
++ * MXC6255 has only one measurement range: +/- 2G.
++ * The acceleration output is an 8-bit value.
++ *
++ * Scale is calculated as follows:
++ * (2 + 2) * 9.80665 / (2^8 - 1) = 0.153829
++ *
++ * Scale value for +/- 2G measurement range
++ */
++#define MXC6255_SCALE			153829
++
++enum mxc6255_axis {
++	AXIS_X,
++	AXIS_Y,
 +};
 +
- static int ad5064_get_powerdown_mode(struct iio_dev *indio_dev,
- 	const struct iio_chan_spec *chan)
- {
-@@ -194,6 +209,13 @@ static const struct iio_enum ad5064_powerdown_mode_enum = {
- 	.set = ad5064_set_powerdown_mode,
- };
- 
-+static const struct iio_enum ltc2617_powerdown_mode_enum = {
-+	.items = ltc2617_powerdown_modes,
-+	.num_items = ARRAY_SIZE(ltc2617_powerdown_modes),
-+	.get = ad5064_get_powerdown_mode,
-+	.set = ad5064_set_powerdown_mode,
++struct mxc6255_data {
++	struct i2c_client *client;
++	struct regmap *regmap;
 +};
 +
- static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
- 	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
-@@ -304,6 +326,18 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
- 	{ },
- };
- 
-+static const struct iio_chan_spec_ext_info ltc2617_ext_info[] = {
-+	{
-+		.name = "powerdown",
-+		.read = ad5064_read_dac_powerdown,
-+		.write = ad5064_write_dac_powerdown,
-+		.shared = IIO_SEPARATE,
-+	},
-+	IIO_ENUM("powerdown_mode", IIO_SEPARATE, &ltc2617_powerdown_mode_enum),
-+	IIO_ENUM_AVAILABLE("powerdown_mode", &ltc2617_powerdown_mode_enum),
-+	{ },
++static int mxc6255_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct mxc6255_data *data = iio_priv(indio_dev);
++	unsigned int reg;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = regmap_read(data->regmap, chan->address, &reg);
++		if (ret < 0) {
++			dev_err(&data->client->dev,
++				"Error reading reg %lu\n", chan->address);
++			return ret;
++		}
++
++		*val = sign_extend32(reg, 7);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 0;
++		*val2 = MXC6255_SCALE;
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info mxc6255_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw	= mxc6255_read_raw,
 +};
 +
- #define AD5064_CHANNEL(chan, addr, bits, _shift, _ext_info) {		\
- 	.type = IIO_VOLTAGE,					\
- 	.indexed = 1,						\
-@@ -350,6 +384,10 @@ static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4, ad5064_ext_info);
- static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4, ad5064_ext_info);
- static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0, ad5064_ext_info);
- 
-+static DECLARE_AD5064_CHANNELS(ltc2607_channels, 16, 0, ltc2617_ext_info);
-+static DECLARE_AD5064_CHANNELS(ltc2617_channels, 14, 2, ltc2617_ext_info);
-+static DECLARE_AD5064_CHANNELS(ltc2627_channels, 12, 4, ltc2617_ext_info);
++#define MXC6255_CHANNEL(_axis, reg) {				\
++	.type = IIO_ACCEL,					\
++	.modified = 1,						\
++	.channel2 = IIO_MOD_##_axis,				\
++	.address = reg,						\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
 +
- static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
- 	[ID_AD5024] = {
- 		.shared_vref = false,
-@@ -458,6 +496,69 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
- 		.channels = ad5669_channels,
- 		.num_channels = 8,
- 	},
-+	[ID_LTC2606] = {
-+		.shared_vref = true,
-+		.internal_vref = 0,
-+		.channels = ltc2607_channels,
-+		.num_channels = 1,
-+		.powerdown_ltc = true,
++static const struct iio_chan_spec mxc6255_channels[] = {
++	MXC6255_CHANNEL(X, MXC6255_REG_XOUT),
++	MXC6255_CHANNEL(Y, MXC6255_REG_YOUT),
++};
++
++static bool mxc6255_is_readable_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case MXC6255_REG_XOUT:
++	case MXC6255_REG_YOUT:
++	case MXC6255_REG_CHIP_ID:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static const struct regmap_config mxc6255_regmap_config = {
++	.name = MXC6255_REGMAP_NAME,
++
++	.reg_bits = 8,
++	.val_bits = 8,
++
++	.readable_reg = mxc6255_is_readable_reg,
++};
++
++static int mxc6255_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct mxc6255_data *data;
++	struct iio_dev *indio_dev;
++	struct regmap *regmap;
++	unsigned int chip_id;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	regmap = devm_regmap_init_i2c(client, &mxc6255_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&client->dev, "Error initializing regmap\n");
++		return PTR_ERR(regmap);
++	}
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	data->regmap = regmap;
++
++	indio_dev->name = MXC6255_DRV_NAME;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->channels = mxc6255_channels;
++	indio_dev->num_channels = ARRAY_SIZE(mxc6255_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &mxc6255_info;
++
++	ret = regmap_read(data->regmap, MXC6255_REG_CHIP_ID, &chip_id);
++	if (ret < 0) {
++		dev_err(&client->dev, "Error reading chip id %d\n", ret);
++		return ret;
++	}
++
++	if (chip_id != MXC6255_CHIP_ID) {
++		dev_err(&client->dev, "Invalid chip id %x\n", chip_id);
++		return -ENODEV;
++	}
++
++	dev_dbg(&client->dev, "Chip id %x\n", chip_id);
++
++	ret = devm_iio_device_register(&client->dev, indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "Could not register IIO device\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct acpi_device_id mxc6255_acpi_match[] = {
++	{"MXC6255",	0},
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, mxc6255_acpi_match);
++
++static const struct i2c_device_id mxc6255_id[] = {
++	{"mxc6255",	0},
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, mxc6255_id);
++
++static struct i2c_driver mxc6255_driver = {
++	.driver = {
++		.name = MXC6255_DRV_NAME,
++		.acpi_match_table = ACPI_PTR(mxc6255_acpi_match),
 +	},
-+	[ID_LTC2607] = {
-+		.shared_vref = true,
-+		.internal_vref = 0,
-+		.channels = ltc2607_channels,
-+		.num_channels = 2,
-+		.powerdown_ltc = true,
-+	},
-+	[ID_LTC2609] = {
-+		.shared_vref = false,
-+		.internal_vref = 0,
-+		.channels = ltc2607_channels,
-+		.num_channels = 4,
-+		.powerdown_ltc = true,
-+	},
-+	[ID_LTC2616] = {
-+		.shared_vref = true,
-+		.internal_vref = 0,
-+		.channels = ltc2617_channels,
-+		.num_channels = 1,
-+		.powerdown_ltc = true,
-+	},
-+	[ID_LTC2617] = {
-+		.shared_vref = true,
-+		.internal_vref = 0,
-+		.channels = ltc2617_channels,
-+		.num_channels = 2,
-+		.powerdown_ltc = true,
-+	},
-+	[ID_LTC2619] = {
-+		.shared_vref = false,
-+		.internal_vref = 0,
-+		.channels = ltc2617_channels,
-+		.num_channels = 4,
-+		.powerdown_ltc = true,
-+	},
-+	[ID_LTC2626] = {
-+		.shared_vref = true,
-+		.internal_vref = 0,
-+		.channels = ltc2627_channels,
-+		.num_channels = 1,
-+		.powerdown_ltc = true,
-+	},
-+	[ID_LTC2627] = {
-+		.shared_vref = true,
-+		.internal_vref = 0,
-+		.channels = ltc2627_channels,
-+		.num_channels = 2,
-+		.powerdown_ltc = true,
-+	},
-+	[ID_LTC2629] = {
-+		.shared_vref = false,
-+		.internal_vref = 0,
-+		.channels = ltc2627_channels,
-+		.num_channels = 4,
-+		.powerdown_ltc = true,
-+	},
- };
- 
- static inline unsigned int ad5064_num_vref(struct ad5064_state *st)
-@@ -669,6 +770,15 @@ static const struct i2c_device_id ad5064_i2c_ids[] = {
- 	{"ad5669-1", ID_AD5669_1},
- 	{"ad5669-2", ID_AD5669_2},
- 	{"ad5669-3", ID_AD5669_2}, /* similar enough to ad5669-2 */
-+	{"ltc2606", ID_LTC2606},
-+	{"ltc2607", ID_LTC2607},
-+	{"ltc2609", ID_LTC2609},
-+	{"ltc2616", ID_LTC2616},
-+	{"ltc2617", ID_LTC2617},
-+	{"ltc2619", ID_LTC2619},
-+	{"ltc2626", ID_LTC2626},
-+	{"ltc2627", ID_LTC2627},
-+	{"ltc2629", ID_LTC2629},
- 	{}
- };
- MODULE_DEVICE_TABLE(i2c, ad5064_i2c_ids);
++	.probe		= mxc6255_probe,
++	.id_table	= mxc6255_id,
++};
++
++module_i2c_driver(mxc6255_driver);
++
++MODULE_AUTHOR("Teodora Baluta <teodora.baluta@intel.com>");
++MODULE_DESCRIPTION("MEMSIC MXC6255 orientation sensing accelerometer driver");
++MODULE_LICENSE("GPL v2");
 -- 
 1.9.1
 
