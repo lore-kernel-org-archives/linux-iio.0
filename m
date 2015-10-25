@@ -1,208 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58907 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58962 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752594AbbJYMEy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 08:04:54 -0400
-Subject: Re: [PATCH v3 2/3] iio:adc:palmas: add DT support
-To: "H. Nikolaus Schaller" <hns@goldelico.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	=?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Marek Belisko <marek@goldelico.com>,
-	Pradeep Goudagunta <pgoudagunta@nvidia.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>,
-	Graeme Gregory <gg@slimlogic.co.uk>,
-	jic23@jic23.retrosnub.co.uk, devicetree@vger.kernel.org,
-	LKML <linux-kernel@vger.kernel.org>,
-	linux-omap <linux-omap@vger.kernel.org>,
-	linux-iio@vger.kernel.org, Grazvydas Ignotas <notasas@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>
-References: <cover.1445000017.git.hns@goldelico.com>
- <79429ca1a6d0465b6b19ede16d90de23e4363431.1445000017.git.hns@goldelico.com>
+	with ESMTP id S1750740AbbJYMOj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 08:14:39 -0400
+Subject: Re: [PATCH v2] vf610_adc: Fix internal temperature calculation
+To: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, stefan@agner.ch,
+	linux-iio@vger.kernel.org
+References: <1445270076-10725-1-git-send-email-bhuvanchandra.dv@toradex.com>
+Cc: B38611@freescale.com, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, shawn.guo@linaro.org,
+	linux-kernel@vger.kernel.org, maitysanchayan@gmail.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <562CC564.7090402@kernel.org>
-Date: Sun, 25 Oct 2015 12:04:52 +0000
+Message-ID: <562CC7AB.5050902@kernel.org>
+Date: Sun, 25 Oct 2015 12:14:35 +0000
 MIME-Version: 1.0
-In-Reply-To: <79429ca1a6d0465b6b19ede16d90de23e4363431.1445000017.git.hns@goldelico.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <1445270076-10725-1-git-send-email-bhuvanchandra.dv@toradex.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/10/15 13:53, H. Nikolaus Schaller wrote:
-> From: Marek Belisko <marek@goldelico.com>
+On 19/10/15 16:54, Bhuvanchandra DV wrote:
+> Calculate ADCR_VTEMP25 using VTEMP25 at VREFH_ADC 3V3. Existing
+> calculations consider the typical values provided in datasheet.
+> Those typical values are valid for VREFH_ADC at 3.0V. VTEMP25
+> is different for different VREFH_ADC voltages. With VREFH_ADC
+> at 3.3V, voltage at 25°C is 0.699V. Hence update the VTEMP25
+> to 0.699V which gives ADCR@Temp25 as 867.
 > 
-> Code was found at:
-> https://android.googlesource.com/kernel/tegra/+/a90856a6626d502d42c6e7abccbdf9d730b36270%5E%21/#F1
+> Formula for finding ADCR@Temp25:
+> ADCR@Temp25 = (ADCR@Vdd * V@TEMP25 * 10) / VDDconv
 > 
-> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
-> Signed-off-by: Marek Belisko <marek@goldelico.com> [Fixed minor typos + add channels list to documentation]
-I am happy with your responses to Lars and that kind of covers what Mark raised as well.
+> ADCR@Vdd for 12-Bit ADC = 4095
+> VDDconv = VREFH_ADC * 10
+> 
+> VREFH_ADC@3.3V
+> ADCR@Temp25 = (4095 * .699 * 10) / 33
+> ADCR@Temp25 ~= 867
+> 
+> | VREFH_ADC | V@TEMP25 | VDDconv | ADCR@Temp25 |
+> |   3.0V    | 0.696mV  |    30   |     950     |
+> |   3.3V    | 0.699mV  |    33   |     867     |
+> 
+> Acked-by: Fugang Duan <B38611@freescale.com>
+> 
+> Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+Note these won't now go anywhere until after the release occurs
+(to close for a fix for something that has been true a while)
 
-One typo correction applied.
+Note standard ordering of signed-off by etc is
 
-Applied to the togreg branch of iio.git
-
-Thanks,
-
-Jonathan
+Author sign off
+Reviewer acked by
+My sign off (though I add this).
 > ---
->  .../devicetree/bindings/iio/adc/palmas-gpadc.txt   | 48 ++++++++++++++++++++
->  drivers/iio/adc/palmas_gpadc.c                     | 52 +++++++++++++++++++---
->  2 files changed, 95 insertions(+), 5 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt
+>  drivers/iio/adc/vf610_adc.c | 19 ++++++++++++++-----
+>  1 file changed, 14 insertions(+), 5 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt b/Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt
-> new file mode 100644
-> index 0000000..a6de996
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt
-> @@ -0,0 +1,48 @@
-> +* Palmas general purpose ADC IP block devicetree bindings
-> +
-> +Channels list:
-> +	0 battery type
-> +	1 battery temp NTC (optional current source)
-> +	2 GP
-> +	3 temp (with ext. diode, optional current source)
-> +	4 GP
-> +	5 GP
-> +	6 VBAT_SENSE
-> +	7 VCC_SENSE
-> +	8 Backup Battery voltage
-> +	9 external charger (VCHG)
-> +	10 VBUS
-> +	11 DC-DC current probe (how does this work?)
-> +	12 internal die temp
-> +	13 internal die temp
-> +	14 USB ID pin voltage
-> +	15 test network
-> +
-> +Required properties:
-> +- compatible : Must be "ti,palmas-gpadc".
-> +- #io-channel-cells: Should be set to <1>.
-> +
-> +Optional sub-nodes:
-> +ti,channel0-current-microamp: Channel 0 current in uA.
-> +	Values are rounded to derive 0uA, 5uA, 15uA, 20uA.
-> +ti,channel3-current-microamp: Channel 3 current in uA.
-> +	Valid are rounded to derive 0uA, 10uA, 400uA, 800uA.
-Values
-
-> +ti,enable-extended-delay: Enable extended delay.
-> +
-> +Example:
-> +
-> +pmic {
-> +	compatible = "ti,twl6035-pmic", "ti,palmas-pmic";
-> +	...
-> +	gpadc {
-> +		compatible = "ti,palmas-gpadc";
-> +		interrupts = <18 0
-> +			      16 0
-> +			      17 0>;
-> +		#io-channel-cells = <1>;
-> +		ti,channel0-current-microamp = <5>;
-> +		ti,channel3-current-microamp = <10>;
-> +		};
-> +	};
-> +	...
-> +};
-> diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
-> index 71763c5..f42eb8a 100644
-> --- a/drivers/iio/adc/palmas_gpadc.c
-> +++ b/drivers/iio/adc/palmas_gpadc.c
-> @@ -21,6 +21,8 @@
->  #include <linux/pm.h>
->  #include <linux/mfd/palmas.h>
->  #include <linux/completion.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/machine.h>
->  #include <linux/iio/driver.h>
-> @@ -460,6 +462,34 @@ static const struct iio_chan_spec palmas_gpadc_iio_channel[] = {
->  	PALMAS_ADC_CHAN_IIO(IN15, IIO_VOLTAGE, IIO_CHAN_INFO_PROCESSED),
->  };
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index f4df2a7..e7abc13 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -103,6 +103,13 @@
 >  
-> +static int palmas_gpadc_get_adc_dt_data(struct platform_device *pdev,
-> +	struct palmas_gpadc_platform_data **gpadc_pdata)
-> +{
-> +	struct device_node *np = pdev->dev.of_node;
-> +	struct palmas_gpadc_platform_data *gp_data;
-> +	int ret;
-> +	u32 pval;
-> +
-> +	gp_data = devm_kzalloc(&pdev->dev, sizeof(*gp_data), GFP_KERNEL);
-> +	if (!gp_data)
-> +		return -ENOMEM;
-> +
-> +	ret = of_property_read_u32(np, "ti,channel0-current-microamp", &pval);
-> +	if (!ret)
-> +		gp_data->ch0_current = pval;
-> +
-> +	ret = of_property_read_u32(np, "ti,channel3-current-microamp", &pval);
-> +	if (!ret)
-> +		gp_data->ch3_current = pval;
-> +
-> +	gp_data->extended_delay = of_property_read_bool(np,
-> +					"ti,enable-extended-delay");
-> +
-> +	*gpadc_pdata = gp_data;
-> +
-> +	return 0;
-> +}
-> +
->  static int palmas_gpadc_probe(struct platform_device *pdev)
->  {
->  	struct palmas_gpadc *adc;
-> @@ -469,12 +499,17 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
->  	int ret, i;
+>  #define DEFAULT_SAMPLE_TIME		1000
 >  
->  	pdata = dev_get_platdata(pdev->dev.parent);
-> -	if (!pdata || !pdata->gpadc_pdata) {
-> -		dev_err(&pdev->dev, "No platform data\n");
-> -		return -ENODEV;
-> -	}
->  
-> -	gpadc_pdata = pdata->gpadc_pdata;
-> +	if (pdata && pdata->gpadc_pdata)
-> +		gpadc_pdata = pdata->gpadc_pdata;
+> +/* V at 25°C of 696 mV */
+> +#define VF610_VTEMP25_3V0		950
+> +/* V at 25°C of 699 mV */
+> +#define VF610_VTEMP25_3V3		867
+> +/* Typical sensor slope coefficient at all temperatures */
+> +#define VF610_TEMP_SLOPE_COEFF		1840
 > +
-> +	if (!gpadc_pdata && pdev->dev.of_node) {
-> +		ret = palmas_gpadc_get_adc_dt_data(pdev, &gpadc_pdata);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +	if (!gpadc_pdata)
-> +		return -EINVAL;
->  
->  	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
->  	if (!indio_dev) {
-> @@ -790,12 +825,19 @@ static const struct dev_pm_ops palmas_pm_ops = {
->  				palmas_gpadc_resume)
->  };
->  
-> +static const struct of_device_id of_palmas_gpadc_match_tbl[] = {
-> +	{ .compatible = "ti,palmas-gpadc", },
-> +	{ /* end */ }
-> +};
-> +MODULE_DEVICE_TABLE(of, of_palmas_gpadc_match_tbl);
+>  enum clk_sel {
+>  	VF610_ADCIOC_BUSCLK_SET,
+>  	VF610_ADCIOC_ALTCLK_SET,
+> @@ -636,11 +643,13 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+>  			break;
+>  		case IIO_TEMP:
+>  			/*
+> -			* Calculate in degree Celsius times 1000
+> -			* Using sensor slope of 1.84 mV/°C and
+> -			* V at 25°C of 696 mV
+> -			*/
+> -			*val = 25000 - ((int)info->value - 864) * 1000000 / 1840;
+> +			 * Calculate in degree Celsius times 1000
+> +			 * Using the typical sensor slope of 1.84 mV/°C
+> +			 * and VREFH_ADC at 3.3V, V at 25°C of 699 mV
+> +			 */
+> +			*val = 25000 - ((int)info->value - VF610_VTEMP25_3V3) *
+> +					1000000 / VF610_TEMP_SLOPE_COEFF;
 > +
->  static struct platform_driver palmas_gpadc_driver = {
->  	.probe = palmas_gpadc_probe,
->  	.remove = palmas_gpadc_remove,
->  	.driver = {
->  		.name = MOD_NAME,
->  		.pm = &palmas_pm_ops,
-> +		.of_match_table = of_palmas_gpadc_match_tbl,
->  	},
->  };
->  
+>  			break;
+>  		default:
+>  			mutex_unlock(&indio_dev->mlock);
 > 
 
