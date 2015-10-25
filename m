@@ -1,243 +1,158 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58533 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58571 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750802AbbJYK6B (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 06:58:01 -0400
-Subject: Re: [PATCH 0/2] Remove .owner from spi_drivers
-To: "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>
-References: <1445608751-8432-1-git-send-email-afd@ti.com>
-Cc: linux-spi@vger.kernel.org, alsa-devel@alsa-project.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1750998AbbJYLFK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 07:05:10 -0400
+Subject: Re: [PATCH v4] iio: mma8452: support either of the available
+ interrupt pins
+To: Rob Herring <robh+dt@kernel.org>,
+	Martin Kepplinger <martink@posteo.de>
+References: <1444914632-4486-1-git-send-email-martink@posteo.de>
+ <CAL_Jsq+cd0A7wczT-KC3TT_2UmZDqjr799uRMR_WA_JFfTw6dA@mail.gmail.com>
+Cc: Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <562CB5B6.2090800@kernel.org>
-Date: Sun, 25 Oct 2015 10:57:58 +0000
+Message-ID: <562CB761.9050905@kernel.org>
+Date: Sun, 25 Oct 2015 11:05:05 +0000
 MIME-Version: 1.0
-In-Reply-To: <1445608751-8432-1-git-send-email-afd@ti.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAL_Jsq+cd0A7wczT-KC3TT_2UmZDqjr799uRMR_WA_JFfTw6dA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/10/15 14:59, Andrew F. Davis wrote:
-> Hello all,
+On 22/10/15 19:22, Rob Herring wrote:
+> On Thu, Oct 15, 2015 at 8:10 AM, Martin Kepplinger <martink@posteo.de> wrote:
+>> This change is important in order for everyone to be easily able to use the
+>> driver for one of the supported accelerometer chips!
+>>
+>> Until now, the driver blindly assumed that the INT1 interrupt line is wired
+>> on a user's board. But these devices have 2 interrupt lines and can route
+>> their interrupt sources to one of them. Now, if "INT2" is found and matches
+>> i2c_client->irq, INT2 will be used.
+>>
+>> The chip's default actually is INT2, which is why probably many boards will
+>> have it wired and can make use of this.
+>>
+>> Of course, this also falls back to assuming INT1, so for existing users
+>> nothing will break. The new functionality is described in the bindings doc.
+>>
+>> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+>> ---
+>> changelog:
+>> v4: use irq that matches client->irq, backwards compatible
+>> v3: correctly assign irq if both pins are described in DT
+>> v2: don't warn but normally handle if both pins are described in dts
+>>     thanks Mark Rutland
+>> v1: initial post
+>>
+>>  .../devicetree/bindings/iio/accel/mma8452.txt       |  6 ++++++
 > 
-> This series adds a helper macro to the SPI core that assigns the owner
-> in spi_drivers so individual drivers do not have to do this, this is
-> similar to other subsystems like platform_driver and i2c_driver that
-> have made this change.
-For patch 2 (which I don't seem to have a copy of - found online)
+> For the binding:
+> 
+> Rob Herring <robh@kernel.org>
+I've guessed that was an Acked-by :)
 
-iio parts 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+Anyhow, applied to the togreg branch of iio.git.
+
+I'm afraid after my hiatus for a couple of weeks (day job work crisis now
+over) this has missed going in for the current cycle.
+
+IIO merge closes more than a week before the merge window opens and Linus
+just announced probably release a week today.
+
+Sorry about that, will be queued up for an early entry into linux next
+after the merge window closes.
+
+Jonathan
 > 
-> Andrew F. Davis (2):
->   spi: Add THIS_MODULE to spi_driver in SPI core
->   Drop owner assignment from spi_drivers
-> 
->  arch/arm/mach-u300/dummyspichip.c                                 | 1 -
->  arch/mips/txx9/generic/spi_eeprom.c                               | 1 -
->  drivers/char/tpm/st33zp24/spi.c                                   | 1 -
->  drivers/gpio/gpio-74x164.c                                        | 1 -
->  drivers/gpio/gpio-max7301.c                                       | 1 -
->  drivers/gpio/gpio-mc33880.c                                       | 1 -
->  drivers/gpio/gpio-mcp23s08.c                                      | 2 --
->  drivers/gpu/drm/panel/panel-lg-lg4573.c                           | 1 -
->  drivers/gpu/drm/panel/panel-samsung-ld9040.c                      | 1 -
->  drivers/hwmon/ad7314.c                                            | 1 -
->  drivers/hwmon/adcxx.c                                             | 1 -
->  drivers/hwmon/ads7871.c                                           | 1 -
->  drivers/hwmon/adt7310.c                                           | 1 -
->  drivers/hwmon/lm70.c                                              | 1 -
->  drivers/hwmon/max1111.c                                           | 1 -
->  drivers/iio/accel/kxsd9.c                                         | 1 -
->  drivers/iio/accel/st_accel_spi.c                                  | 1 -
->  drivers/iio/adc/ad7266.c                                          | 1 -
->  drivers/iio/adc/ad7298.c                                          | 1 -
->  drivers/iio/adc/ad7476.c                                          | 1 -
->  drivers/iio/adc/ad7791.c                                          | 1 -
->  drivers/iio/adc/ad7793.c                                          | 1 -
->  drivers/iio/adc/ad7887.c                                          | 1 -
->  drivers/iio/adc/ad7923.c                                          | 1 -
->  drivers/iio/adc/max1027.c                                         | 1 -
->  drivers/iio/adc/mcp320x.c                                         | 1 -
->  drivers/iio/adc/ti-adc128s052.c                                   | 1 -
->  drivers/iio/amplifiers/ad8366.c                                   | 1 -
->  drivers/iio/common/ssp_sensors/ssp_dev.c                          | 1 -
->  drivers/iio/dac/ad5064.c                                          | 1 -
->  drivers/iio/dac/ad5360.c                                          | 1 -
->  drivers/iio/dac/ad5380.c                                          | 1 -
->  drivers/iio/dac/ad5421.c                                          | 1 -
->  drivers/iio/dac/ad5446.c                                          | 1 -
->  drivers/iio/dac/ad5449.c                                          | 1 -
->  drivers/iio/dac/ad5504.c                                          | 1 -
->  drivers/iio/dac/ad5624r_spi.c                                     | 1 -
->  drivers/iio/dac/ad5686.c                                          | 1 -
->  drivers/iio/dac/ad5755.c                                          | 1 -
->  drivers/iio/dac/ad5764.c                                          | 1 -
->  drivers/iio/dac/ad5791.c                                          | 1 -
->  drivers/iio/dac/ad7303.c                                          | 1 -
->  drivers/iio/dac/mcp4922.c                                         | 1 -
->  drivers/iio/frequency/ad9523.c                                    | 1 -
->  drivers/iio/frequency/adf4350.c                                   | 1 -
->  drivers/iio/gyro/adis16080.c                                      | 1 -
->  drivers/iio/gyro/adis16130.c                                      | 1 -
->  drivers/iio/gyro/adis16136.c                                      | 1 -
->  drivers/iio/gyro/adis16260.c                                      | 1 -
->  drivers/iio/gyro/adxrs450.c                                       | 1 -
->  drivers/iio/gyro/st_gyro_spi.c                                    | 1 -
->  drivers/iio/imu/adis16400_core.c                                  | 1 -
->  drivers/iio/imu/adis16480.c                                       | 1 -
->  drivers/iio/magnetometer/st_magn_spi.c                            | 1 -
->  drivers/iio/pressure/ms5611_spi.c                                 | 1 -
->  drivers/iio/pressure/st_pressure_spi.c                            | 1 -
->  drivers/iio/proximity/as3935.c                                    | 1 -
->  drivers/input/misc/ad714x-spi.c                                   | 1 -
->  drivers/input/misc/adxl34x-spi.c                                  | 1 -
->  drivers/input/touchscreen/ad7877.c                                | 1 -
->  drivers/input/touchscreen/ad7879-spi.c                            | 1 -
->  drivers/input/touchscreen/ads7846.c                               | 1 -
->  drivers/input/touchscreen/cyttsp4_spi.c                           | 1 -
->  drivers/input/touchscreen/cyttsp_spi.c                            | 1 -
->  drivers/input/touchscreen/tsc2005.c                               | 1 -
->  drivers/leds/leds-dac124s085.c                                    | 1 -
->  drivers/media/i2c/s5c73m3/s5c73m3-spi.c                           | 1 -
->  drivers/media/tuners/msi001.c                                     | 1 -
->  drivers/mfd/arizona-spi.c                                         | 1 -
->  drivers/mfd/cros_ec_spi.c                                         | 1 -
->  drivers/mfd/da9052-spi.c                                          | 1 -
->  drivers/mfd/ezx-pcap.c                                            | 1 -
->  drivers/mfd/mc13xxx-spi.c                                         | 1 -
->  drivers/mfd/stmpe-spi.c                                           | 1 -
->  drivers/mfd/tps65912-spi.c                                        | 1 -
->  drivers/mfd/wm831x-spi.c                                          | 1 -
->  drivers/misc/ad525x_dpot-spi.c                                    | 1 -
->  drivers/misc/bmp085-spi.c                                         | 1 -
->  drivers/misc/eeprom/at25.c                                        | 1 -
->  drivers/misc/eeprom/eeprom_93xx46.c                               | 1 -
->  drivers/misc/lattice-ecp3-config.c                                | 1 -
->  drivers/misc/lis3lv02d/lis3lv02d_spi.c                            | 1 -
->  drivers/misc/ti_dac7512.c                                         | 1 -
->  drivers/mmc/host/mmc_spi.c                                        | 1 -
->  drivers/mtd/devices/m25p80.c                                      | 1 -
->  drivers/mtd/devices/mtd_dataflash.c                               | 1 -
->  drivers/mtd/devices/sst25l.c                                      | 1 -
->  drivers/net/can/spi/mcp251x.c                                     | 1 -
->  drivers/net/ethernet/micrel/ks8851.c                              | 1 -
->  drivers/net/ethernet/microchip/enc28j60.c                         | 1 -
->  drivers/net/ethernet/qualcomm/qca_spi.c                           | 1 -
->  drivers/net/ieee802154/at86rf230.c                                | 1 -
->  drivers/net/ieee802154/cc2520.c                                   | 1 -
->  drivers/net/ieee802154/mrf24j40.c                                 | 1 -
->  drivers/net/phy/spi_ks8995.c                                      | 1 -
->  drivers/net/wireless/cw1200/cw1200_spi.c                          | 1 -
->  drivers/net/wireless/libertas/if_spi.c                            | 1 -
->  drivers/net/wireless/p54/p54spi.c                                 | 1 -
->  drivers/net/wireless/ti/wl1251/spi.c                              | 1 -
->  drivers/net/wireless/ti/wlcore/spi.c                              | 1 -
->  drivers/nfc/st-nci/spi.c                                          | 1 -
->  drivers/nfc/trf7970a.c                                            | 1 -
->  drivers/regulator/tps6524x-regulator.c                            | 1 -
->  drivers/rtc/rtc-ds1305.c                                          | 1 -
->  drivers/rtc/rtc-ds1343.c                                          | 1 -
->  drivers/rtc/rtc-ds1347.c                                          | 1 -
->  drivers/rtc/rtc-ds1390.c                                          | 1 -
->  drivers/rtc/rtc-ds3234.c                                          | 1 -
->  drivers/rtc/rtc-m41t93.c                                          | 1 -
->  drivers/rtc/rtc-m41t94.c                                          | 1 -
->  drivers/rtc/rtc-max6902.c                                         | 1 -
->  drivers/rtc/rtc-mcp795.c                                          | 1 -
->  drivers/rtc/rtc-pcf2123.c                                         | 1 -
->  drivers/rtc/rtc-r9701.c                                           | 1 -
->  drivers/rtc/rtc-rs5c348.c                                         | 1 -
->  drivers/rtc/rtc-rx4581.c                                          | 1 -
->  drivers/spi/spi-tle62x0.c                                         | 1 -
->  drivers/spi/spi.c                                                 | 7 ++++---
->  drivers/spi/spidev.c                                              | 1 -
->  drivers/staging/fbtft/fbtft.h                                     | 1 -
->  drivers/staging/fbtft/flexfb.c                                    | 1 -
->  drivers/staging/iio/accel/adis16201_core.c                        | 1 -
->  drivers/staging/iio/accel/adis16203_core.c                        | 1 -
->  drivers/staging/iio/accel/adis16204_core.c                        | 1 -
->  drivers/staging/iio/accel/adis16209_core.c                        | 1 -
->  drivers/staging/iio/accel/adis16220_core.c                        | 1 -
->  drivers/staging/iio/accel/adis16240_core.c                        | 1 -
->  drivers/staging/iio/accel/lis3l02dq_core.c                        | 1 -
->  drivers/staging/iio/accel/sca3000_core.c                          | 1 -
->  drivers/staging/iio/adc/ad7192.c                                  | 1 -
->  drivers/staging/iio/adc/ad7280a.c                                 | 1 -
->  drivers/staging/iio/adc/ad7606_spi.c                              | 1 -
->  drivers/staging/iio/adc/ad7780.c                                  | 1 -
->  drivers/staging/iio/adc/ad7816.c                                  | 1 -
->  drivers/staging/iio/addac/adt7316-spi.c                           | 1 -
->  drivers/staging/iio/frequency/ad9832.c                            | 1 -
->  drivers/staging/iio/frequency/ad9834.c                            | 1 -
->  drivers/staging/iio/gyro/adis16060_core.c                         | 2 --
->  drivers/staging/iio/magnetometer/hmc5843_spi.c                    | 1 -
->  drivers/staging/iio/meter/ade7753.c                               | 1 -
->  drivers/staging/iio/meter/ade7754.c                               | 1 -
->  drivers/staging/iio/meter/ade7758_core.c                          | 1 -
->  drivers/staging/iio/meter/ade7759.c                               | 1 -
->  drivers/staging/iio/meter/ade7854-spi.c                           | 1 -
->  drivers/staging/iio/resolver/ad2s1200.c                           | 1 -
->  drivers/staging/iio/resolver/ad2s1210.c                           | 1 -
->  drivers/staging/iio/resolver/ad2s90.c                             | 1 -
->  drivers/staging/mt29f_spinand/mt29f_spinand.c                     | 1 -
->  drivers/tty/serial/ifx6x60.c                                      | 2 +-
->  drivers/tty/serial/max3100.c                                      | 1 -
->  drivers/tty/serial/max310x.c                                      | 1 -
->  drivers/tty/serial/sc16is7xx.c                                    | 1 -
->  drivers/usb/host/max3421-hcd.c                                    | 1 -
->  drivers/video/backlight/ams369fg06.c                              | 1 -
->  drivers/video/backlight/corgi_lcd.c                               | 1 -
->  drivers/video/backlight/ili922x.c                                 | 1 -
->  drivers/video/backlight/l4f00242t03.c                             | 1 -
->  drivers/video/backlight/ld9040.c                                  | 1 -
->  drivers/video/backlight/lms283gf05.c                              | 1 -
->  drivers/video/backlight/lms501kf03.c                              | 1 -
->  drivers/video/backlight/ltv350qv.c                                | 1 -
->  drivers/video/backlight/s6e63m0.c                                 | 1 -
->  drivers/video/backlight/tdo24m.c                                  | 1 -
->  drivers/video/backlight/tosa_lcd.c                                | 1 -
->  drivers/video/backlight/vgg2432a4.c                               | 1 -
->  drivers/video/fbdev/mmp/panel/tpo_tj032md01bw.c                   | 1 -
->  drivers/video/fbdev/omap/lcd_mipid.c                              | 1 -
->  drivers/video/fbdev/omap2/displays-new/panel-lgphilips-lb035q02.c | 1 -
->  drivers/video/fbdev/omap2/displays-new/panel-nec-nl8048hl11.c     | 1 -
->  drivers/video/fbdev/omap2/displays-new/panel-sony-acx565akm.c     | 1 -
->  drivers/video/fbdev/omap2/displays-new/panel-tpo-td028ttec1.c     | 1 -
->  drivers/video/fbdev/omap2/displays-new/panel-tpo-td043mtea1.c     | 1 -
->  include/linux/spi/spi.h                                           | 6 +++++-
->  sound/soc/codecs/ad1836.c                                         | 1 -
->  sound/soc/codecs/ad193x-spi.c                                     | 1 -
->  sound/soc/codecs/adau1761-spi.c                                   | 1 -
->  sound/soc/codecs/adau1781-spi.c                                   | 1 -
->  sound/soc/codecs/adau1977-spi.c                                   | 1 -
->  sound/soc/codecs/adav801.c                                        | 1 -
->  sound/soc/codecs/ak4104.c                                         | 1 -
->  sound/soc/codecs/cs4271-spi.c                                     | 1 -
->  sound/soc/codecs/da7210.c                                         | 1 -
->  sound/soc/codecs/pcm1792a.c                                       | 1 -
->  sound/soc/codecs/pcm512x-spi.c                                    | 1 -
->  sound/soc/codecs/rt5677-spi.c                                     | 1 -
->  sound/soc/codecs/ssm2602-spi.c                                    | 1 -
->  sound/soc/codecs/tlv320aic23-spi.c                                | 1 -
->  sound/soc/codecs/tlv320aic26.c                                    | 1 -
->  sound/soc/codecs/wm0010.c                                         | 1 -
->  sound/soc/codecs/wm8510.c                                         | 1 -
->  sound/soc/codecs/wm8711.c                                         | 1 -
->  sound/soc/codecs/wm8728.c                                         | 1 -
->  sound/soc/codecs/wm8731.c                                         | 1 -
->  sound/soc/codecs/wm8737.c                                         | 1 -
->  sound/soc/codecs/wm8741.c                                         | 1 -
->  sound/soc/codecs/wm8750.c                                         | 1 -
->  sound/soc/codecs/wm8753.c                                         | 1 -
->  sound/soc/codecs/wm8770.c                                         | 1 -
->  sound/soc/codecs/wm8776.c                                         | 1 -
->  sound/soc/codecs/wm8804-spi.c                                     | 1 -
->  sound/soc/codecs/wm8900.c                                         | 1 -
->  sound/soc/codecs/wm8983.c                                         | 1 -
->  sound/soc/codecs/wm8985.c                                         | 1 -
->  sound/soc/codecs/wm8988.c                                         | 1 -
->  sound/soc/codecs/wm8995.c                                         | 1 -
->  205 files changed, 10 insertions(+), 209 deletions(-)
+>>  drivers/iio/accel/mma8452.c                         | 21 +++++++++++++++------
+>>  2 files changed, 21 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+>> index e3c3746..3c10e85 100644
+>> --- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+>> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+>> @@ -7,13 +7,18 @@ Required properties:
+>>      * "fsl,mma8453"
+>>      * "fsl,mma8652"
+>>      * "fsl,mma8653"
+>> +
+>>    - reg: the I2C address of the chip
+>>
+>>  Optional properties:
+>>
+>>    - interrupt-parent: should be the phandle for the interrupt controller
+>> +
+>>    - interrupts: interrupt mapping for GPIO IRQ
+>>
+>> +  - interrupt-names: should contain "INT1" and/or "INT2", the accelerometer's
+>> +                    interrupt line in use.
+>> +
+>>  Example:
+>>
+>>         mma8453fc@1d {
+>> @@ -21,4 +26,5 @@ Example:
+>>                 reg = <0x1d>;
+>>                 interrupt-parent = <&gpio1>;
+>>                 interrupts = <5 0>;
+>> +               interrupt-names = "INT2";
+>>         };
+>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+>> index 1eccc2d..116a6e4 100644
+>> --- a/drivers/iio/accel/mma8452.c
+>> +++ b/drivers/iio/accel/mma8452.c
+>> @@ -29,6 +29,7 @@
+>>  #include <linux/iio/events.h>
+>>  #include <linux/delay.h>
+>>  #include <linux/of_device.h>
+>> +#include <linux/of_irq.h>
+>>
+>>  #define MMA8452_STATUS                         0x00
+>>  #define  MMA8452_STATUS_DRDY                   (BIT(2) | BIT(1) | BIT(0))
+>> @@ -1130,13 +1131,21 @@ static int mma8452_probe(struct i2c_client *client,
+>>                                            MMA8452_INT_FF_MT;
+>>                 int enabled_interrupts = MMA8452_INT_TRANS |
+>>                                          MMA8452_INT_FF_MT;
+>> +               int irq2;
+>>
+>> -               /* Assume wired to INT1 pin */
+>> -               ret = i2c_smbus_write_byte_data(client,
+>> -                                               MMA8452_CTRL_REG5,
+>> -                                               supported_interrupts);
+>> -               if (ret < 0)
+>> -                       return ret;
+>> +               irq2 = of_irq_get_byname(client->dev.of_node, "INT2");
+>> +
+>> +               if (irq2 == client->irq) {
+>> +                       dev_dbg(&client->dev, "using interrupt line INT2\n");
+>> +               } else {
+>> +                       ret = i2c_smbus_write_byte_data(client,
+>> +                                                       MMA8452_CTRL_REG5,
+>> +                                                       supported_interrupts);
+>> +                       if (ret < 0)
+>> +                               return ret;
+>> +
+>> +                       dev_dbg(&client->dev, "using interrupt line INT1\n");
+>> +               }
+>>
+>>                 ret = i2c_smbus_write_byte_data(client,
+>>                                                 MMA8452_CTRL_REG4,
+>> --
+>> 2.1.4
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
