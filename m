@@ -1,158 +1,178 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58571 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58630 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750998AbbJYLFK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 07:05:10 -0400
-Subject: Re: [PATCH v4] iio: mma8452: support either of the available
- interrupt pins
-To: Rob Herring <robh+dt@kernel.org>,
-	Martin Kepplinger <martink@posteo.de>
-References: <1444914632-4486-1-git-send-email-martink@posteo.de>
- <CAL_Jsq+cd0A7wczT-KC3TT_2UmZDqjr799uRMR_WA_JFfTw6dA@mail.gmail.com>
-Cc: Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Martin Fuzzey <mfuzzey@parkeon.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+	with ESMTP id S1750802AbbJYLOt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 07:14:49 -0400
+Subject: Re: [PATCH v3 1/2] iio:ad5064: Structural changes to support LTC2617
+To: Marc Andre <marc.andre@netline.ch>
+References: <1445488471-16568-1-git-send-email-marc.andre@netline.ch>
+ <1445488471-16568-2-git-send-email-marc.andre@netline.ch>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <562CB761.9050905@kernel.org>
-Date: Sun, 25 Oct 2015 11:05:05 +0000
+Message-ID: <562CB9A4.1030805@kernel.org>
+Date: Sun, 25 Oct 2015 11:14:44 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAL_Jsq+cd0A7wczT-KC3TT_2UmZDqjr799uRMR_WA_JFfTw6dA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1445488471-16568-2-git-send-email-marc.andre@netline.ch>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/10/15 19:22, Rob Herring wrote:
-> On Thu, Oct 15, 2015 at 8:10 AM, Martin Kepplinger <martink@posteo.de> wrote:
->> This change is important in order for everyone to be easily able to use the
->> driver for one of the supported accelerometer chips!
->>
->> Until now, the driver blindly assumed that the INT1 interrupt line is wired
->> on a user's board. But these devices have 2 interrupt lines and can route
->> their interrupt sources to one of them. Now, if "INT2" is found and matches
->> i2c_client->irq, INT2 will be used.
->>
->> The chip's default actually is INT2, which is why probably many boards will
->> have it wired and can make use of this.
->>
->> Of course, this also falls back to assuming INT1, so for existing users
->> nothing will break. The new functionality is described in the bindings doc.
->>
->> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
->> ---
->> changelog:
->> v4: use irq that matches client->irq, backwards compatible
->> v3: correctly assign irq if both pins are described in DT
->> v2: don't warn but normally handle if both pins are described in dts
->>     thanks Mark Rutland
->> v1: initial post
->>
->>  .../devicetree/bindings/iio/accel/mma8452.txt       |  6 ++++++
+On 22/10/15 05:34, Marc Andre wrote:
+> This patch makes minor structural changes to support specifics
+> for LTC2617 DAC. This DAC requires different handling of the
+> power down modes. The configuration to actually support the
+> DAC will be submitted in a secondary patch.
 > 
-> For the binding:
+> Adjust the DECLARE_AD5064_CHANNELS() macro to accept a new
+> ext_info parameter. This allows to use different power down
+> modes per DAC. (e.g. DAC only support 90kohm to ground)
 > 
-> Rob Herring <robh@kernel.org>
-I've guessed that was an Acked-by :)
+> Add the chip_info parameter "powerdown_ltc". This parameter is
+> used in the ad5064_sync_powerdown_mode() function to handle the
+> power down command for LTC diffently. For those devices the
+> power down command must be addressed to the channel.
+> 
+> Signed-off-by: Marc Andre <marc.andre@netline.ch>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Really trivial point inline.  If you find a formatting issue
+(81 char line here) please fix it in a precursor patch rather than
+as you happen to go by it.  That makes for a trivial patch, but
+then ensures there is no 'noise' cluttering up the real work.
 
-Anyhow, applied to the togreg branch of iio.git.
-
-I'm afraid after my hiatus for a couple of weeks (day job work crisis now
-over) this has missed going in for the current cycle.
-
-IIO merge closes more than a week before the merge window opens and Linus
-just announced probably release a week today.
-
-Sorry about that, will be queued up for an early entry into linux next
-after the merge window closes.
+Applied to the togreg branch of iio.git - initially pushed out as testing.
+Note that due to my day job silly week, this missed the merge window for
+this cycle.  Sorry about that. Next pull request to Greg and hence hitting
+linux next will be after rc1.
 
 Jonathan
+> ---
+>  drivers/iio/dac/ad5064.c | 67 +++++++++++++++++++++++++++---------------------
+>  1 file changed, 38 insertions(+), 29 deletions(-)
 > 
->>  drivers/iio/accel/mma8452.c                         | 21 +++++++++++++++------
->>  2 files changed, 21 insertions(+), 6 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
->> index e3c3746..3c10e85 100644
->> --- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
->> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
->> @@ -7,13 +7,18 @@ Required properties:
->>      * "fsl,mma8453"
->>      * "fsl,mma8652"
->>      * "fsl,mma8653"
->> +
->>    - reg: the I2C address of the chip
->>
->>  Optional properties:
->>
->>    - interrupt-parent: should be the phandle for the interrupt controller
->> +
->>    - interrupts: interrupt mapping for GPIO IRQ
->>
->> +  - interrupt-names: should contain "INT1" and/or "INT2", the accelerometer's
->> +                    interrupt line in use.
->> +
->>  Example:
->>
->>         mma8453fc@1d {
->> @@ -21,4 +26,5 @@ Example:
->>                 reg = <0x1d>;
->>                 interrupt-parent = <&gpio1>;
->>                 interrupts = <5 0>;
->> +               interrupt-names = "INT2";
->>         };
->> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> index 1eccc2d..116a6e4 100644
->> --- a/drivers/iio/accel/mma8452.c
->> +++ b/drivers/iio/accel/mma8452.c
->> @@ -29,6 +29,7 @@
->>  #include <linux/iio/events.h>
->>  #include <linux/delay.h>
->>  #include <linux/of_device.h>
->> +#include <linux/of_irq.h>
->>
->>  #define MMA8452_STATUS                         0x00
->>  #define  MMA8452_STATUS_DRDY                   (BIT(2) | BIT(1) | BIT(0))
->> @@ -1130,13 +1131,21 @@ static int mma8452_probe(struct i2c_client *client,
->>                                            MMA8452_INT_FF_MT;
->>                 int enabled_interrupts = MMA8452_INT_TRANS |
->>                                          MMA8452_INT_FF_MT;
->> +               int irq2;
->>
->> -               /* Assume wired to INT1 pin */
->> -               ret = i2c_smbus_write_byte_data(client,
->> -                                               MMA8452_CTRL_REG5,
->> -                                               supported_interrupts);
->> -               if (ret < 0)
->> -                       return ret;
->> +               irq2 = of_irq_get_byname(client->dev.of_node, "INT2");
->> +
->> +               if (irq2 == client->irq) {
->> +                       dev_dbg(&client->dev, "using interrupt line INT2\n");
->> +               } else {
->> +                       ret = i2c_smbus_write_byte_data(client,
->> +                                                       MMA8452_CTRL_REG5,
->> +                                                       supported_interrupts);
->> +                       if (ret < 0)
->> +                               return ret;
->> +
->> +                       dev_dbg(&client->dev, "using interrupt line INT1\n");
->> +               }
->>
->>                 ret = i2c_smbus_write_byte_data(client,
->>                                                 MMA8452_CTRL_REG4,
->> --
->> 2.1.4
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+> index 978f130..3bb0312 100644
+> --- a/drivers/iio/dac/ad5064.c
+> +++ b/drivers/iio/dac/ad5064.c
+> @@ -50,10 +50,12 @@
+>  /**
+>   * struct ad5064_chip_info - chip specific information
+>   * @shared_vref:	whether the vref supply is shared between channels
+> - * @internal_vref:	internal reference voltage. 0 if the chip has no internal
+> - *			vref.
+> + * @internal_vref:	internal reference voltage. 0 if the chip has no
+> +			internal vref.
+I'm guessing this just tripped the 80 character limit. Ideally this would have
+been a precursor patch as it has nothing to with the changes here.  
+>   * @channel:		channel specification
+>   * @num_channels:	number of channels
+> + * @powerdown_ltc:	Use alternative power down addressing as required by
+> + *			ltc2617 and others.
+>   */
+>  
+>  struct ad5064_chip_info {
+> @@ -61,6 +63,7 @@ struct ad5064_chip_info {
+>  	unsigned long internal_vref;
+>  	const struct iio_chan_spec *channels;
+>  	unsigned int num_channels;
+> +	bool powerdown_ltc;
+>  };
+>  
+>  struct ad5064_state;
+> @@ -136,15 +139,21 @@ static int ad5064_write(struct ad5064_state *st, unsigned int cmd,
+>  static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
+>  	const struct iio_chan_spec *chan)
+>  {
+> -	unsigned int val;
+> +	unsigned int val, address;
+>  	int ret;
+>  
+> -	val = (0x1 << chan->address);
+> +	if (st->chip_info->powerdown_ltc) {
+> +		val = 0;
+> +		address = chan->address;
+> +	} else {
+> +		address = 0;
+> +		val = (0x1 << chan->address);
+>  
+> -	if (st->pwr_down[chan->channel])
+> -		val |= st->pwr_down_mode[chan->channel] << 8;
+> +		if (st->pwr_down[chan->channel])
+> +			val |= st->pwr_down_mode[chan->channel] << 8;
+> +	}
+>  
+> -	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, 0, val, 0);
+> +	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, address, val, 0);
+>  
+>  	return ret;
+>  }
+> @@ -295,7 +304,7 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
+>  	{ },
+>  };
+>  
+> -#define AD5064_CHANNEL(chan, addr, bits, _shift) {		\
+> +#define AD5064_CHANNEL(chan, addr, bits, _shift, _ext_info) {		\
+>  	.type = IIO_VOLTAGE,					\
+>  	.indexed = 1,						\
+>  	.output = 1,						\
+> @@ -309,37 +318,37 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
+>  		.storagebits = 16,				\
+>  		.shift = (_shift),				\
+>  	},							\
+> -	.ext_info = ad5064_ext_info,				\
+> +	.ext_info = (_ext_info),				\
+>  }
+>  
+> -#define DECLARE_AD5064_CHANNELS(name, bits, shift) \
+> +#define DECLARE_AD5064_CHANNELS(name, bits, shift, ext_info) \
+>  const struct iio_chan_spec name[] = { \
+> -	AD5064_CHANNEL(0, 0, bits, shift), \
+> -	AD5064_CHANNEL(1, 1, bits, shift), \
+> -	AD5064_CHANNEL(2, 2, bits, shift), \
+> -	AD5064_CHANNEL(3, 3, bits, shift), \
+> -	AD5064_CHANNEL(4, 4, bits, shift), \
+> -	AD5064_CHANNEL(5, 5, bits, shift), \
+> -	AD5064_CHANNEL(6, 6, bits, shift), \
+> -	AD5064_CHANNEL(7, 7, bits, shift), \
+> +	AD5064_CHANNEL(0, 0, bits, shift, ext_info), \
+> +	AD5064_CHANNEL(1, 1, bits, shift, ext_info), \
+> +	AD5064_CHANNEL(2, 2, bits, shift, ext_info), \
+> +	AD5064_CHANNEL(3, 3, bits, shift, ext_info), \
+> +	AD5064_CHANNEL(4, 4, bits, shift, ext_info), \
+> +	AD5064_CHANNEL(5, 5, bits, shift, ext_info), \
+> +	AD5064_CHANNEL(6, 6, bits, shift, ext_info), \
+> +	AD5064_CHANNEL(7, 7, bits, shift, ext_info), \
+>  }
+>  
+> -#define DECLARE_AD5065_CHANNELS(name, bits, shift) \
+> +#define DECLARE_AD5065_CHANNELS(name, bits, shift, ext_info) \
+>  const struct iio_chan_spec name[] = { \
+> -	AD5064_CHANNEL(0, 0, bits, shift), \
+> -	AD5064_CHANNEL(1, 3, bits, shift), \
+> +	AD5064_CHANNEL(0, 0, bits, shift, ext_info), \
+> +	AD5064_CHANNEL(1, 3, bits, shift, ext_info), \
+>  }
+>  
+> -static DECLARE_AD5064_CHANNELS(ad5024_channels, 12, 8);
+> -static DECLARE_AD5064_CHANNELS(ad5044_channels, 14, 6);
+> -static DECLARE_AD5064_CHANNELS(ad5064_channels, 16, 4);
+> +static DECLARE_AD5064_CHANNELS(ad5024_channels, 12, 8, ad5064_ext_info);
+> +static DECLARE_AD5064_CHANNELS(ad5044_channels, 14, 6, ad5064_ext_info);
+> +static DECLARE_AD5064_CHANNELS(ad5064_channels, 16, 4, ad5064_ext_info);
+>  
+> -static DECLARE_AD5065_CHANNELS(ad5025_channels, 12, 8);
+> -static DECLARE_AD5065_CHANNELS(ad5045_channels, 14, 6);
+> -static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4);
+> +static DECLARE_AD5065_CHANNELS(ad5025_channels, 12, 8, ad5064_ext_info);
+> +static DECLARE_AD5065_CHANNELS(ad5045_channels, 14, 6, ad5064_ext_info);
+> +static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4, ad5064_ext_info);
+>  
+> -static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4);
+> -static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0);
+> +static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4, ad5064_ext_info);
+> +static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0, ad5064_ext_info);
+>  
+>  static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
+>  	[ID_AD5024] = {
 > 
 
