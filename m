@@ -1,61 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.101.7]:43468 "EHLO ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751758AbbJWSgV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 23 Oct 2015 14:36:21 -0400
-Date: Fri, 23 Oct 2015 20:29:12 +0200
-From: Sebastian Reichel <sre@ring0.de>
-To: "Andrew F. Davis" <afd@ti.com>
-Cc: Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
-	alsa-devel@alsa-project.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] Remove .owner from spi_drivers
-Message-ID: <20151023182911.GA14674@earth>
-References: <1445608751-8432-1-git-send-email-afd@ti.com>
+Received: from mail-lf0-f51.google.com ([209.85.215.51]:34971 "EHLO
+	mail-lf0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750951AbbJYHIN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 03:08:13 -0400
+Received: by lfbn126 with SMTP id n126so84289436lfb.2
+        for <linux-iio@vger.kernel.org>; Sun, 25 Oct 2015 00:08:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="envbJBWh7q8WU6mo"
-In-Reply-To: <1445608751-8432-1-git-send-email-afd@ti.com>
+In-Reply-To: <1445342112.4432.43.camel@hadess.net>
+References: <CAF8px55fZoAPCcvGf3G4trdnLBj7vcWLQJ7k=8S5YbuTqtRVLA@mail.gmail.com>
+	<20151019223911.GA7159@jelly.redhat.com>
+	<1445334820.4432.42.camel@hadess.net>
+	<CAF8px56KtXzccgTw1m8opnwn0LVoKgc7cTPA_7q_0Zy-L60CoQ@mail.gmail.com>
+	<1445342112.4432.43.camel@hadess.net>
+Date: Sun, 25 Oct 2015 02:08:11 -0500
+Message-ID: <CAF8px57uErVvHDSrovDGia9=ATQvJ7qPN6PSP+Mm_hmM4CQsDw@mail.gmail.com>
+Subject: Re: iio sensors, acceleration and gyro.
+From: Mike Mestnik <cheako+wayland-devel@mikemestnik.net>
+To: Bastien Nocera <hadess@hadess.net>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	linux-input@vger.kernel.org,
+	Peter Hutterer <peter.hutterer@who-t.net>,
+	wayland-devel@lists.freedesktop.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+--- Top Post ---
+I've done some more research into this and I feel that the iio project
+has the answer, the kernel api.  Looks like the developers of iio had
+already considered input events being generated from iio data, this
+includes both rotation(6 possible states and reasons other than an
+~0,0 pivot) and mouse like movement.  Thus I feel that
+devices/input/iio-sensors should replace a userspace process like
+iio-sensor-proxy for all the reasons I've previously stated.  For the
+mpu6050 this would mean at least two more event devices, when
+activated ideally the iio interface would "dry up" to avoid
+contention.
 
---envbJBWh7q8WU6mo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+As stated I feel that the current detection for rotation leaves a lot
+to be desired when compared to how an android opperates, but even they
+didn't get it right.  The pice of the puzzel lacking is the pivot
+point of the rotation, if it's about 0,0 then the screen should flip.
+However if the distance from 0,0 of the pivot point is the distance to
+a persons hind end then the user is simply lying down and the head to
+screen orientation does not change, thus rotating the screen is in
+error.  There are other notable non 0,0 pivot points and in these
+cases it's also likely that rotating the screen would be incorrect.
 
-Hi,
+I'm off to work another project, but if i find the time this is high
+on my todo list.
 
-On Fri, Oct 23, 2015 at 08:59:09AM -0500, Andrew F. Davis wrote:
-> This series adds a helper macro to the SPI core that assigns the owner
-> in spi_drivers so individual drivers do not have to do this, this is
-> similar to other subsystems like platform_driver and i2c_driver that
-> have made this change.
+Cheers.
 
-Probably it makes sense to also update the related coccinelle
-script: scripts/coccinelle/api/platform_no_drv_owner.cocci
-
--- Sebastian
-
---envbJBWh7q8WU6mo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJWKnx0AAoJENju1/PIO/qakQkP/iBMf0gW76bpGYZ88bgGWHD+
-hWF4q3PN8jQswRA4owg8gMqUuLkH/Yv42ISL7HA7wPyQFjpdUHSx3i3B+Obs1Qm9
-K2+m12SZjYPh2R5LVtYIggQXID4mrcWlVnNfNEVYokrcCl+9BaZ+3JHZDWpum/9x
-kLk5rAVUeD8iMp0TKSZgXhIzIlv+qlSJt8sNsrML7RlAk7EmlJrqcwmosknn99SI
-zP1zIs92YjNh64/4lXO6BHhZFIFr4pCfQ8tLQGo4ArkaFJ2vRiEm1TIjWGBjhsg/
-ej5N8JqSRLJtDjYLpRu9yjvHDgQuNYu27SMORUNF9Ytlk6OB0pDmkxlojs5YA8Uk
-TBYmwXRO/e4ikMgCSoBK64sKktTiXxiYdwqWsPMZlDHHt/5QuOqZCczwLj5FN1Wf
-Vi38JZ5KJyZmN7gaUS0LXDKR2A/FXkHsAO4BMhg6YNrQbDV6dLqiqAky8jMoDMYh
-kWbRHEi+L4etey4ngyzP+JNMIFziNsAE0gPisHLcZXbiChfnsZBwA3lNmD8OJBWx
-gZDkBxsezR8Tde1evv5lJ8xtuZVd86oWtLs4Ic4Wr6ElHZcI9P3PFrky5KP4I0sv
-8AF6QJwOKgsMPp5n56XZuwMDiHtSjVcsOqlhBjGnoM1D/EvSfdBgnnKY65LW8tS5
-MBSkaUR34hhJOlGnh4kN
-=t6XM
------END PGP SIGNATURE-----
-
---envbJBWh7q8WU6mo--
+On Tue, Oct 20, 2015 at 6:55 AM, Bastien Nocera <hadess@hadess.net> wrote:
+> On Tue, 2015-10-20 at 06:52 -0500, Mike Mestnik wrote:
+>>
+>> On Oct 20, 2015 4:53 AM, "Bastien Nocera" <hadess@hadess.net> wrote:
+>> >
+>> > On Tue, 2015-10-20 at 08:39 +1000, Peter Hutterer wrote:
+>> > > On Mon, Oct 19, 2015 at 12:20:27PM -0500, Mike Mestnik wrote:
+>> > > > Hello,
+>> > > >   I've been working on a project called iio-sensor-proxy, it's
+>> a
+>> > > > project to take sensor readings and make them available over
+>> > > > dbus.  I
+>> > > > feel that this takes away from the generic concept that
+>> everything
+>> > > > is
+>> > > > a file.
+>> > > >
+>> > > > Does this code perhaps have a better home in libinput?
+>> > > >
+>> > > > https://github.com/hadess/iio-sensor-proxy
+>> > >
+>> > > I don't think so. iio-sensor-proxy is not at the same level as
+>> > > libinput, and
+>> > > the dbus API is there for a reason. in theory, a libinput-based
+>> > > solution
+>> > > would be for libinput to read the sensors and have iio-sensor-
+>> proxy
+>> > > wrap
+>> > > libinput to provide the dbus API that applications require.
+>> > >
+>> > > That wouldn't add anything to the current solution though, it'd
+>> be
+>> > > mostly
+>> > > code churn for little benefit. so unless Bastian requests that we
+>> add
+>> > > this
+>> > > to libinput, I don't think this is worth pursuing.
+>> >
+>> > It's at the wrong level (it needs to be system unique, as IIO
+>> doesn't
+>> > support concurrent uses), and having a single daemon allows us to
+>> share
+>> > code to support the other sensor types.
+>> It should be far more beneficial to add support to iio, then it is to
+>> write a single purpose daemon that fails to fix the cause while
+>> addressing only the symptoms.
+>
+> Be my guest. The ABI of the IIO subsystem in the Linux kernel won't be
+> changed.
