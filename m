@@ -1,54 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from seldrel01.sonyericsson.com ([37.139.156.2]:17678 "EHLO
-	seldrel01.sonyericsson.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751705AbbJYSJx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 14:09:53 -0400
-From: Bjorn Andersson <bjorn.andersson@sonymobile.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Johan Hovold <jhovold@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH 2/3] iio: light: lm3533-als: Print error message on invalid resistance
-Date: Sun, 25 Oct 2015 11:09:45 -0700
-Message-ID: <1445796586-28683-2-git-send-email-bjorn.andersson@sonymobile.com>
-In-Reply-To: <1445796586-28683-1-git-send-email-bjorn.andersson@sonymobile.com>
-References: <1445796586-28683-1-git-send-email-bjorn.andersson@sonymobile.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mranostay@gmail.com>
+From: Matt Ranostay <mranostay@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH] iio: lidar: return -EIO on invalid signal
+Date: Sun, 25 Oct 2015 16:07:18 -0700
+Message-Id: <1445814438-17163-1-git-send-email-mranostay@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Print an error message to indicate that invalid configuration data was
-provided in the platform_data, rather than just aborting initialization.
+Returning zero from the measurment function has the side effect of
+corrupting the triggered buffer readings, better to use -EIO than a
+zero measurement reading.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@sonymobile.com>
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-This patch can be picked independently of the other 2, but included in the
-series for "completeness".
-
- drivers/iio/light/lm3533-als.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
-index 076bc46fad03..e56937c40a18 100644
---- a/drivers/iio/light/lm3533-als.c
-+++ b/drivers/iio/light/lm3533-als.c
-@@ -743,8 +743,10 @@ static int lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
- {
- 	int ret;
+diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+index 961f9f99..359beac 100644
+--- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
++++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+@@ -130,10 +130,10 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+ 		if (ret < 0)
+ 			break;
  
--	if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MAX)
-+	if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MAX) {
-+		dev_err(&als->pdev->dev, "invalid resistor value\n");
- 		return -EINVAL;
-+	};
+-		/* return 0 since laser is likely pointed out of range */
++		/* return -EIO since laser is likely pointed out of range */
+ 		if (ret & LIDAR_REG_STATUS_INVALID) {
+ 			*reg = 0;
+-			ret = 0;
++			ret = -EIO;
+ 			break;
+ 		}
  
- 	ret = lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
- 	if (ret) {
 -- 
-2.4.2
-
+1.9.1
