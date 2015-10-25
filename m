@@ -1,81 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59413 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59421 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751092AbbJYNjA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 09:39:00 -0400
-Subject: Re: [PATCH] Staging: iio: cdc: Remove unused macros
-To: Shraddha Barke <shraddha.6596@gmail.com>,
-	outreachy-kernel@googlegroups.com,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-References: <1444250290-32700-1-git-send-email-shraddha.6596@gmail.com>
- <561A6DCD.8000505@kernel.org> <561A6DF0.4050502@kernel.org>
+	with ESMTP id S1751701AbbJYNk0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 09:40:26 -0400
+Subject: Re: [PATCH] iio:ad7793: Fix ad7785 product ID
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+References: <1444654588-25350-1-git-send-email-lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <562CDB73.6040600@kernel.org>
-Date: Sun, 25 Oct 2015 13:38:59 +0000
+Message-ID: <562CDBC9.9090409@kernel.org>
+Date: Sun, 25 Oct 2015 13:40:25 +0000
 MIME-Version: 1.0
-In-Reply-To: <561A6DF0.4050502@kernel.org>
+In-Reply-To: <1444654588-25350-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/10/15 15:10, Jonathan Cameron wrote:
-> On 11/10/15 15:10, Jonathan Cameron wrote:
->> On 07/10/15 21:38, Shraddha Barke wrote:
->>> Remove the macros since they are not used anywhere throughout the
->>> kernel.
->>>
->>> Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
->> Hi Shraddha,
->>
->> This should have been cc'd to linux-iio and Lars-Peter Clausen
->> (who maintains all the Analog devices drivers).
->>
->> It's straightforward, but worth checking that they are fine with this.
-> That would have worked better if I'd then remembered to CC them myself.
+On 12/10/15 13:56, Lars-Peter Clausen wrote:
+> While the datasheet for the AD7785 lists 0xXB as the product ID the actual
+> product ID is 0xX3.
 > 
-> Sorry!
-Looks like Greg beat me to this one anyway.
->>
->> Jonathan
->>> ---
->>>  drivers/staging/iio/cdc/ad7746.c | 7 -------
->>>  1 file changed, 7 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
->>> index 028b4e8..a4bb152 100644
->>> --- a/drivers/staging/iio/cdc/ad7746.c
->>> +++ b/drivers/staging/iio/cdc/ad7746.c
->>> @@ -27,11 +27,7 @@
->>>  
->>>  #define AD7746_REG_STATUS		0
->>>  #define AD7746_REG_CAP_DATA_HIGH	1
->>> -#define AD7746_REG_CAP_DATA_MID		2
->>> -#define AD7746_REG_CAP_DATA_LOW		3
->>>  #define AD7746_REG_VT_DATA_HIGH		4
->>> -#define AD7746_REG_VT_DATA_MID		5
->>> -#define AD7746_REG_VT_DATA_LOW		6
->>>  #define AD7746_REG_CAP_SETUP		7
->>>  #define AD7746_REG_VT_SETUP		8
->>>  #define AD7746_REG_EXC_SETUP		9
->>> @@ -39,11 +35,8 @@
->>>  #define AD7746_REG_CAPDACA		11
->>>  #define AD7746_REG_CAPDACB		12
->>>  #define AD7746_REG_CAP_OFFH		13
->>> -#define AD7746_REG_CAP_OFFL		14
->>>  #define AD7746_REG_CAP_GAINH		15
->>> -#define AD7746_REG_CAP_GAINL		16
->>>  #define AD7746_REG_VOLT_GAINH		17
->>> -#define AD7746_REG_VOLT_GAINL		18
->>>  
->>>  /* Status Register Bit Designations (AD7746_REG_STATUS) */
->>>  #define AD7746_STATUS_EXCERR		BIT(3)
->>>
->>
+> Fix the product ID otherwise the driver will reject the device due to non
+> matching IDs.
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Fixes: e786cc26dcc5 ("staging:iio:ad7793: Implement stricter id checking")
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+> ---
+>  drivers/iio/adc/ad7793.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+> index b84922a..710aee8 100644
+> --- a/drivers/iio/adc/ad7793.c
+> +++ b/drivers/iio/adc/ad7793.c
+> @@ -101,7 +101,7 @@
+>  #define AD7795_CH_AIN1M_AIN1M	8 /* AIN1(-) - AIN1(-) */
+>  
+>  /* ID Register Bit Designations (AD7793_REG_ID) */
+> -#define AD7785_ID		0xB
+> +#define AD7785_ID		0x3
+>  #define AD7792_ID		0xA
+>  #define AD7793_ID		0xB
+>  #define AD7794_ID		0xF
 > 
 
