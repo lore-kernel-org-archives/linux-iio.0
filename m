@@ -1,95 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36631 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39011 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753786AbbJZKXH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Oct 2015 06:23:07 -0400
-In-Reply-To: <CAH-u=81N45XhXUiaPQG4u-DyNiNd65L-eb=ae7z4UYdLGmib-Q@mail.gmail.com>
-References: <CALxjpLP7jPBTvbMsJFMU+GgJo8i37WcfwLPxJL6+27jpJd0Ukw@mail.gmail.com> <562DDBE2.80504@intel.com> <CAH-u=81N45XhXUiaPQG4u-DyNiNd65L-eb=ae7z4UYdLGmib-Q@mail.gmail.com>
+	with ESMTP id S1751183AbbJZRc4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Oct 2015 13:32:56 -0400
+In-Reply-To: <20151026172045.GA18550@Ubuntu-D830>
+References: <20151023165418.GA18718@Ubuntu-D830> <562DE019.3060807@intel.com> <20151026172045.GA18550@Ubuntu-D830>
 MIME-Version: 1.0
 Content-Type: text/plain;
  charset=UTF-8
-Subject: Re: Is IIO the appropriate subsystem for a thermal camera sensor?
+Subject: Re: [PATCH] staging: iio: dummy: clean up the define and usage of dummy_scan_elements
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Mon, 26 Oct 2015 10:22:58 +0000
-To: Jean-Michel Hautbois <jean-michel.hautbois@veo-labs.com>,
+Date: Mon, 26 Oct 2015 17:32:28 +0000
+To: Alison Schofield <amsfield22@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>
-CC: Lucas Magasweran <lucas.magasweran@daqri.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Media Mailing List <linux-media@vger.kernel.org>
-Message-ID: <AB8AAEEE-A162-439C-8111-766AF4CAE33C@jic23.retrosnub.co.uk>
+CC: outreachy-kernel@googlegroups.com, jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Message-ID: <9193A9A6-70AB-4D99-B8A9-97B570FA4B96@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-On 26 October 2015 08:21:07 GMT+00:00, Jean-Michel Hautbois <jean-michel.hautbois@veo-labs.com> wrote:
->Hi Lucas,
+On 26 October 2015 17:20:46 GMT+00:00, Alison Schofield <amsfield22@gmail.com> wrote:
+>On Mon, Oct 26, 2015 at 10:11:05AM +0200, Daniel Baluta wrote:
+>> 
+>> 
+>> On 10/23/2015 07:54 PM, Alison Schofield wrote:
+>> >Cleanups related to the usage of dummy_scan_elements in the
+>> >iio dummy driver:
+>> >- change enum names to upper case INDEX_*
+>> >- use the enum for IIO_CHAN_SOFT_TIMESTAMP (rm hard coded value)
+>> >- comment edited to match changes & follow preferred kernel style
+>> >
+>> >Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+>> >---
+>> >  drivers/staging/iio/iio_simple_dummy.c        | 22
+>++++++++++++----------
+>> >  drivers/staging/iio/iio_simple_dummy.h        | 20
+>+++++++++++---------
+>> >  drivers/staging/iio/iio_simple_dummy_buffer.c |  9 +++++----
+>> >  3 files changed, 28 insertions(+), 23 deletions(-)
+>> >
+>> >diff --git a/drivers/staging/iio/iio_simple_dummy.c
+>b/drivers/staging/iio/iio_simple_dummy.c
+>> >index 381f90f..5e19068 100644
+>> >--- a/drivers/staging/iio/iio_simple_dummy.c
+>> >+++ b/drivers/staging/iio/iio_simple_dummy.c
+>> >@@ -1,4 +1,4 @@
+>> >-/**
+>> >+/*
+>> This change should be in the 3rd patch.
+>>
+>Thanks for the eagle eyes! I see this (and the other comment I edit'd
+>also.) It leads to another question. 
 >
->2015-10-26 8:53 GMT+01:00 Daniel Baluta <daniel.baluta@intel.com>:
->> Hi Lucas,
->>
->> Adding linux-iio and linux-media, I hope you don't mind.
->>
->> On 10/23/2015 06:58 PM, Lucas Magasweran wrote:
->>>
->>> Hi Daniel,
->>>
->>> My colleague, Roberto Cornetti, attended your IIO talk at LinuxCon
->>> recently and is using the IIO subsystem for an I2C IMU.
->>>
->>
->> Glad to hear that :)
->>
->>> My question is if IIO the appropriate subsystem for a thermal camera
->>> sensor. The driver needs to acquire frames over SPI and configure
->the
->>> sensor via I2C. It also has to respond to a GPIO interrupt to
->>> synchronize with the camera.
->>
->>
->> I am not sure exactly about this. My feeling is that this should go
->with the
->> v4l subsystem thus Cc-ing linux-media.
+>In these dummy files, there are 27 comment blocks that start with
+>/** instead of /* .  I touched 2 of them as a passerby, but now
+>that I'm looking.... should I change them all or is /** that an
+>acceptable
+>variation.
 >
->This is definitely a V4L2 driver. Note however that AFAIK, no sensor
->is currently sending frames from SPI right now... Nothing impossible
->though :).
-
-Absolutely agree. The confusion on this probably stems from thermopiles
- (which are kind of single pixel thermal cameras) and higher res thermal
- cameras.  If you think of it as the same an ambient light sensor vs an optical
- camera then the divisions become clearer.
-
-There are very low pixel count thermal cameras that blur the boundaries though
- so I guess you may have one of those? 4x4 for example.  I still think these should
- be v4l.  Kind of dependent on whether the output is 2d or 1d to my mind.
-
-Jonathan
+>alison
 >
->> Do you have any datasheet for this sensor?
->>
->> At some point [1] we considered introducing the fingerprint sensor as
->an IIO
->> device, but that didn't quite fit. So, we reconsidered using v4l.
->> I this is your case too :).
->>
->> Hope this helps.
->> Daniel.
->>
->>
->> [1] http://marc.info/?l=linux-kernel&m=141769805614596&w=2
->>
->>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe
->linux-media" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+>< snip >
+
+Good thing you raised this as one instance in the patch was an incorrect 
+change away from **
+Basically it should have two stars if kernel-doc (formal kernel documentation)
+and one star if a straightforward inline
+ comment. See Documentation/kernel-doc-nano-howto.txt
 
 -- 
 Sent from my Android device with K-9 Mail. Please excuse my brevity.
