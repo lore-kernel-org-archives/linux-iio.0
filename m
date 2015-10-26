@@ -1,325 +1,214 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59542 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35645 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751750AbbJYN4U (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Oct 2015 09:56:20 -0400
-Subject: Re: [PATCH v3 6/6] iio: Add a DMAengine framework based buffer
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-References: <1444752629-3532-1-git-send-email-lars@metafoo.de>
- <1444752629-3532-7-git-send-email-lars@metafoo.de>
-Cc: Octavian Purdila <octavian.purdila@intel.com>,
-	linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <562CDF83.6070207@kernel.org>
-Date: Sun, 25 Oct 2015 13:56:19 +0000
+	with ESMTP id S1753000AbbJZHV4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Oct 2015 03:21:56 -0400
+In-Reply-To: <20151026032945.GD2104@Ubuntu-D830>
+References: <20151023165418.GA18718@Ubuntu-D830> <562CB4E5.8010503@kernel.org> <20151026032945.GD2104@Ubuntu-D830>
 MIME-Version: 1.0
-In-Reply-To: <1444752629-3532-7-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH] staging: iio: dummy: clean up the define and usage of dummy_scan_elements
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Mon, 26 Oct 2015 07:21:49 +0000
+To: Alison Schofield <amsfield22@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>, gregkh@linuxfoundation.org
+CC: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org
+Message-ID: <9FFA453E-8F87-4B4C-9E10-D0641523A032@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/10/15 17:10, Lars-Peter Clausen wrote:
-> Add a generic fully device independent DMA buffer implementation that uses
-> the DMAegnine framework to perform the DMA transfers. This can be used by
-> converter drivers that whish to provide a DMA buffer for converters that
-> are connected to a DMA core that implements the DMAengine API.
-> 
-> Apart from allocating the buffer using iio_dmaengine_buffer_alloc() and
-> freeing it using iio_dmaengine_buffer_free() no additional converter driver
-> specific code is required when using this DMA buffer implementation.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it (not that they are likely to actually build
-much of it given no users :)
 
-J
-> ---
->  drivers/iio/buffer/Kconfig                         |  11 ++
->  drivers/iio/buffer/Makefile                        |   1 +
->  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 213 +++++++++++++++++++++
->  include/linux/iio/buffer-dmaengine.h               |  18 ++
->  4 files changed, 243 insertions(+)
->  create mode 100644 drivers/iio/buffer/industrialio-buffer-dmaengine.c
->  create mode 100644 include/linux/iio/buffer-dmaengine.h
-> 
-> diff --git a/drivers/iio/buffer/Kconfig b/drivers/iio/buffer/Kconfig
-> index b2fda1a..4ffd3db 100644
-> --- a/drivers/iio/buffer/Kconfig
-> +++ b/drivers/iio/buffer/Kconfig
-> @@ -18,6 +18,17 @@ config IIO_BUFFER_DMA
->  	  Should be selected by drivers that want to use the generic DMA buffer
->  	  infrastructure.
->  
-> +config IIO_BUFFER_DMAENGINE
-> +	tristate
-> +	select IIO_BUFFER_DMA
-> +	help
-> +	  Provides a bonding of the generic IIO DMA buffer infrastructure with the
-> +	  DMAengine framework. This can be used by converter drivers with a DMA port
-> +	  connected to an external DMA controller which is supported by the
-> +	  DMAengine framework.
-> +
-> +	  Should be selected by drivers that want to use this functionality.
-> +
->  config IIO_KFIFO_BUF
->  	tristate "Industrial I/O buffering based on kfifo"
->  	help
-> diff --git a/drivers/iio/buffer/Makefile b/drivers/iio/buffer/Makefile
-> index bda3f11..85beaae 100644
-> --- a/drivers/iio/buffer/Makefile
-> +++ b/drivers/iio/buffer/Makefile
-> @@ -5,5 +5,6 @@
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_IIO_BUFFER_CB) += industrialio-buffer-cb.o
->  obj-$(CONFIG_IIO_BUFFER_DMA) += industrialio-buffer-dma.o
-> +obj-$(CONFIG_IIO_BUFFER_DMAENGINE) += industrialio-buffer-dmaengine.o
->  obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
->  obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
-> diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> new file mode 100644
-> index 0000000..ebdb838
-> --- /dev/null
-> +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> @@ -0,0 +1,213 @@
-> +/*
-> + * Copyright 2014-2015 Analog Devices Inc.
-> + *  Author: Lars-Peter Clausen <lars@metafoo.de>
-> + *
-> + * Licensed under the GPL-2 or later.
-> + */
-> +
-> +#include <linux/slab.h>
-> +#include <linux/kernel.h>
-> +#include <linux/dmaengine.h>
-> +#include <linux/dma-mapping.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/err.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/buffer-dma.h>
-> +#include <linux/iio/buffer-dmaengine.h>
-> +
-> +/*
-> + * The IIO DMAengine buffer combines the generic IIO DMA buffer infrastructure
-> + * with the DMAengine framework. The generic IIO DMA buffer infrastructure is
-> + * used to manage the buffer memory and implement the IIO buffer operations
-> + * while the DMAengine framework is used to perform the DMA transfers. Combined
-> + * this results in a device independent fully functional DMA buffer
-> + * implementation that can be used by device drivers for peripherals which are
-> + * connected to a DMA controller which has a DMAengine driver implementation.
-> + */
-> +
-> +struct dmaengine_buffer {
-> +	struct iio_dma_buffer_queue queue;
-> +
-> +	struct dma_chan *chan;
-> +	struct list_head active;
-> +
-> +	size_t align;
-> +	size_t max_size;
-> +};
-> +
-> +static struct dmaengine_buffer *iio_buffer_to_dmaengine_buffer(
-> +		struct iio_buffer *buffer)
-> +{
-> +	return container_of(buffer, struct dmaengine_buffer, queue.buffer);
-> +}
-> +
-> +static void iio_dmaengine_buffer_block_done(void *data)
-> +{
-> +	struct iio_dma_buffer_block *block = data;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&block->queue->list_lock, flags);
-> +	list_del(&block->head);
-> +	spin_unlock_irqrestore(&block->queue->list_lock, flags);
-> +	iio_dma_buffer_block_done(block);
-> +}
-> +
-> +static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
-> +	struct iio_dma_buffer_block *block)
-> +{
-> +	struct dmaengine_buffer *dmaengine_buffer =
-> +		iio_buffer_to_dmaengine_buffer(&queue->buffer);
-> +	struct dma_async_tx_descriptor *desc;
-> +	dma_cookie_t cookie;
-> +
-> +	block->bytes_used = min(block->size, dmaengine_buffer->max_size);
-> +	block->bytes_used = rounddown(block->bytes_used,
-> +			dmaengine_buffer->align);
-> +
-> +	desc = dmaengine_prep_slave_single(dmaengine_buffer->chan,
-> +		block->phys_addr, block->bytes_used, DMA_DEV_TO_MEM,
-> +		DMA_PREP_INTERRUPT);
-> +	if (!desc)
-> +		return -ENOMEM;
-> +
-> +	desc->callback = iio_dmaengine_buffer_block_done;
-> +	desc->callback_param = block;
-> +
-> +	cookie = dmaengine_submit(desc);
-> +	if (dma_submit_error(cookie))
-> +		return dma_submit_error(cookie);
-> +
-> +	spin_lock_irq(&dmaengine_buffer->queue.list_lock);
-> +	list_add_tail(&block->head, &dmaengine_buffer->active);
-> +	spin_unlock_irq(&dmaengine_buffer->queue.list_lock);
-> +
-> +	dma_async_issue_pending(dmaengine_buffer->chan);
-> +
-> +	return 0;
-> +}
-> +
-> +static void iio_dmaengine_buffer_abort(struct iio_dma_buffer_queue *queue)
-> +{
-> +	struct dmaengine_buffer *dmaengine_buffer =
-> +		iio_buffer_to_dmaengine_buffer(&queue->buffer);
-> +
-> +	dmaengine_terminate_all(dmaengine_buffer->chan);
-> +	/* FIXME: There is a slight chance of a race condition here.
-> +	 * dmaengine_terminate_all() does not guarantee that all transfer
-> +	 * callbacks have finished running. Need to introduce a
-> +	 * dmaengine_terminate_all_sync().
-> +	 */
-> +	iio_dma_buffer_block_list_abort(queue, &dmaengine_buffer->active);
-> +}
-> +
-> +static void iio_dmaengine_buffer_release(struct iio_buffer *buf)
-> +{
-> +	struct dmaengine_buffer *dmaengine_buffer =
-> +		iio_buffer_to_dmaengine_buffer(buf);
-> +
-> +	iio_dma_buffer_release(&dmaengine_buffer->queue);
-> +	kfree(dmaengine_buffer);
-> +}
-> +
-> +static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
-> +	.read_first_n = iio_dma_buffer_read,
-> +	.set_bytes_per_datum = iio_dma_buffer_set_bytes_per_datum,
-> +	.set_length = iio_dma_buffer_set_length,
-> +	.request_update = iio_dma_buffer_request_update,
-> +	.enable = iio_dma_buffer_enable,
-> +	.disable = iio_dma_buffer_disable,
-> +	.data_available = iio_dma_buffer_data_available,
-> +	.release = iio_dmaengine_buffer_release,
-> +
-> +	.modes = INDIO_BUFFER_HARDWARE,
-> +	.flags = INDIO_BUFFER_FLAG_FIXED_WATERMARK,
-> +};
-> +
-> +static const struct iio_dma_buffer_ops iio_dmaengine_default_ops = {
-> +	.submit = iio_dmaengine_buffer_submit_block,
-> +	.abort = iio_dmaengine_buffer_abort,
-> +};
-> +
-> +/**
-> + * iio_dmaengine_buffer_alloc() - Allocate new buffer which uses DMAengine
-> + * @dev: Parent device for the buffer
-> + * @channel: DMA channel name, typically "rx".
-> + *
-> + * This allocates a new IIO buffer which internally uses the DMAengine framework
-> + * to perform its transfers. The parent device will be used to request the DMA
-> + * channel.
-> + *
-> + * Once done using the buffer iio_dmaengine_buffer_free() should be used to
-> + * release it.
-> + */
-> +struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
-> +	const char *channel)
-> +{
-> +	struct dmaengine_buffer *dmaengine_buffer;
-> +	unsigned int width, src_width, dest_width;
-> +	struct dma_slave_caps caps;
-> +	struct dma_chan *chan;
-> +	int ret;
-> +
-> +	dmaengine_buffer = kzalloc(sizeof(*dmaengine_buffer), GFP_KERNEL);
-> +	if (!dmaengine_buffer)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	chan = dma_request_slave_channel_reason(dev, channel);
-> +	if (IS_ERR(chan)) {
-> +		ret = PTR_ERR(chan);
-> +		goto err_free;
-> +	}
-> +
-> +	ret = dma_get_slave_caps(chan, &caps);
-> +	if (ret < 0)
-> +		goto err_free;
-> +
-> +	/* Needs to be aligned to the maximum of the minimums */
-> +	if (caps.src_addr_widths)
-> +		src_width = __ffs(caps.src_addr_widths);
-> +	else
-> +		src_width = 1;
-> +	if (caps.dst_addr_widths)
-> +		dest_width = __ffs(caps.dst_addr_widths);
-> +	else
-> +		dest_width = 1;
-> +	width = max(src_width, dest_width);
-> +
-> +	INIT_LIST_HEAD(&dmaengine_buffer->active);
-> +	dmaengine_buffer->chan = chan;
-> +	dmaengine_buffer->align = width;
-> +	dmaengine_buffer->max_size = dma_get_max_seg_size(chan->device->dev);
-> +
-> +	iio_dma_buffer_init(&dmaengine_buffer->queue, chan->device->dev,
-> +		&iio_dmaengine_default_ops);
-> +
-> +	dmaengine_buffer->queue.buffer.access = &iio_dmaengine_buffer_ops;
-> +
-> +	return &dmaengine_buffer->queue.buffer;
-> +
-> +err_free:
-> +	kfree(dmaengine_buffer);
-> +	return ERR_PTR(ret);
-> +}
-> +EXPORT_SYMBOL(iio_dmaengine_buffer_alloc);
-> +
-> +/**
-> + * iio_dmaengine_buffer_free() - Free dmaengine buffer
-> + * @buffer: Buffer to free
-> + *
-> + * Frees a buffer previously allocated with iio_dmaengine_buffer_alloc().
-> + */
-> +void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
-> +{
-> +	struct dmaengine_buffer *dmaengine_buffer =
-> +		iio_buffer_to_dmaengine_buffer(buffer);
-> +
-> +	iio_dma_buffer_exit(&dmaengine_buffer->queue);
-> +	dma_release_channel(dmaengine_buffer->chan);
-> +
-> +	iio_buffer_put(buffer);
-> +}
-> +EXPORT_SYMBOL_GPL(iio_dmaengine_buffer_free);
-> diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
-> new file mode 100644
-> index 0000000..5dcddf4
-> --- /dev/null
-> +++ b/include/linux/iio/buffer-dmaengine.h
-> @@ -0,0 +1,18 @@
-> +/*
-> + * Copyright 2014-2015 Analog Devices Inc.
-> + *  Author: Lars-Peter Clausen <lars@metafoo.de>
-> + *
-> + * Licensed under the GPL-2 or later.
-> + */
-> +
-> +#ifndef __IIO_DMAENGINE_H__
-> +#define __IIO_DMAENGINE_H__
-> +
-> +struct iio_buffer;
-> +struct device;
-> +
-> +struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
-> +	const char *channel);
-> +void iio_dmaengine_buffer_free(struct iio_buffer *buffer);
-> +
-> +#endif
-> 
 
+On 26 October 2015 03:29:46 GMT+00:00, Alison Schofield <amsfield22@gmail.com> wrote:
+>On Sun, Oct 25, 2015 at 10:54:29AM +0000, Jonathan Cameron wrote:
+>> On 23/10/15 17:54, Alison Schofield wrote:
+>> > Cleanups related to the usage of dummy_scan_elements in the
+>> > iio dummy driver:
+>> > - change enum names to upper case INDEX_*
+>> > - use the enum for IIO_CHAN_SOFT_TIMESTAMP (rm hard coded value)
+>> > - comment edited to match changes & follow preferred kernel style
+>> > 
+>> As Greg observed this would be better as three separate patches.
+>> Comment inline as well.
+>> 
+>> Jonathan
+>
+>Greg, Jonathan,
+>
+>Thanks for the review.  I understand it needs to be a set. 
+>
+>I only see 2 patches:
+>1) change enum names to be upper case.
+>2) replace hardcoded scan_index in IIO_CHAN_SOFT_TIMESTAMP
+>
+>I don't see the comments as a 3rd, they go with each change.
+>ie. when I change the enum names, I update the comments
+>right above it to match.  Same with Patch 2.
+>
+>OK?
+There are a few other comment syntax changes that should really be in a third patch, trivial though they are.
+>
+>alison
+>
+>> > Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+>> > ---
+>> >  drivers/staging/iio/iio_simple_dummy.c        | 22
+>++++++++++++----------
+>> >  drivers/staging/iio/iio_simple_dummy.h        | 20
+>+++++++++++---------
+>> >  drivers/staging/iio/iio_simple_dummy_buffer.c |  9 +++++----
+>> >  3 files changed, 28 insertions(+), 23 deletions(-)
+>> > 
+>> > diff --git a/drivers/staging/iio/iio_simple_dummy.c
+>b/drivers/staging/iio/iio_simple_dummy.c
+>> > index 381f90f..5e19068 100644
+>> > --- a/drivers/staging/iio/iio_simple_dummy.c
+>> > +++ b/drivers/staging/iio/iio_simple_dummy.c
+>> > @@ -1,4 +1,4 @@
+>> > -/**
+>> > +/*
+>> >   * Copyright (c) 2011 Jonathan Cameron
+>> >   *
+>> >   * This program is free software; you can redistribute it and/or
+>modify it
+>> > @@ -137,7 +137,7 @@ static const struct iio_chan_spec
+>iio_dummy_channels[] = {
+>> >  		 */
+>> >  		.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>> >  		/* The ordering of elements in the buffer via an enum */
+>> > -		.scan_index = voltage0,
+>> > +		.scan_index = INDEX_VOLTAGE_0,
+>> >  		.scan_type = { /* Description of storage in buffer */
+>> >  			.sign = 'u', /* unsigned */
+>> >  			.realbits = 13, /* 13 bits */
+>> > @@ -176,7 +176,7 @@ static const struct iio_chan_spec
+>iio_dummy_channels[] = {
+>> >  		 * sampling_frequency
+>> >  		 * The frequency in Hz at which the channels are sampled
+>> >  		 */
+>> > -		.scan_index = diffvoltage1m2,
+>> > +		.scan_index = INDEX_DIFFVOLTAGE_1M2,
+>> >  		.scan_type = { /* Description of storage in buffer */
+>> >  			.sign = 's', /* signed */
+>> >  			.realbits = 12, /* 12 bits */
+>> > @@ -194,7 +194,7 @@ static const struct iio_chan_spec
+>iio_dummy_channels[] = {
+>> >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> >  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+>> >  		.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>> > -		.scan_index = diffvoltage3m4,
+>> > +		.scan_index = INDEX_DIFFVOLTAGE_3M4,
+>> >  		.scan_type = {
+>> >  			.sign = 's',
+>> >  			.realbits = 11,
+>> > @@ -221,7 +221,7 @@ static const struct iio_chan_spec
+>iio_dummy_channels[] = {
+>> >  		BIT(IIO_CHAN_INFO_CALIBSCALE) |
+>> >  		BIT(IIO_CHAN_INFO_CALIBBIAS),
+>> >  		.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>> > -		.scan_index = accelx,
+>> > +		.scan_index = INDEX_ACCELX,
+>> >  		.scan_type = { /* Description of storage in buffer */
+>> >  			.sign = 's', /* signed */
+>> >  			.realbits = 16, /* 16 bits */
+>> > @@ -230,10 +230,10 @@ static const struct iio_chan_spec
+>iio_dummy_channels[] = {
+>> >  		},
+>> >  	},
+>> >  	/*
+>> > -	 * Convenience macro for timestamps. 4 is the index in
+>> > -	 * the buffer.
+>> > +	 * Convenience macro for timestamps.
+>> > +	 * INDEX_TIMESTAMP is the index in the buffer.
+>> >  	 */
+>> > -	IIO_CHAN_SOFT_TIMESTAMP(4),
+>> > +	IIO_CHAN_SOFT_TIMESTAMP(INDEX_TIMESTAMP),
+>> >  	/* DAC channel out_voltage0_raw */
+>> >  	{
+>> >  		.type = IIO_VOLTAGE,
+>> > @@ -364,8 +364,10 @@ static int iio_dummy_read_raw(struct iio_dev
+>*indio_dev,
+>> >  				ret = IIO_VAL_INT_PLUS_MICRO;
+>> >  				break;
+>> >  			case 1:
+>> > -				/* all differential adc channels ->
+>> > -				 * 0.000001344 */
+>> > +				/*
+>> > +				 * all differential adc
+>> > +				 * channels -> 0.000001344
+>> > +				 */
+>> >  				*val = 0;
+>> >  				*val2 = 1344;
+>> >  				ret = IIO_VAL_INT_PLUS_NANO;
+>> > diff --git a/drivers/staging/iio/iio_simple_dummy.h
+>b/drivers/staging/iio/iio_simple_dummy.h
+>> > index 5c2f4d0..31b62ad 100644
+>> > --- a/drivers/staging/iio/iio_simple_dummy.h
+>> > +++ b/drivers/staging/iio/iio_simple_dummy.h
+>> > @@ -96,20 +96,22 @@ iio_simple_dummy_events_unregister(struct
+>iio_dev *indio_dev)
+>> >  
+>> >  #endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS*/
+>> >  
+>> > -/**
+>> > +/*
+>> >   * enum iio_simple_dummy_scan_elements - scan index enum
+>> > - * @voltage0:		the single ended voltage channel
+>> > - * @diffvoltage1m2:	first differential channel
+>> > - * @diffvoltage3m4:	second differenial channel
+>> > - * @accelx:		acceleration channel
+>> > + * @INDEX_VOLTAGE_0:		the single ended voltage channel
+>> > + * @INDEX_DIFFVOLTAGE_1M2:	first differential channel
+>> > + * @INDEX_DIFFVOLTAGE_3M4:	second differential channel
+>> > + * @INDEX_ACCELX:		acceleration channel
+>> > + * @INDEX_TIMESTAMP:		timestamp channel
+>> >   *
+>> >   * Enum provides convenient numbering for the scan index.
+>> >   */
+>> >  enum iio_simple_dummy_scan_elements {
+>> > -	voltage0,
+>> > -	diffvoltage1m2,
+>> > -	diffvoltage3m4,
+>> > -	accelx,
+>> > +	INDEX_VOLTAGE_0,
+>> Even better would be to prefix these to make it clear they
+>> are driver specific.  With such generic names one might
+>> suspect they come from somewhere in the core.
+>> 
+>> Perhaps
+>> DUMMY_INDEX_...
+>> ?
+>> > +	INDEX_DIFFVOLTAGE_1M2,
+>> > +	INDEX_DIFFVOLTAGE_3M4,
+>> > +	INDEX_ACCELX,
+>> > +	INDEX_TIMESTAMP,
+>> >  };
+>> >  
+>> >  #ifdef CONFIG_IIO_SIMPLE_DUMMY_BUFFER
+>> > diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c
+>b/drivers/staging/iio/iio_simple_dummy_buffer.c
+>> > index 00ed774..7516835 100644
+>> > --- a/drivers/staging/iio/iio_simple_dummy_buffer.c
+>> > +++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
+>> > @@ -27,10 +27,11 @@
+>> >  /* Some fake data */
+>> >  
+>> >  static const s16 fakedata[] = {
+>> > -	[voltage0] = 7,
+>> > -	[diffvoltage1m2] = -33,
+>> > -	[diffvoltage3m4] = -2,
+>> > -	[accelx] = 344,
+>> > +	[INDEX_VOLTAGE_0] = 7,
+>> > +	[INDEX_DIFFVOLTAGE_1M2] = -33,
+>> > +	[INDEX_DIFFVOLTAGE_3M4] = -2,
+>> > +	[INDEX_ACCELX] = 344,
+>> > +	[INDEX_TIMESTAMP] = 50,
+>> >  };
+>> >  
+>> >  /**
+>> > 
+>> 
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
