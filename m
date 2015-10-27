@@ -1,88 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f195.google.com ([209.85.212.195]:33584 "EHLO
-	mail-wi0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964897AbbJ0QMN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Oct 2015 12:12:13 -0400
-Received: by wiut4 with SMTP id t4so28595763wiu.0
-        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2015 09:12:12 -0700 (PDT)
+Received: from mail-ob0-f180.google.com ([209.85.214.180]:34210 "EHLO
+	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S964811AbbJ0QNS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Oct 2015 12:13:18 -0400
+Received: by obbza9 with SMTP id za9so56914753obb.1
+        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2015 09:13:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1445959587-25953-1-git-send-email-ciorneiioana@gmail.com>
-References: <1445959587-25953-1-git-send-email-ciorneiioana@gmail.com>
-Date: Tue, 27 Oct 2015 18:12:12 +0200
-Message-ID: <CAEnQRZCEaZ=AW7ka6BWZ5MjBGvMcZuqr=rAcVk3Ga7fKVw_kZQ@mail.gmail.com>
-Subject: Re: [Outreachy kernel] [PATCH] staging: iio: change IRQ_HANDLED to IRQ_WAKE_THREAD
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Ioana Ciornei <ciorneiioana@gmail.com>
-Cc: outreachy-kernel <outreachy-kernel@googlegroups.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
+In-Reply-To: <562CD9BD.6030206@kernel.org>
+References: <1444729080-9937-1-git-send-email-paul.cercueil@analog.com>
+	<562CD9BD.6030206@kernel.org>
+Date: Tue, 27 Oct 2015 17:13:17 +0100
+Message-ID: <CACRpkdatEhs34y3D5evo-_rmG=pPb9LcdNWE+3zgnGqbZFh9hQ@mail.gmail.com>
+Subject: Re: [PATCHv2 1/2] Documentation: ad5592r: Added devicetree bindings documentation
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Paul Cercueil <paul.cercueil@analog.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Antonio Fiol <antonio@fiol.es>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Oct 27, 2015 at 5:26 PM, Ioana Ciornei <ciorneiioana@gmail.com> wrote:
-> This patch changes the return value of the primary interrupt handler to
-> IRQ_WAKE_THREAD in order to wake the kernel thread represented by the
-> iio_simple_dummy_event_handler function and continue handling the event.
+On Sun, Oct 25, 2015 at 2:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 13/10/15 10:37, Paul Cercueil wrote:
+>> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
+> Looks good to me, but as it is a little bit 'different' and we are
+> defining entirely new generic bindings (the channel modes stuff)
+> I would like some more input.  It might be overkill but we do
+> of course have the pinctl framework which covers this sort of
+> thing... Might be worth considering if using that to get the unified
+> bindings might make sense here...
 >
-
-This is a very good catch! We need to have a better commit message. You
-need to describe why the commit is needed.
-
-==
-iio: dummy: Complete IIO events delivery to userspace
-
-Since commit fd2bb310ca ("Staging: iio: Move evgen interrupt
-generation to irq_work")
-event processing is split in two parts using threaded interrupts:
-
-* part 1, IRQ handler - runs in IRQ context and only saves event timestamp.
-* part 2, threaded handler, runs in process context, get events and
-pushes them to userspace.
-
-When IRQ handler returns IRQ_HANDLED code the interrupt is considered
-to be processed
-and the threaded handler will not be called. We don't want this for
-IIO dummy events driver, since
-the events processing takes places in the threaded handler.
-
-Thus, IRQ handler needs to wake up threaded handler by returning IRQ_WAKE_THREAD
-
-Fixes: fd2bb310ca ("Staging: iio: Move evgen interrupt generation to irq_work")
-==
-
-Also, because IIO driver was moved out of staging please rebase your
-patch on Jonathan's tree:
-
-https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=testing
-
-use testing branch for this.
-
-
-> Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
-> ---
->  drivers/staging/iio/iio_simple_dummy_events.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> cc'd Linus in case he wants to comment on this.
 >
-> diff --git a/drivers/staging/iio/iio_simple_dummy_events.c b/drivers/staging/iio/iio_simple_dummy_events.c
-> index bfbf1c5..6eb600f 100644
-> --- a/drivers/staging/iio/iio_simple_dummy_events.c
-> +++ b/drivers/staging/iio/iio_simple_dummy_events.c
-> @@ -159,7 +159,7 @@ static irqreturn_t iio_simple_dummy_get_timestamp(int irq, void *private)
->         struct iio_dummy_state *st = iio_priv(indio_dev);
->
->         st->event_timestamp = iio_get_time_ns();
-> -       return IRQ_HANDLED;
-> +       return IRQ_WAKE_THREAD;
->  }
->
->  /**
-> --
-> 2.1.4
->
-> --
-> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> To post to this group, send email to outreachy-kernel@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/1445959587-25953-1-git-send-email-ciorneiioana%40gmail.com.
-> For more options, visit https://groups.google.com/d/optout.
+> It would obviously be a very heavy weight solution to the problem
+> so I'm far from convinced it makes sense - or even fits the usecase
+> terrible well.  Just thought I'd mention the possibility.
+
+There is something of a grey area between "definately pin control"
+and "some extra pin hardware duct-taped to something else".
+
+I guess that is natural, life is full of grey areas...
+
+Basically if there are plenty of pins and functions, local solutions
+to the problem will not scale. Then it is necessary to go ahead
+and implement full pin control. Especially for say a big BGA
+package or so with lots and lots of pins.
+
+It is is a few pins or they just alter between similar functionality
+(like different graphic modes) I think local solutions are OK.
+
+There are other problems though, but I comment on these
+separately.
+
+Yours,
+Linus Walleij
