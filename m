@@ -1,40 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:48648 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751690AbbJ1Rv0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 28 Oct 2015 13:51:26 -0400
-Subject: Re: [PATCH 0/2] Remove .owner from spi_drivers
-To: Sebastian Reichel <sre@ring0.de>
-References: <1445608751-8432-1-git-send-email-afd@ti.com>
- <20151023182911.GA14674@earth>
-CC: Mark Brown <broonie@kernel.org>, <linux-spi@vger.kernel.org>,
-	<alsa-devel@alsa-project.org>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <56310B15.3000103@ti.com>
-Date: Wed, 28 Oct 2015 12:51:17 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:46319 "EHLO
+	out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756004AbbJ1Wra (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Oct 2015 18:47:30 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+	by mailout.nyi.internal (Postfix) with ESMTP id DBE562028E
+	for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2015 18:47:29 -0400 (EDT)
+Date: Thu, 29 Oct 2015 07:47:22 +0900
+From: Greg KH <greg@kroah.com>
+To: Ioana Ciornei <ciorneiioana@gmail.com>
+Cc: linux-iio@vger.kernel.org, outreachy-kernel@googlegroups.com,
+	cristina.opriceana@gmail.com
+Subject: Re: [Outreachy kernel] [PATCH] staging: iio: dummy: complete IIO
+ events delivery to userspace
+Message-ID: <20151028224722.GA31531@kroah.com>
+References: <1445971256-22474-1-git-send-email-ciorneiioana@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20151023182911.GA14674@earth>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1445971256-22474-1-git-send-email-ciorneiioana@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/23/2015 01:29 PM, Sebastian Reichel wrote:
-> Hi,
->
-> On Fri, Oct 23, 2015 at 08:59:09AM -0500, Andrew F. Davis wrote:
->> This series adds a helper macro to the SPI core that assigns the owner
->> in spi_drivers so individual drivers do not have to do this, this is
->> similar to other subsystems like platform_driver and i2c_driver that
->> have made this change.
->
-> Probably it makes sense to also update the related coccinelle
-> script: scripts/coccinelle/api/platform_no_drv_owner.cocci
->
-> -- Sebastian
->
+On Tue, Oct 27, 2015 at 08:40:56PM +0200, Ioana Ciornei wrote:
+> Starting with commit fd2bb310ca (Staging: iio: Move evgen interrupt
+> generation to irq_work) event processing is handled by calling
+> both the top half and the threaded part properly simulating real
+> hardware interrupts making use of threaded interrupts.
+> This way the processing is split in 2 parts:
+> 
+> * the IRQ handler that runs in IRQ context and only saves the event
+> timestamp
+> * the threaded handler that runs in process context, reads the events
+> and pushes the in the userspace.
+> 
+> If the IRQ handler returns IRQ_HANDLED the threaded handler is not
+> even being called since the interrupt is considered to be processed.
+> Because the iio dummy driver processes the events in the threaded
+> handler the IRQ handler must return IRQ_WAKE_THREAD so that the
+> threaded part would be awakened and called.
+> 
+> Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
+> Fixes: fd2bb310ca ("Staging: iio: Move evgen interrupt generation to irq_work")
+> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+> ---
+> rebased on linux-iio tree
 
-Makes sense, patch submitted.
+Daniel, can you forward this to the iio developers, I can't take this as
+it doesn't apply to my tree :(
 
-Thanks,
-Andrew
+thanks,
+
+greg k-h
