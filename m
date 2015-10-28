@@ -1,32 +1,31 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5630977D.2020102@metafoo.de>
-Date: Wed, 28 Oct 2015 10:38:05 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx2.suse.de ([195.135.220.15]:44782 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S964913AbbJ1KDL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 28 Oct 2015 06:03:11 -0400
+From: Michal Marek <mmarek@suse.cz>
+Subject: Duplicate htu21 drivers
+To: William Markezana <william.markezana@meas-spec.com>,
+	Jean Delvare <jdelvare@suse.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: lm-sensors@lm-sensors.org, linux-iio@vger.kernel.org
+Message-ID: <56309D5C.30008@suse.cz>
+Date: Wed, 28 Oct 2015 11:03:08 +0100
 MIME-Version: 1.0
-To: Nicola Corna <nicola@corna.info>, Wolfram Sang <wsa@the-dreams.de>,
- Stephen Warren <swarren@wwwdotorg.org>,
- Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>,
- Jonathan Cameron <jic23@kernel.org>
-CC: linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 4/4] iio: humidity: si7020: added No Hold read mode
-References: <f113de76b2369d404909cfc5158feca4@rainloop.corna.info> <1446015506-21371-1-git-send-email-nicola@corna.info>
-In-Reply-To: <1446015506-21371-1-git-send-email-nicola@corna.info>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=iso-8859-2
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10/28/2015 07:58 AM, Nicola Corna wrote:
-[...]
-> +			holdmode = !((*client)->adapter->quirks &&
-> +					(*client)->adapter->quirks->flags &
-[...]
-> +		   client->adapter->quirks &&
-> +		   client->adapter->quirks->flags & I2C_AQ_NO_CLK_STRETCH)
+Hi,
 
-This is rather ugly, can we get a helper in the I2C core something along the
-lines of
+commit 2b5c53d2c958 ("Add htu21 meas-spec driver support") introduced a
+new implementation of the htu21 driver into drivers/iio/humidity. At
+first glance, it provides the same features as drivers/hwmon/htu21 with
+a different sysfs interface. What is the plan with these two drivers?
+Will the iio driver replace the hwmon one? At a minimum, they should
+conflict in kconfig, because module names must be unique.
 
-i2c_check_quirks(client->adapter, I2C_AQ_NO_CLK_STRETCH)
-
-- Lars
+Thanks,
+Michal
