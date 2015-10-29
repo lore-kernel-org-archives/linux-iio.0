@@ -1,31 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f41.google.com ([209.85.218.41]:34925 "EHLO
-	mail-oi0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751845AbbJ2KFR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Oct 2015 06:05:17 -0400
-Received: by oifu63 with SMTP id u63so25788248oif.2
-        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2015 03:05:17 -0700 (PDT)
+Received: from mail-ig0-f171.google.com ([209.85.213.171]:33700 "EHLO
+	mail-ig0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757665AbbJ2ReO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Oct 2015 13:34:14 -0400
+Received: by igvi2 with SMTP id i2so29208023igv.0
+        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2015 10:34:13 -0700 (PDT)
 MIME-Version: 1.0
-Date: Thu, 29 Oct 2015 08:05:16 -0200
-Message-ID: <CAMajgzy7HpEF7vWWJm0tss4BM_ENcJHaqPHJqvrSemZ9tbf7qQ@mail.gmail.com>
-Subject: Trying to read data from accelerometer buffer
-From: Ibrahim Mattus Neto <ibrahim.neto@gmail.com>
-To: linux-iio@vger.kernel.org
+In-Reply-To: <562CC0DA.4090400@kernel.org>
+References: <1445120719-29685-1-git-send-email-manabian@gmail.com>
+	<1445374206-7277-1-git-send-email-manabian@gmail.com>
+	<562CC0DA.4090400@kernel.org>
+Date: Thu, 29 Oct 2015 18:34:13 +0100
+Message-ID: <CAGhQ9Vx9PUT8kPQLceC6ZGseasyCawxoqnh3SvYL_=VdBhydjA@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: accel: add Freescale MMA7455L/MMA7456L 3-axis
+ accelerometer driver
+From: Joachim Eastwood <manabian@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Martin Kepplinger <martink@posteo.de>,
+	linux-iio@vger.kernel.org
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SGksIEkgYW0gaGF2aW5nIGlzc3VlcyByZWFkaW5nIGZyb20gYSBhY2NlbGVyb21ldGVyIGFuZCBJ
-IGhvcGUgeW8NCm1pZ2h0IGhlbHAgbWUgKGlmIEkgc2hvdWxkIGFzayB0aGlzIHF1ZXN0aW9uIGVs
-c2V3aGVyZSwgcGxlYXNlIHRlbGwNCm1lKQ0KDQpXaGF0IEkgYW0gdHJ5aW5nIHRvIGRvIGlzIGdl
-dCBkYXRhIGZyb20gYSBidWZmZXIgKEkgYW0gdXNpbmcgdGhlDQpzb3VyY2UgY29kZSBmcm9tIGlp
-b19yZWFkZGV2IGFzIGFuIGV4YW1wbGUpIGJ1dCBJIGNhbid0IGZpZ3VyZSBpdCBvdXQNCmhvdyB0
-byBpbnRlcnByZXQgdGhlIGRhdGEgcHJvcGVybHkuDQoNCkkgd2FzIGV4cGVjdGluZyB0byBnZXQg
-YSBidW5jaCBvZiBudW1iZXJzIHJlbGF0ZWQgdG8gdGhlIFggYXhpcyBidXQNCndoZW4gaXQgd3Jp
-dGVzIHRvIHN0ZG91dCBJIGdldCBhIGJ1bmNoIG9mIHdlaXJkIGNoYXJhY3RlcnMsIGhlcmUgaXMN
-CnRoZSBvdXRwdXQ6DQoNCkDvv73vv73vv73vv73vv73vv71A77+977+977+977+977+977+977+9
-77+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+9
-77+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+9
-77+977+977+9DQoNCkhvdyBjYW4gSSBnZXQgdmFsdWVzIG9mIHgsIHkgYW5kIHogYXhlcz8NCg0K
-SXMgdGhlcmUgYW55dGhpbmcgZWxzZSBJIHNob3VsZCBwcm92aWRlPyBJcyB0aGVyZSBzb21lIGlu
-Zm9ybWF0aW9uIG1pc3Npbmc/DQoNClRoYW5rcyBpbiBhZHZhbmNlIQ0KSWJyYWhpbQ0K
+Hi Jonathan,
+
+On 25 October 2015 at 12:45, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 20/10/15 21:50, Joachim Eastwood wrote:
+>> Add support for Freescale MMA7455L/MMA7456L 3-axis accelerometer
+>> in 10-bit mode for I2C and SPI bus. This rather simple driver that
+>> currently doesn't support all the hardware features of MMA7455L/
+>> MMA7456L.
+>>
+>> Tested on Embedded Artist's LPC4357 Dev Kit with MMA7455L on I2C bus.
+>>
+>> Data sheets for the two devices can be found here:
+>> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7455L.pdf
+>> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7456L.pdf
+>>
+>> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
+> Looks pretty good to me.  A few comments inline.
+> If we hadn't unfortunately just missed the merge window for IIO
+> I'd have probably taken it as is, but now we have plenty of time
+> to tidy up a few corners without effecting when people get to play
+> with it in distros.
+
+No, problem. I wasn't expecting it to go upstream during the upcoming window.
+
+
+>> +static int mma7455_write_raw(struct iio_dev *indio_dev,
+>> +                          struct iio_chan_spec const *chan,
+>> +                          int val, int val2, long mask)
+>> +{
+>> +     struct mma7455_data *mma7455 = iio_priv(indio_dev);
+>> +     int i;
+>> +
+>> +     if (iio_buffer_enabled(indio_dev))
+>> +             return -EBUSY;
+>
+> Whilst it is probably 'unwise' to prevent changes to samping frequency
+> and scale whilst the buffer is running, is there a hardware restriction
+> to prevent us doing so?  If so add a comment here.
+
+The data sheet doesn't really say one way or the other. So I think it
+should work, but as you say it's probably not a very good idea to
+change it during sampling. I'll change to code to allow it.
+
+
+>> +
+>> +     switch (mask) {
+>> +     case IIO_CHAN_INFO_SAMP_FREQ:
+>> +             if (val == 250 && val2 == 0)
+>> +                     i = MMA7455_CTL1_DFBW_125HZ;
+>> +             else if (val == 125 && val2 == 0)
+>> +                     i = MMA7455_CTL1_DFBW_62_5HZ;
+>> +             else
+>> +                     return -EINVAL;
+>> +
+>> +             return regmap_update_bits(mma7455->regmap, MMA7455_REG_CTL1,
+>> +                                       MMA7455_CTL1_DFBW_MASK, i);
+>> +
+>> +     case IIO_CHAN_INFO_SCALE:
+>> +             /* In 10-bit mode there is only one scale available */
+>> +             if (val == 0 && val2 == MMA7455_10BIT_SCALE)
+>> +                     return 0;
+>> +             break;
+>> +     }
+>> +
+>> +     return -EINVAL;
+>> +}
+>> +
+>> +static ssize_t mma7455_show_samp_freq_avail(struct device *dev,
+>> +                                         struct device_attribute *attr,
+>> +                                         char *buf)
+>> +{
+>> +     return scnprintf(buf, PAGE_SIZE, "125 250\n");
+>> +}
+>> +
+>> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma7455_show_samp_freq_avail);
+> There is IIO_CONST_ATTR for this sort of usage, but I guess you might
+> know this is going to get more complex in future?
+
+ah, nice, didn't know about IIO_CONST_ATTR. The hardware only support
+two sample rates so IIO_CONST_ATTR will do just fine.
+
+
+>> +const struct regmap_config mma7455_core_regmap = {
+>> +     .reg_bits = 8,
+>> +     .val_bits = 8,
+>> +     .max_register = MMA7455_REG_TW,
+> It does seem a little bit of a shame to not make use of more
+> regmap magic (e.g. caching) but I suppose this is just an initial
+> implementation of the driver and you can always add that stuff
+> later!
+
+I agree. If more properties like scaling and calibration is added
+using caching would be a good idea.
+
+
+I'll make a new version and send it within a couple of days or do want
+me to wait until the upcoming merge window closes?
+
+
+regards,
+Joachim Eastwood
