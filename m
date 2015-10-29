@@ -1,31 +1,31 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5631E441.6030600@metafoo.de>
-Date: Thu, 29 Oct 2015 10:17:53 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-oi0-f41.google.com ([209.85.218.41]:34925 "EHLO
+	mail-oi0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751845AbbJ2KFR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Oct 2015 06:05:17 -0400
+Received: by oifu63 with SMTP id u63so25788248oif.2
+        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2015 03:05:17 -0700 (PDT)
 MIME-Version: 1.0
-To: Nicola Corna <nicola@corna.info>, Wolfram Sang <wsa@the-dreams.de>,
- Stephen Warren <swarren@wwwdotorg.org>,
- Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>,
- Jonathan Cameron <jic23@kernel.org>
-CC: linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 4/4] iio: humidity: si7020: added No Hold read mode
-References: <563117FB.5030506@metafoo.de> <5630977D.2020102@metafoo.de> <f113de76b2369d404909cfc5158feca4@rainloop.corna.info> <1446015506-21371-1-git-send-email-nicola@corna.info> <aa9c6c7ffdd5083c110cb35723081dbf@rainloop.corna.info> <ba63445a2f9af32bcbad698039041cbf@rainloop.corna.info>
-In-Reply-To: <ba63445a2f9af32bcbad698039041cbf@rainloop.corna.info>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Date: Thu, 29 Oct 2015 08:05:16 -0200
+Message-ID: <CAMajgzy7HpEF7vWWJm0tss4BM_ENcJHaqPHJqvrSemZ9tbf7qQ@mail.gmail.com>
+Subject: Trying to read data from accelerometer buffer
+From: Ibrahim Mattus Neto <ibrahim.neto@gmail.com>
+To: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
->> So maybe more like this:
->>
->> static inline bool i2c_check_quirks(struct i2c_adapter *adap, u64 quirks)
->> {
->> if (!adap->quirks)
->> return false;
->> return (adap->quirks->flags & quirks) == quirks;
->> }
-> 
-> Should I use bool (like in your snippet) or int (like i2c_check_functionality) as return type?
-
-I'd use bool, given that the result is a boolean value. It's semantically
-more clear this way.
+SGksIEkgYW0gaGF2aW5nIGlzc3VlcyByZWFkaW5nIGZyb20gYSBhY2NlbGVyb21ldGVyIGFuZCBJ
+IGhvcGUgeW8NCm1pZ2h0IGhlbHAgbWUgKGlmIEkgc2hvdWxkIGFzayB0aGlzIHF1ZXN0aW9uIGVs
+c2V3aGVyZSwgcGxlYXNlIHRlbGwNCm1lKQ0KDQpXaGF0IEkgYW0gdHJ5aW5nIHRvIGRvIGlzIGdl
+dCBkYXRhIGZyb20gYSBidWZmZXIgKEkgYW0gdXNpbmcgdGhlDQpzb3VyY2UgY29kZSBmcm9tIGlp
+b19yZWFkZGV2IGFzIGFuIGV4YW1wbGUpIGJ1dCBJIGNhbid0IGZpZ3VyZSBpdCBvdXQNCmhvdyB0
+byBpbnRlcnByZXQgdGhlIGRhdGEgcHJvcGVybHkuDQoNCkkgd2FzIGV4cGVjdGluZyB0byBnZXQg
+YSBidW5jaCBvZiBudW1iZXJzIHJlbGF0ZWQgdG8gdGhlIFggYXhpcyBidXQNCndoZW4gaXQgd3Jp
+dGVzIHRvIHN0ZG91dCBJIGdldCBhIGJ1bmNoIG9mIHdlaXJkIGNoYXJhY3RlcnMsIGhlcmUgaXMN
+CnRoZSBvdXRwdXQ6DQoNCkDvv73vv73vv73vv73vv73vv71A77+977+977+977+977+977+977+9
+77+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+9
+77+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+977+9
+77+977+977+9DQoNCkhvdyBjYW4gSSBnZXQgdmFsdWVzIG9mIHgsIHkgYW5kIHogYXhlcz8NCg0K
+SXMgdGhlcmUgYW55dGhpbmcgZWxzZSBJIHNob3VsZCBwcm92aWRlPyBJcyB0aGVyZSBzb21lIGlu
+Zm9ybWF0aW9uIG1pc3Npbmc/DQoNClRoYW5rcyBpbiBhZHZhbmNlIQ0KSWJyYWhpbQ0K
