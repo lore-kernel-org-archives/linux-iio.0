@@ -1,31 +1,31 @@
-Return-Path: <swarren@wwwdotorg.org>
-Subject: Re: [PATCH 3/4] i2c: added I2C_AQ_NO_CLK_STRETCH to i2c-bcm2835.c
-To: Nicola Corna <nicola@corna.info>, Eric Anholt <eric@anholt.net>
-References: <1445976718-7449-1-git-send-email-nicola@corna.info>
- <1445976718-7449-3-git-send-email-nicola@corna.info>
-Cc: Wolfram Sang <wsa@the-dreams.de>, Lee Jones <lee@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>, linux-i2c@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org
-From: Stephen Warren <swarren@wwwdotorg.org>
-Message-ID: <56319C4D.9020807@wwwdotorg.org>
-Date: Wed, 28 Oct 2015 22:10:53 -0600
+Return-Path: <lars@metafoo.de>
+Message-ID: <5631E441.6030600@metafoo.de>
+Date: Thu, 29 Oct 2015 10:17:53 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <1445976718-7449-3-git-send-email-nicola@corna.info>
-Content-Type: text/plain; charset=windows-1252
+To: Nicola Corna <nicola@corna.info>, Wolfram Sang <wsa@the-dreams.de>,
+ Stephen Warren <swarren@wwwdotorg.org>,
+ Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>,
+ Jonathan Cameron <jic23@kernel.org>
+CC: linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ Hartmut Knaack <knaack.h@gmx.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v4 4/4] iio: humidity: si7020: added No Hold read mode
+References: <563117FB.5030506@metafoo.de> <5630977D.2020102@metafoo.de> <f113de76b2369d404909cfc5158feca4@rainloop.corna.info> <1446015506-21371-1-git-send-email-nicola@corna.info> <aa9c6c7ffdd5083c110cb35723081dbf@rainloop.corna.info> <ba63445a2f9af32bcbad698039041cbf@rainloop.corna.info>
+In-Reply-To: <ba63445a2f9af32bcbad698039041cbf@rainloop.corna.info>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 10/27/2015 02:11 PM, Nicola Corna wrote:
-> As reported here
-> http://www.advamation.com/knowhow/raspberrypi/rpi-i2c-bug.html
-> the BCM2835 has a bug in its i2c implementation which prevents a correct
-> clock stretching.
+>> So maybe more like this:
+>>
+>> static inline bool i2c_check_quirks(struct i2c_adapter *adap, u64 quirks)
+>> {
+>> if (!adap->quirks)
+>> return false;
+>> return (adap->quirks->flags & quirks) == quirks;
+>> }
+> 
+> Should I use bool (like in your snippet) or int (like i2c_check_functionality) as return type?
 
-I was going to ask for some more official confirmation of this bug (e.g.
-update to BCM2835_Peripherals.pdf), but it looks like it's already been
-confirmed; check Gert van Loo's responses at:
-
-https://www.raspberrypi.org/forums/viewtopic.php?p=146272
-
-It might be useful to add this link into the patch description.
+I'd use bool, given that the result is a boolean value. It's semantically
+more clear this way.
