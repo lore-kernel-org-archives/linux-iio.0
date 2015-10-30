@@ -1,91 +1,234 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from seldrel01.sonyericsson.com ([37.139.156.2]:16105 "EHLO
+Received: from seldrel01.sonyericsson.com ([37.139.156.2]:12019 "EHLO
 	seldrel01.sonyericsson.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1760560AbbJ3VRF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Oct 2015 17:17:05 -0400
-Date: Fri, 30 Oct 2015 14:16:46 -0700
+	by vger.kernel.org with ESMTP id S1751408AbbJ3Xuq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Oct 2015 19:50:46 -0400
 From: Bjorn Andersson <bjorn.andersson@sonymobile.com>
-To: Rob Herring <robh+dt@kernel.org>
-CC: Lee Jones <lee.jones@linaro.org>, Pawel Moll <pawel.moll@arm.com>,
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Johan Hovold <jhovold@gmail.com>,
-	Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
+	Kumar Gala <galak@codeaurora.org>
+CC: <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v2 1/3] devicetree: mfd: Add binding for the TI LM3533
-Message-ID: <20151030211646.GE24668@usrtlx11787.corpusers.net>
-References: <1445796586-28683-1-git-send-email-bjorn.andersson@sonymobile.com>
- <1445963373-27790-1-git-send-email-bjorn.andersson@sonymobile.com>
- <20151030184220.GJ4058@x1>
- <20151030194150.GD24668@usrtlx11787.corpusers.net>
- <CAL_Jsq+d+_JgiEfQpgD29AnD+bM7Nq94-5NTjK=LFHNg162UOw@mail.gmail.com>
+Subject: [PATCH v3 1/3] devicetree: mfd: Add binding for the TI LM3533
+Date: Fri, 30 Oct 2015 16:50:38 -0700
+Message-ID: <1446249040-16552-1-git-send-email-bjorn.andersson@sonymobile.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <CAL_Jsq+d+_JgiEfQpgD29AnD+bM7Nq94-5NTjK=LFHNg162UOw@mail.gmail.com>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri 30 Oct 13:18 PDT 2015, Rob Herring wrote:
+Add the binding for the Texas Instruments LM3533 lighting power
+solution.
 
-> On Fri, Oct 30, 2015 at 2:41 PM, Bjorn Andersson
-> <bjorn.andersson@sonymobile.com> wrote:
-> > On Fri 30 Oct 11:42 PDT 2015, Lee Jones wrote:
-> >
-> > Rob, please see the discussion regarding ti,boost-freq-khz below. Should
-> > we both specify unit at the same time as we use standard units? (This is
-> > not the first time I have to change this back and forth)
-> >
-> >> On Tue, 27 Oct 2015, Bjorn Andersson wrote:
-> >>
-[..]
-> > The ti,boost-low-freq from the bq25890 binding is the only other
-> > property I can find that describes the same thing. So I'm not sure I
-> > follow you here.
-> >
-> >> Perhaps we need to create a set of generic bindings.
-> >>
-> >> Also, we usually measure DT bindings in HZ, not kHz.
-> 
-> Surprisingly, there are not enough examples to draw much conclusion.
-> 
-> > I thought we had defined frequencies to be in HZ and HZ only, but then
-> > Rob's comment that I need to actually specify the unit doesn't make any
-> > sense.
-> 
-> I don't think we decided, but let's decide now. Go with Hz.
-> 
+Signed-off-by: Bjorn Andersson <bjorn.andersson@sonymobile.com>
+---
 
-+1
+Changes since v2:
+- Drop vendor prefix of vendor properties
+- Specify unit of various properties
+- Fix reference paths
 
-> Really, I first prefer the property name has units and second having
-> standardized units. But if there is a common property without units, I
-> prefer that even more.
-> 
+Changes since v1:
+- Added unit to boost-freq and als-resistance (as the frequency now comes with
+  a unit specifier I changed it to be expressed in kHz)
 
-You can find this property in a variety of hardware, but I don't think
-it would make much sense to define this single property in a common
-place today.
+ Documentation/devicetree/bindings/mfd/lm3533.txt | 184 +++++++++++++++++++++++
+ 1 file changed, 184 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/lm3533.txt
 
-This seems to be the first case where we specify the unit on one of
-these properties though.
+diff --git a/Documentation/devicetree/bindings/mfd/lm3533.txt b/Documentation/devicetree/bindings/mfd/lm3533.txt
+new file mode 100644
+index 000000000000..963cee153a4d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/lm3533.txt
+@@ -0,0 +1,184 @@
++Texas Instruments LM3533 binding
++
++This binding describes the Texas Instruments LM3533, a lighting power solution
++for smartphone handsets. The common properties are described directly in the
++node, while each individual component are described in an optional subnode.
++
++- compatible:
++	Usage: required
++	Value type: <stringlist>
++	Definition: must be:
++		    "ti,lm3533"
++
++- reg:
++	Usage: required
++	Value type: <u32>
++	Definition: i2c address of the LM3533 chip
++
++- als-supply:
++	Usage: optional
++	Value type: <prop-encoded-array>
++	Definition: reference to regulator powering the V_als input; as
++		    specified in "../regulator/regulator.txt"
++
++- hwen-gpios:
++	Usage: required
++	Value type: <prop-encoded-array>
++	Definition: reference to gpio pin connected to the HWEN input; as
++		    specified in "../gpio/gpio.txt"
++
++- ti,boost-freq-hz:
++	Usage: required
++	Value type: <u32>
++	Definition: switch-frequency of the boost converter, must be either:
++		    500000 or 1000000
++
++- ti,boost-ovp-mv:
++	Usage: required
++	Value type: <u32>
++	Definition: over-voltage protection limit, in mV. Must be one of:
++		    16000, 24000, 32000 or 40000
++
++- #address-cells:
++	Usage: required
++	Value type: <u32>
++	Definition: must be 1
++
++- #size-cells:
++	Usage: required
++	Value type: <u32>
++	Definition: must be 0
++
++= ALS SUBNODE
++The ambient light sensor subnode must be named "als", it carries the light
++sensor related properties.
++
++- ti,als-resistance-ohm:
++	Usage: required (unless ti,pwm-mode is specified)
++	Value type: <u32>
++	Definition: specifies the resistor value (R_als), in Ohm. Valid values
++		    ranges from 200000 to 1574 Ohm.
++
++- ti,pwm-mode:
++	Usage: optional
++	Value type: <empty>
++	Definition: specifies, if present, that the als should operate in PWM
++		    mode - rather than analog mode
++
++= BACKLIGHT NODES
++Backlight subnodes must be named "backlight", they carry the backlight related
++properties.
++
++- reg:
++	Usage: required
++	Value type: <u32>
++	Definition: specifies which of the two backlights this node corresponds
++		    to
++
++- default-brightness:
++	Usage: optional
++	Value type: <32>
++	Definition: specifies the default brightness for the backlight, in
++		    units of brightness [0-255]
++
++- label:
++	Usage: required
++	Value type: <string>
++	Definition: specifies a name of this backlight
++
++- led-max-microamp:
++	Usage: required
++	Value type: <u32>
++	Definition: specifies the max current for this backlight, in uA, as
++		    described in "../leds/common.txt"
++
++- ti,pwm-zones:
++	Usage: optional
++	Value type: <u32 list>
++	Definition: lists the ALS zones to be PWM controlled for this backlight,
++		    the values in the list are in the range [0 - 4]
++
++= LED NODES
++LED subnodes must be named "led", they carry the LED related properties.
++
++- reg:
++	Usage: required
++	Value type: <u32>
++	Definition: specifies which of the four LEDs this node corresponds to
++
++- linux,default-trigger:
++	Usage: optional
++	Value type: <string>
++	Definition: specifies the default trigger for the LED, as described in
++		    "../leds/common.txt"
++
++- label:
++	Usage: required
++	Value type: <string>
++	Definition: specifies a name of this LED, as described in
++		    "../leds/common.txt"
++
++- led-max-microamp:
++	Usage: required
++	Value type: <u32>
++	Definition: specifies the max current for this LED, in uA, as described
++		    in "../leds/common.txt"
++
++- ti,pwm-zones:
++	Usage: optional
++	Value type: <u32 list>
++	Definition: lists the ALS zones to be PWM controlled for this LED, the
++		    values in the list are in the range [0 - 4]
++
++= EXAMPLE
++
++i2c@12460000 {
++	compatible = "qcom,i2c-qup-v1.1.1";
++	...
++
++	lm3533@36 {
++		compatible = "ti,lm3533";
++		reg = <0x36>;
++
++		als-supply = <&pm8921_l11>;
++		hwen-gpios = <&pm8921_gpio 26 GPIO_ACTIVE_HIGH>;
++
++		ti,boost-freq-hz = <500000>;
++		ti,boost-ovp-mv = <24000>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		als {
++			ti,als-resistance-ohm = <200000>;
++		};
++
++		backlight@0 {
++			reg = <0>;
++			label = "backlight";
++
++			led-max-microamp = <20200>;
++		};
++
++		led@0 {
++			reg = <0>;
++			label = "red";
++
++			led-max-microamp = <5000>;
++		};
++
++		led@1 {
++			reg = <1>;
++			label = "green";
++
++			led-max-microamp = <5000>;
++		};
++
++		led@2 {
++			reg = <2>;
++			label = "blue";
++
++			led-max-microamp = <5000>;
++		};
++	};
++
+-- 
+2.4.2
 
-> > Do we want these properties in a standard unit or do we want them
-> > specifying the unit? Having both seems excessive.
-> 
-> You mean "freq" would imply the units? No, we want the actual units in
-> the property.
-> 
-
-You're right, frequency can be measured in other units than Hz, I can't
-think of one that would be applicable here though.
-
-Either way, I'll slap on a unit to the property name - Hz that is...
-
-Thanks for your input.
-
-Regards,
-Bjorn
