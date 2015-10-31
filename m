@@ -1,51 +1,181 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38681 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38783 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753275AbbJaKnv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Oct 2015 06:43:51 -0400
-Subject: Re: generic_buffer.c bug
-To: Matt Ranostay <mranostay@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <CAKzfze8JuNGf4NEZJxP0X3UQ21FubYgyB8da7FQSv_dK9cuk8Q@mail.gmail.com>
+	with ESMTP id S1753012AbbJaLA7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Oct 2015 07:00:59 -0400
+Subject: Re: [PATCH] iio:dac: fix i2c_master_send return code misuse
+To: Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
+	linux-iio@vger.kernel.org
+References: <1445963139-2158-1-git-send-email-jeff.dagenais@gmail.com>
+ <1445963139-2158-2-git-send-email-jeff.dagenais@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	Michael.Hennerich@analog.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56349B65.3010201@kernel.org>
-Date: Sat, 31 Oct 2015 10:43:49 +0000
+Message-ID: <56349F66.50201@kernel.org>
+Date: Sat, 31 Oct 2015 11:00:54 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze8JuNGf4NEZJxP0X3UQ21FubYgyB8da7FQSv_dK9cuk8Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1445963139-2158-2-git-send-email-jeff.dagenais@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/10/15 05:26, Matt Ranostay wrote:
-> Jonathan et all,
+On 27/10/15 16:25, Jean-Francois Dagenais wrote:
+> Contrary to most kernel functions, successful call to
+> i2c_master_send returns the number or written bytes,not 0.
 > 
-> Well actually this issues is in the build_channel_array function
-> located in iio_utils.c, but when testing my LIDAR driver with the
-> generic_buffer tool I found the following corner case.
+> However, these callers return the value as is without converting
+> the return style to conform to the expected standard.
 > 
-> So in_distance_* has a scale entry but no offset so it in turn it
-> fails.. at line 495 in iio_utils.c
-This is odd.  That line currently contains:
-if ((ret < 0) && (ret != -ENOENT))
+> Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+Whether these are actually an issue depends on whether the return code
+is simply checked as a boolean, or if a less than 0 check is used.
 
-The -ENOENT bit is there to deal with the file not existing.
-Any chance you are using a version prior to the fix that added the
-ENOENT check?
-7868dfd216074fc5f902e7befacda2a0ec76e403
- tools: iio: make scale and offset files optional
-from back on July.
+Looks like the ad5064, ad5446 certainly uses it as a boolean.
+The max517, max5821 and mcp4725 use them in the suspend and resume callbacks but
+do protect against this for everything else.  A bit of digging
+in the power management code suggests that assumes a 0 return for
+good (rather than 0 or positive) so these are indeed an issue.
 
-There was a window in which it was broken prior to that.
+I'd like to pick up a few Acks however before applying these as
+I'm more than a little curious why we didn't get issues in testing
+the ad5064 and ad5446 at least (suspend paths often don't work on
+a given board for other reasons)
+
+Lars some of these are yours.  Are Jean-Francois and I missing something?
 
 Jonathan
 
+
+> ---
+>  drivers/iio/dac/ad5064.c  |  5 ++++-
+>  drivers/iio/dac/ad5446.c  |  4 +++-
+>  drivers/iio/dac/max517.c  |  6 ++++--
+>  drivers/iio/dac/max5821.c |  8 ++++++--
+>  drivers/iio/dac/mcp4725.c | 10 ++++++++--
+>  5 files changed, 25 insertions(+), 8 deletions(-)
 > 
-> Thanks,
-> 
-> Matt
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+> index c067e68..0ff1107 100644
+> --- a/drivers/iio/dac/ad5064.c
+> +++ b/drivers/iio/dac/ad5064.c
+> @@ -598,10 +598,13 @@ static int ad5064_i2c_write(struct ad5064_state *st, unsigned int cmd,
+>  	unsigned int addr, unsigned int val)
+>  {
+>  	struct i2c_client *i2c = to_i2c_client(st->dev);
+> +	int res;
+>  
+>  	st->data.i2c[0] = (cmd << 4) | addr;
+>  	put_unaligned_be16(val, &st->data.i2c[1]);
+> -	return i2c_master_send(i2c, st->data.i2c, 3);
+> +	res = i2c_master_send(i2c, st->data.i2c, 3);
+> +
+> +	return res == 3 ? 0 : res;
+>  }
+>  
+>  static int ad5064_i2c_probe(struct i2c_client *i2c,
+> diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+> index 07e17d7..9a49941 100644
+> --- a/drivers/iio/dac/ad5446.c
+> +++ b/drivers/iio/dac/ad5446.c
+> @@ -512,7 +512,9 @@ static int ad5622_write(struct ad5446_state *st, unsigned val)
+>  	struct i2c_client *client = to_i2c_client(st->dev);
+>  	__be16 data = cpu_to_be16(val);
+>  
+> -	return i2c_master_send(client, (char *)&data, sizeof(data));
+> +	int res = i2c_master_send(client, (char *)&data, sizeof(data));
+> +
+> +	return res == sizeof(data)? 0 : res;
+>  }
+>  
+>  /**
+> diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
+> index 5507b39..0f3d81fc 100644
+> --- a/drivers/iio/dac/max517.c
+> +++ b/drivers/iio/dac/max517.c
+> @@ -117,15 +117,17 @@ static int max517_write_raw(struct iio_dev *indio_dev,
+>  static int max517_suspend(struct device *dev)
+>  {
+>  	u8 outbuf = COMMAND_PD;
+> +	int res = i2c_master_send(to_i2c_client(dev), &outbuf, 1);
+>  
+> -	return i2c_master_send(to_i2c_client(dev), &outbuf, 1);
+> +	return res == 1 ? 0 : res;
+>  }
+>  
+>  static int max517_resume(struct device *dev)
+>  {
+>  	u8 outbuf = 0;
+> +	int res = i2c_master_send(to_i2c_client(dev), &outbuf, 1);
+>  
+> -	return i2c_master_send(to_i2c_client(dev), &outbuf, 1);
+> +	return res == 1 ? 0 : res;
+>  }
+>  
+>  static SIMPLE_DEV_PM_OPS(max517_pm_ops, max517_suspend, max517_resume);
+> diff --git a/drivers/iio/dac/max5821.c b/drivers/iio/dac/max5821.c
+> index 28b8748..56f9252 100644
+> --- a/drivers/iio/dac/max5821.c
+> +++ b/drivers/iio/dac/max5821.c
+> @@ -278,7 +278,9 @@ static int max5821_suspend(struct device *dev)
+>  			 MAX5821_EXTENDED_DAC_B |
+>  			 MAX5821_EXTENDED_POWER_DOWN_MODE2 };
+>  
+> -	return i2c_master_send(to_i2c_client(dev), outbuf, 2);
+> +	int res = i2c_master_send(to_i2c_client(dev), outbuf, 2);
+> +
+> +	return res == 2 ? 0 : res;
+>  }
+>  
+>  static int max5821_resume(struct device *dev)
+> @@ -288,7 +290,9 @@ static int max5821_resume(struct device *dev)
+>  			 MAX5821_EXTENDED_DAC_B |
+>  			 MAX5821_EXTENDED_POWER_UP };
+>  
+> -	return i2c_master_send(to_i2c_client(dev), outbuf, 2);
+> +	int res = i2c_master_send(to_i2c_client(dev), outbuf, 2);
+> +
+> +	return res == 2 ? 0 : res;
+>  }
+>  
+>  static SIMPLE_DEV_PM_OPS(max5821_pm_ops, max5821_suspend, max5821_resume);
+> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+> index 43d1458..166b607 100644
+> --- a/drivers/iio/dac/mcp4725.c
+> +++ b/drivers/iio/dac/mcp4725.c
+> @@ -39,12 +39,15 @@ static int mcp4725_suspend(struct device *dev)
+>  	struct mcp4725_data *data = iio_priv(i2c_get_clientdata(
+>  		to_i2c_client(dev)));
+>  	u8 outbuf[2];
+> +	int res;
+>  
+>  	outbuf[0] = (data->powerdown_mode + 1) << 4;
+>  	outbuf[1] = 0;
+>  	data->powerdown = true;
+>  
+> -	return i2c_master_send(data->client, outbuf, 2);
+> +	res = i2c_master_send(data->client, outbuf, 2);
+> +
+> +	return res == 2 ? 0 : res;
+>  }
+>  
+>  static int mcp4725_resume(struct device *dev)
+> @@ -52,13 +55,16 @@ static int mcp4725_resume(struct device *dev)
+>  	struct mcp4725_data *data = iio_priv(i2c_get_clientdata(
+>  		to_i2c_client(dev)));
+>  	u8 outbuf[2];
+> +	int res;
+>  
+>  	/* restore previous DAC value */
+>  	outbuf[0] = (data->dac_value >> 8) & 0xf;
+>  	outbuf[1] = data->dac_value & 0xff;
+>  	data->powerdown = false;
+>  
+> -	return i2c_master_send(data->client, outbuf, 2);
+> +	res = i2c_master_send(data->client, outbuf, 2);
+> +
+> +	return res == 2 ? 0 : res;
+>  }
+>  
+>  #ifdef CONFIG_PM_SLEEP
 > 
 
