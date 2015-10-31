@@ -1,73 +1,71 @@
-Return-Path: <robh+dt@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yk0-f174.google.com ([209.85.160.174]:33497 "EHLO
+	mail-yk0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750920AbbJaV1Z (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Oct 2015 17:27:25 -0400
+Received: by ykft191 with SMTP id t191so107281464ykf.0
+        for <linux-iio@vger.kernel.org>; Sat, 31 Oct 2015 14:27:25 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1446309089-21094-2-git-send-email-afd@ti.com>
-References: <1446309089-21094-1-git-send-email-afd@ti.com> <1446309089-21094-2-git-send-email-afd@ti.com>
-From: Rob Herring <robh+dt@kernel.org>
-Date: Sat, 31 Oct 2015 13:44:15 -0500
-Message-ID: <CAL_JsqJJjtAXzi-3Aeb6pwwSUUv0i9g0g43Fq60CeSmNEiYoaQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] Documentation: afe4404: Add DT bindings for the
- AFE4404 heart monitor
-To: "Andrew F. Davis" <afd@ti.com>
-Cc: Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
-	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+In-Reply-To: <5634943D.3080806@kernel.org>
+References: <1446210662-10370-1-git-send-email-ciorneiioana@gmail.com>
+	<5634943D.3080806@kernel.org>
+Date: Sat, 31 Oct 2015 23:27:25 +0200
+Message-ID: <CAHWJYFmmq5dY9+RWNg1nyV9wZzvv2MuFj0qmdmQQRnmuT0WfAQ@mail.gmail.com>
+Subject: Re: [PATCH] tools: iio: avoid returning error when channel does not
+ have an offset
+From: Ioana Ciornei <ciorneiioana@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Matt Ranostaj <mranostay@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-gmail thinks this is spam BTW.
-
-On Sat, Oct 31, 2015 at 11:31 AM, Andrew F. Davis <afd@ti.com> wrote:
-> Add the TI afe4404 heart monitor DT bindings documentation.
-> Create health directory created under iio.
+On Sat, Oct 31, 2015 at 12:13 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 30/10/15 13:11, Ioana Ciornei wrote:
+>> This patch avoids getting an error and aborting when a channel does not have a
+>> specific parameter like 'offset' and the file associated with it is not present.
+>> When none of the files from the device folder does not matches the desired channel's
+>> param function iioutils_get_param_float should return 0.
+>>
+>> This change is safe previous to calling the function the parameters are set to
+>> their defaults, 0 in case of 'offset'
+>>
+>> Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
+> This is rather fixing it in the wrong place.  This function is specifically getting
+> the parameter. If it is not there, then the function should return that fact.
+> It's the caller that should know whether the parameter is optional.
 >
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> ---
->  .../devicetree/bindings/iio/health/afe4404.txt     | 27 ++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/health/afe4404.txt
+> For example, build_channel_array explicitly catches the -ENOENT error and allows
+> for that case.
 >
-> diff --git a/Documentation/devicetree/bindings/iio/health/afe4404.txt b/Documentation/devicetree/bindings/iio/health/afe4404.txt
-> new file mode 100644
-> index 0000000..d377033
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/health/afe4404.txt
-> @@ -0,0 +1,27 @@
-> +* Texas Instruments AFE4404 Heart rate and Pulse Oximeter
-> +
-> +Required properties:
-> + - compatible          : Should be "ti,afe4404".
-> + - reg                 : I2C address of the device.
-> + - led-supply          : Regulator supply to the device.
+> Perhaps we need to improve the documentation to make it clear that this is
+> the expected behaviour?
 
-Is led correct name or copy-n-paste? The datasheet has tx_sup and
-rx_sup for supplies.
+Ok, sure. I will deal with the documentation in a patch.
 
-> + - interrupt-parent    : Phandle to he parent interrupt controller.
-> + - interrupts          : The interrupt line the device ADC_RDY pin is connected to.
-> +
-> +Optional properties:
-> + - reset-gpios         : GPIO used to reset the device.
-> +
-> +Example:
-> +
-> +&i2c2 {
-> +       heart_mon@58 {
-> +               compatible = "ti,afe4404";
-> +               reg = <0x58>;
-> +
-> +               led-supply = <&vbat>;
-> +
-> +               interrupt-parent = <&gpio1>;
-> +               interrupts = <28 IRQ_TYPE_EDGE_RISING>;
-> +
-> +               reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
-> +       };
-> +};
-> --
-> 1.9.1
+Sorry for the late response.
+
+Ioana
+
+>
+>> ---
+>> not tested
+>>
+>>  tools/iio/iio_utils.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+>> index 5eb6793..cbaf696 100644
+>> --- a/tools/iio/iio_utils.c
+>> +++ b/tools/iio/iio_utils.c
+>> @@ -241,7 +241,7 @@ int iioutils_get_param_float(float *output, const char *param_name,
+>>               goto error_free_builtname_generic;
+>>       }
+>>
+>> -     ret = -ENOENT;
+>> +     ret = 0;
+>>       while (ent = readdir(dp), ent)
+>>               if ((strcmp(builtname, ent->d_name) == 0) ||
+>>                   (strcmp(builtname_generic, ent->d_name) == 0)) {
+>>
 >
