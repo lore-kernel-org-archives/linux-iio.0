@@ -1,181 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38783 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38801 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753012AbbJaLA7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Oct 2015 07:00:59 -0400
-Subject: Re: [PATCH] iio:dac: fix i2c_master_send return code misuse
-To: Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
-	linux-iio@vger.kernel.org
-References: <1445963139-2158-1-git-send-email-jeff.dagenais@gmail.com>
- <1445963139-2158-2-git-send-email-jeff.dagenais@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	Michael.Hennerich@analog.com
+	with ESMTP id S1753026AbbJaLDx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Oct 2015 07:03:53 -0400
+Subject: Re: [PATCHv2 1/2] Documentation: ad5592r: Added devicetree bindings
+ documentation
+To: Linus Walleij <linus.walleij@linaro.org>
+References: <1444729080-9937-1-git-send-email-paul.cercueil@analog.com>
+ <562CD9BD.6030206@kernel.org>
+ <CACRpkdatEhs34y3D5evo-_rmG=pPb9LcdNWE+3zgnGqbZFh9hQ@mail.gmail.com>
+Cc: Paul Cercueil <paul.cercueil@analog.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Antonio Fiol <antonio@fiol.es>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56349F66.50201@kernel.org>
-Date: Sat, 31 Oct 2015 11:00:54 +0000
+Message-ID: <5634A016.4020801@kernel.org>
+Date: Sat, 31 Oct 2015 11:03:50 +0000
 MIME-Version: 1.0
-In-Reply-To: <1445963139-2158-2-git-send-email-jeff.dagenais@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CACRpkdatEhs34y3D5evo-_rmG=pPb9LcdNWE+3zgnGqbZFh9hQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/10/15 16:25, Jean-Francois Dagenais wrote:
-> Contrary to most kernel functions, successful call to
-> i2c_master_send returns the number or written bytes,not 0.
+On 27/10/15 16:13, Linus Walleij wrote:
+> On Sun, Oct 25, 2015 at 2:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 13/10/15 10:37, Paul Cercueil wrote:
+>>> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
+>> Looks good to me, but as it is a little bit 'different' and we are
+>> defining entirely new generic bindings (the channel modes stuff)
+>> I would like some more input.  It might be overkill but we do
+>> of course have the pinctl framework which covers this sort of
+>> thing... Might be worth considering if using that to get the unified
+>> bindings might make sense here...
+>>
+>> cc'd Linus in case he wants to comment on this.
+>>
+>> It would obviously be a very heavy weight solution to the problem
+>> so I'm far from convinced it makes sense - or even fits the usecase
+>> terrible well.  Just thought I'd mention the possibility.
 > 
-> However, these callers return the value as is without converting
-> the return style to conform to the expected standard.
+> There is something of a grey area between "definately pin control"
+> and "some extra pin hardware duct-taped to something else".
 > 
-> Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
-Whether these are actually an issue depends on whether the return code
-is simply checked as a boolean, or if a less than 0 check is used.
-
-Looks like the ad5064, ad5446 certainly uses it as a boolean.
-The max517, max5821 and mcp4725 use them in the suspend and resume callbacks but
-do protect against this for everything else.  A bit of digging
-in the power management code suggests that assumes a 0 return for
-good (rather than 0 or positive) so these are indeed an issue.
-
-I'd like to pick up a few Acks however before applying these as
-I'm more than a little curious why we didn't get issues in testing
-the ad5064 and ad5446 at least (suspend paths often don't work on
-a given board for other reasons)
-
-Lars some of these are yours.  Are Jean-Francois and I missing something?
-
-Jonathan
-
-
-> ---
->  drivers/iio/dac/ad5064.c  |  5 ++++-
->  drivers/iio/dac/ad5446.c  |  4 +++-
->  drivers/iio/dac/max517.c  |  6 ++++--
->  drivers/iio/dac/max5821.c |  8 ++++++--
->  drivers/iio/dac/mcp4725.c | 10 ++++++++--
->  5 files changed, 25 insertions(+), 8 deletions(-)
+> I guess that is natural, life is full of grey areas...
 > 
-> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-> index c067e68..0ff1107 100644
-> --- a/drivers/iio/dac/ad5064.c
-> +++ b/drivers/iio/dac/ad5064.c
-> @@ -598,10 +598,13 @@ static int ad5064_i2c_write(struct ad5064_state *st, unsigned int cmd,
->  	unsigned int addr, unsigned int val)
->  {
->  	struct i2c_client *i2c = to_i2c_client(st->dev);
-> +	int res;
->  
->  	st->data.i2c[0] = (cmd << 4) | addr;
->  	put_unaligned_be16(val, &st->data.i2c[1]);
-> -	return i2c_master_send(i2c, st->data.i2c, 3);
-> +	res = i2c_master_send(i2c, st->data.i2c, 3);
-> +
-> +	return res == 3 ? 0 : res;
->  }
->  
->  static int ad5064_i2c_probe(struct i2c_client *i2c,
-> diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
-> index 07e17d7..9a49941 100644
-> --- a/drivers/iio/dac/ad5446.c
-> +++ b/drivers/iio/dac/ad5446.c
-> @@ -512,7 +512,9 @@ static int ad5622_write(struct ad5446_state *st, unsigned val)
->  	struct i2c_client *client = to_i2c_client(st->dev);
->  	__be16 data = cpu_to_be16(val);
->  
-> -	return i2c_master_send(client, (char *)&data, sizeof(data));
-> +	int res = i2c_master_send(client, (char *)&data, sizeof(data));
-> +
-> +	return res == sizeof(data)? 0 : res;
->  }
->  
->  /**
-> diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-> index 5507b39..0f3d81fc 100644
-> --- a/drivers/iio/dac/max517.c
-> +++ b/drivers/iio/dac/max517.c
-> @@ -117,15 +117,17 @@ static int max517_write_raw(struct iio_dev *indio_dev,
->  static int max517_suspend(struct device *dev)
->  {
->  	u8 outbuf = COMMAND_PD;
-> +	int res = i2c_master_send(to_i2c_client(dev), &outbuf, 1);
->  
-> -	return i2c_master_send(to_i2c_client(dev), &outbuf, 1);
-> +	return res == 1 ? 0 : res;
->  }
->  
->  static int max517_resume(struct device *dev)
->  {
->  	u8 outbuf = 0;
-> +	int res = i2c_master_send(to_i2c_client(dev), &outbuf, 1);
->  
-> -	return i2c_master_send(to_i2c_client(dev), &outbuf, 1);
-> +	return res == 1 ? 0 : res;
->  }
->  
->  static SIMPLE_DEV_PM_OPS(max517_pm_ops, max517_suspend, max517_resume);
-> diff --git a/drivers/iio/dac/max5821.c b/drivers/iio/dac/max5821.c
-> index 28b8748..56f9252 100644
-> --- a/drivers/iio/dac/max5821.c
-> +++ b/drivers/iio/dac/max5821.c
-> @@ -278,7 +278,9 @@ static int max5821_suspend(struct device *dev)
->  			 MAX5821_EXTENDED_DAC_B |
->  			 MAX5821_EXTENDED_POWER_DOWN_MODE2 };
->  
-> -	return i2c_master_send(to_i2c_client(dev), outbuf, 2);
-> +	int res = i2c_master_send(to_i2c_client(dev), outbuf, 2);
-> +
-> +	return res == 2 ? 0 : res;
->  }
->  
->  static int max5821_resume(struct device *dev)
-> @@ -288,7 +290,9 @@ static int max5821_resume(struct device *dev)
->  			 MAX5821_EXTENDED_DAC_B |
->  			 MAX5821_EXTENDED_POWER_UP };
->  
-> -	return i2c_master_send(to_i2c_client(dev), outbuf, 2);
-> +	int res = i2c_master_send(to_i2c_client(dev), outbuf, 2);
-> +
-> +	return res == 2 ? 0 : res;
->  }
->  
->  static SIMPLE_DEV_PM_OPS(max5821_pm_ops, max5821_suspend, max5821_resume);
-> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> index 43d1458..166b607 100644
-> --- a/drivers/iio/dac/mcp4725.c
-> +++ b/drivers/iio/dac/mcp4725.c
-> @@ -39,12 +39,15 @@ static int mcp4725_suspend(struct device *dev)
->  	struct mcp4725_data *data = iio_priv(i2c_get_clientdata(
->  		to_i2c_client(dev)));
->  	u8 outbuf[2];
-> +	int res;
->  
->  	outbuf[0] = (data->powerdown_mode + 1) << 4;
->  	outbuf[1] = 0;
->  	data->powerdown = true;
->  
-> -	return i2c_master_send(data->client, outbuf, 2);
-> +	res = i2c_master_send(data->client, outbuf, 2);
-> +
-> +	return res == 2 ? 0 : res;
->  }
->  
->  static int mcp4725_resume(struct device *dev)
-> @@ -52,13 +55,16 @@ static int mcp4725_resume(struct device *dev)
->  	struct mcp4725_data *data = iio_priv(i2c_get_clientdata(
->  		to_i2c_client(dev)));
->  	u8 outbuf[2];
-> +	int res;
->  
->  	/* restore previous DAC value */
->  	outbuf[0] = (data->dac_value >> 8) & 0xf;
->  	outbuf[1] = data->dac_value & 0xff;
->  	data->powerdown = false;
->  
-> -	return i2c_master_send(data->client, outbuf, 2);
-> +	res = i2c_master_send(data->client, outbuf, 2);
-> +
-> +	return res == 2 ? 0 : res;
->  }
->  
->  #ifdef CONFIG_PM_SLEEP
+> Basically if there are plenty of pins and functions, local solutions
+> to the problem will not scale. Then it is necessary to go ahead
+> and implement full pin control. Especially for say a big BGA
+> package or so with lots and lots of pins.
 > 
+> It is is a few pins or they just alter between similar functionality
+> (like different graphic modes) I think local solutions are OK.
+Thanks Linus.  Makes sense
 
