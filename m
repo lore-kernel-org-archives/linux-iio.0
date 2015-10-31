@@ -1,147 +1,76 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:43077 "EHLO mout01.posteo.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751288AbbJaVh4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 31 Oct 2015 17:37:56 -0400
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id 8731F20825
-	for <linux-iio@vger.kernel.org>; Sat, 31 Oct 2015 22:37:53 +0100 (CET)
-Message-ID: <56353491.5060503@posteo.de>
-Date: Sat, 31 Oct 2015 22:37:21 +0100
-From: Martin Kepplinger <martink@posteo.de>
+Return-Path: <MAILER-DAEMON>
+From: "Andrew F. Davis" <afd@ti.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+        Mark
+ Rutland <mark.rutland@arm.com>,
+        Ian Campbell <ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter
+ Meerwald <pmeerw@pmeerw.net>
+CC: <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-api@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Andrew F.
+ Davis" <afd@ti.com>
+Subject: [PATCH 0/2] iio: Heart Rate Monitors
+Date: Sat, 31 Oct 2015 11:31:27 -0500
+Message-ID: <1446309089-21094-1-git-send-email-afd@ti.com>
 MIME-Version: 1.0
-To: Joachim Eastwood <manabian@gmail.com>, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4] iio: accel: add Freescale MMA7455L/MMA7456L 3-axis
- accelerometer driver
-References: <1445120719-29685-1-git-send-email-manabian@gmail.com> <1446295756-14364-1-git-send-email-manabian@gmail.com>
-In-Reply-To: <1446295756-14364-1-git-send-email-manabian@gmail.com>
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Am 2015-10-31 um 13:49 schrieb Joachim Eastwood:
-> Add support for Freescale MMA7455L/MMA7456L 3-axis in 10-bit mode for
-> I2C and SPI bus. This rather simple driver that currently doesn't
-> support all the hardware features of MMA7455L/MMA7456L.
-> 
-> Tested on Embedded Artist's LPC4357 Dev Kit with MMA7455L on I2C bus.
-> 
-> Data sheets for the two devices can be found here:
-> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7455L.pdf
-> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA7456L.pdf
-> 
-> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
-> ---
-> Hi,
-> 
-> This version address the comments from Jonathan Cameron.
-> 
-> Changes since v3:
-> * use IIO_CONST_ATTR on sampling_frequency_available
-> * allow changing of rate and scaling while buffer is running
-> 
-> Changes since v2:
-> * fix id variable name in MODULE_DEVICE_TABLE
-> * make MMA7455_{I2C,SPI} symbols selectable
-> * rebase on linux-next (tag next-20151020)
-> 
-> Changes since v1:
-> * limit retries to 3 in mma7455_drdy
-> * remove mma7455_show_scale_avail
-> * use chan->address instead of chan->scan_index for reg addr
-> * check that val2 is 0 when setting sample freq
-> * use __le16 to hint about endianess in mma7455_trigger_handler
-> * fix endianess in mma7455_read_raw function
-> * add mma7456 id
-> * split it into several source files to support both i2c and spi
-> 
-> 
->  drivers/iio/accel/Kconfig        |  29 ++++
->  drivers/iio/accel/Makefile       |   5 +
->  drivers/iio/accel/mma7455.h      |  20 +++
->  drivers/iio/accel/mma7455_core.c | 311 +++++++++++++++++++++++++++++++++++++++
->  drivers/iio/accel/mma7455_i2c.c  |  57 +++++++
->  drivers/iio/accel/mma7455_spi.c  |  53 +++++++
->  6 files changed, 475 insertions(+)
->  create mode 100644 drivers/iio/accel/mma7455.h
->  create mode 100644 drivers/iio/accel/mma7455_core.c
->  create mode 100644 drivers/iio/accel/mma7455_i2c.c
->  create mode 100644 drivers/iio/accel/mma7455_spi.c
-> 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 969428dd6329..728a7761aaa6 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -107,6 +107,35 @@ config KXCJK1013
->  	  To compile this driver as a module, choose M here: the module will
->  	  be called kxcjk-1013.
->  
-> +config MMA7455
-> +	tristate
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +
-> +config MMA7455_I2C
-> +	tristate "Freescale MMA7455L/MMA7456L Accelerometer I2C Driver"
-> +	depends on I2C
-> +	select MMA7455
-> +	select REGMAP_I2C
-> +	help
-> +	  Say yes here to build support for the Freescale MMA7455L and
-> +	  MMA7456L 3-axis accelerometer.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called mma7455_i2c.
-> +
-> +config MMA7455_SPI
-> +	tristate "Freescale MMA7455L/MMA7456L Accelerometer SPI Driver"
-> +	depends on SPI_MASTER
-> +	select MMA7455
-> +	select REGMAP_SPI
-> +	help
-> +	  Say yes here to build support for the Freescale MMA7455L and
-> +	  MMA7456L 3-axis accelerometer.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called mma7455_spi.
-> +
->  config MMA8452
->  	tristate "Freescale MMA8452Q and similar Accelerometers Driver"
->  	depends on I2C
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index 7925f166e6e9..7ea21f8b7d98 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -10,6 +10,11 @@ obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
->  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> +
-> +obj-$(CONFIG_MMA7455)		+= mma7455_core.o
-> +obj-$(CONFIG_MMA7455_I2C)	+= mma7455_i2c.o
-> +obj-$(CONFIG_MMA7455_SPI)	+= mma7455_spi.o
-> +
->  obj-$(CONFIG_MMA8452)	+= mma8452.o
->  
->  obj-$(CONFIG_MMA9551_CORE)	+= mma9551_core.o
-> diff --git a/drivers/iio/accel/mma7455.h b/drivers/iio/accel/mma7455.h
-> new file mode 100644
-> index 000000000000..8fae9345da88
-> --- /dev/null
-> +++ b/drivers/iio/accel/mma7455.h
-> @@ -0,0 +1,20 @@
-> +/*
-> + * IIO accel header for Freescale MMA7455L 3-axis 10-bit accelerometer
-> + * Copyright 2015 Joachim Eastwood <manabian@gmail.com>
-> + *
+Hello all,
 
-Even though they are very similar (internal technological differences),
-you could mention both supported chips here and in the other files. Btw,
-I would also s/header/driver here.
+This series adds the TI AFE4404 "Ultra-small, Integrated AFE for
+Wearable, Optical Heart Rate Monitoring and Bio-Sensing".
 
-That is, in case you get to do another version.
+This work is based on previous work by Dan Murphy [0] who is working
+on other tasks at the moment, so I will be helping to continue
+upstreaming this driver. This is more of a re-write than a continuation
+and there are many changes so I am submitting this as a v1.
 
-thanks
-                           martin
+This device is very similar to the AFE4403 and I was originally planning
+on pushing the two drivers together with common core functions in a
+third file. The AFE4403 driver is still being tested so I merged common
+code back into this driver, this is why this driver may seem a bit
+unnecessarily modular. I will probably split this stuff back out when
+I push the AFE4403.
+
+I also had some issues with sysfs naming for the channels; this device
+has three input channels from three LED stages and two ambient
+channels based on the LED stages. This might have been be a good place
+for using IIO modifiers[1], but we also have two differential channels
+based on the ambient channels, and channels cannot have both modifiers
+and be differential (the modifier is stored in the differential channel's
+ID field?). So I used sysfs names that would be close to what they
+would be if IIO supported these things.
+
+[0] http://www.spinics.net/lists/linux-iio/msg18413.html
+[1] IIO_MOD_TEMP_AMBIENT could be renamed IIO_MOD_AMBIENT as it can
+also apply to LIGHT, PRESSURE, HUMIDITY, etc..
+
+Thanks,
+Andrew
+
+Andrew F. Davis (2):
+  Documentation: afe4404: Add DT bindings for the AFE4404 heart monitor
+  iio: health: Add driver for the TI AFE4404 heart monitor
+
+ .../ABI/testing/sysfs-bus-iio-health-afe4404       |  70 +++
+ .../devicetree/bindings/iio/health/afe4404.txt     |  27 ++
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/health/Kconfig                         |  24 +
+ drivers/iio/health/Makefile                        |   6 +
+ drivers/iio/health/afe4404.c                       | 526 +++++++++++++++++++++
+ drivers/iio/health/afe440x.h                       | 159 +++++++
+ 8 files changed, 814 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-health-afe4404
+ create mode 100644 Documentation/devicetree/bindings/iio/health/afe4404.txt
+ create mode 100644 drivers/iio/health/Kconfig
+ create mode 100644 drivers/iio/health/Makefile
+ create mode 100644 drivers/iio/health/afe4404.c
+ create mode 100644 drivers/iio/health/afe440x.h
+
+-- 
+1.9.1
