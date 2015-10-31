@@ -1,51 +1,602 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38331 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38400 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752440AbbJaJje (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Oct 2015 05:39:34 -0400
-Subject: Re: [PATCH] iio: core: added support for IIO_VAL_INT
+	with ESMTP id S1752440AbbJaJ5K (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Oct 2015 05:57:10 -0400
+Subject: Re: [PATCH v5 1/2] iio: adc: Add TI ADS8688
 To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org
-References: <1445935915-7765-1-git-send-email-sean.nyekjaer@prevas.dk>
+References: <1445936508-9272-1-git-send-email-sean.nyekjaer@prevas.dk>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56348C54.7070705@kernel.org>
-Date: Sat, 31 Oct 2015 09:39:32 +0000
+Message-ID: <56349071.5010900@kernel.org>
+Date: Sat, 31 Oct 2015 09:57:05 +0000
 MIME-Version: 1.0
-In-Reply-To: <1445935915-7765-1-git-send-email-sean.nyekjaer@prevas.dk>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <1445936508-9272-1-git-send-email-sean.nyekjaer@prevas.dk>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/10/15 08:51, Sean Nyekjaer wrote:
-> Addded core support for IIO_VAL_INT in write_raw_get_fmt function.
-too many 'd's
+On 27/10/15 09:01, Sean Nyekjaer wrote:
+> This patch adds support for the Texas Intruments ADS8688 ADC.
 > 
 > Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-I'm not convinced this works.  In iio_str_to_fixpoint if fract_mult ==1
-and the value passed is say 1.2 we will get 1 + fract_mult*2 = 3.
+> Reviewed-by: Martin Hundebøll <martin.hundeboll@prevas.dk>
+Couple more tiny bits inline.  One introduced this time and one where
+I'd must have been half asleep before.
 
-Maybe it's just too early in the morning!  fract_mult = 0 would probably
-do the job, but this does all seem rather silly given we can just use
-the kstrto* function in the integer case rather than bludgeoning it
-into the fixed point string reader.
+* mutex init needs to be before the iio_device_register
+* I think you should be able to use devm_regulator_get_optional to
+simplify the relevant bit of the probe a little.
 
 Jonathan
 > ---
->  drivers/iio/industrialio-core.c | 3 +++
->  1 file changed, 3 insertions(+)
+> Changes since v4:
+> - Added mutex around databuffer
+> - write_raw_get_fmt case was switched around
 > 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 208358f..2d08c3c 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -571,6 +571,9 @@ static ssize_t iio_write_channel_info(struct device *dev,
->  	if (indio_dev->info->write_raw_get_fmt)
->  		switch (indio_dev->info->write_raw_get_fmt(indio_dev,
->  			this_attr->c, this_attr->address)) {
-> +		case IIO_VAL_INT:
-> +			fract_mult = 1;
-> +			break;
->  		case IIO_VAL_INT_PLUS_MICRO:
->  			fract_mult = 100000;
->  			break;
+> Changes since v3:
+> - fixed multiline comments
+> - write_raw_get_fmt _SCALE is nano, _OFFSET is int
+> 
+> Changes since v2:
+> - Removed unused variables
+> - Removed unnecessary mutex lock
+> - Range array is a enum
+> - Made the read and write functions less complex and easier to read
+> - Added inline comments
+> - Added callback to write_raw_get_fmt
+> 
+> Changes since v1:
+> - Now possible to read and write the actual offset and scale values
+> - Removed unused includes
+> - Removed unused buffer references
+> 
+>  drivers/iio/adc/Kconfig      |  10 +
+>  drivers/iio/adc/Makefile     |   1 +
+>  drivers/iio/adc/ti-ads8688.c | 489 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 500 insertions(+)
+>  create mode 100644 drivers/iio/adc/ti-ads8688.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index daad72e..9162dfe 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -341,6 +341,16 @@ config TI_ADC128S052
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called ti-adc128s052.
+>  
+> +config TI_ADS8688
+> +	tristate "Texas Instruments ADS8688"
+> +	depends on SPI && OF
+> +	help
+> +	  If you say yes here you get support for Texas Instruments ADS8684 and
+> +	  and ADS8688 ADC chips
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called ti-ads8688.
+> +
+>  config TI_AM335X_ADC
+>  	tristate "TI's AM335X ADC driver"
+>  	depends on MFD_TI_AM335X_TSCADC
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 11cfdfd..91a65bf 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -33,6 +33,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+>  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+> +obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+>  obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+> diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
+> new file mode 100644
+> index 0000000..070ebbf
+> --- /dev/null
+> +++ b/drivers/iio/adc/ti-ads8688.c
+> @@ -0,0 +1,489 @@
+> +/*
+> + * Copyright (C) 2015 Prevas A/S
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/err.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +#define ADS8688_CMD_REG(x)		(x << 8)
+> +#define ADS8688_CMD_REG_NOOP		0x00
+> +#define ADS8688_CMD_REG_RST		0x85
+> +#define ADS8688_CMD_REG_MAN_CH(chan)	(0xC0 | (4 * chan))
+> +#define ADS8688_CMD_DONT_CARE_BITS	16
+> +
+> +#define ADS8688_PROG_REG(x)		(x << 9)
+> +#define ADS8688_PROG_REG_RANGE_CH(chan)	(0x05 + chan)
+> +#define ADS8688_PROG_WR_BIT		BIT(8)
+> +#define ADS8688_PROG_DONT_CARE_BITS	8
+> +
+> +#define ADS8688_REG_PLUSMINUS25VREF	0
+> +#define ADS8688_REG_PLUSMINUS125VREF	1
+> +#define ADS8688_REG_PLUSMINUS0625VREF	2
+> +#define ADS8688_REG_PLUS25VREF		5
+> +#define ADS8688_REG_PLUS125VREF		6
+> +
+> +#define ADS8688_VREF_MV			4096
+> +#define ADS8688_REALBITS		16
+> +
+> +/*
+> + * enum ads8688_range - ADS8688 reference voltage range
+> + * @ADS8688_PLUSMINUS25VREF: Device is configured for input range ±2.5 * VREF
+> + * @ADS8688_PLUSMINUS125VREF: Device is configured for input range ±1.25 * VREF
+> + * @ADS8688_PLUSMINUS0625VREF: Device is configured for input range ±0.625 * VREF
+> + * @ADS8688_PLUS25VREF: Device is configured for input range 0 - 2.5 * VREF
+> + * @ADS8688_PLUS125VREF: Device is configured for input range 0 - 1.25 * VREF
+> + */
+> +enum ads8688_range {
+> +	ADS8688_PLUSMINUS25VREF,
+> +	ADS8688_PLUSMINUS125VREF,
+> +	ADS8688_PLUSMINUS0625VREF,
+> +	ADS8688_PLUS25VREF,
+> +	ADS8688_PLUS125VREF,
+> +};
+> +
+> +struct ads8688_chip_info {
+> +	const struct iio_chan_spec *channels;
+> +	unsigned int num_channels;
+> +};
+> +
+> +struct ads8688_state {
+> +	struct mutex			lock;
+> +	const struct ads8688_chip_info	*chip_info;
+> +	struct spi_device		*spi;
+> +	struct regulator		*reg;
+> +	unsigned int			vref_mv;
+> +	enum ads8688_range		range[8];
+> +	union {
+> +		__be32 d32;
+> +		u8 d8[4];
+> +	} data[2] ____cacheline_aligned;
+> +};
+> +
+> +enum ads8688_id {
+> +	ID_ADS8684,
+> +	ID_ADS8688,
+> +};
+> +
+> +struct ads8688_ranges {
+> +	enum ads8688_range range;
+> +	unsigned int scale;
+> +	int offset;
+> +	u8 reg;
+> +};
+> +
+> +static const struct ads8688_ranges ads8688_range_def[5] = {
+> +	{
+> +		.range = ADS8688_PLUSMINUS25VREF,
+> +		.scale = 76295,
+> +		.offset = -(1 << (ADS8688_REALBITS - 1)),
+> +		.reg = ADS8688_REG_PLUSMINUS25VREF,
+> +	}, {
+> +		.range = ADS8688_PLUSMINUS125VREF,
+> +		.scale = 38148,
+> +		.offset = -(1 << (ADS8688_REALBITS - 1)),
+> +		.reg = ADS8688_REG_PLUSMINUS125VREF,
+> +	}, {
+> +		.range = ADS8688_PLUSMINUS0625VREF,
+> +		.scale = 19074,
+> +		.offset = -(1 << (ADS8688_REALBITS - 1)),
+> +		.reg = ADS8688_REG_PLUSMINUS0625VREF,
+> +	}, {
+> +		.range = ADS8688_PLUS25VREF,
+> +		.scale = 38148,
+> +		.offset = 0,
+> +		.reg = ADS8688_REG_PLUS25VREF,
+> +	}, {
+> +		.range = ADS8688_PLUS125VREF,
+> +		.scale = 19074,
+> +		.offset = 0,
+> +		.reg = ADS8688_REG_PLUS125VREF,
+> +	}
+> +};
+> +
+> +static ssize_t ads8688_show_scales(struct device *dev,
+> +				   struct device_attribute *attr, char *buf)
+> +{
+> +	struct ads8688_state *st = iio_priv(dev_to_iio_dev(dev));
+> +
+> +	return sprintf(buf, "0.%09u 0.%09u 0.%09u\n",
+> +		       ads8688_range_def[0].scale * st->vref_mv,
+> +		       ads8688_range_def[1].scale * st->vref_mv,
+> +		       ads8688_range_def[2].scale * st->vref_mv);
+> +}
+> +
+> +static ssize_t ads8688_show_offsets(struct device *dev,
+> +				    struct device_attribute *attr, char *buf)
+> +{
+> +	return sprintf(buf, "%d %d\n", ads8688_range_def[0].offset,
+> +		       ads8688_range_def[3].offset);
+> +}
+> +
+> +static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
+> +		       ads8688_show_scales, NULL, 0);
+> +static IIO_DEVICE_ATTR(in_voltage_offset_available, S_IRUGO,
+> +		       ads8688_show_offsets, NULL, 0);
+> +
+> +static struct attribute *ads8688_attributes[] = {
+> +	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+> +	&iio_dev_attr_in_voltage_offset_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group ads8688_attribute_group = {
+> +	.attrs = ads8688_attributes,
+> +};
+> +
+> +#define ADS8688_CHAN(index)					\
+> +{								\
+> +	.type = IIO_VOLTAGE,					\
+> +	.indexed = 1,						\
+> +	.channel = index,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
+> +			      | BIT(IIO_CHAN_INFO_SCALE)	\
+> +			      | BIT(IIO_CHAN_INFO_OFFSET),	\
+> +}
+> +
+> +static const struct iio_chan_spec ads8684_channels[] = {
+> +	ADS8688_CHAN(0),
+> +	ADS8688_CHAN(1),
+> +	ADS8688_CHAN(2),
+> +	ADS8688_CHAN(3),
+> +};
+> +
+> +static const struct iio_chan_spec ads8688_channels[] = {
+> +	ADS8688_CHAN(0),
+> +	ADS8688_CHAN(1),
+> +	ADS8688_CHAN(2),
+> +	ADS8688_CHAN(3),
+> +	ADS8688_CHAN(4),
+> +	ADS8688_CHAN(5),
+> +	ADS8688_CHAN(6),
+> +	ADS8688_CHAN(7),
+> +};
+> +
+> +static int ads8688_prog_write(struct iio_dev *indio_dev, unsigned int addr,
+> +			      unsigned int val)
+> +{
+> +	struct ads8688_state *st = iio_priv(indio_dev);
+> +	u32 tmp;
+> +
+> +	tmp = ADS8688_PROG_REG(addr) | ADS8688_PROG_WR_BIT | val;
+> +	tmp <<= ADS8688_PROG_DONT_CARE_BITS;
+> +	st->data[0].d32 = cpu_to_be32(tmp);
+> +
+> +	return spi_write(st->spi, &st->data[0].d8[1], 3);
+> +}
+> +
+> +static int ads8688_reset(struct iio_dev *indio_dev)
+> +{
+> +	struct ads8688_state *st = iio_priv(indio_dev);
+> +	u32 tmp;
+> +
+> +	tmp = ADS8688_CMD_REG(ADS8688_CMD_REG_RST);
+> +	tmp <<= ADS8688_CMD_DONT_CARE_BITS;
+> +	st->data[0].d32 = cpu_to_be32(tmp);
+> +
+> +	return spi_write(st->spi, &st->data[0].d8[0], 4);
+> +}
+> +
+> +static int ads8688_read(struct iio_dev *indio_dev, unsigned int chan)
+> +{
+> +	struct ads8688_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +	u32 tmp;
+> +	struct spi_transfer t[] = {
+> +		{
+> +			.tx_buf = &st->data[0].d8[0],
+> +			.len = 4,
+> +			.cs_change = 1,
+> +		}, {
+> +			.tx_buf = &st->data[1].d8[0],
+> +			.rx_buf = &st->data[1].d8[0],
+> +			.len = 4,
+> +		},
+> +	};
+> +
+> +	tmp = ADS8688_CMD_REG(ADS8688_CMD_REG_MAN_CH(chan));
+> +	tmp <<= ADS8688_CMD_DONT_CARE_BITS;
+> +	st->data[0].d32 = cpu_to_be32(tmp);
+> +
+> +	tmp = ADS8688_CMD_REG(ADS8688_CMD_REG_NOOP);
+> +	tmp <<= ADS8688_CMD_DONT_CARE_BITS;
+> +	st->data[1].d32 = cpu_to_be32(tmp);
+> +
+> +	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return be32_to_cpu(st->data[1].d32) & 0xffff;
+> +}
+> +
+> +static int ads8688_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long m)
+> +{
+> +	int ret, offset;
+> +	unsigned long scale_mv;
+> +
+> +	struct ads8688_state *st = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&st->lock);
+> +	switch (m) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = ads8688_read(indio_dev, chan->channel);
+> +		mutex_unlock(&st->lock);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = ret;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		scale_mv = st->vref_mv;
+> +		scale_mv *= ads8688_range_def[st->range[chan->channel]].scale;
+> +		*val = 0;
+> +		*val2 = scale_mv;
+> +		mutex_unlock(&st->lock);
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		offset = ads8688_range_def[st->range[chan->channel]].offset;
+> +		*val = offset;
+> +		mutex_unlock(&st->lock);
+> +		return IIO_VAL_INT;
+> +	}
+> +	mutex_unlock(&st->lock);
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ads8688_write_reg_range(struct iio_dev *indio_dev,
+> +				   struct iio_chan_spec const *chan,
+> +				   enum ads8688_range range)
+> +{
+> +	unsigned int tmp;
+> +	int ret;
+> +
+> +	tmp = ADS8688_PROG_REG_RANGE_CH(chan->channel);
+> +	ret = ads8688_prog_write(indio_dev, tmp, range);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ads8688_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct ads8688_state *st = iio_priv(indio_dev);
+> +	unsigned int scale = 0;
+> +	int ret = -EINVAL, i, offset = 0;
+> +
+> +	mutex_lock(&st->lock);
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* If the offset is 0 the ±2.5 * VREF mode is not available */
+> +		offset = ads8688_range_def[st->range[chan->channel]].offset;
+> +		if (offset == 0 && val2 == ads8688_range_def[0].scale * st->vref_mv) {
+> +			mutex_unlock(&st->lock);
+> +			return -EINVAL;
+> +		}
+> +
+> +		/* Lookup new mode */
+> +		for (i = 0; i < ARRAY_SIZE(ads8688_range_def); i++)
+> +			if (val2 == ads8688_range_def[i].scale * st->vref_mv &&
+> +			    offset == ads8688_range_def[i].offset) {
+> +				ret = ads8688_write_reg_range(indio_dev, chan,
+> +					ads8688_range_def[i].reg);
+> +				break;
+> +			}
+> +		break;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		/*
+> +		 * There are only two available offsets:
+> +		 * 0 and -(1 << (ADS8688_REALBITS - 1))
+> +		 */
+> +		if (!(ads8688_range_def[0].offset == val ||
+> +		    ads8688_range_def[3].offset == val)) {
+> +			mutex_unlock(&st->lock);
+> +			return -EINVAL;
+> +		}
+> +
+> +		/*
+> +		 * If the device are in ±2.5 * VREF mode, it's not allowed to
+> +		 * switch to a mode where the offset is 0
+> +		 */
+> +		if (0 == val &&
+> +		    st->range[chan->channel] == ADS8688_PLUSMINUS25VREF) {
+> +			mutex_unlock(&st->lock);
+> +			return -EINVAL;
+> +		}
+> +
+> +		scale = ads8688_range_def[st->range[chan->channel]].scale;
+> +
+> +		/* Lookup new mode */
+> +		for (i = 0; i < ARRAY_SIZE(ads8688_range_def); i++)
+> +			if (val == ads8688_range_def[i].offset &&
+> +			    scale == ads8688_range_def[i].scale) {
+> +				ret = ads8688_write_reg_range(indio_dev, chan,
+> +					ads8688_range_def[i].reg);
+> +				break;
+> +			}
+> +		break;
+> +	}
+> +
+> +	if (!ret)
+> +		st->range[chan->channel] = ads8688_range_def[i].range;
+> +
+> +	mutex_unlock(&st->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ads8688_write_raw_get_fmt(struct iio_dev *indio_dev,
+> +				     struct iio_chan_spec const *chan,
+> +				     long mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		return IIO_VAL_INT;
+As expected, there is a dependency here on the other patch you sent.
+Ideally you'd have mentioned that in the header for this patch to stop
+some sleepy maintainer applying this one before the other one ;)
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info ads8688_info = {
+> +	.read_raw = &ads8688_read_raw,
+> +	.write_raw = &ads8688_write_raw,
+> +	.write_raw_get_fmt = &ads8688_write_raw_get_fmt,
+> +	.attrs = &ads8688_attribute_group,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static const struct ads8688_chip_info ads8688_chip_info_tbl[] = {
+> +	[ID_ADS8684] = {
+> +		.channels = ads8684_channels,
+> +		.num_channels = ARRAY_SIZE(ads8684_channels),
+> +	},
+> +	[ID_ADS8688] = {
+> +		.channels = ads8688_channels,
+> +		.num_channels = ARRAY_SIZE(ads8688_channels),
+> +	},
+> +};
+> +
+> +static int ads8688_probe(struct spi_device *spi)
+> +{
+> +	struct ads8688_state *st;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> +	if (indio_dev == NULL)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +
+> +	if (spi->dev.of_node && of_property_read_bool(spi->dev.of_node,
+> +	    "vref-supply")) {
+This appears to be a rather complex way of doing a devm_regulator_get_optional
+call.  Is there a reason that I'm missing that prevents that working here?
+It should return -ENODEV if there isn't a regulator then you can
+set it to use the internal reference based on that.
+
+Perhaps I'm missing something.
+> +		st->reg = devm_regulator_get(&spi->dev, "vref");
+> +		if (!IS_ERR(st->reg)) {
+> +			ret = regulator_enable(st->reg);
+> +			if (ret)
+> +				return ret;
+> +
+> +			ret = regulator_get_voltage(st->reg);
+> +			if (ret < 0)
+> +				goto error_out;
+> +
+> +			st->vref_mv = ret / 1000;
+> +		}
+> +	} else {
+> +		/* Use internal reference */
+> +		st->vref_mv = ADS8688_VREF_MV;
+> +	}
+> +
+> +	st->chip_info =	&ads8688_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+> +
+> +	spi->mode = SPI_MODE_1;
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	st->spi = spi;
+> +
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = st->chip_info->channels;
+> +	indio_dev->num_channels = st->chip_info->num_channels;
+> +	indio_dev->info = &ads8688_info;
+> +
+> +	ads8688_reset(indio_dev);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto error_out;
+> +
+> +	mutex_init(&st->lock);
+Unfortunately this introduces a race condition as the userspace
+interfaces that could result in this lock being taken are exposed
+during the iio_device_register call.  Hence you need to init the
+lock before that.
+
+> +
+> +	return 0;
+> +
+> +error_out:
+> +	if (!IS_ERR_OR_NULL(st->reg))
+> +		regulator_disable(st->reg);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ads8688_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct ads8688_state *st = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	if (!IS_ERR_OR_NULL(st->reg))
+> +		regulator_disable(st->reg);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id ads8688_id[] = {
+> +	{"ads8684", ID_ADS8684},
+> +	{"ads8688", ID_ADS8688},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, ads8688_id);
+> +
+> +static const struct of_device_id ads8688_of_match[] = {
+> +	{ .compatible = "ti,ads8684" },
+> +	{ .compatible = "ti,ads8688" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, ads8688_of_match);
+> +
+> +static struct spi_driver ads8688_driver = {
+> +	.driver = {
+> +		.name	= "ads8688",
+> +		.owner	= THIS_MODULE,
+> +	},
+> +	.probe		= ads8688_probe,
+> +	.remove		= ads8688_remove,
+> +	.id_table	= ads8688_id,
+> +};
+> +module_spi_driver(ads8688_driver);
+> +
+> +MODULE_AUTHOR("Sean Nyekjaer <sean.nyekjaer@prevas.dk>");
+> +MODULE_DESCRIPTION("Texas Instruments ADS8688 driver");
+> +MODULE_LICENSE("GPL v2");
 > 
 
