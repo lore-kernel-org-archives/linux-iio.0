@@ -1,79 +1,39 @@
 Return-Path: <ciorneiioana@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <CAHWJYFmmq5dY9+RWNg1nyV9wZzvv2MuFj0qmdmQQRnmuT0WfAQ@mail.gmail.com>
-References: <1446210662-10370-1-git-send-email-ciorneiioana@gmail.com>
-	<5634943D.3080806@kernel.org>
-	<CAHWJYFmmq5dY9+RWNg1nyV9wZzvv2MuFj0qmdmQQRnmuT0WfAQ@mail.gmail.com>
-Date: Sun, 1 Nov 2015 13:30:48 +0200
-Message-ID: <CAHWJYF=kLaJfRKPNDzcHkEWn9ThmzRQ8J_p7Ft04w+rDpQ5CHw@mail.gmail.com>
-Subject: Re: [PATCH] tools: iio: avoid returning error when channel does not
- have an offset
 From: Ioana Ciornei <ciorneiioana@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Matt Ranostaj <mranostay@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: outreachy-kernel@googlegroups.com,
+	Ioana Ciornei <ciorneiioana@gmail.com>
+Subject: [PATCH 1/2] iio: gyro: check sscanf return value
+Date: Sun,  1 Nov 2015 14:58:44 +0200
+Message-Id: <1446382725-11765-1-git-send-email-ciorneiioana@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Oct 31, 2015 at 11:27 PM, Ioana Ciornei <ciorneiioana@gmail.com> wrote:
-> On Sat, Oct 31, 2015 at 12:13 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 30/10/15 13:11, Ioana Ciornei wrote:
->>> This patch avoids getting an error and aborting when a channel does not have a
->>> specific parameter like 'offset' and the file associated with it is not present.
->>> When none of the files from the device folder does not matches the desired channel's
->>> param function iioutils_get_param_float should return 0.
->>>
->>> This change is safe previous to calling the function the parameters are set to
->>> their defaults, 0 in case of 'offset'
->>>
->>> Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
->> This is rather fixing it in the wrong place.  This function is specifically getting
->> the parameter. If it is not there, then the function should return that fact.
->> It's the caller that should know whether the parameter is optional.
->>
->> For example, build_channel_array explicitly catches the -ENOENT error and allows
->> for that case.
->>
+This patch fixes the checkpatch warnings:
+WARNING: unchecked sscanf return value
 
-I took a look at the build_channel_array and the
-iioutils_get_param_float and now I do not understand how the generic
-buffer tool fails at line 495 (where the check is made) if there is no
-offset in the channel.
-If there is no file in the device folder that matches *_offset it the
-iioutils_get_param_float call should return -ENOENT and it should pass
-that line since the check permits it.
+Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
+---
 
-Sorry, but now I'm confused..
+based on linux-iio/testing branch
 
-Ioana
+ drivers/iio/gyro/adis16136.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
->> Perhaps we need to improve the documentation to make it clear that this is
->> the expected behaviour?
->
-> Ok, sure. I will deal with the documentation in a patch.
->
-> Sorry for the late response.
->
-> Ioana
->
->>
->>> ---
->>> not tested
->>>
->>>  tools/iio/iio_utils.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
->>> index 5eb6793..cbaf696 100644
->>> --- a/tools/iio/iio_utils.c
->>> +++ b/tools/iio/iio_utils.c
->>> @@ -241,7 +241,7 @@ int iioutils_get_param_float(float *output, const char *param_name,
->>>               goto error_free_builtname_generic;
->>>       }
->>>
->>> -     ret = -ENOENT;
->>> +     ret = 0;
->>>       while (ent = readdir(dp), ent)
->>>               if ((strcmp(builtname, ent->d_name) == 0) ||
->>>                   (strcmp(builtname_generic, ent->d_name) == 0)) {
->>>
->>
+diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+index 26de876..bb09bff 100644
+--- a/drivers/iio/gyro/adis16136.c
++++ b/drivers/iio/gyro/adis16136.c
+@@ -435,7 +435,9 @@ static int adis16136_initial_setup(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	sscanf(indio_dev->name, "adis%u\n", &device_id);
++	ret = sscanf(indio_dev->name, "adis%u\n", &device_id);
++	if (ret != 1)
++		return -EINVAL;
+ 
+ 	if (prod_id != device_id)
+ 		dev_warn(&indio_dev->dev, "Device ID(%u) and product ID(%u) do not match.",
+-- 
+2.1.4
