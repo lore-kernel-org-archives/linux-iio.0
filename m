@@ -1,67 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f43.google.com ([209.85.215.43]:35255 "EHLO
-	mail-lf0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751060AbbKAArL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Oct 2015 20:47:11 -0400
-Received: by lfbn126 with SMTP id n126so48751547lfb.2
-        for <linux-iio@vger.kernel.org>; Sat, 31 Oct 2015 17:47:10 -0700 (PDT)
+Return-Path: <ciorneiioana@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <563489F0.3000301@kernel.org>
-References: <1445814438-17163-1-git-send-email-mranostay@gmail.com>
-	<563489F0.3000301@kernel.org>
-Date: Sat, 31 Oct 2015 17:47:09 -0700
-Message-ID: <CAKzfze-oSF7V2ht-6GUYkRSjYRcCg2KK7ocf9vNXp=m5vN0EzQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: lidar: return -EIO on invalid signal
-From: Matt Ranostay <mranostay@gmail.com>
+In-Reply-To: <CAHWJYFmmq5dY9+RWNg1nyV9wZzvv2MuFj0qmdmQQRnmuT0WfAQ@mail.gmail.com>
+References: <1446210662-10370-1-git-send-email-ciorneiioana@gmail.com>
+	<5634943D.3080806@kernel.org>
+	<CAHWJYFmmq5dY9+RWNg1nyV9wZzvv2MuFj0qmdmQQRnmuT0WfAQ@mail.gmail.com>
+Date: Sun, 1 Nov 2015 13:30:48 +0200
+Message-ID: <CAHWJYF=kLaJfRKPNDzcHkEWn9ThmzRQ8J_p7Ft04w+rDpQ5CHw@mail.gmail.com>
+Subject: Re: [PATCH] tools: iio: avoid returning error when channel does not
+ have an offset
+From: Ioana Ciornei <ciorneiioana@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Cc: linux-iio@vger.kernel.org, Matt Ranostaj <mranostay@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Actually the INVALID status happens even it isn't out of range
-sometimes roughly once every second or two. This can be from an
-invalid second signal return path and etc..
+On Sat, Oct 31, 2015 at 11:27 PM, Ioana Ciornei <ciorneiioana@gmail.com> wrote:
+> On Sat, Oct 31, 2015 at 12:13 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 30/10/15 13:11, Ioana Ciornei wrote:
+>>> This patch avoids getting an error and aborting when a channel does not have a
+>>> specific parameter like 'offset' and the file associated with it is not present.
+>>> When none of the files from the device folder does not matches the desired channel's
+>>> param function iioutils_get_param_float should return 0.
+>>>
+>>> This change is safe previous to calling the function the parameters are set to
+>>> their defaults, 0 in case of 'offset'
+>>>
+>>> Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
+>> This is rather fixing it in the wrong place.  This function is specifically getting
+>> the parameter. If it is not there, then the function should return that fact.
+>> It's the caller that should know whether the parameter is optional.
+>>
+>> For example, build_channel_array explicitly catches the -ENOENT error and allows
+>> for that case.
+>>
 
-So there are spurious zero readings from the triggered buffer, and
-warning messages in the kernel log.
+I took a look at the build_channel_array and the
+iioutils_get_param_float and now I do not understand how the generic
+buffer tool fails at line 495 (where the check is made) if there is no
+offset in the channel.
+If there is no file in the device folder that matches *_offset it the
+iioutils_get_param_float call should return -ENOENT and it should pass
+that line since the check permits it.
 
-Thanks,
+Sorry, but now I'm confused..
 
-Matt
+Ioana
 
-On Sat, Oct 31, 2015 at 2:29 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 25/10/15 23:07, Matt Ranostay wrote:
->> Returning zero from the measurment function has the side effect of
->> corrupting the triggered buffer readings, better to use -EIO than a
->> zero measurement reading.
-> When you say 'corrupting' what do you mean?  As far as I can quickly see
-> it will give a spurious 0 distance when it really means a long distance.
-> Is that what you are referring to?
+>> Perhaps we need to improve the documentation to make it clear that this is
+>> the expected behaviour?
 >
-> Jonathan
->>
->> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->> ---
->>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> index 961f9f99..359beac 100644
->> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> @@ -130,10 +130,10 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
->>               if (ret < 0)
->>                       break;
->>
->> -             /* return 0 since laser is likely pointed out of range */
->> +             /* return -EIO since laser is likely pointed out of range */
->>               if (ret & LIDAR_REG_STATUS_INVALID) {
->>                       *reg = 0;
->> -                     ret = 0;
->> +                     ret = -EIO;
->>                       break;
->>               }
->>
->>
+> Ok, sure. I will deal with the documentation in a patch.
 >
+> Sorry for the late response.
+>
+> Ioana
+>
+>>
+>>> ---
+>>> not tested
+>>>
+>>>  tools/iio/iio_utils.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+>>> index 5eb6793..cbaf696 100644
+>>> --- a/tools/iio/iio_utils.c
+>>> +++ b/tools/iio/iio_utils.c
+>>> @@ -241,7 +241,7 @@ int iioutils_get_param_float(float *output, const char *param_name,
+>>>               goto error_free_builtname_generic;
+>>>       }
+>>>
+>>> -     ret = -ENOENT;
+>>> +     ret = 0;
+>>>       while (ent = readdir(dp), ent)
+>>>               if ((strcmp(builtname, ent->d_name) == 0) ||
+>>>                   (strcmp(builtname_generic, ent->d_name) == 0)) {
+>>>
+>>
