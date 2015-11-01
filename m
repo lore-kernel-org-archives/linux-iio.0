@@ -1,91 +1,107 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47475 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752106AbbKASf6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 Nov 2015 13:35:58 -0500
-Subject: Re: [PATCH 0/2] iio: Heart Rate Monitors
-To: "Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-References: <1446309089-21094-1-git-send-email-afd@ti.com>
-Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-api@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56365B8A.3030908@kernel.org>
-Date: Sun, 1 Nov 2015 18:35:54 +0000
+Return-Path: <ciorneiioana@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1446309089-21094-1-git-send-email-afd@ti.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <56365999.5010003@kernel.org>
+References: <1446210662-10370-1-git-send-email-ciorneiioana@gmail.com>
+	<5634943D.3080806@kernel.org>
+	<CAHWJYFmmq5dY9+RWNg1nyV9wZzvv2MuFj0qmdmQQRnmuT0WfAQ@mail.gmail.com>
+	<CAHWJYF=kLaJfRKPNDzcHkEWn9ThmzRQ8J_p7Ft04w+rDpQ5CHw@mail.gmail.com>
+	<56365999.5010003@kernel.org>
+Date: Sun, 1 Nov 2015 21:53:29 +0200
+Message-ID: <CAHWJYFnO3eTVBxP-wq+qs-hqeghUu5L-UVNp0KLiEdAa4QSTmQ@mail.gmail.com>
+Subject: Re: [PATCH] tools: iio: avoid returning error when channel does not
+ have an offset
+From: Ioana Ciornei <ciorneiioana@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Matt Ranostaj <mranostay@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 31/10/15 16:31, Andrew F. Davis wrote:
-> Hello all,
-> 
-> This series adds the TI AFE4404 "Ultra-small, Integrated AFE for
-> Wearable, Optical Heart Rate Monitoring and Bio-Sensing".
-> 
-> This work is based on previous work by Dan Murphy [0] who is working
-> on other tasks at the moment, so I will be helping to continue
-> upstreaming this driver. This is more of a re-write than a continuation
-> and there are many changes so I am submitting this as a v1.
-> 
-> This device is very similar to the AFE4403 and I was originally planning
-> on pushing the two drivers together with common core functions in a
-> third file. The AFE4403 driver is still being tested so I merged common
-> code back into this driver, this is why this driver may seem a bit
-> unnecessarily modular. I will probably split this stuff back out when
-> I push the AFE4403.
-> 
-> I also had some issues with sysfs naming for the channels; this device
-> has three input channels from three LED stages and two ambient
-> channels based on the LED stages. This might have been be a good place
-> for using IIO modifiers[1], but we also have two differential channels
-> based on the ambient channels, and channels cannot have both modifiers
-> and be differential (the modifier is stored in the differential channel's
-> ID field?).
-True enough. Didn't expect to run into this particular problem, but I guess
-someone will always make hardware breaking any assumptions we make from the
-software side of things.
- So I used sysfs names that would be close to what they
-> would be if IIO supported these things.
-Fair enough as a starting point though we probably want to figure out how
-to do this 'right'.   Adding an extra field to the channel descriptor will
-be easy enough - it'll be event codes that are nasty to handle.
+On Sun, Nov 1, 2015 at 8:27 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 01/11/15 11:30, Ioana Ciornei wrote:
+>> On Sat, Oct 31, 2015 at 11:27 PM, Ioana Ciornei <ciorneiioana@gmail.com> wrote:
+>>> On Sat, Oct 31, 2015 at 12:13 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>>> On 30/10/15 13:11, Ioana Ciornei wrote:
+>>>>> This patch avoids getting an error and aborting when a channel does not have a
+>>>>> specific parameter like 'offset' and the file associated with it is not present.
+>>>>> When none of the files from the device folder does not matches the desired channel's
+>>>>> param function iioutils_get_param_float should return 0.
+>>>>>
+>>>>> This change is safe previous to calling the function the parameters are set to
+>>>>> their defaults, 0 in case of 'offset'
+>>>>>
+>>>>> Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
+>>>> This is rather fixing it in the wrong place.  This function is specifically getting
+>>>> the parameter. If it is not there, then the function should return that fact.
+>>>> It's the caller that should know whether the parameter is optional.
+>>>>
+>>>> For example, build_channel_array explicitly catches the -ENOENT error and allows
+>>>> for that case.
+>>>>
+>>
+>> I took a look at the build_channel_array and the
+>> iioutils_get_param_float and now I do not understand how the generic
+>> buffer tool fails at line 495 (where the check is made) if there is no
+>> offset in the channel.
+>> If there is no file in the device folder that matches *_offset it the
+>> iioutils_get_param_float call should return -ENOENT and it should pass
+>> that line since the check permits it.
+>>
+>> Sorry, but now I'm confused..
+> Me too!  Anyhow, we are clearly both missing something here.
+>
+> Could you add a few debugging printf lines and chase it through to find
+> out if for some reason, in this case, the code is not returning -ENOENT
+> from that call?  I wonder if there is some other error occurring
+> during that functional call.
+>
+> It's incredibly common to not have an offset so this really ought to be
+> tested code paths.  I can obviously rig something up to test,  but given
+> you already have a setup that is triggering the issue makes sense for
+> you to pursue it if you have time.
 
-Jonathan
-> 
-> [0] http://www.spinics.net/lists/linux-iio/msg18413.html
-> [1] IIO_MOD_TEMP_AMBIENT could be renamed IIO_MOD_AMBIENT as it can
-> also apply to LIGHT, PRESSURE, HUMIDITY, etc..
-No problem with this change so please send a patch.
-> 
-> Thanks,
-> Andrew
-> 
-> Andrew F. Davis (2):
->   Documentation: afe4404: Add DT bindings for the AFE4404 heart monitor
->   iio: health: Add driver for the TI AFE4404 heart monitor
-> 
->  .../ABI/testing/sysfs-bus-iio-health-afe4404       |  70 +++
->  .../devicetree/bindings/iio/health/afe4404.txt     |  27 ++
->  drivers/iio/Kconfig                                |   1 +
->  drivers/iio/Makefile                               |   1 +
->  drivers/iio/health/Kconfig                         |  24 +
->  drivers/iio/health/Makefile                        |   6 +
->  drivers/iio/health/afe4404.c                       | 526 +++++++++++++++++++++
->  drivers/iio/health/afe440x.h                       | 159 +++++++
->  8 files changed, 814 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-health-afe4404
->  create mode 100644 Documentation/devicetree/bindings/iio/health/afe4404.txt
->  create mode 100644 drivers/iio/health/Kconfig
->  create mode 100644 drivers/iio/health/Makefile
->  create mode 100644 drivers/iio/health/afe4404.c
->  create mode 100644 drivers/iio/health/afe440x.h
-> 
+I will definitely pursue this as soon as possible.
 
+Thanks for the feedback.
+
+Ioana
+
+
+
+>
+> Jonathan
+>
+>>
+>> Ioana
+>>
+>>>> Perhaps we need to improve the documentation to make it clear that this is
+>>>> the expected behaviour?
+>>>
+>>> Ok, sure. I will deal with the documentation in a patch.
+>>>
+>>> Sorry for the late response.
+>>>
+>>> Ioana
+>>>
+>>>>
+>>>>> ---
+>>>>> not tested
+>>>>>
+>>>>>  tools/iio/iio_utils.c | 2 +-
+>>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+>>>>> index 5eb6793..cbaf696 100644
+>>>>> --- a/tools/iio/iio_utils.c
+>>>>> +++ b/tools/iio/iio_utils.c
+>>>>> @@ -241,7 +241,7 @@ int iioutils_get_param_float(float *output, const char *param_name,
+>>>>>               goto error_free_builtname_generic;
+>>>>>       }
+>>>>>
+>>>>> -     ret = -ENOENT;
+>>>>> +     ret = 0;
+>>>>>       while (ent = readdir(dp), ent)
+>>>>>               if ((strcmp(builtname, ent->d_name) == 0) ||
+>>>>>                   (strcmp(builtname_generic, ent->d_name) == 0)) {
+>>>>>
+>>>>
+>
