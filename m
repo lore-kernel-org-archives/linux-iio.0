@@ -1,88 +1,93 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f171.google.com ([209.85.214.171]:33292 "EHLO
-	mail-ob0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752380AbbKCLT4 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Nov 2015 06:19:56 -0500
-Received: by obbwb3 with SMTP id wb3so9703308obb.0
-        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2015 03:19:55 -0800 (PST)
+Return-Path: <lars@metafoo.de>
+Message-ID: <5638C45E.8010209@metafoo.de>
+Date: Tue, 03 Nov 2015 15:27:42 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <563497ED.5010805@kernel.org>
-References: <CAMajgzy7HpEF7vWWJm0tss4BM_ENcJHaqPHJqvrSemZ9tbf7qQ@mail.gmail.com>
-	<563497ED.5010805@kernel.org>
-Date: Tue, 3 Nov 2015 09:19:55 -0200
-Message-ID: <CAMajgzw3VZ7oKiP5+_Rp7CVTREfOKAD2WicRLb+KC_Y1CWuimg@mail.gmail.com>
-Subject: Re: Trying to read data from accelerometer buffer
-From: Ibrahim Mattus Neto <ibrahim.neto@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	Paul Cercueil <paul.cercueil@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
+ linux-iio@vger.kernel.org
+CC: jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+ Michael.Hennerich@analog.com,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH] iio:dac: fix i2c_master_send return code misuse
+References: <1445963139-2158-1-git-send-email-jeff.dagenais@gmail.com> <1445963139-2158-2-git-send-email-jeff.dagenais@gmail.com>
+In-Reply-To: <1445963139-2158-2-git-send-email-jeff.dagenais@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+Hi,
 
-Thank you for your time!
+On 10/27/2015 05:25 PM, Jean-Francois Dagenais wrote:
+> Contrary to most kernel functions, successful call to
+> i2c_master_send returns the number or written bytes,not 0.
+> 
+> However, these callers return the value as is without converting
+> the return style to conform to the expected standard.
+> 
+> Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
 
-I read through libiio documentation and found what I was missing. It
-was a matter of using 'iio_channel_convert'
+Thanks for the patch.
 
-Here is how I managed to get the data.
+> ---
+>  drivers/iio/dac/ad5064.c  |  5 ++++-
+>  drivers/iio/dac/ad5446.c  |  4 +++-
+>  drivers/iio/dac/max517.c  |  6 ++++--
+>  drivers/iio/dac/max5821.c |  8 ++++++--
+>  drivers/iio/dac/mcp4725.c | 10 ++++++++--
+>  5 files changed, 25 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+> index c067e68..0ff1107 100644
+> --- a/drivers/iio/dac/ad5064.c
+> +++ b/drivers/iio/dac/ad5064.c
+> @@ -598,10 +598,13 @@ static int ad5064_i2c_write(struct ad5064_state *st, unsigned int cmd,
+>  	unsigned int addr, unsigned int val)
+>  {
+>  	struct i2c_client *i2c = to_i2c_client(st->dev);
+> +	int res;
+>  
+>  	st->data.i2c[0] = (cmd << 4) | addr;
+>  	put_unaligned_be16(val, &st->data.i2c[1]);
+> -	return i2c_master_send(i2c, st->data.i2c, 3);
+> +	res = i2c_master_send(i2c, st->data.i2c, 3);
+> +
+> +	return res == 3 ? 0 : res;
+>  }
 
-I used as a guide the file iio_readdev.c and changed the print_sample
-function to:
+The ad5064 is already fixed in Jonathan's tree.
 
-static ssize_t print_sample(const struct iio_channel *chn, void *buf,
-size_t len, void * d) {
-/* Function called for each sample on buffer*/
-    int16_t val;
+>  
+>  static int ad5064_i2c_probe(struct i2c_client *i2c,
+> diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+> index 07e17d7..9a49941 100644
+> --- a/drivers/iio/dac/ad5446.c
+> +++ b/drivers/iio/dac/ad5446.c
+> @@ -512,7 +512,9 @@ static int ad5622_write(struct ad5446_state *st, unsigned val)
+>  	struct i2c_client *client = to_i2c_client(st->dev);
+>  	__be16 data = cpu_to_be16(val);
+>  
+> -	return i2c_master_send(client, (char *)&data, sizeof(data));
+> +	int res = i2c_master_send(client, (char *)&data, sizeof(data));
+> +
+> +	return res == sizeof(data)? 0 : res;
 
-    iio_channel_convert(chn, &val, buf);
+This still returns the wrong if res is between 0 and sizeof(data)-1. You
+need something like
 
-    printf("Value of sample: %d", val);
+	if (res == sizeof(data))
+		return 0
+	else if (res >= 0)
+		return -EIO;
+	else
+		return res;
 
-    fflush(stdout);
+Same is true for all the other drivers patched.
 
-    return len;
-}
+I really wish we could fix this in the I2C core to avoid having to copy and
+paste the same error handling to each driver.
 
-Thank you very much for your help!
+There was this patch[1], but it looks like it was never followed by a v2.
+Dmitry I'm curious, what happened to that patch?
 
-Regards,
-Ibrahim.
+- Lars
 
-2015-10-31 8:29 GMT-02:00 Jonathan Cameron <jic23@kernel.org>:
-> On 29/10/15 10:05, Ibrahim Mattus Neto wrote:
->> Hi, I am having issues reading from a accelerometer and I hope yo
->> might help me (if I should ask this question elsewhere, please tell
->> me)
->>
->> What I am trying to do is get data from a buffer (I am using the
->> source code from iio_readdev as an example) but I can't figure it out
->> how to interpret the data properly.
-> A quick google suggests this is from libiio.  Perhaps Paul or Lars
-> can give more detail.
->>
->> I was expecting to get a bunch of numbers related to the X axis but
->> when it writes to stdout I get a bunch of weird characters, here is
->> the output:
->>
->> @������@������������������������������������������������
->>
->> How can I get values of x, y and z axes?
-> The data is in binary, whereas piping it to stdout is presumably going to expect
-> asci characters.   I would imagine, glancing at that example code
-> that it was meant for piping into some other program that actually interpreted
-> the stream?
->
-> Alternatively, take a look at tools/iio/generic_buffer.c in the kernel source
-> tree for an example of how to read from the buffers.
->>
->> Is there anything else I should provide? Is there some information missing?
->>
->> Thanks in advance!
->> Ibrahim
->> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z� ��h����&�� �G���h� (�階�ݢj"�� � m�����z�ޖ���f���h���~�mml==
->>
->
+[1] https://patchwork.ozlabs.org/patch/220915/
