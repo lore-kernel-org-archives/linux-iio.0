@@ -1,60 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn1bon0140.outbound.protection.outlook.com ([157.56.111.140]:64064
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751289AbbKBXSJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 2 Nov 2015 18:18:09 -0500
-Date: Mon, 2 Nov 2015 15:45:03 -0600
-From: Chris Lesiak <chris.lesiak@licor.com>
-To: <linux-iio@vger.kernel.org>
-Subject: [PATCH] iio: si7020: Swap data byte order
-Message-ID: <5637d95f.kjNhlcFiM4VW/Nz7%chris.lesiak@licor.com>
+Received: from smtp-out-240.synserver.de ([212.40.185.240]:1062 "EHLO
+	smtp-out-188.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751289AbbKCJWb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Nov 2015 04:22:31 -0500
+Message-ID: <56387CD2.3010906@metafoo.de>
+Date: Tue, 03 Nov 2015 10:22:26 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+To: Jonathan Cameron <jic23@kernel.org>,
+	Ioana Ciornei <ciorneiioana@gmail.com>,
+	linux-iio@vger.kernel.org
+CC: outreachy-kernel@googlegroups.com
+Subject: Re: [PATCH 1/2] iio: gyro: check sscanf return value
+References: <1446382725-11765-1-git-send-email-ciorneiioana@gmail.com> <56365728.9020304@kernel.org>
+In-Reply-To: <56365728.9020304@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
->From e983f08f5cdeb811fd59abfc5ed9b47cef647bf6 Mon Sep 17 00:00:00 2001
-From: Chris Lesiak <chris.lesiak@licor.com>
-Date: Mon, 2 Nov 2015 15:13:45 -0600
-Subject: [PATCH] iio: si7020: Swap data byte order
+On 11/01/2015 07:17 PM, Jonathan Cameron wrote:
+> On 01/11/15 12:58, Ioana Ciornei wrote:
+>> This patch fixes the checkpatch warnings:
+>> WARNING: unchecked sscanf return value
+>>
+>> Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
+> Hi Ioana,
+> 
+> Couple of minor process points (the patches are fine!)
+> 
+> You should have cc'd the driver author and generally also
+> the various listed reviewers in MAINTAINERS.  In this case
+> of of them is the driver author so possibly just pinging him
+> is the way to go.  In the case of Analog devices parts,
+> Lars-Peter is also the maintainer so it's all about as
+> easy as it gets in this case.
+> 
+> Lars, looks fine to me.  Your driver so please sanity check.
+> Clearly it's not a bug as the inputs are entirely controlled
+> by the driver code, but I think having a sanity check on
+> the return value is a good thing (from the point of view of
+> best practice). 
 
-The Silicon Labs Si7013, Si7020, and Si7021 family of I2C humidity and
-temperature sensors deliver 16 bit data high byte first.
+As you say strictly speaking it is not necessary, but if it makes checkpatch
+happy why not.
 
-See the datasheet available at:
-https://www.silabs.com/Support%20Documents%2fTechnicalDocs%2fSi7020-A20.pdf
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 
-But as documented in Documentation/i2c/smbus-protocol,
-i2c_smbus_read_word_data() expects the low byte first.
 
-Change the driver to use i2c_smbus_read_word_swapped to get correct byte
-order.
-
-Signed-off-by: Chris Lesiak <chris.lesiak@licor.com>
----
- drivers/iio/humidity/si7020.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-index 00aec56..d169e90 100644
---- a/drivers/iio/humidity/si7020.c
-+++ b/drivers/iio/humidity/si7020.c
-@@ -50,10 +50,10 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		ret = i2c_smbus_read_word_data(*client,
--					       chan->type == IIO_TEMP ?
--					       SI7020CMD_TEMP_HOLD :
--					       SI7020CMD_RH_HOLD);
-+		ret = i2c_smbus_read_word_swapped(*client,
-+						  chan->type == IIO_TEMP ?
-+						  SI7020CMD_TEMP_HOLD :
-+						  SI7020CMD_RH_HOLD);
- 		if (ret < 0)
- 			return ret;
- 		*val = ret >> 2;
--- 
-2.4.3
+> 
+> There is a second patch for some the IIO drivers that are your
+> problem as well - I'll let you pull that off the list as I'm
+> feeling lazy ;)
+> 
+> I did have to check that sscanf never returns any more helpful
+> error codes, but unlike the glibc one it seems not.  What fun.
+> 
+> Jonathan
+>> ---
+>>
+>> based on linux-iio/testing branch
+>>
+>>  drivers/iio/gyro/adis16136.c | 4 +++-
+>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+>> index 26de876..bb09bff 100644
+>> --- a/drivers/iio/gyro/adis16136.c
+>> +++ b/drivers/iio/gyro/adis16136.c
+>> @@ -435,7 +435,9 @@ static int adis16136_initial_setup(struct iio_dev *indio_dev)
+>>  	if (ret)
+>>  		return ret;
+>>  
+>> -	sscanf(indio_dev->name, "adis%u\n", &device_id);
+>> +	ret = sscanf(indio_dev->name, "adis%u\n", &device_id);
+>> +	if (ret != 1)
+>> +		return -EINVAL;
+>>  
+>>  	if (prod_id != device_id)
+>>  		dev_warn(&indio_dev->dev, "Device ID(%u) and product ID(%u) do not match.",
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
