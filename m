@@ -1,79 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn1bn0108.outbound.protection.outlook.com ([157.56.110.108]:3138
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750741AbbKDGzb convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Nov 2015 01:55:31 -0500
-From: Duan Andy <fugang.duan@freescale.com>
-To: Fabio Estevam <Fabio.Estevam@freescale.com>,
-	"jic23@kernel.org" <jic23@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"festevam@gmail.com" <festevam@gmail.com>,
-	Fabio Estevam <Fabio.Estevam@freescale.com>
-Subject: RE: [PATCH] iio: adc: vf610: Avoid division by zero
-Date: Wed, 4 Nov 2015 06:41:11 +0000
-Message-ID: <BN3PR0301MB1219ED45A2E049CDBB2DEEDBF52A0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <1446567530-14725-1-git-send-email-fabio.estevam@freescale.com>
-In-Reply-To: <1446567530-14725-1-git-send-email-fabio.estevam@freescale.com>
-Content-Type: text/plain; charset="us-ascii"
+Received: from smtp-out-248.synserver.de ([212.40.185.248]:1072 "EHLO
+	smtp-out-188.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751403AbbKDJi6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Nov 2015 04:38:58 -0500
+Message-ID: <5639D22D.3050901@metafoo.de>
+Date: Wed, 04 Nov 2015 10:38:53 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
+To: =?UTF-8?B?VmVzYSBKw6TDpHNrZWzDpGluZW4=?= <dachaac@gmail.com>,
+	linux-iio@vger.kernel.org,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: IIO device indexing issue
+References: <5637AFC5.7080007@gmail.com>
+In-Reply-To: <5637AFC5.7080007@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Fabio Estevam <fabio.estevam@freescale.com> Sent: Wednesday, November 04, 2015 12:19 AM
-> To: jic23@kernel.org
-> Cc: Duan Fugang-B38611; linux-iio@vger.kernel.org; festevam@gmail.com;
-> Estevam Fabio-R49496
-> Subject: [PATCH] iio: adc: vf610: Avoid division by zero
+On 11/02/2015 07:47 PM, Vesa Jääskeläinen wrote:
+> Hi,
 > 
-> When the 'adck-max-frequency' property is not passed in device tree, the
-> following division by zero is seen:
+> When we were using kernel 3.2 and with that board files we just got IIO
+> devices with static order so that we knew exactly what iio:device0 is.
 > 
-> [    2.196814] Hardware name: Freescale i.MX6 SoloX (Device Tree)
-> [    2.202652] Backtrace:
-> [    2.205156] [<c0013600>] (dump_backtrace) from [<c001379c>]
-> (show_stack+0x18/0x1c)
-> [    2.212730]  r6:ef138410 r5:00000000 r4:00000000 r3:00000000
-> [    2.218494] [<c0013784>] (show_stack) from [<c02d8220>]
-> (dump_stack+0x88/0xa4)
-> [    2.225756] [<c02d8198>] (dump_stack) from [<c001346c>]
-> (__div0+0x18/0x20)
-> [    2.232636]  r5:00000001 r4:eeb0a800
-> [    2.236286] [<c0013454>] (__div0) from [<c02d6be4>] (Ldiv0+0x8/0x10)
-> [    2.242657] [<c0574574>] (vf610_adc_probe) from [<c03c9274>]
-> (platform_drv_probe+0x58/0xb4)
+> Now with device tree that order is not so static anymore especially when
+> using device overlays (have not yet tried that thou). If there would be
+> deferred probe for the device then if we have multiple iio:device's then
+> those could in theory be in any order.
 > 
-> Provide a sane adck_rate default value that can be used in normal, high-
-> speed and low-power modes in the case of 'adck-max-frequency' property
-> being absent.
+> In example libiio uses iio device index to open the IIO device. So the
+> problem is to know what iio:device is what.
 > 
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> ---
->  drivers/iio/adc/vf610_adc.c | 2 ++
->  1 file changed, 2 insertions(+)
+> If we look files under /sys/bus/iio/iio:deviceX. They do not reveal what
+> device this is (especially if there are multiple device of same type). There
+> does not seem to be a way to give custom name for the iio device from device
+> tree that could have been used as a cue.
 > 
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index 599cde3..424fd69 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -105,6 +105,7 @@
->  #define VF610_ADC_TIMEOUT		msecs_to_jiffies(100)
+> Device tree aliases kinda sounded a good idea to try. Eg. define adc0 alias
+> and then link it to actual device node in tree.
 > 
->  #define DEFAULT_SAMPLE_TIME		1000
-> +#define ADCK_RATE_MAX_DEFAULT		20000000
+> Aliases could be found under /proc/device-tree/aliases. Looking at it shows
+> what device tree node it is. However there does not seem to be actual link
+> from any /proc/device-tree entries to kernel drivers exposed under sysfs.
+> And even the path components in device tree are not in same format as in
+> sysfs. So there is no 1:1 mapping possible here.
 > 
->  enum clk_sel {
->  	VF610_ADCIOC_BUSCLK_SET,
-> @@ -195,6 +196,7 @@ static inline void vf610_adc_calculate_rates(struct
-> vf610_adc *info)
->  	} else {
->  		/* fall-back value using a safe divisor */
->  		adc_feature->clk_div = 8;
-> +		adck_rate = ADCK_RATE_MAX_DEFAULT;
->  	}
+> IIO devices in /sys/bus/iio/iio:deviceX seem to be symlinks to actual
+> devices under /sys/devices and from there is physical path to the device and
+> under that the IIO device with the same name as is under /sys/bus/iio.
 > 
->  	/*
-> --
-> 1.9.1
+> So in theory we could make a mapping configuration file that specifies
+> logical name for iio device and then physical parent path for the device and
+> then find under it iio:device* files to determine what is the iio device
+> index for this physical device. Then open IIO device with that index in
+> example with libiio. Sounds a bit complex?
+> 
+> So did we miss something on how this should be defined/accessed or is there
+> a slight issue here on how to identify iio devices?
+> 
+> Don't know how device tree overlays affect this if we first load device tree
+> overlay with some configuration and then unload it and load another one with
+> different configuration.
 
-Acked-by: Fugang Duan <B38611@freescale.com>
+Hi,
+
+Yes, excellent analysis. This is a real issue. As you said there is no
+guarantee that the IIO device numbers are stable, they are assigned in the
+order the devices are registered. If the device are registered in a
+different order for whatever reason the numbers will change. You can use
+readlink on the IIO device in /sys/bus/iio/devices to get its position in
+the global device topology and be able to tell what the parent device is,
+but this path might not be completely stable either though. E.g. if your
+device is on a I2C bus and the number of the I2C bus is dynamically assigned
+it might change when the probe order changes.
+
+Alias seem to be one way to solve this issue. The big question remains is
+how to communicate the alias to userspace. For other device classes the
+alias index is used as the device index e.g. a device with alias i2c0 ends
+up being the i2c adapter with index 0. But with IIO where we support a wide
+range of different devices that does not really work. E.g. what to do if you
+have adc0 and dac0 as aliases for different devices. So you'd need a
+different way to expose the alias.
+
+Some bindings also use the "label" property to assign a unique name to node.
+But again the same issue how to expose that information to applications.
+
+- Lars
