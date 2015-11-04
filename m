@@ -1,142 +1,169 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f49.google.com ([209.85.215.49]:34965 "EHLO
-	mail-lf0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753873AbbKDSxK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Nov 2015 13:53:10 -0500
-Subject: Re: IIO device indexing issue
-To: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-References: <5637AFC5.7080007@gmail.com> <5639D22D.3050901@metafoo.de>
-From: =?UTF-8?B?VmVzYSBKw6TDpHNrZWzDpGluZW4=?= <dachaac@gmail.com>
-Message-ID: <563A5412.4030102@gmail.com>
-Date: Wed, 4 Nov 2015 20:53:06 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43037 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756380AbbKDS5i (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Nov 2015 13:57:38 -0500
+Subject: Re: [PATCH 0/2] iio: Heart Rate Monitors
+To: "Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+References: <1446309089-21094-1-git-send-email-afd@ti.com>
+ <56365B8A.3030908@kernel.org> <56378FF6.7000703@ti.com>
+Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-api@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <563A551B.2010808@kernel.org>
+Date: Wed, 4 Nov 2015 18:57:31 +0000
 MIME-Version: 1.0
-In-Reply-To: <5639D22D.3050901@metafoo.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <56378FF6.7000703@ti.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/11/15 11:38, Lars-Peter Clausen wrote:
-> On 11/02/2015 07:47 PM, Vesa Jääskeläinen wrote:
->> Hi,
+On 02/11/15 16:31, Andrew F. Davis wrote:
+> On 11/01/2015 12:35 PM, Jonathan Cameron wrote:
+>> On 31/10/15 16:31, Andrew F. Davis wrote:
+>>> Hello all,
+>>>
+>>> This series adds the TI AFE4404 "Ultra-small, Integrated AFE for
+>>> Wearable, Optical Heart Rate Monitoring and Bio-Sensing".
+>>>
+>>> This work is based on previous work by Dan Murphy [0] who is working
+>>> on other tasks at the moment, so I will be helping to continue
+>>> upstreaming this driver. This is more of a re-write than a continuation
+>>> and there are many changes so I am submitting this as a v1.
+>>>
+>>> This device is very similar to the AFE4403 and I was originally planning
+>>> on pushing the two drivers together with common core functions in a
+>>> third file. The AFE4403 driver is still being tested so I merged common
+>>> code back into this driver, this is why this driver may seem a bit
+>>> unnecessarily modular. I will probably split this stuff back out when
+>>> I push the AFE4403.
+>>>
+>>> I also had some issues with sysfs naming for the channels; this device
+>>> has three input channels from three LED stages and two ambient
+>>> channels based on the LED stages. This might have been be a good place
+>>> for using IIO modifiers[1], but we also have two differential channels
+>>> based on the ambient channels, and channels cannot have both modifiers
+>>> and be differential (the modifier is stored in the differential channel's
+>>> ID field?).
+>> True enough. Didn't expect to run into this particular problem, but I guess
+>> someone will always make hardware breaking any assumptions we make from the
+>> software side of things.
+> 
+> Seems that way, it probably would work to have modified be more that a single
+> bit flag, maybe call it modifier and just store the modifier in there. Doesn't
+> look like it would be that hard right now to fix.
+As I stated below the issue is then to figure out how to get it into the event
+codes without breaking backwards compatibility.  It could probably be done but would
+involve something hideous like a bit for this event is on a channel that is both
+differential and modified.  Then we need to potentially sneak into the code
+2 modifiers, 2 indexes and a bit saying to use them all.  
+
+This is rapidly getting to some very long naming to avoid simply saying what
+the channel is in reality which is a measure of light transmission.  I'm kind
+of thinking that information is more useful to userspace than ending up with
+something along the lines of
+
+in_intensity0_lit-intensity0_ambient_raw
+
+it's worth noting for the discussion below that if you didn't have modifiers
+you'd need to index those two channels separately as the event codes that
+might be generated can't have strings burried in them.  So you'd have
+the even more cyptic.
+
+in_intensity0_lit-in_intensity1_ambient_raw
+(or if you dropped the extra string from these attributes simply
+in_intensity0-intensity1_raw
+vs
+in_intensitytransmitted0_raw
+>  
+> I'm not really sure I understand the need for modifiers at all really, seems
+> most are used by a single driver to get around just naming the channel.
+In a sense they do serve that purpose, but their primary purpose is to provide
+a short hand lookup for common elements that 'identify' a channel.
+These get used in a couple of places in particular:
+1) Event codes - now we could have insisted that any process using events holds
+sufficient state to allow it to identify the channel purely based on type and index
+but instead decided that the vast majority of cases where there is a reason to
+map to a unique identifier are straight forward (e.g. an axis for multi axis
+sensors).  If anyone needs to still do a more detailed lookup to identify the source
+of an event they still can (effectively nothing is lost)
+
+2) In kernel mappings - consumers of IIO channels could in theory do a name look
+up if it was all string based, but then all we've done is pushed the problem on
+one step and have to maintain copies of the magic string mapping that says 
+'This is an x axis'.
+
+Hwmon basically only ever uses string based naming (as it just has sysfs attributes
+instantiated by every driver from scratch).  It works for that case, but has caused
+a lot of grief when people try for example to base a thermal driver on top
+of hwmon. Obviously this doesn't precisely map given the nature of hwmon channels
+is typically simpler and they are almost always accompanied by a userspace mapping
+in lm-sensors that identifies what they are wired to on a particular board.
+
+Input goes right the otherway and more or less provides no naming based stuff at all
+instead mapping to a set of big enums to identify things.
+
+So we could have done it all with strings but at the time it seems more
+straight forward to map onto a known subset using a simple look up.
+Perhaps we should have done this differently, but such is life!
+
+One thing it has really gained me from a maintainer point of view is 
+avoiding small missnaming issues by effectively enforcing the ABI.  Any break
+from the ABI is really obvious and needs a detailed justification!
+
+I am kind of wondering if channels should all come with a help description
+via sysfs attribute to allow more user readable data to be encoded in the 
+driver.  The issue with doing this would be maintaining it fixed for ever
+as any such help descriptions become ABI the moment they are exposed to userspace.
+
+What fun,
+
+Jonathan
+
+
+> 
+>>> So I used sysfs names that would be close to what they
+>>> would be if IIO supported these things.
+>> Fair enough as a starting point though we probably want to figure out how
+>> to do this 'right'.   Adding an extra field to the channel descriptor will
+>> be easy enough - it'll be event codes that are nasty to handle.
 >>
->> When we were using kernel 3.2 and with that board files we just got IIO
->> devices with static order so that we knew exactly what iio:device0 is.
+>> Jonathan
+>>>
+>>> [0] http://www.spinics.net/lists/linux-iio/msg18413.html
+>>> [1] IIO_MOD_TEMP_AMBIENT could be renamed IIO_MOD_AMBIENT as it can
+>>> also apply to LIGHT, PRESSURE, HUMIDITY, etc..
+>> No problem with this change so please send a patch.
+>>>
+>>> Thanks,
+>>> Andrew
+>>>
+>>> Andrew F. Davis (2):
+>>>    Documentation: afe4404: Add DT bindings for the AFE4404 heart monitor
+>>>    iio: health: Add driver for the TI AFE4404 heart monitor
+>>>
+>>>   .../ABI/testing/sysfs-bus-iio-health-afe4404       |  70 +++
+>>>   .../devicetree/bindings/iio/health/afe4404.txt     |  27 ++
+>>>   drivers/iio/Kconfig                                |   1 +
+>>>   drivers/iio/Makefile                               |   1 +
+>>>   drivers/iio/health/Kconfig                         |  24 +
+>>>   drivers/iio/health/Makefile                        |   6 +
+>>>   drivers/iio/health/afe4404.c                       | 526 +++++++++++++++++++++
+>>>   drivers/iio/health/afe440x.h                       | 159 +++++++
+>>>   8 files changed, 814 insertions(+)
+>>>   create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-health-afe4404
+>>>   create mode 100644 Documentation/devicetree/bindings/iio/health/afe4404.txt
+>>>   create mode 100644 drivers/iio/health/Kconfig
+>>>   create mode 100644 drivers/iio/health/Makefile
+>>>   create mode 100644 drivers/iio/health/afe4404.c
+>>>   create mode 100644 drivers/iio/health/afe440x.h
+>>>
 >>
->> Now with device tree that order is not so static anymore especially when
->> using device overlays (have not yet tried that thou). If there would be
->> deferred probe for the device then if we have multiple iio:device's then
->> those could in theory be in any order.
->>
->> In example libiio uses iio device index to open the IIO device. So the
->> problem is to know what iio:device is what.
->>
->> If we look files under /sys/bus/iio/iio:deviceX. They do not reveal what
->> device this is (especially if there are multiple device of same type). There
->> does not seem to be a way to give custom name for the iio device from device
->> tree that could have been used as a cue.
->>
->> Device tree aliases kinda sounded a good idea to try. Eg. define adc0 alias
->> and then link it to actual device node in tree.
->>
->> Aliases could be found under /proc/device-tree/aliases. Looking at it shows
->> what device tree node it is. However there does not seem to be actual link
->> from any /proc/device-tree entries to kernel drivers exposed under sysfs.
->> And even the path components in device tree are not in same format as in
->> sysfs. So there is no 1:1 mapping possible here.
->>
->> IIO devices in /sys/bus/iio/iio:deviceX seem to be symlinks to actual
->> devices under /sys/devices and from there is physical path to the device and
->> under that the IIO device with the same name as is under /sys/bus/iio.
->>
->> So in theory we could make a mapping configuration file that specifies
->> logical name for iio device and then physical parent path for the device and
->> then find under it iio:device* files to determine what is the iio device
->> index for this physical device. Then open IIO device with that index in
->> example with libiio. Sounds a bit complex?
->>
->> So did we miss something on how this should be defined/accessed or is there
->> a slight issue here on how to identify iio devices?
->>
->> Don't know how device tree overlays affect this if we first load device tree
->> overlay with some configuration and then unload it and load another one with
->> different configuration.
-> Hi,
->
-> Yes, excellent analysis. This is a real issue. As you said there is no
-> guarantee that the IIO device numbers are stable, they are assigned in the
-> order the devices are registered. If the device are registered in a
-> different order for whatever reason the numbers will change. You can use
-> readlink on the IIO device in /sys/bus/iio/devices to get its position in
-> the global device topology and be able to tell what the parent device is,
-> but this path might not be completely stable either though. E.g. if your
-> device is on a I2C bus and the number of the I2C bus is dynamically assigned
-> it might change when the probe order changes.
->
-> Alias seem to be one way to solve this issue. The big question remains is
-> how to communicate the alias to userspace. For other device classes the
-> alias index is used as the device index e.g. a device with alias i2c0 ends
-> up being the i2c adapter with index 0. But with IIO where we support a wide
-> range of different devices that does not really work. E.g. what to do if you
-> have adc0 and dac0 as aliases for different devices. So you'd need a
-> different way to expose the alias.
->
-> Some bindings also use the "label" property to assign a unique name to node.
-> But again the same issue how to expose that information to applications.
->
-To continue from this "label" property idea I was wondering if we would 
-add it as new optional(?) file node for IIO devices.
-
-One could then specify it like:
-
-tscadc: tscadc@44e0d000 {
-     compatible = "ti,am3359-tscadc";
-...
-     am335x_adc: adc {
-         compatible = "ti,am3359-adc";
-...
-         label = "Port A";
-     };
-};
-
-And this would generate file /sys/bus/iio/iio:deviceX/label with 
-contents of "Port A".
-
-Then during the application startup it would just need to scan all 
-devices under /sys/bus/iio and determine what labelled device it wants 
-to use.
-
-It would be up to device's developer to determine what labels to use in 
-their designs. This would not break ABI and would be just an extension 
-for it.
-
-One could also auto-assign label "am335x_adc" in this case too. But if 
-you include existing arch device tree then changing label in top level 
-is kinda a bit annoying as you would then need to duplicate all 
-properties with another label and disable arch device tree's settings. 
-Could cause also conflict if there are references elsewhere to existing 
-arch nodes.
-
-Having following in device's device tree file would allow one to 
-override label or just only specify that.
-
-#include "am33xx.dtsi"
-
-&tscadc {
-     status = "okay";
-
-     adc {
-         ti,adc-channels = <4 5 6 7>;
-
-         label = "Port A";
-     };
-};
-
-I think this "label" model would be simple to understand.
-
-Whether this needs to be implemented as per device driver feature or 
-could be implemented as generic IIO functionality I do not know.
-
-Thanks,
-Vesa Jääskeläinen
 
