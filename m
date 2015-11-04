@@ -1,105 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:33840 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755445AbbKDBKa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Nov 2015 20:10:30 -0500
-Received: by padhx2 with SMTP id hx2so26745481pad.1
-        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2015 17:10:30 -0800 (PST)
-Date: Tue, 3 Nov 2015 17:10:26 -0800
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
-	linux-iio@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, Michael.Hennerich@analog.com
-Subject: Re: [PATCH] iio:dac: fix i2c_master_send return code misuse
-Message-ID: <20151104011026.GA39311@dtor-ws>
-References: <1445963139-2158-1-git-send-email-jeff.dagenais@gmail.com>
- <1445963139-2158-2-git-send-email-jeff.dagenais@gmail.com>
- <5638C45E.8010209@metafoo.de>
+Received: from mail-bn1bn0108.outbound.protection.outlook.com ([157.56.110.108]:3138
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750741AbbKDGzb convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Nov 2015 01:55:31 -0500
+From: Duan Andy <fugang.duan@freescale.com>
+To: Fabio Estevam <Fabio.Estevam@freescale.com>,
+	"jic23@kernel.org" <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"festevam@gmail.com" <festevam@gmail.com>,
+	Fabio Estevam <Fabio.Estevam@freescale.com>
+Subject: RE: [PATCH] iio: adc: vf610: Avoid division by zero
+Date: Wed, 4 Nov 2015 06:41:11 +0000
+Message-ID: <BN3PR0301MB1219ED45A2E049CDBB2DEEDBF52A0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+References: <1446567530-14725-1-git-send-email-fabio.estevam@freescale.com>
+In-Reply-To: <1446567530-14725-1-git-send-email-fabio.estevam@freescale.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5638C45E.8010209@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 03, 2015 at 03:27:42PM +0100, Lars-Peter Clausen wrote:
-> Hi,
+From: Fabio Estevam <fabio.estevam@freescale.com> Sent: Wednesday, November 04, 2015 12:19 AM
+> To: jic23@kernel.org
+> Cc: Duan Fugang-B38611; linux-iio@vger.kernel.org; festevam@gmail.com;
+> Estevam Fabio-R49496
+> Subject: [PATCH] iio: adc: vf610: Avoid division by zero
 > 
-> On 10/27/2015 05:25 PM, Jean-Francois Dagenais wrote:
-> > Contrary to most kernel functions, successful call to
-> > i2c_master_send returns the number or written bytes,not 0.
-> > 
-> > However, these callers return the value as is without converting
-> > the return style to conform to the expected standard.
-> > 
-> > Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+> When the 'adck-max-frequency' property is not passed in device tree, the
+> following division by zero is seen:
 > 
-> Thanks for the patch.
+> [    2.196814] Hardware name: Freescale i.MX6 SoloX (Device Tree)
+> [    2.202652] Backtrace:
+> [    2.205156] [<c0013600>] (dump_backtrace) from [<c001379c>]
+> (show_stack+0x18/0x1c)
+> [    2.212730]  r6:ef138410 r5:00000000 r4:00000000 r3:00000000
+> [    2.218494] [<c0013784>] (show_stack) from [<c02d8220>]
+> (dump_stack+0x88/0xa4)
+> [    2.225756] [<c02d8198>] (dump_stack) from [<c001346c>]
+> (__div0+0x18/0x20)
+> [    2.232636]  r5:00000001 r4:eeb0a800
+> [    2.236286] [<c0013454>] (__div0) from [<c02d6be4>] (Ldiv0+0x8/0x10)
+> [    2.242657] [<c0574574>] (vf610_adc_probe) from [<c03c9274>]
+> (platform_drv_probe+0x58/0xb4)
 > 
-> > ---
-> >  drivers/iio/dac/ad5064.c  |  5 ++++-
-> >  drivers/iio/dac/ad5446.c  |  4 +++-
-> >  drivers/iio/dac/max517.c  |  6 ++++--
-> >  drivers/iio/dac/max5821.c |  8 ++++++--
-> >  drivers/iio/dac/mcp4725.c | 10 ++++++++--
-> >  5 files changed, 25 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-> > index c067e68..0ff1107 100644
-> > --- a/drivers/iio/dac/ad5064.c
-> > +++ b/drivers/iio/dac/ad5064.c
-> > @@ -598,10 +598,13 @@ static int ad5064_i2c_write(struct ad5064_state *st, unsigned int cmd,
-> >  	unsigned int addr, unsigned int val)
-> >  {
-> >  	struct i2c_client *i2c = to_i2c_client(st->dev);
-> > +	int res;
-> >  
-> >  	st->data.i2c[0] = (cmd << 4) | addr;
-> >  	put_unaligned_be16(val, &st->data.i2c[1]);
-> > -	return i2c_master_send(i2c, st->data.i2c, 3);
-> > +	res = i2c_master_send(i2c, st->data.i2c, 3);
-> > +
-> > +	return res == 3 ? 0 : res;
-> >  }
+> Provide a sane adck_rate default value that can be used in normal, high-
+> speed and low-power modes in the case of 'adck-max-frequency' property
+> being absent.
 > 
-> The ad5064 is already fixed in Jonathan's tree.
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+> ---
+>  drivers/iio/adc/vf610_adc.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> >  
-> >  static int ad5064_i2c_probe(struct i2c_client *i2c,
-> > diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
-> > index 07e17d7..9a49941 100644
-> > --- a/drivers/iio/dac/ad5446.c
-> > +++ b/drivers/iio/dac/ad5446.c
-> > @@ -512,7 +512,9 @@ static int ad5622_write(struct ad5446_state *st, unsigned val)
-> >  	struct i2c_client *client = to_i2c_client(st->dev);
-> >  	__be16 data = cpu_to_be16(val);
-> >  
-> > -	return i2c_master_send(client, (char *)&data, sizeof(data));
-> > +	int res = i2c_master_send(client, (char *)&data, sizeof(data));
-> > +
-> > +	return res == sizeof(data)? 0 : res;
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index 599cde3..424fd69 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -105,6 +105,7 @@
+>  #define VF610_ADC_TIMEOUT		msecs_to_jiffies(100)
 > 
-> This still returns the wrong if res is between 0 and sizeof(data)-1. You
-> need something like
+>  #define DEFAULT_SAMPLE_TIME		1000
+> +#define ADCK_RATE_MAX_DEFAULT		20000000
 > 
-> 	if (res == sizeof(data))
-> 		return 0
-> 	else if (res >= 0)
-> 		return -EIO;
-> 	else
-> 		return res;
+>  enum clk_sel {
+>  	VF610_ADCIOC_BUSCLK_SET,
+> @@ -195,6 +196,7 @@ static inline void vf610_adc_calculate_rates(struct
+> vf610_adc *info)
+>  	} else {
+>  		/* fall-back value using a safe divisor */
+>  		adc_feature->clk_div = 8;
+> +		adck_rate = ADCK_RATE_MAX_DEFAULT;
+>  	}
 > 
-> Same is true for all the other drivers patched.
-> 
-> I really wish we could fix this in the I2C core to avoid having to copy and
-> paste the same error handling to each driver.
-> 
-> There was this patch[1], but it looks like it was never followed by a v2.
-> Dmitry I'm curious, what happened to that patch?
+>  	/*
+> --
+> 1.9.1
 
-Fell through the cracks I'm afraid. I think facility like this is still
-needed as majority of the drivers do not care about short reads in the
-slightest.
-
--- 
-Dmitry
+Acked-by: Fugang Duan <B38611@freescale.com>
