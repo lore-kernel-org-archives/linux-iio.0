@@ -1,47 +1,116 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn1bon0132.outbound.protection.outlook.com ([157.56.111.132]:18784
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1754792AbbKDDte (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 3 Nov 2015 22:49:34 -0500
-From: Duan Andy <fugang.duan@freescale.com>
-To: Fabio Estevam <festevam@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: vf610_adc: Division by zero
-Date: Wed, 4 Nov 2015 03:49:31 +0000
-Message-ID: <BN3PR0301MB12199D3C5FAE2EDAA8318234F52A0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <CAOMZO5BxwngKrpHf4F_vVAgAskKABDEr4m7TtuZN2LSt-JJSQA@mail.gmail.com>
- <CAOMZO5B0infwHoHPbTP9Mb9Es31cOA+rXBtsRmb-thFAN8cejQ@mail.gmail.com>
-In-Reply-To: <CAOMZO5B0infwHoHPbTP9Mb9Es31cOA+rXBtsRmb-thFAN8cejQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <lars@metafoo.de>
+Message-ID: <563A4E1A.8040103@metafoo.de>
+Date: Wed, 04 Nov 2015 19:27:38 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Adriana Reus <adriana.reus@intel.com>, jic23@kernel.org
+CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net,
+ srinivas.pandruvada@linux.intel.com, daniel.baluta@intel.com
+Subject: Re: [RFC PATCH] iio: accel: kxcj: Reconcile operation order between
+ iio_register/unregister and pm functions
+References: <1446655324-32143-1-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <1446655324-32143-1-git-send-email-adriana.reus@intel.com>
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-RnJvbTogRmFiaW8gRXN0ZXZhbSA8ZmVzdGV2YW1AZ21haWwuY29tPiBTZW50OiBXZWRuZXNkYXks
-IE5vdmVtYmVyIDA0LCAyMDE1IDEyOjAxIEFNDQo+IFRvOiBEdWFuIEZ1Z2FuZy1CMzg2MTENCj4g
-Q2M6IEpvbmF0aGFuIENhbWVyb247IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVj
-dDogUmU6IHZmNjEwX2FkYzogRGl2aXNpb24gYnkgemVybw0KPiANCj4gT24gVHVlLCBOb3YgMywg
-MjAxNSBhdCAxOjI2IFBNLCBGYWJpbyBFc3RldmFtIDxmZXN0ZXZhbUBnbWFpbC5jb20+IHdyb3Rl
-Og0KPiA+IEhpIEFuZHksDQo+ID4NCj4gPiBFbmFibGluZyB2ZjYxMC1hZGMgaW4gYSBpbXg2c3gg
-ZHRzIGZpbGUgY2F1c2VzIHRoZSBmb2xsb3dpbmcgZXJyb3I6DQo+IA0KPiBPaywgcGFzc2luZyBm
-c2wsYWRjay1tYXgtZnJlcXVlbmN5IGluIHRoZSBkdHNpIGF2b2lkcyB0aGUgaXNzdWU6DQo+IA0K
-PiAtLS0gYS9hcmNoL2FybS9ib290L2R0cy9pbXg2c3guZHRzaQ0KPiArKysgYi9hcmNoL2FybS9i
-b290L2R0cy9pbXg2c3guZHRzaQ0KPiBAQCAtMTE1Miw2ICsxMTUyLDggQEANCj4gICAgICAgICAg
-ICAgICAgICBpbnRlcnJ1cHRzID0gPEdJQ19TUEkgMTAwIElSUV9UWVBFX0xFVkVMX0hJR0g+Ow0K
-PiAgICAgICAgICAgICAgICAgIGNsb2NrcyA9IDwmY2xrcyBJTVg2U1hfQ0xLX0lQRz47DQo+ICAg
-ICAgICAgICAgICAgICAgY2xvY2stbmFtZXMgPSAiYWRjIjsNCj4gKyAgICAgICAgICAgICAgICBm
-c2wsYWRjay1tYXgtZnJlcXVlbmN5ID0gPDMwMDAwMDAwPiwgPDQwMDAwMDAwPiwNCj4gKyAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgPDIwMDAwMDAwPjsNCj4gICAgICAgICAgICAgICAgICBz
-dGF0dXMgPSAiZGlzYWJsZWQiOw0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgfTsNCj4gDQo+
-IEBAIC0xMTYxLDYgKzExNjMsOCBAQA0KPiAgICAgICAgICAgICAgICAgIGludGVycnVwdHMgPSA8
-R0lDX1NQSSAxMDEgSVJRX1RZUEVfTEVWRUxfSElHSD47DQo+ICAgICAgICAgICAgICAgICAgY2xv
-Y2tzID0gPCZjbGtzIElNWDZTWF9DTEtfSVBHPjsNCj4gICAgICAgICAgICAgICAgICBjbG9jay1u
-YW1lcyA9ICJhZGMiOw0KPiArICAgICAgICAgICAgICAgIGZzbCxhZGNrLW1heC1mcmVxdWVuY3kg
-PSA8MzAwMDAwMDA+LCA8NDAwMDAwMDA+LA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICA8MjAwMDAwMDA+Ow0KPiAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJkaXNhYmxlZCI7DQo+
-ICAgICAgICAgICAgICAgICAgICAgICAgICB9Ow0KPiANCj4gLGJ1dCB3ZSBzdGlsbCBzaG91bGQg
-YmV0dGVyIGFkZCBzb21lIGRlZmF1bHQgZnJlcXVlbmNpZXMgaW4gY2FzZSAnYWRjay0NCj4gbWF4
-LWZyZXF1ZW5jeScgcHJvcGVydHkgaXMgYWJzZW50Lg0KDQpZb3UgYXJlIHJpZ2h0LCBJIHdpbGwg
-c3VibWl0IG9uZSBwYXRjaCBmb3IgdGhpcy4NCg0KUmVncmFkcy4NCg==
+On 11/04/2015 05:42 PM, Adriana Reus wrote:
+> At probe runtime pm should be setup before registering the sysfs interface.
+> Also when removing the device we should unregister first to make sure
+> that the interfaces that may result in wakeups etc are no longer available.
+> 
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+> ---
+>  I remember having a conversation on the order of iio_unregister
+>  and pm disable functions (http://www.spinics.net/lists/linux-iio/msg19606.html)
+>  and why it is best that unregister is the first call in remove.
+>  Also I'm thinking that at probe it would be best to enable runtime pm before 
+>  exposing it in sysfs for the (theoretical) case when pm attributes might be checked before
+>  they update. I noticed that a lot of drivers do it the other way around and I'm not sure 
+>  if maybe there's a reason for this that I am missing.
+> 
+>  If this is reasonable I can send patches for the other drivers also 
+>  (bmc150, bmg160, kmx and some other ones)
+
+Yes, looks good. Once iio_device_register() has succeeded the device is live
+and can be accessed at any point there after, this means all resources
+required for operation must have be acquired at that point. Similar
+iio_device_unregister() makes sure that the device can't any longer be
+accessed after the call has succeeded, so resources may only be freed after
+that.
+
+
+The order must always be
+
+in probe:
+
+iio_device_alloc()
+
+acquire all resources required for proper device operation
+
+iio_device_register()
+
+in remove:
+
+iio_device_unregister()
+
+release any resources associated with the device
+
+iio_device_free()
+
+> 
+>  drivers/iio/accel/kxcjk-1013.c | 20 +++++++++-----------
+>  1 file changed, 9 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index 18c1b06..edec1d0 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -1264,25 +1264,23 @@ static int kxcjk1013_probe(struct i2c_client *client,
+>  		goto err_trigger_unregister;
+>  	}
+>  
+> -	ret = iio_device_register(indio_dev);
+> -	if (ret < 0) {
+> -		dev_err(&client->dev, "unable to register iio device\n");
+> -		goto err_buffer_cleanup;
+> -	}
+> -
+>  	ret = pm_runtime_set_active(&client->dev);
+>  	if (ret)
+> -		goto err_iio_unregister;
+> +		goto err_buffer_cleanup;
+>  
+>  	pm_runtime_enable(&client->dev);
+>  	pm_runtime_set_autosuspend_delay(&client->dev,
+>  					 KXCJK1013_SLEEP_DELAY_MS);
+>  	pm_runtime_use_autosuspend(&client->dev);
+>  
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "unable to register iio device\n");
+> +		goto err_buffer_cleanup;
+> +	}
+> +
+>  	return 0;
+>  
+> -err_iio_unregister:
+> -	iio_device_unregister(indio_dev);
+>  err_buffer_cleanup:
+>  	if (data->dready_trig)
+>  		iio_triggered_buffer_cleanup(indio_dev);
+> @@ -1302,12 +1300,12 @@ static int kxcjk1013_remove(struct i2c_client *client)
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>  	struct kxcjk1013_data *data = iio_priv(indio_dev);
+>  
+> +	iio_device_unregister(indio_dev);
+> +
+>  	pm_runtime_disable(&client->dev);
+>  	pm_runtime_set_suspended(&client->dev);
+>  	pm_runtime_put_noidle(&client->dev);
+>  
+> -	iio_device_unregister(indio_dev);
+> -
+>  	if (data->dready_trig) {
+>  		iio_triggered_buffer_cleanup(indio_dev);
+>  		iio_trigger_unregister(data->dready_trig);
+> 
