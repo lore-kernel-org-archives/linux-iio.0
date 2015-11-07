@@ -1,240 +1,153 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:54136 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1031154AbbKFCXZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 5 Nov 2015 21:23:25 -0500
-Date: Thu, 5 Nov 2015 20:23:20 -0600
-From: Rob Herring <robh@kernel.org>
-To: Bjorn Andersson <bjorn.andersson@sonymobile.com>
-Cc: Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Johan Hovold <jhovold@gmail.com>,
-	Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 1/3] devicetree: mfd: Add binding for the TI LM3533
-Message-ID: <20151106022319.GA13460@rob-hp-laptop>
-References: <1446249040-16552-1-git-send-email-bjorn.andersson@sonymobile.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1446249040-16552-1-git-send-email-bjorn.andersson@sonymobile.com>
+Received: from mail-pa0-f47.google.com ([209.85.220.47]:32991 "EHLO
+	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750720AbbKGFhz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 7 Nov 2015 00:37:55 -0500
+From: Matt Ranostay <mranostay@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH] iio: pulsedlight-lidar-lite: add runtime PM
+Date: Fri,  6 Nov 2015 21:37:23 -0800
+Message-Id: <1446874643-28020-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Oct 30, 2015 at 04:50:38PM -0700, Bjorn Andersson wrote:
-> Add the binding for the Texas Instruments LM3533 lighting power
-> solution.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@sonymobile.com>
+Add runtime PM support for the lidar-lite module to enable low power
+mode when last device requested reading is over a second ago.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 54 ++++++++++++++++++++++-
+ 1 file changed, 53 insertions(+), 1 deletion(-)
 
-> ---
-> 
-> Changes since v2:
-> - Drop vendor prefix of vendor properties
-> - Specify unit of various properties
-> - Fix reference paths
-> 
-> Changes since v1:
-> - Added unit to boost-freq and als-resistance (as the frequency now comes with
->   a unit specifier I changed it to be expressed in kHz)
-> 
->  Documentation/devicetree/bindings/mfd/lm3533.txt | 184 +++++++++++++++++++++++
->  1 file changed, 184 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/lm3533.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/mfd/lm3533.txt b/Documentation/devicetree/bindings/mfd/lm3533.txt
-> new file mode 100644
-> index 000000000000..963cee153a4d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/lm3533.txt
-> @@ -0,0 +1,184 @@
-> +Texas Instruments LM3533 binding
-> +
-> +This binding describes the Texas Instruments LM3533, a lighting power solution
-> +for smartphone handsets. The common properties are described directly in the
-> +node, while each individual component are described in an optional subnode.
-> +
-> +- compatible:
-> +	Usage: required
-> +	Value type: <stringlist>
-> +	Definition: must be:
-> +		    "ti,lm3533"
-> +
-> +- reg:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: i2c address of the LM3533 chip
-> +
-> +- als-supply:
-> +	Usage: optional
-> +	Value type: <prop-encoded-array>
-> +	Definition: reference to regulator powering the V_als input; as
-> +		    specified in "../regulator/regulator.txt"
-> +
-> +- hwen-gpios:
-> +	Usage: required
-> +	Value type: <prop-encoded-array>
-> +	Definition: reference to gpio pin connected to the HWEN input; as
-> +		    specified in "../gpio/gpio.txt"
-> +
-> +- ti,boost-freq-hz:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: switch-frequency of the boost converter, must be either:
-> +		    500000 or 1000000
-> +
-> +- ti,boost-ovp-mv:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: over-voltage protection limit, in mV. Must be one of:
-> +		    16000, 24000, 32000 or 40000
-> +
-> +- #address-cells:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: must be 1
-> +
-> +- #size-cells:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: must be 0
-> +
-> += ALS SUBNODE
-> +The ambient light sensor subnode must be named "als", it carries the light
-> +sensor related properties.
-> +
-> +- ti,als-resistance-ohm:
-> +	Usage: required (unless ti,pwm-mode is specified)
-> +	Value type: <u32>
-> +	Definition: specifies the resistor value (R_als), in Ohm. Valid values
-> +		    ranges from 200000 to 1574 Ohm.
-> +
-> +- ti,pwm-mode:
-> +	Usage: optional
-> +	Value type: <empty>
-> +	Definition: specifies, if present, that the als should operate in PWM
-> +		    mode - rather than analog mode
-> +
-> += BACKLIGHT NODES
-> +Backlight subnodes must be named "backlight", they carry the backlight related
-> +properties.
-> +
-> +- reg:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: specifies which of the two backlights this node corresponds
-> +		    to
-> +
-> +- default-brightness:
-> +	Usage: optional
-> +	Value type: <32>
-> +	Definition: specifies the default brightness for the backlight, in
-> +		    units of brightness [0-255]
-> +
-> +- label:
-> +	Usage: required
-> +	Value type: <string>
-> +	Definition: specifies a name of this backlight
-> +
-> +- led-max-microamp:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: specifies the max current for this backlight, in uA, as
-> +		    described in "../leds/common.txt"
-> +
-> +- ti,pwm-zones:
-> +	Usage: optional
-> +	Value type: <u32 list>
-> +	Definition: lists the ALS zones to be PWM controlled for this backlight,
-> +		    the values in the list are in the range [0 - 4]
-> +
-> += LED NODES
-> +LED subnodes must be named "led", they carry the LED related properties.
-> +
-> +- reg:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: specifies which of the four LEDs this node corresponds to
-> +
-> +- linux,default-trigger:
-> +	Usage: optional
-> +	Value type: <string>
-> +	Definition: specifies the default trigger for the LED, as described in
-> +		    "../leds/common.txt"
-> +
-> +- label:
-> +	Usage: required
-> +	Value type: <string>
-> +	Definition: specifies a name of this LED, as described in
-> +		    "../leds/common.txt"
-> +
-> +- led-max-microamp:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: specifies the max current for this LED, in uA, as described
-> +		    in "../leds/common.txt"
-> +
-> +- ti,pwm-zones:
-> +	Usage: optional
-> +	Value type: <u32 list>
-> +	Definition: lists the ALS zones to be PWM controlled for this LED, the
-> +		    values in the list are in the range [0 - 4]
-> +
-> += EXAMPLE
-> +
-> +i2c@12460000 {
-> +	compatible = "qcom,i2c-qup-v1.1.1";
-> +	...
-> +
-> +	lm3533@36 {
-> +		compatible = "ti,lm3533";
-> +		reg = <0x36>;
-> +
-> +		als-supply = <&pm8921_l11>;
-> +		hwen-gpios = <&pm8921_gpio 26 GPIO_ACTIVE_HIGH>;
-> +
-> +		ti,boost-freq-hz = <500000>;
-> +		ti,boost-ovp-mv = <24000>;
-> +
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		als {
-> +			ti,als-resistance-ohm = <200000>;
-> +		};
-> +
-> +		backlight@0 {
-> +			reg = <0>;
-> +			label = "backlight";
-> +
-> +			led-max-microamp = <20200>;
-> +		};
-> +
-> +		led@0 {
-> +			reg = <0>;
-> +			label = "red";
-> +
-> +			led-max-microamp = <5000>;
-> +		};
-> +
-> +		led@1 {
-> +			reg = <1>;
-> +			label = "green";
-> +
-> +			led-max-microamp = <5000>;
-> +		};
-> +
-> +		led@2 {
-> +			reg = <2>;
-> +			label = "blue";
-> +
-> +			led-max-microamp = <5000>;
-> +		};
-> +	};
-> +
-> -- 
-> 2.4.2
-> 
+diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+index e544fcf..e015a89 100644
+--- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
++++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+@@ -13,7 +13,7 @@
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  * GNU General Public License for more details.
+  *
+- * TODO: runtime pm, interrupt mode, and signal strength reporting
++ * TODO: interrupt mode, and signal strength reporting
+  */
+ 
+ #include <linux/err.h>
+@@ -21,6 +21,7 @@
+ #include <linux/i2c.h>
+ #include <linux/delay.h>
+ #include <linux/module.h>
++#include <linux/pm_runtime.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
+@@ -37,6 +38,7 @@
+ 
+ #define LIDAR_REG_DATA_HBYTE	0x0f
+ #define LIDAR_REG_DATA_LBYTE	0x10
++#define LIDAR_REG_PWR_CONTROL	0x65
+ 
+ #define LIDAR_DRV_NAME "lidar"
+ 
+@@ -90,6 +92,12 @@ static inline int lidar_write_control(struct lidar_data *data, int val)
+ 	return i2c_smbus_write_byte_data(data->client, LIDAR_REG_CONTROL, val);
+ }
+ 
++static inline int lidar_write_power(struct lidar_data *data, int val)
++{
++	return i2c_smbus_write_byte_data(data->client,
++					 LIDAR_REG_PWR_CONTROL, val);
++}
++
+ static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
+ {
+ 	int ret;
+@@ -114,8 +122,15 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+ {
+ 	struct i2c_client *client = data->client;
+ 	int tries = 10;
++	int suspended = pm_runtime_suspended(&client->dev);
+ 	int ret;
+ 
++	pm_runtime_get(&client->dev);
++
++	/* regulator and FPGA needs settling time */
++	if (suspended)
++		usleep_range(15000, 20000);
++
+ 	/* start sample */
+ 	ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
+ 	if (ret < 0) {
+@@ -144,6 +159,7 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+ 		}
+ 		ret = -EIO;
+ 	}
++	pm_runtime_put_autosuspend(&client->dev);
+ 
+ 	return ret;
+ }
+@@ -243,6 +259,15 @@ static int lidar_probe(struct i2c_client *client,
+ 	if (ret)
+ 		goto error_unreg_buffer;
+ 
++	pm_runtime_set_autosuspend_delay(&client->dev, 1000);
++	pm_runtime_use_autosuspend(&client->dev);
++
++	pm_runtime_set_active(&client->dev);
++	pm_runtime_enable(&client->dev);
++
++	pm_runtime_mark_last_busy(&client->dev);
++	pm_runtime_idle(&client->dev);
++
+ 	return 0;
+ 
+ error_unreg_buffer:
+@@ -258,6 +283,9 @@ static int lidar_remove(struct i2c_client *client)
+ 	iio_device_unregister(indio_dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 
++	pm_runtime_disable(&client->dev);
++	pm_runtime_set_suspended(&client->dev);
++
+ 	return 0;
+ }
+ 
+@@ -273,10 +301,34 @@ static const struct of_device_id lidar_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, lidar_dt_ids);
+ 
++#ifdef CONFIG_PM
++static int lidar_pm_runtime_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct lidar_data *data = iio_priv(indio_dev);
++
++	return lidar_write_power(data, 0x0f);
++}
++
++static int lidar_pm_runtime_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct lidar_data *data = iio_priv(indio_dev);
++
++	return lidar_write_power(data, 0);
++}
++#endif
++
++static const struct dev_pm_ops lidar_pm_ops = {
++	SET_RUNTIME_PM_OPS(lidar_pm_runtime_suspend,
++			   lidar_pm_runtime_resume, NULL)
++};
++
+ static struct i2c_driver lidar_driver = {
+ 	.driver = {
+ 		.name	= LIDAR_DRV_NAME,
+ 		.of_match_table	= of_match_ptr(lidar_dt_ids),
++		.pm	= &lidar_pm_ops,
+ 	},
+ 	.probe		= lidar_probe,
+ 	.remove		= lidar_remove,
+-- 
+1.9.1
+
