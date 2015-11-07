@@ -1,41 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from verein.lst.de ([213.95.11.211]:46247 "EHLO newverein.lst.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752085AbbKGNJv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 7 Nov 2015 08:09:51 -0500
-Date: Sat, 7 Nov 2015 14:09:48 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Joel Becker <jlbec@evilplan.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	linux-fsdevel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
-	Paul Bolle <pebolle@tiscali.nl>, patrick.porlan@intel.com,
-	Adriana Reus <adriana.reus@intel.com>,
-	constantin.musca@intel.com, marten@intuitiveaerial.com,
-	Cristina Georgiana Opriceana <cristina.opriceana@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>, viro@zeniv.linux.org.uk
-Subject: Re: [PATCH v10 1/5] configfs: Allow dynamic group creation
-Message-ID: <20151107130947.GA23086@lst.de>
-References: <1445614411-533-1-git-send-email-daniel.baluta@intel.com> <1445614411-533-2-git-send-email-daniel.baluta@intel.com> <20151106075008.GA30535@lst.de> <CAEnQRZBjy3jnNFA77nrY+3h93MsEqGMko4cicqMP-RHBhLx0UQ@mail.gmail.com> <563C736D.6050705@metafoo.de> <A334FE9C-F187-4304-AA98-6A40347AF731@jic23.retrosnub.co.uk>
+Received: from mail-qk0-f181.google.com ([209.85.220.181]:33041 "EHLO
+	mail-qk0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753214AbbKGOIH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 7 Nov 2015 09:08:07 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <A334FE9C-F187-4304-AA98-6A40347AF731@jic23.retrosnub.co.uk>
+In-Reply-To: <1446874643-28020-1-git-send-email-mranostay@gmail.com>
+References: <1446874643-28020-1-git-send-email-mranostay@gmail.com>
+Date: Sat, 7 Nov 2015 23:08:05 +0900
+Message-ID: <CAJKOXPcjH4hQf8ukUwwCRs3U3Dre+wBvisG0nxu2ZGES3a+unQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: pulsedlight-lidar-lite: add runtime PM
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+To: Matt Ranostay <mranostay@gmail.com>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	linux-pm@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Nov 06, 2015 at 05:38:53PM +0000, Jonathan Cameron wrote:
-> Yup. I'd have no objection to a direct request to Linus to take this as a one off. 
+2015-11-07 14:37 GMT+09:00 Matt Ranostay <mranostay@gmail.com>:
+> Add runtime PM support for the lidar-lite module to enable low power
+> mode when last device requested reading is over a second ago.
+>
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> ---
+>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 54 ++++++++++++++++++++++-
+>  1 file changed, 53 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> index e544fcf..e015a89 100644
+> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> @@ -13,7 +13,7 @@
+>   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+>   * GNU General Public License for more details.
+>   *
+> - * TODO: runtime pm, interrupt mode, and signal strength reporting
+> + * TODO: interrupt mode, and signal strength reporting
+>   */
+>
+>  #include <linux/err.h>
+> @@ -21,6 +21,7 @@
+>  #include <linux/i2c.h>
+>  #include <linux/delay.h>
+>  #include <linux/module.h>
+> +#include <linux/pm_runtime.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/iio/buffer.h>
+> @@ -37,6 +38,7 @@
+>
+>  #define LIDAR_REG_DATA_HBYTE   0x0f
+>  #define LIDAR_REG_DATA_LBYTE   0x10
+> +#define LIDAR_REG_PWR_CONTROL  0x65
+>
+>  #define LIDAR_DRV_NAME "lidar"
+>
+> @@ -90,6 +92,12 @@ static inline int lidar_write_control(struct lidar_data *data, int val)
+>         return i2c_smbus_write_byte_data(data->client, LIDAR_REG_CONTROL, val);
+>  }
+>
+> +static inline int lidar_write_power(struct lidar_data *data, int val)
+> +{
+> +       return i2c_smbus_write_byte_data(data->client,
+> +                                        LIDAR_REG_PWR_CONTROL, val);
+> +}
+> +
+>  static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
+>  {
+>         int ret;
+> @@ -114,8 +122,15 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+>  {
+>         struct i2c_client *client = data->client;
+>         int tries = 10;
+> +       int suspended = pm_runtime_suspended(&client->dev);
+>         int ret;
+>
 
-I'd appreciate if you could give it a try.
+That's racy. You have a gap here between check of the status, resuming
+the device and actual use of the status.
 
-> Or we can do an immutable branch and pull it into all relevant subtrees so all
-> users can hit mainline all in 4.5 without waiting for a cycle. That tends to work well for bits like this.
+> +       pm_runtime_get(&client->dev);
 
-That would be the second best option.
+Are you sure you want to use pm_runtime_get()? The async method? You
+won't have any kind of certainty that resume really finished, even
+after the usleep().
+
+> +
+> +       /* regulator and FPGA needs settling time */
+> +       if (suspended)
+> +               usleep_range(15000, 20000);
+> +
+>         /* start sample */
+>         ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
+>         if (ret < 0) {
+> @@ -144,6 +159,7 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+>                 }
+>                 ret = -EIO;
+>         }
+> +       pm_runtime_put_autosuspend(&client->dev);
+
+mark last busy?
+
+Best regards,
+Krzysztof
