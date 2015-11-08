@@ -1,43 +1,29 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:37920 "EHLO
-	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754234AbbKGUkw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 7 Nov 2015 15:40:52 -0500
-Date: Sat, 7 Nov 2015 23:40:19 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Joe Perches <joe@perches.com>
-Cc: Evan Hosseini <hosse005@umn.edu>, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Staging: iio: Fix some character line limit coding style
- issues
-Message-ID: <20151107204019.GQ7289@mwanda>
-References: <20151107150610.GA3250@archBox.attlocal.net>
- <20151107163005.GI18797@mwanda>
- <1446919324.2701.1.camel@perches.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1446919324.2701.1.camel@perches.com>
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:34459 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752697AbbKHCud (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 7 Nov 2015 21:50:33 -0500
+From: Matt Ranostay <mranostay@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
+	k.kozlowski@samsung.com, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v2 0/1] iio: pulsedlight-lidar-lite: add runtime PM
+Date: Sat,  7 Nov 2015 18:50:23 -0800
+Message-Id: <1446951024-7621-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Nov 07, 2015 at 10:02:04AM -0800, Joe Perches wrote:
-> On Sat, 2015-11-07 at 19:30 +0300, Dan Carpenter wrote:
-> > The original is easier to read, sorry.  Checkpatch is a tool not the
-> > king of the world to obeyed at all times.
-> 
-> Completely agree.
-> 
-> Perhaps there could be some comment indicators added
-> to tell checkpatch to ignore certain warnings like
-> 80 columns.
+Changes from v1:
+* add mutex lock in measurement reading function
+* add missing pm_runtime_mark_last_busy() call
+* use pm_runtime_get_sync() function instead of async version
 
-Applying or rejecting this patch was an easy call so it doesn't cause
-decision fatigue or drain my emotions.  I feel like these patches are
-instructional so people learn not to trust tools.  Checkpatch.pl is fine
-as-is.
+Matt Ranostay (1):
+  iio: pulsedlight-lidar-lite: add runtime PM
 
-regards,
-dan carpenter
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 63 ++++++++++++++++++++++-
+ 1 file changed, 62 insertions(+), 1 deletion(-)
+
+-- 
+1.9.1
+
