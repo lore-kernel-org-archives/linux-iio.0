@@ -1,464 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43802 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43831 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751880AbbKHPii (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Nov 2015 10:38:38 -0500
-Subject: Re: [PATCH] iio: Reconcile operation order between
- iio_register/unregister and pm functions
-To: Adriana Reus <adriana.reus@intel.com>
-References: <1446733529-7277-1-git-send-email-adriana.reus@intel.com>
-Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com, irina.tirdea@intel.com,
-	daniel.baluta@intel.com
+	with ESMTP id S1751897AbbKHPmb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Nov 2015 10:42:31 -0500
+Subject: Re: [PATCH] iio: adc: vf610: Avoid division by zero
+To: Duan Andy <fugang.duan@freescale.com>,
+	Fabio Estevam <Fabio.Estevam@freescale.com>
+References: <1446567530-14725-1-git-send-email-fabio.estevam@freescale.com>
+ <BN3PR0301MB1219ED45A2E049CDBB2DEEDBF52A0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"festevam@gmail.com" <festevam@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <563F6C7C.2020605@kernel.org>
-Date: Sun, 8 Nov 2015 15:38:36 +0000
+Message-ID: <563F6D64.6070801@kernel.org>
+Date: Sun, 8 Nov 2015 15:42:28 +0000
 MIME-Version: 1.0
-In-Reply-To: <1446733529-7277-1-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <BN3PR0301MB1219ED45A2E049CDBB2DEEDBF52A0@BN3PR0301MB1219.namprd03.prod.outlook.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/11/15 14:25, Adriana Reus wrote:
-> At probe, runtime pm should be setup before registering the sysfs interface so
-> that all the power attributes are accurate and functional when registering.
-> Also, when removing the device we should unregister first to make sure
-> that the interfaces that may result in wakeups are no longer available.
+On 04/11/15 06:41, Duan Andy wrote:
+> From: Fabio Estevam <fabio.estevam@freescale.com> Sent: Wednesday, November 04, 2015 12:19 AM
+>> To: jic23@kernel.org
+>> Cc: Duan Fugang-B38611; linux-iio@vger.kernel.org; festevam@gmail.com;
+>> Estevam Fabio-R49496
+>> Subject: [PATCH] iio: adc: vf610: Avoid division by zero
+>>
+>> When the 'adck-max-frequency' property is not passed in device tree, the
+>> following division by zero is seen:
+>>
+>> [    2.196814] Hardware name: Freescale i.MX6 SoloX (Device Tree)
+>> [    2.202652] Backtrace:
+>> [    2.205156] [<c0013600>] (dump_backtrace) from [<c001379c>]
+>> (show_stack+0x18/0x1c)
+>> [    2.212730]  r6:ef138410 r5:00000000 r4:00000000 r3:00000000
+>> [    2.218494] [<c0013784>] (show_stack) from [<c02d8220>]
+>> (dump_stack+0x88/0xa4)
+>> [    2.225756] [<c02d8198>] (dump_stack) from [<c001346c>]
+>> (__div0+0x18/0x20)
+>> [    2.232636]  r5:00000001 r4:eeb0a800
+>> [    2.236286] [<c0013454>] (__div0) from [<c02d6be4>] (Ldiv0+0x8/0x10)
+>> [    2.242657] [<c0574574>] (vf610_adc_probe) from [<c03c9274>]
+>> (platform_drv_probe+0x58/0xb4)
+>>
+>> Provide a sane adck_rate default value that can be used in normal, high-
+>> speed and low-power modes in the case of 'adck-max-frequency' property
+>> being absent.
+>>
+>> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+>> ---
+>>  drivers/iio/adc/vf610_adc.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+>> index 599cde3..424fd69 100644
+>> --- a/drivers/iio/adc/vf610_adc.c
+>> +++ b/drivers/iio/adc/vf610_adc.c
+>> @@ -105,6 +105,7 @@
+>>  #define VF610_ADC_TIMEOUT		msecs_to_jiffies(100)
+>>
+>>  #define DEFAULT_SAMPLE_TIME		1000
+>> +#define ADCK_RATE_MAX_DEFAULT		20000000
+>>
+>>  enum clk_sel {
+>>  	VF610_ADCIOC_BUSCLK_SET,
+>> @@ -195,6 +196,7 @@ static inline void vf610_adc_calculate_rates(struct
+>> vf610_adc *info)
+>>  	} else {
+>>  		/* fall-back value using a safe divisor */
+>>  		adc_feature->clk_div = 8;
+>> +		adck_rate = ADCK_RATE_MAX_DEFAULT;
+>>  	}
+>>
+>>  	/*
+>> --
+>> 1.9.1
 > 
-> Fix this behaviour for the following drivers: bmc150, bmg160, kmx61,
-> kxcj-1013, mma9551, mma9553, rpr0521.
-> 
-> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
-Excellent work. I've applied this to the togreg branch
-rather than fixes-togreg as the window in which it could cause trouble
-is rather brief and as far as I know we don't have anyone actually hitting
-it under normal operation.
-
-Anyhow, applied to the togreg branch  - initially pushed out as testing for the
-autobuilders to play with it.
+> Acked-by: Fugang Duan <B38611@freescale.com>
+Applied to the fixes-togreg branch of iio.git - marked for stable.
 
 Thanks,
 
 Jonathan
-> ---
->  drivers/iio/accel/bmc150-accel-core.c  | 20 +++++++++-----------
->  drivers/iio/accel/kxcjk-1013.c         | 20 +++++++++-----------
->  drivers/iio/accel/mma9551.c            | 19 +++++++++----------
->  drivers/iio/accel/mma9553.c            | 20 +++++++++-----------
->  drivers/iio/gyro/bmg160_core.c         | 19 +++++++++----------
->  drivers/iio/imu/kmx61.c                | 24 +++++++++++-------------
->  drivers/iio/light/rpr0521.c            | 14 ++++----------
->  drivers/iio/magnetometer/bmc150_magn.c | 20 +++++++++-----------
->  8 files changed, 69 insertions(+), 87 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-> index 2d33f1e..c73331f7 100644
-> --- a/drivers/iio/accel/bmc150-accel-core.c
-> +++ b/drivers/iio/accel/bmc150-accel-core.c
-> @@ -1623,24 +1623,22 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
->  		}
->  	}
->  
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0) {
-> -		dev_err(dev, "Unable to register iio device\n");
-> -		goto err_trigger_unregister;
-> -	}
-> -
->  	ret = pm_runtime_set_active(dev);
->  	if (ret)
-> -		goto err_iio_unregister;
-> +		goto err_trigger_unregister;
->  
->  	pm_runtime_enable(dev);
->  	pm_runtime_set_autosuspend_delay(dev, BMC150_AUTO_SUSPEND_DELAY_MS);
->  	pm_runtime_use_autosuspend(dev);
->  
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(dev, "Unable to register iio device\n");
-> +		goto err_trigger_unregister;
-> +	}
-> +
->  	return 0;
->  
-> -err_iio_unregister:
-> -	iio_device_unregister(indio_dev);
->  err_trigger_unregister:
->  	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
->  err_buffer_cleanup:
-> @@ -1655,12 +1653,12 @@ int bmc150_accel_core_remove(struct device *dev)
->  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct bmc150_accel_data *data = iio_priv(indio_dev);
->  
-> +	iio_device_unregister(indio_dev);
-> +
->  	pm_runtime_disable(data->dev);
->  	pm_runtime_set_suspended(data->dev);
->  	pm_runtime_put_noidle(data->dev);
->  
-> -	iio_device_unregister(indio_dev);
-> -
->  	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
->  
->  	iio_triggered_buffer_cleanup(indio_dev);
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 18c1b06..edec1d0 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -1264,25 +1264,23 @@ static int kxcjk1013_probe(struct i2c_client *client,
->  		goto err_trigger_unregister;
->  	}
->  
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "unable to register iio device\n");
-> -		goto err_buffer_cleanup;
-> -	}
-> -
->  	ret = pm_runtime_set_active(&client->dev);
->  	if (ret)
-> -		goto err_iio_unregister;
-> +		goto err_buffer_cleanup;
->  
->  	pm_runtime_enable(&client->dev);
->  	pm_runtime_set_autosuspend_delay(&client->dev,
->  					 KXCJK1013_SLEEP_DELAY_MS);
->  	pm_runtime_use_autosuspend(&client->dev);
->  
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "unable to register iio device\n");
-> +		goto err_buffer_cleanup;
-> +	}
-> +
->  	return 0;
->  
-> -err_iio_unregister:
-> -	iio_device_unregister(indio_dev);
->  err_buffer_cleanup:
->  	if (data->dready_trig)
->  		iio_triggered_buffer_cleanup(indio_dev);
-> @@ -1302,12 +1300,12 @@ static int kxcjk1013_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct kxcjk1013_data *data = iio_priv(indio_dev);
->  
-> +	iio_device_unregister(indio_dev);
-> +
->  	pm_runtime_disable(&client->dev);
->  	pm_runtime_set_suspended(&client->dev);
->  	pm_runtime_put_noidle(&client->dev);
->  
-> -	iio_device_unregister(indio_dev);
-> -
->  	if (data->dready_trig) {
->  		iio_triggered_buffer_cleanup(indio_dev);
->  		iio_trigger_unregister(data->dready_trig);
-> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-> index 7db7cc0..d899a4d 100644
-> --- a/drivers/iio/accel/mma9551.c
-> +++ b/drivers/iio/accel/mma9551.c
-> @@ -495,25 +495,23 @@ static int mma9551_probe(struct i2c_client *client,
->  	if (ret < 0)
->  		goto out_poweroff;
->  
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "unable to register iio device\n");
-> -		goto out_poweroff;
-> -	}
-> -
->  	ret = pm_runtime_set_active(&client->dev);
->  	if (ret < 0)
-> -		goto out_iio_unregister;
-> +		goto out_poweroff;
->  
->  	pm_runtime_enable(&client->dev);
->  	pm_runtime_set_autosuspend_delay(&client->dev,
->  					 MMA9551_AUTO_SUSPEND_DELAY_MS);
->  	pm_runtime_use_autosuspend(&client->dev);
->  
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "unable to register iio device\n");
-> +		goto out_poweroff;
-> +	}
-> +
->  	return 0;
->  
-> -out_iio_unregister:
-> -	iio_device_unregister(indio_dev);
->  out_poweroff:
->  	mma9551_set_device_state(client, false);
->  
-> @@ -525,11 +523,12 @@ static int mma9551_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct mma9551_data *data = iio_priv(indio_dev);
->  
-> +	iio_device_unregister(indio_dev);
-> +
->  	pm_runtime_disable(&client->dev);
->  	pm_runtime_set_suspended(&client->dev);
->  	pm_runtime_put_noidle(&client->dev);
->  
-> -	iio_device_unregister(indio_dev);
->  	mutex_lock(&data->mutex);
->  	mma9551_set_device_state(data->client, false);
->  	mutex_unlock(&data->mutex);
-> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-> index 9408ef3..fa7d362 100644
-> --- a/drivers/iio/accel/mma9553.c
-> +++ b/drivers/iio/accel/mma9553.c
-> @@ -1133,27 +1133,24 @@ static int mma9553_probe(struct i2c_client *client,
->  		}
->  	}
->  
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "unable to register iio device\n");
-> -		goto out_poweroff;
-> -	}
-> -
->  	ret = pm_runtime_set_active(&client->dev);
->  	if (ret < 0)
-> -		goto out_iio_unregister;
-> +		goto out_poweroff;
->  
->  	pm_runtime_enable(&client->dev);
->  	pm_runtime_set_autosuspend_delay(&client->dev,
->  					 MMA9551_AUTO_SUSPEND_DELAY_MS);
->  	pm_runtime_use_autosuspend(&client->dev);
->  
-> -	dev_dbg(&indio_dev->dev, "Registered device %s\n", name);
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "unable to register iio device\n");
-> +		goto out_poweroff;
-> +	}
->  
-> +	dev_dbg(&indio_dev->dev, "Registered device %s\n", name);
->  	return 0;
->  
-> -out_iio_unregister:
-> -	iio_device_unregister(indio_dev);
->  out_poweroff:
->  	mma9551_set_device_state(client, false);
->  	return ret;
-> @@ -1164,11 +1161,12 @@ static int mma9553_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct mma9553_data *data = iio_priv(indio_dev);
->  
-> +	iio_device_unregister(indio_dev);
-> +
->  	pm_runtime_disable(&client->dev);
->  	pm_runtime_set_suspended(&client->dev);
->  	pm_runtime_put_noidle(&client->dev);
->  
-> -	iio_device_unregister(indio_dev);
->  	mutex_lock(&data->mutex);
->  	mma9551_set_device_state(data->client, false);
->  	mutex_unlock(&data->mutex);
-> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-> index 02ff789..bbce3b0 100644
-> --- a/drivers/iio/gyro/bmg160_core.c
-> +++ b/drivers/iio/gyro/bmg160_core.c
-> @@ -1077,25 +1077,23 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
->  		goto err_trigger_unregister;
->  	}
->  
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0) {
-> -		dev_err(dev, "unable to register iio device\n");
-> -		goto err_buffer_cleanup;
-> -	}
-> -
->  	ret = pm_runtime_set_active(dev);
->  	if (ret)
-> -		goto err_iio_unregister;
-> +		goto err_buffer_cleanup;
->  
->  	pm_runtime_enable(dev);
->  	pm_runtime_set_autosuspend_delay(dev,
->  					 BMG160_AUTO_SUSPEND_DELAY_MS);
->  	pm_runtime_use_autosuspend(dev);
->  
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(dev, "unable to register iio device\n");
-> +		goto err_buffer_cleanup;
-> +	}
-> +
->  	return 0;
->  
-> -err_iio_unregister:
-> -	iio_device_unregister(indio_dev);
->  err_buffer_cleanup:
->  	iio_triggered_buffer_cleanup(indio_dev);
->  err_trigger_unregister:
-> @@ -1113,11 +1111,12 @@ void bmg160_core_remove(struct device *dev)
->  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct bmg160_data *data = iio_priv(indio_dev);
->  
-> +	iio_device_unregister(indio_dev);
-> +
->  	pm_runtime_disable(dev);
->  	pm_runtime_set_suspended(dev);
->  	pm_runtime_put_noidle(dev);
->  
-> -	iio_device_unregister(indio_dev);
->  	iio_triggered_buffer_cleanup(indio_dev);
->  
->  	if (data->dready_trig) {
-> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-> index dbf5e99..e5306b4 100644
-> --- a/drivers/iio/imu/kmx61.c
-> +++ b/drivers/iio/imu/kmx61.c
-> @@ -1390,6 +1390,14 @@ static int kmx61_probe(struct i2c_client *client,
->  		}
->  	}
->  
-> +	ret = pm_runtime_set_active(&client->dev);
-> +	if (ret < 0)
-> +		goto err_buffer_cleanup_mag;
-> +
-> +	pm_runtime_enable(&client->dev);
-> +	pm_runtime_set_autosuspend_delay(&client->dev, KMX61_SLEEP_DELAY_MS);
-> +	pm_runtime_use_autosuspend(&client->dev);
-> +
->  	ret = iio_device_register(data->acc_indio_dev);
->  	if (ret < 0) {
->  		dev_err(&client->dev, "Failed to register acc iio device\n");
-> @@ -1402,18 +1410,8 @@ static int kmx61_probe(struct i2c_client *client,
->  		goto err_iio_unregister_acc;
->  	}
->  
-> -	ret = pm_runtime_set_active(&client->dev);
-> -	if (ret < 0)
-> -		goto err_iio_unregister_mag;
-> -
-> -	pm_runtime_enable(&client->dev);
-> -	pm_runtime_set_autosuspend_delay(&client->dev, KMX61_SLEEP_DELAY_MS);
-> -	pm_runtime_use_autosuspend(&client->dev);
-> -
->  	return 0;
->  
-> -err_iio_unregister_mag:
-> -	iio_device_unregister(data->mag_indio_dev);
->  err_iio_unregister_acc:
->  	iio_device_unregister(data->acc_indio_dev);
->  err_buffer_cleanup_mag:
-> @@ -1437,13 +1435,13 @@ static int kmx61_remove(struct i2c_client *client)
->  {
->  	struct kmx61_data *data = i2c_get_clientdata(client);
->  
-> +	iio_device_unregister(data->acc_indio_dev);
-> +	iio_device_unregister(data->mag_indio_dev);
-> +
->  	pm_runtime_disable(&client->dev);
->  	pm_runtime_set_suspended(&client->dev);
->  	pm_runtime_put_noidle(&client->dev);
->  
-> -	iio_device_unregister(data->acc_indio_dev);
-> -	iio_device_unregister(data->mag_indio_dev);
-> -
->  	if (client->irq > 0) {
->  		iio_triggered_buffer_cleanup(data->acc_indio_dev);
->  		iio_triggered_buffer_cleanup(data->mag_indio_dev);
-> diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
-> index 4b75bb0..7de0f39 100644
-> --- a/drivers/iio/light/rpr0521.c
-> +++ b/drivers/iio/light/rpr0521.c
-> @@ -507,34 +507,28 @@ static int rpr0521_probe(struct i2c_client *client,
->  		dev_err(&client->dev, "rpr0521 chip init failed\n");
->  		return ret;
->  	}
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0)
-> -		return ret;
->  
->  	ret = pm_runtime_set_active(&client->dev);
->  	if (ret < 0)
-> -		goto err_iio_unregister;
-> +		return ret;
->  
->  	pm_runtime_enable(&client->dev);
->  	pm_runtime_set_autosuspend_delay(&client->dev, RPR0521_SLEEP_DELAY_MS);
->  	pm_runtime_use_autosuspend(&client->dev);
->  
-> -	return 0;
-> -
-> -err_iio_unregister:
-> -	iio_device_unregister(indio_dev);
-> -	return ret;
-> +	return iio_device_register(indio_dev);
->  }
->  
->  static int rpr0521_remove(struct i2c_client *client)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  
-> +	iio_device_unregister(indio_dev);
-> +
->  	pm_runtime_disable(&client->dev);
->  	pm_runtime_set_suspended(&client->dev);
->  	pm_runtime_put_noidle(&client->dev);
->  
-> -	iio_device_unregister(indio_dev);
->  	rpr0521_poweroff(iio_priv(indio_dev));
->  
->  	return 0;
-> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-> index 1615b23..ffcb75e 100644
-> --- a/drivers/iio/magnetometer/bmc150_magn.c
-> +++ b/drivers/iio/magnetometer/bmc150_magn.c
-> @@ -928,27 +928,24 @@ static int bmc150_magn_probe(struct i2c_client *client,
->  		goto err_free_irq;
->  	}
->  
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "unable to register iio device\n");
-> -		goto err_buffer_cleanup;
-> -	}
-> -
->  	ret = pm_runtime_set_active(&client->dev);
->  	if (ret)
-> -		goto err_iio_unregister;
-> +		goto err_buffer_cleanup;
->  
->  	pm_runtime_enable(&client->dev);
->  	pm_runtime_set_autosuspend_delay(&client->dev,
->  					 BMC150_MAGN_AUTO_SUSPEND_DELAY_MS);
->  	pm_runtime_use_autosuspend(&client->dev);
->  
-> -	dev_dbg(&indio_dev->dev, "Registered device %s\n", name);
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "unable to register iio device\n");
-> +		goto err_buffer_cleanup;
-> +	}
->  
-> +	dev_dbg(&indio_dev->dev, "Registered device %s\n", name);
->  	return 0;
->  
-> -err_iio_unregister:
-> -	iio_device_unregister(indio_dev);
->  err_buffer_cleanup:
->  	iio_triggered_buffer_cleanup(indio_dev);
->  err_free_irq:
-> @@ -967,11 +964,12 @@ static int bmc150_magn_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct bmc150_magn_data *data = iio_priv(indio_dev);
->  
-> +	iio_device_unregister(indio_dev);
-> +
->  	pm_runtime_disable(&client->dev);
->  	pm_runtime_set_suspended(&client->dev);
->  	pm_runtime_put_noidle(&client->dev);
->  
-> -	iio_device_unregister(indio_dev);
->  	iio_triggered_buffer_cleanup(indio_dev);
->  
->  	if (client->irq > 0)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
