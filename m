@@ -1,87 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43831 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43848 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751897AbbKHPmb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Nov 2015 10:42:31 -0500
-Subject: Re: [PATCH] iio: adc: vf610: Avoid division by zero
-To: Duan Andy <fugang.duan@freescale.com>,
-	Fabio Estevam <Fabio.Estevam@freescale.com>
-References: <1446567530-14725-1-git-send-email-fabio.estevam@freescale.com>
- <BN3PR0301MB1219ED45A2E049CDBB2DEEDBF52A0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"festevam@gmail.com" <festevam@gmail.com>
+	with ESMTP id S1751880AbbKHPo6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Nov 2015 10:44:58 -0500
+Subject: Re: [PATCH 1/2] iio: gyro: check sscanf return value
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Ioana Ciornei <ciorneiioana@gmail.com>,
+	linux-iio@vger.kernel.org
+References: <1446382725-11765-1-git-send-email-ciorneiioana@gmail.com>
+ <56365728.9020304@kernel.org> <56387CD2.3010906@metafoo.de>
+Cc: outreachy-kernel@googlegroups.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <563F6D64.6070801@kernel.org>
-Date: Sun, 8 Nov 2015 15:42:28 +0000
+Message-ID: <563F6DF8.5060109@kernel.org>
+Date: Sun, 8 Nov 2015 15:44:56 +0000
 MIME-Version: 1.0
-In-Reply-To: <BN3PR0301MB1219ED45A2E049CDBB2DEEDBF52A0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+In-Reply-To: <56387CD2.3010906@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/11/15 06:41, Duan Andy wrote:
-> From: Fabio Estevam <fabio.estevam@freescale.com> Sent: Wednesday, November 04, 2015 12:19 AM
->> To: jic23@kernel.org
->> Cc: Duan Fugang-B38611; linux-iio@vger.kernel.org; festevam@gmail.com;
->> Estevam Fabio-R49496
->> Subject: [PATCH] iio: adc: vf610: Avoid division by zero
+On 03/11/15 09:22, Lars-Peter Clausen wrote:
+> On 11/01/2015 07:17 PM, Jonathan Cameron wrote:
+>> On 01/11/15 12:58, Ioana Ciornei wrote:
+>>> This patch fixes the checkpatch warnings:
+>>> WARNING: unchecked sscanf return value
+>>>
+>>> Signed-off-by: Ioana Ciornei <ciorneiioana@gmail.com>
+>> Hi Ioana,
 >>
->> When the 'adck-max-frequency' property is not passed in device tree, the
->> following division by zero is seen:
+>> Couple of minor process points (the patches are fine!)
 >>
->> [    2.196814] Hardware name: Freescale i.MX6 SoloX (Device Tree)
->> [    2.202652] Backtrace:
->> [    2.205156] [<c0013600>] (dump_backtrace) from [<c001379c>]
->> (show_stack+0x18/0x1c)
->> [    2.212730]  r6:ef138410 r5:00000000 r4:00000000 r3:00000000
->> [    2.218494] [<c0013784>] (show_stack) from [<c02d8220>]
->> (dump_stack+0x88/0xa4)
->> [    2.225756] [<c02d8198>] (dump_stack) from [<c001346c>]
->> (__div0+0x18/0x20)
->> [    2.232636]  r5:00000001 r4:eeb0a800
->> [    2.236286] [<c0013454>] (__div0) from [<c02d6be4>] (Ldiv0+0x8/0x10)
->> [    2.242657] [<c0574574>] (vf610_adc_probe) from [<c03c9274>]
->> (platform_drv_probe+0x58/0xb4)
+>> You should have cc'd the driver author and generally also
+>> the various listed reviewers in MAINTAINERS.  In this case
+>> of of them is the driver author so possibly just pinging him
+>> is the way to go.  In the case of Analog devices parts,
+>> Lars-Peter is also the maintainer so it's all about as
+>> easy as it gets in this case.
 >>
->> Provide a sane adck_rate default value that can be used in normal, high-
->> speed and low-power modes in the case of 'adck-max-frequency' property
->> being absent.
->>
->> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
->> ---
->>  drivers/iio/adc/vf610_adc.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
->> index 599cde3..424fd69 100644
->> --- a/drivers/iio/adc/vf610_adc.c
->> +++ b/drivers/iio/adc/vf610_adc.c
->> @@ -105,6 +105,7 @@
->>  #define VF610_ADC_TIMEOUT		msecs_to_jiffies(100)
->>
->>  #define DEFAULT_SAMPLE_TIME		1000
->> +#define ADCK_RATE_MAX_DEFAULT		20000000
->>
->>  enum clk_sel {
->>  	VF610_ADCIOC_BUSCLK_SET,
->> @@ -195,6 +196,7 @@ static inline void vf610_adc_calculate_rates(struct
->> vf610_adc *info)
->>  	} else {
->>  		/* fall-back value using a safe divisor */
->>  		adc_feature->clk_div = 8;
->> +		adck_rate = ADCK_RATE_MAX_DEFAULT;
->>  	}
->>
->>  	/*
->> --
->> 1.9.1
+>> Lars, looks fine to me.  Your driver so please sanity check.
+>> Clearly it's not a bug as the inputs are entirely controlled
+>> by the driver code, but I think having a sanity check on
+>> the return value is a good thing (from the point of view of
+>> best practice). 
 > 
-> Acked-by: Fugang Duan <B38611@freescale.com>
-Applied to the fixes-togreg branch of iio.git - marked for stable.
+> As you say strictly speaking it is not necessary, but if it makes checkpatch
+> happy why not.
+> 
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to try and break it.
 
 Thanks,
 
-Jonathan
+jonathan
+> 
+> 
+>>
+>> There is a second patch for some the IIO drivers that are your
+>> problem as well - I'll let you pull that off the list as I'm
+>> feeling lazy ;)
+>>
+>> I did have to check that sscanf never returns any more helpful
+>> error codes, but unlike the glibc one it seems not.  What fun.
+>>
+>> Jonathan
+>>> ---
+>>>
+>>> based on linux-iio/testing branch
+>>>
+>>>  drivers/iio/gyro/adis16136.c | 4 +++-
+>>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+>>> index 26de876..bb09bff 100644
+>>> --- a/drivers/iio/gyro/adis16136.c
+>>> +++ b/drivers/iio/gyro/adis16136.c
+>>> @@ -435,7 +435,9 @@ static int adis16136_initial_setup(struct iio_dev *indio_dev)
+>>>  	if (ret)
+>>>  		return ret;
+>>>  
+>>> -	sscanf(indio_dev->name, "adis%u\n", &device_id);
+>>> +	ret = sscanf(indio_dev->name, "adis%u\n", &device_id);
+>>> +	if (ret != 1)
+>>> +		return -EINVAL;
+>>>  
+>>>  	if (prod_id != device_id)
+>>>  		dev_warn(&indio_dev->dev, "Device ID(%u) and product ID(%u) do not match.",
+>>>
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+> 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
