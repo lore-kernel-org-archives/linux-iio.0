@@ -1,582 +1,648 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail02.prevas.se ([62.95.78.10]:40031 "EHLO mail02.prevas.se"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751096AbbKIMxK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 9 Nov 2015 07:53:10 -0500
-From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-To: <linux-iio@vger.kernel.org>
-CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Subject: [PATCH v6 1/2] iio: adc: Add TI ADS8688
-Date: Mon, 9 Nov 2015 13:52:59 +0100
-Message-ID: <1447073580-17889-1-git-send-email-sean.nyekjaer@prevas.dk>
+Received: from mail-bl2on0128.outbound.protection.outlook.com ([65.55.169.128]:32448
+	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751109AbbKINjY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 9 Nov 2015 08:39:24 -0500
+From: Haibo Chen <haibo.chen@freescale.com>
+To: <robh+dt@kernel.org>, <pawel.moll@arm.com>, <mark.rutland@arm.com>,
+	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
+	<shawnguo@kernel.org>, <kernel@pengutronix.de>,
+	<linux@arm.linux.org.uk>, <jic23@kernel.org>, <knaack.h@gmx.de>,
+	<lars@metafoo.de>, <pmeerw@pmeerw.net>
+CC: <haibo.chen@freescale.com>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>
+Subject: [PATCH v2 1/4] iio: adc: add IMX7D ADC driver support
+Date: Mon, 9 Nov 2015 21:28:21 +0800
+Message-ID: <1447075704-4605-2-git-send-email-haibo.chen@freescale.com>
+In-Reply-To: <1447075704-4605-1-git-send-email-haibo.chen@freescale.com>
+References: <1447075704-4605-1-git-send-email-haibo.chen@freescale.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for the Texas Intruments ADS8688 ADC.
+Freescale i.MX7D soc contains a new ADC IP. This patch add this ADC
+driver support, and the driver only support ADC software trigger.
 
-Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Reviewed-by: Martin Hundebøll <martin.hundeboll@prevas.dk>
+Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
 ---
-This depends on "Added core support for IIO_VAL_INT in write_raw_get_fmt function."
-
-Changes since v5:
-- Moved mutex before iio_device_register
-- Switched to devm_regulator_get_optional
-
-Changes since v4:
-- Added mutex around databuffer
-- write_raw_get_fmt case was switched around
-
-Changes since v3:
-- fixed multiline comments
-- write_raw_get_fmt _SCALE is nano, _OFFSET is int
-
-Changes since v2:
-- Removed unused variables
-- Removed unnecessary mutex lock
-- Range array is a enum
-- Made the read and write functions less complex and easier to read
-- Added inline comments
-- Added callback to write_raw_get_fmt
-
-Changes since v1:
-- Now possible to read and write the actual offset and scale values
-- Removed unused includes
-- Removed unused buffer references
-
- drivers/iio/adc/Kconfig      |  10 +
- drivers/iio/adc/Makefile     |   1 +
- drivers/iio/adc/ti-ads8688.c | 486 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 497 insertions(+)
- create mode 100644 drivers/iio/adc/ti-ads8688.c
+ drivers/iio/adc/Kconfig     |   9 +
+ drivers/iio/adc/Makefile    |   1 +
+ drivers/iio/adc/imx7d_adc.c | 571 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 581 insertions(+)
+ create mode 100644 drivers/iio/adc/imx7d_adc.c
 
 diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index daad72e..9162dfe 100644
+index 7868c74..bf0611c 100644
 --- a/drivers/iio/adc/Kconfig
 +++ b/drivers/iio/adc/Kconfig
-@@ -341,6 +341,16 @@ config TI_ADC128S052
+@@ -194,6 +194,15 @@ config HI8435
  	  This driver can also be built as a module. If so, the module will be
- 	  called ti-adc128s052.
+ 	  called hi8435.
  
-+config TI_ADS8688
-+	tristate "Texas Instruments ADS8688"
-+	depends on SPI && OF
++config IMX7D_ADC
++	tristate "IMX7D ADC driver"
++	depends on OF
 +	help
-+	  If you say yes here you get support for Texas Instruments ADS8684 and
-+	  and ADS8688 ADC chips
++	  Say yes here to build support for IMX7D ADC.
 +
 +	  This driver can also be built as a module. If so, the module will be
-+	  called ti-ads8688.
++	  called imx7d_adc.
 +
- config TI_AM335X_ADC
- 	tristate "TI's AM335X ADC driver"
- 	depends on MFD_TI_AM335X_TSCADC
+ config LP8788_ADC
+ 	tristate "LP8788 ADC driver"
+ 	depends on MFD_LP8788
 diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 11cfdfd..91a65bf 100644
+index 99b37a9..282ffc01 100644
 --- a/drivers/iio/adc/Makefile
 +++ b/drivers/iio/adc/Makefile
-@@ -33,6 +33,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
- obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
-+obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
- obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
- obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
-diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
+@@ -20,6 +20,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+ obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+ obj-$(CONFIG_HI8435) += hi8435.o
++obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_MAX1027) += max1027.o
+ obj-$(CONFIG_MAX1363) += max1363.o
+diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
 new file mode 100644
-index 0000000..03e9070
+index 0000000..7e25e4e
 --- /dev/null
-+++ b/drivers/iio/adc/ti-ads8688.c
-@@ -0,0 +1,486 @@
++++ b/drivers/iio/adc/imx7d_adc.c
+@@ -0,0 +1,571 @@
 +/*
-+ * Copyright (C) 2015 Prevas A/S
++ * Freescale i.MX7D ADC driver
++ *
++ * Copyright (C) 2015 Freescale Semiconductor, Inc.
 + *
 + * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
 + */
 +
-+#include <linux/device.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/delay.h>
 +#include <linux/kernel.h>
 +#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+#include <linux/spi/spi.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/err.h>
-+#include <linux/module.h>
++#include <linux/io.h>
++#include <linux/clk.h>
++#include <linux/completion.h>
 +#include <linux/of.h>
++#include <linux/of_irq.h>
++#include <linux/regulator/consumer.h>
++#include <linux/of_platform.h>
++#include <linux/err.h>
 +
 +#include <linux/iio/iio.h>
 +#include <linux/iio/sysfs.h>
++#include <linux/iio/driver.h>
 +
-+#define ADS8688_CMD_REG(x)		(x << 8)
-+#define ADS8688_CMD_REG_NOOP		0x00
-+#define ADS8688_CMD_REG_RST		0x85
-+#define ADS8688_CMD_REG_MAN_CH(chan)	(0xC0 | (4 * chan))
-+#define ADS8688_CMD_DONT_CARE_BITS	16
++/* This will be the driver name the kernel reports */
++#define DRIVER_NAME "imx7d_adc"
 +
-+#define ADS8688_PROG_REG(x)		(x << 9)
-+#define ADS8688_PROG_REG_RANGE_CH(chan)	(0x05 + chan)
-+#define ADS8688_PROG_WR_BIT		BIT(8)
-+#define ADS8688_PROG_DONT_CARE_BITS	8
++/* ADC register */
++#define IMX7D_REG_ADC_CH_A_CFG1			0x00
++#define IMX7D_REG_ADC_CH_A_CFG2			0x10
++#define IMX7D_REG_ADC_CH_B_CFG1			0x20
++#define IMX7D_REG_ADC_CH_B_CFG2			0x30
++#define IMX7D_REG_ADC_CH_C_CFG1			0x40
++#define IMX7D_REG_ADC_CH_C_CFG2			0x50
++#define IMX7D_REG_ADC_CH_D_CFG1			0x60
++#define IMX7D_REG_ADC_CH_D_CFG2			0x70
++#define IMX7D_REG_ADC_CH_SW_CFG			0x80
++#define IMX7D_REG_ADC_TIMER_UNIT		0x90
++#define IMX7D_REG_ADC_DMA_FIFO			0xa0
++#define IMX7D_REG_ADC_FIFO_STATUS		0xb0
++#define IMX7D_REG_ADC_INT_SIG_EN		0xc0
++#define IMX7D_REG_ADC_INT_EN			0xd0
++#define IMX7D_REG_ADC_INT_STATUS		0xe0
++#define IMX7D_REG_ADC_CHA_B_CNV_RSLT		0xf0
++#define IMX7D_REG_ADC_CHC_D_CNV_RSLT		0x100
++#define IMX7D_REG_ADC_CH_SW_CNV_RSLT		0x110
++#define IMX7D_REG_ADC_DMA_FIFO_DAT		0x120
++#define IMX7D_REG_ADC_ADC_CFG			0x130
 +
-+#define ADS8688_REG_PLUSMINUS25VREF	0
-+#define ADS8688_REG_PLUSMINUS125VREF	1
-+#define ADS8688_REG_PLUSMINUS0625VREF	2
-+#define ADS8688_REG_PLUS25VREF		5
-+#define ADS8688_REG_PLUS125VREF		6
++#define IMX7D_EACH_CHANNEL_REG_SHIF		0x20
 +
-+#define ADS8688_VREF_MV			4096
-+#define ADS8688_REALBITS		16
++#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN			(0x1 << 31)
++#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_DISABLE			(0x0 << 31)
++#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE			BIT(30)
++#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN			BIT(29)
++#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL_SHIF			24
 +
-+/*
-+ * enum ads8688_range - ADS8688 reference voltage range
-+ * @ADS8688_PLUSMINUS25VREF: Device is configured for input range ±2.5 * VREF
-+ * @ADS8688_PLUSMINUS125VREF: Device is configured for input range ±1.25 * VREF
-+ * @ADS8688_PLUSMINUS0625VREF: Device is configured for input range ±0.625 * VREF
-+ * @ADS8688_PLUS25VREF: Device is configured for input range 0 - 2.5 * VREF
-+ * @ADS8688_PLUS125VREF: Device is configured for input range 0 - 1.25 * VREF
-+ */
-+enum ads8688_range {
-+	ADS8688_PLUSMINUS25VREF,
-+	ADS8688_PLUSMINUS125VREF,
-+	ADS8688_PLUSMINUS0625VREF,
-+	ADS8688_PLUS25VREF,
-+	ADS8688_PLUS125VREF,
++#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4				(0x0 << 12)
++#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8				(0x1 << 12)
++#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16			(0x2 << 12)
++#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32			(0x3 << 12)
++
++#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4			(0x0 << 29)
++#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8			(0x1 << 29)
++#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16			(0x2 << 29)
++#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32			(0x3 << 29)
++#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64			(0x4 << 29)
++#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128			(0x5 << 29)
++
++#define IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN			BIT(31)
++#define IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN			BIT(1)
++#define IMX7D_REG_ADC_ADC_CFG_ADC_EN				BIT(0)
++
++#define IMX7D_REG_ADC_INT_CHA_COV_INT_EN			BIT(8)
++#define IMX7D_REG_ADC_INT_CHB_COV_INT_EN			BIT(9)
++#define IMX7D_REG_ADC_INT_CHC_COV_INT_EN			BIT(10)
++#define IMX7D_REG_ADC_INT_CHD_COV_INT_EN			BIT(11)
++#define IMX7D_REG_ADC_INT_CHANNEL_INT_EN			(IMX7D_REG_ADC_INT_CHA_COV_INT_EN | \
++								 IMX7D_REG_ADC_INT_CHB_COV_INT_EN | \
++								 IMX7D_REG_ADC_INT_CHC_COV_INT_EN | \
++								 IMX7D_REG_ADC_INT_CHD_COV_INT_EN)
++#define IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS		0xf00
++
++#define IMX7D_ADC_TIMEOUT		msecs_to_jiffies(100)
++
++enum clk_pre_div {
++	IMX7D_ADC_ANALOG_CLK_PRE_DIV_4,
++	IMX7D_ADC_ANALOG_CLK_PRE_DIV_8,
++	IMX7D_ADC_ANALOG_CLK_PRE_DIV_16,
++	IMX7D_ADC_ANALOG_CLK_PRE_DIV_32,
++	IMX7D_ADC_ANALOG_CLK_PRE_DIV_64,
++	IMX7D_ADC_ANALOG_CLK_PRE_DIV_128,
 +};
 +
-+struct ads8688_chip_info {
-+	const struct iio_chan_spec *channels;
-+	unsigned int num_channels;
++enum average_num {
++	IMX7D_ADC_AVERAGE_NUM_4,
++	IMX7D_ADC_AVERAGE_NUM_8,
++	IMX7D_ADC_AVERAGE_NUM_16,
++	IMX7D_ADC_AVERAGE_NUM_32,
 +};
 +
-+struct ads8688_state {
-+	struct mutex			lock;
-+	const struct ads8688_chip_info	*chip_info;
-+	struct spi_device		*spi;
-+	struct regulator		*reg;
-+	unsigned int			vref_mv;
-+	enum ads8688_range		range[8];
-+	union {
-+		__be32 d32;
-+		u8 d8[4];
-+	} data[2] ____cacheline_aligned;
++struct imx7d_adc_feature {
++	enum clk_pre_div clk_pre_div;
++	enum average_num avg_num;
++
++	u32 core_time_unit;	/* impact the sample rate */
++
++	bool average_en;
 +};
 +
-+enum ads8688_id {
-+	ID_ADS8684,
-+	ID_ADS8688,
++struct imx7d_adc {
++	struct device *dev;
++	void __iomem *regs;
++	struct clk *clk;
++
++	u32 vref_uv;
++	u32 value;
++	u32 channel;
++	u32 pre_div_num;
++
++	struct regulator *vref;
++	struct imx7d_adc_feature adc_feature;
++
++	struct completion completion;
 +};
 +
-+struct ads8688_ranges {
-+	enum ads8688_range range;
-+	unsigned int scale;
-+	int offset;
-+	u8 reg;
++struct imx7d_adc_analogue_core_clk {
++	u32 pre_div;
++	u32 reg_config;
 +};
 +
-+static const struct ads8688_ranges ads8688_range_def[5] = {
-+	{
-+		.range = ADS8688_PLUSMINUS25VREF,
-+		.scale = 76295,
-+		.offset = -(1 << (ADS8688_REALBITS - 1)),
-+		.reg = ADS8688_REG_PLUSMINUS25VREF,
-+	}, {
-+		.range = ADS8688_PLUSMINUS125VREF,
-+		.scale = 38148,
-+		.offset = -(1 << (ADS8688_REALBITS - 1)),
-+		.reg = ADS8688_REG_PLUSMINUS125VREF,
-+	}, {
-+		.range = ADS8688_PLUSMINUS0625VREF,
-+		.scale = 19074,
-+		.offset = -(1 << (ADS8688_REALBITS - 1)),
-+		.reg = ADS8688_REG_PLUSMINUS0625VREF,
-+	}, {
-+		.range = ADS8688_PLUS25VREF,
-+		.scale = 38148,
-+		.offset = 0,
-+		.reg = ADS8688_REG_PLUS25VREF,
-+	}, {
-+		.range = ADS8688_PLUS125VREF,
-+		.scale = 19074,
-+		.offset = 0,
-+		.reg = ADS8688_REG_PLUS125VREF,
-+	}
-+};
-+
-+static ssize_t ads8688_show_scales(struct device *dev,
-+				   struct device_attribute *attr, char *buf)
-+{
-+	struct ads8688_state *st = iio_priv(dev_to_iio_dev(dev));
-+
-+	return sprintf(buf, "0.%09u 0.%09u 0.%09u\n",
-+		       ads8688_range_def[0].scale * st->vref_mv,
-+		       ads8688_range_def[1].scale * st->vref_mv,
-+		       ads8688_range_def[2].scale * st->vref_mv);
++#define IMX7D_ADC_ALALOGUE_CLK_CONFIG(_pre_div, _reg_conf) {	\
++	.pre_div = (_pre_div),					\
++	.reg_config = (_reg_conf),				\
 +}
 +
-+static ssize_t ads8688_show_offsets(struct device *dev,
-+				    struct device_attribute *attr, char *buf)
-+{
-+	return sprintf(buf, "%d %d\n", ads8688_range_def[0].offset,
-+		       ads8688_range_def[3].offset);
-+}
-+
-+static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
-+		       ads8688_show_scales, NULL, 0);
-+static IIO_DEVICE_ATTR(in_voltage_offset_available, S_IRUGO,
-+		       ads8688_show_offsets, NULL, 0);
-+
-+static struct attribute *ads8688_attributes[] = {
-+	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_offset_available.dev_attr.attr,
-+	NULL,
++static const struct imx7d_adc_analogue_core_clk imx7d_adc_analogue_clk[] = {
++	IMX7D_ADC_ALALOGUE_CLK_CONFIG(4, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4),
++	IMX7D_ADC_ALALOGUE_CLK_CONFIG(8, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8),
++	IMX7D_ADC_ALALOGUE_CLK_CONFIG(16, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16),
++	IMX7D_ADC_ALALOGUE_CLK_CONFIG(32, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32),
++	IMX7D_ADC_ALALOGUE_CLK_CONFIG(64, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64),
++	IMX7D_ADC_ALALOGUE_CLK_CONFIG(128, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128),
 +};
 +
-+static const struct attribute_group ads8688_attribute_group = {
-+	.attrs = ads8688_attributes,
-+};
-+
-+#define ADS8688_CHAN(index)					\
-+{								\
-+	.type = IIO_VOLTAGE,					\
++#define IMX7D_ADC_CHAN(_idx, _chan_type) {			\
++	.type = (_chan_type),					\
 +	.indexed = 1,						\
-+	.channel = index,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
-+			      | BIT(IIO_CHAN_INFO_SCALE)	\
-+			      | BIT(IIO_CHAN_INFO_OFFSET),	\
++	.channel = (_idx),					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
++				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
 +}
 +
-+static const struct iio_chan_spec ads8684_channels[] = {
-+	ADS8688_CHAN(0),
-+	ADS8688_CHAN(1),
-+	ADS8688_CHAN(2),
-+	ADS8688_CHAN(3),
++static const struct iio_chan_spec imx7d_adc_iio_channels[] = {
++	IMX7D_ADC_CHAN(0, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(1, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(2, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(3, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(4, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(5, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(6, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(7, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(8, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(9, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(10, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(11, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(12, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(13, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(14, IIO_VOLTAGE),
++	IMX7D_ADC_CHAN(15, IIO_VOLTAGE),
 +};
 +
-+static const struct iio_chan_spec ads8688_channels[] = {
-+	ADS8688_CHAN(0),
-+	ADS8688_CHAN(1),
-+	ADS8688_CHAN(2),
-+	ADS8688_CHAN(3),
-+	ADS8688_CHAN(4),
-+	ADS8688_CHAN(5),
-+	ADS8688_CHAN(6),
-+	ADS8688_CHAN(7),
++static const u32 imx7d_adc_average_num[] = {
++	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4,
++	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8,
++	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16,
++	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32,
 +};
 +
-+static int ads8688_prog_write(struct iio_dev *indio_dev, unsigned int addr,
-+			      unsigned int val)
++static void imx7d_adc_feature_config(struct imx7d_adc *info)
 +{
-+	struct ads8688_state *st = iio_priv(indio_dev);
-+	u32 tmp;
-+
-+	tmp = ADS8688_PROG_REG(addr) | ADS8688_PROG_WR_BIT | val;
-+	tmp <<= ADS8688_PROG_DONT_CARE_BITS;
-+	st->data[0].d32 = cpu_to_be32(tmp);
-+
-+	return spi_write(st->spi, &st->data[0].d8[1], 3);
++	info->adc_feature.clk_pre_div = IMX7D_ADC_ANALOG_CLK_PRE_DIV_4;
++	info->adc_feature.avg_num = IMX7D_ADC_AVERAGE_NUM_32;
++	info->adc_feature.core_time_unit = 1;
++	info->adc_feature.average_en = true;
 +}
 +
-+static int ads8688_reset(struct iio_dev *indio_dev)
++static void imx7d_adc_sample_set(struct imx7d_adc *info)
 +{
-+	struct ads8688_state *st = iio_priv(indio_dev);
-+	u32 tmp;
++	struct imx7d_adc_feature *adc_feature = &info->adc_feature;
++	struct imx7d_adc_analogue_core_clk adc_analogure_clk;
++	u32 i;
++	u32 sample_rate = 0;
 +
-+	tmp = ADS8688_CMD_REG(ADS8688_CMD_REG_RST);
-+	tmp <<= ADS8688_CMD_DONT_CARE_BITS;
-+	st->data[0].d32 = cpu_to_be32(tmp);
++	/*
++	 * Before sample set, disable channel A,B,C,D. Here we
++	 * clear the bit 31 of register REG_ADC_CH_A\B\C\D_CFG1.
++	 */
++	for (i = 0; i < 4; i++)
++		writel(IMX7D_REG_ADC_CH_CFG1_CHANNEL_DISABLE,
++			info->regs + i * IMX7D_EACH_CHANNEL_REG_SHIF);
 +
-+	return spi_write(st->spi, &st->data[0].d8[0], 4);
++	adc_analogure_clk = imx7d_adc_analogue_clk[adc_feature->clk_pre_div];
++	sample_rate |= adc_analogure_clk.reg_config;
++	info->pre_div_num = adc_analogure_clk.pre_div;
++
++	sample_rate |= adc_feature->core_time_unit;
++	writel(sample_rate, info->regs + IMX7D_REG_ADC_TIMER_UNIT);
 +}
 +
-+static int ads8688_read(struct iio_dev *indio_dev, unsigned int chan)
++static void imx7d_adc_hw_init(struct imx7d_adc *info)
 +{
-+	struct ads8688_state *st = iio_priv(indio_dev);
++	u32 cfg;
++	/* power up and enable adc analogue core */
++	cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
++	cfg &= ~(IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN | IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN);
++	cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_EN;
++	writel(cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
++
++	/* enable channel A,B,C,D interrupt */
++	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs + IMX7D_REG_ADC_INT_SIG_EN);
++	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs + IMX7D_REG_ADC_INT_EN);
++
++	imx7d_adc_sample_set(info);
++}
++
++static void imx7d_adc_channel_set(struct imx7d_adc *info)
++{
++	u32 cfg1 = 0;
++	u32 cfg2;
++	u32 channel;
++
++	channel = info->channel;
++
++	/* the channel choose single conversion, and enable average mode */
++	cfg1 |= (IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN | IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE);
++	if (info->adc_feature.average_en)
++		cfg1 |= IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN;
++
++	/*
++	 * physical channel 0 chose logical channel A
++	 * physical channel 1 chose logical channel B
++	 * physical channel 2 chose logical channel C
++	 * physical channel 3 chose logical channel D
++	 */
++	cfg1 |= (channel << IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL_SHIF);
++
++	/* read register REG_ADC_CH_A\B\C\D_CFG2, according to the channel chosen */
++	cfg2 = readl(info->regs + IMX7D_EACH_CHANNEL_REG_SHIF * channel + 0x10);
++
++	cfg2 |= imx7d_adc_average_num[info->adc_feature.avg_num];
++
++	/* write the register REG_ADC_CH_A\B\C\D_CFG2, according to the channel chosen */
++	writel(cfg2, info->regs + IMX7D_EACH_CHANNEL_REG_SHIF * channel + 0x10);
++	writel(cfg1, info->regs + IMX7D_EACH_CHANNEL_REG_SHIF * channel);
++}
++
++static u32 imx7d_adc_get_sample_rate(struct imx7d_adc *info)
++{
++	/* input clock is always 24MHz */
++	u32 input_clk = 24000000;
++	u32 analogue_core_clk;
++	u32 core_time_unit = info->adc_feature.core_time_unit;
++	u32 sample_clk;
++	u32 tmp;
++
++	analogue_core_clk = input_clk / info->pre_div_num;
++	tmp = (core_time_unit + 1) * 6;
++	sample_clk = analogue_core_clk / tmp;
++
++	return sample_clk;
++}
++
++static int imx7d_adc_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val,
++			int *val2,
++			long mask)
++{
++	struct imx7d_adc *info = iio_priv(indio_dev);
++
++	u32 channel;
++	long ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&indio_dev->mlock);
++		reinit_completion(&info->completion);
++
++		channel = (chan->channel) & 0x0f;
++		info->channel = channel;
++		imx7d_adc_channel_set(info);
++
++		ret = wait_for_completion_interruptible_timeout
++				(&info->completion, IMX7D_ADC_TIMEOUT);
++		if (ret == 0) {
++			mutex_unlock(&indio_dev->mlock);
++			return -ETIMEDOUT;
++		}
++		if (ret < 0) {
++			mutex_unlock(&indio_dev->mlock);
++			return ret;
++		}
++
++		*val = info->value;
++		mutex_unlock(&indio_dev->mlock);
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = info->vref_uv / 1000;
++		*val2 = 12;
++		return IIO_VAL_FRACTIONAL_LOG2;
++
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = imx7d_adc_get_sample_rate(info);
++		*val2 = 0;
++		return IIO_VAL_INT;
++
++	default:
++		break;
++	}
++
++	return -EINVAL;
++}
++
++static int imx7d_adc_read_data(struct imx7d_adc *info)
++{
++	u32 channel;
++	u32 value;
++
++	channel = info->channel;
++
++	/*
++	 * channel A and B conversion result share one register,
++	 * bit[27~16] is the channel B conversion result,
++	 * bit[11~0] is the channel A conversion result.
++	 * channel C and D is the same.
++	 */
++	if (channel < 2)
++		value = readl(info->regs + IMX7D_REG_ADC_CHA_B_CNV_RSLT);
++	else
++		value = readl(info->regs + IMX7D_REG_ADC_CHC_D_CNV_RSLT);
++	if (channel & 0x1)	/* channel B or D */
++		value = (value >> 16) & 0xFFF;
++	else			/* channel A or C */
++		value &= 0xFFF;
++
++	return value;
++}
++
++static irqreturn_t imx7d_adc_isr(int irq, void *dev_id)
++{
++	struct imx7d_adc *info = (struct imx7d_adc *)dev_id;
++	int status;
++
++	status = readl(info->regs + IMX7D_REG_ADC_INT_STATUS);
++	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS) {
++		info->value = imx7d_adc_read_data(info);
++		complete(&info->completion);
++	}
++	writel(0, info->regs + IMX7D_REG_ADC_INT_STATUS);
++
++	return IRQ_HANDLED;
++}
++
++static int imx7d_adc_reg_access(struct iio_dev *indio_dev,
++			unsigned reg, unsigned writeval,
++			unsigned *readval)
++{
++	struct imx7d_adc *info = iio_priv(indio_dev);
++
++	if ((readval == NULL) ||
++		((reg % 4) || (reg > IMX7D_REG_ADC_ADC_CFG)))
++		return -EINVAL;
++
++	*readval = readl(info->regs + reg);
++
++	return 0;
++}
++
++static const struct iio_info imx7d_adc_iio_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = &imx7d_adc_read_raw,
++	.debugfs_reg_access = &imx7d_adc_reg_access,
++};
++
++static const struct of_device_id imx7d_adc_match[] = {
++	{ .compatible = "fsl,imx7d-adc", },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, imx7d_adc_match);
++
++static int imx7d_adc_probe(struct platform_device *pdev)
++{
++	struct imx7d_adc *info;
++	struct iio_dev *indio_dev;
++	struct resource *mem;
++	int irq;
 +	int ret;
-+	u32 tmp;
-+	struct spi_transfer t[] = {
-+		{
-+			.tx_buf = &st->data[0].d8[0],
-+			.len = 4,
-+			.cs_change = 1,
-+		}, {
-+			.tx_buf = &st->data[1].d8[0],
-+			.rx_buf = &st->data[1].d8[0],
-+			.len = 4,
-+		},
-+	};
++	u32 channels;
 +
-+	tmp = ADS8688_CMD_REG(ADS8688_CMD_REG_MAN_CH(chan));
-+	tmp <<= ADS8688_CMD_DONT_CARE_BITS;
-+	st->data[0].d32 = cpu_to_be32(tmp);
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct imx7d_adc));
++	if (!indio_dev) {
++		dev_err(&pdev->dev, "Failed allocating iio device\n");
++		return -ENOMEM;
++	}
 +
-+	tmp = ADS8688_CMD_REG(ADS8688_CMD_REG_NOOP);
-+	tmp <<= ADS8688_CMD_DONT_CARE_BITS;
-+	st->data[1].d32 = cpu_to_be32(tmp);
++	info = iio_priv(indio_dev);
++	info->dev = &pdev->dev;
 +
-+	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
-+	if (ret < 0)
++	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	info->regs = devm_ioremap_resource(&pdev->dev, mem);
++	if (IS_ERR(info->regs)) {
++		ret = PTR_ERR(info->regs);
++		dev_err(&pdev->dev, "failed to remap adc memory: %d\n", ret);
++		return ret;
++	}
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "no irq resource?\n");
++		return irq;
++	}
++
++	ret = devm_request_irq(info->dev, irq,
++				imx7d_adc_isr, 0,
++				dev_name(&pdev->dev), info);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
++		return ret;
++	}
++
++	info->clk = devm_clk_get(&pdev->dev, "adc");
++	if (IS_ERR(info->clk)) {
++		ret = PTR_ERR(info->clk);
++		dev_err(&pdev->dev, "failed getting clock, err = %d\n", ret);
++		return ret;
++	}
++
++	info->vref = devm_regulator_get(&pdev->dev, "vref");
++	if (IS_ERR(info->vref)) {
++		ret = PTR_ERR(info->vref);
++		dev_err(&pdev->dev, "failed getting reference voltage: %d\n", ret);
++		return ret;
++	}
++
++	ret = regulator_enable(info->vref);
++	if (ret)
 +		return ret;
 +
-+	return be32_to_cpu(st->data[1].d32) & 0xffff;
-+}
++	info->vref_uv = regulator_get_voltage(info->vref);
 +
-+static int ads8688_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long m)
-+{
-+	int ret, offset;
-+	unsigned long scale_mv;
++	platform_set_drvdata(pdev, indio_dev);
 +
-+	struct ads8688_state *st = iio_priv(indio_dev);
++	init_completion(&info->completion);
 +
-+	mutex_lock(&st->lock);
-+	switch (m) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = ads8688_read(indio_dev, chan->channel);
-+		mutex_unlock(&st->lock);
-+		if (ret < 0)
-+			return ret;
-+		*val = ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		scale_mv = st->vref_mv;
-+		scale_mv *= ads8688_range_def[st->range[chan->channel]].scale;
-+		*val = 0;
-+		*val2 = scale_mv;
-+		mutex_unlock(&st->lock);
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_OFFSET:
-+		offset = ads8688_range_def[st->range[chan->channel]].offset;
-+		*val = offset;
-+		mutex_unlock(&st->lock);
-+		return IIO_VAL_INT;
-+	}
-+	mutex_unlock(&st->lock);
++	ret  = of_property_read_u32(pdev->dev.of_node,
++					"num-channels", &channels);
++	if (ret)
++		channels = ARRAY_SIZE(imx7d_adc_iio_channels);
 +
-+	return -EINVAL;
-+}
-+
-+static int ads8688_write_reg_range(struct iio_dev *indio_dev,
-+				   struct iio_chan_spec const *chan,
-+				   enum ads8688_range range)
-+{
-+	unsigned int tmp;
-+	int ret;
-+
-+	tmp = ADS8688_PROG_REG_RANGE_CH(chan->channel);
-+	ret = ads8688_prog_write(indio_dev, tmp, range);
-+
-+	return ret;
-+}
-+
-+static int ads8688_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long mask)
-+{
-+	struct ads8688_state *st = iio_priv(indio_dev);
-+	unsigned int scale = 0;
-+	int ret = -EINVAL, i, offset = 0;
-+
-+	mutex_lock(&st->lock);
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		/* If the offset is 0 the ±2.5 * VREF mode is not available */
-+		offset = ads8688_range_def[st->range[chan->channel]].offset;
-+		if (offset == 0 && val2 == ads8688_range_def[0].scale * st->vref_mv) {
-+			mutex_unlock(&st->lock);
-+			return -EINVAL;
-+		}
-+
-+		/* Lookup new mode */
-+		for (i = 0; i < ARRAY_SIZE(ads8688_range_def); i++)
-+			if (val2 == ads8688_range_def[i].scale * st->vref_mv &&
-+			    offset == ads8688_range_def[i].offset) {
-+				ret = ads8688_write_reg_range(indio_dev, chan,
-+					ads8688_range_def[i].reg);
-+				break;
-+			}
-+		break;
-+	case IIO_CHAN_INFO_OFFSET:
-+		/*
-+		 * There are only two available offsets:
-+		 * 0 and -(1 << (ADS8688_REALBITS - 1))
-+		 */
-+		if (!(ads8688_range_def[0].offset == val ||
-+		    ads8688_range_def[3].offset == val)) {
-+			mutex_unlock(&st->lock);
-+			return -EINVAL;
-+		}
-+
-+		/*
-+		 * If the device are in ±2.5 * VREF mode, it's not allowed to
-+		 * switch to a mode where the offset is 0
-+		 */
-+		if (val == 0 &&
-+		    st->range[chan->channel] == ADS8688_PLUSMINUS25VREF) {
-+			mutex_unlock(&st->lock);
-+			return -EINVAL;
-+		}
-+
-+		scale = ads8688_range_def[st->range[chan->channel]].scale;
-+
-+		/* Lookup new mode */
-+		for (i = 0; i < ARRAY_SIZE(ads8688_range_def); i++)
-+			if (val == ads8688_range_def[i].offset &&
-+			    scale == ads8688_range_def[i].scale) {
-+				ret = ads8688_write_reg_range(indio_dev, chan,
-+					ads8688_range_def[i].reg);
-+				break;
-+			}
-+		break;
-+	}
-+
-+	if (!ret)
-+		st->range[chan->channel] = ads8688_range_def[i].range;
-+
-+	mutex_unlock(&st->lock);
-+
-+	return ret;
-+}
-+
-+static int ads8688_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				     struct iio_chan_spec const *chan,
-+				     long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_OFFSET:
-+		return IIO_VAL_INT;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info ads8688_info = {
-+	.read_raw = &ads8688_read_raw,
-+	.write_raw = &ads8688_write_raw,
-+	.write_raw_get_fmt = &ads8688_write_raw_get_fmt,
-+	.attrs = &ads8688_attribute_group,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static const struct ads8688_chip_info ads8688_chip_info_tbl[] = {
-+	[ID_ADS8684] = {
-+		.channels = ads8684_channels,
-+		.num_channels = ARRAY_SIZE(ads8684_channels),
-+	},
-+	[ID_ADS8688] = {
-+		.channels = ads8688_channels,
-+		.num_channels = ARRAY_SIZE(ads8688_channels),
-+	},
-+};
-+
-+static int ads8688_probe(struct spi_device *spi)
-+{
-+	struct ads8688_state *st;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	if (indio_dev == NULL)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+
-+	st->reg = devm_regulator_get_optional(&spi->dev, "vref");
-+	if (!IS_ERR(st->reg)) {
-+		ret = regulator_enable(st->reg);
-+		if (ret)
-+			return ret;
-+
-+		ret = regulator_get_voltage(st->reg);
-+		if (ret < 0)
-+			goto error_out;
-+
-+		st->vref_mv = ret / 1000;
-+	} else {
-+		/* Use internal reference */
-+		st->vref_mv = ADS8688_VREF_MV;
-+	}
-+
-+	st->chip_info =	&ads8688_chip_info_tbl[spi_get_device_id(spi)->driver_data];
-+
-+	spi->mode = SPI_MODE_1;
-+
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	st->spi = spi;
-+
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = dev_name(&pdev->dev);
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->dev.of_node = pdev->dev.of_node;
++	indio_dev->info = &imx7d_adc_iio_info;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = st->chip_info->channels;
-+	indio_dev->num_channels = st->chip_info->num_channels;
-+	indio_dev->info = &ads8688_info;
++	indio_dev->channels = imx7d_adc_iio_channels;
++	indio_dev->num_channels = (int)channels;
 +
-+	ads8688_reset(indio_dev);
++	ret = clk_prepare_enable(info->clk);
++	if (ret) {
++		dev_err(&pdev->dev,
++			"Could not prepare or enable the clock.\n");
++		goto error_adc_clk_enable;
++	}
 +
-+	mutex_init(&st->lock);
++	imx7d_adc_feature_config(info);
++	imx7d_adc_hw_init(info);
 +
 +	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto error_out;
++	if (ret) {
++		dev_err(&pdev->dev, "Couldn't register the device.\n");
++		goto error_iio_device_register;
++	}
 +
 +	return 0;
 +
-+error_out:
-+	if (!IS_ERR_OR_NULL(st->reg))
-+		regulator_disable(st->reg);
++error_iio_device_register:
++	clk_disable_unprepare(info->clk);
++error_adc_clk_enable:
++	regulator_disable(info->vref);
 +
 +	return ret;
 +}
 +
-+static int ads8688_remove(struct spi_device *spi)
++static int imx7d_adc_remove(struct platform_device *pdev)
 +{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct ads8688_state *st = iio_priv(indio_dev);
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct imx7d_adc *info = iio_priv(indio_dev);
 +
 +	iio_device_unregister(indio_dev);
-+
-+	if (!IS_ERR_OR_NULL(st->reg))
-+		regulator_disable(st->reg);
++	regulator_disable(info->vref);
++	clk_disable_unprepare(info->clk);
 +
 +	return 0;
 +}
 +
-+static const struct spi_device_id ads8688_id[] = {
-+	{"ads8684", ID_ADS8684},
-+	{"ads8688", ID_ADS8688},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, ads8688_id);
++static int __maybe_unused imx7d_adc_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct imx7d_adc *info = iio_priv(indio_dev);
++	u32 adc_cfg;
 +
-+static const struct of_device_id ads8688_of_match[] = {
-+	{ .compatible = "ti,ads8684" },
-+	{ .compatible = "ti,ads8688" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ads8688_of_match);
++	adc_cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
++	adc_cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN | IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN;
++	adc_cfg &= ~IMX7D_REG_ADC_ADC_CFG_ADC_EN;
++	writel(adc_cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
 +
-+static struct spi_driver ads8688_driver = {
-+	.driver = {
-+		.name	= "ads8688",
-+		.owner	= THIS_MODULE,
++	clk_disable_unprepare(info->clk);
++	regulator_disable(info->vref);
++
++	return 0;
++}
++
++static int __maybe_unused imx7d_adc_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct imx7d_adc *info = iio_priv(indio_dev);
++	int ret;
++
++	ret = regulator_enable(info->vref);
++	if (ret)
++		return ret;
++
++	ret = clk_prepare_enable(info->clk);
++	if (ret) {
++		dev_err(info->dev,
++			"Could not prepare or enable clock.\n");
++		regulator_disable(info->vref);
++		return ret;
++	}
++
++	imx7d_adc_hw_init(info);
++
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(imx7d_adc_pm_ops, imx7d_adc_suspend, imx7d_adc_resume);
++
++static struct platform_driver imx7d_adc_driver = {
++	.probe		= imx7d_adc_probe,
++	.remove		= imx7d_adc_remove,
++	.driver		= {
++		.name	= DRIVER_NAME,
++		.of_match_table = imx7d_adc_match,
++		.pm	= &imx7d_adc_pm_ops,
 +	},
-+	.probe		= ads8688_probe,
-+	.remove		= ads8688_remove,
-+	.id_table	= ads8688_id,
 +};
-+module_spi_driver(ads8688_driver);
 +
-+MODULE_AUTHOR("Sean Nyekjaer <sean.nyekjaer@prevas.dk>");
-+MODULE_DESCRIPTION("Texas Instruments ADS8688 driver");
++module_platform_driver(imx7d_adc_driver);
++
++MODULE_AUTHOR("Haibo Chen <haibo.chen@freescale.com>");
++MODULE_DESCRIPTION("Freeacale IMX7D ADC driver");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.6.2
+1.9.1
 
