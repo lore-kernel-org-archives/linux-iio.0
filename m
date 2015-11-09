@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:6810 "EHLO
-	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751181AbbKIOqs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Nov 2015 09:46:48 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:39302 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751866AbbKIO5h (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Nov 2015 09:57:37 -0500
 From: Giuseppe Barba <giuseppe.barba@st.com>
 To: <linux-iio@vger.kernel.org>
 CC: <denis.ciocca@st.com>, <jic23@kernel.org>,
 	Giuseppe Barba <giuseppe.barba@st.com>
-Subject: [PATCH] iio: st-accel: add support for lis2dh12
-Date: Mon, 9 Nov 2015 15:45:43 +0100
-Message-ID: <1447080343-18763-1-git-send-email-giuseppe.barba@st.com>
+Subject: [PATCH-RESEND] iio: st-accel: add support for lis2dh12
+Date: Mon, 9 Nov 2015 15:56:43 +0100
+Message-ID: <1447081003-2321-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
@@ -63,7 +63,7 @@ index dab8b76..9d973f1 100644
  		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
  		.odr = {
 diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index 8b9cc84..c79b868 100644
+index 8b9cc84..294a32f 100644
 --- a/drivers/iio/accel/st_accel_i2c.c
 +++ b/drivers/iio/accel/st_accel_i2c.c
 @@ -72,6 +72,10 @@ static const struct of_device_id st_accel_of_match[] = {
@@ -73,7 +73,7 @@ index 8b9cc84..c79b868 100644
 +	{
 +		.compatible = "st,lis2dh12-accel",
 +		.data = LIS2DH12_ACCEL_DEV_NAME,
-+	}
++	},
  	{},
  };
  MODULE_DEVICE_TABLE(of, st_accel_of_match);
