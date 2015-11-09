@@ -1,102 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:39302 "EHLO
-	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751866AbbKIO5h (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Nov 2015 09:57:37 -0500
-From: Giuseppe Barba <giuseppe.barba@st.com>
-To: <linux-iio@vger.kernel.org>
-CC: <denis.ciocca@st.com>, <jic23@kernel.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>
-Subject: [PATCH-RESEND] iio: st-accel: add support for lis2dh12
-Date: Mon, 9 Nov 2015 15:56:43 +0100
-Message-ID: <1447081003-2321-1-git-send-email-giuseppe.barba@st.com>
+Return-Path: <robh@kernel.org>
+Date: Mon, 9 Nov 2015 09:56:40 -0600
+From: Rob Herring <robh@kernel.org>
+To: Haibo Chen <haibo.chen@freescale.com>
+Cc: pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
+	galak@codeaurora.org, shawnguo@kernel.org, kernel@pengutronix.de,
+	linux@arm.linux.org.uk, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 2/4] Documentation: add the binding file for Freescale
+ imx7d ADC driver
+Message-ID: <20151109155640.GA21805@rob-hp-laptop>
+References: <1447075704-4605-1-git-send-email-haibo.chen@freescale.com>
+ <1447075704-4605-3-git-send-email-haibo.chen@freescale.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1447075704-4605-3-git-send-email-haibo.chen@freescale.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This commit add support for STMicroelectronics lis2dh12 accelerometer.
+On Mon, Nov 09, 2015 at 09:28:22PM +0800, Haibo Chen wrote:
+> The patch adds the binding file for Freescale imx7d ADC driver.
+> 
+> Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
 
-Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
----
- Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
- drivers/iio/accel/st_accel.h                         | 1 +
- drivers/iio/accel/st_accel_core.c                    | 1 +
- drivers/iio/accel/st_accel_i2c.c                     | 5 +++++
- drivers/iio/accel/st_accel_spi.c                     | 1 +
- 5 files changed, 9 insertions(+)
+Acked-by: Rob Herring <robh@kernel.org>
 
-diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-index d3ccdb1..d4b87cc 100644
---- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-+++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-@@ -36,6 +36,7 @@ Accelerometers:
- - st,lsm303dlm-accel
- - st,lsm330-accel
- - st,lsm303agr-accel
-+- st,lis2dh12-accel
- 
- Gyroscopes:
- - st,l3g4200d-gyro
-diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-index 468f21f..daf58e7 100644
---- a/drivers/iio/accel/st_accel.h
-+++ b/drivers/iio/accel/st_accel.h
-@@ -27,6 +27,7 @@
- #define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
- #define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
- #define LSM303AGR_ACCEL_DEV_NAME	"lsm303agr_accel"
-+#define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12-accel"
- 
- /**
- * struct st_sensors_platform_data - default accel platform data
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index dab8b76..9d973f1 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -234,6 +234,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 			[3] = LSM330DL_ACCEL_DEV_NAME,
- 			[4] = LSM330DLC_ACCEL_DEV_NAME,
- 			[5] = LSM303AGR_ACCEL_DEV_NAME,
-+			[6] = LIS2DH12_ACCEL_DEV_NAME,
- 		},
- 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
- 		.odr = {
-diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index 8b9cc84..294a32f 100644
---- a/drivers/iio/accel/st_accel_i2c.c
-+++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -72,6 +72,10 @@ static const struct of_device_id st_accel_of_match[] = {
- 		.compatible = "st,lsm303agr-accel",
- 		.data = LSM303AGR_ACCEL_DEV_NAME,
- 	},
-+	{
-+		.compatible = "st,lis2dh12-accel",
-+		.data = LIS2DH12_ACCEL_DEV_NAME,
-+	},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, st_accel_of_match);
-@@ -121,6 +125,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
- 	{ LSM303DLM_ACCEL_DEV_NAME },
- 	{ LSM330_ACCEL_DEV_NAME },
- 	{ LSM303AGR_ACCEL_DEV_NAME },
-+	{ LIS2DH12_ACCEL_DEV_NAME },
- 	{},
- };
- MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
-diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-index 54b61a3..e82bedf 100644
---- a/drivers/iio/accel/st_accel_spi.c
-+++ b/drivers/iio/accel/st_accel_spi.c
-@@ -58,6 +58,7 @@ static const struct spi_device_id st_accel_id_table[] = {
- 	{ LSM303DLM_ACCEL_DEV_NAME },
- 	{ LSM330_ACCEL_DEV_NAME },
- 	{ LSM303AGR_ACCEL_DEV_NAME },
-+	{ LIS2DH12_ACCEL_DEV_NAME },
- 	{},
- };
- MODULE_DEVICE_TABLE(spi, st_accel_id_table);
--- 
-1.9.1
-
+> ---
+>  .../devicetree/bindings/iio/adc/imx7d-adc.txt      | 26 ++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt b/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
+> new file mode 100644
+> index 0000000..7f4ec1b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
+> @@ -0,0 +1,26 @@
+> +Freescale imx7d ADC bindings
+> +
+> +The devicetree bindings are for the ADC driver written for
+> +imx7d SoC.
+> +
+> +Required properties:
+> +- compatible: Should be "fsl,imx7d-adc"
+> +- reg: Offset and length of the register set for the ADC device
+> +- interrupts: The interrupt number for the ADC device
+> +- clocks: The root clock of the ADC controller
+> +- clock-names: Must contain "adc", matching entry in the clocks property
+> +- vref-supply: The regulator supply ADC reference voltage
+> +
+> +Optional properties:
+> +- num-channels: the number of channels used
+> +
+> +Example:
+> +adc1: adc@30610000 {
+> +	compatible = "fsl,imx7d-adc";
+> +	reg = <0x30610000 0x10000>;
+> +	interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+> +	clocks = <&clks IMX7D_ADC_ROOT_CLK>;
+> +	clock-names = "adc";
+> +	num-channels = <4>;
+> +	vref-supply = <&reg_vcc_3v3_mcu>;
+> +};
+> -- 
+> 1.9.1
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
