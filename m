@@ -1,35 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.w1.samsung.com ([210.118.77.14]:46065 "EHLO
-	mailout4.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751348AbbKHX6r (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Nov 2015 18:58:47 -0500
-Subject: Re: [PATCH v4 1/1] iio: pulsedlight-lidar-lite: add runtime PM
-To: Matt Ranostay <mranostay@gmail.com>, jic23@kernel.org
-References: <1447014418-27849-1-git-send-email-mranostay@gmail.com>
- <1447014418-27849-2-git-send-email-mranostay@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-pm@vger.kernel.org
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Message-id: <563FE1AF.3040305@samsung.com>
-Date: Mon, 09 Nov 2015 08:58:39 +0900
-MIME-version: 1.0
-In-reply-to: <1447014418-27849-2-git-send-email-mranostay@gmail.com>
-Content-type: text/plain; charset=windows-1252
+Received: from mail01.prevas.se ([62.95.78.3]:53222 "EHLO mail01.prevas.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752154AbbKIIU7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 9 Nov 2015 03:20:59 -0500
+From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+To: <linux-iio@vger.kernel.org>
+CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Subject: [PATCH v2] iio: core: added support for IIO_VAL_INT
+Date: Mon, 9 Nov 2015 09:20:40 +0100
+Message-ID: <1447057240-4490-1-git-send-email-sean.nyekjaer@prevas.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09.11.2015 05:26, Matt Ranostay wrote:
-> Add runtime PM support for the lidar-lite module to enable low power
-> mode when last device requested reading is over a second.
-> 
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-> ---
->  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 54 ++++++++++++++++++++++-
->  1 file changed, 53 insertions(+), 1 deletion(-)
-> 
+Addded core support for IIO_VAL_INT in write_raw_get_fmt function.
 
-Reviewed-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+---
+Changes since v1:
+ - fract_mult set to 0
+ - iio_str_to_fixpoint uses kstrtoint for fract_mult = 0
 
-Best regards,
-Krzysztof
+ drivers/iio/industrialio-core.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 208358f..d0a84fe 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -512,6 +512,12 @@ int iio_str_to_fixpoint(const char *str, int fract_mult,
+ 	int i = 0, f = 0;
+ 	bool integer_part = true, negative = false;
+ 
++	if (fract_mult == 0) {
++		*fract = 0;
++
++		return kstrtoint(str, 0, integer);
++	}
++
+ 	if (str[0] == '-') {
+ 		negative = true;
+ 		str++;
+@@ -571,6 +577,9 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 	if (indio_dev->info->write_raw_get_fmt)
+ 		switch (indio_dev->info->write_raw_get_fmt(indio_dev,
+ 			this_attr->c, this_attr->address)) {
++		case IIO_VAL_INT:
++			fract_mult = 0;
++			break;
+ 		case IIO_VAL_INT_PLUS_MICRO:
+ 			fract_mult = 100000;
+ 			break;
+-- 
+2.6.2
 
