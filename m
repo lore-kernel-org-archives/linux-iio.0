@@ -1,42 +1,44 @@
-Return-Path: <Haibo.Chen@freescale.com>
-From: Haibo Chen <haibo.chen@freescale.com>
-To: <robh+dt@kernel.org>, <pawel.moll@arm.com>, <mark.rutland@arm.com>,
-	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
-	<shawnguo@kernel.org>, <kernel@pengutronix.de>, <linux@arm.linux.org.uk>,
-	<jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>
-CC: <haibo.chen@freescale.com>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>
-Subject: [PATCH v2 0/4] Add i.mx7d adc driver support
-Date: Mon, 9 Nov 2015 21:28:20 +0800
-Message-ID: <1447075704-4605-1-git-send-email-haibo.chen@freescale.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pa0-f65.google.com ([209.85.220.65]:34780 "EHLO
+	mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751509AbbKIO0e (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Nov 2015 09:26:34 -0500
+From: Nizam Haider <nizamhaider786@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, marex@denx.de, stefan.wahren@i2se.com,
+	kristina.martsenko@gmail.com, ciorneiioana@gmail.com,
+	hamohammed.sa@gmail.com, alexandre.belloni@free-electrons.com,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Nizam Haider <nizamhaider786@gmail.com>,
+	Nizam Haider <nijamh@cdac.in>
+Subject: [PATCH] iio: adc: mxs-lradc: Prefer using the BIT macro
+Date: Mon,  9 Nov 2015 19:56:02 +0530
+Message-Id: <1447079162-12531-1-git-send-email-nizamhaider786@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch add imx7d adc driver support.
+Replaces bit shifting on 1 with the BIT(x) macro
 
-Changes in V2:
--prefix defines with IMX7D_ for all the register
--use BIT macro to define a single bit
--remove the dma_en from struct adc_feature which is not support currently
--use static const array to replace the switch case code
+Signed-off-by: Nizam Haider <nijamh@cdac.in>
+---
+ drivers/staging/iio/adc/mxs-lradc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Haibo Chen (4):
-  iio: adc: add IMX7D ADC driver support
-  Documentation: add the binding file for Freescale imx7d ADC driver
-  ARM: dts: imx7d.dtsi: add ADC support
-  ARM: dts: imx7d-sdb: add ADC support
-
- .../devicetree/bindings/iio/adc/imx7d-adc.txt      |  26 +
- arch/arm/boot/dts/imx7d-sdb.dts                    |  10 +
- arch/arm/boot/dts/imx7d.dtsi                       |  20 +
- drivers/iio/adc/Kconfig                            |   9 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/imx7d_adc.c                        | 571 +++++++++++++++++++++
- 6 files changed, 637 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
- create mode 100644 drivers/iio/adc/imx7d_adc.c
-
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index d997d9c..5f1375c 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -324,7 +324,7 @@ struct mxs_lradc {
+ #define	LRADC_DELAY_TRIGGER(x) \
+ 				(((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
+ 				LRADC_DELAY_TRIGGER_LRADCS_MASK)
+-#define	LRADC_DELAY_KICK			(1 << 20)
++#define	LRADC_DELAY_KICK			BIT(20)
+ #define	LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
+ #define	LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
+ #define	LRADC_DELAY_TRIGGER_DELAYS(x) \
 -- 
-1.9.1
+1.8.1.4
+
