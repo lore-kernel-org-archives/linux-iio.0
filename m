@@ -1,239 +1,52 @@
-Return-Path: <mtitinger@baylibre.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f51.google.com ([74.125.82.51]:34748 "EHLO
+	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753590AbbKJQHw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Nov 2015 11:07:52 -0500
+Received: by wmvv187 with SMTP id v187so15515254wmv.1
+        for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2015 08:07:50 -0800 (PST)
 From: Marc Titinger <mtitinger@baylibre.com>
-To: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
 	pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	mturquette@baylibre.com,
-	bcousson@baylibre.com,
-	ptitiano@baylibre.com,
-	Marc Titinger <mtitinger@baylibre.com>
-Subject: [RFC 4/4] iio: ina2xx: add SOFTWARE buffer mode using an iio kfifo.
-Date: Tue, 10 Nov 2015 17:07:33 +0100
-Message-Id: <1447171653-12756-5-git-send-email-mtitinger@baylibre.com>
-In-Reply-To: <1447171653-12756-1-git-send-email-mtitinger@baylibre.com>
-References: <1447171653-12756-1-git-send-email-mtitinger@baylibre.com>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	mturquette@baylibre.com, bcousson@baylibre.com,
+	ptitiano@baylibre.com, Marc Titinger <mtitinger@baylibre.com>
+Subject: [RFC 0/4] IIO: add support for INA2xx power monitor
+Date: Tue, 10 Nov 2015 17:07:29 +0100
+Message-Id: <1447171653-12756-1-git-send-email-mtitinger@baylibre.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Capture the active scan_elements into a kfifo.
-The capture thread will compute the remaining time until the next capture
-tick, and do an active wait (udelay).
+This chip has fair support in the hwmon stack already, this work is more
+as a pathfinder for me, hence I post it as RFC to digg some more into 'does
+and donts' with IIO.
 
-This will produce a stream of up to fours channels plus a 64bits
-timestamps (ns).
+Nevertheless, it provides a working streaming scheme for capturing
+power/voltage/current with this chip. It works in local and remote
+mode with iio_readdev and I did some sniffing tests with iio-oscilloscope
+with promising results inspite of timeout issues for long temporal buffers
+presumably due to the slow rates for this chip compared to expected high-speed
+CoDecs (and maybe the lack of a proper plugin?).
 
-# iio_readdev ina226 |  od -x
-WARNING: High-speed mode not enabled
-0000000 042f 0d5a 002e 010c 4be8 4eb4 0013 0000
-0000020 0430 0d5a 002e 010c a704 4f3e 0013 0000
-0000040 0430 0d5a 002e 010c b477 4fc7 0013 0000
-0000060 042f 0d5b 002e 010c 8052 5050 0013 0000
-0000100 042f 0d5b 002e 010c 5d92 50d8 0013 0000
-0000120 0430 0d5a 002e 010c fa59 515e 0013 0000
-0000140 0430 0d5b 002e 010c 95d2 51e5 0013 0000
+The kthread I'm using does an active waiting to allow for sampling periods
+shorter than a tick. I have not experienced performance issues with it on
+the board (BeagleBoneBlack), IIOD could always schedule on time as far as I
+could see, maybe with other i2c backends a schedule() could be mandatory ?
 
-Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+Many thanks,
 
----
-Ina2xx does not support auto-increment, hence the capture threads sticks
-with single register reads instead of regmap_bulk_read.
+Marc Titinger (4):
+  iio: ina2xx: add direct IO support for TI INA2xx Power Monitors
+  iio: ina2xx: add SAMP_FREQ attribute.
+  iio: ina2xx: add debugfs reg access
+  iio: ina2xx: add SOFTWARE buffer mode using an iio kfifo.
 
-The proper scales must be applied to those raw register
-values, I'm in favor of doing the conversion in userland in a client plugin
-for instance a sigrok, of iio-osciloscope plugin, rather than converting in
-kernel.
----
- drivers/iio/adc/Kconfig      |   2 +
- drivers/iio/adc/ina2xx-iio.c | 120 ++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 120 insertions(+), 2 deletions(-)
+ drivers/iio/adc/Kconfig      |  11 +
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/ina2xx-iio.c | 579 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 591 insertions(+)
+ create mode 100644 drivers/iio/adc/ina2xx-iio.c
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index b648051..6ef8ce5 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -13,6 +13,8 @@ config AD_SIGMA_DELTA
- config INA2XX_IIO
-         tristate "Texas Instruments INA2xx Power Monitors IIO driver"
- 	depends on I2C
-+	select IIO_BUFFER
-+	select IIO_KFIFO_BUF
-         help
-           Say yes here to build support for TI INA2xx familly Power Monitors.
- 
-diff --git a/drivers/iio/adc/ina2xx-iio.c b/drivers/iio/adc/ina2xx-iio.c
-index 3e4a4b0..132b8a9 100644
---- a/drivers/iio/adc/ina2xx-iio.c
-+++ b/drivers/iio/adc/ina2xx-iio.c
-@@ -16,7 +16,10 @@
-  * Licensed under the GPL-2 or later.
-  */
- #include <linux/module.h>
--#include <linux/iio/iio.h>
-+#include <linux/kthread.h>
-+#include <linux/delay.h>
-+#include <linux/iio/kfifo_buf.h>
-+
- #include <linux/i2c.h>
- #include <linux/regmap.h>
- #include <linux/platform_data/ina2xx.h>
-@@ -73,6 +76,7 @@ struct ina2xx_config {
- 
- struct ina2xx_chip_info {
- 	struct iio_dev *indio_dev;
-+	struct task_struct *task;
- 	const struct ina2xx_config *config;
- 	struct mutex state_lock;
- 	long rshunt;
-@@ -263,6 +267,9 @@ static int ina2xx_write_raw(struct iio_dev *indio_dev,
- 	int ret = 0;
- 	unsigned int config, tmp;
- 
-+	if (iio_buffer_enabled(indio_dev))
-+		return -EBUSY;
-+
- 	mutex_lock(&chip->state_lock);
- 
- 	ret = regmap_read(chip->regmap, INA2XX_CONFIG, &config);
-@@ -321,6 +328,106 @@ static const struct iio_chan_spec ina2xx_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(4),
- };
- 
-+/*
-+ * return uS until next due sampling.
-+ */
-+
-+static s64 prev_ns;
-+
-+static int ina2xx_work_buffer(struct ina2xx_chip_info *chip)
-+{
-+	unsigned short data[8];
-+	struct iio_dev *indio_dev = chip->indio_dev;
-+	int bit, ret = 0, i = 0;
-+	unsigned long buffer_us = 0, elapsed_us = 0;
-+	s64 time_a, time_b;
-+
-+	time_a = iio_get_time_ns();
-+
-+	/* Single register reads: bulk_read will not work with ina226
-+	 * as there is no auto-increment of the address register for
-+	 * data length longer than 16bits.
-+	 */
-+	for_each_set_bit(bit, indio_dev->active_scan_mask,
-+			 indio_dev->masklength) {
-+		unsigned int val;
-+
-+		ret = regmap_read(chip->regmap,
-+				  INA2XX_SHUNT_VOLTAGE + bit, &val);
-+		if (ret < 0)
-+			goto _err;
-+
-+		data[i++] = val;
-+	}
-+
-+	time_b = iio_get_time_ns();
-+
-+	iio_push_to_buffers_with_timestamp(chip->indio_dev,
-+					   (unsigned int *)data, time_a);
-+
-+	buffer_us = (unsigned long)(time_b - time_a) / 1000;
-+	elapsed_us = (unsigned long)(time_a - prev_ns) / 1000;
-+
-+	trace_printk("uS: elapsed: %lu, buf: %lu\n", elapsed_us, buffer_us);
-+
-+	prev_ns = time_a;
-+_err:
-+	return buffer_us;
-+};
-+
-+static int ina2xx_capture_thread(void *data)
-+{
-+	struct ina2xx_chip_info *chip = (struct ina2xx_chip_info *)data;
-+	unsigned int sampling_us = chip->period_us * chip->avg;
-+	unsigned long buffer_us;
-+
-+	do {
-+		buffer_us = ina2xx_work_buffer(chip);
-+
-+		if (sampling_us > buffer_us)
-+			udelay(sampling_us - buffer_us);
-+
-+	} while (!kthread_should_stop());
-+
-+	chip->task = NULL;
-+
-+	return 0;
-+}
-+
-+int ina2xx_buffer_enable(struct iio_dev *indio_dev)
-+{
-+	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
-+	unsigned int sampling_us = chip->period_us * chip->avg;
-+
-+	trace_printk("Enabling buffer w/ scan_mask %02x, freq = %d, avg =%u\n",
-+		     (unsigned int)(*indio_dev->active_scan_mask), chip->freq,
-+		     chip->avg);
-+
-+	trace_printk("Expected work period is %u us\n", sampling_us);
-+
-+	prev_ns = iio_get_time_ns();
-+
-+	chip->task = kthread_run(ina2xx_capture_thread, (void *)chip,
-+				 "ina2xx-%uus", sampling_us);
-+
-+	return PTR_ERR_OR_ZERO(chip->task);
-+}
-+
-+int ina2xx_buffer_disable(struct iio_dev *indio_dev)
-+{
-+	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
-+
-+	if (chip->task)
-+		kthread_stop(chip->task);
-+
-+	return 0;
-+}
-+
-+static const struct iio_buffer_setup_ops ina2xx_setup_ops = {
-+	.postenable = &ina2xx_buffer_enable,
-+	.postdisable = &ina2xx_buffer_disable,
-+};
-+
- static int ina2xx_debug_reg(struct iio_dev *indio_dev,
- 			    unsigned reg, unsigned writeval, unsigned *readval)
- {
-@@ -360,6 +467,7 @@ static int ina2xx_probe(struct i2c_client *client,
- {
- 	struct ina2xx_chip_info *chip;
- 	struct iio_dev *indio_dev;
-+	struct iio_buffer *buffer;
- 	int ret;
- 	unsigned int val;
- 
-@@ -402,7 +510,7 @@ static int ina2xx_probe(struct i2c_client *client,
- 
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->info = &ina2xx_info;
--	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
- 
- 	chip->regmap = devm_regmap_init_i2c(client, &ina2xx_regmap_config);
- 	if (IS_ERR(chip->regmap)) {
-@@ -424,6 +532,14 @@ static int ina2xx_probe(struct i2c_client *client,
- 		return -ENODEV;
- 	}
- 
-+	buffer = devm_iio_kfifo_allocate(&indio_dev->dev);
-+	if (!buffer)
-+		return -ENOMEM;
-+
-+	indio_dev->setup_ops = &ina2xx_setup_ops;
-+
-+	iio_device_attach_buffer(indio_dev, buffer);
-+
- 	return iio_device_register(indio_dev);
- }
- 
 -- 
 1.9.1
+
