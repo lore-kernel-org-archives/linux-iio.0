@@ -1,171 +1,103 @@
-Return-Path: <mranostay@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:34122 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751324AbbKKNyQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Nov 2015 08:54:16 -0500
+From: Giuseppe Barba <giuseppe.barba@st.com>
+To: <denis.ciocca@st.com>, <linux-iio@vger.kernel.org>
+CC: <jic23@kernel.org>, Giuseppe Barba <giuseppe.barba@st.com>
+Subject: [V2] iio: st-accel: add support for lis2dh12
+Date: Wed, 11 Nov 2015 14:52:54 +0100
+Message-ID: <1447249974-27442-2-git-send-email-giuseppe.barba@st.com>
+In-Reply-To: <1447249974-27442-1-git-send-email-giuseppe.barba@st.com>
+References: <1447249974-27442-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
-In-Reply-To: <5641E267.6010204@intel.com>
-References: <1447014418-27849-1-git-send-email-mranostay@gmail.com>
-	<1447014418-27849-2-git-send-email-mranostay@gmail.com>
-	<5641E267.6010204@intel.com>
-Date: Wed, 11 Nov 2015 00:51:36 -0800
-Message-ID: <CAKzfze_Zozt4N13jJdAi2C03T57BqNRox3+tANK_hz4d1oiuyw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/1] iio: pulsedlight-lidar-lite: add runtime PM
-From: Matt Ranostay <mranostay@gmail.com>
-To: Adriana Reus <adriana.reus@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, linux-pm@vger.kernel.org,
-	=?UTF-8?Q?Krzysztof_Koz=C5=82owski?= <k.kozlowski@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 10, 2015 at 4:26 AM, Adriana Reus <adriana.reus@intel.com> wrote:
->
->
-> On 08.11.2015 22:26, Matt Ranostay wrote:
->>
->> Add runtime PM support for the lidar-lite module to enable low power
->> mode when last device requested reading is over a second.
->>
->> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->> ---
->>   drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 54
->> ++++++++++++++++++++++-
->>   1 file changed, 53 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> index 961f9f99..1a5481f 100644
->> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> @@ -13,7 +13,7 @@
->>    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->>    * GNU General Public License for more details.
->>    *
->> - * TODO: runtime pm, interrupt mode, and signal strength reporting
->> + * TODO: interrupt mode, and signal strength reporting
->>    */
->>
->>   #include <linux/err.h>
->> @@ -21,6 +21,7 @@
->>   #include <linux/i2c.h>
->>   #include <linux/delay.h>
->>   #include <linux/module.h>
->> +#include <linux/pm_runtime.h>
->>   #include <linux/iio/iio.h>
->>   #include <linux/iio/sysfs.h>
->>   #include <linux/iio/buffer.h>
->> @@ -37,6 +38,7 @@
->>
->>   #define LIDAR_REG_DATA_HBYTE  0x0f
->>   #define LIDAR_REG_DATA_LBYTE  0x10
->> +#define LIDAR_REG_PWR_CONTROL  0x65
->>
->>   #define LIDAR_DRV_NAME "lidar"
->>
->> @@ -90,6 +92,12 @@ static inline int lidar_write_control(struct lidar_data
->> *data, int val)
->>         return i2c_smbus_write_byte_data(data->client, LIDAR_REG_CONTROL,
->> val);
->>   }
->>
->> +static inline int lidar_write_power(struct lidar_data *data, int val)
->> +{
->> +       return i2c_smbus_write_byte_data(data->client,
->> +                                        LIDAR_REG_PWR_CONTROL, val);
->> +}
->> +
->>   static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
->>   {
->>         int ret;
->> @@ -116,6 +124,8 @@ static int lidar_get_measurement(struct lidar_data
->> *data, u16 *reg)
->>         int tries = 10;
->>         int ret;
->>
->> +       pm_runtime_get_sync(&client->dev);
->> +
->>         /* start sample */
->>         ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
->>         if (ret < 0) {
->> @@ -144,6 +154,8 @@ static int lidar_get_measurement(struct lidar_data
->> *data, u16 *reg)
->>                 }
->>                 ret = -EIO;
->>         }
->> +       pm_runtime_mark_last_busy(&client->dev);
->> +       pm_runtime_put_autosuspend(&client->dev);
->>
->>         return ret;
->>   }
->> @@ -243,6 +255,15 @@ static int lidar_probe(struct i2c_client *client,
->>         if (ret)
->>                 goto error_unreg_buffer;
->>
->> +       pm_runtime_set_autosuspend_delay(&client->dev, 1000);
->> +       pm_runtime_use_autosuspend(&client->dev);
->> +
->> +       pm_runtime_set_active(&client->dev);
->
-> pm_runtime_set_active ^ may return an error code.
+This commit add support for STMicroelectronics lis2dh12 accelerometer.
 
-Ah true. But is the return value really needed in this case?
+Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+---
+ Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
+ drivers/iio/accel/st_accel.h                         | 1 +
+ drivers/iio/accel/st_accel_core.c                    | 1 +
+ drivers/iio/accel/st_accel_i2c.c                     | 5 +++++
+ drivers/iio/accel/st_accel_spi.c                     | 1 +
+ 5 files changed, 9 insertions(+)
 
->
->> +       pm_runtime_enable(&client->dev);
->> +
->> +       pm_runtime_mark_last_busy(&client->dev);
->> +       pm_runtime_idle(&client->dev);
->> +
->>         return 0;
->>
->>   error_unreg_buffer:
->> @@ -258,6 +279,9 @@ static int lidar_remove(struct i2c_client *client)
->>         iio_device_unregister(indio_dev);
->>         iio_triggered_buffer_cleanup(indio_dev);
->>
->> +       pm_runtime_disable(&client->dev);
->> +       pm_runtime_set_suspended(&client->dev);
->> +
->>         return 0;
->>   }
->>
->> @@ -273,10 +297,38 @@ static const struct of_device_id lidar_dt_ids[] = {
->>   };
->>   MODULE_DEVICE_TABLE(of, lidar_dt_ids);
->>
->> +#ifdef CONFIG_PM
->> +static int lidar_pm_runtime_suspend(struct device *dev)
->> +{
->> +       struct iio_dev *indio_dev =
->> i2c_get_clientdata(to_i2c_client(dev));
->> +       struct lidar_data *data = iio_priv(indio_dev);
->> +
->> +       return lidar_write_power(data, 0x0f);
->> +}
->> +
->> +static int lidar_pm_runtime_resume(struct device *dev)
->> +{
->> +       struct iio_dev *indio_dev =
->> i2c_get_clientdata(to_i2c_client(dev));
->> +       struct lidar_data *data = iio_priv(indio_dev);
->> +       int ret = lidar_write_power(data, 0);
->> +
->> +       /* regulator and FPGA needs settling time */
->> +       usleep_range(15000, 20000);
->> +
->> +       return ret;
->> +}
->> +#endif
->> +
->> +static const struct dev_pm_ops lidar_pm_ops = {
->> +       SET_RUNTIME_PM_OPS(lidar_pm_runtime_suspend,
->> +                          lidar_pm_runtime_resume, NULL)
->> +};
->> +
->>   static struct i2c_driver lidar_driver = {
->>         .driver = {
->>                 .name   = LIDAR_DRV_NAME,
->>                 .of_match_table = of_match_ptr(lidar_dt_ids),
->> +               .pm     = &lidar_pm_ops,
->>         },
->>         .probe          = lidar_probe,
->>         .remove         = lidar_remove,
->>
->
+diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+index d3ccdb1..d4b87cc 100644
+--- a/Documentation/devicetree/bindings/iio/st-sensors.txt
++++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+@@ -36,6 +36,7 @@ Accelerometers:
+ - st,lsm303dlm-accel
+ - st,lsm330-accel
+ - st,lsm303agr-accel
++- st,lis2dh12-accel
+ 
+ Gyroscopes:
+ - st,l3g4200d-gyro
+diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+index 468f21f..5d4a189 100644
+--- a/drivers/iio/accel/st_accel.h
++++ b/drivers/iio/accel/st_accel.h
+@@ -27,6 +27,7 @@
+ #define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
+ #define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
+ #define LSM303AGR_ACCEL_DEV_NAME	"lsm303agr_accel"
++#define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12_accel"
+ 
+ /**
+ * struct st_sensors_platform_data - default accel platform data
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index dab8b76..9d973f1 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -234,6 +234,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			[3] = LSM330DL_ACCEL_DEV_NAME,
+ 			[4] = LSM330DLC_ACCEL_DEV_NAME,
+ 			[5] = LSM303AGR_ACCEL_DEV_NAME,
++			[6] = LIS2DH12_ACCEL_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+ 		.odr = {
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index 8b9cc84..294a32f 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -72,6 +72,10 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lsm303agr-accel",
+ 		.data = LSM303AGR_ACCEL_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lis2dh12-accel",
++		.data = LIS2DH12_ACCEL_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_accel_of_match);
+@@ -121,6 +125,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+ 	{ LSM303DLM_ACCEL_DEV_NAME },
+ 	{ LSM330_ACCEL_DEV_NAME },
+ 	{ LSM303AGR_ACCEL_DEV_NAME },
++	{ LIS2DH12_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
+index 54b61a3..e82bedf 100644
+--- a/drivers/iio/accel/st_accel_spi.c
++++ b/drivers/iio/accel/st_accel_spi.c
+@@ -58,6 +58,7 @@ static const struct spi_device_id st_accel_id_table[] = {
+ 	{ LSM303DLM_ACCEL_DEV_NAME },
+ 	{ LSM330_ACCEL_DEV_NAME },
+ 	{ LSM303AGR_ACCEL_DEV_NAME },
++	{ LIS2DH12_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_accel_id_table);
+-- 
+1.9.1
+
