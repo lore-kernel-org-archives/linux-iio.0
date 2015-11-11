@@ -1,113 +1,43 @@
-Return-Path: <daniel.baluta@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <1447249974-27442-2-git-send-email-giuseppe.barba@st.com>
-References: <1447249974-27442-1-git-send-email-giuseppe.barba@st.com>
-	<1447249974-27442-2-git-send-email-giuseppe.barba@st.com>
-Date: Wed, 11 Nov 2015 16:45:05 +0200
-Message-ID: <CAEnQRZDaZTzVCfVmBgU_u5s+2MBVnXUrGKE8VCzA17JsJW9Jrw@mail.gmail.com>
+Return-Path: <giuseppe.barba@st.com>
+From: Giuseppe BARBA <giuseppe.barba@st.com>
+To: Daniel Baluta <daniel.baluta@gmail.com>
+CC: Denis CIOCCA <denis.ciocca@st.com>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Date: Wed, 11 Nov 2015 16:25:35 +0100
 Subject: Re: [V2] iio: st-accel: add support for lis2dh12
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Giuseppe Barba <giuseppe.barba@st.com>
-Cc: Denis Ciocca <denis.ciocca@st.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Message-ID: <56435DEF.60800@st.com>
+References: <1447249974-27442-1-git-send-email-giuseppe.barba@st.com>
+ <1447249974-27442-2-git-send-email-giuseppe.barba@st.com>
+ <CAEnQRZDaZTzVCfVmBgU_u5s+2MBVnXUrGKE8VCzA17JsJW9Jrw@mail.gmail.com>
+ <564357D5.6030304@st.com>
+ <CAEnQRZBP50FPFMoewvsdcA7KA2QQg7zW2k5NFyJcbyyDT_LUzQ@mail.gmail.com>
+In-Reply-To: <CAEnQRZBP50FPFMoewvsdcA7KA2QQg7zW2k5NFyJcbyyDT_LUzQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Nov 11, 2015 at 3:52 PM, Giuseppe Barba <giuseppe.barba@st.com> wrote:
-> This commit add support for STMicroelectronics lis2dh12 accelerometer.
-
-Link to datasheet?
-
-The subject should start with [PATCH v2] ...
-
->
-> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
-> ---
-
-Here you should add a short changelog with what you changed since v1.
-
->  Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
->  drivers/iio/accel/st_accel.h                         | 1 +
->  drivers/iio/accel/st_accel_core.c                    | 1 +
->  drivers/iio/accel/st_accel_i2c.c                     | 5 +++++
->  drivers/iio/accel/st_accel_spi.c                     | 1 +
->  5 files changed, 9 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> index d3ccdb1..d4b87cc 100644
-> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> @@ -36,6 +36,7 @@ Accelerometers:
->  - st,lsm303dlm-accel
->  - st,lsm330-accel
->  - st,lsm303agr-accel
-> +- st,lis2dh12-accel
->
->  Gyroscopes:
->  - st,l3g4200d-gyro
-> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-> index 468f21f..5d4a189 100644
-> --- a/drivers/iio/accel/st_accel.h
-> +++ b/drivers/iio/accel/st_accel.h
-> @@ -27,6 +27,7 @@
->  #define LSM303DLM_ACCEL_DEV_NAME       "lsm303dlm_accel"
->  #define LSM330_ACCEL_DEV_NAME          "lsm330_accel"
->  #define LSM303AGR_ACCEL_DEV_NAME       "lsm303agr_accel"
-> +#define LIS2DH12_ACCEL_DEV_NAME                "lis2dh12_accel"
->
->  /**
->  * struct st_sensors_platform_data - default accel platform data
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index dab8b76..9d973f1 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -234,6 +234,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->                         [3] = LSM330DL_ACCEL_DEV_NAME,
->                         [4] = LSM330DLC_ACCEL_DEV_NAME,
->                         [5] = LSM303AGR_ACCEL_DEV_NAME,
-> +                       [6] = LIS2DH12_ACCEL_DEV_NAME,
->                 },
->                 .ch = (struct iio_chan_spec *)st_accel_12bit_channels,
->                 .odr = {
-> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-> index 8b9cc84..294a32f 100644
-> --- a/drivers/iio/accel/st_accel_i2c.c
-> +++ b/drivers/iio/accel/st_accel_i2c.c
-> @@ -72,6 +72,10 @@ static const struct of_device_id st_accel_of_match[] = {
->                 .compatible = "st,lsm303agr-accel",
->                 .data = LSM303AGR_ACCEL_DEV_NAME,
->         },
-> +       {
-> +               .compatible = "st,lis2dh12-accel",
-> +               .data = LIS2DH12_ACCEL_DEV_NAME,
-> +       },
->         {},
->  };
->  MODULE_DEVICE_TABLE(of, st_accel_of_match);
-> @@ -121,6 +125,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
->         { LSM303DLM_ACCEL_DEV_NAME },
->         { LSM330_ACCEL_DEV_NAME },
->         { LSM303AGR_ACCEL_DEV_NAME },
-> +       { LIS2DH12_ACCEL_DEV_NAME },
->         {},
->  };
->  MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
-> diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-> index 54b61a3..e82bedf 100644
-> --- a/drivers/iio/accel/st_accel_spi.c
-> +++ b/drivers/iio/accel/st_accel_spi.c
-> @@ -58,6 +58,7 @@ static const struct spi_device_id st_accel_id_table[] = {
->         { LSM303DLM_ACCEL_DEV_NAME },
->         { LSM330_ACCEL_DEV_NAME },
->         { LSM303AGR_ACCEL_DEV_NAME },
-> +       { LIS2DH12_ACCEL_DEV_NAME },
->         {},
->  };
->  MODULE_DEVICE_TABLE(spi, st_accel_id_table);
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+SGkgRGFuaWVsLA0KDQpPbiAxMS8xMS8yMDE1IDE2OjAzLCBEYW5pZWwgQmFsdXRhIHdyb3RlOg0K
+PiBPbiBXZWQsIE5vdiAxMSwgMjAxNSBhdCA0OjU5IFBNLCBHaXVzZXBwZSBCQVJCQSA8Z2l1c2Vw
+cGUuYmFyYmFAc3QuY29tPiB3cm90ZToNCj4+IEhpIERhbmllbCwNCj4+DQo+PiB0aGFuayB5b3Ug
+Zm9yIHRoZSByZXZpZXcuDQo+Pg0KPj4gT24gMTEvMTEvMjAxNSAxNTo0NSwgRGFuaWVsIEJhbHV0
+YSB3cm90ZToNCj4+PiBPbiBXZWQsIE5vdiAxMSwgMjAxNSBhdCAzOjUyIFBNLCBHaXVzZXBwZSBC
+YXJiYSA8Z2l1c2VwcGUuYmFyYmFAc3QuY29tPiB3cm90ZToNCj4+Pj4gVGhpcyBjb21taXQgYWRk
+IHN1cHBvcnQgZm9yIFNUTWljcm9lbGVjdHJvbmljcyBsaXMyZGgxMiBhY2NlbGVyb21ldGVyLg0K
+Pj4+DQo+Pj4gTGluayB0byBkYXRhc2hlZXQ/DQo+Pg0KPj4gVGhlIGRhdGFzaGVldCBsaW5rIGlz
+Og0KPj4NCj4+IGh0dHA6Ly93d3cuc3QuY29tL3N0LXdlYi11aS9zdGF0aWMvYWN0aXZlL2VuL3Jl
+c291cmNlL3RlY2huaWNhbC9kb2N1bWVudC9kYXRhc2hlZXQvRE0wMDA5MTUxMy5wZGYNCj4NCj4g
+Q2FyZSB0byBzZW5kIHYzIHdpdGggdGhlIGNvbW1pdCBtZXNzYWdlIHVwZGF0ZWQgd2l0aCB0aGUg
+bGluayB0byBkYXRhc2hlZXQ/DQoNClllcywgZm9yIHN1cmUuDQoNCj4+DQo+Pj4NCj4+PiBUaGUg
+c3ViamVjdCBzaG91bGQgc3RhcnQgd2l0aCBbUEFUQ0ggdjJdIC4uLg0KPj4+DQo+Pj4+DQo+Pj4+
+IFNpZ25lZC1vZmYtYnk6IEdpdXNlcHBlIEJhcmJhIDxnaXVzZXBwZS5iYXJiYUBzdC5jb20+DQo+
+Pj4+IC0tLQ0KPj4+DQo+Pj4gSGVyZSB5b3Ugc2hvdWxkIGFkZCBhIHNob3J0IGNoYW5nZWxvZyB3
+aXRoIHdoYXQgeW91IGNoYW5nZWQgc2luY2UgdjEuDQo+Pg0KPj4gWWVzIEkgY2FuIGRvIHRoYXQg
+aWYgbmVlZGVkIGJ1dCBpdCBpcyBqdXN0IGEgdHlwbyBvbg0KPj4gTElTMkRIMTJfQUNDRUxfREVW
+X05BTUUgbWFjcm8gd2hlcmUgSSd2ZSB1c2VkIGEgbWludXMgaW5zdGVhZCBvZg0KPj4gdW5kZXJz
+Y29yZSBjaGFyLg0KPg0KPiBVc3VhbGx5LCBpdCdzIGVhc2llciBmb3IgcmV2aWV3ZXJzIHRvIGNo
+ZWNrIHlvdXIgcGF0Y2ggaGF2aW5nDQo+IHRoZSBjaGFuZ2UgbG9nIGV2ZW4gaWYgdGhlcmUgaXMg
+YSBtaW5vciBjaGFuZ2UgbGlrZSB5b3Vycy4NCg0KSSdtIGFncmVlLg0KSSdsbCBzZW5kIGFnYWlu
+IHRoZSBjb21taXQgZml4ZWQgd2l0aCB5b3VyIHRpcHMuDQoNCnRoYW5rcywNCkdpdXNlcHBlDQoN
+Cj4NCj4gdGhhbmtzLA0KPiBEYW5pZWwuDQo+
