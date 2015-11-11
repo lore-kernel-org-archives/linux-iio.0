@@ -1,43 +1,106 @@
-Return-Path: <giuseppe.barba@st.com>
-From: Giuseppe BARBA <giuseppe.barba@st.com>
-To: Daniel Baluta <daniel.baluta@gmail.com>
-CC: Denis CIOCCA <denis.ciocca@st.com>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 11 Nov 2015 16:25:35 +0100
-Subject: Re: [V2] iio: st-accel: add support for lis2dh12
-Message-ID: <56435DEF.60800@st.com>
-References: <1447249974-27442-1-git-send-email-giuseppe.barba@st.com>
- <1447249974-27442-2-git-send-email-giuseppe.barba@st.com>
- <CAEnQRZDaZTzVCfVmBgU_u5s+2MBVnXUrGKE8VCzA17JsJW9Jrw@mail.gmail.com>
- <564357D5.6030304@st.com>
- <CAEnQRZBP50FPFMoewvsdcA7KA2QQg7zW2k5NFyJcbyyDT_LUzQ@mail.gmail.com>
-In-Reply-To: <CAEnQRZBP50FPFMoewvsdcA7KA2QQg7zW2k5NFyJcbyyDT_LUzQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:3642 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750862AbbKKPad (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Nov 2015 10:30:33 -0500
+From: Giuseppe Barba <giuseppe.barba@st.com>
+To: <denis.ciocca@st.com>, <linux-iio@vger.kernel.org>,
+	<daniel.baluta@gmail.com>
+CC: <jic23@kernel.org>, Giuseppe Barba <giuseppe.barba@st.com>
+Subject: [PATCH v3] iio: st-accel: add support for lis2dh12
+Date: Wed, 11 Nov 2015 16:29:36 +0100
+Message-ID: <1447255776-11101-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-SGkgRGFuaWVsLA0KDQpPbiAxMS8xMS8yMDE1IDE2OjAzLCBEYW5pZWwgQmFsdXRhIHdyb3RlOg0K
-PiBPbiBXZWQsIE5vdiAxMSwgMjAxNSBhdCA0OjU5IFBNLCBHaXVzZXBwZSBCQVJCQSA8Z2l1c2Vw
-cGUuYmFyYmFAc3QuY29tPiB3cm90ZToNCj4+IEhpIERhbmllbCwNCj4+DQo+PiB0aGFuayB5b3Ug
-Zm9yIHRoZSByZXZpZXcuDQo+Pg0KPj4gT24gMTEvMTEvMjAxNSAxNTo0NSwgRGFuaWVsIEJhbHV0
-YSB3cm90ZToNCj4+PiBPbiBXZWQsIE5vdiAxMSwgMjAxNSBhdCAzOjUyIFBNLCBHaXVzZXBwZSBC
-YXJiYSA8Z2l1c2VwcGUuYmFyYmFAc3QuY29tPiB3cm90ZToNCj4+Pj4gVGhpcyBjb21taXQgYWRk
-IHN1cHBvcnQgZm9yIFNUTWljcm9lbGVjdHJvbmljcyBsaXMyZGgxMiBhY2NlbGVyb21ldGVyLg0K
-Pj4+DQo+Pj4gTGluayB0byBkYXRhc2hlZXQ/DQo+Pg0KPj4gVGhlIGRhdGFzaGVldCBsaW5rIGlz
-Og0KPj4NCj4+IGh0dHA6Ly93d3cuc3QuY29tL3N0LXdlYi11aS9zdGF0aWMvYWN0aXZlL2VuL3Jl
-c291cmNlL3RlY2huaWNhbC9kb2N1bWVudC9kYXRhc2hlZXQvRE0wMDA5MTUxMy5wZGYNCj4NCj4g
-Q2FyZSB0byBzZW5kIHYzIHdpdGggdGhlIGNvbW1pdCBtZXNzYWdlIHVwZGF0ZWQgd2l0aCB0aGUg
-bGluayB0byBkYXRhc2hlZXQ/DQoNClllcywgZm9yIHN1cmUuDQoNCj4+DQo+Pj4NCj4+PiBUaGUg
-c3ViamVjdCBzaG91bGQgc3RhcnQgd2l0aCBbUEFUQ0ggdjJdIC4uLg0KPj4+DQo+Pj4+DQo+Pj4+
-IFNpZ25lZC1vZmYtYnk6IEdpdXNlcHBlIEJhcmJhIDxnaXVzZXBwZS5iYXJiYUBzdC5jb20+DQo+
-Pj4+IC0tLQ0KPj4+DQo+Pj4gSGVyZSB5b3Ugc2hvdWxkIGFkZCBhIHNob3J0IGNoYW5nZWxvZyB3
-aXRoIHdoYXQgeW91IGNoYW5nZWQgc2luY2UgdjEuDQo+Pg0KPj4gWWVzIEkgY2FuIGRvIHRoYXQg
-aWYgbmVlZGVkIGJ1dCBpdCBpcyBqdXN0IGEgdHlwbyBvbg0KPj4gTElTMkRIMTJfQUNDRUxfREVW
-X05BTUUgbWFjcm8gd2hlcmUgSSd2ZSB1c2VkIGEgbWludXMgaW5zdGVhZCBvZg0KPj4gdW5kZXJz
-Y29yZSBjaGFyLg0KPg0KPiBVc3VhbGx5LCBpdCdzIGVhc2llciBmb3IgcmV2aWV3ZXJzIHRvIGNo
-ZWNrIHlvdXIgcGF0Y2ggaGF2aW5nDQo+IHRoZSBjaGFuZ2UgbG9nIGV2ZW4gaWYgdGhlcmUgaXMg
-YSBtaW5vciBjaGFuZ2UgbGlrZSB5b3Vycy4NCg0KSSdtIGFncmVlLg0KSSdsbCBzZW5kIGFnYWlu
-IHRoZSBjb21taXQgZml4ZWQgd2l0aCB5b3VyIHRpcHMuDQoNCnRoYW5rcywNCkdpdXNlcHBlDQoN
-Cj4NCj4gdGhhbmtzLA0KPiBEYW5pZWwuDQo+
+This commit add support for STMicroelectronics lis2dh12 accelerometer.
+Datasheet for this device can be found here:
+
+http://www.st.com/st-web-ui/static/active/en/resource/technical/
+document/datasheet/DM00091513.pdf
+
+Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+---
+ Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
+ drivers/iio/accel/st_accel.h                         | 1 +
+ drivers/iio/accel/st_accel_core.c                    | 1 +
+ drivers/iio/accel/st_accel_i2c.c                     | 5 +++++
+ drivers/iio/accel/st_accel_spi.c                     | 1 +
+ 5 files changed, 9 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+index d3ccdb1..d4b87cc 100644
+--- a/Documentation/devicetree/bindings/iio/st-sensors.txt
++++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+@@ -36,6 +36,7 @@ Accelerometers:
+ - st,lsm303dlm-accel
+ - st,lsm330-accel
+ - st,lsm303agr-accel
++- st,lis2dh12-accel
+ 
+ Gyroscopes:
+ - st,l3g4200d-gyro
+diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+index 468f21f..5d4a189 100644
+--- a/drivers/iio/accel/st_accel.h
++++ b/drivers/iio/accel/st_accel.h
+@@ -27,6 +27,7 @@
+ #define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
+ #define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
+ #define LSM303AGR_ACCEL_DEV_NAME	"lsm303agr_accel"
++#define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12_accel"
+ 
+ /**
+ * struct st_sensors_platform_data - default accel platform data
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index dab8b76..9d973f1 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -234,6 +234,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			[3] = LSM330DL_ACCEL_DEV_NAME,
+ 			[4] = LSM330DLC_ACCEL_DEV_NAME,
+ 			[5] = LSM303AGR_ACCEL_DEV_NAME,
++			[6] = LIS2DH12_ACCEL_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+ 		.odr = {
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index 8b9cc84..294a32f 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -72,6 +72,10 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lsm303agr-accel",
+ 		.data = LSM303AGR_ACCEL_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lis2dh12-accel",
++		.data = LIS2DH12_ACCEL_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_accel_of_match);
+@@ -121,6 +125,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+ 	{ LSM303DLM_ACCEL_DEV_NAME },
+ 	{ LSM330_ACCEL_DEV_NAME },
+ 	{ LSM303AGR_ACCEL_DEV_NAME },
++	{ LIS2DH12_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
+index 54b61a3..e82bedf 100644
+--- a/drivers/iio/accel/st_accel_spi.c
++++ b/drivers/iio/accel/st_accel_spi.c
+@@ -58,6 +58,7 @@ static const struct spi_device_id st_accel_id_table[] = {
+ 	{ LSM303DLM_ACCEL_DEV_NAME },
+ 	{ LSM330_ACCEL_DEV_NAME },
+ 	{ LSM303AGR_ACCEL_DEV_NAME },
++	{ LIS2DH12_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_accel_id_table);
+-- 
+1.9.1
+
