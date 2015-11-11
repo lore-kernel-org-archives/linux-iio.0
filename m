@@ -1,102 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:47683 "EHLO
-	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752280AbbKKPAW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Nov 2015 10:00:22 -0500
-From: Giuseppe BARBA <giuseppe.barba@st.com>
-To: Daniel Baluta <daniel.baluta@gmail.com>
-CC: Denis CIOCCA <denis.ciocca@st.com>,
+Received: from mail-wm0-f51.google.com ([74.125.82.51]:38273 "EHLO
+	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752113AbbKKPDg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Nov 2015 10:03:36 -0500
+Received: by wmec201 with SMTP id c201so50403110wme.1
+        for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2015 07:03:34 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <564357D5.6030304@st.com>
+References: <1447249974-27442-1-git-send-email-giuseppe.barba@st.com>
+	<1447249974-27442-2-git-send-email-giuseppe.barba@st.com>
+	<CAEnQRZDaZTzVCfVmBgU_u5s+2MBVnXUrGKE8VCzA17JsJW9Jrw@mail.gmail.com>
+	<564357D5.6030304@st.com>
+Date: Wed, 11 Nov 2015 17:03:34 +0200
+Message-ID: <CAEnQRZBP50FPFMoewvsdcA7KA2QQg7zW2k5NFyJcbyyDT_LUzQ@mail.gmail.com>
+Subject: Re: [V2] iio: st-accel: add support for lis2dh12
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Giuseppe BARBA <giuseppe.barba@st.com>
+Cc: Denis CIOCCA <denis.ciocca@st.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 11 Nov 2015 15:59:33 +0100
-Subject: Re: [V2] iio: st-accel: add support for lis2dh12
-Message-ID: <564357D5.6030304@st.com>
-References: <1447249974-27442-1-git-send-email-giuseppe.barba@st.com>
- <1447249974-27442-2-git-send-email-giuseppe.barba@st.com>
- <CAEnQRZDaZTzVCfVmBgU_u5s+2MBVnXUrGKE8VCzA17JsJW9Jrw@mail.gmail.com>
-In-Reply-To: <CAEnQRZDaZTzVCfVmBgU_u5s+2MBVnXUrGKE8VCzA17JsJW9Jrw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SGkgRGFuaWVsLA0KDQp0aGFuayB5b3UgZm9yIHRoZSByZXZpZXcuDQoNCk9uIDExLzExLzIwMTUg
-MTU6NDUsIERhbmllbCBCYWx1dGEgd3JvdGU6DQo+IE9uIFdlZCwgTm92IDExLCAyMDE1IGF0IDM6
-NTIgUE0sIEdpdXNlcHBlIEJhcmJhIDxnaXVzZXBwZS5iYXJiYUBzdC5jb20+IHdyb3RlOg0KPj4g
-VGhpcyBjb21taXQgYWRkIHN1cHBvcnQgZm9yIFNUTWljcm9lbGVjdHJvbmljcyBsaXMyZGgxMiBh
-Y2NlbGVyb21ldGVyLg0KPg0KPiBMaW5rIHRvIGRhdGFzaGVldD8NCg0KVGhlIGRhdGFzaGVldCBs
-aW5rIGlzOg0KDQpodHRwOi8vd3d3LnN0LmNvbS9zdC13ZWItdWkvc3RhdGljL2FjdGl2ZS9lbi9y
-ZXNvdXJjZS90ZWNobmljYWwvZG9jdW1lbnQvZGF0YXNoZWV0L0RNMDAwOTE1MTMucGRmDQoNCj4N
-Cj4gVGhlIHN1YmplY3Qgc2hvdWxkIHN0YXJ0IHdpdGggW1BBVENIIHYyXSAuLi4NCj4NCj4+DQo+
-PiBTaWduZWQtb2ZmLWJ5OiBHaXVzZXBwZSBCYXJiYSA8Z2l1c2VwcGUuYmFyYmFAc3QuY29tPg0K
-Pj4gLS0tDQo+DQo+IEhlcmUgeW91IHNob3VsZCBhZGQgYSBzaG9ydCBjaGFuZ2Vsb2cgd2l0aCB3
-aGF0IHlvdSBjaGFuZ2VkIHNpbmNlIHYxLg0KDQpZZXMgSSBjYW4gZG8gdGhhdCBpZiBuZWVkZWQg
-YnV0IGl0IGlzIGp1c3QgYSB0eXBvIG9uIA0KTElTMkRIMTJfQUNDRUxfREVWX05BTUUgbWFjcm8g
-d2hlcmUgSSd2ZSB1c2VkIGEgbWludXMgaW5zdGVhZCBvZiANCnVuZGVyc2NvcmUgY2hhci4NCg0K
-Pg0KPj4gICBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3N0LXNlbnNvcnMu
-dHh0IHwgMSArDQo+PiAgIGRyaXZlcnMvaWlvL2FjY2VsL3N0X2FjY2VsLmggICAgICAgICAgICAg
-ICAgICAgICAgICAgfCAxICsNCj4+ICAgZHJpdmVycy9paW8vYWNjZWwvc3RfYWNjZWxfY29yZS5j
-ICAgICAgICAgICAgICAgICAgICB8IDEgKw0KPj4gICBkcml2ZXJzL2lpby9hY2NlbC9zdF9hY2Nl
-bF9pMmMuYyAgICAgICAgICAgICAgICAgICAgIHwgNSArKysrKw0KPj4gICBkcml2ZXJzL2lpby9h
-Y2NlbC9zdF9hY2NlbF9zcGkuYyAgICAgICAgICAgICAgICAgICAgIHwgMSArDQo+PiAgIDUgZmls
-ZXMgY2hhbmdlZCwgOSBpbnNlcnRpb25zKCspDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL0RvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vc3Qtc2Vuc29ycy50eHQgYi9Eb2N1bWVudGF0
-aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3N0LXNlbnNvcnMudHh0DQo+PiBpbmRleCBkM2Nj
-ZGIxLi5kNGI4N2NjIDEwMDY0NA0KPj4gLS0tIGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
-bmRpbmdzL2lpby9zdC1zZW5zb3JzLnR4dA0KPj4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0
-cmVlL2JpbmRpbmdzL2lpby9zdC1zZW5zb3JzLnR4dA0KPj4gQEAgLTM2LDYgKzM2LDcgQEAgQWNj
-ZWxlcm9tZXRlcnM6DQo+PiAgIC0gc3QsbHNtMzAzZGxtLWFjY2VsDQo+PiAgIC0gc3QsbHNtMzMw
-LWFjY2VsDQo+PiAgIC0gc3QsbHNtMzAzYWdyLWFjY2VsDQo+PiArLSBzdCxsaXMyZGgxMi1hY2Nl
-bA0KPj4NCj4+ICAgR3lyb3Njb3BlczoNCj4+ICAgLSBzdCxsM2c0MjAwZC1neXJvDQo+PiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9paW8vYWNjZWwvc3RfYWNjZWwuaCBiL2RyaXZlcnMvaWlvL2FjY2Vs
-L3N0X2FjY2VsLmgNCj4+IGluZGV4IDQ2OGYyMWYuLjVkNGExODkgMTAwNjQ0DQo+PiAtLS0gYS9k
-cml2ZXJzL2lpby9hY2NlbC9zdF9hY2NlbC5oDQo+PiArKysgYi9kcml2ZXJzL2lpby9hY2NlbC9z
-dF9hY2NlbC5oDQo+PiBAQCAtMjcsNiArMjcsNyBAQA0KPj4gICAjZGVmaW5lIExTTTMwM0RMTV9B
-Q0NFTF9ERVZfTkFNRSAgICAgICAibHNtMzAzZGxtX2FjY2VsIg0KPj4gICAjZGVmaW5lIExTTTMz
-MF9BQ0NFTF9ERVZfTkFNRSAgICAgICAgICAibHNtMzMwX2FjY2VsIg0KPj4gICAjZGVmaW5lIExT
-TTMwM0FHUl9BQ0NFTF9ERVZfTkFNRSAgICAgICAibHNtMzAzYWdyX2FjY2VsIg0KPj4gKyNkZWZp
-bmUgTElTMkRIMTJfQUNDRUxfREVWX05BTUUgICAgICAgICAgICAgICAgImxpczJkaDEyX2FjY2Vs
-Ig0KPj4NCj4+ICAgLyoqDQo+PiAgICogc3RydWN0IHN0X3NlbnNvcnNfcGxhdGZvcm1fZGF0YSAt
-IGRlZmF1bHQgYWNjZWwgcGxhdGZvcm0gZGF0YQ0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlv
-L2FjY2VsL3N0X2FjY2VsX2NvcmUuYyBiL2RyaXZlcnMvaWlvL2FjY2VsL3N0X2FjY2VsX2NvcmUu
-Yw0KPj4gaW5kZXggZGFiOGI3Ni4uOWQ5NzNmMSAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvaWlv
-L2FjY2VsL3N0X2FjY2VsX2NvcmUuYw0KPj4gKysrIGIvZHJpdmVycy9paW8vYWNjZWwvc3RfYWNj
-ZWxfY29yZS5jDQo+PiBAQCAtMjM0LDYgKzIzNCw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgc3Rf
-c2Vuc29yX3NldHRpbmdzIHN0X2FjY2VsX3NlbnNvcnNfc2V0dGluZ3NbXSA9IHsNCj4+ICAgICAg
-ICAgICAgICAgICAgICAgICAgICBbM10gPSBMU00zMzBETF9BQ0NFTF9ERVZfTkFNRSwNCj4+ICAg
-ICAgICAgICAgICAgICAgICAgICAgICBbNF0gPSBMU00zMzBETENfQUNDRUxfREVWX05BTUUsDQo+
-PiAgICAgICAgICAgICAgICAgICAgICAgICAgWzVdID0gTFNNMzAzQUdSX0FDQ0VMX0RFVl9OQU1F
-LA0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgWzZdID0gTElTMkRIMTJfQUNDRUxfREVWX05B
-TUUsDQo+PiAgICAgICAgICAgICAgICAgIH0sDQo+PiAgICAgICAgICAgICAgICAgIC5jaCA9IChz
-dHJ1Y3QgaWlvX2NoYW5fc3BlYyAqKXN0X2FjY2VsXzEyYml0X2NoYW5uZWxzLA0KPj4gICAgICAg
-ICAgICAgICAgICAub2RyID0gew0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FjY2VsL3N0
-X2FjY2VsX2kyYy5jIGIvZHJpdmVycy9paW8vYWNjZWwvc3RfYWNjZWxfaTJjLmMNCj4+IGluZGV4
-IDhiOWNjODQuLjI5NGEzMmYgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL2lpby9hY2NlbC9zdF9h
-Y2NlbF9pMmMuYw0KPj4gKysrIGIvZHJpdmVycy9paW8vYWNjZWwvc3RfYWNjZWxfaTJjLmMNCj4+
-IEBAIC03Miw2ICs3MiwxMCBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCBzdF9h
-Y2NlbF9vZl9tYXRjaFtdID0gew0KPj4gICAgICAgICAgICAgICAgICAuY29tcGF0aWJsZSA9ICJz
-dCxsc20zMDNhZ3ItYWNjZWwiLA0KPj4gICAgICAgICAgICAgICAgICAuZGF0YSA9IExTTTMwM0FH
-Ul9BQ0NFTF9ERVZfTkFNRSwNCj4+ICAgICAgICAgIH0sDQo+PiArICAgICAgIHsNCj4+ICsgICAg
-ICAgICAgICAgICAuY29tcGF0aWJsZSA9ICJzdCxsaXMyZGgxMi1hY2NlbCIsDQo+PiArICAgICAg
-ICAgICAgICAgLmRhdGEgPSBMSVMyREgxMl9BQ0NFTF9ERVZfTkFNRSwNCj4+ICsgICAgICAgfSwN
-Cj4+ICAgICAgICAgIHt9LA0KPj4gICB9Ow0KPj4gICBNT0RVTEVfREVWSUNFX1RBQkxFKG9mLCBz
-dF9hY2NlbF9vZl9tYXRjaCk7DQo+PiBAQCAtMTIxLDYgKzEyNSw3IEBAIHN0YXRpYyBjb25zdCBz
-dHJ1Y3QgaTJjX2RldmljZV9pZCBzdF9hY2NlbF9pZF90YWJsZVtdID0gew0KPj4gICAgICAgICAg
-eyBMU00zMDNETE1fQUNDRUxfREVWX05BTUUgfSwNCj4+ICAgICAgICAgIHsgTFNNMzMwX0FDQ0VM
-X0RFVl9OQU1FIH0sDQo+PiAgICAgICAgICB7IExTTTMwM0FHUl9BQ0NFTF9ERVZfTkFNRSB9LA0K
-Pj4gKyAgICAgICB7IExJUzJESDEyX0FDQ0VMX0RFVl9OQU1FIH0sDQo+PiAgICAgICAgICB7fSwN
-Cj4+ICAgfTsNCj4+ICAgTU9EVUxFX0RFVklDRV9UQUJMRShpMmMsIHN0X2FjY2VsX2lkX3RhYmxl
-KTsNCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9hY2NlbC9zdF9hY2NlbF9zcGkuYyBiL2Ry
-aXZlcnMvaWlvL2FjY2VsL3N0X2FjY2VsX3NwaS5jDQo+PiBpbmRleCA1NGI2MWEzLi5lODJiZWRm
-IDEwMDY0NA0KPj4gLS0tIGEvZHJpdmVycy9paW8vYWNjZWwvc3RfYWNjZWxfc3BpLmMNCj4+ICsr
-KyBiL2RyaXZlcnMvaWlvL2FjY2VsL3N0X2FjY2VsX3NwaS5jDQo+PiBAQCAtNTgsNiArNTgsNyBA
-QCBzdGF0aWMgY29uc3Qgc3RydWN0IHNwaV9kZXZpY2VfaWQgc3RfYWNjZWxfaWRfdGFibGVbXSA9
-IHsNCj4+ICAgICAgICAgIHsgTFNNMzAzRExNX0FDQ0VMX0RFVl9OQU1FIH0sDQo+PiAgICAgICAg
-ICB7IExTTTMzMF9BQ0NFTF9ERVZfTkFNRSB9LA0KPj4gICAgICAgICAgeyBMU00zMDNBR1JfQUND
-RUxfREVWX05BTUUgfSwNCj4+ICsgICAgICAgeyBMSVMyREgxMl9BQ0NFTF9ERVZfTkFNRSB9LA0K
-Pj4gICAgICAgICAge30sDQo+PiAgIH07DQo+PiAgIE1PRFVMRV9ERVZJQ0VfVEFCTEUoc3BpLCBz
-dF9hY2NlbF9pZF90YWJsZSk7DQo+PiAtLQ0KPj4gMS45LjENCj4+DQo+PiAtLQ0KPj4gVG8gdW5z
-dWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNlbmQgdGhlIGxpbmUgInVuc3Vic2NyaWJlIGxpbnV4
-LWlpbyIgaW4NCj4+IHRoZSBib2R5IG9mIGEgbWVzc2FnZSB0byBtYWpvcmRvbW9Admdlci5rZXJu
-ZWwub3JnDQo+PiBNb3JlIG1ham9yZG9tbyBpbmZvIGF0ICBodHRwOi8vdmdlci5rZXJuZWwub3Jn
-L21ham9yZG9tby1pbmZvLmh0bWw=
+On Wed, Nov 11, 2015 at 4:59 PM, Giuseppe BARBA <giuseppe.barba@st.com> wrote:
+> Hi Daniel,
+>
+> thank you for the review.
+>
+> On 11/11/2015 15:45, Daniel Baluta wrote:
+>> On Wed, Nov 11, 2015 at 3:52 PM, Giuseppe Barba <giuseppe.barba@st.com> wrote:
+>>> This commit add support for STMicroelectronics lis2dh12 accelerometer.
+>>
+>> Link to datasheet?
+>
+> The datasheet link is:
+>
+> http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00091513.pdf
+
+Care to send v3 with the commit message updated with the link to datasheet?
+>
+>>
+>> The subject should start with [PATCH v2] ...
+>>
+>>>
+>>> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+>>> ---
+>>
+>> Here you should add a short changelog with what you changed since v1.
+>
+> Yes I can do that if needed but it is just a typo on
+> LIS2DH12_ACCEL_DEV_NAME macro where I've used a minus instead of
+> underscore char.
+
+Usually, it's easier for reviewers to check your patch having
+the change log even if there is a minor change like yours.
+
+thanks,
+Daniel.
