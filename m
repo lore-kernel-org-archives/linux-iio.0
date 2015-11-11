@@ -1,18 +1,27 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:61311 "EHLO
-	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750921AbbKKNxw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Nov 2015 08:53:52 -0500
-From: Giuseppe Barba <giuseppe.barba@st.com>
-To: <denis.ciocca@st.com>, <linux-iio@vger.kernel.org>
-CC: <jic23@kernel.org>
-Subject: Add lis2dh12 to st-sensor driver
-Date: Wed, 11 Nov 2015 14:52:53 +0100
-Message-ID: <1447249974-27442-1-git-send-email-giuseppe.barba@st.com>
+Return-Path: <giuseppe.barba@st.com>
+From: Giuseppe BARBA <giuseppe.barba@st.com>
+To: Daniel Baluta <daniel.baluta@gmail.com>
+CC: Denis CIOCCA <denis.ciocca@st.com>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Date: Wed, 11 Nov 2015 15:55:48 +0100
+Subject: Re: Add lis2dh12 to st-sensor driver
+Message-ID: <564356F4.1050207@st.com>
+References: <1447249974-27442-1-git-send-email-giuseppe.barba@st.com>
+ <CAEnQRZBd7krhvGZ-43VJTs7dC9VkkKvQN-V2vzVDSnK6a5JfOA@mail.gmail.com>
+In-Reply-To: <CAEnQRZBd7krhvGZ-43VJTs7dC9VkkKvQN-V2vzVDSnK6a5JfOA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-This little commit is intended to add the lis2dh12 support on top of st iio driver.
-
+SGkgRGFuaWVsLA0KDQpTb3JyeSBmb3IgdGhlIG1haWwgamFtbWluZy4NCkknbSBhZ3JlZSB3aXRo
+IHlvdSAuLi5idXQgSSd2ZSB1c2VkIGEgd3JvbmcgZmxhZyBmb3Igc2VuZC1lbWFpbC4NCg0KR2l1
+c2VwcGUuDQoNCk9uIDExLzExLzIwMTUgMTU6NDMsIERhbmllbCBCYWx1dGEgd3JvdGU6DQo+IE9u
+IFdlZCwgTm92IDExLCAyMDE1IGF0IDM6NTIgUE0sIEdpdXNlcHBlIEJhcmJhIDxnaXVzZXBwZS5i
+YXJiYUBzdC5jb20+IHdyb3RlOg0KPj4gVGhpcyBsaXR0bGUgY29tbWl0IGlzIGludGVuZGVkIHRv
+IGFkZCB0aGUgbGlzMmRoMTIgc3VwcG9ydCBvbiB0b3Agb2Ygc3QgaWlvIGRyaXZlci4NCj4NCj4g
+SG93IGRpZCB5b3UgZ2VuZXJhdGUgdGhpcyBwYXRjaD8gOikuIFRoaXMgaXMgc3VwcG9zZWQgdG8g
+YmUgdGhlIGNvdmVyIGxldHRlci4NCj4NCj4gZ2l0IGZvcm1hdC1wYXRjaCAtMSAtLWNvdmVyLWxl
+dHRlcg0KPg0KPiBBbnlob3csIGluIHRoZSBjYXNlIG9mIGEgc2luZ2xlIHBhdGNoIHlvdSBkb24n
+dCBuZWVkIGEgY292ZXIgbGV0dGVyLg0KPg==
