@@ -1,51 +1,117 @@
-Return-Path: <jlbec@ftp.linux.org.uk>
-Date: Wed, 11 Nov 2015 15:08:27 -0800
-From: Joel Becker <jlbec@evilplan.org>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Christoph Hellwig <hch@lst.de>, Daniel Baluta <daniel.baluta@intel.com>,
-	jic23@kernel.org, linux-iio@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, lars@metafoo.de, knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org, octavian.purdila@intel.com,
-	pebolle@tiscali.nl, patrick.porlan@intel.com,
-	adriana.reus@intel.com, constantin.musca@intel.com,
-	marten@intuitiveaerial.com, cristina.opriceana@gmail.com,
-	pmeerw@pmeerw.net, viro@zeniv.linux.org.uk
-Subject: Re: [PATCH v10 1/5] configfs: Allow dynamic group creation
-Message-ID: <20151111230826.GH4349@noexit.roam.corp.google.com>
-References: <1445614411-533-1-git-send-email-daniel.baluta@intel.com>
- <1445614411-533-2-git-send-email-daniel.baluta@intel.com>
- <20151110065126.GA20339@lst.de>
- <20151110131237.894356c2ba17d8e9231509db@linux-foundation.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:60467 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751006AbbKLGiJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Nov 2015 01:38:09 -0500
+From: Denis Ciocca <denis.ciocca@st.com>
+To: Giuseppe BARBA <giuseppe.barba@st.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"daniel.baluta@gmail.com" <daniel.baluta@gmail.com>,
+	"jic23@kernel.org" <jic23@kernel.org>
+Subject: Re: [PATCH v3] iio: st-accel: add support for lis2dh12
+Date: Thu, 12 Nov 2015 14:38:01 +0800
+Message-ID: <2839481.F2NthOBxx5@hp-zbook-15-g2>
+In-Reply-To: <1447255776-11101-1-git-send-email-giuseppe.barba@st.com>
+References: <1447255776-11101-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20151110131237.894356c2ba17d8e9231509db@linux-foundation.org>
-Sender: Joel Becker <jlbec@ftp.linux.org.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 10, 2015 at 01:12:37PM -0800, Andrew Morton wrote:
-> On Tue, 10 Nov 2015 07:51:26 +0100 Christoph Hellwig <hch@lst.de> wrote:
+Hi Giuseppe,
+
+Can u please also include the Kconfig text integration with the new sensor? The 
+driver is generic, people can easily read using Kconfig help supported sensors.
+
+Denis
+
+
+On Wednesday, November 11, 2015 04:29:36 PM Giuseppe BARBA wrote:
+> This commit add support for STMicroelectronics lis2dh12 accelerometer.
+> Datasheet for this device can be found here:
 > 
-> > is this simple addition something you could still send on to Linus
-> > for this merge window?  I would make my life easier to have it in
-> > so I could start using it in patches for various trees in the next
-> > merge window.
+> http://www.st.com/st-web-ui/static/active/en/resource/technical/
+> document/datasheet/DM00091513.pdf
 > 
-> It's super late, but the configfs changes are obviously safe to
-> existing code.
-
-Loving this change, even if this is merely a drive-by:
-
-Acked-by: Joel Becker <jlbec@evilplan.org>
-
+> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+> ---
+>  Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
+>  drivers/iio/accel/st_accel.h                         | 1 +
+>  drivers/iio/accel/st_accel_core.c                    | 1 +
+>  drivers/iio/accel/st_accel_i2c.c                     | 5 +++++
+>  drivers/iio/accel/st_accel_spi.c                     | 1 +
+>  5 files changed, 9 insertions(+)
 > 
-> What about the IIO changes?  Will someone be merging them for 4.5-rc1,
-> or something else?
+> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt
+> b/Documentation/devicetree/bindings/iio/st-sensors.txt index
+> d3ccdb1..d4b87cc 100644
+> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
+> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+> @@ -36,6 +36,7 @@ Accelerometers:
+>  - st,lsm303dlm-accel
+>  - st,lsm330-accel
+>  - st,lsm303agr-accel
+> +- st,lis2dh12-accel
 > 
+>  Gyroscopes:
+>  - st,l3g4200d-gyro
+> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+> index 468f21f..5d4a189 100644
+> --- a/drivers/iio/accel/st_accel.h
+> +++ b/drivers/iio/accel/st_accel.h
+> @@ -27,6 +27,7 @@
+>  #define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
+>  #define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
+>  #define LSM303AGR_ACCEL_DEV_NAME	"lsm303agr_accel"
+> +#define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12_accel"
+> 
+>  /**
+>  * struct st_sensors_platform_data - default accel platform data
+> diff --git a/drivers/iio/accel/st_accel_core.c
+> b/drivers/iio/accel/st_accel_core.c index dab8b76..9d973f1 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -234,6 +234,7 @@ static const struct st_sensor_settings
+> st_accel_sensors_settings[] = { [3] = LSM330DL_ACCEL_DEV_NAME,
+>  			[4] = LSM330DLC_ACCEL_DEV_NAME,
+>  			[5] = LSM303AGR_ACCEL_DEV_NAME,
+> +			[6] = LIS2DH12_ACCEL_DEV_NAME,
+>  		},
+>  		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+>  		.odr = {
+> diff --git a/drivers/iio/accel/st_accel_i2c.c
+> b/drivers/iio/accel/st_accel_i2c.c index 8b9cc84..294a32f 100644
+> --- a/drivers/iio/accel/st_accel_i2c.c
+> +++ b/drivers/iio/accel/st_accel_i2c.c
+> @@ -72,6 +72,10 @@ static const struct of_device_id st_accel_of_match[] = {
+>  		.compatible = "st,lsm303agr-accel",
+>  		.data = LSM303AGR_ACCEL_DEV_NAME,
+>  	},
+> +	{
+> +		.compatible = "st,lis2dh12-accel",
+> +		.data = LIS2DH12_ACCEL_DEV_NAME,
+> +	},
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, st_accel_of_match);
+> @@ -121,6 +125,7 @@ static const struct i2c_device_id st_accel_id_table[] =
+> { { LSM303DLM_ACCEL_DEV_NAME },
+>  	{ LSM330_ACCEL_DEV_NAME },
+>  	{ LSM303AGR_ACCEL_DEV_NAME },
+> +	{ LIS2DH12_ACCEL_DEV_NAME },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+> diff --git a/drivers/iio/accel/st_accel_spi.c
+> b/drivers/iio/accel/st_accel_spi.c index 54b61a3..e82bedf 100644
+> --- a/drivers/iio/accel/st_accel_spi.c
+> +++ b/drivers/iio/accel/st_accel_spi.c
+> @@ -58,6 +58,7 @@ static const struct spi_device_id st_accel_id_table[] = {
+>  	{ LSM303DLM_ACCEL_DEV_NAME },
+>  	{ LSM330_ACCEL_DEV_NAME },
+>  	{ LSM303AGR_ACCEL_DEV_NAME },
+> +	{ LIS2DH12_ACCEL_DEV_NAME },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(spi, st_accel_id_table);
 
--- 
-
-"Copy from one, it's plagiarism; copy from two, it's research."
-        - Wilson Mizner
-
-			http://www.jlbec.org/
-			jlbec@evilplan.org
