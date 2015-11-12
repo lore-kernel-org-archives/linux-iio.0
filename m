@@ -1,51 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-225.synserver.de ([212.40.185.225]:1055 "EHLO
-	smtp-out-188.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750851AbbKKTIO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Nov 2015 14:08:14 -0500
-Message-ID: <5643921B.5070707@metafoo.de>
-Date: Wed, 11 Nov 2015 20:08:11 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:35746 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753426AbbKLHgi convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 12 Nov 2015 02:36:38 -0500
+From: Giuseppe BARBA <giuseppe.barba@st.com>
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"daniel.baluta@gmail.com" <daniel.baluta@gmail.com>,
+	"jic23@kernel.org" <jic23@kernel.org>
+Date: Thu, 12 Nov 2015 08:35:49 +0100
+Subject: Re: [PATCH v3] iio: st-accel: add support for lis2dh12
+Message-ID: <56444155.5090302@st.com>
+References: <1447255776-11101-1-git-send-email-giuseppe.barba@st.com>
+ <2839481.F2NthOBxx5@hp-zbook-15-g2>
+In-Reply-To: <2839481.F2NthOBxx5@hp-zbook-15-g2>
+Content-Type: text/plain; charset="Windows-1252"
 MIME-Version: 1.0
-To: Martin Kepplinger <martink@posteo.de>, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net,
-	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: Re: [PATCH 1/3] iio: mma8452: add freefall detection for Freescale's
- accelerometers
-References: <1447267094-2248-1-git-send-email-martink@posteo.de>
-In-Reply-To: <1447267094-2248-1-git-send-email-martink@posteo.de>
-Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/11/2015 07:38 PM, Martin Kepplinger wrote:
-> This adds freefall event detection to the supported devices. It adds the 
-> in_accel_x&y&z_mag_falling_en iio event attribute, which activates 
-> freefall mode.
-> 
+On 12/11/2015 07:38, Denis Ciocca wrote:
+> Hi Giuseppe,
+>
+> Can u please also include the Kconfig text integration with the new sensor? The
+> driver is generic, people can easily read using Kconfig help supported sensors.
+>
+> Denis
 
-Hi,
+Hi Denis,
 
-Thanks for the patch, looks pretty good. Just a few things.
+I'll send the v4 patch with your tip.
+Thanks,
 
-> In freefall mode, the current acceleration values of all activated axis 
-> are added and if the *sum* falls *under* the threshold specified
-
-Are you sure its not the magnitude of the vector rather than the sum of the
-individual components?
-
-> (in_accel_mag_falling_value), the appropriate IIO event code is 
-> generated.
-[...]
-> +enum { +	axis_x, +	axis_y, +	axis_z, +};
-
-That should be part of patch two I guess.
-
-[...]
-> +static IIO_DEVICE_ATTR_NAMED(accel_xayaz_mag_falling_en, + 
-> in_accel_x&y&z_mag_falling_en, +			     S_IRUGO | S_IWUSR, + 
-> mma8452_get_freefall_mode, +			     mma8452_set_freefall_mode, + 0);
-
-This should be created by the core based on the event spec, shouldn't it?
+Giuseppe.
