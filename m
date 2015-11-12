@@ -1,36 +1,120 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:35746 "EHLO
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:35858 "EHLO
 	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753426AbbKLHgi convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 12 Nov 2015 02:36:38 -0500
-From: Giuseppe BARBA <giuseppe.barba@st.com>
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"daniel.baluta@gmail.com" <daniel.baluta@gmail.com>,
-	"jic23@kernel.org" <jic23@kernel.org>
-Date: Thu, 12 Nov 2015 08:35:49 +0100
-Subject: Re: [PATCH v3] iio: st-accel: add support for lis2dh12
-Message-ID: <56444155.5090302@st.com>
-References: <1447255776-11101-1-git-send-email-giuseppe.barba@st.com>
- <2839481.F2NthOBxx5@hp-zbook-15-g2>
-In-Reply-To: <2839481.F2NthOBxx5@hp-zbook-15-g2>
-Content-Type: text/plain; charset="Windows-1252"
+	by vger.kernel.org with ESMTP id S1752650AbbKLHhj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Nov 2015 02:37:39 -0500
+From: Giuseppe Barba <giuseppe.barba@st.com>
+To: <denis.ciocca@st.com>, <linux-iio@vger.kernel.org>,
+	<daniel.baluta@gmail.com>
+CC: <jic23@kernel.org>, Giuseppe Barba <giuseppe.barba@st.com>
+Subject: [PATCH v4] iio: st-accel: add support for lis2dh12
+Date: Thu, 12 Nov 2015 08:36:49 +0100
+Message-ID: <1447313809-3342-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/11/2015 07:38, Denis Ciocca wrote:
-> Hi Giuseppe,
->
-> Can u please also include the Kconfig text integration with the new sensor? The
-> driver is generic, people can easily read using Kconfig help supported sensors.
->
-> Denis
+This commit add support for STMicroelectronics lis2dh12 accelerometer.
+Datasheet for this device can be found here:
 
-Hi Denis,
+http://www.st.com/st-web-ui/static/active/en/resource/technical/
+document/datasheet/DM00091513.pdf
 
-I'll send the v4 patch with your tip.
-Thanks,
+Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+---
+ Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
+ drivers/iio/accel/Kconfig                            | 2 +-
+ drivers/iio/accel/st_accel.h                         | 1 +
+ drivers/iio/accel/st_accel_core.c                    | 1 +
+ drivers/iio/accel/st_accel_i2c.c                     | 5 +++++
+ drivers/iio/accel/st_accel_spi.c                     | 1 +
+ 6 files changed, 10 insertions(+), 1 deletion(-)
 
-Giuseppe.
+diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+index d3ccdb1..d4b87cc 100644
+--- a/Documentation/devicetree/bindings/iio/st-sensors.txt
++++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+@@ -36,6 +36,7 @@ Accelerometers:
+ - st,lsm303dlm-accel
+ - st,lsm330-accel
+ - st,lsm303agr-accel
++- st,lis2dh12-accel
+ 
+ Gyroscopes:
+ - st,l3g4200d-gyro
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 87487d3..edc29b1 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -64,7 +64,7 @@ config IIO_ST_ACCEL_3AXIS
+ 	help
+ 	  Say yes here to build support for STMicroelectronics accelerometers:
+ 	  LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
+-	  LIS331DLH, LSM303DL, LSM303DLM, LSM330.
++	  LIS331DLH, LSM303DL, LSM303DLM, LSM330, LIS2DH12.
+ 
+ 	  This driver can also be built as a module. If so, these modules
+ 	  will be created:
+diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+index 468f21f..5d4a189 100644
+--- a/drivers/iio/accel/st_accel.h
++++ b/drivers/iio/accel/st_accel.h
+@@ -27,6 +27,7 @@
+ #define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
+ #define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
+ #define LSM303AGR_ACCEL_DEV_NAME	"lsm303agr_accel"
++#define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12_accel"
+ 
+ /**
+ * struct st_sensors_platform_data - default accel platform data
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index dab8b76..9d973f1 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -234,6 +234,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			[3] = LSM330DL_ACCEL_DEV_NAME,
+ 			[4] = LSM330DLC_ACCEL_DEV_NAME,
+ 			[5] = LSM303AGR_ACCEL_DEV_NAME,
++			[6] = LIS2DH12_ACCEL_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+ 		.odr = {
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index 8b9cc84..294a32f 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -72,6 +72,10 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lsm303agr-accel",
+ 		.data = LSM303AGR_ACCEL_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lis2dh12-accel",
++		.data = LIS2DH12_ACCEL_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_accel_of_match);
+@@ -121,6 +125,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+ 	{ LSM303DLM_ACCEL_DEV_NAME },
+ 	{ LSM330_ACCEL_DEV_NAME },
+ 	{ LSM303AGR_ACCEL_DEV_NAME },
++	{ LIS2DH12_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
+index 54b61a3..e82bedf 100644
+--- a/drivers/iio/accel/st_accel_spi.c
++++ b/drivers/iio/accel/st_accel_spi.c
+@@ -58,6 +58,7 @@ static const struct spi_device_id st_accel_id_table[] = {
+ 	{ LSM303DLM_ACCEL_DEV_NAME },
+ 	{ LSM330_ACCEL_DEV_NAME },
+ 	{ LSM303AGR_ACCEL_DEV_NAME },
++	{ LIS2DH12_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_accel_id_table);
+-- 
+1.9.1
+
