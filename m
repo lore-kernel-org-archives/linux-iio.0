@@ -1,47 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f42.google.com ([209.85.215.42]:33645 "EHLO
-	mail-lf0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753159AbbKLNMx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Nov 2015 08:12:53 -0500
-Received: by lffz63 with SMTP id z63so33737650lff.0
-        for <linux-iio@vger.kernel.org>; Thu, 12 Nov 2015 05:12:51 -0800 (PST)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH] iio: st_sensors: request any context IRQ
-Date: Thu, 12 Nov 2015 14:12:44 +0100
-Message-Id: <1447333964-10276-1-git-send-email-linus.walleij@linaro.org>
+Received: from mout01.posteo.de ([185.67.36.65]:55140 "EHLO mout01.posteo.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751048AbbKLPAv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 12 Nov 2015 10:00:51 -0500
+Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
+	by mout01.posteo.de (Postfix) with ESMTPS id 5E7F020B6D
+	for <linux-iio@vger.kernel.org>; Thu, 12 Nov 2015 16:00:48 +0100 (CET)
+Message-ID: <5644A97A.40900@posteo.de>
+Date: Thu, 12 Nov 2015 16:00:10 +0100
+From: Martin Kepplinger <martink@posteo.de>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>, jic23@kernel.org,
+	knaack.h@gmx.de, pmeerw@pmeerw.net,
+	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: Re: [PATCH 1/3] iio: mma8452: add freefall detection for Freescale's
+ accelerometers
+References: <1447267094-2248-1-git-send-email-martink@posteo.de> <5643921B.5070707@metafoo.de>
+In-Reply-To: <5643921B.5070707@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-It really doesn't matter if the poll is triggered from a
-fastpath or threaded IRQ, the IIO core runs its own interrupt
-thread anyway. Sometimes this is connected to a hard IRQ line,
-sometimes to something on an I2C expander that needs to
-run from a thread, so request any context IRQ.
+Am 2015-11-11 um 20:08 schrieb Lars-Peter Clausen:
+> On 11/11/2015 07:38 PM, Martin Kepplinger wrote:
+>> This adds freefall event detection to the supported devices. It adds the 
+>> in_accel_x&y&z_mag_falling_en iio event attribute, which activates 
+>> freefall mode.
+>>
+> 
+> Hi,
+> 
+> Thanks for the patch, looks pretty good. Just a few things.
+> 
+>> In freefall mode, the current acceleration values of all activated axis 
+>> are added and if the *sum* falls *under* the threshold specified
+> 
+> Are you sure its not the magnitude of the vector rather than the sum of the
+> individual components?
 
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/common/st_sensors/st_sensors_trigger.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+It's the acceleration magnitude, logical AND combination of the values.
+Will correct this for v2.
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-index 3c0aa17d753f..e33796cdd607 100644
---- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-@@ -32,9 +32,8 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
- 		goto iio_trigger_alloc_error;
- 	}
- 
--	err = request_threaded_irq(sdata->get_irq_data_ready(indio_dev),
-+	err = request_any_context_irq(sdata->get_irq_data_ready(indio_dev),
- 			iio_trigger_generic_data_rdy_poll,
--			NULL,
- 			IRQF_TRIGGER_RISING,
- 			sdata->trig->name,
- 			sdata->trig);
--- 
-2.4.3
+> 
+>> (in_accel_mag_falling_value), the appropriate IIO event code is 
+>> generated.
+> [...]
+>> +enum { +	axis_x, +	axis_y, +	axis_z, +};
+> 
+> That should be part of patch two I guess.
+
+Will do.
+
+> 
+> [...]
+>> +static IIO_DEVICE_ATTR_NAMED(accel_xayaz_mag_falling_en, + 
+>> in_accel_x&y&z_mag_falling_en, +			     S_IRUGO | S_IWUSR, + 
+>> mma8452_get_freefall_mode, +			     mma8452_set_freefall_mode, + 0);
+> 
+> This should be created by the core based on the event spec, shouldn't it?
+> 
+
+I'll check if this works when I get to it.
+
+thanks for the review!
+
+                                  martin
 
