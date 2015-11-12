@@ -1,129 +1,158 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f41.google.com ([74.125.82.41]:33146 "EHLO
-	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751644AbbKLIZB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Nov 2015 03:25:01 -0500
-Received: by wmec201 with SMTP id c201so20627916wme.0
-        for <linux-iio@vger.kernel.org>; Thu, 12 Nov 2015 00:25:00 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <1447313809-3342-1-git-send-email-giuseppe.barba@st.com>
-References: <1447313809-3342-1-git-send-email-giuseppe.barba@st.com>
-Date: Thu, 12 Nov 2015 10:25:00 +0200
-Message-ID: <CAEnQRZCSrnQdJ+zCS-2dFJZWfnGzNLAE2ChxVFgsTuK+66QG3A@mail.gmail.com>
-Subject: Re: [PATCH v4] iio: st-accel: add support for lis2dh12
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Giuseppe Barba <giuseppe.barba@st.com>
-Cc: Denis Ciocca <denis.ciocca@st.com>,
+Received: from mail-wm0-f52.google.com ([74.125.82.52]:34983 "EHLO
+	mail-wm0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753768AbbKLJZ4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Nov 2015 04:25:56 -0500
+Received: by wmdw130 with SMTP id w130so145636785wmd.0
+        for <linux-iio@vger.kernel.org>; Thu, 12 Nov 2015 01:25:55 -0800 (PST)
+Subject: Re: [RFC 1/4] iio: ina2xx: add direct IO support for TI INA2xx Power
+ Monitors
+To: Daniel Baluta <daniel.baluta@gmail.com>
+References: <1447171653-12756-1-git-send-email-mtitinger@baylibre.com>
+ <1447171653-12756-2-git-send-email-mtitinger@baylibre.com>
+ <CAEnQRZCvsB1ZRLXf8xmQa=h6R1jcs-DXmhFpsmpTZdWd-102gQ@mail.gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	mturquette@baylibre.com, bcousson@baylibre.com,
+	ptitiano@baylibre.com
+From: Marc Titinger <mtitinger@baylibre.com>
+Message-ID: <56445B22.2050903@baylibre.com>
+Date: Thu, 12 Nov 2015 10:25:54 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAEnQRZCvsB1ZRLXf8xmQa=h6R1jcs-DXmhFpsmpTZdWd-102gQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Nov 12, 2015 at 9:36 AM, Giuseppe Barba <giuseppe.barba@st.com> wrote:
-> This commit add support for STMicroelectronics lis2dh12 accelerometer.
-> Datasheet for this device can be found here:
->
-> http://www.st.com/st-web-ui/static/active/en/resource/technical/
-> document/datasheet/DM00091513.pdf
->
-> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+On 11/11/2015 11:14, Daniel Baluta wrote:
+> On Tue, Nov 10, 2015 at 6:07 PM, Marc Titinger <mtitinger@baylibre.com> wrote:
+>> Basic support or direct IO raw read, with averaging attribute.
+>> Values are RAW, INT_PLUS_MICRO (Volt/Ampere/Watt).
+>>
 
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Hi Daniel,
 
-> ---
->  Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
->  drivers/iio/accel/Kconfig                            | 2 +-
->  drivers/iio/accel/st_accel.h                         | 1 +
->  drivers/iio/accel/st_accel_core.c                    | 1 +
->  drivers/iio/accel/st_accel_i2c.c                     | 5 +++++
->  drivers/iio/accel/st_accel_spi.c                     | 1 +
->  6 files changed, 10 insertions(+), 1 deletion(-)
+thanks for the review,
+comments bellow,
+
+Marc.
+
+
+>> IIO context has 1 devices:
+> Is this from libiio right? Perhaps you should specify this:
 >
-> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> index d3ccdb1..d4b87cc 100644
-> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> @@ -36,6 +36,7 @@ Accelerometers:
->  - st,lsm303dlm-accel
->  - st,lsm330-accel
->  - st,lsm303agr-accel
-> +- st,lis2dh12-accel
+> "libiio context has 1 devices"
+
+It's the raw output from iio_info to give a quick overview of the features.
+
 >
->  Gyroscopes:
->  - st,l3g4200d-gyro
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 87487d3..edc29b1 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -64,7 +64,7 @@ config IIO_ST_ACCEL_3AXIS
->         help
->           Say yes here to build support for STMicroelectronics accelerometers:
->           LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
-> -         LIS331DLH, LSM303DL, LSM303DLM, LSM330.
-> +         LIS331DLH, LSM303DL, LSM303DLM, LSM330, LIS2DH12.
+>>       iio:device0: ina226
+>>        4 channels found:
+>>          power3:  (input)
+>>          1 channel-specific attributes found:
+>>                  attr 0: raw value: 1.150000
+>>          voltage0:  (input)
+>>          1 channel-specific attributes found:
+>>                  attr 0: raw value: 0.000003
+>>          voltage1:  (input)
+>>          1 channel-specific attributes found:
+>>                  attr 0: raw value: 4.277500
+>>          current2:  (input)
+>>          1 channel-specific attributes found:
+>>                  attr 0: raw value: 0.268000
+>>        2 device-specific attributes found:
+>>                  attr 0: in_calibscale value: 10000
+>>                  attr 1: in_mean_raw value: 4
+>>
+>>
 >
->           This driver can also be built as a module. If so, these modules
->           will be created:
-> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-> index 468f21f..5d4a189 100644
-> --- a/drivers/iio/accel/st_accel.h
-> +++ b/drivers/iio/accel/st_accel.h
-> @@ -27,6 +27,7 @@
->  #define LSM303DLM_ACCEL_DEV_NAME       "lsm303dlm_accel"
->  #define LSM330_ACCEL_DEV_NAME          "lsm330_accel"
->  #define LSM303AGR_ACCEL_DEV_NAME       "lsm303agr_accel"
-> +#define LIS2DH12_ACCEL_DEV_NAME                "lis2dh12_accel"
+> Link to datasheet?
+
+Ok, will add it.
+
+http://www.ti.com/lit/gpn/ina226
+
+
+...
+
+
+>>
+>> +config INA2XX_IIO
+>> +        tristate "Texas Instruments INA2xx Power Monitors IIO driver"
+>> +       depends on I2C
 >
->  /**
->  * struct st_sensors_platform_data - default accel platform data
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index dab8b76..9d973f1 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -234,6 +234,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->                         [3] = LSM330DL_ACCEL_DEV_NAME,
->                         [4] = LSM330DLC_ACCEL_DEV_NAME,
->                         [5] = LSM303AGR_ACCEL_DEV_NAME,
-> +                       [6] = LIS2DH12_ACCEL_DEV_NAME,
->                 },
->                 .ch = (struct iio_chan_spec *)st_accel_12bit_channels,
->                 .odr = {
-> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-> index 8b9cc84..294a32f 100644
-> --- a/drivers/iio/accel/st_accel_i2c.c
-> +++ b/drivers/iio/accel/st_accel_i2c.c
-> @@ -72,6 +72,10 @@ static const struct of_device_id st_accel_of_match[] = {
->                 .compatible = "st,lsm303agr-accel",
->                 .data = LSM303AGR_ACCEL_DEV_NAME,
->         },
-> +       {
-> +               .compatible = "st,lis2dh12-accel",
-> +               .data = LIS2DH12_ACCEL_DEV_NAME,
-> +       },
->         {},
->  };
->  MODULE_DEVICE_TABLE(of, st_accel_of_match);
-> @@ -121,6 +125,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
->         { LSM303DLM_ACCEL_DEV_NAME },
->         { LSM330_ACCEL_DEV_NAME },
->         { LSM303AGR_ACCEL_DEV_NAME },
-> +       { LIS2DH12_ACCEL_DEV_NAME },
->         {},
->  };
->  MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
-> diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-> index 54b61a3..e82bedf 100644
-> --- a/drivers/iio/accel/st_accel_spi.c
-> +++ b/drivers/iio/accel/st_accel_spi.c
-> @@ -58,6 +58,7 @@ static const struct spi_device_id st_accel_id_table[] = {
->         { LSM303DLM_ACCEL_DEV_NAME },
->         { LSM330_ACCEL_DEV_NAME },
->         { LSM303AGR_ACCEL_DEV_NAME },
-> +       { LIS2DH12_ACCEL_DEV_NAME },
->         {},
->  };
->  MODULE_DEVICE_TABLE(spi, st_accel_id_table);
-> --
-> 1.9.1
+> Since you are using regmap you should select it here.
+
+Right.
+
 >
+>> +        help
+>> +          Say yes here to build support for TI INA2xx familly Power Monitors.
+>> +
+>> +         Note that this is not the existing hwmon interface for this device.
+>> +
+>> +
+>
+> Config symbol should be in alphabetical order.
+
+Ok
+>
+...
+
+
+>>   obj-$(CONFIG_AD7266) += ad7266.o
+>> +obj-$(CONFIG_INA2XX_IIO) += ina2xx-iio.o
+>
+> The same here.
+
+Ok.
+
+>
+>>   obj-$(CONFIG_AD7291) += ad7291.o
+>>   obj-$(CONFIG_AD7298) += ad7298.o
+>>   obj-$(CONFIG_AD7923) += ad7923.o
+>> diff --git a/drivers/iio/adc/ina2xx-iio.c b/drivers/iio/adc/ina2xx-iio.c
+>> new file mode 100644
+>> index 0000000..257d8d5
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/ina2xx-iio.c
+>> @@ -0,0 +1,404 @@
+>> +/*
+>> + * INA2XX Current and Power Monitors
+>> + *
+
+...
+
+>> + *
+>> + * Licensed under the GPL-2 or later.
+>
+> If you know the I2C address its recommended to mention it here.
+
+ok.
+
+...
+
+>> +
+>> +static struct regmap_config ina2xx_regmap_config = {
+>> +       .reg_bits = 8,
+>> +       .val_bits = 16,
+> Specify here which registers are cacheable, read/write.
+
+ok.
+
+...
+
+>> +
+>> +       return iio_device_register(indio_dev);
+>
+> If there is no reverse operation for ina2xx_init (e.g ina2xx_poweroff) then here
+> you can use devm_iio_device_register and completely remove
+> ina2xx_remove function.
+
+right, thanks!
+
+
