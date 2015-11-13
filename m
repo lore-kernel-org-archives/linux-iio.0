@@ -1,150 +1,360 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5645B2E8.8070906@metafoo.de>
-Date: Fri, 13 Nov 2015 10:52:40 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Haibo Chen <haibo.chen@freescale.com>
-CC: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
- ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
- shawnguo@kernel.org, kernel@pengutronix.de, linux@arm.linux.org.uk,
- jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] iio: adc: add IMX7D ADC driver support
-References: <1447075704-4605-1-git-send-email-haibo.chen@freescale.com> <1447075704-4605-2-git-send-email-haibo.chen@freescale.com> <56420606.4070505@metafoo.de> <20151113093934.GA21068@b51421-server.ap.freescale.net>
-In-Reply-To: <20151113093934.GA21068@b51421-server.ap.freescale.net>
-Content-Type: text/plain; charset=windows-1252
+Return-Path: <linus.walleij@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 1/2] iio: st_sensors: support active-low interrupts
+Date: Fri, 13 Nov 2015 21:18:16 +0100
+Message-Id: <1447445896-12655-1-git-send-email-linus.walleij@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 11/13/2015 10:39 AM, Haibo Chen wrote:
-[...]
->>> +static void imx7d_adc_feature_config(struct imx7d_adc *info)
->>> +{
->>> +	info->adc_feature.clk_pre_div = IMX7D_ADC_ANALOG_CLK_PRE_DIV_4;
->>> +	info->adc_feature.avg_num = IMX7D_ADC_AVERAGE_NUM_32;
->>> +	info->adc_feature.core_time_unit = 1;
->>> +	info->adc_feature.average_en = true;
->>
->> What's the plan for these? Right now they are always initialized to the same
->> static value.
->>
-> 
-> In future, we can get these values from dts file, currently we just use the static value.
+Most ST MEMS Sensors that support interrupts can also handle sending
+an active low interrupt, i.e. going from high to low on data ready
+(or other interrupt) and thus triggering on a falling edge to the
+interrupt controller.
 
-Those seem to be software configuration values though, not part of hardware
-description.
+Set up logic to inspect the interrupt line we get for a sensor: if
+it is triggering on rising edge, leave everything alone, but if it
+triggers on falling edges, set up active low, and if unsupported
+configurations appear: warn with errors and reconfigure the interrupt
+to a rising edge, which all interrupt generating sensors support.
 
-> 
->>
->>> +}
->> [...]
->>> +static int imx7d_adc_read_raw(struct iio_dev *indio_dev,
->>> +			struct iio_chan_spec const *chan,
->>> +			int *val,
->>> +			int *val2,
->>> +			long mask)
->>> +{
->>> +	struct imx7d_adc *info = iio_priv(indio_dev);
->>> +
->>> +	u32 channel;
->>> +	long ret;
->>> +
->>> +	switch (mask) {
->>> +	case IIO_CHAN_INFO_RAW:
->>> +		mutex_lock(&indio_dev->mlock);
->>> +		reinit_completion(&info->completion);
->>> +
->>> +		channel = (chan->channel) & 0x0f;
->>> +		info->channel = channel;
->>> +		imx7d_adc_channel_set(info);
->>
->> How about just passing channel directy adc_channel_set() instead of doing it
->> implicitly through the info struct?
->>
-> 
-> I think there is no difference, besides, using this parameter info struct can keep align with other functions.
-> eg.  imx7d_adc_sample_set(), imx7d_adc_hw_init(), imx7d_adc_get_sample_rate(), all these functions have the same parameter.
-> 
->> [...]
->>> +static irqreturn_t imx7d_adc_isr(int irq, void *dev_id)
->>> +{
->>> +	struct imx7d_adc *info = (struct imx7d_adc *)dev_id;
->>> +	int status;
->>> +
->>> +	status = readl(info->regs + IMX7D_REG_ADC_INT_STATUS);
->>> +	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS) {
->>> +		info->value = imx7d_adc_read_data(info);
->>> +		complete(&info->completion);
->>> +	}
->>> +	writel(0, info->regs + IMX7D_REG_ADC_INT_STATUS);
->>
->> Is the hardware really this broken? If the interrupt happens between reading
->> the status register and clearing it here it will be missed.
->>
-> 
-> I think interrupt can't happen between reading the status register and clearing it.
-> Because in function imx7d_adc_read_raw(), we call the function 
-> imx7d_adc_channel_set(info), in this function, we config the register
-> REG_ADC_CH_A\B\C\D_CFG1 and REG_ADC_CH_A\B\C\D_CFG2, only when these registers
-> is configed, ADC start a conversion. Once the conversion complete, ADC trigger an 
-> interrupt, and call the imx7d_adc_isr().
+Create a local header for st_sensors_core.h to share functions
+between the sensor core and the trigger setup code.
 
-Well an interrupt can always happen, its running fully asynchronous to the
-CPU. If you have multiple interrupt sources enabled and the first one fires
-and you run then start the irq handler, read the status register, now the
-second irq sources fires, and then you clear the status interrupt register.
-This means the driver will not see the irq from the second source.
+Cc: Giuseppe Barba <giuseppe.barba@st.com>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+This patch requires the previously sent patch to switch the
+driver to request_any_context_irq().
 
-> 
->>> +
->>> +	return IRQ_HANDLED;
->>
->> You should only return IRQ_HANDLED if you actually handled are interrupt.
->>
-> 
-> Here in the interrupt, we just handle the channel conversion finished flag, for
-> other flag, ignore them this time, Will add other flag in future.
+I am missing a data sheet for the LSM303AGR sensor that Giuseppe
+added recently, so I have no idea what bits to poke to get active
+low IRQs (or open drain) on that sensor.
+---
+ drivers/iio/accel/st_accel_core.c                  | 16 ++++++++
+ drivers/iio/common/st_sensors/st_sensors_core.c    |  6 +--
+ drivers/iio/common/st_sensors/st_sensors_core.h    |  8 ++++
+ drivers/iio/common/st_sensors/st_sensors_trigger.c | 44 ++++++++++++++++++++--
+ drivers/iio/gyro/st_gyro_core.c                    | 12 ++++++
+ drivers/iio/pressure/st_pressure_core.c            |  8 ++++
+ include/linux/iio/common/st_sensors.h              |  4 ++
+ 7 files changed, 91 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/iio/common/st_sensors/st_sensors_core.h
 
-Yeah, but if you don't handle any interrupt you should return IRQ_NONE. This
-will make sure that the system can recover in case the hardware (or the
-driver) is broken and generates unexpected interrupts. If there are a 1000
-or so IRQ_NONEs in a row in a short time frame the kernel will disable the IRQ.
-
->> [...]
->>> +	ret  = of_property_read_u32(pdev->dev.of_node,
->>
->> Extra space.
->>
->>> +					"num-channels", &channels);
->>
->> What decides how many channels are in use?
->>
-> 
-> The board decides the channel number.
-> In dts file, there is a line:     num-channels = <4>;
-
-Yes, but what decides how this property should be configured?
-
-> 
-> 
->>> +	if (ret)
->>> +		channels = ARRAY_SIZE(imx7d_adc_iio_channels);
->>> +
->>> +	indio_dev->name = dev_name(&pdev->dev);
->>> +	indio_dev->dev.parent = &pdev->dev;
->>> +	indio_dev->dev.of_node = pdev->dev.of_node;
->>> +	indio_dev->info = &imx7d_adc_iio_info;
->>> +	indio_dev->modes = INDIO_DIRECT_MODE;
->>> +	indio_dev->channels = imx7d_adc_iio_channels;
->>> +	indio_dev->num_channels = (int)channels;
->>
->> I don't think you need the case here.
->>
-> 
-> Sorry, can't get your point, you mean I should not indio_dev-> ?
-
-Sorry, I meant the (int) cast.
-
-> 
->>> [...]
-> 
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 197a08b4e2f3..1132224cbc10 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -67,6 +67,8 @@
+ #define ST_ACCEL_1_DRDY_IRQ_ADDR		0x22
+ #define ST_ACCEL_1_DRDY_IRQ_INT1_MASK		0x10
+ #define ST_ACCEL_1_DRDY_IRQ_INT2_MASK		0x08
++#define ST_ACCEL_1_IHL_IRQ_ADDR			0x25
++#define ST_ACCEL_1_IHL_IRQ_MASK			0x02
+ #define ST_ACCEL_1_MULTIREAD_BIT		true
+ 
+ /* CUSTOM VALUES FOR SENSOR 2 */
+@@ -92,6 +94,8 @@
+ #define ST_ACCEL_2_DRDY_IRQ_ADDR		0x22
+ #define ST_ACCEL_2_DRDY_IRQ_INT1_MASK		0x02
+ #define ST_ACCEL_2_DRDY_IRQ_INT2_MASK		0x10
++#define ST_ACCEL_2_IHL_IRQ_ADDR			0x22
++#define ST_ACCEL_2_IHL_IRQ_MASK			0x80
+ #define ST_ACCEL_2_MULTIREAD_BIT		true
+ 
+ /* CUSTOM VALUES FOR SENSOR 3 */
+@@ -125,6 +129,8 @@
+ #define ST_ACCEL_3_DRDY_IRQ_ADDR		0x23
+ #define ST_ACCEL_3_DRDY_IRQ_INT1_MASK		0x80
+ #define ST_ACCEL_3_DRDY_IRQ_INT2_MASK		0x00
++#define ST_ACCEL_3_IHL_IRQ_ADDR			0x23
++#define ST_ACCEL_3_IHL_IRQ_MASK			0x40
+ #define ST_ACCEL_3_IG1_EN_ADDR			0x23
+ #define ST_ACCEL_3_IG1_EN_MASK			0x08
+ #define ST_ACCEL_3_MULTIREAD_BIT		false
+@@ -169,6 +175,8 @@
+ #define ST_ACCEL_5_DRDY_IRQ_ADDR		0x22
+ #define ST_ACCEL_5_DRDY_IRQ_INT1_MASK		0x04
+ #define ST_ACCEL_5_DRDY_IRQ_INT2_MASK		0x20
++#define ST_ACCEL_5_IHL_IRQ_ADDR			0x22
++#define ST_ACCEL_5_IHL_IRQ_MASK			0x80
+ #define ST_ACCEL_5_IG1_EN_ADDR			0x21
+ #define ST_ACCEL_5_IG1_EN_MASK			0x08
+ #define ST_ACCEL_5_MULTIREAD_BIT		false
+@@ -291,6 +299,8 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.addr = ST_ACCEL_1_DRDY_IRQ_ADDR,
+ 			.mask_int1 = ST_ACCEL_1_DRDY_IRQ_INT1_MASK,
+ 			.mask_int2 = ST_ACCEL_1_DRDY_IRQ_INT2_MASK,
++			.addr_ihl = ST_ACCEL_1_IHL_IRQ_ADDR,
++			.mask_ihl = ST_ACCEL_1_IHL_IRQ_MASK,
+ 		},
+ 		.multi_read_bit = ST_ACCEL_1_MULTIREAD_BIT,
+ 		.bootime = 2,
+@@ -354,6 +364,8 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.addr = ST_ACCEL_2_DRDY_IRQ_ADDR,
+ 			.mask_int1 = ST_ACCEL_2_DRDY_IRQ_INT1_MASK,
+ 			.mask_int2 = ST_ACCEL_2_DRDY_IRQ_INT2_MASK,
++			.addr_ihl = ST_ACCEL_2_IHL_IRQ_ADDR,
++			.mask_ihl = ST_ACCEL_2_IHL_IRQ_MASK,
+ 		},
+ 		.multi_read_bit = ST_ACCEL_2_MULTIREAD_BIT,
+ 		.bootime = 2,
+@@ -429,6 +441,8 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.addr = ST_ACCEL_3_DRDY_IRQ_ADDR,
+ 			.mask_int1 = ST_ACCEL_3_DRDY_IRQ_INT1_MASK,
+ 			.mask_int2 = ST_ACCEL_3_DRDY_IRQ_INT2_MASK,
++			.addr_ihl = ST_ACCEL_3_IHL_IRQ_ADDR,
++			.mask_ihl = ST_ACCEL_3_IHL_IRQ_MASK,
+ 			.ig1 = {
+ 				.en_addr = ST_ACCEL_3_IG1_EN_ADDR,
+ 				.en_mask = ST_ACCEL_3_IG1_EN_MASK,
+@@ -536,6 +550,8 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.addr = ST_ACCEL_5_DRDY_IRQ_ADDR,
+ 			.mask_int1 = ST_ACCEL_5_DRDY_IRQ_INT1_MASK,
+ 			.mask_int2 = ST_ACCEL_5_DRDY_IRQ_INT2_MASK,
++			.addr_ihl = ST_ACCEL_5_IHL_IRQ_ADDR,
++			.mask_ihl = ST_ACCEL_5_IHL_IRQ_MASK,
+ 		},
+ 		.multi_read_bit = ST_ACCEL_5_MULTIREAD_BIT,
+ 		.bootime = 2, /* guess */
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 25258e2c1a82..ed6f54d5c932 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -17,7 +17,7 @@
+ #include <linux/of.h>
+ #include <asm/unaligned.h>
+ #include <linux/iio/common/st_sensors.h>
+-
++#include "st_sensors_core.h"
+ 
+ #define ST_SENSORS_WAI_ADDRESS		0x0f
+ 
+@@ -26,8 +26,8 @@ static inline u32 st_sensors_get_unaligned_le24(const u8 *p)
+ 	return (s32)((p[0] | p[1] << 8 | p[2] << 16) << 8) >> 8;
+ }
+ 
+-static int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
+-						u8 reg_addr, u8 mask, u8 data)
++int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
++				    u8 reg_addr, u8 mask, u8 data)
+ {
+ 	int err;
+ 	u8 new_data;
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.h b/drivers/iio/common/st_sensors/st_sensors_core.h
+new file mode 100644
+index 000000000000..cd88098ff6f1
+--- /dev/null
++++ b/drivers/iio/common/st_sensors/st_sensors_core.h
+@@ -0,0 +1,8 @@
++/*
++ * Local functions in the ST Sensors core
++ */
++#ifndef __ST_SENSORS_CORE_H
++#define __ST_SENSORS_CORE_H
++int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
++				    u8 reg_addr, u8 mask, u8 data);
++#endif
+diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+index e33796cdd607..cb53d14aca94 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
++++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+@@ -14,15 +14,16 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+ #include <linux/interrupt.h>
+-
+ #include <linux/iio/common/st_sensors.h>
+-
++#include "st_sensors_core.h"
+ 
+ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 				const struct iio_trigger_ops *trigger_ops)
+ {
+ 	int err;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
++	unsigned long irq_trig;
++	int irq;
+ 
+ 	sdata->trig = iio_trigger_alloc("%s-dev%d",
+ 					indio_dev->name, indio_dev->id);
+@@ -32,9 +33,43 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 		goto iio_trigger_alloc_error;
+ 	}
+ 
+-	err = request_any_context_irq(sdata->get_irq_data_ready(indio_dev),
++	irq = sdata->get_irq_data_ready(indio_dev);
++	irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
++	/*
++	 * If the IRQ is triggered on falling edge, we need to mark the
++	 * interrupt as active low, if the hardware supports this.
++	 */
++	if (irq_trig == IRQF_TRIGGER_FALLING) {
++		if (!sdata->sensor_settings->drdy_irq.addr_ihl) {
++			dev_err(&indio_dev->dev,
++				"falling edge specified for IRQ but hardware "
++				"only support rising edge, will request "
++				"rising edge\n");
++			irq_trig = IRQF_TRIGGER_RISING;
++		} else {
++			/* Set up INT active low i.e. falling edge */
++			err = st_sensors_write_data_with_mask(indio_dev,
++				sdata->sensor_settings->drdy_irq.addr_ihl,
++				sdata->sensor_settings->drdy_irq.mask_ihl, 1);
++			if (err < 0)
++				goto iio_trigger_edge_error;
++			dev_info(&indio_dev->dev,
++				 "interrupts on the falling edge\n");
++		}
++	} else if (irq_trig == IRQF_TRIGGER_RISING) {
++		dev_info(&indio_dev->dev,
++			 "interrupts on the rising edge\n");
++
++	} else {
++		dev_err(&indio_dev->dev,
++			"unsupported IRQ trigger specified (%lx), only "
++			"rising and falling edges supported, enforce "
++			"rising edge\n", irq_trig);
++		irq_trig = IRQF_TRIGGER_RISING;
++	}
++	err = request_any_context_irq(irq,
+ 			iio_trigger_generic_data_rdy_poll,
+-			IRQF_TRIGGER_RISING,
++			irq_trig,
+ 			sdata->trig->name,
+ 			sdata->trig);
+ 	if (err) {
+@@ -59,6 +94,7 @@ iio_trigger_register_error:
+ 	free_irq(sdata->get_irq_data_ready(indio_dev), sdata->trig);
+ request_irq_error:
+ 	iio_trigger_free(sdata->trig);
++iio_trigger_edge_error:
+ iio_trigger_alloc_error:
+ 	return err;
+ }
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+index 02eddcebeea3..260bfe021904 100644
+--- a/drivers/iio/gyro/st_gyro_core.c
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -61,6 +61,8 @@
+ #define ST_GYRO_1_BDU_MASK			0x80
+ #define ST_GYRO_1_DRDY_IRQ_ADDR			0x22
+ #define ST_GYRO_1_DRDY_IRQ_INT2_MASK		0x08
++#define ST_GYRO_1_IHL_IRQ_ADDR			0x22
++#define ST_GYRO_1_IHL_IRQ_MASK			0x20
+ #define ST_GYRO_1_MULTIREAD_BIT			true
+ 
+ /* CUSTOM VALUES FOR SENSOR 2 */
+@@ -85,6 +87,8 @@
+ #define ST_GYRO_2_BDU_MASK			0x80
+ #define ST_GYRO_2_DRDY_IRQ_ADDR			0x22
+ #define ST_GYRO_2_DRDY_IRQ_INT2_MASK		0x08
++#define ST_GYRO_2_IHL_IRQ_ADDR			0x22
++#define ST_GYRO_2_IHL_IRQ_MASK			0x20
+ #define ST_GYRO_2_MULTIREAD_BIT			true
+ 
+ /* CUSTOM VALUES FOR SENSOR 3 */
+@@ -109,6 +113,8 @@
+ #define ST_GYRO_3_BDU_MASK			0x80
+ #define ST_GYRO_3_DRDY_IRQ_ADDR			0x22
+ #define ST_GYRO_3_DRDY_IRQ_INT2_MASK		0x08
++#define ST_GYRO_3_IHL_IRQ_ADDR			0x22
++#define ST_GYRO_3_IHL_IRQ_MASK			0x20
+ #define ST_GYRO_3_MULTIREAD_BIT			true
+ 
+ 
+@@ -185,6 +191,8 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 		.drdy_irq = {
+ 			.addr = ST_GYRO_1_DRDY_IRQ_ADDR,
+ 			.mask_int2 = ST_GYRO_1_DRDY_IRQ_INT2_MASK,
++			.addr_ihl = ST_GYRO_1_IHL_IRQ_ADDR,
++			.mask_ihl = ST_GYRO_1_IHL_IRQ_MASK,
+ 		},
+ 		.multi_read_bit = ST_GYRO_1_MULTIREAD_BIT,
+ 		.bootime = 2,
+@@ -248,6 +256,8 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 		.drdy_irq = {
+ 			.addr = ST_GYRO_2_DRDY_IRQ_ADDR,
+ 			.mask_int2 = ST_GYRO_2_DRDY_IRQ_INT2_MASK,
++			.addr_ihl = ST_GYRO_2_IHL_IRQ_ADDR,
++			.mask_ihl = ST_GYRO_2_IHL_IRQ_MASK,
+ 		},
+ 		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
+ 		.bootime = 2,
+@@ -307,6 +317,8 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 		.drdy_irq = {
+ 			.addr = ST_GYRO_3_DRDY_IRQ_ADDR,
+ 			.mask_int2 = ST_GYRO_3_DRDY_IRQ_INT2_MASK,
++			.addr_ihl = ST_GYRO_3_IHL_IRQ_ADDR,
++			.mask_ihl = ST_GYRO_3_IHL_IRQ_MASK,
+ 		},
+ 		.multi_read_bit = ST_GYRO_3_MULTIREAD_BIT,
+ 		.bootime = 2,
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index b39a2fb0671c..172393ad34af 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -62,6 +62,8 @@
+ #define ST_PRESS_LPS331AP_DRDY_IRQ_ADDR		0x22
+ #define ST_PRESS_LPS331AP_DRDY_IRQ_INT1_MASK	0x04
+ #define ST_PRESS_LPS331AP_DRDY_IRQ_INT2_MASK	0x20
++#define ST_PRESS_LPS331AP_IHL_IRQ_ADDR		0x22
++#define ST_PRESS_LPS331AP_IHL_IRQ_MASK		0x80
+ #define ST_PRESS_LPS331AP_MULTIREAD_BIT		true
+ #define ST_PRESS_LPS331AP_TEMP_OFFSET		42500
+ 
+@@ -100,6 +102,8 @@
+ #define ST_PRESS_LPS25H_DRDY_IRQ_ADDR		0x23
+ #define ST_PRESS_LPS25H_DRDY_IRQ_INT1_MASK	0x01
+ #define ST_PRESS_LPS25H_DRDY_IRQ_INT2_MASK	0x10
++#define ST_PRESS_LPS25H_IHL_IRQ_ADDR		0x22
++#define ST_PRESS_LPS25H_IHL_IRQ_MASK		0x80
+ #define ST_PRESS_LPS25H_MULTIREAD_BIT		true
+ #define ST_PRESS_LPS25H_TEMP_OFFSET		42500
+ #define ST_PRESS_LPS25H_OUT_XL_ADDR		0x28
+@@ -220,6 +224,8 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
+ 			.addr = ST_PRESS_LPS331AP_DRDY_IRQ_ADDR,
+ 			.mask_int1 = ST_PRESS_LPS331AP_DRDY_IRQ_INT1_MASK,
+ 			.mask_int2 = ST_PRESS_LPS331AP_DRDY_IRQ_INT2_MASK,
++			.addr_ihl = ST_PRESS_LPS331AP_IHL_IRQ_ADDR,
++			.mask_ihl = ST_PRESS_LPS331AP_IHL_IRQ_MASK,
+ 		},
+ 		.multi_read_bit = ST_PRESS_LPS331AP_MULTIREAD_BIT,
+ 		.bootime = 2,
+@@ -304,6 +310,8 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
+ 			.addr = ST_PRESS_LPS25H_DRDY_IRQ_ADDR,
+ 			.mask_int1 = ST_PRESS_LPS25H_DRDY_IRQ_INT1_MASK,
+ 			.mask_int2 = ST_PRESS_LPS25H_DRDY_IRQ_INT2_MASK,
++			.addr_ihl = ST_PRESS_LPS25H_IHL_IRQ_ADDR,
++			.mask_ihl = ST_PRESS_LPS25H_IHL_IRQ_MASK,
+ 		},
+ 		.multi_read_bit = ST_PRESS_LPS25H_MULTIREAD_BIT,
+ 		.bootime = 2,
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 2fe939c73cd2..6670c3d25c58 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -119,6 +119,8 @@ struct st_sensor_bdu {
+  * @addr: address of the register.
+  * @mask_int1: mask to enable/disable IRQ on INT1 pin.
+  * @mask_int2: mask to enable/disable IRQ on INT2 pin.
++ * @addr_ihl: address to enable/disable active low on the INT lines.
++ * @mask_ihl: mask to enable/disable active low on the INT lines.
+  * struct ig1 - represents the Interrupt Generator 1 of sensors.
+  * @en_addr: address of the enable ig1 register.
+  * @en_mask: mask to write the on/off value for enable.
+@@ -127,6 +129,8 @@ struct st_sensor_data_ready_irq {
+ 	u8 addr;
+ 	u8 mask_int1;
+ 	u8 mask_int2;
++	u8 addr_ihl;
++	u8 mask_ihl;
+ 	struct {
+ 		u8 en_addr;
+ 		u8 en_mask;
+-- 
+2.4.3
