@@ -1,408 +1,150 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:33806 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754577AbbKMDr3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Nov 2015 22:47:29 -0500
-Received: by padhx2 with SMTP id hx2so86316488pad.1
-        for <linux-iio@vger.kernel.org>; Thu, 12 Nov 2015 19:47:28 -0800 (PST)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: Matt Ranostay <mranostay@gmail.com>
-Subject: [RFC v1] iio: light: add MAX30100 oximeter driver support
-Date: Thu, 12 Nov 2015 19:47:27 -0800
-Message-Id: <1447386447-1123-1-git-send-email-mranostay@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+Message-ID: <5645B2E8.8070906@metafoo.de>
+Date: Fri, 13 Nov 2015 10:52:40 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Haibo Chen <haibo.chen@freescale.com>
+CC: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+ ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+ shawnguo@kernel.org, kernel@pengutronix.de, linux@arm.linux.org.uk,
+ jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] iio: adc: add IMX7D ADC driver support
+References: <1447075704-4605-1-git-send-email-haibo.chen@freescale.com> <1447075704-4605-2-git-send-email-haibo.chen@freescale.com> <56420606.4070505@metafoo.de> <20151113093934.GA21068@b51421-server.ap.freescale.net>
+In-Reply-To: <20151113093934.GA21068@b51421-server.ap.freescale.net>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-MAX30100 is an heart rate and pulse oximeter sensor that works using
-two LEDS of different wavelengths, and detecting the light reflected
-back.
+On 11/13/2015 10:39 AM, Haibo Chen wrote:
+[...]
+>>> +static void imx7d_adc_feature_config(struct imx7d_adc *info)
+>>> +{
+>>> +	info->adc_feature.clk_pre_div = IMX7D_ADC_ANALOG_CLK_PRE_DIV_4;
+>>> +	info->adc_feature.avg_num = IMX7D_ADC_AVERAGE_NUM_32;
+>>> +	info->adc_feature.core_time_unit = 1;
+>>> +	info->adc_feature.average_en = true;
+>>
+>> What's the plan for these? Right now they are always initialized to the same
+>> static value.
+>>
+> 
+> In future, we can get these values from dts file, currently we just use the static value.
 
-This patchset adds support for both IR and RED LED channels which can
-be processed in userspace to determine heart rate and blood oxygen
-levels.
+Those seem to be software configuration values though, not part of hardware
+description.
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
- .../devicetree/bindings/iio/light/max30100.txt     |  22 ++
- drivers/iio/light/Kconfig                          |  13 +
- drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/max30100.c                       | 301 +++++++++++++++++++++
- 4 files changed, 337 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/max30100.txt
- create mode 100644 drivers/iio/light/max30100.c
+> 
+>>
+>>> +}
+>> [...]
+>>> +static int imx7d_adc_read_raw(struct iio_dev *indio_dev,
+>>> +			struct iio_chan_spec const *chan,
+>>> +			int *val,
+>>> +			int *val2,
+>>> +			long mask)
+>>> +{
+>>> +	struct imx7d_adc *info = iio_priv(indio_dev);
+>>> +
+>>> +	u32 channel;
+>>> +	long ret;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_RAW:
+>>> +		mutex_lock(&indio_dev->mlock);
+>>> +		reinit_completion(&info->completion);
+>>> +
+>>> +		channel = (chan->channel) & 0x0f;
+>>> +		info->channel = channel;
+>>> +		imx7d_adc_channel_set(info);
+>>
+>> How about just passing channel directy adc_channel_set() instead of doing it
+>> implicitly through the info struct?
+>>
+> 
+> I think there is no difference, besides, using this parameter info struct can keep align with other functions.
+> eg.  imx7d_adc_sample_set(), imx7d_adc_hw_init(), imx7d_adc_get_sample_rate(), all these functions have the same parameter.
+> 
+>> [...]
+>>> +static irqreturn_t imx7d_adc_isr(int irq, void *dev_id)
+>>> +{
+>>> +	struct imx7d_adc *info = (struct imx7d_adc *)dev_id;
+>>> +	int status;
+>>> +
+>>> +	status = readl(info->regs + IMX7D_REG_ADC_INT_STATUS);
+>>> +	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS) {
+>>> +		info->value = imx7d_adc_read_data(info);
+>>> +		complete(&info->completion);
+>>> +	}
+>>> +	writel(0, info->regs + IMX7D_REG_ADC_INT_STATUS);
+>>
+>> Is the hardware really this broken? If the interrupt happens between reading
+>> the status register and clearing it here it will be missed.
+>>
+> 
+> I think interrupt can't happen between reading the status register and clearing it.
+> Because in function imx7d_adc_read_raw(), we call the function 
+> imx7d_adc_channel_set(info), in this function, we config the register
+> REG_ADC_CH_A\B\C\D_CFG1 and REG_ADC_CH_A\B\C\D_CFG2, only when these registers
+> is configed, ADC start a conversion. Once the conversion complete, ADC trigger an 
+> interrupt, and call the imx7d_adc_isr().
 
-diff --git a/Documentation/devicetree/bindings/iio/light/max30100.txt b/Documentation/devicetree/bindings/iio/light/max30100.txt
-new file mode 100644
-index 0000000..c9119aa
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/max30100.txt
-@@ -0,0 +1,22 @@
-+* Maxim MAX30100 heart rate and pulse oximeter sensor
-+
-+https://datasheets.maximintegrated.com/en/ds/MAX30100.pdf
-+
-+Required properties:
-+
-+  - compatible: must be "maxim,max30100"
-+  - reg: the I2c address of the sensor
-+  - interrupt-parent: should be the phandle for the interrupt controller
-+  - interrupts : the sole interrupt generated by the device
-+
-+  Refer to interrupt-controller/interrupts.txt for generic interrupt client
-+  node bindings.
-+
-+Example:
-+
-+max30100@57 {
-+	compatible = "maxim,max30100";
-+	reg = <0x57>;
-+	interrupt-parent = <&gpio1>;
-+	interrupts = <16 1>;
-+};
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index cfd3df8..3a94e20 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -223,6 +223,19 @@ config LTR501
- 	 This driver can also be built as a module.  If so, the module
-          will be called ltr501.
- 
-+config MAX30100
-+	tristate "MAX30100 heart rate and pulse oximeter sensor"
-+	depends on I2C
-+	select REGMAP_I2C
-+	select IIO_BUFFER
-+	select IIO_KFIFO_BUF
-+	help
-+	  Say Y here to build I2C interface support for the Maxim
-+	  MAX30100 heart rate, and pulse oximeter sensor.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called max30100
-+
- config OPT3001
- 	tristate "Texas Instruments OPT3001 Light Sensor"
- 	depends on I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index b2c3105..0795486 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -20,6 +20,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
- obj-$(CONFIG_JSA1212)		+= jsa1212.o
- obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
- obj-$(CONFIG_LTR501)		+= ltr501.o
-+obj-$(CONFIG_MAX30100)		+= max30100.o
- obj-$(CONFIG_OPT3001)		+= opt3001.o
- obj-$(CONFIG_PA12203001)	+= pa12203001.o
- obj-$(CONFIG_RPR0521)		+= rpr0521.o
-diff --git a/drivers/iio/light/max30100.c b/drivers/iio/light/max30100.c
-new file mode 100644
-index 0000000..436318f
---- /dev/null
-+++ b/drivers/iio/light/max30100.c
-@@ -0,0 +1,301 @@
-+/*
-+ * max30100.c - Support for MAX30100 heart rate and pulse oximeter sensor
-+ *
-+ * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ *
-+ * TODO: temperature reading
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/interrupt.h>
-+#include <linux/err.h>
-+#include <linux/irq.h>
-+#include <linux/gpio.h>
-+#include <linux/i2c.h>
-+#include <linux/mutex.h>
-+#include <linux/regmap.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/of_gpio.h>
-+
-+#define MAX30100_REGMAP_NAME	"max30100_regmap"
-+#define MAX30100_DRV_NAME	"max30100"
-+
-+#define MAX30100_REG_INT_STATUS			0x00
-+#define MAX30100_REG_INT_STATUS_PWR_RDY		BIT(0)
-+#define MAX30100_REG_INT_STATUS_SPO2_RDY	BIT(4)
-+#define MAX30100_REG_INT_STATUS_HR_RDY		BIT(5)
-+
-+#define MAX30100_REG_INT_ENABLE			0x01
-+#define MAX30100_REG_INT_ENABLE_MASK		0xf0
-+#define MAX30100_REG_INT_ENABLE_MASK_SHIFT	4
-+
-+#define MAX30100_REG_FIFO_DATA			0x05
-+
-+#define MAX30100_REG_MODE_CONFIG		0x06
-+#define MAX30100_REG_MODE_CONFIG_MODE_MASK	0x03
-+#define MAX30100_REG_MODE_CONFIG_PWR		BIT(7)
-+
-+#define MAX30100_REG_SPO2_CONFIG		0x07
-+#define MAX30100_REG_SPO2_CONFIG_HI_RES_EN	BIT(6)
-+
-+#define MAX30100_REG_LED_CONFIG			0x09
-+
-+struct max30100_data {
-+	struct iio_dev *indio_dev;
-+	struct mutex lock;
-+	struct regmap *regmap;
-+
-+	u8 buffer[4]; /* 4 8-bit channels */
-+};
-+
-+static bool max30100_is_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case MAX30100_REG_INT_STATUS:
-+	case MAX30100_REG_FIFO_DATA:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static const struct regmap_config max30100_regmap_config = {
-+	.name = MAX30100_REGMAP_NAME,
-+
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+
-+	.max_register = MAX30100_REG_LED_CONFIG,
-+	.cache_type = REGCACHE_FLAT,
-+
-+	.volatile_reg = max30100_is_volatile_reg,
-+};
-+
-+static const unsigned long max30100_scan_masks[] = {0x3, 0};
-+
-+static const struct iio_chan_spec max30100_channels[] = {
-+	{
-+		.type = IIO_INTENSITY,
-+		.channel2 = IIO_MOD_LIGHT_IR,
-+
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 16,
-+			.storagebits = 16,
-+		},
-+	},
-+	{
-+		.type = IIO_INTENSITY,
-+		.channel2 = IIO_MOD_LIGHT_RED,
-+
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 16,
-+			.storagebits = 16,
-+		},
-+	},
-+};
-+
-+static int max30100_set_powermode(struct max30100_data *data, bool state)
-+{
-+	return regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
-+				  MAX30100_REG_MODE_CONFIG_PWR,
-+				  state ? 0 : MAX30100_REG_MODE_CONFIG_PWR);
-+}
-+
-+static int max30100_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct max30100_data *data = iio_priv(indio_dev);
-+
-+	return max30100_set_powermode(data, true);
-+}
-+
-+static int max30100_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct max30100_data *data = iio_priv(indio_dev);
-+
-+	return max30100_set_powermode(data, false);
-+}
-+
-+static const struct iio_buffer_setup_ops max30100_buffer_setup_ops = {
-+	.postenable = max30100_buffer_postenable,
-+	.predisable = max30100_buffer_predisable,
-+};
-+
-+static inline int max30100_fifo_is_empty(struct max30100_data *data)
-+{
-+	int ret, val;
-+
-+	ret = regmap_read(data->regmap, MAX30100_REG_INT_STATUS, &val);
-+	if (ret)
-+		return ret;
-+
-+	return !!(val >> 4);
-+}
-+
-+static irqreturn_t max30100_interrupt_handler(int irq, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct max30100_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	mutex_lock(&data->lock);
-+
-+	while (max30100_fifo_is_empty(data) != 0) {
-+		ret = regmap_bulk_read(data->regmap, MAX30100_REG_FIFO_DATA,
-+				      &data->buffer, 4);
-+
-+		if (ret)
-+			goto err_read;
-+
-+		iio_push_to_buffers(data->indio_dev, data->buffer);
-+	}
-+
-+err_read:
-+	mutex_unlock(&data->lock);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int max30100_chip_init(struct max30100_data *data)
-+{
-+	int ret;
-+
-+	/* RED IR LED = 24mA, IR LED = 50mA */
-+	ret = regmap_write(data->regmap, MAX30100_REG_LED_CONFIG, 0x7f);
-+	if (ret)
-+		return ret;
-+
-+	/* enable hi-res SPO2 readings with 100 samples a second */
-+	ret = regmap_write(data->regmap, MAX30100_REG_SPO2_CONFIG,
-+				MAX30100_REG_SPO2_CONFIG_HI_RES_EN | 0x13);
-+	if (ret)
-+		return ret;
-+
-+	/* enable SPO2 + HR mode */
-+	ret = regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
-+				MAX30100_REG_MODE_CONFIG_MODE_MASK, 0x3);
-+	if (ret)
-+		return ret;
-+
-+	/* enable SPO2 + HR interrupts */
-+	return regmap_update_bits(data->regmap, MAX30100_REG_INT_ENABLE_MASK,
-+				MAX30100_REG_INT_ENABLE_MASK,
-+				0x3 << MAX30100_REG_INT_ENABLE_MASK_SHIFT);
-+}
-+
-+static int max30100_probe(struct i2c_client *client,
-+			  const struct i2c_device_id *id)
-+{
-+	struct max30100_data *data;
-+	struct iio_buffer *buffer;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	buffer = devm_iio_kfifo_allocate(&client->dev);
-+	if (!buffer)
-+		return -ENOMEM;
-+
-+	iio_device_attach_buffer(indio_dev, buffer);
-+
-+	indio_dev->name = MAX30100_DRV_NAME;
-+	indio_dev->channels = max30100_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(max30100_channels);
-+	indio_dev->available_scan_masks = max30100_scan_masks;
-+	indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
-+	indio_dev->setup_ops = &max30100_buffer_setup_ops;
-+
-+	data = iio_priv(indio_dev);
-+	data->indio_dev = indio_dev;
-+
-+	mutex_init(&data->lock);
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	data->regmap = devm_regmap_init_i2c(client, &max30100_regmap_config);
-+	if (IS_ERR(data->regmap)) {
-+		dev_err(&client->dev, "regmap initialization failed.\n");
-+		return PTR_ERR(data->regmap);
-+	}
-+	max30100_set_powermode(data, false);
-+
-+	ret = max30100_chip_init(data);
-+	if (ret)
-+		goto error_out;
-+
-+	if (client->irq <= 0) {
-+		dev_err(&client->dev, "no valid irq defined\n");
-+		ret = -EINVAL;
-+		goto error_out;
-+	}
-+	ret = devm_request_threaded_irq(&client->dev, client->irq,
-+					NULL, max30100_interrupt_handler,
-+					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-+					"max30100_irq", indio_dev);
-+	if (ret) {
-+		dev_err(&client->dev, "request irq (%d) failed\n", client->irq);
-+		goto error_out;
-+	}
-+
-+	return iio_device_register(indio_dev);
-+error_out:
-+
-+	return ret;
-+}
-+
-+static int max30100_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct max30100_data *data = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	max30100_set_powermode(data, false);
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id max30100_id[] = {
-+	{ "max30100", 0 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(i2c, max30100_id);
-+
-+static const struct of_device_id max30100_dt_ids[] = {
-+	{ .compatible = "maxim,max30100" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, max30100_dt_ids);
-+
-+static struct i2c_driver max30100_driver = {
-+	.driver = {
-+		.name	= MAX30100_DRV_NAME,
-+		.of_match_table	= of_match_ptr(max30100_dt_ids),
-+	},
-+	.probe		= max30100_probe,
-+	.remove		= max30100_remove,
-+	.id_table	= max30100_id,
-+};
-+module_i2c_driver(max30100_driver);
-+
-+MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-+MODULE_DESCRIPTION("MAX30100 heart rate and pulse oximeter sensor");
-+MODULE_LICENSE("GPL");
--- 
-1.9.1
+Well an interrupt can always happen, its running fully asynchronous to the
+CPU. If you have multiple interrupt sources enabled and the first one fires
+and you run then start the irq handler, read the status register, now the
+second irq sources fires, and then you clear the status interrupt register.
+This means the driver will not see the irq from the second source.
 
+> 
+>>> +
+>>> +	return IRQ_HANDLED;
+>>
+>> You should only return IRQ_HANDLED if you actually handled are interrupt.
+>>
+> 
+> Here in the interrupt, we just handle the channel conversion finished flag, for
+> other flag, ignore them this time, Will add other flag in future.
+
+Yeah, but if you don't handle any interrupt you should return IRQ_NONE. This
+will make sure that the system can recover in case the hardware (or the
+driver) is broken and generates unexpected interrupts. If there are a 1000
+or so IRQ_NONEs in a row in a short time frame the kernel will disable the IRQ.
+
+>> [...]
+>>> +	ret  = of_property_read_u32(pdev->dev.of_node,
+>>
+>> Extra space.
+>>
+>>> +					"num-channels", &channels);
+>>
+>> What decides how many channels are in use?
+>>
+> 
+> The board decides the channel number.
+> In dts file, there is a line:     num-channels = <4>;
+
+Yes, but what decides how this property should be configured?
+
+> 
+> 
+>>> +	if (ret)
+>>> +		channels = ARRAY_SIZE(imx7d_adc_iio_channels);
+>>> +
+>>> +	indio_dev->name = dev_name(&pdev->dev);
+>>> +	indio_dev->dev.parent = &pdev->dev;
+>>> +	indio_dev->dev.of_node = pdev->dev.of_node;
+>>> +	indio_dev->info = &imx7d_adc_iio_info;
+>>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>>> +	indio_dev->channels = imx7d_adc_iio_channels;
+>>> +	indio_dev->num_channels = (int)channels;
+>>
+>> I don't think you need the case here.
+>>
+> 
+> Sorry, can't get your point, you mean I should not indio_dev-> ?
+
+Sorry, I meant the (int) cast.
+
+> 
+>>> [...]
+> 
