@@ -1,110 +1,285 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41379 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751607AbbKNSoI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Nov 2015 13:44:08 -0500
-Subject: Re: [RFC 4/4] iio: ina2xx: add SOFTWARE buffer mode using an iio
- kfifo.
-To: Marc Titinger <mtitinger@baylibre.com>,
-	Lars-Peter Clausen <lars@metafoo.de>, knaack.h@gmx.de,
-	pmeerw@pmeerw.net
-References: <1447171653-12756-1-git-send-email-mtitinger@baylibre.com>
- <1447171653-12756-5-git-send-email-mtitinger@baylibre.com>
- <56423613.6090403@metafoo.de> <5644675A.2080308@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	mturquette@baylibre.com, bcousson@baylibre.com,
-	ptitiano@baylibre.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <564780F6.5040300@kernel.org>
-Date: Sat, 14 Nov 2015 18:44:06 +0000
+Received: from mout01.posteo.de ([185.67.36.65]:58372 "EHLO mout01.posteo.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751734AbbKNSpx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 14 Nov 2015 13:45:53 -0500
+Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
+	by mout01.posteo.de (Postfix) with ESMTPS id 391B220947
+	for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2015 19:45:50 +0100 (CET)
+Message-ID: <56478136.3040200@posteo.de>
+Date: Sat, 14 Nov 2015 19:45:10 +0100
+From: Martin Kepplinger <martink@posteo.de>
 MIME-Version: 1.0
-In-Reply-To: <5644675A.2080308@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
+	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: Re: [PATCH 1/3] iio: mma8452: add freefall detection for Freescale's
+ accelerometers
+References: <1447267094-2248-1-git-send-email-martink@posteo.de> <5647778E.3090106@kernel.org>
+In-Reply-To: <5647778E.3090106@kernel.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/11/15 10:18, Marc Titinger wrote:
-> On 10/11/2015 19:23, Lars-Peter Clausen wrote:
->> On 11/10/2015 05:07 PM, Marc Titinger wrote:
->>> Capture the active scan_elements into a kfifo.
->>> The capture thread will compute the remaining time until the next capture
->>> tick, and do an active wait (udelay).
->>>
->>> This will produce a stream of up to fours channels plus a 64bits
->>> timestamps (ns).
->>>
->>> # iio_readdev ina226 |  od -x
->>> WARNING: High-speed mode not enabled
->>> 0000000 042f 0d5a 002e 010c 4be8 4eb4 0013 0000
->>> 0000020 0430 0d5a 002e 010c a704 4f3e 0013 0000
->>> 0000040 0430 0d5a 002e 010c b477 4fc7 0013 0000
->>> 0000060 042f 0d5b 002e 010c 8052 5050 0013 0000
->>> 0000100 042f 0d5b 002e 010c 5d92 50d8 0013 0000
->>> 0000120 0430 0d5a 002e 010c fa59 515e 0013 0000
->>> 0000140 0430 0d5b 002e 010c 95d2 51e5 0013 0000
->>>
->>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
-> 
-> Hi Lars,
-> 
+Am 2015-11-14 um 19:03 schrieb Jonathan Cameron:
+> On 11/11/15 18:38, Martin Kepplinger wrote:
+>> This adds freefall event detection to the supported devices. It adds
+>> the in_accel_x&y&z_mag_falling_en iio event attribute, which activates
+>> freefall mode.
 >>
->> Interesting approach. I think if we are going to due this we want to make
->> this kind of emulation generic. Have you seen the software trigger and
->> configfs support patches[1] from Daniel? It kind of achieves the same as you
->> do, but using hrtimers.
+>> In freefall mode, the current acceleration values of all activated axis
+>> are added and if the *sum* falls *under* the threshold specified
+>> (in_accel_mag_falling_value), the appropriate IIO event code
+>> is generated.
+>>
+>> By enabling freefall mode (in_accel_x&y&z_mag_falling_en)
+>> all 3 axis are enabled too as this describes a classic freefall
+>> detection. Of course the user is free to disable one or more directions.
+>>
+>> The values of rising and falling versions of various sysfs files are
+>> shared, which is compliant to the IIO specification.
+>>
+>> This is what the sysfs "events" directory for these devices looks
+>> like after this change:
+>>
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_period
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_value
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_period
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_value
+>> -r--r--r--    4096 Oct 23 08:45 in_accel_scale
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x&y&z_mag_falling_en
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_falling_en
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_rising_en
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_falling_en
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_rising_en
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_falling_en
+>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_rising_en
+>>
+>> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+>> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+> Looks pretty good to me (other than obviously the bits Lars already
+> picked up on!)
 > 
+> My only real comment was that you could do the rest of the combined
+> possibilities whilst you are here (if you want to!)  You've
+> picked the mostly obviously useful one though so maybe leave it
+> at that.
 
-> I totally agree, let me have a look on those patches maybe I could
-> add an active waiting scheme for platforms w/o hrtimers ?
-I've no idea if this is a remotely common case any more but in theory
-I'd have no objection to such a patch though I would like it to be
-a stand alone trigger similar to that used in the patch Daniel has
-submitted.
+I'm not sure what you mean. There is only in_accel_x&y&z_mag_falling_en
+documented. So my guess was to have this to enable freefall mode, taking
+into account the currently enabled falling axis
+(in_accel_x_mag_falling_en, ...).
 
->>
->>>
->>> ---
->>> Ina2xx does not support auto-increment, hence the capture threads sticks
->>> with single register reads instead of regmap_bulk_read.
->>>
->>> The proper scales must be applied to those raw register
->>> values, I'm in favor of doing the conversion in userland in a client plugin
->>
->> Yes, conversion should not be done in kernel space, we don't want to impose
->> the performance penalty on users which don't need it and you can typically
->> do it faster in userspace anyway where you have floats and SSE and what not.
->>
->>> for instance a sigrok
->>
->> Slightly OT, but do you already have some Sigrok IIO support? I have this
->> scheduled for end of the month, maybe we can align our strategies here and
->> avoid duplicated work.
-> 
+Plus enabling all of them. The user has to check it anyways, but maybe I
+should leave that out (which is a slightly different matter from what
+you meant).
 
-> How fortunate! I've started some preliminary work like cloning the
-> demo driver into a skeletton for 'hardware/generic-iio/api.c', adding
-> the build/ac plumbing, and linking to libiio with the idea of using
-> iio_info to create a generic enumeration of the iio-context into
-> sigrok channels.
 > 
-> Now, I'm not familiar with Glib and it might not be my prio until a
-> couple of weeks, so I'd be super happy to wait for you if you are
-> keen to do that part :)
-> 
-> What would be the best spot to chat about this ?
-> 
-
-> Marc.
-> 
-> 
+> Jonathan
+>> ---
+>>  drivers/iio/accel/mma8452.c | 114 ++++++++++++++++++++++++++++++++++++++++++--
+>>  1 file changed, 111 insertions(+), 3 deletions(-)
 >>
->> - Lars
->>
->> [1] https://lkml.org/lkml/2015/8/10/877
+>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+>> index 116a6e4..dedcc1d 100644
+>> --- a/drivers/iio/accel/mma8452.c
+>> +++ b/drivers/iio/accel/mma8452.c
+>> @@ -15,7 +15,7 @@
+>>   *
+>>   * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
+>>   *
+>> - * TODO: orientation / freefall events, autosleep
+>> + * TODO: orientation events, autosleep
+>>   */
+>>  
+>>  #include <linux/module.h>
+>> @@ -144,6 +144,12 @@ struct mma_chip_info {
+>>  	u8 ev_count;
+>>  };
+>>  
+>> +enum {
+>> +	axis_x,
+>> +	axis_y,
+>> +	axis_z,
+>> +};
+>> +
+>>  static int mma8452_drdy(struct mma8452_data *data)
+>>  {
+>>  	int tries = 150;
+>> @@ -410,6 +416,74 @@ fail:
+>>  	return ret;
+>>  }
+>>  
+>> +static ssize_t mma8452_get_freefall_mode(struct device *dev,
+>> +					 struct device_attribute *attr,
+>> +					 char *buf)
+>> +{
+>> +	int val;
+>> +	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
+>> +					     to_i2c_client(dev)));
+>> +	const struct mma_chip_info *chip = data->chip_info;
+>> +
+>> +	mutex_lock(&data->lock);
+>> +	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
+>> +	mutex_unlock(&data->lock);
+>> +	if (val < 0)
+>> +		return val;
+>> +
+>> +	return scnprintf(buf, PAGE_SIZE, "%d\n",
+>> +			 !(val & MMA8452_FF_MT_CFG_OAE));
+>> +}
+>> +
+>> +static ssize_t mma8452_set_freefall_mode(struct device *dev,
+>> +					 struct device_attribute *attr,
+>> +					 const char *buf,
+>> +					 size_t len)
+>> +{
+>> +	int val, ret;
+>> +	u8 user_val;
+>> +	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
+>> +					     to_i2c_client(dev)));
+>> +	const struct mma_chip_info *chip = data->chip_info;
+>> +
+>> +	ret = kstrtou8(buf, 10, &user_val);
+>> +	if (ret)
+>> +		goto err;
+>> +
+>> +	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
+>> +	if (val < 0) {
+>> +		ret = val;
+>> +		goto err;
+>> +	}
+>> +
+>> +	if (user_val && (val & MMA8452_FF_MT_CFG_OAE)) {
+>> +		val |= BIT(axis_x + chip->ev_cfg_chan_shift);
+>> +		val |= BIT(axis_y + chip->ev_cfg_chan_shift);
+>> +		val |= BIT(axis_z + chip->ev_cfg_chan_shift);
+>> +		val &= ~MMA8452_FF_MT_CFG_OAE;
+>> +	} else if (!user_val && !(val & MMA8452_FF_MT_CFG_OAE)) {
+>> +		val &= ~BIT(axis_x + chip->ev_cfg_chan_shift);
+>> +		val &= ~BIT(axis_y + chip->ev_cfg_chan_shift);
+>> +		val &= ~BIT(axis_z + chip->ev_cfg_chan_shift);
+>> +		val |= MMA8452_FF_MT_CFG_OAE;
+>> +	}
+> It would be a pain to do perhaps and of limited interest, but
+> you could support all the combinations as well as separate
+> events... (clearly enabling one disables another, but that's fine
+> under the ABI)
+> 
+> (There's a reason we have x&y, x&z, etc :)  Maybe it's one
+> to leave for an intersted party to pick up in future if they
+> care.
+> 
+>> +
+>> +	ret = mma8452_change_config(data, chip->ev_cfg, val);
+>> +	if (ret)
+>> +		goto err;
+>> +
+>> +	return len;
+>> +err:
+>> +	return ret;
+>> +}
+>> +
+>> +static IIO_DEVICE_ATTR_NAMED(accel_xayaz_mag_falling_en,
+>> +			     in_accel_x&y&z_mag_falling_en,
+>> +			     S_IRUGO | S_IWUSR,
+>> +			     mma8452_get_freefall_mode,
+>> +			     mma8452_set_freefall_mode,
+>> +			     0);
+>> +
+> Lars is correct on this one. If it's not getting created something is
+> going wrong in an odd fashion!
+> 
+>>  static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
+>>  					   int val, int val2)
+>>  {
+>> @@ -631,7 +705,6 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+>>  		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
+>>  
+>>  	val |= chip->ev_cfg_ele;
+>> -	val |= MMA8452_FF_MT_CFG_OAE;
+>>  
+>>  	return mma8452_change_config(data, chip->ev_cfg, val);
+>>  }
+>> @@ -640,12 +713,26 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
+>>  {
+>>  	struct mma8452_data *data = iio_priv(indio_dev);
+>>  	s64 ts = iio_get_time_ns();
+>> -	int src;
+>> +	int src, cfg;
+>>  
+>>  	src = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_src);
+>>  	if (src < 0)
+>>  		return;
+>>  
+>> +	cfg = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_cfg);
+>> +	if (cfg < 0)
+>> +		return;
+>> +
+>> +	if (!(cfg & MMA8452_FF_MT_CFG_OAE)) {
+>> +		iio_push_event(indio_dev,
+>> +			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
+>> +						  IIO_MOD_X_AND_Y_AND_Z,
+>> +						  IIO_EV_TYPE_MAG,
+>> +						  IIO_EV_DIR_FALLING),
+>> +			       ts);
+>> +		return;
+>> +	}
+>> +
+>>  	if (src & data->chip_info->ev_src_xe)
+>>  		iio_push_event(indio_dev,
+>>  			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
+>> @@ -758,6 +845,13 @@ static const struct iio_event_spec mma8452_motion_event[] = {
+>>  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+>>  					BIT(IIO_EV_INFO_PERIOD)
+>>  	},
+>> +	{
+>> +		.type = IIO_EV_TYPE_MAG,
+>> +		.dir = IIO_EV_DIR_FALLING,
+>> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+>> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+>> +					BIT(IIO_EV_INFO_PERIOD)
+>> +	},
+>>  };
+>>  
+>>  /*
+>> @@ -768,6 +862,7 @@ static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
+>>  
+>>  static struct attribute *mma8452_event_attributes[] = {
+>>  	&iio_const_attr_accel_transient_scale.dev_attr.attr,
+>> +	&iio_dev_attr_accel_xayaz_mag_falling_en.dev_attr.attr,
+>>  	NULL,
+>>  };
+>>  
+>> @@ -1057,6 +1152,7 @@ static int mma8452_probe(struct i2c_client *client,
+>>  	struct mma8452_data *data;
+>>  	struct iio_dev *indio_dev;
+>>  	int ret;
+>> +	u8 val;
+>>  	const struct of_device_id *match;
+>>  
+>>  	match = of_match_device(mma8452_dt_ids, &client->dev);
+>> @@ -1158,6 +1254,18 @@ static int mma8452_probe(struct i2c_client *client,
+>>  			return ret;
+>>  	}
+>>  
+>> +	/* don't activate freefall mode on startup */
+>> +	ret = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_cfg);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	val = ret;
+>> +	ret = i2c_smbus_write_byte_data(client,
+>> +					data->chip_info->ev_cfg,
+>> +					val | MMA8452_FF_MT_CFG_OAE);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>>  	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+>>  			  (MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+>>  	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
 >>
 > 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
