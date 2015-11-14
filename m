@@ -1,291 +1,134 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41492 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41520 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751033AbbKNTD2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Nov 2015 14:03:28 -0500
-Subject: Re: [PATCH 1/3] iio: mma8452: add freefall detection for Freescale's
- accelerometers
-To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net,
-	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
-References: <1447267094-2248-1-git-send-email-martink@posteo.de>
- <5647778E.3090106@kernel.org> <56478136.3040200@posteo.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+	with ESMTP id S1751167AbbKNTGJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Nov 2015 14:06:09 -0500
+Subject: Re: [PATCH v4] iio: st-accel: add support for lis2dh12
+To: Daniel Baluta <daniel.baluta@gmail.com>,
+	Giuseppe Barba <giuseppe.barba@st.com>
+References: <1447313809-3342-1-git-send-email-giuseppe.barba@st.com>
+ <CAEnQRZCSrnQdJ+zCS-2dFJZWfnGzNLAE2ChxVFgsTuK+66QG3A@mail.gmail.com>
+Cc: Denis Ciocca <denis.ciocca@st.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5647857D.5050902@kernel.org>
-Date: Sat, 14 Nov 2015 19:03:25 +0000
+Message-ID: <5647861F.80209@kernel.org>
+Date: Sat, 14 Nov 2015 19:06:07 +0000
 MIME-Version: 1.0
-In-Reply-To: <56478136.3040200@posteo.de>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAEnQRZCSrnQdJ+zCS-2dFJZWfnGzNLAE2ChxVFgsTuK+66QG3A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/11/15 18:45, Martin Kepplinger wrote:
-> Am 2015-11-14 um 19:03 schrieb Jonathan Cameron:
->> On 11/11/15 18:38, Martin Kepplinger wrote:
->>> This adds freefall event detection to the supported devices. It adds
->>> the in_accel_x&y&z_mag_falling_en iio event attribute, which activates
->>> freefall mode.
->>>
->>> In freefall mode, the current acceleration values of all activated axis
->>> are added and if the *sum* falls *under* the threshold specified
->>> (in_accel_mag_falling_value), the appropriate IIO event code
->>> is generated.
->>>
->>> By enabling freefall mode (in_accel_x&y&z_mag_falling_en)
->>> all 3 axis are enabled too as this describes a classic freefall
->>> detection. Of course the user is free to disable one or more directions.
->>>
->>> The values of rising and falling versions of various sysfs files are
->>> shared, which is compliant to the IIO specification.
->>>
->>> This is what the sysfs "events" directory for these devices looks
->>> like after this change:
->>>
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_period
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_value
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_period
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_value
->>> -r--r--r--    4096 Oct 23 08:45 in_accel_scale
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x&y&z_mag_falling_en
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_falling_en
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_rising_en
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_falling_en
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_rising_en
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_falling_en
->>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_rising_en
->>>
->>> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
->>> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
->> Looks pretty good to me (other than obviously the bits Lars already
->> picked up on!)
+On 12/11/15 08:25, Daniel Baluta wrote:
+> On Thu, Nov 12, 2015 at 9:36 AM, Giuseppe Barba <giuseppe.barba@st.com> wrote:
+>> This commit add support for STMicroelectronics lis2dh12 accelerometer.
+>> Datasheet for this device can be found here:
 >>
->> My only real comment was that you could do the rest of the combined
->> possibilities whilst you are here (if you want to!)  You've
->> picked the mostly obviously useful one though so maybe leave it
->> at that.
+>> http://www.st.com/st-web-ui/static/active/en/resource/technical/
+>> document/datasheet/DM00091513.pdf
+>>
+>> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
 > 
-> I'm not sure what you mean. There is only in_accel_x&y&z_mag_falling_en
-> documented. So my guess was to have this to enable freefall mode, taking
-> into account the currently enabled falling axis
-> (in_accel_x_mag_falling_en, ...).
-Sure, but the set of modifiers allows for
-in_accel_x&y_mag_falling_* etc and they aren't documented in this particular
-form simply because no driver has used them yet ;)
-
+> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play.
 > 
-> Plus enabling all of them. The user has to check it anyways, but maybe I
-> should leave that out (which is a slightly different matter from what
-> you meant).
-> 
+>> ---
+>>  Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
+>>  drivers/iio/accel/Kconfig                            | 2 +-
+>>  drivers/iio/accel/st_accel.h                         | 1 +
+>>  drivers/iio/accel/st_accel_core.c                    | 1 +
+>>  drivers/iio/accel/st_accel_i2c.c                     | 5 +++++
+>>  drivers/iio/accel/st_accel_spi.c                     | 1 +
+>>  6 files changed, 10 insertions(+), 1 deletion(-)
 >>
->> Jonathan
->>> ---
->>>  drivers/iio/accel/mma8452.c | 114 ++++++++++++++++++++++++++++++++++++++++++--
->>>  1 file changed, 111 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->>> index 116a6e4..dedcc1d 100644
->>> --- a/drivers/iio/accel/mma8452.c
->>> +++ b/drivers/iio/accel/mma8452.c
->>> @@ -15,7 +15,7 @@
->>>   *
->>>   * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
->>>   *
->>> - * TODO: orientation / freefall events, autosleep
->>> + * TODO: orientation events, autosleep
->>>   */
->>>  
->>>  #include <linux/module.h>
->>> @@ -144,6 +144,12 @@ struct mma_chip_info {
->>>  	u8 ev_count;
->>>  };
->>>  
->>> +enum {
->>> +	axis_x,
->>> +	axis_y,
->>> +	axis_z,
->>> +};
->>> +
->>>  static int mma8452_drdy(struct mma8452_data *data)
->>>  {
->>>  	int tries = 150;
->>> @@ -410,6 +416,74 @@ fail:
->>>  	return ret;
->>>  }
->>>  
->>> +static ssize_t mma8452_get_freefall_mode(struct device *dev,
->>> +					 struct device_attribute *attr,
->>> +					 char *buf)
->>> +{
->>> +	int val;
->>> +	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
->>> +					     to_i2c_client(dev)));
->>> +	const struct mma_chip_info *chip = data->chip_info;
->>> +
->>> +	mutex_lock(&data->lock);
->>> +	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
->>> +	mutex_unlock(&data->lock);
->>> +	if (val < 0)
->>> +		return val;
->>> +
->>> +	return scnprintf(buf, PAGE_SIZE, "%d\n",
->>> +			 !(val & MMA8452_FF_MT_CFG_OAE));
->>> +}
->>> +
->>> +static ssize_t mma8452_set_freefall_mode(struct device *dev,
->>> +					 struct device_attribute *attr,
->>> +					 const char *buf,
->>> +					 size_t len)
->>> +{
->>> +	int val, ret;
->>> +	u8 user_val;
->>> +	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
->>> +					     to_i2c_client(dev)));
->>> +	const struct mma_chip_info *chip = data->chip_info;
->>> +
->>> +	ret = kstrtou8(buf, 10, &user_val);
->>> +	if (ret)
->>> +		goto err;
->>> +
->>> +	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
->>> +	if (val < 0) {
->>> +		ret = val;
->>> +		goto err;
->>> +	}
->>> +
->>> +	if (user_val && (val & MMA8452_FF_MT_CFG_OAE)) {
->>> +		val |= BIT(axis_x + chip->ev_cfg_chan_shift);
->>> +		val |= BIT(axis_y + chip->ev_cfg_chan_shift);
->>> +		val |= BIT(axis_z + chip->ev_cfg_chan_shift);
->>> +		val &= ~MMA8452_FF_MT_CFG_OAE;
->>> +	} else if (!user_val && !(val & MMA8452_FF_MT_CFG_OAE)) {
->>> +		val &= ~BIT(axis_x + chip->ev_cfg_chan_shift);
->>> +		val &= ~BIT(axis_y + chip->ev_cfg_chan_shift);
->>> +		val &= ~BIT(axis_z + chip->ev_cfg_chan_shift);
->>> +		val |= MMA8452_FF_MT_CFG_OAE;
->>> +	}
->> It would be a pain to do perhaps and of limited interest, but
->> you could support all the combinations as well as separate
->> events... (clearly enabling one disables another, but that's fine
->> under the ABI)
+>> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+>> index d3ccdb1..d4b87cc 100644
+>> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
+>> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+>> @@ -36,6 +36,7 @@ Accelerometers:
+>>  - st,lsm303dlm-accel
+>>  - st,lsm330-accel
+>>  - st,lsm303agr-accel
+>> +- st,lis2dh12-accel
 >>
->> (There's a reason we have x&y, x&z, etc :)  Maybe it's one
->> to leave for an intersted party to pick up in future if they
->> care.
+>>  Gyroscopes:
+>>  - st,l3g4200d-gyro
+>> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+>> index 87487d3..edc29b1 100644
+>> --- a/drivers/iio/accel/Kconfig
+>> +++ b/drivers/iio/accel/Kconfig
+>> @@ -64,7 +64,7 @@ config IIO_ST_ACCEL_3AXIS
+>>         help
+>>           Say yes here to build support for STMicroelectronics accelerometers:
+>>           LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
+>> -         LIS331DLH, LSM303DL, LSM303DLM, LSM330.
+>> +         LIS331DLH, LSM303DL, LSM303DLM, LSM330, LIS2DH12.
 >>
->>> +
->>> +	ret = mma8452_change_config(data, chip->ev_cfg, val);
->>> +	if (ret)
->>> +		goto err;
->>> +
->>> +	return len;
->>> +err:
->>> +	return ret;
->>> +}
->>> +
->>> +static IIO_DEVICE_ATTR_NAMED(accel_xayaz_mag_falling_en,
->>> +			     in_accel_x&y&z_mag_falling_en,
->>> +			     S_IRUGO | S_IWUSR,
->>> +			     mma8452_get_freefall_mode,
->>> +			     mma8452_set_freefall_mode,
->>> +			     0);
->>> +
->> Lars is correct on this one. If it's not getting created something is
->> going wrong in an odd fashion!
+>>           This driver can also be built as a module. If so, these modules
+>>           will be created:
+>> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+>> index 468f21f..5d4a189 100644
+>> --- a/drivers/iio/accel/st_accel.h
+>> +++ b/drivers/iio/accel/st_accel.h
+>> @@ -27,6 +27,7 @@
+>>  #define LSM303DLM_ACCEL_DEV_NAME       "lsm303dlm_accel"
+>>  #define LSM330_ACCEL_DEV_NAME          "lsm330_accel"
+>>  #define LSM303AGR_ACCEL_DEV_NAME       "lsm303agr_accel"
+>> +#define LIS2DH12_ACCEL_DEV_NAME                "lis2dh12_accel"
 >>
->>>  static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
->>>  					   int val, int val2)
->>>  {
->>> @@ -631,7 +705,6 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
->>>  		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
->>>  
->>>  	val |= chip->ev_cfg_ele;
->>> -	val |= MMA8452_FF_MT_CFG_OAE;
->>>  
->>>  	return mma8452_change_config(data, chip->ev_cfg, val);
->>>  }
->>> @@ -640,12 +713,26 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
->>>  {
->>>  	struct mma8452_data *data = iio_priv(indio_dev);
->>>  	s64 ts = iio_get_time_ns();
->>> -	int src;
->>> +	int src, cfg;
->>>  
->>>  	src = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_src);
->>>  	if (src < 0)
->>>  		return;
->>>  
->>> +	cfg = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_cfg);
->>> +	if (cfg < 0)
->>> +		return;
->>> +
->>> +	if (!(cfg & MMA8452_FF_MT_CFG_OAE)) {
->>> +		iio_push_event(indio_dev,
->>> +			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
->>> +						  IIO_MOD_X_AND_Y_AND_Z,
->>> +						  IIO_EV_TYPE_MAG,
->>> +						  IIO_EV_DIR_FALLING),
->>> +			       ts);
->>> +		return;
->>> +	}
->>> +
->>>  	if (src & data->chip_info->ev_src_xe)
->>>  		iio_push_event(indio_dev,
->>>  			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
->>> @@ -758,6 +845,13 @@ static const struct iio_event_spec mma8452_motion_event[] = {
->>>  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
->>>  					BIT(IIO_EV_INFO_PERIOD)
->>>  	},
->>> +	{
->>> +		.type = IIO_EV_TYPE_MAG,
->>> +		.dir = IIO_EV_DIR_FALLING,
->>> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
->>> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
->>> +					BIT(IIO_EV_INFO_PERIOD)
->>> +	},
->>>  };
->>>  
->>>  /*
->>> @@ -768,6 +862,7 @@ static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
->>>  
->>>  static struct attribute *mma8452_event_attributes[] = {
->>>  	&iio_const_attr_accel_transient_scale.dev_attr.attr,
->>> +	&iio_dev_attr_accel_xayaz_mag_falling_en.dev_attr.attr,
->>>  	NULL,
->>>  };
->>>  
->>> @@ -1057,6 +1152,7 @@ static int mma8452_probe(struct i2c_client *client,
->>>  	struct mma8452_data *data;
->>>  	struct iio_dev *indio_dev;
->>>  	int ret;
->>> +	u8 val;
->>>  	const struct of_device_id *match;
->>>  
->>>  	match = of_match_device(mma8452_dt_ids, &client->dev);
->>> @@ -1158,6 +1254,18 @@ static int mma8452_probe(struct i2c_client *client,
->>>  			return ret;
->>>  	}
->>>  
->>> +	/* don't activate freefall mode on startup */
->>> +	ret = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_cfg);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	val = ret;
->>> +	ret = i2c_smbus_write_byte_data(client,
->>> +					data->chip_info->ev_cfg,
->>> +					val | MMA8452_FF_MT_CFG_OAE);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>>  	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
->>>  			  (MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
->>>  	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
->>>
+>>  /**
+>>  * struct st_sensors_platform_data - default accel platform data
+>> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+>> index dab8b76..9d973f1 100644
+>> --- a/drivers/iio/accel/st_accel_core.c
+>> +++ b/drivers/iio/accel/st_accel_core.c
+>> @@ -234,6 +234,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+>>                         [3] = LSM330DL_ACCEL_DEV_NAME,
+>>                         [4] = LSM330DLC_ACCEL_DEV_NAME,
+>>                         [5] = LSM303AGR_ACCEL_DEV_NAME,
+>> +                       [6] = LIS2DH12_ACCEL_DEV_NAME,
+>>                 },
+>>                 .ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+>>                 .odr = {
+>> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+>> index 8b9cc84..294a32f 100644
+>> --- a/drivers/iio/accel/st_accel_i2c.c
+>> +++ b/drivers/iio/accel/st_accel_i2c.c
+>> @@ -72,6 +72,10 @@ static const struct of_device_id st_accel_of_match[] = {
+>>                 .compatible = "st,lsm303agr-accel",
+>>                 .data = LSM303AGR_ACCEL_DEV_NAME,
+>>         },
+>> +       {
+>> +               .compatible = "st,lis2dh12-accel",
+>> +               .data = LIS2DH12_ACCEL_DEV_NAME,
+>> +       },
+>>         {},
+>>  };
+>>  MODULE_DEVICE_TABLE(of, st_accel_of_match);
+>> @@ -121,6 +125,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+>>         { LSM303DLM_ACCEL_DEV_NAME },
+>>         { LSM330_ACCEL_DEV_NAME },
+>>         { LSM303AGR_ACCEL_DEV_NAME },
+>> +       { LIS2DH12_ACCEL_DEV_NAME },
+>>         {},
+>>  };
+>>  MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+>> diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
+>> index 54b61a3..e82bedf 100644
+>> --- a/drivers/iio/accel/st_accel_spi.c
+>> +++ b/drivers/iio/accel/st_accel_spi.c
+>> @@ -58,6 +58,7 @@ static const struct spi_device_id st_accel_id_table[] = {
+>>         { LSM303DLM_ACCEL_DEV_NAME },
+>>         { LSM330_ACCEL_DEV_NAME },
+>>         { LSM303AGR_ACCEL_DEV_NAME },
+>> +       { LIS2DH12_ACCEL_DEV_NAME },
+>>         {},
+>>  };
+>>  MODULE_DEVICE_TABLE(spi, st_accel_id_table);
+>> --
+>> 1.9.1
 >>
-> 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
