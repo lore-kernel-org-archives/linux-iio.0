@@ -1,270 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41167 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41339 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751327AbbKNSEB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Nov 2015 13:04:01 -0500
-Subject: Re: [PATCH 1/3] iio: mma8452: add freefall detection for Freescale's
- accelerometers
-To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net,
-	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
-References: <1447267094-2248-1-git-send-email-martink@posteo.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+	with ESMTP id S1751448AbbKNSgP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Nov 2015 13:36:15 -0500
+Subject: Re: [PATCH] iio: st_sensors: request any context IRQ
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1447333964-10276-1-git-send-email-linus.walleij@linaro.org>
+Cc: Denis Ciocca <denis.ciocca@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5647778E.3090106@kernel.org>
-Date: Sat, 14 Nov 2015 18:03:58 +0000
+Message-ID: <56477F1B.4000508@kernel.org>
+Date: Sat, 14 Nov 2015 18:36:11 +0000
 MIME-Version: 1.0
-In-Reply-To: <1447267094-2248-1-git-send-email-martink@posteo.de>
+In-Reply-To: <1447333964-10276-1-git-send-email-linus.walleij@linaro.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/11/15 18:38, Martin Kepplinger wrote:
-> This adds freefall event detection to the supported devices. It adds
-> the in_accel_x&y&z_mag_falling_en iio event attribute, which activates
-> freefall mode.
+On 12/11/15 13:12, Linus Walleij wrote:
+> It really doesn't matter if the poll is triggered from a
+> fastpath or threaded IRQ, the IIO core runs its own interrupt
+> thread anyway. Sometimes this is connected to a hard IRQ line,
+> sometimes to something on an I2C expander that needs to
+> run from a thread, so request any context IRQ.
 > 
-> In freefall mode, the current acceleration values of all activated axis
-> are added and if the *sum* falls *under* the threshold specified
-> (in_accel_mag_falling_value), the appropriate IIO event code
-> is generated.
-> 
-> By enabling freefall mode (in_accel_x&y&z_mag_falling_en)
-> all 3 axis are enabled too as this describes a classic freefall
-> detection. Of course the user is free to disable one or more directions.
-> 
-> The values of rising and falling versions of various sysfs files are
-> shared, which is compliant to the IIO specification.
-> 
-> This is what the sysfs "events" directory for these devices looks
-> like after this change:
-> 
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_period
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_value
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_period
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_value
-> -r--r--r--    4096 Oct 23 08:45 in_accel_scale
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_x&y&z_mag_falling_en
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_falling_en
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_rising_en
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_falling_en
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_rising_en
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_falling_en
-> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_rising_en
-> 
-> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-Looks pretty good to me (other than obviously the bits Lars already
-picked up on!)
+> Cc: Denis Ciocca <denis.ciocca@st.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Hi Linus,
 
-My only real comment was that you could do the rest of the combined
-possibilities whilst you are here (if you want to!)  You've
-picked the mostly obviously useful one though so maybe leave it
-at that.
+Note first that there is nothing stopping any random device
+hanging off the trigger - so we can't make any device specific
+assumptions.
+
+>From the start the way it was built up pretty much assumed
+we had a real hardware interrupt to drive this.  Interesting
+question is does it matter - we jump through hoops to drop
+back into interrupt context at times. Perhaps we don't need to
+- I can't honestly remember why we did this and it was pre
+threaded interrupts so perhaps the assumptions are no longer
+valid.
+
+My knowledge of the irq handling is perhaps not
+deep enough but I can follow through code ;)  So here goes.
+
+The result of this as you've identified is that we may call the 
+function iio_trigger_generic_data_ready_poll from either a thread
+context or a interrupt context.
+
+This then calls generic_handle_irq for each of devices hanging
+off the trigger and ultimately desc->handle_irq and on
+to handle_simple_irq (fun this isn't it ;) This calls onto
+handle_irq_event and after a few more jumps ends up at
+handle_irq_event_percpu in kernel/irq/handle.c
+
+This calls the top half interrupt just fine an then if it
+gets an IRQ_WAKE_THREAD (most of the time)
+we call __irq_wake_thread.  So the only remaining question
+is there anything that actually requires the thread to be woken
+from interrupt context...
+
+Ah, this is where it come unstuck...
+__irq_wake_thread explicitly makes the point that it it is running
+only on one cpu at a time and in interrupt context.
+
+Now, we could restrict the st_sensors trigger to use by
+the device supplying it - we could then operate the
+entire trigger always in a state where sleeping is safe
+(and run it as a chained irq - entirely in a thread).
+
+We could perhaps do some 'magic' to allow this on the irq
+side.  As the interrupt is never threaded anyway (though the
+stuff hanging off it almost always is) we could do something
+nefarious such as:
+
+Call request_any_context_irq.  If this returns IRQC_IS_HARDIRQ
+continue as normal.  If it returns IRQ_C_IS_NESTED we could
+note this fact and handle any child interrupts hanging off the
+device differently. In the first instance we could refuse
+to let any pollfuncs with a top half interrupt bind to the trigger.
+The trigger would then call iio_trigger_poll_chained to
+call the nested interrupts (fine I think?)
+
+Am I missing something here?  This turned out to be a rather
+deeper rabbit hole than I thought it would be when I started!
 
 Jonathan
+
 > ---
->  drivers/iio/accel/mma8452.c | 114 ++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 111 insertions(+), 3 deletions(-)
+>  drivers/iio/common/st_sensors/st_sensors_trigger.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 116a6e4..dedcc1d 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -15,7 +15,7 @@
->   *
->   * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
->   *
-> - * TODO: orientation / freefall events, autosleep
-> + * TODO: orientation events, autosleep
->   */
->  
->  #include <linux/module.h>
-> @@ -144,6 +144,12 @@ struct mma_chip_info {
->  	u8 ev_count;
->  };
->  
-> +enum {
-> +	axis_x,
-> +	axis_y,
-> +	axis_z,
-> +};
-> +
->  static int mma8452_drdy(struct mma8452_data *data)
->  {
->  	int tries = 150;
-> @@ -410,6 +416,74 @@ fail:
->  	return ret;
->  }
->  
-> +static ssize_t mma8452_get_freefall_mode(struct device *dev,
-> +					 struct device_attribute *attr,
-> +					 char *buf)
-> +{
-> +	int val;
-> +	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
-> +					     to_i2c_client(dev)));
-> +	const struct mma_chip_info *chip = data->chip_info;
-> +
-> +	mutex_lock(&data->lock);
-> +	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
-> +	mutex_unlock(&data->lock);
-> +	if (val < 0)
-> +		return val;
-> +
-> +	return scnprintf(buf, PAGE_SIZE, "%d\n",
-> +			 !(val & MMA8452_FF_MT_CFG_OAE));
-> +}
-> +
-> +static ssize_t mma8452_set_freefall_mode(struct device *dev,
-> +					 struct device_attribute *attr,
-> +					 const char *buf,
-> +					 size_t len)
-> +{
-> +	int val, ret;
-> +	u8 user_val;
-> +	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
-> +					     to_i2c_client(dev)));
-> +	const struct mma_chip_info *chip = data->chip_info;
-> +
-> +	ret = kstrtou8(buf, 10, &user_val);
-> +	if (ret)
-> +		goto err;
-> +
-> +	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
-> +	if (val < 0) {
-> +		ret = val;
-> +		goto err;
-> +	}
-> +
-> +	if (user_val && (val & MMA8452_FF_MT_CFG_OAE)) {
-> +		val |= BIT(axis_x + chip->ev_cfg_chan_shift);
-> +		val |= BIT(axis_y + chip->ev_cfg_chan_shift);
-> +		val |= BIT(axis_z + chip->ev_cfg_chan_shift);
-> +		val &= ~MMA8452_FF_MT_CFG_OAE;
-> +	} else if (!user_val && !(val & MMA8452_FF_MT_CFG_OAE)) {
-> +		val &= ~BIT(axis_x + chip->ev_cfg_chan_shift);
-> +		val &= ~BIT(axis_y + chip->ev_cfg_chan_shift);
-> +		val &= ~BIT(axis_z + chip->ev_cfg_chan_shift);
-> +		val |= MMA8452_FF_MT_CFG_OAE;
-> +	}
-It would be a pain to do perhaps and of limited interest, but
-you could support all the combinations as well as separate
-events... (clearly enabling one disables another, but that's fine
-under the ABI)
-
-(There's a reason we have x&y, x&z, etc :)  Maybe it's one
-to leave for an intersted party to pick up in future if they
-care.
-
-> +
-> +	ret = mma8452_change_config(data, chip->ev_cfg, val);
-> +	if (ret)
-> +		goto err;
-> +
-> +	return len;
-> +err:
-> +	return ret;
-> +}
-> +
-> +static IIO_DEVICE_ATTR_NAMED(accel_xayaz_mag_falling_en,
-> +			     in_accel_x&y&z_mag_falling_en,
-> +			     S_IRUGO | S_IWUSR,
-> +			     mma8452_get_freefall_mode,
-> +			     mma8452_set_freefall_mode,
-> +			     0);
-> +
-Lars is correct on this one. If it's not getting created something is
-going wrong in an odd fashion!
-
->  static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
->  					   int val, int val2)
->  {
-> @@ -631,7 +705,6 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
->  		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
->  
->  	val |= chip->ev_cfg_ele;
-> -	val |= MMA8452_FF_MT_CFG_OAE;
->  
->  	return mma8452_change_config(data, chip->ev_cfg, val);
->  }
-> @@ -640,12 +713,26 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
->  	s64 ts = iio_get_time_ns();
-> -	int src;
-> +	int src, cfg;
->  
->  	src = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_src);
->  	if (src < 0)
->  		return;
->  
-> +	cfg = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_cfg);
-> +	if (cfg < 0)
-> +		return;
-> +
-> +	if (!(cfg & MMA8452_FF_MT_CFG_OAE)) {
-> +		iio_push_event(indio_dev,
-> +			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
-> +						  IIO_MOD_X_AND_Y_AND_Z,
-> +						  IIO_EV_TYPE_MAG,
-> +						  IIO_EV_DIR_FALLING),
-> +			       ts);
-> +		return;
-> +	}
-> +
->  	if (src & data->chip_info->ev_src_xe)
->  		iio_push_event(indio_dev,
->  			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
-> @@ -758,6 +845,13 @@ static const struct iio_event_spec mma8452_motion_event[] = {
->  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
->  					BIT(IIO_EV_INFO_PERIOD)
->  	},
-> +	{
-> +		.type = IIO_EV_TYPE_MAG,
-> +		.dir = IIO_EV_DIR_FALLING,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-> +					BIT(IIO_EV_INFO_PERIOD)
-> +	},
->  };
->  
->  /*
-> @@ -768,6 +862,7 @@ static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
->  
->  static struct attribute *mma8452_event_attributes[] = {
->  	&iio_const_attr_accel_transient_scale.dev_attr.attr,
-> +	&iio_dev_attr_accel_xayaz_mag_falling_en.dev_attr.attr,
->  	NULL,
->  };
->  
-> @@ -1057,6 +1152,7 @@ static int mma8452_probe(struct i2c_client *client,
->  	struct mma8452_data *data;
->  	struct iio_dev *indio_dev;
->  	int ret;
-> +	u8 val;
->  	const struct of_device_id *match;
->  
->  	match = of_match_device(mma8452_dt_ids, &client->dev);
-> @@ -1158,6 +1254,18 @@ static int mma8452_probe(struct i2c_client *client,
->  			return ret;
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> index 3c0aa17d753f..e33796cdd607 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> @@ -32,9 +32,8 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+>  		goto iio_trigger_alloc_error;
 >  	}
 >  
-> +	/* don't activate freefall mode on startup */
-> +	ret = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_cfg);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	val = ret;
-> +	ret = i2c_smbus_write_byte_data(client,
-> +					data->chip_info->ev_cfg,
-> +					val | MMA8452_FF_MT_CFG_OAE);
-> +	if (ret < 0)
-> +		return ret;
-> +
->  	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
->  			  (MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
->  	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+> -	err = request_threaded_irq(sdata->get_irq_data_ready(indio_dev),
+> +	err = request_any_context_irq(sdata->get_irq_data_ready(indio_dev),
+>  			iio_trigger_generic_data_rdy_poll,
+> -			NULL,
+>  			IRQF_TRIGGER_RISING,
+>  			sdata->trig->name,
+>  			sdata->trig);
 > 
 
