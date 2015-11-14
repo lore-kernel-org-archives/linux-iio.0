@@ -1,108 +1,110 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41339 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41379 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751448AbbKNSgP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Nov 2015 13:36:15 -0500
-Subject: Re: [PATCH] iio: st_sensors: request any context IRQ
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1447333964-10276-1-git-send-email-linus.walleij@linaro.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>
+	with ESMTP id S1751607AbbKNSoI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Nov 2015 13:44:08 -0500
+Subject: Re: [RFC 4/4] iio: ina2xx: add SOFTWARE buffer mode using an iio
+ kfifo.
+To: Marc Titinger <mtitinger@baylibre.com>,
+	Lars-Peter Clausen <lars@metafoo.de>, knaack.h@gmx.de,
+	pmeerw@pmeerw.net
+References: <1447171653-12756-1-git-send-email-mtitinger@baylibre.com>
+ <1447171653-12756-5-git-send-email-mtitinger@baylibre.com>
+ <56423613.6090403@metafoo.de> <5644675A.2080308@baylibre.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	mturquette@baylibre.com, bcousson@baylibre.com,
+	ptitiano@baylibre.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56477F1B.4000508@kernel.org>
-Date: Sat, 14 Nov 2015 18:36:11 +0000
+Message-ID: <564780F6.5040300@kernel.org>
+Date: Sat, 14 Nov 2015 18:44:06 +0000
 MIME-Version: 1.0
-In-Reply-To: <1447333964-10276-1-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <5644675A.2080308@baylibre.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/11/15 13:12, Linus Walleij wrote:
-> It really doesn't matter if the poll is triggered from a
-> fastpath or threaded IRQ, the IIO core runs its own interrupt
-> thread anyway. Sometimes this is connected to a hard IRQ line,
-> sometimes to something on an I2C expander that needs to
-> run from a thread, so request any context IRQ.
+On 12/11/15 10:18, Marc Titinger wrote:
+> On 10/11/2015 19:23, Lars-Peter Clausen wrote:
+>> On 11/10/2015 05:07 PM, Marc Titinger wrote:
+>>> Capture the active scan_elements into a kfifo.
+>>> The capture thread will compute the remaining time until the next capture
+>>> tick, and do an active wait (udelay).
+>>>
+>>> This will produce a stream of up to fours channels plus a 64bits
+>>> timestamps (ns).
+>>>
+>>> # iio_readdev ina226 |  od -x
+>>> WARNING: High-speed mode not enabled
+>>> 0000000 042f 0d5a 002e 010c 4be8 4eb4 0013 0000
+>>> 0000020 0430 0d5a 002e 010c a704 4f3e 0013 0000
+>>> 0000040 0430 0d5a 002e 010c b477 4fc7 0013 0000
+>>> 0000060 042f 0d5b 002e 010c 8052 5050 0013 0000
+>>> 0000100 042f 0d5b 002e 010c 5d92 50d8 0013 0000
+>>> 0000120 0430 0d5a 002e 010c fa59 515e 0013 0000
+>>> 0000140 0430 0d5b 002e 010c 95d2 51e5 0013 0000
+>>>
+>>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
 > 
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Hi Linus,
-
-Note first that there is nothing stopping any random device
-hanging off the trigger - so we can't make any device specific
-assumptions.
-
->From the start the way it was built up pretty much assumed
-we had a real hardware interrupt to drive this.  Interesting
-question is does it matter - we jump through hoops to drop
-back into interrupt context at times. Perhaps we don't need to
-- I can't honestly remember why we did this and it was pre
-threaded interrupts so perhaps the assumptions are no longer
-valid.
-
-My knowledge of the irq handling is perhaps not
-deep enough but I can follow through code ;)  So here goes.
-
-The result of this as you've identified is that we may call the 
-function iio_trigger_generic_data_ready_poll from either a thread
-context or a interrupt context.
-
-This then calls generic_handle_irq for each of devices hanging
-off the trigger and ultimately desc->handle_irq and on
-to handle_simple_irq (fun this isn't it ;) This calls onto
-handle_irq_event and after a few more jumps ends up at
-handle_irq_event_percpu in kernel/irq/handle.c
-
-This calls the top half interrupt just fine an then if it
-gets an IRQ_WAKE_THREAD (most of the time)
-we call __irq_wake_thread.  So the only remaining question
-is there anything that actually requires the thread to be woken
-from interrupt context...
-
-Ah, this is where it come unstuck...
-__irq_wake_thread explicitly makes the point that it it is running
-only on one cpu at a time and in interrupt context.
-
-Now, we could restrict the st_sensors trigger to use by
-the device supplying it - we could then operate the
-entire trigger always in a state where sleeping is safe
-(and run it as a chained irq - entirely in a thread).
-
-We could perhaps do some 'magic' to allow this on the irq
-side.  As the interrupt is never threaded anyway (though the
-stuff hanging off it almost always is) we could do something
-nefarious such as:
-
-Call request_any_context_irq.  If this returns IRQC_IS_HARDIRQ
-continue as normal.  If it returns IRQ_C_IS_NESTED we could
-note this fact and handle any child interrupts hanging off the
-device differently. In the first instance we could refuse
-to let any pollfuncs with a top half interrupt bind to the trigger.
-The trigger would then call iio_trigger_poll_chained to
-call the nested interrupts (fine I think?)
-
-Am I missing something here?  This turned out to be a rather
-deeper rabbit hole than I thought it would be when I started!
-
-Jonathan
-
-> ---
->  drivers/iio/common/st_sensors/st_sensors_trigger.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> Hi Lars,
 > 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> index 3c0aa17d753f..e33796cdd607 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> @@ -32,9 +32,8 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
->  		goto iio_trigger_alloc_error;
->  	}
->  
-> -	err = request_threaded_irq(sdata->get_irq_data_ready(indio_dev),
-> +	err = request_any_context_irq(sdata->get_irq_data_ready(indio_dev),
->  			iio_trigger_generic_data_rdy_poll,
-> -			NULL,
->  			IRQF_TRIGGER_RISING,
->  			sdata->trig->name,
->  			sdata->trig);
+>>
+>> Interesting approach. I think if we are going to due this we want to make
+>> this kind of emulation generic. Have you seen the software trigger and
+>> configfs support patches[1] from Daniel? It kind of achieves the same as you
+>> do, but using hrtimers.
 > 
+
+> I totally agree, let me have a look on those patches maybe I could
+> add an active waiting scheme for platforms w/o hrtimers ?
+I've no idea if this is a remotely common case any more but in theory
+I'd have no objection to such a patch though I would like it to be
+a stand alone trigger similar to that used in the patch Daniel has
+submitted.
+
+>>
+>>>
+>>> ---
+>>> Ina2xx does not support auto-increment, hence the capture threads sticks
+>>> with single register reads instead of regmap_bulk_read.
+>>>
+>>> The proper scales must be applied to those raw register
+>>> values, I'm in favor of doing the conversion in userland in a client plugin
+>>
+>> Yes, conversion should not be done in kernel space, we don't want to impose
+>> the performance penalty on users which don't need it and you can typically
+>> do it faster in userspace anyway where you have floats and SSE and what not.
+>>
+>>> for instance a sigrok
+>>
+>> Slightly OT, but do you already have some Sigrok IIO support? I have this
+>> scheduled for end of the month, maybe we can align our strategies here and
+>> avoid duplicated work.
+> 
+
+> How fortunate! I've started some preliminary work like cloning the
+> demo driver into a skeletton for 'hardware/generic-iio/api.c', adding
+> the build/ac plumbing, and linking to libiio with the idea of using
+> iio_info to create a generic enumeration of the iio-context into
+> sigrok channels.
+> 
+> Now, I'm not familiar with Glib and it might not be my prio until a
+> couple of weeks, so I'd be super happy to wait for you if you are
+> keen to do that part :)
+> 
+> What would be the best spot to chat about this ?
+> 
+
+> Marc.
+> 
+> 
+>>
+>> - Lars
+>>
+>> [1] https://lkml.org/lkml/2015/8/10/877
+>>
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
