@@ -1,614 +1,294 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41467 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41492 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750762AbbKNS7f (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Nov 2015 13:59:35 -0500
-Subject: Re: [RFC v2 1/2] iio: ina2xx: add direct IO support for TI INA2xx
- Power Monitors
-To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-References: <CAEnQRZBeZpBxSCf85MRmByguHA8kXTNp9+NPD2d3cdsMRb+74w@mail.gmail.com>
- <1447333052-12791-1-git-send-email-mtitinger@baylibre.com>
-From: Jonathan Cameron <jic23@kernel.org>
+	with ESMTP id S1751033AbbKNTD2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Nov 2015 14:03:28 -0500
+Subject: Re: [PATCH 1/3] iio: mma8452: add freefall detection for Freescale's
+ accelerometers
+To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
+	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
+References: <1447267094-2248-1-git-send-email-martink@posteo.de>
+ <5647778E.3090106@kernel.org> <56478136.3040200@posteo.de>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	mturquette@baylibre.com, bcousson@baylibre.com,
-	ptitiano@baylibre.com
-Message-ID: <56478493.3030703@kernel.org>
-Date: Sat, 14 Nov 2015 18:59:31 +0000
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5647857D.5050902@kernel.org>
+Date: Sat, 14 Nov 2015 19:03:25 +0000
 MIME-Version: 1.0
-In-Reply-To: <1447333052-12791-1-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <56478136.3040200@posteo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/11/15 12:57, Marc Titinger wrote:
-> Basic support or direct IO raw read, with averaging attribute.
-> Values are RAW, INT_PLUS_MICRO (Volt/Ampere/Watt).
+On 14/11/15 18:45, Martin Kepplinger wrote:
+> Am 2015-11-14 um 19:03 schrieb Jonathan Cameron:
+>> On 11/11/15 18:38, Martin Kepplinger wrote:
+>>> This adds freefall event detection to the supported devices. It adds
+>>> the in_accel_x&y&z_mag_falling_en iio event attribute, which activates
+>>> freefall mode.
+>>>
+>>> In freefall mode, the current acceleration values of all activated axis
+>>> are added and if the *sum* falls *under* the threshold specified
+>>> (in_accel_mag_falling_value), the appropriate IIO event code
+>>> is generated.
+>>>
+>>> By enabling freefall mode (in_accel_x&y&z_mag_falling_en)
+>>> all 3 axis are enabled too as this describes a classic freefall
+>>> detection. Of course the user is free to disable one or more directions.
+>>>
+>>> The values of rising and falling versions of various sysfs files are
+>>> shared, which is compliant to the IIO specification.
+>>>
+>>> This is what the sysfs "events" directory for these devices looks
+>>> like after this change:
+>>>
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_period
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_value
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_period
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_value
+>>> -r--r--r--    4096 Oct 23 08:45 in_accel_scale
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x&y&z_mag_falling_en
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_falling_en
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_rising_en
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_falling_en
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_rising_en
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_falling_en
+>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_rising_en
+>>>
+>>> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+>>> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+>> Looks pretty good to me (other than obviously the bits Lars already
+>> picked up on!)
+>>
+>> My only real comment was that you could do the rest of the combined
+>> possibilities whilst you are here (if you want to!)  You've
+>> picked the mostly obviously useful one though so maybe leave it
+>> at that.
 > 
-> Output of iio_info:
-> 
->      iio:device0: ina226
->       4 channels found:
->         power3:  (input)
->         1 channel-specific attributes found:
->                 attr 0: raw value: 1.150000
->         voltage0:  (input)
->         1 channel-specific attributes found:
->                 attr 0: raw value: 0.000003
->         voltage1:  (input)
->         1 channel-specific attributes found:
->                 attr 0: raw value: 4.277500
->         current2:  (input)
->         1 channel-specific attributes found:
->                 attr 0: raw value: 0.268000
->       2 device-specific attributes found:
->                 attr 0: in_calibscale value: 10000
->                 attr 1: in_mean_raw value: 4
->                 attr 2: in_sampling_frequency value: 455
-> 
-> Tested with ina226, on BeagleBoneBlack.
-> 
-> Datasheet: http://www.ti.com/lit/gpn/ina226
-> 
-> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
-Hi Marc
+> I'm not sure what you mean. There is only in_accel_x&y&z_mag_falling_en
+> documented. So my guess was to have this to enable freefall mode, taking
+> into account the currently enabled falling axis
+> (in_accel_x_mag_falling_en, ...).
+Sure, but the set of modifiers allows for
+in_accel_x&y_mag_falling_* etc and they aren't documented in this particular
+form simply because no driver has used them yet ;)
 
-To express a personal preference, please don't have series of patches as
-replies to the original thread.  It gets really hard to follow after
-a couple of revisions!
-
-May seem a random question, but what do you want to gain from an IIO
-driver over what the hwmon provides?
-
-Various bits inline..
-
-Mostly looks pretty good though.
-
-Jonathan
-> ---
 > 
-> v2 of series https://lkml.org/lkml/2015/11/10/370 :
+> Plus enabling all of them. The user has to check it anyways, but maybe I
+> should leave that out (which is a slightly different matter from what
+> you meant).
 > 
->         - squash patches adding SAMPL_FREQ and debugfs interface
->         - add regmap is_volatile and is_writeable callbacks
->         - fix Kconfig deps and alphabetical sorting
->         - simplification: use devm_iio_device_register
+>>
+>> Jonathan
+>>> ---
+>>>  drivers/iio/accel/mma8452.c | 114 ++++++++++++++++++++++++++++++++++++++++++--
+>>>  1 file changed, 111 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+>>> index 116a6e4..dedcc1d 100644
+>>> --- a/drivers/iio/accel/mma8452.c
+>>> +++ b/drivers/iio/accel/mma8452.c
+>>> @@ -15,7 +15,7 @@
+>>>   *
+>>>   * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
+>>>   *
+>>> - * TODO: orientation / freefall events, autosleep
+>>> + * TODO: orientation events, autosleep
+>>>   */
+>>>  
+>>>  #include <linux/module.h>
+>>> @@ -144,6 +144,12 @@ struct mma_chip_info {
+>>>  	u8 ev_count;
+>>>  };
+>>>  
+>>> +enum {
+>>> +	axis_x,
+>>> +	axis_y,
+>>> +	axis_z,
+>>> +};
+>>> +
+>>>  static int mma8452_drdy(struct mma8452_data *data)
+>>>  {
+>>>  	int tries = 150;
+>>> @@ -410,6 +416,74 @@ fail:
+>>>  	return ret;
+>>>  }
+>>>  
+>>> +static ssize_t mma8452_get_freefall_mode(struct device *dev,
+>>> +					 struct device_attribute *attr,
+>>> +					 char *buf)
+>>> +{
+>>> +	int val;
+>>> +	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
+>>> +					     to_i2c_client(dev)));
+>>> +	const struct mma_chip_info *chip = data->chip_info;
+>>> +
+>>> +	mutex_lock(&data->lock);
+>>> +	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
+>>> +	mutex_unlock(&data->lock);
+>>> +	if (val < 0)
+>>> +		return val;
+>>> +
+>>> +	return scnprintf(buf, PAGE_SIZE, "%d\n",
+>>> +			 !(val & MMA8452_FF_MT_CFG_OAE));
+>>> +}
+>>> +
+>>> +static ssize_t mma8452_set_freefall_mode(struct device *dev,
+>>> +					 struct device_attribute *attr,
+>>> +					 const char *buf,
+>>> +					 size_t len)
+>>> +{
+>>> +	int val, ret;
+>>> +	u8 user_val;
+>>> +	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
+>>> +					     to_i2c_client(dev)));
+>>> +	const struct mma_chip_info *chip = data->chip_info;
+>>> +
+>>> +	ret = kstrtou8(buf, 10, &user_val);
+>>> +	if (ret)
+>>> +		goto err;
+>>> +
+>>> +	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
+>>> +	if (val < 0) {
+>>> +		ret = val;
+>>> +		goto err;
+>>> +	}
+>>> +
+>>> +	if (user_val && (val & MMA8452_FF_MT_CFG_OAE)) {
+>>> +		val |= BIT(axis_x + chip->ev_cfg_chan_shift);
+>>> +		val |= BIT(axis_y + chip->ev_cfg_chan_shift);
+>>> +		val |= BIT(axis_z + chip->ev_cfg_chan_shift);
+>>> +		val &= ~MMA8452_FF_MT_CFG_OAE;
+>>> +	} else if (!user_val && !(val & MMA8452_FF_MT_CFG_OAE)) {
+>>> +		val &= ~BIT(axis_x + chip->ev_cfg_chan_shift);
+>>> +		val &= ~BIT(axis_y + chip->ev_cfg_chan_shift);
+>>> +		val &= ~BIT(axis_z + chip->ev_cfg_chan_shift);
+>>> +		val |= MMA8452_FF_MT_CFG_OAE;
+>>> +	}
+>> It would be a pain to do perhaps and of limited interest, but
+>> you could support all the combinations as well as separate
+>> events... (clearly enabling one disables another, but that's fine
+>> under the ABI)
+>>
+>> (There's a reason we have x&y, x&z, etc :)  Maybe it's one
+>> to leave for an intersted party to pick up in future if they
+>> care.
+>>
+>>> +
+>>> +	ret = mma8452_change_config(data, chip->ev_cfg, val);
+>>> +	if (ret)
+>>> +		goto err;
+>>> +
+>>> +	return len;
+>>> +err:
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static IIO_DEVICE_ATTR_NAMED(accel_xayaz_mag_falling_en,
+>>> +			     in_accel_x&y&z_mag_falling_en,
+>>> +			     S_IRUGO | S_IWUSR,
+>>> +			     mma8452_get_freefall_mode,
+>>> +			     mma8452_set_freefall_mode,
+>>> +			     0);
+>>> +
+>> Lars is correct on this one. If it's not getting created something is
+>> going wrong in an odd fashion!
+>>
+>>>  static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
+>>>  					   int val, int val2)
+>>>  {
+>>> @@ -631,7 +705,6 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+>>>  		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
+>>>  
+>>>  	val |= chip->ev_cfg_ele;
+>>> -	val |= MMA8452_FF_MT_CFG_OAE;
+>>>  
+>>>  	return mma8452_change_config(data, chip->ev_cfg, val);
+>>>  }
+>>> @@ -640,12 +713,26 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
+>>>  {
+>>>  	struct mma8452_data *data = iio_priv(indio_dev);
+>>>  	s64 ts = iio_get_time_ns();
+>>> -	int src;
+>>> +	int src, cfg;
+>>>  
+>>>  	src = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_src);
+>>>  	if (src < 0)
+>>>  		return;
+>>>  
+>>> +	cfg = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_cfg);
+>>> +	if (cfg < 0)
+>>> +		return;
+>>> +
+>>> +	if (!(cfg & MMA8452_FF_MT_CFG_OAE)) {
+>>> +		iio_push_event(indio_dev,
+>>> +			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
+>>> +						  IIO_MOD_X_AND_Y_AND_Z,
+>>> +						  IIO_EV_TYPE_MAG,
+>>> +						  IIO_EV_DIR_FALLING),
+>>> +			       ts);
+>>> +		return;
+>>> +	}
+>>> +
+>>>  	if (src & data->chip_info->ev_src_xe)
+>>>  		iio_push_event(indio_dev,
+>>>  			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
+>>> @@ -758,6 +845,13 @@ static const struct iio_event_spec mma8452_motion_event[] = {
+>>>  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+>>>  					BIT(IIO_EV_INFO_PERIOD)
+>>>  	},
+>>> +	{
+>>> +		.type = IIO_EV_TYPE_MAG,
+>>> +		.dir = IIO_EV_DIR_FALLING,
+>>> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+>>> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+>>> +					BIT(IIO_EV_INFO_PERIOD)
+>>> +	},
+>>>  };
+>>>  
+>>>  /*
+>>> @@ -768,6 +862,7 @@ static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
+>>>  
+>>>  static struct attribute *mma8452_event_attributes[] = {
+>>>  	&iio_const_attr_accel_transient_scale.dev_attr.attr,
+>>> +	&iio_dev_attr_accel_xayaz_mag_falling_en.dev_attr.attr,
+>>>  	NULL,
+>>>  };
+>>>  
+>>> @@ -1057,6 +1152,7 @@ static int mma8452_probe(struct i2c_client *client,
+>>>  	struct mma8452_data *data;
+>>>  	struct iio_dev *indio_dev;
+>>>  	int ret;
+>>> +	u8 val;
+>>>  	const struct of_device_id *match;
+>>>  
+>>>  	match = of_match_device(mma8452_dt_ids, &client->dev);
+>>> @@ -1158,6 +1254,18 @@ static int mma8452_probe(struct i2c_client *client,
+>>>  			return ret;
+>>>  	}
+>>>  
+>>> +	/* don't activate freefall mode on startup */
+>>> +	ret = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_cfg);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	val = ret;
+>>> +	ret = i2c_smbus_write_byte_data(client,
+>>> +					data->chip_info->ev_cfg,
+>>> +					val | MMA8452_FF_MT_CFG_OAE);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>>  	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+>>>  			  (MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+>>>  	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+>>>
+>>
 > 
-> ---
-> 
->  drivers/iio/adc/Kconfig      |   9 +
->  drivers/iio/adc/Makefile     |   1 +
->  drivers/iio/adc/ina2xx-iio.c | 472 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 482 insertions(+)
->  create mode 100644 drivers/iio/adc/ina2xx-iio.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index eb0cd89..087e5bd 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -170,6 +170,15 @@ config EXYNOS_ADC
->  	  of SoCs for drivers such as the touchscreen and hwmon to use to share
->  	  this resource.
->  
-> +config INA2XX_IIO
-> +	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
-> +	depends on I2C
-> +	select REGMAP_I2C
-> +	help
-> +	  Say yes here to build support for TI INA2xx familly Power Monitors.
-> +
-> +	  Note that this is not the existing hwmon interface for this device.
-> +
->  config LP8788_ADC
->  	tristate "LP8788 ADC driver"
->  	depends on MFD_LP8788
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index a096210..74e4341 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -19,6 +19,7 @@ obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
->  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
->  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
-> +obj-$(CONFIG_INA2XX_IIO) += ina2xx-iio.o
->  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->  obj-$(CONFIG_MAX1027) += max1027.o
->  obj-$(CONFIG_MAX1363) += max1363.o
-> diff --git a/drivers/iio/adc/ina2xx-iio.c b/drivers/iio/adc/ina2xx-iio.c
-> new file mode 100644
-> index 0000000..28b7919
-> --- /dev/null
-> +++ b/drivers/iio/adc/ina2xx-iio.c
-> @@ -0,0 +1,472 @@
-> +/*
-> + * INA2XX Current and Power Monitors
-> + *
-> + * Copyright 2015 Baylibre SAS.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * Based on linux/drivers/iio/adc/ad7291.c
-> + * Copyright 2010-2011 Analog Devices Inc.
-> + *
-> + * Based on linux/drivers/hwmon/ina2xx.c
-> + * Copyright 2012 Lothar Felten <l-felten@ti.com>
-> + *
-> + * Licensed under the GPL-2 or later.
-> + *
-> + * IIO driver for INA219-220-226-230-231
-> + *
-> + * Configurable 7-bit I2C slave address from 0x40 to 0x4F
-> + */
-> +#include <linux/module.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/i2c.h>
-> +#include <linux/regmap.h>
-> +#include <linux/platform_data/ina2xx.h>
-> +
-> +#include <linux/util_macros.h>
-> +
-> +/*
-> + * INA2XX registers definition
-> + */
-> +/* common register definitions */
-> +#define INA2XX_CONFIG                   0x00
-> +#define INA2XX_SHUNT_VOLTAGE            0x01	/* readonly */
-> +#define INA2XX_BUS_VOLTAGE              0x02	/* readonly */
-> +#define INA2XX_POWER                    0x03	/* readonly */
-> +#define INA2XX_CURRENT                  0x04	/* readonly */
-> +#define INA2XX_CALIBRATION              0x05
-> +
-> +/* register count */
-> +#define INA219_REGISTERS                6
-> +#define INA226_REGISTERS                8
-> +#define INA2XX_MAX_REGISTERS            8
-> +
-> +/* settings - depend on use case */
-> +#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=8 */
-> +#define INA226_CONFIG_DEFAULT           0x4327
-> +#define INA226_DEFAULT_AVG              4
-> +#define INA226_DEFAULT_FREQ             454
-> +
-> +#define INA2XX_RSHUNT_DEFAULT           10000
-> +
-> +/* bit mask for reading the averaging setting in the configuration register */
-> +#define INA226_AVG_RD_MASK              0x0E00
-genmask is always good for these.
-
-> +#define INA226_READ_AVG(reg)            (((reg) & INA226_AVG_RD_MASK) >> 9)
-> +#define INA226_SHIFT_AVG(val)           ((val) << 9)
-> +
-> +#define INA226_SFREQ_RD_MASK            0x01f8
-> +
-> +
-> +static bool ina2xx_is_writeable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	return (reg == INA2XX_CONFIG)
-> +	    || (reg == INA2XX_CALIBRATION);
-On one line I think this is still way less than 80 chars..
-> +}
-> +
-> +static bool ina2xx_is_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	return (reg != INA2XX_CONFIG);
-> +}
-> +
-> +static struct regmap_config ina2xx_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 16,
-> +
-> +	.writeable_reg = ina2xx_is_writeable_reg,
-> +	.volatile_reg = ina2xx_is_volatile_reg,
-> +};
-> +
-> +enum ina2xx_ids { ina219, ina226 };
-> +
-> +struct ina2xx_config {
-> +	u16 config_default;
-> +	int calibration_factor;
-> +	int registers;
-> +	int shunt_div;
-> +	int bus_voltage_shift;
-> +	int bus_voltage_lsb;	/* uV */
-> +	int power_lsb;		/* uW */
-> +};
-> +
-> +struct ina2xx_chip_info {
-> +	struct iio_dev *indio_dev;
-Having a pointer back to the indio_dev is usually a sign of
-something 'unusual' going on...  Will be interesting to see what it is for ;)
-
-Ah, that was easy, you don't use it that I can see.
-
-> +	const struct ina2xx_config *config;
-> +	struct mutex state_lock;
-> +	long rshunt;
-> +	int avg;
-> +	int freq;
-> +	int period_us;
-> +	struct regmap *regmap;
-> +};
-> +
-> +static const struct ina2xx_config ina2xx_config[] = {
-> +	[ina219] = {
-> +		    .config_default = INA219_CONFIG_DEFAULT,
-> +		    .calibration_factor = 40960000,
-> +		    .registers = INA219_REGISTERS,
-> +		    .shunt_div = 100,
-> +		    .bus_voltage_shift = 3,
-> +		    .bus_voltage_lsb = 4000,
-> +		    .power_lsb = 20000,
-> +		    },
-> +	[ina226] = {
-> +		    .config_default = INA226_CONFIG_DEFAULT,
-> +		    .calibration_factor = 5120000,
-> +		    .registers = INA226_REGISTERS,
-> +		    .shunt_div = 400,
-> +		    .bus_voltage_shift = 0,
-> +		    .bus_voltage_lsb = 1250,
-> +		    .power_lsb = 25000,
-> +		    },
-> +};
-> +
-> +static int ina2xx_get_value(struct ina2xx_chip_info *chip, u8 reg,
-> +			    unsigned int regval, int *val, int *uval)
-> +{
-> +	*val = 0;
-> +
-> +	switch (reg) {
-> +	case INA2XX_SHUNT_VOLTAGE:
-> +		/* signed register */
-> +		*uval = DIV_ROUND_CLOSEST((s16) regval,
-> +					  chip->config->shunt_div);
-> +		*val = *uval/1000000;
-> +		*uval = *uval - *val*1000000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-I'm somewhat unconvinced that this wrapper is adding anything over
-just doing this where you care about the result.
-Also, this is a straight forward linear conversion.  Do it in userspace
-by providing the relevant 'scale' element.
-> +
-> +	case INA2XX_BUS_VOLTAGE:
-> +		*uval = (regval >> chip->config->bus_voltage_shift)
-> +			* chip->config->bus_voltage_lsb;
-> +		*val = *uval/1000000;
-> +		*uval = *uval - *val*1000000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	case INA2XX_POWER:
-> +		*uval = regval * chip->config->power_lsb;
-> +		*val = *uval/1000000;
-> +		*uval = *uval - *val*1000000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	case INA2XX_CURRENT:
-> +		/* signed register, LSB=1mA (selected), in mA */
-> +		*uval = (s16) regval * 1000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	case INA2XX_CALIBRATION:
-> +		*val = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
-> +					regval);
-> +		return IIO_VAL_INT;
-> +
-> +	default:
-> +		/* programmer goofed */
-> +		WARN_ON_ONCE(1);
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int ina2xx_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
-> +{
-> +	int ret;
-> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
-> +	unsigned int regval;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = regmap_read(chip->regmap, chan->address, &regval);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		return ina2xx_get_value(chip, chan->address, regval, val, val2);
-> +
-> +	case IIO_CHAN_INFO_AVERAGE_RAW:
-> +		*val = chip->avg;
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		ret = regmap_read(chip->regmap, INA2XX_CALIBRATION, &regval);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		return ina2xx_get_value(chip, INA2XX_CALIBRATION, regval,
-> +					val, val2);
-> +
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = chip->freq;
-> +		return IIO_VAL_INT;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int ina2xx_calibrate(struct ina2xx_chip_info *chip)
-> +{
-> +	u16 val = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
-> +				    chip->rshunt);
-> +
-> +	return regmap_write(chip->regmap, INA2XX_CALIBRATION, val);
-> +}
-> +
-> +
-> +/*
-> + * Available averaging rates for ina226. The indices correspond with
-> + * the bit values expected by the chip (according to the ina226 datasheet,
-> + * table 3 AVG bit settings, found at
-> + * http://www.ti.com/lit/ds/symlink/ina226.pdf.
-> + */
-> +static const int ina226_avg_tab[] = { 1, 4, 16, 64, 128, 256, 512, 1024 };
-> +
-> +static unsigned int ina226_set_average(struct ina2xx_chip_info *chip,
-> +				       unsigned int val,
-> +				       unsigned int *config)
-> +{
-> +	int bits;
-> +
-> +	if (val > 1024 || val < 1)
-> +		return -EINVAL;
-> +
-> +	bits = find_closest(val, ina226_avg_tab,
-> +			    ARRAY_SIZE(ina226_avg_tab));
-> +
-> +	chip->avg = ina226_avg_tab[bits];
-> +
-> +	*config &= ~INA226_AVG_RD_MASK;
-> +	*config |= INA226_SHIFT_AVG(bits) & INA226_AVG_RD_MASK;
-> +
-> +	return 0;
-> +}
-> +
-> +/*
-> + * Conversion times in uS
-> + */
-> +static const int ina226_conv_time_tab[] = { 140, 204, 332, 588, 1100,
-> +	2116, 4156, 8244};
-> +
-> +static unsigned int ina226_set_frequency(struct ina2xx_chip_info *chip,
-> +					 unsigned int val,
-> +					 unsigned int *config)
-> +{
-> +	int bits;
-> +
-> +	if (val > 3550  || val < 50)
-> +		return -EINVAL;
-> +
-> +	/* integration time in uS, for both voltage channels */
-> +	val = DIV_ROUND_CLOSEST(1000000, 2 * val);
-> +
-> +	bits = find_closest(val, ina226_conv_time_tab,
-> +			    ARRAY_SIZE(ina226_conv_time_tab));
-> +
-> +	chip->period_us = 2 * ina226_conv_time_tab[bits];
-> +
-> +	chip->freq = DIV_ROUND_CLOSEST(1000000, chip->period_us);
-> +
-> +	*config &= ~INA226_SFREQ_RD_MASK;
-> +	*config |= (bits << 3) | (bits << 6);
-> +
-> +	return 0;
-> +}
-> +
-> +
-> +static int ina2xx_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val, int val2, long mask)
-> +{
-> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
-> +	int ret = 0;
-> +	unsigned int config, tmp;
-> +
-> +	mutex_lock(&chip->state_lock);
-> +
-> +	ret = regmap_read(chip->regmap, INA2XX_CONFIG, &config);
-> +	if (ret < 0)
-> +		goto _err;
-> +
-> +	tmp = config;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_AVERAGE_RAW:
-> +
-> +		ret = ina226_set_average(chip, val, &tmp);
-This isn't what the ABI uses the info_average_raw attribute for - it's
-for outputing the average of a channel rather than setting a mean
-filter width (which is what you have here).  Probably need some new ABI
-for this as our current filter description ABI is rather limited!
-
-> +		break;
-> +
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +
-> +		ret = ina226_set_frequency(chip, val, &tmp);
-> +		break;
-> +
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	if (!ret && (tmp != config))
-> +		ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
-> +_err:
-> +	mutex_unlock(&chip->state_lock);
-> +
-> +	return ret;
-> +}
-> +
-> +#define INA2XX_CHAN(_type, _index, _address) { \
-> +	.type = _type, \
-> +	.address = _address, \
-> +	.indexed = 1, \
-> +	.channel = (_index), \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-> +	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_AVERAGE_RAW) | \
-> +					BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
-> +				   BIT(IIO_CHAN_INFO_CALIBSCALE), \
-> +	.scan_index = (_index), \
-> +	.scan_type = { \
-> +		.sign = 'u', \
-> +		.realbits = 16, \
-> +		.storagebits = 16, \
-> +		.shift = 0, \
-> +	.endianness = IIO_BE, \
-> +	} \
-> +}
-> +
-> +static const struct iio_chan_spec ina2xx_channels[] = {
-> +	INA2XX_CHAN(IIO_VOLTAGE, 0, INA2XX_SHUNT_VOLTAGE),
-> +	INA2XX_CHAN(IIO_VOLTAGE, 1, INA2XX_BUS_VOLTAGE),
-> +	INA2XX_CHAN(IIO_CURRENT, 2, INA2XX_CURRENT),
-> +	INA2XX_CHAN(IIO_POWER, 3, INA2XX_POWER),
-> +	IIO_CHAN_SOFT_TIMESTAMP(4),
-> +};
-> +
-> +static int ina2xx_debug_reg(struct iio_dev *indio_dev,
-> +			    unsigned reg, unsigned writeval, unsigned *readval)
-> +{
-> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
-> +
-> +	if (!readval)
-> +		return regmap_write(chip->regmap, reg, writeval);
-> +
-> +	return regmap_read(chip->regmap, reg, readval);
-> +}
-> +
-> +static const struct iio_info ina2xx_info = {
-> +	.debugfs_reg_access = &ina2xx_debug_reg,
-> +	.read_raw = &ina2xx_read_raw,
-> +	.write_raw = &ina2xx_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +/*
-Single line comment, use single line comment syntax.
-> +* Initialize the configuration and calibration registers.
-> +*/
-> +static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
-> +{
-> +	int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
-> +
-> +	if (ret < 0)
-> +		return ret;
-> +	/*
-> +	 * Set current LSB to 1mA, shunt is in uOhms
-> +	 * (equation 13 in datasheet).
-> +	 */
-> +	return ina2xx_calibrate(chip);
-> +}
-> +
-> +static int ina2xx_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	struct ina2xx_chip_info *chip;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +	unsigned int val;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	chip = iio_priv(indio_dev);
-> +	chip->indio_dev = indio_dev;
-> +
-> +	/* set the device type */
-> +	chip->config = &ina2xx_config[id->driver_data];
-> +
-> +	if (of_property_read_u32(client->dev.of_node,
-> +				 "shunt-resistor", &val) < 0) {
-> +		struct ina2xx_platform_data *pdata =
-> +		    dev_get_platdata(&client->dev);
-> +
-> +		if (pdata)
-> +			val = pdata->shunt_uohms;
-> +		else
-> +			val = INA2XX_RSHUNT_DEFAULT;
-> +	}
-> +
-> +	if (val <= 0 || val > chip->config->calibration_factor)
-> +		return -ENODEV;
-> +
-> +	chip->rshunt = val;
-> +
-> +	ina2xx_regmap_config.max_register = chip->config->registers;
-> +
-> +	mutex_init(&chip->state_lock);
-> +
-> +	/* this is only used for device removal purposes */
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	indio_dev->name = id->name;
-> +	indio_dev->channels = ina2xx_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(ina2xx_channels);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &ina2xx_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	chip->regmap = devm_regmap_init_i2c(client, &ina2xx_regmap_config);
-> +	if (IS_ERR(chip->regmap)) {
-> +		dev_err(&client->dev, "failed to allocate register map\n");
-> +		return PTR_ERR(chip->regmap);
-> +	}
-> +
-> +	/* Patch the current config register with default. */
-> +	val = chip->config->config_default;
-> +	if (id->driver_data == ina226) {
-> +		ina226_set_average(chip, INA226_DEFAULT_AVG, &val);
-> +		ina226_set_frequency(chip, INA226_DEFAULT_FREQ, &val);
-> +	}
-> +
-> +	ret = ina2xx_init(chip, val);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "error configuring the device: %d\n",
-> +			ret);
-> +		return -ENODEV;
-> +	}
-> +
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
-> +static const struct i2c_device_id ina2xx_id[] = {
-> +	{"ina219", ina219},
-> +	{"ina220", ina219},
-> +	{"ina226", ina226},
-> +	{"ina230", ina226},
-> +	{"ina231", ina226},
-> +	{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(i2c, ina2xx_id);
-> +
-> +static struct i2c_driver ina2xx_driver = {
-> +	.driver = {
-> +		   .name = KBUILD_MODNAME,
-> +		   },
-> +	.probe = ina2xx_probe,
-> +	.id_table = ina2xx_id,
-> +};
-> +
-> +module_i2c_driver(ina2xx_driver);
-> +
-> +MODULE_AUTHOR("Marc Titinger <marc.titinger@baylibre.com>");
-> +MODULE_DESCRIPTION("Texas Instruments INA2XX ADC driver");
-> +MODULE_LICENSE("GPL v2");
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
