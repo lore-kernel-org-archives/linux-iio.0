@@ -1,99 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48216 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48242 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752201AbbKORqf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2015 12:46:35 -0500
-Subject: Re: [PATCH 1/2] iio: st_sensors: support active-low interrupts
-To: Linus Walleij <linus.walleij@linaro.org>
-References: <1447445896-12655-1-git-send-email-linus.walleij@linaro.org>
- <56485F18.7000608@kernel.org>
- <CACRpkdYi9t_NBjWfBf4qr3XMx7zA62UkBRO-VF1fCUjuX48K_A@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
+	with ESMTP id S1752137AbbKORub (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2015 12:50:31 -0500
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] First set of iio fixes for the 4.4 cycle.
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5648C4F8.5020603@kernel.org>
-Date: Sun, 15 Nov 2015 17:46:32 +0000
+Message-ID: <5648C5E4.1060806@kernel.org>
+Date: Sun, 15 Nov 2015 17:50:28 +0000
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdYi9t_NBjWfBf4qr3XMx7zA62UkBRO-VF1fCUjuX48K_A@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/11/15 16:26, Linus Walleij wrote:
-> On Sun, Nov 15, 2015 at 11:31 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> 
->>> This patch requires the previously sent patch to switch the
->>> driver to request_any_context_irq().
->>
->> Really requires or will create some fuzz without it?  Looks like
->> the latter so if we end up discussing that one for a while
->> I might reorder.  Mind you early in this cycle anyway so
->> no rush on this one!
-> 
-> I can put all three patches in a series and put this before that
-> patch, no problem.
-Might be wise as we can get this one sorted anyway whilst seeing
-if we can get some input on the other one from others...
+The following changes since commit b94e22805a2224061bb263a82b72e09544a5fbb3:
 
-> 
->> p.s. If anyone fancies adding support for the venerable
->> lis3l02dq as well so we can kill off my ancient driver
->> in staging that would be great! (I know I should do it
->> myself probably but I can always hope someone else will
->> get there first ;)
-> 
-> They are all so similar that I could probably code up
-> support from the datasheet.
-> 
-> However I have no hardware to test on...
-> 
-> Who submitted that driver in the first place?
-<tries to look innocent>... That would be me ;)
+  iio: mxs-lradc: Fix temperature offset (2015-10-11 15:02:02 +0100)
 
-Back at the dawn of time for IIO - this was one of our original 
-drivers (the sca3000 was to and that's still in staging too - 
-that one is a seriously odd beast).
+are available in the git repository at:
 
-Technically I still have a board with one lis3l02dq on it
-somewhere around, but I haven't booted it in a few years and
-it has darned silly connectors so wiring it up to something else
-would be 'interesting'. Not to mention, if I recall correctly
-this chip only gives level interrupts and the board only
-has edge triggered ones.  Were some nasty games to discover
-if new data had turned up whilst you were reading the old stuff.
+  ssh://gitolite@ra.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.4a
 
-I'm almost tempted to drop the driver entirely on the basis
-the only boards I know ever had one have been unavailable for
-a long time and I'm the maintainer of those anyway and given
-complete lack of patches for the last 5 years may have the only
-ones that even work (probably) any more...
+for you to fetch changes up to a57f8dac46fbac5ab0e31aef1a98b3f6eb30c079:
 
-I can always bring it back up if I ever actually make the board
-boot again.
+  iio: adc: xilinx: Fix VREFN scale (2015-11-15 12:36:20 +0000)
 
-p.s. Now it will turn out there are hundreds of people using 
-intel research stargate 2 imb400 sensor boards....
-(they were also compatible and sold by CrossBow for their
-imote 2 boards but those went all .net for no apparent reason.
+----------------------------------------------------------------
+First set of IIO fixes for the 4.4 cycle.
 
-It was interesting hardware.  The camera board for instance
-had no pull ups on the i2c bus so the tinyos driver that was
-the only documentation effectively simply never read back or
-checked for acks from the sensor.  Gives you an idea of the
-fun.  Still these were very small boards that well predated
-the gumstix etc.
+This set does not include those for issues introduced during the merge
+window.  Fixes of those will follow in a future series.
 
-Ah, the glory days when I regularly fired up actual hardware!
+* ad5064
+  - Make sure the local i2c_write returns 0 on success rather than the
+    number of bytes transfered.  Otherwise we report an error on all writes.
+  - Fix a shift for ad5629 and ad5669 which gives incorrect DAC output on
+    these parts.
+* ad7793
+  - The product ID on the datasheet is wrong.  Fix it in the driver.
+* IIO_DUMMY_EVGEN
+  - select IRQ_WORK as a dependency.
+* lpc32xx
+  - make sure clock is prepared before enabling.
+* si7020
+  - data byte order was reversed. Fix it.
+* vf610
+  - Internal temperature calculation was wrong if a different
+    reference voltage was used.  Now use a linear interpolation
+    function to make it work over the full range.
+  - Fix a division by zero in the case of a device tree property
+    not being present (same issue two fixes).
+* xilinx XADC
+  - VREFN scale was wrong - fix it.
 
-Jonathan
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      staging: iio: select IRQ_WORK for IIO_DUMMY_EVGEN
 
-> 
-> Yours,
-> Linus Walleij
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Bhuvanchandra DV (1):
+      vf610_adc: Fix internal temperature calculation
 
+Chris Lesiak (1):
+      iio: si7020: Swap data byte order
+
+Lars-Peter Clausen (2):
+      iio: ad5064: Fix ad5629/ad5669 shift
+      iio:ad7793: Fix ad7785 product ID
+
+Michael Hennerich (1):
+      iio:ad5064: Make sure ad5064_i2c_write() returns 0 on success
+
+Sanchayan Maity (1):
+      iio: adc: vf610_adc: Fix division by zero error
+
+Thomas Betker (1):
+      iio: adc: xilinx: Fix VREFN scale
+
+Vladimir Zapolskiy (1):
+      iio: lpc32xx_adc: fix warnings caused by enabling unprepared clock
+
+ drivers/iio/adc/ad7793.c              |  2 +-
+ drivers/iio/adc/vf610_adc.c           | 22 ++++++---
+ drivers/iio/adc/xilinx-xadc-core.c    |  1 +
+ drivers/iio/dac/ad5064.c              | 91 ++++++++++++++++++++++++-----------
+ drivers/iio/humidity/si7020.c         |  8 +--
+ drivers/staging/iio/Kconfig           |  3 +-
+ drivers/staging/iio/adc/lpc32xx_adc.c |  4 +-
+ 7 files changed, 90 insertions(+), 41 deletions(-)
