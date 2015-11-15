@@ -1,324 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45827 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45855 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751741AbbKOKcy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2015 05:32:54 -0500
-Subject: Re: [PATCH 2/2] iio: st_sensors: support open drain mode
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1447445915-12704-1-git-send-email-linus.walleij@linaro.org>
-Cc: devicetree@vger.kernel.org, Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
+	with ESMTP id S1751831AbbKOKjM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2015 05:39:12 -0500
+Subject: Re: [PATCH v10 1/5] configfs: Allow dynamic group creation
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>
+References: <1445614411-533-1-git-send-email-daniel.baluta@intel.com>
+ <1445614411-533-2-git-send-email-daniel.baluta@intel.com>
+ <20151110065126.GA20339@lst.de>
+ <20151110131237.894356c2ba17d8e9231509db@linux-foundation.org>
+ <D914B401-E43C-4B55-8224-93CF218FD613@jic23.retrosnub.co.uk>
+Cc: Daniel Baluta <daniel.baluta@intel.com>, jlbec@evilplan.org,
+	linux-iio@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	lars@metafoo.de, knaack.h@gmx.de, linux-kernel@vger.kernel.org,
+	octavian.purdila@intel.com, pebolle@tiscali.nl,
+	patrick.porlan@intel.com, adriana.reus@intel.com,
+	constantin.musca@intel.com, marten@intuitiveaerial.com,
+	cristina.opriceana@gmail.com, pmeerw@pmeerw.net,
+	viro@zeniv.linux.org.uk
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56485F54.80009@kernel.org>
-Date: Sun, 15 Nov 2015 10:32:52 +0000
+Message-ID: <564860CC.7000206@kernel.org>
+Date: Sun, 15 Nov 2015 10:39:08 +0000
 MIME-Version: 1.0
-In-Reply-To: <1447445915-12704-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <D914B401-E43C-4B55-8224-93CF218FD613@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/11/15 20:18, Linus Walleij wrote:
-> Some types of ST Sensors can be connected to the same IRQ line
-> as other peripherals using open drain. Add a device tree binding
-> and a sensor data property to flip the right bit in the interrupt
-> control register to enable open drain mode on the INT line.
+On 11/11/15 06:43, Jonathan Cameron wrote:
 > 
-> If the line is set to be open drain, also tag on IRQF_SHARED
-> to the IRQ flags when requesting the interrupt, as the whole
-> point of using open drain interrupt lines is to share them with
-> more than one peripheral (wire-or).
 > 
-> Cc: devicetree@vger.kernel.org
-> Cc: Giuseppe Barba <giuseppe.barba@st.com>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-As with the previous patch, looking for an ack / reviewed-by from
-Denis and comments from Giuseppe on the parts added recently.
+> On 10 November 2015 21:12:37 GMT+00:00, Andrew Morton <akpm@linux-foundation.org> wrote:
+>> On Tue, 10 Nov 2015 07:51:26 +0100 Christoph Hellwig <hch@lst.de>
+>> wrote:
+>>
+>>> is this simple addition something you could still send on to Linus
+>>> for this merge window?  I would make my life easier to have it in
+>>> so I could start using it in patches for various trees in the next
+>>> merge window.
+>>
+>> It's super late, but the configfs changes are obviously safe to
+>> existing code.
+>>
+>> What about the IIO changes?  Will someone be merging them for 4.5-rc1,
+>> or something else?
+> Yes. I'll take the IIO bits and ultimately they'll go through Greg KH for the 4.5 
+> merge window.
+> 
+Hi Andrew,
 
-Otherwise, looks good to me!
+Just taken a quick look at your mmotm list and see this ended up in the
+mainline later group (fair enough given the timing!).
+As such shall we fall back to plan b) a special git branch pulled into the trees
+of anyone who cares?
+
+I'll base such a tree on some obvious point in Linus' tree (either 4.4 or 4.5-rc1)
+That way I can get the IIO stuff queued up asap and we can build on that going
+forward during this cycle.
+
+Thanks,
 
 Jonathan
-> ---
->  Documentation/devicetree/bindings/iio/st-sensors.txt |  3 +++
->  drivers/iio/accel/st_accel_core.c                    |  8 ++++++++
->  drivers/iio/common/st_sensors/st_sensors_core.c      | 20 ++++++++++++++++++++
->  drivers/iio/common/st_sensors/st_sensors_trigger.c   |  9 +++++++++
->  drivers/iio/gyro/st_gyro_core.c                      | 12 ++++++++++++
->  drivers/iio/pressure/st_pressure_core.c              |  8 ++++++++
->  include/linux/iio/common/st_sensors.h                |  6 ++++++
->  include/linux/platform_data/st_sensors_pdata.h       |  2 ++
->  8 files changed, 68 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> index d3ccdb190c53..4ac20cb2ae8d 100644
-> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> @@ -16,6 +16,9 @@ Optional properties:
->  - st,drdy-int-pin: the pin on the package that will be used to signal
->    "data ready" (valid values: 1 or 2). This property is not configurable
->    on all sensors.
-> +- st,int-pin-open-drain: the interrupt/data ready line will be configured
-> +  as open drain, which is useful if several sensors share the same
-> +  interrupt line.
->  
->  Sensors may also have applicable pin control settings, those use the
->  standard bindings from pinctrl/pinctrl-bindings.txt.
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 1132224cbc10..888682b95693 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -96,6 +96,8 @@
->  #define ST_ACCEL_2_DRDY_IRQ_INT2_MASK		0x10
->  #define ST_ACCEL_2_IHL_IRQ_ADDR			0x22
->  #define ST_ACCEL_2_IHL_IRQ_MASK			0x80
-> +#define ST_ACCEL_2_OD_IRQ_ADDR			0x22
-> +#define ST_ACCEL_2_OD_IRQ_MASK			0x40
->  #define ST_ACCEL_2_MULTIREAD_BIT		true
->  
->  /* CUSTOM VALUES FOR SENSOR 3 */
-> @@ -177,6 +179,8 @@
->  #define ST_ACCEL_5_DRDY_IRQ_INT2_MASK		0x20
->  #define ST_ACCEL_5_IHL_IRQ_ADDR			0x22
->  #define ST_ACCEL_5_IHL_IRQ_MASK			0x80
-> +#define ST_ACCEL_5_OD_IRQ_ADDR			0x22
-> +#define ST_ACCEL_5_OD_IRQ_MASK			0x40
->  #define ST_ACCEL_5_IG1_EN_ADDR			0x21
->  #define ST_ACCEL_5_IG1_EN_MASK			0x08
->  #define ST_ACCEL_5_MULTIREAD_BIT		false
-> @@ -366,6 +370,8 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->  			.mask_int2 = ST_ACCEL_2_DRDY_IRQ_INT2_MASK,
->  			.addr_ihl = ST_ACCEL_2_IHL_IRQ_ADDR,
->  			.mask_ihl = ST_ACCEL_2_IHL_IRQ_MASK,
-> +			.addr_od = ST_ACCEL_2_OD_IRQ_ADDR,
-> +			.mask_od = ST_ACCEL_2_OD_IRQ_MASK,
->  		},
->  		.multi_read_bit = ST_ACCEL_2_MULTIREAD_BIT,
->  		.bootime = 2,
-> @@ -552,6 +558,8 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->  			.mask_int2 = ST_ACCEL_5_DRDY_IRQ_INT2_MASK,
->  			.addr_ihl = ST_ACCEL_5_IHL_IRQ_ADDR,
->  			.mask_ihl = ST_ACCEL_5_IHL_IRQ_MASK,
-> +			.addr_od = ST_ACCEL_5_OD_IRQ_ADDR,
-> +			.mask_od = ST_ACCEL_5_OD_IRQ_MASK,
->  		},
->  		.multi_read_bit = ST_ACCEL_5_MULTIREAD_BIT,
->  		.bootime = 2, /* guess */
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index ed6f54d5c932..bff469dd9583 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -302,6 +302,14 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
->  		return -EINVAL;
->  	}
->  
-> +	if (pdata->open_drain) {
-> +		if (!sdata->sensor_settings->drdy_irq.addr_od)
-> +			dev_err(&indio_dev->dev,
-> +				"open drain requested but unsupported.\n");
-> +		else
-> +			sdata->int_pin_open_drain = true;
-> +	}
-> +
->  	return 0;
->  }
->  
-> @@ -322,6 +330,8 @@ static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
->  	else
->  		pdata->drdy_int_pin = defdata ? defdata->drdy_int_pin : 0;
->  
-> +	pdata->open_drain = of_property_read_bool(np, "st,int-pin-open-drain");
-> +
->  	return pdata;
->  }
->  #else
-> @@ -375,6 +385,16 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
->  			return err;
->  	}
->  
-> +	if (sdata->int_pin_open_drain) {
-> +		dev_info(&indio_dev->dev,
-> +			 "set interrupt line to open drain mode\n");
-> +		err = st_sensors_write_data_with_mask(indio_dev,
-> +				sdata->sensor_settings->drdy_irq.addr_od,
-> +				sdata->sensor_settings->drdy_irq.mask_od, 1);
-> +		if (err < 0)
-> +			return err;
-> +	}
-> +
->  	err = st_sensors_set_axis_enable(indio_dev, ST_SENSORS_ENABLE_ALL_AXIS);
->  
->  	return err;
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> index cb53d14aca94..4283468fd502 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> @@ -67,6 +67,15 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
->  			"rising edge\n", irq_trig);
->  		irq_trig = IRQF_TRIGGER_RISING;
->  	}
-> +
-> +	/*
-> +	 * If the interrupt pin is Open Drain, by definition this
-> +	 * means that the interrupt line may be shared with other
-> +	 * peripherals.
-> +	 */
-> +	if (sdata->int_pin_open_drain)
-> +		irq_trig |= IRQF_SHARED;
-> +
->  	err = request_any_context_irq(irq,
->  			iio_trigger_generic_data_rdy_poll,
->  			irq_trig,
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index 260bfe021904..d53622b0e430 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -63,6 +63,8 @@
->  #define ST_GYRO_1_DRDY_IRQ_INT2_MASK		0x08
->  #define ST_GYRO_1_IHL_IRQ_ADDR			0x22
->  #define ST_GYRO_1_IHL_IRQ_MASK			0x20
-> +#define ST_GYRO_1_OD_IRQ_ADDR			0x22
-> +#define ST_GYRO_1_OD_IRQ_MASK			0x10
->  #define ST_GYRO_1_MULTIREAD_BIT			true
->  
->  /* CUSTOM VALUES FOR SENSOR 2 */
-> @@ -89,6 +91,8 @@
->  #define ST_GYRO_2_DRDY_IRQ_INT2_MASK		0x08
->  #define ST_GYRO_2_IHL_IRQ_ADDR			0x22
->  #define ST_GYRO_2_IHL_IRQ_MASK			0x20
-> +#define ST_GYRO_2_OD_IRQ_ADDR			0x22
-> +#define ST_GYRO_2_OD_IRQ_MASK			0x10
->  #define ST_GYRO_2_MULTIREAD_BIT			true
->  
->  /* CUSTOM VALUES FOR SENSOR 3 */
-> @@ -115,6 +119,8 @@
->  #define ST_GYRO_3_DRDY_IRQ_INT2_MASK		0x08
->  #define ST_GYRO_3_IHL_IRQ_ADDR			0x22
->  #define ST_GYRO_3_IHL_IRQ_MASK			0x20
-> +#define ST_GYRO_3_OD_IRQ_ADDR			0x22
-> +#define ST_GYRO_3_OD_IRQ_MASK			0x10
->  #define ST_GYRO_3_MULTIREAD_BIT			true
->  
->  
-> @@ -193,6 +199,8 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			.mask_int2 = ST_GYRO_1_DRDY_IRQ_INT2_MASK,
->  			.addr_ihl = ST_GYRO_1_IHL_IRQ_ADDR,
->  			.mask_ihl = ST_GYRO_1_IHL_IRQ_MASK,
-> +			.addr_od = ST_GYRO_1_OD_IRQ_ADDR,
-> +			.mask_od = ST_GYRO_1_OD_IRQ_MASK,
->  		},
->  		.multi_read_bit = ST_GYRO_1_MULTIREAD_BIT,
->  		.bootime = 2,
-> @@ -258,6 +266,8 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			.mask_int2 = ST_GYRO_2_DRDY_IRQ_INT2_MASK,
->  			.addr_ihl = ST_GYRO_2_IHL_IRQ_ADDR,
->  			.mask_ihl = ST_GYRO_2_IHL_IRQ_MASK,
-> +			.addr_od = ST_GYRO_2_OD_IRQ_ADDR,
-> +			.mask_od = ST_GYRO_2_OD_IRQ_MASK,
->  		},
->  		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
->  		.bootime = 2,
-> @@ -319,6 +329,8 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			.mask_int2 = ST_GYRO_3_DRDY_IRQ_INT2_MASK,
->  			.addr_ihl = ST_GYRO_3_IHL_IRQ_ADDR,
->  			.mask_ihl = ST_GYRO_3_IHL_IRQ_MASK,
-> +			.addr_od = ST_GYRO_3_OD_IRQ_ADDR,
-> +			.mask_od = ST_GYRO_3_OD_IRQ_MASK,
->  		},
->  		.multi_read_bit = ST_GYRO_3_MULTIREAD_BIT,
->  		.bootime = 2,
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index 172393ad34af..38186288f79c 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -64,6 +64,8 @@
->  #define ST_PRESS_LPS331AP_DRDY_IRQ_INT2_MASK	0x20
->  #define ST_PRESS_LPS331AP_IHL_IRQ_ADDR		0x22
->  #define ST_PRESS_LPS331AP_IHL_IRQ_MASK		0x80
-> +#define ST_PRESS_LPS331AP_OD_IRQ_ADDR		0x22
-> +#define ST_PRESS_LPS331AP_OD_IRQ_MASK		0x40
->  #define ST_PRESS_LPS331AP_MULTIREAD_BIT		true
->  #define ST_PRESS_LPS331AP_TEMP_OFFSET		42500
->  
-> @@ -104,6 +106,8 @@
->  #define ST_PRESS_LPS25H_DRDY_IRQ_INT2_MASK	0x10
->  #define ST_PRESS_LPS25H_IHL_IRQ_ADDR		0x22
->  #define ST_PRESS_LPS25H_IHL_IRQ_MASK		0x80
-> +#define ST_PRESS_LPS25H_OD_IRQ_ADDR		0x22
-> +#define ST_PRESS_LPS25H_OD_IRQ_MASK		0x40
->  #define ST_PRESS_LPS25H_MULTIREAD_BIT		true
->  #define ST_PRESS_LPS25H_TEMP_OFFSET		42500
->  #define ST_PRESS_LPS25H_OUT_XL_ADDR		0x28
-> @@ -226,6 +230,8 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
->  			.mask_int2 = ST_PRESS_LPS331AP_DRDY_IRQ_INT2_MASK,
->  			.addr_ihl = ST_PRESS_LPS331AP_IHL_IRQ_ADDR,
->  			.mask_ihl = ST_PRESS_LPS331AP_IHL_IRQ_MASK,
-> +			.addr_od = ST_PRESS_LPS331AP_OD_IRQ_ADDR,
-> +			.mask_od = ST_PRESS_LPS331AP_OD_IRQ_MASK,
->  		},
->  		.multi_read_bit = ST_PRESS_LPS331AP_MULTIREAD_BIT,
->  		.bootime = 2,
-> @@ -312,6 +318,8 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
->  			.mask_int2 = ST_PRESS_LPS25H_DRDY_IRQ_INT2_MASK,
->  			.addr_ihl = ST_PRESS_LPS25H_IHL_IRQ_ADDR,
->  			.mask_ihl = ST_PRESS_LPS25H_IHL_IRQ_MASK,
-> +			.addr_od = ST_PRESS_LPS25H_OD_IRQ_ADDR,
-> +			.mask_od = ST_PRESS_LPS25H_OD_IRQ_MASK,
->  		},
->  		.multi_read_bit = ST_PRESS_LPS25H_MULTIREAD_BIT,
->  		.bootime = 2,
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index 6670c3d25c58..8972101224d9 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -121,6 +121,8 @@ struct st_sensor_bdu {
->   * @mask_int2: mask to enable/disable IRQ on INT2 pin.
->   * @addr_ihl: address to enable/disable active low on the INT lines.
->   * @mask_ihl: mask to enable/disable active low on the INT lines.
-> + * @addr_od: address to enable/disable Open Drain on the INT lines.
-> + * @mask_od: mask to enable/disable Open Drain on the INT lines.
->   * struct ig1 - represents the Interrupt Generator 1 of sensors.
->   * @en_addr: address of the enable ig1 register.
->   * @en_mask: mask to write the on/off value for enable.
-> @@ -131,6 +133,8 @@ struct st_sensor_data_ready_irq {
->  	u8 mask_int2;
->  	u8 addr_ihl;
->  	u8 mask_ihl;
-> +	u8 addr_od;
-> +	u8 mask_od;
->  	struct {
->  		u8 en_addr;
->  		u8 en_mask;
-> @@ -212,6 +216,7 @@ struct st_sensor_settings {
->   * @odr: Output data rate of the sensor [Hz].
->   * num_data_channels: Number of data channels used in buffer.
->   * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
-> + * @int_pin_open_drain: Set the interrupt/DRDY to open drain.
->   * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
->   * @tf: Transfer function structure used by I/O operations.
->   * @tb: Transfer buffers and mutex used by I/O operations.
-> @@ -233,6 +238,7 @@ struct st_sensor_data {
->  	unsigned int num_data_channels;
->  
->  	u8 drdy_int_pin;
-> +	bool int_pin_open_drain;
->  
->  	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
->  
-> diff --git a/include/linux/platform_data/st_sensors_pdata.h b/include/linux/platform_data/st_sensors_pdata.h
-> index 753839187ba0..79b0e4cdb814 100644
-> --- a/include/linux/platform_data/st_sensors_pdata.h
-> +++ b/include/linux/platform_data/st_sensors_pdata.h
-> @@ -16,9 +16,11 @@
->   * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
->   *	Available only for accelerometer and pressure sensors.
->   *	Accelerometer DRDY on LSM330 available only on pin 1 (see datasheet).
-> + * @open_drain: set the interrupt line to be open drain if possible.
->   */
->  struct st_sensors_platform_data {
->  	u8 drdy_int_pin;
-> +	bool open_drain;
->  };
->  
->  #endif /* ST_SENSORS_PDATA_H */
-> 
 
