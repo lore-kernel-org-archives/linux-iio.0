@@ -1,187 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45914 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45974 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752322AbbKOKqL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2015 05:46:11 -0500
-Subject: Re: [PATCH v4 1/1] iio: pulsedlight-lidar-lite: add runtime PM
-To: Matt Ranostay <mranostay@gmail.com>,
-	Adriana Reus <adriana.reus@intel.com>
-References: <1447014418-27849-1-git-send-email-mranostay@gmail.com>
- <1447014418-27849-2-git-send-email-mranostay@gmail.com>
- <5641E267.6010204@intel.com>
- <CAKzfze_Zozt4N13jJdAi2C03T57BqNRox3+tANK_hz4d1oiuyw@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	linux-pm@vger.kernel.org,
-	=?UTF-8?Q?Krzysztof_Koz=c5=82owski?= <k.kozlowski@samsung.com>
+	with ESMTP id S1752014AbbKOKyU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2015 05:54:20 -0500
+Subject: Re: [PATCH v3] iio: core: added support for IIO_VAL_INT
+To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org
+References: <1447073734-18602-1-git-send-email-sean.nyekjaer@prevas.dk>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56486271.9000607@kernel.org>
-Date: Sun, 15 Nov 2015 10:46:09 +0000
+Message-ID: <56486458.4000801@kernel.org>
+Date: Sun, 15 Nov 2015 10:54:16 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze_Zozt4N13jJdAi2C03T57BqNRox3+tANK_hz4d1oiuyw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1447073734-18602-1-git-send-email-sean.nyekjaer@prevas.dk>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/11/15 08:51, Matt Ranostay wrote:
-> On Tue, Nov 10, 2015 at 4:26 AM, Adriana Reus <adriana.reus@intel.com> wrote:
->>
->>
->> On 08.11.2015 22:26, Matt Ranostay wrote:
->>>
->>> Add runtime PM support for the lidar-lite module to enable low power
->>> mode when last device requested reading is over a second.
->>>
->>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->>> ---
->>>   drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 54
->>> ++++++++++++++++++++++-
->>>   1 file changed, 53 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->>> b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->>> index 961f9f99..1a5481f 100644
->>> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->>> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->>> @@ -13,7 +13,7 @@
->>>    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->>>    * GNU General Public License for more details.
->>>    *
->>> - * TODO: runtime pm, interrupt mode, and signal strength reporting
->>> + * TODO: interrupt mode, and signal strength reporting
->>>    */
->>>
->>>   #include <linux/err.h>
->>> @@ -21,6 +21,7 @@
->>>   #include <linux/i2c.h>
->>>   #include <linux/delay.h>
->>>   #include <linux/module.h>
->>> +#include <linux/pm_runtime.h>
->>>   #include <linux/iio/iio.h>
->>>   #include <linux/iio/sysfs.h>
->>>   #include <linux/iio/buffer.h>
->>> @@ -37,6 +38,7 @@
->>>
->>>   #define LIDAR_REG_DATA_HBYTE  0x0f
->>>   #define LIDAR_REG_DATA_LBYTE  0x10
->>> +#define LIDAR_REG_PWR_CONTROL  0x65
->>>
->>>   #define LIDAR_DRV_NAME "lidar"
->>>
->>> @@ -90,6 +92,12 @@ static inline int lidar_write_control(struct lidar_data
->>> *data, int val)
->>>         return i2c_smbus_write_byte_data(data->client, LIDAR_REG_CONTROL,
->>> val);
->>>   }
->>>
->>> +static inline int lidar_write_power(struct lidar_data *data, int val)
->>> +{
->>> +       return i2c_smbus_write_byte_data(data->client,
->>> +                                        LIDAR_REG_PWR_CONTROL, val);
->>> +}
->>> +
->>>   static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
->>>   {
->>>         int ret;
->>> @@ -116,6 +124,8 @@ static int lidar_get_measurement(struct lidar_data
->>> *data, u16 *reg)
->>>         int tries = 10;
->>>         int ret;
->>>
->>> +       pm_runtime_get_sync(&client->dev);
->>> +
->>>         /* start sample */
->>>         ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
->>>         if (ret < 0) {
->>> @@ -144,6 +154,8 @@ static int lidar_get_measurement(struct lidar_data
->>> *data, u16 *reg)
->>>                 }
->>>                 ret = -EIO;
->>>         }
->>> +       pm_runtime_mark_last_busy(&client->dev);
->>> +       pm_runtime_put_autosuspend(&client->dev);
->>>
->>>         return ret;
->>>   }
->>> @@ -243,6 +255,15 @@ static int lidar_probe(struct i2c_client *client,
->>>         if (ret)
->>>                 goto error_unreg_buffer;
->>>
->>> +       pm_runtime_set_autosuspend_delay(&client->dev, 1000);
->>> +       pm_runtime_use_autosuspend(&client->dev);
->>> +
->>> +       pm_runtime_set_active(&client->dev);
->>
->> pm_runtime_set_active ^ may return an error code.
+On 09/11/15 12:55, Sean Nyekjaer wrote:
+> Added core support for IIO_VAL_INT in write_raw_get_fmt function.
 > 
-> Ah true. But is the return value really needed in this case?
-Why would it not be?  Something in the probe routine failed,
-the driver should fail to probe...
+> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to try and break it.
 
-If it is possible to muddle through, then you want to explicitly make
-that clear by handling the error and perhaps outputting a warning...
+Thanks for sorting this out!
 
-J
+Jonathan
+> ---
+> Sorry for v1, i've missed the "too many 'd's" comment
 > 
->>
->>> +       pm_runtime_enable(&client->dev);
->>> +
->>> +       pm_runtime_mark_last_busy(&client->dev);
->>> +       pm_runtime_idle(&client->dev);
->>> +
->>>         return 0;
->>>
->>>   error_unreg_buffer:
->>> @@ -258,6 +279,9 @@ static int lidar_remove(struct i2c_client *client)
->>>         iio_device_unregister(indio_dev);
->>>         iio_triggered_buffer_cleanup(indio_dev);
->>>
->>> +       pm_runtime_disable(&client->dev);
->>> +       pm_runtime_set_suspended(&client->dev);
->>> +
->>>         return 0;
->>>   }
->>>
->>> @@ -273,10 +297,38 @@ static const struct of_device_id lidar_dt_ids[] = {
->>>   };
->>>   MODULE_DEVICE_TABLE(of, lidar_dt_ids);
->>>
->>> +#ifdef CONFIG_PM
->>> +static int lidar_pm_runtime_suspend(struct device *dev)
->>> +{
->>> +       struct iio_dev *indio_dev =
->>> i2c_get_clientdata(to_i2c_client(dev));
->>> +       struct lidar_data *data = iio_priv(indio_dev);
->>> +
->>> +       return lidar_write_power(data, 0x0f);
->>> +}
->>> +
->>> +static int lidar_pm_runtime_resume(struct device *dev)
->>> +{
->>> +       struct iio_dev *indio_dev =
->>> i2c_get_clientdata(to_i2c_client(dev));
->>> +       struct lidar_data *data = iio_priv(indio_dev);
->>> +       int ret = lidar_write_power(data, 0);
->>> +
->>> +       /* regulator and FPGA needs settling time */
->>> +       usleep_range(15000, 20000);
->>> +
->>> +       return ret;
->>> +}
->>> +#endif
->>> +
->>> +static const struct dev_pm_ops lidar_pm_ops = {
->>> +       SET_RUNTIME_PM_OPS(lidar_pm_runtime_suspend,
->>> +                          lidar_pm_runtime_resume, NULL)
->>> +};
->>> +
->>>   static struct i2c_driver lidar_driver = {
->>>         .driver = {
->>>                 .name   = LIDAR_DRV_NAME,
->>>                 .of_match_table = of_match_ptr(lidar_dt_ids),
->>> +               .pm     = &lidar_pm_ops,
->>>         },
->>>         .probe          = lidar_probe,
->>>         .remove         = lidar_remove,
->>>
->>
+> Changes since v2:
+>  - Fixed commit msg
+> 
+> Changes since v1:
+>  - fract_mult set to 0
+>  - iio_str_to_fixpoint uses kstrtoint for fract_mult = 0
+> 
+>  drivers/iio/industrialio-core.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 208358f..d0a84fe 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -512,6 +512,12 @@ int iio_str_to_fixpoint(const char *str, int fract_mult,
+>  	int i = 0, f = 0;
+>  	bool integer_part = true, negative = false;
+>  
+> +	if (fract_mult == 0) {
+> +		*fract = 0;
+> +
+> +		return kstrtoint(str, 0, integer);
+> +	}
+> +
+>  	if (str[0] == '-') {
+>  		negative = true;
+>  		str++;
+> @@ -571,6 +577,9 @@ static ssize_t iio_write_channel_info(struct device *dev,
+>  	if (indio_dev->info->write_raw_get_fmt)
+>  		switch (indio_dev->info->write_raw_get_fmt(indio_dev,
+>  			this_attr->c, this_attr->address)) {
+> +		case IIO_VAL_INT:
+> +			fract_mult = 0;
+> +			break;
+>  		case IIO_VAL_INT_PLUS_MICRO:
+>  			fract_mult = 100000;
+>  			break;
+> 
 
