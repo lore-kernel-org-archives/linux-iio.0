@@ -1,69 +1,70 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46184 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751239AbbKOLT6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2015 06:19:58 -0500
-Subject: Re: [PATCH] iio: light: apds9960: correct ->last_busy count
-To: Matt Ranostay <mranostay@gmail.com>
-References: <1446956488-8262-1-git-send-email-mranostay@gmail.com>
- <563F668D.7090804@kernel.org>
- <CAKzfze-dhPiOksAdnGW=FjS346LxZ66kFMd30OiRKRg6U57+rw@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56486A5D.6090100@kernel.org>
-Date: Sun, 15 Nov 2015 11:19:57 +0000
+Return-Path: <nizamhaider786@gmail.com>
+Date: Sun, 15 Nov 2015 17:05:03 +0530
+From: Nizam Haider <nizamhaider786@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, knaack.h@gmx.de,
+	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, Nizam Haider <nijamh@cdac.in>
+Subject: Re: [PATCH] Staging: iio: iio_simple_dummy_buffer: Typo in comments
+ area
+Message-ID: <20151115113503.GA18884@suse.site>
+References: <1447469041-5751-1-git-send-email-nizamhaider786@gmail.com>
+ <5646FEC7.5050600@metafoo.de>
+ <56476DAC.6030903@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze-dhPiOksAdnGW=FjS346LxZ66kFMd30OiRKRg6U57+rw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <56476DAC.6030903@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/11/15 21:23, Matt Ranostay wrote:
-> On Sun, Nov 8, 2015 at 7:13 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 08/11/15 04:21, Matt Ranostay wrote:
->>> Add missing pm_runtime_mark_last_busy to apds9960_set_power_state
->>> function.
->>>
->>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->> Hi Matt,
->>
->> Could you elaborate on what the result of this not being there is?
->> My first thought is that this probably wants to go as a fix, but for
->> that I need details of what the effects of the 'bug' are.
+On Sat, Nov 14, 2015 at 05:21:48PM +0000, Jonathan Cameron wrote:
+> On 14/11/15 09:28, Lars-Peter Clausen wrote:
+> > On 11/14/2015 03:44 AM, Nizam Haider wrote:
+> >> Fix simple typo in comments
+> >>
+> >> Signed-off-by: Nizam Haider <nijamh@cdac.in>
+> > 
+> > Thanks for the patch.
+> > 
+> >> ---
+> >>  drivers/staging/iio/iio_simple_dummy_buffer.c | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
+> >> index cf44a6f..c8f889b 100644
+> >> --- a/drivers/staging/iio/iio_simple_dummy_buffer.c
+> >> +++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
+> >> @@ -64,7 +64,7 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
+> >>  		 * software scans: can be considered to be random access
+> >>  		 *   so efficient reading is just a case of minimal bus
+> >>  		 *   transactions.
+> >> -		 * software culled hardware scans:
+> >> +		 * software called hardware scans:
+> > 
+> > I don't think that's a typo. The non-patched version makes a lot more sense
+> > then the patched vesion.
+> Yup, that's me using some 'more unusual' English terminology, Perhaps the word
+> 'dropped' would be clearer.
 > 
-> Unless pm_runtime_mark_last_busy is called the
-> pm_runtime_put_autosuspend may put the device into suspend before the
-> delay time requested.
-Have added this text to the commit message and applied to the
-temporary branch
-fixes-togreg-post-rc1 which should go out in a few days.
+> Also, that comment is now a little misleading as it is unusual / undesirable
+Yes it is misleading now, non-patched version makes a lot more sense then patched
+version.
+but because of unusual english, should i use dropped and to send new patch or to just
+leave it.
+(it would be bit easy to understand in first shot with "dropped".)
 
-Jonathan
+Nizam
+> to now do this in an individual driver.  The core demux code should take care
+> of it.
 > 
+> Hmm.. I'll make a note to reread the comments in that driver and see if any
+> others could do with a refresh.
 > 
-> Thanks,
+> Jonathan
+> > 
+> >>  		 *   occasionally a driver may process the nearest hardware
+> >>  		 *   scan to avoid storing elements that are not desired. This
+> >>  		 *   is the fiddliest option by far.
+> >>
+> > 
 > 
-> Matt
-> 
-> 
->>
->> Jonathan
->>> ---
->>>  drivers/iio/light/apds9960.c | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
->>> index 7d269ef..f6a07dc 100644
->>> --- a/drivers/iio/light/apds9960.c
->>> +++ b/drivers/iio/light/apds9960.c
->>> @@ -453,6 +453,7 @@ static int apds9960_set_power_state(struct apds9960_data *data, bool on)
->>>                       usleep_range(data->als_adc_int_us,
->>>                                    APDS9960_MAX_INT_TIME_IN_US);
->>>       } else {
->>> +             pm_runtime_mark_last_busy(dev);
->>>               ret = pm_runtime_put_autosuspend(dev);
->>>       }
->>>
->>>
->>
-
