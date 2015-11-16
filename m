@@ -1,35 +1,73 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <robh@kernel.org>
+Date: Mon, 16 Nov 2015 08:16:09 -0600
+From: Rob Herring <robh@kernel.org>
+To: Markus Pargmann <mpa@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee.jones@linaro.org>, Denis Carikli <denis@eukrea.com>,
+	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>, devicetree@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH v8 3/8] ARM: dt: Binding documentation for imx25
+ touchscreen controller
+Message-ID: <20151116141609.GA6167@rob-hp-laptop>
+References: <1447675269-8831-1-git-send-email-mpa@pengutronix.de>
+ <1447675269-8831-4-git-send-email-mpa@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <5649BA9A.50206@st.com>
-References: <1447664287-17310-1-git-send-email-linus.walleij@linaro.org>
-	<5649BA9A.50206@st.com>
-Date: Mon, 16 Nov 2015 14:20:26 +0100
-Message-ID: <CACRpkdaumSNemq63o7s5EeZuBtTKmXqzd9_Kb5ZfouNQbfvEOg@mail.gmail.com>
-Subject: Re: [PATCH 1/2 v2] iio: st_sensors: support active-low interrupts
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Giuseppe BARBA <giuseppe.barba@st.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Denis CIOCCA <denis.ciocca@st.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1447675269-8831-4-git-send-email-mpa@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Nov 16, 2015 at 12:14 PM, Giuseppe BARBA <giuseppe.barba@st.com> wrote:
-> On 16/11/2015 09:58, Linus Walleij wrote:
+On Mon, Nov 16, 2015 at 01:01:04PM +0100, Markus Pargmann wrote:
+> This is the touchscreen conversion queue binding documentation. It uses
+> the shared imx25 ADC.
+> 
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> ---
+> 
+> Notes:
+>     Changes in v5:
+>      - Fix signed/unsigned comparison
+>      - Fix unused variable settling_time by putting it in the correct argument list
+>      - Use continous conversion queue with the repeat feature and a proper
+>        repeat-wait. Previously the touchscreen caused massive number of interrupts.
+> 
+>  .../bindings/input/touchscreen/fsl-mx25-tcq.txt    | 29 ++++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
+> new file mode 100644
+> index 000000000000..89ab47a3acc1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
+> @@ -0,0 +1,29 @@
+> +Freescale mx25 TS conversion queue module
+> +
+> +mx25 touchscreen conversion queue module which controls the ADC unit of the
+> +mx25 for attached touchscreens.
+> +
+> +Required properties:
+> + - compatible: Should be "fsl,imx25-tcq".
+> + - reg: Memory range of the device.
+> + - interrupts: Should be the interrupt number associated with this module within
+> +   the tscadc unit (<0>).
+> + - interrupt-parent: Should be a phandle to the tscadc unit.
+> + - fsl,wires: Should be '<4>' or '<5>'
+> +
+> +Optional properties:
+> + - fsl,pen-debounce: Pen debounce time in nanoseconds.
+> + - fsl,pen-threshold: Pen-down threshold for the touchscreen.
+> + - fsl,settling-time: Settling time in nanoseconds.
 
->> I am still missing a data sheet for the LSM303AGR sensor that
->> Giuseppe added recently, so I have no idea what bits to poke to get
->> active low IRQs (or open drain) on that sensor.
->
-> I'm surprised that the datasheet is not available yet on
-> STMicroelectronics site. I've checked and it should be available in the
-> next days. I'll reply to you again  with the link.
-> Anyway, I can confirm you that the register 0x25 (mask 0x02) is the
-> correct one to use for setting interrupt active high/low.
+Don't we have standard properties for these? If not, these should have 
+units.
 
-For the accelerometer I guessed it's the same as the other sensors,
-but as LSM303AGR also has DRDY for the magnetometer, I was
-wondering if there is a bit for IHL and OD also for the magnetometer
-side?
+I don't understand the difference between debounce and settling times. 
+Please make that clear in the doc.
 
-Yours,
-Linus Walleij
+Rob
