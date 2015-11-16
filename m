@@ -1,98 +1,35 @@
-Return-Path: <mpa@pengutronix.de>
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Shawn Guo <shawnguo@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Denis Carikli <denis@eukrea.com>,
-	=?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	devicetree@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v8 0/8] imx25 adc and touchscreen driver
-Date: Mon, 16 Nov 2015 13:01:01 +0100
-Message-Id: <1447675269-8831-1-git-send-email-mpa@pengutronix.de>
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
+In-Reply-To: <5649BA9A.50206@st.com>
+References: <1447664287-17310-1-git-send-email-linus.walleij@linaro.org>
+	<5649BA9A.50206@st.com>
+Date: Mon, 16 Nov 2015 14:20:26 +0100
+Message-ID: <CACRpkdaumSNemq63o7s5EeZuBtTKmXqzd9_Kb5ZfouNQbfvEOg@mail.gmail.com>
+Subject: Re: [PATCH 1/2 v2] iio: st_sensors: support active-low interrupts
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Giuseppe BARBA <giuseppe.barba@st.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Denis CIOCCA <denis.ciocca@st.com>
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+On Mon, Nov 16, 2015 at 12:14 PM, Giuseppe BARBA <giuseppe.barba@st.com> wrote:
+> On 16/11/2015 09:58, Linus Walleij wrote:
 
-welcome to the next round of the never ending series ;). The last version v7
-was sent roughly 8 months ago. The first version at least 1.5 years ago.
+>> I am still missing a data sheet for the LSM303AGR sensor that
+>> Giuseppe added recently, so I have no idea what bits to poke to get
+>> active low IRQs (or open drain) on that sensor.
+>
+> I'm surprised that the datasheet is not available yet on
+> STMicroelectronics site. I've checked and it should be available in the
+> next days. I'll reply to you again  with the link.
+> Anyway, I can confirm you that the register 0x25 (mask 0x02) is the
+> correct one to use for setting interrupt active high/low.
 
-This series adds two drivers for ADC and TSC of the imx25 and a MFD driver to
-connect these.
+For the accelerometer I guessed it's the same as the other sensors,
+but as LSM303AGR also has DRDY for the magnetometer, I was
+wondering if there is a bit for IHL and OD also for the magnetometer
+side?
 
-Due to the larger changes in this version I had to remove some of the acks
-again.
-
-@Hartmut:
-Thanks for your comments. I updated the drivers accordingly.
-
-Changes in v8:
- - scale was defined as a shared property of the ADC although the scale can be
-   different for each ADC channel. v8 fixes that.
- - Some smaller modifications of the code style in gcq code.
- - Redesign of the regulator handling in the gcq code. The driver does now
-   handle regulators "vref-ext", "vref-xp" and "vref-yp" as positive voltage
-   reference.  Also the calculation of the scale property based on these
-   voltage reference regulators was fixed. The code now uses
-   regulator_get_optional() to avoid dummy regulators.
- - The missing regulator_disable() was added.
-
- Thanks to Jürgen the time behavior of the units is now fixed and within specs:
- - Fixed clock rates for the whole unit regarding to the reference manual.
- - Fixed clock/time calculations for settling times in the touchscreen driver.
-
-Best Regards,
-
-Markus
-
-
-Denis Carikli (2):
-  ARM: dts: imx25: Add TSC and ADC support
-  ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC
-    support.
-
-Markus Pargmann (6):
-  ARM: dt: Binding documentation for imx25 ADC/TSC
-  ARM: dt: Binding documentation for imx25 GCQ
-  ARM: dt: Binding documentation for imx25 touchscreen controller
-  mfd: fsl imx25 Touchscreen ADC driver
-  iio: adc: fsl,imx25-gcq driver
-  input: touchscreen: imx25 tcq driver
-
- .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  |  58 ++
- .../bindings/input/touchscreen/fsl-mx25-tcq.txt    |  29 +
- .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |  46 ++
- arch/arm/boot/dts/imx25.dtsi                       |  30 +-
- arch/arm/configs/imx_v4_v5_defconfig               |   4 +
- drivers/iio/adc/Kconfig                            |   7 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/fsl-imx25-gcq.c                    | 415 ++++++++++++++
- drivers/input/touchscreen/Kconfig                  |   6 +
- drivers/input/touchscreen/Makefile                 |   1 +
- drivers/input/touchscreen/fsl-imx25-tcq.c          | 600 +++++++++++++++++++++
- drivers/mfd/Kconfig                                |   9 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/fsl-imx25-tsadc.c                      | 204 +++++++
- include/dt-bindings/iio/adc/fsl-imx25-gcq.h        |  18 +
- include/linux/mfd/imx25-tsadc.h                    | 140 +++++
- 16 files changed, 1567 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
- create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
- create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
- create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
- create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
- create mode 100644 include/linux/mfd/imx25-tsadc.h
-
--- 
-2.6.1
+Yours,
+Linus Walleij
