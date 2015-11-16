@@ -1,177 +1,112 @@
 Return-Path: <mtitinger@baylibre.com>
-Subject: Re: [RFC v2 1/2] iio: ina2xx: add direct IO support for TI INA2xx
- Power Monitors
-To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de, lars@metafoo.de,
- pmeerw@pmeerw.net
-References: <CAEnQRZBeZpBxSCf85MRmByguHA8kXTNp9+NPD2d3cdsMRb+74w@mail.gmail.com>
- <1447333052-12791-1-git-send-email-mtitinger@baylibre.com>
- <56478493.3030703@kernel.org>
+Subject: Re: [RFC 4/4] iio: ina2xx: add SOFTWARE buffer mode using an iio
+ kfifo.
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
+ <lars@metafoo.de>, knaack.h@gmx.de, pmeerw@pmeerw.net
+References: <1447171653-12756-1-git-send-email-mtitinger@baylibre.com>
+ <1447171653-12756-5-git-send-email-mtitinger@baylibre.com>
+ <56423613.6090403@metafoo.de> <5644675A.2080308@baylibre.com>
+ <564780F6.5040300@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  mturquette@baylibre.com, bcousson@baylibre.com, ptitiano@baylibre.com
 From: Marc Titinger <mtitinger@baylibre.com>
-Message-ID: <5649A265.5060002@baylibre.com>
-Date: Mon, 16 Nov 2015 10:31:17 +0100
+Message-ID: <5649A3E1.4090106@baylibre.com>
+Date: Mon, 16 Nov 2015 10:37:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <56478493.3030703@kernel.org>
+In-Reply-To: <564780F6.5040300@kernel.org>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On 14/11/2015 19:59, Jonathan Cameron wrote:
-> On 12/11/15 12:57, Marc Titinger wrote:
->> Basic support or direct IO raw read, with averaging attribute.
->> Values are RAW, INT_PLUS_MICRO (Volt/Ampere/Watt).
+On 14/11/2015 19:44, Jonathan Cameron wrote:
+> On 12/11/15 10:18, Marc Titinger wrote:
+>> On 10/11/2015 19:23, Lars-Peter Clausen wrote:
+>>> On 11/10/2015 05:07 PM, Marc Titinger wrote:
+>>>> Capture the active scan_elements into a kfifo.
+>>>> The capture thread will compute the remaining time until the next capture
+>>>> tick, and do an active wait (udelay).
+>>>>
+>>>> This will produce a stream of up to fours channels plus a 64bits
+>>>> timestamps (ns).
+>>>>
+>>>> # iio_readdev ina226 |  od -x
+>>>> WARNING: High-speed mode not enabled
+>>>> 0000000 042f 0d5a 002e 010c 4be8 4eb4 0013 0000
+>>>> 0000020 0430 0d5a 002e 010c a704 4f3e 0013 0000
+>>>> 0000040 0430 0d5a 002e 010c b477 4fc7 0013 0000
+>>>> 0000060 042f 0d5b 002e 010c 8052 5050 0013 0000
+>>>> 0000100 042f 0d5b 002e 010c 5d92 50d8 0013 0000
+>>>> 0000120 0430 0d5a 002e 010c fa59 515e 0013 0000
+>>>> 0000140 0430 0d5b 002e 010c 95d2 51e5 0013 0000
+>>>>
+>>>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
 >>
->> Output of iio_info:
+>> Hi Lars,
 >>
->>       iio:device0: ina226
->>        4 channels found:
->>          power3:  (input)
->>          1 channel-specific attributes found:
->>                  attr 0: raw value: 1.150000
->>          voltage0:  (input)
->>          1 channel-specific attributes found:
->>                  attr 0: raw value: 0.000003
->>          voltage1:  (input)
->>          1 channel-specific attributes found:
->>                  attr 0: raw value: 4.277500
->>          current2:  (input)
->>          1 channel-specific attributes found:
->>                  attr 0: raw value: 0.268000
->>        2 device-specific attributes found:
->>                  attr 0: in_calibscale value: 10000
->>                  attr 1: in_mean_raw value: 4
->>                  attr 2: in_sampling_frequency value: 455
+>>>
+>>> Interesting approach. I think if we are going to due this we want to make
+>>> this kind of emulation generic. Have you seen the software trigger and
+>>> configfs support patches[1] from Daniel? It kind of achieves the same as you
+>>> do, but using hrtimers.
 >>
->> Tested with ina226, on BeagleBoneBlack.
+>
+>> I totally agree, let me have a look on those patches maybe I could
+>> add an active waiting scheme for platforms w/o hrtimers ?
+
+> I've no idea if this is a remotely common case any more but in theory
+> I'd have no objection to such a patch though I would like it to be
+> a stand alone trigger similar to that used in the patch Daniel has
+> submitted.
+>
+
+Yes, I've started looking into something like a 'polling' trigger class. 
+I understand that I'd need to support triggered buffer mode in the 
+driver in this case. The current patch is rather simple, but having a 
+generic and documented solution seems a good idea.
+
+>>>
+>>>>
+>>>> ---
+>>>> Ina2xx does not support auto-increment, hence the capture threads sticks
+>>>> with single register reads instead of regmap_bulk_read.
+>>>>
+>>>> The proper scales must be applied to those raw register
+>>>> values, I'm in favor of doing the conversion in userland in a client plugin
+>>>
+>>> Yes, conversion should not be done in kernel space, we don't want to impose
+>>> the performance penalty on users which don't need it and you can typically
+>>> do it faster in userspace anyway where you have floats and SSE and what not.
+>>>
+>>>> for instance a sigrok
+>>>
+>>> Slightly OT, but do you already have some Sigrok IIO support? I have this
+>>> scheduled for end of the month, maybe we can align our strategies here and
+>>> avoid duplicated work.
 >>
->> Datasheet: http://www.ti.com/lit/gpn/ina226
+>
+>> How fortunate! I've started some preliminary work like cloning the
+>> demo driver into a skeletton for 'hardware/generic-iio/api.c', adding
+>> the build/ac plumbing, and linking to libiio with the idea of using
+>> iio_info to create a generic enumeration of the iio-context into
+>> sigrok channels.
 >>
->> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
-> Hi Marc
->
-
-Hi Jonathan,
-
-> To express a personal preference, please don't have series of patches as
-> replies to the original thread.  It gets really hard to follow after
-> a couple of revisions!
->
-Ok, sorry for that.
-
-> May seem a random question, but what do you want to gain from an IIO
-> driver over what the hwmon provides?
-
-Good question. In the frame of Baylibre's ACME power and temperature 
-monitoring demo based on Sigrock, we wish to add a remote mode for the 
-GUI and processing front-end as well as explore other possibilities like 
-using an on-board accelerator to capture the sensor data and stream it 
-back to the front-end. This work is a pathfinder as IIO seems 
-appropriate for what we want to do.
-
->
-> Various bits inline..
-
-Thanks for the review, further questions below!
-
-Marc.
-
->
-> Mostly looks pretty good though.
->
-> Jonathan
->> ---
+>> Now, I'm not familiar with Glib and it might not be my prio until a
+>> couple of weeks, so I'd be super happy to wait for you if you are
+>> keen to do that part :)
 >>
-
-...
-
->> +#define INA2XX_RSHUNT_DEFAULT           10000
->> +
->> +/* bit mask for reading the averaging setting in the configuration register */
->> +#define INA226_AVG_RD_MASK              0x0E00
-> genmask is always good for these.
+>> What would be the best spot to chat about this ?
+>>
 >
-
-ok.
-
-..
-
->> +
->> +static bool ina2xx_is_writeable_reg(struct device *dev, unsigned int reg)
->> +{
->> +	return (reg == INA2XX_CONFIG)
->> +	    || (reg == INA2XX_CALIBRATION);
-> On one line I think this is still way less than 80 chars..
->> +}
-
-ok
-
-...
-
-
->> +struct ina2xx_chip_info {
->> +	struct iio_dev *indio_dev;
-> Having a pointer back to the indio_dev is usually a sign of
-> something 'unusual' going on...  Will be interesting to see what it is for ;)
+>> Marc.
+>>
+>>
+>>>
+>>> - Lars
+>>>
+>>> [1] https://lkml.org/lkml/2015/8/10/877
+>>>
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
-> Ah, that was easy, you don't use it that I can see.
->
-
-Ah, forgot to remove it when splitting into two patches, but yeah you're 
-right, I shall pass the indio_dev ptr as data in the first place.
-
-...
-
->> +
->> +static int ina2xx_get_value(struct ina2xx_chip_info *chip, u8 reg,
->> +			    unsigned int regval, int *val, int *uval)
->> +{
->> +	*val = 0;
->> +
->> +	switch (reg) {
->> +	case INA2XX_SHUNT_VOLTAGE:
->> +		/* signed register */
->> +		*uval = DIV_ROUND_CLOSEST((s16) regval,
->> +					  chip->config->shunt_div);
->> +		*val = *uval/1000000;
->> +		*uval = *uval - *val*1000000;
->> +		return IIO_VAL_INT_PLUS_MICRO;
-> I'm somewhat unconvinced that this wrapper is adding anything over
-> just doing this where you care about the result.
-> Also, this is a straight forward linear conversion.  Do it in userspace
-> by providing the relevant 'scale' element.
-
-got it! A practical question: can you specify a divider rather than a 
-multiplier as a scale so that userspace does the division?
-
->> +
->> +	case INA2XX_BUS_VOLTAGE:
->> +		*uval = (regval >> chip->config->bus_voltage_shift)
->> +			* chip->config->bus_voltage_lsb;
->> +		*val = *uval/1000000;
->> +		*uval = *uval - *val*1000000;
->> +		return IIO_VAL_INT_PLUS_MICRO;
-...
-
->> +	tmp = config;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_AVERAGE_RAW:
->> +
->> +		ret = ina226_set_average(chip, val, &tmp);
-> This isn't what the ABI uses the info_average_raw attribute for - it's
-> for outputing the average of a channel rather than setting a mean
-> filter width (which is what you have here).  Probably need some new ABI
-> for this as our current filter description ABI is rather limited!
->
-Ah ok, should this go into a sysfs attribute then, until the ABI section 
-is defined ? How about specifying the ABI section while we are at it ?
-
-...
-
-.driver_module = THIS_MODULE,
->> +};
->> +
->> +/*
-> Single line comment, use single line comment syntax.
-
-ok
