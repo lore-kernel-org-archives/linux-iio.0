@@ -1,112 +1,425 @@
-Return-Path: <mtitinger@baylibre.com>
-Subject: Re: [RFC 4/4] iio: ina2xx: add SOFTWARE buffer mode using an iio
- kfifo.
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, knaack.h@gmx.de, pmeerw@pmeerw.net
-References: <1447171653-12756-1-git-send-email-mtitinger@baylibre.com>
- <1447171653-12756-5-git-send-email-mtitinger@baylibre.com>
- <56423613.6090403@metafoo.de> <5644675A.2080308@baylibre.com>
- <564780F6.5040300@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- mturquette@baylibre.com, bcousson@baylibre.com, ptitiano@baylibre.com
-From: Marc Titinger <mtitinger@baylibre.com>
-Message-ID: <5649A3E1.4090106@baylibre.com>
-Date: Mon, 16 Nov 2015 10:37:37 +0100
+Return-Path: <giuseppe.barba@st.com>
+From: Giuseppe BARBA <giuseppe.barba@st.com>
+To: Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron
+	<jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: Denis CIOCCA <denis.ciocca@st.com>
+Date: Mon, 16 Nov 2015 12:14:34 +0100
+Subject: Re: [PATCH 1/2 v2] iio: st_sensors: support active-low interrupts
+Message-ID: <5649BA9A.50206@st.com>
+References: <1447664287-17310-1-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1447664287-17310-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset="Windows-1252"
 MIME-Version: 1.0
-In-Reply-To: <564780F6.5040300@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On 14/11/2015 19:44, Jonathan Cameron wrote:
-> On 12/11/15 10:18, Marc Titinger wrote:
->> On 10/11/2015 19:23, Lars-Peter Clausen wrote:
->>> On 11/10/2015 05:07 PM, Marc Titinger wrote:
->>>> Capture the active scan_elements into a kfifo.
->>>> The capture thread will compute the remaining time until the next capture
->>>> tick, and do an active wait (udelay).
->>>>
->>>> This will produce a stream of up to fours channels plus a 64bits
->>>> timestamps (ns).
->>>>
->>>> # iio_readdev ina226 |  od -x
->>>> WARNING: High-speed mode not enabled
->>>> 0000000 042f 0d5a 002e 010c 4be8 4eb4 0013 0000
->>>> 0000020 0430 0d5a 002e 010c a704 4f3e 0013 0000
->>>> 0000040 0430 0d5a 002e 010c b477 4fc7 0013 0000
->>>> 0000060 042f 0d5b 002e 010c 8052 5050 0013 0000
->>>> 0000100 042f 0d5b 002e 010c 5d92 50d8 0013 0000
->>>> 0000120 0430 0d5a 002e 010c fa59 515e 0013 0000
->>>> 0000140 0430 0d5b 002e 010c 95d2 51e5 0013 0000
->>>>
->>>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
->>
->> Hi Lars,
->>
->>>
->>> Interesting approach. I think if we are going to due this we want to make
->>> this kind of emulation generic. Have you seen the software trigger and
->>> configfs support patches[1] from Daniel? It kind of achieves the same as you
->>> do, but using hrtimers.
->>
->
->> I totally agree, let me have a look on those patches maybe I could
->> add an active waiting scheme for platforms w/o hrtimers ?
+Hi Linus,
 
-> I've no idea if this is a remotely common case any more but in theory
-> I'd have no objection to such a patch though I would like it to be
-> a stand alone trigger similar to that used in the patch Daniel has
-> submitted.
+On 16/11/2015 09:58, Linus Walleij wrote:
+> Most ST MEMS Sensors that support interrupts can also handle sending
+> an active low interrupt, i.e. going from high to low on data ready
+> (or other interrupt) and thus triggering on a falling edge to the
+> interrupt controller.
 >
+> Set up logic to inspect the interrupt line we get for a sensor: if
+> it is triggering on rising edge, leave everything alone, but if it
+> triggers on falling edges, set up active low, and if unsupported
+> configurations appear: warn with errors and reconfigure the interrupt
+> to a rising edge, which all interrupt generating sensors support.
+>
+> Create a local header for st_sensors_core.h to share functions
+> between the sensor core and the trigger setup code.
+>
+> Cc: Giuseppe Barba <giuseppe.barba@st.com>
+> Cc: Denis Ciocca <denis.ciocca@st.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v1->v2:
+> - Rebased to come first in the series independently of the
+>    request_any_context_irq() change.
+> - Fixed some errorpath issues found by Denis, including a
+>    cleanup to return out directly on the first error.
+>
+> I am still missing a data sheet for the LSM303AGR sensor that
+> Giuseppe added recently, so I have no idea what bits to poke to get
+> active low IRQs (or open drain) on that sensor.
 
-Yes, I've started looking into something like a 'polling' trigger class. 
-I understand that I'd need to support triggered buffer mode in the 
-driver in this case. The current patch is rather simple, but having a 
-generic and documented solution seems a good idea.
+I'm surprised that the datasheet is not available yet on
+STMicroelectronics site. I've checked and it should be available in the
+next days. I'll reply to you again  with the link.
+Anyway, I can confirm you that the register 0x25 (mask 0x02) is the
+correct one to use for setting interrupt active high/low.
 
->>>
->>>>
->>>> ---
->>>> Ina2xx does not support auto-increment, hence the capture threads sticks
->>>> with single register reads instead of regmap_bulk_read.
->>>>
->>>> The proper scales must be applied to those raw register
->>>> values, I'm in favor of doing the conversion in userland in a client plugin
->>>
->>> Yes, conversion should not be done in kernel space, we don't want to impose
->>> the performance penalty on users which don't need it and you can typically
->>> do it faster in userspace anyway where you have floats and SSE and what not.
->>>
->>>> for instance a sigrok
->>>
->>> Slightly OT, but do you already have some Sigrok IIO support? I have this
->>> scheduled for end of the month, maybe we can align our strategies here and
->>> avoid duplicated work.
->>
+Giuseppe.
+
+> ---
+>   drivers/iio/accel/st_accel_core.c                  | 16 +++++++
+>   drivers/iio/common/st_sensors/st_sensors_core.c    |  6 +--
+>   drivers/iio/common/st_sensors/st_sensors_core.h    |  8 ++++
+>   drivers/iio/common/st_sensors/st_sensors_trigger.c | 52 +++++++++++++++=
+++-----
+>   drivers/iio/gyro/st_gyro_core.c                    | 12 +++++
+>   drivers/iio/pressure/st_pressure_core.c            |  8 ++++
+>   include/linux/iio/common/st_sensors.h              |  4 ++
+>   7 files changed, 93 insertions(+), 13 deletions(-)
+>   create mode 100644 drivers/iio/common/st_sensors/st_sensors_core.h
 >
->> How fortunate! I've started some preliminary work like cloning the
->> demo driver into a skeletton for 'hardware/generic-iio/api.c', adding
->> the build/ac plumbing, and linking to libiio with the idea of using
->> iio_info to create a generic enumeration of the iio-context into
->> sigrok channels.
->>
->> Now, I'm not familiar with Glib and it might not be my prio until a
->> couple of weeks, so I'd be super happy to wait for you if you are
->> keen to do that part :)
->>
->> What would be the best spot to chat about this ?
->>
+> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_acc=
+el_core.c
+> index 197a08b4e2f3..1132224cbc10 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -67,6 +67,8 @@
+>   #define ST_ACCEL_1_DRDY_IRQ_ADDR               0x22
+>   #define ST_ACCEL_1_DRDY_IRQ_INT1_MASK          0x10
+>   #define ST_ACCEL_1_DRDY_IRQ_INT2_MASK          0x08
+> +#define ST_ACCEL_1_IHL_IRQ_ADDR                        0x25
+> +#define ST_ACCEL_1_IHL_IRQ_MASK                        0x02
+>   #define ST_ACCEL_1_MULTIREAD_BIT               true
 >
->> Marc.
->>
->>
->>>
->>> - Lars
->>>
->>> [1] https://lkml.org/lkml/2015/8/10/877
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>   /* CUSTOM VALUES FOR SENSOR 2 */
+> @@ -92,6 +94,8 @@
+>   #define ST_ACCEL_2_DRDY_IRQ_ADDR               0x22
+>   #define ST_ACCEL_2_DRDY_IRQ_INT1_MASK          0x02
+>   #define ST_ACCEL_2_DRDY_IRQ_INT2_MASK          0x10
+> +#define ST_ACCEL_2_IHL_IRQ_ADDR                        0x22
+> +#define ST_ACCEL_2_IHL_IRQ_MASK                        0x80
+>   #define ST_ACCEL_2_MULTIREAD_BIT               true
+>
+>   /* CUSTOM VALUES FOR SENSOR 3 */
+> @@ -125,6 +129,8 @@
+>   #define ST_ACCEL_3_DRDY_IRQ_ADDR               0x23
+>   #define ST_ACCEL_3_DRDY_IRQ_INT1_MASK          0x80
+>   #define ST_ACCEL_3_DRDY_IRQ_INT2_MASK          0x00
+> +#define ST_ACCEL_3_IHL_IRQ_ADDR                        0x23
+> +#define ST_ACCEL_3_IHL_IRQ_MASK                        0x40
+>   #define ST_ACCEL_3_IG1_EN_ADDR                 0x23
+>   #define ST_ACCEL_3_IG1_EN_MASK                 0x08
+>   #define ST_ACCEL_3_MULTIREAD_BIT               false
+> @@ -169,6 +175,8 @@
+>   #define ST_ACCEL_5_DRDY_IRQ_ADDR               0x22
+>   #define ST_ACCEL_5_DRDY_IRQ_INT1_MASK          0x04
+>   #define ST_ACCEL_5_DRDY_IRQ_INT2_MASK          0x20
+> +#define ST_ACCEL_5_IHL_IRQ_ADDR                        0x22
+> +#define ST_ACCEL_5_IHL_IRQ_MASK                        0x80
+>   #define ST_ACCEL_5_IG1_EN_ADDR                 0x21
+>   #define ST_ACCEL_5_IG1_EN_MASK                 0x08
+>   #define ST_ACCEL_5_MULTIREAD_BIT               false
+> @@ -291,6 +299,8 @@ static const struct st_sensor_settings st_accel_senso=
+rs_settings[] =3D {
+>                          .addr =3D ST_ACCEL_1_DRDY_IRQ_ADDR,
+>                          .mask_int1 =3D ST_ACCEL_1_DRDY_IRQ_INT1_MASK,
+>                          .mask_int2 =3D ST_ACCEL_1_DRDY_IRQ_INT2_MASK,
+> +                       .addr_ihl =3D ST_ACCEL_1_IHL_IRQ_ADDR,
+> +                       .mask_ihl =3D ST_ACCEL_1_IHL_IRQ_MASK,
+>                  },
+>                  .multi_read_bit =3D ST_ACCEL_1_MULTIREAD_BIT,
+>                  .bootime =3D 2,
+> @@ -354,6 +364,8 @@ static const struct st_sensor_settings st_accel_senso=
+rs_settings[] =3D {
+>                          .addr =3D ST_ACCEL_2_DRDY_IRQ_ADDR,
+>                          .mask_int1 =3D ST_ACCEL_2_DRDY_IRQ_INT1_MASK,
+>                          .mask_int2 =3D ST_ACCEL_2_DRDY_IRQ_INT2_MASK,
+> +                       .addr_ihl =3D ST_ACCEL_2_IHL_IRQ_ADDR,
+> +                       .mask_ihl =3D ST_ACCEL_2_IHL_IRQ_MASK,
+>                  },
+>                  .multi_read_bit =3D ST_ACCEL_2_MULTIREAD_BIT,
+>                  .bootime =3D 2,
+> @@ -429,6 +441,8 @@ static const struct st_sensor_settings st_accel_senso=
+rs_settings[] =3D {
+>                          .addr =3D ST_ACCEL_3_DRDY_IRQ_ADDR,
+>                          .mask_int1 =3D ST_ACCEL_3_DRDY_IRQ_INT1_MASK,
+>                          .mask_int2 =3D ST_ACCEL_3_DRDY_IRQ_INT2_MASK,
+> +                       .addr_ihl =3D ST_ACCEL_3_IHL_IRQ_ADDR,
+> +                       .mask_ihl =3D ST_ACCEL_3_IHL_IRQ_MASK,
+>                          .ig1 =3D {
+>                                  .en_addr =3D ST_ACCEL_3_IG1_EN_ADDR,
+>                                  .en_mask =3D ST_ACCEL_3_IG1_EN_MASK,
+> @@ -536,6 +550,8 @@ static const struct st_sensor_settings st_accel_senso=
+rs_settings[] =3D {
+>                          .addr =3D ST_ACCEL_5_DRDY_IRQ_ADDR,
+>                          .mask_int1 =3D ST_ACCEL_5_DRDY_IRQ_INT1_MASK,
+>                          .mask_int2 =3D ST_ACCEL_5_DRDY_IRQ_INT2_MASK,
+> +                       .addr_ihl =3D ST_ACCEL_5_IHL_IRQ_ADDR,
+> +                       .mask_ihl =3D ST_ACCEL_5_IHL_IRQ_MASK,
+>                  },
+>                  .multi_read_bit =3D ST_ACCEL_5_MULTIREAD_BIT,
+>                  .bootime =3D 2, /* guess */
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/ii=
+o/common/st_sensors/st_sensors_core.c
+> index 25258e2c1a82..ed6f54d5c932 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -17,7 +17,7 @@
+>   #include <linux/of.h>
+>   #include <asm/unaligned.h>
+>   #include <linux/iio/common/st_sensors.h>
+> -
+> +#include "st_sensors_core.h"
+>
+>   #define ST_SENSORS_WAI_ADDRESS         0x0f
+>
+> @@ -26,8 +26,8 @@ static inline u32 st_sensors_get_unaligned_le24(const u=
+8 *p)
+>          return (s32)((p[0] | p[1] << 8 | p[2] << 16) << 8) >> 8;
+>   }
+>
+> -static int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
+> -                                               u8 reg_addr, u8 mask, u8 =
+data)
+> +int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
+> +                                   u8 reg_addr, u8 mask, u8 data)
+>   {
+>          int err;
+>          u8 new_data;
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.h b/drivers/ii=
+o/common/st_sensors/st_sensors_core.h
+> new file mode 100644
+> index 000000000000..cd88098ff6f1
+> --- /dev/null
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.h
+> @@ -0,0 +1,8 @@
+> +/*
+> + * Local functions in the ST Sensors core
+> + */
+> +#ifndef __ST_SENSORS_CORE_H
+> +#define __ST_SENSORS_CORE_H
+> +int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
+> +                                   u8 reg_addr, u8 mask, u8 data);
+> +#endif
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers=
+/iio/common/st_sensors/st_sensors_trigger.c
+> index 3c0aa17d753f..54115ccdada2 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> @@ -14,33 +14,66 @@
+>   #include <linux/iio/iio.h>
+>   #include <linux/iio/trigger.h>
+>   #include <linux/interrupt.h>
+> -
+>   #include <linux/iio/common/st_sensors.h>
+> -
+> +#include "st_sensors_core.h"
+>
+>   int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+>                                  const struct iio_trigger_ops *trigger_op=
+s)
+>   {
+> -       int err;
+> +       int err, irq;
+>          struct st_sensor_data *sdata =3D iio_priv(indio_dev);
+> +       unsigned long irq_trig;
+>
+>          sdata->trig =3D iio_trigger_alloc("%s-dev%d",
+>                                          indio_dev->name, indio_dev->id);
+>          if (sdata->trig =3D=3D NULL) {
+> -               err =3D -ENOMEM;
+>                  dev_err(&indio_dev->dev, "failed to allocate iio trigger=
+.\n");
+> -               goto iio_trigger_alloc_error;
+> +               return -ENOMEM;
+>          }
+>
+> -       err =3D request_threaded_irq(sdata->get_irq_data_ready(indio_dev)=
+,
+> +       irq =3D sdata->get_irq_data_ready(indio_dev);
+> +       irq_trig =3D irqd_get_trigger_type(irq_get_irq_data(irq));
+> +       /*
+> +        * If the IRQ is triggered on falling edge, we need to mark the
+> +        * interrupt as active low, if the hardware supports this.
+> +        */
+> +       if (irq_trig =3D=3D IRQF_TRIGGER_FALLING) {
+> +               if (!sdata->sensor_settings->drdy_irq.addr_ihl) {
+> +                       dev_err(&indio_dev->dev,
+> +                               "falling edge specified for IRQ but hardw=
+are "
+> +                               "only support rising edge, will request "
+> +                               "rising edge\n");
+> +                       irq_trig =3D IRQF_TRIGGER_RISING;
+> +               } else {
+> +                       /* Set up INT active low i.e. falling edge */
+> +                       err =3D st_sensors_write_data_with_mask(indio_dev=
+,
+> +                               sdata->sensor_settings->drdy_irq.addr_ihl=
+,
+> +                               sdata->sensor_settings->drdy_irq.mask_ihl=
+, 1);
+> +                       if (err < 0)
+> +                               goto iio_trigger_free;
+> +                       dev_info(&indio_dev->dev,
+> +                                "interrupts on the falling edge\n");
+> +               }
+> +       } else if (irq_trig =3D=3D IRQF_TRIGGER_RISING) {
+> +               dev_info(&indio_dev->dev,
+> +                        "interrupts on the rising edge\n");
+> +
+> +       } else {
+> +               dev_err(&indio_dev->dev,
+> +                       "unsupported IRQ trigger specified (%lx), only "
+> +                       "rising and falling edges supported, enforce "
+> +                       "rising edge\n", irq_trig);
+> +               irq_trig =3D IRQF_TRIGGER_RISING;
+> +       }
+> +       err =3D request_threaded_irq(irq,
+>                          iio_trigger_generic_data_rdy_poll,
+>                          NULL,
+> -                       IRQF_TRIGGER_RISING,
+> +                       irq_trig,
+>                          sdata->trig->name,
+>                          sdata->trig);
+>          if (err) {
+>                  dev_err(&indio_dev->dev, "failed to request trigger IRQ.=
+\n");
+> -               goto request_irq_error;
+> +               goto iio_trigger_free;
+>          }
+>
+>          iio_trigger_set_drvdata(sdata->trig, indio_dev);
+> @@ -58,9 +91,8 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_d=
+ev,
+>
+>   iio_trigger_register_error:
+>          free_irq(sdata->get_irq_data_ready(indio_dev), sdata->trig);
+> -request_irq_error:
+> +iio_trigger_free:
+>          iio_trigger_free(sdata->trig);
+> -iio_trigger_alloc_error:
+>          return err;
+>   }
+>   EXPORT_SYMBOL(st_sensors_allocate_trigger);
+> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_c=
+ore.c
+> index 02eddcebeea3..260bfe021904 100644
+> --- a/drivers/iio/gyro/st_gyro_core.c
+> +++ b/drivers/iio/gyro/st_gyro_core.c
+> @@ -61,6 +61,8 @@
+>   #define ST_GYRO_1_BDU_MASK                     0x80
+>   #define ST_GYRO_1_DRDY_IRQ_ADDR                        0x22
+>   #define ST_GYRO_1_DRDY_IRQ_INT2_MASK           0x08
+> +#define ST_GYRO_1_IHL_IRQ_ADDR                 0x22
+> +#define ST_GYRO_1_IHL_IRQ_MASK                 0x20
+>   #define ST_GYRO_1_MULTIREAD_BIT                        true
+>
+>   /* CUSTOM VALUES FOR SENSOR 2 */
+> @@ -85,6 +87,8 @@
+>   #define ST_GYRO_2_BDU_MASK                     0x80
+>   #define ST_GYRO_2_DRDY_IRQ_ADDR                        0x22
+>   #define ST_GYRO_2_DRDY_IRQ_INT2_MASK           0x08
+> +#define ST_GYRO_2_IHL_IRQ_ADDR                 0x22
+> +#define ST_GYRO_2_IHL_IRQ_MASK                 0x20
+>   #define ST_GYRO_2_MULTIREAD_BIT                        true
+>
+>   /* CUSTOM VALUES FOR SENSOR 3 */
+> @@ -109,6 +113,8 @@
+>   #define ST_GYRO_3_BDU_MASK                     0x80
+>   #define ST_GYRO_3_DRDY_IRQ_ADDR                        0x22
+>   #define ST_GYRO_3_DRDY_IRQ_INT2_MASK           0x08
+> +#define ST_GYRO_3_IHL_IRQ_ADDR                 0x22
+> +#define ST_GYRO_3_IHL_IRQ_MASK                 0x20
+>   #define ST_GYRO_3_MULTIREAD_BIT                        true
+>
+>
+> @@ -185,6 +191,8 @@ static const struct st_sensor_settings st_gyro_sensor=
+s_settings[] =3D {
+>                  .drdy_irq =3D {
+>                          .addr =3D ST_GYRO_1_DRDY_IRQ_ADDR,
+>                          .mask_int2 =3D ST_GYRO_1_DRDY_IRQ_INT2_MASK,
+> +                       .addr_ihl =3D ST_GYRO_1_IHL_IRQ_ADDR,
+> +                       .mask_ihl =3D ST_GYRO_1_IHL_IRQ_MASK,
+>                  },
+>                  .multi_read_bit =3D ST_GYRO_1_MULTIREAD_BIT,
+>                  .bootime =3D 2,
+> @@ -248,6 +256,8 @@ static const struct st_sensor_settings st_gyro_sensor=
+s_settings[] =3D {
+>                  .drdy_irq =3D {
+>                          .addr =3D ST_GYRO_2_DRDY_IRQ_ADDR,
+>                          .mask_int2 =3D ST_GYRO_2_DRDY_IRQ_INT2_MASK,
+> +                       .addr_ihl =3D ST_GYRO_2_IHL_IRQ_ADDR,
+> +                       .mask_ihl =3D ST_GYRO_2_IHL_IRQ_MASK,
+>                  },
+>                  .multi_read_bit =3D ST_GYRO_2_MULTIREAD_BIT,
+>                  .bootime =3D 2,
+> @@ -307,6 +317,8 @@ static const struct st_sensor_settings st_gyro_sensor=
+s_settings[] =3D {
+>                  .drdy_irq =3D {
+>                          .addr =3D ST_GYRO_3_DRDY_IRQ_ADDR,
+>                          .mask_int2 =3D ST_GYRO_3_DRDY_IRQ_INT2_MASK,
+> +                       .addr_ihl =3D ST_GYRO_3_IHL_IRQ_ADDR,
+> +                       .mask_ihl =3D ST_GYRO_3_IHL_IRQ_MASK,
+>                  },
+>                  .multi_read_bit =3D ST_GYRO_3_MULTIREAD_BIT,
+>                  .bootime =3D 2,
+> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressu=
+re/st_pressure_core.c
+> index b39a2fb0671c..172393ad34af 100644
+> --- a/drivers/iio/pressure/st_pressure_core.c
+> +++ b/drivers/iio/pressure/st_pressure_core.c
+> @@ -62,6 +62,8 @@
+>   #define ST_PRESS_LPS331AP_DRDY_IRQ_ADDR                0x22
+>   #define ST_PRESS_LPS331AP_DRDY_IRQ_INT1_MASK   0x04
+>   #define ST_PRESS_LPS331AP_DRDY_IRQ_INT2_MASK   0x20
+> +#define ST_PRESS_LPS331AP_IHL_IRQ_ADDR         0x22
+> +#define ST_PRESS_LPS331AP_IHL_IRQ_MASK         0x80
+>   #define ST_PRESS_LPS331AP_MULTIREAD_BIT                true
+>   #define ST_PRESS_LPS331AP_TEMP_OFFSET          42500
+>
+> @@ -100,6 +102,8 @@
+>   #define ST_PRESS_LPS25H_DRDY_IRQ_ADDR          0x23
+>   #define ST_PRESS_LPS25H_DRDY_IRQ_INT1_MASK     0x01
+>   #define ST_PRESS_LPS25H_DRDY_IRQ_INT2_MASK     0x10
+> +#define ST_PRESS_LPS25H_IHL_IRQ_ADDR           0x22
+> +#define ST_PRESS_LPS25H_IHL_IRQ_MASK           0x80
+>   #define ST_PRESS_LPS25H_MULTIREAD_BIT          true
+>   #define ST_PRESS_LPS25H_TEMP_OFFSET            42500
+>   #define ST_PRESS_LPS25H_OUT_XL_ADDR            0x28
+> @@ -220,6 +224,8 @@ static const struct st_sensor_settings st_press_senso=
+rs_settings[] =3D {
+>                          .addr =3D ST_PRESS_LPS331AP_DRDY_IRQ_ADDR,
+>                          .mask_int1 =3D ST_PRESS_LPS331AP_DRDY_IRQ_INT1_M=
+ASK,
+>                          .mask_int2 =3D ST_PRESS_LPS331AP_DRDY_IRQ_INT2_M=
+ASK,
+> +                       .addr_ihl =3D ST_PRESS_LPS331AP_IHL_IRQ_ADDR,
+> +                       .mask_ihl =3D ST_PRESS_LPS331AP_IHL_IRQ_MASK,
+>                  },
+>                  .multi_read_bit =3D ST_PRESS_LPS331AP_MULTIREAD_BIT,
+>                  .bootime =3D 2,
+> @@ -304,6 +310,8 @@ static const struct st_sensor_settings st_press_senso=
+rs_settings[] =3D {
+>                          .addr =3D ST_PRESS_LPS25H_DRDY_IRQ_ADDR,
+>                          .mask_int1 =3D ST_PRESS_LPS25H_DRDY_IRQ_INT1_MAS=
+K,
+>                          .mask_int2 =3D ST_PRESS_LPS25H_DRDY_IRQ_INT2_MAS=
+K,
+> +                       .addr_ihl =3D ST_PRESS_LPS25H_IHL_IRQ_ADDR,
+> +                       .mask_ihl =3D ST_PRESS_LPS25H_IHL_IRQ_MASK,
+>                  },
+>                  .multi_read_bit =3D ST_PRESS_LPS25H_MULTIREAD_BIT,
+>                  .bootime =3D 2,
+> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/co=
+mmon/st_sensors.h
+> index 2fe939c73cd2..6670c3d25c58 100644
+> --- a/include/linux/iio/common/st_sensors.h
+> +++ b/include/linux/iio/common/st_sensors.h
+> @@ -119,6 +119,8 @@ struct st_sensor_bdu {
+>    * @addr: address of the register.
+>    * @mask_int1: mask to enable/disable IRQ on INT1 pin.
+>    * @mask_int2: mask to enable/disable IRQ on INT2 pin.
+> + * @addr_ihl: address to enable/disable active low on the INT lines.
+> + * @mask_ihl: mask to enable/disable active low on the INT lines.
+>    * struct ig1 - represents the Interrupt Generator 1 of sensors.
+>    * @en_addr: address of the enable ig1 register.
+>    * @en_mask: mask to write the on/off value for enable.
+> @@ -127,6 +129,8 @@ struct st_sensor_data_ready_irq {
+>          u8 addr;
+>          u8 mask_int1;
+>          u8 mask_int2;
+> +       u8 addr_ihl;
+> +       u8 mask_ihl;
+>          struct {
+>                  u8 en_addr;
+>                  u8 en_mask;
+> --
+> 2.4.3
 >
