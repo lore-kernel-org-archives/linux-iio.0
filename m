@@ -1,110 +1,207 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:41411 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751600AbbKPOBc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 16 Nov 2015 09:01:32 -0500
-Date: Mon, 16 Nov 2015 08:01:19 -0600
-From: Rob Herring <robh@kernel.org>
-To: Markus Pargmann <mpa@pengutronix.de>
-Cc: Shawn Guo <shawnguo@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Denis Carikli <denis@eukrea.com>,
-	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v8 1/8] ARM: dt: Binding documentation for imx25 ADC/TSC
-Message-ID: <20151116140119.GA30407@rob-hp-laptop>
-References: <1447675269-8831-1-git-send-email-mpa@pengutronix.de>
- <1447675269-8831-2-git-send-email-mpa@pengutronix.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55826 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751099AbbKPR2G (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Nov 2015 12:28:06 -0500
+In-Reply-To: <5649A265.5060002@baylibre.com>
+References: <CAEnQRZBeZpBxSCf85MRmByguHA8kXTNp9+NPD2d3cdsMRb+74w@mail.gmail.com> <1447333052-12791-1-git-send-email-mtitinger@baylibre.com> <56478493.3030703@kernel.org> <5649A265.5060002@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1447675269-8831-2-git-send-email-mpa@pengutronix.de>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [RFC v2 1/2] iio: ina2xx: add direct IO support for TI INA2xx Power Monitors
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Mon, 16 Nov 2015 17:27:02 +0000
+To: Marc Titinger <mtitinger@baylibre.com>,
+	Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	mturquette@baylibre.com, bcousson@baylibre.com,
+	ptitiano@baylibre.com
+Message-ID: <7D5B8D99-3343-4BFC-A88B-A3B0A90C9A30@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Nov 16, 2015 at 01:01:02PM +0100, Markus Pargmann wrote:
-> This documentation describes the devicetree bindings for the
-> ADC/Touchscreen unit of the i.MX25 SoC.
-> 
-> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-Acked-by: Rob Herring <robh@kernel.org>
 
-> ---
-> 
-> Notes:
->     Changes in v6:
->      - Removed adc-ref property and replaced it with refp and refn for positive and
->        negative references. The properties are optional now as the default
->        behaviour is a positive internal reference voltage and ADC GND as negative
->        reference.
-> 
->  .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    | 46 ++++++++++++++++++++++
->  1 file changed, 46 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
-> new file mode 100644
-> index 000000000000..a857af0eb68c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
-> @@ -0,0 +1,46 @@
-> +Freescale mx25 ADC/TSC multifunction device
-> +
-> +This device combines two general purpose conversion queues one used for general
-> +ADC and the other used for touchscreens.
-> +
-> +Required properties:
-> + - compatible: Should be "fsl,imx25-tsadc".
-> + - reg: Memory range of the device.
-> + - interrupts: Interrupt for this device as described in
-> +   interrupts/interrupts.txt
-> + - clocks: An 'ipg' clock defined as described in clocks/clock.txt
-> + - interrupt-controller: This device is an interrupt controller. It controls
-> +   the interrupts of both conversion queues.
-> + - #interrupt-cells: Should be '<1>'.
-> + - #address-cells: Should be '<1>'.
-> + - #size-cells: Should be '<1>'.
-> + - ranges
-> +
-> +This device includes two conversion queues which can be added as subnodes.
-> +The first queue is for the touchscreen, the second for general purpose ADC.
-> +
-> +Example:
-> +	tscadc: tscadc@50030000 {
-> +		compatible = "fsl,imx25-tsadc";
-> +		reg = <0x50030000 0xc>;
-> +		interrupts = <46>;
-> +		clocks = <&clks 119>;
-> +		clock-names = "ipg";
-> +		interrupt-controller;
-> +		#interrupt-cells = <1>;
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		ranges;
-> +
-> +		tsc: tcq@50030400 {
-> +			compatible = "fsl,imx25-tcq";
-> +			reg = <0x50030400 0x60>;
-> +			...
-> +		};
-> +
-> +		adc: gcq@50030800 {
-> +			compatible = "fsl,imx25-gcq";
-> +			reg = <0x50030800 0x60>;
-> +			...
-> +		};
-> +	};
-> -- 
-> 2.6.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On 16 November 2015 09:31:17 GMT+00:00, Marc Titinger <mtitinger@baylibre.com> wrote:
+>On 14/11/2015 19:59, Jonathan Cameron wrote:
+>> On 12/11/15 12:57, Marc Titinger wrote:
+>>> Basic support or direct IO raw read, with averaging attribute.
+>>> Values are RAW, INT_PLUS_MICRO (Volt/Ampere/Watt).
+>>>
+>>> Output of iio_info:
+>>>
+>>>       iio:device0: ina226
+>>>        4 channels found:
+>>>          power3:  (input)
+>>>          1 channel-specific attributes found:
+>>>                  attr 0: raw value: 1.150000
+>>>          voltage0:  (input)
+>>>          1 channel-specific attributes found:
+>>>                  attr 0: raw value: 0.000003
+>>>          voltage1:  (input)
+>>>          1 channel-specific attributes found:
+>>>                  attr 0: raw value: 4.277500
+>>>          current2:  (input)
+>>>          1 channel-specific attributes found:
+>>>                  attr 0: raw value: 0.268000
+>>>        2 device-specific attributes found:
+>>>                  attr 0: in_calibscale value: 10000
+>>>                  attr 1: in_mean_raw value: 4
+>>>                  attr 2: in_sampling_frequency value: 455
+>>>
+>>> Tested with ina226, on BeagleBoneBlack.
+>>>
+>>> Datasheet: http://www.ti.com/lit/gpn/ina226
+>>>
+>>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+>> Hi Marc
+>>
+>
+>Hi Jonathan,
+>
+>> To express a personal preference, please don't have series of patches
+>as
+>> replies to the original thread.  It gets really hard to follow after
+>> a couple of revisions!
+>>
+>Ok, sorry for that.
+>
+>> May seem a random question, but what do you want to gain from an IIO
+>> driver over what the hwmon provides?
+>
+>Good question. In the frame of Baylibre's ACME power and temperature 
+>monitoring demo based on Sigrock, we wish to add a remote mode for the 
+>GUI and processing front-end as well as explore other possibilities
+>like 
+>using an on-board accelerator to capture the sensor data and stream it 
+>back to the front-end. This work is a pathfinder as IIO seems 
+>appropriate for what we want to do.
+Fair enough I guess. Will need to check we aren't stepping on too many toes in
+ hwmon if we merge a second driver...
+>
+>>
+>> Various bits inline..
+>
+>Thanks for the review, further questions below!
+>
+>Marc.
+>
+>>
+>> Mostly looks pretty good though.
+>>
+>> Jonathan
+>>> ---
+>>>
+>
+>...
+>
+>>> +#define INA2XX_RSHUNT_DEFAULT           10000
+>>> +
+>>> +/* bit mask for reading the averaging setting in the configuration
+>register */
+>>> +#define INA226_AVG_RD_MASK              0x0E00
+>> genmask is always good for these.
+>>
+>
+>ok.
+>
+>..
+>
+>>> +
+>>> +static bool ina2xx_is_writeable_reg(struct device *dev, unsigned
+>int reg)
+>>> +{
+>>> +	return (reg == INA2XX_CONFIG)
+>>> +	    || (reg == INA2XX_CALIBRATION);
+>> On one line I think this is still way less than 80 chars..
+>>> +}
+>
+>ok
+>
+>...
+>
+>
+>>> +struct ina2xx_chip_info {
+>>> +	struct iio_dev *indio_dev;
+>> Having a pointer back to the indio_dev is usually a sign of
+>> something 'unusual' going on...  Will be interesting to see what it
+>is for ;)
+>>
+>> Ah, that was easy, you don't use it that I can see.
+>>
+>
+>Ah, forgot to remove it when splitting into two patches, but yeah
+>you're 
+>right, I shall pass the indio_dev ptr as data in the first place.
+>
+>...
+>
+>>> +
+>>> +static int ina2xx_get_value(struct ina2xx_chip_info *chip, u8 reg,
+>>> +			    unsigned int regval, int *val, int *uval)
+>>> +{
+>>> +	*val = 0;
+>>> +
+>>> +	switch (reg) {
+>>> +	case INA2XX_SHUNT_VOLTAGE:
+>>> +		/* signed register */
+>>> +		*uval = DIV_ROUND_CLOSEST((s16) regval,
+>>> +					  chip->config->shunt_div);
+>>> +		*val = *uval/1000000;
+>>> +		*uval = *uval - *val*1000000;
+>>> +		return IIO_VAL_INT_PLUS_MICRO;
+>> I'm somewhat unconvinced that this wrapper is adding anything over
+>> just doing this where you care about the result.
+>> Also, this is a straight forward linear conversion.  Do it in
+>userspace
+>> by providing the relevant 'scale' element.
+>
+>got it! A practical question: can you specify a divider rather than a 
+>multiplier as a scale so that userspace does the division?
+Sort of see IIO_TYPE_FRACTIONAL
+
+>
+>>> +
+>>> +	case INA2XX_BUS_VOLTAGE:
+>>> +		*uval = (regval >> chip->config->bus_voltage_shift)
+>>> +			* chip->config->bus_voltage_lsb;
+>>> +		*val = *uval/1000000;
+>>> +		*uval = *uval - *val*1000000;
+>>> +		return IIO_VAL_INT_PLUS_MICRO;
+>...
+>
+>>> +	tmp = config;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_AVERAGE_RAW:
+>>> +
+>>> +		ret = ina226_set_average(chip, val, &tmp);
+>> This isn't what the ABI uses the info_average_raw attribute for -
+>it's
+>> for outputing the average of a channel rather than setting a mean
+>> filter width (which is what you have here).  Probably need some new
+>ABI
+>> for this as our current filter description ABI is rather limited!
+>>
+>Ah ok, should this go into a sysfs attribute then, until the ABI
+>section 
+>is defined ? How about specifying the ABI section while we are at it ?
+
+Go ahead and have a go at defining a suitable ABI :)
+
+Post it as a separate RFC though as discussion might be rather in depth and
+not really driver related. 
+>
+>...
+>
+>.driver_module = THIS_MODULE,
+>>> +};
+>>> +
+>>> +/*
+>> Single line comment, use single line comment syntax.
+>
+>ok
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
