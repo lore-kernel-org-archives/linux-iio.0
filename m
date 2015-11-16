@@ -1,73 +1,43 @@
-Return-Path: <robh@kernel.org>
-Date: Mon, 16 Nov 2015 08:16:09 -0600
-From: Rob Herring <robh@kernel.org>
-To: Markus Pargmann <mpa@pengutronix.de>
-Cc: Shawn Guo <shawnguo@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>, Denis Carikli <denis@eukrea.com>,
-	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>, devicetree@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v8 3/8] ARM: dt: Binding documentation for imx25
- touchscreen controller
-Message-ID: <20151116141609.GA6167@rob-hp-laptop>
-References: <1447675269-8831-1-git-send-email-mpa@pengutronix.de>
- <1447675269-8831-4-git-send-email-mpa@pengutronix.de>
+Return-Path: <giuseppe.barba@st.com>
+From: Giuseppe BARBA <giuseppe.barba@st.com>
+To: Linus Walleij <linus.walleij@linaro.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>,
+        Denis CIOCCA <denis.ciocca@st.com>
+Date: Mon, 16 Nov 2015 15:34:22 +0100
+Subject: Re: [PATCH 1/2 v2] iio: st_sensors: support active-low interrupts
+Message-ID: <5649E96E.8030400@st.com>
+References: <1447664287-17310-1-git-send-email-linus.walleij@linaro.org>
+ <5649BA9A.50206@st.com>
+ <CACRpkdaumSNemq63o7s5EeZuBtTKmXqzd9_Kb5ZfouNQbfvEOg@mail.gmail.com>
+In-Reply-To: <CACRpkdaumSNemq63o7s5EeZuBtTKmXqzd9_Kb5ZfouNQbfvEOg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1447675269-8831-4-git-send-email-mpa@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Nov 16, 2015 at 01:01:04PM +0100, Markus Pargmann wrote:
-> This is the touchscreen conversion queue binding documentation. It uses
-> the shared imx25 ADC.
-> 
-> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> ---
-> 
-> Notes:
->     Changes in v5:
->      - Fix signed/unsigned comparison
->      - Fix unused variable settling_time by putting it in the correct argument list
->      - Use continous conversion queue with the repeat feature and a proper
->        repeat-wait. Previously the touchscreen caused massive number of interrupts.
-> 
->  .../bindings/input/touchscreen/fsl-mx25-tcq.txt    | 29 ++++++++++++++++++++++
->  1 file changed, 29 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
-> new file mode 100644
-> index 000000000000..89ab47a3acc1
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
-> @@ -0,0 +1,29 @@
-> +Freescale mx25 TS conversion queue module
-> +
-> +mx25 touchscreen conversion queue module which controls the ADC unit of the
-> +mx25 for attached touchscreens.
-> +
-> +Required properties:
-> + - compatible: Should be "fsl,imx25-tcq".
-> + - reg: Memory range of the device.
-> + - interrupts: Should be the interrupt number associated with this module within
-> +   the tscadc unit (<0>).
-> + - interrupt-parent: Should be a phandle to the tscadc unit.
-> + - fsl,wires: Should be '<4>' or '<5>'
-> +
-> +Optional properties:
-> + - fsl,pen-debounce: Pen debounce time in nanoseconds.
-> + - fsl,pen-threshold: Pen-down threshold for the touchscreen.
-> + - fsl,settling-time: Settling time in nanoseconds.
-
-Don't we have standard properties for these? If not, these should have 
-units.
-
-I don't understand the difference between debounce and settling times. 
-Please make that clear in the doc.
-
-Rob
+DQoNCk9uIDE2LzExLzIwMTUgMTQ6MjAsIExpbnVzIFdhbGxlaWogd3JvdGU6DQo+IE9uIE1vbiwg
+Tm92IDE2LCAyMDE1IGF0IDEyOjE0IFBNLCBHaXVzZXBwZSBCQVJCQSA8Z2l1c2VwcGUuYmFyYmFA
+c3QuY29tPiB3cm90ZToNCj4+IE9uIDE2LzExLzIwMTUgMDk6NTgsIExpbnVzIFdhbGxlaWogd3Jv
+dGU6DQo+DQo+Pj4gSSBhbSBzdGlsbCBtaXNzaW5nIGEgZGF0YSBzaGVldCBmb3IgdGhlIExTTTMw
+M0FHUiBzZW5zb3IgdGhhdA0KPj4+IEdpdXNlcHBlIGFkZGVkIHJlY2VudGx5LCBzbyBJIGhhdmUg
+bm8gaWRlYSB3aGF0IGJpdHMgdG8gcG9rZSB0byBnZXQNCj4+PiBhY3RpdmUgbG93IElSUXMgKG9y
+IG9wZW4gZHJhaW4pIG9uIHRoYXQgc2Vuc29yLg0KPj4NCj4+IEknbSBzdXJwcmlzZWQgdGhhdCB0
+aGUgZGF0YXNoZWV0IGlzIG5vdCBhdmFpbGFibGUgeWV0IG9uDQo+PiBTVE1pY3JvZWxlY3Ryb25p
+Y3Mgc2l0ZS4gSSd2ZSBjaGVja2VkIGFuZCBpdCBzaG91bGQgYmUgYXZhaWxhYmxlIGluIHRoZQ0K
+Pj4gbmV4dCBkYXlzLiBJJ2xsIHJlcGx5IHRvIHlvdSBhZ2FpbiAgd2l0aCB0aGUgbGluay4NCj4+
+IEFueXdheSwgSSBjYW4gY29uZmlybSB5b3UgdGhhdCB0aGUgcmVnaXN0ZXIgMHgyNSAobWFzayAw
+eDAyKSBpcyB0aGUNCj4+IGNvcnJlY3Qgb25lIHRvIHVzZSBmb3Igc2V0dGluZyBpbnRlcnJ1cHQg
+YWN0aXZlIGhpZ2gvbG93Lg0KPg0KPiBGb3IgdGhlIGFjY2VsZXJvbWV0ZXIgSSBndWVzc2VkIGl0
+J3MgdGhlIHNhbWUgYXMgdGhlIG90aGVyIHNlbnNvcnMsDQo+IGJ1dCBhcyBMU00zMDNBR1IgYWxz
+byBoYXMgRFJEWSBmb3IgdGhlIG1hZ25ldG9tZXRlciwgSSB3YXMNCj4gd29uZGVyaW5nIGlmIHRo
+ZXJlIGlzIGEgYml0IGZvciBJSEwgYW5kIE9EIGFsc28gZm9yIHRoZSBtYWduZXRvbWV0ZXINCj4g
+c2lkZT8NCg0KWWVzLCB0aGUgaW50ZXJydXB0IHBvbGFyaXR5IGlzIGFsc28gcHJlc2VudCBmb3Ig
+bWFnbmV0b21ldGVyLg0KVGhpcyBpcyBuYW1lbHkgSUVBIGJpdCBpbiB0aGUgcmVnaXN0ZXIgQ1RS
+TF9SRUdfTSAoMHg2MyksIGJpdCAyIChtYXNrIA0KMHgwNCkuIEZvbGxvd2luZyB0aGUgYml0IGRl
+c2NyaXB0aW9uOg0KDQpDb250cm9scyB0aGUgcG9sYXJpdHkgb2YgdGhlIElOVCBiaXQgd2hlbiBh
+biBpbnRlcnJ1cHQgb2NjdXJzLg0KRGVmYXVsdDogMA0KDQpJZiBJRUEgPSAwLCB0aGVuIElOVCA9
+IDAgc2lnbmFscyBhbiBpbnRlcnJ1cHQNCklmIElFQSA9IDEsIHRoZW4gSU5UID0gMSBzaWduYWxz
+IGFuIGludGVycnVwdA0KDQpUaGlzIGJpdCBpcyBwcmVzZW50IGFsc28gZm9yIHRoZSBvdGhlciBz
+dXBwb3J0ZWQgbWFnbmV0b21ldGVycy4NCg0KR2l1c2VwcGUuDQoNCj4NCj4gWW91cnMsDQo+IExp
+bnVzIFdhbGxlaWoNCj4=
