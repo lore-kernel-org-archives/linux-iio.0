@@ -1,58 +1,115 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51827 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750889AbbKPGzP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Nov 2015 01:55:15 -0500
-In-Reply-To: <1447629111-6400-1-git-send-email-nizamhaider786@gmail.com>
-References: <1447629111-6400-1-git-send-email-nizamhaider786@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] IIO: adc: xilinx-xadc-core.c: constify iio_buffer_setup_ops structure
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Mon, 16 Nov 2015 06:54:43 +0000
-To: Nizam Haider <nizamhaider786@gmail.com>, jic23@kernel.org
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
-	thomas.betker@rohde-schwarz.com, xander.huff@ni.com,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, Nizam Haider <nijamh@cdac.in>
-Message-ID: <E5B479B9-0B4F-4183-A850-3E7DBC260D09@jic23.retrosnub.co.uk>
+Received: from atl4mhfb03.myregisteredsite.com ([209.17.115.61]:45252 "EHLO
+	atl4mhfb03.myregisteredsite.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751027AbbKPHSX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Nov 2015 02:18:23 -0500
+Received: from atl4mhob09.myregisteredsite.com (atl4mhob09.myregisteredsite.com [209.17.115.47])
+	by atl4mhfb03.myregisteredsite.com (8.14.4/8.14.4) with ESMTP id tAG7ILaf027688
+	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2015 02:18:21 -0500
+Received: from mailpod.hostingplatform.com ([10.30.71.205])
+	by atl4mhob09.myregisteredsite.com (8.14.4/8.14.4) with ESMTP id tAG7IJlP024053
+	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2015 02:18:19 -0500
+From: Mike Looijmans <mike.looijmans@topic.nl>
+To: lars@metafoo.de, Michael.Hennerich@analog.com
+Cc: linux-iio@vger.kernel.org, Mike Looijmans <mike.looijmans@topic.nl>
+Subject: [PATCH] iio/adc/ad9467.c: Add support for AD9649
+Date: Mon, 16 Nov 2015 08:18:07 +0100
+Message-Id: <1447658287-7785-1-git-send-email-mike.looijmans@topic.nl>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The AD9649 is a 14-bit 20-80Msps ADC.
+---
+ drivers/iio/adc/ad9467.c     | 22 +++++++++++++++++++++-
+ drivers/iio/adc/cf_axi_adc.h |  7 +++++++
+ 2 files changed, 28 insertions(+), 1 deletion(-)
 
-
-On 15 November 2015 23:11:51 GMT+00:00, Nizam Haider <nizamhaider786@gmail.com> wrote:
->structure iio_buffer_setup_ops is never modified, so declare it as
->const.
->
->Signed-off-by: Nizam Haider <nijamh@cdac.in>
-Sometimes it feels like there is something in the air...
-
-Julia Lawal posted a patch for this yesterday.
-
-Thanks
-
-Jonathan
->---
-> drivers/iio/adc/xilinx-xadc-core.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/drivers/iio/adc/xilinx-xadc-core.c
->b/drivers/iio/adc/xilinx-xadc-core.c
->index 0370624..c2b5f10 100644
->--- a/drivers/iio/adc/xilinx-xadc-core.c
->+++ b/drivers/iio/adc/xilinx-xadc-core.c
->@@ -803,7 +803,7 @@ err:
-> 	return ret;
-> }
-> 
->-static struct iio_buffer_setup_ops xadc_buffer_ops = {
->+static const struct iio_buffer_setup_ops xadc_buffer_ops = {
-> 	.preenable = &xadc_preenable,
-> 	.postenable = &iio_triggered_buffer_postenable,
-> 	.predisable = &iio_triggered_buffer_predisable,
-
+diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
+index dde27cb..ca67b74 100644
+--- a/drivers/iio/adc/ad9467.c
++++ b/drivers/iio/adc/ad9467.c
+@@ -370,6 +370,7 @@ static int ad9467_dco_calibrate(struct iio_dev *indio_dev, unsigned chan)
+ 	case CHIPID_AD9680:
+ 	case CHIPID_AD9625:
+ 	case CHIPID_AD9434:
++	case CHIPID_AD9649:
+ 		return 0;
+ 	case CHIPID_AD9265:
+ 	case CHIPID_AD9652:
+@@ -417,6 +418,10 @@ static const int ad9652_scale_table[][2] = {
+ 	{1250, 0}, {1125, 1}, {1200, 2}, {1250, 3}, {1000, 5},
+ };
+ 
++static const int ad9649_scale_table[][2] = {
++	{2000, 0},
++};
++
+ static int ad9467_scale(struct axiadc_converter *conv, int index)
+ {
+ 	if (index > conv->chip_info->num_scales)
+@@ -848,7 +853,15 @@ static const struct axiadc_chip_info axiadc_chip_info_tbl[] = {
+ 		       .channel[0] = AIM_CHAN_NOCALIB(0, 0, 12, 'S', 0, NULL, 0),
+ 		       .channel[1] = AIM_CHAN_NOCALIB(1, 1, 12, 'S', 0, NULL, 0),
+ 		       },
+-
++	[ID_AD9649] = {
++		       .name = "AD9649",
++		       .max_rate = 80000000UL,
++		       .scale_table = ad9649_scale_table,
++		       .num_scales = ARRAY_SIZE(ad9649_scale_table),
++		       .max_testmode = TESTMODE_ONE_ZERO_TOGGLE,
++		       .num_channels = 1,
++		       .channel[0] = AIM_CHAN_NOCALIB(0, 0, 14, 'S', 0, NULL, 0),
++		       },
+ };
+ 
+ static int ad9250_setup(struct spi_device *spi, unsigned m, unsigned l)
+@@ -1351,6 +1364,12 @@ static int ad9467_probe(struct spi_device *spi)
+ 		    AD9643_DEF_OUTPUT_MODE | OUTPUT_MODE_TWOS_COMPLEMENT;
+ 		ret = ad9467_outputmode_set(spi, conv->adc_output_mode);
+ 		break;
++	case CHIPID_AD9649:
++		conv->chip_info = &axiadc_chip_info_tbl[ID_AD9649];
++		conv->adc_output_mode =
++		    AD9643_DEF_OUTPUT_MODE | OUTPUT_MODE_TWOS_COMPLEMENT;
++		ret = ad9467_outputmode_set(spi, conv->adc_output_mode);
++		break;
+ 	default:
+ 		dev_err(&spi->dev, "Unrecognized CHIP_ID 0x%X\n", conv->id);
+ 		ret = -ENODEV;
+@@ -1424,6 +1443,7 @@ static const struct spi_device_id ad9467_id[] = {
+ 	{"ad9680", CHIPID_AD9680},
+ 	{"ad9652", CHIPID_AD9652},
+ 	{"ad9234", CHIPID_AD9234},
++	{"ad9649", CHIPID_AD9649},
+ 	{}
+ };
+ 
+diff --git a/drivers/iio/adc/cf_axi_adc.h b/drivers/iio/adc/cf_axi_adc.h
+index 0ad524e..8c36b9c 100644
+--- a/drivers/iio/adc/cf_axi_adc.h
++++ b/drivers/iio/adc/cf_axi_adc.h
+@@ -316,6 +316,12 @@ enum adc_data_sel {
+ 
+ #define CHIPID_AD9234			0xCE
+ 
++/*
++ * Analog Devices AD9649
++ */
++
++#define CHIPID_AD9649			0x6F
++
+ /* debugfs direct register access */
+ #define DEBUGFS_DRA_PCORE_REG_MAGIC	0x80000000
+ 
+@@ -335,6 +341,7 @@ enum {
+ 	ID_AD9652,
+ 	ID_AD9234,
+ 	ID_AD9680_x2,
++	ID_AD9649,
+ };
+ 
+ struct axiadc_chip_info {
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+1.9.1
+
