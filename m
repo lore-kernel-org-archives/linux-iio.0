@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:38187 "EHLO
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:52604 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751099AbbKPMBb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Nov 2015 07:01:31 -0500
+	with ESMTP id S1752120AbbKPMBj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Nov 2015 07:01:39 -0500
 From: Markus Pargmann <mpa@pengutronix.de>
 To: Shawn Guo <shawnguo@kernel.org>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
@@ -16,66 +16,51 @@ Cc: Denis Carikli <denis@eukrea.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Fabio Estevam <festevam@gmail.com>,
 	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v8 3/8] ARM: dt: Binding documentation for imx25 touchscreen controller
-Date: Mon, 16 Nov 2015 13:01:04 +0100
-Message-Id: <1447675269-8831-4-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH v8 8/8] ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC support.
+Date: Mon, 16 Nov 2015 13:01:09 +0100
+Message-Id: <1447675269-8831-9-git-send-email-mpa@pengutronix.de>
 In-Reply-To: <1447675269-8831-1-git-send-email-mpa@pengutronix.de>
 References: <1447675269-8831-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is the touchscreen conversion queue binding documentation. It uses
-the shared imx25 ADC.
+From: Denis Carikli <denis@eukrea.com>
 
+Signed-off-by: Denis Carikli <denis@eukrea.com>
 Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 ---
+ arch/arm/configs/imx_v4_v5_defconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Notes:
-    Changes in v5:
-     - Fix signed/unsigned comparison
-     - Fix unused variable settling_time by putting it in the correct argument list
-     - Use continous conversion queue with the repeat feature and a proper
-       repeat-wait. Previously the touchscreen caused massive number of interrupts.
-
- .../bindings/input/touchscreen/fsl-mx25-tcq.txt    | 29 ++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
-
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
-new file mode 100644
-index 000000000000..89ab47a3acc1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
-@@ -0,0 +1,29 @@
-+Freescale mx25 TS conversion queue module
-+
-+mx25 touchscreen conversion queue module which controls the ADC unit of the
-+mx25 for attached touchscreens.
-+
-+Required properties:
-+ - compatible: Should be "fsl,imx25-tcq".
-+ - reg: Memory range of the device.
-+ - interrupts: Should be the interrupt number associated with this module within
-+   the tscadc unit (<0>).
-+ - interrupt-parent: Should be a phandle to the tscadc unit.
-+ - fsl,wires: Should be '<4>' or '<5>'
-+
-+Optional properties:
-+ - fsl,pen-debounce: Pen debounce time in nanoseconds.
-+ - fsl,pen-threshold: Pen-down threshold for the touchscreen.
-+ - fsl,settling-time: Settling time in nanoseconds.
-+
-+This device includes two conversion queues which can be added as subnodes.
-+The first queue is for the touchscreen, the second for general purpose ADC.
-+
-+Example:
-+	tsc: tcq@50030400 {
-+		compatible = "fsl,imx25-tcq";
-+		reg = <0x50030400 0x60>;
-+		interrupt-parent = <&tscadc>;
-+		interrupts = <0>;
-+		fsl,wires = <4>;
-+	};
+diff --git a/arch/arm/configs/imx_v4_v5_defconfig b/arch/arm/configs/imx_v4_v5_defconfig
+index d3a8018639de..d6754ac47788 100644
+--- a/arch/arm/configs/imx_v4_v5_defconfig
++++ b/arch/arm/configs/imx_v4_v5_defconfig
+@@ -88,6 +88,7 @@ CONFIG_KEYBOARD_IMX=y
+ # CONFIG_INPUT_MOUSE is not set
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
++CONFIG_TOUCHSCREEN_MX25=y
+ CONFIG_TOUCHSCREEN_MC13783=y
+ # CONFIG_LEGACY_PTYS is not set
+ CONFIG_SERIAL_8250=m
+@@ -107,6 +108,7 @@ CONFIG_HWMON=m
+ CONFIG_SENSORS_MC13783_ADC=m
+ CONFIG_WATCHDOG=y
+ CONFIG_IMX2_WDT=y
++CONFIG_MFD_MX25_TSADC=y
+ CONFIG_MFD_MC13XXX_SPI=y
+ CONFIG_REGULATOR=y
+ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+@@ -172,6 +174,8 @@ CONFIG_DMADEVICES=y
+ CONFIG_IMX_SDMA=y
+ CONFIG_IMX_DMA=y
+ # CONFIG_IOMMU_SUPPORT is not set
++CONFIG_IIO=y
++CONFIG_FSL_MX25_ADC=y
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT3_FS=y
+ CONFIG_EXT4_FS=y
 -- 
 2.6.1
 
