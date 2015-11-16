@@ -1,90 +1,156 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48242 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752137AbbKORub (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2015 12:50:31 -0500
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] First set of iio fixes for the 4.4 cycle.
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5648C5E4.1060806@kernel.org>
-Date: Sun, 15 Nov 2015 17:50:28 +0000
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:33408 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752624AbbKPBUH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2015 20:20:07 -0500
+Received: by pabfh17 with SMTP id fh17so158830211pab.0
+        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2015 17:20:07 -0800 (PST)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org, jic23@kernel.org
+Cc: Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v5 1/1] iio: pulsedlight-lidar-lite: add runtime PM
+Date: Sun, 15 Nov 2015 17:20:05 -0800
+Message-Id: <1447636805-1451-2-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1447636805-1451-1-git-send-email-mranostay@gmail.com>
+References: <1447636805-1451-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit b94e22805a2224061bb263a82b72e09544a5fbb3:
+Add runtime PM support for the lidar-lite module to enable low power
+mode when last device requested reading is over a second.
 
-  iio: mxs-lradc: Fix temperature offset (2015-10-11 15:02:02 +0100)
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 56 ++++++++++++++++++++++-
+ 1 file changed, 55 insertions(+), 1 deletion(-)
 
-are available in the git repository at:
+diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+index 961f9f99..be8ccef 100644
+--- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
++++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+@@ -13,7 +13,7 @@
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  * GNU General Public License for more details.
+  *
+- * TODO: runtime pm, interrupt mode, and signal strength reporting
++ * TODO: interrupt mode, and signal strength reporting
+  */
+ 
+ #include <linux/err.h>
+@@ -21,6 +21,7 @@
+ #include <linux/i2c.h>
+ #include <linux/delay.h>
+ #include <linux/module.h>
++#include <linux/pm_runtime.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
+@@ -37,6 +38,7 @@
+ 
+ #define LIDAR_REG_DATA_HBYTE	0x0f
+ #define LIDAR_REG_DATA_LBYTE	0x10
++#define LIDAR_REG_PWR_CONTROL	0x65
+ 
+ #define LIDAR_DRV_NAME "lidar"
+ 
+@@ -90,6 +92,12 @@ static inline int lidar_write_control(struct lidar_data *data, int val)
+ 	return i2c_smbus_write_byte_data(data->client, LIDAR_REG_CONTROL, val);
+ }
+ 
++static inline int lidar_write_power(struct lidar_data *data, int val)
++{
++	return i2c_smbus_write_byte_data(data->client,
++					 LIDAR_REG_PWR_CONTROL, val);
++}
++
+ static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
+ {
+ 	int ret;
+@@ -116,6 +124,8 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+ 	int tries = 10;
+ 	int ret;
+ 
++	pm_runtime_get_sync(&client->dev);
++
+ 	/* start sample */
+ 	ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
+ 	if (ret < 0) {
+@@ -144,6 +154,8 @@ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+ 		}
+ 		ret = -EIO;
+ 	}
++	pm_runtime_mark_last_busy(&client->dev);
++	pm_runtime_put_autosuspend(&client->dev);
+ 
+ 	return ret;
+ }
+@@ -243,6 +255,17 @@ static int lidar_probe(struct i2c_client *client,
+ 	if (ret)
+ 		goto error_unreg_buffer;
+ 
++	pm_runtime_set_autosuspend_delay(&client->dev, 1000);
++	pm_runtime_use_autosuspend(&client->dev);
++
++	ret = pm_runtime_set_active(&client->dev);
++	if (ret)
++		goto error_unreg_buffer;
++	pm_runtime_enable(&client->dev);
++
++	pm_runtime_mark_last_busy(&client->dev);
++	pm_runtime_idle(&client->dev);
++
+ 	return 0;
+ 
+ error_unreg_buffer:
+@@ -258,6 +281,9 @@ static int lidar_remove(struct i2c_client *client)
+ 	iio_device_unregister(indio_dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 
++	pm_runtime_disable(&client->dev);
++	pm_runtime_set_suspended(&client->dev);
++
+ 	return 0;
+ }
+ 
+@@ -273,10 +299,38 @@ static const struct of_device_id lidar_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, lidar_dt_ids);
+ 
++#ifdef CONFIG_PM
++static int lidar_pm_runtime_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct lidar_data *data = iio_priv(indio_dev);
++
++	return lidar_write_power(data, 0x0f);
++}
++
++static int lidar_pm_runtime_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct lidar_data *data = iio_priv(indio_dev);
++	int ret = lidar_write_power(data, 0);
++
++	/* regulator and FPGA needs settling time */
++	usleep_range(15000, 20000);
++
++	return ret;
++}
++#endif
++
++static const struct dev_pm_ops lidar_pm_ops = {
++	SET_RUNTIME_PM_OPS(lidar_pm_runtime_suspend,
++			   lidar_pm_runtime_resume, NULL)
++};
++
+ static struct i2c_driver lidar_driver = {
+ 	.driver = {
+ 		.name	= LIDAR_DRV_NAME,
+ 		.of_match_table	= of_match_ptr(lidar_dt_ids),
++		.pm	= &lidar_pm_ops,
+ 	},
+ 	.probe		= lidar_probe,
+ 	.remove		= lidar_remove,
+-- 
+1.9.1
 
-  ssh://gitolite@ra.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.4a
-
-for you to fetch changes up to a57f8dac46fbac5ab0e31aef1a98b3f6eb30c079:
-
-  iio: adc: xilinx: Fix VREFN scale (2015-11-15 12:36:20 +0000)
-
-----------------------------------------------------------------
-First set of IIO fixes for the 4.4 cycle.
-
-This set does not include those for issues introduced during the merge
-window.  Fixes of those will follow in a future series.
-
-* ad5064
-  - Make sure the local i2c_write returns 0 on success rather than the
-    number of bytes transfered.  Otherwise we report an error on all writes.
-  - Fix a shift for ad5629 and ad5669 which gives incorrect DAC output on
-    these parts.
-* ad7793
-  - The product ID on the datasheet is wrong.  Fix it in the driver.
-* IIO_DUMMY_EVGEN
-  - select IRQ_WORK as a dependency.
-* lpc32xx
-  - make sure clock is prepared before enabling.
-* si7020
-  - data byte order was reversed. Fix it.
-* vf610
-  - Internal temperature calculation was wrong if a different
-    reference voltage was used.  Now use a linear interpolation
-    function to make it work over the full range.
-  - Fix a division by zero in the case of a device tree property
-    not being present (same issue two fixes).
-* xilinx XADC
-  - VREFN scale was wrong - fix it.
-
-----------------------------------------------------------------
-Arnd Bergmann (1):
-      staging: iio: select IRQ_WORK for IIO_DUMMY_EVGEN
-
-Bhuvanchandra DV (1):
-      vf610_adc: Fix internal temperature calculation
-
-Chris Lesiak (1):
-      iio: si7020: Swap data byte order
-
-Lars-Peter Clausen (2):
-      iio: ad5064: Fix ad5629/ad5669 shift
-      iio:ad7793: Fix ad7785 product ID
-
-Michael Hennerich (1):
-      iio:ad5064: Make sure ad5064_i2c_write() returns 0 on success
-
-Sanchayan Maity (1):
-      iio: adc: vf610_adc: Fix division by zero error
-
-Thomas Betker (1):
-      iio: adc: xilinx: Fix VREFN scale
-
-Vladimir Zapolskiy (1):
-      iio: lpc32xx_adc: fix warnings caused by enabling unprepared clock
-
- drivers/iio/adc/ad7793.c              |  2 +-
- drivers/iio/adc/vf610_adc.c           | 22 ++++++---
- drivers/iio/adc/xilinx-xadc-core.c    |  1 +
- drivers/iio/dac/ad5064.c              | 91 ++++++++++++++++++++++++-----------
- drivers/iio/humidity/si7020.c         |  8 +--
- drivers/staging/iio/Kconfig           |  3 +-
- drivers/staging/iio/adc/lpc32xx_adc.c |  4 +-
- 7 files changed, 90 insertions(+), 41 deletions(-)
