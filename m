@@ -1,148 +1,118 @@
-Return-Path: <mpa@pengutronix.de>
-From: Markus Pargmann <mpa@pengutronix.de>
-To: linux-arm-kernel@lists.infradead.org
-Cc: Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, Sascha Hauer <kernel@pengutronix.de>, linux-iio@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Denis Carikli <denis@eukrea.com>, Eric =?ISO-8859-1?Q?B=E9nard?= <eric@eukrea.com>, linux-input@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH v8 3/8] ARM: dt: Binding documentation for imx25 touchscreen controller
-Date: Tue, 17 Nov 2015 09:54:03 +0100
-Message-ID: <2927401.FasWCEIy4W@adelgunde>
-In-Reply-To: <20151116141609.GA6167@rob-hp-laptop>
-References: <1447675269-8831-1-git-send-email-mpa@pengutronix.de> <1447675269-8831-4-git-send-email-mpa@pengutronix.de> <20151116141609.GA6167@rob-hp-laptop>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart10441568.fBDciVvhji"; micalg="pgp-sha256"; protocol="application/pgp-signature"
+Return-Path: <mtitinger@baylibre.com>
+From: Marc Titinger <mtitinger@baylibre.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: daniel.baluta@intel.com,
+	linux-api@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Marc Titinger <mtitinger@baylibre.com>
+Subject: [RFC 1/2] ABI: iio: support AVERAGING_RATIO setting
+Date: Tue, 17 Nov 2015 11:44:09 +0100
+Message-Id: <1447757050-4214-2-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <1447757050-4214-1-git-send-email-mtitinger@baylibre.com>
+References: <1447757050-4214-1-git-send-email-mtitinger@baylibre.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Some ADC devices allow averaging/downsampling. The minimal parameter
+set for this will be the number of taps used for computing a mean value.
 
---nextPart10441568.fBDciVvhji
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="us-ascii"
+In some cases the ratio will hold discrete values for instance "1, 4, 16"
+hence an averaging_ratio_available property is useful. The possible ratio
+values are less likely to changing with the device settings, so this patch
+only provides a CONST version of the definition helper.
 
-Hi,
+Tested with ina226:
 
-On Monday 16 November 2015 08:16:09 Rob Herring wrote:
-> On Mon, Nov 16, 2015 at 01:01:04PM +0100, Markus Pargmann wrote:
-> > This is the touchscreen conversion queue binding documentation. It =
-uses
-> > the shared imx25 ADC.
-> >=20
-> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> > ---
-> >=20
-> > Notes:
-> >     Changes in v5:
-> >      - Fix signed/unsigned comparison
-> >      - Fix unused variable settling_time by putting it in the corre=
-ct argument list
-> >      - Use continous conversion queue with the repeat feature and a=
- proper
-> >        repeat-wait. Previously the touchscreen caused massive numbe=
-r of interrupts.
-> >=20
-> >  .../bindings/input/touchscreen/fsl-mx25-tcq.txt    | 29 ++++++++++=
-++++++++++++
-> >  1 file changed, 29 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/input/touchsc=
-reen/fsl-mx25-tcq.txt
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/input/touchscreen/fs=
-l-mx25-tcq.txt b/Documentation/devicetree/bindings/input/touchscreen/fs=
-l-mx25-tcq.txt
-> > new file mode 100644
-> > index 000000000000..89ab47a3acc1
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-=
-tcq.txt
-> > @@ -0,0 +1,29 @@
-> > +Freescale mx25 TS conversion queue module
-> > +
-> > +mx25 touchscreen conversion queue module which controls the ADC un=
-it of the
-> > +mx25 for attached touchscreens.
-> > +
-> > +Required properties:
-> > + - compatible: Should be "fsl,imx25-tcq".
-> > + - reg: Memory range of the device.
-> > + - interrupts: Should be the interrupt number associated with this=
- module within
-> > +   the tscadc unit (<0>).
-> > + - interrupt-parent: Should be a phandle to the tscadc unit.
-> > + - fsl,wires: Should be '<4>' or '<5>'
-> > +
-> > +Optional properties:
-> > + - fsl,pen-debounce: Pen debounce time in nanoseconds.
-> > + - fsl,pen-threshold: Pen-down threshold for the touchscreen.
-> > + - fsl,settling-time: Settling time in nanoseconds.
->=20
-> Don't we have standard properties for these? If not, these should hav=
-e=20
-> units.
+# ls /sys/bus/iio/devices/iio\:device0/
+averaging_ratio_available     in_voltage0_raw
+dev                           in_voltage1_raw
+in_averaging_ratio            name
+in_calibscale                 power
+in_current2_raw               sampling_frequency_available
+in_power3_raw                 subsystem
+in_sampling_frequency         uevent
 
-I just found properties like 'debounce_timeout' without a vendor prefix=
- but
-they don't seem to be standard properties:
-=09Documentation/devicetree/bindings/input/touchscreen/brcm,iproc-touch=
-screen.txt
+# cat averaging_ratio_available
+1, 4, 16, 64, 128, 256, 512, 1024
 
-For fsl,pen-threshold there is no real unit. It is the ratio between th=
-e
-internal voltage reference and the measured voltage after one of the
-touchscreen plates was precharged. However there are limits, I will add=
- a
-better description.
+Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
+ drivers/iio/industrialio-core.c         |  1 +
+ include/linux/iio/iio.h                 |  1 +
+ include/linux/iio/sysfs.h               |  9 +++++++++
+ 4 files changed, 24 insertions(+)
 
->=20
-> I don't understand the difference between debounce and settling times=
-.=20
-> Please make that clear in the doc.
-
-The settling time is the time waited after charging the touchscreen pla=
-tes. The
-pen-debounce time is a delay after a pen down has been detected.
-
-Best Regards,
-
-Markus
-
->=20
-> Rob
->=20
->=20
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->=20
-
-=2D-=20
-Pengutronix e.K.                           |                           =
-  |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
-  |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
-5 |
-
---nextPart10441568.fBDciVvhji
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJWSusrAAoJEEpcgKtcEGQQU2EP/1CGedi07KtAR2aaCUTKMmHC
-wuX8qHJpsh6sbcr9Y4azI7q6eiW4ONVxJEbt4cxON8rCHhqI1OmlYGucyDG9x0HR
-N3itvHvir8szFvs0Z7AbEepz03X6ahMWNX4Y9+OOrtJNuL+AjseXV3vRvhxSOSPV
-VcCEzzkvEcUB3vL4GGzJv8ijvzThwRgxnlsrSttGFWDrESihcvBHvQsTeq97Y5EB
-gvn6tuQSGH7+9z6eAwP6fKKg5cDs0nkib/spwhzBTsYUCBBDRzPWc4cEHR8QU287
-lFxwdA9mVBe/jBlqcfq6pV7qQhKpjkxAITIhbSFhh0JGGJyF25BWJamTb8XHrULO
-DO/Dksb01/i95of01fXEbMrMUsbi8F82PUpdV4xQsSEmxH1NYhtYd9dWPuTC+XSd
-W3UdnB+V0acbBF3S2p7cCt57i/SuIP3jDJOr67KQV9m7ENX5asTjwgbSQuYyoyGF
-WzVlcqq5H3hvuJvoEh/tp7GdSYD19a+wJCsbDnA6JKhhqnM4xjiaYyFzr2SbogB1
-AkR2DP9cwIwnnzcyDHq4tHjcL66F7AMjVjPdfdPYlya+ZK5mkmwTHtaMA9sU5CDJ
-bpRgNEBWVqrj57FTgT4+fvvAcFiLbbw3VIHFoPhjh125g2ZwpdkCnkZefDXg/pZz
-7vMzMpxLcno2B9vyl0zN
-=/Fbw
------END PGP SIGNATURE-----
-
---nextPart10441568.fBDciVvhji--
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 42d360f..a208dfe 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -56,6 +56,19 @@ Description:
+ 		When the internal sampling clock can only take a small
+ 		discrete set of values, this file lists those available.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/averaging_ratio
++KernelVersion:	4.x.x
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware dependent ADC averaging. Controls the averaging ratio
++		of the digital filter if available.
++
++What:		/sys/bus/iio/devices/iio:deviceX/averaging_ratio_available
++KernelVersion:	4.x.x
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware dependent values supported by the averaging filter.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/oversampling_ratio
+ KernelVersion:	2.6.38
+ Contact:	linux-iio@vger.kernel.org
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index b3fcc2c..e4745f0 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -142,6 +142,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
+ 	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
+ 	[IIO_CHAN_INFO_OVERSAMPLING_RATIO] = "oversampling_ratio",
++	[IIO_CHAN_INFO_AVERAGING_RATIO] = "averaging_ratio",
+ };
+ 
+ /**
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 7bb7f67..4c84de5 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -46,6 +46,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_DEBOUNCE_TIME,
+ 	IIO_CHAN_INFO_CALIBEMISSIVITY,
+ 	IIO_CHAN_INFO_OVERSAMPLING_RATIO,
++	IIO_CHAN_INFO_AVERAGING_RATIO,
+ };
+ 
+ enum iio_shared_by {
+diff --git a/include/linux/iio/sysfs.h b/include/linux/iio/sysfs.h
+index 9cd8f74..4478ba1 100644
+--- a/include/linux/iio/sysfs.h
++++ b/include/linux/iio/sysfs.h
+@@ -76,6 +76,15 @@ struct iio_const_attr {
+ /* Generic attributes of onetype or another */
+ 
+ /**
++ * IIO_CONST_ATTR_AVERAGING_RATIO_AVAIL - list available averaging ratios
++ * @_string: ratio string for the attribute
++ *
++ * Constant version
++ **/
++#define IIO_CONST_ATTR_AVERAGING_RATIO_AVAIL(_string)                 \
++	IIO_CONST_ATTR(averaging_ratio_available, _string)
++
++/**
+  * IIO_DEV_ATTR_SAMP_FREQ - sets any internal clock frequency
+  * @_mode: sysfs file mode/permissions
+  * @_show: output method for the attribute
+-- 
+1.9.1
