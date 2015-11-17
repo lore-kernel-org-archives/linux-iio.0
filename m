@@ -1,118 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:55810 "EHLO mout01.posteo.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752416AbbKQTZg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 17 Nov 2015 14:25:36 -0500
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id 0C1AC2088A
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2015 20:25:32 +0100 (CET)
-Message-ID: <564B7F02.4020709@posteo.de>
-Date: Tue, 17 Nov 2015 20:24:50 +0100
-From: Martin Kepplinger <martink@posteo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net,
-	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: Re: [PATCH 1/3] iio: mma8452: add freefall detection for Freescale's
- accelerometers
-References: <1447267094-2248-1-git-send-email-martink@posteo.de> <5647778E.3090106@kernel.org> <56478136.3040200@posteo.de> <5647857D.5050902@kernel.org>
-In-Reply-To: <5647857D.5050902@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <akpm@linux-foundation.org>
+Date: Tue, 17 Nov 2015 15:47:16 -0800
+From: Andrew Morton <akpm@linux-foundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Christoph Hellwig
+ <hch@lst.de>, Daniel Baluta <daniel.baluta@intel.com>, jlbec@evilplan.org,
+ linux-iio@vger.kernel.org, linux-fsdevel@vger.kernel.org, lars@metafoo.de,
+ knaack.h@gmx.de, linux-kernel@vger.kernel.org, octavian.purdila@intel.com,
+ pebolle@tiscali.nl, patrick.porlan@intel.com, adriana.reus@intel.com,
+ constantin.musca@intel.com, marten@intuitiveaerial.com,
+ cristina.opriceana@gmail.com, pmeerw@pmeerw.net, viro@zeniv.linux.org.uk
+Subject: Re: [PATCH v10 1/5] configfs: Allow dynamic group creation
+Message-Id: <20151117154716.48f5a2955b2ce4422dcbc763@linux-foundation.org>
+In-Reply-To: <564860CC.7000206@kernel.org>
+References: <1445614411-533-1-git-send-email-daniel.baluta@intel.com>
+	<1445614411-533-2-git-send-email-daniel.baluta@intel.com>
+	<20151110065126.GA20339@lst.de>
+	<20151110131237.894356c2ba17d8e9231509db@linux-foundation.org>
+	<D914B401-E43C-4B55-8224-93CF218FD613@jic23.retrosnub.co.uk>
+	<564860CC.7000206@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-Am 2015-11-14 um 20:03 schrieb Jonathan Cameron:
-> On 14/11/15 18:45, Martin Kepplinger wrote:
->> Am 2015-11-14 um 19:03 schrieb Jonathan Cameron:
->>> On 11/11/15 18:38, Martin Kepplinger wrote:
->>>> This adds freefall event detection to the supported devices. It adds
->>>> the in_accel_x&y&z_mag_falling_en iio event attribute, which activates
->>>> freefall mode.
->>>>
->>>> In freefall mode, the current acceleration values of all activated axis
->>>> are added and if the *sum* falls *under* the threshold specified
->>>> (in_accel_mag_falling_value), the appropriate IIO event code
->>>> is generated.
->>>>
->>>> By enabling freefall mode (in_accel_x&y&z_mag_falling_en)
->>>> all 3 axis are enabled too as this describes a classic freefall
->>>> detection. Of course the user is free to disable one or more directions.
->>>>
->>>> The values of rising and falling versions of various sysfs files are
->>>> shared, which is compliant to the IIO specification.
->>>>
->>>> This is what the sysfs "events" directory for these devices looks
->>>> like after this change:
->>>>
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_period
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_value
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_period
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_value
->>>> -r--r--r--    4096 Oct 23 08:45 in_accel_scale
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x&y&z_mag_falling_en
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_falling_en
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_rising_en
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_falling_en
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_rising_en
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_falling_en
->>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_rising_en
->>>>
->>>> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
->>>> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
->>> Looks pretty good to me (other than obviously the bits Lars already
->>> picked up on!)
->>>
->>> My only real comment was that you could do the rest of the combined
->>> possibilities whilst you are here (if you want to!)  You've
->>> picked the mostly obviously useful one though so maybe leave it
->>> at that.
->>
->> I'm not sure what you mean. There is only in_accel_x&y&z_mag_falling_en
->> documented. So my guess was to have this to enable freefall mode, taking
->> into account the currently enabled falling axis
->> (in_accel_x_mag_falling_en, ...).
-> Sure, but the set of modifiers allows for
-> in_accel_x&y_mag_falling_* etc and they aren't documented in this particular
-> form simply because no driver has used them yet ;)
+On Sun, 15 Nov 2015 10:39:08 +0000 Jonathan Cameron <jic23@kernel.org> wrote:
+
+> On 11/11/15 06:43, Jonathan Cameron wrote:
+> > 
+> > 
+> > On 10 November 2015 21:12:37 GMT+00:00, Andrew Morton <akpm@linux-foundation.org> wrote:
+> >> On Tue, 10 Nov 2015 07:51:26 +0100 Christoph Hellwig <hch@lst.de>
+> >> wrote:
+> >>
+> >>> is this simple addition something you could still send on to Linus
+> >>> for this merge window?  I would make my life easier to have it in
+> >>> so I could start using it in patches for various trees in the next
+> >>> merge window.
+> >>
+> >> It's super late, but the configfs changes are obviously safe to
+> >> existing code.
+> >>
+> >> What about the IIO changes?  Will someone be merging them for 4.5-rc1,
+> >> or something else?
+> > Yes. I'll take the IIO bits and ultimately they'll go through Greg KH for the 4.5 
+> > merge window.
+> > 
+> Hi Andrew,
 > 
+> Just taken a quick look at your mmotm list and see this ended up in the
+> mainline later group (fair enough given the timing!).
+> As such shall we fall back to plan b) a special git branch pulled into the trees
+> of anyone who cares?
+> 
+> I'll base such a tree on some obvious point in Linus' tree (either 4.4 or 4.5-rc1)
+> That way I can get the IIO stuff queued up asap and we can build on that going
+> forward during this cycle.
 
+I plan to send configfs-allow-dynamic-group-creation.patch to Linus
+this week.  I'll retain 
 
+iio-core-introduce-iio-configfs-support.patch
+iio-core-introduce-iio-software-triggers.patch
+iio-core-introduce-iio-software-triggers-fix.patch
+iio-trigger-introduce-iio-hrtimer-based-trigger.patch
+iio-documentation-add-iio-configfs-documentation.patch
 
-I don't see how to do it in iio_event_spec only. Could you point me in
-the right direction, could well be I overlook something...
-
-I *can* add a channel for freefall purposes, something like:
-
-static const struct iio_chan_spec mma8653_channels[] = {
-        MMA8652_CHANNEL(IIO_MOD_X, idx_axis_x, 10),
-        MMA8652_CHANNEL(IIO_MOD_Y, idx_axis_y, 10),
-        MMA8652_CHANNEL(IIO_MOD_Z, idx_axis_z, 10),
-        MMA8652_CHANNEL(IIO_MOD_X_AND_Y_AND_Z, idx_axis_xyz, 10),
-        IIO_CHAN_SOFT_TIMESTAMP(idx_timestamp),
-};
-
-
-just as an example, but then of course I get more than just events: In
-the device-directory:
-
-in_accel_x&y&z_calibbias
-in_accel_x&y&z_raw
-in_accel_x_calibbias
-in_accel_x_raw
-in_accel_y_calibbias
-in_accel_y_raw
-in_accel_z_calibbias
-in_accel_z_raw
-
-
-calibbias and raw are not (really) available for x&y&z. I could
-calculate a "raw" value, but calibbias doesn't make sense here. ...But
-again, maybe I'm on the wrong path!!
-
-thanks a lot!
-
-                              martin
-
-
+with a view to dropping them once I see them turn up in linux-next.
