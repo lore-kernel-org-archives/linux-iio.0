@@ -1,111 +1,277 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn1on0094.outbound.protection.outlook.com ([157.56.110.94]:58176
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S932936AbbKRObX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 18 Nov 2015 09:31:23 -0500
-From: Dragos Bogdan <dragos.bogdan@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	<linux-iio@vger.kernel.org>,
-	Dragos Bogdan <dragos.bogdan@analog.com>
-Subject: [PATCH] staging:iio:ad7780: Remove the ad7780_platform_data
-Date: Wed, 18 Nov 2015 16:16:34 +0200
-Message-ID: <1447856194-26450-1-git-send-email-dragos.bogdan@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mail-wm0-f45.google.com ([74.125.82.45]:37809 "EHLO
+	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755999AbbKROi6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 09:38:58 -0500
+Received: by wmww144 with SMTP id w144so74999451wmw.0
+        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 06:38:56 -0800 (PST)
+From: Marc Titinger <mtitinger@baylibre.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: daniel.baluta@intel.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Marten Svanfeldt <marten@intuitiveaerial.com>
+Subject: [RFC 4/9] iio: trigger: Introduce IIO hrtimer based trigger
+Date: Wed, 18 Nov 2015 15:38:30 +0100
+Message-Id: <1447857515-23935-5-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
+References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ad7780_platform_data contains just the reference voltage information.
-Since the preferred way of specifying this information is using the Linux
-regulator framework and the ad7780 platform_data is not used by other
-users, it can be completely removed.
+From: Daniel Baluta <daniel.baluta@intel.com>
 
-Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>
----
-This patch depends on patch "staging:iio:ad7780: Switch to the gpio
-descriptor interface"
----
- drivers/staging/iio/adc/ad7780.c |  9 ++-------
- drivers/staging/iio/adc/ad7780.h | 29 -----------------------------
- 2 files changed, 2 insertions(+), 36 deletions(-)
- delete mode 100644 drivers/staging/iio/adc/ad7780.h
+This patch registers a new IIO software trigger interrupt source
+based on high resolution timers.
 
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 98b5fc4..498e86b 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -22,8 +22,6 @@
- #include <linux/iio/sysfs.h>
- #include <linux/iio/adc/ad_sigma_delta.h>
+Notice that if configfs is enabled we create sampling_frequency
+attribute allowing users to change hrtimer period (1/sampling_frequency).
+
+The IIO hrtimer trigger has a long history, this patch is based on
+an older version from Marten and Lars-Peter.
+
+Signed-off-by: Marten Svanfeldt <marten@intuitiveaerial.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/trigger/Kconfig            |  10 ++
+ drivers/iio/trigger/Makefile           |   2 +
+ drivers/iio/trigger/iio-trig-hrtimer.c | 193 +++++++++++++++++++++++++++++++++
+ 3 files changed, 205 insertions(+)
+ create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
+
+diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
+index 7999612..519e677 100644
+--- a/drivers/iio/trigger/Kconfig
++++ b/drivers/iio/trigger/Kconfig
+@@ -5,6 +5,16 @@
  
--#include "ad7780.h"
--
- #define AD7780_RDY	BIT(7)
- #define AD7780_FILTER	BIT(6)
- #define AD7780_ERR	BIT(5)
-@@ -162,7 +160,6 @@ static const struct iio_info ad7780_info = {
+ menu "Triggers - standalone"
  
- static int ad7780_probe(struct spi_device *spi)
- {
--	struct ad7780_platform_data *pdata = spi->dev.platform_data;
- 	struct ad7780_state *st;
- 	struct iio_dev *indio_dev;
- 	int ret, voltage_uv = 0;
-@@ -188,12 +185,10 @@ static int ad7780_probe(struct spi_device *spi)
- 	st->chip_info =
- 		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
++config IIO_HRTIMER_TRIGGER
++	tristate "High resolution timer trigger"
++	depends on IIO_SW_TRIGGER
++	help
++	  Provides a frequency based IIO trigger using high resolution
++	  timers as interrupt source.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called iio-trig-hrtimer.
++
+ config IIO_INTERRUPT_TRIGGER
+ 	tristate "Generic interrupt trigger"
+ 	help
+diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
+index 0694dae..fe06eb5 100644
+--- a/drivers/iio/trigger/Makefile
++++ b/drivers/iio/trigger/Makefile
+@@ -3,5 +3,7 @@
+ #
  
--	if (pdata && pdata->vref_mv)
--		st->int_vref_mv = pdata->vref_mv;
--	else if (voltage_uv)
-+	if (voltage_uv)
- 		st->int_vref_mv = voltage_uv / 1000;
- 	else
--		dev_warn(&spi->dev, "reference voltage unspecified\n");
-+		dev_warn(&spi->dev, "Reference voltage unspecified\n");
- 
- 	spi_set_drvdata(spi, indio_dev);
- 
-diff --git a/drivers/staging/iio/adc/ad7780.h b/drivers/staging/iio/adc/ad7780.h
-deleted file mode 100644
-index 46f61c9..0000000
---- a/drivers/staging/iio/adc/ad7780.h
-+++ /dev/null
-@@ -1,29 +0,0 @@
--/*
-- * AD7780/AD7781 SPI ADC driver
-- *
-- * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-- */
--#ifndef IIO_ADC_AD7780_H_
--#define IIO_ADC_AD7780_H_
--
--/*
-- * TODO: struct ad7780_platform_data needs to go into include/linux/iio
-- */
--
--/* NOTE:
-- * The AD7780 doesn't feature a dedicated SPI chip select, in addition it
-- * features a dual use data out ready DOUT/RDY output.
-- * In order to avoid contentions on the SPI bus, it's therefore necessary
-- * to use spi bus locking combined with a dedicated GPIO to control the
-- * power down reset signal of the AD7780.
-- *
-- * The DOUT/RDY output must also be wired to an interrupt capable GPIO.
-- */
--
--struct ad7780_platform_data {
--	u16				vref_mv;
--};
--
--#endif /* IIO_ADC_AD7780_H_ */
+ # When adding new entries keep the list in alphabetical order
++
++obj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o
+ obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
+ obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
+diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
+new file mode 100644
+index 0000000..5e6d451
+--- /dev/null
++++ b/drivers/iio/trigger/iio-trig-hrtimer.c
+@@ -0,0 +1,193 @@
++/**
++ * The industrial I/O periodic hrtimer trigger driver
++ *
++ * Copyright (C) Intuitive Aerial AB
++ * Written by Marten Svanfeldt, marten@intuitiveaerial.com
++ * Copyright (C) 2012, Analog Device Inc.
++ *	Author: Lars-Peter Clausen <lars@metafoo.de>
++ * Copyright (C) 2015, Intel Corporation
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ *
++ */
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/hrtimer.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/sw_trigger.h>
++
++/* default sampling frequency - 100Hz */
++#define HRTIMER_DEFAULT_SAMPLING_FREQUENCY 100
++
++struct iio_hrtimer_info {
++	struct iio_sw_trigger swt;
++	struct hrtimer timer;
++	unsigned long sampling_frequency;
++	ktime_t period;
++};
++
++static struct config_item_type iio_hrtimer_type = {
++	.ct_owner = THIS_MODULE,
++};
++
++static
++ssize_t iio_hrtimer_show_sampling_frequency(struct device *dev,
++					    struct device_attribute *attr,
++					    char *buf)
++{
++	struct iio_trigger *trig = to_iio_trigger(dev);
++	struct iio_hrtimer_info *info = iio_trigger_get_drvdata(trig);
++
++	return snprintf(buf, PAGE_SIZE, "%lu\n", info->sampling_frequency);
++}
++
++static
++ssize_t iio_hrtimer_store_sampling_frequency(struct device *dev,
++					     struct device_attribute *attr,
++					     const char *buf, size_t len)
++{
++	struct iio_trigger *trig = to_iio_trigger(dev);
++	struct iio_hrtimer_info *info = iio_trigger_get_drvdata(trig);
++	unsigned long val;
++	int ret;
++
++	ret = kstrtoul(buf, 10, &val);
++	if (ret)
++		return ret;
++
++	if (!val || val > NSEC_PER_SEC)
++		return -EINVAL;
++
++	info->sampling_frequency = val;
++	info->period = ktime_set(0, NSEC_PER_SEC / val);
++
++	return len;
++}
++
++static DEVICE_ATTR(sampling_frequency, S_IRUGO | S_IWUSR,
++		   iio_hrtimer_show_sampling_frequency,
++		   iio_hrtimer_store_sampling_frequency);
++
++static struct attribute *iio_hrtimer_attrs[] = {
++	&dev_attr_sampling_frequency.attr,
++	NULL
++};
++
++static const struct attribute_group iio_hrtimer_attr_group = {
++	.attrs = iio_hrtimer_attrs,
++};
++
++static const struct attribute_group *iio_hrtimer_attr_groups[] = {
++	&iio_hrtimer_attr_group,
++	NULL
++};
++
++static enum hrtimer_restart iio_hrtimer_trig_handler(struct hrtimer *timer)
++{
++	struct iio_hrtimer_info *info;
++
++	info = container_of(timer, struct iio_hrtimer_info, timer);
++
++	hrtimer_forward_now(timer, info->period);
++	iio_trigger_poll(info->swt.trigger);
++
++	return HRTIMER_RESTART;
++}
++
++static int iio_trig_hrtimer_set_state(struct iio_trigger *trig, bool state)
++{
++	struct iio_hrtimer_info *trig_info;
++
++	trig_info = iio_trigger_get_drvdata(trig);
++
++	if (state)
++		hrtimer_start(&trig_info->timer, trig_info->period,
++			      HRTIMER_MODE_REL);
++	else
++		hrtimer_cancel(&trig_info->timer);
++
++	return 0;
++}
++
++static const struct iio_trigger_ops iio_hrtimer_trigger_ops = {
++	.owner = THIS_MODULE,
++	.set_trigger_state = iio_trig_hrtimer_set_state,
++};
++
++static struct iio_sw_trigger *iio_trig_hrtimer_probe(const char *name)
++{
++	struct iio_hrtimer_info *trig_info;
++	int ret;
++
++	trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
++	if (!trig_info)
++		return ERR_PTR(-ENOMEM);
++
++	trig_info->swt.trigger = iio_trigger_alloc("%s", name);
++	if (!trig_info->swt.trigger) {
++		ret = -ENOMEM;
++		goto err_free_trig_info;
++	}
++
++	iio_trigger_set_drvdata(trig_info->swt.trigger, trig_info);
++	trig_info->swt.trigger->ops = &iio_hrtimer_trigger_ops;
++	trig_info->swt.trigger->dev.groups = iio_hrtimer_attr_groups;
++
++	hrtimer_init(&trig_info->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++	trig_info->timer.function = iio_hrtimer_trig_handler;
++
++	trig_info->sampling_frequency = HRTIMER_DEFAULT_SAMPLING_FREQUENCY;
++	trig_info->period = ktime_set(0, NSEC_PER_SEC /
++				      trig_info->sampling_frequency);
++
++	ret = iio_trigger_register(trig_info->swt.trigger);
++	if (ret)
++		goto err_free_trigger;
++
++	iio_swt_group_init_type_name(&trig_info->swt, name, &iio_hrtimer_type);
++	return &trig_info->swt;
++err_free_trigger:
++	iio_trigger_free(trig_info->swt.trigger);
++err_free_trig_info:
++	kfree(trig_info);
++
++	return ERR_PTR(ret);
++}
++
++static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
++{
++	struct iio_hrtimer_info *trig_info;
++
++	trig_info = iio_trigger_get_drvdata(swt->trigger);
++
++	iio_trigger_unregister(swt->trigger);
++
++	/* cancel the timer after unreg to make sure no one rearms it */
++	hrtimer_cancel(&trig_info->timer);
++	iio_trigger_free(swt->trigger);
++	kfree(trig_info);
++
++	return 0;
++}
++
++static const struct iio_sw_trigger_ops iio_trig_hrtimer_ops = {
++	.probe		= iio_trig_hrtimer_probe,
++	.remove		= iio_trig_hrtimer_remove,
++};
++
++static struct iio_sw_trigger_type iio_trig_hrtimer = {
++	.name = "hrtimer",
++	.owner = THIS_MODULE,
++	.ops = &iio_trig_hrtimer_ops,
++};
++
++module_iio_sw_trigger_driver(iio_trig_hrtimer);
++
++MODULE_AUTHOR("Marten Svanfeldt <marten@intuitiveaerial.com>");
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
++MODULE_DESCRIPTION("Periodic hrtimer trigger for the IIO subsystem");
++MODULE_LICENSE("GPL v2");
 -- 
-2.1.4
+1.9.1
 
