@@ -1,159 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f43.google.com ([74.125.82.43]:37885 "EHLO
-	mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756047AbbKROjB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 09:39:01 -0500
-Received: by wmww144 with SMTP id w144so75002151wmw.0
-        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 06:39:00 -0800 (PST)
+Received: from mail-wm0-f51.google.com ([74.125.82.51]:33003 "EHLO
+	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755854AbbKROix (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 09:38:53 -0500
+Received: by wmec201 with SMTP id c201so281773202wme.0
+        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 06:38:52 -0800 (PST)
 From: Marc Titinger <mtitinger@baylibre.com>
 To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
 	pmeerw@pmeerw.net
 Cc: daniel.baluta@intel.com, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org, Marc Titinger <mtitinger@baylibre.com>
-Subject: [RFC 7/9] iio: ina2xx: add triggered buffer
-Date: Wed, 18 Nov 2015 15:38:33 +0100
-Message-Id: <1447857515-23935-8-git-send-email-mtitinger@baylibre.com>
-In-Reply-To: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
-References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
+Subject: [RFC 0/9] spawn hrtimer trigger from client driver upon enabling buffer
+Date: Wed, 18 Nov 2015 15:38:26 +0100
+Message-Id: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
----
- drivers/iio/adc/Kconfig      |  3 ++
- drivers/iio/adc/ina2xx-iio.c | 74 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 77 insertions(+)
+this builds upon the sw-trigger / hrtimer series from Daniel[1]
+in order to create the trigger upon enabling the buffer when the
+sampling frequency is known. This is useful for devices without
+hardware streaming scheme, to avoid the complexity of creating
+a separate trigger through configfs, and then setting
+the sw-trigger frequency from both device0 and the trigger.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index ebbfff9..929cfb0 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -187,6 +187,9 @@ config INA2XX_IIO
- 	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
- 	depends on I2C
- 	select REGMAP_I2C
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	select IIO_HRTIMER_TRIGGER
- 	help
- 	  Say yes here to build support for TI INA2xx familly Power Monitors.
- 
-diff --git a/drivers/iio/adc/ina2xx-iio.c b/drivers/iio/adc/ina2xx-iio.c
-index d4dd908..e47f30d 100644
---- a/drivers/iio/adc/ina2xx-iio.c
-+++ b/drivers/iio/adc/ina2xx-iio.c
-@@ -28,6 +28,10 @@
- 
- #include <linux/util_macros.h>
- 
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
- /*
-  * INA2XX registers definition
-  */
-@@ -294,6 +298,10 @@ static int ina2xx_write_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 
- 		ret = ina226_set_frequency(chip, val, &tmp);
-+
-+		trace_printk("Enabling buffer w/ freq = %d, avg =%u, period= %u\n",
-+                    chip->freq, chip->avg, chip->period_us );
-+
- 		break;
- 
- 	default:
-@@ -379,6 +387,58 @@ static int ina2xx_debug_reg(struct iio_dev *indio_dev,
- 	return regmap_read(chip->regmap, reg, readval);
- }
- 
-+static s64 prev_ns;
-+
-+static irqreturn_t ina2xx_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
-+	unsigned short data[8];
-+	int bit, ret = 0, i = 0;
-+
-+	unsigned long buffer_us = 0, elapsed_us = 0;
-+	s64 time_a, time_b;
-+
-+	time_a = iio_get_time_ns();
-+
-+	/* Single register reads: bulk_read will not work with ina226
-+	* as there is no auto-increment of the address register for
-+	* data length longer than 16bits.
-+	*/
-+	for_each_set_bit(bit, indio_dev->active_scan_mask,
-+					indio_dev->masklength) {
-+		unsigned int val;
-+
-+		ret = regmap_read(chip->regmap,
-+				  INA2XX_SHUNT_VOLTAGE + bit, &val);
-+		if (ret < 0)
-+			goto _err;
-+
-+		data[i++] = val;
-+	}
-+
-+	time_b = iio_get_time_ns();
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, (unsigned int *)data,
-+					   time_b);
-+
-+	buffer_us = (unsigned long)(time_b - time_a) / 1000;
-+	elapsed_us = (unsigned long)(time_a - prev_ns) / 1000;
-+
-+	/* delais in uS */
-+	trace_printk("T[k]-T[k_1] = %lu, xfer %lu", elapsed_us, buffer_us);
-+
-+	ret = IRQ_HANDLED;
-+
-+        prev_ns = time_a;
-+
-+_err:
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return ret;
-+}
-+
- /* frequencies matching the cummulated integration times for vshunt and vbus */
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("61 120 236 455 850 1506 2450 3571");
- 
-@@ -486,9 +546,22 @@ static int ina2xx_probe(struct i2c_client *client,
- 		return -ENODEV;
- 	}
- 
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					&ina2xx_trigger_handler, NULL);
-+	if (ret)
-+		return ret;
-+
- 	return devm_iio_device_register(&client->dev, indio_dev);
- }
- 
-+static int ina2xx_remove(struct i2c_client *client)
-+{
-+	iio_triggered_buffer_cleanup(dev_get_drvdata(&client->dev));
-+
-+	return 0;
-+}
-+
-+
- static const struct i2c_device_id ina2xx_id[] = {
- 	{"ina219", ina219},
- 	{"ina220", ina219},
-@@ -505,6 +578,7 @@ static struct i2c_driver ina2xx_driver = {
- 		   .name = KBUILD_MODNAME,
- 		   },
- 	.probe = ina2xx_probe,
-+	.remove = ina2xx_remove,
- 	.id_table = ina2xx_id,
- };
- 
+[1]: https://lkml.org/lkml/2015/10/23/369
+
+Daniel Baluta (5):
+  configfs: Allow dynamic group creation
+  iio: core: Introduce IIO configfs support
+  iio: core: Introduce IIO software triggers
+  iio: trigger: Introduce IIO hrtimer based trigger
+  iio: Documentation: Add IIO configfs documentation
+
+Marc Titinger (4):
+  iio: ina2xx: add direct IO support for TI INA2xx Power Monitors
+  iio: ina2xx: add triggered buffer
+  iio: buffer: allow for last-second trigger spawning from device driver
+  iio: (RFC) illustrate creation/destruction of hrtimer trigger upon
+    buffer enable
+
+ Documentation/ABI/testing/configfs-iio |  21 ++
+ Documentation/iio/iio_configfs.txt     |  93 +++++
+ drivers/iio/Kconfig                    |  16 +
+ drivers/iio/Makefile                   |   2 +
+ drivers/iio/adc/Kconfig                |  12 +
+ drivers/iio/adc/Makefile               |   1 +
+ drivers/iio/adc/ina2xx-iio.c           | 661 +++++++++++++++++++++++++++++++++
+ drivers/iio/industrialio-buffer.c      |   5 +
+ drivers/iio/industrialio-configfs.c    |  50 +++
+ drivers/iio/industrialio-sw-trigger.c  | 183 +++++++++
+ drivers/iio/trigger/Kconfig            |  10 +
+ drivers/iio/trigger/Makefile           |   2 +
+ drivers/iio/trigger/iio-trig-hrtimer.c | 193 ++++++++++
+ fs/configfs/dir.c                      | 110 ++++++
+ include/linux/configfs.h               |  10 +
+ include/linux/iio/iio.h                |   3 +
+ include/linux/iio/sw_trigger.h         |  71 ++++
+ 17 files changed, 1443 insertions(+)
+ create mode 100644 Documentation/ABI/testing/configfs-iio
+ create mode 100644 Documentation/iio/iio_configfs.txt
+ create mode 100644 drivers/iio/adc/ina2xx-iio.c
+ create mode 100644 drivers/iio/industrialio-configfs.c
+ create mode 100644 drivers/iio/industrialio-sw-trigger.c
+ create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
+ create mode 100644 include/linux/iio/sw_trigger.h
+
 -- 
 1.9.1
 
