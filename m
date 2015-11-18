@@ -1,30 +1,73 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <564C5517.6020101@metafoo.de>
-Date: Wed, 18 Nov 2015 11:38:15 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Dragos Bogdan <dragos.bogdan@analog.com>,
- Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] staging:iio:ad7780: Switch to the gpio descriptor
- interface
-References: <1447842934-5355-1-git-send-email-dragos.bogdan@analog.com>
-In-Reply-To: <1447842934-5355-1-git-send-email-dragos.bogdan@analog.com>
-Content-Type: text/plain; charset=windows-1252
+Return-Path: <mtitinger@baylibre.com>
+From: Marc Titinger <mtitinger@baylibre.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: daniel.baluta@intel.com,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Marc Titinger <mtitinger@baylibre.com>
+Subject: [RFC 8/9] iio: buffer: allow for last-second trigger spawning from device driver
+Date: Wed, 18 Nov 2015 15:38:34 +0100
+Message-Id: <1447857515-23935-9-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
+References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 11/18/2015 11:35 AM, Dragos Bogdan wrote:
-> Use the gpiod interface for the powerdown_gpio instead of the deprecated
-> old non-descriptor interface.
-> 
-> The powerdown pin can be tied high, so the gpio is optional.
-> Remove the gpio_pdrst platform_data member since the new interface is
-> used.
-> 
-> Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>
+The hrtimer sw-trigger allow for polling mode on devices w/o hard irq
+trigger source, but setting the frequency from userland for both the
+hrtimer trigger device and the adc is error prone.
 
-Thanks, good job.
+Make adc drivers able to setup the sw-trigger at the last second when the
+buffer is enabled, and the sampling frequency is known.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+enable_trigger is called from verify_update, before the classical setup_ops
+are called in buffers_enable. This gives a chance to complete the setup of
+indio_dev->trig.
+
+Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+---
+ drivers/iio/industrialio-buffer.c | 5 +++++
+ include/linux/iio/iio.h           | 3 +++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index d7e908a..ba7abd4 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -647,6 +647,11 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+ 	if (insert_buffer)
+ 		modes &= insert_buffer->access->modes;
+ 
++	if (indio_dev->setup_ops &&
++	    indio_dev->setup_ops->enable_trigger &&
++	   (indio_dev->setup_ops->enable_trigger(indio_dev) < 0))
++		return -ENXIO;
++
+ 	/* Definitely possible for devices to support both of these. */
+ 	if ((modes & INDIO_BUFFER_TRIGGERED) && indio_dev->trig) {
+ 		config->mode = INDIO_BUFFER_TRIGGERED;
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 7bb7f67..8f82113 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -419,6 +419,8 @@ struct iio_info {
+ 
+ /**
+  * struct iio_buffer_setup_ops - buffer setup related callbacks
++ * @enable_trigger:	[DRIVER] function to call if a trigger is instancied
++ *				 upon enabling the buffer (sw triggers)
+  * @preenable:		[DRIVER] function to run prior to marking buffer enabled
+  * @postenable:		[DRIVER] function to run after marking buffer enabled
+  * @predisable:		[DRIVER] function to run prior to marking buffer
+@@ -428,6 +430,7 @@ struct iio_info {
+  *			scan mask is valid for the device.
+  */
+ struct iio_buffer_setup_ops {
++	int (*enable_trigger)(struct iio_dev *);
+ 	int (*preenable)(struct iio_dev *);
+ 	int (*postenable)(struct iio_dev *);
+ 	int (*predisable)(struct iio_dev *);
+-- 
+1.9.1
