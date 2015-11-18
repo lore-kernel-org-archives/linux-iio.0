@@ -1,75 +1,114 @@
 Return-Path: <mranostay@gmail.com>
 From: Matt Ranostay <mranostay@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH] iio: chemical: vz89x: rework i2c transfer reading
-Date: Tue, 17 Nov 2015 17:49:49 -0800
-Message-Id: <1447811389-28509-1-git-send-email-mranostay@gmail.com>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH] iio: proximity: lidar: optimize i2c transactions
+Date: Tue, 17 Nov 2015 22:11:27 -0800
+Message-Id: <1447827087-4755-1-git-send-email-mranostay@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Remove racey i2c_smbus_read_byte() calls in measurement
-reading function with an single i2c_transfer.
+Optimize device tranactions using i2c transfers versus multiple
+possibly racey i2c_smbus_* function calls, and only one tranaction
+for distance measurement.
 
 Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
- drivers/iio/chemical/vz89x.c | 33 +++++++++++++++++++++++----------
- 1 file changed, 23 insertions(+), 10 deletions(-)
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 54 ++++++++++++-----------
+ 1 file changed, 29 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
-index 11e59a5..c03f988 100644
---- a/drivers/iio/chemical/vz89x.c
-+++ b/drivers/iio/chemical/vz89x.c
-@@ -100,27 +100,40 @@ static int vz89x_measurement_is_valid(struct vz89x_data *data)
- 	return !!(data->buffer[VZ89X_REG_MEASUREMENT_SIZE - 1] > 0);
- }
+diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+index e015a89..1df1a2f 100644
+--- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
++++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+@@ -36,8 +36,7 @@
+ #define LIDAR_REG_STATUS_INVALID	BIT(3)
+ #define LIDAR_REG_STATUS_READY		BIT(0)
  
-+static int vz89x_i2c_xfer(struct vz89x_data *data, u8 cmd)
-+{
-+	struct i2c_client *client = data->client;
+-#define LIDAR_REG_DATA_HBYTE	0x0f
+-#define LIDAR_REG_DATA_LBYTE	0x10
++#define LIDAR_REG_DATA		0x8f
+ #define LIDAR_REG_PWR_CONTROL	0x65
+ 
+ #define LIDAR_DRV_NAME "lidar"
+@@ -64,9 +63,10 @@ static const struct iio_chan_spec lidar_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(1),
+ };
+ 
+-static int lidar_read_byte(struct lidar_data *data, int reg)
++static int lidar_i2c_xfer(struct lidar_data *data, u8 reg, u8 *val, int len)
+ {
+ 	struct i2c_client *client = data->client;
 +	struct i2c_msg msg[2];
-+	int ret;
-+	u8 buf[3] = { cmd, 0, 0};
-+
+ 	int ret;
+ 
+ 	/*
+@@ -74,17 +74,31 @@ static int lidar_read_byte(struct lidar_data *data, int reg)
+ 	 * so in turn i2c_smbus_read_byte_data cannot be used
+ 	 */
+ 
+-	ret = i2c_smbus_write_byte(client, reg);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "cannot write addr value");
+-		return ret;
+-	}
 +	msg[0].addr = client->addr;
-+	msg[0].flags = client->flags;
-+	msg[0].len = 3;
-+	msg[0].buf  = (char *) &buf;
-+
++	msg[0].flags = client->flags | I2C_M_STOP;
++	msg[0].len = 1;
++	msg[0].buf  = (char *) &reg;
+ 
+-	ret = i2c_smbus_read_byte(client);
 +	msg[1].addr = client->addr;
 +	msg[1].flags = client->flags | I2C_M_RD;
-+	msg[1].len = VZ89X_REG_MEASUREMENT_SIZE;
-+	msg[1].buf = (char *) &data->buffer;
++	msg[1].len = len;
++	msg[1].buf = (char *) val;
 +
 +	ret = i2c_transfer(client->adapter, msg, 2);
 +
-+	return (ret == VZ89X_REG_MEASUREMENT_SIZE) ? 0 : ret;
++	return (ret == len) ? 0 : ret;
 +}
 +
- static int vz89x_get_measurement(struct vz89x_data *data)
- {
- 	int ret;
--	int i;
- 
- 	/* sensor can only be polled once a second max per datasheet */
- 	if (!time_after(jiffies, data->last_update + HZ))
- 		return 0;
- 
--	ret = i2c_smbus_write_word_data(data->client,
--					VZ89X_REG_MEASUREMENT, 0);
-+	ret = vz89x_i2c_xfer(data, VZ89X_REG_MEASUREMENT);
++static int lidar_read_byte(struct lidar_data *data, u8 reg)
++{
++	int ret;
++	u8 val;
++
++	ret = lidar_i2c_xfer(data, reg, &val, 1);
  	if (ret < 0)
- 		return ret;
+-		dev_err(&client->dev, "cannot read data value");
++		return ret;
  
--	for (i = 0; i < VZ89X_REG_MEASUREMENT_SIZE; i++) {
--		ret = i2c_smbus_read_byte(data->client);
--		if (ret < 0)
--			return ret;
--		data->buffer[i] = ret;
--	}
+-	return ret;
++	return val;
+ }
+ 
+ static inline int lidar_write_control(struct lidar_data *data, int val)
+@@ -100,22 +114,12 @@ static inline int lidar_write_power(struct lidar_data *data, int val)
+ 
+ static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
+ {
+-	int ret;
+-	int val;
 -
- 	ret = vz89x_measurement_is_valid(data);
- 	if (ret)
- 		return -EAGAIN;
+-	ret = lidar_read_byte(data, LIDAR_REG_DATA_HBYTE);
+-	if (ret < 0)
+-		return ret;
+-	val = ret << 8;
++	int ret = lidar_i2c_xfer(data, LIDAR_REG_DATA, (u8 *) reg, 2);
+ 
+-	ret = lidar_read_byte(data, LIDAR_REG_DATA_LBYTE);
+-	if (ret < 0)
+-		return ret;
+-
+-	val |= ret;
+-	*reg = val;
++	if (!ret)
++		*reg = be16_to_cpu(*reg);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
 -- 
 1.9.1
