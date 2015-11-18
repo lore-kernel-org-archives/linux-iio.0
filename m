@@ -1,70 +1,174 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f51.google.com ([74.125.82.51]:33003 "EHLO
-	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755854AbbKROix (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 09:38:53 -0500
-Received: by wmec201 with SMTP id c201so281773202wme.0
-        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 06:38:52 -0800 (PST)
-From: Marc Titinger <mtitinger@baylibre.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net
-Cc: daniel.baluta@intel.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, Marc Titinger <mtitinger@baylibre.com>
-Subject: [RFC 0/9] spawn hrtimer trigger from client driver upon enabling buffer
-Date: Wed, 18 Nov 2015 15:38:26 +0100
-Message-Id: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
+Received: from mail-lf0-f43.google.com ([209.85.215.43]:34005 "EHLO
+	mail-lf0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755148AbbKRPjR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 10:39:17 -0500
+Received: by lffu14 with SMTP id u14so29002548lff.1
+        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 07:39:15 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <1447857515-23935-6-git-send-email-mtitinger@baylibre.com>
+References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com> <1447857515-23935-6-git-send-email-mtitinger@baylibre.com>
+From: Crt Mori <cmo@melexis.com>
+Date: Wed, 18 Nov 2015 16:38:35 +0100
+Message-ID: <CAKv63uutrH=sZ4iu2-kgsgDmnmykwAWw0CGVCb2WWPcS5hZWdA@mail.gmail.com>
+Subject: Re: [RFC 5/9] iio: Documentation: Add IIO configfs documentation
+To: Marc Titinger <mtitinger@baylibre.com>
+Cc: Johnathan Iain Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-this builds upon the sw-trigger / hrtimer series from Daniel[1]
-in order to create the trigger upon enabling the buffer when the
-sampling frequency is known. This is useful for devices without
-hardware streaming scheme, to avoid the complexity of creating
-a separate trigger through configfs, and then setting
-the sw-trigger frequency from both device0 and the trigger.
+This has my acked-by, yet it is missing a commit message? Can we get that
+and the removed From: as I think this is a new patch and not resend of Daniel's?
+Also it would need your signed-off-by in that case
 
-[1]: https://lkml.org/lkml/2015/10/23/369
-
-Daniel Baluta (5):
-  configfs: Allow dynamic group creation
-  iio: core: Introduce IIO configfs support
-  iio: core: Introduce IIO software triggers
-  iio: trigger: Introduce IIO hrtimer based trigger
-  iio: Documentation: Add IIO configfs documentation
-
-Marc Titinger (4):
-  iio: ina2xx: add direct IO support for TI INA2xx Power Monitors
-  iio: ina2xx: add triggered buffer
-  iio: buffer: allow for last-second trigger spawning from device driver
-  iio: (RFC) illustrate creation/destruction of hrtimer trigger upon
-    buffer enable
-
- Documentation/ABI/testing/configfs-iio |  21 ++
- Documentation/iio/iio_configfs.txt     |  93 +++++
- drivers/iio/Kconfig                    |  16 +
- drivers/iio/Makefile                   |   2 +
- drivers/iio/adc/Kconfig                |  12 +
- drivers/iio/adc/Makefile               |   1 +
- drivers/iio/adc/ina2xx-iio.c           | 661 +++++++++++++++++++++++++++++++++
- drivers/iio/industrialio-buffer.c      |   5 +
- drivers/iio/industrialio-configfs.c    |  50 +++
- drivers/iio/industrialio-sw-trigger.c  | 183 +++++++++
- drivers/iio/trigger/Kconfig            |  10 +
- drivers/iio/trigger/Makefile           |   2 +
- drivers/iio/trigger/iio-trig-hrtimer.c | 193 ++++++++++
- fs/configfs/dir.c                      | 110 ++++++
- include/linux/configfs.h               |  10 +
- include/linux/iio/iio.h                |   3 +
- include/linux/iio/sw_trigger.h         |  71 ++++
- 17 files changed, 1443 insertions(+)
- create mode 100644 Documentation/ABI/testing/configfs-iio
- create mode 100644 Documentation/iio/iio_configfs.txt
- create mode 100644 drivers/iio/adc/ina2xx-iio.c
- create mode 100644 drivers/iio/industrialio-configfs.c
- create mode 100644 drivers/iio/industrialio-sw-trigger.c
- create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
- create mode 100644 include/linux/iio/sw_trigger.h
-
--- 
-1.9.1
-
+On 18 November 2015 at 15:38, Marc Titinger <mtitinger@baylibre.com> wrote:
+> From: Daniel Baluta <daniel.baluta@intel.com>
+>
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> Acked-by: Crt Mori <cmo@melexis.com>
+> ---
+>  Documentation/ABI/testing/configfs-iio | 21 ++++++++
+>  Documentation/iio/iio_configfs.txt     | 93 ++++++++++++++++++++++++++++++++++
+>  2 files changed, 114 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/configfs-iio
+>  create mode 100644 Documentation/iio/iio_configfs.txt
+>
+> diff --git a/Documentation/ABI/testing/configfs-iio b/Documentation/ABI/testing/configfs-iio
+> new file mode 100644
+> index 0000000..2483756
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/configfs-iio
+> @@ -0,0 +1,21 @@
+> +What:          /config/iio
+> +Date:          October 2015
+> +KernelVersion: 4.4
+> +Contact:       linux-iio@vger.kernel.org
+> +Description:
+> +               This represents Industrial IO configuration entry point
+> +               directory. It contains sub-groups corresponding to IIO
+> +               objects.
+> +
+> +What:          /config/iio/triggers
+> +Date:          October 2015
+> +KernelVersion: 4.4
+> +Description:
+> +               Industrial IO software triggers directory.
+> +
+> +What:          /config/iio/triggers/hrtimers
+> +Date:          October 2015
+> +KernelVersion: 4.4
+> +Description:
+> +               High resolution timers directory. Creating a directory here
+> +               will result in creating a hrtimer trigger in the IIO subsystem.
+> diff --git a/Documentation/iio/iio_configfs.txt b/Documentation/iio/iio_configfs.txt
+> new file mode 100644
+> index 0000000..f0add35
+> --- /dev/null
+> +++ b/Documentation/iio/iio_configfs.txt
+> @@ -0,0 +1,93 @@
+> +Industrial IIO configfs support
+> +
+> +1. Overview
+> +
+> +Configfs is a filesystem-based manager of kernel objects. IIO uses some
+> +objects that could be easily configured using configfs (e.g.: devices,
+> +triggers).
+> +
+> +See Documentation/filesystems/configfs/configfs.txt for more information
+> +about how configfs works.
+> +
+> +2. Usage
+> +
+> +In order to use configfs support in IIO we need to select it at compile
+> +time via CONFIG_IIO_CONFIGFS config option.
+> +
+> +Then, mount the configfs filesystem (usually under /config directory):
+> +
+> +$ mkdir /config
+> +$ mount -t configfs none /config
+> +
+> +At this point, all default IIO groups will be created and can be accessed
+> +under /config/iio. Next chapters will describe available IIO configuration
+> +objects.
+> +
+> +3. Software triggers
+> +
+> +One of the IIO default configfs groups is the "triggers" group. It is
+> +automagically accessible when the configfs is mounted and can be found
+> +under /config/iio/triggers.
+> +
+> +IIO software triggers implementation offers support for creating multiple
+> +trigger types. A new trigger type is usually implemented as a separate
+> +kernel module following the interface in include/linux/iio/sw_trigger.h:
+> +
+> +/*
+> + * drivers/iio/trigger/iio-trig-sample.c
+> + * sample kernel module implementing a new trigger type
+> + */
+> +#include <linux/iio/sw_trigger.h>
+> +
+> +
+> +static struct iio_sw_trigger *iio_trig_sample_probe(const char *name)
+> +{
+> +       /*
+> +        * This allocates and registers an IIO trigger plus other
+> +        * trigger type specific initialization.
+> +        */
+> +}
+> +
+> +static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
+> +{
+> +       /*
+> +        * This undoes the actions in iio_trig_sample_probe
+> +        */
+> +}
+> +
+> +static const struct iio_sw_trigger_ops iio_trig_sample_ops = {
+> +       .probe          = iio_trig_sample_probe,
+> +       .remove         = iio_trig_sample_remove,
+> +};
+> +
+> +static struct iio_sw_trigger_type iio_trig_sample = {
+> +       .name = "trig-sample",
+> +       .owner = THIS_MODULE,
+> +       .ops = &iio_trig_sample_ops,
+> +};
+> +
+> +module_iio_sw_trigger_driver(iio_trig_sample);
+> +
+> +Each trigger type has its own directory under /config/iio/triggers. Loading
+> +iio-trig-sample module will create 'trig-sample' trigger type directory
+> +/config/iio/triggers/trig-sample.
+> +
+> +We support the following interrupt sources (trigger types):
+> +       * hrtimer, uses high resolution timers as interrupt source
+> +
+> +3.1 Hrtimer triggers creation and destruction
+> +
+> +Loading iio-trig-hrtimer module will register hrtimer trigger types allowing
+> +users to create hrtimer triggers under /config/iio/triggers/hrtimer.
+> +
+> +e.g:
+> +
+> +$ mkdir /config/triggers/hrtimer/instance1
+> +$ rmdir /config/triggers/hrtimer/instance1
+> +
+> +Each trigger can have one or more attributes specific to the trigger type.
+> +
+> +3.2 "hrtimer" trigger types attributes
+> +
+> +"hrtimer" trigger type doesn't have any configurable attribute from /config dir.
+> +It does introduce the sampling_frequency attribute to trigger directory.
+> --
+> 1.9.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
