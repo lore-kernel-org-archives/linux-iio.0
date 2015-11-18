@@ -1,18 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f50.google.com ([74.125.82.50]:33145 "EHLO
-	mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756037AbbKROi7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 09:38:59 -0500
-Received: by wmec201 with SMTP id c201so281778248wme.0
-        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 06:38:58 -0800 (PST)
+Received: from mail-wm0-f54.google.com ([74.125.82.54]:34883 "EHLO
+	mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755920AbbKROiz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 09:38:55 -0500
+Received: by wmdw130 with SMTP id w130so201373999wmd.0
+        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 06:38:53 -0800 (PST)
 From: Marc Titinger <mtitinger@baylibre.com>
 To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
 	pmeerw@pmeerw.net
 Cc: daniel.baluta@intel.com, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-Subject: [RFC 5/9] iio: Documentation: Add IIO configfs documentation
-Date: Wed, 18 Nov 2015 15:38:31 +0100
-Message-Id: <1447857515-23935-6-git-send-email-mtitinger@baylibre.com>
+Subject: [RFC 1/9] configfs: Allow dynamic group creation
+Date: Wed, 18 Nov 2015 15:38:27 +0100
+Message-Id: <1447857515-23935-2-git-send-email-mtitinger@baylibre.com>
 In-Reply-To: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
 References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -20,141 +20,166 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Daniel Baluta <daniel.baluta@intel.com>
 
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Acked-by: Crt Mori <cmo@melexis.com>
----
- Documentation/ABI/testing/configfs-iio | 21 ++++++++
- Documentation/iio/iio_configfs.txt     | 93 ++++++++++++++++++++++++++++++++++
- 2 files changed, 114 insertions(+)
- create mode 100644 Documentation/ABI/testing/configfs-iio
- create mode 100644 Documentation/iio/iio_configfs.txt
+We don't want to hardcode default groups at subsystem
+creation time. We export:
+	* configfs_register_group
+	* configfs_unregister_group
+to allow drivers to programatically create/destroy groups
+later, after module init time.
 
-diff --git a/Documentation/ABI/testing/configfs-iio b/Documentation/ABI/testing/configfs-iio
-new file mode 100644
-index 0000000..2483756
---- /dev/null
-+++ b/Documentation/ABI/testing/configfs-iio
-@@ -0,0 +1,21 @@
-+What:		/config/iio
-+Date:		October 2015
-+KernelVersion:	4.4
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This represents Industrial IO configuration entry point
-+		directory. It contains sub-groups corresponding to IIO
-+		objects.
-+
-+What:		/config/iio/triggers
-+Date:		October 2015
-+KernelVersion:	4.4
-+Description:
-+		Industrial IO software triggers directory.
-+
-+What:		/config/iio/triggers/hrtimers
-+Date:		October 2015
-+KernelVersion:	4.4
-+Description:
-+		High resolution timers directory. Creating a directory here
-+		will result in creating a hrtimer trigger in the IIO subsystem.
-diff --git a/Documentation/iio/iio_configfs.txt b/Documentation/iio/iio_configfs.txt
-new file mode 100644
-index 0000000..f0add35
---- /dev/null
-+++ b/Documentation/iio/iio_configfs.txt
-@@ -0,0 +1,93 @@
-+Industrial IIO configfs support
-+
-+1. Overview
-+
-+Configfs is a filesystem-based manager of kernel objects. IIO uses some
-+objects that could be easily configured using configfs (e.g.: devices,
-+triggers).
-+
-+See Documentation/filesystems/configfs/configfs.txt for more information
-+about how configfs works.
-+
-+2. Usage
-+
-+In order to use configfs support in IIO we need to select it at compile
-+time via CONFIG_IIO_CONFIGFS config option.
-+
-+Then, mount the configfs filesystem (usually under /config directory):
-+
-+$ mkdir /config
-+$ mount -t configfs none /config
-+
-+At this point, all default IIO groups will be created and can be accessed
-+under /config/iio. Next chapters will describe available IIO configuration
-+objects.
-+
-+3. Software triggers
-+
-+One of the IIO default configfs groups is the "triggers" group. It is
-+automagically accessible when the configfs is mounted and can be found
-+under /config/iio/triggers.
-+
-+IIO software triggers implementation offers support for creating multiple
-+trigger types. A new trigger type is usually implemented as a separate
-+kernel module following the interface in include/linux/iio/sw_trigger.h:
-+
-+/*
-+ * drivers/iio/trigger/iio-trig-sample.c
-+ * sample kernel module implementing a new trigger type
+This is needed for IIO configfs support.
+
+Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Joel Becker <jlbec@evilplan.org>
+---
+ fs/configfs/dir.c        | 110 +++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/configfs.h |  10 +++++
+ 2 files changed, 120 insertions(+)
+
+diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
+index c81ce7f..a7a1b21 100644
+--- a/fs/configfs/dir.c
++++ b/fs/configfs/dir.c
+@@ -1636,6 +1636,116 @@ const struct file_operations configfs_dir_operations = {
+ 	.iterate	= configfs_readdir,
+ };
+ 
++/**
++ * configfs_register_group - creates a parent-child relation between two groups
++ * @parent_group:	parent group
++ * @group:		child group
++ *
++ * link groups, creates dentry for the child and attaches it to the
++ * parent dentry.
++ *
++ * Return: 0 on success, negative errno code on error
 + */
-+#include <linux/iio/sw_trigger.h>
-+
-+
-+static struct iio_sw_trigger *iio_trig_sample_probe(const char *name)
++int configfs_register_group(struct config_group *parent_group,
++			    struct config_group *group)
 +{
-+	/*
-+	 * This allocates and registers an IIO trigger plus other
-+	 * trigger type specific initialization.
-+	 */
-+}
++	struct configfs_subsystem *subsys = parent_group->cg_subsys;
++	struct dentry *parent;
++	int ret;
 +
-+static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
++	mutex_lock(&subsys->su_mutex);
++	link_group(parent_group, group);
++	mutex_unlock(&subsys->su_mutex);
++
++	parent = parent_group->cg_item.ci_dentry;
++
++	mutex_lock_nested(&d_inode(parent)->i_mutex, I_MUTEX_PARENT);
++	ret = create_default_group(parent_group, group);
++	if (!ret) {
++		spin_lock(&configfs_dirent_lock);
++		configfs_dir_set_ready(group->cg_item.ci_dentry->d_fsdata);
++		spin_unlock(&configfs_dirent_lock);
++	}
++	mutex_unlock(&d_inode(parent)->i_mutex);
++	return ret;
++}
++EXPORT_SYMBOL(configfs_register_group);
++
++/**
++ * configfs_unregister_group() - unregisters a child group from its parent
++ * @group: parent group to be unregistered
++ *
++ * Undoes configfs_register_group()
++ */
++void configfs_unregister_group(struct config_group *group)
 +{
-+	/*
-+	 * This undoes the actions in iio_trig_sample_probe
-+	 */
++	struct configfs_subsystem *subsys = group->cg_subsys;
++	struct dentry *dentry = group->cg_item.ci_dentry;
++	struct dentry *parent = group->cg_item.ci_parent->ci_dentry;
++
++	mutex_lock_nested(&d_inode(parent)->i_mutex, I_MUTEX_PARENT);
++	spin_lock(&configfs_dirent_lock);
++	configfs_detach_prep(dentry, NULL);
++	spin_unlock(&configfs_dirent_lock);
++
++	configfs_detach_group(&group->cg_item);
++	d_inode(dentry)->i_flags |= S_DEAD;
++	dont_mount(dentry);
++	d_delete(dentry);
++	mutex_unlock(&d_inode(parent)->i_mutex);
++
++	dput(dentry);
++
++	mutex_lock(&subsys->su_mutex);
++	unlink_group(group);
++	mutex_unlock(&subsys->su_mutex);
 +}
++EXPORT_SYMBOL(configfs_unregister_group);
 +
-+static const struct iio_sw_trigger_ops iio_trig_sample_ops = {
-+	.probe		= iio_trig_sample_probe,
-+	.remove		= iio_trig_sample_remove,
-+};
++/**
++ * configfs_register_default_group() - allocates and registers a child group
++ * @parent_group:	parent group
++ * @name:		child group name
++ * @item_type:		child item type description
++ *
++ * boilerplate to allocate and register a child group with its parent. We need
++ * kzalloc'ed memory because child's default_group is initially empty.
++ *
++ * Return: allocated config group or ERR_PTR() on error
++ */
++struct config_group *
++configfs_register_default_group(struct config_group *parent_group,
++				const char *name,
++				struct config_item_type *item_type)
++{
++	int ret;
++	struct config_group *group;
 +
-+static struct iio_sw_trigger_type iio_trig_sample = {
-+	.name = "trig-sample",
-+	.owner = THIS_MODULE,
-+	.ops = &iio_trig_sample_ops,
-+};
++	group = kzalloc(sizeof(*group), GFP_KERNEL);
++	if (!group)
++		return ERR_PTR(-ENOMEM);
++	config_group_init_type_name(group, name, item_type);
 +
-+module_iio_sw_trigger_driver(iio_trig_sample);
++	ret = configfs_register_group(parent_group, group);
++	if (ret) {
++		kfree(group);
++		return ERR_PTR(ret);
++	}
++	return group;
++}
++EXPORT_SYMBOL(configfs_register_default_group);
 +
-+Each trigger type has its own directory under /config/iio/triggers. Loading
-+iio-trig-sample module will create 'trig-sample' trigger type directory
-+/config/iio/triggers/trig-sample.
++/**
++ * configfs_unregister_default_group() - unregisters and frees a child group
++ * @group:	the group to act on
++ */
++void configfs_unregister_default_group(struct config_group *group)
++{
++	configfs_unregister_group(group);
++	kfree(group);
++}
++EXPORT_SYMBOL(configfs_unregister_default_group);
 +
-+We support the following interrupt sources (trigger types):
-+	* hrtimer, uses high resolution timers as interrupt source
+ int configfs_register_subsystem(struct configfs_subsystem *subsys)
+ {
+ 	int err;
+diff --git a/include/linux/configfs.h b/include/linux/configfs.h
+index 63a36e8..931ca25 100644
+--- a/include/linux/configfs.h
++++ b/include/linux/configfs.h
+@@ -252,6 +252,16 @@ static inline struct configfs_subsystem *to_configfs_subsystem(struct config_gro
+ int configfs_register_subsystem(struct configfs_subsystem *subsys);
+ void configfs_unregister_subsystem(struct configfs_subsystem *subsys);
+ 
++int configfs_register_group(struct config_group *parent_group,
++			    struct config_group *group);
++void configfs_unregister_group(struct config_group *group);
 +
-+3.1 Hrtimer triggers creation and destruction
++struct config_group *
++configfs_register_default_group(struct config_group *parent_group,
++				const char *name,
++				struct config_item_type *item_type);
++void configfs_unregister_default_group(struct config_group *group);
 +
-+Loading iio-trig-hrtimer module will register hrtimer trigger types allowing
-+users to create hrtimer triggers under /config/iio/triggers/hrtimer.
-+
-+e.g:
-+
-+$ mkdir /config/triggers/hrtimer/instance1
-+$ rmdir /config/triggers/hrtimer/instance1
-+
-+Each trigger can have one or more attributes specific to the trigger type.
-+
-+3.2 "hrtimer" trigger types attributes
-+
-+"hrtimer" trigger type doesn't have any configurable attribute from /config dir.
-+It does introduce the sampling_frequency attribute to trigger directory.
+ /* These functions can sleep and can alloc with GFP_KERNEL */
+ /* WARNING: These cannot be called underneath configfs callbacks!! */
+ int configfs_depend_item(struct configfs_subsystem *subsys, struct config_item *target);
 -- 
 1.9.1
 
