@@ -1,18 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f54.google.com ([74.125.82.54]:34883 "EHLO
-	mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755920AbbKROiz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 09:38:55 -0500
-Received: by wmdw130 with SMTP id w130so201373999wmd.0
-        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 06:38:53 -0800 (PST)
+Received: from mail-wm0-f51.google.com ([74.125.82.51]:33834 "EHLO
+	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755889AbbKROi4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 09:38:56 -0500
+Received: by wmvv187 with SMTP id v187so281539288wmv.1
+        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 06:38:55 -0800 (PST)
 From: Marc Titinger <mtitinger@baylibre.com>
 To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
 	pmeerw@pmeerw.net
 Cc: daniel.baluta@intel.com, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-Subject: [RFC 1/9] configfs: Allow dynamic group creation
-Date: Wed, 18 Nov 2015 15:38:27 +0100
-Message-Id: <1447857515-23935-2-git-send-email-mtitinger@baylibre.com>
+Subject: [RFC 3/9] iio: core: Introduce IIO software triggers
+Date: Wed, 18 Nov 2015 15:38:29 +0100
+Message-Id: <1447857515-23935-4-git-send-email-mtitinger@baylibre.com>
 In-Reply-To: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
 References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -20,166 +20,328 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Daniel Baluta <daniel.baluta@intel.com>
 
-We don't want to hardcode default groups at subsystem
-creation time. We export:
-	* configfs_register_group
-	* configfs_unregister_group
-to allow drivers to programatically create/destroy groups
-later, after module init time.
+A software trigger associates an IIO device trigger with a software
+interrupt source (e.g: timer, sysfs). This patch adds the generic
+infrastructure for handling software triggers.
 
-This is needed for IIO configfs support.
+Software interrupts sources are kept in a iio_trigger_types_list and
+registered separately when the associated kernel module is loaded.
 
-Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
+Software triggers can be created directly from drivers or from user
+space via configfs interface.
+
+To sum up, this dynamically creates "triggers" group to be found under
+/config/iio/triggers and offers the possibility of dynamically
+creating trigger types groups. The first supported trigger type is
+"hrtimer" found under /config/iio/triggers/hrtimer.
+
 Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Joel Becker <jlbec@evilplan.org>
 ---
- fs/configfs/dir.c        | 110 +++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/configfs.h |  10 +++++
- 2 files changed, 120 insertions(+)
+ drivers/iio/Kconfig                   |   8 ++
+ drivers/iio/Makefile                  |   1 +
+ drivers/iio/industrialio-sw-trigger.c | 183 ++++++++++++++++++++++++++++++++++
+ include/linux/iio/sw_trigger.h        |  71 +++++++++++++
+ 4 files changed, 263 insertions(+)
+ create mode 100644 drivers/iio/industrialio-sw-trigger.c
+ create mode 100644 include/linux/iio/sw_trigger.h
 
-diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
-index c81ce7f..a7a1b21 100644
---- a/fs/configfs/dir.c
-+++ b/fs/configfs/dir.c
-@@ -1636,6 +1636,116 @@ const struct file_operations configfs_dir_operations = {
- 	.iterate	= configfs_readdir,
- };
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 17cac8e..5dce2cf 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -66,6 +66,14 @@ config IIO_CONSUMERS_PER_TRIGGER
+ 	This value controls the maximum number of consumers that a
+ 	given trigger may handle. Default is 2.
  
-+/**
-+ * configfs_register_group - creates a parent-child relation between two groups
-+ * @parent_group:	parent group
-+ * @group:		child group
++config IIO_SW_TRIGGER
++	tristate "Enable software triggers support"
++	select IIO_CONFIGFS
++	help
++	 Provides IIO core support for software triggers. A software
++	 trigger can be created via configfs or directly by a driver
++	 using the API provided.
++
+ source "drivers/iio/accel/Kconfig"
+ source "drivers/iio/adc/Kconfig"
+ source "drivers/iio/amplifiers/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 72e85c42..43b95e9 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -9,6 +9,7 @@ industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+ industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
+ 
+ obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
++obj-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
+ obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
+ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+ 
+diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
+new file mode 100644
+index 0000000..4825cfd
+--- /dev/null
++++ b/drivers/iio/industrialio-sw-trigger.c
+@@ -0,0 +1,183 @@
++/*
++ * The Industrial I/O core, software trigger functions
 + *
-+ * link groups, creates dentry for the child and attaches it to the
-+ * parent dentry.
++ * Copyright (c) 2015 Intel Corporation
 + *
-+ * Return: 0 on success, negative errno code on error
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
 + */
-+int configfs_register_group(struct config_group *parent_group,
-+			    struct config_group *group)
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/kmod.h>
++#include <linux/list.h>
++#include <linux/slab.h>
++
++#include <linux/iio/sw_trigger.h>
++#include <linux/configfs.h>
++
++static struct config_group *iio_triggers_group;
++static struct config_item_type iio_trigger_type_group_type;
++
++static struct config_item_type iio_triggers_group_type = {
++	.ct_owner = THIS_MODULE,
++};
++
++static LIST_HEAD(iio_trigger_types_list);
++static DEFINE_MUTEX(iio_trigger_types_lock);
++
++static
++struct iio_sw_trigger_type *__iio_find_sw_trigger_type(const char *name,
++						       unsigned len)
 +{
-+	struct configfs_subsystem *subsys = parent_group->cg_subsys;
-+	struct dentry *parent;
-+	int ret;
++	struct iio_sw_trigger_type *t = NULL, *iter;
 +
-+	mutex_lock(&subsys->su_mutex);
-+	link_group(parent_group, group);
-+	mutex_unlock(&subsys->su_mutex);
++	list_for_each_entry(iter, &iio_trigger_types_list, list)
++		if (!strcmp(iter->name, name)) {
++			t = iter;
++			break;
++		}
 +
-+	parent = parent_group->cg_item.ci_dentry;
++	return t;
++}
 +
-+	mutex_lock_nested(&d_inode(parent)->i_mutex, I_MUTEX_PARENT);
-+	ret = create_default_group(parent_group, group);
-+	if (!ret) {
-+		spin_lock(&configfs_dirent_lock);
-+		configfs_dir_set_ready(group->cg_item.ci_dentry->d_fsdata);
-+		spin_unlock(&configfs_dirent_lock);
-+	}
-+	mutex_unlock(&d_inode(parent)->i_mutex);
++int iio_register_sw_trigger_type(struct iio_sw_trigger_type *t)
++{
++	struct iio_sw_trigger_type *iter;
++	int ret = 0;
++
++	mutex_lock(&iio_trigger_types_lock);
++	iter = __iio_find_sw_trigger_type(t->name, strlen(t->name));
++	if (iter)
++		ret = -EBUSY;
++	else
++		list_add_tail(&t->list, &iio_trigger_types_list);
++	mutex_unlock(&iio_trigger_types_lock);
++
++	if (ret)
++		return ret;
++
++	t->group = configfs_register_default_group(iio_triggers_group, t->name,
++						&iio_trigger_type_group_type);
++	if (IS_ERR(t->group))
++		ret = PTR_ERR(t->group);
++
 +	return ret;
 +}
-+EXPORT_SYMBOL(configfs_register_group);
++EXPORT_SYMBOL(iio_register_sw_trigger_type);
 +
-+/**
-+ * configfs_unregister_group() - unregisters a child group from its parent
-+ * @group: parent group to be unregistered
-+ *
-+ * Undoes configfs_register_group()
-+ */
-+void configfs_unregister_group(struct config_group *group)
++void iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *t)
 +{
-+	struct configfs_subsystem *subsys = group->cg_subsys;
-+	struct dentry *dentry = group->cg_item.ci_dentry;
-+	struct dentry *parent = group->cg_item.ci_parent->ci_dentry;
++	struct iio_sw_trigger_type *iter;
 +
-+	mutex_lock_nested(&d_inode(parent)->i_mutex, I_MUTEX_PARENT);
-+	spin_lock(&configfs_dirent_lock);
-+	configfs_detach_prep(dentry, NULL);
-+	spin_unlock(&configfs_dirent_lock);
++	mutex_lock(&iio_trigger_types_lock);
++	iter = __iio_find_sw_trigger_type(t->name, strlen(t->name));
++	if (iter)
++		list_del(&t->list);
++	mutex_unlock(&iio_trigger_types_lock);
 +
-+	configfs_detach_group(&group->cg_item);
-+	d_inode(dentry)->i_flags |= S_DEAD;
-+	dont_mount(dentry);
-+	d_delete(dentry);
-+	mutex_unlock(&d_inode(parent)->i_mutex);
-+
-+	dput(dentry);
-+
-+	mutex_lock(&subsys->su_mutex);
-+	unlink_group(group);
-+	mutex_unlock(&subsys->su_mutex);
++	configfs_unregister_default_group(t->group);
 +}
-+EXPORT_SYMBOL(configfs_unregister_group);
++EXPORT_SYMBOL(iio_unregister_sw_trigger_type);
 +
-+/**
-+ * configfs_register_default_group() - allocates and registers a child group
-+ * @parent_group:	parent group
-+ * @name:		child group name
-+ * @item_type:		child item type description
-+ *
-+ * boilerplate to allocate and register a child group with its parent. We need
-+ * kzalloc'ed memory because child's default_group is initially empty.
-+ *
-+ * Return: allocated config group or ERR_PTR() on error
-+ */
-+struct config_group *
-+configfs_register_default_group(struct config_group *parent_group,
-+				const char *name,
-+				struct config_item_type *item_type)
++static
++struct iio_sw_trigger_type *iio_get_sw_trigger_type(const char *name)
 +{
-+	int ret;
-+	struct config_group *group;
++	struct iio_sw_trigger_type *t;
 +
-+	group = kzalloc(sizeof(*group), GFP_KERNEL);
-+	if (!group)
-+		return ERR_PTR(-ENOMEM);
-+	config_group_init_type_name(group, name, item_type);
++	mutex_lock(&iio_trigger_types_lock);
++	t = __iio_find_sw_trigger_type(name, strlen(name));
++	if (t && !try_module_get(t->owner))
++		t = NULL;
++	mutex_unlock(&iio_trigger_types_lock);
 +
-+	ret = configfs_register_group(parent_group, group);
-+	if (ret) {
-+		kfree(group);
-+		return ERR_PTR(ret);
++	return t;
++}
++
++struct iio_sw_trigger *iio_sw_trigger_create(const char *type, const char *name)
++{
++	struct iio_sw_trigger *t;
++	struct iio_sw_trigger_type *tt;
++
++	tt = iio_get_sw_trigger_type(type);
++	if (!tt) {
++		pr_err("Invalid trigger type: %s\n", type);
++		return ERR_PTR(-EINVAL);
 +	}
-+	return group;
-+}
-+EXPORT_SYMBOL(configfs_register_default_group);
++	t = tt->ops->probe(name);
++	if (IS_ERR(t))
++		goto out_module_put;
 +
-+/**
-+ * configfs_unregister_default_group() - unregisters and frees a child group
-+ * @group:	the group to act on
-+ */
-+void configfs_unregister_default_group(struct config_group *group)
++	t->trigger_type = tt;
++
++	return t;
++out_module_put:
++	module_put(tt->owner);
++	return t;
++}
++EXPORT_SYMBOL(iio_sw_trigger_create);
++
++void iio_sw_trigger_destroy(struct iio_sw_trigger *t)
 +{
-+	configfs_unregister_group(group);
-+	kfree(group);
++	struct iio_sw_trigger_type *tt = t->trigger_type;
++
++	tt->ops->remove(t);
++	module_put(tt->owner);
 +}
-+EXPORT_SYMBOL(configfs_unregister_default_group);
++EXPORT_SYMBOL(iio_sw_trigger_destroy);
 +
- int configfs_register_subsystem(struct configfs_subsystem *subsys)
- {
- 	int err;
-diff --git a/include/linux/configfs.h b/include/linux/configfs.h
-index 63a36e8..931ca25 100644
---- a/include/linux/configfs.h
-+++ b/include/linux/configfs.h
-@@ -252,6 +252,16 @@ static inline struct configfs_subsystem *to_configfs_subsystem(struct config_gro
- int configfs_register_subsystem(struct configfs_subsystem *subsys);
- void configfs_unregister_subsystem(struct configfs_subsystem *subsys);
- 
-+int configfs_register_group(struct config_group *parent_group,
-+			    struct config_group *group);
-+void configfs_unregister_group(struct config_group *group);
++static struct config_group *trigger_make_group(struct config_group *group,
++					       const char *name)
++{
++	struct iio_sw_trigger *t;
 +
-+struct config_group *
-+configfs_register_default_group(struct config_group *parent_group,
-+				const char *name,
-+				struct config_item_type *item_type);
-+void configfs_unregister_default_group(struct config_group *group);
++	t = iio_sw_trigger_create(group->cg_item.ci_name, name);
++	if (IS_ERR(t))
++		return ERR_CAST(t);
 +
- /* These functions can sleep and can alloc with GFP_KERNEL */
- /* WARNING: These cannot be called underneath configfs callbacks!! */
- int configfs_depend_item(struct configfs_subsystem *subsys, struct config_item *target);
++	config_item_set_name(&t->group.cg_item, "%s", name);
++
++	return &t->group;
++}
++
++static void trigger_drop_group(struct config_group *group,
++			       struct config_item *item)
++{
++	struct iio_sw_trigger *t = to_iio_sw_trigger(item);
++
++	iio_sw_trigger_destroy(t);
++	config_item_put(item);
++}
++
++static struct configfs_group_operations trigger_ops = {
++	.make_group	= &trigger_make_group,
++	.drop_item	= &trigger_drop_group,
++};
++
++static struct config_item_type iio_trigger_type_group_type = {
++	.ct_group_ops = &trigger_ops,
++	.ct_owner       = THIS_MODULE,
++};
++
++static int __init iio_sw_trigger_init(void)
++{
++	iio_triggers_group =
++		configfs_register_default_group(&iio_configfs_subsys.su_group,
++						"triggers",
++						&iio_triggers_group_type);
++	if (IS_ERR(iio_triggers_group))
++		return PTR_ERR(iio_triggers_group);
++	return 0;
++}
++module_init(iio_sw_trigger_init);
++
++static void __exit iio_sw_trigger_exit(void)
++{
++	configfs_unregister_default_group(iio_triggers_group);
++}
++module_exit(iio_sw_trigger_exit);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
++MODULE_DESCRIPTION("Industrial I/O software triggers support");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
+new file mode 100644
+index 0000000..c2f33b2
+--- /dev/null
++++ b/include/linux/iio/sw_trigger.h
+@@ -0,0 +1,71 @@
++/*
++ * Industrial I/O software trigger interface
++ *
++ * Copyright (c) 2015 Intel Corporation
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++#ifndef __IIO_SW_TRIGGER
++#define __IIO_SW_TRIGGER
++
++#include <linux/module.h>
++#include <linux/device.h>
++#include <linux/iio/iio.h>
++#include <linux/configfs.h>
++
++#define module_iio_sw_trigger_driver(__iio_sw_trigger_type) \
++	module_driver(__iio_sw_trigger_type, iio_register_sw_trigger_type, \
++		      iio_unregister_sw_trigger_type)
++
++extern struct configfs_subsystem iio_configfs_subsys;
++struct iio_sw_trigger_ops;
++
++struct iio_sw_trigger_type {
++	const char *name;
++	struct module *owner;
++	const struct iio_sw_trigger_ops *ops;
++	struct list_head list;
++	struct config_group *group;
++};
++
++struct iio_sw_trigger {
++	struct iio_trigger *trigger;
++	struct iio_sw_trigger_type *trigger_type;
++	struct config_group group;
++};
++
++struct iio_sw_trigger_ops {
++	struct iio_sw_trigger* (*probe)(const char *);
++	int (*remove)(struct iio_sw_trigger *);
++};
++
++static inline
++struct iio_sw_trigger *to_iio_sw_trigger(struct config_item *item)
++{
++	return container_of(to_config_group(item), struct iio_sw_trigger,
++			    group);
++}
++
++int iio_register_sw_trigger_type(struct iio_sw_trigger_type *tt);
++void iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *tt);
++
++struct iio_sw_trigger *iio_sw_trigger_create(const char *, const char *);
++void iio_sw_trigger_destroy(struct iio_sw_trigger *);
++
++int iio_sw_trigger_type_configfs_register(struct iio_sw_trigger_type *tt);
++void iio_sw_trigger_type_configfs_unregister(struct iio_sw_trigger_type *tt);
++
++static inline
++void iio_swt_group_init_type_name(struct iio_sw_trigger *t,
++				  const char *name,
++				  struct config_item_type *type)
++{
++#ifdef CONFIG_CONFIGFS_FS
++	config_group_init_type_name(&t->group, name, type);
++#endif
++}
++
++#endif /* __IIO_SW_TRIGGER */
 -- 
 1.9.1
 
