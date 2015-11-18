@@ -1,128 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f45.google.com ([74.125.82.45]:37770 "EHLO
-	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755988AbbKROi4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 09:38:56 -0500
-Received: by wmww144 with SMTP id w144so74998042wmw.0
-        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2015 06:38:54 -0800 (PST)
-From: Marc Titinger <mtitinger@baylibre.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net
-Cc: daniel.baluta@intel.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [RFC 2/9] iio: core: Introduce IIO configfs support
-Date: Wed, 18 Nov 2015 15:38:28 +0100
-Message-Id: <1447857515-23935-3-git-send-email-mtitinger@baylibre.com>
-In-Reply-To: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
-References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43538 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755212AbbKRRca (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2015 12:32:30 -0500
+In-Reply-To: <CAEnQRZAGyT33jTHDZHYYo_k4-4NX=XzGAuJXMOzhQzGyUQx+7Q@mail.gmail.com>
+References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com> <1447857515-23935-6-git-send-email-mtitinger@baylibre.com> <CAKv63uutrH=sZ4iu2-kgsgDmnmykwAWw0CGVCb2WWPcS5hZWdA@mail.gmail.com> <564CA201.3060601@baylibre.com> <CAEnQRZAGyT33jTHDZHYYo_k4-4NX=XzGAuJXMOzhQzGyUQx+7Q@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [RFC 5/9] iio: Documentation: Add IIO configfs documentation
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Wed, 18 Nov 2015 17:32:14 +0000
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Marc Titinger <mtitinger@baylibre.com>
+CC: Crt Mori <cmo@melexis.com>,
+	Johnathan Iain Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Message-ID: <2993100F-2532-4BF4-B3D0-5F6C9530725E@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Daniel Baluta <daniel.baluta@intel.com>
 
-This patch creates the IIO configfs root group. The group
-will appear under <mount-point>/iio/, usually /config/iio.
 
-We introduce configfs support in IIO in order to be able to easily
-create IIO objects from userspace. The first supported IIO objects
-are triggers introduced with next patches.
+On 18 November 2015 16:15:57 GMT+00:00, Daniel Baluta <daniel.baluta@intel.com> wrote:
+>On Wed, Nov 18, 2015 at 6:06 PM, Marc Titinger <mtitinger@baylibre.com>
+>wrote:
+>> On 18/11/2015 16:38, Crt Mori wrote:
+>>>
+>>> This has my acked-by, yet it is missing a commit message? Can we get
+>that
+>>> and the removed From: as I think this is a new patch and not resend
+>of
+>>> Daniel's?
+>>> Also it would need your signed-off-by in that case
+>>
+>>
+>> You've lost me: I think the commit message is the brief line only.
+>> The patch is as-is from Daniel's series.
+>
+>Hi Marc, Crt,
+>
+>Configfs patches should soon be merged into linux-next tree, so there
+>is
+>no need for them to be resent here.
+>
+>Not sure how/when/where they'll be pulled back to linux-iio tree.
+>
+>Daniel.
+It got a little complex as Christoph wanted the configfs change to hit
+ mainline asap.
 
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Tested-by: Matt Ranostay <matt.ranostay@intel.com>
----
- drivers/iio/Kconfig                 |  8 ++++++
- drivers/iio/Makefile                |  1 +
- drivers/iio/industrialio-configfs.c | 50 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 59 insertions(+)
- create mode 100644 drivers/iio/industrialio-configfs.c
+Andrew Morton will be sending Linus the change to configfs sometime in the next
+ week. The other patches might show in Linux next after that via Andrew's tree.
+Once I fast forward to a version of Greg's
+ tree which has picked up the configfs change I will apply the patches to the IIO
+ tree and send Greg a pull request sharpish to get them into Linux next.
+ Andrew will then drop them from his tree and all will be lined up for the next merge
+ window.
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 4011eff..17cac8e 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -42,6 +42,14 @@ config IIO_TRIGGERED_BUFFER
- 
- endif # IIO_BUFFER
- 
-+config IIO_CONFIGFS
-+	tristate "Enable IIO configuration via configfs"
-+	select CONFIGFS_FS
-+	help
-+	  This allows configuring various IIO bits through configfs
-+	  (e.g. software triggers). For more info see
-+	  Documentation/iio/iio_configfs.txt.
-+
- config IIO_TRIGGER
- 	bool "Enable triggered sampling support"
- 	help
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 698afc2..72e85c42 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -8,6 +8,7 @@ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
- industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
- industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
- 
-+obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
- obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
- obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
- 
-diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
-new file mode 100644
-index 0000000..83563dd
---- /dev/null
-+++ b/drivers/iio/industrialio-configfs.c
-@@ -0,0 +1,50 @@
-+/*
-+ * Industrial I/O configfs bits
-+ *
-+ * Copyright (c) 2015 Intel Corporation
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#include <linux/configfs.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/kmod.h>
-+#include <linux/slab.h>
-+
-+#include <linux/iio/iio.h>
-+
-+static struct config_item_type iio_root_group_type = {
-+	.ct_owner       = THIS_MODULE,
-+};
-+
-+struct configfs_subsystem iio_configfs_subsys = {
-+	.su_group = {
-+		.cg_item = {
-+			.ci_namebuf = "iio",
-+			.ci_type = &iio_root_group_type,
-+		},
-+	},
-+	.su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),
-+};
-+EXPORT_SYMBOL(iio_configfs_subsys);
-+
-+static int __init iio_configfs_init(void)
-+{
-+	config_group_init(&iio_configfs_subsys.su_group);
-+
-+	return configfs_register_subsystem(&iio_configfs_subsys);
-+}
-+module_init(iio_configfs_init);
-+
-+static void __exit iio_configfs_exit(void)
-+{
-+	configfs_unregister_subsystem(&iio_configfs_subsys);
-+}
-+module_exit(iio_configfs_exit);
-+
-+MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
-+MODULE_DESCRIPTION("Industrial I/O configfs support");
-+MODULE_LICENSE("GPL v2");
+Simple :)
+
+At a guess we are talking 2 to 3 weeks, maybe more, unfortunately but we'll
+ before the next merge window.
+
+Jonathan
 -- 
-1.9.1
-
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
