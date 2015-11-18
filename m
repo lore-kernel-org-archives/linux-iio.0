@@ -1,24 +1,16 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-by2on0064.outbound.protection.outlook.com ([207.46.100.64]:35283
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751674AbbKRKvf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 18 Nov 2015 05:51:35 -0500
+Return-Path: <Dragos.Bogdan@analog.com>
 From: Dragos Bogdan <dragos.bogdan@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	<linux-iio@vger.kernel.org>,
-	Dragos Bogdan <dragos.bogdan@analog.com>
-Subject: [PATCH v2] staging:iio:ad7780: Switch to the gpio descriptor interface
-Date: Wed, 18 Nov 2015 12:35:34 +0200
-Message-ID: <1447842934-5355-1-git-send-email-dragos.bogdan@analog.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+	<Michael.Hennerich@analog.com>, <linux-iio@vger.kernel.org>, Dragos Bogdan
+	<dragos.bogdan@analog.com>
+Subject: [PATCH] staging:iio:ad7780: Switch to the gpio descriptor interface
+Date: Wed, 18 Nov 2015 12:23:25 +0200
+Message-ID: <1447842205-3422-1-git-send-email-dragos.bogdan@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 Use the gpiod interface for the powerdown_gpio instead of the deprecated
 old non-descriptor interface.
@@ -29,27 +21,23 @@ used.
 
 Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>
 ---
-Changes since first version:
-Remove <linux/gpio.h> include since it is no longer needed.
----
- drivers/staging/iio/adc/ad7780.c | 27 +++++++++++----------------
+ drivers/staging/iio/adc/ad7780.c | 26 +++++++++++---------------
  drivers/staging/iio/adc/ad7780.h |  1 -
- 2 files changed, 11 insertions(+), 17 deletions(-)
+ 2 files changed, 11 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 618b41f..98b5fc4 100644
+index 618b41f..a5c5a95 100644
 --- a/drivers/staging/iio/adc/ad7780.c
 +++ b/drivers/staging/iio/adc/ad7780.c
-@@ -15,7 +15,7 @@
- #include <linux/regulator/consumer.h>
+@@ -16,6 +16,7 @@
  #include <linux/err.h>
  #include <linux/sched.h>
--#include <linux/gpio.h>
+ #include <linux/gpio.h>
 +#include <linux/gpio/consumer.h>
  #include <linux/module.h>
  
  #include <linux/iio/iio.h>
-@@ -42,7 +42,7 @@ struct ad7780_chip_info {
+@@ -42,7 +43,7 @@ struct ad7780_chip_info {
  struct ad7780_state {
  	const struct ad7780_chip_info	*chip_info;
  	struct regulator		*reg;
@@ -58,7 +46,7 @@ index 618b41f..98b5fc4 100644
  	unsigned int	gain;
  	u16				int_vref_mv;
  
-@@ -77,8 +77,7 @@ static int ad7780_set_mode(struct ad_sigma_delta *sigma_delta,
+@@ -77,8 +78,7 @@ static int ad7780_set_mode(struct ad_sigma_delta *sigma_delta,
  		break;
  	}
  
@@ -68,7 +56,7 @@ index 618b41f..98b5fc4 100644
  
  	return 0;
  }
-@@ -205,18 +204,14 @@ static int ad7780_probe(struct spi_device *spi)
+@@ -205,18 +205,14 @@ static int ad7780_probe(struct spi_device *spi)
  	indio_dev->num_channels = 1;
  	indio_dev->info = &ad7780_info;
  
@@ -109,4 +97,3 @@ index 67e511c..46f61c9 100644
  #endif /* IIO_ADC_AD7780_H_ */
 -- 
 2.1.4
-
