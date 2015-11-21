@@ -1,25 +1,133 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-100.synserver.de ([212.40.185.100]:1063 "EHLO
-	smtp-out-188.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751780AbbKUS2a (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Nov 2015 13:28:30 -0500
-Message-ID: <5650B7C9.5020809@metafoo.de>
-Date: Sat, 21 Nov 2015 19:28:25 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40483 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1761373AbbKUSbM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Nov 2015 13:31:12 -0500
+Subject: Re: [PATCH] iio: proximity: lidar: optimize i2c transactions
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1447827087-4755-1-git-send-email-mranostay@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5650B86D.80807@kernel.org>
+Date: Sat, 21 Nov 2015 18:31:09 +0000
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: cristina.opriceana@gmail.com
-Subject: Re: [PATCH] staging:iio: Delete some commented out lines in Kconfig.
-References: <1448130164-29097-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1448130164-29097-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <1447827087-4755-1-git-send-email-mranostay@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/21/2015 07:22 PM, Jonathan Cameron wrote:
-> These should have been removed with the driver move out of staging
-> but instead were commented out.  This was missed in reviews at the
-> time so fixing it up now.
+On 18/11/15 06:11, Matt Ranostay wrote:
+> Optimize device tranactions using i2c transfers versus multiple
+> possibly racey i2c_smbus_* function calls, and only one tranaction
+> for distance measurement.
+> 
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+This is in principle fine, but... 
+It does require use of more generic I2C whereas previously we just needed
+smbus.  As such you need to check said support is available and should
+have a fallback to smbus.  Note you are correct in thinking this might
+need some locking to be entirely safe.
 
-The Makefile has the same issue. Sorry, saw that only after sending the
-initial mail.
+However, you do hold the mlock (for other reasons) during the read so 
+that might effectively do the  job. I haven't checked thorougly.
+
+
+Jonathan
+> ---
+>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 54 ++++++++++++-----------
+>  1 file changed, 29 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> index e015a89..1df1a2f 100644
+> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> @@ -36,8 +36,7 @@
+>  #define LIDAR_REG_STATUS_INVALID	BIT(3)
+>  #define LIDAR_REG_STATUS_READY		BIT(0)
+>  
+> -#define LIDAR_REG_DATA_HBYTE	0x0f
+> -#define LIDAR_REG_DATA_LBYTE	0x10
+> +#define LIDAR_REG_DATA		0x8f
+>  #define LIDAR_REG_PWR_CONTROL	0x65
+>  
+>  #define LIDAR_DRV_NAME "lidar"
+> @@ -64,9 +63,10 @@ static const struct iio_chan_spec lidar_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(1),
+>  };
+>  
+> -static int lidar_read_byte(struct lidar_data *data, int reg)
+> +static int lidar_i2c_xfer(struct lidar_data *data, u8 reg, u8 *val, int len)
+>  {
+>  	struct i2c_client *client = data->client;
+> +	struct i2c_msg msg[2];
+>  	int ret;
+>  
+>  	/*
+> @@ -74,17 +74,31 @@ static int lidar_read_byte(struct lidar_data *data, int reg)
+>  	 * so in turn i2c_smbus_read_byte_data cannot be used
+>  	 */
+>  
+> -	ret = i2c_smbus_write_byte(client, reg);
+> -	if (ret < 0) {
+> -		dev_err(&client->dev, "cannot write addr value");
+> -		return ret;
+> -	}
+> +	msg[0].addr = client->addr;
+> +	msg[0].flags = client->flags | I2C_M_STOP;
+> +	msg[0].len = 1;
+> +	msg[0].buf  = (char *) &reg;
+>  
+> -	ret = i2c_smbus_read_byte(client);
+> +	msg[1].addr = client->addr;
+> +	msg[1].flags = client->flags | I2C_M_RD;
+> +	msg[1].len = len;
+> +	msg[1].buf = (char *) val;
+> +
+> +	ret = i2c_transfer(client->adapter, msg, 2);
+> +
+> +	return (ret == len) ? 0 : ret;
+> +}
+> +
+> +static int lidar_read_byte(struct lidar_data *data, u8 reg)
+> +{
+> +	int ret;
+> +	u8 val;
+> +
+> +	ret = lidar_i2c_xfer(data, reg, &val, 1);
+>  	if (ret < 0)
+> -		dev_err(&client->dev, "cannot read data value");
+> +		return ret;
+>  
+> -	return ret;
+> +	return val;
+>  }
+>  
+>  static inline int lidar_write_control(struct lidar_data *data, int val)
+> @@ -100,22 +114,12 @@ static inline int lidar_write_power(struct lidar_data *data, int val)
+>  
+>  static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
+>  {
+> -	int ret;
+> -	int val;
+> -
+> -	ret = lidar_read_byte(data, LIDAR_REG_DATA_HBYTE);
+> -	if (ret < 0)
+> -		return ret;
+> -	val = ret << 8;
+> +	int ret = lidar_i2c_xfer(data, LIDAR_REG_DATA, (u8 *) reg, 2);
+>  
+> -	ret = lidar_read_byte(data, LIDAR_REG_DATA_LBYTE);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	val |= ret;
+> -	*reg = val;
+> +	if (!ret)
+> +		*reg = be16_to_cpu(*reg);
+>  
+> -	return 0;
+> +	return ret;
+>  }
+>  
+>  static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+> 
+
