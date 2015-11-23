@@ -1,59 +1,44 @@
-Return-Path: <mtitinger@baylibre.com>
-Subject: Re: [RFC 6/9] iio: ina2xx: add direct IO support for TI INA2xx Power
- Monitors
-To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de, lars@metafoo.de,
- pmeerw@pmeerw.net
-References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
- <1447857515-23935-7-git-send-email-mtitinger@baylibre.com>
- <5650B42D.6040500@kernel.org>
-Cc: daniel.baluta@intel.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-From: Marc Titinger <mtitinger@baylibre.com>
-Message-ID: <56533B8E.6050905@baylibre.com>
-Date: Mon, 23 Nov 2015 17:15:10 +0100
-MIME-Version: 1.0
-In-Reply-To: <5650B42D.6040500@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pa0-f67.google.com ([209.85.220.67]:36771 "EHLO
+	mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752296AbbKWRtQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Nov 2015 12:49:16 -0500
+From: Nizam Haider <nizamhaider786@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	hamohammed.sa@gmail.com, shivanib134@gmail.com,
+	asaf.vertz@tandemg.com, cristina.moraru09@gmail.com
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Nizam Haider <nizamhaider786@gmail.com>,
+	Nizam Haider <nijamh@cdac.in>
+Subject: [PATCH] Staging: iio: light: tsl2x7x_core: use dev_get_platdata()
+Date: Mon, 23 Nov 2015 23:18:50 +0530
+Message-Id: <1448300930-10789-1-git-send-email-nizamhaider786@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 21/11/2015 19:13, Jonathan Cameron wrote:
-> On 18/11/15 14:38, Marc Titinger wrote:
->> Basic support or direct IO raw read, with averaging attribute.
->> Values are RAW, INT_PLUS_MICRO (Volt/Ampere/Watt).
->>
->> Output of iio_info:
->>
->>       iio:device0: ina226
->>        4 channels found:
->>          power3:  (input)
->>          1 channel-specific attributes found:
->>                  attr 0: raw value: 1.150000
->>          voltage0:  (input)
->>          1 channel-specific attributes found:
->>                  attr 0: raw value: 0.000003
->>          voltage1:  (input)
->>          1 channel-specific attributes found:
->>                  attr 0: raw value: 4.277500
->>          current2:  (input)
->>          1 channel-specific attributes found:
->>                  attr 0: raw value: 0.268000
->>          4 device-specific attributes found:
->>                  attr 0: sampling_frequency_available value: 61 120 236...
->>                  attr 1: in_averaging_steps value: 4
->>                  attr 2: in_calibscale value: 10000
->>                  attr 3: in_sampling_frequency value: 1506
->>
->> Tested with ina226, on BeagleBoneBlack.
->>
->> Datasheet: http://www.ti.com/lit/gpn/ina226
->>
->> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
-> You have added some new ABI in here, but I'm not seeing any documentation
-> for averaging_steps.  Does this map onto the existing oversampling_ratio?
->
+Use the wrapper function for retrieving the platform data instead of
+accessing dev->platform_data directly.
 
-I am not sure normal averaging maps well with oversampling. Normal 
-averaging will provide one value every N samples (this is what this chip 
-does), while oversampling will interpolate N value between sample 'k' 
-and 'k-1', and decimate to provide a less-noisy version of sample 'k', 
-the resulting sampling frequency is not lower.
+Signed-off-by: Nizam Haider <nijamh@cdac.in>
+---
+ drivers/staging/iio/light/tsl2x7x_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+index 9dfd048..5b1c165 100644
+--- a/drivers/staging/iio/light/tsl2x7x_core.c
++++ b/drivers/staging/iio/light/tsl2x7x_core.c
+@@ -1898,7 +1898,7 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
+ 	mutex_init(&chip->prox_mutex);
+ 
+ 	chip->tsl2x7x_chip_status = TSL2X7X_CHIP_UNKNOWN;
+-	chip->pdata = clientp->dev.platform_data;
++	chip->pdata = dev_get_platdata(&clientp->dev);
+ 	chip->id = id->driver_data;
+ 	chip->chip_info =
+ 		&tsl2x7x_chip_info_tbl[device_channel_config[id->driver_data]];
+-- 
+1.8.1.4
+
