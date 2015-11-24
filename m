@@ -1,236 +1,208 @@
-Return-Path: <adriana.reus@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:60880 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754538AbbKXLBQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 24 Nov 2015 06:01:16 -0500
 From: Adriana Reus <adriana.reus@intel.com>
 To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	robh+dt@kernel.org,
-	ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org,
-	pawel.moll@arm.com,
-	pmeerw@pmeerw.net,
-	lars@metafoo.de,
-	Adriana Reus <adriana.reus@intel.com>
-Subject: [PATCH 1/5] iio: light: us5182d: Add property for choosing default power mode
-Date: Tue, 24 Nov 2015 12:59:48 +0200
-Message-Id: <1448362792-5181-2-git-send-email-adriana.reus@intel.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+	robh+dt@kernel.org, ijc+devicetree@hellion.org.uk,
+	galak@codeaurora.org, pawel.moll@arm.com, pmeerw@pmeerw.net,
+	lars@metafoo.de, Adriana Reus <adriana.reus@intel.com>
+Subject: [PATCH 4/5] iio: light: us8152d: Add power management support
+Date: Tue, 24 Nov 2015 12:59:51 +0200
+Message-Id: <1448362792-5181-5-git-send-email-adriana.reus@intel.com>
 In-Reply-To: <1448362792-5181-1-git-send-email-adriana.reus@intel.com>
 References: <1448362792-5181-1-git-send-email-adriana.reus@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This chip supports two power modes.
-1. "one-shot" mode - the chip activates and executes one complete
-conversion loop and then shuts itself down. This is the default mode
-chosen for raw reads.
-2. "continuous" mode - the chip takes continuous measurements.
-
-Continuous mode is more expensive power-wise but may be more reliable.
-Add a property so that if preferred, the default power mode for raw
-reads can be set to continuous.
-Separate one-shot enabling in a separate function that will be used
-depending on the chosen power mode. Also create a function for
-powering the chip on and off.
+Add power management for sleep as well as runtime pm.
 
 Signed-off-by: Adriana Reus <adriana.reus@intel.com>
 ---
- drivers/iio/light/us5182d.c | 90 +++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 78 insertions(+), 12 deletions(-)
+ drivers/iio/light/us5182d.c | 95 +++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 88 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-index 49dab3c..7993014 100644
+index 3d959f3..60cab4a 100644
 --- a/drivers/iio/light/us5182d.c
 +++ b/drivers/iio/light/us5182d.c
-@@ -99,6 +99,11 @@ enum mode {
- 	US5182D_PX_ONLY
- };
+@@ -23,6 +23,8 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/mutex.h>
++#include <linux/pm.h>
++#include <linux/pm_runtime.h>
  
-+enum pmode {
-+	US5182D_CONTINUOUS,
-+	US5182D_ONESHOT
-+};
-+
- struct us5182d_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
-@@ -112,6 +117,9 @@ struct us5182d_data {
- 	u16 *us5182d_dark_ths;
+ #define US5182D_REG_CFG0				0x00
+ #define US5182D_CFG0_ONESHOT_EN				BIT(6)
+@@ -81,6 +83,7 @@
+ #define US5182D_READ_BYTE			1
+ #define US5182D_READ_WORD			2
+ #define US5182D_OPSTORE_SLEEP_TIME		20 /* ms */
++#define US5182D_SLEEP_MS			3000 /* ms */
  
- 	u8 opmode;
-+	u8 power_mode;
-+
-+	bool default_continuous;
- };
- 
- static IIO_CONST_ATTR(in_illuminance_scale_available,
-@@ -130,13 +138,11 @@ static const struct {
- 	u8 reg;
- 	u8 val;
- } us5182d_regvals[] = {
--	{US5182D_REG_CFG0, (US5182D_CFG0_SHUTDOWN_EN |
--			    US5182D_CFG0_WORD_ENABLE)},
-+	{US5182D_REG_CFG0, US5182D_CFG0_WORD_ENABLE},
- 	{US5182D_REG_CFG1, US5182D_CFG1_ALS_RES16},
- 	{US5182D_REG_CFG2, (US5182D_CFG2_PX_RES16 |
- 			    US5182D_CFG2_PXGAIN_DEFAULT)},
- 	{US5182D_REG_CFG3, US5182D_CFG3_LED_CURRENT100},
--	{US5182D_REG_MODE_STORE, US5182D_STORE_MODE},
- 	{US5182D_REG_CFG4, 0x00},
- };
- 
-@@ -169,7 +175,7 @@ static int us5182d_get_als(struct us5182d_data *data)
- 	return result;
+ /* Available ranges: [12354, 7065, 3998, 2202, 1285, 498, 256, 138] lux */
+ static const int us5182d_scales[] = {188500, 107800, 61000, 33600, 19600, 7600,
+@@ -298,6 +301,26 @@ static int us5182d_shutdown_en (struct us5182d_data *data, u8 state)
+ 	return ret;
  }
  
--static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
-+static int us5182d_oneshot_en(struct us5182d_data *data)
- {
- 	int ret;
- 
-@@ -182,6 +188,20 @@ static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
- 	 * required measurement.
- 	 */
- 	ret = ret | US5182D_CFG0_ONESHOT_EN;
-+	return i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0, ret);
 +
-+}
-+
-+static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
-+{
-+	int ret;
-+
-+	if (mode == data->opmode)
-+		return 0;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, US5182D_REG_CFG0);
-+	if (ret < 0)
-+		return ret;
- 
- 	/* update mode */
- 	ret = ret & ~US5182D_OPMODE_MASK;
-@@ -196,9 +216,6 @@ static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
- 	if (ret < 0)
- 		return ret;
- 
--	if (mode == data->opmode)
--		return 0;
--
- 	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_MODE_STORE,
- 					US5182D_STORE_MODE);
- 	if (ret < 0)
-@@ -210,6 +227,23 @@ static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
- 	return 0;
- }
- 
-+static int us5182d_shutdown_en (struct us5182d_data *data, u8 state)
++static int us5182d_set_power_state(struct us5182d_data *data, bool on)
 +{
 +	int ret;
 +
 +	if (data->power_mode == US5182D_ONESHOT)
 +		return 0;
 +
-+	ret = i2c_smbus_read_byte_data(data->client, US5182D_REG_CFG0);
-+	if (ret < 0)
-+		return ret;
++	if (on) {
++		ret = pm_runtime_get_sync(&data->client->dev);
++		if (ret < 0)
++			pm_runtime_put_noidle(&data->client->dev);
++	} else {
++		pm_runtime_mark_last_busy(&data->client->dev);
++		ret = pm_runtime_put_autosuspend(&data->client->dev);
++	}
 +
-+	ret = ret & ~US5182D_CFG0_SHUTDOWN_EN;
-+	ret = ret | state;
-+
-+	return i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0, ret);
++	return ret;
 +}
 +
  static int us5182d_read_raw(struct iio_dev *indio_dev,
  			    struct iio_chan_spec const *chan, int *val,
  			    int *val2, long mask)
-@@ -222,6 +256,11 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
- 		switch (chan->type) {
- 		case IIO_LIGHT:
- 			mutex_lock(&data->lock);
-+			if (data->power_mode == US5182D_ONESHOT) {
-+				ret = us5182d_oneshot_en(data);
-+				if (ret < 0)
-+					goto out_err;
-+			}
- 			ret = us5182d_set_opmode(data, US5182D_OPMODE_ALS);
+@@ -315,15 +338,20 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
+ 				if (ret < 0)
+ 					goto out_err;
+ 			}
+-			ret = us5182d_als_enable(data);
++			ret = us5182d_set_power_state(data, true);
  			if (ret < 0)
  				goto out_err;
-@@ -234,6 +273,11 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
+-
++			ret = us5182d_als_enable(data);
++			if (ret < 0)
++				goto out_poweroff;
+ 			ret = us5182d_get_als(data);
+ 			if (ret < 0)
++				goto out_poweroff;
++			*val = ret;
++			ret = us5182d_set_power_state(data, false);
++			if (ret < 0)
+ 				goto out_err;
+ 			mutex_unlock(&data->lock);
+-			*val = ret;
  			return IIO_VAL_INT;
  		case IIO_PROXIMITY:
  			mutex_lock(&data->lock);
-+			if (data->power_mode == US5182D_ONESHOT) {
-+				ret = us5182d_oneshot_en(data);
-+				if (ret < 0)
-+					goto out_err;
-+			}
- 			ret = us5182d_set_opmode(data, US5182D_OPMODE_PX);
+@@ -332,17 +360,22 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
+ 				if (ret < 0)
+ 					goto out_err;
+ 			}
+-			ret = us5182d_px_enable(data);
++			ret = us5182d_set_power_state(data, true);
  			if (ret < 0)
  				goto out_err;
-@@ -368,6 +412,7 @@ static int us5182d_init(struct iio_dev *indio_dev)
- 		return ret;
- 
- 	data->opmode = 0;
-+	data->power_mode = US5182D_CONTINUOUS;
- 	for (i = 0; i < ARRAY_SIZE(us5182d_regvals); i++) {
- 		ret = i2c_smbus_write_byte_data(data->client,
- 						us5182d_regvals[i].reg,
-@@ -376,7 +421,15 @@ static int us5182d_init(struct iio_dev *indio_dev)
- 			return ret;
+-
++			ret = us5182d_px_enable(data);
++			if (ret < 0)
++				goto out_poweroff;
+ 			ret = i2c_smbus_read_word_data(data->client,
+ 						       US5182D_REG_PDL);
+ 			if (ret < 0)
++				goto out_poweroff;
++			*val = ret;
++			ret = us5182d_set_power_state(data, false);
++			if (ret < 0)
+ 				goto out_err;
+ 			mutex_unlock(&data->lock);
+-			*val = ret;
+-			return  IIO_VAL_INT;
++			return IIO_VAL_INT;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -361,6 +394,9 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
  	}
  
--	return 0;
-+	if (!data->default_continuous) {
-+		ret = us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
+ 	return -EINVAL;
++
++out_poweroff:
++	us5182d_set_power_state(data, false);
+ out_err:
+ 	mutex_unlock(&data->lock);
+ 	return ret;
+@@ -577,6 +613,17 @@ static int us5182d_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		goto out_err;
+ 
++	if (data->default_continuous) {
++		pm_runtime_set_active(&client->dev);
 +		if (ret < 0)
-+			return ret;
-+		data->power_mode = US5182D_ONESHOT;
++			goto out_err;
 +	}
 +
++	pm_runtime_enable(&client->dev);
++	pm_runtime_set_autosuspend_delay(&client->dev,
++					 US5182D_SLEEP_MS);
++	pm_runtime_use_autosuspend(&client->dev);
 +
-+	return ret;
- }
- 
- static void us5182d_get_platform_data(struct iio_dev *indio_dev)
-@@ -399,6 +452,8 @@ static void us5182d_get_platform_data(struct iio_dev *indio_dev)
- 				    "upisemi,lower-dark-gain",
- 				    &data->lower_dark_gain))
- 		data->lower_dark_gain = US5182D_REG_AUTO_LDARK_GAIN_DEFAULT;
-+	data->default_continuous = device_property_read_bool(&data->client->dev,
-+							     "upisemi,continuous");
- }
- 
- static int  us5182d_dark_gain_config(struct iio_dev *indio_dev)
-@@ -464,16 +519,27 @@ static int us5182d_probe(struct i2c_client *client,
- 
- 	ret = us5182d_dark_gain_config(indio_dev);
+ 	ret = iio_device_register(indio_dev);
  	if (ret < 0)
--		return ret;
-+		goto out_err;
+ 		goto out_err;
+@@ -595,9 +642,42 @@ static int us5182d_remove(struct i2c_client *client)
+ 
+ 	iio_device_unregister(i2c_get_clientdata(client));
+ 
++	pm_runtime_disable(&client->dev);
++	pm_runtime_set_suspended(&client->dev);
 +
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto out_err;
+ 	return us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
+ }
+ 
++#if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM)
++static int us5182d_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct us5182d_data *data = iio_priv(indio_dev);
++
++	if (data->power_mode == US5182D_CONTINUOUS)
++		return us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
 +
 +	return 0;
++}
 +
-+out_err:
-+	us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
-+	return ret;
- 
--	return iio_device_register(indio_dev);
- }
- 
- static int us5182d_remove(struct i2c_client *client)
- {
-+	struct us5182d_data *data = iio_priv(i2c_get_clientdata(client));
++static int us5182d_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct us5182d_data *data = iio_priv(indio_dev);
 +
- 	iio_device_unregister(i2c_get_clientdata(client));
--	return i2c_smbus_write_byte_data(client, US5182D_REG_CFG0,
--					 US5182D_CFG0_SHUTDOWN_EN);
++	if (data->power_mode == US5182D_CONTINUOUS)
++		return us5182d_shutdown_en(data,
++					   ~US5182D_CFG0_SHUTDOWN_EN & 0xff);
 +
-+	return us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
- }
- 
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops us5182d_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(us5182d_suspend, us5182d_resume)
++	SET_RUNTIME_PM_OPS(us5182d_suspend, us5182d_resume, NULL)
++};
++
  static const struct acpi_device_id us5182d_acpi_match[] = {
+ 	{ "USD5182", 0},
+ 	{}
+@@ -615,6 +695,7 @@ MODULE_DEVICE_TABLE(i2c, us5182d_id);
+ static struct i2c_driver us5182d_driver = {
+ 	.driver = {
+ 		.name = US5182D_DRV_NAME,
++		.pm = &us5182d_pm_ops,
+ 		.acpi_match_table = ACPI_PTR(us5182d_acpi_match),
+ 	},
+ 	.probe = us5182d_probe,
 -- 
 1.9.1
+
