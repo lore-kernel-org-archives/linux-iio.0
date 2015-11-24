@@ -1,125 +1,130 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:44641 "EHLO mout01.posteo.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750830AbbKXFV0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 24 Nov 2015 00:21:26 -0500
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id 1E9A62096F
-	for <linux-iio@vger.kernel.org>; Tue, 24 Nov 2015 06:21:22 +0100 (CET)
-Message-ID: <5653F3A1.6010905@posteo.de>
-Date: Tue, 24 Nov 2015 06:20:33 +0100
-From: Martin Kepplinger <martink@posteo.de>
+Received: from mail-cys01nam02on0043.outbound.protection.outlook.com ([104.47.37.43]:28131
+	"EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752287AbbKXHv3 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Nov 2015 02:51:29 -0500
+From: Ranjit Waghmode <ranjit.waghmode@xilinx.com>
+To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+	<pmeerw@pmeerw.net>, <michal.simek@xilinx.com>,
+	<soren.brinkmann@xilinx.com>
+CC: <linux-iio@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <sbhatta@xilinx.com>,
+	<punnaia@xilinx.com>, Ranjit Waghmode <ranjit.waghmode@xilinx.com>
+Subject: [LINUX PATCH] iio: xadc: fix for extended name remains same issue
+Date: Tue, 24 Nov 2015 11:47:27 +0530
+Message-ID: <1448345847-15051-1-git-send-email-ranjit.waghmode@xilinx.com>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net,
-	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: Re: [PATCH 1/3] iio: mma8452: add freefall detection for Freescale's
- accelerometers
-References: <1447267094-2248-1-git-send-email-martink@posteo.de> <5647778E.3090106@kernel.org> <56478136.3040200@posteo.de> <5647857D.5050902@kernel.org> <564B7F02.4020709@posteo.de>
-In-Reply-To: <564B7F02.4020709@posteo.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 2015-11-17 um 20:24 schrieb Martin Kepplinger:
-> Am 2015-11-14 um 20:03 schrieb Jonathan Cameron:
->> On 14/11/15 18:45, Martin Kepplinger wrote:
->>> Am 2015-11-14 um 19:03 schrieb Jonathan Cameron:
->>>> On 11/11/15 18:38, Martin Kepplinger wrote:
->>>>> This adds freefall event detection to the supported devices. It adds
->>>>> the in_accel_x&y&z_mag_falling_en iio event attribute, which activates
->>>>> freefall mode.
->>>>>
->>>>> In freefall mode, the current acceleration values of all activated axis
->>>>> are added and if the *sum* falls *under* the threshold specified
->>>>> (in_accel_mag_falling_value), the appropriate IIO event code
->>>>> is generated.
->>>>>
->>>>> By enabling freefall mode (in_accel_x&y&z_mag_falling_en)
->>>>> all 3 axis are enabled too as this describes a classic freefall
->>>>> detection. Of course the user is free to disable one or more directions.
->>>>>
->>>>> The values of rising and falling versions of various sysfs files are
->>>>> shared, which is compliant to the IIO specification.
->>>>>
->>>>> This is what the sysfs "events" directory for these devices looks
->>>>> like after this change:
->>>>>
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_period
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_value
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_period
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_value
->>>>> -r--r--r--    4096 Oct 23 08:45 in_accel_scale
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x&y&z_mag_falling_en
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_falling_en
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_rising_en
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_falling_en
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_rising_en
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_falling_en
->>>>> -rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_rising_en
->>>>>
->>>>> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
->>>>> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
->>>> Looks pretty good to me (other than obviously the bits Lars already
->>>> picked up on!)
->>>>
->>>> My only real comment was that you could do the rest of the combined
->>>> possibilities whilst you are here (if you want to!)  You've
->>>> picked the mostly obviously useful one though so maybe leave it
->>>> at that.
->>>
->>> I'm not sure what you mean. There is only in_accel_x&y&z_mag_falling_en
->>> documented. So my guess was to have this to enable freefall mode, taking
->>> into account the currently enabled falling axis
->>> (in_accel_x_mag_falling_en, ...).
->> Sure, but the set of modifiers allows for
->> in_accel_x&y_mag_falling_* etc and they aren't documented in this particular
->> form simply because no driver has used them yet ;)
->>
-> 
-> 
-> 
-> I don't see how to do it in iio_event_spec only. Could you point me in
-> the right direction, could well be I overlook something...
-> 
-> I *can* add a channel for freefall purposes, something like:
-> 
-> static const struct iio_chan_spec mma8653_channels[] = {
->         MMA8652_CHANNEL(IIO_MOD_X, idx_axis_x, 10),
->         MMA8652_CHANNEL(IIO_MOD_Y, idx_axis_y, 10),
->         MMA8652_CHANNEL(IIO_MOD_Z, idx_axis_z, 10),
->         MMA8652_CHANNEL(IIO_MOD_X_AND_Y_AND_Z, idx_axis_xyz, 10),
->         IIO_CHAN_SOFT_TIMESTAMP(idx_timestamp),
-> };
-> 
-> 
-> just as an example, but then of course I get more than just events: In
-> the device-directory:
-> 
-> in_accel_x&y&z_calibbias
-> in_accel_x&y&z_raw
-> in_accel_x_calibbias
-> in_accel_x_raw
-> in_accel_y_calibbias
-> in_accel_y_raw
-> in_accel_z_calibbias
-> in_accel_z_raw
-> 
-> 
-> calibbias and raw are not (really) available for x&y&z. I could
-> calculate a "raw" value, but calibbias doesn't make sense here. ...But
-> again, maybe I'm on the wrong path!!
-> 
-> thanks a lot!
-> 
->                               martin
-> 
+If we read channel details based on the device tree entry; channel’s scan_index
+and channel’s address were overwritten by scan_index and address of channel
+based on device tree. But extended name were remaining same because of which
+sysfs entry names were continuous.
 
-Would this be the way to go? And just not support the generated file
-that don't apply?
+So this patch takes care of the above issue by updating 'channels' structure
+inside xadc_parse_dt() function with the help of 'xadc_channels' structure
+so that every channel's parameters will be updated properly. Also for the
+sake of simplicity this patch updates default values for extend_name.
 
-thanks,
+Signed-off-by: Ranjit Waghmode <ranjit.waghmode@xilinx.com>
+---
+ drivers/iio/adc/xilinx-xadc-core.c | 52 +++++++++++++++++---------------------
+ 1 file changed, 23 insertions(+), 29 deletions(-)
 
-                             martin
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index a221f73..b3f158f 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -1015,23 +1015,23 @@ static const struct iio_chan_spec xadc_channels[] = {
+ 	XADC_CHAN_VOLTAGE(5, 7, XADC_REG_VCCO_DDR, "vccoddr", true),
+ 	XADC_CHAN_VOLTAGE(6, 12, XADC_REG_VREFP, "vrefp", false),
+ 	XADC_CHAN_VOLTAGE(7, 13, XADC_REG_VREFN, "vrefn", false),
+-	XADC_CHAN_VOLTAGE(8, 11, XADC_REG_VPVN, NULL, false),
+-	XADC_CHAN_VOLTAGE(9, 16, XADC_REG_VAUX(0), NULL, false),
+-	XADC_CHAN_VOLTAGE(10, 17, XADC_REG_VAUX(1), NULL, false),
+-	XADC_CHAN_VOLTAGE(11, 18, XADC_REG_VAUX(2), NULL, false),
+-	XADC_CHAN_VOLTAGE(12, 19, XADC_REG_VAUX(3), NULL, false),
+-	XADC_CHAN_VOLTAGE(13, 20, XADC_REG_VAUX(4), NULL, false),
+-	XADC_CHAN_VOLTAGE(14, 21, XADC_REG_VAUX(5), NULL, false),
+-	XADC_CHAN_VOLTAGE(15, 22, XADC_REG_VAUX(6), NULL, false),
+-	XADC_CHAN_VOLTAGE(16, 23, XADC_REG_VAUX(7), NULL, false),
+-	XADC_CHAN_VOLTAGE(17, 24, XADC_REG_VAUX(8), NULL, false),
+-	XADC_CHAN_VOLTAGE(18, 25, XADC_REG_VAUX(9), NULL, false),
+-	XADC_CHAN_VOLTAGE(19, 26, XADC_REG_VAUX(10), NULL, false),
+-	XADC_CHAN_VOLTAGE(20, 27, XADC_REG_VAUX(11), NULL, false),
+-	XADC_CHAN_VOLTAGE(21, 28, XADC_REG_VAUX(12), NULL, false),
+-	XADC_CHAN_VOLTAGE(22, 29, XADC_REG_VAUX(13), NULL, false),
+-	XADC_CHAN_VOLTAGE(23, 30, XADC_REG_VAUX(14), NULL, false),
+-	XADC_CHAN_VOLTAGE(24, 31, XADC_REG_VAUX(15), NULL, false),
++	XADC_CHAN_VOLTAGE(8, 11, XADC_REG_VPVN, "vpvn", false),
++	XADC_CHAN_VOLTAGE(9, 16, XADC_REG_VAUX(0), "vaux0", false),
++	XADC_CHAN_VOLTAGE(10, 17, XADC_REG_VAUX(1), "vaux1", false),
++	XADC_CHAN_VOLTAGE(11, 18, XADC_REG_VAUX(2), "vaux2", false),
++	XADC_CHAN_VOLTAGE(12, 19, XADC_REG_VAUX(3), "vaux3", false),
++	XADC_CHAN_VOLTAGE(13, 20, XADC_REG_VAUX(4), "vaux4", false),
++	XADC_CHAN_VOLTAGE(14, 21, XADC_REG_VAUX(5), "vaux5", false),
++	XADC_CHAN_VOLTAGE(15, 22, XADC_REG_VAUX(6), "vaux6", false),
++	XADC_CHAN_VOLTAGE(16, 23, XADC_REG_VAUX(7), "vaux7", false),
++	XADC_CHAN_VOLTAGE(17, 24, XADC_REG_VAUX(8), "vaux8", false),
++	XADC_CHAN_VOLTAGE(18, 25, XADC_REG_VAUX(9), "vaux9", false),
++	XADC_CHAN_VOLTAGE(19, 26, XADC_REG_VAUX(10), "vaux10", false),
++	XADC_CHAN_VOLTAGE(20, 27, XADC_REG_VAUX(11), "vaux11", false),
++	XADC_CHAN_VOLTAGE(21, 28, XADC_REG_VAUX(12), "vaux12", false),
++	XADC_CHAN_VOLTAGE(22, 29, XADC_REG_VAUX(13), "vaux13", false),
++	XADC_CHAN_VOLTAGE(23, 30, XADC_REG_VAUX(14), "vaux14", false),
++	XADC_CHAN_VOLTAGE(24, 31, XADC_REG_VAUX(15), "vaux15", false),
+ };
+
+ static const struct iio_info xadc_info = {
+@@ -1056,7 +1056,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+ 	unsigned int *conf)
+ {
+ 	struct xadc *xadc = iio_priv(indio_dev);
+-	struct iio_chan_spec *channels, *chan;
++	struct iio_chan_spec *channels;
+ 	struct device_node *chan_node, *child;
+ 	unsigned int num_channels;
+ 	const char *external_mux;
+@@ -1104,7 +1104,6 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+ 		return -ENOMEM;
+
+ 	num_channels = 9;
+-	chan = &channels[9];
+
+ 	chan_node = of_get_child_by_name(np, "xlnx,channels");
+ 	if (chan_node) {
+@@ -1114,22 +1113,17 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+ 				break;
+ 			}
+
++			channels[num_channels] = xadc_channels[reg + 9];
++			channels[num_channels].channel = num_channels - 1;
++
+ 			ret = of_property_read_u32(child, "reg", &reg);
+ 			if (ret || reg > 16)
+ 				continue;
+
+ 			if (of_property_read_bool(child, "xlnx,bipolar"))
+-				chan->scan_type.sign = 's';
+-
+-			if (reg == 0) {
+-				chan->scan_index = 11;
+-				chan->address = XADC_REG_VPVN;
+-			} else {
+-				chan->scan_index = 15 + reg;
+-				chan->address = XADC_REG_VAUX(reg - 1);
+-			}
++				channels[num_channels].scan_type.sign = 's';
++
+ 			num_channels++;
+-			chan++;
+ 		}
+ 	}
+ 	of_node_put(chan_node);
+--
+2.1.2
+
