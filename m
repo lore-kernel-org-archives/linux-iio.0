@@ -1,130 +1,208 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-cys01nam02on0043.outbound.protection.outlook.com ([104.47.37.43]:28131
-	"EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752287AbbKXHv3 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Nov 2015 02:51:29 -0500
-From: Ranjit Waghmode <ranjit.waghmode@xilinx.com>
-To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-	<pmeerw@pmeerw.net>, <michal.simek@xilinx.com>,
-	<soren.brinkmann@xilinx.com>
-CC: <linux-iio@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <sbhatta@xilinx.com>,
-	<punnaia@xilinx.com>, Ranjit Waghmode <ranjit.waghmode@xilinx.com>
-Subject: [LINUX PATCH] iio: xadc: fix for extended name remains same issue
-Date: Tue, 24 Nov 2015 11:47:27 +0530
-Message-ID: <1448345847-15051-1-git-send-email-ranjit.waghmode@xilinx.com>
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:45132 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752563AbbKXKpI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Nov 2015 05:45:08 -0500
+From: Markus Pargmann <mpa@pengutronix.de>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
+	Eric =?ISO-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
+	linux-iio@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Denis Carikli <denis@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-input@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH v8 1/8] ARM: dt: Binding documentation for imx25 ADC/TSC
+Date: Tue, 24 Nov 2015 11:44:51 +0100
+Message-ID: <6186462.YDum13BH0b@adelgunde>
+In-Reply-To: <20151123145952.GC31376@x1>
+References: <1447675269-8831-1-git-send-email-mpa@pengutronix.de> <1447675269-8831-2-git-send-email-mpa@pengutronix.de> <20151123145952.GC31376@x1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="nextPart5983557.4qvLmEj1SL"; micalg="pgp-sha256"; protocol="application/pgp-signature"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-If we read channel details based on the device tree entry; channel’s scan_index
-and channel’s address were overwritten by scan_index and address of channel
-based on device tree. But extended name were remaining same because of which
-sysfs entry names were continuous.
 
-So this patch takes care of the above issue by updating 'channels' structure
-inside xadc_parse_dt() function with the help of 'xadc_channels' structure
-so that every channel's parameters will be updated properly. Also for the
-sake of simplicity this patch updates default values for extend_name.
+--nextPart5983557.4qvLmEj1SL
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
 
-Signed-off-by: Ranjit Waghmode <ranjit.waghmode@xilinx.com>
----
- drivers/iio/adc/xilinx-xadc-core.c | 52 +++++++++++++++++---------------------
- 1 file changed, 23 insertions(+), 29 deletions(-)
+On Monday 23 November 2015 14:59:52 Lee Jones wrote:
+> On Mon, 16 Nov 2015, Markus Pargmann wrote:
+>=20
+> > This documentation describes the devicetree bindings for the
+> > ADC/Touchscreen unit of the i.MX25 SoC.
+> >=20
+> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> > Acked-by: Jonathan Cameron <jic23@kernel.org>
+> > ---
+> >=20
+> > Notes:
+> >     Changes in v6:
+> >      - Removed adc-ref property and replaced it with refp and refn =
+for positive and
+> >        negative references. The properties are optional now as the =
+default
+> >        behaviour is a positive internal reference voltage and ADC G=
+ND as negative
+> >        reference.
+> >=20
+> >  .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    | 46 ++++++++++=
+++++++++++++
+> >  1 file changed, 46 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25=
+=2Dtsadc.txt
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.=
+txt b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+> > new file mode 100644
+> > index 000000000000..a857af0eb68c
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+> > @@ -0,0 +1,46 @@
+> > +Freescale mx25 ADC/TSC multifunction device
+>=20
+> Prefer "MX25" and "MultiFunction Device (MFD)"
 
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index a221f73..b3f158f 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -1015,23 +1015,23 @@ static const struct iio_chan_spec xadc_channels[] = {
- 	XADC_CHAN_VOLTAGE(5, 7, XADC_REG_VCCO_DDR, "vccoddr", true),
- 	XADC_CHAN_VOLTAGE(6, 12, XADC_REG_VREFP, "vrefp", false),
- 	XADC_CHAN_VOLTAGE(7, 13, XADC_REG_VREFN, "vrefn", false),
--	XADC_CHAN_VOLTAGE(8, 11, XADC_REG_VPVN, NULL, false),
--	XADC_CHAN_VOLTAGE(9, 16, XADC_REG_VAUX(0), NULL, false),
--	XADC_CHAN_VOLTAGE(10, 17, XADC_REG_VAUX(1), NULL, false),
--	XADC_CHAN_VOLTAGE(11, 18, XADC_REG_VAUX(2), NULL, false),
--	XADC_CHAN_VOLTAGE(12, 19, XADC_REG_VAUX(3), NULL, false),
--	XADC_CHAN_VOLTAGE(13, 20, XADC_REG_VAUX(4), NULL, false),
--	XADC_CHAN_VOLTAGE(14, 21, XADC_REG_VAUX(5), NULL, false),
--	XADC_CHAN_VOLTAGE(15, 22, XADC_REG_VAUX(6), NULL, false),
--	XADC_CHAN_VOLTAGE(16, 23, XADC_REG_VAUX(7), NULL, false),
--	XADC_CHAN_VOLTAGE(17, 24, XADC_REG_VAUX(8), NULL, false),
--	XADC_CHAN_VOLTAGE(18, 25, XADC_REG_VAUX(9), NULL, false),
--	XADC_CHAN_VOLTAGE(19, 26, XADC_REG_VAUX(10), NULL, false),
--	XADC_CHAN_VOLTAGE(20, 27, XADC_REG_VAUX(11), NULL, false),
--	XADC_CHAN_VOLTAGE(21, 28, XADC_REG_VAUX(12), NULL, false),
--	XADC_CHAN_VOLTAGE(22, 29, XADC_REG_VAUX(13), NULL, false),
--	XADC_CHAN_VOLTAGE(23, 30, XADC_REG_VAUX(14), NULL, false),
--	XADC_CHAN_VOLTAGE(24, 31, XADC_REG_VAUX(15), NULL, false),
-+	XADC_CHAN_VOLTAGE(8, 11, XADC_REG_VPVN, "vpvn", false),
-+	XADC_CHAN_VOLTAGE(9, 16, XADC_REG_VAUX(0), "vaux0", false),
-+	XADC_CHAN_VOLTAGE(10, 17, XADC_REG_VAUX(1), "vaux1", false),
-+	XADC_CHAN_VOLTAGE(11, 18, XADC_REG_VAUX(2), "vaux2", false),
-+	XADC_CHAN_VOLTAGE(12, 19, XADC_REG_VAUX(3), "vaux3", false),
-+	XADC_CHAN_VOLTAGE(13, 20, XADC_REG_VAUX(4), "vaux4", false),
-+	XADC_CHAN_VOLTAGE(14, 21, XADC_REG_VAUX(5), "vaux5", false),
-+	XADC_CHAN_VOLTAGE(15, 22, XADC_REG_VAUX(6), "vaux6", false),
-+	XADC_CHAN_VOLTAGE(16, 23, XADC_REG_VAUX(7), "vaux7", false),
-+	XADC_CHAN_VOLTAGE(17, 24, XADC_REG_VAUX(8), "vaux8", false),
-+	XADC_CHAN_VOLTAGE(18, 25, XADC_REG_VAUX(9), "vaux9", false),
-+	XADC_CHAN_VOLTAGE(19, 26, XADC_REG_VAUX(10), "vaux10", false),
-+	XADC_CHAN_VOLTAGE(20, 27, XADC_REG_VAUX(11), "vaux11", false),
-+	XADC_CHAN_VOLTAGE(21, 28, XADC_REG_VAUX(12), "vaux12", false),
-+	XADC_CHAN_VOLTAGE(22, 29, XADC_REG_VAUX(13), "vaux13", false),
-+	XADC_CHAN_VOLTAGE(23, 30, XADC_REG_VAUX(14), "vaux14", false),
-+	XADC_CHAN_VOLTAGE(24, 31, XADC_REG_VAUX(15), "vaux15", false),
- };
+Fixed.
 
- static const struct iio_info xadc_info = {
-@@ -1056,7 +1056,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
- 	unsigned int *conf)
- {
- 	struct xadc *xadc = iio_priv(indio_dev);
--	struct iio_chan_spec *channels, *chan;
-+	struct iio_chan_spec *channels;
- 	struct device_node *chan_node, *child;
- 	unsigned int num_channels;
- 	const char *external_mux;
-@@ -1104,7 +1104,6 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
- 		return -ENOMEM;
+>=20
+> > +This device combines two general purpose conversion queues one use=
+d for general
+> > +ADC and the other used for touchscreens.
+> > +
+> > +Required properties:
+> > + - compatible: Should be "fsl,imx25-tsadc".
+> > + - reg: Memory range of the device.
+>=20
+> Not exactly.  More like start location and size.
+>=20
+> > + - interrupts: Interrupt for this device as described in
+> > +   interrupts/interrupts.txt
+>=20
+> No such file.  In any case, I'd prefer:
+>=20
+> "(See: ../interrupt-controller/interrupts.txt)".
+>=20
+> > + - clocks: An 'ipg' clock defined as described in clocks/clock.txt=
 
- 	num_channels = 9;
--	chan = &channels[9];
+>=20
+> Didn't you check any of what you've written?
+>=20
+> "(See: ../clock/clock-bindings.txt)"
 
- 	chan_node = of_get_child_by_name(np, "xlnx,channels");
- 	if (chan_node) {
-@@ -1114,22 +1113,17 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
- 				break;
- 			}
+Seems I didn't check these, sorry.
 
-+			channels[num_channels] = xadc_channels[reg + 9];
-+			channels[num_channels].channel = num_channels - 1;
-+
- 			ret = of_property_read_u32(child, "reg", &reg);
- 			if (ret || reg > 16)
- 				continue;
+>=20
+> > + - interrupt-controller: This device is an interrupt controller. I=
+t controls
+> > +   the interrupts of both conversion queues.
+> > + - #interrupt-cells: Should be '<1>'.
+> > + - #address-cells: Should be '<1>'.
+> > + - #size-cells: Should be '<1>'.
+> > + - ranges
+>=20
+> ?
+>=20
+> Also, don't think think that this looks better/easier to read?
 
- 			if (of_property_read_bool(child, "xlnx,bipolar"))
--				chan->scan_type.sign = 's';
--
--			if (reg == 0) {
--				chan->scan_index = 11;
--				chan->address = XADC_REG_VPVN;
--			} else {
--				chan->scan_index = 15 + reg;
--				chan->address = XADC_REG_VAUX(reg - 1);
--			}
-+				channels[num_channels].scan_type.sign = 's';
-+
- 			num_channels++;
--			chan++;
- 		}
- 	}
- 	of_node_put(chan_node);
---
-2.1.2
+Yes a bit, changed it.
+
+>=20
+> > +Required properties:
+> > + - compatible:=09=09Should be "fsl,imx25-tsadc".
+> > + - reg:=09=09=09Memory range of the device.
+> > + - interrupts:=09=09Interrupt for this device as described in
+> > +=09=09=09=09interrupts/interrupts.txt
+> > + - clocks:=09=09=09An 'ipg' clock defined as described in clocks/c=
+lock.txt
+> > + - interrupt-controller:=09This device is an interrupt controller.=
+ It controls
+> > +   =09=09=09=09the interrupts of both conversion queues.
+> > + - #interrupt-cells:=09=09Should be '<1>'.
+> > + - #address-cells:=09=09Should be '<1>'.
+> > + - #size-cells:=09=09Should be '<1>'.
+>=20
+> [...]
+>=20
+> > +This device includes two conversion queues which can be added as s=
+ubnodes.
+> > +The first queue is for the touchscreen, the second for general pur=
+pose ADC.
+> > +
+> > +Example:
+> > +=09tscadc: tscadc@50030000 {
+> > +=09=09compatible =3D "fsl,imx25-tsadc";
+> > +=09=09reg =3D <0x50030000 0xc>;
+> > +=09=09interrupts =3D <46>;
+> > +=09=09clocks =3D <&clks 119>;
+> > +=09=09clock-names =3D "ipg";
+>=20
+> I don't think this is required, if you only have a single clock.
+
+I prefer this variation so that you immediately see what the clock is
+for. The number is not terribly helpful.
+
+Thanks,
+
+Markus
+
+>=20
+> > +=09=09interrupt-controller;
+> > +=09=09#interrupt-cells =3D <1>;
+> > +=09=09#address-cells =3D <1>;
+> > +=09=09#size-cells =3D <1>;
+> > +=09=09ranges;
+> > +
+> > +=09=09tsc: tcq@50030400 {
+> > +=09=09=09compatible =3D "fsl,imx25-tcq";
+> > +=09=09=09reg =3D <0x50030400 0x60>;
+> > +=09=09=09...
+> > +=09=09};
+> > +
+> > +=09=09adc: gcq@50030800 {
+> > +=09=09=09compatible =3D "fsl,imx25-gcq";
+> > +=09=09=09reg =3D <0x50030800 0x60>;
+> > +=09=09=09...
+> > +=09=09};
+> > +=09};
+>=20
+>=20
+
+=2D-=20
+Pengutronix e.K.                           |                           =
+  |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
+  |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
+5 |
+
+--nextPart5983557.4qvLmEj1SL
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJWVD+qAAoJEEpcgKtcEGQQdLEP/i7le0wDFSLtPJSmA/45t7B+
+JInh2I9oroXF4F2mpLMe5j+HH8JpiwlrdCnGGHswx1akmK5ky6lLOobpPwpfoWqu
+hrArpK3/qkX+s599cAF/HyTrAaNVUaX131aLY6z8g1YdvMy62JiPSnFD8QqcAv7Y
+Nnb6ZEovuJ0dJYaoPcJDXMwPv4FsNbmBJmo5KEek3MW6u3uD4QakWYy0Xs2a4sI4
+5IHS7tbeRjZyjQnrECy70UJAfQM9Nxcy1gC3QqwY4DF/wS0myn9CvfOf++6YFw72
+uNCvw6bfN5s+KgJX6OC430bE9W+gs/kPmu4XUkxIwZ53RKTX0/OJZKrwaUkhoggF
+8QZKGQDojUxGca17GFXUq7rIvbibT2P17bFoslZhhym4FeftADwhP/sT0R1FzPrY
+drd76llTyLA5RKDLPBSKOX0PPw2KNTD4afEC8g+jSSB6SysG5D/nnOUsyV/EnNsE
+eGiK/k+yFdxnrOsDFhLAPuaNmIZZcTlEbi7CNfu3T29cfN2edpsHN500rFLMkeXM
+3jruR+PDocuoSdbOeByAOtJmppjiKrRzRB93ZvQPgl3xL8Lp5i8i+sYWoBVzVM7a
+BVptoJDVrq+jPnB7x/j60PSKyvsO/wc2Ou3s8zGiakW+it64wqRoa1qI0TcmCFRA
+/rwEctToc7wRI3auhWdn
+=1bel
+-----END PGP SIGNATURE-----
+
+--nextPart5983557.4qvLmEj1SL--
 
