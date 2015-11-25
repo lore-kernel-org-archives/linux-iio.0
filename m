@@ -1,137 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f54.google.com ([209.85.215.54]:35608 "EHLO
-	mail-lf0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752723AbbKXO0Q (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Nov 2015 09:26:16 -0500
-Received: by lfdl133 with SMTP id l133so22597950lfd.2
-        for <linux-iio@vger.kernel.org>; Tue, 24 Nov 2015 06:26:15 -0800 (PST)
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:33990 "EHLO
+	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751810AbbKYLuT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Nov 2015 06:50:19 -0500
+Received: by wmww144 with SMTP id w144so11022753wmw.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2015 03:50:18 -0800 (PST)
+To: Hartley Sweeten <hsweeten@visionengravers.com>,
+	Ryan Mallon <rmallon@gmail.com>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Subject: [PATCH 0/5] iio: ADC driver for EP93xx SoC
+Message-ID: <5655A078.5090201@gmail.com>
+Date: Wed, 25 Nov 2015 12:50:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <5651B66E.2070002@kernel.org>
-References: <1447811389-28509-1-git-send-email-mranostay@gmail.com>
- <5650B8BE.3060909@kernel.org> <CAKzfze-5G9y_-KiBYUNj4R1nVtL-dK5j4sWTcyJ39MuUL5jRjw@mail.gmail.com>
- <5651B66E.2070002@kernel.org>
-From: Matt Ranostay <mranostay@gmail.com>
-Date: Tue, 24 Nov 2015 21:25:35 +0700
-Message-ID: <CAKzfze-MMBG1q6LLN5dCN1jtPC8iB-N9La7d8PK--3GoMoFZ_g@mail.gmail.com>
-Subject: Re: [PATCH] iio: chemical: vz89x: rework i2c transfer reading
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Nov 22, 2015 at 7:34 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 22/11/15 12:08, Matt Ranostay wrote:
->> On Sun, Nov 22, 2015 at 1:32 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 18/11/15 01:49, Matt Ranostay wrote:
->>>> Remove racey i2c_smbus_read_byte() calls in measurement
->>>> reading function with an single i2c_transfer.
->>>>
->>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->>> As with the lidar sensor, this requires a more sophisticated I2C master
->>> so you should be checking if it is capable of doing what you need here.
->>> Also, ideally provide a fallback to smbus for those cases where the
->>> controller isn't sophisticated enough with appropriate locking to protect
->>> the device...
->>
->> Ok should be simple enough. Is there an example of an iio driver doing
->> this currently that I could use a reference?
-> Should be... (now I've got actually find one :)
->
-> adc/max1363 sort of does this - though in that case it only falls back to
-> smbus for 8 bit devices (IIRC the others perhaps can't be done as this
-> device clocks it's conversions of the i2c bus pulses)
->
-> Otherwise, grep is suggesting drivers simply fault out if what they want
-> isn't provided.   Now there is some stuff to emulate bulk reads
-> in both i2c and regmap (recent so not necessarily in the iio tree yet).
-> However, I don't think it is relevant here.
->
-> This is one of those classic silly cases. If the driver had originally
-> been write to not support smbus only use, and checked for it then there
-> would have been no need to make it work.  Now the driver does support it
-> we have a reason to continue to do so!
+This series prepares the necessary infrastructure for ADC platform device on
+Cirrus Logic EP93xx family of SoCs and adds the driver for ADC device using
+IIO subsystem.
 
-Yeah if it wasn't only a single register I would have used regmap for this :)
-Ok should be too hard to just do a callback and make it look mostly sane.
+Alexander Sverdlin (5):
+  clk: ep93xx: Implement clk_get_parent()
+  clk: ep93xx: Add ADC clock
+  ep93xx: Add ADC platform device support to core
+  edb93xx: Add ADC platform device
+  iio: adc: New driver for Cirrus Logic EP93xx ADC
 
-Thanks,
-
-Matt
-
->
-> Jonathan
->>
->> Thanks,
->>
->> Matt
->>
->>>
->>> Jonathan
->>>> ---
->>>>  drivers/iio/chemical/vz89x.c | 33 +++++++++++++++++++++++----------
->>>>  1 file changed, 23 insertions(+), 10 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
->>>> index 11e59a5..c03f988 100644
->>>> --- a/drivers/iio/chemical/vz89x.c
->>>> +++ b/drivers/iio/chemical/vz89x.c
->>>> @@ -100,27 +100,40 @@ static int vz89x_measurement_is_valid(struct vz89x_data *data)
->>>>       return !!(data->buffer[VZ89X_REG_MEASUREMENT_SIZE - 1] > 0);
->>>>  }
->>>>
->>>> +static int vz89x_i2c_xfer(struct vz89x_data *data, u8 cmd)
->>>> +{
->>>> +     struct i2c_client *client = data->client;
->>>> +     struct i2c_msg msg[2];
->>>> +     int ret;
->>>> +     u8 buf[3] = { cmd, 0, 0};
->>>> +
->>>> +     msg[0].addr = client->addr;
->>>> +     msg[0].flags = client->flags;
->>>> +     msg[0].len = 3;
->>>> +     msg[0].buf  = (char *) &buf;
->>>> +
->>>> +     msg[1].addr = client->addr;
->>>> +     msg[1].flags = client->flags | I2C_M_RD;
->>>> +     msg[1].len = VZ89X_REG_MEASUREMENT_SIZE;
->>>> +     msg[1].buf = (char *) &data->buffer;
->>>> +
->>>> +     ret = i2c_transfer(client->adapter, msg, 2);
->>>> +
->>>> +     return (ret == VZ89X_REG_MEASUREMENT_SIZE) ? 0 : ret;
->>>> +}
->>>> +
->>>>  static int vz89x_get_measurement(struct vz89x_data *data)
->>>>  {
->>>>       int ret;
->>>> -     int i;
->>>>
->>>>       /* sensor can only be polled once a second max per datasheet */
->>>>       if (!time_after(jiffies, data->last_update + HZ))
->>>>               return 0;
->>>>
->>>> -     ret = i2c_smbus_write_word_data(data->client,
->>>> -                                     VZ89X_REG_MEASUREMENT, 0);
->>>> +     ret = vz89x_i2c_xfer(data, VZ89X_REG_MEASUREMENT);
->>>>       if (ret < 0)
->>>>               return ret;
->>>>
->>>> -     for (i = 0; i < VZ89X_REG_MEASUREMENT_SIZE; i++) {
->>>> -             ret = i2c_smbus_read_byte(data->client);
->>>> -             if (ret < 0)
->>>> -                     return ret;
->>>> -             data->buffer[i] = ret;
->>>> -     }
->>>> -
->>>>       ret = vz89x_measurement_is_valid(data);
->>>>       if (ret)
->>>>               return -EAGAIN;
->>>>
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
+ arch/arm/mach-ep93xx/clock.c                 |  14 ++
+ arch/arm/mach-ep93xx/core.c                  |  24 +++
+ arch/arm/mach-ep93xx/edb93xx.c               |   1 +
+ arch/arm/mach-ep93xx/include/mach/platform.h |   1 +
+ arch/arm/mach-ep93xx/soc.h                   |   1 +
+ drivers/iio/adc/Kconfig                      |  11 ++
+ drivers/iio/adc/Makefile                     |   1 +
+ drivers/iio/adc/ep93xx_adc.c                 | 253 +++++++++++++++++++++++++++
+ 8 files changed, 306 insertions(+)
+ create mode 100644 drivers/iio/adc/ep93xx_adc.c
