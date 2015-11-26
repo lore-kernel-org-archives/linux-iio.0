@@ -1,103 +1,131 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f45.google.com ([74.125.82.45]:35529 "EHLO
-	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753054AbbKYNBx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Nov 2015 08:01:53 -0500
-Received: by wmuu63 with SMTP id u63so137005552wmu.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2015 05:01:52 -0800 (PST)
-Subject: Re: [PATCH 5/5] iio: adc: New driver for Cirrus Logic EP93xx ADC
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <56558B23.4080506@gmail.com> <5655A0A5.20908@gmail.com>
- <alpine.DEB.2.02.1511251331310.11807@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>
-From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Message-ID: <5655B13D.5060708@gmail.com>
-Date: Wed, 25 Nov 2015 14:01:49 +0100
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1511251331310.11807@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mranostay@gmail.com>
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v2 1/1] iio: chemical: vz89x: rework i2c transfer reading
+Date: Thu, 26 Nov 2015 09:11:14 -0800
+Message-Id: <1448557874-3812-2-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1448557874-3812-1-git-send-email-mranostay@gmail.com>
+References: <1448557874-3812-1-git-send-email-mranostay@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi!
+Add an optimized i2c transfer reading function, and fallback
+to racey smbus transfers if client->adapter doesn't support this.
 
-On 25/11/15 13:43, Peter Meerwald-Stadler wrote:
->> New driver adding support for ADC found on Cirrus Logic EP93xx series of SoCs.
->> > Board specific code must take care to create platform device with all necessary
->> > resources.
-> comments below
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/chemical/vz89x.c | 66 ++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 52 insertions(+), 14 deletions(-)
 
-Thanks for spelling corrections :)
-
-[...]
-
->> > +		/* At this point conversion must be completed, but anyway... */
->> > +		while (1) {
->> > +			u32 t;
->> > +
->> > +			t = ep93xx_adc_reg_read(priv->base + EP93XX_ADC_RESULT);
->> > +			if (t & EP93XX_ADC_SDR) {
->> > +				/* Sign extend lower 16 bits */
->> > +				*value = (s16)t;
-> there would be a nice sign_extend function
-
-Yes, but we don't need its flexibility for the 16 bit case?
-
-> maybe have a timeout?
-
-Maybe... I'll add it...
-
->> > +				break;
->> > +			}
->> > +		}
->> > +		mutex_unlock(&priv->lock);
->> > +		return IIO_VAL_INT;
->> > +
->> > +	case IIO_CHAN_INFO_OFFSET:
->> > +		/* According to datasheet, range is -25000..25000 */
-> huh? so 0 V returns what value?
-
-Manual says it returns ~-25000. This seems to be true in reality, but I cannot tell
-you now if it could be even below -25000. But as I've understood, all the relevant
-calculations in IIO core are signed, so this should not be a problem.
-
-[...]
-
->> > +		dev_err(&pdev->dev, "Cannot obtain clock");
-> put \n at the end of the message
-
-Yes, thanks for that notice...
-
-[...]
-
->> > +	ret = clk_enable(priv->clk);
->> > +	if (ret) {
->> > +		dev_err(&pdev->dev, "Cannot enable clock");
->> > +		return ret;
->> > +	}
->> > +
-> clock should be disabled on error in the following error path
-
-True... I'll try to postpone clock enabling to the very end...
-
-[...]
-
->> > +	ret = devm_iio_device_register(&pdev->dev, iiodev);
->> > +	if (ret)
->> > +		return ret;
->> > +
->> > +	platform_set_drvdata(pdev, iiodev);
-> this should be done before _register()
-
-I don't agree here, because this is for platform device only and is
-only used in _remove() below, not for IIO device.
-
-> just do
-> return devm_iio_device_register(..)
-
-Thanks for review!
-
-Regards,
-Alexander.
+diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
+index 11e59a5..c3367aa 100644
+--- a/drivers/iio/chemical/vz89x.c
++++ b/drivers/iio/chemical/vz89x.c
+@@ -34,8 +34,9 @@
+ struct vz89x_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+-	unsigned long last_update;
++	int (*xfer)(struct vz89x_data *data, u8 cmd);
+ 
++	unsigned long last_update;
+ 	u8 buffer[VZ89X_REG_MEASUREMENT_SIZE];
+ };
+ 
+@@ -100,27 +101,60 @@ static int vz89x_measurement_is_valid(struct vz89x_data *data)
+ 	return !!(data->buffer[VZ89X_REG_MEASUREMENT_SIZE - 1] > 0);
+ }
+ 
+-static int vz89x_get_measurement(struct vz89x_data *data)
++static int vz89x_i2c_xfer(struct vz89x_data *data, u8 cmd)
+ {
++	struct i2c_client *client = data->client;
++	struct i2c_msg msg[2];
+ 	int ret;
+-	int i;
++	u8 buf[3] = { cmd, 0, 0};
+ 
+-	/* sensor can only be polled once a second max per datasheet */
+-	if (!time_after(jiffies, data->last_update + HZ))
+-		return 0;
++	msg[0].addr = client->addr;
++	msg[0].flags = client->flags;
++	msg[0].len = 3;
++	msg[0].buf  = (char *) &buf;
++
++	msg[1].addr = client->addr;
++	msg[1].flags = client->flags | I2C_M_RD;
++	msg[1].len = VZ89X_REG_MEASUREMENT_SIZE;
++	msg[1].buf = (char *) &data->buffer;
++
++	ret = i2c_transfer(client->adapter, msg, 2);
+ 
+-	ret = i2c_smbus_write_word_data(data->client,
+-					VZ89X_REG_MEASUREMENT, 0);
++	return (ret == VZ89X_REG_MEASUREMENT_SIZE) ? 0 : ret;
++}
++
++static int vz89x_smbus_xfer(struct vz89x_data *data, u8 cmd)
++{
++	struct i2c_client *client = data->client;
++	int ret;
++	int i;
++
++	ret = i2c_smbus_write_word_data(client, cmd, 0);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	for (i = 0; i < VZ89X_REG_MEASUREMENT_SIZE; i++) {
+-		ret = i2c_smbus_read_byte(data->client);
++		ret = i2c_smbus_read_byte(client);
+ 		if (ret < 0)
+ 			return ret;
+ 		data->buffer[i] = ret;
+ 	}
+ 
++	return 0;
++}
++
++static int vz89x_get_measurement(struct vz89x_data *data)
++{
++	int ret;
++
++	/* sensor can only be polled once a second max per datasheet */
++	if (!time_after(jiffies, data->last_update + HZ))
++		return 0;
++
++	ret = data->xfer(data, VZ89X_REG_MEASUREMENT);
++	if (ret < 0)
++		return ret;
++
+ 	ret = vz89x_measurement_is_valid(data);
+ 	if (ret)
+ 		return -EAGAIN;
+@@ -204,15 +238,19 @@ static int vz89x_probe(struct i2c_client *client,
+ 	struct iio_dev *indio_dev;
+ 	struct vz89x_data *data;
+ 
+-	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
+-				     I2C_FUNC_SMBUS_BYTE))
+-		return -ENODEV;
+-
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+-
+ 	data = iio_priv(indio_dev);
++
++	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
++		data->xfer = vz89x_i2c_xfer;
++	else if (i2c_check_functionality(client->adapter,
++				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
++		data->xfer = vz89x_smbus_xfer;
++	else
++		return -ENOTSUPP;
++
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 	data->last_update = jiffies - HZ;
+-- 
+1.9.1
