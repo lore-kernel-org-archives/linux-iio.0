@@ -1,149 +1,251 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43847 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43890 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752913AbbK2O1P (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 09:27:15 -0500
-Subject: Re: [PATCH v2 1/1] iio: chemical: vz89x: rework i2c transfer reading
-To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
-References: <1448557874-3812-1-git-send-email-mranostay@gmail.com>
- <1448557874-3812-2-git-send-email-mranostay@gmail.com>
+	with ESMTP id S1752913AbbK2OfP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 09:35:15 -0500
+Subject: Re: [PATCH 1/5] iio: light: us5182d: Add property for choosing
+ default power mode
+To: Adriana Reus <adriana.reus@intel.com>
+References: <1448362792-5181-1-git-send-email-adriana.reus@intel.com>
+ <1448362792-5181-2-git-send-email-adriana.reus@intel.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+	robh+dt@kernel.org, ijc+devicetree@hellion.org.uk,
+	galak@codeaurora.org, pawel.moll@arm.com, pmeerw@pmeerw.net,
+	lars@metafoo.de
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <565B0B41.3080203@kernel.org>
-Date: Sun, 29 Nov 2015 14:27:13 +0000
+Message-ID: <565B0D1D.1070006@kernel.org>
+Date: Sun, 29 Nov 2015 14:35:09 +0000
 MIME-Version: 1.0
-In-Reply-To: <1448557874-3812-2-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1448362792-5181-2-git-send-email-adriana.reus@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/11/15 17:11, Matt Ranostay wrote:
-> Add an optimized i2c transfer reading function, and fallback
-> to racey smbus transfers if client->adapter doesn't support this.
+On 24/11/15 10:59, Adriana Reus wrote:
+> This chip supports two power modes.
+> 1. "one-shot" mode - the chip activates and executes one complete
+> conversion loop and then shuts itself down. This is the default mode
+> chosen for raw reads.
+> 2. "continuous" mode - the chip takes continuous measurements.
 > 
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-Few comments inline but nothing that stops me applying this.
+> Continuous mode is more expensive power-wise but may be more reliable.
+> Add a property so that if preferred, the default power mode for raw
+> reads can be set to continuous.
+> Separate one-shot enabling in a separate function that will be used
+> depending on the chosen power mode. Also create a function for
+> powering the chip on and off.
+> 
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+A couple of nitpicks inline...  I've fixed them up when applying to the
+togreg branch of iio.git - initially pushed out as testing for the autobuilders
+to play with them.
 
-Applied to the togreg branch of iio.git - initially pushed out as testing.
-Note this branch will rebase soonish so don't base anything much on it!
+Thanks,
 
 Jonathan
 > ---
->  drivers/iio/chemical/vz89x.c | 66 ++++++++++++++++++++++++++++++++++----------
->  1 file changed, 52 insertions(+), 14 deletions(-)
+>  drivers/iio/light/us5182d.c | 90 +++++++++++++++++++++++++++++++++++++++------
+>  1 file changed, 78 insertions(+), 12 deletions(-)
 > 
-> diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
-> index 11e59a5..c3367aa 100644
-> --- a/drivers/iio/chemical/vz89x.c
-> +++ b/drivers/iio/chemical/vz89x.c
-> @@ -34,8 +34,9 @@
->  struct vz89x_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
-> -	unsigned long last_update;
-> +	int (*xfer)(struct vz89x_data *data, u8 cmd);
->  
-> +	unsigned long last_update;
->  	u8 buffer[VZ89X_REG_MEASUREMENT_SIZE];
+> diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
+> index 49dab3c..7993014 100644
+> --- a/drivers/iio/light/us5182d.c
+> +++ b/drivers/iio/light/us5182d.c
+> @@ -99,6 +99,11 @@ enum mode {
+>  	US5182D_PX_ONLY
 >  };
 >  
-> @@ -100,27 +101,60 @@ static int vz89x_measurement_is_valid(struct vz89x_data *data)
->  	return !!(data->buffer[VZ89X_REG_MEASUREMENT_SIZE - 1] > 0);
+> +enum pmode {
+> +	US5182D_CONTINUOUS,
+> +	US5182D_ONESHOT
+> +};
+> +
+>  struct us5182d_data {
+>  	struct i2c_client *client;
+>  	struct mutex lock;
+> @@ -112,6 +117,9 @@ struct us5182d_data {
+>  	u16 *us5182d_dark_ths;
+>  
+>  	u8 opmode;
+> +	u8 power_mode;
+> +
+> +	bool default_continuous;
+>  };
+>  
+>  static IIO_CONST_ATTR(in_illuminance_scale_available,
+> @@ -130,13 +138,11 @@ static const struct {
+>  	u8 reg;
+>  	u8 val;
+>  } us5182d_regvals[] = {
+> -	{US5182D_REG_CFG0, (US5182D_CFG0_SHUTDOWN_EN |
+> -			    US5182D_CFG0_WORD_ENABLE)},
+> +	{US5182D_REG_CFG0, US5182D_CFG0_WORD_ENABLE},
+>  	{US5182D_REG_CFG1, US5182D_CFG1_ALS_RES16},
+>  	{US5182D_REG_CFG2, (US5182D_CFG2_PX_RES16 |
+>  			    US5182D_CFG2_PXGAIN_DEFAULT)},
+>  	{US5182D_REG_CFG3, US5182D_CFG3_LED_CURRENT100},
+> -	{US5182D_REG_MODE_STORE, US5182D_STORE_MODE},
+>  	{US5182D_REG_CFG4, 0x00},
+>  };
+>  
+> @@ -169,7 +175,7 @@ static int us5182d_get_als(struct us5182d_data *data)
+>  	return result;
 >  }
 >  
-> -static int vz89x_get_measurement(struct vz89x_data *data)
-> +static int vz89x_i2c_xfer(struct vz89x_data *data, u8 cmd)
+> -static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
+> +static int us5182d_oneshot_en(struct us5182d_data *data)
 >  {
-> +	struct i2c_client *client = data->client;
-> +	struct i2c_msg msg[2];
 >  	int ret;
-> -	int i;
-> +	u8 buf[3] = { cmd, 0, 0};
 >  
-> -	/* sensor can only be polled once a second max per datasheet */
-> -	if (!time_after(jiffies, data->last_update + HZ))
-> -		return 0;
-> +	msg[0].addr = client->addr;
-> +	msg[0].flags = client->flags;
-> +	msg[0].len = 3;
-> +	msg[0].buf  = (char *) &buf;
+> @@ -182,6 +188,20 @@ static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
+>  	 * required measurement.
+>  	 */
+>  	ret = ret | US5182D_CFG0_ONESHOT_EN;
+> +	return i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0, ret);
+Unwanted extra blank line here...
 > +
-> +	msg[1].addr = client->addr;
-> +	msg[1].flags = client->flags | I2C_M_RD;
-> +	msg[1].len = VZ89X_REG_MEASUREMENT_SIZE;
-> +	msg[1].buf = (char *) &data->buffer;
-> +
-> +	ret = i2c_transfer(client->adapter, msg, 2);
->  
-> -	ret = i2c_smbus_write_word_data(data->client,
-> -					VZ89X_REG_MEASUREMENT, 0);
-> +	return (ret == VZ89X_REG_MEASUREMENT_SIZE) ? 0 : ret;
 > +}
 > +
-> +static int vz89x_smbus_xfer(struct vz89x_data *data, u8 cmd)
+> +static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
 > +{
-> +	struct i2c_client *client = data->client;
-I wouldn't have bothered with the local variable, but it's just
-a matter of personal taste so lets leave it be!
-
 > +	int ret;
-> +	int i;
 > +
-> +	ret = i2c_smbus_write_word_data(client, cmd, 0);
+> +	if (mode == data->opmode)
+> +		return 0;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, US5182D_REG_CFG0);
+> +	if (ret < 0)
+> +		return ret;
+>  
+>  	/* update mode */
+>  	ret = ret & ~US5182D_OPMODE_MASK;
+> @@ -196,9 +216,6 @@ static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
 >  	if (ret < 0)
 >  		return ret;
 >  
->  	for (i = 0; i < VZ89X_REG_MEASUREMENT_SIZE; i++) {
-> -		ret = i2c_smbus_read_byte(data->client);
-> +		ret = i2c_smbus_read_byte(client);
->  		if (ret < 0)
->  			return ret;
->  		data->buffer[i] = ret;
->  	}
+> -	if (mode == data->opmode)
+> -		return 0;
+> -
+>  	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_MODE_STORE,
+>  					US5182D_STORE_MODE);
+>  	if (ret < 0)
+> @@ -210,6 +227,23 @@ static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
+>  	return 0;
+>  }
 >  
-> +	return 0;
-> +}
-> +
-> +static int vz89x_get_measurement(struct vz89x_data *data)
+> +static int us5182d_shutdown_en (struct us5182d_data *data, u8 state)
+Stray space above.. Checkpatch would have highlighted this for you, please
+do run it as a sanity check before you send a series out.
+
 > +{
 > +	int ret;
 > +
-> +	/* sensor can only be polled once a second max per datasheet */
-> +	if (!time_after(jiffies, data->last_update + HZ))
+> +	if (data->power_mode == US5182D_ONESHOT)
 > +		return 0;
 > +
-> +	ret = data->xfer(data, VZ89X_REG_MEASUREMENT);
+> +	ret = i2c_smbus_read_byte_data(data->client, US5182D_REG_CFG0);
 > +	if (ret < 0)
 > +		return ret;
 > +
->  	ret = vz89x_measurement_is_valid(data);
->  	if (ret)
->  		return -EAGAIN;
-> @@ -204,15 +238,19 @@ static int vz89x_probe(struct i2c_client *client,
->  	struct iio_dev *indio_dev;
->  	struct vz89x_data *data;
+> +	ret = ret & ~US5182D_CFG0_SHUTDOWN_EN;
+> +	ret = ret | state;
+> +
+> +	return i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0, ret);
+> +}
+> +
+>  static int us5182d_read_raw(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *chan, int *val,
+>  			    int *val2, long mask)
+> @@ -222,6 +256,11 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
+>  		switch (chan->type) {
+>  		case IIO_LIGHT:
+>  			mutex_lock(&data->lock);
+> +			if (data->power_mode == US5182D_ONESHOT) {
+> +				ret = us5182d_oneshot_en(data);
+> +				if (ret < 0)
+> +					goto out_err;
+> +			}
+>  			ret = us5182d_set_opmode(data, US5182D_OPMODE_ALS);
+>  			if (ret < 0)
+>  				goto out_err;
+> @@ -234,6 +273,11 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
+>  			return IIO_VAL_INT;
+>  		case IIO_PROXIMITY:
+>  			mutex_lock(&data->lock);
+> +			if (data->power_mode == US5182D_ONESHOT) {
+> +				ret = us5182d_oneshot_en(data);
+> +				if (ret < 0)
+> +					goto out_err;
+> +			}
+>  			ret = us5182d_set_opmode(data, US5182D_OPMODE_PX);
+>  			if (ret < 0)
+>  				goto out_err;
+> @@ -368,6 +412,7 @@ static int us5182d_init(struct iio_dev *indio_dev)
+>  		return ret;
 >  
-> -	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
-> -				     I2C_FUNC_SMBUS_BYTE))
-> -		return -ENODEV;
-> -
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
->  		return -ENOMEM;
-> -
-THis is a random white space change that snuck in - hardly crucial but would
-have been cleaner if this hadn't been in the patch.
->  	data = iio_priv(indio_dev);
+>  	data->opmode = 0;
+> +	data->power_mode = US5182D_CONTINUOUS;
+>  	for (i = 0; i < ARRAY_SIZE(us5182d_regvals); i++) {
+>  		ret = i2c_smbus_write_byte_data(data->client,
+>  						us5182d_regvals[i].reg,
+> @@ -376,7 +421,15 @@ static int us5182d_init(struct iio_dev *indio_dev)
+>  			return ret;
+>  	}
+>  
+> -	return 0;
+> +	if (!data->default_continuous) {
+> +		ret = us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
+> +		if (ret < 0)
+> +			return ret;
+> +		data->power_mode = US5182D_ONESHOT;
+> +	}
 > +
-> +	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
-> +		data->xfer = vz89x_i2c_xfer;
-> +	else if (i2c_check_functionality(client->adapter,
-> +				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
-> +		data->xfer = vz89x_smbus_xfer;
-> +	else
-> +		return -ENOTSUPP;
 > +
->  	i2c_set_clientdata(client, indio_dev);
->  	data->client = client;
->  	data->last_update = jiffies - HZ;
+> +	return ret;
+>  }
+>  
+>  static void us5182d_get_platform_data(struct iio_dev *indio_dev)
+> @@ -399,6 +452,8 @@ static void us5182d_get_platform_data(struct iio_dev *indio_dev)
+>  				    "upisemi,lower-dark-gain",
+>  				    &data->lower_dark_gain))
+>  		data->lower_dark_gain = US5182D_REG_AUTO_LDARK_GAIN_DEFAULT;
+> +	data->default_continuous = device_property_read_bool(&data->client->dev,
+> +							     "upisemi,continuous");
+>  }
+>  
+>  static int  us5182d_dark_gain_config(struct iio_dev *indio_dev)
+> @@ -464,16 +519,27 @@ static int us5182d_probe(struct i2c_client *client,
+>  
+>  	ret = us5182d_dark_gain_config(indio_dev);
+>  	if (ret < 0)
+> -		return ret;
+> +		goto out_err;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		goto out_err;
+> +
+> +	return 0;
+> +
+> +out_err:
+> +	us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
+> +	return ret;
+>  
+> -	return iio_device_register(indio_dev);
+>  }
+>  
+>  static int us5182d_remove(struct i2c_client *client)
+>  {
+> +	struct us5182d_data *data = iio_priv(i2c_get_clientdata(client));
+> +
+>  	iio_device_unregister(i2c_get_clientdata(client));
+> -	return i2c_smbus_write_byte_data(client, US5182D_REG_CFG0,
+> -					 US5182D_CFG0_SHUTDOWN_EN);
+> +
+> +	return us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
+>  }
+>  
+>  static const struct acpi_device_id us5182d_acpi_match[] = {
 > 
 
