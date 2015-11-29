@@ -1,706 +1,365 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44277 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44498 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751208AbbK2Pds (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 10:33:48 -0500
-Subject: Re: [PATCH v3 1/4] iio: adc: add IMX7D ADC driver support
-To: Stefan Agner <stefan@agner.ch>,
-	Haibo Chen <haibo.chen@freescale.com>
-References: <1448034495-1759-1-git-send-email-haibo.chen@freescale.com>
- <1448034495-1759-2-git-send-email-haibo.chen@freescale.com>
- <ce451bd2d1b88d93585e156ce8d1d977@agner.ch>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	shawnguo@kernel.org, kernel@pengutronix.de, robh+dt@kernel.org,
-	pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	linux@arm.linux.org.uk, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
+	with ESMTP id S1751468AbbK2QMr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 11:12:47 -0500
+Subject: Re: [PATCH 5/5] iio: adc: New driver for Cirrus Logic EP93xx ADC
+To: Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+	Hartley Sweeten <hsweeten@visionengravers.com>,
+	Ryan Mallon <rmallon@gmail.com>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+References: <56558B23.4080506@gmail.com> <5655A0A5.20908@gmail.com>
+Cc: Russell King <linux@arm.linux.org.uk>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <565B1AD6.9020208@kernel.org>
-Date: Sun, 29 Nov 2015 15:33:42 +0000
+Message-ID: <565B23FB.9040405@kernel.org>
+Date: Sun, 29 Nov 2015 16:12:43 +0000
 MIME-Version: 1.0
-In-Reply-To: <ce451bd2d1b88d93585e156ce8d1d977@agner.ch>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <5655A0A5.20908@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/11/15 03:52, Stefan Agner wrote:
-> Hi Haibo,
+On 25/11/15 11:51, Alexander Sverdlin wrote:
+> New driver adding support for ADC found on Cirrus Logic EP93xx series of SoCs.
+> Board specific code must take care to create platform device with all necessary
+> resources.
 > 
-> Some comments below:
+> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Datasheet links always appreciated if available.
+
+Right now Cirrus' website is fighting back so I can't get to any
+of their docs - hence bare with me!
+
+A few bits inline.  Primary question which is hard to answer without the
+datasheets is what meaning the channel names actually have?  THe brief
+says they are general purpose.  If so then it's not really valid
+to given them extended names suggesting anything more.
+
+Jonathan
+> ---
+>  drivers/iio/adc/Kconfig      |  11 ++
+>  drivers/iio/adc/Makefile     |   1 +
+>  drivers/iio/adc/ep93xx_adc.c | 253 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 265 insertions(+)
+>  create mode 100644 drivers/iio/adc/ep93xx_adc.c
 > 
-> On 2015-11-20 07:48, Haibo Chen wrote:
->> Freescale i.MX7D soc contains a new ADC IP. This patch add this ADC
->> driver support, and the driver only support ADC software trigger.
->>
->> Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
->> ---
->>  drivers/iio/adc/Kconfig     |   9 +
->>  drivers/iio/adc/Makefile    |   1 +
->>  drivers/iio/adc/imx7d_adc.c | 570 ++++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 580 insertions(+)
->>  create mode 100644 drivers/iio/adc/imx7d_adc.c
->>
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index 7868c74..bf0611c 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -194,6 +194,15 @@ config HI8435
->>  	  This driver can also be built as a module. If so, the module will be
->>  	  called hi8435.
->>  
->> +config IMX7D_ADC
->> +	tristate "IMX7D ADC driver"
->> +	depends on OF
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 7868c74..2ee8b8b 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -172,6 +172,17 @@ config DA9150_GPADC
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called berlin2-adc.
 > 
-> Hm, not sure, but shouldn't we use a proper depends here? Otherwise this
-> will show up as modules in all kinds of distributions.
-usual trick is a depends on the platform or COMPILE_TEST
-(so that autobuilders will hit it)
-> 
->> +	help
->> +	  Say yes here to build support for IMX7D ADC.
->> +
->> +	  This driver can also be built as a module. If so, the module will be
->> +	  called imx7d_adc.
->> +
->>  config LP8788_ADC
->>  	tristate "LP8788 ADC driver"
->>  	depends on MFD_LP8788
->> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->> index 99b37a9..282ffc01 100644
->> --- a/drivers/iio/adc/Makefile
->> +++ b/drivers/iio/adc/Makefile
->> @@ -20,6 +20,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
->>  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->>  obj-$(CONFIG_HI8435) += hi8435.o
->> +obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
->>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->>  obj-$(CONFIG_MAX1027) += max1027.o
->>  obj-$(CONFIG_MAX1363) += max1363.o
->> diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
->> new file mode 100644
->> index 0000000..d9547bf
->> --- /dev/null
->> +++ b/drivers/iio/adc/imx7d_adc.c
->> @@ -0,0 +1,570 @@
->> +/*
->> + * Freescale i.MX7D ADC driver
->> + *
->> + * Copyright (C) 2015 Freescale Semiconductor, Inc.
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/kernel.h>
->> +#include <linux/clk.h>
->> +#include <linux/completion.h>
->> +#include <linux/io.h>
->> +#include <linux/of.h>
->> +#include <linux/regulator/consumer.h>
->> +#include <linux/err.h>
-> 
-> Can you sort these alphabetically
-> 
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +#include <linux/iio/driver.h>
->> +
->> +/* ADC register */
->> +#define IMX7D_REG_ADC_CH_A_CFG1			0x00
->> +#define IMX7D_REG_ADC_CH_A_CFG2			0x10
->> +#define IMX7D_REG_ADC_CH_B_CFG1			0x20
->> +#define IMX7D_REG_ADC_CH_B_CFG2			0x30
->> +#define IMX7D_REG_ADC_CH_C_CFG1			0x40
->> +#define IMX7D_REG_ADC_CH_C_CFG2			0x50
->> +#define IMX7D_REG_ADC_CH_D_CFG1			0x60
->> +#define IMX7D_REG_ADC_CH_D_CFG2			0x70
->> +#define IMX7D_REG_ADC_CH_SW_CFG			0x80
->> +#define IMX7D_REG_ADC_TIMER_UNIT		0x90
->> +#define IMX7D_REG_ADC_DMA_FIFO			0xa0
->> +#define IMX7D_REG_ADC_FIFO_STATUS		0xb0
->> +#define IMX7D_REG_ADC_INT_SIG_EN		0xc0
->> +#define IMX7D_REG_ADC_INT_EN			0xd0
->> +#define IMX7D_REG_ADC_INT_STATUS		0xe0
->> +#define IMX7D_REG_ADC_CHA_B_CNV_RSLT		0xf0
->> +#define IMX7D_REG_ADC_CHC_D_CNV_RSLT		0x100
->> +#define IMX7D_REG_ADC_CH_SW_CNV_RSLT		0x110
->> +#define IMX7D_REG_ADC_DMA_FIFO_DAT		0x120
->> +#define IMX7D_REG_ADC_ADC_CFG			0x130
->> +
->> +#define IMX7D_EACH_CHANNEL_REG_SHIF		0x20
-> 
-> I would call that OFFSET, SHIFT is typically used for a bit offset
-> within a register.
-> 
->> +
->> +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN			(0x1 << 31)
->> +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_DISABLE			(0x0 << 31)
-> 
-> I would just define the _EN definition (along with using BIT).
-> Bitshifting a 0 is not really useful.
-> 
->> +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE			BIT(30)
->> +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN			BIT(29)
->> +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL_SHIF			24
->> +
->> +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4				(0x0 << 12)
->> +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8				(0x1 << 12)
->> +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16			(0x2 << 12)
->> +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32			(0x3 << 12)
->> +
->> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4			(0x0 << 29)
->> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8			(0x1 << 29)
->> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16			(0x2 << 29)
->> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32			(0x3 << 29)
->> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64			(0x4 << 29)
->> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128			(0x5 << 29)
->> +
->> +#define IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN			BIT(31)
->> +#define IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN			BIT(1)
->> +#define IMX7D_REG_ADC_ADC_CFG_ADC_EN				BIT(0)
->> +
->> +#define IMX7D_REG_ADC_INT_CHA_COV_INT_EN			BIT(8)
->> +#define IMX7D_REG_ADC_INT_CHB_COV_INT_EN			BIT(9)
->> +#define IMX7D_REG_ADC_INT_CHC_COV_INT_EN			BIT(10)
->> +#define IMX7D_REG_ADC_INT_CHD_COV_INT_EN			BIT(11)
->> +#define IMX7D_REG_ADC_INT_CHANNEL_INT_EN			(IMX7D_REG_ADC_INT_CHA_COV_INT_EN | \
->> +								 IMX7D_REG_ADC_INT_CHB_COV_INT_EN | \
->> +								 IMX7D_REG_ADC_INT_CHC_COV_INT_EN | \
->> +								 IMX7D_REG_ADC_INT_CHD_COV_INT_EN)
->> +#define IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS		0xf00
->> +
->> +#define IMX7D_ADC_TIMEOUT		msecs_to_jiffies(100)
->> +
->> +enum imx7d_adc_clk_pre_div {
->> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_4,
->> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_8,
->> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_16,
->> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_32,
->> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_64,
->> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_128,
->> +};
->> +
->> +enum imx7d_adc_average_num {
->> +	IMX7D_ADC_AVERAGE_NUM_4,
->> +	IMX7D_ADC_AVERAGE_NUM_8,
->> +	IMX7D_ADC_AVERAGE_NUM_16,
->> +	IMX7D_ADC_AVERAGE_NUM_32,
->> +};
->> +
->> +struct imx7d_adc_feature {
->> +	enum imx7d_adc_clk_pre_div clk_pre_div;
->> +	enum imx7d_adc_average_num avg_num;
->> +
->> +	u32 core_time_unit;	/* impact the sample rate */
->> +
->> +	bool average_en;
->> +};
->> +
->> +struct imx7d_adc {
->> +	struct device *dev;
->> +	void __iomem *regs;
->> +	struct clk *clk;
->> +
->> +	u32 vref_uv;
->> +	u32 value;
->> +	u32 channel;
->> +	u32 pre_div_num;
->> +
->> +	struct regulator *vref;
->> +	struct imx7d_adc_feature adc_feature;
->> +
->> +	struct completion completion;
->> +};
->> +
->> +struct imx7d_adc_analogue_core_clk {
->> +	u32 pre_div;
->> +	u32 reg_config;
->> +};
->> +
->> +#define IMX7D_ADC_ALALOGUE_CLK_CONFIG(_pre_div, _reg_conf) {	\
->> +	.pre_div = (_pre_div),					\
->> +	.reg_config = (_reg_conf),				\
->> +}
->> +
->> +static const struct imx7d_adc_analogue_core_clk imx7d_adc_analogue_clk[] = {
->> +	IMX7D_ADC_ALALOGUE_CLK_CONFIG(4, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4),
->> +	IMX7D_ADC_ALALOGUE_CLK_CONFIG(8, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8),
->> +	IMX7D_ADC_ALALOGUE_CLK_CONFIG(16, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16),
->> +	IMX7D_ADC_ALALOGUE_CLK_CONFIG(32, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32),
->> +	IMX7D_ADC_ALALOGUE_CLK_CONFIG(64, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64),
->> +	IMX7D_ADC_ALALOGUE_CLK_CONFIG(128, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128),
->> +};
->> +
->> +#define IMX7D_ADC_CHAN(_idx, _chan_type) {			\
->> +	.type = (_chan_type),					\
->> +	.indexed = 1,						\
->> +	.channel = (_idx),					\
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
->> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
->> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
->> +}
->> +
->> +static const struct iio_chan_spec imx7d_adc_iio_channels[] = {
->> +	IMX7D_ADC_CHAN(0, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(1, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(2, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(3, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(4, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(5, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(6, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(7, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(8, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(9, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(10, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(11, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(12, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(13, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(14, IIO_VOLTAGE),
->> +	IMX7D_ADC_CHAN(15, IIO_VOLTAGE),
->> +};
->> +
->> +static const u32 imx7d_adc_average_num[] = {
->> +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4,
->> +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8,
->> +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16,
->> +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32,
->> +};
->> +
->> +static void imx7d_adc_feature_config(struct imx7d_adc *info)
->> +{
->> +	info->adc_feature.clk_pre_div = IMX7D_ADC_ANALOG_CLK_PRE_DIV_4;
->> +	info->adc_feature.avg_num = IMX7D_ADC_AVERAGE_NUM_32;
->> +	info->adc_feature.core_time_unit = 1;
->> +	info->adc_feature.average_en = true;
-> 
-> Since this function is about ADC features, I would pass in a pointer to
-> adc_feature. Gets rid of info-> on each line.
-> 
->> +}
->> +
->> +static void imx7d_adc_sample_set(struct imx7d_adc *info)
->> +{
->> +	struct imx7d_adc_feature *adc_feature = &info->adc_feature;
->> +	struct imx7d_adc_analogue_core_clk adc_analogure_clk;
->> +	u32 i;
->> +	u32 sample_rate = 0;
->> +
->> +	/*
->> +	 * Before sample set, disable channel A,B,C,D. Here we
->> +	 * clear the bit 31 of register REG_ADC_CH_A\B\C\D_CFG1.
->> +	 */
->> +	for (i = 0; i < 4; i++)
->> +		writel(IMX7D_REG_ADC_CH_CFG1_CHANNEL_DISABLE,
->> +			info->regs + i * IMX7D_EACH_CHANNEL_REG_SHIF);
-> 
-> This does not clear bit 31 only, but all bits. You need to read into
-> tmp, and clear the single bit using ~IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN...
-> 
-> What I would consider is using regmap. It would allow to use helpers
-> such as regmap_update_bits...
-> 
->> +
->> +	adc_analogure_clk = imx7d_adc_analogue_clk[adc_feature->clk_pre_div];
->> +	sample_rate |= adc_analogure_clk.reg_config;
->> +	info->pre_div_num = adc_analogure_clk.pre_div;
->> +
->> +	sample_rate |= adc_feature->core_time_unit;
->> +	writel(sample_rate, info->regs + IMX7D_REG_ADC_TIMER_UNIT);
->> +}
->> +
->> +static void imx7d_adc_hw_init(struct imx7d_adc *info)
->> +{
->> +	u32 cfg;
->> +	/* power up and enable adc analogue core */
->> +	cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
->> +	cfg &= ~(IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN |
->> IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN);
->> +	cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_EN;
->> +	writel(cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
->> +
->> +	/* enable channel A,B,C,D interrupt */
->> +	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs +
->> IMX7D_REG_ADC_INT_SIG_EN);
->> +	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs + IMX7D_REG_ADC_INT_EN);
->> +
->> +	imx7d_adc_sample_set(info);
->> +}
->> +
->> +static void imx7d_adc_channel_set(struct imx7d_adc *info)
->> +{
->> +	u32 cfg1 = 0;
->> +	u32 cfg2;
->> +	u32 channel;
->> +
->> +	channel = info->channel;
->> +
->> +	/* the channel choose single conversion, and enable average mode */
->> +	cfg1 |= (IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN |
->> +		 IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE);
->> +	if (info->adc_feature.average_en)
->> +		cfg1 |= IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN;
->> +
->> +	/*
->> +	 * physical channel 0 chose logical channel A
->> +	 * physical channel 1 chose logical channel B
->> +	 * physical channel 2 chose logical channel C
->> +	 * physical channel 3 chose logical channel D
->> +	 */
->> +	cfg1 |= (channel << IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL_SHIF);
-> 
-> Matter of taste, but I would put the shifting logic into a define above
-> and use something like
-> IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL(x)
-> 
-> 
->> +
->> +	/* read register REG_ADC_CH_A\B\C\D_CFG2, according to the channel chosen */
->> +	cfg2 = readl(info->regs + IMX7D_EACH_CHANNEL_REG_SHIF * channel + 0x10);
->> +
->> +	cfg2 |= imx7d_adc_average_num[info->adc_feature.avg_num];
->> +
->> +	/* write the register REG_ADC_CH_A\B\C\D_CFG2, according to the
->> channel chosen */
->> +	writel(cfg2, info->regs + IMX7D_EACH_CHANNEL_REG_SHIF * channel + 0x10);
->> +	writel(cfg1, info->regs + IMX7D_EACH_CHANNEL_REG_SHIF * channel);
->> +}
->> +
->> +static u32 imx7d_adc_get_sample_rate(struct imx7d_adc *info)
->> +{
->> +	/* input clock is always 24MHz */
->> +	u32 input_clk = 24000000;
->> +	u32 analogue_core_clk;
->> +	u32 core_time_unit = info->adc_feature.core_time_unit;
->> +	u32 sample_clk;
->> +	u32 tmp;
->> +
->> +	analogue_core_clk = input_clk / info->pre_div_num;
->> +	tmp = (core_time_unit + 1) * 6;
->> +	sample_clk = analogue_core_clk / tmp;
->> +
->> +	return sample_clk;
->> +}
->> +
->> +static int imx7d_adc_read_raw(struct iio_dev *indio_dev,
->> +			struct iio_chan_spec const *chan,
->> +			int *val,
->> +			int *val2,
->> +			long mask)
->> +{
->> +	struct imx7d_adc *info = iio_priv(indio_dev);
->> +
->> +	u32 channel;
->> +	long ret;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		mutex_lock(&indio_dev->mlock);
->> +		reinit_completion(&info->completion);
->> +
->> +		channel = (chan->channel) & 0x03;
->> +		info->channel = channel;
->> +		imx7d_adc_channel_set(info);
->> +
->> +		ret = wait_for_completion_interruptible_timeout
->> +				(&info->completion, IMX7D_ADC_TIMEOUT);
->> +		if (ret == 0) {
->> +			mutex_unlock(&indio_dev->mlock);
->> +			return -ETIMEDOUT;
->> +		}
->> +		if (ret < 0) {
->> +			mutex_unlock(&indio_dev->mlock);
->> +			return ret;
->> +		}
->> +
->> +		*val = info->value;
->> +		mutex_unlock(&indio_dev->mlock);
->> +		return IIO_VAL_INT;
->> +
->> +	case IIO_CHAN_INFO_SCALE:
->> +		info->vref_uv = regulator_get_voltage(info->vref);
->> +		*val = info->vref_uv / 1000;
->> +		*val2 = 12;
->> +		return IIO_VAL_FRACTIONAL_LOG2;
->> +
->> +	case IIO_CHAN_INFO_SAMP_FREQ:
->> +		*val = imx7d_adc_get_sample_rate(info);
->> +		*val2 = 0;
->> +		return IIO_VAL_INT;
->> +
->> +	default:
->> +		break;
->> +	}
->> +
->> +	return -EINVAL;
->> +}
->> +
->> +static int imx7d_adc_read_data(struct imx7d_adc *info)
->> +{
->> +	u32 channel;
->> +	u32 value;
->> +
->> +	channel = (info->channel) & 0x03;
->> +
->> +	/*
->> +	 * channel A and B conversion result share one register,
->> +	 * bit[27~16] is the channel B conversion result,
->> +	 * bit[11~0] is the channel A conversion result.
->> +	 * channel C and D is the same.
->> +	 */
->> +	if (channel < 2)
->> +		value = readl(info->regs + IMX7D_REG_ADC_CHA_B_CNV_RSLT);
->> +	else
->> +		value = readl(info->regs + IMX7D_REG_ADC_CHC_D_CNV_RSLT);
->> +	if (channel & 0x1)	/* channel B or D */
->> +		value = (value >> 16) & 0xFFF;
->> +	else			/* channel A or C */
->> +		value &= 0xFFF;
->> +
->> +	return value;
->> +}
->> +
->> +static irqreturn_t imx7d_adc_isr(int irq, void *dev_id)
->> +{
->> +	struct imx7d_adc *info = (struct imx7d_adc *)dev_id;
->> +	int status;
->> +
->> +	status = readl(info->regs + IMX7D_REG_ADC_INT_STATUS);
->> +	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS) {
->> +		info->value = imx7d_adc_read_data(info);
->> +		complete(&info->completion);
->> +
->> +		/*
->> +		 * The register IMX7D_REG_ADC_INT_STATUS can't clear
->> +		 * itself after read operation, need software to write
->> +		 * 0 to the related bit. Here we clear the channel A/B/C/D
->> +		 * conversion finished flag.
->> +		 */
->> +		status &= ~IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS;
->> +		writel(status, info->regs + IMX7D_REG_ADC_INT_STATUS);
->> +		return IRQ_HANDLED;
->> +	}
->> +
->> +	/* For other bits of register IMX7D_REG_ADC_INT_STATUS, ignore them */
->> +	writel(0, info->regs + IMX7D_REG_ADC_INT_STATUS);
->> +	return IRQ_NONE;
->> +}
->> +
->> +static int imx7d_adc_reg_access(struct iio_dev *indio_dev,
->> +			unsigned reg, unsigned writeval,
->> +			unsigned *readval)
->> +{
->> +	struct imx7d_adc *info = iio_priv(indio_dev);
->> +
->> +	if ((readval == NULL) ||
->> +		((reg % 4) || (reg > IMX7D_REG_ADC_ADC_CFG)))
-> 
-> This looks somewhat hard to read. The parentheses around reg ar
-> unnecessary, also you can check for NULL using !.
-> 
-> if (!readval || reg % 4 || reg > IMX7D_REG_ADC_ADC_CFG)
-> ...
-> 
->> +		return -EINVAL;
->> +
->> +	*readval = readl(info->regs + reg);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct iio_info imx7d_adc_iio_info = {
->> +	.driver_module = THIS_MODULE,
->> +	.read_raw = &imx7d_adc_read_raw,
->> +	.debugfs_reg_access = &imx7d_adc_reg_access,
->> +};
->> +
->> +static const struct of_device_id imx7d_adc_match[] = {
->> +	{ .compatible = "fsl,imx7d-adc", },
->> +	{ /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(of, imx7d_adc_match);
->> +
->> +static int imx7d_adc_probe(struct platform_device *pdev)
->> +{
->> +	struct imx7d_adc *info;
->> +	struct iio_dev *indio_dev;
->> +	struct resource *mem;
->> +	int irq;
->> +	int ret;
->> +
->> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct imx7d_adc));
->> +	if (!indio_dev) {
->> +		dev_err(&pdev->dev, "Failed allocating iio device\n");
->> +		return -ENOMEM;
->> +	}
->> +
->> +	info = iio_priv(indio_dev);
->> +	info->dev = &pdev->dev;
->> +
->> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
->> +	if (IS_ERR(info->regs)) {
->> +		ret = PTR_ERR(info->regs);
->> +		dev_err(&pdev->dev, "failed to remap adc memory: %d\n", ret);
->> +		return ret;
->> +	}
->> +
->> +	irq = platform_get_irq(pdev, 0);
->> +	if (irq < 0) {
->> +		dev_err(&pdev->dev, "no irq resource?\n");
->> +		return irq;
->> +	}
->> +
->> +	info->clk = devm_clk_get(&pdev->dev, "adc");
->> +	if (IS_ERR(info->clk)) {
->> +		ret = PTR_ERR(info->clk);
->> +		dev_err(&pdev->dev, "failed getting clock, err = %d\n", ret);
->> +		return ret;
->> +	}
->> +
->> +	info->vref = devm_regulator_get(&pdev->dev, "vref");
->> +	if (IS_ERR(info->vref)) {
->> +		ret = PTR_ERR(info->vref);
->> +		dev_err(&pdev->dev, "failed getting reference voltage: %d\n", ret);
->> +		return ret;
-> 
-> Use colon or "err =" a bit more consistence across these error messages.
-> 
-> --
-> Stefan
-> 
->> +	}
->> +
->> +	ret = regulator_enable(info->vref);
->> +	if (ret)
->> +		return ret;
->> +
->> +	platform_set_drvdata(pdev, indio_dev);
->> +
->> +	init_completion(&info->completion);
->> +
->> +	indio_dev->name = dev_name(&pdev->dev);
->> +	indio_dev->dev.parent = &pdev->dev;
->> +	indio_dev->dev.of_node = pdev->dev.of_node;
->> +	indio_dev->info = &imx7d_adc_iio_info;
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +	indio_dev->channels = imx7d_adc_iio_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(imx7d_adc_iio_channels);
->> +
->> +	ret = clk_prepare_enable(info->clk);
->> +	if (ret) {
->> +		dev_err(&pdev->dev,
->> +			"Could not prepare or enable the clock.\n");
->> +		goto error_adc_clk_enable;
->> +	}
->> +
->> +	ret = devm_request_irq(info->dev, irq,
->> +				imx7d_adc_isr, 0,
->> +				dev_name(&pdev->dev), info);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
->> +		goto error_iio_device_register;
->> +	}
->> +
->> +	ret = iio_device_register(indio_dev);
->> +	if (ret) {
->> +		dev_err(&pdev->dev, "Couldn't register the device.\n");
->> +		goto error_iio_device_register;
->> +	}
->> +
->> +	imx7d_adc_feature_config(info);
->> +	imx7d_adc_hw_init(info);
->> +
->> +	return 0;
->> +
->> +error_iio_device_register:
->> +	clk_disable_unprepare(info->clk);
->> +error_adc_clk_enable:
->> +	regulator_disable(info->vref);
->> +
->> +	return ret;
->> +}
->> +
->> +static int imx7d_adc_remove(struct platform_device *pdev)
->> +{
->> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->> +	struct imx7d_adc *info = iio_priv(indio_dev);
->> +
->> +	iio_device_unregister(indio_dev);
->> +	regulator_disable(info->vref);
->> +	clk_disable_unprepare(info->clk);
->> +
->> +	return 0;
->> +}
->> +
->> +static int __maybe_unused imx7d_adc_suspend(struct device *dev)
->> +{
->> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->> +	struct imx7d_adc *info = iio_priv(indio_dev);
->> +	u32 adc_cfg;
->> +
->> +	adc_cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
->> +	adc_cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN |
->> +		   IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN;
->> +	adc_cfg &= ~IMX7D_REG_ADC_ADC_CFG_ADC_EN;
->> +	writel(adc_cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
->> +
->> +	clk_disable_unprepare(info->clk);
->> +	regulator_disable(info->vref);
->> +
->> +	return 0;
->> +}
->> +
->> +static int __maybe_unused imx7d_adc_resume(struct device *dev)
->> +{
->> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->> +	struct imx7d_adc *info = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	ret = regulator_enable(info->vref);
->> +	if (ret)
->> +		return ret;
->> +
->> +	ret = clk_prepare_enable(info->clk);
->> +	if (ret) {
->> +		dev_err(info->dev,
->> +			"Could not prepare or enable clock.\n");
->> +		regulator_disable(info->vref);
->> +		return ret;
->> +	}
->> +
->> +	imx7d_adc_hw_init(info);
->> +
->> +	return 0;
->> +}
->> +
->> +static SIMPLE_DEV_PM_OPS(imx7d_adc_pm_ops, imx7d_adc_suspend,
->> imx7d_adc_resume);
->> +
->> +static struct platform_driver imx7d_adc_driver = {
->> +	.probe		= imx7d_adc_probe,
->> +	.remove		= imx7d_adc_remove,
->> +	.driver		= {
->> +		.name	= "imx7d_adc",
->> +		.of_match_table = imx7d_adc_match,
->> +		.pm	= &imx7d_adc_pm_ops,
->> +	},
->> +};
->> +
->> +module_platform_driver(imx7d_adc_driver);
->> +
->> +MODULE_AUTHOR("Haibo Chen <haibo.chen@freescale.com>");
->> +MODULE_DESCRIPTION("Freeacale IMX7D ADC driver");
->> +MODULE_LICENSE("GPL v2");
+> +config EP93XX_ADC
+> +	tristate "Cirrus Logic EP93XX ADC driver"
+> +	depends on ARCH_EP93XX
+> +	help
+> +	  Driver for the ADC module on the EP93XX series of SoC from Cirrus Logic.
+> +	  It's recommended to switch on CONFIG_HIGH_RES_TIMERS option, in this
+> +	  case driver will reduce its CPU usage by 70% in some use cases.
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called ep93xx_adc.
+> +
+>  config EXYNOS_ADC
+>  	tristate "Exynos ADC driver support"
+>  	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 99b37a9..5481b42 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -18,6 +18,7 @@ obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+>  obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+>  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+>  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+> +obj-$(CONFIG_EP93XX_ADC) += ep93xx_adc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>  obj-$(CONFIG_HI8435) += hi8435.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+> diff --git a/drivers/iio/adc/ep93xx_adc.c b/drivers/iio/adc/ep93xx_adc.c
+> new file mode 100644
+> index 0000000..ebaacb9
+> --- /dev/null
+> +++ b/drivers/iio/adc/ep93xx_adc.c
+> @@ -0,0 +1,253 @@
+> +/*
+> + * Driver for ADC module on the Cirrus Logic EP93xx series of SoCs
+> + *
+> + * Copyright (C) 2015 Alexander Sverdlin
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * The driver uses polling to get the conversion status. According to EP93xx
+> + * datasheets, reading ADCResult register starts the conversion, but user also
+> + * responsible for ensuring that delay between adjacent conversion triggers is
+> + * long enough so that maximum allowed conversion rate is not exceeded. This
+> + * basically renders IRQ mode unusable.
+Genius!
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/delay.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/io.h>
+> +#include <linux/irqflags.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/platform_device.h>
+> +
+> +#define EP93XX_NUM_CHANNELS 8
+> +
+> +#define ep93xx_adc_reg_read(reg)	__raw_readl(reg)
+> +#define ep93xx_adc_reg_write(val, reg)	__raw_writel(val, reg)
+> +
+> +/*
+> + * This code could benefit from real HR Timers, but jiffy granularity would
+> + * lower ADC conversion rate down to CONFIG_HZ, so we fallback to busy wait
+> + * in such case.
+> + *
+> + * HR Timers-based version loads CPU only up to 30% during back to back ADC
+> + * conversion, while busy wait-based version consumes whole CPU power.
+> + */
+> +#ifdef CONFIG_HIGH_RES_TIMERS
+> +#define ep93xx_adc_delay(usmin, usmax) usleep_range(usmin, usmax)
+> +#else
+> +#define ep93xx_adc_delay(usmin, usmax) udelay(usmin)
+> +#endif
+> +
+> +#define EP93XX_ADC_RESULT	0x08
+> +#define   EP93XX_ADC_SDR	BIT(31)
+> +#define EP93XX_ADC_SWITCH	0x18
+> +#define EP93XX_ADC_SW_LOCK	0x20
+> +#define EP93XX_ADC_INT_EN	0x24
+> +#define   EP93XX_ADC_RINTEN	BIT(11)
+> +
+> +struct ep93xx_adc_priv {
+> +	struct clk *clk;
+> +	void __iomem *base;
+> +	int lastch;
+> +	struct mutex lock;
+> +};
+> +
+> +#define EP93XX_ADC_CH(index, dname, ename, swcfg) {		\
+> +	.type = IIO_VOLTAGE,					\
+> +	.indexed = 1,						\
+> +	.channel = index,					\
+> +	.address = swcfg,					\
+> +	.datasheet_name = dname,				\
+> +	.extend_name = ename,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE) |	\
+> +				   BIT(IIO_CHAN_INFO_OFFSET),	\
+> +}
+> +
+> +/*
+> + * Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
+> + * EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numering is
+> + * not defined. So the last three are numbered randomly, let's say.
+> + */
+> +static const struct iio_chan_spec ep93xx_adc_channels[EP93XX_NUM_CHANNELS] = {
+> +	EP93XX_ADC_CH(0, "YM",	"ym",	0x608),
+> +	EP93XX_ADC_CH(1, "SXP",	"sxp",	0x680),
+> +	EP93XX_ADC_CH(2, "SXM",	"sxm",	0x640),
+> +	EP93XX_ADC_CH(3, "SYP",	"syp",	0x620),
+> +	EP93XX_ADC_CH(4, "SYM",	"sym",	0x610),
+> +	EP93XX_ADC_CH(5, "XP",	"xp",	0x601),
+> +	EP93XX_ADC_CH(6, "XM",	"xm",	0x602),
+> +	EP93XX_ADC_CH(7, "YP",	"yp",	0x604),
+> +};
+Hmm.  I'm a little dubious about the extended names.  What in the device
+acutally restricts them to these uses?  This naming is probably something
+to do with touch screens?  If there is no special purpose hardware then
+I'd just drop the extended names (datasheet names obviously fine if thats
+what they are called on the datasheet!)
+> +
+> +static int ep93xx_read_raw(struct iio_dev *iiodev,
+> +			   struct iio_chan_spec const *channel, int *value,
+> +			   int *shift, long mask)
+> +{
+> +	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&priv->lock);
+> +		if (priv->lastch != channel->channel) {
+> +			priv->lastch = channel->channel;
+> +			/*
+> +			 * Switch register is software-locked, unlocking must be
+> +			 * immediately followed by write
+> +			 */
+> +			local_irq_disable();
+> +			ep93xx_adc_reg_write(0xAA,
+> +					     priv->base + EP93XX_ADC_SW_LOCK);
+> +			ep93xx_adc_reg_write(channel->address,
+> +					     priv->base + EP93XX_ADC_SWITCH);
+> +			local_irq_enable();
+> +			/*
+> +			 * Settling delay depends on module clock and could be
+> +			 * 2ms or 500us
+> +			 */
+> +			ep93xx_adc_delay(2000, 2000);
+> +		}
+> +		/* Start the conversion, eventually discarding old result */
+> +		ep93xx_adc_reg_read(priv->base + EP93XX_ADC_RESULT);
+> +		/* Ensure maximun conversion rate is not exceeded */
+> +		ep93xx_adc_delay(DIV_ROUND_UP(1000000, 925),
+> +				 DIV_ROUND_UP(1000000, 925));
+> +		/* At this point conversion must be completed, but anyway... */
+> +		while (1) {
+Might be worth a timeout and adding a sleep in here to avoid a tight
+spin.  Obviously it should always be fine, but who knows!
+> +			u32 t;
+> +
+> +			t = ep93xx_adc_reg_read(priv->base + EP93XX_ADC_RESULT);
+> +			if (t & EP93XX_ADC_SDR) {
+> +				/* Sign extend lower 16 bits */
+> +				*value = (s16)t;
+> +				break;
+> +			}
+> +		}
+> +		mutex_unlock(&priv->lock);
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		/* According to datasheet, range is -25000..25000 */
+> +		*value = 25000;
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* Typical supply voltage is 3.3v */
+> +		*value = (1ULL << 32) * 3300 / 50000;
+> +		*shift = 32;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info ep93xx_adc_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = ep93xx_read_raw,
+> +};
+> +
+> +static int ep93xx_adc_probe(struct platform_device *pdev)
+> +{
+> +	int ret;
+> +	struct iio_dev *iiodev;
+> +	struct ep93xx_adc_priv *priv;
+> +	struct clk *pclk;
+> +	struct resource *res;
+> +
+> +	iiodev = devm_iio_device_alloc(&pdev->dev,
+> +				       sizeof(struct ep93xx_adc_priv));
+> +	if (!iiodev)
+> +		return -ENOMEM;
+> +	priv = iio_priv(iiodev);
+> +
+> +	priv->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(priv->clk)) {
+> +		dev_err(&pdev->dev, "Cannot obtain clock");
+> +		return PTR_ERR(priv->clk);
+> +	}
+> +
+> +	pclk = clk_get_parent(priv->clk);
+> +	if (!pclk) {
+> +		dev_warn(&pdev->dev, "Cannot obtain parent clock");
+> +	} else {
+> +		/*
+> +		 * This is actually a place for improvement:
+> +		 * EP93xx ADC supports two clock divisors -- 4 and 16,
+> +		 * resulting in conversion rates 3750 and 925 samples per second
+> +		 * respectively with 500uS or 2ms settling time respectively.
+> +		 * One might find this interesting enough to be configurable.
+> +		 */
+> +		ret = clk_set_rate(priv->clk, clk_get_rate(pclk) / 16);
+> +		if (ret)
+> +			dev_warn(&pdev->dev, "Cannot set clock rate");
+> +		/*
+> +		 * We can tolerate rate setting failure because the module should
+> +		 * work in any case.
+> +		 */
+> +	}
+> +
+> +	ret = clk_enable(priv->clk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Cannot enable clock");
+> +		return ret;
+> +	}
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!res) {
+> +		dev_err(&pdev->dev, "Cannot obtain memory resource");
+> +		return -ENXIO;
+> +	}
+> +	priv->base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(priv->base)) {
+> +		dev_err(&pdev->dev, "Cannot map memory resource");
+> +		return PTR_ERR(priv->base);
+> +	}
+> +
+> +	iiodev->dev.parent = &pdev->dev;
+> +	iiodev->name = dev_name(&pdev->dev);
+> +	iiodev->modes = INDIO_DIRECT_MODE;
+> +	iiodev->info = &ep93xx_adc_info;
+> +	iiodev->num_channels = ARRAY_SIZE(ep93xx_adc_channels);
+> +	iiodev->channels = ep93xx_adc_channels;
+> +
+> +	priv->lastch = -1;
+> +	mutex_init(&priv->lock);
+> +
+> +	ret = devm_iio_device_register(&pdev->dev, iiodev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	platform_set_drvdata(pdev, iiodev);
+I'd reorder as Peter suggested - it doesn't mater obviously but
+you could then do return devm_iio_device_register and save
+a few lines of code without a lost of functionality.
+
+However, this is racey as the userspace interface will be removed
+'after' the clk_disable below.  Basic rule of thumb is that if
+you do anything at all in the remove, you can't use devm_iio_device_register
+as if it makes sense to do it it must effect device functionality of a
+device still exposed to userspace.
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int ep93xx_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *iiodev = platform_get_drvdata(pdev);
+> +	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
+Personal taste, but I'd roll the above into one call as we never
+use the iio_dev in this function..
+
+> +
+> +	clk_disable(priv->clk);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver ep93xx_adc_driver = {
+> +	.driver = {
+> +		.name = "ep93xx-adc",
+> +	},
+> +	.probe = ep93xx_adc_probe,
+> +	.remove = ep93xx_adc_remove,
+> +};
+> +module_platform_driver(ep93xx_adc_driver);
+> +
+> +MODULE_AUTHOR("Alexander Sverdlin <alexander.sverdlin@gmail.com>");
+> +MODULE_DESCRIPTION("Cirrus Logic EP93XX ADC driver");
+> +MODULE_LICENSE("GPL");
+> +MODULE_ALIAS("platform:ep93xx-adc");
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
