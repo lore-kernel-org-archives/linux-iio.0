@@ -1,147 +1,127 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44627 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751680AbbK2Qdh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 11:33:37 -0500
-Subject: Re: [PATCH 2/2] iio: ina2xx: provide a sysfs parameter to allow async
- readout of the ADCs
-To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux@roeck-us.net,
-	jdelvare@suse.com
-References: <1448450896-24387-1-git-send-email-mtitinger@baylibre.com>
- <1448450896-24387-3-git-send-email-mtitinger@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	lm-sensors@lm-sensors.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <565B28DF.60002@kernel.org>
-Date: Sun, 29 Nov 2015 16:33:35 +0000
+Return-Path: <alexander.sverdlin@gmail.com>
+Subject: Re: [PATCH 5/5] iio: adc: New driver for Cirrus Logic EP93xx ADC
+To: Jonathan Cameron <jic23@kernel.org>,
+ Hartley Sweeten <hsweeten@visionengravers.com>,
+ Ryan Mallon <rmallon@gmail.com>, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org
+References: <56558B23.4080506@gmail.com> <5655A0A5.20908@gmail.com>
+ <565B23FB.9040405@kernel.org>
+Cc: Russell King <linux@arm.linux.org.uk>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>
+From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Message-ID: <565B2A91.6050409@gmail.com>
+Date: Sun, 29 Nov 2015 17:40:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <1448450896-24387-3-git-send-email-mtitinger@baylibre.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <565B23FB.9040405@kernel.org>
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 25/11/15 11:28, Marc Titinger wrote:
-> This can lead to repeated or skipped samples depending on the clock beat
-> between the capture thread and the chip sampling clock, but will also spare
-> reading/waiting for the Capture Ready Flag and improve the available i2c
-> bandwidth for reading measurements.
+Hello Jonathan!
+
+Thanks for your review!
+
+On 29/11/15 17:12, Jonathan Cameron wrote:
+>> New driver adding support for ADC found on Cirrus Logic EP93xx series of SoCs.
+>> > Board specific code must take care to create platform device with all necessary
+>> > resources.
+>> > 
+>> > Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+> Datasheet links always appreciated if available.
 > 
-> Output of iio_info:
-> ...snip...
-> 4 device-specific attributes found:
->   attr 0: in_oversampling_ratio value: 4
->   attr 1: in_allow_async_readout value: 0
->   attr 2: integration_time_available value: 140 204 332 588 1100 2116 4156 8244
->   attr 3: in_sampling_frequency value: 114
->
-This is a good compromise if it is needed to get the rates as high as
-you need.
+> Right now Cirrus' website is fighting back so I can't get to any
+> of their docs - hence bare with me!
 
-One suggestion inline.
+Yeah, with Cirrus one is served elsewhere much better than on the Cirrus's website.
+First hit by Google (on "ep9301 user's guide") gives the document which is even
+missing at Cirrus:
+https://www.embeddedarm.com/documentation/third-party/ts-7000_ep9301-ug.pdf
 
-Jonathan
+> A few bits inline.  Primary question which is hard to answer without the
+> datasheets is what meaning the channel names actually have?  THe brief
+> says they are general purpose.  If so then it's not really valid
+> to given them extended names suggesting anything more.
 
-> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
-> ---
->  drivers/iio/adc/ina2xx-iio.c | 48 ++++++++++++++++++++++++++++++++++++++------
->  1 file changed, 42 insertions(+), 6 deletions(-)
+High end models (EP9307, EP9312, EP9315) have TS controller, which can operate
+in general purpose ADC mode. In this mode these names are just ball names on the
+pinout. They are all the same. There is only one issue -- I have not found any
+official numbering for these devices, therefore wanted to expose this naming to
+user space. Low end devices (EP9301, EP9302) have same hw block where TS mode is
+not advertised, and even though the balls/pins are still named as in TS controller,
+they are also referred as ADC0-ADC4 in datasheet. But there are only 5 of them,
+so we do not know the numbers for other 3 in the bigger devices.
+
+If this is not the purpose of extend_name, I'll drop them.
+
+[...]
+
+>> > +static const struct iio_chan_spec ep93xx_adc_channels[EP93XX_NUM_CHANNELS] = {
+>> > +	EP93XX_ADC_CH(0, "YM",	"ym",	0x608),
+>> > +	EP93XX_ADC_CH(1, "SXP",	"sxp",	0x680),
+>> > +	EP93XX_ADC_CH(2, "SXM",	"sxm",	0x640),
+>> > +	EP93XX_ADC_CH(3, "SYP",	"syp",	0x620),
+>> > +	EP93XX_ADC_CH(4, "SYM",	"sym",	0x610),
+>> > +	EP93XX_ADC_CH(5, "XP",	"xp",	0x601),
+>> > +	EP93XX_ADC_CH(6, "XM",	"xm",	0x602),
+>> > +	EP93XX_ADC_CH(7, "YP",	"yp",	0x604),
+>> > +};
+> Hmm.  I'm a little dubious about the extended names.  What in the device
+> acutally restricts them to these uses?  This naming is probably something
+> to do with touch screens?  If there is no special purpose hardware then
+> I'd just drop the extended names (datasheet names obviously fine if thats
+> what they are called on the datasheet!)
+
+see above...
+
+>> > +		ep93xx_adc_delay(DIV_ROUND_UP(1000000, 925),
+>> > +				 DIV_ROUND_UP(1000000, 925));
+>> > +		/* At this point conversion must be completed, but anyway... */
+>> > +		while (1) {
+> Might be worth a timeout and adding a sleep in here to avoid a tight
+> spin.  Obviously it should always be fine, but who knows!
+
+Yes, I've added a timeout for v2. We really don't need a second sleep here, the sleep
+before should ensure polling ends up immediately. But timeout will ensure read
+will not hang even if HW is exploded.
+
+[...]
+
+>> > +	ret = devm_iio_device_register(&pdev->dev, iiodev);
+>> > +	if (ret)
+>> > +		return ret;
+>> > +
+>> > +	platform_set_drvdata(pdev, iiodev);
+> I'd reorder as Peter suggested - it doesn't mater obviously but
+> you could then do return devm_iio_device_register and save
+> a few lines of code without a lost of functionality.
 > 
-> diff --git a/drivers/iio/adc/ina2xx-iio.c b/drivers/iio/adc/ina2xx-iio.c
-> index 4a0026c..c153164 100644
-> --- a/drivers/iio/adc/ina2xx-iio.c
-> +++ b/drivers/iio/adc/ina2xx-iio.c
-> @@ -114,6 +114,7 @@ struct ina2xx_chip_info {
->  	int avg;
->  	int itb; /* Bus voltage integration time uS */
->  	int its; /* Shunt voltage integration tim uS */
-> +	bool allow_async_readout;
->  };
->  
->  static const struct ina2xx_config ina2xx_config[] = {
-> @@ -335,6 +336,33 @@ _err:
->  }
->  
->  
-> +static ssize_t ina2xx_allow_async_readout_show(struct device *dev,
-> +					   struct device_attribute *attr,
-> +					   char *buf)
-> +{
-> +	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
-> +
-> +	return sprintf(buf, "%d\n", chip->allow_async_readout);
-> +}
-> +
-> +static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
-> +				struct device_attribute *attr,
-> +				const char *buf, size_t len)
-> +{
-> +	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
-> +	unsigned long val;
-> +	int ret;
-> +
-strtobool would simplify this.
-> +	ret = kstrtoul((const char *) buf, 10, &val);
-> +	if (ret)
-> +		return -EINVAL;
-> +
-> +	chip->allow_async_readout = !!val;
-> +
-> +	return len;
-> +}
-> +
-> +
->  #define INA2XX_CHAN(_type, _index, _address) { \
->  	.type = _type, \
->  	.address = _address, \
-> @@ -402,11 +430,12 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
->  	 * GPIO a triggered buffer could be used instead.
->  	 * For now, we pay for that extra read of the ALERT register
->  	 */
-> -	do {
-> -		ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
-> -				  &alert);
-> -		if (ret < 0)
-> -			goto _err;
-> +	if (!chip->allow_async_readout)
-> +		do {
-> +			ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
-> +					  &alert);
-> +			if (ret < 0)
-> +				goto _err;
->  
->  		alert &= INA266_CVRF;
->  		trace_printk("Conversion ready: %d\n", !!alert);
-> @@ -457,7 +486,8 @@ static int ina2xx_capture_thread(void *data)
->  	 * Poll a bit faster than the chip internal Fs, in case
->  	 * we wish to sync with the conversion ready flag.
->  	 */
-> -	sampling_us -= 200;
-> +	if (!chip->allow_async_readout)
-> +		sampling_us -= 200;
->  
->  	do {
->  		buffer_us = ina2xx_work_buffer(indio_dev);
-> @@ -480,6 +510,7 @@ int ina2xx_buffer_enable(struct iio_dev *indio_dev)
->  		     1000000/sampling_us, chip->avg);
->  
->  	trace_printk("Expected work period: %u us\n", sampling_us);
-> +	trace_printk("Async readout mode: %d\n", chip->allow_async_readout);
->  
->  	prev_ns = iio_get_time_ns();
->  
-> @@ -519,7 +550,12 @@ static int ina2xx_debug_reg(struct iio_dev *indio_dev,
->  /* frequencies matching the cummulated integration times for vshunt and vbus */
->  static IIO_CONST_ATTR_INT_TIME_AVAIL("140 204 332 588 1100 2116 4156 8244");
->  
-> +static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
-> +		       ina2xx_allow_async_readout_show,
-> +		       ina2xx_allow_async_readout_store, 0);
-> +
->  static struct attribute *ina2xx_attributes[] = {
-> +	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
->  	&iio_const_attr_integration_time_available.dev_attr.attr,
->  	NULL,
->  };
-> 
+> However, this is racey as the userspace interface will be removed
+> 'after' the clk_disable below.  Basic rule of thumb is that if
+> you do anything at all in the remove, you can't use devm_iio_device_register
+> as if it makes sense to do it it must effect device functionality of a
+> device still exposed to userspace.
 
+This is a valid point... Will drop devm_iio_device_register() usage in v2...
+
+>> > +
+>> > +	return 0;
+>> > +}
+>> > +
+>> > +static int ep93xx_adc_remove(struct platform_device *pdev)
+>> > +{
+>> > +	struct iio_dev *iiodev = platform_get_drvdata(pdev);
+>> > +	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
+> Personal taste, but I'd roll the above into one call as we never
+> use the iio_dev in this function..
+
+Well, dropping devm_iio_device_register() will require its usage...
+
+>> > +
+>> > +	clk_disable(priv->clk);
+>> > +
+>> > +	return 0;
+>> > +}
+
+[...]
+
+Regards,
+Alexander.
