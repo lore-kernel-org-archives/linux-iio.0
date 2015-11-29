@@ -1,293 +1,798 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44947 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751558AbbK2R3T (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 12:29:19 -0500
-Subject: Re: [PULL] IIO - First set of new drivers, core support and cleanups
- for the 4.5 cycle
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <5651D09C.6030209@kernel.org> <5651D1DA.9020903@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <565B35ED.6000206@kernel.org>
-Date: Sun, 29 Nov 2015 17:29:17 +0000
+Return-Path: <linux@roeck-us.net>
+Subject: Re: [PATCH 1/2] iio: ina2xx: add support for TI INA2xx Power Monitors
+To: Jonathan Cameron <jic23@kernel.org>,
+ Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de, lars@metafoo.de,
+ pmeerw@pmeerw.net, jdelvare@suse.com
+References: <1448450896-24387-1-git-send-email-mtitinger@baylibre.com>
+ <1448450896-24387-2-git-send-email-mtitinger@baylibre.com>
+ <565B287B.6010008@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ lm-sensors@lm-sensors.org
+From: Guenter Roeck <linux@roeck-us.net>
+Message-ID: <565B381F.7000208@roeck-us.net>
+Date: Sun, 29 Nov 2015 09:38:39 -0800
 MIME-Version: 1.0
-In-Reply-To: <5651D1DA.9020903@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <565B287B.6010008@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Greg,
+On 11/29/2015 08:31 AM, Jonathan Cameron wrote:
+> On 25/11/15 11:28, Marc Titinger wrote:
+>> in SOFTWARE buffer mode, a kthread will capture the active scan_elements
+>> into a kfifo, then compute the remaining time until the next capture tick
+>> and do an active wait (udelay).
+>>
+>> This will produce a stream of up to fours channels plus a 64bits
+>> timestamps (ns).
+>>
+>> Tested with ina226, on BeagleBoneBlack.
+>>
+>> Datasheet: http://www.ti.com/lit/gpn/ina226
+>>
+>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+> A few more bits from me, but basically looking good.
+>
+> We do however, need to make the hwmon guys aware this is going on.
+> Please cc their list on the next version.
+>
+> Last thing we want is for this to turn up as a surprise!
+>
 
-Did this one and the fixes set sent a few minutes before it slip 
-past you in your usual deluge of email?
+I have seen the original patch, so no surprise here. Just not sure
+if we should remove the hwmon driver after the iio driver is accepted.
+Even though the stated goal is different, it seems to me that having
+two drivers really does not make sense. Any thoughts ?
 
-Thanks,
+Guenter
 
-Jonathan
-
-On 22/11/15 14:31, Jonathan Cameron wrote:
-> 
-> Hi Greg,
-> 
-> When this one and the fixes set I sent a few minutes ago merge you curiously
-> get an issue with drivers/staging/iio/Kconfig.  The right resolution is
-> to dump all the dummy driver stuff.
-> 
-> All the other changes related to that move and various automerge stuff that
-> occurs looks fine to me.
-> 
-> Thanks as ever for dealing with our mess ;)
-> 
 > Jonathan
-> 
-> On 22/11/15 14:26, Jonathan Cameron wrote:
->> The following changes since commit c3af8a28f43315fc46753465a4e77e5619dd9f30:
+>> ---
+>>   drivers/iio/adc/Kconfig      |  10 +
+>>   drivers/iio/adc/Makefile     |   1 +
+>>   drivers/iio/adc/ina2xx-iio.c | 684 +++++++++++++++++++++++++++++++++++++++++++
+>>   3 files changed, 695 insertions(+)
+>>   create mode 100644 drivers/iio/adc/ina2xx-iio.c
 >>
->>   staging: IB/hfi1: use TASK_COMM_LEN in hfi1_ctxtdata (2015-10-17 22:05:17 -0700)
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index eb0cd89..9b87372 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -170,6 +170,16 @@ config EXYNOS_ADC
+>>   	  of SoCs for drivers such as the touchscreen and hwmon to use to share
+>>   	  this resource.
 >>
->> are available in the git repository at:
+>> +config INA2XX_IIO
+>> +	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
+>> +	depends on I2C
+>> +	select REGMAP_I2C
+>> +	select IIO_BUFFER
+>> +	help
+>> +	  Say yes here to build support for TI INA2xx familly Power Monitors.
+>> +
+>> +	  Note that this is not the existing hwmon interface for this device.
+>> +
+>>   config LP8788_ADC
+>>   	tristate "LP8788 ADC driver"
+>>   	depends on MFD_LP8788
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index a096210..74e4341 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -19,6 +19,7 @@ obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+>>   obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>>   obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+>>   obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>> +obj-$(CONFIG_INA2XX_IIO) += ina2xx-iio.o
+>>   obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>>   obj-$(CONFIG_MAX1027) += max1027.o
+>>   obj-$(CONFIG_MAX1363) += max1363.o
+>> diff --git a/drivers/iio/adc/ina2xx-iio.c b/drivers/iio/adc/ina2xx-iio.c
+>> new file mode 100644
+>> index 0000000..4a0026c
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/ina2xx-iio.c
+>> @@ -0,0 +1,684 @@
+>> +/*
+>> + * INA2XX Current and Power Monitors
+>> + *
+>> + * Copyright 2015 Baylibre SAS.
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License version 2 as
+>> + * published by the Free Software Foundation.
+>> + *
+>> + * Based on linux/drivers/iio/adc/ad7291.c
+>> + * Copyright 2010-2011 Analog Devices Inc.
+>> + *
+>> + * Based on linux/drivers/hwmon/ina2xx.c
+>> + * Copyright 2012 Lothar Felten <l-felten@ti.com>
+>> + *
+>> + * Licensed under the GPL-2 or later.
+>> + *
+>> + * IIO driver for INA219-220-226-230-231
+>> + *
+>> + * Configurable 7-bit I2C slave address from 0x40 to 0x4F
+>> + */
+>> +#include <linux/module.h>
+>> +#include <linux/kthread.h>
+>> +#include <linux/delay.h>
+>> +#include <linux/iio/kfifo_buf.h>
+>> +#include <linux/iio/sysfs.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/regmap.h>
+>> +#include <linux/platform_data/ina2xx.h>
+>> +
+>> +#include <linux/util_macros.h>
+>> +
+>> +/*
+>> + * INA2XX registers definition
+>> + */
+>> +/* common register definitions */
+>> +#define INA2XX_CONFIG                   0x00
+>> +#define INA2XX_SHUNT_VOLTAGE            0x01	/* readonly */
+>> +#define INA2XX_BUS_VOLTAGE              0x02	/* readonly */
+>> +#define INA2XX_POWER                    0x03	/* readonly */
+>> +#define INA2XX_CURRENT                  0x04	/* readonly */
+>> +#define INA2XX_CALIBRATION              0x05
+>> +
+>> +#define INA226_ALERT_MASK		0x06
+>> +#define INA266_CVRF			BIT(3)
+>> +
+>> +/* register count */
+>> +#define INA219_REGISTERS                6
+>> +#define INA226_REGISTERS                8
+>> +#define INA2XX_MAX_REGISTERS            8
+>> +
+>> +/* settings - depend on use case */
+>> +#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=8 */
+>> +#define INA226_CONFIG_DEFAULT           0x4327
+>> +#define INA226_DEFAULT_AVG              4
+>> +#define INA226_DEFAULT_IT		1110
+>> +
+>> +#define INA2XX_RSHUNT_DEFAULT           10000
+>> +
+>> +/*
+>> + * bit mask for reading the averaging setting in the configuration register
+>> + * FIXME: use regmap_fields.
+>> + */
+>> +#define INA2XX_MODE_MASK	GENMASK(3, 0)
+>> +
+>> +#define INA226_AVG_MASK		GENMASK(11, 9)
+>> +#define INA226_SHIFT_AVG(val)	((val) << 9)
+>> +
+>> +/* Integration time for VBus */
+>> +#define INA226_ITB_MASK		GENMASK(8, 6)
+>> +#define INA226_SHIFT_ITB(val)	((val) << 6)
+>> +
+>> +/*Integration Time for VShunt */
+>> +#define INA226_ITS_MASK		GENMASK(5, 3)
+>> +#define INA226_SHIFT_ITS(val)	((val) << 3)
+>> +
+>> +
+>> +static bool ina2xx_is_writeable_reg(struct device *dev, unsigned int reg)
+>> +{
+>> +	return (reg == INA2XX_CONFIG) || (reg > INA2XX_CURRENT);
+>> +}
+>> +
+>> +static bool ina2xx_is_volatile_reg(struct device *dev, unsigned int reg)
+>> +{
+>> +	return (reg != INA2XX_CONFIG);
+>> +}
+>> +
+>> +static struct regmap_config ina2xx_regmap_config = {
+>> +	.reg_bits = 8,
+>> +	.val_bits = 16,
+>> +
+>> +	.writeable_reg = ina2xx_is_writeable_reg,
+>> +	.volatile_reg = ina2xx_is_volatile_reg,
+>> +};
+>> +
+>> +enum ina2xx_ids { ina219, ina226 };
+>> +
+>> +struct ina2xx_config {
+>> +	u16 config_default;
+>> +	int calibration_factor;
+>> +	int registers;
+>> +	int shunt_div;
+>> +	int bus_voltage_shift;
+>> +	int bus_voltage_lsb;	/* uV */
+>> +	int power_lsb;		/* uW */
+>> +};
+>> +
+>> +struct ina2xx_chip_info {
+>> +	struct regmap *regmap;
+>> +	struct task_struct *task;
+>> +	const struct ina2xx_config *config;
+>> +	struct mutex state_lock;
+>> +	long rshunt;
+>> +	int avg;
+>> +	int itb; /* Bus voltage integration time uS */
+>> +	int its; /* Shunt voltage integration tim uS */
+>> +};
+>> +
+>> +static const struct ina2xx_config ina2xx_config[] = {
+>> +	[ina219] = {
+>> +		    .config_default = INA219_CONFIG_DEFAULT,
+>> +		    .calibration_factor = 40960000,
+>> +		    .registers = INA219_REGISTERS,
+>> +		    .shunt_div = 100,
+>> +		    .bus_voltage_shift = 3,
+>> +		    .bus_voltage_lsb = 4000,
+>> +		    .power_lsb = 20000,
+>> +		    },
+>> +	[ina226] = {
+>> +		    .config_default = INA226_CONFIG_DEFAULT,
+>> +		    .calibration_factor = 5120000,
+>> +		    .registers = INA226_REGISTERS,
+>> +		    .shunt_div = 400,
+>> +		    .bus_voltage_shift = 0,
+>> +		    .bus_voltage_lsb = 1250,
+>> +		    .power_lsb = 25000,
+>> +		    },
+>> +};
+>> +
+>> +static int ina2xx_get_value(struct ina2xx_chip_info *chip, u8 reg,
+>> +			    unsigned int regval, int *val, int *uval)
+>> +{
+>> +	*val = 0;
+>> +
+>> +	switch (reg) {
+>> +	case INA2XX_SHUNT_VOLTAGE:
+>> +		/* signed register */
+>> +		*uval = DIV_ROUND_CLOSEST((s16) regval,
+>> +					  chip->config->shunt_div);
+>> +		return IIO_VAL_INT_PLUS_MICRO;
+>> +
+>> +	case INA2XX_BUS_VOLTAGE:
+>> +		*uval = (regval >> chip->config->bus_voltage_shift)
+>> +			* chip->config->bus_voltage_lsb;
+>> +		*val = *uval/1000000;
+>> +		*uval = *uval % 1000000;
+>> +		return IIO_VAL_INT_PLUS_MICRO;
+>> +
+>> +	case INA2XX_POWER:
+>> +		*uval = regval * chip->config->power_lsb;
+>> +		*val = *uval/1000000;
+>> +		*uval = *uval % 1000000;
+>> +		return IIO_VAL_INT_PLUS_MICRO;
+>> +
+>> +	case INA2XX_CURRENT:
+>> +		/* signed register, LSB=1mA (selected), in mA */
+>> +		*uval = (s16) regval * 1000;
+>> +		return IIO_VAL_INT_PLUS_MICRO;
+>> +
+>> +	default:
+>> +		/* programmer goofed */
+>> +		WARN_ON_ONCE(1);
+>> +	}
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static int ina2xx_read_raw(struct iio_dev *indio_dev,
+>> +			   struct iio_chan_spec const *chan,
+>> +			   int *val, int *val2, long mask)
+>> +{
+>> +	int ret;
+>> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+>> +	unsigned int regval;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		ret = regmap_read(chip->regmap, chan->address, &regval);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +
+>> +		return ina2xx_get_value(chip, chan->address, regval, val, val2);
+>> +
+>> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>> +		*val = chip->avg;
+>> +		return IIO_VAL_INT;
+>> +
+>> +	case IIO_CHAN_INFO_INT_TIME:
+>> +		*val = 0;
+>> +		if (chan->address == INA2XX_SHUNT_VOLTAGE)
+>> +			*val2 = chip->its;
+>> +		else
+>> +			*val2 = chip->itb;
+>> +
+>> +		return IIO_VAL_INT_PLUS_MICRO;
+>> +	/*
+>> +	 * sample freq is read only, it is a consequence of
+>> +	 * 1/AVG*(CT_bus+CT_shunt)
+>> +	 */
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		*val = DIV_ROUND_CLOSEST(1000000,
+>> +		       (chip->itb + chip->its) * chip->avg);
+>> +
+>> +		return IIO_VAL_INT;
+>> +
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +/*
+>> + * Available averaging rates for ina226. The indices correspond with
+>> + * the bit values expected by the chip (according to the ina226 datasheet,
+>> + * table 3 AVG bit settings, found at
+>> + * http://www.ti.com/lit/ds/symlink/ina226.pdf.
+>> + */
+>> +static const int ina226_avg_tab[] = { 1, 4, 16, 64, 128, 256, 512, 1024 };
+>> +
+>> +static unsigned int ina226_set_average(struct ina2xx_chip_info *chip,
+>> +				       unsigned int val,
+>> +				       unsigned int *config)
+>> +{
+>> +	int bits;
+>> +
+>> +	if (val > 1024 || val < 1)
+>> +		return -EINVAL;
+>> +
+>> +	bits = find_closest(val, ina226_avg_tab,
+>> +			    ARRAY_SIZE(ina226_avg_tab));
+>> +
+>> +	chip->avg = ina226_avg_tab[bits];
+>> +
+>> +	*config &= ~INA226_AVG_MASK;
+>> +	*config |= INA226_SHIFT_AVG(bits) & INA226_AVG_MASK;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +/* Conversion times in uS */
+>> +static const int ina226_conv_time_tab[] = { 140, 204, 332, 588, 1100,
+>> +					    2116, 4156, 8244};
+>> +
+>> +static unsigned int ina226_set_itb(struct ina2xx_chip_info *chip,
+>> +				   unsigned int val,
+>> +				   unsigned int *config)
+>> +{
+>> +	int bits;
+>> +
+>> +	if (val > 8244 || val < 140)
+>> +		return -EINVAL;
+>> +
+>> +	bits = find_closest(val, ina226_conv_time_tab,
+>> +			ARRAY_SIZE(ina226_conv_time_tab));
+>> +
+>> +	chip->itb = ina226_conv_time_tab[bits];
+>> +
+>> +	*config &= ~INA226_ITB_MASK;
+>> +	*config |= INA226_SHIFT_ITB(bits) & INA226_ITB_MASK;
+>> +
+>> +	return 0;
+>> +}
+>> +
+> Could do with a slightly more informative name than its vs itb.
+> Or at least some docs explaining what it does.
+>> +static unsigned int ina226_set_its(struct ina2xx_chip_info *chip,
+>> +				   unsigned int val,
+>> +				   unsigned int *config)
+>> +{
+>> +	int bits;
+>> +
+>> +	if (val > 8244 || val < 140)
+>> +		return -EINVAL;
+>> +
+>> +	bits = find_closest(val, ina226_conv_time_tab,
+>> +			ARRAY_SIZE(ina226_conv_time_tab));
+>> +
+>> +	chip->its = ina226_conv_time_tab[bits];
+>> +
+>> +	*config &= ~INA226_ITS_MASK;
+>> +	*config |= INA226_SHIFT_ITS(bits) & INA226_ITS_MASK;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +
+>> +static int ina2xx_write_raw(struct iio_dev *indio_dev,
+>> +			    struct iio_chan_spec const *chan,
+>> +			    int val, int val2, long mask)
+>> +{
+>> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+>> +	int ret = 0;
+>> +	unsigned int config, tmp;
+>> +
+>> +	if (iio_buffer_enabled(indio_dev))
+>> +		return -EBUSY;
+>> +
+>> +	mutex_lock(&chip->state_lock);
+>> +
+>> +	ret = regmap_read(chip->regmap, INA2XX_CONFIG, &config);
+>> +	if (ret < 0)
+>> +		goto _err;
+>> +
+>> +	tmp = config;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>> +		ret = ina226_set_average(chip, val, &tmp);
+>> +		break;
+>> +
+>> +	case IIO_CHAN_INFO_INT_TIME:
+>> +		if (chan->address == INA2XX_SHUNT_VOLTAGE)
+>> +			ret = ina226_set_its(chip, val, &tmp);
+>> +		else
+>> +			ret = ina226_set_itb(chip, val, &tmp);
+>> +		break;
+>> +	default:
+>> +		ret = -EINVAL;
+>> +	}
+>> +
+>> +	if (!ret && (tmp != config))
+>> +		ret = regmap_write(chip->regmap, INA2XX_CONFIG, tmp);
+>> +_err:
+>> +	mutex_unlock(&chip->state_lock);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +
+>> +#define INA2XX_CHAN(_type, _index, _address) { \
+>> +	.type = _type, \
+>> +	.address = _address, \
+>> +	.indexed = 1, \
+>> +	.channel = (_index), \
+>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+>> +	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
+>> +				   BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
+>> +	.scan_index = (_index), \
+>> +	.scan_type = { \
+>> +		.sign = 'u', \
+>> +		.realbits = 16, \
+>> +		.storagebits = 16, \
+>> +	.endianness = IIO_BE, \
+>> +	} \
+>> +}
+>> +
+>> +/*Sampling Freq is a consequence of the integration times of the V channels.*/
+>> +#define INA2XX_CHAN_VOLTAGE(_index, _address) { \
+>> +	.type = IIO_VOLTAGE, \
+>> +	.address = _address, \
+>> +	.indexed = 1, \
+>> +	.channel = (_index), \
+>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+>> +			      BIT(IIO_CHAN_INFO_INT_TIME), \
+>> +	.scan_index = (_index), \
+>> +	.scan_type = { \
+>> +		.sign = 'u', \
+>> +		.realbits = 16, \
+>> +		.storagebits = 16, \
+>> +	.endianness = IIO_BE, \
+>> +	} \
+>> +}
+>> +
+>> +
+>> +static const struct iio_chan_spec ina2xx_channels[] = {
+>> +	INA2XX_CHAN_VOLTAGE(0, INA2XX_SHUNT_VOLTAGE),
+>> +	INA2XX_CHAN_VOLTAGE(1, INA2XX_BUS_VOLTAGE),
+>> +	INA2XX_CHAN(IIO_CURRENT, 2, INA2XX_CURRENT),
+>> +	INA2XX_CHAN(IIO_POWER, 3, INA2XX_POWER),
+>> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+>> +};
+>> +
+>> +
+>> +static s64 prev_ns;
+> This prevents you having more than one instance of the device - move it into
+> your chip_info.
+>> +
+>> +static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+>> +{
+>> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+>> +	unsigned short data[8];
+>> +	int bit, ret = 0, i = 0;
+>> +	unsigned long buffer_us = 0, elapsed_us = 0;
+>> +	s64 time_a, time_b;
+>> +	unsigned int alert;
+>> +
+>> +	time_a = iio_get_time_ns();
+>> +
+>> +	/*
+>> +	 * Because the timer thread and the chip conversion clock
+>> +	 * are asynchronous, the period difference will eventually
+>> +	 * result in reading V[k-1] again, or skip V[k] at time Tk.
+>> +	 * In order to resync the timer with the conversion process
+>> +	 * we check the ConVersionReadyFlag.
+>> +	 * On hardware that supports using the ALERT pin to toggle a
+>> +	 * GPIO a triggered buffer could be used instead.
+>> +	 * For now, we pay for that extra read of the ALERT register
+>> +	 */
+>> +	do {
+>> +		ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
+>> +				  &alert);
+>> +		if (ret < 0)
+>> +			goto _err;
+>> +
+>> +		alert &= INA266_CVRF;
+>> +		trace_printk("Conversion ready: %d\n", !!alert);
+>> +
+>> +	} while (!alert);
+>> +
+>> +	/*
+>> +	 * Single register reads: bulk_read will not work with ina226
+>> +	 * as there is no auto-increment of the address register for
+>> +	 * data length longer than 16bits.
+>> +	 */
+>> +	for_each_set_bit(bit, indio_dev->active_scan_mask,
+>> +			 indio_dev->masklength) {
+>> +		unsigned int val;
+>> +
+>> +		ret = regmap_read(chip->regmap,
+>> +				  INA2XX_SHUNT_VOLTAGE + bit, &val);
+>> +		if (ret < 0)
+>> +			goto _err;
+>> +
+>> +		data[i++] = val;
+>> +	}
+>> +
+>> +	time_b = iio_get_time_ns();
+>> +
+>> +	iio_push_to_buffers_with_timestamp(indio_dev,
+>> +					   (unsigned int *)data, time_a);
+>> +
+>> +	buffer_us = (unsigned long)(time_b - time_a) / 1000;
+>> +	elapsed_us = (unsigned long)(time_a - prev_ns) / 1000;
+>> +
+>> +	trace_printk("uS: elapsed: %lu, buf: %lu\n", elapsed_us, buffer_us);
+>> +
+>> +	prev_ns = time_a;
+>> +
+>> +_err:
+>> +	return buffer_us;
+>> +};
+>> +
+>> +static int ina2xx_capture_thread(void *data)
+>> +{
+>> +	struct iio_dev *indio_dev = (struct iio_dev *)data;
+>> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+>> +	unsigned int sampling_us = (chip->itb + chip->its) * chip->avg;
+>> +	unsigned long buffer_us;
+>> +
+>> +	/*
+>> +	 * Poll a bit faster than the chip internal Fs, in case
+>> +	 * we wish to sync with the conversion ready flag.
+>> +	 */
+>> +	sampling_us -= 200;
+>> +
+>> +	do {
+>> +		buffer_us = ina2xx_work_buffer(indio_dev);
+>> +
+>> +		if (sampling_us > buffer_us)
+>> +			udelay(sampling_us - buffer_us);
+>> +
+>> +	} while (!kthread_should_stop());
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +int ina2xx_buffer_enable(struct iio_dev *indio_dev)
+>> +{
+>> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+>> +	unsigned int sampling_us = (chip->itb + chip->its) * chip->avg;
+>> +
+>> +	trace_printk("Enabling buffer w/ scan_mask %02x, freq = %d, avg =%u\n",
+>> +		     (unsigned int)(*indio_dev->active_scan_mask),
+>> +		     1000000/sampling_us, chip->avg);
+>> +
+>> +	trace_printk("Expected work period: %u us\n", sampling_us);
+>> +
+>> +	prev_ns = iio_get_time_ns();
+>> +
+>> +	chip->task = kthread_run(ina2xx_capture_thread, (void *)indio_dev,
+>> +				 "ina2xx-%uus", sampling_us);
+>> +
+>> +	return PTR_ERR_OR_ZERO(chip->task);
+>> +}
+>> +
+>> +int ina2xx_buffer_disable(struct iio_dev *indio_dev)
+>> +{
+>> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+>> +
+>> +	if (chip->task) {
+>> +		kthread_stop(chip->task);
+>> +		chip->task = NULL;
+>> +	}
+> nitpick: blank line here.
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct iio_buffer_setup_ops ina2xx_setup_ops = {
+>> +	.postenable = &ina2xx_buffer_enable,
+>> +	.postdisable = &ina2xx_buffer_disable,
+>> +};
+>> +
+>> +static int ina2xx_debug_reg(struct iio_dev *indio_dev,
+>> +			    unsigned reg, unsigned writeval, unsigned *readval)
+>> +{
+>> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+>> +
+>> +	if (!readval)
+>> +		return regmap_write(chip->regmap, reg, writeval);
+>> +
+>> +	return regmap_read(chip->regmap, reg, readval);
+>> +}
+>> +
+>> +/* frequencies matching the cummulated integration times for vshunt and vbus */
+> huh?  Integration time is in seconds... These seem unlikely to be valid
+> settings.
+>> +static IIO_CONST_ATTR_INT_TIME_AVAIL("140 204 332 588 1100 2116 4156 8244");
+>> +
+>> +static struct attribute *ina2xx_attributes[] = {
+>> +	&iio_const_attr_integration_time_available.dev_attr.attr,
+>> +	NULL,
+>> +};
+>> +
+>> +static const struct attribute_group ina2xx_attribute_group = {
+>> +	.attrs = ina2xx_attributes,
+>> +};
+>> +
+>> +static const struct iio_info ina2xx_info = {
+>> +	.debugfs_reg_access = &ina2xx_debug_reg,
+>> +	.read_raw = &ina2xx_read_raw,
+>> +	.write_raw = &ina2xx_write_raw,
+>> +	.attrs = &ina2xx_attribute_group,
+>> +	.driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +/* Initialize the configuration and calibration registers. */
+>> +static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
+>> +{
+>> +	u16 regval;
+>> +	int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
+>> +
+>> +	if (ret < 0)
+>> +		return ret;
+>> +	/*
+>> +	 * Set current LSB to 1mA, shunt is in uOhms
+>> +	 * (equation 13 in datasheet). We hardcode a Current_LSB
+>> +	 * of 1.0 x10-6. The only remaining parameter is RShunt
+>> +	 * There is no need to expose the CALIBRATION register
+>> +	 * to the user for now.
+>> +	 */
+>> +	regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
+>> +			    chip->rshunt);
+>> +
+>> +	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
+>> +}
+>> +
+>> +static int ina2xx_probe(struct i2c_client *client,
+>> +			const struct i2c_device_id *id)
+>> +{
+>> +	struct ina2xx_chip_info *chip;
+>> +	struct iio_dev *indio_dev;
+>> +	struct iio_buffer *buffer;
+>> +	int ret;
+>> +	unsigned int val;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	chip = iio_priv(indio_dev);
+>> +
+>> +	chip->config = &ina2xx_config[id->driver_data];
+>> +
+>> +	if (of_property_read_u32(client->dev.of_node,
+>> +				 "shunt-resistor", &val) < 0) {
+>> +		struct ina2xx_platform_data *pdata =
+>> +		    dev_get_platdata(&client->dev);
+>> +
+>> +		if (pdata)
+>> +			val = pdata->shunt_uohms;
+>> +		else
+>> +			val = INA2XX_RSHUNT_DEFAULT;
+>> +	}
+>> +
+>> +	if (val <= 0 || val > chip->config->calibration_factor)
+>> +		return -ENODEV;
+>> +
+>> +	chip->rshunt = val;
+>> +
+>> +	ina2xx_regmap_config.max_register = chip->config->registers;
+>> +
+>> +	mutex_init(&chip->state_lock);
+>> +
+>> +	/* this is only used for device removal purposes */
+>> +	i2c_set_clientdata(client, indio_dev);
+>> +
+>> +	indio_dev->name = id->name;
+>> +	indio_dev->channels = ina2xx_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(ina2xx_channels);
+>> +
+>> +	indio_dev->dev.parent = &client->dev;
+>> +	indio_dev->info = &ina2xx_info;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
+>> +
+>> +	chip->regmap = devm_regmap_init_i2c(client, &ina2xx_regmap_config);
+>> +	if (IS_ERR(chip->regmap)) {
+>> +		dev_err(&client->dev, "failed to allocate register map\n");
+>> +		return PTR_ERR(chip->regmap);
+>> +	}
+>> +
+>> +	/* Patch the current config register with default. */
+>> +	val = chip->config->config_default;
+>> +
+>> +	if (id->driver_data == ina226) {
+>> +		ina226_set_average(chip, INA226_DEFAULT_AVG, &val);
+>> +		ina226_set_itb(chip, INA226_DEFAULT_IT, &val);
+>> +		ina226_set_its(chip, INA226_DEFAULT_IT, &val);
+>> +	}
+>> +
+>> +	ret = ina2xx_init(chip, val);
+>> +	if (ret < 0) {
+>> +		dev_err(&client->dev, "error configuring the device: %d\n",
+>> +			ret);
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	buffer = devm_iio_kfifo_allocate(&indio_dev->dev);
+>> +	if (!buffer)
+>> +		return -ENOMEM;
+>> +
+>> +	indio_dev->setup_ops = &ina2xx_setup_ops;
+>> +
+>> +	iio_device_attach_buffer(indio_dev, buffer);
+>> +
+>> +	return devm_iio_device_register(&client->dev, indio_dev);
+>> +}
+>> +
+>> +
+>> +static int ina2xx_remove(struct i2c_client *client)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	mutex_destroy(&chip->state_lock);
+>> +
+>> +	/* Powerdown */
+>> +	ret = regmap_update_bits(chip->regmap, INA2XX_CONFIG,
+>> +				  INA2XX_MODE_MASK, 0);
+>> +
+>> +	iio_device_unregister(indio_dev);
+> Peter already covered this to a degree.
+>
+> iio_device_unregister removes the userspace interface - hence it
+> must be the first thing done in remove.
+>
+> If you use devm_ version of register it will occur at the end of the
+> remove.  Hence if the remove has anything in it, you pretty much
+> can't use the devm_iio_device_register without introducing a nasty
+> race condition.  Hence you don't want the devm version here and you
+> want to move iio_device_unregister to the beginning of this function.
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +
+>> +static const struct i2c_device_id ina2xx_id[] = {
+>> +	{"ina219", ina219},
+>> +	{"ina220", ina219},
+>> +	{"ina226", ina226},
+>> +	{"ina230", ina226},
+>> +	{"ina231", ina226},
+>> +	{}
+>> +};
+>> +
+>> +MODULE_DEVICE_TABLE(i2c, ina2xx_id);
+>> +
+>> +static struct i2c_driver ina2xx_driver = {
+>> +	.driver = {
+>> +		   .name = KBUILD_MODNAME,
+>> +	},
+>> +	.probe = ina2xx_probe,
+>> +	.remove = ina2xx_remove,
+>> +	.id_table = ina2xx_id,
+>> +};
+>> +
+>> +module_i2c_driver(ina2xx_driver);
+>> +
+>> +MODULE_AUTHOR("Marc Titinger <marc.titinger@baylibre.com>");
+>> +MODULE_DESCRIPTION("Texas Instruments INA2XX ADC driver");
+>> +MODULE_LICENSE("GPL v2");
 >>
->>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.5a
->>
->> for you to fetch changes up to 4ac4e086fd8c59e6b69089e6f7605500b63a6d17:
->>
->>   iio: pulsedlight-lidar-lite: add runtime PM (2015-11-22 12:18:47 +0000)
->>
->> ----------------------------------------------------------------
->> First set of new device support, features and cleanups for IIO in the 4.5 cycle
->>
->> Usual mixed bag, but the big item perhaps in this series is the DMA buffer
->> support added by Lars-Peter Clausen. It's been in the works for a long time
->> and it will be interesting to see what hardware support shows up now that
->> this is available.
->>
->> New core features + associate cleanup.
->> * Add generic DMA buffer infrastructure
->> * Add a DMAengine framework based buffer
->>  Also associated minor changes.
->>    - Set the device buffer watermark based on the minimum watermark for all
->>      attached buffers rather than just the 'primary' one.
->>    - iio_buffer_init - only set the watermark default if one hasn't already
->>      been provided.  This allows simple support for devices with a fixed
->>      watermark.
->>    - read only attribute for watermark on fixed watermark devices.
->>    - add explicit buffer enable/disable callbacks to allow the buffer to
->>      do more than trivial actions when it is being turned on and off.
->> * IIO_VAL_INT support in write_raw_get_fmt function.
->>
->> New device support
->> * Freescale MMA7455/7456L accelerometers
->> * Memsic MXC6255XC accelerometer
->> * ST lis2dh12 accelerometer
->> * TI ADS8688 ADC
->> * TI Palamas (twl6035/7) gpadc
->>
->> New driver features
->> * mma8452
->>   - support either of the available interrupt pins to cope with the case
->>     where board layout has lead to a particular one being connected.
->>
->> Staging graduation
->> * Dummy driver
->>   - this driver acts as both an example and a test device for those with
->>     out hardware to develop userspace code against.
->>
->> Cleanups and minor bits and bobs.
->> * treewide
->>   - Sort out the ordering of iio_device_register/unregister vs runtime
->>     pm function calls so that it's all nice and consistent and not race
->>     prone.
->>   - Check sscanf return values.  None of the cases will actually happen as
->>     the strings are supplied internally, but best to be consistent on this.
->> * ad7780
->>   - switch over to the gpio descriptor interface and remove the now unused
->>     platform data which gets rid of a header entirely.
->> * ad7793
->>   - drop a pointless else statement.
->> * at91_adc
->>   - Swap kmalloc_array in for a kmalloc doing the same job.
->> * dummy
->>   - get rid of some commented out lines that snuck in during the move of
->>     the driver.
->> * lm3533-als
->>   - Print an error message on provision of an invalid resistance.
->> * mcp320x
->>   - Add compatible strings with vendor prefix and deprecate those with
->>     no vendor prefix.
->> * mxs-lradc
->>   - Use BIT macro in various places rather than shifted ones.
->> * pa12203001
->>   - Power off the chip if the registration fails.
->> * pulsedlight-lidar-lite
->>   - add runtime PM support.
->> * xilinx XADC
->>   - constify an iio_buffer_setup_ops structure.
->>
->> ----------------------------------------------------------------
->> Adriana Reus (2):
->>       iio: light: pa12203001: Poweroff chip if register fails
->>       iio: Reconcile operation order between iio_register/unregister and pm functions
->>
->> Bjorn Andersson (1):
->>       iio: light: lm3533-als: Print error message on invalid resistance
->>
->> Cristina Opriceana (1):
->>       iio: Move IIO Dummy Driver out of staging
->>
->> Dragos Bogdan (2):
->>       staging:iio:ad7780: Switch to the gpio descriptor interface
->>       staging:iio:ad7780: Remove the ad7780_platform_data
->>
->> Giuseppe Barba (1):
->>       iio: st-accel: add support for lis2dh12
->>
->> H. Nikolaus Schaller (1):
->>       iio:adc: add iio driver for Palmas (twl6035/7) gpadc
->>
->> Ioana Ciornei (2):
->>       iio: gyro: check sscanf return value
->>       iio: imu: check sscanf return value
->>
->> Javier Martinez Canillas (2):
->>       iio: adc: mcp320x: Deprecated compatible strings with no vendor prefix
->>       iio: adc: mcp320x: Add compatible with vendor prefix to OF table
->>
->> Joachim Eastwood (1):
->>       iio: accel: add Freescale MMA7455L/MMA7456L 3-axis accelerometer driver
->>
->> Jonathan Cameron (1):
->>       staging:iio: Delete some commented out lines in Kconfig and Makefile.
->>
->> Julia Lawall (1):
->>       iio: adc: xilinx: constify iio_buffer_setup_ops structure
->>
->> Lars-Peter Clausen (6):
->>       iio: Set device watermark based on watermark of all attached buffers
->>       iio:iio_buffer_init(): Only set watermark if not already set
->>       iio: Add support for indicating fixed watermarks
->>       iio: Add buffer enable/disable callbacks
->>       iio: Add generic DMA buffer infrastructure
->>       iio: Add a DMAengine framework based buffer
->>
->> Marek Belisko (1):
->>       iio:adc:palmas: add DT support
->>
->> Martin Kepplinger (1):
->>       iio: mma8452: support either of the available interrupt pins
->>
->> Matt Ranostay (1):
->>       iio: pulsedlight-lidar-lite: add runtime PM
->>
->> Nizam Haider (3):
->>       iio: adc: mxs-lradc: Prefer using the BIT macro
->>       iio: adc: ad7793: removed unnecessary else.
->>       IIO: adc: at91_adc.c Prefer kmalloc_array over kmalloc with multiply
->>
->> Sean Nyekjaer (3):
->>       iio: core: added support for IIO_VAL_INT
->>       iio: adc: Add TI ADS8688
->>       iio: ti-ads8688: Add DT binding documentation
->>
->> Teodora Baluta (1):
->>       iio: accel: add support for Memsic MXC6255XC sensor
->>
->>  .../devicetree/bindings/iio/accel/mma8452.txt      |   6 +
->>  .../devicetree/bindings/iio/adc/mcp320x.txt        |  30 +-
->>  .../devicetree/bindings/iio/adc/palmas-gpadc.txt   |  48 ++
->>  .../devicetree/bindings/iio/adc/ti-ads8688.txt     |  20 +
->>  .../devicetree/bindings/iio/st-sensors.txt         |   1 +
->>  drivers/iio/Kconfig                                |   1 +
->>  drivers/iio/Makefile                               |   1 +
->>  drivers/iio/accel/Kconfig                          |  42 +-
->>  drivers/iio/accel/Makefile                         |   6 +
->>  drivers/iio/accel/bmc150-accel-core.c              |  20 +-
->>  drivers/iio/accel/kxcjk-1013.c                     |  20 +-
->>  drivers/iio/accel/mma7455.h                        |  19 +
->>  drivers/iio/accel/mma7455_core.c                   | 311 ++++++++
->>  drivers/iio/accel/mma7455_i2c.c                    |  56 ++
->>  drivers/iio/accel/mma7455_spi.c                    |  52 ++
->>  drivers/iio/accel/mma8452.c                        |  21 +-
->>  drivers/iio/accel/mma9551.c                        |  19 +-
->>  drivers/iio/accel/mma9553.c                        |  20 +-
->>  drivers/iio/accel/mxc6255.c                        | 198 +++++
->>  drivers/iio/accel/st_accel.h                       |   1 +
->>  drivers/iio/accel/st_accel_core.c                  |   1 +
->>  drivers/iio/accel/st_accel_i2c.c                   |   5 +
->>  drivers/iio/accel/st_accel_spi.c                   |   1 +
->>  drivers/iio/adc/Kconfig                            |  18 +
->>  drivers/iio/adc/Makefile                           |   2 +
->>  drivers/iio/adc/ad7793.c                           |   5 +-
->>  drivers/iio/adc/at91_adc.c                         |   2 +-
->>  drivers/iio/adc/mcp320x.c                          |  28 +
->>  drivers/iio/adc/palmas_gpadc.c                     | 859 +++++++++++++++++++++
->>  drivers/iio/adc/ti-ads8688.c                       | 486 ++++++++++++
->>  drivers/iio/adc/xilinx-xadc-core.c                 |   2 +-
->>  drivers/iio/buffer/Kconfig                         |  20 +
->>  drivers/iio/buffer/Makefile                        |   2 +
->>  drivers/iio/buffer/industrialio-buffer-dma.c       | 683 ++++++++++++++++
->>  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 213 +++++
->>  drivers/iio/dummy/Kconfig                          |  35 +
->>  drivers/iio/dummy/Makefile                         |  10 +
->>  .../{staging/iio => iio/dummy}/iio_dummy_evgen.c   |   0
->>  .../{staging/iio => iio/dummy}/iio_dummy_evgen.h   |   0
->>  .../{staging/iio => iio/dummy}/iio_simple_dummy.c  |   0
->>  .../{staging/iio => iio/dummy}/iio_simple_dummy.h  |   0
->>  .../iio => iio/dummy}/iio_simple_dummy_buffer.c    |   0
->>  .../iio => iio/dummy}/iio_simple_dummy_events.c    |   0
->>  drivers/iio/gyro/adis16136.c                       |   4 +-
->>  drivers/iio/gyro/bmg160_core.c                     |  19 +-
->>  drivers/iio/imu/adis16400_core.c                   |   6 +-
->>  drivers/iio/imu/adis16480.c                        |   4 +-
->>  drivers/iio/imu/kmx61.c                            |  24 +-
->>  drivers/iio/industrialio-buffer.c                  |  58 +-
->>  drivers/iio/industrialio-core.c                    |   9 +
->>  drivers/iio/light/lm3533-als.c                     |   4 +-
->>  drivers/iio/light/pa12203001.c                     |  16 +-
->>  drivers/iio/light/rpr0521.c                        |  14 +-
->>  drivers/iio/magnetometer/bmc150_magn.c             |  20 +-
->>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c  |  56 +-
->>  drivers/staging/iio/Kconfig                        |  28 -
->>  drivers/staging/iio/Makefile                       |   7 -
->>  drivers/staging/iio/adc/ad7780.c                   |  36 +-
->>  drivers/staging/iio/adc/ad7780.h                   |  30 -
->>  drivers/staging/iio/adc/mxs-lradc.c                |   2 +-
->>  include/linux/iio/buffer-dma.h                     | 152 ++++
->>  include/linux/iio/buffer-dmaengine.h               |  18 +
->>  include/linux/iio/buffer.h                         |  16 +
->>  include/linux/mfd/palmas.h                         |  75 +-
->>  64 files changed, 3625 insertions(+), 237 deletions(-)
->>  create mode 100644 Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt
->>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads8688.txt
->>  create mode 100644 drivers/iio/accel/mma7455.h
->>  create mode 100644 drivers/iio/accel/mma7455_core.c
->>  create mode 100644 drivers/iio/accel/mma7455_i2c.c
->>  create mode 100644 drivers/iio/accel/mma7455_spi.c
->>  create mode 100644 drivers/iio/accel/mxc6255.c
->>  create mode 100644 drivers/iio/adc/palmas_gpadc.c
->>  create mode 100644 drivers/iio/adc/ti-ads8688.c
->>  create mode 100644 drivers/iio/buffer/industrialio-buffer-dma.c
->>  create mode 100644 drivers/iio/buffer/industrialio-buffer-dmaengine.c
->>  create mode 100644 drivers/iio/dummy/Kconfig
->>  create mode 100644 drivers/iio/dummy/Makefile
->>  rename drivers/{staging/iio => iio/dummy}/iio_dummy_evgen.c (100%)
->>  rename drivers/{staging/iio => iio/dummy}/iio_dummy_evgen.h (100%)
->>  rename drivers/{staging/iio => iio/dummy}/iio_simple_dummy.c (100%)
->>  rename drivers/{staging/iio => iio/dummy}/iio_simple_dummy.h (100%)
->>  rename drivers/{staging/iio => iio/dummy}/iio_simple_dummy_buffer.c (100%)
->>  rename drivers/{staging/iio => iio/dummy}/iio_simple_dummy_events.c (100%)
->>  delete mode 100644 drivers/staging/iio/adc/ad7780.h
->>  create mode 100644 include/linux/iio/buffer-dma.h
->>  create mode 100644 include/linux/iio/buffer-dmaengine.h
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+>
+>
