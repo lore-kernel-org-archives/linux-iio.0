@@ -1,223 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44064 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44163 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752931AbbK2O76 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 09:59:58 -0500
-Subject: Re: [PATCH 4/5] iio: light: us8152d: Add power management support
-To: Adriana Reus <adriana.reus@intel.com>
-References: <1448362792-5181-1-git-send-email-adriana.reus@intel.com>
- <1448362792-5181-5-git-send-email-adriana.reus@intel.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-	robh+dt@kernel.org, ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org, pawel.moll@arm.com, pmeerw@pmeerw.net,
-	lars@metafoo.de
+	with ESMTP id S1750714AbbK2PSD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 10:18:03 -0500
+Subject: Re: [RFC 6/9] iio: ina2xx: add direct IO support for TI INA2xx Power
+ Monitors
+To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net
+References: <1447857515-23935-1-git-send-email-mtitinger@baylibre.com>
+ <1447857515-23935-7-git-send-email-mtitinger@baylibre.com>
+ <5650B42D.6040500@kernel.org> <56533B8E.6050905@baylibre.com>
+Cc: daniel.baluta@intel.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <565B12EB.4070208@kernel.org>
-Date: Sun, 29 Nov 2015 14:59:56 +0000
+Message-ID: <565B1727.8090506@kernel.org>
+Date: Sun, 29 Nov 2015 15:17:59 +0000
 MIME-Version: 1.0
-In-Reply-To: <1448362792-5181-5-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <56533B8E.6050905@baylibre.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/11/15 10:59, Adriana Reus wrote:
-> Add power management for sleep as well as runtime pm.
+On 23/11/15 16:15, Marc Titinger wrote:
+> On 21/11/2015 19:13, Jonathan Cameron wrote:
+>> On 18/11/15 14:38, Marc Titinger wrote:
+>>> Basic support or direct IO raw read, with averaging attribute.
+>>> Values are RAW, INT_PLUS_MICRO (Volt/Ampere/Watt).
+>>>
+>>> Output of iio_info:
+>>>
+>>>       iio:device0: ina226
+>>>        4 channels found:
+>>>          power3:  (input)
+>>>          1 channel-specific attributes found:
+>>>                  attr 0: raw value: 1.150000
+>>>          voltage0:  (input)
+>>>          1 channel-specific attributes found:
+>>>                  attr 0: raw value: 0.000003
+>>>          voltage1:  (input)
+>>>          1 channel-specific attributes found:
+>>>                  attr 0: raw value: 4.277500
+>>>          current2:  (input)
+>>>          1 channel-specific attributes found:
+>>>                  attr 0: raw value: 0.268000
+>>>          4 device-specific attributes found:
+>>>                  attr 0: sampling_frequency_available value: 61 120 236...
+>>>                  attr 1: in_averaging_steps value: 4
+>>>                  attr 2: in_calibscale value: 10000
+>>>                  attr 3: in_sampling_frequency value: 1506
+>>>
+>>> Tested with ina226, on BeagleBoneBlack.
+>>>
+>>> Datasheet: http://www.ti.com/lit/gpn/ina226
+>>>
+>>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+>> You have added some new ABI in here, but I'm not seeing any documentation
+>> for averaging_steps.  Does this map onto the existing oversampling_ratio?
+>>
 > 
-> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
-Mostly fine, but a comment on a possible future tidy up inline.
-
-Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to play with it.
-
-> ---
->  drivers/iio/light/us5182d.c | 95 +++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 88 insertions(+), 7 deletions(-)
+> I am not sure normal averaging maps well with oversampling. Normal
+> averaging will provide one value every N samples (this is what this
+> chip does), while oversampling will interpolate N value between
+> sample 'k' and 'k-1', and decimate to provide a less-noisy version of
+> sample 'k', the resulting sampling frequency is not lower.
 > 
-> diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-> index 3d959f3..60cab4a 100644
-> --- a/drivers/iio/light/us5182d.c
-> +++ b/drivers/iio/light/us5182d.c
-> @@ -23,6 +23,8 @@
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  #include <linux/mutex.h>
-> +#include <linux/pm.h>
-> +#include <linux/pm_runtime.h>
->  
->  #define US5182D_REG_CFG0				0x00
->  #define US5182D_CFG0_ONESHOT_EN				BIT(6)
-> @@ -81,6 +83,7 @@
->  #define US5182D_READ_BYTE			1
->  #define US5182D_READ_WORD			2
->  #define US5182D_OPSTORE_SLEEP_TIME		20 /* ms */
-> +#define US5182D_SLEEP_MS			3000 /* ms */
->  
->  /* Available ranges: [12354, 7065, 3998, 2202, 1285, 498, 256, 138] lux */
->  static const int us5182d_scales[] = {188500, 107800, 61000, 33600, 19600, 7600,
-> @@ -298,6 +301,26 @@ static int us5182d_shutdown_en (struct us5182d_data *data, u8 state)
->  	return ret;
->  }
->  
-> +
-> +static int us5182d_set_power_state(struct us5182d_data *data, bool on)
-> +{
-> +	int ret;
-> +
-> +	if (data->power_mode == US5182D_ONESHOT)
-> +		return 0;
-> +
-> +	if (on) {
-> +		ret = pm_runtime_get_sync(&data->client->dev);
-> +		if (ret < 0)
-> +			pm_runtime_put_noidle(&data->client->dev);
-> +	} else {
-> +		pm_runtime_mark_last_busy(&data->client->dev);
-> +		ret = pm_runtime_put_autosuspend(&data->client->dev);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->  static int us5182d_read_raw(struct iio_dev *indio_dev,
->  			    struct iio_chan_spec const *chan, int *val,
->  			    int *val2, long mask)
-> @@ -315,15 +338,20 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
->  				if (ret < 0)
->  					goto out_err;
->  			}
-> -			ret = us5182d_als_enable(data);
-> +			ret = us5182d_set_power_state(data, true);
->  			if (ret < 0)
->  				goto out_err;
-> -
-> +			ret = us5182d_als_enable(data);
-> +			if (ret < 0)
-> +				goto out_poweroff;
->  			ret = us5182d_get_als(data);
->  			if (ret < 0)
-> +				goto out_poweroff;
-> +			*val = ret;
-> +			ret = us5182d_set_power_state(data, false);
-> +			if (ret < 0)
->  				goto out_err;
->  			mutex_unlock(&data->lock);
-> -			*val = ret;
->  			return IIO_VAL_INT;
->  		case IIO_PROXIMITY:
-I'd argue the complexity of this has reached the point where ideally you'd
-break it out to a function.  The jumps out of the switch statement are 
-particularly nasty from a readability point of view.
+Oversampling is wonderfully badly defined as a term.  Often it is use precisely for the
+method or noise reduction that is infact just an average.   Usually it implies:
+1) Sampling at a higher rate than the eventual output will be provided at. This is the oversampling bit.
+2) Sometimes adding carefully controlled noise - effectively dithering but ensuring the
+noise is not at a frequency of interest so it can be removed later without effecting
+what we are after - this allows obtaining a theoretically higher bit rate signal than
+what you are measuring with - in extreme cases it allows the one bit adc trick - more
+commonly it's just about reducing the noise as a result of the measurement process.
+3) ADC conversion - post noise addition if we are deliberately adding some.
+4) Applying digital filters as desired.
+5) Finally outputing at the reduced data rate.
 
-Perhaps a job for a followup patch?
->  			mutex_lock(&data->lock);
-> @@ -332,17 +360,22 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
->  				if (ret < 0)
->  					goto out_err;
->  			}
-> -			ret = us5182d_px_enable(data);
-> +			ret = us5182d_set_power_state(data, true);
->  			if (ret < 0)
->  				goto out_err;
-> -
-> +			ret = us5182d_px_enable(data);
-> +			if (ret < 0)
-> +				goto out_poweroff;
->  			ret = i2c_smbus_read_word_data(data->client,
->  						       US5182D_REG_PDL);
->  			if (ret < 0)
-> +				goto out_poweroff;
-> +			*val = ret;
-> +			ret = us5182d_set_power_state(data, false);
-> +			if (ret < 0)
->  				goto out_err;
->  			mutex_unlock(&data->lock);
-> -			*val = ret;
-> -			return  IIO_VAL_INT;
-> +			return IIO_VAL_INT;
-This is a little bit of noise that should have been dealt with separately...
+So - in the simplest form we actually have a straight forward average filter just like
+the one your device is applying.  
 
->  		default:
->  			return -EINVAL;
->  		}
-> @@ -361,6 +394,9 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
->  	}
->  
->  	return -EINVAL;
-> +
-> +out_poweroff:
-> +	us5182d_set_power_state(data, false);
->  out_err:
->  	mutex_unlock(&data->lock);
->  	return ret;
-> @@ -577,6 +613,17 @@ static int us5182d_probe(struct i2c_client *client,
->  	if (ret < 0)
->  		goto out_err;
->  
-> +	if (data->default_continuous) {
-> +		pm_runtime_set_active(&client->dev);
-> +		if (ret < 0)
-> +			goto out_err;
-> +	}
-> +
-> +	pm_runtime_enable(&client->dev);
-> +	pm_runtime_set_autosuspend_delay(&client->dev,
-> +					 US5182D_SLEEP_MS);
-> +	pm_runtime_use_autosuspend(&client->dev);
-> +
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0)
->  		goto out_err;
-> @@ -595,9 +642,42 @@ static int us5182d_remove(struct i2c_client *client)
->  
->  	iio_device_unregister(i2c_get_clientdata(client));
->  
-> +	pm_runtime_disable(&client->dev);
-> +	pm_runtime_set_suspended(&client->dev);
-> +
->  	return us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
->  }
->  
-> +#if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM)
-> +static int us5182d_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct us5182d_data *data = iio_priv(indio_dev);
-> +
-> +	if (data->power_mode == US5182D_CONTINUOUS)
-> +		return us5182d_shutdown_en(data, US5182D_CFG0_SHUTDOWN_EN);
-> +
-> +	return 0;
-> +}
-> +
-> +static int us5182d_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct us5182d_data *data = iio_priv(indio_dev);
-> +
-> +	if (data->power_mode == US5182D_CONTINUOUS)
-> +		return us5182d_shutdown_en(data,
-> +					   ~US5182D_CFG0_SHUTDOWN_EN & 0xff);
-> +
-> +	return 0;
-> +}
-> +#endif
-> +
-> +static const struct dev_pm_ops us5182d_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(us5182d_suspend, us5182d_resume)
-> +	SET_RUNTIME_PM_OPS(us5182d_suspend, us5182d_resume, NULL)
-> +};
-> +
->  static const struct acpi_device_id us5182d_acpi_match[] = {
->  	{ "USD5182", 0},
->  	{}
-> @@ -615,6 +695,7 @@ MODULE_DEVICE_TABLE(i2c, us5182d_id);
->  static struct i2c_driver us5182d_driver = {
->  	.driver = {
->  		.name = US5182D_DRV_NAME,
-> +		.pm = &us5182d_pm_ops,
->  		.acpi_match_table = ACPI_PTR(us5182d_acpi_match),
->  	},
->  	.probe = us5182d_probe,
-> 
+Now you are correct that the data goes digital at a much higher rate than the output
+rate in oversampling - however if we assume a chip is providing an oversampling function
+inherently it must then be dropping it down to a more reasonable level in chip (rather than
+leaving it to the CPU)  Hence if we have an iio chip with oversampling it's applying a
+filter - whether that is a simple average filter, or something a touch more clever is the
+only real question.
+
+Now I've probably confused this discussion even more ;)
+
+Jonathan
 
