@@ -1,127 +1,145 @@
-Return-Path: <alexander.sverdlin@gmail.com>
-Subject: Re: [PATCH 5/5] iio: adc: New driver for Cirrus Logic EP93xx ADC
-To: Jonathan Cameron <jic23@kernel.org>,
- Hartley Sweeten <hsweeten@visionengravers.com>,
- Ryan Mallon <rmallon@gmail.com>, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org
-References: <56558B23.4080506@gmail.com> <5655A0A5.20908@gmail.com>
- <565B23FB.9040405@kernel.org>
-Cc: Russell King <linux@arm.linux.org.uk>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>
-From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Message-ID: <565B2A91.6050409@gmail.com>
-Date: Sun, 29 Nov 2015 17:40:49 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44864 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751013AbbK2RRL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 12:17:11 -0500
+Subject: Re: directions to write a new adc driver
+To: Ludovic Desroches <ludovic.desroches@atmel.com>,
+	linux-iio@vger.kernel.org
+References: <20151127150823.GB11016@odux.rfo.atmel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <565B3313.40208@kernel.org>
+Date: Sun, 29 Nov 2015 17:17:07 +0000
 MIME-Version: 1.0
-In-Reply-To: <565B23FB.9040405@kernel.org>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20151127150823.GB11016@odux.rfo.atmel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello Jonathan!
-
-Thanks for your review!
-
-On 29/11/15 17:12, Jonathan Cameron wrote:
->> New driver adding support for ADC found on Cirrus Logic EP93xx series of SoCs.
->> > Board specific code must take care to create platform device with all necessary
->> > resources.
->> > 
->> > Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-> Datasheet links always appreciated if available.
+On 27/11/15 15:08, Ludovic Desroches wrote:
+> Hi,
 > 
-> Right now Cirrus' website is fighting back so I can't get to any
-> of their docs - hence bare with me!
-
-Yeah, with Cirrus one is served elsewhere much better than on the Cirrus's website.
-First hit by Google (on "ep9301 user's guide") gives the document which is even
-missing at Cirrus:
-https://www.embeddedarm.com/documentation/third-party/ts-7000_ep9301-ug.pdf
-
-> A few bits inline.  Primary question which is hard to answer without the
-> datasheets is what meaning the channel names actually have?  THe brief
-> says they are general purpose.  If so then it's not really valid
-> to given them extended names suggesting anything more.
-
-High end models (EP9307, EP9312, EP9315) have TS controller, which can operate
-in general purpose ADC mode. In this mode these names are just ball names on the
-pinout. They are all the same. There is only one issue -- I have not found any
-official numbering for these devices, therefore wanted to expose this naming to
-user space. Low end devices (EP9301, EP9302) have same hw block where TS mode is
-not advertised, and even though the balls/pins are still named as in TS controller,
-they are also referred as ADC0-ADC4 in datasheet. But there are only 5 of them,
-so we do not know the numbers for other 3 in the bigger devices.
-
-If this is not the purpose of extend_name, I'll drop them.
-
-[...]
-
->> > +static const struct iio_chan_spec ep93xx_adc_channels[EP93XX_NUM_CHANNELS] = {
->> > +	EP93XX_ADC_CH(0, "YM",	"ym",	0x608),
->> > +	EP93XX_ADC_CH(1, "SXP",	"sxp",	0x680),
->> > +	EP93XX_ADC_CH(2, "SXM",	"sxm",	0x640),
->> > +	EP93XX_ADC_CH(3, "SYP",	"syp",	0x620),
->> > +	EP93XX_ADC_CH(4, "SYM",	"sym",	0x610),
->> > +	EP93XX_ADC_CH(5, "XP",	"xp",	0x601),
->> > +	EP93XX_ADC_CH(6, "XM",	"xm",	0x602),
->> > +	EP93XX_ADC_CH(7, "YP",	"yp",	0x604),
->> > +};
-> Hmm.  I'm a little dubious about the extended names.  What in the device
-> acutally restricts them to these uses?  This naming is probably something
-> to do with touch screens?  If there is no special purpose hardware then
-> I'd just drop the extended names (datasheet names obviously fine if thats
-> what they are called on the datasheet!)
-
-see above...
-
->> > +		ep93xx_adc_delay(DIV_ROUND_UP(1000000, 925),
->> > +				 DIV_ROUND_UP(1000000, 925));
->> > +		/* At this point conversion must be completed, but anyway... */
->> > +		while (1) {
-> Might be worth a timeout and adding a sleep in here to avoid a tight
-> spin.  Obviously it should always be fine, but who knows!
-
-Yes, I've added a timeout for v2. We really don't need a second sleep here, the sleep
-before should ensure polling ends up immediately. But timeout will ensure read
-will not hang even if HW is exploded.
-
-[...]
-
->> > +	ret = devm_iio_device_register(&pdev->dev, iiodev);
->> > +	if (ret)
->> > +		return ret;
->> > +
->> > +	platform_set_drvdata(pdev, iiodev);
-> I'd reorder as Peter suggested - it doesn't mater obviously but
-> you could then do return devm_iio_device_register and save
-> a few lines of code without a lost of functionality.
+> I want to add support for the ADC device of the SAMA5D2 SoC. I may
+> write a new driver because they are some changes about the register
+> contents. Moreover, the new device doesn't fit the dt bindings (which are
+> not very good since there is configuration stuff which is not
+> relating to the SoC or to the board).
 > 
-> However, this is racey as the userspace interface will be removed
-> 'after' the clk_disable below.  Basic rule of thumb is that if
-> you do anything at all in the remove, you can't use devm_iio_device_register
-> as if it makes sense to do it it must effect device functionality of a
-> device still exposed to userspace.
+> My main concern is how to adress the configuration of my ADC, some
+> examples:
+> - choosing the resolution (some resolutions will impact the sampling
+>   time)
+The nasty here comes with the buffers.  Right now we are defining the
+resolution of a given element to be fixed.  Clearly in some SoC ADCs this
+isn't really true (in stand alone ones it pretty much always is fixed).
+Partly this then depends on the data layout - if it is such that we
+can effectively ignore it in describing the channel (i.e. the other bits
+are 0 anyway) then we tend to use _scale attributes to control the resolution.
+I'm not against having additional ABI for this, as long as it is clear.
 
-This is a valid point... Will drop devm_iio_device_register() usage in v2...
+We can add a callback to override the buffer descriptions with a runtime
+built version as long as the exposed ABI doesn't change.
 
->> > +
->> > +	return 0;
->> > +}
->> > +
->> > +static int ep93xx_adc_remove(struct platform_device *pdev)
->> > +{
->> > +	struct iio_dev *iiodev = platform_get_drvdata(pdev);
->> > +	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
-> Personal taste, but I'd roll the above into one call as we never
-> use the iio_dev in this function..
+Having quickly browsed the datasheet we are talking 12,13,14 bits, done
+by oversampling.  We have control for oversampling via an info_mask
+element so the control is fine.
 
-Well, dropping devm_iio_device_register() will require its usage...
+Looks like values are sign extended to 16bits which is great as well
+as it means the buffer logic doesn't even have to know that different
+resolutions are supported.
 
->> > +
->> > +	clk_disable(priv->clk);
->> > +
->> > +	return 0;
->> > +}
+> - enabling the sleep mode or not
+This is an irritatingly open question kernel wide.  It basically boils down
+to a 'low power mode' or not I guess.  Every now and then someone suggests
+a general kernel twiddle knob for this, but right now we end up with a mess
+of different methods.  To a degree it depends on the driver writer to make
+a sensible decision on whether sleep mode is too costly or not. If it's not
+then don't turn it on...  Intermediate tricks to do with allowing a window
+in which it is disabled (runtime pm based normally) work well sometimes.
 
-[...]
+Here it looks like you could work out whether there is time to enable
+it for some types of trigger (timing based ones).  If so enable it, if
+not don't.  Hard for other trigger types however...
 
-Regards,
-Alexander.
+> - using offset correction
+Ah, found this in the datasheet (wasn't initially sure what you meant).
+Classic offset and gain, use calibscale and calibbias for this for the
+simple cases.  The final mode is 'novel' and will need some new ABI
+or perhaps just figuring out which of the gain modes will work for
+a given input value... Not sure.
+
+
+
+> - signed or unsigned conversions
+That should be defined by the hardware...?  Or are we talking differential
+vs single ended conversion? If that then have two lots of channels for the
+the two cases and enable / disable as relevant - lots of standard ADC drivers
+do this.  Something like the max1363 driver should be a good example.
+
+
+> - etc.
+> 
+> Having a look to other adc drivers, it seems resolution only depends on the
+> SoC.
+> Is there a generic solution?
+Not really - sometimes it really is soc dependent - e.g. a given soc
+has only one option, but in the flexible case we don't have a good solution.
+
+> If not, can I create the files I need for my
+> device in sysfs?
+Yes
+> 
+> Which adc driver would be the best to take as a reference?
+For a generic ADC I'd normally say either the max1363 or the various
+analog devices parts. It gets less obvious for the quirks of a SoC
+- they all seem to be special cases!
+
+> 
+> If you have some interesting discussions, I am interested too. I have
+> browsed the iio mainling list up to september but I have not found
+> answers.
+Yeah, we aren't the best at documentation and things tend to get burried
+over the years on the mailing list!
+
+A few other points to note from the datasheet for this one -
+1) You have touchscreen specific hardware in there.  Is the plan a combined
+driver?  Looks fairly standard so that might be the easiest option.  One day
+I'll figure out if this stuff is generic enough across SoCs to do it
+as an IIO consumer with a few magic extra bits but for now a combined
+driver is probably easiest (though you then need to get it past both sets
+of reviewers!)
+2) Lots of trigger options here - you can register as many triggers as you
+likes so this should be fine.  You'll need to prevent those that never
+reach userspace from being used by other device however using the validate
+callbacks.
+3) Dma support - I've not pinned down how useful this is yet, but the recent
+   dma buffers support from Lars may be useful here.  Looks like it does
+   tightly packed channels in a nice linear buffer so looks good.
+   I got lost in the description however so will leave figuring this out to
+   you ;)
+   
+4) I love the bit where you can set the differential channels to be unsigned
+   and the single ended ones signed.... Sometimes it's best to not admit
+   that the hardware allows bonkers options ;)
+5) Repeated channel reads in the sequencer.  We don't currently provide
+any means of doing this as it's horendous to design a generic interface
+around and relatively rarely makes much sense in an application.
+
+6) Events support - looks straight forward to support he threshold stuff.
+7) The last channel measurement trigger stuff is 'unusual' - but not hard
+to support - just give it it's own integration time I guess and set this
+magic stuff if it differs from other channels.
+
+Anyhow, nice enough looking ADC with not to 'silly' a hardware interface.
+> 
+> Thanks for you help
+> 
+> Regards
+> 
+> Ludovic
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
