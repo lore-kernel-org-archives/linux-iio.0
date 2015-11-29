@@ -1,71 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43776 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43802 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753008AbbK2OTt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 09:19:49 -0500
-Subject: Re: [PATCH 2/2] dt-bindings: iio: adc: Update mcp342x binding for the
- mcp3421
-To: Rob Herring <robh@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>
-References: <1448632372-5315-1-git-send-email-s.hauer@pengutronix.de>
- <1448632372-5315-3-git-send-email-s.hauer@pengutronix.de>
- <20151127201526.GA31568@rob-hp-laptop>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, devicetree@vger.kernel.org
+	with ESMTP id S1752887AbbK2OWP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 09:22:15 -0500
+Subject: Re: [PATCH] iio: adis_buffer: Fix out-of-bounds memory access
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1448632556-13005-1-git-send-email-lars@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <565B0982.8010507@kernel.org>
-Date: Sun, 29 Nov 2015 14:19:46 +0000
+Message-ID: <565B0A16.80408@kernel.org>
+Date: Sun, 29 Nov 2015 14:22:14 +0000
 MIME-Version: 1.0
-In-Reply-To: <20151127201526.GA31568@rob-hp-laptop>
+In-Reply-To: <1448632556-13005-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/11/15 20:15, Rob Herring wrote:
-> On Fri, Nov 27, 2015 at 02:52:52PM +0100, Sascha Hauer wrote:
->> The mcp3421 is the single channel variant of the mcp342x family and
->> can be supported by the mcp342x driver.
->>
->> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
->> Cc: devicetree@vger.kernel.org
+On 27/11/15 13:55, Lars-Peter Clausen wrote:
+> The SPI tx and rx buffers are both supposed to be scan_bytes amount of
+> bytes large and a common allocation is used to allocate both buffers. This
+> puts the beginning of the tx buffer scan_bytes bytes after the rx buffer.
+> The initialization of the tx buffer pointer is done adding scan_bytes to
+> the beginning of the rx buffer, but since the rx buffer is of type __be16
+> this will actually add two times as much and the tx buffer ends up pointing
+> after the allocated buffer.
 > 
-> Acked-by: Rob Herring <robh@kernel.org>
-Applied.
-
-Thanks,
+> Fix this by using scan_count, which is scan_bytes / 2, instead of
+> scan_bytes when initializing the tx buffer pointer.
+> 
+> Fixes: aacff892cbd5 ("staging:iio:adis: Preallocate transfer message")
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to my local fixes branch - will push out once Greg has caught
+up with last pull request - don't want to muddy the waters!
 
 Jonathan
+> ---
+> Apologies if you got this twice, forgot the mailinglist on the first try.
+> ---
+>  drivers/iio/imu/adis_buffer.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
->> ---
->>  Documentation/devicetree/bindings/iio/adc/mcp3422.txt | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
->> index 333139c..dcae4cc 100644
->> --- a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
->> +++ b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
->> @@ -1,7 +1,8 @@
->> -* Microchip mcp3422/3/4/6/7/8 chip family (ADC)
->> +* Microchip mcp3421/2/3/4/6/7/8 chip family (ADC)
->>  
->>  Required properties:
->>   - compatible: Should be
->> +	"microchip,mcp3421" or
->>  	"microchip,mcp3422" or
->>  	"microchip,mcp3423" or
->>  	"microchip,mcp3424" or
->> -- 
->> 2.6.2
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe devicetree" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+> index cb32b59..36607d5 100644
+> --- a/drivers/iio/imu/adis_buffer.c
+> +++ b/drivers/iio/imu/adis_buffer.c
+> @@ -43,7 +43,7 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+>  		return -ENOMEM;
+>  
+>  	rx = adis->buffer;
+> -	tx = rx + indio_dev->scan_bytes;
+> +	tx = rx + scan_count;
+>  
+>  	spi_message_init(&adis->msg);
+>  
 > 
 
