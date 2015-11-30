@@ -1,52 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f45.google.com ([74.125.82.45]:33317 "EHLO
-	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752025AbbK2S1K (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Nov 2015 13:27:10 -0500
-Received: by wmec201 with SMTP id c201so126821157wme.0
-        for <linux-iio@vger.kernel.org>; Sun, 29 Nov 2015 10:27:08 -0800 (PST)
-Subject: Re: [PATCH 5/5] iio: adc: New driver for Cirrus Logic EP93xx ADC
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartley Sweeten <hsweeten@visionengravers.com>,
-	Ryan Mallon <rmallon@gmail.com>,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-References: <56558B23.4080506@gmail.com> <5655A0A5.20908@gmail.com>
- <565B23FB.9040405@kernel.org> <565B2A91.6050409@gmail.com>
- <565B33AC.40908@kernel.org>
-Cc: Russell King <linux@arm.linux.org.uk>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Message-ID: <565B437A.4030501@gmail.com>
-Date: Sun, 29 Nov 2015 19:27:06 +0100
-MIME-Version: 1.0
-In-Reply-To: <565B33AC.40908@kernel.org>
-Content-Type: text/plain; charset=utf-8
+Received: from mail-wm0-f50.google.com ([74.125.82.50]:35935 "EHLO
+	mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753462AbbK3Lt1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Nov 2015 06:49:27 -0500
+Received: by wmww144 with SMTP id w144so125726672wmw.1
+        for <linux-iio@vger.kernel.org>; Mon, 30 Nov 2015 03:49:26 -0800 (PST)
+From: Marc Titinger <mtitinger@baylibre.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Marc Titinger <mtitinger@baylibre.com>
+Subject: [PATCH v2 2/2] iio: ina2xx: provide a sysfs parameter to allow async readout of the ADCs
+Date: Mon, 30 Nov 2015 12:49:15 +0100
+Message-Id: <1448884155-2546-3-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <1448884155-2546-1-git-send-email-mtitinger@baylibre.com>
+References: <1448884155-2546-1-git-send-email-mtitinger@baylibre.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Jonathan,
+This can lead to repeated or skipped samples depending on the clock beat
+between the capture thread and the chip sampling clock, but will also spare
+reading/waiting for the Capture Ready Flag and improve the available i2c
+bandwidth for reading measurements.
 
-On 29/11/15 18:19, Jonathan Cameron wrote:
->> High end models (EP9307, EP9312, EP9315) have TS controller, which can operate
->> > in general purpose ADC mode. In this mode these names are just ball names on the
->> > pinout. They are all the same. There is only one issue -- I have not found any
->> > official numbering for these devices, therefore wanted to expose this naming to
->> > user space. Low end devices (EP9301, EP9302) have same hw block where TS mode is
->> > not advertised, and even though the balls/pins are still named as in TS controller,
->> > they are also referred as ADC0-ADC4 in datasheet. But there are only 5 of them,
->> > so we do not know the numbers for other 3 in the bigger devices.
->> > 
->> > If this is not the purpose of extend_name, I'll drop them.
-> It's not.  We've had discussions about either exposing the datasheet names via
-> sysfs or perhaps allowing arbitrary labelling but nothing has come of it yet.
-> 
-> Perhaps in this case clear documentation of the mapping is the way to go in 
-> documentation for the driver.
+Output of iio_info:
+...snip...
+4 device-specific attributes found:
+  attr 0: in_oversampling_ratio value: 4
+  attr 1: in_allow_async_readout value: 0
+  attr 2: integration_time_available value: 140 204 332 588 1100 2116 4156 8244
+  attr 3: in_sampling_frequency value: 114
 
-Do you think something like Documentation/ABI/testing/sysfs-bus-iio-adc-ep93xx is a right
-place?
+Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+---
+ drivers/iio/adc/ina2xx-iio.c | 48 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 42 insertions(+), 6 deletions(-)
 
-Regards,
-Alexander.
+diff --git a/drivers/iio/adc/ina2xx-iio.c b/drivers/iio/adc/ina2xx-iio.c
+index 99fb73c..7575a12 100644
+--- a/drivers/iio/adc/ina2xx-iio.c
++++ b/drivers/iio/adc/ina2xx-iio.c
+@@ -117,6 +117,7 @@ struct ina2xx_chip_info {
+ 	s64 prev_ns;	/* track buffer capture time check, for underruns*/
+ 	int int_time_vbus; /* Bus voltage integration time uS */
+ 	int int_time_vshunt; /* Shunt voltage integration time uS */
++	bool allow_async_readout;
+ };
+ 
+ static const struct ina2xx_config ina2xx_config[] = {
+@@ -333,6 +334,33 @@ _err:
+ }
+ 
+ 
++static ssize_t ina2xx_allow_async_readout_show(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf)
++{
++	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
++
++	return sprintf(buf, "%d\n", chip->allow_async_readout);
++}
++
++static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf, size_t len)
++{
++	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
++	bool val;
++	int ret;
++
++	ret = strtobool((const char *) buf, &val);
++	if (ret)
++		return ret;
++
++	chip->allow_async_readout = val;
++
++	return len;
++}
++
++
+ #define INA2XX_CHAN(_type, _index, _address) { \
+ 	.type = _type, \
+ 	.address = _address, \
+@@ -399,11 +427,12 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+ 	 * GPIO a triggered buffer could be used instead.
+ 	 * For now, we pay for that extra read of the ALERT register
+ 	 */
+-	do {
+-		ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
+-				  &alert);
+-		if (ret < 0)
+-			goto _err;
++	if (!chip->allow_async_readout)
++		do {
++			ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
++					  &alert);
++			if (ret < 0)
++				goto _err;
+ 
+ 		alert &= INA266_CVRF;
+ 		trace_printk("Conversion ready: %d\n", !!alert);
+@@ -454,7 +483,8 @@ static int ina2xx_capture_thread(void *data)
+ 	 * Poll a bit faster than the chip internal Fs, in case
+ 	 * we wish to sync with the conversion ready flag.
+ 	 */
+-	sampling_us -= 200;
++	if (!chip->allow_async_readout)
++		sampling_us -= 200;
+ 
+ 	do {
+ 		buffer_us = ina2xx_work_buffer(indio_dev);
+@@ -477,6 +507,7 @@ int ina2xx_buffer_enable(struct iio_dev *indio_dev)
+ 		     1000000/sampling_us, chip->avg);
+ 
+ 	trace_printk("Expected work period: %u us\n", sampling_us);
++	trace_printk("Async readout mode: %d\n", chip->allow_async_readout);
+ 
+ 	chip->prev_ns = iio_get_time_ns();
+ 
+@@ -518,7 +549,12 @@ static int ina2xx_debug_reg(struct iio_dev *indio_dev,
+ static IIO_CONST_ATTR_INT_TIME_AVAIL \
+  ("0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
+ 
++static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
++		       ina2xx_allow_async_readout_show,
++		       ina2xx_allow_async_readout_store, 0);
++
+ static struct attribute *ina2xx_attributes[] = {
++	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
+ 	&iio_const_attr_integration_time_available.dev_attr.attr,
+ 	NULL,
+ };
+-- 
+1.9.1
+
