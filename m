@@ -1,30 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:41061 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753062AbbLAEET (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Nov 2015 23:04:19 -0500
-Date: Mon, 30 Nov 2015 20:04:18 -0800
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO - Second set of fixes for the 4.4 cycle.
-Message-ID: <20151201040418.GB17280@kroah.com>
-References: <5651D004.2030600@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56405 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755135AbbLAHOW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Dec 2015 02:14:22 -0500
+In-Reply-To: <20151201035947.GA17280@kroah.com>
+References: <5651D09C.6030209@kernel.org> <5651D1DA.9020903@kernel.org> <565B35ED.6000206@kernel.org> <20151201035947.GA17280@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5651D004.2030600@kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PULL] IIO - First set of new drivers, core support and cleanups for the 4.5 cycle
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Tue, 01 Dec 2015 07:13:49 +0000
+To: Greg KH <gregkh@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Message-ID: <0CFC7659-2414-4769-87D2-07BF334E740D@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Nov 22, 2015 at 02:24:04PM +0000, Jonathan Cameron wrote:
-> he following changes since commit b57f9f34e27bf81c97b10d6725d71824e448c37e:
-> 
->   Revert "Staging: wilc1000: coreconfigurator: Drop unneeded wrapper functions" (2015-11-18 13:22:44 -0800)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.4b
 
-Pulled and pushed out, thanks.
 
-greg k-h
+On 1 December 2015 03:59:47 GMT+00:00, Greg KH <gregkh@linuxfoundation.org> wrote:
+>On Sun, Nov 29, 2015 at 05:29:17PM +0000, Jonathan Cameron wrote:
+>> Hi Greg,
+>> 
+>> Did this one and the fixes set sent a few minutes before it slip 
+>> past you in your usual deluge of email?
+>
+>They are in my queue, sorry, it was a holliday last week in the US.
+>
+>greg k-h
+Cool. Hope you had a good time!
+
+J
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
