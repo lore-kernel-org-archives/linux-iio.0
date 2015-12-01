@@ -1,132 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:42276 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933335AbbLBRVE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Dec 2015 12:21:04 -0500
-Subject: Re: [PATCH v2 1/2] iio: ina2xx: add support for TI INA2xx Power
- Monitors
-To: Marc Titinger <mtitinger@baylibre.com>
-References: <1448884155-2546-1-git-send-email-mtitinger@baylibre.com>
- <1448884155-2546-2-git-send-email-mtitinger@baylibre.com>
- <20151202021429.GA19098@roeck-us.net> <565EC5DB.5040401@baylibre.com>
- <565F169D.2050709@roeck-us.net> <565F1A44.3080504@baylibre.com>
- <565F1FF8.5030508@roeck-us.net> <565F25D4.10006@baylibre.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-From: Guenter Roeck <linux@roeck-us.net>
-Message-ID: <565F287A.3050103@roeck-us.net>
-Date: Wed, 2 Dec 2015 09:20:58 -0800
+Received: from smtp-out-201.synserver.de ([212.40.185.201]:1206 "EHLO
+	smtp-out-194.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1756841AbbLAVj6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Dec 2015 16:39:58 -0500
+Message-ID: <565E13AB.8050401@metafoo.de>
+Date: Tue, 01 Dec 2015 22:39:55 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <565F25D4.10006@baylibre.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: Jonathan Cameron <jic23@kernel.org>,
+	Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PULL] IIO - First set of new drivers, core support and cleanups
+ for the 4.5 cycle
+References: <5651D09C.6030209@kernel.org> <5651D1DA.9020903@kernel.org> <20151201171356.GC2714@kroah.com> <565E08F3.20706@kernel.org>
+In-Reply-To: <565E08F3.20706@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/02/2015 09:09 AM, Marc Titinger wrote:
-> On 02/12/2015 17:44, Guenter Roeck wrote:
->> On 12/02/2015 08:20 AM, Marc Titinger wrote:
->>> On 02/12/2015 17:04, Guenter Roeck wrote:
->>>> On 12/02/2015 02:20 AM, Marc Titinger wrote:
->>>>> On 02/12/2015 03:14, Guenter Roeck wrote:
->>>>>> On Mon, Nov 30, 2015 at 12:49:14PM +0100, Marc Titinger wrote:
->>>>>>> in SOFTWARE buffer mode, a kthread will capture the active
->>>>>>> scan_elements
->>>>>>> into a kfifo, then compute the remaining time until the next capture
->>>>>>> tick
->>>>>>> and do an active wait (udelay).
->>>>>>>
->>>>>>> This will produce a stream of up to fours channels plus a 64bits
->>>>>>> timestamps (ns).
->>>>>>>
->>>>>>> Tested with ina226, on BeagleBoneBlack.
->>>>>>>
->>>>>>> Datasheet: http://www.ti.com/lit/gpn/ina226
->>>>>>>
->>>>>>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
->>>>>>> ---
->>>>>>>   drivers/iio/adc/Kconfig      |   9 +
->>>>>>>   drivers/iio/adc/Makefile     |   1 +
->>>>>>>   drivers/iio/adc/ina2xx-iio.c | 678
->>>>>>> +++++++++++++++++++++++++++++++++++++++++++
->>>>>>>   3 files changed, 688 insertions(+)
->>>>>>>   create mode 100644 drivers/iio/adc/ina2xx-iio.c
->>>>>>> +
->>>>>> [ ... ]
->>>>>>> +
->>>>>>> +static const struct i2c_device_id ina2xx_id[] = {
->>>>>>> +    {"ina219", ina219},
->>>>>>> +    {"ina220", ina219},
->>>>>>> +    {"ina226", ina226},
->>>>>>> +    {"ina230", ina226},
->>>>>>> +    {"ina231", ina226},
->>>>>>> +    {}
->>>>>>> +};
->>>>>>
->>>>>> I wonder what is going to happen if both this driver and the hwmon
->>>>>> driver for the same chips are configured in a system which supports
->>>>>> devicetree (or any system, really). Unless I am missing something,
->>>>>> the result will be that both drivers will try to instantiate, and
->>>>>> one will fail with -EBUSY. Or the instantiated driver is more or less
->>>>>> random, depending on which one happens to be loaded. Not a good
->>>>>> situation to be in.
->>>>>
->>>>> I agree, we should put a mutual exclusion in Kconfig, plus maybe a
->>>>> cross-reference in the help section.
->>>>>
->>>>>>
->>>>>> For the time being, it might make sense to add cross-dependencies
->>>>>> in Kconfig to only permit one of the two drivers to be configured.
->>>>>>
->>>>>> Ultimately we may need a better solution for the iio-hwmon bridge,
->>>>>> one that makes the underlying driver transparent in both devicetree
->>>>>> properties and user space ABI. No idea how to do that, though.
->>>>>>
->>>>>
->>>>> IDK if ina2xx is a special case or if this matter of dual driver
->>>>> stacks for the same chip already occurred and requires specific
->>>>> plumbing. Making the user aware of the mutual of the exclusion sounds
->>>>> fine with me.
->>>>>
->>>> htu21. We'll drop that driver from hwmon with the 4.5 kernel.
->>>> We could just drop ina2xx as well, but it is more widely used
->>>> and referenced from dts files. The ABI changes, so I am not sure
->>>> if we can just do that.
+On 12/01/2015 09:54 PM, Jonathan Cameron wrote:
+> On 01/12/15 17:13, Greg KH wrote:
+>> On Sun, Nov 22, 2015 at 02:31:54PM +0000, Jonathan Cameron wrote:
 >>>
->>> I changed iio/adc/Kconfig to the following:
+>>> Hi Greg,
 >>>
->>> +config INA2XX_ADC
->>> +       tristate "Texas Instruments INA2xx Power Monitors IIO driver"
->>> +       depends on I2C && !SENSORS_INA2XX
->>> +       select REGMAP_I2C
->>> +       select IIO_BUFFER
->>> +       select IIO_KFIFO_BUF
->>> +       help
->>> +         Say yes here to build support for TI INA2xx family of Power
->>> Monitors.
->>> +         This driver is mutually exclusive with the HWMON version.
->>> +
+>>> When this one and the fixes set I sent a few minutes ago merge you curiously
+>>> get an issue with drivers/staging/iio/Kconfig.  The right resolution is
+>>> to dump all the dummy driver stuff.
 >>>
->>>
->>> anything the patch should also add to hwmon/Kconfig (that will not
->>> lead to a cycling reference warning) ?
->>>
+>>> All the other changes related to that move and various automerge stuff that
+>>> occurs looks fine to me.
 >>
->> You could try the opposite, but I don't know if that works.
+>> Thanks for the merge info, that helped.
 >>
->>      depends on I2C && !INA2XX_ADC
->
-> I tried: it's functional, but leads to a ugly warning:
->
-> drivers/iio/adc/Kconfig:173:error: recursive dependency detected!
-> drivers/iio/adc/Kconfig:173:    symbol INA2XX_ADC depends on SENSORS_INA2XX
-> drivers/hwmon/Kconfig:1453:    symbol SENSORS_INA2XX depends on INA2XX_ADC
->
-Can't do that.
+>> But, I'm now getting these build warnings that I don't think we had
+>> before:
+>>
+>> drivers/staging/iio/adc/mxs-lradc.c: In function ‘mxs_lradc_complete_touch_event’:
+>> drivers/staging/iio/adc/mxs-lradc.c:325:5: warning: large integer implicitly truncated to unsigned type [-Woverflow]
+>>      (((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
+>>      ^
+>> drivers/staging/iio/adc/mxs-lradc.c:734:7: note: in expansion of macro ‘LRADC_DELAY_TRIGGER’
+>>        LRADC_DELAY_TRIGGER(1 << TOUCHSCREEN_VCHANNEL1) |
+>>        ^
+>>   LD [M]  drivers/staging/iio/accel/adis16201.o
+>> drivers/staging/iio/adc/mxs-lradc.c: In function ‘mxs_lradc_buffer_preenable’:
+>> drivers/staging/iio/adc/mxs-lradc.c:322:42: warning: large integer implicitly truncated to unsigned type [-Woverflow]
+>>  #define LRADC_DELAY_TRIGGER_LRADCS_MASK  (0xff << 24)
+>>                                           ^
+>> drivers/staging/iio/adc/mxs-lradc.c:1308:29: note: in expansion of macro ‘LRADC_DELAY_TRIGGER_LRADCS_MASK’
+>>   mxs_lradc_reg_clear(lradc, LRADC_DELAY_TRIGGER_LRADCS_MASK |
+>>                              ^
+>> drivers/staging/iio/adc/mxs-lradc.c: In function ‘mxs_lradc_buffer_postdisable’:
+>> drivers/staging/iio/adc/mxs-lradc.c:322:42: warning: large integer implicitly truncated to unsigned type [-Woverflow]
+>>  #define LRADC_DELAY_TRIGGER_LRADCS_MASK  (0xff << 24)
+>>                                           ^
+>> drivers/staging/iio/adc/mxs-lradc.c:1327:29: note: in expansion of macro ‘LRADC_DELAY_TRIGGER_LRADCS_MASK’
+>>   mxs_lradc_reg_clear(lradc, LRADC_DELAY_TRIGGER_LRADCS_MASK |
+>>                              ^
+>>
+>> Can you fix those up?
+>>
+>> thanks,
+>>
+>> greg k-h
+> oops. I'd forgotten I got that one a while ago and meant to check what was causing
+> it - sorry about that - initially assumed it was just a warning that had gotten
+> turned on in the autobuilder.
+> 
+> After a lot of digging can be boiled down to statements
+> that end up as
+> 
+> (0xff << 24) | (1UL << 20)
+> Now I'm not entirely sure why it is unhappy with that. 
+> (0xffUL << 24) | (1UL << 20) is and (0xff << 24) | (1 << 20) - the original - is fine
+> as well.
+> 
+> The oddity to my mind is that 0xff is supposed to be fitted to the smallest possible
+> unsigned type (as it's in hex) so why is this happening?
 
-> Anyone knows how to implement a radio button in Kconfig ? ;)
->
-That is possible, but only in a single menu. Look for choice/endchoice.
+The type is int, if the value fits into int, see
+http://www.open-std.org/jtc1/sc22/WG14/www/docs/n1570.pdf#page=82
 
-Guenter
+I guess the right thing to do is to use UL, even though it is a bit ugly.
+(Or write 0xff000000 instead of 0xff << 24).
+
+- Lars
 
