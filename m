@@ -1,842 +1,762 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f42.google.com ([74.125.82.42]:38362 "EHLO
-	mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755009AbbLAKB7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Dec 2015 05:01:59 -0500
-Received: by wmec201 with SMTP id c201so5781428wme.1
-        for <linux-iio@vger.kernel.org>; Tue, 01 Dec 2015 02:01:58 -0800 (PST)
-Subject: Re: [PATCH 1/2] iio: ina2xx: add support for TI INA2xx Power Monitors
-To: Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, jdelvare@suse.com
-References: <1448450896-24387-1-git-send-email-mtitinger@baylibre.com>
- <1448450896-24387-2-git-send-email-mtitinger@baylibre.com>
- <565B287B.6010008@kernel.org> <565B381F.7000208@roeck-us.net>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	lm-sensors@lm-sensors.org
-From: Marc Titinger <mtitinger@baylibre.com>
-Message-ID: <565D7014.4020806@baylibre.com>
-Date: Tue, 1 Dec 2015 11:01:56 +0100
+Received: from ns.pmeerw.net ([84.19.176.92]:37942 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751603AbbLAKRD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 1 Dec 2015 05:17:03 -0500
+Date: Tue, 1 Dec 2015 11:17:00 +0100 (CET)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Chen Bough <Haibo.Chen@freescale.com>
+cc: "jic23@kernel.org" <jic23@kernel.org>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"shawnguo@kernel.org" <shawnguo@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v4 1/4] iio: adc: add IMX7D ADC driver support
+In-Reply-To: <BY1PR03MB13885BDDB2CC98E1CF9EAC3A9A0F0@BY1PR03MB1388.namprd03.prod.outlook.com>
+Message-ID: <alpine.DEB.2.02.1512011105210.14849@pmeerw.net>
+References: <1448958150-25579-1-git-send-email-haibo.chen@freescale.com> <1448958150-25579-2-git-send-email-haibo.chen@freescale.com> <alpine.DEB.2.02.1512010936580.14290@pmeerw.net>
+ <BY1PR03MB13885BDDB2CC98E1CF9EAC3A9A0F0@BY1PR03MB1388.namprd03.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <565B381F.7000208@roeck-us.net>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/11/2015 18:38, Guenter Roeck wrote:
-> On 11/29/2015 08:31 AM, Jonathan Cameron wrote:
->> On 25/11/15 11:28, Marc Titinger wrote:
->>> in SOFTWARE buffer mode, a kthread will capture the active scan_elements
->>> into a kfifo, then compute the remaining time until the next capture
->>> tick
->>> and do an active wait (udelay).
->>>
->>> This will produce a stream of up to fours channels plus a 64bits
->>> timestamps (ns).
->>>
->>> Tested with ina226, on BeagleBoneBlack.
->>>
->>> Datasheet: http://www.ti.com/lit/gpn/ina226
->>>
->>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
->> A few more bits from me, but basically looking good.
->>
->> We do however, need to make the hwmon guys aware this is going on.
->> Please cc their list on the next version.
->>
->> Last thing we want is for this to turn up as a surprise!
->>
->
-> I have seen the original patch, so no surprise here. Just not sure
-> if we should remove the hwmon driver after the iio driver is accepted.
-> Even though the stated goal is different, it seems to me that having
-> two drivers really does not make sense. Any thoughts ?
 
-Hi Guenter,
+> > -----Original Message-----
+> > From: Peter Meerwald-Stadler [mailto:pmeerw@pmeerw.net]
+> > Sent: Tuesday, December 01, 2015 4:51 PM
+> > To: Chen Haibo-B51421
+> > Cc: jic23@kernel.org; knaack.h@gmx.de; lars@metafoo.de;
+> > shawnguo@kernel.org; linux-iio@vger.kernel.org; linux-
+> > kernel@vger.kernel.org
+> > Subject: Re: [PATCH v4 1/4] iio: adc: add IMX7D ADC driver support
+> > 
+> > 
+> > > Freescale i.MX7D soc contains a new ADC IP. This patch add this ADC
+> > > driver support, and the driver only support ADC software trigger.
+> > 
+> > some extreme nitpicking below :)
+> > 
+> > > Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
+> > > ---
+> > >  drivers/iio/adc/Kconfig     |   9 +
+> > >  drivers/iio/adc/Makefile    |   1 +
+> > >  drivers/iio/adc/imx7d_adc.c | 588
+> > > ++++++++++++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 598 insertions(+)
+> > >  create mode 100644 drivers/iio/adc/imx7d_adc.c
+> > >
+> > > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig index
+> > > 7868c74..3493a46 100644
+> > > --- a/drivers/iio/adc/Kconfig
+> > > +++ b/drivers/iio/adc/Kconfig
+> > > @@ -194,6 +194,15 @@ config HI8435
+> > >  	  This driver can also be built as a module. If so, the module will
+> > be
+> > >  	  called hi8435.
+> > >
+> > > +config IMX7D_ADC
+> > > +	tristate "IMX7D ADC driver"
+> > > +	depends on ARCH_MXC || COMPILE_TEST
+> > > +	help
+> > > +	  Say yes here to build support for IMX7D ADC.
+> > > +
+> > > +	  This driver can also be built as a module. If so, the module will
+> > be
+> > > +	  called imx7d_adc.
+> > > +
+> > >  config LP8788_ADC
+> > >  	tristate "LP8788 ADC driver"
+> > >  	depends on MFD_LP8788
+> > > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile index
+> > > 99b37a9..282ffc01 100644
+> > > --- a/drivers/iio/adc/Makefile
+> > > +++ b/drivers/iio/adc/Makefile
+> > > @@ -20,6 +20,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+> > >  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+> > >  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+> > >  obj-$(CONFIG_HI8435) += hi8435.o
+> > > +obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+> > >  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+> > >  obj-$(CONFIG_MAX1027) += max1027.o
+> > >  obj-$(CONFIG_MAX1363) += max1363.o
+> > > diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
+> > > new file mode 100644 index 0000000..4780595
+> > > --- /dev/null
+> > > +++ b/drivers/iio/adc/imx7d_adc.c
+> > > @@ -0,0 +1,588 @@
+> > > +/*
+> > > + * Freescale i.MX7D ADC driver
+> > > + *
+> > > + * Copyright (C) 2015 Freescale Semiconductor, Inc.
+> > > + *
+> > > + * This program is free software; you can redistribute it and/or
+> > > +modify
+> > > + * it under the terms of the GNU General Public License as published
+> > > +by
+> > > + * the Free Software Foundation; either version 2 of the License, or
+> > > + * (at your option) any later version.
+> > > + */
+> > > +
+> > > +#include <linux/clk.h>
+> > > +#include <linux/completion.h>
+> > > +#include <linux/err.h>
+> > > +#include <linux/interrupt.h>
+> > > +#include <linux/io.h>
+> > > +#include <linux/kernel.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/platform_device.h>
+> > > +#include <linux/regulator/consumer.h>
+> > > +
+> > > +#include <linux/iio/iio.h>
+> > > +#include <linux/iio/driver.h>
+> > > +#include <linux/iio/sysfs.h>
+> > > +
+> > > +/* ADC register */
+> > > +#define IMX7D_REG_ADC_CH_A_CFG1			0x00
+> > > +#define IMX7D_REG_ADC_CH_A_CFG2			0x10
+> > > +#define IMX7D_REG_ADC_CH_B_CFG1			0x20
+> > > +#define IMX7D_REG_ADC_CH_B_CFG2			0x30
+> > > +#define IMX7D_REG_ADC_CH_C_CFG1			0x40
+> > > +#define IMX7D_REG_ADC_CH_C_CFG2			0x50
+> > > +#define IMX7D_REG_ADC_CH_D_CFG1			0x60
+> > > +#define IMX7D_REG_ADC_CH_D_CFG2			0x70
+> > > +#define IMX7D_REG_ADC_CH_SW_CFG			0x80
+> > > +#define IMX7D_REG_ADC_TIMER_UNIT		0x90
+> > > +#define IMX7D_REG_ADC_DMA_FIFO			0xa0
+> > > +#define IMX7D_REG_ADC_FIFO_STATUS		0xb0
+> > > +#define IMX7D_REG_ADC_INT_SIG_EN		0xc0
+> > > +#define IMX7D_REG_ADC_INT_EN			0xd0
+> > > +#define IMX7D_REG_ADC_INT_STATUS		0xe0
+> > > +#define IMX7D_REG_ADC_CHA_B_CNV_RSLT		0xf0
+> > > +#define IMX7D_REG_ADC_CHC_D_CNV_RSLT		0x100
+> > > +#define IMX7D_REG_ADC_CH_SW_CNV_RSLT		0x110
+> > > +#define IMX7D_REG_ADC_DMA_FIFO_DAT		0x120
+> > > +#define IMX7D_REG_ADC_ADC_CFG			0x130
+> > > +
+> > > +#define IMX7D_REG_ADC_CHANNEL_CFG2_BASE		0x10
+> > > +#define IMX7D_EACH_CHANNEL_REG_OFFSET		0x20
+> > > +
+> > > +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN			(0x1 << 31)
+> > > +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE			BIT(30)
+> > > +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN			BIT(29)
+> > > +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL(x)			((x) << 24)
+> > > +
+> > > +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4				(0x0 <<
+> > 12)
+> > > +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8				(0x1 <<
+> > 12)
+> > > +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16			(0x2 << 12)
+> > > +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32			(0x3 << 12)
+> > > +
+> > > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4			(0x0 << 29)
+> > > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8			(0x1 << 29)
+> > > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16			(0x2 << 29)
+> > > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32			(0x3 << 29)
+> > > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64			(0x4 << 29)
+> > > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128			(0x5 << 29)
+> > > +
+> > > +#define IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN			BIT(31)
+> > > +#define IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN			BIT(1)
+> > > +#define IMX7D_REG_ADC_ADC_CFG_ADC_EN				BIT(0)
+> > > +
+> > > +#define IMX7D_REG_ADC_INT_CHA_COV_INT_EN			BIT(8)
+> > > +#define IMX7D_REG_ADC_INT_CHB_COV_INT_EN			BIT(9)
+> > > +#define IMX7D_REG_ADC_INT_CHC_COV_INT_EN			BIT(10)
+> > > +#define IMX7D_REG_ADC_INT_CHD_COV_INT_EN			BIT(11)
+> > > +#define IMX7D_REG_ADC_INT_CHANNEL_INT_EN
+> > 	(IMX7D_REG_ADC_INT_CHA_COV_INT_EN | \
+> > > +
+> > IMX7D_REG_ADC_INT_CHB_COV_INT_EN | \
+> > > +
+> > IMX7D_REG_ADC_INT_CHC_COV_INT_EN | \
+> > > +
+> > IMX7D_REG_ADC_INT_CHD_COV_INT_EN)
+> > > +#define IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS		0xf00
+> > > +
+> > > +#define IMX7D_ADC_TIMEOUT		msecs_to_jiffies(100)
+> > > +
+> > > +enum imx7d_adc_clk_pre_div {
+> > > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_4,
+> > > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_8,
+> > > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_16,
+> > > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_32,
+> > > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_64,
+> > > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_128,
+> > > +};
+> > > +
+> > > +enum imx7d_adc_average_num {
+> > > +	IMX7D_ADC_AVERAGE_NUM_4,
+> > > +	IMX7D_ADC_AVERAGE_NUM_8,
+> > > +	IMX7D_ADC_AVERAGE_NUM_16,
+> > > +	IMX7D_ADC_AVERAGE_NUM_32,
+> > > +};
+> > > +
+> > > +struct imx7d_adc_feature {
+> > > +	enum imx7d_adc_clk_pre_div clk_pre_div;
+> > > +	enum imx7d_adc_average_num avg_num;
+> > > +
+> > > +	u32 core_time_unit;	/* impact the sample rate */
+> > > +
+> > > +	bool average_en;
+> > > +};
+> > > +
+> > > +struct imx7d_adc {
+> > > +	struct device *dev;
+> > > +	void __iomem *regs;
+> > > +	struct clk *clk;
+> > > +
+> > > +	u32 vref_uv;
+> > > +	u32 value;
+> > > +	u32 channel;
+> > > +	u32 pre_div_num;
+> > > +
+> > > +	struct regulator *vref;
+> > > +	struct imx7d_adc_feature adc_feature;
+> > > +
+> > > +	struct completion completion;
+> > > +};
+> > > +
+> > > +struct imx7d_adc_analogue_core_clk {
+> > > +	u32 pre_div;
+> > > +	u32 reg_config;
+> > > +};
+> > > +
+> > > +#define IMX7D_ADC_ANALOGUE_CLK_CONFIG(_pre_div, _reg_conf) {	\
+> > > +	.pre_div = (_pre_div),					\
+> > > +	.reg_config = (_reg_conf),				\
+> > > +}
+> > > +
+> > > +static const struct imx7d_adc_analogue_core_clk
+> > imx7d_adc_analogue_clk[] = {
+> > > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(4,
+> > IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4),
+> > > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(8,
+> > IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8),
+> > > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(16,
+> > IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16),
+> > > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(32,
+> > IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32),
+> > > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(64,
+> > IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64),
+> > > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(128,
+> > > +IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128),
+> > > +};
+> > > +
+> > > +#define IMX7D_ADC_CHAN(_idx) {					\
+> > > +	.type = IIO_VOLTAGE,					\
+> > > +	.indexed = 1,						\
+> > > +	.channel = (_idx),					\
+> > > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> > > +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+> > > +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> > > +}
+> > > +
+> > > +static const struct iio_chan_spec imx7d_adc_iio_channels[] = {
+> > > +	IMX7D_ADC_CHAN(0),
+> > > +	IMX7D_ADC_CHAN(1),
+> > > +	IMX7D_ADC_CHAN(2),
+> > > +	IMX7D_ADC_CHAN(3),
+> > > +	IMX7D_ADC_CHAN(4),
+> > > +	IMX7D_ADC_CHAN(5),
+> > > +	IMX7D_ADC_CHAN(6),
+> > > +	IMX7D_ADC_CHAN(7),
+> > > +	IMX7D_ADC_CHAN(8),
+> > > +	IMX7D_ADC_CHAN(9),
+> > > +	IMX7D_ADC_CHAN(10),
+> > > +	IMX7D_ADC_CHAN(11),
+> > > +	IMX7D_ADC_CHAN(12),
+> > > +	IMX7D_ADC_CHAN(13),
+> > > +	IMX7D_ADC_CHAN(14),
+> > > +	IMX7D_ADC_CHAN(15),
+> > > +};
+> > > +
+> > > +static const u32 imx7d_adc_average_num[] = {
+> > > +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4,
+> > > +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8,
+> > > +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16,
+> > > +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32,
+> > > +};
+> > > +
+> > > +static void imx7d_adc_feature_config(struct imx7d_adc *info) {
+> > > +	info->adc_feature.clk_pre_div = IMX7D_ADC_ANALOG_CLK_PRE_DIV_4;
+> > > +	info->adc_feature.avg_num = IMX7D_ADC_AVERAGE_NUM_32;
+> > > +	info->adc_feature.core_time_unit = 1;
+> > > +	info->adc_feature.average_en = true; }
+> > > +
+> > > +static void imx7d_adc_sample_rate_set(struct imx7d_adc *info) {
+> > > +	struct imx7d_adc_feature *adc_feature = &info->adc_feature;
+> > > +	struct imx7d_adc_analogue_core_clk adc_analogure_clk;
+> > > +	u32 i;
+> > > +	u32 tmp_cfg1;
+> > > +	u32 sample_rate = 0;
+> > > +
+> > > +	/*
+> > > +	 * Before sample set, disable channel A,B,C,D. Here we
+> > > +	 * clear the bit 31 of register REG_ADC_CH_A\B\C\D_CFG1.
+> > > +	 */
+> > > +	for (i = 0; i < 4; i++) {
+> > > +		tmp_cfg1 = readl(info->regs + i *
+> > IMX7D_EACH_CHANNEL_REG_OFFSET);
+> > > +		tmp_cfg1 &= ~IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN;
+> > > +		writel(tmp_cfg1, info->regs + i *
+> > IMX7D_EACH_CHANNEL_REG_OFFSET);
+> > > +	}
+> > > +
+> > > +	adc_analogure_clk = imx7d_adc_analogue_clk[adc_feature-
+> > >clk_pre_div];
+> > > +	sample_rate |= adc_analogure_clk.reg_config;
+> > > +	info->pre_div_num = adc_analogure_clk.pre_div;
+> > > +
+> > > +	sample_rate |= adc_feature->core_time_unit;
+> > > +	writel(sample_rate, info->regs + IMX7D_REG_ADC_TIMER_UNIT); }
+> > > +
+> > > +static void imx7d_adc_hw_init(struct imx7d_adc *info) {
+> > > +	u32 cfg;
+> > > +
+> > > +	/* power up and enable adc analogue core */
+> > > +	cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
+> > > +	cfg &= ~(IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN |
+> > IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN);
+> > > +	cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_EN;
+> > > +	writel(cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
+> > > +
+> > > +	/* enable channel A,B,C,D interrupt */
+> > > +	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs +
+> > IMX7D_REG_ADC_INT_SIG_EN);
+> > > +	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs +
+> > > +IMX7D_REG_ADC_INT_EN);
+> > > +
+> > > +	imx7d_adc_sample_rate_set(info);
+> > > +}
+> > > +
+> > > +static void imx7d_adc_channel_set(struct imx7d_adc *info) {
+> > > +	u32 cfg1 = 0;
+> > > +	u32 cfg2;
+> > > +	u32 channel;
+> > > +
+> > > +	channel = info->channel;
+> > > +
+> > > +	/* the channel choose single conversion, and enable average mode */
+> > > +	cfg1 |= (IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN |
+> > > +		 IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE);
+> > > +	if (info->adc_feature.average_en)
+> > > +		cfg1 |= IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN;
+> > > +
+> > > +	/*
+> > > +	 * physical channel 0 chose logical channel A
+> > > +	 * physical channel 1 chose logical channel B
+> > > +	 * physical channel 2 chose logical channel C
+> > > +	 * physical channel 3 chose logical channel D
+> > > +	 */
+> > > +	cfg1 |= IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL(channel);
+> > > +
+> > > +	/* read register REG_ADC_CH_A\B\C\D_CFG2, according to the channel
+> > chosen */
+> > > +	cfg2 = readl(info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel +
+> > > +IMX7D_REG_ADC_CHANNEL_CFG2_BASE);
+> > > +
+> > > +	cfg2 |= imx7d_adc_average_num[info->adc_feature.avg_num];
+> > > +
+> > > +	/* write the register REG_ADC_CH_A\B\C\D_CFG2, according to the
+> > channel chosen */
+> > > +	writel(cfg2, info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel +
+> > IMX7D_REG_ADC_CHANNEL_CFG2_BASE);
+> > > +	writel(cfg1, info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel);
+> > > +}
+> > > +
+> > > +static u32 imx7d_adc_get_sample_rate(struct imx7d_adc *info) {
+> > > +	/* input clock is always 24MHz */
+> > > +	u32 input_clk = 24000000;
+> > > +	u32 analogue_core_clk;
+> > > +	u32 core_time_unit = info->adc_feature.core_time_unit;
+> > > +	u32 tmp;
+> > > +
+> > > +	analogue_core_clk = input_clk / info->pre_div_num;
+> > > +	tmp = (core_time_unit + 1) * 6;
+> > > +
+> > > +	return  analogue_core_clk / tmp;
+> > 
+> > extra space after return
+> > 
+> > > +}
+> > > +
+> > > +static int imx7d_adc_read_raw(struct iio_dev *indio_dev,
+> > > +			struct iio_chan_spec const *chan,
+> > > +			int *val,
+> > > +			int *val2,
+> > > +			long mask)
+> > > +{
+> > > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > > +
+> > > +	u32 channel;
+> > > +	long ret;
+> > > +
+> > > +	switch (mask) {
+> > > +	case IIO_CHAN_INFO_RAW:
+> > > +		mutex_lock(&indio_dev->mlock);
+> > > +		reinit_completion(&info->completion);
+> > > +
+> > > +		channel = chan->channel & 0x03;
+> > > +		info->channel = channel;
+> > > +		imx7d_adc_channel_set(info);
+> > > +
+> > > +		ret = wait_for_completion_interruptible_timeout
+> > > +				(&info->completion, IMX7D_ADC_TIMEOUT);
+> > 
+> > all mutex_unlock() calls could be moved here
+> 
+> [haibo] Sorry, I can't get your point, you mean we don't need to use mutex_unlock?
 
-we for instance have two completely unrelated projects both using this 
-chip, on one side we wish to measure power consumption on the host board 
-and hwmon has the apis and tool ecosystem for it, while on the "ACME" 
-system we needed IIO because it's buffer streaming scheme and remote 
-features saves the day to create a lab instrument. But really both have 
-their use, I'd recommend keeping the hwmon driver for now. I doubt those 
-drivers will generate much maintenance work in the future either.
+I was aiming for code simplification (reduce the number of mutex_unlock() 
+calls); the mutex protects info->value so it is difficult to rearrange
 
-Kind Regards,
-Marc.
+please ignore my comment
 
 
+one could do
 
->
-> Guenter
->
->> Jonathan
->>> ---
->>>   drivers/iio/adc/Kconfig      |  10 +
->>>   drivers/iio/adc/Makefile     |   1 +
->>>   drivers/iio/adc/ina2xx-iio.c | 684
->>> +++++++++++++++++++++++++++++++++++++++++++
->>>   3 files changed, 695 insertions(+)
->>>   create mode 100644 drivers/iio/adc/ina2xx-iio.c
->>>
->>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->>> index eb0cd89..9b87372 100644
->>> --- a/drivers/iio/adc/Kconfig
->>> +++ b/drivers/iio/adc/Kconfig
->>> @@ -170,6 +170,16 @@ config EXYNOS_ADC
->>>         of SoCs for drivers such as the touchscreen and hwmon to use
->>> to share
->>>         this resource.
->>>
->>> +config INA2XX_IIO
->>> +    tristate "Texas Instruments INA2xx Power Monitors IIO driver"
->>> +    depends on I2C
->>> +    select REGMAP_I2C
->>> +    select IIO_BUFFER
->>> +    help
->>> +      Say yes here to build support for TI INA2xx familly Power
->>> Monitors.
->>> +
->>> +      Note that this is not the existing hwmon interface for this
->>> device.
->>> +
->>>   config LP8788_ADC
->>>       tristate "LP8788 ADC driver"
->>>       depends on MFD_LP8788
->>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->>> index a096210..74e4341 100644
->>> --- a/drivers/iio/adc/Makefile
->>> +++ b/drivers/iio/adc/Makefile
->>> @@ -19,6 +19,7 @@ obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
->>>   obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->>>   obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
->>>   obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->>> +obj-$(CONFIG_INA2XX_IIO) += ina2xx-iio.o
->>>   obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->>>   obj-$(CONFIG_MAX1027) += max1027.o
->>>   obj-$(CONFIG_MAX1363) += max1363.o
->>> diff --git a/drivers/iio/adc/ina2xx-iio.c b/drivers/iio/adc/ina2xx-iio.c
->>> new file mode 100644
->>> index 0000000..4a0026c
->>> --- /dev/null
->>> +++ b/drivers/iio/adc/ina2xx-iio.c
->>> @@ -0,0 +1,684 @@
->>> +/*
->>> + * INA2XX Current and Power Monitors
->>> + *
->>> + * Copyright 2015 Baylibre SAS.
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify
->>> + * it under the terms of the GNU General Public License version 2 as
->>> + * published by the Free Software Foundation.
->>> + *
->>> + * Based on linux/drivers/iio/adc/ad7291.c
->>> + * Copyright 2010-2011 Analog Devices Inc.
->>> + *
->>> + * Based on linux/drivers/hwmon/ina2xx.c
->>> + * Copyright 2012 Lothar Felten <l-felten@ti.com>
->>> + *
->>> + * Licensed under the GPL-2 or later.
->>> + *
->>> + * IIO driver for INA219-220-226-230-231
->>> + *
->>> + * Configurable 7-bit I2C slave address from 0x40 to 0x4F
->>> + */
->>> +#include <linux/module.h>
->>> +#include <linux/kthread.h>
->>> +#include <linux/delay.h>
->>> +#include <linux/iio/kfifo_buf.h>
->>> +#include <linux/iio/sysfs.h>
->>> +#include <linux/i2c.h>
->>> +#include <linux/regmap.h>
->>> +#include <linux/platform_data/ina2xx.h>
->>> +
->>> +#include <linux/util_macros.h>
->>> +
->>> +/*
->>> + * INA2XX registers definition
->>> + */
->>> +/* common register definitions */
->>> +#define INA2XX_CONFIG                   0x00
->>> +#define INA2XX_SHUNT_VOLTAGE            0x01    /* readonly */
->>> +#define INA2XX_BUS_VOLTAGE              0x02    /* readonly */
->>> +#define INA2XX_POWER                    0x03    /* readonly */
->>> +#define INA2XX_CURRENT                  0x04    /* readonly */
->>> +#define INA2XX_CALIBRATION              0x05
->>> +
->>> +#define INA226_ALERT_MASK        0x06
->>> +#define INA266_CVRF            BIT(3)
->>> +
->>> +/* register count */
->>> +#define INA219_REGISTERS                6
->>> +#define INA226_REGISTERS                8
->>> +#define INA2XX_MAX_REGISTERS            8
->>> +
->>> +/* settings - depend on use case */
->>> +#define INA219_CONFIG_DEFAULT           0x399F    /* PGA=8 */
->>> +#define INA226_CONFIG_DEFAULT           0x4327
->>> +#define INA226_DEFAULT_AVG              4
->>> +#define INA226_DEFAULT_IT        1110
->>> +
->>> +#define INA2XX_RSHUNT_DEFAULT           10000
->>> +
->>> +/*
->>> + * bit mask for reading the averaging setting in the configuration
->>> register
->>> + * FIXME: use regmap_fields.
->>> + */
->>> +#define INA2XX_MODE_MASK    GENMASK(3, 0)
->>> +
->>> +#define INA226_AVG_MASK        GENMASK(11, 9)
->>> +#define INA226_SHIFT_AVG(val)    ((val) << 9)
->>> +
->>> +/* Integration time for VBus */
->>> +#define INA226_ITB_MASK        GENMASK(8, 6)
->>> +#define INA226_SHIFT_ITB(val)    ((val) << 6)
->>> +
->>> +/*Integration Time for VShunt */
->>> +#define INA226_ITS_MASK        GENMASK(5, 3)
->>> +#define INA226_SHIFT_ITS(val)    ((val) << 3)
->>> +
->>> +
->>> +static bool ina2xx_is_writeable_reg(struct device *dev, unsigned int
->>> reg)
->>> +{
->>> +    return (reg == INA2XX_CONFIG) || (reg > INA2XX_CURRENT);
->>> +}
->>> +
->>> +static bool ina2xx_is_volatile_reg(struct device *dev, unsigned int
->>> reg)
->>> +{
->>> +    return (reg != INA2XX_CONFIG);
->>> +}
->>> +
->>> +static struct regmap_config ina2xx_regmap_config = {
->>> +    .reg_bits = 8,
->>> +    .val_bits = 16,
->>> +
->>> +    .writeable_reg = ina2xx_is_writeable_reg,
->>> +    .volatile_reg = ina2xx_is_volatile_reg,
->>> +};
->>> +
->>> +enum ina2xx_ids { ina219, ina226 };
->>> +
->>> +struct ina2xx_config {
->>> +    u16 config_default;
->>> +    int calibration_factor;
->>> +    int registers;
->>> +    int shunt_div;
->>> +    int bus_voltage_shift;
->>> +    int bus_voltage_lsb;    /* uV */
->>> +    int power_lsb;        /* uW */
->>> +};
->>> +
->>> +struct ina2xx_chip_info {
->>> +    struct regmap *regmap;
->>> +    struct task_struct *task;
->>> +    const struct ina2xx_config *config;
->>> +    struct mutex state_lock;
->>> +    long rshunt;
->>> +    int avg;
->>> +    int itb; /* Bus voltage integration time uS */
->>> +    int its; /* Shunt voltage integration tim uS */
->>> +};
->>> +
->>> +static const struct ina2xx_config ina2xx_config[] = {
->>> +    [ina219] = {
->>> +            .config_default = INA219_CONFIG_DEFAULT,
->>> +            .calibration_factor = 40960000,
->>> +            .registers = INA219_REGISTERS,
->>> +            .shunt_div = 100,
->>> +            .bus_voltage_shift = 3,
->>> +            .bus_voltage_lsb = 4000,
->>> +            .power_lsb = 20000,
->>> +            },
->>> +    [ina226] = {
->>> +            .config_default = INA226_CONFIG_DEFAULT,
->>> +            .calibration_factor = 5120000,
->>> +            .registers = INA226_REGISTERS,
->>> +            .shunt_div = 400,
->>> +            .bus_voltage_shift = 0,
->>> +            .bus_voltage_lsb = 1250,
->>> +            .power_lsb = 25000,
->>> +            },
->>> +};
->>> +
->>> +static int ina2xx_get_value(struct ina2xx_chip_info *chip, u8 reg,
->>> +                unsigned int regval, int *val, int *uval)
->>> +{
->>> +    *val = 0;
->>> +
->>> +    switch (reg) {
->>> +    case INA2XX_SHUNT_VOLTAGE:
->>> +        /* signed register */
->>> +        *uval = DIV_ROUND_CLOSEST((s16) regval,
->>> +                      chip->config->shunt_div);
->>> +        return IIO_VAL_INT_PLUS_MICRO;
->>> +
->>> +    case INA2XX_BUS_VOLTAGE:
->>> +        *uval = (regval >> chip->config->bus_voltage_shift)
->>> +            * chip->config->bus_voltage_lsb;
->>> +        *val = *uval/1000000;
->>> +        *uval = *uval % 1000000;
->>> +        return IIO_VAL_INT_PLUS_MICRO;
->>> +
->>> +    case INA2XX_POWER:
->>> +        *uval = regval * chip->config->power_lsb;
->>> +        *val = *uval/1000000;
->>> +        *uval = *uval % 1000000;
->>> +        return IIO_VAL_INT_PLUS_MICRO;
->>> +
->>> +    case INA2XX_CURRENT:
->>> +        /* signed register, LSB=1mA (selected), in mA */
->>> +        *uval = (s16) regval * 1000;
->>> +        return IIO_VAL_INT_PLUS_MICRO;
->>> +
->>> +    default:
->>> +        /* programmer goofed */
->>> +        WARN_ON_ONCE(1);
->>> +    }
->>> +    return -EINVAL;
->>> +}
->>> +
->>> +static int ina2xx_read_raw(struct iio_dev *indio_dev,
->>> +               struct iio_chan_spec const *chan,
->>> +               int *val, int *val2, long mask)
->>> +{
->>> +    int ret;
->>> +    struct ina2xx_chip_info *chip = iio_priv(indio_dev);
->>> +    unsigned int regval;
->>> +
->>> +    switch (mask) {
->>> +    case IIO_CHAN_INFO_RAW:
->>> +        ret = regmap_read(chip->regmap, chan->address, &regval);
->>> +        if (ret < 0)
->>> +            return ret;
->>> +
->>> +        return ina2xx_get_value(chip, chan->address, regval, val,
->>> val2);
->>> +
->>> +    case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
->>> +        *val = chip->avg;
->>> +        return IIO_VAL_INT;
->>> +
->>> +    case IIO_CHAN_INFO_INT_TIME:
->>> +        *val = 0;
->>> +        if (chan->address == INA2XX_SHUNT_VOLTAGE)
->>> +            *val2 = chip->its;
->>> +        else
->>> +            *val2 = chip->itb;
->>> +
->>> +        return IIO_VAL_INT_PLUS_MICRO;
->>> +    /*
->>> +     * sample freq is read only, it is a consequence of
->>> +     * 1/AVG*(CT_bus+CT_shunt)
->>> +     */
->>> +    case IIO_CHAN_INFO_SAMP_FREQ:
->>> +        *val = DIV_ROUND_CLOSEST(1000000,
->>> +               (chip->itb + chip->its) * chip->avg);
->>> +
->>> +        return IIO_VAL_INT;
->>> +
->>> +    default:
->>> +        return -EINVAL;
->>> +    }
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +/*
->>> + * Available averaging rates for ina226. The indices correspond with
->>> + * the bit values expected by the chip (according to the ina226
->>> datasheet,
->>> + * table 3 AVG bit settings, found at
->>> + * http://www.ti.com/lit/ds/symlink/ina226.pdf.
->>> + */
->>> +static const int ina226_avg_tab[] = { 1, 4, 16, 64, 128, 256, 512,
->>> 1024 };
->>> +
->>> +static unsigned int ina226_set_average(struct ina2xx_chip_info *chip,
->>> +                       unsigned int val,
->>> +                       unsigned int *config)
->>> +{
->>> +    int bits;
->>> +
->>> +    if (val > 1024 || val < 1)
->>> +        return -EINVAL;
->>> +
->>> +    bits = find_closest(val, ina226_avg_tab,
->>> +                ARRAY_SIZE(ina226_avg_tab));
->>> +
->>> +    chip->avg = ina226_avg_tab[bits];
->>> +
->>> +    *config &= ~INA226_AVG_MASK;
->>> +    *config |= INA226_SHIFT_AVG(bits) & INA226_AVG_MASK;
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +/* Conversion times in uS */
->>> +static const int ina226_conv_time_tab[] = { 140, 204, 332, 588, 1100,
->>> +                        2116, 4156, 8244};
->>> +
->>> +static unsigned int ina226_set_itb(struct ina2xx_chip_info *chip,
->>> +                   unsigned int val,
->>> +                   unsigned int *config)
->>> +{
->>> +    int bits;
->>> +
->>> +    if (val > 8244 || val < 140)
->>> +        return -EINVAL;
->>> +
->>> +    bits = find_closest(val, ina226_conv_time_tab,
->>> +            ARRAY_SIZE(ina226_conv_time_tab));
->>> +
->>> +    chip->itb = ina226_conv_time_tab[bits];
->>> +
->>> +    *config &= ~INA226_ITB_MASK;
->>> +    *config |= INA226_SHIFT_ITB(bits) & INA226_ITB_MASK;
->>> +
->>> +    return 0;
->>> +}
->>> +
->> Could do with a slightly more informative name than its vs itb.
->> Or at least some docs explaining what it does.
->>> +static unsigned int ina226_set_its(struct ina2xx_chip_info *chip,
->>> +                   unsigned int val,
->>> +                   unsigned int *config)
->>> +{
->>> +    int bits;
->>> +
->>> +    if (val > 8244 || val < 140)
->>> +        return -EINVAL;
->>> +
->>> +    bits = find_closest(val, ina226_conv_time_tab,
->>> +            ARRAY_SIZE(ina226_conv_time_tab));
->>> +
->>> +    chip->its = ina226_conv_time_tab[bits];
->>> +
->>> +    *config &= ~INA226_ITS_MASK;
->>> +    *config |= INA226_SHIFT_ITS(bits) & INA226_ITS_MASK;
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +
->>> +static int ina2xx_write_raw(struct iio_dev *indio_dev,
->>> +                struct iio_chan_spec const *chan,
->>> +                int val, int val2, long mask)
->>> +{
->>> +    struct ina2xx_chip_info *chip = iio_priv(indio_dev);
->>> +    int ret = 0;
->>> +    unsigned int config, tmp;
->>> +
->>> +    if (iio_buffer_enabled(indio_dev))
->>> +        return -EBUSY;
->>> +
->>> +    mutex_lock(&chip->state_lock);
->>> +
->>> +    ret = regmap_read(chip->regmap, INA2XX_CONFIG, &config);
->>> +    if (ret < 0)
->>> +        goto _err;
->>> +
->>> +    tmp = config;
->>> +
->>> +    switch (mask) {
->>> +    case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
->>> +        ret = ina226_set_average(chip, val, &tmp);
->>> +        break;
->>> +
->>> +    case IIO_CHAN_INFO_INT_TIME:
->>> +        if (chan->address == INA2XX_SHUNT_VOLTAGE)
->>> +            ret = ina226_set_its(chip, val, &tmp);
->>> +        else
->>> +            ret = ina226_set_itb(chip, val, &tmp);
->>> +        break;
->>> +    default:
->>> +        ret = -EINVAL;
->>> +    }
->>> +
->>> +    if (!ret && (tmp != config))
->>> +        ret = regmap_write(chip->regmap, INA2XX_CONFIG, tmp);
->>> +_err:
->>> +    mutex_unlock(&chip->state_lock);
->>> +
->>> +    return ret;
->>> +}
->>> +
->>> +
->>> +#define INA2XX_CHAN(_type, _index, _address) { \
->>> +    .type = _type, \
->>> +    .address = _address, \
->>> +    .indexed = 1, \
->>> +    .channel = (_index), \
->>> +    .info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
->>> +    .info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
->>> +                   BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
->>> +    .scan_index = (_index), \
->>> +    .scan_type = { \
->>> +        .sign = 'u', \
->>> +        .realbits = 16, \
->>> +        .storagebits = 16, \
->>> +    .endianness = IIO_BE, \
->>> +    } \
->>> +}
->>> +
->>> +/*Sampling Freq is a consequence of the integration times of the V
->>> channels.*/
->>> +#define INA2XX_CHAN_VOLTAGE(_index, _address) { \
->>> +    .type = IIO_VOLTAGE, \
->>> +    .address = _address, \
->>> +    .indexed = 1, \
->>> +    .channel = (_index), \
->>> +    .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->>> +                  BIT(IIO_CHAN_INFO_INT_TIME), \
->>> +    .scan_index = (_index), \
->>> +    .scan_type = { \
->>> +        .sign = 'u', \
->>> +        .realbits = 16, \
->>> +        .storagebits = 16, \
->>> +    .endianness = IIO_BE, \
->>> +    } \
->>> +}
->>> +
->>> +
->>> +static const struct iio_chan_spec ina2xx_channels[] = {
->>> +    INA2XX_CHAN_VOLTAGE(0, INA2XX_SHUNT_VOLTAGE),
->>> +    INA2XX_CHAN_VOLTAGE(1, INA2XX_BUS_VOLTAGE),
->>> +    INA2XX_CHAN(IIO_CURRENT, 2, INA2XX_CURRENT),
->>> +    INA2XX_CHAN(IIO_POWER, 3, INA2XX_POWER),
->>> +    IIO_CHAN_SOFT_TIMESTAMP(4),
->>> +};
->>> +
->>> +
->>> +static s64 prev_ns;
->> This prevents you having more than one instance of the device - move
->> it into
->> your chip_info.
->>> +
->>> +static int ina2xx_work_buffer(struct iio_dev *indio_dev)
->>> +{
->>> +    struct ina2xx_chip_info *chip = iio_priv(indio_dev);
->>> +    unsigned short data[8];
->>> +    int bit, ret = 0, i = 0;
->>> +    unsigned long buffer_us = 0, elapsed_us = 0;
->>> +    s64 time_a, time_b;
->>> +    unsigned int alert;
->>> +
->>> +    time_a = iio_get_time_ns();
->>> +
->>> +    /*
->>> +     * Because the timer thread and the chip conversion clock
->>> +     * are asynchronous, the period difference will eventually
->>> +     * result in reading V[k-1] again, or skip V[k] at time Tk.
->>> +     * In order to resync the timer with the conversion process
->>> +     * we check the ConVersionReadyFlag.
->>> +     * On hardware that supports using the ALERT pin to toggle a
->>> +     * GPIO a triggered buffer could be used instead.
->>> +     * For now, we pay for that extra read of the ALERT register
->>> +     */
->>> +    do {
->>> +        ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
->>> +                  &alert);
->>> +        if (ret < 0)
->>> +            goto _err;
->>> +
->>> +        alert &= INA266_CVRF;
->>> +        trace_printk("Conversion ready: %d\n", !!alert);
->>> +
->>> +    } while (!alert);
->>> +
->>> +    /*
->>> +     * Single register reads: bulk_read will not work with ina226
->>> +     * as there is no auto-increment of the address register for
->>> +     * data length longer than 16bits.
->>> +     */
->>> +    for_each_set_bit(bit, indio_dev->active_scan_mask,
->>> +             indio_dev->masklength) {
->>> +        unsigned int val;
->>> +
->>> +        ret = regmap_read(chip->regmap,
->>> +                  INA2XX_SHUNT_VOLTAGE + bit, &val);
->>> +        if (ret < 0)
->>> +            goto _err;
->>> +
->>> +        data[i++] = val;
->>> +    }
->>> +
->>> +    time_b = iio_get_time_ns();
->>> +
->>> +    iio_push_to_buffers_with_timestamp(indio_dev,
->>> +                       (unsigned int *)data, time_a);
->>> +
->>> +    buffer_us = (unsigned long)(time_b - time_a) / 1000;
->>> +    elapsed_us = (unsigned long)(time_a - prev_ns) / 1000;
->>> +
->>> +    trace_printk("uS: elapsed: %lu, buf: %lu\n", elapsed_us,
->>> buffer_us);
->>> +
->>> +    prev_ns = time_a;
->>> +
->>> +_err:
->>> +    return buffer_us;
->>> +};
->>> +
->>> +static int ina2xx_capture_thread(void *data)
->>> +{
->>> +    struct iio_dev *indio_dev = (struct iio_dev *)data;
->>> +    struct ina2xx_chip_info *chip = iio_priv(indio_dev);
->>> +    unsigned int sampling_us = (chip->itb + chip->its) * chip->avg;
->>> +    unsigned long buffer_us;
->>> +
->>> +    /*
->>> +     * Poll a bit faster than the chip internal Fs, in case
->>> +     * we wish to sync with the conversion ready flag.
->>> +     */
->>> +    sampling_us -= 200;
->>> +
->>> +    do {
->>> +        buffer_us = ina2xx_work_buffer(indio_dev);
->>> +
->>> +        if (sampling_us > buffer_us)
->>> +            udelay(sampling_us - buffer_us);
->>> +
->>> +    } while (!kthread_should_stop());
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +int ina2xx_buffer_enable(struct iio_dev *indio_dev)
->>> +{
->>> +    struct ina2xx_chip_info *chip = iio_priv(indio_dev);
->>> +    unsigned int sampling_us = (chip->itb + chip->its) * chip->avg;
->>> +
->>> +    trace_printk("Enabling buffer w/ scan_mask %02x, freq = %d, avg
->>> =%u\n",
->>> +             (unsigned int)(*indio_dev->active_scan_mask),
->>> +             1000000/sampling_us, chip->avg);
->>> +
->>> +    trace_printk("Expected work period: %u us\n", sampling_us);
->>> +
->>> +    prev_ns = iio_get_time_ns();
->>> +
->>> +    chip->task = kthread_run(ina2xx_capture_thread, (void *)indio_dev,
->>> +                 "ina2xx-%uus", sampling_us);
->>> +
->>> +    return PTR_ERR_OR_ZERO(chip->task);
->>> +}
->>> +
->>> +int ina2xx_buffer_disable(struct iio_dev *indio_dev)
->>> +{
->>> +    struct ina2xx_chip_info *chip = iio_priv(indio_dev);
->>> +
->>> +    if (chip->task) {
->>> +        kthread_stop(chip->task);
->>> +        chip->task = NULL;
->>> +    }
->> nitpick: blank line here.
->>> +    return 0;
->>> +}
->>> +
->>> +static const struct iio_buffer_setup_ops ina2xx_setup_ops = {
->>> +    .postenable = &ina2xx_buffer_enable,
->>> +    .postdisable = &ina2xx_buffer_disable,
->>> +};
->>> +
->>> +static int ina2xx_debug_reg(struct iio_dev *indio_dev,
->>> +                unsigned reg, unsigned writeval, unsigned *readval)
->>> +{
->>> +    struct ina2xx_chip_info *chip = iio_priv(indio_dev);
->>> +
->>> +    if (!readval)
->>> +        return regmap_write(chip->regmap, reg, writeval);
->>> +
->>> +    return regmap_read(chip->regmap, reg, readval);
->>> +}
->>> +
->>> +/* frequencies matching the cummulated integration times for vshunt
->>> and vbus */
->> huh?  Integration time is in seconds... These seem unlikely to be valid
->> settings.
->>> +static IIO_CONST_ATTR_INT_TIME_AVAIL("140 204 332 588 1100 2116 4156
->>> 8244");
->>> +
->>> +static struct attribute *ina2xx_attributes[] = {
->>> +    &iio_const_attr_integration_time_available.dev_attr.attr,
->>> +    NULL,
->>> +};
->>> +
->>> +static const struct attribute_group ina2xx_attribute_group = {
->>> +    .attrs = ina2xx_attributes,
->>> +};
->>> +
->>> +static const struct iio_info ina2xx_info = {
->>> +    .debugfs_reg_access = &ina2xx_debug_reg,
->>> +    .read_raw = &ina2xx_read_raw,
->>> +    .write_raw = &ina2xx_write_raw,
->>> +    .attrs = &ina2xx_attribute_group,
->>> +    .driver_module = THIS_MODULE,
->>> +};
->>> +
->>> +/* Initialize the configuration and calibration registers. */
->>> +static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int
->>> config)
->>> +{
->>> +    u16 regval;
->>> +    int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
->>> +
->>> +    if (ret < 0)
->>> +        return ret;
->>> +    /*
->>> +     * Set current LSB to 1mA, shunt is in uOhms
->>> +     * (equation 13 in datasheet). We hardcode a Current_LSB
->>> +     * of 1.0 x10-6. The only remaining parameter is RShunt
->>> +     * There is no need to expose the CALIBRATION register
->>> +     * to the user for now.
->>> +     */
->>> +    regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
->>> +                chip->rshunt);
->>> +
->>> +    return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
->>> +}
->>> +
->>> +static int ina2xx_probe(struct i2c_client *client,
->>> +            const struct i2c_device_id *id)
->>> +{
->>> +    struct ina2xx_chip_info *chip;
->>> +    struct iio_dev *indio_dev;
->>> +    struct iio_buffer *buffer;
->>> +    int ret;
->>> +    unsigned int val;
->>> +
->>> +    indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
->>> +    if (!indio_dev)
->>> +        return -ENOMEM;
->>> +
->>> +    chip = iio_priv(indio_dev);
->>> +
->>> +    chip->config = &ina2xx_config[id->driver_data];
->>> +
->>> +    if (of_property_read_u32(client->dev.of_node,
->>> +                 "shunt-resistor", &val) < 0) {
->>> +        struct ina2xx_platform_data *pdata =
->>> +            dev_get_platdata(&client->dev);
->>> +
->>> +        if (pdata)
->>> +            val = pdata->shunt_uohms;
->>> +        else
->>> +            val = INA2XX_RSHUNT_DEFAULT;
->>> +    }
->>> +
->>> +    if (val <= 0 || val > chip->config->calibration_factor)
->>> +        return -ENODEV;
->>> +
->>> +    chip->rshunt = val;
->>> +
->>> +    ina2xx_regmap_config.max_register = chip->config->registers;
->>> +
->>> +    mutex_init(&chip->state_lock);
->>> +
->>> +    /* this is only used for device removal purposes */
->>> +    i2c_set_clientdata(client, indio_dev);
->>> +
->>> +    indio_dev->name = id->name;
->>> +    indio_dev->channels = ina2xx_channels;
->>> +    indio_dev->num_channels = ARRAY_SIZE(ina2xx_channels);
->>> +
->>> +    indio_dev->dev.parent = &client->dev;
->>> +    indio_dev->info = &ina2xx_info;
->>> +    indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
->>> +
->>> +    chip->regmap = devm_regmap_init_i2c(client, &ina2xx_regmap_config);
->>> +    if (IS_ERR(chip->regmap)) {
->>> +        dev_err(&client->dev, "failed to allocate register map\n");
->>> +        return PTR_ERR(chip->regmap);
->>> +    }
->>> +
->>> +    /* Patch the current config register with default. */
->>> +    val = chip->config->config_default;
->>> +
->>> +    if (id->driver_data == ina226) {
->>> +        ina226_set_average(chip, INA226_DEFAULT_AVG, &val);
->>> +        ina226_set_itb(chip, INA226_DEFAULT_IT, &val);
->>> +        ina226_set_its(chip, INA226_DEFAULT_IT, &val);
->>> +    }
->>> +
->>> +    ret = ina2xx_init(chip, val);
->>> +    if (ret < 0) {
->>> +        dev_err(&client->dev, "error configuring the device: %d\n",
->>> +            ret);
->>> +        return -ENODEV;
->>> +    }
->>> +
->>> +    buffer = devm_iio_kfifo_allocate(&indio_dev->dev);
->>> +    if (!buffer)
->>> +        return -ENOMEM;
->>> +
->>> +    indio_dev->setup_ops = &ina2xx_setup_ops;
->>> +
->>> +    iio_device_attach_buffer(indio_dev, buffer);
->>> +
->>> +    return devm_iio_device_register(&client->dev, indio_dev);
->>> +}
->>> +
->>> +
->>> +static int ina2xx_remove(struct i2c_client *client)
->>> +{
->>> +    struct iio_dev *indio_dev = i2c_get_clientdata(client);
->>> +    struct ina2xx_chip_info *chip = iio_priv(indio_dev);
->>> +    int ret;
->>> +
->>> +    mutex_destroy(&chip->state_lock);
->>> +
->>> +    /* Powerdown */
->>> +    ret = regmap_update_bits(chip->regmap, INA2XX_CONFIG,
->>> +                  INA2XX_MODE_MASK, 0);
->>> +
->>> +    iio_device_unregister(indio_dev);
->> Peter already covered this to a degree.
->>
->> iio_device_unregister removes the userspace interface - hence it
->> must be the first thing done in remove.
->>
->> If you use devm_ version of register it will occur at the end of the
->> remove.  Hence if the remove has anything in it, you pretty much
->> can't use the devm_iio_device_register without introducing a nasty
->> race condition.  Hence you don't want the devm version here and you
->> want to move iio_device_unregister to the beginning of this function.
->>> +
->>> +    return ret;
->>> +}
->>> +
->>> +
->>> +static const struct i2c_device_id ina2xx_id[] = {
->>> +    {"ina219", ina219},
->>> +    {"ina220", ina219},
->>> +    {"ina226", ina226},
->>> +    {"ina230", ina226},
->>> +    {"ina231", ina226},
->>> +    {}
->>> +};
->>> +
->>> +MODULE_DEVICE_TABLE(i2c, ina2xx_id);
->>> +
->>> +static struct i2c_driver ina2xx_driver = {
->>> +    .driver = {
->>> +           .name = KBUILD_MODNAME,
->>> +    },
->>> +    .probe = ina2xx_probe,
->>> +    .remove = ina2xx_remove,
->>> +    .id_table = ina2xx_id,
->>> +};
->>> +
->>> +module_i2c_driver(ina2xx_driver);
->>> +
->>> +MODULE_AUTHOR("Marc Titinger <marc.titinger@baylibre.com>");
->>> +MODULE_DESCRIPTION("Texas Instruments INA2XX ADC driver");
->>> +MODULE_LICENSE("GPL v2");
->>>
->>
->>
->
+ret = wait_for_completion(...);
+if (ret > 0)
+  *val = info->value;
+mutex_unlock();
+if (ret == 0)
+  return -ETIMEDOUT;
+else if (ret < 0)
+  return ret;
+return IIO_VAL_INT;
 
+this saves two mutex_unlock() but this is not really any better
+
+> > > +		if (ret == 0) {
+> > > +			mutex_unlock(&indio_dev->mlock);
+> > > +			return -ETIMEDOUT;
+> > > +		}
+> > > +		if (ret < 0) {
+> > > +			mutex_unlock(&indio_dev->mlock);
+> > > +			return ret;
+> > > +		}
+> > > +
+> > > +		*val = info->value;
+> > > +		mutex_unlock(&indio_dev->mlock);
+> > > +		return IIO_VAL_INT;
+> > > +
+> > > +	case IIO_CHAN_INFO_SCALE:
+> > > +		info->vref_uv = regulator_get_voltage(info->vref);
+> > > +		*val = info->vref_uv / 1000;
+> > > +		*val2 = 12;
+> > > +		return IIO_VAL_FRACTIONAL_LOG2;
+> > > +
+> > > +	case IIO_CHAN_INFO_SAMP_FREQ:
+> > > +		*val = imx7d_adc_get_sample_rate(info);
+> > > +		return IIO_VAL_INT;
+> > > +
+> > > +	default:
+> > > +		break;
+> > 
+> > just
+> > return -EINVAL
+> > here
+> > 
+> > > +	}
+> > > +
+> > > +	return -EINVAL;
+> > > +}
+> > > +
+> > > +static int imx7d_adc_read_data(struct imx7d_adc *info) {
+> > > +	u32 channel;
+> > > +	u32 value;
+> > > +
+> > > +	channel = info->channel & 0x03;
+> > > +
+> > > +	/*
+> > > +	 * channel A and B conversion result share one register,
+> > > +	 * bit[27~16] is the channel B conversion result,
+> > > +	 * bit[11~0] is the channel A conversion result.
+> > > +	 * channel C and D is the same.
+> > > +	 */
+> > > +	if (channel < 2)
+> > > +		value = readl(info->regs + IMX7D_REG_ADC_CHA_B_CNV_RSLT);
+> > > +	else
+> > > +		value = readl(info->regs + IMX7D_REG_ADC_CHC_D_CNV_RSLT);
+> > > +	if (channel & 0x1)	/* channel B or D */
+> > > +		value = (value >> 16) & 0xFFF;
+> > > +	else			/* channel A or C */
+> > > +		value &= 0xFFF;
+> > > +
+> > > +	return value;
+> > > +}
+> > > +
+> > > +static irqreturn_t imx7d_adc_isr(int irq, void *dev_id) {
+> > > +	struct imx7d_adc *info = (struct imx7d_adc *)dev_id;
+> > > +	int status;
+> > > +
+> > > +	status = readl(info->regs + IMX7D_REG_ADC_INT_STATUS);
+> > > +	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS) {
+> > > +		info->value = imx7d_adc_read_data(info);
+> > > +		complete(&info->completion);
+> > > +
+> > > +		/*
+> > > +		 * The register IMX7D_REG_ADC_INT_STATUS can't clear
+> > > +		 * itself after read operation, need software to write
+> > > +		 * 0 to the related bit. Here we clear the channel A/B/C/D
+> > > +		 * conversion finished flag.
+> > > +		 */
+> > > +		status &= ~IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS;
+> > > +		writel(status, info->regs + IMX7D_REG_ADC_INT_STATUS);
+> > > +		return IRQ_HANDLED;
+> > > +	}
+> > > +
+> > > +	/*
+> > > +	 * Currently, driver only enable channel A/B/C/D conversion
+> > interrupt,
+> > > +	 * so logically for other bits of IMX7D_REG_ADC_INT_STATUS, they
+> > should
+> > > +	 * always be zero. But due to this register can't clear itself
+> > after the
+> > > +	 * read operation, if any accident happen and cause the other bits
+> > > +of this
+> > 
+> > happens and causes
+> > 
+> > > +	 * register set, then interrupt will be triggered constantly. To
+> > make the
+> > > +	 * code robust, here clear this register for all the accident.
+> > 
+> > clear this register here .. accidents
+> > 
+> > > +	 */
+> > > +	writel(0, info->regs + IMX7D_REG_ADC_INT_STATUS);
+> > > +	return IRQ_NONE;
+> > > +}
+> > > +
+> > > +static int imx7d_adc_reg_access(struct iio_dev *indio_dev,
+> > > +			unsigned reg, unsigned writeval,
+> > > +			unsigned *readval)
+> > > +{
+> > > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > > +
+> > > +	if (!readval || reg % 4 || reg > IMX7D_REG_ADC_ADC_CFG)
+> > > +		return -EINVAL;
+> > > +
+> > > +	*readval = readl(info->regs + reg);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static const struct iio_info imx7d_adc_iio_info = {
+> > > +	.driver_module = THIS_MODULE,
+> > > +	.read_raw = &imx7d_adc_read_raw,
+> > > +	.debugfs_reg_access = &imx7d_adc_reg_access, };
+> > > +
+> > > +static const struct of_device_id imx7d_adc_match[] = {
+> > > +	{ .compatible = "fsl,imx7d-adc", },
+> > > +	{ /* sentinel */ }
+> > > +};
+> > > +MODULE_DEVICE_TABLE(of, imx7d_adc_match);
+> > > +
+> > > +static int imx7d_adc_probe(struct platform_device *pdev) {
+> > > +	struct imx7d_adc *info;
+> > > +	struct iio_dev *indio_dev;
+> > > +	struct resource *mem;
+> > > +	int irq;
+> > > +	int ret;
+> > > +
+> > > +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+> > > +	if (!indio_dev) {
+> > > +		dev_err(&pdev->dev, "Failed allocating iio device\n");
+> > > +		return -ENOMEM;
+> > > +	}
+> > > +
+> > > +	info = iio_priv(indio_dev);
+> > > +	info->dev = &pdev->dev;
+> > > +
+> > > +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > > +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+> > > +	if (IS_ERR(info->regs)) {
+> > > +		ret = PTR_ERR(info->regs);
+> > > +		dev_err(&pdev->dev, "Failed to remap adc memory, err = %d\n",
+> > ret);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	irq = platform_get_irq(pdev, 0);
+> > > +	if (irq < 0) {
+> > > +		dev_err(&pdev->dev, "No irq resource?\n");
+> > > +		return irq;
+> > > +	}
+> > > +
+> > > +	info->clk = devm_clk_get(&pdev->dev, "adc");
+> > > +	if (IS_ERR(info->clk)) {
+> > > +		ret = PTR_ERR(info->clk);
+> > > +		dev_err(&pdev->dev, "Failed getting clock, err = %d\n", ret);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	info->vref = devm_regulator_get(&pdev->dev, "vref");
+> > > +	if (IS_ERR(info->vref)) {
+> > > +		ret = PTR_ERR(info->vref);
+> > > +		dev_err(&pdev->dev, "Failed getting reference voltage, err
+> > = %d\n", ret);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	ret = regulator_enable(info->vref);
+> > > +	if (ret) {
+> > > +		dev_err(&pdev->dev, "Can't enable adc reference top voltage,
+> > err = %d\n", ret);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	platform_set_drvdata(pdev, indio_dev);
+> > > +
+> > > +	init_completion(&info->completion);
+> > > +
+> > > +	indio_dev->name = dev_name(&pdev->dev);
+> > > +	indio_dev->dev.parent = &pdev->dev;
+> > > +	indio_dev->info = &imx7d_adc_iio_info;
+> > > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> > > +	indio_dev->channels = imx7d_adc_iio_channels;
+> > > +	indio_dev->num_channels = ARRAY_SIZE(imx7d_adc_iio_channels);
+> > > +
+> > > +	ret = clk_prepare_enable(info->clk);
+> > > +	if (ret) {
+> > > +		dev_err(&pdev->dev,
+> > > +			"Could not prepare or enable the clock.\n");
+> > > +		goto error_adc_clk_enable;
+> > > +	}
+> > > +
+> > > +	ret = devm_request_irq(info->dev, irq,
+> > > +				imx7d_adc_isr, 0,
+> > > +				dev_name(&pdev->dev), info);
+> > > +	if (ret < 0) {
+> > > +		dev_err(&pdev->dev, "Failed requesting irq, irq = %d\n", irq);
+> > > +		goto error_iio_device_register;
+> > > +	}
+> > > +
+> > > +	imx7d_adc_feature_config(info);
+> > > +	imx7d_adc_hw_init(info);
+> > > +
+> > > +	ret = iio_device_register(indio_dev);
+> > > +	if (ret) {
+> > > +		dev_err(&pdev->dev, "Couldn't register the device.\n");
+> > 
+> > probably power down
+> 
+> [haibo] Yes, you are right! I will add this.
+> 
+> Thanks for your careful review!
+> 
+> Best Regards
+> Haibo chen
+> 
+> > 
+> > > +		goto error_iio_device_register;
+> > > +	}
+> > > +
+> > > +	return 0;
+> > > +
+> > > +error_iio_device_register:
+> > > +	clk_disable_unprepare(info->clk);
+> > > +error_adc_clk_enable:
+> > > +	regulator_disable(info->vref);
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +static void imx7d_adc_power_down(struct imx7d_adc *info) {
+> > > +	u32 adc_cfg;
+> > > +
+> > > +	adc_cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
+> > > +	adc_cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN |
+> > > +		   IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN;
+> > > +	adc_cfg &= ~IMX7D_REG_ADC_ADC_CFG_ADC_EN;
+> > > +	writel(adc_cfg, info->regs + IMX7D_REG_ADC_ADC_CFG); }
+> > > +
+> > > +static int imx7d_adc_remove(struct platform_device *pdev) {
+> > > +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> > > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > > +
+> > > +	imx7d_adc_power_down(info);
+> > > +
+> > > +	iio_device_unregister(indio_dev);
+> > > +	clk_disable_unprepare(info->clk);
+> > > +	regulator_disable(info->vref);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int __maybe_unused imx7d_adc_suspend(struct device *dev) {
+> > > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> > > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > > +
+> > > +	imx7d_adc_power_down(info);
+> > > +
+> > > +	clk_disable_unprepare(info->clk);
+> > > +	regulator_disable(info->vref);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int __maybe_unused imx7d_adc_resume(struct device *dev) {
+> > > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> > > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > > +	int ret;
+> > > +
+> > > +	ret = regulator_enable(info->vref);
+> > > +	if (ret) {
+> > > +		dev_err(info->dev,
+> > > +			"Can't enable adc reference top voltage, err = %d\n",
+> > ret);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	ret = clk_prepare_enable(info->clk);
+> > > +	if (ret) {
+> > > +		dev_err(info->dev,
+> > > +			"Could not prepare or enable clock.\n");
+> > > +		regulator_disable(info->vref);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	imx7d_adc_hw_init(info);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static SIMPLE_DEV_PM_OPS(imx7d_adc_pm_ops, imx7d_adc_suspend,
+> > > +imx7d_adc_resume);
+> > > +
+> > > +static struct platform_driver imx7d_adc_driver = {
+> > > +	.probe		= imx7d_adc_probe,
+> > > +	.remove		= imx7d_adc_remove,
+> > > +	.driver		= {
+> > > +		.name	= "imx7d_adc",
+> > > +		.of_match_table = imx7d_adc_match,
+> > > +		.pm	= &imx7d_adc_pm_ops,
+> > > +	},
+> > > +};
+> > > +
+> > > +module_platform_driver(imx7d_adc_driver);
+> > > +
+> > > +MODULE_AUTHOR("Haibo Chen <haibo.chen@freescale.com>");
+> > > +MODULE_DESCRIPTION("Freeacale IMX7D ADC driver"); MODULE_LICENSE("GPL
+> > > +v2");
+> > >
+> > 
+> > --
+> > 
+> > Peter Meerwald-Stadler
+> > +43-664-2444418 (mobile)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
+
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
