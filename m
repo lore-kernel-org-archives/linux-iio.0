@@ -1,138 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f49.google.com ([209.85.220.49]:33008 "EHLO
-	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750990AbbLBFr0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Dec 2015 00:47:26 -0500
-Received: by pabfh17 with SMTP id fh17so30724553pab.0
-        for <linux-iio@vger.kernel.org>; Tue, 01 Dec 2015 21:47:26 -0800 (PST)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v3 1/1] iio: chemical: vz89x: rework i2c transfer reading
-Date: Tue,  1 Dec 2015 21:47:20 -0800
-Message-Id: <1449035240-31044-2-git-send-email-mranostay@gmail.com>
-In-Reply-To: <1449035240-31044-1-git-send-email-mranostay@gmail.com>
-References: <1449035240-31044-1-git-send-email-mranostay@gmail.com>
+Received: from mail-wm0-f42.google.com ([74.125.82.42]:38637 "EHLO
+	mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754041AbbLBKUN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Dec 2015 05:20:13 -0500
+Received: by wmec201 with SMTP id c201so51089720wme.1
+        for <linux-iio@vger.kernel.org>; Wed, 02 Dec 2015 02:20:12 -0800 (PST)
+Subject: Re: [PATCH v2 1/2] iio: ina2xx: add support for TI INA2xx Power
+ Monitors
+To: Guenter Roeck <linux@roeck-us.net>
+References: <1448884155-2546-1-git-send-email-mtitinger@baylibre.com>
+ <1448884155-2546-2-git-send-email-mtitinger@baylibre.com>
+ <20151202021429.GA19098@roeck-us.net>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+From: Marc Titinger <mtitinger@baylibre.com>
+Message-ID: <565EC5DB.5040401@baylibre.com>
+Date: Wed, 2 Dec 2015 11:20:11 +0100
+MIME-Version: 1.0
+In-Reply-To: <20151202021429.GA19098@roeck-us.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add an optimized i2c transfer reading function, and fallback
-to racey smbus transfers if client->adapter doesn't support this.
+On 02/12/2015 03:14, Guenter Roeck wrote:
+> On Mon, Nov 30, 2015 at 12:49:14PM +0100, Marc Titinger wrote:
+>> in SOFTWARE buffer mode, a kthread will capture the active scan_elements
+>> into a kfifo, then compute the remaining time until the next capture tick
+>> and do an active wait (udelay).
+>>
+>> This will produce a stream of up to fours channels plus a 64bits
+>> timestamps (ns).
+>>
+>> Tested with ina226, on BeagleBoneBlack.
+>>
+>> Datasheet: http://www.ti.com/lit/gpn/ina226
+>>
+>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+>> ---
+>>   drivers/iio/adc/Kconfig      |   9 +
+>>   drivers/iio/adc/Makefile     |   1 +
+>>   drivers/iio/adc/ina2xx-iio.c | 678 +++++++++++++++++++++++++++++++++++++++++++
+>>   3 files changed, 688 insertions(+)
+>>   create mode 100644 drivers/iio/adc/ina2xx-iio.c
+>> +
+> [ ... ]
+>> +
+>> +static const struct i2c_device_id ina2xx_id[] = {
+>> +	{"ina219", ina219},
+>> +	{"ina220", ina219},
+>> +	{"ina226", ina226},
+>> +	{"ina230", ina226},
+>> +	{"ina231", ina226},
+>> +	{}
+>> +};
+>
+> I wonder what is going to happen if both this driver and the hwmon
+> driver for the same chips are configured in a system which supports
+> devicetree (or any system, really). Unless I am missing something,
+> the result will be that both drivers will try to instantiate, and
+> one will fail with -EBUSY. Or the instantiated driver is more or less
+> random, depending on which one happens to be loaded. Not a good
+> situation to be in.
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
- drivers/iio/chemical/vz89x.c | 66 ++++++++++++++++++++++++++++++++++----------
- 1 file changed, 52 insertions(+), 14 deletions(-)
+I agree, we should put a mutual exclusion in Kconfig, plus maybe a 
+cross-reference in the help section.
 
-diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
-index 11e59a5..b8b8049 100644
---- a/drivers/iio/chemical/vz89x.c
-+++ b/drivers/iio/chemical/vz89x.c
-@@ -34,8 +34,9 @@
- struct vz89x_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
--	unsigned long last_update;
-+	int (*xfer)(struct vz89x_data *data, u8 cmd);
- 
-+	unsigned long last_update;
- 	u8 buffer[VZ89X_REG_MEASUREMENT_SIZE];
- };
- 
-@@ -100,27 +101,60 @@ static int vz89x_measurement_is_valid(struct vz89x_data *data)
- 	return !!(data->buffer[VZ89X_REG_MEASUREMENT_SIZE - 1] > 0);
- }
- 
--static int vz89x_get_measurement(struct vz89x_data *data)
-+static int vz89x_i2c_xfer(struct vz89x_data *data, u8 cmd)
- {
-+	struct i2c_client *client = data->client;
-+	struct i2c_msg msg[2];
- 	int ret;
--	int i;
-+	u8 buf[3] = { cmd, 0, 0};
- 
--	/* sensor can only be polled once a second max per datasheet */
--	if (!time_after(jiffies, data->last_update + HZ))
--		return 0;
-+	msg[0].addr = client->addr;
-+	msg[0].flags = client->flags;
-+	msg[0].len = 3;
-+	msg[0].buf  = (char *) &buf;
-+
-+	msg[1].addr = client->addr;
-+	msg[1].flags = client->flags | I2C_M_RD;
-+	msg[1].len = VZ89X_REG_MEASUREMENT_SIZE;
-+	msg[1].buf = (char *) &data->buffer;
-+
-+	ret = i2c_transfer(client->adapter, msg, 2);
- 
--	ret = i2c_smbus_write_word_data(data->client,
--					VZ89X_REG_MEASUREMENT, 0);
-+	return (ret == 2) ? 0 : ret;
-+}
-+
-+static int vz89x_smbus_xfer(struct vz89x_data *data, u8 cmd)
-+{
-+	struct i2c_client *client = data->client;
-+	int ret;
-+	int i;
-+
-+	ret = i2c_smbus_write_word_data(client, cmd, 0);
- 	if (ret < 0)
- 		return ret;
- 
- 	for (i = 0; i < VZ89X_REG_MEASUREMENT_SIZE; i++) {
--		ret = i2c_smbus_read_byte(data->client);
-+		ret = i2c_smbus_read_byte(client);
- 		if (ret < 0)
- 			return ret;
- 		data->buffer[i] = ret;
- 	}
- 
-+	return 0;
-+}
-+
-+static int vz89x_get_measurement(struct vz89x_data *data)
-+{
-+	int ret;
-+
-+	/* sensor can only be polled once a second max per datasheet */
-+	if (!time_after(jiffies, data->last_update + HZ))
-+		return 0;
-+
-+	ret = data->xfer(data, VZ89X_REG_MEASUREMENT);
-+	if (ret < 0)
-+		return ret;
-+
- 	ret = vz89x_measurement_is_valid(data);
- 	if (ret)
- 		return -EAGAIN;
-@@ -204,15 +238,19 @@ static int vz89x_probe(struct i2c_client *client,
- 	struct iio_dev *indio_dev;
- 	struct vz89x_data *data;
- 
--	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
--				     I2C_FUNC_SMBUS_BYTE))
--		return -ENODEV;
--
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
--
- 	data = iio_priv(indio_dev);
-+
-+	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
-+		data->xfer = vz89x_i2c_xfer;
-+	else if (i2c_check_functionality(client->adapter,
-+				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
-+		data->xfer = vz89x_smbus_xfer;
-+	else
-+		return -ENOTSUPP;
-+
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
- 	data->last_update = jiffies - HZ;
--- 
-1.9.1
+>
+> For the time being, it might make sense to add cross-dependencies
+> in Kconfig to only permit one of the two drivers to be configured.
+>
+> Ultimately we may need a better solution for the iio-hwmon bridge,
+> one that makes the underlying driver transparent in both devicetree
+> properties and user space ABI. No idea how to do that, though.
+>
+
+IDK if ina2xx is a special case or if this matter of dual driver stacks 
+for the same chip already occurred and requires specific plumbing. 
+Making the user aware of the mutual of the exclusion sounds fine with me.
+
+Marc.
+
+
+> Guenter
+>
 
