@@ -12,56 +12,50 @@ CC: <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
         <linux-api@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         "Andrew F.
  Davis" <afd@ti.com>
-Subject: [PATCH v2 1/2] Documentation: afe4404: Add DT bindings for the AFE4404 heart monitor
-Date: Wed, 2 Dec 2015 13:57:19 -0600
-Message-ID: <1449086240-13375-2-git-send-email-afd@ti.com>
-In-Reply-To: <1449086240-13375-1-git-send-email-afd@ti.com>
-References: <1449086240-13375-1-git-send-email-afd@ti.com>
+Subject: [PATCH v2 0/2] iio: AFE4404 Heart Rate Monitor and Bio-Sensing
+Date: Wed, 2 Dec 2015 13:57:18 -0600
+Message-ID: <1449086240-13375-1-git-send-email-afd@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Add the TI afe4404 heart monitor DT bindings documentation.
-Create health directory created under iio.
+Hello all,
 
-Signed-off-by: Andrew F. Davis <afd@ti.com>
----
- .../devicetree/bindings/iio/health/afe4404.txt     | 27 ++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+This series adds the TI AFE4404 "Ultra-small, Integrated AFE for
+Wearable, Optical Heart Rate Monitoring and Bio-Sensing".
+
+I've made changes too numerous to list based on comments in the
+v1 thread[0]. The most substantial change is in the way parts
+of this device are exposed to userspace as channels.
+
+Please see [0] for more background.
+
+Thanks,
+Andrew
+
+[0] http://www.spinics.net/lists/linux-iio/msg21619.html*
+
+*Not the first message as that was flagged as spam by the lists.
+
+Andrew F. Davis (2):
+  Documentation: afe4404: Add DT bindings for the AFE4404 heart monitor
+  iio: health: Add driver for the TI AFE4404 heart monitor
+
+ .../ABI/testing/sysfs-bus-iio-health-afe4404       |  20 +
+ .../devicetree/bindings/iio/health/afe4404.txt     |  27 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/health/Kconfig                         |  25 +
+ drivers/iio/health/Makefile                        |   6 +
+ drivers/iio/health/afe4404.c                       | 619 +++++++++++++++++++++
+ drivers/iio/health/afe440x.h                       | 168 ++++++
+ 8 files changed, 867 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-health-afe4404
  create mode 100644 Documentation/devicetree/bindings/iio/health/afe4404.txt
+ create mode 100644 drivers/iio/health/Kconfig
+ create mode 100644 drivers/iio/health/Makefile
+ create mode 100644 drivers/iio/health/afe4404.c
+ create mode 100644 drivers/iio/health/afe440x.h
 
-diff --git a/Documentation/devicetree/bindings/iio/health/afe4404.txt b/Documentation/devicetree/bindings/iio/health/afe4404.txt
-new file mode 100644
-index 0000000..25b77a4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/health/afe4404.txt
-@@ -0,0 +1,27 @@
-+* Texas Instruments AFE4404 Heart rate and Pulse Oximeter
-+
-+Required properties:
-+ - compatible		: Should be "ti,afe4404".
-+ - reg			: I2C address of the device.
-+ - tx_sup-supply	: Regulator supply to LEDs.
-+ - interrupt-parent	: Phandle to he parent interrupt controller.
-+ - interrupts		: The interrupt line the device ADC_RDY pin is connected to.
-+
-+Optional properties:
-+ - reset-gpios		: GPIO used to reset the device.
-+
-+Example:
-+
-+&i2c2 {
-+	heart_mon@58 {
-+		compatible = "ti,afe4404";
-+		reg = <0x58>;
-+
-+		tx_sup-supply = <&vbat>;
-+
-+		interrupt-parent = <&gpio1>;
-+		interrupts = <28 IRQ_TYPE_EDGE_RISING>;
-+
-+		reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
-+	};
-+};
 -- 
 1.9.1
