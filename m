@@ -1,110 +1,615 @@
-Return-Path: <jic23@kernel.org>
-Subject: Re: [PATCH v10 1/5] configfs: Allow dynamic group creation
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- Andrew Morton <akpm@linux-foundation.org>
-References: <1445614411-533-1-git-send-email-daniel.baluta@intel.com>
- <1445614411-533-2-git-send-email-daniel.baluta@intel.com>
- <20151110065126.GA20339@lst.de>
- <20151110131237.894356c2ba17d8e9231509db@linux-foundation.org>
- <D914B401-E43C-4B55-8224-93CF218FD613@jic23.retrosnub.co.uk>
- <564860CC.7000206@kernel.org>
- <20151117154716.48f5a2955b2ce4422dcbc763@linux-foundation.org>
- <01253AE7-7798-46ED-B3E4-A2540E577D47@jic23.retrosnub.co.uk>
- <565B357E.308@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Daniel Baluta <daniel.baluta@intel.com>,
- jlbec@evilplan.org, linux-iio@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, lars@metafoo.de, knaack.h@gmx.de,
- linux-kernel@vger.kernel.org, octavian.purdila@intel.com,
- pebolle@tiscali.nl, patrick.porlan@intel.com, adriana.reus@intel.com,
- constantin.musca@intel.com, marten@intuitiveaerial.com,
- cristina.opriceana@gmail.com, pmeerw@pmeerw.net, viro@zeniv.linux.org.uk
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <565F3944.50009@kernel.org>
-Date: Wed, 2 Dec 2015 18:32:36 +0000
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f50.google.com ([209.85.215.50]:33174 "EHLO
+	mail-lf0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751309AbbLBSgp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Dec 2015 13:36:45 -0500
+Received: by lfaz4 with SMTP id z4so62629016lfa.0
+        for <linux-iio@vger.kernel.org>; Wed, 02 Dec 2015 10:36:44 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <565B357E.308@kernel.org>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.02.1511201709280.10019@pmeerw.net>
+References: <1447838351-5076-1-git-send-email-mranostay@gmail.com>
+ <1447838351-5076-2-git-send-email-mranostay@gmail.com> <alpine.DEB.2.02.1511201709280.10019@pmeerw.net>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Wed, 2 Dec 2015 10:36:04 -0800
+Message-ID: <CAKzfze9uizVc4uAkjvSfne2W16bhxiSEVHnUneCyvbO+9WKTUw@mail.gmail.com>
+Subject: Re: [RFC v2 1/1] iio: light: add MAX30100 oximeter driver support
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 29/11/15 17:27, Jonathan Cameron wrote:
-> On 18/11/15 07:33, Jonathan Cameron wrote:
+On Fri, Nov 20, 2015 at 8:40 AM, Peter Meerwald-Stadler
+<pmeerw@pmeerw.net> wrote:
+> On Wed, 18 Nov 2015, Matt Ranostay wrote:
+>
+>> MAX30100 is an heart rate and pulse oximeter sensor that works using
+>> two LEDS of different wavelengths, and detecting the light reflected
+>> back.
 >>
+>> This patchset adds support for both IR and RED LED channels which can
+>
+> red? this refers to a LED with visible red color?
+> more nitpicking below
+>
+>> be processed in userspace to determine heart rate and blood oxygen
+>> levels.
 >>
->> On 17 November 2015 23:47:16 GMT+00:00, Andrew Morton <akpm@linux-foundation.org> wrote:
->>> On Sun, 15 Nov 2015 10:39:08 +0000 Jonathan Cameron <jic23@kernel.org>
->>> wrote:
->>>
->>>> On 11/11/15 06:43, Jonathan Cameron wrote:
->>>>>
->>>>>
->>>>> On 10 November 2015 21:12:37 GMT+00:00, Andrew Morton
->>> <akpm@linux-foundation.org> wrote:
->>>>>> On Tue, 10 Nov 2015 07:51:26 +0100 Christoph Hellwig <hch@lst.de>
->>>>>> wrote:
->>>>>>
->>>>>>> is this simple addition something you could still send on to
->>> Linus
->>>>>>> for this merge window?  I would make my life easier to have it in
->>>>>>> so I could start using it in patches for various trees in the
->>> next
->>>>>>> merge window.
->>>>>>
->>>>>> It's super late, but the configfs changes are obviously safe to
->>>>>> existing code.
->>>>>>
->>>>>> What about the IIO changes?  Will someone be merging them for
->>> 4.5-rc1,
->>>>>> or something else?
->>>>> Yes. I'll take the IIO bits and ultimately they'll go through Greg
->>> KH for the 4.5 
->>>>> merge window.
->>>>>
->>>> Hi Andrew,
->>>>
->>>> Just taken a quick look at your mmotm list and see this ended up in
->>> the
->>>> mainline later group (fair enough given the timing!).
->>>> As such shall we fall back to plan b) a special git branch pulled
->>> into the trees
->>>> of anyone who cares?
->>>>
->>>> I'll base such a tree on some obvious point in Linus' tree (either
->>> 4.4 or 4.5-rc1)
->>>> That way I can get the IIO stuff queued up asap and we can build on
->>> that going
->>>> forward during this cycle.
->>>
->>> I plan to send configfs-allow-dynamic-group-creation.patch to Linus
->>> this week.  I'll retain 
->>>
->>> iio-core-introduce-iio-configfs-support.patch
->>> iio-core-introduce-iio-software-triggers.patch
->>> iio-core-introduce-iio-software-triggers-fix.patch
->>> iio-trigger-introduce-iio-hrtimer-based-trigger.patch
->>> iio-documentation-add-iio-configfs-documentation.patch
->>>
->>> with a view to dropping them once I see them turn up in linux-next.
+>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>> ---
+>>  .../devicetree/bindings/iio/light/max30100.txt     |  22 ++
+>>  drivers/iio/Kconfig                                |   1 +
+>>  drivers/iio/Makefile                               |   1 +
+>>  drivers/iio/health/Kconfig                         |  21 +
+>>  drivers/iio/health/Makefile                        |   7 +
+>>  drivers/iio/health/max30100.c                      | 423 +++++++++++++++++++++
+>>  6 files changed, 475 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/light/max30100.txt
+>>  create mode 100644 drivers/iio/health/Kconfig
+>>  create mode 100644 drivers/iio/health/Makefile
+>>  create mode 100644 drivers/iio/health/max30100.c
 >>
->> That's great. Thanks.
-> I've now applied the rest of the series to my local togreg branch and pushed
-> out as testing for the autobuilders to play with them.
-> 
-> This branch will get rebased once Greg has picked up the previous PULL request.
-Now rebased - I also made a tiny change to take the iio_configfs_subsys
-structure static in response to a sparse warning - shout if I've done
-anything silly.
+>> diff --git a/Documentation/devicetree/bindings/iio/light/max30100.txt b/Documentation/devicetree/bindings/iio/light/max30100.txt
+>> new file mode 100644
+>> index 0000000..435d6fc
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/light/max30100.txt
+>> @@ -0,0 +1,22 @@
+>> +* Maxim MAX30100 heart rate and pulse oximeter sensor
+>> +
+>> +https://datasheets.maximintegrated.com/en/ds/MAX30100.pdf
+>> +
+>> +Required properties:
+>> +
+>> +  - compatible: must be "maxim,max30100"
+>> +  - reg: the I2c address of the sensor
+>
+> I2C
+>
+>> +  - interrupt-parent: should be the phandle for the interrupt controller
+>> +  - interrupts : the sole interrupt generated by the device
+>
+> no space before : for consistency
+>
+>> +
+>> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+>> +  node bindings.
+>> +
+>> +Example:
+>> +
+>> +max30100@57 {
+>> +     compatible = "maxim,max30100";
+>> +     reg = <0x57>;
+>> +     interrupt-parent = <&gpio1>;
+>> +     interrupts = <16 2>;
+>> +};
+>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>> index 5dfb4f1..b846873 100644
+>> --- a/drivers/iio/Kconfig
+>> +++ b/drivers/iio/Kconfig
+>> @@ -68,6 +68,7 @@ source "drivers/iio/common/Kconfig"
+>>  source "drivers/iio/dac/Kconfig"
+>>  source "drivers/iio/frequency/Kconfig"
+>>  source "drivers/iio/gyro/Kconfig"
+>> +source "drivers/iio/health/Kconfig"
+>>  source "drivers/iio/humidity/Kconfig"
+>>  source "drivers/iio/imu/Kconfig"
+>>  source "drivers/iio/light/Kconfig"
+>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>> index dc73c1f..7371791 100644
+>> --- a/drivers/iio/Makefile
+>> +++ b/drivers/iio/Makefile
+>> @@ -20,6 +20,7 @@ obj-y += common/
+>>  obj-y += dac/
+>>  obj-y += gyro/
+>>  obj-y += frequency/
+>> +obj-y += health/
+>>  obj-y += humidity/
+>>  obj-y += imu/
+>>  obj-y += light/
+>> diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
+>> new file mode 100644
+>> index 0000000..30d4ca0
+>> --- /dev/null
+>> +++ b/drivers/iio/health/Kconfig
+>> @@ -0,0 +1,21 @@
+>> +#
+>> +# Health sensors
+>> +#
+>> +# When adding new entries keep the list in alphabetical order
+>> +
+>> +menu "Health sensors"
+>> +
+>> +config MAX30100
+>> +     tristate "MAX30100 heart rate and pulse oximeter sensor"
+>> +     depends on I2C
+>> +     select REGMAP_I2C
+>> +     select IIO_BUFFER
+>> +     select IIO_KFIFO_BUF
+>> +     help
+>> +       Say Y here to build I2C interface support for the Maxim
+>> +       MAX30100 heart rate, and pulse oximeter sensor.
+>> +
+>> +       To compile this driver as a module, choose M here: the
+>> +       module will be called max30100
+>
+> put a full stop (.) at the end of the sentence maybe :)
+>
+>> +
+>> +endmenu
+>> diff --git a/drivers/iio/health/Makefile b/drivers/iio/health/Makefile
+>> new file mode 100644
+>> index 0000000..7c475d7
+>> --- /dev/null
+>> +++ b/drivers/iio/health/Makefile
+>> @@ -0,0 +1,7 @@
+>> +#
+>> +# Makefile for IIO Health sensors
+>> +#
+>> +
+>> +# When adding new entries keep the list in alphabetical order
+>> +
+>> +obj-$(CONFIG_MAX30100)               += max30100.o
+>> diff --git a/drivers/iio/health/max30100.c b/drivers/iio/health/max30100.c
+>> new file mode 100644
+>> index 0000000..3ad6b31
+>> --- /dev/null
+>> +++ b/drivers/iio/health/max30100.c
+>> @@ -0,0 +1,423 @@
+>> +/*
+>> + * max30100.c - Support for MAX30100 heart rate and pulse oximeter sensor
+>> + *
+>> + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License as published by
+>> + * the Free Software Foundation; either version 2 of the License, or
+>> + * (at your option) any later version.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+>> + * GNU General Public License for more details.
+>> + *
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/init.h>
+>> +#include <linux/interrupt.h>
+>> +#include <linux/delay.h>
+>> +#include <linux/err.h>
+>> +#include <linux/irq.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/mutex.h>
+>> +#include <linux/regmap.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/kfifo_buf.h>
+>> +
+>> +#define MAX30100_REGMAP_NAME "max30100_regmap"
+>> +#define MAX30100_DRV_NAME    "max30100"
+>> +
+>> +#define MAX30100_REG_INT_STATUS                      0x00
+>> +#define MAX30100_REG_INT_STATUS_PWR_RDY              BIT(0)
+>> +#define MAX30100_REG_INT_STATUS_SPO2_RDY     BIT(4)
+>> +#define MAX30100_REG_INT_STATUS_HR_RDY               BIT(5)
+>> +
+>> +#define MAX30100_REG_INT_ENABLE                      0x01
+>> +#define MAX30100_REG_INT_ENABLE_HR_EN                BIT(0)
+>> +#define MAX30100_REG_INT_ENABLE_SPO2_EN              BIT(1)
+>> +#define MAX30100_REG_INT_ENABLE_MASK         0xf0
+>> +#define MAX30100_REG_INT_ENABLE_MASK_SHIFT   4
+>> +
+>> +#define MAX30100_REG_FIFO_DATA                       0x05
+>> +
+>> +#define MAX30100_REG_MODE_CONFIG             0x06
+>> +#define MAX30100_REG_MODE_CONFIG_MODE_HR_EN  BIT(0)
+>> +#define MAX30100_REG_MODE_CONFIG_MODE_SPO2_EN        BIT(1)
+>> +#define MAX30100_REG_MODE_CONFIG_MODE_MASK   0x03
+>> +#define MAX30100_REG_MODE_CONFIG_TEMP_EN     BIT(3)
+>> +#define MAX30100_REG_MODE_CONFIG_PWR         BIT(7)
+>> +
+>> +#define MAX30100_REG_SPO2_CONFIG             0x07
+>> +#define MAX30100_REG_SPO2_CONFIG_HI_RES_EN   BIT(6)
+>> +
+>> +#define MAX30100_REG_SPO2_CONFIG_100HZ               BIT(2)
+>> +#define MAX30100_REG_SPO2_CONFIG_1600US              0x3
+>> +
+>> +#define MAX30100_REG_LED_CONFIG                      0x09
+>> +#define MAX30100_REG_LED_CONFIG_RED_LED_SHIFT        4
+>> +
+>> +#define MAX30100_REG_LED_CONFIG_24MA         0x07
+>> +#define MAX30100_REG_LED_CONFIG_50MA         0x0f
+>> +
+>> +#define MAX30100_REG_TEMP_INTEGER            0x16
+>> +#define MAX30100_REG_TEMP_FRACTION           0x17
+>> +
+>> +struct max30100_data {
+>> +     struct iio_dev *indio_dev;
+>> +     struct mutex lock;
+>> +     struct regmap *regmap;
+>> +
+>> +     u8 buffer[4]; /* 4 8-bit channels */
+>> +};
+>> +
+>> +static bool max30100_is_volatile_reg(struct device *dev, unsigned int reg)
+>> +{
+>> +     switch (reg) {
+>> +     case MAX30100_REG_INT_STATUS:
+>> +     case MAX30100_REG_MODE_CONFIG:
+>> +     case MAX30100_REG_FIFO_DATA:
+>> +     case MAX30100_REG_TEMP_INTEGER:
+>> +     case MAX30100_REG_TEMP_FRACTION:
+>> +             return true;
+>> +     default:
+>> +             return false;
+>> +     }
+>> +}
+>> +
+>> +static const struct regmap_config max30100_regmap_config = {
+>> +     .name = MAX30100_REGMAP_NAME,
+>> +
+>> +     .reg_bits = 8,
+>> +     .val_bits = 8,
+>> +
+>> +     .max_register = MAX30100_REG_LED_CONFIG,
+>> +     .cache_type = REGCACHE_FLAT,
+>> +
+>> +     .volatile_reg = max30100_is_volatile_reg,
+>> +};
+>> +
+>> +static const unsigned long max30100_scan_masks[] = {0x3, 0};
+>> +
+>> +static const struct iio_chan_spec max30100_channels[] = {
+>> +     {
+>> +             .type = IIO_INTENSITY,
+>> +             .channel2 = IIO_MOD_LIGHT_IR,
+>> +
+>> +             .scan_index = 0,
+>> +             .scan_type = {
+>> +                     .sign = 'u',
+>> +                     .realbits = 16,
+>> +                     .storagebits = 16,
+>> +                     .endianness = IIO_BE,
+>> +             },
+>> +     },
+>> +     {
+>> +             .type = IIO_INTENSITY,
+>> +             .channel2 = IIO_MOD_LIGHT_RED,
+>> +
+>> +             .scan_index = 1,
+>> +             .scan_type = {
+>> +                     .sign = 'u',
+>> +                     .realbits = 16,
+>
+> max30100_interrupt_handler() reads 4 bytes?!
+>
+> description of buffer in max30100_data:
+> u8 buffer[4]; /* 4 8-bit channels */
+> this is confusing; maybe __be16 buffer[2]?
+>
+>> +                     .storagebits = 16,
+>> +                     .endianness = IIO_BE,
+>> +             },
+>> +     },
+>> +     {
+>> +             .type = IIO_TEMP,
+>> +             .info_mask_separate =
+>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>> +             .scan_index = -1,
+>> +     },
+>> +};
+>> +
+>> +static int max30100_set_powermode(struct max30100_data *data, bool state)
+>> +{
+>> +     return regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
+>> +                               MAX30100_REG_MODE_CONFIG_PWR,
+>> +                               state ? 0 : MAX30100_REG_MODE_CONFIG_PWR);
+>> +}
+>> +
+>> +static int max30100_buffer_postenable(struct iio_dev *indio_dev)
+>> +{
+>> +     struct max30100_data *data = iio_priv(indio_dev);
+>> +
+>> +     return max30100_set_powermode(data, true);
+>> +}
+>> +
+>> +static int max30100_buffer_predisable(struct iio_dev *indio_dev)
+>> +{
+>> +     struct max30100_data *data = iio_priv(indio_dev);
+>> +
+>> +     return max30100_set_powermode(data, false);
+>> +}
+>> +
+>> +static const struct iio_buffer_setup_ops max30100_buffer_setup_ops = {
+>> +     .postenable = max30100_buffer_postenable,
+>> +     .predisable = max30100_buffer_predisable,
+>> +};
+>> +
+>> +static inline int max30100_fifo_is_empty(struct max30100_data *data)
+>> +{
+>> +     int ret, val;
+>> +
+>> +     ret = regmap_read(data->regmap, MAX30100_REG_INT_STATUS, &val);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     return !!(val >> 4);
+>> +}
+>> +
+>> +static irqreturn_t max30100_interrupt_handler(int irq, void *private)
+>> +{
+>> +     struct iio_dev *indio_dev = private;
+>> +     struct max30100_data *data = iio_priv(indio_dev);
+>> +     int ret;
+>> +
+>> +     mutex_lock(&data->lock);
+>> +
+>> +     while (max30100_fifo_is_empty(data) != 0) {
+>> +             ret = regmap_bulk_read(data->regmap, MAX30100_REG_FIFO_DATA,
+>> +                                   &data->buffer, 4);
+>> +
+>> +             if (ret)
+>> +                     goto err_read;
+>> +
+>> +             iio_push_to_buffers(data->indio_dev, data->buffer);
+>> +     }
+>> +
+>> +err_read:
+>> +     mutex_unlock(&data->lock);
+>> +
+>> +     return IRQ_HANDLED;
+>> +}
+>> +
+>> +static int max30100_chip_init(struct max30100_data *data)
+>> +{
+>> +     int ret;
+>> +
+>> +     /* RED IR LED = 24mA, IR LED = 50mA */
+>> +     ret = regmap_write(data->regmap, MAX30100_REG_LED_CONFIG,
+>> +                             (MAX30100_REG_LED_CONFIG_24MA <<
+>> +                              MAX30100_REG_LED_CONFIG_RED_LED_SHIFT) |
+>> +                              MAX30100_REG_LED_CONFIG_50MA);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     /* enable hi-res SPO2 readings with 100 samples a second */
+>> +     ret = regmap_write(data->regmap, MAX30100_REG_SPO2_CONFIG,
+>> +                             MAX30100_REG_SPO2_CONFIG_HI_RES_EN |
+>> +                             MAX30100_REG_SPO2_CONFIG_100HZ |
+>> +                             MAX30100_REG_SPO2_CONFIG_1600US);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     /* enable SPO2 + HR mode */
+>> +     ret = regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
+>> +                             MAX30100_REG_MODE_CONFIG_MODE_MASK,
+>> +                             MAX30100_REG_MODE_CONFIG_MODE_HR_EN |
+>> +                             MAX30100_REG_MODE_CONFIG_MODE_SPO2_EN);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     /* enable SPO2 + HR interrupts */
+>> +     return regmap_update_bits(data->regmap, MAX30100_REG_INT_ENABLE,
+>> +                             MAX30100_REG_INT_ENABLE_MASK,
+>> +                             (MAX30100_REG_INT_ENABLE_HR_EN |
+>> +                              MAX30100_REG_INT_ENABLE_SPO2_EN)
+>> +                              << MAX30100_REG_INT_ENABLE_MASK_SHIFT);
+>> +}
+>> +
+>> +static int max30100_read_temp(struct max30100_data *data, int *val)
+>> +{
+>> +     int ret;
+>> +     int reg;
+>> +
+>> +     ret = regmap_read(data->regmap, MAX30100_REG_TEMP_INTEGER, &reg);
+>> +     if (ret < 0)
+>> +             return ret;
+>> +     *val = reg << 4;
+>
+> note that this is a signed value; I think negative temperatures are not
+> processed correctly
+>
+>> +
+>> +     ret = regmap_read(data->regmap, MAX30100_REG_TEMP_FRACTION, &reg);
+>> +     if (ret < 0)
+>> +             return ret;
+>> +     *val |= reg & 0xf;
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static int max30100_get_temp(struct max30100_data *data, int *val)
+>> +{
+>> +     int ret;
+>> +     int tries = 3;
+>> +
+>> +     /* start acquisition */
+>> +     ret = regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
+>> +                              MAX30100_REG_MODE_CONFIG_TEMP_EN,
+>> +                              MAX30100_REG_MODE_CONFIG_TEMP_EN);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     while (tries--) {
+>> +             int reg;
+>> +
+>> +             usleep_range(29000, 40000);
+>> +
+>> +             ret = regmap_read(data->regmap, MAX30100_REG_MODE_CONFIG, &reg);
+>> +             if (ret < 0)
+>> +                     break;
+>> +
+>> +             /* bit reset to zero when reading is ready */
+>> +             if (!(reg & MAX30100_REG_MODE_CONFIG_TEMP_EN)) {
+>> +                     ret = max30100_read_temp(data, val);
+>> +                     break;
+>> +             }
+>> +             ret = -EIO;
+>> +     }
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static int max30100_read_raw(struct iio_dev *indio_dev,
+>> +                          struct iio_chan_spec const *chan,
+>> +                          int *val, int *val2, long mask)
+>> +{
+>> +     struct max30100_data *data = iio_priv(indio_dev);
+>> +     int ret = -EINVAL;
+>> +
+>> +     mutex_lock(&indio_dev->mlock);
+>> +
+>> +     /* temperature reading can only be acquired while engine is running */
+>> +     if (!iio_buffer_enabled(indio_dev) && mask == IIO_CHAN_INFO_RAW) {
+>> +             ret = -EAGAIN;
+>> +             goto error_again;
+>> +     }
+>> +
+>> +     switch (mask) {
+>> +     case IIO_CHAN_INFO_RAW:
+>> +             ret = max30100_get_temp(data, val);
+>> +             if (!ret)
+>
+> what if ret < 0?
+> _get_temp() checks for ret < 0
 
+If ret is other than 0 (greater or lless) it will return the error
+code from *get_temp. Wouldn't this be the expected way to do this?
 
-> 
-> Thanks,
-> 
-> Jonathan
+>
+> INTENSITY channels cannot be raw_read?
+>
+>> +                     ret = IIO_VAL_INT;
+>> +             break;
+>> +     case IIO_CHAN_INFO_SCALE:
+>> +             *val = 1;  /* 0.0625 */
+>> +             *val2 = 16;
+>> +             ret = IIO_VAL_FRACTIONAL;
+>> +             break;
+>> +     }
+>> +
+>> +error_again:
+>> +     mutex_unlock(&indio_dev->mlock);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static const struct iio_info max30100_info = {
+>> +     .driver_module = THIS_MODULE,
+>> +     .read_raw = max30100_read_raw,
+>> +};
+>> +
+>> +static int max30100_probe(struct i2c_client *client,
+>> +                       const struct i2c_device_id *id)
+>> +{
+>> +     struct max30100_data *data;
+>> +     struct iio_buffer *buffer;
+>> +     struct iio_dev *indio_dev;
+>> +     int ret;
+>> +
+>> +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> +     if (!indio_dev)
+>> +             return -ENOMEM;
+>> +
+>> +     buffer = devm_iio_kfifo_allocate(&client->dev);
+>> +     if (!buffer)
+>> +             return -ENOMEM;
+>> +
+>> +     iio_device_attach_buffer(indio_dev, buffer);
+>> +
+>> +     indio_dev->name = MAX30100_DRV_NAME;
+>> +     indio_dev->channels = max30100_channels;
+>> +     indio_dev->info = &max30100_info;
+>> +     indio_dev->num_channels = ARRAY_SIZE(max30100_channels);
+>> +     indio_dev->available_scan_masks = max30100_scan_masks;
+>> +     indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
+>> +     indio_dev->setup_ops = &max30100_buffer_setup_ops;
+>> +
+>> +     data = iio_priv(indio_dev);
+>> +     data->indio_dev = indio_dev;
+>> +
+>> +     mutex_init(&data->lock);
+>> +     i2c_set_clientdata(client, indio_dev);
+>> +
+>> +     data->regmap = devm_regmap_init_i2c(client, &max30100_regmap_config);
+>> +     if (IS_ERR(data->regmap)) {
+>> +             dev_err(&client->dev, "regmap initialization failed.\n");
+>> +             return PTR_ERR(data->regmap);
+>> +     }
+>> +     max30100_set_powermode(data, false);
+>> +
+>> +     ret = max30100_chip_init(data);
+>> +     if (ret)
+>> +             goto error_out;
+>> +
+>> +     if (client->irq <= 0) {
+>> +             dev_err(&client->dev, "no valid irq defined\n");
+>> +             ret = -EINVAL;
+>> +             goto error_out;
+>> +     }
+>> +     ret = devm_request_threaded_irq(&client->dev, client->irq,
+>> +                                     NULL, max30100_interrupt_handler,
+>> +                                     IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>> +                                     "max30100_irq", indio_dev);
+>> +     if (ret) {
+>> +             dev_err(&client->dev, "request irq (%d) failed\n", client->irq);
+>> +             goto error_out;
+>> +     }
+>> +
+>> +     return iio_device_register(indio_dev);
+>
+> newline here
+>
+>> +error_out:
+>
+> drop newline
+>
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static int max30100_remove(struct i2c_client *client)
+>> +{
+>> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +     struct max30100_data *data = iio_priv(indio_dev);
+>> +
+>> +     iio_device_unregister(indio_dev);
+>> +     max30100_set_powermode(data, false);
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static const struct i2c_device_id max30100_id[] = {
+>> +     { "max30100", 0 },
+>> +     {}
+>> +};
+>> +MODULE_DEVICE_TABLE(i2c, max30100_id);
+>> +
+>> +static const struct of_device_id max30100_dt_ids[] = {
+>> +     { .compatible = "maxim,max30100" },
+>> +     { }
+>> +};
+>> +MODULE_DEVICE_TABLE(of, max30100_dt_ids);
+>> +
+>> +static struct i2c_driver max30100_driver = {
+>> +     .driver = {
+>> +             .name   = MAX30100_DRV_NAME,
+>> +             .of_match_table = of_match_ptr(max30100_dt_ids),
+>> +     },
+>> +     .probe          = max30100_probe,
+>> +     .remove         = max30100_remove,
+>> +     .id_table       = max30100_id,
+>> +};
+>> +module_i2c_driver(max30100_driver);
+>> +
+>> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+>> +MODULE_DESCRIPTION("MAX30100 heart rate and pulse oximeter sensor");
+>> +MODULE_LICENSE("GPL");
 >>
->> Jonathan
->>
-> 
+>
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>
+> Peter Meerwald-Stadler
+> +43-664-2444418 (mobile)
