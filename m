@@ -1,66 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:37028 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753471AbbLBWG5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Dec 2015 17:06:57 -0500
-Date: Wed, 2 Dec 2015 14:06:57 -0800
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, lars@metafoo.de,
-	maxime.ripard@free-electrons.com
-Subject: Re: [PATCH] staging:iio:mxs-lradc Fix large integer implicitly
- truncated to unsigned warning
-Message-ID: <20151202220657.GA17624@kroah.com>
-References: <1449080685-4662-1-git-send-email-jic23@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48348 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752710AbbLCSSq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Dec 2015 13:18:46 -0500
+Subject: Re: [iio:togreg 11/13] industrialio-sw-trigger.c:undefined reference
+ to `iio_configfs_subsys'
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	kbuild test robot <fengguang.wu@intel.com>
+References: <201512030723.5UzAF24I%fengguang.wu@intel.com>
+ <43E08F24-AB64-4F2B-B422-3425A2D4D182@jic23.retrosnub.co.uk>
+ <566003F5.5090001@intel.com>
+ <D645C15C-AF9D-47B3-A254-9D6137CCAD69@jic23.retrosnub.co.uk>
+ <566068B7.5090408@intel.com>
+Cc: kbuild-all@01.org, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Message-ID: <56608782.7000205@jic23.retrosnub.co.uk>
+Date: Thu, 3 Dec 2015 18:18:42 +0000
 MIME-Version: 1.0
+In-Reply-To: <566068B7.5090408@intel.com>
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1449080685-4662-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Dec 02, 2015 at 06:24:45PM +0000, Jonathan Cameron wrote:
-> The change to using BIT(20) for one of the bit shifts resulted
-> in a constant becoming unsigned. When combined with the existing
-> signed constants in a couple of places, this caused possible trouble,
-> hence the warnings:
+On 03/12/15 16:07, Daniel Baluta wrote:
+> I see, strange. It shouldn't complain about it, because it is immediately exported.
 > 
-> drivers/staging/iio/adc/mxs-lradc.c: In function ‘mxs_lradc_complete_touch_event’:
-> drivers/staging/iio/adc/mxs-lradc.c:325:5: warning: large integer implicitly truncated to unsigned type [-Woverflow]
->      (((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
->      ^
-> drivers/staging/iio/adc/mxs-lradc.c:734:7: note: in expansion of macro ‘LRADC_DELAY_TRIGGER’
->        LRADC_DELAY_TRIGGER(1 << TOUCHSCREEN_VCHANNEL1) |
->        ^
->   LD [M]  drivers/staging/iio/accel/adis16201.o
-> drivers/staging/iio/adc/mxs-lradc.c: In function ‘mxs_lradc_buffer_preenable’:
-> drivers/staging/iio/adc/mxs-lradc.c:322:42: warning: large integer implicitly truncated to unsigned type [-Woverflow]
->  #define LRADC_DELAY_TRIGGER_LRADCS_MASK  (0xff << 24)
->                                           ^
-> drivers/staging/iio/adc/mxs-lradc.c:1308:29: note: in expansion of macro ‘LRADC_DELAY_TRIGGER_LRADCS_MASK’
->   mxs_lradc_reg_clear(lradc, LRADC_DELAY_TRIGGER_LRADCS_MASK |
->                              ^
-> drivers/staging/iio/adc/mxs-lradc.c: In function ‘mxs_lradc_buffer_postdisable’:
-> drivers/staging/iio/adc/mxs-lradc.c:322:42: warning: large integer implicitly truncated to unsigned type [-Woverflow]
->  #define LRADC_DELAY_TRIGGER_LRADCS_MASK  (0xff << 24)
->                                           ^
-> drivers/staging/iio/adc/mxs-lradc.c:1327:29: note: in expansion of macro ‘LRADC_DELAY_TRIGGER_LRADCS_MASK’
->   mxs_lradc_reg_clear(lradc, LRADC_DELAY_TRIGGER_LRADCS_MASK |
-> 
-> The simplest fix is to force LRADC_DELAY_TRIGGER_LRADCS_MASK to be
-> a shift of an unsigned 0xff rather than a signed one.
-> 
-> This is ugly considering it is the only constant in the driver which
-> is so forced, but it does deal with the issue.
-> 
-> Fixes: e0c961bdaf27 (iio: adc: mxs-lradc: Prefer using the BIT macro)
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> ---
-> Greg I guess the best bet might be if you pick this one up directly.
-> If not I can queue it up for a pull request that will probably hit
-> you on Sunday.  Don't mind either way!
+> I will have a closer look.
+Indeed, it's clearly BS (serves me right for fly by sparse fixing during
+applying patches:).  Looking at the moment like a bug in Sparse which is 
+unusual...
 
-I've queued it up now, no need to wait.
+cc'd the list as maybe someone else will be able to suggest what is going on here.
+> 
+> 
+> struct configfs_subsystem iio_configfs_subsys = {
+> »       .su_group = {
+> »       »       .cg_item = {
+> »       »       »       .ci_namebuf = "iio",
+> »       »       »       .ci_type = &iio_root_group_type,
+> »       »       },
+> »       },
+> »       .su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),
+> };
+> EXPORT_SYMBOL(iio_configfs_subsys);
+> 
+> 
+>        
+> 
+> On 12/03/2015 05:53 PM, Jonathan Cameron wrote:
+>> Classic symbol not exported should it be static from sparse.
+>>
+>> On 3 December 2015 08:57:25 GMT+00:00, Daniel Baluta
+>> <daniel.baluta@intel.com> wrote:
+>>
+>>     Ooops, yes!
+>>
+>>     Sorry for the late answer, Jonathan :(.
+>>
+>>     What was the warning you got and fixed with adding static?
+>>
+>>     thanks,
+>>     Daniel
+>>
+>>     On 12/03/2015 08:41 AM, Jonathan Cameron wrote:
+>>
+>>         I'll back that static addition out then!
+>>
+>>         On 2 December 2015 23:23:27 GMT+00:00, kbuild test robot
+>>         <fengguang.wu@intel.com> wrote:
+>>
+>>         tree:https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+>>         togreg
+>>         head: 5a9776becbe3a15f0616883244142b3e6addf93b
+>>         commit: 13bbe76b0b58c958ea6b9fcb982ca5f969f89d48 [11/13] iio:
+>>         core: Introduce IIO software triggers
+>>         config: i386-allyesconfig (attached as .config)
+>>         reproduce:
+>>         git checkout 13bbe76b0b58c958ea6b9fcb982ca5f969f89d48
+>>         # save the attached .config to linux build tree
+>>         make ARCH=i386
+>>
+>>         All errors (new ones prefixed by >>):
+>>
+>>         drivers/built-in.o: In function `iio_sw_trigger_init':
+>>
+>>         industrialio-sw-trigger.c:(.init.text+0x801d0): undefined
+>>         reference to `iio_configfs_subsys'
+>>
+>>
+>>         ---
+>>         0-DAY kernel test infrastructure Open Source Technology Center
+>>         https://lists.01.org/pipermail/kbuild-all Intel Corporation
+>>
+>>
+>>         --
+>>         Sent from my Android device with K-9 Mail. Please excuse my brevity.
+>>
+>>
+>> -- 
+>> Sent from my Android device with K-9 Mail. Please excuse my brevity.
 
-thanks for the fix,
-
-greg k-h
