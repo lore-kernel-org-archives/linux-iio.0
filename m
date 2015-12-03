@@ -1,109 +1,143 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-188.synserver.de ([212.40.185.188]:1225 "EHLO
-	smtp-out-194.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752406AbbLCSeU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Dec 2015 13:34:20 -0500
-Message-ID: <56608B28.1040808@metafoo.de>
-Date: Thu, 03 Dec 2015 19:34:16 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48447 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752406AbbLCSfH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Dec 2015 13:35:07 -0500
+Subject: Re: [PATCH v3 1/1] iio: chemical: vz89x: rework i2c transfer reading
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1449035240-31044-1-git-send-email-mranostay@gmail.com>
+ <1449035240-31044-2-git-send-email-mranostay@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56608B56.10401@kernel.org>
+Date: Thu, 3 Dec 2015 18:35:02 +0000
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	kbuild test robot <fengguang.wu@intel.com>
-CC: kbuild-all@01.org, Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [iio:togreg 11/13] industrialio-sw-trigger.c:undefined reference
- to `iio_configfs_subsys'
-References: <201512030723.5UzAF24I%fengguang.wu@intel.com> <43E08F24-AB64-4F2B-B422-3425A2D4D182@jic23.retrosnub.co.uk> <566003F5.5090001@intel.com> <D645C15C-AF9D-47B3-A254-9D6137CCAD69@jic23.retrosnub.co.uk> <566068B7.5090408@intel.com> <56608782.7000205@jic23.retrosnub.co.uk>
-In-Reply-To: <56608782.7000205@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1449035240-31044-2-git-send-email-mranostay@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/03/2015 07:18 PM, Jonathan Cameron wrote:
-> On 03/12/15 16:07, Daniel Baluta wrote:
->> I see, strange. It shouldn't complain about it, because it is immediately exported.
->>
->> I will have a closer look.
-> Indeed, it's clearly BS (serves me right for fly by sparse fixing during
-> applying patches:).  Looking at the moment like a bug in Sparse which is 
-> unusual...
+On 02/12/15 05:47, Matt Ranostay wrote:
+> Add an optimized i2c transfer reading function, and fallback
+> to racey smbus transfers if client->adapter doesn't support this.
 > 
-> cc'd the list as maybe someone else will be able to suggest what is going on here.
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+Hmm. The change from V2 is always an interesting one...  Partial transfers
+are rather unusual and usually mean thoroughly broken hardware..
 
-
-sparse complains if there is no forward declaration in a header file. This
-could either mean there is non or the header file is not included in the C
-file where it is defined.
-
->>
->>
->> struct configfs_subsystem iio_configfs_subsys = {
->> »       .su_group = {
->> »       »       .cg_item = {
->> »       »       »       .ci_namebuf = "iio",
->> »       »       »       .ci_type = &iio_root_group_type,
->> »       »       },
->> »       },
->> »       .su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),
->> };
->> EXPORT_SYMBOL(iio_configfs_subsys);
->>
->>
->>        
->>
->> On 12/03/2015 05:53 PM, Jonathan Cameron wrote:
->>> Classic symbol not exported should it be static from sparse.
->>>
->>> On 3 December 2015 08:57:25 GMT+00:00, Daniel Baluta
->>> <daniel.baluta@intel.com> wrote:
->>>
->>>     Ooops, yes!
->>>
->>>     Sorry for the late answer, Jonathan :(.
->>>
->>>     What was the warning you got and fixed with adding static?
->>>
->>>     thanks,
->>>     Daniel
->>>
->>>     On 12/03/2015 08:41 AM, Jonathan Cameron wrote:
->>>
->>>         I'll back that static addition out then!
->>>
->>>         On 2 December 2015 23:23:27 GMT+00:00, kbuild test robot
->>>         <fengguang.wu@intel.com> wrote:
->>>
->>>         tree:https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
->>>         togreg
->>>         head: 5a9776becbe3a15f0616883244142b3e6addf93b
->>>         commit: 13bbe76b0b58c958ea6b9fcb982ca5f969f89d48 [11/13] iio:
->>>         core: Introduce IIO software triggers
->>>         config: i386-allyesconfig (attached as .config)
->>>         reproduce:
->>>         git checkout 13bbe76b0b58c958ea6b9fcb982ca5f969f89d48
->>>         # save the attached .config to linux build tree
->>>         make ARCH=i386
->>>
->>>         All errors (new ones prefixed by >>):
->>>
->>>         drivers/built-in.o: In function `iio_sw_trigger_init':
->>>
->>>         industrialio-sw-trigger.c:(.init.text+0x801d0): undefined
->>>         reference to `iio_configfs_subsys'
->>>
->>>
->>>         ---
->>>         0-DAY kernel test infrastructure Open Source Technology Center
->>>         https://lists.01.org/pipermail/kbuild-all Intel Corporation
->>>
->>>
->>>         --
->>>         Sent from my Android device with K-9 Mail. Please excuse my brevity.
->>>
->>>
->>> -- 
->>> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+Ah well, I don't really care either way so applied this version to the togreg
+branch of iio.git - pushed out as testing.
+> ---
+>  drivers/iio/chemical/vz89x.c | 66 ++++++++++++++++++++++++++++++++++----------
+>  1 file changed, 52 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
+> index 11e59a5..b8b8049 100644
+> --- a/drivers/iio/chemical/vz89x.c
+> +++ b/drivers/iio/chemical/vz89x.c
+> @@ -34,8 +34,9 @@
+>  struct vz89x_data {
+>  	struct i2c_client *client;
+>  	struct mutex lock;
+> -	unsigned long last_update;
+> +	int (*xfer)(struct vz89x_data *data, u8 cmd);
+>  
+> +	unsigned long last_update;
+>  	u8 buffer[VZ89X_REG_MEASUREMENT_SIZE];
+>  };
+>  
+> @@ -100,27 +101,60 @@ static int vz89x_measurement_is_valid(struct vz89x_data *data)
+>  	return !!(data->buffer[VZ89X_REG_MEASUREMENT_SIZE - 1] > 0);
+>  }
+>  
+> -static int vz89x_get_measurement(struct vz89x_data *data)
+> +static int vz89x_i2c_xfer(struct vz89x_data *data, u8 cmd)
+>  {
+> +	struct i2c_client *client = data->client;
+> +	struct i2c_msg msg[2];
+>  	int ret;
+> -	int i;
+> +	u8 buf[3] = { cmd, 0, 0};
+>  
+> -	/* sensor can only be polled once a second max per datasheet */
+> -	if (!time_after(jiffies, data->last_update + HZ))
+> -		return 0;
+> +	msg[0].addr = client->addr;
+> +	msg[0].flags = client->flags;
+> +	msg[0].len = 3;
+> +	msg[0].buf  = (char *) &buf;
+> +
+> +	msg[1].addr = client->addr;
+> +	msg[1].flags = client->flags | I2C_M_RD;
+> +	msg[1].len = VZ89X_REG_MEASUREMENT_SIZE;
+> +	msg[1].buf = (char *) &data->buffer;
+> +
+> +	ret = i2c_transfer(client->adapter, msg, 2);
+>  
+> -	ret = i2c_smbus_write_word_data(data->client,
+> -					VZ89X_REG_MEASUREMENT, 0);
+> +	return (ret == 2) ? 0 : ret;
+> +}
+> +
+> +static int vz89x_smbus_xfer(struct vz89x_data *data, u8 cmd)
+> +{
+> +	struct i2c_client *client = data->client;
+> +	int ret;
+> +	int i;
+> +
+> +	ret = i2c_smbus_write_word_data(client, cmd, 0);
+>  	if (ret < 0)
+>  		return ret;
+>  
+>  	for (i = 0; i < VZ89X_REG_MEASUREMENT_SIZE; i++) {
+> -		ret = i2c_smbus_read_byte(data->client);
+> +		ret = i2c_smbus_read_byte(client);
+>  		if (ret < 0)
+>  			return ret;
+>  		data->buffer[i] = ret;
+>  	}
+>  
+> +	return 0;
+> +}
+> +
+> +static int vz89x_get_measurement(struct vz89x_data *data)
+> +{
+> +	int ret;
+> +
+> +	/* sensor can only be polled once a second max per datasheet */
+> +	if (!time_after(jiffies, data->last_update + HZ))
+> +		return 0;
+> +
+> +	ret = data->xfer(data, VZ89X_REG_MEASUREMENT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	ret = vz89x_measurement_is_valid(data);
+>  	if (ret)
+>  		return -EAGAIN;
+> @@ -204,15 +238,19 @@ static int vz89x_probe(struct i2c_client *client,
+>  	struct iio_dev *indio_dev;
+>  	struct vz89x_data *data;
+>  
+> -	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
+> -				     I2C_FUNC_SMBUS_BYTE))
+> -		return -ENODEV;
+> -
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+> -
+>  	data = iio_priv(indio_dev);
+> +
+> +	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
+> +		data->xfer = vz89x_i2c_xfer;
+> +	else if (i2c_check_functionality(client->adapter,
+> +				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
+> +		data->xfer = vz89x_smbus_xfer;
+> +	else
+> +		return -ENOTSUPP;
+> +
+>  	i2c_set_clientdata(client, indio_dev);
+>  	data->client = client;
+>  	data->last_update = jiffies - HZ;
 > 
 
