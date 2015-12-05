@@ -1,53 +1,192 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33516 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33590 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753288AbbLEQds (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Dec 2015 11:33:48 -0500
-Subject: Re: [RFC] pH sensors
-To: Matt Ranostay <mranostay@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <CAKzfze_t+D1sxP58EJeR284XbLHnrvaLOEpBgq_wdGGg2gW9XA@mail.gmail.com>
- <CAKzfze_Ff8mWJR0kqo1v1mD_=mGCNBWPaZZ1Q+2aOzU9mzPp1A@mail.gmail.com>
+	with ESMTP id S1754308AbbLEQuP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Dec 2015 11:50:15 -0500
+Subject: Re: [PATCH v3 1/] iio: proximity: lidar: optimize i2c transactions
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1449032722-25646-1-git-send-email-mranostay@gmail.com>
+ <1449032722-25646-2-git-send-email-mranostay@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <566311EA.9070504@kernel.org>
-Date: Sat, 5 Dec 2015 16:33:46 +0000
+Message-ID: <566315C3.4000909@kernel.org>
+Date: Sat, 5 Dec 2015 16:50:11 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze_Ff8mWJR0kqo1v1mD_=mGCNBWPaZZ1Q+2aOzU9mzPp1A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1449032722-25646-2-git-send-email-mranostay@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/12/15 06:44, Matt Ranostay wrote:
-> On Thu, Dec 3, 2015 at 8:29 PM, Matt Ranostay <mranostay@gmail.com> wrote:
->> Hello et all,
->>
->> So currently planning on working a I2C based pH sensor and want to get
->> some input on the iio_chan_type to use.
->>
->> There are two solutions  that can be thought of:
->>
->> 1) Use the current IIO_CONCENTRATION type and use the percentage of
->> Hydronium (H3O+) in the solution to report to actual pH levels
+On 02/12/15 05:05, Matt Ranostay wrote:
+> Optimize device tranactions using i2c transfers versus multiple
+> possibly racey i2c_smbus_* function calls, and only one transaction
+> for distance measurement. Falls back to smbus method if i2c
+> functionality isn't available.
 > 
-> I just remembered that pH is for example  -log(10**-7) = 7. so using
-> IIO_CONCENTRATION would require processing within the driver. So I
-> think option 2 is the only thing that makes sense since it would just
-> have a simple scaling value.
-I'd have gone for the second option anyway!
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+This ended up more fiddly that I expected, but seems like you got
+it right to me.
 
-Whilst it's nice to keep the range of units used to a minimum some units
-are so ingrained in peoples minds for particular things we are best
-going with them even when they could be blugeoned into an existing option!
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play with it.
 
+Jonathan
+> ---
+>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 95 +++++++++++++++++------
+>  1 file changed, 70 insertions(+), 25 deletions(-)
 > 
->> 2) New IIO_PH type that is an typically an integer from 0 (acid) - 14 (base)
->>
->> Thanks,
->>
->> Matt
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> index 32f24f1..05db6ce 100644
+> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> @@ -36,8 +36,10 @@
+>  #define LIDAR_REG_STATUS_INVALID	BIT(3)
+>  #define LIDAR_REG_STATUS_READY		BIT(0)
+>  
+> -#define LIDAR_REG_DATA_HBYTE	0x0f
+> -#define LIDAR_REG_DATA_LBYTE	0x10
+> +#define LIDAR_REG_DATA_HBYTE		0x0f
+> +#define LIDAR_REG_DATA_LBYTE		0x10
+> +#define LIDAR_REG_DATA_WORD_READ	BIT(7)
+> +
+>  #define LIDAR_REG_PWR_CONTROL	0x65
+>  
+>  #define LIDAR_DRV_NAME "lidar"
+> @@ -46,6 +48,9 @@ struct lidar_data {
+>  	struct iio_dev *indio_dev;
+>  	struct i2c_client *client;
+>  
+> +	int (*xfer)(struct lidar_data *data, u8 reg, u8 *val, int len);
+> +	int i2c_enabled;
+> +
+>  	u16 buffer[8]; /* 2 byte distance + 8 byte timestamp */
+>  };
+>  
+> @@ -64,7 +69,28 @@ static const struct iio_chan_spec lidar_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(1),
+>  };
+>  
+> -static int lidar_read_byte(struct lidar_data *data, int reg)
+> +static int lidar_i2c_xfer(struct lidar_data *data, u8 reg, u8 *val, int len)
+> +{
+> +	struct i2c_client *client = data->client;
+> +	struct i2c_msg msg[2];
+> +	int ret;
+> +
+> +	msg[0].addr = client->addr;
+> +	msg[0].flags = client->flags | I2C_M_STOP;
+> +	msg[0].len = 1;
+> +	msg[0].buf  = (char *) &reg;
+> +
+> +	msg[1].addr = client->addr;
+> +	msg[1].flags = client->flags | I2C_M_RD;
+> +	msg[1].len = len;
+> +	msg[1].buf = (char *) val;
+> +
+> +	ret = i2c_transfer(client->adapter, msg, 2);
+> +
+> +	return (ret == 2) ? 0 : ret;
+> +}
+> +
+> +static int lidar_smbus_xfer(struct lidar_data *data, u8 reg, u8 *val, int len)
+>  {
+>  	struct i2c_client *client = data->client;
+>  	int ret;
+> @@ -74,17 +100,35 @@ static int lidar_read_byte(struct lidar_data *data, int reg)
+>  	 * so in turn i2c_smbus_read_byte_data cannot be used
+>  	 */
+>  
+> -	ret = i2c_smbus_write_byte(client, reg);
+> -	if (ret < 0) {
+> -		dev_err(&client->dev, "cannot write addr value");
+> -		return ret;
+> +	while (len--) {
+> +		ret = i2c_smbus_write_byte(client, reg++);
+> +		if (ret < 0) {
+> +			dev_err(&client->dev, "cannot write addr value");
+> +			return ret;
+> +		}
+> +
+> +		ret = i2c_smbus_read_byte(client);
+> +		if (ret < 0) {
+> +			dev_err(&client->dev, "cannot read data value");
+> +			return ret;
+> +		}
+> +
+> +		*(val++) = ret;
+>  	}
+>  
+> -	ret = i2c_smbus_read_byte(client);
+> +	return 0;
+> +}
+> +
+> +static int lidar_read_byte(struct lidar_data *data, u8 reg)
+> +{
+> +	int ret;
+> +	u8 val;
+> +
+> +	ret = data->xfer(data, reg, &val, 1);
+>  	if (ret < 0)
+> -		dev_err(&client->dev, "cannot read data value");
+> +		return ret;
+>  
+> -	return ret;
+> +	return val;
+>  }
+>  
+>  static inline int lidar_write_control(struct lidar_data *data, int val)
+> @@ -100,22 +144,14 @@ static inline int lidar_write_power(struct lidar_data *data, int val)
+>  
+>  static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
+>  {
+> -	int ret;
+> -	int val;
+> -
+> -	ret = lidar_read_byte(data, LIDAR_REG_DATA_HBYTE);
+> -	if (ret < 0)
+> -		return ret;
+> -	val = ret << 8;
+> +	int ret = data->xfer(data, LIDAR_REG_DATA_HBYTE |
+> +			(data->i2c_enabled ? LIDAR_REG_DATA_WORD_READ : 0),
+> +			(u8 *) reg, 2);
+>  
+> -	ret = lidar_read_byte(data, LIDAR_REG_DATA_LBYTE);
+> -	if (ret < 0)
+> -		return ret;
+> +	if (!ret)
+> +		*reg = be16_to_cpu(*reg);
+>  
+> -	val |= ret;
+> -	*reg = val;
+> -
+> -	return 0;
+> +	return ret;
+>  }
+>  
+>  static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+> @@ -237,6 +273,16 @@ static int lidar_probe(struct i2c_client *client,
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+> +	data = iio_priv(indio_dev);
+> +
+> +	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
+> +		data->xfer = lidar_i2c_xfer;
+> +		data->i2c_enabled = 1;
+> +	} else if (i2c_check_functionality(client->adapter,
+> +				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
+> +		data->xfer = lidar_smbus_xfer;
+> +	else
+> +		return -ENOTSUPP;
+>  
+>  	indio_dev->info = &lidar_info;
+>  	indio_dev->name = LIDAR_DRV_NAME;
+> @@ -244,7 +290,6 @@ static int lidar_probe(struct i2c_client *client,
+>  	indio_dev->num_channels = ARRAY_SIZE(lidar_channels);
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> -	data = iio_priv(indio_dev);
+>  	i2c_set_clientdata(client, indio_dev);
+>  
+>  	data->client = client;
 > 
 
