@@ -1,140 +1,677 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34077 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34194 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750813AbbLESaa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Dec 2015 13:30:30 -0500
-Subject: Re: [PATCH v2 2/2] iio: ina2xx: provide a sysfs parameter to allow
- async readout of the ADCs
-To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-References: <1448884155-2546-1-git-send-email-mtitinger@baylibre.com>
- <1448884155-2546-3-git-send-email-mtitinger@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1752371AbbLEStq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Dec 2015 13:49:46 -0500
+Subject: Re: [PATCH v4 1/4] iio: adc: add IMX7D ADC driver support
+To: Haibo Chen <haibo.chen@freescale.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, shawnguo@kernel.org,
+	kernel@pengutronix.de
+References: <1448958150-25579-1-git-send-email-haibo.chen@freescale.com>
+ <1448958150-25579-2-git-send-email-haibo.chen@freescale.com>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56632D45.40903@kernel.org>
-Date: Sat, 5 Dec 2015 18:30:29 +0000
+Message-ID: <566331C4.3070006@kernel.org>
+Date: Sat, 5 Dec 2015 18:49:40 +0000
 MIME-Version: 1.0
-In-Reply-To: <1448884155-2546-3-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <1448958150-25579-2-git-send-email-haibo.chen@freescale.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/11/15 11:49, Marc Titinger wrote:
-> This can lead to repeated or skipped samples depending on the clock beat
-> between the capture thread and the chip sampling clock, but will also spare
-> reading/waiting for the Capture Ready Flag and improve the available i2c
-> bandwidth for reading measurements.
+On 01/12/15 08:22, Haibo Chen wrote:
+> Freescale i.MX7D soc contains a new ADC IP. This patch add this ADC
+> driver support, and the driver only support ADC software trigger.
 > 
-> Output of iio_info:
-> ...snip...
-> 4 device-specific attributes found:
->   attr 0: in_oversampling_ratio value: 4
->   attr 1: in_allow_async_readout value: 0
->   attr 2: integration_time_available value: 140 204 332 588 1100 2116 4156 8244
->   attr 3: in_sampling_frequency value: 114
-> 
-> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
-Missing one thing.
-ABI Docs in Documentation/ABI/testing/sysfs-bus-iio-ina2xx-iio.txt
+> Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
+Looks good to me.
 
+Only bit I don't like is the papering over an interrupt occuring that
+should not.  If that happens we want to rely on the core support shutting
+down the interrupt and providing the correct report on what happened rather
+than hiding it in the driver.
+
+Jonathan
 > ---
->  drivers/iio/adc/ina2xx-iio.c | 48 ++++++++++++++++++++++++++++++++++++++------
->  1 file changed, 42 insertions(+), 6 deletions(-)
+>  drivers/iio/adc/Kconfig     |   9 +
+>  drivers/iio/adc/Makefile    |   1 +
+>  drivers/iio/adc/imx7d_adc.c | 588 ++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 598 insertions(+)
+>  create mode 100644 drivers/iio/adc/imx7d_adc.c
 > 
-> diff --git a/drivers/iio/adc/ina2xx-iio.c b/drivers/iio/adc/ina2xx-iio.c
-> index 99fb73c..7575a12 100644
-> --- a/drivers/iio/adc/ina2xx-iio.c
-> +++ b/drivers/iio/adc/ina2xx-iio.c
-> @@ -117,6 +117,7 @@ struct ina2xx_chip_info {
->  	s64 prev_ns;	/* track buffer capture time check, for underruns*/
->  	int int_time_vbus; /* Bus voltage integration time uS */
->  	int int_time_vshunt; /* Shunt voltage integration time uS */
-> +	bool allow_async_readout;
->  };
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 7868c74..3493a46 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -194,6 +194,15 @@ config HI8435
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called hi8435.
 >  
->  static const struct ina2xx_config ina2xx_config[] = {
-> @@ -333,6 +334,33 @@ _err:
->  }
->  
->  
-> +static ssize_t ina2xx_allow_async_readout_show(struct device *dev,
-> +					   struct device_attribute *attr,
-> +					   char *buf)
-> +{
-> +	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
+> +config IMX7D_ADC
+> +	tristate "IMX7D ADC driver"
+> +	depends on ARCH_MXC || COMPILE_TEST
+> +	help
+> +	  Say yes here to build support for IMX7D ADC.
 > +
-> +	return sprintf(buf, "%d\n", chip->allow_async_readout);
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called imx7d_adc.
+> +
+>  config LP8788_ADC
+>  	tristate "LP8788 ADC driver"
+>  	depends on MFD_LP8788
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 99b37a9..282ffc01 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -20,6 +20,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+>  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>  obj-$(CONFIG_HI8435) += hi8435.o
+> +obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_MAX1027) += max1027.o
+>  obj-$(CONFIG_MAX1363) += max1363.o
+> diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
+> new file mode 100644
+> index 0000000..4780595
+> --- /dev/null
+> +++ b/drivers/iio/adc/imx7d_adc.c
+> @@ -0,0 +1,588 @@
+> +/*
+> + * Freescale i.MX7D ADC driver
+> + *
+> + * Copyright (C) 2015 Freescale Semiconductor, Inc.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/completion.h>
+> +#include <linux/err.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regulator/consumer.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/driver.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +/* ADC register */
+> +#define IMX7D_REG_ADC_CH_A_CFG1			0x00
+> +#define IMX7D_REG_ADC_CH_A_CFG2			0x10
+> +#define IMX7D_REG_ADC_CH_B_CFG1			0x20
+> +#define IMX7D_REG_ADC_CH_B_CFG2			0x30
+> +#define IMX7D_REG_ADC_CH_C_CFG1			0x40
+> +#define IMX7D_REG_ADC_CH_C_CFG2			0x50
+> +#define IMX7D_REG_ADC_CH_D_CFG1			0x60
+> +#define IMX7D_REG_ADC_CH_D_CFG2			0x70
+> +#define IMX7D_REG_ADC_CH_SW_CFG			0x80
+> +#define IMX7D_REG_ADC_TIMER_UNIT		0x90
+> +#define IMX7D_REG_ADC_DMA_FIFO			0xa0
+> +#define IMX7D_REG_ADC_FIFO_STATUS		0xb0
+> +#define IMX7D_REG_ADC_INT_SIG_EN		0xc0
+> +#define IMX7D_REG_ADC_INT_EN			0xd0
+> +#define IMX7D_REG_ADC_INT_STATUS		0xe0
+> +#define IMX7D_REG_ADC_CHA_B_CNV_RSLT		0xf0
+> +#define IMX7D_REG_ADC_CHC_D_CNV_RSLT		0x100
+> +#define IMX7D_REG_ADC_CH_SW_CNV_RSLT		0x110
+> +#define IMX7D_REG_ADC_DMA_FIFO_DAT		0x120
+> +#define IMX7D_REG_ADC_ADC_CFG			0x130
+> +
+> +#define IMX7D_REG_ADC_CHANNEL_CFG2_BASE		0x10
+> +#define IMX7D_EACH_CHANNEL_REG_OFFSET		0x20
+> +
+> +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN			(0x1 << 31)
+> +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE			BIT(30)
+> +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN			BIT(29)
+> +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL(x)			((x) << 24)
+> +
+> +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4				(0x0 << 12)
+> +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8				(0x1 << 12)
+> +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16			(0x2 << 12)
+> +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32			(0x3 << 12)
+> +
+> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4			(0x0 << 29)
+> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8			(0x1 << 29)
+> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16			(0x2 << 29)
+> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32			(0x3 << 29)
+> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64			(0x4 << 29)
+> +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128			(0x5 << 29)
+> +
+> +#define IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN			BIT(31)
+> +#define IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN			BIT(1)
+> +#define IMX7D_REG_ADC_ADC_CFG_ADC_EN				BIT(0)
+> +
+> +#define IMX7D_REG_ADC_INT_CHA_COV_INT_EN			BIT(8)
+> +#define IMX7D_REG_ADC_INT_CHB_COV_INT_EN			BIT(9)
+> +#define IMX7D_REG_ADC_INT_CHC_COV_INT_EN			BIT(10)
+> +#define IMX7D_REG_ADC_INT_CHD_COV_INT_EN			BIT(11)
+> +#define IMX7D_REG_ADC_INT_CHANNEL_INT_EN			(IMX7D_REG_ADC_INT_CHA_COV_INT_EN | \
+> +								 IMX7D_REG_ADC_INT_CHB_COV_INT_EN | \
+> +								 IMX7D_REG_ADC_INT_CHC_COV_INT_EN | \
+> +								 IMX7D_REG_ADC_INT_CHD_COV_INT_EN)
+> +#define IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS		0xf00
+> +
+> +#define IMX7D_ADC_TIMEOUT		msecs_to_jiffies(100)
+> +
+> +enum imx7d_adc_clk_pre_div {
+> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_4,
+> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_8,
+> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_16,
+> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_32,
+> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_64,
+> +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_128,
+> +};
+> +
+> +enum imx7d_adc_average_num {
+> +	IMX7D_ADC_AVERAGE_NUM_4,
+> +	IMX7D_ADC_AVERAGE_NUM_8,
+> +	IMX7D_ADC_AVERAGE_NUM_16,
+> +	IMX7D_ADC_AVERAGE_NUM_32,
+> +};
+> +
+> +struct imx7d_adc_feature {
+> +	enum imx7d_adc_clk_pre_div clk_pre_div;
+> +	enum imx7d_adc_average_num avg_num;
+> +
+> +	u32 core_time_unit;	/* impact the sample rate */
+> +
+> +	bool average_en;
+> +};
+> +
+> +struct imx7d_adc {
+> +	struct device *dev;
+> +	void __iomem *regs;
+> +	struct clk *clk;
+> +
+> +	u32 vref_uv;
+> +	u32 value;
+> +	u32 channel;
+> +	u32 pre_div_num;
+> +
+> +	struct regulator *vref;
+> +	struct imx7d_adc_feature adc_feature;
+> +
+> +	struct completion completion;
+> +};
+> +
+> +struct imx7d_adc_analogue_core_clk {
+> +	u32 pre_div;
+> +	u32 reg_config;
+> +};
+> +
+> +#define IMX7D_ADC_ANALOGUE_CLK_CONFIG(_pre_div, _reg_conf) {	\
+> +	.pre_div = (_pre_div),					\
+> +	.reg_config = (_reg_conf),				\
 > +}
 > +
-> +static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
-> +				struct device_attribute *attr,
-> +				const char *buf, size_t len)
+> +static const struct imx7d_adc_analogue_core_clk imx7d_adc_analogue_clk[] = {
+> +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(4, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4),
+> +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(8, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8),
+> +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(16, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16),
+> +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(32, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32),
+> +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(64, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64),
+> +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(128, IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128),
+> +};
+> +
+> +#define IMX7D_ADC_CHAN(_idx) {					\
+> +	.type = IIO_VOLTAGE,					\
+> +	.indexed = 1,						\
+> +	.channel = (_idx),					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> +}
+> +
+> +static const struct iio_chan_spec imx7d_adc_iio_channels[] = {
+> +	IMX7D_ADC_CHAN(0),
+> +	IMX7D_ADC_CHAN(1),
+> +	IMX7D_ADC_CHAN(2),
+> +	IMX7D_ADC_CHAN(3),
+> +	IMX7D_ADC_CHAN(4),
+> +	IMX7D_ADC_CHAN(5),
+> +	IMX7D_ADC_CHAN(6),
+> +	IMX7D_ADC_CHAN(7),
+> +	IMX7D_ADC_CHAN(8),
+> +	IMX7D_ADC_CHAN(9),
+> +	IMX7D_ADC_CHAN(10),
+> +	IMX7D_ADC_CHAN(11),
+> +	IMX7D_ADC_CHAN(12),
+> +	IMX7D_ADC_CHAN(13),
+> +	IMX7D_ADC_CHAN(14),
+> +	IMX7D_ADC_CHAN(15),
+> +};
+> +
+> +static const u32 imx7d_adc_average_num[] = {
+> +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4,
+> +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8,
+> +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16,
+> +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32,
+> +};
+> +
+> +static void imx7d_adc_feature_config(struct imx7d_adc *info)
 > +{
-> +	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
-> +	bool val;
+> +	info->adc_feature.clk_pre_div = IMX7D_ADC_ANALOG_CLK_PRE_DIV_4;
+> +	info->adc_feature.avg_num = IMX7D_ADC_AVERAGE_NUM_32;
+> +	info->adc_feature.core_time_unit = 1;
+> +	info->adc_feature.average_en = true;
+> +}
+> +
+> +static void imx7d_adc_sample_rate_set(struct imx7d_adc *info)
+> +{
+> +	struct imx7d_adc_feature *adc_feature = &info->adc_feature;
+> +	struct imx7d_adc_analogue_core_clk adc_analogure_clk;
+> +	u32 i;
+> +	u32 tmp_cfg1;
+> +	u32 sample_rate = 0;
+> +
+> +	/*
+> +	 * Before sample set, disable channel A,B,C,D. Here we
+> +	 * clear the bit 31 of register REG_ADC_CH_A\B\C\D_CFG1.
+> +	 */
+> +	for (i = 0; i < 4; i++) {
+> +		tmp_cfg1 = readl(info->regs + i * IMX7D_EACH_CHANNEL_REG_OFFSET);
+> +		tmp_cfg1 &= ~IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN;
+> +		writel(tmp_cfg1, info->regs + i * IMX7D_EACH_CHANNEL_REG_OFFSET);
+> +	}
+> +
+> +	adc_analogure_clk = imx7d_adc_analogue_clk[adc_feature->clk_pre_div];
+> +	sample_rate |= adc_analogure_clk.reg_config;
+> +	info->pre_div_num = adc_analogure_clk.pre_div;
+> +
+> +	sample_rate |= adc_feature->core_time_unit;
+> +	writel(sample_rate, info->regs + IMX7D_REG_ADC_TIMER_UNIT);
+> +}
+> +
+> +static void imx7d_adc_hw_init(struct imx7d_adc *info)
+> +{
+> +	u32 cfg;
+> +
+> +	/* power up and enable adc analogue core */
+> +	cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
+> +	cfg &= ~(IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN | IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN);
+> +	cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_EN;
+> +	writel(cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
+> +
+> +	/* enable channel A,B,C,D interrupt */
+> +	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs + IMX7D_REG_ADC_INT_SIG_EN);
+> +	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs + IMX7D_REG_ADC_INT_EN);
+> +
+> +	imx7d_adc_sample_rate_set(info);
+> +}
+> +
+> +static void imx7d_adc_channel_set(struct imx7d_adc *info)
+> +{
+> +	u32 cfg1 = 0;
+> +	u32 cfg2;
+> +	u32 channel;
+> +
+> +	channel = info->channel;
+> +
+> +	/* the channel choose single conversion, and enable average mode */
+> +	cfg1 |= (IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN |
+> +		 IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE);
+> +	if (info->adc_feature.average_en)
+> +		cfg1 |= IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN;
+> +
+> +	/*
+> +	 * physical channel 0 chose logical channel A
+> +	 * physical channel 1 chose logical channel B
+> +	 * physical channel 2 chose logical channel C
+> +	 * physical channel 3 chose logical channel D
+> +	 */
+> +	cfg1 |= IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL(channel);
+> +
+> +	/* read register REG_ADC_CH_A\B\C\D_CFG2, according to the channel chosen */
+> +	cfg2 = readl(info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel + IMX7D_REG_ADC_CHANNEL_CFG2_BASE);
+> +
+> +	cfg2 |= imx7d_adc_average_num[info->adc_feature.avg_num];
+> +
+> +	/* write the register REG_ADC_CH_A\B\C\D_CFG2, according to the channel chosen */
+> +	writel(cfg2, info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel + IMX7D_REG_ADC_CHANNEL_CFG2_BASE);
+> +	writel(cfg1, info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel);
+> +}
+> +
+> +static u32 imx7d_adc_get_sample_rate(struct imx7d_adc *info)
+> +{
+> +	/* input clock is always 24MHz */
+> +	u32 input_clk = 24000000;
+> +	u32 analogue_core_clk;
+> +	u32 core_time_unit = info->adc_feature.core_time_unit;
+> +	u32 tmp;
+> +
+> +	analogue_core_clk = input_clk / info->pre_div_num;
+> +	tmp = (core_time_unit + 1) * 6;
+> +
+> +	return  analogue_core_clk / tmp;
+> +}
+> +
+> +static int imx7d_adc_read_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int *val,
+> +			int *val2,
+> +			long mask)
+> +{
+> +	struct imx7d_adc *info = iio_priv(indio_dev);
+> +
+> +	u32 channel;
+> +	long ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&indio_dev->mlock);
+> +		reinit_completion(&info->completion);
+> +
+> +		channel = chan->channel & 0x03;
+> +		info->channel = channel;
+> +		imx7d_adc_channel_set(info);
+> +
+> +		ret = wait_for_completion_interruptible_timeout
+> +				(&info->completion, IMX7D_ADC_TIMEOUT);
+> +		if (ret == 0) {
+> +			mutex_unlock(&indio_dev->mlock);
+> +			return -ETIMEDOUT;
+> +		}
+> +		if (ret < 0) {
+> +			mutex_unlock(&indio_dev->mlock);
+> +			return ret;
+> +		}
+> +
+> +		*val = info->value;
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		info->vref_uv = regulator_get_voltage(info->vref);
+> +		*val = info->vref_uv / 1000;
+> +		*val2 = 12;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*val = imx7d_adc_get_sample_rate(info);
+> +		return IIO_VAL_INT;
+> +
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int imx7d_adc_read_data(struct imx7d_adc *info)
+> +{
+> +	u32 channel;
+> +	u32 value;
+> +
+> +	channel = info->channel & 0x03;
+> +
+> +	/*
+> +	 * channel A and B conversion result share one register,
+> +	 * bit[27~16] is the channel B conversion result,
+> +	 * bit[11~0] is the channel A conversion result.
+> +	 * channel C and D is the same.
+> +	 */
+> +	if (channel < 2)
+> +		value = readl(info->regs + IMX7D_REG_ADC_CHA_B_CNV_RSLT);
+> +	else
+> +		value = readl(info->regs + IMX7D_REG_ADC_CHC_D_CNV_RSLT);
+> +	if (channel & 0x1)	/* channel B or D */
+> +		value = (value >> 16) & 0xFFF;
+> +	else			/* channel A or C */
+> +		value &= 0xFFF;
+> +
+> +	return value;
+> +}
+> +
+> +static irqreturn_t imx7d_adc_isr(int irq, void *dev_id)
+> +{
+> +	struct imx7d_adc *info = (struct imx7d_adc *)dev_id;
+> +	int status;
+> +
+> +	status = readl(info->regs + IMX7D_REG_ADC_INT_STATUS);
+> +	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS) {
+> +		info->value = imx7d_adc_read_data(info);
+> +		complete(&info->completion);
+> +
+> +		/*
+> +		 * The register IMX7D_REG_ADC_INT_STATUS can't clear
+> +		 * itself after read operation, need software to write
+> +		 * 0 to the related bit. Here we clear the channel A/B/C/D
+> +		 * conversion finished flag.
+> +		 */
+> +		status &= ~IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS;
+> +		writel(status, info->regs + IMX7D_REG_ADC_INT_STATUS);
+> +		return IRQ_HANDLED;
+> +	}
+> +
+> +	/*
+> +	 * Currently, driver only enable channel A/B/C/D conversion interrupt,
+> +	 * so logically for other bits of IMX7D_REG_ADC_INT_STATUS, they should
+> +	 * always be zero. But due to this register can't clear itself after the
+> +	 * read operation, if any accident happen and cause the other bits of this
+> +	 * register set, then interrupt will be triggered constantly. To make the
+> +	 * code robust, here clear this register for all the accident.
+> +	 */
+I would not do this. The interrupt should get automatically disabled if we
+get an interrupt storm due to a bug that made this happen.  Doing this
+is actively hiding the issue and not a good idea to my mind.
+
+The only exception would be if this was a workaround for a known hardware
+bug in which case it would need to be documented here.
+
+> +	writel(0, info->regs + IMX7D_REG_ADC_INT_STATUS);
+> +	return IRQ_NONE;
+> +}
+> +
+> +static int imx7d_adc_reg_access(struct iio_dev *indio_dev,
+> +			unsigned reg, unsigned writeval,
+> +			unsigned *readval)
+> +{
+> +	struct imx7d_adc *info = iio_priv(indio_dev);
+> +
+> +	if (!readval || reg % 4 || reg > IMX7D_REG_ADC_ADC_CFG)
+> +		return -EINVAL;
+> +
+> +	*readval = readl(info->regs + reg);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_info imx7d_adc_iio_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = &imx7d_adc_read_raw,
+> +	.debugfs_reg_access = &imx7d_adc_reg_access,
+> +};
+> +
+> +static const struct of_device_id imx7d_adc_match[] = {
+> +	{ .compatible = "fsl,imx7d-adc", },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, imx7d_adc_match);
+> +
+> +static int imx7d_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct imx7d_adc *info;
+> +	struct iio_dev *indio_dev;
+> +	struct resource *mem;
+> +	int irq;
 > +	int ret;
 > +
-> +	ret = strtobool((const char *) buf, &val);
-> +	if (ret)
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "Failed allocating iio device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	info = iio_priv(indio_dev);
+> +	info->dev = &pdev->dev;
+> +
+> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+> +	if (IS_ERR(info->regs)) {
+> +		ret = PTR_ERR(info->regs);
+> +		dev_err(&pdev->dev, "Failed to remap adc memory, err = %d\n", ret);
 > +		return ret;
+> +	}
 > +
-> +	chip->allow_async_readout = val;
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "No irq resource?\n");
+> +		return irq;
+> +	}
 > +
-> +	return len;
+> +	info->clk = devm_clk_get(&pdev->dev, "adc");
+> +	if (IS_ERR(info->clk)) {
+> +		ret = PTR_ERR(info->clk);
+> +		dev_err(&pdev->dev, "Failed getting clock, err = %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	info->vref = devm_regulator_get(&pdev->dev, "vref");
+> +	if (IS_ERR(info->vref)) {
+> +		ret = PTR_ERR(info->vref);
+> +		dev_err(&pdev->dev, "Failed getting reference voltage, err = %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = regulator_enable(info->vref);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Can't enable adc reference top voltage, err = %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	init_completion(&info->completion);
+> +
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->info = &imx7d_adc_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = imx7d_adc_iio_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(imx7d_adc_iio_channels);
+> +
+> +	ret = clk_prepare_enable(info->clk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev,
+> +			"Could not prepare or enable the clock.\n");
+> +		goto error_adc_clk_enable;
+> +	}
+> +
+> +	ret = devm_request_irq(info->dev, irq,
+> +				imx7d_adc_isr, 0,
+> +				dev_name(&pdev->dev), info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "Failed requesting irq, irq = %d\n", irq);
+> +		goto error_iio_device_register;
+> +	}
+> +
+> +	imx7d_adc_feature_config(info);
+> +	imx7d_adc_hw_init(info);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Couldn't register the device.\n");
+> +		goto error_iio_device_register;
+> +	}
+> +
+> +	return 0;
+> +
+> +error_iio_device_register:
+> +	clk_disable_unprepare(info->clk);
+> +error_adc_clk_enable:
+> +	regulator_disable(info->vref);
+> +
+> +	return ret;
 > +}
 > +
+> +static void imx7d_adc_power_down(struct imx7d_adc *info)
+> +{
+> +	u32 adc_cfg;
 > +
->  #define INA2XX_CHAN(_type, _index, _address) { \
->  	.type = _type, \
->  	.address = _address, \
-> @@ -399,11 +427,12 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
->  	 * GPIO a triggered buffer could be used instead.
->  	 * For now, we pay for that extra read of the ALERT register
->  	 */
-> -	do {
-> -		ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
-> -				  &alert);
-> -		if (ret < 0)
-> -			goto _err;
-> +	if (!chip->allow_async_readout)
-> +		do {
-> +			ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
-> +					  &alert);
-> +			if (ret < 0)
-> +				goto _err;
->  
->  		alert &= INA266_CVRF;
->  		trace_printk("Conversion ready: %d\n", !!alert);
-> @@ -454,7 +483,8 @@ static int ina2xx_capture_thread(void *data)
->  	 * Poll a bit faster than the chip internal Fs, in case
->  	 * we wish to sync with the conversion ready flag.
->  	 */
-> -	sampling_us -= 200;
-> +	if (!chip->allow_async_readout)
-> +		sampling_us -= 200;
->  
->  	do {
->  		buffer_us = ina2xx_work_buffer(indio_dev);
-> @@ -477,6 +507,7 @@ int ina2xx_buffer_enable(struct iio_dev *indio_dev)
->  		     1000000/sampling_us, chip->avg);
->  
->  	trace_printk("Expected work period: %u us\n", sampling_us);
-> +	trace_printk("Async readout mode: %d\n", chip->allow_async_readout);
->  
->  	chip->prev_ns = iio_get_time_ns();
->  
-> @@ -518,7 +549,12 @@ static int ina2xx_debug_reg(struct iio_dev *indio_dev,
->  static IIO_CONST_ATTR_INT_TIME_AVAIL \
->   ("0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
->  
-> +static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
-> +		       ina2xx_allow_async_readout_show,
-> +		       ina2xx_allow_async_readout_store, 0);
+> +	adc_cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
+> +	adc_cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN |
+> +		   IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN;
+> +	adc_cfg &= ~IMX7D_REG_ADC_ADC_CFG_ADC_EN;
+> +	writel(adc_cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
+> +}
 > +
->  static struct attribute *ina2xx_attributes[] = {
-> +	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
->  	&iio_const_attr_integration_time_available.dev_attr.attr,
->  	NULL,
->  };
+> +static int imx7d_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct imx7d_adc *info = iio_priv(indio_dev);
+> +
+> +	imx7d_adc_power_down(info);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	clk_disable_unprepare(info->clk);
+> +	regulator_disable(info->vref);
+> +
+> +	return 0;
+> +}
+> +
+> +static int __maybe_unused imx7d_adc_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct imx7d_adc *info = iio_priv(indio_dev);
+> +
+> +	imx7d_adc_power_down(info);
+> +
+> +	clk_disable_unprepare(info->clk);
+> +	regulator_disable(info->vref);
+> +
+> +	return 0;
+> +}
+> +
+> +static int __maybe_unused imx7d_adc_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct imx7d_adc *info = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = regulator_enable(info->vref);
+> +	if (ret) {
+> +		dev_err(info->dev,
+> +			"Can't enable adc reference top voltage, err = %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = clk_prepare_enable(info->clk);
+> +	if (ret) {
+> +		dev_err(info->dev,
+> +			"Could not prepare or enable clock.\n");
+> +		regulator_disable(info->vref);
+> +		return ret;
+> +	}
+> +
+> +	imx7d_adc_hw_init(info);
+> +
+> +	return 0;
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(imx7d_adc_pm_ops, imx7d_adc_suspend, imx7d_adc_resume);
+> +
+> +static struct platform_driver imx7d_adc_driver = {
+> +	.probe		= imx7d_adc_probe,
+> +	.remove		= imx7d_adc_remove,
+> +	.driver		= {
+> +		.name	= "imx7d_adc",
+> +		.of_match_table = imx7d_adc_match,
+> +		.pm	= &imx7d_adc_pm_ops,
+> +	},
+> +};
+> +
+> +module_platform_driver(imx7d_adc_driver);
+> +
+> +MODULE_AUTHOR("Haibo Chen <haibo.chen@freescale.com>");
+> +MODULE_DESCRIPTION("Freeacale IMX7D ADC driver");
+> +MODULE_LICENSE("GPL v2");
 > 
 
