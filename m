@@ -1,32 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f182.google.com ([209.85.217.182]:35543 "EHLO
-	mail-lb0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752974AbbLDEaL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Dec 2015 23:30:11 -0500
-Received: by lbcdv4 with SMTP id dv4so13694960lbc.2
-        for <linux-iio@vger.kernel.org>; Thu, 03 Dec 2015 20:30:09 -0800 (PST)
+Return-Path: <mranostay@gmail.com>
 MIME-Version: 1.0
+In-Reply-To: <CAKzfze_t+D1sxP58EJeR284XbLHnrvaLOEpBgq_wdGGg2gW9XA@mail.gmail.com>
+References: <CAKzfze_t+D1sxP58EJeR284XbLHnrvaLOEpBgq_wdGGg2gW9XA@mail.gmail.com>
 From: Matt Ranostay <mranostay@gmail.com>
-Date: Thu, 3 Dec 2015 20:29:29 -0800
-Message-ID: <CAKzfze_t+D1sxP58EJeR284XbLHnrvaLOEpBgq_wdGGg2gW9XA@mail.gmail.com>
-Subject: [RFC] pH sensors
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
+Date: Fri, 4 Dec 2015 22:44:00 -0800
+Message-ID: <CAKzfze_Ff8mWJR0kqo1v1mD_=mGCNBWPaZZ1Q+2aOzU9mzPp1A@mail.gmail.com>
+Subject: Re: [RFC] pH sensors
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello et all,
+On Thu, Dec 3, 2015 at 8:29 PM, Matt Ranostay <mranostay@gmail.com> wrote:
+> Hello et all,
+>
+> So currently planning on working a I2C based pH sensor and want to get
+> some input on the iio_chan_type to use.
+>
+> There are two solutions  that can be thought of:
+>
+> 1) Use the current IIO_CONCENTRATION type and use the percentage of
+> Hydronium (H3O+) in the solution to report to actual pH levels
 
-So currently planning on working a I2C based pH sensor and want to get
-some input on the iio_chan_type to use.
+I just remembered that pH is for example  -log(10**-7) = 7. so using
+IIO_CONCENTRATION would require processing within the driver. So I
+think option 2 is the only thing that makes sense since it would just
+have a simple scaling value.
 
-There are two solutions  that can be thought of:
-
-1) Use the current IIO_CONCENTRATION type and use the percentage of
-Hydronium (H3O+) in the solution to report to actual pH levels
-2) New IIO_PH type that is an typically an integer from 0 (acid) - 14 (base)
-
-Thanks,
-
-Matt
+> 2) New IIO_PH type that is an typically an integer from 0 (acid) - 14 (base)
+>
+> Thanks,
+>
+> Matt
