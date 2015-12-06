@@ -1,81 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f43.google.com ([209.85.220.43]:34685 "EHLO
-	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751915AbbLEXdH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Dec 2015 18:33:07 -0500
-Received: by pacwq6 with SMTP id wq6so27729344pac.1
-        for <linux-iio@vger.kernel.org>; Sat, 05 Dec 2015 15:33:06 -0800 (PST)
+Received: from mail-pf0-f175.google.com ([209.85.192.175]:35907 "EHLO
+	mail-pf0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753486AbbLFB6I (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Dec 2015 20:58:08 -0500
+Received: by pfdd184 with SMTP id d184so45746656pfd.3
+        for <linux-iio@vger.kernel.org>; Sat, 05 Dec 2015 17:58:07 -0800 (PST)
 From: Matt Ranostay <mranostay@gmail.com>
 To: linux-iio@vger.kernel.org, jic23@kernel.org
 Cc: Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v2 1/1] iio: chemical: add AMS iAQ-core support
-Date: Sat,  5 Dec 2015 15:33:11 -0800
-Message-Id: <1449358391-11851-2-git-send-email-mranostay@gmail.com>
-In-Reply-To: <1449358391-11851-1-git-send-email-mranostay@gmail.com>
-References: <1449358391-11851-1-git-send-email-mranostay@gmail.com>
+Subject: [PATCH v6 1/1] iio: light: add MAX30100 oximeter driver support
+Date: Sat,  5 Dec 2015 17:58:12 -0800
+Message-Id: <1449367092-2391-2-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1449367092-2391-1-git-send-email-mranostay@gmail.com>
+References: <1449367092-2391-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add support for AMS iAQ-core continuous and pulsed VOC sensors.
+MAX30100 is an heart rate and pulse oximeter sensor that works using
+two LEDS of different wavelengths, and detecting the light reflected
+back.
+
+This patchset adds support for both IR and RED LED channels which can
+be processed in userspace to determine heart rate and blood oxygen
+levels.
 
 Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
- .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
- drivers/iio/chemical/Kconfig                       |   8 +
- drivers/iio/chemical/Makefile                      |   1 +
- drivers/iio/chemical/ams-iaq-core.c                | 200 +++++++++++++++++++++
- 4 files changed, 210 insertions(+)
- create mode 100644 drivers/iio/chemical/ams-iaq-core.c
+ .../devicetree/bindings/iio/health/max30100.txt    |  21 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/health/Kconfig                         |  21 +
+ drivers/iio/health/Makefile                        |   7 +
+ drivers/iio/health/max30100.c                      | 460 +++++++++++++++++++++
+ 6 files changed, 511 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/health/max30100.txt
+ create mode 100644 drivers/iio/health/Kconfig
+ create mode 100644 drivers/iio/health/Makefile
+ create mode 100644 drivers/iio/health/max30100.c
 
-diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-index c50cf13..f6fec95 100644
---- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-@@ -20,6 +20,7 @@ adi,adt7476		+/-1C TDM Extended Temp Range I.C
- adi,adt7490		+/-1C TDM Extended Temp Range I.C
- adi,adxl345		Three-Axis Digital Accelerometer
- adi,adxl346		Three-Axis Digital Accelerometer (backward-compatibility value "adi,adxl345" must be listed too)
-+ams,iaq-core		AMS iAQ-Core VOC Sensor
- at,24c08		i2c serial eeprom  (24cxx)
- atmel,24c00		i2c serial eeprom  (24cxx)
- atmel,24c01		i2c serial eeprom  (24cxx)
-diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-index 3061b72..f16de61 100644
---- a/drivers/iio/chemical/Kconfig
-+++ b/drivers/iio/chemical/Kconfig
-@@ -4,6 +4,14 @@
- 
- menu "Chemical Sensors"
- 
-+config IAQCORE
-+	tristate "AMS iAQ-Core VOC sensors"
-+	depends on I2C
-+	help
-+	  Say Y here to build I2C interface support for the AMS
-+	  iAQ-Core Continuous/Pulsed VOC (Volatile Organic Compounds)
-+	  sensors
-+
- config VZ89X
- 	tristate "SGX Sensortech MiCS VZ89X VOC sensor"
- 	depends on I2C
-diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
-index 7292f2d..167861f 100644
---- a/drivers/iio/chemical/Makefile
-+++ b/drivers/iio/chemical/Makefile
-@@ -3,4 +3,5 @@
- #
- 
- # When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_IAQCORE)		+= ams-iaq-core.o
- obj-$(CONFIG_VZ89X)		+= vz89x.o
-diff --git a/drivers/iio/chemical/ams-iaq-core.c b/drivers/iio/chemical/ams-iaq-core.c
+diff --git a/Documentation/devicetree/bindings/iio/health/max30100.txt b/Documentation/devicetree/bindings/iio/health/max30100.txt
 new file mode 100644
-index 0000000..9fadcb7
+index 0000000..f6fbac6
 --- /dev/null
-+++ b/drivers/iio/chemical/ams-iaq-core.c
-@@ -0,0 +1,200 @@
++++ b/Documentation/devicetree/bindings/iio/health/max30100.txt
+@@ -0,0 +1,21 @@
++Maxim MAX30100 heart rate and pulse oximeter sensor
++
++* https://datasheets.maximintegrated.com/en/ds/MAX30100.pdf
++
++Required properties:
++  - compatible: must be "maxim,max30100"
++  - reg: the I2C address of the sensor
++  - interrupt-parent: should be the phandle for the interrupt controller
++  - interrupts: the sole interrupt generated by the device
++
++  Refer to interrupt-controller/interrupts.txt for generic
++  interrupt client node bindings.
++
++Example:
++
++max30100@057 {
++	compatible = "maxim,max30100";
++	reg = <57>;
++	interrupt-parent = <&gpio1>;
++	interrupts = <16 2>;
++};
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index ac8715e..505e921 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -69,6 +69,7 @@ source "drivers/iio/dac/Kconfig"
+ source "drivers/iio/dummy/Kconfig"
+ source "drivers/iio/frequency/Kconfig"
+ source "drivers/iio/gyro/Kconfig"
++source "drivers/iio/health/Kconfig"
+ source "drivers/iio/humidity/Kconfig"
+ source "drivers/iio/imu/Kconfig"
+ source "drivers/iio/light/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index f670b82..20f6490 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -21,6 +21,7 @@ obj-y += dac/
+ obj-y += dummy/
+ obj-y += gyro/
+ obj-y += frequency/
++obj-y += health/
+ obj-y += humidity/
+ obj-y += imu/
+ obj-y += light/
+diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
+new file mode 100644
+index 0000000..a647679
+--- /dev/null
++++ b/drivers/iio/health/Kconfig
+@@ -0,0 +1,21 @@
++#
++# Health sensors
++#
++# When adding new entries keep the list in alphabetical order
++
++menu "Health sensors"
++
++config MAX30100
++	tristate "MAX30100 heart rate and pulse oximeter sensor"
++	depends on I2C
++	select REGMAP_I2C
++	select IIO_BUFFER
++	select IIO_KFIFO_BUF
++	help
++	  Say Y here to build I2C interface support for the Maxim
++	  MAX30100 heart rate, and pulse oximeter sensor.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called max30100.
++
++endmenu
+diff --git a/drivers/iio/health/Makefile b/drivers/iio/health/Makefile
+new file mode 100644
+index 0000000..7c475d7
+--- /dev/null
++++ b/drivers/iio/health/Makefile
+@@ -0,0 +1,7 @@
++#
++# Makefile for IIO Health sensors
++#
++
++# When adding new entries keep the list in alphabetical order
++
++obj-$(CONFIG_MAX30100)		+= max30100.o
+diff --git a/drivers/iio/health/max30100.c b/drivers/iio/health/max30100.c
+new file mode 100644
+index 0000000..5c60f71
+--- /dev/null
++++ b/drivers/iio/health/max30100.c
+@@ -0,0 +1,460 @@
 +/*
-+ * ams-iaq-core.c - Support for AMS iAQ-Core VOC sensors
++ * max30100.c - Support for MAX30100 heart rate and pulse oximeter sensor
 + *
 + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
 + *
@@ -89,191 +150,451 @@ index 0000000..9fadcb7
 + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 + * GNU General Public License for more details.
 + *
++ * TODO: allow LED current and pulse length controls via device tree properties
 + */
 +
 +#include <linux/module.h>
-+#include <linux/mutex.h>
 +#include <linux/init.h>
++#include <linux/interrupt.h>
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/irq.h>
 +#include <linux/i2c.h>
++#include <linux/mutex.h>
++#include <linux/regmap.h>
 +#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/kfifo_buf.h>
 +
-+#define AMS_IAQCORE_DATA_SIZE		9
++#define MAX30100_REGMAP_NAME	"max30100_regmap"
++#define MAX30100_DRV_NAME	"max30100"
 +
-+#define AMS_IAQCORE_VOC_CO2_IDX		0
-+#define AMS_IAQCORE_VOC_RESISTANCE_IDX	1
-+#define AMS_IAQCORE_VOC_TVOC_IDX	2
++#define MAX30100_REG_INT_STATUS			0x00
++#define MAX30100_REG_INT_STATUS_PWR_RDY		BIT(0)
++#define MAX30100_REG_INT_STATUS_SPO2_RDY	BIT(4)
++#define MAX30100_REG_INT_STATUS_HR_RDY		BIT(5)
++#define MAX30100_REG_INT_STATUS_FIFO_RDY	BIT(7)
 +
-+struct ams_iaqcore_reading {
-+	__be16 co2_ppm;
-+	u8 status;
-+	__be32 resistance;
-+	__be16 voc_ppb;
-+} __attribute__((__packed__));
++#define MAX30100_REG_INT_ENABLE			0x01
++#define MAX30100_REG_INT_ENABLE_SPO2_EN		BIT(0)
++#define MAX30100_REG_INT_ENABLE_HR_EN		BIT(1)
++#define MAX30100_REG_INT_ENABLE_FIFO_EN		BIT(3)
++#define MAX30100_REG_INT_ENABLE_MASK		0xf0
++#define MAX30100_REG_INT_ENABLE_MASK_SHIFT	4
 +
-+struct ams_iaqcore_data {
++#define MAX30100_REG_FIFO_WR_PTR		0x02
++#define MAX30100_REG_FIFO_OVR_CTR		0x03
++#define MAX30100_REG_FIFO_RD_PTR		0x04
++#define MAX30100_REG_FIFO_DATA			0x05
++#define MAX30100_REG_FIFO_DATA_ENTRY_COUNT	16
++#define MAX30100_REG_FIFO_DATA_ENTRY_LEN	4
++
++#define MAX30100_REG_MODE_CONFIG		0x06
++#define MAX30100_REG_MODE_CONFIG_MODE_SPO2_EN	BIT(0)
++#define MAX30100_REG_MODE_CONFIG_MODE_HR_EN	BIT(1)
++#define MAX30100_REG_MODE_CONFIG_MODE_MASK	0x03
++#define MAX30100_REG_MODE_CONFIG_TEMP_EN	BIT(3)
++#define MAX30100_REG_MODE_CONFIG_PWR		BIT(7)
++
++#define MAX30100_REG_SPO2_CONFIG		0x07
++#define MAX30100_REG_SPO2_CONFIG_HI_RES_EN	BIT(6)
++
++#define MAX30100_REG_SPO2_CONFIG_100HZ		BIT(2)
++#define MAX30100_REG_SPO2_CONFIG_1600US		0x3
++
++#define MAX30100_REG_LED_CONFIG			0x09
++#define MAX30100_REG_LED_CONFIG_RED_LED_SHIFT	4
++
++#define MAX30100_REG_LED_CONFIG_24MA		0x07
++#define MAX30100_REG_LED_CONFIG_50MA		0x0f
++
++#define MAX30100_REG_TEMP_INTEGER		0x16
++#define MAX30100_REG_TEMP_FRACTION		0x17
++
++struct max30100_data {
 +	struct i2c_client *client;
++	struct iio_dev *indio_dev;
 +	struct mutex lock;
-+	unsigned long last_update;
++	struct regmap *regmap;
 +
-+	struct ams_iaqcore_reading buffer;
++	__be16 buffer[2]; /* 2 16-bit channels */
 +};
 +
-+static const struct iio_chan_spec ams_iaqcore_channels[] = {
-+	{
-+		.type = IIO_CONCENTRATION,
-+		.channel2 = IIO_MOD_CO2,
-+		.modified = 1,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.address = AMS_IAQCORE_VOC_CO2_IDX,
-+	},
-+	{
-+		.type = IIO_RESISTANCE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.address = AMS_IAQCORE_VOC_RESISTANCE_IDX,
-+	},
-+	{
-+		.type = IIO_CONCENTRATION,
-+		.channel2 = IIO_MOD_VOC,
-+		.modified = 1,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.address = AMS_IAQCORE_VOC_TVOC_IDX,
-+	},
-+};
-+
-+static int ams_iaqcore_read_measurement(struct ams_iaqcore_data *data)
++static bool max30100_is_volatile_reg(struct device *dev, unsigned int reg)
 +{
-+	struct i2c_client *client = data->client;
-+	int ret;
-+
-+	struct i2c_msg msg = {
-+		.addr = client->addr,
-+		.flags = client->flags | I2C_M_RD,
-+		.len = AMS_IAQCORE_DATA_SIZE,
-+		.buf = (char *) &data->buffer,
-+	};
-+
-+	ret = i2c_transfer(client->adapter, &msg, 1);
-+
-+	return (ret == AMS_IAQCORE_DATA_SIZE) ? 0 : ret;
++	switch (reg) {
++	case MAX30100_REG_INT_STATUS:
++	case MAX30100_REG_MODE_CONFIG:
++	case MAX30100_REG_FIFO_WR_PTR:
++	case MAX30100_REG_FIFO_OVR_CTR:
++	case MAX30100_REG_FIFO_RD_PTR:
++	case MAX30100_REG_FIFO_DATA:
++	case MAX30100_REG_TEMP_INTEGER:
++	case MAX30100_REG_TEMP_FRACTION:
++		return true;
++	default:
++		return false;
++	}
 +}
 +
-+static int ams_iaqcore_get_measurement(struct ams_iaqcore_data *data)
++static const struct regmap_config max30100_regmap_config = {
++	.name = MAX30100_REGMAP_NAME,
++
++	.reg_bits = 8,
++	.val_bits = 8,
++
++	.max_register = MAX30100_REG_TEMP_FRACTION,
++	.cache_type = REGCACHE_FLAT,
++
++	.volatile_reg = max30100_is_volatile_reg,
++};
++
++static const unsigned long max30100_scan_masks[] = {0x3, 0};
++
++static const struct iio_chan_spec max30100_channels[] = {
++	{
++		.type = IIO_INTENSITY,
++		.channel2 = IIO_MOD_LIGHT_IR,
++		.modified = 1,
++
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_BE,
++		},
++	},
++	{
++		.type = IIO_INTENSITY,
++		.channel2 = IIO_MOD_LIGHT_RED,
++		.modified = 1,
++
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_BE,
++		},
++	},
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = -1,
++	},
++};
++
++static int max30100_set_powermode(struct max30100_data *data, bool state)
++{
++	return regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
++				  MAX30100_REG_MODE_CONFIG_PWR,
++				  state ? 0 : MAX30100_REG_MODE_CONFIG_PWR);
++}
++
++static int max30100_clear_fifo(struct max30100_data *data)
 +{
 +	int ret;
 +
-+	/* sensor can only be polled once a second max per datasheet */
-+	if (!time_after(jiffies, data->last_update + HZ))
-+		return 0;
-+
-+	ret = ams_iaqcore_read_measurement(data);
-+	if (ret < 0)
++	ret = regmap_write(data->regmap, MAX30100_REG_FIFO_WR_PTR, 0);
++	if (ret)
 +		return ret;
 +
-+	data->last_update = jiffies;
++	ret = regmap_write(data->regmap, MAX30100_REG_FIFO_OVR_CTR, 0);
++	if (ret)
++		return ret;
++
++	return regmap_write(data->regmap, MAX30100_REG_FIFO_RD_PTR, 0);
++}
++
++static int max30100_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct max30100_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = max30100_set_powermode(data, true);
++	if (ret)
++		return ret;
++
++	return max30100_clear_fifo(data);
++}
++
++static int max30100_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct max30100_data *data = iio_priv(indio_dev);
++
++	return max30100_set_powermode(data, false);
++}
++
++static const struct iio_buffer_setup_ops max30100_buffer_setup_ops = {
++	.postenable = max30100_buffer_postenable,
++	.predisable = max30100_buffer_predisable,
++};
++
++static inline int max30100_fifo_count(struct max30100_data *data)
++{
++	unsigned int val;
++	int ret;
++
++	ret = regmap_read(data->regmap, MAX30100_REG_INT_STATUS, &val);
++	if (ret)
++		return ret;
++
++	/* FIFO is almost full */
++	if (val & MAX30100_REG_INT_STATUS_FIFO_RDY)
++		return MAX30100_REG_FIFO_DATA_ENTRY_COUNT - 1;
++
++	/* FIFO has at least one entry to read */
++	if (val & MAX30100_REG_INT_STATUS_SPO2_RDY)
++		return 1;
 +
 +	return 0;
 +}
 +
-+static int ams_iaqcore_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan, int *val,
-+				int *val2, long mask)
++static int max30100_read_measurement(struct max30100_data *data)
 +{
-+	struct ams_iaqcore_data *data = iio_priv(indio_dev);
 +	int ret;
 +
-+	if (mask != IIO_CHAN_INFO_RAW)
-+		return -EINVAL;
++	ret = i2c_smbus_read_i2c_block_data(data->client,
++					    MAX30100_REG_FIFO_DATA,
++					    MAX30100_REG_FIFO_DATA_ENTRY_LEN,
++					    (u8 *) &data->buffer);
++
++	return (ret == MAX30100_REG_FIFO_DATA_ENTRY_LEN) ? 0 : ret;
++}
++
++static irqreturn_t max30100_interrupt_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct max30100_data *data = iio_priv(indio_dev);
++	int ret, cnt = 0;
 +
 +	mutex_lock(&data->lock);
-+	ret = ams_iaqcore_get_measurement(data);
 +
-+	if (ret)
-+		goto err_out;
++	while (cnt-- || (cnt = max30100_fifo_count(data) > 0)) {
++		ret = max30100_read_measurement(data);
++		if (ret)
++			break;
 +
-+	switch (chan->address) {
-+	case AMS_IAQCORE_VOC_CO2_IDX:
-+		*val = 0;
-+		*val2 = be16_to_cpu(data->buffer.co2_ppm);
-+		ret = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	case AMS_IAQCORE_VOC_RESISTANCE_IDX:
-+		*val = be32_to_cpu(data->buffer.resistance);
-+		ret = IIO_VAL_INT;
-+		break;
-+	case AMS_IAQCORE_VOC_TVOC_IDX:
-+		*val = 0;
-+		*val2 = be16_to_cpu(data->buffer.voc_ppb);
-+		ret = IIO_VAL_INT_PLUS_NANO;
-+		break;
-+	default:
-+		ret = -EINVAL;
++		iio_push_to_buffers(data->indio_dev, data->buffer);
 +	}
 +
-+err_out:
 +	mutex_unlock(&data->lock);
++
++	return IRQ_HANDLED;
++}
++
++static int max30100_chip_init(struct max30100_data *data)
++{
++	int ret;
++
++	/* RED IR LED = 24mA, IR LED = 50mA */
++	ret = regmap_write(data->regmap, MAX30100_REG_LED_CONFIG,
++				(MAX30100_REG_LED_CONFIG_24MA <<
++				 MAX30100_REG_LED_CONFIG_RED_LED_SHIFT) |
++				 MAX30100_REG_LED_CONFIG_50MA);
++	if (ret)
++		return ret;
++
++	/* enable hi-res SPO2 readings with 100 samples a second */
++	ret = regmap_write(data->regmap, MAX30100_REG_SPO2_CONFIG,
++				 MAX30100_REG_SPO2_CONFIG_HI_RES_EN |
++				 MAX30100_REG_SPO2_CONFIG_100HZ |
++				 MAX30100_REG_SPO2_CONFIG_1600US);
++	if (ret)
++		return ret;
++
++	/* enable SPO2 mode */
++	ret = regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
++				 MAX30100_REG_MODE_CONFIG_MODE_MASK,
++				 MAX30100_REG_MODE_CONFIG_MODE_HR_EN |
++				 MAX30100_REG_MODE_CONFIG_MODE_SPO2_EN);
++	if (ret)
++		return ret;
++
++	/* enable SPO2 + FIFO interrupts */
++	return regmap_update_bits(data->regmap, MAX30100_REG_INT_ENABLE,
++				 MAX30100_REG_INT_ENABLE_MASK,
++				(MAX30100_REG_INT_ENABLE_FIFO_EN |
++				 MAX30100_REG_INT_ENABLE_SPO2_EN)
++				 << MAX30100_REG_INT_ENABLE_MASK_SHIFT);
++}
++
++static int max30100_read_temp(struct max30100_data *data, int *val)
++{
++	int ret;
++	unsigned int reg;
++
++	ret = regmap_read(data->regmap, MAX30100_REG_TEMP_INTEGER, &reg);
++	if (ret < 0)
++		return ret;
++	*val = reg << 4;
++
++	ret = regmap_read(data->regmap, MAX30100_REG_TEMP_FRACTION, &reg);
++	if (ret < 0)
++		return ret;
++
++	*val |= reg & 0xf;
++	*val = sign_extend32(*val, 11);
++
++	return 0;
++}
++
++static int max30100_get_temp(struct max30100_data *data, int *val)
++{
++	int ret;
++
++	/* start acquisition */
++	ret = regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
++				 MAX30100_REG_MODE_CONFIG_TEMP_EN,
++				 MAX30100_REG_MODE_CONFIG_TEMP_EN);
++	if (ret)
++		return ret;
++
++	usleep_range(35000, 50000);
++
++	return max30100_read_temp(data, val);
++}
++
++static int max30100_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val, int *val2, long mask)
++{
++	struct max30100_data *data = iio_priv(indio_dev);
++	int ret = -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		/*
++		 * Temperature reading can only be acquired while engine
++		 * is running
++		 */
++		mutex_lock(&indio_dev->mlock);
++
++		if (!iio_buffer_enabled(indio_dev))
++			ret = -EAGAIN;
++		else {
++			ret = max30100_get_temp(data, val);
++			if (!ret)
++				ret = IIO_VAL_INT;
++
++		}
++
++		mutex_unlock(&indio_dev->mlock);
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 1;  /* 0.0625 */
++		*val2 = 16;
++		ret = IIO_VAL_FRACTIONAL;
++		break;
++	}
 +
 +	return ret;
 +}
 +
-+static const struct iio_info ams_iaqcore_info = {
-+	.read_raw	= ams_iaqcore_read_raw,
-+	.driver_module	= THIS_MODULE,
++static const struct iio_info max30100_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = max30100_read_raw,
 +};
 +
-+static int ams_iaqcore_probe(struct i2c_client *client,
-+			     const struct i2c_device_id *id)
++static int max30100_probe(struct i2c_client *client,
++			  const struct i2c_device_id *id)
 +{
++	struct max30100_data *data;
++	struct iio_buffer *buffer;
 +	struct iio_dev *indio_dev;
-+	struct ams_iaqcore_data *data;
++	int ret;
 +
 +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
 +	if (!indio_dev)
 +		return -ENOMEM;
 +
++	buffer = devm_iio_kfifo_allocate(&client->dev);
++	if (!buffer)
++		return -ENOMEM;
++
++	iio_device_attach_buffer(indio_dev, buffer);
++
++	indio_dev->name = MAX30100_DRV_NAME;
++	indio_dev->channels = max30100_channels;
++	indio_dev->info = &max30100_info;
++	indio_dev->num_channels = ARRAY_SIZE(max30100_channels);
++	indio_dev->available_scan_masks = max30100_scan_masks;
++	indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
++	indio_dev->setup_ops = &max30100_buffer_setup_ops;
++
 +	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
++	data->indio_dev = indio_dev;
 +	data->client = client;
 +
-+	/* set timestamp so initial reading will complete */
-+	data->last_update = jiffies - HZ;
 +	mutex_init(&data->lock);
++	i2c_set_clientdata(client, indio_dev);
 +
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &ams_iaqcore_info,
-+	indio_dev->name = dev_name(&client->dev);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
++	data->regmap = devm_regmap_init_i2c(client, &max30100_regmap_config);
++	if (IS_ERR(data->regmap)) {
++		dev_err(&client->dev, "regmap initialization failed.\n");
++		return PTR_ERR(data->regmap);
++	}
++	max30100_set_powermode(data, false);
 +
-+	indio_dev->channels = ams_iaqcore_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ams_iaqcore_channels);
++	ret = max30100_chip_init(data);
++	if (ret)
++		return ret;
 +
-+	return devm_iio_device_register(&client->dev, indio_dev);
++	if (client->irq <= 0) {
++		dev_err(&client->dev, "no valid irq defined\n");
++		return -EINVAL;
++	}
++	ret = devm_request_threaded_irq(&client->dev, client->irq,
++					NULL, max30100_interrupt_handler,
++					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++					"max30100_irq", indio_dev);
++	if (ret) {
++		dev_err(&client->dev, "request irq (%d) failed\n", client->irq);
++		return ret;
++	}
++
++	return iio_device_register(indio_dev);
 +}
 +
-+static const struct i2c_device_id ams_iaqcore_id[] = {
-+	{ "ams-iaq-core", 0 },
++static int max30100_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct max30100_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	max30100_set_powermode(data, false);
++
++	return 0;
++}
++
++static const struct i2c_device_id max30100_id[] = {
++	{ "max30100", 0 },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, max30100_id);
++
++static const struct of_device_id max30100_dt_ids[] = {
++	{ .compatible = "maxim,max30100" },
 +	{ }
 +};
-+MODULE_DEVICE_TABLE(i2c, ams_iaqcore_id);
++MODULE_DEVICE_TABLE(of, max30100_dt_ids);
 +
-+static const struct of_device_id ams_iaqcore_dt_ids[] = {
-+	{ .compatible = "ams,iaq-core" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ams_iaqcore_dt_ids);
-+
-+static struct i2c_driver ams_iaqcore_driver = {
++static struct i2c_driver max30100_driver = {
 +	.driver = {
-+		.name	= "ams-iaq-core",
-+		.of_match_table = of_match_ptr(ams_iaqcore_dt_ids),
++		.name	= MAX30100_DRV_NAME,
++		.of_match_table	= of_match_ptr(max30100_dt_ids),
 +	},
-+	.probe = ams_iaqcore_probe,
-+	.id_table = ams_iaqcore_id,
++	.probe		= max30100_probe,
++	.remove		= max30100_remove,
++	.id_table	= max30100_id,
 +};
-+module_i2c_driver(ams_iaqcore_driver);
++module_i2c_driver(max30100_driver);
 +
 +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-+MODULE_DESCRIPTION("AMS iAQ-Core VOC sensors");
-+MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("MAX30100 heart rate and pulse oximeter sensor");
++MODULE_LICENSE("GPL");
 -- 
 1.9.1
 
