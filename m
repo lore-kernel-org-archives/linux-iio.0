@@ -1,32 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f54.google.com ([209.85.220.54]:33988 "EHLO
-	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750905AbbLFG6Q (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Dec 2015 01:58:16 -0500
-Received: by pacwq6 with SMTP id wq6so30830406pac.1
-        for <linux-iio@vger.kernel.org>; Sat, 05 Dec 2015 22:58:15 -0800 (PST)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v3 0/1] iio: chemical: add AMS iAQ-core support
-Date: Sat,  5 Dec 2015 22:58:21 -0800
-Message-Id: <1449385102-14393-1-git-send-email-mranostay@gmail.com>
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:34822 "EHLO
+	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751603AbbLFI3s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Dec 2015 03:29:48 -0500
+Received: by wmuu63 with SMTP id u63so107073977wmu.0
+        for <linux-iio@vger.kernel.org>; Sun, 06 Dec 2015 00:29:47 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <1449385102-14393-2-git-send-email-mranostay@gmail.com>
+References: <1449385102-14393-1-git-send-email-mranostay@gmail.com>
+	<1449385102-14393-2-git-send-email-mranostay@gmail.com>
+Date: Sun, 6 Dec 2015 10:29:47 +0200
+Message-ID: <CAEnQRZCG9abOOG8hTqvv8sx_i0RSGuK=fN-7SPZ5g_y_-x3D2g@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] iio: chemical: add AMS iAQ-core support
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Matt Ranostay <mranostay@gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes from v2:
-* Change IIO_CHAN_INFO_RAW to IIO_CHAN_INFO_PROCESSED in *_read_raw check
+On Sun, Dec 6, 2015 at 8:58 AM, Matt Ranostay <mranostay@gmail.com> wrote:
+> Add support for AMS iAQ-core continuous and pulsed VOC sensors.
+>
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 
-Matt Ranostay (1):
-  iio: chemical: add AMS iAQ-core support
+Matt, just one style issue. When sending one patch it is preferred to
+skip the cover letter.
+You can add your comments under the scissor line.
 
- .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
- drivers/iio/chemical/Kconfig                       |   8 +
- drivers/iio/chemical/Makefile                      |   1 +
- drivers/iio/chemical/ams-iaq-core.c                | 200 +++++++++++++++++++++
- 4 files changed, 210 insertions(+)
- create mode 100644 drivers/iio/chemical/ams-iaq-core.c
+> ---     <---- this is the scissor line
 
--- 
-1.9.1
-
+thanks,
+Daniel.
