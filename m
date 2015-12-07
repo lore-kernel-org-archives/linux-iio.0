@@ -1,72 +1,43 @@
-Return-Path: <mpa@pengutronix.de>
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Shawn Guo <shawnguo@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Denis Carikli <denis@eukrea.com>,
-	=?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	devicetree@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v9 0/8] imx25 adc and touchscreen driver
-Date: Sun,  6 Dec 2015 20:52:13 +0100
-Message-Id: <1449431542-1892-1-git-send-email-mpa@pengutronix.de>
+Return-Path: <mtitinger@baylibre.com>
+From: Marc Titinger <mtitinger@baylibre.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux@roeck-us.net,
+	jdelvare@suse.com
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	lm-sensors@lm-sensors.org,
+	Marc Titinger <mtitinger@baylibre.com>
+Subject: [PATCH v3 0/2] IIO version of INA2xx
+Date: Mon,  7 Dec 2015 10:09:33 +0100
+Message-Id: <1449479375-4061-1-git-send-email-mtitinger@baylibre.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+Version 3 of https://lkml.org/lkml/2015/11/25/245
 
-another larger restructuring of the touchscreen driver and some smaller
-changes in other parts. The changes are noted below each patch description.
+  * rename ina2xx-iio to ian2xx-adc for consistency with other chips
+    (ina2xx being the hwmon driver).
+  * add an exclusion in the iio/adc/Kconfig: depends on !SENSORS_INA2XX
+  * more typos and style fixes
+  * make regmap config const with .max_register = INA2XX_MAX_REGISTERS
 
-Best Regards,
+previous references:
+  * following RFC started in https://lkml.org/lkml/2015/11/10/370
+  * and feed back from https://lkml.org/lkml/2015/11/18/395
+  * Version 2: https://lkml.org/lkml/2015/11/30/245
 
-Markus
+Marc Titinger (2):
+  iio: ina2xx: add support for TI INA2xx Power Monitors
+  iio: ina2xx: provide a sysfs parameter to allow async readout of the
+    ADCs
 
-
-Denis Carikli (2):
-  ARM: dts: imx25: Add TSC and ADC support
-  ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC
-    support.
-
-Markus Pargmann (6):
-  ARM: dt: Binding documentation for imx25 ADC/TSC
-  ARM: dt: Binding documentation for imx25 GCQ
-  ARM: dt: Binding documentation for imx25 touchscreen controller
-  mfd: fsl imx25 Touchscreen ADC driver
-  iio: adc: fsl,imx25-gcq driver
-  input: touchscreen: imx25 tcq driver
-
- .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  |  58 ++
- .../bindings/input/touchscreen/fsl-mx25-tcq.txt    |  35 ++
- .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |  47 ++
- arch/arm/boot/dts/imx25.dtsi                       |  29 +-
- arch/arm/configs/imx_v4_v5_defconfig               |   4 +
- drivers/iio/adc/Kconfig                            |   7 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/fsl-imx25-gcq.c                    | 415 ++++++++++++++
- drivers/input/touchscreen/Kconfig                  |   9 +
- drivers/input/touchscreen/Makefile                 |   1 +
- drivers/input/touchscreen/fsl-imx25-tcq.c          | 596 +++++++++++++++++++++
- drivers/mfd/Kconfig                                |   9 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/fsl-imx25-tsadc.c                      | 203 +++++++
- include/dt-bindings/iio/adc/fsl-imx25-gcq.h        |  18 +
- include/linux/mfd/imx25-tsadc.h                    | 140 +++++
- 16 files changed, 1571 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
- create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
- create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
- create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
- create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
- create mode 100644 include/linux/mfd/imx25-tsadc.h
+ drivers/iio/adc/Kconfig      |  10 +
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/ina2xx-adc.c | 706 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 717 insertions(+)
+ create mode 100644 drivers/iio/adc/ina2xx-adc.c
 
 -- 
-2.6.2
+1.9.1
