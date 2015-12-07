@@ -1,703 +1,751 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:47466 "EHLO
-	metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754132AbbLFTwu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Dec 2015 14:52:50 -0500
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Shawn Guo <shawnguo@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Denis Carikli <denis@eukrea.com>,
-	=?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	Juergen Borleis <jbe@pengutronix.de>
-Subject: [PATCH v9 6/8] input: touchscreen: imx25 tcq driver
-Date: Sun,  6 Dec 2015 20:52:19 +0100
-Message-Id: <1449431542-1892-7-git-send-email-mpa@pengutronix.de>
-In-Reply-To: <1449431542-1892-1-git-send-email-mpa@pengutronix.de>
-References: <1449431542-1892-1-git-send-email-mpa@pengutronix.de>
+Received: from mail-wm0-f50.google.com ([74.125.82.50]:33355 "EHLO
+	mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755222AbbLGJJq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Dec 2015 04:09:46 -0500
+Received: by wmec201 with SMTP id c201so155269155wme.0
+        for <linux-iio@vger.kernel.org>; Mon, 07 Dec 2015 01:09:45 -0800 (PST)
+From: Marc Titinger <mtitinger@baylibre.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux@roeck-us.net, jdelvare@suse.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	lm-sensors@lm-sensors.org, Marc Titinger <mtitinger@baylibre.com>
+Subject: [PATCH v3 1/2] iio: ina2xx: add support for TI INA2xx Power Monitors
+Date: Mon,  7 Dec 2015 10:09:34 +0100
+Message-Id: <1449479375-4061-2-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <1449479375-4061-1-git-send-email-mtitinger@baylibre.com>
+References: <1449479375-4061-1-git-send-email-mtitinger@baylibre.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is a driver for the imx25 ADC/TSC module. It controls the
-touchscreen conversion queue and creates a touchscreen input device.
-The driver currently only supports 4 wire touchscreens. The driver uses
-a simple conversion queue of precharge, touch detection, X measurement,
-Y measurement, precharge and another touch detection.
+in SOFTWARE buffer mode, a kthread will capture the active scan_elements
+into a kfifo, then compute the remaining time until the next capture tick
+and do an active wait (udelay).
 
-This driver uses the regmap from the parent to setup some touch specific
-settings in the core driver and setup a idle configuration with touch
-detection.
+This will produce a stream of up to fours channels plus a 64bits
+timestamps (ns).
 
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-Signed-off-by: Denis Carikli <denis@eukrea.com>
+Tested with ina226, on BeagleBoneBlack.
 
-[fix clock's period calculation]
-[fix calculation of the 'settling' value]
-Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
+Datasheet: http://www.ti.com/lit/gpn/ina226
+
+Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
 ---
+ drivers/iio/adc/Kconfig      |  10 +
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/ina2xx-adc.c | 670 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 681 insertions(+)
+ create mode 100644 drivers/iio/adc/ina2xx-adc.c
 
-Notes:
-    Changes in v9:
-     - Added module description to Kconfig item
-     - Fixed devm_ioremap_resource() return value check to use IS_ERR()
-     - Removed return value of mx25_tcq_create_event_for_4wire()
-     - Renamed most 'ret' variables through 'error'
-     - Removed IRQF_ONESHOT
-     - Rearranged threaded handler to not mix up samples from multiple measurements
-    
-    Changes in v7:
-     - Moved clk_prepare_enable() and mx25_tcq_init() into mx25_tcq_open(). This
-       was done to be able to use devm_request_threaded_irq().
-     - Cleanup of the probe function through above change
-     - Removed mx25_tcq_remove(), not necessary now
-
- drivers/input/touchscreen/Kconfig         |   9 +
- drivers/input/touchscreen/Makefile        |   1 +
- drivers/input/touchscreen/fsl-imx25-tcq.c | 596 ++++++++++++++++++++++++++++++
- 3 files changed, 606 insertions(+)
- create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
-
-diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-index ae33da7ab51f..873bf3697e35 100644
---- a/drivers/input/touchscreen/Kconfig
-+++ b/drivers/input/touchscreen/Kconfig
-@@ -811,6 +811,15 @@ config TOUCHSCREEN_USB_COMPOSITE
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called usbtouchscreen.
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index eb0cd89..e5fdc7d 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -170,6 +170,16 @@ config EXYNOS_ADC
+ 	  of SoCs for drivers such as the touchscreen and hwmon to use to share
+ 	  this resource.
  
-+config TOUCHSCREEN_MX25
-+	tristate "Freescale i.MX25 touchscreen input driver"
-+	depends on MFD_MX25_TSADC
++config INA2XX_ADC
++	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
++	depends on I2C && !SENSORS_INA2XX
++	select REGMAP_I2C
++	select IIO_BUFFER
++	select IIO_KFIFO_BUF
 +	help
-+	  Enable support for touchscreen connected to your i.MX25.
++	  Say yes here to build support for TI INA2xx family of Power Monitors.
++	  This driver is mutually exclusive with the HWMON version.
 +
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called fsl-imx25-tcq.
-+
- config TOUCHSCREEN_MC13783
- 	tristate "Freescale MC13783 touchscreen input driver"
- 	depends on MFD_MC13XXX
-diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
-index cbaa6abb08da..77a2ac54101a 100644
---- a/drivers/input/touchscreen/Makefile
-+++ b/drivers/input/touchscreen/Makefile
-@@ -45,6 +45,7 @@ obj-$(CONFIG_TOUCHSCREEN_INTEL_MID)	+= intel-mid-touch.o
- obj-$(CONFIG_TOUCHSCREEN_IPROC)		+= bcm_iproc_tsc.o
- obj-$(CONFIG_TOUCHSCREEN_LPC32XX)	+= lpc32xx_ts.o
- obj-$(CONFIG_TOUCHSCREEN_MAX11801)	+= max11801_ts.o
-+obj-$(CONFIG_TOUCHSCREEN_MX25)		+= fsl-imx25-tcq.o
- obj-$(CONFIG_TOUCHSCREEN_MC13783)	+= mc13783_ts.o
- obj-$(CONFIG_TOUCHSCREEN_MCS5000)	+= mcs5000_ts.o
- obj-$(CONFIG_TOUCHSCREEN_MIGOR)		+= migor_ts.o
-diff --git a/drivers/input/touchscreen/fsl-imx25-tcq.c b/drivers/input/touchscreen/fsl-imx25-tcq.c
+ config LP8788_ADC
+ 	tristate "LP8788 ADC driver"
+ 	depends on MFD_LP8788
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index a096210..2869b0ef 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -19,6 +19,7 @@ obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+ obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
++obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_MAX1027) += max1027.o
+ obj-$(CONFIG_MAX1363) += max1363.o
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
 new file mode 100644
-index 000000000000..d1f3d7860ea5
+index 0000000..0e7c474
 --- /dev/null
-+++ b/drivers/input/touchscreen/fsl-imx25-tcq.c
-@@ -0,0 +1,596 @@
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -0,0 +1,670 @@
 +/*
-+ * Copyright (C) 2014-2015 Pengutronix, Markus Pargmann <mpa@pengutronix.de>
++ * INA2XX Current and Power Monitors
 + *
-+ * This program is free software; you can redistribute it and/or modify it under
-+ * the terms of the GNU General Public License version 2 as published by the
-+ * Free Software Foundation.
++ * Copyright 2015 Baylibre SAS.
 + *
-+ * Based on driver from 2011:
-+ *   Juergen Beisert, Pengutronix <kernel@pengutronix.de>
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + *
-+ * This is the driver for the imx25 TCQ (Touchscreen Conversion Queue)
-+ * connected to the imx25 ADC.
++ * Based on linux/drivers/iio/adc/ad7291.c
++ * Copyright 2010-2011 Analog Devices Inc.
++ *
++ * Based on linux/drivers/hwmon/ina2xx.c
++ * Copyright 2012 Lothar Felten <l-felten@ti.com>
++ *
++ * Licensed under the GPL-2 or later.
++ *
++ * IIO driver for INA219-220-226-230-231
++ *
++ * Configurable 7-bit I2C slave address from 0x40 to 0x4F
 + */
-+
-+#include <linux/clk.h>
-+#include <linux/device.h>
-+#include <linux/input.h>
-+#include <linux/interrupt.h>
-+#include <linux/mfd/imx25-tsadc.h>
 +#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
++#include <linux/kthread.h>
++#include <linux/delay.h>
++#include <linux/iio/kfifo_buf.h>
++#include <linux/iio/sysfs.h>
++#include <linux/i2c.h>
 +#include <linux/regmap.h>
++#include <linux/platform_data/ina2xx.h>
 +
-+static const char mx25_tcq_name[] = "mx25-tcq";
++#include <linux/util_macros.h>
 +
-+enum mx25_tcq_mode {
-+	MX25_TS_4WIRE,
-+};
++/* INA2XX registers definition */
++#define INA2XX_CONFIG                   0x00
++#define INA2XX_SHUNT_VOLTAGE            0x01	/* readonly */
++#define INA2XX_BUS_VOLTAGE              0x02	/* readonly */
++#define INA2XX_POWER                    0x03	/* readonly */
++#define INA2XX_CURRENT                  0x04	/* readonly */
++#define INA2XX_CALIBRATION              0x05
 +
-+struct mx25_tcq_priv {
-+	struct regmap *regs;
-+	struct regmap *core_regs;
-+	struct input_dev *idev;
-+	enum mx25_tcq_mode mode;
-+	unsigned int pen_threshold;
-+	unsigned int sample_count;
-+	unsigned int expected_samples;
-+	unsigned int pen_debounce;
-+	unsigned int settling_time;
-+	struct clk *clk;
-+	int irq;
-+	struct device *dev;
-+};
++#define INA226_ALERT_MASK		0x06
++#define INA266_CVRF			BIT(3)
 +
-+static struct regmap_config mx25_tcq_regconfig = {
-+	.fast_io = true,
-+	.max_register = 0x5c,
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = 4,
-+};
++#define INA2XX_MAX_REGISTERS            8
 +
-+static const struct of_device_id mx25_tcq_ids[] = {
-+	{ .compatible = "fsl,imx25-tcq", },
-+	{ /* Sentinel */ }
-+};
++/* settings - depend on use case */
++#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=8 */
++#define INA226_CONFIG_DEFAULT           0x4327
++#define INA226_DEFAULT_AVG              4
++#define INA226_DEFAULT_IT		1110
 +
-+#define TSC_4WIRE_PRE_INDEX 0
-+#define TSC_4WIRE_X_INDEX 1
-+#define TSC_4WIRE_Y_INDEX 2
-+#define TSC_4WIRE_POST_INDEX 3
-+#define TSC_4WIRE_LEAVE 4
++#define INA2XX_RSHUNT_DEFAULT           10000
 +
-+#define MX25_TSC_DEF_THRESHOLD 80
-+#define TSC_MAX_SAMPLES 16
++/*
++ * bit mask for reading the averaging setting in the configuration register
++ * FIXME: use regmap_fields.
++ */
++#define INA2XX_MODE_MASK	GENMASK(3, 0)
 +
-+#define MX25_TSC_REPEAT_WAIT 14
++#define INA226_AVG_MASK		GENMASK(11, 9)
++#define INA226_SHIFT_AVG(val)	((val) << 9)
 +
-+enum mx25_adc_configurations {
-+	MX25_CFG_PRECHARGE = 0,
-+	MX25_CFG_TOUCH_DETECT,
-+	MX25_CFG_X_MEASUREMENT,
-+	MX25_CFG_Y_MEASUREMENT,
-+};
++/* Integration time for VBus */
++#define INA226_ITB_MASK		GENMASK(8, 6)
++#define INA226_SHIFT_ITB(val)	((val) << 6)
 +
-+#define MX25_PRECHARGE_VALUE (\
-+			MX25_ADCQ_CFG_YPLL_OFF | \
-+			MX25_ADCQ_CFG_XNUR_OFF | \
-+			MX25_ADCQ_CFG_XPUL_HIGH | \
-+			MX25_ADCQ_CFG_REFP_INT | \
-+			MX25_ADCQ_CFG_IN_XP | \
-+			MX25_ADCQ_CFG_REFN_NGND2 | \
-+			MX25_ADCQ_CFG_IGS)
++/* Integration time for VShunt */
++#define INA226_ITS_MASK		GENMASK(5, 3)
++#define INA226_SHIFT_ITS(val)	((val) << 3)
 +
-+#define MX25_TOUCH_DETECT_VALUE (\
-+			MX25_ADCQ_CFG_YNLR | \
-+			MX25_ADCQ_CFG_YPLL_OFF | \
-+			MX25_ADCQ_CFG_XNUR_OFF | \
-+			MX25_ADCQ_CFG_XPUL_OFF | \
-+			MX25_ADCQ_CFG_REFP_INT | \
-+			MX25_ADCQ_CFG_IN_XP | \
-+			MX25_ADCQ_CFG_REFN_NGND2 | \
-+			MX25_ADCQ_CFG_PENIACK)
++/* Cosmetic macro giving the sampling period for a full P=UxI cycle */
++#define SAMPLING_PERIOD(c)	((c->int_time_vbus + c->int_time_vshunt) \
++				 * c->avg)
 +
-+static void imx25_setup_queue_cfgs(struct mx25_tcq_priv *priv,
-+				   unsigned int settling_cnt)
++static bool ina2xx_is_writeable_reg(struct device *dev, unsigned int reg)
 +{
-+	u32 precharge_cfg =
-+			MX25_PRECHARGE_VALUE |
-+			MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt);
-+	u32 touch_detect_cfg =
-+			MX25_TOUCH_DETECT_VALUE |
-+			MX25_ADCQ_CFG_NOS(1) |
-+			MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt);
-+
-+	regmap_write(priv->core_regs, MX25_TSC_TICR, precharge_cfg);
-+
-+	/* PRECHARGE */
-+	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_PRECHARGE),
-+		     precharge_cfg);
-+
-+	/* TOUCH_DETECT */
-+	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_TOUCH_DETECT),
-+		     touch_detect_cfg);
-+
-+	/* X Measurement */
-+	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_X_MEASUREMENT),
-+		     MX25_ADCQ_CFG_YPLL_OFF |
-+		     MX25_ADCQ_CFG_XNUR_LOW |
-+		     MX25_ADCQ_CFG_XPUL_HIGH |
-+		     MX25_ADCQ_CFG_REFP_XP |
-+		     MX25_ADCQ_CFG_IN_YP |
-+		     MX25_ADCQ_CFG_REFN_XN |
-+		     MX25_ADCQ_CFG_NOS(priv->sample_count) |
-+		     MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt));
-+
-+	/* Y Measurement */
-+	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_Y_MEASUREMENT),
-+		     MX25_ADCQ_CFG_YNLR |
-+		     MX25_ADCQ_CFG_YPLL_HIGH |
-+		     MX25_ADCQ_CFG_XNUR_OFF |
-+		     MX25_ADCQ_CFG_XPUL_OFF |
-+		     MX25_ADCQ_CFG_REFP_YP |
-+		     MX25_ADCQ_CFG_IN_XP |
-+		     MX25_ADCQ_CFG_REFN_YN |
-+		     MX25_ADCQ_CFG_NOS(priv->sample_count) |
-+		     MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt));
-+
-+	/* Enable the touch detection right now */
-+	regmap_write(priv->core_regs, MX25_TSC_TICR, touch_detect_cfg |
-+		     MX25_ADCQ_CFG_IGS);
++	return (reg == INA2XX_CONFIG) || (reg > INA2XX_CURRENT);
 +}
 +
-+static int imx25_setup_queue_4wire(struct mx25_tcq_priv *priv,
-+				   unsigned settling_cnt, int *items)
++static bool ina2xx_is_volatile_reg(struct device *dev, unsigned int reg)
 +{
-+	imx25_setup_queue_cfgs(priv, settling_cnt);
++	return (reg != INA2XX_CONFIG);
++}
 +
-+	/* Setup the conversion queue */
-+	regmap_write(priv->regs, MX25_ADCQ_ITEM_7_0,
-+		     MX25_ADCQ_ITEM(0, MX25_CFG_PRECHARGE) |
-+		     MX25_ADCQ_ITEM(1, MX25_CFG_TOUCH_DETECT) |
-+		     MX25_ADCQ_ITEM(2, MX25_CFG_X_MEASUREMENT) |
-+		     MX25_ADCQ_ITEM(3, MX25_CFG_Y_MEASUREMENT) |
-+		     MX25_ADCQ_ITEM(4, MX25_CFG_PRECHARGE) |
-+		     MX25_ADCQ_ITEM(5, MX25_CFG_TOUCH_DETECT));
++static const struct regmap_config ina2xx_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 16,
++	.max_register = INA2XX_MAX_REGISTERS,
++	.writeable_reg = ina2xx_is_writeable_reg,
++	.volatile_reg = ina2xx_is_volatile_reg,
++};
 +
-+	/*
-+	 * We measure X/Y with 'sample_count' number of samples and execute a
-+	 * touch detection twice, with 1 sample each
-+	 */
-+	priv->expected_samples = priv->sample_count * 2 + 2;
-+	*items = 6;
++enum ina2xx_ids { ina219, ina226 };
++
++struct ina2xx_config {
++	u16 config_default;
++	int calibration_factor;
++	int shunt_div;
++	int bus_voltage_shift;
++	int bus_voltage_lsb;	/* uV */
++	int power_lsb;		/* uW */
++};
++
++struct ina2xx_chip_info {
++	struct regmap *regmap;
++	struct task_struct *task;
++	const struct ina2xx_config *config;
++	struct mutex state_lock;
++	long rshunt;
++	int avg;
++	s64 prev_ns;	/* track buffer capture time, check for underruns*/
++	int int_time_vbus; /* Bus voltage integration time uS */
++	int int_time_vshunt; /* Shunt voltage integration time uS */
++};
++
++static const struct ina2xx_config ina2xx_config[] = {
++	[ina219] = {
++		    .config_default = INA219_CONFIG_DEFAULT,
++		    .calibration_factor = 40960000,
++		    .shunt_div = 100,
++		    .bus_voltage_shift = 3,
++		    .bus_voltage_lsb = 4000,
++		    .power_lsb = 20000,
++		    },
++	[ina226] = {
++		    .config_default = INA226_CONFIG_DEFAULT,
++		    .calibration_factor = 5120000,
++		    .shunt_div = 400,
++		    .bus_voltage_shift = 0,
++		    .bus_voltage_lsb = 1250,
++		    .power_lsb = 25000,
++		    },
++};
++
++static int ina2xx_get_value(struct ina2xx_chip_info *chip, u8 reg,
++			    unsigned int regval, int *val, int *uval)
++{
++	*val = 0;
++
++	switch (reg) {
++	case INA2XX_SHUNT_VOLTAGE:
++		/* signed register */
++		*uval = DIV_ROUND_CLOSEST((s16) regval,
++					  chip->config->shunt_div);
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	case INA2XX_BUS_VOLTAGE:
++		*uval = (regval >> chip->config->bus_voltage_shift)
++			* chip->config->bus_voltage_lsb;
++		*val = *uval / 1000000;
++		*uval = *uval % 1000000;
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	case INA2XX_POWER:
++		*uval = regval * chip->config->power_lsb;
++		*val = *uval / 1000000;
++		*uval = *uval % 1000000;
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	case INA2XX_CURRENT:
++		/* signed register, LSB=1mA (selected), in mA */
++		*uval = (s16) regval * 1000;
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	default:
++		/* programmer goofed */
++		WARN_ON_ONCE(1);
++	}
++	return -EINVAL;
++}
++
++static int ina2xx_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	int ret;
++	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
++	unsigned int regval;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = regmap_read(chip->regmap, chan->address, &regval);
++		if (ret < 0)
++			return ret;
++
++		return ina2xx_get_value(chip, chan->address, regval, val, val2);
++
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		*val = chip->avg;
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_INT_TIME:
++		*val = 0;
++		if (chan->address == INA2XX_SHUNT_VOLTAGE)
++			*val2 = chip->int_time_vshunt;
++		else
++			*val2 = chip->int_time_vbus;
++
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		/*
++		 * Sample freq is read only, it is a consequence of
++		 * 1/AVG*(CT_bus+CT_shunt).
++		 */
++		*val = DIV_ROUND_CLOSEST(1000000, SAMPLING_PERIOD(chip));
++
++		return IIO_VAL_INT;
++
++	default:
++		return -EINVAL;
++	}
 +
 +	return 0;
 +}
 +
-+static void mx25_tcq_disable_touch_irq(struct mx25_tcq_priv *priv)
++/*
++ * Available averaging rates for ina226. The indices correspond with
++ * the bit values expected by the chip (according to the ina226 datasheet,
++ * table 3 AVG bit settings, found at
++ * http://www.ti.com/lit/ds/symlink/ina226.pdf.
++ */
++static const int ina226_avg_tab[] = { 1, 4, 16, 64, 128, 256, 512, 1024 };
++
++static int ina226_set_average(struct ina2xx_chip_info *chip, unsigned int val,
++			      unsigned int *config)
 +{
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_PDMSK,
-+			   MX25_ADCQ_CR_PDMSK);
++	int bits;
++
++	if (val > 1024 || val < 1)
++		return -EINVAL;
++
++	bits = find_closest(val, ina226_avg_tab,
++			    ARRAY_SIZE(ina226_avg_tab));
++
++	chip->avg = ina226_avg_tab[bits];
++
++	*config &= ~INA226_AVG_MASK;
++	*config |= INA226_SHIFT_AVG(bits) & INA226_AVG_MASK;
++
++	return 0;
 +}
 +
-+static void mx25_tcq_enable_touch_irq(struct mx25_tcq_priv *priv)
++/* Conversion times in uS */
++static const int ina226_conv_time_tab[] = { 140, 204, 332, 588, 1100,
++					    2116, 4156, 8244 };
++
++static int ina226_set_int_time_vbus(struct ina2xx_chip_info *chip,
++				    unsigned int val_us, unsigned int *config)
 +{
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_PDMSK, 0);
++	int bits;
++
++	if (val_us > 8244 || val_us < 140)
++		return -EINVAL;
++
++	bits = find_closest(val_us, ina226_conv_time_tab,
++			ARRAY_SIZE(ina226_conv_time_tab));
++
++	chip->int_time_vbus = ina226_conv_time_tab[bits];
++
++	*config &= ~INA226_ITB_MASK;
++	*config |= INA226_SHIFT_ITB(bits) & INA226_ITB_MASK;
++
++	return 0;
 +}
 +
-+static void mx25_tcq_disable_fifo_irq(struct mx25_tcq_priv *priv)
++static int ina226_set_int_time_vshunt(struct ina2xx_chip_info *chip,
++				      unsigned int val_us, unsigned int *config)
 +{
-+	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_FDRY_IRQ,
-+			   MX25_ADCQ_MR_FDRY_IRQ);
++	int bits;
++
++	if (val_us > 8244 || val_us < 140)
++		return -EINVAL;
++
++	bits = find_closest(val_us, ina226_conv_time_tab,
++			ARRAY_SIZE(ina226_conv_time_tab));
++
++	chip->int_time_vshunt = ina226_conv_time_tab[bits];
++
++	*config &= ~INA226_ITS_MASK;
++	*config |= INA226_SHIFT_ITS(bits) & INA226_ITS_MASK;
++
++	return 0;
 +}
 +
-+static void mx25_tcq_enable_fifo_irq(struct mx25_tcq_priv *priv)
++static int ina2xx_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
 +{
-+	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_FDRY_IRQ, 0);
-+}
++	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
++	int ret;
++	unsigned int config, tmp;
 +
-+static void mx25_tcq_force_queue_start(struct mx25_tcq_priv *priv)
-+{
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
-+			   MX25_ADCQ_CR_FQS,
-+			   MX25_ADCQ_CR_FQS);
-+}
++	if (iio_buffer_enabled(indio_dev))
++		return -EBUSY;
 +
-+static void mx25_tcq_force_queue_stop(struct mx25_tcq_priv *priv)
-+{
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
-+			   MX25_ADCQ_CR_FQS, 0);
-+}
++	mutex_lock(&chip->state_lock);
 +
-+static void mx25_tcq_fifo_reset(struct mx25_tcq_priv *priv)
-+{
-+	u32 tcqcr;
++	ret = regmap_read(chip->regmap, INA2XX_CONFIG, &config);
++	if (ret < 0)
++		goto _err;
 +
-+	regmap_read(priv->regs, MX25_ADCQ_CR, &tcqcr);
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FRST,
-+			   MX25_ADCQ_CR_FRST);
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FRST, 0);
-+	regmap_write(priv->regs, MX25_ADCQ_CR, tcqcr);
-+}
++	tmp = config;
 +
-+static void mx25_tcq_re_enable_touch_detection(struct mx25_tcq_priv *priv)
-+{
-+	/* stop the queue from looping */
-+	mx25_tcq_force_queue_stop(priv);
++	switch (mask) {
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		ret = ina226_set_average(chip, val, &tmp);
++		break;
 +
-+	/* for a clean touch detection, preload the X plane */
-+	regmap_write(priv->core_regs, MX25_TSC_TICR, MX25_PRECHARGE_VALUE);
-+
-+	/* waste some time now to pre-load the X plate to high voltage */
-+	mx25_tcq_fifo_reset(priv);
-+
-+	/* re-enable the detection right now */
-+	regmap_write(priv->core_regs, MX25_TSC_TICR,
-+		     MX25_TOUCH_DETECT_VALUE | MX25_ADCQ_CFG_IGS);
-+
-+	regmap_update_bits(priv->regs, MX25_ADCQ_SR, MX25_ADCQ_SR_PD,
-+			   MX25_ADCQ_SR_PD);
-+
-+	/* enable the pen down event to be a source for the interrupt */
-+	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_PD_IRQ, 0);
-+
-+	/* lets fire the next IRQ if someone touches the touchscreen */
-+	mx25_tcq_enable_touch_irq(priv);
-+}
-+
-+static void mx25_tcq_create_event_for_4wire(struct mx25_tcq_priv *priv,
-+					    u32 *sample_buf,
-+					    unsigned int samples)
-+{
-+	unsigned int x_pos = 0;
-+	unsigned int y_pos = 0;
-+	unsigned int touch_pre = 0;
-+	unsigned int touch_post = 0;
-+	unsigned int i;
-+
-+	for (i = 0; i < samples; i++) {
-+		unsigned int index = MX25_ADCQ_FIFO_ID(sample_buf[i]);
-+		unsigned int val = MX25_ADCQ_FIFO_DATA(sample_buf[i]);
-+
-+		switch (index) {
-+		case 1:
-+			touch_pre = val;
-+			break;
-+		case 2:
-+			x_pos = val;
-+			break;
-+		case 3:
-+			y_pos = val;
-+			break;
-+		case 5:
-+			touch_post = val;
-+			break;
-+		default:
-+			dev_dbg(priv->dev, "Dropped samples because of invalid index %d\n",
-+				index);
-+			return;
-+		}
++	case IIO_CHAN_INFO_INT_TIME:
++		if (chan->address == INA2XX_SHUNT_VOLTAGE)
++			ret = ina226_set_int_time_vshunt(chip, val2, &tmp);
++		else
++			ret = ina226_set_int_time_vbus(chip, val2, &tmp);
++		break;
++	default:
++		ret = -EINVAL;
 +	}
 +
-+	if (samples != 0) {
-+		/*
-+		 * only if both touch measures are below a threshold,
-+		 * the position is valid
-+		 */
-+		if (touch_pre < priv->pen_threshold &&
-+		    touch_post < priv->pen_threshold) {
-+			/* valid samples, generate a report */
-+			x_pos /= priv->sample_count;
-+			y_pos /= priv->sample_count;
-+			input_report_abs(priv->idev, ABS_X, x_pos);
-+			input_report_abs(priv->idev, ABS_Y, y_pos);
-+			input_report_key(priv->idev, BTN_TOUCH, 1);
-+			input_sync(priv->idev);
-+
-+			/* get next sample */
-+			mx25_tcq_enable_fifo_irq(priv);
-+		} else if (touch_pre >= priv->pen_threshold &&
-+			   touch_post >= priv->pen_threshold) {
-+			/*
-+			 * if both samples are invalid,
-+			 * generate a release report
-+			 */
-+			input_report_key(priv->idev, BTN_TOUCH, 0);
-+			input_sync(priv->idev);
-+			mx25_tcq_re_enable_touch_detection(priv);
-+		} else {
-+			/*
-+			 * if only one of both touch measurements are
-+			 * below the threshold, still some bouncing
-+			 * happens. Take additional samples in this
-+			 * case to be sure
-+			 */
-+			mx25_tcq_enable_fifo_irq(priv);
-+		}
-+	}
-+}
-+
-+static irqreturn_t mx25_tcq_irq_thread(int irq, void *dev_id)
-+{
-+	struct mx25_tcq_priv *priv = dev_id;
-+	u32 sample_buf[TSC_MAX_SAMPLES];
-+	unsigned int samples;
-+	u32 stats;
-+	unsigned int i;
-+
-+	/*
-+	 * Check how many samples are available. We always have to read exactly
-+	 * sample_count samples from the fifo, or a multiple of sample_count.
-+	 * Otherwise we mixup samples into different touch events.
-+	 */
-+	regmap_read(priv->regs, MX25_ADCQ_SR, &stats);
-+	samples = MX25_ADCQ_SR_FDN(stats);
-+	samples -= samples % priv->sample_count;
-+
-+	if (!samples)
-+		return IRQ_HANDLED;
-+
-+	for (i = 0; i != samples; ++i)
-+		regmap_read(priv->regs, MX25_ADCQ_FIFO, &sample_buf[i]);
-+
-+	mx25_tcq_create_event_for_4wire(priv, sample_buf, samples);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t mx25_tcq_irq(int irq, void *dev_id)
-+{
-+	struct mx25_tcq_priv *priv = dev_id;
-+	u32 stat;
-+	int ret = IRQ_HANDLED;
-+
-+	regmap_read(priv->regs, MX25_ADCQ_SR, &stat);
-+
-+	if (stat & (MX25_ADCQ_SR_FRR | MX25_ADCQ_SR_FUR | MX25_ADCQ_SR_FOR))
-+		mx25_tcq_re_enable_touch_detection(priv);
-+
-+	if (stat & MX25_ADCQ_SR_PD) {
-+		mx25_tcq_disable_touch_irq(priv);
-+		mx25_tcq_force_queue_start(priv);
-+		mx25_tcq_enable_fifo_irq(priv);
-+	}
-+
-+	if (stat & MX25_ADCQ_SR_FDRY) {
-+		mx25_tcq_disable_fifo_irq(priv);
-+		ret = IRQ_WAKE_THREAD;
-+	}
-+
-+	regmap_update_bits(priv->regs, MX25_ADCQ_SR, MX25_ADCQ_SR_FRR |
-+			   MX25_ADCQ_SR_FUR | MX25_ADCQ_SR_FOR |
-+			   MX25_ADCQ_SR_PD,
-+			   MX25_ADCQ_SR_FRR | MX25_ADCQ_SR_FUR |
-+			   MX25_ADCQ_SR_FOR | MX25_ADCQ_SR_PD);
++	if (!ret && (tmp != config))
++		ret = regmap_write(chip->regmap, INA2XX_CONFIG, tmp);
++_err:
++	mutex_unlock(&chip->state_lock);
 +
 +	return ret;
 +}
 +
-+/* configure the state machine for a 4-wire touchscreen */
-+static int mx25_tcq_init(struct mx25_tcq_priv *priv)
-+{
-+	u32 tgcr;
-+	unsigned int ipg_div;
-+	unsigned int adc_period;
-+	unsigned int debounce_cnt;
-+	unsigned int settling_cnt;
-+	int itemct;
-+	int error;
 +
-+	regmap_read(priv->core_regs, MX25_TSC_TGCR, &tgcr);
-+	ipg_div = max_t(unsigned int, 4, MX25_TGCR_GET_ADCCLK(tgcr));
-+	adc_period = USEC_PER_SEC * ipg_div * 2 + 2;
-+	adc_period /= clk_get_rate(priv->clk) / 1000 + 1;
-+	debounce_cnt = DIV_ROUND_UP(priv->pen_debounce, adc_period * 8) - 1;
-+	settling_cnt = DIV_ROUND_UP(priv->settling_time, adc_period * 8) - 1;
-+
-+	/* Reset */
-+	regmap_write(priv->regs, MX25_ADCQ_CR,
-+		     MX25_ADCQ_CR_QRST | MX25_ADCQ_CR_FRST);
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
-+			   MX25_ADCQ_CR_QRST | MX25_ADCQ_CR_FRST, 0);
-+
-+	/* up to 128 * 8 ADC clocks are possible */
-+	if (debounce_cnt > 127)
-+		debounce_cnt = 127;
-+
-+	/* up to 255 * 8 ADC clocks are possible */
-+	if (settling_cnt > 255)
-+		settling_cnt = 255;
-+
-+	error = imx25_setup_queue_4wire(priv, settling_cnt, &itemct);
-+	if (error)
-+		return error;
-+
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
-+			   MX25_ADCQ_CR_LITEMID_MASK | MX25_ADCQ_CR_WMRK_MASK,
-+			   MX25_ADCQ_CR_LITEMID(itemct - 1) |
-+			   MX25_ADCQ_CR_WMRK(priv->expected_samples - 1));
-+
-+	/* setup debounce count */
-+	regmap_update_bits(priv->core_regs, MX25_TSC_TGCR,
-+			   MX25_TGCR_PDBTIME_MASK,
-+			   MX25_TGCR_PDBTIME(debounce_cnt));
-+
-+	/* enable debounce */
-+	regmap_update_bits(priv->core_regs, MX25_TSC_TGCR, MX25_TGCR_PDBEN,
-+			   MX25_TGCR_PDBEN);
-+	regmap_update_bits(priv->core_regs, MX25_TSC_TGCR, MX25_TGCR_PDEN,
-+			   MX25_TGCR_PDEN);
-+
-+	/* enable the engine on demand */
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_QSM_MASK,
-+			   MX25_ADCQ_CR_QSM_FQS);
-+
-+	/* Enable repeat and repeat wait */
-+	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
-+			   MX25_ADCQ_CR_RPT | MX25_ADCQ_CR_RWAIT_MASK,
-+			   MX25_ADCQ_CR_RPT |
-+			   MX25_ADCQ_CR_RWAIT(MX25_TSC_REPEAT_WAIT));
-+
-+	return 0;
++#define INA2XX_CHAN(_type, _index, _address) { \
++	.type = (_type), \
++	.address = (_address), \
++	.indexed = 1, \
++	.channel = (_index), \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
++				   BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
++	.scan_index = (_index), \
++	.scan_type = { \
++		.sign = 'u', \
++		.realbits = 16, \
++		.storagebits = 16, \
++		.endianness = IIO_BE, \
++	} \
 +}
 +
-+static int mx25_tcq_parse_dt(struct platform_device *pdev,
-+			     struct mx25_tcq_priv *priv)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	u32 wires;
-+	int error;
-+
-+	/* Setup defaults */
-+	priv->pen_threshold = 500;
-+	priv->sample_count = 3;
-+	priv->pen_debounce = 1000000;
-+	priv->settling_time = 250000;
-+
-+	error = of_property_read_u32(np, "fsl,wires", &wires);
-+	if (error) {
-+		dev_err(&pdev->dev, "Failed to find fsl,wires properties\n");
-+		return error;
-+	}
-+
-+	if (wires == 4) {
-+		priv->mode = MX25_TS_4WIRE;
-+	} else {
-+		dev_err(&pdev->dev, "%u-wire mode not supported\n", wires);
-+		return -EINVAL;
-+	}
-+
-+	/* These are optional, we don't care about the return values */
-+	of_property_read_u32(np, "fsl,pen-threshold", &priv->pen_threshold);
-+	of_property_read_u32(np, "fsl,settling-time", &priv->settling_time);
-+	of_property_read_u32(np, "fsl,pen-debounce", &priv->pen_debounce);
-+
-+	return 0;
++/*
++ * Sampling Freq is a consequence of the integration times of
++ * the Voltage channels.
++ */
++#define INA2XX_CHAN_VOLTAGE(_index, _address) { \
++	.type = IIO_VOLTAGE, \
++	.address = (_address), \
++	.indexed = 1, \
++	.channel = (_index), \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++			      BIT(IIO_CHAN_INFO_INT_TIME), \
++	.scan_index = (_index), \
++	.scan_type = { \
++		.sign = 'u', \
++		.realbits = 16, \
++		.storagebits = 16, \
++		.endianness = IIO_BE, \
++	} \
 +}
 +
-+static int mx25_tcq_open(struct input_dev *idev)
-+{
-+	struct device *dev = &idev->dev;
-+	struct mx25_tcq_priv *priv = dev_get_drvdata(dev);
-+	int error;
-+
-+	error = clk_prepare_enable(priv->clk);
-+	if (error) {
-+		dev_err(dev, "Failed to enable ipg clock\n");
-+		return error;
-+	}
-+
-+	error = mx25_tcq_init(priv);
-+	if (error) {
-+		dev_err(dev, "Failed to init tcq\n");
-+		clk_disable_unprepare(priv->clk);
-+		return error;
-+	}
-+
-+	mx25_tcq_re_enable_touch_detection(priv);
-+
-+	return 0;
-+}
-+
-+static void mx25_tcq_close(struct input_dev *idev)
-+{
-+	struct mx25_tcq_priv *priv = input_get_drvdata(idev);
-+
-+	mx25_tcq_force_queue_stop(priv);
-+	mx25_tcq_disable_touch_irq(priv);
-+	mx25_tcq_disable_fifo_irq(priv);
-+	clk_disable_unprepare(priv->clk);
-+}
-+
-+static int mx25_tcq_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct input_dev *idev;
-+	struct mx25_tcq_priv *priv;
-+	struct mx25_tsadc *tsadc = dev_get_drvdata(pdev->dev.parent);
-+	struct resource *res;
-+	void __iomem *mem;
-+	int error;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+	priv->dev = dev;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	mem = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(mem))
-+		return PTR_ERR(mem);
-+
-+	error = mx25_tcq_parse_dt(pdev, priv);
-+	if (error)
-+		return error;
-+
-+	priv->regs = devm_regmap_init_mmio(dev, mem, &mx25_tcq_regconfig);
-+	if (IS_ERR(priv->regs)) {
-+		dev_err(dev, "Failed to initialize regmap\n");
-+		return PTR_ERR(priv->regs);
-+	}
-+
-+	priv->irq = platform_get_irq(pdev, 0);
-+	if (priv->irq <= 0) {
-+		dev_err(dev, "Failed to get IRQ\n");
-+		return priv->irq;
-+	}
-+
-+	idev = devm_input_allocate_device(dev);
-+	if (!idev) {
-+		dev_err(dev, "Failed to allocate input device\n");
-+		return -ENOMEM;
-+	}
-+
-+	idev->name = mx25_tcq_name;
-+	input_set_capability(idev, EV_KEY, BTN_TOUCH);
-+	input_set_abs_params(idev, ABS_X, 0, 0xfff, 0, 0);
-+	input_set_abs_params(idev, ABS_Y, 0, 0xfff, 0, 0);
-+
-+	idev->id.bustype = BUS_HOST;
-+	idev->open = mx25_tcq_open;
-+	idev->close = mx25_tcq_close;
-+
-+	priv->idev = idev;
-+	input_set_drvdata(idev, priv);
-+
-+	priv->core_regs = tsadc->regs;
-+	if (!priv->core_regs)
-+		return -EINVAL;
-+
-+	priv->clk = tsadc->clk;
-+	if (!priv->clk)
-+		return -EINVAL;
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	error = devm_request_threaded_irq(dev, priv->irq, mx25_tcq_irq,
-+					  mx25_tcq_irq_thread, 0, pdev->name,
-+					  priv);
-+	if (error) {
-+		dev_err(dev, "Failed requesting IRQ\n");
-+		return error;
-+	}
-+
-+	error = input_register_device(idev);
-+	if (error) {
-+		dev_err(dev, "Failed to register input device\n");
-+		return error;
-+	}
-+
-+	return 0;
-+}
-+
-+static struct platform_driver mx25_tcq_driver = {
-+	.driver		= {
-+		.name	= "mx25-tcq",
-+		.of_match_table = mx25_tcq_ids,
-+	},
-+	.probe		= mx25_tcq_probe,
++static const struct iio_chan_spec ina2xx_channels[] = {
++	INA2XX_CHAN_VOLTAGE(0, INA2XX_SHUNT_VOLTAGE),
++	INA2XX_CHAN_VOLTAGE(1, INA2XX_BUS_VOLTAGE),
++	INA2XX_CHAN(IIO_CURRENT, 2, INA2XX_CURRENT),
++	INA2XX_CHAN(IIO_POWER, 3, INA2XX_POWER),
++	IIO_CHAN_SOFT_TIMESTAMP(4),
 +};
-+module_platform_driver(mx25_tcq_driver);
 +
-+MODULE_DESCRIPTION("TS input driver for Freescale mx25");
-+MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
++static int ina2xx_work_buffer(struct iio_dev *indio_dev)
++{
++	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
++	unsigned short data[8];
++	int bit, ret, i = 0;
++	unsigned long buffer_us, elapsed_us;
++	s64 time_a, time_b;
++	unsigned int alert;
++
++	time_a = iio_get_time_ns();
++
++	/*
++	 * Because the timer thread and the chip conversion clock
++	 * are asynchronous, the period difference will eventually
++	 * result in reading V[k-1] again, or skip V[k] at time Tk.
++	 * In order to resync the timer with the conversion process
++	 * we check the ConVersionReadyFlag.
++	 * On hardware that supports using the ALERT pin to toggle a
++	 * GPIO a triggered buffer could be used instead.
++	 * For now, we pay for that extra read of the ALERT register
++	 */
++	do {
++		ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
++				  &alert);
++		if (ret < 0)
++			return ret;
++
++		alert &= INA266_CVRF;
++		trace_printk("Conversion ready: %d\n", !!alert);
++
++	} while (!alert);
++
++	/*
++	 * Single register reads: bulk_read will not work with ina226
++	 * as there is no auto-increment of the address register for
++	 * data length longer than 16bits.
++	 */
++	for_each_set_bit(bit, indio_dev->active_scan_mask,
++			 indio_dev->masklength) {
++		unsigned int val;
++
++		ret = regmap_read(chip->regmap,
++				  INA2XX_SHUNT_VOLTAGE + bit, &val);
++		if (ret < 0)
++			return ret;
++
++		data[i++] = val;
++	}
++
++	time_b = iio_get_time_ns();
++
++	iio_push_to_buffers_with_timestamp(indio_dev,
++					   (unsigned int *)data, time_a);
++
++	buffer_us = (unsigned long)(time_b - time_a) / 1000;
++	elapsed_us = (unsigned long)(time_a - chip->prev_ns) / 1000;
++
++	trace_printk("uS: elapsed: %lu, buf: %lu\n", elapsed_us, buffer_us);
++
++	chip->prev_ns = time_a;
++
++	return buffer_us;
++};
++
++static int ina2xx_capture_thread(void *data)
++{
++	struct iio_dev *indio_dev = (struct iio_dev *)data;
++	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
++	unsigned int sampling_us = SAMPLING_PERIOD(chip);
++	int buffer_us;
++
++	/*
++	 * Poll a bit faster than the chip internal Fs, in case
++	 * we wish to sync with the conversion ready flag.
++	 */
++	sampling_us -= 200;
++
++	do {
++		buffer_us = ina2xx_work_buffer(indio_dev);
++		if (buffer_us < 0)
++			return buffer_us;
++
++		if (sampling_us > buffer_us)
++			udelay(sampling_us - buffer_us);
++
++	} while (!kthread_should_stop());
++
++	return 0;
++}
++
++int ina2xx_buffer_enable(struct iio_dev *indio_dev)
++{
++	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
++	unsigned int sampling_us = SAMPLING_PERIOD(chip);
++
++	trace_printk("Enabling buffer w/ scan_mask %02x, freq = %d, avg =%u\n",
++		     (unsigned int)(*indio_dev->active_scan_mask),
++		     1000000/sampling_us, chip->avg);
++
++	trace_printk("Expected work period: %u us\n", sampling_us);
++
++	chip->prev_ns = iio_get_time_ns();
++
++	chip->task = kthread_run(ina2xx_capture_thread, (void *)indio_dev,
++				 "ina2xx-%uus", sampling_us);
++
++	return PTR_ERR_OR_ZERO(chip->task);
++}
++
++int ina2xx_buffer_disable(struct iio_dev *indio_dev)
++{
++	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
++
++	if (chip->task) {
++		kthread_stop(chip->task);
++		chip->task = NULL;
++	}
++
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops ina2xx_setup_ops = {
++	.postenable = &ina2xx_buffer_enable,
++	.postdisable = &ina2xx_buffer_disable,
++};
++
++static int ina2xx_debug_reg(struct iio_dev *indio_dev,
++			    unsigned reg, unsigned writeval, unsigned *readval)
++{
++	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
++
++	if (!readval)
++		return regmap_write(chip->regmap, reg, writeval);
++
++	return regmap_read(chip->regmap, reg, readval);
++}
++
++/* Possible integration times for vshunt and vbus */
++static IIO_CONST_ATTR_INT_TIME_AVAIL \
++ ("0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
++
++static struct attribute *ina2xx_attributes[] = {
++	&iio_const_attr_integration_time_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ina2xx_attribute_group = {
++	.attrs = ina2xx_attributes,
++};
++
++static const struct iio_info ina2xx_info = {
++	.debugfs_reg_access = &ina2xx_debug_reg,
++	.read_raw = &ina2xx_read_raw,
++	.write_raw = &ina2xx_write_raw,
++	.attrs = &ina2xx_attribute_group,
++	.driver_module = THIS_MODULE,
++};
++
++/* Initialize the configuration and calibration registers. */
++static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
++{
++	u16 regval;
++	int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
++
++	if (ret < 0)
++		return ret;
++	/*
++	 * Set current LSB to 1mA, shunt is in uOhms
++	 * (equation 13 in datasheet). We hardcode a Current_LSB
++	 * of 1.0 x10-6. The only remaining parameter is RShunt.
++	 * There is no need to expose the CALIBRATION register
++	 * to the user for now.
++	 */
++	regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
++			    chip->rshunt);
++
++	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
++}
++
++static int ina2xx_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct ina2xx_chip_info *chip;
++	struct iio_dev *indio_dev;
++	struct iio_buffer *buffer;
++	int ret;
++	unsigned int val;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	chip = iio_priv(indio_dev);
++
++	chip->config = &ina2xx_config[id->driver_data];
++
++	if (of_property_read_u32(client->dev.of_node,
++				 "shunt-resistor", &val) < 0) {
++		struct ina2xx_platform_data *pdata =
++		    dev_get_platdata(&client->dev);
++
++		if (pdata)
++			val = pdata->shunt_uohms;
++		else
++			val = INA2XX_RSHUNT_DEFAULT;
++	}
++
++	if (val <= 0 || val > chip->config->calibration_factor)
++		return -ENODEV;
++
++	chip->rshunt = val;
++
++	mutex_init(&chip->state_lock);
++
++	/* This is only used for device removal purposes. */
++	i2c_set_clientdata(client, indio_dev);
++
++	indio_dev->name = id->name;
++	indio_dev->channels = ina2xx_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ina2xx_channels);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &ina2xx_info;
++	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
++
++	chip->regmap = devm_regmap_init_i2c(client, &ina2xx_regmap_config);
++	if (IS_ERR(chip->regmap)) {
++		dev_err(&client->dev, "failed to allocate register map\n");
++		return PTR_ERR(chip->regmap);
++	}
++
++	/* Patch the current config register with default. */
++	val = chip->config->config_default;
++
++	if (id->driver_data == ina226) {
++		ina226_set_average(chip, INA226_DEFAULT_AVG, &val);
++		ina226_set_int_time_vbus(chip, INA226_DEFAULT_IT, &val);
++		ina226_set_int_time_vshunt(chip, INA226_DEFAULT_IT, &val);
++	}
++
++	ret = ina2xx_init(chip, val);
++	if (ret < 0) {
++		dev_err(&client->dev, "error configuring the device: %d\n",
++			ret);
++		return -ENODEV;
++	}
++
++	buffer = devm_iio_kfifo_allocate(&indio_dev->dev);
++	if (!buffer)
++		return -ENOMEM;
++
++	indio_dev->setup_ops = &ina2xx_setup_ops;
++
++	iio_device_attach_buffer(indio_dev, buffer);
++
++	return iio_device_register(indio_dev);
++}
++
++
++static int ina2xx_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++
++	/* Powerdown */
++	return regmap_update_bits(chip->regmap, INA2XX_CONFIG,
++				  INA2XX_MODE_MASK, 0);
++}
++
++
++static const struct i2c_device_id ina2xx_id[] = {
++	{"ina219", ina219},
++	{"ina220", ina219},
++	{"ina226", ina226},
++	{"ina230", ina226},
++	{"ina231", ina226},
++	{}
++};
++
++MODULE_DEVICE_TABLE(i2c, ina2xx_id);
++
++static struct i2c_driver ina2xx_driver = {
++	.driver = {
++		   .name = KBUILD_MODNAME,
++	},
++	.probe = ina2xx_probe,
++	.remove = ina2xx_remove,
++	.id_table = ina2xx_id,
++};
++
++module_i2c_driver(ina2xx_driver);
++
++MODULE_AUTHOR("Marc Titinger <marc.titinger@baylibre.com>");
++MODULE_DESCRIPTION("Texas Instruments INA2XX ADC driver");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.6.2
+1.9.1
 
