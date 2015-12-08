@@ -1,144 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f50.google.com ([74.125.82.50]:37048 "EHLO
-	mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755243AbbLGJJr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Dec 2015 04:09:47 -0500
-Received: by wmww144 with SMTP id w144so141158095wmw.0
-        for <linux-iio@vger.kernel.org>; Mon, 07 Dec 2015 01:09:46 -0800 (PST)
-From: Marc Titinger <mtitinger@baylibre.com>
+Received: from mail-pf0-f170.google.com ([209.85.192.170]:36803 "EHLO
+	mail-pf0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756957AbbLHQtC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Dec 2015 11:49:02 -0500
+From: Anshul Garg <aksgarg1989@gmail.com>
 To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux@roeck-us.net, jdelvare@suse.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	lm-sensors@lm-sensors.org, Marc Titinger <mtitinger@baylibre.com>
-Subject: [PATCH v3 2/2] iio: ina2xx: provide a sysfs parameter to allow async readout of the ADCs
-Date: Mon,  7 Dec 2015 10:09:35 +0100
-Message-Id: <1449479375-4061-3-git-send-email-mtitinger@baylibre.com>
-In-Reply-To: <1449479375-4061-1-git-send-email-mtitinger@baylibre.com>
-References: <1449479375-4061-1-git-send-email-mtitinger@baylibre.com>
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Anshul Garg <aksgarg1989@gmail.com>
+Subject: [PATCH] iio/inkern.c Use list_for_each_entry_safe
+Date: Tue,  8 Dec 2015 08:42:56 -0800
+Message-Id: <1449592976-34591-1-git-send-email-aksgarg1989@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This can lead to repeated or skipped samples depending on the clock beat
-between the capture thread and the chip sampling clock, but will also spare
-reading/waiting for the Capture Ready Flag and improve the available i2c
-bandwidth for reading measurements.
+Use list_for_each_entry_safe instead of list_for_each_safe
+and list_entry call.
 
-Output of iio_info:
-...snip...
-4 device-specific attributes found:
-  attr 0: in_oversampling_ratio value: 4
-  attr 1: in_allow_async_readout value: 0
-  attr 2: integration_time_available value: 140 204 332 588 1100 2116...
-  attr 3: in_sampling_frequency value: 114
-
-Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+Signed-off-by: Anshul Garg <aksgarg1989@gmail.com>
 ---
- drivers/iio/adc/ina2xx-adc.c | 54 ++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 45 insertions(+), 9 deletions(-)
+ drivers/iio/inkern.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 0e7c474..615c203 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -111,6 +111,7 @@ struct ina2xx_chip_info {
- 	s64 prev_ns;	/* track buffer capture time, check for underruns*/
- 	int int_time_vbus; /* Bus voltage integration time uS */
- 	int int_time_vshunt; /* Shunt voltage integration time uS */
-+	bool allow_async_readout;
- };
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index c8bad3c..f764eb6 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -61,12 +61,10 @@ EXPORT_SYMBOL_GPL(iio_map_array_register);
+ int iio_map_array_unregister(struct iio_dev *indio_dev)
+ {
+ 	int ret = -ENODEV;
+-	struct iio_map_internal *mapi;
+-	struct list_head *pos, *tmp;
++	struct iio_map_internal *mapi, *next;
  
- static const struct ina2xx_config ina2xx_config[] = {
-@@ -326,6 +327,33 @@ _err:
- }
- 
- 
-+static ssize_t ina2xx_allow_async_readout_show(struct device *dev,
-+					   struct device_attribute *attr,
-+					   char *buf)
-+{
-+	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
-+
-+	return sprintf(buf, "%d\n", chip->allow_async_readout);
-+}
-+
-+static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf, size_t len)
-+{
-+	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
-+	bool val;
-+	int ret;
-+
-+	ret = strtobool((const char *) buf, &val);
-+	if (ret)
-+		return ret;
-+
-+	chip->allow_async_readout = val;
-+
-+	return len;
-+}
-+
-+
- #define INA2XX_CHAN(_type, _index, _address) { \
- 	.type = (_type), \
- 	.address = (_address), \
-@@ -392,16 +420,17 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 	 * GPIO a triggered buffer could be used instead.
- 	 * For now, we pay for that extra read of the ALERT register
- 	 */
--	do {
--		ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
--				  &alert);
--		if (ret < 0)
--			return ret;
-+	if (!chip->allow_async_readout)
-+		do {
-+			ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
-+					  &alert);
-+			if (ret < 0)
-+				return ret;
- 
--		alert &= INA266_CVRF;
--		trace_printk("Conversion ready: %d\n", !!alert);
-+			alert &= INA266_CVRF;
-+			trace_printk("Conversion ready: %d\n", !!alert);
- 
--	} while (!alert);
-+		} while (!alert);
- 
- 	/*
- 	 * Single register reads: bulk_read will not work with ina226
-@@ -446,7 +475,8 @@ static int ina2xx_capture_thread(void *data)
- 	 * Poll a bit faster than the chip internal Fs, in case
- 	 * we wish to sync with the conversion ready flag.
- 	 */
--	sampling_us -= 200;
-+	if (!chip->allow_async_readout)
-+		sampling_us -= 200;
- 
- 	do {
- 		buffer_us = ina2xx_work_buffer(indio_dev);
-@@ -471,6 +501,7 @@ int ina2xx_buffer_enable(struct iio_dev *indio_dev)
- 		     1000000/sampling_us, chip->avg);
- 
- 	trace_printk("Expected work period: %u us\n", sampling_us);
-+	trace_printk("Async readout mode: %d\n", chip->allow_async_readout);
- 
- 	chip->prev_ns = iio_get_time_ns();
- 
-@@ -512,7 +543,12 @@ static int ina2xx_debug_reg(struct iio_dev *indio_dev,
- static IIO_CONST_ATTR_INT_TIME_AVAIL \
-  ("0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
- 
-+static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
-+		       ina2xx_allow_async_readout_show,
-+		       ina2xx_allow_async_readout_store, 0);
-+
- static struct attribute *ina2xx_attributes[] = {
-+	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
- 	&iio_const_attr_integration_time_available.dev_attr.attr,
- 	NULL,
- };
+ 	mutex_lock(&iio_map_list_lock);
+-	list_for_each_safe(pos, tmp, &iio_map_list) {
+-		mapi = list_entry(pos, struct iio_map_internal, l);
++	list_for_each_entry_safe(mapi, next, &iio_map_listi, list) {
+ 		if (indio_dev == mapi->indio_dev) {
+ 			list_del(&mapi->l);
+ 			kfree(mapi);
 -- 
-1.9.1
+1.7.9.5
+
+
+---
+This email has been checked for viruses by Avast antivirus software.
+https://www.avast.com/antivirus
 
