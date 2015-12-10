@@ -1,35 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:24339 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751388AbbLILlY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 9 Dec 2015 06:41:24 -0500
-From: Adriana Reus <adriana.reus@intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Adriana Reus <adriana.reus@intel.com>
-Subject: [PATCH 0/3] iio: light: us5218d: Add interrupt support and some tidying up
-Date: Wed,  9 Dec 2015 13:40:41 +0200
-Message-Id: <1449661244-18692-1-git-send-email-adriana.reus@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mranostay@gmail.com>
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: Matt Ranostay <mranostay@gmail.com>
+Subject: [RFC v1 0/3] iio: chemical: add Atlas pH-SM sensor support
+Date: Thu, 10 Dec 2015 00:10:45 -0800
+Message-Id: <1449735048-16668-1-git-send-email-mranostay@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The first patch fixes an inconsistency that I've missed in the px_enable and
-als enable status variables.
-The second patch adds interrupt support for proximity. It's the same with what
-I previously sent (https://lkml.org/lkml/2015/11/29/83), but with the suggested
-changes. I chose to resend it because it needs to go together with the first one
-because there is a particular workflow case involving event enabling that can be
-affected by that bug.
-And lastly, some refactoring to improve readability regarding the read raw function. 
+* Initial revision of a driver that enables support for the Atlas
+  Scientific pH-SM chemical sensor
+* Add new IIO_PH iio_chan_type
+* Add Atlas Scientific LLC devicetree vendor id
 
+NOTE: Not tested on actual hardware yet. Hence the RFC prefix, just want
+      early feedback.
 
-Adriana Reus (3):
-  iio: light: us5182d: Fix enable status inconcistency
-  iio: light: us5182d: Add interrupt support and events
-  iio: light: us5182d: Refactor read_raw function
+Matt Ranostay (3):
+  devicetree: add Atlas Scientific LLC vendor prefix
+  iio: ph: add IIO_PH channel type
+  iio: chemical: add Atlas pH-SM sensor support
 
- drivers/iio/light/us5182d.c | 445 ++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 363 insertions(+), 82 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio            |   6 +
+ .../bindings/iio/chemical/atlas,ph-sm.txt          |  22 ++
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ drivers/iio/chemical/Kconfig                       |  13 +
+ drivers/iio/chemical/Makefile                      |   1 +
+ drivers/iio/chemical/atlas-ph-sensor.c             | 385 +++++++++++++++++++++
+ drivers/iio/industrialio-core.c                    |   1 +
+ include/uapi/linux/iio/types.h                     |   1 +
+ 8 files changed, 430 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+ create mode 100644 drivers/iio/chemical/atlas-ph-sensor.c
 
 -- 
 1.9.1
-
