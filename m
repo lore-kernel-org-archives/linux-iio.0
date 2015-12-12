@@ -1,86 +1,501 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55282 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55354 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751869AbbLLLvU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 06:51:20 -0500
-Subject: Re: read /dev/iio:device0 return -1 (Invalid argument)
-To: Julio Cruz <jcsistemas2001@gmail.com>, linux-iio@vger.kernel.org
-References: <CAAn_ec90t=N1e1m8aUcBZRb5wsRwiz56WUzFCWqTrVHHhcAuBA@mail.gmail.com>
+	with ESMTP id S1752645AbbLLMGN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 07:06:13 -0500
+Subject: Re: [RFC v1 3/3] iio: chemical: add Atlas pH-SM sensor support
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1449735048-16668-1-git-send-email-mranostay@gmail.com>
+ <1449735048-16668-4-git-send-email-mranostay@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <566C0A32.3030104@kernel.org>
-Date: Sat, 12 Dec 2015 11:51:14 +0000
+Message-ID: <566C0DB3.8080105@kernel.org>
+Date: Sat, 12 Dec 2015 12:06:11 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAAn_ec90t=N1e1m8aUcBZRb5wsRwiz56WUzFCWqTrVHHhcAuBA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1449735048-16668-4-git-send-email-mranostay@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/12/15 08:36, Julio Cruz wrote:
-> Hi,
+On 10/12/15 08:10, Matt Ranostay wrote:
+> Add support for the Atlas Scientific pH-SM chemical sensor that can
+> detect pH levels of solutions in the range of 0-14.
 > 
-> I get an error trying to read /dev/iio:device0 in a custom application
-> (C/C++), however in a terminal the command "cat /dev/iio_device0"
-> return data.
-> 
-> Below the procedure:
-> 
-> - enable channels
-> - setup trigger
-> - setup buffer lenght
-> - enable buffer (the SPI interrupt is setup properly and all the
-> trigger handler are done)
-> - read /dev/iio_device0
-> 
-> It's a SPI device acquiring 27 bytes @ 1KHz.
-Reading this again after point 4 below this makes me ask the question
-what are you pushing into the buffer? 27 bytes seems unlikely given
-the alignment requirements.
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+This looks like it has a fairly standard dataready interrupt and no
+hardware buffering.  Hence it should be using a trigger to allow other
+sensors to be captured synced with it.  Skipping a trigger is fine
+if there is a hardware buffer involved or some other reason why the trigger
+is less than meaningful.  Here I think you should have one as it expands
+possible usecases and makes things more flexible.
 
-> 
-> Results:
-> 
-> 1. Custom application (based on generic_buffer.c): function 'read'
-> return -1 and strerror(errno) return "Invalid argument"
-> 2. iio_readdev (libiio): show the message "Unable to refill buffer:
-> Input/output error"
-> 3. In terminal, the command "cat /dev/iio_device0" show values (no
-> readable) while the buffer is enable.
-> 
-> Any suggestion?
-> 
-> Thanks for your help!
-Sounds like you are ultimately getting that error from a call to
- iio_buffer_read_first_n_outer
-so what can return -EINVAL (which is -1)?
+Interestingly I can't find any reference in the (admittedly very pretty)
+datasheet to how fast thing this runs.
 
-1) Buffer not being allocated (seems unlikely - that's really just to
-pick up on bugs in side the driver)
-2) read_first_n from the buffer not supplied - again not likely.
-3) wait_event_interruptible returns it - unlikely.
-4) read_first_n which comes from the buffer implementation is returning -EINVAL
-This last one seems most likely.
-
-So I am guessing you are using the kfifo buffer (most common option).
-Reasons this can return -EINVAL are
-1) kfifo not initialized (unlikely)
-2) Read length is less than the buffer element size (which is the full scan storage
-size)
-3) an error from kfifo_to_user (unlikely)
-
-So I'm guessing you are reading too small an amount of data. (tricky to chase
-down without adding further printk's etc to the relevant bits of kernel code)
-If I've 'guessed' right, interesting question is how this came about.
-How many bytes is it trying to read?
-
-Note that IIO has strict alignment requirements - any element must be aligned
-to it's own size and this will in some case add lots of padding.  The full buffer
-element will be a multiple of the largest element in the scan.  If you have a timestamp
-for example at 64bits the whole buffer element will be a multiple of 8bytes.
+Otherwise, looks like you got some thorough reviews already so I'll
+take a proper look at a new version.
 
 Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+>  .../bindings/iio/chemical/atlas,ph-sm.txt          |  22 ++
+>  drivers/iio/chemical/Kconfig                       |  13 +
+>  drivers/iio/chemical/Makefile                      |   1 +
+>  drivers/iio/chemical/atlas-ph-sensor.c             | 385 +++++++++++++++++++++
+>  4 files changed, 421 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+>  create mode 100644 drivers/iio/chemical/atlas-ph-sensor.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+> new file mode 100644
+> index 0000000..a060fd1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+> @@ -0,0 +1,22 @@
+> +* Atlas Scientific pH-SM OEM sensor
+> +
+> +http://www.atlas-scientific.com/_files/_datasheets/_oem/pH_oem_datasheet.pdf
+> +
+> +Required properties:
+> +
+> +  - compatible: must be "atlas,ph-sm"
+> +  - reg: the I2C address of the sensor
+> +  - interrupt-parent: should be the phandle for the interrupt controller
+> +  - interrupts : the sole interrupt generated by the device
+> +
+> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+> +  node bindings.
+> +
+> +Example:
+> +
+> +atlas@65 {
+> +	compatible = "atlas,ph-sm";
+> +	reg = <0x65>;
+> +	interrupt-parent = <&gpio1>;
+> +	interrupts = <16 2>;
+> +};
+> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+> index 3061b72..753eab6 100644
+> --- a/drivers/iio/chemical/Kconfig
+> +++ b/drivers/iio/chemical/Kconfig
+> @@ -4,6 +4,19 @@
+>  
+>  menu "Chemical Sensors"
+>  
+> +config ATLAS_PH_SENSOR
+> +	tristate "Atlas Scientific OEM pH-SM sensor"
+> +	depends on I2C
+> +	select REGMAP_I2C
+> +	select IIO_BUFFER
+> +	select IIO_KFIFO_BUF
+> +	help
+> +	 Say Y here to build I2C interface support for the Atlas
+> +	 Scientific OEM pH-SM sensor.
+> +
+> +	 To compile this driver as module, choose M here: the
+> +	 module will be called atlas-ph-sensor
+> +
+>  config VZ89X
+>  	tristate "SGX Sensortech MiCS VZ89X VOC sensor"
+>  	depends on I2C
+> diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
+> index 7292f2d..e9eb852 100644
+> --- a/drivers/iio/chemical/Makefile
+> +++ b/drivers/iio/chemical/Makefile
+> @@ -3,4 +3,5 @@
+>  #
+>  
+>  # When adding new entries keep the list in alphabetical order
+> +obj-$(CONFIG_ATLAS_PH_SENSOR)	+= atlas-ph-sensor.o
+>  obj-$(CONFIG_VZ89X)		+= vz89x.o
+> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+> new file mode 100644
+> index 0000000..6c6f261
+> --- /dev/null
+> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+> @@ -0,0 +1,385 @@
+> +/*
+> + * atlas-ph-sensor.c - Support for Atlas Scientific OEM pH-SM sensor
+> + *
+> + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + *
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/delay.h>
+> +#include <linux/mutex.h>
+> +#include <linux/err.h>
+> +#include <linux/irq.h>
+> +#include <linux/gpio.h>
+> +#include <linux/i2c.h>
+> +#include <linux/regmap.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/kfifo_buf.h>
+> +#include <linux/pm_runtime.h>
+> +
+> +#define ATLAS_REGMAP_NAME	"atlas_ph_regmap"
+> +#define	ATLAS_DRV_NAME		"atlas_ph"
+> +
+> +#define ATLAS_REG_DEV_TYPE		0x00
+> +#define ATLAS_REG_DEV_VERSION		0x01
+> +
+> +#define ATLAS_REG_INT_CONTROL		0x04
+> +#define ATLAS_REG_INT_CONTROL_EN	BIT(2)
+> +
+> +#define ATLAS_REG_PWR_CONTROL		0x06
+> +
+> +#define ATLAS_REG_TEMP_DATA		0x0e
+> +#define ATLAS_REG_PH_DATA		0x16
+> +
+> +#define ATLAS_PH_INT_TIME_IN_US		450000
+> +
+> +struct atlas_data {
+> +	struct i2c_client *client;
+> +	struct regmap *regmap;
+> +
+> +	__be32 buffer[3]; /* 32-bit pH data + 64-bit timestamp */
+> +};
+> +
+> +static bool max30100_is_volatile_reg(struct device *dev, unsigned int reg)
+> +{
+> +	if (reg == ATLAS_REG_INT_CONTROL)
+> +		return true;
+> +
+> +	return false;
+> +}
+> +
+> +static const struct regmap_config atlas_regmap_config = {
+> +	.name = ATLAS_REGMAP_NAME,
+> +
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +
+> +	.volatile_reg = max30100_is_volatile_reg,
+> +	.max_register = ATLAS_REG_PH_DATA + 4,
+> +	.cache_type = REGCACHE_FLAT,
+> +
+> +};
+> +
+> +static const struct iio_chan_spec atlas_channels[] = {
+> +	{
+> +		.type = IIO_PH,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 32,
+> +			.storagebits = 32,
+> +			.endianness = IIO_BE,
+> +		},
+> +	},
+> +	{
+> +		.type = IIO_TEMP,
+> +		.address = ATLAS_REG_TEMP_DATA,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +
+> +		.output = 1,
+> +		.scan_index = -1
+> +	},
+> +};
+> +
+> +#ifdef CONFIG_PM
+> +static int atlas_set_powermode(struct atlas_data *data, int on)
+> +{
+> +	return regmap_write(data->regmap, ATLAS_REG_PWR_CONTROL, on);
+> +}
+> +#else
+> +static int atlas_set_powermode(struct atlas_data *data, int on)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+> +static int atlas_set_interrupt(struct atlas_data *data, bool state)
+> +{
+> +	return regmap_update_bits(data->regmap, ATLAS_REG_INT_CONTROL,
+> +				  ATLAS_REG_INT_CONTROL_EN,
+> +				  state ? ATLAS_REG_INT_CONTROL_EN : 0);
+> +}
+> +
+> +static int atlas_buffer_postenable(struct iio_dev *indio_dev)
+> +{
+> +	struct atlas_data *data = iio_priv(indio_dev);
+> +
+> +	pm_runtime_get_sync(&data->client->dev);
+> +
+> +	return atlas_set_interrupt(data, true);
+> +}
+> +
+> +static int atlas_buffer_predisable(struct iio_dev *indio_dev)
+> +{
+> +	struct atlas_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = atlas_set_interrupt(data, false);
+> +	if (ret)
+> +		return ret;
+> +
+> +	pm_runtime_mark_last_busy(&data->client->dev);
+> +	return pm_runtime_put_autosuspend(&data->client->dev);
+> +}
+> +
+> +static const struct iio_buffer_setup_ops atlas_buffer_setup_ops = {
+> +	.postenable = atlas_buffer_postenable,
+> +	.predisable = atlas_buffer_predisable,
+> +};
+> +
+> +static irqreturn_t atlas_interrupt_handler(int irq, void *private)
+> +{
+> +	struct iio_dev *indio_dev = private;
+> +	struct atlas_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = i2c_smbus_read_i2c_block_data(data->client, ATLAS_REG_PH_DATA,
+> +				sizeof(data->buffer[0]), (u8 *) &data->buffer);
+> +	if (!ret)
+> +		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> +				iio_get_time_ns());
+> +
+> +	/* re-enable interrupt */
+> +	atlas_set_interrupt(data, true);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int atlas_read_ph_measurement(struct atlas_data *data, __be32 *val)
+> +{
+> +	struct device *dev = &data->client->dev;
+> +	int suspended = pm_runtime_suspended(dev);
+> +	int ret;
+> +
+> +	ret = pm_runtime_get_sync(dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (suspended)
+> +		usleep_range(ATLAS_PH_INT_TIME_IN_US,
+> +			     ATLAS_PH_INT_TIME_IN_US + 100000);
+> +
+> +	ret = i2c_smbus_read_i2c_block_data(data->client, ATLAS_REG_PH_DATA,
+> +					    sizeof(*val), (u8 *) val);
+> +
+> +	pm_runtime_mark_last_busy(dev);
+> +	pm_runtime_put_autosuspend(dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int atlas_read_raw(struct iio_dev *indio_dev,
+> +			  struct iio_chan_spec const *chan,
+> +			  int *val, int *val2, long mask)
+> +{
+> +	struct atlas_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW: {
+> +		int ret;
+> +		__be32 reg;
+> +
+> +		mutex_lock(&indio_dev->mlock);
+> +
+> +		if (iio_buffer_enabled(indio_dev)) {
+> +			ret = -EINVAL;
+> +			goto error_busy;
+> +		}
+> +
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			ret = regmap_bulk_read(data->regmap, chan->address,
+> +					      (u8 *) &reg, sizeof(reg));
+> +			break;
+> +		case IIO_PH:
+> +			ret = atlas_read_ph_measurement(data, &reg);
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +		}
+> +
+> +		if (!ret) {
+> +			*val = be32_to_cpu(reg);
+> +			ret = IIO_VAL_INT;
+> +		}
+> +
+> +error_busy:
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return ret;
+> +	}
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0; /* 0.001 */
+> +		*val2 = 1000;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int atlas_write_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int val, int val2, long mask)
+> +{
+> +	struct atlas_data *data = iio_priv(indio_dev);
+> +	__be32 reg = cpu_to_be32(val);
+> +
+> +	if (val2 != 0)
+> +		return -EINVAL;
+> +
+> +	if (mask != IIO_CHAN_INFO_RAW || chan->type != IIO_TEMP)
+> +		return -EINVAL;
+> +
+> +	return regmap_bulk_write(data->regmap, chan->address, &reg, 4);
+> +}
+> +
+> +static const struct iio_info atlas_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = atlas_read_raw,
+> +	.write_raw = atlas_write_raw,
+> +};
+> +
+> +static int atlas_probe(struct i2c_client *client,
+> +		       const struct i2c_device_id *id)
+> +{
+> +	struct atlas_data *data;
+> +	struct iio_buffer *buffer;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	buffer = devm_iio_kfifo_allocate(&client->dev);
+> +	if (!buffer)
+> +		return -ENOMEM;
+> +
+> +	iio_device_attach_buffer(indio_dev, buffer);
+> +
+> +	indio_dev->info = &atlas_info;
+> +	indio_dev->name = ATLAS_DRV_NAME;
+> +	indio_dev->channels = atlas_channels;
+> +	indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
+> +	indio_dev->setup_ops = &atlas_buffer_setup_ops;
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +
+> +	data->regmap = devm_regmap_init_i2c(client, &atlas_regmap_config);
+> +	if (IS_ERR(data->regmap)) {
+> +		dev_err(&client->dev, "regmap initialization failed\n");
+> +		return PTR_ERR(data->regmap);
+> +	}
+> +
+> +	ret = pm_runtime_set_active(&client->dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (client->irq <= 0) {
+> +		dev_err(&client->dev, "no valid irq defined\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = devm_request_threaded_irq(&client->dev, client->irq,
+> +					NULL, atlas_interrupt_handler,
+> +					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> +					"atlas_event",
+> +					indio_dev);
+> +	if (ret) {
+> +		dev_err(&client->dev, "request irq (%d) failed\n", client->irq);
+> +		return ret;
+> +	}
+> +
+> +	pm_runtime_enable(&client->dev);
+> +	pm_runtime_set_autosuspend_delay(&client->dev, 2500);
+> +	pm_runtime_use_autosuspend(&client->dev);
+> +
+> +	ret = atlas_set_powermode(data, 0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return iio_device_register(indio_dev);
+> +}
+> +
+> +static int atlas_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct atlas_data *data = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	pm_runtime_disable(&client->dev);
+> +	pm_runtime_set_suspended(&client->dev);
+> +
+> +	return atlas_set_powermode(data, 0);
+> +}
+> +
+> +#ifdef CONFIG_PM
+> +static int atlas_runtime_suspend(struct device *dev)
+> +{
+> +	struct atlas_data *data =
+> +		     iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+> +
+> +	return atlas_set_powermode(data, 0);
+> +}
+> +
+> +static int atlas_runtime_resume(struct device *dev)
+> +{
+> +	struct atlas_data *data =
+> +		     iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+> +
+> +	return atlas_set_powermode(data, 1);
+> +}
+> +#endif
+> +
+> +static const struct dev_pm_ops atlas_pm_ops = {
+> +	SET_RUNTIME_PM_OPS(atlas_runtime_suspend,
+> +			   atlas_runtime_resume, NULL)
+> +};
+> +
+> +static const struct i2c_device_id atlas_id[] = {
+> +	{ "atlas-ph-sm", 0 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, atlas_id);
+> +
+> +static const struct of_device_id atlas_dt_ids[] = {
+> +	{ .compatible = "atlas,ph-sm" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, atlas_dt_ids);
+> +
+> +static struct i2c_driver atlas_driver = {
+> +	.driver = {
+> +		.name	= ATLAS_DRV_NAME,
+> +		.of_match_table	= of_match_ptr(atlas_dt_ids),
+> +		.pm	= &atlas_pm_ops,
+> +	},
+> +	.probe		= atlas_probe,
+> +	.remove		= atlas_remove,
+> +	.id_table	= atlas_id,
+> +};
+> +module_i2c_driver(atlas_driver);
+> +
+> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+> +MODULE_DESCRIPTION("Atlas Scientific pH-SM sensor");
+> +MODULE_LICENSE("GPL");
 > 
 
