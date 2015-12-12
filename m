@@ -1,97 +1,29 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55446 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752210AbbLLMYq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 07:24:46 -0500
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <566C1208.4080405@kernel.org>
+References: <1449332995-21695-1-git-send-email-jic23@kernel.org>
+	<566C1208.4080405@kernel.org>
+Date: Sat, 12 Dec 2015 14:30:16 +0200
+Message-ID: <CAEnQRZAfoDf6Oyzq4gamg9U-Bu5cUnp104vYgOMbmsFF=dVvuQ@mail.gmail.com>
 Subject: Re: [PATCH] iio:configfs: Introduce iio/configfs.h to provide a
  location for the configfs_subsystem
-To: linux-iio@vger.kernel.org
-References: <1449332995-21695-1-git-send-email-jic23@kernel.org>
-Cc: daniel.baluta@intel.com, lars@metafoo.de
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <566C1208.4080405@kernel.org>
-Date: Sat, 12 Dec 2015 12:24:40 +0000
-MIME-Version: 1.0
-In-Reply-To: <1449332995-21695-1-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Daniel Baluta <daniel.baluta@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/12/15 16:29, Jonathan Cameron wrote:
-> This exported element needs to be accesible to all drivers using configfs
-> within IIO.  Previously it was in the sw_trig.h file which only convered one
-> such usecase.  This also fixes a sparse warning as it is now in a header
-> that makes sense to include from industrialio-configfs.c
-> 
-> Signed-off-by: Jonathan Cameron < jic23@kernel.org>
-I guess no one cares or they are all happy with this :)
-Applied.
+On Sat, Dec 12, 2015 at 2:24 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 05/12/15 16:29, Jonathan Cameron wrote:
+>> This exported element needs to be accesible to all drivers using configfs
+>> within IIO.  Previously it was in the sw_trig.h file which only convered one
+>> such usecase.  This also fixes a sparse warning as it is now in a header
+>> that makes sense to include from industrialio-configfs.c
+>>
+>> Signed-off-by: Jonathan Cameron < jic23@kernel.org>
+> I guess no one cares or they are all happy with this :)
+> Applied.
 
-J
-> ---
->  drivers/iio/industrialio-configfs.c   |  1 +
->  drivers/iio/industrialio-sw-trigger.c |  1 +
->  include/linux/iio/configfs.h          | 15 +++++++++++++++
->  include/linux/iio/sw_trigger.h        |  1 -
->  4 files changed, 17 insertions(+), 1 deletion(-)
->  create mode 100644 include/linux/iio/configfs.h
-> 
-> diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
-> index 83563dd7fcf4..45ce2bc47180 100644
-> --- a/drivers/iio/industrialio-configfs.c
-> +++ b/drivers/iio/industrialio-configfs.c
-> @@ -15,6 +15,7 @@
->  #include <linux/slab.h>
->  
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/configfs.h>
->  
->  static struct config_item_type iio_root_group_type = {
->  	.ct_owner       = THIS_MODULE,
-> diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
-> index 4825cfd9c4ea..311f9fe5aa34 100644
-> --- a/drivers/iio/industrialio-sw-trigger.c
-> +++ b/drivers/iio/industrialio-sw-trigger.c
-> @@ -15,6 +15,7 @@
->  #include <linux/slab.h>
->  
->  #include <linux/iio/sw_trigger.h>
-> +#include <linux/iio/configfs.h>
->  #include <linux/configfs.h>
->  
->  static struct config_group *iio_triggers_group;
-> diff --git a/include/linux/iio/configfs.h b/include/linux/iio/configfs.h
-> new file mode 100644
-> index 000000000000..93befd67c15c
-> --- /dev/null
-> +++ b/include/linux/iio/configfs.h
-> @@ -0,0 +1,15 @@
-> +/*
-> + * Industrial I/O configfs support
-> + *
-> + * Copyright (c) 2015 Intel Corporation
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
-> + */
-> +#ifndef __IIO_CONFIGFS
-> +#define __IIO_CONFIGFS
-> +
-> +extern struct configfs_subsystem iio_configfs_subsys;
-> +
-> +#endif /* __IIO_CONFIGFS */
-> diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
-> index c2f33b2b35a5..5198f8ed08a4 100644
-> --- a/include/linux/iio/sw_trigger.h
-> +++ b/include/linux/iio/sw_trigger.h
-> @@ -20,7 +20,6 @@
->  	module_driver(__iio_sw_trigger_type, iio_register_sw_trigger_type, \
->  		      iio_unregister_sw_trigger_type)
->  
-> -extern struct configfs_subsystem iio_configfs_subsys;
->  struct iio_sw_trigger_ops;
->  
->  struct iio_sw_trigger_type {
-> 
-
+:)), I thought I already added my Acked-by on this. I have must been dreaming.
