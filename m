@@ -1,158 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56529 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56543 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751048AbbLLP4R (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 10:56:17 -0500
-Subject: Re: [PATCH v3 2/2] iio: ina2xx: provide a sysfs parameter to allow
- async readout of the ADCs
+	with ESMTP id S1751048AbbLLP5h (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 10:57:37 -0500
+Subject: Re: [PATCH 1/3] iio: ina2xx: re-instate a sysfs show/store for the
+ shunt resistor value
 To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux@roeck-us.net,
-	jdelvare@suse.com
-References: <1449479375-4061-1-git-send-email-mtitinger@baylibre.com>
- <1449479375-4061-3-git-send-email-mtitinger@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	lm-sensors@lm-sensors.org
+	lars@metafoo.de, pmeerw@pmeerw.net
+References: <1449852557-3138-1-git-send-email-mtitinger@baylibre.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <566C439B.5080406@kernel.org>
-Date: Sat, 12 Dec 2015 15:56:11 +0000
+Message-ID: <566C43EF.9050806@kernel.org>
+Date: Sat, 12 Dec 2015 15:57:35 +0000
 MIME-Version: 1.0
-In-Reply-To: <1449479375-4061-3-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <1449852557-3138-1-git-send-email-mtitinger@baylibre.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/12/15 09:09, Marc Titinger wrote:
-> This can lead to repeated or skipped samples depending on the clock beat
-> between the capture thread and the chip sampling clock, but will also spare
-> reading/waiting for the Capture Ready Flag and improve the available i2c
-> bandwidth for reading measurements.
-> 
-> Output of iio_info:
-> ...snip...
-> 4 device-specific attributes found:
->   attr 0: in_oversampling_ratio value: 4
->   attr 1: in_allow_async_readout value: 0
->   attr 2: integration_time_available value: 140 204 332 588 1100 2116...
->   attr 3: in_sampling_frequency value: 114
+On 11/12/15 16:49, Marc Titinger wrote:
+> Different probe modules use different resistor values. The front-end
+> application may read a probe ID (from eeprom) and set the shunt value
+> accordingly.
 > 
 > Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing for the autobuilders
-to play with it.
+Fair enough.
 
-Could you prepare a follow up patch adding abi docs to
-Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc 
-please.
-
-I didn't want to hold this up by insisting on docs now, but it does need
-doing asap.
-
-Jonathan
+Applied.
 > ---
->  drivers/iio/adc/ina2xx-adc.c | 54 ++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 45 insertions(+), 9 deletions(-)
+>  drivers/iio/adc/ina2xx-adc.c | 52 +++++++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 46 insertions(+), 6 deletions(-)
 > 
 > diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> index 0e7c474..615c203 100644
+> index 615c203..fe42872 100644
 > --- a/drivers/iio/adc/ina2xx-adc.c
 > +++ b/drivers/iio/adc/ina2xx-adc.c
-> @@ -111,6 +111,7 @@ struct ina2xx_chip_info {
+> @@ -106,7 +106,7 @@ struct ina2xx_chip_info {
+>  	struct task_struct *task;
+>  	const struct ina2xx_config *config;
+>  	struct mutex state_lock;
+> -	long rshunt;
+> +	unsigned int shunt_resistor;
+>  	int avg;
 >  	s64 prev_ns;	/* track buffer capture time, check for underruns*/
 >  	int int_time_vbus; /* Bus voltage integration time uS */
->  	int int_time_vshunt; /* Shunt voltage integration time uS */
-> +	bool allow_async_readout;
->  };
->  
->  static const struct ina2xx_config ina2xx_config[] = {
-> @@ -326,6 +327,33 @@ _err:
+> @@ -353,6 +353,42 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
+>  	return len;
 >  }
 >  
->  
-> +static ssize_t ina2xx_allow_async_readout_show(struct device *dev,
-> +					   struct device_attribute *attr,
-> +					   char *buf)
+> +static int set_shunt_resistor(struct ina2xx_chip_info *chip, unsigned int val)
 > +{
-> +	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
+> +	if (val <= 0 || val > chip->config->calibration_factor)
+> +		return -EINVAL;
 > +
-> +	return sprintf(buf, "%d\n", chip->allow_async_readout);
+> +	chip->shunt_resistor = val;
+> +	return 0;
 > +}
 > +
-> +static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
-> +				struct device_attribute *attr,
-> +				const char *buf, size_t len)
+> +static ssize_t ina2xx_shunt_resistor_show(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  char *buf)
 > +{
 > +	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
-> +	bool val;
+> +
+> +	return sprintf(buf, "%d\n", chip->shunt_resistor);
+> +}
+> +
+> +static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+> +					   struct device_attribute *attr,
+> +					   const char *buf, size_t len)
+> +{
+> +	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
+> +	unsigned long val;
 > +	int ret;
 > +
-> +	ret = strtobool((const char *) buf, &val);
+> +	ret = kstrtoul((const char *) buf, 10, &val);
 > +	if (ret)
 > +		return ret;
 > +
-> +	chip->allow_async_readout = val;
+> +	ret = set_shunt_resistor(chip, val);
+> +	if (ret)
+> +		return ret;
 > +
 > +	return len;
 > +}
-> +
-> +
+>  
 >  #define INA2XX_CHAN(_type, _index, _address) { \
 >  	.type = (_type), \
->  	.address = (_address), \
-> @@ -392,16 +420,17 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
->  	 * GPIO a triggered buffer could be used instead.
->  	 * For now, we pay for that extra read of the ALERT register
->  	 */
-> -	do {
-> -		ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
-> -				  &alert);
-> -		if (ret < 0)
-> -			return ret;
-> +	if (!chip->allow_async_readout)
-> +		do {
-> +			ret = regmap_read(chip->regmap, INA226_ALERT_MASK,
-> +					  &alert);
-> +			if (ret < 0)
-> +				return ret;
+> @@ -547,9 +583,14 @@ static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
+>  		       ina2xx_allow_async_readout_show,
+>  		       ina2xx_allow_async_readout_store, 0);
 >  
-> -		alert &= INA266_CVRF;
-> -		trace_printk("Conversion ready: %d\n", !!alert);
-> +			alert &= INA266_CVRF;
-> +			trace_printk("Conversion ready: %d\n", !!alert);
->  
-> -	} while (!alert);
-> +		} while (!alert);
->  
->  	/*
->  	 * Single register reads: bulk_read will not work with ina226
-> @@ -446,7 +475,8 @@ static int ina2xx_capture_thread(void *data)
->  	 * Poll a bit faster than the chip internal Fs, in case
->  	 * we wish to sync with the conversion ready flag.
->  	 */
-> -	sampling_us -= 200;
-> +	if (!chip->allow_async_readout)
-> +		sampling_us -= 200;
->  
->  	do {
->  		buffer_us = ina2xx_work_buffer(indio_dev);
-> @@ -471,6 +501,7 @@ int ina2xx_buffer_enable(struct iio_dev *indio_dev)
->  		     1000000/sampling_us, chip->avg);
->  
->  	trace_printk("Expected work period: %u us\n", sampling_us);
-> +	trace_printk("Async readout mode: %d\n", chip->allow_async_readout);
->  
->  	chip->prev_ns = iio_get_time_ns();
->  
-> @@ -512,7 +543,12 @@ static int ina2xx_debug_reg(struct iio_dev *indio_dev,
->  static IIO_CONST_ATTR_INT_TIME_AVAIL \
->   ("0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
->  
-> +static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
-> +		       ina2xx_allow_async_readout_show,
-> +		       ina2xx_allow_async_readout_store, 0);
+> +static IIO_DEVICE_ATTR(in_shunt_resistor, S_IRUGO | S_IWUSR,
+> +		       ina2xx_shunt_resistor_show,
+> +		       ina2xx_shunt_resistor_store, 0);
 > +
 >  static struct attribute *ina2xx_attributes[] = {
-> +	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
+>  	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
 >  	&iio_const_attr_integration_time_available.dev_attr.attr,
+> +	&iio_dev_attr_in_shunt_resistor.dev_attr.attr,
 >  	NULL,
 >  };
+>  
+> @@ -581,7 +622,7 @@ static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
+>  	 * to the user for now.
+>  	 */
+>  	regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
+> -			    chip->rshunt);
+> +			    chip->shunt_resistor);
+>  
+>  	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
+>  }
+> @@ -614,10 +655,9 @@ static int ina2xx_probe(struct i2c_client *client,
+>  			val = INA2XX_RSHUNT_DEFAULT;
+>  	}
+>  
+> -	if (val <= 0 || val > chip->config->calibration_factor)
+> -		return -ENODEV;
+> -
+> -	chip->rshunt = val;
+> +	ret = set_shunt_resistor(chip, val);
+> +	if (ret)
+> +		return ret;
+>  
+>  	mutex_init(&chip->state_lock);
+>  
 > 
 
