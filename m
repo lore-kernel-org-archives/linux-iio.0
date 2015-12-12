@@ -1,61 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56557 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56679 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751032AbbLLP7W (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 10:59:22 -0500
-Subject: Re: [PATCH 2/3] iio: ina2xx: give the capture kthread a more useful
- name string.
-To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-References: <1449852557-3138-1-git-send-email-mtitinger@baylibre.com>
- <1449852557-3138-2-git-send-email-mtitinger@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1751229AbbLLQ0L (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 11:26:11 -0500
+Subject: Re: [PATCH v5 2/4] Documentation: add the binding file for Freescale
+ imx7d ADC driver
+To: Haibo Chen <haibo.chen@freescale.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, shawnguo@kernel.org,
+	kernel@pengutronix.de
+References: <1449570383-25716-1-git-send-email-haibo.chen@freescale.com>
+ <1449570383-25716-3-git-send-email-haibo.chen@freescale.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <566C4458.3040108@kernel.org>
-Date: Sat, 12 Dec 2015 15:59:20 +0000
+Message-ID: <566C4A9C.3060903@kernel.org>
+Date: Sat, 12 Dec 2015 16:26:04 +0000
 MIME-Version: 1.0
-In-Reply-To: <1449852557-3138-2-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <1449570383-25716-3-git-send-email-haibo.chen@freescale.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/12/15 16:49, Marc Titinger wrote:
->   PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
->   144     2 root     DW       0   0%  33% [ina226:1-8800us]
->   141     2 root     DW       0   0%  25% [ina226:0-8800us]
->    40     2 root     SW       0   0%  15% [irq/156-4802a00]
->   147     2 root     DW       0   0%   7% [ina226:2-8800us]
->   145     1 root     S     1236   0%   6% dd if /dev/iio:device1 of /dev/null
->   148     1 root     S     1236   0%   4% dd if /dev/iio:device2 of /dev/null
->   149   137 root     R     1244   0%   3% top -d 1
->   142     1 root     S     1236   0%   2% dd if /dev/iio:device0 of /dev/null
+On 08/12/15 10:26, Haibo Chen wrote:
+> The patch adds the binding file for Freescale imx7d ADC driver.
 > 
-> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
-Could have slightly improved your patch, but saying what it was before in the
-description but otherwise seems reasonable so applied to the
-togreg branch of iio.git - initially pushed out as testing for the
-autobuilders to play with it.
-
-Thanks,
-
-Jonathan
+> Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+Applied 
 > ---
->  drivers/iio/adc/ina2xx-adc.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  .../devicetree/bindings/iio/adc/imx7d-adc.txt      | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
 > 
-> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> index fe42872..99afa6e 100644
-> --- a/drivers/iio/adc/ina2xx-adc.c
-> +++ b/drivers/iio/adc/ina2xx-adc.c
-> @@ -542,7 +542,8 @@ int ina2xx_buffer_enable(struct iio_dev *indio_dev)
->  	chip->prev_ns = iio_get_time_ns();
->  
->  	chip->task = kthread_run(ina2xx_capture_thread, (void *)indio_dev,
-> -				 "ina2xx-%uus", sampling_us);
-> +				 "%s:%d-%uus", indio_dev->name, indio_dev->id,
-> +				 sampling_us);
->  
->  	return PTR_ERR_OR_ZERO(chip->task);
->  }
+> diff --git a/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt b/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
+> new file mode 100644
+> index 0000000..5c184b9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
+> @@ -0,0 +1,22 @@
+> +Freescale imx7d ADC bindings
+> +
+> +The devicetree bindings are for the ADC driver written for
+> +imx7d SoC.
+> +
+> +Required properties:
+> +- compatible: Should be "fsl,imx7d-adc"
+> +- reg: Offset and length of the register set for the ADC device
+> +- interrupts: The interrupt number for the ADC device
+> +- clocks: The root clock of the ADC controller
+> +- clock-names: Must contain "adc", matching entry in the clocks property
+> +- vref-supply: The regulator supply ADC reference voltage
+> +
+> +Example:
+> +adc1: adc@30610000 {
+> +	compatible = "fsl,imx7d-adc";
+> +	reg = <0x30610000 0x10000>;
+> +	interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+> +	clocks = <&clks IMX7D_ADC_ROOT_CLK>;
+> +	clock-names = "adc";
+> +	vref-supply = <&reg_vcc_3v3_mcu>;
+> +};
 > 
 
