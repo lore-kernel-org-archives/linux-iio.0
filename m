@@ -1,94 +1,86 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55282 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751869AbbLLLvU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 06:51:20 -0500
+Subject: Re: read /dev/iio:device0 return -1 (Invalid argument)
+To: Julio Cruz <jcsistemas2001@gmail.com>, linux-iio@vger.kernel.org
+References: <CAAn_ec90t=N1e1m8aUcBZRb5wsRwiz56WUzFCWqTrVHHhcAuBA@mail.gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <566C0A32.3030104@kernel.org>
+Date: Sat, 12 Dec 2015 11:51:14 +0000
 MIME-Version: 1.0
-In-Reply-To: <1449544808-3163-1-git-send-email-peda@lysator.liu.se>
-References: <1449544808-3163-1-git-send-email-peda@lysator.liu.se>
-Date: Fri, 11 Dec 2015 13:53:05 +0100
-Message-ID: <CACRpkdYN=n=Q+UpLbWjxJHP-FYi_e4cHFE_d1_fR2r7QYcqgYQ@mail.gmail.com>
-Subject: Re: [RESEND RFC PATCH 0/2] Expose the PIO_ISR register on SAMA5D3
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Peter Rosin <peda@lysator.liu.se>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Alexandre Courbot <gnurou@gmail.com>,
-	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Peter Rosin <peda@axentia.se>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <CAAn_ec90t=N1e1m8aUcBZRb5wsRwiz56WUzFCWqTrVHHhcAuBA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Quoting extensively since I'm involving the linux-iio mailinglist.
+On 12/12/15 08:36, Julio Cruz wrote:
+> Hi,
+> 
+> I get an error trying to read /dev/iio:device0 in a custom application
+> (C/C++), however in a terminal the command "cat /dev/iio_device0"
+> return data.
+> 
+> Below the procedure:
+> 
+> - enable channels
+> - setup trigger
+> - setup buffer lenght
+> - enable buffer (the SPI interrupt is setup properly and all the
+> trigger handler are done)
+> - read /dev/iio_device0
+> 
+> It's a SPI device acquiring 27 bytes @ 1KHz.
+Reading this again after point 4 below this makes me ask the question
+what are you pushing into the buffer? 27 bytes seems unlikely given
+the alignment requirements.
 
-The use case you describe is hand-in-glove with Industrial I/O.
-I think you want a trigger interface from IIO and read events from
-userspace using the IIO character device.
+> 
+> Results:
+> 
+> 1. Custom application (based on generic_buffer.c): function 'read'
+> return -1 and strerror(errno) return "Invalid argument"
+> 2. iio_readdev (libiio): show the message "Unable to refill buffer:
+> Input/output error"
+> 3. In terminal, the command "cat /dev/iio_device0" show values (no
+> readable) while the buffer is enable.
+> 
+> Any suggestion?
+> 
+> Thanks for your help!
+Sounds like you are ultimately getting that error from a call to
+ iio_buffer_read_first_n_outer
+so what can return -EINVAL (which is -1)?
 
-Look at the userspace examples in tools/iio for how it's used
-in userspace, the subsystem is in drivers/iio. I suspect
-drivers/iio/adc/polled-gpio.c or something is where you actually
-want to go with this. The module should do all the fastpath
-work and then expose what you actually want to know to
-userspace using the IIO triggers or events.
+1) Buffer not being allocated (seems unlikely - that's really just to
+pick up on bugs in side the driver)
+2) read_first_n from the buffer not supplied - again not likely.
+3) wait_event_interruptible returns it - unlikely.
+4) read_first_n which comes from the buffer implementation is returning -EINVAL
+This last one seems most likely.
 
-I have used IIO myself, it is really neat for this kind of usecase,
-and designed right from the ground up.
+So I am guessing you are using the kfifo buffer (most common option).
+Reasons this can return -EINVAL are
+1) kfifo not initialized (unlikely)
+2) Read length is less than the buffer element size (which is the full scan storage
+size)
+3) an error from kfifo_to_user (unlikely)
 
-I think you whould think about how to write the right kind of
-driver for IIO to do what you want.
+So I'm guessing you are reading too small an amount of data. (tricky to chase
+down without adding further printk's etc to the relevant bits of kernel code)
+If I've 'guessed' right, interesting question is how this came about.
+How many bytes is it trying to read?
 
-Yours,
-Linus Walleij
+Note that IIO has strict alignment requirements - any element must be aligned
+to it's own size and this will in some case add lots of padding.  The full buffer
+element will be a multiple of the largest element in the scan.  If you have a timestamp
+for example at 64bits the whole buffer element will be a multiple of 8bytes.
 
-On Tue, Dec 8, 2015 at 4:20 AM, Peter Rosin <peda@lysator.liu.se> wrote:
-> From: Peter Rosin <peda@axentia.se>
->
-> Hi!
->
-> I have a signal connected to a gpio pin which is the output of
-> a comparator. By changing the level of one of the inputs to the
-> comparator, I can detect the envelope of the other input to
-> the comparator by using a series of measurements much in the
-> same maner a manual ADC works, but watching for changes on the
-> comparator over a period of time instead of only the immediate
-> output.
->
-> Now, the input signal to the comparator might have a high frequency,
-> which will cause the output from the comparator (and thus the GPIO
-> input) to change rapidly.
->
-> A common(?) idiom for this is to use the interrupt status register
-> to catch the glitches, but then not have any interrupt tied to
-> the pin as that could possibly generate pointless bursts of
-> (expensive) interrupts.
->
-> So, these two patches expose an interface to the PIO_ISR register
-> of the pio controllers on the platform I'm targetting. The first
-> patch adds some infrastructure to the gpio core and the second
-> patch hooks up "my" pin controller.
->
-> But hey, this seems like an old problem and I was surprised that
-> I had to touch the source to do it. Which makes me wonder what I'm
-> missing and what others needing to see short pulses on a pin but not
-> needing/wanting interrupts are doing?
->
-> Yes, there needs to be a way to select the interrupt edge w/o
-> actually arming the interrupt, that is missing. And probably
-> other things too, but I didn't want to do more work in case this
-> is a dead end for some reason...
->
-> Cheers,
-> Peter
->
-> Peter Rosin (2):
->   gpio: Add isr property of gpio pins
->   pinctrl: at91: expose the isr bit
->
->  Documentation/gpio/sysfs.txt   |   12 ++++++++++
->  drivers/gpio/gpiolib-sysfs.c   |   30 ++++++++++++++++++++++++
->  drivers/gpio/gpiolib.c         |   15 ++++++++++++
->  drivers/pinctrl/pinctrl-at91.c |   50 ++++++++++++++++++++++++++++++++++++----
->  include/linux/gpio/consumer.h  |    1 +
->  include/linux/gpio/driver.h    |    2 ++
->  6 files changed, 106 insertions(+), 4 deletions(-)
->
+Jonathan
 > --
-> 1.7.10.4
->
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
