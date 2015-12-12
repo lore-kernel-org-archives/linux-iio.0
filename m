@@ -1,129 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56543 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56557 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751048AbbLLP5h (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 10:57:37 -0500
-Subject: Re: [PATCH 1/3] iio: ina2xx: re-instate a sysfs show/store for the
- shunt resistor value
+	with ESMTP id S1751032AbbLLP7W (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 10:59:22 -0500
+Subject: Re: [PATCH 2/3] iio: ina2xx: give the capture kthread a more useful
+ name string.
 To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
 	lars@metafoo.de, pmeerw@pmeerw.net
 References: <1449852557-3138-1-git-send-email-mtitinger@baylibre.com>
+ <1449852557-3138-2-git-send-email-mtitinger@baylibre.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <566C43EF.9050806@kernel.org>
-Date: Sat, 12 Dec 2015 15:57:35 +0000
+Message-ID: <566C4458.3040108@kernel.org>
+Date: Sat, 12 Dec 2015 15:59:20 +0000
 MIME-Version: 1.0
-In-Reply-To: <1449852557-3138-1-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <1449852557-3138-2-git-send-email-mtitinger@baylibre.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 11/12/15 16:49, Marc Titinger wrote:
-> Different probe modules use different resistor values. The front-end
-> application may read a probe ID (from eeprom) and set the shunt value
-> accordingly.
+>   PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+>   144     2 root     DW       0   0%  33% [ina226:1-8800us]
+>   141     2 root     DW       0   0%  25% [ina226:0-8800us]
+>    40     2 root     SW       0   0%  15% [irq/156-4802a00]
+>   147     2 root     DW       0   0%   7% [ina226:2-8800us]
+>   145     1 root     S     1236   0%   6% dd if /dev/iio:device1 of /dev/null
+>   148     1 root     S     1236   0%   4% dd if /dev/iio:device2 of /dev/null
+>   149   137 root     R     1244   0%   3% top -d 1
+>   142     1 root     S     1236   0%   2% dd if /dev/iio:device0 of /dev/null
 > 
 > Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
-Fair enough.
+Could have slightly improved your patch, but saying what it was before in the
+description but otherwise seems reasonable so applied to the
+togreg branch of iio.git - initially pushed out as testing for the
+autobuilders to play with it.
 
-Applied.
+Thanks,
+
+Jonathan
 > ---
->  drivers/iio/adc/ina2xx-adc.c | 52 +++++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 46 insertions(+), 6 deletions(-)
+>  drivers/iio/adc/ina2xx-adc.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> index 615c203..fe42872 100644
+> index fe42872..99afa6e 100644
 > --- a/drivers/iio/adc/ina2xx-adc.c
 > +++ b/drivers/iio/adc/ina2xx-adc.c
-> @@ -106,7 +106,7 @@ struct ina2xx_chip_info {
->  	struct task_struct *task;
->  	const struct ina2xx_config *config;
->  	struct mutex state_lock;
-> -	long rshunt;
-> +	unsigned int shunt_resistor;
->  	int avg;
->  	s64 prev_ns;	/* track buffer capture time, check for underruns*/
->  	int int_time_vbus; /* Bus voltage integration time uS */
-> @@ -353,6 +353,42 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
->  	return len;
+> @@ -542,7 +542,8 @@ int ina2xx_buffer_enable(struct iio_dev *indio_dev)
+>  	chip->prev_ns = iio_get_time_ns();
+>  
+>  	chip->task = kthread_run(ina2xx_capture_thread, (void *)indio_dev,
+> -				 "ina2xx-%uus", sampling_us);
+> +				 "%s:%d-%uus", indio_dev->name, indio_dev->id,
+> +				 sampling_us);
+>  
+>  	return PTR_ERR_OR_ZERO(chip->task);
 >  }
->  
-> +static int set_shunt_resistor(struct ina2xx_chip_info *chip, unsigned int val)
-> +{
-> +	if (val <= 0 || val > chip->config->calibration_factor)
-> +		return -EINVAL;
-> +
-> +	chip->shunt_resistor = val;
-> +	return 0;
-> +}
-> +
-> +static ssize_t ina2xx_shunt_resistor_show(struct device *dev,
-> +					  struct device_attribute *attr,
-> +					  char *buf)
-> +{
-> +	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
-> +
-> +	return sprintf(buf, "%d\n", chip->shunt_resistor);
-> +}
-> +
-> +static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
-> +					   struct device_attribute *attr,
-> +					   const char *buf, size_t len)
-> +{
-> +	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
-> +	unsigned long val;
-> +	int ret;
-> +
-> +	ret = kstrtoul((const char *) buf, 10, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = set_shunt_resistor(chip, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return len;
-> +}
->  
->  #define INA2XX_CHAN(_type, _index, _address) { \
->  	.type = (_type), \
-> @@ -547,9 +583,14 @@ static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
->  		       ina2xx_allow_async_readout_show,
->  		       ina2xx_allow_async_readout_store, 0);
->  
-> +static IIO_DEVICE_ATTR(in_shunt_resistor, S_IRUGO | S_IWUSR,
-> +		       ina2xx_shunt_resistor_show,
-> +		       ina2xx_shunt_resistor_store, 0);
-> +
->  static struct attribute *ina2xx_attributes[] = {
->  	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
->  	&iio_const_attr_integration_time_available.dev_attr.attr,
-> +	&iio_dev_attr_in_shunt_resistor.dev_attr.attr,
->  	NULL,
->  };
->  
-> @@ -581,7 +622,7 @@ static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
->  	 * to the user for now.
->  	 */
->  	regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
-> -			    chip->rshunt);
-> +			    chip->shunt_resistor);
->  
->  	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
->  }
-> @@ -614,10 +655,9 @@ static int ina2xx_probe(struct i2c_client *client,
->  			val = INA2XX_RSHUNT_DEFAULT;
->  	}
->  
-> -	if (val <= 0 || val > chip->config->calibration_factor)
-> -		return -ENODEV;
-> -
-> -	chip->rshunt = val;
-> +	ret = set_shunt_resistor(chip, val);
-> +	if (ret)
-> +		return ret;
->  
->  	mutex_init(&chip->state_lock);
->  
 > 
 
