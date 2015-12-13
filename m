@@ -1,188 +1,229 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57211 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33789 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751635AbbLLSGJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Dec 2015 13:06:09 -0500
-Subject: Re: [RESEND RFC PATCH 0/2] Expose the PIO_ISR register on SAMA5D3
-To: Linus Walleij <linus.walleij@linaro.org>,
-	Peter Rosin <peda@lysator.liu.se>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <1449544808-3163-1-git-send-email-peda@lysator.liu.se>
- <CACRpkdYN=n=Q+UpLbWjxJHP-FYi_e4cHFE_d1_fR2r7QYcqgYQ@mail.gmail.com>
- <566C6122.6040406@kernel.org>
-Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	Alexandre Courbot <gnurou@gmail.com>,
-	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	Peter Rosin <peda@axentia.se>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Matt Porter <mporter@konsulko.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <566C620D.3000705@kernel.org>
-Date: Sat, 12 Dec 2015 18:06:05 +0000
+	with ESMTP id S1751343AbbLMMOq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Dec 2015 07:14:46 -0500
+In-Reply-To: <CAAn_ec8BMT9fPc06YOc14Eh+8vpQGJW_Lv-BOqDCqS5UbZF3iQ@mail.gmail.com>
+References: <CAAn_ec90t=N1e1m8aUcBZRb5wsRwiz56WUzFCWqTrVHHhcAuBA@mail.gmail.com> <566C0A32.3030104@kernel.org> <CAAn_ec_=9syP4j+g5GRMCB-+7vCWE1XqryE6KWUm=auUBZE=uQ@mail.gmail.com> <566C1493.7090002@jic23.retrosnub.co.uk> <CAAn_ec_5UcQ5GVFx=byU6sKJ9u33LmUzFvoRvVgTko4GfDHnOA@mail.gmail.com> <CAAn_ec8BMT9fPc06YOc14Eh+8vpQGJW_Lv-BOqDCqS5UbZF3iQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <566C6122.6040406@kernel.org>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: read /dev/iio:device0 return -1 (Invalid argument)
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Sun, 13 Dec 2015 12:14:20 +0000
+To: Julio Cruz <jcsistemas2001@gmail.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Message-ID: <7665C9F2-AA7C-404F-AC43-2D045E330030@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-My address for Matt was out of date..
-Here's hoping there is only one Matt Porter writing IIO drivers and
-trying a more recent email address.
 
-On 12/12/15 18:02, Jonathan Cameron wrote:
-> On 11/12/15 12:53, Linus Walleij wrote:
->> Quoting extensively since I'm involving the linux-iio mailinglist.
->>
->> The use case you describe is hand-in-glove with Industrial I/O.
->> I think you want a trigger interface from IIO and read events from
->> userspace using the IIO character device.
->>
->> Look at the userspace examples in tools/iio for how it's used
->> in userspace, the subsystem is in drivers/iio. I suspect
->> drivers/iio/adc/polled-gpio.c or something is where you actually
->> want to go with this. The module should do all the fastpath
->> work and then expose what you actually want to know to
->> userspace using the IIO triggers or events.
->>
->> I have used IIO myself, it is really neat for this kind of usecase,
->> and designed right from the ground up.
->>
->> I think you whould think about how to write the right kind of
->> driver for IIO to do what you want.
-> Peter has a spot of IIO experience as well :)
-> 
-> I'm not sure I entirely understand what the data flows are here so I may
-> get this completely wrong!
-> 
-> Sounds like a quick, dirty and simple 'capture unit' like you'd find on a PLC to
-> me (be bit one that doesn't grab much data - I use these all the time at
-> work to catch the output from beam break sensor on automated systems and
-> stuff like that).  Timers often support a copy to register on a gpio
-> signal but I'm not sure I've ever seen that supported in kernel either
-> (some discussion about doing this in IIO occurred a while ago but I don't
-> think anything ever came of it unfortunately). It was for the TI ECAP devices
-> by Matt Porter (cc'd)  Not that closely related but perhaps Matt will
-> have some insight here.
-> 
-> So:
-> 
-> Are we looking to synchronised control of the DAC
-> feeding the comparator or is that entirely autonomous?
-> (for now I'll assume autonomous - it gets interesting if
->  not - we'd need the buffered output stuff Lars has for that)
-> 
-> How fast are we talking?
-> 
-> So I think we are basically looking for fast sampling of the gpio with latching.
-> 
-> I suspect the rates are high enough that an IIO trigger is going to be too expensive
-> (as it effectively runs as an irq).  That's fine though as they are optional if
-> you have a good reason not to use them and a direct polling of the isr and filling a
-> buffer might work.
-> 
-> We don't currently have 1 bit channel support in IIO and in this particular case
-> our normal buffers are going to be very inefficient as they are kfifo based
-> and hence will burn 1 byte per sample if we do this the simple way.
-> The closest we have gotten to a 1 bit support was a comparator driver and
-> in the end the author decided to support that via events which have way higher
-> overhead than I think you want.
-> 
-> So if IIO is the sensible way to support this I think we need something like
-> the following:
-> 
-> 1) 1 bit data type support in IIO - not too bad to add, though will need
->    to have some restrictions in the demux as arbitary bit channel recombining
->    would be horrible and costly.  So in the first instance we'd probably burn 1 byte
->    per 1 bit channel each sample - address this later perhaps.  If burning
->    a byte, just specify that you have a channel with realbits = 1, storagebits = 8
->    and it should all work.  I'd like to add 1 bit support fully if you are
->    interested though!
-> 
-> 2) A driver that can effectively check and clear the interrupt register and
->    push that to the kfifo.  Probably running a kthread to keep the overhead
->    low - something like the recent INA2XX driver is doing (though for a rather
->    different reason).  That would then shove data into the buffer at regular
->    intervals.
-> 
-> 3) Normal userspace code would then read this - ideally with updates to
->    correctly interpret it as boolean data.
-> 
-> Doesn't sound too bad - just a question of whether it will be lightweight
-> enough for your use case.
-> 
-> Assuming I have understood even vaguely what you are doing ;)
->  
-> Sounds fun.
-> 
-> Jonathan
->>
->> Yours,
->> Linus Walleij
->>
->> On Tue, Dec 8, 2015 at 4:20 AM, Peter Rosin <peda@lysator.liu.se> wrote:
->>> From: Peter Rosin <peda@axentia.se>
->>>
->>> Hi!
->>>
->>> I have a signal connected to a gpio pin which is the output of
->>> a comparator. By changing the level of one of the inputs to the
->>> comparator, I can detect the envelope of the other input to
->>> the comparator by using a series of measurements much in the
->>> same maner a manual ADC works, but watching for changes on the
->>> comparator over a period of time instead of only the immediate
->>> output.
->>>
->>> Now, the input signal to the comparator might have a high frequency,
->>> which will cause the output from the comparator (and thus the GPIO
->>> input) to change rapidly.
->>>
->>> A common(?) idiom for this is to use the interrupt status register
->>> to catch the glitches, but then not have any interrupt tied to
->>> the pin as that could possibly generate pointless bursts of
->>> (expensive) interrupts.
->>>
->>> So, these two patches expose an interface to the PIO_ISR register
->>> of the pio controllers on the platform I'm targetting. The first
->>> patch adds some infrastructure to the gpio core and the second
->>> patch hooks up "my" pin controller.
->>>
->>> But hey, this seems like an old problem and I was surprised that
->>> I had to touch the source to do it. Which makes me wonder what I'm
->>> missing and what others needing to see short pulses on a pin but not
->>> needing/wanting interrupts are doing?
-> Basically a capture unit... Be it one that doesn't grab anything else
-> at the moment.
->>>
->>> Yes, there needs to be a way to select the interrupt edge w/o
->>> actually arming the interrupt, that is missing. And probably
->>> other things too, but I didn't want to do more work in case this
->>> is a dead end for some reason...
->>>
->>> Cheers,
->>> Peter
->>>
->>> Peter Rosin (2):
->>>   gpio: Add isr property of gpio pins
->>>   pinctrl: at91: expose the isr bit
->>>
->>>  Documentation/gpio/sysfs.txt   |   12 ++++++++++
->>>  drivers/gpio/gpiolib-sysfs.c   |   30 ++++++++++++++++++++++++
->>>  drivers/gpio/gpiolib.c         |   15 ++++++++++++
->>>  drivers/pinctrl/pinctrl-at91.c |   50 ++++++++++++++++++++++++++++++++++++----
->>>  include/linux/gpio/consumer.h  |    1 +
->>>  include/linux/gpio/driver.h    |    2 ++
->>>  6 files changed, 106 insertions(+), 4 deletions(-)
->>>
->>> --
->>> 1.7.10.4
->>>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
 
+On 13 December 2015 10:44:29 GMT+00:00, Julio Cruz <jcsistemas2001@gmail.com> wrote:
+>Hi Jonathan,
+>
+>Right now, the app is able to read the data from /dev/iio:device0 with
+>success (not data loss). Currently, the app read 1 sample (with 9
+>channels of 4 bytes each one) every time (using "read" function).
+>
+>I still have some doubts about my implementation, because, sometimes
+>there is data lost.
+>
+>For example, when the app try to read more than 1 sample (for example,
+>2 samples: 72 bytes, using "read"), the results are strange. For
+>instance, when the app is using libiio, the function iio_buffer_refill
+>return -1 and is not able to receive data.
+That is definitely odd. 
+Perhaps you could post the content of all the files under scan_elements so we can
+ check nothing odd has happened with the channel definitions.
+
+
+ In this case, the buffer
+>(at iio_device_create_buffer) need to be setup with 1 sample to work.
+>
+>Below some assumptions/questions:
+>
+>- The buffer/length define the kfifo length (in samples, not in
+>bytes)?
+Number and of scans where a scan is one sample from all enabled channels.
+
+> In this case, the buffer must be multiple of 36 bytes right?
+The one you are reading into should be.
+>- At user space, the application can read 36 bytes or more (i.e. 72,
+>...) (/dev/iio:device0) (but not less)? According with the buffer
+>length.
+Yes.
+
+So I have no idea what is going on. Can only suggest you add printks to find out
+ what exactly is causing that error return
+
+Any chance you could post the driver?
+>
+>Thanks
+>
+>
+>On Sat, Dec 12, 2015 at 8:41 PM, Julio Cruz <jcsistemas2001@gmail.com>
+>wrote:
+>> OK, I understood! Thanks
+>>
+>> I will use 32 bits for storage in all the channels
+>>
+>> On Sat, Dec 12, 2015 at 8:35 PM, Jonathan Cameron
+>> <jic23@jic23.retrosnub.co.uk> wrote:
+>>> On 12/12/15 12:24, Julio Cruz wrote:
+>>>> HI Jonathan,
+>>> Hi Julio
+>>>
+>>> I've kept the list cc'd as this sort of conversation acts as
+>>> 'free' documentation solving other people's problems in future.
+>>>
+>>>>
+>>>> Thanks for your quick reply.
+>>>>
+>>>> When you mention the alignment, I remember some things that I did
+>>>> about it, as below.
+>>>>
+>>>> When I started testing the _trigger_handler, I found that the
+>driver
+>>>> calculate indio_dev->scan_bytes. This value is not clear to me
+>>>> because, for example, 1 channel is 3 bytes,
+>>> It shouldn't be. Padding is to the nearest power of 2 bytes so
+>should
+>>> be 4.  The non power of two realbits may have resulted in an
+>unexpected
+>>> path in which case we should add a sanity check to catch this.
+>>>> and for 2 channels is 8
+>>>> bytes (1 byte padding). The channel spec are realbits = 24 and
+>>>> storagebits = 24.
+>>> Storage bits should be a power of 2.  So in this case 32 bytes.
+>>> Might seem wasteful but processors handle aligned data a lot
+>>> more easily so to keep rates up it is usually better to burn a small
+>>> amount of memory and keep everything aligned.
+>>>
+>>>  At that point, I fixed the frame buffer size to 27
+>>>> (used at iio_push_to_buffers) assuming that the same buffer could
+>be
+>>>> read at user space.
+>>>>
+>>>> Please, may I know if this approach is correct?
+>>> Sorry nope, the buffer structure assumes power of 2 alignment
+>everywhere.
+>>>>
+>>>> The SPI device send 9 channels, 3 bytes each one (for a total of 27
+>>>> bytes) and each channels is 24 bits width.
+>>> Unfortunately you'll have to do unpacking of this before pushing to
+>the buffer.
+>>> It'll have to happen somewhere anyway (as userspace code would need
+>to unpack
+>>> it otherwise).
+>>>
+>>> It's actually relatively unusual to find a device that does this
+>sort of
+>>> packing.  We have talked in the past about allowing this sort of
+>packing and
+>>> modifying the buffer infrastructure to accept it, but I'm
+>unconvinced that
+>>> it is worth the added complexity + cost in userspace complexity.
+>>>
+>>> Jonathan
+>>>>
+>>>> Thanks
+>>>>
+>>>> Julio
+>>>>
+>>>>
+>>>> On Sat, Dec 12, 2015 at 7:51 PM, Jonathan Cameron
+><jic23@kernel.org> wrote:
+>>>>> On 12/12/15 08:36, Julio Cruz wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> I get an error trying to read /dev/iio:device0 in a custom
+>application
+>>>>>> (C/C++), however in a terminal the command "cat /dev/iio_device0"
+>>>>>> return data.
+>>>>>>
+>>>>>> Below the procedure:
+>>>>>>
+>>>>>> - enable channels
+>>>>>> - setup trigger
+>>>>>> - setup buffer lenght
+>>>>>> - enable buffer (the SPI interrupt is setup properly and all the
+>>>>>> trigger handler are done)
+>>>>>> - read /dev/iio_device0
+>>>>>>
+>>>>>> It's a SPI device acquiring 27 bytes @ 1KHz.
+>>>>> Reading this again after point 4 below this makes me ask the
+>question
+>>>>> what are you pushing into the buffer? 27 bytes seems unlikely
+>given
+>>>>> the alignment requirements.
+>>>>>
+>>>>>>
+>>>>>> Results:
+>>>>>>
+>>>>>> 1. Custom application (based on generic_buffer.c): function
+>'read'
+>>>>>> return -1 and strerror(errno) return "Invalid argument"
+>>>>>> 2. iio_readdev (libiio): show the message "Unable to refill
+>buffer:
+>>>>>> Input/output error"
+>>>>>> 3. In terminal, the command "cat /dev/iio_device0" show values
+>(no
+>>>>>> readable) while the buffer is enable.
+>>>>>>
+>>>>>> Any suggestion?
+>>>>>>
+>>>>>> Thanks for your help!
+>>>>> Sounds like you are ultimately getting that error from a call to
+>>>>>  iio_buffer_read_first_n_outer
+>>>>> so what can return -EINVAL (which is -1)?
+>>>>>
+>>>>> 1) Buffer not being allocated (seems unlikely - that's really just
+>to
+>>>>> pick up on bugs in side the driver)
+>>>>> 2) read_first_n from the buffer not supplied - again not likely.
+>>>>> 3) wait_event_interruptible returns it - unlikely.
+>>>>> 4) read_first_n which comes from the buffer implementation is
+>returning -EINVAL
+>>>>> This last one seems most likely.
+>>>>>
+>>>>> So I am guessing you are using the kfifo buffer (most common
+>option).
+>>>>> Reasons this can return -EINVAL are
+>>>>> 1) kfifo not initialized (unlikely)
+>>>>> 2) Read length is less than the buffer element size (which is the
+>full scan storage
+>>>>> size)
+>>>>> 3) an error from kfifo_to_user (unlikely)
+>>>>>
+>>>>> So I'm guessing you are reading too small an amount of data.
+>(tricky to chase
+>>>>> down without adding further printk's etc to the relevant bits of
+>kernel code)
+>>>>> If I've 'guessed' right, interesting question is how this came
+>about.
+>>>>> How many bytes is it trying to read?
+>>>>>
+>>>>> Note that IIO has strict alignment requirements - any element must
+>be aligned
+>>>>> to it's own size and this will in some case add lots of padding. 
+>The full buffer
+>>>>> element will be a multiple of the largest element in the scan.  If
+>you have a timestamp
+>>>>> for example at 64bits the whole buffer element will be a multiple
+>of 8bytes.
+>>>>>
+>>>>> Jonathan
+>>>>>> --
+>>>>>> To unsubscribe from this list: send the line "unsubscribe
+>linux-iio" in
+>>>>>> the body of a message to majordomo@vger.kernel.org
+>>>>>> More majordomo info at 
+>http://vger.kernel.org/majordomo-info.html
+>>>>>>
+>>>>>
+>>>
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
