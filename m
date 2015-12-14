@@ -1,228 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:56191 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932140AbbLNMZ0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 14 Dec 2015 07:25:26 -0500
-From: Adriana Reus <adriana.reus@intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Adriana Reus <adriana.reus@intel.com>
-Subject: [PATCH v2 3/3] iio: light: us5182d: Refactor read_raw function
-Date: Mon, 14 Dec 2015 14:24:47 +0200
-Message-Id: <1450095887-13122-4-git-send-email-adriana.reus@intel.com>
-In-Reply-To: <1450095887-13122-1-git-send-email-adriana.reus@intel.com>
-References: <1450095887-13122-1-git-send-email-adriana.reus@intel.com>
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:36518 "EHLO
+	metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932140AbbLNNyl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Dec 2015 08:54:41 -0500
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Shawn Guo <shawnguo@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Denis Carikli <denis@eukrea.com>,
+	=?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Markus Pargmann <mpa@pengutronix.de>
+Subject: [PATCH v10 8/8] ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC support.
+Date: Mon, 14 Dec 2015 14:53:54 +0100
+Message-Id: <1450101234-2191-9-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
+References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-A bit of refactoring for better readability.
-Moved and slightly reorganized all the activity necessary for reading als
-and proximity into a different function. This way the switch in read raw
-becomes clearer and more compact.
+From: Denis Carikli <denis@eukrea.com>
 
-Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+Signed-off-by: Denis Carikli <denis@eukrea.com>
+Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 ---
- No change since initial patch
+ arch/arm/configs/imx_v4_v5_defconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
 
- drivers/iio/light/us5182d.c | 155 ++++++++++++++++++++++----------------------
- 1 file changed, 78 insertions(+), 77 deletions(-)
-
-diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-index 213f778..45bc2f7 100644
---- a/drivers/iio/light/us5182d.c
-+++ b/drivers/iio/light/us5182d.c
-@@ -203,23 +203,6 @@ static const struct iio_chan_spec us5182d_channels[] = {
- 	}
- };
- 
--static int us5182d_get_als(struct us5182d_data *data)
--{
--	int ret;
--	unsigned long result;
--
--	ret = i2c_smbus_read_word_data(data->client,
--				       US5182D_REG_ADL);
--	if (ret < 0)
--		return ret;
--
--	result = ret * data->ga / US5182D_GA_RESOLUTION;
--	if (result > 0xffff)
--		result = 0xffff;
--
--	return result;
--}
--
- static int us5182d_oneshot_en(struct us5182d_data *data)
- {
- 	int ret;
-@@ -324,6 +307,39 @@ static int us5182d_px_enable(struct us5182d_data *data)
- 	return 0;
- }
- 
-+static int us5182d_get_als(struct us5182d_data *data)
-+{
-+	int ret;
-+	unsigned long result;
-+
-+	ret = us5182d_als_enable(data);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_read_word_data(data->client,
-+				       US5182D_REG_ADL);
-+	if (ret < 0)
-+		return ret;
-+
-+	result = ret * data->ga / US5182D_GA_RESOLUTION;
-+	if (result > 0xffff)
-+		result = 0xffff;
-+
-+	return result;
-+}
-+
-+static int us5182d_get_px(struct us5182d_data *data)
-+{
-+	int ret;
-+
-+	ret = us5182d_px_enable(data);
-+	if (ret < 0)
-+		return ret;
-+
-+	return i2c_smbus_read_word_data(data->client,
-+					US5182D_REG_PDL);
-+}
-+
- static int us5182d_shutdown_en(struct us5182d_data *data, u8 state)
- {
- 	int ret;
-@@ -370,6 +386,46 @@ static int us5182d_set_power_state(struct us5182d_data *data, bool on)
- 	return ret;
- }
- 
-+static int us5182d_read_value(struct us5182d_data *data,
-+			      struct iio_chan_spec const *chan)
-+{
-+	int ret, value;
-+
-+	mutex_lock(&data->lock);
-+
-+	if (data->power_mode == US5182D_ONESHOT) {
-+		ret = us5182d_oneshot_en(data);
-+		if (ret < 0)
-+			goto out_err;
-+	}
-+
-+	ret = us5182d_set_power_state(data, true);
-+	if (ret < 0)
-+		goto out_err;
-+
-+	if (chan->type == IIO_LIGHT)
-+		ret = us5182d_get_als(data);
-+	else
-+		ret = us5182d_get_px(data);
-+	if (ret < 0)
-+		goto out_poweroff;
-+
-+	value = ret;
-+
-+	ret = us5182d_set_power_state(data, false);
-+	if (ret < 0)
-+		goto out_err;
-+
-+	mutex_unlock(&data->lock);
-+	return value;
-+
-+out_poweroff:
-+	us5182d_set_power_state(data, false);
-+out_err:
-+	mutex_unlock(&data->lock);
-+	return ret;
-+}
-+
- static int us5182d_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan, int *val,
- 			    int *val2, long mask)
-@@ -379,76 +435,21 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		switch (chan->type) {
--		case IIO_LIGHT:
--			mutex_lock(&data->lock);
--			if (data->power_mode == US5182D_ONESHOT) {
--				ret = us5182d_oneshot_en(data);
--				if (ret < 0)
--					goto out_err;
--			}
--			ret = us5182d_set_power_state(data, true);
--			if (ret < 0)
--				goto out_err;
--			ret = us5182d_als_enable(data);
--			if (ret < 0)
--				goto out_poweroff;
--			ret = us5182d_get_als(data);
--			if (ret < 0)
--				goto out_poweroff;
--			*val = ret;
--			ret = us5182d_set_power_state(data, false);
--			if (ret < 0)
--				goto out_err;
--			mutex_unlock(&data->lock);
--			return IIO_VAL_INT;
--		case IIO_PROXIMITY:
--			mutex_lock(&data->lock);
--			if (data->power_mode == US5182D_ONESHOT) {
--				ret = us5182d_oneshot_en(data);
--				if (ret < 0)
--					goto out_err;
--			}
--			ret = us5182d_set_power_state(data, true);
--			if (ret < 0)
--				goto out_err;
--			ret = us5182d_px_enable(data);
--			if (ret < 0)
--				goto out_poweroff;
--			ret = i2c_smbus_read_word_data(data->client,
--						       US5182D_REG_PDL);
--			if (ret < 0)
--				goto out_poweroff;
--			*val = ret;
--			ret = us5182d_set_power_state(data, false);
--			if (ret < 0)
--				goto out_err;
--			mutex_unlock(&data->lock);
--			return IIO_VAL_INT;
--		default:
--			return -EINVAL;
--		}
--
-+		ret = us5182d_read_value(data, chan);
-+		if (ret < 0)
-+			return ret;
-+		*val = ret;
-+		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		ret = i2c_smbus_read_byte_data(data->client, US5182D_REG_CFG1);
- 		if (ret < 0)
- 			return ret;
--
- 		*val = 0;
- 		*val2 = us5182d_scales[ret & US5182D_AGAIN_MASK];
--
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
- 		return -EINVAL;
- 	}
--
--	return -EINVAL;
--
--out_poweroff:
--	us5182d_set_power_state(data, false);
--out_err:
--	mutex_unlock(&data->lock);
--	return ret;
- }
- 
- /**
+diff --git a/arch/arm/configs/imx_v4_v5_defconfig b/arch/arm/configs/imx_v4_v5_defconfig
+index d3a8018639de..d6754ac47788 100644
+--- a/arch/arm/configs/imx_v4_v5_defconfig
++++ b/arch/arm/configs/imx_v4_v5_defconfig
+@@ -88,6 +88,7 @@ CONFIG_KEYBOARD_IMX=y
+ # CONFIG_INPUT_MOUSE is not set
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
++CONFIG_TOUCHSCREEN_MX25=y
+ CONFIG_TOUCHSCREEN_MC13783=y
+ # CONFIG_LEGACY_PTYS is not set
+ CONFIG_SERIAL_8250=m
+@@ -107,6 +108,7 @@ CONFIG_HWMON=m
+ CONFIG_SENSORS_MC13783_ADC=m
+ CONFIG_WATCHDOG=y
+ CONFIG_IMX2_WDT=y
++CONFIG_MFD_MX25_TSADC=y
+ CONFIG_MFD_MC13XXX_SPI=y
+ CONFIG_REGULATOR=y
+ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+@@ -172,6 +174,8 @@ CONFIG_DMADEVICES=y
+ CONFIG_IMX_SDMA=y
+ CONFIG_IMX_DMA=y
+ # CONFIG_IOMMU_SUPPORT is not set
++CONFIG_IIO=y
++CONFIG_FSL_MX25_ADC=y
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT3_FS=y
+ CONFIG_EXT4_FS=y
 -- 
-1.9.1
+2.6.2
 
