@@ -12,48 +12,62 @@ CC: <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
         <linux-api@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         "Andrew F.
  Davis" <afd@ti.com>
-Subject: [PATCH v3 1/5] iio: Make IIO value formating function globally available.
-Date: Mon, 14 Dec 2015 16:35:57 -0600
-Message-ID: <1450132561-5245-2-git-send-email-afd@ti.com>
+Subject: [PATCH v3 4/5] Documentation: afe4403: Add DT bindings for the AFE4403 heart monitor
+Date: Mon, 14 Dec 2015 16:36:00 -0600
+Message-ID: <1450132561-5245-5-git-send-email-afd@ti.com>
 In-Reply-To: <1450132561-5245-1-git-send-email-afd@ti.com>
 References: <1450132561-5245-1-git-send-email-afd@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Make IIO value formating function globally available to allow IIO drivers
-to output values as the core does.
+Add the TI AFE4403 heart monitor DT bindings documentation.
 
 Signed-off-by: Andrew F. Davis <afd@ti.com>
 ---
- drivers/iio/industrialio-core.c | 1 +
- include/linux/iio/iio.h         | 2 ++
- 2 files changed, 3 insertions(+)
+ .../devicetree/bindings/iio/health/afe4403.txt     | 34 ++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/health/afe4403.txt
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 208358f..eb5909d 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -470,6 +470,7 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
- 		return 0;
- 	}
- }
-+EXPORT_SYMBOL_GPL(iio_format_value);
- 
- static ssize_t iio_read_channel_info(struct device *dev,
- 				     struct device_attribute *attr,
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 19c94c9..b589411 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -636,6 +636,8 @@ static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
- }
- #endif
- 
-+ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals);
+diff --git a/Documentation/devicetree/bindings/iio/health/afe4403.txt b/Documentation/devicetree/bindings/iio/health/afe4403.txt
+new file mode 100644
+index 0000000..2fffd70
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/health/afe4403.txt
+@@ -0,0 +1,34 @@
++Texas Instruments AFE4403 Heart rate and Pulse Oximeter
 +
- int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
- 	int *fract);
- 
++Required properties:
++ - compatible		: Should be "ti,afe4403".
++ - reg			: SPI chip select address of device.
++ - tx-supply		: Regulator supply to transmitting LEDs.
++ - interrupt-parent	: Phandle to he parent interrupt controller.
++ - interrupts		: The interrupt line the device ADC_RDY pin is
++			  connected to. For details refer to,
++			  ../../interrupt-controller/interrupts.txt.
++
++Optional properties:
++ - reset-gpios		: GPIO used to reset the device.
++			  For details refer to, ../../gpio/gpio.txt.
++
++For other required and optional properties of SPI slave nodes
++please refer to ../../spi/spi-bus.txt.
++
++Example:
++
++&spi0 {
++	heart_mon@0 {
++		compatible = "ti,afe4403";
++		reg = <0>;
++		spi-max-frequency = <10000000>;
++
++		tx-supply = <&vbat>;
++
++		interrupt-parent = <&gpio1>;
++		interrupts = <28 IRQ_TYPE_EDGE_RISING>;
++
++		reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
++	};
++};
 -- 
 2.6.4
