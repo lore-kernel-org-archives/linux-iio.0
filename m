@@ -1,236 +1,1141 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from axentia.se ([87.96.186.132]:64256 "EHLO EMAIL.axentia.se"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932200AbbLNKp4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 14 Dec 2015 05:45:56 -0500
-From: Peter Rosin <peda@axentia.se>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Peter Rosin <peda@lysator.liu.se>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	"Alexandre Courbot" <gnurou@gmail.com>,
-	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"mporter@linaro.org" <mporter@linaro.org>
-Subject: RE: [RESEND RFC PATCH 0/2] Expose the PIO_ISR register on SAMA5D3
-Date: Mon, 14 Dec 2015 10:38:30 +0000
-Message-ID: <85d1850f20c141b2952d93be72199fdf@EMAIL.axentia.se>
-References: <1449544808-3163-1-git-send-email-peda@lysator.liu.se>
- <CACRpkdYN=n=Q+UpLbWjxJHP-FYi_e4cHFE_d1_fR2r7QYcqgYQ@mail.gmail.com>
- <566C6122.6040406@kernel.org>
-In-Reply-To: <566C6122.6040406@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <afd@ti.com>
+Subject: Re: [PATCH v2 2/2] iio: health: Add driver for the TI AFE4404 heart
+ monitor
+To: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
+        Ian
+ Campbell <ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter
+ Meerwald <pmeerw@pmeerw.net>
+References: <1449086240-13375-1-git-send-email-afd@ti.com>
+ <1449086240-13375-3-git-send-email-afd@ti.com> <56632B28.4080702@kernel.org>
+ <5665C142.1050105@ti.com> <566C4010.6030703@kernel.org>
+CC: <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-api@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+From: "Andrew F. Davis" <afd@ti.com>
+Message-ID: <566F3D56.4010509@ti.com>
+Date: Mon, 14 Dec 2015 16:06:14 -0600
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <566C4010.6030703@kernel.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Sm9uYXRoYW4gQ2FtZXJvbiBbbWFpbHRvOmppYzIzQGtlcm5lbC5vcmddIHdyb3RlOg0KPiBPbiAx
-MS8xMi8xNSAxMjo1MywgTGludXMgV2FsbGVpaiB3cm90ZToNCj4gPiBRdW90aW5nIGV4dGVuc2l2
-ZWx5IHNpbmNlIEknbSBpbnZvbHZpbmcgdGhlIGxpbnV4LWlpbyBtYWlsaW5nbGlzdC4NCj4gPiAN
-Cj4gPiBUaGUgdXNlIGNhc2UgeW91IGRlc2NyaWJlIGlzIGhhbmQtaW4tZ2xvdmUgd2l0aCBJbmR1
-c3RyaWFsIEkvTy4NCj4gPiBJIHRoaW5rIHlvdSB3YW50IGEgdHJpZ2dlciBpbnRlcmZhY2UgZnJv
-bSBJSU8gYW5kIHJlYWQgZXZlbnRzIGZyb20NCj4gPiB1c2Vyc3BhY2UgdXNpbmcgdGhlIElJTyBj
-aGFyYWN0ZXIgZGV2aWNlLg0KPiA+IA0KPiA+IExvb2sgYXQgdGhlIHVzZXJzcGFjZSBleGFtcGxl
-cyBpbiB0b29scy9paW8gZm9yIGhvdyBpdCdzIHVzZWQNCj4gPiBpbiB1c2Vyc3BhY2UsIHRoZSBz
-dWJzeXN0ZW0gaXMgaW4gZHJpdmVycy9paW8uIEkgc3VzcGVjdA0KPiA+IGRyaXZlcnMvaWlvL2Fk
-Yy9wb2xsZWQtZ3Bpby5jIG9yIHNvbWV0aGluZyBpcyB3aGVyZSB5b3UgYWN0dWFsbHkNCj4gPiB3
-YW50IHRvIGdvIHdpdGggdGhpcy4gVGhlIG1vZHVsZSBzaG91bGQgZG8gYWxsIHRoZSBmYXN0cGF0
-aA0KPiA+IHdvcmsgYW5kIHRoZW4gZXhwb3NlIHdoYXQgeW91IGFjdHVhbGx5IHdhbnQgdG8ga25v
-dyB0bw0KPiA+IHVzZXJzcGFjZSB1c2luZyB0aGUgSUlPIHRyaWdnZXJzIG9yIGV2ZW50cy4NCj4g
-PiANCj4gPiBJIGhhdmUgdXNlZCBJSU8gbXlzZWxmLCBpdCBpcyByZWFsbHkgbmVhdCBmb3IgdGhp
-cyBraW5kIG9mIHVzZWNhc2UsDQo+ID4gYW5kIGRlc2lnbmVkIHJpZ2h0IGZyb20gdGhlIGdyb3Vu
-ZCB1cC4NCj4gPiANCj4gPiBJIHRoaW5rIHlvdSB3aG91bGQgdGhpbmsgYWJvdXQgaG93IHRvIHdy
-aXRlIHRoZSByaWdodCBraW5kIG9mDQo+ID4gZHJpdmVyIGZvciBJSU8gdG8gZG8gd2hhdCB5b3Ug
-d2FudC4NCj4gUGV0ZXIgaGFzIGEgc3BvdCBvZiBJSU8gZXhwZXJpZW5jZSBhcyB3ZWxsIDopDQoN
-ClJpZ2h0LCB0aGUgIkRBQyIgSSdtIHVzaW5nIHRvIGNvbnRyb2wgdGhlIGlucHV0IGxldmVsIG9u
-IHRoZSBjb21wYXJhdG9yDQppcyBhY3R1YWxseSBteSBJSU8gbWNwNDUzMSBwb3RlbnRpb21ldGVy
-IGRyaXZlci4gQnV0IEkgaGF2ZSBvbmx5DQpydWRpbWVudGFyeSBJSU8ga25vd2xlZGdlOyB0aGF0
-IGRyaXZlciBpcyB0cml2aWFsLg0KDQo+IEknbSBub3Qgc3VyZSBJIGVudGlyZWx5IHVuZGVyc3Rh
-bmQgd2hhdCB0aGUgZGF0YSBmbG93cyBhcmUgaGVyZSBzbyBJIG1heQ0KPiBnZXQgdGhpcyBjb21w
-bGV0ZWx5IHdyb25nIQ0KPiANCj4gU291bmRzIGxpa2UgYSBxdWljaywgZGlydHkgYW5kIHNpbXBs
-ZSAnY2FwdHVyZSB1bml0JyBsaWtlIHlvdSdkIGZpbmQgb24gYSBQTEMgdG8NCj4gbWUgKGJlIGJp
-dCBvbmUgdGhhdCBkb2Vzbid0IGdyYWIgbXVjaCBkYXRhIC0gSSB1c2UgdGhlc2UgYWxsIHRoZSB0
-aW1lIGF0DQo+IHdvcmsgdG8gY2F0Y2ggdGhlIG91dHB1dCBmcm9tIGJlYW0gYnJlYWsgc2Vuc29y
-IG9uIGF1dG9tYXRlZCBzeXN0ZW1zIGFuZA0KPiBzdHVmZiBsaWtlIHRoYXQpLiAgVGltZXJzIG9m
-dGVuIHN1cHBvcnQgYSBjb3B5IHRvIHJlZ2lzdGVyIG9uIGEgZ3Bpbw0KPiBzaWduYWwgYnV0IEkn
-bSBub3Qgc3VyZSBJJ3ZlIGV2ZXIgc2VlbiB0aGF0IHN1cHBvcnRlZCBpbiBrZXJuZWwgZWl0aGVy
-DQo+IChzb21lIGRpc2N1c3Npb24gYWJvdXQgZG9pbmcgdGhpcyBpbiBJSU8gb2NjdXJyZWQgYSB3
-aGlsZSBhZ28gYnV0IEkgZG9uJ3QNCj4gdGhpbmsgYW55dGhpbmcgZXZlciBjYW1lIG9mIGl0IHVu
-Zm9ydHVuYXRlbHkpLiBJdCB3YXMgZm9yIHRoZSBUSSBFQ0FQIGRldmljZXMNCj4gYnkgTWF0dCBQ
-b3J0ZXIgKGNjJ2QpICBOb3QgdGhhdCBjbG9zZWx5IHJlbGF0ZWQgYnV0IHBlcmhhcHMgTWF0dCB3
-aWxsDQo+IGhhdmUgc29tZSBpbnNpZ2h0IGhlcmUuDQo+IA0KPiBTbzoNCj4gDQo+IEFyZSB3ZSBs
-b29raW5nIHRvIHN5bmNocm9uaXNlZCBjb250cm9sIG9mIHRoZSBEQUMNCj4gZmVlZGluZyB0aGUg
-Y29tcGFyYXRvciBvciBpcyB0aGF0IGVudGlyZWx5IGF1dG9ub21vdXM/DQo+IChmb3Igbm93IEkn
-bGwgYXNzdW1lIGF1dG9ub21vdXMgLSBpdCBnZXRzIGludGVyZXN0aW5nIGlmDQo+ICBub3QgLSB3
-ZSdkIG5lZWQgdGhlIGJ1ZmZlcmVkIG91dHB1dCBzdHVmZiBMYXJzIGhhcyBmb3IgdGhhdCkNCj4g
-DQo+IEhvdyBmYXN0IGFyZSB3ZSB0YWxraW5nPw0KPiANCj4gU28gSSB0aGluayB3ZSBhcmUgYmFz
-aWNhbGx5IGxvb2tpbmcgZm9yIGZhc3Qgc2FtcGxpbmcgb2YgdGhlIGdwaW8gd2l0aCBsYXRjaGlu
-Zy4NCj4gDQo+IEkgc3VzcGVjdCB0aGUgcmF0ZXMgYXJlIGhpZ2ggZW5vdWdoIHRoYXQgYW4gSUlP
-IHRyaWdnZXIgaXMgZ29pbmcgdG8gYmUgdG9vIGV4cGVuc2l2ZQ0KPiAoYXMgaXQgZWZmZWN0aXZl
-bHkgcnVucyBhcyBhbiBpcnEpLiAgVGhhdCdzIGZpbmUgdGhvdWdoIGFzIHRoZXkgYXJlIG9wdGlv
-bmFsIGlmDQo+IHlvdSBoYXZlIGEgZ29vZCByZWFzb24gbm90IHRvIHVzZSB0aGVtIGFuZCBhIGRp
-cmVjdCBwb2xsaW5nIG9mIHRoZSBpc3IgYW5kIGZpbGxpbmcgYQ0KPiBidWZmZXIgbWlnaHQgd29y
-ay4NCj4gDQo+IFdlIGRvbid0IGN1cnJlbnRseSBoYXZlIDEgYml0IGNoYW5uZWwgc3VwcG9ydCBp
-biBJSU8gYW5kIGluIHRoaXMgcGFydGljdWxhciBjYXNlDQo+IG91ciBub3JtYWwgYnVmZmVycyBh
-cmUgZ29pbmcgdG8gYmUgdmVyeSBpbmVmZmljaWVudCBhcyB0aGV5IGFyZSBrZmlmbyBiYXNlZA0K
-PiBhbmQgaGVuY2Ugd2lsbCBidXJuIDEgYnl0ZSBwZXIgc2FtcGxlIGlmIHdlIGRvIHRoaXMgdGhl
-IHNpbXBsZSB3YXkuDQo+IFRoZSBjbG9zZXN0IHdlIGhhdmUgZ290dGVuIHRvIGEgMSBiaXQgc3Vw
-cG9ydCB3YXMgYSBjb21wYXJhdG9yIGRyaXZlciBhbmQNCj4gaW4gdGhlIGVuZCB0aGUgYXV0aG9y
-IGRlY2lkZWQgdG8gc3VwcG9ydCB0aGF0IHZpYSBldmVudHMgd2hpY2ggaGF2ZSB3YXkgaGlnaGVy
-DQo+IG92ZXJoZWFkIHRoYW4gSSB0aGluayB5b3Ugd2FudC4NCj4gDQo+IFNvIGlmIElJTyBpcyB0
-aGUgc2Vuc2libGUgd2F5IHRvIHN1cHBvcnQgdGhpcyBJIHRoaW5rIHdlIG5lZWQgc29tZXRoaW5n
-IGxpa2UNCj4gdGhlIGZvbGxvd2luZzoNCj4gDQo+IDEpIDEgYml0IGRhdGEgdHlwZSBzdXBwb3J0
-IGluIElJTyAtIG5vdCB0b28gYmFkIHRvIGFkZCwgdGhvdWdoIHdpbGwgbmVlZA0KPiAgICB0byBo
-YXZlIHNvbWUgcmVzdHJpY3Rpb25zIGluIHRoZSBkZW11eCBhcyBhcmJpdGFyeSBiaXQgY2hhbm5l
-bCByZWNvbWJpbmluZw0KPiAgICB3b3VsZCBiZSBob3JyaWJsZSBhbmQgY29zdGx5LiAgU28gaW4g
-dGhlIGZpcnN0IGluc3RhbmNlIHdlJ2QgcHJvYmFibHkgYnVybiAxIGJ5dGUNCj4gICAgcGVyIDEg
-Yml0IGNoYW5uZWwgZWFjaCBzYW1wbGUgLSBhZGRyZXNzIHRoaXMgbGF0ZXIgcGVyaGFwcy4gIElm
-IGJ1cm5pbmcNCj4gICAgYSBieXRlLCBqdXN0IHNwZWNpZnkgdGhhdCB5b3UgaGF2ZSBhIGNoYW5u
-ZWwgd2l0aCByZWFsYml0cyA9IDEsIHN0b3JhZ2ViaXRzID0gOA0KPiAgICBhbmQgaXQgc2hvdWxk
-IGFsbCB3b3JrLiAgSSdkIGxpa2UgdG8gYWRkIDEgYml0IHN1cHBvcnQgZnVsbHkgaWYgeW91IGFy
-ZQ0KPiAgICBpbnRlcmVzdGVkIHRob3VnaCENCj4gDQo+IDIpIEEgZHJpdmVyIHRoYXQgY2FuIGVm
-ZmVjdGl2ZWx5IGNoZWNrIGFuZCBjbGVhciB0aGUgaW50ZXJydXB0IHJlZ2lzdGVyIGFuZA0KPiAg
-ICBwdXNoIHRoYXQgdG8gdGhlIGtmaWZvLiAgUHJvYmFibHkgcnVubmluZyBhIGt0aHJlYWQgdG8g
-a2VlcCB0aGUgb3ZlcmhlYWQNCj4gICAgbG93IC0gc29tZXRoaW5nIGxpa2UgdGhlIHJlY2VudCBJ
-TkEyWFggZHJpdmVyIGlzIGRvaW5nICh0aG91Z2ggZm9yIGEgcmF0aGVyDQo+ICAgIGRpZmZlcmVu
-dCByZWFzb24pLiAgVGhhdCB3b3VsZCB0aGVuIHNob3ZlIGRhdGEgaW50byB0aGUgYnVmZmVyIGF0
-IHJlZ3VsYXINCj4gICAgaW50ZXJ2YWxzLg0KPiANCj4gMykgTm9ybWFsIHVzZXJzcGFjZSBjb2Rl
-IHdvdWxkIHRoZW4gcmVhZCB0aGlzIC0gaWRlYWxseSB3aXRoIHVwZGF0ZXMgdG8NCj4gICAgY29y
-cmVjdGx5IGludGVycHJldCBpdCBhcyBib29sZWFuIGRhdGEuDQo+IA0KPiBEb2Vzbid0IHNvdW5k
-IHRvbyBiYWQgLSBqdXN0IGEgcXVlc3Rpb24gb2Ygd2hldGhlciBpdCB3aWxsIGJlIGxpZ2h0d2Vp
-Z2h0DQo+IGVub3VnaCBmb3IgeW91ciB1c2UgY2FzZS4NCj4gDQo+IEFzc3VtaW5nIEkgaGF2ZSB1
-bmRlcnN0b29kIGV2ZW4gdmFndWVseSB3aGF0IHlvdSBhcmUgZG9pbmcgOykNCj4gIA0KPiBTb3Vu
-ZHMgZnVuLg0KDQpIbW0sIEkndmUgYmVlbiByZWFkaW5nIHRoZSByZXNwb25zZXMgZnJvbSB5b3Ug
-YW5kIExpbnVzIGEgY291cGxlIG9mDQp0aW1lcywgYW5kIEkgdGhpbmsgeW91IGhhdmUgbWlzdW5k
-ZXJzdG9vZD8gWW91IHRhbGsgYWJvdXQgdHJpZ2dlcnMsDQpmYXN0cGF0aCwgaGlnaCByYXRlcyBh
-bmQgd2hhdG5vdC4gVGhhdCBpcyBub3Qgd2hhdCBJIG5lZWQgYW5kIG5vdCBteQ0KaXRjaCBhdCBh
-bGwhIEknbSBub3QgbG9va2luZyBhdCBnZXR0aW5nIGEgY29udGludW91cyBzdHJlYW0gb2YgZW52
-ZWxvcGUNCnZhbHVlcywgSSBvbmx5IG5lZWQgdG8gY2hlY2sgdGhlIGVudmVsb3BlIHZhbHVlIGV2
-ZXJ5IDUgc2Vjb25kcyBvcg0Kc28uIEFsc28sIHRoZSB3aG9sZSB0aGluZyBpcyBjb21wbGljYXRl
-ZCBieSB0aGUgZW52ZWxvcGUgZGV0ZWN0b3INCmJlaW5nIG11bHRpcGxleGVkLCBzbyB0aGF0IHRo
-ZSBvbmUgZW52ZWxvcGUgZGV0ZWN0b3IgY2FuIGJlIHVzZWQNCmZvciBhIGhhbmRmdWwgb2Ygc2ln
-bmFscy4NCg0KVGhlIHNpbXBsaWZpZWQgc2NoZW1hdGljcyBhcmU6DQoNCiAgICAgLS0tLS0tLQ0K
-IC0+IHwgSTEgICAgfCAgICAgICAgICAgICAgLS0tLS0tLSAgICAgIC0tLS0tLS0NCiAtPiB8IEky
-ICBPIHwgLT4gSU5QVVQgLT4gfCBBICAgICB8ICAgIHwgICAgICAgfA0KIC0+IHwgSTMgICAgfCAg
-ICAgICAgICAgICB8ICAgICBDIHwgLT4gfCBncGlvICB8DQogLT4gfCBJNCAgICB8ICAgICAgREFD
-IC0+IHwgQiAgICAgfCAgICB8ICAgICAgIHwNCiAtPiB8IEk1ICAgIHwgICAgICAgICAgICAgIC0t
-LS0tLS0gICAgICAtLS0tLS0tDQogICAgIC0tLS0tLS0gICAgICAgICAgICAgICAgIENNUCAgICAg
-ICAgICBNQ1UNCiAgICAgICBNVVgNCg0KVXNlcnNwYWNlIGRvZXMgdGhlIGZvbGxvd2luZyB3aGVu
-IGRvaW5nIHRoaXMgdy9vIHRoZSBpc3IgcGF0Y2hlczoNCg0KMS4gc2VsZWN0IHNpZ25hbCB1c2lu
-ZyB0aGUgTVVYDQoyLiBzZXQgdGhlIERBQyBzbyBoaWdoIHRoYXQgSU5QVVQgaXMgbmV2ZXIgcmVh
-Y2hpbmcgdGhhdCBsZXZlbC4NCiAgIEMgKGFuZCB0aHVzIGdwaW8pIGlzIG5vdyBzdGFibGUNCjMu
-IHN0YXJ0IHdhaXRpbmcgZm9yIGludGVycnVwdHMgb24gZ3Bpbw0KNC4gYWRqdXN0IHRoZSBEQUMg
-bGV2ZWwgdG8gdGhlIGxldmVsIG9mIGludGVyZXN0DQo1LiBhYm9ydCBvbiBpbnRlcnJ1cHQgb3Ig
-dGltZW91dA0KDQpJZiB0aGUgbWVhc3VyZW1lbnQgdGltZWQgb3V0LCBJIGtub3cgdGhhdCB0aGUg
-c2lnbmFsIGlzIHdlYWtlciB0aGFuIHRoZQ0KZ2l2ZW4gREFDIHRocmVzaG9sZCwgYW5kIGNhbiBn
-byBiYWNrIHRvIDQgd2l0aCBhIGxvd2VyIERBQyBsZXZlbC4gSWYgdGhlDQptZWFzdXJlbWVudCB3
-YXMgaW50ZXJydXB0ZWQsIEkgbmVlZCB0byBnbyBiYWNrIHRvIDIgaW4gb3JkZXIgdG8gc2V0IGEN
-CmhpZ2hlciBEQUMgbGV2ZWwgd2hlbiBwb2ludCA0IGlzIHJlYWNoZWQuDQoNClRoZSBhY3R1YWwg
-SU5QVVQgZW52ZWxvcGUgaXMgZm91bmQgb3V0IGJ5IHJlcGVhdGluZyB0aGlzIHVudGlsIHdlDQpy
-dW4gb3V0IG9mIGJpdHMgaW4gdGhlIERBQyAoaS5lLiB1c2luZyBhIGJpbmFyeSBzZWFyY2ggcGF0
-dGVybikuDQoNCkluIG15IHVzZSBjYXNlLCBJIGRvbid0IHByZXRlbmQgdG8gZGV0ZWN0IHNpZ25h
-bHMgbG93ZXIgdGhhbiAyMEh6LCBzbw0KbXkgdGltZW91dCBpcyA1MG1zLg0KDQpXaXRoIHRoZSBp
-c3IgcGF0Y2hlcywgdGhlIGFib3ZlIHRyYW5zZm9ybXMgaW50bzoNCg0KMS4gc2VsZWN0IHNpZ25h
-bCB1c2luZyB0aGUgTVVYDQoyLiBzZXQgdGhlIERBQyBzbyBoaWdoIHRoYXQgSU5QVVQgaXMgbmV2
-ZXIgcmVhY2hpbmcgdGhhdCBsZXZlbC4NCiAgIEMgKGFuZCB0aHVzIGdwaW8pIGlzIG5vdyBzdGFi
-bGUNCjMuIHJlYWQgdGhlIGlzciBiaXQgdG8gY2xlYXIgaXQNCjQuIGFkanVzdCB0aGUgREFDIGxl
-dmVsIHRvIHRoZSBsZXZlbCBvZiBpbnRlcmVzdA0KNS4gcmVhZCB0aGUgaXNyIGJpdCBhZ2FpbiBh
-ZnRlciA1MG1zDQoNClRoZSByZXN1bHQgaXMgYXZhaWxhYmxlIGRpcmVjdGx5IGluIHRoZSBpc3Ig
-Yml0LCBubyBpbnRlcnJ1cHRzIG5lZWRlZC4NCklmIEkgaGFwcGVuIHRvIHdhaXQgbG9uZ2VyIHRo
-YW4gNTBtcywgdGhhdCdzIG5vdCBhIHByb2JsZW0gZWl0aGVyLiBXaXRoDQp0aGUgaXNyIHJlZ2lz
-dGVyIHZlcnNpb24sIHRoZXJlIGlzIHNpbXBseSBubyBuZWVkIHRvIGRvIGFueSBvZiB0aGlzDQp3
-aXRoIGFueSBjcml0aWNhbCB1cmdlbmN5Lg0KDQpUaGUgYWN0dWFsIElOUFVUIGVudmVsb3BlIGlz
-IGZvdW5kIG91dCBpbiB0aGUgc2FtZSB3YXkgYXMgaW4gdGhlDQppbnRlcnJ1cHQgY2FzZSwgYnkg
-bG9vcGluZyB1bnRpbCB3ZSBydW4gb3V0IG9mIERBQyBiaXRzLg0KDQpTbywgbXkgcHJvYmxlbSBp
-cyB0aGF0IGRvaW5nIHRoaXMgd2l0aCB0aGUgaW50ZXJydXB0IHZlcnNpb24NCmludHJvZHVjZXMg
-YSByaXNrIHRoYXQgeW91IGdldCBhIG5ldmVyLWVuZGluZyBmbG9vZCBvZiBpbnRlcnJ1cHRzIGlm
-DQpJTlBVVCBoYXMgYSBmcmVxdWVuY3kgdGhhdCdzIGhpZ2ggZW5vdWdoLiBVc2VyIHNwYWNlIG1h
-eSBuZXZlciBnZXQNCmEgY2hhbmNlIHRvIHNheSB0aGF0IG1vcmUgaW50ZXJydXB0cyBhcmUgbm90
-IGludGVyZXN0aW5nLiBPciwNCmF0IGxlYXN0LCB0aGUgZGV2aWNlIG1heSBiZSB0aWVkIHVwIHdp
-dGggaGFuZGxpbmcgdG90YWxseSBwb2ludGxlc3MNCmludGVycnVwdHMgZm9yIGFuIHVuYWNjZXB0
-YWJsZSBhbW91bnQgb2YgdGltZSBiZWZvcmUgdXNlciBzcGFjZQ0KZ2V0cyB0byBydW4uDQoNCklO
-UFVUIG1heSBiZSBhbiBleHRlcm5hbCBzaWduYWwgdG8gdGhlIGRldmljZSwgYW5kIHdoaWxlIEkg
-Y291bGQgYWRkDQpzcGVjcyB0aGF0IHN0YXRlIGEgbWF4IGZyZXF1ZW5jeSBhbmQgdGhlbiBibGFt
-ZSB0aGUgZW5kIHVzZXIgaW4gY2FzZSBvZg0KdHJvdWJsZSwgSSB3b3VsZCB2ZXJ5IG11Y2ggbGlr
-ZSBpdCBpZiBpdCB3YXMgbm90IHBvc3NpYmxlIHRoZSBraWxsIHRoZQ0KZGV2aWNlIGJ5IGFwcGx5
-aW5nIHRoZSAicmlnaHQiIHNpZ25hbC4NCg0KDQoNCkkgaGF2ZSByZWFsaXplZCB0aGF0IEkgY291
-bGQgd29yayB3aXRoIG9uZS1zaG90LWludGVycnVwdHMuIFRoZW4gdGhlDQp1cmdlbmN5IHRvIGRp
-c2FibGUgaW50ZXJydXB0cyBnbyBhd2F5LCBhcyBvbmx5IG9uZSBpbnRlcnJ1cHQgd291bGQNCmJl
-IHNlcnZlZC4gVGhhdCB3YXMgbm90IG15IGltbWVkaWF0ZSBzb2x1dGlvbiB0aG91Z2gsIGFzIEkg
-aGF2ZSBiZWVuDQp1c2luZyBpc3IgdHlwZSByZWdpc3RlcnMgaW4gdGhpcyB3YXkgc2V2ZXJhbCB0
-aW1lcyBiZWZvcmUuDQoNCk9uZSBnYWluIHdpdGggdGhlIGludGVycnVwdCBhcHByb2FjaCBpcyB0
-aGF0IHlvdSBtYXkgbm90IG5lZWQgdG8gd2FpdA0KdGhlIGZ1bGwgNTBtcyBmb3IgZWFjaCBtZWFz
-dXJlbWVudCwgYnV0IEkgY2FuJ3Qgc2F5IHRoYXQgSSBjYXJlIG11Y2gNCmFib3V0IHRoYXQuDQoN
-CklmIHRoaXMgaXMgdG8gYmUgZG9uZSBpbiBJSU8sIEkgaW1hZ2luZSB0aGF0IHRoZSBzYW5lc3Qg
-dGhpbmcgd291bGQNCmJlIHRvIGludGVncmF0ZSB0aGUgd2hvbGUgREFDLWxvb3AgYW5kIHByZXNl
-bnQgYSBmaW5pc2hlZCBlbnZlbG9wZQ0KdmFsdWUgdG8gdXNlciBzcGFjZT8gVGhpcyBlbnZlbG9w
-ZSBkZXRlY3RvciB3b3VsZCBoYXZlIHRvIGJlIHByZXR0eQ0KY29uZmlndXJhYmxlLCBvciBpdCB3
-aWxsIGJlIG5leHQgdG8gdXNlbGVzcyB0byBhbnlib2R5IGJ1dCBtZS4NCg0KSSBjb3VsZCBpbWFn
-aW5nIHRoYXQgdGhpcyBuZXcgSUlPIGRyaXZlciBzaG91bGQgYmUgYWJsZSB0byB3b3JrDQp3aXRo
-IGFueSBEQUMgdHlwZSBkZXZpY2UsIHdoaWNoIGluIG15IGNhc2Ugd291bGQgYmUgdGhlIG1jcDQ1
-MzENCmRwb3QuIFdoaWNoIGlzIG5vdCBhIERBQywgbWF5YmUgdGhhdCBjb3VsZCBiZSBzb2x2ZWQg
-d2l0aCBhIG5ldw0KZGFjLWRwb3QgZHJpdmVyLCBhcHBsaWNhYmxlIHRvIGNhc2VzIHdoZXJlIGEg
-ZHBvdCBpcyB3aXJlZCBhcyBhDQpzaW1wbGUgdm9sdGFnZSBkaXZpZGVyPyBUaGUgbmV3IElJTyBk
-cml2ZXIgYWxzbyBuZWVkcyB0byBrbm93IGhvdw0KdG8gZ2V0IGEgcmVhZGluZyBmcm9tIHRoZSBj
-b21wYXJhdG9yLiBJIHRoaW5rIHRoZSBkcml2ZXIgc2hvdWxkDQpzdXBwb3J0IGhhdmluZyBhIGxh
-dGNoIGJldHdlZW4gdGhlIGNvbXBhcmF0b3IgYW5kIHRoZSBncGlvLCBzbyBpdA0KbmVlZCB0byBr
-bm93IGhvdyB0byBvcHRpb25hbGx5ICJyZXNldCB0aGUgY29tcGFyYXRvciIuIFRoYXQNCndvdWxk
-IGhhdmUgc29sdmVkIHRoZSB3aG9sZSBwcm9ibGVtLCB5b3Ugd291bGQgbmV2ZXIgaGF2ZSBzZWVu
-DQphbnkgb2YgdGhpcyBpZiBJIGhhZCBzdWNoIGEgbGF0Y2ggb24gbXkgYm9hcmQuIEJ1dCB0aGUg
-aXNyDQpyZWdpc3RlciBpcyBhIGxhdGNoLCBzby4uLg0KDQpSZWdhcmRsZXNzLCBJIHRoaW5rIHN1
-Y2ggYSBkcml2ZXIgc3RpbGwgbmVlZHMgc3VwcG9ydCBmcm9tIGdwaW8NCmFuZC9vciBwaW5jdHJs
-LiBFaXRoZXIgZXhwb3NpbmcgdGhlIGlzciByZWdpc3RlciBvciBzdXBwb3J0aW5nDQpvbmUtc2hv
-dC1pbnRlcnJ1cHRzIHRoYXQgZGlzYXJtIHRoZW1zZWx2ZXMgYmVmb3JlIHJlc3RvcmluZyB0aGUN
-CnByb2Nlc3NvciBpbnRlcnJ1cHQgZmxhZyAobWF5YmUgdGhhdCBleGlzdHM/KS4gT3RoZXJ3aXNl
-IHRoZQ0KY29yZSBwcm9ibGVtIHJlbWFpbnMgdW5zb2x2ZWQuIEFsc28sIHRoaXMgaW1hZ2luYXJ5
-IElJTyBkcml2ZXINCnByb2JhYmx5IGhhdmUgdG8gYmUgdG90YWxseSBvYmxpdmlvdXMgb2YgdGhl
-IE1VWCwgb3IgdGhlIG51bWJlcg0Kb2YgcG9zc2liaWxpdGllcyBleHBsb2RlLg0KDQpDaGVlcnMs
-DQpQZXRlcg0KDQo+ID4gWW91cnMsDQo+ID4gTGludXMgV2FsbGVpag0KPiA+IA0KPiA+IE9uIFR1
-ZSwgRGVjIDgsIDIwMTUgYXQgNDoyMCBBTSwgUGV0ZXIgUm9zaW4gPHBlZGFAbHlzYXRvci5saXUu
-c2U+IHdyb3RlOg0KPiA+PiBGcm9tOiBQZXRlciBSb3NpbiA8cGVkYUBheGVudGlhLnNlPg0KPiA+
-Pg0KPiA+PiBIaSENCj4gPj4NCj4gPj4gSSBoYXZlIGEgc2lnbmFsIGNvbm5lY3RlZCB0byBhIGdw
-aW8gcGluIHdoaWNoIGlzIHRoZSBvdXRwdXQgb2YNCj4gPj4gYSBjb21wYXJhdG9yLiBCeSBjaGFu
-Z2luZyB0aGUgbGV2ZWwgb2Ygb25lIG9mIHRoZSBpbnB1dHMgdG8gdGhlDQo+ID4+IGNvbXBhcmF0
-b3IsIEkgY2FuIGRldGVjdCB0aGUgZW52ZWxvcGUgb2YgdGhlIG90aGVyIGlucHV0IHRvDQo+ID4+
-IHRoZSBjb21wYXJhdG9yIGJ5IHVzaW5nIGEgc2VyaWVzIG9mIG1lYXN1cmVtZW50cyBtdWNoIGlu
-IHRoZQ0KPiA+PiBzYW1lIG1hbmVyIGEgbWFudWFsIEFEQyB3b3JrcywgYnV0IHdhdGNoaW5nIGZv
-ciBjaGFuZ2VzIG9uIHRoZQ0KPiA+PiBjb21wYXJhdG9yIG92ZXIgYSBwZXJpb2Qgb2YgdGltZSBp
-bnN0ZWFkIG9mIG9ubHkgdGhlIGltbWVkaWF0ZQ0KPiA+PiBvdXRwdXQuDQo+ID4+DQo+ID4+IE5v
-dywgdGhlIGlucHV0IHNpZ25hbCB0byB0aGUgY29tcGFyYXRvciBtaWdodCBoYXZlIGEgaGlnaCBm
-cmVxdWVuY3ksDQo+ID4+IHdoaWNoIHdpbGwgY2F1c2UgdGhlIG91dHB1dCBmcm9tIHRoZSBjb21w
-YXJhdG9yIChhbmQgdGh1cyB0aGUgR1BJTw0KPiA+PiBpbnB1dCkgdG8gY2hhbmdlIHJhcGlkbHku
-DQo+ID4+DQo+ID4+IEEgY29tbW9uKD8pIGlkaW9tIGZvciB0aGlzIGlzIHRvIHVzZSB0aGUgaW50
-ZXJydXB0IHN0YXR1cyByZWdpc3Rlcg0KPiA+PiB0byBjYXRjaCB0aGUgZ2xpdGNoZXMsIGJ1dCB0
-aGVuIG5vdCBoYXZlIGFueSBpbnRlcnJ1cHQgdGllZCB0bw0KPiA+PiB0aGUgcGluIGFzIHRoYXQg
-Y291bGQgcG9zc2libHkgZ2VuZXJhdGUgcG9pbnRsZXNzIGJ1cnN0cyBvZg0KPiA+PiAoZXhwZW5z
-aXZlKSBpbnRlcnJ1cHRzLg0KPiA+Pg0KPiA+PiBTbywgdGhlc2UgdHdvIHBhdGNoZXMgZXhwb3Nl
-IGFuIGludGVyZmFjZSB0byB0aGUgUElPX0lTUiByZWdpc3Rlcg0KPiA+PiBvZiB0aGUgcGlvIGNv
-bnRyb2xsZXJzIG9uIHRoZSBwbGF0Zm9ybSBJJ20gdGFyZ2V0dGluZy4gVGhlIGZpcnN0DQo+ID4+
-IHBhdGNoIGFkZHMgc29tZSBpbmZyYXN0cnVjdHVyZSB0byB0aGUgZ3BpbyBjb3JlIGFuZCB0aGUg
-c2Vjb25kDQo+ID4+IHBhdGNoIGhvb2tzIHVwICJteSIgcGluIGNvbnRyb2xsZXIuDQo+ID4+DQo+
-ID4+IEJ1dCBoZXksIHRoaXMgc2VlbXMgbGlrZSBhbiBvbGQgcHJvYmxlbSBhbmQgSSB3YXMgc3Vy
-cHJpc2VkIHRoYXQNCj4gPj4gSSBoYWQgdG8gdG91Y2ggdGhlIHNvdXJjZSB0byBkbyBpdC4gV2hp
-Y2ggbWFrZXMgbWUgd29uZGVyIHdoYXQgSSdtDQo+ID4+IG1pc3NpbmcgYW5kIHdoYXQgb3RoZXJz
-IG5lZWRpbmcgdG8gc2VlIHNob3J0IHB1bHNlcyBvbiBhIHBpbiBidXQgbm90DQo+ID4+IG5lZWRp
-bmcvd2FudGluZyBpbnRlcnJ1cHRzIGFyZSBkb2luZz8NCj4gQmFzaWNhbGx5IGEgY2FwdHVyZSB1
-bml0Li4uIEJlIGl0IG9uZSB0aGF0IGRvZXNuJ3QgZ3JhYiBhbnl0aGluZyBlbHNlDQo+IGF0IHRo
-ZSBtb21lbnQuDQo+ID4+DQo+ID4+IFllcywgdGhlcmUgbmVlZHMgdG8gYmUgYSB3YXkgdG8gc2Vs
-ZWN0IHRoZSBpbnRlcnJ1cHQgZWRnZSB3L28NCj4gPj4gYWN0dWFsbHkgYXJtaW5nIHRoZSBpbnRl
-cnJ1cHQsIHRoYXQgaXMgbWlzc2luZy4gQW5kIHByb2JhYmx5DQo+ID4+IG90aGVyIHRoaW5ncyB0
-b28sIGJ1dCBJIGRpZG4ndCB3YW50IHRvIGRvIG1vcmUgd29yayBpbiBjYXNlIHRoaXMNCj4gPj4g
-aXMgYSBkZWFkIGVuZCBmb3Igc29tZSByZWFzb24uLi4NCj4gPj4NCj4gPj4gQ2hlZXJzLA0KPiA+
-PiBQZXRlcg0KPiA+Pg0KPiA+PiBQZXRlciBSb3NpbiAoMik6DQo+ID4+ICAgZ3BpbzogQWRkIGlz
-ciBwcm9wZXJ0eSBvZiBncGlvIHBpbnMNCj4gPj4gICBwaW5jdHJsOiBhdDkxOiBleHBvc2UgdGhl
-IGlzciBiaXQNCj4gPj4NCj4gPj4gIERvY3VtZW50YXRpb24vZ3Bpby9zeXNmcy50eHQgICB8ICAg
-MTIgKysrKysrKysrKw0KPiA+PiAgZHJpdmVycy9ncGlvL2dwaW9saWItc3lzZnMuYyAgIHwgICAz
-MCArKysrKysrKysrKysrKysrKysrKysrKysNCj4gPj4gIGRyaXZlcnMvZ3Bpby9ncGlvbGliLmMg
-ICAgICAgICB8ICAgMTUgKysrKysrKysrKysrDQo+ID4+ICBkcml2ZXJzL3BpbmN0cmwvcGluY3Ry
-bC1hdDkxLmMgfCAgIDUwICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0N
-Cj4gPj4gIGluY2x1ZGUvbGludXgvZ3Bpby9jb25zdW1lci5oICB8ICAgIDEgKw0KPiA+PiAgaW5j
-bHVkZS9saW51eC9ncGlvL2RyaXZlci5oICAgIHwgICAgMiArKw0KPiA+PiAgNiBmaWxlcyBjaGFu
-Z2VkLCAxMDYgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4gPj4NCj4gPj4gLS0NCj4g
-Pj4gMS43LjEwLjQNCj4gPj4NCg==
+On 12/12/2015 09:41 AM, Jonathan Cameron wrote:
+> On 07/12/15 17:26, Andrew F. Davis wrote:
+>> On 12/05/2015 12:21 PM, Jonathan Cameron wrote:
+>>> On 02/12/15 19:57, Andrew F. Davis wrote:
+>>>> Add driver for the TI AFE4404 heart rate monitor and pulse oximeter.
+>>>> This device detects reflected LED light fluctuations and presents an ADC
+>>>> value to the user space for further signal processing.
+>>>>
+>>>> Datasheet: http://www.ti.com/product/AFE4404/datasheet
+>>>>
+>>>> Signed-off-by: Andrew F. Davis <afd@ti.com>
+>>> I like this a lot.  Seems much simpler to me.
+>>>
+>>> Various bits and bobs inline though.  You quite rightly stated there
+>>> was too much to describe in the change log so I've kind of started
+>>> from scratch on the review as well.
+>>>
+>>> Thanks for your hard work on this.
+>>>
+>>> Jonathan
+> Reponses inline.
+>>>> ---
+>>>>    .../ABI/testing/sysfs-bus-iio-health-afe4404       |  20 +
+>>>>    drivers/iio/Kconfig                                |   1 +
+>>>>    drivers/iio/Makefile                               |   1 +
+>>>>    drivers/iio/health/Kconfig                         |  25 +
+>>>>    drivers/iio/health/Makefile                        |   6 +
+>>>>    drivers/iio/health/afe4404.c                       | 619 +++++++++++++++++++++
+>>>>    drivers/iio/health/afe440x.h                       | 168 ++++++
+>>>>    7 files changed, 840 insertions(+)
+>>>>    create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-health-afe4404
+>>>>    create mode 100644 drivers/iio/health/Kconfig
+>>>>    create mode 100644 drivers/iio/health/Makefile
+>>>>    create mode 100644 drivers/iio/health/afe4404.c
+>>>>    create mode 100644 drivers/iio/health/afe440x.h
+>>>>
+>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-health-afe4404 b/Documentation/ABI/testing/sysfs-bus-iio-health-afe4404
+>>>> new file mode 100644
+>>>> index 0000000..c104d66
+>>>> --- /dev/null
+>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-health-afe4404
+>>>> @@ -0,0 +1,20 @@
+>>>> +What:        /sys/bus/iio/devices/iio:deviceX/tia_resistanceY
+>>>> +        /sys/bus/iio/devices/iio:deviceX/tia_capacitanceY
+>>>> +Date:        December 2015
+>>>> +KernelVersion:
+>>>> +Contact:    Andrew F. Davis <afd@ti.com>
+>>>> +Description:
+>>>> +        Get and set the resistance and the capacitance settings for the
+>>>> +        Transimpedance Amplifier. Y is 1 for Rf1 and Cf1, Y is 2 for
+>>>> +        Rf2 and Cf2 values.
+>>>> +        Resistance setting is from 0 -> 7
+>>>> +        Capcitance setting is from 0 -> 15
+>>> No magic numbers if at all possible.  These correspond to real resistances
+>>> and capacitances.
+>>>
+>>> You also want an _available attribute for each of them for the different
+>>> possible values.
+>>>
+>>> I'm not overly keep on the naming still but it's part specific enough that
+>>> if you fix the units I'll let it go ;)
+>>
+>> I'm not sure if there is a clean way to do this, these are not channels
+>> so parsing input will need checks based on what kind of register and value
+>> we send in, these are raw input to the registers for other registers, I
+>> changed the name to attempt to make it clear to users these are not
+>> channels but raw registers (out_resistance1_raw -> tia_resistance1).
+>>
+>> I could still make this more clear in the ABI doc:
+>>
+>>      Valid capacitance settings are 0 -> 7 which correspond to
+>>      5pF, 2.5pF, 10pF, 7.5pF, 20pF, 17.5pF, 25pF, and 22.5pF
+>>      respectively.
+> Just do a simple mapping in the driver from magic number to real value
+> and the other way around + provide the available attribute.  Rule 2 of sysfs
+> interfaces: no magic values where a real meaningful one can be provided for
+> the cost of a few more lines of code.
+>
+> You can use the existing floating point to value pair functions from IIO
+> to get you to a couple of values that can be trivially matched against
+> a const table.
+>
+> It's not free, but probably only 20 lines including the static const table
+> of values.
+
+Took a bit more work than expected but done for the next version.
+
+>>
+>> or something similar.
+>>
+>>>> +
+>>>> +What:        /sys/bus/iio/devices/iio:deviceX/tia_separate_en
+>>>> +Date:        December 2015
+>>>> +KernelVersion:
+>>>> +Contact:    Andrew F. Davis <afd@ti.com>
+>>>> +Description:
+>>>> +        Enable or disable separate settings for the TransImpedance
+>>>> +        Amplifier above, when disabled both values are set by the
+>>>> +        first channel.
+>>> Weird and wonderful but fine for a part specific attibute!
+>>>
+>>> As noted below, I think we need to document all the new ABI even though
+>>> much of it is just extended names on standard channels.
+>>>
+>>
+>> Works for me, I'll add them back.
+>>
+>>>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>>>> index 66792e7..ac085ab 100644
+>>>> --- a/drivers/iio/Kconfig
+>>>> +++ b/drivers/iio/Kconfig
+>>>> @@ -52,6 +52,7 @@ source "drivers/iio/common/Kconfig"
+>>>>    source "drivers/iio/dac/Kconfig"
+>>>>    source "drivers/iio/frequency/Kconfig"
+>>>>    source "drivers/iio/gyro/Kconfig"
+>>>> +source "drivers/iio/health/Kconfig"
+>>>>    source "drivers/iio/humidity/Kconfig"
+>>>>    source "drivers/iio/imu/Kconfig"
+>>>>    source "drivers/iio/light/Kconfig"
+>>>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>>>> index aeca726..6c5eb2a 100644
+>>>> --- a/drivers/iio/Makefile
+>>>> +++ b/drivers/iio/Makefile
+>>>> @@ -18,6 +18,7 @@ obj-y += common/
+>>>>    obj-y += dac/
+>>>>    obj-y += gyro/
+>>>>    obj-y += frequency/
+>>>> +obj-y += health/
+>>>>    obj-y += humidity/
+>>>>    obj-y += imu/
+>>>>    obj-y += light/
+>>>> diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
+>>>> new file mode 100644
+>>>> index 0000000..526e7af
+>>>> --- /dev/null
+>>>> +++ b/drivers/iio/health/Kconfig
+>>>> @@ -0,0 +1,25 @@
+>>>> +#
+>>>> +# Health drivers
+>>>> +#
+>>>> +# When adding new entries keep the list in alphabetical order
+>>>> +
+>>>> +menu "Health"
+>>>> +
+>>>> +menu "Heart Rate Monitors"
+>>>> +
+>>>> +config AFE4404
+>>>> +    tristate "TI AFE4404 Heart Rate Monitor"
+>>>> +    depends on I2C
+>>>> +    select REGMAP_I2C
+>>>> +    select IIO_BUFFER
+>>>> +    select IIO_TRIGGERED_BUFFER
+>>>> +    help
+>>>> +      Say yes to choose the Texas Instruments AFE4404
+>>>> +      heart rate monitor and low-cost pulse oximeter.
+>>>> +
+>>>> +      To compile this driver as a module, choose M here: the
+>>>> +      module will be called afe4404.
+>>>> +
+>>>> +endmenu
+>>>> +
+>>>> +endmenu
+>>>> diff --git a/drivers/iio/health/Makefile b/drivers/iio/health/Makefile
+>>>> new file mode 100644
+>>>> index 0000000..c108c8d
+>>>> --- /dev/null
+>>>> +++ b/drivers/iio/health/Makefile
+>>>> @@ -0,0 +1,6 @@
+>>>> +#
+>>>> +# Makefile for IIO Health drivers
+>>>> +#
+>>>> +# When adding new entries keep the list in alphabetical order
+>>>> +
+>>>> +obj-$(CONFIG_AFE4404) += afe4404.o
+>>>> diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
+>>>> new file mode 100644
+>>>> index 0000000..d36c1d9
+>>>> --- /dev/null
+>>>> +++ b/drivers/iio/health/afe4404.c
+>>>> @@ -0,0 +1,619 @@
+>>>> +/*
+>>>> + * AFE4404 Heart Rate Monitors and Low-Cost Pulse Oximeters
+>>>> + *
+>>>> + * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+>>>> + *    Andrew F. Davis <afd@ti.com>
+>>>> + *
+>>>> + * This program is free software; you can redistribute it and/or modify
+>>>> + * it under the terms of the GNU General Public License version 2 as
+>>>> + * published by the Free Software Foundation.
+>>>> + *
+>>>> + * This program is distributed in the hope that it will be useful, but
+>>>> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+>>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+>>>> + * General Public License for more details.
+>>>> + */
+>>>> +
+>>>> +#include <linux/device.h>
+>>>> +#include <linux/delay.h>
+>>>> +#include <linux/err.h>
+>>>> +#include <linux/interrupt.h>
+>>>> +#include <linux/i2c.h>
+>>>> +#include <linux/kernel.h>
+>>>> +#include <linux/module.h>
+>>>> +#include <linux/of_gpio.h>
+>>>> +#include <linux/regmap.h>
+>>>> +#include <linux/slab.h>
+>>>> +#include <linux/sysfs.h>
+>>>> +#include <linux/regulator/consumer.h>
+>>>> +
+>>>> +#include <linux/iio/iio.h>
+>>>> +#include <linux/iio/sysfs.h>
+>>>> +#include <linux/iio/buffer.h>
+>>>> +#include <linux/iio/trigger.h>
+>>>> +#include <linux/iio/triggered_buffer.h>
+>>>> +#include <linux/iio/trigger_consumer.h>
+>>>> +
+>>>> +#include "afe440x.h"
+>>>> +
+>>>> +#define AFE4404_DRIVER_NAME        "afe4404"
+>>>> +
+>>>> +/* AFE4404 registers */
+>>>> +#define AFE4404_TIA_GAIN_SEP        0x20
+>>>> +#define AFE4404_TIA_GAIN        0x21
+>>>> +#define AFE4404_PROG_TG_STC        0x34
+>>>> +#define AFE4404_PROG_TG_ENDC        0x35
+>>>> +#define AFE4404_LED3LEDSTC        0x36
+>>>> +#define AFE4404_LED3LEDENDC        0x37
+>>>> +#define AFE4404_CLKDIV_PRF        0x39
+>>>> +#define AFE4404_OFFDAC            0x3a
+>>>> +#define AFE4404_DEC            0x3d
+>>>> +#define AFE4404_AVG_LED2_ALED2VAL    0x3f
+>>>> +#define AFE4404_AVG_LED1_ALED1VAL    0x40
+>>>> +
+>>>> +/* AFE4404 GAIN register fields */
+>>>> +#define AFE4404_TIA_GAIN_RES_MASK    GENMASK(2, 0)
+>>>> +#define AFE4404_TIA_GAIN_RES_SHIFT    0
+>>>> +#define AFE4404_TIA_GAIN_CAP_MASK    GENMASK(5, 3)
+>>>> +#define AFE4404_TIA_GAIN_CAP_SHIFT    3
+>>>> +
+>>>> +/* AFE4404 LEDCNTRL register fields */
+>>>> +#define AFE4404_LEDCNTRL_ILED1_MASK    GENMASK(5, 0)
+>>>> +#define AFE4404_LEDCNTRL_ILED1_SHIFT    0
+>>>> +#define AFE4404_LEDCNTRL_ILED2_MASK    GENMASK(11, 6)
+>>>> +#define AFE4404_LEDCNTRL_ILED2_SHIFT    6
+>>>> +#define AFE4404_LEDCNTRL_ILED3_MASK    GENMASK(17, 12)
+>>>> +#define AFE4404_LEDCNTRL_ILED3_SHIFT    12
+>>>> +
+>>>> +/* AFE4404 CONTROL2 register fields */
+>>>> +#define AFE440X_CONTROL2_ILED_2X_MASK    BIT(17)
+>>>> +#define AFE440X_CONTROL2_ILED_2X_SHIFT    17
+>>>> +
+>>>> +/* AFE4404 CONTROL3 register fields */
+>>>> +#define AFE440X_CONTROL3_OSC_ENABLE    BIT(9)
+>>>> +
+>>>> +/* AFE4404 OFFDAC register current fields */
+>>>> +#define AFE4404_OFFDAC_CURR_LED1_MASK    GENMASK(9, 5)
+>>>> +#define AFE4404_OFFDAC_CURR_LED1_SHIFT    5
+>>>> +#define AFE4404_OFFDAC_CURR_LED2_MASK    GENMASK(19, 15)
+>>>> +#define AFE4404_OFFDAC_CURR_LED2_SHIFT    15
+>>>> +#define AFE4404_OFFDAC_CURR_LED3_MASK    GENMASK(4, 0)
+>>>> +#define AFE4404_OFFDAC_CURR_LED3_SHIFT    0
+>>>> +#define AFE4404_OFFDAC_CURR_ALED1_MASK    GENMASK(14, 10)
+>>>> +#define AFE4404_OFFDAC_CURR_ALED1_SHIFT    10
+>>>> +#define AFE4404_OFFDAC_CURR_ALED2_MASK    GENMASK(4, 0)
+>>>> +#define AFE4404_OFFDAC_CURR_ALED2_SHIFT    0
+>>>> +
+>>>> +/* AFE4404 NULL fields */
+>>>> +#define NULL_MASK    0
+>>>> +#define NULL_SHIFT    0
+>>>> +
+>>>> +/* AFE4404 TIA_GAIN_CAP values */
+>>>> +#define AFE4404_TIA_GAIN_CAP_5_P    0x0
+>>>> +#define AFE4404_TIA_GAIN_CAP_2_5_P    0x1
+>>>> +#define AFE4404_TIA_GAIN_CAP_10_P    0x2
+>>>> +#define AFE4404_TIA_GAIN_CAP_7_5_P    0x3
+>>>> +#define AFE4404_TIA_GAIN_CAP_20_P    0x4
+>>>> +#define AFE4404_TIA_GAIN_CAP_17_5_P    0x5
+>>>> +#define AFE4404_TIA_GAIN_CAP_25_P    0x6
+>>>> +#define AFE4404_TIA_GAIN_CAP_22_5_P    0x7
+>>>> +
+>>>> +/* AFE4404 TIA_GAIN_RES values */
+>>>> +#define AFE4404_TIA_GAIN_RES_500_K    0x0
+>>>> +#define AFE4404_TIA_GAIN_RES_250_K    0x1
+>>>> +#define AFE4404_TIA_GAIN_RES_100_K    0x2
+>>>> +#define AFE4404_TIA_GAIN_RES_50_K    0x3
+>>>> +#define AFE4404_TIA_GAIN_RES_25_K    0x4
+>>>> +#define AFE4404_TIA_GAIN_RES_10_K    0x5
+>>>> +#define AFE4404_TIA_GAIN_RES_1_M    0x6
+>>>> +#define AFE4404_TIA_GAIN_RES_2_M    0x7
+>>>> +
+>>>> +enum afe4404_chan_id {
+>>>> +    LED1,
+>>>> +    ALED1,
+>>>> +    LED2,
+>>>> +    ALED2,
+>>>> +    LED3,
+>>>> +    LED1_ALED1,
+>>>> +    LED2_ALED2,
+>>>> +    AVG_LED1_ALED1,
+>>>> +    AVG_LED2_ALED2,
+>>>> +    ILED1,
+>>>> +    ILED2,
+>>>> +    ILED3,
+>>>> +};
+>>>> +
+>>>> +#define AFE4404_REG_INFO(_id, _reg, _offreg, _sm)        \
+>>>> +    [_id] = {                        \
+>>>> +        .reg = _reg,                    \
+>>>> +        .offreg = _offreg,                \
+>>>> +        .shift = _sm ## _SHIFT,                \
+>>>> +        .mask = _sm ## _MASK,                \
+>>>> +    }
+>>>> +
+>>>> +struct {
+>>>> +    unsigned int reg;
+>>>> +    unsigned int offreg;
+>>>> +    unsigned int shift;
+>>>> +    unsigned int mask;
+>>>> +} reg_info[] = {
+>>>> +    AFE4404_REG_INFO(LED1, AFE440X_LED1VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_LED1),
+>>>> +    AFE4404_REG_INFO(ALED1, AFE440X_ALED1VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_ALED1),
+>>>> +    AFE4404_REG_INFO(LED2, AFE440X_LED2VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_LED2),
+>>>> +    AFE4404_REG_INFO(ALED2, AFE440X_ALED2VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_ALED2),
+>>>> +    AFE4404_REG_INFO(LED3, AFE440X_ALED2VAL, 0, NULL),
+>>>> +    AFE4404_REG_INFO(LED1_ALED1, AFE440X_LED1_ALED1VAL, 0, NULL),
+>>>> +    AFE4404_REG_INFO(LED2_ALED2, AFE440X_LED2_ALED2VAL, 0, NULL),
+>>>> +    AFE4404_REG_INFO(AVG_LED1_ALED1, AFE4404_AVG_LED1_ALED1VAL, 0, NULL),
+>>>> +    AFE4404_REG_INFO(AVG_LED2_ALED2, AFE4404_AVG_LED2_ALED2VAL, 0, NULL),
+>>>> +    AFE4404_REG_INFO(ILED1, AFE440X_LEDCNTRL, 0, AFE4404_LEDCNTRL_ILED1),
+>>>> +    AFE4404_REG_INFO(ILED2, AFE440X_LEDCNTRL, 0, AFE4404_LEDCNTRL_ILED2),
+>>>> +    AFE4404_REG_INFO(ILED3, AFE440X_LEDCNTRL, 0, AFE4404_LEDCNTRL_ILED3),
+>>>> +};
+>>>> +
+>>>> +static const struct iio_chan_spec afe4404_channels[] = {
+>>>> +    /* ADC values */
+>>>> +    AFE440X_INTENSITY_CHAN(LED1, "led1", BIT(IIO_CHAN_INFO_OFFSET)),
+>>>> +    AFE440X_INTENSITY_CHAN(ALED1, "led1_ambient", BIT(IIO_CHAN_INFO_OFFSET)),
+>>> (this one is still 'interesting' as it's nothing to do with led1 other than it's
+>>> taken temporily close to it - the led is presumably off at the time! - I can't
+>>> think of a better way though - maybe another reviewer will)
+>>>> +    AFE440X_INTENSITY_CHAN(LED2, "led2", BIT(IIO_CHAN_INFO_OFFSET)),
+>>>> +    AFE440X_INTENSITY_CHAN(ALED2, "led2_ambient", BIT(IIO_CHAN_INFO_OFFSET)),
+>>>> +    AFE440X_INTENSITY_CHAN(LED3, "led3", BIT(IIO_CHAN_INFO_OFFSET)),
+>>>> +    AFE440X_INTENSITY_CHAN(LED1_ALED1, "led1-led1_ambient", 0),
+>>>> +    AFE440X_INTENSITY_CHAN(LED2_ALED2, "led2-led2_ambient", 0),
+>>> This trick for the differential cases is a cludge to work around deficiencies
+>>> in our existing infrastructure, but it's straight forward one for an unusual
+>>> case so fair enough.
+>>>
+>>>> +    AFE440X_INTENSITY_CHAN(AVG_LED1_ALED1, "led1-led1_ambient_mean", 0),
+>>>> +    AFE440X_INTENSITY_CHAN(AVG_LED2_ALED2, "led2-led2_ambient_mean", 0),
+>>> I'd love to better describe these two with the filters made explicit as
+>>> separate sysfs attributes rather than here.  It's kind of backwards but
+>>> we do have oversampling to define what is happening here.  I also note
+>>> that the true output rate of this is lower than the other channels.
+>>>
+>>> If we were to propose a decimation to match with oversampling and to
+>>> explicitly document them as a pair it might work.  Which is relevant
+>>> for a channel is dependent on the 'natural - e.g. the trigger rate'
+>>> at which we fill the buffer.  So if the whole device is performing
+>>> decimation and we read at the reduced frequency then it is oversampling
+>>> - if we read at the original frequency it is decimation.
+>>>
+>>> What do you think?
+>>
+>> I'm thinking these last two are kind of a mess right now, also I don't
+>> expose the setting to enable these yet anyway, so, I think I will just
+>> drop them and add them back in a latter patch that adds all their
+>> required functionality together.
+> Fair enough.
+>>
+>>>> +    /* LED current */
+>>>> +    AFE440X_CURRENT_CHAN(ILED1, "led1"),
+>>>> +    AFE440X_CURRENT_CHAN(ILED2, "led2"),
+>>>> +    AFE440X_CURRENT_CHAN(ILED3, "led3"),
+>>>
+>>> Whilst all these now just 'stretch' :) the current ABI structure they
+>>> do need explicitly documenting somewhere.  Probably odd enough that they'll
+>>> want to go in your part specific doc rather than just adding the specific
+>>> naming to the existing abi.
+>>>
+>>
+>> ACK
+>>
+>>>> +};
+>>>> +
+>>>> +static ssize_t afe440x_show_register(struct device *dev,
+>>>> +                     struct device_attribute *attr,
+>>>> +                     char *buf)
+>>>> +{
+>>>> +    struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>> +    struct afe440x_data *afe440x = iio_device_get_drvdata(indio_dev);
+>>>> +    struct afe440x_reg *afe440x_reg = to_afe440x_reg(attr);
+>>>> +    unsigned int reg_val;
+>>>> +    int ret;
+>>>> +
+>>>> +    ret = regmap_read(afe440x->regmap, afe440x_reg->reg, &reg_val);
+>>>> +    if (ret)
+>>>> +        return ret;
+>>>> +
+>>>> +    reg_val >>= afe440x_reg->shift;
+>>>> +    reg_val &= afe440x_reg->mask;
+>>>> +
+>>>> +    return scnprintf(buf, PAGE_SIZE, "%u\n", reg_val);
+>>>> +}
+>>>> +
+>>>> +static ssize_t afe440x_store_register(struct device *dev,
+>>>> +                      struct device_attribute *attr,
+>>>> +                      const char *buf, size_t count)
+>>>> +{
+>>>> +    struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>> +    struct afe440x_data *afe440x = iio_device_get_drvdata(indio_dev);
+>>>> +    struct afe440x_reg *afe440x_reg = to_afe440x_reg(attr);
+>>>> +    unsigned int reg_val;
+>>>> +    int val, ret;
+>>>> +
+>>>> +    if (kstrtoint(buf, 0, &val))
+>>>> +        return -EINVAL;
+>>>> +
+>>>> +    ret = regmap_read(afe440x->regmap, afe440x_reg->reg, &reg_val);
+>>>> +    if (ret)
+>>>> +        return ret;
+>>>> +
+>>>> +    reg_val &= ~afe440x_reg->mask;
+>>>> +    reg_val |= ((val << afe440x_reg->shift) & afe440x_reg->mask);
+>>>> +
+>>>> +    ret = regmap_write(afe440x->regmap, afe440x_reg->reg, reg_val);
+>>>> +    if (ret)
+>>>> +        return ret;
+>>>> +
+>>>> +    return count;
+>>>> +}
+>>>> +
+>>>> +AFE440X_ATTR(tia_separate_en, AFE4404_TIA_GAIN_SEP, AFE440X_TIAGAIN_ENSEPGAIN);
+>>>> +
+>>>> +AFE440X_ATTR(tia_resistance1, AFE4404_TIA_GAIN, AFE4404_TIA_GAIN_RES);
+>>>> +AFE440X_ATTR(tia_capacitance1, AFE4404_TIA_GAIN, AFE4404_TIA_GAIN_CAP);
+>>>> +
+>>>> +AFE440X_ATTR(tia_resistance2, AFE4404_TIA_GAIN_SEP, AFE4404_TIA_GAIN_RES);
+>>>> +AFE440X_ATTR(tia_capacitance2, AFE4404_TIA_GAIN_SEP, AFE4404_TIA_GAIN_CAP);
+>>>> +
+>>>> +static struct attribute *afe4404_attributes[] = {
+>>>> +    &afe440x_reg_tia_separate_en.dev_attr.attr,
+>>>> +    &afe440x_reg_tia_resistance1.dev_attr.attr,
+>>>> +    &afe440x_reg_tia_capacitance1.dev_attr.attr,
+>>>> +    &afe440x_reg_tia_resistance2.dev_attr.attr,
+>>>> +    &afe440x_reg_tia_capacitance2.dev_attr.attr,
+>>>> +    NULL
+>>>> +};
+>>>> +
+>>>> +static const struct attribute_group afe4404_attribute_group = {
+>>>> +    .attrs = afe4404_attributes
+>>>> +};
+>>>> +
+>>>> +static int afe440x_read_raw(struct iio_dev *indio_dev,
+>>>> +                struct iio_chan_spec const *chan,
+>>>> +                int *val, int *val2, long mask)
+>>>> +{
+>>>> +    struct afe440x_data *afe440x = iio_device_get_drvdata(indio_dev);
+>>>> +    int ret;
+>>>> +
+>>>> +    switch (chan->type) {
+>>>> +    case IIO_INTENSITY:
+>>>> +        switch (mask) {
+>>>> +        case IIO_CHAN_INFO_RAW:
+>>>> +            ret = regmap_read(afe440x->regmap,
+>>>> +                      reg_info[chan->address].reg, val);
+>>>> +            if (ret)
+>>>> +                return ret;
+>>>> +            return IIO_VAL_INT;
+>>>> +        case IIO_CHAN_INFO_OFFSET:
+>>>> +            ret = regmap_read(afe440x->regmap,
+>>>> +                      reg_info[chan->address].offreg, val);
+>>>> +            if (ret)
+>>>> +                return ret;
+>>>> +            *val &= reg_info[chan->address].mask;
+>>>> +            *val >>= reg_info[chan->address].shift;
+>>>> +            return IIO_VAL_INT;
+>>>> +        }
+>>>> +        break;
+>>>> +    case IIO_CURRENT:
+>>>> +        switch (mask) {
+>>>> +        case IIO_CHAN_INFO_RAW:
+>>>> +            ret = regmap_read(afe440x->regmap,
+>>>> +                      reg_info[chan->address].reg, val);
+>>>> +            if (ret)
+>>>> +                return ret;
+>>>> +            *val &= reg_info[chan->address].mask;
+>>>> +            *val >>= reg_info[chan->address].shift;
+>>>> +            return IIO_VAL_INT;
+>>>> +        case IIO_CHAN_INFO_SCALE:
+>>>> +            *val = 0;
+>>>> +            *val2 = 800000;
+>>>> +            return IIO_VAL_INT_PLUS_MICRO;
+>>>> +        }
+>>>> +        break;
+>>>> +    default:
+>>>> +        break;
+>>>> +    }
+>>>> +
+>>>> +    return -EINVAL;
+>>>> +}
+>>>> +
+>>>> +static int afe440x_write_raw(struct iio_dev *indio_dev,
+>>>> +                 struct iio_chan_spec const *chan,
+>>>> +                 int val, int val2, long mask)
+>>>> +{
+>>>> +    struct afe440x_data *afe440x = iio_device_get_drvdata(indio_dev);
+>>>> +    unsigned int reg_val;
+>>>> +    int ret;
+>>>> +
+>>>> +    switch (chan->type) {
+>>>> +    case IIO_INTENSITY:
+>>>> +        switch (mask) {
+>>>> +        case IIO_CHAN_INFO_OFFSET:
+>>>> +            ret = regmap_read(afe440x->regmap,
+>>>> +                      reg_info[chan->address].offreg,
+>>>> +                      &reg_val);
+>>>> +            if (ret)
+>>>> +                return ret;
+>>>> +            reg_val &= ~reg_info[chan->address].mask;
+>>>> +            reg_val |= ((val << reg_info[chan->address].shift) &
+>>>> +                    reg_info[chan->address].mask);
+>>>> +            return regmap_write(afe440x->regmap,
+>>>> +                        reg_info[chan->address].offreg,
+>>>> +                        reg_val);
+>>>> +        }
+>>>> +        break;
+>>>> +    case IIO_CURRENT:
+>>>> +        switch (mask) {
+>>>> +        case IIO_CHAN_INFO_RAW:
+>>>> +            ret = regmap_read(afe440x->regmap,
+>>>> +                      reg_info[chan->address].reg,
+>>>> +                      &reg_val);
+>>>> +            if (ret)
+>>>> +                return ret;
+>>>> +            reg_val &= ~reg_info[chan->address].mask;
+>>>> +            reg_val |= ((val << reg_info[chan->address].shift) &
+>>>> +                    reg_info[chan->address].mask);
+>>>> +            return regmap_write(afe440x->regmap,
+>>>> +                        reg_info[chan->address].reg,
+>>>> +                        reg_val);
+>>>> +        }
+>>>> +        break;
+>>>> +    default:
+>>>> +        break;
+>>>> +    }
+>>>> +
+>>>> +    return -EINVAL;
+>>>> +}
+>>>> +
+>>>> +static const struct iio_info afe4404_iio_info = {
+>>>> +    .attrs    = &afe4404_attribute_group,
+>>>> +    .read_raw = afe440x_read_raw,
+>>>> +    .write_raw = afe440x_write_raw,
+>>>> +    .driver_module = THIS_MODULE,
+>>>> +};
+>>>> +
+>>>> +static irqreturn_t afe440x_trigger_handler(int irq, void *private)
+>>>> +{
+>>>> +    struct iio_poll_func *pf = private;
+>>>> +    struct iio_dev *indio_dev = pf->indio_dev;
+>>>> +    struct afe440x_data *afe440x = iio_device_get_drvdata(indio_dev);
+>>>> +    int ret, bit, reg, i = 0;
+>>>> +    s32 buffer[12];
+>>>> +
+>>>> +    for_each_set_bit(bit, indio_dev->active_scan_mask,
+>>>> +             indio_dev->masklength) {
+>>>> +        reg = reg_info[bit].reg;
+>>> why the local reg variable? Stick it dirrectly in the functional call.
+>>
+>> No reason, just looked better to me. Will fix.
+>>
+>>>> +        ret = regmap_read(afe440x->regmap, reg, &buffer[i++]);
+>>>> +        if (ret)
+>>>> +            goto err;
+>>>> +    }
+>>>> +
+>>>> +    iio_push_to_buffers_with_timestamp(indio_dev, buffer, pf->timestamp);
+>>>> +err:
+>>>> +    iio_trigger_notify_done(indio_dev->trig);
+>>>> +
+>>>> +    return IRQ_HANDLED;
+>>>> +}
+>>>> +
+>>>> +static const struct iio_trigger_ops afe440x_trigger_ops = {
+>>>> +    .owner = THIS_MODULE,
+>>>> +};
+>>>> +
+>>>> +/* Default timings from data-sheet */
+>>>> +#define AFE4404_TIMING_PAIRS            \
+>>>> +    { AFE440X_PRPCOUNT,    39999    },    \
+>>>> +    { AFE440X_LED2LEDSTC,    0    },    \
+>>>> +    { AFE440X_LED2LEDENDC,    398    },    \
+>>>> +    { AFE440X_LED2STC,    80    },    \
+>>>> +    { AFE440X_LED2ENDC,    398    },    \
+>>>> +    { AFE440X_ADCRSTSTCT0,    5600    },    \
+>>>> +    { AFE440X_ADCRSTENDCT0,    5606    },    \
+>>>> +    { AFE440X_LED2CONVST,    5607    },    \
+>>>> +    { AFE440X_LED2CONVEND,    6066    },    \
+>>>> +    { AFE4404_LED3LEDSTC,    400    },    \
+>>>> +    { AFE4404_LED3LEDENDC,    798    },    \
+>>>> +    { AFE440X_ALED2STC,    480    },    \
+>>>> +    { AFE440X_ALED2ENDC,    798    },    \
+>>>> +    { AFE440X_ADCRSTSTCT1,    6068    },    \
+>>>> +    { AFE440X_ADCRSTENDCT1,    6074    },    \
+>>>> +    { AFE440X_ALED2CONVST,    6075    },    \
+>>>> +    { AFE440X_ALED2CONVEND,    6534    },    \
+>>>> +    { AFE440X_LED1LEDSTC,    800    },    \
+>>>> +    { AFE440X_LED1LEDENDC,    1198    },    \
+>>>> +    { AFE440X_LED1STC,    880    },    \
+>>>> +    { AFE440X_LED1ENDC,    1198    },    \
+>>>> +    { AFE440X_ADCRSTSTCT2,    6536    },    \
+>>>> +    { AFE440X_ADCRSTENDCT2,    6542    },    \
+>>>> +    { AFE440X_LED1CONVST,    6543    },    \
+>>>> +    { AFE440X_LED1CONVEND,    7003    },    \
+>>>> +    { AFE440X_ALED1STC,    1280    },    \
+>>>> +    { AFE440X_ALED1ENDC,    1598    },    \
+>>>> +    { AFE440X_ADCRSTSTCT3,    7005    },    \
+>>>> +    { AFE440X_ADCRSTENDCT3,    7011    },    \
+>>>> +    { AFE440X_ALED1CONVST,    7012    },    \
+>>>> +    { AFE440X_ALED1CONVEND,    7471    },    \
+>>>> +    { AFE440X_PDNCYCLESTC,    7671    },    \
+>>>> +    { AFE440X_PDNCYCLEENDC,    39199    }
+>>>> +
+>>>> +static const struct reg_sequence afe4404_reg_sequences[] = {
+>>>> +    AFE4404_TIMING_PAIRS,
+>>>> +    { AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
+>>>> +    { AFE4404_TIA_GAIN, AFE4404_TIA_GAIN_RES_50_K },
+>>>> +    { AFE440X_LEDCNTRL, (0xf << AFE4404_LEDCNTRL_ILED1_SHIFT) |
+>>>> +                (0x3 << AFE4404_LEDCNTRL_ILED2_SHIFT) |
+>>>> +                (0x3 << AFE4404_LEDCNTRL_ILED3_SHIFT) },
+>>>> +    { AFE440X_CONTROL2, AFE440X_CONTROL3_OSC_ENABLE    },
+>>>> +};
+>>>> +
+>>>> +static const struct regmap_range afe4404_yes_ranges[] = {
+>>>> +    regmap_reg_range(AFE440X_LED2VAL, AFE440X_LED1_ALED1VAL),
+>>>> +    regmap_reg_range(AFE4404_AVG_LED2_ALED2VAL, AFE4404_AVG_LED1_ALED1VAL),
+>>>> +};
+>>>> +
+>>>> +static const struct regmap_access_table afe4404_volatile_table = {
+>>>> +    .yes_ranges = afe4404_yes_ranges,
+>>>> +    .n_yes_ranges = ARRAY_SIZE(afe4404_yes_ranges),
+>>>> +};
+>>>> +
+>>>> +static const struct regmap_config afe4404_regmap_config = {
+>>>> +    .reg_bits = 8,
+>>>> +    .val_bits = 24,
+>>>> +
+>>>> +    .max_register = AFE4404_AVG_LED1_ALED1VAL,
+>>>> +    .cache_type = REGCACHE_RBTREE,
+>>>> +    .volatile_table = &afe4404_volatile_table,
+>>>> +};
+>>>> +
+>>>> +#ifdef CONFIG_OF
+>>>> +static const struct of_device_id afe4404_of_match[] = {
+>>>> +    { .compatible = "ti,afe4404", },
+>>>> +    { /* sentinel */ },
+>>>> +};
+>>>> +MODULE_DEVICE_TABLE(of, afe4404_of_match);
+>>>> +#endif
+>>>> +
+>>>> +static int afe440x_suspend(struct device *dev)
+>>>> +{
+>>>> +    struct afe440x_data *afe440x = dev_get_drvdata(dev);
+>>>> +    int ret;
+>>>> +
+>>>> +    ret = regmap_update_bits(afe440x->regmap, AFE440X_CONTROL2,
+>>>> +                 AFE440X_CONTROL2_PDN_AFE,
+>>>> +                 AFE440X_CONTROL2_PDN_AFE);
+>>>> +    if (ret)
+>>>> +        return ret;
+>>>> +
+>>>> +    ret = regulator_disable(afe440x->regulator);
+>>>> +    if (ret) {
+>>>> +        dev_err(dev, "Failed to disable regulator\n");
+>>>> +        return ret;
+>>>> +    }
+>>> Some of the static code checkers (probably coccicheck) will
+>>> point out that moving the return ret out of the above brackets
+>>> will have the same effect as you have here in less code.
+>>>
+>>> It's worth running sparse, smatch and coccicheck on drivers before
+>>> submitting as otherwise we miss things and then get a series
+>>> of 'fix' patches after this hits a public tree rather than the list
+>>> (you sometimes get them for posting on the list as well these days!)
+>>
+>> Makes sense, will do.
+>>
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>> +static int afe440x_resume(struct device *dev)
+>>>> +{
+>>>> +    struct afe440x_data *afe440x = dev_get_drvdata(dev);
+>>>> +    int ret;
+>>>> +
+>>>> +    ret = regmap_update_bits(afe440x->regmap, AFE440X_CONTROL2,
+>>>> +                 AFE440X_CONTROL2_PDN_AFE, 0);
+>>>> +    if (ret)
+>>>> +        return ret;
+>>> I'd expect you want to turn the device off on remove given you turn
+>>> it on during a resume...
+>>>> +
+>>>> +    ret = regulator_enable(afe440x->regulator);
+>>>> +    if (ret) {
+>>>> +        dev_err(dev, "Failed to enable regulator\n");
+>>>> +        return ret;
+>>>> +    }
+>>> You turn the reg on here, but nowhere else that I can see.
+>>> Why should it be on during the initial start?
+>>
+>> I'm not sure but I belive the regulator will be enabled on 'get'
+> It won't - has to be explicity enabled.  Now as likely as not on most
+> boards it will be on anyway, but you never know!
+>> and when all devices using the regulator have 'put' it will be
+>> turned off.
+> Not true either.  Will leave it on unless explicitly disabled.
+
+Interesting, well, I'll add this stuff then.
+
+>> I manualy disable/enable in the PM code so I don't
+>> have to put/get them agian.
+>>
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>> +SIMPLE_DEV_PM_OPS(afe440x_pm_ops, afe440x_suspend, afe440x_resume);
+>>>> +
+>>>> +static int afe440x_iio_setup(struct afe440x_data *afe440x)
+>>>> +{
+>>>> +    struct iio_dev *indio_dev;
+>>>> +    int ret;
+>>>> +
+>>>> +    indio_dev = devm_iio_device_alloc(afe440x->dev, 0);
+>>>> +    if (!indio_dev) {
+>>>> +        dev_err(afe440x->dev, "Unable to allocate IIO device\n");
+>>>> +        return -ENOMEM;
+>>>> +    }
+>>>> +
+>>>> +    iio_device_set_drvdata(indio_dev, afe440x);
+>>>> +
+>>>> +    indio_dev->modes = INDIO_DIRECT_MODE;
+>>>> +    indio_dev->dev.parent = afe440x->dev;
+>>>> +    indio_dev->channels = afe440x->channels;
+>>>> +    indio_dev->num_channels = afe440x->num_channels;
+>>>> +    indio_dev->name = afe440x->name;
+>>>> +    indio_dev->info = afe440x->info;
+>>>> +
+>>>> +    if (afe440x->irq > 0) {
+>>>> +        afe440x->trig = devm_iio_trigger_alloc(afe440x->dev,
+>>>> +                               "%s-dev%d",
+>>>> +                               indio_dev->name,
+>>>> +                               indio_dev->id);
+>>>> +        if (!afe440x->trig) {
+>>>> +            dev_err(afe440x->dev, "Unable to allocate IIO trigger\n");
+>>>> +            return -ENOMEM;
+>>>> +        }
+>>>> +
+>>>> +        iio_trigger_set_drvdata(afe440x->trig, indio_dev);
+>>>> +
+>>>> +        afe440x->trig->ops = &afe440x_trigger_ops;
+>>>> +        afe440x->trig->dev.parent = afe440x->dev;
+>>>> +
+>>>> +        ret = iio_trigger_register(afe440x->trig);
+>>>> +        if (ret) {
+>>>> +            dev_err(afe440x->dev, "Unable to register IIO trigger\n");
+>>>> +            return ret;
+>>>> +        }
+>>>> +
+>>>> +        ret = devm_request_threaded_irq(afe440x->dev, afe440x->irq,
+>>>> +                        iio_trigger_generic_data_rdy_poll,
+>>>> +                        NULL, IRQF_ONESHOT,
+>>>> +                        afe440x->name, afe440x->trig);
+>>>> +        if (ret) {
+>>>> +            dev_err(afe440x->dev, "Unable to request IRQ\n");
+>>>> +            return ret;
+>>>> +        }
+>>>> +    }
+>>>> +
+>>>> +    ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+>>>> +                     &afe440x_trigger_handler, NULL);
+>>>> +    if (ret) {
+>>>> +        dev_err(afe440x->dev, "Unable to setup buffer\n");
+>>>> +        return ret;
+>>>> +    }
+>>>> +
+>>>> +    ret = devm_iio_device_register(afe440x->dev, indio_dev);
+>>> This suprises me a little - I'd expect such a complex part to
+>>> do at least some power saving or similar...
+>>>
+>>> If that is the case you'll want to do that in the remove after the device
+>>> is unregistered (to avoid a race with userspace interfaces still available).
+>>>
+>>> Can always be added in a later patch however!
+>>
+>> Why do today what you can put off until tomorrow :) I'll look into that
+>> in a later patch.
+>>
+>>>> +    if (ret) {
+>>>> +        dev_err(afe440x->dev, "Unable to register IIO device\n");
+>>>> +        return ret;
+>>>> +    }
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>> +static int afe4404_probe(struct i2c_client *client,
+>>>> +             const struct i2c_device_id *id)
+>>>> +{
+>>>> +    struct afe440x_data *afe440x;
+>>>> +    int ret;
+>>>> +
+>>>> +    afe440x = devm_kzalloc(&client->dev, sizeof(*afe440x), GFP_KERNEL);
+>>>> +    if (!afe440x)
+>>>> +        return -ENOMEM;
+>>> This is all still backwards to my mind and could be easily refactored
+>>> to provide the device specific stuff in a similar way to other IIO drivers
+>>> do it with a mixture of const data and appropriate callbacks.
+>>>
+>>> I appreciate I haven't seen the other driver you mentioned shares a lot
+>>> of the code, but I doubt it does anything that couldn't be handled that
+>>> way around.
+>>
+>> I'm thinking now that this driver may be getting close to correct, I will
+>> add the other part as part of this series if that is OK. Should clear up
+>> some of the issues below to have them at the same time.
+> Cool
+>>
+>>>> +
+>>>> +    i2c_set_clientdata(client, afe440x);
+>>>> +
+>>>> +    afe440x->dev = &client->dev;
+>>>> +    afe440x->irq = client->irq;
+>>>> +
+>>>> +    afe440x->regmap = devm_regmap_init_i2c(client, &afe4404_regmap_config);
+>>>> +    if (IS_ERR(afe440x->regmap)) {
+>>>> +        dev_err(afe440x->dev, "Unable to allocate register map\n");
+>>>> +        return PTR_ERR(afe440x->regmap);
+>>>> +    }
+>>>> +
+>>>> +    afe440x->regulator = devm_regulator_get(afe440x->dev, "tx_sup");
+>>>> +    if (IS_ERR(afe440x->regulator)) {
+>>>> +        dev_err(afe440x->dev, "Unable to get regulator\n");
+>>>> +        return PTR_ERR(afe440x->regulator);
+>>>> +    }
+>>> Given you turn the reg on during the resume, I'm guessing you want to turn
+>>> it on here and off in remove?  No reason to assume it is on when the
+>>> board is powered up!
+>>>
+>>>> +
+>>>> +    ret = regmap_write(afe440x->regmap, AFE440X_CONTROL0,
+>>>> +               AFE440X_CONTROL0_SW_RESET);
+>>>> +    if (ret) {
+>>>> +        dev_err(afe440x->dev, "Unable to reset device\n");
+>>>> +        return ret;
+>>>> +    }
+>>>> +
+>>>> +    ret = regmap_register_patch(afe440x->regmap, afe4404_reg_sequences,
+>>>> +                    ARRAY_SIZE(afe4404_reg_sequences));
+>>>> +    if (ret) {
+>>>> +        dev_err(afe440x->dev, "Unable to set register defaults\n");
+>>>> +        return ret;
+>>>> +    }
+>>>> +
+>>> As I suggest below in the header, I'd put these elements
+>>> into a separate structure (as they are constant for a given part)
+>>
+>> ACK
+>>
+>>>> +    afe440x->channels = afe4404_channels;
+>>>> +    afe440x->num_channels = ARRAY_SIZE(afe4404_channels);
+>>>> +    afe440x->name = AFE4404_DRIVER_NAME;
+>>>> +    afe440x->info = &afe4404_iio_info;
+>>>> +
+>>>> +    return afe440x_iio_setup(afe440x);
+>>>> +}
+>>>> +
+>>>> +static const struct i2c_device_id afe4404_ids[] = {
+>>>> +    { "afe4404", 0 },
+>>>> +    { /* sentinel */ },
+>>>> +};
+>>>> +MODULE_DEVICE_TABLE(i2c, afe4404_ids);
+>>>> +
+>>>> +static struct i2c_driver afe4404_i2c_driver = {
+>>>> +    .driver = {
+>>>> +        .name = AFE4404_DRIVER_NAME,
+>>>> +        .of_match_table = of_match_ptr(afe4404_of_match),
+>>>> +        .pm = &afe440x_pm_ops,
+>>>> +    },
+>>>> +    .probe = afe4404_probe,
+>>>> +    .id_table = afe4404_ids,
+>>>> +};
+>>>> +module_i2c_driver(afe4404_i2c_driver);
+>>>> +
+>>>> +MODULE_AUTHOR("Andrew F. Davis <afd@ti.com>");
+>>>> +MODULE_DESCRIPTION("TI AFE4404 Heart Rate and Pulse Oximeter");
+>>>> +MODULE_LICENSE("GPL");
+>>>> diff --git a/drivers/iio/health/afe440x.h b/drivers/iio/health/afe440x.h
+>>>> new file mode 100644
+>>>> index 0000000..73a2577
+>>>> --- /dev/null
+>>>> +++ b/drivers/iio/health/afe440x.h
+>>>> @@ -0,0 +1,168 @@
+>>>> +/*
+>>>> + * AFE440X Heart Rate Monitors and Low-Cost Pulse Oximeters
+>>>> + *
+>>>> + * Author: Andrew F. Davis <afd@ti.com>
+>>>> + *
+>>>> + * Copyright: (C) 2015 Texas Instruments, Inc.
+>>>> + *
+>>>> + * This program is free software; you can redistribute it and/or modify
+>>>> + * it under the terms of the GNU General Public License version 2 as
+>>>> + * published by the Free Software Foundation.
+>>>> + *
+>>>> + * This program is distributed in the hope that it will be useful, but
+>>>> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+>>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+>>>> + * General Public License for more details.
+>>>> + */
+>>>> +
+>>>> +#ifndef _AFE440X_H
+>>>> +#define _AFE440X_H
+>>> I know you are aiming to support more devices and hence the header file
+>>> spit may make sense, but please squish it into the .c file for now and
+>>> pull it out as part of the series adding the new devices - avoids
+>>> me getting patches 'tidying this up' in the interval before the other
+>>> device support makes it.
+>>
+>> As above would it be better for me to push both now?
+> Probably, easier to look at whether any refactoring make sense with
+> both infront of us.
+
+OK, next series will have both.
+
+>>
+>>>> +
+>>>> +/* AFE440X registers */
+>>>> +#define AFE440X_CONTROL0        0x00
+>>>> +#define AFE440X_LED2STC            0x01
+>>>> +#define AFE440X_LED2ENDC        0x02
+>>>> +#define AFE440X_LED1LEDSTC        0x03
+>>>> +#define AFE440X_LED1LEDENDC        0x04
+>>>> +#define AFE440X_ALED2STC        0x05
+>>>> +#define AFE440X_ALED2ENDC        0x06
+>>>> +#define AFE440X_LED1STC            0x07
+>>>> +#define AFE440X_LED1ENDC        0x08
+>>>> +#define AFE440X_LED2LEDSTC        0x09
+>>>> +#define AFE440X_LED2LEDENDC        0x0a
+>>>> +#define AFE440X_ALED1STC        0x0b
+>>>> +#define AFE440X_ALED1ENDC        0x0c
+>>>> +#define AFE440X_LED2CONVST        0x0d
+>>>> +#define AFE440X_LED2CONVEND        0x0e
+>>>> +#define AFE440X_ALED2CONVST        0x0f
+>>>> +#define AFE440X_ALED2CONVEND        0x10
+>>>> +#define AFE440X_LED1CONVST        0x11
+>>>> +#define AFE440X_LED1CONVEND        0x12
+>>>> +#define AFE440X_ALED1CONVST        0x13
+>>>> +#define AFE440X_ALED1CONVEND        0x14
+>>>> +#define AFE440X_ADCRSTSTCT0        0x15
+>>>> +#define AFE440X_ADCRSTENDCT0        0x16
+>>>> +#define AFE440X_ADCRSTSTCT1        0x17
+>>>> +#define AFE440X_ADCRSTENDCT1        0x18
+>>>> +#define AFE440X_ADCRSTSTCT2        0x19
+>>>> +#define AFE440X_ADCRSTENDCT2        0x1a
+>>>> +#define AFE440X_ADCRSTSTCT3        0x1b
+>>>> +#define AFE440X_ADCRSTENDCT3        0x1c
+>>>> +#define AFE440X_PRPCOUNT        0x1d
+>>>> +#define AFE440X_CONTROL1        0x1e
+>>>> +#define AFE440X_TIAGAIN            0x20
+>>>> +#define AFE440X_TIA_AMB_GAIN        0x21
+>>>> +#define AFE440X_LEDCNTRL        0x22
+>>>> +#define AFE440X_CONTROL2        0x23
+>>>> +#define AFE440X_ALARM            0x29
+>>>> +#define AFE440X_LED2VAL            0x2a
+>>>> +#define AFE440X_ALED2VAL        0x2b
+>>>> +#define AFE440X_LED1VAL            0x2c
+>>>> +#define AFE440X_ALED1VAL        0x2d
+>>>> +#define AFE440X_LED2_ALED2VAL        0x2e
+>>>> +#define AFE440X_LED1_ALED1VAL        0x2f
+>>>> +#define AFE440X_CONTROL3        0x31
+>>>> +#define AFE440X_PDNCYCLESTC        0x32
+>>>> +#define AFE440X_PDNCYCLEENDC        0x33
+>>>> +
+>>>> +/* CONTROL0 register fields */
+>>>> +#define AFE440X_CONTROL0_REG_READ    BIT(0)
+>>>> +#define AFE440X_CONTROL0_TM_COUNT_RST    BIT(1)
+>>>> +#define AFE440X_CONTROL0_SW_RESET    BIT(3)
+>>>> +
+>>>> +/* CONTROL1 register fields */
+>>>> +#define AFE440X_CONTROL1_TIMEREN    BIT(8)
+>>>> +
+>>>> +/* TIAGAIN register fields */
+>>>> +#define AFE440X_TIAGAIN_ENSEPGAIN_MASK    BIT(15)
+>>>> +#define AFE440X_TIAGAIN_ENSEPGAIN_SHIFT    15
+>>>> +
+>>>> +/* CONTROL2 register fields */
+>>>> +#define AFE440X_CONTROL2_PDN_AFE    BIT(0)
+>>>> +#define AFE440X_CONTROL2_PDN_RX        BIT(1)
+>>>> +#define AFE440X_CONTROL2_DYNAMIC4    BIT(3)
+>>>> +#define AFE440X_CONTROL2_DYNAMIC3    BIT(4)
+>>>> +#define AFE440X_CONTROL2_DYNAMIC2    BIT(14)
+>>>> +#define AFE440X_CONTROL2_DYNAMIC1    BIT(20)
+>>>> +
+>>>> +/* CONTROL3 register fields */
+>>>> +#define AFE440X_CONTROL3_CLKDIV        GENMASK(2, 0)
+>>>> +
+>>>> +/* CONTROL0 values */
+>>>> +#define AFE440X_CONTROL0_WRITE        0x0
+>>>> +#define AFE440X_CONTROL0_READ        0x1
+>>>> +
+>>>> +#define AFE440X_INTENSITY_CHAN(_index, _name, _mask)        \
+>>>> +    {                            \
+>>>> +        .type = IIO_INTENSITY,                \
+>>>> +        .channel = _index,                \
+>>>> +        .address = _index,                \
+>>>> +        .scan_index = _index,                \
+>>>> +        .scan_type = {                    \
+>>>> +                .sign = 's',            \
+>>>> +                .realbits = 24,            \
+>>>> +                .storagebits = 32,        \
+>>>> +                .endianness = IIO_CPU,        \
+>>>> +        },                        \
+>>>> +        .extend_name = _name,                \
+>>>> +        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |    \
+>>>> +            _mask,                    \
+>>>> +    }
+>>>> +
+>>>> +#define AFE440X_CURRENT_CHAN(_index, _name)            \
+>>>> +    {                            \
+>>>> +        .type = IIO_CURRENT,                \
+>>>> +        .channel = _index,                \
+>>>> +        .address = _index,                \
+>>>> +        .scan_index = _index,                \
+>>>> +        .extend_name = _name,                \
+>>>> +        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |    \
+>>>> +            BIT(IIO_CHAN_INFO_SCALE),        \
+>>>> +        .output = true,                    \
+>>>> +    }
+>>> I'd particularly like to see the above two definitions next to the
+>>> arrays they are used to instantiate - makes for easier review!
+>>>
+>>>> +
+>>>> +struct afe440x_reg {
+>>>> +    struct device_attribute dev_attr;
+>>>> +    unsigned int reg;
+>>>> +    unsigned int shift;
+>>>> +    unsigned int mask;
+>>>> +};
+>>>> +
+>>>> +#define to_afe440x_reg(_dev_attr)                \
+>>>> +    container_of(_dev_attr, struct afe440x_reg, dev_attr)
+>>>> +
+>>>> +#define AFE440X_ATTR(_name, _reg, _field)            \
+>>>> +    struct afe440x_reg afe440x_reg_##_name = {        \
+>>>> +        .dev_attr = __ATTR(_name, (S_IRUGO | S_IWUSR),    \
+>>>> +                   afe440x_show_register,    \
+>>>> +                   afe440x_store_register),    \
+>>>> +        .reg = _reg,                    \
+>>>> +        .shift = _field ## _SHIFT,            \
+>>>> +        .mask = _field ## _MASK,            \
+>>>> +    }
+>>> For now I'd like to see this in the .c file
+>>>> +
+>>>> +/**
+>>>> + * struct afe440x_data
+>>>> + * @dev - Device structure
+>>>> + * @name - Device name
+>>> You still have a few bits in here that are presumably there
+>>> to assist supporting multiple drivers.  I don't think they
+>>> belong in this structure.
+>>>
+>>> Split them out to say
+>>> struct afe440x_device_info and pass that into your iio_setup
+>>> function as well.  Then they won't be in this struct for it's
+>>> other uses which would be cleaner (at the cost of one extra
+>>> parameter to that function call)
+>>>
+>>> It will also split out thsoe parts that are constant for a given
+>>> type of device from those that are instance specific
+>>> (such as Irq's etc).
+>>>
+>>
+>> ACK
+>>
+>>>> + * @regmap - Register map of the device
+>>>> + * @regulator - Pointer to the regulator for the IC
+>>>> + * @channels - IIO channels
+>>>> + * @num_channels - Number of IIO channels
+>>>> + * @info - IIO info for device
+>>>> + * @trig - IIO trigger for this device
+>>>> + * @irq - ADC_RDY line interrupt number
+>>>> +**/
+>>> Nicely documented - thanks.
+>>>> +struct afe440x_data {
+>>>> +    struct device *dev;
+>>>> +    const char *name;
+>>>> +    struct regmap *regmap;
+>>>> +    struct regulator *regulator;
+>>>> +    struct iio_chan_spec const *channels;
+>>>> +    int num_channels;
+>>>> +    const struct iio_info *info;
+>>>> +    struct iio_trigger *trig;
+>>>> +    int irq;
+>>>> +};
+>>>> +
+>>>> +#endif /* _AFE440X_H */
+>>>>
+>>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
