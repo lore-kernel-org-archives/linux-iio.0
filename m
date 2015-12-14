@@ -1,87 +1,231 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:21572 "EHLO mga04.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932075AbbLNJQG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 14 Dec 2015 04:16:06 -0500
-Subject: Re: [PATCH 1/3] iio: light: us5182d: Fix enable status inconcistency
-To: Jonathan Cameron <jic23@kernel.org>
-References: <1449661244-18692-1-git-send-email-adriana.reus@intel.com>
- <1449661244-18692-2-git-send-email-adriana.reus@intel.com>
- <566C35F3.408@kernel.org>
-Cc: linux-iio@vger.kernel.org
-From: Adriana Reus <adriana.reus@intel.com>
-Message-ID: <566E88B5.4080104@intel.com>
-Date: Mon, 14 Dec 2015 11:15:33 +0200
+Received: from mail-wm0-f44.google.com ([74.125.82.44]:33648 "EHLO
+	mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932099AbbLNKPe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Dec 2015 05:15:34 -0500
+Received: by mail-wm0-f44.google.com with SMTP id n186so38077764wmn.0
+        for <linux-iio@vger.kernel.org>; Mon, 14 Dec 2015 02:15:33 -0800 (PST)
+Subject: Re: [PATCH 3/3] iio: ina2xx: add support for CHAN_INFO_SCALE
+To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net
+References: <1449852557-3138-1-git-send-email-mtitinger@baylibre.com>
+ <1449852557-3138-3-git-send-email-mtitinger@baylibre.com>
+ <566C5600.7070306@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Marc Titinger <mtitinger@baylibre.com>
+Message-ID: <566E96C3.40905@baylibre.com>
+Date: Mon, 14 Dec 2015 11:15:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <566C35F3.408@kernel.org>
+In-Reply-To: <566C5600.7070306@kernel.org>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-
-On 12.12.2015 16:57, Jonathan Cameron wrote:
-> On 09/12/15 11:40, Adriana Reus wrote:
->> When setting als only or proximity only modes make sure that we mark the other
->> component as disabled.
+On 12/12/2015 18:14, Jonathan Cameron wrote:
+> On 11/12/15 16:49, Marc Titinger wrote:
+>> Provide client apps with the scales to apply to the register values
+>> read from the software buffer.
 >>
->> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
-> Hi Adriana
+>> Follow the ABI documentation so that values are in milli-unit after scales
+>> are applied.
+> Umm. The below looks like it is doing rather more than this..
 >
-> When you send a fix of any type, please describe the effects of the bug.
-> That way I have more information to figure out if the bug is tidying up
-> a loose end or fixing a critical bug and hence judge which path it takes
-> to upstream.
-Long story short it's a tidy up that prevents a bug that would occur
-once events are added (patch 2 of this series adds events). The exact
-use case is: if user polls proximity px_enabled will be set to true,
-user then polls als, and sets the mode to ALS_ONLY, while px_enabled
-wrongfully remains true, at this point if events are enabled proximity
-won't actually get to be enabled in the chip and will not deliver
-events. For this reason it has to be applied before or at the same time
-with the patch that adds events and interrupt support.
+> There is an endian switch!   I'm going to assume that is correct
+> for now and merge it into the original patch (rather than as a follow
+> up).  If this is wrong and should not be here shout quickly and loudly!
 >
-> Please let me know for this one as I can't immediately pick out what the
-> effects will be.
+
+I know...I think the endianess issue was not spotted in my tests until I 
+had the scales coded-in: values in direct read mode were processed 
+before, and hence ok.
+
+The endianness hint was wrong in streamed mode, but I did only 
+functional check so far. This is now tested with he sigrok-iio draft 
+from my colleague and values are now fine with scales applied on the 
+buffer samples.
+
+
+> Will take the rest of this patch as is though I would much have
+> prefered that this one was rolled into the original driver as
+> I hadn't taken that when you sent this change...
+>
+> Actually never mind I'll smash it into the original driver as git
+> seems to be happy to handle that bit of reordering and I haven't
+> pushed out yet.
+
+Yes thank you for doing that, it's the good option I think.
+
+>
+> So applied as a fixup to the original driver patch.
+> Hmm. a few mor bits came up build testing this - such as lack of static on the
+> the buffer enable / disable functions.
+>
+> Please check nothing went wrong in my making various minor changes.
+> I've done basic build tests but obviously that doesn't catch everything!
+
+Tested ok with iio utils (using iio_monitor for scales) and  and the 
+sigrok-iio draft using 3 instances of the driver.
+
+Many thanks,
+Marc.
+
+
 >
 > Jonathan
+>
+>>
+>> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
 >> ---
->>   drivers/iio/light/us5182d.c | 16 ++++++++++++----
->>   1 file changed, 12 insertions(+), 4 deletions(-)
+>>   drivers/iio/adc/ina2xx-adc.c | 85 +++++++++++++++++++++-----------------------
+>>   1 file changed, 41 insertions(+), 44 deletions(-)
 >>
->> diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
->> index 256c4bc..f24b687 100644
->> --- a/drivers/iio/light/us5182d.c
->> +++ b/drivers/iio/light/us5182d.c
->> @@ -238,8 +238,12 @@ static int us5182d_als_enable(struct us5182d_data *data)
->>   	int ret;
->>   	u8 mode;
+>> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+>> index 99afa6e..98939ba 100644
+>> --- a/drivers/iio/adc/ina2xx-adc.c
+>> +++ b/drivers/iio/adc/ina2xx-adc.c
+>> @@ -82,6 +82,11 @@ static bool ina2xx_is_volatile_reg(struct device *dev, unsigned int reg)
+>>   	return (reg != INA2XX_CONFIG);
+>>   }
 >>
->> -	if (data->power_mode == US5182D_ONESHOT)
->> -		return us5182d_set_opmode(data, US5182D_ALS_ONLY);
->> +	if (data->power_mode == US5182D_ONESHOT) {
->> +		ret = us5182d_set_opmode(data, US5182D_ALS_ONLY);
->> +		if (ret < 0)
->> +			return ret;
->> +		data->px_enabled = false;
->> +	}
+>> +static inline bool is_signed_reg(unsigned int reg)
+>> +{
+>> +	return (reg == INA2XX_SHUNT_VOLTAGE) || (reg == INA2XX_CURRENT);
+>> +}
+>> +
+>>   static const struct regmap_config ina2xx_regmap_config = {
+>>   	.reg_bits = 8,
+>>   	.val_bits = 16,
+>> @@ -133,43 +138,6 @@ static const struct ina2xx_config ina2xx_config[] = {
+>>   		    },
+>>   };
 >>
->>   	if (data->als_enabled)
->>   		return 0;
->> @@ -260,8 +264,12 @@ static int us5182d_px_enable(struct us5182d_data *data)
->>   	int ret;
->>   	u8 mode;
+>> -static int ina2xx_get_value(struct ina2xx_chip_info *chip, u8 reg,
+>> -			    unsigned int regval, int *val, int *uval)
+>> -{
+>> -	*val = 0;
+>> -
+>> -	switch (reg) {
+>> -	case INA2XX_SHUNT_VOLTAGE:
+>> -		/* signed register */
+>> -		*uval = DIV_ROUND_CLOSEST((s16) regval,
+>> -					  chip->config->shunt_div);
+>> -		return IIO_VAL_INT_PLUS_MICRO;
+>> -
+>> -	case INA2XX_BUS_VOLTAGE:
+>> -		*uval = (regval >> chip->config->bus_voltage_shift)
+>> -			* chip->config->bus_voltage_lsb;
+>> -		*val = *uval / 1000000;
+>> -		*uval = *uval % 1000000;
+>> -		return IIO_VAL_INT_PLUS_MICRO;
+>> -
+>> -	case INA2XX_POWER:
+>> -		*uval = regval * chip->config->power_lsb;
+>> -		*val = *uval / 1000000;
+>> -		*uval = *uval % 1000000;
+>> -		return IIO_VAL_INT_PLUS_MICRO;
+>> -
+>> -	case INA2XX_CURRENT:
+>> -		/* signed register, LSB=1mA (selected), in mA */
+>> -		*uval = (s16) regval * 1000;
+>> -		return IIO_VAL_INT_PLUS_MICRO;
+>> -
+>> -	default:
+>> -		/* programmer goofed */
+>> -		WARN_ON_ONCE(1);
+>> -	}
+>> -	return -EINVAL;
+>> -}
+>> -
+>>   static int ina2xx_read_raw(struct iio_dev *indio_dev,
+>>   			   struct iio_chan_spec const *chan,
+>>   			   int *val, int *val2, long mask)
+>> @@ -184,7 +152,12 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+>>   		if (ret < 0)
+>>   			return ret;
 >>
->> -	if (data->power_mode == US5182D_ONESHOT)
->> -		return us5182d_set_opmode(data, US5182D_PX_ONLY);
->> +	if (data->power_mode == US5182D_ONESHOT) {
->> +		ret = us5182d_set_opmode(data, US5182D_PX_ONLY);
->> +		if (ret < 0)
->> +			return ret;
->> +		data->als_enabled = false;
->> +	}
+>> -		return ina2xx_get_value(chip, chan->address, regval, val, val2);
+>> +		if (is_signed_reg(chan->address))
+>> +			*val = (s16) regval;
+>> +		else
+>> +			*val  = regval;
+>> +
+>> +		return IIO_VAL_INT;
 >>
->>   	if (data->px_enabled)
->>   		return 0;
+>>   	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>>   		*val = chip->avg;
+>> @@ -208,11 +181,34 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+>>
+>>   		return IIO_VAL_INT;
+>>
+>> -	default:
+>> -		return -EINVAL;
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		switch (chan->address) {
+>> +		case INA2XX_SHUNT_VOLTAGE:
+>> +			/* processed (mV) = raw*1000/shunt_div */
+>> +			*val2 = chip->config->shunt_div;
+>> +			*val = 1000;
+>> +			return IIO_VAL_FRACTIONAL;
+>> +
+>> +		case INA2XX_BUS_VOLTAGE:
+>> +			/* processed (mV) = raw*lsb (uV) / (1000 << shift) */
+>> +			*val = chip->config->bus_voltage_lsb;
+>> +			*val2 = 1000 << chip->config->bus_voltage_shift;
+>> +			return IIO_VAL_FRACTIONAL;
+>> +
+>> +		case INA2XX_POWER:
+>> +			/* processed (mW) = raw*lsb (uW) / 1000 */
+>> +			*val = chip->config->power_lsb;
+>> +			*val2 = 1000;
+>> +			return IIO_VAL_FRACTIONAL;
+>> +
+>> +		case INA2XX_CURRENT:
+>> +			/* processed (mA) = raw (mA) */
+>> +			*val = 1;
+>> +			return IIO_VAL_INT;
+>> +		}
+>>   	}
+>>
+>> -	return 0;
+>> +	return -EINVAL;
+>>   }
+>>
+>>   /*
+>> @@ -395,7 +391,7 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+>>   	.address = (_address), \
+>>   	.indexed = 1, \
+>>   	.channel = (_index), \
+>> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)|BIT(IIO_CHAN_INFO_SCALE), \
+> Spacing wrong about the |
+>>   	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
+>>   				   BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
+>>   	.scan_index = (_index), \
+>> @@ -403,7 +399,7 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+>>   		.sign = 'u', \
+>>   		.realbits = 16, \
+>>   		.storagebits = 16, \
+>> -		.endianness = IIO_BE, \
+>> +		.endianness = IIO_LE, \
+>>   	} \
+>>   }
+>>
+>> @@ -417,13 +413,14 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+>>   	.indexed = 1, \
+>>   	.channel = (_index), \
+>>   	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+>> +			      BIT(IIO_CHAN_INFO_SCALE) | \
+>>   			      BIT(IIO_CHAN_INFO_INT_TIME), \
+>>   	.scan_index = (_index), \
+>>   	.scan_type = { \
+>>   		.sign = 'u', \
+>>   		.realbits = 16, \
+>>   		.storagebits = 16, \
+>> -		.endianness = IIO_BE, \
+>> +		.endianness = IIO_LE, \
+>>   	} \
+>>   }
+>>
 >>
 >
+
