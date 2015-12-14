@@ -1,81 +1,59 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:35048 "EHLO
-	metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932601AbbLNNzE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Dec 2015 08:55:04 -0500
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Shawn Guo <shawnguo@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Denis Carikli <denis@eukrea.com>,
-	=?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v10 7/8] ARM: dts: imx25: Add TSC and ADC support
-Date: Mon, 14 Dec 2015 14:53:53 +0100
-Message-Id: <1450101234-2191-8-git-send-email-mpa@pengutronix.de>
-In-Reply-To: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
-References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <MAILER-DAEMON>
+From: "Andrew F. Davis" <afd@ti.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+        Mark
+ Rutland <mark.rutland@arm.com>,
+        Ian Campbell <ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter
+ Meerwald <pmeerw@pmeerw.net>
+CC: <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-api@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Andrew F.
+ Davis" <afd@ti.com>
+Subject: [PATCH v3 1/5] iio: Make IIO value formating function globally available.
+Date: Mon, 14 Dec 2015 16:35:57 -0600
+Message-ID: <1450132561-5245-2-git-send-email-afd@ti.com>
+In-Reply-To: <1450132561-5245-1-git-send-email-afd@ti.com>
+References: <1450132561-5245-1-git-send-email-afd@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Denis Carikli <denis@eukrea.com>
+Make IIO value formating function globally available to allow IIO drivers
+to output values as the core does.
 
-Signed-off-by: Denis Carikli <denis@eukrea.com>
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+Signed-off-by: Andrew F. Davis <afd@ti.com>
 ---
- arch/arm/boot/dts/imx25.dtsi | 29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+ drivers/iio/industrialio-core.c | 1 +
+ include/linux/iio/iio.h         | 2 ++
+ 2 files changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx25.dtsi b/arch/arm/boot/dts/imx25.dtsi
-index 677f81d9dcd5..6ac5e71d312b 100644
---- a/arch/arm/boot/dts/imx25.dtsi
-+++ b/arch/arm/boot/dts/imx25.dtsi
-@@ -265,13 +265,36 @@
- 				status = "disabled";
- 			};
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 208358f..eb5909d 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -470,6 +470,7 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+ 		return 0;
+ 	}
+ }
++EXPORT_SYMBOL_GPL(iio_format_value);
  
--			tsc: tsc@50030000 {
--				compatible = "fsl,imx25-adc", "fsl,imx21-tsc";
--				reg = <0x50030000 0x4000>;
-+			tscadc: tscadc@50030000 {
-+				compatible = "fsl,imx25-tsadc";
-+				reg = <0x50030000 0xc>;
- 				interrupts = <46>;
- 				clocks = <&clks 119>;
- 				clock-names = "ipg";
-+				interrupt-controller;
-+				#interrupt-cells = <1>;
-+				#address-cells = <1>;
-+				#size-cells = <1>;
- 				status = "disabled";
-+
-+				adc: adc@50030800 {
-+					compatible = "fsl,imx25-gcq";
-+					reg = <0x50030800 0x60>;
-+					interrupt-parent = <&tscadc>;
-+					interrupts = <1>;
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+					status = "disabled";
-+				};
-+
-+				tsc: tcq@50030400 {
-+					compatible = "fsl,imx25-tcq";
-+					reg = <0x50030400 0x60>;
-+					interrupt-parent = <&tscadc>;
-+					interrupts = <0>;
-+					fsl,wires = <4>;
-+					status = "disabled";
-+				};
- 			};
+ static ssize_t iio_read_channel_info(struct device *dev,
+ 				     struct device_attribute *attr,
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 19c94c9..b589411 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -636,6 +636,8 @@ static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
+ }
+ #endif
  
- 			ssi1: ssi@50034000 {
++ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals);
++
+ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
+ 	int *fract);
+ 
 -- 
-2.6.2
-
+2.6.4
