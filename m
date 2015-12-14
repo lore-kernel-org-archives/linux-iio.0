@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:36518 "EHLO
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:49068 "EHLO
 	metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932140AbbLNNyl (ORCPT
+	by vger.kernel.org with ESMTP id S932455AbbLNNyl (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Dec 2015 08:54:41 -0500
 From: Markus Pargmann <mpa@pengutronix.de>
 To: Shawn Guo <shawnguo@kernel.org>,
@@ -16,51 +16,61 @@ Cc: Denis Carikli <denis@eukrea.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Fabio Estevam <festevam@gmail.com>,
 	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v10 8/8] ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC support.
-Date: Mon, 14 Dec 2015 14:53:54 +0100
-Message-Id: <1450101234-2191-9-git-send-email-mpa@pengutronix.de>
-In-Reply-To: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
-References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH v10 0/8] imx25 adc and touchscreen driver
+Date: Mon, 14 Dec 2015 14:53:46 +0100
+Message-Id: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Denis Carikli <denis@eukrea.com>
+Hi,
 
-Signed-off-by: Denis Carikli <denis@eukrea.com>
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
----
- arch/arm/configs/imx_v4_v5_defconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+v10 includes minor fixes in the gcq driver code and the renamed two DT
+properties for the touchscreen which now include the units in the name.
 
-diff --git a/arch/arm/configs/imx_v4_v5_defconfig b/arch/arm/configs/imx_v4_v5_defconfig
-index d3a8018639de..d6754ac47788 100644
---- a/arch/arm/configs/imx_v4_v5_defconfig
-+++ b/arch/arm/configs/imx_v4_v5_defconfig
-@@ -88,6 +88,7 @@ CONFIG_KEYBOARD_IMX=y
- # CONFIG_INPUT_MOUSE is not set
- CONFIG_INPUT_TOUCHSCREEN=y
- CONFIG_TOUCHSCREEN_ADS7846=m
-+CONFIG_TOUCHSCREEN_MX25=y
- CONFIG_TOUCHSCREEN_MC13783=y
- # CONFIG_LEGACY_PTYS is not set
- CONFIG_SERIAL_8250=m
-@@ -107,6 +108,7 @@ CONFIG_HWMON=m
- CONFIG_SENSORS_MC13783_ADC=m
- CONFIG_WATCHDOG=y
- CONFIG_IMX2_WDT=y
-+CONFIG_MFD_MX25_TSADC=y
- CONFIG_MFD_MC13XXX_SPI=y
- CONFIG_REGULATOR=y
- CONFIG_REGULATOR_FIXED_VOLTAGE=y
-@@ -172,6 +174,8 @@ CONFIG_DMADEVICES=y
- CONFIG_IMX_SDMA=y
- CONFIG_IMX_DMA=y
- # CONFIG_IOMMU_SUPPORT is not set
-+CONFIG_IIO=y
-+CONFIG_FSL_MX25_ADC=y
- CONFIG_EXT2_FS=y
- CONFIG_EXT3_FS=y
- CONFIG_EXT4_FS=y
+Best Regards,
+
+Markus
+
+
+Denis Carikli (2):
+  ARM: dts: imx25: Add TSC and ADC support
+  ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC
+    support.
+
+Markus Pargmann (6):
+  ARM: dt: Binding documentation for imx25 ADC/TSC
+  ARM: dt: Binding documentation for imx25 GCQ
+  ARM: dt: Binding documentation for imx25 touchscreen controller
+  mfd: fsl imx25 Touchscreen ADC driver
+  iio: adc: fsl,imx25-gcq driver
+  input: touchscreen: imx25 tcq driver
+
+ .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  |  58 ++
+ .../bindings/input/touchscreen/fsl-mx25-tcq.txt    |  35 ++
+ .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |  47 ++
+ arch/arm/boot/dts/imx25.dtsi                       |  29 +-
+ arch/arm/configs/imx_v4_v5_defconfig               |   4 +
+ drivers/iio/adc/Kconfig                            |   7 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/fsl-imx25-gcq.c                    | 417 ++++++++++++++
+ drivers/input/touchscreen/Kconfig                  |   9 +
+ drivers/input/touchscreen/Makefile                 |   1 +
+ drivers/input/touchscreen/fsl-imx25-tcq.c          | 596 +++++++++++++++++++++
+ drivers/mfd/Kconfig                                |   9 +
+ drivers/mfd/Makefile                               |   2 +
+ drivers/mfd/fsl-imx25-tsadc.c                      | 203 +++++++
+ include/dt-bindings/iio/adc/fsl-imx25-gcq.h        |  18 +
+ include/linux/mfd/imx25-tsadc.h                    | 140 +++++
+ 16 files changed, 1573 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+ create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
+ create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
+ create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
+ create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
+ create mode 100644 include/linux/mfd/imx25-tsadc.h
+
 -- 
 2.6.2
 
