@@ -12,54 +12,51 @@ CC: <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
         <linux-api@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         "Andrew F.
  Davis" <afd@ti.com>
-Subject: [PATCH v3 4/5] Documentation: afe4403: Add DT bindings for the AFE4403 heart monitor
-Date: Mon, 14 Dec 2015 16:36:00 -0600
-Message-ID: <1450132561-5245-5-git-send-email-afd@ti.com>
+Subject: [PATCH v3 2/5] Documentation: afe4404: Add DT bindings for the AFE4404 heart monitor
+Date: Mon, 14 Dec 2015 16:35:58 -0600
+Message-ID: <1450132561-5245-3-git-send-email-afd@ti.com>
 In-Reply-To: <1450132561-5245-1-git-send-email-afd@ti.com>
 References: <1450132561-5245-1-git-send-email-afd@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Add the TI AFE4403 heart monitor DT bindings documentation.
+Add the TI afe4404 heart monitor DT bindings documentation.
+Create health directory created under iio.
 
 Signed-off-by: Andrew F. Davis <afd@ti.com>
 ---
- .../devicetree/bindings/iio/health/afe4403.txt     | 34 ++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/health/afe4403.txt
+ .../devicetree/bindings/iio/health/afe4404.txt     | 30 ++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/health/afe4404.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/health/afe4403.txt b/Documentation/devicetree/bindings/iio/health/afe4403.txt
+diff --git a/Documentation/devicetree/bindings/iio/health/afe4404.txt b/Documentation/devicetree/bindings/iio/health/afe4404.txt
 new file mode 100644
-index 0000000..2fffd70
+index 0000000..de69f20
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/health/afe4403.txt
-@@ -0,0 +1,34 @@
-+Texas Instruments AFE4403 Heart rate and Pulse Oximeter
++++ b/Documentation/devicetree/bindings/iio/health/afe4404.txt
+@@ -0,0 +1,30 @@
++Texas Instruments AFE4404 Heart rate and Pulse Oximeter
 +
 +Required properties:
-+ - compatible		: Should be "ti,afe4403".
-+ - reg			: SPI chip select address of device.
++ - compatible		: Should be "ti,afe4404".
++ - reg			: I2C address of the device.
 + - tx-supply		: Regulator supply to transmitting LEDs.
 + - interrupt-parent	: Phandle to he parent interrupt controller.
 + - interrupts		: The interrupt line the device ADC_RDY pin is
 +			  connected to. For details refer to,
-+			  ../../interrupt-controller/interrupts.txt.
++			  ../interrupt-controller/interrupts.txt.
 +
 +Optional properties:
 + - reset-gpios		: GPIO used to reset the device.
-+			  For details refer to, ../../gpio/gpio.txt.
-+
-+For other required and optional properties of SPI slave nodes
-+please refer to ../../spi/spi-bus.txt.
++			  For details refer to, ../gpio/gpio.txt.
 +
 +Example:
 +
-+&spi0 {
-+	heart_mon@0 {
-+		compatible = "ti,afe4403";
-+		reg = <0>;
-+		spi-max-frequency = <10000000>;
++&i2c2 {
++	heart_mon@58 {
++		compatible = "ti,afe4404";
++		reg = <0x58>;
 +
 +		tx-supply = <&vbat>;
 +
