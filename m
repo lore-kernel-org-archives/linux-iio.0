@@ -1,877 +1,728 @@
-Return-Path: <jcsistemas2001@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-bn1on0140.outbound.protection.outlook.com ([157.56.110.140]:5451
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751624AbbLNCsP convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Dec 2015 21:48:15 -0500
+From: Chen Bough <Haibo.Chen@freescale.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"shawnguo@kernel.org" <shawnguo@kernel.org>,
+	"kernel@pengutronix.de" <kernel@pengutronix.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v5 1/4] iio: adc: add IMX7D ADC driver support
+Date: Mon, 14 Dec 2015 02:48:11 +0000
+Message-ID: <BY1PR03MB138834ECB5A035305AA1536E9AED0@BY1PR03MB1388.namprd03.prod.outlook.com>
+References: <1449570383-25716-1-git-send-email-haibo.chen@freescale.com>
+ <1449570383-25716-2-git-send-email-haibo.chen@freescale.com>
+ <566C5351.5040402@kernel.org>
+In-Reply-To: <566C5351.5040402@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <7665C9F2-AA7C-404F-AC43-2D045E330030@jic23.retrosnub.co.uk>
-References: <CAAn_ec90t=N1e1m8aUcBZRb5wsRwiz56WUzFCWqTrVHHhcAuBA@mail.gmail.com>
-	<566C0A32.3030104@kernel.org>
-	<CAAn_ec_=9syP4j+g5GRMCB-+7vCWE1XqryE6KWUm=auUBZE=uQ@mail.gmail.com>
-	<566C1493.7090002@jic23.retrosnub.co.uk>
-	<CAAn_ec_5UcQ5GVFx=byU6sKJ9u33LmUzFvoRvVgTko4GfDHnOA@mail.gmail.com>
-	<CAAn_ec8BMT9fPc06YOc14Eh+8vpQGJW_Lv-BOqDCqS5UbZF3iQ@mail.gmail.com>
-	<7665C9F2-AA7C-404F-AC43-2D045E330030@jic23.retrosnub.co.uk>
-Date: Sun, 13 Dec 2015 22:42:08 +0800
-Message-ID: <CAAn_ec97uYM5vPogeRFFsfh8vUTb9H8SVrJYiWbBZmy9b9xBhQ@mail.gmail.com>
-Subject: Re: read /dev/iio:device0 return -1 (Invalid argument)
-From: Julio Cruz <jcsistemas2001@gmail.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Hi Jonathan,
 
-Below the content of all the files under scan_elements to check if
-something is odd (using iio_info). I cannot distribute all the source
-code, but I will re-make and share as below.
+Thanks for your careful and patient review!
+
+Best Regards
+Haibo Chen
+
+
+> -----Original Message-----
+> From: Jonathan Cameron [mailto:jic23@kernel.org]
+> Sent: Sunday, December 13, 2015 1:03 AM
+> To: Chen Haibo-B51421; knaack.h@gmx.de; lars@metafoo.de;
+> pmeerw@pmeerw.net; shawnguo@kernel.org; kernel@pengutronix.de
+> Cc: linux-iio@vger.kernel.org; devicetree@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH v5 1/4] iio: adc: add IMX7D ADC driver support
+> 
+> On 08/12/15 10:26, Haibo Chen wrote:
+> > Freescale i.MX7D soc contains a new ADC IP. This patch add this ADC
+> > driver support, and the driver only support ADC software trigger.
+> >
+> > Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
+> One significant issue, but as the fix is simple I've made it.
+> A few formatting bits and bobs that I've also cleaned up (overly long
+> lines).
+> If I don't clean them up on merge I have to deal with the little 'fix'
+> patches in the coming weeks :) Easier to do it now.
+> I left one case where I felt it would hurt readability alone, but fixed
+> the others.
+> 
+> Applied to the togreg branch of iio.git - initially pushed out as testing
+> for the autobuilders to play with it.
+> 
+> Thanks,
+> 
+> Jonathan
+> > ---
+> >  drivers/iio/adc/Kconfig     |   9 +
+> >  drivers/iio/adc/Makefile    |   1 +
+> >  drivers/iio/adc/imx7d_adc.c | 589
+> > ++++++++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 599 insertions(+)
+> >  create mode 100644 drivers/iio/adc/imx7d_adc.c
+> >
+> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig index
+> > 7868c74..3493a46 100644
+> > --- a/drivers/iio/adc/Kconfig
+> > +++ b/drivers/iio/adc/Kconfig
+> > @@ -194,6 +194,15 @@ config HI8435
+> >  	  This driver can also be built as a module. If so, the module will
+> be
+> >  	  called hi8435.
+> >
+> > +config IMX7D_ADC
+> > +	tristate "IMX7D ADC driver"
+> > +	depends on ARCH_MXC || COMPILE_TEST
+> > +	help
+> > +	  Say yes here to build support for IMX7D ADC.
+> > +
+> > +	  This driver can also be built as a module. If so, the module will
+> be
+> > +	  called imx7d_adc.
+> > +
+> >  config LP8788_ADC
+> >  	tristate "LP8788 ADC driver"
+> >  	depends on MFD_LP8788
+> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile index
+> > 99b37a9..282ffc01 100644
+> > --- a/drivers/iio/adc/Makefile
+> > +++ b/drivers/iio/adc/Makefile
+> > @@ -20,6 +20,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+> >  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+> >  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+> >  obj-$(CONFIG_HI8435) += hi8435.o
+> > +obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+> >  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+> >  obj-$(CONFIG_MAX1027) += max1027.o
+> >  obj-$(CONFIG_MAX1363) += max1363.o
+> > diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
+> > new file mode 100644 index 0000000..d3511b9
+> > --- /dev/null
+> > +++ b/drivers/iio/adc/imx7d_adc.c
+> > @@ -0,0 +1,589 @@
+> > +/*
+> > + * Freescale i.MX7D ADC driver
+> > + *
+> > + * Copyright (C) 2015 Freescale Semiconductor, Inc.
+> > + *
+> > + * This program is free software; you can redistribute it and/or
+> > +modify
+> > + * it under the terms of the GNU General Public License as published
+> > +by
+> > + * the Free Software Foundation; either version 2 of the License, or
+> > + * (at your option) any later version.
+> > + */
+> > +
+> > +#include <linux/clk.h>
+> > +#include <linux/completion.h>
+> > +#include <linux/err.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/io.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/regulator/consumer.h>
+> > +
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/iio/driver.h>
+> > +#include <linux/iio/sysfs.h>
+> > +
+> > +/* ADC register */
+> > +#define IMX7D_REG_ADC_CH_A_CFG1			0x00
+> > +#define IMX7D_REG_ADC_CH_A_CFG2			0x10
+> > +#define IMX7D_REG_ADC_CH_B_CFG1			0x20
+> > +#define IMX7D_REG_ADC_CH_B_CFG2			0x30
+> > +#define IMX7D_REG_ADC_CH_C_CFG1			0x40
+> > +#define IMX7D_REG_ADC_CH_C_CFG2			0x50
+> > +#define IMX7D_REG_ADC_CH_D_CFG1			0x60
+> > +#define IMX7D_REG_ADC_CH_D_CFG2			0x70
+> > +#define IMX7D_REG_ADC_CH_SW_CFG			0x80
+> > +#define IMX7D_REG_ADC_TIMER_UNIT		0x90
+> > +#define IMX7D_REG_ADC_DMA_FIFO			0xa0
+> > +#define IMX7D_REG_ADC_FIFO_STATUS		0xb0
+> > +#define IMX7D_REG_ADC_INT_SIG_EN		0xc0
+> > +#define IMX7D_REG_ADC_INT_EN			0xd0
+> > +#define IMX7D_REG_ADC_INT_STATUS		0xe0
+> > +#define IMX7D_REG_ADC_CHA_B_CNV_RSLT		0xf0
+> > +#define IMX7D_REG_ADC_CHC_D_CNV_RSLT		0x100
+> > +#define IMX7D_REG_ADC_CH_SW_CNV_RSLT		0x110
+> > +#define IMX7D_REG_ADC_DMA_FIFO_DAT		0x120
+> > +#define IMX7D_REG_ADC_ADC_CFG			0x130
+> > +
+> > +#define IMX7D_REG_ADC_CHANNEL_CFG2_BASE		0x10
+> > +#define IMX7D_EACH_CHANNEL_REG_OFFSET		0x20
+> > +
+> > +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN			(0x1 << 31)
+> > +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE			BIT(30)
+> > +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN			BIT(29)
+> > +#define IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL(x)			((x) << 24)
+> > +
+> > +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4				(0x0 <<
+> 12)
+> > +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8				(0x1 <<
+> 12)
+> > +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16			(0x2 << 12)
+> > +#define IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32			(0x3 << 12)
+> > +
+> > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4			(0x0 << 29)
+> > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8			(0x1 << 29)
+> > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16			(0x2 << 29)
+> > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32			(0x3 << 29)
+> > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64			(0x4 << 29)
+> > +#define IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128			(0x5 << 29)
+> > +
+> > +#define IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN			BIT(31)
+> > +#define IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN			BIT(1)
+> > +#define IMX7D_REG_ADC_ADC_CFG_ADC_EN				BIT(0)
+> > +
+> > +#define IMX7D_REG_ADC_INT_CHA_COV_INT_EN			BIT(8)
+> > +#define IMX7D_REG_ADC_INT_CHB_COV_INT_EN			BIT(9)
+> > +#define IMX7D_REG_ADC_INT_CHC_COV_INT_EN			BIT(10)
+> > +#define IMX7D_REG_ADC_INT_CHD_COV_INT_EN			BIT(11)
+> > +#define IMX7D_REG_ADC_INT_CHANNEL_INT_EN
+> 	(IMX7D_REG_ADC_INT_CHA_COV_INT_EN | \
+> > +
+> IMX7D_REG_ADC_INT_CHB_COV_INT_EN | \
+> > +
+> IMX7D_REG_ADC_INT_CHC_COV_INT_EN | \
+> > +
+> IMX7D_REG_ADC_INT_CHD_COV_INT_EN)
+> > +#define IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS		0xf00
+> > +#define IMX7D_REG_ADC_INT_STATUS_CHANNEL_CONV_TIME_OUT		0xf0000
+> > +
+> > +#define IMX7D_ADC_TIMEOUT		msecs_to_jiffies(100)
+> > +
+> > +enum imx7d_adc_clk_pre_div {
+> > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_4,
+> > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_8,
+> > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_16,
+> > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_32,
+> > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_64,
+> > +	IMX7D_ADC_ANALOG_CLK_PRE_DIV_128,
+> > +};
+> > +
+> > +enum imx7d_adc_average_num {
+> > +	IMX7D_ADC_AVERAGE_NUM_4,
+> > +	IMX7D_ADC_AVERAGE_NUM_8,
+> > +	IMX7D_ADC_AVERAGE_NUM_16,
+> > +	IMX7D_ADC_AVERAGE_NUM_32,
+> > +};
+> > +
+> > +struct imx7d_adc_feature {
+> > +	enum imx7d_adc_clk_pre_div clk_pre_div;
+> > +	enum imx7d_adc_average_num avg_num;
+> > +
+> > +	u32 core_time_unit;	/* impact the sample rate */
+> > +
+> > +	bool average_en;
+> > +};
+> > +
+> > +struct imx7d_adc {
+> > +	struct device *dev;
+> > +	void __iomem *regs;
+> > +	struct clk *clk;
+> > +
+> > +	u32 vref_uv;
+> > +	u32 value;
+> > +	u32 channel;
+> > +	u32 pre_div_num;
+> > +
+> > +	struct regulator *vref;
+> > +	struct imx7d_adc_feature adc_feature;
+> > +
+> > +	struct completion completion;
+> > +};
+> > +
+> > +struct imx7d_adc_analogue_core_clk {
+> > +	u32 pre_div;
+> > +	u32 reg_config;
+> > +};
+> > +
+> > +#define IMX7D_ADC_ANALOGUE_CLK_CONFIG(_pre_div, _reg_conf) {	\
+> > +	.pre_div = (_pre_div),					\
+> > +	.reg_config = (_reg_conf),				\
+> > +}
+> > +
+> > +static const struct imx7d_adc_analogue_core_clk
+> imx7d_adc_analogue_clk[] = {
+> > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(4,
+> IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_4),
+> > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(8,
+> IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_8),
+> > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(16,
+> IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_16),
+> > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(32,
+> IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_32),
+> > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(64,
+> IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_64),
+> > +	IMX7D_ADC_ANALOGUE_CLK_CONFIG(128,
+> > +IMX7D_REG_ADC_TIMER_UNIT_PRE_DIV_128),
+> > +};
+> > +
+> > +#define IMX7D_ADC_CHAN(_idx) {					\
+> > +	.type = IIO_VOLTAGE,					\
+> > +	.indexed = 1,						\
+> > +	.channel = (_idx),					\
+> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> > +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+> > +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> > +}
+> > +
+> > +static const struct iio_chan_spec imx7d_adc_iio_channels[] = {
+> > +	IMX7D_ADC_CHAN(0),
+> > +	IMX7D_ADC_CHAN(1),
+> > +	IMX7D_ADC_CHAN(2),
+> > +	IMX7D_ADC_CHAN(3),
+> > +	IMX7D_ADC_CHAN(4),
+> > +	IMX7D_ADC_CHAN(5),
+> > +	IMX7D_ADC_CHAN(6),
+> > +	IMX7D_ADC_CHAN(7),
+> > +	IMX7D_ADC_CHAN(8),
+> > +	IMX7D_ADC_CHAN(9),
+> > +	IMX7D_ADC_CHAN(10),
+> > +	IMX7D_ADC_CHAN(11),
+> > +	IMX7D_ADC_CHAN(12),
+> > +	IMX7D_ADC_CHAN(13),
+> > +	IMX7D_ADC_CHAN(14),
+> > +	IMX7D_ADC_CHAN(15),
+> > +};
+> > +
+> > +static const u32 imx7d_adc_average_num[] = {
+> > +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_4,
+> > +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_8,
+> > +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_16,
+> > +	IMX7D_REG_ADC_CH_CFG2_AVG_NUM_32,
+> > +};
+> > +
+> > +static void imx7d_adc_feature_config(struct imx7d_adc *info) {
+> > +	info->adc_feature.clk_pre_div = IMX7D_ADC_ANALOG_CLK_PRE_DIV_4;
+> > +	info->adc_feature.avg_num = IMX7D_ADC_AVERAGE_NUM_32;
+> > +	info->adc_feature.core_time_unit = 1;
+> > +	info->adc_feature.average_en = true; }
+> > +
+> > +static void imx7d_adc_sample_rate_set(struct imx7d_adc *info) {
+> > +	struct imx7d_adc_feature *adc_feature = &info->adc_feature;
+> > +	struct imx7d_adc_analogue_core_clk adc_analogure_clk;
+> > +	u32 i;
+> > +	u32 tmp_cfg1;
+> > +	u32 sample_rate = 0;
+> > +
+> > +	/*
+> > +	 * Before sample set, disable channel A,B,C,D. Here we
+> > +	 * clear the bit 31 of register REG_ADC_CH_A\B\C\D_CFG1.
+> > +	 */
+> > +	for (i = 0; i < 4; i++) {
+> > +		tmp_cfg1 = readl(info->regs + i *
+> IMX7D_EACH_CHANNEL_REG_OFFSET);
+> > +		tmp_cfg1 &= ~IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN;
+> > +		writel(tmp_cfg1, info->regs + i *
+> IMX7D_EACH_CHANNEL_REG_OFFSET);
+> > +	}
+> > +
+> > +	adc_analogure_clk = imx7d_adc_analogue_clk[adc_feature-
+> >clk_pre_div];
+> > +	sample_rate |= adc_analogure_clk.reg_config;
+> > +	info->pre_div_num = adc_analogure_clk.pre_div;
+> > +
+> > +	sample_rate |= adc_feature->core_time_unit;
+> > +	writel(sample_rate, info->regs + IMX7D_REG_ADC_TIMER_UNIT); }
+> > +
+> > +static void imx7d_adc_hw_init(struct imx7d_adc *info) {
+> > +	u32 cfg;
+> > +
+> > +	/* power up and enable adc analogue core */
+> > +	cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
+> > +	cfg &= ~(IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN |
+> IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN);
+> > +	cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_EN;
+> > +	writel(cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
+> > +
+> > +	/* enable channel A,B,C,D interrupt */
+> > +	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs +
+> IMX7D_REG_ADC_INT_SIG_EN);
+> > +	writel(IMX7D_REG_ADC_INT_CHANNEL_INT_EN, info->regs +
+> > +IMX7D_REG_ADC_INT_EN);
+> > +
+> > +	imx7d_adc_sample_rate_set(info);
+> > +}
+> > +
+> > +static void imx7d_adc_channel_set(struct imx7d_adc *info) {
+> > +	u32 cfg1 = 0;
+> > +	u32 cfg2;
+> > +	u32 channel;
+> > +
+> > +	channel = info->channel;
+> > +
+> > +	/* the channel choose single conversion, and enable average mode */
+> > +	cfg1 |= (IMX7D_REG_ADC_CH_CFG1_CHANNEL_EN |
+> > +		 IMX7D_REG_ADC_CH_CFG1_CHANNEL_SINGLE);
+> > +	if (info->adc_feature.average_en)
+> > +		cfg1 |= IMX7D_REG_ADC_CH_CFG1_CHANNEL_AVG_EN;
+> > +
+> > +	/*
+> > +	 * physical channel 0 chose logical channel A
+> > +	 * physical channel 1 chose logical channel B
+> > +	 * physical channel 2 chose logical channel C
+> > +	 * physical channel 3 chose logical channel D
+> > +	 */
+> > +	cfg1 |= IMX7D_REG_ADC_CH_CFG1_CHANNEL_SEL(channel);
+> > +
+> > +	/* read register REG_ADC_CH_A\B\C\D_CFG2, according to the channel
+> chosen */
+> > +	cfg2 = readl(info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel +
+> > +IMX7D_REG_ADC_CHANNEL_CFG2_BASE);
+> > +
+> > +	cfg2 |= imx7d_adc_average_num[info->adc_feature.avg_num];
+> > +
+> > +	/* write the register REG_ADC_CH_A\B\C\D_CFG2, according to the
+> channel chosen */
+> > +	writel(cfg2, info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel +
+> > +IMX7D_REG_ADC_CHANNEL_CFG2_BASE);
+> Whilst line length limits are not set in stone it is best to stick to
+> them if there is no good reason to not do so.  Here it owuld make no real
+> difference.
+> > +	writel(cfg1, info->regs + IMX7D_EACH_CHANNEL_REG_OFFSET * channel);
+> > +}
+> > +
+> > +static u32 imx7d_adc_get_sample_rate(struct imx7d_adc *info) {
+> > +	/* input clock is always 24MHz */
+> > +	u32 input_clk = 24000000;
+> > +	u32 analogue_core_clk;
+> > +	u32 core_time_unit = info->adc_feature.core_time_unit;
+> > +	u32 tmp;
+> > +
+> > +	analogue_core_clk = input_clk / info->pre_div_num;
+> > +	tmp = (core_time_unit + 1) * 6;
+> > +
+> > +	return analogue_core_clk / tmp;
+> > +}
+> > +
+> > +static int imx7d_adc_read_raw(struct iio_dev *indio_dev,
+> > +			struct iio_chan_spec const *chan,
+> > +			int *val,
+> > +			int *val2,
+> > +			long mask)
+> > +{
+> > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > +
+> > +	u32 channel;
+> > +	long ret;
+> > +
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_RAW:
+> > +		mutex_lock(&indio_dev->mlock);
+> > +		reinit_completion(&info->completion);
+> > +
+> > +		channel = chan->channel & 0x03;
+> > +		info->channel = channel;
+> > +		imx7d_adc_channel_set(info);
+> > +
+> > +		ret = wait_for_completion_interruptible_timeout
+> > +				(&info->completion, IMX7D_ADC_TIMEOUT);
+> > +		if (ret == 0) {
+> > +			mutex_unlock(&indio_dev->mlock);
+> > +			return -ETIMEDOUT;
+> > +		}
+> > +		if (ret < 0) {
+> > +			mutex_unlock(&indio_dev->mlock);
+> > +			return ret;
+> > +		}
+> > +
+> > +		*val = info->value;
+> > +		mutex_unlock(&indio_dev->mlock);
+> > +		return IIO_VAL_INT;
+> > +
+> > +	case IIO_CHAN_INFO_SCALE:
+> > +		info->vref_uv = regulator_get_voltage(info->vref);
+> > +		*val = info->vref_uv / 1000;
+> > +		*val2 = 12;
+> > +		return IIO_VAL_FRACTIONAL_LOG2;
+> > +
+> > +	case IIO_CHAN_INFO_SAMP_FREQ:
+> > +		*val = imx7d_adc_get_sample_rate(info);
+> > +		return IIO_VAL_INT;
+> > +
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +}
+> > +
+> > +static int imx7d_adc_read_data(struct imx7d_adc *info) {
+> > +	u32 channel;
+> > +	u32 value;
+> > +
+> > +	channel = info->channel & 0x03;
+> > +
+> > +	/*
+> > +	 * channel A and B conversion result share one register,
+> > +	 * bit[27~16] is the channel B conversion result,
+> > +	 * bit[11~0] is the channel A conversion result.
+> > +	 * channel C and D is the same.
+> > +	 */
+> > +	if (channel < 2)
+> > +		value = readl(info->regs + IMX7D_REG_ADC_CHA_B_CNV_RSLT);
+> > +	else
+> > +		value = readl(info->regs + IMX7D_REG_ADC_CHC_D_CNV_RSLT);
+> > +	if (channel & 0x1)	/* channel B or D */
+> > +		value = (value >> 16) & 0xFFF;
+> > +	else			/* channel A or C */
+> > +		value &= 0xFFF;
+> > +
+> > +	return value;
+> > +}
+> > +
+> > +static irqreturn_t imx7d_adc_isr(int irq, void *dev_id) {
+> > +	struct imx7d_adc *info = (struct imx7d_adc *)dev_id;
+> > +	int status;
+> > +
+> > +	status = readl(info->regs + IMX7D_REG_ADC_INT_STATUS);
+> > +	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS) {
+> > +		info->value = imx7d_adc_read_data(info);
+> > +		complete(&info->completion);
+> > +
+> > +		/*
+> > +		 * The register IMX7D_REG_ADC_INT_STATUS can't clear
+> > +		 * itself after read operation, need software to write
+> > +		 * 0 to the related bit. Here we clear the channel A/B/C/D
+> > +		 * conversion finished flag.
+> > +		 */
+> > +		status &= ~IMX7D_REG_ADC_INT_STATUS_CHANNEL_INT_STATUS;
+> > +		writel(status, info->regs + IMX7D_REG_ADC_INT_STATUS);
+> > +	}
+> > +
+> > +	/*
+> > +	 * If the channel A/B/C/D conversion timeout, report it and clear
+> these
+> > +	 * timeout flags.
+> > +	 */
+> > +	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_CONV_TIME_OUT) {
+> > +		pr_err("%s: ADC got conversion time out interrupt: 0x%08x\n",
+> > +			dev_name(info->dev), status);
+> > +		status &= ~IMX7D_REG_ADC_INT_STATUS_CHANNEL_CONV_TIME_OUT;
+> > +		writel(status, info->regs + IMX7D_REG_ADC_INT_STATUS);
+> > +	}
+> > +
+> > +	return IRQ_HANDLED;
+> > +}
+> > +
+> > +static int imx7d_adc_reg_access(struct iio_dev *indio_dev,
+> > +			unsigned reg, unsigned writeval,
+> > +			unsigned *readval)
+> > +{
+> > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > +
+> > +	if (!readval || reg % 4 || reg > IMX7D_REG_ADC_ADC_CFG)
+> > +		return -EINVAL;
+> > +
+> > +	*readval = readl(info->regs + reg);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static const struct iio_info imx7d_adc_iio_info = {
+> > +	.driver_module = THIS_MODULE,
+> > +	.read_raw = &imx7d_adc_read_raw,
+> > +	.debugfs_reg_access = &imx7d_adc_reg_access, };
+> > +
+> > +static const struct of_device_id imx7d_adc_match[] = {
+> > +	{ .compatible = "fsl,imx7d-adc", },
+> > +	{ /* sentinel */ }
+> > +};
+> > +MODULE_DEVICE_TABLE(of, imx7d_adc_match);
+> > +
+> > +static void imx7d_adc_power_down(struct imx7d_adc *info) {
+> > +	u32 adc_cfg;
+> > +
+> > +	adc_cfg = readl(info->regs + IMX7D_REG_ADC_ADC_CFG);
+> > +	adc_cfg |= IMX7D_REG_ADC_ADC_CFG_ADC_CLK_DOWN |
+> > +		   IMX7D_REG_ADC_ADC_CFG_ADC_POWER_DOWN;
+> > +	adc_cfg &= ~IMX7D_REG_ADC_ADC_CFG_ADC_EN;
+> > +	writel(adc_cfg, info->regs + IMX7D_REG_ADC_ADC_CFG); }
+> > +
+> > +static int imx7d_adc_probe(struct platform_device *pdev) {
+> > +	struct imx7d_adc *info;
+> > +	struct iio_dev *indio_dev;
+> > +	struct resource *mem;
+> > +	int irq;
+> > +	int ret;
+> > +
+> > +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+> > +	if (!indio_dev) {
+> > +		dev_err(&pdev->dev, "Failed allocating iio device\n");
+> > +		return -ENOMEM;
+> > +	}
+> > +
+> > +	info = iio_priv(indio_dev);
+> > +	info->dev = &pdev->dev;
+> > +
+> > +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+> > +	if (IS_ERR(info->regs)) {
+> > +		ret = PTR_ERR(info->regs);
+> > +		dev_err(&pdev->dev, "Failed to remap adc memory, err = %d\n",
+> ret);
+> > +		return ret;
+> > +	}
+> > +
+> > +	irq = platform_get_irq(pdev, 0);
+> > +	if (irq < 0) {
+> > +		dev_err(&pdev->dev, "No irq resource?\n");
+> > +		return irq;
+> > +	}
+> > +
+> > +	info->clk = devm_clk_get(&pdev->dev, "adc");
+> > +	if (IS_ERR(info->clk)) {
+> > +		ret = PTR_ERR(info->clk);
+> > +		dev_err(&pdev->dev, "Failed getting clock, err = %d\n", ret);
+> > +		return ret;
+> > +	}
+> > +
+> > +	info->vref = devm_regulator_get(&pdev->dev, "vref");
+> > +	if (IS_ERR(info->vref)) {
+> > +		ret = PTR_ERR(info->vref);
+> > +		dev_err(&pdev->dev, "Failed getting reference voltage, err
+> = %d\n", ret);
+> > +		return ret;
+> > +	}
+> > +
+> > +	ret = regulator_enable(info->vref);
+> > +	if (ret) {
+> > +		dev_err(&pdev->dev, "Can't enable adc reference top voltage,
+> err = %d\n", ret);
+> > +		return ret;
+> > +	}
+> > +
+> > +	platform_set_drvdata(pdev, indio_dev);
+> > +
+> > +	init_completion(&info->completion);
+> > +
+> > +	indio_dev->name = dev_name(&pdev->dev);
+> > +	indio_dev->dev.parent = &pdev->dev;
+> > +	indio_dev->info = &imx7d_adc_iio_info;
+> > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> > +	indio_dev->channels = imx7d_adc_iio_channels;
+> > +	indio_dev->num_channels = ARRAY_SIZE(imx7d_adc_iio_channels);
+> > +
+> > +	ret = clk_prepare_enable(info->clk);
+> > +	if (ret) {
+> > +		dev_err(&pdev->dev,
+> > +			"Could not prepare or enable the clock.\n");
+> > +		goto error_adc_clk_enable;
+> > +	}
+> > +
+> > +	ret = devm_request_irq(info->dev, irq,
+> > +				imx7d_adc_isr, 0,
+> > +				dev_name(&pdev->dev), info);
+> > +	if (ret < 0) {
+> > +		dev_err(&pdev->dev, "Failed requesting irq, irq = %d\n", irq);
+> > +		goto error_iio_device_register;
+> It's trivial but this goto label naming isn't accurate as the device
+> register doesn't occur for a few more lines...
+> > +	}
+> > +
+> > +	imx7d_adc_feature_config(info);
+> > +	imx7d_adc_hw_init(info);
+> > +
+> > +	ret = iio_device_register(indio_dev);
+> > +	if (ret) {
+> > +		imx7d_adc_power_down(info);
+> > +		dev_err(&pdev->dev, "Couldn't register the device.\n");
+> > +		goto error_iio_device_register;
+> > +	}
+> > +
+> > +	return 0;
+> > +
+> > +error_iio_device_register:
+> > +	clk_disable_unprepare(info->clk);
+> > +error_adc_clk_enable:
+> > +	regulator_disable(info->vref);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int imx7d_adc_remove(struct platform_device *pdev) {
+> > +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > +
+> > +	imx7d_adc_power_down(info);
+> I might fix this up, but the power down definitely wants to occur 'after'
+> you have removed the userspace interface (so after the
+> iio_device_unregister call).
+> 
+> > +
+> > +	iio_device_unregister(indio_dev);
+> > +	clk_disable_unprepare(info->clk);
+> > +	regulator_disable(info->vref);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int __maybe_unused imx7d_adc_suspend(struct device *dev) {
+> > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > +
+> > +	imx7d_adc_power_down(info);
+> > +
+> > +	clk_disable_unprepare(info->clk);
+> > +	regulator_disable(info->vref);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int __maybe_unused imx7d_adc_resume(struct device *dev) {
+> > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> > +	struct imx7d_adc *info = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	ret = regulator_enable(info->vref);
+> > +	if (ret) {
+> > +		dev_err(info->dev,
+> > +			"Can't enable adc reference top voltage, err = %d\n",
+> ret);
+> > +		return ret;
+> > +	}
+> > +
+> > +	ret = clk_prepare_enable(info->clk);
+> > +	if (ret) {
+> > +		dev_err(info->dev,
+> > +			"Could not prepare or enable clock.\n");
+> > +		regulator_disable(info->vref);
+> > +		return ret;
+> > +	}
+> > +
+> > +	imx7d_adc_hw_init(info);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static SIMPLE_DEV_PM_OPS(imx7d_adc_pm_ops, imx7d_adc_suspend,
+> > +imx7d_adc_resume);
+> > +
+> > +static struct platform_driver imx7d_adc_driver = {
+> > +	.probe		= imx7d_adc_probe,
+> > +	.remove		= imx7d_adc_remove,
+> > +	.driver		= {
+> > +		.name	= "imx7d_adc",
+> > +		.of_match_table = imx7d_adc_match,
+> > +		.pm	= &imx7d_adc_pm_ops,
+> > +	},
+> > +};
+> > +
+> > +module_platform_driver(imx7d_adc_driver);
+> > +
+> > +MODULE_AUTHOR("Haibo Chen <haibo.chen@freescale.com>");
+> > +MODULE_DESCRIPTION("Freeacale IMX7D ADC driver"); MODULE_LICENSE("GPL
+> > +v2");
+> >
 
-Thanks again for any suggestion.
-
----------------------
-Library version: 0.6 (git tag: 9d8aa76)
-IIO context created with local backend.
-Backend version: 0.6 (git tag: 9d8aa76)
-Backend description string: Linux Board Custom
-3.10.53-1.1.0_ga-boardcustom #94 SMP PREEMPT Sun Dec 13 16:17:57 CST
-2015 armv7l
-IIO context has 2 devices:
-        trigger0: customdevice-dev0
-                0 channels found:
-        iio:device0: customdevice
-                9 channels found:
-                        voltage0: 0 (input)
-                        3 channel-specific attributes found:
-                                attr 0: en value: 1
-                                attr 1: index value: 0
-                                attr 2: type value: be:u24/32>>0
-                        voltage1: 1 (input)
-                        3 channel-specific attributes found:
-                                attr 0: en value: 1
-                                attr 1: type value: be:u24/32>>0
-                                attr 2: index value: 1
-                        voltage2: 2 (input)
-                        3 channel-specific attributes found:
-                                attr 0: en value: 1
-                                attr 1: type value: be:u24/32>>0
-                                attr 2: index value: 2
-                        voltage3: 3 (input)
-                        3 channel-specific attributes found:
-                                attr 0: type value: be:u24/32>>0
-                                attr 1: index value: 3
-                                attr 2: en value: 1
-                        voltage4: 4 (input)
-                        3 channel-specific attributes found:
-                                attr 0: en value: 1
-                                attr 1: type value: be:u24/32>>0
-                                attr 2: index value: 4
-                        voltage5: 5 (input)
-                        3 channel-specific attributes found:
-                                attr 0: en value: 1
-                                attr 1: index value: 5
-                                attr 2: type value: be:u24/32>>0
-                        voltage6: 6 (input)
-                        3 channel-specific attributes found:
-                                attr 0: index value: 6
-                                attr 1: type value: be:u24/32>>0
-                                attr 2: en value: 1
-                        voltage7: 7 (input)
-                        3 channel-specific attributes found:
-                                attr 0: index value: 7
-                                attr 1: type value: be:u24/32>>0
-                                attr 2: en value: 1
-                        voltage8: 8 (input)
-                        3 channel-specific attributes found:
-                                attr 0: index value: 8
-                                attr 1: type value: be:u24/32>>0
-                                attr 2: en value: 1
-                1 device-specific attributes found:
-                                attr 0: config1 value: 133
-                Current trigger: trigger0(customde
----------------------
-
---------------------
-struct customdevice_state {
-       struct spi_device       *spi;
-
-       bool sampling;
-       bool irq_enabled;
-
-       uint8_t               *samples_data;
-
-       struct iio_trigger *trig;
-
-       struct mutex lock;
-
-
-       /*
-        * DMA (thus cache coherency maintenance) requires the
-        * transfer buffers to live in their own cache lines.
-        */
-       uint8_t rx_buf[customdevice_SPI_MAX_FRAMESIZE] ____cacheline_aligned;
-       uint8_t tx_buf[customdevice_SPI_MAX_FRAMESIZE] ____cacheline_aligned;
-};
-
-static int customdevice_send_command(struct iio_dev *indio_dev,
-unsigned char command)
-{
-       struct customdevice_state *st = iio_priv(indio_dev);
-       int ret;
-
-       if (iio_buffer_enabled(indio_dev))
-              return -EBUSY;
-
-       mutex_lock(&st->lock);
-       st->tx_buf[0] = command;
-       ret = spi_write(st->spi, &st->tx_buf, 1);
-       mutex_unlock(&st->lock);
-
-       return ret;
-};
-
-static int customdevice_read_register(struct iio_dev *indio_dev,
-unsigned char address,
-       unsigned char *value)
-{
-       struct customdevice_state *st = iio_priv(indio_dev);
-       struct spi_transfer xfer;
-       struct spi_message msg;
-       int ret;
-
-       if (iio_buffer_enabled(indio_dev))
-              return -EBUSY;
-
-       memset(&xfer, 0, sizeof(xfer));
-       xfer.tx_buf = &st->tx_buf;
-       xfer.rx_buf = &st->rx_buf;
-       xfer.len = 3;
-       xfer.delay_usecs = 2;
-       xfer.cs_change = 0;
-       xfer.bits_per_word = 8;
-
-       spi_message_init(&msg);
-       spi_message_add_tail(&xfer, &msg);
-
-       mutex_lock(&st->lock);
-       st->tx_buf[0] = customdevice_CMD_RREG | address;
-       st->tx_buf[1] = 0;
-       st->tx_buf[2] = 0;
-       ret = spi_sync(st->spi, &msg);
-       if (ret)
-              goto out;
-       *value = st->rx_buf[2];
-out:
-       mutex_unlock(&st->lock);
-
-       return ret;
-};
-
-static int customdevice_write_register(struct iio_dev *indio_dev,
-unsigned char address,
-       unsigned char value)
-{
-       struct customdevice_state *st = iio_priv(indio_dev);
-       struct spi_transfer xfer;
-       struct spi_message msg;
-       int ret;
-
-       if (iio_buffer_enabled(indio_dev))
-              return -EBUSY;
-
-       memset(&xfer, 0, sizeof(xfer));
-       xfer.tx_buf = &st->tx_buf;
-       xfer.rx_buf = &st->rx_buf;
-       xfer.len = 3;
-       xfer.delay_usecs = 2;
-       xfer.cs_change = 0;
-       xfer.bits_per_word = 8;
-
-       spi_message_init(&msg);
-       spi_message_add_tail(&xfer, &msg);
-
-       mutex_lock(&st->lock);
-       st->tx_buf[0] = customdevice_CMD_WREG | address;
-       st->tx_buf[1] = 0;
-       st->tx_buf[2] = value;
-       ret = spi_sync(st->spi, &msg);
-       if (ret)
-              goto out;
-out:
-       mutex_unlock(&st->lock);
-
-       return ret;
-};
-
-struct gpio customdevice_gpio_reset = { .label = "reset-gpio", .flags
-= GPIOF_OUT_INIT_HIGH };
-struct gpio customdevice_gpio_acquire = { .label = "acquire-gpio",
-.flags =GPIOF_OUT_INIT_LOW };
-
-static void customdevice_reset_by_gpio(void)
-{
-       gpio_set_value_cansleep(customdevice_gpio_reset.gpio, 0);
-       udelay(5);
-       gpio_set_value_cansleep(customdevice_gpio_reset.gpio, 1);
-       udelay(20);
-       printk(KERN_ALERT "DEBUG: Passed %s %d GPIO setting
-%s\n",__FUNCTION__,__LINE__, customdevice_gpio_reset.label);
-}
-
-static void customdevice_acquire_by_gpio(bool enable)
-{
-       gpio_set_value_cansleep(customdevice_gpio_acquire.gpio, enable);
-       printk(KERN_ALERT "DEBUG: Passed %s %d GPIO setting
-%s\n",__FUNCTION__,__LINE__, customdevice_gpio_acquire.label);
-}
-
-static int customdevice_init_io_from_dt(struct device *dev, struct gpio *pgpio)
-{
-       struct device_node *np = dev->of_node;
-
-       int ret;
-
-       pgpio->gpio = of_get_named_gpio(np, pgpio->label, 0);
-
-       if (!gpio_is_valid(pgpio->gpio)) {
-              return -EINVAL;
-       } else {
-              ret = devm_gpio_request_one(dev, pgpio->gpio,
-pgpio->flags, pgpio->label);
-              if (ret < 0) {
-                     return ret;
-              }
-       }
-
-       return 0;
-};
-
-static int customdevice_init_gpio_pins(struct iio_dev *indio_dev)
-{
-       struct customdevice_state *st = iio_priv(indio_dev);
-       struct device *dev = &st->spi->dev;
-       int ret;
-
-       ret = customdevice_init_io_from_dt(dev, &customdevice_gpio_reset);
-       printk(KERN_ALERT "DEBUG: Passed %s %d init GPIO RESET return
-%d \n",__FUNCTION__,__LINE__, ret);
-
-       ret = customdevice_init_io_from_dt(dev, &customdevice_gpio_acquire);
-       printk(KERN_ALERT "DEBUG: Passed %s %d init GPIO START return
-%d \n",__FUNCTION__,__LINE__, ret);
-       if (ret < 0)
-              goto out;
-
-       gpio_set_value_cansleep(customdevice_gpio_acquire.gpio, 0);
-       printk(KERN_ALERT "DEBUG: Passed %s %d GPIO setting
-%s\n",__FUNCTION__,__LINE__, customdevice_gpio_acquire.label);
-       gpio_set_value_cansleep(customdevice_gpio_reset.gpio, 1);
-       printk(KERN_ALERT "DEBUG: Passed %s %d GPIO setting
-%s\n",__FUNCTION__,__LINE__, customdevice_gpio_reset.label);
-
-       return 0;
-
-out:
-       return ret;
-};
-#ifdef CONFIG_DEBUG_FS
-static void customdevice_debugfs_init(struct iio_dev *indio_dev)
-{
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-}
-
-static int customdevice_debugfs_reg_access(struct iio_dev *indio_dev,
-                              unsigned reg, unsigned writeval,
-                              unsigned *readval)
-{
-       unsigned char readdata;
-       int ret;
-
-       if (readval == NULL) {
-              printk(KERN_ALERT "DEBUG: Passed %s %d WRITE reg = %x
-val = %x\n",__FUNCTION__,__LINE__, (unsigned char)reg, (unsigned
-char)writeval);
-              return customdevice_write_register(indio_dev, (unsigned
-char)reg, (unsigned char)writeval);
-       }
-
-       ret = customdevice_read_register(indio_dev, (unsigned char)reg,
-&readdata);
-       if (ret)
-              return ret;
-       *readval = (unsigned)readdata;
-       printk(KERN_ALERT "DEBUG: Passed %s %d READ reg = %x val =
-%x\n",__FUNCTION__,__LINE__, (unsigned char)reg, (unsigned
-char)writeval);
-       return 0;
-}
-
-#else
-
-static inline void customdevice_debugfs_init(struct iio_dev *indio_dev) {};
-#define customdevice_debugfs_reg_access NULL
-
-#endif
-
-static int customdevice_startup(struct iio_dev *indio_dev, unsigned long mask)
-{
-       unsigned char reg;
-       int ret;
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-
-       // enable conversions
-       customdevice_acquire_by_gpio(true);
-
-       return 0;
-}
-
-static int customdevice_shutdown(struct iio_dev *indio_dev)
-{
-       int ret;
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-
-       // stop conversions
-       customdevice_acquire_by_gpio(false);
-
-       return 0;
-}
-
-static int customdevice_preenable(struct iio_dev *indio_dev)
-{
-       struct customdevice_state *st = iio_priv(indio_dev);
-       int ret;
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       ret = iio_sw_buffer_preenable(indio_dev);
-       if (ret)
-              return ret;
-
-       ret = customdevice_startup(indio_dev, *indio_dev->active_scan_mask);
-       if (ret)
-              return ret;
-
-       st->sampling = true;
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       return ret;
-}
-
-static int customdevice_postenable(struct iio_dev *indio_dev)
-{
-       struct customdevice_state *st = iio_priv(indio_dev);
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       iio_triggered_buffer_postenable(indio_dev);
-
-       if (st->spi->irq) {
-              st->irq_enabled = true;
-              enable_irq(st->spi->irq);
-       }
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       return 0;
-}
-
-static int customdevice_postdisable(struct iio_dev *indio_dev)
-{
-       struct customdevice_state *st = iio_priv(indio_dev);
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       st->sampling = false;
-
-       return customdevice_shutdown(indio_dev);
-}
-
-static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
-       .preenable = &customdevice_preenable,
-       .postenable = &customdevice_postenable,
-       .predisable = &iio_triggered_buffer_predisable,
-       .postdisable = &customdevice_postdisable,
-};
-
-unsigned long int test = 0;
-static irqreturn_t customdevice_trigger_handler(int irq, void *p)
-{
-       struct iio_poll_func *pf = p;
-       struct iio_dev *indio_dev = pf->indio_dev;
-       struct customdevice_state *st = iio_priv(indio_dev);
-       struct spi_transfer xfer;
-       struct spi_message msg;
-       int ret;
-
-       memset(&xfer, 0, sizeof(xfer));
-       xfer.tx_buf = &st->tx_buf;
-       xfer.rx_buf = &st->rx_buf;
-       xfer.len = indio_dev->num_channels*3; /*assuming all channels enabled*/
-       xfer.delay_usecs = 2;
-       xfer.cs_change = 0;
-       xfer.bits_per_word = 8;
-
-       spi_message_init(&msg);
-       spi_message_add_tail(&xfer, &msg);
-       ret = spi_sync(st->spi, &msg);
-       if (ret)
-              goto err;
-
-       /* Unpacking data */
-
-       test++;
-       st->samples_data[0] = (unsigned char)(test & 0xFF);
-       st->samples_data[1] = (unsigned char)(test >> 8 & 0xFF);
-       st->samples_data[2] = (unsigned char)(test >> 16 & 0xFF);
-       st->samples_data[3] = (unsigned char)(test >> 24 & 0xFF);
-
-       iio_push_to_buffers(indio_dev, st->samples_data);
-
-err:
-       iio_trigger_notify_done(indio_dev->trig);
-       enable_irq(st->spi->irq);
-
-       return IRQ_HANDLED;
-}
-
-static int customdevice_update_scan_mode(struct iio_dev *indio_dev,
-       const unsigned long *scan_mask)
-{
-       struct customdevice_state *st = iio_priv(indio_dev);
-
-       /* We have to make sure to output all zeros on the SDO line */
-       memset(st->tx_buf, 0x00, customdevice_SPI_MAX_FRAMESIZE);
-
-       st->samples_data = krealloc(st->samples_data,
-indio_dev->scan_bytes, GFP_KERNEL);
-       if (!st->samples_data)
-              return -ENOMEM;
-
-       return 0;
-}
-
-// data leads channels
-enum customdevice_channel_leads {
-       CUSTOMDEVICE_1,
-       CUSTOMDEVICE_2,
-       CUSTOMDEVICE_3,
-       CUSTOMDEVICE_4,
-       CUSTOMDEVICE_5,
-       CUSTOMDEVICE_6,
-       CUSTOMDEVICE_7,
-       CUSTOMDEVICE_8,
-       CUSTOMDEVICE_9,
-};
-
-#define customdevice_ADC_CHAN(_chan1, _scan_index, _extend_name) {       \
-       .type = IIO_VOLTAGE,                            \
-       .indexed = 1,                                   \
-       .differential = 1,                            \
-       .channel = (_chan1),                            \
-       .scan_index = (_scan_index),                     \
-       .scan_type = {                                   \
-              .sign = 'u',                            \
-              .realbits = 24,                            \
-              .storagebits = 32,                     \
-              .shift = 0,                            \
-              .endianness = IIO_BE,                     \
-       },                                          \
-       .extend_name = (_extend_name),                     \
-}
-
-static const struct iio_chan_spec customdevice_channels[] = {
-       customdevice_ADC_CHAN(CUSTOMDEVICE_1, 0, "1"),
-       customdevice_ADC_CHAN(CUSTOMDEVICE_2, 1, "2"),
-       customdevice_ADC_CHAN(CUSTOMDEVICE_3, 2, "3"),
-       customdevice_ADC_CHAN(CUSTOMDEVICE_4, 3, "4"),
-       customdevice_ADC_CHAN(CUSTOMDEVICE_5, 4, "5"),
-       customdevice_ADC_CHAN(CUSTOMDEVICE_6, 5, "6"),
-       customdevice_ADC_CHAN(CUSTOMDEVICE_7, 6, "7"),
-       customdevice_ADC_CHAN(CUSTOMDEVICE_8, 7, "8"),
-       customdevice_ADC_CHAN(CUSTOMDEVICE_9, 8, "9"),
-};
-
-static const struct iio_trigger_ops customdevice_trigger_ops = {
-       .owner = THIS_MODULE,
-};
-
-static irqreturn_t customdevice_trigger_irq(int irq, void *data)
-{
-       struct customdevice_state *st = data;
-       struct iio_trigger *trig = st->trig;
-
-       if (!st->sampling) {
-              disable_irq_nosync(irq);
-              st->irq_enabled = false;
-              return IRQ_HANDLED;
-       }
-
-       iio_trigger_poll(trig, iio_get_time_ns());
-       disable_irq_nosync(irq);
-
-       return IRQ_HANDLED;
-}
-
-static struct iio_trigger *customdevice_allocate_trigger(struct
-iio_dev *indio_dev,
-       int irq)
-{
-       struct customdevice_state *st = iio_priv(indio_dev);
-       struct iio_trigger *trig;
-       int ret;
-
-       trig = iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
-       if (!trig)
-              return NULL;
-
-       trig->dev.parent = indio_dev->dev.parent;
-       trig->ops = &customdevice_trigger_ops;
-
-       ret = request_irq(irq, customdevice_trigger_irq, IRQF_TRIGGER_LOW,
-                     trig->name, st);
-       if (ret)
-              return NULL;
-
-       indio_dev->trig = trig;
-       iio_trigger_get(indio_dev->trig);
-
-       ret = iio_trigger_register(trig);
-       if (ret) {
-              free_irq(irq, trig);
-              return NULL;
-       }
-
-       return trig;
-}
-
-
-
-static const struct iio_info customdevice_info = {
-       .update_scan_mode = customdevice_update_scan_mode,
-       .debugfs_reg_access = customdevice_debugfs_reg_access,
-       .driver_module = THIS_MODULE,
-};
-
-static int customdevice_inital_setup(struct iio_dev *indio_dev,
-       struct customdevice_platform_data *pdata)
-{
-       int ret;
-       unsigned char id;
-
-       ret = customdevice_init_gpio_pins(indio_dev);
-       if (ret)
-              return ret;
-
-       // reset device
-       customdevice_reset_by_gpio();
-       customdevice_acquire_by_gpio(false);
-
-       return ret;
-}
-
-static int customdevice_probe(struct spi_device *spi)
-{
-       struct customdevice_platform_data *pdata = spi->dev.platform_data;
-       struct iio_dev *indio_dev;
-       struct customdevice_state *st;
-       int ret;
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-
-       indio_dev = iio_device_alloc(sizeof(*st));
-       if (indio_dev == NULL)
-              return -ENOMEM;
-
-       st = iio_priv(indio_dev);
-
-       mutex_init(&st->lock);
-       spi_set_drvdata(spi, indio_dev);
-       st->spi = spi;
-
-       indio_dev->dev.parent = &spi->dev;
-       indio_dev->name = spi_get_device_id(spi)->name;
-       indio_dev->modes = INDIO_DIRECT_MODE;
-       indio_dev->info = &customdevice_info;
-       indio_dev->channels = customdevice_channels;
-       indio_dev->num_channels = ARRAY_SIZE(customdevice_channels);
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       ret = customdevice_inital_setup(indio_dev, pdata);
-       if (ret)
-              goto error_free;
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-              &customdevice_trigger_handler, &iio_triggered_buffer_setup_ops);
-       if (ret)
-              goto error_free;
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       st->irq_enabled = true;
-       if (spi->irq)
-              st->trig = customdevice_allocate_trigger(indio_dev, spi->irq);
-
-       ret = iio_device_register(indio_dev);
-       if (ret)
-              goto error_buffer_cleanup;
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       customdevice_debugfs_init(indio_dev);
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       return 0;
-
-error_buffer_cleanup:
-       iio_triggered_buffer_cleanup(indio_dev);
-error_free:
-       iio_device_free(indio_dev);
-
-       printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-       return ret;
-}
-
-static int customdevice_remove(struct spi_device *spi)
-{
-       struct iio_dev *indio_dev = spi_get_drvdata(spi);
-       struct customdevice_state *st = iio_priv(indio_dev);
-
-       iio_device_unregister(indio_dev);
-       iio_triggered_buffer_cleanup(indio_dev);
-       kfree(st->samples_data);
-       mutex_destroy(&st->lock);
-       iio_device_free(indio_dev);
-
-       return 0;
-}
-
-static const struct of_device_id customdevice_dt_ids[] = {
-       { .compatible = "customdevice" },
-       { }
-};
-MODULE_DEVICE_TABLE(of, customdevice_dt_ids);
-
-static const struct spi_device_id customdevice_ids[] = {
-       {"customdevice", 0},
-       { }
-};
-MODULE_DEVICE_TABLE(spi, customdevice_ids);
-
-static struct spi_driver customdevice_driver = {
-       .driver = {
-              .name       = "customdevice",
-              .owner       = THIS_MODULE,
-              .of_match_table = of_match_ptr(customdevice_dt_ids),
-       },
-       .probe              = customdevice_probe,
-       .remove              = customdevice_remove,
-       .id_table       = customdevice_ids,
-};
-module_spi_driver(customdevice_driver);
---------------------
-
-On Sun, Dec 13, 2015 at 8:14 PM, Jonathan Cameron
-<jic23@jic23.retrosnub.co.uk> wrote:
->
->
-> On 13 December 2015 10:44:29 GMT+00:00, Julio Cruz <jcsistemas2001@gmail.com> wrote:
->>Hi Jonathan,
->>
->>Right now, the app is able to read the data from /dev/iio:device0 with
->>success (not data loss). Currently, the app read 1 sample (with 9
->>channels of 4 bytes each one) every time (using "read" function).
->>
->>I still have some doubts about my implementation, because, sometimes
->>there is data lost.
->>
->>For example, when the app try to read more than 1 sample (for example,
->>2 samples: 72 bytes, using "read"), the results are strange. For
->>instance, when the app is using libiio, the function iio_buffer_refill
->>return -1 and is not able to receive data.
-> That is definitely odd.
-> Perhaps you could post the content of all the files under scan_elements so we can
->  check nothing odd has happened with the channel definitions.
->
->
->  In this case, the buffer
->>(at iio_device_create_buffer) need to be setup with 1 sample to work.
->>
->>Below some assumptions/questions:
->>
->>- The buffer/length define the kfifo length (in samples, not in
->>bytes)?
-> Number and of scans where a scan is one sample from all enabled channels.
->
->> In this case, the buffer must be multiple of 36 bytes right?
-> The one you are reading into should be.
->>- At user space, the application can read 36 bytes or more (i.e. 72,
->>...) (/dev/iio:device0) (but not less)? According with the buffer
->>length.
-> Yes.
->
-> So I have no idea what is going on. Can only suggest you add printks to find out
->  what exactly is causing that error return
->
-> Any chance you could post the driver?
->>
->>Thanks
->>
->>
->>On Sat, Dec 12, 2015 at 8:41 PM, Julio Cruz <jcsistemas2001@gmail.com>
->>wrote:
->>> OK, I understood! Thanks
->>>
->>> I will use 32 bits for storage in all the channels
->>>
->>> On Sat, Dec 12, 2015 at 8:35 PM, Jonathan Cameron
->>> <jic23@jic23.retrosnub.co.uk> wrote:
->>>> On 12/12/15 12:24, Julio Cruz wrote:
->>>>> HI Jonathan,
->>>> Hi Julio
->>>>
->>>> I've kept the list cc'd as this sort of conversation acts as
->>>> 'free' documentation solving other people's problems in future.
->>>>
->>>>>
->>>>> Thanks for your quick reply.
->>>>>
->>>>> When you mention the alignment, I remember some things that I did
->>>>> about it, as below.
->>>>>
->>>>> When I started testing the _trigger_handler, I found that the
->>driver
->>>>> calculate indio_dev->scan_bytes. This value is not clear to me
->>>>> because, for example, 1 channel is 3 bytes,
->>>> It shouldn't be. Padding is to the nearest power of 2 bytes so
->>should
->>>> be 4.  The non power of two realbits may have resulted in an
->>unexpected
->>>> path in which case we should add a sanity check to catch this.
->>>>> and for 2 channels is 8
->>>>> bytes (1 byte padding). The channel spec are realbits = 24 and
->>>>> storagebits = 24.
->>>> Storage bits should be a power of 2.  So in this case 32 bytes.
->>>> Might seem wasteful but processors handle aligned data a lot
->>>> more easily so to keep rates up it is usually better to burn a small
->>>> amount of memory and keep everything aligned.
->>>>
->>>>  At that point, I fixed the frame buffer size to 27
->>>>> (used at iio_push_to_buffers) assuming that the same buffer could
->>be
->>>>> read at user space.
->>>>>
->>>>> Please, may I know if this approach is correct?
->>>> Sorry nope, the buffer structure assumes power of 2 alignment
->>everywhere.
->>>>>
->>>>> The SPI device send 9 channels, 3 bytes each one (for a total of 27
->>>>> bytes) and each channels is 24 bits width.
->>>> Unfortunately you'll have to do unpacking of this before pushing to
->>the buffer.
->>>> It'll have to happen somewhere anyway (as userspace code would need
->>to unpack
->>>> it otherwise).
->>>>
->>>> It's actually relatively unusual to find a device that does this
->>sort of
->>>> packing.  We have talked in the past about allowing this sort of
->>packing and
->>>> modifying the buffer infrastructure to accept it, but I'm
->>unconvinced that
->>>> it is worth the added complexity + cost in userspace complexity.
->>>>
->>>> Jonathan
->>>>>
->>>>> Thanks
->>>>>
->>>>> Julio
->>>>>
->>>>>
->>>>> On Sat, Dec 12, 2015 at 7:51 PM, Jonathan Cameron
->><jic23@kernel.org> wrote:
->>>>>> On 12/12/15 08:36, Julio Cruz wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> I get an error trying to read /dev/iio:device0 in a custom
->>application
->>>>>>> (C/C++), however in a terminal the command "cat /dev/iio_device0"
->>>>>>> return data.
->>>>>>>
->>>>>>> Below the procedure:
->>>>>>>
->>>>>>> - enable channels
->>>>>>> - setup trigger
->>>>>>> - setup buffer lenght
->>>>>>> - enable buffer (the SPI interrupt is setup properly and all the
->>>>>>> trigger handler are done)
->>>>>>> - read /dev/iio_device0
->>>>>>>
->>>>>>> It's a SPI device acquiring 27 bytes @ 1KHz.
->>>>>> Reading this again after point 4 below this makes me ask the
->>question
->>>>>> what are you pushing into the buffer? 27 bytes seems unlikely
->>given
->>>>>> the alignment requirements.
->>>>>>
->>>>>>>
->>>>>>> Results:
->>>>>>>
->>>>>>> 1. Custom application (based on generic_buffer.c): function
->>'read'
->>>>>>> return -1 and strerror(errno) return "Invalid argument"
->>>>>>> 2. iio_readdev (libiio): show the message "Unable to refill
->>buffer:
->>>>>>> Input/output error"
->>>>>>> 3. In terminal, the command "cat /dev/iio_device0" show values
->>(no
->>>>>>> readable) while the buffer is enable.
->>>>>>>
->>>>>>> Any suggestion?
->>>>>>>
->>>>>>> Thanks for your help!
->>>>>> Sounds like you are ultimately getting that error from a call to
->>>>>>  iio_buffer_read_first_n_outer
->>>>>> so what can return -EINVAL (which is -1)?
->>>>>>
->>>>>> 1) Buffer not being allocated (seems unlikely - that's really just
->>to
->>>>>> pick up on bugs in side the driver)
->>>>>> 2) read_first_n from the buffer not supplied - again not likely.
->>>>>> 3) wait_event_interruptible returns it - unlikely.
->>>>>> 4) read_first_n which comes from the buffer implementation is
->>returning -EINVAL
->>>>>> This last one seems most likely.
->>>>>>
->>>>>> So I am guessing you are using the kfifo buffer (most common
->>option).
->>>>>> Reasons this can return -EINVAL are
->>>>>> 1) kfifo not initialized (unlikely)
->>>>>> 2) Read length is less than the buffer element size (which is the
->>full scan storage
->>>>>> size)
->>>>>> 3) an error from kfifo_to_user (unlikely)
->>>>>>
->>>>>> So I'm guessing you are reading too small an amount of data.
->>(tricky to chase
->>>>>> down without adding further printk's etc to the relevant bits of
->>kernel code)
->>>>>> If I've 'guessed' right, interesting question is how this came
->>about.
->>>>>> How many bytes is it trying to read?
->>>>>>
->>>>>> Note that IIO has strict alignment requirements - any element must
->>be aligned
->>>>>> to it's own size and this will in some case add lots of padding.
->>The full buffer
->>>>>> element will be a multiple of the largest element in the scan.  If
->>you have a timestamp
->>>>>> for example at 64bits the whole buffer element will be a multiple
->>of 8bytes.
->>>>>>
->>>>>> Jonathan
->>>>>>> --
->>>>>>> To unsubscribe from this list: send the line "unsubscribe
->>linux-iio" in
->>>>>>> the body of a message to majordomo@vger.kernel.org
->>>>>>> More majordomo info at
->>http://vger.kernel.org/majordomo-info.html
->>>>>>>
->>>>>>
->>>>
->
-> --
-> Sent from my Android device with K-9 Mail. Please excuse my brevity.
