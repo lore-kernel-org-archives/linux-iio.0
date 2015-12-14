@@ -1,231 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f44.google.com ([74.125.82.44]:33648 "EHLO
+Received: from mail-wm0-f44.google.com ([74.125.82.44]:38842 "EHLO
 	mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932099AbbLNKPe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Dec 2015 05:15:34 -0500
-Received: by mail-wm0-f44.google.com with SMTP id n186so38077764wmn.0
-        for <linux-iio@vger.kernel.org>; Mon, 14 Dec 2015 02:15:33 -0800 (PST)
-Subject: Re: [PATCH 3/3] iio: ina2xx: add support for CHAN_INFO_SCALE
-To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-References: <1449852557-3138-1-git-send-email-mtitinger@baylibre.com>
- <1449852557-3138-3-git-send-email-mtitinger@baylibre.com>
- <566C5600.7070306@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S932140AbbLNLBX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Dec 2015 06:01:23 -0500
+Received: by wmpp66 with SMTP id p66so55469496wmp.1
+        for <linux-iio@vger.kernel.org>; Mon, 14 Dec 2015 03:01:22 -0800 (PST)
 From: Marc Titinger <mtitinger@baylibre.com>
-Message-ID: <566E96C3.40905@baylibre.com>
-Date: Mon, 14 Dec 2015 11:15:31 +0100
-MIME-Version: 1.0
-In-Reply-To: <566C5600.7070306@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Marc Titinger <mtitinger@baylibre.com>
+Subject: [PATCH] iio: ina2xx: add ABI documentation entry sysfs-bus-iio-ina2xx-adc
+Date: Mon, 14 Dec 2015 12:01:10 +0100
+Message-Id: <1450090870-11452-1-git-send-email-mtitinger@baylibre.com>
+In-Reply-To: <566C439B.5080406@kernel.org>
+References: <566C439B.5080406@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/12/2015 18:14, Jonathan Cameron wrote:
-> On 11/12/15 16:49, Marc Titinger wrote:
->> Provide client apps with the scales to apply to the register values
->> read from the software buffer.
->>
->> Follow the ABI documentation so that values are in milli-unit after scales
->> are applied.
-> Umm. The below looks like it is doing rather more than this..
->
-> There is an endian switch!   I'm going to assume that is correct
-> for now and merge it into the original patch (rather than as a follow
-> up).  If this is wrong and should not be here shout quickly and loudly!
->
+Documentation for attributes:
 
-I know...I think the endianess issue was not spotted in my tests until I 
-had the scales coded-in: values in direct read mode were processed 
-before, and hence ok.
+ * in_allow_async_readout
+ * in_shunt_resistor
 
-The endianness hint was wrong in streamed mode, but I did only 
-functional check so far. This is now tested with he sigrok-iio draft 
-from my colleague and values are now fine with scales applied on the 
-buffer samples.
+Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc
 
-
-> Will take the rest of this patch as is though I would much have
-> prefered that this one was rolled into the original driver as
-> I hadn't taken that when you sent this change...
->
-> Actually never mind I'll smash it into the original driver as git
-> seems to be happy to handle that bit of reordering and I haven't
-> pushed out yet.
-
-Yes thank you for doing that, it's the good option I think.
-
->
-> So applied as a fixup to the original driver patch.
-> Hmm. a few mor bits came up build testing this - such as lack of static on the
-> the buffer enable / disable functions.
->
-> Please check nothing went wrong in my making various minor changes.
-> I've done basic build tests but obviously that doesn't catch everything!
-
-Tested ok with iio utils (using iio_monitor for scales) and  and the 
-sigrok-iio draft using 3 instances of the driver.
-
-Many thanks,
-Marc.
-
-
->
-> Jonathan
->
->>
->> Signed-off-by: Marc Titinger <mtitinger@baylibre.com>
->> ---
->>   drivers/iio/adc/ina2xx-adc.c | 85 +++++++++++++++++++++-----------------------
->>   1 file changed, 41 insertions(+), 44 deletions(-)
->>
->> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
->> index 99afa6e..98939ba 100644
->> --- a/drivers/iio/adc/ina2xx-adc.c
->> +++ b/drivers/iio/adc/ina2xx-adc.c
->> @@ -82,6 +82,11 @@ static bool ina2xx_is_volatile_reg(struct device *dev, unsigned int reg)
->>   	return (reg != INA2XX_CONFIG);
->>   }
->>
->> +static inline bool is_signed_reg(unsigned int reg)
->> +{
->> +	return (reg == INA2XX_SHUNT_VOLTAGE) || (reg == INA2XX_CURRENT);
->> +}
->> +
->>   static const struct regmap_config ina2xx_regmap_config = {
->>   	.reg_bits = 8,
->>   	.val_bits = 16,
->> @@ -133,43 +138,6 @@ static const struct ina2xx_config ina2xx_config[] = {
->>   		    },
->>   };
->>
->> -static int ina2xx_get_value(struct ina2xx_chip_info *chip, u8 reg,
->> -			    unsigned int regval, int *val, int *uval)
->> -{
->> -	*val = 0;
->> -
->> -	switch (reg) {
->> -	case INA2XX_SHUNT_VOLTAGE:
->> -		/* signed register */
->> -		*uval = DIV_ROUND_CLOSEST((s16) regval,
->> -					  chip->config->shunt_div);
->> -		return IIO_VAL_INT_PLUS_MICRO;
->> -
->> -	case INA2XX_BUS_VOLTAGE:
->> -		*uval = (regval >> chip->config->bus_voltage_shift)
->> -			* chip->config->bus_voltage_lsb;
->> -		*val = *uval / 1000000;
->> -		*uval = *uval % 1000000;
->> -		return IIO_VAL_INT_PLUS_MICRO;
->> -
->> -	case INA2XX_POWER:
->> -		*uval = regval * chip->config->power_lsb;
->> -		*val = *uval / 1000000;
->> -		*uval = *uval % 1000000;
->> -		return IIO_VAL_INT_PLUS_MICRO;
->> -
->> -	case INA2XX_CURRENT:
->> -		/* signed register, LSB=1mA (selected), in mA */
->> -		*uval = (s16) regval * 1000;
->> -		return IIO_VAL_INT_PLUS_MICRO;
->> -
->> -	default:
->> -		/* programmer goofed */
->> -		WARN_ON_ONCE(1);
->> -	}
->> -	return -EINVAL;
->> -}
->> -
->>   static int ina2xx_read_raw(struct iio_dev *indio_dev,
->>   			   struct iio_chan_spec const *chan,
->>   			   int *val, int *val2, long mask)
->> @@ -184,7 +152,12 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
->>   		if (ret < 0)
->>   			return ret;
->>
->> -		return ina2xx_get_value(chip, chan->address, regval, val, val2);
->> +		if (is_signed_reg(chan->address))
->> +			*val = (s16) regval;
->> +		else
->> +			*val  = regval;
->> +
->> +		return IIO_VAL_INT;
->>
->>   	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
->>   		*val = chip->avg;
->> @@ -208,11 +181,34 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
->>
->>   		return IIO_VAL_INT;
->>
->> -	default:
->> -		return -EINVAL;
->> +	case IIO_CHAN_INFO_SCALE:
->> +		switch (chan->address) {
->> +		case INA2XX_SHUNT_VOLTAGE:
->> +			/* processed (mV) = raw*1000/shunt_div */
->> +			*val2 = chip->config->shunt_div;
->> +			*val = 1000;
->> +			return IIO_VAL_FRACTIONAL;
->> +
->> +		case INA2XX_BUS_VOLTAGE:
->> +			/* processed (mV) = raw*lsb (uV) / (1000 << shift) */
->> +			*val = chip->config->bus_voltage_lsb;
->> +			*val2 = 1000 << chip->config->bus_voltage_shift;
->> +			return IIO_VAL_FRACTIONAL;
->> +
->> +		case INA2XX_POWER:
->> +			/* processed (mW) = raw*lsb (uW) / 1000 */
->> +			*val = chip->config->power_lsb;
->> +			*val2 = 1000;
->> +			return IIO_VAL_FRACTIONAL;
->> +
->> +		case INA2XX_CURRENT:
->> +			/* processed (mA) = raw (mA) */
->> +			*val = 1;
->> +			return IIO_VAL_INT;
->> +		}
->>   	}
->>
->> -	return 0;
->> +	return -EINVAL;
->>   }
->>
->>   /*
->> @@ -395,7 +391,7 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
->>   	.address = (_address), \
->>   	.indexed = 1, \
->>   	.channel = (_index), \
->> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)|BIT(IIO_CHAN_INFO_SCALE), \
-> Spacing wrong about the |
->>   	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
->>   				   BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
->>   	.scan_index = (_index), \
->> @@ -403,7 +399,7 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
->>   		.sign = 'u', \
->>   		.realbits = 16, \
->>   		.storagebits = 16, \
->> -		.endianness = IIO_BE, \
->> +		.endianness = IIO_LE, \
->>   	} \
->>   }
->>
->> @@ -417,13 +413,14 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
->>   	.indexed = 1, \
->>   	.channel = (_index), \
->>   	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->> +			      BIT(IIO_CHAN_INFO_SCALE) | \
->>   			      BIT(IIO_CHAN_INFO_INT_TIME), \
->>   	.scan_index = (_index), \
->>   	.scan_type = { \
->>   		.sign = 'u', \
->>   		.realbits = 16, \
->>   		.storagebits = 16, \
->> -		.endianness = IIO_BE, \
->> +		.endianness = IIO_LE, \
->>   	} \
->>   }
->>
->>
->
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc b/Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc
+new file mode 100644
+index 0000000..8916f7e
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc
+@@ -0,0 +1,24 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_allow_async_readout
++Date:		December 2015
++KernelVersion:	4.4
++Contact:	linux-iio@vger.kernel.org
++Description:
++		By default (value '0'), the capture thread checks for the Conversion
++		Ready Flag to being set prior to committing a new value to the sample
++		buffer. This synchronizes the in-chip conversion rate with the
++		in-driver readout rate at the cost of an additional register read.
++
++		Writing '1' will remove the polling for the Conversion Ready Flags to
++		save the additional i2c transaction, which will improve the bandwidth
++		available for reading data. However, samples can be occasionally skipped
++		or repeated, depending on the beat between the capture and conversion
++		rates.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_shunt_resistor
++Date:		December 2015
++KernelVersion:	4.4
++Contact:	linux-iio@vger.kernel.org
++Description:
++		The value of the shunt resistor may be known only at runtime fom an
++		eeprom content read by a client application. This attribute allows to
++		set its value in ohms.
+-- 
+1.9.1
 
