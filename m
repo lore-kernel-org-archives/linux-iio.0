@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f170.google.com ([209.85.217.170]:35951 "EHLO
-	mail-lb0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964908AbbLOPHd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Dec 2015 10:07:33 -0500
-Received: by mail-lb0-f170.google.com with SMTP id lt2so7512845lbb.3
-        for <linux-iio@vger.kernel.org>; Tue, 15 Dec 2015 07:07:32 -0800 (PST)
+Received: from mail-lb0-f169.google.com ([209.85.217.169]:34991 "EHLO
+	mail-lb0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753884AbbLOPTv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Dec 2015 10:19:51 -0500
+Received: by mail-lb0-f169.google.com with SMTP id u9so7755032lbp.2
+        for <linux-iio@vger.kernel.org>; Tue, 15 Dec 2015 07:19:51 -0800 (PST)
 MIME-Version: 1.0
 In-Reply-To: <566FF36E.4090501@intel.com>
 References: <1450171574-3283-1-git-send-email-mranostay@gmail.com>
  <1450171574-3283-4-git-send-email-mranostay@gmail.com> <566FF36E.4090501@intel.com>
 From: Matt Ranostay <mranostay@gmail.com>
-Date: Tue, 15 Dec 2015 07:06:51 -0800
-Message-ID: <CAKzfze8e6dz1MA6b1QKtXv3ZLR1BLW3oHcQ7VdnFu7HLFL6cNg@mail.gmail.com>
+Date: Tue, 15 Dec 2015 07:19:10 -0800
+Message-ID: <CAKzfze9=4TrJbUw-yeLdNTSJUi3mrS8VHe=kp4p14pxbqdyCPg@mail.gmail.com>
 Subject: Re: [RFC v2 3/3] iio: chemical: add Atlas pH-SM sensor support
 To: Adriana Reus <adriana.reus@intel.com>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
@@ -234,8 +234,6 @@ On Tue, Dec 15, 2015 at 3:03 AM, Adriana Reus <adriana.reus@intel.com> wrote:
 >> +       pm_runtime_get_sync(&data->client->dev);
 >
 > ^ pm_runtime_get_sync may return errors
-
-Noted.
 >
 >> +
 >> +       return atlas_set_interrupt(data, true);
@@ -311,9 +309,6 @@ Noted.
 > Also if this does return an error you may want to call put_noidle
 > because get_sync increments the device usage_count before it tries to
 > resume and you can end up with an unbalanced count there.
-
-Ok noted.
-
 >>
 >> +
 >> +       if (suspended)
@@ -329,7 +324,9 @@ Ok noted.
 >
 > ^ also may return err code
 
-Noted.
+What would be proper handling of it here though? *_put_noidle ?
+
+
 >
 >> +
 >> +       return ret == sizeof(*val) ? 0 : -EINVAL;
@@ -363,11 +360,6 @@ Noted.
 > runtime-pm wise? Unless I am missing something the chip may be powered
 > off at this point.
 >
-Ah actually it is a "hibernate" mode in which samples aren't being
-generated but i2c access is still up.
-And this isn't a temperate reading from the sensor put one you pass to
-it from a probe to adjust the pH reading calcualtion.
-
 >> +                       break;
 >> +               case IIO_PH:
 >> +                       ret = atlas_read_ph_measurement(data, &reg);
