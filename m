@@ -1,38 +1,32 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f182.google.com ([209.85.213.182]:34276 "EHLO
-	mail-ig0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751259AbbLOTTR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Dec 2015 14:19:17 -0500
+Received: from anchovy2.45ru.net.au ([203.30.46.146]:35548 "EHLO
+	anchovy.45ru.net.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753612AbbLPD6U (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Dec 2015 22:58:20 -0500
+To: linux-iio@vger.kernel.org
+From: Phil Reid <preid@electromag.com.au>
+Subject: IIO and high speed
+Message-ID: <5670E151.7000909@electromag.com.au>
+Date: Wed, 16 Dec 2015 11:58:09 +0800
 MIME-Version: 1.0
-Date: Tue, 15 Dec 2015 11:19:16 -0800
-Message-ID: <CAOhV88NP+bpN6oVk3_DbszNqKAo4T9z-umfVQAcyS3QArwguTA@mail.gmail.com>
-Subject: Issues with Lenovo Yoga 900 IIO devices (accelerometer, etc.)
-From: Nish Aravamudan <nish.aravamudan@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-So, I apologize in advance for this relatively vague report, but I'm fairly sure
-the Yoga 900 has an accelerometer amongst other sensors (ambient light?)
-exported over IIO.
+G'day All,
 
-But, these sensors seem to not be updating at all with a 4.4-rc5+ kernel (a
-set of patches from https://lkml.org/lkml/2015/11/30/441 applied to Linus'
-tree).
+I'm just enquiring what the status / plans are for the IIO high speed interface.
 
-The odd part is at some point in messing with this, I'm fairly sure it did work!
-That is,
+This code is present in libiio to do zero copy operations using IIO_BLOCK* ioctls.
+EG: I get a warning when running iio_readdev about high speed not being enabled.
 
-`watch -n 0.1 cat '/sys/bus/iio/devices/iio:device'*/*raw*`
+However corresponding code is not in the mainline kernel, I did find something at:
+https://github.com/analogdevicesinc/linux.git
 
-showed updating values as I moved the laptop around.
+Or has this line of development been discontinued in favour of another plan.
+It looks to be a few years old.
 
-I've not done any accelerometer debugging before, so any suggestion on
-where to start would be greatly appreciated!
 
--Nish
+-- 
+Regards
+Phil Reid
