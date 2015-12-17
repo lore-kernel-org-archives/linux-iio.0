@@ -1,249 +1,146 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yk0-f181.google.com ([209.85.160.181]:34534 "EHLO
-	mail-yk0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755287AbbLQUc7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Dec 2015 15:32:59 -0500
-MIME-Version: 1.0
-In-Reply-To: <CAOhV88MrhzUgsDtYZ=+Jvtzzd1A0p97U7XuCFJfPLb0oSkZr8g@mail.gmail.com>
-References: <CAOhV88NP+bpN6oVk3_DbszNqKAo4T9z-umfVQAcyS3QArwguTA@mail.gmail.com>
-	<CAEnQRZACu89UR2w=rN3mve8DFniqdf2=Y69FuBnoyXUber=kZA@mail.gmail.com>
-	<CAOhV88PGnVWbnCjTf3W-jD22rtQYSXDVWez+gFkrPYky9kkQnw@mail.gmail.com>
-	<CAKv63uvEKOycY2pPCRwVXvYR1yj8SbBaPJyw41_7mc4Vnftkew@mail.gmail.com>
-	<CAOhV88OJZO_zO7WJ4WAvToAJGzcXp+zZ6y8v_xMeRgbBbhYrkg@mail.gmail.com>
-	<CAKv63uv5806-ecxGXK8HSOSnoHciXp8UHBcyvEqYk14BX1snVQ@mail.gmail.com>
-	<CAOhV88MNVj9cs+VyjZGqW2T5-QTVFRJGj+VSHj-fuqXyQABsiA@mail.gmail.com>
-	<CAOhV88NrU1cXiMXkCpuZbGGkFiOet_ZxotusdZD5rA+76cyspw@mail.gmail.com>
-	<CAKv63ut15dRMLq4Te7i5ww7WyQD302oEiu+7EivsVSuBfxd2dA@mail.gmail.com>
-	<CAOhV88Ot+--hsrZNuD2g8m_32YoaB2ZEyC7aHvOt_zd7JNOneQ@mail.gmail.com>
-	<CAOhV88P3wbf6Jhx+yyhbiWLKWYek8AzKuki-Smy9TX_XTfQYwQ@mail.gmail.com>
-	<CAKv63usQLowH_F4J7R551hdHGyu-ruHr7Fc9KLuLW921FOn65g@mail.gmail.com>
-	<CAOhV88MrhzUgsDtYZ=+Jvtzzd1A0p97U7XuCFJfPLb0oSkZr8g@mail.gmail.com>
-Date: Thu, 17 Dec 2015 12:32:58 -0800
-Message-ID: <CAOhV88Os-y68URtMLCVdbB8=Bs-96m-4yDd4KLuw-mz3a0nstQ@mail.gmail.com>
-Subject: Re: Issues with Lenovo Yoga 900 IIO devices (accelerometer, etc.)
-From: Nish Aravamudan <nish.aravamudan@gmail.com>
-To: Crt Mori <cmo@melexis.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
+Received: from axentia.se ([87.96.186.132]:14963 "EHLO EMAIL.axentia.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751815AbbLQXVM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 17 Dec 2015 18:21:12 -0500
+From: Peter Rosin <peda@axentia.se>
+To: Linus Walleij <linus.walleij@linaro.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Peter Rosin <peda@lysator.liu.se>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+	Alexandre Courbot <gnurou@gmail.com>,
+	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+	Matt Porter <mporter@konsulko.com>,
+	Marc Zyngier <marc.zyngier@arm.com>
+Subject: RE: [RESEND RFC PATCH 0/2] Expose the PIO_ISR register on SAMA5D3
+Date: Thu, 17 Dec 2015 23:19:17 +0000
+Message-ID: <a5deeb3722254bd08d7a7e071fd42e7f@EMAIL.axentia.se>
+References: <1449544808-3163-1-git-send-email-peda@lysator.liu.se>
+	<CACRpkdYN=n=Q+UpLbWjxJHP-FYi_e4cHFE_d1_fR2r7QYcqgYQ@mail.gmail.com>
+	<566C6122.6040406@kernel.org>
+	<85d1850f20c141b2952d93be72199fdf@EMAIL.axentia.se>
+ <CACRpkdY9Nwg3B1bAJ53Y-tJJywC=ENvFR6S99+wUKzcUHTa5TQ@mail.gmail.com>
+In-Reply-To: <CACRpkdY9Nwg3B1bAJ53Y-tJJywC=ENvFR6S99+wUKzcUHTa5TQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Dec 17, 2015 at 12:05 PM, Nish Aravamudan
-<nish.aravamudan@gmail.com> wrote:
-> On Thu, Dec 17, 2015 at 10:38 AM, Crt Mori <cmo@melexis.com> wrote:
->> On 17 December 2015 at 19:10, Nish Aravamudan <nish.aravamudan@gmail.com> wrote:
->>> On Thu, Dec 17, 2015 at 9:32 AM, Nish Aravamudan
->>> <nish.aravamudan@gmail.com> wrote:
->>>> On Thu, Dec 17, 2015 at 12:41 AM, Crt Mori <cmo@melexis.com> wrote:
->>>>> On 17 December 2015 at 06:27, Nish Aravamudan <nish.aravamudan@gmail.com> wrote:
->>>>>> On Wed, Dec 16, 2015 at 3:05 PM, Nish Aravamudan
->>>>>> <nish.aravamudan@gmail.com> wrote:
->>>>>>> On Wed, Dec 16, 2015 at 2:55 PM, Crt Mori <cmo@melexis.com> wrote:
->>>>>>>>
->>>>>>>> On Dec 16, 2015 11:37 PM, "Nish Aravamudan" <nish.aravamudan@gmail.com>
->>>>>>>> wrote:
->>>>>>>>>
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>> On Wed, Dec 16, 2015 at 2:22 PM, Crt Mori <cmo@melexis.com> wrote:
->>>>>>>>> > On 16 December 2015 at 22:41, Nish Aravamudan
->>>>>>>>> > <nish.aravamudan@gmail.com> wrote:
->>>>>>>>> >> Hi Daniel,
->>>>>>>>> >>
->>>>>>>>> >> On Wed, Dec 16, 2015 at 1:43 AM, Daniel Baluta
->>>>>>>>> >> <daniel.baluta@gmail.com> wrote:
->>>>>>>>> >>> On Tue, Dec 15, 2015 at 9:19 PM, Nish Aravamudan
->>>>>>>>> >>> <nish.aravamudan@gmail.com> wrote:
->>>>>>>>> >>>> So, I apologize in advance for this relatively vague report, but I'm
->>>>>>>>> >>>> fairly sure
->>>>>>>>> >>>> the Yoga 900 has an accelerometer amongst other sensors (ambient
->>>>>>>>> >>>> light?)
->>>>>>>>> >>>> exported over IIO.
->>>>>>>>> >>>>
->>>>>>>>> >>>> But, these sensors seem to not be updating at all with a 4.4-rc5+
->>>>>>>>> >>>> kernel (a
->>>>>>>>> >>>> set of patches from https://lkml.org/lkml/2015/11/30/441 applied to
->>>>>>>>> >>>> Linus'
->>>>>>>>> >>>> tree).
->>>>>>>>> >>>>
->>>>>>>>> >>>> The odd part is at some point in messing with this, I'm fairly sure
->>>>>>>>> >>>> it did work!
->>>>>>>>> >>>> That is,
->>>>>>>>> >>>>
->>>>>>>>> >>>> `watch -n 0.1 cat '/sys/bus/iio/devices/iio:device'*/*raw*`
->>>>>>>>> >>>
->>>>>>>>> >>> Can you send us a sample of the output? Also, would be
->>>>>>>>> >>> good to identify the exact driver for accel.
->>>>>>>>> >>
->>>>>>>>> >> cat /sys/bus/iio/devices/iio:device*/*raw*
->>>>>>>>> >> 65478
->>>>>>>>> >> 7
->>>>>>>>> >> 1023
->>>>>>>>> >> 0
->>>>>>>>> >> 0
->>>>>>>>> >> 0
->>>>>>>>> >> 100
->>>>>>>>> >> -539062
->>>>>>>>> >> -742187
->>>>>>>>> >> 1292968
->>>>>>>>> >> 1592
->>>>>>>>> >> 64932
->>>>>>>>> >> 2
->>>>>>>>> >> 275
->>>>>>>>> >> 0 0 0 0
->>>>>>>>> >>
->>>>>>>>> >> Now, I should say that I distinctly remember at some point waving my
->>>>>>>>> >> laptop around and seeing these values change ... but now they seem to
->>>>>>>>> >> be "stuck". Maybe it's a hardware issue or something special that
->>>>>>>>> >> WIndows does to leverage the IIO sensors?
->>>>>>>>> >>
->>>>>>>>> >>> Perhaps: cat /sys/bus/iio/devices/iio:device'*/name
->>>>>>>>> >>
->>>>>>>>> >> $ cat /sys/bus/iio/devices/iio:device*/name
->>>>>>>>> >> accel_3d
->>>>>>>>> >
->>>>>>>>> > Can you list the directory of iio:device with this name (it is:
->>>>>>>>> > drivers/iio/accel/hid-sensor-accel-3d.c).
->>>>>>>>> > This is something you will be looking at for accel debugging, but it
->>>>>>>>> > seems more like
->>>>>>>>> > standard
->>>>>>>>>
->>>>>>>>> /sys/bus/iio/devices/iio:device0/name
->>>>>>>>> gyro_3d
->>>>>>>>> /sys/bus/iio/devices/iio:device1/name
->>>>>>>>> dev_rotation
->>>>>>>>> /sys/bus/iio/devices/iio:device2/name
->>>>>>>>> als
->>>>>>>>> /sys/bus/iio/devices/iio:device3/name
->>>>>>>>> magn_3d
->>>>>>>>> /sys/bus/iio/devices/iio:device4/name
->>>>>>>>> accel_3d
->>>>>>>>> /sys/bus/iio/devices/iio:device5/name
->>>>>>>>> incli_3d
->>>>>>>>>
->>>>>>>>> are all the IIO sensors, sorry about that!
->>>>>>>>>
->>>>>>>>
->>>>>>>> I was more thinking what else is in iio:device4 directory, so that we can
->>>>>>>> see if it was initialized OK. Can you also grep the dmesg for any errors?
->>>>>>>
->>>>>>> Well, I just noticed the device #s are not consistent boot-to-boot, so
->>>>>>> this time it was device0. Trimming out the directories:
->>>>>>>
->>>>>
->>>>> This is correct/intended. You need to confirm "deviceX/name" each time.
->>>>
->>>> Got it!
->>>>
->>>>>>> /sys/bus/iio/devices/iio:device0/buffer
->>>>>>> cat: /sys/bus/iio/devices/iio:device0/buffer: Is a directory
->>>>>>> /sys/bus/iio/devices/iio:device0/dev
->>>>>>> 250:0
->>>>>>> /sys/bus/iio/devices/iio:device0/in_accel_hysteresis
->>>>>>> cat: /sys/bus/iio/devices/iio:device0/in_accel_hysteresis: Invalid argument
->>>>>>> /sys/bus/iio/devices/iio:device0/in_accel_offset
->>>>>>> 0
->>>>>>> /sys/bus/iio/devices/iio:device0/in_accel_sampling_frequency
->>>>>>> 8.000000
->>>>>>> /sys/bus/iio/devices/iio:device0/in_accel_scale
->>>>>>> 0.009806
->>>>>>> /sys/bus/iio/devices/iio:device0/in_accel_x_raw
->>>>>>> 65478
->>>>>>> /sys/bus/iio/devices/iio:device0/in_accel_y_raw
->>>>>>> 7
->>>>>>> /sys/bus/iio/devices/iio:device0/in_accel_z_raw
->>>>>>> 1023
->>>>>
->>>>> This seems like a valid number 1023 * 0.009806 = 10,031 m/s2 but X does not.
->>>>
->>>> Ok...
->>>>
->>>>>>> /sys/bus/iio/devices/iio:device0/name
->>>>>>> accel_3d
->>>>>>> /sys/bus/iio/devices/iio:device0/uevent
->>>>>>> MAJOR=250
->>>>>>> MINOR=0
->>>>>>> DEVNAME=iio:device0
->>>>>>> DEVTYPE=iio_device
->>>>>>>
->>>>>>> Another thing I just noticed:
->>>>>>>
->>>>>>> /sys/bus/iio/devices/iio:device0/buffer/enable
->>>>>>> 0
->>>>>
->>>>> This is buffer enable not chip enable. You can write 1 to that so it
->>>>> will be enables
->>>>> (echo "1" > /sys/bus/iio/devices/.../buffer/enable) and see what
->>>>> happens. It might be
->>>>> that it needs buffer to update properly (I haven't checked the code).
->>>>
->>>> Doesn't immediately seem to make a difference.
->>>>
->>>>>>>
->>>>>>> The only error I'm getting consistently is:
->>>>>>>
->>>>>>> [    1.115327] i2c_hid i2c-ITE8396:00: error in i2c_hid_init_report
->>>>>>> size:19 / ret_size:18
->>>>>>>
->>>>>>> which I don't think is relevant, but I might be wrong.
->>>>>
->>>>> If accel is i2c this might be a relevant error - and probe would also
->>>>> not fail, but error would
->>>>> repeat itself each time probably Maybe track where that line is in
->>>>> i2c_hid and see what it
->>>>> could mean.
->>>>
->>>> i2c_hid i2c-ITE8396:00: report (len=19): 12 00 5a ff ff ff ff ff ff ff
->>>> ff ff ff ff ff ff ff ff 06
->>>> i2c_hid i2c-ITE8396:00: error in i2c_hid_init_report size:19 / ret_size:18
->>>>
->>>> So it seems like the device indicates an expected return size of 18,
->>>> but actually gives 19 bytes.
->>>>
->>>> I don't know anything about i2c, but i'll dig around.
->>>
->>
->> There is chance to read the /sys/bus/i2c/... device (maybe see the
->> address there?) directly.
->> However I would expect an i2c error each time you try to read a raw
->> value in driver if there would
->> be some. I hope someone more experienced can chime in...
->>
->>> Another thought I had, reading through Google results for other Yoga
->>> laptops, the sensor device showed up in lsusb. Would I expect to see
->>> any such device in lsusb for the Yoga 900? I only get:
->>>
->>> Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
->>> Bus 001 Device 003: ID 8087:0a2b Intel Corp.
->>> Bus 001 Device 002: ID 13d3:5664 IMC Networks
->>> Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
->>>
->>
->> I somehow doubt that accel is an usb device (which is what lsusb would
->> show), but if it
->> does then it should not show in iio.
->> There is however iioutils package which is around same as lsusb and
->> might be worth checking
->> out for you.
->
-> Ah! So I have no idea what changed. I cloned the iioutils git tree
-> from SF and now the sensors are reporting values and dmesg is
-> reporting:
->
-> [13872.936769] hid-sensor-hub 0018:048D:8396.0001: No report with id
-> 0xffffffff found
-
-Ok, well, I'm pretty confused now. Maybe lsiio probed something
-correctly to wake up the sensors. But now they work still after
-reboot! The message above was because I had incorrectly applied the
-Yoga/Yoga2 quirk to the 900 and it doesn't seem to be necessary.
-
-Now to get iio-sensor-proxy to work :)
-
--Nish
+SGkgTGludXMsDQoNCj4gT24gTW9uLCBEZWMgMTQsIDIwMTUgYXQgMTE6MzggQU0sIFBldGVyIFJv
+c2luIDxwZWRhQGF4ZW50aWEuc2U+IHdyb3RlOg0KPiANCj4gSSB0aGluayBJIGF0bGVhc3QgaGFs
+Zi11bmRlcnN0YW5kIHdoYXQgeW91J3JlIHRyeWluZyB0byBkby4NCg0KR29vZC4gSXQncyByZWFs
+bHkgbm90IHRoYXQgY29tcGxpY2F0ZWQsIGJ1dCBJJ20gcGVyaGFwcyBub3QgZGVzY3JpYmluZw0K
+aXQgdmVyeSBjbGVhcmx5Li4uDQoNCj4gPiBVc2Vyc3BhY2UgZG9lcyB0aGUgZm9sbG93aW5nIHdo
+ZW4gZG9pbmcgdGhpcyB3L28gdGhlIGlzciBwYXRjaGVzOg0KPiA+DQo+ID4gMS4gc2VsZWN0IHNp
+Z25hbCB1c2luZyB0aGUgTVVYDQo+ID4gMi4gc2V0IHRoZSBEQUMgc28gaGlnaCB0aGF0IElOUFVU
+IGlzIG5ldmVyIHJlYWNoaW5nIHRoYXQgbGV2ZWwuDQo+ID4gICAgQyAoYW5kIHRodXMgZ3Bpbykg
+aXMgbm93IHN0YWJsZQ0KPiA+IDMuIHN0YXJ0IHdhaXRpbmcgZm9yIGludGVycnVwdHMgb24gZ3Bp
+bw0KPiA+IDQuIGFkanVzdCB0aGUgREFDIGxldmVsIHRvIHRoZSBsZXZlbCBvZiBpbnRlcmVzdA0K
+PiA+IDUuIGFib3J0IG9uIGludGVycnVwdCBvciB0aW1lb3V0DQo+ICguLi4pDQo+ID4gV2l0aCB0
+aGUgaXNyIHBhdGNoZXMsIHRoZSBhYm92ZSB0cmFuc2Zvcm1zIGludG86DQo+ID4NCj4gPiAxLiBz
+ZWxlY3Qgc2lnbmFsIHVzaW5nIHRoZSBNVVgNCj4gPiAyLiBzZXQgdGhlIERBQyBzbyBoaWdoIHRo
+YXQgSU5QVVQgaXMgbmV2ZXIgcmVhY2hpbmcgdGhhdCBsZXZlbC4NCj4gPiAgICBDIChhbmQgdGh1
+cyBncGlvKSBpcyBub3cgc3RhYmxlDQo+ID4gMy4gcmVhZCB0aGUgaXNyIGJpdCB0byBjbGVhciBp
+dA0KPiA+IDQuIGFkanVzdCB0aGUgREFDIGxldmVsIHRvIHRoZSBsZXZlbCBvZiBpbnRlcmVzdA0K
+PiA+IDUuIHJlYWQgdGhlIGlzciBiaXQgYWdhaW4gYWZ0ZXIgNTBtcw0KPiA+DQo+ID4gVGhlIHJl
+c3VsdCBpcyBhdmFpbGFibGUgZGlyZWN0bHkgaW4gdGhlIGlzciBiaXQsIG5vIGludGVycnVwdHMg
+bmVlZGVkLg0KPiANCj4gVGhlIHByb2JsZW0gSSBzZWUgaGVyZSBhcyBrZXJuZWwgZGV2ZWxvcGVy
+IGlzIHRoYXQgdGhlcmUgaXMgYSBmdXp6eQ0KPiBhbmQgaW1wbGljaXQgc2VwYXJhdGlvbiBvZiBj
+b25jZXJucyBiZXR3ZWVuIHVzZXJzcGFjZSBhbmQNCj4ga2VybmVsc3BhY2UuDQo+IA0KPiBJTU8g
+cmVhZGluZyBoYXJkd2FyZSByZWdpc3RlcnMgaXMgdGhlIGRvbWFpbiBvZiB0aGUga2VybmVsLCBh
+bmQNCj4gdGhlbiB0aGUgcmVzdWx0IHRoZXJlb2YgaXMgcHJlc2VudGVkIHRvIHVzZXJzcGFjZS4g
+VGhlIGtlcm5lbA0KPiBoYW5kbGVzIGhhcmR3YXJlLCBzaW1wbHkuDQo+IA0KPiBJIHRoaW5rIHdl
+IG5lZWQgdG8gcmV2ZXJzZSBvdXQgb2YgdGhpcyBzb2x1dGlvbiBhbmQgaW5zdGVhZCBhc2sNCj4g
+dGhlIHF1ZXN0aW9uIHdoYXQgdGhlIGtlcm5lbCBzaG91bGQgcHJvdmlkZSB5b3VyIHVzZXJzcGFj
+ZS4NCj4gTWF5YmUgcGFydHMgb2Ygd2hhdCB5b3UgaGF2ZSBpbiB1c2Vyc3BhY2UgbmVlZHMgdG8g
+YWN0dWFsbHkNCj4gZ28gaW50byB0aGUga2VybmVsPw0KPiANCj4gVGhlIGdvYWwgb2YgSUlPIHNl
+ZW1zIHRvIGJlIHRvIHByZXNlbnQgcmF3IGFuZCBjYWxpYnJhdGVkDQo+IChTSSB1bml0KSBkYXRh
+IHRvIHVzZXJzcGFjZS4gU28gd2hhdCBkYXRhIGlzIGl0IHlvdSB3YW50LCBhbmQNCj4gd2h5IGNh
+bid0IHlvdSBqdXN0IGdldCB0aGF0IGRpcmVjdGx5IGZyb20gdGhlIGtlcm5lbCB3aXRob3V0DQo+
+IHRyaWNrc2luZyBhcm91bmQgd2l0aCByZWFkaW5nIHJlZ2lzdGVycyBiaXRzIGluIHVzZXJzcGFj
+ZT8NCg0KVGhpcyBhbGwgbWFrZXMgc2Vuc2UuIFRoZSByZWFzb24gaXMgdGhhdCBJJ20gbm90IGZh
+bWlsaWFyIHdpdGgNCnRoZSBrZXJuZWwgQVBJcy4gSSBoYXZlIHRvIHdyYXAgbXkgaGVhZCBhcm91
+bmQgaG93IHRvIHNldCB1cA0Kd29yayB0byBiZSBwZXJmb3JtZWQgbGF0ZXIsIGV0YyBldGMuIEFs
+bCBvZiB0aGF0IGlzIGluIGFsbA0KbGlrZWxpaG9vZCBwcmV0dHkgc3RyYWlnaHRmb3J3YXJkLCBi
+dXQgSSBmZWVsIHRoYXQgSSBhbQ0KZmx1bmRlcmluZyBhcm91bmQgZXZlcnkgc3RlcCBvZiB0aGUg
+d2F5LiBFbmQgcmVzdWx0OyBJIGZpbmQNCm15c2VsZiB0cnlpbmcgdG8gZG8gYXMgbGl0dGxlIGFz
+IHBvc3NpYmxlIGluc2lkZSB0aGUga2VybmVsLg0KDQpJLmUuIEkgaGF2ZSBhIHByZXR0eSBjbGVh
+ciBwaWN0dXJlIG9mIHdoYXQgbmVlZHMgdG8gYmUgZG9uZSwgYnV0DQp0aGUgZGV2aWwgaXMgaW4g
+dGhlIGRldGFpbHMuLi4NCg0KPiBJZiBhIGtlcm5lbCBtb2R1bGUgbmVlZHMgdG8gcmVhZCBhbiBp
+bnRlcnJ1cHQgYml0IGRpcmVjdGx5IGZyb20gdGhlDQo+IEdQSU8gY29udHJvbGxlciBpcyBhbm90
+aGVyIHRoaW5nLiBUaGF0IGlzIGFraW4gdG8gaG93IHBvbGxpbmcNCj4gbmV0d29yayBkcml2ZXJz
+IHN0YXJ0IHBvbGxpbmcgcmVnaXN0ZXJzIGZvciBpbmNvbWluZyBwYWNrYWdlcw0KPiBpbnN0ZWFk
+IG9mIHdhaXRpbmcgZm9yIHRoZW0gdG8gZmlyZSBpbnRlcnJ1cHRzLiBKdXN0IHRoYXQgdGhlc2Ug
+YXJlDQo+IGRlZGljYXRlZCBJUlEgbGluZXMsIG5vdCBHUElPcy4NCg0KWWVzLCB0aGVyZSB3YXMg
+YWxzbyB0aGUgTkFDSyB0byBhZGRpbmcgbmV3IGdwaW8gc3lzZnMgZmlsZXMgd2hpY2gNCmVtcGhh
+c2l6ZXMgdGhpcy4NCg0KPiBBcyBzdHJ1Y3QgaXJxX2NoaXAgaGFzIGlycV9nZXRfaXJxY2hpcF9z
+dGF0ZSgpIEkgdGhpbmsgdGhpcw0KPiBpcyBhY3R1YWxseSBwb3NzaWJsZSB0byBhY2hpZXZlIHRo
+aXMgYnkgaW1wbGVtZW50aW5nIHRoYXQNCj4gYW5kIGNhbGxpbmcgaXJxX2dldF9pcnFjaGlwX3N0
+YXRlKCkuDQoNCkknbGwgaGF2ZSBhIHBlZWsgaW50byB0aGF0LCBidXQgc2VlIGJlbG93Lg0KDQo+
+ID4gSSBoYXZlIHJlYWxpemVkIHRoYXQgSSBjb3VsZCB3b3JrIHdpdGggb25lLXNob3QtaW50ZXJy
+dXB0cy4gVGhlbiB0aGUNCj4gPiB1cmdlbmN5IHRvIGRpc2FibGUgaW50ZXJydXB0cyBnbyBhd2F5
+LCBhcyBvbmx5IG9uZSBpbnRlcnJ1cHQgd291bGQNCj4gPiBiZSBzZXJ2ZWQuIFRoYXQgd2FzIG5v
+dCBteSBpbW1lZGlhdGUgc29sdXRpb24gdGhvdWdoLCBhcyBJIGhhdmUgYmVlbg0KPiA+IHVzaW5n
+IGlzciB0eXBlIHJlZ2lzdGVycyBpbiB0aGlzIHdheSBzZXZlcmFsIHRpbWVzIGJlZm9yZS4NCj4g
+DQo+IFRoYXQgc291bmRzIGxpa2UgdGhlIHJpZ2h0IHNvbHV0aW9uLiBXaXRoIE9ORVNIT1QgYSB0
+aHJlYWRlZCBJUlENCj4gd2lsbCBoYXZlIGl0cyBsaW5lIG1hc2tlZCB1bnRpbCB5b3UgcmV0dXJu
+IGZyb20gdGhlIElTUiB0aHJlYWQuIFdvdWxkIHRoaXMNCj4gd29yayBmb3IgeW91ciB1c2VjYXNl
+Pw0KDQpUaGUgSVNSIHRocmVhZCB3b3VsZCBuZWVkIHRvIGJlIGFibGUgdG8gZGlzYWJsZSBmdXJ0
+aGVyIGludGVycnVwdHMNCmJlZm9yZSBpdCByZXR1cm5lZCwgaXMgdGhhdCBwb3NzaWJsZSB3aXRo
+b3V0IGRlYWRsb2NrPyBJZiBzbywgaXQncw0KYSBnb29kIGZpdC4NCg0KPiBJIHN1c3BlY3QgdGhp
+cyByZXF1aXJlIHlvdSB0byBtb3ZlIHRoZSBsb2dpYyBpbnRvIHRoZSBrZXJuZWw/IEludG8gSUlP
+Pw0KDQpZZXMsIGFuZCB5ZXMgSUlPIHNlZW1zIGFib3V0IHJpZ2h0IHRvIG1lIHRvby4NCg0KPiA+
+IElmIHRoaXMgaXMgdG8gYmUgZG9uZSBpbiBJSU8sIEkgaW1hZ2luZSB0aGF0IHRoZSBzYW5lc3Qg
+dGhpbmcgd291bGQNCj4gPiBiZSB0byBpbnRlZ3JhdGUgdGhlIHdob2xlIERBQy1sb29wIGFuZCBw
+cmVzZW50IGEgZmluaXNoZWQgZW52ZWxvcGUNCj4gPiB2YWx1ZSB0byB1c2VyIHNwYWNlPyBUaGlz
+IGVudmVsb3BlIGRldGVjdG9yIHdvdWxkIGhhdmUgdG8gYmUgcHJldHR5DQo+ID4gY29uZmlndXJh
+YmxlLCBvciBpdCB3aWxsIGJlIG5leHQgdG8gdXNlbGVzcyB0byBhbnlib2R5IGJ1dCBtZS4NCj4g
+DQo+IE1ha2VzIHNlbnNlIHRvIG1lLCBidXQgbXVzdCBiZSBBQ0tlZCBieSBKb25hdGhhbi4gQnV0
+IGl0DQo+IHNvdW5kcyBwcmV0dHkgY29vbCBkb2VzIGl0IG5vdD8NCg0KUmlnaHQsIGJ1dCBJIGRv
+bid0IHNlZSB3aHkgaXQgc2hvdWxkIGJlIGEgcHJvYmxlbT8gQW4gZW52ZWxvcGUgZGV0ZWN0b3IN
+CnN1cmVseSBmaXRzIElJTy4NCg0KPiA+IEkgY291bGQgaW1hZ2luZyB0aGF0IHRoaXMgbmV3IElJ
+TyBkcml2ZXIgc2hvdWxkIGJlIGFibGUgdG8gd29yaw0KPiA+IHdpdGggYW55IERBQyB0eXBlIGRl
+dmljZSwgd2hpY2ggaW4gbXkgY2FzZSB3b3VsZCBiZSB0aGUgbWNwNDUzMQ0KPiA+IGRwb3QuIFdo
+aWNoIGlzIG5vdCBhIERBQywgbWF5YmUgdGhhdCBjb3VsZCBiZSBzb2x2ZWQgd2l0aCBhIG5ldw0K
+PiA+IGRhYy1kcG90IGRyaXZlciwgYXBwbGljYWJsZSB0byBjYXNlcyB3aGVyZSBhIGRwb3QgaXMg
+d2lyZWQgYXMgYQ0KPiA+IHNpbXBsZSB2b2x0YWdlIGRpdmlkZXI/IFRoZSBuZXcgSUlPIGRyaXZl
+ciBhbHNvIG5lZWRzIHRvIGtub3cgaG93DQo+ID4gdG8gZ2V0IGEgcmVhZGluZyBmcm9tIHRoZSBj
+b21wYXJhdG9yLiBJIHRoaW5rIHRoZSBkcml2ZXIgc2hvdWxkDQo+ID4gc3VwcG9ydCBoYXZpbmcg
+YSBsYXRjaCBiZXR3ZWVuIHRoZSBjb21wYXJhdG9yIGFuZCB0aGUgZ3Bpbywgc28gaXQNCj4gPiBu
+ZWVkIHRvIGtub3cgaG93IHRvIG9wdGlvbmFsbHkgInJlc2V0IHRoZSBjb21wYXJhdG9yIi4gVGhh
+dA0KPiA+IHdvdWxkIGhhdmUgc29sdmVkIHRoZSB3aG9sZSBwcm9ibGVtLCB5b3Ugd291bGQgbmV2
+ZXIgaGF2ZSBzZWVuDQo+ID4gYW55IG9mIHRoaXMgaWYgSSBoYWQgc3VjaCBhIGxhdGNoIG9uIG15
+IGJvYXJkLiBCdXQgdGhlIGlzcg0KPiA+IHJlZ2lzdGVyIGlzIGEgbGF0Y2gsIHNvLi4uDQo+ID4N
+Cj4gPiBSZWdhcmRsZXNzLCBJIHRoaW5rIHN1Y2ggYSBkcml2ZXIgc3RpbGwgbmVlZHMgc3VwcG9y
+dCBmcm9tIGdwaW8NCj4gPiBhbmQvb3IgcGluY3RybC4gRWl0aGVyIGV4cG9zaW5nIHRoZSBpc3Ig
+cmVnaXN0ZXIgb3Igc3VwcG9ydGluZw0KPiA+IG9uZS1zaG90LWludGVycnVwdHMgdGhhdCBkaXNh
+cm0gdGhlbXNlbHZlcyBiZWZvcmUgcmVzdG9yaW5nIHRoZQ0KPiA+IHByb2Nlc3NvciBpbnRlcnJ1
+cHQgZmxhZyAobWF5YmUgdGhhdCBleGlzdHM/KS4NCj4gDQo+IEFsbCBpcnFjaGlwcyBzdXBwb3J0
+IG9uZS1zaG90IGludGVycnVwdHMgYXMgbG9uZyBhcyB5b3UgcmVxdWVzdCBhDQo+IHRocmVhZGVk
+IElSUSBJIHRoaW5rLg0KPiANCj4gWW91ciBHUElPIGRyaXZlciBtdXN0IHN1cHBvcnQgSVJRcyB0
+aG91Z2ggYnV0IEFUOTEgc3VyZWx5IGRvZXMuDQo+IE1heWJlIHlvdSB3aWxsIG5lZWQgdG8gaW1w
+bGVtZW50IGlycV9nZXRfaXJxY2hpcF9zdGF0ZSgpIG9uIGl0DQo+IGlmIHlvdSBpbnNpc3Qgb24g
+cG9sbGluZyB0aGUgaW50ZXJydXB0Lg0KDQpJZiBJIGdldCB0aGUgb25lc2hvdCBpcnFzIHRvIHdv
+cmssIHRoYXQgaW5kZWVkIHNlZW1zIGxpa2UgdGhlIGJldHRlcg0KYW5kIG1vcmUgZ2VuZXJhbCBz
+b2x1dGlvbi4NCg0KPiA+IE90aGVyd2lzZSB0aGUNCj4gPiBjb3JlIHByb2JsZW0gcmVtYWlucyB1
+bnNvbHZlZC4gQWxzbywgdGhpcyBpbWFnaW5hcnkgSUlPIGRyaXZlcg0KPiA+IHByb2JhYmx5IGhh
+dmUgdG8gYmUgdG90YWxseSBvYmxpdmlvdXMgb2YgdGhlIE1VWCwgb3IgdGhlIG51bWJlcg0KPiA+
+IG9mIHBvc3NpYmlsaXRpZXMgZXhwbG9kZS4NCj4gDQo+IFVzdWFsbHkgd2UgdHJ5IHRvIGZvbGxv
+dyB0aGUgVU5JWCBwaGlsaXNvcGh5IHRvIGRvIG9uZSB0aGluZw0KPiBhbmQgZG8gaXQgZ29vZC4N
+Cj4gDQo+IFlvdSBoYXZlbid0IHNhaWQgbXVjaCBhYm91dCBob3cgdGhhdCBNVVggd29ya3MsIGlm
+IGl0J3MgYW5vdGhlcg0KPiB1c2Vyc3BhY2UgVGhpbmdPZkFCb2Igb3Igd2hhdCBpdCBpcy4gVGhl
+cmUgaXMgbm8gZ2VuZXJpYw0KPiBrZXJuZWwgZnJhbWV3b3JrIGZvciBtdXhlcyBzbyBJIHNlZSB3
+aHkgcGVvcGxlIHdvdWxkIHdhbnQgdG8NCj4gZHJpdmUgdGhhdCB1c2luZyB1c2Vyc3BhY2UgR1BJ
+TyBsaW5lcyBmb3IgZXhhbXBsZS4NCj4gDQo+IElmIGl0IGlzIHBpbm11eGluZyBpbiBhIHN0YW5k
+YXJkIGNoaXAgb2Ygc29tZSBraW5kLCBwaW5jdHJsDQo+IGhhbmRsZXMgaXQuDQoNCkknbSBhZnJh
+aWQgaXQncyBjdXJyZW50bHkgZG9uZSBmcm9tIHVzZXJzcGFjZSB3aXRoIGdwaW8tc3lzZnMuIElm
+DQp0aGF0J3Mgbm90IGNoYW5nZWQsIEkgbmVlZCB1c2Vyc3BhY2UgdG8gY29udHJvbCAqd2hlbiog
+dGhlIGtlcm5lbA0KcGVyZm9ybXMgdGhlIGVudmVsb3BlIGRldGVjdG9yIGxvZ2ljLg0KDQpUaGFu
+a3MgZm9yIHlvdXIgZmVlZGJhY2shIEkgdGhpbmsgSSBoYXZlIGVub3VnaCBpbmZvIHRvIGdldA0K
+c3RhcnRlZC4gTm93IEkganVzdCBuZWVkIHRvIGZpbmQgdGhlIHRpbWUuLi4NCg0KQ2hlZXJzLA0K
+UGV0ZXINCg==
