@@ -1,146 +1,717 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from axentia.se ([87.96.186.132]:14963 "EHLO EMAIL.axentia.se"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751815AbbLQXVM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 17 Dec 2015 18:21:12 -0500
-From: Peter Rosin <peda@axentia.se>
-To: Linus Walleij <linus.walleij@linaro.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Peter Rosin <peda@lysator.liu.se>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	Alexandre Courbot <gnurou@gmail.com>,
-	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Matt Porter <mporter@konsulko.com>,
-	Marc Zyngier <marc.zyngier@arm.com>
-Subject: RE: [RESEND RFC PATCH 0/2] Expose the PIO_ISR register on SAMA5D3
-Date: Thu, 17 Dec 2015 23:19:17 +0000
-Message-ID: <a5deeb3722254bd08d7a7e071fd42e7f@EMAIL.axentia.se>
-References: <1449544808-3163-1-git-send-email-peda@lysator.liu.se>
-	<CACRpkdYN=n=Q+UpLbWjxJHP-FYi_e4cHFE_d1_fR2r7QYcqgYQ@mail.gmail.com>
-	<566C6122.6040406@kernel.org>
-	<85d1850f20c141b2952d93be72199fdf@EMAIL.axentia.se>
- <CACRpkdY9Nwg3B1bAJ53Y-tJJywC=ENvFR6S99+wUKzcUHTa5TQ@mail.gmail.com>
-In-Reply-To: <CACRpkdY9Nwg3B1bAJ53Y-tJJywC=ENvFR6S99+wUKzcUHTa5TQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from mail-pa0-f53.google.com ([209.85.220.53]:36363 "EHLO
+	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751845AbbLQXay (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Dec 2015 18:30:54 -0500
+Date: Thu, 17 Dec 2015 15:30:50 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Markus Pargmann <mpa@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	Denis Carikli <denis@eukrea.com>,
+	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Juergen Borleis <jbe@pengutronix.de>
+Subject: Re: [PATCH v10 6/8] input: touchscreen: imx25 tcq driver
+Message-ID: <20151217233050.GA16016@dtor-ws>
+References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
+ <1450101234-2191-7-git-send-email-mpa@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1450101234-2191-7-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SGkgTGludXMsDQoNCj4gT24gTW9uLCBEZWMgMTQsIDIwMTUgYXQgMTE6MzggQU0sIFBldGVyIFJv
-c2luIDxwZWRhQGF4ZW50aWEuc2U+IHdyb3RlOg0KPiANCj4gSSB0aGluayBJIGF0bGVhc3QgaGFs
-Zi11bmRlcnN0YW5kIHdoYXQgeW91J3JlIHRyeWluZyB0byBkby4NCg0KR29vZC4gSXQncyByZWFs
-bHkgbm90IHRoYXQgY29tcGxpY2F0ZWQsIGJ1dCBJJ20gcGVyaGFwcyBub3QgZGVzY3JpYmluZw0K
-aXQgdmVyeSBjbGVhcmx5Li4uDQoNCj4gPiBVc2Vyc3BhY2UgZG9lcyB0aGUgZm9sbG93aW5nIHdo
-ZW4gZG9pbmcgdGhpcyB3L28gdGhlIGlzciBwYXRjaGVzOg0KPiA+DQo+ID4gMS4gc2VsZWN0IHNp
-Z25hbCB1c2luZyB0aGUgTVVYDQo+ID4gMi4gc2V0IHRoZSBEQUMgc28gaGlnaCB0aGF0IElOUFVU
-IGlzIG5ldmVyIHJlYWNoaW5nIHRoYXQgbGV2ZWwuDQo+ID4gICAgQyAoYW5kIHRodXMgZ3Bpbykg
-aXMgbm93IHN0YWJsZQ0KPiA+IDMuIHN0YXJ0IHdhaXRpbmcgZm9yIGludGVycnVwdHMgb24gZ3Bp
-bw0KPiA+IDQuIGFkanVzdCB0aGUgREFDIGxldmVsIHRvIHRoZSBsZXZlbCBvZiBpbnRlcmVzdA0K
-PiA+IDUuIGFib3J0IG9uIGludGVycnVwdCBvciB0aW1lb3V0DQo+ICguLi4pDQo+ID4gV2l0aCB0
-aGUgaXNyIHBhdGNoZXMsIHRoZSBhYm92ZSB0cmFuc2Zvcm1zIGludG86DQo+ID4NCj4gPiAxLiBz
-ZWxlY3Qgc2lnbmFsIHVzaW5nIHRoZSBNVVgNCj4gPiAyLiBzZXQgdGhlIERBQyBzbyBoaWdoIHRo
-YXQgSU5QVVQgaXMgbmV2ZXIgcmVhY2hpbmcgdGhhdCBsZXZlbC4NCj4gPiAgICBDIChhbmQgdGh1
-cyBncGlvKSBpcyBub3cgc3RhYmxlDQo+ID4gMy4gcmVhZCB0aGUgaXNyIGJpdCB0byBjbGVhciBp
-dA0KPiA+IDQuIGFkanVzdCB0aGUgREFDIGxldmVsIHRvIHRoZSBsZXZlbCBvZiBpbnRlcmVzdA0K
-PiA+IDUuIHJlYWQgdGhlIGlzciBiaXQgYWdhaW4gYWZ0ZXIgNTBtcw0KPiA+DQo+ID4gVGhlIHJl
-c3VsdCBpcyBhdmFpbGFibGUgZGlyZWN0bHkgaW4gdGhlIGlzciBiaXQsIG5vIGludGVycnVwdHMg
-bmVlZGVkLg0KPiANCj4gVGhlIHByb2JsZW0gSSBzZWUgaGVyZSBhcyBrZXJuZWwgZGV2ZWxvcGVy
-IGlzIHRoYXQgdGhlcmUgaXMgYSBmdXp6eQ0KPiBhbmQgaW1wbGljaXQgc2VwYXJhdGlvbiBvZiBj
-b25jZXJucyBiZXR3ZWVuIHVzZXJzcGFjZSBhbmQNCj4ga2VybmVsc3BhY2UuDQo+IA0KPiBJTU8g
-cmVhZGluZyBoYXJkd2FyZSByZWdpc3RlcnMgaXMgdGhlIGRvbWFpbiBvZiB0aGUga2VybmVsLCBh
-bmQNCj4gdGhlbiB0aGUgcmVzdWx0IHRoZXJlb2YgaXMgcHJlc2VudGVkIHRvIHVzZXJzcGFjZS4g
-VGhlIGtlcm5lbA0KPiBoYW5kbGVzIGhhcmR3YXJlLCBzaW1wbHkuDQo+IA0KPiBJIHRoaW5rIHdl
-IG5lZWQgdG8gcmV2ZXJzZSBvdXQgb2YgdGhpcyBzb2x1dGlvbiBhbmQgaW5zdGVhZCBhc2sNCj4g
-dGhlIHF1ZXN0aW9uIHdoYXQgdGhlIGtlcm5lbCBzaG91bGQgcHJvdmlkZSB5b3VyIHVzZXJzcGFj
-ZS4NCj4gTWF5YmUgcGFydHMgb2Ygd2hhdCB5b3UgaGF2ZSBpbiB1c2Vyc3BhY2UgbmVlZHMgdG8g
-YWN0dWFsbHkNCj4gZ28gaW50byB0aGUga2VybmVsPw0KPiANCj4gVGhlIGdvYWwgb2YgSUlPIHNl
-ZW1zIHRvIGJlIHRvIHByZXNlbnQgcmF3IGFuZCBjYWxpYnJhdGVkDQo+IChTSSB1bml0KSBkYXRh
-IHRvIHVzZXJzcGFjZS4gU28gd2hhdCBkYXRhIGlzIGl0IHlvdSB3YW50LCBhbmQNCj4gd2h5IGNh
-bid0IHlvdSBqdXN0IGdldCB0aGF0IGRpcmVjdGx5IGZyb20gdGhlIGtlcm5lbCB3aXRob3V0DQo+
-IHRyaWNrc2luZyBhcm91bmQgd2l0aCByZWFkaW5nIHJlZ2lzdGVycyBiaXRzIGluIHVzZXJzcGFj
-ZT8NCg0KVGhpcyBhbGwgbWFrZXMgc2Vuc2UuIFRoZSByZWFzb24gaXMgdGhhdCBJJ20gbm90IGZh
-bWlsaWFyIHdpdGgNCnRoZSBrZXJuZWwgQVBJcy4gSSBoYXZlIHRvIHdyYXAgbXkgaGVhZCBhcm91
-bmQgaG93IHRvIHNldCB1cA0Kd29yayB0byBiZSBwZXJmb3JtZWQgbGF0ZXIsIGV0YyBldGMuIEFs
-bCBvZiB0aGF0IGlzIGluIGFsbA0KbGlrZWxpaG9vZCBwcmV0dHkgc3RyYWlnaHRmb3J3YXJkLCBi
-dXQgSSBmZWVsIHRoYXQgSSBhbQ0KZmx1bmRlcmluZyBhcm91bmQgZXZlcnkgc3RlcCBvZiB0aGUg
-d2F5LiBFbmQgcmVzdWx0OyBJIGZpbmQNCm15c2VsZiB0cnlpbmcgdG8gZG8gYXMgbGl0dGxlIGFz
-IHBvc3NpYmxlIGluc2lkZSB0aGUga2VybmVsLg0KDQpJLmUuIEkgaGF2ZSBhIHByZXR0eSBjbGVh
-ciBwaWN0dXJlIG9mIHdoYXQgbmVlZHMgdG8gYmUgZG9uZSwgYnV0DQp0aGUgZGV2aWwgaXMgaW4g
-dGhlIGRldGFpbHMuLi4NCg0KPiBJZiBhIGtlcm5lbCBtb2R1bGUgbmVlZHMgdG8gcmVhZCBhbiBp
-bnRlcnJ1cHQgYml0IGRpcmVjdGx5IGZyb20gdGhlDQo+IEdQSU8gY29udHJvbGxlciBpcyBhbm90
-aGVyIHRoaW5nLiBUaGF0IGlzIGFraW4gdG8gaG93IHBvbGxpbmcNCj4gbmV0d29yayBkcml2ZXJz
-IHN0YXJ0IHBvbGxpbmcgcmVnaXN0ZXJzIGZvciBpbmNvbWluZyBwYWNrYWdlcw0KPiBpbnN0ZWFk
-IG9mIHdhaXRpbmcgZm9yIHRoZW0gdG8gZmlyZSBpbnRlcnJ1cHRzLiBKdXN0IHRoYXQgdGhlc2Ug
-YXJlDQo+IGRlZGljYXRlZCBJUlEgbGluZXMsIG5vdCBHUElPcy4NCg0KWWVzLCB0aGVyZSB3YXMg
-YWxzbyB0aGUgTkFDSyB0byBhZGRpbmcgbmV3IGdwaW8gc3lzZnMgZmlsZXMgd2hpY2gNCmVtcGhh
-c2l6ZXMgdGhpcy4NCg0KPiBBcyBzdHJ1Y3QgaXJxX2NoaXAgaGFzIGlycV9nZXRfaXJxY2hpcF9z
-dGF0ZSgpIEkgdGhpbmsgdGhpcw0KPiBpcyBhY3R1YWxseSBwb3NzaWJsZSB0byBhY2hpZXZlIHRo
-aXMgYnkgaW1wbGVtZW50aW5nIHRoYXQNCj4gYW5kIGNhbGxpbmcgaXJxX2dldF9pcnFjaGlwX3N0
-YXRlKCkuDQoNCkknbGwgaGF2ZSBhIHBlZWsgaW50byB0aGF0LCBidXQgc2VlIGJlbG93Lg0KDQo+
-ID4gSSBoYXZlIHJlYWxpemVkIHRoYXQgSSBjb3VsZCB3b3JrIHdpdGggb25lLXNob3QtaW50ZXJy
-dXB0cy4gVGhlbiB0aGUNCj4gPiB1cmdlbmN5IHRvIGRpc2FibGUgaW50ZXJydXB0cyBnbyBhd2F5
-LCBhcyBvbmx5IG9uZSBpbnRlcnJ1cHQgd291bGQNCj4gPiBiZSBzZXJ2ZWQuIFRoYXQgd2FzIG5v
-dCBteSBpbW1lZGlhdGUgc29sdXRpb24gdGhvdWdoLCBhcyBJIGhhdmUgYmVlbg0KPiA+IHVzaW5n
-IGlzciB0eXBlIHJlZ2lzdGVycyBpbiB0aGlzIHdheSBzZXZlcmFsIHRpbWVzIGJlZm9yZS4NCj4g
-DQo+IFRoYXQgc291bmRzIGxpa2UgdGhlIHJpZ2h0IHNvbHV0aW9uLiBXaXRoIE9ORVNIT1QgYSB0
-aHJlYWRlZCBJUlENCj4gd2lsbCBoYXZlIGl0cyBsaW5lIG1hc2tlZCB1bnRpbCB5b3UgcmV0dXJu
-IGZyb20gdGhlIElTUiB0aHJlYWQuIFdvdWxkIHRoaXMNCj4gd29yayBmb3IgeW91ciB1c2VjYXNl
-Pw0KDQpUaGUgSVNSIHRocmVhZCB3b3VsZCBuZWVkIHRvIGJlIGFibGUgdG8gZGlzYWJsZSBmdXJ0
-aGVyIGludGVycnVwdHMNCmJlZm9yZSBpdCByZXR1cm5lZCwgaXMgdGhhdCBwb3NzaWJsZSB3aXRo
-b3V0IGRlYWRsb2NrPyBJZiBzbywgaXQncw0KYSBnb29kIGZpdC4NCg0KPiBJIHN1c3BlY3QgdGhp
-cyByZXF1aXJlIHlvdSB0byBtb3ZlIHRoZSBsb2dpYyBpbnRvIHRoZSBrZXJuZWw/IEludG8gSUlP
-Pw0KDQpZZXMsIGFuZCB5ZXMgSUlPIHNlZW1zIGFib3V0IHJpZ2h0IHRvIG1lIHRvby4NCg0KPiA+
-IElmIHRoaXMgaXMgdG8gYmUgZG9uZSBpbiBJSU8sIEkgaW1hZ2luZSB0aGF0IHRoZSBzYW5lc3Qg
-dGhpbmcgd291bGQNCj4gPiBiZSB0byBpbnRlZ3JhdGUgdGhlIHdob2xlIERBQy1sb29wIGFuZCBw
-cmVzZW50IGEgZmluaXNoZWQgZW52ZWxvcGUNCj4gPiB2YWx1ZSB0byB1c2VyIHNwYWNlPyBUaGlz
-IGVudmVsb3BlIGRldGVjdG9yIHdvdWxkIGhhdmUgdG8gYmUgcHJldHR5DQo+ID4gY29uZmlndXJh
-YmxlLCBvciBpdCB3aWxsIGJlIG5leHQgdG8gdXNlbGVzcyB0byBhbnlib2R5IGJ1dCBtZS4NCj4g
-DQo+IE1ha2VzIHNlbnNlIHRvIG1lLCBidXQgbXVzdCBiZSBBQ0tlZCBieSBKb25hdGhhbi4gQnV0
-IGl0DQo+IHNvdW5kcyBwcmV0dHkgY29vbCBkb2VzIGl0IG5vdD8NCg0KUmlnaHQsIGJ1dCBJIGRv
-bid0IHNlZSB3aHkgaXQgc2hvdWxkIGJlIGEgcHJvYmxlbT8gQW4gZW52ZWxvcGUgZGV0ZWN0b3IN
-CnN1cmVseSBmaXRzIElJTy4NCg0KPiA+IEkgY291bGQgaW1hZ2luZyB0aGF0IHRoaXMgbmV3IElJ
-TyBkcml2ZXIgc2hvdWxkIGJlIGFibGUgdG8gd29yaw0KPiA+IHdpdGggYW55IERBQyB0eXBlIGRl
-dmljZSwgd2hpY2ggaW4gbXkgY2FzZSB3b3VsZCBiZSB0aGUgbWNwNDUzMQ0KPiA+IGRwb3QuIFdo
-aWNoIGlzIG5vdCBhIERBQywgbWF5YmUgdGhhdCBjb3VsZCBiZSBzb2x2ZWQgd2l0aCBhIG5ldw0K
-PiA+IGRhYy1kcG90IGRyaXZlciwgYXBwbGljYWJsZSB0byBjYXNlcyB3aGVyZSBhIGRwb3QgaXMg
-d2lyZWQgYXMgYQ0KPiA+IHNpbXBsZSB2b2x0YWdlIGRpdmlkZXI/IFRoZSBuZXcgSUlPIGRyaXZl
-ciBhbHNvIG5lZWRzIHRvIGtub3cgaG93DQo+ID4gdG8gZ2V0IGEgcmVhZGluZyBmcm9tIHRoZSBj
-b21wYXJhdG9yLiBJIHRoaW5rIHRoZSBkcml2ZXIgc2hvdWxkDQo+ID4gc3VwcG9ydCBoYXZpbmcg
-YSBsYXRjaCBiZXR3ZWVuIHRoZSBjb21wYXJhdG9yIGFuZCB0aGUgZ3Bpbywgc28gaXQNCj4gPiBu
-ZWVkIHRvIGtub3cgaG93IHRvIG9wdGlvbmFsbHkgInJlc2V0IHRoZSBjb21wYXJhdG9yIi4gVGhh
-dA0KPiA+IHdvdWxkIGhhdmUgc29sdmVkIHRoZSB3aG9sZSBwcm9ibGVtLCB5b3Ugd291bGQgbmV2
-ZXIgaGF2ZSBzZWVuDQo+ID4gYW55IG9mIHRoaXMgaWYgSSBoYWQgc3VjaCBhIGxhdGNoIG9uIG15
-IGJvYXJkLiBCdXQgdGhlIGlzcg0KPiA+IHJlZ2lzdGVyIGlzIGEgbGF0Y2gsIHNvLi4uDQo+ID4N
-Cj4gPiBSZWdhcmRsZXNzLCBJIHRoaW5rIHN1Y2ggYSBkcml2ZXIgc3RpbGwgbmVlZHMgc3VwcG9y
-dCBmcm9tIGdwaW8NCj4gPiBhbmQvb3IgcGluY3RybC4gRWl0aGVyIGV4cG9zaW5nIHRoZSBpc3Ig
-cmVnaXN0ZXIgb3Igc3VwcG9ydGluZw0KPiA+IG9uZS1zaG90LWludGVycnVwdHMgdGhhdCBkaXNh
-cm0gdGhlbXNlbHZlcyBiZWZvcmUgcmVzdG9yaW5nIHRoZQ0KPiA+IHByb2Nlc3NvciBpbnRlcnJ1
-cHQgZmxhZyAobWF5YmUgdGhhdCBleGlzdHM/KS4NCj4gDQo+IEFsbCBpcnFjaGlwcyBzdXBwb3J0
-IG9uZS1zaG90IGludGVycnVwdHMgYXMgbG9uZyBhcyB5b3UgcmVxdWVzdCBhDQo+IHRocmVhZGVk
-IElSUSBJIHRoaW5rLg0KPiANCj4gWW91ciBHUElPIGRyaXZlciBtdXN0IHN1cHBvcnQgSVJRcyB0
-aG91Z2ggYnV0IEFUOTEgc3VyZWx5IGRvZXMuDQo+IE1heWJlIHlvdSB3aWxsIG5lZWQgdG8gaW1w
-bGVtZW50IGlycV9nZXRfaXJxY2hpcF9zdGF0ZSgpIG9uIGl0DQo+IGlmIHlvdSBpbnNpc3Qgb24g
-cG9sbGluZyB0aGUgaW50ZXJydXB0Lg0KDQpJZiBJIGdldCB0aGUgb25lc2hvdCBpcnFzIHRvIHdv
-cmssIHRoYXQgaW5kZWVkIHNlZW1zIGxpa2UgdGhlIGJldHRlcg0KYW5kIG1vcmUgZ2VuZXJhbCBz
-b2x1dGlvbi4NCg0KPiA+IE90aGVyd2lzZSB0aGUNCj4gPiBjb3JlIHByb2JsZW0gcmVtYWlucyB1
-bnNvbHZlZC4gQWxzbywgdGhpcyBpbWFnaW5hcnkgSUlPIGRyaXZlcg0KPiA+IHByb2JhYmx5IGhh
-dmUgdG8gYmUgdG90YWxseSBvYmxpdmlvdXMgb2YgdGhlIE1VWCwgb3IgdGhlIG51bWJlcg0KPiA+
-IG9mIHBvc3NpYmlsaXRpZXMgZXhwbG9kZS4NCj4gDQo+IFVzdWFsbHkgd2UgdHJ5IHRvIGZvbGxv
-dyB0aGUgVU5JWCBwaGlsaXNvcGh5IHRvIGRvIG9uZSB0aGluZw0KPiBhbmQgZG8gaXQgZ29vZC4N
-Cj4gDQo+IFlvdSBoYXZlbid0IHNhaWQgbXVjaCBhYm91dCBob3cgdGhhdCBNVVggd29ya3MsIGlm
-IGl0J3MgYW5vdGhlcg0KPiB1c2Vyc3BhY2UgVGhpbmdPZkFCb2Igb3Igd2hhdCBpdCBpcy4gVGhl
-cmUgaXMgbm8gZ2VuZXJpYw0KPiBrZXJuZWwgZnJhbWV3b3JrIGZvciBtdXhlcyBzbyBJIHNlZSB3
-aHkgcGVvcGxlIHdvdWxkIHdhbnQgdG8NCj4gZHJpdmUgdGhhdCB1c2luZyB1c2Vyc3BhY2UgR1BJ
-TyBsaW5lcyBmb3IgZXhhbXBsZS4NCj4gDQo+IElmIGl0IGlzIHBpbm11eGluZyBpbiBhIHN0YW5k
-YXJkIGNoaXAgb2Ygc29tZSBraW5kLCBwaW5jdHJsDQo+IGhhbmRsZXMgaXQuDQoNCkknbSBhZnJh
-aWQgaXQncyBjdXJyZW50bHkgZG9uZSBmcm9tIHVzZXJzcGFjZSB3aXRoIGdwaW8tc3lzZnMuIElm
-DQp0aGF0J3Mgbm90IGNoYW5nZWQsIEkgbmVlZCB1c2Vyc3BhY2UgdG8gY29udHJvbCAqd2hlbiog
-dGhlIGtlcm5lbA0KcGVyZm9ybXMgdGhlIGVudmVsb3BlIGRldGVjdG9yIGxvZ2ljLg0KDQpUaGFu
-a3MgZm9yIHlvdXIgZmVlZGJhY2shIEkgdGhpbmsgSSBoYXZlIGVub3VnaCBpbmZvIHRvIGdldA0K
-c3RhcnRlZC4gTm93IEkganVzdCBuZWVkIHRvIGZpbmQgdGhlIHRpbWUuLi4NCg0KQ2hlZXJzLA0K
-UGV0ZXINCg==
+On Mon, Dec 14, 2015 at 02:53:52PM +0100, Markus Pargmann wrote:
+> This is a driver for the imx25 ADC/TSC module. It controls the
+> touchscreen conversion queue and creates a touchscreen input device.
+> The driver currently only supports 4 wire touchscreens. The driver uses
+> a simple conversion queue of precharge, touch detection, X measurement,
+> Y measurement, precharge and another touch detection.
+> 
+> This driver uses the regmap from the parent to setup some touch specific
+> settings in the core driver and setup a idle configuration with touch
+> detection.
+> 
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> Signed-off-by: Denis Carikli <denis@eukrea.com>
+> 
+> [fix clock's period calculation]
+> [fix calculation of the 'settling' value]
+> Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
+
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+
+Please merge with the rest of this MFD device.
+
+> ---
+> 
+> Notes:
+>     Changes in v10:
+>      - Renamed devicetree properties
+>     
+>     Changes in v9:
+>      - Added module description to Kconfig item
+>      - Fixed devm_ioremap_resource() return value check to use IS_ERR()
+>      - Removed return value of mx25_tcq_create_event_for_4wire()
+>      - Renamed most 'ret' variables through 'error'
+>      - Removed IRQF_ONESHOT
+>      - Rearranged threaded handler to not mix up samples from multiple measurements
+>     
+>     Changes in v7:
+>      - Moved clk_prepare_enable() and mx25_tcq_init() into mx25_tcq_open(). This
+>        was done to be able to use devm_request_threaded_irq().
+>      - Cleanup of the probe function through above change
+>      - Removed mx25_tcq_remove(), not necessary now
+> 
+>  drivers/input/touchscreen/Kconfig         |   9 +
+>  drivers/input/touchscreen/Makefile        |   1 +
+>  drivers/input/touchscreen/fsl-imx25-tcq.c | 596 ++++++++++++++++++++++++++++++
+>  3 files changed, 606 insertions(+)
+>  create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
+> 
+> diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+> index ae33da7ab51f..873bf3697e35 100644
+> --- a/drivers/input/touchscreen/Kconfig
+> +++ b/drivers/input/touchscreen/Kconfig
+> @@ -811,6 +811,15 @@ config TOUCHSCREEN_USB_COMPOSITE
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called usbtouchscreen.
+>  
+> +config TOUCHSCREEN_MX25
+> +	tristate "Freescale i.MX25 touchscreen input driver"
+> +	depends on MFD_MX25_TSADC
+> +	help
+> +	  Enable support for touchscreen connected to your i.MX25.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called fsl-imx25-tcq.
+> +
+>  config TOUCHSCREEN_MC13783
+>  	tristate "Freescale MC13783 touchscreen input driver"
+>  	depends on MFD_MC13XXX
+> diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
+> index cbaa6abb08da..77a2ac54101a 100644
+> --- a/drivers/input/touchscreen/Makefile
+> +++ b/drivers/input/touchscreen/Makefile
+> @@ -45,6 +45,7 @@ obj-$(CONFIG_TOUCHSCREEN_INTEL_MID)	+= intel-mid-touch.o
+>  obj-$(CONFIG_TOUCHSCREEN_IPROC)		+= bcm_iproc_tsc.o
+>  obj-$(CONFIG_TOUCHSCREEN_LPC32XX)	+= lpc32xx_ts.o
+>  obj-$(CONFIG_TOUCHSCREEN_MAX11801)	+= max11801_ts.o
+> +obj-$(CONFIG_TOUCHSCREEN_MX25)		+= fsl-imx25-tcq.o
+>  obj-$(CONFIG_TOUCHSCREEN_MC13783)	+= mc13783_ts.o
+>  obj-$(CONFIG_TOUCHSCREEN_MCS5000)	+= mcs5000_ts.o
+>  obj-$(CONFIG_TOUCHSCREEN_MIGOR)		+= migor_ts.o
+> diff --git a/drivers/input/touchscreen/fsl-imx25-tcq.c b/drivers/input/touchscreen/fsl-imx25-tcq.c
+> new file mode 100644
+> index 000000000000..fe9877a6af9e
+> --- /dev/null
+> +++ b/drivers/input/touchscreen/fsl-imx25-tcq.c
+> @@ -0,0 +1,596 @@
+> +/*
+> + * Copyright (C) 2014-2015 Pengutronix, Markus Pargmann <mpa@pengutronix.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it under
+> + * the terms of the GNU General Public License version 2 as published by the
+> + * Free Software Foundation.
+> + *
+> + * Based on driver from 2011:
+> + *   Juergen Beisert, Pengutronix <kernel@pengutronix.de>
+> + *
+> + * This is the driver for the imx25 TCQ (Touchscreen Conversion Queue)
+> + * connected to the imx25 ADC.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/device.h>
+> +#include <linux/input.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/mfd/imx25-tsadc.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +
+> +static const char mx25_tcq_name[] = "mx25-tcq";
+> +
+> +enum mx25_tcq_mode {
+> +	MX25_TS_4WIRE,
+> +};
+> +
+> +struct mx25_tcq_priv {
+> +	struct regmap *regs;
+> +	struct regmap *core_regs;
+> +	struct input_dev *idev;
+> +	enum mx25_tcq_mode mode;
+> +	unsigned int pen_threshold;
+> +	unsigned int sample_count;
+> +	unsigned int expected_samples;
+> +	unsigned int pen_debounce;
+> +	unsigned int settling_time;
+> +	struct clk *clk;
+> +	int irq;
+> +	struct device *dev;
+> +};
+> +
+> +static struct regmap_config mx25_tcq_regconfig = {
+> +	.fast_io = true,
+> +	.max_register = 0x5c,
+> +	.reg_bits = 32,
+> +	.val_bits = 32,
+> +	.reg_stride = 4,
+> +};
+> +
+> +static const struct of_device_id mx25_tcq_ids[] = {
+> +	{ .compatible = "fsl,imx25-tcq", },
+> +	{ /* Sentinel */ }
+> +};
+> +
+> +#define TSC_4WIRE_PRE_INDEX 0
+> +#define TSC_4WIRE_X_INDEX 1
+> +#define TSC_4WIRE_Y_INDEX 2
+> +#define TSC_4WIRE_POST_INDEX 3
+> +#define TSC_4WIRE_LEAVE 4
+> +
+> +#define MX25_TSC_DEF_THRESHOLD 80
+> +#define TSC_MAX_SAMPLES 16
+> +
+> +#define MX25_TSC_REPEAT_WAIT 14
+> +
+> +enum mx25_adc_configurations {
+> +	MX25_CFG_PRECHARGE = 0,
+> +	MX25_CFG_TOUCH_DETECT,
+> +	MX25_CFG_X_MEASUREMENT,
+> +	MX25_CFG_Y_MEASUREMENT,
+> +};
+> +
+> +#define MX25_PRECHARGE_VALUE (\
+> +			MX25_ADCQ_CFG_YPLL_OFF | \
+> +			MX25_ADCQ_CFG_XNUR_OFF | \
+> +			MX25_ADCQ_CFG_XPUL_HIGH | \
+> +			MX25_ADCQ_CFG_REFP_INT | \
+> +			MX25_ADCQ_CFG_IN_XP | \
+> +			MX25_ADCQ_CFG_REFN_NGND2 | \
+> +			MX25_ADCQ_CFG_IGS)
+> +
+> +#define MX25_TOUCH_DETECT_VALUE (\
+> +			MX25_ADCQ_CFG_YNLR | \
+> +			MX25_ADCQ_CFG_YPLL_OFF | \
+> +			MX25_ADCQ_CFG_XNUR_OFF | \
+> +			MX25_ADCQ_CFG_XPUL_OFF | \
+> +			MX25_ADCQ_CFG_REFP_INT | \
+> +			MX25_ADCQ_CFG_IN_XP | \
+> +			MX25_ADCQ_CFG_REFN_NGND2 | \
+> +			MX25_ADCQ_CFG_PENIACK)
+> +
+> +static void imx25_setup_queue_cfgs(struct mx25_tcq_priv *priv,
+> +				   unsigned int settling_cnt)
+> +{
+> +	u32 precharge_cfg =
+> +			MX25_PRECHARGE_VALUE |
+> +			MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt);
+> +	u32 touch_detect_cfg =
+> +			MX25_TOUCH_DETECT_VALUE |
+> +			MX25_ADCQ_CFG_NOS(1) |
+> +			MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt);
+> +
+> +	regmap_write(priv->core_regs, MX25_TSC_TICR, precharge_cfg);
+> +
+> +	/* PRECHARGE */
+> +	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_PRECHARGE),
+> +		     precharge_cfg);
+> +
+> +	/* TOUCH_DETECT */
+> +	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_TOUCH_DETECT),
+> +		     touch_detect_cfg);
+> +
+> +	/* X Measurement */
+> +	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_X_MEASUREMENT),
+> +		     MX25_ADCQ_CFG_YPLL_OFF |
+> +		     MX25_ADCQ_CFG_XNUR_LOW |
+> +		     MX25_ADCQ_CFG_XPUL_HIGH |
+> +		     MX25_ADCQ_CFG_REFP_XP |
+> +		     MX25_ADCQ_CFG_IN_YP |
+> +		     MX25_ADCQ_CFG_REFN_XN |
+> +		     MX25_ADCQ_CFG_NOS(priv->sample_count) |
+> +		     MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt));
+> +
+> +	/* Y Measurement */
+> +	regmap_write(priv->regs, MX25_ADCQ_CFG(MX25_CFG_Y_MEASUREMENT),
+> +		     MX25_ADCQ_CFG_YNLR |
+> +		     MX25_ADCQ_CFG_YPLL_HIGH |
+> +		     MX25_ADCQ_CFG_XNUR_OFF |
+> +		     MX25_ADCQ_CFG_XPUL_OFF |
+> +		     MX25_ADCQ_CFG_REFP_YP |
+> +		     MX25_ADCQ_CFG_IN_XP |
+> +		     MX25_ADCQ_CFG_REFN_YN |
+> +		     MX25_ADCQ_CFG_NOS(priv->sample_count) |
+> +		     MX25_ADCQ_CFG_SETTLING_TIME(settling_cnt));
+> +
+> +	/* Enable the touch detection right now */
+> +	regmap_write(priv->core_regs, MX25_TSC_TICR, touch_detect_cfg |
+> +		     MX25_ADCQ_CFG_IGS);
+> +}
+> +
+> +static int imx25_setup_queue_4wire(struct mx25_tcq_priv *priv,
+> +				   unsigned settling_cnt, int *items)
+> +{
+> +	imx25_setup_queue_cfgs(priv, settling_cnt);
+> +
+> +	/* Setup the conversion queue */
+> +	regmap_write(priv->regs, MX25_ADCQ_ITEM_7_0,
+> +		     MX25_ADCQ_ITEM(0, MX25_CFG_PRECHARGE) |
+> +		     MX25_ADCQ_ITEM(1, MX25_CFG_TOUCH_DETECT) |
+> +		     MX25_ADCQ_ITEM(2, MX25_CFG_X_MEASUREMENT) |
+> +		     MX25_ADCQ_ITEM(3, MX25_CFG_Y_MEASUREMENT) |
+> +		     MX25_ADCQ_ITEM(4, MX25_CFG_PRECHARGE) |
+> +		     MX25_ADCQ_ITEM(5, MX25_CFG_TOUCH_DETECT));
+> +
+> +	/*
+> +	 * We measure X/Y with 'sample_count' number of samples and execute a
+> +	 * touch detection twice, with 1 sample each
+> +	 */
+> +	priv->expected_samples = priv->sample_count * 2 + 2;
+> +	*items = 6;
+> +
+> +	return 0;
+> +}
+> +
+> +static void mx25_tcq_disable_touch_irq(struct mx25_tcq_priv *priv)
+> +{
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_PDMSK,
+> +			   MX25_ADCQ_CR_PDMSK);
+> +}
+> +
+> +static void mx25_tcq_enable_touch_irq(struct mx25_tcq_priv *priv)
+> +{
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_PDMSK, 0);
+> +}
+> +
+> +static void mx25_tcq_disable_fifo_irq(struct mx25_tcq_priv *priv)
+> +{
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_FDRY_IRQ,
+> +			   MX25_ADCQ_MR_FDRY_IRQ);
+> +}
+> +
+> +static void mx25_tcq_enable_fifo_irq(struct mx25_tcq_priv *priv)
+> +{
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_FDRY_IRQ, 0);
+> +}
+> +
+> +static void mx25_tcq_force_queue_start(struct mx25_tcq_priv *priv)
+> +{
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
+> +			   MX25_ADCQ_CR_FQS,
+> +			   MX25_ADCQ_CR_FQS);
+> +}
+> +
+> +static void mx25_tcq_force_queue_stop(struct mx25_tcq_priv *priv)
+> +{
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
+> +			   MX25_ADCQ_CR_FQS, 0);
+> +}
+> +
+> +static void mx25_tcq_fifo_reset(struct mx25_tcq_priv *priv)
+> +{
+> +	u32 tcqcr;
+> +
+> +	regmap_read(priv->regs, MX25_ADCQ_CR, &tcqcr);
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FRST,
+> +			   MX25_ADCQ_CR_FRST);
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FRST, 0);
+> +	regmap_write(priv->regs, MX25_ADCQ_CR, tcqcr);
+> +}
+> +
+> +static void mx25_tcq_re_enable_touch_detection(struct mx25_tcq_priv *priv)
+> +{
+> +	/* stop the queue from looping */
+> +	mx25_tcq_force_queue_stop(priv);
+> +
+> +	/* for a clean touch detection, preload the X plane */
+> +	regmap_write(priv->core_regs, MX25_TSC_TICR, MX25_PRECHARGE_VALUE);
+> +
+> +	/* waste some time now to pre-load the X plate to high voltage */
+> +	mx25_tcq_fifo_reset(priv);
+> +
+> +	/* re-enable the detection right now */
+> +	regmap_write(priv->core_regs, MX25_TSC_TICR,
+> +		     MX25_TOUCH_DETECT_VALUE | MX25_ADCQ_CFG_IGS);
+> +
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_SR, MX25_ADCQ_SR_PD,
+> +			   MX25_ADCQ_SR_PD);
+> +
+> +	/* enable the pen down event to be a source for the interrupt */
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_PD_IRQ, 0);
+> +
+> +	/* lets fire the next IRQ if someone touches the touchscreen */
+> +	mx25_tcq_enable_touch_irq(priv);
+> +}
+> +
+> +static void mx25_tcq_create_event_for_4wire(struct mx25_tcq_priv *priv,
+> +					    u32 *sample_buf,
+> +					    unsigned int samples)
+> +{
+> +	unsigned int x_pos = 0;
+> +	unsigned int y_pos = 0;
+> +	unsigned int touch_pre = 0;
+> +	unsigned int touch_post = 0;
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < samples; i++) {
+> +		unsigned int index = MX25_ADCQ_FIFO_ID(sample_buf[i]);
+> +		unsigned int val = MX25_ADCQ_FIFO_DATA(sample_buf[i]);
+> +
+> +		switch (index) {
+> +		case 1:
+> +			touch_pre = val;
+> +			break;
+> +		case 2:
+> +			x_pos = val;
+> +			break;
+> +		case 3:
+> +			y_pos = val;
+> +			break;
+> +		case 5:
+> +			touch_post = val;
+> +			break;
+> +		default:
+> +			dev_dbg(priv->dev, "Dropped samples because of invalid index %d\n",
+> +				index);
+> +			return;
+> +		}
+> +	}
+> +
+> +	if (samples != 0) {
+> +		/*
+> +		 * only if both touch measures are below a threshold,
+> +		 * the position is valid
+> +		 */
+> +		if (touch_pre < priv->pen_threshold &&
+> +		    touch_post < priv->pen_threshold) {
+> +			/* valid samples, generate a report */
+> +			x_pos /= priv->sample_count;
+> +			y_pos /= priv->sample_count;
+> +			input_report_abs(priv->idev, ABS_X, x_pos);
+> +			input_report_abs(priv->idev, ABS_Y, y_pos);
+> +			input_report_key(priv->idev, BTN_TOUCH, 1);
+> +			input_sync(priv->idev);
+> +
+> +			/* get next sample */
+> +			mx25_tcq_enable_fifo_irq(priv);
+> +		} else if (touch_pre >= priv->pen_threshold &&
+> +			   touch_post >= priv->pen_threshold) {
+> +			/*
+> +			 * if both samples are invalid,
+> +			 * generate a release report
+> +			 */
+> +			input_report_key(priv->idev, BTN_TOUCH, 0);
+> +			input_sync(priv->idev);
+> +			mx25_tcq_re_enable_touch_detection(priv);
+> +		} else {
+> +			/*
+> +			 * if only one of both touch measurements are
+> +			 * below the threshold, still some bouncing
+> +			 * happens. Take additional samples in this
+> +			 * case to be sure
+> +			 */
+> +			mx25_tcq_enable_fifo_irq(priv);
+> +		}
+> +	}
+> +}
+> +
+> +static irqreturn_t mx25_tcq_irq_thread(int irq, void *dev_id)
+> +{
+> +	struct mx25_tcq_priv *priv = dev_id;
+> +	u32 sample_buf[TSC_MAX_SAMPLES];
+> +	unsigned int samples;
+> +	u32 stats;
+> +	unsigned int i;
+> +
+> +	/*
+> +	 * Check how many samples are available. We always have to read exactly
+> +	 * sample_count samples from the fifo, or a multiple of sample_count.
+> +	 * Otherwise we mixup samples into different touch events.
+> +	 */
+> +	regmap_read(priv->regs, MX25_ADCQ_SR, &stats);
+> +	samples = MX25_ADCQ_SR_FDN(stats);
+> +	samples -= samples % priv->sample_count;
+> +
+> +	if (!samples)
+> +		return IRQ_HANDLED;
+> +
+> +	for (i = 0; i != samples; ++i)
+> +		regmap_read(priv->regs, MX25_ADCQ_FIFO, &sample_buf[i]);
+> +
+> +	mx25_tcq_create_event_for_4wire(priv, sample_buf, samples);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t mx25_tcq_irq(int irq, void *dev_id)
+> +{
+> +	struct mx25_tcq_priv *priv = dev_id;
+> +	u32 stat;
+> +	int ret = IRQ_HANDLED;
+> +
+> +	regmap_read(priv->regs, MX25_ADCQ_SR, &stat);
+> +
+> +	if (stat & (MX25_ADCQ_SR_FRR | MX25_ADCQ_SR_FUR | MX25_ADCQ_SR_FOR))
+> +		mx25_tcq_re_enable_touch_detection(priv);
+> +
+> +	if (stat & MX25_ADCQ_SR_PD) {
+> +		mx25_tcq_disable_touch_irq(priv);
+> +		mx25_tcq_force_queue_start(priv);
+> +		mx25_tcq_enable_fifo_irq(priv);
+> +	}
+> +
+> +	if (stat & MX25_ADCQ_SR_FDRY) {
+> +		mx25_tcq_disable_fifo_irq(priv);
+> +		ret = IRQ_WAKE_THREAD;
+> +	}
+> +
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_SR, MX25_ADCQ_SR_FRR |
+> +			   MX25_ADCQ_SR_FUR | MX25_ADCQ_SR_FOR |
+> +			   MX25_ADCQ_SR_PD,
+> +			   MX25_ADCQ_SR_FRR | MX25_ADCQ_SR_FUR |
+> +			   MX25_ADCQ_SR_FOR | MX25_ADCQ_SR_PD);
+> +
+> +	return ret;
+> +}
+> +
+> +/* configure the state machine for a 4-wire touchscreen */
+> +static int mx25_tcq_init(struct mx25_tcq_priv *priv)
+> +{
+> +	u32 tgcr;
+> +	unsigned int ipg_div;
+> +	unsigned int adc_period;
+> +	unsigned int debounce_cnt;
+> +	unsigned int settling_cnt;
+> +	int itemct;
+> +	int error;
+> +
+> +	regmap_read(priv->core_regs, MX25_TSC_TGCR, &tgcr);
+> +	ipg_div = max_t(unsigned int, 4, MX25_TGCR_GET_ADCCLK(tgcr));
+> +	adc_period = USEC_PER_SEC * ipg_div * 2 + 2;
+> +	adc_period /= clk_get_rate(priv->clk) / 1000 + 1;
+> +	debounce_cnt = DIV_ROUND_UP(priv->pen_debounce, adc_period * 8) - 1;
+> +	settling_cnt = DIV_ROUND_UP(priv->settling_time, adc_period * 8) - 1;
+> +
+> +	/* Reset */
+> +	regmap_write(priv->regs, MX25_ADCQ_CR,
+> +		     MX25_ADCQ_CR_QRST | MX25_ADCQ_CR_FRST);
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
+> +			   MX25_ADCQ_CR_QRST | MX25_ADCQ_CR_FRST, 0);
+> +
+> +	/* up to 128 * 8 ADC clocks are possible */
+> +	if (debounce_cnt > 127)
+> +		debounce_cnt = 127;
+> +
+> +	/* up to 255 * 8 ADC clocks are possible */
+> +	if (settling_cnt > 255)
+> +		settling_cnt = 255;
+> +
+> +	error = imx25_setup_queue_4wire(priv, settling_cnt, &itemct);
+> +	if (error)
+> +		return error;
+> +
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
+> +			   MX25_ADCQ_CR_LITEMID_MASK | MX25_ADCQ_CR_WMRK_MASK,
+> +			   MX25_ADCQ_CR_LITEMID(itemct - 1) |
+> +			   MX25_ADCQ_CR_WMRK(priv->expected_samples - 1));
+> +
+> +	/* setup debounce count */
+> +	regmap_update_bits(priv->core_regs, MX25_TSC_TGCR,
+> +			   MX25_TGCR_PDBTIME_MASK,
+> +			   MX25_TGCR_PDBTIME(debounce_cnt));
+> +
+> +	/* enable debounce */
+> +	regmap_update_bits(priv->core_regs, MX25_TSC_TGCR, MX25_TGCR_PDBEN,
+> +			   MX25_TGCR_PDBEN);
+> +	regmap_update_bits(priv->core_regs, MX25_TSC_TGCR, MX25_TGCR_PDEN,
+> +			   MX25_TGCR_PDEN);
+> +
+> +	/* enable the engine on demand */
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_QSM_MASK,
+> +			   MX25_ADCQ_CR_QSM_FQS);
+> +
+> +	/* Enable repeat and repeat wait */
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
+> +			   MX25_ADCQ_CR_RPT | MX25_ADCQ_CR_RWAIT_MASK,
+> +			   MX25_ADCQ_CR_RPT |
+> +			   MX25_ADCQ_CR_RWAIT(MX25_TSC_REPEAT_WAIT));
+> +
+> +	return 0;
+> +}
+> +
+> +static int mx25_tcq_parse_dt(struct platform_device *pdev,
+> +			     struct mx25_tcq_priv *priv)
+> +{
+> +	struct device_node *np = pdev->dev.of_node;
+> +	u32 wires;
+> +	int error;
+> +
+> +	/* Setup defaults */
+> +	priv->pen_threshold = 500;
+> +	priv->sample_count = 3;
+> +	priv->pen_debounce = 1000000;
+> +	priv->settling_time = 250000;
+> +
+> +	error = of_property_read_u32(np, "fsl,wires", &wires);
+> +	if (error) {
+> +		dev_err(&pdev->dev, "Failed to find fsl,wires properties\n");
+> +		return error;
+> +	}
+> +
+> +	if (wires == 4) {
+> +		priv->mode = MX25_TS_4WIRE;
+> +	} else {
+> +		dev_err(&pdev->dev, "%u-wire mode not supported\n", wires);
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* These are optional, we don't care about the return values */
+> +	of_property_read_u32(np, "fsl,pen-threshold", &priv->pen_threshold);
+> +	of_property_read_u32(np, "fsl,settling-time-ns", &priv->settling_time);
+> +	of_property_read_u32(np, "fsl,pen-debounce-ns", &priv->pen_debounce);
+> +
+> +	return 0;
+> +}
+> +
+> +static int mx25_tcq_open(struct input_dev *idev)
+> +{
+> +	struct device *dev = &idev->dev;
+> +	struct mx25_tcq_priv *priv = dev_get_drvdata(dev);
+> +	int error;
+> +
+> +	error = clk_prepare_enable(priv->clk);
+> +	if (error) {
+> +		dev_err(dev, "Failed to enable ipg clock\n");
+> +		return error;
+> +	}
+> +
+> +	error = mx25_tcq_init(priv);
+> +	if (error) {
+> +		dev_err(dev, "Failed to init tcq\n");
+> +		clk_disable_unprepare(priv->clk);
+> +		return error;
+> +	}
+> +
+> +	mx25_tcq_re_enable_touch_detection(priv);
+> +
+> +	return 0;
+> +}
+> +
+> +static void mx25_tcq_close(struct input_dev *idev)
+> +{
+> +	struct mx25_tcq_priv *priv = input_get_drvdata(idev);
+> +
+> +	mx25_tcq_force_queue_stop(priv);
+> +	mx25_tcq_disable_touch_irq(priv);
+> +	mx25_tcq_disable_fifo_irq(priv);
+> +	clk_disable_unprepare(priv->clk);
+> +}
+> +
+> +static int mx25_tcq_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct input_dev *idev;
+> +	struct mx25_tcq_priv *priv;
+> +	struct mx25_tsadc *tsadc = dev_get_drvdata(pdev->dev.parent);
+> +	struct resource *res;
+> +	void __iomem *mem;
+> +	int error;
+> +
+> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +	priv->dev = dev;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	mem = devm_ioremap_resource(dev, res);
+> +	if (IS_ERR(mem))
+> +		return PTR_ERR(mem);
+> +
+> +	error = mx25_tcq_parse_dt(pdev, priv);
+> +	if (error)
+> +		return error;
+> +
+> +	priv->regs = devm_regmap_init_mmio(dev, mem, &mx25_tcq_regconfig);
+> +	if (IS_ERR(priv->regs)) {
+> +		dev_err(dev, "Failed to initialize regmap\n");
+> +		return PTR_ERR(priv->regs);
+> +	}
+> +
+> +	priv->irq = platform_get_irq(pdev, 0);
+> +	if (priv->irq <= 0) {
+> +		dev_err(dev, "Failed to get IRQ\n");
+> +		return priv->irq;
+> +	}
+> +
+> +	idev = devm_input_allocate_device(dev);
+> +	if (!idev) {
+> +		dev_err(dev, "Failed to allocate input device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	idev->name = mx25_tcq_name;
+> +	input_set_capability(idev, EV_KEY, BTN_TOUCH);
+> +	input_set_abs_params(idev, ABS_X, 0, 0xfff, 0, 0);
+> +	input_set_abs_params(idev, ABS_Y, 0, 0xfff, 0, 0);
+> +
+> +	idev->id.bustype = BUS_HOST;
+> +	idev->open = mx25_tcq_open;
+> +	idev->close = mx25_tcq_close;
+> +
+> +	priv->idev = idev;
+> +	input_set_drvdata(idev, priv);
+> +
+> +	priv->core_regs = tsadc->regs;
+> +	if (!priv->core_regs)
+> +		return -EINVAL;
+> +
+> +	priv->clk = tsadc->clk;
+> +	if (!priv->clk)
+> +		return -EINVAL;
+> +
+> +	platform_set_drvdata(pdev, priv);
+> +
+> +	error = devm_request_threaded_irq(dev, priv->irq, mx25_tcq_irq,
+> +					  mx25_tcq_irq_thread, 0, pdev->name,
+> +					  priv);
+> +	if (error) {
+> +		dev_err(dev, "Failed requesting IRQ\n");
+> +		return error;
+> +	}
+> +
+> +	error = input_register_device(idev);
+> +	if (error) {
+> +		dev_err(dev, "Failed to register input device\n");
+> +		return error;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver mx25_tcq_driver = {
+> +	.driver		= {
+> +		.name	= "mx25-tcq",
+> +		.of_match_table = mx25_tcq_ids,
+> +	},
+> +	.probe		= mx25_tcq_probe,
+> +};
+> +module_platform_driver(mx25_tcq_driver);
+> +
+> +MODULE_DESCRIPTION("TS input driver for Freescale mx25");
+> +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.6.2
+> 
+
+-- 
+Dmitry
