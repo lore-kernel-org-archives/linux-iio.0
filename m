@@ -1,52 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:59399 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754151AbbLTDjs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 19 Dec 2015 22:39:48 -0500
-Date: Sat, 19 Dec 2015 21:39:43 -0600
-From: Rob Herring <robh@kernel.org>
-To: Markus Pargmann <mpa@pengutronix.de>
-Cc: Shawn Guo <shawnguo@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Denis Carikli <denis@eukrea.com>,
-	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v10 3/8] ARM: dt: Binding documentation for imx25
- touchscreen controller
-Message-ID: <20151220033943.GO9883@rob-hp-laptop>
-References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
- <1450101234-2191-4-git-send-email-mpa@pengutronix.de>
+Received: from mail-lf0-f53.google.com ([209.85.215.53]:32988 "EHLO
+	mail-lf0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754262AbbLTLT2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Dec 2015 06:19:28 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1450101234-2191-4-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <5675865F.6050306@kernel.org>
+References: <1450272464-13992-1-git-send-email-ricardo.ribalda@gmail.com> <5675865F.6050306@kernel.org>
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Date: Sun, 20 Dec 2015 12:19:06 +0100
+Message-ID: <CAPybu_0mp339amnPqbOddMVJ9VRqw7cWLEscyWNi7TTOYbBZTQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: add ad5761 DAC driver
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Dec 14, 2015 at 02:53:49PM +0100, Markus Pargmann wrote:
-> This is the touchscreen conversion queue binding documentation. It uses
-> the shared imx25 ADC.
-> 
-> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> ---
-> 
-> Notes:
->     Changes in v9:
->      - Updated binding descriptions
->     
->     Changes in v5:
->      - Fix signed/unsigned comparison
->      - Fix unused variable settling_time by putting it in the correct argument list
->      - Use continous conversion queue with the repeat feature and a proper
->        repeat-wait. Previously the touchscreen caused massive number of interrupts.
-> 
->  .../bindings/input/touchscreen/fsl-mx25-tcq.txt    | 35 ++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
+Hello Jonthan
 
-Acked-by: Rob Herring <robh@kernel.org>
+Thanks for your comments, I have fixed all the style problems in v2,
+so we can focus in the range parameter.
+
+On Sat, Dec 19, 2015 at 5:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> Range isn't actually specified in the ABI docs.
+> Documenation\ABI\testing\sysfs-bus-iio*
+> The control interface for this is normally scale rather than range
+> (we had to pick one of the two and that is the way it fell out)  Usually
+> hardware designers care about range, but userspace programs are often
+> most directly interested in scale factors that need to be applied.
+> (and that was my most rediculously over generalized statement for the day ;)
+
+What about a first version of the driver where the range is set via
+pdata and is not userland configurable?
+That way the four chips will be supported and we can have more
+feedback from other users about the range issue.
+
+>
+> I can see this is rather complex here given the random looking collection
+> of associated scales and offsets.  You would have to have _available
+> attributes to say what offsets are available at a given scale I think.
+> Also we'd have to then define a precedence order in the docs for the
+> two attributes (worth doing to make it obvious what to do when this
+> sort of setup arises).
+
+The problem with that approach is that there will be two operations to
+set the range: one  to change the scale, and another for the offset.  The output
+voltage will change twice in this process and may have an intermediate value
+that can damage a circuit.
+
+I also believe that my approach with a text description is more user friendly
+(but problably because I programmed it :P)
+
+In any case, I will implement whatever we agree ;)
+
+Best regards!
