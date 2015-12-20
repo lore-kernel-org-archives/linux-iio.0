@@ -1,572 +1,543 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:36958 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S964791AbbLSRGf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 19 Dec 2015 12:06:35 -0500
-Date: Sat, 19 Dec 2015 18:06:32 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: add ad5761 DAC driver
-In-Reply-To: <1450272464-13992-1-git-send-email-ricardo.ribalda@gmail.com>
-Message-ID: <alpine.DEB.2.02.1512191736230.3182@pmeerw.net>
-References: <1450272464-13992-1-git-send-email-ricardo.ribalda@gmail.com>
+Return-Path: <mranostay@gmail.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <567587C2.8050806@kernel.org>
+References: <1450171574-3283-1-git-send-email-mranostay@gmail.com>
+ <1450171574-3283-4-git-send-email-mranostay@gmail.com> <567587C2.8050806@kernel.org>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Sat, 19 Dec 2015 16:40:55 -0800
+Message-ID: <CAKzfze9ztY5a4-A34aO39RX7mtZ8HYtv0553kzeMFQVSQp0D3Q@mail.gmail.com>
+Subject: Re: [RFC v2 3/3] iio: chemical: add Atlas pH-SM sensor support
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
+Ok will fix these minor formatting issues. Will submit version 3 when
+the actual hardware is tested after the holidays.
 
-> ad5761 is a 1-channel DAC with configurable output range.
-> The driver uses the regulator interface for its voltage ref.
-
-some nitpicking below
-
-> It shares its register layout with ad5761r, ad5721 and ad5721r.
-> 
-> Differences:
-> ad5761* are 16 bit, ad5721* are 12 bits.
-> ad57*1r have an internal reference.
-> 
-> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-> ---
->  CREDITS                  |   1 +
->  drivers/iio/dac/Kconfig  |  10 ++
->  drivers/iio/dac/Makefile |   1 +
->  drivers/iio/dac/ad5761.c | 425 +++++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 437 insertions(+)
->  create mode 100644 drivers/iio/dac/ad5761.c
-> 
-> diff --git a/CREDITS b/CREDITS
-> index 8207cc62ee9d..44ea433d70a1 100644
-> --- a/CREDITS
-> +++ b/CREDITS
-> @@ -3035,6 +3035,7 @@ D: PLX USB338x driver
->  D: PCA9634 driver
->  D: Option GTM671WFS
->  D: Fintek F81216A
-> +D: AD5761 iio driver
->  D: Various kernel hacks
->  S: Qtechnology A/S
->  S: Valby Langgade 142
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index e701e28fb1cd..4caedd671360 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -111,6 +111,16 @@ config AD5755
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad5755.
->  
-> +config AD5761
-> +	tristate "Analog Devices AD5761/61R/21/21R DAC driver"
-> +	depends on SPI_MASTER
-> +	help
-> +	  Say yes here to build support for Analog Devices AD5761, AD5761R, AD5721,
-> +	  AD5721R Digital to Analog Converter.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ad5761.
-> +
->  config AD5764
->  	tristate "Analog Devices AD5764/64R/44/44R DAC driver"
->  	depends on SPI_MASTER
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index 63ae05633e0c..cb525b53fc7b 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -12,6 +12,7 @@ obj-$(CONFIG_AD5504) += ad5504.o
->  obj-$(CONFIG_AD5446) += ad5446.o
->  obj-$(CONFIG_AD5449) += ad5449.o
->  obj-$(CONFIG_AD5755) += ad5755.o
-> +obj-$(CONFIG_AD5761) += ad5761.o
->  obj-$(CONFIG_AD5764) += ad5764.o
->  obj-$(CONFIG_AD5791) += ad5791.o
->  obj-$(CONFIG_AD5686) += ad5686.o
-> diff --git a/drivers/iio/dac/ad5761.c b/drivers/iio/dac/ad5761.c
-> new file mode 100644
-> index 000000000000..b4eac59ef81f
-> --- /dev/null
-> +++ b/drivers/iio/dac/ad5761.c
-> @@ -0,0 +1,425 @@
-> +/*
-> + * AD5721, AD5721R, AD5761, AD5761R, Voltage Output Digital to Analog Converter
-> + *
-> + * Copyright 2015 Qtechnology A/S
-> + *
-> + * Licensed under the GPL-2.
-> + */
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/bitops.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/regulator/consumer.h>
-> +
-> +#define AD5761_ADDR(addr)		((addr&0xf) << 16)
-
-maybe add whitespace around &
-
-> +#define AD5761_ADDR_NOOP		0x0
-> +#define AD5761_ADDR_DAC_WRITE		0x3
-> +#define AD5761_ADDR_CTRL_WRITE_REG	0x4
-> +#define AD5761_ADDR_SW_DATA_RESET	0x7
-> +#define AD5761_ADDR_DAC_READ		0xb
-> +#define AD5761_ADDR_CTRL_READ_REG	0xc
-> +#define AD5761_ADDR_SW_FULL_RESET	0xf
-> +
-> +#define AD5761_CTRL_USE_INTVREF		BIT(5)
-> +#define AD5761_CTRL_ETS			BIT(6)
-> +
-> +/**
-> + * struct ad5761_chip_info - chip specific information
-> + * @int_vref:	Value of the internal reference voltage in mV - 0 if external
-> + *		reference voltage is used
-> + * @channel	channel specification
-
-@channel:
-
-> +*/
-> +
-> +struct ad5761_chip_info {
-> +	unsigned long int_vref;
-> +	const struct iio_chan_spec channel;
-> +};
-> +
-> +struct ad5761_range_params {
-> +	int m;
-> +	int c;
-> +};
-> +
-> +/**
-> + * ad5761_supported_device_ids:
-> + */
-> +
-> +enum ad5761_supported_device_ids {
-> +	ID_AD5721,
-> +	ID_AD5721R,
-> +	ID_AD5761,
-> +	ID_AD5761R,
-> +};
-> +
-> +/**
-> + * struct ad5761_state - driver instance specific data
-> + * @spi:		spi_device
-> + * @chip_info:		chip model specific constants
-> + * @vref_mv:		actual reference voltage used
-
-there is no chip_info and no vref_mv in ad5761_state
-
-vref_reg, use_intref, vref, range, data exist but have no explanation
-
-> + */
-> +struct ad5761_state {
-> +	struct spi_device		*spi;
-> +	struct regulator		*vref_reg;
-> +
-> +	bool use_intref;
-> +	int vref;
-> +	int range;
-> +
-> +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
-> +	 */
-> +	union {
-> +		__be32 d32;
-> +		u8 d8[4];
-> +	} data[3] ____cacheline_aligned;
-> +};
-> +
-> +enum ad5761_range_ids {
-> +	MODE_M10V_10V,
-> +	MODE_0V_10V,
-> +	MODE_M5V_5V,
-> +	MODE_0V_5V,
-> +	MODE_M2V5_7V5,
-> +	MODE_M3V_3V,
-> +	MODE_0V_16V,
-> +	MODE_0V_20V,
-> +};
-> +
-> +static const struct ad5761_range_params ad5761_range_params[] = {
-> +	[MODE_M10V_10V] = {
-> +		.m = 80,
-> +		.c = 40,
-> +	},
-> +	[MODE_0V_10V] = {
-> +		.m = 40,
-> +		.c = 0,
-> +	},
-> +	[MODE_M5V_5V] = {
-> +		.m = 40,
-> +		.c = 20,
-> +	},
-> +	[MODE_0V_5V] = {
-> +		.m = 20,
-> +		.c = 0,
-> +	},
-> +	[MODE_M2V5_7V5] = {
-> +		.m = 40,
-> +		.c = 10,
-> +	},
-> +	[MODE_M3V_3V] = {
-> +		.m = 24,
-> +		.c = 12,
-> +	},
-> +	[MODE_0V_16V] = {
-> +		.m = 64,
-> +		.c = 0,
-> +	},
-> +	[MODE_0V_20V] = {
-> +		.m = 80,
-> +		.c = 0,
-> +	},
-> +};
-> +
-> +static const char * const ad5761_ranges[] = {
-> +	[MODE_M10V_10V] = "-10V_10V",
-> +	[MODE_0V_10V] = "0V_10V",
-> +	[MODE_M5V_5V] = "-5V_5V",
-> +	[MODE_0V_5V] = "0V_5V",
-> +	[MODE_M2V5_7V5] = "-2V5_7V5",
-> +	[MODE_M3V_3V] = "-3V_3V",
-> +	[MODE_0V_16V] = "0V_16V",
-> +	[MODE_0V_20V] = "0V_20V",
-> +};
-> +
-> +static int ad5761_spi_write(struct ad5761_state *st, u8 addr, u16 val)
-> +{
-> +	st->data[0].d32 = cpu_to_be32(AD5761_ADDR(addr) | val);
-> +
-> +	return spi_write(st->spi, &st->data[0].d8[1], 3);
-> +}
-> +
-> +static int ad5761_spi_read(struct ad5761_state *st, u8 addr, u16 *val)
-> +{
-> +	int ret;
-> +	struct spi_transfer xfers[] = {
-> +		{
-> +			.tx_buf = &st->data[0].d8[1],
-> +			.bits_per_word = 8,
-> +			.len = 3,
-> +			.cs_change = true,
-> +		}, {
-> +			.tx_buf = &st->data[1].d8[1],
-> +			.rx_buf = &st->data[2].d8[1],
-> +			.bits_per_word = 8,
-> +			.len = 3,
-> +		},
-> +	};
-> +
-> +	st->data[0].d32 = cpu_to_be32(AD5761_ADDR(addr));
-> +	st->data[1].d32 = cpu_to_be32(AD5761_ADDR(AD5761_ADDR_NOOP));
-> +
-> +	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
-> +
-> +	*val = be32_to_cpu(st->data[2].d32);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ad5761_spi_set_range(struct ad5761_state *st, int range)
-> +{
-> +	u16 aux;
-> +	int ret;
-> +
-> +	aux = range;
-> +	aux |= AD5761_CTRL_ETS;
-> +	if (st->use_intref)
-> +		aux |= AD5761_CTRL_USE_INTVREF;
-> +	ret = ad5761_spi_write(st, AD5761_ADDR_CTRL_WRITE_REG, aux);
-> +	if (ret)
-> +		return ret;
-> +	ret = ad5761_spi_write(st, AD5761_ADDR_SW_DATA_RESET, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->range = range;
-> +	return 0;
-> +}
-> +
-> +static int ad5761_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val,
-> +			   int *val2,
-> +			   long m)
-
-often 'mask' is used instead of m
-
-> +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +	u16 aux;
-> +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = ad5761_spi_read(st, AD5761_ADDR_DAC_READ, &aux);
-> +		if (ret)
-> +			return ret;
-> +		*val = aux >> chan->scan_type.shift;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = st->vref * ad5761_range_params[st->range].m;
-> +		*val /= 10;
-> +		*val2 = chan->scan_type.realbits;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		*val = -(1<<chan->scan_type.realbits);
-
-whitespace around <<
-
-> +		*val *=	ad5761_range_params[st->range].c;
-> +		*val /=	ad5761_range_params[st->range].m;
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-
-delete newline
-
-> +}
-> +
-> +static int ad5761_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val,
-> +			    int val2,
-> +			    long mask)
-> +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
-> +	u16 aux;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		aux =  val << chan->scan_type.shift;
-
-delete extra space before val
-
-> +		return ad5761_spi_write(st, AD5761_ADDR_DAC_WRITE, aux);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ad5761_set_range(struct iio_dev *indio_dev,
-> +	const struct iio_chan_spec *chan, unsigned int range)
-> +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
-> +
-> +	return ad5761_spi_set_range(st, range);
-> +}
-> +
-> +static int ad5761_get_range(struct iio_dev *indio_dev,
-> +	const struct iio_chan_spec *chan)
-> +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
-> +	u16 aux;
-> +	int ret;
-> +
-> +	ret = ad5761_spi_read(st, AD5761_ADDR_CTRL_READ_REG, &aux);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return aux & 0x7;
-> +}
-> +
-> +static const struct iio_info ad5761_info = {
-> +	.read_raw = &ad5761_read_raw,
-> +	.write_raw = &ad5761_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static const struct iio_enum ad5761_range_enum = {
-> +	.items = ad5761_ranges,
-> +	.num_items = ARRAY_SIZE(ad5761_ranges),
-> +	.get = ad5761_get_range,
-> +	.set = ad5761_set_range,
-> +};
-> +
-> +static struct iio_chan_spec_ext_info ad5761_ext_info[] = {
-> +	IIO_ENUM("range", IIO_SHARED_BY_TYPE,
-> +		 &ad5761_range_enum),
-> +	IIO_ENUM_AVAILABLE("range", &ad5761_range_enum),
-> +	{ },
-> +};
-> +
-> +#define AD5761_CHAN(_bits) {				\
-> +	.type = IIO_VOLTAGE,				\
-> +	.output = 1,					\
-> +	.indexed = 1,					\
-
-since there is only one channel, .indexed could be 0 (or not set)
-
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> +		BIT(IIO_CHAN_INFO_OFFSET),		\
-> +	.scan_type = {					\
-
-the driver does not support buffered mode, not sure if scan_type should be 
-used to store the number of bits; I think it would be cleaner to put this 
-in chip_info
-
-> +		.sign = 'u',				\
-> +		.realbits = (_bits),			\
-> +		.storagebits = 16,			\
-> +		.shift = 16 - (_bits),			\
-> +	},						\
-> +	.ext_info = ad5761_ext_info,			\
-> +}
-> +
-> +static const struct ad5761_chip_info ad5761_chip_infos[] = {
-> +	[ID_AD5721] = {
-> +		.int_vref = 0,
-> +		.channel = AD5761_CHAN(12),
-> +	},
-> +	[ID_AD5721R] = {
-> +		.int_vref = 2500,
-> +		.channel = AD5761_CHAN(12),
-> +	},
-> +	[ID_AD5761] = {
-> +		.int_vref = 0,
-> +		.channel = AD5761_CHAN(16),
-> +	},
-> +	[ID_AD5761R] = {
-> +		.int_vref = 2500,
-> +		.channel = AD5761_CHAN(16),
-> +	},
-> +};
-> +
-> +static void ad5761_get_vref(struct ad5761_state *st)
-> +{
-> +	int ret;
-> +
-
-delete extra newline
-
-> +
-> +	st->vref_reg = devm_regulator_get(&st->spi->dev, "vref");
-> +	if (IS_ERR(st->vref_reg))
-> +		return;
-> +
-> +	ret = regulator_enable(st->vref_reg);
-> +	if (ret) {
-> +		dev_warn(&st->spi->dev, "Failed to enable vref. Using internal");
-
-put \n at the end of the message (here and elsewhere)
-
-> +		return;
-> +	}
-> +
-> +	ret = regulator_get_voltage(st->vref_reg);
-> +	if (ret < 0) {
-> +		regulator_disable(st->vref_reg);
-> +		dev_warn(&st->spi->dev,
-> +			 "Failed to get vref value. Using internal");
-> +		return;
-> +	}
-> +
-> +	if (ret < 2000000 || ret > 3000000) {
-> +		regulator_disable(st->vref_reg);
-> +		dev_warn(&st->spi->dev,
-> +				"Invalid external vref value. Using internal");
-> +		return;
-> +	}
-> +
-> +	st->vref = ret / 1000;
-> +	st->use_intref = false;
-> +}
-> +
-> +static int ad5761_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *iio_dev;
-> +	struct ad5761_state *st;
-> +	int ret;
-> +	const struct ad5761_chip_info *chip_info =
-> +		&ad5761_chip_infos[spi_get_device_id(spi)->driver_data];
-> +
-> +	iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!iio_dev)
-> +		return -ENOMEM;
-> +	st = iio_priv(iio_dev);
-> +
-> +	st->spi = spi;
-> +	spi_set_drvdata(spi, iio_dev);
-> +
-> +	st->use_intref = true;
-> +	st->vref = chip_info->int_vref;
-> +	ad5761_get_vref(st);
-
-this is ugly, I'd prefer to return something from _get_vref() instead of 
-first setting a could of variable and then checking a couple of variables
-
-> +	if (st->use_intref && !chip_info->int_vref) {
-> +		dev_err(&spi->dev, "Missing vref, cannot continue");
-> +		return -EIO;
-> +	}
-> +
-> +	ad5761_spi_set_range(st, MODE_0V_5V);
-
-this can fail, retval not checked
-
-> +
-> +	iio_dev->dev.parent = &spi->dev;
-> +	iio_dev->info = &ad5761_info;
-> +	iio_dev->modes = INDIO_DIRECT_MODE;
-> +	iio_dev->channels = &chip_info->channel;
-> +	iio_dev->num_channels = 1;
-> +	iio_dev->name = spi_get_device_id(st->spi)->name;
-> +	ret = iio_device_register(iio_dev);
-> +	if (ret && !IS_ERR(st->vref_reg))
-> +		regulator_disable(st->vref_reg);
-
-maybe vref_reg is disabled twice, here and in get_vref()
-
-> +
-> +	return ret;
-> +}
-> +
-> +static int ad5761_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *iio_dev = spi_get_drvdata(spi);
-> +	struct ad5761_state *st = iio_priv(iio_dev);
-> +
-> +	if (!IS_ERR(st->vref_reg))
-> +		regulator_disable(st->vref_reg);
-> +	iio_device_unregister(iio_dev);
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id ad5761_id[] = {
-> +	{"ad5721", ID_AD5721},
-> +	{"ad5721r", ID_AD5721R},
-> +	{"ad5761", ID_AD5761},
-> +	{"ad5761r", ID_AD5761R},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, ad5761_id);
-> +
-> +static struct spi_driver ad5761_driver = {
-> +	.driver = {
-> +		   .name = "ad5761",
-> +		   .owner = THIS_MODULE,
-> +		   },
-> +	.probe = ad5761_probe,
-> +	.remove = ad5761_remove,
-> +	.id_table = ad5761_id,
-> +};
-> +module_spi_driver(ad5761_driver);
-> +
-> +MODULE_AUTHOR("Ricardo Ribalda <ricardo.ribalda@gmail.com>");
-> +MODULE_DESCRIPTION("Analog Devices AD5721, AD5721R, AD5761, AD5761R driver");
-> +MODULE_LICENSE("GPL v2");
-> 
-
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+On Sat, Dec 19, 2015 at 8:37 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 15/12/15 09:26, Matt Ranostay wrote:
+>> Add support for the Atlas Scientific pH-SM chemical sensor that can
+>> detect pH levels of solutions in the range of 0-14.
+>>
+>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> Some totally nit picky bits inline..  (what can I say I was
+> reading it and didn't find anything else wrong :)
+>
+> If you hadn't been respinning anyway I'd just have fixed them
+> up whilst applying.
+>
+> Jonathan
+>> ---
+>>  .../bindings/iio/chemical/atlas,ph-sm.txt          |  22 ++
+>>  drivers/iio/chemical/Kconfig                       |  13 +
+>>  drivers/iio/chemical/Makefile                      |   1 +
+>>  drivers/iio/chemical/atlas-ph-sensor.c             | 431 +++++++++++++++++++++
+>>  4 files changed, 467 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+>>  create mode 100644 drivers/iio/chemical/atlas-ph-sensor.c
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+>> new file mode 100644
+>> index 0000000..cffa190
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+>> @@ -0,0 +1,22 @@
+>> +* Atlas Scientific pH-SM OEM sensor
+>> +
+>> +http://www.atlas-scientific.com/_files/_datasheets/_oem/pH_oem_datasheet.pdf
+>> +
+>> +Required properties:
+>> +
+>> +  - compatible: must be "atlas,ph-sm"
+>> +  - reg: the I2C address of the sensor
+>> +  - interrupt-parent: should be the phandle for the interrupt controller
+>> +  - interrupts: the sole interrupt generated by the device
+>> +
+>> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+>> +  node bindings.
+>> +
+>> +Example:
+>> +
+>> +atlas@65 {
+>> +     compatible = "atlas,ph-sm";
+>> +     reg = <0x65>;
+>> +     interrupt-parent = <&gpio1>;
+>> +     interrupts = <16 2>;
+>> +};
+>> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+>> index 3061b72..a358e4b 100644
+>> --- a/drivers/iio/chemical/Kconfig
+>> +++ b/drivers/iio/chemical/Kconfig
+>> @@ -4,6 +4,19 @@
+>>
+>>  menu "Chemical Sensors"
+>>
+>> +config ATLAS_PH_SENSOR
+>> +     tristate "Atlas Scientific OEM pH-SM sensor"
+>> +     depends on I2C
+>> +     select REGMAP_I2C
+>> +     select IIO_BUFFER
+>> +     select IIO_TRIGGERED_BUFFER
+>> +     help
+>> +      Say Y here to build I2C interface support for the Atlas
+>> +      Scientific OEM pH-SM sensor.
+>> +
+>> +      To compile this driver as module, choose M here: the
+>> +      module will be called atlas-ph-sensor.
+>> +
+>>  config VZ89X
+>>       tristate "SGX Sensortech MiCS VZ89X VOC sensor"
+>>       depends on I2C
+>> diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
+>> index 7292f2d..e9eb852 100644
+>> --- a/drivers/iio/chemical/Makefile
+>> +++ b/drivers/iio/chemical/Makefile
+>> @@ -3,4 +3,5 @@
+>>  #
+>>
+>>  # When adding new entries keep the list in alphabetical order
+>> +obj-$(CONFIG_ATLAS_PH_SENSOR)        += atlas-ph-sensor.o
+>>  obj-$(CONFIG_VZ89X)          += vz89x.o
+>> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+>> new file mode 100644
+>> index 0000000..63da26b
+>> --- /dev/null
+>> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+>> @@ -0,0 +1,431 @@
+>> +/*
+>> + * atlas-ph-sensor.c - Support for Atlas Scientific OEM pH-SM sensor
+>> + *
+>> + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License as published by
+>> + * the Free Software Foundation; either version 2 of the License, or
+>> + * (at your option) any later version.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+>> + * GNU General Public License for more details.
+>> + *
+> No need for a blank line here.
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/init.h>
+>> +#include <linux/interrupt.h>
+>> +#include <linux/delay.h>
+>> +#include <linux/mutex.h>
+>> +#include <linux/err.h>
+>> +#include <linux/irq.h>
+>> +#include <linux/gpio.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/regmap.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/trigger.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>> +#include <linux/iio/triggered_buffer.h>
+>> +#include <linux/pm_runtime.h>
+>> +
+>> +#define ATLAS_REGMAP_NAME    "atlas_ph_regmap"
+>> +#define ATLAS_DRV_NAME               "atlas_ph"
+>> +
+>> +#define ATLAS_REG_DEV_TYPE           0x00
+>> +#define ATLAS_REG_DEV_VERSION                0x01
+>> +
+>> +#define ATLAS_REG_INT_CONTROL                0x04
+>> +#define ATLAS_REG_INT_CONTROL_EN     BIT(2)
+>> +
+>> +#define ATLAS_REG_PWR_CONTROL                0x06
+>> +
+>> +#define ATLAS_REG_TEMP_DATA          0x0e
+>> +#define ATLAS_REG_PH_DATA            0x16
+>> +
+>> +#define ATLAS_PH_INT_TIME_IN_US              450000
+>> +
+>> +struct atlas_data {
+>> +     struct i2c_client *client;
+>> +     struct iio_trigger *trig;
+>> +     struct regmap *regmap;
+>> +
+>> +     __be32 buffer[4]; /* 32-bit pH data + 32-bit pad + 64-bit timestamp */
+>> +};
+>> +
+>> +static bool atlas_is_volatile_reg(struct device *dev, unsigned int reg)
+>> +{
+>> +     if (reg == ATLAS_REG_INT_CONTROL)
+>> +             return true;
+>> +
+>> +     return false;
+>> +}
+>> +
+>> +static const struct regmap_config atlas_regmap_config = {
+>> +     .name = ATLAS_REGMAP_NAME,
+>> +
+>> +     .reg_bits = 8,
+>> +     .val_bits = 8,
+>> +
+>> +     .volatile_reg = atlas_is_volatile_reg,
+>> +     .max_register = ATLAS_REG_PH_DATA + 4,
+>> +     .cache_type = REGCACHE_FLAT,
+>> +
+>> +};
+>> +
+>> +static const struct iio_chan_spec atlas_channels[] = {
+>> +     {
+>> +             .type = IIO_PH,
+>> +             .info_mask_separate =
+>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>> +             .scan_index = 0,
+>> +             .scan_type = {
+>> +                     .sign = 'u',
+>> +                     .realbits = 32,
+>> +                     .storagebits = 32,
+>> +                     .endianness = IIO_BE,
+>> +             },
+>> +     },
+>> +     {
+>> +             .type = IIO_TEMP,
+>> +             .address = ATLAS_REG_TEMP_DATA,
+>> +             .info_mask_separate =
+>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>> +             .output = 1,
+>> +             .scan_index = -1
+>> +     },
+>> +};
+>> +
+>> +static int atlas_set_powermode(struct atlas_data *data, int on)
+>> +{
+>> +     return regmap_write(data->regmap, ATLAS_REG_PWR_CONTROL, on);
+>> +}
+>> +
+>> +static int atlas_set_interrupt(struct atlas_data *data, bool state)
+>> +{
+>> +     return regmap_update_bits(data->regmap, ATLAS_REG_INT_CONTROL,
+>> +                               ATLAS_REG_INT_CONTROL_EN,
+>> +                               state ? ATLAS_REG_INT_CONTROL_EN : 0);
+>> +}
+>> +
+>> +static int atlas_buffer_postenable(struct iio_dev *indio_dev)
+>> +{
+>> +     struct atlas_data *data = iio_priv(indio_dev);
+>> +
+>> +     pm_runtime_get_sync(&data->client->dev);
+>> +
+>> +     return atlas_set_interrupt(data, true);
+>> +}
+>> +
+>> +static int atlas_buffer_predisable(struct iio_dev *indio_dev)
+>> +{
+>> +     struct atlas_data *data = iio_priv(indio_dev);
+>> +     int ret;
+>> +
+>> +     ret = atlas_set_interrupt(data, false);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     pm_runtime_mark_last_busy(&data->client->dev);
+>> +     return pm_runtime_put_autosuspend(&data->client->dev);
+>> +}
+>> +
+>> +static const struct iio_trigger_ops atlas_interrupt_trigger_ops = {
+>> +     .owner = THIS_MODULE,
+>> +};
+>> +
+>> +static const struct iio_buffer_setup_ops atlas_buffer_setup_ops = {
+>> +     .postenable = atlas_buffer_postenable,
+>> +     .predisable = atlas_buffer_predisable,
+>> +};
+>> +
+>> +static irqreturn_t atlas_trigger_handler(int irq, void *private)
+>> +{
+>> +     struct iio_dev *indio_dev = private;
+>> +     struct atlas_data *data = iio_priv(indio_dev);
+>> +     int ret;
+>> +
+>> +     ret = i2c_smbus_read_i2c_block_data(data->client, ATLAS_REG_PH_DATA,
+>> +                             sizeof(data->buffer[0]), (u8 *) &data->buffer);
+>> +
+>> +     if (ret > 0)
+>> +             iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+>> +                             iio_get_time_ns());
+>> +
+>> +     iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +     return IRQ_HANDLED;
+>> +}
+>> +
+>> +static irqreturn_t atlas_interrupt_handler(int irq, void *private)
+>> +{
+>> +     struct iio_dev *indio_dev = private;
+>> +     struct atlas_data *data = iio_priv(indio_dev);
+>> +
+>> +     /* re-enable interrupt */
+>> +     atlas_set_interrupt(data, true);
+>> +
+>> +     return IRQ_HANDLED;
+>> +}
+>> +
+>> +static int atlas_read_ph_measurement(struct atlas_data *data, __be32 *val)
+>> +{
+>> +     struct device *dev = &data->client->dev;
+>> +     int suspended = pm_runtime_suspended(dev);
+>> +     int ret;
+>> +
+>> +     ret = pm_runtime_get_sync(dev);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     if (suspended)
+>> +             usleep_range(ATLAS_PH_INT_TIME_IN_US,
+>> +                          ATLAS_PH_INT_TIME_IN_US + 100000);
+>> +
+>> +     ret = i2c_smbus_read_i2c_block_data(data->client, ATLAS_REG_PH_DATA,
+>> +                                         sizeof(*val), (u8 *) val);
+>> +
+>> +     pm_runtime_mark_last_busy(dev);
+>> +     pm_runtime_put_autosuspend(dev);
+>> +
+>> +     return ret == sizeof(*val) ? 0 : -EINVAL;
+>> +}
+>> +
+>> +static int atlas_read_raw(struct iio_dev *indio_dev,
+>> +                       struct iio_chan_spec const *chan,
+>> +                       int *val, int *val2, long mask)
+>> +{
+>> +     struct atlas_data *data = iio_priv(indio_dev);
+>> +
+>> +     switch (mask) {
+>> +     case IIO_CHAN_INFO_RAW: {
+>> +             int ret;
+>> +             __be32 reg;
+>> +
+>> +             mutex_lock(&indio_dev->mlock);
+>> +
+>> +             if (iio_buffer_enabled(indio_dev)) {
+>> +                     ret = -EBUSY;
+>> +                     goto error_busy;
+>> +             }
+>> +
+>> +             switch (chan->type) {
+>> +             case IIO_TEMP:
+>> +                     ret = regmap_bulk_read(data->regmap, chan->address,
+>> +                                           (u8 *) &reg, sizeof(reg));
+>> +                     break;
+>> +             case IIO_PH:
+>> +                     ret = atlas_read_ph_measurement(data, &reg);
+>> +                     break;
+>> +             default:
+>> +                     ret = -EINVAL;
+>> +             }
+>> +
+>> +             if (!ret) {
+>> +                     *val = be32_to_cpu(reg);
+>> +                     ret = IIO_VAL_INT;
+>> +             }
+>> +error_busy:
+>> +             mutex_unlock(&indio_dev->mlock);
+>> +             return ret;
+>> +     }
+>> +     case IIO_CHAN_INFO_SCALE:
+>> +             *val = 0; /* 0.001 */
+>> +             *val2 = 1000;
+>> +             return IIO_VAL_INT_PLUS_MICRO;
+>> +     }
+>> +
+>> +     return -EINVAL;
+>> +}
+>> +
+>> +static int atlas_write_raw(struct iio_dev *indio_dev,
+>> +                        struct iio_chan_spec const *chan,
+>> +                        int val, int val2, long mask)
+>> +{
+>> +     struct atlas_data *data = iio_priv(indio_dev);
+>> +     __be32 reg = cpu_to_be32(val);
+>> +
+>> +     if (val2 != 0)
+>> +             return -EINVAL;
+>> +
+>> +     if (mask != IIO_CHAN_INFO_RAW || chan->type != IIO_TEMP)
+>> +             return -EINVAL;
+>> +
+>> +     return regmap_bulk_write(data->regmap, chan->address, &reg, 4);
+>> +}
+>> +
+>> +static const struct iio_info atlas_info = {
+>> +     .driver_module = THIS_MODULE,
+>> +     .read_raw = atlas_read_raw,
+>> +     .write_raw = atlas_write_raw,
+>> +};
+>> +
+>> +static int atlas_probe(struct i2c_client *client,
+>> +                    const struct i2c_device_id *id)
+>> +{
+>> +     struct atlas_data *data;
+>> +     struct iio_trigger *trig;
+>> +     struct iio_dev *indio_dev;
+>> +     int ret;
+>> +
+>> +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> +     if (!indio_dev)
+>> +             return -ENOMEM;
+>> +
+>> +     indio_dev->info = &atlas_info;
+>> +     indio_dev->name = ATLAS_DRV_NAME;
+>> +     indio_dev->channels = atlas_channels;
+>> +     indio_dev->modes = INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE;
+>> +     indio_dev->setup_ops = &atlas_buffer_setup_ops;
+>> +     indio_dev->dev.parent = &client->dev;
+>> +
+>> +     trig = devm_iio_trigger_alloc(&client->dev, "%s-dev%d",
+>> +                                   indio_dev->name, indio_dev->id);
+>> +
+>> +     if (!trig)
+>> +             return -ENOMEM;
+>> +
+>> +     data = iio_priv(indio_dev);
+>> +     data->client = client;
+>> +     data->trig = trig;
+>> +     trig->dev.parent = indio_dev->dev.parent;
+>> +     trig->ops = &atlas_interrupt_trigger_ops;
+>> +     iio_trigger_set_drvdata(trig, indio_dev);
+>> +
+>> +     i2c_set_clientdata(client, indio_dev);
+>> +
+>> +     data->regmap = devm_regmap_init_i2c(client, &atlas_regmap_config);
+>> +     if (IS_ERR(data->regmap)) {
+>> +             dev_err(&client->dev, "regmap initialization failed\n");
+>> +             return PTR_ERR(data->regmap);
+>> +     }
+>> +
+>> +     ret = pm_runtime_set_active(&client->dev);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     if (client->irq <= 0) {
+>> +             dev_err(&client->dev, "no valid irq defined\n");
+>> +             return -EINVAL;
+>> +     }
+>> +
+>> +     ret = iio_trigger_register(trig);
+>> +     if (ret) {
+>> +             dev_err(&client->dev, "failed to register trigger\n");
+>> +             return ret;
+>> +     }
+>> +
+>> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>> +             &atlas_trigger_handler, NULL);
+> Getting really fussy, but this blank line is I think inconsistent
+> with how you have spacing in the rest of this file!
+>> +
+>> +     if (ret) {
+>> +             dev_err(&client->dev, "cannot setup iio trigger\n");
+>> +             goto unregister_trigger;
+>> +     }
+>> +
+>> +     ret = devm_request_threaded_irq(&client->dev, client->irq,
+>> +                                     NULL, atlas_interrupt_handler,
+>> +                                     IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>> +                                     "atlas_irq",
+>> +                                     indio_dev);
+>> +     if (ret) {
+>> +             dev_err(&client->dev, "request irq (%d) failed\n", client->irq);
+>> +             goto unregister_buffer;
+>> +     }
+>> +
+>> +     ret = atlas_set_powermode(data, 1);
+>> +     if (ret) {
+>> +             dev_err(&client->dev, "cannot power device on");
+>> +             goto unregister_buffer;
+>> +     }
+>> +
+>> +     pm_runtime_enable(&client->dev);
+>> +     pm_runtime_set_autosuspend_delay(&client->dev, 2500);
+>> +     pm_runtime_use_autosuspend(&client->dev);
+>> +
+>> +     ret = iio_device_register(indio_dev);
+>> +     if (ret) {
+>> +             dev_err(&client->dev, "unable to register device\n");
+>> +             goto unregister_buffer;
+>> +     }
+>> +
+>> +     return 0;
+>> +
+>> +unregister_buffer:
+>> +     iio_triggered_buffer_cleanup(indio_dev);
+>> +
+>> +unregister_trigger:
+>> +     iio_trigger_unregister(data->trig);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static int atlas_remove(struct i2c_client *client)
+>> +{
+>> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +     struct atlas_data *data = iio_priv(indio_dev);
+>> +
+>> +     iio_device_unregister(indio_dev);
+>> +     iio_triggered_buffer_cleanup(indio_dev);
+>> +     iio_trigger_unregister(data->trig);
+>> +
+>> +     pm_runtime_disable(&client->dev);
+>> +     pm_runtime_set_suspended(&client->dev);
+>> +     pm_runtime_put_noidle(&client->dev);
+>> +
+>> +     return atlas_set_powermode(data, 0);
+>> +}
+>> +
+>> +#ifdef CONFIG_PM
+>> +static int atlas_runtime_suspend(struct device *dev)
+>> +{
+>> +     struct atlas_data *data =
+>> +                  iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+>> +
+>> +     return atlas_set_powermode(data, 0);
+>> +}
+>> +
+>> +static int atlas_runtime_resume(struct device *dev)
+>> +{
+>> +     struct atlas_data *data =
+>> +                  iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+>> +
+>> +     return atlas_set_powermode(data, 1);
+>> +}
+>> +#endif
+>> +
+>> +static const struct dev_pm_ops atlas_pm_ops = {
+>> +     SET_RUNTIME_PM_OPS(atlas_runtime_suspend,
+>> +                        atlas_runtime_resume, NULL)
+>> +};
+>> +
+>> +static const struct i2c_device_id atlas_id[] = {
+>> +     { "atlas-ph-sm", 0 },
+>> +     {}
+>> +};
+>> +MODULE_DEVICE_TABLE(i2c, atlas_id);
+>> +
+>> +static const struct of_device_id atlas_dt_ids[] = {
+>> +     { .compatible = "atlas,ph-sm" },
+>> +     { }
+>> +};
+>> +MODULE_DEVICE_TABLE(of, atlas_dt_ids);
+>> +
+>> +static struct i2c_driver atlas_driver = {
+>> +     .driver = {
+>> +             .name   = ATLAS_DRV_NAME,
+>> +             .of_match_table = of_match_ptr(atlas_dt_ids),
+>> +             .pm     = &atlas_pm_ops,
+>> +     },
+>> +     .probe          = atlas_probe,
+>> +     .remove         = atlas_remove,
+>> +     .id_table       = atlas_id,
+>> +};
+>> +module_i2c_driver(atlas_driver);
+>> +
+>> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+>> +MODULE_DESCRIPTION("Atlas Scientific pH-SM sensor");
+>> +MODULE_LICENSE("GPL");
+>>
+>
