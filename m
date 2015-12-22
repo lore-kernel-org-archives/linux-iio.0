@@ -1,59 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48852 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48901 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755080AbbLVSxW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Dec 2015 13:53:22 -0500
-Subject: Re: [PATCH v4 0/2] IIO version of INA2xx
-To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-References: <1450459432-16057-1-git-send-email-mtitinger@baylibre.com>
- <567580E7.5010307@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1752383AbbLVTEI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Dec 2015 14:04:08 -0500
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] Third set of IIO new stuff for the 4.5 cycle.
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56799C1D.6060408@kernel.org>
-Date: Tue, 22 Dec 2015 18:53:17 +0000
+Message-ID: <56799EA6.1010909@kernel.org>
+Date: Tue, 22 Dec 2015 19:04:06 +0000
 MIME-Version: 1.0
-In-Reply-To: <567580E7.5010307@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/12/15 16:08, Jonathan Cameron wrote:
-> On 18/12/15 17:23, Marc Titinger wrote:
->> v4:
->>  * squash previous small fixes into one patch and catch up with fixes from
->>    linux-iio git, 'testing' branch.
->>  * fix endianness hint by the use of IIO_CPU, following Andrew's comment
->>  * fix spacing issue.
->>  * add separate ABI documentation entry
->>
->> v3 and earlier : see http://www.spinics.net/lists/linux-iio/msg22100.html
->>
->> Marc Titinger (2):
->>   iio: ina2xx: add support for TI INA2xx Power Monitors
->>   iio: ina2xx: add ABI documentation entry sysfs-bus-iio-ina2xx-adc
->>
->>  Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc |  24 +
->>  drivers/iio/adc/Kconfig                            |  10 +
->>  drivers/iio/adc/Makefile                           |   1 +
->>  drivers/iio/adc/ina2xx-adc.c                       | 745 +++++++++++++++++++++
->>  4 files changed, 780 insertions(+)
->>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc
->>  create mode 100644 drivers/iio/adc/ina2xx-adc.c
->>
-> The togreg branch to which I applied the previous is a non rebasing tree
-> and a pull request went out to Greg so a new complete version is no use
-> now.
-> 
-I've just put together a patch to fixup the wrong endianness issue and applied
-it to the togreg branch of iio.git as I'm preparing a pull request and want
-this fixed as this will be the last pull of this cycle.
+The following changes since commit c34c18195d30aa3b95f5ae1b4349875c45fdb8e4:
 
-Jonathan
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+  iio/inkern.c Use list_for_each_entry_safe (2015-12-12 17:23:37 +0000)
 
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.5c
+
+for you to fetch changes up to e8aab48b34d3bd069dfcf4ccb8f13ba8c98f7845:
+
+  iio: adc: ina2xx: Fix incorrect report of data endianness to userspace. (2015-12-22 18:51:27 +0000)
+
+----------------------------------------------------------------
+Third set of new stuff for IIO in the 4.5 cycle.
+
+New driver features
+- us5182
+  * Add interrupt support and rising / falling threshold events.
+
+Cleanups / fixes to new stuff / minor additions
+* Expose the IIO value formatting function for drivers to
+  make use of internally.
+- ina2xx
+   * Fix wrong channel order
+   * Fix incorrect reporting of endianness
+   * Adding documentation of ABI unique to this device
+- mma8452
+  * Drop an unused register description
+  * Use an enum for the channel index to aid readability
+- sca3000
+  * Use standard NULL comparison style
+- us5182
+  * fix an inconsistency in status of enable (a bug with no real effect until
+    above patches are applied)
+  * refactor the read_raw function to improve maintainability / readability.
+
+----------------------------------------------------------------
+Adriana Reus (3):
+      iio: light: us5182d: Fix enable status inconcistency
+      iio: light: us5182d: Add interrupt support and events
+      iio: light: us5182d: Refactor read_raw function
+
+Andrew F. Davis (1):
+      iio: Make IIO value formating function globally available.
+
+Bhaktipriya Shridhar (1):
+      Staging: iio: accel: sca3000: Fixed NULL comparison style
+
+Jonathan Cameron (1):
+      iio: adc: ina2xx: Fix incorrect report of data endianness to userspace.
+
+Marc Titinger (2):
+      iio: ina2xx: fix channel order in software buffer
+      iio: ina2xx: add ABI documentation entry sysfs-bus-iio-ina2xx-adc
+
+Martin Kepplinger (2):
+      iio: mma8452: remove unused register description
+      iio: mma8452: use enum for channel index
+
+ Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc |  24 ++
+ drivers/iio/accel/mma8452.c                        |  40 +-
+ drivers/iio/adc/ina2xx-adc.c                       |   6 +-
+ drivers/iio/industrialio-core.c                    |   1 +
+ drivers/iio/light/us5182d.c                        | 442 +++++++++++++++++----
+ drivers/staging/iio/accel/sca3000_ring.c           |   2 +-
+ include/linux/iio/iio.h                            |   2 +
+ 7 files changed, 414 insertions(+), 103 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc
