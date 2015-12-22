@@ -1,574 +1,541 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48673 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48731 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932792AbbLVSV5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Dec 2015 13:21:57 -0500
-Subject: Re: [PATCH v2] iio: add ad5761 DAC driver
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-References: <1450611599-1480-1-git-send-email-ricardo.ribalda@gmail.com>
+	with ESMTP id S1752476AbbLVSeD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Dec 2015 13:34:03 -0500
+Subject: Re: [PATCH 1/5] iio:adc:at91_adc8xx: introduce new atmel adc driver
+To: Ludovic Desroches <ludovic.desroches@atmel.com>,
+	nicolas.ferre@atmel.com, alexandre.belloni@free-electrons.com
+References: <1450689852-22763-1-git-send-email-ludovic.desroches@atmel.com>
+ <1450689852-22763-2-git-send-email-ludovic.desroches@atmel.com>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, plagnioj@jcrosoft.com,
+	linux-arm-kernel@lists.infradead.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <567994C3.20804@kernel.org>
-Date: Tue, 22 Dec 2015 18:21:55 +0000
+Message-ID: <56799798.203@kernel.org>
+Date: Tue, 22 Dec 2015 18:34:00 +0000
 MIME-Version: 1.0
-In-Reply-To: <1450611599-1480-1-git-send-email-ricardo.ribalda@gmail.com>
+In-Reply-To: <1450689852-22763-2-git-send-email-ludovic.desroches@atmel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/12/15 11:39, Ricardo Ribalda Delgado wrote:
-> ad5761 is a 1-channel DAC with configurable output range.
-> The driver uses the regulator interface for its voltage ref.
+On 21/12/15 09:24, Ludovic Desroches wrote:
+> This driver supports the new version of the Atmel ADC device introduced
+> with the SAMA5D2 SoC family.
 > 
-> It shares its register layout with ad5761r, ad5721 and ad5721r.
-> 
-> Differences:
-> ad5761* are 16 bit, ad5721* are 12 bits.
-> ad57*1r have an internal reference.
-
-I don't like the muddling through to use the internal reference
-if the one specified doesn't work.  Seems to me that it would be
-better to fault out as we are doing something other than is 'expected'
-for a given board.
-
-I got back to you too late on whether range made sense as a userspace
-control (at least to start with)  For the reason you pointed out (hardware
-damage potential) I'd say keep it in platform data for now.
+> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+A few more bits and bobs from me. Mostly looking good.
 
 Jonathan
 > ---
+>  .../devicetree/bindings/iio/adc/at91_adc8xx.txt    |  27 ++
+>  drivers/iio/adc/Kconfig                            |  11 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/at91_adc8xx.c                      | 417 +++++++++++++++++++++
+>  4 files changed, 456 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/at91_adc8xx.txt
+>  create mode 100644 drivers/iio/adc/at91_adc8xx.c
 > 
-> v2: A lot of CodeStyle Fixes
-> Thanks to Peter Meerwald-Stadler <pmeerw@pmeerw.net> and 
-> Jonathan Cameron <jic23@kernel.org>
-> 
-> This v2 has not been tested on real hardware. I will have access
-> to the board after New Year.
-> 
-> 
->  CREDITS                  |   1 +
->  drivers/iio/dac/Kconfig  |  10 ++
->  drivers/iio/dac/Makefile |   1 +
->  drivers/iio/dac/ad5761.c | 450 +++++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 462 insertions(+)
->  create mode 100644 drivers/iio/dac/ad5761.c
-> 
-> diff --git a/CREDITS b/CREDITS
-> index 8207cc6..44ea433 100644
-> --- a/CREDITS
-> +++ b/CREDITS
-> @@ -3035,6 +3035,7 @@ D: PLX USB338x driver
->  D: PCA9634 driver
->  D: Option GTM671WFS
->  D: Fintek F81216A
-> +D: AD5761 iio driver
->  D: Various kernel hacks
->  S: Qtechnology A/S
->  S: Valby Langgade 142
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index e701e28..4caedd6 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -111,6 +111,16 @@ config AD5755
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad5755.
->  
-> +config AD5761
-> +	tristate "Analog Devices AD5761/61R/21/21R DAC driver"
-> +	depends on SPI_MASTER
-> +	help
-> +	  Say yes here to build support for Analog Devices AD5761, AD5761R, AD5721,
-> +	  AD5721R Digital to Analog Converter.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ad5761.
-> +
->  config AD5764
->  	tristate "Analog Devices AD5764/64R/44/44R DAC driver"
->  	depends on SPI_MASTER
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index 63ae056..cb525b5 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -12,6 +12,7 @@ obj-$(CONFIG_AD5504) += ad5504.o
->  obj-$(CONFIG_AD5446) += ad5446.o
->  obj-$(CONFIG_AD5449) += ad5449.o
->  obj-$(CONFIG_AD5755) += ad5755.o
-> +obj-$(CONFIG_AD5761) += ad5761.o
->  obj-$(CONFIG_AD5764) += ad5764.o
->  obj-$(CONFIG_AD5791) += ad5791.o
->  obj-$(CONFIG_AD5686) += ad5686.o
-> diff --git a/drivers/iio/dac/ad5761.c b/drivers/iio/dac/ad5761.c
+> diff --git a/Documentation/devicetree/bindings/iio/adc/at91_adc8xx.txt b/Documentation/devicetree/bindings/iio/adc/at91_adc8xx.txt
 > new file mode 100644
-> index 0000000..6c96150
+> index 0000000..64ad6a5
 > --- /dev/null
-> +++ b/drivers/iio/dac/ad5761.c
-> @@ -0,0 +1,450 @@
+> +++ b/Documentation/devicetree/bindings/iio/adc/at91_adc8xx.txt
+> @@ -0,0 +1,27 @@
+> +* AT91 SAMA5D2 Analog to Digital Converter (ADC)
+> +
+> +Required properties:
+> +  - compatible: Should be "atmel,sama5d2-adc".
+> +  - reg: Should contain ADC registers location and length.
+> +  - interrupts: Should contain the IRQ line for the ADC.
+> +  - clocks: phandles to clocks.
+> +  - clock-names: tuple listing clock names.
+> +      Required elements: "adc_clk", "adc_op_clk". "adc_clk" is the peripheral
+> +      clock, "adc_clk" is the sampling clock.
+> +  - vref-supply: Supply used as reference for conversions.
+> +
+> +Optional properties:
+> +  - vddana-supply: Supply for the adc device.
+> +
+> +
+> +Example:
+> +
+> +adc: adc@fc030000 {
+> +	compatible = "atmel,sama5d2-adc";
+> +	reg = <0xfc030000 0x100>;
+> +	interrupts = <40 IRQ_TYPE_LEVEL_HIGH 7>;
+> +	clocks = <&adc_clk>, <&adc_op_clk>;
+> +	clock-names = "adc_clk", "adc_op_clk";
+> +	vddana-supply = <&vdd_3v3_lp_reg>;
+> +	vref-supply = <&vdd_3v3_lp_reg>;
+> +}
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 9162dfe..5819e41 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -131,6 +131,17 @@ config AT91_ADC
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called at91_adc.
+>  
+> +config AT91_ADC8xx
+> +	tristate "Atmel AT91 ADC 8xx"
+> +	depends on ARCH_AT91
+> +	depends on INPUT
+> +	help
+> +	  Say yes here to build support for Atmel ADC 8xx which is available
+> +	  from SAMA5D2 SoC family.
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called at91_adc8xx.
+> +
+>  config AXP288_ADC
+>  	tristate "X-Powers AXP288 ADC driver"
+>  	depends on MFD_AXP20X
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 91a65bf..d684a52 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
+>  obj-$(CONFIG_AD7887) += ad7887.o
+>  obj-$(CONFIG_AD799X) += ad799x.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+> +obj-$(CONFIG_AT91_ADC8xx) += at91_adc8xx.o
+>  obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+>  obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+>  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+> diff --git a/drivers/iio/adc/at91_adc8xx.c b/drivers/iio/adc/at91_adc8xx.c
+> new file mode 100644
+> index 0000000..8b4a6e7
+> --- /dev/null
+> +++ b/drivers/iio/adc/at91_adc8xx.c
+> @@ -0,0 +1,417 @@
 > +/*
-> + * AD5721, AD5721R, AD5761, AD5761R, Voltage Output Digital to Analog Converter
+> + * Atmel ADC driver for SAMA5D2 devices and later.
 > + *
-> + * Copyright 2015 Qtechnology A/S
+> + * Copyright (C) 2015 Atmel,
+> + *               2015 Ludovic Desroches <ludovic.desroches@atmel.com>
 > + *
-> + * Licensed under the GPL-2.
+> + * This software is licensed under the terms of the GNU General Public
+> + * License version 2, as published by the Free Software Foundation, and
+> + * may be copied, distributed, and modified under those terms.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
 > + */
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
+> +
 > +#include <linux/bitops.h>
+> +#include <linux/clk.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/sched.h>
+> +#include <linux/wait.h>
 > +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
 > +#include <linux/regulator/consumer.h>
 > +
-> +#define AD5761_ADDR(addr)		((addr & 0xf) << 16)
-> +#define AD5761_ADDR_NOOP		0x0
-> +#define AD5761_ADDR_DAC_WRITE		0x3
-> +#define AD5761_ADDR_CTRL_WRITE_REG	0x4
-> +#define AD5761_ADDR_SW_DATA_RESET	0x7
-> +#define AD5761_ADDR_DAC_READ		0xb
-> +#define AD5761_ADDR_CTRL_READ_REG	0xc
-> +#define AD5761_ADDR_SW_FULL_RESET	0xf
+> +#define ADC_CR		0x00			/* Control Register */
+> +#define		ADC_CR_SWRST		BIT(0)		/* Software Reset */
+> +#define		ADC_CR_START		BIT(1)		/* Start Conversion */
+> +#define		ADC_CR_TSCALIB		BIT(2)		/* Touchscreen Calibration */
+> +#define		ADC_CR_CMPRST		BIT(4)		/* Comparison Restart */
+> +#define ADC_MR		0x04			/* Mode Register */
+> +#define		ADC_MR_TRGSEL(v)	(v << 1)	/* Trigger Selection */
+> +#define			ADC_MR_TRGSEL_TRIG0	0		/* ADTRG */
+> +#define			ADC_MR_TRGSEL_TRIG1	1		/* TIOA0 */
+> +#define			ADC_MR_TRGSEL_TRIG2	2		/* TIOA1 */
+> +#define			ADC_MR_TRGSEL_TRIG3	3		/* TIOA2 */
+> +#define			ADC_MR_TRGSEL_TRIG4	4		/* PWM event line 0 */
+> +#define			ADC_MR_TRGSEL_TRIG5	5		/* PWM event line 1 */
+> +#define			ADC_MR_TRGSEL_TRIG6	6		/* TIOA3 */
+> +#define			ADC_MR_TRGSEL_TRIG7	7		/* RTCOUT0 */
+> +#define		ADC_MR_SLEEP		BIT(5)		/* Sleep Mode */
+> +#define		ADC_MR_FWUP		BIT(6)		/* Fast Wake Up */
+> +#define		ADC_MR_PRESCAL(v)	(v << 8)	/* Prescaler Rate Selection */
+> +#define			ADC_MR_PRESCAL_MAX	0xffff
+> +#define		ADC_MR_STARTUP(v)	(v << 16)	/* Startup Time */
+> +#define			ADC_MR_STARTUP_SUT0	0		/* 0 period of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT8	1		/* 8 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT16	2		/* 16 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT24	3		/* 24 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT64	4		/* 64 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT80	5		/* 80 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT96	6		/* 96 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT112	7		/* 112 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT512	8		/* 512 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT576	9		/* 576 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT640	10		/* 640 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT704	11		/* 704 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT768	12		/* 768 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT832	13		/* 832 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT896	14		/* 896 periods of ADCCLK */
+> +#define			ADC_MR_STARTUP_SUT960	15		/* 960 periods of ADCCLK */
+> +#define		ADC_MR_ANACH		BIT(23)		/* Analog Change */
+> +#define		ADC_MR_TRACKTIM(v)	(v << 24)	/* Tracking Time */
+> +#define			ADC_MR_TRACKTIM_MAX	0xff
+> +#define		ADC_MR_TRANSFER(v)	(v << 28)	/* Transfer Time */
+> +#define			ADC_MR_TRANSFER_MAX	0x3
+> +#define		ADC_MR_USEQ		BIT(31)		/* Use Sequence Enable */
+> +#define ADC_SEQR1	0x08			/* Channel Sequence Register 1 */
+> +#define ADC_SEQR2	0x0c			/* Channel Sequence Register 2 */
+> +#define ADC_CHER	0x10			/* Channel Enable Register */
+> +#define ADC_CHDR	0x14			/* Channel Disable Register */
+> +#define ADC_CHSR	0x18			/* Channel Status Register */
+> +#define ADC_LCDR	0x20			/* Last Converted Data Register */
+> +#define ADC_IER		0x24			/* Interrupt Enable Register */
+> +#define ADC_IDR		0x28			/* Interrupt Disable Register */
+> +#define ADC_IMR		0x2c			/* Interrupt Mask Register */
+> +#define ADC_ISR		0x30			/* Interrupt Status Register */
+> +#define ADC_LCTMR	0x34			/* Last Channel Trigger Mode Register */
+> +#define ADC_LCCWR	0x38			/* Last Channel Compare Window Register */
+> +#define ADC_OVER	0x3c			/* Overrun Status Register */
+> +#define ADC_EMR		0x40			/* Extended Mode Register */
+> +#define ADC_CWR		0x44			/* Compare Window Register */
+> +#define ADC_CGR		0x48			/* Channel Gain Register */
+> +#define ADC_COR		0x4c			/* Channel Offset Register */
+> +#define ADC_CDR0	0x50			/* Channel Data Register 0 */
+> +#define ADC_ACR		0x94			/* Analog Control Register */
+> +#define ADC_TSMR	0xb0			/* Touchscreen Mode Register */
+> +#define ADC_XPOSR	0xb4			/* Touchscreen X Position Register */
+> +#define ADC_YPOSR	0xb8			/* Touchscreen Y Position Register */
+> +#define ADC_PRESSR	0xbc			/* Touchscreen Pressure Register */
+> +#define ADC_TRGR	0xc0			/* Trigger Register */
+> +#define ADC_COSR	0xd0			/* Correction Select Register */
+> +#define ADC_CVR		0xd4			/* Correction Value Register */
+> +#define ADC_CECR	0xd8			/* Channel Error Correction Register */
+> +#define ADC_WPMR	0xe4			/* Write Protection Mode Register */
+> +#define ADC_WPSR	0xe8			/* Write Protection Status Register */
+> +#define ADC_VERSION	0xfc			/* Version Register */
 > +
-> +#define AD5761_CTRL_USE_INTVREF		BIT(5)
-> +#define AD5761_CTRL_ETS			BIT(6)
+> +#define AT91_ADC_CHAN(num, addr)					\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.channel = num,						\
+> +		.address = addr,					\
+> +		.scan_type = {						\
+> +			.sign = 'u',					\
+> +			.realbits = 12,					\
+> +			.storagebits = 14,				\
+> +		},							\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +		.datasheet_name = "CH"#num,				\
+> +		.indexed = 1,						\
+> +	}
 > +
-> +/**
-> + * struct ad5761_chip_info - chip specific information
-> + * @int_vref:	Value of the internal reference voltage in mV - 0 if external
-> + *		reference voltage is used
-> + * @channel:	channel specification
-> +*/
+> +#define at91_adc_readl(st, reg)		readl_relaxed(st->base + reg)
+> +#define at91_adc_writel(st, reg, val)	writel_relaxed(val, st->base + reg)
 > +
-> +struct ad5761_chip_info {
-> +	unsigned long int_vref;
-> +	const struct iio_chan_spec channel;
+> +struct at91_adc_soc_info {
+> +	unsigned			startup_time;
+> +	unsigned			min_f_adc;
+> +	unsigned			max_f_adc;
+> +	const struct iio_chan_spec	*channels;
+> +	int				num_channels;
 > +};
 > +
-> +struct ad5761_range_params {
-> +	int m;
-> +	int c;
+> +struct at91_adc_state {
+> +	void __iomem			*base;
+> +	struct clk			*per_clk;
+> +	struct clk			*adc_clk;
+> +	int				irq;
+> +	struct regulator		*reg;
+> +	struct regulator		*vref;
+> +	u32				vref_uv;
+> +	struct at91_adc_soc_info	*soc_info;
+> +	wait_queue_head_t		wq_data_available;
+> +	bool				done;
+> +	const struct iio_chan_spec	*chan;
+> +	u32				last_value;
+> +	struct mutex			lock;
 > +};
 > +
-> +enum ad5761_supported_device_ids {
-> +	ID_AD5721,
-> +	ID_AD5721R,
-> +	ID_AD5761,
-> +	ID_AD5761R,
+> +static struct at91_adc_soc_info at91_adc_sama5d2_soc_info = {
+> +	.startup_time = 4,
+> +	.min_f_adc = 200000,
+> +	.max_f_adc = 20000000,
+These rather look like things that should be in the device tree if they
+are going to change between SoC varients. 
 > +};
 > +
-> +enum ad5761_range_ids {
-> +	MODE_M10V_10V,
-> +	MODE_0V_10V,
-> +	MODE_M5V_5V,
-> +	MODE_0V_5V,
-> +	MODE_M2V5_7V5,
-> +	MODE_M3V_3V,
-> +	MODE_0V_16V,
-> +	MODE_0V_20V,
+> +static const struct iio_chan_spec at91_adc_channels[] = {
+> +	AT91_ADC_CHAN(0, 0x50),
+> +	AT91_ADC_CHAN(1, 0x54),
+> +	AT91_ADC_CHAN(2, 0x58),
+> +	AT91_ADC_CHAN(3, 0x5c),
+> +	AT91_ADC_CHAN(4, 0x60),
+> +	AT91_ADC_CHAN(5, 0x64),
+> +	AT91_ADC_CHAN(6, 0x68),
+> +	AT91_ADC_CHAN(7, 0x6c),
+> +	AT91_ADC_CHAN(8, 0x70),
+> +	AT91_ADC_CHAN(9, 0x74),
+> +	AT91_ADC_CHAN(10, 0x78),
+> +	AT91_ADC_CHAN(11, 0x7c),
 > +};
 > +
-> +/**
-> + * struct ad5761_state - driver instance specific data
-> + * @spi:		spi_device
-> + * @chip_info:		chip model specific constants
-> + * @vref_reg:		reference voltage regulator
-> + * @use_intref:		true when the internal voltage reference is used
-> + * @vref:		actual voltage reference in mVolts
-> + * @range:		output range mode used
-> + * @data:		cache aligned spi buffer
-> + */
-> +struct ad5761_state {
-> +	struct spi_device		*spi;
-> +	struct regulator		*vref_reg;
+> +static irqreturn_t at91_adc_interrupt(int irq, void *private)
+> +{
+> +	struct iio_dev *indio = private;
+> +	struct at91_adc_state *st = iio_priv(indio);
+> +	u32 status = at91_adc_readl(st, ADC_ISR);
 > +
-> +	bool use_intref;
-> +	int vref;
-> +	enum ad5761_range_ids range;
+> +	status &= at91_adc_readl(st, ADC_IMR);
+> +	if (status & 0xFFF) {
+> +		st->last_value = at91_adc_readl(st, st->chan->address);
+If this is a polled read - is there any reason to read this value here
+rather than outside the interrupt?
+> +		st->done = true;
+> +		wake_up_interruptible(&st->wq_data_available);
+> +	}
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static bool at91_adc_freq_supported(struct at91_adc_state *st, unsigned freq)
+> +{
+> +	return ((freq >= st->soc_info->min_f_adc)
+> +		&& (freq <= st->soc_info->max_f_adc));
+> +}
+> +
+> +static unsigned at91_adc_startup_time(unsigned startup_time_min,
+> +				      unsigned adc_clk_khz)
+> +{
+> +	const unsigned startup_lookup[] = {
+> +		0,     8,  16,  24,
+> +		64,   80,  96, 112,
+> +		512, 576, 640, 704,
+> +		768, 832, 896, 960
+> +		};
+> +	unsigned ticks_min, i;
 > +
 > +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
+> +	 * Since the adc frequency is checked before, there is no reason
+> +	 * to not meet the startup time constraint.
 > +	 */
-> +	union {
-> +		__be32 d32;
-> +		u8 d8[4];
-> +	} data[3] ____cacheline_aligned;
-> +};
 > +
-> +static const struct ad5761_range_params ad5761_range_params[] = {
-> +	[MODE_M10V_10V] = {
-> +		.m = 80,
-> +		.c = 40,
-> +	},
-> +	[MODE_0V_10V] = {
-> +		.m = 40,
-> +		.c = 0,
-> +	},
-> +	[MODE_M5V_5V] = {
-> +		.m = 40,
-> +		.c = 20,
-> +	},
-> +	[MODE_0V_5V] = {
-> +		.m = 20,
-> +		.c = 0,
-> +	},
-> +	[MODE_M2V5_7V5] = {
-> +		.m = 40,
-> +		.c = 10,
-> +	},
-> +	[MODE_M3V_3V] = {
-> +		.m = 24,
-> +		.c = 12,
-> +	},
-> +	[MODE_0V_16V] = {
-> +		.m = 64,
-> +		.c = 0,
-> +	},
-> +	[MODE_0V_20V] = {
-> +		.m = 80,
-> +		.c = 0,
-> +	},
-> +};
+> +	ticks_min = startup_time_min * adc_clk_khz / 1000;
+> +	for (i = 0; i < ARRAY_SIZE(startup_lookup); i++)
+> +		if (startup_lookup[i] > ticks_min)
+> +			break;
 > +
-> +static const char * const ad5761_ranges[] = {
-> +	[MODE_M10V_10V] = "-10V_10V",
-> +	[MODE_0V_10V] = "0V_10V",
-> +	[MODE_M5V_5V] = "-5V_5V",
-> +	[MODE_0V_5V] = "0V_5V",
-> +	[MODE_M2V5_7V5] = "-2V5_7V5",
-> +	[MODE_M3V_3V] = "-3V_3V",
-> +	[MODE_0V_16V] = "0V_16V",
-> +	[MODE_0V_20V] = "0V_20V",
-> +};
-See response to previous version on this.  I think you were
-correct in suggesting this should be platform data only in the
-first instance to protect against damaging hardware.
-> +
-> +static int ad5761_spi_write(struct ad5761_state *st, u8 addr, u16 val)
-> +{
-> +	st->data[0].d32 = cpu_to_be32(AD5761_ADDR(addr) | val);
-> +
-> +	return spi_write(st->spi, &st->data[0].d8[1], 3);
+> +	return i;
 > +}
 > +
-> +static int ad5761_spi_read(struct ad5761_state *st, u8 addr, u16 *val)
+> +static int at91_adc_init(struct at91_adc_state *st)
 > +{
-> +	int ret;
-> +	struct spi_transfer xfers[] = {
-> +		{
-> +			.tx_buf = &st->data[0].d8[1],
-> +			.bits_per_word = 8,
-> +			.len = 3,
-> +			.cs_change = true,
-> +		}, {
-> +			.tx_buf = &st->data[1].d8[1],
-> +			.rx_buf = &st->data[2].d8[1],
-> +			.bits_per_word = 8,
-> +			.len = 3,
-> +		},
-> +	};
+> +	struct iio_dev *indio_dev = iio_priv_to_dev(st);
+> +	unsigned f_adc, f_per, prescal, startup;
 > +
-> +	st->data[0].d32 = cpu_to_be32(AD5761_ADDR(addr));
-> +	st->data[1].d32 = cpu_to_be32(AD5761_ADDR(AD5761_ADDR_NOOP));
+> +	at91_adc_writel(st, ADC_CR, ADC_CR_SWRST);
+> +	at91_adc_writel(st, ADC_IDR, 0xffffffff);
 > +
-> +	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
+> +	f_adc = clk_get_rate(st->adc_clk);
+> +	if (!at91_adc_freq_supported(st, f_adc)) {
+> +		dev_err(&indio_dev->dev, "unsupported adc clock frequency\n");
+> +		return -EINVAL;
+> +	}
 > +
-> +	*val = be32_to_cpu(st->data[2].d32);
+> +	f_per = clk_get_rate(st->per_clk);
+> +	prescal = (f_per / (2 * f_adc)) - 1;
 > +
-> +	return ret;
-> +}
+> +	startup = at91_adc_startup_time(st->soc_info->startup_time,
+> +					f_adc / 1000);
 > +
-> +static int ad5761_spi_set_range(struct ad5761_state *st, int range)
-> +{
-> +	u16 aux;
-> +	int ret;
+> +	at91_adc_writel(st, ADC_MR,
+> +			ADC_MR_TRANSFER(2)
+> +			| ADC_MR_STARTUP(startup)
+> +			| ADC_MR_PRESCAL(prescal));
 > +
-> +	aux = range | AD5761_CTRL_ETS;
-> +
-> +	if (st->use_intref)
-> +		aux |= AD5761_CTRL_USE_INTVREF;
-> +
-> +	ret = ad5761_spi_write(st, AD5761_ADDR_CTRL_WRITE_REG, aux);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ad5761_spi_write(st, AD5761_ADDR_SW_DATA_RESET, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->range = range;
+> +	dev_dbg(&indio_dev->dev, "startup: %u, prescal: %u\n",
+> +		startup, prescal);
 > +
 > +	return 0;
 > +}
 > +
-> +static int ad5761_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val,
-> +			   int *val2,
-> +			   long mask)
+> +static int at91_adc_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
 > +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
+> +	struct at91_adc_state *st = iio_priv(indio_dev);
 > +	int ret;
-> +	u16 aux;
+> +
+> +	st->chan = chan;
 > +
 > +	switch (mask) {
 > +	case IIO_CHAN_INFO_RAW:
-> +		ret = ad5761_spi_read(st, AD5761_ADDR_DAC_READ, &aux);
-> +		if (ret)
+> +		mutex_lock(&st->lock);
+> +
+> +		at91_adc_writel(st, ADC_CHER, BIT(chan->channel));
+> +		at91_adc_writel(st, ADC_IER, BIT(chan->channel));
+> +		at91_adc_writel(st, ADC_CR, ADC_CR_START);
+> +
+> +		ret = wait_event_interruptible_timeout(st->wq_data_available,
+> +						       st->done,
+> +						       msecs_to_jiffies(1000));
+> +		if (ret == 0)
+> +			ret = -ETIMEDOUT;
+> +
+> +		if (ret <= 0) {
+> +			at91_adc_writel(st, ADC_CHDR, BIT(chan->channel));
+> +			at91_adc_writel(st, ADC_IDR, BIT(chan->channel));
+> +			mutex_unlock(&st->lock);
 > +			return ret;
-> +		*val = aux >> chan->scan_type.shift;
+> +		}
+> +
+> +		if (chan->scan_type.sign == 's')
+> +			*val = sign_extend32(st->last_value,
+> +					     chan->scan_type.realbits - 1);
+> +		else
+> +			*val = st->last_value;
+> +		at91_adc_writel(st, ADC_CHDR, BIT(chan->channel));
+> +		at91_adc_writel(st, ADC_IDR, BIT(chan->channel));
+> +		st->done = false;
+> +
+> +		mutex_unlock(&st->lock);
 > +		return IIO_VAL_INT;
+> +
 > +	case IIO_CHAN_INFO_SCALE:
-> +		*val = st->vref * ad5761_range_params[st->range].m;
-> +		*val /= 10;
+> +		*val = st->vref_uv / 1000;
 > +		*val2 = chan->scan_type.realbits;
 > +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		*val = -(1 << chan->scan_type.realbits);
-> +		*val *=	ad5761_range_params[st->range].c;
-> +		*val /=	ad5761_range_params[st->range].m;
-> +		return IIO_VAL_INT;
+> +
 > +	default:
 > +		return -EINVAL;
 > +	}
 > +}
 > +
-> +static int ad5761_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val,
-> +			    int val2,
-> +			    long mask)
-> +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
-> +	u16 aux;
-> +
-> +	if (mask != IIO_CHAN_INFO_RAW)
-> +		return -EINVAL;
-> +
-> +	aux = val << chan->scan_type.shift;
-> +
-> +	return ad5761_spi_write(st, AD5761_ADDR_DAC_WRITE, aux);
-> +}
-> +
-> +static int ad5761_set_range(struct iio_dev *indio_dev,
-> +	const struct iio_chan_spec *chan, unsigned int range)
-> +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
-> +
-> +	return ad5761_spi_set_range(st, range);
-> +}
-> +
-> +static int ad5761_get_range(struct iio_dev *indio_dev,
-> +	const struct iio_chan_spec *chan)
-> +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
-> +	u16 aux;
-> +	int ret;
-> +
-> +	ret = ad5761_spi_read(st, AD5761_ADDR_CTRL_READ_REG, &aux);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return aux & 0x7;
-> +}
-> +
-> +static const struct iio_info ad5761_info = {
-> +	.read_raw = &ad5761_read_raw,
-> +	.write_raw = &ad5761_write_raw,
+> +static const struct iio_info at91_adc_info = {
+> +	.read_raw = &at91_adc_read_raw,
 > +	.driver_module = THIS_MODULE,
 > +};
 > +
-> +static const struct iio_enum ad5761_range_enum = {
-> +	.items = ad5761_ranges,
-> +	.num_items = ARRAY_SIZE(ad5761_ranges),
-> +	.get = ad5761_get_range,
-> +	.set = ad5761_set_range,
-> +};
-> +
-> +static struct iio_chan_spec_ext_info ad5761_ext_info[] = {
-> +	IIO_ENUM("range", IIO_SHARED_BY_TYPE,
-> +		 &ad5761_range_enum),
-> +	IIO_ENUM_AVAILABLE("range", &ad5761_range_enum),
-> +	{ },
-> +};
-> +
-> +#define AD5761_CHAN(_bits) {				\
-> +	.type = IIO_VOLTAGE,				\
-> +	.output = 1,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> +		BIT(IIO_CHAN_INFO_OFFSET),		\
-> +	.scan_type = {					\
-> +		.sign = 'u',				\
-> +		.realbits = (_bits),			\
-> +		.storagebits = 16,			\
-> +		.shift = 16 - (_bits),			\
-> +	},						\
-> +	.ext_info = ad5761_ext_info,			\
-> +}
-> +
-> +static const struct ad5761_chip_info ad5761_chip_infos[] = {
-> +	[ID_AD5721] = {
-> +		.int_vref = 0,
-> +		.channel = AD5761_CHAN(12),
-> +	},
-> +	[ID_AD5721R] = {
-> +		.int_vref = 2500,
-> +		.channel = AD5761_CHAN(12),
-> +	},
-> +	[ID_AD5761] = {
-> +		.int_vref = 0,
-> +		.channel = AD5761_CHAN(16),
-> +	},
-> +	[ID_AD5761R] = {
-> +		.int_vref = 2500,
-> +		.channel = AD5761_CHAN(16),
-> +	},
-> +};
-> +
-> +static int ad5761_get_vref(struct ad5761_state *st,
-> +			   const struct ad5761_chip_info *chip_info)
+> +static int at91_adc_probe(struct platform_device *pdev)
 > +{
-> +	int ret = 0;
-> +
-> +	st->vref_reg = devm_regulator_get_optional(&st->spi->dev, "vref");
-> +	if (IS_ERR_OR_NULL(st->vref_reg))
-> +		goto use_internal_vref;
-Hmm. Goto's other than on error paths do tend to make things harder
-to follow.  Also the only case where I would say it is valid to do so
-is the optional regulator is not supplied.  Otherwise we have
-an error and should fault out reporting the issue up to userspace.
-
-> +
-> +	ret = regulator_enable(st->vref_reg);
-> +	if (ret) {
-> +		dev_warn(&st->spi->dev,
-> +			 "Failed to enable vref. Using internal\n");
-> +		ret = 0;
-> +		goto use_internal_vref;
-> +	}
-> +
-> +	ret = regulator_get_voltage(st->vref_reg);
-> +	if (ret < 0) {
-> +		dev_warn(&st->spi->dev,
-> +			 "Failed to get vref value. Using internal\n");
-This sort of fallback seems logical to us, but it might give the user
-a very different result from what they are expecting (and they won't
-know unless they read the logs)
-> +		ret = 0;
-> +		goto disable_regulator_vref;
-> +	}
-> +
-> +	if (ret < 2000000 || ret > 3000000) {
-> +		dev_warn(&st->spi->dev,
-> +			 "Invalid external vref value. Using internal\n");
-Again, nastiness has happened, lets fault out from here and fail the probe.
-> +		ret = 0;
-> +		goto disable_regulator_vref;
-> +	}
-> +
-> +	st->vref = ret / 1000;
-> +	st->use_intref = false;
-> +
-> +	return 0;
-> +
-> +disable_regulator_vref:
-> +	regulator_disable(st->vref_reg);
-> +	st->vref_reg = NULL;
-> +
-> +use_internal_vref:
-> +	if (!chip_info->int_vref) {
-> +		dev_err(&st->spi->dev, "Missing vref, cannot continue\n");
-> +		return -EIO;
-> +	}
-> +
-> +	st->use_intref = true;
-> +	st->vref = chip_info->int_vref;
-> +
-> +	return ret;
-> +}
-> +
-> +static int ad5761_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *iio_dev;
-> +	struct ad5761_state *st;
+> +	struct iio_dev *indio_dev;
+> +	struct at91_adc_state *st;
+> +	struct resource	*res;
 > +	int ret;
-> +	const struct ad5761_chip_info *chip_info =
-> +		&ad5761_chip_infos[spi_get_device_id(spi)->driver_data];
 > +
-> +	iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!iio_dev)
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
+> +					  sizeof(struct at91_adc_state));
+> +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	st = iio_priv(iio_dev);
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &at91_adc_info;
+> +	indio_dev->channels = at91_adc_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(at91_adc_channels);
 > +
-> +	st->spi = spi;
-> +	spi_set_drvdata(spi, iio_dev);
+> +	st = iio_priv(indio_dev);
+> +	st->soc_info = (struct at91_adc_soc_info *)
+> +			of_device_get_match_data(&pdev->dev);
+> +	init_waitqueue_head(&st->wq_data_available);
+> +	mutex_init(&st->lock);
 > +
-> +	ret = ad5761_get_vref(st, chip_info);
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!res)
+> +		return -EINVAL;
+> +
+> +	st->base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(st->base))
+> +		return PTR_ERR(st->base);
+> +
+> +	st->irq = platform_get_irq(pdev, 0);
+> +	if (st->irq < 0)
+could be be 0 (effectively marked as not present) - probably want to check
+for that and fault out if so.
+> +		return st->irq;
+> +
+> +	st->per_clk = devm_clk_get(&pdev->dev, "adc_clk");
+> +	if (IS_ERR(st->per_clk))
+> +		return PTR_ERR(st->per_clk);
+> +
+> +	st->adc_clk = devm_clk_get(&pdev->dev, "adc_op_clk");
+> +	if (IS_ERR(st->adc_clk))
+> +		return PTR_ERR(st->adc_clk);
+> +
+> +	st->reg = devm_regulator_get(&pdev->dev, "vddana");
+> +	if (IS_ERR(st->reg))
+> +		return PTR_ERR(st->reg);
+You get this regulator but never explicitly request that it is on...
+I can understand that for a reference like below (though probably want
+to turn that on as well really).
+> +
+> +	st->vref = devm_regulator_get(&pdev->dev, "vref");
+> +	if (IS_ERR(st->vref))
+> +		return PTR_ERR(st->vref);
+> +
+> +	ret = devm_request_irq(&pdev->dev, st->irq, at91_adc_interrupt, 0,
+> +			       pdev->dev.driver->name, indio_dev);
 > +	if (ret)
 > +		return ret;
 > +
-> +	ret = ad5761_spi_set_range(st, MODE_0V_5V);
+> +	st->vref_uv = regulator_get_voltage(st->vref);
+> +	if (st->vref_uv <= 0) {
+> +		ret = -EINVAL;
+> +		goto error;
+> +	}
+> +
+> +	ret = at91_adc_init(st);
 > +	if (ret)
-> +		goto disable_regulator_err;
+> +		goto error;
 > +
-> +	iio_dev->dev.parent = &spi->dev;
-> +	iio_dev->info = &ad5761_info;
-> +	iio_dev->modes = INDIO_DIRECT_MODE;
-> +	iio_dev->channels = &chip_info->channel;
-> +	iio_dev->num_channels = 1;
-> +	iio_dev->name = spi_get_device_id(st->spi)->name;
-> +	ret = iio_device_register(iio_dev);
-> +	if (ret)
-> +		goto disable_regulator_err;
+> +	ret = clk_prepare_enable(st->adc_clk);
+Handle these possible errors.
+> +	ret = clk_prepare_enable(st->per_clk);
 > +
-> +	return ret;
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +disable_regulator_err:
-> +	if (!IS_ERR_OR_NULL(st->vref_reg))
-> +		regulator_disable(st->vref_reg);
+> +	dev_info(&pdev->dev, "version: %x\n",
+> +		 readl_relaxed(st->base + ADC_VERSION));
 > +
+> +error:
 > +	return ret;
 > +}
 > +
-> +static int ad5761_remove(struct spi_device *spi)
+> +static int at91_adc_remove(struct platform_device *pdev)
 > +{
-> +	struct iio_dev *iio_dev = spi_get_drvdata(spi);
-> +	struct ad5761_state *st = iio_priv(iio_dev);
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct at91_adc_state *st = iio_priv(indio_dev);
 > +
-> +	if (!IS_ERR_OR_NULL(st->vref_reg))
-> +		regulator_disable(st->vref_reg);
-> +	iio_device_unregister(iio_dev);
+> +	iio_device_unregister(indio_dev);
+> +
+> +	clk_disable_unprepare(st->per_clk);
+> +	clk_disable_unprepare(st->adc_clk);
 > +
 > +	return 0;
 > +}
 > +
-> +static const struct spi_device_id ad5761_id[] = {
-> +	{"ad5721", ID_AD5721},
-> +	{"ad5721r", ID_AD5721R},
-> +	{"ad5761", ID_AD5761},
-> +	{"ad5761r", ID_AD5761R},
-> +	{}
+> +static const struct of_device_id at91_adc_dt_match[] = {
+> +	{
+> +		.compatible = "atmel,sama5d2-adc",
+> +		.data = &at91_adc_sama5d2_soc_info
+> +	}, {
+> +		/* sentinel */
+> +	}
 > +};
-> +MODULE_DEVICE_TABLE(spi, ad5761_id);
+> +MODULE_DEVICE_TABLE(of, at91_adc_dt_match);
 > +
-> +static struct spi_driver ad5761_driver = {
+> +static struct platform_driver at91_adc_driver = {
+> +	.probe = at91_adc_probe,
+> +	.remove = at91_adc_remove,
 > +	.driver = {
-> +		   .name = "ad5761",
-> +		   .owner = THIS_MODULE,
-> +		   },
-> +	.probe = ad5761_probe,
-> +	.remove = ad5761_remove,
-> +	.id_table = ad5761_id,
+> +		.name = "at91_adc8xx",
+> +		.of_match_table = at91_adc_dt_match,
+> +	},
 > +};
-> +module_spi_driver(ad5761_driver);
+> +module_platform_driver(at91_adc_driver)
 > +
-> +MODULE_AUTHOR("Ricardo Ribalda <ricardo.ribalda@gmail.com>");
-> +MODULE_DESCRIPTION("Analog Devices AD5721, AD5721R, AD5761, AD5761R driver");
+> +MODULE_AUTHOR("Ludovic Desroches <ludovic.desroches@atmel.com>");
+> +MODULE_DESCRIPTION("Atmel AT91 ADC 8xx");
 > +MODULE_LICENSE("GPL v2");
 > 
 
