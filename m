@@ -1,84 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48901 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752383AbbLVTEI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Dec 2015 14:04:08 -0500
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] Third set of IIO new stuff for the 4.5 cycle.
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56799EA6.1010909@kernel.org>
-Date: Tue, 22 Dec 2015 19:04:06 +0000
+Received: from mail.kernel.org ([198.145.29.136]:53774 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755626AbbLWAvW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 22 Dec 2015 19:51:22 -0500
+Date: Tue, 22 Dec 2015 18:51:18 -0600
+From: Rob Herring <robh@kernel.org>
+To: Ludovic Desroches <ludovic.desroches@atmel.com>
+Cc: jic23@kernel.org, nicolas.ferre@atmel.com,
+	alexandre.belloni@free-electrons.com, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	plagnioj@jcrosoft.com, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/5] iio:adc:at91_adc8xx: introduce new atmel adc driver
+Message-ID: <20151223005118.GA29457@rob-hp-laptop>
+References: <1450689852-22763-1-git-send-email-ludovic.desroches@atmel.com>
+ <1450689852-22763-2-git-send-email-ludovic.desroches@atmel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1450689852-22763-2-git-send-email-ludovic.desroches@atmel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit c34c18195d30aa3b95f5ae1b4349875c45fdb8e4:
+On Mon, Dec 21, 2015 at 10:24:08AM +0100, Ludovic Desroches wrote:
+> This driver supports the new version of the Atmel ADC device introduced
+> with the SAMA5D2 SoC family.
+> 
+> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+> ---
+>  .../devicetree/bindings/iio/adc/at91_adc8xx.txt    |  27 ++
+>  drivers/iio/adc/Kconfig                            |  11 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/at91_adc8xx.c                      | 417 +++++++++++++++++++++
+>  4 files changed, 456 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/at91_adc8xx.txt
+>  create mode 100644 drivers/iio/adc/at91_adc8xx.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/at91_adc8xx.txt b/Documentation/devicetree/bindings/iio/adc/at91_adc8xx.txt
+> new file mode 100644
+> index 0000000..64ad6a5
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/at91_adc8xx.txt
+> @@ -0,0 +1,27 @@
+> +* AT91 SAMA5D2 Analog to Digital Converter (ADC)
+> +
+> +Required properties:
+> +  - compatible: Should be "atmel,sama5d2-adc".
+> +  - reg: Should contain ADC registers location and length.
+> +  - interrupts: Should contain the IRQ line for the ADC.
+> +  - clocks: phandles to clocks.
+> +  - clock-names: tuple listing clock names.
+> +      Required elements: "adc_clk", "adc_op_clk". "adc_clk" is the peripheral
+> +      clock, "adc_clk" is the sampling clock.
+> +  - vref-supply: Supply used as reference for conversions.
+> +
+> +Optional properties:
+> +  - vddana-supply: Supply for the adc device.
 
-  iio/inkern.c Use list_for_each_entry_safe (2015-12-12 17:23:37 +0000)
+What makes a supply optional? If chip dependent, then then you need a 
+more specific compatible string.
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.5c
-
-for you to fetch changes up to e8aab48b34d3bd069dfcf4ccb8f13ba8c98f7845:
-
-  iio: adc: ina2xx: Fix incorrect report of data endianness to userspace. (2015-12-22 18:51:27 +0000)
-
-----------------------------------------------------------------
-Third set of new stuff for IIO in the 4.5 cycle.
-
-New driver features
-- us5182
-  * Add interrupt support and rising / falling threshold events.
-
-Cleanups / fixes to new stuff / minor additions
-* Expose the IIO value formatting function for drivers to
-  make use of internally.
-- ina2xx
-   * Fix wrong channel order
-   * Fix incorrect reporting of endianness
-   * Adding documentation of ABI unique to this device
-- mma8452
-  * Drop an unused register description
-  * Use an enum for the channel index to aid readability
-- sca3000
-  * Use standard NULL comparison style
-- us5182
-  * fix an inconsistency in status of enable (a bug with no real effect until
-    above patches are applied)
-  * refactor the read_raw function to improve maintainability / readability.
-
-----------------------------------------------------------------
-Adriana Reus (3):
-      iio: light: us5182d: Fix enable status inconcistency
-      iio: light: us5182d: Add interrupt support and events
-      iio: light: us5182d: Refactor read_raw function
-
-Andrew F. Davis (1):
-      iio: Make IIO value formating function globally available.
-
-Bhaktipriya Shridhar (1):
-      Staging: iio: accel: sca3000: Fixed NULL comparison style
-
-Jonathan Cameron (1):
-      iio: adc: ina2xx: Fix incorrect report of data endianness to userspace.
-
-Marc Titinger (2):
-      iio: ina2xx: fix channel order in software buffer
-      iio: ina2xx: add ABI documentation entry sysfs-bus-iio-ina2xx-adc
-
-Martin Kepplinger (2):
-      iio: mma8452: remove unused register description
-      iio: mma8452: use enum for channel index
-
- Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc |  24 ++
- drivers/iio/accel/mma8452.c                        |  40 +-
- drivers/iio/adc/ina2xx-adc.c                       |   6 +-
- drivers/iio/industrialio-core.c                    |   1 +
- drivers/iio/light/us5182d.c                        | 442 +++++++++++++++++----
- drivers/staging/iio/accel/sca3000_ring.c           |   2 +-
- include/linux/iio/iio.h                            |   2 +
- 7 files changed, 414 insertions(+), 103 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc
+Rob
