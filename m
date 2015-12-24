@@ -1,64 +1,133 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:56084 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753444AbbLWKtQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Dec 2015 05:49:16 -0500
-Date: Wed, 23 Dec 2015 11:48:33 +0100
-From: Ludovic Desroches <ludovic.desroches@atmel.com>
-To: Jonathan Cameron <jic23@kernel.org>, <nicolas.ferre@atmel.com>,
-	<alexandre.belloni@free-electrons.com>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <plagnioj@jcrosoft.com>,
-	<linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 1/5] iio:adc:at91_adc8xx: introduce new atmel adc driver
-Message-ID: <20151223104833.GE2789@odux.rfo.atmel.com>
-References: <1450689852-22763-1-git-send-email-ludovic.desroches@atmel.com>
- <1450689852-22763-2-git-send-email-ludovic.desroches@atmel.com>
- <56799798.203@kernel.org>
- <20151223102700.GC2789@odux.rfo.atmel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <20151223102700.GC2789@odux.rfo.atmel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <akinobu.mita@gmail.com>
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: adc: mcp3422: Add support for MCP3425
+Date: Fri, 25 Dec 2015 02:11:07 +0900
+Message-Id: <1450977067-30639-1-git-send-email-akinobu.mita@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Dec 23, 2015 at 11:27:00AM +0100, Ludovic Desroches wrote:
-> On Tue, Dec 22, 2015 at 06:34:00PM +0000, Jonathan Cameron wrote:
-> > On 21/12/15 09:24, Ludovic Desroches wrote:
-> > > This driver supports the new version of the Atmel ADC device introduced
-> > > with the SAMA5D2 SoC family.
-> > > 
+The MCP3425 is a single channel up to 16-bit A/D converter which has
+features:
 
-[...]
+- On-Board Programmable Gain Amplifier (PGA):
+ - Gains of 1, 2, 4 or 8
+- Programmable Data Rate Options:
+ - 15 SPS (16 bits), 60 SPS (14 bits), 240 SPS (12 bits)
 
-> > > +static irqreturn_t at91_adc_interrupt(int irq, void *private)
-> > > +{
-> > > +	struct iio_dev *indio = private;
-> > > +	struct at91_adc_state *st = iio_priv(indio);
-> > > +	u32 status = at91_adc_readl(st, ADC_ISR);
-> > > +
-> > > +	status &= at91_adc_readl(st, ADC_IMR);
-> > > +	if (status & 0xFFF) {
-> > > +		st->last_value = at91_adc_readl(st, st->chan->address);
-> > If this is a polled read - is there any reason to read this value here
-> > rather than outside the interrupt?
-> 
-> No it can be done outside the interrupt. I have taken some parts from the
-> previous driver but it was reading a register used by all the channels
-> when it has been designed. So yes there is probably no more reason to
-> read it into the interrupt.
-> 
+So we can support MCP3425 with a little changes to mcp3422 driver.
 
-Thinking about it. Is it really useful to move reading outside the
-interrupt?
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+---
+ Documentation/devicetree/bindings/iio/adc/mcp3422.txt |  1 +
+ drivers/iio/adc/Kconfig                               |  4 ++--
+ drivers/iio/adc/mcp3422.c                             | 16 +++++++++++++---
+ 3 files changed, 16 insertions(+), 5 deletions(-)
 
-By the way this is not a polled read.
-
-> > > +		st->done = true;
-> > > +		wake_up_interruptible(&st->wq_data_available);
-> > > +	}
-> > > +
-> > > +	return IRQ_HANDLED;
-> > > +}
-
-Ludovic
+diff --git a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+index 333139c..84289bd 100644
+--- a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
++++ b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+@@ -5,6 +5,7 @@ Required properties:
+ 	"microchip,mcp3422" or
+ 	"microchip,mcp3423" or
+ 	"microchip,mcp3424" or
++	"microchip,mcp3425" or
+ 	"microchip,mcp3426" or
+ 	"microchip,mcp3427" or
+ 	"microchip,mcp3428"
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7868c74..e4b1de9 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -246,11 +246,11 @@ config MCP320X
+ 	  called mcp320x.
+ 
+ config MCP3422
+-	tristate "Microchip Technology MCP3422/3/4/6/7/8 driver"
++	tristate "Microchip Technology MCP3422/3/4/5/6/7/8 driver"
+ 	depends on I2C
+ 	help
+ 	  Say yes here to build support for Microchip Technology's
+-	  MCP3422, MCP3423, MCP3424, MCP3426, MCP3427 or MCP3428
++	  MCP3422, MCP3423, MCP3424, MCP3425, MCP3426, MCP3427 or MCP3428
+ 	  analog to digital converters.
+ 
+ 	  This driver can also be built as a module. If so, the module will be
+diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+index 3555122..ba0c3ad 100644
+--- a/drivers/iio/adc/mcp3422.c
++++ b/drivers/iio/adc/mcp3422.c
+@@ -1,11 +1,12 @@
+ /*
+- * mcp3422.c - driver for the Microchip mcp3422/3/4/6/7/8 chip family
++ * mcp3422.c - driver for the Microchip mcp3422/3/4/5/6/7/8 chip family
+  *
+  * Copyright (C) 2013, Angelo Compagnucci
+  * Author: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+  *
+  * Datasheet: http://ww1.microchip.com/downloads/en/devicedoc/22088b.pdf
+  *            http://ww1.microchip.com/downloads/en/DeviceDoc/22226a.pdf
++ *            http://ww1.microchip.com/downloads/en/DeviceDoc/22072b.pdf
+  *
+  * This driver exports the value of analog input voltage to sysfs, the
+  * voltage unit is nV.
+@@ -317,6 +318,10 @@ static const struct iio_chan_spec mcp3424_channels[] = {
+ 	MCP3422_CHAN(3),
+ };
+ 
++static const struct iio_chan_spec mcp3425_channels[] = {
++	MCP3422_CHAN(0),
++};
++
+ static const struct iio_info mcp3422_info = {
+ 	.read_raw = mcp3422_read_raw,
+ 	.write_raw = mcp3422_write_raw,
+@@ -352,6 +357,10 @@ static int mcp3422_probe(struct i2c_client *client,
+ 	indio_dev->info = &mcp3422_info;
+ 
+ 	switch (adc->id) {
++	case 5:
++		indio_dev->channels = mcp3425_channels;
++		indio_dev->num_channels = ARRAY_SIZE(mcp3425_channels);
++		break;
+ 	case 2:
+ 	case 3:
+ 	case 6:
+@@ -368,7 +377,7 @@ static int mcp3422_probe(struct i2c_client *client,
+ 
+ 	/* meaningful default configuration */
+ 	config = (MCP3422_CONT_SAMPLING
+-		| MCP3422_CHANNEL_VALUE(1)
++		| MCP3422_CHANNEL_VALUE(0)
+ 		| MCP3422_PGA_VALUE(MCP3422_PGA_1)
+ 		| MCP3422_SAMPLE_RATE_VALUE(MCP3422_SRATE_240));
+ 	mcp3422_update_config(adc, config);
+@@ -386,6 +395,7 @@ static const struct i2c_device_id mcp3422_id[] = {
+ 	{ "mcp3422", 2 },
+ 	{ "mcp3423", 3 },
+ 	{ "mcp3424", 4 },
++	{ "mcp3425", 5 },
+ 	{ "mcp3426", 6 },
+ 	{ "mcp3427", 7 },
+ 	{ "mcp3428", 8 },
+@@ -412,5 +422,5 @@ static struct i2c_driver mcp3422_driver = {
+ module_i2c_driver(mcp3422_driver);
+ 
+ MODULE_AUTHOR("Angelo Compagnucci <angelo.compagnucci@gmail.com>");
+-MODULE_DESCRIPTION("Microchip mcp3422/3/4/6/7/8 driver");
++MODULE_DESCRIPTION("Microchip mcp3422/3/4/5/6/7/8 driver");
+ MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
