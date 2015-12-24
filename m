@@ -1,79 +1,210 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55491 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933553AbbLWRVb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Dec 2015 12:21:31 -0500
-In-Reply-To: <20151223104833.GE2789@odux.rfo.atmel.com>
-References: <1450689852-22763-1-git-send-email-ludovic.desroches@atmel.com> <1450689852-22763-2-git-send-email-ludovic.desroches@atmel.com> <56799798.203@kernel.org> <20151223102700.GC2789@odux.rfo.atmel.com> <20151223104833.GE2789@odux.rfo.atmel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 1/5] iio:adc:at91_adc8xx: introduce new atmel adc driver
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Wed, 23 Dec 2015 17:21:25 +0000
-To: Ludovic Desroches <ludovic.desroches@atmel.com>,
-	Jonathan Cameron <jic23@kernel.org>, nicolas.ferre@atmel.com,
-	alexandre.belloni@free-electrons.com, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	plagnioj@jcrosoft.com, linux-arm-kernel@lists.infradead.org
-Message-ID: <E2C27D1A-1035-4330-AEF3-C72B87C27FEF@jic23.retrosnub.co.uk>
+Received: from mail-pf0-f172.google.com ([209.85.192.172]:36856 "EHLO
+	mail-pf0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752673AbbLXRLg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Dec 2015 12:11:36 -0500
+Received: by mail-pf0-f172.google.com with SMTP id 65so26229772pff.3
+        for <linux-iio@vger.kernel.org>; Thu, 24 Dec 2015 09:11:36 -0800 (PST)
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: dac: mcp4725: Add basic support for MCP4726
+Date: Fri, 25 Dec 2015 02:11:28 +0900
+Message-Id: <1450977088-30692-1-git-send-email-akinobu.mita@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+MCP4726 is a single channel 12-bit DAC.  We can support MCP4726 with
+a little changes to mcp4725 driver.  In power-down mode, they have
+different selection of VOUT pull-down registers.
 
+MCP4726 also has features:
+ - Output gain options: 2x
+ - Voltage reference selection: VDD, VREF (Unbuffered or Buffered)
 
-On 23 December 2015 10:48:33 GMT+00:00, Ludovic Desroches <ludovic.desroches@atmel.com> wrote:
->On Wed, Dec 23, 2015 at 11:27:00AM +0100, Ludovic Desroches wrote:
->> On Tue, Dec 22, 2015 at 06:34:00PM +0000, Jonathan Cameron wrote:
->> > On 21/12/15 09:24, Ludovic Desroches wrote:
->> > > This driver supports the new version of the Atmel ADC device
->introduced
->> > > with the SAMA5D2 SoC family.
->> > > 
->
->[...]
->
->> > > +static irqreturn_t at91_adc_interrupt(int irq, void *private)
->> > > +{
->> > > +	struct iio_dev *indio = private;
->> > > +	struct at91_adc_state *st = iio_priv(indio);
->> > > +	u32 status = at91_adc_readl(st, ADC_ISR);
->> > > +
->> > > +	status &= at91_adc_readl(st, ADC_IMR);
->> > > +	if (status & 0xFFF) {
->> > > +		st->last_value = at91_adc_readl(st, st->chan->address);
->> > If this is a polled read - is there any reason to read this value
->here
->> > rather than outside the interrupt?
->> 
->> No it can be done outside the interrupt. I have taken some parts from
->the
->> previous driver but it was reading a register used by all the
->channels
->> when it has been designed. So yes there is probably no more reason to
->> read it into the interrupt.
->> 
->
->Thinking about it. Is it really useful to move reading outside the
->interrupt?
-It avoids needing to know the channel in here, hence simplifying the code a bit.
->
->By the way this is not a polled read.
-I meant that it is an individually requested conversion rather than a free running
- sampling system where the value read might change before it is read out.
->
->> > > +		st->done = true;
->> > > +		wake_up_interruptible(&st->wq_data_available);
->> > > +	}
->> > > +
->> > > +	return IRQ_HANDLED;
->> > > +}
->
->Ludovic
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+But these are not supported in this change.
 
+datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22272C.pdf
+
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+---
+ drivers/iio/dac/Kconfig   |  4 +--
+ drivers/iio/dac/mcp4725.c | 87 ++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 69 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index e701e28..5263c51 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -176,11 +176,11 @@ config MAX5821
+ 	  10 bits DAC.
+ 
+ config MCP4725
+-	tristate "MCP4725 DAC driver"
++	tristate "MCP4725/6 DAC driver"
+ 	depends on I2C
+ 	---help---
+ 	  Say Y here if you want to build a driver for the Microchip
+-	  MCP 4725 12-bit digital-to-analog converter (DAC) with I2C
++	  MCP 4725/6 12-bit digital-to-analog converter (DAC) with I2C
+ 	  interface.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+index 43d1458..fb4b336 100644
+--- a/drivers/iio/dac/mcp4725.c
++++ b/drivers/iio/dac/mcp4725.c
+@@ -1,5 +1,5 @@
+ /*
+- * mcp4725.c - Support for Microchip MCP4725
++ * mcp4725.c - Support for Microchip MCP4725/6
+  *
+  * Copyright (C) 2012 Peter Meerwald <pmeerw@pmeerw.net>
+  *
+@@ -134,6 +134,12 @@ static const char * const mcp4725_powerdown_modes[] = {
+ 	"500kohm_to_gnd"
+ };
+ 
++static const char * const mcp4726_powerdown_modes[] = {
++	"1kohm_to_gnd",
++	"125kohm_to_gnd",
++	"640kohm_to_gnd"
++};
++
+ static int mcp4725_get_powerdown_mode(struct iio_dev *indio_dev,
+ 	const struct iio_chan_spec *chan)
+ {
+@@ -182,11 +188,24 @@ static ssize_t mcp4725_write_powerdown(struct iio_dev *indio_dev,
+ 	return len;
+ }
+ 
+-static const struct iio_enum mcp4725_powerdown_mode_enum = {
+-	.items = mcp4725_powerdown_modes,
+-	.num_items = ARRAY_SIZE(mcp4725_powerdown_modes),
+-	.get = mcp4725_get_powerdown_mode,
+-	.set = mcp4725_set_powerdown_mode,
++enum {
++	MCP4725,
++	MCP4726,
++};
++
++static const struct iio_enum mcp472x_powerdown_mode_enum[] = {
++	[MCP4725] = {
++		.items = mcp4725_powerdown_modes,
++		.num_items = ARRAY_SIZE(mcp4725_powerdown_modes),
++		.get = mcp4725_get_powerdown_mode,
++		.set = mcp4725_set_powerdown_mode,
++	},
++	[MCP4726] = {
++		.items = mcp4726_powerdown_modes,
++		.num_items = ARRAY_SIZE(mcp4726_powerdown_modes),
++		.get = mcp4725_get_powerdown_mode,
++		.set = mcp4725_set_powerdown_mode,
++	},
+ };
+ 
+ static const struct iio_chan_spec_ext_info mcp4725_ext_info[] = {
+@@ -196,19 +215,46 @@ static const struct iio_chan_spec_ext_info mcp4725_ext_info[] = {
+ 		.write = mcp4725_write_powerdown,
+ 		.shared = IIO_SEPARATE,
+ 	},
+-	IIO_ENUM("powerdown_mode", IIO_SEPARATE, &mcp4725_powerdown_mode_enum),
+-	IIO_ENUM_AVAILABLE("powerdown_mode", &mcp4725_powerdown_mode_enum),
++	IIO_ENUM("powerdown_mode", IIO_SEPARATE,
++			&mcp472x_powerdown_mode_enum[MCP4725]),
++	IIO_ENUM_AVAILABLE("powerdown_mode",
++			&mcp472x_powerdown_mode_enum[MCP4725]),
++	{ },
++};
++
++static const struct iio_chan_spec_ext_info mcp4726_ext_info[] = {
++	{
++		.name = "powerdown",
++		.read = mcp4725_read_powerdown,
++		.write = mcp4725_write_powerdown,
++		.shared = IIO_SEPARATE,
++	},
++	IIO_ENUM("powerdown_mode", IIO_SEPARATE,
++			&mcp472x_powerdown_mode_enum[MCP4726]),
++	IIO_ENUM_AVAILABLE("powerdown_mode",
++			&mcp472x_powerdown_mode_enum[MCP4726]),
+ 	{ },
+ };
+ 
+-static const struct iio_chan_spec mcp4725_channel = {
+-	.type		= IIO_VOLTAGE,
+-	.indexed	= 1,
+-	.output		= 1,
+-	.channel	= 0,
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+-	.ext_info	= mcp4725_ext_info,
++static const struct iio_chan_spec mcp472x_channel[] = {
++	[MCP4725] = {
++		.type		= IIO_VOLTAGE,
++		.indexed	= 1,
++		.output		= 1,
++		.channel	= 0,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++		.ext_info	= mcp4725_ext_info,
++	},
++	[MCP4726] = {
++		.type		= IIO_VOLTAGE,
++		.indexed	= 1,
++		.output		= 1,
++		.channel	= 0,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++		.ext_info	= mcp4726_ext_info,
++	},
+ };
+ 
+ static int mcp4725_set_value(struct iio_dev *indio_dev, int val)
+@@ -301,7 +347,7 @@ static int mcp4725_probe(struct i2c_client *client,
+ 
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->info = &mcp4725_info;
+-	indio_dev->channels = &mcp4725_channel;
++	indio_dev->channels = &mcp472x_channel[id->driver_data];
+ 	indio_dev->num_channels = 1;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+@@ -315,7 +361,7 @@ static int mcp4725_probe(struct i2c_client *client,
+ 	}
+ 	pd = (inbuf[0] >> 1) & 0x3;
+ 	data->powerdown = pd > 0 ? true : false;
+-	data->powerdown_mode = pd ? pd-1 : 2; /* 500kohm_to_gnd */
++	data->powerdown_mode = pd ? pd - 1 : 2; /* largest register to gnd */
+ 	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
+ 
+ 	return iio_device_register(indio_dev);
+@@ -328,7 +374,8 @@ static int mcp4725_remove(struct i2c_client *client)
+ }
+ 
+ static const struct i2c_device_id mcp4725_id[] = {
+-	{ "mcp4725", 0 },
++	{ "mcp4725", MCP4725 },
++	{ "mcp4726", MCP4726 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, mcp4725_id);
+@@ -345,5 +392,5 @@ static struct i2c_driver mcp4725_driver = {
+ module_i2c_driver(mcp4725_driver);
+ 
+ MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+-MODULE_DESCRIPTION("MCP4725 12-bit DAC");
++MODULE_DESCRIPTION("MCP4725/6 12-bit DAC");
+ MODULE_LICENSE("GPL");
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+1.9.1
+
