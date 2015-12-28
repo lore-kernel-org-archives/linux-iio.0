@@ -1,43 +1,159 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:34827 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750753AbbL0FLq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Dec 2015 00:11:46 -0500
-Received: by mail-pa0-f46.google.com with SMTP id jx14so150968881pad.2
-        for <linux-iio@vger.kernel.org>; Sat, 26 Dec 2015 21:11:46 -0800 (PST)
-From: Matt Ranostay <mranostay@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH] iio: chemical: vz89x: correct xfer return value
-Date: Sat, 26 Dec 2015 21:11:30 -0800
-Message-Id: <1451193090-3625-1-git-send-email-mranostay@gmail.com>
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:35176 "EHLO
+	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751171AbbL1QPm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Dec 2015 11:15:42 -0500
+Received: by mail-pf0-f194.google.com with SMTP id e65so10070250pfe.2
+        for <linux-iio@vger.kernel.org>; Mon, 28 Dec 2015 08:15:41 -0800 (PST)
+From: Shraddha Barke <shraddha.6596@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Shraddha Barke <shraddha.6596@gmail.com>
+Subject: [PATCH] Staging: iio: cdc: Fix Alignment should match open parenthesis
+Date: Mon, 28 Dec 2015 21:44:22 +0530
+Message-Id: <1451319262-4631-1-git-send-email-shraddha.6596@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-vz89x_i2c_xfer() function was never returning a non-positive value on
-error, and this patch corrects that with a -EIO return code.
+Patch fixes the checkpatch warning "Alignment should match open 
+parenthesis"
 
-Also the error condition was incorrect since it was against measurement
-size and not the i2c messages send/received count.
-
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
 ---
- drivers/iio/chemical/vz89x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/iio/cdc/ad7746.c | 42 +++++++++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
-index c3367aa..0666919 100644
---- a/drivers/iio/chemical/vz89x.c
-+++ b/drivers/iio/chemical/vz89x.c
-@@ -120,7 +120,7 @@ static int vz89x_i2c_xfer(struct vz89x_data *data, u8 cmd)
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index 2c5d277..8c371e3 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -212,7 +212,7 @@ static const unsigned char ad7746_cap_filter_rate_table[][2] = {
+ };
  
- 	ret = i2c_transfer(client->adapter, msg, 2);
+ static int ad7746_select_channel(struct iio_dev *indio_dev,
+-			    struct iio_chan_spec const *chan)
++				 struct iio_chan_spec const *chan)
+ {
+ 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+ 	int ret, delay;
+@@ -227,12 +227,12 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
  
--	return (ret == VZ89X_REG_MEASUREMENT_SIZE) ? 0 : ret;
-+	return (ret == 2) ? 0 : -EIO;
+ 		if (chip->capdac_set != chan->channel) {
+ 			ret = i2c_smbus_write_byte_data(chip->client,
+-				AD7746_REG_CAPDACA,
+-				chip->capdac[chan->channel][0]);
++							AD7746_REG_CAPDACA,
++			chip->capdac[chan->channel][0]);
+ 			if (ret < 0)
+ 				return ret;
+ 			ret = i2c_smbus_write_byte_data(chip->client,
+-				AD7746_REG_CAPDACB,
++							AD7746_REG_CAPDACB,
+ 				chip->capdac[chan->channel][1]);
+ 			if (ret < 0)
+ 				return ret;
+@@ -356,8 +356,8 @@ static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
+ 		       S_IWUSR, NULL, ad7746_start_gain_calib, VIN);
+ 
+ static ssize_t ad7746_show_cap_filter_rate_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++						 struct device_attribute *attr,
++						 char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+@@ -367,9 +367,9 @@ static ssize_t ad7746_show_cap_filter_rate_setup(struct device *dev,
  }
  
- static int vz89x_smbus_xfer(struct vz89x_data *data, u8 cmd)
+ static ssize_t ad7746_store_cap_filter_rate_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
++						  struct device_attribute *attr,
++						  const char *buf,
++						  size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+@@ -396,8 +396,8 @@ static ssize_t ad7746_store_cap_filter_rate_setup(struct device *dev,
+ }
+ 
+ static ssize_t ad7746_show_vt_filter_rate_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++						struct device_attribute *attr,
++						char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+@@ -407,9 +407,9 @@ static ssize_t ad7746_show_vt_filter_rate_setup(struct device *dev,
+ }
+ 
+ static ssize_t ad7746_store_vt_filter_rate_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
++						 struct device_attribute *attr,
++						 const char *buf,
++						 size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+@@ -509,7 +509,8 @@ static int ad7746_write_raw(struct iio_dev *indio_dev,
+ 			goto out;
+ 		}
+ 		ret = i2c_smbus_write_word_data(chip->client,
+-				AD7746_REG_CAP_OFFH, swab16(val));
++						AD7746_REG_CAP_OFFH,
++						swab16(val));
+ 		if (ret < 0)
+ 			goto out;
+ 
+@@ -533,12 +534,12 @@ static int ad7746_write_raw(struct iio_dev *indio_dev,
+ 			AD7746_CAPDAC_DACP(val) | AD7746_CAPDAC_DACEN : 0);
+ 
+ 		ret = i2c_smbus_write_byte_data(chip->client,
+-			AD7746_REG_CAPDACA,
++						AD7746_REG_CAPDACA,
+ 			chip->capdac[chan->channel][0]);
+ 		if (ret < 0)
+ 			goto out;
+ 		ret = i2c_smbus_write_byte_data(chip->client,
+-			AD7746_REG_CAPDACB,
++						AD7746_REG_CAPDACB,
+ 			chip->capdac[chan->channel][1]);
+ 		if (ret < 0)
+ 			goto out;
+@@ -577,7 +578,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 
+ 		regval = chip->config | AD7746_CONF_MODE_SINGLE_CONV;
+ 		ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG,
+-				regval);
++						regval);
+ 		if (ret < 0)
+ 			goto out;
+ 
+@@ -585,7 +586,8 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 		/* Now read the actual register */
+ 
+ 		ret = i2c_smbus_read_i2c_block_data(chip->client,
+-			chan->address >> 8, 3, &chip->data.d8[1]);
++						    chan->address >> 8, 3,
++						    &chip->data.d8[1]);
+ 
+ 		if (ret < 0)
+ 			goto out;
+@@ -687,7 +689,7 @@ static const struct iio_info ad7746_info = {
+  */
+ 
+ static int ad7746_probe(struct i2c_client *client,
+-		const struct i2c_device_id *id)
++			const struct i2c_device_id *id)
+ {
+ 	struct ad7746_platform_data *pdata = client->dev.platform_data;
+ 	struct ad7746_chip_info *chip;
 -- 
-2.6.4
+2.1.4
 
