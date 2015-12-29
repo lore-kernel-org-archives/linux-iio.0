@@ -1,101 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:33832 "EHLO
-	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751756AbbL2Lqy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Dec 2015 06:46:54 -0500
-Received: by mail-pf0-f194.google.com with SMTP id 65so8327431pff.1
-        for <linux-iio@vger.kernel.org>; Tue, 29 Dec 2015 03:46:54 -0800 (PST)
-From: Shraddha Barke <shraddha.6596@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-iio@vger.kernel.org, Shraddha Barke <shraddha.6596@gmail.com>
-Subject: [PATCH 3/5] Staging: iio: cdc: ad7152: Fix alignment should match open parenthesis
-Date: Tue, 29 Dec 2015 16:57:29 +0530
-Message-Id: <1451388451-10342-4-git-send-email-shraddha.6596@gmail.com>
-In-Reply-To: <1451388451-10342-1-git-send-email-shraddha.6596@gmail.com>
-References: <1451388451-10342-1-git-send-email-shraddha.6596@gmail.com>
+Received: from mail.kernel.org ([198.145.29.136]:42390 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753863AbbL2Sev (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Dec 2015 13:34:51 -0500
+Date: Tue, 29 Dec 2015 12:34:47 -0600
+From: Rob Herring <robh@kernel.org>
+To: Matt Ranostay <mranostay@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	jic23@kernel.org
+Subject: Re: [PATCH] iio: health: max30100: add config for LED current
+Message-ID: <20151229183447.GE12450@rob-hp-laptop>
+References: <1451191104-1281-1-git-send-email-mranostay@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1451191104-1281-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix checkpatch warning of "Alignment should match open parenthesis".
+On Sat, Dec 26, 2015 at 08:38:24PM -0800, Matt Ranostay wrote:
+> Allow the current for both RED and IR LEDs to be set via an device tree
+> property setting.
+> 
+> This is an optional setting that is useful for applications that have a
+> known glass attenuation factor.
+> 
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> ---
+>  .../devicetree/bindings/iio/health/max30100.txt     |  7 +++++++
+>  drivers/iio/health/max30100.c                       | 21 +++++++++++++++------
+>  2 files changed, 22 insertions(+), 6 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/health/max30100.txt b/Documentation/devicetree/bindings/iio/health/max30100.txt
+> index f6fbac6..009314c 100644
+> --- a/Documentation/devicetree/bindings/iio/health/max30100.txt
+> +++ b/Documentation/devicetree/bindings/iio/health/max30100.txt
+> @@ -11,11 +11,18 @@ Required properties:
+>    Refer to interrupt-controller/interrupts.txt for generic
+>    interrupt client node bindings.
+>  
+> +Optional properties:
+> +  - max30100,led-current: configuration for LED current (in mA) while the engine
+> +    is running. Upper nibble is for the RED LED, and lower nibble the IR LED.
 
-Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
----
- drivers/staging/iio/cdc/ad7152.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+Can you use the common LED binding and led-max-microamp instead?
 
-diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
-index 472836d..15bbbe5 100644
---- a/drivers/staging/iio/cdc/ad7152.c
-+++ b/drivers/staging/iio/cdc/ad7152.c
-@@ -166,8 +166,8 @@ static const unsigned char ad7152_filter_rate_table[][2] = {
- };
- 
- static ssize_t ad7152_show_filter_rate_setup(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
-+					     struct device_attribute *attr,
-+					     char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7152_chip_info *chip = iio_priv(indio_dev);
-@@ -177,9 +177,9 @@ static ssize_t ad7152_show_filter_rate_setup(struct device *dev,
- }
- 
- static ssize_t ad7152_store_filter_rate_setup(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
-+					      struct device_attribute *attr,
-+					      const char *buf,
-+					      size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7152_chip_info *chip = iio_priv(indio_dev);
-@@ -199,7 +199,7 @@ static ssize_t ad7152_store_filter_rate_setup(struct device *dev,
- 
- 	mutex_lock(&indio_dev->mlock);
- 	ret = i2c_smbus_write_byte_data(chip->client,
--			AD7152_REG_CFG2, AD7152_CFG2_OSR(i));
-+					AD7152_REG_CFG2, AD7152_CFG2_OSR(i));
- 	if (ret < 0) {
- 		mutex_unlock(&indio_dev->mlock);
- 		return ret;
-@@ -268,8 +268,8 @@ static int ad7152_write_raw(struct iio_dev *indio_dev,
- 		val = (val2 * 1024) / 15625;
- 
- 		ret = i2c_smbus_write_word_data(chip->client,
--				ad7152_addresses[chan->channel][AD7152_GAIN],
--				swab16(val));
-+						ad7152_addresses[chan->channel][AD7152_GAIN],
-+						swab16(val));
- 		if (ret < 0)
- 			goto out;
- 
-@@ -282,8 +282,8 @@ static int ad7152_write_raw(struct iio_dev *indio_dev,
- 			goto out;
- 		}
- 		ret = i2c_smbus_write_word_data(chip->client,
--				ad7152_addresses[chan->channel][AD7152_OFFS],
--				swab16(val));
-+						ad7152_addresses[chan->channel][AD7152_OFFS],
-+						swab16(val));
- 		if (ret < 0)
- 			goto out;
- 
-@@ -302,8 +302,8 @@ static int ad7152_write_raw(struct iio_dev *indio_dev,
- 		chip->setup[chan->channel] |= AD7152_SETUP_RANGE(i);
- 
- 		ret = i2c_smbus_write_byte_data(chip->client,
--				ad7152_addresses[chan->channel][AD7152_SETUP],
--				chip->setup[chan->channel]);
-+						ad7152_addresses[chan->channel][AD7152_SETUP],
-+						chip->setup[chan->channel]);
- 		if (ret < 0)
- 			goto out;
- 
--- 
-2.1.4
+Otherwise, please add "-microamp" suffix and just split to 2 cells for 
+RED and IR LEDs. Also, "max30100" is not a vendor prefix. Use maxim.
 
+
+> +	ret = of_property_read_u32(np, "max30100,led-current", &val);
+> +	if (ret) {
+> +		/* Default to 24 mA RED LED, 50 mA IR LED */
+> +		val = (MAX30100_REG_LED_CONFIG_24MA <<
+> +			MAX30100_REG_LED_CONFIG_RED_LED_SHIFT) |
+> +			MAX30100_REG_LED_CONFIG_50MA;
+> +		dev_warn(dev, "no led-current set, defaulting to %d", val);
+> +	}
+> +
+> +	ret = regmap_write(data->regmap, MAX30100_REG_LED_CONFIG, val & 0xFF);
+
+Huh? You say the units are milliamps, but then you use the DT value 
+directly?
+
+Rob
