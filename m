@@ -1,33 +1,36 @@
-Return-Path: <mranostay@gmail.com>
-From: Matt Ranostay <mranostay@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH] iio: proximity: lidar: correct return value
-Date: Sat, 26 Dec 2015 20:56:30 -0800
-Message-Id: <1451192190-2624-1-git-send-email-mranostay@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:33465 "EHLO
+	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751162AbbL2L2O (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Dec 2015 06:28:14 -0500
+Received: by mail-pf0-f193.google.com with SMTP id 78so12395084pfw.0
+        for <linux-iio@vger.kernel.org>; Tue, 29 Dec 2015 03:28:14 -0800 (PST)
+From: Shraddha Barke <shraddha.6596@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-iio@vger.kernel.org, Shraddha Barke <shraddha.6596@gmail.com>
+Subject: [PATCH 0/5] Staging: iio: cdc: Checkpatch cleanups
+Date: Tue, 29 Dec 2015 16:57:26 +0530
+Message-Id: <1451388451-10342-1-git-send-email-shraddha.6596@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-lidar_i2c_xfer() function was never a non-positive value on error,
-and this correct that with a -EIO return code.
+These patches fix warnings detected by checkpatch.
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
- drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Shraddha Barke (5):
+  Staging: iio: cdc: Prefer using the BIT macro
+  Staging: iio: cdc: Prefer using the BIT macro
+  Staging: iio: cdc: Fix alignment should match open parenthesis
+  Staging: iio: cdc: Prefer using the BIT macro
+  Staging: iio: cdc: Fix alignment should match open parenthesis
 
-diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-index 93e29fb..db35e04 100644
---- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-+++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-@@ -87,7 +87,7 @@ static int lidar_i2c_xfer(struct lidar_data *data, u8 reg, u8 *val, int len)
- 
- 	ret = i2c_transfer(client->adapter, msg, 2);
- 
--	return (ret == 2) ? 0 : ret;
-+	return (ret == 2) ? 0 : -EIO;
- }
- 
- static int lidar_smbus_xfer(struct lidar_data *data, u8 reg, u8 *val, int len)
+ drivers/staging/iio/cdc/ad7150.c | 34 ++++++++++++++++---------------
+ drivers/staging/iio/cdc/ad7152.c | 44 ++++++++++++++++++++--------------------
+ drivers/staging/iio/cdc/ad7746.c | 22 ++++++++++----------
+ 3 files changed, 51 insertions(+), 49 deletions(-)
+
 -- 
-2.6.4
+2.1.4
+
