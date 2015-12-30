@@ -1,47 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qg0-f49.google.com ([209.85.192.49]:36832 "EHLO
-	mail-qg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754417AbbL3LHK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Dec 2015 06:07:10 -0500
-Received: by mail-qg0-f49.google.com with SMTP id e32so90535779qgf.3
-        for <linux-iio@vger.kernel.org>; Wed, 30 Dec 2015 03:07:10 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <1451473319.2316.0@smtp.gmail.com>
-References: <1451464368.2262.1@smtp.gmail.com>
-	<201512300952.24700.marex@denx.de>
-	<1451468582.2348.0@smtp.gmail.com>
-	<201512301050.11178.marex@denx.de>
-	<CABFtUbTbibudvXYspe8N7cf1UgGVOwtYSPF2JuMZPVmpa680+g@mail.gmail.com>
-	<1451473319.2316.0@smtp.gmail.com>
-Date: Wed, 30 Dec 2015 12:07:09 +0100
-Message-ID: <CABFtUbSfXeXf_+_uOExwoMZJ0ixVve4hiA93gkUuXcVv0PQ0Lw@mail.gmail.com>
-Subject: Re: acpi-als on Dell XPS 13 9343
-From: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-To: Mykola Dvornik <mykola.dvornik@gmail.com>
-Cc: Marek Vasut <marex@denx.de>, linux-iio@vger.kernel.org,
-	=?UTF-8?Q?Martin_Li=C5=A1ka?= <marxin.liska@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from h1.radempa.de ([176.9.142.194]:51912 "EHLO mail.cosmopool.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752118AbbL3OgE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 30 Dec 2015 09:36:04 -0500
+From: Harald Geyer <harald@ccbib.org>
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Bell <jonathan@raspberrypi.org>
+Cc: Richard Weinberger <richard@nod.at>,
+	Harald Geyer <harald@ccbib.org>
+Subject: [PATCH 3/3] iio: dht11: Improve logging
+Date: Wed, 30 Dec 2015 14:26:45 +0000
+Message-Id: <1451485605-3441-3-git-send-email-harald@ccbib.org>
+In-Reply-To: <1451485605-3441-1-git-send-email-harald@ccbib.org>
+References: <1451485605-3441-1-git-send-email-harald@ccbib.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-2015-12-30 12:01 GMT+01:00 Mykola Dvornik <mykola.dvornik@gmail.com>:
-> Hi Gabriele,
->
-> Thanks for the tip.
->
-> The reported status is 0, so the device is disabled and there is no way to
-> override it in BIOS.
+* Unify log messages
+* Add more DEBUG messages
 
-Not really related to acpi-als, but you could take a look at
-libsmbios. I know it can enable the ambient light sensor of
-some Dell laptops.
+Apparently this driver is working unreliably on some platforms that I can't
+test. Therefore I want an easy way for bug reporters to provide useful
+information without making the driver too chatty by default.
 
-Gabriele
+Signed-off-by: Harald Geyer <harald@ccbib.org>
+---
+ drivers/iio/humidity/dht11.c | 40 ++++++++++++++++++++++++++++++++++------
+ 1 file changed, 34 insertions(+), 6 deletions(-)
 
-> Anyway thanks guys for all your help.
->
-> Happy New Year.
->
-> Cheers,
->
-> Mykola
+diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+index cd1477d..f0cb28c 100644
+--- a/drivers/iio/humidity/dht11.c
++++ b/drivers/iio/humidity/dht11.c
+@@ -96,6 +96,24 @@ struct dht11 {
+ 	struct {s64 ts; int value; }	edges[DHT11_EDGES_PER_READ];
+ };
+ 
++#ifdef CONFIG_DYNAMIC_DEBUG
++/*
++ * dht11_edges_print: show the data as actually received by the
++ *                    driver.
++ */
++static void dht11_edges_print(struct dht11 *dht11)
++{
++	int i;
++
++	dev_dbg(dht11->dev, "%d edges detected:\n", dht11->num_edges);
++	for (i = 1; i < dht11->num_edges; ++i) {
++		dev_dbg(dht11->dev, "%d: %lld ns %s\n", i,
++			dht11->edges[i].ts - dht11->edges[i - 1].ts,
++			dht11->edges[i - 1].value ? "high" : "low");
++	}
++}
++#endif /* CONFIG_DYNAMIC_DEBUG */
++
+ static unsigned char dht11_decode_byte(char *bits)
+ {
+ 	unsigned char ret = 0;
+@@ -119,8 +137,12 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 	for (i = 0; i < DHT11_BITS_PER_READ; ++i) {
+ 		t = dht11->edges[offset + 2 * i + 2].ts -
+ 			dht11->edges[offset + 2 * i + 1].ts;
+-		if (!dht11->edges[offset + 2 * i + 1].value)
+-			return -EIO;  /* lost synchronisation */
++		if (!dht11->edges[offset + 2 * i + 1].value) {
++			dev_dbg(dht11->dev,
++				"lost synchronisation at edge %d\n",
++				offset + 2 * i + 1);
++			return -EIO;
++		}
+ 		bits[i] = t > DHT11_THRESHOLD ? 1 : 0;
+ 	}
+ 
+@@ -130,8 +152,10 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 	temp_dec = dht11_decode_byte(&bits[24]);
+ 	checksum = dht11_decode_byte(&bits[32]);
+ 
+-	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
++	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum) {
++		dev_dbg(dht11->dev, "invalid checksum\n");
+ 		return -EIO;
++	}
+ 
+ 	dht11->timestamp = ktime_get_real_ns();
+ 	if (hum_int < 20) {  /* DHT22 */
+@@ -182,6 +206,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 	mutex_lock(&dht11->lock);
+ 	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns()) {
+ 		timeres = ktime_get_resolution_ns();
++		dev_dbg(dht11->dev, "current timeresolution: %dns\n", timeres);
+ 		if (timeres > DHT11_MIN_TIMERES) {
+ 			dev_err(dht11->dev, "timeresolution %dns too low\n",
+ 				timeres);
+@@ -219,10 +244,13 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 
+ 		free_irq(dht11->irq, iio_dev);
+ 
++#ifdef CONFIG_DYNAMIC_DEBUG
++		dht11_edges_print(dht11);
++#endif
++
+ 		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
+-			dev_err(&iio_dev->dev,
+-				"Only %d signal edges detected\n",
+-					dht11->num_edges);
++			dev_err(dht11->dev, "Only %d signal edges detected\n",
++				dht11->num_edges);
+ 			ret = -ETIMEDOUT;
+ 		}
+ 		if (ret < 0)
+-- 
+2.1.4
+
