@@ -1,68 +1,65 @@
-Return-Path: <mranostay@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <20151229183447.GE12450@rob-hp-laptop>
-References: <1451191104-1281-1-git-send-email-mranostay@gmail.com> <20151229183447.GE12450@rob-hp-laptop>
-From: Matt Ranostay <mranostay@gmail.com>
-Date: Tue, 29 Dec 2015 18:13:58 -0800
-Message-ID: <CAKzfze---+VUotfM91YC1TcEU-aK0UeNhBy8LL39772uvmVhDA@mail.gmail.com>
-Subject: Re: [PATCH] iio: health: max30100: add config for LED current
-To: Rob Herring <robh@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <harald@ccbib.org>
+From: Harald Geyer <harald@ccbib.org>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Bell <jonathan@raspberrypi.org>
+Cc: Richard Weinberger <richard@nod.at>,
+	Harald Geyer <harald@ccbib.org>
+Subject: [PATCH 1/3] iio: dht11: Improve reliability - be more tolerant about missing start bits
+Date: Wed, 30 Dec 2015 14:26:43 +0000
+Message-Id: <1451485605-3441-1-git-send-email-harald@ccbib.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Dec 29, 2015 at 10:34 AM, Rob Herring <robh@kernel.org> wrote:
-> On Sat, Dec 26, 2015 at 08:38:24PM -0800, Matt Ranostay wrote:
->> Allow the current for both RED and IR LEDs to be set via an device tree
->> property setting.
->>
->> This is an optional setting that is useful for applications that have a
->> known glass attenuation factor.
->>
->> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->> ---
->>  .../devicetree/bindings/iio/health/max30100.txt     |  7 +++++++
->>  drivers/iio/health/max30100.c                       | 21 +++++++++++++++------
->>  2 files changed, 22 insertions(+), 6 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/health/max30100.txt b/Documentation/devicetree/bindings/iio/health/max30100.txt
->> index f6fbac6..009314c 100644
->> --- a/Documentation/devicetree/bindings/iio/health/max30100.txt
->> +++ b/Documentation/devicetree/bindings/iio/health/max30100.txt
->> @@ -11,11 +11,18 @@ Required properties:
->>    Refer to interrupt-controller/interrupts.txt for generic
->>    interrupt client node bindings.
->>
->> +Optional properties:
->> +  - max30100,led-current: configuration for LED current (in mA) while the engine
->> +    is running. Upper nibble is for the RED LED, and lower nibble the IR LED.
->
-> Can you use the common LED binding and led-max-microamp instead?
->
-> Otherwise, please add "-microamp" suffix and just split to 2 cells for
-> RED and IR LEDs. Also, "max30100" is not a vendor prefix. Use maxim.
+Instead of guessing where the data starts, we now just try to decode from
+every possible start position. This causes no additional overhead if we
+properly received the full preamble and only costs a few extra CPU cycles
+in the case where the preamble is corrupted. This is much more efficient
+than to return an error to userspace and start over again.
 
-Ok.
+Signed-off-by: Harald Geyer <harald@ccbib.org>
+---
+Jonathan Bell:
+Can you test if this fixes the problems you reported on RPi?
 
->
->
->> +     ret = of_property_read_u32(np, "max30100,led-current", &val);
->> +     if (ret) {
->> +             /* Default to 24 mA RED LED, 50 mA IR LED */
->> +             val = (MAX30100_REG_LED_CONFIG_24MA <<
->> +                     MAX30100_REG_LED_CONFIG_RED_LED_SHIFT) |
->> +                     MAX30100_REG_LED_CONFIG_50MA;
->> +             dev_warn(dev, "no led-current set, defaulting to %d", val);
->> +     }
->> +
->> +     ret = regmap_write(data->regmap, MAX30100_REG_LED_CONFIG, val & 0xFF);
->
-> Huh? You say the units are milliamps, but then you use the DT value
-> directly?
+(It does fix problems I noticed when I slowed down my test HW with
+enabling the debug logging introduced later in this series, so including
+this patch is a good thing even if it doesn't fix Jonathan's problems.)
 
-Yeah they are direct index values in the register. Probably should
-make the documentation more clear.
+ drivers/iio/humidity/dht11.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
->
-> Rob
+diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+index 1165b1c..1ca284a 100644
+--- a/drivers/iio/humidity/dht11.c
++++ b/drivers/iio/humidity/dht11.c
+@@ -161,7 +161,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 			int *val, int *val2, long m)
+ {
+ 	struct dht11 *dht11 = iio_priv(iio_dev);
+-	int ret, timeres;
++	int ret, timeres, offset;
+ 
+ 	mutex_lock(&dht11->lock);
+ 	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns()) {
+@@ -208,11 +208,14 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 		if (ret < 0)
+ 			goto err;
+ 
+-		ret = dht11_decode(dht11,
+-				   dht11->num_edges == DHT11_EDGES_PER_READ ?
+-					DHT11_EDGES_PREAMBLE :
+-					DHT11_EDGES_PREAMBLE - 2,
+-				timeres);
++		offset = DHT11_EDGES_PREAMBLE +
++				dht11->num_edges - DHT11_EDGES_PER_READ;
++		for (; offset >= 0; --offset) {
++			ret = dht11_decode(dht11, offset, timeres);
++			if (!ret)
++				break;
++		}
++
+ 		if (ret)
+ 			goto err;
+ 	}
+-- 
+2.1.4
