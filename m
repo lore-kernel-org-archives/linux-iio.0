@@ -1,38 +1,173 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:58369 "EHLO mail.kernel.org"
+Received: from mga03.intel.com ([134.134.136.65]:37108 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751509AbbLaWRf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 31 Dec 2015 17:17:35 -0500
-Date: Thu, 31 Dec 2015 16:17:31 -0600
-From: Rob Herring <robh@kernel.org>
-To: Matt Ranostay <mranostay@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	jic23@kernel.org
-Subject: Re: [PATCH v2] iio: health: max30100: add config for LED current
-Message-ID: <20151231221731.GA4445@rob-hp-laptop>
-References: <1451454288-9945-1-git-send-email-mranostay@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1451454288-9945-1-git-send-email-mranostay@gmail.com>
+	id S1751104AbbLaXUH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 31 Dec 2015 18:20:07 -0500
+Message-ID: <1451603888.4047.34.camel@linux.intel.com>
+Subject: Re: [PATCH 3/6] thermal: iio device for thermal sensor
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Eduardo Valentin <edubezval@gmail.com>
+Cc: jic23@kernel.org, rui.zhang@intel.com, linux-pm@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Date: Thu, 31 Dec 2015 15:18:08 -0800
+In-Reply-To: <20151231191847.GA14793@localhost.localdomain>
+References: <1443305111-28272-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <1443305111-28272-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <20151231191847.GA14793@localhost.localdomain>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Dec 29, 2015 at 09:44:48PM -0800, Matt Ranostay wrote:
-> Allow the current for both RED and IR LEDs to be set via an device tree
-> property setting.
-> 
-> This is an optional setting that is useful for applications that have a
-> known glass attenuation factor.
-> 
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-> ---
-> Changes from v2:
-> * change to use microamp property name from LED class
-> * updated documentation for new format
-> * added allowed current index map
-> 
-> .../devicetree/bindings/iio/health/max30100.txt    |  8 +++
->  drivers/iio/health/max30100.c                      | 81 ++++++++++++++++++++--
->  2 files changed, 83 insertions(+), 6 deletions(-)
+On Thu, 2015-12-31 at 11:18 -0800, Eduardo Valentin wrote:
+> On Sat, Sep 26, 2015 at 03:05:08PM -0700, Srinivas Pandruvada wrote:
+> > This change registers temperature sensor in a thermal zone as an
+> > IIO
+> > temperature device. This allows user space thermal application to
+> > fully
+> > utilize IIO capability to read temperature events and samples.
+> > The primary motivation for this change to improve performance for
+> > user
+> > space thermal controllers like Linux thermal daemon or Intel®
+> > Dynamic
+> > Platform and Thermal Framework (DPTF) for Chromium OS.
+> > The current sysfs has several limitations, which forces the current
+> > user space to use polling as the safe way. This polling causes
+> > performance
+> > bottlenecks as some devices requires extremely aggressive response
+> > to
+> > changing temperature conditions.
+> > These are some limitations, which this change tries to address:
+> > - Temperature reading via sysfs attribute, which needs conversion
+> > from
+> > string to int
+> > - No way to set threshold settings to avoid polling for temperature
+> > change
+> > without using a RW passive trip point.
+> > - Event notifications via slow kobject uevents, which needs parsing
+> > to id
+> > the zone and read temperature
+> > - Only pull interface from user space, kernel drivers can't send
+> > samples
+> > - One sample at a time read from user space
+> > These limitations can be addressed by registering temperature
+> > sensor
+> > as an IIO device. IIO provides
+> > - buffered access via /dev/iio:deviceX node with select/poll
+> > capability
+> > - temperature thresholds setting via iio event thresholds
+> > - Wait and receive events
+> > - Able to use different external trigger (data ready indications)
+> > and push
+> > samples to buffers
+> > 
+> > Next set of patches uses the IIO binding introduced in this
+> > patchset.
+> > The iio device created during call to thermal_zone_device_register.
+> > Samples
+> > are pushed to iio buffers when thermal_zone_device_update is called
+> > from
+> > client drivers.
+> > 
+> > New thermal zone device callbacks:
+> > It introduces three new callbacks for thermal client drivers:
+> > get_threshold_temp: Get the current threshold temperature
+> > set_threshold_temp: Set the current threshold temperature
+> > check_notification_support: Inform that the client driver has
+> > asynchronous
+> > notification mechanism. If it is then polling can be avoided for
+> > the
+> > temperature sensor.
+> > 
+> > Signed-off-by: Srinivas Pandruvada <
+> > srinivas.pandruvada@linux.intel.com>
+> > ---
 
-Acked-by: Rob Herring <robh@kernel.org>
+[Cut]
+
+> > 
+> > +	int (*get_threshold_temp)(struct thermal_zone_device *, > > 
+> > int,
+> > +				  int *);
+> > +	int (*set_threshold_temp)(struct thermal_zone_device *,
+> > int,
+> > +				  int);
+> > +	int (*set_notification_status)(struct thermal_zone_device
+> > *,
+> > +				       bool status);
+> > +	bool (*check_notification_support)(struct
+> > thermal_zone_device *);
+> 
+> 
+> Can an existing thermal sensor benefit of the new functionality? If
+> yes,
+
+Yes. The existing driver will be using the trips instead of thresholds.
+As we discussed during LPC,
+trips (pasive/active/..): These are temperature points to which a
+cooling action can be performed by binding a cooling device. The
+existing drivers who support RW trips, user space still can update
+those and get sample notifications. Existing drivers either have
+polling or interrupt suport to evaluate trips and call
+thermal_zone_device_update(), which will result in sample pushed to
+user space.
+ 
+Thresholds: These are sensor temperature points which user space wants
+to get notification of temperature change. They will not be presented
+as passive/active/hot trips. User space can decide what to do with the
+notifications. If existing drivers don't want to present as fake trips,
+then they need to add the callback support.
+
+> The problem I have with the above is the fact that they add callbacks
+> and behavior eligible only for a subset of thermal zones.
+> 
+> If we are moving to IIO integrated mode, the existing drivers need to
+> be
+> converted, to avoid diversification of behavior. For example, there
+> is
+> existing notification callbacks. Also, hot trip points are described
+> as
+> notification points.
+> 
+> I believe the patch set needs to document also the next steps on this
+> move.
+> 
+
+If we decide to merge this functionality, I will push a documentation
+and IIO sample program to use these features.
+
+Thanks,
+Srinivas
+
+> 
+> >  	int (*notify) (struct thermal_zone_device *, int,
+> >  		       enum thermal_trip_type);
+> >  };
+> > @@ -148,6 +155,8 @@ struct thermal_attr {
+> >  	char name[THERMAL_NAME_LENGTH];
+> >  };
+> >  
+> > +struct iio_dev;
+> > +
+> >  /**
+> >   * struct thermal_zone_device - structure for a thermal zone
+> >   * @id:		unique id number for each thermal zone
+> > @@ -182,6 +191,7 @@ struct thermal_attr {
+> >   * @lock:	lock to protect thermal_instances list
+> >   * @node:	node in thermal_tz_list (in thermal_core.c)
+> >   * @poll_queue:	delayed work for polling
+> > + * @indio_dev:	pointer to instance of an IIO dev for this
+> > zone
+> >   */
+> >  struct thermal_zone_device {
+> >  	int id;
+> > @@ -208,6 +218,9 @@ struct thermal_zone_device {
+> >  	struct mutex lock;
+> >  	struct list_head node;
+> >  	struct delayed_work poll_queue;
+> > +#if defined(CONFIG_THERMAL_IIO)
+> > +	struct iio_dev *indio_dev;
+> > +#endif
+> >  };
+> >  
+> >  /**
