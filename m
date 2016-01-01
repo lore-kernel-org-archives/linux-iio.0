@@ -1,132 +1,156 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:26751 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751104AbbLaXbO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 31 Dec 2015 18:31:14 -0500
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "edubezval@gmail.com" <edubezval@gmail.com>
-CC: "Zhang, Rui" <rui.zhang@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH 3/6] thermal: iio device for thermal sensor
-Date: Thu, 31 Dec 2015 23:31:12 +0000
-Message-ID: <1451604555.4047.39.camel@intel.com>
-References: <1443305111-28272-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <1443305111-28272-4-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <20151231191847.GA14793@localhost.localdomain>
-	 <1451603888.4047.34.camel@linux.intel.com>
-In-Reply-To: <1451603888.4047.34.camel@linux.intel.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48151 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752083AbcAARul (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jan 2016 12:50:41 -0500
+Subject: Re: [PATCH 2/3] iio: Specify supported modes for buffers
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+References: <1432916062-15195-1-git-send-email-lars@metafoo.de>
+ <1432916062-15195-3-git-send-email-lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5686BC6A.8080208@kernel.org>
+Date: Fri, 1 Jan 2016 17:50:34 +0000
 MIME-Version: 1.0
+In-Reply-To: <1432916062-15195-3-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gVGh1LCAyMDE1LTEyLTMxIGF0IDE1OjE4IC0wODAwLCBTcmluaXZhcyBQYW5kcnV2YWRhIHdy
-b3RlOg0KPiBPbiBUaHUsIDIwMTUtMTItMzEgYXQgMTE6MTggLTA4MDAsIEVkdWFyZG8gVmFsZW50
-aW4gd3JvdGU6DQo+ID4gT24gU2F0LCBTZXAgMjYsIDIwMTUgYXQgMDM6MDU6MDhQTSAtMDcwMCwg
-U3Jpbml2YXMgUGFuZHJ1dmFkYQ0KPiA+IHdyb3RlOg0KPiA+ID4gVGhpcyBjaGFuZ2UgcmVnaXN0
-ZXJzIHRlbXBlcmF0dXJlIHNlbnNvciBpbiBhIHRoZXJtYWwgem9uZSBhcyBhbg0KPiA+ID4gSUlP
-DQo+ID4gPiB0ZW1wZXJhdHVyZSBkZXZpY2UuIFRoaXMgYWxsb3dzIHVzZXIgc3BhY2UgdGhlcm1h
-bCBhcHBsaWNhdGlvbiB0bw0KPiA+ID4gZnVsbHkNCj4gPiA+IHV0aWxpemUgSUlPIGNhcGFiaWxp
-dHkgdG8gcmVhZCB0ZW1wZXJhdHVyZSBldmVudHMgYW5kIHNhbXBsZXMuDQo+ID4gPiBUaGUgcHJp
-bWFyeSBtb3RpdmF0aW9uIGZvciB0aGlzIGNoYW5nZSB0byBpbXByb3ZlIHBlcmZvcm1hbmNlIGZv
-cg0KPiA+ID4gdXNlcg0KPiA+ID4gc3BhY2UgdGhlcm1hbCBjb250cm9sbGVycyBsaWtlIExpbnV4
-IHRoZXJtYWwgZGFlbW9uIG9yIEludGVswq4NCj4gPiA+IER5bmFtaWMNCj4gPiA+IFBsYXRmb3Jt
-IGFuZCBUaGVybWFsIEZyYW1ld29yayAoRFBURikgZm9yIENocm9taXVtIE9TLg0KPiA+ID4gVGhl
-IGN1cnJlbnQgc3lzZnMgaGFzIHNldmVyYWwgbGltaXRhdGlvbnMsIHdoaWNoIGZvcmNlcyB0aGUN
-Cj4gPiA+IGN1cnJlbnQNCj4gPiA+IHVzZXIgc3BhY2UgdG8gdXNlIHBvbGxpbmcgYXMgdGhlIHNh
-ZmUgd2F5LiBUaGlzIHBvbGxpbmcgY2F1c2VzDQo+ID4gPiBwZXJmb3JtYW5jZQ0KPiA+ID4gYm90
-dGxlbmVja3MgYXMgc29tZSBkZXZpY2VzIHJlcXVpcmVzIGV4dHJlbWVseSBhZ2dyZXNzaXZlDQo+
-ID4gPiByZXNwb25zZQ0KPiA+ID4gdG8NCj4gPiA+IGNoYW5naW5nIHRlbXBlcmF0dXJlIGNvbmRp
-dGlvbnMuDQo+ID4gPiBUaGVzZSBhcmUgc29tZSBsaW1pdGF0aW9ucywgd2hpY2ggdGhpcyBjaGFu
-Z2UgdHJpZXMgdG8gYWRkcmVzczoNCj4gPiA+IC0gVGVtcGVyYXR1cmUgcmVhZGluZyB2aWEgc3lz
-ZnMgYXR0cmlidXRlLCB3aGljaCBuZWVkcyBjb252ZXJzaW9uDQo+ID4gPiBmcm9tDQo+ID4gPiBz
-dHJpbmcgdG8gaW50DQo+ID4gPiAtIE5vIHdheSB0byBzZXQgdGhyZXNob2xkIHNldHRpbmdzIHRv
-IGF2b2lkIHBvbGxpbmcgZm9yDQo+ID4gPiB0ZW1wZXJhdHVyZQ0KPiA+ID4gY2hhbmdlDQo+ID4g
-PiB3aXRob3V0IHVzaW5nIGEgUlcgcGFzc2l2ZSB0cmlwIHBvaW50Lg0KPiA+ID4gLSBFdmVudCBu
-b3RpZmljYXRpb25zIHZpYSBzbG93IGtvYmplY3QgdWV2ZW50cywgd2hpY2ggbmVlZHMNCj4gPiA+
-IHBhcnNpbmcNCj4gPiA+IHRvIGlkDQo+ID4gPiB0aGUgem9uZSBhbmQgcmVhZCB0ZW1wZXJhdHVy
-ZQ0KPiA+ID4gLSBPbmx5IHB1bGwgaW50ZXJmYWNlIGZyb20gdXNlciBzcGFjZSwga2VybmVsIGRy
-aXZlcnMgY2FuJ3Qgc2VuZA0KPiA+ID4gc2FtcGxlcw0KPiA+ID4gLSBPbmUgc2FtcGxlIGF0IGEg
-dGltZSByZWFkIGZyb20gdXNlciBzcGFjZQ0KPiA+ID4gVGhlc2UgbGltaXRhdGlvbnMgY2FuIGJl
-IGFkZHJlc3NlZCBieSByZWdpc3RlcmluZyB0ZW1wZXJhdHVyZQ0KPiA+ID4gc2Vuc29yDQo+ID4g
-PiBhcyBhbiBJSU8gZGV2aWNlLiBJSU8gcHJvdmlkZXMNCj4gPiA+IC0gYnVmZmVyZWQgYWNjZXNz
-IHZpYSAvZGV2L2lpbzpkZXZpY2VYIG5vZGUgd2l0aCBzZWxlY3QvcG9sbA0KPiA+ID4gY2FwYWJp
-bGl0eQ0KPiA+ID4gLSB0ZW1wZXJhdHVyZSB0aHJlc2hvbGRzIHNldHRpbmcgdmlhIGlpbyBldmVu
-dCB0aHJlc2hvbGRzDQo+ID4gPiAtIFdhaXQgYW5kIHJlY2VpdmUgZXZlbnRzDQo+ID4gPiAtIEFi
-bGUgdG8gdXNlIGRpZmZlcmVudCBleHRlcm5hbCB0cmlnZ2VyIChkYXRhIHJlYWR5IGluZGljYXRp
-b25zKQ0KPiA+ID4gYW5kIHB1c2gNCj4gPiA+IHNhbXBsZXMgdG8gYnVmZmVycw0KPiA+ID4gDQo+
-ID4gPiBOZXh0IHNldCBvZiBwYXRjaGVzIHVzZXMgdGhlIElJTyBiaW5kaW5nIGludHJvZHVjZWQg
-aW4gdGhpcw0KPiA+ID4gcGF0Y2hzZXQuDQo+ID4gPiBUaGUgaWlvIGRldmljZSBjcmVhdGVkIGR1
-cmluZyBjYWxsIHRvDQo+ID4gPiB0aGVybWFsX3pvbmVfZGV2aWNlX3JlZ2lzdGVyLg0KPiA+ID4g
-U2FtcGxlcw0KPiA+ID4gYXJlIHB1c2hlZCB0byBpaW8gYnVmZmVycyB3aGVuIHRoZXJtYWxfem9u
-ZV9kZXZpY2VfdXBkYXRlIGlzDQo+ID4gPiBjYWxsZWQNCj4gPiA+IGZyb20NCj4gPiA+IGNsaWVu
-dCBkcml2ZXJzLg0KPiA+ID4gDQo+ID4gPiBOZXcgdGhlcm1hbCB6b25lIGRldmljZSBjYWxsYmFj
-a3M6DQo+ID4gPiBJdCBpbnRyb2R1Y2VzIHRocmVlIG5ldyBjYWxsYmFja3MgZm9yIHRoZXJtYWwg
-Y2xpZW50IGRyaXZlcnM6DQo+ID4gPiBnZXRfdGhyZXNob2xkX3RlbXA6IEdldCB0aGUgY3VycmVu
-dCB0aHJlc2hvbGQgdGVtcGVyYXR1cmUNCj4gPiA+IHNldF90aHJlc2hvbGRfdGVtcDogU2V0IHRo
-ZSBjdXJyZW50IHRocmVzaG9sZCB0ZW1wZXJhdHVyZQ0KPiA+ID4gY2hlY2tfbm90aWZpY2F0aW9u
-X3N1cHBvcnQ6IEluZm9ybSB0aGF0IHRoZSBjbGllbnQgZHJpdmVyIGhhcw0KPiA+ID4gYXN5bmNo
-cm9ub3VzDQo+ID4gPiBub3RpZmljYXRpb24gbWVjaGFuaXNtLiBJZiBpdCBpcyB0aGVuIHBvbGxp
-bmcgY2FuIGJlIGF2b2lkZWQgZm9yDQo+ID4gPiB0aGUNCj4gPiA+IHRlbXBlcmF0dXJlIHNlbnNv
-ci4NCj4gPiA+IA0KPiA+ID4gU2lnbmVkLW9mZi1ieTogU3Jpbml2YXMgUGFuZHJ1dmFkYSA8DQo+
-ID4gPiBzcmluaXZhcy5wYW5kcnV2YWRhQGxpbnV4LmludGVsLmNvbT4NCj4gPiA+IC0tLQ0KPiAN
-Cj4gW0N1dF0NCj4gDQo+ID4gPiANCj4gPiA+ICsJaW50ICgqZ2V0X3RocmVzaG9sZF90ZW1wKShz
-dHJ1Y3QgdGhlcm1hbF96b25lX2RldmljZSAqLA0KPiA+ID4gPiA+IA0KPiA+ID4gaW50LA0KPiA+
-ID4gKwkJCQkgIGludCAqKTsNCj4gPiA+ICsJaW50ICgqc2V0X3RocmVzaG9sZF90ZW1wKShzdHJ1
-Y3QgdGhlcm1hbF96b25lX2RldmljZSAqLA0KPiA+ID4gaW50LA0KPiA+ID4gKwkJCQkgIGludCk7
-DQo+ID4gPiArCWludCAoKnNldF9ub3RpZmljYXRpb25fc3RhdHVzKShzdHJ1Y3QNCj4gPiA+IHRo
-ZXJtYWxfem9uZV9kZXZpY2UNCj4gPiA+ICosDQo+ID4gPiArCQkJCSAgICAgICBib29sIHN0YXR1
-cyk7DQo+ID4gPiArCWJvb2wgKCpjaGVja19ub3RpZmljYXRpb25fc3VwcG9ydCkoc3RydWN0DQo+
-ID4gPiB0aGVybWFsX3pvbmVfZGV2aWNlICopOw0KPiA+IA0KPiA+IA0KPiA+IENhbiBhbiBleGlz
-dGluZyB0aGVybWFsIHNlbnNvciBiZW5lZml0IG9mIHRoZSBuZXcgZnVuY3Rpb25hbGl0eT8gSWYN
-Cj4gPiB5ZXMsDQo+IA0KPiBZZXMuIFRoZSBleGlzdGluZyBkcml2ZXIgd2lsbCBiZSB1c2luZyB0
-aGUgdHJpcHMgaW5zdGVhZCBvZg0KPiB0aHJlc2hvbGRzLg0KPiBBcyB3ZSBkaXNjdXNzZWQgZHVy
-aW5nIExQQywNCj4gdHJpcHMgKHBhc2l2ZS9hY3RpdmUvLi4pOiBUaGVzZSBhcmUgdGVtcGVyYXR1
-cmUgcG9pbnRzIHRvIHdoaWNoIGENCj4gY29vbGluZyBhY3Rpb24gY2FuIGJlIHBlcmZvcm1lZCBi
-eSBiaW5kaW5nIGEgY29vbGluZyBkZXZpY2UuIFRoZQ0KPiBleGlzdGluZyBkcml2ZXJzIHdobyBz
-dXBwb3J0IFJXIHRyaXBzLCB1c2VyIHNwYWNlIHN0aWxsIGNhbiB1cGRhdGUNCj4gdGhvc2UgYW5k
-IGdldCBzYW1wbGUgbm90aWZpY2F0aW9ucy4gRXhpc3RpbmcgZHJpdmVycyBlaXRoZXIgaGF2ZQ0K
-PiBwb2xsaW5nIG9yIGludGVycnVwdCBzdXBvcnQgdG8gZXZhbHVhdGUgdHJpcHMgYW5kIGNhbGwN
-Cj4gdGhlcm1hbF96b25lX2RldmljZV91cGRhdGUoKSwgd2hpY2ggd2lsbCByZXN1bHQgaW4gc2Ft
-cGxlIHB1c2hlZCB0bw0KPiB1c2VyIHNwYWNlLg0KPiAgDQo+IFRocmVzaG9sZHM6IFRoZXNlIGFy
-ZSBzZW5zb3IgdGVtcGVyYXR1cmUgcG9pbnRzIHdoaWNoIHVzZXIgc3BhY2UNCj4gd2FudHMNCj4g
-dG8gZ2V0IG5vdGlmaWNhdGlvbiBvZiB0ZW1wZXJhdHVyZSBjaGFuZ2UuIFRoZXkgd2lsbCBub3Qg
-YmUgcHJlc2VudGVkDQo+IGFzIHBhc3NpdmUvYWN0aXZlL2hvdCB0cmlwcy4gVXNlciBzcGFjZSBj
-YW4gZGVjaWRlIHdoYXQgdG8gZG8gd2l0aA0KPiB0aGUNCj4gbm90aWZpY2F0aW9ucy4gSWYgZXhp
-c3RpbmcgZHJpdmVycyBkb24ndCB3YW50IHRvIHByZXNlbnQgYXMgZmFrZQ0KPiB0cmlwcywNCj4g
-dGhlbiB0aGV5IG5lZWQgdG8gYWRkIHRoZSBjYWxsYmFjayBzdXBwb3J0Lg0KPiANCj4gPiBUaGUg
-cHJvYmxlbSBJIGhhdmUgd2l0aCB0aGUgYWJvdmUgaXMgdGhlIGZhY3QgdGhhdCB0aGV5IGFkZA0K
-PiA+IGNhbGxiYWNrcw0KPiA+IGFuZCBiZWhhdmlvciBlbGlnaWJsZSBvbmx5IGZvciBhIHN1YnNl
-dCBvZiB0aGVybWFsIHpvbmVzLg0KPiA+IA0KPiA+IElmIHdlIGFyZSBtb3ZpbmcgdG8gSUlPIGlu
-dGVncmF0ZWQgbW9kZSwgdGhlIGV4aXN0aW5nIGRyaXZlcnMgbmVlZA0KPiA+IHRvDQo+ID4gYmUN
-Cj4gPiBjb252ZXJ0ZWQsIHRvIGF2b2lkIGRpdmVyc2lmaWNhdGlvbiBvZiBiZWhhdmlvci4gRm9y
-IGV4YW1wbGUsIHRoZXJlDQo+ID4gaXMNCj4gPiBleGlzdGluZyBub3RpZmljYXRpb24gY2FsbGJh
-Y2tzLiBBbHNvLCBob3QgdHJpcCBwb2ludHMgYXJlDQo+ID4gZGVzY3JpYmVkDQo+ID4gYXMNCj4g
-PiBub3RpZmljYXRpb24gcG9pbnRzLg0KPiA+IA0KPiA+IEkgYmVsaWV2ZSB0aGUgcGF0Y2ggc2V0
-IG5lZWRzIHRvIGRvY3VtZW50IGFsc28gdGhlIG5leHQgc3RlcHMgb24NCj4gPiB0aGlzDQo+ID4g
-bW92ZS4NCj4gPiANCj4gDQo+IElmIHdlIGRlY2lkZSB0byBtZXJnZSB0aGlzIGZ1bmN0aW9uYWxp
-dHksIEkgd2lsbCBwdXNoIGEgZG9jdW1lbnRhdGlvbg0KPiBhbmQgSUlPIHNhbXBsZSBwcm9ncmFt
-IHRvIHVzZSB0aGVzZSBmZWF0dXJlcy4NCj4gDQpUaGUgc2VyaXMgaXMgb2xkIGVub3VnaCwgSSBm
-b3Jnb3QuIFRoZSBwYXRjaCBhZGRzIGRvY3VtZW50YXRpb24NCltQQVRDSCA1LzZdIHRoZXJtYWw6
-IGlpbyBEb2N1bWVudGF0aW9uDQpUaGVyZSBpcyBhbHdheXMgc2NvcGUgdG8gYWRkIG1vcmUuDQoN
-ClRoYW5rcywNClNyaW5pdmFzDQoNCg0KPiBUaGFua3MsDQo+IFNyaW5pdmFzDQo+IA0KPiA+IA0K
-PiA+ID4gIAlpbnQgKCpub3RpZnkpIChzdHJ1Y3QgdGhlcm1hbF96b25lX2RldmljZSAqLCBpbnQs
-DQo+ID4gPiAgCQkgICAgICAgZW51bSB0aGVybWFsX3RyaXBfdHlwZSk7DQo+ID4gPiAgfTsNCj4g
-PiA+IEBAIC0xNDgsNiArMTU1LDggQEAgc3RydWN0IHRoZXJtYWxfYXR0ciB7DQo+ID4gPiAgCWNo
-YXIgbmFtZVtUSEVSTUFMX05BTUVfTEVOR1RIXTsNCj4gPiA+ICB9Ow0KPiA+ID4gIA0KPiA+ID4g
-K3N0cnVjdCBpaW9fZGV2Ow0KPiA+ID4gKw0KPiA+ID4gIC8qKg0KPiA+ID4gICAqIHN0cnVjdCB0
-aGVybWFsX3pvbmVfZGV2aWNlIC0gc3RydWN0dXJlIGZvciBhIHRoZXJtYWwgem9uZQ0KPiA+ID4g
-ICAqIEBpZDoJCXVuaXF1ZSBpZCBudW1iZXIgZm9yIGVhY2ggdGhlcm1hbCB6b25lDQo+ID4gPiBA
-QCAtMTgyLDYgKzE5MSw3IEBAIHN0cnVjdCB0aGVybWFsX2F0dHIgew0KPiA+ID4gICAqIEBsb2Nr
-Oglsb2NrIHRvIHByb3RlY3QgdGhlcm1hbF9pbnN0YW5jZXMgbGlzdA0KPiA+ID4gICAqIEBub2Rl
-Oglub2RlIGluIHRoZXJtYWxfdHpfbGlzdCAoaW4gdGhlcm1hbF9jb3JlLmMpDQo+ID4gPiAgICog
-QHBvbGxfcXVldWU6CWRlbGF5ZWQgd29yayBmb3IgcG9sbGluZw0KPiA+ID4gKyAqIEBpbmRpb19k
-ZXY6CXBvaW50ZXIgdG8gaW5zdGFuY2Ugb2YgYW4gSUlPIGRldiBmb3IgdGhpcw0KPiA+ID4gem9u
-ZQ0KPiA+ID4gICAqLw0KPiA+ID4gIHN0cnVjdCB0aGVybWFsX3pvbmVfZGV2aWNlIHsNCj4gPiA+
-ICAJaW50IGlkOw0KPiA+ID4gQEAgLTIwOCw2ICsyMTgsOSBAQCBzdHJ1Y3QgdGhlcm1hbF96b25l
-X2RldmljZSB7DQo+ID4gPiAgCXN0cnVjdCBtdXRleCBsb2NrOw0KPiA+ID4gIAlzdHJ1Y3QgbGlz
-dF9oZWFkIG5vZGU7DQo+ID4gPiAgCXN0cnVjdCBkZWxheWVkX3dvcmsgcG9sbF9xdWV1ZTsNCj4g
-PiA+ICsjaWYgZGVmaW5lZChDT05GSUdfVEhFUk1BTF9JSU8pDQo+ID4gPiArCXN0cnVjdCBpaW9f
-ZGV2ICppbmRpb19kZXY7DQo+ID4gPiArI2VuZGlmDQo+ID4gPiAgfTsNCj4gPiA+ICA=
+On 29/05/15 17:14, Lars-Peter Clausen wrote:
+> For each buffer type specify the supported device modes for this buffer.
+> This allows us for devices which support multiple different operating modes
+> to pick the correct operating mode based on the modes supported by the
+> attached buffers.
+> 
+> It also prevents that buffers with conflicting modes are attached
+> to a device at the same time or that a buffer with a non-supported mode is
+> attached to a device (e.g. in-kernel callback buffer to a device only
+> supporting hardware mode).
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+
+This email is more of a heads up than anything else.  We accidentally
+broke the am335x driver doing this as it is specifying that it has
+a hardware buffer whereas is should be a software buffer as the buffer
+exposed to userspace is a software one (kfifo).
+
+Hardware buffer should be reserved for those rare cases where we really
+are talking directly to the hardware (and as such can't do some intermediate
+stuff).  In this case we are reading from a fifo in the hardware but then
+pushing it into the software buffer.
+
+I'll send a patch shortly.
+
+Jonathan
+> ---
+>  drivers/iio/buffer_cb.c                  |  2 ++
+>  drivers/iio/industrialio-buffer.c        | 18 +++++++++++++++---
+>  drivers/iio/kfifo_buf.c                  |  2 ++
+>  drivers/staging/iio/accel/sca3000_ring.c |  2 ++
+>  include/linux/iio/buffer.h               |  3 +++
+>  5 files changed, 24 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
+> index eb46e72..1648e6e 100644
+> --- a/drivers/iio/buffer_cb.c
+> +++ b/drivers/iio/buffer_cb.c
+> @@ -33,6 +33,8 @@ static void iio_buffer_cb_release(struct iio_buffer *buffer)
+>  static const struct iio_buffer_access_funcs iio_cb_access = {
+>  	.store_to = &iio_buffer_cb_store_to,
+>  	.release = &iio_buffer_cb_release,
+> +
+> +	.modes = INDIO_BUFFER_SOFTWARE | INDIO_BUFFER_TRIGGERED,
+>  };
+>  
+>  struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index a72db00..4250e97 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -604,6 +604,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+>  	const unsigned long *scan_mask;
+>  	struct iio_buffer *buffer;
+>  	bool scan_timestamp;
+> +	unsigned int modes;
+>  
+>  	memset(config, 0, sizeof(*config));
+>  
+> @@ -615,12 +616,23 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+>  		list_is_singular(&indio_dev->buffer_list))
+>  			return 0;
+>  
+> +	modes = indio_dev->modes;
+> +
+> +	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list) {
+> +		if (buffer == remove_buffer)
+> +			continue;
+> +		modes &= buffer->access->modes;
+> +	}
+> +
+> +	if (insert_buffer)
+> +		modes &= insert_buffer->access->modes;
+> +
+>  	/* Definitely possible for devices to support both of these. */
+> -	if ((indio_dev->modes & INDIO_BUFFER_TRIGGERED) && indio_dev->trig) {
+> +	if ((modes & INDIO_BUFFER_TRIGGERED) && indio_dev->trig) {
+>  		config->mode = INDIO_BUFFER_TRIGGERED;
+> -	} else if (indio_dev->modes & INDIO_BUFFER_HARDWARE) {
+> +	} else if (modes & INDIO_BUFFER_HARDWARE) {
+>  		config->mode = INDIO_BUFFER_HARDWARE;
+> -	} else if (indio_dev->modes & INDIO_BUFFER_SOFTWARE) {
+> +	} else if (modes & INDIO_BUFFER_SOFTWARE) {
+>  		config->mode = INDIO_BUFFER_SOFTWARE;
+>  	} else {
+>  		/* Can only occur on first buffer */
+> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+> index 847ca56..db15684 100644
+> --- a/drivers/iio/kfifo_buf.c
+> +++ b/drivers/iio/kfifo_buf.c
+> @@ -135,6 +135,8 @@ static const struct iio_buffer_access_funcs kfifo_access_funcs = {
+>  	.set_bytes_per_datum = &iio_set_bytes_per_datum_kfifo,
+>  	.set_length = &iio_set_length_kfifo,
+>  	.release = &iio_kfifo_buffer_release,
+> +
+> +	.modes = INDIO_BUFFER_SOFTWARE | INDIO_BUFFER_TRIGGERED,
+>  };
+>  
+>  struct iio_buffer *iio_kfifo_allocate(void)
+> diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
+> index 8589eade..23685e7 100644
+> --- a/drivers/staging/iio/accel/sca3000_ring.c
+> +++ b/drivers/staging/iio/accel/sca3000_ring.c
+> @@ -258,6 +258,8 @@ static const struct iio_buffer_access_funcs sca3000_ring_access_funcs = {
+>  	.read_first_n = &sca3000_read_first_n_hw_rb,
+>  	.data_available = sca3000_ring_buf_data_available,
+>  	.release = sca3000_ring_release,
+> +
+> +	.modes = INDIO_BUFFER_HARDWARE,
+>  };
+>  
+>  int sca3000_configure_ring(struct iio_dev *indio_dev)
+> diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+> index eb8622b..1600c55 100644
+> --- a/include/linux/iio/buffer.h
+> +++ b/include/linux/iio/buffer.h
+> @@ -29,6 +29,7 @@ struct iio_buffer;
+>   * @set_length:		set number of datums in buffer
+>   * @release:		called when the last reference to the buffer is dropped,
+>   *			should free all resources allocated by the buffer.
+> + * @modes:		Supported operating modes by this buffer type
+>   *
+>   * The purpose of this structure is to make the buffer element
+>   * modular as event for a given driver, different usecases may require
+> @@ -51,6 +52,8 @@ struct iio_buffer_access_funcs {
+>  	int (*set_length)(struct iio_buffer *buffer, int length);
+>  
+>  	void (*release)(struct iio_buffer *buffer);
+> +
+> +	unsigned int modes;
+>  };
+>  
+>  /**
+> 
+
