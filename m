@@ -1,43 +1,49 @@
-Return-Path: <jic23@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] iio:adc:ti_am335x_adc Fix buffered mode by identifying as software buffer.
-Date: Fri,  1 Jan 2016 18:05:34 +0000
-Message-Id: <1451671534-23708-1-git-send-email-jic23@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from aserp1040.oracle.com ([141.146.126.69]:46585 "EHLO
+	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751455AbcABNE4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Jan 2016 08:04:56 -0500
+From: Vegard Nossum <vegard.nossum@oracle.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH 2/2] iio: add HAS_IOMEM dependency to VF610_ADC
+Date: Sat,  2 Jan 2016 14:04:40 +0100
+Message-Id: <1451739880-14178-2-git-send-email-vegard.nossum@oracle.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Whilst this part has a hardware buffer, the identifcation that IIO cares
-about is the userspace facing end.  It this case we push individual elements
-from the hardware fifo into the software interface (specifically a kfifo)
-rather than providing direct reads through to a hardware buffer
-(as we still do in the sca3000 for example).
+Ran into this on UML:
 
-Technically the original specification as a hardware buffer could be
-considered wrong, but it didn't matter until the patch listed below.
+drivers/built-in.o: In function `vf610_adc_probe':
+drivers/iio/adc/vf610_adc.c:744: undefined reference to `devm_ioremap_resource'
 
-Result is that any attempt to enable the buffer will return -EINVAL
+devm_ioremap_resource() is defined only when HAS_IOMEM is selected.
 
-Fixes: 225d59adf1c8 ("iio: Specify supported modes for buffers")
-Cc: lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
 ---
- drivers/iio/adc/ti_am335x_adc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 942320e32753..c1e05532d437 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -289,7 +289,7 @@ static int tiadc_iio_buffered_hardware_setup(struct iio_dev *indio_dev,
- 		goto error_kfifo_free;
- 
- 	indio_dev->setup_ops = setup_ops;
--	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
-+	indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
- 
- 	return 0;
- 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7868c74..1e7aded 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -372,6 +372,7 @@ config TWL6030_GPADC
+ config VF610_ADC
+ 	tristate "Freescale vf610 ADC driver"
+ 	depends on OF
++	depends on HAS_IOMEM
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
 -- 
-2.6.4
+1.9.1
+
