@@ -1,119 +1,133 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52826 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57191 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751818AbcABS2L (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Jan 2016 13:28:11 -0500
-Subject: Re: [PATCH] iio: qcom-spmi-vadc: One check less in
- vadc_measure_ref_points() after error detection
-To: SF Markus Elfring <elfring@users.sourceforge.net>,
-	linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1751392AbcACPuM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jan 2016 10:50:12 -0500
+Subject: Re: [PATCH v2] iio: adc: mcp3422: Add support for MCP3425
+To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org
+References: <1451132174-4172-1-git-send-email-akinobu.mita@gmail.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
-References: <566ABCD9.1060404@users.sourceforge.net>
- <567E9059.30709@users.sourceforge.net>
-Cc: LKML <linux-kernel@vger.kernel.org>,
-	kernel-janitors@vger.kernel.org,
-	Julia Lawall <julia.lawall@lip6.fr>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <568816B4.2090003@kernel.org>
-Date: Sat, 2 Jan 2016 18:28:04 +0000
+Message-ID: <5689432E.8050100@kernel.org>
+Date: Sun, 3 Jan 2016 15:50:06 +0000
 MIME-Version: 1.0
-In-Reply-To: <567E9059.30709@users.sourceforge.net>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1451132174-4172-1-git-send-email-akinobu.mita@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/12/15 13:04, SF Markus Elfring wrote:
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Sat, 26 Dec 2015 13:53:15 +0100
+On 26/12/15 12:16, Akinobu Mita wrote:
+> The MCP3425 is a single channel up to 16-bit A/D converter which has
+> features:
 > 
-> This issue was detected by using the Coccinelle software.
+> - On-Board Programmable Gain Amplifier (PGA):
+>  - Gains of 1, 2, 4 or 8
+> - Programmable Data Rate Options:
+>  - 15 SPS (16 bits), 60 SPS (14 bits), 240 SPS (12 bits)
 > 
-> Move the jump label directly before the desired log statement
-> so that the variable "ret" does not need to be checked once more
-> after it was determined that a function call failed.
+> The mcp3422 driver also supports the MCP3421 which is a single channel.
+> So we can support MCP3425 with a little changes to mcp3422 driver.
 > 
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-If we are going to change this, I would prefer to see more useful
-local error messages and direct returns rather than jumping to
-a very generic message at the end.
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: linux-iio@vger.kernel.org
+Applied to the togreg branch of iio.git. 
 
-I'm also less than keen on jumping into conditionals as I find
-it slightly less readable. 
-
-We might technically be 'simplifying' the code, but in this case
-the gain is very minor for a fair bit of code churn...
+I dropped a few of this list of cc's 
 
 Thanks,
 
 Jonathan
 > ---
->  drivers/iio/adc/qcom-spmi-vadc.c | 17 +++++++++--------
->  1 file changed, 9 insertions(+), 8 deletions(-)
+> * v2
+> - reuse mcp3421's code (suggested by Peter Meerwald-Stadler)
+> - remove a change for the first configuration access channel
 > 
-> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-> index c2babe5..391eefa 100644
-> --- a/drivers/iio/adc/qcom-spmi-vadc.c
-> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
-> @@ -424,7 +424,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
->  	ret = vadc_do_conversion(vadc, prop, &read_1);
->  	if (ret)
-> -		goto err;
-> +		goto report_failure;
-In this first case we have already had a report that a conversion failed.
-I suppose adding that it was during reference point measurement 'might'
-be useful additional information.  I'm not really convinced of it does
-however... Hence I'd drop reporting it entirely in this function.
+>  Documentation/devicetree/bindings/iio/adc/mcp3422.txt | 1 +
+>  drivers/iio/adc/Kconfig                               | 6 +++---
+>  drivers/iio/adc/mcp3422.c                             | 7 +++++--
+>  3 files changed, 9 insertions(+), 5 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+> index dcae4cc..82bcce0 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+> @@ -6,6 +6,7 @@ Required properties:
+>  	"microchip,mcp3422" or
+>  	"microchip,mcp3423" or
+>  	"microchip,mcp3424" or
+> +	"microchip,mcp3425" or
+>  	"microchip,mcp3426" or
+>  	"microchip,mcp3427" or
+>  	"microchip,mcp3428"
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 7868c74..0c843a6 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -246,11 +246,11 @@ config MCP320X
+>  	  called mcp320x.
 >  
->  	/* Try with buffered 625mV channel first */
->  	prop = vadc_get_channel(vadc, VADC_SPARE1);
-> @@ -433,11 +433,11 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>  config MCP3422
+> -	tristate "Microchip Technology MCP3422/3/4/6/7/8 driver"
+> +	tristate "Microchip Technology MCP3421/2/3/4/5/6/7/8 driver"
+>  	depends on I2C
+>  	help
+> -	  Say yes here to build support for Microchip Technology's
+> -	  MCP3422, MCP3423, MCP3424, MCP3426, MCP3427 or MCP3428
+> +	  Say yes here to build support for Microchip Technology's MCP3421
+> +	  MCP3422, MCP3423, MCP3424, MCP3425, MCP3426, MCP3427 or MCP3428
+>  	  analog to digital converters.
 >  
->  	ret = vadc_do_conversion(vadc, prop, &read_2);
->  	if (ret)
-> -		goto err;
-> +		goto report_failure;
+>  	  This driver can also be built as a module. If so, the module will be
+> diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+> index 6eca7ae..ebad83e 100644
+> --- a/drivers/iio/adc/mcp3422.c
+> +++ b/drivers/iio/adc/mcp3422.c
+> @@ -1,11 +1,12 @@
+>  /*
+> - * mcp3422.c - driver for the Microchip mcp3422/3/4/6/7/8 chip family
+> + * mcp3422.c - driver for the Microchip mcp3421/2/3/4/5/6/7/8 chip family
+>   *
+>   * Copyright (C) 2013, Angelo Compagnucci
+>   * Author: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+>   *
+>   * Datasheet: http://ww1.microchip.com/downloads/en/devicedoc/22088b.pdf
+>   *            http://ww1.microchip.com/downloads/en/DeviceDoc/22226a.pdf
+> + *            http://ww1.microchip.com/downloads/en/DeviceDoc/22072b.pdf
+>   *
+>   * This driver exports the value of analog input voltage to sysfs, the
+>   * voltage unit is nV.
+> @@ -357,6 +358,7 @@ static int mcp3422_probe(struct i2c_client *client,
 >  
->  	if (read_1 == read_2) {
->  		ret = -EINVAL;
-I think this one indicates we can't actually read anything at all
-for some reason...  It's the only form of error we won't have effectively
-already reported so is worthy of some sort of debug message...
-> -		goto err;
-> +		goto report_failure;
->  	}
+>  	switch (adc->id) {
+>  	case 1:
+> +	case 5:
+>  		indio_dev->channels = mcp3421_channels;
+>  		indio_dev->num_channels = ARRAY_SIZE(mcp3421_channels);
+>  		break;
+> @@ -395,6 +397,7 @@ static const struct i2c_device_id mcp3422_id[] = {
+>  	{ "mcp3422", 2 },
+>  	{ "mcp3423", 3 },
+>  	{ "mcp3424", 4 },
+> +	{ "mcp3425", 5 },
+>  	{ "mcp3426", 6 },
+>  	{ "mcp3427", 7 },
+>  	{ "mcp3428", 8 },
+> @@ -421,5 +424,5 @@ static struct i2c_driver mcp3422_driver = {
+>  module_i2c_driver(mcp3422_driver);
 >  
->  	vadc->graph[VADC_CALIB_ABSOLUTE].dy = read_1 - read_2;
-> @@ -447,23 +447,24 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->  	prop = vadc_get_channel(vadc, VADC_VDD_VADC);
->  	ret = vadc_do_conversion(vadc, prop, &read_1);
->  	if (ret)
-> -		goto err;
-> +		goto report_failure;
->  
->  	prop = vadc_get_channel(vadc, VADC_GND_REF);
->  	ret = vadc_do_conversion(vadc, prop, &read_2);
->  	if (ret)
-> -		goto err;
-> +		goto report_failure;
->  
->  	if (read_1 == read_2) {
->  		ret = -EINVAL;
-> -		goto err;
-> +		goto report_failure;
->  	}
->  
->  	vadc->graph[VADC_CALIB_RATIOMETRIC].dy = read_1 - read_2;
->  	vadc->graph[VADC_CALIB_RATIOMETRIC].gnd = read_2;
-> -err:
-> -	if (ret)
-> +	if (ret) {
-> +report_failure:
->  		dev_err(vadc->dev, "measure reference points failed\n");
-> +	}
->  
->  	return ret;
->  }
+>  MODULE_AUTHOR("Angelo Compagnucci <angelo.compagnucci@gmail.com>");
+> -MODULE_DESCRIPTION("Microchip mcp3422/3/4/6/7/8 driver");
+> +MODULE_DESCRIPTION("Microchip mcp3421/2/3/4/5/6/7/8 driver");
+>  MODULE_LICENSE("GPL v2");
 > 
 
