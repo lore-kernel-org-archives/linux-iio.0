@@ -1,133 +1,238 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57191 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57623 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751392AbcACPuM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jan 2016 10:50:12 -0500
-Subject: Re: [PATCH v2] iio: adc: mcp3422: Add support for MCP3425
+	with ESMTP id S1751117AbcACRmj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jan 2016 12:42:39 -0500
+Subject: Re: [PATCH v2] iio: dac: mcp4725: Add basic support for MCP4726
 To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org
-References: <1451132174-4172-1-git-send-email-akinobu.mita@gmail.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+References: <1451132242-4274-1-git-send-email-akinobu.mita@gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5689432E.8050100@kernel.org>
-Date: Sun, 3 Jan 2016 15:50:06 +0000
+Message-ID: <56895D8C.5060606@kernel.org>
+Date: Sun, 3 Jan 2016 17:42:36 +0000
 MIME-Version: 1.0
-In-Reply-To: <1451132174-4172-1-git-send-email-akinobu.mita@gmail.com>
+In-Reply-To: <1451132242-4274-1-git-send-email-akinobu.mita@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/12/15 12:16, Akinobu Mita wrote:
-> The MCP3425 is a single channel up to 16-bit A/D converter which has
-> features:
+On 26/12/15 12:17, Akinobu Mita wrote:
+> MCP4726 is a single channel 12-bit DAC.  We can support MCP4726 with
+> a little changes to mcp4725 driver.  In power-down mode, they have
+> different selection of VOUT pull-down registers.
 > 
-> - On-Board Programmable Gain Amplifier (PGA):
->  - Gains of 1, 2, 4 or 8
-> - Programmable Data Rate Options:
->  - 15 SPS (16 bits), 60 SPS (14 bits), 240 SPS (12 bits)
+> MCP4726 also has features:
+>  - Output gain options: 1x, 2x
+>  - Voltage reference selection: VDD, VREF (Unbuffered or Buffered)
 > 
-> The mcp3422 driver also supports the MCP3421 which is a single channel.
-> So we can support MCP3425 with a little changes to mcp3422 driver.
+> But these are not supported in this change. (1x gain, VDD is selected)
+> 
+> datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22272C.pdf
 > 
 > Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Angelo Compagnucci <angelo.compagnucci@gmail.com>
 > Cc: Jonathan Cameron <jic23@kernel.org>
 > Cc: Hartmut Knaack <knaack.h@gmx.de>
 > Cc: Lars-Peter Clausen <lars@metafoo.de>
 > Cc: Peter Meerwald <pmeerw@pmeerw.net>
 > Cc: linux-iio@vger.kernel.org
-Applied to the togreg branch of iio.git. 
+Looks good to me
 
-I dropped a few of this list of cc's 
+Applied to the togreg branch of iio.git - initially pushed out as testing for
+the autobuilders to play with it.
 
-Thanks,
+This branch won't be going anywhere for a week or so, hence I'm happy to
+add reviewed-by/acked-by if anyone wants to add them.
 
 Jonathan
 > ---
 > * v2
-> - reuse mcp3421's code (suggested by Peter Meerwald-Stadler)
-> - remove a change for the first configuration access channel
+> - add two modes to Documentation/ABI/testing/sysfs-bus-iio
+>   (suggested by Peter Meerwald-Stadler)
 > 
->  Documentation/devicetree/bindings/iio/adc/mcp3422.txt | 1 +
->  drivers/iio/adc/Kconfig                               | 6 +++---
->  drivers/iio/adc/mcp3422.c                             | 7 +++++--
->  3 files changed, 9 insertions(+), 5 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-iio |  2 +
+>  drivers/iio/dac/Kconfig                 |  4 +-
+>  drivers/iio/dac/mcp4725.c               | 87 +++++++++++++++++++++++++--------
+>  3 files changed, 71 insertions(+), 22 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
-> index dcae4cc..82bcce0 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
-> @@ -6,6 +6,7 @@ Required properties:
->  	"microchip,mcp3422" or
->  	"microchip,mcp3423" or
->  	"microchip,mcp3424" or
-> +	"microchip,mcp3425" or
->  	"microchip,mcp3426" or
->  	"microchip,mcp3427" or
->  	"microchip,mcp3428"
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 7868c74..0c843a6 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -246,11 +246,11 @@ config MCP320X
->  	  called mcp320x.
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 0439c2a..8fadd27 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -497,7 +497,9 @@ Description:
+>  		6kohm_to_gnd: connected to ground via a 6kOhm resistor,
+>  		20kohm_to_gnd: connected to ground via a 20kOhm resistor,
+>  		100kohm_to_gnd: connected to ground via an 100kOhm resistor,
+> +		125kohm_to_gnd: connected to ground via an 125kOhm resistor,
+>  		500kohm_to_gnd: connected to ground via a 500kOhm resistor,
+> +		640kohm_to_gnd: connected to ground via a 640kOhm resistor,
+>  		three_state: left floating.
+>  		For a list of available output power down options read
+>  		outX_powerdown_mode_available. If Y is not present the
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index e701e28..5263c51 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -176,11 +176,11 @@ config MAX5821
+>  	  10 bits DAC.
 >  
->  config MCP3422
-> -	tristate "Microchip Technology MCP3422/3/4/6/7/8 driver"
-> +	tristate "Microchip Technology MCP3421/2/3/4/5/6/7/8 driver"
+>  config MCP4725
+> -	tristate "MCP4725 DAC driver"
+> +	tristate "MCP4725/6 DAC driver"
 >  	depends on I2C
->  	help
-> -	  Say yes here to build support for Microchip Technology's
-> -	  MCP3422, MCP3423, MCP3424, MCP3426, MCP3427 or MCP3428
-> +	  Say yes here to build support for Microchip Technology's MCP3421
-> +	  MCP3422, MCP3423, MCP3424, MCP3425, MCP3426, MCP3427 or MCP3428
->  	  analog to digital converters.
+>  	---help---
+>  	  Say Y here if you want to build a driver for the Microchip
+> -	  MCP 4725 12-bit digital-to-analog converter (DAC) with I2C
+> +	  MCP 4725/6 12-bit digital-to-analog converter (DAC) with I2C
+>  	  interface.
 >  
->  	  This driver can also be built as a module. If so, the module will be
-> diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
-> index 6eca7ae..ebad83e 100644
-> --- a/drivers/iio/adc/mcp3422.c
-> +++ b/drivers/iio/adc/mcp3422.c
-> @@ -1,11 +1,12 @@
+>  	  To compile this driver as a module, choose M here: the module
+> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+> index 43d1458..fb4b336 100644
+> --- a/drivers/iio/dac/mcp4725.c
+> +++ b/drivers/iio/dac/mcp4725.c
+> @@ -1,5 +1,5 @@
 >  /*
-> - * mcp3422.c - driver for the Microchip mcp3422/3/4/6/7/8 chip family
-> + * mcp3422.c - driver for the Microchip mcp3421/2/3/4/5/6/7/8 chip family
+> - * mcp4725.c - Support for Microchip MCP4725
+> + * mcp4725.c - Support for Microchip MCP4725/6
 >   *
->   * Copyright (C) 2013, Angelo Compagnucci
->   * Author: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+>   * Copyright (C) 2012 Peter Meerwald <pmeerw@pmeerw.net>
 >   *
->   * Datasheet: http://ww1.microchip.com/downloads/en/devicedoc/22088b.pdf
->   *            http://ww1.microchip.com/downloads/en/DeviceDoc/22226a.pdf
-> + *            http://ww1.microchip.com/downloads/en/DeviceDoc/22072b.pdf
->   *
->   * This driver exports the value of analog input voltage to sysfs, the
->   * voltage unit is nV.
-> @@ -357,6 +358,7 @@ static int mcp3422_probe(struct i2c_client *client,
+> @@ -134,6 +134,12 @@ static const char * const mcp4725_powerdown_modes[] = {
+>  	"500kohm_to_gnd"
+>  };
 >  
->  	switch (adc->id) {
->  	case 1:
-> +	case 5:
->  		indio_dev->channels = mcp3421_channels;
->  		indio_dev->num_channels = ARRAY_SIZE(mcp3421_channels);
->  		break;
-> @@ -395,6 +397,7 @@ static const struct i2c_device_id mcp3422_id[] = {
->  	{ "mcp3422", 2 },
->  	{ "mcp3423", 3 },
->  	{ "mcp3424", 4 },
-> +	{ "mcp3425", 5 },
->  	{ "mcp3426", 6 },
->  	{ "mcp3427", 7 },
->  	{ "mcp3428", 8 },
-> @@ -421,5 +424,5 @@ static struct i2c_driver mcp3422_driver = {
->  module_i2c_driver(mcp3422_driver);
+> +static const char * const mcp4726_powerdown_modes[] = {
+> +	"1kohm_to_gnd",
+> +	"125kohm_to_gnd",
+> +	"640kohm_to_gnd"
+> +};
+> +
+>  static int mcp4725_get_powerdown_mode(struct iio_dev *indio_dev,
+>  	const struct iio_chan_spec *chan)
+>  {
+> @@ -182,11 +188,24 @@ static ssize_t mcp4725_write_powerdown(struct iio_dev *indio_dev,
+>  	return len;
+>  }
 >  
->  MODULE_AUTHOR("Angelo Compagnucci <angelo.compagnucci@gmail.com>");
-> -MODULE_DESCRIPTION("Microchip mcp3422/3/4/6/7/8 driver");
-> +MODULE_DESCRIPTION("Microchip mcp3421/2/3/4/5/6/7/8 driver");
->  MODULE_LICENSE("GPL v2");
+> -static const struct iio_enum mcp4725_powerdown_mode_enum = {
+> -	.items = mcp4725_powerdown_modes,
+> -	.num_items = ARRAY_SIZE(mcp4725_powerdown_modes),
+> -	.get = mcp4725_get_powerdown_mode,
+> -	.set = mcp4725_set_powerdown_mode,
+> +enum {
+> +	MCP4725,
+> +	MCP4726,
+> +};
+> +
+> +static const struct iio_enum mcp472x_powerdown_mode_enum[] = {
+> +	[MCP4725] = {
+> +		.items = mcp4725_powerdown_modes,
+> +		.num_items = ARRAY_SIZE(mcp4725_powerdown_modes),
+> +		.get = mcp4725_get_powerdown_mode,
+> +		.set = mcp4725_set_powerdown_mode,
+> +	},
+> +	[MCP4726] = {
+> +		.items = mcp4726_powerdown_modes,
+> +		.num_items = ARRAY_SIZE(mcp4726_powerdown_modes),
+> +		.get = mcp4725_get_powerdown_mode,
+> +		.set = mcp4725_set_powerdown_mode,
+> +	},
+>  };
+>  
+>  static const struct iio_chan_spec_ext_info mcp4725_ext_info[] = {
+> @@ -196,19 +215,46 @@ static const struct iio_chan_spec_ext_info mcp4725_ext_info[] = {
+>  		.write = mcp4725_write_powerdown,
+>  		.shared = IIO_SEPARATE,
+>  	},
+> -	IIO_ENUM("powerdown_mode", IIO_SEPARATE, &mcp4725_powerdown_mode_enum),
+> -	IIO_ENUM_AVAILABLE("powerdown_mode", &mcp4725_powerdown_mode_enum),
+> +	IIO_ENUM("powerdown_mode", IIO_SEPARATE,
+> +			&mcp472x_powerdown_mode_enum[MCP4725]),
+> +	IIO_ENUM_AVAILABLE("powerdown_mode",
+> +			&mcp472x_powerdown_mode_enum[MCP4725]),
+> +	{ },
+> +};
+> +
+> +static const struct iio_chan_spec_ext_info mcp4726_ext_info[] = {
+> +	{
+> +		.name = "powerdown",
+> +		.read = mcp4725_read_powerdown,
+> +		.write = mcp4725_write_powerdown,
+> +		.shared = IIO_SEPARATE,
+> +	},
+> +	IIO_ENUM("powerdown_mode", IIO_SEPARATE,
+> +			&mcp472x_powerdown_mode_enum[MCP4726]),
+> +	IIO_ENUM_AVAILABLE("powerdown_mode",
+> +			&mcp472x_powerdown_mode_enum[MCP4726]),
+>  	{ },
+>  };
+>  
+> -static const struct iio_chan_spec mcp4725_channel = {
+> -	.type		= IIO_VOLTAGE,
+> -	.indexed	= 1,
+> -	.output		= 1,
+> -	.channel	= 0,
+> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> -	.ext_info	= mcp4725_ext_info,
+> +static const struct iio_chan_spec mcp472x_channel[] = {
+> +	[MCP4725] = {
+> +		.type		= IIO_VOLTAGE,
+> +		.indexed	= 1,
+> +		.output		= 1,
+> +		.channel	= 0,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +		.ext_info	= mcp4725_ext_info,
+> +	},
+> +	[MCP4726] = {
+> +		.type		= IIO_VOLTAGE,
+> +		.indexed	= 1,
+> +		.output		= 1,
+> +		.channel	= 0,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +		.ext_info	= mcp4726_ext_info,
+> +	},
+>  };
+>  
+>  static int mcp4725_set_value(struct iio_dev *indio_dev, int val)
+> @@ -301,7 +347,7 @@ static int mcp4725_probe(struct i2c_client *client,
+>  
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->info = &mcp4725_info;
+> -	indio_dev->channels = &mcp4725_channel;
+> +	indio_dev->channels = &mcp472x_channel[id->driver_data];
+>  	indio_dev->num_channels = 1;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> @@ -315,7 +361,7 @@ static int mcp4725_probe(struct i2c_client *client,
+>  	}
+>  	pd = (inbuf[0] >> 1) & 0x3;
+>  	data->powerdown = pd > 0 ? true : false;
+> -	data->powerdown_mode = pd ? pd-1 : 2; /* 500kohm_to_gnd */
+> +	data->powerdown_mode = pd ? pd - 1 : 2; /* largest register to gnd */
+>  	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
+>  
+>  	return iio_device_register(indio_dev);
+> @@ -328,7 +374,8 @@ static int mcp4725_remove(struct i2c_client *client)
+>  }
+>  
+>  static const struct i2c_device_id mcp4725_id[] = {
+> -	{ "mcp4725", 0 },
+> +	{ "mcp4725", MCP4725 },
+> +	{ "mcp4726", MCP4726 },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(i2c, mcp4725_id);
+> @@ -345,5 +392,5 @@ static struct i2c_driver mcp4725_driver = {
+>  module_i2c_driver(mcp4725_driver);
+>  
+>  MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+> -MODULE_DESCRIPTION("MCP4725 12-bit DAC");
+> +MODULE_DESCRIPTION("MCP4725/6 12-bit DAC");
+>  MODULE_LICENSE("GPL");
 > 
 
