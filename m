@@ -1,49 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57679 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57694 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751117AbcACR5r (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jan 2016 12:57:47 -0500
-Subject: Re: [PATCH] iio: chemical: vz89x: correct xfer return value
-To: Matt Ranostay <mranostay@gmail.com>
-References: <1451193090-3625-1-git-send-email-mranostay@gmail.com>
-Cc: linux-iio@vger.kernel.org
+	with ESMTP id S1751357AbcACSAk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jan 2016 13:00:40 -0500
+Subject: Re: [PATCH v2] iio: health: max30100: add config for LED current
+To: Rob Herring <robh@kernel.org>, Matt Ranostay <mranostay@gmail.com>
+References: <1451454288-9945-1-git-send-email-mranostay@gmail.com>
+ <20151231221731.GA4445@rob-hp-laptop>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5689611A.1000409@kernel.org>
-Date: Sun, 3 Jan 2016 17:57:46 +0000
+Message-ID: <568961C7.1060503@kernel.org>
+Date: Sun, 3 Jan 2016 18:00:39 +0000
 MIME-Version: 1.0
-In-Reply-To: <1451193090-3625-1-git-send-email-mranostay@gmail.com>
+In-Reply-To: <20151231221731.GA4445@rob-hp-laptop>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/12/15 05:11, Matt Ranostay wrote:
-> vz89x_i2c_xfer() function was never returning a non-positive value on
-> error, and this patch corrects that with a -EIO return code.
+On 31/12/15 22:17, Rob Herring wrote:
+> On Tue, Dec 29, 2015 at 09:44:48PM -0800, Matt Ranostay wrote:
+>> Allow the current for both RED and IR LEDs to be set via an device tree
+>> property setting.
+>>
+>> This is an optional setting that is useful for applications that have a
+>> known glass attenuation factor.
+>>
+>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>> ---
+>> Changes from v2:
+>> * change to use microamp property name from LED class
+>> * updated documentation for new format
+>> * added allowed current index map
+>>
+>> .../devicetree/bindings/iio/health/max30100.txt    |  8 +++
+>>  drivers/iio/health/max30100.c                      | 81 ++++++++++++++++++++--
+>>  2 files changed, 83 insertions(+), 6 deletions(-)
 > 
-> Also the error condition was incorrect since it was against measurement
-> size and not the i2c messages send/received count.
-> 
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-This doesn't apply to the current tree as we already have
-an 'incorrect' fix in place for the value being compared against below.
+> Acked-by: Rob Herring <robh@kernel.org>
+Looks good to me as well. Applied to the togreg branch of iio.git - initially
+pushed out as testing for the autobuilders to play with it.
 
-J
-> ---
->  drivers/iio/chemical/vz89x.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
-> index c3367aa..0666919 100644
-> --- a/drivers/iio/chemical/vz89x.c
-> +++ b/drivers/iio/chemical/vz89x.c
-> @@ -120,7 +120,7 @@ static int vz89x_i2c_xfer(struct vz89x_data *data, u8 cmd)
->  
->  	ret = i2c_transfer(client->adapter, msg, 2);
->  
-> -	return (ret == VZ89X_REG_MEASUREMENT_SIZE) ? 0 : ret;
-> +	return (ret == 2) ? 0 : -EIO;
->  }
->  
->  static int vz89x_smbus_xfer(struct vz89x_data *data, u8 cmd)
+Thanks,
+
+Jonathan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
