@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:58670 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:57336 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752036AbcAEP5l (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jan 2016 10:57:41 -0500
+	with ESMTP id S1752036AbcAEP57 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jan 2016 10:57:59 -0500
 From: Peter Rosin <peda@lysator.liu.se>
 To: Wolfram Sang <wsa@the-dreams.de>
 Cc: Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
@@ -29,9 +29,9 @@ Cc: Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
 	Peter Rosin <peda@lysator.liu.se>, linux-i2c@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH v2 1/8] i2c-mux: add common core data for every mux instance
-Date: Tue,  5 Jan 2016 16:57:11 +0100
-Message-Id: <1452009438-27347-2-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v2 3/8] i2c-mux: move the slave side adapter management to i2c_mux_core
+Date: Tue,  5 Jan 2016 16:57:13 +0100
+Message-Id: <1452009438-27347-4-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1452009438-27347-1-git-send-email-peda@lysator.liu.se>
 References: <1452009438-27347-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -39,922 +39,922 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Peter Rosin <peda@axentia.se>
 
-The initial core mux structure starts off small with only the parent
-adapter pointer, which all muxes have, and a priv pointer for mux
-driver private data.
+All muxes have slave side adapters, many have some arbitrary number of
+them. Handle this in the mux core, so that drivers are simplified.
 
-Add i2c_mux_alloc function to unify the creation of a mux.
+Add i2c_mux_reserve_adapter that can be used when it is known in advance
+how many child adapters that is to be added. This avoids reallocating
+memory.
 
-Where appropriate, pass around the mux core structure instead of the
-parent adapter or the driver private data.
-
-Remove the parent adapter pointer from the driver private data for all
-mux drivers.
+Drop i2c_del_mux_adapter and replace it with i2c_del_mux_adapters, since
+no mux driver is dynamically deleting individual child adapters anyway.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/i2c-mux.c                        | 28 +++++++++++++++++-----
- drivers/i2c/muxes/i2c-arb-gpio-challenge.c   | 24 +++++++++----------
- drivers/i2c/muxes/i2c-mux-gpio.c             | 20 ++++++++--------
- drivers/i2c/muxes/i2c-mux-pca9541.c          | 35 ++++++++++++++--------------
- drivers/i2c/muxes/i2c-mux-pca954x.c          | 19 ++++++++++-----
- drivers/i2c/muxes/i2c-mux-pinctrl.c          | 23 +++++++++---------
- drivers/i2c/muxes/i2c-mux-reg.c              | 23 ++++++++++--------
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c   | 10 +++++++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h    |  1 +
- drivers/media/dvb-frontends/m88ds3103.c      | 10 +++++++-
- drivers/media/dvb-frontends/m88ds3103_priv.h |  1 +
- drivers/media/dvb-frontends/rtl2830.c        | 10 +++++++-
- drivers/media/dvb-frontends/rtl2830_priv.h   |  1 +
- drivers/media/dvb-frontends/rtl2832.c        | 10 +++++++-
- drivers/media/dvb-frontends/rtl2832_priv.h   |  1 +
- drivers/media/dvb-frontends/si2168.c         | 10 +++++++-
- drivers/media/dvb-frontends/si2168_priv.h    |  1 +
- drivers/media/usb/cx231xx/cx231xx-core.c     |  3 +++
- drivers/media/usb/cx231xx/cx231xx-i2c.c      | 13 +++++++++--
- drivers/media/usb/cx231xx/cx231xx.h          |  2 ++
- drivers/of/unittest.c                        | 16 +++++++------
- include/linux/i2c-mux.h                      | 14 ++++++++++-
- 22 files changed, 187 insertions(+), 88 deletions(-)
+ drivers/i2c/i2c-mux.c                        | 71 ++++++++++++++++++++++------
+ drivers/i2c/muxes/i2c-arb-gpio-challenge.c   | 10 ++--
+ drivers/i2c/muxes/i2c-mux-gpio.c             | 23 +++------
+ drivers/i2c/muxes/i2c-mux-pca9541.c          | 13 ++---
+ drivers/i2c/muxes/i2c-mux-pca954x.c          | 26 ++++------
+ drivers/i2c/muxes/i2c-mux-pinctrl.c          | 27 +++--------
+ drivers/i2c/muxes/i2c-mux-reg.c              | 28 ++++-------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c   | 12 ++---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h    |  1 -
+ drivers/media/dvb-frontends/m88ds3103.c      | 11 ++---
+ drivers/media/dvb-frontends/m88ds3103_priv.h |  1 -
+ drivers/media/dvb-frontends/rtl2830.c        | 10 ++--
+ drivers/media/dvb-frontends/rtl2830_priv.h   |  1 -
+ drivers/media/dvb-frontends/rtl2832.c        | 11 ++---
+ drivers/media/dvb-frontends/rtl2832_priv.h   |  1 -
+ drivers/media/dvb-frontends/si2168.c         | 10 ++--
+ drivers/media/dvb-frontends/si2168_priv.h    |  1 -
+ drivers/media/usb/cx231xx/cx231xx-core.c     |  3 +-
+ drivers/media/usb/cx231xx/cx231xx-i2c.c      | 26 +++++-----
+ drivers/media/usb/cx231xx/cx231xx.h          |  2 +-
+ drivers/of/unittest.c                        | 28 ++++-------
+ include/linux/i2c-mux.h                      | 15 ++++--
+ 22 files changed, 149 insertions(+), 182 deletions(-)
 
 diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
-index 00fc5b1c7b66..c2163f6b51d5 100644
+index 6c5cb9f7649b..7ba0308537a8 100644
 --- a/drivers/i2c/i2c-mux.c
 +++ b/drivers/i2c/i2c-mux.c
-@@ -31,8 +31,8 @@
- struct i2c_mux_priv {
- 	struct i2c_adapter adap;
- 	struct i2c_algorithm algo;
-+	struct i2c_mux_core *muxc;
- 
--	struct i2c_adapter *parent;
- 	struct device *mux_dev;
- 	void *mux_priv;
- 	u32 chan_id;
-@@ -45,7 +45,8 @@ static int i2c_mux_master_xfer(struct i2c_adapter *adap,
- 			       struct i2c_msg msgs[], int num)
- {
- 	struct i2c_mux_priv *priv = adap->algo_data;
--	struct i2c_adapter *parent = priv->parent;
-+	struct i2c_mux_core *muxc = priv->muxc;
-+	struct i2c_adapter *parent = muxc->parent;
- 	int ret;
- 
- 	/* Switch to the right mux port and perform the transfer. */
-@@ -65,7 +66,8 @@ static int i2c_mux_smbus_xfer(struct i2c_adapter *adap,
- 			      int size, union i2c_smbus_data *data)
- {
- 	struct i2c_mux_priv *priv = adap->algo_data;
--	struct i2c_adapter *parent = priv->parent;
-+	struct i2c_mux_core *muxc = priv->muxc;
-+	struct i2c_adapter *parent = muxc->parent;
- 	int ret;
- 
- 	/* Select the right mux port and perform the transfer. */
-@@ -84,7 +86,7 @@ static int i2c_mux_smbus_xfer(struct i2c_adapter *adap,
- static u32 i2c_mux_functionality(struct i2c_adapter *adap)
- {
- 	struct i2c_mux_priv *priv = adap->algo_data;
--	struct i2c_adapter *parent = priv->parent;
-+	struct i2c_adapter *parent = priv->muxc->parent;
- 
- 	return parent->algo->functionality(parent);
- }
-@@ -102,7 +104,20 @@ static unsigned int i2c_mux_parent_classes(struct i2c_adapter *parent)
+@@ -99,6 +99,29 @@ static unsigned int i2c_mux_parent_classes(struct i2c_adapter *parent)
  	return class;
  }
  
--struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
-+struct i2c_mux_core *i2c_mux_alloc(struct device *dev, int sizeof_priv)
++int i2c_mux_reserve_adapters(struct i2c_mux_core *muxc, int adapters)
 +{
-+	struct i2c_mux_core *muxc;
++	struct i2c_adapter **adapter;
 +
-+	muxc = devm_kzalloc(dev, sizeof(*muxc) + sizeof_priv, GFP_KERNEL);
-+	if (!muxc)
-+		return NULL;
-+	if (sizeof_priv)
-+		muxc->priv = muxc + 1;
-+	return muxc;
++	if (adapters <= muxc->max_adapters)
++		return 0;
++
++	adapter = devm_kmalloc_array(muxc->dev,
++				     adapters, sizeof(*adapter),
++				     GFP_KERNEL);
++	if (!adapter)
++		return -ENOMEM;
++
++	memcpy(adapter, muxc->adapter,
++	       muxc->max_adapters * sizeof(*adapter));
++
++	devm_kfree(muxc->dev, muxc->adapter);
++	muxc->adapter = adapter;
++	muxc->max_adapters = adapters;
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(i2c_mux_alloc);
++EXPORT_SYMBOL_GPL(i2c_mux_reserve_adapters);
 +
-+struct i2c_adapter *i2c_add_mux_adapter(struct i2c_mux_core *muxc,
- 				struct device *mux_dev,
- 				void *mux_priv, u32 force_nr, u32 chan_id,
- 				unsigned int class,
-@@ -111,6 +126,7 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
- 				int (*deselect) (struct i2c_adapter *,
- 						 void *, u32))
+ struct i2c_mux_core *i2c_mux_alloc(struct device *dev, int sizeof_priv)
  {
-+	struct i2c_adapter *parent = muxc->parent;
+ 	struct i2c_mux_core *muxc;
+@@ -113,19 +136,29 @@ struct i2c_mux_core *i2c_mux_alloc(struct device *dev, int sizeof_priv)
+ }
+ EXPORT_SYMBOL_GPL(i2c_mux_alloc);
+ 
+-struct i2c_adapter *i2c_add_mux_adapter(struct i2c_mux_core *muxc,
+-					struct device *mux_dev,
+-					u32 force_nr, u32 chan_id,
+-					unsigned int class)
++int i2c_add_mux_adapter(struct i2c_mux_core *muxc,
++			struct device *mux_dev,
++			u32 force_nr, u32 chan_id,
++			unsigned int class)
+ {
+ 	struct i2c_adapter *parent = muxc->parent;
  	struct i2c_mux_priv *priv;
  	char symlink_name[20];
  	int ret;
-@@ -120,7 +136,7 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
- 		return NULL;
+ 
++	if (muxc->adapters >= muxc->max_adapters) {
++		int new_max = 2 * muxc->max_adapters;
++
++		if (!new_max)
++			new_max = 1;
++		ret = i2c_mux_reserve_adapters(muxc, new_max);
++		if (ret)
++			return ret;
++	}
++
+ 	priv = kzalloc(sizeof(struct i2c_mux_priv), GFP_KERNEL);
+ 	if (!priv)
+-		return NULL;
++		return -ENOMEM;
  
  	/* Set up private adapter data */
--	priv->parent = parent;
-+	priv->muxc = muxc;
- 	priv->mux_dev = mux_dev;
- 	priv->mux_priv = mux_priv;
- 	priv->chan_id = chan_id;
+ 	priv->muxc = muxc;
+@@ -197,7 +230,7 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_mux_core *muxc,
+ 			"failed to add mux-adapter (error=%d)\n",
+ 			ret);
+ 		kfree(priv);
+-		return NULL;
++		return ret;
+ 	}
+ 
+ 	WARN(sysfs_create_link(&priv->adap.dev.kobj, &mux_dev->kobj, "mux_device"),
+@@ -209,23 +242,31 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_mux_core *muxc,
+ 	dev_info(&parent->dev, "Added multiplexed i2c bus %d\n",
+ 		 i2c_adapter_id(&priv->adap));
+ 
+-	return &priv->adap;
++	muxc->adapter[muxc->adapters++] = &priv->adap;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(i2c_add_mux_adapter);
+ 
+-void i2c_del_mux_adapter(struct i2c_adapter *adap)
++void i2c_del_mux_adapters(struct i2c_mux_core *muxc)
+ {
+-	struct i2c_mux_priv *priv = adap->algo_data;
+ 	char symlink_name[20];
+ 
+-	snprintf(symlink_name, sizeof(symlink_name), "channel-%u", priv->chan_id);
+-	sysfs_remove_link(&priv->mux_dev->kobj, symlink_name);
++	while (muxc->adapters) {
++		struct i2c_adapter *adap = muxc->adapter[--muxc->adapters];
++		struct i2c_mux_priv *priv = adap->algo_data;
+ 
+-	sysfs_remove_link(&priv->adap.dev.kobj, "mux_device");
+-	i2c_del_adapter(adap);
+-	kfree(priv);
++		muxc->adapter[muxc->adapters] = NULL;
++
++		snprintf(symlink_name, sizeof(symlink_name),
++			 "channel-%u", priv->chan_id);
++		sysfs_remove_link(&priv->mux_dev->kobj, symlink_name);
++
++		sysfs_remove_link(&priv->adap.dev.kobj, "mux_device");
++		i2c_del_adapter(adap);
++		kfree(priv);
++	}
+ }
+-EXPORT_SYMBOL_GPL(i2c_del_mux_adapter);
++EXPORT_SYMBOL_GPL(i2c_del_mux_adapters);
+ 
+ MODULE_AUTHOR("Rodolfo Giometti <giometti@linux.it>");
+ MODULE_DESCRIPTION("I2C driver for multiplexed I2C busses");
 diff --git a/drivers/i2c/muxes/i2c-arb-gpio-challenge.c b/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
-index 402e3a6c671a..6e27ea4fb25a 100644
+index 1e1a479d5b61..e0558e8a0e74 100644
 --- a/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
 +++ b/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
 @@ -42,7 +42,6 @@
   */
  
  struct i2c_arbitrator_data {
--	struct i2c_adapter *parent;
- 	struct i2c_adapter *child;
+-	struct i2c_adapter *child;
  	int our_gpio;
  	int our_gpio_release;
-@@ -119,6 +118,7 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct device_node *np = dev->of_node;
- 	struct device_node *parent_np;
-+	struct i2c_mux_core *muxc;
- 	struct i2c_arbitrator_data *arb;
- 	enum of_gpio_flags gpio_flags;
- 	unsigned long out_init;
-@@ -134,13 +134,12 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	arb = devm_kzalloc(dev, sizeof(*arb), GFP_KERNEL);
--	if (!arb) {
--		dev_err(dev, "Cannot allocate i2c_arbitrator_data\n");
-+	muxc = i2c_mux_alloc(dev, sizeof(*arb));
-+	if (!muxc)
- 		return -ENOMEM;
--	}
--	platform_set_drvdata(pdev, arb);
-+	arb = i2c_mux_priv(muxc);
- 
-+	platform_set_drvdata(pdev, muxc);
- 	/* Request GPIOs */
- 	ret = of_get_named_gpio_flags(np, "our-claim-gpio", 0, &gpio_flags);
- 	if (!gpio_is_valid(ret)) {
-@@ -196,21 +195,21 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
- 		dev_err(dev, "Cannot parse i2c-parent\n");
- 		return -EINVAL;
- 	}
--	arb->parent = of_get_i2c_adapter_by_node(parent_np);
-+	muxc->parent = of_find_i2c_adapter_by_node(parent_np);
- 	of_node_put(parent_np);
--	if (!arb->parent) {
-+	if (!muxc->parent) {
- 		dev_err(dev, "Cannot find parent bus\n");
- 		return -EPROBE_DEFER;
+ 	int their_gpio;
+@@ -205,10 +204,9 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
  	}
  
  	/* Actually add the mux adapter */
--	arb->child = i2c_add_mux_adapter(arb->parent, dev, arb, 0, 0, 0,
-+	arb->child = i2c_add_mux_adapter(muxc, dev, arb, 0, 0, 0,
- 					 i2c_arbitrator_select,
- 					 i2c_arbitrator_deselect);
- 	if (!arb->child) {
+-	arb->child = i2c_add_mux_adapter(muxc, dev, 0, 0, 0);
+-	if (!arb->child) {
++	ret = i2c_add_mux_adapter(muxc, dev, 0, 0, 0);
++	if (ret) {
  		dev_err(dev, "Failed to add adapter\n");
- 		ret = -ENODEV;
--		i2c_put_adapter(arb->parent);
-+		i2c_put_adapter(muxc->parent);
+-		ret = -ENODEV;
+ 		i2c_put_adapter(muxc->parent);
  	}
  
- 	return ret;
-@@ -218,10 +217,11 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
- 
+@@ -218,11 +216,9 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
  static int i2c_arbitrator_remove(struct platform_device *pdev)
  {
--	struct i2c_arbitrator_data *arb = platform_get_drvdata(pdev);
-+	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
-+	struct i2c_arbitrator_data *arb = i2c_mux_priv(muxc);
+ 	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
+-	struct i2c_arbitrator_data *arb = i2c_mux_priv(muxc);
  
- 	i2c_del_mux_adapter(arb->child);
--	i2c_put_adapter(arb->parent);
-+	i2c_put_adapter(muxc->parent);
- 
+-	i2c_del_mux_adapter(arb->child);
++	i2c_del_mux_adapters(muxc);
+ 	i2c_put_adapter(muxc->parent);
+-
  	return 0;
  }
+ 
 diff --git a/drivers/i2c/muxes/i2c-mux-gpio.c b/drivers/i2c/muxes/i2c-mux-gpio.c
-index b8e11c16d98c..ee43dd76a4d7 100644
+index d89a0fbca4bc..6bd41ace81d4 100644
 --- a/drivers/i2c/muxes/i2c-mux-gpio.c
 +++ b/drivers/i2c/muxes/i2c-mux-gpio.c
 @@ -18,7 +18,6 @@
  #include <linux/of_gpio.h>
  
  struct gpiomux {
--	struct i2c_adapter *parent;
- 	struct i2c_adapter **adap; /* child busses */
+-	struct i2c_adapter **adap; /* child busses */
  	struct i2c_mux_gpio_platform_data data;
  	unsigned gpio_base;
-@@ -136,19 +135,19 @@ static int i2c_mux_gpio_probe_dt(struct gpiomux *mux,
- 
- static int i2c_mux_gpio_probe(struct platform_device *pdev)
- {
-+	struct i2c_mux_core *muxc;
- 	struct gpiomux *mux;
- 	struct i2c_adapter *parent;
- 	int (*deselect) (struct i2c_adapter *, void *, u32);
- 	unsigned initial_state, gpio_base;
- 	int i, ret;
- 
--	mux = devm_kzalloc(&pdev->dev, sizeof(*mux), GFP_KERNEL);
--	if (!mux) {
--		dev_err(&pdev->dev, "Cannot allocate gpiomux structure");
-+	muxc = i2c_mux_alloc(&pdev->dev, sizeof(*mux));
-+	if (!muxc)
- 		return -ENOMEM;
--	}
-+	mux = i2c_mux_priv(muxc);
- 
--	platform_set_drvdata(pdev, mux);
-+	platform_set_drvdata(pdev, muxc);
- 
- 	if (!dev_get_platdata(&pdev->dev)) {
- 		ret = i2c_mux_gpio_probe_dt(mux, pdev);
-@@ -180,7 +179,7 @@ static int i2c_mux_gpio_probe(struct platform_device *pdev)
- 	if (!parent)
- 		return -EPROBE_DEFER;
- 
--	mux->parent = parent;
-+	muxc->parent = parent;
+ };
+@@ -182,14 +181,9 @@ static int i2c_mux_gpio_probe(struct platform_device *pdev)
+ 	muxc->select = i2c_mux_gpio_select;
  	mux->gpio_base = gpio_base;
  
- 	mux->adap = devm_kzalloc(&pdev->dev,
-@@ -223,7 +222,7 @@ static int i2c_mux_gpio_probe(struct platform_device *pdev)
+-	mux->adap = devm_kzalloc(&pdev->dev,
+-				 sizeof(*mux->adap) * mux->data.n_values,
+-				 GFP_KERNEL);
+-	if (!mux->adap) {
+-		dev_err(&pdev->dev, "Cannot allocate i2c_adapter structure");
+-		ret = -ENOMEM;
++	ret = i2c_mux_reserve_adapters(muxc, mux->data.n_values);
++	if (ret)
+ 		goto alloc_failed;
+-	}
+ 
+ 	if (mux->data.idle != I2C_MUX_GPIO_NO_IDLE) {
+ 		initial_state = mux->data.idle;
+@@ -222,10 +216,9 @@ static int i2c_mux_gpio_probe(struct platform_device *pdev)
  		u32 nr = mux->data.base_nr ? (mux->data.base_nr + i) : 0;
  		unsigned int class = mux->data.classes ? mux->data.classes[i] : 0;
  
--		mux->adap[i] = i2c_add_mux_adapter(parent, &pdev->dev, mux, nr,
-+		mux->adap[i] = i2c_add_mux_adapter(muxc, &pdev->dev, mux, nr,
- 						   mux->data.values[i], class,
- 						   i2c_mux_gpio_select, deselect);
- 		if (!mux->adap[i]) {
-@@ -253,7 +252,8 @@ alloc_failed:
+-		mux->adap[i] = i2c_add_mux_adapter(muxc, &pdev->dev, nr,
+-						   mux->data.values[i], class);
+-		if (!mux->adap[i]) {
+-			ret = -ENODEV;
++		ret = i2c_add_mux_adapter(muxc, &pdev->dev, nr,
++					  mux->data.values[i], class);
++		if (ret) {
+ 			dev_err(&pdev->dev, "Failed to add adapter %d\n", i);
+ 			goto add_adapter_failed;
+ 		}
+@@ -237,8 +230,7 @@ static int i2c_mux_gpio_probe(struct platform_device *pdev)
+ 	return 0;
  
- static int i2c_mux_gpio_remove(struct platform_device *pdev)
- {
--	struct gpiomux *mux = platform_get_drvdata(pdev);
-+	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
-+	struct gpiomux *mux = i2c_mux_priv(muxc);
+ add_adapter_failed:
+-	for (; i > 0; i--)
+-		i2c_del_mux_adapter(mux->adap[i - 1]);
++	i2c_del_mux_adapters(muxc);
+ 	i = mux->data.n_gpios;
+ err_request_gpio:
+ 	for (; i > 0; i--)
+@@ -255,8 +247,7 @@ static int i2c_mux_gpio_remove(struct platform_device *pdev)
+ 	struct gpiomux *mux = i2c_mux_priv(muxc);
  	int i;
  
- 	for (i = 0; i < mux->data.n_values; i++)
-@@ -262,7 +262,7 @@ static int i2c_mux_gpio_remove(struct platform_device *pdev)
+-	for (i = 0; i < mux->data.n_values; i++)
+-		i2c_del_mux_adapter(mux->adap[i]);
++	i2c_del_mux_adapters(muxc);
+ 
  	for (i = 0; i < mux->data.n_gpios; i++)
  		gpio_free(mux->gpio_base + mux->data.gpios[i]);
- 
--	i2c_put_adapter(mux->parent);
-+	i2c_put_adapter(muxc->parent);
- 
- 	return 0;
- }
 diff --git a/drivers/i2c/muxes/i2c-mux-pca9541.c b/drivers/i2c/muxes/i2c-mux-pca9541.c
-index d0ba424adebc..47ae2259d1ca 100644
+index ae42039459d0..80de0a0977a5 100644
 --- a/drivers/i2c/muxes/i2c-mux-pca9541.c
 +++ b/drivers/i2c/muxes/i2c-mux-pca9541.c
-@@ -73,6 +73,7 @@
- #define SELECT_DELAY_LONG	1000
+@@ -74,7 +74,6 @@
  
  struct pca9541 {
-+	struct i2c_client *client;
- 	struct i2c_adapter *mux_adap;
+ 	struct i2c_client *client;
+-	struct i2c_adapter *mux_adap;
  	unsigned long select_timeout;
  	unsigned long arb_timeout;
-@@ -217,7 +218,8 @@ static const u8 pca9541_control[16] = {
-  */
- static int pca9541_arbitrate(struct i2c_client *client)
- {
--	struct pca9541 *data = i2c_get_clientdata(client);
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
-+	struct pca9541 *data = i2c_mux_priv(muxc);
- 	int reg;
- 
- 	reg = pca9541_reg_read(client, PCA9541_CONTROL);
-@@ -324,20 +326,22 @@ static int pca9541_probe(struct i2c_client *client,
- {
- 	struct i2c_adapter *adap = client->adapter;
- 	struct pca954x_platform_data *pdata = dev_get_platdata(&client->dev);
-+	struct i2c_mux_core *muxc;
+ };
+@@ -332,6 +331,7 @@ static int pca9541_probe(struct i2c_client *client,
+ 	struct i2c_mux_core *muxc;
  	struct pca9541 *data;
  	int force;
--	int ret = -ENODEV;
++	int ret;
  
  	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE_DATA))
--		goto err;
-+		return -ENODEV;
- 
--	data = kzalloc(sizeof(struct pca9541), GFP_KERNEL);
--	if (!data) {
--		ret = -ENOMEM;
--		goto err;
--	}
-+	muxc = i2c_mux_alloc(&client->dev, sizeof(*data));
-+	if (!muxc)
-+		return -ENOMEM;
-+	data = i2c_mux_priv(muxc);
-+
-+	i2c_set_clientdata(client, muxc);
- 
--	i2c_set_clientdata(client, data);
-+	data->client = client;
-+	muxc->parent = adap;
- 
- 	/*
- 	 * I2C accesses are unprotected here.
-@@ -352,34 +356,29 @@ static int pca9541_probe(struct i2c_client *client,
+ 		return -ENODEV;
+@@ -361,11 +361,10 @@ static int pca9541_probe(struct i2c_client *client,
  	force = 0;
  	if (pdata)
  		force = pdata->modes[0].adap_id;
--	data->mux_adap = i2c_add_mux_adapter(adap, &client->dev, client,
-+	data->mux_adap = i2c_add_mux_adapter(muxc, &client->dev, client,
- 					     force, 0, 0,
- 					     pca9541_select_chan,
- 					     pca9541_release_chan);
- 
- 	if (data->mux_adap == NULL) {
+-	data->mux_adap = i2c_add_mux_adapter(muxc, &client->dev, force, 0, 0);
+-
+-	if (data->mux_adap == NULL) {
++	ret = i2c_add_mux_adapter(muxc, &client->dev, force, 0, 0);
++	if (ret) {
  		dev_err(&client->dev, "failed to register master selector\n");
--		goto exit_free;
-+		return -ENODEV;
+-		return -ENODEV;
++		return ret;
  	}
  
  	dev_info(&client->dev, "registered master selector for I2C %s\n",
- 		 client->name);
- 
- 	return 0;
--
--exit_free:
--	kfree(data);
--err:
--	return ret;
- }
- 
+@@ -377,10 +376,8 @@ static int pca9541_probe(struct i2c_client *client,
  static int pca9541_remove(struct i2c_client *client)
  {
--	struct pca9541 *data = i2c_get_clientdata(client);
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
-+	struct pca9541 *data = i2c_mux_priv(muxc);
+ 	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+-	struct pca9541 *data = i2c_mux_priv(muxc);
+-
+-	i2c_del_mux_adapter(data->mux_adap);
  
- 	i2c_del_mux_adapter(data->mux_adap);
- 
--	kfree(data);
++	i2c_del_mux_adapters(muxc);
  	return 0;
  }
  
 diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
-index acfcef3d4068..a4df831fae9d 100644
+index 9e9d708fb2cb..640670b604f5 100644
 --- a/drivers/i2c/muxes/i2c-mux-pca954x.c
 +++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
-@@ -63,6 +63,7 @@ struct pca954x {
- 	struct i2c_adapter *virt_adaps[PCA954X_MAX_NCHANS];
+@@ -60,7 +60,6 @@ enum pca_type {
+ 
+ struct pca954x {
+ 	enum pca_type type;
+-	struct i2c_adapter *virt_adaps[PCA954X_MAX_NCHANS];
  
  	u8 last_chan;		/* last register value */
-+	struct i2c_client *client;
- };
- 
- struct chip_desc {
-@@ -191,17 +192,20 @@ static int pca954x_probe(struct i2c_client *client,
- 	bool idle_disconnect_dt;
- 	struct gpio_desc *gpio;
- 	int num, force, class;
-+	struct i2c_mux_core *muxc;
- 	struct pca954x *data;
- 	int ret;
- 
- 	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE))
- 		return -ENODEV;
- 
--	data = devm_kzalloc(&client->dev, sizeof(struct pca954x), GFP_KERNEL);
--	if (!data)
-+	muxc = i2c_mux_alloc(&client->dev, sizeof(*data));
-+	if (!muxc)
- 		return -ENOMEM;
-+	data = i2c_mux_priv(muxc);
- 
--	i2c_set_clientdata(client, data);
-+	i2c_set_clientdata(client, muxc);
-+	data->client = client;
- 
- 	/* Get the mux out of reset if a reset GPIO is specified. */
- 	gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_LOW);
-@@ -217,6 +221,7 @@ static int pca954x_probe(struct i2c_client *client,
- 		return -ENODEV;
- 	}
- 
-+	muxc->parent = adap;
+ 	u8 deselect;
+@@ -231,6 +230,10 @@ static int pca954x_probe(struct i2c_client *client,
  	data->type = id->driver_data;
  	data->last_chan = 0;		   /* force the first selection */
  
-@@ -241,7 +246,7 @@ static int pca954x_probe(struct i2c_client *client,
++	ret = i2c_mux_reserve_adapters(muxc, chips[data->type].nchans);
++	if (ret)
++		return ret;
++
+ 	idle_disconnect_dt = of_node &&
+ 		of_property_read_bool(of_node, "i2c-mux-idle-disconnect");
+ 
+@@ -253,12 +256,10 @@ static int pca954x_probe(struct i2c_client *client,
+ 					   || idle_disconnect_dt) << num;
  		}
  
- 		data->virt_adaps[num] =
--			i2c_add_mux_adapter(adap, &client->dev, client,
-+			i2c_add_mux_adapter(muxc, &client->dev, client,
- 				force, num, class, pca954x_select_chan,
- 				(idle_disconnect_pd || idle_disconnect_dt)
- 					? pca954x_deselect_mux : NULL);
-@@ -270,7 +275,8 @@ virt_reg_failed:
+-		data->virt_adaps[num] =
+-			i2c_add_mux_adapter(muxc, &client->dev,
+-					    force, num, class);
++		ret = i2c_add_mux_adapter(muxc, &client->dev,
++					  force, num, class);
+ 
+-		if (data->virt_adaps[num] == NULL) {
+-			ret = -ENODEV;
++		if (ret) {
+ 			dev_err(&client->dev,
+ 				"failed to register multiplexed adapter"
+ 				" %d as bus %d\n", num, force);
+@@ -274,24 +275,15 @@ static int pca954x_probe(struct i2c_client *client,
+ 	return 0;
+ 
+ virt_reg_failed:
+-	for (num--; num >= 0; num--)
+-		i2c_del_mux_adapter(data->virt_adaps[num]);
++	i2c_del_mux_adapters(muxc);
+ 	return ret;
+ }
  
  static int pca954x_remove(struct i2c_client *client)
  {
--	struct pca954x *data = i2c_get_clientdata(client);
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
-+	struct pca954x *data = i2c_mux_priv(muxc);
- 	const struct chip_desc *chip = &chips[data->type];
- 	int i;
+ 	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+-	struct pca954x *data = i2c_mux_priv(muxc);
+-	const struct chip_desc *chip = &chips[data->type];
+-	int i;
+-
+-	for (i = 0; i < chip->nchans; ++i)
+-		if (data->virt_adaps[i]) {
+-			i2c_del_mux_adapter(data->virt_adaps[i]);
+-			data->virt_adaps[i] = NULL;
+-		}
  
-@@ -287,7 +293,8 @@ static int pca954x_remove(struct i2c_client *client)
- static int pca954x_resume(struct device *dev)
- {
- 	struct i2c_client *client = to_i2c_client(dev);
--	struct pca954x *data = i2c_get_clientdata(client);
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
-+	struct pca954x *data = i2c_mux_priv(muxc);
++	i2c_del_mux_adapters(muxc);
+ 	return 0;
+ }
  
- 	data->last_chan = 0;
- 	return i2c_smbus_write_byte(client, 0);
 diff --git a/drivers/i2c/muxes/i2c-mux-pinctrl.c b/drivers/i2c/muxes/i2c-mux-pinctrl.c
-index b5a982ba8898..810f75f114a7 100644
+index e87c8f77037a..3bbb3fb1d693 100644
 --- a/drivers/i2c/muxes/i2c-mux-pinctrl.c
 +++ b/drivers/i2c/muxes/i2c-mux-pinctrl.c
 @@ -31,7 +31,6 @@ struct i2c_mux_pinctrl {
  	struct pinctrl *pinctrl;
  	struct pinctrl_state **states;
  	struct pinctrl_state *state_idle;
--	struct i2c_adapter *parent;
- 	struct i2c_adapter **busses;
+-	struct i2c_adapter **busses;
  };
  
-@@ -131,17 +130,18 @@ static inline int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
- 
- static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
- {
-+	struct i2c_mux_core *muxc;
- 	struct i2c_mux_pinctrl *mux;
- 	int (*deselect)(struct i2c_adapter *, void *, u32);
- 	int i, ret;
- 
--	mux = devm_kzalloc(&pdev->dev, sizeof(*mux), GFP_KERNEL);
--	if (!mux) {
--		dev_err(&pdev->dev, "Cannot allocate i2c_mux_pinctrl\n");
-+	muxc = i2c_mux_alloc(&pdev->dev, sizeof(*mux));
-+	if (!muxc) {
- 		ret = -ENOMEM;
+ static int i2c_mux_pinctrl_select(struct i2c_mux_core *muxc, u32 chan)
+@@ -163,14 +162,9 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
  		goto err;
  	}
--	platform_set_drvdata(pdev, mux);
-+	mux = i2c_mux_priv(muxc);
-+	platform_set_drvdata(pdev, muxc);
  
- 	mux->dev = &pdev->dev;
+-	mux->busses = devm_kzalloc(&pdev->dev,
+-				   sizeof(*mux->busses) * mux->pdata->bus_count,
+-				   GFP_KERNEL);
+-	if (!mux->busses) {
+-		dev_err(&pdev->dev, "Cannot allocate busses\n");
+-		ret = -ENOMEM;
++	ret = i2c_mux_reserve_adapters(muxc, mux->pdata->bus_count);
++	if (ret)
+ 		goto err;
+-	}
  
-@@ -208,8 +208,8 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
- 		deselect = NULL;
- 	}
- 
--	mux->parent = i2c_get_adapter(mux->pdata->parent_bus_num);
--	if (!mux->parent) {
-+	muxc->parent = i2c_get_adapter(mux->pdata->parent_bus_num);
-+	if (!muxc->parent) {
- 		dev_err(&pdev->dev, "Parent adapter (%d) not found\n",
- 			mux->pdata->parent_bus_num);
- 		ret = -EPROBE_DEFER;
-@@ -220,7 +220,7 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+ 	mux->pinctrl = devm_pinctrl_get(&pdev->dev);
+ 	if (IS_ERR(mux->pinctrl)) {
+@@ -218,10 +212,9 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
  		u32 bus = mux->pdata->base_bus_num ?
  				(mux->pdata->base_bus_num + i) : 0;
  
--		mux->busses[i] = i2c_add_mux_adapter(mux->parent, &pdev->dev,
-+		mux->busses[i] = i2c_add_mux_adapter(muxc, &pdev->dev,
- 						     mux, bus, i, 0,
- 						     i2c_mux_pinctrl_select,
- 						     deselect);
-@@ -236,20 +236,21 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+-		mux->busses[i] = i2c_add_mux_adapter(muxc, &pdev->dev,
+-						     bus, i, 0);
+-		if (!mux->busses[i]) {
+-			ret = -ENODEV;
++		ret = i2c_add_mux_adapter(muxc, &pdev->dev,
++					  bus, i, 0);
++		if (ret) {
+ 			dev_err(&pdev->dev, "Failed to add adapter %d\n", i);
+ 			goto err_del_adapter;
+ 		}
+@@ -230,8 +223,7 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+ 	return 0;
+ 
  err_del_adapter:
- 	for (; i > 0; i--)
- 		i2c_del_mux_adapter(mux->busses[i - 1]);
--	i2c_put_adapter(mux->parent);
-+	i2c_put_adapter(muxc->parent);
+-	for (; i > 0; i--)
+-		i2c_del_mux_adapter(mux->busses[i - 1]);
++	i2c_del_mux_adapters(muxc);
+ 	i2c_put_adapter(muxc->parent);
  err:
  	return ret;
- }
- 
+@@ -240,14 +232,9 @@ err:
  static int i2c_mux_pinctrl_remove(struct platform_device *pdev)
  {
--	struct i2c_mux_pinctrl *mux = platform_get_drvdata(pdev);
-+	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
-+	struct i2c_mux_pinctrl *mux = i2c_mux_priv(muxc);
- 	int i;
+ 	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
+-	struct i2c_mux_pinctrl *mux = i2c_mux_priv(muxc);
+-	int i;
+-
+-	for (i = 0; i < mux->pdata->bus_count; i++)
+-		i2c_del_mux_adapter(mux->busses[i]);
  
- 	for (i = 0; i < mux->pdata->bus_count; i++)
- 		i2c_del_mux_adapter(mux->busses[i]);
- 
--	i2c_put_adapter(mux->parent);
-+	i2c_put_adapter(muxc->parent);
- 
++	i2c_del_mux_adapters(muxc);
+ 	i2c_put_adapter(muxc->parent);
+-
  	return 0;
  }
+ 
 diff --git a/drivers/i2c/muxes/i2c-mux-reg.c b/drivers/i2c/muxes/i2c-mux-reg.c
-index 5fbd5bd0878f..8bde4cfac512 100644
+index 3b01e7809a66..5c004ff5b6ad 100644
 --- a/drivers/i2c/muxes/i2c-mux-reg.c
 +++ b/drivers/i2c/muxes/i2c-mux-reg.c
 @@ -21,7 +21,6 @@
  #include <linux/slab.h>
  
  struct regmux {
--	struct i2c_adapter *parent;
- 	struct i2c_adapter **adap; /* child busses */
+-	struct i2c_adapter **adap; /* child busses */
  	struct i2c_mux_reg_platform_data data;
  };
-@@ -87,6 +86,7 @@ static int i2c_mux_reg_deselect(struct i2c_adapter *adap, void *data,
- static int i2c_mux_reg_probe_dt(struct regmux *mux,
- 					struct platform_device *pdev)
- {
-+	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
- 	struct device_node *np = pdev->dev.of_node;
- 	struct device_node *adapter_np, *child;
- 	struct i2c_adapter *adapter;
-@@ -107,7 +107,7 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
- 	if (!adapter)
- 		return -EPROBE_DEFER;
  
--	mux->parent = adapter;
-+	muxc->parent = adapter;
- 	mux->data.parent = i2c_adapter_id(adapter);
- 	put_device(&adapter->dev);
+@@ -214,13 +213,9 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
  
-@@ -169,6 +169,7 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+-	mux->adap = devm_kzalloc(&pdev->dev,
+-				 sizeof(*mux->adap) * mux->data.n_values,
+-				 GFP_KERNEL);
+-	if (!mux->adap) {
+-		dev_err(&pdev->dev, "Cannot allocate i2c_adapter structure");
+-		return -ENOMEM;
+-	}
++	ret = i2c_mux_reserve_adapters(muxc, mux->data.n_values);
++	if (ret)
++		return ret;
  
- static int i2c_mux_reg_probe(struct platform_device *pdev)
- {
-+	struct i2c_mux_core *muxc;
- 	struct regmux *mux;
- 	struct i2c_adapter *parent;
- 	struct resource *res;
-@@ -176,11 +177,12 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
- 	unsigned int class;
- 	int i, ret, nr;
- 
--	mux = devm_kzalloc(&pdev->dev, sizeof(*mux), GFP_KERNEL);
--	if (!mux)
-+	muxc = i2c_mux_alloc(&pdev->dev, sizeof(*mux));
-+	if (!muxc)
- 		return -ENOMEM;
-+	mux = i2c_mux_priv(muxc);
- 
--	platform_set_drvdata(pdev, mux);
-+	platform_set_drvdata(pdev, muxc);
- 
- 	if (dev_get_platdata(&pdev->dev)) {
- 		memcpy(&mux->data, dev_get_platdata(&pdev->dev),
-@@ -190,7 +192,7 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
- 		if (!parent)
- 			return -EPROBE_DEFER;
- 
--		mux->parent = parent;
-+		muxc->parent = parent;
- 	} else {
- 		ret = i2c_mux_reg_probe_dt(mux, pdev);
- 		if (ret < 0) {
-@@ -232,7 +234,7 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ 	muxc->select = i2c_mux_reg_select;
+ 	if (mux->data.idle_in_use)
+@@ -232,11 +227,9 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
  		nr = mux->data.base_nr ? (mux->data.base_nr + i) : 0;
  		class = mux->data.classes ? mux->data.classes[i] : 0;
  
--		mux->adap[i] = i2c_add_mux_adapter(mux->parent, &pdev->dev, mux,
-+		mux->adap[i] = i2c_add_mux_adapter(muxc, &pdev->dev, mux,
- 						   nr, mux->data.values[i],
- 						   class, i2c_mux_reg_select,
- 						   deselect);
-@@ -244,7 +246,7 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
- 	}
- 
- 	dev_dbg(&pdev->dev, "%d port mux on %s adapter\n",
--		 mux->data.n_values, mux->parent->name);
-+		 mux->data.n_values, muxc->parent->name);
- 
+-		mux->adap[i] = i2c_add_mux_adapter(muxc, &pdev->dev,
+-						   nr, mux->data.values[i],
+-						   class);
+-		if (!mux->adap[i]) {
+-			ret = -ENODEV;
++		ret = i2c_add_mux_adapter(muxc, &pdev->dev, nr,
++					  mux->data.values[i], class);
++		if (ret) {
+ 			dev_err(&pdev->dev, "Failed to add adapter %d\n", i);
+ 			goto add_adapter_failed;
+ 		}
+@@ -248,8 +241,7 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
  	return 0;
  
-@@ -257,13 +259,14 @@ add_adapter_failed:
+ add_adapter_failed:
+-	for (; i > 0; i--)
+-		i2c_del_mux_adapter(mux->adap[i - 1]);
++	i2c_del_mux_adapters(muxc);
  
+ 	return ret;
+ }
+@@ -257,12 +249,8 @@ add_adapter_failed:
  static int i2c_mux_reg_remove(struct platform_device *pdev)
  {
--	struct regmux *mux = platform_get_drvdata(pdev);
-+	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
-+	struct regmux *mux = i2c_mux_priv(muxc);
- 	int i;
+ 	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
+-	struct regmux *mux = i2c_mux_priv(muxc);
+-	int i;
+-
+-	for (i = 0; i < mux->data.n_values; i++)
+-		i2c_del_mux_adapter(mux->adap[i]);
  
- 	for (i = 0; i < mux->data.n_values; i++)
- 		i2c_del_mux_adapter(mux->adap[i]);
- 
--	i2c_put_adapter(mux->parent);
-+	i2c_put_adapter(muxc->parent);
++	i2c_del_mux_adapters(muxc);
+ 	i2c_put_adapter(muxc->parent);
  
  	return 0;
- }
 diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index f0e06093b5e8..3aab0d7a1bdc 100644
+index 0a47396bc5be..a9a163c1c22c 100644
 --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
 +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -842,7 +842,15 @@ static int inv_mpu_probe(struct i2c_client *client,
- 		goto out_remove_trigger;
- 	}
+@@ -850,13 +850,9 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 	st->muxc->select = inv_mpu6050_select_bypass;
+ 	st->muxc->deselect = inv_mpu6050_deselect_bypass;
  
--	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
-+	st->muxc = i2c_mux_alloc(&client->dev, 0);
-+	if (!st->muxc) {
-+		result = -ENOMEM;
-+		goto out_unreg_device;
-+	}
-+	st->muxc->priv = indio_dev;
-+	st->muxc->parent = client->adapter;
-+
-+	st->mux_adapter = i2c_add_mux_adapter(st->muxc,
- 					      &client->dev,
- 					      indio_dev,
- 					      0, 0, 0,
+-	st->mux_adapter = i2c_add_mux_adapter(st->muxc,
+-					      &client->dev,
+-					      0, 0, 0);
+-	if (!st->mux_adapter) {
+-		result = -ENODEV;
++	result = i2c_add_mux_adapter(st->muxc, &client->dev, 0, 0, 0);
++	if (result)
+ 		goto out_unreg_device;
+-	}
+ 
+ 	result = inv_mpu_acpi_create_mux_client(st);
+ 	if (result)
+@@ -865,7 +861,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 	return 0;
+ 
+ out_del_mux:
+-	i2c_del_mux_adapter(st->mux_adapter);
++	i2c_del_mux_adapters(st->muxc);
+ out_unreg_device:
+ 	iio_device_unregister(indio_dev);
+ out_remove_trigger:
+@@ -881,7 +877,7 @@ static int inv_mpu_remove(struct i2c_client *client)
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 
+ 	inv_mpu_acpi_delete_mux_client(st);
+-	i2c_del_mux_adapter(st->mux_adapter);
++	i2c_del_mux_adapters(st->muxc);
+ 	iio_device_unregister(indio_dev);
+ 	inv_mpu6050_remove_trigger(st);
+ 	iio_triggered_buffer_cleanup(indio_dev);
 diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index db0a4a2758ab..d4929db4b40e 100644
+index d4929db4b40e..72113b59132e 100644
 --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
 +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -120,6 +120,7 @@ struct inv_mpu6050_state {
- 	enum   inv_devices chip_type;
+@@ -121,7 +121,6 @@ struct inv_mpu6050_state {
  	spinlock_t time_stamp_lock;
  	struct i2c_client *client;
-+	struct i2c_mux_core *muxc;
- 	struct i2c_adapter *mux_adapter;
+ 	struct i2c_mux_core *muxc;
+-	struct i2c_adapter *mux_adapter;
  	struct i2c_client *mux_client;
  	unsigned int powerup_count;
+ 	struct inv_mpu6050_platform_data plat_data;
 diff --git a/drivers/media/dvb-frontends/m88ds3103.c b/drivers/media/dvb-frontends/m88ds3103.c
-index feeeb70d841e..a0006aec6937 100644
+index c9f8296ea421..deab5cdba01f 100644
 --- a/drivers/media/dvb-frontends/m88ds3103.c
 +++ b/drivers/media/dvb-frontends/m88ds3103.c
-@@ -1466,8 +1466,16 @@ static int m88ds3103_probe(struct i2c_client *client,
- 	if (ret)
- 		goto err_kfree;
+@@ -1374,7 +1374,7 @@ static struct i2c_adapter *m88ds3103_get_i2c_adapter(struct i2c_client *client)
  
-+	dev->muxc  = i2c_mux_alloc(&client->dev, 0);
-+	if (!dev->muxc) {
-+		ret = -ENOMEM;
-+		goto err_kfree;
-+	}
-+	dev->muxc->priv = dev;
-+	dev->muxc->parent = client->adapter;
-+
- 	/* create mux i2c adapter for tuner */
--	dev->i2c_adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
-+	dev->i2c_adapter = i2c_add_mux_adapter(dev->muxc, &client->dev,
- 					       dev, 0, 0, 0, m88ds3103_select,
- 					       NULL);
- 	if (dev->i2c_adapter == NULL) {
-diff --git a/drivers/media/dvb-frontends/m88ds3103_priv.h b/drivers/media/dvb-frontends/m88ds3103_priv.h
-index eee8c22c51ec..52d66c566ac1 100644
---- a/drivers/media/dvb-frontends/m88ds3103_priv.h
-+++ b/drivers/media/dvb-frontends/m88ds3103_priv.h
-@@ -42,6 +42,7 @@ struct m88ds3103_dev {
- 	enum fe_status fe_status;
- 	u32 dvbv3_ber; /* for old DVBv3 API read_ber */
- 	bool warm; /* FW running */
-+	struct i2c_mux_core *muxc;
- 	struct i2c_adapter *i2c_adapter;
- 	/* auto detect chip id to do different config */
- 	u8 chip_id;
-diff --git a/drivers/media/dvb-frontends/rtl2830.c b/drivers/media/dvb-frontends/rtl2830.c
-index b792f305cf15..ebf28b49cab2 100644
---- a/drivers/media/dvb-frontends/rtl2830.c
-+++ b/drivers/media/dvb-frontends/rtl2830.c
-@@ -864,8 +864,16 @@ static int rtl2830_probe(struct i2c_client *client,
- 	if (ret)
- 		goto err_regmap_exit;
+ 	dev_dbg(&client->dev, "\n");
  
-+	dev->muxc = i2c_mux_alloc(&client->dev, 0);
-+	if (!dev->muxc) {
-+		ret = -ENOMEM;
-+		goto err_regmap_exit;
-+	}
-+	dev->muxc->priv = client;
-+	dev->muxc->parent = client->adapter;
-+
- 	/* create muxed i2c adapter for tuner */
--	dev->adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
-+	dev->adapter = i2c_add_mux_adapter(dev->muxc, &client->dev,
- 			client, 0, 0, 0, rtl2830_select, NULL);
- 	if (dev->adapter == NULL) {
- 		ret = -ENODEV;
-diff --git a/drivers/media/dvb-frontends/rtl2830_priv.h b/drivers/media/dvb-frontends/rtl2830_priv.h
-index cf793f39a09b..2169c8d9c99c 100644
---- a/drivers/media/dvb-frontends/rtl2830_priv.h
-+++ b/drivers/media/dvb-frontends/rtl2830_priv.h
-@@ -29,6 +29,7 @@ struct rtl2830_dev {
- 	struct rtl2830_platform_data *pdata;
- 	struct i2c_client *client;
- 	struct regmap *regmap;
-+	struct i2c_mux_core *muxc;
- 	struct i2c_adapter *adapter;
- 	struct dvb_frontend fe;
- 	bool sleeping;
-diff --git a/drivers/media/dvb-frontends/rtl2832.c b/drivers/media/dvb-frontends/rtl2832.c
-index 78b87b260d74..38402ad3ecdd 100644
---- a/drivers/media/dvb-frontends/rtl2832.c
-+++ b/drivers/media/dvb-frontends/rtl2832.c
-@@ -1261,8 +1261,16 @@ static int rtl2832_probe(struct i2c_client *client,
- 	if (ret)
- 		goto err_regmap_exit;
- 
-+	dev->muxc = i2c_mux_alloc(&client->dev, 0);
-+	if (!dev->muxc) {
-+		ret = -ENOMEM;
-+		goto err_regmap_exit;
-+	}
-+	dev->muxc->priv = dev;
-+	dev->muxc->parent = i2c;
-+
- 	/* create muxed i2c adapter for demod tuner bus */
--	dev->i2c_adapter_tuner = i2c_add_mux_adapter(i2c, &i2c->dev, dev,
-+	dev->i2c_adapter_tuner = i2c_add_mux_adapter(dev->muxc, &i2c->dev, dev,
- 			0, 0, 0, rtl2832_select, rtl2832_deselect);
- 	if (dev->i2c_adapter_tuner == NULL) {
- 		ret = -ENODEV;
-diff --git a/drivers/media/dvb-frontends/rtl2832_priv.h b/drivers/media/dvb-frontends/rtl2832_priv.h
-index 5dcd3a41d23f..2d252bd5b8b1 100644
---- a/drivers/media/dvb-frontends/rtl2832_priv.h
-+++ b/drivers/media/dvb-frontends/rtl2832_priv.h
-@@ -36,6 +36,7 @@ struct rtl2832_dev {
- 	struct mutex regmap_mutex;
- 	struct regmap_config regmap_config;
- 	struct regmap *regmap;
-+	struct i2c_mux_core *muxc;
- 	struct i2c_adapter *i2c_adapter_tuner;
- 	struct dvb_frontend fe;
- 	struct delayed_work stat_work;
-diff --git a/drivers/media/dvb-frontends/si2168.c b/drivers/media/dvb-frontends/si2168.c
-index 821a8f481507..a52756bf9834 100644
---- a/drivers/media/dvb-frontends/si2168.c
-+++ b/drivers/media/dvb-frontends/si2168.c
-@@ -708,8 +708,16 @@ static int si2168_probe(struct i2c_client *client,
- 		goto err;
- 	}
- 
-+	dev->muxc = i2c_mux_alloc(&client->dev, 0);
-+	if (!dev->muxc) {
-+		ret = -ENOMEM;
-+		goto err_kfree;
-+	}
-+	dev->muxc->priv = client;
-+	dev->muxc->parent = client->adapter;
-+
- 	/* create mux i2c adapter for tuner */
--	dev->adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
-+	dev->adapter = i2c_add_mux_adapter(dev->muxc, &client->dev,
- 			client, 0, 0, 0, si2168_select, si2168_deselect);
- 	if (dev->adapter == NULL) {
- 		ret = -ENODEV;
-diff --git a/drivers/media/dvb-frontends/si2168_priv.h b/drivers/media/dvb-frontends/si2168_priv.h
-index c07e6fe2cb10..53efb9d562da 100644
---- a/drivers/media/dvb-frontends/si2168_priv.h
-+++ b/drivers/media/dvb-frontends/si2168_priv.h
-@@ -29,6 +29,7 @@
- 
- /* state struct */
- struct si2168_dev {
-+	struct i2c_mux_core *muxc;
- 	struct i2c_adapter *adapter;
- 	struct dvb_frontend fe;
- 	enum fe_delivery_system delivery_system;
-diff --git a/drivers/media/usb/cx231xx/cx231xx-core.c b/drivers/media/usb/cx231xx/cx231xx-core.c
-index a2fd49b6be83..d805e192e4ca 100644
---- a/drivers/media/usb/cx231xx/cx231xx-core.c
-+++ b/drivers/media/usb/cx231xx/cx231xx-core.c
-@@ -1291,6 +1291,9 @@ int cx231xx_dev_init(struct cx231xx *dev)
- 	cx231xx_i2c_register(&dev->i2c_bus[1]);
- 	cx231xx_i2c_register(&dev->i2c_bus[2]);
- 
-+	errCode = cx231xx_i2c_mux_create(dev);
-+	if (errCode < 0)
-+		return errCode;
- 	cx231xx_i2c_mux_register(dev, 0);
- 	cx231xx_i2c_mux_register(dev, 1);
- 
-diff --git a/drivers/media/usb/cx231xx/cx231xx-i2c.c b/drivers/media/usb/cx231xx/cx231xx-i2c.c
-index a29c345b027d..09c30e753ca5 100644
---- a/drivers/media/usb/cx231xx/cx231xx-i2c.c
-+++ b/drivers/media/usb/cx231xx/cx231xx-i2c.c
-@@ -565,13 +565,22 @@ static int cx231xx_i2c_mux_select(struct i2c_adapter *adap,
- 	return cx231xx_enable_i2c_port_3(dev, chan_id);
+-	return dev->i2c_adapter;
++	return dev->muxc->adapter[0];
  }
  
-+int cx231xx_i2c_mux_create(struct cx231xx *dev)
-+{
-+	dev->muxc = i2c_mux_alloc(dev->dev, 0);
-+	if (!dev->muxc)
-+		return -ENOMEM;
-+	dev->muxc->priv = dev;
-+	dev->muxc->parent = &dev->i2c_bus[1].i2c_adap;
-+	return 0;
-+}
-+
- int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no)
+ static int m88ds3103_probe(struct i2c_client *client,
+@@ -1476,12 +1476,9 @@ static int m88ds3103_probe(struct i2c_client *client,
+ 	dev->muxc->select = m88ds3103_select;
+ 
+ 	/* create mux i2c adapter for tuner */
+-	dev->i2c_adapter = i2c_add_mux_adapter(dev->muxc, &client->dev,
+-					       0, 0, 0);
+-	if (dev->i2c_adapter == NULL) {
+-		ret = -ENOMEM;
++	ret = i2c_add_mux_adapter(dev->muxc, &client->dev, 0, 0, 0);
++	if (ret)
+ 		goto err_kfree;
+-	}
+ 
+ 	/* create dvb_frontend */
+ 	memcpy(&dev->fe.ops, &m88ds3103_ops, sizeof(struct dvb_frontend_ops));
+@@ -1510,7 +1507,7 @@ static int m88ds3103_remove(struct i2c_client *client)
+ 
+ 	dev_dbg(&client->dev, "\n");
+ 
+-	i2c_del_mux_adapter(dev->i2c_adapter);
++	i2c_del_mux_adapters(dev->muxc);
+ 
+ 	kfree(dev);
+ 	return 0;
+diff --git a/drivers/media/dvb-frontends/m88ds3103_priv.h b/drivers/media/dvb-frontends/m88ds3103_priv.h
+index 52d66c566ac1..c5b4e177c6ea 100644
+--- a/drivers/media/dvb-frontends/m88ds3103_priv.h
++++ b/drivers/media/dvb-frontends/m88ds3103_priv.h
+@@ -43,7 +43,6 @@ struct m88ds3103_dev {
+ 	u32 dvbv3_ber; /* for old DVBv3 API read_ber */
+ 	bool warm; /* FW running */
+ 	struct i2c_mux_core *muxc;
+-	struct i2c_adapter *i2c_adapter;
+ 	/* auto detect chip id to do different config */
+ 	u8 chip_id;
+ 	/* main mclk is calculated for M88RS6000 dynamically */
+diff --git a/drivers/media/dvb-frontends/rtl2830.c b/drivers/media/dvb-frontends/rtl2830.c
+index d6330e8d5fa4..9864740722dd 100644
+--- a/drivers/media/dvb-frontends/rtl2830.c
++++ b/drivers/media/dvb-frontends/rtl2830.c
+@@ -712,7 +712,7 @@ static struct i2c_adapter *rtl2830_get_i2c_adapter(struct i2c_client *client)
+ 
+ 	dev_dbg(&client->dev, "\n");
+ 
+-	return dev->adapter;
++	return dev->muxc->adapter[0];
+ }
+ 
+ /*
+@@ -874,11 +874,9 @@ static int rtl2830_probe(struct i2c_client *client,
+ 	dev->muxc->select = rtl2830_select;
+ 
+ 	/* create muxed i2c adapter for tuner */
+-	dev->adapter = i2c_add_mux_adapter(dev->muxc, &client->dev, 0, 0, 0);
+-	if (dev->adapter == NULL) {
+-		ret = -ENODEV;
++	ret = i2c_add_mux_adapter(dev->muxc, &client->dev, 0, 0, 0);
++	if (ret)
+ 		goto err_regmap_exit;
+-	}
+ 
+ 	/* create dvb frontend */
+ 	memcpy(&dev->fe.ops, &rtl2830_ops, sizeof(dev->fe.ops));
+@@ -908,7 +906,7 @@ static int rtl2830_remove(struct i2c_client *client)
+ 
+ 	dev_dbg(&client->dev, "\n");
+ 
+-	i2c_del_mux_adapter(dev->adapter);
++	i2c_del_mux_adapters(dev->muxc);
+ 	regmap_exit(dev->regmap);
+ 	kfree(dev);
+ 
+diff --git a/drivers/media/dvb-frontends/rtl2830_priv.h b/drivers/media/dvb-frontends/rtl2830_priv.h
+index 2169c8d9c99c..da4909543da2 100644
+--- a/drivers/media/dvb-frontends/rtl2830_priv.h
++++ b/drivers/media/dvb-frontends/rtl2830_priv.h
+@@ -30,7 +30,6 @@ struct rtl2830_dev {
+ 	struct i2c_client *client;
+ 	struct regmap *regmap;
+ 	struct i2c_mux_core *muxc;
+-	struct i2c_adapter *adapter;
+ 	struct dvb_frontend fe;
+ 	bool sleeping;
+ 	unsigned long filters;
+diff --git a/drivers/media/dvb-frontends/rtl2832.c b/drivers/media/dvb-frontends/rtl2832.c
+index c8fd990fdae8..99d8dbf66fd7 100644
+--- a/drivers/media/dvb-frontends/rtl2832.c
++++ b/drivers/media/dvb-frontends/rtl2832.c
+@@ -1074,7 +1074,7 @@ static struct i2c_adapter *rtl2832_get_i2c_adapter(struct i2c_client *client)
+ 	struct rtl2832_dev *dev = i2c_get_clientdata(client);
+ 
+ 	dev_dbg(&client->dev, "\n");
+-	return dev->i2c_adapter_tuner;
++	return dev->muxc->adapter[0];
+ }
+ 
+ static int rtl2832_enable_slave_ts(struct i2c_client *client)
+@@ -1271,12 +1271,9 @@ static int rtl2832_probe(struct i2c_client *client,
+ 	dev->muxc->deselect = rtl2832_deselect;
+ 
+ 	/* create muxed i2c adapter for demod tuner bus */
+-	dev->i2c_adapter_tuner = i2c_add_mux_adapter(dev->muxc, &i2c->dev,
+-						     0, 0, 0);
+-	if (dev->i2c_adapter_tuner == NULL) {
+-		ret = -ENODEV;
++	ret = i2c_add_mux_adapter(dev->muxc, &i2c->dev, 0, 0, 0);
++	if (ret)
+ 		goto err_regmap_exit;
+-	}
+ 
+ 	/* create dvb_frontend */
+ 	memcpy(&dev->fe.ops, &rtl2832_ops, sizeof(struct dvb_frontend_ops));
+@@ -1311,7 +1308,7 @@ static int rtl2832_remove(struct i2c_client *client)
+ 
+ 	cancel_delayed_work_sync(&dev->i2c_gate_work);
+ 
+-	i2c_del_mux_adapter(dev->i2c_adapter_tuner);
++	i2c_del_mux_adapters(dev->muxc);
+ 
+ 	regmap_exit(dev->regmap);
+ 
+diff --git a/drivers/media/dvb-frontends/rtl2832_priv.h b/drivers/media/dvb-frontends/rtl2832_priv.h
+index 2d252bd5b8b1..6b3cd23a2c26 100644
+--- a/drivers/media/dvb-frontends/rtl2832_priv.h
++++ b/drivers/media/dvb-frontends/rtl2832_priv.h
+@@ -37,7 +37,6 @@ struct rtl2832_dev {
+ 	struct regmap_config regmap_config;
+ 	struct regmap *regmap;
+ 	struct i2c_mux_core *muxc;
+-	struct i2c_adapter *i2c_adapter_tuner;
+ 	struct dvb_frontend fe;
+ 	struct delayed_work stat_work;
+ 	enum fe_status fe_status;
+diff --git a/drivers/media/dvb-frontends/si2168.c b/drivers/media/dvb-frontends/si2168.c
+index 5b1872b1bbf4..06aa496cc42c 100644
+--- a/drivers/media/dvb-frontends/si2168.c
++++ b/drivers/media/dvb-frontends/si2168.c
+@@ -719,16 +719,14 @@ static int si2168_probe(struct i2c_client *client,
+ 	dev->muxc->deselect = si2168_deselect;
+ 
+ 	/* create mux i2c adapter for tuner */
+-	dev->adapter = i2c_add_mux_adapter(dev->muxc, &client->dev, 0, 0, 0);
+-	if (dev->adapter == NULL) {
+-		ret = -ENODEV;
++	ret = i2c_add_mux_adapter(dev->muxc, &client->dev, 0, 0, 0);
++	if (ret)
+ 		goto err_kfree;
+-	}
+ 
+ 	/* create dvb_frontend */
+ 	memcpy(&dev->fe.ops, &si2168_ops, sizeof(struct dvb_frontend_ops));
+ 	dev->fe.demodulator_priv = client;
+-	*config->i2c_adapter = dev->adapter;
++	*config->i2c_adapter = dev->muxc->adapter[0];
+ 	*config->fe = &dev->fe;
+ 	dev->ts_mode = config->ts_mode;
+ 	dev->ts_clock_inv = config->ts_clock_inv;
+@@ -752,7 +750,7 @@ static int si2168_remove(struct i2c_client *client)
+ 
+ 	dev_dbg(&client->dev, "\n");
+ 
+-	i2c_del_mux_adapter(dev->adapter);
++	i2c_del_mux_adapters(dev->muxc);
+ 
+ 	dev->fe.ops.release = NULL;
+ 	dev->fe.demodulator_priv = NULL;
+diff --git a/drivers/media/dvb-frontends/si2168_priv.h b/drivers/media/dvb-frontends/si2168_priv.h
+index 53efb9d562da..165bf1412063 100644
+--- a/drivers/media/dvb-frontends/si2168_priv.h
++++ b/drivers/media/dvb-frontends/si2168_priv.h
+@@ -30,7 +30,6 @@
+ /* state struct */
+ struct si2168_dev {
+ 	struct i2c_mux_core *muxc;
+-	struct i2c_adapter *adapter;
+ 	struct dvb_frontend fe;
+ 	enum fe_delivery_system delivery_system;
+ 	enum fe_status fe_status;
+diff --git a/drivers/media/usb/cx231xx/cx231xx-core.c b/drivers/media/usb/cx231xx/cx231xx-core.c
+index d805e192e4ca..7d7b04df6a22 100644
+--- a/drivers/media/usb/cx231xx/cx231xx-core.c
++++ b/drivers/media/usb/cx231xx/cx231xx-core.c
+@@ -1416,8 +1416,7 @@ EXPORT_SYMBOL_GPL(cx231xx_dev_init);
+ void cx231xx_dev_uninit(struct cx231xx *dev)
  {
--	struct i2c_adapter *i2c_parent = &dev->i2c_bus[1].i2c_adap;
+ 	/* Un Initialize I2C bus */
+-	cx231xx_i2c_mux_unregister(dev, 1);
+-	cx231xx_i2c_mux_unregister(dev, 0);
++	cx231xx_i2c_mux_unregister(dev);
+ 	cx231xx_i2c_unregister(&dev->i2c_bus[2]);
+ 	cx231xx_i2c_unregister(&dev->i2c_bus[1]);
+ 	cx231xx_i2c_unregister(&dev->i2c_bus[0]);
+diff --git a/drivers/media/usb/cx231xx/cx231xx-i2c.c b/drivers/media/usb/cx231xx/cx231xx-i2c.c
+index 51760bfc7cbc..2b5adb056827 100644
+--- a/drivers/media/usb/cx231xx/cx231xx-i2c.c
++++ b/drivers/media/usb/cx231xx/cx231xx-i2c.c
+@@ -579,23 +579,23 @@ int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no)
+ {
  	/* what is the correct mux_dev? */
  	struct device *mux_dev = dev->dev;
+-
+-	dev->i2c_mux_adap[mux_no] = i2c_add_mux_adapter(dev->muxc,
+-				mux_dev,
+-				0,
+-				mux_no /* chan_id */,
+-				0 /* class */);
+-	if (!dev->i2c_mux_adap[mux_no])
++	int rc;
++
++	rc = i2c_add_mux_adapter(dev->muxc,
++				 mux_dev,
++				 0,
++				 mux_no /* chan_id */,
++				 0 /* class */);
++	if (rc)
+ 		dev_warn(dev->dev,
+ 			 "i2c mux %d register FAILED\n", mux_no);
  
--	dev->i2c_mux_adap[mux_no] = i2c_add_mux_adapter(i2c_parent,
-+	dev->i2c_mux_adap[mux_no] = i2c_add_mux_adapter(dev->muxc,
- 				mux_dev,
- 				dev /* mux_priv */,
- 				0,
+-	return 0;
++	return rc;
+ }
+ 
+-void cx231xx_i2c_mux_unregister(struct cx231xx *dev, int mux_no)
++void cx231xx_i2c_mux_unregister(struct cx231xx *dev)
+ {
+-	i2c_del_mux_adapter(dev->i2c_mux_adap[mux_no]);
+-	dev->i2c_mux_adap[mux_no] = NULL;
++	i2c_del_mux_adapters(dev->muxc);
+ }
+ 
+ struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port)
+@@ -608,9 +608,9 @@ struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port)
+ 	case I2C_2:
+ 		return &dev->i2c_bus[2].i2c_adap;
+ 	case I2C_1_MUX_1:
+-		return dev->i2c_mux_adap[0];
++		return dev->muxc->adapter[0];
+ 	case I2C_1_MUX_3:
+-		return dev->i2c_mux_adap[1];
++		return dev->muxc->adapter[1];
+ 	default:
+ 		return NULL;
+ 	}
 diff --git a/drivers/media/usb/cx231xx/cx231xx.h b/drivers/media/usb/cx231xx/cx231xx.h
-index 54790fbe8fdc..72f8188e0b01 100644
+index 72f8188e0b01..8c71fa8d777c 100644
 --- a/drivers/media/usb/cx231xx/cx231xx.h
 +++ b/drivers/media/usb/cx231xx/cx231xx.h
-@@ -625,6 +625,7 @@ struct cx231xx {
- 
- 	/* I2C adapters: Master 1 & 2 (External) & Master 3 (Internal only) */
- 	struct cx231xx_i2c i2c_bus[3];
-+	struct i2c_mux_core *muxc;
- 	struct i2c_adapter *i2c_mux_adap[2];
- 
- 	unsigned int xc_fw_load_done:1;
-@@ -759,6 +760,7 @@ int cx231xx_reset_analog_tuner(struct cx231xx *dev);
- void cx231xx_do_i2c_scan(struct cx231xx *dev, int i2c_port);
- int cx231xx_i2c_register(struct cx231xx_i2c *bus);
+@@ -762,7 +762,7 @@ int cx231xx_i2c_register(struct cx231xx_i2c *bus);
  int cx231xx_i2c_unregister(struct cx231xx_i2c *bus);
-+int cx231xx_i2c_mux_create(struct cx231xx *dev);
+ int cx231xx_i2c_mux_create(struct cx231xx *dev);
  int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no);
- void cx231xx_i2c_mux_unregister(struct cx231xx *dev, int mux_no);
+-void cx231xx_i2c_mux_unregister(struct cx231xx *dev, int mux_no);
++void cx231xx_i2c_mux_unregister(struct cx231xx *dev);
  struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port);
+ 
+ /* Internal block control functions */
 diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-index e16ea5717b7f..6bfc2f9a5a24 100644
+index a4abd9b588b9..77ccc54cfdc9 100644
 --- a/drivers/of/unittest.c
 +++ b/drivers/of/unittest.c
-@@ -1695,6 +1695,7 @@ static int unittest_i2c_mux_probe(struct i2c_client *client,
+@@ -1677,11 +1677,6 @@ static struct i2c_driver unittest_i2c_dev_driver = {
+ 
+ #if IS_BUILTIN(CONFIG_I2C_MUX)
+ 
+-struct unittest_i2c_mux_data {
+-	int nchans;
+-	struct i2c_adapter *adap[];
+-};
+-
+ static int unittest_i2c_mux_select_chan(struct i2c_mux_core *muxc, u32 chan)
+ {
+ 	return 0;
+@@ -1690,12 +1685,11 @@ static int unittest_i2c_mux_select_chan(struct i2c_mux_core *muxc, u32 chan)
+ static int unittest_i2c_mux_probe(struct i2c_client *client,
+ 		const struct i2c_device_id *id)
+ {
+-	int ret, i, nchans, size;
++	int ret, i, nchans;
  	struct device *dev = &client->dev;
  	struct i2c_adapter *adap = to_i2c_adapter(dev->parent);
  	struct device_node *np = client->dev.of_node, *child;
-+	struct i2c_mux_core *muxc;
- 	struct unittest_i2c_mux_data *stm;
+ 	struct i2c_mux_core *muxc;
+-	struct unittest_i2c_mux_data *stm;
  	u32 reg, max_reg;
  
-@@ -1720,14 +1721,14 @@ static int unittest_i2c_mux_probe(struct i2c_client *client,
+ 	dev_dbg(dev, "%s for node @%s\n", __func__, np->full_name);
+@@ -1719,20 +1713,19 @@ static int unittest_i2c_mux_probe(struct i2c_client *client,
+ 		return -EINVAL;
  	}
  
- 	size = offsetof(struct unittest_i2c_mux_data, adap[nchans]);
--	stm = devm_kzalloc(dev, size, GFP_KERNEL);
--	if (!stm) {
--		dev_err(dev, "Out of memory\n");
-+	muxc = i2c_mux_alloc(dev, size);
-+	if (!muxc)
+-	size = offsetof(struct unittest_i2c_mux_data, adap[nchans]);
+-	muxc = i2c_mux_alloc(dev, size);
++	muxc = i2c_mux_alloc(dev, 0);
+ 	if (!muxc)
  		return -ENOMEM;
--	}
-+	muxc->parent = adap;
-+	stm = i2c_mux_priv(muxc);
- 	stm->nchans = nchans;
+ 	muxc->parent = adap;
+ 	muxc->select = unittest_i2c_mux_select_chan;
+-	stm = i2c_mux_priv(muxc);
+-	stm->nchans = nchans;
++	ret = i2c_mux_reserve_adapters(muxc, nchans);
++	if (ret)
++		return ret;
  	for (i = 0; i < nchans; i++) {
--		stm->adap[i] = i2c_add_mux_adapter(adap, dev, client,
-+		stm->adap[i] = i2c_add_mux_adapter(muxc, dev, client,
- 				0, i, 0, unittest_i2c_mux_select_chan, NULL);
- 		if (!stm->adap[i]) {
+-		stm->adap[i] = i2c_add_mux_adapter(muxc, dev, 0, i, 0);
+-		if (!stm->adap[i]) {
++		ret = i2c_add_mux_adapter(muxc, dev, 0, i, 0);
++		if (ret) {
  			dev_err(dev, "Failed to register mux #%d\n", i);
-@@ -1737,7 +1738,7 @@ static int unittest_i2c_mux_probe(struct i2c_client *client,
+-			for (i--; i >= 0; i--)
+-				i2c_del_mux_adapter(stm->adap[i]);
++			i2c_del_mux_adapters(muxc);
+ 			return -ENODEV;
  		}
  	}
- 
--	i2c_set_clientdata(client, stm);
-+	i2c_set_clientdata(client, muxc);
- 
- 	return 0;
- };
-@@ -1746,7 +1747,8 @@ static int unittest_i2c_mux_remove(struct i2c_client *client)
- {
+@@ -1747,12 +1740,9 @@ static int unittest_i2c_mux_remove(struct i2c_client *client)
  	struct device *dev = &client->dev;
  	struct device_node *np = client->dev.of_node;
--	struct unittest_i2c_mux_data *stm = i2c_get_clientdata(client);
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
-+	struct unittest_i2c_mux_data *stm = i2c_mux_priv(muxc);
- 	int i;
+ 	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+-	struct unittest_i2c_mux_data *stm = i2c_mux_priv(muxc);
+-	int i;
  
  	dev_dbg(dev, "%s for node @%s\n", __func__, np->full_name);
+-	for (i = stm->nchans - 1; i >= 0; i--)
+-		i2c_del_mux_adapter(stm->adap[i]);
++	i2c_del_mux_adapters(muxc);
+ 	return 0;
+ }
+ 
 diff --git a/include/linux/i2c-mux.h b/include/linux/i2c-mux.h
-index b5f9a007a3ab..3ca1783b86ac 100644
+index 5cd6e1e664e0..bfcdcc46f2a6 100644
 --- a/include/linux/i2c-mux.h
 +++ b/include/linux/i2c-mux.h
-@@ -27,13 +27,25 @@
+@@ -29,6 +29,9 @@
  
- #ifdef __KERNEL__
+ struct i2c_mux_core {
+ 	struct i2c_adapter *parent;
++	struct i2c_adapter **adapter;
++	int adapters;
++	int max_adapters;
+ 	struct device *dev;
  
-+struct i2c_mux_core {
-+	struct i2c_adapter *parent;
-+	void *priv;
-+};
-+
-+struct i2c_mux_core *i2c_mux_alloc(struct device *dev, int sizeof_priv);
-+
-+static inline void *i2c_mux_priv(struct i2c_mux_core *muxc)
-+{
-+	return muxc->priv;
-+}
+ 	void *priv;
+@@ -44,18 +47,20 @@ static inline void *i2c_mux_priv(struct i2c_mux_core *muxc)
+ 	return muxc->priv;
+ }
+ 
++int i2c_mux_reserve_adapters(struct i2c_mux_core *muxc, int adapters);
 +
  /*
   * Called to create a i2c bus on a multiplexed bus segment.
@@ -962,11 +962,20 @@ index b5f9a007a3ab..3ca1783b86ac 100644
   * and deselect callback functions to perform hardware-specific
   * mux control.
   */
--struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
-+struct i2c_adapter *i2c_add_mux_adapter(struct i2c_mux_core *muxc,
- 				struct device *mux_dev,
- 				void *mux_priv, u32 force_nr, u32 chan_id,
- 				unsigned int class,
+-struct i2c_adapter *i2c_add_mux_adapter(struct i2c_mux_core *muxc,
+-					struct device *mux_dev,
+-					u32 force_nr, u32 chan_id,
+-					unsigned int class);
++int i2c_add_mux_adapter(struct i2c_mux_core *muxc,
++			struct device *mux_dev,
++			u32 force_nr, u32 chan_id,
++			unsigned int class);
+ 
+-void i2c_del_mux_adapter(struct i2c_adapter *adap);
++void i2c_del_mux_adapters(struct i2c_mux_core *muxc);
+ 
+ #endif /* __KERNEL__ */
+ 
 -- 
 2.1.4
 
