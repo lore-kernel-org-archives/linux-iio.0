@@ -1,50 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:60546 "EHLO
-	mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751487AbcAEPJc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jan 2016 10:09:32 -0500
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+Return-Path: <linus.walleij@linaro.org>
+MIME-Version: 1.0
+In-Reply-To: <5651B37C.5030008@kernel.org>
+References: <1447924517-8190-1-git-send-email-linus.walleij@linaro.org>
+	<5651B37C.5030008@kernel.org>
+Date: Tue, 5 Jan 2016 16:18:16 +0100
+Message-ID: <CACRpkdZp9H7p11PUsvskhMa0BYXb3q5pw848Yw1MLE3P1k8WqQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2 v3] iio: st_sensors: support active-low interrupts
+From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: kernel-janitors@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: ak8975: constify ak_def structures
-Date: Tue,  5 Jan 2016 15:56:42 +0100
-Message-Id: <1452005802-4165-1-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-The ak_def structures are never modified, so declare them as const.
+On Sun, Nov 22, 2015 at 1:22 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 19/11/15 09:15, Linus Walleij wrote:
+>> Most ST MEMS Sensors that support interrupts can also handle sending
+>> an active low interrupt, i.e. going from high to low on data ready
+>> (or other interrupt) and thus triggering on a falling edge to the
+>> interrupt controller.
+>>
+>> Set up logic to inspect the interrupt line we get for a sensor: if
+>> it is triggering on rising edge, leave everything alone, but if it
+>> triggers on falling edges, set up active low, and if unsupported
+>> configurations appear: warn with errors and reconfigure the interrupt
+>> to a rising edge, which all interrupt generating sensors support.
+>>
+>> Create a local header for st_sensors_core.h to share functions
+>> between the sensor core and the trigger setup code.
+>>
+>> Cc: Giuseppe Barba <giuseppe.barba@st.com>
+>> Cc: Denis Ciocca <denis.ciocca@st.com>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> Looks good to me.  Ideally I'd like ack from Denis.
+> (it's early in the cycle so plenty of time for this one!)
 
-Done with the help of Coccinelle.
+Has this fallen off the table? I think this patch 1/2 is fine
+to merge as-is, I guess it is too late for v4.5 now, but
+please queue it for the next cycle.
 
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-
----
- drivers/iio/magnetometer/ak8975.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index b13936d..9c5c9ef 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -252,7 +252,7 @@ struct ak_def {
- 	u8 data_regs[3];
- };
- 
--static struct ak_def ak_def_array[AK_MAX_TYPE] = {
-+static const struct ak_def ak_def_array[AK_MAX_TYPE] = {
- 	{
- 		.type = AK8975,
- 		.raw_to_gauss = ak8975_raw_to_gauss,
-@@ -360,7 +360,7 @@ static struct ak_def ak_def_array[AK_MAX_TYPE] = {
-  */
- struct ak8975_data {
- 	struct i2c_client	*client;
--	struct ak_def		*def;
-+	const struct ak_def	*def;
- 	struct attribute_group	attrs;
- 	struct mutex		lock;
- 	u8			asa[3];
-
+Yours,
+Linus Walleij
