@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:56717 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:47166 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752592AbcAEP61 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jan 2016 10:58:27 -0500
+	with ESMTP id S1752036AbcAEP6N (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jan 2016 10:58:13 -0500
 From: Peter Rosin <peda@lysator.liu.se>
 To: Wolfram Sang <wsa@the-dreams.de>
 Cc: Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
@@ -29,9 +29,9 @@ Cc: Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
 	Peter Rosin <peda@lysator.liu.se>, linux-i2c@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH v2 7/8] i2c: muxes always lock the parent adapter
-Date: Tue,  5 Jan 2016 16:57:17 +0100
-Message-Id: <1452009438-27347-8-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v2 5/8] i2c-mux: pinctrl: get rid of the driver private struct device pointer
+Date: Tue,  5 Jan 2016 16:57:15 +0100
+Message-Id: <1452009438-27347-6-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1452009438-27347-1-git-send-email-peda@lysator.liu.se>
 References: <1452009438-27347-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -39,107 +39,103 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Peter Rosin <peda@axentia.se>
 
-Instead of checking for i2c parent adapters for every lock/unlock, simply
-override the locking for muxes to always lock/unlock the parent adapter
-directly.
+There is a copy of the device pointer in the mux core.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/i2c-core.c | 21 +++------------------
- drivers/i2c/i2c-mux.c  | 27 +++++++++++++++++++++++++++
- 2 files changed, 30 insertions(+), 18 deletions(-)
+ drivers/i2c/muxes/i2c-mux-pinctrl.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
-index 34a7748b4652..4683777f81ca 100644
---- a/drivers/i2c/i2c-core.c
-+++ b/drivers/i2c/i2c-core.c
-@@ -963,12 +963,7 @@ static int i2c_check_addr_busy(struct i2c_adapter *adapter, int addr)
-  */
- static void i2c_adapter_lock_bus(struct i2c_adapter *adapter, int flags)
+diff --git a/drivers/i2c/muxes/i2c-mux-pinctrl.c b/drivers/i2c/muxes/i2c-mux-pinctrl.c
+index 0dc912898813..38129850cbe4 100644
+--- a/drivers/i2c/muxes/i2c-mux-pinctrl.c
++++ b/drivers/i2c/muxes/i2c-mux-pinctrl.c
+@@ -26,7 +26,6 @@
+ #include <linux/of.h>
+ 
+ struct i2c_mux_pinctrl {
+-	struct device *dev;
+ 	struct i2c_mux_pinctrl_platform_data *pdata;
+ 	struct pinctrl *pinctrl;
+ 	struct pinctrl_state **states;
+@@ -51,6 +50,7 @@ static int i2c_mux_pinctrl_deselect(struct i2c_mux_core *muxc, u32 chan)
+ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
+ 				struct platform_device *pdev)
  {
--	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
++	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
+ 	struct device_node *np = pdev->dev.of_node;
+ 	int num_names, i, ret;
+ 	struct device_node *adapter_np;
+@@ -60,15 +60,12 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
+ 		return 0;
+ 
+ 	mux->pdata = devm_kzalloc(&pdev->dev, sizeof(*mux->pdata), GFP_KERNEL);
+-	if (!mux->pdata) {
+-		dev_err(mux->dev,
+-			"Cannot allocate i2c_mux_pinctrl_platform_data\n");
++	if (!mux->pdata)
+ 		return -ENOMEM;
+-	}
+ 
+ 	num_names = of_property_count_strings(np, "pinctrl-names");
+ 	if (num_names < 0) {
+-		dev_err(mux->dev, "Cannot parse pinctrl-names: %d\n",
++		dev_err(muxc->dev, "Cannot parse pinctrl-names: %d\n",
+ 			num_names);
+ 		return num_names;
+ 	}
+@@ -76,23 +73,21 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
+ 	mux->pdata->pinctrl_states = devm_kzalloc(&pdev->dev,
+ 		sizeof(*mux->pdata->pinctrl_states) * num_names,
+ 		GFP_KERNEL);
+-	if (!mux->pdata->pinctrl_states) {
+-		dev_err(mux->dev, "Cannot allocate pinctrl_states\n");
++	if (!mux->pdata->pinctrl_states)
+ 		return -ENOMEM;
+-	}
+ 
+ 	for (i = 0; i < num_names; i++) {
+ 		ret = of_property_read_string_index(np, "pinctrl-names", i,
+ 			&mux->pdata->pinctrl_states[mux->pdata->bus_count]);
+ 		if (ret < 0) {
+-			dev_err(mux->dev, "Cannot parse pinctrl-names: %d\n",
++			dev_err(muxc->dev, "Cannot parse pinctrl-names: %d\n",
+ 				ret);
+ 			return ret;
+ 		}
+ 		if (!strcmp(mux->pdata->pinctrl_states[mux->pdata->bus_count],
+ 			    "idle")) {
+ 			if (i != num_names - 1) {
+-				dev_err(mux->dev, "idle state must be last\n");
++				dev_err(muxc->dev, "idle state must be last\n");
+ 				return -EINVAL;
+ 			}
+ 			mux->pdata->pinctrl_state_idle = "idle";
+@@ -103,13 +98,13 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
+ 
+ 	adapter_np = of_parse_phandle(np, "i2c-parent", 0);
+ 	if (!adapter_np) {
+-		dev_err(mux->dev, "Cannot parse i2c-parent\n");
++		dev_err(muxc->dev, "Cannot parse i2c-parent\n");
+ 		return -ENODEV;
+ 	}
+ 	adapter = of_find_i2c_adapter_by_node(adapter_np);
+ 	of_node_put(adapter_np);
+ 	if (!adapter) {
+-		dev_err(mux->dev, "Cannot find parent bus\n");
++		dev_err(muxc->dev, "Cannot find parent bus\n");
+ 		return -EPROBE_DEFER;
+ 	}
+ 	mux->pdata->parent_bus_num = i2c_adapter_id(adapter);
+@@ -139,8 +134,6 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+ 	mux = i2c_mux_priv(muxc);
+ 	platform_set_drvdata(pdev, muxc);
+ 
+-	mux->dev = &pdev->dev;
 -
--	if (parent)
--		i2c_lock_adapter(parent);
--	else
--		rt_mutex_lock(&adapter->bus_lock);
-+	rt_mutex_lock(&adapter->bus_lock);
- }
- 
- /**
-@@ -977,12 +972,7 @@ static void i2c_adapter_lock_bus(struct i2c_adapter *adapter, int flags)
-  */
- static int i2c_adapter_trylock_bus(struct i2c_adapter *adapter, int flags)
- {
--	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
--
--	if (parent)
--		return parent->trylock_bus(parent, flags);
--	else
--		return rt_mutex_trylock(&adapter->bus_lock);
-+	return rt_mutex_trylock(&adapter->bus_lock);
- }
- 
- /**
-@@ -991,12 +981,7 @@ static int i2c_adapter_trylock_bus(struct i2c_adapter *adapter, int flags)
-  */
- static void i2c_adapter_unlock_bus(struct i2c_adapter *adapter, int flags)
- {
--	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
--
--	if (parent)
--		i2c_unlock_adapter(parent);
--	else
--		rt_mutex_unlock(&adapter->bus_lock);
-+	rt_mutex_unlock(&adapter->bus_lock);
- }
- 
- static void i2c_dev_set_name(struct i2c_adapter *adap,
-diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
-index 5c1088079231..dd8a790cb4cc 100644
---- a/drivers/i2c/i2c-mux.c
-+++ b/drivers/i2c/i2c-mux.c
-@@ -98,6 +98,30 @@ static unsigned int i2c_mux_parent_classes(struct i2c_adapter *parent)
- 	return class;
- }
- 
-+static void i2c_parent_lock_bus(struct i2c_adapter *adapter, int flags)
-+{
-+	struct i2c_mux_priv *priv = adapter->algo_data;
-+	struct i2c_adapter *parent = priv->muxc->parent;
-+
-+	parent->lock_bus(parent, flags);
-+}
-+
-+static int i2c_parent_trylock_bus(struct i2c_adapter *adapter, int flags)
-+{
-+	struct i2c_mux_priv *priv = adapter->algo_data;
-+	struct i2c_adapter *parent = priv->muxc->parent;
-+
-+	return parent->trylock_bus(parent, flags);
-+}
-+
-+static void i2c_parent_unlock_bus(struct i2c_adapter *adapter, int flags)
-+{
-+	struct i2c_mux_priv *priv = adapter->algo_data;
-+	struct i2c_adapter *parent = priv->muxc->parent;
-+
-+	parent->unlock_bus(parent, flags);
-+}
-+
- int i2c_mux_reserve_adapters(struct i2c_mux_core *muxc, int adapters)
- {
- 	struct i2c_adapter **adapter;
-@@ -181,6 +205,9 @@ int i2c_add_mux_adapter(struct i2c_mux_core *muxc,
- 	priv->adap.retries = parent->retries;
- 	priv->adap.timeout = parent->timeout;
- 	priv->adap.quirks = parent->quirks;
-+	priv->adap.lock_bus = i2c_parent_lock_bus;
-+	priv->adap.trylock_bus = i2c_parent_trylock_bus;
-+	priv->adap.unlock_bus = i2c_parent_unlock_bus;
- 
- 	/* Sanity check on class */
- 	if (i2c_mux_parent_classes(parent) & class)
+ 	mux->pdata = dev_get_platdata(&pdev->dev);
+ 	if (!mux->pdata) {
+ 		ret = i2c_mux_pinctrl_parse_dt(mux, pdev);
 -- 
 2.1.4
 
