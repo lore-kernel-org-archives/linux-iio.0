@@ -1,273 +1,177 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-031.synserver.de ([212.40.185.31]:1124 "EHLO
-	smtp-out-188.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751865AbcAERUu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jan 2016 12:20:50 -0500
-Subject: Re: [PATCH v3] iio: add ad5761 DAC driver
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-References: <1452013261-19096-1-git-send-email-ricardo.ribalda@gmail.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <568BFB6F.2020705@metafoo.de>
-Date: Tue, 5 Jan 2016 18:20:47 +0100
+Received: from mail-wm0-f54.google.com ([74.125.82.54]:34191 "EHLO
+	mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752042AbcAEL5H convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jan 2016 06:57:07 -0500
+Received: by mail-wm0-f54.google.com with SMTP id u188so20222412wmu.1
+        for <linux-iio@vger.kernel.org>; Tue, 05 Jan 2016 03:57:06 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1452013261-19096-1-git-send-email-ricardo.ribalda@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <568AB86A.6070801@kernel.org>
+References: <CAAn_ec90t=N1e1m8aUcBZRb5wsRwiz56WUzFCWqTrVHHhcAuBA@mail.gmail.com>
+	<566C0A32.3030104@kernel.org>
+	<CAAn_ec_=9syP4j+g5GRMCB-+7vCWE1XqryE6KWUm=auUBZE=uQ@mail.gmail.com>
+	<566C1493.7090002@jic23.retrosnub.co.uk>
+	<CAAn_ec_5UcQ5GVFx=byU6sKJ9u33LmUzFvoRvVgTko4GfDHnOA@mail.gmail.com>
+	<CAAn_ec8BMT9fPc06YOc14Eh+8vpQGJW_Lv-BOqDCqS5UbZF3iQ@mail.gmail.com>
+	<7665C9F2-AA7C-404F-AC43-2D045E330030@jic23.retrosnub.co.uk>
+	<CAAn_ec97uYM5vPogeRFFsfh8vUTb9H8SVrJYiWbBZmy9b9xBhQ@mail.gmail.com>
+	<0BBA92A2-6E6C-4CCA-A290-920CFB50FCAE@jic23.retrosnub.co.uk>
+	<CAAn_ec-UJn9DFt=HodPAVvmm4s_4zwq=DF8un8U2ngLB+XXNDw@mail.gmail.com>
+	<568A58C3.6060804@kernel.org>
+	<568A69B8.9080406@metafoo.de>
+	<568AB86A.6070801@kernel.org>
+Date: Tue, 5 Jan 2016 19:57:05 +0800
+Message-ID: <CAAn_ec8vhXx10P2q=uAPJgKF5Xymm688Mih3cTnTkMJgioW-_w@mail.gmail.com>
+Subject: Re: read /dev/iio:device0 return -1 (Invalid argument)
+From: Julio Cruz <jcsistemas2001@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Paul Cercueil <pcercuei@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/05/2016 06:01 PM, Ricardo Ribalda Delgado wrote:
-> ad5761 is a 1-channel DAC with configurable output range.
-> The driver uses the regulator interface for its voltage ref.
-> 
-> It shares its register layout with ad5761r, ad5721 and ad5721r.
-> 
-> Differences:
-> ad5761* are 16 bit, ad5721* are 12 bits.
-> ad57*1r have an internal reference.
-> 
-> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Dear All,
 
-Hi,
+Thanks to your comments, I found out that the function in my kernel
+iio_buffer_read_first_n_outer is different to the one that you
+mentioned.
 
-Thanks for the driver. Looks pretty good, a few comments inline.
+I was debugging a kernel version 3.10, that's include another
+implementation of the function that we are talking. After some extra
+effort, I could update to version 3.14 and effectively, the behavior
+is as expected.
 
-[...]
-> +enum ad5761_range_ids {
-> +	MODE_M10V_10V,
-> +	MODE_0V_10V,
-> +	MODE_M5V_5V,
-> +	MODE_0V_5V,
-> +	MODE_M2V5_7V5,
-> +	MODE_M3V_3V,
-> +	MODE_0V_16V,
-> +	MODE_0V_20V,
+Very sorry for this misunderstanding.
 
-Those should have the AD5761 prefix to avoid name conflicts.
+BTW, in case of future problems, would be fine
 
-> +};
-> +
-> +static int ad5761_spi_set_range(struct ad5761_state *st,
-> +				enum ad5761_voltage_range range)
-> +{
-> +	u16 aux;
-> +	int ret;
-> +
-> +	aux = range | AD5761_CTRL_ETS;
-> +
-> +	if (st->use_intref)
-> +		aux |= AD5761_CTRL_USE_INTVREF;
-> +
-> +	ret = ad5761_spi_write(st, AD5761_ADDR_CTRL_WRITE_REG, aux);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ad5761_spi_write(st, AD5761_ADDR_SW_DATA_RESET, 0);
-> +	if (ret)
-> +		return ret;
+Thanks
 
-The datasheet says:
+Julio
 
-	When the DAC output range is reconfigured during operation, a
-	software full reset command (see Table 26) must be written to the
-	device before writing to the control register.
 
-This is just the data reset and it should be moved before the range change.
+kernel 3.10:
+---------------
+ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+     size_t n, loff_t *f_ps)
+{
+    struct iio_dev *indio_dev = filp->private_data;
+    struct iio_buffer *rb = indio_dev->buffer;
 
-> +
-> +	st->range = range;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad5761_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val,
-> +			   int *val2,
-> +			   long mask)
-> +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +	u16 aux;
+i   if (!rb || !rb->access->read_first_n)
+        return -EINVAL;
+    return rb->access->read_first_n(rb, n, buf);
+}
 
-You'll need locking here to avoid concurrent access to the data field in the
-state struct.
+kernel 3.14:
+---------------
+ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+     size_t n, loff_t *f_ps)
+{
+struct iio_dev *indio_dev = filp->private_data;
+struct iio_buffer *rb = indio_dev->buffer;
+int ret;
 
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = ad5761_spi_read(st, AD5761_ADDR_DAC_READ, &aux);
-> +		if (ret)
-> +			return ret;
-> +		*val = aux >> chan->scan_type.shift;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = st->vref * ad5761_range_params[st->range].m;
-> +		*val /= 10;
-> +		*val2 = chan->scan_type.realbits;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		*val = -(1 << chan->scan_type.realbits);
-> +		*val *=	ad5761_range_params[st->range].c;
-> +		*val /=	ad5761_range_params[st->range].m;
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ad5761_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val,
-> +			    int val2,
-> +			    long mask)
-> +{
-> +	struct ad5761_state *st = iio_priv(indio_dev);
-> +	u16 aux;
-> +
-> +	if (mask != IIO_CHAN_INFO_RAW)
-> +		return -EINVAL;
-> +
-> +	aux = val << chan->scan_type.shift;
-> +
+if (!indio_dev->info)
+     return -ENODEV;
 
-Same here.
+if (!rb || !rb->access->read_first_n)
+     return -EINVAL;
 
-> +	return ad5761_spi_write(st, AD5761_ADDR_DAC_WRITE, aux);
-> +}
-> +
-[...]
-> +	if (IS_ERR(st->vref_reg)) {
-> +		dev_err(&st->spi->dev,
-> +			"Error getting voltage reference regulator\n");
-> +		return -EIO;
+do {
+     if (!iio_buffer_data_available(rb)) {
+          if (filp->f_flags & O_NONBLOCK)
+               return -EAGAIN;
 
-This needs to propagate the original error, otherwise things like probed
-deferring wont work.
+               ret = wait_event_interruptible(rb->pollq,
+               iio_buffer_data_available(rb) ||
+              indio_dev->info == NULL);
+               if (ret)
+                    return ret;
+              if (indio_dev->info == NULL)
+                    return -ENODEV;
+     }
 
-> +	}
-> +
-> +	ret = regulator_enable(st->vref_reg);
-> +	if (ret) {
-> +		dev_err(&st->spi->dev,
-> +			 "Failed to enable voltage reference\n");
-> +		return -EIO;
+     ret = rb->access->read_first_n(rb, n, buf);
+     if (ret == 0 && (filp->f_flags & O_NONBLOCK))
+         ret = -EAGAIN;
+     } while (ret == 0);
 
-Return the original error code here as well.
+     return ret;
+}
 
-> +	}
-> +
-> +	ret = regulator_get_voltage(st->vref_reg);
-> +	if (ret < 0) {
-> +		dev_err(&st->spi->dev,
-> +			 "Failed to get voltage reference value\n");
-> +		goto disable_regulator_vref;
-> +	}
-> +
-> +	if (ret < 2000000 || ret > 3000000) {
-> +		dev_warn(&st->spi->dev,
-> +			 "Invalid external voltage ref. value %d uV\n", ret);
-> +		goto disable_regulator_vref;
-> +	}
-> +
-> +	st->vref = ret / 1000;
-> +	st->use_intref = false;
-> +
-> +	return 0;
-> +
-> +disable_regulator_vref:
-> +	regulator_disable(st->vref_reg);
-> +	st->vref_reg = NULL;
-> +	return -EIO;
-
-and here.
-
-> +}
-> +
-> +static int ad5761_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *iio_dev;
-> +	struct ad5761_state *st;
-> +	int ret;
-> +	const struct ad5761_chip_info *chip_info =
-> +		&ad5761_chip_infos[spi_get_device_id(spi)->driver_data];
-> +	enum ad5761_voltage_range voltage_range = MODE_0V_5V;
-> +	struct ad5761_platform_data *pdata = dev_get_platdata(&spi->dev);
-> +
-> +	iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!iio_dev)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(iio_dev);
-> +
-> +	st->spi = spi;
-> +	spi_set_drvdata(spi, iio_dev);
-> +
-> +	ret = ad5761_get_vref(st, chip_info);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (pdata)
-> +		voltage_range = pdata->voltage_range & 0x7;
-
-What is encoded in the upper bits of pdata->voltage_range?
-
-> +
-> +	ret = ad5761_spi_set_range(st, voltage_range);
-> +	if (ret)
-> +		goto disable_regulator_err;
-> +
-> +	iio_dev->dev.parent = &spi->dev;
-> +	iio_dev->info = &ad5761_info;
-> +	iio_dev->modes = INDIO_DIRECT_MODE;
-> +	iio_dev->channels = &chip_info->channel;
-> +	iio_dev->num_channels = 1;
-> +	iio_dev->name = spi_get_device_id(st->spi)->name;
-> +	ret = iio_device_register(iio_dev);
-> +	if (ret)
-> +		goto disable_regulator_err;
-> +
-> +	return ret;
-> +
-> +disable_regulator_err:
-> +	if (!IS_ERR_OR_NULL(st->vref_reg))
-> +		regulator_disable(st->vref_reg);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ad5761_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *iio_dev = spi_get_drvdata(spi);
-> +	struct ad5761_state *st = iio_priv(iio_dev);
-> +
-> +	if (!IS_ERR_OR_NULL(st->vref_reg))
-> +		regulator_disable(st->vref_reg);
-> +	iio_device_unregister(iio_dev);
-
-First unregister, then regulator disable.
-
-> +
-> +	return 0;
-> +}
-[...]
-> +static struct spi_driver ad5761_driver = {
-> +	.driver = {
-> +		   .name = "ad5761",
-> +		   .owner = THIS_MODULE,
-
-This is no longer necessary. spi_register_driver() takes care of
-initializing the owner field.
-
-> +		   },
-> +	.probe = ad5761_probe,
-> +	.remove = ad5761_remove,
-> +	.id_table = ad5761_id,
-> +};
-> +module_spi_driver(ad5761_driver);
-[...]
-
+On Tue, Jan 5, 2016 at 2:22 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 04/01/16 12:46, Lars-Peter Clausen wrote:
+>> On 01/04/2016 12:34 PM, Jonathan Cameron wrote:
+>>> On 04/01/16 04:59, Julio Cruz wrote:
+>>>> Hi Jonathan,
+>>>>
+>>>> Previously, you help me about an issue related with data loss. You suggest
+>>>> me to debug deep in the core elements. I will try to summarize the results
+>>>> below for future reference.
+>>>>
+>>>> When there is not data available in the buffer (kfifo), and the application
+>>>> try to read data (using "read" function), it return zero (0).
+>>>>
+>>>> If libiio will be used to read the data, there is a problem (detailed at
+>>>> https://github.com/analogdevicesinc/libiio/issues/23). In brief, Paul
+>>>> (pcercuei) suggest me that this issue must be manage by the driver, in this
+>>>> case, return -EAGAIN when there is not data available [Resource temporarily
+>>>> unavailable (POSIX.1)].
+>>>>
+>>>> After review the core elements as suggested, I changed the line (in
+>>>> function iio_read_first_n_kfifo of kfifo_buf.c) as below:
+>>>>
+>>>> - return copied;
+>>>> + return copied == 0 ? -EAGAIN: copied;
+>>>>
+>>>> Do you think will be OK like this?
+>>> Hmm.. This is an interesting one (thanks for tracking it down)
+>>>
+>>> The man page for read indeed allows for this to occur.
+>>>
+>>>        When attempting to read a file (other than a pipe or  FIFO)  that  sup‐
+>>>        ports non-blocking reads and has no data currently available:
+>>>
+>>>         *  If  O_NONBLOCK  is  set,  read()  shall  return −1 and set errno to
+>>>            [EAGAIN].
+>>>
+>>>
+>>> However the issue here is that this is an ABI change and there may
+>>> unfortunately be code out there relying on it returning 0.
+>>
+>> We never propagate 0 to userspace though. The referenced function is
+>> iio_read_first_n_kfifo() which is an internal function. The function that
+>> handles the userspace ABI is iio_buffer_read_first_n_outer() and here, as
+>> Daniel pointed out, there are two things that can happen.
+>>
+>> We are in non-blocking mode and iio_read_first_n_kfifo() returns 0. In that
+>> case we'll return -EAGAIN as mandated by the specification.
+>>
+>> We are in blocking mode and iio_read_first_n_kfifo() returns 0. In that case
+>> we'll go back to waiting for more data and we'll only return if either data
+>> was received or the application was interrupted by a signal. In the former
+>> case we'll return the number of received bytes in the later case -ERESTARTSYS.
+>>
+>> So either way we should never return 0, something else must be going on.
+>>
+>>
+>> Btw. letting iio_read_first_n_kfifo() return -EAGAIN will break blocking mode.
+> That's what I get for thinking I remembered how this code works ;)
+> Completely forgot the outer function did anything non trivial.
+>
+> Thanks Daniel / Lars for picking up on this!
+>
+> Oops.
+>
+> Jonathan
+>>
+>> - Lars
+>>
+>
