@@ -1,14 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:55254 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:45854 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752174AbcAETB7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jan 2016 14:01:59 -0500
-Message-ID: <568C131F.3040703@lysator.liu.se>
-Date: Tue, 05 Jan 2016 20:01:51 +0100
+	with ESMTP id S1751498AbcAETQ3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jan 2016 14:16:29 -0500
+Message-ID: <568C1683.3080108@lysator.liu.se>
+Date: Tue, 05 Jan 2016 20:16:19 +0100
 From: Peter Rosin <peda@lysator.liu.se>
 MIME-Version: 1.0
-To: Wolfram Sang <wsa@the-dreams.de>
-CC: Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
+To: kbuild test robot <lkp@intel.com>
+CC: kbuild-all@01.org, Wolfram Sang <wsa@the-dreams.de>,
+	Peter Rosin <peda@axentia.se>,
+	Rob Herring <robh+dt@kernel.org>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
@@ -31,38 +33,86 @@ CC: Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
 	Olli Salonen <olli.salonen@iki.fi>, linux-i2c@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org
-Subject: Re: [PATCH v2 0/8] i2c mux cleanup and locking update
-References: <1452009438-27347-1-git-send-email-peda@lysator.liu.se> <20160105184819.GA1743@katana>
-In-Reply-To: <20160105184819.GA1743@katana>
+Subject: Re: [PATCH v2 3/8] i2c-mux: move the slave side adapter management
+ to i2c_mux_core
+References: <201601060037.nR1VtA8Y%fengguang.wu@intel.com>
+In-Reply-To: <201601060037.nR1VtA8Y%fengguang.wu@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Wolfram,
+Hi,
 
-On 2016-01-05 19:48, Wolfram Sang wrote:
-> Peter,
-> 
->> PS. needs a bunch of testing, I do not have access to all the involved hw
-> 
-> First of all, thanks for diving into this topic and the huge effort you
-> apparently have put into it.
-
-Yeah, I started with dipping just the toes, but now it rather feels like
-I'm fully submerged at the deep end...
-
-> It is obviously a quite intrusive series, so it needs careful review.
-> TBH, I can't really tell when I have the bandwidth to do that, so I hope
-> other people will step up. And yes, it needs serious testing.
-> 
-> To all: Although I appreciate any review support, I'd think the first
-> thing to be done should be a very high level review - is this series
-> worth the huge update? Is the path chosen proper? Stuff like this. I'd
-> appreciate Acks or Revs for that. Stuff like fixing checkpatch warnings
-> and other minor stuff should come later.
-
-Right, I'll hold back on sending updates for trivial stuff until the
-big picture stuff has been cleared.
+This should fix it (I'm not sending a v3 right away).
 
 Cheers,
 Peter
+
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+index 1c982a56acd5..5de993deca7e 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+@@ -16,6 +16,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/i2c.h>
++#include <linux/i2c-mux.h>
+ #include <linux/dmi.h>
+ #include <linux/acpi.h>
+ #include "inv_mpu_iio.h"
+@@ -182,7 +183,7 @@ int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st)
+ 			} else
+ 				return 0; /* no secondary addr, which is OK */
+ 		}
+-		st->mux_client = i2c_new_device(st->mux_adapter, &info);
++		st->mux_client = i2c_new_device(st->muxc->adapter[0], &info);
+ 		if (!st->mux_client)
+ 			return -ENODEV;
+ 
+-- 
+
+
+On 2016-01-05 17:49, kbuild test robot wrote:
+> Hi Peter,
+> 
+> [auto build test ERROR on wsa/i2c/for-next]
+> [also build test ERROR on v4.4-rc8 next-20160105]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improving the system]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Peter-Rosin/i2c-mux-cleanup-and-locking-update/20160106-000205
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux i2c/for-next
+> config: i386-randconfig-s1-201601 (attached as .config)
+> reproduce:
+>         # save the attached .config to linux build tree
+>         make ARCH=i386 
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c: In function 'inv_mpu_acpi_create_mux_client':
+>>> drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c:185:37: error: 'struct inv_mpu6050_state' has no member named 'mux_adapter'
+>       st->mux_client = i2c_new_device(st->mux_adapter, &info);
+>                                         ^
+> 
+> vim +185 drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> 
+> a35c5d1a Srinivas Pandruvada 2015-01-30  179  					*name = '\0';
+> a35c5d1a Srinivas Pandruvada 2015-01-30  180  				strlcat(info.type, "-client",
+> a35c5d1a Srinivas Pandruvada 2015-01-30  181  					sizeof(info.type));
+> a35c5d1a Srinivas Pandruvada 2015-01-30  182  			} else
+> a35c5d1a Srinivas Pandruvada 2015-01-30  183  				return 0; /* no secondary addr, which is OK */
+> a35c5d1a Srinivas Pandruvada 2015-01-30  184  		}
+> a35c5d1a Srinivas Pandruvada 2015-01-30 @185  		st->mux_client = i2c_new_device(st->mux_adapter, &info);
+> a35c5d1a Srinivas Pandruvada 2015-01-30  186  		if (!st->mux_client)
+> a35c5d1a Srinivas Pandruvada 2015-01-30  187  			return -ENODEV;
+> a35c5d1a Srinivas Pandruvada 2015-01-30  188  
+> 
+> :::::: The code at line 185 was first introduced by commit
+> :::::: a35c5d1aa96aa6cc70e91786cbe9be4db23f8f4a iio: imu: inv_mpu6050: Create mux clients for ACPI
+> 
+> :::::: TO: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> :::::: CC: Jonathan Cameron <jic23@kernel.org>
+> 
+> ---
+> 0-DAY kernel test infrastructure                Open Source Technology Center
+> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+> 
