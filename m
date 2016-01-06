@@ -1,151 +1,190 @@
-Return-Path: <crope@iki.fi>
-Subject: Re: [PATCH v2 0/8] i2c mux cleanup and locking update
-To: Peter Rosin <peda@lysator.liu.se>, Wolfram Sang <wsa@the-dreams.de>
-References: <1452009438-27347-1-git-send-email-peda@lysator.liu.se>
-Cc: Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
- Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
- Ian Campbell <ijc+devicetree@hellion.org.uk>,
- Kumar Gala <galak@codeaurora.org>,
- Peter Korsgaard <peter.korsgaard@barco.com>,
- Guenter Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
- Frank Rowand <frowand.list@gmail.com>, Grant Likely
- <grant.likely@linaro.org>, Adriana Reus <adriana.reus@intel.com>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- Krzysztof Kozlowski <k.kozlowski@samsung.com>,
- Hans Verkuil <hans.verkuil@cisco.com>, Nicholas Mc Guire <hofrat@osadl.org>,
- Olli Salonen <olli.salonen@iki.fi>, linux-i2c@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-media@vger.kernel.org
-From: Antti Palosaari <crope@iki.fi>
-Message-ID: <568D4C3D.3000906@iki.fi>
-Date: Wed, 6 Jan 2016 19:17:49 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47744 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752211AbcAFS1m (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jan 2016 13:27:42 -0500
+Subject: Re: read /dev/iio:device0 return -1 (Invalid argument)
+To: Julio Cruz <jcsistemas2001@gmail.com>
+References: <CAAn_ec90t=N1e1m8aUcBZRb5wsRwiz56WUzFCWqTrVHHhcAuBA@mail.gmail.com>
+ <566C0A32.3030104@kernel.org>
+ <CAAn_ec_=9syP4j+g5GRMCB-+7vCWE1XqryE6KWUm=auUBZE=uQ@mail.gmail.com>
+ <566C1493.7090002@jic23.retrosnub.co.uk>
+ <CAAn_ec_5UcQ5GVFx=byU6sKJ9u33LmUzFvoRvVgTko4GfDHnOA@mail.gmail.com>
+ <CAAn_ec8BMT9fPc06YOc14Eh+8vpQGJW_Lv-BOqDCqS5UbZF3iQ@mail.gmail.com>
+ <7665C9F2-AA7C-404F-AC43-2D045E330030@jic23.retrosnub.co.uk>
+ <CAAn_ec97uYM5vPogeRFFsfh8vUTb9H8SVrJYiWbBZmy9b9xBhQ@mail.gmail.com>
+ <0BBA92A2-6E6C-4CCA-A290-920CFB50FCAE@jic23.retrosnub.co.uk>
+ <CAAn_ec-UJn9DFt=HodPAVvmm4s_4zwq=DF8un8U2ngLB+XXNDw@mail.gmail.com>
+ <568A58C3.6060804@kernel.org> <568A69B8.9080406@metafoo.de>
+ <568AB86A.6070801@kernel.org>
+ <CAAn_ec8vhXx10P2q=uAPJgKF5Xymm688Mih3cTnTkMJgioW-_w@mail.gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Paul Cercueil <pcercuei@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <568D5C9A.6010901@kernel.org>
+Date: Wed, 6 Jan 2016 18:27:38 +0000
 MIME-Version: 1.0
-In-Reply-To: <1452009438-27347-1-git-send-email-peda@lysator.liu.se>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <CAAn_ec8vhXx10P2q=uAPJgKF5Xymm688Mih3cTnTkMJgioW-_w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/05/2016 05:57 PM, Peter Rosin wrote:
-> From: Peter Rosin <peda@axentia.se>
->
-> Hi!
->
-> I have a pair of boards with this i2c topology:
->
->                         GPIO ---|  ------ BAT1
->                          |      v /
->     I2C  -----+------B---+---- MUX
->               |                   \
->             EEPROM                 ------ BAT2
->
-> 	(B denotes the boundary between the boards)
+On 05/01/16 11:57, Julio Cruz wrote:
+> Dear All,
+> 
+> Thanks to your comments, I found out that the function in my kernel
+> iio_buffer_read_first_n_outer is different to the one that you
+> mentioned.
+> 
+> I was debugging a kernel version 3.10, that's include another
+> implementation of the function that we are talking. After some extra
+> effort, I could update to version 3.14 and effectively, the behavior
+> is as expected.
+Cool and thanks for letting us know - back then it seems we didn't support
+blocking reads which explains the problem.  Btw, you have my sympathies
+with older kernels, I'm trying to bring up a board for the first time since
+I ran 3.7 on it and it's proving 'interesting'... Unfortunately it's
+the only source of lis3l02dq that I have and I'd like to merge the old
+staging driver into the more recent generic st_sensors driver.  Fun fun fun!
+> 
+> Very sorry for this misunderstanding.
+That's fine. None of us managed to remember that this was the case
+for older kernels!
+> 
+> BTW, in case of future problems, would be fine
+> 
+> Thanks
+> 
+> Julio
+> 
+> 
+> kernel 3.10:
+> ---------------
+> ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>      size_t n, loff_t *f_ps)
+> {
+>     struct iio_dev *indio_dev = filp->private_data;
+>     struct iio_buffer *rb = indio_dev->buffer;
+> 
+> i   if (!rb || !rb->access->read_first_n)
+>         return -EINVAL;
+>     return rb->access->read_first_n(rb, n, buf);
+> }
+> 
+> kernel 3.14:
+> ---------------
+> ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>      size_t n, loff_t *f_ps)
+> {
+> struct iio_dev *indio_dev = filp->private_data;
+> struct iio_buffer *rb = indio_dev->buffer;
+> int ret;
+> 
+> if (!indio_dev->info)
+>      return -ENODEV;
+> 
+> if (!rb || !rb->access->read_first_n)
+>      return -EINVAL;
+> 
+> do {
+>      if (!iio_buffer_data_available(rb)) {
+>           if (filp->f_flags & O_NONBLOCK)
+>                return -EAGAIN;
+> 
+>                ret = wait_event_interruptible(rb->pollq,
+>                iio_buffer_data_available(rb) ||
+>               indio_dev->info == NULL);
+>                if (ret)
+>                     return ret;
+>               if (indio_dev->info == NULL)
+>                     return -ENODEV;
+>      }
+> 
+>      ret = rb->access->read_first_n(rb, n, buf);
+>      if (ret == 0 && (filp->f_flags & O_NONBLOCK))
+>          ret = -EAGAIN;
+>      } while (ret == 0);
+> 
+>      return ret;
+> }
+> 
+> On Tue, Jan 5, 2016 at 2:22 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 04/01/16 12:46, Lars-Peter Clausen wrote:
+>>> On 01/04/2016 12:34 PM, Jonathan Cameron wrote:
+>>>> On 04/01/16 04:59, Julio Cruz wrote:
+>>>>> Hi Jonathan,
+>>>>>
+>>>>> Previously, you help me about an issue related with data loss. You suggest
+>>>>> me to debug deep in the core elements. I will try to summarize the results
+>>>>> below for future reference.
+>>>>>
+>>>>> When there is not data available in the buffer (kfifo), and the application
+>>>>> try to read data (using "read" function), it return zero (0).
+>>>>>
+>>>>> If libiio will be used to read the data, there is a problem (detailed at
+>>>>> https://github.com/analogdevicesinc/libiio/issues/23). In brief, Paul
+>>>>> (pcercuei) suggest me that this issue must be manage by the driver, in this
+>>>>> case, return -EAGAIN when there is not data available [Resource temporarily
+>>>>> unavailable (POSIX.1)].
+>>>>>
+>>>>> After review the core elements as suggested, I changed the line (in
+>>>>> function iio_read_first_n_kfifo of kfifo_buf.c) as below:
+>>>>>
+>>>>> - return copied;
+>>>>> + return copied == 0 ? -EAGAIN: copied;
+>>>>>
+>>>>> Do you think will be OK like this?
+>>>> Hmm.. This is an interesting one (thanks for tracking it down)
+>>>>
+>>>> The man page for read indeed allows for this to occur.
+>>>>
+>>>>        When attempting to read a file (other than a pipe or  FIFO)  that  sup‐
+>>>>        ports non-blocking reads and has no data currently available:
+>>>>
+>>>>         *  If  O_NONBLOCK  is  set,  read()  shall  return −1 and set errno to
+>>>>            [EAGAIN].
+>>>>
+>>>>
+>>>> However the issue here is that this is an ABI change and there may
+>>>> unfortunately be code out there relying on it returning 0.
+>>>
+>>> We never propagate 0 to userspace though. The referenced function is
+>>> iio_read_first_n_kfifo() which is an internal function. The function that
+>>> handles the userspace ABI is iio_buffer_read_first_n_outer() and here, as
+>>> Daniel pointed out, there are two things that can happen.
+>>>
+>>> We are in non-blocking mode and iio_read_first_n_kfifo() returns 0. In that
+>>> case we'll return -EAGAIN as mandated by the specification.
+>>>
+>>> We are in blocking mode and iio_read_first_n_kfifo() returns 0. In that case
+>>> we'll go back to waiting for more data and we'll only return if either data
+>>> was received or the application was interrupted by a signal. In the former
+>>> case we'll return the number of received bytes in the later case -ERESTARTSYS.
+>>>
+>>> So either way we should never return 0, something else must be going on.
+>>>
+>>>
+>>> Btw. letting iio_read_first_n_kfifo() return -EAGAIN will break blocking mode.
+>> That's what I get for thinking I remembered how this code works ;)
+>> Completely forgot the outer function did anything non trivial.
+>>
+>> Thanks Daniel / Lars for picking up on this!
+>>
+>> Oops.
+>>
+>> Jonathan
+>>>
+>>> - Lars
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-Handling of I2C muxes that close channel automatically, after the first 
-I2C stop (P) is seen?
-
-For example channel is selected to BAT1 => there is EEPROM write => mux 
-closes channel BAT1 => access to BAT1 will fail. Is it possible to lock 
-whole adapter, but allow only traffic to i2c mux client?
-
-regards
-Antti
-
->
-> The problem with this is that the GPIO controller sits on the same i2c bus
-> that it MUXes. For pca954x devices this is worked around by using unlocked
-> transfers when updating the MUX. I have no such luck as the GPIO is a general
-> purpose IO expander and the MUX is just a random bidirectional MUX, unaware
-> of the fact that it is muxing an i2c bus, and extending unlocked transfers
-> into the GPIO subsystem is too ugly to even think about. But the general hw
-> approach is sane in my opinion, with the number of connections between the
-> two boards minimized. To put is plainly, I need support for it.
->
-> So, I observe that while it is needed to have the i2c bus locked during the
-> actual MUX update in order to avoid random garbage on the slave side, it
-> is not strictly a must to have it locked over the whole sequence of a full
-> select-transfer-deselect operation. The MUX itself needs to be locked, so
-> transfers to clients behind the mux are serialized, and the MUX needs to be
-> stable during all i2c traffic (otherwise individual mux slave segments
-> might see garbage).
->
-> This series accomplishes this by adding a dt property to i2c-mux-gpio and
-> i2c-mux-pinctrl that can be used to state that the mux is updated by means
-> of the muxed master bus, and that the select-transfer-deselect operations
-> should be locked individually. When this holds, the i2c bus *is* locked
-> during muxing, since the muxing happens as part of i2c transfers. This
-> is true even if the MUX is updated with several transfers to the GPIO (at
-> least as long as *all* MUX changes are using the i2s master bus). A lock
-> is added to the mux so that transfers through the mux are serialized.
->
-> Concerns:
-> - The locking is perhaps too complex?
-> - I worry about the priority inheritance aspect of the adapter lock. When
->    the transfers behind the mux are divided into select-transfer-deselect all
->    locked individually, low priority transfers get more chances to interfere
->    with high priority transfers.
-> - When doing an i2c_transfer() in_atomic() context of with irqs_disabled(),
->    there is a higher possibility that the mux is not returned to its idle
->    state after a failed (-EAGAIN) transfer due to trylock.
->
-> To summarize the series, there's some i2c-mux infrastructure cleanup work
-> first (I think that part stands by itself as desireable regardless), the
-> locking changes are in the last three patches of the series, with the real
-> meat in 8/8.
->
-> PS. needs a bunch of testing, I do not have access to all the involved hw
->
-> Changes since v1:
-> - Allocate mux core and (optional) priv in a combined allocation.
-> - Killed dev_err messages triggered by memory allocation failure.
-> - Fix the device specific i2c muxes that I had overlooked.
-> - Rebased on top of v4.4-rc8 (was based on v4.4-rc6 previously).
->
-> Cheers,
-> Peter
->
-> Peter Rosin (8):
->    i2c-mux: add common core data for every mux instance
->    i2c-mux: move select and deselect ops to i2c_mux_core
->    i2c-mux: move the slave side adapter management to i2c_mux_core
->    i2c-mux: remove the mux dev pointer from the mux per channel data
->    i2c-mux: pinctrl: get rid of the driver private struct device pointer
->    i2c: allow adapter drivers to override the adapter locking
->    i2c: muxes always lock the parent adapter
->    i2c-mux: relax locking of the top i2c adapter during i2c controlled
->      muxing
->
->   .../devicetree/bindings/i2c/i2c-mux-gpio.txt       |   2 +
->   .../devicetree/bindings/i2c/i2c-mux-pinctrl.txt    |   4 +
->   drivers/i2c/i2c-core.c                             |  59 ++---
->   drivers/i2c/i2c-mux.c                              | 272 +++++++++++++++++----
->   drivers/i2c/muxes/i2c-arb-gpio-challenge.c         |  46 ++--
->   drivers/i2c/muxes/i2c-mux-gpio.c                   |  58 ++---
->   drivers/i2c/muxes/i2c-mux-pca9541.c                |  58 +++--
->   drivers/i2c/muxes/i2c-mux-pca954x.c                |  66 ++---
->   drivers/i2c/muxes/i2c-mux-pinctrl.c                |  89 +++----
->   drivers/i2c/muxes/i2c-mux-reg.c                    |  63 ++---
->   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         |  33 +--
->   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |   2 +-
->   drivers/media/dvb-frontends/m88ds3103.c            |  23 +-
->   drivers/media/dvb-frontends/m88ds3103_priv.h       |   2 +-
->   drivers/media/dvb-frontends/rtl2830.c              |  24 +-
->   drivers/media/dvb-frontends/rtl2830_priv.h         |   2 +-
->   drivers/media/dvb-frontends/rtl2832.c              |  30 ++-
->   drivers/media/dvb-frontends/rtl2832_priv.h         |   2 +-
->   drivers/media/dvb-frontends/si2168.c               |  29 ++-
->   drivers/media/dvb-frontends/si2168_priv.h          |   2 +-
->   drivers/media/usb/cx231xx/cx231xx-core.c           |   6 +-
->   drivers/media/usb/cx231xx/cx231xx-i2c.c            |  48 ++--
->   drivers/media/usb/cx231xx/cx231xx.h                |   4 +-
->   drivers/of/unittest.c                              |  41 ++--
->   include/linux/i2c-mux-gpio.h                       |   2 +
->   include/linux/i2c-mux-pinctrl.h                    |   2 +
->   include/linux/i2c-mux.h                            |  39 ++-
->   include/linux/i2c.h                                |  28 ++-
->   28 files changed, 612 insertions(+), 424 deletions(-)
->
-
--- 
-http://palosaari.fi/
