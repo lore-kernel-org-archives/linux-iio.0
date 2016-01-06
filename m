@@ -1,20 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f175.google.com ([209.85.217.175]:36325 "EHLO
-	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751992AbcAFNXn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jan 2016 08:23:43 -0500
-Received: by mail-lb0-f175.google.com with SMTP id oh2so190852388lbb.3
-        for <linux-iio@vger.kernel.org>; Wed, 06 Jan 2016 05:23:42 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <20160105184819.GA1743@katana>
-References: <1452009438-27347-1-git-send-email-peda@lysator.liu.se> <20160105184819.GA1743@katana>
-From: Crt Mori <cmo@melexis.com>
-Date: Wed, 6 Jan 2016 14:23:02 +0100
-Message-ID: <CAKv63uvvdjmQj3J73UJZFLJ=U0c+Z=dmknm3UH=3MvYU0oqNNg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/8] i2c mux cleanup and locking update
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: Peter Rosin <peda@lysator.liu.se>, Peter Rosin <peda@axentia.se>,
-	Rob Herring <robh+dt@kernel.org>,
+Received: from mail.kernel.org ([198.145.29.136]:45125 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751643AbcAFOty (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 6 Jan 2016 09:49:54 -0500
+Date: Wed, 6 Jan 2016 08:49:47 -0600
+From: Rob Herring <robh@kernel.org>
+To: Peter Rosin <peda@lysator.liu.se>
+Cc: Wolfram Sang <wsa@the-dreams.de>, Peter Rosin <peda@axentia.se>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
@@ -37,43 +29,60 @@ Cc: Peter Rosin <peda@lysator.liu.se>, Peter Rosin <peda@axentia.se>,
 	Olli Salonen <olli.salonen@iki.fi>, linux-i2c@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v2 8/8] i2c-mux: relax locking of the top i2c adapter
+ during i2c controlled muxing
+Message-ID: <20160106144947.GA13257@rob-hp-laptop>
+References: <1452009438-27347-1-git-send-email-peda@lysator.liu.se>
+ <1452009438-27347-9-git-send-email-peda@lysator.liu.se>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1452009438-27347-9-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Wolfram and Peter,
-I will give my opinion about the path chosen although it should be
-taken lightly.
+On Tue, Jan 05, 2016 at 04:57:18PM +0100, Peter Rosin wrote:
+> From: Peter Rosin <peda@axentia.se>
+> 
+> With a i2c topology like the following
+> 
+>                        GPIO ---|  ------ BAT1
+>                         |      v /
+>    I2C  -----+----------+---- MUX
+>              |                   \
+>            EEPROM                 ------ BAT2
 
-I can see that hardware guys missed the software guys again on the
-development path, but since this happens more often than not, I would
-say it seems OK to have support for this as long as it does not make
-more complex (longer) standard i2c transfers. I would support to have
-additional mutex before mux as that will make less chance that someone
-forgets to lock mutex before mux and proposed solution seems valid.
+Yuck. One would think you would just use an I2C controlled mux in this 
+case...
+ 
+> there is a locking problem with the GPIO controller since it is a client
+> on the same i2c bus that it muxes. Transfers to the mux clients (e.g. BAT1)
+> will lock the whole i2c bus prior to attempting to switch the mux to the
+> correct i2c segment. In the above case, the GPIO device is an I/O expander
+> with an i2c interface, and since the GPIO subsystem knows nothing (and
+> rightfully so) about the lockless needs of the i2c mux code, this results
+> in a deadlock when the GPIO driver issues i2c transfers to modify the
+> mux.
+> 
+> So, observing that while it is needed to have the i2c bus locked during the
+> actual MUX update in order to avoid random garbage on the slave side, it
+> is not strictly a must to have it locked over the whole sequence of a full
+> select-transfer-deselect mux client operation. The mux itself needs to be
+> locked, so transfers to clients behind the mux are serialized, and the mux
+> needs to be stable during all i2c traffic (otherwise individual mux slave
+> segments might see garbage, or worse).
+> 
+> Add devive tree properties (bool named i2c-controlled) to i2c-mux-gpio and
+> i2c-mux-pinctrl that asserts that the the gpio/pinctrl is controlled via
+> the same i2c bus that it muxes.
 
-Regards,
-Crt
+Can't you determine this condition by checking the mux parent and gpio 
+parent are the same i2c controller?
 
-On 5 January 2016 at 19:48, Wolfram Sang <wsa@the-dreams.de> wrote:
-> Peter,
->
->> PS. needs a bunch of testing, I do not have access to all the involved hw
->
-> First of all, thanks for diving into this topic and the huge effort you
-> apparently have put into it.
->
-> It is obviously a quite intrusive series, so it needs careful review.
-> TBH, I can't really tell when I have the bandwidth to do that, so I hope
-> other people will step up. And yes, it needs serious testing.
->
-> To all: Although I appreciate any review support, I'd think the first
-> thing to be done should be a very high level review - is this series
-> worth the huge update? Is the path chosen proper? Stuff like this. I'd
-> appreciate Acks or Revs for that. Stuff like fixing checkpatch warnings
-> and other minor stuff should come later.
->
-> Thanks,
->
->    Wolfram
->
+Alternatively, can't you just always do the locking like i2c-controlled 
+is set when a mux is involved? What is the harm in doing that if the 
+GPIO is controlled somewhere else?
+
+I would prefer to see a solution not requiring DT updates to fix and 
+this change seems like it is working around kernel issues.
+
+Rob
