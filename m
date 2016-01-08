@@ -1,250 +1,244 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:37288 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751515AbcALT1H (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 12 Jan 2016 14:27:07 -0500
-Date: Tue, 12 Jan 2016 20:27:01 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Alexander Koch <mail@alexanderkoch.net>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	mhornung.linux@gmail.com, dannenberg@ti.com, balbi@ti.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: light: opt3001: enable operation w/o IRQ
-In-Reply-To: <1452622180-12728-3-git-send-email-mail@alexanderkoch.net>
-Message-ID: <alpine.DEB.2.02.1601122024340.10606@pmeerw.net>
-References: <1452622180-12728-1-git-send-email-mail@alexanderkoch.net> <1452622180-12728-3-git-send-email-mail@alexanderkoch.net>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Received: from mail.lysator.liu.se ([130.236.254.3]:57571 "EHLO
+	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932296AbcAHPGF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Jan 2016 10:06:05 -0500
+From: Peter Rosin <peda@lysator.liu.se>
+To: Wolfram Sang <wsa@the-dreams.de>
+Cc: Peter Rosin <peda@axentia.se>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Nicholas Mc Guire <hofrat@osadl.org>,
+	Olli Salonen <olli.salonen@iki.fi>,
+	Peter Rosin <peda@lysator.liu.se>, linux-i2c@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v3 6/8] i2c: allow adapter drivers to override the adapter locking
+Date: Fri,  8 Jan 2016 16:04:54 +0100
+Message-Id: <1452265496-22475-7-git-send-email-peda@lysator.liu.se>
+In-Reply-To: <1452265496-22475-1-git-send-email-peda@lysator.liu.se>
+References: <1452265496-22475-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 12 Jan 2016, Alexander Koch wrote:
+From: Peter Rosin <peda@axentia.se>
 
-> Enable operation of the TI OPT3001 light sensor without having an
-> interrupt line available to connect the INT pin to.
-> 
-> In this operation mode, we issue a conversion request and simply wait
-> for the conversion time available as timeout value, determined from
-> integration time configuration and the worst-case time given in the data
-> sheet (sect. 6.5, table on p. 5):
-> 
->   short integration time (100ms): 110ms + 3ms = 113ms
->    long integration time (800ms): 880ms + 3ms = 883ms
-> 
-> This change is transparent as behaviour defaults to using the interrupt
-> method if an interrupt no. is configured via device tree. Interrupt-less
-> operation mode is performed when no valid interrupt no. is given.
+Add i2c_lock_bus() and i2c_unlock_bus(), which call the new lock_bus and
+unlock_bus ops in the adapter. These funcs/ops take an additional flags
+argument that indicates for what purpose the adapter is locked.
 
-looks good, I'd rather use a bool for use_irq and the msecs_to_jiffies() 
-call moved from the #define to the code (which is not strictly necessary 
-for the patch) -- matter of taste
+There are two flags, I2C_LOCK_ADAPTER and I2C_LOCK_SEGMENT, but they are
+both implemented the same. For now. Locking the adapter means that the
+whole bus is locked, locking the segment means that only the current bus
+segment is locked (i.e. i2c traffic on the parent side of mux is still
+allowed even if the child side of the mux is locked.
+
+Also support a trylock_bus op (but no function to call it, as it is not
+expected to be needed outside of the i2c core).
+
+Implement i2c_lock_adapter/i2c_unlock_adapter in terms of the new locking
+scheme (i.e. lock with the I2C_LOCK_ADAPTER flag).
+
+Annotate some of the locking with explicit I2C_LOCK_SEGMENT flags.
+
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/i2c/i2c-core.c | 40 ++++++++++++++++++++++------------------
+ include/linux/i2c.h    | 28 ++++++++++++++++++++++++++--
+ 2 files changed, 48 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
+index ba8eb087f224..34a7748b4652 100644
+--- a/drivers/i2c/i2c-core.c
++++ b/drivers/i2c/i2c-core.c
+@@ -958,10 +958,10 @@ static int i2c_check_addr_busy(struct i2c_adapter *adapter, int addr)
+ }
  
-> Signed-off-by: Alexander Koch <mail@alexanderkoch.net>
-> Signed-off-by: Michael Hornung <mhornung.linux@gmail.com>
-> ---
->  drivers/iio/light/opt3001.c | 137 ++++++++++++++++++++++++++++++--------------
->  1 file changed, 95 insertions(+), 42 deletions(-)
-> 
-> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-> index aefbd79..2abc18a 100644
-> --- a/drivers/iio/light/opt3001.c
-> +++ b/drivers/iio/light/opt3001.c
-> @@ -70,9 +70,12 @@
->  
->  /*
->   * Time to wait for conversion result to be ready. The device datasheet
-> - * worst-case max value is 880ms. Add some slack to be on the safe side.
-> + * sect. 6.5 states results are ready after total integration time plus 3ms.
-> + * This results in worst-case max values of 113ms or 883ms, respectively.
-> + * Add some slack to be on the safe side.
->   */
-> -#define OPT3001_RESULT_READY_TIMEOUT	msecs_to_jiffies(1000)
-> +#define OPT3001_RESULT_READY_SHORT	150
-> +#define OPT3001_RESULT_READY_LONG	1000
->  
->  struct opt3001 {
->  	struct i2c_client	*client;
-> @@ -92,6 +95,8 @@ struct opt3001 {
->  
->  	u8			high_thresh_exp;
->  	u8			low_thresh_exp;
-> +
-> +	u16			use_irq:1;
->  };
->  
->  struct opt3001_scale {
-> @@ -230,26 +235,30 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
->  	u16 reg;
->  	u8 exponent;
->  	u16 value;
-> +	long timeout;
->  
-> -	/*
-> -	 * Enable the end-of-conversion interrupt mechanism. Note that doing
-> -	 * so will overwrite the low-level limit value however we will restore
-> -	 * this value later on.
-> -	 */
-> -	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_LOW_LIMIT,
-> -			OPT3001_LOW_LIMIT_EOC_ENABLE);
-> -	if (ret < 0) {
-> -		dev_err(opt->dev, "failed to write register %02x\n",
-> -				OPT3001_LOW_LIMIT);
-> -		return ret;
-> +	if (opt->use_irq) {
-> +		/*
-> +		 * Enable the end-of-conversion interrupt mechanism. Note that
-> +		 * doing so will overwrite the low-level limit value however we
-> +		 * will restore this value later on.
-> +		 */
-> +		ret = i2c_smbus_write_word_swapped(opt->client,
-> +					OPT3001_LOW_LIMIT,
-> +					OPT3001_LOW_LIMIT_EOC_ENABLE);
-> +		if (ret < 0) {
-> +			dev_err(opt->dev, "failed to write register %02x\n",
-> +					OPT3001_LOW_LIMIT);
-> +			return ret;
-> +		}
-> +
-> +		/* Allow IRQ to access the device despite lock being set */
-> +		opt->ok_to_ignore_lock = true;
->  	}
->  
-> -	/* Reset data-ready indicator flag (will be set in the IRQ routine) */
-> +	/* Reset data-ready indicator flag */
->  	opt->result_ready = false;
->  
-> -	/* Allow IRQ to access the device despite lock being set */
-> -	opt->ok_to_ignore_lock = true;
-> -
->  	/* Configure for single-conversion mode and start a new conversion */
->  	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
->  	if (ret < 0) {
-> @@ -269,32 +278,69 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
->  		goto err;
->  	}
->  
-> -	/* Wait for the IRQ to indicate the conversion is complete */
-> -	ret = wait_event_timeout(opt->result_ready_queue, opt->result_ready,
-> -			OPT3001_RESULT_READY_TIMEOUT);
-> +	if (opt->use_irq) {
-> +		/* Wait for the IRQ to indicate the conversion is complete */
-> +		ret = wait_event_timeout(opt->result_ready_queue,
-> +				opt->result_ready,
-> +				msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
-> +	} else {
-> +		/* Sleep for result ready time */
-> +		timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
-> +			OPT3001_RESULT_READY_SHORT : OPT3001_RESULT_READY_LONG;
-> +		msleep(timeout);
-> +
-> +		/* Check result ready flag */
-> +		ret = i2c_smbus_read_word_swapped(opt->client,
-> +						  OPT3001_CONFIGURATION);
-> +		if (ret < 0) {
-> +			dev_err(opt->dev, "failed to read register %02x\n",
-> +				OPT3001_CONFIGURATION);
-> +			goto err;
-> +		}
-> +
-> +		if (!(ret & OPT3001_CONFIGURATION_CRF)) {
-> +			ret = -ETIMEDOUT;
-> +			goto err;
-> +		}
-> +
-> +		/* Obtain value */
-> +		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
-> +		if (ret < 0) {
-> +			dev_err(opt->dev, "failed to read register %02x\n",
-> +				OPT3001_RESULT);
-> +			goto err;
-> +		}
-> +		opt->result = ret;
-> +		opt->result_ready = true;
-> +	}
->  
->  err:
-> -	/* Disallow IRQ to access the device while lock is active */
-> -	opt->ok_to_ignore_lock = false;
-> +	if (opt->use_irq)
-> +		/* Disallow IRQ to access the device while lock is active */
-> +		opt->ok_to_ignore_lock = false;
->  
->  	if (ret == 0)
->  		return -ETIMEDOUT;
->  	else if (ret < 0)
->  		return ret;
->  
-> -	/*
-> -	 * Disable the end-of-conversion interrupt mechanism by restoring the
-> -	 * low-level limit value (clearing OPT3001_LOW_LIMIT_EOC_ENABLE). Note
-> -	 * that selectively clearing those enable bits would affect the actual
-> -	 * limit value due to bit-overlap and therefore can't be done.
-> -	 */
-> -	value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
-> -	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_LOW_LIMIT,
-> -			value);
-> -	if (ret < 0) {
-> -		dev_err(opt->dev, "failed to write register %02x\n",
-> -				OPT3001_LOW_LIMIT);
-> -		return ret;
-> +	if (opt->use_irq) {
-> +		/*
-> +		 * Disable the end-of-conversion interrupt mechanism by
-> +		 * restoring the low-level limit value (clearing
-> +		 * OPT3001_LOW_LIMIT_EOC_ENABLE). Note that selectively clearing
-> +		 * those enable bits would affect the actual limit value due to
-> +		 * bit-overlap and therefore can't be done.
-> +		 */
-> +		value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
-> +		ret = i2c_smbus_write_word_swapped(opt->client,
-> +						   OPT3001_LOW_LIMIT,
-> +						   value);
-> +		if (ret < 0) {
-> +			dev_err(opt->dev, "failed to write register %02x\n",
-> +					OPT3001_LOW_LIMIT);
-> +			return ret;
-> +		}
->  	}
->  
->  	exponent = OPT3001_REG_EXPONENT(opt->result);
-> @@ -736,12 +782,18 @@ static int opt3001_probe(struct i2c_client *client,
->  		return ret;
->  	}
->  
-> -	ret = request_threaded_irq(irq, NULL, opt3001_irq,
-> -			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-> -			"opt3001", iio);
-> -	if (ret) {
-> -		dev_err(dev, "failed to request IRQ #%d\n", irq);
-> -		return ret;
-> +	/* Make use of INT pin only if valid IRQ no. is given */
-> +	if (irq > 0) {
-> +		ret = request_threaded_irq(irq, NULL, opt3001_irq,
-> +				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-> +				"opt3001", iio);
-> +		if (ret) {
-> +			dev_err(dev, "failed to request IRQ #%d\n", irq);
-> +			return ret;
-> +		}
-> +		opt->use_irq = true;
-> +	} else {
-> +		dev_info(opt->dev, "enabling interrupt-less operation\n");
->  	}
->  
->  	return 0;
-> @@ -754,7 +806,8 @@ static int opt3001_remove(struct i2c_client *client)
->  	int ret;
->  	u16 reg;
->  
-> -	free_irq(client->irq, iio);
-> +	if (opt->use_irq)
-> +		free_irq(client->irq, iio);
->  
->  	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
->  	if (ret < 0) {
-> 
-
+ /**
+- * i2c_lock_adapter - Get exclusive access to an I2C bus segment
++ * i2c_adapter_lock_bus - Get exclusive access to an I2C bus segment
+  * @adapter: Target I2C bus segment
+  */
+-void i2c_lock_adapter(struct i2c_adapter *adapter)
++static void i2c_adapter_lock_bus(struct i2c_adapter *adapter, int flags)
+ {
+ 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
+ 
+@@ -970,27 +970,26 @@ void i2c_lock_adapter(struct i2c_adapter *adapter)
+ 	else
+ 		rt_mutex_lock(&adapter->bus_lock);
+ }
+-EXPORT_SYMBOL_GPL(i2c_lock_adapter);
+ 
+ /**
+- * i2c_trylock_adapter - Try to get exclusive access to an I2C bus segment
++ * i2c_adapter_trylock_bus - Try to get exclusive access to an I2C bus segment
+  * @adapter: Target I2C bus segment
+  */
+-static int i2c_trylock_adapter(struct i2c_adapter *adapter)
++static int i2c_adapter_trylock_bus(struct i2c_adapter *adapter, int flags)
+ {
+ 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
+ 
+ 	if (parent)
+-		return i2c_trylock_adapter(parent);
++		return parent->trylock_bus(parent, flags);
+ 	else
+ 		return rt_mutex_trylock(&adapter->bus_lock);
+ }
+ 
+ /**
+- * i2c_unlock_adapter - Release exclusive access to an I2C bus segment
++ * i2c_adapter_unlock_bus - Release exclusive access to an I2C bus segment
+  * @adapter: Target I2C bus segment
+  */
+-void i2c_unlock_adapter(struct i2c_adapter *adapter)
++static void i2c_adapter_unlock_bus(struct i2c_adapter *adapter, int flags)
+ {
+ 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
+ 
+@@ -999,7 +998,6 @@ void i2c_unlock_adapter(struct i2c_adapter *adapter)
+ 	else
+ 		rt_mutex_unlock(&adapter->bus_lock);
+ }
+-EXPORT_SYMBOL_GPL(i2c_unlock_adapter);
+ 
+ static void i2c_dev_set_name(struct i2c_adapter *adap,
+ 			     struct i2c_client *client)
+@@ -1545,6 +1543,12 @@ static int i2c_register_adapter(struct i2c_adapter *adap)
+ 		return -EINVAL;
+ 	}
+ 
++	if (!adap->lock_bus) {
++		adap->lock_bus = i2c_adapter_lock_bus;
++		adap->trylock_bus = i2c_adapter_trylock_bus;
++		adap->unlock_bus = i2c_adapter_unlock_bus;
++	}
++
+ 	rt_mutex_init(&adap->bus_lock);
+ 	mutex_init(&adap->userspace_clients_lock);
+ 	INIT_LIST_HEAD(&adap->userspace_clients);
+@@ -2254,16 +2258,16 @@ int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
+ #endif
+ 
+ 		if (in_atomic() || irqs_disabled()) {
+-			ret = i2c_trylock_adapter(adap);
++			ret = adap->trylock_bus(adap, I2C_LOCK_SEGMENT);
+ 			if (!ret)
+ 				/* I2C activity is ongoing. */
+ 				return -EAGAIN;
+ 		} else {
+-			i2c_lock_adapter(adap);
++			i2c_lock_bus(adap, I2C_LOCK_SEGMENT);
+ 		}
+ 
+ 		ret = __i2c_transfer(adap, msgs, num);
+-		i2c_unlock_adapter(adap);
++		i2c_unlock_bus(adap, I2C_LOCK_SEGMENT);
+ 
+ 		return ret;
+ 	} else {
+@@ -3038,7 +3042,7 @@ s32 i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short flags,
+ 	flags &= I2C_M_TEN | I2C_CLIENT_PEC | I2C_CLIENT_SCCB;
+ 
+ 	if (adapter->algo->smbus_xfer) {
+-		i2c_lock_adapter(adapter);
++		i2c_lock_bus(adapter, I2C_LOCK_SEGMENT);
+ 
+ 		/* Retry automatically on arbitration loss */
+ 		orig_jiffies = jiffies;
+@@ -3052,7 +3056,7 @@ s32 i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short flags,
+ 				       orig_jiffies + adapter->timeout))
+ 				break;
+ 		}
+-		i2c_unlock_adapter(adapter);
++		i2c_unlock_bus(adapter, I2C_LOCK_SEGMENT);
+ 
+ 		if (res != -EOPNOTSUPP || !adapter->algo->master_xfer)
+ 			goto trace;
+@@ -3163,9 +3167,9 @@ int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb)
+ 
+ 	client->slave_cb = slave_cb;
+ 
+-	i2c_lock_adapter(client->adapter);
++	i2c_lock_bus(client->adapter, I2C_LOCK_SEGMENT);
+ 	ret = client->adapter->algo->reg_slave(client);
+-	i2c_unlock_adapter(client->adapter);
++	i2c_unlock_bus(client->adapter, I2C_LOCK_SEGMENT);
+ 
+ 	if (ret) {
+ 		client->slave_cb = NULL;
+@@ -3185,9 +3189,9 @@ int i2c_slave_unregister(struct i2c_client *client)
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	i2c_lock_adapter(client->adapter);
++	i2c_lock_bus(client->adapter, I2C_LOCK_SEGMENT);
+ 	ret = client->adapter->algo->unreg_slave(client);
+-	i2c_unlock_adapter(client->adapter);
++	i2c_unlock_bus(client->adapter, I2C_LOCK_SEGMENT);
+ 
+ 	if (ret == 0)
+ 		client->slave_cb = NULL;
+diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+index 768063baafbf..8040b48aef75 100644
+--- a/include/linux/i2c.h
++++ b/include/linux/i2c.h
+@@ -520,6 +520,10 @@ struct i2c_adapter {
+ 
+ 	struct i2c_bus_recovery_info *bus_recovery_info;
+ 	const struct i2c_adapter_quirks *quirks;
++
++	void (*lock_bus)(struct i2c_adapter *, int flags);
++	int (*trylock_bus)(struct i2c_adapter *, int flags);
++	void (*unlock_bus)(struct i2c_adapter *, int flags);
+ };
+ #define to_i2c_adapter(d) container_of(d, struct i2c_adapter, dev)
+ 
+@@ -549,8 +553,28 @@ i2c_parent_is_i2c_adapter(const struct i2c_adapter *adapter)
+ int i2c_for_each_dev(void *data, int (*fn)(struct device *, void *));
+ 
+ /* Adapter locking functions, exported for shared pin cases */
+-void i2c_lock_adapter(struct i2c_adapter *);
+-void i2c_unlock_adapter(struct i2c_adapter *);
++#define I2C_LOCK_ADAPTER 0x01
++#define I2C_LOCK_SEGMENT 0x02
++static inline void
++i2c_lock_bus(struct i2c_adapter *adapter, int flags)
++{
++	adapter->lock_bus(adapter, flags);
++}
++static inline void
++i2c_unlock_bus(struct i2c_adapter *adapter, int flags)
++{
++	adapter->unlock_bus(adapter, flags);
++}
++static inline void
++i2c_lock_adapter(struct i2c_adapter *adapter)
++{
++	i2c_lock_bus(adapter, I2C_LOCK_ADAPTER);
++}
++static inline void
++i2c_unlock_adapter(struct i2c_adapter *adapter)
++{
++	i2c_unlock_bus(adapter, I2C_LOCK_ADAPTER);
++}
+ 
+ /*flags for the client struct: */
+ #define I2C_CLIENT_PEC		0x04	/* Use Packet Error Checking */
 -- 
+2.1.4
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
