@@ -1,75 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from argos.tuxed.org ([176.9.87.227]:40102 "EHLO argos.tuxed.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752804AbcALSRf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 12 Jan 2016 13:17:35 -0500
-From: Alexander Koch <mail@alexanderkoch.net>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	mhornung.linux@gmail.com, dannenberg@ti.com, balbi@ti.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Alexander Koch <mail@alexanderkoch.net>
-Subject: [PATCH 1/2] iio: light: opt3001: extract int. time constants
-Date: Tue, 12 Jan 2016 19:09:39 +0100
-Message-Id: <1452622180-12728-2-git-send-email-mail@alexanderkoch.net>
-In-Reply-To: <1452622180-12728-1-git-send-email-mail@alexanderkoch.net>
-References: <1452622180-12728-1-git-send-email-mail@alexanderkoch.net>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37586 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756088AbcAIQfC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Jan 2016 11:35:02 -0500
+Subject: Re: [PATCH] iio: dac: mcp4725: set iio name property in sysfs
+To: Yong Li <sdliyong@gmail.com>, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, akinobu.mita@gmail.com
+References: <1452042583-10580-1-git-send-email-sdliyong@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <569136B4.306@kernel.org>
+Date: Sat, 9 Jan 2016 16:35:00 +0000
+MIME-Version: 1.0
+In-Reply-To: <1452042583-10580-1-git-send-email-sdliyong@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Extract integration times as #define constants. This prepares using them
-for delay/timeout length determination.
+On 06/01/16 01:09, Yong Li wrote:
+> Without this change, the name entity for mcp4725 is missing in
+> /sys/bus/iio/devices/iio\:device*/name
+> 
+> With this change, name is reported correctly
+> 
+> Signed-off-by: Yong Li <sdliyong@gmail.com>
+Hi Yong,
 
-Signed-off-by: Alexander Koch <mail@alexanderkoch.net>
-Signed-off-by: Michael Hornung <mhornung.linux@gmail.com>
----
- drivers/iio/light/opt3001.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+A fix like this gets applied to the iio fixes-togreg branch
+and this one required a bit of pushing to get it to apply.
 
-diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 01e111e..aefbd79 100644
---- a/drivers/iio/light/opt3001.c
-+++ b/drivers/iio/light/opt3001.c
-@@ -65,6 +65,9 @@
- #define OPT3001_REG_EXPONENT(n)		((n) >> 12)
- #define OPT3001_REG_MANTISSA(n)		((n) & 0xfff)
- 
-+#define OPT3001_INT_TIME_LONG		800000
-+#define OPT3001_INT_TIME_SHORT		100000
-+
- /*
-  * Time to wait for conversion result to be ready. The device datasheet
-  * worst-case max value is 880ms. Add some slack to be on the safe side.
-@@ -325,13 +328,13 @@ static int opt3001_set_int_time(struct opt3001 *opt, int time)
- 	reg = ret;
- 
- 	switch (time) {
--	case 100000:
-+	case OPT3001_INT_TIME_SHORT:
- 		reg &= ~OPT3001_CONFIGURATION_CT;
--		opt->int_time = 100000;
-+		opt->int_time = OPT3001_INT_TIME_SHORT;
- 		break;
--	case 800000:
-+	case OPT3001_INT_TIME_LONG:
- 		reg |= OPT3001_CONFIGURATION_CT;
--		opt->int_time = 800000;
-+		opt->int_time = OPT3001_INT_TIME_LONG;
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -597,9 +600,9 @@ static int opt3001_configure(struct opt3001 *opt)
- 
- 	/* Reflect status of the device's integration time setting */
- 	if (reg & OPT3001_CONFIGURATION_CT)
--		opt->int_time = 800000;
-+		opt->int_time = OPT3001_INT_TIME_LONG;
- 	else
--		opt->int_time = 100000;
-+		opt->int_time = OPT3001_INT_TIME_SHORT;
- 
- 	/* Ensure device is in shutdown initially */
- 	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
--- 
-2.7.0
+I've marked it for stable as well.
+
+Thanks!
+
+Jonathan
+> ---
+>  drivers/iio/dac/mcp4725.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+> index fb4b336..cca935c 100644
+> --- a/drivers/iio/dac/mcp4725.c
+> +++ b/drivers/iio/dac/mcp4725.c
+> @@ -346,6 +346,7 @@ static int mcp4725_probe(struct i2c_client *client,
+>  	data->client = client;
+>  
+>  	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->name = id->name;
+>  	indio_dev->info = &mcp4725_info;
+>  	indio_dev->channels = &mcp472x_channel[id->driver_data];
+>  	indio_dev->num_channels = 1;
+> 
 
