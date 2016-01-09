@@ -1,156 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37693 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37729 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755726AbcAIQ7I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Jan 2016 11:59:08 -0500
-Subject: Re: [PATCH v4.4-rc8] iio: magnetometer: ak8975: Silence 'may be used
- uninitialized' warning
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	tim.gardner@canonical.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-References: <1452298661-3636-1-git-send-email-tim.gardner@canonical.com>
- <56912EB1.7040107@kernel.org> <1452356229.4044.4.camel@linux.intel.com>
- <5691346D.2090307@kernel.org> <1452358275.4044.9.camel@linux.intel.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1753482AbcAIRDc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Jan 2016 12:03:32 -0500
+Subject: Re: [PATCH] iio: ak8975: constify ak_def structures
+To: Julia Lawall <Julia.Lawall@lip6.fr>
+References: <1452005802-4165-1-git-send-email-Julia.Lawall@lip6.fr>
+Cc: kernel-janitors@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56913C5A.9010409@kernel.org>
-Date: Sat, 9 Jan 2016 16:59:06 +0000
+Message-ID: <56913D62.8080107@kernel.org>
+Date: Sat, 9 Jan 2016 17:03:30 +0000
 MIME-Version: 1.0
-In-Reply-To: <1452358275.4044.9.camel@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1452005802-4165-1-git-send-email-Julia.Lawall@lip6.fr>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/01/16 16:51, Srinivas Pandruvada wrote:
-> On Sat, 2016-01-09 at 16:25 +0000, Jonathan Cameron wrote:
->>
-> On 09/01/16 16:17, Srinivas Pandruvada wrote:
->>> On Sat, 2016-01-09 at 16:00 +0000, Jonathan Cameron wrote:
->>>> On 09/01/16 00:17, tim.gardner@canonical.com wrote:
->>>>> From: Tim Gardner <tim.gardner@canonical.com>
->>>>>
->>>>> drivers/iio/magnetometer/ak8975.c: In function 'ak8975_probe':
->>>>> drivers/iio/magnetometer/ak8975.c:788:14: warning: 'chipset'
->>>>> may be
->>>>> used uninitialized in this function [-Wmaybe-uninitialized]
->>>>>   data->def = &ak_def_array[chipset];
->>>>>
->>>>> gcc version 5.3.1 20151219 (Ubuntu 5.3.1-4ubuntu1)
->>>>>
->>>>> Cc: Jonathan Cameron <jic23@kernel.org>
->>>>> Cc: Hartmut Knaack <knaack.h@gmx.de>
->>>>> Cc: Lars-Peter Clausen <lars@metafoo.de>
->>>>> Cc: Peter Meerwald <pmeerw@pmeerw.net>
->>>>> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
->>>>> Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
->>>> Doesn't look to be an actual bug as we either end up with chipset
->>>> being filled
->>>> based on the traditional match table in which case it'll be
->>>> assigned
->>>> or based on the acpi match, which should succeed seeing as we've
->>>> already
->>>> had to have matched one or the other for the probe to match in
->>>> the
->>>> first place.
->>>>
->>>> So probably worth the change to make it easier to tell that it
->>>> should
->>>> be fine
->>>> and suppress the warning.  However, whilst we are here, I note
->>>> that
->>>> *match_acpi_table has a path which returns NULL as the name and
->>>> doesn't assign
->>>> the chipset.  We should be therefore checking if (!name) return 
->>>> -ENOSYS;
->>>> Though maybe another error code would be more appropriate.
->>>>
->>>
->>> Since in this case we are enumerated by ACPI using our match table,
->>> so
->>> name can't be null. The "name" we provided in 
->>> static const struct acpi_device_id ak_acpi_match[] = {..}
->>> Same with the *chipset. Other than suppress warnings, I don't think
->>> it
->>> will cause any real issue.
->> True enough, in which case why are we checking the name?
+On 05/01/16 14:56, Julia Lawall wrote:
+> The ak_def structures are never modified, so declare them as const.
 > 
-> We can remove this check for !id
->   id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> - if (!id)
-> -	return NULL;
->   *chipset = (int)id->driver_data;
-Yes, that's the one I meant rather than the name!
-
-I'm not getting the warning Tim is seeing anyway so I'll leave
-it to him to confirm if this clears that up as well (so we
-don't need the other patch).
-
-Tim, as you are working on this issue, do you want to try the
-above and if it works post a patch making that change + adding
-a note where the check is removed to say it cannot fail so there
-is no need to check?
-
-Thanks,
+> Done with the help of Coccinelle.
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+> 
+Applied, thanks.
 
 Jonathan
+> ---
+>  drivers/iio/magnetometer/ak8975.c |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> Thanks,
-> Srinivas
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index b13936d..9c5c9ef 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -252,7 +252,7 @@ struct ak_def {
+>  	u8 data_regs[3];
+>  };
+>  
+> -static struct ak_def ak_def_array[AK_MAX_TYPE] = {
+> +static const struct ak_def ak_def_array[AK_MAX_TYPE] = {
+>  	{
+>  		.type = AK8975,
+>  		.raw_to_gauss = ak8975_raw_to_gauss,
+> @@ -360,7 +360,7 @@ static struct ak_def ak_def_array[AK_MAX_TYPE] = {
+>   */
+>  struct ak8975_data {
+>  	struct i2c_client	*client;
+> -	struct ak_def		*def;
+> +	const struct ak_def	*def;
+>  	struct attribute_group	attrs;
+>  	struct mutex		lock;
+>  	u8			asa[3];
 > 
-> 
->> I'd be included to drop that check and add a comment.
->> I haven't chased every path, but I think that might deal with the
->> above
->> warning at it's root.
->>> Thanks,
->>> Srinivas 
->>>
->>>> Not sure that error path can actually happen either, but if we
->>>> are
->>>> going to
->>>> bother having the error path out of match_acpi_table then we
->>>> ought to
->>>> actually
->>>> handle it!
->>>>
->>>> Don't suppose you'd mind fixing that one as well whilst here?
->>>>
->>>> Jonathan 
->>>>> ---
->>>>>
->>>>> This seems like a legitimate warning, though gcc should have
->>>>> complained
->>>>> about an earlier use of chipset on line 782.
->>>>>
->>>>>  drivers/iio/magnetometer/ak8975.c | 2 +-
->>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/drivers/iio/magnetometer/ak8975.c
->>>>> b/drivers/iio/magnetometer/ak8975.c
->>>>> index b13936d..80ec0ce 100644
->>>>> --- a/drivers/iio/magnetometer/ak8975.c
->>>>> +++ b/drivers/iio/magnetometer/ak8975.c
->>>>> @@ -732,7 +732,7 @@ static int ak8975_probe(struct i2c_client
->>>>> *client,
->>>>>  	int eoc_gpio;
->>>>>  	int err;
->>>>>  	const char *name = NULL;
->>>>> -	enum asahi_compass_chipset chipset;
->>>>> +	enum asahi_compass_chipset chipset = AK_MAX_TYPE;
->>>>>  
->>>>>  	/* Grab and set up the supplied GPIO. */
->>>>>  	if (client->dev.platform_data)
->>>>>
->>>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux
->>> -iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
