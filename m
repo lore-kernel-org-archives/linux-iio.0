@@ -1,46 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:54273 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754221AbcAIR16 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Jan 2016 12:27:58 -0500
-From: Marek Vasut <marex@denx.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] iio: light: acpi-als: Report data as processed rather than raw
-Date: Sat, 9 Jan 2016 18:27:50 +0100
-Cc: Gabriele Mazzotta <gabriele.mzt@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, marxin.liska@gmail.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1452180105-9584-1-git-send-email-gabriele.mzt@gmail.com> <569135DC.2090400@kernel.org>
-In-Reply-To: <569135DC.2090400@kernel.org>
+Received: from mail-pf0-f181.google.com ([209.85.192.181]:36721 "EHLO
+	mail-pf0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753860AbcAJGUJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Jan 2016 01:20:09 -0500
+Date: Sun, 10 Jan 2016 11:50:18 +0530
+From: Bhaktipriya Shridhar <bhaktipriya96@gmail.com>
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	bhaktipriya96@gmail.com
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: iio: cdc: Prefer using the BIT macro
+Message-ID: <20160110062018.GA22031@Karyakshetra>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201601091827.50571.marex@denx.de>
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Saturday, January 09, 2016 at 05:31:24 PM, Jonathan Cameron wrote:
-> On 07/01/16 15:21, Gabriele Mazzotta wrote:
-> > As per the ACPI specification (Revision 5.0) [1], the data coming
-> > from the sensor represent the ambient light illuminance reading
-> > expressed in lux. Use IIO_CHAN_INFO_PROCESSED instead of
-> > IIO_CHAN_INFO_RAW to signify that the data are pre-processed.
-> > 
-> > [1] http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
-> > 
-> > Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-> 
-> Hm. Whilst it's a fix in a sense, the original didn't really 'break'
-> the ABI so I worry a little that this change may break others.
-> Irritating as it is, perhaps we should keep the _RAW and add _PROCESSED
-> (which will then be exactly the same value).
-> We'll also then need a comment in the code, that leaving the _RAW
-> elements was for ABI compatibility.
-> 
-> What do others think?
+Replace all occurences of (1<<x) by BIT(x) in the file ad7150.c to get rid
+of checkpatch.pl "CHECK" output "Prefer using the BIT macro"
 
-I'm not an IIO guru, but this does sound sensible. Do you know if any userland
-code which actually uses the ACPI ALS already ?
+Signed-off-by: Bhaktipriya Shridhar <bhaktipriya96@gmail.com>
+---
+ drivers/staging/iio/cdc/ad7150.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Best regards,
-Marek Vasut
+diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
+index e8d0ff2..0b934f7 100644
+--- a/drivers/staging/iio/cdc/ad7150.c
++++ b/drivers/staging/iio/cdc/ad7150.c
+@@ -21,8 +21,8 @@
+  */
+
+ #define AD7150_STATUS              0
+-#define AD7150_STATUS_OUT1         (1 << 3)
+-#define AD7150_STATUS_OUT2         (1 << 5)
++#define AD7150_STATUS_OUT1         BIT(3)
++#define AD7150_STATUS_OUT2         BIT(5)
+ #define AD7150_CH1_DATA_HIGH       1
+ #define AD7150_CH2_DATA_HIGH       3
+ #define AD7150_CH1_AVG_HIGH        5
+@@ -36,7 +36,7 @@
+ #define AD7150_CH2_TIMEOUT         13
+ #define AD7150_CH2_SETUP           14
+ #define AD7150_CFG                 15
+-#define AD7150_CFG_FIX             (1 << 7)
++#define AD7150_CFG_FIX             BIT(7)
+ #define AD7150_PD_TIMER            16
+ #define AD7150_CH1_CAPDAC          17
+ #define AD7150_CH2_CAPDAC          18
+--
+2.1.4
+
