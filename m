@@ -1,102 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:5751 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753238AbcAIQTN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 9 Jan 2016 11:19:13 -0500
-Message-ID: <1452356229.4044.4.camel@linux.intel.com>
-Subject: Re: [PATCH v4.4-rc8] iio: magnetometer: ak8975: Silence 'may be
- used uninitialized' warning
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, tim.gardner@canonical.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Date: Sat, 09 Jan 2016 08:17:09 -0800
-In-Reply-To: <56912EB1.7040107@kernel.org>
-References: <1452298661-3636-1-git-send-email-tim.gardner@canonical.com>
-	 <56912EB1.7040107@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42157 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752154AbcAJMgt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Jan 2016 07:36:49 -0500
+Subject: Re: [PATCH 1/2 v3] iio: st_sensors: support active-low interrupts
+To: Linus Walleij <linus.walleij@linaro.org>
+References: <1447924517-8190-1-git-send-email-linus.walleij@linaro.org>
+ <5651B37C.5030008@kernel.org>
+ <CACRpkdZp9H7p11PUsvskhMa0BYXb3q5pw848Yw1MLE3P1k8WqQ@mail.gmail.com>
+ <56913B86.5040700@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5692505C.7090008@kernel.org>
+Date: Sun, 10 Jan 2016 12:36:44 +0000
+MIME-Version: 1.0
+In-Reply-To: <56913B86.5040700@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 2016-01-09 at 16:00 +0000, Jonathan Cameron wrote:
-> On 09/01/16 00:17, tim.gardner@canonical.com wrote:
-> > From: Tim Gardner <tim.gardner@canonical.com>
-> > 
-> > drivers/iio/magnetometer/ak8975.c: In function 'ak8975_probe':
-> > drivers/iio/magnetometer/ak8975.c:788:14: warning: 'chipset' may be
-> > used uninitialized in this function [-Wmaybe-uninitialized]
-> >   data->def = &ak_def_array[chipset];
-> > 
-> > gcc version 5.3.1 20151219 (Ubuntu 5.3.1-4ubuntu1)
-> > 
-> > Cc: Jonathan Cameron <jic23@kernel.org>
-> > Cc: Hartmut Knaack <knaack.h@gmx.de>
-> > Cc: Lars-Peter Clausen <lars@metafoo.de>
-> > Cc: Peter Meerwald <pmeerw@pmeerw.net>
-> > Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> > Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
-> Doesn't look to be an actual bug as we either end up with chipset
-> being filled
-> based on the traditional match table in which case it'll be assigned
-> or based on the acpi match, which should succeed seeing as we've
-> already
-> had to have matched one or the other for the probe to match in the
-> first place.
+On 09/01/16 16:55, Jonathan Cameron wrote:
+> On 05/01/16 15:18, Linus Walleij wrote:
+>> On Sun, Nov 22, 2015 at 1:22 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>> On 19/11/15 09:15, Linus Walleij wrote:
+>>>> Most ST MEMS Sensors that support interrupts can also handle sending
+>>>> an active low interrupt, i.e. going from high to low on data ready
+>>>> (or other interrupt) and thus triggering on a falling edge to the
+>>>> interrupt controller.
+>>>>
+>>>> Set up logic to inspect the interrupt line we get for a sensor: if
+>>>> it is triggering on rising edge, leave everything alone, but if it
+>>>> triggers on falling edges, set up active low, and if unsupported
+>>>> configurations appear: warn with errors and reconfigure the interrupt
+>>>> to a rising edge, which all interrupt generating sensors support.
+>>>>
+>>>> Create a local header for st_sensors_core.h to share functions
+>>>> between the sensor core and the trigger setup code.
+>>>>
+>>>> Cc: Giuseppe Barba <giuseppe.barba@st.com>
+>>>> Cc: Denis Ciocca <denis.ciocca@st.com>
+>>>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>>>
+>>> Looks good to me.  Ideally I'd like ack from Denis.
+>>> (it's early in the cycle so plenty of time for this one!)
+>>
+>> Has this fallen off the table?
+> oops. Yes it has indeed.  I still had it marked as outstanding
+> but it had drifted too many pages up in my patch list to get
+> noticed.  Good thing you are keeping track!
+>> I think this patch 1/2 is fine
+>> to merge as-is, I guess it is too late for v4.5 now, but
+>> please queue it for the next cycle.
+> It was a little interesting to apply so could you take
+> a look at my testing branch and check I didn't mess it up.
+> Needed a fair bit of hand resolution though I think it was
+> all just fuzz really.
+Oops, failed to add the new header.  Now fixed in testing.
+
+Jonathan
 > 
-> So probably worth the change to make it easier to tell that it should
-> be fine
-> and suppress the warning.  However, whilst we are here, I note that
-> *match_acpi_table has a path which returns NULL as the name and
-> doesn't assign
-> the chipset.  We should be therefore checking if (!name) return 
-> -ENOSYS;
-> Though maybe another error code would be more appropriate.
+> Applied to the togreg branch of iio.git - initially pushed out
+> as testing.
+> 
+> Jonathan
+>>
+>> Yours,
+>> Linus Walleij
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
-Since in this case we are enumerated by ACPI using our match table, so
-name can't be null. The "name" we provided in 
-static const struct acpi_device_id ak_acpi_match[] = {..}
-Same with the *chipset. Other than suppress warnings, I don't think it
-will cause any real issue.
-
-Thanks,
-Srinivas 
-
-> Not sure that error path can actually happen either, but if we are
-> going to
-> bother having the error path out of match_acpi_table then we ought to
-> actually
-> handle it!
-> 
-> Don't suppose you'd mind fixing that one as well whilst here?
-> 
-> Jonathan 
-> > ---
-> > 
-> > This seems like a legitimate warning, though gcc should have
-> > complained
-> > about an earlier use of chipset on line 782.
-> > 
-> >  drivers/iio/magnetometer/ak8975.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/magnetometer/ak8975.c
-> > b/drivers/iio/magnetometer/ak8975.c
-> > index b13936d..80ec0ce 100644
-> > --- a/drivers/iio/magnetometer/ak8975.c
-> > +++ b/drivers/iio/magnetometer/ak8975.c
-> > @@ -732,7 +732,7 @@ static int ak8975_probe(struct i2c_client
-> > *client,
-> >  	int eoc_gpio;
-> >  	int err;
-> >  	const char *name = NULL;
-> > -	enum asahi_compass_chipset chipset;
-> > +	enum asahi_compass_chipset chipset = AK_MAX_TYPE;
-> >  
-> >  	/* Grab and set up the supplied GPIO. */
-> >  	if (client->dev.platform_data)
-> > 
-> 
