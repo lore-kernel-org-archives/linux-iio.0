@@ -1,78 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42157 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752154AbcAJMgt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Jan 2016 07:36:49 -0500
-Subject: Re: [PATCH 1/2 v3] iio: st_sensors: support active-low interrupts
-To: Linus Walleij <linus.walleij@linaro.org>
-References: <1447924517-8190-1-git-send-email-linus.walleij@linaro.org>
- <5651B37C.5030008@kernel.org>
- <CACRpkdZp9H7p11PUsvskhMa0BYXb3q5pw848Yw1MLE3P1k8WqQ@mail.gmail.com>
- <56913B86.5040700@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5692505C.7090008@kernel.org>
-Date: Sun, 10 Jan 2016 12:36:44 +0000
+Received: from mail.kernel.org ([198.145.29.136]:35466 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757173AbcAKCco (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 10 Jan 2016 21:32:44 -0500
+Date: Sun, 10 Jan 2016 20:32:39 -0600
+From: Rob Herring <robh@kernel.org>
+To: Ludovic Desroches <ludovic.desroches@atmel.com>
+Cc: jic23@kernel.org, nicolas.ferre@atmel.com,
+	alexandre.belloni@free-electrons.com, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	plagnioj@jcrosoft.com, linux-arm-kernel@lists.infradead.org,
+	pmeerw@pmeerw.net
+Subject: Re: [PATCH v2 1/5] iio:adc:at91_adc8xx: introduce new atmel adc
+ driver
+Message-ID: <20160111023239.GA27025@rob-hp-laptop>
+References: <1452096759-19438-1-git-send-email-ludovic.desroches@atmel.com>
+ <1452096759-19438-2-git-send-email-ludovic.desroches@atmel.com>
 MIME-Version: 1.0
-In-Reply-To: <56913B86.5040700@kernel.org>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1452096759-19438-2-git-send-email-ludovic.desroches@atmel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/01/16 16:55, Jonathan Cameron wrote:
-> On 05/01/16 15:18, Linus Walleij wrote:
->> On Sun, Nov 22, 2015 at 1:22 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 19/11/15 09:15, Linus Walleij wrote:
->>>> Most ST MEMS Sensors that support interrupts can also handle sending
->>>> an active low interrupt, i.e. going from high to low on data ready
->>>> (or other interrupt) and thus triggering on a falling edge to the
->>>> interrupt controller.
->>>>
->>>> Set up logic to inspect the interrupt line we get for a sensor: if
->>>> it is triggering on rising edge, leave everything alone, but if it
->>>> triggers on falling edges, set up active low, and if unsupported
->>>> configurations appear: warn with errors and reconfigure the interrupt
->>>> to a rising edge, which all interrupt generating sensors support.
->>>>
->>>> Create a local header for st_sensors_core.h to share functions
->>>> between the sensor core and the trigger setup code.
->>>>
->>>> Cc: Giuseppe Barba <giuseppe.barba@st.com>
->>>> Cc: Denis Ciocca <denis.ciocca@st.com>
->>>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->>>
->>> Looks good to me.  Ideally I'd like ack from Denis.
->>> (it's early in the cycle so plenty of time for this one!)
->>
->> Has this fallen off the table?
-> oops. Yes it has indeed.  I still had it marked as outstanding
-> but it had drifted too many pages up in my patch list to get
-> noticed.  Good thing you are keeping track!
->> I think this patch 1/2 is fine
->> to merge as-is, I guess it is too late for v4.5 now, but
->> please queue it for the next cycle.
-> It was a little interesting to apply so could you take
-> a look at my testing branch and check I didn't mess it up.
-> Needed a fair bit of hand resolution though I think it was
-> all just fuzz really.
-Oops, failed to add the new header.  Now fixed in testing.
+On Wed, Jan 06, 2016 at 05:12:35PM +0100, Ludovic Desroches wrote:
+> This driver supports the new version of the Atmel ADC device introduced
+> with the SAMA5D2 SoC family.
+> 
+> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+> ---
+>  .../devicetree/bindings/iio/adc/at91_adc8xx.txt    |  28 ++
 
-Jonathan
-> 
-> Applied to the togreg branch of iio.git - initially pushed out
-> as testing.
-> 
-> Jonathan
->>
->> Yours,
->> Linus Walleij
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+For the binding:
 
+Acked-by: Rob Herring <robh@kernel.org>
+
+>  drivers/iio/adc/Kconfig                            |  11 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/at91_adc8xx.c                      | 461 +++++++++++++++++++++
+>  4 files changed, 501 insertions(+)
