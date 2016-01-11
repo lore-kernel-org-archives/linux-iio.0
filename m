@@ -1,57 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:54644 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934419AbcAKTUl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jan 2016 14:20:41 -0500
-From: Marek Vasut <marex@denx.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] iio: light: acpi-als: Report data as processed rather than raw
-Date: Mon, 11 Jan 2016 20:20:41 +0100
-Cc: Gabriele Mazzotta <gabriele.mzt@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, marxin.liska@gmail.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1452180105-9584-1-git-send-email-gabriele.mzt@gmail.com> <201601091827.50571.marex@denx.de> <56940003.2040209@kernel.org>
-In-Reply-To: <56940003.2040209@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50481 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934419AbcAKTVI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jan 2016 14:21:08 -0500
+Subject: Re: [PATCH v5] iio: add ad5761 DAC driver
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+References: <1452274180-16673-1-git-send-email-ricardo.ribalda@gmail.com>
+ <5691322C.2030004@kernel.org>
+ <CAPybu_1oPAVtEyTOj6urZagvBf67Q8qwRC6vTsLa=Agi8t3f8A@mail.gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	LKML <linux-kernel@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <569400A1.2060200@kernel.org>
+Date: Mon, 11 Jan 2016 19:21:05 +0000
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201601112020.41199.marex@denx.de>
+In-Reply-To: <CAPybu_1oPAVtEyTOj6urZagvBf67Q8qwRC6vTsLa=Agi8t3f8A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Monday, January 11, 2016 at 08:18:27 PM, Jonathan Cameron wrote:
-> On 09/01/16 17:27, Marek Vasut wrote:
-> > On Saturday, January 09, 2016 at 05:31:24 PM, Jonathan Cameron wrote:
-> >> On 07/01/16 15:21, Gabriele Mazzotta wrote:
-> >>> As per the ACPI specification (Revision 5.0) [1], the data coming
-> >>> from the sensor represent the ambient light illuminance reading
-> >>> expressed in lux. Use IIO_CHAN_INFO_PROCESSED instead of
-> >>> IIO_CHAN_INFO_RAW to signify that the data are pre-processed.
-> >>> 
-> >>> [1] http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
-> >>> 
-> >>> Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-> >> 
-> >> Hm. Whilst it's a fix in a sense, the original didn't really 'break'
-> >> the ABI so I worry a little that this change may break others.
-> >> Irritating as it is, perhaps we should keep the _RAW and add _PROCESSED
-> >> (which will then be exactly the same value).
-> >> We'll also then need a comment in the code, that leaving the _RAW
-> >> elements was for ABI compatibility.
-> >> 
-> >> What do others think?
-> > 
-> > I'm not an IIO guru, but this does sound sensible. Do you know if any
-> > userland code which actually uses the ACPI ALS already ?
+On 11/01/16 16:23, Ricardo Ribalda Delgado wrote:
+> Hello Jonathan
 > 
-> It's more than likely as Gnome at least supports using them to control
-> screen brightness.  Hopefully that code is able to cope with the correct
-> ABI though as well as the old one.  Anyhow, we seem to have a reasonable
-> consensus. Gabriele, are you happy to do a version of the patch with the
-> _RAW version left along side your _PROCESSED version and a comment saying
-> that it is for compatibility only?
+> Thanks for your review
+> 
+> On Sat, Jan 9, 2016 at 5:15 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> I'm a little unsure that we shouldn't just fail the probe if the
+>> range is supplied.  Even the default (the best option available)
+>> could in theory do damage to a circuit with a maximum of 3V though
+>> it's probably unlikely...
+> 
+> I personally hate when a driver needs a mandatory pdata. I expect a
+> default behaviour on the absence of it.
+That's fair enough, though in this particular case, in theory it could
+cause damage.  Let's take the view that's unlikely.
+> 
+>>> +     st->vref_reg = devm_regulator_get_optional(&st->spi->dev, "vref");
+>>> +     if (!st->vref_reg || PTR_ERR(st->vref_reg) == -ENODEV) {
+>> This is a little unusual... Only one of those errors is returned by
+>> devm_regulator_get_optional if the regulator is not specified.
+>> I believe from a quick look at the regulator code that it returns the
+>> -ENODEV part.
+>>
+>> So how can it be null?
+>>
+> 
+> After a fast look:
+> 
+> devm_regulator_get_optional-> _devm_regulator_get -> regulator_get
+> (regulator/consumer.h)
+> 
+> Probably consumer.h cannot be reached at the same time than
+> _devm_regulator_get. But for safety I rather leave the check.
+Hmm. In this particular case it's relatively clear that one of
+the checks must be meaningless so chances of patches turning up
+to 'fix' this in future makes me think it's better to save time
+and drop it now.
+> 
+> 
+> 
+> I send v6 right away.
+> 
+> 
+> Thanks!
+> 
+> 
+> 
 
-This makes sense in my mind, thanks :)
-
-Best regards,
-Marek Vasut
