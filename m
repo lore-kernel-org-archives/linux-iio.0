@@ -1,11 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f54.google.com ([74.125.82.54]:36767 "EHLO
-	mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758497AbcAKGyp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jan 2016 01:54:45 -0500
-Received: by mail-wm0-f54.google.com with SMTP id l65so198534798wmf.1
-        for <linux-iio@vger.kernel.org>; Sun, 10 Jan 2016 22:54:44 -0800 (PST)
-Date: Mon, 11 Jan 2016 06:54:41 +0000
+Received: from mail-wm0-f52.google.com ([74.125.82.52]:33132 "EHLO
+	mail-wm0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757379AbcAKH30 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jan 2016 02:29:26 -0500
+Received: by mail-wm0-f52.google.com with SMTP id f206so201147012wmf.0
+        for <linux-iio@vger.kernel.org>; Sun, 10 Jan 2016 23:29:25 -0800 (PST)
+Date: Mon, 11 Jan 2016 07:29:21 +0000
 From: Lee Jones <lee.jones@linaro.org>
 To: Markus Pargmann <mpa@pengutronix.de>
 Cc: Shawn Guo <shawnguo@kernel.org>,
@@ -17,63 +17,97 @@ Cc: Shawn Guo <shawnguo@kernel.org>,
 	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Juergen Borleis <jbe@pengutronix.de>
-Subject: Re: [PATCH v10 4/8] mfd: fsl imx25 Touchscreen ADC driver
-Message-ID: <20160111065441.GW3331@x1>
+	Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH v10 1/8] ARM: dt: Binding documentation for imx25 ADC/TSC
+Message-ID: <20160111072921.GX3331@x1>
 References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
- <1450101234-2191-5-git-send-email-mpa@pengutronix.de>
+ <1450101234-2191-2-git-send-email-mpa@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1450101234-2191-5-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <1450101234-2191-2-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On Mon, 14 Dec 2015, Markus Pargmann wrote:
 
-> This is the core driver for imx25 touchscreen/adc driver. The module
-> has one shared ADC and two different conversion queues which use the
-> ADC. The two queues are identical. Both can be used for general purpose
-> ADC but one is meant to be used for touchscreens.
-> 
-> This driver is the core which manages the central components and
-> registers of the TSC/ADC unit. It manages the IRQs and forwards them to
-> the correct components.
+> This documentation describes the devicetree bindings for the
+> ADC/Touchscreen unit of the i.MX25 SoC.
 > 
 > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> Signed-off-by: Denis Carikli <denis@eukrea.com>
-> 
-> [ensure correct ADC clock depending on the IPG clock]
-> Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
 > Acked-by: Jonathan Cameron <jic23@kernel.org>
+> Acked-by: Rob Herring <robh@kernel.org>
 > ---
 > 
 > Notes:
->     Changes in v7:
->      - Cleanup bit defines in header files to be more readable
->      - Fix irq check to return with an error for irq <= 0
->      - Add COMPILE_TEST in Kconfig file
+>     Changes in v9:
+>      - Fixed some style things.
 >     
->     Changes in v5:
->      - Remove ifdef CONFIG_OF as this driver is only for DT usage
->      - Remove module owner
->      - Add Kconfig dependencies ARCH_MX25 and OF
+>     Changes in v6:
+>      - Removed adc-ref property and replaced it with refp and refn for positive and
+>        negative references. The properties are optional now as the default
+>        behaviour is a positive internal reference voltage and ADC GND as negative
+>        reference.
 > 
->  drivers/mfd/Kconfig             |   9 ++
->  drivers/mfd/Makefile            |   2 +
->  drivers/mfd/fsl-imx25-tsadc.c   | 203 ++++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/imx25-tsadc.h | 140 +++++++++++++++++++++++++++
->  4 files changed, 354 insertions(+)
->  create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
->  create mode 100644 include/linux/mfd/imx25-tsadc.h
+>  .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    | 47 ++++++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
 
-For my own reference:
-  Acked-by: Lee Jones <lee.jones@linaro.org>
+Binding looks fine, but you need to change the subject line of the
+patch, for is it not an ARM, but MFD patch.
 
-I will apply this and sent out pull-requests to the relevant
-maintainers once -rc1 is out.
-
-[...]
+> diff --git a/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+> new file mode 100644
+> index 000000000000..b03505286997
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+> @@ -0,0 +1,47 @@
+> +Freescale MX25 ADC/TSC MultiFunction Device (MFD)
+> +
+> +This device combines two general purpose conversion queues one used for general
+> +ADC and the other used for touchscreens.
+> +
+> +Required properties:
+> + - compatible:			Should be "fsl,imx25-tsadc".
+> + - reg:				Start address and size of the memory area of
+> + 					the device
+> + - interrupts:			Interrupt for this device
+> +					(See: ../interrupt-controller/interrupts.txt)
+> + - clocks:			An 'ipg' clock (See: ../clock/clock-bindings.txt)
+> + - interrupt-controller:	This device is an interrupt controller. It
+> +   					controls the interrupts of both
+> +					conversion queues.
+> + - #interrupt-cells:		Should be '<1>'.
+> + - #address-cells:		Should be '<1>'.
+> + - #size-cells:			Should be '<1>'.
+> +
+> +This device includes two conversion queues which can be added as subnodes.
+> +The first queue is for the touchscreen, the second for general purpose ADC.
+> +
+> +Example:
+> +	tscadc: tscadc@50030000 {
+> +		compatible = "fsl,imx25-tsadc";
+> +		reg = <0x50030000 0xc>;
+> +		interrupts = <46>;
+> +		clocks = <&clks 119>;
+> +		clock-names = "ipg";
+> +		interrupt-controller;
+> +		#interrupt-cells = <1>;
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		ranges;
+> +
+> +		tsc: tcq@50030400 {
+> +			compatible = "fsl,imx25-tcq";
+> +			reg = <0x50030400 0x60>;
+> +			...
+> +		};
+> +
+> +		adc: gcq@50030800 {
+> +			compatible = "fsl,imx25-gcq";
+> +			reg = <0x50030800 0x60>;
+> +			...
+> +		};
+> +	};
 
 -- 
 Lee Jones
