@@ -1,61 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f67.google.com ([74.125.82.67]:35514 "EHLO
-	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752678AbcALPV5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jan 2016 10:21:57 -0500
-From: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-	marxin.liska@gmail.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Gabriele Mazzotta <gabriele.mzt@gmail.com>
-Subject: [PATCH v2] iio: light: acpi-als: Report data as processed
-Date: Tue, 12 Jan 2016 16:21:39 +0100
-Message-Id: <1452612099-26630-1-git-send-email-gabriele.mzt@gmail.com>
-In-Reply-To: <1452180105-9584-1-git-send-email-gabriele.mzt@gmail.com>
+Received: from mail-qg0-f43.google.com ([209.85.192.43]:34891 "EHLO
+	mail-qg0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965383AbcALP1e (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jan 2016 10:27:34 -0500
+MIME-Version: 1.0
+In-Reply-To: <56940003.2040209@kernel.org>
 References: <1452180105-9584-1-git-send-email-gabriele.mzt@gmail.com>
+	<569135DC.2090400@kernel.org>
+	<201601091827.50571.marex@denx.de>
+	<56940003.2040209@kernel.org>
+Date: Tue, 12 Jan 2016 16:27:33 +0100
+Message-ID: <CABFtUbRT2bWsUCn6sCxytZDoAV5hC9rojpJUwXJrt2EEXyCSVA@mail.gmail.com>
+Subject: Re: [PATCH] iio: light: acpi-als: Report data as processed rather
+ than raw
+From: Gabriele Mazzotta <gabriele.mzt@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Marek Vasut <marex@denx.de>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	=?UTF-8?Q?Martin_Li=C5=A1ka?= <marxin.liska@gmail.com>,
+	linux-iio@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-As per the ACPI specification (Revision 5.0) [1], the data coming
-from the sensor represent the ambient light illuminance reading
-expressed in lux. So use IIO_CHAN_INFO_PROCESSED to signify that
-the data are pre-processed.
+2016-01-11 20:18 GMT+01:00 Jonathan Cameron <jic23@kernel.org>:
+> On 09/01/16 17:27, Marek Vasut wrote:
+>> On Saturday, January 09, 2016 at 05:31:24 PM, Jonathan Cameron wrote:
+>>> On 07/01/16 15:21, Gabriele Mazzotta wrote:
+>>>> As per the ACPI specification (Revision 5.0) [1], the data coming
+>>>> from the sensor represent the ambient light illuminance reading
+>>>> expressed in lux. Use IIO_CHAN_INFO_PROCESSED instead of
+>>>> IIO_CHAN_INFO_RAW to signify that the data are pre-processed.
+>>>>
+>>>> [1] http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
+>>>>
+>>>> Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
+>>>
+>>> Hm. Whilst it's a fix in a sense, the original didn't really 'break'
+>>> the ABI so I worry a little that this change may break others.
+>>> Irritating as it is, perhaps we should keep the _RAW and add _PROCESSED
+>>> (which will then be exactly the same value).
+>>> We'll also then need a comment in the code, that leaving the _RAW
+>>> elements was for ABI compatibility.
+>>>
+>>> What do others think?
+>>
+>> I'm not an IIO guru, but this does sound sensible. Do you know if any userland
+>> code which actually uses the ACPI ALS already ?
+> It's more than likely as Gnome at least supports using them to control screen
+> brightness.  Hopefully that code is able to cope with the correct ABI though as
+> well as the old one.  Anyhow, we seem to have a reasonable consensus.
 
-However, to keep backward ABI compatibility, the IIO_CHAN_INFO_RAW
-bit is not removed.
+I looked into this and Gnome uses iio-proxy-sensor to handle iio
+devices. As of now it, only looks for in_illuminance_input, so it
+currently doesn't work with acpi-als. I've also found a bug report [1]
+of an acpi-als user stating the same.
 
-[1] http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
+[1] https://github.com/hadess/iio-sensor-proxy/issues/46
 
-Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
----
- drivers/iio/light/acpi-als.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
-index 60537ec..53201d9 100644
---- a/drivers/iio/light/acpi-als.c
-+++ b/drivers/iio/light/acpi-als.c
-@@ -54,7 +54,9 @@ static const struct iio_chan_spec acpi_als_channels[] = {
- 			.realbits	= 32,
- 			.storagebits	= 32,
- 		},
--		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),
-+		/* _RAW is here for backward ABI compatibility */
-+		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW) |
-+					  BIT(IIO_CHAN_INFO_PROCESSED),
- 	},
- };
- 
-@@ -152,7 +154,7 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
- 	s32 temp_val;
- 	int ret;
- 
--	if (mask != IIO_CHAN_INFO_RAW)
-+	if ((mask != IIO_CHAN_INFO_PROCESSED) && (mask != IIO_CHAN_INFO_RAW))
- 		return -EINVAL;
- 
- 	/* we support only illumination (_ALI) so far. */
--- 
-2.7.0.rc3
-
+> Gabriele, are you happy to do a version of the patch with the _RAW version
+> left along side your _PROCESSED version and a comment saying that it is for
+> compatibility only?
+>
+> Jonathan
+>>
+>> Best regards,
+>> Marek Vasut
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
