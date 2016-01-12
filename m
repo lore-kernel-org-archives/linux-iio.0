@@ -1,73 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41973 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756833AbcAJLxJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Jan 2016 06:53:09 -0500
-Subject: Re: [PATCH] staging: iio: cdc: Prefer using the BIT macro
-To: Bhaktipriya Shridhar <bhaktipriya96@gmail.com>, lars@metafoo.de,
-	Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org
-References: <20160110062018.GA22031@Karyakshetra>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56924621.4010906@kernel.org>
-Date: Sun, 10 Jan 2016 11:53:05 +0000
-MIME-Version: 1.0
-In-Reply-To: <20160110062018.GA22031@Karyakshetra>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:35514 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752678AbcALPV5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jan 2016 10:21:57 -0500
+From: Gabriele Mazzotta <gabriele.mzt@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+	marxin.liska@gmail.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Gabriele Mazzotta <gabriele.mzt@gmail.com>
+Subject: [PATCH v2] iio: light: acpi-als: Report data as processed
+Date: Tue, 12 Jan 2016 16:21:39 +0100
+Message-Id: <1452612099-26630-1-git-send-email-gabriele.mzt@gmail.com>
+In-Reply-To: <1452180105-9584-1-git-send-email-gabriele.mzt@gmail.com>
+References: <1452180105-9584-1-git-send-email-gabriele.mzt@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/01/16 06:20, Bhaktipriya Shridhar wrote:
-> Replace all occurences of (1<<x) by BIT(x) in the file ad7150.c to get rid
-> of checkpatch.pl "CHECK" output "Prefer using the BIT macro"
-> 
-> Signed-off-by: Bhaktipriya Shridhar <bhaktipriya96@gmail.com>
-Hi,
+As per the ACPI specification (Revision 5.0) [1], the data coming
+from the sensor represent the ambient light illuminance reading
+expressed in lux. So use IIO_CHAN_INFO_PROCESSED to signify that
+the data are pre-processed.
 
-I'm afraid that a similar patch was sent by Shraddha Barke back at the end
-of December.  It just missed the last merge window so can currently only
-be found in the testing branch of iio.git.
+However, to keep backward ABI compatibility, the IIO_CHAN_INFO_RAW
+bit is not removed.
 
-Thanks anyway. It is always amazing how long code can sit in a given state
-before several patches turn up for it in a couple of weeks!
+[1] http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
 
-Jonathan
-> ---
->  drivers/staging/iio/cdc/ad7150.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-> index e8d0ff2..0b934f7 100644
-> --- a/drivers/staging/iio/cdc/ad7150.c
-> +++ b/drivers/staging/iio/cdc/ad7150.c
-> @@ -21,8 +21,8 @@
->   */
-> 
->  #define AD7150_STATUS              0
-> -#define AD7150_STATUS_OUT1         (1 << 3)
-> -#define AD7150_STATUS_OUT2         (1 << 5)
-> +#define AD7150_STATUS_OUT1         BIT(3)
-> +#define AD7150_STATUS_OUT2         BIT(5)
->  #define AD7150_CH1_DATA_HIGH       1
->  #define AD7150_CH2_DATA_HIGH       3
->  #define AD7150_CH1_AVG_HIGH        5
-> @@ -36,7 +36,7 @@
->  #define AD7150_CH2_TIMEOUT         13
->  #define AD7150_CH2_SETUP           14
->  #define AD7150_CFG                 15
-> -#define AD7150_CFG_FIX             (1 << 7)
-> +#define AD7150_CFG_FIX             BIT(7)
->  #define AD7150_PD_TIMER            16
->  #define AD7150_CH1_CAPDAC          17
->  #define AD7150_CH2_CAPDAC          18
-> --
-> 2.1.4
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
+---
+ drivers/iio/light/acpi-als.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
+index 60537ec..53201d9 100644
+--- a/drivers/iio/light/acpi-als.c
++++ b/drivers/iio/light/acpi-als.c
+@@ -54,7 +54,9 @@ static const struct iio_chan_spec acpi_als_channels[] = {
+ 			.realbits	= 32,
+ 			.storagebits	= 32,
+ 		},
+-		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),
++		/* _RAW is here for backward ABI compatibility */
++		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW) |
++					  BIT(IIO_CHAN_INFO_PROCESSED),
+ 	},
+ };
+ 
+@@ -152,7 +154,7 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
+ 	s32 temp_val;
+ 	int ret;
+ 
+-	if (mask != IIO_CHAN_INFO_RAW)
++	if ((mask != IIO_CHAN_INFO_PROCESSED) && (mask != IIO_CHAN_INFO_RAW))
+ 		return -EINVAL;
+ 
+ 	/* we support only illumination (_ALI) so far. */
+-- 
+2.7.0.rc3
 
