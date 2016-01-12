@@ -1,76 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qg0-f43.google.com ([209.85.192.43]:34891 "EHLO
-	mail-qg0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965383AbcALP1e (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jan 2016 10:27:34 -0500
-MIME-Version: 1.0
-In-Reply-To: <56940003.2040209@kernel.org>
-References: <1452180105-9584-1-git-send-email-gabriele.mzt@gmail.com>
-	<569135DC.2090400@kernel.org>
-	<201601091827.50571.marex@denx.de>
-	<56940003.2040209@kernel.org>
-Date: Tue, 12 Jan 2016 16:27:33 +0100
-Message-ID: <CABFtUbRT2bWsUCn6sCxytZDoAV5hC9rojpJUwXJrt2EEXyCSVA@mail.gmail.com>
-Subject: Re: [PATCH] iio: light: acpi-als: Report data as processed rather
- than raw
-From: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Marek Vasut <marex@denx.de>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	=?UTF-8?Q?Martin_Li=C5=A1ka?= <marxin.liska@gmail.com>,
-	linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from argos.tuxed.org ([176.9.87.227]:40102 "EHLO argos.tuxed.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752804AbcALSRf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 12 Jan 2016 13:17:35 -0500
+From: Alexander Koch <mail@alexanderkoch.net>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	mhornung.linux@gmail.com, dannenberg@ti.com, balbi@ti.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Alexander Koch <mail@alexanderkoch.net>
+Subject: [PATCH 1/2] iio: light: opt3001: extract int. time constants
+Date: Tue, 12 Jan 2016 19:09:39 +0100
+Message-Id: <1452622180-12728-2-git-send-email-mail@alexanderkoch.net>
+In-Reply-To: <1452622180-12728-1-git-send-email-mail@alexanderkoch.net>
+References: <1452622180-12728-1-git-send-email-mail@alexanderkoch.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-2016-01-11 20:18 GMT+01:00 Jonathan Cameron <jic23@kernel.org>:
-> On 09/01/16 17:27, Marek Vasut wrote:
->> On Saturday, January 09, 2016 at 05:31:24 PM, Jonathan Cameron wrote:
->>> On 07/01/16 15:21, Gabriele Mazzotta wrote:
->>>> As per the ACPI specification (Revision 5.0) [1], the data coming
->>>> from the sensor represent the ambient light illuminance reading
->>>> expressed in lux. Use IIO_CHAN_INFO_PROCESSED instead of
->>>> IIO_CHAN_INFO_RAW to signify that the data are pre-processed.
->>>>
->>>> [1] http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
->>>>
->>>> Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
->>>
->>> Hm. Whilst it's a fix in a sense, the original didn't really 'break'
->>> the ABI so I worry a little that this change may break others.
->>> Irritating as it is, perhaps we should keep the _RAW and add _PROCESSED
->>> (which will then be exactly the same value).
->>> We'll also then need a comment in the code, that leaving the _RAW
->>> elements was for ABI compatibility.
->>>
->>> What do others think?
->>
->> I'm not an IIO guru, but this does sound sensible. Do you know if any userland
->> code which actually uses the ACPI ALS already ?
-> It's more than likely as Gnome at least supports using them to control screen
-> brightness.  Hopefully that code is able to cope with the correct ABI though as
-> well as the old one.  Anyhow, we seem to have a reasonable consensus.
+Extract integration times as #define constants. This prepares using them
+for delay/timeout length determination.
 
-I looked into this and Gnome uses iio-proxy-sensor to handle iio
-devices. As of now it, only looks for in_illuminance_input, so it
-currently doesn't work with acpi-als. I've also found a bug report [1]
-of an acpi-als user stating the same.
+Signed-off-by: Alexander Koch <mail@alexanderkoch.net>
+Signed-off-by: Michael Hornung <mhornung.linux@gmail.com>
+---
+ drivers/iio/light/opt3001.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-[1] https://github.com/hadess/iio-sensor-proxy/issues/46
+diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+index 01e111e..aefbd79 100644
+--- a/drivers/iio/light/opt3001.c
++++ b/drivers/iio/light/opt3001.c
+@@ -65,6 +65,9 @@
+ #define OPT3001_REG_EXPONENT(n)		((n) >> 12)
+ #define OPT3001_REG_MANTISSA(n)		((n) & 0xfff)
+ 
++#define OPT3001_INT_TIME_LONG		800000
++#define OPT3001_INT_TIME_SHORT		100000
++
+ /*
+  * Time to wait for conversion result to be ready. The device datasheet
+  * worst-case max value is 880ms. Add some slack to be on the safe side.
+@@ -325,13 +328,13 @@ static int opt3001_set_int_time(struct opt3001 *opt, int time)
+ 	reg = ret;
+ 
+ 	switch (time) {
+-	case 100000:
++	case OPT3001_INT_TIME_SHORT:
+ 		reg &= ~OPT3001_CONFIGURATION_CT;
+-		opt->int_time = 100000;
++		opt->int_time = OPT3001_INT_TIME_SHORT;
+ 		break;
+-	case 800000:
++	case OPT3001_INT_TIME_LONG:
+ 		reg |= OPT3001_CONFIGURATION_CT;
+-		opt->int_time = 800000;
++		opt->int_time = OPT3001_INT_TIME_LONG;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -597,9 +600,9 @@ static int opt3001_configure(struct opt3001 *opt)
+ 
+ 	/* Reflect status of the device's integration time setting */
+ 	if (reg & OPT3001_CONFIGURATION_CT)
+-		opt->int_time = 800000;
++		opt->int_time = OPT3001_INT_TIME_LONG;
+ 	else
+-		opt->int_time = 100000;
++		opt->int_time = OPT3001_INT_TIME_SHORT;
+ 
+ 	/* Ensure device is in shutdown initially */
+ 	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+-- 
+2.7.0
 
-> Gabriele, are you happy to do a version of the patch with the _RAW version
-> left along side your _PROCESSED version and a comment saying that it is for
-> compatibility only?
->
-> Jonathan
->>
->> Best regards,
->> Marek Vasut
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
