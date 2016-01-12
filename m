@@ -1,54 +1,43 @@
-Return-Path: <linux@rainbow-software.org>
-From: Ondrej Zary <linux@rainbow-software.org>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: [PATCH] iio: Add TH06 Humidity and Temperature sensor driver
-Date: Tue, 12 Jan 2016 13:50:10 +0100
-Cc: "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
- Cristina Moraru <cristina.moraru09@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>,
- "Lars-Peter Clausen" <lars@metafoo.de>,
- Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
- Matt Ranostaj <mranostay@gmail.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "octavian.purdila@intel.com" <octavian.purdila@intel.com>
-References: <1452553042-4495-1-git-send-email-cristina.moraru09@gmail.com> <alpine.DEB.2.02.1601121158480.30757@pmeerw.net> <CAEnQRZBUkaFKLUZRQD3zDU4JyHbrBd+dv+vuZwMf5zjqogBijQ@mail.gmail.com>
-In-Reply-To: <CAEnQRZBUkaFKLUZRQD3zDU4JyHbrBd+dv+vuZwMf5zjqogBijQ@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f53.google.com ([74.125.82.53]:34694 "EHLO
+	mail-wm0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752044AbcALPuT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jan 2016 10:50:19 -0500
+Received: by mail-wm0-f53.google.com with SMTP id u188so261455690wmu.1
+        for <linux-iio@vger.kernel.org>; Tue, 12 Jan 2016 07:50:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Message-Id: <201601121350.11076.linux@rainbow-software.org>
-List-ID: <linux-iio@vger.kernel.org>
+Date: Tue, 12 Jan 2016 23:50:17 +0800
+Message-ID: <CAAn_ec90RULN=X=uoV4CrztyiQ0dsBOjYcSqgmbxqOheQR56ZA@mail.gmail.com>
+Subject: How to address a latency issue in a data acquisition system (IIO based)?
+From: Julio Cruz <jcsistemas2001@gmail.com>
+To: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tuesday 12 January 2016, Daniel Baluta wrote:
-> On Tue, Jan 12, 2016 at 1:07 PM, Peter Meerwald-Stadler
->
-> <pmeerw@pmeerw.net> wrote:
-> >> Add implementation for Hoperf TH06 Humidity and Temperature
-> >> sensor driver.
-> >>
-> >> Datasheet: http://www.hoperf.com/upload/sensor/TH06_Module_v01.pdf
-> >
-> > I think it would be good to make to manufacturer's company name (Hoperf)
-> > more visible in the driver; it is currently just mentioned in the commit
-> > message; just 'TH06' is hard to google :)
-> >
-> > maybe you could list the TODOs / unsupported features here...
-> >
-> > the I2C register layout looks close to the si7020, maybe the chip can be
-> > supported there without duplicating code?
->
-> Yes, they look pretty similar. We can give it a try to add the support
-> for TH06 into
-> already existing code for si7020.
->
-> There will be some fun with Kconfig part :). Any idea if Hoperf and
-> Silabs are related
-> companies :D.
+Hi,
 
-Looks like TH06 is just a module with Si7020 chip. Try the "Read Electronic 
-ID" and "Read Firmware Revision" commands from Si7020 datasheet.
+I'm running an acquisition system @1KHz sampling frequency (27
+bytes/sample) with libiio as interface between the application and the
+IIO driver (SPI based). The network and local context are working as
+expected.
 
--- 
-Ondrej Zary
+However, the system have some data loss at SPI level (confirmed by
+scope) even if the data is not pushed to the buffer
+(iio_push_to_buffers). The scope show that every 1.4 sec (aprox), the
+handler is not called. It seem other process is taking priority over
+this.
+
+I'm trying to find the process that is taking over the SPI/IRQ handlers.
+
+- My system is running in ext4 (on SD) and maybe this could be the
+problem (journal)?
+- Implement a RT and review interrupt context as suggested by Xander
+(http://marc.info/?l=linux-iio&m=143933412720586&w=2)?
+- I would like to implement a DMA buffer as suggested by Lars (two
+month ago) but I'm not sure this will help in this case
+(http://marc.info/?l=linux-iio&m=144475305426138&w=2), for now.
+
+In any case, any advice to address this problem is welcome.
+
+Thanks
