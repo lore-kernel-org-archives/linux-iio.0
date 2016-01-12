@@ -1,54 +1,250 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37586 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756088AbcAIQfC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Jan 2016 11:35:02 -0500
-Subject: Re: [PATCH] iio: dac: mcp4725: set iio name property in sysfs
-To: Yong Li <sdliyong@gmail.com>, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, akinobu.mita@gmail.com
-References: <1452042583-10580-1-git-send-email-sdliyong@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <569136B4.306@kernel.org>
-Date: Sat, 9 Jan 2016 16:35:00 +0000
+Received: from ns.pmeerw.net ([84.19.176.92]:37288 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751515AbcALT1H (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 12 Jan 2016 14:27:07 -0500
+Date: Tue, 12 Jan 2016 20:27:01 +0100 (CET)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Alexander Koch <mail@alexanderkoch.net>
+cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	mhornung.linux@gmail.com, dannenberg@ti.com, balbi@ti.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: light: opt3001: enable operation w/o IRQ
+In-Reply-To: <1452622180-12728-3-git-send-email-mail@alexanderkoch.net>
+Message-ID: <alpine.DEB.2.02.1601122024340.10606@pmeerw.net>
+References: <1452622180-12728-1-git-send-email-mail@alexanderkoch.net> <1452622180-12728-3-git-send-email-mail@alexanderkoch.net>
 MIME-Version: 1.0
-In-Reply-To: <1452042583-10580-1-git-send-email-sdliyong@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/01/16 01:09, Yong Li wrote:
-> Without this change, the name entity for mcp4725 is missing in
-> /sys/bus/iio/devices/iio\:device*/name
+On Tue, 12 Jan 2016, Alexander Koch wrote:
+
+> Enable operation of the TI OPT3001 light sensor without having an
+> interrupt line available to connect the INT pin to.
 > 
-> With this change, name is reported correctly
+> In this operation mode, we issue a conversion request and simply wait
+> for the conversion time available as timeout value, determined from
+> integration time configuration and the worst-case time given in the data
+> sheet (sect. 6.5, table on p. 5):
 > 
-> Signed-off-by: Yong Li <sdliyong@gmail.com>
-Hi Yong,
+>   short integration time (100ms): 110ms + 3ms = 113ms
+>    long integration time (800ms): 880ms + 3ms = 883ms
+> 
+> This change is transparent as behaviour defaults to using the interrupt
+> method if an interrupt no. is configured via device tree. Interrupt-less
+> operation mode is performed when no valid interrupt no. is given.
 
-A fix like this gets applied to the iio fixes-togreg branch
-and this one required a bit of pushing to get it to apply.
-
-I've marked it for stable as well.
-
-Thanks!
-
-Jonathan
+looks good, I'd rather use a bool for use_irq and the msecs_to_jiffies() 
+call moved from the #define to the code (which is not strictly necessary 
+for the patch) -- matter of taste
+ 
+> Signed-off-by: Alexander Koch <mail@alexanderkoch.net>
+> Signed-off-by: Michael Hornung <mhornung.linux@gmail.com>
 > ---
->  drivers/iio/dac/mcp4725.c | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/iio/light/opt3001.c | 137 ++++++++++++++++++++++++++++++--------------
+>  1 file changed, 95 insertions(+), 42 deletions(-)
 > 
-> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> index fb4b336..cca935c 100644
-> --- a/drivers/iio/dac/mcp4725.c
-> +++ b/drivers/iio/dac/mcp4725.c
-> @@ -346,6 +346,7 @@ static int mcp4725_probe(struct i2c_client *client,
->  	data->client = client;
+> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+> index aefbd79..2abc18a 100644
+> --- a/drivers/iio/light/opt3001.c
+> +++ b/drivers/iio/light/opt3001.c
+> @@ -70,9 +70,12 @@
 >  
->  	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->name = id->name;
->  	indio_dev->info = &mcp4725_info;
->  	indio_dev->channels = &mcp472x_channel[id->driver_data];
->  	indio_dev->num_channels = 1;
+>  /*
+>   * Time to wait for conversion result to be ready. The device datasheet
+> - * worst-case max value is 880ms. Add some slack to be on the safe side.
+> + * sect. 6.5 states results are ready after total integration time plus 3ms.
+> + * This results in worst-case max values of 113ms or 883ms, respectively.
+> + * Add some slack to be on the safe side.
+>   */
+> -#define OPT3001_RESULT_READY_TIMEOUT	msecs_to_jiffies(1000)
+> +#define OPT3001_RESULT_READY_SHORT	150
+> +#define OPT3001_RESULT_READY_LONG	1000
+>  
+>  struct opt3001 {
+>  	struct i2c_client	*client;
+> @@ -92,6 +95,8 @@ struct opt3001 {
+>  
+>  	u8			high_thresh_exp;
+>  	u8			low_thresh_exp;
+> +
+> +	u16			use_irq:1;
+>  };
+>  
+>  struct opt3001_scale {
+> @@ -230,26 +235,30 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
+>  	u16 reg;
+>  	u8 exponent;
+>  	u16 value;
+> +	long timeout;
+>  
+> -	/*
+> -	 * Enable the end-of-conversion interrupt mechanism. Note that doing
+> -	 * so will overwrite the low-level limit value however we will restore
+> -	 * this value later on.
+> -	 */
+> -	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_LOW_LIMIT,
+> -			OPT3001_LOW_LIMIT_EOC_ENABLE);
+> -	if (ret < 0) {
+> -		dev_err(opt->dev, "failed to write register %02x\n",
+> -				OPT3001_LOW_LIMIT);
+> -		return ret;
+> +	if (opt->use_irq) {
+> +		/*
+> +		 * Enable the end-of-conversion interrupt mechanism. Note that
+> +		 * doing so will overwrite the low-level limit value however we
+> +		 * will restore this value later on.
+> +		 */
+> +		ret = i2c_smbus_write_word_swapped(opt->client,
+> +					OPT3001_LOW_LIMIT,
+> +					OPT3001_LOW_LIMIT_EOC_ENABLE);
+> +		if (ret < 0) {
+> +			dev_err(opt->dev, "failed to write register %02x\n",
+> +					OPT3001_LOW_LIMIT);
+> +			return ret;
+> +		}
+> +
+> +		/* Allow IRQ to access the device despite lock being set */
+> +		opt->ok_to_ignore_lock = true;
+>  	}
+>  
+> -	/* Reset data-ready indicator flag (will be set in the IRQ routine) */
+> +	/* Reset data-ready indicator flag */
+>  	opt->result_ready = false;
+>  
+> -	/* Allow IRQ to access the device despite lock being set */
+> -	opt->ok_to_ignore_lock = true;
+> -
+>  	/* Configure for single-conversion mode and start a new conversion */
+>  	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
+>  	if (ret < 0) {
+> @@ -269,32 +278,69 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
+>  		goto err;
+>  	}
+>  
+> -	/* Wait for the IRQ to indicate the conversion is complete */
+> -	ret = wait_event_timeout(opt->result_ready_queue, opt->result_ready,
+> -			OPT3001_RESULT_READY_TIMEOUT);
+> +	if (opt->use_irq) {
+> +		/* Wait for the IRQ to indicate the conversion is complete */
+> +		ret = wait_event_timeout(opt->result_ready_queue,
+> +				opt->result_ready,
+> +				msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
+> +	} else {
+> +		/* Sleep for result ready time */
+> +		timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
+> +			OPT3001_RESULT_READY_SHORT : OPT3001_RESULT_READY_LONG;
+> +		msleep(timeout);
+> +
+> +		/* Check result ready flag */
+> +		ret = i2c_smbus_read_word_swapped(opt->client,
+> +						  OPT3001_CONFIGURATION);
+> +		if (ret < 0) {
+> +			dev_err(opt->dev, "failed to read register %02x\n",
+> +				OPT3001_CONFIGURATION);
+> +			goto err;
+> +		}
+> +
+> +		if (!(ret & OPT3001_CONFIGURATION_CRF)) {
+> +			ret = -ETIMEDOUT;
+> +			goto err;
+> +		}
+> +
+> +		/* Obtain value */
+> +		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
+> +		if (ret < 0) {
+> +			dev_err(opt->dev, "failed to read register %02x\n",
+> +				OPT3001_RESULT);
+> +			goto err;
+> +		}
+> +		opt->result = ret;
+> +		opt->result_ready = true;
+> +	}
+>  
+>  err:
+> -	/* Disallow IRQ to access the device while lock is active */
+> -	opt->ok_to_ignore_lock = false;
+> +	if (opt->use_irq)
+> +		/* Disallow IRQ to access the device while lock is active */
+> +		opt->ok_to_ignore_lock = false;
+>  
+>  	if (ret == 0)
+>  		return -ETIMEDOUT;
+>  	else if (ret < 0)
+>  		return ret;
+>  
+> -	/*
+> -	 * Disable the end-of-conversion interrupt mechanism by restoring the
+> -	 * low-level limit value (clearing OPT3001_LOW_LIMIT_EOC_ENABLE). Note
+> -	 * that selectively clearing those enable bits would affect the actual
+> -	 * limit value due to bit-overlap and therefore can't be done.
+> -	 */
+> -	value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
+> -	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_LOW_LIMIT,
+> -			value);
+> -	if (ret < 0) {
+> -		dev_err(opt->dev, "failed to write register %02x\n",
+> -				OPT3001_LOW_LIMIT);
+> -		return ret;
+> +	if (opt->use_irq) {
+> +		/*
+> +		 * Disable the end-of-conversion interrupt mechanism by
+> +		 * restoring the low-level limit value (clearing
+> +		 * OPT3001_LOW_LIMIT_EOC_ENABLE). Note that selectively clearing
+> +		 * those enable bits would affect the actual limit value due to
+> +		 * bit-overlap and therefore can't be done.
+> +		 */
+> +		value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
+> +		ret = i2c_smbus_write_word_swapped(opt->client,
+> +						   OPT3001_LOW_LIMIT,
+> +						   value);
+> +		if (ret < 0) {
+> +			dev_err(opt->dev, "failed to write register %02x\n",
+> +					OPT3001_LOW_LIMIT);
+> +			return ret;
+> +		}
+>  	}
+>  
+>  	exponent = OPT3001_REG_EXPONENT(opt->result);
+> @@ -736,12 +782,18 @@ static int opt3001_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  
+> -	ret = request_threaded_irq(irq, NULL, opt3001_irq,
+> -			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> -			"opt3001", iio);
+> -	if (ret) {
+> -		dev_err(dev, "failed to request IRQ #%d\n", irq);
+> -		return ret;
+> +	/* Make use of INT pin only if valid IRQ no. is given */
+> +	if (irq > 0) {
+> +		ret = request_threaded_irq(irq, NULL, opt3001_irq,
+> +				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> +				"opt3001", iio);
+> +		if (ret) {
+> +			dev_err(dev, "failed to request IRQ #%d\n", irq);
+> +			return ret;
+> +		}
+> +		opt->use_irq = true;
+> +	} else {
+> +		dev_info(opt->dev, "enabling interrupt-less operation\n");
+>  	}
+>  
+>  	return 0;
+> @@ -754,7 +806,8 @@ static int opt3001_remove(struct i2c_client *client)
+>  	int ret;
+>  	u16 reg;
+>  
+> -	free_irq(client->irq, iio);
+> +	if (opt->use_irq)
+> +		free_irq(client->irq, iio);
+>  
+>  	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
+>  	if (ret < 0) {
 > 
 
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
