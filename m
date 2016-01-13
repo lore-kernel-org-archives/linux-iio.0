@@ -1,57 +1,310 @@
-Return-Path: <mail@alexanderkoch.net>
-Subject: Re: [PATCH 2/2] iio: light: opt3001: enable operation w/o IRQ
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1452622180-12728-1-git-send-email-mail@alexanderkoch.net>
- <1452622180-12728-3-git-send-email-mail@alexanderkoch.net>
- <alpine.DEB.2.02.1601122024340.10606@pmeerw.net>
-From: Alexander Koch <mail@alexanderkoch.net>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
- mhornung.linux@gmail.com, dannenberg@ti.com, balbi@ti.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <56955F43.90705@alexanderkoch.net>
-Date: Tue, 12 Jan 2016 21:17:07 +0100
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1601122024340.10606@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+Return-Path: <martink@posteo.de>
+From: Martin Kepplinger <martink@posteo.de>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	christoph.muellner@theobroma-systems.com,
+	mfuzzey@parkeon.com
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Martin Kepplinger <martink@posteo.de>,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: [PATCH v3] iio: mma8452: add freefall detection for Freescale's accelerometers
+Date: Wed, 13 Jan 2016 12:24:04 +0100
+Message-Id: <1452684244-5048-1-git-send-email-martink@posteo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Am 12.01.2016 um 20:27 schrieb Peter Meerwald-Stadler:
-> On Tue, 12 Jan 2016, Alexander Koch wrote:
-> 
->> Enable operation of the TI OPT3001 light sensor without having an
->> interrupt line available to connect the INT pin to.
->>
->> In this operation mode, we issue a conversion request and simply wait
->> for the conversion time available as timeout value, determined from
->> integration time configuration and the worst-case time given in the data
->> sheet (sect. 6.5, table on p. 5):
->>
->>   short integration time (100ms): 110ms + 3ms = 113ms
->>    long integration time (800ms): 880ms + 3ms = 883ms
->>
->> This change is transparent as behaviour defaults to using the interrupt
->> method if an interrupt no. is configured via device tree. Interrupt-less
->> operation mode is performed when no valid interrupt no. is given.
-> 
-> looks good, I'd rather use a bool for use_irq and the msecs_to_jiffies() 
-> call moved from the #define to the code (which is not strictly necessary 
-> for the patch) -- matter of taste
+This adds freefall event detection to the supported devices. It adds
+the in_accel_x&y&z_mag_falling_en iio event attribute, which activates
+freefall mode.
 
-Thanks - actually this is my first patch, so positive feedback much
-appreciated!
+In freefall mode, the current acceleration magnitude (AND combination
+of all axis values) is compared to the specified threshold.
+If it falls under the threshold (in_accel_mag_falling_value),
+the appropriate IIO event code is generated.
 
-Concerning the bool for 'use_irq': I first had it that way but then
-opted for the bit field of length 1 as I wasn't sure whether bool would
-get optimized to the same level by the compiler.
+This is what the sysfs "events" directory for these devices looks
+like after this change:
 
-I'm a bit irritated by your comment concerning the msecs_to_jiffies()
-call, as my patch indeed moves this call from the #define to the code.
-Did you mean it the other way round, then?
-My reason to move it was that I need to work with microseconds for the
-IRQ-less operation mode, and jiffies are only required in one place for
-the IRQ mode.
+-rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_period
+-rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_value
+-rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_period
+-rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_value
+-r--r--r--    4096 Oct 23 08:45 in_accel_scale
+-rw-r--r--    4096 Oct 23 08:45 in_accel_x&y&z_mag_falling_en
+-rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_rising_en
+-rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_rising_en
+-rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_rising_en
+
+Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+---
+revision history
+----------------
+v1:
+	initial post
+v2:
+	build all from correct event and channel spec structs
+v3:
+	rising and falling are treated as equal now. Until last time, I had
+	misunderstood the iio events' user API definition. This works and
+	values always reflect the current state of operation.
 
 
-Best regards
+ drivers/iio/accel/mma8452.c | 160 +++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 143 insertions(+), 17 deletions(-)
 
-lynix
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index ccc632a..4c63d36 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -15,7 +15,7 @@
+  *
+  * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
+  *
+- * TODO: orientation / freefall events, autosleep
++ * TODO: orientation events, autosleep
+  */
+ 
+ #include <linux/module.h>
+@@ -416,6 +416,46 @@ fail:
+ 	return ret;
+ }
+ 
++static int mma8452_freefall_mode_enabled(struct mma8452_data *data)
++{
++	int val;
++	const struct mma_chip_info *chip = data->chip_info;
++
++	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
++	if (val < 0)
++		return val;
++
++	return !(val & MMA8452_FF_MT_CFG_OAE);
++}
++
++static int mma8452_set_freefall_mode(struct mma8452_data *data, u8 state)
++{
++	int val, ret;
++	const struct mma_chip_info *chip = data->chip_info;
++
++	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
++	if (val < 0)
++		return val;
++
++	if (state && !(mma8452_freefall_mode_enabled(data))) {
++		val |= BIT(idx_x + chip->ev_cfg_chan_shift);
++		val |= BIT(idx_y + chip->ev_cfg_chan_shift);
++		val |= BIT(idx_z + chip->ev_cfg_chan_shift);
++		val &= ~MMA8452_FF_MT_CFG_OAE;
++	} else if (!state && mma8452_freefall_mode_enabled(data)) {
++		val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
++		val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
++		val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
++		val |= MMA8452_FF_MT_CFG_OAE;
++	}
++
++	ret = mma8452_change_config(data, chip->ev_cfg, val);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
+ static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
+ 					   int val, int val2)
+ {
+@@ -609,12 +649,22 @@ static int mma8452_read_event_config(struct iio_dev *indio_dev,
+ 	const struct mma_chip_info *chip = data->chip_info;
+ 	int ret;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client,
+-				       data->chip_info->ev_cfg);
+-	if (ret < 0)
+-		return ret;
++	switch (dir) {
++	case IIO_EV_DIR_FALLING:
++		return mma8452_freefall_mode_enabled(data);
++	case IIO_EV_DIR_RISING:
++		if (mma8452_freefall_mode_enabled(data))
++			return 0;
++
++		ret = i2c_smbus_read_byte_data(data->client,
++					       data->chip_info->ev_cfg);
++		if (ret < 0)
++			return ret;
+ 
+-	return !!(ret & BIT(chan->scan_index + chip->ev_cfg_chan_shift));
++		return !!(ret & BIT(chan->scan_index + chip->ev_cfg_chan_shift));
++	default:
++		return -EINVAL;
++	}
+ }
+ 
+ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+@@ -627,19 +677,38 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+ 	const struct mma_chip_info *chip = data->chip_info;
+ 	int val;
+ 
+-	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
+-	if (val < 0)
+-		return val;
+-
+-	if (state)
+-		val |= BIT(chan->scan_index + chip->ev_cfg_chan_shift);
+-	else
+-		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
++	switch (dir) {
++	case IIO_EV_DIR_FALLING:
++		if ((!state && mma8452_freefall_mode_enabled) ||
++		    (state && !mma8452_freefall_mode_enabled))
++			return mma8452_set_freefall_mode(data, state);
++		else
++			return 0;
++	case IIO_EV_DIR_RISING:
++		val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
++		if (val < 0)
++			return val;
++
++		if (state) {
++			if (mma8452_freefall_mode_enabled(data)) {
++				val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
++				val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
++				val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
++				val |= MMA8452_FF_MT_CFG_OAE;
++			}
++			val |= BIT(chan->scan_index + chip->ev_cfg_chan_shift);
++		} else {
++			if (mma8452_freefall_mode_enabled(data))
++				return -EBUSY;
++			val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
++		}
+ 
+-	val |= chip->ev_cfg_ele;
+-	val |= MMA8452_FF_MT_CFG_OAE;
++		val |= chip->ev_cfg_ele;
+ 
+-	return mma8452_change_config(data, chip->ev_cfg, val);
++		return mma8452_change_config(data, chip->ev_cfg, val);
++	default:
++		return -EINVAL;
++	}
+ }
+ 
+ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
+@@ -652,6 +721,16 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
+ 	if (src < 0)
+ 		return;
+ 
++	if (mma8452_freefall_mode_enabled(data)) {
++		iio_push_event(indio_dev,
++			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
++						  IIO_MOD_X_AND_Y_AND_Z,
++						  IIO_EV_TYPE_MAG,
++						  IIO_EV_DIR_FALLING),
++			       ts);
++		return;
++	}
++
+ 	if (src & data->chip_info->ev_src_xe)
+ 		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
+@@ -745,6 +824,27 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
+ 	return 0;
+ }
+ 
++static const struct iio_event_spec mma8452_freefall_event[] = {
++	{
++		.type = IIO_EV_TYPE_MAG,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
++					BIT(IIO_EV_INFO_PERIOD) |
++					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB)
++	},
++};
++
++static const struct iio_event_spec mma8652_freefall_event[] = {
++	{
++		.type = IIO_EV_TYPE_MAG,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
++					BIT(IIO_EV_INFO_PERIOD)
++	},
++};
++
+ static const struct iio_event_spec mma8452_transient_event[] = {
+ 	{
+ 		.type = IIO_EV_TYPE_MAG,
+@@ -781,6 +881,24 @@ static struct attribute_group mma8452_event_attribute_group = {
+ 	.attrs = mma8452_event_attributes,
+ };
+ 
++#define MMA8452_FREEFALL_CHANNEL(modifier) { \
++	.type = IIO_ACCEL, \
++	.modified = 1, \
++	.channel2 = modifier, \
++	.scan_index = -1, \
++	.event_spec = mma8452_freefall_event, \
++	.num_event_specs = ARRAY_SIZE(mma8452_freefall_event), \
++}
++
++#define MMA8652_FREEFALL_CHANNEL(modifier) { \
++	.type = IIO_ACCEL, \
++	.modified = 1, \
++	.channel2 = modifier, \
++	.scan_index = -1, \
++	.event_spec = mma8652_freefall_event, \
++	.num_event_specs = ARRAY_SIZE(mma8652_freefall_event), \
++}
++
+ #define MMA8452_CHANNEL(axis, idx, bits) { \
+ 	.type = IIO_ACCEL, \
+ 	.modified = 1, \
+@@ -827,6 +945,7 @@ static const struct iio_chan_spec mma8452_channels[] = {
+ 	MMA8452_CHANNEL(Y, idx_y, 12),
+ 	MMA8452_CHANNEL(Z, idx_z, 12),
+ 	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
++	MMA8452_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
+ };
+ 
+ static const struct iio_chan_spec mma8453_channels[] = {
+@@ -834,6 +953,7 @@ static const struct iio_chan_spec mma8453_channels[] = {
+ 	MMA8452_CHANNEL(Y, idx_y, 10),
+ 	MMA8452_CHANNEL(Z, idx_z, 10),
+ 	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
++	MMA8452_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
+ };
+ 
+ static const struct iio_chan_spec mma8652_channels[] = {
+@@ -841,6 +961,7 @@ static const struct iio_chan_spec mma8652_channels[] = {
+ 	MMA8652_CHANNEL(Y, idx_y, 12),
+ 	MMA8652_CHANNEL(Z, idx_z, 12),
+ 	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
++	MMA8652_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
+ };
+ 
+ static const struct iio_chan_spec mma8653_channels[] = {
+@@ -848,6 +969,7 @@ static const struct iio_chan_spec mma8653_channels[] = {
+ 	MMA8652_CHANNEL(Y, idx_y, 10),
+ 	MMA8652_CHANNEL(Z, idx_z, 10),
+ 	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
++	MMA8652_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
+ };
+ 
+ enum {
+@@ -1190,6 +1312,10 @@ static int mma8452_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		goto buffer_cleanup;
+ 
++	ret = mma8452_set_freefall_mode(data, 0);
++	if (ret)
++		return ret;
++
+ 	return 0;
+ 
+ buffer_cleanup:
+-- 
+2.1.4
