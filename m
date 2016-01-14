@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:45070 "EHLO
+Received: from eusmtp01.atmel.com ([212.144.249.243]:44837 "EHLO
 	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754797AbcANPjq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jan 2016 10:39:46 -0500
+	with ESMTP id S1754568AbcANPh6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jan 2016 10:37:58 -0500
 From: Ludovic Desroches <ludovic.desroches@atmel.com>
 To: <jic23@kernel.org>, <nicolas.ferre@atmel.com>,
 	<alexandre.belloni@free-electrons.com>
@@ -10,57 +10,63 @@ CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-iio@vger.kernel.org>, <plagnioj@jcrosoft.com>,
 	<linux-arm-kernel@lists.infradead.org>, <pmeerw@pmeerw.net>,
 	<robh@kernel.org>, Ludovic Desroches <ludovic.desroches@atmel.com>
-Subject: [PATCH v3 4/5] ARM: at91/dt: sama5d2 Xplained: enable the adc device
-Date: Thu, 14 Jan 2016 16:38:16 +0100
-Message-ID: <1452785897-16270-5-git-send-email-ludovic.desroches@atmel.com>
-In-Reply-To: <1452785897-16270-1-git-send-email-ludovic.desroches@atmel.com>
-References: <1452785897-16270-1-git-send-email-ludovic.desroches@atmel.com>
+Subject: [PATCH v3 0/5] Introduce at91_adc8xx driver
+Date: Thu, 14 Jan 2016 16:38:12 +0100
+Message-ID: <1452785897-16270-1-git-send-email-ludovic.desroches@atmel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Enable the adc on the sama5d2 Xplained board.
+Hi,
 
-Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
----
- arch/arm/boot/dts/at91-sama5d2_xplained.dts | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+This is the very basic support for the adc introduced with the SAMA5D2 SoC
+family.
 
-diff --git a/arch/arm/boot/dts/at91-sama5d2_xplained.dts b/arch/arm/boot/dts/at91-sama5d2_xplained.dts
-index 77ddff0..c3102a0 100644
---- a/arch/arm/boot/dts/at91-sama5d2_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d2_xplained.dts
-@@ -261,7 +261,29 @@
- 				};
- 			};
- 
-+			adc: adc@fc030000 {
-+				vddana-supply = <&vdd_3v3_lp_reg>;
-+				vref-supply = <&vdd_3v3_lp_reg>;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&pinctrl_adc_default>;
-+				status = "okay";
-+			};
-+
- 			pinctrl@fc038000 {
-+				/*
-+				 * There is no real pinmux for ADC, if the pin
-+				 * is not requested by another peripheral then
-+				 * the muxing is done when channel is enabled.
-+				 * Requesting pins for ADC is GPIO is
-+				 * encouraged to prevent conflicts and to
-+				 * disable bias in order to be in the same
-+				 * state when the pin is not muxed to the adc.
-+				 */
-+				pinctrl_adc_default: adc_default {
-+					pinmux = <PIN_PD23__GPIO>;
-+					bias-disable;
-+				};
-+
- 				pinctrl_flx0_default: flx0_default {
- 					pinmux = <PIN_PB28__FLEXCOM0_IO0>,
- 						 <PIN_PB29__FLEXCOM0_IO1>;
+The goal is to provide something to the user as soon as possible instead of
+waiting for a full featured driver.
+
+Only unsigned conversions on a software tigger are supported. Next steps are
+signed conversions, differential channels, hardware triggers, dma support,
+touchscreen support, and others.
+
+Changes:
+- v3:
+  - Driver file renaming.
+  - Syntax cleanup.
+  - Sampling frequency accessed through read/write_raw.
+  - Cleanup in the IRQ handler.
+- v2:
+  - Cleanup thanks to Peter Meerwald-Stadler comments (add prefix for macros,
+    remove useless stuff, etc).
+  - Move parameters relative to the SoC to the device tree (min/max sampling
+    rate and startup time).
+  - Use sysfs to configure the sampling frequency.
+  - vddana supply is no more optionnal.
+  - No change for irq since I am not sure it will simplify the code (interrupt
+    is cleared when reading channel conversion result). Jonathan, tell me if
+    I need to rework this part.
+
+
+Ludovic Desroches (5):
+  iio:adc:at91_adc8xx: introduce new atmel adc driver
+  MAINTAINERS: add entry for Atmel ADC 8xx driver
+  ARM: at91/dt: sama5d2: add adc device
+  ARM: at91/dt: sama5d2 Xplained: enable the adc device
+  ARM: at91/defconfig: add sama5d2 adc support in sama5_defconfig
+
+ .../bindings/iio/adc/at91-sama5d2_adc.txt          |  28 ++
+ MAINTAINERS                                        |   6 +
+ arch/arm/boot/dts/at91-sama5d2_xplained.dts        |  22 +
+ arch/arm/boot/dts/sama5d2.dtsi                     |  18 +-
+ arch/arm/configs/sama5_defconfig                   |   1 +
+ drivers/iio/adc/Kconfig                            |  11 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/at91-sama5d2_adc.c                 | 509 +++++++++++++++++++++
+ 8 files changed, 590 insertions(+), 6 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
+ create mode 100644 drivers/iio/adc/at91-sama5d2_adc.c
+
 -- 
 2.5.0
 
