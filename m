@@ -1,42 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:45130 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755146AbcANPkP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jan 2016 10:40:15 -0500
-From: Ludovic Desroches <ludovic.desroches@atmel.com>
-To: <jic23@kernel.org>, <nicolas.ferre@atmel.com>,
-	<alexandre.belloni@free-electrons.com>
-CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <plagnioj@jcrosoft.com>,
-	<linux-arm-kernel@lists.infradead.org>, <pmeerw@pmeerw.net>,
-	<robh@kernel.org>, Ludovic Desroches <ludovic.desroches@atmel.com>
-Subject: [PATCH v3 5/5] ARM: at91/defconfig: add sama5d2 adc support in sama5_defconfig
-Date: Thu, 14 Jan 2016 16:38:17 +0100
-Message-ID: <1452785897-16270-6-git-send-email-ludovic.desroches@atmel.com>
-In-Reply-To: <1452785897-16270-1-git-send-email-ludovic.desroches@atmel.com>
-References: <1452785897-16270-1-git-send-email-ludovic.desroches@atmel.com>
+Received: from mail-ig0-f178.google.com ([209.85.213.178]:33682 "EHLO
+	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754971AbcANQxs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jan 2016 11:53:48 -0500
+Date: Thu, 14 Jan 2016 10:51:33 -0600
+From: Michael Welling <mwelling@ieee.org>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, lucas.demarchi@intel.com,
+	eibach@gdsys.de, linux@roeck-us.net
+Subject: Re: [PATCH] iio: adc: Add TI ADS1015 ADC driver support
+Message-ID: <20160114165133.GA20246@deathstar>
+References: <1452788708-3003-1-git-send-email-daniel.baluta@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1452788708-3003-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
----
- arch/arm/configs/sama5_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+On Thu, Jan 14, 2016 at 06:25:08PM +0200, Daniel Baluta wrote:
+> The driver has sysfs readings with runtime PM support for power saving.
+> It also offers buffer support that can be used together with IIO software
+> triggers.
+>
 
-diff --git a/arch/arm/configs/sama5_defconfig b/arch/arm/configs/sama5_defconfig
-index c11bab7..afbda41 100644
---- a/arch/arm/configs/sama5_defconfig
-+++ b/arch/arm/configs/sama5_defconfig
-@@ -187,6 +187,7 @@ CONFIG_AT_XDMAC=y
- # CONFIG_IOMMU_SUPPORT is not set
- CONFIG_IIO=y
- CONFIG_AT91_ADC=y
-+CONFIG_AT91_SAMA5D2_ADC=y
- CONFIG_PWM=y
- CONFIG_PWM_ATMEL=y
- CONFIG_PWM_ATMEL_TCB=y
--- 
-2.5.0
+It should be noted that the hwmon driver subsystem has support for this device.
+
+http://lxr.free-electrons.com/source/drivers/hwmon/ads1015.c
+
+The driver could likely be removed if this is accepted into iio.
+The hwmon subsystem has an iio wrapper driver.
+
+http://lxr.free-electrons.com/source/drivers/hwmon/iio_hwmon.c
+
+The only hurdle is adding support for the ads1115 before removing the other driver.
 
