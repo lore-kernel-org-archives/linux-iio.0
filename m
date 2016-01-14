@@ -1,42 +1,57 @@
-Return-Path: <linux@roeck-us.net>
-Subject: Re: [PATCH] iio: adc: Add TI ADS1015 ADC driver support
-To: Michael Welling <mwelling@ieee.org>,
- Daniel Baluta <daniel.baluta@intel.com>
-References: <1452788708-3003-1-git-send-email-daniel.baluta@intel.com>
- <20160114165133.GA20246@deathstar>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- lucas.demarchi@intel.com, eibach@gdsys.de
-From: Guenter Roeck <linux@roeck-us.net>
-Message-ID: <5697DC2A.5000801@roeck-us.net>
-Date: Thu, 14 Jan 2016 09:34:34 -0800
+Return-Path: <lars@metafoo.de>
+Subject: Re: [PATCH 2/2] iio: pressure: mpl115: support MPL115A1
+To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org
+References: <1452789018-16255-1-git-send-email-akinobu.mita@gmail.com>
+ <1452789018-16255-2-git-send-email-akinobu.mita@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <5697CEE7.6070908@metafoo.de>
+Date: Thu, 14 Jan 2016 17:37:59 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160114165133.GA20246@deathstar>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <1452789018-16255-2-git-send-email-akinobu.mita@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-On 01/14/2016 08:51 AM, Michael Welling wrote:
-> On Thu, Jan 14, 2016 at 06:25:08PM +0200, Daniel Baluta wrote:
->> The driver has sysfs readings with runtime PM support for power saving.
->> It also offers buffer support that can be used together with IIO software
->> triggers.
->>
->
-> It should be noted that the hwmon driver subsystem has support for this device.
->
-> http://lxr.free-electrons.com/source/drivers/hwmon/ads1015.c
->
-> The driver could likely be removed if this is accepted into iio.
-> The hwmon subsystem has an iio wrapper driver.
->
-> http://lxr.free-electrons.com/source/drivers/hwmon/iio_hwmon.c
->
-> The only hurdle is adding support for the ads1115 before removing the other driver.
->
-Yes, plus one would hope that there are not going to be a different set of
-devicetree properties associated with the new driver, and that the new driver
-will support (at least) the same properties.
+On 01/14/2016 05:30 PM, Akinobu Mita wrote:
+> mpl115 driver currently supports i2c interface (MPL115A2).
+> There is also SPI version (MPL115A1).  The difference between them
+> is only physical transport so we can easily support both while sharing
+> most of the code.
+> 
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: linux-iio@vger.kernel.org
+> ---
+>  drivers/iio/pressure/Kconfig  |   8 +-
+>  drivers/iio/pressure/mpl115.c | 258 +++++++++++++++++++++++++++++++++++++-----
+>  2 files changed, 236 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index 6f2e7c9..fa628b7 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -31,11 +31,11 @@ config HID_SENSOR_PRESS
+>            will be called hid-sensor-press.
+>  
+>  config MPL115
+> -	tristate "Freescale MPL115A2 pressure sensor driver"
+> -	depends on I2C
+> +	tristate "Freescale MPL115A1/2 pressure sensor driver"
+> +	depends on (SPI_MASTER && I2C!=m) || I2C
 
-You'll also have to make sure that only one of the two drivers can be selected.
+Hi,
 
-Guenter
+for combined SPI and I2C support please follow a scheme similar to that used
+by the mma7455 driver
+(http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/drivers/iio?id=a84ef0d181d917125f1f16cffe53f84c19968969)
+and split the driver into a core support module and one module each for I2C
+and SPI support.
+
+That is a much cleaner approach and avoids issues that can happen if core
+I2C support is build as a module and core SPI support is built-in.
+
+- Lars
