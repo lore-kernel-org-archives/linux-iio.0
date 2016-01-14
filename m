@@ -1,307 +1,73 @@
-Return-Path: <martink@posteo.de>
-From: Martin Kepplinger <martink@posteo.de>
-To: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	christoph.muellner@theobroma-systems.com,
-	mfuzzey@parkeon.com
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Martin Kepplinger <martink@posteo.de>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: [PATCH v4] iio: mma8452: add freefall detection for Freescale's accelerometers
-Date: Wed, 13 Jan 2016 12:54:00 +0100
-Message-Id: <1452686040-6421-1-git-send-email-martink@posteo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f42.google.com ([74.125.82.42]:33760 "EHLO
+	mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750807AbcANI3Y (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jan 2016 03:29:24 -0500
+Received: by mail-wm0-f42.google.com with SMTP id f206so332151875wmf.0
+        for <linux-iio@vger.kernel.org>; Thu, 14 Jan 2016 00:29:23 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <CAAn_ec90RULN=X=uoV4CrztyiQ0dsBOjYcSqgmbxqOheQR56ZA@mail.gmail.com>
+References: <CAAn_ec90RULN=X=uoV4CrztyiQ0dsBOjYcSqgmbxqOheQR56ZA@mail.gmail.com>
+Date: Thu, 14 Jan 2016 16:29:22 +0800
+Message-ID: <CAAn_ec9QoS3iW8jAO2eRG9M73X56s23+fWWFk9meO6B0pANayA@mail.gmail.com>
+Subject: Re: How to address a latency issue in a data acquisition system (IIO based)?
+From: Julio Cruz <jcsistemas2001@gmail.com>
+To: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds freefall event detection to the supported devices. It adds
-the in_accel_x&y&z_mag_falling_en iio event attribute, which activates
-freefall mode.
+Hi again,
 
-In freefall mode, the current acceleration magnitude (AND combination
-of all axis values) is compared to the specified threshold.
-If it falls under the threshold (in_accel_mag_falling_value),
-the appropriate IIO event code is generated.
+After digging on this issue, the SPI data loss was due to:
 
-This is what the sysfs "events" directory for these devices looks
-like after this change:
+1. The latency of some kernel drivers/modules. After disable some
+modules as suggested by Mat and tglx [1] the SPI handler latency was
+better, however still have some missing.
+2. The SPI thread priority was too low. After setting the
+policy/priority as suggested by Daniel [2], the SPI response was as
+expected.
 
--rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_period
--rw-r--r--    4096 Oct 23 08:45 in_accel_mag_falling_value
--rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_period
--rw-r--r--    4096 Oct 23 08:45 in_accel_mag_rising_value
--r--r--r--    4096 Oct 23 08:45 in_accel_scale
--rw-r--r--    4096 Oct 23 08:45 in_accel_x&y&z_mag_falling_en
--rw-r--r--    4096 Oct 23 08:45 in_accel_x_mag_rising_en
--rw-r--r--    4096 Oct 23 08:45 in_accel_y_mag_rising_en
--rw-r--r--    4096 Oct 23 08:45 in_accel_z_mag_rising_en
+The interrupt latency depends on different factors, and those are very
+interesting once you research it (interrupt controller implementation,
+device priority of the interrupt, others drivers, etc...). Sorry for
+the noise about this issue.
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
----
-revision history
-----------------
-v1:
-        initial post
-v2:
-        build all from correct event and channel spec structs
-v3:
-        rising and falling are treated as equal now. Until last time, I had
-        misunderstood the iio events' user API definition. This works and
-        values always reflect the current state of operation.
-v4:
-	fix error that caused a build warning
+Maybe this experience could be of interest for others SPI based drivers.
 
- drivers/iio/accel/mma8452.c | 156 +++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 139 insertions(+), 17 deletions(-)
+Julio
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index ccc632a..9534c3a 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -15,7 +15,7 @@
-  *
-  * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
-  *
-- * TODO: orientation / freefall events, autosleep
-+ * TODO: orientation events, autosleep
-  */
- 
- #include <linux/module.h>
-@@ -416,6 +416,46 @@ fail:
- 	return ret;
- }
- 
-+static int mma8452_freefall_mode_enabled(struct mma8452_data *data)
-+{
-+	int val;
-+	const struct mma_chip_info *chip = data->chip_info;
-+
-+	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
-+	if (val < 0)
-+		return val;
-+
-+	return !(val & MMA8452_FF_MT_CFG_OAE);
-+}
-+
-+static int mma8452_set_freefall_mode(struct mma8452_data *data, u8 state)
-+{
-+	int val, ret;
-+	const struct mma_chip_info *chip = data->chip_info;
-+
-+	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
-+	if (val < 0)
-+		return val;
-+
-+	if (state && !(mma8452_freefall_mode_enabled(data))) {
-+		val |= BIT(idx_x + chip->ev_cfg_chan_shift);
-+		val |= BIT(idx_y + chip->ev_cfg_chan_shift);
-+		val |= BIT(idx_z + chip->ev_cfg_chan_shift);
-+		val &= ~MMA8452_FF_MT_CFG_OAE;
-+	} else if (!state && mma8452_freefall_mode_enabled(data)) {
-+		val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
-+		val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
-+		val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
-+		val |= MMA8452_FF_MT_CFG_OAE;
-+	}
-+
-+	ret = mma8452_change_config(data, chip->ev_cfg, val);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
- static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
- 					   int val, int val2)
- {
-@@ -609,12 +649,22 @@ static int mma8452_read_event_config(struct iio_dev *indio_dev,
- 	const struct mma_chip_info *chip = data->chip_info;
- 	int ret;
- 
--	ret = i2c_smbus_read_byte_data(data->client,
--				       data->chip_info->ev_cfg);
--	if (ret < 0)
--		return ret;
-+	switch (dir) {
-+	case IIO_EV_DIR_FALLING:
-+		return mma8452_freefall_mode_enabled(data);
-+	case IIO_EV_DIR_RISING:
-+		if (mma8452_freefall_mode_enabled(data))
-+			return 0;
-+
-+		ret = i2c_smbus_read_byte_data(data->client,
-+					       data->chip_info->ev_cfg);
-+		if (ret < 0)
-+			return ret;
- 
--	return !!(ret & BIT(chan->scan_index + chip->ev_cfg_chan_shift));
-+		return !!(ret & BIT(chan->scan_index + chip->ev_cfg_chan_shift));
-+	default:
-+		return -EINVAL;
-+	}
- }
- 
- static int mma8452_write_event_config(struct iio_dev *indio_dev,
-@@ -627,19 +677,34 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 	const struct mma_chip_info *chip = data->chip_info;
- 	int val;
- 
--	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
--	if (val < 0)
--		return val;
--
--	if (state)
--		val |= BIT(chan->scan_index + chip->ev_cfg_chan_shift);
--	else
--		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
-+	switch (dir) {
-+	case IIO_EV_DIR_FALLING:
-+		return mma8452_set_freefall_mode(data, state);
-+	case IIO_EV_DIR_RISING:
-+		val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
-+		if (val < 0)
-+			return val;
-+
-+		if (state) {
-+			if (mma8452_freefall_mode_enabled(data)) {
-+				val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
-+				val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
-+				val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
-+				val |= MMA8452_FF_MT_CFG_OAE;
-+			}
-+			val |= BIT(chan->scan_index + chip->ev_cfg_chan_shift);
-+		} else {
-+			if (mma8452_freefall_mode_enabled(data))
-+				return -EBUSY;
-+			val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
-+		}
- 
--	val |= chip->ev_cfg_ele;
--	val |= MMA8452_FF_MT_CFG_OAE;
-+		val |= chip->ev_cfg_ele;
- 
--	return mma8452_change_config(data, chip->ev_cfg, val);
-+		return mma8452_change_config(data, chip->ev_cfg, val);
-+	default:
-+		return -EINVAL;
-+	}
- }
- 
- static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
-@@ -652,6 +717,16 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
- 	if (src < 0)
- 		return;
- 
-+	if (mma8452_freefall_mode_enabled(data)) {
-+		iio_push_event(indio_dev,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
-+						  IIO_MOD_X_AND_Y_AND_Z,
-+						  IIO_EV_TYPE_MAG,
-+						  IIO_EV_DIR_FALLING),
-+			       ts);
-+		return;
-+	}
-+
- 	if (src & data->chip_info->ev_src_xe)
- 		iio_push_event(indio_dev,
- 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
-@@ -745,6 +820,27 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
- 	return 0;
- }
- 
-+static const struct iio_event_spec mma8452_freefall_event[] = {
-+	{
-+		.type = IIO_EV_TYPE_MAG,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-+		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-+					BIT(IIO_EV_INFO_PERIOD) |
-+					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB)
-+	},
-+};
-+
-+static const struct iio_event_spec mma8652_freefall_event[] = {
-+	{
-+		.type = IIO_EV_TYPE_MAG,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-+		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-+					BIT(IIO_EV_INFO_PERIOD)
-+	},
-+};
-+
- static const struct iio_event_spec mma8452_transient_event[] = {
- 	{
- 		.type = IIO_EV_TYPE_MAG,
-@@ -781,6 +877,24 @@ static struct attribute_group mma8452_event_attribute_group = {
- 	.attrs = mma8452_event_attributes,
- };
- 
-+#define MMA8452_FREEFALL_CHANNEL(modifier) { \
-+	.type = IIO_ACCEL, \
-+	.modified = 1, \
-+	.channel2 = modifier, \
-+	.scan_index = -1, \
-+	.event_spec = mma8452_freefall_event, \
-+	.num_event_specs = ARRAY_SIZE(mma8452_freefall_event), \
-+}
-+
-+#define MMA8652_FREEFALL_CHANNEL(modifier) { \
-+	.type = IIO_ACCEL, \
-+	.modified = 1, \
-+	.channel2 = modifier, \
-+	.scan_index = -1, \
-+	.event_spec = mma8652_freefall_event, \
-+	.num_event_specs = ARRAY_SIZE(mma8652_freefall_event), \
-+}
-+
- #define MMA8452_CHANNEL(axis, idx, bits) { \
- 	.type = IIO_ACCEL, \
- 	.modified = 1, \
-@@ -827,6 +941,7 @@ static const struct iio_chan_spec mma8452_channels[] = {
- 	MMA8452_CHANNEL(Y, idx_y, 12),
- 	MMA8452_CHANNEL(Z, idx_z, 12),
- 	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
-+	MMA8452_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
- };
- 
- static const struct iio_chan_spec mma8453_channels[] = {
-@@ -834,6 +949,7 @@ static const struct iio_chan_spec mma8453_channels[] = {
- 	MMA8452_CHANNEL(Y, idx_y, 10),
- 	MMA8452_CHANNEL(Z, idx_z, 10),
- 	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
-+	MMA8452_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
- };
- 
- static const struct iio_chan_spec mma8652_channels[] = {
-@@ -841,6 +957,7 @@ static const struct iio_chan_spec mma8652_channels[] = {
- 	MMA8652_CHANNEL(Y, idx_y, 12),
- 	MMA8652_CHANNEL(Z, idx_z, 12),
- 	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
-+	MMA8652_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
- };
- 
- static const struct iio_chan_spec mma8653_channels[] = {
-@@ -848,6 +965,7 @@ static const struct iio_chan_spec mma8653_channels[] = {
- 	MMA8652_CHANNEL(Y, idx_y, 10),
- 	MMA8652_CHANNEL(Z, idx_z, 10),
- 	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
-+	MMA8652_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
- };
- 
- enum {
-@@ -1190,6 +1308,10 @@ static int mma8452_probe(struct i2c_client *client,
- 	if (ret < 0)
- 		goto buffer_cleanup;
- 
-+	ret = mma8452_set_freefall_mode(data, 0);
-+	if (ret)
-+		return ret;
-+
- 	return 0;
- 
- buffer_cleanup:
--- 
-2.1.4
+----
+[1] Long max latencies on Wandbaord / Freescale i.MX6
+http://marc.info/?l=linux-rt-users&m=144368690819933&w=2
+----
+[2] cyclictest versus custom SPI based system
+http://marc.info/?l=linux-rt-users&m=145271122200825&w=2
+
+On Tue, Jan 12, 2016 at 11:50 PM, Julio Cruz <jcsistemas2001@gmail.com> wrote:
+> Hi,
+>
+> I'm running an acquisition system @1KHz sampling frequency (27
+> bytes/sample) with libiio as interface between the application and the
+> IIO driver (SPI based). The network and local context are working as
+> expected.
+>
+> However, the system have some data loss at SPI level (confirmed by
+> scope) even if the data is not pushed to the buffer
+> (iio_push_to_buffers). The scope show that every 1.4 sec (aprox), the
+> handler is not called. It seem other process is taking priority over
+> this.
+>
+> I'm trying to find the process that is taking over the SPI/IRQ handlers.
+>
+> - My system is running in ext4 (on SD) and maybe this could be the
+> problem (journal)?
+> - Implement a RT and review interrupt context as suggested by Xander
+> (http://marc.info/?l=linux-iio&m=143933412720586&w=2)?
+> - I would like to implement a DMA buffer as suggested by Lars (two
+> month ago) but I'm not sure this will help in this case
+> (http://marc.info/?l=linux-iio&m=144475305426138&w=2), for now.
+>
+> In any case, any advice to address this problem is welcome.
+>
+> Thanks
