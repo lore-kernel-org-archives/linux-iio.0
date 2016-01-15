@@ -1,43 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-224.synserver.de ([212.40.185.224]:1089 "EHLO
-	smtp-out-067.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750762AbcAOFBv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jan 2016 00:01:51 -0500
-Subject: Re: [PATCH] iio: adc: Add TI ADS1015 ADC driver support
-To: Michael Welling <mwelling@ieee.org>,
-	Daniel Baluta <daniel.baluta@intel.com>
-References: <1452788708-3003-1-git-send-email-daniel.baluta@intel.com>
- <20160114165133.GA20246@deathstar>
-Cc: jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	lucas.demarchi@intel.com, eibach@gdsys.de, linux@roeck-us.net
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <5697D511.7040301@metafoo.de>
-Date: Thu, 14 Jan 2016 18:04:17 +0100
+Received: from mail-vk0-f66.google.com ([209.85.213.66]:33683 "EHLO
+	mail-vk0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751107AbcAONdS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jan 2016 08:33:18 -0500
+Received: by mail-vk0-f66.google.com with SMTP id n1so8998140vkb.0
+        for <linux-iio@vger.kernel.org>; Fri, 15 Jan 2016 05:33:18 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20160114165133.GA20246@deathstar>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <5697CEE7.6070908@metafoo.de>
+References: <1452789018-16255-1-git-send-email-akinobu.mita@gmail.com>
+	<1452789018-16255-2-git-send-email-akinobu.mita@gmail.com>
+	<5697CEE7.6070908@metafoo.de>
+Date: Fri, 15 Jan 2016 22:33:17 +0900
+Message-ID: <CAC5umygni_mPD+U855AJTQoVf9YRHE6_mBcdfnc4co2qg-DLuA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] iio: pressure: mpl115: support MPL115A1
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/14/2016 05:51 PM, Michael Welling wrote:
-> On Thu, Jan 14, 2016 at 06:25:08PM +0200, Daniel Baluta wrote:
->> The driver has sysfs readings with runtime PM support for power saving.
->> It also offers buffer support that can be used together with IIO software
->> triggers.
+2016-01-15 1:37 GMT+09:00 Lars-Peter Clausen <lars@metafoo.de>:
+> On 01/14/2016 05:30 PM, Akinobu Mita wrote:
+>> mpl115 driver currently supports i2c interface (MPL115A2).
+>> There is also SPI version (MPL115A1).  The difference between them
+>> is only physical transport so we can easily support both while sharing
+>> most of the code.
 >>
-> 
-> It should be noted that the hwmon driver subsystem has support for this device.
-> 
-> http://lxr.free-electrons.com/source/drivers/hwmon/ads1015.c
-> 
-> The driver could likely be removed if this is accepted into iio.
-> The hwmon subsystem has an iio wrapper driver.
+>> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+>> Cc: Jonathan Cameron <jic23@kernel.org>
+>> Cc: Hartmut Knaack <knaack.h@gmx.de>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+>> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+>> Cc: linux-iio@vger.kernel.org
+>> ---
+>>  drivers/iio/pressure/Kconfig  |   8 +-
+>>  drivers/iio/pressure/mpl115.c | 258 +++++++++++++++++++++++++++++++++++++-----
+>>  2 files changed, 236 insertions(+), 30 deletions(-)
+>>
+>> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+>> index 6f2e7c9..fa628b7 100644
+>> --- a/drivers/iio/pressure/Kconfig
+>> +++ b/drivers/iio/pressure/Kconfig
+>> @@ -31,11 +31,11 @@ config HID_SENSOR_PRESS
+>>            will be called hid-sensor-press.
+>>
+>>  config MPL115
+>> -     tristate "Freescale MPL115A2 pressure sensor driver"
+>> -     depends on I2C
+>> +     tristate "Freescale MPL115A1/2 pressure sensor driver"
+>> +     depends on (SPI_MASTER && I2C!=m) || I2C
+>
+> Hi,
+>
+> for combined SPI and I2C support please follow a scheme similar to that used
+> by the mma7455 driver
+> (http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/drivers/iio?id=a84ef0d181d917125f1f16cffe53f84c19968969)
+> and split the driver into a core support module and one module each for I2C
+> and SPI support.
+>
+> That is a much cleaner approach and avoids issues that can happen if core
+> I2C support is build as a module and core SPI support is built-in.
 
-If we do this we should instantiate the hwmon bridge for such drivers by
-default, so that the userspace ABI is kept intact.
-
-And of course we'd also need backwards compatibility for those horrible
-devicetree bindings.
-
-- Lars
+Thanks for your advise.  I've just finished the conversion.  It looks
+good as we can continue to use module_i2c_driver() instead of
+open-coding it.
