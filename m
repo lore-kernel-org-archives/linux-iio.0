@@ -1,69 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vk0-f66.google.com ([209.85.213.66]:33683 "EHLO
-	mail-vk0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751107AbcAONdS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jan 2016 08:33:18 -0500
-Received: by mail-vk0-f66.google.com with SMTP id n1so8998140vkb.0
-        for <linux-iio@vger.kernel.org>; Fri, 15 Jan 2016 05:33:18 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <5697CEE7.6070908@metafoo.de>
-References: <1452789018-16255-1-git-send-email-akinobu.mita@gmail.com>
-	<1452789018-16255-2-git-send-email-akinobu.mita@gmail.com>
-	<5697CEE7.6070908@metafoo.de>
-Date: Fri, 15 Jan 2016 22:33:17 +0900
-Message-ID: <CAC5umygni_mPD+U855AJTQoVf9YRHE6_mBcdfnc4co2qg-DLuA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: pressure: mpl115: support MPL115A1
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:36687 "EHLO
+	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751076AbcAOQAT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jan 2016 11:00:19 -0500
+Received: by mail-pf0-f194.google.com with SMTP id n128so8668575pfn.3
+        for <linux-iio@vger.kernel.org>; Fri, 15 Jan 2016 08:00:19 -0800 (PST)
 From: Akinobu Mita <akinobu.mita@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+To: linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+Subject: [PATCH v2 1/2] iio: pressure: mpl115: don't set unused i2c clientdata
+Date: Sat, 16 Jan 2016 01:00:02 +0900
+Message-Id: <1452873603-17381-1-git-send-email-akinobu.mita@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-2016-01-15 1:37 GMT+09:00 Lars-Peter Clausen <lars@metafoo.de>:
-> On 01/14/2016 05:30 PM, Akinobu Mita wrote:
->> mpl115 driver currently supports i2c interface (MPL115A2).
->> There is also SPI version (MPL115A1).  The difference between them
->> is only physical transport so we can easily support both while sharing
->> most of the code.
->>
->> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
->> Cc: Jonathan Cameron <jic23@kernel.org>
->> Cc: Hartmut Knaack <knaack.h@gmx.de>
->> Cc: Lars-Peter Clausen <lars@metafoo.de>
->> Cc: Peter Meerwald <pmeerw@pmeerw.net>
->> Cc: linux-iio@vger.kernel.org
->> ---
->>  drivers/iio/pressure/Kconfig  |   8 +-
->>  drivers/iio/pressure/mpl115.c | 258 +++++++++++++++++++++++++++++++++++++-----
->>  2 files changed, 236 insertions(+), 30 deletions(-)
->>
->> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
->> index 6f2e7c9..fa628b7 100644
->> --- a/drivers/iio/pressure/Kconfig
->> +++ b/drivers/iio/pressure/Kconfig
->> @@ -31,11 +31,11 @@ config HID_SENSOR_PRESS
->>            will be called hid-sensor-press.
->>
->>  config MPL115
->> -     tristate "Freescale MPL115A2 pressure sensor driver"
->> -     depends on I2C
->> +     tristate "Freescale MPL115A1/2 pressure sensor driver"
->> +     depends on (SPI_MASTER && I2C!=m) || I2C
->
-> Hi,
->
-> for combined SPI and I2C support please follow a scheme similar to that used
-> by the mma7455 driver
-> (http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/drivers/iio?id=a84ef0d181d917125f1f16cffe53f84c19968969)
-> and split the driver into a core support module and one module each for I2C
-> and SPI support.
->
-> That is a much cleaner approach and avoids issues that can happen if core
-> I2C support is build as a module and core SPI support is built-in.
+mpl115 sets i2c clientdata, but it is not used anywhere.  So remove it.
 
-Thanks for your advise.  I've just finished the conversion.  It looks
-good as we can continue to use module_i2c_driver() instead of
-open-coding it.
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+---
+ drivers/iio/pressure/mpl115.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
+index f5ecd6e..3e1e3353 100644
+--- a/drivers/iio/pressure/mpl115.c
++++ b/drivers/iio/pressure/mpl115.c
+@@ -163,7 +163,6 @@ static int mpl115_probe(struct i2c_client *client,
+ 	data->client = client;
+ 	mutex_init(&data->lock);
+ 
+-	i2c_set_clientdata(client, indio_dev);
+ 	indio_dev->info = &mpl115_info;
+ 	indio_dev->name = id->name;
+ 	indio_dev->dev.parent = &client->dev;
+-- 
+2.5.0
+
