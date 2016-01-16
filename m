@@ -1,83 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53518 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751257AbcAPMw2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jan 2016 07:52:28 -0500
-Subject: Re: [PATCH 2/2] iio: light: opt3001: enable operation w/o IRQ
-To: Alexander Koch <mail@alexanderkoch.net>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1452622180-12728-1-git-send-email-mail@alexanderkoch.net>
- <1452622180-12728-3-git-send-email-mail@alexanderkoch.net>
- <alpine.DEB.2.02.1601122024340.10606@pmeerw.net>
- <56955F43.90705@alexanderkoch.net>
-Cc: knaack.h@gmx.de, lars@metafoo.de, mhornung.linux@gmail.com,
-	dannenberg@ti.com, balbi@ti.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <569A3D06.80701@kernel.org>
-Date: Sat, 16 Jan 2016 12:52:22 +0000
-MIME-Version: 1.0
-In-Reply-To: <56955F43.90705@alexanderkoch.net>
-Content-Type: text/plain; charset=windows-1252
+Received: from mout01.posteo.de ([185.67.36.65]:54062 "EHLO mout01.posteo.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752147AbcAPOgm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 16 Jan 2016 09:36:42 -0500
+Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
+	by mout01.posteo.de (Postfix) with ESMTPS id E500A20ABA
+	for <linux-iio@vger.kernel.org>; Sat, 16 Jan 2016 15:36:40 +0100 (CET)
+From: Martin Kepplinger <martink@posteo.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, christoph.muellner@theobroma-systems.com,
+	mfuzzey@parkeon.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Martin Kepplinger <martink@posteo.de>,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: [PATCH 2/3] iio: mma8452: whitespace cleanup
+Date: Sat, 16 Jan 2016 15:35:21 +0100
+Message-Id: <1452954922-2266-3-git-send-email-martink@posteo.de>
+In-Reply-To: <1452954922-2266-1-git-send-email-martink@posteo.de>
+References: <1452954922-2266-1-git-send-email-martink@posteo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/01/16 20:17, Alexander Koch wrote:
-> Am 12.01.2016 um 20:27 schrieb Peter Meerwald-Stadler:
->> On Tue, 12 Jan 2016, Alexander Koch wrote:
->>
->>> Enable operation of the TI OPT3001 light sensor without having an
->>> interrupt line available to connect the INT pin to.
->>>
->>> In this operation mode, we issue a conversion request and simply wait
->>> for the conversion time available as timeout value, determined from
->>> integration time configuration and the worst-case time given in the data
->>> sheet (sect. 6.5, table on p. 5):
->>>
->>>   short integration time (100ms): 110ms + 3ms = 113ms
->>>    long integration time (800ms): 880ms + 3ms = 883ms
->>>
->>> This change is transparent as behaviour defaults to using the interrupt
->>> method if an interrupt no. is configured via device tree. Interrupt-less
->>> operation mode is performed when no valid interrupt no. is given.
->>
->> looks good, I'd rather use a bool for use_irq and the msecs_to_jiffies() 
->> call moved from the #define to the code (which is not strictly necessary 
->> for the patch) -- matter of taste
-> 
-> Thanks - actually this is my first patch, so positive feedback much
-> appreciated!
-> 
-> Concerning the bool for 'use_irq': I first had it that way but then
-> opted for the bit field of length 1 as I wasn't sure whether bool would
-> get optimized to the same level by the compiler.
-Bit fields are often less efficient as the compiler has to separate them out
-using shifts and masks.  Also from a space point of view the data structure
-will be considerably padded anyway for a couple of reasons:
-1) It contains u32 fields so will at least be padded to a multiple of u32.
-2) Memory allocations may well be a good bit larger depending on exact
-sizes vs the blob levels available in the memory allocator.
+Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+---
+ drivers/iio/accel/mma8452.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Basic rule of thumb - keep things simple and let the compiler do the work.
-So a bool is suitable here.
-
-> 
-> I'm a bit irritated by your comment concerning the msecs_to_jiffies()
-> call, as my patch indeed moves this call from the #define to the code.
-> Did you mean it the other way round, then?
-Presumably ;) 
-> My reason to move it was that I need to work with microseconds for the
-> IRQ-less operation mode, and jiffies are only required in one place for
-> the IRQ mode.
-Now perhaps the 'right' way to do this would be have been a precursor patch
-removing the define rather than lumping what is an an connected change (in
-many ways) in here.  Overall I agree the change is worthwhile and trivial.
-As Peter said, it's a matter of taste!  We both happen to disagree with him
-on this point.
-> 
-> 
-	> Best regards
-> 
-> lynix
-> 
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 77b71c2..843169e 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -85,8 +85,8 @@
+ #define  MMA8452_INT_FF_MT			BIT(2)
+ #define  MMA8452_INT_TRANS			BIT(5)
+ 
+-#define  MMA8452_DEVICE_ID			0x2a
+-#define  MMA8453_DEVICE_ID			0x3a
++#define MMA8452_DEVICE_ID			0x2a
++#define MMA8453_DEVICE_ID			0x3a
+ #define MMA8652_DEVICE_ID			0x4a
+ #define MMA8653_DEVICE_ID			0x5a
+ 
+-- 
+2.1.4
 
