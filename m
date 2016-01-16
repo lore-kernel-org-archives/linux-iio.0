@@ -1,635 +1,504 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53092 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53057 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751610AbcAPL1y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jan 2016 06:27:54 -0500
-Subject: Re: [PATCH v3 1/5] iio:adc:at91_adc8xx: introduce new atmel adc
- driver
-To: Ludovic Desroches <ludovic.desroches@atmel.com>,
-	nicolas.ferre@atmel.com, alexandre.belloni@free-electrons.com
-References: <1452785897-16270-1-git-send-email-ludovic.desroches@atmel.com>
- <1452785897-16270-2-git-send-email-ludovic.desroches@atmel.com>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, plagnioj@jcrosoft.com,
-	linux-arm-kernel@lists.infradead.org, pmeerw@pmeerw.net,
-	robh@kernel.org
+	with ESMTP id S1751474AbcAPLT2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jan 2016 06:19:28 -0500
+Subject: Re: [PATCH v2 2/2] iio: pressure: mpl115: support MPL115A1
+To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org
+References: <1452873603-17381-1-git-send-email-akinobu.mita@gmail.com>
+ <1452873603-17381-2-git-send-email-akinobu.mita@gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <569A2937.609@kernel.org>
-Date: Sat, 16 Jan 2016 11:27:51 +0000
+Message-ID: <569A273B.1030907@kernel.org>
+Date: Sat, 16 Jan 2016 11:19:23 +0000
 MIME-Version: 1.0
-In-Reply-To: <1452785897-16270-2-git-send-email-ludovic.desroches@atmel.com>
+In-Reply-To: <1452873603-17381-2-git-send-email-akinobu.mita@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/01/16 15:38, Ludovic Desroches wrote:
-> This driver supports the new version of the Atmel ADC device introduced
-> with the SAMA5D2 SoC family.
+On 15/01/16 16:00, Akinobu Mita wrote:
+> mpl115 driver currently supports i2c interface (MPL115A2).
+> There is also SPI version (MPL115A1).  The difference between them
+> is only physical transport so we can easily support both while sharing
+> most of the code.
 > 
-> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-Looks good to me.  One totally trivial note inline (which I'm not even going
-to bother changing whilst applying the patch - a good measure of how trivial ;)
+> Split the driver into a core support module and one module each for I2C
+> and SPI support.
+> 
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: linux-iio@vger.kernel.org
+Looks pretty good to me - couple of comments and utterly trivial nitpicks
+inline (I'll fix those up whilst applying unless you end up doing another
+version to address comments from other reiewers).
 
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.
-
-Thanks,
+Would like to leave this on the list for a week though to let Peter / Lars
+(and others of course!) take a look at the patch if they would like to.
 
 Jonathan
 > ---
->  .../bindings/iio/adc/at91-sama5d2_adc.txt          |  28 ++
->  drivers/iio/adc/Kconfig                            |  11 +
->  drivers/iio/adc/Makefile                           |   1 +
->  drivers/iio/adc/at91-sama5d2_adc.c                 | 509 +++++++++++++++++++++
->  4 files changed, 549 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
->  create mode 100644 drivers/iio/adc/at91-sama5d2_adc.c
+> * v2
+> - split the driver into a core support module and one module each
+>   for I2C and SPI support, suggested by Lars-Peter Clausen
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt b/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
-> new file mode 100644
-> index 0000000..3223684
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
-> @@ -0,0 +1,28 @@
-> +* AT91 SAMA5D2 Analog to Digital Converter (ADC)
-> +
-> +Required properties:
-> +  - compatible: Should be "atmel,sama5d2-adc".
-> +  - reg: Should contain ADC registers location and length.
-> +  - interrupts: Should contain the IRQ line for the ADC.
-> +  - clocks: phandle to device clock.
-> +  - clock-names: Must be "adc_clk".
-> +  - vref-supply: Supply used as reference for conversions.
-> +  - vddana-supply: Supply for the adc device.
-> +  - atmel,min-sample-rate-hz: Minimum sampling rate, it depends on SoC.
-> +  - atmel,max-sample-rate-hz: Maximum sampling rate, it depends on SoC.
-> +  - atmel,startup-time-ms: Startup time expressed in ms, it depends on SoC.
-> +
-> +Example:
-> +
-> +adc: adc@fc030000 {
-> +	compatible = "atmel,sama5d2-adc";
-> +	reg = <0xfc030000 0x100>;
-> +	interrupts = <40 IRQ_TYPE_LEVEL_HIGH 7>;
-> +	clocks = <&adc_clk>;
-> +	clock-names = "adc_clk";
-> +	atmel,min-sample-rate-hz = <200000>;
-> +	atmel,max-sample-rate-hz = <20000000>;
-> +	atmel,startup-time-ms = <4>;
-> +	vddana-supply = <&vdd_3v3_lp_reg>;
-> +	vref-supply = <&vdd_3v3_lp_reg>;
-> +}
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 605ff42..f57b4ea 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -131,6 +131,17 @@ config AT91_ADC
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called at91_adc.
+>  drivers/iio/pressure/Kconfig      |  17 +++++-
+>  drivers/iio/pressure/Makefile     |   2 +
+>  drivers/iio/pressure/mpl115.c     |  65 ++++++++++-------------
+>  drivers/iio/pressure/mpl115.h     |  25 +++++++++
+>  drivers/iio/pressure/mpl115_i2c.c |  71 +++++++++++++++++++++++++
+>  drivers/iio/pressure/mpl115_spi.c | 107 ++++++++++++++++++++++++++++++++++++++
+>  6 files changed, 248 insertions(+), 39 deletions(-)
+>  create mode 100644 drivers/iio/pressure/mpl115.h
+>  create mode 100644 drivers/iio/pressure/mpl115_i2c.c
+>  create mode 100644 drivers/iio/pressure/mpl115_spi.c
+> 
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index 6f2e7c9..e8f60db 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -31,14 +31,29 @@ config HID_SENSOR_PRESS
+>            will be called hid-sensor-press.
 >  
-> +config AT91_SAMA5D2_ADC
-> +	tristate "Atmel AT91 SAMA5D2 ADC"
-> +	depends on ARCH_AT91
-> +	depends on INPUT
+>  config MPL115
+> +	tristate
+> +
+> +config MPL115_I2C
+>  	tristate "Freescale MPL115A2 pressure sensor driver"
+>  	depends on I2C
+> +	select MPL115
+>  	help
+>  	  Say yes here to build support for the Freescale MPL115A2
+>  	  pressure sensor connected via I2C.
+>  
+>            To compile this driver as a module, choose M here: the module
+> -          will be called mpl115.
+> +          will be called mpl115_i2c.
+Hmm. Nothing to do with your patch (other than you continue what is already
+there) but this whole file has a random mix of spacing vs tabs for indenting.
+Clearly wants a trivial cleanup patch at some point.
+
+> +
+> +config MPL115_SPI
+> +	tristate "Freescale MPL115A1 pressure sensor driver"
+> +	depends on SPI_MASTER
+> +	select MPL115
 > +	help
-> +	  Say yes here to build support for Atmel SAMA5D2 ADC which is
-> +	  available on SAMA5D2 SoC family.
+> +	  Say yes here to build support for the Freescale MPL115A1
+> +	  pressure sensor connected via SPI.
 > +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called at91-sama5d2_adc.
+> +          To compile this driver as a module, choose M here: the module
+> +          will be called mpl115_spi.
+>  
+>  config MPL3115
+>  	tristate "Freescale MPL3115A2 pressure sensor driver"
+> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+> index 46571c96..d336af1 100644
+> --- a/drivers/iio/pressure/Makefile
+> +++ b/drivers/iio/pressure/Makefile
+> @@ -6,6 +6,8 @@
+>  obj-$(CONFIG_BMP280) += bmp280.o
+>  obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+>  obj-$(CONFIG_MPL115) += mpl115.o
+> +obj-$(CONFIG_MPL115_I2C) += mpl115_i2c.o
+> +obj-$(CONFIG_MPL115_SPI) += mpl115_spi.o
+>  obj-$(CONFIG_MPL3115) += mpl3115.o
+>  obj-$(CONFIG_MS5611) += ms5611_core.o
+>  obj-$(CONFIG_MS5611_I2C) += ms5611_i2c.o
+> diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
+> index 3e1e3353..138344c 100644
+> --- a/drivers/iio/pressure/mpl115.c
+> +++ b/drivers/iio/pressure/mpl115.c
+> @@ -1,5 +1,5 @@
+>  /*
+> - * mpl115.c - Support for Freescale MPL115A2 pressure/temperature sensor
+> + * mpl115.c - Support for Freescale MPL115A pressure/temperature sensor
+>   *
+>   * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
+>   *
+> @@ -7,17 +7,16 @@
+>   * the GNU General Public License.  See the file COPYING in the main
+>   * directory of this archive for more details.
+>   *
+> - * (7-bit I2C slave address 0x60)
+> - *
+>   * TODO: shutdown pin
+>   *
+>   */
+>  
+>  #include <linux/module.h>
+> -#include <linux/i2c.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/delay.h>
+>  
+> +#include "mpl115.h"
 > +
->  config AXP288_ADC
->  	tristate "X-Powers AXP288 ADC driver"
->  	depends on MFD_AXP20X
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 6435780..fb57e12 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
->  obj-$(CONFIG_AD7887) += ad7887.o
->  obj-$(CONFIG_AD799X) += ad799x.o
->  obj-$(CONFIG_AT91_ADC) += at91_adc.o
-> +obj-$(CONFIG_AT91_SAMA5D2_ADC) += at91-sama5d2_adc.o
->  obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
->  obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
->  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
-> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+>  #define MPL115_PADC 0x00 /* pressure ADC output value, MSB first, 10 bit */
+>  #define MPL115_TADC 0x02 /* temperature ADC output value, MSB first, 10 bit */
+>  #define MPL115_A0 0x04 /* 12 bit integer, 3 bit fraction */
+> @@ -27,16 +26,18 @@
+>  #define MPL115_CONVERT 0x12 /* convert temperature and pressure */
+>  
+>  struct mpl115_data {
+> -	struct i2c_client *client;
+> +	struct device *dev;
+>  	struct mutex lock;
+>  	s16 a0;
+>  	s16 b1, b2;
+>  	s16 c12;
+> +	const struct mpl115_ops *ops;
+>  };
+>  
+>  static int mpl115_request(struct mpl115_data *data)
+>  {
+> -	int ret = i2c_smbus_write_byte_data(data->client, MPL115_CONVERT, 0);
+> +	int ret = data->ops->write(data->dev, MPL115_CONVERT, 0);
+> +
+>  	if (ret < 0)
+>  		return ret;
+>  
+> @@ -57,12 +58,12 @@ static int mpl115_comp_pressure(struct mpl115_data *data, int *val, int *val2)
+>  	if (ret < 0)
+>  		goto done;
+>  
+> -	ret = i2c_smbus_read_word_swapped(data->client, MPL115_PADC);
+> +	ret = data->ops->read(data->dev, MPL115_PADC);
+>  	if (ret < 0)
+>  		goto done;
+>  	padc = ret >> 6;
+>  
+> -	ret = i2c_smbus_read_word_swapped(data->client, MPL115_TADC);
+> +	ret = data->ops->read(data->dev, MPL115_TADC);
+>  	if (ret < 0)
+>  		goto done;
+>  	tadc = ret >> 6;
+> @@ -90,7 +91,7 @@ static int mpl115_read_temp(struct mpl115_data *data)
+>  	ret = mpl115_request(data);
+>  	if (ret < 0)
+>  		goto done;
+> -	ret = i2c_smbus_read_word_swapped(data->client, MPL115_TADC);
+> +	ret = data->ops->read(data->dev, MPL115_TADC);
+>  done:
+>  	mutex_unlock(&data->lock);
+>  	return ret;
+> @@ -145,65 +146,53 @@ static const struct iio_info mpl115_info = {
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> -static int mpl115_probe(struct i2c_client *client,
+> -			 const struct i2c_device_id *id)
+> +int mpl115_probe(struct device *dev, const char *name,
+> +			const struct mpl115_ops *ops)
+>  {
+>  	struct mpl115_data *data;
+>  	struct iio_dev *indio_dev;
+>  	int ret;
+>  
+> -	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+> -		return -ENODEV;
+> -
+> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+>  
+>  	data = iio_priv(indio_dev);
+> -	data->client = client;
+> +	data->dev = dev;
+> +	data->ops = ops;
+>  	mutex_init(&data->lock);
+>  
+>  	indio_dev->info = &mpl115_info;
+> -	indio_dev->name = id->name;
+> -	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->name = name;
+> +	indio_dev->dev.parent = dev;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->channels = mpl115_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(mpl115_channels);
+>  
+> -	ret = i2c_smbus_read_word_swapped(data->client, MPL115_A0);
+> +	ret = data->ops->init(data->dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = data->ops->read(data->dev, MPL115_A0);
+>  	if (ret < 0)
+>  		return ret;
+>  	data->a0 = ret;
+> -	ret = i2c_smbus_read_word_swapped(data->client, MPL115_B1);
+> +	ret = data->ops->read(data->dev, MPL115_B1);
+>  	if (ret < 0)
+>  		return ret;
+>  	data->b1 = ret;
+> -	ret = i2c_smbus_read_word_swapped(data->client, MPL115_B2);
+> +	ret = data->ops->read(data->dev, MPL115_B2);
+>  	if (ret < 0)
+>  		return ret;
+>  	data->b2 = ret;
+> -	ret = i2c_smbus_read_word_swapped(data->client, MPL115_C12);
+> +	ret = data->ops->read(data->dev, MPL115_C12);
+>  	if (ret < 0)
+>  		return ret;
+>  	data->c12 = ret;
+>  
+> -	return devm_iio_device_register(&client->dev, indio_dev);
+> +	return devm_iio_device_register(dev, indio_dev);
+>  }
+> -
+> -static const struct i2c_device_id mpl115_id[] = {
+> -	{ "mpl115", 0 },
+> -	{ }
+> -};
+> -MODULE_DEVICE_TABLE(i2c, mpl115_id);
+> -
+> -static struct i2c_driver mpl115_driver = {
+> -	.driver = {
+> -		.name	= "mpl115",
+> -	},
+> -	.probe = mpl115_probe,
+> -	.id_table = mpl115_id,
+> -};
+> -module_i2c_driver(mpl115_driver);
+> +EXPORT_SYMBOL_GPL(mpl115_probe);
+>  
+>  MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+>  MODULE_DESCRIPTION("Freescale MPL115 pressure/temperature driver");
+> diff --git a/drivers/iio/pressure/mpl115.h b/drivers/iio/pressure/mpl115.h
 > new file mode 100644
-> index 0000000..ecb2d90
+> index 0000000..77efbad
 > --- /dev/null
-> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-> @@ -0,0 +1,509 @@
+> +++ b/drivers/iio/pressure/mpl115.h
+> @@ -0,0 +1,25 @@
 > +/*
-> + * Atmel ADC driver for SAMA5D2 devices and compatible.
+> + * Freescale MPL115A pressure/temperature sensor
 > + *
-> + * Copyright (C) 2015 Atmel,
-> + *               2015 Ludovic Desroches <ludovic.desroches@atmel.com>
+> + * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
+> + * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
 > + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
 > + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> + * GNU General Public License for more details.
+Nitpick ;) No need for blank comment line here.
 > + */
 > +
-> +#include <linux/bitops.h>
-> +#include <linux/clk.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
+> +#ifndef _MPL115_H_
+> +#define _MPL115_H_
+> +
+> +struct mpl115_ops {
+> +	int (*init)(struct device *);
+> +	int (*read)(struct device *, u8);
+> +	int (*write)(struct device *, u8, u8);
+> +};
+> +
+> +int mpl115_probe(struct device *dev, const char *name,
+> +			const struct mpl115_ops *ops);
+> +
+> +#endif
+> diff --git a/drivers/iio/pressure/mpl115_i2c.c b/drivers/iio/pressure/mpl115_i2c.c
+> new file mode 100644
+> index 0000000..098b45f
+> --- /dev/null
+> +++ b/drivers/iio/pressure/mpl115_i2c.c
+> @@ -0,0 +1,71 @@
+> +/*
+> + * Freescale MPL115A2 pressure/temperature sensor
+> + *
+> + * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * (7-bit I2C slave address 0x60)
+> + *
+> + * Datasheet: http://www.nxp.com/files/sensors/doc/data_sheet/MPL115A2.pdf
+> + */
+> +
 > +#include <linux/module.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/sched.h>
-> +#include <linux/wait.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/regulator/consumer.h>
+> +#include <linux/i2c.h>
 > +
-> +/* Control Register */
-> +#define AT91_SAMA5D2_CR		0x00
-> +/* Software Reset */
-> +#define	AT91_SAMA5D2_CR_SWRST		BIT(0)
-> +/* Start Conversion */
-> +#define	AT91_SAMA5D2_CR_START		BIT(1)
-> +/* Touchscreen Calibration */
-> +#define	AT91_SAMA5D2_CR_TSCALIB		BIT(2)
-> +/* Comparison Restart */
-> +#define	AT91_SAMA5D2_CR_CMPRST		BIT(4)
+> +#include "mpl115.h"
 > +
-> +/* Mode Register */
-> +#define AT91_SAMA5D2_MR		0x04
-> +/* Trigger Selection */
-> +#define	AT91_SAMA5D2_MR_TRGSEL(v)	((v) << 1)
-> +/* ADTRG */
-> +#define	AT91_SAMA5D2_MR_TRGSEL_TRIG0	0
-> +/* TIOA0 */
-> +#define	AT91_SAMA5D2_MR_TRGSEL_TRIG1	1
-> +/* TIOA1 */
-> +#define	AT91_SAMA5D2_MR_TRGSEL_TRIG2	2
-> +/* TIOA2 */
-> +#define	AT91_SAMA5D2_MR_TRGSEL_TRIG3	3
-> +/* PWM event line 0 */
-> +#define	AT91_SAMA5D2_MR_TRGSEL_TRIG4	4
-> +/* PWM event line 1 */
-> +#define	AT91_SAMA5D2_MR_TRGSEL_TRIG5	5
-> +/* TIOA3 */
-> +#define	AT91_SAMA5D2_MR_TRGSEL_TRIG6	6
-> +/* RTCOUT0 */
-> +#define	AT91_SAMA5D2_MR_TRGSEL_TRIG7	7
-> +/* Sleep Mode */
-> +#define	AT91_SAMA5D2_MR_SLEEP		BIT(5)
-> +/* Fast Wake Up */
-> +#define	AT91_SAMA5D2_MR_FWUP		BIT(6)
-> +/* Prescaler Rate Selection */
-> +#define	AT91_SAMA5D2_MR_PRESCAL(v)	((v) << AT91_SAMA5D2_MR_PRESCAL_OFFSET)
-> +#define	AT91_SAMA5D2_MR_PRESCAL_OFFSET	8
-> +#define	AT91_SAMA5D2_MR_PRESCAL_MAX	0xff
-> +/* Startup Time */
-> +#define	AT91_SAMA5D2_MR_STARTUP(v)	((v) << 16)
-> +/* Analog Change */
-> +#define	AT91_SAMA5D2_MR_ANACH		BIT(23)
-> +/* Tracking Time */
-> +#define	AT91_SAMA5D2_MR_TRACKTIM(v)	((v) << 24)
-> +#define	AT91_SAMA5D2_MR_TRACKTIM_MAX	0xff
-> +/* Transfer Time */
-> +#define	AT91_SAMA5D2_MR_TRANSFER(v)	((v) << 28)
-> +#define	AT91_SAMA5D2_MR_TRANSFER_MAX	0x3
-> +/* Use Sequence Enable */
-> +#define	AT91_SAMA5D2_MR_USEQ		BIT(31)
-> +
-> +/* Channel Sequence Register 1 */
-> +#define AT91_SAMA5D2_SEQR1	0x08
-> +/* Channel Sequence Register 2 */
-> +#define AT91_SAMA5D2_SEQR2	0x0c
-> +/* Channel Enable Register */
-> +#define AT91_SAMA5D2_CHER	0x10
-> +/* Channel Disable Register */
-> +#define AT91_SAMA5D2_CHDR	0x14
-> +/* Channel Status Register */
-> +#define AT91_SAMA5D2_CHSR	0x18
-> +/* Last Converted Data Register */
-> +#define AT91_SAMA5D2_LCDR	0x20
-> +/* Interrupt Enable Register */
-> +#define AT91_SAMA5D2_IER		0x24
-> +/* Interrupt Disable Register */
-> +#define AT91_SAMA5D2_IDR		0x28
-> +/* Interrupt Mask Register */
-> +#define AT91_SAMA5D2_IMR		0x2c
-> +/* Interrupt Status Register */
-> +#define AT91_SAMA5D2_ISR		0x30
-> +/* Last Channel Trigger Mode Register */
-> +#define AT91_SAMA5D2_LCTMR	0x34
-> +/* Last Channel Compare Window Register */
-> +#define AT91_SAMA5D2_LCCWR	0x38
-> +/* Overrun Status Register */
-> +#define AT91_SAMA5D2_OVER	0x3c
-> +/* Extended Mode Register */
-> +#define AT91_SAMA5D2_EMR		0x40
-> +/* Compare Window Register */
-> +#define AT91_SAMA5D2_CWR		0x44
-> +/* Channel Gain Register */
-> +#define AT91_SAMA5D2_CGR		0x48
-> +/* Channel Offset Register */
-> +#define AT91_SAMA5D2_COR		0x4c
-> +/* Channel Data Register 0 */
-> +#define AT91_SAMA5D2_CDR0	0x50
-> +/* Analog Control Register */
-> +#define AT91_SAMA5D2_ACR		0x94
-> +/* Touchscreen Mode Register */
-> +#define AT91_SAMA5D2_TSMR	0xb0
-> +/* Touchscreen X Position Register */
-> +#define AT91_SAMA5D2_XPOSR	0xb4
-> +/* Touchscreen Y Position Register */
-> +#define AT91_SAMA5D2_YPOSR	0xb8
-> +/* Touchscreen Pressure Register */
-> +#define AT91_SAMA5D2_PRESSR	0xbc
-> +/* Trigger Register */
-> +#define AT91_SAMA5D2_TRGR	0xc0
-> +/* Correction Select Register */
-> +#define AT91_SAMA5D2_COSR	0xd0
-> +/* Correction Value Register */
-> +#define AT91_SAMA5D2_CVR		0xd4
-> +/* Channel Error Correction Register */
-> +#define AT91_SAMA5D2_CECR	0xd8
-> +/* Write Protection Mode Register */
-> +#define AT91_SAMA5D2_WPMR	0xe4
-> +/* Write Protection Status Register */
-> +#define AT91_SAMA5D2_WPSR	0xe8
-> +/* Version Register */
-> +#define AT91_SAMA5D2_VERSION	0xfc
-> +
-> +#define AT91_AT91_SAMA5D2_CHAN(num, addr)				\
-> +	{								\
-> +		.type = IIO_VOLTAGE,					\
-> +		.channel = num,						\
-> +		.address = addr,					\
-> +		.scan_type = {						\
-> +			.sign = 'u',					\
-> +			.realbits = 12,					\
-> +		},							\
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
-> +		.datasheet_name = "CH"#num,				\
-> +		.indexed = 1,						\
-> +	}
-> +
-> +#define at91_adc_readl(st, reg)		readl_relaxed(st->base + reg)
-> +#define at91_adc_writel(st, reg, val)	writel_relaxed(val, st->base + reg)
-> +
-> +struct at91_adc_soc_info {
-> +	unsigned			startup_time;
-> +	unsigned			min_sample_rate;
-> +	unsigned			max_sample_rate;
-> +};
-> +
-> +struct at91_adc_state {
-> +	void __iomem			*base;
-> +	int				irq;
-> +	struct clk			*per_clk;
-> +	struct regulator		*reg;
-> +	struct regulator		*vref;
-> +	u32				vref_uv;
-> +	const struct iio_chan_spec	*chan;
-> +	bool				conversion_done;
-> +	u32				conversion_value;
-> +	struct at91_adc_soc_info	soc_info;
-> +	wait_queue_head_t		wq_data_available;
-> +	/*
-> +	 * lock to prevent concurrent 'single conversion' requests through
-> +	 * sysfs.
-> +	 */
-> +	struct mutex			lock;
-> +};
-> +
-> +static const struct iio_chan_spec at91_adc_channels[] = {
-> +	AT91_AT91_SAMA5D2_CHAN(0, 0x50),
-> +	AT91_AT91_SAMA5D2_CHAN(1, 0x54),
-> +	AT91_AT91_SAMA5D2_CHAN(2, 0x58),
-> +	AT91_AT91_SAMA5D2_CHAN(3, 0x5c),
-> +	AT91_AT91_SAMA5D2_CHAN(4, 0x60),
-> +	AT91_AT91_SAMA5D2_CHAN(5, 0x64),
-> +	AT91_AT91_SAMA5D2_CHAN(6, 0x68),
-> +	AT91_AT91_SAMA5D2_CHAN(7, 0x6c),
-> +	AT91_AT91_SAMA5D2_CHAN(8, 0x70),
-> +	AT91_AT91_SAMA5D2_CHAN(9, 0x74),
-> +	AT91_AT91_SAMA5D2_CHAN(10, 0x78),
-> +	AT91_AT91_SAMA5D2_CHAN(11, 0x7c),
-> +};
-> +
-> +static unsigned at91_adc_startup_time(unsigned startup_time_min,
-> +				      unsigned adc_clk_khz)
+> +static int mpl115_i2c_init(struct device *dev)
 > +{
-> +	const unsigned startup_lookup[] = {
-> +		  0,   8,  16,  24,
-> +		 64,  80,  96, 112,
-> +		512, 576, 640, 704,
-> +		768, 832, 896, 960
-> +		};
-> +	unsigned ticks_min, i;
-> +
-> +	/*
-> +	 * Since the adc frequency is checked before, there is no reason
-> +	 * to not meet the startup time constraint.
-> +	 */
-> +
-> +	ticks_min = startup_time_min * adc_clk_khz / 1000;
-> +	for (i = 0; i < ARRAY_SIZE(startup_lookup); i++)
-> +		if (startup_lookup[i] > ticks_min)
-> +			break;
-> +
-> +	return i;
-> +}
-> +
-> +static void at91_adc_setup_samp_freq(struct at91_adc_state *st, unsigned freq)
-> +{
-> +	struct iio_dev *indio_dev = iio_priv_to_dev(st);
-> +	unsigned f_per, prescal, startup;
-> +
-> +	f_per = clk_get_rate(st->per_clk);
-> +	prescal = (f_per / (2 * freq)) - 1;
-> +
-> +	startup = at91_adc_startup_time(st->soc_info.startup_time,
-> +					freq / 1000);
-> +
-> +	at91_adc_writel(st, AT91_SAMA5D2_MR,
-> +			AT91_SAMA5D2_MR_TRANSFER(2)
-> +			| AT91_SAMA5D2_MR_STARTUP(startup)
-> +			| AT91_SAMA5D2_MR_PRESCAL(prescal));
-> +
-> +	dev_dbg(&indio_dev->dev, "freq: %u, startup: %u, prescal: %u\n",
-> +		freq, startup, prescal);
-> +}
-> +
-> +static unsigned at91_adc_get_sample_freq(struct at91_adc_state *st)
-> +{
-> +	unsigned f_adc, f_per = clk_get_rate(st->per_clk);
-> +	unsigned mr, prescal;
-> +
-> +	mr = at91_adc_readl(st, AT91_SAMA5D2_MR);
-> +	prescal = (mr >> AT91_SAMA5D2_MR_PRESCAL_OFFSET)
-> +		  & AT91_SAMA5D2_MR_PRESCAL_MAX;
-> +	f_adc = f_per / (2 * (prescal + 1));
-> +
-> +	return f_adc;
-> +}
-> +
-> +static irqreturn_t at91_adc_interrupt(int irq, void *private)
-> +{
-> +	struct iio_dev *indio = private;
-> +	struct at91_adc_state *st = iio_priv(indio);
-> +	u32 status = at91_adc_readl(st, AT91_SAMA5D2_ISR);
-> +	u32 imr = at91_adc_readl(st, AT91_SAMA5D2_IMR);
-> +
-> +	if (status & imr) {
-> +		st->conversion_value = at91_adc_readl(st, st->chan->address);
-> +		st->conversion_done = true;
-> +		wake_up_interruptible(&st->wq_data_available);
-> +		return IRQ_HANDLED;
-> +	}
-> +
-> +	return IRQ_NONE;
-> +}
-> +
-> +static int at91_adc_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int *val, int *val2, long mask)
-> +{
-> +	struct at91_adc_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&st->lock);
-> +
-> +		st->chan = chan;
-> +
-> +		at91_adc_writel(st, AT91_SAMA5D2_CHER, BIT(chan->channel));
-> +		at91_adc_writel(st, AT91_SAMA5D2_IER, BIT(chan->channel));
-> +		at91_adc_writel(st, AT91_SAMA5D2_CR, AT91_SAMA5D2_CR_START);
-> +
-> +		ret = wait_event_interruptible_timeout(st->wq_data_available,
-> +						       st->conversion_done,
-> +						       msecs_to_jiffies(1000));
-> +		if (ret == 0)
-> +			ret = -ETIMEDOUT;
-> +
-> +		if (ret > 0) {
-> +			*val = st->conversion_value;
-> +			ret = IIO_VAL_INT;
-> +			st->conversion_done = false;
-> +		}
-> +
-> +		at91_adc_writel(st, AT91_SAMA5D2_IDR, BIT(chan->channel));
-> +		at91_adc_writel(st, AT91_SAMA5D2_CHDR, BIT(chan->channel));
-> +
-> +		mutex_unlock(&st->lock);
-> +		return ret;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = st->vref_uv / 1000;
-> +		*val2 = chan->scan_type.realbits;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = at91_adc_get_sample_freq(st);
-> +		return IIO_VAL_INT;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int at91_adc_write_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int val, int val2, long mask)
-> +{
-> +	struct at91_adc_state *st = iio_priv(indio_dev);
-> +
-> +	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
-> +		return -EINVAL;
-> +
-> +	if (val < st->soc_info.min_sample_rate ||
-> +	    val > st->soc_info.max_sample_rate)
-> +		return -EINVAL;
-> +
-> +	at91_adc_setup_samp_freq(st, val);
-> +
 > +	return 0;
 > +}
 > +
-> +static const struct iio_info at91_adc_info = {
-> +	.read_raw = &at91_adc_read_raw,
-> +	.write_raw = &at91_adc_write_raw,
-> +	.driver_module = THIS_MODULE,
+> +static int mpl115_i2c_read(struct device *dev, u8 address)
+> +{
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +
+> +	return i2c_smbus_read_word_swapped(client, address);
+I'd roll these into one line for compactness as the separation doesn't
+add anything significant to readability. i.e.
+    	return i2c_smbus_read_word_swapped(to_i2c_client(dev), address);
+> +}
+> +
+> +static int mpl115_i2c_write(struct device *dev, u8 address, u8 value)
+> +{
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +
+> +	return i2c_smbus_write_byte_data(client, address, value);
+> +}
+> +
+> +static const struct mpl115_ops mpl115_i2c_ops = {
+> +	.init = mpl115_i2c_init,
+> +	.read = mpl115_i2c_read,
+> +	.write = mpl115_i2c_write,
 > +};
 > +
-> +static int at91_adc_probe(struct platform_device *pdev)
+> +static int mpl115_i2c_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
 > +{
-> +	struct iio_dev *indio_dev;
-> +	struct at91_adc_state *st;
-> +	struct resource	*res;
-> +	int ret;
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+> +		return -ENODEV;
 > +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
-> +					  sizeof(struct at91_adc_state));
-Utter nitpick that isn't going to hold up the patch...
-I'd have done this as sizeof(*st)) but really doesn't matter.
-> +	if (!indio_dev)
+> +	return mpl115_probe(&client->dev, id->name, &mpl115_i2c_ops);
+> +}
+> +
+> +static const struct i2c_device_id mpl115_i2c_id[] = {
+> +	{ "mpl115", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, mpl115_i2c_id);
+> +
+> +static struct i2c_driver mpl115_i2c_driver = {
+> +	.driver = {
+> +		.name	= "mpl115",
+> +	},
+> +	.probe = mpl115_i2c_probe,
+> +	.id_table = mpl115_i2c_id,
+> +};
+> +module_i2c_driver(mpl115_i2c_driver);
+> +
+> +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+> +MODULE_DESCRIPTION("Freescale MPL115A2 pressure/temperature driver");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/iio/pressure/mpl115_spi.c b/drivers/iio/pressure/mpl115_spi.c
+> new file mode 100644
+> index 0000000..eae779b
+> --- /dev/null
+> +++ b/drivers/iio/pressure/mpl115_spi.c
+> @@ -0,0 +1,107 @@
+> +/*
+> + * Freescale MPL115A1 pressure/temperature sensor
+> + *
+> + * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * Datasheet: http://www.nxp.com/files/sensors/doc/data_sheet/MPL115A1.pdf
+> + *
+Another blank line that isn't useful or necessary.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/spi/spi.h>
+> +
+> +#include "mpl115.h"
+> +
+> +#define MPL115_SPI_WRITE(address)	((address) << 1)
+> +#define MPL115_SPI_READ(address)	(0x80 | (address) << 1)
+> +
+> +struct mpl115_spi_buf {
+> +	u8 tx[4];
+> +	u8 rx[4];
+> +};
+> +
+> +static int mpl115_spi_init(struct device *dev)
+> +{
+> +	struct spi_device *spi = to_spi_device(dev);
+> +	struct mpl115_spi_buf *buf;
+> +
+> +	buf = devm_kzalloc(dev, sizeof(*buf), GFP_KERNEL);
+> +	if (!buf)
 > +		return -ENOMEM;
 > +
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->name = dev_name(&pdev->dev);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &at91_adc_info;
-> +	indio_dev->channels = at91_adc_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(at91_adc_channels);
-> +
-> +	st = iio_priv(indio_dev);
-> +
-> +	ret = of_property_read_u32(pdev->dev.of_node,
-> +				   "atmel,min-sample-rate-hz",
-> +				   &st->soc_info.min_sample_rate);
-> +	if (ret) {
-> +		dev_err(&pdev->dev,
-> +			"invalid or missing value for atmel,min-sample-rate-hz\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = of_property_read_u32(pdev->dev.of_node,
-> +				   "atmel,max-sample-rate-hz",
-> +				   &st->soc_info.max_sample_rate);
-> +	if (ret) {
-> +		dev_err(&pdev->dev,
-> +			"invalid or missing value for atmel,max-sample-rate-hz\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = of_property_read_u32(pdev->dev.of_node, "atmel,startup-time-ms",
-> +				   &st->soc_info.startup_time);
-> +	if (ret) {
-> +		dev_err(&pdev->dev,
-> +			"invalid or missing value for atmel,startup-time-ms\n");
-> +		return ret;
-> +	}
-> +
-> +	init_waitqueue_head(&st->wq_data_available);
-> +	mutex_init(&st->lock);
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (!res)
-> +		return -EINVAL;
-> +
-> +	st->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(st->base))
-> +		return PTR_ERR(st->base);
-> +
-> +	st->irq = platform_get_irq(pdev, 0);
-> +	if (st->irq <= 0) {
-> +		if (!st->irq)
-> +			st->irq = -ENXIO;
-> +
-> +		return st->irq;
-> +	}
-> +
-> +	st->per_clk = devm_clk_get(&pdev->dev, "adc_clk");
-> +	if (IS_ERR(st->per_clk))
-> +		return PTR_ERR(st->per_clk);
-> +
-> +	st->reg = devm_regulator_get(&pdev->dev, "vddana");
-> +	if (IS_ERR(st->reg))
-> +		return PTR_ERR(st->reg);
-> +
-> +	st->vref = devm_regulator_get(&pdev->dev, "vref");
-> +	if (IS_ERR(st->vref))
-> +		return PTR_ERR(st->vref);
-> +
-> +	ret = devm_request_irq(&pdev->dev, st->irq, at91_adc_interrupt, 0,
-> +			       pdev->dev.driver->name, indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regulator_enable(st->reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regulator_enable(st->vref);
-> +	if (ret)
-> +		goto reg_disable;
-> +
-> +	st->vref_uv = regulator_get_voltage(st->vref);
-> +	if (st->vref_uv <= 0) {
-> +		ret = -EINVAL;
-> +		goto vref_disable;
-> +	}
-> +
-> +	at91_adc_writel(st, AT91_SAMA5D2_CR, AT91_SAMA5D2_CR_SWRST);
-> +	at91_adc_writel(st, AT91_SAMA5D2_IDR, 0xffffffff);
-> +
-> +	at91_adc_setup_samp_freq(st, st->soc_info.min_sample_rate);
-> +
-> +	ret = clk_prepare_enable(st->per_clk);
-> +	if (ret)
-> +		goto vref_disable;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		goto per_clk_disable_unprepare;
-> +
-> +	dev_info(&pdev->dev, "version: %x\n",
-> +		 readl_relaxed(st->base + AT91_SAMA5D2_VERSION));
+> +	spi_set_drvdata(spi, buf);
 > +
 > +	return 0;
-> +
-> +per_clk_disable_unprepare:
-> +	clk_disable_unprepare(st->per_clk);
-> +vref_disable:
-> +	regulator_disable(st->vref);
-> +reg_disable:
-> +	regulator_disable(st->reg);
-> +	return ret;
 > +}
 > +
-> +static int at91_adc_remove(struct platform_device *pdev)
+> +static int mpl115_spi_read(struct device *dev, u8 address)
 > +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct at91_adc_state *st = iio_priv(indio_dev);
+> +	struct spi_device *spi = to_spi_device(dev);
+> +	struct mpl115_spi_buf *buf = spi_get_drvdata(spi);
+> +	struct spi_transfer xfer = {
+> +		.tx_buf = buf->tx,
+> +		.rx_buf = buf->rx,
+> +		.len = 4,
+> +	};
+> +	int ret;
 > +
-> +	iio_device_unregister(indio_dev);
+> +	buf->tx[0] = MPL115_SPI_READ(address);
+> +	buf->tx[2] = MPL115_SPI_READ(address + 1);
+Hmm. Got to love a device that presents 16bit registers over i2c and
+8 bit ones over spi.  Up until this I was wondering if this would
+fit sensibly into regmap.  Could probably still be done, but perhaps
+more effort that it's worth!
+
 > +
-> +	clk_disable_unprepare(st->per_clk);
+> +	ret = spi_sync_transfer(spi, &xfer, 1);
+> +	if (ret)
+> +		return ret;
 > +
-> +	regulator_disable(st->vref);
-> +	regulator_disable(st->reg);
-> +
-> +	return 0;
+> +	return (buf->rx[1] << 8) | buf->rx[3];
 > +}
 > +
-> +static const struct of_device_id at91_adc_dt_match[] = {
-> +	{
-> +		.compatible = "atmel,sama5d2-adc",
-> +	}, {
-> +		/* sentinel */
-> +	}
-> +};
-> +MODULE_DEVICE_TABLE(of, at91_adc_dt_match);
+> +static int mpl115_spi_write(struct device *dev, u8 address, u8 value)
+> +{
+> +	struct spi_device *spi = to_spi_device(dev);
+> +	struct mpl115_spi_buf *buf = spi_get_drvdata(spi);
+> +	struct spi_transfer xfer = {
+> +		.tx_buf = buf->tx,
+> +		.len = 2,
+> +	};
 > +
-> +static struct platform_driver at91_adc_driver = {
-> +	.probe = at91_adc_probe,
-> +	.remove = at91_adc_remove,
+> +	buf->tx[0] = MPL115_SPI_WRITE(address);
+> +	buf->tx[1] = value;
+> +
+> +	return spi_sync_transfer(spi, &xfer, 1);
+> +}
+> +
+> +static const struct mpl115_ops mpl115_spi_ops = {
+> +	.init = mpl115_spi_init,
+> +	.read = mpl115_spi_read,
+> +	.write = mpl115_spi_write,
+> +};
+> +
+> +static int mpl115_spi_probe(struct spi_device *spi)
+> +{
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +
+> +	return mpl115_probe(&spi->dev, id->name, &mpl115_spi_ops);
+> +}
+> +
+> +static const struct spi_device_id mpl115_spi_ids[] = {
+> +	{ "mpl115", 0 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, mpl115_spi_ids);
+> +
+> +static struct spi_driver mpl115_spi_driver = {
 > +	.driver = {
-> +		.name = "at91-sama5d2_adc",
-> +		.of_match_table = at91_adc_dt_match,
+> +		.name   = "mpl115",
 > +	},
+> +	.probe = mpl115_spi_probe,
+> +	.id_table = mpl115_spi_ids,
 > +};
-> +module_platform_driver(at91_adc_driver)
+> +module_spi_driver(mpl115_spi_driver);
 > +
-> +MODULE_AUTHOR("Ludovic Desroches <ludovic.desroches@atmel.com>");
-> +MODULE_DESCRIPTION("Atmel AT91 SAMA5D2 ADC");
-> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR("Akinobu Mita <akinobu.mita@gmail.com>");
+> +MODULE_DESCRIPTION("Freescale MPL115A1 pressure/temperature driver");
+> +MODULE_LICENSE("GPL");
 > 
 
