@@ -1,71 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53589 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53518 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751050AbcAPNCz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jan 2016 08:02:55 -0500
-Subject: Re: [PATCH v2] iio: light: acpi-als: Report data as processed
-To: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-References: <1452180105-9584-1-git-send-email-gabriele.mzt@gmail.com>
- <1452612099-26630-1-git-send-email-gabriele.mzt@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-	marxin.liska@gmail.com, linux-iio@vger.kernel.org,
+	with ESMTP id S1751257AbcAPMw2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jan 2016 07:52:28 -0500
+Subject: Re: [PATCH 2/2] iio: light: opt3001: enable operation w/o IRQ
+To: Alexander Koch <mail@alexanderkoch.net>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1452622180-12728-1-git-send-email-mail@alexanderkoch.net>
+ <1452622180-12728-3-git-send-email-mail@alexanderkoch.net>
+ <alpine.DEB.2.02.1601122024340.10606@pmeerw.net>
+ <56955F43.90705@alexanderkoch.net>
+Cc: knaack.h@gmx.de, lars@metafoo.de, mhornung.linux@gmail.com,
+	dannenberg@ti.com, balbi@ti.com, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <569A3F7C.2050400@kernel.org>
-Date: Sat, 16 Jan 2016 13:02:52 +0000
+Message-ID: <569A3D06.80701@kernel.org>
+Date: Sat, 16 Jan 2016 12:52:22 +0000
 MIME-Version: 1.0
-In-Reply-To: <1452612099-26630-1-git-send-email-gabriele.mzt@gmail.com>
+In-Reply-To: <56955F43.90705@alexanderkoch.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/01/16 15:21, Gabriele Mazzotta wrote:
-> As per the ACPI specification (Revision 5.0) [1], the data coming
-> from the sensor represent the ambient light illuminance reading
-> expressed in lux. So use IIO_CHAN_INFO_PROCESSED to signify that
-> the data are pre-processed.
+On 12/01/16 20:17, Alexander Koch wrote:
+> Am 12.01.2016 um 20:27 schrieb Peter Meerwald-Stadler:
+>> On Tue, 12 Jan 2016, Alexander Koch wrote:
+>>
+>>> Enable operation of the TI OPT3001 light sensor without having an
+>>> interrupt line available to connect the INT pin to.
+>>>
+>>> In this operation mode, we issue a conversion request and simply wait
+>>> for the conversion time available as timeout value, determined from
+>>> integration time configuration and the worst-case time given in the data
+>>> sheet (sect. 6.5, table on p. 5):
+>>>
+>>>   short integration time (100ms): 110ms + 3ms = 113ms
+>>>    long integration time (800ms): 880ms + 3ms = 883ms
+>>>
+>>> This change is transparent as behaviour defaults to using the interrupt
+>>> method if an interrupt no. is configured via device tree. Interrupt-less
+>>> operation mode is performed when no valid interrupt no. is given.
+>>
+>> looks good, I'd rather use a bool for use_irq and the msecs_to_jiffies() 
+>> call moved from the #define to the code (which is not strictly necessary 
+>> for the patch) -- matter of taste
 > 
-> However, to keep backward ABI compatibility, the IIO_CHAN_INFO_RAW
-> bit is not removed.
+> Thanks - actually this is my first patch, so positive feedback much
+> appreciated!
 > 
-> [1] http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
-> 
-> Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-Applied to the fixes-togreg branch and marked for stable.
+> Concerning the bool for 'use_irq': I first had it that way but then
+> opted for the bit field of length 1 as I wasn't sure whether bool would
+> get optimized to the same level by the compiler.
+Bit fields are often less efficient as the compiler has to separate them out
+using shifts and masks.  Also from a space point of view the data structure
+will be considerably padded anyway for a couple of reasons:
+1) It contains u32 fields so will at least be padded to a multiple of u32.
+2) Memory allocations may well be a good bit larger depending on exact
+sizes vs the blob levels available in the memory allocator.
 
-I added a bit to the commit message including that bug report you found for
-iio-sensor-proxy as additional justification for the stable marking
-and sending it as a fix.
+Basic rule of thumb - keep things simple and let the compiler do the work.
+So a bool is suitable here.
 
-Jonathan
-
-> ---
->  drivers/iio/light/acpi-als.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
-> index 60537ec..53201d9 100644
-> --- a/drivers/iio/light/acpi-als.c
-> +++ b/drivers/iio/light/acpi-als.c
-> @@ -54,7 +54,9 @@ static const struct iio_chan_spec acpi_als_channels[] = {
->  			.realbits	= 32,
->  			.storagebits	= 32,
->  		},
-> -		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),
-> +		/* _RAW is here for backward ABI compatibility */
-> +		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW) |
-> +					  BIT(IIO_CHAN_INFO_PROCESSED),
->  	},
->  };
->  
-> @@ -152,7 +154,7 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
->  	s32 temp_val;
->  	int ret;
->  
-> -	if (mask != IIO_CHAN_INFO_RAW)
-> +	if ((mask != IIO_CHAN_INFO_PROCESSED) && (mask != IIO_CHAN_INFO_RAW))
->  		return -EINVAL;
->  
->  	/* we support only illumination (_ALI) so far. */
+> I'm a bit irritated by your comment concerning the msecs_to_jiffies()
+> call, as my patch indeed moves this call from the #define to the code.
+> Did you mean it the other way round, then?
+Presumably ;) 
+> My reason to move it was that I need to work with microseconds for the
+> IRQ-less operation mode, and jiffies are only required in one place for
+> the IRQ mode.
+Now perhaps the 'right' way to do this would be have been a precursor patch
+removing the define rather than lumping what is an an connected change (in
+many ways) in here.  Overall I agree the change is worthwhile and trivial.
+As Peter said, it's a matter of taste!  We both happen to disagree with him
+on this point.
+> 
+> 
+	> Best regards
+> 
+> lynix
 > 
 
