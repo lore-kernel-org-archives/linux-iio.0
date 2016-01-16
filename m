@@ -1,84 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53412 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53544 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751851AbcAPMZO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jan 2016 07:25:14 -0500
-Subject: Re: How to address a latency issue in a data acquisition system (IIO
- based)?
-To: Julio Cruz <jcsistemas2001@gmail.com>, linux-iio@vger.kernel.org
-References: <CAAn_ec90RULN=X=uoV4CrztyiQ0dsBOjYcSqgmbxqOheQR56ZA@mail.gmail.com>
- <CAAn_ec9QoS3iW8jAO2eRG9M73X56s23+fWWFk9meO6B0pANayA@mail.gmail.com>
+	with ESMTP id S1751257AbcAPMzd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jan 2016 07:55:33 -0500
+Subject: Re: [PATCH v7] iio: add ad5761 DAC driver
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+References: <1452540774-26410-1-git-send-email-ricardo.ribalda@gmail.com>
+ <56941920.8020406@metafoo.de>
+ <CAPybu_00PsgSzp1-TV98ndrh9jym+n=earLU=2w+L9R89=fi1g@mail.gmail.com>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	LKML <linux-kernel@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <569A36A8.2090407@kernel.org>
-Date: Sat, 16 Jan 2016 12:25:12 +0000
+Message-ID: <569A3DC3.7040307@kernel.org>
+Date: Sat, 16 Jan 2016 12:55:31 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAAn_ec9QoS3iW8jAO2eRG9M73X56s23+fWWFk9meO6B0pANayA@mail.gmail.com>
+In-Reply-To: <CAPybu_00PsgSzp1-TV98ndrh9jym+n=earLU=2w+L9R89=fi1g@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/01/16 08:29, Julio Cruz wrote:
-> Hi again,
+On 12/01/16 08:23, Ricardo Ribalda Delgado wrote:
+> Hello Lars
 > 
-> After digging on this issue, the SPI data loss was due to:
+>> And one wish for the future, please give people a chance a review and don't
+>> resend a new version of the patch every couple of hours. This will make the
+>> reviewers life a bit easier.
 > 
-> 1. The latency of some kernel drivers/modules. After disable some
-> modules as suggested by Mat and tglx [1] the SPI handler latency was
-> better, however still have some missing.
-> 2. The SPI thread priority was too low. After setting the
-> policy/priority as suggested by Daniel [2], the SPI response was as
-> expected.
+> Sorry for the disturbance
 > 
-> The interrupt latency depends on different factors, and those are very
-> interesting once you research it (interrupt controller implementation,
-> device priority of the interrupt, others drivers, etc...). Sorry for
-> the noise about this issue.
+I'm impatient unlike Lars ;)
+>>
+>>> diff --git a/include/linux/iio/dac/ad5761.h b/include/linux/iio/dac/ad5761.h
+>>> new file mode 100644
+>>> index 000000000000..2f3702309d61
+>>> --- /dev/null
+>>> +++ b/include/linux/iio/dac/ad5761.h
+>>
+>> This should go into include/linux/platform_data. That's where all new
+>> platform data include files should go.
+>>
 > 
-> Maybe this experience could be of interest for others SPI based drivers.
+> v8 is not on https://github.com/ribalda/linux/tree/ad5761v8
 > 
-> Julio
-> 
-Thanks for the updates.  Certainly of interest in general and good to have
-a set of references to look at when next this question is raised!
+> I will send to the ML if there is no more comments on it by the end of the day.
+It's been several days....
 
-Jonathan
-> ----
-> [1] Long max latencies on Wandbaord / Freescale i.MX6
-> http://marc.info/?l=linux-rt-users&m=144368690819933&w=2
-> ----
-> [2] cyclictest versus custom SPI based system
-> http://marc.info/?l=linux-rt-users&m=145271122200825&w=2
+(not that it actually matters at this time of the cycle!)
 > 
-> On Tue, Jan 12, 2016 at 11:50 PM, Julio Cruz <jcsistemas2001@gmail.com> wrote:
->> Hi,
->>
->> I'm running an acquisition system @1KHz sampling frequency (27
->> bytes/sample) with libiio as interface between the application and the
->> IIO driver (SPI based). The network and local context are working as
->> expected.
->>
->> However, the system have some data loss at SPI level (confirmed by
->> scope) even if the data is not pushed to the buffer
->> (iio_push_to_buffers). The scope show that every 1.4 sec (aprox), the
->> handler is not called. It seem other process is taking priority over
->> this.
->>
->> I'm trying to find the process that is taking over the SPI/IRQ handlers.
->>
->> - My system is running in ext4 (on SD) and maybe this could be the
->> problem (journal)?
->> - Implement a RT and review interrupt context as suggested by Xander
->> (http://marc.info/?l=linux-iio&m=143933412720586&w=2)?
->> - I would like to implement a DMA buffer as suggested by Lars (two
->> month ago) but I'm not sure this will help in this case
->> (http://marc.info/?l=linux-iio&m=144475305426138&w=2), for now.
->>
->> In any case, any advice to address this problem is welcome.
->>
->> Thanks
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Regards!
+> 
 > 
 
