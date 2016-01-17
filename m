@@ -1,160 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1.radempa.de ([176.9.142.194]:35964 "EHLO mail.cosmopool.net"
+Received: from h1.radempa.de ([176.9.142.194]:35974 "EHLO mail.cosmopool.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750957AbcAQQNy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 17 Jan 2016 11:13:54 -0500
+	id S1751074AbcAQQN5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 17 Jan 2016 11:13:57 -0500
 From: Harald Geyer <harald@ccbib.org>
 To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 	Jonathan Bell <jonathan@raspberrypi.org>
 Cc: Richard Weinberger <richard@nod.at>,
 	Harald Geyer <harald@ccbib.org>
-Subject: [PATCHv2 2/3] iio: dht11: Simplify decoding algorithm
-Date: Sun, 17 Jan 2016 16:13:30 +0000
-Message-Id: <1453047211-16661-2-git-send-email-harald@ccbib.org>
+Subject: [PATCHv2 3/3] iio: dht11: Improve logging
+Date: Sun, 17 Jan 2016 16:13:31 +0000
+Message-Id: <1453047211-16661-3-git-send-email-harald@ccbib.org>
 In-Reply-To: <1453047211-16661-1-git-send-email-harald@ccbib.org>
 References: <1453047211-16661-1-git-send-email-harald@ccbib.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The new algorithm uses a 'one size fits em all' threshold, which should
-be easier to understand and debug. I believe there are no regressions
-compared to the old adaptive threshold algorithm. I don't remember why
-I chose the old algorithm when I initially wrote the driver.
+* Unify log messages
+* Add more DEBUG messages
+
+Apparently this driver is working unreliably on some platforms that I can't
+test. Therefore I want an easy way for bug reporters to provide useful
+information without making the driver too chatty by default.
 
 Signed-off-by: Harald Geyer <harald@ccbib.org>
 ---
 changes since V1:
- * Simplify overly explicit code - no real change
+ * rebased onto the updated series
 
- drivers/iio/humidity/dht11.c | 64 +++++++++++++++++++++++++++++---------------
- 1 file changed, 42 insertions(+), 22 deletions(-)
+ drivers/iio/humidity/dht11.c | 40 ++++++++++++++++++++++++++++++++++------
+ 1 file changed, 34 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index 1ca284a..96185f8 100644
+index 96185f8..4992e8c 100644
 --- a/drivers/iio/humidity/dht11.c
 +++ b/drivers/iio/humidity/dht11.c
-@@ -50,12 +50,32 @@
- #define DHT11_EDGES_PER_READ (2 * DHT11_BITS_PER_READ + \
- 			      DHT11_EDGES_PREAMBLE + 1)
- 
--/* Data transmission timing (nano seconds) */
-+/*
-+ * Data transmission timing:
-+ * Data bits are encoded as pulse length (high time) on the data line.
-+ * 0-bit: 22-30uS -- typically 26uS (AM2302)
-+ * 1-bit: 68-75uS -- typically 70uS (AM2302)
-+ * The acutal timings also depend on the properties of the cable, with
-+ * longer cables typically making pulses shorter.
-+ *
-+ * Our decoding depends on the time resolution of the system:
-+ * timeres > 34uS ... don't know what a 1-tick pulse is
-+ * 34uS > timeres > 30uS ... no problem (30kHz and 32kHz clocks)
-+ * 30uS > timeres > 23uS ... don't know what a 2-tick pulse is
-+ * timeres < 23uS ... no problem
-+ *
-+ * Luckily clocks in the 33-44kHz range are quite uncommon, so we can
-+ * support most systems if the threshold for decoding a pulse as 1-bit
-+ * is chosen carefully. If somebody really wants to support clocks around
-+ * 40kHz, where this driver is most unreliable, there are two options.
-+ * a) select an implementation using busy loop polling on those systems
-+ * b) use the checksum to do some probabilistic decoding
-+ */
- #define DHT11_START_TRANSMISSION	18  /* ms */
--#define DHT11_SENSOR_RESPONSE	80000
--#define DHT11_START_BIT		50000
--#define DHT11_DATA_BIT_LOW	27000
--#define DHT11_DATA_BIT_HIGH	70000
-+#define DHT11_MIN_TIMERES	34000  /* ns */
-+#define DHT11_THRESHOLD		49000  /* ns */
-+#define DHT11_AMBIG_LOW		23000  /* ns */
-+#define DHT11_AMBIG_HIGH	30000  /* ns */
- 
- struct dht11 {
- 	struct device			*dev;
-@@ -76,43 +96,39 @@ struct dht11 {
+@@ -96,6 +96,24 @@ struct dht11 {
  	struct {s64 ts; int value; }	edges[DHT11_EDGES_PER_READ];
  };
  
--static unsigned char dht11_decode_byte(int *timing, int threshold)
-+static unsigned char dht11_decode_byte(char *bits)
++#ifdef CONFIG_DYNAMIC_DEBUG
++/*
++ * dht11_edges_print: show the data as actually received by the
++ *                    driver.
++ */
++static void dht11_edges_print(struct dht11 *dht11)
++{
++	int i;
++
++	dev_dbg(dht11->dev, "%d edges detected:\n", dht11->num_edges);
++	for (i = 1; i < dht11->num_edges; ++i) {
++		dev_dbg(dht11->dev, "%d: %lld ns %s\n", i,
++			dht11->edges[i].ts - dht11->edges[i - 1].ts,
++			dht11->edges[i - 1].value ? "high" : "low");
++	}
++}
++#endif /* CONFIG_DYNAMIC_DEBUG */
++
+ static unsigned char dht11_decode_byte(char *bits)
  {
  	unsigned char ret = 0;
- 	int i;
- 
- 	for (i = 0; i < 8; ++i) {
- 		ret <<= 1;
--		if (timing[i] >= threshold)
-+		if (bits[i])
- 			++ret;
- 	}
- 
- 	return ret;
- }
- 
--static int dht11_decode(struct dht11 *dht11, int offset, int timeres)
-+static int dht11_decode(struct dht11 *dht11, int offset)
- {
--	int i, t, timing[DHT11_BITS_PER_READ], threshold;
-+	int i, t;
-+	char bits[DHT11_BITS_PER_READ];
- 	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
- 
--	threshold = DHT11_DATA_BIT_HIGH / timeres;
--	if (DHT11_DATA_BIT_LOW / timeres + 1 >= threshold)
--		pr_err("dht11: WARNING: decoding ambiguous\n");
--
--	/* scale down with timeres and check validity */
+@@ -119,8 +137,12 @@ static int dht11_decode(struct dht11 *dht11, int offset)
  	for (i = 0; i < DHT11_BITS_PER_READ; ++i) {
  		t = dht11->edges[offset + 2 * i + 2].ts -
  			dht11->edges[offset + 2 * i + 1].ts;
- 		if (!dht11->edges[offset + 2 * i + 1].value)
- 			return -EIO;  /* lost synchronisation */
--		timing[i] = t / timeres;
-+		bits[i] = t > DHT11_THRESHOLD;
+-		if (!dht11->edges[offset + 2 * i + 1].value)
+-			return -EIO;  /* lost synchronisation */
++		if (!dht11->edges[offset + 2 * i + 1].value) {
++			dev_dbg(dht11->dev,
++				"lost synchronisation at edge %d\n",
++				offset + 2 * i + 1);
++			return -EIO;
++		}
+ 		bits[i] = t > DHT11_THRESHOLD;
  	}
  
--	hum_int = dht11_decode_byte(timing, threshold);
--	hum_dec = dht11_decode_byte(&timing[8], threshold);
--	temp_int = dht11_decode_byte(&timing[16], threshold);
--	temp_dec = dht11_decode_byte(&timing[24], threshold);
--	checksum = dht11_decode_byte(&timing[32], threshold);
-+	hum_int = dht11_decode_byte(bits);
-+	hum_dec = dht11_decode_byte(&bits[8]);
-+	temp_int = dht11_decode_byte(&bits[16]);
-+	temp_dec = dht11_decode_byte(&bits[24]);
-+	checksum = dht11_decode_byte(&bits[32]);
+@@ -130,8 +152,10 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 	temp_dec = dht11_decode_byte(&bits[24]);
+ 	checksum = dht11_decode_byte(&bits[32]);
  
- 	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
+-	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
++	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum) {
++		dev_dbg(dht11->dev, "invalid checksum\n");
  		return -EIO;
-@@ -166,7 +182,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
++	}
+ 
+ 	dht11->timestamp = ktime_get_real_ns();
+ 	if (hum_int < 20) {  /* DHT22 */
+@@ -182,6 +206,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
  	mutex_lock(&dht11->lock);
  	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns()) {
  		timeres = ktime_get_resolution_ns();
--		if (DHT11_DATA_BIT_HIGH < 2 * timeres) {
-+		if (timeres > DHT11_MIN_TIMERES) {
++		dev_dbg(dht11->dev, "current timeresolution: %dns\n", timeres);
+ 		if (timeres > DHT11_MIN_TIMERES) {
  			dev_err(dht11->dev, "timeresolution %dns too low\n",
  				timeres);
- 			/* In theory a better clock could become available
-@@ -176,6 +192,10 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
- 			ret = -EAGAIN;
- 			goto err;
- 		}
-+		if (timeres > DHT11_AMBIG_LOW && timeres < DHT11_AMBIG_HIGH)
-+			dev_warn(dht11->dev,
-+				 "timeresolution: %dns - decoding ambiguous\n",
-+				 timeres);
+@@ -219,10 +244,13 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
  
- 		reinit_completion(&dht11->completion);
+ 		free_irq(dht11->irq, iio_dev);
  
-@@ -211,7 +231,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
- 		offset = DHT11_EDGES_PREAMBLE +
- 				dht11->num_edges - DHT11_EDGES_PER_READ;
- 		for (; offset >= 0; --offset) {
--			ret = dht11_decode(dht11, offset, timeres);
-+			ret = dht11_decode(dht11, offset);
- 			if (!ret)
- 				break;
++#ifdef CONFIG_DYNAMIC_DEBUG
++		dht11_edges_print(dht11);
++#endif
++
+ 		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
+-			dev_err(&iio_dev->dev,
+-				"Only %d signal edges detected\n",
+-					dht11->num_edges);
++			dev_err(dht11->dev, "Only %d signal edges detected\n",
++				dht11->num_edges);
+ 			ret = -ETIMEDOUT;
  		}
+ 		if (ret < 0)
 -- 
 2.1.4
 
