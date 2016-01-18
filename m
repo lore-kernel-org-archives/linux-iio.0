@@ -1,46 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from youngberry.canonical.com ([91.189.89.112]:33454 "EHLO
-	youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753996AbcAVRt1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jan 2016 12:49:27 -0500
-From: Colin King <colin.king@canonical.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Krzysztof Kozlowski <k.kozlowski.k@gmail.com>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: axp288: remove redundant duplicate const on axp288_adc_channels
-Date: Fri, 22 Jan 2016 17:49:22 +0000
-Message-Id: <1453484962-25247-1-git-send-email-colin.king@canonical.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <ludovic.desroches@atmel.com>
+From: Ludovic Desroches <ludovic.desroches@atmel.com>
+To: <jic23@kernel.org>, <nicolas.ferre@atmel.com>
+CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, Ludovic Desroches
+	<ludovic.desroches@atmel.com>
+Subject: [PATCH 2/2] iio:adc:at91-sama5d2: code cleanup
+Date: Mon, 18 Jan 2016 09:41:56 +0100
+Message-ID: <1453106516-17935-2-git-send-email-ludovic.desroches@atmel.com>
+In-Reply-To: <1453106516-17935-1-git-send-email-ludovic.desroches@atmel.com>
+References: <1453106516-17935-1-git-send-email-ludovic.desroches@atmel.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Colin Ian King <colin.king@canonical.com>
+Use var type for sizeof argument instead of the struct name.
 
-duplicate const can be removed, it is redundant. Found by static
-analysis using smatch.
-
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
 ---
- drivers/iio/adc/axp288_adc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/at91-sama5d2_adc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
-index 0c904ed..7fd2494 100644
---- a/drivers/iio/adc/axp288_adc.c
-+++ b/drivers/iio/adc/axp288_adc.c
-@@ -46,7 +46,7 @@ struct axp288_adc_info {
- 	struct regmap *regmap;
- };
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index f2d8bd5..dbee13a 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -353,8 +353,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	struct resource	*res;
+ 	int ret;
  
--static const struct iio_chan_spec const axp288_adc_channels[] = {
-+static const struct iio_chan_spec axp288_adc_channels[] = {
- 	{
- 		.indexed = 1,
- 		.type = IIO_TEMP,
+-	indio_dev = devm_iio_device_alloc(&pdev->dev,
+-					  sizeof(struct at91_adc_state));
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*st));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
 -- 
-2.7.0.rc3
-
+2.5.0
