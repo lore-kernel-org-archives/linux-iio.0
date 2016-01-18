@@ -1,103 +1,248 @@
-Return-Path: <jic23@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio:pressure:Kconfig white space cleanup.
-Date: Sun, 24 Jan 2016 17:06:50 +0000
-Message-Id: <1453655210-13420-1-git-send-email-jic23@kernel.org>
+Return-Path: <martink@posteo.de>
+Subject: Re: [PATCH v2 3/3] iio: light: opt3001: enable operation w/o IRQ
+To: Alexander Koch <mail@alexanderkoch.net>, jic23@kernel.org
+References: <1452960878-1727-1-git-send-email-mail@alexanderkoch.net>
+ <1452960878-1727-4-git-send-email-mail@alexanderkoch.net>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+ mhornung.linux@gmail.com, dannenberg@ti.com, balbi@ti.com,
+ fengguang.wu@intel.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+From: Martin Kepplinger <martink@posteo.de>
+Message-ID: <569D1BDD.1050804@posteo.de>
+Date: Mon, 18 Jan 2016 18:07:41 +0100
+MIME-Version: 1.0
+In-Reply-To: <1452960878-1727-4-git-send-email-mail@alexanderkoch.net>
+Content-Type: text/plain; charset=iso-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-Clearly a high degree of cut and paste has gone on in this file, propogating
-a particularly random combination of tabs and spaces.  This patch at least
-should make it all consistent going forward.
+Am 2016-01-16 um 17:14 schrieb Alexander Koch:
+> Enable operation of the TI OPT3001 light sensor without having an
+> interrupt line available to connect the INT pin to.
+> 
+> In this operation mode, we issue a conversion request and simply wait
+> for the conversion time available as timeout value, determined from
+> integration time configuration and the worst-case time given in the data
+> sheet (sect. 6.5, table on p. 5):
+> 
+>   short integration time (100ms): 110ms + 3ms = 113ms
+>    long integration time (800ms): 880ms + 3ms = 883ms
+> 
+> This change is transparent as behaviour defaults to using the interrupt
+> method if an interrupt no. is configured via device tree. Interrupt-less
+> operation mode is performed when no valid interrupt no. is given.
+> 
+> Signed-off-by: Alexander Koch <mail@alexanderkoch.net>
+> Signed-off-by: Michael Hornung <mhornung.linux@gmail.com>
+> ---
+>  drivers/iio/light/opt3001.c | 137 ++++++++++++++++++++++++++++++--------------
+>  1 file changed, 95 insertions(+), 42 deletions(-)
+> 
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/iio/pressure/Kconfig | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+Looks ok to me, although I didn't verify anything. Not very important
+suggestions for changes inline:
 
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index e8f60dbf646e..cf03a43545a1 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -10,11 +10,11 @@ config BMP280
- 	depends on I2C
- 	select REGMAP_I2C
- 	help
--	 Say yes here to build support for Bosch Sensortec BMP280
--	 pressure and temperature sensor.
-+	  Say yes here to build support for Bosch Sensortec BMP280
-+	  pressure and temperature sensor.
- 
--	 To compile this driver as a module, choose M here: the module
--	 will be called bmp280.
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called bmp280.
- 
- config HID_SENSOR_PRESS
- 	depends on HID_SENSOR_HUB
-@@ -27,8 +27,8 @@ config HID_SENSOR_PRESS
- 	  Say yes here to build support for the HID SENSOR
- 	  Pressure driver
- 
--          To compile this driver as a module, choose M here: the module
--          will be called hid-sensor-press.
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called hid-sensor-press.
- 
- config MPL115
- 	tristate
-@@ -41,8 +41,8 @@ config MPL115_I2C
- 	  Say yes here to build support for the Freescale MPL115A2
- 	  pressure sensor connected via I2C.
- 
--          To compile this driver as a module, choose M here: the module
--          will be called mpl115_i2c.
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called mpl115_i2c.
- 
- config MPL115_SPI
- 	tristate "Freescale MPL115A1 pressure sensor driver"
-@@ -52,8 +52,8 @@ config MPL115_SPI
- 	  Say yes here to build support for the Freescale MPL115A1
- 	  pressure sensor connected via SPI.
- 
--          To compile this driver as a module, choose M here: the module
--          will be called mpl115_spi.
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called mpl115_spi.
- 
- config MPL3115
- 	tristate "Freescale MPL3115A2 pressure sensor driver"
-@@ -64,8 +64,8 @@ config MPL3115
- 	  Say yes here to build support for the Freescale MPL3115A2
- 	  pressure sensor / altimeter.
- 
--          To compile this driver as a module, choose M here: the module
--          will be called mpl3115.
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called mpl3115.
- 
- config MS5611
- 	tristate "Measurement Specialties MS5611 pressure sensor driver"
-@@ -97,7 +97,7 @@ config MS5611_SPI
- config MS5637
- 	tristate "Measurement Specialties MS5637 pressure & temperature sensor"
- 	depends on I2C
--        select IIO_MS_SENSORS_I2C
-+	select IIO_MS_SENSORS_I2C
- 	help
- 	  If you say yes here you get support for the Measurement Specialties
- 	  MS5637 pressure and temperature sensor.
-@@ -143,7 +143,7 @@ config T5403
- 	  Say yes here to build support for the EPCOS T5403 pressure sensor
- 	  connected via I2C.
- 
--          To compile this driver as a module, choose M here: the module
--          will be called t5403.
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called t5403.
- 
- endmenu
--- 
-2.6.4
+> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+> index b05c484..2a2340d 100644
+> --- a/drivers/iio/light/opt3001.c
+> +++ b/drivers/iio/light/opt3001.c
+> @@ -70,9 +70,12 @@
+>  
+>  /*
+>   * Time to wait for conversion result to be ready. The device datasheet
+> - * worst-case max value is 880ms. Add some slack to be on the safe side.
+> + * sect. 6.5 states results are ready after total integration time plus 3ms.
+> + * This results in worst-case max values of 113ms or 883ms, respectively.
+> + * Add some slack to be on the safe side.
+>   */
+> -#define OPT3001_RESULT_READY_TIMEOUT	msecs_to_jiffies(1000)
+> +#define OPT3001_RESULT_READY_SHORT	150
+> +#define OPT3001_RESULT_READY_LONG	1000
+>  
+>  struct opt3001 {
+>  	struct i2c_client	*client;
+> @@ -92,6 +95,8 @@ struct opt3001 {
+>  
+>  	u8			high_thresh_exp;
+>  	u8			low_thresh_exp;
+> +
+> +	bool			use_irq;
+>  };
+>  
+>  struct opt3001_scale {
+> @@ -230,26 +235,30 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
+>  	u16 reg;
+>  	u8 exponent;
+>  	u16 value;
+> +	long timeout;
+>  
+> -	/*
+> -	 * Enable the end-of-conversion interrupt mechanism. Note that doing
+> -	 * so will overwrite the low-level limit value however we will restore
+> -	 * this value later on.
+> -	 */
+> -	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_LOW_LIMIT,
+> -			OPT3001_LOW_LIMIT_EOC_ENABLE);
+> -	if (ret < 0) {
+> -		dev_err(opt->dev, "failed to write register %02x\n",
+> -				OPT3001_LOW_LIMIT);
+> -		return ret;
+> +	if (opt->use_irq) {
+> +		/*
+> +		 * Enable the end-of-conversion interrupt mechanism. Note that
+> +		 * doing so will overwrite the low-level limit value however we
+> +		 * will restore this value later on.
+> +		 */
+> +		ret = i2c_smbus_write_word_swapped(opt->client,
+> +					OPT3001_LOW_LIMIT,
+> +					OPT3001_LOW_LIMIT_EOC_ENABLE);
+> +		if (ret < 0) {
+> +			dev_err(opt->dev, "failed to write register %02x\n",
+> +					OPT3001_LOW_LIMIT);
+> +			return ret;
+> +		}
+> +
+> +		/* Allow IRQ to access the device despite lock being set */
+> +		opt->ok_to_ignore_lock = true;
+>  	}
+>  
+> -	/* Reset data-ready indicator flag (will be set in the IRQ routine) */
+> +	/* Reset data-ready indicator flag */
+>  	opt->result_ready = false;
+>  
+> -	/* Allow IRQ to access the device despite lock being set */
+> -	opt->ok_to_ignore_lock = true;
+> -
+>  	/* Configure for single-conversion mode and start a new conversion */
+>  	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
+>  	if (ret < 0) {
+> @@ -269,32 +278,69 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
+>  		goto err;
+>  	}
+>  
+> -	/* Wait for the IRQ to indicate the conversion is complete */
+> -	ret = wait_event_timeout(opt->result_ready_queue, opt->result_ready,
+> -			OPT3001_RESULT_READY_TIMEOUT);
+> +	if (opt->use_irq) {
+> +		/* Wait for the IRQ to indicate the conversion is complete */
+> +		ret = wait_event_timeout(opt->result_ready_queue,
+> +				opt->result_ready,
+> +				msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
+> +	} else {
+> +		/* Sleep for result ready time */
+> +		timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
+> +			OPT3001_RESULT_READY_SHORT : OPT3001_RESULT_READY_LONG;
+> +		msleep(timeout);
+> +
+> +		/* Check result ready flag */
+> +		ret = i2c_smbus_read_word_swapped(opt->client,
+> +						  OPT3001_CONFIGURATION);
+> +		if (ret < 0) {
+> +			dev_err(opt->dev, "failed to read register %02x\n",
+> +				OPT3001_CONFIGURATION);
+> +			goto err;
+> +		}
+> +
+> +		if (!(ret & OPT3001_CONFIGURATION_CRF)) {
+> +			ret = -ETIMEDOUT;
+> +			goto err;
+> +		}
+> +
+> +		/* Obtain value */
+> +		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
+> +		if (ret < 0) {
+> +			dev_err(opt->dev, "failed to read register %02x\n",
+> +				OPT3001_RESULT);
+> +			goto err;
+> +		}
+> +		opt->result = ret;
+> +		opt->result_ready = true;
+> +	}
+>  
+>  err:
+> -	/* Disallow IRQ to access the device while lock is active */
+> -	opt->ok_to_ignore_lock = false;
+> +	if (opt->use_irq)
+> +		/* Disallow IRQ to access the device while lock is active */
+> +		opt->ok_to_ignore_lock = false;
+>  
+>  	if (ret == 0)
+>  		return -ETIMEDOUT;
+>  	else if (ret < 0)
+>  		return ret;
+>  
+> -	/*
+> -	 * Disable the end-of-conversion interrupt mechanism by restoring the
+> -	 * low-level limit value (clearing OPT3001_LOW_LIMIT_EOC_ENABLE). Note
+> -	 * that selectively clearing those enable bits would affect the actual
+> -	 * limit value due to bit-overlap and therefore can't be done.
+> -	 */
+> -	value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
+> -	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_LOW_LIMIT,
+> -			value);
+> -	if (ret < 0) {
+> -		dev_err(opt->dev, "failed to write register %02x\n",
+> -				OPT3001_LOW_LIMIT);
+> -		return ret;
+> +	if (opt->use_irq) {
+> +		/*
+> +		 * Disable the end-of-conversion interrupt mechanism by
+> +		 * restoring the low-level limit value (clearing
+> +		 * OPT3001_LOW_LIMIT_EOC_ENABLE). Note that selectively clearing
+> +		 * those enable bits would affect the actual limit value due to
+> +		 * bit-overlap and therefore can't be done.
+> +		 */
+> +		value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
+> +		ret = i2c_smbus_write_word_swapped(opt->client,
+> +						   OPT3001_LOW_LIMIT,
+> +						   value);
+> +		if (ret < 0) {
+> +			dev_err(opt->dev, "failed to write register %02x\n",
+> +					OPT3001_LOW_LIMIT);
+> +			return ret;
+> +		}
+>  	}
+>  
+>  	exponent = OPT3001_REG_EXPONENT(opt->result);
+> @@ -736,12 +782,18 @@ static int opt3001_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  
+> -	ret = request_threaded_irq(irq, NULL, opt3001_irq,
+> -			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> -			"opt3001", iio);
+> -	if (ret) {
+> -		dev_err(dev, "failed to request IRQ #%d\n", irq);
+> -		return ret;
+> +	/* Make use of INT pin only if valid IRQ no. is given */
+> +	if (irq > 0) {
+> +		ret = request_threaded_irq(irq, NULL, opt3001_irq,
+> +				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> +				"opt3001", iio);
+
+You can define your driver's name once and use it at least here and in
+struct i2c_driver, and struct i2c_device_id.
+
+> +		if (ret) {
+> +			dev_err(dev, "failed to request IRQ #%d\n", irq);
+> +			return ret;
+> +		}
+> +		opt->use_irq = true;
+> +	} else {
+> +		dev_info(opt->dev, "enabling interrupt-less operation\n");
+>  	}
+
+I'd probably make this debug level output.
+
+>  
+>  	return 0;
+> @@ -754,7 +806,8 @@ static int opt3001_remove(struct i2c_client *client)
+>  	int ret;
+>  	u16 reg;
+>  
+> -	free_irq(client->irq, iio);
+> +	if (opt->use_irq)
+> +		free_irq(client->irq, iio);
+>  
+>  	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
+>  	if (ret < 0) {
+> 
