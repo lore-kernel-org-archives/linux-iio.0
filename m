@@ -1,41 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f52.google.com ([209.85.220.52]:34646 "EHLO
-	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750709AbcATFfu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Jan 2016 00:35:50 -0500
-Received: by mail-pa0-f52.google.com with SMTP id uo6so450616470pac.1
-        for <linux-iio@vger.kernel.org>; Tue, 19 Jan 2016 21:35:50 -0800 (PST)
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:35414 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750842AbcATFfw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Jan 2016 00:35:52 -0500
+Received: by mail-pa0-f44.google.com with SMTP id ho8so203250784pac.2
+        for <linux-iio@vger.kernel.org>; Tue, 19 Jan 2016 21:35:52 -0800 (PST)
 From: Matt Ranostay <mranostay@gmail.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v4 0/3] iio: chemical: add atlas ph sensor support
-Date: Tue, 19 Jan 2016 21:35:43 -0800
-Message-Id: <1453268146-28388-1-git-send-email-mranostay@gmail.com>
+Subject: [PATCH v4 1/3] devicetree: add Atlas Scientific LLC vendor prefix
+Date: Tue, 19 Jan 2016 21:35:44 -0800
+Message-Id: <1453268146-28388-2-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1453268146-28388-1-git-send-email-mranostay@gmail.com>
+References: <1453268146-28388-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes from v3:
-* Allow temp output channel to be read during buffer enable
-* Add volatile table for regmap reading/writing
-* Make sizeof() parameters consistent
+Add the "atlas" vendor prefix for Atlas Scientific LLC
 
-Matt Ranostay (3):
-  devicetree: add Atlas Scientific LLC vendor prefix
-  iio: ph: add IIO_PH channel type
-  iio: chemical: add Atlas pH-SM sensor support
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
- Documentation/ABI/testing/sysfs-bus-iio            |   7 +
- .../bindings/iio/chemical/atlas,ph-sm.txt          |  22 +
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/chemical/Kconfig                       |  13 +
- drivers/iio/chemical/Makefile                      |   1 +
- drivers/iio/chemical/atlas-ph-sensor.c             | 497 +++++++++++++++++++++
- drivers/iio/industrialio-core.c                    |   1 +
- include/uapi/linux/iio/types.h                     |   1 +
- 8 files changed, 543 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
- create mode 100644 drivers/iio/chemical/atlas-ph-sensor.c
-
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index 72e2c5a..44ddc98 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -28,6 +28,7 @@ arm	ARM Ltd.
+ armadeus	ARMadeus Systems SARL
+ artesyn	Artesyn Embedded Technologies Inc.
+ asahi-kasei	Asahi Kasei Corp.
++atlas	Atlas Scientific LLC
+ atmel	Atmel Corporation
+ auo	AU Optronics Corporation
+ avago	Avago Technologies
 -- 
 2.7.0.rc3
 
