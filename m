@@ -1,63 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45544 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751608AbcAXQdQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jan 2016 11:33:16 -0500
-Subject: Re: [PATCH] iio: pressure: mpl115: fix temperature offset sign
-To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org
-References: <1453306051-8817-1-git-send-email-akinobu.mita@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56A4FCCA.80500@kernel.org>
-Date: Sun, 24 Jan 2016 16:33:14 +0000
+Received: from aserp1040.oracle.com ([141.146.126.69]:24048 "EHLO
+	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750908AbcAUTr1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jan 2016 14:47:27 -0500
+Date: Thu, 21 Jan 2016 22:46:51 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Matt Ranostay <mranostay@gmail.com>
+Cc: "Gujulan Elango, Hari Prasath (H.)" <hgujulan@visteon.com>,
+	"daniel.baluta@intel.com" <daniel.baluta@intel.com>,
+	"ciorneiioana@gmail.com" <ciorneiioana@gmail.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"hamohammed.sa@gmail.com" <hamohammed.sa@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"jic23@kernel.org" <jic23@kernel.org>
+Subject: Re: [PATCH] staging: iio: replace clk_get() with devm_clk_get()
+Message-ID: <20160121194651.GA5325@mwanda>
+References: <20160121091238.GA9430@IND12F0122>
+ <CAKzfze_t39zoDv16ng04NpVLW1PG3n5WtCnvVp=Amh4EKme2FA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1453306051-8817-1-git-send-email-akinobu.mita@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAKzfze_t39zoDv16ng04NpVLW1PG3n5WtCnvVp=Amh4EKme2FA@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/01/16 16:07, Akinobu Mita wrote:
-> According to the datasheet, the resolusion of temperature sensor is
-> -5.35 counts/C. Temperature ADC is 472 counts at 25C.
-> (https://www.sparkfun.com/datasheets/Sensors/Pressure/MPL115A1.pdf
-> NOTE: This is older revision, but this information is removed from the
-> latest datasheet from nxp somehow)
+On Thu, Jan 21, 2016 at 11:21:53AM -0800, Matt Ranostay wrote:
+> > @@ -356,8 +356,6 @@ static int spear_adc_probe(struct platform_device *pdev)
+> >
+> >  errout3:
+> >         clk_disable_unprepare(st->clk);
 > 
-> Temp [C] = (Tadc - 472) / -5.35 + 25
->          = (Tadc - 605.750000) * -0.186915888
+> Shouldn't errout3 now be errout2.. having a gap would seem odd.
 > 
-> So the correct offset is -605.750000.
-> 
-> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: linux-iio@vger.kernel.org
-Peter,
+> > -errout2:
+> > -       clk_put(st->clk);
+> >  errout1:
+> >         iounmap(st->adc_base_spear6xx);
 
-I'd like your Ack on this given it is your driver.  That way
-I can be lazy and not cross check the datasheet myself.
+GW-BASIC style numbered gotos are nonsense.  Label names should be name
+after what the label does.
 
-Jonathan
-> ---
->  drivers/iio/pressure/mpl115.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
-> index 138344c..73f2f0c 100644
-> --- a/drivers/iio/pressure/mpl115.c
-> +++ b/drivers/iio/pressure/mpl115.c
-> @@ -118,7 +118,7 @@ static int mpl115_read_raw(struct iio_dev *indio_dev,
->  		*val = ret >> 6;
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_OFFSET:
-> -		*val = 605;
-> +		*val = -605;
->  		*val2 = 750000;
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_SCALE:
-> 
+err_unprepare:
+err_put:
+err_iounmap:
+
+But that's something for a different patch, not related to this patch.
+
+regards,
+dan carpenter
 
