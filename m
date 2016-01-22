@@ -1,78 +1,70 @@
-Return-Path: <hgujulan@visteon.com>
-From: "Gujulan Elango, Hari Prasath (H.)" <hgujulan@visteon.com>
-To: Matt Ranostay <mranostay@gmail.com>
-CC: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"jic23@kernel.org" <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"daniel.baluta@intel.com" <daniel.baluta@intel.com>, "ciorneiioana@gmail.com"
-	<ciorneiioana@gmail.com>, "hamohammed.sa@gmail.com"
-	<hamohammed.sa@gmail.com>, "devel@driverdev.osuosl.org"
-	<devel@driverdev.osuosl.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] staging: iio: replace clk_get() with devm_clk_get()
-Date: Fri, 22 Jan 2016 07:31:55 +0000
-Message-ID: <20160122073258.GB10350@IND12F0122>
-References: <20160121091238.GA9430@IND12F0122>
- <CAKzfze_t39zoDv16ng04NpVLW1PG3n5WtCnvVp=Amh4EKme2FA@mail.gmail.com>
-In-Reply-To: <CAKzfze_t39zoDv16ng04NpVLW1PG3n5WtCnvVp=Amh4EKme2FA@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail01.prevas.se ([62.95.78.3]:17744 "EHLO mail01.prevas.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753560AbcAVNIB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 22 Jan 2016 08:08:01 -0500
+From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+To: <linux-iio@vger.kernel.org>
+CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Subject: [RFC 1/2] iio: core: added support for a single output that supports both current and voltage
+Date: Fri, 22 Jan 2016 13:54:55 +0100
+Message-ID: <1453467296-26356-1-git-send-email-sean.nyekjaer@prevas.dk>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jan 21, 2016 at 11:21:53AM -0800, Matt Ranostay wrote:
-> On Thu, Jan 21, 2016 at 1:11 AM, Gujulan Elango, Hari Prasath (H.)
-> <hgujulan@visteon.com> wrote:
-> > From: Hari Prasath Gujulan Elango
-> >
-> > This patch replaces the clk_get() with devm_clk_get().
-> > Accordingly,modified the error paths and removed clk_put() as well.
-> >
-> > Signed-off-by: Hari Prasath Gujulan Elango <hgujulan@visteon.com>
-> > ---
-> >  drivers/staging/iio/adc/spear_adc.c | 6 ++----
-> >  1 file changed, 2 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/=
-adc/spear_adc.c
-> > index 712cae0..4ac0f54 100644
-> > --- a/drivers/staging/iio/adc/spear_adc.c
-> > +++ b/drivers/staging/iio/adc/spear_adc.c
-> > @@ -288,7 +288,7 @@ static int spear_adc_probe(struct platform_device *=
-pdev)
-> >         st->adc_base_spear3xx =3D
-> >                 (struct adc_regs_spear3xx __iomem *)st->adc_base_spear6=
-xx;
-> >
-> > -       st->clk =3D clk_get(dev, NULL);
-> > +       st->clk =3D devm_clk_get(dev, NULL);
-> >         if (IS_ERR(st->clk)) {
-> >                 dev_err(dev, "failed getting clock\n");
-> >                 goto errout1;
-> > @@ -297,7 +297,7 @@ static int spear_adc_probe(struct platform_device *=
-pdev)
-> >         ret =3D clk_prepare_enable(st->clk);
-> >         if (ret) {
-> >                 dev_err(dev, "failed enabling clock\n");
-> > -               goto errout2;
-> > +               goto errout1;
-> >         }
-> >
-> >         irq =3D platform_get_irq(pdev, 0);
-> > @@ -356,8 +356,6 @@ static int spear_adc_probe(struct platform_device *=
-pdev)
-> >
-> >  errout3:
-> >         clk_disable_unprepare(st->clk);
->=20
-> Shouldn't errout3 now be errout2.. having a gap would seem odd.
->=20
-I agree with you on this. But as Dan says,I would correct it in a
-different patch.
-> > -errout2:
-> > -       clk_put(st->clk);
-> >  errout1:
-> >         iounmap(st->adc_base_spear6xx);
-> >         return ret;
-> > --
-> > 1.9.1=
+Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+---
+ drivers/iio/industrialio-core.c | 2 ++
+ include/linux/iio/iio.h         | 1 +
+ include/uapi/linux/iio/types.h  | 1 +
+ 3 files changed, 4 insertions(+)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index fd01f34..5e1beea 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -77,6 +77,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_VELOCITY] = "velocity",
+ 	[IIO_CONCENTRATION] = "concentration",
+ 	[IIO_RESISTANCE] = "resistance",
++	[IIO_DUAL_VOLTCUR] = "voltcur",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+@@ -146,6 +147,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
+ 	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
+ 	[IIO_CHAN_INFO_OVERSAMPLING_RATIO] = "oversampling_ratio",
++	[IIO_CHAN_INFO_MODE] = "mode",
+ };
+ 
+ /**
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index b589411..ef4c7cd9 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -46,6 +46,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_DEBOUNCE_TIME,
+ 	IIO_CHAN_INFO_CALIBEMISSIVITY,
+ 	IIO_CHAN_INFO_OVERSAMPLING_RATIO,
++	IIO_CHAN_INFO_MODE,
+ };
+ 
+ enum iio_shared_by {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 7c63bd6..81e6a2a 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -37,6 +37,7 @@ enum iio_chan_type {
+ 	IIO_VELOCITY,
+ 	IIO_CONCENTRATION,
+ 	IIO_RESISTANCE,
++	IIO_DUAL_VOLTCUR,
+ };
+ 
+ enum iio_modifier {
+-- 
+2.7.0
+
