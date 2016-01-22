@@ -1,65 +1,78 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f178.google.com ([209.85.192.178]:33043 "EHLO
-	mail-pf0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751149AbcAUT70 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jan 2016 14:59:26 -0500
-Received: by mail-pf0-f178.google.com with SMTP id e65so28761614pfe.0
-        for <linux-iio@vger.kernel.org>; Thu, 21 Jan 2016 11:59:26 -0800 (PST)
-From: Shraddha Barke <shraddha.6596@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Cc: Shraddha Barke <shraddha.6596@gmail.com>
-Subject: [PATCH] Staging: iio: Documentation: Remove unused sysfs attributes
-Date: Thu, 21 Jan 2016 12:22:59 +0530
-Message-Id: <1453359179-9675-1-git-send-email-shraddha.6596@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <hgujulan@visteon.com>
+From: "Gujulan Elango, Hari Prasath (H.)" <hgujulan@visteon.com>
+To: Matt Ranostay <mranostay@gmail.com>
+CC: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"jic23@kernel.org" <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"daniel.baluta@intel.com" <daniel.baluta@intel.com>, "ciorneiioana@gmail.com"
+	<ciorneiioana@gmail.com>, "hamohammed.sa@gmail.com"
+	<hamohammed.sa@gmail.com>, "devel@driverdev.osuosl.org"
+	<devel@driverdev.osuosl.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] staging: iio: replace clk_get() with devm_clk_get()
+Date: Fri, 22 Jan 2016 07:31:55 +0000
+Message-ID: <20160122073258.GB10350@IND12F0122>
+References: <20160121091238.GA9430@IND12F0122>
+ <CAKzfze_t39zoDv16ng04NpVLW1PG3n5WtCnvVp=Amh4EKme2FA@mail.gmail.com>
+In-Reply-To: <CAKzfze_t39zoDv16ng04NpVLW1PG3n5WtCnvVp=Amh4EKme2FA@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch removes the unused sysfs attributes range, range_available,
-adc_resolution and adc_resolution_available.
-
-Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
----
- .../staging/iio/Documentation/sysfs-bus-iio-light  | 28 ----------------------
- 1 file changed, 28 deletions(-)
-
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-index 17e5c9c..7c7cd84 100644
---- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-+++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-@@ -1,31 +1,3 @@
--
--What:		/sys/bus/iio/devices/device[n]/range
--KernelVersion:	2.6.37
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Hardware dependent ADC Full Scale Range used for some ambient
--		light sensors in calculating lux.
--
--What:		/sys/bus/iio/devices/device[n]/range_available
--KernelVersion:	2.6.37
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Hardware dependent supported vales for ADC Full Scale Range.
--
--What:		/sys/bus/iio/devices/device[n]/adc_resolution
--KernelVersion:	2.6.37
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Hardware dependent ADC resolution of the ambient light sensor
--		used in calculating the lux.
--
--What:		/sys/bus/iio/devices/device[n]/adc_resolution_available
--KernelVersion:	2.6.37
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Hardware dependent list of possible values supported for the
--		adc_resolution of the given sensor.
--
- What:		/sys/bus/iio/devices/device[n]/in_illuminance0[_input|_raw]
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
--- 
-2.1.4
-
+On Thu, Jan 21, 2016 at 11:21:53AM -0800, Matt Ranostay wrote:
+> On Thu, Jan 21, 2016 at 1:11 AM, Gujulan Elango, Hari Prasath (H.)
+> <hgujulan@visteon.com> wrote:
+> > From: Hari Prasath Gujulan Elango
+> >
+> > This patch replaces the clk_get() with devm_clk_get().
+> > Accordingly,modified the error paths and removed clk_put() as well.
+> >
+> > Signed-off-by: Hari Prasath Gujulan Elango <hgujulan@visteon.com>
+> > ---
+> >  drivers/staging/iio/adc/spear_adc.c | 6 ++----
+> >  1 file changed, 2 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/=
+adc/spear_adc.c
+> > index 712cae0..4ac0f54 100644
+> > --- a/drivers/staging/iio/adc/spear_adc.c
+> > +++ b/drivers/staging/iio/adc/spear_adc.c
+> > @@ -288,7 +288,7 @@ static int spear_adc_probe(struct platform_device *=
+pdev)
+> >         st->adc_base_spear3xx =3D
+> >                 (struct adc_regs_spear3xx __iomem *)st->adc_base_spear6=
+xx;
+> >
+> > -       st->clk =3D clk_get(dev, NULL);
+> > +       st->clk =3D devm_clk_get(dev, NULL);
+> >         if (IS_ERR(st->clk)) {
+> >                 dev_err(dev, "failed getting clock\n");
+> >                 goto errout1;
+> > @@ -297,7 +297,7 @@ static int spear_adc_probe(struct platform_device *=
+pdev)
+> >         ret =3D clk_prepare_enable(st->clk);
+> >         if (ret) {
+> >                 dev_err(dev, "failed enabling clock\n");
+> > -               goto errout2;
+> > +               goto errout1;
+> >         }
+> >
+> >         irq =3D platform_get_irq(pdev, 0);
+> > @@ -356,8 +356,6 @@ static int spear_adc_probe(struct platform_device *=
+pdev)
+> >
+> >  errout3:
+> >         clk_disable_unprepare(st->clk);
+>=20
+> Shouldn't errout3 now be errout2.. having a gap would seem odd.
+>=20
+I agree with you on this. But as Dan says,I would correct it in a
+different patch.
+> > -errout2:
+> > -       clk_put(st->clk);
+> >  errout1:
+> >         iounmap(st->adc_base_spear6xx);
+> >         return ret;
+> > --
+> > 1.9.1=
