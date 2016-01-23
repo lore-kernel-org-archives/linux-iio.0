@@ -1,59 +1,173 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45163 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40454 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752199AbcAXPCH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jan 2016 10:02:07 -0500
-Subject: Re: [PATCH v2 2/3] iio: light: opt3001: trivial type refactoring
-To: Alexander Koch <mail@alexanderkoch.net>
-References: <1452960878-1727-1-git-send-email-mail@alexanderkoch.net>
- <1452960878-1727-3-git-send-email-mail@alexanderkoch.net>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	mhornung.linux@gmail.com, dannenberg@ti.com, balbi@ti.com,
-	fengguang.wu@intel.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+	with ESMTP id S1751921AbcAWQ3w (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Jan 2016 11:29:52 -0500
+Subject: Re: [PATCH 3/3] iio: mma8452: add support for MMA8451Q
+To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
+	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
+References: <1452954922-2266-1-git-send-email-martink@posteo.de>
+ <1452954922-2266-4-git-send-email-martink@posteo.de>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56A4E76E.6060309@kernel.org>
-Date: Sun, 24 Jan 2016 15:02:06 +0000
+Message-ID: <56A3AA7E.4010201@kernel.org>
+Date: Sat, 23 Jan 2016 16:29:50 +0000
 MIME-Version: 1.0
-In-Reply-To: <1452960878-1727-3-git-send-email-mail@alexanderkoch.net>
+In-Reply-To: <1452954922-2266-4-git-send-email-martink@posteo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/01/16 16:14, Alexander Koch wrote:
-> Change variable type of struct opt3001 members 'ok_to_ignore_lock' and
-> 'result_ready' uint16-bitfield of length one to bool.
+On 16/01/16 14:35, Martin Kepplinger wrote:
+> This adds support for this series' 14 bit accelerometer chip, MMA8451Q.
+> It's datasheet is available at the vendor's website:
 > 
-> They are used as bool, let the compiler do the optimization.
+> https://cache.freescale.com/files/sensors/doc/data_sheet/MMA8451Q.pdf
 > 
-> Signed-off-by: Alexander Koch <mail@alexanderkoch.net>
-> Signed-off-by: Michael Hornung <mhornung.linux@gmail.com>
-I find it hard to care much about this one, but consistency is
-always good and the bitfield never made much sense in here.
-
-Applied to the togreg branch of iio.git - pushed out as testing... etc.
+> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 > ---
->  drivers/iio/light/opt3001.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  .../devicetree/bindings/iio/accel/mma8452.txt      |  4 ++-
+>  drivers/iio/accel/Kconfig                          |  2 +-
+>  drivers/iio/accel/mma8452.c                        | 42 ++++++++++++++++++----
+>  3 files changed, 40 insertions(+), 8 deletions(-)
 > 
-> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-> index aefbd79..b05c484 100644
-> --- a/drivers/iio/light/opt3001.c
-> +++ b/drivers/iio/light/opt3001.c
-> @@ -79,8 +79,8 @@ struct opt3001 {
->  	struct device		*dev;
+> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> index 3c10e85..165937e 100644
+> --- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> @@ -1,8 +1,10 @@
+> -Freescale MMA8452Q, MMA8453Q, MMA8652FC or MMA8653FC triaxial accelerometer
+> +Freescale MMA8451Q, MMA8452Q, MMA8453Q, MMA8652FC or MMA8653FC
+> +triaxial accelerometer
 >  
->  	struct mutex		lock;
-> -	u16			ok_to_ignore_lock:1;
-> -	u16			result_ready:1;
-> +	bool			ok_to_ignore_lock;
-> +	bool			result_ready;
->  	wait_queue_head_t	result_ready_queue;
->  	u16			result;
+>  Required properties:
 >  
+>    - compatible: should contain one of
+> +    * "fsl,mma8451"
+>      * "fsl,mma8452"
+>      * "fsl,mma8453"
+>      * "fsl,mma8652"
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index edc29b1..d9feaa3 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -143,7 +143,7 @@ config MMA8452
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
+>  	  Say yes here to build support for the following Freescale 3-axis
+> -	  accelerometers: MMA8452Q, MMA8453Q, MMA8652FC, MMA8653FC.
+> +	  accelerometers: MMA8451Q, MMA8452Q, MMA8453Q, MMA8652FC, MMA8653FC.
+>  
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called mma8452.
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 843169e..7f4994f 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -1,6 +1,7 @@
+>  /*
+>   * mma8452.c - Support for following Freescale 3-axis accelerometers:
+>   *
+> + * MMA8451Q (14 bit)
+>   * MMA8452Q (12 bit)
+>   * MMA8453Q (10 bit)
+>   * MMA8652FC (12 bit)
+> @@ -85,6 +86,7 @@
+>  #define  MMA8452_INT_FF_MT			BIT(2)
+>  #define  MMA8452_INT_TRANS			BIT(5)
+>  
+> +#define MMA8451_DEVICE_ID			0x1a
+>  #define MMA8452_DEVICE_ID			0x2a
+>  #define MMA8453_DEVICE_ID			0x3a
+>  #define MMA8652_DEVICE_ID			0x4a
+> @@ -942,6 +944,14 @@ static struct attribute_group mma8452_event_attribute_group = {
+>  	.num_event_specs = ARRAY_SIZE(mma8452_motion_event), \
+>  }
+>  
+> +static const struct iio_chan_spec mma8451_channels[] = {
+> +	MMA8452_CHANNEL(X, idx_x, 14),
+> +	MMA8452_CHANNEL(Y, idx_y, 14),
+> +	MMA8452_CHANNEL(Z, idx_z, 14),
+> +	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
+> +	MMA8452_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
+> +};
+> +
+>  static const struct iio_chan_spec mma8452_channels[] = {
+>  	MMA8452_CHANNEL(X, idx_x, 12),
+>  	MMA8452_CHANNEL(Y, idx_y, 12),
+> @@ -975,6 +985,7 @@ static const struct iio_chan_spec mma8653_channels[] = {
+>  };
+>  
+>  enum {
+> +	mma8451,
+>  	mma8452,
+>  	mma8453,
+>  	mma8652,
+> @@ -982,17 +993,34 @@ enum {
+>  };
+>  
+>  static const struct mma_chip_info mma_chip_info_table[] = {
+> -	[mma8452] = {
+> -		.chip_id = MMA8452_DEVICE_ID,
+> -		.channels = mma8452_channels,
+> -		.num_channels = ARRAY_SIZE(mma8452_channels),
+> +	[mma8451] = {
+> +		.chip_id = MMA8451_DEVICE_ID,
+> +		.channels = mma8451_channels,
+> +		.num_channels = ARRAY_SIZE(mma8451_channels),
+>  		/*
+>  		 * Hardware has fullscale of -2G, -4G, -8G corresponding to
+> -		 * raw value -2048 for 12 bit or -512 for 10 bit.
+> +		 * raw value -8192 for 14 bit, -2048 for 12 bit or -512 for 10
+> +		 * bit.
+>  		 * The userspace interface uses m/s^2 and we declare micro units
+>  		 * So scale factor for 12 bit here is given by:
+> -		 *	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
+> +		 * 	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
+>  		 */
+> +		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
+> +		.ev_cfg = MMA8452_TRANSIENT_CFG,
+> +		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+> +		.ev_cfg_chan_shift = 1,
+> +		.ev_src = MMA8452_TRANSIENT_SRC,
+> +		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+> +		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+> +		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+> +		.ev_ths = MMA8452_TRANSIENT_THS,
+> +		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+> +		.ev_count = MMA8452_TRANSIENT_COUNT,
+> +	},
+> +	[mma8452] = {
+> +		.chip_id = MMA8452_DEVICE_ID,
+> +		.channels = mma8452_channels,
+> +		.num_channels = ARRAY_SIZE(mma8452_channels),
+>  		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
+>  		.ev_cfg = MMA8452_TRANSIENT_CFG,
+>  		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+> @@ -1173,6 +1201,7 @@ static int mma8452_reset(struct i2c_client *client)
+>  }
+>  
+>  static const struct of_device_id mma8452_dt_ids[] = {
+> +	{ .compatible = "fsl,mma8451", .data = &mma_chip_info_table[mma8451] },
+>  	{ .compatible = "fsl,mma8452", .data = &mma_chip_info_table[mma8452] },
+>  	{ .compatible = "fsl,mma8453", .data = &mma_chip_info_table[mma8453] },
+>  	{ .compatible = "fsl,mma8652", .data = &mma_chip_info_table[mma8652] },
+> @@ -1209,6 +1238,7 @@ static int mma8452_probe(struct i2c_client *client,
+>  		return ret;
+>  
+>  	switch (ret) {
+> +	case MMA8451_DEVICE_ID:
+>  	case MMA8452_DEVICE_ID:
+>  	case MMA8453_DEVICE_ID:
+>  	case MMA8652_DEVICE_ID:
 > 
 
