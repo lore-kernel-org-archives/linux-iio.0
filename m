@@ -1,94 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail01.prevas.se ([62.95.78.3]:23344 "EHLO mail01.prevas.se"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754095AbcAVOhh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 22 Jan 2016 09:37:37 -0500
-Subject: Re: [RFC 1/2] iio: core: added support for a single output that
- supports both current and voltage
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	<linux-iio@vger.kernel.org>
-References: <1453467296-26356-1-git-send-email-sean.nyekjaer@prevas.dk>
- <2C284AAE-21FB-4EFE-AD1C-2F010B15C845@jic23.retrosnub.co.uk>
-From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
-Message-ID: <56A23EAD.1000207@prevas.dk>
-Date: Fri, 22 Jan 2016 15:37:33 +0100
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45533 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750924AbcAXQb0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jan 2016 11:31:26 -0500
+Subject: Re: [PATCH] Staging: iio: Documentation: Remove unused sysfs
+ attributes
+To: Shraddha Barke <shraddha.6596@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	Jon Brenner <Jon.Brenner@ams.com>
+References: <1453359179-9675-1-git-send-email-shraddha.6596@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56A4FC5B.30100@kernel.org>
+Date: Sun, 24 Jan 2016 16:31:23 +0000
 MIME-Version: 1.0
-In-Reply-To: <2C284AAE-21FB-4EFE-AD1C-2F010B15C845@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <1453359179-9675-1-git-send-email-shraddha.6596@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi
+On 21/01/16 06:52, Shraddha Barke wrote:
+> This patch removes the unused sysfs attributes range, range_available,
+> adc_resolution and adc_resolution_available.
+> 
+> Signed-off-by: Shraddha Barke <shraddha.6596@gmail.com>
+Applied,
 
-How do you register two channels for one channel?
-Please give a quick example
+If you are of a mind to do it, it would also be good to prune general attributes
+that are mirrored in Documentation/ABI/testing/sysfs-bus-iio* out of this staging
+version as well.
 
-/Sean
+That would clear
+in_illuminance0_[raw|input]
+in_proximity0_[raw|input]
+intensity_infrared_[raw|input] (though this one is bogus anyway given the lack of prefix).
+in_illuminance0_integration_time
+in_intensity_clear...
+in_intensity_red... (though curiously some of these are not documented in the Documentation
+dir but should be as their integration_time parts are!)
 
-On 2016-01-22 15:14, Jonathan Cameron wrote:
-> Hi
->
-> Quick gut feel response. Register two channels.
->
-> Jonathan
->
-> On 22 January 2016 12:54:55 GMT+00:00, Sean Nyekjaer 
-> <sean.nyekjaer@prevas.dk> wrote:
->
->     Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
->     ---
->       drivers/iio/industrialio-core.c | 2 ++
->       include/linux/iio/iio.h         | 1 +
->       include/uapi/linux/iio/types.h  | 1 +
->       3 files changed, 4 insertions(+)
->
->     diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->     index fd01f34..5e1beea 100644
->     --- a/drivers/iio/industrialio-core.c
->     +++ b/drivers/iio/industrialio-core.c
->     @@ -77,6 +77,7 @@ static const char * const iio_chan_type_name_spec[] = {
->        [IIO_VELOCITY] = "velocity",
->        [IIO_CONCENTRATION] = "concentration",
->        [IIO_RESISTANCE] = "resistance",
->     + [IIO_DUAL_VOLTCUR] = "voltcur",
->       };
->       
->       static const char * const iio_modifier_names[] = {
->     @@ -146,6 +147,7 @@ static const char * const iio_chan_info_postfix[] = {
->        [IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
->        [IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
->       
->     [IIO_CHAN_INFO_OVERSAMPLING_RATIO] = "oversampling_ratio",
->     + [IIO_CHAN_INFO_MODE] = "mode",
->       };
->       
->       /**
->     diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->     index b589411..ef4c7cd9 100644
->     --- a/include/linux/iio/iio.h
->     +++ b/include/linux/iio/iio.h
->     @@ -46,6 +46,7 @@ enum iio_chan_info_enum {
->        IIO_CHAN_INFO_DEBOUNCE_TIME,
->        IIO_CHAN_INFO_CALIBEMISSIVITY,
->        IIO_CHAN_INFO_OVERSAMPLING_RATIO,
->     + IIO_CHAN_INFO_MODE,
->       };
->       
->       enum iio_shared_by {
->     diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
->     index 7c63bd6..81e6a2a 100644
->     --- a/include/uapi/linux/iio/types.h
->     +++ b/include/uapi/linux/iio/types.h
->     @@ -37,6 +37,7 @@ enum iio_chan_type {
->        IIO_VELOCITY,
->        IIO_CONCENTRATION,
->        IIO_RESISTANCE,
->     + IIO_DUAL_VOLTCUR,
->       };
->       
->       enum iio_modifier {
->
->
-> -- 
-> Sent from my Android device with K-9 Mail. Please excuse my brevity. 
+Other elements in here don't look to be used in staging either so could at least be dropped
+from this file.
+
+CCT. I'm having trouble remembering which part resulted in this being added!  It was a
+patch from Jon at TAOS (now AMS).  cc'd on off chance he can provide more info or get
+back to us with a driver or two ;) I'd actually be inclined to just move this particular
+bit of documentation directly to the non staging file. It's used by out of tree drivers
+(presumably given Jon had some reason to propose it) and supported by the core so
+lets just lift the ABI doc out of staging.
+
+lux_table - this was always black magic and part specific - nasty non linear mappings -
+not much we can do about this one so leave it there until the two taos driver using it
+move out of staging then stick it in a taos specific ABI doc.
+target - much the same.
+on_chip_ambient_infrared_supression - much the same.
+
+Anyhow, just a few thoughts.  Keep up the good work!
+
+Jonathan
+
+
+> ---
+>  .../staging/iio/Documentation/sysfs-bus-iio-light  | 28 ----------------------
+>  1 file changed, 28 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+> index 17e5c9c..7c7cd84 100644
+> --- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+> +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+> @@ -1,31 +1,3 @@
+> -
+> -What:		/sys/bus/iio/devices/device[n]/range
+> -KernelVersion:	2.6.37
+> -Contact:	linux-iio@vger.kernel.org
+> -Description:
+> -		Hardware dependent ADC Full Scale Range used for some ambient
+> -		light sensors in calculating lux.
+> -
+> -What:		/sys/bus/iio/devices/device[n]/range_available
+> -KernelVersion:	2.6.37
+> -Contact:	linux-iio@vger.kernel.org
+> -Description:
+> -		Hardware dependent supported vales for ADC Full Scale Range.
+> -
+> -What:		/sys/bus/iio/devices/device[n]/adc_resolution
+> -KernelVersion:	2.6.37
+> -Contact:	linux-iio@vger.kernel.org
+> -Description:
+> -		Hardware dependent ADC resolution of the ambient light sensor
+> -		used in calculating the lux.
+> -
+> -What:		/sys/bus/iio/devices/device[n]/adc_resolution_available
+> -KernelVersion:	2.6.37
+> -Contact:	linux-iio@vger.kernel.org
+> -Description:
+> -		Hardware dependent list of possible values supported for the
+> -		adc_resolution of the given sensor.
+> -
+>  What:		/sys/bus/iio/devices/device[n]/in_illuminance0[_input|_raw]
+>  KernelVersion:	2.6.35
+>  Contact:	linux-iio@vger.kernel.org
+> 
 
