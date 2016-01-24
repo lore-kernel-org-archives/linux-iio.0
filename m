@@ -1,121 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45220 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45544 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752084AbcAXPOE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jan 2016 10:14:04 -0500
-Subject: Re: [RFC 1/2] iio: core: added support for a single output that
- supports both current and voltage
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	=?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>,
-	linux-iio@vger.kernel.org
-References: <1453467296-26356-1-git-send-email-sean.nyekjaer@prevas.dk>
- <2C284AAE-21FB-4EFE-AD1C-2F010B15C845@jic23.retrosnub.co.uk>
- <56A23EAD.1000207@prevas.dk>
- <1F14D1A1-22FE-4A57-9EA1-2F87E23C6AC9@jic23.retrosnub.co.uk>
+	with ESMTP id S1751608AbcAXQdQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jan 2016 11:33:16 -0500
+Subject: Re: [PATCH] iio: pressure: mpl115: fix temperature offset sign
+To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org
+References: <1453306051-8817-1-git-send-email-akinobu.mita@gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56A4EA3A.3030200@kernel.org>
-Date: Sun, 24 Jan 2016 15:14:02 +0000
+Message-ID: <56A4FCCA.80500@kernel.org>
+Date: Sun, 24 Jan 2016 16:33:14 +0000
 MIME-Version: 1.0
-In-Reply-To: <1F14D1A1-22FE-4A57-9EA1-2F87E23C6AC9@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1453306051-8817-1-git-send-email-akinobu.mita@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/01/16 16:49, Jonathan Cameron wrote:
+On 20/01/16 16:07, Akinobu Mita wrote:
+> According to the datasheet, the resolusion of temperature sensor is
+> -5.35 counts/C. Temperature ADC is 472 counts at 25C.
+> (https://www.sparkfun.com/datasheets/Sensors/Pressure/MPL115A1.pdf
+> NOTE: This is older revision, but this information is removed from the
+> latest datasheet from nxp somehow)
 > 
+> Temp [C] = (Tadc - 472) / -5.35 + 25
+>          = (Tadc - 605.750000) * -0.186915888
 > 
-> On 22 January 2016 14:37:33 GMT+00:00, "Sean Nyekjær" <sean.nyekjaer@prevas.dk> wrote:
->> Hi
->>
->> How do you register two channels for one channel?
-I got this a bit backwards reading it on the phone and thought we were dealing
-with an ADC rather than a DAC (oops!) I'm going to move the rest of this
-discussion into the reply to patch 2 as it will make more sense alongside
-your usecase there.
+> So the correct offset is -605.750000.
+> 
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: linux-iio@vger.kernel.org
+Peter,
 
-<snip>
+I'd like your Ack on this given it is your driver.  That way
+I can be lazy and not cross check the datasheet myself.
+
+Jonathan
+> ---
+>  drivers/iio/pressure/mpl115.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> 
->> Please give a quick example
-> Phone only so will get back to you tomorrow!
-> 
->>
->> /Sean
->>
->> On 2016-01-22 15:14, Jonathan Cameron wrote:
->>> Hi
->>>
->>> Quick gut feel response. Register two channels.
->>>
->>> Jonathan
->>>
->>> On 22 January 2016 12:54:55 GMT+00:00, Sean Nyekjaer 
->>> <sean.nyekjaer@prevas.dk> wrote:
->>>
->>>     Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
->>>     ---
->>>       drivers/iio/industrialio-core.c | 2 ++
->>>       include/linux/iio/iio.h         | 1 +
->>>       include/uapi/linux/iio/types.h  | 1 +
->>>       3 files changed, 4 insertions(+)
->>>
->>>     diff --git a/drivers/iio/industrialio-core.c
->> b/drivers/iio/industrialio-core.c
->>>     index fd01f34..5e1beea 100644
->>>     --- a/drivers/iio/industrialio-core.c
->>>     +++ b/drivers/iio/industrialio-core.c
->>>     @@ -77,6 +77,7 @@ static const char * const
->> iio_chan_type_name_spec[] = {
->>>        [IIO_VELOCITY] = "velocity",
->>>        [IIO_CONCENTRATION] = "concentration",
->>>        [IIO_RESISTANCE] = "resistance",
->>>     + [IIO_DUAL_VOLTCUR] = "voltcur",
->>>       };
->>>       
->>>       static const char * const iio_modifier_names[] = {
->>>     @@ -146,6 +147,7 @@ static const char * const
->> iio_chan_info_postfix[] = {
->>>        [IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
->>>        [IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
->>>       
->>>     [IIO_CHAN_INFO_OVERSAMPLING_RATIO] = "oversampling_ratio",
->>>     + [IIO_CHAN_INFO_MODE] = "mode",
->>>       };
->>>       
->>>       /**
->>>     diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->>>     index b589411..ef4c7cd9 100644
->>>     --- a/include/linux/iio/iio.h
->>>     +++ b/include/linux/iio/iio.h
->>>     @@ -46,6 +46,7 @@ enum iio_chan_info_enum {
->>>        IIO_CHAN_INFO_DEBOUNCE_TIME,
->>>        IIO_CHAN_INFO_CALIBEMISSIVITY,
->>>        IIO_CHAN_INFO_OVERSAMPLING_RATIO,
->>>     + IIO_CHAN_INFO_MODE,
->>>       };
->>>       
->>>       enum iio_shared_by {
->>>     diff --git a/include/uapi/linux/iio/types.h
->> b/include/uapi/linux/iio/types.h
->>>     index 7c63bd6..81e6a2a 100644
->>>     --- a/include/uapi/linux/iio/types.h
->>>     +++ b/include/uapi/linux/iio/types.h
->>>     @@ -37,6 +37,7 @@ enum iio_chan_type {
->>>        IIO_VELOCITY,
->>>        IIO_CONCENTRATION,
->>>        IIO_RESISTANCE,
->>>     + IIO_DUAL_VOLTCUR,
->>>       };
->>>       
->>>       enum iio_modifier {
->>>
->>>
->>> -- 
->>> Sent from my Android device with K-9 Mail. Please excuse my brevity. 
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
+> index 138344c..73f2f0c 100644
+> --- a/drivers/iio/pressure/mpl115.c
+> +++ b/drivers/iio/pressure/mpl115.c
+> @@ -118,7 +118,7 @@ static int mpl115_read_raw(struct iio_dev *indio_dev,
+>  		*val = ret >> 6;
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_OFFSET:
+> -		*val = 605;
+> +		*val = -605;
+>  		*val2 = 750000;
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  	case IIO_CHAN_INFO_SCALE:
 > 
 
