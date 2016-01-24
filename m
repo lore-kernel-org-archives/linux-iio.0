@@ -1,173 +1,677 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40454 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45351 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751921AbcAWQ3w (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Jan 2016 11:29:52 -0500
-Subject: Re: [PATCH 3/3] iio: mma8452: add support for MMA8451Q
-To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net,
-	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
-References: <1452954922-2266-1-git-send-email-martink@posteo.de>
- <1452954922-2266-4-git-send-email-martink@posteo.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+	with ESMTP id S1750924AbcAXPto (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jan 2016 10:49:44 -0500
+Subject: Re: [RFC 2/2] iio: ad5755: added support for switching between
+ voltage and current output
+To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+References: <1453467296-26356-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <1453467296-26356-2-git-send-email-sean.nyekjaer@prevas.dk>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56A3AA7E.4010201@kernel.org>
-Date: Sat, 23 Jan 2016 16:29:50 +0000
+Message-ID: <56A4F295.1060707@kernel.org>
+Date: Sun, 24 Jan 2016 15:49:41 +0000
 MIME-Version: 1.0
-In-Reply-To: <1452954922-2266-4-git-send-email-martink@posteo.de>
+In-Reply-To: <1453467296-26356-2-git-send-email-sean.nyekjaer@prevas.dk>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/01/16 14:35, Martin Kepplinger wrote:
-> This adds support for this series' 14 bit accelerometer chip, MMA8451Q.
-> It's datasheet is available at the vendor's website:
+On 22/01/16 12:54, Sean Nyekjaer wrote:
+> DAC ad5755 have both support for voltage and current output, before the driver
+> only had support for switching modes at compile time. Not very smart...
 > 
-> https://cache.freescale.com/files/sensors/doc/data_sheet/MMA8451Q.pdf
-> 
-> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.
+This is currently where we possibly disagree.  It was a very deliberate decision to
+do it where it is done. It is way to easy to blow hardware up if the wrong
+range is selected on a multirange DAC and as far as I can see this is
+effectively the same.
 
-Thanks,
+It is btw not at compile time, but at boot time of a given piece of hardware.
+It's not as though a kernel for multiple boards will not allow different
+combinations for different boards. A fine distinction of course and one
+that I suspect is causing you trouble because you are dealing with external
+connections and no knowledge of what is beyond them (i.e. a PLC or general
+purpose output board?)
+
+
+Ah, I'll revise this (having dived into the datasheet) 
+what wasn't clear immediately is that the chip puts the voltage and current
+outputs on different pins - but only one is enabled at a time.  This makes for
+a rather different set of circumstances and explains when you might
+want to allow runtime configuation.  Note however, that this means they really
+are different channels - just ones with some constraints on which combinations
+are enabled at any given time.  The datasheet does say you can tie the two
+together (I guess for use as a flexible PLC output for example) but they
+aren't tied together on the chip so we don't have to care ;)
+
+I wonder if what we really need here is a standard way of applying platform
+data based channel restrictions...  This applies to all multirange output
+parts. 
+
+Requirements:
+
+1) List of 'safe ranges' for a given piece of hardware.
+2) In dual parts like this one, list of 'safe ranges' for both current and voltage
+outputs.
+
+If people then want to operate in only one mode (so on a board where the use is known)
+then they provide only one entry and that's all the part will be used in.
+
+If, as I guess you are doing, the range is unknown then the part is either powered down
+until the range is set by userspace, or powered up in the 'safest' mode of those listed.
+
+Hence if it was unsafe to use it as a current output at all, that list would be empty
+for this part (same with voltage range list) and the driver would refuse to put
+it in that mode at all.
+
+So for your usecase you'd simply specify that all ranges are fine.  If someone blows
+external kit up, it's their own fault as we had no way of knowing what was safe.
+
+Still, here definitely separate current and voltage channels!
 
 Jonathan
-> ---
->  .../devicetree/bindings/iio/accel/mma8452.txt      |  4 ++-
->  drivers/iio/accel/Kconfig                          |  2 +-
->  drivers/iio/accel/mma8452.c                        | 42 ++++++++++++++++++----
->  3 files changed, 40 insertions(+), 8 deletions(-)
+> This patch adds support for switching modes from userspace.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-> index 3c10e85..165937e 100644
-> --- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-> @@ -1,8 +1,10 @@
-> -Freescale MMA8452Q, MMA8453Q, MMA8652FC or MMA8653FC triaxial accelerometer
-> +Freescale MMA8451Q, MMA8452Q, MMA8453Q, MMA8652FC or MMA8653FC
-> +triaxial accelerometer
+> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+> ---
+
+As I stated in my last email in response to patch 1 I think continuing the
+discussion on how to handle this here makes more sense...
+> 
+> Register them as two independent channels. One for current and one for
+>  voltage. In a sense the change of measurement type is just a different type
+>  of front end mux like you see on many ADCs.
+
+Hmm. Thinking more on this I'm worried that, as with multirange DACs,
+it might be possible to switch this DAC into a mode that will actually
+damage the hardware.  I note it is also a multirange part and that was
+originaly controlled by platform data.
+
+I would thing we either need to restrict the choice to platform data only,
+or add some concept of limiting the resulting ranges in platform data.
+
+You are in a fairly odd situation if you want to, at runtime switch a
+given bit of circuitry from one mode to the other.
+
+What is your usecase?
+
+I really don't like the combined channel as it's either one or the other
+at any given time, not some mixture of the two. Given the simple nature
+of powerdown on channels on this device, here we can just do it by allowing
+only the voltage or the current channel to be powered up at any given time.
+
+See below for various other comemnts.
+
+Lars, any thoughts on this?  You'd probably come across more of these
+multirange parts than I have.
+
+Jonathan
+
+> 
+> This patch is not done yet :-) I would like to get some feedback of my work.
+> I have tested this patch with an ad5755 and it works.
+> 
+> So if you have any ideas on how I should progress please give me some feedback.
+> 
+>  drivers/iio/dac/ad5755.c | 405 +++++++++++++++++++++++++++++++++++++----------
+>  1 file changed, 319 insertions(+), 86 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+> index bfb350a..6e7ab3f 100644
+> --- a/drivers/iio/dac/ad5755.c
+> +++ b/drivers/iio/dac/ad5755.c
+> @@ -63,6 +63,9 @@
+>  #define AD5755_SLEW_RATE_SHIFT			3
+>  #define AD5755_SLEW_ENABLE			BIT(12)
 >  
->  Required properties:
+> +#define AD5755_VOLTAGE_MODE			0
+> +#define AD5755_CURRENT_MODE			1
+> +
+>  /**
+>   * struct ad5755_chip_info - chip specific information
+>   * @channel_template:	channel specification
+> @@ -91,6 +94,8 @@ struct ad5755_state {
+>  	unsigned int			ctrl[AD5755_NUM_CHANNELS];
+>  	struct iio_chan_spec		channels[AD5755_NUM_CHANNELS];
 >  
->    - compatible: should contain one of
-> +    * "fsl,mma8451"
->      * "fsl,mma8452"
->      * "fsl,mma8453"
->      * "fsl,mma8652"
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index edc29b1..d9feaa3 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -143,7 +143,7 @@ config MMA8452
->  	select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say yes here to build support for the following Freescale 3-axis
-> -	  accelerometers: MMA8452Q, MMA8453Q, MMA8652FC, MMA8653FC.
-> +	  accelerometers: MMA8451Q, MMA8452Q, MMA8453Q, MMA8652FC, MMA8653FC.
+> +	struct ad5755_platform_data *pdata;
+> +
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) requires the
+>  	 * transfer buffers to live in their own cache lines.
+> @@ -109,6 +114,163 @@ enum ad5755_type {
+>  	ID_AD5737,
+>  };
 >  
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called mma8452.
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 843169e..7f4994f 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -1,6 +1,7 @@
->  /*
->   * mma8452.c - Support for following Freescale 3-axis accelerometers:
->   *
-> + * MMA8451Q (14 bit)
->   * MMA8452Q (12 bit)
->   * MMA8453Q (10 bit)
->   * MMA8652FC (12 bit)
-> @@ -85,6 +86,7 @@
->  #define  MMA8452_INT_FF_MT			BIT(2)
->  #define  MMA8452_INT_TRANS			BIT(5)
->  
-> +#define MMA8451_DEVICE_ID			0x1a
->  #define MMA8452_DEVICE_ID			0x2a
->  #define MMA8453_DEVICE_ID			0x3a
->  #define MMA8652_DEVICE_ID			0x4a
-> @@ -942,6 +944,14 @@ static struct attribute_group mma8452_event_attribute_group = {
->  	.num_event_specs = ARRAY_SIZE(mma8452_motion_event), \
->  }
->  
-> +static const struct iio_chan_spec mma8451_channels[] = {
-> +	MMA8452_CHANNEL(X, idx_x, 14),
-> +	MMA8452_CHANNEL(Y, idx_y, 14),
-> +	MMA8452_CHANNEL(Z, idx_z, 14),
-> +	IIO_CHAN_SOFT_TIMESTAMP(idx_ts),
-> +	MMA8452_FREEFALL_CHANNEL(IIO_MOD_X_AND_Y_AND_Z),
+> +struct ad5755_ranges {
+> +	enum ad5755_mode range;
+> +	unsigned int scale;
+> +	int offset;
 > +};
 > +
->  static const struct iio_chan_spec mma8452_channels[] = {
->  	MMA8452_CHANNEL(X, idx_x, 12),
->  	MMA8452_CHANNEL(Y, idx_y, 12),
-> @@ -975,6 +985,7 @@ static const struct iio_chan_spec mma8653_channels[] = {
->  };
->  
->  enum {
-> +	mma8451,
->  	mma8452,
->  	mma8453,
->  	mma8652,
-> @@ -982,17 +993,34 @@ enum {
->  };
->  
->  static const struct mma_chip_info mma_chip_info_table[] = {
-> -	[mma8452] = {
-> -		.chip_id = MMA8452_DEVICE_ID,
-> -		.channels = mma8452_channels,
-> -		.num_channels = ARRAY_SIZE(mma8452_channels),
-> +	[mma8451] = {
-> +		.chip_id = MMA8451_DEVICE_ID,
-> +		.channels = mma8451_channels,
-> +		.num_channels = ARRAY_SIZE(mma8451_channels),
->  		/*
->  		 * Hardware has fullscale of -2G, -4G, -8G corresponding to
-> -		 * raw value -2048 for 12 bit or -512 for 10 bit.
-> +		 * raw value -8192 for 14 bit, -2048 for 12 bit or -512 for 10
-> +		 * bit.
->  		 * The userspace interface uses m/s^2 and we declare micro units
->  		 * So scale factor for 12 bit here is given by:
-> -		 *	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
-> +		 * 	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
->  		 */
-> +		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
-> +		.ev_cfg = MMA8452_TRANSIENT_CFG,
-> +		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
-> +		.ev_cfg_chan_shift = 1,
-> +		.ev_src = MMA8452_TRANSIENT_SRC,
-> +		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
-> +		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
-> +		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
-> +		.ev_ths = MMA8452_TRANSIENT_THS,
-> +		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
-> +		.ev_count = MMA8452_TRANSIENT_COUNT,
-> +	},
-> +	[mma8452] = {
-> +		.chip_id = MMA8452_DEVICE_ID,
-> +		.channels = mma8452_channels,
-> +		.num_channels = ARRAY_SIZE(mma8452_channels),
->  		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
->  		.ev_cfg = MMA8452_TRANSIENT_CFG,
->  		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
-> @@ -1173,6 +1201,7 @@ static int mma8452_reset(struct i2c_client *client)
+> +static const struct ad5755_ranges ad5755_range_def[] = {
+> +	{
+> +		.range = AD5755_MODE_VOLTAGE_0V_5V,
+> +		.scale = 76293945,
+> +		.offset = 0,
+> +	}, {
+> +		.range = AD5755_MODE_VOLTAGE_0V_10V,
+> +		.scale = 152587890,
+> +		.offset = 0,
+> +	}, {
+> +		.range = AD5755_MODE_VOLTAGE_PLUSMINUS_5V,
+> +		.scale = 152587890,
+> +		.offset = -(1 << (16 /*REALBITS*/ - 1)),
+> +	}, {
+> +		.range = AD5755_MODE_VOLTAGE_PLUSMINUS_10V,
+> +		.scale = 305175781,
+> +		.offset = -(1 << (16 /*REALBITS*/ - 1)),
+> +	}, {
+> +		.range = AD5755_MODE_CURRENT_4mA_20mA,
+> +		.scale = 244140,
+> +		.offset = 16384,
+> +	}, {
+> +		.range = AD5755_MODE_CURRENT_0mA_20mA,
+> +		.scale = 305175,
+> +		.offset = 0,
+> +	}, {
+> +		.range = AD5755_MODE_CURRENT_0mA_24mA,
+> +		.scale = 366210,
+> +		.offset = 0,
+> +	}
+> +};
+> +
+> +static inline enum ad5755_mode ad5755_get_chan_mode(struct ad5755_state *st,
+> +						    const struct iio_chan_spec
+> +						    *chan)
+> +{
+> +	return st->ctrl[chan->channel] & 7;
+> +}
+> +
+> +static inline int ad5755_get_chan_scale(struct ad5755_state *st,
+> +					const struct iio_chan_spec *chan)
+> +{
+> +	return ad5755_range_def[ad5755_get_chan_mode(st, chan)].scale;
+> +}
+> +
+> +static inline int ad5755_get_chan_offset(struct ad5755_state *st,
+> +					 const struct iio_chan_spec *chan)
+> +{
+> +	return ad5755_range_def[ad5755_get_chan_mode(st, chan)].offset;
+> +}
+> +
+> +static bool ad5755_is_voltage_mode(enum ad5755_mode mode)
+> +{
+> +	switch (mode) {
+> +	case AD5755_MODE_VOLTAGE_0V_5V:
+> +	case AD5755_MODE_VOLTAGE_0V_10V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static ssize_t ad5755_show_voltcur_modes(struct device *dev,
+> +					 struct device_attribute *attr,
+> +					 char *buf)
+> +{
+> +	return sprintf(buf, "voltage: 0\ncurrent: 1\n");
+This is just not how it is done.  Value written must = value read
+(assuming it succeeded and nothing has change it in the meantime).
+
+We have the IIO_ENUM stuff in iio.h to handle this common case of matching
+strings to real values.
+
+My gut feeling is that, subject to be convinced that we want runtime
+configuration of current vs voltage output (that it can be prevented
+from causing hardware damange), that we want to have
+separate channels for the current and voltage and handle this by effectively
+controlling whether they are enabled or not.  Only allow either
+the current or the voltage channel to power up at a given time
+(internally this is presumably what the hardware is doing anyway!)
+
+> +}
+> +
+> +static ssize_t ad5755_scales(char *buf, bool voltage_mode)
+> +{
+> +	int i, len = 0;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ad5755_range_def); i++) {
+> +		if (ad5755_is_voltage_mode(i) != voltage_mode)
+> +			continue;
+> +		len += sprintf(buf + len, "0.%09u ", ad5755_range_def[i].scale);
+> +	}
+> +	len += sprintf(buf + len, "\n");
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t ad5755_offset(char *buf, bool voltage_mode)
+> +{
+> +	int i, len = 0;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ad5755_range_def); i++) {
+> +		if (ad5755_is_voltage_mode(i) != voltage_mode)
+> +			continue;
+> +		len += sprintf(buf + len, "%d ", ad5755_range_def[i].offset);
+> +	}
+> +	len += sprintf(buf + len, "\n");
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t ad5755_show_voltage_scales(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  char *buf)
+> +{
+> +	return ad5755_scales(buf, true);
+> +}
+> +
+> +static ssize_t ad5755_show_voltage_offset(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  char *buf)
+> +{
+> +	return ad5755_offset(buf, true);
+> +}
+> +
+> +static ssize_t ad5755_show_current_scales(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  char *buf)
+> +{
+> +	return ad5755_scales(buf, false);
+> +}
+> +
+> +static ssize_t ad5755_show_current_offset(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  char *buf)
+> +{
+> +	return ad5755_offset(buf, false);
+> +}
+> +
+> +static IIO_DEVICE_ATTR(out_voltcur_modes_available, S_IRUGO,
+> +		       ad5755_show_voltcur_modes, NULL, 0);
+> +static IIO_DEVICE_ATTR(out_voltage_scale_available, S_IRUGO,
+> +		       ad5755_show_voltage_scales, NULL, 0);
+> +static IIO_DEVICE_ATTR(out_voltage_offset_available, S_IRUGO,
+> +		       ad5755_show_voltage_offset, NULL, 0);
+> +static IIO_DEVICE_ATTR(out_current_scale_available, S_IRUGO,
+> +		       ad5755_show_current_scales, NULL, 0);
+> +static IIO_DEVICE_ATTR(out_current_offset_available, S_IRUGO,
+> +		       ad5755_show_current_offset, NULL, 0);
+> +
+> +static struct attribute *ad5755_attributes[] = {
+> +	&iio_dev_attr_out_voltcur_modes_available.dev_attr.attr,
+> +	&iio_dev_attr_out_voltage_scale_available.dev_attr.attr,
+> +	&iio_dev_attr_out_voltage_offset_available.dev_attr.attr,
+> +	&iio_dev_attr_out_current_scale_available.dev_attr.attr,
+> +	&iio_dev_attr_out_current_offset_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group ad5755_attribute_group = {
+> +	.attrs = ad5755_attributes,
+> +};
+> +
+>  static int ad5755_write_unlocked(struct iio_dev *indio_dev,
+>  	unsigned int reg, unsigned int val)
+>  {
+> @@ -226,31 +388,54 @@ out_unlock:
+>  	return 0;
 >  }
 >  
->  static const struct of_device_id mma8452_dt_ids[] = {
-> +	{ .compatible = "fsl,mma8451", .data = &mma_chip_info_table[mma8451] },
->  	{ .compatible = "fsl,mma8452", .data = &mma_chip_info_table[mma8452] },
->  	{ .compatible = "fsl,mma8453", .data = &mma_chip_info_table[mma8453] },
->  	{ .compatible = "fsl,mma8652", .data = &mma_chip_info_table[mma8652] },
-> @@ -1209,6 +1238,7 @@ static int mma8452_probe(struct i2c_client *client,
->  		return ret;
+> -static const int ad5755_min_max_table[][2] = {
+> -	[AD5755_MODE_VOLTAGE_0V_5V] = { 0, 5000 },
+> -	[AD5755_MODE_VOLTAGE_0V_10V] = { 0, 10000 },
+> -	[AD5755_MODE_VOLTAGE_PLUSMINUS_5V] = { -5000, 5000 },
+> -	[AD5755_MODE_VOLTAGE_PLUSMINUS_10V] = { -10000, 10000 },
+> -	[AD5755_MODE_CURRENT_4mA_20mA] = { 4, 20 },
+> -	[AD5755_MODE_CURRENT_0mA_20mA] = { 0, 20 },
+> -	[AD5755_MODE_CURRENT_0mA_24mA] = { 0, 24 },
+> -};
+> +static bool ad5755_is_valid_mode(struct ad5755_state *st, enum ad5755_mode mode)
+> +{
+> +	switch (mode) {
+> +	case AD5755_MODE_VOLTAGE_0V_5V:
+> +	case AD5755_MODE_VOLTAGE_0V_10V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> +		return st->chip_info->has_voltage_out;
+> +	case AD5755_MODE_CURRENT_4mA_20mA:
+> +	case AD5755_MODE_CURRENT_0mA_20mA:
+> +	case AD5755_MODE_CURRENT_0mA_24mA:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
 >  
->  	switch (ret) {
-> +	case MMA8451_DEVICE_ID:
->  	case MMA8452_DEVICE_ID:
->  	case MMA8453_DEVICE_ID:
->  	case MMA8652_DEVICE_ID:
+> -static void ad5755_get_min_max(struct ad5755_state *st,
+> -	struct iio_chan_spec const *chan, int *min, int *max)
+> +static int ad5755_clear_dac(struct iio_dev *indio_dev, int channel)
+>  {
+> -	enum ad5755_mode mode = st->ctrl[chan->channel] & 7;
+> -	*min = ad5755_min_max_table[mode][0];
+> -	*max = ad5755_min_max_table[mode][1];
+> +	int i = channel;
+> +	int ret;
+> +
+> +	ret = ad5755_update_dac_ctrl(indio_dev, i, 0, UINT_MAX);
+> +	return ret;
+> +
+>  }
+>  
+> -static inline int ad5755_get_offset(struct ad5755_state *st,
+> -	struct iio_chan_spec const *chan)
+> +static int ad5755_setup_dac(struct iio_dev *indio_dev, int channel)
+>  {
+> -	int min, max;
+> +	int i = channel;
+> +	int ret;
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int val;
+> +	struct ad5755_platform_data *pdata = st->pdata;
+> +
+> +	if (!ad5755_is_valid_mode(st, pdata->dac[i].mode))
+> +		return -EINVAL;
+> +
+> +	val = 0;
+> +	if (!pdata->dac[i].ext_current_sense_resistor)
+> +		val |= AD5755_DAC_INT_CURRENT_SENSE_RESISTOR;
+> +	if (pdata->dac[i].enable_voltage_overrange)
+> +		val |= AD5755_DAC_VOLTAGE_OVERRANGE_EN;
+> +	val |= pdata->dac[i].mode;
+> +
+> +	ret = ad5755_update_dac_ctrl(indio_dev, i, val, 0);
+> +	return ret;
+>  
+> -	ad5755_get_min_max(st, chan, &min, &max);
+> -	return (min * (1 << chan->scan_type.realbits)) / (max - min);
+>  }
+>  
+>  static int ad5755_chan_reg_info(struct ad5755_state *st,
+> @@ -294,18 +479,25 @@ static int ad5755_read_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct ad5755_state *st = iio_priv(indio_dev);
+>  	unsigned int reg, shift, offset;
+> -	int min, max;
+>  	int ret;
+>  
+>  	switch (info) {
+>  	case IIO_CHAN_INFO_SCALE:
+> -		ad5755_get_min_max(st, chan, &min, &max);
+> -		*val = max - min;
+> -		*val2 = chan->scan_type.realbits;
+> -		return IIO_VAL_FRACTIONAL_LOG2;
+> +		*val = 0;
+> +		*val2 = ad5755_get_chan_scale(st, chan);
+> +		return IIO_VAL_INT_PLUS_NANO;
+>  	case IIO_CHAN_INFO_OFFSET:
+> -		*val = ad5755_get_offset(st, chan);
+> +		*val = ad5755_get_chan_offset(st, chan);
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_MODE:
+> +		if (ad5755_is_voltage_mode(st->pdata->dac[chan->address].mode)) {
+> +			*val = AD5755_VOLTAGE_MODE;
+> +			return IIO_VAL_INT;
+> +		} else {
+> +			*val = AD5755_CURRENT_MODE;
+> +			return IIO_VAL_INT;
+> +		}
+> +		break;
+>  	default:
+>  		ret = ad5755_chan_reg_info(st, chan, info, false,
+>  						&reg, &shift, &offset);
+> @@ -325,24 +517,100 @@ static int ad5755_read_raw(struct iio_dev *indio_dev,
+>  }
+>  
+>  static int ad5755_write_raw(struct iio_dev *indio_dev,
+> -	const struct iio_chan_spec *chan, int val, int val2, long info)
+> +			    const struct iio_chan_spec *chan, int val, int val2,
+> +			    long info)
+This is just reformatting. Might be worthwhile, but should be in a separate
+patch.
+>  {
+>  	struct ad5755_state *st = iio_priv(indio_dev);
+> -	unsigned int shift, reg, offset;
+> -	int ret;
+> +	unsigned int shift, reg;
+> +	bool is_voltage;
+> +	int offset;
+> +	unsigned int scale;
+> +	int ret, i;
+>  
+> -	ret = ad5755_chan_reg_info(st, chan, info, true,
+> -					&reg, &shift, &offset);
+> -	if (ret)
+> -		return ret;
+> -
+> -	val <<= shift;
+> -	val += offset;
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +	case IIO_CHAN_INFO_OFFSET:
+> +	case IIO_CHAN_INFO_MODE:
+> +		if (!(bool) (st->pwr_down & (1 << chan->channel))) {
+> +			printk
+> +			    ("POWER DOWN off - Power down before shifting modes\n");
+> +			return -EPERM;
+> +		}
+> +	}
+>  
+> -	if (val < 0 || val > 0xffff)
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		is_voltage =
+> +		    ad5755_is_voltage_mode(st->pdata->dac[chan->address].mode);
+> +		offset =
+> +		    ad5755_range_def[st->pdata->dac[chan->address].mode].offset;
+> +		/* is new scale allowed */
+> +		for (i = 0; i < ARRAY_SIZE(ad5755_range_def); i++) {
+> +			if (val2 == ad5755_range_def[i].scale &&
+> +			    offset == ad5755_range_def[i].offset &&
+> +			    is_voltage == ad5755_is_voltage_mode(i)) {
+> +				st->pdata->dac[chan->address].mode = i;
+> +				ad5755_clear_dac(indio_dev, chan->address);
+> +				return ad5755_setup_dac(indio_dev, chan->address);
+> +			}
+> +		}
+>  		return -EINVAL;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		is_voltage =
+> +		    ad5755_is_voltage_mode(st->pdata->dac[chan->address].mode);
+> +		scale =
+> +		    ad5755_range_def[st->pdata->dac[chan->address].mode].scale;
+> +		/* is new offset allowed */
+> +		for (i = 0; i < ARRAY_SIZE(ad5755_range_def); i++) {
+> +			if (val == ad5755_range_def[i].offset &&
+> +			    scale == ad5755_range_def[i].scale &&
+> +			    is_voltage == ad5755_is_voltage_mode(i)) {
+> +				st->pdata->dac[chan->address].mode = i;
+> +				ad5755_clear_dac(indio_dev, chan->address);
+> +				return ad5755_setup_dac(indio_dev, chan->address);
+> +			}
+> +		}
+> +		return -EINVAL;
+> +	case IIO_CHAN_INFO_MODE:
+> +		if (val2 != 0)
+> +			return -EINVAL;
+> +		if (val == AD5755_VOLTAGE_MODE)
+This looks like magic values to me.
+If we did end up with such an interface, you'd want to be using the
+extended attribute stuff and the enum support it has to give
+meaningful names to these.
+
+> +			st->pdata->dac[chan->address].mode = AD5755_MODE_VOLTAGE_0V_5V;
+> +		else
+> +			st->pdata->dac[chan->address].mode = AD5755_MODE_CURRENT_0mA_20mA;
+> +		ad5755_clear_dac(indio_dev, chan->address);
+> +
+> +		return ad5755_setup_dac(indio_dev, chan->address);
+> +		break;
+> +	default:
+> +		ret = ad5755_chan_reg_info(st, chan, info, true,
+> +					   &reg, &shift, &offset);
+> +		if (ret)
+> +			return ret;
+> +
+> +		val <<= shift;
+> +		val += offset;
+> +
+> +		if (val < 0 || val > 0xffff)
+> +			return -EINVAL;
+> +
+> +		return ad5755_write(indio_dev, reg, val);
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ad5755_write_raw_get_fmt(struct iio_dev *indio_dev,
+> +				    struct iio_chan_spec const *chan, long mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	default:
+> +		return IIO_VAL_INT;
+> +	}
+>  
+> -	return ad5755_write(indio_dev, reg, val);
+> +	return -EINVAL;
+>  }
+>  
+>  static ssize_t ad5755_read_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
+> @@ -371,6 +639,8 @@ static ssize_t ad5755_write_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
+>  static const struct iio_info ad5755_info = {
+>  	.read_raw = ad5755_read_raw,
+>  	.write_raw = ad5755_write_raw,
+> +	.write_raw_get_fmt = &ad5755_write_raw_get_fmt,
+> +	.attrs = &ad5755_attribute_group,
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> @@ -391,7 +661,8 @@ static const struct iio_chan_spec_ext_info ad5755_ext_info[] = {
+>  		BIT(IIO_CHAN_INFO_SCALE) |			\
+>  		BIT(IIO_CHAN_INFO_OFFSET) |			\
+>  		BIT(IIO_CHAN_INFO_CALIBSCALE) |			\
+> -		BIT(IIO_CHAN_INFO_CALIBBIAS),			\
+> +		BIT(IIO_CHAN_INFO_CALIBBIAS)  |			\
+> +		BIT(IIO_CHAN_INFO_MODE),			\
+>  	.scan_type = {						\
+>  		.sign = 'u',					\
+>  		.realbits = (_bits),				\
+> @@ -424,27 +695,9 @@ static const struct ad5755_chip_info ad5755_chip_info_tbl[] = {
+>  	},
+>  };
+>  
+> -static bool ad5755_is_valid_mode(struct ad5755_state *st, enum ad5755_mode mode)
+> -{
+> -	switch (mode) {
+> -	case AD5755_MODE_VOLTAGE_0V_5V:
+> -	case AD5755_MODE_VOLTAGE_0V_10V:
+> -	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> -	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> -		return st->chip_info->has_voltage_out;
+> -	case AD5755_MODE_CURRENT_4mA_20mA:
+> -	case AD5755_MODE_CURRENT_0mA_20mA:
+> -	case AD5755_MODE_CURRENT_0mA_24mA:
+> -		return true;
+> -	default:
+> -		return false;
+> -	}
+> -}
+> -
+>  static int ad5755_setup_pdata(struct iio_dev *indio_dev,
+> -			      const struct ad5755_platform_data *pdata)
+> +			      struct ad5755_platform_data *pdata)
+>  {
+> -	struct ad5755_state *st = iio_priv(indio_dev);
+>  	unsigned int val;
+>  	unsigned int i;
+>  	int ret;
+> @@ -479,39 +732,17 @@ static int ad5755_setup_pdata(struct iio_dev *indio_dev,
+>  	}
+>  
+>  	for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
+> -		if (!ad5755_is_valid_mode(st, pdata->dac[i].mode))
+> -			return -EINVAL;
+> -
+> -		val = 0;
+> -		if (!pdata->dac[i].ext_current_sense_resistor)
+> -			val |= AD5755_DAC_INT_CURRENT_SENSE_RESISTOR;
+> -		if (pdata->dac[i].enable_voltage_overrange)
+> -			val |= AD5755_DAC_VOLTAGE_OVERRANGE_EN;
+> -		val |= pdata->dac[i].mode;
+> -
+> -		ret = ad5755_update_dac_ctrl(indio_dev, i, val, 0);
+> +		ret = ad5755_setup_dac(indio_dev, i);
+>  		if (ret < 0)
+>  			return ret;
+> +
+>  	}
+>  
+>  	return 0;
+>  }
+>  
+> -static bool ad5755_is_voltage_mode(enum ad5755_mode mode)
+> -{
+> -	switch (mode) {
+> -	case AD5755_MODE_VOLTAGE_0V_5V:
+> -	case AD5755_MODE_VOLTAGE_0V_10V:
+> -	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> -	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> -		return true;
+> -	default:
+> -		return false;
+> -	}
+> -}
+> -
+>  static int ad5755_init_channels(struct iio_dev *indio_dev,
+> -				const struct ad5755_platform_data *pdata)
+> +				struct ad5755_platform_data *pdata)
+>  {
+>  	struct ad5755_state *st = iio_priv(indio_dev);
+>  	struct iio_chan_spec *channels = st->channels;
+> @@ -521,8 +752,8 @@ static int ad5755_init_channels(struct iio_dev *indio_dev,
+>  		channels[i] = st->chip_info->channel_template;
+>  		channels[i].channel = i;
+>  		channels[i].address = i;
+> -		if (pdata && ad5755_is_voltage_mode(pdata->dac[i].mode))
+> -			channels[i].type = IIO_VOLTAGE;
+> +		if (st->chip_info->has_voltage_out)
+> +			channels[i].type = IIO_DUAL_VOLTCUR;
+>  		else
+>  			channels[i].type = IIO_CURRENT;
+>  	}
+> @@ -543,7 +774,7 @@ static int ad5755_init_channels(struct iio_dev *indio_dev,
+>  		}, \
+>  	}
+>  
+> -static const struct ad5755_platform_data ad5755_default_pdata = {
+> +struct ad5755_platform_data ad5755_default_pdata = {
+>  	.ext_dc_dc_compenstation_resistor = false,
+>  	.dc_dc_phase = AD5755_DC_DC_PHASE_ALL_SAME_EDGE,
+>  	.dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ,
+> @@ -559,7 +790,7 @@ static const struct ad5755_platform_data ad5755_default_pdata = {
+>  static int ad5755_probe(struct spi_device *spi)
+>  {
+>  	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
+> -	const struct ad5755_platform_data *pdata = dev_get_platdata(&spi->dev);
+> +	struct ad5755_platform_data *pdata = dev_get_platdata(&spi->dev);
+>  	struct iio_dev *indio_dev;
+>  	struct ad5755_state *st;
+>  	int ret;
+> @@ -586,6 +817,8 @@ static int ad5755_probe(struct spi_device *spi)
+>  	if (!pdata)
+>  		pdata = &ad5755_default_pdata;
+>  
+> +	st->pdata = pdata;
+> +
+>  	ret = ad5755_init_channels(indio_dev, pdata);
+>  	if (ret)
+>  		return ret;
 > 
 
