@@ -1,49 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-193.synserver.de ([212.40.185.193]:1324 "EHLO
-	smtp-out-233.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S932213AbcA0PpO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jan 2016 10:45:14 -0500
-Subject: Re: [PATCH] iio:dac:ad5755 fixed SPI_MODE
-To: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>,
-	linux-iio@vger.kernel.org
-References: <1453905547-27938-1-git-send-email-sean.nyekjaer@prevas.dk>
- <56A8D800.3030804@metafoo.de> <56A8E344.8070803@prevas.dk>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56A8E606.2030708@metafoo.de>
-Date: Wed, 27 Jan 2016 16:45:10 +0100
-MIME-Version: 1.0
-In-Reply-To: <56A8E344.8070803@prevas.dk>
-Content-Type: text/plain; charset=windows-1252
+Received: from mout.kundenserver.de ([217.72.192.74]:52183 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932224AbcAYPxg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jan 2016 10:53:36 -0500
+From: Arnd Bergmann <arnd@arndb.de>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>
+Cc: linux-arm-kernel@lists.infradead.org,
+	Arnd Bergmann <arnd@arndb.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: ade7753: avoid uninitialized data
+Date: Mon, 25 Jan 2016 16:52:40 +0100
+Message-Id: <1453737174-1959778-1-git-send-email-arnd@arndb.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/27/2016 04:33 PM, Sean Nyekjær wrote:
-> 
-> On 2016-01-27 15:45, Lars-Peter Clausen wrote:
->> On 01/27/2016 03:39 PM, Sean Nyekjaer wrote:
->>> According to datasheet data is latched on the falling edge of the SCK.
->>>
->>> I agree it works in SPI_MODE_0 on the eval kit, but in other configurations
->>> with optic isolators (that adds a small delay). We are falling out of spec.
->>>
->>> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
->> Hi,
->>
->> The SPI mode is usually specified in the spi_board_info struct or devicetree
->> rather than hardcoding it in the driver.
->>
->> - Lars
-> Hi
-> I know :-)
-> But, all devices in this family have only support for SPI_MODE_1. So why
-> leave it up to the spi_board_info or devicetree when only one mode is allowed?
+The ade7753_spi_read_reg_16() will either successfully read a value
+from SPI, or return a failure code without delivering data. However,
+the ade7753_stop_device() and ade7753_reset() functions use the returned
+data without checking for an error condition first. Gcc detects this
+as a possible bug and warns about it:
 
-As far as I can see they should work with either SPI_MODE_1 or SPI_MODE_2.
-But it would certainly be nice if the SPI framework had support for
-auto-configuration, based on the support modes of the SPI controller and the
-device, in case no mode was explicit specified.
+drivers/staging/iio/meter/ade7753.c: In function 'ade7753_remove':
+drivers/staging/iio/meter/ade7753.c:348:6: error: 'val' may be used uninitialized in this function [-Werror=maybe-uninitialized]
+  val |= BIT(4);  /* AD converters can be turned off */
+      ^
+drivers/staging/iio/meter/ade7753.c:345:6: note: 'val' was declared here
+  u16 val;
+      ^
+drivers/staging/iio/meter/ade7753.c: In function 'ade7753_probe':
+drivers/staging/iio/meter/ade7753.c:222:6: error: 'val' may be used uninitialized in this function [-Werror=maybe-uninitialized]
 
-> If you don't like this patch I think we should create some documentation for
-> the device, so other people don't have to use hours in debugging :-D
+In both cases, we can avoids the warning by checking the return code
+before using the data.
 
-https://wiki.analog.com/resources/tools-software/linux-drivers/iio-dac/ad5755?&#example_platform_device_initialization
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/staging/iio/meter/ade7753.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
+index f129039bece3..69287108f793 100644
+--- a/drivers/staging/iio/meter/ade7753.c
++++ b/drivers/staging/iio/meter/ade7753.c
+@@ -217,8 +217,12 @@ error_ret:
+ static int ade7753_reset(struct device *dev)
+ {
+ 	u16 val;
++	int ret;
++
++	ret = ade7753_spi_read_reg_16(dev, ADE7753_MODE, &val);
++	if (ret)
++		return ret;
+ 
+-	ade7753_spi_read_reg_16(dev, ADE7753_MODE, &val);
+ 	val |= BIT(6); /* Software Chip Reset */
+ 
+ 	return ade7753_spi_write_reg_16(dev, ADE7753_MODE, val);
+@@ -343,8 +347,12 @@ error_ret:
+ static int ade7753_stop_device(struct device *dev)
+ {
+ 	u16 val;
++	int ret;
++
++	ret = ade7753_spi_read_reg_16(dev, ADE7753_MODE, &val);
++	if (ret)
++		return ret;
+ 
+-	ade7753_spi_read_reg_16(dev, ADE7753_MODE, &val);
+ 	val |= BIT(4);  /* AD converters can be turned off */
+ 
+ 	return ade7753_spi_write_reg_16(dev, ADE7753_MODE, val);
+-- 
+2.7.0
+
