@@ -1,40 +1,65 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-124.synserver.de ([212.40.185.124]:1112 "EHLO
-	smtp-out-013.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S932879AbcAYQAK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jan 2016 11:00:10 -0500
-Subject: Re: [RFC 2/2] iio: ad5755: added support for switching between
- voltage and current output
-To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org
-References: <1453467296-26356-1-git-send-email-sean.nyekjaer@prevas.dk>
- <1453467296-26356-2-git-send-email-sean.nyekjaer@prevas.dk>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56A64686.8030003@metafoo.de>
-Date: Mon, 25 Jan 2016 17:00:06 +0100
+Return-Path: <MAILER-DAEMON>
+From: "Andrew F. Davis" <afd@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>, Dan
+ Murphy <dmurphy@ti.com>,
+        Rob Herring <robh+dt@kernel.org>, Pawel Moll
+	<pawel.moll@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ian Campbell
+	<ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>
+CC: <linux-iio@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Andrew F.
+ Davis" <afd@ti.com>
+Subject: [PATCH v4 0/4] iio: AFE4404 Heart Rate Monitor and Bio-Sensing
+Date: Mon, 25 Jan 2016 11:28:57 -0600
+Message-ID: <1453742941-12086-1-git-send-email-afd@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <1453467296-26356-2-git-send-email-sean.nyekjaer@prevas.dk>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/22/2016 01:54 PM, Sean Nyekjaer wrote:
-> DAC ad5755 have both support for voltage and current output, before the driver
-> only had support for switching modes at compile time. Not very smart...
-> 
-> This patch adds support for switching modes from userspace.
-> 
-> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-> ---
-> 
-> This patch is not done yet :-) I would like to get some feedback of my work.
-> I have tested this patch with an ad5755 and it works.
-> 
-> So if you have any ideas on how I should progress please give me some feedback.
+This series adds the TI AFE4404 "Ultra-small, Integrated AFE for
+Wearable, Optical Heart Rate Monitoring and Bio-Sensing".
 
-Hi,
+Changes from v3:
+ - Removed attempt to factor out common code
+ - Rebased on v4.5-rc1
+ - Small fixes
 
-I'd like to better understand why this is necessary (or not). What is your
-usecase where you need to support switching at runtime?
+Changes from v2:
+ - Added afe4403 driver to this series
+ - Added patch to export needed IIO function
+ - Table lookup for magic numbers
+ - Other small fixes
 
-- Lars
+Please see [0] for more background.
 
+[0] http://www.spinics.net/lists/linux-iio/msg21619.html
+
+Andrew F. Davis (4):
+  Documentation: afe4404: Add DT bindings for the AFE4404 heart monitor
+  iio: health: Add driver for the TI AFE4404 heart monitor
+  Documentation: afe4403: Add DT bindings for the AFE4403 heart monitor
+  iio: health: Add driver for the TI AFE4403 heart monitor
+
+ .../ABI/testing/sysfs-bus-iio-health-afe440x       |  54 ++
+ .../devicetree/bindings/iio/health/afe4403.txt     |  34 +
+ .../devicetree/bindings/iio/health/afe4404.txt     |  30 +
+ drivers/iio/health/Kconfig                         |  31 +-
+ drivers/iio/health/Makefile                        |   2 +
+ drivers/iio/health/afe4403.c                       | 698 +++++++++++++++++++++
+ drivers/iio/health/afe4404.c                       | 665 ++++++++++++++++++++
+ drivers/iio/health/afe440x.h                       | 193 ++++++
+ 8 files changed, 1706 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
+ create mode 100644 Documentation/devicetree/bindings/iio/health/afe4403.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/health/afe4404.txt
+ create mode 100644 drivers/iio/health/afe4403.c
+ create mode 100644 drivers/iio/health/afe4404.c
+ create mode 100644 drivers/iio/health/afe440x.h
+
+-- 
+2.7.0
