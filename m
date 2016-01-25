@@ -1,65 +1,75 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.187]:52688 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932835AbcAYPwZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jan 2016 10:52:25 -0500
-From: Arnd Bergmann <arnd@arndb.de>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>
-Cc: linux-arm-kernel@lists.infradead.org,
-	Arnd Bergmann <arnd@arndb.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: ad5933: avoid uninitialized variable in error case
-Date: Mon, 25 Jan 2016 16:50:46 +0100
-Message-Id: <1453737099-1959671-1-git-send-email-arnd@arndb.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <MAILER-DAEMON>
+From: "Andrew F. Davis" <afd@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>, Dan
+ Murphy <dmurphy@ti.com>,
+        Rob Herring <robh+dt@kernel.org>, Pawel Moll
+	<pawel.moll@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ian Campbell
+	<ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>
+CC: <linux-iio@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Andrew F.
+ Davis" <afd@ti.com>
+Subject: [PATCH v4 3/4] Documentation: afe4403: Add DT bindings for the AFE4403 heart monitor
+Date: Mon, 25 Jan 2016 11:29:00 -0600
+Message-ID: <1453742941-12086-4-git-send-email-afd@ti.com>
+In-Reply-To: <1453742941-12086-1-git-send-email-afd@ti.com>
+References: <1453742941-12086-1-git-send-email-afd@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-The ad5933_i2c_read function returns an error code to indicate
-whether it could read data or not. However ad5933_work() ignores
-this return code and just accesses the data unconditionally,
-which gets detected by gcc as a possible bug:
+Add the TI AFE4403 heart monitor DT bindings documentation.
 
-drivers/staging/iio/impedance-analyzer/ad5933.c: In function 'ad5933_work':
-drivers/staging/iio/impedance-analyzer/ad5933.c:649:16: warning: 'status' may be used uninitialized in this function [-Wmaybe-uninitialized]
-
-This adds minimal error handling so we only evaluate the
-data if it was correctly read.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Andrew F. Davis <afd@ti.com>
 ---
- drivers/staging/iio/impedance-analyzer/ad5933.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/iio/health/afe4403.txt     | 34 ++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/health/afe4403.txt
 
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 10c43dda0f5a..304bb464e478 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -647,6 +647,7 @@ static void ad5933_work(struct work_struct *work)
- 	__be16 buf[2];
- 	int val[2];
- 	unsigned char status;
-+	int ret;
- 
- 	mutex_lock(&indio_dev->mlock);
- 	if (st->state == AD5933_CTRL_INIT_START_FREQ) {
-@@ -658,9 +659,9 @@ static void ad5933_work(struct work_struct *work)
- 		return;
- 	}
- 
--	ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
-+	ret = ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
- 
--	if (status & AD5933_STAT_DATA_VALID) {
-+	if (!ret && (status & AD5933_STAT_DATA_VALID)) {
- 		int scan_count = bitmap_weight(indio_dev->active_scan_mask,
- 					       indio_dev->masklength);
- 		ad5933_i2c_read(st->client,
+diff --git a/Documentation/devicetree/bindings/iio/health/afe4403.txt b/Documentation/devicetree/bindings/iio/health/afe4403.txt
+new file mode 100644
+index 0000000..2fffd70
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/health/afe4403.txt
+@@ -0,0 +1,34 @@
++Texas Instruments AFE4403 Heart rate and Pulse Oximeter
++
++Required properties:
++ - compatible		: Should be "ti,afe4403".
++ - reg			: SPI chip select address of device.
++ - tx-supply		: Regulator supply to transmitting LEDs.
++ - interrupt-parent	: Phandle to he parent interrupt controller.
++ - interrupts		: The interrupt line the device ADC_RDY pin is
++			  connected to. For details refer to,
++			  ../../interrupt-controller/interrupts.txt.
++
++Optional properties:
++ - reset-gpios		: GPIO used to reset the device.
++			  For details refer to, ../../gpio/gpio.txt.
++
++For other required and optional properties of SPI slave nodes
++please refer to ../../spi/spi-bus.txt.
++
++Example:
++
++&spi0 {
++	heart_mon@0 {
++		compatible = "ti,afe4403";
++		reg = <0>;
++		spi-max-frequency = <10000000>;
++
++		tx-supply = <&vbat>;
++
++		interrupt-parent = <&gpio1>;
++		interrupts = <28 IRQ_TYPE_EDGE_RISING>;
++
++		reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
++	};
++};
 -- 
 2.7.0
-
