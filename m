@@ -1,77 +1,113 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:49448 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S934274AbcAZMde (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 26 Jan 2016 07:33:34 -0500
-Date: Tue, 26 Jan 2016 13:33:32 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH] iio: pressure: mpl115: fix temperature offset sign
-In-Reply-To: <56A4FCCA.80500@kernel.org>
-Message-ID: <alpine.DEB.2.02.1601261333010.22166@pmeerw.net>
-References: <1453306051-8817-1-git-send-email-akinobu.mita@gmail.com> <56A4FCCA.80500@kernel.org>
+Received: from mail-io0-f178.google.com ([209.85.223.178]:33771 "EHLO
+	mail-io0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932339AbcAZMMu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jan 2016 07:12:50 -0500
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <alpine.DEB.2.02.1601261309440.22166@pmeerw.net>
+References: <1453809982-3548-1-git-send-email-tanure@linux.com>
+	<alpine.DEB.2.02.1601261309440.22166@pmeerw.net>
+Date: Tue, 26 Jan 2016 10:12:47 -0200
+Message-ID: <CAJX_Q+08m4d-gwkn=ZZN2ceq+GbtTGuWrTSX=3FJEJ9f=TGjKQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: ltr501: Use a signed return type for ltr501_match_samp_freq
+From: Lucas Tanure <tanure@linux.com>
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 24 Jan 2016, Jonathan Cameron wrote:
+Hi,
 
-> On 20/01/16 16:07, Akinobu Mita wrote:
-> > According to the datasheet, the resolusion of temperature sensor is
-> > -5.35 counts/C. Temperature ADC is 472 counts at 25C.
-> > (https://www.sparkfun.com/datasheets/Sensors/Pressure/MPL115A1.pdf
-> > NOTE: This is older revision, but this information is removed from the
-> > latest datasheet from nxp somehow)
-> > 
-> > Temp [C] = (Tadc - 472) / -5.35 + 25
-> >          = (Tadc - 605.750000) * -0.186915888
-> > 
-> > So the correct offset is -605.750000.
+On Tue, Jan 26, 2016 at 10:10 AM, Peter Meerwald-Stadler
+<pmeerw@pmeerw.net> wrote:
+>
+>> The return type "unsigned int" was used by the ltr501_match_samp_freq function
+>> despite of the aspect that it will eventually return a negative error code.
+>> So, change to signed int and get the value by reference in the parameters.
+>
+> ok, or just change the return type to int w/o adding a new pointer
+> argument?
+Yeah, you explained better. =p
+Do you need me to resend ?
 
-Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
- 
-> > Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-> > Cc: Jonathan Cameron <jic23@kernel.org>
-> > Cc: Hartmut Knaack <knaack.h@gmx.de>
-> > Cc: Lars-Peter Clausen <lars@metafoo.de>
-> > Cc: Peter Meerwald <pmeerw@pmeerw.net>
-> > Cc: linux-iio@vger.kernel.org
-> Peter,
-> 
-> I'd like your Ack on this given it is your driver.  That way
-> I can be lazy and not cross check the datasheet myself.
-> 
-> Jonathan
-> > ---
-> >  drivers/iio/pressure/mpl115.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
-> > index 138344c..73f2f0c 100644
-> > --- a/drivers/iio/pressure/mpl115.c
-> > +++ b/drivers/iio/pressure/mpl115.c
-> > @@ -118,7 +118,7 @@ static int mpl115_read_raw(struct iio_dev *indio_dev,
-> >  		*val = ret >> 6;
-> >  		return IIO_VAL_INT;
-> >  	case IIO_CHAN_INFO_OFFSET:
-> > -		*val = 605;
-> > +		*val = -605;
-> >  		*val2 = 750000;
-> >  		return IIO_VAL_INT_PLUS_MICRO;
-> >  	case IIO_CHAN_INFO_SCALE:
-> > 
-> 
+Thanks!
+
+>
+>> Done with the help of Coccinelle.
+>>
+>> Signed-off-by: Lucas Tanure <tanure@linux.com>
+>> ---
+>>  drivers/iio/light/ltr501.c | 27 +++++++++++++++------------
+>>  1 file changed, 15 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+>> index 809a961..99e8b12 100644
+>> --- a/drivers/iio/light/ltr501.c
+>> +++ b/drivers/iio/light/ltr501.c
+>> @@ -180,16 +180,19 @@ static const struct ltr501_samp_table ltr501_ps_samp_table[] = {
+>>                       {500000, 2000000}
+>>  };
+>>
+>> -static unsigned int ltr501_match_samp_freq(const struct ltr501_samp_table *tab,
+>> -                                        int len, int val, int val2)
+>> +static int ltr501_match_samp_freq(const struct ltr501_samp_table *tab,
+>> +                                        int len, int val, int val2,
+>> +                                        int *ret)
+>>  {
+>>       int i, freq;
+>>
+>>       freq = val * 1000000 + val2;
+>>
+>>       for (i = 0; i < len; i++) {
+>> -             if (tab[i].freq_val == freq)
+>> -                     return i;
+>> +             if (tab[i].freq_val == freq) {
+>> +                     *ret = i;
+>> +                     return 0;
+>> +             }
+>>       }
+>>
+>>       return -EINVAL;
+>> @@ -236,12 +239,12 @@ static int ltr501_als_write_samp_freq(struct ltr501_data *data,
+>>  {
+>>       int i, ret;
+>>
+>> -     i = ltr501_match_samp_freq(ltr501_als_samp_table,
+>> +     ret = ltr501_match_samp_freq(ltr501_als_samp_table,
+>>                                  ARRAY_SIZE(ltr501_als_samp_table),
+>> -                                val, val2);
+>> +                                val, val2, &i);
+>>
+>> -     if (i < 0)
+>> -             return i;
+>> +     if (ret < 0)
+>> +             return ret;
+>>
+>>       mutex_lock(&data->lock_als);
+>>       ret = regmap_field_write(data->reg_als_rate, i);
+>> @@ -255,12 +258,12 @@ static int ltr501_ps_write_samp_freq(struct ltr501_data *data,
+>>  {
+>>       int i, ret;
+>>
+>> -     i = ltr501_match_samp_freq(ltr501_ps_samp_table,
+>> +     ret = ltr501_match_samp_freq(ltr501_ps_samp_table,
+>>                                  ARRAY_SIZE(ltr501_ps_samp_table),
+>> -                                val, val2);
+>> +                                val, val2, &i);
+>>
+>> -     if (i < 0)
+>> -             return i;
+>> +     if (ret < 0)
+>> +             return ret;
+>>
+>>       mutex_lock(&data->lock_ps);
+>>       ret = regmap_field_write(data->reg_ps_rate, i);
+>>
+>
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+>
+> Peter Meerwald-Stadler
+> +43-664-2444418 (mobile)
