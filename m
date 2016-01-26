@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:36340 "EHLO mga04.intel.com"
+Received: from mga11.intel.com ([192.55.52.93]:21354 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756344AbcAZPrA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 26 Jan 2016 10:47:00 -0500
+	id S965442AbcAZQzC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 26 Jan 2016 11:55:02 -0500
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: jic23@kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de,
@@ -11,61 +11,36 @@ Cc: knaack.h@gmx.de, lars@metafoo.de,
 	k.kozlowski@samsung.com, afd@ti.com, broonie@kernel.org,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	lucas.demarchi@intel.com
-Subject: [PATCH 1/2] iio: pressure: ms5611: Add IIO_CHAN_INFO_SCALE to mask
-Date: Tue, 26 Jan 2016 17:49:07 +0200
-Message-Id: <1453823348-23074-2-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1453823348-23074-1-git-send-email-daniel.baluta@intel.com>
-References: <1453823348-23074-1-git-send-email-daniel.baluta@intel.com>
+Subject: [PATCH v2 0/2] ms5611: Add triggered buffer support
+Date: Tue, 26 Jan 2016 18:57:19 +0200
+Message-Id: <1453827441-25611-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This allows data exported via buffer interface to be converted
-to standard units in userspace.
+First patch reverts 7cb46c2a066 ("iio: pressure: ms5611: remove
+IIO_CHAN_INFO_SCALE from mask") because we need the scale to correctly
+transform "raw" data from buffer into correct measurement units.
 
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/iio/pressure/ms5611_core.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+Second patch adds the actual buffer support.
 
-diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-index 2f3d9b4..6cf0e55 100644
---- a/drivers/iio/pressure/ms5611_core.c
-+++ b/drivers/iio/pressure/ms5611_core.c
-@@ -201,6 +201,18 @@ static int ms5611_read_raw(struct iio_dev *indio_dev,
- 		default:
- 			return -EINVAL;
- 		}
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_TEMP:
-+			*val = 10;
-+			return IIO_VAL_INT;
-+		case IIO_PRESSURE:
-+			*val = 0;
-+			*val2 = 1000;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		default:
-+			return -EINVAL;
-+		}
- 	}
- 
- 	return -EINVAL;
-@@ -218,11 +230,13 @@ static struct ms5611_chip_info chip_info_tbl[] = {
- static const struct iio_chan_spec ms5611_channels[] = {
- 	{
- 		.type = IIO_PRESSURE,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+			BIT(IIO_CHAN_INFO_SCALE),
- 	},
- 	{
- 		.type = IIO_TEMP,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+			BIT(IIO_CHAN_INFO_SCALE),
- 	}
- };
- 
+Changes since v1:
+	* addressed comments from Peter
+	* explain why the need for allocating a buffer of 4 s32 elements
+	* correctly handle data copy into buffer when not all channels are enabled
+	* fixed timestamp channel index (2 instead of 3)
+	* added some new lines for readability
+
+Daniel Baluta (2):
+  iio: pressure: ms5611: Add IIO_CHAN_INFO_SCALE to mask
+  iio: pressure: ms5611: Add triggered buffer support
+
+ drivers/iio/pressure/Kconfig       |  1 +
+ drivers/iio/pressure/ms5611.h      |  1 +
+ drivers/iio/pressure/ms5611_core.c | 95 ++++++++++++++++++++++++++++++++++++--
+ drivers/iio/pressure/ms5611_i2c.c  |  7 +++
+ drivers/iio/pressure/ms5611_spi.c  |  8 ++++
+ 5 files changed, 108 insertions(+), 4 deletions(-)
+
 -- 
 2.5.0
 
