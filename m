@@ -1,53 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lb2-smtp-cloud2.xs4all.net ([194.109.24.25]:35748 "EHLO
-	lb2-smtp-cloud2.xs4all.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756071AbcAZAPq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jan 2016 19:15:46 -0500
-Message-ID: <1453767342.17181.26.camel@tiscali.nl>
-Subject: Re: [PATCH 16/22] iio: imu: Fix dependencies for !HAS_IOMEM archs
-From: Paul Bolle <pebolle@tiscali.nl>
-To: Richard Weinberger <richard@nod.at>
-Cc: user-mode-linux-devel@lists.sourceforge.net,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Date: Tue, 26 Jan 2016 01:15:42 +0100
-In-Reply-To: <1453760661-1444-17-git-send-email-richard@nod.at>
-References: <1453760661-1444-1-git-send-email-richard@nod.at>
-	 <1453760661-1444-17-git-send-email-richard@nod.at>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mail01.prevas.se ([62.95.78.3]:1830 "EHLO mail01.prevas.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752150AbcAZGZ6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 26 Jan 2016 01:25:58 -0500
+Subject: Re: [RFC 2/2] iio: ad5755: added support for switching between
+ voltage and current output
+To: Lars-Peter Clausen <lars@metafoo.de>, <linux-iio@vger.kernel.org>
+References: <1453467296-26356-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <1453467296-26356-2-git-send-email-sean.nyekjaer@prevas.dk>
+ <56A64686.8030003@metafoo.de>
+From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
+Message-ID: <56A70F10.3090507@prevas.dk>
+Date: Tue, 26 Jan 2016 07:15:44 +0100
+MIME-Version: 1.0
+In-Reply-To: <56A64686.8030003@metafoo.de>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On ma, 2016-01-25 at 23:24 +0100, Richard Weinberger wrote:
-> --- a/drivers/iio/imu/inv_mpu6050/Kconfig
-> +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-
->  config INV_MPU6050_IIO
->  	tristate "Invensense MPU6050 devices"
->  	depends on I2C && SYSFS
-> +	depends on I2C_MUX
-
-Nit: if I parsed the v4.5-rc1 tree correctly I2C_MUX depends I2C. So
-just
-	depends on I2C_MUX && SYSFS
-
-should also do the trick. Is it clearer to mention both I2C and I2C_MUX
-explicitly?
-
-(Likewise for 17/22.)
-
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
-> -	select I2C_MUX
->  	help
->  	  This driver supports the Invensense MPU6050 devices.
-
-(evolution 3.16.5 hates replying to plain text messages, so I've lost a
-line of context after fiddling with your message here.)
 
 
-Paul Bolle
+On 2016-01-25 17:00, Lars-Peter Clausen wrote:
+> On 01/22/2016 01:54 PM, Sean Nyekjaer wrote:
+>> DAC ad5755 have both support for voltage and current output, before the driver
+>> only had support for switching modes at compile time. Not very smart...
+>>
+>> This patch adds support for switching modes from userspace.
+>>
+>> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+>> ---
+>>
+>> This patch is not done yet :-) I would like to get some feedback of my work.
+>> I have tested this patch with an ad5755 and it works.
+>>
+>> So if you have any ideas on how I should progress please give me some feedback.
+> Hi,
+>
+> I'd like to better understand why this is necessary (or not). What is your
+> usecase where you need to support switching at runtime?
+>
+> - Lars
+>
+Hi Lars
+
+Our customer is building an IO board, where they are going to loop some 
+-15-15V or 0-24mA signals thru their board and manipulate them. We are 
+using an ti-ads8688 for input and an ad5755 for output :-)
+In our case it's necessary because our costumer does not know about the 
+input signals therefore we have to give them the posibility to switch 
+between the modes.
+Yes we could just provide them with 2 voltage modes and 2 current mode 
+or two different boardfiles, but they have declined that proposal :-(
+
+/Sean
