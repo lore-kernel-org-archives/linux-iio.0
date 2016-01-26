@@ -1,398 +1,241 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:35543 "EHLO
-	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752368AbcA1Q0t (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jan 2016 11:26:49 -0500
-Received: by mail-pf0-f194.google.com with SMTP id 66so1892051pfe.2
-        for <linux-iio@vger.kernel.org>; Thu, 28 Jan 2016 08:26:49 -0800 (PST)
-From: Akinobu Mita <akinobu.mita@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Akinobu Mita <akinobu.mita@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH] iio: adc: add support for ADC0832 8-bit ADC chips
-Date: Fri, 29 Jan 2016 01:26:32 +0900
-Message-Id: <1453998392-562-1-git-send-email-akinobu.mita@gmail.com>
+Received: from mga11.intel.com ([192.55.52.93]:21354 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S966776AbcAZQzJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 26 Jan 2016 11:55:09 -0500
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de,
+	ludovic.tancerel@maplehightech.com, tduszyns@gmail.com,
+	akinobu.mita@gmail.com, daniel.baluta@intel.com,
+	k.kozlowski@samsung.com, afd@ti.com, broonie@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	lucas.demarchi@intel.com
+Subject: [PATCH v2 2/2] iio: pressure: ms5611: Add triggered buffer support
+Date: Tue, 26 Jan 2016 18:57:21 +0200
+Message-Id: <1453827441-25611-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1453827441-25611-1-git-send-email-daniel.baluta@intel.com>
+References: <1453827441-25611-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds ADC0832 8-bit ADC driver.  This can also support
-ADC0831, ADC0834, and ADC0838 chips easily.  But I currently don't
-have these chips except ADC0832 and untested, so MODULE_DEVICE_TABLE
-for these are disabled for now.
+This will be used together with an external trigger (e.g hrtimer
+based software trigger).
 
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- .../devicetree/bindings/iio/adc/ti-adc083x.txt     |  15 ++
- drivers/iio/adc/Kconfig                            |  10 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/ti-adc083x.c                       | 296 +++++++++++++++++++++
- 4 files changed, 322 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc083x.txt
- create mode 100644 drivers/iio/adc/ti-adc083x.c
+ drivers/iio/pressure/Kconfig       |  1 +
+ drivers/iio/pressure/ms5611.h      |  1 +
+ drivers/iio/pressure/ms5611_core.c | 77 +++++++++++++++++++++++++++++++++++++-
+ drivers/iio/pressure/ms5611_i2c.c  |  7 ++++
+ drivers/iio/pressure/ms5611_spi.c  |  8 ++++
+ 5 files changed, 92 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc083x.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc083x.txt
-new file mode 100644
-index 0000000..caace65
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti-adc083x.txt
-@@ -0,0 +1,15 @@
-+* Texas Instruments' ADC0832 ADC chip
-+
-+Required properties:
-+ - compatible: Should be "ti,adc0832"
-+ - reg: spi chip select number for the device
-+ - vref-supply: The regulator supply for ADC reference voltage
-+ - spi-max-frequency: Max SPI frequency to use (< 400000)
-+
-+Example:
-+adc@0 {
-+	compatible = "ti,adc0832";
-+	reg = <0>;
-+	vref-supply = <&vdd_supply>;
-+	spi-max-frequency = <200000>;
-+};
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index e421030..387f8df 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -333,6 +333,16 @@ config TI_ADC081C
- 	  This driver can also be built as a module. If so, the module will be
- 	  called ti-adc081c.
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index e8f60db..48c3741 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -69,6 +69,7 @@ config MPL3115
  
-+config TI_ADC083X
-+	tristate "Texas Instruments ADC0832"
-+	depends on SPI
-+	help
-+	  If you say yes here you get support for Texas Instruments ADC0832
-+	  ADC chips.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called ti-adc083x.
-+
- config TI_ADC128S052
- 	tristate "Texas Instruments ADC128S052/ADC122S021"
- 	depends on SPI
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 9d09b44..9815021 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -32,6 +32,7 @@ obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
- obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
- obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
-+obj-$(CONFIG_TI_ADC083X) += ti-adc083x.o
- obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
- obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
-diff --git a/drivers/iio/adc/ti-adc083x.c b/drivers/iio/adc/ti-adc083x.c
-new file mode 100644
-index 0000000..894e9cc
---- /dev/null
-+++ b/drivers/iio/adc/ti-adc083x.c
-@@ -0,0 +1,296 @@
-+/*
-+ * ADC0831/ADC0832/ADC0834/ADC0838 8-bit ADC driver
-+ *
-+ * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License.  See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * Datasheet: http://www.ti.com/lit/ds/symlink/adc0832-n.pdf
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+#include <linux/regulator/consumer.h>
-+
-+enum {
-+	adc0831,
-+	adc0832,
-+	adc0834,
-+	adc0838,
-+};
-+
-+struct adc083x {
-+	struct spi_device *spi;
-+	struct regulator *reg;
-+	struct mutex lock;
-+	u8 mux_bits;
-+
-+	u8 tx_buf[2] ____cacheline_aligned;
-+	u8 rx_buf[2];
-+};
-+
-+#define ADC083X_VOLTAGE_CHANNEL(chan)					\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = chan,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-+	}
-+
-+#define ADC083X_VOLTAGE_CHANNEL_DIFF(chan1, chan2)			\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = (chan1),					\
-+		.channel2 = (chan2),					\
-+		.differential = 1,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-+	}
-+
-+static const struct iio_chan_spec adc0831_channels[] = {
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(0, 1),
-+};
-+
-+static const struct iio_chan_spec adc0832_channels[] = {
-+	ADC083X_VOLTAGE_CHANNEL(0),
-+	ADC083X_VOLTAGE_CHANNEL(1),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(0, 1),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(1, 0),
-+};
-+
-+static const struct iio_chan_spec adc0834_channels[] = {
-+	ADC083X_VOLTAGE_CHANNEL(0),
-+	ADC083X_VOLTAGE_CHANNEL(1),
-+	ADC083X_VOLTAGE_CHANNEL(2),
-+	ADC083X_VOLTAGE_CHANNEL(3),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(0, 1),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(1, 0),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(2, 3),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(3, 2),
-+};
-+
-+static const struct iio_chan_spec adc0838_channels[] = {
-+	ADC083X_VOLTAGE_CHANNEL(0),
-+	ADC083X_VOLTAGE_CHANNEL(1),
-+	ADC083X_VOLTAGE_CHANNEL(2),
-+	ADC083X_VOLTAGE_CHANNEL(3),
-+	ADC083X_VOLTAGE_CHANNEL(4),
-+	ADC083X_VOLTAGE_CHANNEL(5),
-+	ADC083X_VOLTAGE_CHANNEL(6),
-+	ADC083X_VOLTAGE_CHANNEL(7),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(0, 1),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(1, 0),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(2, 3),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(3, 2),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(4, 5),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(5, 4),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(6, 7),
-+	ADC083X_VOLTAGE_CHANNEL_DIFF(7, 6),
-+};
-+
-+static int adc0831_adc_conversion(struct adc083x *adc)
+ config MS5611
+ 	tristate "Measurement Specialties MS5611 pressure sensor driver"
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say Y here to build support for the Measurement Specialties
+ 	  MS5611, MS5607 pressure and temperature sensors.
+diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
+index 23b93c7..2d70dd6 100644
+--- a/drivers/iio/pressure/ms5611.h
++++ b/drivers/iio/pressure/ms5611.h
+@@ -52,5 +52,6 @@ struct ms5611_state {
+ };
+ 
+ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type);
++int ms5611_remove(struct iio_dev *indio_dev);
+ 
+ #endif /* _MS5611_H */
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index 6cf0e55..7ce58cb 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -17,6 +17,9 @@
+ #include <linux/iio/iio.h>
+ #include <linux/delay.h>
+ 
++#include <linux/iio/buffer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
+ #include "ms5611.h"
+ 
+ static bool ms5611_prom_is_valid(u16 *prom, size_t len)
+@@ -173,6 +176,34 @@ static int ms5611_reset(struct iio_dev *indio_dev)
+ 	return 0;
+ }
+ 
++static irqreturn_t ms5611_trigger_handler(int irq, void *p)
 +{
-+	struct spi_device *spi = adc->spi;
-+	int ret;
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ms5611_state *st = iio_priv(indio_dev);
++	s32 buf[4]; /* s32 (pressure) + s32 (temp) + 2 * s32 (timestamp) */
++	s32 pressure, temp;
++	int ret, i = 0;
 +
-+	ret = spi_read(spi, &adc->rx_buf, 2);
-+	if (ret)
-+		return ret;
++	mutex_lock(&st->lock);
++	ret = ms5611_read_temp_and_pressure(indio_dev, &temp, &pressure);
++	mutex_unlock(&st->lock);
++	if (ret < 0)
++		goto err;
 +
-+	return (adc->rx_buf[0] << 2) | (adc->rx_buf[1] >> 6);
++	if (test_bit(0, indio_dev->active_scan_mask))
++		buf[i++] = pressure;
++	if (test_bit(1, indio_dev->active_scan_mask))
++		buf[i] = temp;
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf, pf->timestamp);
++
++err:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
 +}
 +
-+static int adc083x_adc_conversion(struct adc083x *adc, int channel,
-+				bool differential)
-+{
-+	struct spi_device *spi = adc->spi;
-+	struct spi_transfer xfer = {
-+		.tx_buf = adc->tx_buf,
-+		.rx_buf = adc->rx_buf,
-+		.len = 2,
-+	};
-+	int ret;
-+
-+	if (!adc->mux_bits)
-+		return adc0831_adc_conversion(adc);
-+
-+	/* start bit */
-+	adc->tx_buf[0] = 1 << (adc->mux_bits + 1);
-+	/* single-ended or differential */
-+	adc->tx_buf[0] |= differential ? 0 : (1 << adc->mux_bits);
-+	/* odd / sign */
-+	adc->tx_buf[0] |= (channel % 2) << (adc->mux_bits - 1);
-+	/* select */
-+	if (adc->mux_bits > 1)
-+		adc->tx_buf[0] |= channel / 2;
-+
-+	/* align Data output BIT7 (MSB) to 8-bit boundary */
-+	adc->tx_buf[0] <<= 1;
-+
-+	ret = spi_sync_transfer(spi, &xfer, 1);
-+	if (ret)
+ static int ms5611_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+@@ -232,12 +263,27 @@ static const struct iio_chan_spec ms5611_channels[] = {
+ 		.type = IIO_PRESSURE,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+ 			BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 32,
++			.storagebits = 32,
++			.endianness = IIO_CPU,
++		},
+ 	},
+ 	{
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+ 			BIT(IIO_CHAN_INFO_SCALE),
+-	}
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 32,
++			.storagebits = 32,
++			.endianness = IIO_CPU,
++		},
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(2),
+ };
+ 
+ static const struct iio_info ms5611_info = {
+@@ -274,10 +320,37 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return devm_iio_device_register(dev, indio_dev);
++	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
++					 ms5611_trigger_handler, NULL);
++	if (ret < 0) {
++		dev_err(dev, "iio triggered buffer setup failed\n");
 +		return ret;
-+
-+	return adc->rx_buf[1];
-+}
-+
-+static int adc083x_read_raw(struct iio_dev *iio,
-+			struct iio_chan_spec const *channel, int *value,
-+			int *shift, long mask)
-+{
-+	struct adc083x *adc = iio_priv(iio);
-+	int ret;
-+
-+	mutex_lock(&adc->lock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = adc083x_adc_conversion(adc, channel->channel,
-+						channel->differential);
-+		if (ret < 0)
-+			break;
-+
-+		*value = ret;
-+		ret = IIO_VAL_INT;
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regulator_get_voltage(adc->reg);
-+		if (ret < 0)
-+			break;
-+
-+		/* convert regulator output voltage to mV */
-+		*value = ret / 1000;
-+		*shift = 8;
-+		ret = IIO_VAL_FRACTIONAL_LOG2;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
 +	}
 +
-+	mutex_unlock(&adc->lock);
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(dev, "unable to register iio device\n");
++		goto err_buffer_cleanup;
++	}
++
++	return 0;
++
++err_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
 +
 +	return ret;
-+}
-+
-+static const struct iio_info adc083x_info = {
-+	.read_raw = adc083x_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int adc083x_probe(struct spi_device *spi)
+ }
+ EXPORT_SYMBOL(ms5611_probe);
+ 
++int ms5611_remove(struct iio_dev *indio_dev)
 +{
-+	struct iio_dev *indio_dev;
-+	struct adc083x *adc;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	adc = iio_priv(indio_dev);
-+	adc->spi = spi;
-+	mutex_init(&adc->lock);
-+
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->info = &adc083x_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	switch (spi_get_device_id(spi)->driver_data) {
-+	case adc0831:
-+		adc->mux_bits = 0;
-+		indio_dev->channels = adc0831_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(adc0831_channels);
-+		break;
-+	case adc0832:
-+		adc->mux_bits = 1;
-+		indio_dev->channels = adc0832_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(adc0832_channels);
-+		break;
-+	case adc0834:
-+		adc->mux_bits = 2;
-+		indio_dev->channels = adc0834_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(adc0834_channels);
-+		break;
-+	case adc0838:
-+		adc->mux_bits = 3;
-+		indio_dev->channels = adc0838_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(adc0838_channels);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	adc->reg = devm_regulator_get(&spi->dev, "vref");
-+	if (IS_ERR(adc->reg))
-+		return PTR_ERR(adc->reg);
-+
-+	ret = regulator_enable(adc->reg);
-+	if (ret)
-+		return ret;
-+
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	ret = devm_iio_device_register(&spi->dev, indio_dev);
-+	if (ret)
-+		regulator_disable(adc->reg);
-+
-+	return ret;
-+}
-+
-+static int adc083x_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct adc083x *adc = iio_priv(indio_dev);
-+
-+	regulator_disable(adc->reg);
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
 +
 +	return 0;
 +}
++EXPORT_SYMBOL(ms5611_remove);
 +
-+#ifdef CONFIG_OF
+ MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
+ MODULE_DESCRIPTION("MS5611 core driver");
+ MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
+index 245797d..42706a8 100644
+--- a/drivers/iio/pressure/ms5611_i2c.c
++++ b/drivers/iio/pressure/ms5611_i2c.c
+@@ -99,6 +99,7 @@ static int ms5611_i2c_probe(struct i2c_client *client,
+ 		return -ENOMEM;
+ 
+ 	st = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
+ 	st->reset = ms5611_i2c_reset;
+ 	st->read_prom_word = ms5611_i2c_read_prom_word;
+ 	st->read_adc_temp_and_pressure = ms5611_i2c_read_adc_temp_and_pressure;
+@@ -107,6 +108,11 @@ static int ms5611_i2c_probe(struct i2c_client *client,
+ 	return ms5611_probe(indio_dev, &client->dev, id->driver_data);
+ }
+ 
++static int ms5611_i2c_remove(struct i2c_client *client)
++{
++	return ms5611_remove(i2c_get_clientdata(client));
++}
 +
-+static const struct of_device_id adc083x_dt_ids[] = {
-+	{ .compatible = "ti,adc0832", },
-+/* THESE CHIPS ARE NOT TESTED
-+	{ .compatible = "ti,adc0831", },
-+	{ .compatible = "ti,adc0834", },
-+	{ .compatible = "ti,adc0838", },
-+*/
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, adc083x_dt_ids);
+ static const struct i2c_device_id ms5611_id[] = {
+ 	{ "ms5611", MS5611 },
+ 	{ "ms5607", MS5607 },
+@@ -120,6 +126,7 @@ static struct i2c_driver ms5611_driver = {
+ 	},
+ 	.id_table = ms5611_id,
+ 	.probe = ms5611_i2c_probe,
++	.remove = ms5611_i2c_remove,
+ };
+ module_i2c_driver(ms5611_driver);
+ 
+diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
+index aaa0c4b..c4bf4e8 100644
+--- a/drivers/iio/pressure/ms5611_spi.c
++++ b/drivers/iio/pressure/ms5611_spi.c
+@@ -90,6 +90,8 @@ static int ms5611_spi_probe(struct spi_device *spi)
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
++	spi_set_drvdata(spi, indio_dev);
 +
-+#endif
+ 	spi->mode = SPI_MODE_0;
+ 	spi->max_speed_hz = 20000000;
+ 	spi->bits_per_word = 8;
+@@ -107,6 +109,11 @@ static int ms5611_spi_probe(struct spi_device *spi)
+ 			    spi_get_device_id(spi)->driver_data);
+ }
+ 
++static int ms5611_spi_remove(struct spi_device *spi)
++{
++	return ms5611_remove(spi_get_drvdata(spi));
++}
 +
-+static const struct spi_device_id adc083x_id[] = {
-+	{ "adc0832", adc0832 },
-+/* THESE CHIPS ARE NOT TESTED
-+	{ "adc0831", adc0831 },
-+	{ "adc0834", adc0834 },
-+	{ "adc0838", adc0838 },
-+*/
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, adc083x_id);
-+
-+static struct spi_driver adc083x_driver = {
-+	.driver = {
-+		.name = "adc083x",
-+		.of_match_table = of_match_ptr(adc083x_dt_ids),
-+	},
-+	.probe = adc083x_probe,
-+	.remove = adc083x_remove,
-+	.id_table = adc083x_id,
-+};
-+module_spi_driver(adc083x_driver);
-+
-+MODULE_AUTHOR("Akinobu Mita <akinobu.mita@gmail.com>");
-+MODULE_DESCRIPTION("ADC0831/ADC0832/ADC0834/ADC0838 driver");
-+MODULE_LICENSE("GPL v2");
+ static const struct spi_device_id ms5611_id[] = {
+ 	{ "ms5611", MS5611 },
+ 	{ "ms5607", MS5607 },
+@@ -120,6 +127,7 @@ static struct spi_driver ms5611_driver = {
+ 	},
+ 	.id_table = ms5611_id,
+ 	.probe = ms5611_spi_probe,
++	.remove = ms5611_spi_remove,
+ };
+ module_spi_driver(ms5611_driver);
+ 
 -- 
 2.5.0
 
