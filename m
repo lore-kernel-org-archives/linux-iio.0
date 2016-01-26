@@ -1,64 +1,53 @@
-Return-Path: <cristina.moraru09@gmail.com>
-From: Cristina Moraru <cristina.moraru09@gmail.com>
-To: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	ludovic.tancerel@maplehightech.com,
-	mranostay@gmail.com,
-	geert@linux-m68k.org,
-	andrew.smirnov@gmail.com,
-	nicola@corna.info,
-	chris.lesiak@licor.com,
-	linux-kernel@vger.kernel.org,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yk0-f174.google.com ([209.85.160.174]:34943 "EHLO
+	mail-yk0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751886AbcAZW25 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jan 2016 17:28:57 -0500
+MIME-Version: 1.0
+In-Reply-To: <1452788708-3003-1-git-send-email-daniel.baluta@intel.com>
+References: <1452788708-3003-1-git-send-email-daniel.baluta@intel.com>
+From: Lucas De Marchi <lucas.de.marchi@gmail.com>
+Date: Tue, 26 Jan 2016 20:28:37 -0200
+Message-ID: <CAKi4VA+n63x=HXGpijksCSMC6tb0ppCqxqAiVwSuGnw2TkzS7g@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: Add TI ADS1015 ADC driver support
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, lkml <linux-kernel@vger.kernel.org>,
 	linux-iio@vger.kernel.org,
-	octavian.purdila@intel.com,
-	daniel.baluta@intel.com
-Cc: Cristina Moraru <cristina.moraru09@gmail.com>
-Subject: [PATCH 1/2] iio: si7020: add support for Hoperf th06
-Date: Tue, 26 Jan 2016 22:17:49 +0200
-Message-Id: <1453839469-3537-1-git-send-email-cristina.moraru09@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+	Lucas De Marchi <lucas.demarchi@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for Hoperf th06 humidity and
-temperature sensor as it uses same register definitions
-as si7020
+Hi,
 
-th06 Datasheet: http://www.hoperf.com/upload/sensor/TH06.pdf
+On Thu, Jan 14, 2016 at 2:25 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+> The driver has sysfs readings with runtime PM support for power saving.
+> It also offers buffer support that can be used together with IIO software
+> triggers.
+>
+> Datasheet can be found here:
+>         http://www.ti.com.cn/cn/lit/ds/symlink/ads1015.pdf
+>
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> ---
 
-Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
----
-Previously sent: http://marc.info/?l=linux-iio&m=145255305514311&w=2
+[ ... ]
 
- drivers/iio/humidity/Kconfig  | 3 ++-
- drivers/iio/humidity/si7020.c | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+> +static const struct i2c_device_id ads1015_id[] = {
+> +       {"ads1015", 0},
 
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index 6a23698..c1f3a21 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -50,7 +50,8 @@ config SI7020
- 	depends on I2C
- 	help
- 	  Say yes here to build support for the Silicon Labs Si7013/20/21
--	  Relative Humidity and Temperature Sensors.
-+	  Relative Humidity and Temperature Sensors. This driver also
-+	  supports Hoperf TH06 Humidity and Temperature Sensor.
- 
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called si7020.
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-index 71991b5..5ab4e06 100644
---- a/drivers/iio/humidity/si7020.c
-+++ b/drivers/iio/humidity/si7020.c
-@@ -149,6 +149,7 @@ static int si7020_probe(struct i2c_client *client,
- 
- static const struct i2c_device_id si7020_id[] = {
- 	{ "si7020", 0 },
-+	{ "th06", 0 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, si7020_id);
--- 
-1.9.1
+shouldn't this be ti-ads1015 so not to clash with the hwmon driver?
+
+> +       {}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, ads1015_id);
+> +
+> +static struct i2c_driver ads1015_driver = {
+> +       .driver = {
+> +               .name = ADS1015_DRV_NAME,
+
+same here, otherwise we will have an i2c:ads1015 alias
+
+
+Lucas De Marchi
