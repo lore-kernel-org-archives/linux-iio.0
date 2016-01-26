@@ -1,47 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail02.prevas.se ([62.95.78.10]:56232 "EHLO mail02.prevas.se"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932922AbcA0Pd2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 27 Jan 2016 10:33:28 -0500
-Subject: Re: [PATCH] iio:dac:ad5755 fixed SPI_MODE
-To: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-References: <1453905547-27938-1-git-send-email-sean.nyekjaer@prevas.dk>
- <56A8D800.3030804@metafoo.de>
-From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
-Message-ID: <56A8E344.8070803@prevas.dk>
-Date: Wed, 27 Jan 2016 16:33:24 +0100
-MIME-Version: 1.0
-In-Reply-To: <56A8D800.3030804@metafoo.de>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <cristina.moraru09@gmail.com>
+From: Cristina Moraru <cristina.moraru09@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	ludovic.tancerel@maplehightech.com,
+	mranostay@gmail.com,
+	geert@linux-m68k.org,
+	k.kozlowski@samsung.com,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	octavian.purdila@intel.com,
+	daniel.baluta@intel.com
+Cc: Cristina Moraru <cristina.moraru09@gmail.com>
+Subject: [PATCH 2/2] iio: si7005: add support for Hoperf th02
+Date: Tue, 26 Jan 2016 22:21:07 +0200
+Message-Id: <1453839667-3626-1-git-send-email-cristina.moraru09@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+This patch adds support for Hoperf th02 humidity and
+temperature sensor as it uses same register definitions
+as si7005
 
-On 2016-01-27 15:45, Lars-Peter Clausen wrote:
-> On 01/27/2016 03:39 PM, Sean Nyekjaer wrote:
->> According to datasheet data is latched on the falling edge of the SCK.
->>
->> I agree it works in SPI_MODE_0 on the eval kit, but in other configurations
->> with optic isolators (that adds a small delay). We are falling out of spec.
->>
->> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-> Hi,
->
-> The SPI mode is usually specified in the spi_board_info struct or devicetree
-> rather than hardcoding it in the driver.
->
-> - Lars
-Hi
-I know :-)
-But, all devices in this family have only support for SPI_MODE_1. So why 
-leave it up to the spi_board_info or devicetree when only one mode is 
-allowed?
-If you don't like this patch I think we should create some documentation 
-for the device, so other people don't have to use hours in debugging :-D
+th02 Datasheet: http://www.anglia-live.com/netalogue/pdfs/hrf/datasheets/TH02_V1.1.pdf
 
-/Sean
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
+---
+ drivers/iio/humidity/Kconfig  | 3 ++-
+ drivers/iio/humidity/si7005.c | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+index c1f3a21..866dda1 100644
+--- a/drivers/iio/humidity/Kconfig
++++ b/drivers/iio/humidity/Kconfig
+@@ -43,7 +43,8 @@ config SI7005
+ 	  humidity and temperature sensor.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+-	  will be called si7005.
++	  will be called si7005. This driver also
++	  supports Hoperf TH02 Humidity and Temperature Sensor.
+ 
+ config SI7020
+ 	tristate "Si7013/20/21 Relative Humidity and Temperature Sensors"
+diff --git a/drivers/iio/humidity/si7005.c b/drivers/iio/humidity/si7005.c
+index 91972cc..98a022f 100644
+--- a/drivers/iio/humidity/si7005.c
++++ b/drivers/iio/humidity/si7005.c
+@@ -170,6 +170,7 @@ static int si7005_probe(struct i2c_client *client,
+ 
+ static const struct i2c_device_id si7005_id[] = {
+ 	{ "si7005", 0 },
++	{ "th02", 0 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, si7005_id);
+-- 
+1.9.1
