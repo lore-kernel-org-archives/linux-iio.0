@@ -1,59 +1,31 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from [212.40.180.149] ([212.40.180.149]:54012 "EHLO
+	smtp-out-124.synserver.de" rhost-flags-FAIL-FAIL-OK-FAIL)
+	by vger.kernel.org with ESMTP id S932555AbcA0OqX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jan 2016 09:46:23 -0500
+Subject: Re: [PATCH] iio:dac:ad5755 fixed SPI_MODE
+To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org
+References: <1453905547-27938-1-git-send-email-sean.nyekjaer@prevas.dk>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56A8D800.3030804@metafoo.de>
+Date: Wed, 27 Jan 2016 15:45:20 +0100
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <CAKi4VA+n63x=HXGpijksCSMC6tb0ppCqxqAiVwSuGnw2TkzS7g@mail.gmail.com>
-References: <1452788708-3003-1-git-send-email-daniel.baluta@intel.com>
-	<CAKi4VA+n63x=HXGpijksCSMC6tb0ppCqxqAiVwSuGnw2TkzS7g@mail.gmail.com>
-Date: Wed, 27 Jan 2016 11:49:28 +0200
-Message-ID: <CAEnQRZDeLoOUbF-jw81t-LUFQYAjqX84tA_ZyHCPWWxbGSN6KA@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: Add TI ADS1015 ADC driver support
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Lucas De Marchi <lucas.de.marchi@gmail.com>
-Cc: Daniel Baluta <daniel.baluta@intel.com>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, lkml <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Lucas De Marchi <lucas.demarchi@intel.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1453905547-27938-1-git-send-email-sean.nyekjaer@prevas.dk>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Jan 27, 2016 at 12:28 AM, Lucas De Marchi
-<lucas.de.marchi@gmail.com> wrote:
-> Hi,
->
-> On Thu, Jan 14, 2016 at 2:25 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
->> The driver has sysfs readings with runtime PM support for power saving.
->> It also offers buffer support that can be used together with IIO software
->> triggers.
->>
->> Datasheet can be found here:
->>         http://www.ti.com.cn/cn/lit/ds/symlink/ads1015.pdf
->>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->> ---
->
-> [ ... ]
->
->> +static const struct i2c_device_id ads1015_id[] = {
->> +       {"ads1015", 0},
->
-> shouldn't this be ti-ads1015 so not to clash with the hwmon driver?
+On 01/27/2016 03:39 PM, Sean Nyekjaer wrote:
+> According to datasheet data is latched on the falling edge of the SCK.
+> 
+> I agree it works in SPI_MODE_0 on the eval kit, but in other configurations
+> with optic isolators (that adds a small delay). We are falling out of spec.
+> 
+> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
 
-The plan is to remove hwmon driver and replace it with the a backward
-compatbile IIO driver.
+Hi,
 
-I am now working to address the comments from this thread and send a v2
-asap.
+The SPI mode is usually specified in the spi_board_info struct or devicetree
+rather than hardcoding it in the driver.
 
->
->> +       {}
->> +};
->> +MODULE_DEVICE_TABLE(i2c, ads1015_id);
->> +
->> +static struct i2c_driver ads1015_driver = {
->> +       .driver = {
->> +               .name = ADS1015_DRV_NAME,
->
-> same here, otherwise we will have an i2c:ads1015 alias
-
-thanks,
-Daniel.
+- Lars
