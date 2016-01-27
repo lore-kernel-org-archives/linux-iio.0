@@ -1,109 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f48.google.com ([74.125.82.48]:38392 "EHLO
-	mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752487AbcA0JeZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jan 2016 04:34:25 -0500
-Received: by mail-wm0-f48.google.com with SMTP id p63so16886308wmp.1
-        for <linux-iio@vger.kernel.org>; Wed, 27 Jan 2016 01:34:25 -0800 (PST)
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35695 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932263AbcA0RXv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jan 2016 12:23:51 -0500
+In-Reply-To: <CAEnQRZBb5xK0=i1=Dwhcdkj1baSg4LGgFwzP8uQfeV29M+Cypg@mail.gmail.com>
+References: <1452788708-3003-1-git-send-email-daniel.baluta@intel.com> <569A3299.3@kernel.org> <CAEnQRZBb5xK0=i1=Dwhcdkj1baSg4LGgFwzP8uQfeV29M+Cypg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1453814201-31557-1-git-send-email-lars@metafoo.de>
-References: <1453814201-31557-1-git-send-email-lars@metafoo.de>
-Date: Wed, 27 Jan 2016 11:34:24 +0200
-Message-ID: <CAEnQRZAwM8R0QeFz_R-ACYPX6sxjSGqNyA3CLOTndhAXDFE6NQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: Add helper function for calculating scan index
- storage size
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH] iio: adc: Add TI ADS1015 ADC driver support
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Wed, 27 Jan 2016 17:23:39 +0000
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lucas De Marchi <lucas.demarchi@intel.com>
+Message-ID: <DFB2F2D5-3791-4820-98F9-A425E7C95DA5@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jan 26, 2016 at 3:16 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> We have the same code for computing the scan index storage size in bytes
-> all over the place. Factor this out into a helper function. makes the code
-> a bit shorter and makes it easier to do future modifications to the
-> implementation.
 
-Nice patch. Few comments below:
 
-Running checkpatch I get some warnings like this:
-
-$ ./scripts/checkpatch.pl --strict x.patch
-CHECK: Alignment should match open parenthesis
-
-One of them can be fixed, for the others there's not much to be done.
+On 27 January 2016 16:31:42 GMT+00:00, Daniel Baluta <daniel.baluta@intel.com> wrote:
+>On Sat, Jan 16, 2016 at 2:07 PM, Jonathan Cameron <jic23@kernel.org>
+>wrote:
+>> On 14/01/16 16:25, Daniel Baluta wrote:
+>>> The driver has sysfs readings with runtime PM support for power
+>saving.
+>>> It also offers buffer support that can be used together with IIO
+>software
+>>> triggers.
+>>>
+>>> Datasheet can be found here:
+>>>       http://www.ti.com.cn/cn/lit/ds/symlink/ads1015.pdf
+>>>
+>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>
+>Thanks for the feedback! Few questions below.
+>
+>
+>> The hwmon compatibility stuff has been covered by others so I'll just
+>assume
+>> you'll sort that out :)
+>>
+>> Various bits and bobs inline.
+>
+>Do you think it is worth to have both of the drivers in parallel for a
+>period until
+>we figure out that everything is correct? The IIO config symbol can be
+>enabled
+>only hwmon symbol is not enabled?
+>
+Yes. (That was easy)
+><snip>
+>
+>>> +struct ads1015_data {
+>> I was a little suprised to see both the i2c_client and regmap in
+>here...
+>> Could use regmap_get_device for most if not all uses in here of the
+>> client pointer..
+>
+>That's a good point. Anyhow, there is no single instance of
+>regmap_get_device
+>in the IIO tree. I counted at least 4 drivers where we could use it.
+>Do you think
+>is there a great benefit from using it?
+I only came across it here by thinking surely there was a better way!
 
 >
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/iio/industrialio-buffer.c | 52 ++++++++++++++-------------------------
->  1 file changed, 19 insertions(+), 33 deletions(-)
+>This will be a nice change for Linux kernel outreachy applicants :).
+>I'm sure they will
+>love to work on it.
+Cool.
 >
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index 139ae91..e026a09 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -512,33 +512,35 @@ static ssize_t iio_buffer_show_enable(struct device *dev,
->         return sprintf(buf, "%d\n", iio_buffer_is_active(indio_dev->buffer));
->  }
+>>> +     struct i2c_client *client;
+>>> +     struct regmap *regmap;
+>> You only use buffer[0] that I can see...
 >
-> +static unsigned int iio_storage_bytes_for_si(struct iio_dev *indio_dev,
-> +       unsigned int scan_index)
-
-This can be fixed. Second line doesn't go beyond 80 chars limit after alignment.
-
-> +{
-> +       const struct iio_chan_spec *ch;
-> +       unsigned int bytes;
-> +
-> +       ch = iio_find_channel_from_si(indio_dev, scan_index);
-> +       bytes = ch->scan_type.storagebits / 8;
-> +       if (ch->scan_type.repeat > 1)
-> +               bytes *= ch->scan_type.repeat;
-> +       return bytes;
-> +}
-> +
->  static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
->                                 const unsigned long *mask, bool timestamp)
->  {
-> -       const struct iio_chan_spec *ch;
->         unsigned bytes = 0;
->         int length, i;
+>The rest should be for the timestamp and I will fix it :).
 >
->         /* How much space will the demuxed element take? */
->         for_each_set_bit(i, mask,
->                          indio_dev->masklength) {
+><snip>
+>
+>thanks,
+>Daniel.
 
-While at it you can move this on the previous line. It makes code
-easier to read.
-
-> -               ch = iio_find_channel_from_si(indio_dev, i);
-> -               if (ch->scan_type.repeat > 1)
-> -                       length = ch->scan_type.storagebits / 8 *
-> -                               ch->scan_type.repeat;
-> -               else
-> -                       length = ch->scan_type.storagebits / 8;
-> +               length = iio_storage_bytes_for_si(indio_dev, i);
->                 bytes = ALIGN(bytes, length);
->                 bytes += length;
->         }
->         if (timestamp) {
-> -               ch = iio_find_channel_from_si(indio_dev,
-> -                                             indio_dev->scan_index_timestamp);
-> -               if (ch->scan_type.repeat > 1)
-> -                       length = ch->scan_type.storagebits / 8 *
-> -                               ch->scan_type.repeat;
-> -               else
-> -                       length = ch->scan_type.storagebits / 8;
-> +               length = iio_storage_bytes_for_si(indio_dev,
-> +                       indio_dev->scan_index_timestamp);
-
-
-<snip>
-
-thanks,
-Daniel.
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
