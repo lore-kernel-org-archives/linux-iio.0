@@ -1,74 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f47.google.com ([209.85.215.47]:34637 "EHLO
-	mail-lf0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753119AbcAZW47 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jan 2016 17:56:59 -0500
-MIME-Version: 1.0
-In-Reply-To: <1453839667-3626-1-git-send-email-cristina.moraru09@gmail.com>
-References: <1453839667-3626-1-git-send-email-cristina.moraru09@gmail.com>
+Received: from mail-pf0-f170.google.com ([209.85.192.170]:35780 "EHLO
+	mail-pf0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751901AbcA0Cei (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jan 2016 21:34:38 -0500
+Received: by mail-pf0-f170.google.com with SMTP id 65so21588062pfd.2
+        for <linux-iio@vger.kernel.org>; Tue, 26 Jan 2016 18:34:38 -0800 (PST)
 From: Matt Ranostay <mranostay@gmail.com>
-Date: Tue, 26 Jan 2016 14:56:17 -0800
-Message-ID: <CAKzfze-usm3BM0wu3vVy5zoX0Zq2=5EgNfEwYwqnL2H8_tRbEQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: si7005: add support for Hoperf th02
-To: Cristina Moraru <cristina.moraru09@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	ludovic.tancerel@maplehightech.com, geert@linux-m68k.org,
-	=?UTF-8?Q?Krzysztof_Koz=C5=82owski?= <k.kozlowski@samsung.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	octavian.purdila@intel.com, Daniel Baluta <daniel.baluta@intel.com>
-Content-Type: text/plain; charset=UTF-8
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v5 2/3] iio: ph: add IIO_PH channel type
+Date: Tue, 26 Jan 2016 18:34:30 -0800
+Message-Id: <1453862071-1610-3-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1453862071-1610-1-git-send-email-mranostay@gmail.com>
+References: <1453862071-1610-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jan 26, 2016 at 12:21 PM, Cristina Moraru
-<cristina.moraru09@gmail.com> wrote:
-> This patch adds support for Hoperf th02 humidity and
-> temperature sensor as it uses same register definitions
-> as si7005
->
-> th02 Datasheet: http://www.anglia-live.com/netalogue/pdfs/hrf/datasheets/TH02_V1.1.pdf
->
-> Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
-> ---
->  drivers/iio/humidity/Kconfig  | 3 ++-
->  drivers/iio/humidity/si7005.c | 1 +
->  2 files changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-> index c1f3a21..866dda1 100644
-> --- a/drivers/iio/humidity/Kconfig
-> +++ b/drivers/iio/humidity/Kconfig
-> @@ -43,7 +43,8 @@ config SI7005
->           humidity and temperature sensor.
->
->           To compile this driver as a module, choose M here: the module
-> -         will be called si7005.
-> +         will be called si7005. This driver also
-> +         supports Hoperf TH02 Humidity and Temperature Sensor.
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+ drivers/iio/industrialio-core.c         | 1 +
+ include/uapi/linux/iio/types.h          | 1 +
+ 3 files changed, 9 insertions(+)
 
-This probably shouldn't be changing the Kconfig description. Since if
-every driver added a line for each device/variant it supported
-everything would get quite wordy.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 0439c2a..86ba8d6 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1491,3 +1491,10 @@ Description:
+ 		This ABI is especially applicable for humidity sensors
+ 		to heatup the device and get rid of any condensation
+ 		in some humidity environment
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_ph_raw
++KernelVersion:	4.5
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled no offset etc.) pH reading of a substance as a negative
++		base-10 logarithm of hydrodium ions in a litre of water.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index af7cc1e..70cb7eb 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -77,6 +77,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_VELOCITY] = "velocity",
+ 	[IIO_CONCENTRATION] = "concentration",
+ 	[IIO_RESISTANCE] = "resistance",
++	[IIO_PH] = "ph",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 7c63bd6..c077617 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -37,6 +37,7 @@ enum iio_chan_type {
+ 	IIO_VELOCITY,
+ 	IIO_CONCENTRATION,
+ 	IIO_RESISTANCE,
++	IIO_PH,
+ };
+ 
+ enum iio_modifier {
+-- 
+2.7.0.rc3
 
->
->  config SI7020
->         tristate "Si7013/20/21 Relative Humidity and Temperature Sensors"
-> diff --git a/drivers/iio/humidity/si7005.c b/drivers/iio/humidity/si7005.c
-> index 91972cc..98a022f 100644
-> --- a/drivers/iio/humidity/si7005.c
-> +++ b/drivers/iio/humidity/si7005.c
-> @@ -170,6 +170,7 @@ static int si7005_probe(struct i2c_client *client,
->
->  static const struct i2c_device_id si7005_id[] = {
->         { "si7005", 0 },
-> +       { "th02", 0 },
->         { }
->  };
->  MODULE_DEVICE_TABLE(i2c, si7005_id);
-> --
-> 1.9.1
->
