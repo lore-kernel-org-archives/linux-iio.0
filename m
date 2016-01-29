@@ -1,60 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:48396 "EHLO comal.ext.ti.com"
+Received: from bear.ext.ti.com ([192.94.94.41]:39779 "EHLO bear.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751124AbcA2TEG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 29 Jan 2016 14:04:06 -0500
+	id S1750985AbcA2SGj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 29 Jan 2016 13:06:39 -0500
+Date: Fri, 29 Jan 2016 12:05:42 -0600
 From: Andreas Dannenberg <dannenberg@ti.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<jic23@kernel.org>
-CC: Alexander Koch <mail@alexanderkoch.net>, <knaack.h@gmx.de>,
-	<lars@metafoo.de>, <pmeerw@pmeerw.ne>, <mhornung.linux@gmail.com>,
-	<fengguang.wu@intel.com>, Andreas Dannenberg <dannenberg@ti.com>
-Subject: [PATCH] iio: light: opt3001: Add device tree binding documentation
-Date: Fri, 29 Jan 2016 13:03:00 -0600
-Message-ID: <1454094180-2688-1-git-send-email-dannenberg@ti.com>
+To: Alexander Koch <mail@alexanderkoch.net>, <jic23@kernel.org>
+CC: <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+	<mhornung.linux@gmail.com>, <balbi@ti.com>,
+	<fengguang.wu@intel.com>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 0/3] iio: light: opt3001: Enable operation w/o IRQ
+Message-ID: <20160129180542.GD7960@LTA0797059A>
+References: <1452960878-1727-1-git-send-email-mail@alexanderkoch.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <1452960878-1727-1-git-send-email-mail@alexanderkoch.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Andreas Dannenberg <dannenberg@ti.com>
----
- .../devicetree/bindings/iio/light/opt3001.txt      | 26 ++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/opt3001.txt
+On Sat, Jan 16, 2016 at 05:14:35PM +0100, Alexander Koch wrote:
+> This patch series aims at enabling IRQ-less operation for the TI OPT3001 light
+> sensor.
 
-diff --git a/Documentation/devicetree/bindings/iio/light/opt3001.txt b/Documentation/devicetree/bindings/iio/light/opt3001.txt
-new file mode 100644
-index 0000000..55b9cb3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/opt3001.txt
-@@ -0,0 +1,26 @@
-+* Texas Instruments OPT3001 Ambient Light Sensor
-+
-+The driver supports interrupt-driven and interrupt-less operation, depending
-+on whether an interrupt property has been populated into the DT. Note that
-+the optional generation of IIO events on rising/falling light threshold changes
-+requires the use of interrupts. Without interrupts, only the simple reading
-+of the current light value is supported through the IIO API.
-+
-+http://www.ti.com/product/opt3001
-+
-+Required properties:
-+  - compatible: should be "ti,opt3001"
-+  - reg: the I2C address of the sensor
-+  
-+Optional properties:
-+  - interrupt-parent: should be the phandle for the interrupt controller
-+  - interrupts: interrupt mapping for GPIO IRQ (configure for falling edge)
-+
-+Example:
-+
-+opt3001@44 {
-+	compatible = "ti,opt3001";
-+	reg = <0x44>;
-+	interrupt-parent = <&gpio1>;
-+	interrupts = <28 IRQ_TYPE_EDGE_FALLING>;
-+};
--- 
-2.6.4
+Jon,
+I was checking to see if the DT bindings have been updated to reflect
+the interrupt-less operation however I can't seem to find it in the
+Kernel tree. The last activity I can find is this one...
 
+https://patchwork.ozlabs.org/patch/490819/
+
+I guess it may have slipped through the cracks so I'm going to update
+the bindings document and re-submit.
+
+Regards,
+Andreas
+
+> 
+> The current version of the driver requires an interrupt line to be connected to
+> the INT pin of the sensor, through which the IIO framework gets notified about
+> readout values being ready. In the datasheet this is described as optional (sec.
+> 8.1.1).
+> 
+> In my use case of the OPT3001 I do not have any interrupt lines or GPIOs
+> available to connect the INT pin to, so I have implemented an interrupt-less
+> operation mode that simply sleeps for the specified worst-case readout time
+> instead of waiting for the interrupt.
+> 
+> This change is transparent as interrupt-less operation mode is done only when no
+> valid interrupt no. is configured via device tree.
+> 
+> Patches are taken against linux-next/master, tested by compilation,
+> checkpatch.pl and by running on an embedded developer board (both IRQ-enabled
+> and IRQ-less mode).
+> 
+> 
+> Changes from v1:
+> 
+>  - use type bool for introduced member 'use_irq'
+>  - include trivial refactoring step that changes the types of two other members
+>    to bool, in order to match 'use_irq'
+> 
+> 
+> Alexander Koch (3):
+>   iio: light: opt3001: extract int. time constants
+>   iio: light: opt3001: trivial type refactoring
+>   iio: light: opt3001: enable operation w/o IRQ
+> 
+>  drivers/iio/light/opt3001.c | 156 ++++++++++++++++++++++++++++++--------------
+>  1 file changed, 106 insertions(+), 50 deletions(-)
+> 
+> -- 
+> 2.7.0
+> 
