@@ -1,85 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52882 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52917 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754426AbcA3OMh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2016 09:12:37 -0500
-Subject: Re: [PATCH 1/2] staging:iio:adc:added space around '-'
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Dan Carpenter <dan.carpenter@oracle.com>
-References: <cover.1452878721.git.bhumirks@gmail.com>
- <115dd2e3f67706fd323c18b23871068ad36dfa94.1452878721.git.bhumirks@gmail.com>
- <56995378.1010204@metafoo.de> <20160120142137.GC6370@mwanda>
- <56A4FD7F.6010800@kernel.org> <56A5068D.4080207@metafoo.de>
-Cc: Bhumika Goyal <bhumirks@gmail.com>, devel@driverdev.osuosl.org,
-	Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-	gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-	pmeerw@pmeerw.net
+	with ESMTP id S1754466AbcA3OSM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2016 09:18:12 -0500
+Subject: Re: [PATCH] staging: iio: ad5933: avoid uninitialized variable in
+ error case
+To: Arnd Bergmann <arnd@arndb.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>
+References: <1453737099-1959671-1-git-send-email-arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56ACC4D2.8040802@kernel.org>
-Date: Sat, 30 Jan 2016 14:12:34 +0000
+Message-ID: <56ACC622.8000908@kernel.org>
+Date: Sat, 30 Jan 2016 14:18:10 +0000
 MIME-Version: 1.0
-In-Reply-To: <56A5068D.4080207@metafoo.de>
+In-Reply-To: <1453737099-1959671-1-git-send-email-arnd@arndb.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/01/16 17:14, Lars-Peter Clausen wrote:
-> On 01/24/2016 05:36 PM, Jonathan Cameron wrote:
->> On 20/01/16 14:21, Dan Carpenter wrote:
->>> On Fri, Jan 15, 2016 at 09:15:52PM +0100, Lars-Peter Clausen wrote:
->>>> On 01/15/2016 08:42 PM, Bhumika Goyal wrote:
->>>>> This patch adds apace around '-' operator.Found using checkpatch.pl
->>>>>
->>>>> Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
->>>>> ---
->>>>>  drivers/staging/iio/adc/ad7280a.c | 4 ++--
->>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>
->>>>> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
->>>>> index f45ebed..0c73bce 100644
->>>>> --- a/drivers/staging/iio/adc/ad7280a.c
->>>>> +++ b/drivers/staging/iio/adc/ad7280a.c
->>>>> @@ -744,14 +744,14 @@ out:
->>>>>  }
->>>>>  
->>>>>  static IIO_DEVICE_ATTR_NAMED(in_thresh_low_value,
->>>>> -		in_voltage-voltage_thresh_low_value,
->>>>> +		in_voltage - voltage_thresh_low_value,
->>>>
->>>> Hi,
->>>>
->>>> Thanks for patch. But when sending cleanup patches like this please make
->>>> sure that you a) understand what the code does and how your change affects
->>>> it and b) as a bare minimum of testing perform a compile test, if possible
->>>> also do functional testing.
->>>>
->>>> The patch as it is, is neither semantically nor syntactically correct. As an
->>>> exercise please make sure you understand why.
->>>
->>> Ugh!
->>>
->>> It took me a long time to figure out the bug in this patch...  Why does
->>> that filename have a mix of dashes and underscores?  Too late to fix it
->>> now...  :/
->>>
->> Very deliberately.  The - is indicating it is a differential channel!
->> Literally A minus B.
->>
->> It's an awfully compact representation for maths ;)
->> This is obscured partly in this case as it's specifying an attribute
->> shared by a set of differential channels so it's the generalization
->> of
->> in_voltage0-voltage1_thresh_low_value
->> which does begin to slightly stretch the argument that it is nice and
->> clear ;(
+On 25/01/16 15:50, Arnd Bergmann wrote:
+> The ad5933_i2c_read function returns an error code to indicate
+> whether it could read data or not. However ad5933_work() ignores
+> this return code and just accesses the data unconditionally,
+> which gets detected by gcc as a possible bug:
 > 
-> One thing we should maybe take a look at is making it explicit that this is
-> a string so it does not get picked up by checkpatch.
-Make sense. Patches welcome :)
+> drivers/staging/iio/impedance-analyzer/ad5933.c: In function 'ad5933_work':
+> drivers/staging/iio/impedance-analyzer/ad5933.c:649:16: warning: 'status' may be used uninitialized in this function [-Wmaybe-uninitialized]
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> This adds minimal error handling so we only evaluate the
+> data if it was correctly read.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Hi Arnd,
+
+Thanks for the patch.   The handling in here is a little fiddly
+by the look of things. Lars can you take a look at this when
+you have a minute?
+
+At a very high level, it doesn't make sense to fix this instance and
+not the one in the context of the patch below.
+See below...
+> ---
+>  drivers/staging/iio/impedance-analyzer/ad5933.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> index 10c43dda0f5a..304bb464e478 100644
+> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> @@ -647,6 +647,7 @@ static void ad5933_work(struct work_struct *work)
+>  	__be16 buf[2];
+>  	int val[2];
+>  	unsigned char status;
+> +	int ret;
+>  
+>  	mutex_lock(&indio_dev->mlock);
+>  	if (st->state == AD5933_CTRL_INIT_START_FREQ) {
+> @@ -658,9 +659,9 @@ static void ad5933_work(struct work_struct *work)
+>  		return;
+>  	}
+>  
+> -	ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
+> +	ret = ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
+>  
+> -	if (status & AD5933_STAT_DATA_VALID) {
+> +	if (!ret && (status & AD5933_STAT_DATA_VALID)) {
+The else is non trivial here as it assumes we will get the data later. If we
+get such a failure, we probably want to drop out completely rather than paper
+over the gaps..
+>  		int scan_count = bitmap_weight(indio_dev->active_scan_mask,
+>  					       indio_dev->masklength);
+Same issue on the next line - this results in known garbage data being spooled
+out.
+>  		ad5933_i2c_read(st->client,
 > 
 
