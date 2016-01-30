@@ -1,75 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:39779 "EHLO bear.ext.ti.com"
+Received: from mga04.intel.com ([192.55.52.120]:47094 "EHLO mga04.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750985AbcA2SGj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 29 Jan 2016 13:06:39 -0500
-Date: Fri, 29 Jan 2016 12:05:42 -0600
-From: Andreas Dannenberg <dannenberg@ti.com>
-To: Alexander Koch <mail@alexanderkoch.net>, <jic23@kernel.org>
-CC: <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-	<mhornung.linux@gmail.com>, <balbi@ti.com>,
-	<fengguang.wu@intel.com>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 0/3] iio: light: opt3001: Enable operation w/o IRQ
-Message-ID: <20160129180542.GD7960@LTA0797059A>
-References: <1452960878-1727-1-git-send-email-mail@alexanderkoch.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <1452960878-1727-1-git-send-email-mail@alexanderkoch.net>
+	id S932143AbcA3Joy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 30 Jan 2016 04:44:54 -0500
+From: Adriana Reus <adriana.reus@intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	ggao@invensense.com, Adriana Reus <adriana.reus@intel.com>
+Subject: [PATCH 2/5] iio: inv_mpu6050: Remove unused parameter
+Date: Sat, 30 Jan 2016 11:43:45 +0200
+Message-Id: <1454147028-22449-3-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <1454147028-22449-1-git-send-email-adriana.reus@intel.com>
+References: <1454147028-22449-1-git-send-email-adriana.reus@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jan 16, 2016 at 05:14:35PM +0100, Alexander Koch wrote:
-> This patch series aims at enabling IRQ-less operation for the TI OPT3001 light
-> sensor.
+The inv_check_and_setup_chip function does not use the i2c_device_id
+parameter. Therefore remove it.
 
-Jon,
-I was checking to see if the DT bindings have been updated to reflect
-the interrupt-less operation however I can't seem to find it in the
-Kernel tree. The last activity I can find is this one...
+Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-https://patchwork.ozlabs.org/patch/490819/
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 5fe1dd8..1121f4e 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -727,8 +727,7 @@ static const struct iio_info mpu_info = {
+ /**
+  *  inv_check_and_setup_chip() - check and setup chip.
+  */
+-static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
+-		const struct i2c_device_id *id)
++static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
+ {
+ 	int result;
+ 
+@@ -795,7 +794,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 	if (pdata)
+ 		st->plat_data = *pdata;
+ 	/* power is turned on inside check chip type*/
+-	result = inv_check_and_setup_chip(st, id);
++	result = inv_check_and_setup_chip(st);
+ 	if (result)
+ 		return result;
+ 
+-- 
+1.9.1
 
-I guess it may have slipped through the cracks so I'm going to update
-the bindings document and re-submit.
-
-Regards,
-Andreas
-
-> 
-> The current version of the driver requires an interrupt line to be connected to
-> the INT pin of the sensor, through which the IIO framework gets notified about
-> readout values being ready. In the datasheet this is described as optional (sec.
-> 8.1.1).
-> 
-> In my use case of the OPT3001 I do not have any interrupt lines or GPIOs
-> available to connect the INT pin to, so I have implemented an interrupt-less
-> operation mode that simply sleeps for the specified worst-case readout time
-> instead of waiting for the interrupt.
-> 
-> This change is transparent as interrupt-less operation mode is done only when no
-> valid interrupt no. is configured via device tree.
-> 
-> Patches are taken against linux-next/master, tested by compilation,
-> checkpatch.pl and by running on an embedded developer board (both IRQ-enabled
-> and IRQ-less mode).
-> 
-> 
-> Changes from v1:
-> 
->  - use type bool for introduced member 'use_irq'
->  - include trivial refactoring step that changes the types of two other members
->    to bool, in order to match 'use_irq'
-> 
-> 
-> Alexander Koch (3):
->   iio: light: opt3001: extract int. time constants
->   iio: light: opt3001: trivial type refactoring
->   iio: light: opt3001: enable operation w/o IRQ
-> 
->  drivers/iio/light/opt3001.c | 156 ++++++++++++++++++++++++++++++--------------
->  1 file changed, 106 insertions(+), 50 deletions(-)
-> 
-> -- 
-> 2.7.0
-> 
