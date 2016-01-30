@@ -1,41 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f41.google.com ([209.85.220.41]:34738 "EHLO
-	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751646AbcA0Cef (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jan 2016 21:34:35 -0500
-Received: by mail-pa0-f41.google.com with SMTP id uo6so109819753pac.1
-        for <linux-iio@vger.kernel.org>; Tue, 26 Jan 2016 18:34:35 -0800 (PST)
-From: Matt Ranostay <mranostay@gmail.com>
+Received: from mga04.intel.com ([192.55.52.120]:47094 "EHLO mga04.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932125AbcA3Jow (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 30 Jan 2016 04:44:52 -0500
+From: Adriana Reus <adriana.reus@intel.com>
 To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v5 0/3] iio: chemical: add Atlas pH-SM sensor support
-Date: Tue, 26 Jan 2016 18:34:28 -0800
-Message-Id: <1453862071-1610-1-git-send-email-mranostay@gmail.com>
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	ggao@invensense.com, Adriana Reus <adriana.reus@intel.com>
+Subject: [RFC PATCH 0/5] iio: imu: inv_mpu6050: Split driver into core and I2C/SPI functionality
+Date: Sat, 30 Jan 2016 11:43:43 +0200
+Message-Id: <1454147028-22449-1-git-send-email-adriana.reus@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes from v4:
-* Correct temp scaling value
-* Disable runtime pm if iio_device_register fails
-* Add comment on toggling interrupt line
+This series splits this driver into general and I2C/SPI specific funtionality.
+The first patch is a fix for a bug in the interrupt pin configuration.
+The second patch is a minor clean up in preparation for the split.
+The third patch changes all the I2C specific calls into regmap calls.
+The third patch separated the remaining I2C specific part into a different component.
+Finally the fourth patch adds SPI support for the MPU6000 chip.
 
-Matt Ranostay (3):
-  devicetree: add Atlas Scientific LLC vendor prefix
-  iio: ph: add IIO_PH channel type
-  iio: chemical: add Atlas pH-SM sensor support
+Adriana Reus (5):
+  iio: imu: inv-mpu6050: Fix interrupt pin configuration
+  iio: inv_mpu6050: Remove unused parameter
+  iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions
+  iio: imu: inv_mpu6050: Separate driver into core and i2c
+    functionality.
+  iio: imu: inv_mpu6050: Add SPI support for MPU6000
 
- Documentation/ABI/testing/sysfs-bus-iio            |   7 +
- .../bindings/iio/chemical/atlas,ph-sm.txt          |  22 +
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/chemical/Kconfig                       |  13 +
- drivers/iio/chemical/Makefile                      |   1 +
- drivers/iio/chemical/atlas-ph-sensor.c             | 511 +++++++++++++++++++++
- drivers/iio/industrialio-core.c                    |   1 +
- include/uapi/linux/iio/types.h                     |   1 +
- 8 files changed, 557 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
- create mode 100644 drivers/iio/chemical/atlas-ph-sensor.c
+ drivers/iio/imu/inv_mpu6050/Kconfig           |  15 +-
+ drivers/iio/imu/inv_mpu6050/Makefile          |   8 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |  14 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 259 ++++++--------------------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 209 +++++++++++++++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  15 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |  34 ++--
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  80 ++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  10 +-
+ 9 files changed, 402 insertions(+), 242 deletions(-)
+ create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+ create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
 
 -- 
-2.7.0.rc3
+1.9.1
 
