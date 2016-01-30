@@ -1,74 +1,570 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53348 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53482 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756896AbcA3PpA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2016 10:45:00 -0500
-Subject: Re: [PATCH 06/22] iio: adc: Fix dependencies for !HAS_IOMEM archs
-To: Richard Weinberger <richard@nod.at>, linux-kernel@vger.kernel.org
-References: <1453760661-1444-1-git-send-email-richard@nod.at>
- <1453760661-1444-7-git-send-email-richard@nod.at>
-Cc: user-mode-linux-devel@lists.sourceforge.net,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Pradeep Goudagunta <pgoudagunta@nvidia.com>,
-	Haibo Chen <haibo.chen@freescale.com>,
-	Phani Movva <Phani.Movva@imgtec.com>,
-	Andrea Galbusera <gizero@gmail.com>,
-	Stanimir Varbanov <svarbanov@mm-sol.com>,
-	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-	Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
-	=?UTF-8?Q?Oliver_St=c3=a4bler?= <oliver.staebler@bytesatwork.ch>,
-	=?UTF-8?Q?Urs_F=c3=a4ssler?= <urs.fassler@bytesatwork.ch>,
-	=?UTF-8?Q?S=c3=b8ren_Andersen?= <san@rosetechnology.dk>,
-	linux-iio@vger.kernel.org
+	with ESMTP id S1752754AbcA3QCk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2016 11:02:40 -0500
+Subject: Re: [RFC v2] iio: ad5755: added support for switching between voltage
+ and current output
+To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org
+References: <1453807782-18961-1-git-send-email-sean.nyekjaer@prevas.dk>
+Cc: lars@metafoo.de, jic23@jic23.retrosnub.co.uk
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56ACDA78.1070208@kernel.org>
-Date: Sat, 30 Jan 2016 15:44:56 +0000
+Message-ID: <56ACDE9C.30602@kernel.org>
+Date: Sat, 30 Jan 2016 16:02:36 +0000
 MIME-Version: 1.0
-In-Reply-To: <1453760661-1444-7-git-send-email-richard@nod.at>
+In-Reply-To: <1453807782-18961-1-git-send-email-sean.nyekjaer@prevas.dk>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/01/16 22:24, Richard Weinberger wrote:
-> Not every arch has io memory.
-> So, unbreak the build by fixing the dependencies.
+On 26/01/16 11:29, Sean Nyekjaer wrote:
+> This patch adds support for switching modes from userspace.
 > 
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-Applied to the temporary branch for post 4.5 fixes
-(as I haven't unwound that yet) for iio.git.
+> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Hmm. This patch is hard to read as it stands.  Some elements
+could probably be separated out into smaller patches, making review
+easier (there is some refactoring hiding in here amongst the big changes!)
+
+A few more bits to add to Peter's. It is definitely headed in the
+right direction, but I do think we need to work out how to put safe
+ranges into the device tree with as we discussed earlier, preventing of
+changing range unless the device tree says it is safe.
+
+Jonathan
 > ---
->  drivers/iio/adc/Kconfig | 3 +++
->  1 file changed, 3 insertions(+)
+> Changes since v1:
+> - Channels are exported as two independent channels
+> - Changes between modes can be done by writing a new scale that fits the channel
+> - If voltage mode is chosen, the readback from the current channel is -EBUSY
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 605ff42..283ded7 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -175,6 +175,7 @@ config DA9150_GPADC
->  config EXYNOS_ADC
->  	tristate "Exynos ADC driver support"
->  	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
-> +	depends on HAS_IOMEM
->  	help
->  	  Core support for the ADC block found in the Samsung EXYNOS series
->  	  of SoCs for drivers such as the touchscreen and hwmon to use to share
-> @@ -207,6 +208,7 @@ config INA2XX_ADC
->  config IMX7D_ADC
->  	tristate "IMX7D ADC driver"
->  	depends on ARCH_MXC || COMPILE_TEST
-> +	depends on HAS_IOMEM
->  	help
->  	  Say yes here to build support for IMX7D ADC.
+>  drivers/iio/dac/ad5755.c | 385 ++++++++++++++++++++++++++++++++++++-----------
+>  1 file changed, 297 insertions(+), 88 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+> index bfb350a..e614884 100644
+> --- a/drivers/iio/dac/ad5755.c
+> +++ b/drivers/iio/dac/ad5755.c
+> @@ -18,7 +18,7 @@
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/platform_data/ad5755.h>
 >  
-> @@ -409,6 +411,7 @@ config TWL6030_GPADC
->  config VF610_ADC
->  	tristate "Freescale vf610 ADC driver"
->  	depends on OF
-> +	depends on HAS_IOMEM
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
->  	help
+> -#define AD5755_NUM_CHANNELS 4
+> +#define AD5755_NUM_CHANNELS 8	//4
+>  
+>  #define AD5755_ADDR(x)			((x) << 16)
+>  
+> @@ -91,6 +91,8 @@ struct ad5755_state {
+>  	unsigned int			ctrl[AD5755_NUM_CHANNELS];
+>  	struct iio_chan_spec		channels[AD5755_NUM_CHANNELS];
+>  
+> +	struct ad5755_platform_data *pdata;
+It's a pointer to a const structure, so make it so here and you don't
+need the changes you made later to drop the const.
+> +
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) requires the
+>  	 * transfer buffers to live in their own cache lines.
+> @@ -109,6 +111,153 @@ enum ad5755_type {
+>  	ID_AD5737,
+>  };
+>  
+> +struct ad5755_ranges {
+> +	enum ad5755_mode range;
+> +	unsigned int scale;
+> +	int offset;
+> +};
+> +
+> +static const struct ad5755_ranges ad5755_range_def[] = {
+> +	{
+> +		.range = AD5755_MODE_VOLTAGE_0V_5V,
+> +		.scale = 76293945,
+> +		.offset = 0,
+> +	}, {
+> +		.range = AD5755_MODE_VOLTAGE_0V_10V,
+> +		.scale = 152587890,
+> +		.offset = 0,
+> +	}, {
+> +		.range = AD5755_MODE_VOLTAGE_PLUSMINUS_5V,
+> +		.scale = 152587890,
+> +		.offset = -(1 << (16 /*REALBITS*/ - 1)),
+> +	}, {
+> +		.range = AD5755_MODE_VOLTAGE_PLUSMINUS_10V,
+> +		.scale = 305175781,
+> +		.offset = -(1 << (16 /*REALBITS*/ - 1)),
+> +	}, {
+> +		.range = AD5755_MODE_CURRENT_4mA_20mA,
+> +		.scale = 244140,
+> +		.offset = 16384,
+> +	}, {
+> +		.range = AD5755_MODE_CURRENT_0mA_20mA,
+> +		.scale = 305175,
+> +		.offset = 0,
+> +	}, {
+> +		.range = AD5755_MODE_CURRENT_0mA_24mA,
+> +		.scale = 366210,
+> +		.offset = 0,
+> +	}
+> +};
+> +
+> +static inline enum ad5755_mode ad5755_get_chan_mode(struct ad5755_state *st,
+> +						    const struct iio_chan_spec
+> +						    *chan)
+> +{
+> +	return st->ctrl[chan->channel] & 7;
+> +}
+> +
+> +static inline int ad5755_get_chan_scale(struct ad5755_state *st,
+> +					const struct iio_chan_spec *chan)
+> +{
+> +	return ad5755_range_def[ad5755_get_chan_mode(st, chan)].scale;
+> +}
+> +
+> +static inline int ad5755_get_chan_offset(struct ad5755_state *st,
+> +					 const struct iio_chan_spec *chan)
+> +{
+> +	return ad5755_range_def[ad5755_get_chan_mode(st, chan)].offset;
+> +}
+> +
+> +static bool ad5755_is_voltage_mode(enum ad5755_mode mode)
+> +{
+> +	switch (mode) {
+> +	case AD5755_MODE_VOLTAGE_0V_5V:
+> +	case AD5755_MODE_VOLTAGE_0V_10V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static ssize_t ad5755_scales(char *buf, bool voltage_mode)
+> +{
+> +	int i, len = 0;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ad5755_range_def); i++) {
+> +		if (ad5755_is_voltage_mode(i) != voltage_mode)
+> +			continue;
+> +		len += sprintf(buf + len, "0.%09u ", ad5755_range_def[i].scale);
+> +	}
+> +	len += sprintf(buf + len, "\n");
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t ad5755_offset(char *buf, bool voltage_mode)
+offsets?
+> +{
+> +	int i, len = 0;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ad5755_range_def); i++) {
+> +		if (ad5755_is_voltage_mode(i) != voltage_mode)
+> +			continue;
+> +		len += sprintf(buf + len, "%d ", ad5755_range_def[i].offset);
+> +	}
+> +	len += sprintf(buf + len, "\n");
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t ad5755_show_voltage_scales(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  char *buf)
+> +{
+> +	return ad5755_scales(buf, true);
+> +}
+> +
+> +static ssize_t ad5755_show_voltage_offset(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  char *buf)
+> +{
+> +	return ad5755_offset(buf, true);
+> +}
+> +
+> +static ssize_t ad5755_show_current_scales(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  char *buf)
+> +{
+> +	return ad5755_scales(buf, false);
+> +}
+> +
+> +static ssize_t ad5755_show_current_offset(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  char *buf)
+for consistency should this be offsets?
+> +{
+> +	return ad5755_offset(buf, false);
+> +}
+> +
+> +static IIO_DEVICE_ATTR(out_voltage_scale_available, S_IRUGO,
+> +		       ad5755_show_voltage_scales, NULL, 0);
+> +static IIO_DEVICE_ATTR(out_voltage_offset_available, S_IRUGO,
+> +		       ad5755_show_voltage_offset, NULL, 0);
+> +static IIO_DEVICE_ATTR(out_current_scale_available, S_IRUGO,
+> +		       ad5755_show_current_scales, NULL, 0);
+> +static IIO_DEVICE_ATTR(out_current_offset_available, S_IRUGO,
+> +		       ad5755_show_current_offset, NULL, 0);
+> +
+> +static struct attribute *ad5755_attributes[] = {
+> +	&iio_dev_attr_out_voltage_scale_available.dev_attr.attr,
+> +	&iio_dev_attr_out_voltage_offset_available.dev_attr.attr,
+> +	&iio_dev_attr_out_current_scale_available.dev_attr.attr,
+> +	&iio_dev_attr_out_current_offset_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group ad5755_attribute_group = {
+> +	.attrs = ad5755_attributes,
+> +};
+> +
+>  static int ad5755_write_unlocked(struct iio_dev *indio_dev,
+>  	unsigned int reg, unsigned int val)
+>  {
+> @@ -226,31 +375,54 @@ out_unlock:
+>  	return 0;
+>  }
+>  
+> -static const int ad5755_min_max_table[][2] = {
+> -	[AD5755_MODE_VOLTAGE_0V_5V] = { 0, 5000 },
+> -	[AD5755_MODE_VOLTAGE_0V_10V] = { 0, 10000 },
+> -	[AD5755_MODE_VOLTAGE_PLUSMINUS_5V] = { -5000, 5000 },
+> -	[AD5755_MODE_VOLTAGE_PLUSMINUS_10V] = { -10000, 10000 },
+> -	[AD5755_MODE_CURRENT_4mA_20mA] = { 4, 20 },
+> -	[AD5755_MODE_CURRENT_0mA_20mA] = { 0, 20 },
+> -	[AD5755_MODE_CURRENT_0mA_24mA] = { 0, 24 },
+> -};
+> +static bool ad5755_is_valid_mode(struct ad5755_state *st, enum ad5755_mode mode)
+> +{
+> +	switch (mode) {
+> +	case AD5755_MODE_VOLTAGE_0V_5V:
+> +	case AD5755_MODE_VOLTAGE_0V_10V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> +		return st->chip_info->has_voltage_out;
+> +	case AD5755_MODE_CURRENT_4mA_20mA:
+> +	case AD5755_MODE_CURRENT_0mA_20mA:
+> +	case AD5755_MODE_CURRENT_0mA_24mA:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+>  
+> -static void ad5755_get_min_max(struct ad5755_state *st,
+> -	struct iio_chan_spec const *chan, int *min, int *max)
+> +static int ad5755_clear_dac(struct iio_dev *indio_dev, int channel)
+>  {
+> -	enum ad5755_mode mode = st->ctrl[chan->channel] & 7;
+> -	*min = ad5755_min_max_table[mode][0];
+> -	*max = ad5755_min_max_table[mode][1];
+> +	int i = channel;
+> +	int ret;
+> +
+> +	ret = ad5755_update_dac_ctrl(indio_dev, i, 0, UINT_MAX);
+> +	return ret;
+> +
+>  }
+>  
+> -static inline int ad5755_get_offset(struct ad5755_state *st,
+> -	struct iio_chan_spec const *chan)
+> +static int ad5755_setup_dac(struct iio_dev *indio_dev, int channel)
+>  {
+> -	int min, max;
+> +	int i = channel;
+> +	int ret;
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int val;
+> +	struct ad5755_platform_data *pdata = st->pdata;
+> +
+> +	if (!ad5755_is_valid_mode(st, pdata->dac[i].mode))
+> +		return -EINVAL;
+> +
+> +	val = 0;
+> +	if (!pdata->dac[i].ext_current_sense_resistor)
+> +		val |= AD5755_DAC_INT_CURRENT_SENSE_RESISTOR;
+> +	if (pdata->dac[i].enable_voltage_overrange)
+> +		val |= AD5755_DAC_VOLTAGE_OVERRANGE_EN;
+> +	val |= pdata->dac[i].mode;
+> +
+> +	ret = ad5755_update_dac_ctrl(indio_dev, i, val, 0);
+> +	return ret;
+>  
+> -	ad5755_get_min_max(st, chan, &min, &max);
+> -	return (min * (1 << chan->scan_type.realbits)) / (max - min);
+>  }
+>  
+>  static int ad5755_chan_reg_info(struct ad5755_state *st,
+> @@ -289,22 +461,29 @@ static int ad5755_chan_reg_info(struct ad5755_state *st,
+>  	return 0;
+>  }
+>  
+> +static int ad5755_channel_report(int type, int mode)
+> +{
+> +	return (type == IIO_VOLTAGE) == ad5755_is_voltage_mode(mode);
+Clean up little things like this unnecessary blank line before asking
+for review (as it saves everyone time ;)
+> +
+> +}
+> +
+>  static int ad5755_read_raw(struct iio_dev *indio_dev,
+>  	const struct iio_chan_spec *chan, int *val, int *val2, long info)
+>  {
+>  	struct ad5755_state *st = iio_priv(indio_dev);
+>  	unsigned int reg, shift, offset;
+> -	int min, max;
+>  	int ret;
+>  
+> +	if(!ad5755_channel_report(chan->type,st->pdata->dac[chan->address].mode))
+Run checkpatch as your spacing is odd..
+> +		return -EBUSY;
+> +
+>  	switch (info) {
+>  	case IIO_CHAN_INFO_SCALE:
+> -		ad5755_get_min_max(st, chan, &min, &max);
+> -		*val = max - min;
+> -		*val2 = chan->scan_type.realbits;
+> -		return IIO_VAL_FRACTIONAL_LOG2;
+> +		*val = 0;
+> +		*val2 = ad5755_get_chan_scale(st, chan);
+> +		return IIO_VAL_INT_PLUS_NANO;
+>  	case IIO_CHAN_INFO_OFFSET:
+> -		*val = ad5755_get_offset(st, chan);
+> +		*val = ad5755_get_chan_offset(st, chan);
+>  		return IIO_VAL_INT;
+>  	default:
+>  		ret = ad5755_chan_reg_info(st, chan, info, false,
+> @@ -328,21 +507,82 @@ static int ad5755_write_raw(struct iio_dev *indio_dev,
+>  	const struct iio_chan_spec *chan, int val, int val2, long info)
+>  {
+>  	struct ad5755_state *st = iio_priv(indio_dev);
+> -	unsigned int shift, reg, offset;
+> -	int ret;
+> -
+> -	ret = ad5755_chan_reg_info(st, chan, info, true,
+> -					&reg, &shift, &offset);
+> -	if (ret)
+> -		return ret;
+> +	unsigned int shift, reg;
+> +	int offset;
+> +	unsigned int scale;
+> +	int ret, i;
+> +
+> +	/* Lets us select mode only when a new scale is applied */
+> +	if(info != IIO_CHAN_INFO_SCALE) {
+> +		if(!ad5755_channel_report(chan->type,st->pdata->dac[chan->address].mode))
+> +		return -EBUSY;
+> +	}
+>  
+> -	val <<= shift;
+> -	val += offset;
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		if (!(bool) (st->pwr_down & (1 << chan->channel))) {
+> +			printk("POWER DOWN off - Power down before shifting modes\n");
+> +			return -EPERM;
+> +		}
+> +	}
+>  
+> -	if (val < 0 || val > 0xffff)
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		offset = ad5755_range_def[st->pdata->dac[chan->address].mode].offset;
+> +		/* is new scale allowed */
+> +		for (i = 0; i < ARRAY_SIZE(ad5755_range_def); i++) {
+> +			if (val2 == ad5755_range_def[i].scale &&
+> +			    offset == ad5755_range_def[i].offset &&
+> +			    ad5755_channel_report(chan->type, i)) {
+> +				st->pdata->dac[chan->address].mode = i;
+> +				ad5755_clear_dac(indio_dev, chan->address);
+> +				return ad5755_setup_dac(indio_dev, chan->address);
+> +			}
+> +		}
+>  		return -EINVAL;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		scale = ad5755_range_def[st->pdata->dac[chan->address].mode].scale;
+> +		/* is new offset allowed */
+> +		for (i = 0; i < ARRAY_SIZE(ad5755_range_def); i++) {
+> +			if (val == ad5755_range_def[i].offset &&
+> +			    scale == ad5755_range_def[i].scale &&
+> +			    ad5755_channel_report(chan->type, i)) {
+> +				st->pdata->dac[chan->address].mode = i;
+> +				ad5755_clear_dac(indio_dev, chan->address);
+> +				return ad5755_setup_dac(indio_dev, chan->address);
+> +			}
+> +		}
+> +		return -EINVAL;
+> +	default:
+> +		ret = ad5755_chan_reg_info(st, chan, info, true,
+> +					   &reg, &shift, &offset);
+> +		if (ret)
+> +			return ret;
+> +
+> +		val <<= shift;
+> +		val += offset;
+> +
+> +		if (val < 0 || val > 0xffff)
+> +			return -EINVAL;
+> +
+> +		return ad5755_write(indio_dev, reg, val);
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ad5755_write_raw_get_fmt(struct iio_dev *indio_dev,
+> +				    struct iio_chan_spec const *chan, long mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	default:
+> +		return IIO_VAL_INT;
+> +	}
+>  
+> -	return ad5755_write(indio_dev, reg, val);
+> +	return -EINVAL;
+>  }
+>  
+>  static ssize_t ad5755_read_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
+> @@ -371,6 +611,8 @@ static ssize_t ad5755_write_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
+>  static const struct iio_info ad5755_info = {
+>  	.read_raw = ad5755_read_raw,
+>  	.write_raw = ad5755_write_raw,
+> +	.write_raw_get_fmt = &ad5755_write_raw_get_fmt,
+> +	.attrs = &ad5755_attribute_group,
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> @@ -424,27 +666,9 @@ static const struct ad5755_chip_info ad5755_chip_info_tbl[] = {
+>  	},
+>  };
+>  
+> -static bool ad5755_is_valid_mode(struct ad5755_state *st, enum ad5755_mode mode)
+> -{
+> -	switch (mode) {
+> -	case AD5755_MODE_VOLTAGE_0V_5V:
+> -	case AD5755_MODE_VOLTAGE_0V_10V:
+> -	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> -	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> -		return st->chip_info->has_voltage_out;
+> -	case AD5755_MODE_CURRENT_4mA_20mA:
+> -	case AD5755_MODE_CURRENT_0mA_20mA:
+> -	case AD5755_MODE_CURRENT_0mA_24mA:
+> -		return true;
+> -	default:
+> -		return false;
+> -	}
+> -}
+> -
+>  static int ad5755_setup_pdata(struct iio_dev *indio_dev,
+> -			      const struct ad5755_platform_data *pdata)
+> +			      struct ad5755_platform_data *pdata)
+>  {
+> -	struct ad5755_state *st = iio_priv(indio_dev);
+>  	unsigned int val;
+>  	unsigned int i;
+>  	int ret;
+> @@ -479,17 +703,7 @@ static int ad5755_setup_pdata(struct iio_dev *indio_dev,
+>  	}
+>  
+>  	for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
+> -		if (!ad5755_is_valid_mode(st, pdata->dac[i].mode))
+> -			return -EINVAL;
+> -
+> -		val = 0;
+> -		if (!pdata->dac[i].ext_current_sense_resistor)
+> -			val |= AD5755_DAC_INT_CURRENT_SENSE_RESISTOR;
+> -		if (pdata->dac[i].enable_voltage_overrange)
+> -			val |= AD5755_DAC_VOLTAGE_OVERRANGE_EN;
+> -		val |= pdata->dac[i].mode;
+> -
+> -		ret = ad5755_update_dac_ctrl(indio_dev, i, val, 0);
+> +		ret = ad5755_setup_dac(indio_dev, i);
+Would it be possible to break this piece of refactoring out to a precursor
+patch? (I haven't checked the details).  That would make this patch
+appear less invasive and easier to read - whilst he precursor would be
+trivial.
+>  		if (ret < 0)
+>  			return ret;
+>  	}
+> @@ -497,21 +711,8 @@ static int ad5755_setup_pdata(struct iio_dev *indio_dev,
+>  	return 0;
+>  }
+>  
+> -static bool ad5755_is_voltage_mode(enum ad5755_mode mode)
+> -{
+> -	switch (mode) {
+> -	case AD5755_MODE_VOLTAGE_0V_5V:
+> -	case AD5755_MODE_VOLTAGE_0V_10V:
+> -	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> -	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> -		return true;
+> -	default:
+> -		return false;
+> -	}
+> -}
+> -
+>  static int ad5755_init_channels(struct iio_dev *indio_dev,
+> -				const struct ad5755_platform_data *pdata)
+> +				struct ad5755_platform_data *pdata)
+>  {
+>  	struct ad5755_state *st = iio_priv(indio_dev);
+>  	struct iio_chan_spec *channels = st->channels;
+> @@ -519,12 +720,18 @@ static int ad5755_init_channels(struct iio_dev *indio_dev,
+>  
+>  	for (i = 0; i < AD5755_NUM_CHANNELS; ++i) {
+>  		channels[i] = st->chip_info->channel_template;
+> -		channels[i].channel = i;
+> -		channels[i].address = i;
+> -		if (pdata && ad5755_is_voltage_mode(pdata->dac[i].mode))
+> -			channels[i].type = IIO_VOLTAGE;
+> -		else
+> +		if (i <= 3) {
+> +			channels[i].channel = i;
+> +			channels[i].address = i;
+>  			channels[i].type = IIO_CURRENT;
+> +		} else {
+> +			channels[i].channel = i - 4;
+> +			channels[i].address = i - 4;
+> +			channels[i].type = IIO_VOLTAGE;
+> +		}
+> +		/*if(!st->chip_info->has_voltage_out)
+> +			if(i>3)
+> +				break;*/
+>  	}
+>  
+>  	indio_dev->channels = channels;
+> @@ -543,7 +750,7 @@ static int ad5755_init_channels(struct iio_dev *indio_dev,
+>  		}, \
+>  	}
+>  
+> -static const struct ad5755_platform_data ad5755_default_pdata = {
+> +struct ad5755_platform_data ad5755_default_pdata = {
+>  	.ext_dc_dc_compenstation_resistor = false,
+>  	.dc_dc_phase = AD5755_DC_DC_PHASE_ALL_SAME_EDGE,
+>  	.dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ,
+This a definite bad idea. You've just effectively stopped people having
+more than one attached a device. If you need to modify this data, take
+a copy.  (right now I'm unconvinced that you do).
+> @@ -559,7 +766,7 @@ static const struct ad5755_platform_data ad5755_default_pdata = {
+>  static int ad5755_probe(struct spi_device *spi)
+>  {
+>  	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
+> -	const struct ad5755_platform_data *pdata = dev_get_platdata(&spi->dev);
+> +	struct ad5755_platform_data *pdata = dev_get_platdata(&spi->dev);
+I'm not immediately seeing why you need to drop the const...
+>  	struct iio_dev *indio_dev;
+>  	struct ad5755_state *st;
+>  	int ret;
+> @@ -586,6 +793,8 @@ static int ad5755_probe(struct spi_device *spi)
+>  	if (!pdata)
+>  		pdata = &ad5755_default_pdata;
+>  
+> +	st->pdata = pdata;
+> +
+>  	ret = ad5755_init_channels(indio_dev, pdata);
+>  	if (ret)
+>  		return ret;
 > 
 
