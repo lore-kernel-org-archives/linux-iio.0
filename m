@@ -1,77 +1,181 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54066 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54057 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932309AbcA3Rua (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2016 12:50:30 -0500
-Subject: Re: [PATCH] iio: dht11: Use boottime
-To: Abhilash Jindal <klock.android@gmail.com>,
-	linux-iio@vger.kernel.org, Richard Weinberger <richard@nod.at>,
-	Harald Geyer <harald@ccbib.org>
-References: <1453934762-6290-1-git-send-email-klock.android@gmail.com>
+	with ESMTP id S932529AbcA3RtE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2016 12:49:04 -0500
+Subject: Re: [RFC PATCH 5/5] iio: imu: inv_mpu6050: Add SPI support for
+ MPU6000
+To: Adriana Reus <adriana.reus@intel.com>
+References: <1454147028-22449-1-git-send-email-adriana.reus@intel.com>
+ <1454147028-22449-6-git-send-email-adriana.reus@intel.com>
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	ggao@invensense.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56ACF7E4.7040603@kernel.org>
-Date: Sat, 30 Jan 2016 17:50:28 +0000
+Message-ID: <56ACF78B.9080706@kernel.org>
+Date: Sat, 30 Jan 2016 17:48:59 +0000
 MIME-Version: 1.0
-In-Reply-To: <1453934762-6290-1-git-send-email-klock.android@gmail.com>
+In-Reply-To: <1454147028-22449-6-git-send-email-adriana.reus@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/01/16 22:46, Abhilash Jindal wrote:
-> Wall time obtained from ktime_get_real_ns is susceptible to sudden jumps due to
-> user setting the time or due to NTP.  Boot time is constantly increasing time
-> better suited for comparing two timestamps.
+On 30/01/16 09:43, Adriana Reus wrote:
+> The only difference between the MPU6000 and the
+> MPU6050 is that the first also supports SPI.
+> Add SPI driver for this chip.
 > 
-> Signed-off-by: Abhilash Jindal <klock.android@gmail.com>
-Seems sensible to me, but would like Richard / Harald to take a quick
-look before I apply it.
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+Regmap at it's best. Only comments are same kconfig comments as for the
+previous patch.
 
-Thanks,
+For the really insane you could in theory make this device a very limited
+spi to i2c bridge ;) Looking at the registermap docs that looks like
+it could be fun.
+
 
 Jonathan
 > ---
->  drivers/iio/humidity/dht11.c |    8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+>  drivers/iio/imu/inv_mpu6050/Kconfig       |  7 ++-
+>  drivers/iio/imu/inv_mpu6050/Makefile      |  5 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h |  1 +
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c | 80 +++++++++++++++++++++++++++++++
+>  4 files changed, 91 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
 > 
-> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-> index 1165b1c..cfc5a05 100644
-> --- a/drivers/iio/humidity/dht11.c
-> +++ b/drivers/iio/humidity/dht11.c
-> @@ -117,7 +117,7 @@ static int dht11_decode(struct dht11 *dht11, int offset, int timeres)
->  	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
->  		return -EIO;
+> diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
+> index 2225d3c..4ebe8d6 100644
+> --- a/drivers/iio/imu/inv_mpu6050/Kconfig
+> +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
+> @@ -8,6 +8,7 @@ config INV_MPU6050_IIO
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	select INV_MPU6050_I2C if I2C
+> +	select INV_MPU6050_SPI if SPI
+>  	help
+>  	  This driver supports the Invensense MPU6050 devices.
+>  	  This driver can also support MPU6500 in MPU6050 compatibility mode
+> @@ -20,4 +21,8 @@ config INV_MPU6050_I2C
+>  	tristate "Invensense MPU6050 devices"
+>  	depends on I2C
+>  	select I2C_MUX
+> -	select REGMAP_I2C
+> \ No newline at end of file
+> +	select REGMAP_I2C
+> +
+> +config INV_MPU6050_SPI
+> +	tristate "Invensense MPU6050 devices"
+> +	select REGMAP_SPI
+> diff --git a/drivers/iio/imu/inv_mpu6050/Makefile b/drivers/iio/imu/inv_mpu6050/Makefile
+> index cb5df02..734af5e 100644
+> --- a/drivers/iio/imu/inv_mpu6050/Makefile
+> +++ b/drivers/iio/imu/inv_mpu6050/Makefile
+> @@ -6,4 +6,7 @@ obj-$(CONFIG_INV_MPU6050_IIO) += inv-mpu6050.o
+>  inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o
 >  
-> -	dht11->timestamp = ktime_get_real_ns();
-> +	dht11->timestamp = ktime_get_boot_ns();
->  	if (hum_int < 20) {  /* DHT22 */
->  		dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec) *
->  					((temp_int & 0x80) ? -100 : 100);
-> @@ -145,7 +145,7 @@ static irqreturn_t dht11_handle_irq(int irq, void *data)
+>  obj-$(CONFIG_INV_MPU6050_I2C) += inv-mpu6050-i2c.o
+> -inv-mpu6050-i2c-objs := inv_mpu_i2c.o inv_mpu_acpi.o
+> \ No newline at end of file
+> +inv-mpu6050-i2c-objs := inv_mpu_i2c.o inv_mpu_acpi.o
+> +
+> +obj-$(CONFIG_INV_MPU6050_SPI) += inv-mpu6050-spi.o
+> +inv-mpu6050-spi-objs := inv_mpu_spi.o
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index 0ef6046..74181d8 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -62,6 +62,7 @@ struct inv_mpu6050_reg_map {
+>  enum inv_devices {
+>  	INV_MPU6050,
+>  	INV_MPU6500,
+> +	INV_MPU6000,
+>  	INV_NUM_PARTS
+>  };
 >  
->  	/* TODO: Consider making the handler safe for IRQ sharing */
->  	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
-> -		dht11->edges[dht11->num_edges].ts = ktime_get_real_ns();
-> +		dht11->edges[dht11->num_edges].ts = ktime_get_boot_ns();
->  		dht11->edges[dht11->num_edges++].value =
->  						gpio_get_value(dht11->gpio);
->  
-> @@ -164,7 +164,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
->  	int ret, timeres;
->  
->  	mutex_lock(&dht11->lock);
-> -	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns()) {
-> +	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_boot_ns()) {
->  		timeres = ktime_get_resolution_ns();
->  		if (DHT11_DATA_BIT_HIGH < 2 * timeres) {
->  			dev_err(dht11->dev, "timeresolution %dns too low\n",
-> @@ -279,7 +279,7 @@ static int dht11_probe(struct platform_device *pdev)
->  		return -EINVAL;
->  	}
->  
-> -	dht11->timestamp = ktime_get_real_ns() - DHT11_DATA_VALID_TIME - 1;
-> +	dht11->timestamp = ktime_get_boot_ns() - DHT11_DATA_VALID_TIME - 1;
->  	dht11->num_edges = -1;
->  
->  	platform_set_drvdata(pdev, iio);
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> new file mode 100644
+> index 0000000..f94f121
+> --- /dev/null
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> @@ -0,0 +1,80 @@
+> +/*
+> +* Copyright (C) 2015 Intel Corporation Inc.
+> +*
+> +* This software is licensed under the terms of the GNU General Public
+> +* License version 2, as published by the Free Software Foundation, and
+> +* may be copied, distributed, and modified under those terms.
+> +*
+> +* This program is distributed in the hope that it will be useful,
+> +* but WITHOUT ANY WARRANTY; without even the implied warranty of
+> +* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> +* GNU General Public License for more details.
+> +*/
+> +#include <linux/module.h>
+> +#include <linux/acpi.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/regmap.h>
+> +#include <linux/iio/iio.h>
+> +#include "inv_mpu_iio.h"
+> +
+> +static const struct regmap_config inv_mpu_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +};
+> +
+> +static int inv_mpu_probe(struct spi_device *spi)
+> +{
+> +	struct regmap *regmap;
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +	const char *name = id ? id->name : NULL;
+> +
+> +	regmap = devm_regmap_init_spi(spi, &inv_mpu_regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
+> +			(int)PTR_ERR(regmap));
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	return inv_mpu_core_probe(&spi->dev, regmap, spi->irq, name);
+> +}
+> +
+> +static int inv_mpu_remove(struct spi_device *spi)
+> +{
+> +	return inv_mpu_core_remove(&spi->dev);
+> +}
+> +
+> +/*
+> + * device id table is used to identify what device can be
+> + * supported by this driver
+> + */
+> +static const struct spi_device_id inv_mpu_id[] = {
+> +	{"mpu6050", INV_MPU6050},
+> +	{"mpu6000", INV_MPU6000},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(spi, inv_mpu_id);
+> +
+> +static const struct acpi_device_id inv_acpi_match[] = {
+> +	{"INVN6000", 0},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
+> +
+> +static struct spi_driver inv_mpu_driver = {
+> +	.probe		=	inv_mpu_probe,
+> +	.remove		=	inv_mpu_remove,
+> +	.id_table	=	inv_mpu_id,
+> +	.driver = {
+> +		.owner	=	THIS_MODULE,
+> +		.acpi_match_table = ACPI_PTR(inv_acpi_match),
+> +		.name	=	"inv-mpu6050 spi driver",
+> +		.pm     =       &inv_mpu_pmops,
+> +	},
+> +};
+> +
+> +module_spi_driver(inv_mpu_driver);
+> +
+> +MODULE_AUTHOR("Adriana Reus <adriana.reus@intel.com>");
+> +MODULE_DESCRIPTION("Invensense device MPU6050 driver");
+> +MODULE_LICENSE("GPL");
 > 
 
