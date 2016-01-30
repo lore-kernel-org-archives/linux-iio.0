@@ -1,55 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53889 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53930 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932141AbcA3RL2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2016 12:11:28 -0500
-Subject: Re: [RFC PATCH 0/5] iio: imu: inv_mpu6050: Split driver into core and
- I2C/SPI functionality
+	with ESMTP id S932141AbcA3RSN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2016 12:18:13 -0500
+Subject: Re: [PATCH 2/5] iio: inv_mpu6050: Remove unused parameter
 To: Adriana Reus <adriana.reus@intel.com>
 References: <1454147028-22449-1-git-send-email-adriana.reus@intel.com>
+ <1454147028-22449-3-git-send-email-adriana.reus@intel.com>
 Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
 	ggao@invensense.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56ACEEBE.20701@kernel.org>
-Date: Sat, 30 Jan 2016 17:11:26 +0000
+Message-ID: <56ACF053.2050807@kernel.org>
+Date: Sat, 30 Jan 2016 17:18:11 +0000
 MIME-Version: 1.0
-In-Reply-To: <1454147028-22449-1-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <1454147028-22449-3-git-send-email-adriana.reus@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 30/01/16 09:43, Adriana Reus wrote:
-> This series splits this driver into general and I2C/SPI specific funtionality.
-functionality.
-> The first patch is a fix for a bug in the interrupt pin configuration.
-> The second patch is a minor clean up in preparation for the split.
-> The third patch changes all the I2C specific calls into regmap calls.
-> The third patch separated the remaining I2C specific part into a different component.
-> Finally the fourth patch adds SPI support for the MPU6000 chip.
-If sending an RFC, always state why you think it is not ready to merge
-right now.
+> The inv_check_and_setup_chip function does not use the i2c_device_id
+> parameter. Therefore remove it.
+> 
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+This one stands just fine on it's own.  Hence applied to the togreg branch
+of iio.git - initially pushed out as testing for the autobuilders to
+play with it.
+
+Thanks,
 
 Jonathan
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 > 
-> Adriana Reus (5):
->   iio: imu: inv-mpu6050: Fix interrupt pin configuration
->   iio: inv_mpu6050: Remove unused parameter
->   iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions
->   iio: imu: inv_mpu6050: Separate driver into core and i2c
->     functionality.
->   iio: imu: inv_mpu6050: Add SPI support for MPU6000
-> 
->  drivers/iio/imu/inv_mpu6050/Kconfig           |  15 +-
->  drivers/iio/imu/inv_mpu6050/Makefile          |   8 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |  14 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 259 ++++++--------------------
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 209 +++++++++++++++++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  15 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |  34 ++--
->  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  80 ++++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  10 +-
->  9 files changed, 402 insertions(+), 242 deletions(-)
->  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
->  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 5fe1dd8..1121f4e 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -727,8 +727,7 @@ static const struct iio_info mpu_info = {
+>  /**
+>   *  inv_check_and_setup_chip() - check and setup chip.
+>   */
+> -static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
+> -		const struct i2c_device_id *id)
+> +static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
+>  {
+>  	int result;
+>  
+> @@ -795,7 +794,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  	if (pdata)
+>  		st->plat_data = *pdata;
+>  	/* power is turned on inside check chip type*/
+> -	result = inv_check_and_setup_chip(st, id);
+> +	result = inv_check_and_setup_chip(st);
+>  	if (result)
+>  		return result;
+>  
 > 
 
