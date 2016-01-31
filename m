@@ -1,155 +1,280 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1.radempa.de ([176.9.142.194]:37563 "EHLO mail.cosmopool.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757192AbcAaKKB convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 31 Jan 2016 05:10:01 -0500
-From: Harald Geyer <harald@ccbib.org>
-To: Abhilash Jindal <klock.android@gmail.com>
-cc: Harald Geyer <harald@ccbib.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Richard Weinberger <richard@nod.at>
-Subject: Re: [PATCH] iio: dht11: Use boottime
-In-reply-to: <CALiE4M3BGE=_jWJu+s1SgDEfHD0r1md8yRjXFsRmNoL_Ta4HbA@mail.gmail.com>
-References: <1453934762-6290-1-git-send-email-klock.android@gmail.com> <56ACF7E4.7040603@kernel.org> <E1aPavY-0000Rc-Gk@stardust.g4.wien.funkfeuer.at> <CALiE4M3BGE=_jWJu+s1SgDEfHD0r1md8yRjXFsRmNoL_Ta4HbA@mail.gmail.com>
+Received: from mail-vk0-f50.google.com ([209.85.213.50]:35030 "EHLO
+	mail-vk0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757218AbcAaPSf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 31 Jan 2016 10:18:35 -0500
+Received: by mail-vk0-f50.google.com with SMTP id e6so64535629vkh.2
+        for <linux-iio@vger.kernel.org>; Sun, 31 Jan 2016 07:18:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Date: Sun, 31 Jan 2016 11:09:56 +0100
-Message-Id: <E1aPoxA-0000TS-KM@stardust.g4.wien.funkfeuer.at>
+In-Reply-To: <56ACEBDF.4020108@kernel.org>
+References: <1453998392-562-1-git-send-email-akinobu.mita@gmail.com>
+	<56ACEBDF.4020108@kernel.org>
+Date: Mon, 1 Feb 2016 00:18:33 +0900
+Message-ID: <CAC5umyjwYfK5SSi2BYvCr5SFY2BjxxpS4xRAXgvwmp93JrS3XA@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: add support for ADC0832 8-bit ADC chips
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Abhilash Jindal writes:
-> Thanks Harald and Jonathan.
-> 
-> I would absolutely love to know the symptoms of the odd issue you mentioned.
+2016-01-31 1:59 GMT+09:00 Jonathan Cameron <jic23@kernel.org>:
+> On 28/01/16 16:26, Akinobu Mita wrote:
+>> This adds ADC0832 8-bit ADC driver.  This can also support
+>> ADC0831, ADC0834, and ADC0838 chips easily.  But I currently don't
+>> have these chips except ADC0832 and untested, so MODULE_DEVICE_TABLE
+>> for these are disabled for now.
+>
+> Don't let lack of hardware stop you on that front ;)
+> I only have two of the parts supported by the max1363 driver for instance.
 
-Sure. What I was seeing was a number of zero humidity, zero temperature
-values reported for some time after boot. Then the sensors started to work
-normally.
+Heh, I'm impressed by the number of chips max1363 driver supports.
 
-Given that "all transmission bits zero" passes the checksum test, I thought
-that maybe there is some ressource conflict of the irq line causing
-edges to come in at way too fast pace. However the bug you found explains
-it neatly if we assume that the system clock is set after probe() but before
-the sensor is read for the first time and the zeros I saw in the log were
-actually uninitialized memory.
+> The only time that it really matters is for parts that are significantly
+> different in less than predictable ways.
+>
+> Of course, if you are more diligent than me feel free to test them all.
+> The 0831 is different enough with that slightly odd timing that perhaps
+> you will want to test that one.
+>
+> Anyhow, various bits inline, but mostly looking good.
+>
+> Jonathan
+>>
+>> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+>> Cc: Jonathan Cameron <jic23@kernel.org>
+>> Cc: Hartmut Knaack <knaack.h@gmx.de>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+>> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+>> ---
+>>  .../devicetree/bindings/iio/adc/ti-adc083x.txt     |  15 ++
+>>  drivers/iio/adc/Kconfig                            |  10 +
+>>  drivers/iio/adc/Makefile                           |   1 +
+>>  drivers/iio/adc/ti-adc083x.c                       | 296 +++++++++++++++++++++
+> Usually best to not use wild cards in device naming.  Marketting or whoever
+> had a horrible habit of not keeping nicely defined part number ranges.
+>
+> Hence pick a part and name everything after that.
 
-Maybe setting
-dht11->timestamp = ktime_get_real_ns() - DHT11_DATA_VALID_TIME - 1;
-in probe() wasn't such a good idea.
-dht11->timestamp = -1;
-probably would have been more robust. But of course your patch is fixing
-the true problem.
+OK.  I'll use ti-adc0832.
 
-best regards,
-Harald
+>> +static int adc0831_adc_conversion(struct adc083x *adc)
+>> +{
+>> +     struct spi_device *spi = adc->spi;
+>> +     int ret;
+>> +
+>> +     ret = spi_read(spi, &adc->rx_buf, 2);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     return (adc->rx_buf[0] << 2) | (adc->rx_buf[1] >> 6);
+>> +}
+>> +
+>> +static int adc083x_adc_conversion(struct adc083x *adc, int channel,
+>> +                             bool differential)
+>> +{
+>> +     struct spi_device *spi = adc->spi;
+>> +     struct spi_transfer xfer = {
+>> +             .tx_buf = adc->tx_buf,
+>> +             .rx_buf = adc->rx_buf,
+>> +             .len = 2,
+>> +     };
+>> +     int ret;
+>> +
+>> +     if (!adc->mux_bits)
+>> +             return adc0831_adc_conversion(adc);
+>> +
+>> +     /* start bit */
+> Hmm.. This takes some getting one's head around!
+> As far as I can see you got it right.
+>
+> One slight curiosity to my mind is that the diagramss all show an extra
+> pair of clock samples after the read out.  You explicitly do that
+> for the 8031 but not the other parts that I can see.  There is a cryptic
+> not 'LSB first output not available on 0831' which might be relevant
+> but I have no idea what it means!
 
-> Cheers,
-> Abhilash
-> 
-> On Sat, Jan 30, 2016 at 2:11 PM, Harald Geyer <harald@ccbib.org> wrote:
-> 
-> > Jonathan Cameron writes:
-> > > On 27/01/16 22:46, Abhilash Jindal wrote:
-> > > > Wall time obtained from ktime_get_real_ns is susceptible to sudden
-> > jumps due to
-> > > > user setting the time or due to NTP.  Boot time is constantly
-> > increasing time
-> > > > better suited for comparing two timestamps.
-> > > >
-> > > > Signed-off-by: Abhilash Jindal <klock.android@gmail.com>
-> > > Seems sensible to me, but would like Richard / Harald to take a quick
-> > > look before I apply it.
-> >
-> > Reviewed-by: Harald Geyer <harald@ccbib.org>
-> >
-> > I can't test this right now, but I think it will fix an odd issue I
-> > have seen in a log file (apparently was completely off track debugging it).
-> > As this very likely is a real world issue, I'd recommend applying the patch
-> > to the fixes branch, so that it hopefully gets picked up for LTS kernels.
-> >
-> > I used ktime_get_real_ns() because that is what iio_get_time_ns() uses.
-> > I should have thought about this twice - sorry about being sloppy!
-> >
-> > I just grepped the other iio drivers and none is using iio_get_time_ns() in
-> > a comparision like dht11 did, so maybe the other uses are safe. However
-> > I couldn't check variables containing timestamps that way, so maybe
-> > reviewing the users of iio_get_time_ns(), whether wall time is actually
-> > what is wanted, would be a worthwhile task if somebody has the time ...
-> >
-> > Thanks for the patch!
-> > Harald
-> >
-> > > Thanks,
-> > >
-> > > Jonathan
-> > > > ---
-> > > >  drivers/iio/humidity/dht11.c |    8 ++++----
-> > > >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iio/humidity/dht11.c
-> > b/drivers/iio/humidity/dht11.c
-> > > > index 1165b1c..cfc5a05 100644
-> > > > --- a/drivers/iio/humidity/dht11.c
-> > > > +++ b/drivers/iio/humidity/dht11.c
-> > > > @@ -117,7 +117,7 @@ static int dht11_decode(struct dht11 *dht11, int
-> > offset, int timeres)
-> > > >     if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
-> > > >             return -EIO;
-> > > >
-> > > > -   dht11->timestamp = ktime_get_real_ns();
-> > > > +   dht11->timestamp = ktime_get_boot_ns();
-> > > >     if (hum_int < 20) {  /* DHT22 */
-> > > >             dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec)
-> > *
-> > > >                                     ((temp_int & 0x80) ? -100 : 100);
-> > > > @@ -145,7 +145,7 @@ static irqreturn_t dht11_handle_irq(int irq, void
-> > *data)
-> > > >
-> > > >     /* TODO: Consider making the handler safe for IRQ sharing */
-> > > >     if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >=
-> > 0) {
-> > > > -           dht11->edges[dht11->num_edges].ts = ktime_get_real_ns();
-> > > > +           dht11->edges[dht11->num_edges].ts = ktime_get_boot_ns();
-> > > >             dht11->edges[dht11->num_edges++].value =
-> > > >
-> >  gpio_get_value(dht11->gpio);
-> > > >
-> > > > @@ -164,7 +164,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
-> > > >     int ret, timeres;
-> > > >
-> > > >     mutex_lock(&dht11->lock);
-> > > > -   if (dht11->timestamp + DHT11_DATA_VALID_TIME <
-> > ktime_get_real_ns()) {
-> > > > +   if (dht11->timestamp + DHT11_DATA_VALID_TIME <
-> > ktime_get_boot_ns()) {
-> > > >             timeres = ktime_get_resolution_ns();
-> > > >             if (DHT11_DATA_BIT_HIGH < 2 * timeres) {
-> > > >                     dev_err(dht11->dev, "timeresolution %dns too
-> > low\n",
-> > > > @@ -279,7 +279,7 @@ static int dht11_probe(struct platform_device
-> > *pdev)
-> > > >             return -EINVAL;
-> > > >     }
-> > > >
-> > > > -   dht11->timestamp = ktime_get_real_ns() - DHT11_DATA_VALID_TIME - 1;
-> > > > +   dht11->timestamp = ktime_get_boot_ns() - DHT11_DATA_VALID_TIME - 1;
-> > > >     dht11->num_edges = -1;
-> > > >
-> > > >     platform_set_drvdata(pdev, iio);
-> > > >
-> > >
-> >
-> > --
-> > If you want to support my work:
-> > see http://friends.ccbib.org/harald/supporting/
-> > or donate via peercoin to P98LRdhit3gZbHDBe7ta5jtXrMJUms4p7w
-> > or bitcoin 1FUtd8T9jRN1rFz63vZz7s2fDtB6d6A7aS
-> >
-> 
+I plan to get 8031.  Sooner or later we'll see if this works or not.
 
--- 
-If you want to support my work:
-see http://friends.ccbib.org/harald/supporting/
-or donate via peercoin to P98LRdhit3gZbHDBe7ta5jtXrMJUms4p7w
-or bitcoin 1FUtd8T9jRN1rFz63vZz7s2fDtB6d6A7aS
+>> +     adc->tx_buf[0] = 1 << (adc->mux_bits + 1);
+>> +     /* single-ended or differential */
+>> +     adc->tx_buf[0] |= differential ? 0 : (1 << adc->mux_bits);
+>> +     /* odd / sign */
+>> +     adc->tx_buf[0] |= (channel % 2) << (adc->mux_bits - 1);
+>> +     /* select */
+>> +     if (adc->mux_bits > 1)
+>> +             adc->tx_buf[0] |= channel / 2;
+>> +
+>> +     /* align Data output BIT7 (MSB) to 8-bit boundary */
+>> +     adc->tx_buf[0] <<= 1;
+>> +
+>> +     ret = spi_sync_transfer(spi, &xfer, 1);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     return adc->rx_buf[1];
+>> +}
+>> +
+>> +static int adc083x_read_raw(struct iio_dev *iio,
+>> +                     struct iio_chan_spec const *channel, int *value,
+>> +                     int *shift, long mask)
+>> +{
+>> +     struct adc083x *adc = iio_priv(iio);
+>> +     int ret;
+>> +
+> I'd move the lock in a bit as it will simplify your program flow
+> somewhat.  Only needs to be held around the adc_conversion call
+> (I think)
+
+You're right.
+
+>> +     mutex_lock(&adc->lock);
+>> +
+>> +     switch (mask) {
+>> +     case IIO_CHAN_INFO_RAW:
+>> +             ret = adc083x_adc_conversion(adc, channel->channel,
+>> +                                             channel->differential);
+>> +             if (ret < 0)
+>> +                     break;
+>> +
+>> +             *value = ret;
+>> +             ret = IIO_VAL_INT;
+>> +             break;
+>> +     case IIO_CHAN_INFO_SCALE:
+>> +             ret = regulator_get_voltage(adc->reg);
+>> +             if (ret < 0)
+>> +                     break;
+>> +
+>> +             /* convert regulator output voltage to mV */
+>> +             *value = ret / 1000;
+>> +             *shift = 8;
+>> +             ret = IIO_VAL_FRACTIONAL_LOG2;
+>> +             break;
+>> +     default:
+>> +             ret = -EINVAL;
+>> +             break;
+>> +     }
+>> +
+>> +     mutex_unlock(&adc->lock);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static const struct iio_info adc083x_info = {
+>> +     .read_raw = adc083x_read_raw,
+>> +     .driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +static int adc083x_probe(struct spi_device *spi)
+>> +{
+>> +     struct iio_dev *indio_dev;
+>> +     struct adc083x *adc;
+>> +     int ret;
+>> +
+>> +     indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+>> +     if (!indio_dev)
+>> +             return -ENOMEM;
+>> +
+>> +     adc = iio_priv(indio_dev);
+>> +     adc->spi = spi;
+>> +     mutex_init(&adc->lock);
+>> +
+>> +     indio_dev->name = spi_get_device_id(spi)->name;
+>> +     indio_dev->dev.parent = &spi->dev;
+>> +     indio_dev->info = &adc083x_info;
+>> +     indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +     switch (spi_get_device_id(spi)->driver_data) {
+>> +     case adc0831:
+>> +             adc->mux_bits = 0;
+>> +             indio_dev->channels = adc0831_channels;
+>> +             indio_dev->num_channels = ARRAY_SIZE(adc0831_channels);
+>> +             break;
+>> +     case adc0832:
+>> +             adc->mux_bits = 1;
+>> +             indio_dev->channels = adc0832_channels;
+>> +             indio_dev->num_channels = ARRAY_SIZE(adc0832_channels);
+>> +             break;
+>> +     case adc0834:
+>> +             adc->mux_bits = 2;
+>> +             indio_dev->channels = adc0834_channels;
+>> +             indio_dev->num_channels = ARRAY_SIZE(adc0834_channels);
+>> +             break;
+>> +     case adc0838:
+>> +             adc->mux_bits = 3;
+>> +             indio_dev->channels = adc0838_channels;
+>> +             indio_dev->num_channels = ARRAY_SIZE(adc0838_channels);
+>> +             break;
+>> +     default:
+>> +             return -EINVAL;
+>> +     }
+>> +
+>> +     adc->reg = devm_regulator_get(&spi->dev, "vref");
+>> +     if (IS_ERR(adc->reg))
+>> +             return PTR_ERR(adc->reg);
+>> +
+>> +     ret = regulator_enable(adc->reg);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     spi_set_drvdata(spi, indio_dev);
+>> +
+>> +     ret = devm_iio_device_register(&spi->dev, indio_dev);
+>> +     if (ret)
+>> +             regulator_disable(adc->reg);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static int adc083x_remove(struct spi_device *spi)
+>> +{
+>> +     struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>> +     struct adc083x *adc = iio_priv(indio_dev);
+>> +
+>> +     regulator_disable(adc->reg);
+> The key thing to note here is that the unwinding of all managed
+> elements occurs after anything in remove.  Hence, in this case
+> you have turned the regulator off, before the iio_device_unregister
+> function gets called by the managed tear down.  That call is responsible
+> for removing the userspace and in kernel interfaces to the driver.
+>
+> So, rule of thumb - the first time you hit a non devm call of significance
+> in your probe function is the point at which all futher calls cannot be done
+> as managed ones.  e.g. you need to do explicit iio_device_register
+> / iio_device_unregister in this driver.
+
+Very informative.
+
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +#ifdef CONFIG_OF
+>> +
+>> +static const struct of_device_id adc083x_dt_ids[] = {
+>> +     { .compatible = "ti,adc0832", },
+>> +/* THESE CHIPS ARE NOT TESTED
+>> +     { .compatible = "ti,adc0831", },
+>> +     { .compatible = "ti,adc0834", },
+>> +     { .compatible = "ti,adc0838", },
+>> +*/
+>> +     {}
+>> +};
+>> +MODULE_DEVICE_TABLE(of, adc083x_dt_ids);
+>> +
+>> +#endif
+>> +
+>> +static const struct spi_device_id adc083x_id[] = {
+>> +     { "adc0832", adc0832 },
+>> +/* THESE CHIPS ARE NOT TESTED
+> Leave them in anyway.  It's not a part that is going to
+> break anything permanently if you have missed some small reason why
+> they don't work.  (more intesting with multirange DACs where they
+> might burn components!)
+
+Heh.
+
+Thanks for your review. I'll surely update this patch.
