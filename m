@@ -1,119 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37809 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37924 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751677AbcBAT5C (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Feb 2016 14:57:02 -0500
-Received: from localhost.localdomain (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-	by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 908C842E8C
-	for <linux-iio@vger.kernel.org>; Mon,  1 Feb 2016 19:57:01 +0000 (GMT)
-Subject: Re: [PATCH] iio:pressure:Kconfig white space cleanup.
-To: linux-iio@vger.kernel.org
-References: <1453655210-13420-1-git-send-email-jic23@kernel.org>
+	with ESMTP id S1753294AbcBAUVy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Feb 2016 15:21:54 -0500
+To: Greg KH <gregkh@linuxfoundation.org>
+Subject: [PULL] Second set of IIO fixes for the 4.5 cycle - dependent on merge
+ window patches.
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56AFB88D.9050303@kernel.org>
-Date: Mon, 1 Feb 2016 19:57:01 +0000
+Message-ID: <56AFBE60.7030509@kernel.org>
+Date: Mon, 1 Feb 2016 20:21:52 +0000
 MIME-Version: 1.0
-In-Reply-To: <1453655210-13420-1-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/01/16 17:06, Jonathan Cameron wrote:
-> Clearly a high degree of cut and paste has gone on in this file, propogating
-> a particularly random combination of tabs and spaces.  This patch at least
-> should make it all consistent going forward.
-> 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-Ooops, I replied to just myself on Saturday that I'd applied this.
+The following changes since commit 02c34ccc1d2d528d2de2897881b97933363432b5:
 
-Anyhow, applied ;)
+  Merge tag 'iio-for-4.5c' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2015-12-26 17:05:25 -0800)
 
-> ---
->  drivers/iio/pressure/Kconfig | 30 +++++++++++++++---------------
->  1 file changed, 15 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index e8f60dbf646e..cf03a43545a1 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -10,11 +10,11 @@ config BMP280
->  	depends on I2C
->  	select REGMAP_I2C
->  	help
-> -	 Say yes here to build support for Bosch Sensortec BMP280
-> -	 pressure and temperature sensor.
-> +	  Say yes here to build support for Bosch Sensortec BMP280
-> +	  pressure and temperature sensor.
->  
-> -	 To compile this driver as a module, choose M here: the module
-> -	 will be called bmp280.
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called bmp280.
->  
->  config HID_SENSOR_PRESS
->  	depends on HID_SENSOR_HUB
-> @@ -27,8 +27,8 @@ config HID_SENSOR_PRESS
->  	  Say yes here to build support for the HID SENSOR
->  	  Pressure driver
->  
-> -          To compile this driver as a module, choose M here: the module
-> -          will be called hid-sensor-press.
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called hid-sensor-press.
->  
->  config MPL115
->  	tristate
-> @@ -41,8 +41,8 @@ config MPL115_I2C
->  	  Say yes here to build support for the Freescale MPL115A2
->  	  pressure sensor connected via I2C.
->  
-> -          To compile this driver as a module, choose M here: the module
-> -          will be called mpl115_i2c.
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called mpl115_i2c.
->  
->  config MPL115_SPI
->  	tristate "Freescale MPL115A1 pressure sensor driver"
-> @@ -52,8 +52,8 @@ config MPL115_SPI
->  	  Say yes here to build support for the Freescale MPL115A1
->  	  pressure sensor connected via SPI.
->  
-> -          To compile this driver as a module, choose M here: the module
-> -          will be called mpl115_spi.
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called mpl115_spi.
->  
->  config MPL3115
->  	tristate "Freescale MPL3115A2 pressure sensor driver"
-> @@ -64,8 +64,8 @@ config MPL3115
->  	  Say yes here to build support for the Freescale MPL3115A2
->  	  pressure sensor / altimeter.
->  
-> -          To compile this driver as a module, choose M here: the module
-> -          will be called mpl3115.
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called mpl3115.
->  
->  config MS5611
->  	tristate "Measurement Specialties MS5611 pressure sensor driver"
-> @@ -97,7 +97,7 @@ config MS5611_SPI
->  config MS5637
->  	tristate "Measurement Specialties MS5637 pressure & temperature sensor"
->  	depends on I2C
-> -        select IIO_MS_SENSORS_I2C
-> +	select IIO_MS_SENSORS_I2C
->  	help
->  	  If you say yes here you get support for the Measurement Specialties
->  	  MS5637 pressure and temperature sensor.
-> @@ -143,7 +143,7 @@ config T5403
->  	  Say yes here to build support for the EPCOS T5403 pressure sensor
->  	  connected via I2C.
->  
-> -          To compile this driver as a module, choose M here: the module
-> -          will be called t5403.
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called t5403.
->  
->  endmenu
-> 
+are available in the git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.5b
+
+for you to fetch changes up to 17a2f46c3d8877fe2a0b6ff391d1df30e67892a6:
+
+  iio: dht11: Use boottime (2016-02-01 20:16:13 +0000)
+
+----------------------------------------------------------------
+Second set of IIO fixes for the 4.5 cycle.  These ones are mostly
+dependent on patches from the recent merge cycle.
+
+* adc, imu and iio staging drivers
+  - !HAS_IOMEM dependency fixes
+* dht11
+  - use boottime clock for time measurement to avoid incorrect measurements
+   due to clock updates.
+* lidar
+  - correct a return value for short i2c transfers.
+
+----------------------------------------------------------------
+Abhilash Jindal (1):
+      iio: dht11: Use boottime
+
+Matt Ranostay (1):
+      iio: proximity: lidar: correct return value
+
+Richard Weinberger (3):
+      iio: adc: Fix dependencies for !HAS_IOMEM archs
+      staging: iio: Fix dependencies for !HAS_IOMEM archs
+      iio: imu: Fix dependencies for !HAS_IOMEM archs
+
+ drivers/iio/adc/Kconfig                           | 3 +++
+ drivers/iio/humidity/dht11.c                      | 8 ++++----
+ drivers/iio/imu/inv_mpu6050/Kconfig               | 2 +-
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 2 +-
+ drivers/staging/iio/adc/Kconfig                   | 1 +
+ 5 files changed, 10 insertions(+), 6 deletions(-)
