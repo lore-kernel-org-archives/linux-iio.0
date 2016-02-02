@@ -1,100 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37867 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751975AbcBAULF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Feb 2016 15:11:05 -0500
-To: Greg KH <gregkh@linuxfoundation.org>
-Subject: [PULL] First set of IIO fixes for the 4.5 cycle
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56AFBBD7.1040002@kernel.org>
-Date: Mon, 1 Feb 2016 20:11:03 +0000
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Received: from mga09.intel.com ([134.134.136.24]:18425 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932304AbcBBPEa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 2 Feb 2016 10:04:30 -0500
+From: Adriana Reus <adriana.reus@intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	ggao@invensense.com, Adriana Reus <adriana.reus@intel.com>
+Subject: [PATCH v1 0/4] iio: imu: inv_mpu6050: Split driver into core and I2C/SPI functionality
+Date: Tue,  2 Feb 2016 17:02:14 +0200
+Message-Id: <1454425338-17674-1-git-send-email-adriana.reus@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit d590faf9e8f8509a0a0aa79c38e87fcc6b913248:
+This series splits this driver into general and I2C/SPI specific funtionality.
+functionality.
+The first patch is a fix for a bug in the interrupt pin configuration.
+The second patch changes all the I2C specific calls into regmap calls.
+The third patch separated the remaining I2C specific part into a different component.
+Finally the fourth patch adds SPI support for the MPU6000 chip.
 
-  iio: adis_buffer: Fix out-of-bounds memory access (2015-12-05 17:32:04 +0000)
+Since the initial version there have been minor changes according to the
+comments received.
 
-are available in the git repository at:
+Adriana Reus (4):
+  iio: imu: inv-mpu6050: Fix interrupt pin configuration
+  iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions
+  iio: imu: inv_mpu6050: Separate driver into core and i2c
+    functionality.
+  iio: imu: inv_mpu6050: Add SPI support for MPU6000
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.5a
+ drivers/iio/imu/inv_mpu6050/Kconfig           |  21 ++-
+ drivers/iio/imu/inv_mpu6050/Makefile          |   8 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |  14 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 253 +++++---------------------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 207 +++++++++++++++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  13 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |  35 ++--
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  80 ++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  10 +-
+ 9 files changed, 402 insertions(+), 239 deletions(-)
+ create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+ create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
 
-for you to fetch changes up to 7e1da86339f29e445e40d41132c30741df8c19ad:
+-- 
+1.9.1
 
-  iio: ade7753: avoid uninitialized data (2016-01-30 16:24:24 +0000)
-
-----------------------------------------------------------------
-First set of IIO fixes for the 4.5 cycle.
-
-This set comprises those not dependent on patches in the 4.5 merge cycle.
-A second set will follow shortly with ones that are.
-
-* core in kernel interfaces
-  - fix a possible NULL dereference that is a theoretical possibility
-    via odd usage of iio_channel_release. Pretty much a hardening of
-    the interface, but observed in the wild with the twl4030_charger
-    driver.
-* acpi-als
-  - report the data as processed as it is in lux.  This fixes a wrong
-    use of the IIO ABI.  However, old _raw version retained to avoid
-    breaking any userspace in the wild that is relying on that (none
-    known but it doesn't hurt us much to retain it)
-* ade7753
-  - fix some error handling to avoid use of unitialized data.
-* ltr501
-  - use a signed return type for ltr501_match_samp_freq so as to allow
-    returning of an error code.
-* mcp4725
-  - set name field of struct iio_dev to ensure the sysfs name attribute
-    doesn't give NULL.
-* mpl115
-  - temperature offset sign is wrong.
-* stk8ba50
-  - IIO_TRIGGER dependency added
-* ti_am335x_adc
-  - Label buffer as a software buffer. It's actually a hybrid of a
-    true hardware buffer feeding a kfifo, but the meaning of these fields
-    has changed a little recently and in this case it should be labeled
-    a software buffer ensure it is allowed to use the kfifo.
-* vf610_adc
-  - HAS_IOMEM dependency
-
-----------------------------------------------------------------
-Akinobu Mita (1):
-      iio: pressure: mpl115: fix temperature offset sign
-
-Arnd Bergmann (1):
-      iio: ade7753: avoid uninitialized data
-
-Dan Carpenter (1):
-      iio: inkern: fix a NULL dereference on error
-
-Gabriele Mazzotta (1):
-      iio: light: acpi-als: Report data as processed
-
-Jonathan Cameron (1):
-      iio:adc:ti_am335x_adc Fix buffered mode by identifying as software buffer.
-
-Markus Elfring (1):
-      iio-light: Use a signed return type for ltr501_match_samp_freq()
-
-Vegard Nossum (2):
-      iio: add IIO_TRIGGER dependency to STK8BA50
-      iio: add HAS_IOMEM dependency to VF610_ADC
-
-Yong Li (1):
-      iio: dac: mcp4725: set iio name property in sysfs
-
- drivers/iio/accel/Kconfig           |  1 +
- drivers/iio/adc/Kconfig             |  1 +
- drivers/iio/adc/ti_am335x_adc.c     |  2 +-
- drivers/iio/dac/mcp4725.c           |  1 +
- drivers/iio/inkern.c                |  2 ++
- drivers/iio/light/acpi-als.c        |  6 ++++--
- drivers/iio/light/ltr501.c          |  2 +-
- drivers/iio/pressure/mpl115.c       |  2 +-
- drivers/staging/iio/meter/ade7753.c | 12 ++++++++++--
- 9 files changed, 22 insertions(+), 7 deletions(-)
