@@ -1,107 +1,122 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39483 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751441AbcBFLYv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 06:24:51 -0500
-Subject: Re: [PATCH 2/2] staging:iio:ad7606: Consolidate channel specs
-To: Lars-Peter Clausen <lars@metafoo.de>
-References: <1454668354-11450-1-git-send-email-lars@metafoo.de>
- <1454668354-11450-2-git-send-email-lars@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B5D801.20903@kernel.org>
-Date: Sat, 6 Feb 2016 11:24:49 +0000
+Return-Path: <afd@ti.com>
+Subject: Re: [PATCH v4 2/4] iio: health: Add driver for the TI AFE4404 heart
+ monitor
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>, Dan
+ Murphy <dmurphy@ti.com>,
+        Rob Herring <robh+dt@kernel.org>, Pawel Moll
+	<pawel.moll@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ian Campbell
+	<ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>
+References: <1453742941-12086-1-git-send-email-afd@ti.com>
+ <1453742941-12086-3-git-send-email-afd@ti.com> <56ACCFC6.2000700@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+From: "Andrew F. Davis" <afd@ti.com>
+Message-ID: <56B0D04B.1090208@ti.com>
+Date: Tue, 2 Feb 2016 09:50:35 -0600
 MIME-Version: 1.0
-In-Reply-To: <1454668354-11450-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <56ACCFC6.2000700@kernel.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/02/16 10:32, Lars-Peter Clausen wrote:
-> By slightly reordering the channels in the channel spec array we can reuse
-> the same array for all variant of the chip.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Fair enough I suppose, though I find it hard to care much about this sort
-of consolidation as it trades slight readability disadvantage off against
-reduced code size.
+On 01/30/2016 08:59 AM, Jonathan Cameron wrote:
+> On 25/01/16 17:28, Andrew F. Davis wrote:
+>> Add driver for the TI AFE4404 heart rate monitor and pulse oximeter.
+>> This device detects reflected LED light fluctuations and presents an ADC
+>> value to the user space for further signal processing.
+>>
+>> Datasheet: http://www.ti.com/product/AFE4404/datasheet
+>>
+>> Signed-off-by: Andrew F. Davis <afd@ti.com>
+> Hi Andrew,
+>
+> This changed rather more than I was expecting, but fair enough.
+>
+> A few bits are missing from remove.  Few other little bits inline,
+> though mostly those are about readability rather than what the code
+> is doing.
+>
+> I was a little suprised to see no control over whether the trigger is
+> enabled or not.  I'm trying to get my head around what the result of this will
+> be.  I guess we'll have interrupts pinging away merilly doing nothing until
+> the buffer is attached then the demux will get set up to actually do
+> something with the data.
+>
+> hmm. Might be fine, if I ususual.  Normally devices have some means of
+> masking the interrupt.
 
-Applied to the togreg branch of iio.git.
+I wasn't sure about this ether, but it doesn't seem to break anything.
+
+>
+> Jonathan
+>
+>> ---
+>>   .../ABI/testing/sysfs-bus-iio-health-afe440x       |  54 ++
+>>   drivers/iio/health/Kconfig                         |  19 +-
+
+[...]
+
+>> +
+>> +static const struct afe440x_reg_info afe4404_reg_info[] = {
+>
+> As noted below, I'd find
+> [LED1] = AFE440X_REG_INFO(AFE440_LED1VAL...
+> more readable.
+>
+
+ACK
+
+[...]
+
+>> +	int ret;
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +
+> Would expect unwinding of the triggered_buffer here.
+> iio_triggered_buffer_cleanup()
+>
+
+ACK
+
+>> +	iio_trigger_unregister(afe->trig);
+> This should be protected by a check on afe->irq as for the register in probe.
+> There is no protection against afe->trig == NULL in iio_trigger_unregister.
+> That is kind of deliberate as it makes sure the probe / remove in drivers
+> are balanced unlike here.
+>
+
+Makes sense, will add.
+
+[...]
+
+> I'm not overly keen on the hiding fo the indexing.  I'd prefer
+> this was just the bit {...} and you had the fact it was filling in an
+> indexed element explicit where used.
+
+That works.
+
+[...]
+
+> I'd prefix reg_type to avoid possible name clashes in future.
+>> +enum reg_type {
+>> +	SIMPLE,
+>> +	RESISTANCE,
+>> +	CAPACITANCE,
+>> +};
+
+ACK
+
+>> +
+>> +/* this could be made more general for other IIO drivers if needed --------- */
+>
+> Yes, but lets do that at as a follow up.
+>
+
+Sure.
 
 Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/adc/ad7606_core.c | 34 ++++++++--------------------------
->  1 file changed, 8 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index d0b634d..ce9b2c3 100644
-> --- a/drivers/staging/iio/adc/ad7606_core.c
-> +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -250,7 +250,8 @@ static const struct attribute_group ad7606_attribute_group_range = {
->  		},						\
->  	}
->  
-> -static const struct iio_chan_spec ad7606_8_channels[] = {
-> +static const struct iio_chan_spec ad7606_channels[] = {
-> +	IIO_CHAN_SOFT_TIMESTAMP(8),
->  	AD7606_CHANNEL(0),
->  	AD7606_CHANNEL(1),
->  	AD7606_CHANNEL(2),
-> @@ -259,25 +260,6 @@ static const struct iio_chan_spec ad7606_8_channels[] = {
->  	AD7606_CHANNEL(5),
->  	AD7606_CHANNEL(6),
->  	AD7606_CHANNEL(7),
-> -	IIO_CHAN_SOFT_TIMESTAMP(8),
-> -};
-> -
-> -static const struct iio_chan_spec ad7606_6_channels[] = {
-> -	AD7606_CHANNEL(0),
-> -	AD7606_CHANNEL(1),
-> -	AD7606_CHANNEL(2),
-> -	AD7606_CHANNEL(3),
-> -	AD7606_CHANNEL(4),
-> -	AD7606_CHANNEL(5),
-> -	IIO_CHAN_SOFT_TIMESTAMP(6),
-> -};
-> -
-> -static const struct iio_chan_spec ad7606_4_channels[] = {
-> -	AD7606_CHANNEL(0),
-> -	AD7606_CHANNEL(1),
-> -	AD7606_CHANNEL(2),
-> -	AD7606_CHANNEL(3),
-> -	IIO_CHAN_SOFT_TIMESTAMP(4),
->  };
->  
->  static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
-> @@ -287,20 +269,20 @@ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
->  	[ID_AD7606_8] = {
->  		.name = "ad7606",
->  		.int_vref_mv = 2500,
-> -		.channels = ad7606_8_channels,
-> -		.num_channels = 8,
-> +		.channels = ad7606_channels,
-> +		.num_channels = 9,
->  	},
->  	[ID_AD7606_6] = {
->  		.name = "ad7606-6",
->  		.int_vref_mv = 2500,
-> -		.channels = ad7606_6_channels,
-> -		.num_channels = 6,
-> +		.channels = ad7606_channels,
-> +		.num_channels = 7,
->  	},
->  	[ID_AD7606_4] = {
->  		.name = "ad7606-4",
->  		.int_vref_mv = 2500,
-> -		.channels = ad7606_4_channels,
-> -		.num_channels = 4,
-> +		.channels = ad7606_channels,
-> +		.num_channels = 5,
->  	},
->  };
->  
-> 
-
+Andrew
