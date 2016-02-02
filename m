@@ -1,85 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn1on0085.outbound.protection.outlook.com ([157.56.110.85]:49779
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751498AbcBBB1U convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Feb 2016 20:27:20 -0500
-From: Ge Gao <GGao@invensense.com>
-To: Adriana Reus <adriana.reus@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"srinivas.pandruvada@linux.intel.com"
-	<srinivas.pandruvada@linux.intel.com>
-Subject: RE: [RFC PATCH 0/5] iio: imu: inv_mpu6050: Split driver into core and
- I2C/SPI functionality
-Date: Tue, 2 Feb 2016 01:11:51 +0000
-Message-ID: <DM3PR1201MB10727095A2982AD3C9F6BD60AFDF0@DM3PR1201MB1072.namprd12.prod.outlook.com>
-References: <1454147028-22449-1-git-send-email-adriana.reus@intel.com>
- <56ACEEBE.20701@kernel.org> <56AF1EE7.7010900@intel.com>
-In-Reply-To: <56AF1EE7.7010900@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:45856 "EHLO
+	metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755183AbcBBLlu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Feb 2016 06:41:50 -0500
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Shawn Guo <shawnguo@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Denis Carikli <denis@eukrea.com>,
+	Eric =?ISO-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Juergen Borleis <jbe@pengutronix.de>
+Subject: Re: [PATCH v10 4/8] mfd: fsl imx25 Touchscreen ADC driver
+Date: Tue, 02 Feb 2016 12:41:40 +0100
+Message-ID: <6151166.y0HMDdqtvF@adelgunde>
+In-Reply-To: <20160111065441.GW3331@x1>
+References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de> <1450101234-2191-5-git-send-email-mpa@pengutronix.de> <20160111065441.GW3331@x1>
 MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPart2458794.MQBc4Lxljv"; micalg="pgp-sha256"; protocol="application/pgp-signature"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear all,
-	The patch looks fine to me. Thanks for the change.
 
-Best Regards,
-
-Ge Gao
-
-
------Original Message-----
-From: Adriana Reus [mailto:adriana.reus@intel.com] 
-Sent: Monday, February 01, 2016 1:01 AM
-To: Jonathan Cameron
-Cc: linux-iio@vger.kernel.org; srinivas.pandruvada@linux.intel.com; Ge Gao
-Subject: Re: [RFC PATCH 0/5] iio: imu: inv_mpu6050: Split driver into core and I2C/SPI functionality
+--nextPart2458794.MQBc4Lxljv
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
 
 Hi,
 
-Thanks for your comments on this series, I'll resend a new version soon.
-It was an RFC because I've done some slight rebasing and shuffling around between my last tested version of this series and what was sent out and I wanted to make sure I can give it a final test run before it gets merged.
-As testing goes, I am using an mpu6050 to test the i2c part and an
-mpu6000 to test the spi part.
+On Monday, January 11, 2016 06:54:41 AM Lee Jones wrote:
+> On Mon, 14 Dec 2015, Markus Pargmann wrote:
+>=20
+> > This is the core driver for imx25 touchscreen/adc driver. The modul=
+e
+> > has one shared ADC and two different conversion queues which use th=
+e
+> > ADC. The two queues are identical. Both can be used for general pur=
+pose
+> > ADC but one is meant to be used for touchscreens.
+> >=20
+> > This driver is the core which manages the central components and
+> > registers of the TSC/ADC unit. It manages the IRQs and forwards the=
+m to
+> > the correct components.
+> >=20
+> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> > Signed-off-by: Denis Carikli <denis@eukrea.com>
+> >=20
+> > [ensure correct ADC clock depending on the IPG clock]
+> > Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
+> > Acked-by: Jonathan Cameron <jic23@kernel.org>
+> > ---
+> >=20
+> > Notes:
+> >     Changes in v7:
+> >      - Cleanup bit defines in header files to be more readable
+> >      - Fix irq check to return with an error for irq <=3D 0
+> >      - Add COMPILE_TEST in Kconfig file
+> >    =20
+> >     Changes in v5:
+> >      - Remove ifdef CONFIG_OF as this driver is only for DT usage
+> >      - Remove module owner
+> >      - Add Kconfig dependencies ARCH_MX25 and OF
+> >=20
+> >  drivers/mfd/Kconfig             |   9 ++
+> >  drivers/mfd/Makefile            |   2 +
+> >  drivers/mfd/fsl-imx25-tsadc.c   | 203 ++++++++++++++++++++++++++++=
+++++++++++++
+> >  include/linux/mfd/imx25-tsadc.h | 140 +++++++++++++++++++++++++++
+> >  4 files changed, 354 insertions(+)
+> >  create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
+> >  create mode 100644 include/linux/mfd/imx25-tsadc.h
+>=20
+> For my own reference:
+>   Acked-by: Lee Jones <lee.jones@linaro.org>
+>=20
+> I will apply this and sent out pull-requests to the relevant
+> maintainers once -rc1 is out.
 
-Thanks,
-Adriana
+Thanks. Do you mean just this patch or the whole series?
 
-On 30.01.2016 19:11, Jonathan Cameron wrote:
-> On 30/01/16 09:43, Adriana Reus wrote:
->> This series splits this driver into general and I2C/SPI specific funtionality.
-> functionality.
->> The first patch is a fix for a bug in the interrupt pin configuration.
->> The second patch is a minor clean up in preparation for the split.
->> The third patch changes all the I2C specific calls into regmap calls.
->> The third patch separated the remaining I2C specific part into a different component.
->> Finally the fourth patch adds SPI support for the MPU6000 chip.
-> If sending an RFC, always state why you think it is not ready to merge 
-> right now.
->
-> Jonathan
->>
->> Adriana Reus (5):
->>    iio: imu: inv-mpu6050: Fix interrupt pin configuration
->>    iio: inv_mpu6050: Remove unused parameter
->>    iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions
->>    iio: imu: inv_mpu6050: Separate driver into core and i2c
->>      functionality.
->>    iio: imu: inv_mpu6050: Add SPI support for MPU6000
->>
->>   drivers/iio/imu/inv_mpu6050/Kconfig           |  15 +-
->>   drivers/iio/imu/inv_mpu6050/Makefile          |   8 +-
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |  14 +-
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 259 ++++++--------------------
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 209 +++++++++++++++++++++
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  15 +-
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |  34 ++--
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  80 ++++++++
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  10 +-
->>   9 files changed, 402 insertions(+), 242 deletions(-)
->>   create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
->>   create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
->>
->
+Shall I resend the whole series to fix the commit title of the first
+patch?
+
+Best Regards,
+
+Markus
+
+=2D-=20
+Pengutronix e.K.                           |                           =
+  |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
+  |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
+5 |
+
+--nextPart2458794.MQBc4Lxljv
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJWsJX0AAoJEEpcgKtcEGQQjNcP/214dQVDTNzK8gpUr6sMUCoF
+L8b8setMn+y+qAQTQD+hJNCfSUMP7O5SFvR+k54XxmBvJxRzrSiGWKFHwBO2lkGu
+zjCVNs8CFn941cBYYn44NKm7q7u11vBq74K0tpercVppG7q/mXkasDJz86Ni+wlN
+FZ2jzGCqT+ct/ZV+AfuSMRc93A5ya2oFIajLw0/KnuR3/TbNKF/NpjFfFgQjyFtg
+w+wdLQ19TxlldDJU8KEKs7dR5ComTNul9JSA+y4SHaiGcLEuR/mCUFhvtOB2S4ys
+UgKhB8XkVVG6fHTBjqQgm9Gu3c9lvTnQKfyd1ywopfv1WH3bR4bU1/Pe3Rb8zEuz
+WoFxgRWiDiPcNTeoO0g0M8uYu8WT4n7cMh/oZ6r1tncn5okPhm3dSeyH0GggpXJ3
+saHc0YeMno3FLoE5sV7Sf5QL+IBM6tK5aB/BpPrTJbP05CFJsPp53gkXLO+UaQxK
+wXnbRxBSynd3xLOjf8eQcZRAnRl6PJc7sGhV7AL9wLJaYXO/uLwKWL93ZEkvxx4/
+at63+vTqw804s9eIxEFDJhUqQ7TpJX7JX09xR7SXuo0r0QLbODu9HLT2nHg0IibJ
+8a3f7+LJuNlklffNdmvphN2DZogT6njaqDkiok4qoJ7uyREUjK44B7DoByH/e4/9
+W4RVRyuZ4wjwXj73dpH4
+=t7PK
+-----END PGP SIGNATURE-----
+
+--nextPart2458794.MQBc4Lxljv--
+
