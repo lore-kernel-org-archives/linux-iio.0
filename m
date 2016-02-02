@@ -1,85 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f195.google.com ([209.85.213.195]:36406 "EHLO
-	mail-ig0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751037AbcBFAc7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Feb 2016 19:32:59 -0500
-Date: Fri, 5 Feb 2016 18:32:45 -0600
-From: Michael Welling <mwelling@ieee.org>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+Received: from mail-am1on0140.outbound.protection.outlook.com ([157.56.112.140]:52676
+	"EHLO emea01-am1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S932232AbcBBO3w convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Feb 2016 09:29:52 -0500
+From: "Gujulan Elango, Hari Prasath (H.)" <hgujulan@visteon.com>
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
+	"mranostay@gmail.com" <mranostay@gmail.com>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>
+CC: "ciorneiioana@gmail.com" <ciorneiioana@gmail.com>,
+	"daniel.baluta@intel.com" <daniel.baluta@intel.com>,
+	"hamohammed.sa@gmail.com" <hamohammed.sa@gmail.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Andy Gross <agross@codeaurora.org>,
-	Wolfram Sang <wsa@the-dreams.de>,
-	Pramod Gurav <pramod.gurav@smartplayin.com>,
-	Bjorn Andersson <bjorn.andersson@sonymobile.com>,
-	Guenter Roeck <linux@roeck-us.net>, eibach@gdsys.de
-Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
-Message-ID: <20160206003245.GA1329@deathstar>
-References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>
- <20160205172457.GA16778@deathstar>
- <CAEnQRZAjgn3Y0618MgO284DMc_9cE49b9jeUr0j2HwUK6YK+0A@mail.gmail.com>
+	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Babu, Viswanathan (V.)" <vbabu3@visteon.com>
+Subject: [PATCHv3] staging: iio: replace clk_get() with devm_clk_get()
+Date: Tue, 2 Feb 2016 12:56:32 +0000
+Message-ID: <20160202125741.GA9279@IND12F0122>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAEnQRZAjgn3Y0618MgO284DMc_9cE49b9jeUr0j2HwUK6YK+0A@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Feb 05, 2016 at 09:32:34PM +0200, Daniel Baluta wrote:
-> >> +static int ads1015_read_raw(struct iio_dev *indio_dev,
-> >> +                         struct iio_chan_spec const *chan, int *val,
-> >> +                         int *val2, long mask)
-> >> +{
-> >> +     int ret, idx;
-> >> +     struct ads1015_data *data = iio_priv(indio_dev);
-> >> +
-> >> +     mutex_lock(&data->lock);
-> >> +     switch (mask) {
-> >> +     case IIO_CHAN_INFO_RAW:
-> >> +             if (iio_buffer_enabled(indio_dev)) {
-> >> +                     ret = -EBUSY;
-> >> +                     break;
-> >> +             }
-> >> +
-> >> +             ret = ads1015_set_power_state(data, true);
-> >> +             if (ret < 0)
-> >> +                     break;
-> >
-> > Just tested the driver on a Dragonboard 410C with a robotics mezzanine that I
-> > designed.
-> >
-> > The above ads1015_set_power_state(data, true) is always returning -EINVAL.
-> >
-> > Any ideas why that would be happening?
-> > I think it may be the return from pm_runtime_get_sync?
-> 
-> Can you confirm that pm_runtime_get_sync fails? Using some printk?
-> 
-> Also adding printks in suspend/resume function would be helpful. Do
-> you have CONFIG_PM enabled?
->
+This patch replaces the clk_get() with devm_clk_get().Accordingly,modified
+the error paths,rename error labels and removed clk_put() in probe() &
+remove functions.
 
-Indeed it is the pm_runtime_get_sync that fails with a -EINVAL.
+Signed-off-by: Hari Prasath Gujulan Elango <hgujulan@visteon.com>
+---
+	v3: Rename error path labels to suite modified code as reviewd
+	    by Matt Ranostay.
+	    Remove clk_put() from the driver remove method as pointed by
+	    Jonathan Cameron.
 
-> >
-> > When I comment out the break the readings come back but are not updated continually.
-> > If I read in_voltage0-voltage1_raw then in_voltage0_raw the value is updated.
-> 
-> I guess this is normal if set_power_state fails.
+	v2: From email address was missing as pointed by Dan Carpenter.
+---
+ drivers/staging/iio/adc/spear_adc.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-The hwmod driver works fine BTW.
-
-My guess is there is an issue with the qup i2c driver seeing as it has worked on
-other system without issue.
-
-CC'd some the latest developer on the qup i2c driver.
-
-I2C guys have any ideas on this?
-
-> 
-> thanks,
-> Daniel.
+diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
+index 712cae0..f2c0065 100644
+--- a/drivers/staging/iio/adc/spear_adc.c
++++ b/drivers/staging/iio/adc/spear_adc.c
+@@ -288,7 +288,7 @@ static int spear_adc_probe(struct platform_device *pdev)
+ 	st->adc_base_spear3xx =
+ 		(struct adc_regs_spear3xx __iomem *)st->adc_base_spear6xx;
+ 
+-	st->clk = clk_get(dev, NULL);
++	st->clk = devm_clk_get(dev, NULL);
+ 	if (IS_ERR(st->clk)) {
+ 		dev_err(dev, "failed getting clock\n");
+ 		goto errout1;
+@@ -297,28 +297,28 @@ static int spear_adc_probe(struct platform_device *pdev)
+ 	ret = clk_prepare_enable(st->clk);
+ 	if (ret) {
+ 		dev_err(dev, "failed enabling clock\n");
+-		goto errout2;
++		goto errout1;
+ 	}
+ 
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq <= 0) {
+ 		dev_err(dev, "failed getting interrupt resource\n");
+ 		ret = -EINVAL;
+-		goto errout3;
++		goto errout2;
+ 	}
+ 
+ 	ret = devm_request_irq(dev, irq, spear_adc_isr, 0, SPEAR_ADC_MOD_NAME,
+ 			       st);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed requesting interrupt\n");
+-		goto errout3;
++		goto errout2;
+ 	}
+ 
+ 	if (of_property_read_u32(np, "sampling-frequency",
+ 				 &st->sampling_freq)) {
+ 		dev_err(dev, "sampling-frequency missing in DT\n");
+ 		ret = -EINVAL;
+-		goto errout3;
++		goto errout2;
+ 	}
+ 
+ 	/*
+@@ -348,16 +348,14 @@ static int spear_adc_probe(struct platform_device *pdev)
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto errout3;
++		goto errout2;
+ 
+ 	dev_info(dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
+ 
+ 	return 0;
+ 
+-errout3:
+-	clk_disable_unprepare(st->clk);
+ errout2:
+-	clk_put(st->clk);
++	clk_disable_unprepare(st->clk);
+ errout1:
+ 	iounmap(st->adc_base_spear6xx);
+ 	return ret;
+@@ -370,7 +368,6 @@ static int spear_adc_remove(struct platform_device *pdev)
+ 
+ 	iio_device_unregister(indio_dev);
+ 	clk_disable_unprepare(st->clk);
+-	clk_put(st->clk);
+ 	iounmap(st->adc_base_spear6xx);
+ 
+ 	return 0;
+-- 
+1.9.1
