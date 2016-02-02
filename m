@@ -1,58 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail01.prevas.se ([62.95.78.3]:34188 "EHLO mail01.prevas.se"
+Received: from mail02.prevas.se ([62.95.78.10]:48627 "EHLO mail02.prevas.se"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751317AbcBBMgS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 2 Feb 2016 07:36:18 -0500
+	id S1753764AbcBBMgT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 2 Feb 2016 07:36:19 -0500
 From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
 To: <linux-iio@vger.kernel.org>
 CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
 	<devicetree@vger.kernel.org>
-Subject: [PATCH 2/2] iio: ad5755: Add DT binding documentation
-Date: Tue, 2 Feb 2016 13:36:14 +0100
-Message-ID: <1454416574-6645-2-git-send-email-sean.nyekjaer@prevas.dk>
-In-Reply-To: <1454416574-6645-1-git-send-email-sean.nyekjaer@prevas.dk>
-References: <1454416574-6645-1-git-send-email-sean.nyekjaer@prevas.dk>
+Subject: [PATCH 1/2] iio: ad5755: add support for dt bindings
+Date: Tue, 2 Feb 2016 13:36:13 +0100
+Message-ID: <1454416574-6645-1-git-send-email-sean.nyekjaer@prevas.dk>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Still missing a way to provide default modes and settings
+for the driver from dt, but I see this as a start.
+
 Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
 ---
- .../devicetree/bindings/iio/dac/ad5755.txt         | 24 ++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5755.txt
+ drivers/iio/dac/ad5755.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/ad5755.txt b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
-new file mode 100644
-index 0000000..4c91583
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
-@@ -0,0 +1,24 @@
-+* Analog Device AD5755 IIO Multi-Channel DAC Linux Driver
-+
-+Required properties:
-+ - compatible: Has to contain one of the following:
-+	adi,ad5755
-+	adi,ad5755-1
-+	adi,ad5757
-+	adi,ad5735
-+	adi,ad5737
-+
-+ - reg: spi chip select number for the device
-+ - spi-cpha or spi-cpol: is the only modes that is supported
-+
-+Recommended properties:
-+ - spi-max-frequency: Definition as per
-+		Documentation/devicetree/bindings/spi/spi-bus.txt
-+
-+Example:
-+dac@0 {
-+	compatible = "adi,ad5755";
-+	reg = <0>;
-+	spi-max-frequency = <1000000>;
-+	spi-cpha;
+diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+index bfb350a..e1b6e78 100644
+--- a/drivers/iio/dac/ad5755.c
++++ b/drivers/iio/dac/ad5755.c
+@@ -607,6 +607,16 @@ static const struct spi_device_id ad5755_id[] = {
+ };
+ MODULE_DEVICE_TABLE(spi, ad5755_id);
+ 
++static const struct of_device_id ad5755_of_match[] = {
++	{ .compatible = "adi,ad5755" },
++	{ .compatible = "adi,ad5755-1" },
++	{ .compatible = "adi,ad5757" },
++	{ .compatible = "adi,ad5735" },
++	{ .compatible = "adi,ad5737" },
++	{ }
 +};
++MODULE_DEVICE_TABLE(of, ad5755_of_match);
++
+ static struct spi_driver ad5755_driver = {
+ 	.driver = {
+ 		.name = "ad5755",
 -- 
 2.7.0
 
