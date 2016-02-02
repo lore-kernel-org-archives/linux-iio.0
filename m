@@ -1,61 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx-37.synserver.de ([212.40.180.155]:45570 "EHLO
-	smtp-out-212.synserver.de" rhost-flags-OK-FAIL-OK-FAIL)
-	by vger.kernel.org with ESMTP id S933254AbcBBPe2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Feb 2016 10:34:28 -0500
-Subject: Re: [PATCH 1/2] iio: ad5755: add support for dt bindings
-To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org
-References: <1454416574-6645-1-git-send-email-sean.nyekjaer@prevas.dk>
-Cc: devicetree@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56B0CC2C.6020809@metafoo.de>
-Date: Tue, 2 Feb 2016 16:33:00 +0100
+Return-Path: <MAILER-DAEMON>
+From: "Andrew F. Davis" <afd@ti.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+        Mark
+ Rutland <mark.rutland@arm.com>,
+        Ian Campbell <ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter
+ Meerwald <pmeerw@pmeerw.net>
+CC: <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-api@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Andrew F.
+ Davis" <afd@ti.com>
+Subject: [PATCH v5 0/4] iio: AFE4404 Heart Rate Monitor and Bio-Sensing
+Date: Tue, 2 Feb 2016 11:50:42 -0600
+Message-ID: <1454435446-20586-1-git-send-email-afd@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <1454416574-6645-1-git-send-email-sean.nyekjaer@prevas.dk>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/02/2016 01:36 PM, Sean Nyekjaer wrote:
-> Still missing a way to provide default modes and settings
-> for the driver from dt, but I see this as a start.
-> 
-> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+This series adds the TI AFE4404 "Ultra-small, Integrated AFE for
+Wearable, Optical Heart Rate Monitoring and Bio-Sensing".
 
-Hi,
+Changes from v4:
+ - Added unwinding of the triggered_buffer
+ - Fixed cacheline alignment
+ - Small fixes
 
-Thanks for the patch.
+Changes from v3:
+ - Removed attempt to factor out common code
+ - Rebased on v4.5-rc1
+ - Small fixes
 
-> ---
->  drivers/iio/dac/ad5755.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-> index bfb350a..e1b6e78 100644
-> --- a/drivers/iio/dac/ad5755.c
-> +++ b/drivers/iio/dac/ad5755.c
-> @@ -607,6 +607,16 @@ static const struct spi_device_id ad5755_id[] = {
->  };
->  MODULE_DEVICE_TABLE(spi, ad5755_id);
->  
-> +static const struct of_device_id ad5755_of_match[] = {
-> +	{ .compatible = "adi,ad5755" },
-> +	{ .compatible = "adi,ad5755-1" },
-> +	{ .compatible = "adi,ad5757" },
-> +	{ .compatible = "adi,ad5735" },
-> +	{ .compatible = "adi,ad5737" },
+Changes from v2:
+ - Added afe4403 driver to this series
+ - Added patch to export needed IIO function
+ - Table lookup for magic numbers
+ - Other small fixes
 
-This needs to set the ID for the device type, so that the driver gets
-instantiated for the correct devicetype. And in the probe function check if
-the driver was probed via DT (by checking spi->dev.of_node) and if it does
-get the ID from the of_device_id rather the spi_device_id.
+Please see [0] for more background.
 
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, ad5755_of_match);
-> +
->  static struct spi_driver ad5755_driver = {
->  	.driver = {
->  		.name = "ad5755",
-> 
+[0] http://www.spinics.net/lists/linux-iio/msg21619.html
 
+Andrew F. Davis (4):
+  Documentation: afe4404: Add DT bindings for the AFE4404 heart monitor
+  iio: health: Add driver for the TI AFE4404 heart monitor
+  Documentation: afe4403: Add DT bindings for the AFE4403 heart monitor
+  iio: health: Add driver for the TI AFE4403 heart monitor
+
+ .../ABI/testing/sysfs-bus-iio-health-afe440x       |  54 ++
+ .../devicetree/bindings/iio/health/afe4403.txt     |  34 +
+ .../devicetree/bindings/iio/health/afe4404.txt     |  30 +
+ drivers/iio/health/Kconfig                         |  31 +-
+ drivers/iio/health/Makefile                        |   2 +
+ drivers/iio/health/afe4403.c                       | 700 +++++++++++++++++++++
+ drivers/iio/health/afe4404.c                       | 668 ++++++++++++++++++++
+ drivers/iio/health/afe440x.h                       | 191 ++++++
+ 8 files changed, 1709 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
+ create mode 100644 Documentation/devicetree/bindings/iio/health/afe4403.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/health/afe4404.txt
+ create mode 100644 drivers/iio/health/afe4403.c
+ create mode 100644 drivers/iio/health/afe4404.c
+ create mode 100644 drivers/iio/health/afe440x.h
+
+-- 
+2.7.0
