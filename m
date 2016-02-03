@@ -1,51 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f180.google.com ([209.85.217.180]:33826 "EHLO
-	mail-lb0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754752AbcBCH4j (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Feb 2016 02:56:39 -0500
+Received: from mail01.prevas.se ([62.95.78.3]:56678 "EHLO mail01.prevas.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751664AbcBCJ3Z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 3 Feb 2016 04:29:25 -0500
+Subject: Re: [PATCH 1/2] iio: ad5755: add support for dt bindings
+To: Lars-Peter Clausen <lars@metafoo.de>, <linux-iio@vger.kernel.org>
+References: <1454416574-6645-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <56B0CC2C.6020809@metafoo.de> <56B0D203.3050905@prevas.dk>
+ <56B0DB5E.7060608@metafoo.de>
+CC: <devicetree@vger.kernel.org>
+From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
+Message-ID: <56B1C871.6070105@prevas.dk>
+Date: Wed, 3 Feb 2016 10:29:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <5127664.OXcBoKUPQO@wuerfel>
-References: <5127664.OXcBoKUPQO@wuerfel>
-From: Matt Ranostay <mranostay@gmail.com>
-Date: Tue, 2 Feb 2016 23:55:58 -0800
-Message-ID: <CAKzfze8b7Q4ZHyXW=wq4K2ETFoMrfERpTci2dSAzSgCCrWpnzg@mail.gmail.com>
-Subject: Re: [PATCH] iio: chemical: select IRQ_WORK for ATLAS ph sensor
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <56B0DB5E.7060608@metafoo.de>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Reviewed-by: Matt Ranostay <mranostay@gmail.com>
 
-On Tue, Feb 2, 2016 at 6:36 AM, Arnd Bergmann <arnd@arndb.de> wrote:
-> The newly added atlas-ph-sensor driver uses irq_work_queue, which
-> may not always be enabled:
+
+On 2016-02-02 17:37, Lars-Peter Clausen wrote:
+> On 02/02/2016 04:57 PM, Sean Nyekjær wrote:
+>>
+>> On 2016-02-02 16:33, Lars-Peter Clausen wrote:
+>>> On 02/02/2016 01:36 PM, Sean Nyekjaer wrote:
+>>>> Still missing a way to provide default modes and settings
+>>>> for the driver from dt, but I see this as a start.
+>>>>
+>>>> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+>>> Hi,
+>>>
+>>> Thanks for the patch.
+>> :-)
+>>>> ---
+>>>>    drivers/iio/dac/ad5755.c | 10 ++++++++++
+>>>>    1 file changed, 10 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+>>>> index bfb350a..e1b6e78 100644
+>>>> --- a/drivers/iio/dac/ad5755.c
+>>>> +++ b/drivers/iio/dac/ad5755.c
+>>>> @@ -607,6 +607,16 @@ static const struct spi_device_id ad5755_id[] = {
+>>>>    };
+>>>>    MODULE_DEVICE_TABLE(spi, ad5755_id);
+>>>>    +static const struct of_device_id ad5755_of_match[] = {
+>>>> +    { .compatible = "adi,ad5755" },
+>>>> +    { .compatible = "adi,ad5755-1" },
+>>>> +    { .compatible = "adi,ad5757" },
+>>>> +    { .compatible = "adi,ad5735" },
+>>>> +    { .compatible = "adi,ad5737" },
+>>> This needs to set the ID for the device type, so that the driver gets
+>>> instantiated for the correct devicetype. And in the probe function check if
+>>> the driver was probed via DT (by checking spi->dev.of_node) and if it does
+>>> get the ID from the of_device_id rather the spi_device_id.
+If I probe the driver via DT the spi_get_device_id(spi)->driver_data 
+returns the type...
+So this works as it is :-)
+
+I'll continue with the proposal...
+>> I was planning on doing that.
+>> And I was experimenting with providing modes and settings for every channel
+>> from the dt.
+>> Is the DAC the only output devices in IIO?
+> There is also support for programmable potentiometers (sometimes called
+> RDAC), but that's it.
 >
-> ERROR: "irq_work_queue" [drivers/iio/chemical/atlas-ph-sensor.ko] undefined!
+>> I will send an proposal tomorrow :-) And thereby (maybe) pave the way for
+>> the runtime mode switching
+>>
+>> Should we drop the platform data support and only rely on dt?
+> No, there might still be some people depending on it. I don't think the
+> burden of continuing to maintain the platform data support is that high.
 >
-> This adds a 'select' statement to Kconfig to ensure it's there
-> when we need it.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 27dec00ecf2d ("iio: chemical: add Atlas pH-SM sensor support")
->
-> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-> index ce7cd1370f74..f73290f84c90 100644
-> --- a/drivers/iio/chemical/Kconfig
-> +++ b/drivers/iio/chemical/Kconfig
-> @@ -10,6 +10,7 @@ config ATLAS_PH_SENSOR
->         select REGMAP_I2C
->         select IIO_BUFFER
->         select IIO_TRIGGERED_BUFFER
-> +       select IRQ_WORK
->         help
->          Say Y here to build I2C interface support for the Atlas
->          Scientific OEM pH-SM sensor.
->
+> - Lars
+
