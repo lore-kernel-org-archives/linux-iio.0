@@ -1,150 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:36601 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751647AbcBCJS3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 3 Feb 2016 04:18:29 -0500
-Subject: Re: [PATCH v1 4/4] iio: imu: inv_mpu6050: Add SPI support for MPU6000
-To: Ge Gao <GGao@invensense.com>,
-	Lucas De Marchi <lucas.de.marchi@gmail.com>
-References: <1454425338-17674-1-git-send-email-adriana.reus@intel.com>
- <1454425338-17674-5-git-send-email-adriana.reus@intel.com>
- <CAKi4VA++NyD8uge=EfN2NT2F1xRgCYv-F89Q-Dpcu=56i4US+g@mail.gmail.com>
- <F5965A81-9ACE-405F-8776-7216E70AB81A@invensense.com>
-Cc: "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"srinivas.pandruvada@linux.intel.com"
-	<srinivas.pandruvada@linux.intel.com>
-From: Adriana Reus <adriana.reus@intel.com>
-Message-ID: <56B1C5AB.1090609@intel.com>
-Date: Wed, 3 Feb 2016 11:17:31 +0200
+Received: from mail-lb0-f180.google.com ([209.85.217.180]:33826 "EHLO
+	mail-lb0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754752AbcBCH4j (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Feb 2016 02:56:39 -0500
 MIME-Version: 1.0
-In-Reply-To: <F5965A81-9ACE-405F-8776-7216E70AB81A@invensense.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <5127664.OXcBoKUPQO@wuerfel>
+References: <5127664.OXcBoKUPQO@wuerfel>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Tue, 2 Feb 2016 23:55:58 -0800
+Message-ID: <CAKzfze8b7Q4ZHyXW=wq4K2ETFoMrfERpTci2dSAzSgCCrWpnzg@mail.gmail.com>
+Subject: Re: [PATCH] iio: chemical: select IRQ_WORK for ATLAS ph sensor
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Lucas, Ge,
+Reviewed-by: Matt Ranostay <mranostay@gmail.com>
 
-
-Thanks for pointing that out Lucas, I'm looking into it.
-
-Ge, would it suffice to set the I2C_IF_DIS via an SPI transaction 
-(spi_write or regmap_write)?
-Couldn't the chip get confused during that transaction also?
-
-
-On 03.02.2016 08:42, Ge Gao wrote:
-> That is a good point.  That register should be set in case chip get confused if the spi signal mimic a I2C signal
+On Tue, Feb 2, 2016 at 6:36 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> The newly added atlas-ph-sensor driver uses irq_work_queue, which
+> may not always be enabled:
 >
-> Ge
+> ERROR: "irq_work_queue" [drivers/iio/chemical/atlas-ph-sensor.ko] undefined!
 >
->> On Feb 2, 2016, at 10:31 PM, Lucas De Marchi <lucas.de.marchi@gmail.com> wrote:
->>
->> Hi Adriana,
->>
->>> On Tue, Feb 2, 2016 at 1:02 PM, Adriana Reus <adriana.reus@intel.com> wrote:
->>> The only difference between the MPU6000 and the
->>> MPU6050 is that the first also supports SPI.
->>> Add SPI driver for this chip.
->>>
->>> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
->>> ---
->>> Changes since initial version:
->>> * Modified Kconfig so that the SPI component selects the core component
->>>    instead of the other way around.
->>>
->>> drivers/iio/imu/inv_mpu6050/Kconfig       |  7 +++
->>> drivers/iio/imu/inv_mpu6050/Makefile      |  3 ++
->>> drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h |  1 +
->>> drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c | 80 +++++++++++++++++++++++++++++++
->>> 4 files changed, 91 insertions(+)
->>> create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
->>>
->>> diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
->>> index 483f52d..6f6a419 100644
->>> --- a/drivers/iio/imu/inv_mpu6050/Kconfig
->>> +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
->>> @@ -25,3 +25,10 @@ config INV_MPU6050_I2C
->>>           This driver can be built as a module. The module will be called
->>>           inv-mpu6050-i2c.
->>>
->>> +config INV_MPU6050_SPI
->>> +       tristate "Invensense MPU6050 devices"
->>> +       select INV_MPU6050_IIO
->>> +       select REGMAP_SPI
->>> +       help
->>> +         This driver can be built as a module. The module will be called
->>> +         inv-mpu6050-spi.
->>> diff --git a/drivers/iio/imu/inv_mpu6050/Makefile b/drivers/iio/imu/inv_mpu6050/Makefile
->>> index ca4941d..734af5e 100644
->>> --- a/drivers/iio/imu/inv_mpu6050/Makefile
->>> +++ b/drivers/iio/imu/inv_mpu6050/Makefile
->>> @@ -7,3 +7,6 @@ inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o
->>>
->>> obj-$(CONFIG_INV_MPU6050_I2C) += inv-mpu6050-i2c.o
->>> inv-mpu6050-i2c-objs := inv_mpu_i2c.o inv_mpu_acpi.o
->>> +
->>> +obj-$(CONFIG_INV_MPU6050_SPI) += inv-mpu6050-spi.o
->>> +inv-mpu6050-spi-objs := inv_mpu_spi.o
->>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->>> index af406a3..758fe2b 100644
->>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->>> @@ -62,6 +62,7 @@ struct inv_mpu6050_reg_map {
->>> enum inv_devices {
->>>         INV_MPU6050,
->>>         INV_MPU6500,
->>> +       INV_MPU6000,
->>>         INV_NUM_PARTS
->>> };
->>>
->>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
->>> new file mode 100644
->>> index 0000000..484171e
->>> --- /dev/null
->>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
->>> @@ -0,0 +1,80 @@
->>> +/*
->>> +* Copyright (C) 2015 Intel Corporation Inc.
->>> +*
->>> +* This software is licensed under the terms of the GNU General Public
->>> +* License version 2, as published by the Free Software Foundation, and
->>> +* may be copied, distributed, and modified under those terms.
->>> +*
->>> +* This program is distributed in the hope that it will be useful,
->>> +* but WITHOUT ANY WARRANTY; without even the implied warranty of
->>> +* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->>> +* GNU General Public License for more details.
->>> +*/
->>> +#include <linux/module.h>
->>> +#include <linux/acpi.h>
->>> +#include <linux/spi/spi.h>
->>> +#include <linux/regmap.h>
->>> +#include <linux/iio/iio.h>
->>> +#include "inv_mpu_iio.h"
->>> +
->>> +static const struct regmap_config inv_mpu_regmap_config = {
->>> +       .reg_bits = 8,
->>> +       .val_bits = 8,
->>> +};
->>> +
->>> +static int inv_mpu_probe(struct spi_device *spi)
->>> +{
->>> +       struct regmap *regmap;
->>> +       const struct spi_device_id *id = spi_get_device_id(spi);
->>> +       const char *name = id ? id->name : NULL;
->>> +
->>> +       regmap = devm_regmap_init_spi(spi, &inv_mpu_regmap_config);
->>> +       if (IS_ERR(regmap)) {
->>> +               dev_err(&spi->dev, "Failed to register spi regmap %d\n",
->>> +                       (int)PTR_ERR(regmap));
->>> +               return PTR_ERR(regmap);
->>> +       }
->>> +
->>> +       return inv_mpu_core_probe(regmap, spi->irq, name);
->>
->> I think there's still some spi-only initialization missing. As per
->> datasheet we should disable the I2C interface when using the SPI
->> interface.
->>
->> Lucas De Marchi
+> This adds a 'select' statement to Kconfig to ensure it's there
+> when we need it.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: 27dec00ecf2d ("iio: chemical: add Atlas pH-SM sensor support")
+>
+> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+> index ce7cd1370f74..f73290f84c90 100644
+> --- a/drivers/iio/chemical/Kconfig
+> +++ b/drivers/iio/chemical/Kconfig
+> @@ -10,6 +10,7 @@ config ATLAS_PH_SENSOR
+>         select REGMAP_I2C
+>         select IIO_BUFFER
+>         select IIO_TRIGGERED_BUFFER
+> +       select IRQ_WORK
+>         help
+>          Say Y here to build I2C interface support for the Atlas
+>          Scientific OEM pH-SM sensor.
+>
