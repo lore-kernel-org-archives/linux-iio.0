@@ -1,56 +1,33 @@
-Return-Path: <afd@ti.com>
-Subject: Re: [PATCH v4 4/4] iio: health: Add driver for the TI AFE4403 heart
- monitor
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>, Dan
- Murphy <dmurphy@ti.com>,
-        Rob Herring <robh+dt@kernel.org>, Pawel Moll
-	<pawel.moll@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ian Campbell
-	<ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>
-References: <1453742941-12086-1-git-send-email-afd@ti.com>
- <1453742941-12086-5-git-send-email-afd@ti.com> <56ACD24E.3050308@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <linux-api@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <56B0E981.5040203@ti.com>
-Date: Tue, 2 Feb 2016 11:38:09 -0600
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.aswsp.com ([193.34.35.150]:50024 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750863AbcBCLAx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 3 Feb 2016 06:00:53 -0500
+Message-ID: <56B1DCA4.9050903@parrot.com>
+Date: Wed, 3 Feb 2016 11:55:32 +0100
+From: Gregor Boirie <gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <56ACD24E.3050308@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: <linux-iio@vger.kernel.org>
+Subject: using monotonic clok for timstamping
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/30/2016 09:10 AM, Jonathan Cameron wrote:
-> On 25/01/16 17:29, Andrew F. Davis wrote:
->> +
->> +static int afe4403_read(struct afe4403_data *afe, unsigned int reg, u32 *val)
->> +{
->> +	u8 tx[4] ____cacheline_aligned = {AFE440X_CONTROL0, 0x0, 0x0,
->> +					  AFE440X_CONTROL0_READ};
-> hmm. Can you do this on the stack?  Don't think so but maybe I'm wrong..
-> The cachline aligned trick relies on the start of the allocation on the
-> heap being aligned and then pads to ensure that the element so tagged
-> is also aligned appropriately.
+Dear  all,
 
-I am not sure ether, I think I borrowed this from some example that did
-it like this, but I can't find it now. So, I'll change this to be safe.
+Our application relies on precise and monotonic timestamping of IMU 
+samples (and other sensors).
+I am wondering what reasons / use cases led to the choice of realtime 
+clock to implement
+iio_get_time_ns (not to mention time gaps that may be seen after wake up 
+from sleep states).
 
->> +	u8 rx[3];
->> +	int ret;
-> Even if this were possible, ret is in the same cacheline as tx and rx so
-> chaos may well occur.
->
-> If you really want to avoid having allocations elsewhere, just use
-> spi_write_then_read(afe->spi, tx, 4, NULL, 0) and you should be fine
-> as spi_write_then_read uses safe bounce buffers.
+As a dirty hack, I simply rewrote iio_get_time_ns on our platform. But I 
+suspect it would be usefull as
+a long term solution, to give userland the ability to choose a 
+particular posix clock (realtime, monotonic,
+etc...) on a per device and / or driver basis through a sysfs attribute 
+for example.
 
-spi_write_then_read performs a memcpy to the rx buffer, even though
-the length is 0 I believe it is still technically undefined behavior,
-but it doesn't seem to cause any issues with the current implementation
-so I'll do this.
-
-Thanks,
-Andrew
+I'd be glad to hear your suggestions. Best regards,
+Grégor.
