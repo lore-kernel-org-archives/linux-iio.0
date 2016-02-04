@@ -1,44 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:33924 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965248AbcBCT3n (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Feb 2016 14:29:43 -0500
-Received: by mail-pa0-f44.google.com with SMTP id uo6so18559363pac.1
-        for <linux-iio@vger.kernel.org>; Wed, 03 Feb 2016 11:29:43 -0800 (PST)
-From: Keith Mok <ek9852@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Keith Mok <ek9852@gmail.com>
-Subject: [PATCH] iio: use boot time instead of realtime
-Date: Wed,  3 Feb 2016 11:29:37 -0800
-Message-Id: <1454527777-16565-1-git-send-email-ek9852@Gmail.com>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:33673 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754223AbcBDMv1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Feb 2016 07:51:27 -0500
+MIME-Version: 1.0
+In-Reply-To: <20160203181919.GD25464@deathstar>
+References: <1454518796-10897-1-git-send-email-daniel.baluta@intel.com>
+	<20160203181919.GD25464@deathstar>
+Date: Thu, 4 Feb 2016 14:51:26 +0200
+Message-ID: <CAEnQRZDOPYDVUUXBXc7OEmAo0QEryg0PvMLXUxA__Rxu8bS=0g@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: adc: Add TI ADS1015 ADC driver support
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Michael Welling <mwelling@ieee.org>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	linux@roeck-us.net, eibach@gdsys.de
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Keith Mok <ek9852@gmail.com>
+> Would it be more consistent to handle the mutex outside of the switch above similar
+> to how it is handled in ads1015_write_raw?
+>
+> Also the ads1015_set_power_state(data, false) is called either way so why not just
+> use one call?
+>
 
-Advanced sensor has fifo/ring buffer internally,
-they can store data when the system is suspend,
-we need a timestamp that is able to take into
-account of the time when the system is suspend also.
+I don't have a strong preference for that. I think across IIO drivers
+we can find both coding practices.
 
-Signed-off-by: Keith Mok <ek9852@gmail.com>
----
- include/linux/iio/iio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Indeed consistency with ads1015_write_raw is a good argument. Will fix it.
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index b589411..7092877 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -286,7 +286,7 @@ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
-  **/
- static inline s64 iio_get_time_ns(void)
- {
--	return ktime_get_real_ns();
-+	return ktime_get_boot_ns();
- }
- 
- /* Device operating modes */
--- 
-2.5.1
+I will leave the code here for one more day and then send an updated version.
 
+thanks,
+Daniel.
