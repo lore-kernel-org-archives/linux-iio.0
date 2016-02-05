@@ -1,797 +1,730 @@
-Return-Path: <afd@ti.com>
-Subject: Re: [PATCH v5 4/4] iio: health: Add driver for the TI AFE4403 heart
- monitor
-To: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
-        Ian
- Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter
- Meerwald <pmeerw@pmeerw.net>
-References: <1454435446-20586-1-git-send-email-afd@ti.com>
- <1454435446-20586-5-git-send-email-afd@ti.com> <56B64353.4060601@kernel.org>
-CC: <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-api@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <56B644C2.9060301@ti.com>
-Date: Sat, 6 Feb 2016 13:08:50 -0600
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ig0-f195.google.com ([209.85.213.195]:33424 "EHLO
+	mail-ig0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752731AbcBERZY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Feb 2016 12:25:24 -0500
+Date: Fri, 5 Feb 2016 11:25:12 -0600
+From: Michael Welling <mwelling@ieee.org>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, lucas.demarchi@intel.com,
+	linux@roeck-us.net, eibach@gdsys.de
+Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
+Message-ID: <20160205172457.GA16778@deathstar>
+References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <56B64353.4060601@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 02/06/2016 01:02 PM, Jonathan Cameron wrote:
-> On 02/02/16 17:50, Andrew F. Davis wrote:
->> Add driver for the TI AFE4403 heart rate monitor and pulse oximeter.
->> This device detects reflected LED light fluctuations and presents an ADC
->> value to the user space for further signal processing.
->>
->> Data sheet located here:
->> http://www.ti.com/product/AFE4403/datasheet
->>
->> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> Same issue in probe unwinding of errors + you still have that
-> unusually ___cacheline_aligned data on the stack which I'm unconvinced works
-> (really not sure either way!)
-> Anyhow. 1 thing to far for me to feel confident about just fixing it up so
-> please reroll just this patch one last time.
->
-> Jonathan
+On Fri, Feb 05, 2016 at 03:17:18PM +0200, Daniel Baluta wrote:
+> The driver has sysfs readings with runtime PM support for power saving.
+> It also offers buffer support that can be used together with IIO software
+> triggers.
+> 
+> Datasheet can be found here:
+> 	http://www.ti.com.cn/cn/lit/ds/symlink/ads1015.pdf
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> ---
+> Changes since v3:
+> 	* fixed type connectd -> connected
+> 	* move mutex outside of switch in read_raw to be consistent
+> 	with write_raw
+> 
+> Changes since v2:
+> 	* push locking out of the switch in write_raw
+> 	* fix  buf allocation in triggered buffer's handler
+> 
+> Changes since v1:
+> 	* addressed concerns about replacing the ads1015 hwmon driver
+> 		* For the moment the IIO driver is compatible with hwmon
+> 		  driver (dt bindings) the only thing left is to also add
+> 		  support for ads1115.
+> 		* DT bindings are described in Documentation/devicetree/
+> 		  bindings/hwmon/ads1015.txt. If needed will copy this file
+> 		  in a later patch to the IIO corresponding location.
+> 	* addressed comments from Jonathan
+> 		* added proper locking
+> 		* added timestamp channel
+> 		* removed magic constants
+> 		* added some new lines to increase readability
+> 		* used regmap_get_device instead of keeping a copy of
+> 		i2c_client pointer.
+> 		* used non-devm function to correct the cleanup order
+> 
+>  drivers/iio/adc/Kconfig      |  13 +
+>  drivers/iio/adc/Makefile     |   1 +
+>  drivers/iio/adc/ti-ads1015.c | 610 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 624 insertions(+)
+>  create mode 100644 drivers/iio/adc/ti-ads1015.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 60673b4..fad7e6a 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -370,6 +370,19 @@ config TI_ADC128S052
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called ti-adc128s052.
+>  
+> +config TI_ADS1015
+> +	tristate "Texas Instruments ADS1015 ADC"
+> +	depends on I2C && !SENSORS_ADS1015
+> +	select REGMAP_I2C
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	  If you say yes here you get support for Texas Instruments ADS1015
+> +	  ADC chip.
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called ti-ads1015.
+> +
+>  config TI_ADS8688
+>  	tristate "Texas Instruments ADS8688"
+>  	depends on SPI && OF
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index fb57e12..2ff70a3 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -36,6 +36,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+>  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+> +obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+>  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+> new file mode 100644
+> index 0000000..596335f
+> --- /dev/null
+> +++ b/drivers/iio/adc/ti-ads1015.c
+> @@ -0,0 +1,610 @@
+> +/*
+> + * ADS1015 - Texas Instruments Analog-to-Digital Converter
+> + *
+> + * Copyright (c) 2016, Intel Corporation.
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * IIO driver for ADS1015 ADC 7-bit I2C slave address:
+> + *	* 0x48 - ADDR connected to Ground
+> + *	* 0x49 - ADDR connected to Vdd
+> + *	* 0x4A - ADDR connected to SDA
+> + *	* 0x4B - ADDR connected to SCL
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/i2c.h>
+> +#include <linux/regmap.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/mutex.h>
+> +#include <linux/delay.h>
+> +
+> +#include <linux/i2c/ads1015.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/types.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +
+> +#define ADS1015_DRV_NAME "ads1015"
+> +
+> +#define ADS1015_CONV_REG	0x00
+> +#define ADS1015_CFG_REG		0x01
+> +
+> +#define ADS1015_CFG_DR_SHIFT	5
+> +#define ADS1015_CFG_MOD_SHIFT	8
+> +#define ADS1015_CFG_PGA_SHIFT	9
+> +#define ADS1015_CFG_MUX_SHIFT	12
+> +
+> +#define ADS1015_CFG_DR_MASK	GENMASK(7, 5)
+> +#define ADS1015_CFG_MOD_MASK	BIT(8)
+> +#define ADS1015_CFG_PGA_MASK	GENMASK(11, 9)
+> +#define ADS1015_CFG_MUX_MASK	GENMASK(14, 12)
+> +
+> +/* device operating modes */
+> +#define ADS1015_CONTINUOUS	0
+> +#define ADS1015_SINGLESHOT	1
+> +
+> +#define ADS1015_SLEEP_DELAY_MS		2000
+> +#define ADS1015_DEFAULT_PGA		2
+> +#define ADS1015_DEFAULT_DATA_RATE	4
+> +#define ADS1015_DEFAULT_CHAN		0
+> +
+> +enum ads1015_channels {
+> +	ADS1015_AIN0_AIN1 = 0,
+> +	ADS1015_AIN0_AIN3,
+> +	ADS1015_AIN1_AIN3,
+> +	ADS1015_AIN2_AIN3,
+> +	ADS1015_AIN0,
+> +	ADS1015_AIN1,
+> +	ADS1015_AIN2,
+> +	ADS1015_AIN3,
+> +	ADS1015_TIMESTAMP,
+> +};
+> +
+> +static const unsigned int ads1015_data_rate[] = {
+> +	128, 250, 490, 920, 1600, 2400, 3300, 3300
+> +};
+> +
+> +static const struct {
+> +	int scale;
+> +	int uscale;
+> +} ads1015_scale[] = {
+> +	{3, 0},
+> +	{2, 0},
+> +	{1, 0},
+> +	{0, 500000},
+> +	{0, 250000},
+> +	{0, 125000},
+> +	{0, 125000},
+> +	{0, 125000},
+> +};
+> +
+> +#define ADS1015_V_CHAN(_chan, _addr) {				\
+> +	.type = IIO_VOLTAGE,					\
+> +	.indexed = 1,						\
+> +	.address = _addr,					\
+> +	.channel = _chan,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+> +				BIT(IIO_CHAN_INFO_SCALE) |	\
+> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> +	.scan_index = _addr,					\
+> +	.scan_type = {						\
+> +		.sign = 's',					\
+> +		.realbits = 12,					\
+> +		.storagebits = 16,				\
+> +		.shift = 4,					\
+> +		.endianness = IIO_CPU,				\
+> +	},							\
+> +}
+> +
+> +#define ADS1015_V_DIFF_CHAN(_chan, _chan2, _addr) {		\
+> +	.type = IIO_VOLTAGE,					\
+> +	.differential = 1,					\
+> +	.indexed = 1,						\
+> +	.address = _addr,					\
+> +	.channel = _chan,					\
+> +	.channel2 = _chan2,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+> +				BIT(IIO_CHAN_INFO_SCALE) |	\
+> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> +	.scan_index = _addr,					\
+> +	.scan_type = {						\
+> +		.sign = 's',					\
+> +		.realbits = 12,					\
+> +		.storagebits = 16,				\
+> +		.shift = 4,					\
+> +		.endianness = IIO_CPU,				\
+> +	},							\
+> +}
+> +
+> +struct ads1015_data {
+> +	struct regmap *regmap;
+> +	/*
+> +	 * Protects ADC ops, e.g: concurrent sysfs/buffered
+> +	 * data reads, configuration updates
+> +	 */
+> +	struct mutex lock;
+> +	struct ads1015_channel_data channel_data[ADS1015_CHANNELS];
+> +};
+> +
+> +static bool ads1015_is_writeable_reg(struct device *dev, unsigned int reg)
+> +{
+> +	return (reg == ADS1015_CFG_REG);
+> +}
+> +
+> +static const struct regmap_config ads1015_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 16,
+> +	.max_register = ADS1015_CFG_REG,
+> +	.writeable_reg = ads1015_is_writeable_reg,
+> +};
+> +
+> +static const struct iio_chan_spec ads1015_channels[] = {
+> +	ADS1015_V_DIFF_CHAN(0, 1, ADS1015_AIN0_AIN1),
+> +	ADS1015_V_DIFF_CHAN(0, 3, ADS1015_AIN0_AIN3),
+> +	ADS1015_V_DIFF_CHAN(1, 3, ADS1015_AIN1_AIN3),
+> +	ADS1015_V_DIFF_CHAN(2, 3, ADS1015_AIN2_AIN3),
+> +	ADS1015_V_CHAN(0, ADS1015_AIN0),
+> +	ADS1015_V_CHAN(1, ADS1015_AIN1),
+> +	ADS1015_V_CHAN(2, ADS1015_AIN2),
+> +	ADS1015_V_CHAN(3, ADS1015_AIN3),
+> +	IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
+> +};
+> +
+> +static int ads1015_set_power_state(struct ads1015_data *data, bool on)
+> +{
+> +	int ret;
+> +	struct device *dev = regmap_get_device(data->regmap);
+> +
+> +	if (on) {
+> +		ret = pm_runtime_get_sync(dev);
+> +		if (ret < 0)
+> +			pm_runtime_put_noidle(dev);
+> +	} else {
+> +		pm_runtime_mark_last_busy(dev);
+> +		ret = pm_runtime_put_autosuspend(dev);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static
+> +int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+> +{
+> +	int ret, pga, dr, conv_time;
+> +	bool change;
+> +
+> +	if (chan < 0 || chan >= ADS1015_CHANNELS)
+> +		return -EINVAL;
+> +
+> +	pga = data->channel_data[chan].pga;
+> +	dr = data->channel_data[chan].data_rate;
+> +
+> +	ret = regmap_update_bits_check(data->regmap, ADS1015_CFG_REG,
+> +				       ADS1015_CFG_MUX_MASK |
+> +				       ADS1015_CFG_PGA_MASK,
+> +				       chan << ADS1015_CFG_MUX_SHIFT |
+> +				       pga << ADS1015_CFG_PGA_SHIFT,
+> +				       &change);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (change) {
+> +		conv_time = DIV_ROUND_UP(USEC_PER_SEC, ads1015_data_rate[dr]);
+> +		usleep_range(conv_time, conv_time + 1);
+> +	}
+> +
+> +	return regmap_read(data->regmap, ADS1015_CONV_REG, val);
+> +}
+> +
+> +static irqreturn_t ads1015_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct ads1015_data *data = iio_priv(indio_dev);
+> +	s16 buf[8]; /* 1x s16 ADC val + 3x s16 padding +  4x s16 timestamp */
+> +	int chan, ret, res;
+> +
+> +	memset(buf, 0, sizeof(buf));
+> +
+> +	mutex_lock(&data->lock);
+> +	chan = find_first_bit(indio_dev->active_scan_mask,
+> +			      indio_dev->masklength);
+> +	ret = ads1015_get_adc_result(data, chan, &res);
+> +	if (ret < 0) {
+> +		mutex_unlock(&data->lock);
+> +		goto err;
+> +	}
+> +
+> +	buf[0] = res;
+> +	mutex_unlock(&data->lock);
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+> +
+> +err:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int ads1015_set_scale(struct ads1015_data *data, int chan,
+> +			     int scale, int uscale)
+> +{
+> +	int i, ret, rindex = -1;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ads1015_scale); i++)
+> +		if (ads1015_scale[i].scale == scale &&
+> +		    ads1015_scale[i].uscale == uscale) {
+> +			rindex = i;
+> +			break;
+> +		}
+> +	if (rindex < 0)
+> +		return -EINVAL;
+> +
+> +	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+> +				 ADS1015_CFG_PGA_MASK,
+> +				 rindex << ADS1015_CFG_PGA_SHIFT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->channel_data[chan].pga = rindex;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
+> +{
+> +	int i, ret, rindex = -1;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++)
+> +		if (ads1015_data_rate[i] == rate) {
+> +			rindex = i;
+> +			break;
+> +		}
+> +	if (rindex < 0)
+> +		return -EINVAL;
+> +
+> +	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+> +				 ADS1015_CFG_DR_MASK,
+> +				 rindex << ADS1015_CFG_DR_SHIFT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->channel_data[chan].data_rate = rindex;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ads1015_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan, int *val,
+> +			    int *val2, long mask)
+> +{
+> +	int ret, idx;
+> +	struct ads1015_data *data = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&data->lock);
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (iio_buffer_enabled(indio_dev)) {
+> +			ret = -EBUSY;
+> +			break;
+> +		}
+> +
+> +		ret = ads1015_set_power_state(data, true);
+> +		if (ret < 0)
+> +			break;
 
-Hmm, that's odd, it's fixed in my local branch, I must have pushed the
-wrong patch here, I'll push the new one here in a minute.
+Just tested the driver on a Dragonboard 410C with a robotics mezzanine that I
+designed.
 
-Thanks,
-Andrew
+The above ads1015_set_power_state(data, true) is always returning -EINVAL.
 
->> ---
->>   drivers/iio/health/Kconfig   |  12 +
->>   drivers/iio/health/Makefile  |   1 +
->>   drivers/iio/health/afe4403.c | 700 +++++++++++++++++++++++++++++++++++++++++++
->>   3 files changed, 713 insertions(+)
->>   create mode 100644 drivers/iio/health/afe4403.c
->>
->> diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
->> index 632a14b..f0c1977 100644
->> --- a/drivers/iio/health/Kconfig
->> +++ b/drivers/iio/health/Kconfig
->> @@ -7,6 +7,18 @@ menu "Health Sensors"
->>
->>   menu "Heart Rate Monitors"
->>
->> +config AFE4403
->> +	tristate "TI AFE4403 Heart Rate Monitor"
->> +	depends on SPI_MASTER
->> +	select IIO_BUFFER
->> +	select IIO_TRIGGERED_BUFFER
->> +	help
->> +	  Say yes to choose the Texas Instruments AFE4403
->> +	  heart rate monitor and low-cost pulse oximeter.
->> +
->> +	  To compile this driver as a module, choose M here: the
->> +	  module will be called afe4403.
->> +
->>   config AFE4404
->>   	tristate "TI AFE4404 heart rate and pulse oximeter sensor"
->>   	depends on I2C
->> diff --git a/drivers/iio/health/Makefile b/drivers/iio/health/Makefile
->> index b37c0d5..9955a2a 100644
->> --- a/drivers/iio/health/Makefile
->> +++ b/drivers/iio/health/Makefile
->> @@ -4,5 +4,6 @@
->>
->>   # When adding new entries keep the list in alphabetical order
->>
->> +obj-$(CONFIG_AFE4403)		+= afe4403.o
->>   obj-$(CONFIG_AFE4404)		+= afe4404.o
->>   obj-$(CONFIG_MAX30100)		+= max30100.o
->> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
->> new file mode 100644
->> index 0000000..d69acda
->> --- /dev/null
->> +++ b/drivers/iio/health/afe4403.c
->> @@ -0,0 +1,700 @@
->> +/*
->> + * AFE4403 Heart Rate Monitors and Low-Cost Pulse Oximeters
->> + *
->> + * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
->> + *	Andrew F. Davis <afd@ti.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License version 2 as
->> + * published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful, but
->> + * WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
->> + * General Public License for more details.
->> + */
->> +
->> +#include <linux/device.h>
->> +#include <linux/err.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/kernel.h>
->> +#include <linux/module.h>
->> +#include <linux/regmap.h>
->> +#include <linux/spi/spi.h>
->> +#include <linux/sysfs.h>
->> +#include <linux/regulator/consumer.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/trigger.h>
->> +#include <linux/iio/triggered_buffer.h>
->> +#include <linux/iio/trigger_consumer.h>
->> +
->> +#include "afe440x.h"
->> +
->> +#define AFE4403_DRIVER_NAME		"afe4403"
->> +
->> +/* AFE4403 Registers */
->> +#define AFE4403_TIAGAIN			0x20
->> +#define AFE4403_TIA_AMB_GAIN		0x21
->> +
->> +/* AFE4403 GAIN register fields */
->> +#define AFE4403_TIAGAIN_RES_MASK	GENMASK(2, 0)
->> +#define AFE4403_TIAGAIN_RES_SHIFT	0
->> +#define AFE4403_TIAGAIN_CAP_MASK	GENMASK(7, 3)
->> +#define AFE4403_TIAGAIN_CAP_SHIFT	3
->> +
->> +/* AFE4403 LEDCNTRL register fields */
->> +#define AFE440X_LEDCNTRL_LED1_MASK		GENMASK(15, 8)
->> +#define AFE440X_LEDCNTRL_LED1_SHIFT		8
->> +#define AFE440X_LEDCNTRL_LED2_MASK		GENMASK(7, 0)
->> +#define AFE440X_LEDCNTRL_LED2_SHIFT		0
->> +#define AFE440X_LEDCNTRL_LED_RANGE_MASK		GENMASK(17, 16)
->> +#define AFE440X_LEDCNTRL_LED_RANGE_SHIFT	16
->> +
->> +/* AFE4403 CONTROL2 register fields */
->> +#define AFE440X_CONTROL2_PWR_DWN_TX	BIT(2)
->> +#define AFE440X_CONTROL2_EN_SLOW_DIAG	BIT(8)
->> +#define AFE440X_CONTROL2_DIAG_OUT_TRI	BIT(10)
->> +#define AFE440X_CONTROL2_TX_BRDG_MOD	BIT(11)
->> +#define AFE440X_CONTROL2_TX_REF_MASK	GENMASK(18, 17)
->> +#define AFE440X_CONTROL2_TX_REF_SHIFT	17
->> +
->> +/* AFE4404 NULL fields */
->> +#define NULL_MASK	0
->> +#define NULL_SHIFT	0
->> +
->> +/* AFE4403 LEDCNTRL values */
->> +#define AFE440X_LEDCNTRL_RANGE_TX_HALF	0x1
->> +#define AFE440X_LEDCNTRL_RANGE_TX_FULL	0x2
->> +#define AFE440X_LEDCNTRL_RANGE_TX_OFF	0x3
->> +
->> +/* AFE4403 CONTROL2 values */
->> +#define AFE440X_CONTROL2_TX_REF_025	0x0
->> +#define AFE440X_CONTROL2_TX_REF_050	0x1
->> +#define AFE440X_CONTROL2_TX_REF_100	0x2
->> +#define AFE440X_CONTROL2_TX_REF_075	0x3
->> +
->> +/* AFE4403 CONTROL3 values */
->> +#define AFE440X_CONTROL3_CLK_DIV_2	0x0
->> +#define AFE440X_CONTROL3_CLK_DIV_4	0x2
->> +#define AFE440X_CONTROL3_CLK_DIV_6	0x3
->> +#define AFE440X_CONTROL3_CLK_DIV_8	0x4
->> +#define AFE440X_CONTROL3_CLK_DIV_12	0x5
->> +#define AFE440X_CONTROL3_CLK_DIV_1	0x7
->> +
->> +/* AFE4403 TIAGAIN_CAP values */
->> +#define AFE4403_TIAGAIN_CAP_5_P		0x0
->> +#define AFE4403_TIAGAIN_CAP_10_P	0x1
->> +#define AFE4403_TIAGAIN_CAP_20_P	0x2
->> +#define AFE4403_TIAGAIN_CAP_30_P	0x3
->> +#define AFE4403_TIAGAIN_CAP_55_P	0x8
->> +#define AFE4403_TIAGAIN_CAP_155_P	0x10
->> +
->> +/* AFE4403 TIAGAIN_RES values */
->> +#define AFE4403_TIAGAIN_RES_500_K	0x0
->> +#define AFE4403_TIAGAIN_RES_250_K	0x1
->> +#define AFE4403_TIAGAIN_RES_100_K	0x2
->> +#define AFE4403_TIAGAIN_RES_50_K	0x3
->> +#define AFE4403_TIAGAIN_RES_25_K	0x4
->> +#define AFE4403_TIAGAIN_RES_10_K	0x5
->> +#define AFE4403_TIAGAIN_RES_1_M		0x6
->> +#define AFE4403_TIAGAIN_RES_NONE	0x7
->> +
->> +/**
->> + * struct afe4403_data
->> + * @dev - Device structure
->> + * @spi - SPI device handle
->> + * @regmap - Register map of the device
->> + * @regulator - Pointer to the regulator for the IC
->> + * @trig - IIO trigger for this device
->> + * @irq - ADC_RDY line interrupt number
->> + */
->> +struct afe4403_data {
->> +	struct device *dev;
->> +	struct spi_device *spi;
->> +	struct regmap *regmap;
->> +	struct regulator *regulator;
->> +	struct iio_trigger *trig;
->> +	int irq;
->> +};
->> +
->> +enum afe4403_chan_id {
->> +	LED1,
->> +	ALED1,
->> +	LED2,
->> +	ALED2,
->> +	LED1_ALED1,
->> +	LED2_ALED2,
->> +	ILED1,
->> +	ILED2,
->> +};
->> +
->> +static const struct afe440x_reg_info afe4403_reg_info[] = {
->> +	[LED1] = AFE440X_REG_INFO(AFE440X_LED1VAL, 0, NULL),
->> +	[ALED1] = AFE440X_REG_INFO(AFE440X_ALED1VAL, 0, NULL),
->> +	[LED2] = AFE440X_REG_INFO(AFE440X_LED2VAL, 0, NULL),
->> +	[ALED2] = AFE440X_REG_INFO(AFE440X_ALED2VAL, 0, NULL),
->> +	[LED1_ALED1] = AFE440X_REG_INFO(AFE440X_LED1_ALED1VAL, 0, NULL),
->> +	[LED2_ALED2] = AFE440X_REG_INFO(AFE440X_LED2_ALED2VAL, 0, NULL),
->> +	[ILED1] = AFE440X_REG_INFO(AFE440X_LEDCNTRL, 0, AFE440X_LEDCNTRL_LED1),
->> +	[ILED2] = AFE440X_REG_INFO(AFE440X_LEDCNTRL, 0, AFE440X_LEDCNTRL_LED2),
->> +};
->> +
->> +static const struct iio_chan_spec afe4403_channels[] = {
->> +	/* ADC values */
->> +	AFE440X_INTENSITY_CHAN(LED1, "led1", 0),
->> +	AFE440X_INTENSITY_CHAN(ALED1, "led1_ambient", 0),
->> +	AFE440X_INTENSITY_CHAN(LED2, "led2", 0),
->> +	AFE440X_INTENSITY_CHAN(ALED2, "led2_ambient", 0),
->> +	AFE440X_INTENSITY_CHAN(LED1_ALED1, "led1-led1_ambient", 0),
->> +	AFE440X_INTENSITY_CHAN(LED2_ALED2, "led2-led2_ambient", 0),
->> +	/* LED current */
->> +	AFE440X_CURRENT_CHAN(ILED1, "led1"),
->> +	AFE440X_CURRENT_CHAN(ILED2, "led2"),
->> +};
->> +
->> +static const struct afe440x_val_table afe4403_res_table[] = {
->> +	{ 500000 }, { 250000 }, { 100000 }, { 50000 },
->> +	{ 25000 }, { 10000 }, { 1000000 }, { 0 },
->> +};
->> +AFE440X_TABLE_ATTR(tia_resistance_available, afe4403_res_table);
->> +
->> +static const struct afe440x_val_table afe4403_cap_table[] = {
->> +	{ 0, 5000 }, { 0, 10000 }, { 0, 20000 }, { 0, 25000 },
->> +	{ 0, 30000 }, { 0, 35000 }, { 0, 45000 }, { 0, 50000 },
->> +	{ 0, 55000 }, { 0, 60000 }, { 0, 70000 }, { 0, 75000 },
->> +	{ 0, 80000 }, { 0, 85000 }, { 0, 95000 }, { 0, 100000 },
->> +	{ 0, 155000 }, { 0, 160000 }, { 0, 170000 }, { 0, 175000 },
->> +	{ 0, 180000 }, { 0, 185000 }, { 0, 195000 }, { 0, 200000 },
->> +	{ 0, 205000 }, { 0, 210000 }, { 0, 220000 }, { 0, 225000 },
->> +	{ 0, 230000 }, { 0, 235000 }, { 0, 245000 }, { 0, 250000 },
->> +};
->> +AFE440X_TABLE_ATTR(tia_capacitance_available, afe4403_cap_table);
->> +
->> +static ssize_t afe440x_show_register(struct device *dev,
->> +				     struct device_attribute *attr,
->> +				     char *buf)
->> +{
->> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> +	struct afe4403_data *afe = iio_priv(indio_dev);
->> +	struct afe440x_attr *afe440x_attr = to_afe440x_attr(attr);
->> +	unsigned int reg_val, type;
->> +	int vals[2];
->> +	int ret, val_len;
->> +
->> +	ret = regmap_read(afe->regmap, afe440x_attr->reg, &reg_val);
->> +	if (ret)
->> +		return ret;
->> +
->> +	reg_val &= afe440x_attr->mask;
->> +	reg_val >>= afe440x_attr->shift;
->> +
->> +	switch (afe440x_attr->type) {
->> +	case SIMPLE:
->> +		type = IIO_VAL_INT;
->> +		val_len = 1;
->> +		vals[0] = reg_val;
->> +		break;
->> +	case RESISTANCE:
->> +	case CAPACITANCE:
->> +		type = IIO_VAL_INT_PLUS_MICRO;
->> +		val_len = 2;
->> +		if (reg_val < afe440x_attr->table_size) {
->> +			vals[0] = afe440x_attr->val_table[reg_val].integer;
->> +			vals[1] = afe440x_attr->val_table[reg_val].fract;
->> +			break;
->> +		}
->> +		return -EINVAL;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +
->> +	return iio_format_value(buf, type, val_len, vals);
->> +}
->> +
->> +static ssize_t afe440x_store_register(struct device *dev,
->> +				      struct device_attribute *attr,
->> +				      const char *buf, size_t count)
->> +{
->> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> +	struct afe4403_data *afe = iio_priv(indio_dev);
->> +	struct afe440x_attr *afe440x_attr = to_afe440x_attr(attr);
->> +	int val, integer, fract, ret;
->> +
->> +	ret = iio_str_to_fixpoint(buf, 100000, &integer, &fract);
->> +	if (ret)
->> +		return ret;
->> +
->> +	switch (afe440x_attr->type) {
->> +	case SIMPLE:
->> +		val = integer;
->> +		break;
->> +	case RESISTANCE:
->> +	case CAPACITANCE:
->> +		for (val = 0; val < afe440x_attr->table_size; val++)
->> +			if (afe440x_attr->val_table[val].integer == integer &&
->> +			    afe440x_attr->val_table[val].fract == fract)
->> +				break;
->> +		if (val == afe440x_attr->table_size)
->> +			return -EINVAL;
->> +		break;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +
->> +	ret = regmap_update_bits(afe->regmap, afe440x_attr->reg,
->> +				 afe440x_attr->mask,
->> +				 (val << afe440x_attr->shift));
->> +	if (ret)
->> +		return ret;
->> +
->> +	return count;
->> +}
->> +
->> +static AFE440X_ATTR(tia_separate_en, AFE4403_TIAGAIN, AFE440X_TIAGAIN_ENSEPGAIN, SIMPLE, NULL, 0);
->> +
->> +static AFE440X_ATTR(tia_resistance1, AFE4403_TIAGAIN, AFE4403_TIAGAIN_RES, RESISTANCE, afe4403_res_table, ARRAY_SIZE(afe4403_res_table));
->> +static AFE440X_ATTR(tia_capacitance1, AFE4403_TIAGAIN, AFE4403_TIAGAIN_CAP, CAPACITANCE, afe4403_cap_table, ARRAY_SIZE(afe4403_cap_table));
->> +
->> +static AFE440X_ATTR(tia_resistance2, AFE4403_TIA_AMB_GAIN, AFE4403_TIAGAIN_RES, RESISTANCE, afe4403_res_table, ARRAY_SIZE(afe4403_res_table));
->> +static AFE440X_ATTR(tia_capacitance2, AFE4403_TIA_AMB_GAIN, AFE4403_TIAGAIN_RES, CAPACITANCE, afe4403_cap_table, ARRAY_SIZE(afe4403_cap_table));
->> +
->> +static struct attribute *afe440x_attributes[] = {
->> +	&afe440x_attr_tia_separate_en.dev_attr.attr,
->> +	&afe440x_attr_tia_resistance1.dev_attr.attr,
->> +	&afe440x_attr_tia_capacitance1.dev_attr.attr,
->> +	&afe440x_attr_tia_resistance2.dev_attr.attr,
->> +	&afe440x_attr_tia_capacitance2.dev_attr.attr,
->> +	&dev_attr_tia_resistance_available.attr,
->> +	&dev_attr_tia_capacitance_available.attr,
->> +	NULL
->> +};
->> +
->> +static const struct attribute_group afe440x_attribute_group = {
->> +	.attrs = afe440x_attributes
->> +};
->> +
->> +static int afe4403_read(struct afe4403_data *afe, unsigned int reg, u32 *val)
->> +{
->> +	u8 tx[4] = {AFE440X_CONTROL0, 0x0, 0x0, AFE440X_CONTROL0_READ};
->> +	u8 rx[3];
->> +	int ret;
->> +
->> +	/* Enable reading from the device */
->> +	ret = spi_write_then_read(afe->spi, tx, 4, NULL, 0);
->> +	if (ret)
->> +		goto out;
->> +
->> +	ret = spi_write_then_read(afe->spi, &reg, 1, rx, 3);
->> +	if (ret)
->> +		goto out;
->> +
->> +	*val = (rx[0] << 16) |
->> +		(rx[1] << 8) |
->> +		(rx[2]);
->> +
->> +	/* Disable reading from the device */
->> +	tx[3] = AFE440X_CONTROL0_WRITE;
->> +	ret = spi_write_then_read(afe->spi, tx, 4, NULL, 0);
->> +	if (ret)
->> +		goto out;
->> +
->> +out:
->> +
->> +	return ret;
->> +}
->> +
->> +static int afe4403_read_raw(struct iio_dev *indio_dev,
->> +			    struct iio_chan_spec const *chan,
->> +			    int *val, int *val2, long mask)
->> +{
->> +	struct afe4403_data *afe = iio_priv(indio_dev);
->> +	const struct afe440x_reg_info reg_info = afe4403_reg_info[chan->address];
->> +	int ret;
->> +
->> +	switch (chan->type) {
->> +	case IIO_INTENSITY:
->> +		switch (mask) {
->> +		case IIO_CHAN_INFO_RAW:
->> +			ret = afe4403_read(afe, reg_info.reg, val);
->> +			if (ret)
->> +				return ret;
->> +			return IIO_VAL_INT;
->> +		case IIO_CHAN_INFO_OFFSET:
->> +			ret = regmap_read(afe->regmap, reg_info.offreg,
->> +					  val);
->> +			if (ret)
->> +				return ret;
->> +			*val &= reg_info.mask;
->> +			*val >>= reg_info.shift;
->> +			return IIO_VAL_INT;
->> +		}
->> +		break;
->> +	case IIO_CURRENT:
->> +		switch (mask) {
->> +		case IIO_CHAN_INFO_RAW:
->> +			ret = regmap_read(afe->regmap, reg_info.reg, val);
->> +			if (ret)
->> +				return ret;
->> +			*val &= reg_info.mask;
->> +			*val >>= reg_info.shift;
->> +			return IIO_VAL_INT;
->> +		case IIO_CHAN_INFO_SCALE:
->> +			*val = 0;
->> +			*val2 = 800000;
->> +			return IIO_VAL_INT_PLUS_MICRO;
->> +		}
->> +		break;
->> +	default:
->> +		break;
->> +	}
->> +
->> +	return -EINVAL;
->> +}
->> +
->> +static int afe4403_write_raw(struct iio_dev *indio_dev,
->> +			     struct iio_chan_spec const *chan,
->> +			     int val, int val2, long mask)
->> +{
->> +	struct afe4403_data *afe = iio_priv(indio_dev);
->> +	const struct afe440x_reg_info reg_info = afe4403_reg_info[chan->address];
->> +
->> +	switch (chan->type) {
->> +	case IIO_INTENSITY:
->> +		switch (mask) {
->> +		case IIO_CHAN_INFO_OFFSET:
->> +			return regmap_update_bits(afe->regmap,
->> +				reg_info.offreg,
->> +				reg_info.mask,
->> +				(val << reg_info.shift));
->> +		}
->> +		break;
->> +	case IIO_CURRENT:
->> +		switch (mask) {
->> +		case IIO_CHAN_INFO_RAW:
->> +			return regmap_update_bits(afe->regmap,
->> +				reg_info.reg,
->> +				reg_info.mask,
->> +				(val << reg_info.shift));
->> +		}
->> +		break;
->> +	default:
->> +		break;
->> +	}
->> +
->> +	return -EINVAL;
->> +}
->> +
->> +static const struct iio_info afe4403_iio_info = {
->> +	.attrs = &afe440x_attribute_group,
->> +	.read_raw = afe4403_read_raw,
->> +	.write_raw = afe4403_write_raw,
->> +	.driver_module = THIS_MODULE,
->> +};
->> +
->> +static irqreturn_t afe4403_trigger_handler(int irq, void *private)
->> +{
->> +	struct iio_poll_func *pf = private;
->> +	struct iio_dev *indio_dev = pf->indio_dev;
->> +	struct afe4403_data *afe = iio_priv(indio_dev);
->> +	int ret, bit, i = 0;
->> +	s32 buffer[8];
->> +	u8 tx[4] ____cacheline_aligned = {AFE440X_CONTROL0, 0x0, 0x0,
->> +					  AFE440X_CONTROL0_READ};
-> I thought you were going to remove this on the basis that neither of
-> of was convinced if is safe.
->> +	u8 rx[3];
->> +
->> +	/* Enable reading from the device */
->> +	ret = spi_write(afe->spi, tx, 4);
->> +	if (ret)
->> +		goto err;
->> +
->> +	for_each_set_bit(bit, indio_dev->active_scan_mask,
->> +			 indio_dev->masklength) {
->> +		ret = spi_write_then_read(afe->spi,
->> +					  &afe4403_reg_info[bit].reg, 1,
->> +					  rx, 3);
->> +		if (ret)
->> +			goto err;
->> +
->> +		buffer[i++] = (rx[0] << 16) |
->> +				(rx[1] << 8) |
->> +				(rx[2]);
->> +	}
->> +
->> +	/* Disable reading from the device */
->> +	tx[3] = AFE440X_CONTROL0_WRITE;
->> +	ret = spi_write(afe->spi, tx, 4);
->> +	if (ret)
->> +		goto err;
->> +
->> +	iio_push_to_buffers_with_timestamp(indio_dev, buffer, pf->timestamp);
->> +err:
->> +	iio_trigger_notify_done(indio_dev->trig);
->> +
->> +	return IRQ_HANDLED;
->> +}
->> +
->> +static const struct iio_trigger_ops afe4403_trigger_ops = {
->> +	.owner = THIS_MODULE,
->> +};
->> +
->> +#define AFE4403_TIMING_PAIRS			\
->> +	{ AFE440X_LED2STC,	0x000050 },	\
->> +	{ AFE440X_LED2ENDC,	0x0003e7 },	\
->> +	{ AFE440X_LED1LEDSTC,	0x0007d0 },	\
->> +	{ AFE440X_LED1LEDENDC,	0x000bb7 },	\
->> +	{ AFE440X_ALED2STC,	0x000438 },	\
->> +	{ AFE440X_ALED2ENDC,	0x0007cf },	\
->> +	{ AFE440X_LED1STC,	0x000820 },	\
->> +	{ AFE440X_LED1ENDC,	0x000bb7 },	\
->> +	{ AFE440X_LED2LEDSTC,	0x000000 },	\
->> +	{ AFE440X_LED2LEDENDC,	0x0003e7 },	\
->> +	{ AFE440X_ALED1STC,	0x000c08 },	\
->> +	{ AFE440X_ALED1ENDC,	0x000f9f },	\
->> +	{ AFE440X_LED2CONVST,	0x0003ef },	\
->> +	{ AFE440X_LED2CONVEND,	0x0007cf },	\
->> +	{ AFE440X_ALED2CONVST,	0x0007d7 },	\
->> +	{ AFE440X_ALED2CONVEND,	0x000bb7 },	\
->> +	{ AFE440X_LED1CONVST,	0x000bbf },	\
->> +	{ AFE440X_LED1CONVEND,	0x009c3f },	\
->> +	{ AFE440X_ALED1CONVST,	0x000fa7 },	\
->> +	{ AFE440X_ALED1CONVEND,	0x001387 },	\
->> +	{ AFE440X_ADCRSTSTCT0,	0x0003e8 },	\
->> +	{ AFE440X_ADCRSTENDCT0,	0x0003eb },	\
->> +	{ AFE440X_ADCRSTSTCT1,	0x0007d0 },	\
->> +	{ AFE440X_ADCRSTENDCT1,	0x0007d3 },	\
->> +	{ AFE440X_ADCRSTSTCT2,	0x000bb8 },	\
->> +	{ AFE440X_ADCRSTENDCT2,	0x000bbb },	\
->> +	{ AFE440X_ADCRSTSTCT3,	0x000fa0 },	\
->> +	{ AFE440X_ADCRSTENDCT3,	0x000fa3 },	\
->> +	{ AFE440X_PRPCOUNT,	0x009c3f },	\
->> +	{ AFE440X_PDNCYCLESTC,	0x001518 },	\
->> +	{ AFE440X_PDNCYCLEENDC,	0x00991f }
->> +
->> +static const struct reg_sequence afe4403_reg_sequences[] = {
->> +	AFE4403_TIMING_PAIRS,
->> +	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN | 0x000007},
->> +	{ AFE4403_TIA_AMB_GAIN, AFE4403_TIAGAIN_RES_1_M },
->> +	{ AFE440X_LEDCNTRL, (0x14 << AFE440X_LEDCNTRL_LED1_SHIFT) |
->> +			    (0x14 << AFE440X_LEDCNTRL_LED2_SHIFT) },
->> +	{ AFE440X_CONTROL2, AFE440X_CONTROL2_TX_REF_050 <<
->> +			    AFE440X_CONTROL2_TX_REF_SHIFT },
->> +};
->> +
->> +static const struct regmap_range afe4403_yes_ranges[] = {
->> +	regmap_reg_range(AFE440X_LED2VAL, AFE440X_LED1_ALED1VAL),
->> +};
->> +
->> +static const struct regmap_access_table afe4403_volatile_table = {
->> +	.yes_ranges = afe4403_yes_ranges,
->> +	.n_yes_ranges = ARRAY_SIZE(afe4403_yes_ranges),
->> +};
->> +
->> +static const struct regmap_config afe4403_regmap_config = {
->> +	.reg_bits = 8,
->> +	.val_bits = 24,
->> +
->> +	.max_register = AFE440X_PDNCYCLEENDC,
->> +	.cache_type = REGCACHE_RBTREE,
->> +	.volatile_table = &afe4403_volatile_table,
->> +};
->> +
->> +#ifdef CONFIG_OF
->> +static const struct of_device_id afe4403_of_match[] = {
->> +	{ .compatible = "ti,afe4403", },
->> +	{ /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(of, afe4403_of_match);
->> +#endif
->> +
->> +static int afe4403_suspend(struct device *dev)
->> +{
->> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> +	struct afe4403_data *afe = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	ret = regmap_update_bits(afe->regmap, AFE440X_CONTROL2,
->> +				 AFE440X_CONTROL2_PDN_AFE,
->> +				 AFE440X_CONTROL2_PDN_AFE);
->> +	if (ret)
->> +		return ret;
->> +
->> +	ret = regulator_disable(afe->regulator);
->> +	if (ret) {
->> +		dev_err(dev, "Unable to disable regulator\n");
->> +		return ret;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static int afe4403_resume(struct device *dev)
->> +{
->> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> +	struct afe4403_data *afe = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	ret = regulator_enable(afe->regulator);
->> +	if (ret) {
->> +		dev_err(dev, "Unable to enable regulator\n");
->> +		return ret;
->> +	}
->> +
->> +	ret = regmap_update_bits(afe->regmap, AFE440X_CONTROL2,
->> +				 AFE440X_CONTROL2_PDN_AFE, 0);
->> +	if (ret)
->> +		return ret;
->> +
->> +	return 0;
->> +}
->> +
->> +static SIMPLE_DEV_PM_OPS(afe4403_pm_ops, afe4403_suspend, afe4403_resume);
->> +
->> +static int afe4403_probe(struct spi_device *spi)
->> +{
->> +	struct iio_dev *indio_dev;
->> +	struct afe4403_data *afe;
->> +	int ret;
->> +
->> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*afe));
->> +	if (!indio_dev)
->> +		return -ENOMEM;
->> +
->> +	afe = iio_priv(indio_dev);
->> +	spi_set_drvdata(spi, indio_dev);
->> +
->> +	afe->dev = &spi->dev;
->> +	afe->spi = spi;
->> +	afe->irq = spi->irq;
->> +
->> +	afe->regmap = devm_regmap_init_spi(spi, &afe4403_regmap_config);
->> +	if (IS_ERR(afe->regmap)) {
->> +		dev_err(afe->dev, "Unable to allocate register map\n");
->> +		return PTR_ERR(afe->regmap);
->> +	}
->> +
->> +	afe->regulator = devm_regulator_get(afe->dev, "tx_sup");
->> +	if (IS_ERR(afe->regulator)) {
->> +		dev_err(afe->dev, "Unable to get regulator\n");
->> +		return PTR_ERR(afe->regulator);
->> +	}
->> +	ret = regulator_enable(afe->regulator);
->> +	if (ret) {
->> +		dev_err(afe->dev, "Unable to enable regulator\n");
->> +		return ret;
->> +	}
->> +
->> +	ret = regmap_write(afe->regmap, AFE440X_CONTROL0,
->> +			   AFE440X_CONTROL0_SW_RESET);
->> +	if (ret) {
->> +		dev_err(afe->dev, "Unable to reset device\n");
->> +		return ret;
->> +	}
->> +
->> +	ret = regmap_multi_reg_write(afe->regmap, afe4403_reg_sequences,
->> +				     ARRAY_SIZE(afe4403_reg_sequences));
->> +	if (ret) {
->> +		dev_err(afe->dev, "Unable to set register defaults\n");
->> +		return ret;
->> +	}
->> +
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +	indio_dev->dev.parent = afe->dev;
->> +	indio_dev->channels = afe4403_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(afe4403_channels);
->> +	indio_dev->name = AFE4403_DRIVER_NAME;
->> +	indio_dev->info = &afe4403_iio_info;
->> +
->> +	if (afe->irq > 0) {
->> +		afe->trig = devm_iio_trigger_alloc(afe->dev,
->> +						   "%s-dev%d",
->> +						   indio_dev->name,
->> +						   indio_dev->id);
->> +		if (!afe->trig) {
->> +			dev_err(afe->dev, "Unable to allocate IIO trigger\n");
->> +			return -ENOMEM;
->> +		}
->> +
->> +		iio_trigger_set_drvdata(afe->trig, indio_dev);
->> +
->> +		afe->trig->ops = &afe4403_trigger_ops;
->> +		afe->trig->dev.parent = afe->dev;
->> +
->> +		ret = iio_trigger_register(afe->trig);
->> +		if (ret) {
->> +			dev_err(afe->dev, "Unable to register IIO trigger\n");
->> +			return ret;
->> +		}
->> +
->> +		ret = devm_request_threaded_irq(afe->dev, afe->irq,
->> +						iio_trigger_generic_data_rdy_poll,
->> +						NULL, IRQF_ONESHOT,
->> +						AFE4403_DRIVER_NAME,
->> +						afe->trig);
->> +		if (ret) {
->> +			dev_err(afe->dev, "Unable to request IRQ\n");
->> +			return ret;
->> +		}
->> +	}
->> +
->> +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
->> +					 afe4403_trigger_handler, NULL);
->> +	if (ret) {
->> +		dev_err(afe->dev, "Unable to setup buffer\n");
->> +		return ret;
->> +	}
->> +
->> +	ret = iio_device_register(indio_dev);
->> +	if (ret) {
->> +		dev_err(afe->dev, "Unable to register IIO device\n");
->> +		return ret;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static int afe4403_remove(struct spi_device *spi)
->> +{
->> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
->> +	struct afe4403_data *afe = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	iio_device_unregister(indio_dev);
->> +
->> +	iio_triggered_buffer_cleanup(indio_dev);
->> +
->> +	if (afe->irq > 0)
->> +		iio_trigger_unregister(afe->trig);
->> +
->> +	ret = regulator_disable(afe->regulator);
->> +	if (ret) {
->> +		dev_err(afe->dev, "Unable to disable regulator\n");
->> +		return ret;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct spi_device_id afe4403_ids[] = {
->> +	{ "afe4403", 0 },
->> +	{ /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(spi, afe4403_ids);
->> +
->> +static struct spi_driver afe4403_spi_driver = {
->> +	.driver = {
->> +		.name = AFE4403_DRIVER_NAME,
->> +		.of_match_table = of_match_ptr(afe4403_of_match),
->> +		.pm = &afe4403_pm_ops,
->> +	},
->> +	.probe = afe4403_probe,
->> +	.remove = afe4403_remove,
->> +	.id_table = afe4403_ids,
->> +};
->> +module_spi_driver(afe4403_spi_driver);
->> +
->> +MODULE_AUTHOR("Andrew F. Davis <afd@ti.com>");
->> +MODULE_DESCRIPTION("TI AFE4403 Heart Rate and Pulse Oximeter");
->> +MODULE_LICENSE("GPL v2");
->>
+Any ideas why that would be happening?
+I think it may be the return from pm_runtime_get_sync?
+
+When I comment out the break the readings come back but are not updated continually.
+If I read in_voltage0-voltage1_raw then in_voltage0_raw the value is updated.
+
+> +
+> +		ret = ads1015_get_adc_result(data, chan->address, val);
+> +		if (ret < 0) {
+> +			ads1015_set_power_state(data, false);
+> +			break;
+> +		}
+> +
+> +		/* 12 bit res, D0 is bit 4 in conversion register */
+> +		*val = sign_extend32(*val >> 4, 11);
+> +
+> +		ret = ads1015_set_power_state(data, false);
+> +		if (ret < 0)
+> +			break;
+> +
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		idx = data->channel_data[chan->address].pga;
+> +		*val = ads1015_scale[idx].scale;
+> +		*val2 = ads1015_scale[idx].uscale;
+> +		ret = IIO_VAL_INT_PLUS_MICRO;
+> +		break;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		idx = data->channel_data[chan->address].data_rate;
+> +		*val = ads1015_data_rate[idx];
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
+> +	}
+> +	mutex_unlock(&data->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ads1015_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan, int val,
+> +			     int val2, long mask)
+> +{
+> +	struct ads1015_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	mutex_lock(&data->lock);
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = ads1015_set_scale(data, chan->address, val, val2);
+> +		break;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		ret = ads1015_set_data_rate(data, chan->address, val);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
+> +	}
+> +	mutex_unlock(&data->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ads1015_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	return ads1015_set_power_state(iio_priv(indio_dev), true);
+> +}
+> +
+> +static int ads1015_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	return ads1015_set_power_state(iio_priv(indio_dev), false);
+> +}
+> +
+> +static const struct iio_buffer_setup_ops ads1015_buffer_setup_ops = {
+> +	.preenable	= ads1015_buffer_preenable,
+> +	.postenable	= iio_triggered_buffer_postenable,
+> +	.predisable	= iio_triggered_buffer_predisable,
+> +	.postdisable	= ads1015_buffer_postdisable,
+> +	.validate_scan_mask = &iio_validate_scan_mask_onehot,
+> +};
+> +
+> +static IIO_CONST_ATTR(scale_available, "3 2 1 0.5 0.25 0.125");
+> +static IIO_CONST_ATTR(sampling_frequency_available,
+> +		      "128 250 490 920 1600 2400 3300");
+> +
+> +static struct attribute *ads1015_attributes[] = {
+> +	&iio_const_attr_scale_available.dev_attr.attr,
+> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group ads1015_attribute_group = {
+> +	.attrs = ads1015_attributes,
+> +};
+> +
+> +static const struct iio_info ads1015_info = {
+> +	.driver_module	= THIS_MODULE,
+> +	.read_raw	= ads1015_read_raw,
+> +	.write_raw	= ads1015_write_raw,
+> +	.attrs		= &ads1015_attribute_group,
+> +};
+> +
+> +#ifdef CONFIG_OF
+> +static int ads1015_get_channels_config_of(struct i2c_client *client)
+> +{
+> +	struct ads1015_data *data = i2c_get_clientdata(client);
+> +	struct device_node *node;
+> +
+> +	if (!client->dev.of_node ||
+> +	    !of_get_next_child(client->dev.of_node, NULL))
+> +		return -EINVAL;
+> +
+> +	for_each_child_of_node(client->dev.of_node, node) {
+> +		u32 pval;
+> +		unsigned int channel;
+> +		unsigned int pga = ADS1015_DEFAULT_PGA;
+> +		unsigned int data_rate = ADS1015_DEFAULT_DATA_RATE;
+> +
+> +		if (of_property_read_u32(node, "reg", &pval)) {
+> +			dev_err(&client->dev, "invalid reg on %s\n",
+> +				node->full_name);
+> +			continue;
+> +		}
+> +
+> +		channel = pval;
+> +		if (channel >= ADS1015_CHANNELS) {
+> +			dev_err(&client->dev,
+> +				"invalid channel index %d on %s\n",
+> +				channel, node->full_name);
+> +			continue;
+> +		}
+> +
+> +		if (!of_property_read_u32(node, "ti,gain", &pval)) {
+> +			pga = pval;
+> +			if (pga > 6) {
+> +				dev_err(&client->dev, "invalid gain on %s\n",
+> +					node->full_name);
+> +				return -EINVAL;
+> +			}
+> +		}
+> +
+> +		if (!of_property_read_u32(node, "ti,datarate", &pval)) {
+> +			data_rate = pval;
+> +			if (data_rate > 7) {
+> +				dev_err(&client->dev,
+> +					"invalid data_rate on %s\n",
+> +					node->full_name);
+> +				return -EINVAL;
+> +			}
+> +		}
+> +
+> +		data->channel_data[channel].pga = pga;
+> +		data->channel_data[channel].data_rate = data_rate;
+> +	}
+> +
+> +	return 0;
+> +}
+> +#endif
+> +
+> +static void ads1015_get_channels_config(struct i2c_client *client)
+> +{
+> +	unsigned int k;
+> +
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct ads1015_data *data = iio_priv(indio_dev);
+> +	struct ads1015_platform_data *pdata = dev_get_platdata(&client->dev);
+> +
+> +	/* prefer platform data */
+> +	if (pdata) {
+> +		memcpy(data->channel_data, pdata->channel_data,
+> +		       sizeof(data->channel_data));
+> +		return;
+> +	}
+> +
+> +#ifdef CONFIG_OF
+> +	if (!ads1015_get_channels_config_of(client))
+> +		return;
+> +#endif
+> +	/* fallback on default configuration */
+> +	for (k = 0; k < ADS1015_CHANNELS; ++k) {
+> +		data->channel_data[k].pga = ADS1015_DEFAULT_PGA;
+> +		data->channel_data[k].data_rate = ADS1015_DEFAULT_DATA_RATE;
+> +	}
+> +}
+> +
+> +static int ads1015_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct ads1015_data *data;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +
+> +	mutex_init(&data->lock);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &ads1015_info;
+> +	indio_dev->name = ADS1015_DRV_NAME;
+> +	indio_dev->channels = ads1015_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(ads1015_channels);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	/* we need this be keep the same ABI with hwmon ADS1015 driver */
+> +	ads1015_get_channels_config(client);
+> +
+> +	data->regmap = devm_regmap_init_i2c(client, &ads1015_regmap_config);
+> +	if (IS_ERR(data->regmap)) {
+> +		dev_err(&client->dev, "Failed to allocate register map\n");
+> +		return PTR_ERR(data->regmap);
+> +	}
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +					 ads1015_trigger_handler,
+> +					 &ads1015_buffer_setup_ops);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+> +		return ret;
+> +	}
+> +	ret = pm_runtime_set_active(&client->dev);
+> +	if (ret)
+> +		goto err_buffer_cleanup;
+> +	pm_runtime_set_autosuspend_delay(&client->dev, ADS1015_SLEEP_DELAY_MS);
+> +	pm_runtime_use_autosuspend(&client->dev);
+> +	pm_runtime_enable(&client->dev);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "Failed to register IIO device\n");
+> +		goto err_buffer_cleanup;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_buffer_cleanup:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ads1015_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct ads1015_data *data = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	pm_runtime_disable(&client->dev);
+> +	pm_runtime_set_suspended(&client->dev);
+> +	pm_runtime_put_noidle(&client->dev);
+> +
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	/* power down single shot mode */
+> +	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+> +				  ADS1015_CFG_MOD_MASK,
+> +				  ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
+> +}
+> +
+> +#ifdef CONFIG_PM
+> +static int ads1015_runtime_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct ads1015_data *data = iio_priv(indio_dev);
+> +
+> +	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+> +				  ADS1015_CFG_MOD_MASK,
+> +				  ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
+> +}
+> +
+> +static int ads1015_runtime_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct ads1015_data *data = iio_priv(indio_dev);
+> +
+> +	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+> +				  ADS1015_CFG_MOD_MASK,
+> +				  ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
+> +}
+> +#endif
+> +
+> +static const struct dev_pm_ops ads1015_pm_ops = {
+> +	SET_RUNTIME_PM_OPS(ads1015_runtime_suspend,
+> +			   ads1015_runtime_resume, NULL)
+> +};
+> +
+> +static const struct i2c_device_id ads1015_id[] = {
+> +	{"ads1015", 0},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, ads1015_id);
+> +
+> +static struct i2c_driver ads1015_driver = {
+> +	.driver = {
+> +		.name = ADS1015_DRV_NAME,
+> +		.pm = &ads1015_pm_ops,
+> +	},
+> +	.probe		= ads1015_probe,
+> +	.remove		= ads1015_remove,
+> +	.id_table	= ads1015_id,
+> +};
+> +
+> +module_i2c_driver(ads1015_driver);
+> +
+> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
+> +MODULE_DESCRIPTION("Texas Instruments ADS1015 ADC driver");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.5.0
+> 
