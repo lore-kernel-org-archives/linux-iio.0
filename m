@@ -1,279 +1,470 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-009.synserver.de ([212.40.185.9]:1175 "EHLO
-	smtp-out-169.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754316AbcBHRCH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 12:02:07 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Marc Andre <marc.andre@netline.ch>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 4/5] iio:ad5064: Use a enum for the register map layout type
-Date: Mon,  8 Feb 2016 18:01:49 +0100
-Message-Id: <1454950910-26049-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1454950910-26049-1-git-send-email-lars@metafoo.de>
-References: <1454950910-26049-1-git-send-email-lars@metafoo.de>
+Received: from mail-io0-f194.google.com ([209.85.223.194]:34354 "EHLO
+	mail-io0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751529AbcBETue (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Feb 2016 14:50:34 -0500
+Date: Fri, 5 Feb 2016 13:50:22 -0600
+From: Michael Welling <mwelling@ieee.org>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Guenter Roeck <linux@roeck-us.net>, eibach@gdsys.de
+Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
+Message-ID: <20160205195022.GA21242@deathstar>
+References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>
+ <20160205172457.GA16778@deathstar>
+ <CAEnQRZAjgn3Y0618MgO284DMc_9cE49b9jeUr0j2HwUK6YK+0A@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAEnQRZAjgn3Y0618MgO284DMc_9cE49b9jeUr0j2HwUK6YK+0A@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently the ad5064 only supports two different register map variations
-and this is represented by a bool. This patch changes since to a enum so
-we can support more variations in the future.
+On Fri, Feb 05, 2016 at 09:32:34PM +0200, Daniel Baluta wrote:
+> On Fri, Feb 5, 2016 at 7:25 PM, Michael Welling <mwelling@ieee.org> wrote:
+> > On Fri, Feb 05, 2016 at 03:17:18PM +0200, Daniel Baluta wrote:
+> >> The driver has sysfs readings with runtime PM support for power saving.
+> >> It also offers buffer support that can be used together with IIO software
+> >> triggers.
+> >>
+> >> Datasheet can be found here:
+> >>       http://www.ti.com.cn/cn/lit/ds/symlink/ads1015.pdf
+> >>
+> >> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> >> ---
+> >> Changes since v3:
+> >>       * fixed type connectd -> connected
+> >>       * move mutex outside of switch in read_raw to be consistent
+> >>       with write_raw
+> >>
+> >> Changes since v2:
+> >>       * push locking out of the switch in write_raw
+> >>       * fix  buf allocation in triggered buffer's handler
+> >>
+> >> Changes since v1:
+> >>       * addressed concerns about replacing the ads1015 hwmon driver
+> >>               * For the moment the IIO driver is compatible with hwmon
+> >>                 driver (dt bindings) the only thing left is to also add
+> >>                 support for ads1115.
+> >>               * DT bindings are described in Documentation/devicetree/
+> >>                 bindings/hwmon/ads1015.txt. If needed will copy this file
+> >>                 in a later patch to the IIO corresponding location.
+> >>       * addressed comments from Jonathan
+> >>               * added proper locking
+> >>               * added timestamp channel
+> >>               * removed magic constants
+> >>               * added some new lines to increase readability
+> >>               * used regmap_get_device instead of keeping a copy of
+> >>               i2c_client pointer.
+> >>               * used non-devm function to correct the cleanup order
+> >>
+> >>  drivers/iio/adc/Kconfig      |  13 +
+> >>  drivers/iio/adc/Makefile     |   1 +
+> >>  drivers/iio/adc/ti-ads1015.c | 610 +++++++++++++++++++++++++++++++++++++++++++
+> >>  3 files changed, 624 insertions(+)
+> >>  create mode 100644 drivers/iio/adc/ti-ads1015.c
+> >>
+> >> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> >> index 60673b4..fad7e6a 100644
+> >> --- a/drivers/iio/adc/Kconfig
+> >> +++ b/drivers/iio/adc/Kconfig
+> >> @@ -370,6 +370,19 @@ config TI_ADC128S052
+> >>         This driver can also be built as a module. If so, the module will be
+> >>         called ti-adc128s052.
+> >>
+> >> +config TI_ADS1015
+> >> +     tristate "Texas Instruments ADS1015 ADC"
+> >> +     depends on I2C && !SENSORS_ADS1015
+> >> +     select REGMAP_I2C
+> >> +     select IIO_BUFFER
+> >> +     select IIO_TRIGGERED_BUFFER
+> >> +     help
+> >> +       If you say yes here you get support for Texas Instruments ADS1015
+> >> +       ADC chip.
+> >> +
+> >> +       This driver can also be built as a module. If so, the module will be
+> >> +       called ti-ads1015.
+> >> +
+> >>  config TI_ADS8688
+> >>       tristate "Texas Instruments ADS8688"
+> >>       depends on SPI && OF
+> >> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> >> index fb57e12..2ff70a3 100644
+> >> --- a/drivers/iio/adc/Makefile
+> >> +++ b/drivers/iio/adc/Makefile
+> >> @@ -36,6 +36,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+> >>  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+> >>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+> >>  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+> >> +obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+> >>  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+> >>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+> >>  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+> >> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+> >> new file mode 100644
+> >> index 0000000..596335f
+> >> --- /dev/null
+> >> +++ b/drivers/iio/adc/ti-ads1015.c
+> >> @@ -0,0 +1,610 @@
+> >> +/*
+> >> + * ADS1015 - Texas Instruments Analog-to-Digital Converter
+> >> + *
+> >> + * Copyright (c) 2016, Intel Corporation.
+> >> + *
+> >> + * This file is subject to the terms and conditions of version 2 of
+> >> + * the GNU General Public License.  See the file COPYING in the main
+> >> + * directory of this archive for more details.
+> >> + *
+> >> + * IIO driver for ADS1015 ADC 7-bit I2C slave address:
+> >> + *   * 0x48 - ADDR connected to Ground
+> >> + *   * 0x49 - ADDR connected to Vdd
+> >> + *   * 0x4A - ADDR connected to SDA
+> >> + *   * 0x4B - ADDR connected to SCL
+> >> + */
+> >> +
+> >> +#include <linux/module.h>
+> >> +#include <linux/init.h>
+> >> +#include <linux/i2c.h>
+> >> +#include <linux/regmap.h>
+> >> +#include <linux/pm_runtime.h>
+> >> +#include <linux/mutex.h>
+> >> +#include <linux/delay.h>
+> >> +
+> >> +#include <linux/i2c/ads1015.h>
+> >> +
+> >> +#include <linux/iio/iio.h>
+> >> +#include <linux/iio/types.h>
+> >> +#include <linux/iio/sysfs.h>
+> >> +#include <linux/iio/buffer.h>
+> >> +#include <linux/iio/triggered_buffer.h>
+> >> +#include <linux/iio/trigger_consumer.h>
+> >> +
+> >> +#define ADS1015_DRV_NAME "ads1015"
+> >> +
+> >> +#define ADS1015_CONV_REG     0x00
+> >> +#define ADS1015_CFG_REG              0x01
+> >> +
+> >> +#define ADS1015_CFG_DR_SHIFT 5
+> >> +#define ADS1015_CFG_MOD_SHIFT        8
+> >> +#define ADS1015_CFG_PGA_SHIFT        9
+> >> +#define ADS1015_CFG_MUX_SHIFT        12
+> >> +
+> >> +#define ADS1015_CFG_DR_MASK  GENMASK(7, 5)
+> >> +#define ADS1015_CFG_MOD_MASK BIT(8)
+> >> +#define ADS1015_CFG_PGA_MASK GENMASK(11, 9)
+> >> +#define ADS1015_CFG_MUX_MASK GENMASK(14, 12)
+> >> +
+> >> +/* device operating modes */
+> >> +#define ADS1015_CONTINUOUS   0
+> >> +#define ADS1015_SINGLESHOT   1
+> >> +
+> >> +#define ADS1015_SLEEP_DELAY_MS               2000
+> >> +#define ADS1015_DEFAULT_PGA          2
+> >> +#define ADS1015_DEFAULT_DATA_RATE    4
+> >> +#define ADS1015_DEFAULT_CHAN         0
+> >> +
+> >> +enum ads1015_channels {
+> >> +     ADS1015_AIN0_AIN1 = 0,
+> >> +     ADS1015_AIN0_AIN3,
+> >> +     ADS1015_AIN1_AIN3,
+> >> +     ADS1015_AIN2_AIN3,
+> >> +     ADS1015_AIN0,
+> >> +     ADS1015_AIN1,
+> >> +     ADS1015_AIN2,
+> >> +     ADS1015_AIN3,
+> >> +     ADS1015_TIMESTAMP,
+> >> +};
+> >> +
+> >> +static const unsigned int ads1015_data_rate[] = {
+> >> +     128, 250, 490, 920, 1600, 2400, 3300, 3300
+> >> +};
+> >> +
+> >> +static const struct {
+> >> +     int scale;
+> >> +     int uscale;
+> >> +} ads1015_scale[] = {
+> >> +     {3, 0},
+> >> +     {2, 0},
+> >> +     {1, 0},
+> >> +     {0, 500000},
+> >> +     {0, 250000},
+> >> +     {0, 125000},
+> >> +     {0, 125000},
+> >> +     {0, 125000},
+> >> +};
+> >> +
+> >> +#define ADS1015_V_CHAN(_chan, _addr) {                               \
+> >> +     .type = IIO_VOLTAGE,                                    \
+> >> +     .indexed = 1,                                           \
+> >> +     .address = _addr,                                       \
+> >> +     .channel = _chan,                                       \
+> >> +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
+> >> +                             BIT(IIO_CHAN_INFO_SCALE) |      \
+> >> +                             BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> >> +     .scan_index = _addr,                                    \
+> >> +     .scan_type = {                                          \
+> >> +             .sign = 's',                                    \
+> >> +             .realbits = 12,                                 \
+> >> +             .storagebits = 16,                              \
+> >> +             .shift = 4,                                     \
+> >> +             .endianness = IIO_CPU,                          \
+> >> +     },                                                      \
+> >> +}
+> >> +
+> >> +#define ADS1015_V_DIFF_CHAN(_chan, _chan2, _addr) {          \
+> >> +     .type = IIO_VOLTAGE,                                    \
+> >> +     .differential = 1,                                      \
+> >> +     .indexed = 1,                                           \
+> >> +     .address = _addr,                                       \
+> >> +     .channel = _chan,                                       \
+> >> +     .channel2 = _chan2,                                     \
+> >> +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
+> >> +                             BIT(IIO_CHAN_INFO_SCALE) |      \
+> >> +                             BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> >> +     .scan_index = _addr,                                    \
+> >> +     .scan_type = {                                          \
+> >> +             .sign = 's',                                    \
+> >> +             .realbits = 12,                                 \
+> >> +             .storagebits = 16,                              \
+> >> +             .shift = 4,                                     \
+> >> +             .endianness = IIO_CPU,                          \
+> >> +     },                                                      \
+> >> +}
+> >> +
+> >> +struct ads1015_data {
+> >> +     struct regmap *regmap;
+> >> +     /*
+> >> +      * Protects ADC ops, e.g: concurrent sysfs/buffered
+> >> +      * data reads, configuration updates
+> >> +      */
+> >> +     struct mutex lock;
+> >> +     struct ads1015_channel_data channel_data[ADS1015_CHANNELS];
+> >> +};
+> >> +
+> >> +static bool ads1015_is_writeable_reg(struct device *dev, unsigned int reg)
+> >> +{
+> >> +     return (reg == ADS1015_CFG_REG);
+> >> +}
+> >> +
+> >> +static const struct regmap_config ads1015_regmap_config = {
+> >> +     .reg_bits = 8,
+> >> +     .val_bits = 16,
+> >> +     .max_register = ADS1015_CFG_REG,
+> >> +     .writeable_reg = ads1015_is_writeable_reg,
+> >> +};
+> >> +
+> >> +static const struct iio_chan_spec ads1015_channels[] = {
+> >> +     ADS1015_V_DIFF_CHAN(0, 1, ADS1015_AIN0_AIN1),
+> >> +     ADS1015_V_DIFF_CHAN(0, 3, ADS1015_AIN0_AIN3),
+> >> +     ADS1015_V_DIFF_CHAN(1, 3, ADS1015_AIN1_AIN3),
+> >> +     ADS1015_V_DIFF_CHAN(2, 3, ADS1015_AIN2_AIN3),
+> >> +     ADS1015_V_CHAN(0, ADS1015_AIN0),
+> >> +     ADS1015_V_CHAN(1, ADS1015_AIN1),
+> >> +     ADS1015_V_CHAN(2, ADS1015_AIN2),
+> >> +     ADS1015_V_CHAN(3, ADS1015_AIN3),
+> >> +     IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
+> >> +};
+> >> +
+> >> +static int ads1015_set_power_state(struct ads1015_data *data, bool on)
+> >> +{
+> >> +     int ret;
+> >> +     struct device *dev = regmap_get_device(data->regmap);
+> >> +
+> >> +     if (on) {
+> >> +             ret = pm_runtime_get_sync(dev);
+> >> +             if (ret < 0)
+> >> +                     pm_runtime_put_noidle(dev);
+> >> +     } else {
+> >> +             pm_runtime_mark_last_busy(dev);
+> >> +             ret = pm_runtime_put_autosuspend(dev);
+> >> +     }
+> >> +
+> >> +     return ret;
+> >> +}
+> >> +
+> >> +static
+> >> +int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+> >> +{
+> >> +     int ret, pga, dr, conv_time;
+> >> +     bool change;
+> >> +
+> >> +     if (chan < 0 || chan >= ADS1015_CHANNELS)
+> >> +             return -EINVAL;
+> >> +
+> >> +     pga = data->channel_data[chan].pga;
+> >> +     dr = data->channel_data[chan].data_rate;
+> >> +
+> >> +     ret = regmap_update_bits_check(data->regmap, ADS1015_CFG_REG,
+> >> +                                    ADS1015_CFG_MUX_MASK |
+> >> +                                    ADS1015_CFG_PGA_MASK,
+> >> +                                    chan << ADS1015_CFG_MUX_SHIFT |
+> >> +                                    pga << ADS1015_CFG_PGA_SHIFT,
+> >> +                                    &change);
+> >> +     if (ret < 0)
+> >> +             return ret;
+> >> +
+> >> +     if (change) {
+> >> +             conv_time = DIV_ROUND_UP(USEC_PER_SEC, ads1015_data_rate[dr]);
+> >> +             usleep_range(conv_time, conv_time + 1);
+> >> +     }
+> >> +
+> >> +     return regmap_read(data->regmap, ADS1015_CONV_REG, val);
+> >> +}
+> >> +
+> >> +static irqreturn_t ads1015_trigger_handler(int irq, void *p)
+> >> +{
+> >> +     struct iio_poll_func *pf = p;
+> >> +     struct iio_dev *indio_dev = pf->indio_dev;
+> >> +     struct ads1015_data *data = iio_priv(indio_dev);
+> >> +     s16 buf[8]; /* 1x s16 ADC val + 3x s16 padding +  4x s16 timestamp */
+> >> +     int chan, ret, res;
+> >> +
+> >> +     memset(buf, 0, sizeof(buf));
+> >> +
+> >> +     mutex_lock(&data->lock);
+> >> +     chan = find_first_bit(indio_dev->active_scan_mask,
+> >> +                           indio_dev->masklength);
+> >> +     ret = ads1015_get_adc_result(data, chan, &res);
+> >> +     if (ret < 0) {
+> >> +             mutex_unlock(&data->lock);
+> >> +             goto err;
+> >> +     }
+> >> +
+> >> +     buf[0] = res;
+> >> +     mutex_unlock(&data->lock);
+> >> +
+> >> +     iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+> >> +
+> >> +err:
+> >> +     iio_trigger_notify_done(indio_dev->trig);
+> >> +
+> >> +     return IRQ_HANDLED;
+> >> +}
+> >> +
+> >> +static int ads1015_set_scale(struct ads1015_data *data, int chan,
+> >> +                          int scale, int uscale)
+> >> +{
+> >> +     int i, ret, rindex = -1;
+> >> +
+> >> +     for (i = 0; i < ARRAY_SIZE(ads1015_scale); i++)
+> >> +             if (ads1015_scale[i].scale == scale &&
+> >> +                 ads1015_scale[i].uscale == uscale) {
+> >> +                     rindex = i;
+> >> +                     break;
+> >> +             }
+> >> +     if (rindex < 0)
+> >> +             return -EINVAL;
+> >> +
+> >> +     ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+> >> +                              ADS1015_CFG_PGA_MASK,
+> >> +                              rindex << ADS1015_CFG_PGA_SHIFT);
+> >> +     if (ret < 0)
+> >> +             return ret;
+> >> +
+> >> +     data->channel_data[chan].pga = rindex;
+> >> +
+> >> +     return 0;
+> >> +}
+> >> +
+> >> +static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
+> >> +{
+> >> +     int i, ret, rindex = -1;
+> >> +
+> >> +     for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++)
+> >> +             if (ads1015_data_rate[i] == rate) {
+> >> +                     rindex = i;
+> >> +                     break;
+> >> +             }
+> >> +     if (rindex < 0)
+> >> +             return -EINVAL;
+> >> +
+> >> +     ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+> >> +                              ADS1015_CFG_DR_MASK,
+> >> +                              rindex << ADS1015_CFG_DR_SHIFT);
+> >> +     if (ret < 0)
+> >> +             return ret;
+> >> +
+> >> +     data->channel_data[chan].data_rate = rindex;
+> >> +
+> >> +     return 0;
+> >> +}
+> >> +
+> >> +static int ads1015_read_raw(struct iio_dev *indio_dev,
+> >> +                         struct iio_chan_spec const *chan, int *val,
+> >> +                         int *val2, long mask)
+> >> +{
+> >> +     int ret, idx;
+> >> +     struct ads1015_data *data = iio_priv(indio_dev);
+> >> +
+> >> +     mutex_lock(&data->lock);
+> >> +     switch (mask) {
+> >> +     case IIO_CHAN_INFO_RAW:
+> >> +             if (iio_buffer_enabled(indio_dev)) {
+> >> +                     ret = -EBUSY;
+> >> +                     break;
+> >> +             }
+> >> +
+> >> +             ret = ads1015_set_power_state(data, true);
+> >> +             if (ret < 0)
+> >> +                     break;
+> >
+> > Just tested the driver on a Dragonboard 410C with a robotics mezzanine that I
+> > designed.
+> >
+> > The above ads1015_set_power_state(data, true) is always returning -EINVAL.
+> >
+> > Any ideas why that would be happening?
+> > I think it may be the return from pm_runtime_get_sync?
+> 
+> Can you confirm that pm_runtime_get_sync fails? Using some printk?
+>
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/dac/ad5064.c | 54 ++++++++++++++++++++++++++++++++++++------------
- 1 file changed, 41 insertions(+), 13 deletions(-)
+root@dragonboard-410c:/sys/devices/platform/soc/78b6000.i2c/i2c-0/0-0048/iio:device0# cat in_voltage0_raw
+[  867.065084] mask = 0
+[  867.065104] IIO_CHAN_INFO_RAW
+[  867.066646] error set_power_state IIO_CHAN_INFO_RAW
+265
 
-diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index 7cc3e93..b7f717c 100644
---- a/drivers/iio/dac/ad5064.c
-+++ b/drivers/iio/dac/ad5064.c
-@@ -50,14 +50,23 @@
- #define AD5064_LDAC_PWRDN_3STATE		0x3
- 
- /**
-+ * enum ad5064_regmap_type - Register layout variant
-+ * @AD5064_REGMAP_ADI: Analog Devices register map layout
-+ * @AD5064_REGMAP_LTC: LTC register map layout
-+ */
-+enum ad5064_regmap_type {
-+	AD5064_REGMAP_ADI,
-+	AD5064_REGMAP_LTC,
-+};
-+
-+/**
-  * struct ad5064_chip_info - chip specific information
-  * @shared_vref:	whether the vref supply is shared between channels
-  * @internal_vref:	internal reference voltage. 0 if the chip has no
- 			internal vref.
-  * @channel:		channel specification
-  * @num_channels:	number of channels
-- * @powerdown_ltc:	Use alternative power down addressing as required by
-- *			ltc2617 and others.
-+ * @regmap_type:	register map layout variant
-  */
- 
- struct ad5064_chip_info {
-@@ -65,7 +74,7 @@ struct ad5064_chip_info {
- 	unsigned long internal_vref;
- 	const struct iio_chan_spec *channels;
- 	unsigned int num_channels;
--	bool powerdown_ltc;
-+	enum ad5064_regmap_type regmap_type;
- };
- 
- struct ad5064_state;
-@@ -153,7 +162,7 @@ static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
- 	unsigned int val, address;
- 	int ret;
- 
--	if (st->chip_info->powerdown_ltc) {
-+	if (st->chip_info->regmap_type == AD5064_REGMAP_LTC) {
- 		val = 0;
- 		address = chan->address;
- 	} else {
-@@ -393,171 +402,190 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
- 		.shared_vref = false,
- 		.channels = ad5024_channels,
- 		.num_channels = 4,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5025] = {
- 		.shared_vref = false,
- 		.channels = ad5025_channels,
- 		.num_channels = 2,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5044] = {
- 		.shared_vref = false,
- 		.channels = ad5044_channels,
- 		.num_channels = 4,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5045] = {
- 		.shared_vref = false,
- 		.channels = ad5045_channels,
- 		.num_channels = 2,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5064] = {
- 		.shared_vref = false,
- 		.channels = ad5064_channels,
- 		.num_channels = 4,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5064_1] = {
- 		.shared_vref = true,
- 		.channels = ad5064_channels,
- 		.num_channels = 4,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5065] = {
- 		.shared_vref = false,
- 		.channels = ad5065_channels,
- 		.num_channels = 2,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5628_1] = {
- 		.shared_vref = true,
- 		.internal_vref = 2500000,
- 		.channels = ad5024_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5628_2] = {
- 		.shared_vref = true,
- 		.internal_vref = 5000000,
- 		.channels = ad5024_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5629_1] = {
- 		.shared_vref = true,
- 		.internal_vref = 2500000,
- 		.channels = ad5629_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5629_2] = {
- 		.shared_vref = true,
- 		.internal_vref = 5000000,
- 		.channels = ad5629_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5648_1] = {
- 		.shared_vref = true,
- 		.internal_vref = 2500000,
- 		.channels = ad5044_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5648_2] = {
- 		.shared_vref = true,
- 		.internal_vref = 5000000,
- 		.channels = ad5044_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5666_1] = {
- 		.shared_vref = true,
- 		.internal_vref = 2500000,
- 		.channels = ad5064_channels,
- 		.num_channels = 4,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5666_2] = {
- 		.shared_vref = true,
- 		.internal_vref = 5000000,
- 		.channels = ad5064_channels,
- 		.num_channels = 4,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5668_1] = {
- 		.shared_vref = true,
- 		.internal_vref = 2500000,
- 		.channels = ad5064_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5668_2] = {
- 		.shared_vref = true,
- 		.internal_vref = 5000000,
- 		.channels = ad5064_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5669_1] = {
- 		.shared_vref = true,
- 		.internal_vref = 2500000,
- 		.channels = ad5669_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_AD5669_2] = {
- 		.shared_vref = true,
- 		.internal_vref = 5000000,
- 		.channels = ad5669_channels,
- 		.num_channels = 8,
-+		.regmap_type = AD5064_REGMAP_ADI,
- 	},
- 	[ID_LTC2606] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
- 		.channels = ltc2607_channels,
- 		.num_channels = 1,
--		.powerdown_ltc = true,
-+		.regmap_type = AD5064_REGMAP_LTC,
- 	},
- 	[ID_LTC2607] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
- 		.channels = ltc2607_channels,
- 		.num_channels = 2,
--		.powerdown_ltc = true,
-+		.regmap_type = AD5064_REGMAP_LTC,
- 	},
- 	[ID_LTC2609] = {
- 		.shared_vref = false,
- 		.internal_vref = 0,
- 		.channels = ltc2607_channels,
- 		.num_channels = 4,
--		.powerdown_ltc = true,
-+		.regmap_type = AD5064_REGMAP_LTC,
- 	},
- 	[ID_LTC2616] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
- 		.channels = ltc2617_channels,
- 		.num_channels = 1,
--		.powerdown_ltc = true,
-+		.regmap_type = AD5064_REGMAP_LTC,
- 	},
- 	[ID_LTC2617] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
- 		.channels = ltc2617_channels,
- 		.num_channels = 2,
--		.powerdown_ltc = true,
-+		.regmap_type = AD5064_REGMAP_LTC,
- 	},
- 	[ID_LTC2619] = {
- 		.shared_vref = false,
- 		.internal_vref = 0,
- 		.channels = ltc2617_channels,
- 		.num_channels = 4,
--		.powerdown_ltc = true,
-+		.regmap_type = AD5064_REGMAP_LTC,
- 	},
- 	[ID_LTC2626] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
- 		.channels = ltc2627_channels,
- 		.num_channels = 1,
--		.powerdown_ltc = true,
-+		.regmap_type = AD5064_REGMAP_LTC,
- 	},
- 	[ID_LTC2627] = {
- 		.shared_vref = true,
- 		.internal_vref = 0,
- 		.channels = ltc2627_channels,
- 		.num_channels = 2,
--		.powerdown_ltc = true,
-+		.regmap_type = AD5064_REGMAP_LTC,
- 	},
- 	[ID_LTC2629] = {
- 		.shared_vref = false,
- 		.internal_vref = 0,
- 		.channels = ltc2627_channels,
- 		.num_channels = 4,
--		.powerdown_ltc = true,
-+		.regmap_type = AD5064_REGMAP_LTC,
- 	},
- };
- 
--- 
-2.1.4
+I assumed the only way for the failure to occur is if pm_runtime_get_sync
+returns an error in ads1015_set_power_state.
 
+I will add more printks to see if I can find out more.
+
+> Also adding printks in suspend/resume function would be helpful. Do
+> you have CONFIG_PM enabled?
+#
+# Power management options
+#
+CONFIG_SUSPEND=y
+CONFIG_SUSPEND_FREEZER=y
+CONFIG_PM_SLEEP=y
+CONFIG_PM_SLEEP_SMP=y
+# CONFIG_PM_AUTOSLEEP is not set
+# CONFIG_PM_WAKELOCKS is not set
+CONFIG_PM=y
+# CONFIG_PM_DEBUG is not set
+CONFIG_PM_CLK=y
+CONFIG_PM_GENERIC_DOMAINS=y
+# CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
+CONFIG_PM_GENERIC_DOMAINS_SLEEP=y
+CONFIG_PM_GENERIC_DOMAINS_OF=y
+CONFIG_CPU_PM=y
+CONFIG_ARCH_SUSPEND_POSSIBLE=y
+
+> 
+> >
+> > When I comment out the break the readings come back but are not updated continually.
+> > If I read in_voltage0-voltage1_raw then in_voltage0_raw the value is updated.
+> 
+> I guess this is normal if set_power_state fails.
+>
+
+Yeah the continuous mode is never enabled if the runtime resume is never called.
+
+> thanks,
+> Daniel.
