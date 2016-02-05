@@ -1,67 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:36311 "EHLO
-	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750947AbcBEDxv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Feb 2016 22:53:51 -0500
-From: Bhumika Goyal <bhumirks@gmail.com>
-To: gregkh@linuxfoundation.org, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-	pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, Bhumika Goyal <bhumirks@gmail.com>
-Subject: [PATCH] Staging:iio:Remove exceptional & on function name
-Date: Fri,  5 Feb 2016 09:23:32 +0530
-Message-Id: <1454644412-6861-1-git-send-email-bhumirks@gmail.com>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:36553 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751572AbcBEMku (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Feb 2016 07:40:50 -0500
+Received: by mail-wm0-f67.google.com with SMTP id 128so2836117wmz.3
+        for <linux-iio@vger.kernel.org>; Fri, 05 Feb 2016 04:40:50 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
+References: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
+Date: Fri, 5 Feb 2016 14:40:49 +0200
+Message-ID: <CAEnQRZBzejEWMnu4YABAquYJGK7J0JSUyreETdykqxa528rG1A@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] iio: imu: inv_mpu6050: Split driver into core and
+ I2C/SPI functionality
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Adriana Reus <adriana.reus@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	ggao@invensense.com, Lucas De Marchi <lucas.de.marchi@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-In this file,function names are otherwise used as pointers without &.
-Found using coccinelle.
-// <smpl>
-@r@
-identifier f;
-@@
+On Thu, Feb 4, 2016 at 11:20 AM, Adriana Reus <adriana.reus@intel.com> wrote:
+> This series splits this driver into general and I2C/SPI specific functionality.
+> The first patch is a fix for a bug in the interrupt pin configuration.
+> The second patch changes all the I2C specific calls into regmap calls.
+> The third patch separated the remaining I2C specific part into a different component.
+> Finally the fourth patch adds SPI support for the MPU6000 chip.
+>
+> No changes since v1 for the first two patches.
+> Small changes since v1 to the last two patches
+>
+> Adriana Reus (4):
+>   iio: imu: inv-mpu6050: Fix interrupt pin configuration
+>   iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions
+>   iio: imu: inv_mpu6050: Separate driver into core and i2c
+>     functionality.
+>   iio: imu: inv_mpu6050: Add SPI support for MPU6000
 
-f(...) { ... }
-@@
-identifier r.f;
-@@
+Looks good to me.
 
-- &f
-+ f
-// </smpl>
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
 
-Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
----
- drivers/staging/iio/impedance-analyzer/ad5933.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 10c43dda..d1218d8 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -558,7 +558,7 @@ out:
- }
- 
- static const struct iio_info ad5933_info = {
--	.read_raw = &ad5933_read_raw,
-+	.read_raw = ad5933_read_raw,
- 	.attrs = &ad5933_attribute_group,
- 	.driver_module = THIS_MODULE,
- };
-@@ -616,9 +616,9 @@ static int ad5933_ring_postdisable(struct iio_dev *indio_dev)
- }
- 
- static const struct iio_buffer_setup_ops ad5933_ring_setup_ops = {
--	.preenable = &ad5933_ring_preenable,
--	.postenable = &ad5933_ring_postenable,
--	.postdisable = &ad5933_ring_postdisable,
-+	.preenable = ad5933_ring_preenable,
-+	.postenable = ad5933_ring_postenable,
-+	.postdisable = ad5933_ring_postdisable,
- };
- 
- static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
--- 
-1.9.1
-
+thanks,
+Daniel.
