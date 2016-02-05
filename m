@@ -1,48 +1,96 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [RFC PATCH 1/2] iio: hmc5843 Add channel attribute for bias
- configuration
-To: Cristina Moraru <cristina.moraru09@gmail.com>, jic23@kernel.org,
- knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
- cristina.opriceana@gmail.com, marek@goldelico.com, sdliyong@gmail.com,
- linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
- linux-kernel@vger.kernel.org, octavian.purdila@intel.com,
- daniel.baluta@intel.com
-References: <1454597413-5298-1-git-send-email-cristina.moraru09@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from [212.40.180.161] ([212.40.180.161]:45242 "EHLO
+	smtp-out-195.synserver.de" rhost-flags-FAIL-FAIL-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751175AbcBEKiE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Feb 2016 05:38:04 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56B38E29.8040300@metafoo.de>
-Date: Thu, 4 Feb 2016 18:45:13 +0100
-MIME-Version: 1.0
-In-Reply-To: <1454597413-5298-1-git-send-email-cristina.moraru09@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/2] staging:iio:ad7606: Consolidate channel specs
+Date: Fri,  5 Feb 2016 11:32:34 +0100
+Message-Id: <1454668354-11450-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1454668354-11450-1-git-send-email-lars@metafoo.de>
+References: <1454668354-11450-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 02/04/2016 03:50 PM, Cristina Moraru wrote:
-> Replace non standard meas_conf attribute with the standard IIO
-> calibbias attribute.
-> 
-> API for setting bias measurement configuration:
-> 
-> 0 - Normal measurement configuration (default): In normal measurement
->     configuration the device follows normal measurement flow. Pins BP
->     and BN are left floating and high impedance.
-> 
-> 1 - Positive bias configuration: In positive bias configuration, a
->     positive current is forced across the resistive load on pins BP
->     and BN.
-> 
-> 2 - Negative bias configuration. In negative bias configuration, a
->     negative current is forced across the resistive load on pins BP
->     and BN.
-> 
-> 3 - Only available on HMC5983. Magnetic sensor is disabled.
->     Temperature sensor is enabled.
-> 
-> With this in place, we can think of moving this driver out of staging.
+By slightly reordering the channels in the channel spec array we can reuse
+the same array for all variant of the chip.
 
-Using a standard attribute, but overloading it with custom semantics doesn't
-do any good either. calibbias is supposed to be a integer that gets added to
-measurements internally in the device (unit is device specific though).
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/ad7606_core.c | 34 ++++++++--------------------------
+ 1 file changed, 8 insertions(+), 26 deletions(-)
 
-This attribute seems to do something else. In that case it might be better
-to stay with a custom attribute (as long as it is documented) or come up
-with a better way to map the device configuration onto standard attributes.
+diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+index d0b634d..ce9b2c3 100644
+--- a/drivers/staging/iio/adc/ad7606_core.c
++++ b/drivers/staging/iio/adc/ad7606_core.c
+@@ -250,7 +250,8 @@ static const struct attribute_group ad7606_attribute_group_range = {
+ 		},						\
+ 	}
+ 
+-static const struct iio_chan_spec ad7606_8_channels[] = {
++static const struct iio_chan_spec ad7606_channels[] = {
++	IIO_CHAN_SOFT_TIMESTAMP(8),
+ 	AD7606_CHANNEL(0),
+ 	AD7606_CHANNEL(1),
+ 	AD7606_CHANNEL(2),
+@@ -259,25 +260,6 @@ static const struct iio_chan_spec ad7606_8_channels[] = {
+ 	AD7606_CHANNEL(5),
+ 	AD7606_CHANNEL(6),
+ 	AD7606_CHANNEL(7),
+-	IIO_CHAN_SOFT_TIMESTAMP(8),
+-};
+-
+-static const struct iio_chan_spec ad7606_6_channels[] = {
+-	AD7606_CHANNEL(0),
+-	AD7606_CHANNEL(1),
+-	AD7606_CHANNEL(2),
+-	AD7606_CHANNEL(3),
+-	AD7606_CHANNEL(4),
+-	AD7606_CHANNEL(5),
+-	IIO_CHAN_SOFT_TIMESTAMP(6),
+-};
+-
+-static const struct iio_chan_spec ad7606_4_channels[] = {
+-	AD7606_CHANNEL(0),
+-	AD7606_CHANNEL(1),
+-	AD7606_CHANNEL(2),
+-	AD7606_CHANNEL(3),
+-	IIO_CHAN_SOFT_TIMESTAMP(4),
+ };
+ 
+ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
+@@ -287,20 +269,20 @@ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
+ 	[ID_AD7606_8] = {
+ 		.name = "ad7606",
+ 		.int_vref_mv = 2500,
+-		.channels = ad7606_8_channels,
+-		.num_channels = 8,
++		.channels = ad7606_channels,
++		.num_channels = 9,
+ 	},
+ 	[ID_AD7606_6] = {
+ 		.name = "ad7606-6",
+ 		.int_vref_mv = 2500,
+-		.channels = ad7606_6_channels,
+-		.num_channels = 6,
++		.channels = ad7606_channels,
++		.num_channels = 7,
+ 	},
+ 	[ID_AD7606_4] = {
+ 		.name = "ad7606-4",
+ 		.int_vref_mv = 2500,
+-		.channels = ad7606_4_channels,
+-		.num_channels = 4,
++		.channels = ad7606_channels,
++		.num_channels = 5,
+ 	},
+ };
+ 
+-- 
+2.1.4
+
