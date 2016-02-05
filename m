@@ -1,70 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:9913 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751185AbcBDJWH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 4 Feb 2016 04:22:07 -0500
-From: Adriana Reus <adriana.reus@intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
-	ggao@invensense.com, lucas.de.marchi@gmail.com,
-	Adriana Reus <adriana.reus@intel.com>
-Subject: [PATCH v2 1/4] iio: imu: inv-mpu6050: Fix interrupt pin configuration
-Date: Thu,  4 Feb 2016 11:20:25 +0200
-Message-Id: <1454577628-12708-2-git-send-email-adriana.reus@intel.com>
-In-Reply-To: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
-References: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:36311 "EHLO
+	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750947AbcBEDxv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Feb 2016 22:53:51 -0500
+From: Bhumika Goyal <bhumirks@gmail.com>
+To: gregkh@linuxfoundation.org, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, Bhumika Goyal <bhumirks@gmail.com>
+Subject: [PATCH] Staging:iio:Remove exceptional & on function name
+Date: Fri,  5 Feb 2016 09:23:32 +0530
+Message-Id: <1454644412-6861-1-git-send-email-bhumirks@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The select/deselect_bypass duo writes the irq number into the interrupt
-configuration register.
-If there is a i2c slave device connected to the mpu (eg. a magnetometer)
-then this can hinder interrupt delivery for the accelerometer and
-gyroscope.
-Set this register to the default configuration.
+In this file,function names are otherwise used as pointers without &.
+Found using coccinelle.
+// <smpl>
+@r@
+identifier f;
+@@
 
-Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+f(...) { ... }
+@@
+identifier r.f;
+@@
+
+- &f
++ f
+// </smpl>
+
+Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
 ---
- * No changes since previous versions for this patch
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 4 ++--
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 1 +
- 2 files changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 0852b7f..1121f4e 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -129,7 +129,7 @@ static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
- 	if (!ret) {
- 		st->powerup_count++;
- 		ret = inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
--						     st->client->irq |
-+						     INV_MPU6050_INT_PIN_CFG |
- 						     INV_MPU6050_BIT_BYPASS_EN);
- 	}
- write_error:
-@@ -147,7 +147,7 @@ static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
- 	mutex_lock(&indio_dev->mlock);
- 	/* It doesn't really mattter, if any of the calls fails */
- 	inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
--				       st->client->irq);
-+				       INV_MPU6050_INT_PIN_CFG);
- 	st->powerup_count--;
- 	if (!st->powerup_count)
- 		inv_mpu6050_write_reg_unlocked(st, st->reg->pwr_mgmt_1,
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index db0a4a2..455b99d 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -185,6 +185,7 @@ struct inv_mpu6050_state {
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 10c43dda..d1218d8 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -558,7 +558,7 @@ out:
+ }
  
- #define INV_MPU6050_REG_INT_PIN_CFG	0x37
- #define INV_MPU6050_BIT_BYPASS_EN	0x2
-+#define INV_MPU6050_INT_PIN_CFG		0
+ static const struct iio_info ad5933_info = {
+-	.read_raw = &ad5933_read_raw,
++	.read_raw = ad5933_read_raw,
+ 	.attrs = &ad5933_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+@@ -616,9 +616,9 @@ static int ad5933_ring_postdisable(struct iio_dev *indio_dev)
+ }
  
- /* init parameters */
- #define INV_MPU6050_INIT_FIFO_RATE           50
+ static const struct iio_buffer_setup_ops ad5933_ring_setup_ops = {
+-	.preenable = &ad5933_ring_preenable,
+-	.postenable = &ad5933_ring_postenable,
+-	.postdisable = &ad5933_ring_postdisable,
++	.preenable = ad5933_ring_preenable,
++	.postenable = ad5933_ring_postenable,
++	.postdisable = ad5933_ring_postdisable,
+ };
+ 
+ static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
 -- 
 1.9.1
 
