@@ -1,162 +1,146 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41100 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41136 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752000AbcBFSW0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:22:26 -0500
-Subject: Re: [PATCH v2] iio: Add helper function for calculating scan index
- storage size
-To: Daniel Baluta <daniel.baluta@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-References: <1454426844-4276-1-git-send-email-lars@metafoo.de>
- <CAEnQRZAkwRJk1SNw5tGs6EdJ34ZVkmsyVEnmwv+mEQD16doA8w@mail.gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+	with ESMTP id S1752251AbcBFSaH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:30:07 -0500
+Subject: Re: [PATCH v2 4/4] iio: ad5755: Add full DT binding documentation
+To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org
+References: <1454509864-32285-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <1454509864-32285-2-git-send-email-sean.nyekjaer@prevas.dk>
+ <1454509864-32285-3-git-send-email-sean.nyekjaer@prevas.dk>
+ <1454509864-32285-4-git-send-email-sean.nyekjaer@prevas.dk>
+Cc: devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B639E0.1090702@kernel.org>
-Date: Sat, 6 Feb 2016 18:22:24 +0000
+Message-ID: <56B63BAC.2040001@kernel.org>
+Date: Sat, 6 Feb 2016 18:30:04 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZAkwRJk1SNw5tGs6EdJ34ZVkmsyVEnmwv+mEQD16doA8w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1454509864-32285-4-git-send-email-sean.nyekjaer@prevas.dk>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/02/16 14:35, Daniel Baluta wrote:
-> On Tue, Feb 2, 2016 at 5:27 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> We have the same code for computing the scan index storage size in bytes
->> all over the place. Factor this out into helper functions.
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> 
-> Nice!
-Indeed.
-> 
-> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-as per normal.
+On 03/02/16 14:31, Sean Nyekjaer wrote:
+> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Hmm. Complex beast.  Going to want Lars to look at this in particular.
+Also a device tree review would be good on this one.
+
+My personal gut feeling is not to wrap up things that are really numeric
+with names, but rather to provide docs on the valid values for them.
+Not sure what is the preferred by the device tree guys??
 
 Jonathan
+> ---
+> Changes since v1:
+> - this patch added
 > 
->> ---
->> Changes since v1:
->>         * Workaround checkpatch.pl --strict warnings
->> ---
->>  drivers/iio/industrialio-buffer.c | 59 +++++++++++++++++----------------------
->>  1 file changed, 25 insertions(+), 34 deletions(-)
->>
->> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->> index 139ae91..b976332 100644
->> --- a/drivers/iio/industrialio-buffer.c
->> +++ b/drivers/iio/industrialio-buffer.c
->> @@ -512,33 +512,41 @@ static ssize_t iio_buffer_show_enable(struct device *dev,
->>         return sprintf(buf, "%d\n", iio_buffer_is_active(indio_dev->buffer));
->>  }
->>
->> +static unsigned int iio_storage_bytes_for_si(struct iio_dev *indio_dev,
->> +                                            unsigned int scan_index)
->> +{
->> +       const struct iio_chan_spec *ch;
->> +       unsigned int bytes;
->> +
->> +       ch = iio_find_channel_from_si(indio_dev, scan_index);
->> +       bytes = ch->scan_type.storagebits / 8;
->> +       if (ch->scan_type.repeat > 1)
->> +               bytes *= ch->scan_type.repeat;
->> +       return bytes;
->> +}
->> +
->> +static unsigned int iio_storage_bytes_for_timestamp(struct iio_dev *indio_dev)
->> +{
->> +       return iio_storage_bytes_for_si(indio_dev,
->> +                                       indio_dev->scan_index_timestamp);
->> +}
->> +
->>  static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
->>                                 const unsigned long *mask, bool timestamp)
->>  {
->> -       const struct iio_chan_spec *ch;
->>         unsigned bytes = 0;
->>         int length, i;
->>
->>         /* How much space will the demuxed element take? */
->>         for_each_set_bit(i, mask,
->>                          indio_dev->masklength) {
->> -               ch = iio_find_channel_from_si(indio_dev, i);
->> -               if (ch->scan_type.repeat > 1)
->> -                       length = ch->scan_type.storagebits / 8 *
->> -                               ch->scan_type.repeat;
->> -               else
->> -                       length = ch->scan_type.storagebits / 8;
->> +               length = iio_storage_bytes_for_si(indio_dev, i);
->>                 bytes = ALIGN(bytes, length);
->>                 bytes += length;
->>         }
->> +
->>         if (timestamp) {
->> -               ch = iio_find_channel_from_si(indio_dev,
->> -                                             indio_dev->scan_index_timestamp);
->> -               if (ch->scan_type.repeat > 1)
->> -                       length = ch->scan_type.storagebits / 8 *
->> -                               ch->scan_type.repeat;
->> -               else
->> -                       length = ch->scan_type.storagebits / 8;
->> +               length = iio_storage_bytes_for_timestamp(indio_dev);
->>                 bytes = ALIGN(bytes, length);
->>                 bytes += length;
->>         }
->> @@ -1288,7 +1296,6 @@ static int iio_buffer_add_demux(struct iio_buffer *buffer,
->>  static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->>                                    struct iio_buffer *buffer)
->>  {
->> -       const struct iio_chan_spec *ch;
->>         int ret, in_ind = -1, out_ind, length;
->>         unsigned in_loc = 0, out_loc = 0;
->>         struct iio_demux_table *p = NULL;
->> @@ -1315,21 +1322,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->>                         in_ind = find_next_bit(indio_dev->active_scan_mask,
->>                                                indio_dev->masklength,
->>                                                in_ind + 1);
->> -                       ch = iio_find_channel_from_si(indio_dev, in_ind);
->> -                       if (ch->scan_type.repeat > 1)
->> -                               length = ch->scan_type.storagebits / 8 *
->> -                                       ch->scan_type.repeat;
->> -                       else
->> -                               length = ch->scan_type.storagebits / 8;
->> +                       length = iio_storage_bytes_for_si(indio_dev, in_ind);
->>                         /* Make sure we are aligned */
->>                         in_loc = roundup(in_loc, length) + length;
->>                 }
->> -               ch = iio_find_channel_from_si(indio_dev, in_ind);
->> -               if (ch->scan_type.repeat > 1)
->> -                       length = ch->scan_type.storagebits / 8 *
->> -                               ch->scan_type.repeat;
->> -               else
->> -                       length = ch->scan_type.storagebits / 8;
->> +               length = iio_storage_bytes_for_si(indio_dev, in_ind);
->>                 out_loc = roundup(out_loc, length);
->>                 in_loc = roundup(in_loc, length);
->>                 ret = iio_buffer_add_demux(buffer, &p, in_loc, out_loc, length);
->> @@ -1340,13 +1337,7 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->>         }
->>         /* Relies on scan_timestamp being last */
->>         if (buffer->scan_timestamp) {
->> -               ch = iio_find_channel_from_si(indio_dev,
->> -                       indio_dev->scan_index_timestamp);
->> -               if (ch->scan_type.repeat > 1)
->> -                       length = ch->scan_type.storagebits / 8 *
->> -                               ch->scan_type.repeat;
->> -               else
->> -                       length = ch->scan_type.storagebits / 8;
->> +               length = iio_storage_bytes_for_timestamp(indio_dev);
->>                 out_loc = roundup(out_loc, length);
->>                 in_loc = roundup(in_loc, length);
->>                 ret = iio_buffer_add_demux(buffer, &p, in_loc, out_loc, length);
->> --
->> 2.1.4
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>  .../devicetree/bindings/iio/dac/ad5755.txt         | 83 ++++++++++++++++++++++
+>  1 file changed, 83 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/dac/ad5755.txt b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+> index 4c91583..3aac20d 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+> +++ b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+> @@ -15,10 +15,93 @@ Recommended properties:
+>   - spi-max-frequency: Definition as per
+>  		Documentation/devicetree/bindings/spi/spi-bus.txt
+>  
+> +Optional properties:
+> +See include/dt-bindings/iio/ad5755.h
+> + - adi,ext_dc_dc_compenstation_resistor: boolean set if using compensation resistor
+> + - adi,dc_dc_phase: can be set to
+> +	AD5755_DC_DC_PHASE_ALL_SAME_EDGE
+> +	AD5755_DC_DC_PHASE_A_B_SAME_EDGE_C_D_OPP_EDGE
+> +	AD5755_DC_DC_PHASE_A_C_SAME_EDGE_B_D_OPP_EDGE
+> +	AD5755_DC_DC_PHASE_90_DEGREE
+> + - adi,dc_dc_freq:
+> +	AD5755_DC_DC_FREQ_250kHZ
+> +	AD5755_DC_DC_FREQ_410kHZ
+> +	AD5755_DC_DC_FREQ_650kHZ
+Can we not just make this numeric with a set of valid values specified in this doc?
+> + - adi,dc_dc_maxv:
+> +	AD5755_DC_DC_MAXV_23V
+> +	AD5755_DC_DC_MAXV_24V5
+> +	AD5755_DC_DC_MAXV_27V
+> +	AD5755_DC_DC_MAXV_29V5
+Same on this.
+> +
+> +Optional for every channel:
+> +	 - adi,mode:
+> +		AD5755_MODE_VOLTAGE_0V_5V
+> +		AD5755_MODE_VOLTAGE_0V_10V
+> +		AD5755_MODE_VOLTAGE_PLUSMINUS_5V
+> +		AD5755_MODE_VOLTAGE_PLUSMINUS_10V
+> +		AD5755_MODE_CURRENT_4mA_20mA
+> +		AD5755_MODE_CURRENT_0mA_20mA
+> +		AD5755_MODE_CURRENT_0mA_24mA
+Again, could break this into two numeric values and have options specified in the
+doc + reject any invalid ones. 
+> +	 - adi,ext_current_sense_resistor: boolean set if using external
+> +					   current sense resistor
+> +	 - adi,enable_voltage_overrange: boolean enable voltage overrange
+> +	 - adi,slew: Array of slewrate settings should contain 3 fields:
+> +		1: Should be either 0 or 1 in order to enable or disable slew
+> +		2: Slew rate settings:
+> +			AD5755_SLEW_RATE_64k
+> +			AD5755_SLEW_RATE_32k
+> +			AD5755_SLEW_RATE_16k
+> +			AD5755_SLEW_RATE_8k
+> +			AD5755_SLEW_RATE_4k
+> +			AD5755_SLEW_RATE_2k
+> +			AD5755_SLEW_RATE_1k
+> +			AD5755_SLEW_RATE_500
+> +			AD5755_SLEW_RATE_250
+> +			AD5755_SLEW_RATE_125
+> +			AD5755_SLEW_RATE_64
+> +			AD5755_SLEW_RATE_32
+> +			AD5755_SLEW_RATE_16
+> +			AD5755_SLEW_RATE_8
+> +			AD5755_SLEW_RATE_4
+> +			AD5755_SLEW_RATE_0_5
+> +		3: Slew step size:
+> +			AD5755_SLEW_STEP_SIZE_1
+> +			AD5755_SLEW_STEP_SIZE_2
+> +			AD5755_SLEW_STEP_SIZE_4
+> +			AD5755_SLEW_STEP_SIZE_8
+> +			AD5755_SLEW_STEP_SIZE_16
+> +			AD5755_SLEW_STEP_SIZE_32
+> +			AD5755_SLEW_STEP_SIZE_64
+> +			AD5755_SLEW_STEP_SIZE_128
+> +			AD5755_SLEW_STEP_SIZE_256
+Same with these.
+> +
+>  Example:
+>  dac@0 {
+>  	compatible = "adi,ad5755";
+>  	reg = <0>;
+>  	spi-max-frequency = <1000000>;
+>  	spi-cpha;
+> +	adi,dc_dc_phase = <AD5755_DC_DC_PHASE_ALL_SAME_EDGE>;
+> +	adi,dc_dc_freq = <AD5755_DC_DC_FREQ_410kHZ>;
+> +	adi,dc_dc_maxv = <AD5755_DC_DC_MAXV_23V>;
+> +	channel@0 {
+> +		adi,mode = <AD5755_MODE_CURRENT_4mA_20mA>;
+> +		adi,ext_current_sense_resistor;
+> +		adi,slew = <0 AD5755_SLEW_RATE_64k AD5755_SLEW_STEP_SIZE_1>;
+> +	};
+> +	channel@1 {
+> +		adi,mode = <AD5755_MODE_CURRENT_4mA_20mA>;
+> +		adi,ext_current_sense_resistor;
+> +		adi,slew = <0 AD5755_SLEW_RATE_64k AD5755_SLEW_STEP_SIZE_1>;
+> +	};
+> +	channel@2 {
+> +		adi,mode = <AD5755_MODE_CURRENT_4mA_20mA>;
+> +		adi,ext_current_sense_resistor;
+> +		adi,slew = <0 AD5755_SLEW_RATE_64k AD5755_SLEW_STEP_SIZE_1>;
+> +	};
+> +	channel@3 {
+> +		adi,mode = <AD5755_MODE_CURRENT_4mA_20mA>;
+> +		adi,ext_current_sense_resistor;
+> +		adi,slew = <0 AD5755_SLEW_RATE_64k AD5755_SLEW_STEP_SIZE_1>;
+> +	};
+>  };
 > 
 
