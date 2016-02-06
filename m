@@ -1,43 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:51078 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751482AbcBHRhc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 8 Feb 2016 12:37:32 -0500
-Date: Mon, 8 Feb 2016 11:37:27 -0600
-From: Rob Herring <robh@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: [PATCH v2 4/4] iio: ad5755: Add full DT binding documentation
-Message-ID: <20160208173727.GA823@rob-hp-laptop>
-References: <1454509864-32285-1-git-send-email-sean.nyekjaer@prevas.dk>
- <1454509864-32285-2-git-send-email-sean.nyekjaer@prevas.dk>
- <1454509864-32285-3-git-send-email-sean.nyekjaer@prevas.dk>
- <1454509864-32285-4-git-send-email-sean.nyekjaer@prevas.dk>
- <56B63BAC.2040001@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41151 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752286AbcBFSdv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:33:51 -0500
+Subject: Re: using monotonic clok for timstamping
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	linux-iio@vger.kernel.org
+References: <56B1DCA4.9050903@parrot.com> <56B1E2D8.90308@metafoo.de>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56B63C8E.3020309@kernel.org>
+Date: Sat, 6 Feb 2016 18:33:50 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <56B63BAC.2040001@kernel.org>
+In-Reply-To: <56B1E2D8.90308@metafoo.de>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Feb 06, 2016 at 06:30:04PM +0000, Jonathan Cameron wrote:
-> On 03/02/16 14:31, Sean Nyekjaer wrote:
-> > Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-> Hmm. Complex beast.  Going to want Lars to look at this in particular.
-> Also a device tree review would be good on this one.
+On 03/02/16 11:22, Lars-Peter Clausen wrote:
+> On 02/03/2016 11:55 AM, Gregor Boirie wrote:
+>> Dear  all,
+>>
+>> Our application relies on precise and monotonic timestamping of IMU samples
+>> (and other sensors).
+>> I am wondering what reasons / use cases led to the choice of realtime clock
+>> to implement
+>> iio_get_time_ns (not to mention time gaps that may be seen after wake up
+>> from sleep states).
 > 
-> My personal gut feeling is not to wrap up things that are really numeric
-> with names, but rather to provide docs on the valid values for them.
-> Not sure what is the preferred by the device tree guys??
+> It's more of an oversight than a deliberate design decision. I noticed this
+> problem as well a while ago and wanted to re-write things to use the
+> monotonic clock, but then realized that this would be a ABI change so
+> dropped it and forgot about it again.
+There are certainly cases where the other clock would make sense (for slow
+sampling device where being as correct as possible is the most important
+thing).
 
-Agreed. I'm not such a fan of defines in DT.
+However as Lars observed it was as well considered a choice as it should have
+been as this dates back all the way.
+> 
+>>
+>> As a dirty hack, I simply rewrote iio_get_time_ns on our platform. But I
+>> suspect it would be usefull as
+>> a long term solution, to give userland the ability to choose a particular
+>> posix clock (realtime, monotonic,
+>> etc...) on a per device and / or driver basis through a sysfs attribute for
+>> example.
+> 
+> This is probably the only viable solution while keeping the ABI backwards
+> compatible.
+Agreed - preference for per device instance sysfs attribute.
+If it were just the buffered timestamp readings, we could make it an attribute
+for that single channel, but timestamps are also used with events and we
+would therefore probably want it to be consistent for a whole instance of the
+device.
 
-Also, if there is some possibility that bindings could be generic, I 
-prefer to see them use the native units rather than the enumerated 
-register values. The downside is adding the translation into the driver. 
-These look like they could possibly be generic DAC properties.
+Jonathan
+> 
+> - Lars
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-Rob
