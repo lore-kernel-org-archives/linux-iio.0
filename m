@@ -1,127 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41223 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41263 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751930AbcBFSnf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:43:35 -0500
-Subject: Re: [PATCHv3] staging: iio: replace clk_get() with devm_clk_get()
-To: "Gujulan Elango, Hari Prasath (H.)" <hgujulan@visteon.com>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
-	"mranostay@gmail.com" <mranostay@gmail.com>,
-	"knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>
-References: <20160202125741.GA9279@IND12F0122>
-Cc: "ciorneiioana@gmail.com" <ciorneiioana@gmail.com>,
-	"daniel.baluta@intel.com" <daniel.baluta@intel.com>,
-	"hamohammed.sa@gmail.com" <hamohammed.sa@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Babu, Viswanathan (V.)" <vbabu3@visteon.com>
+	with ESMTP id S1752591AbcBFSvQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:51:16 -0500
+Subject: Re: [PATCH v5 1/4] Documentation: afe4404: Add DT bindings for the
+ AFE4404 heart monitor
+To: "Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+References: <1454435446-20586-1-git-send-email-afd@ti.com>
+ <1454435446-20586-2-git-send-email-afd@ti.com>
+Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-api@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B63ED2.3000906@kernel.org>
-Date: Sat, 6 Feb 2016 18:43:30 +0000
+Message-ID: <56B6409D.1030501@kernel.org>
+Date: Sat, 6 Feb 2016 18:51:09 +0000
 MIME-Version: 1.0
-In-Reply-To: <20160202125741.GA9279@IND12F0122>
+In-Reply-To: <1454435446-20586-2-git-send-email-afd@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/02/16 12:56, Gujulan Elango, Hari Prasath (H.) wrote:
-> This patch replaces the clk_get() with devm_clk_get().Accordingly,modified
-> the error paths,rename error labels and removed clk_put() in probe() &
-> remove functions.
+On 02/02/16 17:50, Andrew F. Davis wrote:
+> Add the TI afe4404 heart monitor DT bindings documentation.
+> Create health directory created under iio.
 > 
-> Signed-off-by: Hari Prasath Gujulan Elango <hgujulan@visteon.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.
+> Signed-off-by: Andrew F. Davis <afd@ti.com>
+Nothing terribly controversial in here I think and its been around in roughly this
+form for a long time so I'm applying this now.
 
-Thanks,
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to test the other patches in the series.
 
 Jonathan
 > ---
-> 	v3: Rename error path labels to suite modified code as reviewd
-> 	    by Matt Ranostay.
-> 	    Remove clk_put() from the driver remove method as pointed by
-> 	    Jonathan Cameron.
+>  .../devicetree/bindings/iio/health/afe4404.txt     | 30 ++++++++++++++++++++++
+>  1 file changed, 30 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/health/afe4404.txt
 > 
-> 	v2: From email address was missing as pointed by Dan Carpenter.
-> ---
->  drivers/staging/iio/adc/spear_adc.c | 17 +++++++----------
->  1 file changed, 7 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
-> index 712cae0..f2c0065 100644
-> --- a/drivers/staging/iio/adc/spear_adc.c
-> +++ b/drivers/staging/iio/adc/spear_adc.c
-> @@ -288,7 +288,7 @@ static int spear_adc_probe(struct platform_device *pdev)
->  	st->adc_base_spear3xx =
->  		(struct adc_regs_spear3xx __iomem *)st->adc_base_spear6xx;
->  
-> -	st->clk = clk_get(dev, NULL);
-> +	st->clk = devm_clk_get(dev, NULL);
->  	if (IS_ERR(st->clk)) {
->  		dev_err(dev, "failed getting clock\n");
->  		goto errout1;
-> @@ -297,28 +297,28 @@ static int spear_adc_probe(struct platform_device *pdev)
->  	ret = clk_prepare_enable(st->clk);
->  	if (ret) {
->  		dev_err(dev, "failed enabling clock\n");
-> -		goto errout2;
-> +		goto errout1;
->  	}
->  
->  	irq = platform_get_irq(pdev, 0);
->  	if (irq <= 0) {
->  		dev_err(dev, "failed getting interrupt resource\n");
->  		ret = -EINVAL;
-> -		goto errout3;
-> +		goto errout2;
->  	}
->  
->  	ret = devm_request_irq(dev, irq, spear_adc_isr, 0, SPEAR_ADC_MOD_NAME,
->  			       st);
->  	if (ret < 0) {
->  		dev_err(dev, "failed requesting interrupt\n");
-> -		goto errout3;
-> +		goto errout2;
->  	}
->  
->  	if (of_property_read_u32(np, "sampling-frequency",
->  				 &st->sampling_freq)) {
->  		dev_err(dev, "sampling-frequency missing in DT\n");
->  		ret = -EINVAL;
-> -		goto errout3;
-> +		goto errout2;
->  	}
->  
->  	/*
-> @@ -348,16 +348,14 @@ static int spear_adc_probe(struct platform_device *pdev)
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
-> -		goto errout3;
-> +		goto errout2;
->  
->  	dev_info(dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
->  
->  	return 0;
->  
-> -errout3:
-> -	clk_disable_unprepare(st->clk);
->  errout2:
-> -	clk_put(st->clk);
-> +	clk_disable_unprepare(st->clk);
->  errout1:
->  	iounmap(st->adc_base_spear6xx);
->  	return ret;
-> @@ -370,7 +368,6 @@ static int spear_adc_remove(struct platform_device *pdev)
->  
->  	iio_device_unregister(indio_dev);
->  	clk_disable_unprepare(st->clk);
-> -	clk_put(st->clk);
->  	iounmap(st->adc_base_spear6xx);
->  
->  	return 0;
+> diff --git a/Documentation/devicetree/bindings/iio/health/afe4404.txt b/Documentation/devicetree/bindings/iio/health/afe4404.txt
+> new file mode 100644
+> index 0000000..de69f20
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/health/afe4404.txt
+> @@ -0,0 +1,30 @@
+> +Texas Instruments AFE4404 Heart rate and Pulse Oximeter
+> +
+> +Required properties:
+> + - compatible		: Should be "ti,afe4404".
+> + - reg			: I2C address of the device.
+> + - tx-supply		: Regulator supply to transmitting LEDs.
+> + - interrupt-parent	: Phandle to he parent interrupt controller.
+> + - interrupts		: The interrupt line the device ADC_RDY pin is
+> +			  connected to. For details refer to,
+> +			  ../interrupt-controller/interrupts.txt.
+> +
+> +Optional properties:
+> + - reset-gpios		: GPIO used to reset the device.
+> +			  For details refer to, ../gpio/gpio.txt.
+> +
+> +Example:
+> +
+> +&i2c2 {
+> +	heart_mon@58 {
+> +		compatible = "ti,afe4404";
+> +		reg = <0x58>;
+> +
+> +		tx-supply = <&vbat>;
+> +
+> +		interrupt-parent = <&gpio1>;
+> +		interrupts = <28 IRQ_TYPE_EDGE_RISING>;
+> +
+> +		reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
+> +	};
+> +};
 > 
 
