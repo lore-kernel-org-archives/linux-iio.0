@@ -1,216 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39471 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39483 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751441AbcBFLWs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 06:22:48 -0500
-Subject: Re: [PATCH 1/2] staging:iio:ad7606: Consolidate PM ops
+	with ESMTP id S1751441AbcBFLYv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 06:24:51 -0500
+Subject: Re: [PATCH 2/2] staging:iio:ad7606: Consolidate channel specs
 To: Lars-Peter Clausen <lars@metafoo.de>
 References: <1454668354-11450-1-git-send-email-lars@metafoo.de>
+ <1454668354-11450-2-git-send-email-lars@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B5D783.6040504@kernel.org>
-Date: Sat, 6 Feb 2016 11:22:43 +0000
+Message-ID: <56B5D801.20903@kernel.org>
+Date: Sat, 6 Feb 2016 11:24:49 +0000
 MIME-Version: 1.0
-In-Reply-To: <1454668354-11450-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1454668354-11450-2-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 05/02/16 10:32, Lars-Peter Clausen wrote:
-> Both the SPI and platform device driver for the ad7606 use the same set of
-> PM ops. Consolidate them in the common part of the driver.
+> By slightly reordering the channels in the channel spec array we can reuse
+> the same array for all variant of the chip.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Lars, this doesn't apply to the togreg branch.
+Fair enough I suppose, though I find it hard to care much about this sort
+of consolidation as it trades slight readability disadvantage off against
+reduced code size.
 
-Looks like you are locally missing the patch:
+Applied to the togreg branch of iio.git.
 
-0046a46a8f93f5b99b499118779521ba3b017d69
-staging/ad7606: Actually build the interface modules 
-
-Which was fixing some module building issues back in October last year.
+Thanks,
 
 Jonathan
 > ---
->  drivers/staging/iio/adc/ad7606.h      | 10 ++++++++--
->  drivers/staging/iio/adc/ad7606_core.c | 16 ++++++++++++++--
->  drivers/staging/iio/adc/ad7606_par.c  | 32 +-------------------------------
->  drivers/staging/iio/adc/ad7606_spi.c  | 32 +-------------------------------
->  4 files changed, 24 insertions(+), 66 deletions(-)
+>  drivers/staging/iio/adc/ad7606_core.c | 34 ++++++++--------------------------
+>  1 file changed, 8 insertions(+), 26 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-> index ec89d05..cca9469 100644
-> --- a/drivers/staging/iio/adc/ad7606.h
-> +++ b/drivers/staging/iio/adc/ad7606.h
-> @@ -85,8 +85,6 @@ struct ad7606_bus_ops {
->  	int (*read_block)(struct device *, int, void *);
->  };
->  
-> -void ad7606_suspend(struct iio_dev *indio_dev);
-> -void ad7606_resume(struct iio_dev *indio_dev);
->  struct iio_dev *ad7606_probe(struct device *dev, int irq,
->  			      void __iomem *base_address, unsigned id,
->  			      const struct ad7606_bus_ops *bops);
-> @@ -101,4 +99,12 @@ enum ad7606_supported_device_ids {
->  
->  int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev);
->  void ad7606_ring_cleanup(struct iio_dev *indio_dev);
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +extern const struct dev_pm_ops ad7606_pm_ops;
-> +#define AD7606_PM_OPS (&ad7606_pm_ops)
-> +#else
-> +#define AD7606_PM_OPS NULL
-> +#endif
-> +
->  #endif /* IIO_ADC_AD7606_H_ */
 > diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index 5796ed2..d0b634d 100644
+> index d0b634d..ce9b2c3 100644
 > --- a/drivers/staging/iio/adc/ad7606_core.c
 > +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -576,8 +576,11 @@ int ad7606_remove(struct iio_dev *indio_dev, int irq)
->  	return 0;
->  }
->  
-> -void ad7606_suspend(struct iio_dev *indio_dev)
-> +#ifdef CONFIG_PM_SLEEP
-> +
-> +static int ad7606_suspend(struct device *dev)
->  {
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ad7606_state *st = iio_priv(indio_dev);
->  
->  	if (gpio_is_valid(st->pdata->gpio_stby)) {
-> @@ -585,10 +588,13 @@ void ad7606_suspend(struct iio_dev *indio_dev)
->  			gpio_set_value(st->pdata->gpio_range, 1);
->  		gpio_set_value(st->pdata->gpio_stby, 0);
+> @@ -250,7 +250,8 @@ static const struct attribute_group ad7606_attribute_group_range = {
+>  		},						\
 >  	}
-> +
-> +	return 0;
->  }
 >  
-> -void ad7606_resume(struct iio_dev *indio_dev)
-> +static int ad7606_resume(struct device *dev)
->  {
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ad7606_state *st = iio_priv(indio_dev);
->  
->  	if (gpio_is_valid(st->pdata->gpio_stby)) {
-> @@ -599,8 +605,14 @@ void ad7606_resume(struct iio_dev *indio_dev)
->  		gpio_set_value(st->pdata->gpio_stby, 1);
->  		ad7606_reset(st);
->  	}
-> +
-> +	return 0;
->  }
->  
-> +SIMPLE_DEV_PM_OPS(ad7606_pm_ops, ad7606_suspend, ad7606_resume);
-> +
-> +#endif
-> +
->  MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
->  MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
->  MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-> index adc370e..84d2393 100644
-> --- a/drivers/staging/iio/adc/ad7606_par.c
-> +++ b/drivers/staging/iio/adc/ad7606_par.c
-> @@ -90,36 +90,6 @@ static int ad7606_par_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> -#ifdef CONFIG_PM
-> -static int ad7606_par_suspend(struct device *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	ad7606_suspend(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -static int ad7606_par_resume(struct device *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	ad7606_resume(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -static const struct dev_pm_ops ad7606_pm_ops = {
-> -	.suspend = ad7606_par_suspend,
-> -	.resume  = ad7606_par_resume,
+> -static const struct iio_chan_spec ad7606_8_channels[] = {
+> +static const struct iio_chan_spec ad7606_channels[] = {
+> +	IIO_CHAN_SOFT_TIMESTAMP(8),
+>  	AD7606_CHANNEL(0),
+>  	AD7606_CHANNEL(1),
+>  	AD7606_CHANNEL(2),
+> @@ -259,25 +260,6 @@ static const struct iio_chan_spec ad7606_8_channels[] = {
+>  	AD7606_CHANNEL(5),
+>  	AD7606_CHANNEL(6),
+>  	AD7606_CHANNEL(7),
+> -	IIO_CHAN_SOFT_TIMESTAMP(8),
 > -};
 > -
-> -#define AD7606_PAR_PM_OPS (&ad7606_pm_ops)
+> -static const struct iio_chan_spec ad7606_6_channels[] = {
+> -	AD7606_CHANNEL(0),
+> -	AD7606_CHANNEL(1),
+> -	AD7606_CHANNEL(2),
+> -	AD7606_CHANNEL(3),
+> -	AD7606_CHANNEL(4),
+> -	AD7606_CHANNEL(5),
+> -	IIO_CHAN_SOFT_TIMESTAMP(6),
+> -};
 > -
-> -#else
-> -#define AD7606_PAR_PM_OPS NULL
-> -#endif  /* CONFIG_PM */
-> -
->  static const struct platform_device_id ad7606_driver_ids[] = {
->  	{
->  		.name		= "ad7606-8",
-> @@ -142,7 +112,7 @@ static struct platform_driver ad7606_driver = {
->  	.id_table = ad7606_driver_ids,
->  	.driver = {
->  		.name	 = "ad7606",
-> -		.pm    = AD7606_PAR_PM_OPS,
-> +		.pm	 = AD7606_PM_OPS,
+> -static const struct iio_chan_spec ad7606_4_channels[] = {
+> -	AD7606_CHANNEL(0),
+> -	AD7606_CHANNEL(1),
+> -	AD7606_CHANNEL(2),
+> -	AD7606_CHANNEL(3),
+> -	IIO_CHAN_SOFT_TIMESTAMP(4),
+>  };
+>  
+>  static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
+> @@ -287,20 +269,20 @@ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
+>  	[ID_AD7606_8] = {
+>  		.name = "ad7606",
+>  		.int_vref_mv = 2500,
+> -		.channels = ad7606_8_channels,
+> -		.num_channels = 8,
+> +		.channels = ad7606_channels,
+> +		.num_channels = 9,
+>  	},
+>  	[ID_AD7606_6] = {
+>  		.name = "ad7606-6",
+>  		.int_vref_mv = 2500,
+> -		.channels = ad7606_6_channels,
+> -		.num_channels = 6,
+> +		.channels = ad7606_channels,
+> +		.num_channels = 7,
+>  	},
+>  	[ID_AD7606_4] = {
+>  		.name = "ad7606-4",
+>  		.int_vref_mv = 2500,
+> -		.channels = ad7606_4_channels,
+> -		.num_channels = 4,
+> +		.channels = ad7606_channels,
+> +		.num_channels = 5,
 >  	},
 >  };
 >  
-> diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-> index cbb3631..d873a51 100644
-> --- a/drivers/staging/iio/adc/ad7606_spi.c
-> +++ b/drivers/staging/iio/adc/ad7606_spi.c
-> @@ -62,36 +62,6 @@ static int ad7606_spi_remove(struct spi_device *spi)
->  	return ad7606_remove(indio_dev, spi->irq);
->  }
->  
-> -#ifdef CONFIG_PM
-> -static int ad7606_spi_suspend(struct device *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	ad7606_suspend(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -static int ad7606_spi_resume(struct device *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	ad7606_resume(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -static const struct dev_pm_ops ad7606_pm_ops = {
-> -	.suspend = ad7606_spi_suspend,
-> -	.resume  = ad7606_spi_resume,
-> -};
-> -
-> -#define AD7606_SPI_PM_OPS (&ad7606_pm_ops)
-> -
-> -#else
-> -#define AD7606_SPI_PM_OPS NULL
-> -#endif
-> -
->  static const struct spi_device_id ad7606_id[] = {
->  	{"ad7606-8", ID_AD7606_8},
->  	{"ad7606-6", ID_AD7606_6},
-> @@ -103,7 +73,7 @@ MODULE_DEVICE_TABLE(spi, ad7606_id);
->  static struct spi_driver ad7606_driver = {
->  	.driver = {
->  		.name = "ad7606",
-> -		.pm    = AD7606_SPI_PM_OPS,
-> +		.pm = AD7606_PM_OPS,
->  	},
->  	.probe = ad7606_spi_probe,
->  	.remove = ad7606_spi_remove,
 > 
 
