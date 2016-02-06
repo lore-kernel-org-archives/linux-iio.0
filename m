@@ -1,73 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41057 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41075 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751891AbcBFSSW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:18:22 -0500
-Subject: Re: [PATCH v3 1/2] iio: pressure: ms5611: Add IIO_CHAN_INFO_SCALE to
- mask
-To: Daniel Baluta <daniel.baluta@intel.com>
-References: <1454518238-7242-1-git-send-email-daniel.baluta@intel.com>
- <1454518238-7242-2-git-send-email-daniel.baluta@intel.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	lucas.demarchi@intel.com
+	with ESMTP id S1752652AbcBFSTI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:19:08 -0500
+Subject: Re: [PATCH] Staging:iio:Remove exceptional & on function name
+To: Bhumika Goyal <bhumirks@gmail.com>, gregkh@linuxfoundation.org,
+	lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+	pmeerw@pmeerw.net
+References: <1454644412-6861-1-git-send-email-bhumirks@gmail.com>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B638E9.2030203@kernel.org>
-Date: Sat, 6 Feb 2016 18:18:17 +0000
+Message-ID: <56B6391A.9040508@kernel.org>
+Date: Sat, 6 Feb 2016 18:19:06 +0000
 MIME-Version: 1.0
-In-Reply-To: <1454518238-7242-2-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1454644412-6861-1-git-send-email-bhumirks@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/02/16 16:50, Daniel Baluta wrote:
-> This allows data exported via buffer interface to be converted
-> to standard units in userspace.
+On 05/02/16 03:53, Bhumika Goyal wrote:
+> In this file,function names are otherwise used as pointers without &.
+> Found using coccinelle.
+> // <smpl>
+> @r@
+> identifier f;
+> @@
 > 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Applied.
+> f(...) { ... }
+> @@
+> identifier r.f;
+> @@
+> 
+> - &f
+> + f
+> // </smpl>
+> 
+> Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+Nice little bit of tidying up.
+
+Applied to the togreg branch of iio.git -  initially pushed out as testing for
+the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
 > ---
->  drivers/iio/pressure/ms5611_core.c | 18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
+>  drivers/staging/iio/impedance-analyzer/ad5933.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-> index 2f3d9b4..6cf0e55 100644
-> --- a/drivers/iio/pressure/ms5611_core.c
-> +++ b/drivers/iio/pressure/ms5611_core.c
-> @@ -201,6 +201,18 @@ static int ms5611_read_raw(struct iio_dev *indio_dev,
->  		default:
->  			return -EINVAL;
->  		}
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_TEMP:
-> +			*val = 10;
-> +			return IIO_VAL_INT;
-> +		case IIO_PRESSURE:
-> +			*val = 0;
-> +			*val2 = 1000;
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		default:
-> +			return -EINVAL;
-> +		}
->  	}
+> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> index 10c43dda..d1218d8 100644
+> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> @@ -558,7 +558,7 @@ out:
+>  }
 >  
->  	return -EINVAL;
-> @@ -218,11 +230,13 @@ static struct ms5611_chip_info chip_info_tbl[] = {
->  static const struct iio_chan_spec ms5611_channels[] = {
->  	{
->  		.type = IIO_PRESSURE,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
->  	},
->  	{
->  		.type = IIO_TEMP,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
->  	}
+>  static const struct iio_info ad5933_info = {
+> -	.read_raw = &ad5933_read_raw,
+> +	.read_raw = ad5933_read_raw,
+>  	.attrs = &ad5933_attribute_group,
+>  	.driver_module = THIS_MODULE,
+>  };
+> @@ -616,9 +616,9 @@ static int ad5933_ring_postdisable(struct iio_dev *indio_dev)
+>  }
+>  
+>  static const struct iio_buffer_setup_ops ad5933_ring_setup_ops = {
+> -	.preenable = &ad5933_ring_preenable,
+> -	.postenable = &ad5933_ring_postenable,
+> -	.postdisable = &ad5933_ring_postdisable,
+> +	.preenable = ad5933_ring_preenable,
+> +	.postenable = ad5933_ring_postenable,
+> +	.postdisable = ad5933_ring_postdisable,
 >  };
 >  
+>  static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
 > 
 
