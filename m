@@ -1,72 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40966 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41223 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751891AbcBFSB6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:01:58 -0500
-Subject: Re: [RFC PATCH 1/2] iio: hmc5843 Add channel attribute for bias
- configuration
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Cristina Moraru <cristina.moraru09@gmail.com>, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	cristina.opriceana@gmail.com, marek@goldelico.com,
-	sdliyong@gmail.com, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-	octavian.purdila@intel.com, daniel.baluta@intel.com
-References: <1454597413-5298-1-git-send-email-cristina.moraru09@gmail.com>
- <56B38E29.8040300@metafoo.de>
+	with ESMTP id S1751930AbcBFSnf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:43:35 -0500
+Subject: Re: [PATCHv3] staging: iio: replace clk_get() with devm_clk_get()
+To: "Gujulan Elango, Hari Prasath (H.)" <hgujulan@visteon.com>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
+	"mranostay@gmail.com" <mranostay@gmail.com>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>
+References: <20160202125741.GA9279@IND12F0122>
+Cc: "ciorneiioana@gmail.com" <ciorneiioana@gmail.com>,
+	"daniel.baluta@intel.com" <daniel.baluta@intel.com>,
+	"hamohammed.sa@gmail.com" <hamohammed.sa@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Babu, Viswanathan (V.)" <vbabu3@visteon.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B63514.90907@kernel.org>
-Date: Sat, 6 Feb 2016 18:01:56 +0000
+Message-ID: <56B63ED2.3000906@kernel.org>
+Date: Sat, 6 Feb 2016 18:43:30 +0000
 MIME-Version: 1.0
-In-Reply-To: <56B38E29.8040300@metafoo.de>
+In-Reply-To: <20160202125741.GA9279@IND12F0122>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/02/16 17:45, Lars-Peter Clausen wrote:
-> On 02/04/2016 03:50 PM, Cristina Moraru wrote:
->> Replace non standard meas_conf attribute with the standard IIO
->> calibbias attribute.
->>
->> API for setting bias measurement configuration:
->>
->> 0 - Normal measurement configuration (default): In normal measurement
->>     configuration the device follows normal measurement flow. Pins BP
->>     and BN are left floating and high impedance.
->>
->> 1 - Positive bias configuration: In positive bias configuration, a
->>     positive current is forced across the resistive load on pins BP
->>     and BN.
->>
->> 2 - Negative bias configuration. In negative bias configuration, a
->>     negative current is forced across the resistive load on pins BP
->>     and BN.
->>
->> 3 - Only available on HMC5983. Magnetic sensor is disabled.
->>     Temperature sensor is enabled.
->>
->> With this in place, we can think of moving this driver out of staging.
+On 02/02/16 12:56, Gujulan Elango, Hari Prasath (H.) wrote:
+> This patch replaces the clk_get() with devm_clk_get().Accordingly,modified
+> the error paths,rename error labels and removed clk_put() in probe() &
+> remove functions.
 > 
-> Using a standard attribute, but overloading it with custom semantics doesn't
-> do any good either. calibbias is supposed to be a integer that gets added to
-> measurements internally in the device (unit is device specific though).
-> 
-> This attribute seems to do something else. In that case it might be better
-> to stay with a custom attribute (as long as it is documented) or come up
-> with a better way to map the device configuration onto standard attributes.
-> 
-Agree with Lars on this.  Only consistent way that this 'could' (it's not a good idea!)
-be supported would be to make this an explicit output channel in a similar way
-to we have debated doing with LED drivers in some of the proximity devices.
+> Signed-off-by: Hari Prasath Gujulan Elango <hgujulan@visteon.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
-If it was meant to be a refined compensation of the measured output (perhaps
-to correct for some other local field) then perhaps we could argue it as
-an analog correction for which calibbias etc would be just about applicable.
-Here it's really about self test I think...  One option would be to write
-a sane self test entirely in the driver and run that on probe, similar to
-we do for some other devices.  Then you could remove this attribute entirely.
-
-Mind you it's not entirely obvious to me what steps the self test would actually
-have so perhaps best to leave this to userspace (at least for now!)
+Thanks,
 
 Jonathan
+> ---
+> 	v3: Rename error path labels to suite modified code as reviewd
+> 	    by Matt Ranostay.
+> 	    Remove clk_put() from the driver remove method as pointed by
+> 	    Jonathan Cameron.
+> 
+> 	v2: From email address was missing as pointed by Dan Carpenter.
+> ---
+>  drivers/staging/iio/adc/spear_adc.c | 17 +++++++----------
+>  1 file changed, 7 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
+> index 712cae0..f2c0065 100644
+> --- a/drivers/staging/iio/adc/spear_adc.c
+> +++ b/drivers/staging/iio/adc/spear_adc.c
+> @@ -288,7 +288,7 @@ static int spear_adc_probe(struct platform_device *pdev)
+>  	st->adc_base_spear3xx =
+>  		(struct adc_regs_spear3xx __iomem *)st->adc_base_spear6xx;
+>  
+> -	st->clk = clk_get(dev, NULL);
+> +	st->clk = devm_clk_get(dev, NULL);
+>  	if (IS_ERR(st->clk)) {
+>  		dev_err(dev, "failed getting clock\n");
+>  		goto errout1;
+> @@ -297,28 +297,28 @@ static int spear_adc_probe(struct platform_device *pdev)
+>  	ret = clk_prepare_enable(st->clk);
+>  	if (ret) {
+>  		dev_err(dev, "failed enabling clock\n");
+> -		goto errout2;
+> +		goto errout1;
+>  	}
+>  
+>  	irq = platform_get_irq(pdev, 0);
+>  	if (irq <= 0) {
+>  		dev_err(dev, "failed getting interrupt resource\n");
+>  		ret = -EINVAL;
+> -		goto errout3;
+> +		goto errout2;
+>  	}
+>  
+>  	ret = devm_request_irq(dev, irq, spear_adc_isr, 0, SPEAR_ADC_MOD_NAME,
+>  			       st);
+>  	if (ret < 0) {
+>  		dev_err(dev, "failed requesting interrupt\n");
+> -		goto errout3;
+> +		goto errout2;
+>  	}
+>  
+>  	if (of_property_read_u32(np, "sampling-frequency",
+>  				 &st->sampling_freq)) {
+>  		dev_err(dev, "sampling-frequency missing in DT\n");
+>  		ret = -EINVAL;
+> -		goto errout3;
+> +		goto errout2;
+>  	}
+>  
+>  	/*
+> @@ -348,16 +348,14 @@ static int spear_adc_probe(struct platform_device *pdev)
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret)
+> -		goto errout3;
+> +		goto errout2;
+>  
+>  	dev_info(dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
+>  
+>  	return 0;
+>  
+> -errout3:
+> -	clk_disable_unprepare(st->clk);
+>  errout2:
+> -	clk_put(st->clk);
+> +	clk_disable_unprepare(st->clk);
+>  errout1:
+>  	iounmap(st->adc_base_spear6xx);
+>  	return ret;
+> @@ -370,7 +368,6 @@ static int spear_adc_remove(struct platform_device *pdev)
+>  
+>  	iio_device_unregister(indio_dev);
+>  	clk_disable_unprepare(st->clk);
+> -	clk_put(st->clk);
+>  	iounmap(st->adc_base_spear6xx);
+>  
+>  	return 0;
+> 
+
