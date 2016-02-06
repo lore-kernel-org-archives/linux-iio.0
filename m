@@ -1,122 +1,43 @@
-Return-Path: <afd@ti.com>
-Subject: Re: [PATCH v4 2/4] iio: health: Add driver for the TI AFE4404 heart
- monitor
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>, Dan
- Murphy <dmurphy@ti.com>,
-        Rob Herring <robh+dt@kernel.org>, Pawel Moll
-	<pawel.moll@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ian Campbell
-	<ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>
-References: <1453742941-12086-1-git-send-email-afd@ti.com>
- <1453742941-12086-3-git-send-email-afd@ti.com> <56ACCFC6.2000700@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <linux-api@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <56B0D04B.1090208@ti.com>
-Date: Tue, 2 Feb 2016 09:50:35 -0600
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40925 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752652AbcBFRyM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 12:54:12 -0500
+Subject: Re: [PATCH 1/2] staging:iio:ad7606: Consolidate PM ops
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1454668354-11450-1-git-send-email-lars@metafoo.de>
+ <56B5D783.6040504@kernel.org> <56B5D8E6.9060409@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56B63341.10300@kernel.org>
+Date: Sat, 6 Feb 2016 17:54:09 +0000
 MIME-Version: 1.0
-In-Reply-To: <56ACCFC6.2000700@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <56B5D8E6.9060409@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/30/2016 08:59 AM, Jonathan Cameron wrote:
-> On 25/01/16 17:28, Andrew F. Davis wrote:
->> Add driver for the TI AFE4404 heart rate monitor and pulse oximeter.
->> This device detects reflected LED light fluctuations and presents an ADC
->> value to the user space for further signal processing.
+On 06/02/16 11:28, Lars-Peter Clausen wrote:
+> On 02/06/2016 12:22 PM, Jonathan Cameron wrote:
+>> On 05/02/16 10:32, Lars-Peter Clausen wrote:
+>>> Both the SPI and platform device driver for the ad7606 use the same set of
+>>> PM ops. Consolidate them in the common part of the driver.
+>>>
+>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> Lars, this doesn't apply to the togreg branch.
 >>
->> Datasheet: http://www.ti.com/product/AFE4404/datasheet
+>> Looks like you are locally missing the patch:
 >>
->> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> Hi Andrew,
->
-> This changed rather more than I was expecting, but fair enough.
->
-> A few bits are missing from remove.  Few other little bits inline,
-> though mostly those are about readability rather than what the code
-> is doing.
->
-> I was a little suprised to see no control over whether the trigger is
-> enabled or not.  I'm trying to get my head around what the result of this will
-> be.  I guess we'll have interrupts pinging away merilly doing nothing until
-> the buffer is attached then the demux will get set up to actually do
-> something with the data.
->
-> hmm. Might be fine, if I ususual.  Normally devices have some means of
-> masking the interrupt.
+>> 0046a46a8f93f5b99b499118779521ba3b017d69
+>> staging/ad7606: Actually build the interface modules 
+> 
+> Which is not yet in the public togreg branch. I'll rebase and resend next
+> week when the public branch has been updated.
+Odd... Pull request went out last weekend and hence even if I'd accidentally
+kept it in testing until then it should have been in togreg last week.
+Ah well, definitely is now as it's made it through to staging-next (and
+Linux next). oops!
 
-I wasn't sure about this ether, but it doesn't seem to break anything.
+Jonathan
 
->
-> Jonathan
->
->> ---
->>   .../ABI/testing/sysfs-bus-iio-health-afe440x       |  54 ++
->>   drivers/iio/health/Kconfig                         |  19 +-
-
-[...]
-
->> +
->> +static const struct afe440x_reg_info afe4404_reg_info[] = {
->
-> As noted below, I'd find
-> [LED1] = AFE440X_REG_INFO(AFE440_LED1VAL...
-> more readable.
->
-
-ACK
-
-[...]
-
->> +	int ret;
->> +
->> +	iio_device_unregister(indio_dev);
->> +
-> Would expect unwinding of the triggered_buffer here.
-> iio_triggered_buffer_cleanup()
->
-
-ACK
-
->> +	iio_trigger_unregister(afe->trig);
-> This should be protected by a check on afe->irq as for the register in probe.
-> There is no protection against afe->trig == NULL in iio_trigger_unregister.
-> That is kind of deliberate as it makes sure the probe / remove in drivers
-> are balanced unlike here.
->
-
-Makes sense, will add.
-
-[...]
-
-> I'm not overly keen on the hiding fo the indexing.  I'd prefer
-> this was just the bit {...} and you had the fact it was filling in an
-> indexed element explicit where used.
-
-That works.
-
-[...]
-
-> I'd prefix reg_type to avoid possible name clashes in future.
->> +enum reg_type {
->> +	SIMPLE,
->> +	RESISTANCE,
->> +	CAPACITANCE,
->> +};
-
-ACK
-
->> +
->> +/* this could be made more general for other IIO drivers if needed --------- */
->
-> Yes, but lets do that at as a follow up.
->
-
-Sure.
-
-Thanks,
-Andrew
