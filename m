@@ -1,123 +1,172 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Mon, 8 Feb 2016 11:25:00 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Michael Welling <mwelling@ieee.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Andy Gross <agross@codeaurora.org>,
-	Pramod Gurav <pramod.gurav@smartplayin.com>,
-	Bjorn Andersson <bjorn.andersson@sonymobile.com>,
-	Guenter Roeck <linux@roeck-us.net>, eibach@gdsys.de,
-	Sricharan R <sricharan@codeaurora.org>,
-	linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
-Message-ID: <20160208102459.GC2220@tetsubishi>
-References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>
- <20160205172457.GA16778@deathstar>
- <CAEnQRZAjgn3Y0618MgO284DMc_9cE49b9jeUr0j2HwUK6YK+0A@mail.gmail.com>
- <20160206003245.GA1329@deathstar>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="qcHopEYAB45HaUaB"
-In-Reply-To: <20160206003245.GA1329@deathstar>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:ad7192: Add support for the AD7193
+Date: Mon,  8 Feb 2016 11:45:04 +0100
+Message-Id: <1454928304-18838-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
+The AD7193 is mostly register map compatible to the AD7192. The main
+difference is that it has 8 instead of 4 inputs, so the way the input
+channels are selected is slightly different.
 
---qcHopEYAB45HaUaB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/Kconfig  |  4 +--
+ drivers/staging/iio/adc/ad7192.c | 76 ++++++++++++++++++++++++++++++++--------
+ 2 files changed, 63 insertions(+), 17 deletions(-)
 
-On Fri, Feb 05, 2016 at 06:32:45PM -0600, Michael Welling wrote:
-> On Fri, Feb 05, 2016 at 09:32:34PM +0200, Daniel Baluta wrote:
-> > >> +static int ads1015_read_raw(struct iio_dev *indio_dev,
-> > >> +                         struct iio_chan_spec const *chan, int *val,
-> > >> +                         int *val2, long mask)
-> > >> +{
-> > >> +     int ret, idx;
-> > >> +     struct ads1015_data *data =3D iio_priv(indio_dev);
-> > >> +
-> > >> +     mutex_lock(&data->lock);
-> > >> +     switch (mask) {
-> > >> +     case IIO_CHAN_INFO_RAW:
-> > >> +             if (iio_buffer_enabled(indio_dev)) {
-> > >> +                     ret =3D -EBUSY;
-> > >> +                     break;
-> > >> +             }
-> > >> +
-> > >> +             ret =3D ads1015_set_power_state(data, true);
-> > >> +             if (ret < 0)
-> > >> +                     break;
-> > >
-> > > Just tested the driver on a Dragonboard 410C with a robotics mezzanin=
-e that I
-> > > designed.
-> > >
-> > > The above ads1015_set_power_state(data, true) is always returning -EI=
-NVAL.
-> > >
-> > > Any ideas why that would be happening?
-> > > I think it may be the return from pm_runtime_get_sync?
-> >=20
-> > Can you confirm that pm_runtime_get_sync fails? Using some printk?
-> >=20
-> > Also adding printks in suspend/resume function would be helpful. Do
-> > you have CONFIG_PM enabled?
-> >
->=20
-> Indeed it is the pm_runtime_get_sync that fails with a -EINVAL.
->=20
-> > >
-> > > When I comment out the break the readings come back but are not updat=
-ed continually.
-> > > If I read in_voltage0-voltage1_raw then in_voltage0_raw the value is =
-updated.
-> >=20
-> > I guess this is normal if set_power_state fails.
->=20
-> The hwmod driver works fine BTW.
->=20
-> My guess is there is an issue with the qup i2c driver seeing as it has wo=
-rked on
-> other system without issue.
->=20
-> CC'd some the latest developer on the qup i2c driver.
->=20
-> I2C guys have any ideas on this?
->=20
-
-Adding some more people who recently worked on this. Might be nice to
-know which kernel version you are using.
-
-> >=20
-> > thanks,
-> > Daniel.
-
---qcHopEYAB45HaUaB
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJWuGz7AAoJEBQN5MwUoCm2qAEP/2st0VPHVDqIzodwsozYHFYf
-M+glFHGfVD1Mk2mF75xx4z30J9ycBJuzhmgp+VF75doOE0LZwypBe1SMorBhAhiu
-+cJBv9wZEaprfgawd+g0EgNHM/lWJPzfjf/QBOiBiBh2GfsC/odVa7drlfWZb2fk
-hvE64d5NOgDqArDkGtAz3K8s71UTM44Ay8wYIXLgY/AaBqV7odAXHmTjIPMnFojr
-wGH+FK0FfUe51FEL2MZLnqlbqN/uzWizeoQh/7IbF8Ftk1UXpS9mXanS1M+AHdQc
-Y2DVxGnNGr9A53Umalhex3U23YFHpLoytErYDmqwvK0nicMrHKF6QQQ8GX0O51Ib
-6eLcLY8A6pcu5nj9VGPFTO8uwpxIQb97TkUGpO+5VXOw7l/V4hUrU+BOC1dx68bq
-ncgmRn1lXAib59DI8VG04pK8wCpMnDL9BotZQIA3qaqVa0BuFY6ZwfqGBvAHhfYF
-GJPSlj/NAvIQf0QX9z/8SVbfxl+B25wZ/QcRjZ/bFhYANlK7tY6CL/YcIelYiW5Z
-DnS6zJMgcidjNO22mgl5JWCXDme4tvrGyHZNNknz0c/1y6fUjRE9JpsTe5cz7Uqc
-Ozofp8xevt4j/rDdr9BtlKFN+6AfbPzAvEH9HY9+qfP6bSPG+3WkYt6JefAE39Kv
-rwzUTMYq8W2qmchaUG26
-=+gDK
------END PGP SIGNATURE-----
-
---qcHopEYAB45HaUaB--
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 58d4517..a700f19 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -58,12 +58,12 @@ config AD7816
+ 	  temperature sensors and ADC.
+ 
+ config AD7192
+-	tristate "Analog Devices AD7190 AD7192 AD7195 ADC driver"
++	tristate "Analog Devices AD7190 AD7192 AD7193 AD7195 ADC driver"
+ 	depends on SPI
+ 	select AD_SIGMA_DELTA
+ 	help
+ 	  Say yes here to build support for Analog Devices AD7190,
+-	  AD7192 or AD7195 SPI analog to digital converters (ADC).
++	  AD7192, AD7193 or AD7195 SPI analog to digital converters (ADC).
+ 	  If unsure, say N (but it's safe to say "Y").
+ 
+ 	  To compile this driver as a module, choose M here: the
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index 92f2b72..f843f19 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -1,7 +1,7 @@
+ /*
+- * AD7190 AD7192 AD7195 SPI ADC driver
++ * AD7190 AD7192 AD7193 AD7195 SPI ADC driver
+  *
+- * Copyright 2011-2012 Analog Devices Inc.
++ * Copyright 2011-2015 Analog Devices Inc.
+  *
+  * Licensed under the GPL-2.
+  */
+@@ -92,26 +92,43 @@
+ 
+ #define AD7192_CONF_CHOP	BIT(23) /* CHOP enable */
+ #define AD7192_CONF_REFSEL	BIT(20) /* REFIN1/REFIN2 Reference Select */
+-#define AD7192_CONF_CHAN(x)	(((1 << (x)) & 0xFF) << 8) /* Channel select */
+-#define AD7192_CONF_CHAN_MASK	(0xFF << 8) /* Channel select mask */
++#define AD7192_CONF_CHAN(x)	((x) << 8) /* Channel select */
++#define AD7192_CONF_CHAN_MASK	(0x7FF << 8) /* Channel select mask */
+ #define AD7192_CONF_BURN	BIT(7) /* Burnout current enable */
+ #define AD7192_CONF_REFDET	BIT(6) /* Reference detect enable */
+ #define AD7192_CONF_BUF		BIT(4) /* Buffered Mode Enable */
+ #define AD7192_CONF_UNIPOLAR	BIT(3) /* Unipolar/Bipolar Enable */
+ #define AD7192_CONF_GAIN(x)	((x) & 0x7) /* Gain Select */
+ 
+-#define AD7192_CH_AIN1P_AIN2M	0 /* AIN1(+) - AIN2(-) */
+-#define AD7192_CH_AIN3P_AIN4M	1 /* AIN3(+) - AIN4(-) */
+-#define AD7192_CH_TEMP		2 /* Temp Sensor */
+-#define AD7192_CH_AIN2P_AIN2M	3 /* AIN2(+) - AIN2(-) */
+-#define AD7192_CH_AIN1		4 /* AIN1 - AINCOM */
+-#define AD7192_CH_AIN2		5 /* AIN2 - AINCOM */
+-#define AD7192_CH_AIN3		6 /* AIN3 - AINCOM */
+-#define AD7192_CH_AIN4		7 /* AIN4 - AINCOM */
++#define AD7192_CH_AIN1P_AIN2M	BIT(0) /* AIN1(+) - AIN2(-) */
++#define AD7192_CH_AIN3P_AIN4M	BIT(1) /* AIN3(+) - AIN4(-) */
++#define AD7192_CH_TEMP		BIT(2) /* Temp Sensor */
++#define AD7192_CH_AIN2P_AIN2M	BIT(3) /* AIN2(+) - AIN2(-) */
++#define AD7192_CH_AIN1		BIT(4) /* AIN1 - AINCOM */
++#define AD7192_CH_AIN2		BIT(5) /* AIN2 - AINCOM */
++#define AD7192_CH_AIN3		BIT(6) /* AIN3 - AINCOM */
++#define AD7192_CH_AIN4		BIT(7) /* AIN4 - AINCOM */
++
++#define AD7193_CH_AIN1P_AIN2M	0x000  /* AIN1(+) - AIN2(-) */
++#define AD7193_CH_AIN3P_AIN4M	0x001  /* AIN3(+) - AIN4(-) */
++#define AD7193_CH_AIN5P_AIN6M	0x002  /* AIN5(+) - AIN6(-) */
++#define AD7193_CH_AIN7P_AIN8M	0x004  /* AIN7(+) - AIN8(-) */
++#define AD7193_CH_TEMP		0x100 /* Temp senseor */
++#define AD7193_CH_AIN2P_AIN2M	0x200 /* AIN2(+) - AIN2(-) */
++#define AD7193_CH_AIN1		0x401 /* AIN1 - AINCOM */
++#define AD7193_CH_AIN2		0x402 /* AIN2 - AINCOM */
++#define AD7193_CH_AIN3		0x404 /* AIN3 - AINCOM */
++#define AD7193_CH_AIN4		0x408 /* AIN4 - AINCOM */
++#define AD7193_CH_AIN5		0x410 /* AIN5 - AINCOM */
++#define AD7193_CH_AIN6		0x420 /* AIN6 - AINCOM */
++#define AD7193_CH_AIN7		0x440 /* AIN7 - AINCOM */
++#define AD7193_CH_AIN8		0x480 /* AIN7 - AINCOM */
++#define AD7193_CH_AINCOM	0x600 /* AINCOM - AINCOM */
+ 
+ /* ID Register Bit Designations (AD7192_REG_ID) */
+ #define ID_AD7190		0x4
+ #define ID_AD7192		0x0
++#define ID_AD7193		0x2
+ #define ID_AD7195		0x6
+ #define AD7192_ID_MASK		0x0F
+ 
+@@ -607,6 +624,24 @@ static const struct iio_chan_spec ad7192_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(8),
+ };
+ 
++static const struct iio_chan_spec ad7193_channels[] = {
++	AD_SD_DIFF_CHANNEL(0, 1, 2, AD7193_CH_AIN1P_AIN2M, 24, 32, 0),
++	AD_SD_DIFF_CHANNEL(1, 3, 4, AD7193_CH_AIN3P_AIN4M, 24, 32, 0),
++	AD_SD_DIFF_CHANNEL(2, 5, 6, AD7193_CH_AIN5P_AIN6M, 24, 32, 0),
++	AD_SD_DIFF_CHANNEL(3, 7, 8, AD7193_CH_AIN7P_AIN8M, 24, 32, 0),
++	AD_SD_TEMP_CHANNEL(4, AD7193_CH_TEMP, 24, 32, 0),
++	AD_SD_SHORTED_CHANNEL(5, 2, AD7193_CH_AIN2P_AIN2M, 24, 32, 0),
++	AD_SD_CHANNEL(6, 1, AD7193_CH_AIN1, 24, 32, 0),
++	AD_SD_CHANNEL(7, 2, AD7193_CH_AIN2, 24, 32, 0),
++	AD_SD_CHANNEL(8, 3, AD7193_CH_AIN3, 24, 32, 0),
++	AD_SD_CHANNEL(9, 4, AD7193_CH_AIN4, 24, 32, 0),
++	AD_SD_CHANNEL(10, 5, AD7193_CH_AIN5, 24, 32, 0),
++	AD_SD_CHANNEL(11, 6, AD7193_CH_AIN6, 24, 32, 0),
++	AD_SD_CHANNEL(12, 7, AD7193_CH_AIN7, 24, 32, 0),
++	AD_SD_CHANNEL(13, 8, AD7193_CH_AIN8, 24, 32, 0),
++	IIO_CHAN_SOFT_TIMESTAMP(14),
++};
++
+ static int ad7192_probe(struct spi_device *spi)
+ {
+ 	const struct ad7192_platform_data *pdata = dev_get_platdata(&spi->dev);
+@@ -651,8 +686,18 @@ static int ad7192_probe(struct spi_device *spi)
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->channels = ad7192_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(ad7192_channels);
++
++	switch (st->devid) {
++	case ID_AD7193:
++		indio_dev->channels = ad7193_channels;
++		indio_dev->num_channels = ARRAY_SIZE(ad7193_channels);
++		break;
++	default:
++		indio_dev->channels = ad7192_channels;
++		indio_dev->num_channels = ARRAY_SIZE(ad7192_channels);
++		break;
++	}
++
+ 	if (st->devid == ID_AD7195)
+ 		indio_dev->info = &ad7195_info;
+ 	else
+@@ -699,6 +744,7 @@ static int ad7192_remove(struct spi_device *spi)
+ static const struct spi_device_id ad7192_id[] = {
+ 	{"ad7190", ID_AD7190},
+ 	{"ad7192", ID_AD7192},
++	{"ad7193", ID_AD7193},
+ 	{"ad7195", ID_AD7195},
+ 	{}
+ };
+@@ -715,5 +761,5 @@ static struct spi_driver ad7192_driver = {
+ module_spi_driver(ad7192_driver);
+ 
+ MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+-MODULE_DESCRIPTION("Analog Devices AD7190, AD7192, AD7195 ADC");
++MODULE_DESCRIPTION("Analog Devices AD7190, AD7192, AD7193, AD7195 ADC");
+ MODULE_LICENSE("GPL v2");
+-- 
+2.1.4
