@@ -1,52 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:38073 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753800AbcBHVXd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 8 Feb 2016 16:23:33 -0500
-Date: Mon, 8 Feb 2016 15:23:28 -0600
-From: Rob Herring <robh@kernel.org>
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2] iio: adc: add support for
- ADC0831/ADC0832/ADC0834/ADC0838 chips
-Message-ID: <20160208212328.GA1069@rob-hp-laptop>
-References: <1454836456-17033-1-git-send-email-akinobu.mita@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37954 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752932AbcBHSka (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 13:40:30 -0500
+Subject: Re: [PATCH 3/5] iio:ad5064: List support LTC devices in Kconfig
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1454950910-26049-1-git-send-email-lars@metafoo.de>
+ <1454950910-26049-3-git-send-email-lars@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Marc Andre <marc.andre@netline.ch>, linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56B8E119.5040904@kernel.org>
+Date: Mon, 8 Feb 2016 18:40:25 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1454836456-17033-1-git-send-email-akinobu.mita@gmail.com>
+In-Reply-To: <1454950910-26049-3-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Feb 07, 2016 at 06:14:16PM +0900, Akinobu Mita wrote:
-> This adds ADC0831/ADC0832/ADC0834/ADC0838 8-bit ADC driver.
-> I have tested with ADC0831 and ADC0832.  The remaining ADC0834 and
-> ADC0838 are very similar to ADC0832.
+On 08/02/16 17:01, Lars-Peter Clausen wrote:
+> List the newly support LTC devices in the Kconfig entry for the AD5064
+> driver.
 > 
-> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+I thought about merging this back into the previous patch
+but decided to be lazy and leave it as is.
+
+Applied to the togreg branch of iio.git - initially pushed
+out as testing for the autobuilders to play with it.
+
+Jonathan
 > ---
-> * v2 (Most changes are suggested by Jonathan Cameron)
-> - rename driver name from ti-adc083x to ti-adc0832
-> - simplify read_raw() by moving lock
-> - fix remove() of driver with correct unwinding
-> - enable untested chips (adc0831, adc0834, adc0838)
-> - fix adc0831_adc_conversion as a result of testing
+>  drivers/iio/dac/Kconfig | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
->  .../devicetree/bindings/iio/adc/ti-adc0832.txt     |  19 ++
-
-Acked-by: Rob Herring <robh@kernel.org>
-
->  drivers/iio/adc/Kconfig                            |  10 +
->  drivers/iio/adc/Makefile                           |   1 +
->  drivers/iio/adc/ti-adc0832.c                       | 288 +++++++++++++++++++++
->  4 files changed, 318 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc0832.txt
->  create mode 100644 drivers/iio/adc/ti-adc0832.c
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 5dc7150..a56b52d 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -11,7 +11,8 @@ config AD5064
+>  	help
+>  	  Say yes here to build support for Analog Devices AD5024, AD5025, AD5044,
+>  	  AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R, AD5648, AD5666, AD5668,
+> -	  AD5669R Digital to Analog Converter.
+> +	  AD5669R, LTC2606, LTC2607, LTC2609, LTC2616, LTC2617, LTC2619, LTC2626,
+> +	  LTC2627, LTC2629 Digital to Analog Converter.
+>  
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called ad5064.
 > 
+
