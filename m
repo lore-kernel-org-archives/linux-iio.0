@@ -1,231 +1,756 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail01.prevas.se ([62.95.78.3]:5776 "EHLO mail01.prevas.se"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751841AbcBIIWO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 9 Feb 2016 03:22:14 -0500
-Subject: Re: [PATCH v2 3/4] iio: ad5755: added full support for devicetree
-To: <linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-References: <1454509864-32285-1-git-send-email-sean.nyekjaer@prevas.dk>
- <1454509864-32285-2-git-send-email-sean.nyekjaer@prevas.dk>
- <1454509864-32285-3-git-send-email-sean.nyekjaer@prevas.dk>
-CC: <devicetree@vger.kernel.org>
-From: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>
-Message-ID: <56B9A1B2.6030007@prevas.dk>
-Date: Tue, 9 Feb 2016 09:22:10 +0100
+Received: from mail-io0-f193.google.com ([209.85.223.193]:33037 "EHLO
+	mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753011AbcBHCGX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Feb 2016 21:06:23 -0500
+Received: by mail-io0-f193.google.com with SMTP id f81so9043064iof.0
+        for <linux-iio@vger.kernel.org>; Sun, 07 Feb 2016 18:06:23 -0800 (PST)
+Date: Sun, 7 Feb 2016 20:06:14 -0600
+From: Michael Welling <mwelling@ieee.org>
+To: Adriana Reus <adriana.reus@intel.com>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com, ggao@invensense.com,
+	lucas.de.marchi@gmail.com
+Subject: Re: [PATCH v2 3/4] iio: imu: inv_mpu6050: Separate driver into core
+ and i2c functionality.
+Message-ID: <20160208020614.GB2554@deathstar>
+References: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
+ <1454577628-12708-4-git-send-email-adriana.reus@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1454509864-32285-3-git-send-email-sean.nyekjaer@prevas.dk>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1454577628-12708-4-git-send-email-adriana.reus@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-On 2016-02-03 15:31, Sean Nyekjaer wrote:
-> Devicetree can provide platform data
->
-> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Lars do you have time to look at this before i'm fixing the comments 
-from Jonathan and Rob :-)
-
-Sean
+On Thu, Feb 04, 2016 at 11:20:27AM +0200, Adriana Reus wrote:
+> Separate this driver into core and i2c functionality.
+> This is in preparation for adding spi support.
+> 
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
 > ---
-> Changes since v1:
-> - this patch added
->
-> I'm adding dt bindings header file with the same info as, the platform data as
-> the devicetree can't understand enums.
-> Please give an idea to work around this :-)
->
->   drivers/iio/dac/ad5755.c             | 87 +++++++++++++++++++++++++++++++++++-
->   include/dt-bindings/iio/adi,ad5755.h | 66 +++++++++++++++++++++++++++
->   2 files changed, 152 insertions(+), 1 deletion(-)
->   create mode 100644 include/dt-bindings/iio/adi,ad5755.h
->
-> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-> index e1b6e78..c1e2546 100644
-> --- a/drivers/iio/dac/ad5755.c
-> +++ b/drivers/iio/dac/ad5755.c
-> @@ -14,9 +14,11 @@
->   #include <linux/slab.h>
->   #include <linux/sysfs.h>
->   #include <linux/delay.h>
-> +#include <linux/of.h>
->   #include <linux/iio/iio.h>
->   #include <linux/iio/sysfs.h>
->   #include <linux/platform_data/ad5755.h>
-> +#include <dt-bindings/iio/adi,ad5755.h>
->   
->   #define AD5755_NUM_CHANNELS 4
->   
-> @@ -556,6 +558,82 @@ static const struct ad5755_platform_data ad5755_default_pdata = {
->   	},
->   };
->   
-> +#ifdef CONFIG_OF
-> +static struct ad5755_platform_data *ad5755_parse_dt(struct device *dev)
-> +{
-> +	struct device_node *np = dev->of_node;
-> +	struct device_node *pp;
-> +	struct ad5755_platform_data *pdata;
-> +	unsigned int tmp;
-> +	unsigned int tmparray[3];
-> +	int devnr;
+>  Changes since v1:
+>  * updated the documentation for struct inv_mpu6050_hw so that it
+>    reflects the changes made to the structure.
+> 
+>  drivers/iio/imu/inv_mpu6050/Kconfig           |  15 +-
+>  drivers/iio/imu/inv_mpu6050/Makefile          |   5 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |  14 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 208 ++++----------------------
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 207 +++++++++++++++++++++++++
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  12 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |   5 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |   4 +-
+>  8 files changed, 269 insertions(+), 201 deletions(-)
+>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> 
+> diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
+> index f301f3a..483f52d 100644
+> --- a/drivers/iio/imu/inv_mpu6050/Kconfig
+> +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
+> @@ -4,11 +4,9 @@
+>  
+>  config INV_MPU6050_IIO
+>  	tristate "Invensense MPU6050 devices"
+> -	depends on I2C && SYSFS
+> +	depends on SYSFS
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+> -	select I2C_MUX
+> -	select REGMAP_I2C
+>  	help
+>  	  This driver supports the Invensense MPU6050 devices.
+>  	  This driver can also support MPU6500 in MPU6050 compatibility mode
+> @@ -16,3 +14,14 @@ config INV_MPU6050_IIO
+>  	  It is a gyroscope/accelerometer combo device.
+>  	  This driver can be built as a module. The module will be called
+>  	  inv-mpu6050.
 > +
-> +	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-> +	if (!pdata)
-> +		return NULL;
-> +
-> +	pdata->ext_dc_dc_compenstation_resistor =
-> +	       of_property_read_bool(np, "adi,ext_dc_dc_compenstation_resistor");
-> +
-> +	if (!of_property_read_u32(np, "adi,dc_dc_phase", &tmp))
-> +		pdata->dc_dc_phase = tmp;
-> +	else
-> +		pdata->dc_dc_phase = AD5755_DC_DC_PHASE_ALL_SAME_EDGE;
-> +
-> +	if (!of_property_read_u32(np, "adi,dc_dc_freq", &tmp))
-> +		pdata->dc_dc_freq = tmp;
-> +	else
-> +		pdata->dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ;
-> +
-> +	if (!of_property_read_u32(np, "adi,dc_dc_maxv", &tmp))
-> +		pdata->dc_dc_maxv = tmp;
-> +	else
-> +		pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_23V;
-> +
-> +	devnr = 0;
-> +	for_each_child_of_node(np, pp) {
-> +		if (devnr > AD5755_NUM_CHANNELS) {
-> +			dev_err(dev, "There is to many channels defined in DT\n");
-> +			goto error_out;
-> +		}
-> +
-> +		if (!of_property_read_u32(pp, "adi,mode", &tmp))
-> +			pdata->dac[devnr].mode = tmp;
-> +		else
-> +			pdata->dac[devnr].mode = AD5755_MODE_CURRENT_4mA_20mA;
-> +
-> +		pdata->dac[devnr].ext_current_sense_resistor =
-> +		       of_property_read_bool(pp, "adi,ext_current_sense_resistor");
-> +
-> +		pdata->dac[devnr].enable_voltage_overrange =
-> +			of_property_read_bool(pp, "adi,enable_voltage_overrange");
-> +		if (!of_property_read_u32_array(pp, "adi,slew", tmparray, 3)) {
-> +			pdata->dac[devnr].slew.enable = tmparray[0];
-> +			pdata->dac[devnr].slew.rate = tmparray[1];
-> +			pdata->dac[devnr].slew.step_size = tmparray[2];
-> +		} else {
-> +			pdata->dac[devnr].slew.enable = false;
-> +			pdata->dac[devnr].slew.rate = AD5755_SLEW_RATE_64k;
-> +			pdata->dac[devnr].slew.step_size = AD5755_SLEW_STEP_SIZE_1;
-> +		}
-> +
-> +		devnr++;
-> +	}
-> +
-> +	return pdata;
-> +
-> +error_out:
-> +	devm_kfree(dev, pdata);
-> +	return NULL;
-> +}
-> +#else
-> +static
-> +struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
-> +{
-> +	return NULL;
-> +}
-> +#endif
-> +
->   static int ad5755_probe(struct spi_device *spi)
->   {
->   	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
-> @@ -583,8 +661,15 @@ static int ad5755_probe(struct spi_device *spi)
->   	indio_dev->modes = INDIO_DIRECT_MODE;
->   	indio_dev->num_channels = AD5755_NUM_CHANNELS;
->   
-> -	if (!pdata)
-> +	if (spi->dev.of_node)
-> +		pdata = ad5755_parse_dt(&spi->dev);
-> +	else
-> +		pdata = spi->dev.platform_data;
-> +
-> +	if (!pdata) {
-> +		dev_warn(&spi->dev, "no platform data? using default\n");
->   		pdata = &ad5755_default_pdata;
-> +	}
->   
->   	ret = ad5755_init_channels(indio_dev, pdata);
->   	if (ret)
-> diff --git a/include/dt-bindings/iio/adi,ad5755.h b/include/dt-bindings/iio/adi,ad5755.h
-> new file mode 100644
-> index 0000000..117466b
-> --- /dev/null
-> +++ b/include/dt-bindings/iio/adi,ad5755.h
-> @@ -0,0 +1,66 @@
-> +/*
-> + * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 and
-> + * only version 2 as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#ifndef _DT_BINDINGS_AD5755_H
-> +#define _DT_BINDINGS_AD5755_H
-> +
-> +#define	AD5755_MODE_VOLTAGE_0V_5V			0
-> +#define AD5755_MODE_VOLTAGE_0V_10V			1
-> +#define AD5755_MODE_VOLTAGE_PLUSMINUS_5V		2
-> +#define AD5755_MODE_VOLTAGE_PLUSMINUS_10V		3
-> +#define AD5755_MODE_CURRENT_4mA_20mA			4
-> +#define AD5755_MODE_CURRENT_0mA_20mA			5
-> +#define AD5755_MODE_CURRENT_0mA_24mA			6
-> +
-> +#define AD5755_DC_DC_PHASE_ALL_SAME_EDGE		0
-> +#define AD5755_DC_DC_PHASE_A_B_SAME_EDGE_C_D_OPP_EDGE	1
-> +#define AD5755_DC_DC_PHASE_A_C_SAME_EDGE_B_D_OPP_EDGE	2
-> +#define AD5755_DC_DC_PHASE_90_DEGREE			3
-> +
-> +#define AD5755_DC_DC_FREQ_250kHZ			0
-> +#define AD5755_DC_DC_FREQ_410kHZ			1
-> +#define AD5755_DC_DC_FREQ_650kHZ			2
-> +
-> +#define AD5755_DC_DC_MAXV_23V				0
-> +#define AD5755_DC_DC_MAXV_24V5				1
-> +#define AD5755_DC_DC_MAXV_27V				2
-> +#define AD5755_DC_DC_MAXV_29V5				3
-> +
-> +#define AD5755_SLEW_RATE_64k				0
-> +#define AD5755_SLEW_RATE_32k				1
-> +#define AD5755_SLEW_RATE_16k				2
-> +#define AD5755_SLEW_RATE_8k				3
-> +#define AD5755_SLEW_RATE_4k				4
-> +#define AD5755_SLEW_RATE_2k				5
-> +#define AD5755_SLEW_RATE_1k				6
-> +#define AD5755_SLEW_RATE_500				7
-> +#define AD5755_SLEW_RATE_250				8
-> +#define AD5755_SLEW_RATE_125				9
-> +#define AD5755_SLEW_RATE_64				10
-> +#define AD5755_SLEW_RATE_32				11
-> +#define AD5755_SLEW_RATE_16				12
-> +#define AD5755_SLEW_RATE_8				13
-> +#define AD5755_SLEW_RATE_4				14
-> +#define AD5755_SLEW_RATE_0_5				15
-> +
-> +#define AD5755_SLEW_STEP_SIZE_1				0
-> +#define AD5755_SLEW_STEP_SIZE_2				1
-> +#define AD5755_SLEW_STEP_SIZE_4				2
-> +#define AD5755_SLEW_STEP_SIZE_8				3
-> +#define AD5755_SLEW_STEP_SIZE_16 			4
-> +#define AD5755_SLEW_STEP_SIZE_32			5
-> +#define AD5755_SLEW_STEP_SIZE_64			6
-> +#define AD5755_SLEW_STEP_SIZE_128			7
-> +#define AD5755_SLEW_STEP_SIZE_256			8
-> +
-> +#endif				/* _DT_BINDINGS_AD5755_H */
+> +config INV_MPU6050_I2C
+> +	tristate "Invensense MPU6050 devices"
 
+This should probably be "Invensense MPU6050 devices I2C" or similar.
+
+> +	depends on I2C
+> +	select INV_MPU6050_IIO
+> +	select I2C_MUX
+> +	select REGMAP_I2C
+> +	help
+> +	  This driver can be built as a module. The module will be called
+> +	  inv-mpu6050-i2c.
+> +
+> diff --git a/drivers/iio/imu/inv_mpu6050/Makefile b/drivers/iio/imu/inv_mpu6050/Makefile
+> index f566f6a..ca4941d 100644
+> --- a/drivers/iio/imu/inv_mpu6050/Makefile
+> +++ b/drivers/iio/imu/inv_mpu6050/Makefile
+> @@ -3,4 +3,7 @@
+>  #
+>  
+>  obj-$(CONFIG_INV_MPU6050_IIO) += inv-mpu6050.o
+> -inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o inv_mpu_acpi.o
+> +inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o
+> +
+> +obj-$(CONFIG_INV_MPU6050_I2C) += inv-mpu6050-i2c.o
+> +inv-mpu6050-i2c-objs := inv_mpu_i2c.o inv_mpu_acpi.o
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> index 1c982a5..36d7067 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> @@ -139,22 +139,23 @@ static int inv_mpu_process_acpi_config(struct i2c_client *client,
+>  	return 0;
+>  }
+>  
+> -int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st)
+> +int inv_mpu_acpi_create_mux_client(struct i2c_client *client)
+>  {
+> +	struct inv_mpu6050_state *st = iio_priv(dev_get_drvdata(&client->dev));
+>  
+>  	st->mux_client = NULL;
+> -	if (ACPI_HANDLE(&st->client->dev)) {
+> +	if (ACPI_HANDLE(&client->dev)) {
+>  		struct i2c_board_info info;
+>  		struct acpi_device *adev;
+>  		int ret = -1;
+>  
+> -		adev = ACPI_COMPANION(&st->client->dev);
+> +		adev = ACPI_COMPANION(&client->dev);
+>  		memset(&info, 0, sizeof(info));
+>  
+>  		dmi_check_system(inv_mpu_dev_list);
+>  		switch (matched_product_name) {
+>  		case INV_MPU_ASUS_T100TA:
+> -			ret = asus_acpi_get_sensor_info(adev, st->client,
+> +			ret = asus_acpi_get_sensor_info(adev, client,
+>  							&info);
+>  			break;
+>  		/* Add more matched product processing here */
+> @@ -166,7 +167,7 @@ int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st)
+>  			/* No matching DMI, so create device on INV6XX type */
+>  			unsigned short primary, secondary;
+>  
+> -			ret = inv_mpu_process_acpi_config(st->client, &primary,
+> +			ret = inv_mpu_process_acpi_config(client, &primary,
+>  							  &secondary);
+>  			if (!ret && secondary) {
+>  				char *name;
+> @@ -191,8 +192,9 @@ int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st)
+>  	return 0;
+>  }
+>  
+> -void inv_mpu_acpi_delete_mux_client(struct inv_mpu6050_state *st)
+> +void inv_mpu_acpi_delete_mux_client(struct i2c_client *client)
+>  {
+> +	struct inv_mpu6050_state *st = iio_priv(dev_get_drvdata(&client->dev));
+>  	if (st->mux_client)
+>  		i2c_unregister_device(st->mux_client);
+>  }
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 151a378..7b46db5 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -27,11 +27,6 @@
+>  #include <linux/acpi.h>
+>  #include "inv_mpu_iio.h"
+>  
+> -static const struct regmap_config inv_mpu_regmap_config = {
+> -	.reg_bits = 8,
+> -	.val_bits = 8,
+> -};
+> -
+>  /*
+>   * this is the gyro scale translated from dynamic range plus/minus
+>   * {250, 500, 1000, 2000} to rad/s
+> @@ -80,83 +75,6 @@ static const struct inv_mpu6050_hw hw_info[INV_NUM_PARTS] = {
+>  	},
+>  };
+>  
+> -/*
+> - * The i2c read/write needs to happen in unlocked mode. As the parent
+> - * adapter is common. If we use locked versions, it will fail as
+> - * the mux adapter will lock the parent i2c adapter, while calling
+> - * select/deselect functions.
+> - */
+> -static int inv_mpu6050_write_reg_unlocked(struct inv_mpu6050_state *st,
+> -					  u8 reg, u8 d)
+> -{
+> -	int ret;
+> -	u8 buf[2];
+> -	struct i2c_msg msg[1] = {
+> -		{
+> -			.addr = st->client->addr,
+> -			.flags = 0,
+> -			.len = sizeof(buf),
+> -			.buf = buf,
+> -		}
+> -	};
+> -
+> -	buf[0] = reg;
+> -	buf[1] = d;
+> -	ret = __i2c_transfer(st->client->adapter, msg, 1);
+> -	if (ret != 1)
+> -		return ret;
+> -
+> -	return 0;
+> -}
+> -
+> -static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
+> -				     u32 chan_id)
+> -{
+> -	struct iio_dev *indio_dev = mux_priv;
+> -	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> -	int ret = 0;
+> -
+> -	/* Use the same mutex which was used everywhere to protect power-op */
+> -	mutex_lock(&indio_dev->mlock);
+> -	if (!st->powerup_count) {
+> -		ret = inv_mpu6050_write_reg_unlocked(st, st->reg->pwr_mgmt_1,
+> -						     0);
+> -		if (ret)
+> -			goto write_error;
+> -
+> -		msleep(INV_MPU6050_REG_UP_TIME);
+> -	}
+> -	if (!ret) {
+> -		st->powerup_count++;
+> -		ret = inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
+> -						     INV_MPU6050_INT_PIN_CFG |
+> -						     INV_MPU6050_BIT_BYPASS_EN);
+> -	}
+> -write_error:
+> -	mutex_unlock(&indio_dev->mlock);
+> -
+> -	return ret;
+> -}
+> -
+> -static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
+> -				       void *mux_priv, u32 chan_id)
+> -{
+> -	struct iio_dev *indio_dev = mux_priv;
+> -	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> -
+> -	mutex_lock(&indio_dev->mlock);
+> -	/* It doesn't really mattter, if any of the calls fails */
+> -	inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
+> -				       INV_MPU6050_INT_PIN_CFG);
+> -	st->powerup_count--;
+> -	if (!st->powerup_count)
+> -		inv_mpu6050_write_reg_unlocked(st, st->reg->pwr_mgmt_1,
+> -					       INV_MPU6050_BIT_SLEEP);
+> -	mutex_unlock(&indio_dev->mlock);
+> -
+> -	return 0;
+> -}
+> -
+>  int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+>  {
+>  	unsigned int d, mgmt_1;
+> @@ -758,42 +676,23 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
+>  	return 0;
+>  }
+>  
+> -/**
+> - *  inv_mpu_probe() - probe function.
+> - *  @client:          i2c client.
+> - *  @id:              i2c device id.
+> - *
+> - *  Returns 0 on success, a negative error code otherwise.
+> - */
+> -static int inv_mpu_probe(struct i2c_client *client,
+> -	const struct i2c_device_id *id)
+> +int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name)
+>  {
+>  	struct inv_mpu6050_state *st;
+>  	struct iio_dev *indio_dev;
+>  	struct inv_mpu6050_platform_data *pdata;
+> +	struct device *dev = regmap_get_device(regmap);
+>  	int result;
+> -	struct regmap *regmap;
+>  
+> -	if (!i2c_check_functionality(client->adapter,
+> -		I2C_FUNC_SMBUS_I2C_BLOCK))
+> -		return -ENOSYS;
+> -
+> -	regmap = devm_regmap_init_i2c(client, &inv_mpu_regmap_config);
+> -	if (IS_ERR(regmap)) {
+> -		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
+> -			(int)PTR_ERR(regmap));
+> -		return PTR_ERR(regmap);
+> -	}
+> -
+> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+>  
+>  	st = iio_priv(indio_dev);
+> -	st->client = client;
+>  	st->powerup_count = 0;
+> +	st->irq = irq;
+>  	st->map = regmap;
+> -	pdata = dev_get_platdata(&client->dev);
+> +	pdata = dev_get_platdata(dev);
+>  	if (pdata)
+>  		st->plat_data = *pdata;
+>  	/* power is turned on inside check chip type*/
+> @@ -803,18 +702,17 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  
+>  	result = inv_mpu6050_init_config(indio_dev);
+>  	if (result) {
+> -		dev_err(&client->dev,
+> -			"Could not initialize device.\n");
+> +		dev_err(dev, "Could not initialize device.\n");
+>  		return result;
+>  	}
+>  
+> -	i2c_set_clientdata(client, indio_dev);
+> -	indio_dev->dev.parent = &client->dev;
+> -	/* id will be NULL when enumerated via ACPI */
+> -	if (id)
+> -		indio_dev->name = (char *)id->name;
+> +	dev_set_drvdata(dev, indio_dev);
+> +	indio_dev->dev.parent = dev;
+> +	/* name will be NULL when enumerated via ACPI */
+> +	if (name)
+> +		indio_dev->name = name;
+>  	else
+> -		indio_dev->name = (char *)dev_name(&client->dev);
+> +		indio_dev->name = dev_name(dev);
+>  	indio_dev->channels = inv_mpu_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
+>  
+> @@ -826,13 +724,12 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  					    inv_mpu6050_read_fifo,
+>  					    NULL);
+>  	if (result) {
+> -		dev_err(&st->client->dev, "configure buffer fail %d\n",
+> -				result);
+> +		dev_err(dev, "configure buffer fail %d\n", result);
+>  		return result;
+>  	}
+>  	result = inv_mpu6050_probe_trigger(indio_dev);
+>  	if (result) {
+> -		dev_err(&st->client->dev, "trigger probe fail %d\n", result);
+> +		dev_err(dev, "trigger probe fail %d\n", result);
+>  		goto out_unreg_ring;
+>  	}
+>  
+> @@ -840,102 +737,47 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  	spin_lock_init(&st->time_stamp_lock);
+>  	result = iio_device_register(indio_dev);
+>  	if (result) {
+> -		dev_err(&st->client->dev, "IIO register fail %d\n", result);
+> +		dev_err(dev, "IIO register fail %d\n", result);
+>  		goto out_remove_trigger;
+>  	}
+>  
+> -	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
+> -					      &client->dev,
+> -					      indio_dev,
+> -					      0, 0, 0,
+> -					      inv_mpu6050_select_bypass,
+> -					      inv_mpu6050_deselect_bypass);
+> -	if (!st->mux_adapter) {
+> -		result = -ENODEV;
+> -		goto out_unreg_device;
+> -	}
+> -
+> -	result = inv_mpu_acpi_create_mux_client(st);
+> -	if (result)
+> -		goto out_del_mux;
+> -
+>  	return 0;
+>  
+> -out_del_mux:
+> -	i2c_del_mux_adapter(st->mux_adapter);
+> -out_unreg_device:
+> -	iio_device_unregister(indio_dev);
+>  out_remove_trigger:
+>  	inv_mpu6050_remove_trigger(st);
+>  out_unreg_ring:
+>  	iio_triggered_buffer_cleanup(indio_dev);
+>  	return result;
+>  }
+> +EXPORT_SYMBOL_GPL(inv_mpu_core_probe);
+>  
+> -static int inv_mpu_remove(struct i2c_client *client)
+> +int inv_mpu_core_remove(struct device  *dev)
+>  {
+> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> -	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>  
+> -	inv_mpu_acpi_delete_mux_client(st);
+> -	i2c_del_mux_adapter(st->mux_adapter);
+>  	iio_device_unregister(indio_dev);
+> -	inv_mpu6050_remove_trigger(st);
+> +	inv_mpu6050_remove_trigger(iio_priv(indio_dev));
+>  	iio_triggered_buffer_cleanup(indio_dev);
+>  
+>  	return 0;
+>  }
+> +EXPORT_SYMBOL_GPL(inv_mpu_core_remove);
+> +
+>  #ifdef CONFIG_PM_SLEEP
+>  
+>  static int inv_mpu_resume(struct device *dev)
+>  {
+> -	return inv_mpu6050_set_power_itg(
+> -		iio_priv(i2c_get_clientdata(to_i2c_client(dev))), true);
+> +	return inv_mpu6050_set_power_itg(iio_priv(dev_get_drvdata(dev)), true);
+>  }
+>  
+>  static int inv_mpu_suspend(struct device *dev)
+>  {
+> -	return inv_mpu6050_set_power_itg(
+> -		iio_priv(i2c_get_clientdata(to_i2c_client(dev))), false);
+> +	return inv_mpu6050_set_power_itg(iio_priv(dev_get_drvdata(dev)), false);
+>  }
+> -static SIMPLE_DEV_PM_OPS(inv_mpu_pmops, inv_mpu_suspend, inv_mpu_resume);
+> -
+> -#define INV_MPU6050_PMOPS (&inv_mpu_pmops)
+> -#else
+> -#define INV_MPU6050_PMOPS NULL
+>  #endif /* CONFIG_PM_SLEEP */
+>  
+> -/*
+> - * device id table is used to identify what device can be
+> - * supported by this driver
+> - */
+> -static const struct i2c_device_id inv_mpu_id[] = {
+> -	{"mpu6050", INV_MPU6050},
+> -	{"mpu6500", INV_MPU6500},
+> -	{}
+> -};
+> -
+> -MODULE_DEVICE_TABLE(i2c, inv_mpu_id);
+> -
+> -static const struct acpi_device_id inv_acpi_match[] = {
+> -	{"INVN6500", 0},
+> -	{ },
+> -};
+> -
+> -MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
+> -
+> -static struct i2c_driver inv_mpu_driver = {
+> -	.probe		=	inv_mpu_probe,
+> -	.remove		=	inv_mpu_remove,
+> -	.id_table	=	inv_mpu_id,
+> -	.driver = {
+> -		.name	=	"inv-mpu6050",
+> -		.pm     =       INV_MPU6050_PMOPS,
+> -		.acpi_match_table = ACPI_PTR(inv_acpi_match),
+> -	},
+> -};
+> -
+> -module_i2c_driver(inv_mpu_driver);
+> +SIMPLE_DEV_PM_OPS(inv_mpu_pmops, inv_mpu_suspend, inv_mpu_resume);
+> +EXPORT_SYMBOL_GPL(inv_mpu_pmops);
+>  
+>  MODULE_AUTHOR("Invensense Corporation");
+>  MODULE_DESCRIPTION("Invensense device MPU6050 driver");
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> new file mode 100644
+> index 0000000..6c225a0
+> --- /dev/null
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> @@ -0,0 +1,207 @@
+> +/*
+> +* Copyright (C) 2012 Invensense, Inc.
+> +*
+> +* This software is licensed under the terms of the GNU General Public
+> +* License version 2, as published by the Free Software Foundation, and
+> +* may be copied, distributed, and modified under those terms.
+> +*
+> +* This program is distributed in the hope that it will be useful,
+> +* but WITHOUT ANY WARRANTY; without even the implied warranty of
+> +* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> +* GNU General Public License for more details.
+> +*/
+> +
+> +#include <linux/acpi.h>
+> +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/i2c-mux.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/module.h>
+> +#include "inv_mpu_iio.h"
+> +
+> +static const struct regmap_config inv_mpu_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +};
+> +
+> +/*
+> + * The i2c read/write needs to happen in unlocked mode. As the parent
+> + * adapter is common. If we use locked versions, it will fail as
+> + * the mux adapter will lock the parent i2c adapter, while calling
+> + * select/deselect functions.
+> + */
+> +static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
+> +					  u8 reg, u8 d)
+> +{
+> +	int ret;
+> +	u8 buf[2] = {reg, d};
+> +	struct i2c_msg msg[1] = {
+> +		{
+> +			.addr = client->addr,
+> +			.flags = 0,
+> +			.len = sizeof(buf),
+> +			.buf = buf,
+> +		}
+> +	};
+> +
+> +	ret = __i2c_transfer(client->adapter, msg, 1);
+> +	if (ret != 1)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
+> +				     u32 chan_id)
+> +{
+> +	struct i2c_client *client = mux_priv;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
+> +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> +	int ret = 0;
+> +
+> +	/* Use the same mutex which was used everywhere to protect power-op */
+> +	mutex_lock(&indio_dev->mlock);
+> +	if (!st->powerup_count) {
+> +		ret = inv_mpu6050_write_reg_unlocked(client,
+> +						     st->reg->pwr_mgmt_1, 0);
+> +		if (ret)
+> +			goto write_error;
+> +
+> +		msleep(INV_MPU6050_REG_UP_TIME);
+> +	}
+> +	if (!ret) {
+> +		st->powerup_count++;
+> +		ret = inv_mpu6050_write_reg_unlocked(client,
+> +						     st->reg->int_pin_cfg,
+> +						     INV_MPU6050_INT_PIN_CFG |
+> +						     INV_MPU6050_BIT_BYPASS_EN);
+> +	}
+> +write_error:
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
+> +				       void *mux_priv, u32 chan_id)
+> +{
+> +	struct i2c_client *client = mux_priv;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
+> +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	/* It doesn't really mattter, if any of the calls fails */
+> +	inv_mpu6050_write_reg_unlocked(client, st->reg->int_pin_cfg,
+> +				       INV_MPU6050_INT_PIN_CFG);
+> +	st->powerup_count--;
+> +	if (!st->powerup_count)
+> +		inv_mpu6050_write_reg_unlocked(client, st->reg->pwr_mgmt_1,
+> +					       INV_MPU6050_BIT_SLEEP);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + *  inv_mpu_probe() - probe function.
+> + *  @client:          i2c client.
+> + *  @id:              i2c device id.
+> + *
+> + *  Returns 0 on success, a negative error code otherwise.
+> + */
+> +static int inv_mpu_probe(struct i2c_client *client,
+> +	const struct i2c_device_id *id)
+> +{
+> +	struct inv_mpu6050_state *st;
+> +	int result;
+> +	const char *name = id ? id->name : NULL;
+> +	struct regmap *regmap;
+> +
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_I2C_BLOCK))
+> +		return -ENOSYS;
+> +
+> +	regmap = devm_regmap_init_i2c(client, &inv_mpu_regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
+> +			(int)PTR_ERR(regmap));
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	result = inv_mpu_core_probe(regmap, client->irq, name);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	st = iio_priv(dev_get_drvdata(&client->dev));
+> +	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
+> +					      &client->dev,
+> +					      client,
+> +					      0, 0, 0,
+> +					      inv_mpu6050_select_bypass,
+> +					      inv_mpu6050_deselect_bypass);
+> +	if (!st->mux_adapter) {
+> +		result = -ENODEV;
+> +		goto out_unreg_device;
+> +	}
+> +
+> +	result = inv_mpu_acpi_create_mux_client(client);
+> +	if (result)
+> +		goto out_del_mux;
+> +
+> +	return 0;
+> +
+> +out_del_mux:
+> +	i2c_del_mux_adapter(st->mux_adapter);
+> +out_unreg_device:
+> +	inv_mpu_core_remove(&client->dev);
+> +	return result;
+> +}
+> +
+> +static int inv_mpu_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> +
+> +	inv_mpu_acpi_delete_mux_client(client);
+> +	i2c_del_mux_adapter(st->mux_adapter);
+> +
+> +	return inv_mpu_core_remove(&client->dev);
+> +}
+> +
+> +/*
+> + * device id table is used to identify what device can be
+> + * supported by this driver
+> + */
+> +static const struct i2c_device_id inv_mpu_id[] = {
+> +	{"mpu6050", INV_MPU6050},
+> +	{"mpu6500", INV_MPU6500},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(i2c, inv_mpu_id);
+> +
+> +static const struct acpi_device_id inv_acpi_match[] = {
+> +	{"INVN6500", 0},
+> +	{ },
+> +};
+> +
+> +MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
+> +
+> +static struct i2c_driver inv_mpu_driver = {
+> +	.probe		=	inv_mpu_probe,
+> +	.remove		=	inv_mpu_remove,
+> +	.id_table	=	inv_mpu_id,
+> +	.driver = {
+> +		.owner	=	THIS_MODULE,
+> +		.acpi_match_table = ACPI_PTR(inv_acpi_match),
+> +		.name	=	"inv-mpu6050 i2c driver",
+> +		.pm     =       &inv_mpu_pmops,
+> +	},
+> +};
+> +
+> +module_i2c_driver(inv_mpu_driver);
+> +
+> +MODULE_AUTHOR("Invensense Corporation");
+> +MODULE_DESCRIPTION("Invensense device MPU6050 driver");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index 469cd1f..1bf65a0 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -108,9 +108,10 @@ struct inv_mpu6050_hw {
+>   *  @hw:		Other hardware-specific information.
+>   *  @chip_type:		chip type.
+>   *  @time_stamp_lock:	spin lock to time stamp.
+> - *  @client:		i2c client handle.
+>   *  @plat_data:		platform data.
+>   *  @timestamps:        kfifo queue to store time stamp.
+> + *  @map		regmap pointer.
+> + *  @irq		interrupt number.
+>   */
+>  struct inv_mpu6050_state {
+>  #define TIMESTAMP_FIFO_SIZE 16
+> @@ -120,13 +121,13 @@ struct inv_mpu6050_state {
+>  	const struct inv_mpu6050_hw *hw;
+>  	enum   inv_devices chip_type;
+>  	spinlock_t time_stamp_lock;
+> -	struct i2c_client *client;
+>  	struct i2c_adapter *mux_adapter;
+>  	struct i2c_client *mux_client;
+>  	unsigned int powerup_count;
+>  	struct inv_mpu6050_platform_data plat_data;
+>  	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
+>  	struct regmap *map;
+> +	int irq;
+>  };
+>  
+>  /*register and associated bit definition*/
+> @@ -255,5 +256,8 @@ int inv_reset_fifo(struct iio_dev *indio_dev);
+>  int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask);
+>  int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 val);
+>  int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on);
+> -int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st);
+> -void inv_mpu_acpi_delete_mux_client(struct inv_mpu6050_state *st);
+> +int inv_mpu_acpi_create_mux_client(struct i2c_client *client);
+> +void inv_mpu_acpi_delete_mux_client(struct i2c_client *client);
+> +int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name);
+> +int inv_mpu_core_remove(struct device *dev);
+> +extern const struct dev_pm_ops inv_mpu_pmops;
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> index eb19dae..1fc5fd9 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> @@ -42,7 +42,8 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  	/* disable interrupt */
+>  	result = regmap_write(st->map, st->reg->int_enable, 0);
+>  	if (result) {
+> -		dev_err(&st->client->dev, "int_enable failed %d\n", result);
+> +		dev_err(regmap_get_device(st->map), "int_enable failed %d\n",
+> +			result);
+>  		return result;
+>  	}
+>  	/* disable the sensor output to FIFO */
+> @@ -89,7 +90,7 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  	return 0;
+>  
+>  reset_fifo_fail:
+> -	dev_err(&st->client->dev, "reset fifo failed %d\n", result);
+> +	dev_err(regmap_get_device(st->map), "reset fifo failed %d\n", result);
+>  	result = regmap_write(st->map, st->reg->int_enable,
+>  					INV_MPU6050_BIT_DATA_RDY_EN);
+>  
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> index ee9e66d..72d6aae 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> @@ -123,7 +123,7 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
+>  	if (!st->trig)
+>  		return -ENOMEM;
+>  
+> -	ret = devm_request_irq(&indio_dev->dev, st->client->irq,
+> +	ret = devm_request_irq(&indio_dev->dev, st->irq,
+>  			       &iio_trigger_generic_data_rdy_poll,
+>  			       IRQF_TRIGGER_RISING,
+>  			       "inv_mpu",
+> @@ -131,7 +131,7 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
+>  	if (ret)
+>  		return ret;
+>  
+> -	st->trig->dev.parent = &st->client->dev;
+> +	st->trig->dev.parent = regmap_get_device(st->map);
+>  	st->trig->ops = &inv_mpu_trigger_ops;
+>  	iio_trigger_set_drvdata(st->trig, indio_dev);
+>  
+> -- 
+> 1.9.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
