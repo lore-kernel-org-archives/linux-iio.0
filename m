@@ -1,214 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37895 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37916 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750982AbcBHSbN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 13:31:13 -0500
-Subject: Re: [PATCH v2] staging:iio:ad7606: Consolidate PM ops
-To: Lars-Peter Clausen <lars@metafoo.de>
-References: <1454926409-3178-1-git-send-email-lars@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+	with ESMTP id S1754857AbcBHSew (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 13:34:52 -0500
+Subject: Re: [PATCH] iio: Fix documentation for iio_dev mlock
+To: Daniel Baluta <daniel.baluta@intel.com>
+References: <1454943795-7582-1-git-send-email-daniel.baluta@intel.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B8DEEE.9040600@kernel.org>
-Date: Mon, 8 Feb 2016 18:31:10 +0000
+Message-ID: <56B8DFCA.9010807@kernel.org>
+Date: Mon, 8 Feb 2016 18:34:50 +0000
 MIME-Version: 1.0
-In-Reply-To: <1454926409-3178-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1454943795-7582-1-git-send-email-daniel.baluta@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/02/16 10:13, Lars-Peter Clausen wrote:
-> Both the SPI and platform device driver for the ad7606 use the same set of
-> PM ops. Consolidate them in the common part of the driver.
+On 08/02/16 15:03, Daniel Baluta wrote:
+> mlock *must* be used by core and drivers to protect access
+> to devices state changes.
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied. Thanks for doing the rebase,
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied. Thanks for cleaning this up.
 
 Jonathan
 > ---
-> Changes since v1:
-> 	* Rebased onto latest iio/testing
-> ---
->  drivers/staging/iio/adc/ad7606.h      | 10 ++++++++--
->  drivers/staging/iio/adc/ad7606_core.c | 19 +++++++++++++++----
->  drivers/staging/iio/adc/ad7606_par.c  | 32 +-------------------------------
->  drivers/staging/iio/adc/ad7606_spi.c  | 32 +-------------------------------
->  4 files changed, 25 insertions(+), 68 deletions(-)
+> At a first glance there are few places where access to iio_dev
+> state changes are done without mlock protection. Will fix them
+> with follow up patches.
 > 
-> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-> index ec89d05..cca9469 100644
-> --- a/drivers/staging/iio/adc/ad7606.h
-> +++ b/drivers/staging/iio/adc/ad7606.h
-> @@ -85,8 +85,6 @@ struct ad7606_bus_ops {
->  	int (*read_block)(struct device *, int, void *);
->  };
->  
-> -void ad7606_suspend(struct iio_dev *indio_dev);
-> -void ad7606_resume(struct iio_dev *indio_dev);
->  struct iio_dev *ad7606_probe(struct device *dev, int irq,
->  			      void __iomem *base_address, unsigned id,
->  			      const struct ad7606_bus_ops *bops);
-> @@ -101,4 +99,12 @@ enum ad7606_supported_device_ids {
->  
->  int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev);
->  void ad7606_ring_cleanup(struct iio_dev *indio_dev);
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +extern const struct dev_pm_ops ad7606_pm_ops;
-> +#define AD7606_PM_OPS (&ad7606_pm_ops)
-> +#else
-> +#define AD7606_PM_OPS NULL
-> +#endif
-> +
->  #endif /* IIO_ADC_AD7606_H_ */
-> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index 263f981..fe6caee 100644
-> --- a/drivers/staging/iio/adc/ad7606_core.c
-> +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -560,8 +560,11 @@ int ad7606_remove(struct iio_dev *indio_dev, int irq)
->  }
->  EXPORT_SYMBOL_GPL(ad7606_remove);
->  
-> -void ad7606_suspend(struct iio_dev *indio_dev)
-> +#ifdef CONFIG_PM_SLEEP
-> +
-> +static int ad7606_suspend(struct device *dev)
->  {
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ad7606_state *st = iio_priv(indio_dev);
->  
->  	if (gpio_is_valid(st->pdata->gpio_stby)) {
-> @@ -569,11 +572,13 @@ void ad7606_suspend(struct iio_dev *indio_dev)
->  			gpio_set_value(st->pdata->gpio_range, 1);
->  		gpio_set_value(st->pdata->gpio_stby, 0);
->  	}
-> +
-> +	return 0;
->  }
-> -EXPORT_SYMBOL_GPL(ad7606_suspend);
->  
-> -void ad7606_resume(struct iio_dev *indio_dev)
-> +static int ad7606_resume(struct device *dev)
->  {
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ad7606_state *st = iio_priv(indio_dev);
->  
->  	if (gpio_is_valid(st->pdata->gpio_stby)) {
-> @@ -584,8 +589,14 @@ void ad7606_resume(struct iio_dev *indio_dev)
->  		gpio_set_value(st->pdata->gpio_stby, 1);
->  		ad7606_reset(st);
->  	}
-> +
-> +	return 0;
->  }
-> -EXPORT_SYMBOL_GPL(ad7606_resume);
-> +
-> +SIMPLE_DEV_PM_OPS(ad7606_pm_ops, ad7606_suspend, ad7606_resume);
-> +EXPORT_SYMBOL_GPL(ad7606_pm_ops);
-> +
-> +#endif
->  
->  MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
->  MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
-> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-> index adc370e..84d2393 100644
-> --- a/drivers/staging/iio/adc/ad7606_par.c
-> +++ b/drivers/staging/iio/adc/ad7606_par.c
-> @@ -90,36 +90,6 @@ static int ad7606_par_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> -#ifdef CONFIG_PM
-> -static int ad7606_par_suspend(struct device *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	ad7606_suspend(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -static int ad7606_par_resume(struct device *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	ad7606_resume(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -static const struct dev_pm_ops ad7606_pm_ops = {
-> -	.suspend = ad7606_par_suspend,
-> -	.resume  = ad7606_par_resume,
-> -};
-> -
-> -#define AD7606_PAR_PM_OPS (&ad7606_pm_ops)
-> -
-> -#else
-> -#define AD7606_PAR_PM_OPS NULL
-> -#endif  /* CONFIG_PM */
-> -
->  static const struct platform_device_id ad7606_driver_ids[] = {
->  	{
->  		.name		= "ad7606-8",
-> @@ -142,7 +112,7 @@ static struct platform_driver ad7606_driver = {
->  	.id_table = ad7606_driver_ids,
->  	.driver = {
->  		.name	 = "ad7606",
-> -		.pm    = AD7606_PAR_PM_OPS,
-> +		.pm	 = AD7606_PM_OPS,
->  	},
->  };
->  
-> diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-> index cbb3631..d873a51 100644
-> --- a/drivers/staging/iio/adc/ad7606_spi.c
-> +++ b/drivers/staging/iio/adc/ad7606_spi.c
-> @@ -62,36 +62,6 @@ static int ad7606_spi_remove(struct spi_device *spi)
->  	return ad7606_remove(indio_dev, spi->irq);
->  }
->  
-> -#ifdef CONFIG_PM
-> -static int ad7606_spi_suspend(struct device *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	ad7606_suspend(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -static int ad7606_spi_resume(struct device *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	ad7606_resume(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -static const struct dev_pm_ops ad7606_pm_ops = {
-> -	.suspend = ad7606_spi_suspend,
-> -	.resume  = ad7606_spi_resume,
-> -};
-> -
-> -#define AD7606_SPI_PM_OPS (&ad7606_pm_ops)
-> -
-> -#else
-> -#define AD7606_SPI_PM_OPS NULL
-> -#endif
-> -
->  static const struct spi_device_id ad7606_id[] = {
->  	{"ad7606-8", ID_AD7606_8},
->  	{"ad7606-6", ID_AD7606_6},
-> @@ -103,7 +73,7 @@ MODULE_DEVICE_TABLE(spi, ad7606_id);
->  static struct spi_driver ad7606_driver = {
->  	.driver = {
->  		.name = "ad7606",
-> -		.pm    = AD7606_SPI_PM_OPS,
-> +		.pm = AD7606_PM_OPS,
->  	},
->  	.probe = ad7606_spi_probe,
->  	.remove = ad7606_spi_remove,
+>  include/linux/iio/iio.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index b589411..ce9e9c1 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -448,7 +448,7 @@ struct iio_buffer_setup_ops {
+>   * @buffer:		[DRIVER] any buffer present
+>   * @buffer_list:	[INTERN] list of all buffers currently attached
+>   * @scan_bytes:		[INTERN] num bytes captured to be fed to buffer demux
+> - * @mlock:		[INTERN] lock used to prevent simultaneous device state
+> + * @mlock:		[DRIVER] lock used to prevent simultaneous device state
+>   *			changes
+>   * @available_scan_masks: [DRIVER] optional array of allowed bitmasks
+>   * @masklength:		[INTERN] the length of the mask established from
 > 
 
