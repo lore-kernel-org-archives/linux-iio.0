@@ -1,69 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44908 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932434AbcBIWOU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 17:14:20 -0500
-Subject: Re: [PATCH 2/5] iio: hmc5843: Swap suspend and resume implementations
-To: Cristina Moraru <cristina.moraru09@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	cristina.opriceana@gmail.com, marek@goldelico.com,
-	sdliyong@gmail.com, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-	linux-api@vger.kernel.org, tolga.ceylan@gmail.com,
-	k.kozlowski@samsung.com, javier@osg.samsung.com, arnd@arndb.de,
-	geert@linux-m68k.org, irina.tirdea@intel.com,
-	daniel.baluta@intel.com, octavia.purdila@intel.com
-References: <1454883711-15489-1-git-send-email-cristina.moraru09@gmail.com>
- <1454883711-15489-3-git-send-email-cristina.moraru09@gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56BA64B9.2090903@kernel.org>
-Date: Tue, 9 Feb 2016 22:14:17 +0000
+Received: from smtp.codeaurora.org ([198.145.29.96]:35064 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750781AbcBHTLu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 14:11:50 -0500
+From: "Sricharan" <sricharan@codeaurora.org>
+To: "'Michael Welling'" <mwelling@ieee.org>,
+	"'Wolfram Sang'" <wsa@the-dreams.de>
+Cc: "'Daniel Baluta'" <daniel.baluta@intel.com>,
+	"'Jonathan Cameron'" <jic23@kernel.org>,
+	"'Hartmut Knaack'" <knaack.h@gmx.de>,
+	"'Lars-Peter Clausen'" <lars@metafoo.de>,
+	"'Peter Meerwald-Stadler'" <pmeerw@pmeerw.net>,
+	"'Linux Kernel Mailing List'" <linux-kernel@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>,
+	"'Lucas De Marchi'" <lucas.demarchi@intel.com>,
+	"'Andy Gross'" <agross@codeaurora.org>,
+	"'Pramod Gurav'" <pramod.gurav@smartplayin.com>,
+	"'Bjorn Andersson'" <bjorn.andersson@sonymobile.com>,
+	"'Guenter Roeck'" <linux@roeck-us.net>, <eibach@gdsys.de>,
+	<linux-arm-msm@vger.kernel.org>
+References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com> <20160205172457.GA16778@deathstar> <CAEnQRZAjgn3Y0618MgO284DMc_9cE49b9jeUr0j2HwUK6YK+0A@mail.gmail.com> <20160206003245.GA1329@deathstar> <20160208102459.GC2220@tetsubishi> <20160208163632.GA3630@deathstar>
+In-Reply-To: <20160208163632.GA3630@deathstar>
+Subject: RE: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
+Date: Tue, 9 Feb 2016 00:41:35 +0530
+Message-ID: <01fd01d162a4$8e28c450$aa7a4cf0$@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <1454883711-15489-3-git-send-email-cristina.moraru09@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain;
+	charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/02/16 22:21, Cristina Moraru wrote:
-> Swap implementations of hmc5843_common_suspend and
-> hmc5843_common_resume functions for they have been
-> inversed. Device should go on SLEEP mode on suspend
-> and on CONTINUOUS mode on resume.
-> 
-> Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
-I'd normally apply this as a fix, but to keep things simple with
-the move out of staging I've just applied it to the togreg branch
-of iio.git - initially pushed out as testing for the autobuilders
-to play with it.
+Hi,
 
-It's been there a long time an no one has noticed, so I'm guessing
-any hardware platforms with this on aren't going in for power management!
+> -----Original Message-----
+> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf Of Michael
+> Welling
+> Sent: Monday, February 08, 2016 10:07 PM
+> To: Wolfram Sang
+> Cc: Daniel Baluta; Jonathan Cameron; Hartmut Knaack; Lars-Peter Clausen;
+> Peter Meerwald-Stadler; Linux Kernel Mailing List;
+linux-iio@vger.kernel.org;
+> Lucas De Marchi; Andy Gross; Pramod Gurav; Bjorn Andersson; Guenter
+> Roeck; eibach@gdsys.de; Sricharan R; linux-arm-msm@vger.kernel.org
+> Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
+> 
+> On Mon, Feb 08, 2016 at 11:25:00AM +0100, Wolfram Sang wrote:
+> > On Fri, Feb 05, 2016 at 06:32:45PM -0600, Michael Welling wrote:
+> > > On Fri, Feb 05, 2016 at 09:32:34PM +0200, Daniel Baluta wrote:
+> > > > >> +static int ads1015_read_raw(struct iio_dev *indio_dev,
+> > > > >> +                         struct iio_chan_spec const *chan, int
+*val,
+> > > > >> +                         int *val2, long mask) {
+> > > > >> +     int ret, idx;
+> > > > >> +     struct ads1015_data *data = iio_priv(indio_dev);
+> > > > >> +
+> > > > >> +     mutex_lock(&data->lock);
+> > > > >> +     switch (mask) {
+> > > > >> +     case IIO_CHAN_INFO_RAW:
+> > > > >> +             if (iio_buffer_enabled(indio_dev)) {
+> > > > >> +                     ret = -EBUSY;
+> > > > >> +                     break;
+> > > > >> +             }
+> > > > >> +
+> > > > >> +             ret = ads1015_set_power_state(data, true);
+> > > > >> +             if (ret < 0)
+> > > > >> +                     break;
+> > > > >
+> > > > > Just tested the driver on a Dragonboard 410C with a robotics
+> > > > > mezzanine that I designed.
+> > > > >
+> > > > > The above ads1015_set_power_state(data, true) is always returning
+-
+> EINVAL.
+> > > > >
+> > > > > Any ideas why that would be happening?
+> > > > > I think it may be the return from pm_runtime_get_sync?
+> > > >
+> > > > Can you confirm that pm_runtime_get_sync fails? Using some printk?
+> > > >
+> > > > Also adding printks in suspend/resume function would be helpful.
+> > > > Do you have CONFIG_PM enabled?
+> > > >
+> > >
+> > > Indeed it is the pm_runtime_get_sync that fails with a -EINVAL.
+> > >
+> > > > >
+> > > > > When I comment out the break the readings come back but are not
+> updated continually.
+> > > > > If I read in_voltage0-voltage1_raw then in_voltage0_raw the value
+is
+> updated.
+> > > >
+> > > > I guess this is normal if set_power_state fails.
+> > >
+> > > The hwmod driver works fine BTW.
+> > >
+> > > My guess is there is an issue with the qup i2c driver seeing as it
+> > > has worked on other system without issue.
+> > >
+> > > CC'd some the latest developer on the qup i2c driver.
+> > >
+> > > I2C guys have any ideas on this?
+> > >
+> >
+> > Adding some more people who recently worked on this. Might be nice to
+> > know which kernel version you are using.
+> >
+ Which i2c bus is this connected to ? I can give a try with 410c to see why
+pm_runtime_get_sync from qup
+ fails.
 
-Jonathan
-> ---
->  drivers/staging/iio/magnetometer/hmc5843_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
-> index 4e2a7ec..dca8d64 100644
-> --- a/drivers/staging/iio/magnetometer/hmc5843_core.c
-> +++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
-> @@ -612,14 +612,14 @@ static const unsigned long hmc5843_scan_masks[] = {0x7, 0};
->  int hmc5843_common_suspend(struct device *dev)
->  {
->  	return hmc5843_set_mode(iio_priv(dev_get_drvdata(dev)),
-> -			HMC5843_MODE_CONVERSION_CONTINUOUS);
-> +				HMC5843_MODE_SLEEP);
->  }
->  EXPORT_SYMBOL(hmc5843_common_suspend);
->  
->  int hmc5843_common_resume(struct device *dev)
->  {
->  	return hmc5843_set_mode(iio_priv(dev_get_drvdata(dev)),
-> -				HMC5843_MODE_SLEEP);
-> +		HMC5843_MODE_CONVERSION_CONTINUOUS);
->  }
->  EXPORT_SYMBOL(hmc5843_common_resume);
->  
-> 
+Regards,
+  Sricharan
+
+
 
