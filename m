@@ -1,171 +1,247 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 8 Feb 2016 19:16:49 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Marc Andre <marc.andre@netline.ch>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/5] iio:ad5064: Structural changes to support LTC2617
-In-Reply-To: <1454950910-26049-1-git-send-email-lars@metafoo.de>
-Message-ID: <alpine.DEB.2.02.1602081915280.22739@pmeerw.net>
-References: <1454950910-26049-1-git-send-email-lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yw0-f196.google.com ([209.85.161.196]:34289 "EHLO
+	mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754889AbcBHRuo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 12:50:44 -0500
+Date: Mon, 8 Feb 2016 12:50:34 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: Add IIO support for the DAC on the Apex Embedded
+ Systems STX104
+Message-ID: <20160208175034.GA14727@sophia>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 8 Feb 2016, Lars-Peter Clausen wrote:
+The Apex Embedded Systems STX104 is a 16-channel 16-bit analog input and
+2-channel 16-bit analog output PC/104 card. The STX104 incorporates a
+large one mega-sample FIFO.
 
-> From: Marc Andre <marc.andre@netline.ch>
-> 
-> This patch makes minor structural changes to support specifics
-> for LTC2617 DAC. This DAC requires different handling of the
-> power down modes. The configuration to actually support the
-> DAC will be submitted in a secondary patch.
-> 
-> Adjust the DECLARE_AD5064_CHANNELS() macro to accept a new
-> ext_info parameter. This allows to use different power down
-> modes per DAC. (e.g. DAC only support 90kohm to ground)
-> 
-> Add the chip_info parameter "powerdown_ltc". This parameter is
-> used in the ad5064_sync_powerdown_mode() function to handle the
-> power down command for LTC diffently. For those devices the
-> power down command must be addressed to the channel.
-> 
-> Signed-off-by: Marc Andre <marc.andre@netline.ch>
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
-> Took the liberty to rebase this onto the latest iio/testing branch
-> ---
->  drivers/iio/dac/ad5064.c | 67 +++++++++++++++++++++++++++---------------------
->  1 file changed, 38 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-> index 81ca008..c55282d 100644
-> --- a/drivers/iio/dac/ad5064.c
-> +++ b/drivers/iio/dac/ad5064.c
-> @@ -50,10 +50,12 @@
->  /**
->   * struct ad5064_chip_info - chip specific information
->   * @shared_vref:	whether the vref supply is shared between channels
-> - * @internal_vref:	internal reference voltage. 0 if the chip has no internal
-> - *			vref.
-> + * @internal_vref:	internal reference voltage. 0 if the chip has no
-> +			internal vref.
->   * @channel:		channel specification
+This driver provides IIO support for the 2-channel DAC on the STX104.
+The base port addresses for the devices may be configured via the
+stx104_base module parameter array.
 
-unrelated, but should be channels
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+Changes in v2:
+  - Inline use of dev_name macro
+  - Use devm_iio_device_register to simplify cleanup code
+  - Use ISA bus driver instead of platform driver
+  - Provide stx104_base module parameter as an array in order to support
+    multiple instances
 
->   * @num_channels:	number of channels
-> + * @powerdown_ltc:	Use alternative power down addressing as required by
-> + *			ltc2617 and others.
->   */
->  
->  struct ad5064_chip_info {
-> @@ -61,6 +63,7 @@ struct ad5064_chip_info {
->  	unsigned long internal_vref;
->  	const struct iio_chan_spec *channels;
->  	unsigned int num_channels;
-> +	bool powerdown_ltc;
->  };
->  
->  struct ad5064_state;
-> @@ -136,15 +139,21 @@ static int ad5064_write(struct ad5064_state *st, unsigned int cmd,
->  static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
->  	const struct iio_chan_spec *chan)
->  {
-> -	unsigned int val;
-> +	unsigned int val, address;
->  	int ret;
->  
-> -	val = (0x1 << chan->address);
-> +	if (st->chip_info->powerdown_ltc) {
-> +		val = 0;
-> +		address = chan->address;
-> +	} else {
-> +		address = 0;
-> +		val = (0x1 << chan->address);
->  
-> -	if (st->pwr_down[chan->channel])
-> -		val |= st->pwr_down_mode[chan->channel] << 8;
-> +		if (st->pwr_down[chan->channel])
-> +			val |= st->pwr_down_mode[chan->channel] << 8;
-> +	}
->  
-> -	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, 0, val, 0);
-> +	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, address, val, 0);
->  
->  	return ret;
->  }
-> @@ -295,7 +304,7 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
->  	{ },
->  };
->  
-> -#define AD5064_CHANNEL(chan, addr, bits, _shift) {		\
-> +#define AD5064_CHANNEL(chan, addr, bits, _shift, _ext_info) {		\
->  	.type = IIO_VOLTAGE,					\
->  	.indexed = 1,						\
->  	.output = 1,						\
-> @@ -309,37 +318,37 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
->  		.storagebits = 16,				\
->  		.shift = (_shift),				\
->  	},							\
-> -	.ext_info = ad5064_ext_info,				\
-> +	.ext_info = (_ext_info),				\
->  }
->  
-> -#define DECLARE_AD5064_CHANNELS(name, bits, shift) \
-> +#define DECLARE_AD5064_CHANNELS(name, bits, shift, ext_info) \
->  const struct iio_chan_spec name[] = { \
-> -	AD5064_CHANNEL(0, 0, bits, shift), \
-> -	AD5064_CHANNEL(1, 1, bits, shift), \
-> -	AD5064_CHANNEL(2, 2, bits, shift), \
-> -	AD5064_CHANNEL(3, 3, bits, shift), \
-> -	AD5064_CHANNEL(4, 4, bits, shift), \
-> -	AD5064_CHANNEL(5, 5, bits, shift), \
-> -	AD5064_CHANNEL(6, 6, bits, shift), \
-> -	AD5064_CHANNEL(7, 7, bits, shift), \
-> +	AD5064_CHANNEL(0, 0, bits, shift, ext_info), \
-> +	AD5064_CHANNEL(1, 1, bits, shift, ext_info), \
-> +	AD5064_CHANNEL(2, 2, bits, shift, ext_info), \
-> +	AD5064_CHANNEL(3, 3, bits, shift, ext_info), \
-> +	AD5064_CHANNEL(4, 4, bits, shift, ext_info), \
-> +	AD5064_CHANNEL(5, 5, bits, shift, ext_info), \
-> +	AD5064_CHANNEL(6, 6, bits, shift, ext_info), \
-> +	AD5064_CHANNEL(7, 7, bits, shift, ext_info), \
->  }
->  
-> -#define DECLARE_AD5065_CHANNELS(name, bits, shift) \
-> +#define DECLARE_AD5065_CHANNELS(name, bits, shift, ext_info) \
->  const struct iio_chan_spec name[] = { \
-> -	AD5064_CHANNEL(0, 0, bits, shift), \
-> -	AD5064_CHANNEL(1, 3, bits, shift), \
-> +	AD5064_CHANNEL(0, 0, bits, shift, ext_info), \
-> +	AD5064_CHANNEL(1, 3, bits, shift, ext_info), \
->  }
->  
-> -static DECLARE_AD5064_CHANNELS(ad5024_channels, 12, 8);
-> -static DECLARE_AD5064_CHANNELS(ad5044_channels, 14, 6);
-> -static DECLARE_AD5064_CHANNELS(ad5064_channels, 16, 4);
-> +static DECLARE_AD5064_CHANNELS(ad5024_channels, 12, 8, ad5064_ext_info);
-> +static DECLARE_AD5064_CHANNELS(ad5044_channels, 14, 6, ad5064_ext_info);
-> +static DECLARE_AD5064_CHANNELS(ad5064_channels, 16, 4, ad5064_ext_info);
->  
-> -static DECLARE_AD5065_CHANNELS(ad5025_channels, 12, 8);
-> -static DECLARE_AD5065_CHANNELS(ad5045_channels, 14, 6);
-> -static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4);
-> +static DECLARE_AD5065_CHANNELS(ad5025_channels, 12, 8, ad5064_ext_info);
-> +static DECLARE_AD5065_CHANNELS(ad5045_channels, 14, 6, ad5064_ext_info);
-> +static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4, ad5064_ext_info);
->  
-> -static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4);
-> -static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0);
-> +static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4, ad5064_ext_info);
-> +static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0, ad5064_ext_info);
->  
->  static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
->  	[ID_AD5024] = {
-> 
+ MAINTAINERS              |   6 ++
+ drivers/iio/dac/Kconfig  |   9 +++
+ drivers/iio/dac/Makefile |   1 +
+ drivers/iio/dac/stx104.c | 152 +++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 168 insertions(+)
+ create mode 100644 drivers/iio/dac/stx104.c
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6ddb488..3905b31 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -763,6 +763,12 @@ L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
+ S:	Maintained
+ F:	sound/aoa/
+ 
++APEX EMBEDDED SYSTEMS STX104 DAC DRIVER
++M:	William Breathitt Gray <vilhelm.gray@gmail.com>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	drivers/iio/dac/stx104.c
++
+ APM DRIVER
+ M:	Jiri Kosina <jikos@kernel.org>
+ S:	Odd fixes
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 5dc7150..6cf1066 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -206,4 +206,13 @@ config MCP4922
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called mcp4922.
+ 
++config STX104
++	tristate "Apex Embedded Systems STX104 DAC driver"
++	depends on ISA
++	help
++	  Say yes here to build support for the 2-channel DAC on the Apex
++	  Embedded Systems STX104 integrated analog PC/104 card. The base port
++	  addresses for the devices may be configured via the stx104_base module
++	  parameter array.
++
+ endmenu
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index cb525b5..e2deda9 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -22,3 +22,4 @@ obj-$(CONFIG_MAX517) += max517.o
+ obj-$(CONFIG_MAX5821) += max5821.o
+ obj-$(CONFIG_MCP4725) += mcp4725.o
+ obj-$(CONFIG_MCP4922) += mcp4922.o
++obj-$(CONFIG_STX104) += stx104.o
+diff --git a/drivers/iio/dac/stx104.c b/drivers/iio/dac/stx104.c
+new file mode 100644
+index 0000000..f183e3f
+--- /dev/null
++++ b/drivers/iio/dac/stx104.c
+@@ -0,0 +1,152 @@
++/*
++ * DAC driver for the Apex Embedded Systems STX104
++ * Copyright (C) 2016 William Breathitt Gray
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ */
++#include <linux/bitops.h>
++#include <linux/device.h>
++#include <linux/errno.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/types.h>
++#include <linux/io.h>
++#include <linux/ioport.h>
++#include <linux/isa.h>
++#include <linux/module.h>
++#include <linux/moduleparam.h>
++
++#define STX104_NUM_CHAN 2
++
++#define STX104_CHAN(chan) {				\
++	.type = IIO_VOLTAGE,				\
++	.channel = chan,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++	.indexed = 1,					\
++	.output = 1					\
++}
++
++#define STX104_EXTENT 16
++/**
++ * The highest base address possible for an ISA device is 0x3FF; this results in
++ * 1024 possible base addresses. Dividing the number of possible base addresses
++ * by the address extent taken by each device results in the maximum number of
++ * devices on a system.
++ */
++#define MAX_NUM_STX104 (1024 / STX104_EXTENT)
++
++static unsigned stx104_base[MAX_NUM_STX104];
++static unsigned num_stx104;
++module_param_array(stx104_base, uint, &num_stx104, 0);
++MODULE_PARM_DESC(stx104_base, "Apex Embedded Systems STX104 base addresses");
++
++/**
++ * struct stx104_iio - IIO device private data structure
++ * @chan_out_states:	channels' output states
++ * @base:		base port address of the IIO device
++ */
++struct stx104_iio {
++	unsigned chan_out_states[STX104_NUM_CHAN];
++	unsigned base;
++};
++
++static int stx104_read_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
++{
++	struct stx104_iio *const priv = iio_priv(indio_dev);
++
++	if (mask != IIO_CHAN_INFO_RAW)
++		return -EINVAL;
++
++	*val = priv->chan_out_states[chan->channel];
++
++	return IIO_VAL_INT;
++}
++
++static int stx104_write_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int val, int val2, long mask)
++{
++	struct stx104_iio *const priv = iio_priv(indio_dev);
++	const unsigned chan_addr_offset = 2 * chan->channel;
++
++	if (mask != IIO_CHAN_INFO_RAW)
++		return -EINVAL;
++
++	priv->chan_out_states[chan->channel] = val;
++	outw(val, priv->base + 4 + chan_addr_offset);
++
++	return 0;
++}
++
++static const struct iio_info stx104_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = stx104_read_raw,
++	.write_raw = stx104_write_raw
++};
++
++static const struct iio_chan_spec stx104_channels[STX104_NUM_CHAN] = {
++	STX104_CHAN(0),
++	STX104_CHAN(1)
++};
++
++static int stx104_probe(struct device *dev, unsigned int id)
++{
++	struct iio_dev *indio_dev;
++	struct stx104_iio *priv;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	if (!devm_request_region(dev, stx104_base[id], STX104_EXTENT,
++		dev_name(dev))) {
++		dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n",
++			stx104_base[id], stx104_base[id] + STX104_EXTENT);
++		return -EBUSY;
++	}
++
++	indio_dev->info = &stx104_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = stx104_channels;
++	indio_dev->num_channels = STX104_NUM_CHAN;
++	indio_dev->name = dev_name(dev);
++
++	priv = iio_priv(indio_dev);
++	priv->base = stx104_base[id];
++
++	/* initialize DAC output to 0V */
++	outw(0, stx104_base[id] + 4);
++	outw(0, stx104_base[id] + 6);
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static struct isa_driver stx104_driver = {
++	.probe = stx104_probe,
++	.driver = {
++		.name = "stx104"
++	}
++};
++
++static void __exit stx104_exit(void)
++{
++	isa_unregister_driver(&stx104_driver);
++}
++
++static int __init stx104_init(void)
++{
++	return isa_register_driver(&stx104_driver, num_stx104);
++}
++
++module_init(stx104_init);
++module_exit(stx104_exit);
++
++MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
++MODULE_DESCRIPTION("Apex Embedded Systems STX104 DAC driver");
++MODULE_LICENSE("GPL v2");
 -- 
+2.4.10
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
