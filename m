@@ -1,54 +1,46 @@
 Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH 1/2] Staging:iio:Prefer using BIT macro
-To: Bhumika Goyal <bhumirks@gmail.com>, gregkh@linuxfoundation.org,
- Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
- pmeerw@pmeerw.net
-References: <cover.1454913458.git.bhumirks@gmail.com>
- <74ee6d155e15fbfe06512c7caa52f1575727402e.1454913458.git.bhumirks@gmail.com>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
- linux-kernel@vger.kernel.org
+Subject: Re: using monotonic clok for timstamping
+To: Jonathan Cameron <jic23@kernel.org>,
+ Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
+References: <56B1DCA4.9050903@parrot.com> <56B1E2D8.90308@metafoo.de>
+ <56B63C8E.3020309@kernel.org>
 From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56B85C88.7040506@metafoo.de>
-Date: Mon, 8 Feb 2016 10:14:48 +0100
+Message-ID: <56B865FC.7020106@metafoo.de>
+Date: Mon, 8 Feb 2016 10:55:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <74ee6d155e15fbfe06512c7caa52f1575727402e.1454913458.git.bhumirks@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <56B63C8E.3020309@kernel.org>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 02/08/2016 07:48 AM, Bhumika Goyal wrote:
-> This patch replaces bit shifting on 1 with the BIT(x) macro.
-> This was done with coccinelle:
->  @@ int g; @@
-> -(1 << g)
-> +BIT(g)
-> 
-> Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+On 02/06/2016 07:33 PM, Jonathan Cameron wrote:
+> On 03/02/16 11:22, Lars-Peter Clausen wrote:
+>> On 02/03/2016 11:55 AM, Gregor Boirie wrote:
+>>> Dear  all,
+>>>
+>>> Our application relies on precise and monotonic timestamping of IMU samples
+>>> (and other sensors).
+>>> I am wondering what reasons / use cases led to the choice of realtime clock
+>>> to implement
+>>> iio_get_time_ns (not to mention time gaps that may be seen after wake up
+>>> from sleep states).
+>>
+>> It's more of an oversight than a deliberate design decision. I noticed this
+>> problem as well a while ago and wanted to re-write things to use the
+>> monotonic clock, but then realized that this would be a ABI change so
+>> dropped it and forgot about it again.
+> There are certainly cases where the other clock would make sense (for slow
+> sampling device where being as correct as possible is the most important
+> thing).
 
-Hi,
+I'm not sure I understand what you are trying to say, maybe we are not on
+the same page. As far as I know both clocks have the same precession, but
+their absolute value differs.
 
-Thanks for the patch.
+What iio_get_time_ns() currently returns is the system clock, which changes
+whenever the time is changed (e.g. to compensate for drift, or daylight
+saving, etc.). This is obviously not so great if that happens in the middle
+of the capture since what you care about is the relative distance between
+the samples and if your time base changes you have no idea what that is anymore.
 
-> ---
->  drivers/staging/iio/adc/ad7816.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index 2226051..f631012 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -222,7 +222,7 @@ static ssize_t ad7816_show_value(struct device *dev,
->  		value = (s8)((data >> AD7816_TEMP_FLOAT_OFFSET) - 103);
->  		data &= AD7816_TEMP_FLOAT_MASK;
->  		if (value < 0)
-> -			data = (1 << AD7816_TEMP_FLOAT_OFFSET) - data;
-> +			data = BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
-
-
-But in this case this is a false positive. The intended semantic meaning
-here is 2**... not BIT(...). Using BIT() here in my opinion only causes
-confusion.
-
->  		return sprintf(buf, "%d.%.2d\n", value, data * 25);
->  	}
->  	return sprintf(buf, "%u\n", data);
-> 
+So the monotonic clock which just keeps going at a fixed interval would be
+the better choice.
