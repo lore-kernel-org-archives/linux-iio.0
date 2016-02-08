@@ -1,68 +1,289 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f194.google.com ([209.85.223.194]:33494 "EHLO
-	mail-io0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752136AbcBHHQr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 02:16:47 -0500
-Received: by mail-io0-f194.google.com with SMTP id f81so9263907iof.0
-        for <linux-iio@vger.kernel.org>; Sun, 07 Feb 2016 23:16:47 -0800 (PST)
-Date: Mon, 8 Feb 2016 01:16:34 -0600
-From: Michael Welling <mwelling@ieee.org>
-To: Adriana Reus <adriana.reus@intel.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com, ggao@invensense.com,
-	lucas.de.marchi@gmail.com
-Subject: Re: [PATCH v2 0/4] iio: imu: inv_mpu6050: Split driver into core and
- I2C/SPI functionality
-Message-ID: <20160208071634.GA26438@deathstar>
-References: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37966 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753800AbcBHSmK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 13:42:10 -0500
+Subject: Re: [PATCH 4/5] iio:ad5064: Use a enum for the register map layout
+ type
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1454950910-26049-1-git-send-email-lars@metafoo.de>
+ <1454950910-26049-4-git-send-email-lars@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Marc Andre <marc.andre@netline.ch>, linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56B8E180.70708@kernel.org>
+Date: Mon, 8 Feb 2016 18:42:08 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <1454950910-26049-4-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Feb 04, 2016 at 11:20:24AM +0200, Adriana Reus wrote:
-> This series splits this driver into general and I2C/SPI specific functionality.
-> The first patch is a fix for a bug in the interrupt pin configuration.
-> The second patch changes all the I2C specific calls into regmap calls.
-> The third patch separated the remaining I2C specific part into a different component.
-> Finally the fourth patch adds SPI support for the MPU6000 chip.
+On 08/02/16 17:01, Lars-Peter Clausen wrote:
+> Currently the ad5064 only supports two different register map variations
+> and this is represented by a bool. This patch changes since to a enum so
+> we can support more variations in the future.
 > 
-> No changes since v1 for the first two patches.
-> Small changes since v1 to the last two patches
->
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Obvious enough and entirely sensible change.
 
-After fixing the compilation error, I was able to get the driver to run
-on the Dragonboard 410c. I tested it with a robotics mezzanine board that
-I designed. The driver appears to work with the MPU-9250 as it has the
-same core funtionality.
+Applied.
 
-Tested-by: Michael Welling <mwelling@ieee.org>
- 
-> Adriana Reus (4):
->   iio: imu: inv-mpu6050: Fix interrupt pin configuration
->   iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions
->   iio: imu: inv_mpu6050: Separate driver into core and i2c
->     functionality.
->   iio: imu: inv_mpu6050: Add SPI support for MPU6000
+Thanks,
+
+Jonathan
+> ---
+>  drivers/iio/dac/ad5064.c | 54 ++++++++++++++++++++++++++++++++++++------------
+>  1 file changed, 41 insertions(+), 13 deletions(-)
 > 
->  drivers/iio/imu/inv_mpu6050/Kconfig           |  21 ++-
->  drivers/iio/imu/inv_mpu6050/Makefile          |   8 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |  14 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 253 +++++---------------------
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 207 +++++++++++++++++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  17 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |  35 ++--
->  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  87 +++++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  10 +-
->  9 files changed, 412 insertions(+), 240 deletions(-)
->  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
->  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+> index 7cc3e93..b7f717c 100644
+> --- a/drivers/iio/dac/ad5064.c
+> +++ b/drivers/iio/dac/ad5064.c
+> @@ -50,14 +50,23 @@
+>  #define AD5064_LDAC_PWRDN_3STATE		0x3
+>  
+>  /**
+> + * enum ad5064_regmap_type - Register layout variant
+> + * @AD5064_REGMAP_ADI: Analog Devices register map layout
+> + * @AD5064_REGMAP_LTC: LTC register map layout
+> + */
+> +enum ad5064_regmap_type {
+> +	AD5064_REGMAP_ADI,
+> +	AD5064_REGMAP_LTC,
+> +};
+> +
+> +/**
+>   * struct ad5064_chip_info - chip specific information
+>   * @shared_vref:	whether the vref supply is shared between channels
+>   * @internal_vref:	internal reference voltage. 0 if the chip has no
+>  			internal vref.
+>   * @channel:		channel specification
+>   * @num_channels:	number of channels
+> - * @powerdown_ltc:	Use alternative power down addressing as required by
+> - *			ltc2617 and others.
+> + * @regmap_type:	register map layout variant
+>   */
+>  
+>  struct ad5064_chip_info {
+> @@ -65,7 +74,7 @@ struct ad5064_chip_info {
+>  	unsigned long internal_vref;
+>  	const struct iio_chan_spec *channels;
+>  	unsigned int num_channels;
+> -	bool powerdown_ltc;
+> +	enum ad5064_regmap_type regmap_type;
+>  };
+>  
+>  struct ad5064_state;
+> @@ -153,7 +162,7 @@ static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
+>  	unsigned int val, address;
+>  	int ret;
+>  
+> -	if (st->chip_info->powerdown_ltc) {
+> +	if (st->chip_info->regmap_type == AD5064_REGMAP_LTC) {
+>  		val = 0;
+>  		address = chan->address;
+>  	} else {
+> @@ -393,171 +402,190 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
+>  		.shared_vref = false,
+>  		.channels = ad5024_channels,
+>  		.num_channels = 4,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5025] = {
+>  		.shared_vref = false,
+>  		.channels = ad5025_channels,
+>  		.num_channels = 2,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5044] = {
+>  		.shared_vref = false,
+>  		.channels = ad5044_channels,
+>  		.num_channels = 4,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5045] = {
+>  		.shared_vref = false,
+>  		.channels = ad5045_channels,
+>  		.num_channels = 2,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5064] = {
+>  		.shared_vref = false,
+>  		.channels = ad5064_channels,
+>  		.num_channels = 4,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5064_1] = {
+>  		.shared_vref = true,
+>  		.channels = ad5064_channels,
+>  		.num_channels = 4,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5065] = {
+>  		.shared_vref = false,
+>  		.channels = ad5065_channels,
+>  		.num_channels = 2,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5628_1] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 2500000,
+>  		.channels = ad5024_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5628_2] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 5000000,
+>  		.channels = ad5024_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5629_1] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 2500000,
+>  		.channels = ad5629_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5629_2] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 5000000,
+>  		.channels = ad5629_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5648_1] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 2500000,
+>  		.channels = ad5044_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5648_2] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 5000000,
+>  		.channels = ad5044_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5666_1] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 2500000,
+>  		.channels = ad5064_channels,
+>  		.num_channels = 4,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5666_2] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 5000000,
+>  		.channels = ad5064_channels,
+>  		.num_channels = 4,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5668_1] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 2500000,
+>  		.channels = ad5064_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5668_2] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 5000000,
+>  		.channels = ad5064_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5669_1] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 2500000,
+>  		.channels = ad5669_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_AD5669_2] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 5000000,
+>  		.channels = ad5669_channels,
+>  		.num_channels = 8,
+> +		.regmap_type = AD5064_REGMAP_ADI,
+>  	},
+>  	[ID_LTC2606] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 0,
+>  		.channels = ltc2607_channels,
+>  		.num_channels = 1,
+> -		.powerdown_ltc = true,
+> +		.regmap_type = AD5064_REGMAP_LTC,
+>  	},
+>  	[ID_LTC2607] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 0,
+>  		.channels = ltc2607_channels,
+>  		.num_channels = 2,
+> -		.powerdown_ltc = true,
+> +		.regmap_type = AD5064_REGMAP_LTC,
+>  	},
+>  	[ID_LTC2609] = {
+>  		.shared_vref = false,
+>  		.internal_vref = 0,
+>  		.channels = ltc2607_channels,
+>  		.num_channels = 4,
+> -		.powerdown_ltc = true,
+> +		.regmap_type = AD5064_REGMAP_LTC,
+>  	},
+>  	[ID_LTC2616] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 0,
+>  		.channels = ltc2617_channels,
+>  		.num_channels = 1,
+> -		.powerdown_ltc = true,
+> +		.regmap_type = AD5064_REGMAP_LTC,
+>  	},
+>  	[ID_LTC2617] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 0,
+>  		.channels = ltc2617_channels,
+>  		.num_channels = 2,
+> -		.powerdown_ltc = true,
+> +		.regmap_type = AD5064_REGMAP_LTC,
+>  	},
+>  	[ID_LTC2619] = {
+>  		.shared_vref = false,
+>  		.internal_vref = 0,
+>  		.channels = ltc2617_channels,
+>  		.num_channels = 4,
+> -		.powerdown_ltc = true,
+> +		.regmap_type = AD5064_REGMAP_LTC,
+>  	},
+>  	[ID_LTC2626] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 0,
+>  		.channels = ltc2627_channels,
+>  		.num_channels = 1,
+> -		.powerdown_ltc = true,
+> +		.regmap_type = AD5064_REGMAP_LTC,
+>  	},
+>  	[ID_LTC2627] = {
+>  		.shared_vref = true,
+>  		.internal_vref = 0,
+>  		.channels = ltc2627_channels,
+>  		.num_channels = 2,
+> -		.powerdown_ltc = true,
+> +		.regmap_type = AD5064_REGMAP_LTC,
+>  	},
+>  	[ID_LTC2629] = {
+>  		.shared_vref = false,
+>  		.internal_vref = 0,
+>  		.channels = ltc2627_channels,
+>  		.num_channels = 4,
+> -		.powerdown_ltc = true,
+> +		.regmap_type = AD5064_REGMAP_LTC,
+>  	},
+>  };
+>  
 > 
-> -- 
-> 1.9.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
