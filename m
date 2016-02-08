@@ -1,289 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37966 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753800AbcBHSmK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 13:42:10 -0500
-Subject: Re: [PATCH 4/5] iio:ad5064: Use a enum for the register map layout
- type
-To: Lars-Peter Clausen <lars@metafoo.de>
-References: <1454950910-26049-1-git-send-email-lars@metafoo.de>
- <1454950910-26049-4-git-send-email-lars@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Marc Andre <marc.andre@netline.ch>, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B8E180.70708@kernel.org>
-Date: Mon, 8 Feb 2016 18:42:08 +0000
+Received: from mail.kernel.org ([198.145.29.136]:38073 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753800AbcBHVXd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 8 Feb 2016 16:23:33 -0500
+Date: Mon, 8 Feb 2016 15:23:28 -0600
+From: Rob Herring <robh@kernel.org>
+To: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2] iio: adc: add support for
+ ADC0831/ADC0832/ADC0834/ADC0838 chips
+Message-ID: <20160208212328.GA1069@rob-hp-laptop>
+References: <1454836456-17033-1-git-send-email-akinobu.mita@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1454950910-26049-4-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1454836456-17033-1-git-send-email-akinobu.mita@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/02/16 17:01, Lars-Peter Clausen wrote:
-> Currently the ad5064 only supports two different register map variations
-> and this is represented by a bool. This patch changes since to a enum so
-> we can support more variations in the future.
+On Sun, Feb 07, 2016 at 06:14:16PM +0900, Akinobu Mita wrote:
+> This adds ADC0831/ADC0832/ADC0834/ADC0838 8-bit ADC driver.
+> I have tested with ADC0831 and ADC0832.  The remaining ADC0834 and
+> ADC0838 are very similar to ADC0832.
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Obvious enough and entirely sensible change.
-
-Applied.
-
-Thanks,
-
-Jonathan
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
 > ---
->  drivers/iio/dac/ad5064.c | 54 ++++++++++++++++++++++++++++++++++++------------
->  1 file changed, 41 insertions(+), 13 deletions(-)
+> * v2 (Most changes are suggested by Jonathan Cameron)
+> - rename driver name from ti-adc083x to ti-adc0832
+> - simplify read_raw() by moving lock
+> - fix remove() of driver with correct unwinding
+> - enable untested chips (adc0831, adc0834, adc0838)
+> - fix adc0831_adc_conversion as a result of testing
 > 
-> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-> index 7cc3e93..b7f717c 100644
-> --- a/drivers/iio/dac/ad5064.c
-> +++ b/drivers/iio/dac/ad5064.c
-> @@ -50,14 +50,23 @@
->  #define AD5064_LDAC_PWRDN_3STATE		0x3
->  
->  /**
-> + * enum ad5064_regmap_type - Register layout variant
-> + * @AD5064_REGMAP_ADI: Analog Devices register map layout
-> + * @AD5064_REGMAP_LTC: LTC register map layout
-> + */
-> +enum ad5064_regmap_type {
-> +	AD5064_REGMAP_ADI,
-> +	AD5064_REGMAP_LTC,
-> +};
-> +
-> +/**
->   * struct ad5064_chip_info - chip specific information
->   * @shared_vref:	whether the vref supply is shared between channels
->   * @internal_vref:	internal reference voltage. 0 if the chip has no
->  			internal vref.
->   * @channel:		channel specification
->   * @num_channels:	number of channels
-> - * @powerdown_ltc:	Use alternative power down addressing as required by
-> - *			ltc2617 and others.
-> + * @regmap_type:	register map layout variant
->   */
->  
->  struct ad5064_chip_info {
-> @@ -65,7 +74,7 @@ struct ad5064_chip_info {
->  	unsigned long internal_vref;
->  	const struct iio_chan_spec *channels;
->  	unsigned int num_channels;
-> -	bool powerdown_ltc;
-> +	enum ad5064_regmap_type regmap_type;
->  };
->  
->  struct ad5064_state;
-> @@ -153,7 +162,7 @@ static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
->  	unsigned int val, address;
->  	int ret;
->  
-> -	if (st->chip_info->powerdown_ltc) {
-> +	if (st->chip_info->regmap_type == AD5064_REGMAP_LTC) {
->  		val = 0;
->  		address = chan->address;
->  	} else {
-> @@ -393,171 +402,190 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
->  		.shared_vref = false,
->  		.channels = ad5024_channels,
->  		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5025] = {
->  		.shared_vref = false,
->  		.channels = ad5025_channels,
->  		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5044] = {
->  		.shared_vref = false,
->  		.channels = ad5044_channels,
->  		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5045] = {
->  		.shared_vref = false,
->  		.channels = ad5045_channels,
->  		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5064] = {
->  		.shared_vref = false,
->  		.channels = ad5064_channels,
->  		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5064_1] = {
->  		.shared_vref = true,
->  		.channels = ad5064_channels,
->  		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5065] = {
->  		.shared_vref = false,
->  		.channels = ad5065_channels,
->  		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5628_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
->  		.channels = ad5024_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5628_2] = {
->  		.shared_vref = true,
->  		.internal_vref = 5000000,
->  		.channels = ad5024_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5629_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
->  		.channels = ad5629_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5629_2] = {
->  		.shared_vref = true,
->  		.internal_vref = 5000000,
->  		.channels = ad5629_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5648_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
->  		.channels = ad5044_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5648_2] = {
->  		.shared_vref = true,
->  		.internal_vref = 5000000,
->  		.channels = ad5044_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5666_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
->  		.channels = ad5064_channels,
->  		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5666_2] = {
->  		.shared_vref = true,
->  		.internal_vref = 5000000,
->  		.channels = ad5064_channels,
->  		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5668_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
->  		.channels = ad5064_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5668_2] = {
->  		.shared_vref = true,
->  		.internal_vref = 5000000,
->  		.channels = ad5064_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5669_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
->  		.channels = ad5669_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_AD5669_2] = {
->  		.shared_vref = true,
->  		.internal_vref = 5000000,
->  		.channels = ad5669_channels,
->  		.num_channels = 8,
-> +		.regmap_type = AD5064_REGMAP_ADI,
->  	},
->  	[ID_LTC2606] = {
->  		.shared_vref = true,
->  		.internal_vref = 0,
->  		.channels = ltc2607_channels,
->  		.num_channels = 1,
-> -		.powerdown_ltc = true,
-> +		.regmap_type = AD5064_REGMAP_LTC,
->  	},
->  	[ID_LTC2607] = {
->  		.shared_vref = true,
->  		.internal_vref = 0,
->  		.channels = ltc2607_channels,
->  		.num_channels = 2,
-> -		.powerdown_ltc = true,
-> +		.regmap_type = AD5064_REGMAP_LTC,
->  	},
->  	[ID_LTC2609] = {
->  		.shared_vref = false,
->  		.internal_vref = 0,
->  		.channels = ltc2607_channels,
->  		.num_channels = 4,
-> -		.powerdown_ltc = true,
-> +		.regmap_type = AD5064_REGMAP_LTC,
->  	},
->  	[ID_LTC2616] = {
->  		.shared_vref = true,
->  		.internal_vref = 0,
->  		.channels = ltc2617_channels,
->  		.num_channels = 1,
-> -		.powerdown_ltc = true,
-> +		.regmap_type = AD5064_REGMAP_LTC,
->  	},
->  	[ID_LTC2617] = {
->  		.shared_vref = true,
->  		.internal_vref = 0,
->  		.channels = ltc2617_channels,
->  		.num_channels = 2,
-> -		.powerdown_ltc = true,
-> +		.regmap_type = AD5064_REGMAP_LTC,
->  	},
->  	[ID_LTC2619] = {
->  		.shared_vref = false,
->  		.internal_vref = 0,
->  		.channels = ltc2617_channels,
->  		.num_channels = 4,
-> -		.powerdown_ltc = true,
-> +		.regmap_type = AD5064_REGMAP_LTC,
->  	},
->  	[ID_LTC2626] = {
->  		.shared_vref = true,
->  		.internal_vref = 0,
->  		.channels = ltc2627_channels,
->  		.num_channels = 1,
-> -		.powerdown_ltc = true,
-> +		.regmap_type = AD5064_REGMAP_LTC,
->  	},
->  	[ID_LTC2627] = {
->  		.shared_vref = true,
->  		.internal_vref = 0,
->  		.channels = ltc2627_channels,
->  		.num_channels = 2,
-> -		.powerdown_ltc = true,
-> +		.regmap_type = AD5064_REGMAP_LTC,
->  	},
->  	[ID_LTC2629] = {
->  		.shared_vref = false,
->  		.internal_vref = 0,
->  		.channels = ltc2627_channels,
->  		.num_channels = 4,
-> -		.powerdown_ltc = true,
-> +		.regmap_type = AD5064_REGMAP_LTC,
->  	},
->  };
->  
-> 
+>  .../devicetree/bindings/iio/adc/ti-adc0832.txt     |  19 ++
 
+Acked-by: Rob Herring <robh@kernel.org>
+
+>  drivers/iio/adc/Kconfig                            |  10 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/ti-adc0832.c                       | 288 +++++++++++++++++++++
+>  4 files changed, 318 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc0832.txt
+>  create mode 100644 drivers/iio/adc/ti-adc0832.c
+> 
