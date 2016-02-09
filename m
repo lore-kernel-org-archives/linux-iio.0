@@ -1,43 +1,127 @@
-Return-Path: <vilhelm.gray@gmail.com>
-Date: Tue, 9 Feb 2016 21:19:04 -0500
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: Add IIO support for the DAC on the Apex Embedded
- Systems STX104
-Message-ID: <20160210021904.GA13466@sophia>
-References: <20160208175034.GA14727@sophia>
- <56BA6A15.9000601@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from [212.40.180.161] ([212.40.180.161]:49655 "EHLO
+	smtp-out-039.synserver.de" rhost-flags-FAIL-FAIL-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754173AbcBIUbG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 15:31:06 -0500
+Subject: Re: [PATCH v2 3/4] iio: ad5755: added full support for devicetree
+To: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>,
+	linux-iio@vger.kernel.org
+References: <1454509864-32285-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <1454509864-32285-2-git-send-email-sean.nyekjaer@prevas.dk>
+ <1454509864-32285-3-git-send-email-sean.nyekjaer@prevas.dk>
+ <56B9A1B2.6030007@prevas.dk>
+Cc: devicetree@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56BA4C74.9030503@metafoo.de>
+Date: Tue, 9 Feb 2016 21:30:44 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <56BA6A15.9000601@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <56B9A1B2.6030007@prevas.dk>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Feb 09, 2016 at 10:37:09PM +0000, Jonathan Cameron wrote:
->My only real question is on the naming of the module parameter.
->Is it the equivalent of the io address that a load of ISA
->radio drivers seem to use?  (fed to me by grepping isa_register_driver)
->If so perhaps that's the 'standard' name as much as one exists for this?
+On 02/09/2016 09:22 AM, Sean Nyekjær wrote:
+> 
+> On 2016-02-03 15:31, Sean Nyekjaer wrote:
+>> Devicetree can provide platform data
+>>
+>> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+> Lars do you have time to look at this before i'm fixing the comments from
+> Jonathan and Rob :-)
 
-Yes, you noted correctly that the stx104_base module parameter fulfills
-the same function as the io module parameter used in many of the radio
-drivers: it's an array holding the io port address of each device.
-However, I find "io" to be a rather vague module parameter name, so I've
-decided to use the more apt "stx104_base" name for my array of base
-addresses.
+The obvious thing is to use '-' instead of '_' since that is the DT convention.
 
-As you've probably noticed, there are few ISA drivers existing in the
-kernel baseline currently, so not much of a standard is set yet. I'm all
-right with renaming the module parameter if you have a preference, just
-as long as the name is more informative than simply "io."
+Other than that this non-trivial. This is the first binding for such a
+device and it is always hard to come up with a good ABI without knowing what
+other similar devices might need to be supported by the same bindings. And
+it is also not always clear what is hardware description and what is driver
+policy.
 
-For what it's worth, this driver is part of a series of PC/104 drivers
-I've been submitting to various subsystems (in the hopes of improving
-the lack of PC/104 support in the baseline Linux kernel); see
-drivers/gpio/gpio-104-idio-16.c and drivers/gpio/gpio-104-idi-48.c for
-example. I have thus far been following the convention of naming the
-base address module parameter as "modname_base," where "modname" is the
-respective module name.
+The external resistor configuration should be clear, that's a description of
+the hardware whether the resistor exists or not.
 
-William Breathitt Gray
+For the others it's not so clear. E.g. the DC-to-DC converter configuration,
+this is most certainly not a description of the hardware. But we could get
+away with it by saying this is a system level design decision and is made by
+the system designer based on the operating parameters of the hardware and
+hence is policy that belongs in the DT. It might make sense to follow what
+the regulator bindings do here, even though the regulator is not exposed
+externally.
+
+The configuration of the output pin (voltage level, current level, etc) is
+certainly influenced by the restrictions of the hardware itself. You don't
+want to allow a configuration that can damage the hardware. But on the other
+hand it is still a valid usecase for some applications to switch between two
+setups at runtime, which is something you said you need to be able to do.
+Here we might want to use something similar to pinctrl where the devicetree
+can offer a selection of valid configurations and the driver can switch
+between those configurations.
+
+- Lars
+
+[...]
+>> +static struct ad5755_platform_data *ad5755_parse_dt(struct device *dev)
+>> +{
+>> +    struct device_node *np = dev->of_node;
+>> +    struct device_node *pp;
+>> +    struct ad5755_platform_data *pdata;
+>> +    unsigned int tmp;
+>> +    unsigned int tmparray[3];
+>> +    int devnr;
+>> +
+>> +    pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+>> +    if (!pdata)
+>> +        return NULL;
+>> +
+>> +    pdata->ext_dc_dc_compenstation_resistor =
+>> +           of_property_read_bool(np,
+>> "adi,ext_dc_dc_compenstation_resistor");
+>> +
+>> +    if (!of_property_read_u32(np, "adi,dc_dc_phase", &tmp))
+>> +        pdata->dc_dc_phase = tmp;
+>> +    else
+>> +        pdata->dc_dc_phase = AD5755_DC_DC_PHASE_ALL_SAME_EDGE;
+>> +
+>> +    if (!of_property_read_u32(np, "adi,dc_dc_freq", &tmp))
+>> +        pdata->dc_dc_freq = tmp;
+>> +    else
+>> +        pdata->dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ;
+>> +
+>> +    if (!of_property_read_u32(np, "adi,dc_dc_maxv", &tmp))
+>> +        pdata->dc_dc_maxv = tmp;
+>> +    else
+>> +        pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_23V;
+>> +
+>> +    devnr = 0;
+>> +    for_each_child_of_node(np, pp) {
+>> +        if (devnr > AD5755_NUM_CHANNELS) {
+>> +            dev_err(dev, "There is to many channels defined in DT\n");
+>> +            goto error_out;
+>> +        }
+>> +
+>> +        if (!of_property_read_u32(pp, "adi,mode", &tmp))
+>> +            pdata->dac[devnr].mode = tmp;
+>> +        else
+>> +            pdata->dac[devnr].mode = AD5755_MODE_CURRENT_4mA_20mA;
+>> +
+>> +        pdata->dac[devnr].ext_current_sense_resistor =
+>> +               of_property_read_bool(pp, "adi,ext_current_sense_resistor");
+>> +
+>> +        pdata->dac[devnr].enable_voltage_overrange =
+>> +            of_property_read_bool(pp, "adi,enable_voltage_overrange");
+>> +        if (!of_property_read_u32_array(pp, "adi,slew", tmparray, 3)) {
+>> +            pdata->dac[devnr].slew.enable = tmparray[0];
+>> +            pdata->dac[devnr].slew.rate = tmparray[1];
+>> +            pdata->dac[devnr].slew.step_size = tmparray[2];
+>> +        } else {
+>> +            pdata->dac[devnr].slew.enable = false;
+>> +            pdata->dac[devnr].slew.rate = AD5755_SLEW_RATE_64k;
+>> +            pdata->dac[devnr].slew.step_size = AD5755_SLEW_STEP_SIZE_1;
+>> +        }
+>> +
+>> +        devnr++;
+>> +    }
+>> +
+>> +    return pdata;
+
+[...]
