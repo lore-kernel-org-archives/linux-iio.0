@@ -1,61 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-011.synserver.de ([212.40.185.11]:1266 "EHLO
-	smtp-out-008.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S932414AbcBIUMb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 15:12:31 -0500
-Subject: Re: [PATCH v2 3/4] iio: imu: inv_mpu6050: Separate driver into core
- and i2c functionality.
-To: Adriana Reus <adriana.reus@intel.com>, jic23@kernel.org
-References: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
- <1454577628-12708-4-git-send-email-adriana.reus@intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44476 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755290AbcBIUoK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 15:44:10 -0500
+Subject: Re: [PATCH v3 0/4] iio: imu: inv_mpu6050: Split driver into core and
+ I2C/SPI functionality
+To: Adriana Reus <adriana.reus@intel.com>
+References: <1455032300-12466-1-git-send-email-adriana.reus@intel.com>
 Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
-	ggao@invensense.com, lucas.de.marchi@gmail.com
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56BA4753.5030502@metafoo.de>
-Date: Tue, 9 Feb 2016 21:08:51 +0100
+	ggao@invensense.com, daniel.baluta@intel.com, mwelling@ieee.org,
+	lucas.de.marchi@gmail.com, adi.reus@gmail.com
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56BA4F97.40002@kernel.org>
+Date: Tue, 9 Feb 2016 20:44:07 +0000
 MIME-Version: 1.0
-In-Reply-To: <1454577628-12708-4-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <1455032300-12466-1-git-send-email-adriana.reus@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/04/2016 10:20 AM, Adriana Reus wrote:
-[...]
-> --- a/drivers/iio/imu/inv_mpu6050/Kconfig
-> +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-> @@ -4,11 +4,9 @@
->  
->  config INV_MPU6050_IIO
->  	tristate "Invensense MPU6050 devices"
-> -	depends on I2C && SYSFS
-> +	depends on SYSFS
+On 09/02/16 15:38, Adriana Reus wrote:
+> This series splits this driver into general and I2C/SPI specific functionality.
+> The first patch is a fix for a bug in the interrupt pin configuration.
+> The second patch changes all the I2C specific calls into regmap calls.
+> The third patch separated the remaining I2C specific part into a different component.
+> Finally the fourth patch adds SPI support for the MPU6000 chip.
+> 
+> No changes since v2 for the first two patches.
+> Adressed comments for the last two patches
+> 
+> Adriana Reus (4):
+>   iio: imu: inv-mpu6050: Fix interrupt pin configuration
+>   iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions
+>   iio: imu: inv_mpu6050: Separate driver into core and i2c
+>     functionality.
+>   iio: imu: inv_mpu6050: Add SPI support for MPU6000
+> 
+>  drivers/iio/imu/inv_mpu6050/Kconfig           |  21 ++-
+>  drivers/iio/imu/inv_mpu6050/Makefile          |   8 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |  18 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 258 ++++++--------------------
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 207 +++++++++++++++++++++
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  19 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |  35 ++--
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     | 106 +++++++++++
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  10 +-
+>  9 files changed, 440 insertions(+), 242 deletions(-)
+>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> 
+Just to make sure you don't miss it, (and for my reference as I 
+might forget those emails before I apply this)
+there are some additional comments on V2 from Lars that crossed
+with V3 that need addressing.
 
-This does not work 'select' overwrites 'depends'. So if the users selects
-INV_MPU6050_I2C this will work even though SYSFS is not available and you'll
-get compile errors. But then again I'm not sure how we could end up with IIO
-enabled and SYSFS not, so maybe just drop that line in a cleanup patch.
-
-The other thing is that INV_MPU6050_IIO is user selectable, but doesn't
-actually provide any functionality. My personal preference would be to make
-this non user selectable, like we do for the other IIO drivers with similar
-structure.
-
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
-[...]
-[...]
-> +static struct i2c_driver inv_mpu_driver = {
-> +	.probe		=	inv_mpu_probe,
-> +	.remove		=	inv_mpu_remove,
-> +	.id_table	=	inv_mpu_id,
-> +	.driver = {
-> +		.owner	=	THIS_MODULE,
-
-Drop the owner flag field, it wasn't part of the st
-
-> +		.acpi_match_table = ACPI_PTR(inv_acpi_match),
-> +		.name	=	"inv-mpu6050 i2c driver",
-> +		.pm     =       &inv_mpu_pmops,
-> +	},
-> +};
 
