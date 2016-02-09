@@ -1,97 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f45.google.com ([74.125.82.45]:37197 "EHLO
-	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932701AbcBIKfS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 05:35:18 -0500
-Received: by mail-wm0-f45.google.com with SMTP id g62so17118813wme.0
-        for <linux-iio@vger.kernel.org>; Tue, 09 Feb 2016 02:35:17 -0800 (PST)
-Date: Tue, 9 Feb 2016 10:35:13 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Markus Pargmann <mpa@pengutronix.de>
-Cc: Shawn Guo <shawnguo@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Denis Carikli <denis@eukrea.com>,
-	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Juergen Borleis <jbe@pengutronix.de>
-Subject: Re: [PATCH v10 4/8] mfd: fsl imx25 Touchscreen ADC driver
-Message-ID: <20160209103513.GC24522@x1>
-References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
- <1450101234-2191-5-git-send-email-mpa@pengutronix.de>
- <20160111065441.GW3331@x1>
- <6151166.y0HMDdqtvF@adelgunde>
+Received: from smtp-out-011.synserver.de ([212.40.185.11]:1266 "EHLO
+	smtp-out-008.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S932414AbcBIUMb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 15:12:31 -0500
+Subject: Re: [PATCH v2 3/4] iio: imu: inv_mpu6050: Separate driver into core
+ and i2c functionality.
+To: Adriana Reus <adriana.reus@intel.com>, jic23@kernel.org
+References: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
+ <1454577628-12708-4-git-send-email-adriana.reus@intel.com>
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	ggao@invensense.com, lucas.de.marchi@gmail.com
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56BA4753.5030502@metafoo.de>
+Date: Tue, 9 Feb 2016 21:08:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <6151166.y0HMDdqtvF@adelgunde>
+In-Reply-To: <1454577628-12708-4-git-send-email-adriana.reus@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 02 Feb 2016, Markus Pargmann wrote:
+On 02/04/2016 10:20 AM, Adriana Reus wrote:
+[...]
+> --- a/drivers/iio/imu/inv_mpu6050/Kconfig
+> +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
+> @@ -4,11 +4,9 @@
+>  
+>  config INV_MPU6050_IIO
+>  	tristate "Invensense MPU6050 devices"
+> -	depends on I2C && SYSFS
+> +	depends on SYSFS
 
-> Hi,
-> 
-> On Monday, January 11, 2016 06:54:41 AM Lee Jones wrote:
-> > On Mon, 14 Dec 2015, Markus Pargmann wrote:
-> > 
-> > > This is the core driver for imx25 touchscreen/adc driver. The module
-> > > has one shared ADC and two different conversion queues which use the
-> > > ADC. The two queues are identical. Both can be used for general purpose
-> > > ADC but one is meant to be used for touchscreens.
-> > > 
-> > > This driver is the core which manages the central components and
-> > > registers of the TSC/ADC unit. It manages the IRQs and forwards them to
-> > > the correct components.
-> > > 
-> > > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> > > Signed-off-by: Denis Carikli <denis@eukrea.com>
-> > > 
-> > > [ensure correct ADC clock depending on the IPG clock]
-> > > Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
-> > > Acked-by: Jonathan Cameron <jic23@kernel.org>
-> > > ---
-> > > 
-> > > Notes:
-> > >     Changes in v7:
-> > >      - Cleanup bit defines in header files to be more readable
-> > >      - Fix irq check to return with an error for irq <= 0
-> > >      - Add COMPILE_TEST in Kconfig file
-> > >     
-> > >     Changes in v5:
-> > >      - Remove ifdef CONFIG_OF as this driver is only for DT usage
-> > >      - Remove module owner
-> > >      - Add Kconfig dependencies ARCH_MX25 and OF
-> > > 
-> > >  drivers/mfd/Kconfig             |   9 ++
-> > >  drivers/mfd/Makefile            |   2 +
-> > >  drivers/mfd/fsl-imx25-tsadc.c   | 203 ++++++++++++++++++++++++++++++++++++++++
-> > >  include/linux/mfd/imx25-tsadc.h | 140 +++++++++++++++++++++++++++
-> > >  4 files changed, 354 insertions(+)
-> > >  create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
-> > >  create mode 100644 include/linux/mfd/imx25-tsadc.h
-> > 
-> > For my own reference:
-> >   Acked-by: Lee Jones <lee.jones@linaro.org>
-> > 
-> > I will apply this and sent out pull-requests to the relevant
-> > maintainers once -rc1 is out.
-> 
-> Thanks. Do you mean just this patch or the whole series?
+This does not work 'select' overwrites 'depends'. So if the users selects
+INV_MPU6050_I2C this will work even though SYSFS is not available and you'll
+get compile errors. But then again I'm not sure how we could end up with IIO
+enabled and SYSFS not, so maybe just drop that line in a cleanup patch.
 
-I will take all of the /driver patches.  The ARM patches need to go in
-through ARM-SoC via the relevant sub-arch maintainer(s).
+The other thing is that INV_MPU6050_IIO is user selectable, but doesn't
+actually provide any functionality. My personal preference would be to make
+this non user selectable, like we do for the other IIO drivers with similar
+structure.
 
-> Shall I resend the whole series to fix the commit title of the first
-> patch?
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+[...]
+[...]
+> +static struct i2c_driver inv_mpu_driver = {
+> +	.probe		=	inv_mpu_probe,
+> +	.remove		=	inv_mpu_remove,
+> +	.id_table	=	inv_mpu_id,
+> +	.driver = {
+> +		.owner	=	THIS_MODULE,
 
-No, that's fine.  I'll handle that *this time*.
+Drop the owner flag field, it wasn't part of the st
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> +		.acpi_match_table = ACPI_PTR(inv_acpi_match),
+> +		.name	=	"inv-mpu6050 i2c driver",
+> +		.pm     =       &inv_mpu_pmops,
+> +	},
+> +};
+
