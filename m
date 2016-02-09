@@ -1,177 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37970 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753800AbcBHSmo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2016 13:42:44 -0500
-Subject: Re: [PATCH 1/5] iio:ad5064: Structural changes to support LTC2617
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Lars-Peter Clausen <lars@metafoo.de>
-References: <1454950910-26049-1-git-send-email-lars@metafoo.de>
- <alpine.DEB.2.02.1602081915280.22739@pmeerw.net>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Marc Andre <marc.andre@netline.ch>, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B8E1A2.7090206@kernel.org>
-Date: Mon, 8 Feb 2016 18:42:42 +0000
+Received: from mga02.intel.com ([134.134.136.20]:43689 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752778AbcBIIkN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 9 Feb 2016 03:40:13 -0500
+Subject: Re: [PATCH v2 0/4] iio: imu: inv_mpu6050: Split driver into core and
+ I2C/SPI functionality
+To: Michael Welling <mwelling@ieee.org>
+References: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
+ <20160208071634.GA26438@deathstar>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com, ggao@invensense.com,
+	lucas.de.marchi@gmail.com
+From: Adriana Reus <adriana.reus@intel.com>
+Message-ID: <56B9A5AC.5040003@intel.com>
+Date: Tue, 9 Feb 2016 10:39:08 +0200
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1602081915280.22739@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20160208071634.GA26438@deathstar>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/02/16 18:16, Peter Meerwald-Stadler wrote:
-> On Mon, 8 Feb 2016, Lars-Peter Clausen wrote:
-> 
->> From: Marc Andre <marc.andre@netline.ch>
->>
->> This patch makes minor structural changes to support specifics
->> for LTC2617 DAC. This DAC requires different handling of the
->> power down modes. The configuration to actually support the
->> DAC will be submitted in a secondary patch.
->>
->> Adjust the DECLARE_AD5064_CHANNELS() macro to accept a new
->> ext_info parameter. This allows to use different power down
->> modes per DAC. (e.g. DAC only support 90kohm to ground)
->>
->> Add the chip_info parameter "powerdown_ltc". This parameter is
->> used in the ad5064_sync_powerdown_mode() function to handle the
->> power down command for LTC diffently. For those devices the
->> power down command must be addressed to the channel.
->>
->> Signed-off-by: Marc Andre <marc.andre@netline.ch>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> ---
->> Took the liberty to rebase this onto the latest iio/testing branch
->> ---
->>  drivers/iio/dac/ad5064.c | 67 +++++++++++++++++++++++++++---------------------
->>  1 file changed, 38 insertions(+), 29 deletions(-)
->>
->> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
->> index 81ca008..c55282d 100644
->> --- a/drivers/iio/dac/ad5064.c
->> +++ b/drivers/iio/dac/ad5064.c
->> @@ -50,10 +50,12 @@
->>  /**
->>   * struct ad5064_chip_info - chip specific information
->>   * @shared_vref:	whether the vref supply is shared between channels
->> - * @internal_vref:	internal reference voltage. 0 if the chip has no internal
->> - *			vref.
->> + * @internal_vref:	internal reference voltage. 0 if the chip has no
->> +			internal vref.
->>   * @channel:		channel specification
-> 
-> unrelated, but should be channels
-Patches welcome ;)
-> 
->>   * @num_channels:	number of channels
->> + * @powerdown_ltc:	Use alternative power down addressing as required by
->> + *			ltc2617 and others.
->>   */
->>  
->>  struct ad5064_chip_info {
->> @@ -61,6 +63,7 @@ struct ad5064_chip_info {
->>  	unsigned long internal_vref;
->>  	const struct iio_chan_spec *channels;
->>  	unsigned int num_channels;
->> +	bool powerdown_ltc;
->>  };
->>  
->>  struct ad5064_state;
->> @@ -136,15 +139,21 @@ static int ad5064_write(struct ad5064_state *st, unsigned int cmd,
->>  static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
->>  	const struct iio_chan_spec *chan)
->>  {
->> -	unsigned int val;
->> +	unsigned int val, address;
->>  	int ret;
->>  
->> -	val = (0x1 << chan->address);
->> +	if (st->chip_info->powerdown_ltc) {
->> +		val = 0;
->> +		address = chan->address;
->> +	} else {
->> +		address = 0;
->> +		val = (0x1 << chan->address);
->>  
->> -	if (st->pwr_down[chan->channel])
->> -		val |= st->pwr_down_mode[chan->channel] << 8;
->> +		if (st->pwr_down[chan->channel])
->> +			val |= st->pwr_down_mode[chan->channel] << 8;
->> +	}
->>  
->> -	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, 0, val, 0);
->> +	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, address, val, 0);
->>  
->>  	return ret;
->>  }
->> @@ -295,7 +304,7 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
->>  	{ },
->>  };
->>  
->> -#define AD5064_CHANNEL(chan, addr, bits, _shift) {		\
->> +#define AD5064_CHANNEL(chan, addr, bits, _shift, _ext_info) {		\
->>  	.type = IIO_VOLTAGE,					\
->>  	.indexed = 1,						\
->>  	.output = 1,						\
->> @@ -309,37 +318,37 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
->>  		.storagebits = 16,				\
->>  		.shift = (_shift),				\
->>  	},							\
->> -	.ext_info = ad5064_ext_info,				\
->> +	.ext_info = (_ext_info),				\
->>  }
->>  
->> -#define DECLARE_AD5064_CHANNELS(name, bits, shift) \
->> +#define DECLARE_AD5064_CHANNELS(name, bits, shift, ext_info) \
->>  const struct iio_chan_spec name[] = { \
->> -	AD5064_CHANNEL(0, 0, bits, shift), \
->> -	AD5064_CHANNEL(1, 1, bits, shift), \
->> -	AD5064_CHANNEL(2, 2, bits, shift), \
->> -	AD5064_CHANNEL(3, 3, bits, shift), \
->> -	AD5064_CHANNEL(4, 4, bits, shift), \
->> -	AD5064_CHANNEL(5, 5, bits, shift), \
->> -	AD5064_CHANNEL(6, 6, bits, shift), \
->> -	AD5064_CHANNEL(7, 7, bits, shift), \
->> +	AD5064_CHANNEL(0, 0, bits, shift, ext_info), \
->> +	AD5064_CHANNEL(1, 1, bits, shift, ext_info), \
->> +	AD5064_CHANNEL(2, 2, bits, shift, ext_info), \
->> +	AD5064_CHANNEL(3, 3, bits, shift, ext_info), \
->> +	AD5064_CHANNEL(4, 4, bits, shift, ext_info), \
->> +	AD5064_CHANNEL(5, 5, bits, shift, ext_info), \
->> +	AD5064_CHANNEL(6, 6, bits, shift, ext_info), \
->> +	AD5064_CHANNEL(7, 7, bits, shift, ext_info), \
->>  }
->>  
->> -#define DECLARE_AD5065_CHANNELS(name, bits, shift) \
->> +#define DECLARE_AD5065_CHANNELS(name, bits, shift, ext_info) \
->>  const struct iio_chan_spec name[] = { \
->> -	AD5064_CHANNEL(0, 0, bits, shift), \
->> -	AD5064_CHANNEL(1, 3, bits, shift), \
->> +	AD5064_CHANNEL(0, 0, bits, shift, ext_info), \
->> +	AD5064_CHANNEL(1, 3, bits, shift, ext_info), \
->>  }
->>  
->> -static DECLARE_AD5064_CHANNELS(ad5024_channels, 12, 8);
->> -static DECLARE_AD5064_CHANNELS(ad5044_channels, 14, 6);
->> -static DECLARE_AD5064_CHANNELS(ad5064_channels, 16, 4);
->> +static DECLARE_AD5064_CHANNELS(ad5024_channels, 12, 8, ad5064_ext_info);
->> +static DECLARE_AD5064_CHANNELS(ad5044_channels, 14, 6, ad5064_ext_info);
->> +static DECLARE_AD5064_CHANNELS(ad5064_channels, 16, 4, ad5064_ext_info);
->>  
->> -static DECLARE_AD5065_CHANNELS(ad5025_channels, 12, 8);
->> -static DECLARE_AD5065_CHANNELS(ad5045_channels, 14, 6);
->> -static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4);
->> +static DECLARE_AD5065_CHANNELS(ad5025_channels, 12, 8, ad5064_ext_info);
->> +static DECLARE_AD5065_CHANNELS(ad5045_channels, 14, 6, ad5064_ext_info);
->> +static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4, ad5064_ext_info);
->>  
->> -static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4);
->> -static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0);
->> +static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4, ad5064_ext_info);
->> +static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0, ad5064_ext_info);
->>  
->>  static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
->>  	[ID_AD5024] = {
->>
-> 
+Thanks!
+Are you using the MPU on your board via SPI or via I2C?
 
+On 08.02.2016 09:16, Michael Welling wrote:
+> On Thu, Feb 04, 2016 at 11:20:24AM +0200, Adriana Reus wrote:
+>> This series splits this driver into general and I2C/SPI specific functionality.
+>> The first patch is a fix for a bug in the interrupt pin configuration.
+>> The second patch changes all the I2C specific calls into regmap calls.
+>> The third patch separated the remaining I2C specific part into a different component.
+>> Finally the fourth patch adds SPI support for the MPU6000 chip.
+>>
+>> No changes since v1 for the first two patches.
+>> Small changes since v1 to the last two patches
+>>
+>
+> After fixing the compilation error, I was able to get the driver to run
+> on the Dragonboard 410c. I tested it with a robotics mezzanine board that
+> I designed. The driver appears to work with the MPU-9250 as it has the
+> same core funtionality.
+>
+> Tested-by: Michael Welling <mwelling@ieee.org>
+>
+>> Adriana Reus (4):
+>>    iio: imu: inv-mpu6050: Fix interrupt pin configuration
+>>    iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions
+>>    iio: imu: inv_mpu6050: Separate driver into core and i2c
+>>      functionality.
+>>    iio: imu: inv_mpu6050: Add SPI support for MPU6000
+>>
+>>   drivers/iio/imu/inv_mpu6050/Kconfig           |  21 ++-
+>>   drivers/iio/imu/inv_mpu6050/Makefile          |   8 +-
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |  14 +-
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 253 +++++---------------------
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 207 +++++++++++++++++++++
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  17 +-
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |  35 ++--
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  87 +++++++++
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  10 +-
+>>   9 files changed, 412 insertions(+), 240 deletions(-)
+>>   create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+>>   create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+>>
+>> --
+>> 1.9.1
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
