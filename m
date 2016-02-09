@@ -1,27 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:53470 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750739AbcBGFzd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Feb 2016 00:55:33 -0500
-Date: Sat, 6 Feb 2016 21:55:32 -0800
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Cc: devel@driverdev.osuosl.org, lars@metafoo.de,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	pmeerw@pmeerw.net, knaack.h@gmx.de, jic23@kernel.org
-Subject: Re: [PATCH] iio: adc: Move mxs-lradc out of staging
-Message-ID: <20160207055532.GA18331@kroah.com>
-References: <1454797403-21576-1-git-send-email-ksenija.stanojevic@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44937 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932948AbcBIWRE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 17:17:04 -0500
+Subject: Re: [PATCH 4/5] iio: hmc5843: Fix comment style warnings
+To: Cristina Moraru <cristina.moraru09@gmail.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	cristina.opriceana@gmail.com, marek@goldelico.com,
+	sdliyong@gmail.com, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+	linux-api@vger.kernel.org, tolga.ceylan@gmail.com,
+	k.kozlowski@samsung.com, javier@osg.samsung.com, arnd@arndb.de,
+	geert@linux-m68k.org, irina.tirdea@intel.com,
+	daniel.baluta@intel.com, octavia.purdila@intel.com
+References: <1454883711-15489-1-git-send-email-cristina.moraru09@gmail.com>
+ <1454883711-15489-5-git-send-email-cristina.moraru09@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56BA655D.4000407@kernel.org>
+Date: Tue, 9 Feb 2016 22:17:01 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1454797403-21576-1-git-send-email-ksenija.stanojevic@gmail.com>
+In-Reply-To: <1454883711-15489-5-git-send-email-cristina.moraru09@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Feb 06, 2016 at 11:23:23PM +0100, Ksenija Stanojevic wrote:
-> Move mxs-lradc driver from drivers/staging/iio/adc to drivers/iio/adc.
+On 07/02/16 22:21, Cristina Moraru wrote:
+> Fix comment style warnings in order to comply with Coding Style
+> standard provided by Documentation/CodingStyle.
 > 
-> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> This patch solves following issue found with checkpatch:
+> WARNING: Block comments use a trailing */ on a separate line
+> 
+> Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
+I've applied this, but with a few additions... see inline.
+> ---
+>  drivers/staging/iio/magnetometer/hmc5843.h     | 4 ++--
+>  drivers/staging/iio/magnetometer/hmc5843_i2c.c | 2 +-
+>  drivers/staging/iio/magnetometer/hmc5843_spi.c | 2 +-
+>  3 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/magnetometer/hmc5843.h b/drivers/staging/iio/magnetometer/hmc5843.h
+> index 06f35d3..cb284cf 100644
+> --- a/drivers/staging/iio/magnetometer/hmc5843.h
+> +++ b/drivers/staging/iio/magnetometer/hmc5843.h
+> @@ -8,7 +8,7 @@
+>   * it under the terms of the GNU General Public License version 2 as
+>   * published by the Free Software Foundation.
+>   *
+Dropped the unwanted empty comment line as it doesn't add anything and we
+might as well clean it up whilst here.
+> - * */
+> + */
+>  
+>  #ifndef HMC5843_CORE_H
+>  #define HMC5843_CORE_H
+> @@ -38,7 +38,7 @@ enum hmc5843_ids {
+>   * @regmap:		hardware access register maps
+>   * @variant:		describe chip variants
+>   * @buffer:		3x 16-bit channels + padding + 64-bit timestamp
+> - **/
+> + */
+>  struct hmc5843_data {
+>  	struct device *dev;
+>  	struct mutex lock;
+> diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+> index 3e06ceb..6f7b8fb 100644
+> --- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+> +++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+> @@ -8,7 +8,7 @@
+>   * it under the terms of the GNU General Public License version 2 as
+>   * published by the Free Software Foundation.
+>   *
+snap
+> - * */
+> + */
+>  
+>  #include <linux/module.h>
+>  #include <linux/i2c.h>
+> diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+> index 1549192..85adcdd 100644
+> --- a/drivers/staging/iio/magnetometer/hmc5843_spi.c
+> +++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+> @@ -7,7 +7,7 @@
+>   * it under the terms of the GNU General Public License version 2 as
+>   * published by the Free Software Foundation.
+>   *
+snap.
+> - * */
+> + */
+>  
+>  #include <linux/module.h>
+>  #include <linux/spi/spi.h>
+> 
 
