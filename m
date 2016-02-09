@@ -1,61 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51451 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752603AbcBJSzt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2016 13:55:49 -0500
-Subject: Re: [PATCH v2] iio: Add IIO support for the DAC on the Apex Embedded
- Systems STX104
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-References: <20160208175034.GA14727@sophia> <56BA6A15.9000601@kernel.org>
- <20160210021904.GA13466@sophia>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56BB87B1.3030806@kernel.org>
-Date: Wed, 10 Feb 2016 18:55:45 +0000
+Received: from [212.40.180.161] ([212.40.180.161]:39636 "EHLO
+	smtp-out-039.synserver.de" rhost-flags-FAIL-FAIL-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752489AbcBIURD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 15:17:03 -0500
+Subject: Re: [PATCH v2 4/4] iio: imu: inv_mpu6050: Add SPI support for MPU6000
+To: Adriana Reus <adriana.reus@intel.com>, jic23@kernel.org
+References: <1454577628-12708-1-git-send-email-adriana.reus@intel.com>
+ <1454577628-12708-5-git-send-email-adriana.reus@intel.com>
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	ggao@invensense.com, lucas.de.marchi@gmail.com
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56BA47E2.6080304@metafoo.de>
+Date: Tue, 9 Feb 2016 21:11:14 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160210021904.GA13466@sophia>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1454577628-12708-5-git-send-email-adriana.reus@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/02/16 02:19, William Breathitt Gray wrote:
-> On Tue, Feb 09, 2016 at 10:37:09PM +0000, Jonathan Cameron wrote:
->> My only real question is on the naming of the module parameter.
->> Is it the equivalent of the io address that a load of ISA
->> radio drivers seem to use?  (fed to me by grepping isa_register_driver)
->> If so perhaps that's the 'standard' name as much as one exists for this?
-> 
-> Yes, you noted correctly that the stx104_base module parameter fulfills
-> the same function as the io module parameter used in many of the radio
-> drivers: it's an array holding the io port address of each device.
-> However, I find "io" to be a rather vague module parameter name, so I've
-> decided to use the more apt "stx104_base" name for my array of base
-> addresses.
-> 
-> As you've probably noticed, there are few ISA drivers existing in the
-> kernel baseline currently, so not much of a standard is set yet. I'm all
-> right with renaming the module parameter if you have a preference, just
-> as long as the name is more informative than simply "io."
-> 
-> For what it's worth, this driver is part of a series of PC/104 drivers
-> I've been submitting to various subsystems (in the hopes of improving
-> the lack of PC/104 support in the baseline Linux kernel); see
-> drivers/gpio/gpio-104-idio-16.c and drivers/gpio/gpio-104-idi-48.c for
-> example. I have thus far been following the convention of naming the
-> base address module parameter as "modname_base," where "modname" is the
-> respective module name.
-I've been trying to work out if IO ports is a generic enough ISA term
-to take the view that anyone using an ISA card should know about it...
-I certainly know the I/O space approach to interacting with PCI cards is
-well understood in people working with shall we say 'dumb' PCI hardware.
+On 02/04/2016 10:20 AM, Adriana Reus wrote:
+[...]
+> +config INV_MPU6050_SPI
+> +	tristate "Invensense MPU6050 devices"
 
-I guess I don't really care all that much on this though - just nice to
-be consistent / general when possible.
+depends on SPI_MASTER
 
-Jonathan
+> +	select INV_MPU6050_IIO
+> +	select REGMAP_SPI
+> +	help
+> +	  This driver can be built as a module. The module will be called
+> +	  inv-mpu6050-spi.
+[...]
+[...]
+> +static struct spi_driver inv_mpu_driver = {
+> +	.probe		=	inv_mpu_probe,
+> +	.remove		=	inv_mpu_remove,
+> +	.id_table	=	inv_mpu_id,
+> +	.driver = {
+> +		.owner	=	THIS_MODULE,
 
-> 
-> William Breathitt Gray
-> 
+Drop the owner field that should no longer be necessary.
+
+> +		.acpi_match_table = ACPI_PTR(inv_acpi_match),
+> +		.name	=	"inv-mpu6000 spi driver",
+> +		.pm     =       &inv_mpu_pmops,
+> +	},
+> +};
 
