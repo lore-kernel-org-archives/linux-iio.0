@@ -1,60 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f195.google.com ([209.85.213.195]:36196 "EHLO
-	mail-ig0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755446AbcBIQ26 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 11:28:58 -0500
-Received: by mail-ig0-f195.google.com with SMTP id 5so1189971igt.3
-        for <linux-iio@vger.kernel.org>; Tue, 09 Feb 2016 08:28:58 -0800 (PST)
-Date: Tue, 9 Feb 2016 10:28:45 -0600
-From: Michael Welling <mwelling@ieee.org>
-To: Adriana Reus <adriana.reus@intel.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com, ggao@invensense.com,
-	daniel.baluta@intel.com, lucas.de.marchi@gmail.com,
-	adi.reus@gmail.com
-Subject: Re: [PATCH v3 0/4] iio: imu: inv_mpu6050: Split driver into core and
- I2C/SPI functionality
-Message-ID: <20160209162845.GA3798@deathstar>
-References: <1455032300-12466-1-git-send-email-adriana.reus@intel.com>
+Received: from mail-wm0-f45.google.com ([74.125.82.45]:37197 "EHLO
+	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932701AbcBIKfS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 05:35:18 -0500
+Received: by mail-wm0-f45.google.com with SMTP id g62so17118813wme.0
+        for <linux-iio@vger.kernel.org>; Tue, 09 Feb 2016 02:35:17 -0800 (PST)
+Date: Tue, 9 Feb 2016 10:35:13 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Markus Pargmann <mpa@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Denis Carikli <denis@eukrea.com>,
+	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Juergen Borleis <jbe@pengutronix.de>
+Subject: Re: [PATCH v10 4/8] mfd: fsl imx25 Touchscreen ADC driver
+Message-ID: <20160209103513.GC24522@x1>
+References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
+ <1450101234-2191-5-git-send-email-mpa@pengutronix.de>
+ <20160111065441.GW3331@x1>
+ <6151166.y0HMDdqtvF@adelgunde>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1455032300-12466-1-git-send-email-adriana.reus@intel.com>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <6151166.y0HMDdqtvF@adelgunde>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Feb 09, 2016 at 05:38:16PM +0200, Adriana Reus wrote:
-> This series splits this driver into general and I2C/SPI specific functionality.
-> The first patch is a fix for a bug in the interrupt pin configuration.
-> The second patch changes all the I2C specific calls into regmap calls.
-> The third patch separated the remaining I2C specific part into a different component.
-> Finally the fourth patch adds SPI support for the MPU6000 chip.
-> 
-> No changes since v2 for the first two patches.
-> Adressed comments for the last two patches
->
+On Tue, 02 Feb 2016, Markus Pargmann wrote:
 
-Tested-by: Michael Welling <mwelling@ieee.org>
- 
-> Adriana Reus (4):
->   iio: imu: inv-mpu6050: Fix interrupt pin configuration
->   iio: imu: inv_mpu6050: Use regmap instead of i2c specific functions
->   iio: imu: inv_mpu6050: Separate driver into core and i2c
->     functionality.
->   iio: imu: inv_mpu6050: Add SPI support for MPU6000
+> Hi,
 > 
->  drivers/iio/imu/inv_mpu6050/Kconfig           |  21 ++-
->  drivers/iio/imu/inv_mpu6050/Makefile          |   8 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |  18 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 258 ++++++--------------------
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 207 +++++++++++++++++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  19 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |  35 ++--
->  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     | 106 +++++++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  10 +-
->  9 files changed, 440 insertions(+), 242 deletions(-)
->  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
->  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> On Monday, January 11, 2016 06:54:41 AM Lee Jones wrote:
+> > On Mon, 14 Dec 2015, Markus Pargmann wrote:
+> > 
+> > > This is the core driver for imx25 touchscreen/adc driver. The module
+> > > has one shared ADC and two different conversion queues which use the
+> > > ADC. The two queues are identical. Both can be used for general purpose
+> > > ADC but one is meant to be used for touchscreens.
+> > > 
+> > > This driver is the core which manages the central components and
+> > > registers of the TSC/ADC unit. It manages the IRQs and forwards them to
+> > > the correct components.
+> > > 
+> > > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> > > Signed-off-by: Denis Carikli <denis@eukrea.com>
+> > > 
+> > > [ensure correct ADC clock depending on the IPG clock]
+> > > Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
+> > > Acked-by: Jonathan Cameron <jic23@kernel.org>
+> > > ---
+> > > 
+> > > Notes:
+> > >     Changes in v7:
+> > >      - Cleanup bit defines in header files to be more readable
+> > >      - Fix irq check to return with an error for irq <= 0
+> > >      - Add COMPILE_TEST in Kconfig file
+> > >     
+> > >     Changes in v5:
+> > >      - Remove ifdef CONFIG_OF as this driver is only for DT usage
+> > >      - Remove module owner
+> > >      - Add Kconfig dependencies ARCH_MX25 and OF
+> > > 
+> > >  drivers/mfd/Kconfig             |   9 ++
+> > >  drivers/mfd/Makefile            |   2 +
+> > >  drivers/mfd/fsl-imx25-tsadc.c   | 203 ++++++++++++++++++++++++++++++++++++++++
+> > >  include/linux/mfd/imx25-tsadc.h | 140 +++++++++++++++++++++++++++
+> > >  4 files changed, 354 insertions(+)
+> > >  create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
+> > >  create mode 100644 include/linux/mfd/imx25-tsadc.h
+> > 
+> > For my own reference:
+> >   Acked-by: Lee Jones <lee.jones@linaro.org>
+> > 
+> > I will apply this and sent out pull-requests to the relevant
+> > maintainers once -rc1 is out.
 > 
-> -- 
-> 1.9.1
-> 
+> Thanks. Do you mean just this patch or the whole series?
+
+I will take all of the /driver patches.  The ARM patches need to go in
+through ARM-SoC via the relevant sub-arch maintainer(s).
+
+> Shall I resend the whole series to fix the commit title of the first
+> patch?
+
+No, that's fine.  I'll handle that *this time*.
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
