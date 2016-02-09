@@ -1,64 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41167 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751923AbcBFSgF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2016 13:36:05 -0500
-Subject: Re: [PATCH v2 2/4] iio: ad5755: Add DT binding documentation
-To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org
-References: <1454509864-32285-1-git-send-email-sean.nyekjaer@prevas.dk>
- <1454509864-32285-2-git-send-email-sean.nyekjaer@prevas.dk>
-Cc: devicetree@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56B63D13.9080005@kernel.org>
-Date: Sat, 6 Feb 2016 18:36:03 +0000
+Received: from smtp-out-011.synserver.de ([212.40.185.11]:1064 "EHLO
+	smtp-out-039.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S932172AbcBIUwK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 15:52:10 -0500
+Subject: Re: using monotonic clok for timstamping
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+References: <56B1DCA4.9050903@parrot.com> <56B1E2D8.90308@metafoo.de>
+ <56B63C8E.3020309@kernel.org> <56B865FC.7020106@metafoo.de>
+ <EDC91D66-140E-4BC1-BA2C-06689BB8FC02@jic23.retrosnub.co.uk>
+ <56B9C826.1090309@parrot.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56BA5176.6020108@metafoo.de>
+Date: Tue, 9 Feb 2016 21:52:06 +0100
 MIME-Version: 1.0
-In-Reply-To: <1454509864-32285-2-git-send-email-sean.nyekjaer@prevas.dk>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <56B9C826.1090309@parrot.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/02/16 14:31, Sean Nyekjaer wrote:
-> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Please pick up Rob's Ack in any future versions of the series
-(I'm sending this as mostly as a reminder to myself if this one goes
-in as it is!)
-> ---
-> Changes since v1:
-> - none
+On 02/09/2016 12:06 PM, Gregor Boirie wrote:
+> To sump up, implementing timestamping clock selection support in IIO
+> should be based on the following principles.
 > 
->  .../devicetree/bindings/iio/dac/ad5755.txt         | 24 ++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5755.txt
+> Selected timestamping clock is a per-device attribute which the userspace
+> may access through a sysfs file.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/ad5755.txt b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
-> new file mode 100644
-> index 0000000..4c91583
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
-> @@ -0,0 +1,24 @@
-> +* Analog Device AD5755 IIO Multi-Channel DAC Linux Driver
-> +
-> +Required properties:
-> + - compatible: Has to contain one of the following:
-> +	adi,ad5755
-> +	adi,ad5755-1
-> +	adi,ad5757
-> +	adi,ad5735
-> +	adi,ad5737
-> +
-> + - reg: spi chip select number for the device
-> + - spi-cpha or spi-cpol: is the only modes that is supported
-> +
-> +Recommended properties:
-> + - spi-max-frequency: Definition as per
-> +		Documentation/devicetree/bindings/spi/spi-bus.txt
-> +
-> +Example:
-> +dac@0 {
-> +	compatible = "adi,ad5755";
-> +	reg = <0>;
-> +	spi-max-frequency = <1000000>;
-> +	spi-cpha;
-> +};
+> It must be applicable to both buffered samples and events.
+
+Just playing out ideas here to make sure we have everything covered, but
+could be there be a setup where you'd want different timestamps for events
+and buffers?
+
 > 
+> Userspace may choose amongst a subset of available POSIX clocks. A good
+> starting point would be: CLOCK_REALTIME, CLOCK_MONOTONIC,
+> CLOCK_MONOTONIC_RAW, CLOCK_REALTIME_COARSE,
+> CLOCK_MONOTONIC_COARSE, CLOCK_BOOTTIME and CLOCK_TAI.
+> Please delete as appropriate if needed and see clock_gettime(2).
+> 
+> One remaining question is : how do we ensure sample and event timestamps
+> consistency with respect to clock changes ? 2 suggestions:
+> * reject the ability to select a new clock as long as an events chardev is
+> opened
+>   or a buffered samples channel is enabled ;
+> * clock may be changed at any time since it could be implemented in an atomic
+>   way (a simple atomic_t can hold an int / clockid_t if I'm no wrong).
+
+Not sure if we need to prevent it. If somebody changes it during an active
+measurement it is their problem I'd say.
 
