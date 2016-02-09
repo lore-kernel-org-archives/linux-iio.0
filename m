@@ -1,127 +1,218 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from [212.40.180.161] ([212.40.180.161]:49655 "EHLO
-	smtp-out-039.synserver.de" rhost-flags-FAIL-FAIL-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754173AbcBIUbG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 15:31:06 -0500
-Subject: Re: [PATCH v2 3/4] iio: ad5755: added full support for devicetree
-To: =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>,
-	linux-iio@vger.kernel.org
-References: <1454509864-32285-1-git-send-email-sean.nyekjaer@prevas.dk>
- <1454509864-32285-2-git-send-email-sean.nyekjaer@prevas.dk>
- <1454509864-32285-3-git-send-email-sean.nyekjaer@prevas.dk>
- <56B9A1B2.6030007@prevas.dk>
-Cc: devicetree@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56BA4C74.9030503@metafoo.de>
-Date: Tue, 9 Feb 2016 21:30:44 +0100
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44868 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755712AbcBIWKb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 17:10:31 -0500
+Subject: Re: [PATCH 1/5] iio: hmc5843: Add attribute for available measurement
+ config
+To: Cristina Moraru <cristina.moraru09@gmail.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	cristina.opriceana@gmail.com, marek@goldelico.com,
+	sdliyong@gmail.com, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+	linux-api@vger.kernel.org, tolga.ceylan@gmail.com,
+	k.kozlowski@samsung.com, javier@osg.samsung.com, arnd@arndb.de,
+	geert@linux-m68k.org, irina.tirdea@intel.com,
+	daniel.baluta@intel.com, octavia.purdila@intel.com
+References: <1454883711-15489-1-git-send-email-cristina.moraru09@gmail.com>
+ <1454883711-15489-2-git-send-email-cristina.moraru09@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56BA63D2.1060209@kernel.org>
+Date: Tue, 9 Feb 2016 22:10:26 +0000
 MIME-Version: 1.0
-In-Reply-To: <56B9A1B2.6030007@prevas.dk>
+In-Reply-To: <1454883711-15489-2-git-send-email-cristina.moraru09@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/09/2016 09:22 AM, Sean Nyekjær wrote:
+On 07/02/16 22:21, Cristina Moraru wrote:
+> Add static attribute meas_conf_available to show available
+> configurations for the bias current.
 > 
-> On 2016-02-03 15:31, Sean Nyekjaer wrote:
->> Devicetree can provide platform data
->>
->> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-> Lars do you have time to look at this before i'm fixing the comments from
-> Jonathan and Rob :-)
+> API for setting bias measurement configuration:
+> 
+> 0 - Normal measurement configuration (default): In normal measurement
+>     configuration the device follows normal measurement flow. Pins BP
+>     and BN are left floating and high impedance.
+> 
+> 1 - Positive bias configuration: In positive bias configuration, a
+>     positive current is forced across the resistive load on pins BP
+>     and BN.
+> 
+> 2 - Negative bias configuration. In negative bias configuration, a
+>     negative current is forced across the resistive load on pins BP
+>     and BN.
+> 
+> 3 - Only available on HMC5983. Magnetic sensor is disabled.
+>     Temperature sensor is enabled.
+> 
+> Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
+I'd much prefer to see this done using the iio_enum magic, giving
+something like.
 
-The obvious thing is to use '-' instead of '_' since that is the DT convention.
+cat meas_conf_available 
+normal, positivebias, negativebias, disabled
 
-Other than that this non-trivial. This is the first binding for such a
-device and it is always hard to come up with a good ABI without knowing what
-other similar devices might need to be supported by the same bindings. And
-it is also not always clear what is hardware description and what is driver
-policy.
+then have meas_conf read as one of these strings and take one as a write.
 
-The external resistor configuration should be clear, that's a description of
-the hardware whether the resistor exists or not.
+This abi is never going to make all that much sense to someone who
+hasn't read the datasheet / docs, but if possible it is nice to
+give them a hint by using informative strings as the values.
 
-For the others it's not so clear. E.g. the DC-to-DC converter configuration,
-this is most certainly not a description of the hardware. But we could get
-away with it by saying this is a system level design decision and is made by
-the system designer based on the operating parameters of the hardware and
-hence is policy that belongs in the DT. It might make sense to follow what
-the regulator bindings do here, even though the regulator is not exposed
-externally.
+Jonathan
+> ---
+>  drivers/staging/iio/magnetometer/hmc5843_core.c | 83 +++++++++++++++++++------
+>  1 file changed, 65 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
+> index 4aab022..4e2a7ec 100644
+> --- a/drivers/staging/iio/magnetometer/hmc5843_core.c
+> +++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
+> @@ -66,6 +66,34 @@
+>  #define HMC5843_MEAS_CONF_NEGATIVE_BIAS		0x02
+>  #define HMC5843_MEAS_CONF_MASK			0x03
+>  
+> +/*
+> + * API for setting the measurement configuration to
+> + * Normal, Positive bias and Negative bias
+> + *
+> + * From the datasheet:
+> + * 0 - Normal measurement configuration (default): In normal measurement
+> + *     configuration the device follows normal measurement flow. Pins BP
+> + *     and BN are left floating and high impedance.
+> + *
+> + * 1 - Positive bias configuration: In positive bias configuration, a
+> + *     positive current is forced across the resistive load on pins BP
+> + *     and BN.
+> + *
+> + * 2 - Negative bias configuration. In negative bias configuration, a
+> + *     negative current is forced across the resistive load on pins BP
+> + *     and BN.
+> + *
+> + * 3 - Only available on HMC5983. Magnetic sensor is disabled.
+> + *     Temperature sensor is enabled.
+> + */
+> +static const int hmc5843_regval_to_meas_conf[] = {
+> +	0, 1, 2
+> +};
+> +
+> +static const int hmc5983_regval_to_meas_conf[] = {
+> +	0, 1, 2, 3
+> +};
+> +
+>  /* Scaling factors: 10000000/Gain */
+>  static const int hmc5843_regval_to_nanoscale[] = {
+>  	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
+> @@ -109,6 +137,8 @@ static const int hmc5983_regval_to_samp_freq[][2] = {
+>  /* Describe chip variants */
+>  struct hmc5843_chip_info {
+>  	const struct iio_chan_spec *channels;
+> +	const int *regval_to_meas_conf;
+> +	const int n_regval_to_meas_conf;
+>  	const int (*regval_to_samp_freq)[2];
+>  	const int n_regval_to_samp_freq;
+>  	const int *regval_to_nanoscale;
+> @@ -174,24 +204,6 @@ static int hmc5843_read_measurement(struct hmc5843_data *data,
+>  	return IIO_VAL_INT;
+>  }
+>  
+> -/*
+> - * API for setting the measurement configuration to
+> - * Normal, Positive bias and Negative bias
+> - *
+> - * From the datasheet:
+> - * 0 - Normal measurement configuration (default): In normal measurement
+> - *     configuration the device follows normal measurement flow. Pins BP
+> - *     and BN are left floating and high impedance.
+> - *
+> - * 1 - Positive bias configuration: In positive bias configuration, a
+> - *     positive current is forced across the resistive load on pins BP
+> - *     and BN.
+> - *
+> - * 2 - Negative bias configuration. In negative bias configuration, a
+> - *     negative current is forced across the resistive load on pins BP
+> - *     and BN.
+> - *
+> - */
+>  static int hmc5843_set_meas_conf(struct hmc5843_data *data, u8 meas_conf)
+>  {
+>  	int ret;
+> @@ -248,6 +260,28 @@ static IIO_DEVICE_ATTR(meas_conf,
+>  			hmc5843_set_measurement_configuration,
+>  			0);
+>  
+> +static ssize_t hmc5843_show_meas_conf_avail(struct device *dev,
+> +					    struct device_attribute *attr,
+> +					    char *buf)
+> +{
+> +	struct hmc5843_data *data = iio_priv(dev_to_iio_dev(dev));
+> +
+> +	size_t len = 0;
+> +	int i;
+> +
+> +	for (i = 0; i < data->variant->n_regval_to_meas_conf; i++)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len,
+> +			"%d ", data->variant->regval_to_meas_conf[i]);
+> +
+> +	/* replace trailing space by newline */
+> +	buf[len - 1] = '\n';
+> +
+> +	return len;
+> +}
+> +
+> +static IIO_DEVICE_ATTR(meas_conf_available, S_IRUGO,
+> +	hmc5843_show_meas_conf_avail, NULL, 0);
+> +
+>  static
+>  ssize_t hmc5843_show_samp_freq_avail(struct device *dev,
+>  				     struct device_attribute *attr, char *buf)
+> @@ -478,6 +512,7 @@ static const struct iio_chan_spec hmc5883_channels[] = {
+>  
+>  static struct attribute *hmc5843_attributes[] = {
+>  	&iio_dev_attr_meas_conf.dev_attr.attr,
+> +	&iio_dev_attr_meas_conf_available.dev_attr.attr,
+>  	&iio_dev_attr_scale_available.dev_attr.attr,
+>  	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>  	NULL
+> @@ -490,6 +525,9 @@ static const struct attribute_group hmc5843_group = {
+>  static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
+>  	[HMC5843_ID] = {
+>  		.channels = hmc5843_channels,
+> +		.regval_to_meas_conf = hmc5843_regval_to_meas_conf,
+> +		.n_regval_to_meas_conf =
+> +				ARRAY_SIZE(hmc5843_regval_to_meas_conf),
+>  		.regval_to_samp_freq = hmc5843_regval_to_samp_freq,
+>  		.n_regval_to_samp_freq =
+>  				ARRAY_SIZE(hmc5843_regval_to_samp_freq),
+> @@ -499,6 +537,9 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
+>  	},
+>  	[HMC5883_ID] = {
+>  		.channels = hmc5883_channels,
+> +		.regval_to_meas_conf = hmc5843_regval_to_meas_conf,
+> +		.n_regval_to_meas_conf =
+> +				ARRAY_SIZE(hmc5843_regval_to_meas_conf),
+>  		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
+>  		.n_regval_to_samp_freq =
+>  				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
+> @@ -508,6 +549,9 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
+>  	},
+>  	[HMC5883L_ID] = {
+>  		.channels = hmc5883_channels,
+> +		.regval_to_meas_conf = hmc5843_regval_to_meas_conf,
+> +		.n_regval_to_meas_conf =
+> +				ARRAY_SIZE(hmc5843_regval_to_meas_conf),
+>  		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
+>  		.n_regval_to_samp_freq =
+>  				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
+> @@ -517,6 +561,9 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
+>  	},
+>  	[HMC5983_ID] = {
+>  		.channels = hmc5883_channels,
+> +		.regval_to_meas_conf = hmc5983_regval_to_meas_conf,
+> +		.n_regval_to_meas_conf =
+> +				ARRAY_SIZE(hmc5983_regval_to_meas_conf),
+>  		.regval_to_samp_freq = hmc5983_regval_to_samp_freq,
+>  		.n_regval_to_samp_freq =
+>  				ARRAY_SIZE(hmc5983_regval_to_samp_freq),
+> 
 
-The configuration of the output pin (voltage level, current level, etc) is
-certainly influenced by the restrictions of the hardware itself. You don't
-want to allow a configuration that can damage the hardware. But on the other
-hand it is still a valid usecase for some applications to switch between two
-setups at runtime, which is something you said you need to be able to do.
-Here we might want to use something similar to pinctrl where the devicetree
-can offer a selection of valid configurations and the driver can switch
-between those configurations.
-
-- Lars
-
-[...]
->> +static struct ad5755_platform_data *ad5755_parse_dt(struct device *dev)
->> +{
->> +    struct device_node *np = dev->of_node;
->> +    struct device_node *pp;
->> +    struct ad5755_platform_data *pdata;
->> +    unsigned int tmp;
->> +    unsigned int tmparray[3];
->> +    int devnr;
->> +
->> +    pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
->> +    if (!pdata)
->> +        return NULL;
->> +
->> +    pdata->ext_dc_dc_compenstation_resistor =
->> +           of_property_read_bool(np,
->> "adi,ext_dc_dc_compenstation_resistor");
->> +
->> +    if (!of_property_read_u32(np, "adi,dc_dc_phase", &tmp))
->> +        pdata->dc_dc_phase = tmp;
->> +    else
->> +        pdata->dc_dc_phase = AD5755_DC_DC_PHASE_ALL_SAME_EDGE;
->> +
->> +    if (!of_property_read_u32(np, "adi,dc_dc_freq", &tmp))
->> +        pdata->dc_dc_freq = tmp;
->> +    else
->> +        pdata->dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ;
->> +
->> +    if (!of_property_read_u32(np, "adi,dc_dc_maxv", &tmp))
->> +        pdata->dc_dc_maxv = tmp;
->> +    else
->> +        pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_23V;
->> +
->> +    devnr = 0;
->> +    for_each_child_of_node(np, pp) {
->> +        if (devnr > AD5755_NUM_CHANNELS) {
->> +            dev_err(dev, "There is to many channels defined in DT\n");
->> +            goto error_out;
->> +        }
->> +
->> +        if (!of_property_read_u32(pp, "adi,mode", &tmp))
->> +            pdata->dac[devnr].mode = tmp;
->> +        else
->> +            pdata->dac[devnr].mode = AD5755_MODE_CURRENT_4mA_20mA;
->> +
->> +        pdata->dac[devnr].ext_current_sense_resistor =
->> +               of_property_read_bool(pp, "adi,ext_current_sense_resistor");
->> +
->> +        pdata->dac[devnr].enable_voltage_overrange =
->> +            of_property_read_bool(pp, "adi,enable_voltage_overrange");
->> +        if (!of_property_read_u32_array(pp, "adi,slew", tmparray, 3)) {
->> +            pdata->dac[devnr].slew.enable = tmparray[0];
->> +            pdata->dac[devnr].slew.rate = tmparray[1];
->> +            pdata->dac[devnr].slew.step_size = tmparray[2];
->> +        } else {
->> +            pdata->dac[devnr].slew.enable = false;
->> +            pdata->dac[devnr].slew.rate = AD5755_SLEW_RATE_64k;
->> +            pdata->dac[devnr].slew.step_size = AD5755_SLEW_STEP_SIZE_1;
->> +        }
->> +
->> +        devnr++;
->> +    }
->> +
->> +    return pdata;
-
-[...]
