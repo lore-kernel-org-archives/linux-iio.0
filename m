@@ -1,390 +1,188 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44582 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44828 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932209AbcBIVEP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 16:04:15 -0500
-Subject: Re: [PATCH 5/5] iio:ad5064: Add
- AD5625/AD5627/AD5645/AD5647/AD4665/AD5657 support
+	with ESMTP id S932560AbcBIWDX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2016 17:03:23 -0500
+Subject: Re: [PATCH] staging:iio:ad7192: Add support for the AD7193
 To: Lars-Peter Clausen <lars@metafoo.de>
-References: <1454950910-26049-1-git-send-email-lars@metafoo.de>
- <1454950910-26049-5-git-send-email-lars@metafoo.de>
+References: <1454928304-18838-1-git-send-email-lars@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Marc Andre <marc.andre@netline.ch>, linux-iio@vger.kernel.org
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56BA544D.8010800@kernel.org>
-Date: Tue, 9 Feb 2016 21:04:13 +0000
+Message-ID: <56BA6228.30907@kernel.org>
+Date: Tue, 9 Feb 2016 22:03:20 +0000
 MIME-Version: 1.0
-In-Reply-To: <1454950910-26049-5-git-send-email-lars@metafoo.de>
+In-Reply-To: <1454928304-18838-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/02/16 17:01, Lars-Peter Clausen wrote:
-> The AD5625/AD5645/AD5665 are a family of 4 channel DACs with 12-bit, 14-bit
-> and 16-bit precision respectively. The devices come in 3 flavors in terms
-> of built-in reference, either no built-in reference, built-in 1.25V
-> reference or built-in 2.5V reference.
-> 
-> The AD5627/AD5647/AD5667 are similar to the AD5625/AD5645/AD5665 except
-> that they have 2 instead of 4 channels.
-> 
-> While these new devices are mostly register map compatible with the
-> existing devices support by the driver some offsets and register addresses
-> have been shuffled around. To accommodate this introduce a new register map
-> layout. For the lack of a better name we will just call it version 2.
-> 
-> Datasheets:
-> 	http://www.analog.com/media/en/technical-documentation/data-sheets/AD5625R_5645R_5665R_5625_5665.pdf
-> 	http://www.analog.com/media/en/technical-documentation/data-sheets/AD5627R_5647R_5667R_5627_5667.pdf
+On 08/02/16 10:45, Lars-Peter Clausen wrote:
+> The AD7193 is mostly register map compatible to the AD7192. The main
+> difference is that it has 8 instead of 4 inputs, so the way the input
+> channels are selected is slightly different.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Hmm. And just to follow up on missing the earlier patches, I think I applied
-this one and didn't actually let you know.
+Looks good.
 
-Anyhow, was applied yesterday to the togreg branch of iio.git etc etc.
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play with it.
+
+Thanks,
 
 Jonathan
 > ---
->  drivers/iio/dac/Kconfig  |   7 +-
->  drivers/iio/dac/ad5064.c | 192 +++++++++++++++++++++++++++++++++++++++++++++--
->  2 files changed, 188 insertions(+), 11 deletions(-)
+>  drivers/staging/iio/adc/Kconfig  |  4 +--
+>  drivers/staging/iio/adc/ad7192.c | 76 ++++++++++++++++++++++++++++++++--------
+>  2 files changed, 63 insertions(+), 17 deletions(-)
 > 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index a56b52d..3c809e2 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -10,9 +10,10 @@ config AD5064
->  	depends on (SPI_MASTER && I2C!=m) || I2C
+> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+> index 58d4517..a700f19 100644
+> --- a/drivers/staging/iio/adc/Kconfig
+> +++ b/drivers/staging/iio/adc/Kconfig
+> @@ -58,12 +58,12 @@ config AD7816
+>  	  temperature sensors and ADC.
+>  
+>  config AD7192
+> -	tristate "Analog Devices AD7190 AD7192 AD7195 ADC driver"
+> +	tristate "Analog Devices AD7190 AD7192 AD7193 AD7195 ADC driver"
+>  	depends on SPI
+>  	select AD_SIGMA_DELTA
 >  	help
->  	  Say yes here to build support for Analog Devices AD5024, AD5025, AD5044,
-> -	  AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R, AD5648, AD5666, AD5668,
-> -	  AD5669R, LTC2606, LTC2607, LTC2609, LTC2616, LTC2617, LTC2619, LTC2626,
-> -	  LTC2627, LTC2629 Digital to Analog Converter.
-> +	  AD5045, AD5064, AD5064-1, AD5065, AD5625, AD5625R, AD5627, AD5627R,
-> +	  AD5628, AD5629R, AD5645R, AD5647R, AD5648, AD5665, AD5665R, AD5666,
-> +	  AD5667, AD5667R, AD5668, AD5669R, LTC2606, LTC2607, LTC2609, LTC2616,
-> +	  LTC2617, LTC2619, LTC2626, LTC2627, LTC2629 Digital to Analog Converter.
+>  	  Say yes here to build support for Analog Devices AD7190,
+> -	  AD7192 or AD7195 SPI analog to digital converters (ADC).
+> +	  AD7192, AD7193 or AD7195 SPI analog to digital converters (ADC).
+>  	  If unsure, say N (but it's safe to say "Y").
 >  
 >  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad5064.
-> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-> index b7f717c..6803e4a 100644
-> --- a/drivers/iio/dac/ad5064.c
-> +++ b/drivers/iio/dac/ad5064.c
-> @@ -1,6 +1,7 @@
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> index 92f2b72..f843f19 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -1,7 +1,7 @@
 >  /*
-> - * AD5024, AD5025, AD5044, AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R,
-> - * AD5648, AD5666, AD5668, AD5669R, LTC2606, LTC2607, LTC2609, LTC2616,
-> + * AD5024, AD5025, AD5044, AD5045, AD5064, AD5064-1, AD5065, AD5625, AD5625R,
-> + * AD5627, AD5627R, AD5628, AD5629R, AD5645R, AD5647R, AD5648, AD5665, AD5665R,
-> + * AD5666, AD5667, AD5667R, AD5668, AD5669R, LTC2606, LTC2607, LTC2609, LTC2616,
->   * LTC2617, LTC2619, LTC2626, LTC2627, LTC2629 Digital to analog converters
->   * driver
+> - * AD7190 AD7192 AD7195 SPI ADC driver
+> + * AD7190 AD7192 AD7193 AD7195 SPI ADC driver
 >   *
-> @@ -41,6 +42,9 @@
->  #define AD5064_CMD_RESET			0x7
->  #define AD5064_CMD_CONFIG			0x8
->  
-> +#define AD5064_CMD_RESET_V2			0x5
-> +#define AD5064_CMD_CONFIG_V2			0x7
-> +
->  #define AD5064_CONFIG_DAISY_CHAIN_ENABLE	BIT(1)
->  #define AD5064_CONFIG_INT_VREF_ENABLE		BIT(0)
->  
-> @@ -51,11 +55,13 @@
->  
->  /**
->   * enum ad5064_regmap_type - Register layout variant
-> - * @AD5064_REGMAP_ADI: Analog Devices register map layout
-> + * @AD5064_REGMAP_ADI: Old Analog Devices register map layout
-> + * @AD5064_REGMAP_ADI2: New Analog Devices register map layout
->   * @AD5064_REGMAP_LTC: LTC register map layout
+> - * Copyright 2011-2012 Analog Devices Inc.
+> + * Copyright 2011-2015 Analog Devices Inc.
+>   *
+>   * Licensed under the GPL-2.
 >   */
->  enum ad5064_regmap_type {
->  	AD5064_REGMAP_ADI,
-> +	AD5064_REGMAP_ADI2,
->  	AD5064_REGMAP_LTC,
+> @@ -92,26 +92,43 @@
+>  
+>  #define AD7192_CONF_CHOP	BIT(23) /* CHOP enable */
+>  #define AD7192_CONF_REFSEL	BIT(20) /* REFIN1/REFIN2 Reference Select */
+> -#define AD7192_CONF_CHAN(x)	(((1 << (x)) & 0xFF) << 8) /* Channel select */
+> -#define AD7192_CONF_CHAN_MASK	(0xFF << 8) /* Channel select mask */
+> +#define AD7192_CONF_CHAN(x)	((x) << 8) /* Channel select */
+> +#define AD7192_CONF_CHAN_MASK	(0x7FF << 8) /* Channel select mask */
+>  #define AD7192_CONF_BURN	BIT(7) /* Burnout current enable */
+>  #define AD7192_CONF_REFDET	BIT(6) /* Reference detect enable */
+>  #define AD7192_CONF_BUF		BIT(4) /* Buffered Mode Enable */
+>  #define AD7192_CONF_UNIPOLAR	BIT(3) /* Unipolar/Bipolar Enable */
+>  #define AD7192_CONF_GAIN(x)	((x) & 0x7) /* Gain Select */
+>  
+> -#define AD7192_CH_AIN1P_AIN2M	0 /* AIN1(+) - AIN2(-) */
+> -#define AD7192_CH_AIN3P_AIN4M	1 /* AIN3(+) - AIN4(-) */
+> -#define AD7192_CH_TEMP		2 /* Temp Sensor */
+> -#define AD7192_CH_AIN2P_AIN2M	3 /* AIN2(+) - AIN2(-) */
+> -#define AD7192_CH_AIN1		4 /* AIN1 - AINCOM */
+> -#define AD7192_CH_AIN2		5 /* AIN2 - AINCOM */
+> -#define AD7192_CH_AIN3		6 /* AIN3 - AINCOM */
+> -#define AD7192_CH_AIN4		7 /* AIN4 - AINCOM */
+> +#define AD7192_CH_AIN1P_AIN2M	BIT(0) /* AIN1(+) - AIN2(-) */
+> +#define AD7192_CH_AIN3P_AIN4M	BIT(1) /* AIN3(+) - AIN4(-) */
+> +#define AD7192_CH_TEMP		BIT(2) /* Temp Sensor */
+> +#define AD7192_CH_AIN2P_AIN2M	BIT(3) /* AIN2(+) - AIN2(-) */
+> +#define AD7192_CH_AIN1		BIT(4) /* AIN1 - AINCOM */
+> +#define AD7192_CH_AIN2		BIT(5) /* AIN2 - AINCOM */
+> +#define AD7192_CH_AIN3		BIT(6) /* AIN3 - AINCOM */
+> +#define AD7192_CH_AIN4		BIT(7) /* AIN4 - AINCOM */
+> +
+> +#define AD7193_CH_AIN1P_AIN2M	0x000  /* AIN1(+) - AIN2(-) */
+> +#define AD7193_CH_AIN3P_AIN4M	0x001  /* AIN3(+) - AIN4(-) */
+> +#define AD7193_CH_AIN5P_AIN6M	0x002  /* AIN5(+) - AIN6(-) */
+> +#define AD7193_CH_AIN7P_AIN8M	0x004  /* AIN7(+) - AIN8(-) */
+> +#define AD7193_CH_TEMP		0x100 /* Temp senseor */
+> +#define AD7193_CH_AIN2P_AIN2M	0x200 /* AIN2(+) - AIN2(-) */
+> +#define AD7193_CH_AIN1		0x401 /* AIN1 - AINCOM */
+> +#define AD7193_CH_AIN2		0x402 /* AIN2 - AINCOM */
+> +#define AD7193_CH_AIN3		0x404 /* AIN3 - AINCOM */
+> +#define AD7193_CH_AIN4		0x408 /* AIN4 - AINCOM */
+> +#define AD7193_CH_AIN5		0x410 /* AIN5 - AINCOM */
+> +#define AD7193_CH_AIN6		0x420 /* AIN6 - AINCOM */
+> +#define AD7193_CH_AIN7		0x440 /* AIN7 - AINCOM */
+> +#define AD7193_CH_AIN8		0x480 /* AIN7 - AINCOM */
+> +#define AD7193_CH_AINCOM	0x600 /* AINCOM - AINCOM */
+>  
+>  /* ID Register Bit Designations (AD7192_REG_ID) */
+>  #define ID_AD7190		0x4
+>  #define ID_AD7192		0x0
+> +#define ID_AD7193		0x2
+>  #define ID_AD7195		0x6
+>  #define AD7192_ID_MASK		0x0F
+>  
+> @@ -607,6 +624,24 @@ static const struct iio_chan_spec ad7192_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(8),
 >  };
 >  
-> @@ -125,14 +131,30 @@ enum ad5064_type {
->  	ID_AD5064,
->  	ID_AD5064_1,
->  	ID_AD5065,
-> +	ID_AD5625,
-> +	ID_AD5625R_1V25,
-> +	ID_AD5625R_2V5,
-> +	ID_AD5627,
-> +	ID_AD5627R_1V25,
-> +	ID_AD5627R_2V5,
->  	ID_AD5628_1,
->  	ID_AD5628_2,
->  	ID_AD5629_1,
->  	ID_AD5629_2,
-> +	ID_AD5645R_1V25,
-> +	ID_AD5645R_2V5,
-> +	ID_AD5647R_1V25,
-> +	ID_AD5647R_2V5,
->  	ID_AD5648_1,
->  	ID_AD5648_2,
-> +	ID_AD5665,
-> +	ID_AD5665R_1V25,
-> +	ID_AD5665R_2V5,
->  	ID_AD5666_1,
->  	ID_AD5666_2,
-> +	ID_AD5667,
-> +	ID_AD5667R_1V25,
-> +	ID_AD5667R_2V5,
->  	ID_AD5668_1,
->  	ID_AD5668_2,
->  	ID_AD5669_1,
-> @@ -160,17 +182,23 @@ static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
->  	const struct iio_chan_spec *chan)
+> +static const struct iio_chan_spec ad7193_channels[] = {
+> +	AD_SD_DIFF_CHANNEL(0, 1, 2, AD7193_CH_AIN1P_AIN2M, 24, 32, 0),
+> +	AD_SD_DIFF_CHANNEL(1, 3, 4, AD7193_CH_AIN3P_AIN4M, 24, 32, 0),
+> +	AD_SD_DIFF_CHANNEL(2, 5, 6, AD7193_CH_AIN5P_AIN6M, 24, 32, 0),
+> +	AD_SD_DIFF_CHANNEL(3, 7, 8, AD7193_CH_AIN7P_AIN8M, 24, 32, 0),
+> +	AD_SD_TEMP_CHANNEL(4, AD7193_CH_TEMP, 24, 32, 0),
+> +	AD_SD_SHORTED_CHANNEL(5, 2, AD7193_CH_AIN2P_AIN2M, 24, 32, 0),
+> +	AD_SD_CHANNEL(6, 1, AD7193_CH_AIN1, 24, 32, 0),
+> +	AD_SD_CHANNEL(7, 2, AD7193_CH_AIN2, 24, 32, 0),
+> +	AD_SD_CHANNEL(8, 3, AD7193_CH_AIN3, 24, 32, 0),
+> +	AD_SD_CHANNEL(9, 4, AD7193_CH_AIN4, 24, 32, 0),
+> +	AD_SD_CHANNEL(10, 5, AD7193_CH_AIN5, 24, 32, 0),
+> +	AD_SD_CHANNEL(11, 6, AD7193_CH_AIN6, 24, 32, 0),
+> +	AD_SD_CHANNEL(12, 7, AD7193_CH_AIN7, 24, 32, 0),
+> +	AD_SD_CHANNEL(13, 8, AD7193_CH_AIN8, 24, 32, 0),
+> +	IIO_CHAN_SOFT_TIMESTAMP(14),
+> +};
+> +
+>  static int ad7192_probe(struct spi_device *spi)
 >  {
->  	unsigned int val, address;
-> +	unsigned int shift;
->  	int ret;
->  
->  	if (st->chip_info->regmap_type == AD5064_REGMAP_LTC) {
->  		val = 0;
->  		address = chan->address;
->  	} else {
-> -		address = 0;
-> +		if (st->chip_info->regmap_type == AD5064_REGMAP_ADI2)
-> +			shift = 4;
-> +		else
-> +			shift = 8;
+>  	const struct ad7192_platform_data *pdata = dev_get_platdata(&spi->dev);
+> @@ -651,8 +686,18 @@ static int ad7192_probe(struct spi_device *spi)
+>  	indio_dev->dev.parent = &spi->dev;
+>  	indio_dev->name = spi_get_device_id(spi)->name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> -	indio_dev->channels = ad7192_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(ad7192_channels);
 > +
->  		val = (0x1 << chan->address);
-> +		address = 0;
->  
->  		if (st->pwr_down[chan->channel])
-> -			val |= st->pwr_down_mode[chan->channel] << 8;
-> +			val |= st->pwr_down_mode[chan->channel] << shift;
->  	}
->  
->  	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, address, val, 0);
-> @@ -391,6 +419,7 @@ static DECLARE_AD5065_CHANNELS(ad5045_channels, 14, 6, ad5064_ext_info);
->  static DECLARE_AD5065_CHANNELS(ad5065_channels, 16, 4, ad5064_ext_info);
->  
->  static DECLARE_AD5064_CHANNELS(ad5629_channels, 12, 4, ad5064_ext_info);
-> +static DECLARE_AD5064_CHANNELS(ad5645_channels, 14, 2, ad5064_ext_info);
->  static DECLARE_AD5064_CHANNELS(ad5669_channels, 16, 0, ad5064_ext_info);
->  
->  static DECLARE_AD5064_CHANNELS(ltc2607_channels, 16, 0, ltc2617_ext_info);
-> @@ -440,6 +469,46 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
->  		.num_channels = 2,
->  		.regmap_type = AD5064_REGMAP_ADI,
->  	},
-> +	[ID_AD5625] = {
-> +		.shared_vref = true,
-> +		.channels = ad5629_channels,
-> +		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5625R_1V25] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 1250000,
-> +		.channels = ad5629_channels,
-> +		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5625R_2V5] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 2500000,
-> +		.channels = ad5629_channels,
-> +		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5627] = {
-> +		.shared_vref = true,
-> +		.channels = ad5629_channels,
-> +		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5627R_1V25] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 1250000,
-> +		.channels = ad5629_channels,
-> +		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5627R_2V5] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 2500000,
-> +		.channels = ad5629_channels,
-> +		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
->  	[ID_AD5628_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
-> @@ -468,6 +537,34 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
->  		.num_channels = 8,
->  		.regmap_type = AD5064_REGMAP_ADI,
->  	},
-> +	[ID_AD5645R_1V25] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 1250000,
-> +		.channels = ad5645_channels,
-> +		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5645R_2V5] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 2500000,
-> +		.channels = ad5645_channels,
-> +		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5647R_1V25] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 1250000,
-> +		.channels = ad5645_channels,
-> +		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5647R_2V5] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 2500000,
-> +		.channels = ad5645_channels,
-> +		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
->  	[ID_AD5648_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
-> @@ -482,6 +579,26 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
->  		.num_channels = 8,
->  		.regmap_type = AD5064_REGMAP_ADI,
->  	},
-> +	[ID_AD5665] = {
-> +		.shared_vref = true,
-> +		.channels = ad5669_channels,
-> +		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5665R_1V25] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 1250000,
-> +		.channels = ad5669_channels,
-> +		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5665R_2V5] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 2500000,
-> +		.channels = ad5669_channels,
-> +		.num_channels = 4,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
->  	[ID_AD5666_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
-> @@ -496,6 +613,26 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
->  		.num_channels = 4,
->  		.regmap_type = AD5064_REGMAP_ADI,
->  	},
-> +	[ID_AD5667] = {
-> +		.shared_vref = true,
-> +		.channels = ad5669_channels,
-> +		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5667R_1V25] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 1250000,
-> +		.channels = ad5669_channels,
-> +		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
-> +	[ID_AD5667R_2V5] = {
-> +		.shared_vref = true,
-> +		.internal_vref = 2500000,
-> +		.channels = ad5669_channels,
-> +		.num_channels = 2,
-> +		.regmap_type = AD5064_REGMAP_ADI2
-> +	},
->  	[ID_AD5668_1] = {
->  		.shared_vref = true,
->  		.internal_vref = 2500000,
-> @@ -607,6 +744,22 @@ static const char * const ad5064_vref_name(struct ad5064_state *st,
->  	return st->chip_info->shared_vref ? "vref" : ad5064_vref_names[vref];
->  }
->  
-> +static int ad5064_set_config(struct ad5064_state *st, unsigned int val)
-> +{
-> +	unsigned int cmd;
-> +
-> +	switch (st->chip_info->regmap_type) {
-> +	case AD5064_REGMAP_ADI2:
-> +		cmd = AD5064_CMD_CONFIG_V2;
+> +	switch (st->devid) {
+> +	case ID_AD7193:
+> +		indio_dev->channels = ad7193_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(ad7193_channels);
 > +		break;
 > +	default:
-> +		cmd = AD5064_CMD_CONFIG;
+> +		indio_dev->channels = ad7192_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(ad7192_channels);
 > +		break;
 > +	}
 > +
-> +	return ad5064_write(st, cmd, 0, val, 0);
-> +}
-> +
->  static int ad5064_probe(struct device *dev, enum ad5064_type type,
->  			const char *name, ad5064_write_func write)
->  {
-> @@ -636,8 +789,7 @@ static int ad5064_probe(struct device *dev, enum ad5064_type type,
->  		if (!st->chip_info->internal_vref)
->  			return ret;
->  		st->use_internal_vref = true;
-> -		ret = ad5064_write(st, AD5064_CMD_CONFIG, 0,
-> -			AD5064_CONFIG_INT_VREF_ENABLE, 0);
-> +		ret = ad5064_set_config(st, AD5064_CONFIG_INT_VREF_ENABLE);
->  		if (ret) {
->  			dev_err(dev, "Failed to enable internal vref: %d\n",
->  				ret);
-> @@ -766,9 +918,19 @@ static int ad5064_i2c_write(struct ad5064_state *st, unsigned int cmd,
->  	unsigned int addr, unsigned int val)
->  {
->  	struct i2c_client *i2c = to_i2c_client(st->dev);
-> +	unsigned int cmd_shift;
->  	int ret;
+>  	if (st->devid == ID_AD7195)
+>  		indio_dev->info = &ad7195_info;
+>  	else
+> @@ -699,6 +744,7 @@ static int ad7192_remove(struct spi_device *spi)
+>  static const struct spi_device_id ad7192_id[] = {
+>  	{"ad7190", ID_AD7190},
+>  	{"ad7192", ID_AD7192},
+> +	{"ad7193", ID_AD7193},
+>  	{"ad7195", ID_AD7195},
+>  	{}
+>  };
+> @@ -715,5 +761,5 @@ static struct spi_driver ad7192_driver = {
+>  module_spi_driver(ad7192_driver);
 >  
-> -	st->data.i2c[0] = (cmd << 4) | addr;
-> +	switch (st->chip_info->regmap_type) {
-> +	case AD5064_REGMAP_ADI2:
-> +		cmd_shift = 3;
-> +		break;
-> +	default:
-> +		cmd_shift = 4;
-> +		break;
-> +	}
-> +
-> +	st->data.i2c[0] = (cmd << cmd_shift) | addr;
->  	put_unaligned_be16(val, &st->data.i2c[1]);
->  
->  	ret = i2c_master_send(i2c, st->data.i2c, 3);
-> @@ -791,9 +953,23 @@ static int ad5064_i2c_remove(struct i2c_client *i2c)
->  }
->  
->  static const struct i2c_device_id ad5064_i2c_ids[] = {
-> +	{"ad5625", ID_AD5625 },
-> +	{"ad5625r-1v25", ID_AD5625R_1V25 },
-> +	{"ad5625r-2v5", ID_AD5625R_2V5 },
-> +	{"ad5627", ID_AD5627 },
-> +	{"ad5627r-1v25", ID_AD5627R_1V25 },
-> +	{"ad5627r-2v5", ID_AD5627R_2V5 },
->  	{"ad5629-1", ID_AD5629_1},
->  	{"ad5629-2", ID_AD5629_2},
->  	{"ad5629-3", ID_AD5629_2}, /* similar enough to ad5629-2 */
-> +	{"ad5645r-1v25", ID_AD5645R_1V25 },
-> +	{"ad5645r-2v5", ID_AD5645R_2V5 },
-> +	{"ad5665", ID_AD5665 },
-> +	{"ad5665r-1v25", ID_AD5665R_1V25 },
-> +	{"ad5665r-2v5", ID_AD5665R_2V5 },
-> +	{"ad5667", ID_AD5667 },
-> +	{"ad5667r-1v25", ID_AD5667R_1V25 },
-> +	{"ad5667r-2v5", ID_AD5667R_2V5 },
->  	{"ad5669-1", ID_AD5669_1},
->  	{"ad5669-2", ID_AD5669_2},
->  	{"ad5669-3", ID_AD5669_2}, /* similar enough to ad5669-2 */
+>  MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+> -MODULE_DESCRIPTION("Analog Devices AD7190, AD7192, AD7195 ADC");
+> +MODULE_DESCRIPTION("Analog Devices AD7190, AD7192, AD7193, AD7195 ADC");
+>  MODULE_LICENSE("GPL v2");
 > 
 
