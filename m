@@ -1,407 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:41216 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751325AbcBLSej (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Feb 2016 13:34:39 -0500
-From: "Andrew F. Davis" <afd@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Marc Titinger <mtitinger@baylibre.com>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH 1/2] iio: ina2xx: Fix whitespace and re-order code
-Date: Fri, 12 Feb 2016 12:34:22 -0600
-Message-ID: <1455302063-8414-1-git-send-email-afd@ti.com>
+Received: from mail-yk0-f193.google.com ([209.85.160.193]:35250 "EHLO
+	mail-yk0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751003AbcBJVWs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2016 16:22:48 -0500
+Date: Wed, 10 Feb 2016 16:22:40 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: Add IIO support for the DAC on the Apex Embedded
+ Systems STX104
+Message-ID: <20160210212240.GA12207@sophia>
+References: <20160208175034.GA14727@sophia>
+ <56BA6A15.9000601@kernel.org>
+ <20160210021904.GA13466@sophia>
+ <56BB87B1.3030806@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <56BB87B1.3030806@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Group of probably overly rigorous whitespace and code cleanups.
- - Alphabetize includes
- - Assign to variables in the order they are defined
- - Alignment issues
- - Group alike statements together
- - Use helper macros
+On Wed, Feb 10, 2016 at 06:55:45PM +0000, Jonathan Cameron wrote:
+>On 10/02/16 02:19, William Breathitt Gray wrote:
+>> On Tue, Feb 09, 2016 at 10:37:09PM +0000, Jonathan Cameron wrote:
+>>> My only real question is on the naming of the module parameter.
+>>> Is it the equivalent of the io address that a load of ISA
+>>> radio drivers seem to use?  (fed to me by grepping isa_register_driver)
+>>> If so perhaps that's the 'standard' name as much as one exists for this?
+>> 
+>> Yes, you noted correctly that the stx104_base module parameter fulfills
+>> the same function as the io module parameter used in many of the radio
+>> drivers: it's an array holding the io port address of each device.
+>> However, I find "io" to be a rather vague module parameter name, so I've
+>> decided to use the more apt "stx104_base" name for my array of base
+>> addresses.
+>> 
+>> As you've probably noticed, there are few ISA drivers existing in the
+>> kernel baseline currently, so not much of a standard is set yet. I'm all
+>> right with renaming the module parameter if you have a preference, just
+>> as long as the name is more informative than simply "io."
+>> 
+>> For what it's worth, this driver is part of a series of PC/104 drivers
+>> I've been submitting to various subsystems (in the hopes of improving
+>> the lack of PC/104 support in the baseline Linux kernel); see
+>> drivers/gpio/gpio-104-idio-16.c and drivers/gpio/gpio-104-idi-48.c for
+>> example. I have thus far been following the convention of naming the
+>> base address module parameter as "modname_base," where "modname" is the
+>> respective module name.
+>I've been trying to work out if IO ports is a generic enough ISA term
+>to take the view that anyone using an ISA card should know about it...
+>I certainly know the I/O space approach to interacting with PCI cards is
+>well understood in people working with shall we say 'dumb' PCI hardware.
+>
+>I guess I don't really care all that much on this though - just nice to
+>be consistent / general when possible.
 
-Signed-off-by: Andrew F. Davis <afd@ti.com>
----
- drivers/iio/adc/ina2xx-adc.c | 164 +++++++++++++++++++++----------------------
- 1 file changed, 80 insertions(+), 84 deletions(-)
+I believe that port-mapped I/O is ubiquitous enough in the industry that
+anyone with an ISA card will understand the term; in fact, I can't
+recall any PC/104 card datasheet I've encountered without a chapter
+section devoted to "I/O port address" configuration.
 
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index d803e50..61e8ae9 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -19,17 +19,18 @@
-  *
-  * Configurable 7-bit I2C slave address from 0x40 to 0x4F
-  */
--#include <linux/module.h>
--#include <linux/kthread.h>
-+
- #include <linux/delay.h>
-+#include <linux/i2c.h>
- #include <linux/iio/kfifo_buf.h>
- #include <linux/iio/sysfs.h>
--#include <linux/i2c.h>
-+#include <linux/kthread.h>
-+#include <linux/module.h>
- #include <linux/regmap.h>
--#include <linux/platform_data/ina2xx.h>
--
- #include <linux/util_macros.h>
- 
-+#include <linux/platform_data/ina2xx.h>
-+
- /* INA2XX registers definition */
- #define INA2XX_CONFIG                   0x00
- #define INA2XX_SHUNT_VOLTAGE            0x01	/* readonly */
-@@ -38,7 +39,7 @@
- #define INA2XX_CURRENT                  0x04	/* readonly */
- #define INA2XX_CALIBRATION              0x05
- 
--#define INA226_ALERT_MASK		0x06
-+#define INA226_ALERT_MASK		GENMASK(2, 1)
- #define INA266_CVRF			BIT(3)
- 
- #define INA2XX_MAX_REGISTERS            8
-@@ -113,7 +114,7 @@ struct ina2xx_chip_info {
- 	struct mutex state_lock;
- 	unsigned int shunt_resistor;
- 	int avg;
--	s64 prev_ns;	/* track buffer capture time, check for underruns*/
-+	s64 prev_ns; /* track buffer capture time, check for underruns*/
- 	int int_time_vbus; /* Bus voltage integration time uS */
- 	int int_time_vshunt; /* Shunt voltage integration time uS */
- 	bool allow_async_readout;
-@@ -121,21 +122,21 @@ struct ina2xx_chip_info {
- 
- static const struct ina2xx_config ina2xx_config[] = {
- 	[ina219] = {
--		    .config_default = INA219_CONFIG_DEFAULT,
--		    .calibration_factor = 40960000,
--		    .shunt_div = 100,
--		    .bus_voltage_shift = 3,
--		    .bus_voltage_lsb = 4000,
--		    .power_lsb = 20000,
--		    },
-+		.config_default = INA219_CONFIG_DEFAULT,
-+		.calibration_factor = 40960000,
-+		.shunt_div = 100,
-+		.bus_voltage_shift = 3,
-+		.bus_voltage_lsb = 4000,
-+		.power_lsb = 20000,
-+	},
- 	[ina226] = {
--		    .config_default = INA226_CONFIG_DEFAULT,
--		    .calibration_factor = 5120000,
--		    .shunt_div = 400,
--		    .bus_voltage_shift = 0,
--		    .bus_voltage_lsb = 1250,
--		    .power_lsb = 25000,
--		    },
-+		.config_default = INA226_CONFIG_DEFAULT,
-+		.calibration_factor = 5120000,
-+		.shunt_div = 400,
-+		.bus_voltage_shift = 0,
-+		.bus_voltage_lsb = 1250,
-+		.power_lsb = 25000,
-+	},
- };
- 
- static int ina2xx_read_raw(struct iio_dev *indio_dev,
-@@ -149,7 +150,7 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		ret = regmap_read(chip->regmap, chan->address, &regval);
--		if (ret < 0)
-+		if (ret)
- 			return ret;
- 
- 		if (is_signed_reg(chan->address))
-@@ -251,7 +252,7 @@ static int ina226_set_int_time_vbus(struct ina2xx_chip_info *chip,
- 		return -EINVAL;
- 
- 	bits = find_closest(val_us, ina226_conv_time_tab,
--			ARRAY_SIZE(ina226_conv_time_tab));
-+			    ARRAY_SIZE(ina226_conv_time_tab));
- 
- 	chip->int_time_vbus = ina226_conv_time_tab[bits];
- 
-@@ -270,7 +271,7 @@ static int ina226_set_int_time_vshunt(struct ina2xx_chip_info *chip,
- 		return -EINVAL;
- 
- 	bits = find_closest(val_us, ina226_conv_time_tab,
--			ARRAY_SIZE(ina226_conv_time_tab));
-+			    ARRAY_SIZE(ina226_conv_time_tab));
- 
- 	chip->int_time_vshunt = ina226_conv_time_tab[bits];
- 
-@@ -285,8 +286,8 @@ static int ina2xx_write_raw(struct iio_dev *indio_dev,
- 			    int val, int val2, long mask)
- {
- 	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
--	int ret;
- 	unsigned int config, tmp;
-+	int ret;
- 
- 	if (iio_buffer_enabled(indio_dev))
- 		return -EBUSY;
-@@ -294,8 +295,8 @@ static int ina2xx_write_raw(struct iio_dev *indio_dev,
- 	mutex_lock(&chip->state_lock);
- 
- 	ret = regmap_read(chip->regmap, INA2XX_CONFIG, &config);
--	if (ret < 0)
--		goto _err;
-+	if (ret)
-+		goto err;
- 
- 	tmp = config;
- 
-@@ -310,19 +311,19 @@ static int ina2xx_write_raw(struct iio_dev *indio_dev,
- 		else
- 			ret = ina226_set_int_time_vbus(chip, val2, &tmp);
- 		break;
-+
- 	default:
- 		ret = -EINVAL;
- 	}
- 
- 	if (!ret && (tmp != config))
- 		ret = regmap_write(chip->regmap, INA2XX_CONFIG, tmp);
--_err:
-+err:
- 	mutex_unlock(&chip->state_lock);
- 
- 	return ret;
- }
- 
--
- static ssize_t ina2xx_allow_async_readout_show(struct device *dev,
- 					   struct device_attribute *attr,
- 					   char *buf)
-@@ -355,6 +356,7 @@ static int set_shunt_resistor(struct ina2xx_chip_info *chip, unsigned int val)
- 		return -EINVAL;
- 
- 	chip->shunt_resistor = val;
-+
- 	return 0;
- }
- 
-@@ -408,21 +410,21 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
-  * Sampling Freq is a consequence of the integration times of
-  * the Voltage channels.
-  */
--#define INA2XX_CHAN_VOLTAGE(_index, _address) { \
--	.type = IIO_VOLTAGE, \
--	.address = (_address), \
--	.indexed = 1, \
--	.channel = (_index), \
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
--			      BIT(IIO_CHAN_INFO_SCALE) | \
--			      BIT(IIO_CHAN_INFO_INT_TIME), \
--	.scan_index = (_index), \
--	.scan_type = { \
--		.sign = 'u', \
--		.realbits = 16, \
--		.storagebits = 16, \
--		.endianness = IIO_LE, \
--	} \
-+#define INA2XX_CHAN_VOLTAGE(_index, _address) {			\
-+	.type = IIO_VOLTAGE,					\
-+	.address = (_address),					\
-+	.indexed = 1,						\
-+	.channel = (_index),					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-+			      BIT(IIO_CHAN_INFO_SCALE) |	\
-+			      BIT(IIO_CHAN_INFO_INT_TIME),	\
-+	.scan_index = (_index),					\
-+	.scan_type = {						\
-+		.sign = 'u',					\
-+		.realbits = 16,					\
-+		.storagebits = 16,				\
-+		.endianness = IIO_LE,				\
-+	}							\
- }
- 
- static const struct iio_chan_spec ina2xx_channels[] = {
-@@ -500,7 +502,7 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 
- static int ina2xx_capture_thread(void *data)
- {
--	struct iio_dev *indio_dev = (struct iio_dev *)data;
-+	struct iio_dev *indio_dev = data;
- 	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
- 	unsigned int sampling_us = SAMPLING_PERIOD(chip);
- 	int buffer_us;
-@@ -575,8 +577,7 @@ static int ina2xx_debug_reg(struct iio_dev *indio_dev,
- }
- 
- /* Possible integration times for vshunt and vbus */
--static IIO_CONST_ATTR_INT_TIME_AVAIL \
-- ("0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
-+static IIO_CONST_ATTR_INT_TIME_AVAIL("0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
- 
- static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
- 		       ina2xx_allow_async_readout_show,
-@@ -598,21 +599,23 @@ static const struct attribute_group ina2xx_attribute_group = {
- };
- 
- static const struct iio_info ina2xx_info = {
--	.debugfs_reg_access = &ina2xx_debug_reg,
--	.read_raw = &ina2xx_read_raw,
--	.write_raw = &ina2xx_write_raw,
--	.attrs = &ina2xx_attribute_group,
- 	.driver_module = THIS_MODULE,
-+	.attrs = &ina2xx_attribute_group,
-+	.read_raw = ina2xx_read_raw,
-+	.write_raw = ina2xx_write_raw,
-+	.debugfs_reg_access = ina2xx_debug_reg,
- };
- 
- /* Initialize the configuration and calibration registers. */
- static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
- {
- 	u16 regval;
--	int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
-+	int ret;
- 
--	if (ret < 0)
-+	ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
-+	if (ret)
- 		return ret;
-+
- 	/*
- 	 * Set current LSB to 1mA, shunt is in uOhms
- 	 * (equation 13 in datasheet). We hardcode a Current_LSB
-@@ -621,7 +624,7 @@ static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
- 	 * to the user for now.
- 	 */
- 	regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
--			    chip->shunt_resistor);
-+				   chip->shunt_resistor);
- 
- 	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
- }
-@@ -632,8 +635,8 @@ static int ina2xx_probe(struct i2c_client *client,
- 	struct ina2xx_chip_info *chip;
- 	struct iio_dev *indio_dev;
- 	struct iio_buffer *buffer;
--	int ret;
- 	unsigned int val;
-+	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
- 	if (!indio_dev)
-@@ -641,8 +644,19 @@ static int ina2xx_probe(struct i2c_client *client,
- 
- 	chip = iio_priv(indio_dev);
- 
-+	/* This is only used for device removal purposes. */
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	chip->regmap = devm_regmap_init_i2c(client, &ina2xx_regmap_config);
-+	if (IS_ERR(chip->regmap)) {
-+		dev_err(&client->dev, "failed to allocate register map\n");
-+		return PTR_ERR(chip->regmap);
-+	}
-+
- 	chip->config = &ina2xx_config[id->driver_data];
- 
-+	mutex_init(&chip->state_lock);
-+
- 	if (of_property_read_u32(client->dev.of_node,
- 				 "shunt-resistor", &val) < 0) {
- 		struct ina2xx_platform_data *pdata =
-@@ -658,25 +672,6 @@ static int ina2xx_probe(struct i2c_client *client,
- 	if (ret)
- 		return ret;
- 
--	mutex_init(&chip->state_lock);
--
--	/* This is only used for device removal purposes. */
--	i2c_set_clientdata(client, indio_dev);
--
--	indio_dev->name = id->name;
--	indio_dev->channels = ina2xx_channels;
--	indio_dev->num_channels = ARRAY_SIZE(ina2xx_channels);
--
--	indio_dev->dev.parent = &client->dev;
--	indio_dev->info = &ina2xx_info;
--	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
--
--	chip->regmap = devm_regmap_init_i2c(client, &ina2xx_regmap_config);
--	if (IS_ERR(chip->regmap)) {
--		dev_err(&client->dev, "failed to allocate register map\n");
--		return PTR_ERR(chip->regmap);
--	}
--
- 	/* Patch the current config register with default. */
- 	val = chip->config->config_default;
- 
-@@ -687,24 +682,28 @@ static int ina2xx_probe(struct i2c_client *client,
- 	}
- 
- 	ret = ina2xx_init(chip, val);
--	if (ret < 0) {
--		dev_err(&client->dev, "error configuring the device: %d\n",
--			ret);
--		return -ENODEV;
-+	if (ret) {
-+		dev_err(&client->dev, "error configuring the device\n");
-+		return ret;
- 	}
- 
-+	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->channels = ina2xx_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ina2xx_channels);
-+	indio_dev->name = id->name;
-+	indio_dev->info = &ina2xx_info;
-+	indio_dev->setup_ops = &ina2xx_setup_ops;
-+
- 	buffer = devm_iio_kfifo_allocate(&indio_dev->dev);
- 	if (!buffer)
- 		return -ENOMEM;
- 
--	indio_dev->setup_ops = &ina2xx_setup_ops;
--
- 	iio_device_attach_buffer(indio_dev, buffer);
- 
- 	return iio_device_register(indio_dev);
- }
- 
--
- static int ina2xx_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-@@ -717,7 +716,6 @@ static int ina2xx_remove(struct i2c_client *client)
- 				  INA2XX_MODE_MASK, 0);
- }
- 
--
- static const struct i2c_device_id ina2xx_id[] = {
- 	{"ina219", ina219},
- 	{"ina220", ina219},
-@@ -726,7 +724,6 @@ static const struct i2c_device_id ina2xx_id[] = {
- 	{"ina231", ina226},
- 	{}
- };
--
- MODULE_DEVICE_TABLE(i2c, ina2xx_id);
- 
- static struct i2c_driver ina2xx_driver = {
-@@ -737,7 +734,6 @@ static struct i2c_driver ina2xx_driver = {
- 	.remove = ina2xx_remove,
- 	.id_table = ina2xx_id,
- };
--
- module_i2c_driver(ina2xx_driver);
- 
- MODULE_AUTHOR("Marc Titinger <marc.titinger@baylibre.com>");
--- 
-2.7.1
+The ISA drivers in the sound subsystem use "port" as the module
+parameter name for the I/O port base address of the respective sound
+device. Notice also how there are module parameters such as "midi_port"
+which represent the I/O port address of various registers on the device.
 
+"I/O port address" does not necessarily mean the base address of the
+device, but simply a port address (typically pointing to a particular
+register). For this reason, I prefer the more specific name "base" to
+indicate the I/O port base address of the device from which to derive
+the register addresses.
+
+Thinking it over again, I want to submit a version 3 of this patch which
+will rename "stx104_base" to the more general "base" name; the "stx104_"
+prefix is overly verbose for a module parameter since the user should
+already know the module he/she is configuring. Hopefully, by using a
+more general name, there will also arise a more consistent way of
+configuring the I/O port base addresses among other PC/104 and ISA
+drivers via the "base" module parameter.
+
+Are there any other changes I should include in version 3?
+
+On an unrelated note, I may write a patch in the future to add support
+for the 16-channel ADC on the STX104. Should this support be added into
+this existing iio/dac/stx104.c file, or into a new iio/adc/stx104.c
+file?
+
+William Breathitt Gray
