@@ -1,110 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:52580 "EHLO
-	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750997AbcBJPJk convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2016 10:09:40 -0500
-From: "Sricharan" <sricharan@codeaurora.org>
-To: "'Daniel Baluta'" <daniel.baluta@intel.com>
-Cc: "'Michael Welling'" <mwelling@ieee.org>,
-	"'Wolfram Sang'" <wsa@the-dreams.de>,
-	"'Jonathan Cameron'" <jic23@kernel.org>,
-	"'Hartmut Knaack'" <knaack.h@gmx.de>,
-	"'Lars-Peter Clausen'" <lars@metafoo.de>,
-	"'Peter Meerwald-Stadler'" <pmeerw@pmeerw.net>,
-	"'Linux Kernel Mailing List'" <linux-kernel@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>,
-	"'Lucas De Marchi'" <lucas.demarchi@intel.com>,
-	"'Andy Gross'" <agross@codeaurora.org>,
-	"'Pramod Gurav'" <pramod.gurav@smartplayin.com>,
-	"'Bjorn Andersson'" <bjorn.andersson@sonymobile.com>,
-	"'Guenter Roeck'" <linux@roeck-us.net>, <eibach@gdsys.de>,
-	<linux-arm-msm@vger.kernel.org>
-References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>	<20160205172457.GA16778@deathstar>	<CAEnQRZAjgn3Y0618MgO284DMc_9cE49b9jeUr0j2HwUK6YK+0A@mail.gmail.com>	<20160206003245.GA1329@deathstar>	<20160208102459.GC2220@tetsubishi>	<20160208163632.GA3630@deathstar>	<01fd01d162a4$8e28c450$aa7a4cf0$@codeaurora.org>	<20160208191658.GA23145@deathstar>	<001b01d163fd$bfb15280$3f13f780$@codeaurora.org> <CAEnQRZCzkq5wFsS7Ydby+bsFJTbGVq=AX9TLkkhfMKOG8gAZHA@mail.gmail.com>
-In-Reply-To: <CAEnQRZCzkq5wFsS7Ydby+bsFJTbGVq=AX9TLkkhfMKOG8gAZHA@mail.gmail.com>
-Subject: RE: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
-Date: Wed, 10 Feb 2016 20:39:04 +0530
-Message-ID: <003201d16415$0eb1a8f0$2c14fad0$@codeaurora.org>
+Return-Path: <vilhelm.gray@gmail.com>
+Date: Tue, 9 Feb 2016 21:19:04 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: Add IIO support for the DAC on the Apex Embedded
+ Systems STX104
+Message-ID: <20160210021904.GA13466@sophia>
+References: <20160208175034.GA14727@sophia>
+ <56BA6A15.9000601@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="UTF-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <56BA6A15.9000601@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-<snip>...
+On Tue, Feb 09, 2016 at 10:37:09PM +0000, Jonathan Cameron wrote:
+>My only real question is on the naming of the module parameter.
+>Is it the equivalent of the io address that a load of ISA
+>radio drivers seem to use?  (fed to me by grepping isa_register_driver)
+>If so perhaps that's the 'standard' name as much as one exists for this?
 
-> >> > > > >
-> >> > > > > Indeed it is the pm_runtime_get_sync that fails with a -EINVAL.
-> >> > > > >
-> >> > > > > > >
-> >> > > > > > > When I comment out the break the readings come back but
-> >> > > > > > > are not
-> >> > > updated continually.
-> >> > > > > > > If I read in_voltage0-voltage1_raw then in_voltage0_raw
-> >> > > > > > > the value
-> >> > is
-> >> > > updated.
-> >> > > > > >
-> >> > > > > > I guess this is normal if set_power_state fails.
-> >> > > > >
-> >> > > > > The hwmod driver works fine BTW.
-> >> > > > >
-> >> > > > > My guess is there is an issue with the qup i2c driver seeing
-> >> > > > > as it has worked on other system without issue.
-> >> > > > >
-> >> > > > > CC'd some the latest developer on the qup i2c driver.
-> >> > > > >
-> >> > > > > I2C guys have any ideas on this?
-> >> > > > >
-> >> > > >
-> >> > > > Adding some more people who recently worked on this. Might be
-> >> > > > nice to know which kernel version you are using.
-> >> > > >
-> >> >  Which i2c bus is this connected to ? I can give a try with 410c to
-> >> > see why pm_runtime_get_sync from qup  fails.
-> >>
-> >> It is on the lowspeed header. Here is my devicetree entry:
-> >>
-> >>                  i2c@78b6000 {
-> >>                  /* On Low speed expansion */
-> >>                          label = "LS-I2C0";
-> >>                          status = "okay";
-> >>
-> >>                          pca: pca@40 {
-> >>                                  compatible = "nxp,pca9685-pwm";
-> >>                                  #pwm-cells = <2>;
-> >>                                  reg = <0x40>;
-> >>                          };
-> >>
-> >>                          adc: adc@48 {
-> >>                                  compatible = "ti,ads1015";
-> >>                                  reg = <0x48>;
-> >>                          };
-> >>                  };
-> >
-> > Whats the sequence in which the failure happens ?
-> >
-> > I tested on DB410c by adding the DT entry that you mentioned above on
-> > 4.5-rc2 and rc3.
-> > I see that the i2c transfers call from pca9685  during
-> > pca9685_pwm_probe did go through and no failure from
-> > pm_runtime_get_sync
-> 
-> Hi Sricharan,
-> 
-> Are you looking at pca9685_pwm_probe in drivers/pwm/pwm-pca9685.c
-> right?
->
- Yes.
- 
-> I'm asking this because this driver doesn't seem to support runtime pm and
-> there is no check for regmap_write/regmap_write return code in the probe
-> function.
-   Hmm to be clear, so it’s the pm_runtime_getsync from i2c-qup which fails right ?
-   I was tracking that when there are i2c_xfers from pwm. I did not see any failures there.
-   So wanted to know the correct sequence to reproduce.
-  
-Regards,
-  Sricharan
-  
+Yes, you noted correctly that the stx104_base module parameter fulfills
+the same function as the io module parameter used in many of the radio
+drivers: it's an array holding the io port address of each device.
+However, I find "io" to be a rather vague module parameter name, so I've
+decided to use the more apt "stx104_base" name for my array of base
+addresses.
 
+As you've probably noticed, there are few ISA drivers existing in the
+kernel baseline currently, so not much of a standard is set yet. I'm all
+right with renaming the module parameter if you have a preference, just
+as long as the name is more informative than simply "io."
 
+For what it's worth, this driver is part of a series of PC/104 drivers
+I've been submitting to various subsystems (in the hopes of improving
+the lack of PC/104 support in the baseline Linux kernel); see
+drivers/gpio/gpio-104-idio-16.c and drivers/gpio/gpio-104-idi-48.c for
+example. I have thus far been following the convention of naming the
+base address module parameter as "modname_base," where "modname" is the
+respective module name.
+
+William Breathitt Gray
