@@ -1,66 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f195.google.com ([209.85.213.195]:36595 "EHLO
-	mail-ig0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751662AbcBJQgm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2016 11:36:42 -0500
-Date: Wed, 10 Feb 2016 10:36:22 -0600
-From: Michael Welling <mwelling@ieee.org>
-To: Sricharan <sricharan@codeaurora.org>
-Cc: 'Daniel Baluta' <daniel.baluta@intel.com>,
-	'Wolfram Sang' <wsa@the-dreams.de>,
-	'Jonathan Cameron' <jic23@kernel.org>,
-	'Hartmut Knaack' <knaack.h@gmx.de>,
-	'Lars-Peter Clausen' <lars@metafoo.de>,
-	'Peter Meerwald-Stadler' <pmeerw@pmeerw.net>,
-	'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org,
-	'Lucas De Marchi' <lucas.demarchi@intel.com>,
-	'Andy Gross' <agross@codeaurora.org>,
-	'Pramod Gurav' <pramod.gurav@smartplayin.com>,
-	'Bjorn Andersson' <bjorn.andersson@sonymobile.com>,
-	'Guenter Roeck' <linux@roeck-us.net>, eibach@gdsys.de,
-	linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
-Message-ID: <20160210163622.GA1390@deathstar>
-References: <20160205172457.GA16778@deathstar>
- <CAEnQRZAjgn3Y0618MgO284DMc_9cE49b9jeUr0j2HwUK6YK+0A@mail.gmail.com>
- <20160206003245.GA1329@deathstar>
- <20160208102459.GC2220@tetsubishi>
- <20160208163632.GA3630@deathstar>
- <01fd01d162a4$8e28c450$aa7a4cf0$@codeaurora.org>
- <20160208191658.GA23145@deathstar>
- <001b01d163fd$bfb15280$3f13f780$@codeaurora.org>
- <CAEnQRZCzkq5wFsS7Ydby+bsFJTbGVq=AX9TLkkhfMKOG8gAZHA@mail.gmail.com>
- <003201d16415$0eb1a8f0$2c14fad0$@codeaurora.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51451 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752603AbcBJSzt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2016 13:55:49 -0500
+Subject: Re: [PATCH v2] iio: Add IIO support for the DAC on the Apex Embedded
+ Systems STX104
+To: William Breathitt Gray <vilhelm.gray@gmail.com>
+References: <20160208175034.GA14727@sophia> <56BA6A15.9000601@kernel.org>
+ <20160210021904.GA13466@sophia>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56BB87B1.3030806@kernel.org>
+Date: Wed, 10 Feb 2016 18:55:45 +0000
 MIME-Version: 1.0
+In-Reply-To: <20160210021904.GA13466@sophia>
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <003201d16415$0eb1a8f0$2c14fad0$@codeaurora.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Feb 10, 2016 at 08:39:04PM +0530, Sricharan wrote:
-> > Hi Sricharan,
-> > 
-> > Are you looking at pca9685_pwm_probe in drivers/pwm/pwm-pca9685.c
-> > right?
-> >
->  Yes.
->  
-> > I'm asking this because this driver doesn't seem to support runtime pm and
-> > there is no check for regmap_write/regmap_write return code in the probe
-> > function.
->    Hmm to be clear, so it’s the pm_runtime_getsync from i2c-qup which fails right ?
->    I was tracking that when there are i2c_xfers from pwm. I did not see any failures there.
->    So wanted to know the correct sequence to reproduce.
->
-
-The problem was discovered using the patch that this thread is on. The PWM driver does
-not have the problem.
-
-When the driver in this patch called pm_runtime_get_sync you got -EINVAL back.
-
-> Regards,
->   Sricharan
->   
+On 10/02/16 02:19, William Breathitt Gray wrote:
+> On Tue, Feb 09, 2016 at 10:37:09PM +0000, Jonathan Cameron wrote:
+>> My only real question is on the naming of the module parameter.
+>> Is it the equivalent of the io address that a load of ISA
+>> radio drivers seem to use?  (fed to me by grepping isa_register_driver)
+>> If so perhaps that's the 'standard' name as much as one exists for this?
 > 
+> Yes, you noted correctly that the stx104_base module parameter fulfills
+> the same function as the io module parameter used in many of the radio
+> drivers: it's an array holding the io port address of each device.
+> However, I find "io" to be a rather vague module parameter name, so I've
+> decided to use the more apt "stx104_base" name for my array of base
+> addresses.
 > 
+> As you've probably noticed, there are few ISA drivers existing in the
+> kernel baseline currently, so not much of a standard is set yet. I'm all
+> right with renaming the module parameter if you have a preference, just
+> as long as the name is more informative than simply "io."
+> 
+> For what it's worth, this driver is part of a series of PC/104 drivers
+> I've been submitting to various subsystems (in the hopes of improving
+> the lack of PC/104 support in the baseline Linux kernel); see
+> drivers/gpio/gpio-104-idio-16.c and drivers/gpio/gpio-104-idi-48.c for
+> example. I have thus far been following the convention of naming the
+> base address module parameter as "modname_base," where "modname" is the
+> respective module name.
+I've been trying to work out if IO ports is a generic enough ISA term
+to take the view that anyone using an ISA card should know about it...
+I certainly know the I/O space approach to interacting with PCI cards is
+well understood in people working with shall we say 'dumb' PCI hardware.
+
+I guess I don't really care all that much on this though - just nice to
+be consistent / general when possible.
+
+Jonathan
+
+> 
+> William Breathitt Gray
+> 
+
