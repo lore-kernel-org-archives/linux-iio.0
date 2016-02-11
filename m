@@ -1,90 +1,725 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yk0-f193.google.com ([209.85.160.193]:35250 "EHLO
-	mail-yk0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751003AbcBJVWs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2016 16:22:48 -0500
-Date: Wed, 10 Feb 2016 16:22:40 -0500
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: Add IIO support for the DAC on the Apex Embedded
- Systems STX104
-Message-ID: <20160210212240.GA12207@sophia>
-References: <20160208175034.GA14727@sophia>
- <56BA6A15.9000601@kernel.org>
- <20160210021904.GA13466@sophia>
- <56BB87B1.3030806@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <56BB87B1.3030806@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	daniel.baluta@intel.com,
+	lucas.demarchi@intel.com,
+	mwelling@ieee.org,
+	linux@roeck-us.net,
+	eibach@gdsys.de
+Subject: [PATCH v5] iio: adc: Add TI ADS1015 ADC driver support
+Date: Thu, 11 Feb 2016 15:49:54 +0200
+Message-Id: <1455198594-21659-1-git-send-email-daniel.baluta@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Feb 10, 2016 at 06:55:45PM +0000, Jonathan Cameron wrote:
->On 10/02/16 02:19, William Breathitt Gray wrote:
->> On Tue, Feb 09, 2016 at 10:37:09PM +0000, Jonathan Cameron wrote:
->>> My only real question is on the naming of the module parameter.
->>> Is it the equivalent of the io address that a load of ISA
->>> radio drivers seem to use?  (fed to me by grepping isa_register_driver)
->>> If so perhaps that's the 'standard' name as much as one exists for this?
->> 
->> Yes, you noted correctly that the stx104_base module parameter fulfills
->> the same function as the io module parameter used in many of the radio
->> drivers: it's an array holding the io port address of each device.
->> However, I find "io" to be a rather vague module parameter name, so I've
->> decided to use the more apt "stx104_base" name for my array of base
->> addresses.
->> 
->> As you've probably noticed, there are few ISA drivers existing in the
->> kernel baseline currently, so not much of a standard is set yet. I'm all
->> right with renaming the module parameter if you have a preference, just
->> as long as the name is more informative than simply "io."
->> 
->> For what it's worth, this driver is part of a series of PC/104 drivers
->> I've been submitting to various subsystems (in the hopes of improving
->> the lack of PC/104 support in the baseline Linux kernel); see
->> drivers/gpio/gpio-104-idio-16.c and drivers/gpio/gpio-104-idi-48.c for
->> example. I have thus far been following the convention of naming the
->> base address module parameter as "modname_base," where "modname" is the
->> respective module name.
->I've been trying to work out if IO ports is a generic enough ISA term
->to take the view that anyone using an ISA card should know about it...
->I certainly know the I/O space approach to interacting with PCI cards is
->well understood in people working with shall we say 'dumb' PCI hardware.
->
->I guess I don't really care all that much on this though - just nice to
->be consistent / general when possible.
+The driver has sysfs readings with runtime PM support for power saving.
+It also offers buffer support that can be used together with IIO software
+triggers.
 
-I believe that port-mapped I/O is ubiquitous enough in the industry that
-anyone with an ISA card will understand the term; in fact, I can't
-recall any PC/104 card datasheet I've encountered without a chapter
-section devoted to "I/O port address" configuration.
+Datasheet can be found here:
+	http://www.ti.com.cn/cn/lit/ds/symlink/ads1015.pdf
 
-The ISA drivers in the sound subsystem use "port" as the module
-parameter name for the I/O port base address of the respective sound
-device. Notice also how there are module parameters such as "midi_port"
-which represent the I/O port address of various registers on the device.
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+Changes since v4:
+	* fixed wording in comment
+	* use iio_dev->mlock to protect IIO dev state changes
+	* Tested on PC with USB-I2C bridge on ADS1015 eval board
+	and also on MinnowBoard MAX using Drone Lure
+	http://wiki.minnowboard.org/Drone_Lure
+	* There were some problems reported by Michael on Dragonboard 410C
+	not sure if they are caused by this code though. Currently trying
+	to isolate the problem.
 
-"I/O port address" does not necessarily mean the base address of the
-device, but simply a port address (typically pointing to a particular
-register). For this reason, I prefer the more specific name "base" to
-indicate the I/O port base address of the device from which to derive
-the register addresses.
+Changes since v3:
+        * fixed type connectd -> connected
+        * move mutex outside of switch in read_raw to be consistent
+        with write_raw
 
-Thinking it over again, I want to submit a version 3 of this patch which
-will rename "stx104_base" to the more general "base" name; the "stx104_"
-prefix is overly verbose for a module parameter since the user should
-already know the module he/she is configuring. Hopefully, by using a
-more general name, there will also arise a more consistent way of
-configuring the I/O port base addresses among other PC/104 and ISA
-drivers via the "base" module parameter.
+Changes since v2:
+        * push locking out of the switch in write_raw
+        * fix  buf allocation in triggered buffer's handler
 
-Are there any other changes I should include in version 3?
+Changes since v1:
+        * addressed concerns about replacing the ads1015 hwmon driver
+                * For the moment the IIO driver is compatible with hwmon
+                  driver (dt bindings) the only thing left is to also add
+                  support for ads1115.
+                * DT bindings are described in Documentation/devicetree/
+                  bindings/hwmon/ads1015.txt. If needed will copy this file
+                  in a later patch to the IIO corresponding location.
+        * addressed comments from Jonathan
+                * added proper locking
+                * added timestamp channel
+                * removed magic constants
+                * added some new lines to increase readability
+                * used regmap_get_device instead of keeping a copy of
+                i2c_client pointer.
+                * used non-devm function to correct the cleanup order
 
-On an unrelated note, I may write a patch in the future to add support
-for the 16-channel ADC on the STX104. Should this support be added into
-this existing iio/dac/stx104.c file, or into a new iio/adc/stx104.c
-file?
+ drivers/iio/adc/Kconfig      |  13 +
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/ti-ads1015.c | 612 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 626 insertions(+)
+ create mode 100644 drivers/iio/adc/ti-ads1015.c
 
-William Breathitt Gray
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index fd8b53e..262d1f6 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -380,6 +380,19 @@ config TI_ADC128S052
+ 	  This driver can also be built as a module. If so, the module will be
+ 	  called ti-adc128s052.
+ 
++config TI_ADS1015
++	tristate "Texas Instruments ADS1015 ADC"
++	depends on I2C && !SENSORS_ADS1015
++	select REGMAP_I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  If you say yes here you get support for Texas Instruments ADS1015
++	  ADC chip.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called ti-ads1015.
++
+ config TI_ADS8688
+ 	tristate "Texas Instruments ADS8688"
+ 	depends on SPI && OF
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index a3820fa..ad57f89 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -37,6 +37,7 @@ obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+ obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+ obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
++obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+ obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+ obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+ obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+new file mode 100644
+index 0000000..73cbf0b
+--- /dev/null
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -0,0 +1,612 @@
++/*
++ * ADS1015 - Texas Instruments Analog-to-Digital Converter
++ *
++ * Copyright (c) 2016, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO driver for ADS1015 ADC 7-bit I2C slave address:
++ *	* 0x48 - ADDR connected to Ground
++ *	* 0x49 - ADDR connected to Vdd
++ *	* 0x4A - ADDR connected to SDA
++ *	* 0x4B - ADDR connected to SCL
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/i2c.h>
++#include <linux/regmap.h>
++#include <linux/pm_runtime.h>
++#include <linux/mutex.h>
++#include <linux/delay.h>
++
++#include <linux/i2c/ads1015.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/types.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
++
++#define ADS1015_DRV_NAME "ads1015"
++
++#define ADS1015_CONV_REG	0x00
++#define ADS1015_CFG_REG		0x01
++
++#define ADS1015_CFG_DR_SHIFT	5
++#define ADS1015_CFG_MOD_SHIFT	8
++#define ADS1015_CFG_PGA_SHIFT	9
++#define ADS1015_CFG_MUX_SHIFT	12
++
++#define ADS1015_CFG_DR_MASK	GENMASK(7, 5)
++#define ADS1015_CFG_MOD_MASK	BIT(8)
++#define ADS1015_CFG_PGA_MASK	GENMASK(11, 9)
++#define ADS1015_CFG_MUX_MASK	GENMASK(14, 12)
++
++/* device operating modes */
++#define ADS1015_CONTINUOUS	0
++#define ADS1015_SINGLESHOT	1
++
++#define ADS1015_SLEEP_DELAY_MS		2000
++#define ADS1015_DEFAULT_PGA		2
++#define ADS1015_DEFAULT_DATA_RATE	4
++#define ADS1015_DEFAULT_CHAN		0
++
++enum ads1015_channels {
++	ADS1015_AIN0_AIN1 = 0,
++	ADS1015_AIN0_AIN3,
++	ADS1015_AIN1_AIN3,
++	ADS1015_AIN2_AIN3,
++	ADS1015_AIN0,
++	ADS1015_AIN1,
++	ADS1015_AIN2,
++	ADS1015_AIN3,
++	ADS1015_TIMESTAMP,
++};
++
++static const unsigned int ads1015_data_rate[] = {
++	128, 250, 490, 920, 1600, 2400, 3300, 3300
++};
++
++static const struct {
++	int scale;
++	int uscale;
++} ads1015_scale[] = {
++	{3, 0},
++	{2, 0},
++	{1, 0},
++	{0, 500000},
++	{0, 250000},
++	{0, 125000},
++	{0, 125000},
++	{0, 125000},
++};
++
++#define ADS1015_V_CHAN(_chan, _addr) {				\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.address = _addr,					\
++	.channel = _chan,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++				BIT(IIO_CHAN_INFO_SCALE) |	\
++				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++	.scan_index = _addr,					\
++	.scan_type = {						\
++		.sign = 's',					\
++		.realbits = 12,					\
++		.storagebits = 16,				\
++		.shift = 4,					\
++		.endianness = IIO_CPU,				\
++	},							\
++}
++
++#define ADS1015_V_DIFF_CHAN(_chan, _chan2, _addr) {		\
++	.type = IIO_VOLTAGE,					\
++	.differential = 1,					\
++	.indexed = 1,						\
++	.address = _addr,					\
++	.channel = _chan,					\
++	.channel2 = _chan2,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++				BIT(IIO_CHAN_INFO_SCALE) |	\
++				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++	.scan_index = _addr,					\
++	.scan_type = {						\
++		.sign = 's',					\
++		.realbits = 12,					\
++		.storagebits = 16,				\
++		.shift = 4,					\
++		.endianness = IIO_CPU,				\
++	},							\
++}
++
++struct ads1015_data {
++	struct regmap *regmap;
++	/*
++	 * Protects ADC ops, e.g: concurrent sysfs/buffered
++	 * data reads, configuration updates
++	 */
++	struct mutex lock;
++	struct ads1015_channel_data channel_data[ADS1015_CHANNELS];
++};
++
++static bool ads1015_is_writeable_reg(struct device *dev, unsigned int reg)
++{
++	return (reg == ADS1015_CFG_REG);
++}
++
++static const struct regmap_config ads1015_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 16,
++	.max_register = ADS1015_CFG_REG,
++	.writeable_reg = ads1015_is_writeable_reg,
++};
++
++static const struct iio_chan_spec ads1015_channels[] = {
++	ADS1015_V_DIFF_CHAN(0, 1, ADS1015_AIN0_AIN1),
++	ADS1015_V_DIFF_CHAN(0, 3, ADS1015_AIN0_AIN3),
++	ADS1015_V_DIFF_CHAN(1, 3, ADS1015_AIN1_AIN3),
++	ADS1015_V_DIFF_CHAN(2, 3, ADS1015_AIN2_AIN3),
++	ADS1015_V_CHAN(0, ADS1015_AIN0),
++	ADS1015_V_CHAN(1, ADS1015_AIN1),
++	ADS1015_V_CHAN(2, ADS1015_AIN2),
++	ADS1015_V_CHAN(3, ADS1015_AIN3),
++	IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
++};
++
++static int ads1015_set_power_state(struct ads1015_data *data, bool on)
++{
++	int ret;
++	struct device *dev = regmap_get_device(data->regmap);
++
++	if (on) {
++		ret = pm_runtime_get_sync(dev);
++		if (ret < 0)
++			pm_runtime_put_noidle(dev);
++	} else {
++		pm_runtime_mark_last_busy(dev);
++		ret = pm_runtime_put_autosuspend(dev);
++	}
++
++	return ret;
++}
++
++static
++int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
++{
++	int ret, pga, dr, conv_time;
++	bool change;
++
++	if (chan < 0 || chan >= ADS1015_CHANNELS)
++		return -EINVAL;
++
++	pga = data->channel_data[chan].pga;
++	dr = data->channel_data[chan].data_rate;
++
++	ret = regmap_update_bits_check(data->regmap, ADS1015_CFG_REG,
++				       ADS1015_CFG_MUX_MASK |
++				       ADS1015_CFG_PGA_MASK,
++				       chan << ADS1015_CFG_MUX_SHIFT |
++				       pga << ADS1015_CFG_PGA_SHIFT,
++				       &change);
++	if (ret < 0)
++		return ret;
++
++	if (change) {
++		conv_time = DIV_ROUND_UP(USEC_PER_SEC, ads1015_data_rate[dr]);
++		usleep_range(conv_time, conv_time + 1);
++	}
++
++	return regmap_read(data->regmap, ADS1015_CONV_REG, val);
++}
++
++static irqreturn_t ads1015_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ads1015_data *data = iio_priv(indio_dev);
++	s16 buf[8]; /* 1x s16 ADC val + 3x s16 padding +  4x s16 timestamp */
++	int chan, ret, res;
++
++	memset(buf, 0, sizeof(buf));
++
++	mutex_lock(&data->lock);
++	chan = find_first_bit(indio_dev->active_scan_mask,
++			      indio_dev->masklength);
++	ret = ads1015_get_adc_result(data, chan, &res);
++	if (ret < 0) {
++		mutex_unlock(&data->lock);
++		goto err;
++	}
++
++	buf[0] = res;
++	mutex_unlock(&data->lock);
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
++
++err:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int ads1015_set_scale(struct ads1015_data *data, int chan,
++			     int scale, int uscale)
++{
++	int i, ret, rindex = -1;
++
++	for (i = 0; i < ARRAY_SIZE(ads1015_scale); i++)
++		if (ads1015_scale[i].scale == scale &&
++		    ads1015_scale[i].uscale == uscale) {
++			rindex = i;
++			break;
++		}
++	if (rindex < 0)
++		return -EINVAL;
++
++	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
++				 ADS1015_CFG_PGA_MASK,
++				 rindex << ADS1015_CFG_PGA_SHIFT);
++	if (ret < 0)
++		return ret;
++
++	data->channel_data[chan].pga = rindex;
++
++	return 0;
++}
++
++static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
++{
++	int i, ret, rindex = -1;
++
++	for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++)
++		if (ads1015_data_rate[i] == rate) {
++			rindex = i;
++			break;
++		}
++	if (rindex < 0)
++		return -EINVAL;
++
++	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
++				 ADS1015_CFG_DR_MASK,
++				 rindex << ADS1015_CFG_DR_SHIFT);
++	if (ret < 0)
++		return ret;
++
++	data->channel_data[chan].data_rate = rindex;
++
++	return 0;
++}
++
++static int ads1015_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan, int *val,
++			    int *val2, long mask)
++{
++	int ret, idx;
++	struct ads1015_data *data = iio_priv(indio_dev);
++
++	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&data->lock);
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (iio_buffer_enabled(indio_dev)) {
++			ret = -EBUSY;
++			break;
++		}
++
++		ret = ads1015_set_power_state(data, true);
++		if (ret < 0)
++			break;
++
++		ret = ads1015_get_adc_result(data, chan->address, val);
++		if (ret < 0) {
++			ads1015_set_power_state(data, false);
++			break;
++		}
++
++		/* 12 bit res, D0 is bit 4 in conversion register */
++		*val = sign_extend32(*val >> 4, 11);
++
++		ret = ads1015_set_power_state(data, false);
++		if (ret < 0)
++			break;
++
++		ret = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		idx = data->channel_data[chan->address].pga;
++		*val = ads1015_scale[idx].scale;
++		*val2 = ads1015_scale[idx].uscale;
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		idx = data->channel_data[chan->address].data_rate;
++		*val = ads1015_data_rate[idx];
++		ret = IIO_VAL_INT;
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++	mutex_unlock(&data->lock);
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static int ads1015_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan, int val,
++			     int val2, long mask)
++{
++	struct ads1015_data *data = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&data->lock);
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		ret = ads1015_set_scale(data, chan->address, val, val2);
++		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = ads1015_set_data_rate(data, chan->address, val);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static int ads1015_buffer_preenable(struct iio_dev *indio_dev)
++{
++	return ads1015_set_power_state(iio_priv(indio_dev), true);
++}
++
++static int ads1015_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	return ads1015_set_power_state(iio_priv(indio_dev), false);
++}
++
++static const struct iio_buffer_setup_ops ads1015_buffer_setup_ops = {
++	.preenable	= ads1015_buffer_preenable,
++	.postenable	= iio_triggered_buffer_postenable,
++	.predisable	= iio_triggered_buffer_predisable,
++	.postdisable	= ads1015_buffer_postdisable,
++	.validate_scan_mask = &iio_validate_scan_mask_onehot,
++};
++
++static IIO_CONST_ATTR(scale_available, "3 2 1 0.5 0.25 0.125");
++static IIO_CONST_ATTR(sampling_frequency_available,
++		      "128 250 490 920 1600 2400 3300");
++
++static struct attribute *ads1015_attributes[] = {
++	&iio_const_attr_scale_available.dev_attr.attr,
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ads1015_attribute_group = {
++	.attrs = ads1015_attributes,
++};
++
++static const struct iio_info ads1015_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw	= ads1015_read_raw,
++	.write_raw	= ads1015_write_raw,
++	.attrs		= &ads1015_attribute_group,
++};
++
++#ifdef CONFIG_OF
++static int ads1015_get_channels_config_of(struct i2c_client *client)
++{
++	struct ads1015_data *data = i2c_get_clientdata(client);
++	struct device_node *node;
++
++	if (!client->dev.of_node ||
++	    !of_get_next_child(client->dev.of_node, NULL))
++		return -EINVAL;
++
++	for_each_child_of_node(client->dev.of_node, node) {
++		u32 pval;
++		unsigned int channel;
++		unsigned int pga = ADS1015_DEFAULT_PGA;
++		unsigned int data_rate = ADS1015_DEFAULT_DATA_RATE;
++
++		if (of_property_read_u32(node, "reg", &pval)) {
++			dev_err(&client->dev, "invalid reg on %s\n",
++				node->full_name);
++			continue;
++		}
++
++		channel = pval;
++		if (channel >= ADS1015_CHANNELS) {
++			dev_err(&client->dev,
++				"invalid channel index %d on %s\n",
++				channel, node->full_name);
++			continue;
++		}
++
++		if (!of_property_read_u32(node, "ti,gain", &pval)) {
++			pga = pval;
++			if (pga > 6) {
++				dev_err(&client->dev, "invalid gain on %s\n",
++					node->full_name);
++				return -EINVAL;
++			}
++		}
++
++		if (!of_property_read_u32(node, "ti,datarate", &pval)) {
++			data_rate = pval;
++			if (data_rate > 7) {
++				dev_err(&client->dev,
++					"invalid data_rate on %s\n",
++					node->full_name);
++				return -EINVAL;
++			}
++		}
++
++		data->channel_data[channel].pga = pga;
++		data->channel_data[channel].data_rate = data_rate;
++	}
++
++	return 0;
++}
++#endif
++
++static void ads1015_get_channels_config(struct i2c_client *client)
++{
++	unsigned int k;
++
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ads1015_data *data = iio_priv(indio_dev);
++	struct ads1015_platform_data *pdata = dev_get_platdata(&client->dev);
++
++	/* prefer platform data */
++	if (pdata) {
++		memcpy(data->channel_data, pdata->channel_data,
++		       sizeof(data->channel_data));
++		return;
++	}
++
++#ifdef CONFIG_OF
++	if (!ads1015_get_channels_config_of(client))
++		return;
++#endif
++	/* fallback on default configuration */
++	for (k = 0; k < ADS1015_CHANNELS; ++k) {
++		data->channel_data[k].pga = ADS1015_DEFAULT_PGA;
++		data->channel_data[k].data_rate = ADS1015_DEFAULT_DATA_RATE;
++	}
++}
++
++static int ads1015_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct iio_dev *indio_dev;
++	struct ads1015_data *data;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &ads1015_info;
++	indio_dev->name = ADS1015_DRV_NAME;
++	indio_dev->channels = ads1015_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ads1015_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	/* we need to keep this ABI the same as used by hwmon ADS1015 driver */
++	ads1015_get_channels_config(client);
++
++	data->regmap = devm_regmap_init_i2c(client, &ads1015_regmap_config);
++	if (IS_ERR(data->regmap)) {
++		dev_err(&client->dev, "Failed to allocate register map\n");
++		return PTR_ERR(data->regmap);
++	}
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++					 ads1015_trigger_handler,
++					 &ads1015_buffer_setup_ops);
++	if (ret < 0) {
++		dev_err(&client->dev, "iio triggered buffer setup failed\n");
++		return ret;
++	}
++	ret = pm_runtime_set_active(&client->dev);
++	if (ret)
++		goto err_buffer_cleanup;
++	pm_runtime_set_autosuspend_delay(&client->dev, ADS1015_SLEEP_DELAY_MS);
++	pm_runtime_use_autosuspend(&client->dev);
++	pm_runtime_enable(&client->dev);
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "Failed to register IIO device\n");
++		goto err_buffer_cleanup;
++	}
++
++	return 0;
++
++err_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++
++	return ret;
++}
++
++static int ads1015_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ads1015_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++
++	pm_runtime_disable(&client->dev);
++	pm_runtime_set_suspended(&client->dev);
++	pm_runtime_put_noidle(&client->dev);
++
++	iio_triggered_buffer_cleanup(indio_dev);
++
++	/* power down single shot mode */
++	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
++				  ADS1015_CFG_MOD_MASK,
++				  ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
++}
++
++#ifdef CONFIG_PM
++static int ads1015_runtime_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct ads1015_data *data = iio_priv(indio_dev);
++
++	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
++				  ADS1015_CFG_MOD_MASK,
++				  ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
++}
++
++static int ads1015_runtime_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct ads1015_data *data = iio_priv(indio_dev);
++
++	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
++				  ADS1015_CFG_MOD_MASK,
++				  ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
++}
++#endif
++
++static const struct dev_pm_ops ads1015_pm_ops = {
++	SET_RUNTIME_PM_OPS(ads1015_runtime_suspend,
++			   ads1015_runtime_resume, NULL)
++};
++
++static const struct i2c_device_id ads1015_id[] = {
++	{"ads1015", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, ads1015_id);
++
++static struct i2c_driver ads1015_driver = {
++	.driver = {
++		.name = ADS1015_DRV_NAME,
++		.pm = &ads1015_pm_ops,
++	},
++	.probe		= ads1015_probe,
++	.remove		= ads1015_remove,
++	.id_table	= ads1015_id,
++};
++
++module_i2c_driver(ads1015_driver);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
++MODULE_DESCRIPTION("Texas Instruments ADS1015 ADC driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.5.0
