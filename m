@@ -1,58 +1,252 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58722 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58737 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751182AbcBMNqC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Feb 2016 08:46:02 -0500
-Subject: Re: [PATCH] iio: adc/imx25-gcq: move incorrect do_div
-To: Arnd Bergmann <arnd@arndb.de>, Lee Jones <lee.jones@linaro.org>
-References: <1455275748-999115-1-git-send-email-arnd@arndb.de>
-Cc: linux-arm-kernel@lists.infradead.org,
-	Denis Carikli <denis@eukrea.com>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+	with ESMTP id S1751182AbcBMNu1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Feb 2016 08:50:27 -0500
+Subject: Re: [PATCH v3] iio: Add IIO support for the DAC on the Apex Embedded
+ Systems STX104
+To: William Breathitt Gray <vilhelm.gray@gmail.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net
+References: <20160211164936.GA23898@sophia>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56BF3397.1040006@kernel.org>
-Date: Sat, 13 Feb 2016 13:45:59 +0000
+Message-ID: <56BF34A0.9000700@kernel.org>
+Date: Sat, 13 Feb 2016 13:50:24 +0000
 MIME-Version: 1.0
-In-Reply-To: <1455275748-999115-1-git-send-email-arnd@arndb.de>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20160211164936.GA23898@sophia>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/02/16 11:15, Arnd Bergmann wrote:
-> The newly added driver uses do_div() to device a 32-bit number, which now
-> provokes a warning:
+On 11/02/16 16:49, William Breathitt Gray wrote:
+> The Apex Embedded Systems STX104 is a 16-channel 16-bit analog input and
+> 2-channel 16-bit analog output PC/104 card. The STX104 incorporates a
+> large one mega-sample FIFO.
 > 
-> drivers/iio/adc/fsl-imx25-gcq.c: In function 'mx25_gcq_setup_cfgs':
-> include/asm-generic/div64.h:207:28: warning: comparison of distinct pointer types lacks a cast
->   (void)(((typeof((n)) *)0) == ((uint64_t *)0)); \
+> This driver provides IIO support for the 2-channel DAC on the STX104.
+> The base port addresses for the devices may be configured via the "base"
+> module parameter array.
 > 
-> This replaces the do_div() call with a straight division operator.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 6df2e98c3ea5 ("iio: adc: Add imx25-gcq ADC driver")
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Applied and pushed out as testing for the autobuilders to play with it.
+Hopefully some standard build does x86 32 bit and the ISA bus as I'm feeling
+too lazy to setup an extra build locally that can actually build this.
+Will do so if we start to get lots of ISA cards though.
 
-oops.
+Jonathan
 > ---
->  drivers/iio/adc/fsl-imx25-gcq.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Changes in v3:
+>   - Change module parameter "stx104_base" name to the more generic
+>     "base" name
 > 
-> diff --git a/drivers/iio/adc/fsl-imx25-gcq.c b/drivers/iio/adc/fsl-imx25-gcq.c
-> index 2fd192735d5b..72b32c1ab257 100644
-> --- a/drivers/iio/adc/fsl-imx25-gcq.c
-> +++ b/drivers/iio/adc/fsl-imx25-gcq.c
-> @@ -233,7 +233,7 @@ static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
->  			priv->channel_vref_mv[reg] =
->  				regulator_get_voltage(priv->vref[refp]);
->  			/* Conversion from uV to mV */
-> -			do_div(priv->channel_vref_mv[reg], 1000);
-> +			priv->channel_vref_mv[reg] /= 1000;
->  			break;
->  		case MX25_ADC_REFP_INT:
->  			priv->channel_vref_mv[reg] = 2500;
+>  MAINTAINERS              |   6 ++
+>  drivers/iio/dac/Kconfig  |   9 +++
+>  drivers/iio/dac/Makefile |   1 +
+>  drivers/iio/dac/stx104.c | 152 +++++++++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 168 insertions(+)
+>  create mode 100644 drivers/iio/dac/stx104.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 7c39a48..3cbff94 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -778,6 +778,12 @@ L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
+>  S:	Maintained
+>  F:	sound/aoa/
+>  
+> +APEX EMBEDDED SYSTEMS STX104 DAC DRIVER
+> +M:	William Breathitt Gray <vilhelm.gray@gmail.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Maintained
+> +F:	drivers/iio/dac/stx104.c
+> +
+>  APM DRIVER
+>  M:	Jiri Kosina <jikos@kernel.org>
+>  S:	Odd fixes
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 3c809e2..31a1985 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -208,4 +208,13 @@ config MCP4922
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called mcp4922.
+>  
+> +config STX104
+> +	tristate "Apex Embedded Systems STX104 DAC driver"
+> +	depends on ISA
+> +	help
+> +	  Say yes here to build support for the 2-channel DAC on the Apex
+> +	  Embedded Systems STX104 integrated analog PC/104 card. The base port
+> +	  addresses for the devices may be configured via the "base" module
+> +	  parameter array.
+> +
+>  endmenu
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index cb525b5..e2deda9 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -22,3 +22,4 @@ obj-$(CONFIG_MAX517) += max517.o
+>  obj-$(CONFIG_MAX5821) += max5821.o
+>  obj-$(CONFIG_MCP4725) += mcp4725.o
+>  obj-$(CONFIG_MCP4922) += mcp4922.o
+> +obj-$(CONFIG_STX104) += stx104.o
+> diff --git a/drivers/iio/dac/stx104.c b/drivers/iio/dac/stx104.c
+> new file mode 100644
+> index 0000000..174f4b7
+> --- /dev/null
+> +++ b/drivers/iio/dac/stx104.c
+> @@ -0,0 +1,152 @@
+> +/*
+> + * DAC driver for the Apex Embedded Systems STX104
+> + * Copyright (C) 2016 William Breathitt Gray
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> + * General Public License for more details.
+> + */
+> +#include <linux/bitops.h>
+> +#include <linux/device.h>
+> +#include <linux/errno.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/types.h>
+> +#include <linux/io.h>
+> +#include <linux/ioport.h>
+> +#include <linux/isa.h>
+> +#include <linux/module.h>
+> +#include <linux/moduleparam.h>
+> +
+> +#define STX104_NUM_CHAN 2
+> +
+> +#define STX104_CHAN(chan) {				\
+> +	.type = IIO_VOLTAGE,				\
+> +	.channel = chan,				\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> +	.indexed = 1,					\
+> +	.output = 1					\
+> +}
+> +
+> +#define STX104_EXTENT 16
+> +/**
+> + * The highest base address possible for an ISA device is 0x3FF; this results in
+> + * 1024 possible base addresses. Dividing the number of possible base addresses
+> + * by the address extent taken by each device results in the maximum number of
+> + * devices on a system.
+> + */
+> +#define MAX_NUM_STX104 (1024 / STX104_EXTENT)
+> +
+> +static unsigned base[MAX_NUM_STX104];
+> +static unsigned num_stx104;
+> +module_param_array(base, uint, &num_stx104, 0);
+> +MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
+> +
+> +/**
+> + * struct stx104_iio - IIO device private data structure
+> + * @chan_out_states:	channels' output states
+> + * @base:		base port address of the IIO device
+> + */
+> +struct stx104_iio {
+> +	unsigned chan_out_states[STX104_NUM_CHAN];
+> +	unsigned base;
+> +};
+> +
+> +static int stx104_read_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+> +{
+> +	struct stx104_iio *const priv = iio_priv(indio_dev);
+> +
+> +	if (mask != IIO_CHAN_INFO_RAW)
+> +		return -EINVAL;
+> +
+> +	*val = priv->chan_out_states[chan->channel];
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int stx104_write_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int val, int val2, long mask)
+> +{
+> +	struct stx104_iio *const priv = iio_priv(indio_dev);
+> +	const unsigned chan_addr_offset = 2 * chan->channel;
+> +
+> +	if (mask != IIO_CHAN_INFO_RAW)
+> +		return -EINVAL;
+> +
+> +	priv->chan_out_states[chan->channel] = val;
+> +	outw(val, priv->base + 4 + chan_addr_offset);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_info stx104_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = stx104_read_raw,
+> +	.write_raw = stx104_write_raw
+> +};
+> +
+> +static const struct iio_chan_spec stx104_channels[STX104_NUM_CHAN] = {
+> +	STX104_CHAN(0),
+> +	STX104_CHAN(1)
+> +};
+> +
+> +static int stx104_probe(struct device *dev, unsigned int id)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct stx104_iio *priv;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	if (!devm_request_region(dev, base[id], STX104_EXTENT,
+> +		dev_name(dev))) {
+> +		dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n",
+> +			base[id], base[id] + STX104_EXTENT);
+> +		return -EBUSY;
+> +	}
+> +
+> +	indio_dev->info = &stx104_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = stx104_channels;
+> +	indio_dev->num_channels = STX104_NUM_CHAN;
+> +	indio_dev->name = dev_name(dev);
+> +
+> +	priv = iio_priv(indio_dev);
+> +	priv->base = base[id];
+> +
+> +	/* initialize DAC output to 0V */
+> +	outw(0, base[id] + 4);
+> +	outw(0, base[id] + 6);
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> +
+> +static struct isa_driver stx104_driver = {
+> +	.probe = stx104_probe,
+> +	.driver = {
+> +		.name = "stx104"
+> +	}
+> +};
+> +
+> +static void __exit stx104_exit(void)
+> +{
+> +	isa_unregister_driver(&stx104_driver);
+> +}
+> +
+> +static int __init stx104_init(void)
+> +{
+> +	return isa_register_driver(&stx104_driver, num_stx104);
+> +}
+> +
+> +module_init(stx104_init);
+> +module_exit(stx104_exit);
+> +
+> +MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
+> +MODULE_DESCRIPTION("Apex Embedded Systems STX104 DAC driver");
+> +MODULE_LICENSE("GPL v2");
 > 
 
