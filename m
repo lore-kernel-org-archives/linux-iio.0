@@ -1,49 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:30849 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1423031AbcBQRxH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 17 Feb 2016 12:53:07 -0500
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Mark Brown <broonie@kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v3 0/6] iio:pressure:ms5611: fix and enhancements
-Date: Wed, 17 Feb 2016 18:52:48 +0100
-Message-ID: <cover.1455731233.git.gregor.boirie@parrot.com>
+Return-Path: <lars@metafoo.de>
+Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: switch regmap cache
+To: Jonathan Cameron <jic23@kernel.org>, Matt Ranostay <mranostay@gmail.com>
+References: <1455412842-750-1-git-send-email-mranostay@gmail.com>
+ <56C096F3.9070908@kernel.org>
+Cc: linux-iio@vger.kernel.org, Mark Brown <broonie@kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56C0BBFF.5040703@metafoo.de>
+Date: Sun, 14 Feb 2016 18:40:15 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <56C096F3.9070908@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-Changes since v2:
-* remove non printable characters from commit messages
+On 02/14/2016 04:02 PM, Jonathan Cameron wrote:
+> On 14/02/16 01:20, Matt Ranostay wrote:
+>> switch from using REGCACHE_FLAT to REGCACHE_RBTREE so initial hw values
+>> are read from device. This also allows some volatile ranges to be
+>> dropped.
+>>
+>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> I'm lost here. Why should changing the storage of the register cache result
+> in different behaviour other than in efficiency of access to cached values?
 
-Gregor Boirie (3):
-  iio:pressure:ms5611: fix ms5607 temp compensation
-  iio:pressure:ms5611: oversampling rate support
-  iio:pressure:ms5611: continuous sampling support
+And if there is really a difference this should probably be addressed at the
+regmap level.
 
-Grégor Boirie (3):
-  iio:pressure:ms5611: use probed device name
-  iio:pressure:ms5611: power regulator support
-  iio:pressure:ms5611: DT bindings documentation
+- Lars
 
- .../devicetree/bindings/iio/pressure/ms5611.txt    |  19 ++
- drivers/iio/pressure/ms5611.h                      |  31 ++-
- drivers/iio/pressure/ms5611_core.c                 | 252 ++++++++++++++++++---
- drivers/iio/pressure/ms5611_i2c.c                  |  14 +-
- drivers/iio/pressure/ms5611_spi.c                  |  23 +-
- 5 files changed, 284 insertions(+), 55 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/pressure/ms5611.txt
-
--- 
-2.1.4
-
+> 
+> Jonathan
+>> ---
+>>  drivers/iio/chemical/atlas-ph-sensor.c | 4 +---
+>>  1 file changed, 1 insertion(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+>> index 06cd49c..71c8e02 100644
+>> --- a/drivers/iio/chemical/atlas-ph-sensor.c
+>> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+>> @@ -65,8 +65,6 @@ struct atlas_data {
+>>  
+>>  static const struct regmap_range atlas_volatile_ranges[] = {
+>>  	regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
+>> -	regmap_reg_range(ATLAS_REG_CALIB_STATUS, ATLAS_REG_CALIB_STATUS),
+>> -	regmap_reg_range(ATLAS_REG_TEMP_DATA, ATLAS_REG_TEMP_DATA + 4),
+>>  	regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
+>>  };
+>>  
+>> @@ -83,7 +81,7 @@ static const struct regmap_config atlas_regmap_config = {
+>>  
+>>  	.volatile_table = &atlas_volatile_table,
+>>  	.max_register = ATLAS_REG_PH_DATA + 4,
+>> -	.cache_type = REGCACHE_FLAT,
+>> +	.cache_type = REGCACHE_RBTREE,
+>>  };
+>>  
+>>  static const struct iio_chan_spec atlas_channels[] = {
+>>
