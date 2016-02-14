@@ -1,66 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55962 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964895AbcBQTcL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Feb 2016 14:32:11 -0500
-Subject: Re: [PATCH] iio: health/afe4403: select REGMAP_SPI
-To: "Andrew F. Davis" <afd@ti.com>, Arnd Bergmann <arnd@arndb.de>
-References: <1455637959-3169264-1-git-send-email-arnd@arndb.de>
- <56C34AF8.7080104@ti.com>
-Cc: linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56C4CAB9.8000609@kernel.org>
-Date: Wed, 17 Feb 2016 19:32:09 +0000
+Received: from smtp-out-018.synserver.de ([212.40.185.18]:1496 "EHLO
+	smtp-out-221.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751571AbcBNR5m (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Feb 2016 12:57:42 -0500
+Subject: Re: [RFC PATCH v1 1/3] iio:core: timestamping clock selection support
+To: Jonathan Cameron <jic23@kernel.org>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1455184829.git.gregor.boirie@parrot.com>
+ <3e2d224ccd59ecba141e1320e804c674eb61c686.1455184829.git.gregor.boirie@parrot.com>
+ <56BF3A49.1000908@kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56C0BCDD.3080006@metafoo.de>
+Date: Sun, 14 Feb 2016 18:43:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <56C34AF8.7080104@ti.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <56BF3A49.1000908@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/02/16 16:14, Andrew F. Davis wrote:
-> On 02/16/2016 09:52 AM, Arnd Bergmann wrote:
->> The newly added afe4403 driver uses the regmap facility to abstract
->> the I2C and SPI access. However, it fails to ensure that regmap_spi
->> is actually present:
+On 02/13/2016 03:14 PM, Jonathan Cameron wrote:
+> On 11/02/16 10:04, Gregor Boirie wrote:
+>> Adds a new per-device sysfs attribute "clockid" to allow userspace to select a
+>> particular POSIX clock for buffered samples and events timestamping.
 >>
->> drivers/iio/built-in.o: In function `afe4403_probe':
->> :(.text+0x9bf8): undefined reference to `__devm_regmap_init_spi'
+>> When read, the attribute file returns a stringifi'ed clockid_t matching the
+>> currently selected clock.
+>> Writing a stringifi'ed clockid_t to the attribute file will select the
+>> corresponding clock for the device.
 >>
->> This adds a Kconfig select statement like the afe4404 I2C driver
->> has.
+>> Following clocks, as listed in clock_gettime(2), are supported: CLOCK_REALTIME,
+>> CLOCK_MONOTONIC, CLOCK_MONOTONIC_RAW, CLOCK_REALTIME_COARSE,
+>> CLOCK_MONOTONIC_COARSE, CLOCK_BOOTTIME and CLOCK_TAI.
 >>
->> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->> Fixes: eec96d1e2d31 ("iio: health: Add driver for the TI AFE4403 heart monitor")
+>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 >> ---
->>   drivers/iio/health/Kconfig | 1 +
->>   1 file changed, 1 insertion(+)
+>>  Documentation/ABI/testing/sysfs-bus-iio |   7 +++
+>>  Documentation/DocBook/iio.tmpl          |   2 +-
+>>  drivers/iio/iio_core.h                  |   3 +
+>>  drivers/iio/industrialio-core.c         | 107 ++++++++++++++++++++++++++++++--
+>>  drivers/iio/industrialio-event.c        |  19 +++++-
+>>  drivers/iio/industrialio-trigger.c      |   2 +-
+>>  include/linux/iio/iio.h                 |  10 +--
+>>  7 files changed, 134 insertions(+), 16 deletions(-)
 >>
->> diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
->> index f0c19779ac27..c5f004a8e447 100644
->> --- a/drivers/iio/health/Kconfig
->> +++ b/drivers/iio/health/Kconfig
->> @@ -10,6 +10,7 @@ menu "Heart Rate Monitors"
->>   config AFE4403
->>       tristate "TI AFE4403 Heart Rate Monitor"
->>       depends on SPI_MASTER
->> +    select REGMAP_SPI
->>       select IIO_BUFFER
->>       select IIO_TRIGGERED_BUFFER
->>       help
->>
-> 
-> Oversight on my part, thanks for fix.
-> 
-> Acked-by: Andrew F. Davis <afd@ti.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to fail to trigger similar issues... (ah well, they can't
-hammer everything!)
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>> index 3c66248..4602006 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>> @@ -32,6 +32,13 @@ Description:
+>>  		Description of the physical chip / device for device X.
+>>  		Typically a part number.
+>>  
+>> +What:		/sys/bus/iio/devices/iio:deviceX/clockid
+>> +KernelVersion:	4.5
+>> +Contact:	linux-iio@vger.kernel.org
+>> +Description:
+>> +		Identifier (clockid_t) of current posix clock used to timestamp
+>> +		buffered samples and events for device X.
+> As it's been written into a sysfs attribute I'd normally prefer to see a
+> descriptive string for something like this.  What do others think?
+> clockid_t is clearly fixed abi so this makes reasonable sense.  Are there
+> other sysfs attributes to select the clock already present elsewhere in the
+> kernel?
 
-Thanks Arnd!
-
-Jonathan
+Very same thoughts here. clockid_t is already ABI so we don't have to be
+afraid exposing values that might change, but at the same time a string
+would be more suitable for sysfs.
