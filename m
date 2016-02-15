@@ -1,380 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f42.google.com ([74.125.82.42]:36031 "EHLO
-	mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753868AbcBTSAP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Feb 2016 13:00:15 -0500
-Received: by mail-wm0-f42.google.com with SMTP id g62so118628033wme.1
-        for <linux-iio@vger.kernel.org>; Sat, 20 Feb 2016 10:00:14 -0800 (PST)
-Subject: [PATCH v2 5/5] iio: adc: New driver for Cirrus Logic EP93xx ADC
-To: Hartley Sweeten <hsweeten@visionengravers.com>,
-	Ryan Mallon <rmallon@gmail.com>,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-References: <56C88EDD.3040007@gmail.com> <56C88FCB.30008@gmail.com>
- <56C88FFD.9050504@gmail.com> <56C89024.3060802@gmail.com>
- <56C89056.7070903@gmail.com>
-Cc: Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Jonathan Cameron <jic23@kernel.org>
-From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Message-ID: <56C8A9AB.7040506@gmail.com>
-Date: Sat, 20 Feb 2016 19:00:11 +0100
-MIME-Version: 1.0
-In-Reply-To: <56C89056.7070903@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from mail-pf0-f182.google.com ([209.85.192.182]:34985 "EHLO
+	mail-pf0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751327AbcBOC7N (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Feb 2016 21:59:13 -0500
+Received: by mail-pf0-f182.google.com with SMTP id c10so80823281pfc.2
+        for <linux-iio@vger.kernel.org>; Sun, 14 Feb 2016 18:59:13 -0800 (PST)
+From: Matt Ranostay <mranostay@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH] iio: chemical: atlas-ph-sensor: use regmap_bulk_read
+Date: Sun, 14 Feb 2016 18:59:07 -0800
+Message-Id: <1455505147-2261-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-New driver adding support for ADC found on Cirrus Logic EP93xx series of SoCs.
-Board specific code must take care to create plaform device with all necessary
-resources.
+Replaced i2c_smbus_read_i2c_block_data() with regmap_bulk_read()
+function call. This is to make the driver code more consistent.
 
-Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
- Documentation/iio/ep93xx_adc.txt |  29 +++++
- drivers/iio/adc/Kconfig          |  11 ++
- drivers/iio/adc/Makefile         |   1 +
- drivers/iio/adc/ep93xx_adc.c     | 261 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 302 insertions(+)
- create mode 100644 Documentation/iio/ep93xx_adc.txt
- create mode 100644 drivers/iio/adc/ep93xx_adc.c
+ drivers/iio/chemical/atlas-ph-sensor.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/iio/ep93xx_adc.txt b/Documentation/iio/ep93xx_adc.txt
-new file mode 100644
-index 0000000..321e59f
---- /dev/null
-+++ b/Documentation/iio/ep93xx_adc.txt
-@@ -0,0 +1,29 @@
-+Cirrus Logic EP93xx ADC driver.
-+
-+1. Overview
-+
-+The driver is intended to work on both low-end (EP9301, EP9302) devices with
-+5-channel ADC and high-end (EP9307, EP9312, EP9315) devices with 10-channel
-+touchscreen/ADC module.
-+
-+2. Channel numbering
-+
-+Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
-+EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
-+not defined. So the last three are numbered randomly, let's say.
-+
-+Assuming ep93xx_adc is IIO device0, you'd find following entries under
-+/sys/bus/iio/devices/iio:device0/:
-+
-+  +-----------------+---------------+
-+  | sysfs entry     | ball/pin name |
-+  +-----------------+---------------+
-+  | in_voltage0_raw | YM            |
-+  | in_voltage1_raw | SXP           |
-+  | in_voltage2_raw | SXM           |
-+  | in_voltage3_raw | SYP           |
-+  | in_voltage4_raw | SYM           |
-+  | in_voltage5_raw | XP            |
-+  | in_voltage6_raw | XM            |
-+  | in_voltage7_raw | YP            |
-+  +-----------------+---------------+
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 283ded7..0482f29 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -172,6 +172,17 @@ config DA9150_GPADC
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called berlin2-adc.
-
-+config EP93XX_ADC
-+	tristate "Cirrus Logic EP93XX ADC driver"
-+	depends on ARCH_EP93XX
-+	help
-+	  Driver for the ADC module on the EP93XX series of SoC from Cirrus Logic.
-+	  It's recommended to switch on CONFIG_HIGH_RES_TIMERS option, in this
-+	  case driver will reduce its CPU usage by 90% in some use cases.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called ep93xx_adc.
-+
- config EXYNOS_ADC
- 	tristate "Exynos ADC driver support"
- 	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 6435780..cd7d33e 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -18,6 +18,7 @@ obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
- obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
- obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
- obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
-+obj-$(CONFIG_EP93XX_ADC) += ep93xx_adc.o
- obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
- obj-$(CONFIG_HI8435) += hi8435.o
- obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
-diff --git a/drivers/iio/adc/ep93xx_adc.c b/drivers/iio/adc/ep93xx_adc.c
-new file mode 100644
-index 0000000..3728591
---- /dev/null
-+++ b/drivers/iio/adc/ep93xx_adc.c
-@@ -0,0 +1,261 @@
-+/*
-+ * Driver for ADC module on the Cirrus Logic EP93xx series of SoCs
-+ *
-+ * Copyright (C) 2015 Alexander Sverdlin
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * The driver uses polling to get the conversion status. According to EP93xx
-+ * datasheets, reading ADCResult register starts the conversion, but user is also
-+ * responsible for ensuring that delay between adjacent conversion triggers is
-+ * long enough so that maximum allowed conversion rate is not exceeded. This
-+ * basically renders IRQ mode unusable.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/iio/iio.h>
-+#include <linux/io.h>
-+#include <linux/irqflags.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/platform_device.h>
-+
-+#define EP93XX_NUM_CHANNELS 8
-+
-+/*
-+ * This code could benefit from real HR Timers, but jiffy granularity would
-+ * lower ADC conversion rate down to CONFIG_HZ, so we fallback to busy wait
-+ * in such case.
-+ *
-+ * HR Timers-based version loads CPU only up to 10% during back to back ADC
-+ * conversion, while busy wait-based version consumes whole CPU power.
-+ */
-+#ifdef CONFIG_HIGH_RES_TIMERS
-+#define ep93xx_adc_delay(usmin, usmax) usleep_range(usmin, usmax)
-+#else
-+#define ep93xx_adc_delay(usmin, usmax) udelay(usmin)
-+#endif
-+
-+#define EP93XX_ADC_RESULT	0x08
-+#define   EP93XX_ADC_SDR	BIT(31)
-+#define EP93XX_ADC_SWITCH	0x18
-+#define EP93XX_ADC_SW_LOCK	0x20
-+#define EP93XX_ADC_INT_EN	0x24
-+#define   EP93XX_ADC_RINTEN	BIT(11)
-+
-+struct ep93xx_adc_priv {
-+	struct clk *clk;
-+	void __iomem *base;
-+	int lastch;
-+	struct mutex lock;
-+};
-+
-+#define EP93XX_ADC_CH(index, dname, swcfg) {			\
-+	.type = IIO_VOLTAGE,					\
-+	.indexed = 1,						\
-+	.channel = index,					\
-+	.address = swcfg,					\
-+	.datasheet_name = dname,				\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE) |	\
-+				   BIT(IIO_CHAN_INFO_OFFSET),	\
-+}
-+
-+/*
-+ * Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
-+ * EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
-+ * not defined. So the last three are numbered randomly, let's say.
-+ */
-+static const struct iio_chan_spec ep93xx_adc_channels[EP93XX_NUM_CHANNELS] = {
-+	EP93XX_ADC_CH(0, "YM",	0x608),
-+	EP93XX_ADC_CH(1, "SXP",	0x680),
-+	EP93XX_ADC_CH(2, "SXM",	0x640),
-+	EP93XX_ADC_CH(3, "SYP",	0x620),
-+	EP93XX_ADC_CH(4, "SYM",	0x610),
-+	EP93XX_ADC_CH(5, "XP",	0x601),
-+	EP93XX_ADC_CH(6, "XM",	0x602),
-+	EP93XX_ADC_CH(7, "YP",	0x604),
-+};
-+
-+static int ep93xx_read_raw(struct iio_dev *iiodev,
-+			   struct iio_chan_spec const *channel, int *value,
-+			   int *shift, long mask)
-+{
-+	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
-+	unsigned long timeout;
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&priv->lock);
-+		if (priv->lastch != channel->channel) {
-+			priv->lastch = channel->channel;
-+			/*
-+			 * Switch register is software-locked, unlocking must be
-+			 * immediately followed by write
-+			 */
-+			local_irq_disable();
-+			writel_relaxed(0xAA, priv->base + EP93XX_ADC_SW_LOCK);
-+			writel_relaxed(channel->address,
-+				       priv->base + EP93XX_ADC_SWITCH);
-+			local_irq_enable();
-+			/*
-+			 * Settling delay depends on module clock and could be
-+			 * 2ms or 500us
-+			 */
-+			ep93xx_adc_delay(2000, 2000);
-+		}
-+		/* Start the conversion, eventually discarding old result */
-+		readl_relaxed(priv->base + EP93XX_ADC_RESULT);
-+		/* Ensure maximun conversion rate is not exceeded */
-+		ep93xx_adc_delay(DIV_ROUND_UP(1000000, 925),
-+				 DIV_ROUND_UP(1000000, 925));
-+		/* At this point conversion must be completed, but anyway... */
-+		ret = IIO_VAL_INT;
-+		timeout = jiffies + msecs_to_jiffies(1) + 1;
-+		while (1) {
-+			u32 t;
-+
-+			t = readl_relaxed(priv->base + EP93XX_ADC_RESULT);
-+			if (t & EP93XX_ADC_SDR) {
-+				/* Sign extend lower 16 bits */
-+				*value = (s16)t;
-+				break;
-+			}
-+
-+			if (time_after(jiffies, timeout)) {
-+				dev_err(&iiodev->dev, "Conversion timeout\n");
-+				ret = -ETIMEDOUT;
-+				break;
-+			}
-+
-+			cpu_relax();
-+		}
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+
-+	case IIO_CHAN_INFO_OFFSET:
-+		/* According to datasheet, range is -25000..25000 */
-+		*value = 25000;
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		/* Typical supply voltage is 3.3v */
-+		*value = (1ULL << 32) * 3300 / 50000;
-+		*shift = 32;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info ep93xx_adc_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = ep93xx_read_raw,
-+};
-+
-+static int ep93xx_adc_probe(struct platform_device *pdev)
-+{
-+	int ret;
-+	struct iio_dev *iiodev;
-+	struct ep93xx_adc_priv *priv;
-+	struct clk *pclk;
-+	struct resource *res;
-+
-+	iiodev = devm_iio_device_alloc(&pdev->dev,
-+				       sizeof(struct ep93xx_adc_priv));
-+	if (!iiodev)
-+		return -ENOMEM;
-+	priv = iio_priv(iiodev);
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		dev_err(&pdev->dev, "Cannot obtain memory resource\n");
-+		return -ENXIO;
-+	}
-+	priv->base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(priv->base)) {
-+		dev_err(&pdev->dev, "Cannot map memory resource\n");
-+		return PTR_ERR(priv->base);
-+	}
-+
-+	iiodev->dev.parent = &pdev->dev;
-+	iiodev->name = dev_name(&pdev->dev);
-+	iiodev->modes = INDIO_DIRECT_MODE;
-+	iiodev->info = &ep93xx_adc_info;
-+	iiodev->num_channels = ARRAY_SIZE(ep93xx_adc_channels);
-+	iiodev->channels = ep93xx_adc_channels;
-+
-+	priv->lastch = -1;
-+	mutex_init(&priv->lock);
-+
-+	platform_set_drvdata(pdev, iiodev);
-+
-+	priv->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(priv->clk)) {
-+		dev_err(&pdev->dev, "Cannot obtain clock\n");
-+		return PTR_ERR(priv->clk);
-+	}
-+
-+	pclk = clk_get_parent(priv->clk);
-+	if (!pclk) {
-+		dev_warn(&pdev->dev, "Cannot obtain parent clock\n");
-+	} else {
-+		/*
-+		 * This is actually a place for improvement:
-+		 * EP93xx ADC supports two clock divisors -- 4 and 16,
-+		 * resulting in conversion rates 3750 and 925 samples per second
-+		 * respectively with 500uS or 2ms settling time respectively.
-+		 * One might find this interesting enough to be configurable.
-+		 */
-+		ret = clk_set_rate(priv->clk, clk_get_rate(pclk) / 16);
-+		if (ret)
-+			dev_warn(&pdev->dev, "Cannot set clock rate\n");
-+		/*
-+		 * We can tolerate rate setting failure because the module should
-+		 * work in any case.
-+		 */
-+	}
-+
-+	ret = clk_enable(priv->clk);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Cannot enable clock\n");
-+		return ret;
-+	}
-+
-+	ret = iio_device_register(iiodev);
-+	if (ret)
-+		clk_disable(priv->clk);
-+
-+	return ret;
-+}
-+
-+static int ep93xx_adc_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *iiodev = platform_get_drvdata(pdev);
-+	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
-+
-+	iio_device_unregister(iiodev);
-+	clk_disable(priv->clk);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver ep93xx_adc_driver = {
-+	.driver = {
-+		.name = "ep93xx-adc",
-+	},
-+	.probe = ep93xx_adc_probe,
-+	.remove = ep93xx_adc_remove,
-+};
-+module_platform_driver(ep93xx_adc_driver);
-+
-+MODULE_AUTHOR("Alexander Sverdlin <alexander.sverdlin@gmail.com>");
-+MODULE_DESCRIPTION("Cirrus Logic EP93XX ADC driver");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:ep93xx-adc");
+diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+index 06cd49c..93fcea9 100644
+--- a/drivers/iio/chemical/atlas-ph-sensor.c
++++ b/drivers/iio/chemical/atlas-ph-sensor.c
+@@ -180,10 +180,10 @@ static irqreturn_t atlas_trigger_handler(int irq, void *private)
+ 	struct atlas_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	ret = i2c_smbus_read_i2c_block_data(data->client, ATLAS_REG_PH_DATA,
+-				sizeof(data->buffer[0]), (u8 *) &data->buffer);
++	ret = regmap_bulk_read(data->regmap, ATLAS_REG_PH_DATA,
++			      (u8 *) &data->buffer, sizeof(data->buffer[0]));
+ 
+-	if (ret > 0)
++	if (!ret)
+ 		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+ 				iio_get_time_ns());
+ 
+-- 
+2.7.0
 
