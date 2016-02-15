@@ -1,141 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail01.prevas.se ([62.95.78.3]:35859 "EHLO mail01.prevas.se"
+Received: from mail.aswsp.com ([193.34.35.150]:30862 "EHLO mail.aswsp.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932430AbcBPO0L (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 16 Feb 2016 09:26:11 -0500
-From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+	id S1751949AbcBORx7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 15 Feb 2016 12:53:59 -0500
+From: Gregor Boirie <gregor.boirie@parrot.com>
 To: <linux-iio@vger.kernel.org>
-CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
-	<devicetree@vger.kernel.org>
-Subject: [PATCH v3 4/4] iio: ad5755: Add full DT binding documentation
-Date: Tue, 16 Feb 2016 15:25:57 +0100
-Message-ID: <1455632757-21748-4-git-send-email-sean.nyekjaer@prevas.dk>
-In-Reply-To: <1455632757-21748-3-git-send-email-sean.nyekjaer@prevas.dk>
-References: <1455632757-21748-1-git-send-email-sean.nyekjaer@prevas.dk>
- <1455632757-21748-2-git-send-email-sean.nyekjaer@prevas.dk>
- <1455632757-21748-3-git-send-email-sean.nyekjaer@prevas.dk>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>,
+	"Andrew F. Davis" <afd@ti.com>,
+	=?UTF-8?q?Gr=C3=A9gor=20Boirie?= <gregor.boirie@parrot.com>
+Subject: [PATCH v1 3/5] iio:pressure:ms5611: power regulator support
+Date: Mon, 15 Feb 2016 18:53:18 +0100
+Message-ID: <e036950749dd366cc3cacce73c3c64b05802ee0d.1455557806.git.gregor.boirie@parrot.com>
+In-Reply-To: <5764f4978abda151dd053c56d08f1688b371635d.1455557806.git.gregor.boirie@parrot.com>
+References: <5764f4978abda151dd053c56d08f1688b371635d.1455557806.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+From: Grégor Boirie <gregor.boirie@parrot.com>
+
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 ---
-Changes since v2:
- - Removed defines, alot easier to read :-)
+ drivers/iio/pressure/ms5611_core.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
- .../devicetree/bindings/iio/dac/ad5755.txt         | 94 ++++++++++++++++++++++
- 1 file changed, 94 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/iio/dac/ad5755.txt b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
-index 4c91583..751204b 100644
---- a/Documentation/devicetree/bindings/iio/dac/ad5755.txt
-+++ b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
-@@ -15,10 +15,104 @@ Recommended properties:
-  - spi-max-frequency: Definition as per
- 		Documentation/devicetree/bindings/spi/spi-bus.txt
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index 65d8fd2..a024445 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -16,6 +16,7 @@
+ #include <linux/module.h>
+ #include <linux/iio/iio.h>
+ #include <linux/delay.h>
++#include <linux/regulator/consumer.h>
  
-+Optional properties:
-+See include/dt-bindings/iio/ad5755.h
-+ - adi,ext_dc_dc_compenstation_resistor: boolean set if the hardware have an
-+					 external resistor and thereby bypasses
-+					 the internal compensation resistor.
-+ - adi,dc_dc_phase:
-+	Valid values for DC DC Phase control is:
-+	0: All dc-to-dc converters clock on the same edge.
-+	1: Channel A and Channel B clock on the same edge,
-+	   Channel C and Channel D clock on opposite edges.
-+	2: Channel A and Channel C clock on the same edge,
-+	   Channel B and Channel D clock on opposite edges.
-+	3: Channel A, Channel B, Channel C, and Channel D
-+	   clock 90 degrees out of phase from each other.
-+ - adi,dc_dc_freq:
-+	Valid values for DC DC frequency is:
-+	0: 250 kHz.
-+	1: 410 kHz.
-+	2: 650 kHz.
-+ - adi,dc_dc_maxv:
-+	Valid values for the maximum allowed Vboost voltage supplied by
-+	the dc-to-dc converter is:
-+	0: 23 V.
-+	1: 24.5 V.
-+	2: 27 V.
-+	3: 29.5 V.
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/triggered_buffer.h>
+@@ -290,6 +291,18 @@ static const struct iio_info ms5611_info = {
+ static int ms5611_init(struct iio_dev *indio_dev)
+ {
+ 	int ret;
++	struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
++	                                           "vdd");
 +
-+Optional for every channel:
-+ - adi,mode:
-+	Valid values for DAC modes is:
-+	0: 0 V to 5 V voltage range.
-+	1: 0 V to 10 V voltage range.
-+	2: Plus minus 5 V voltage range.
-+	3: Plus minus 10 V voltage range.
-+	4: 4 mA to 20 mA current range.
-+	5: 0 mA to 20 mA current range.
-+	6: 0 mA to 24 mA current range.
-+ - adi,ext_current_sense_resistor: boolean set if the hardware a external
-+				   current sense resistor.
-+ - adi,enable_voltage_overrange: boolean enable voltage overrange
-+ - adi,slew: Array of slewrate settings should contain 3 fields:
-+	1: Should be either 0 or 1 in order to enable or disable slewrate.
-+	2: Slew rate settings:
-+		Valid values for the slew rate update frequency:
-+		0: 64 kHz
-+		1: 32 kHz
-+		2: 16 kHz
-+		3: 8 kHz
-+		4: 4 kHz
-+		5: 2 kHz
-+		6: 1 kHz
-+		7: 500 Hz
-+		8: 250 Hz
-+		9: 125 Hz
-+		10: 64 Hz
-+		11: 32 Hz
-+		12: 16 Hz
-+		13: 8 Hz
-+		14: 4 Hz
-+		15: 0.5 Hz
-+	3: Slew step size:
-+		Valid values for the step size LSBs:
-+		0: 1
-+		1: 2
-+		2: 4
-+		3: 16
-+		4: 32
-+		5: 64
-+		6: 128
-+		7: 256
-+
- Example:
- dac@0 {
- 	compatible = "adi,ad5755";
- 	reg = <0>;
- 	spi-max-frequency = <1000000>;
- 	spi-cpha;
-+	adi,dc_dc_phase = <0>;
-+	adi,dc_dc_freq = <1>;
-+	adi,dc_dc_maxv = <0>;
-+	channel@0 {
-+		adi,mode = <4>;
-+		adi,ext_current_sense_resistor;
-+		adi,slew = <0 0 0>;
-+	};
-+	channel@1 {
-+		adi,mode = <4>;
-+		adi,ext_current_sense_resistor;
-+		adi,slew = <0 0 0>;
-+	};
-+	channel@2 {
-+		adi,mode = <4>;
-+		adi,ext_current_sense_resistor;
-+		adi,slew = <0 0 0>;
-+	};
-+	channel@3 {
-+		adi,mode = <4>;
-+		adi,ext_current_sense_resistor;
-+		adi,slew = <0 0 0>;
-+	};
- };
++	/* Enable attached regulator if any. */
++	if (!IS_ERR(vdd)) {
++		ret = regulator_enable(vdd);
++		if (ret) {
++			dev_err(indio_dev->dev.parent,
++			        "failed to enable Vdd supply: %d\n", ret);
++			return ret;
++		}
++	}
+ 
+ 	ret = ms5611_reset(indio_dev);
+ 	if (ret < 0)
 -- 
-2.7.1
+2.1.4
 
