@@ -1,78 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60660 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751373AbcBUUxw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 15:53:52 -0500
-Subject: Re: [PATCH v3 3/6] iio:pressure:ms5611: power regulator support
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1455731233.git.gregor.boirie@parrot.com>
- <62baa1cc0a865049bdd23e03b24a6051463ccc7b.1455731233.git.gregor.boirie@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Mark Brown <broonie@kernel.org>, "Andrew F. Davis" <afd@ti.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56CA23DE.80301@kernel.org>
-Date: Sun, 21 Feb 2016 20:53:50 +0000
+Received: from smtp-out-072.synserver.de ([212.40.185.72]:1168 "EHLO
+	smtp-out-033.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751496AbcBOQvb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Feb 2016 11:51:31 -0500
+Subject: Re: libiio and unindexed channel
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+	linux-iio@vger.kernel.org, paul.cercueil@analog.com
+References: <56C1F92D.2020506@parrot.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56C2020F.9000902@metafoo.de>
+Date: Mon, 15 Feb 2016 17:51:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <62baa1cc0a865049bdd23e03b24a6051463ccc7b.1455731233.git.gregor.boirie@parrot.com>
+In-Reply-To: <56C1F92D.2020506@parrot.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/02/16 17:52, Gregor Boirie wrote:
-> From: Grégor Boirie <gregor.boirie@parrot.com>
+On 02/15/2016 05:13 PM, Gregor Boirie wrote:
+> Hi all,
 > 
-> Add support for an optional regulator which, if found into device-tree,
-> will power on device at probing time.
-> The regulator is declared into ms5611 DTS entry as a "vdd-supply" property.
+> I hope it is the right place to post for libiio related problems. Please,
+> forgive my mistakeif it is not.
 > 
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-This usually only gets done when it first matters to someone. Guessing it
-matters to you!
+> I'm facing a rather odd problem with unindexed channel (as declared
+> in ms5611 pressure driver iio_chan_spec 's). libiio does not consider
+> pressure and temperature channels exposed by the driver as...
+> channels.
+> 
+> Trying to figure out why, I looked into libiio local backend and found
+> that:
+> * on tag v0.6, libiio simply consider unindexed driver channels as
+>   device attribute (see local.c:942) ;
+> * on actual master, libiio will promote unindexed driver channels to
+>   channels BUT without the scan_element ability (see local.c:1130)
+> 
+> I don't fully understand what real difference it makes but libiio manual
+> says:
+> </quote>
+> a channel that is a scan element is a channel that can generate samples
+> (for an input channel) or receive samples (for an output channel) after
+> being enabled.
+> <quote/>
+> 
+> I feel a bit lost here : I thought input channels were always able to
+> generate samples. What is this iio_channel_is_scan_element() here
+> for ? From userspace point of view, what channel indices should be used
+> for ?
+> 
+> Many thanks in advancefor sharing your time and knowledge.
+> Regards,
+> Gregor.
+> 
+> P.S.: by the way, setting the "indexed" field of iio_chan_spec's in
+> ms5611_core.c makes libiio see temperature and pressure as channels.
 
-Applied to the togreg branch of iio.git
+Hi,
 
-Thanks,
+One of the major issues of the current IIO userspace ABI is that it is not
+really machine readable friendly. libiio employs a couple of heuristics to
+try to recover the original information. Your usecase is currently not
+covered by the heuristics. But it should be fairly easy to add. If there is
+a entry in scan_elements/ whether it has a index or not it should cause
+libiio to infer a channel for it. Patches welcome.
 
-Jonathan
-> ---
->  drivers/iio/pressure/ms5611_core.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-> index acd8e37..992ad8d 100644
-> --- a/drivers/iio/pressure/ms5611_core.c
-> +++ b/drivers/iio/pressure/ms5611_core.c
-> @@ -16,6 +16,7 @@
->  #include <linux/module.h>
->  #include <linux/iio/iio.h>
->  #include <linux/delay.h>
-> +#include <linux/regulator/consumer.h>
->  
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/triggered_buffer.h>
-> @@ -290,6 +291,18 @@ static const struct iio_info ms5611_info = {
->  static int ms5611_init(struct iio_dev *indio_dev)
->  {
->  	int ret;
-> +	struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
-> +	                                           "vdd");
-> +
-> +	/* Enable attached regulator if any. */
-> +	if (!IS_ERR(vdd)) {
-> +		ret = regulator_enable(vdd);
-> +		if (ret) {
-> +			dev_err(indio_dev->dev.parent,
-> +			        "failed to enable Vdd supply: %d\n", ret);
-> +			return ret;
-> +		}
-> +	}
->  
->  	ret = ms5611_reset(indio_dev);
->  	if (ret < 0)
-> 
+- Lars
 
