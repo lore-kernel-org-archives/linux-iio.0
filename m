@@ -1,147 +1,250 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail02.prevas.se ([62.95.78.10]:21257 "EHLO mail02.prevas.se"
+Received: from mail.aswsp.com ([193.34.35.150]:30846 "EHLO mail.aswsp.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932478AbcBPO0M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 16 Feb 2016 09:26:12 -0500
-From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+	id S1751949AbcBORyE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 15 Feb 2016 12:54:04 -0500
+From: Gregor Boirie <gregor.boirie@parrot.com>
 To: <linux-iio@vger.kernel.org>
-CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
-	<devicetree@vger.kernel.org>
-Subject: [PATCH v3 3/4] iio: ad5755: added full support for devicetree
-Date: Tue, 16 Feb 2016 15:25:56 +0100
-Message-ID: <1455632757-21748-3-git-send-email-sean.nyekjaer@prevas.dk>
-In-Reply-To: <1455632757-21748-2-git-send-email-sean.nyekjaer@prevas.dk>
-References: <1455632757-21748-1-git-send-email-sean.nyekjaer@prevas.dk>
- <1455632757-21748-2-git-send-email-sean.nyekjaer@prevas.dk>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>,
+	"Andrew F. Davis" <afd@ti.com>,
+	Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v1 5/5] iio:pressure:ms5611: continuous sampling support
+Date: Mon, 15 Feb 2016 18:53:20 +0100
+Message-ID: <316f70b9ec942eaba245258e50d2d5f40d3d6fef.1455557806.git.gregor.boirie@parrot.com>
+In-Reply-To: <5764f4978abda151dd053c56d08f1688b371635d.1455557806.git.gregor.boirie@parrot.com>
+References: <5764f4978abda151dd053c56d08f1688b371635d.1455557806.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Devicetree can provide platform data
+Implement INDIO_BUFFER_SOFTWARE mode to allow continuous sampling without
+relying upon external trigger.
+Sampling is carried out by a kthread which life cycle is bound to samples
+buffering: it is created at postenable time and destroyed at predisable time.
 
-Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 ---
-Changes since v2:
-- removed defines from DT
+ drivers/iio/pressure/ms5611.h      |   8 +++
+ drivers/iio/pressure/ms5611_core.c | 117 ++++++++++++++++++++++++++++++-------
+ 2 files changed, 105 insertions(+), 20 deletions(-)
 
-Still missing check of the valid from DT is valid.
-
- drivers/iio/dac/ad5755.c | 86 +++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 85 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-index e1b6e78..8d264f0 100644
---- a/drivers/iio/dac/ad5755.c
-+++ b/drivers/iio/dac/ad5755.c
-@@ -14,6 +14,7 @@
- #include <linux/slab.h>
- #include <linux/sysfs.h>
- #include <linux/delay.h>
-+#include <linux/of.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/platform_data/ad5755.h>
-@@ -556,6 +557,82 @@ static const struct ad5755_platform_data ad5755_default_pdata = {
- 	},
+diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
+index 8b08e4b..5b4bbd4 100644
+--- a/drivers/iio/pressure/ms5611.h
++++ b/drivers/iio/pressure/ms5611.h
+@@ -39,7 +39,14 @@ struct ms5611_chip_info {
+ 					    s32 *temp, s32 *pressure);
  };
  
-+#ifdef CONFIG_OF
-+static struct ad5755_platform_data *ad5755_parse_dt(struct device *dev)
-+{
-+	struct device_node *np = dev->of_node;
-+	struct device_node *pp;
-+	struct ad5755_platform_data *pdata;
-+	unsigned int tmp;
-+	unsigned int tmparray[3];
-+	int devnr;
++/*
++ * Number of s32 for a complete sample, i.e. s32 (pressure) + s32 (temp) +
++ * 2 * s32 (timestamp).
++ */
++#define MS5611_BUFFER_NR (4U)
 +
-+	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-+	if (!pdata)
-+		return NULL;
+ struct ms5611_state {
++	s32 buf[MS5611_BUFFER_NR];
+ 	void *client;
+ 	struct mutex lock;
+ 
+@@ -49,6 +56,7 @@ struct ms5611_state {
+ 					  s32 *temp, s32 *pressure);
+ 
+ 	struct ms5611_chip_info *chip_info;
++	struct task_struct *task;
+ };
+ 
+ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index a024445..f05da74 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -14,15 +14,21 @@
+  */
+ 
+ #include <linux/module.h>
+-#include <linux/iio/iio.h>
+ #include <linux/delay.h>
++#include <linux/kthread.h>
++#include <linux/freezer.h>
+ #include <linux/regulator/consumer.h>
+-
++#include <linux/iio/iio.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/triggered_buffer.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include "ms5611.h"
+ 
++enum {
++	MS5611_PRESSURE = 0,
++	MS5611_TEMP = 1
++};
 +
-+	pdata->ext_dc_dc_compenstation_resistor =
-+	       of_property_read_bool(np, "adi,ext_dc_dc_compenstation_resistor");
-+
-+	if (!of_property_read_u32(np, "adi,dc_dc_phase", &tmp))
-+		pdata->dc_dc_phase = tmp;
-+	else
-+		pdata->dc_dc_phase = AD5755_DC_DC_PHASE_ALL_SAME_EDGE;
-+
-+	if (!of_property_read_u32(np, "adi,dc_dc_freq", &tmp))
-+		pdata->dc_dc_freq = tmp;
-+	else
-+		pdata->dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ;
-+
-+	if (!of_property_read_u32(np, "adi,dc_dc_maxv", &tmp))
-+		pdata->dc_dc_maxv = tmp;
-+	else
-+		pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_23V;
-+
-+	devnr = 0;
-+	for_each_child_of_node(np, pp) {
-+		if (devnr > AD5755_NUM_CHANNELS) {
-+			dev_err(dev, "There is to many channels defined in DT\n");
-+			goto error_out;
-+		}
-+
-+		if (!of_property_read_u32(pp, "adi,mode", &tmp))
-+			pdata->dac[devnr].mode = tmp;
-+		else
-+			pdata->dac[devnr].mode = AD5755_MODE_CURRENT_4mA_20mA;
-+
-+		pdata->dac[devnr].ext_current_sense_resistor =
-+		       of_property_read_bool(pp, "adi,ext_current_sense_resistor");
-+
-+		pdata->dac[devnr].enable_voltage_overrange =
-+			of_property_read_bool(pp, "adi,enable_voltage_overrange");
-+		if (!of_property_read_u32_array(pp, "adi,slew", tmparray, 3)) {
-+			pdata->dac[devnr].slew.enable = tmparray[0];
-+			pdata->dac[devnr].slew.rate = tmparray[1];
-+			pdata->dac[devnr].slew.step_size = tmparray[2];
-+		} else {
-+			pdata->dac[devnr].slew.enable = false;
-+			pdata->dac[devnr].slew.rate = AD5755_SLEW_RATE_64k;
-+			pdata->dac[devnr].slew.step_size = AD5755_SLEW_STEP_SIZE_1;
-+		}
-+
-+		devnr++;
-+	}
-+
-+	return pdata;
-+
-+error_out:
-+	devm_kfree(dev, pdata);
-+	return NULL;
-+}
-+#else
-+static
-+struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
-+{
-+	return NULL;
-+}
-+#endif
-+
- static int ad5755_probe(struct spi_device *spi)
+ static bool ms5611_prom_is_valid(u16 *prom, size_t len)
  {
- 	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
-@@ -583,8 +660,15 @@ static int ad5755_probe(struct spi_device *spi)
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->num_channels = AD5755_NUM_CHANNELS;
+ 	int i, j;
+@@ -177,25 +183,28 @@ static int ms5611_reset(struct iio_dev *indio_dev)
+ 	return 0;
+ }
  
--	if (!pdata)
-+	if (spi->dev.of_node)
-+		pdata = ad5755_parse_dt(&spi->dev);
-+	else
-+		pdata = spi->dev.platform_data;
+-static irqreturn_t ms5611_trigger_handler(int irq, void *p)
++static void ms5611_push_data(struct iio_dev *indio_dev,
++                             struct ms5611_state *state)
+ {
+-	struct iio_poll_func *pf = p;
+-	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct ms5611_state *st = iio_priv(indio_dev);
+-	s32 buf[4]; /* s32 (pressure) + s32 (temp) + 2 * s32 (timestamp) */
+ 	int ret;
+ 
+-	mutex_lock(&st->lock);
+-	ret = ms5611_read_temp_and_pressure(indio_dev, &buf[1], &buf[0]);
+-	mutex_unlock(&st->lock);
+-	if (ret < 0)
+-		goto err;
++	mutex_lock(&state->lock);
++	ret = ms5611_read_temp_and_pressure(indio_dev, &state->buf[MS5611_TEMP],
++	                                    &state->buf[MS5611_PRESSURE]);
++	mutex_unlock(&state->lock);
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
++	if (!ret)
++		iio_push_to_buffers_with_timestamp(indio_dev, state->buf,
++		                                   iio_get_time_ns());
++}
+ 
+-err:
+-	iio_trigger_notify_done(indio_dev->trig);
++static irqreturn_t ms5611_trigger_handler(int irq, void *p)
++{
++	const struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
+ 
++	ms5611_push_data(indio_dev, iio_priv(indio_dev));
++	iio_trigger_notify_done(indio_dev->trig);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -203,15 +212,24 @@ static int ms5611_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+ {
+-	int ret;
++	int ret = 0;
+ 	s32 temp, pressure;
+ 	struct ms5611_state *st = iio_priv(indio_dev);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		mutex_lock(&st->lock);
+-		ret = ms5611_read_temp_and_pressure(indio_dev,
+-						    &temp, &pressure);
++		if (iio_buffer_enabled(indio_dev)) {
++			/*
++			 * Return "cached" data since sampling is ongoing in the
++			 * background.
++			 */
++			pressure = st->buf[MS5611_PRESSURE];
++			temp = st->buf[MS5611_TEMP];
++		}
++		else
++			ret = ms5611_read_temp_and_pressure(indio_dev, &temp,
++			                                    &pressure);
+ 		mutex_unlock(&st->lock);
+ 		if (ret < 0)
+ 			return ret;
+@@ -288,6 +306,64 @@ static const struct iio_info ms5611_info = {
+ 	.driver_module = THIS_MODULE,
+ };
+ 
++static int ms5611d(void *data)
++{
++	struct iio_dev *indio_dev = data;
++	struct ms5611_state *st = iio_priv(indio_dev);
 +
-+	if (!pdata) {
-+		dev_warn(&spi->dev, "no platform data? using default\n");
- 		pdata = &ad5755_default_pdata;
++	set_freezable();
++
++	do {
++		ms5611_push_data(indio_dev, st);
++	} while (likely(!kthread_freezable_should_stop(NULL)));
++
++	return 0;
++}
++
++static int ms5611_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct ms5611_state *st = iio_priv(indio_dev);
++	int ret;
++
++	/*
++	 * Initialize temperature and pressure so that a client getting samples
++	 * through read_raw retrieves valid data when buffering has just been
++	 * enabled but first sampling round is not yet completed.
++	 */
++	mutex_lock(&st->lock);
++	ret = ms5611_read_temp_and_pressure(indio_dev, &st->buf[MS5611_TEMP],
++	                                    &st->buf[MS5611_PRESSURE]);
++	mutex_unlock(&st->lock);
++	if (ret < 0)
++		return ret;
++
++	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
++		return iio_triggered_buffer_postenable(indio_dev);
++
++	st->task = kthread_run(ms5611d, indio_dev, indio_dev->name);
++	if (unlikely(IS_ERR(st->task))) {
++		dev_err(&indio_dev->dev, "failed to create buffering task\n");
++		return PTR_ERR(st->task);
 +	}
++
++	return 0;
++}
++
++static int ms5611_buffer_predisable(struct iio_dev *indio_dev)
++{
++
++	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
++		return iio_triggered_buffer_predisable(indio_dev);
++
++	kthread_stop(((struct ms5611_state*) iio_priv(indio_dev))->task);
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops ms5611_buffer_ops = {
++	.postenable = ms5611_buffer_postenable,
++	.predisable = ms5611_buffer_predisable,
++};
++
+ static int ms5611_init(struct iio_dev *indio_dev)
+ {
+ 	int ret;
+@@ -324,7 +400,7 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
+ 	indio_dev->info = &ms5611_info;
+ 	indio_dev->channels = ms5611_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(ms5611_channels);
+-	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
+ 	indio_dev->available_scan_masks = ms5611_scan_masks;
  
- 	ret = ad5755_init_channels(indio_dev, pdata);
- 	if (ret)
+ 	ret = ms5611_init(indio_dev);
+@@ -332,7 +408,8 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
+ 		return ret;
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+-					 ms5611_trigger_handler, NULL);
++	                                 ms5611_trigger_handler,
++	                                 &ms5611_buffer_ops);
+ 	if (ret < 0) {
+ 		dev_err(dev, "iio triggered buffer setup failed\n");
+ 		return ret;
 -- 
-2.7.1
+2.1.4
 
