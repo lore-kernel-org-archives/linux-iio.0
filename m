@@ -1,58 +1,53 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: switch regmap cache
-To: Jonathan Cameron <jic23@kernel.org>, Matt Ranostay <mranostay@gmail.com>
-References: <1455412842-750-1-git-send-email-mranostay@gmail.com>
- <56C096F3.9070908@kernel.org>
-Cc: linux-iio@vger.kernel.org, Mark Brown <broonie@kernel.org>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56C0BBFF.5040703@metafoo.de>
-Date: Sun, 14 Feb 2016 18:40:15 +0100
-MIME-Version: 1.0
-In-Reply-To: <56C096F3.9070908@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([217.72.192.74]:55632 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755173AbcBPO4F (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Feb 2016 09:56:05 -0500
+From: Arnd Bergmann <arnd@arndb.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org,
+	Arnd Bergmann <arnd@arndb.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: pressure: ms5611: select IIO_BUFFER
+Date: Tue, 16 Feb 2016 15:55:07 +0100
+Message-Id: <1455634525-2023774-1-git-send-email-arnd@arndb.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 02/14/2016 04:02 PM, Jonathan Cameron wrote:
-> On 14/02/16 01:20, Matt Ranostay wrote:
->> switch from using REGCACHE_FLAT to REGCACHE_RBTREE so initial hw values
->> are read from device. This also allows some volatile ranges to be
->> dropped.
->>
->> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-> I'm lost here. Why should changing the storage of the register cache result
-> in different behaviour other than in efficiency of access to cached values?
+The ms5611 driver started using the IIO_TRIGGERED_BUFFER infrastructure
+which in turn depend on IIO_BUFFER, and it produces a build error now
+if that is not enabled:
 
-And if there is really a difference this should probably be addressed at the
-regmap level.
+warning: (... && MS5611 && ...) selects IIO_TRIGGERED_BUFFER which has unmet direct dependencies (IIO && IIO_BUFFER)
+buffer/industrialio-triggered-buffer.c: In function 'iio_triggered_buffer_setup':
+buffer/industrialio-triggered-buffer.c:58:2: error: implicit declaration of function 'iio_device_attach_buffer' [-Werror=implicit-function-declaration]
+pressure/ms5611_core.c: In function 'ms5611_trigger_handler':
+pressure/ms5611_core.c:193:2: error: implicit declaration of function 'iio_push_to_buffers_with_timestamp' [-Werror=implicit-function-declaration]
 
-- Lars
+This adds the second select.
 
-> 
-> Jonathan
->> ---
->>  drivers/iio/chemical/atlas-ph-sensor.c | 4 +---
->>  1 file changed, 1 insertion(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
->> index 06cd49c..71c8e02 100644
->> --- a/drivers/iio/chemical/atlas-ph-sensor.c
->> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
->> @@ -65,8 +65,6 @@ struct atlas_data {
->>  
->>  static const struct regmap_range atlas_volatile_ranges[] = {
->>  	regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
->> -	regmap_reg_range(ATLAS_REG_CALIB_STATUS, ATLAS_REG_CALIB_STATUS),
->> -	regmap_reg_range(ATLAS_REG_TEMP_DATA, ATLAS_REG_TEMP_DATA + 4),
->>  	regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
->>  };
->>  
->> @@ -83,7 +81,7 @@ static const struct regmap_config atlas_regmap_config = {
->>  
->>  	.volatile_table = &atlas_volatile_table,
->>  	.max_register = ATLAS_REG_PH_DATA + 4,
->> -	.cache_type = REGCACHE_FLAT,
->> +	.cache_type = REGCACHE_RBTREE,
->>  };
->>  
->>  static const struct iio_chan_spec atlas_channels[] = {
->>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 713bbb4efb9d ("iio: pressure: ms5611: Add triggered buffer support")
+---
+ drivers/iio/pressure/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index f15f66d6f527..31c0e1fd2202 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -69,6 +69,7 @@ config MPL3115
+ 
+ config MS5611
+ 	tristate "Measurement Specialties MS5611 pressure sensor driver"
++	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say Y here to build support for the Measurement Specialties
+-- 
+2.7.0
+
