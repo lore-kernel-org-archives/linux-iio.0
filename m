@@ -1,69 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:32180 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1426448AbcBRPv1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 18 Feb 2016 10:51:27 -0500
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	wsa@the-dreams.de, linux-i2c@vger.kernel.org,
-	lucas.demarchi@intel.com, daniel.baluta@intel.com,
-	srinivas.pandruvada@linux.intel.com, ggao@invensense.com,
-	adi.reus@gmail.com, cmo@melexis.com, mwelling@ieee.org
-Subject: [RFC PATCH 8/9] i2c: i2c-mux: Allow for NULL select callback
-Date: Thu, 18 Feb 2016 17:53:13 +0200
-Message-Id: <1455810794-3188-9-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
-References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
+Received: from mout.kundenserver.de ([212.227.126.135]:53557 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755429AbcBPPwx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Feb 2016 10:52:53 -0500
+From: Arnd Bergmann <arnd@arndb.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org,
+	Arnd Bergmann <arnd@arndb.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"Andrew F. Davis" <afd@ti.com>,
+	Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: health/afe4403: select REGMAP_SPI
+Date: Tue, 16 Feb 2016 16:52:15 +0100
+Message-Id: <1455637959-3169264-1-git-send-email-arnd@arndb.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Adriana Reus <adriana.reus@intel.com>
+The newly added afe4403 driver uses the regmap facility to abstract
+the I2C and SPI access. However, it fails to ensure that regmap_spi
+is actually present:
 
-Add a check in i2c_mux_master_xfer before calling the select callback.
-This is necessary so that NULL callbacks can be safely registered.
+drivers/iio/built-in.o: In function `afe4403_probe':
+:(.text+0x9bf8): undefined reference to `__devm_regmap_init_spi'
 
-Signed-off-by: Adriana Reus <adriana.reus@intel.com>
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+This adds a Kconfig select statement like the afe4404 I2C driver
+has.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: eec96d1e2d31 ("iio: health: Add driver for the TI AFE4403 heart monitor")
 ---
- drivers/i2c/i2c-mux.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/iio/health/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
-index 00fc5b1..74d1700 100644
---- a/drivers/i2c/i2c-mux.c
-+++ b/drivers/i2c/i2c-mux.c
-@@ -46,11 +46,12 @@ static int i2c_mux_master_xfer(struct i2c_adapter *adap,
- {
- 	struct i2c_mux_priv *priv = adap->algo_data;
- 	struct i2c_adapter *parent = priv->parent;
--	int ret;
-+	int ret = 0;
- 
- 	/* Switch to the right mux port and perform the transfer. */
- 
--	ret = priv->select(parent, priv->mux_priv, priv->chan_id);
-+	if (priv->select)
-+		ret = priv->select(parent, priv->mux_priv, priv->chan_id);
- 	if (ret >= 0)
- 		ret = __i2c_transfer(parent, msgs, num);
- 	if (priv->deselect)
-@@ -66,11 +67,12 @@ static int i2c_mux_smbus_xfer(struct i2c_adapter *adap,
- {
- 	struct i2c_mux_priv *priv = adap->algo_data;
- 	struct i2c_adapter *parent = priv->parent;
--	int ret;
-+	int ret = 0;
- 
- 	/* Select the right mux port and perform the transfer. */
- 
--	ret = priv->select(parent, priv->mux_priv, priv->chan_id);
-+	if (priv->select)
-+		ret = priv->select(parent, priv->mux_priv, priv->chan_id);
- 	if (ret >= 0)
- 		ret = parent->algo->smbus_xfer(parent, addr, flags,
- 					read_write, command, size, data);
+diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
+index f0c19779ac27..c5f004a8e447 100644
+--- a/drivers/iio/health/Kconfig
++++ b/drivers/iio/health/Kconfig
+@@ -10,6 +10,7 @@ menu "Heart Rate Monitors"
+ config AFE4403
+ 	tristate "TI AFE4403 Heart Rate Monitor"
+ 	depends on SPI_MASTER
++	select REGMAP_SPI
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
 -- 
-2.5.0
+2.7.0
 
