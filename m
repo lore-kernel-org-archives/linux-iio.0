@@ -1,46 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f171.google.com ([209.85.161.171]:33123 "EHLO
-	mail-yw0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752423AbcBPEfk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Feb 2016 23:35:40 -0500
-Received: by mail-yw0-f171.google.com with SMTP id u200so130621582ywf.0
-        for <linux-iio@vger.kernel.org>; Mon, 15 Feb 2016 20:35:40 -0800 (PST)
+Received: from mail01.prevas.se ([62.95.78.3]:35859 "EHLO mail01.prevas.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932595AbcBPO0I (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 16 Feb 2016 09:26:08 -0500
+From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+To: <linux-iio@vger.kernel.org>
+CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
+	<devicetree@vger.kernel.org>
+Subject: [PATCH v3 2/4] iio: ad5755: Add DT binding documentation
+Date: Tue, 16 Feb 2016 15:25:55 +0100
+Message-ID: <1455632757-21748-2-git-send-email-sean.nyekjaer@prevas.dk>
+In-Reply-To: <1455632757-21748-1-git-send-email-sean.nyekjaer@prevas.dk>
+References: <1455632757-21748-1-git-send-email-sean.nyekjaer@prevas.dk>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1602151923540.7180@pmeerw.net>
-References: <5764f4978abda151dd053c56d08f1688b371635d.1455557806.git.gregor.boirie@parrot.com>
- <alpine.DEB.2.02.1602151923540.7180@pmeerw.net>
-From: Lucas De Marchi <lucas.de.marchi@gmail.com>
-Date: Tue, 16 Feb 2016 02:28:49 -0200
-Message-ID: <CAKi4VAL9=HSGQRG97c597_krDn=1L7bo3_8+DriONshnomSnAw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/5] iio:pressure:ms5611: fix ms5607 temp compensation
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Gregor Boirie <gregor.boirie@parrot.com>,
-	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Mark Brown <broonie@kernel.org>, "Andrew F. Davis" <afd@ti.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Feb 15, 2016 at 4:37 PM, Peter Meerwald-Stadler
-<pmeerw@pmeerw.net> wrote:
->
->> See page 8 of ms5607 datasheet here:
->> http://www.meas-spec.com/product/pressure/MS5607-ms.aspx
->
-> link doesn't seem to work anymore, maybe now it's
-> http://www.meas-spec.com/product/pressure/MS5607-02BA03.aspx
->
-> computation of sens2 was wrong and is fixed by this patch,
-> sens2 should be 2 * (t - 2000)^2
+Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/iio/dac/ad5755.txt         | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5755.txt
 
-yes, and it matches what we are currently doing in ardupilot.
+diff --git a/Documentation/devicetree/bindings/iio/dac/ad5755.txt b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+new file mode 100644
+index 0000000..4c91583
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+@@ -0,0 +1,24 @@
++* Analog Device AD5755 IIO Multi-Channel DAC Linux Driver
++
++Required properties:
++ - compatible: Has to contain one of the following:
++	adi,ad5755
++	adi,ad5755-1
++	adi,ad5757
++	adi,ad5735
++	adi,ad5737
++
++ - reg: spi chip select number for the device
++ - spi-cpha or spi-cpol: is the only modes that is supported
++
++Recommended properties:
++ - spi-max-frequency: Definition as per
++		Documentation/devicetree/bindings/spi/spi-bus.txt
++
++Example:
++dac@0 {
++	compatible = "adi,ad5755";
++	reg = <0>;
++	spi-max-frequency = <1000000>;
++	spi-cpha;
++};
+-- 
+2.7.1
 
-Acked-by: Lucas De Marchi <lucas.demarchi@intel.com>
-
-
-Lucas De Marchi
