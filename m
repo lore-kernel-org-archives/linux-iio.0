@@ -1,54 +1,72 @@
-Return-Path: <mwelling79@gmail.com>
-Sender: Michael Welling <mwelling79@gmail.com>
-Date: Thu, 11 Feb 2016 12:00:20 -0600
-From: Michael Welling <mwelling@ieee.org>
-To: Adriana Reus <adriana.reus@intel.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com, ggao@invensense.com,
-	lars@metafoo.de, daniel.baluta@intel.com, lucas.de.marchi@gmail.com,
-	adi.reus@gmail.com, cmo@melexis.com
-Subject: Re: [PATCH v5 3/4] iio: imu: inv_mpu6050: Separate driver into core
- and i2c functionality.
-Message-ID: <20160211180019.GA15330@deathstar>
-References: <1455185128-4717-1-git-send-email-adriana.reus@intel.com>
- <1455185128-4717-4-git-send-email-adriana.reus@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.aswsp.com ([193.34.35.150]:30858 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S965296AbcBQRkr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Feb 2016 12:40:47 -0500
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>,
+	"Andrew F. Davis" <afd@ti.com>,
+	=?UTF-8?q?Gr=C3=A9gor=20Boirie?= <gregor.boirie@parrot.com>
+Subject: [PATCH v2 3/6] iio:pressure:ms5611: power regulator support
+Date: Wed, 17 Feb 2016 18:38:41 +0100
+Message-ID: <704bdf6619be84f5029299d1844f50d9a767d0f4.1455729921.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1455729921.git.gregor.boirie@parrot.com>
+References: <cover.1455729921.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1455185128-4717-4-git-send-email-adriana.reus@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Feb 11, 2016 at 12:05:27PM +0200, Adriana Reus wrote:
-> +MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
-> +
-> +static struct i2c_driver inv_mpu_driver = {
-> +	.probe		=	inv_mpu_probe,
-> +	.remove		=	inv_mpu_remove,
-> +	.id_table	=	inv_mpu_id,
-> +	.driver = {
-> +		.acpi_match_table = ACPI_PTR(inv_acpi_match),
-> +		.name	=	"inv-mpu6050 i2c driver",
+From: Grégor Boirie <gregor.boirie@parrot.com>
 
-I just noticed this but spaces in this name leads to spaces in the sysfs entry
-which could be potentially confusing.
+Add support for an optional regulator which, if found into device-tree,
+will power on device at probing time.
+The regulator is declared into ms5611 DTS entry as a "vdd-supply" property.
 
-root@dragonboard-410c:/sys/bus/i2c/drivers# ls
-ads1015                 cs2000-cp               inv-mpu6050 i2c driver
-ak4613-codec            dummy                   pca9685-pwm
-root@dragonboard-410c:/sys/bus/i2c/drivers# ls -l
-drwxr-xr-x    2 root     root             0 Feb  5 05:37 ads1015
-drwxr-xr-x    2 root     root             0 Feb  5 05:37 ak4613-codec
-drwxr-xr-x    2 root     root             0 Feb  5 05:37 cs2000-cp
-drwxr-xr-x    2 root     root             0 Feb  5 05:37 dummy
-drwxr-xr-x    2 root     root             0 Feb  5 05:37 inv-mpu6050 i2c driver
-drwxr-xr-x    2 root     root             0 Feb  5 05:37 pca9685-pwm
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ drivers/iio/pressure/ms5611_core.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Same goes for the SPI driver.
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index acd8e37..992ad8d 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -16,6 +16,7 @@
+ #include <linux/module.h>
+ #include <linux/iio/iio.h>
+ #include <linux/delay.h>
++#include <linux/regulator/consumer.h>
+ 
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/triggered_buffer.h>
+@@ -290,6 +291,18 @@ static const struct iio_info ms5611_info = {
+ static int ms5611_init(struct iio_dev *indio_dev)
+ {
+ 	int ret;
++	struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
++	                                           "vdd");
++
++	/* Enable attached regulator if any. */
++	if (!IS_ERR(vdd)) {
++		ret = regulator_enable(vdd);
++		if (ret) {
++			dev_err(indio_dev->dev.parent,
++			        "failed to enable Vdd supply: %d\n", ret);
++			return ret;
++		}
++	}
+ 
+ 	ret = ms5611_reset(indio_dev);
+ 	if (ret < 0)
+-- 
+2.1.4
 
-root@dragonboard-410c:/sys/bus/spi/drivers# ls
-inv-mpu6000 spi driver  mmc_spi                 spidev
-root@dragonboard-410c:/sys/bus/spi/drivers# ls -l
-drwxr-xr-x    2 root     root             0 Feb  5 05:43 inv-mpu6000 spi driver
-drwxr-xr-x    2 root     root             0 Feb  5 05:43 mmc_spi
-drwxr-xr-x    2 root     root             0 Feb  5 05:43 spidev
-
-Not sure if it is worth a revision but letting you know.
