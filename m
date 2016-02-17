@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:30846 "EHLO mail.aswsp.com"
+Received: from mail.aswsp.com ([193.34.35.150]:30857 "EHLO mail.aswsp.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1422778AbcBQRxv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 17 Feb 2016 12:53:51 -0500
+	id S1423103AbcBQRxl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Feb 2016 12:53:41 -0500
 From: Gregor Boirie <gregor.boirie@parrot.com>
 To: <linux-iio@vger.kernel.org>
 CC: Jonathan Cameron <jic23@kernel.org>,
@@ -15,9 +15,9 @@ CC: Jonathan Cameron <jic23@kernel.org>,
 	Mark Brown <broonie@kernel.org>,
 	"Andrew F. Davis" <afd@ti.com>,
 	=?UTF-8?q?Gr=C3=A9gor=20Boirie?= <gregor.boirie@parrot.com>
-Subject: [PATCH v3 4/6] iio:pressure:ms5611: DT bindings documentation
-Date: Wed, 17 Feb 2016 18:52:52 +0100
-Message-ID: <b94c67ed8d9148707e4b613c747fc654c52c62d3.1455731233.git.gregor.boirie@parrot.com>
+Subject: [PATCH v3 3/6] iio:pressure:ms5611: power regulator support
+Date: Wed, 17 Feb 2016 18:52:51 +0100
+Message-ID: <62baa1cc0a865049bdd23e03b24a6051463ccc7b.1455731233.git.gregor.boirie@parrot.com>
 In-Reply-To: <cover.1455731233.git.gregor.boirie@parrot.com>
 References: <cover.1455731233.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
@@ -27,37 +27,46 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Grégor Boirie <gregor.boirie@parrot.com>
 
+Add support for an optional regulator which, if found into device-tree,
+will power on device at probing time.
+The regulator is declared into ms5611 DTS entry as a "vdd-supply" property.
+
 Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 ---
- .../devicetree/bindings/iio/pressure/ms5611.txt       | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/pressure/ms5611.txt
+ drivers/iio/pressure/ms5611_core.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/ms5611.txt b/Documentation/devicetree/bindings/iio/pressure/ms5611.txt
-new file mode 100644
-index 0000000..986415a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/pressure/ms5611.txt
-@@ -0,0 +1,19 @@
-+MEAS ms5611 family pressure sensors
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index acd8e37..992ad8d 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -16,6 +16,7 @@
+ #include <linux/module.h>
+ #include <linux/iio/iio.h>
+ #include <linux/delay.h>
++#include <linux/regulator/consumer.h>
+ 
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/triggered_buffer.h>
+@@ -290,6 +291,18 @@ static const struct iio_info ms5611_info = {
+ static int ms5611_init(struct iio_dev *indio_dev)
+ {
+ 	int ret;
++	struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
++	                                           "vdd");
 +
-+Pressure sensors from MEAS Switzerland with SPI and I2C bus interfaces.
-+
-+Required properties:
-+- compatible: "ms5611" or "ms5607"
-+- reg: the I2C or SPI address the device will respond to
-+
-+Optional properties:
-+- vdd-supply: an optional regulator that needs to be on to provide VDD
-+  power to the sensor.
-+
-+Example:
-+
-+ms5607@77 {
-+	compatible = "ms5607";
-+	reg = <0x77>;
-+	vdd-supply = <&ldo_3v3_gnss>;
-+};
++	/* Enable attached regulator if any. */
++	if (!IS_ERR(vdd)) {
++		ret = regulator_enable(vdd);
++		if (ret) {
++			dev_err(indio_dev->dev.parent,
++			        "failed to enable Vdd supply: %d\n", ret);
++			return ret;
++		}
++	}
+ 
+ 	ret = ms5611_reset(indio_dev);
+ 	if (ret < 0)
 -- 
 2.1.4
 
