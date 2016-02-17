@@ -1,69 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55997 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56013 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1422986AbcBQTgW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Feb 2016 14:36:22 -0500
-Subject: Re: [PATCH] iio: health/afe4404: mark suspend/resume functions
- __maybe_unused
-To: Arnd Bergmann <arnd@arndb.de>
-References: <1455527958-2647084-1-git-send-email-arnd@arndb.de>
-Cc: linux-arm-kernel@lists.infradead.org,
-	"Andrew F . Davis" <afd@ti.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+	with ESMTP id S1030388AbcBQTiW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Feb 2016 14:38:22 -0500
+Subject: Re: [RFC PATCH v1 1/3] iio:core: timestamping clock selection support
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+	Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+References: <cover.1455184829.git.gregor.boirie@parrot.com>
+ <3e2d224ccd59ecba141e1320e804c674eb61c686.1455184829.git.gregor.boirie@parrot.com>
+ <56BF3A49.1000908@kernel.org> <56C0BCDD.3080006@metafoo.de>
+ <56C19D6A.4020905@parrot.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56C4CBB4.3050708@kernel.org>
-Date: Wed, 17 Feb 2016 19:36:20 +0000
+Message-ID: <56C4CC2D.6010608@kernel.org>
+Date: Wed, 17 Feb 2016 19:38:21 +0000
 MIME-Version: 1.0
-In-Reply-To: <1455527958-2647084-1-git-send-email-arnd@arndb.de>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <56C19D6A.4020905@parrot.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/02/16 09:19, Arnd Bergmann wrote:
-> The newly added afe4404 driver implements suspend/resume using the
-> SIMPLE_DEV_PM_OPS() macro, which leaves out references to the actual
-> functions when CONFIG_PM is disabled, causing a harmless warning:
+On 15/02/16 09:42, Gregor Boirie wrote:
+> On 02/14/2016 06:43 PM, Lars-Peter Clausen wrote:
+>> On 02/13/2016 03:14 PM, Jonathan Cameron wrote:
+>>> On 11/02/16 10:04, Gregor Boirie wrote:
+>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>>>> index 3c66248..4602006 100644
+>>>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>>>> @@ -32,6 +32,13 @@ Description:
+>>>>           Description of the physical chip / device for device X.
+>>>>           Typically a part number.
+>>>>   +What:        /sys/bus/iio/devices/iio:deviceX/clockid
+>>>> +KernelVersion:    4.5
+>>>> +Contact:    linux-iio@vger.kernel.org
+>>>> +Description:
+>>>> +        Identifier (clockid_t) of current posix clock used to timestamp
+>>>> +        buffered samples and events for device X.
+>>> As it's been written into a sysfs attribute I'd normally prefer to see a
+>>> descriptive string for something like this.  What do others think?
+>>> clockid_t is clearly fixed abi so this makes reasonable sense.  Are there
+>>> other sysfs attributes to select the clock already present elsewhere in the
+>>> kernel?
+>> Very same thoughts here. clockid_t is already ABI so we don't have to be
+>> afraid exposing values that might change, but at the same time a string
+>> would be more suitable for sysfs.
+> I was driven by simple userspace implementation at the cost of sysfs conventions.
+> Moreover, no kernel side parsing is needed in this way.
+> Using a stringifi'ed clockid_t allows trivial clock selection with following libiio based
+> code snippet:
+> </code>
+> int err;
+> ...
+> err = iio_device_attr_write(indio_dev, "clockid", STRINGIFY(CLOCK_MONOTONIC));
+> if (err < 0)
+> goto error;
+> <code/>
 > 
-> health/afe4404.c:509:12: error: 'afe4404_suspend' defined but not used
-> health/afe4404.c:530:12: error: 'afe4404_resume' defined but not used
+> And even simpler retrieval and use of current clock:
+> </code>
+> int             err;
+> long long       clockid;
+> struct timespec tspec;
+> ...
+> err = iio_device_attr_read_longlong(indio_dev, "clockid", &clockid);
+> if (err < 0)
+>     goto error;
+> ...
+> clock_gettime((clockid_t) clockid, &tspec);
+> ...
+> <code/>
 > 
-> This marks the functions as __maybe_unused so we don't get those
-> warnings.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 87aec56e27ef ("iio: health: Add driver for the TI AFE4404 heart monitor")
-Applied to the togreg branch of iio.git.
+> Implementing this with a descriptive string is no big deal anyway. I can modify this
+> part if you feel sysfs conventions respect prevails.
+
+Sorry to be a pain, but I think that it is worth the somewhat silly jumping through
+hoops to sysfsify it.  Keeping sysfs as 'self documenting' as possible is always a good
+aim.
 
 Thanks,
 
 Jonathan
-> ---
->  drivers/iio/health/afe4404.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
-> index 0759268f37e0..5096a4643784 100644
-> --- a/drivers/iio/health/afe4404.c
-> +++ b/drivers/iio/health/afe4404.c
-> @@ -477,7 +477,7 @@ static const struct of_device_id afe4404_of_match[] = {
->  MODULE_DEVICE_TABLE(of, afe4404_of_match);
->  #endif
->  
-> -static int afe4404_suspend(struct device *dev)
-> +static int __maybe_unused afe4404_suspend(struct device *dev)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct afe4404_data *afe = iio_priv(indio_dev);
-> @@ -498,7 +498,7 @@ static int afe4404_suspend(struct device *dev)
->  	return 0;
->  }
->  
-> -static int afe4404_resume(struct device *dev)
-> +static int __maybe_unused afe4404_resume(struct device *dev)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct afe4404_data *afe = iio_priv(indio_dev);
-> 
+> gregor.
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
