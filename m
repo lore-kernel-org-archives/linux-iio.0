@@ -1,52 +1,318 @@
-Return-Path: <alexander.sverdlin@gmail.com>
-Subject: [PATCH v2 2/5] clk: ep93xx: Add ADC clock
-To: Hartley Sweeten <hsweeten@visionengravers.com>,
- Ryan Mallon <rmallon@gmail.com>, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org
-References: <56C88EDD.3040007@gmail.com> <56C88FCB.30008@gmail.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Jonathan Cameron
- <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- Jonathan Cameron <jic23@kernel.org>
-From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Message-ID: <56C8A996.8040107@gmail.com>
-Date: Sat, 20 Feb 2016 18:59:50 +0100
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>, "Andrew F. Davis" <afd@ti.com>, Gregor
+ Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v3 5/6] iio:pressure:ms5611: oversampling rate support
+Date: Wed, 17 Feb 2016 18:52:53 +0100
+Message-ID: <ecec3e34cbbf9bccf559deaf0d116faa1cd779dc.1455731233.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1455731233.git.gregor.boirie@parrot.com>
+References: <cover.1455731233.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <56C88FCB.30008@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-ADC and keypad controller clocks share the same control register, so use the
-existing infrastructure to add ADC clock support for Cirrus Logic EP93xx SoCs.
+Add support for setting and retrieving OverSampling Rate independently for
+each of the temperature and pressure channels. This allows userspace to
+fine tune hardware sampling process according to the following tradeoffs :
+* the higher the OSR, the finer the resolution ;
+* the higher the OSR, the lower the noise ;
+BUT:
+* the higher the OSR, the larger the drift ;
+* the higher the OSR, the longer the response time, i.e. less samples per
+  unit of time.
 
-Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 ---
- arch/arm/mach-ep93xx/clock.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iio/pressure/ms5611.h      |  20 ++++---
+ drivers/iio/pressure/ms5611_core.c | 105 ++++++++++++++++++++++++++++++++++++-
+ drivers/iio/pressure/ms5611_i2c.c  |  12 ++---
+ drivers/iio/pressure/ms5611_spi.c  |  19 +++----
+ 4 files changed, 133 insertions(+), 23 deletions(-)
 
-diff --git a/arch/arm/mach-ep93xx/clock.c b/arch/arm/mach-ep93xx/clock.c
-index b9cd9d7..4253426 100644
---- a/arch/arm/mach-ep93xx/clock.c
-+++ b/arch/arm/mach-ep93xx/clock.c
-@@ -98,6 +98,13 @@ static struct clk clk_keypad = {
- 	.enable_mask	= EP93XX_SYSCON_KEYTCHCLKDIV_KEN,
- 	.set_rate	= set_keytchclk_rate,
+diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
+index 8b08e4b..b07897f 100644
+--- a/drivers/iio/pressure/ms5611.h
++++ b/drivers/iio/pressure/ms5611.h
+@@ -19,12 +19,6 @@
+ #define MS5611_RESET			0x1e
+ #define MS5611_READ_ADC			0x00
+ #define MS5611_READ_PROM_WORD		0xA0
+-#define MS5611_START_TEMP_CONV		0x58
+-#define MS5611_START_PRESSURE_CONV	0x48
+-
+-#define MS5611_CONV_TIME_MIN		9040
+-#define MS5611_CONV_TIME_MAX		10000
+-
+ #define MS5611_PROM_WORDS_NB		8
+ 
+ enum {
+@@ -39,10 +33,24 @@ struct ms5611_chip_info {
+ 					    s32 *temp, s32 *pressure);
  };
-+static struct clk clk_adc = {
-+	.parent		= &clk_xtali,
-+	.sw_locked	= 1,
-+	.enable_reg	= EP93XX_SYSCON_KEYTCHCLKDIV,
-+	.enable_mask	= EP93XX_SYSCON_KEYTCHCLKDIV_TSEN,
-+	.set_rate	= set_keytchclk_rate,
+ 
++/*
++ * OverSampling Rate descriptor.
++ * Warning: cmd MUST be kept aligned on a word boundary (see
++ * m5611_spi_read_adc_temp_and_pressure in ms5611_spi.c).
++ */
++struct ms5611_osr {
++	unsigned long conv_usec;
++	uint8_t cmd;
++	unsigned short rate;
 +};
- static struct clk clk_spi = {
- 	.parent		= &clk_xtali,
- 	.rate		= EP93XX_EXT_CLK_RATE,
-@@ -214,6 +221,7 @@ static struct clk_lookup clocks[] = {
- 	INIT_CK(NULL,			"pll2",		&clk_pll2),
- 	INIT_CK("ohci-platform",	NULL,		&clk_usb_host),
- 	INIT_CK("ep93xx-keypad",	NULL,		&clk_keypad),
-+	INIT_CK("ep93xx-adc",		NULL,		&clk_adc),
- 	INIT_CK("ep93xx-fb",		NULL,		&clk_video),
- 	INIT_CK("ep93xx-spi.0",		NULL,		&clk_spi),
- 	INIT_CK("ep93xx-i2s",		"mclk",		&clk_i2s_mclk),
++
+ struct ms5611_state {
+ 	void *client;
+ 	struct mutex lock;
+ 
++	const struct ms5611_osr *pressure_osr;
++	const struct ms5611_osr *temp_osr;
++
+ 	int (*reset)(struct device *dev);
+ 	int (*read_prom_word)(struct device *dev, int index, u16 *word);
+ 	int (*read_adc_temp_and_pressure)(struct device *dev,
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index 992ad8d..06d453c 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -18,11 +18,44 @@
+ #include <linux/delay.h>
+ #include <linux/regulator/consumer.h>
+ 
++#include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/triggered_buffer.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include "ms5611.h"
+ 
++#define MS5611_INIT_OSR(_cmd, _conv_usec, _rate) \
++	{ .cmd = _cmd, .conv_usec = _conv_usec, .rate = _rate }
++
++static const struct ms5611_osr ms5611_avail_pressure_osr[] = {
++	MS5611_INIT_OSR(0x40, 600,  256),
++	MS5611_INIT_OSR(0x42, 1170, 512),
++	MS5611_INIT_OSR(0x44, 2280, 1024),
++	MS5611_INIT_OSR(0x46, 4540, 2048),
++	MS5611_INIT_OSR(0x48, 9040, 4096)
++};
++
++static const struct ms5611_osr ms5611_avail_temp_osr[] = {
++	MS5611_INIT_OSR(0x50, 600,  256),
++	MS5611_INIT_OSR(0x52, 1170, 512),
++	MS5611_INIT_OSR(0x54, 2280, 1024),
++	MS5611_INIT_OSR(0x56, 4540, 2048),
++	MS5611_INIT_OSR(0x58, 9040, 4096)
++};
++
++static const char ms5611_show_osr[] = "256 512 1024 2048 4096";
++
++static IIO_CONST_ATTR(oversampling_ratio_available, ms5611_show_osr);
++
++static struct attribute *ms5611_attributes[] = {
++	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ms5611_attribute_group = {
++	.attrs = ms5611_attributes,
++};
++
+ static bool ms5611_prom_is_valid(u16 *prom, size_t len)
+ {
+ 	int i, j;
+@@ -239,11 +272,70 @@ static int ms5611_read_raw(struct iio_dev *indio_dev,
+ 		default:
+ 			return -EINVAL;
+ 		}
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		if (chan->type != IIO_TEMP && chan->type != IIO_PRESSURE)
++			break;
++		mutex_lock(&st->lock);
++		if (chan->type == IIO_TEMP)
++			*val = (int) st->temp_osr->rate;
++		else
++			*val = (int) st->pressure_osr->rate;
++		mutex_unlock(&st->lock);
++		return IIO_VAL_INT;
+ 	}
+ 
+ 	return -EINVAL;
+ }
+ 
++static const struct ms5611_osr* ms5611_find_osr(int rate,
++                                                const struct ms5611_osr *osr,
++                                                size_t count)
++{
++	unsigned int r;
++
++	for (r = 0; r < count; r++)
++		if ((unsigned short) rate == osr[r].rate)
++			break;
++	if (r >= count)
++		return NULL;
++	return &osr[r];
++}
++
++static int ms5611_write_raw(struct iio_dev *indio_dev,
++                            struct iio_chan_spec const *chan,
++                            int val, int val2, long mask)
++{
++	struct ms5611_state *st = iio_priv(indio_dev);
++	const struct ms5611_osr *osr = NULL;
++
++	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
++		return -EINVAL;
++
++	if (chan->type == IIO_TEMP)
++		osr = ms5611_find_osr(val, ms5611_avail_temp_osr,
++		                      ARRAY_SIZE(ms5611_avail_temp_osr));
++	else if (chan->type == IIO_PRESSURE)
++		osr = ms5611_find_osr(val, ms5611_avail_pressure_osr,
++		                      ARRAY_SIZE(ms5611_avail_pressure_osr));
++	if (!osr)
++		return -EINVAL;
++
++	mutex_lock(&st->lock);
++
++	if (iio_buffer_enabled(indio_dev)) {
++		mutex_unlock(&st->lock);
++		return -EBUSY;
++	}
++
++	if (chan->type == IIO_TEMP)
++		st->temp_osr = osr;
++	else
++		st->pressure_osr = osr;
++
++	mutex_unlock(&st->lock);
++	return 0;
++}
++
+ static const unsigned long ms5611_scan_masks[] = {0x3, 0};
+ 
+ static struct ms5611_chip_info chip_info_tbl[] = {
+@@ -259,7 +351,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
+ 	{
+ 		.type = IIO_PRESSURE,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+-			BIT(IIO_CHAN_INFO_SCALE),
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+ 		.scan_index = 0,
+ 		.scan_type = {
+ 			.sign = 's',
+@@ -271,7 +364,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
+ 	{
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+-			BIT(IIO_CHAN_INFO_SCALE),
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+ 		.scan_index = 1,
+ 		.scan_type = {
+ 			.sign = 's',
+@@ -285,6 +379,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
+ 
+ static const struct iio_info ms5611_info = {
+ 	.read_raw = &ms5611_read_raw,
++	.write_raw = &ms5611_write_raw,
++	.attrs = &ms5611_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+@@ -319,6 +415,11 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
+ 
+ 	mutex_init(&st->lock);
+ 	st->chip_info = &chip_info_tbl[type];
++	st->temp_osr =
++		&ms5611_avail_temp_osr[ARRAY_SIZE(ms5611_avail_temp_osr) - 1];
++	st->pressure_osr =
++		&ms5611_avail_pressure_osr[ARRAY_SIZE(ms5611_avail_pressure_osr)
++		                           - 1];
+ 	indio_dev->dev.parent = dev;
+ 	indio_dev->name = name;
+ 	indio_dev->info = &ms5611_info;
+diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
+index ae67539..b482ca4 100644
+--- a/drivers/iio/pressure/ms5611_i2c.c
++++ b/drivers/iio/pressure/ms5611_i2c.c
+@@ -62,23 +62,23 @@ static int ms5611_i2c_read_adc_temp_and_pressure(struct device *dev,
+ {
+ 	int ret;
+ 	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
++	const struct ms5611_osr *osr = st->temp_osr;
+ 
+-	ret = i2c_smbus_write_byte(st->client, MS5611_START_TEMP_CONV);
++	ret = i2c_smbus_write_byte(st->client, osr->cmd);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+-
++	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+ 	ret = ms5611_i2c_read_adc(st, temp);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = i2c_smbus_write_byte(st->client, MS5611_START_PRESSURE_CONV);
++	osr = st->pressure_osr;
++	ret = i2c_smbus_write_byte(st->client, osr->cmd);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+-
++	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+ 	return ms5611_i2c_read_adc(st, pressure);
+ }
+ 
+diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
+index 5cc009e..aa6cf2d 100644
+--- a/drivers/iio/pressure/ms5611_spi.c
++++ b/drivers/iio/pressure/ms5611_spi.c
+@@ -55,28 +55,29 @@ static int ms5611_spi_read_adc(struct device *dev, s32 *val)
+ static int ms5611_spi_read_adc_temp_and_pressure(struct device *dev,
+ 						 s32 *temp, s32 *pressure)
+ {
+-	u8 cmd;
+ 	int ret;
+ 	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
++	const struct ms5611_osr *osr = st->temp_osr;
+ 
+-	cmd = MS5611_START_TEMP_CONV;
+-	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
++	/*
++	 * Warning: &osr->cmd MUST be aligned on a word boundary since used as
++	 * 2nd argument (void*) of spi_write_then_read.
++	 */
++	ret = spi_write_then_read(st->client, &osr->cmd, 1, NULL, 0);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+-
++	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+ 	ret = ms5611_spi_read_adc(dev, temp);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	cmd = MS5611_START_PRESSURE_CONV;
+-	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
++	osr = st->pressure_osr;
++	ret = spi_write_then_read(st->client, &osr->cmd, 1, NULL, 0);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+-
++	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+ 	return ms5611_spi_read_adc(dev, pressure);
+ }
+ 
+-- 
+2.1.4
