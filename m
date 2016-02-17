@@ -1,54 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56553 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1423662AbcBQVTd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Feb 2016 16:19:33 -0500
-Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: switch regmap cache
-To: Mark Brown <broonie@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-References: <1455412842-750-1-git-send-email-mranostay@gmail.com>
- <56C096F3.9070908@kernel.org> <56C0BBFF.5040703@metafoo.de>
- <20160215150242.GM18988@sirena.org.uk>
-Cc: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56C4E3E2.8040505@kernel.org>
-Date: Wed, 17 Feb 2016 21:19:30 +0000
+Received: from mail.aswsp.com ([193.34.35.150]:30862 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S965212AbcBQRiz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Feb 2016 12:38:55 -0500
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>,
+	"Andrew F. Davis" <afd@ti.com>,
+	Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v2 1/6] =?UTF-8?q?iio:pressure:ms5611:=C2=A0fix=20ms5607?= =?UTF-8?q?=20temp=20compensation?=
+Date: Wed, 17 Feb 2016 18:38:39 +0100
+Message-ID: <9b12f71237b69a94be36de5b8a86af967e6f5b3e.1455729921.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1455729921.git.gregor.boirie@parrot.com>
+References: <cover.1455729921.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <20160215150242.GM18988@sirena.org.uk>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/02/16 15:02, Mark Brown wrote:
-> On Sun, Feb 14, 2016 at 06:40:15PM +0100, Lars-Peter Clausen wrote:
->> On 02/14/2016 04:02 PM, Jonathan Cameron wrote:
-> 
->>> I'm lost here. Why should changing the storage of the register cache result
->>> in different behaviour other than in efficiency of access to cached values?
-> 
->> And if there is really a difference this should probably be addressed at the
->> regmap level.
-> 
-> You'd need to make regcache-flat keep track of which cache values are
-> valid either during init (in which case it'd have to read every other
-> register at that time) or at runtime (which would mean extra operations
-> in a fast path).  Flat really is special here, there's no reason to use
-> it over a rbtree other than being very sensitive about performance.
-> 
-> Please also be aware that if you CC me on an iio patch series there's a
-> good chance I'll just delete it without reading it, for some reason I
-> keep on getting copied on lots of them which have no relevance to me
-> that I'm able to identify.
-> 
-Hmm.  Not the best documented 'non intuitive case' ever, but fair enough.
-Glad you did pick this one up Mark!
+Computation of sens2 was wrong and is fixed by this patch, sens2 should be:
+    2 * (t - 2000)^2
+See page 8 of ms5607 datasheet here:
+    http://www.meas-spec.com/product/pressure/MS5607-02BA03.aspx
 
-So Matt, the reason those two elements are dropped from being volatile
-is that they never were, but because we were using a flat cache it wasn't
-getting the original values?
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Acked-by: Lucas De Marchi <lucas.demarchi@intel.com>
+Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+---
+ drivers/iio/pressure/ms5611_core.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-If so fair enough I suppose, but please confirm that I've understood this
-correctly + I'll probably expand the patch description somewhat to make it
-clearer why the original was wrong.
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index c7885f0c..84ab8d2 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -136,17 +136,17 @@ static int ms5607_temp_and_pressure_compensate(struct ms5611_chip_info *chip_inf
+ 
+ 	t = 2000 + ((chip_info->prom[6] * dt) >> 23);
+ 	if (t < 2000) {
+-		s64 off2, sens2, t2;
++		s64 off2, sens2, t2, tmp;
+ 
+ 		t2 = (dt * dt) >> 31;
+-		off2 = (61 * (t - 2000) * (t - 2000)) >> 4;
+-		sens2 = off2 << 1;
++		tmp = (t - 2000) * (t - 2000);
++		off2 = (61 * tmp) >> 4;
++		sens2 = tmp << 1;
+ 
+ 		if (t < -1500) {
+-			s64 tmp = (t + 1500) * (t + 1500);
+-
++			tmp = (t + 1500) * (t + 1500);
+ 			off2 += 15 * tmp;
+-			sens2 += (8 * tmp);
++			sens2 += 8 * tmp;
+ 		}
+ 
+ 		t -= t2;
+-- 
+2.1.4
 
-Jonathan
