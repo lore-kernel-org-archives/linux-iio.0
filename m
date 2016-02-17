@@ -1,70 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:32180 "EHLO mga02.intel.com"
+Received: from mail.aswsp.com ([193.34.35.150]:30866 "EHLO mail.aswsp.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1425202AbcBRPu7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 18 Feb 2016 10:50:59 -0500
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	wsa@the-dreams.de, linux-i2c@vger.kernel.org,
-	lucas.demarchi@intel.com, daniel.baluta@intel.com,
-	srinivas.pandruvada@linux.intel.com, ggao@invensense.com,
-	adi.reus@gmail.com, cmo@melexis.com, mwelling@ieee.org
-Subject: [RFC PATCH 0/9] iio: Fix ABBA deadlock in inv-mpu6050
-Date: Thu, 18 Feb 2016 17:53:05 +0200
-Message-Id: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
+	id S965212AbcBQRjW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Feb 2016 12:39:22 -0500
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>,
+	"Andrew F. Davis" <afd@ti.com>,
+	=?UTF-8?q?Gr=C3=A9gor=20Boirie?= <gregor.boirie@parrot.com>
+Subject: [PATCH v2 2/6] iio:pressure:ms5611: use probed device name
+Date: Wed, 17 Feb 2016 18:38:40 +0100
+Message-ID: <8240f1f910697be2917a6d696d5ce649bbc30406.1455729921.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1455729921.git.gregor.boirie@parrot.com>
+References: <cover.1455729921.git.gregor.boirie@parrot.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Sending this as an RFC because I don't know if style fixes are appropriate
-for this driver and also not sure if deadlock fix is the best solution.
+From: Grégor Boirie <gregor.boirie@parrot.com>
 
-I2C people should only look at patches 8/9 and 9/9.
+Use name of probed device instead of driver's one when registering device.
 
-The mpu6050 accel+gyro combo has an auxiliary I2C bus, allowing for
-an auxiliary sensor to be connected (eg. a magnetometer).
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ drivers/iio/pressure/ms5611.h      | 3 ++-
+ drivers/iio/pressure/ms5611_core.c | 5 +++--
+ drivers/iio/pressure/ms5611_i2c.c  | 2 +-
+ drivers/iio/pressure/ms5611_spi.c  | 4 ++--
+ 4 files changed, 8 insertions(+), 6 deletions(-)
 
-The mpu can either act as an I2C master (functionality not currently
-implemented in the driver) or it can use a bypass multiplexer which
-directly connects the auxiliary I2C bus pins to the main I2C bus pins [1]
-Currently the driver implements the bypass mode via an I2C mux.
-
-This patchset fixes a deadlock in inv-mpu6050 IMU which happens when
-magnetometer (on auxiliary I2C bus) runs in parallel with accel or gyro.
-
-First 7 patches do some cleanup in order to make INV MPU6050 code easier
-to read.
-
-Patch number 8 allows passing NULL select callbacks to i2c_mux_master_xfer
-and i2c_mux_smbus_xfer.
-
-Patch number 9 actually fixes the deadlock.
-
-[1] (page 28, https://www.cdiweb.com/datasheets/invensense/MPU-6050_DataSheet_V3%204.pdf)
-
-Adriana Reus (2):
-  i2c: i2c-mux: Allow for NULL select callback
-  iio: imu: inv_mpu6050: Fix deadlock between i2c adapter lock and mpu
-    lock
-
-Daniel Baluta (7):
-  iio: imu: inv_mpu6050: Fix multiline comments style
-  iio: imu: inv_mpu6050: Fix Yoda conditions
-  iio: imu: inv_mpu6050: Fix newlines to make code easier to read
-  iio: imu: inv_mpu6050: Remove unnecessary parentheses
-  iio: imu: inv_mpu6050: Delete space before comma
-  iio: imu: inv_mpu6050: Fix code indent for if statement
-  iio: imu: inv_mpu6050: Fix alignment with open parenthesis
-
- drivers/i2c/i2c-mux.c                         |  10 ++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c    |   6 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 101 ++++++++++++++------------
- drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     |  90 ++++-------------------
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    |  23 +++---
- drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  22 +++---
- 6 files changed, 102 insertions(+), 150 deletions(-)
-
+diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
+index 2d70dd6..8b08e4b 100644
+--- a/drivers/iio/pressure/ms5611.h
++++ b/drivers/iio/pressure/ms5611.h
+@@ -51,7 +51,8 @@ struct ms5611_state {
+ 	struct ms5611_chip_info *chip_info;
+ };
+ 
+-int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type);
++int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
++                 const char* name, int type);
+ int ms5611_remove(struct iio_dev *indio_dev);
+ 
+ #endif /* _MS5611_H */
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index 84ab8d2..acd8e37 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -298,7 +298,8 @@ static int ms5611_init(struct iio_dev *indio_dev)
+ 	return ms5611_read_prom(indio_dev);
+ }
+ 
+-int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type)
++int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
++                 const char *name, int type)
+ {
+ 	int ret;
+ 	struct ms5611_state *st = iio_priv(indio_dev);
+@@ -306,7 +307,7 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type)
+ 	mutex_init(&st->lock);
+ 	st->chip_info = &chip_info_tbl[type];
+ 	indio_dev->dev.parent = dev;
+-	indio_dev->name = dev->driver->name;
++	indio_dev->name = name;
+ 	indio_dev->info = &ms5611_info;
+ 	indio_dev->channels = ms5611_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(ms5611_channels);
+diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
+index 42706a8..ae67539 100644
+--- a/drivers/iio/pressure/ms5611_i2c.c
++++ b/drivers/iio/pressure/ms5611_i2c.c
+@@ -105,7 +105,7 @@ static int ms5611_i2c_probe(struct i2c_client *client,
+ 	st->read_adc_temp_and_pressure = ms5611_i2c_read_adc_temp_and_pressure;
+ 	st->client = client;
+ 
+-	return ms5611_probe(indio_dev, &client->dev, id->driver_data);
++	return ms5611_probe(indio_dev, &client->dev, id->name, id->driver_data);
+ }
+ 
+ static int ms5611_i2c_remove(struct i2c_client *client)
+diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
+index c4bf4e8..5cc009e 100644
+--- a/drivers/iio/pressure/ms5611_spi.c
++++ b/drivers/iio/pressure/ms5611_spi.c
+@@ -105,8 +105,8 @@ static int ms5611_spi_probe(struct spi_device *spi)
+ 	st->read_adc_temp_and_pressure = ms5611_spi_read_adc_temp_and_pressure;
+ 	st->client = spi;
+ 
+-	return ms5611_probe(indio_dev, &spi->dev,
+-			    spi_get_device_id(spi)->driver_data);
++	return ms5611_probe(indio_dev, &spi->dev, spi_get_device_id(spi)->name,
++	                    spi_get_device_id(spi)->driver_data);
+ }
+ 
+ static int ms5611_spi_remove(struct spi_device *spi)
 -- 
-2.5.0
+2.1.4
 
