@@ -1,52 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.135]:53557 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755429AbcBPPwx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Feb 2016 10:52:53 -0500
-From: Arnd Bergmann <arnd@arndb.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org,
-	Arnd Bergmann <arnd@arndb.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"Andrew F. Davis" <afd@ti.com>,
-	Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: health/afe4403: select REGMAP_SPI
-Date: Tue, 16 Feb 2016 16:52:15 +0100
-Message-Id: <1455637959-3169264-1-git-send-email-arnd@arndb.de>
+Received: from mga02.intel.com ([134.134.136.20]:32180 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1426555AbcBRPvG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 18 Feb 2016 10:51:06 -0500
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	wsa@the-dreams.de, linux-i2c@vger.kernel.org,
+	lucas.demarchi@intel.com, daniel.baluta@intel.com,
+	srinivas.pandruvada@linux.intel.com, ggao@invensense.com,
+	adi.reus@gmail.com, cmo@melexis.com, mwelling@ieee.org
+Subject: [RFC PATCH 2/9] iio: imu: inv_mpu6050: Fix Yoda conditions
+Date: Thu, 18 Feb 2016 17:53:07 +0200
+Message-Id: <1455810794-3188-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
+References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The newly added afe4403 driver uses the regmap facility to abstract
-the I2C and SPI access. However, it fails to ensure that regmap_spi
-is actually present:
+This fixes the following checkpatch warning:
+	* WARNING: Comparisons should place the constant
+	  on the right side of the test
 
-drivers/iio/built-in.o: In function `afe4403_probe':
-:(.text+0x9bf8): undefined reference to `__devm_regmap_init_spi'
-
-This adds a Kconfig select statement like the afe4404 I2C driver
-has.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Fixes: eec96d1e2d31 ("iio: health: Add driver for the TI AFE4403 heart monitor")
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- drivers/iio/health/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 +++---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
-index f0c19779ac27..c5f004a8e447 100644
---- a/drivers/iio/health/Kconfig
-+++ b/drivers/iio/health/Kconfig
-@@ -10,6 +10,7 @@ menu "Heart Rate Monitors"
- config AFE4403
- 	tristate "TI AFE4403 Heart Rate Monitor"
- 	depends on SPI_MASTER
-+	select REGMAP_SPI
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 84e014c..c550ebb 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -84,7 +84,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+ 	 * clock source be switched to gyro. Otherwise, it must be set to
+ 	 * internal clock
+ 	 */
+-	if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
++	if (mask == INV_MPU6050_BIT_PWR_GYRO_STBY) {
+ 		result = regmap_read(st->map, st->reg->pwr_mgmt_1, &mgmt_1);
+ 		if (result)
+ 			return result;
+@@ -92,7 +92,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+ 		mgmt_1 &= ~INV_MPU6050_BIT_CLK_MASK;
+ 	}
+ 
+-	if ((INV_MPU6050_BIT_PWR_GYRO_STBY == mask) && (!en)) {
++	if ((mask == INV_MPU6050_BIT_PWR_GYRO_STBY) && (!en)) {
+ 		/*
+ 		 * turning off gyro requires switch to internal clock first.
+ 		 * Then turn off gyro engine
+@@ -117,7 +117,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+ 	if (en) {
+ 		/* Wait for output stabilize */
+ 		msleep(INV_MPU6050_TEMP_UP_TIME);
+-		if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
++		if (mask == INV_MPU6050_BIT_PWR_GYRO_STBY) {
+ 			/* switch internal clock to PLL */
+ 			mgmt_1 |= INV_CLK_PLL;
+ 			result = regmap_write(st->map,
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+index 1fc5fd9..441080b 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+@@ -168,7 +168,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+ 
+ 		result = kfifo_out(&st->timestamps, &timestamp, 1);
+ 		/* when there is no timestamp, put timestamp as 0 */
+-		if (0 == result)
++		if (result == 0)
+ 			timestamp = 0;
+ 
+ 		result = iio_push_to_buffers_with_timestamp(indio_dev, data,
 -- 
-2.7.0
+2.5.0
 
