@@ -1,51 +1,51 @@
-Return-Path: <afd@ti.com>
-Subject: Re: [PATCH] iio: health/afe4403: select REGMAP_SPI
-To: Arnd Bergmann <arnd@arndb.de>, Jonathan Cameron <jic23@kernel.org>
-References: <1455637959-3169264-1-git-send-email-arnd@arndb.de>
-CC: <linux-arm-kernel@lists.infradead.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Matt Ranostay <mranostay@gmail.com>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <56C34AF8.7080104@ti.com>
-Date: Tue, 16 Feb 2016 10:14:48 -0600
-MIME-Version: 1.0
-In-Reply-To: <1455637959-3169264-1-git-send-email-arnd@arndb.de>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Return-Path: <matt.ranostay@intel.com>
+From: Matt Ranostay <matt.ranostay@intel.com>
+To: adriana.reus@intel.com,
+	jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Matt Ranostay <matt.ranostay@intel.com>
+Subject: [PATCH] iio: imu: mpu6050: remove trailing whitespaces
+Date: Wed, 17 Feb 2016 21:58:23 -0800
+Message-Id: <1455775103-18130-1-git-send-email-matt.ranostay@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 02/16/2016 09:52 AM, Arnd Bergmann wrote:
-> The newly added afe4403 driver uses the regmap facility to abstract
-> the I2C and SPI access. However, it fails to ensure that regmap_spi
-> is actually present:
->
-> drivers/iio/built-in.o: In function `afe4403_probe':
-> :(.text+0x9bf8): undefined reference to `__devm_regmap_init_spi'
->
-> This adds a Kconfig select statement like the afe4404 I2C driver
-> has.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: eec96d1e2d31 ("iio: health: Add driver for the TI AFE4403 heart monitor")
-> ---
->   drivers/iio/health/Kconfig | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
-> index f0c19779ac27..c5f004a8e447 100644
-> --- a/drivers/iio/health/Kconfig
-> +++ b/drivers/iio/health/Kconfig
-> @@ -10,6 +10,7 @@ menu "Heart Rate Monitors"
->   config AFE4403
->   	tristate "TI AFE4403 Heart Rate Monitor"
->   	depends on SPI_MASTER
-> +	select REGMAP_SPI
->   	select IIO_BUFFER
->   	select IIO_TRIGGERED_BUFFER
->   	help
->
+removed several trailing whitespaces before assignment operations
 
-Oversight on my part, thanks for fix.
+Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Acked-by: Andrew F. Davis <afd@ti.com>
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 225860016fed..cbc8c74d4692 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -244,7 +244,7 @@ static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+ 				if (result)
+ 					goto error_read_raw;
+ 			}
+-			ret =  inv_mpu6050_sensor_show(st, st->reg->raw_gyro,
++			ret = inv_mpu6050_sensor_show(st, st->reg->raw_gyro,
+ 						chan->channel2, val);
+ 			if (!st->chip_config.gyro_fifo_enable ||
+ 					!st->chip_config.enable) {
+@@ -567,7 +567,7 @@ static int inv_mpu6050_validate_trigger(struct iio_dev *indio_dev,
+ 		.type = _type,                                        \
+ 		.modified = 1,                                        \
+ 		.channel2 = _channel2,                                \
+-		.info_mask_shared_by_type =  BIT(IIO_CHAN_INFO_SCALE), \
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),         \
+ 		.scan_index = _index,                                 \
+ 		.scan_type = {                                        \
+@@ -587,7 +587,7 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
+ 	 */
+ 	{
+ 		.type = IIO_TEMP,
+-		.info_mask_separate =  BIT(IIO_CHAN_INFO_RAW)
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
+ 				| BIT(IIO_CHAN_INFO_OFFSET)
+ 				| BIT(IIO_CHAN_INFO_SCALE),
+ 		.scan_index = -1,
+-- 
+1.9.1
