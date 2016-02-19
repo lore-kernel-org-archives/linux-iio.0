@@ -1,170 +1,80 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-by2on0072.outbound.protection.outlook.com ([207.46.100.72]:2166
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1949378AbcBSURF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 19 Feb 2016 15:17:05 -0500
-From: Ge Gao <GGao@invensense.com>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	"jic23@kernel.org" <jic23@kernel.org>
-CC: "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"wsa@the-dreams.de" <wsa@the-dreams.de>,
-	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-	"lucas.demarchi@intel.com" <lucas.demarchi@intel.com>,
-	"adi.reus@gmail.com" <adi.reus@gmail.com>,
-	"cmo@melexis.com" <cmo@melexis.com>,
-	"mwelling@ieee.org" <mwelling@ieee.org>
-Subject: RE: [RFC PATCH 9/9] iio: imu: inv_mpu6050: Fix deadlock between i2c
- adapter lock and mpu lock
-Date: Fri, 19 Feb 2016 20:17:00 +0000
-Message-ID: <DM3PR1201MB10720FEC1B387708539473D7AFA00@DM3PR1201MB1072.namprd12.prod.outlook.com>
-References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
-	 <1455810794-3188-10-git-send-email-daniel.baluta@intel.com>
- <1455819430.7375.192.camel@linux.intel.com>
-In-Reply-To: <1455819430.7375.192.camel@linux.intel.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <cmo@melexis.com>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1455810794-3188-3-git-send-email-daniel.baluta@intel.com>
+References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com> <1455810794-3188-3-git-send-email-daniel.baluta@intel.com>
+From: Crt Mori <cmo@melexis.com>
+Date: Fri, 19 Feb 2016 10:09:45 +0100
+Message-ID: <CAKv63us92Epe0go9JGNScbeOepg3_j8RyW9w2qgN01Jvnj3sUQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/9] iio: imu: inv_mpu6050: Fix Yoda conditions
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Johnathan Iain Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, linux-i2c@vger.kernel.org,
+	lucas.demarchi@intel.com,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, ggao@invensense.com,
+	Adriana Reus <adi.reus@gmail.com>, mwelling@ieee.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-InRoZXJlIHdhcyBvbmUgY29tbWVudCBiZWZvcmUgdGhhdCBwb3dlciBvZmYgd2lsbCBjYXVzZSB0
-aGUgdGhlIGJ5cGFzcyBpMmMgbGluZXMgdG8gZGlzYWJsZSBmb3Igc29tZSBNUFUgY2hpcHMgd2hp
-Y2ggdGhpcyBkcml2ZXIgY2FuIHN1cHBvcnQuIg0KVGhpcyBpcyByaWdodC4gSSByZW1lbWJlciB0
-aGVyZSB3YXMgc29tZSBjb2RlIGFib3V0IGl0IGVhcmxpZXIgdHJ5aW5nIHRvIHRha2UgYWR2YW50
-YWdlIG9mIHRoZSBzZWNvbmRhcnkgYnVzIHdpdGhvdXQgZW5hYmxpbmcgdGhlIE1QVSBjaGlwIGl0
-c2VsZi4gVGhpcyBpcyBpbXBvc3NpYmxlLiBUaGUgc2Vjb25kYXJ5IGJ1cyBpbnRlcmZhY2UgaXMg
-cGFydCBvZiB0aGUgY2hpcCBhbmQgaXQgd2lsbCBub3QgZnVuY3Rpb24gd2l0aG91dCBlbmFibGlu
-ZyB0aGUgY2hpcC4gV2l0aG91dCBlbmFibGluZyBneXJvL2FjY2VsIGVuZ2luZSwgZW5hYmxpbmcg
-dGhlIGNoaXAgYWxvbmUgdGFrZXMgdmVyeSBsaXR0bGUgcG93ZXIuIEl0IGlzIG5vdCB3b3J0aCB0
-aGUgdHJvdWJsZSB0byBkbyB0aGF0Lg0KDQpUaGFua3MsDQoNCkdlDQoNCg0KDQotLS0tLU9yaWdp
-bmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogU3Jpbml2YXMgUGFuZHJ1dmFkYSBbbWFpbHRvOnNyaW5p
-dmFzLnBhbmRydXZhZGFAbGludXguaW50ZWwuY29tXSANClNlbnQ6IFRodXJzZGF5LCBGZWJydWFy
-eSAxOCwgMjAxNiAxMDoxNyBBTQ0KVG86IERhbmllbCBCYWx1dGE7IGppYzIzQGtlcm5lbC5vcmcN
-CkNjOiBrbmFhY2suaEBnbXguZGU7IGxhcnNAbWV0YWZvby5kZTsgcG1lZXJ3QHBtZWVydy5uZXQ7
-IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7
-IHdzYUB0aGUtZHJlYW1zLmRlOyBsaW51eC1pMmNAdmdlci5rZXJuZWwub3JnOyBsdWNhcy5kZW1h
-cmNoaUBpbnRlbC5jb207IEdlIEdhbzsgYWRpLnJldXNAZ21haWwuY29tOyBjbW9AbWVsZXhpcy5j
-b207IG13ZWxsaW5nQGllZWUub3JnDQpTdWJqZWN0OiBSZTogW1JGQyBQQVRDSCA5LzldIGlpbzog
-aW11OiBpbnZfbXB1NjA1MDogRml4IGRlYWRsb2NrIGJldHdlZW4gaTJjIGFkYXB0ZXIgbG9jayBh
-bmQgbXB1IGxvY2sNCg0KT24gVGh1LCAyMDE2LTAyLTE4IGF0IDE3OjUzICswMjAwLCBEYW5pZWwg
-QmFsdXRhIHdyb3RlOg0KPiBGcm9tOiBBZHJpYW5hIFJldXMgPGFkcmlhbmEucmV1c0BpbnRlbC5j
-b20+DQo+IA0KPiBUaGlzIGRlYWRsb2NrIG9jY3VycyBpZiB0aGUgYWNjZWwvZ3lybyBhbmQgdGhl
-IHNlbnNvciBvbiB0aGUgYXV4aWxpYXJ5IA0KPiBJMkMgKGluIG15IHNldHVwIGl0J3MgYW4gYWs4
-OTc1KSBhcmUgd29ya2luZyBhdCB0aGUgc2FtZSB0aW1lLg0KPiANCj4gU2NlbmFyaW86DQo+IA0K
-PiDCoMKgwqDCoMKgwqBUMQkJCQkJVDINCj4gwqDCoMKgwqDCoD09PT0JCQkJwqDCoMKgwqDCoMKg
-wqA9PT09DQo+IGludl9tcHU2MDUwX3JlYWRfZmlmb8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoGF1eCBzZW5zb3Igb3AgKGVnLg0KPiBhazg5NzVfcmVhZF9yYXcpDQo+IMKgwqDC
-oMKgwqDCoMKgwqB8wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB8DQo+IG11dGV4X2xvY2soJmluZGlvX2Rldi0+
-bWxvY2spwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGkyY190cmFuc2Zlcg0KPiDCoMKgwqDCoMKgwqDC
-oMKgfMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgfCBpMmMgdHJhbnNhY3Rpb27CoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoA0KPiBpMmMgYWRhcHRlciBsb2NrDQo+IMKg
-wqDCoMKgwqDCoMKgwqB8wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB8IGkyYyBhZGFwdGVyIGxvY2vCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqANCj4gaTJjX211eF9tYXN0
-ZXJfeGZlcg0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHwNCj4gwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqBpbnZfbXB1NjA1MF9zZWxlY3RfYnlwYXNzDQo+IMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfA0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoG11dGV4
-X2xvY2soJmluZGlvX2Rldi0+bWxvY2spDQo+IA0KPiBXaGVuIHdlIG9wZXJhdGUgb24gYW4gbXB1
-IHNlbnNvciB0aGUgb3JkZXIgb2YgbG9ja2luZyBpcyBtcHUgbG9jayANCj4gZm9sbG93ZWQgYnkg
-dGhlIGkyYyBhZGFwdGVyIGxvY2suIEhvd2V2ZXIsIHdoZW4gd2Ugb3BlcmF0ZSB0aGUgDQo+IGF1
-eGlsaWFyeSBzZW5zb3IgdGhlIG9yZGVyIG9mIGxvY2tpbmcgaXMgdGhlIG90aGVyIHdheSBhcm91
-bmQuDQo+IA0KPiBJbiBvcmRlciB0byBhdm9pZCB0aGlzIGVuYWJsZSB0aGUgYnlwYXNzIG11eCBi
-aXQgb25jZSBpbiB0aGUgYmVnaW5uaW5nIA0KPiBhbmQgcmVtb3ZlIHRoZSBzZWxlY3QvZGVzZWxl
-Y3RfYnlwYXNzIGZ1bmN0aW9ucy4NCj4gDQo+IFRoaXMgcGF0Y2ggbW92ZXMgdGhlIGJ5cGFzcyBl
-bmFibGluZyBpbiBhIHNlcGFyYXRlIGZ1bmN0aW9uIHRoYXQgaXMgDQo+IGNhbGxlZCBvbmNlIGF0
-IHByb2JlIGFuZCByZW1vdmVzIHRoZSBmdW5jdGlvbmFsaXR5IGZyb20gDQo+IGludl9tcHVfc2Vs
-ZWN0L2Rlc2VsZWN0X2J5cGFzcy4NCj4gDQo+IEFub3RoZXIgYWR2YW50YWdlIG9mIHRoaXMgYXBw
-cm9hY2ggaXMgdGhhdCBwb3dlci13aXNlIHRoZSBtcHUgY2hpcCANCj4gaXNuJ3QgcG93ZXJlZCB1
-cCBhdCBlYWNoIGF1eGlsaWFyeSBzZW5zb3IgaTJjIHRyYW5zYWN0aW9uIHNvIGlmIG9ubHkgDQo+
-IHRoZSBjb21wYXNzIGlzIHVzZWQgdGhpcyB3b3VsZCBiZSBtb3JlIHBvd2VyIGVmZmljaWVudC4N
-ClRoZXJlIHdhcyBvbmUgY29tbWVudCBiZWZvcmUgdGhhdCBwb3dlciBvZmYgd2lsbCBjYXVzZSB0
-aGUgdGhlIGJ5cGFzcyBpMmMgbGluZXMgdG8gZGlzYWJsZSBmb3Igc29tZSBNUFUgY2hpcHMgd2hp
-Y2ggdGhpcyBkcml2ZXIgY2FuIHN1cHBvcnQuDQpTbyBnZXQgc29tZSBjb25maXJtYXRpb24gZnJv
-bSBJbnZlbnNlbnNlIGZvbGtzIHRoYXQgdGhpcyBpcyBPSyBmb3IgYWxsIE1QVSBjaGlwcy4NCg0K
-DQpUaGFua3MsDQpTcmluaXZhcw0KDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBBZHJpYW5hIFJldXMg
-PGFkcmlhbmEucmV1c0BpbnRlbC5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IERhbmllbCBCYWx1dGEg
-PGRhbmllbC5iYWx1dGFAaW50ZWwuY29tPg0KPiAtLS0NCj4gwqBkcml2ZXJzL2lpby9pbXUvaW52
-X21wdTYwNTAvaW52X21wdV9pMmMuYyB8IDg4ICsrKysrKy0tLS0tLS0tLS0tLS0tLQ0KPiAtLS0t
-LS0tLS0tDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDE1IGluc2VydGlvbnMoKyksIDczIGRlbGV0aW9u
-cygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2ltdS9pbnZfbXB1NjA1MC9pbnZf
-bXB1X2kyYy5jDQo+IGIvZHJpdmVycy9paW8vaW11L2ludl9tcHU2MDUwL2ludl9tcHVfaTJjLmMN
-Cj4gaW5kZXggNzFiZGFhMy4uODA2NTM1NSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9paW8vaW11
-L2ludl9tcHU2MDUwL2ludl9tcHVfaTJjLmMNCj4gKysrIGIvZHJpdmVycy9paW8vaW11L2ludl9t
-cHU2MDUwL2ludl9tcHVfaTJjLmMNCj4gQEAgLTI1LDgyICsyNSwyNSBAQCBzdGF0aWMgY29uc3Qg
-c3RydWN0IHJlZ21hcF9jb25maWcgDQo+IGludl9tcHVfcmVnbWFwX2NvbmZpZyA9IHsNCj4gwqAJ
-LnZhbF9iaXRzID0gOCwNCj4gwqB9Ow0KPiDCoA0KPiAtLyoNCj4gLSAqIFRoZSBpMmMgcmVhZC93
-cml0ZSBuZWVkcyB0byBoYXBwZW4gaW4gdW5sb2NrZWQgbW9kZS4gQXMgdGhlIHBhcmVudA0KPiAt
-ICogYWRhcHRlciBpcyBjb21tb24uIElmIHdlIHVzZSBsb2NrZWQgdmVyc2lvbnMsIGl0IHdpbGwg
-ZmFpbCBhcw0KPiAtICogdGhlIG11eCBhZGFwdGVyIHdpbGwgbG9jayB0aGUgcGFyZW50IGkyYyBh
-ZGFwdGVyLCB3aGlsZSBjYWxsaW5nDQo+IC0gKiBzZWxlY3QvZGVzZWxlY3QgZnVuY3Rpb25zLg0K
-PiAtICovDQo+IC1zdGF0aWMgaW50IGludl9tcHU2MDUwX3dyaXRlX3JlZ191bmxvY2tlZChzdHJ1
-Y3QgaTJjX2NsaWVudCAqY2xpZW50LA0KPiAtCQkJCQnCoMKgdTggcmVnLCB1OCBkKQ0KPiArc3Rh
-dGljIGludCBpbnZfbXB1NjA1MF9ieXBhc3NfZW4oc3RydWN0IGlpb19kZXYgKmluZGlvX2RldikN
-Cj4gwqB7DQo+IC0JaW50IHJldDsNCj4gLQl1OCBidWZbMl0gPSB7cmVnLCBkfTsNCj4gLQlzdHJ1
-Y3QgaTJjX21zZyBtc2dbMV0gPSB7DQo+IC0JCXsNCj4gLQkJCS5hZGRyID0gY2xpZW50LT5hZGRy
-LA0KPiAtCQkJLmZsYWdzID0gMCwNCj4gLQkJCS5sZW4gPSBzaXplb2YoYnVmKSwNCj4gLQkJCS5i
-dWYgPSBidWYsDQo+IC0JCX0NCj4gLQl9Ow0KPiAtDQo+IC0JcmV0ID0gX19pMmNfdHJhbnNmZXIo
-Y2xpZW50LT5hZGFwdGVyLCBtc2csIDEpOw0KPiAtCWlmIChyZXQgIT0gMSkNCj4gLQkJcmV0dXJu
-IHJldDsNCj4gLQ0KPiAtCXJldHVybiAwOw0KPiAtfQ0KPiAtDQo+IC1zdGF0aWMgaW50IGludl9t
-cHU2MDUwX3NlbGVjdF9ieXBhc3Moc3RydWN0IGkyY19hZGFwdGVyICphZGFwLCB2b2lkIA0KPiAq
-bXV4X3ByaXYsDQo+IC0JCQkJwqDCoMKgwqDCoHUzMiBjaGFuX2lkKQ0KPiAtew0KPiAtCXN0cnVj
-dCBpMmNfY2xpZW50ICpjbGllbnQgPSBtdXhfcHJpdjsNCj4gLQlzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2ID0gZGV2X2dldF9kcnZkYXRhKCZjbGllbnQtPmRldik7DQo+IMKgCXN0cnVjdCBpbnZf
-bXB1NjA1MF9zdGF0ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiDCoAlpbnQgcmV0ID0g
-MDsNCj4gwqANCj4gLQkvKiBVc2UgdGhlIHNhbWUgbXV0ZXggd2hpY2ggd2FzIHVzZWQgZXZlcnl3
-aGVyZSB0byBwcm90ZWN0DQo+IHBvd2VyLW9wICovDQo+IC0JbXV0ZXhfbG9jaygmaW5kaW9fZGV2
-LT5tbG9jayk7DQo+IC0JaWYgKCFzdC0+cG93ZXJ1cF9jb3VudCkgew0KPiAtCQlyZXQgPSBpbnZf
-bXB1NjA1MF93cml0ZV9yZWdfdW5sb2NrZWQoY2xpZW50LA0KPiAtCQkJCQkJwqDCoMKgwqDCoHN0
-LT5yZWctDQo+ID5wd3JfbWdtdF8xLCAwKTsNCj4gLQkJaWYgKHJldCkNCj4gLQkJCWdvdG8gd3Jp
-dGVfZXJyb3I7DQo+ICsJcmV0ID0gaW52X21wdTYwNTBfc2V0X3Bvd2VyX2l0ZyhzdCwgdHJ1ZSk7
-DQo+ICsJaWYgKHJldCkNCj4gKwkJcmV0dXJuIHJldDsNCj4gwqANCj4gLQkJbXNsZWVwKElOVl9N
-UFU2MDUwX1JFR19VUF9USU1FKTsNCj4gLQl9DQo+IC0JaWYgKCFyZXQpIHsNCj4gLQkJc3QtPnBv
-d2VydXBfY291bnQrKzsNCj4gLQkJcmV0ID0gaW52X21wdTYwNTBfd3JpdGVfcmVnX3VubG9ja2Vk
-KGNsaWVudCwNCj4gLQkJCQkJCcKgwqDCoMKgwqBzdC0+cmVnLQ0KPiA+aW50X3Bpbl9jZmcsDQo+
-IC0JCQkJCQnCoMKgwqDCoMKgSU5WX01QVTYwNTBfSU5UDQo+IF9QSU5fQ0ZHIHwNCj4gLQkJCQkJ
-CcKgwqDCoMKgwqBJTlZfTVBVNjA1MF9CSVQNCj4gX0JZUEFTU19FTik7DQo+ICsJcmV0ID0gcmVn
-bWFwX3dyaXRlKHN0LT5tYXAsDQo+ICsJCQnCoMKgwqBzdC0+cmVnLT5pbnRfcGluX2NmZywNCj4g
-KwkJCcKgwqDCoElOVl9NUFU2MDUwX0lOVF9QSU5fQ0ZHIHwNCj4gKwkJCcKgwqDCoElOVl9NUFU2
-MDUwX0JJVF9CWVBBU1NfRU4pOw0KPiArCWlmIChyZXQpIHsNCj4gKwkJaW52X21wdTYwNTBfc2V0
-X3Bvd2VyX2l0ZyhzdCwgZmFsc2UpOw0KPiArCQlyZXR1cm4gcmV0Ow0KPiDCoAl9DQo+IC13cml0
-ZV9lcnJvcjoNCj4gLQltdXRleF91bmxvY2soJmluZGlvX2Rldi0+bWxvY2spOw0KPiDCoA0KPiAt
-CXJldHVybiByZXQ7DQo+IC19DQo+IC0NCj4gLXN0YXRpYyBpbnQgaW52X21wdTYwNTBfZGVzZWxl
-Y3RfYnlwYXNzKHN0cnVjdCBpMmNfYWRhcHRlciAqYWRhcCwNCj4gLQkJCQnCoMKgwqDCoMKgwqDC
-oHZvaWQgKm11eF9wcml2LCB1MzIgY2hhbl9pZCkNCj4gLXsNCj4gLQlzdHJ1Y3QgaTJjX2NsaWVu
-dCAqY2xpZW50ID0gbXV4X3ByaXY7DQo+IC0Jc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IGRl
-dl9nZXRfZHJ2ZGF0YSgmY2xpZW50LT5kZXYpOw0KPiAtCXN0cnVjdCBpbnZfbXB1NjA1MF9zdGF0
-ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiAtDQo+IC0JbXV0ZXhfbG9jaygmaW5kaW9f
-ZGV2LT5tbG9jayk7DQo+IC0JLyogSXQgZG9lc24ndCByZWFsbHkgbWF0dHRlciwgaWYgYW55IG9m
-IHRoZSBjYWxscyBmYWlscyAqLw0KPiAtCWludl9tcHU2MDUwX3dyaXRlX3JlZ191bmxvY2tlZChj
-bGllbnQsIHN0LT5yZWctPmludF9waW5fY2ZnLA0KPiAtCQkJCcKgwqDCoMKgwqDCoMKgSU5WX01Q
-VTYwNTBfSU5UX1BJTl9DRkcpOw0KPiAtCXN0LT5wb3dlcnVwX2NvdW50LS07DQo+IC0JaWYgKCFz
-dC0+cG93ZXJ1cF9jb3VudCkNCj4gLQkJaW52X21wdTYwNTBfd3JpdGVfcmVnX3VubG9ja2VkKGNs
-aWVudCwgc3QtPnJlZy0NCj4gPnB3cl9tZ210XzEsDQo+IC0JCQkJCcKgwqDCoMKgwqDCoMKgSU5W
-X01QVTYwNTBfQklUX1NMRUVQDQo+ICk7DQo+IC0JbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1s
-b2NrKTsNCj4gLQ0KPiAtCXJldHVybiAwOw0KPiArCXJldHVybiBpbnZfbXB1NjA1MF9zZXRfcG93
-ZXJfaXRnKHN0LCBmYWxzZSk7DQo+IMKgfQ0KPiDCoA0KPiDCoC8qKg0KPiBAQCAtMTI5LDcgKzcy
-LDggQEAgc3RhdGljIGludCBpbnZfbXB1X3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQs
-DQo+IMKgCQlyZXR1cm4gUFRSX0VSUihyZWdtYXApOw0KPiDCoAl9DQo+IMKgDQo+IC0JcmVzdWx0
-ID0gaW52X21wdV9jb3JlX3Byb2JlKHJlZ21hcCwgY2xpZW50LT5pcnEsIG5hbWUsDQo+IE5VTEwp
-Ow0KPiArCXJlc3VsdCA9IGludl9tcHVfY29yZV9wcm9iZShyZWdtYXAsIGNsaWVudC0+aXJxLCBu
-YW1lLA0KPiArCQkJCcKgwqDCoMKgaW52X21wdTYwNTBfYnlwYXNzX2VuKTsNCj4gwqAJaWYgKHJl
-c3VsdCA8IDApDQo+IMKgCQlyZXR1cm4gcmVzdWx0Ow0KPiDCoA0KPiBAQCAtMTM3LDkgKzgxLDcg
-QEAgc3RhdGljIGludCBpbnZfbXB1X3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQsDQo+
-IMKgCXN0LT5tdXhfYWRhcHRlciA9IGkyY19hZGRfbXV4X2FkYXB0ZXIoY2xpZW50LT5hZGFwdGVy
-LA0KPiDCoAkJCQkJwqDCoMKgwqDCoMKgJmNsaWVudC0+ZGV2LA0KPiDCoAkJCQkJwqDCoMKgwqDC
-oMKgY2xpZW50LA0KPiAtCQkJCQnCoMKgwqDCoMKgwqAwLCAwLCAwLA0KPiAtCQkJCQnCoMKgwqDC
-oMKgwqBpbnZfbXB1NjA1MF9zZWxlY3RfYnlwDQo+IGFzcywNCj4gLQkJCQkJwqDCoMKgwqDCoMKg
-aW52X21wdTYwNTBfZGVzZWxlY3RfYg0KPiB5cGFzcyk7DQo+ICsJCQkJCcKgwqDCoMKgwqDCoDAs
-IDAsIDAsIE5VTEwsIE5VTEwpOw0KPiDCoAlpZiAoIXN0LT5tdXhfYWRhcHRlcikgew0KPiDCoAkJ
-cmVzdWx0ID0gLUVOT0RFVjsNCj4gwqAJCWdvdG8gb3V0X3VucmVnX2RldmljZTsNCg==
+This is quite trivial.
+
+Acked-by: Crt Mori <cmo@melexis.com>
+
+On 18 February 2016 at 16:53, Daniel Baluta <daniel.baluta@intel.com> wrote:
+> This fixes the following checkpatch warning:
+>         * WARNING: Comparisons should place the constant
+>           on the right side of the test
+>
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 +++---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 2 +-
+>  2 files changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 84e014c..c550ebb 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -84,7 +84,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+>          * clock source be switched to gyro. Otherwise, it must be set to
+>          * internal clock
+>          */
+> -       if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
+> +       if (mask == INV_MPU6050_BIT_PWR_GYRO_STBY) {
+>                 result = regmap_read(st->map, st->reg->pwr_mgmt_1, &mgmt_1);
+>                 if (result)
+>                         return result;
+> @@ -92,7 +92,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+>                 mgmt_1 &= ~INV_MPU6050_BIT_CLK_MASK;
+>         }
+>
+> -       if ((INV_MPU6050_BIT_PWR_GYRO_STBY == mask) && (!en)) {
+> +       if ((mask == INV_MPU6050_BIT_PWR_GYRO_STBY) && (!en)) {
+>                 /*
+>                  * turning off gyro requires switch to internal clock first.
+>                  * Then turn off gyro engine
+> @@ -117,7 +117,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+>         if (en) {
+>                 /* Wait for output stabilize */
+>                 msleep(INV_MPU6050_TEMP_UP_TIME);
+> -               if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
+> +               if (mask == INV_MPU6050_BIT_PWR_GYRO_STBY) {
+>                         /* switch internal clock to PLL */
+>                         mgmt_1 |= INV_CLK_PLL;
+>                         result = regmap_write(st->map,
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> index 1fc5fd9..441080b 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> @@ -168,7 +168,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+>
+>                 result = kfifo_out(&st->timestamps, &timestamp, 1);
+>                 /* when there is no timestamp, put timestamp as 0 */
+> -               if (0 == result)
+> +               if (result == 0)
+>                         timestamp = 0;
+>
+>                 result = iio_push_to_buffers_with_timestamp(indio_dev, data,
+> --
+> 2.5.0
+>
