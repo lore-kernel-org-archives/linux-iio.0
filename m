@@ -1,107 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:30866 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S965212AbcBQRjW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 17 Feb 2016 12:39:22 -0500
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47468 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1428023AbcBSS7V (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Feb 2016 13:59:21 -0500
+Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: switch regmap cache
+To: Matt Ranostay <mranostay@gmail.com>
+References: <1455412842-750-1-git-send-email-mranostay@gmail.com>
+ <56C096F3.9070908@kernel.org> <56C0BBFF.5040703@metafoo.de>
+ <20160215150242.GM18988@sirena.org.uk> <56C4E3E2.8040505@kernel.org>
+ <CAKzfze8VfMrv4rKXthZAT_JgcOazDpXTLvvsuJpQA8q553y-xA@mail.gmail.com>
+Cc: Mark Brown <broonie@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Mark Brown <broonie@kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>,
-	=?UTF-8?q?Gr=C3=A9gor=20Boirie?= <gregor.boirie@parrot.com>
-Subject: [PATCH v2 2/6] iio:pressure:ms5611: use probed device name
-Date: Wed, 17 Feb 2016 18:38:40 +0100
-Message-ID: <8240f1f910697be2917a6d696d5ce649bbc30406.1455729921.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1455729921.git.gregor.boirie@parrot.com>
-References: <cover.1455729921.git.gregor.boirie@parrot.com>
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56C76606.2020408@kernel.org>
+Date: Fri, 19 Feb 2016 18:59:18 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAKzfze8VfMrv4rKXthZAT_JgcOazDpXTLvvsuJpQA8q553y-xA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Grégor Boirie <gregor.boirie@parrot.com>
+On 17/02/16 21:44, Matt Ranostay wrote:
+> On Wed, Feb 17, 2016 at 1:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 15/02/16 15:02, Mark Brown wrote:
+>>> On Sun, Feb 14, 2016 at 06:40:15PM +0100, Lars-Peter Clausen wrote:
+>>>> On 02/14/2016 04:02 PM, Jonathan Cameron wrote:
+>>>
+>>>>> I'm lost here. Why should changing the storage of the register cache result
+>>>>> in different behaviour other than in efficiency of access to cached values?
+>>>
+>>>> And if there is really a difference this should probably be addressed at the
+>>>> regmap level.
+>>>
+>>> You'd need to make regcache-flat keep track of which cache values are
+>>> valid either during init (in which case it'd have to read every other
+>>> register at that time) or at runtime (which would mean extra operations
+>>> in a fast path).  Flat really is special here, there's no reason to use
+>>> it over a rbtree other than being very sensitive about performance.
+>>>
+>>> Please also be aware that if you CC me on an iio patch series there's a
+>>> good chance I'll just delete it without reading it, for some reason I
+>>> keep on getting copied on lots of them which have no relevance to me
+>>> that I'm able to identify.
+>>>
+>> Hmm.  Not the best documented 'non intuitive case' ever, but fair enough.
+>> Glad you did pick this one up Mark!
+>>
+>> So Matt, the reason those two elements are dropped from being volatile
+>> is that they never were, but because we were using a flat cache it wasn't
+>> getting the original values?
+>>
+>> If so fair enough I suppose, but please confirm that I've understood this
+>> correctly + I'll probably expand the patch description somewhat to make it
+>> clearer why the original was wrong.
+> 
+> That is correct. Flat cache wasn't getting the on device value without
+> it being set as volatile.
+Applied to the togreg branch iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
-Use name of probed device instead of driver's one when registering device.
-
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- drivers/iio/pressure/ms5611.h      | 3 ++-
- drivers/iio/pressure/ms5611_core.c | 5 +++--
- drivers/iio/pressure/ms5611_i2c.c  | 2 +-
- drivers/iio/pressure/ms5611_spi.c  | 4 ++--
- 4 files changed, 8 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
-index 2d70dd6..8b08e4b 100644
---- a/drivers/iio/pressure/ms5611.h
-+++ b/drivers/iio/pressure/ms5611.h
-@@ -51,7 +51,8 @@ struct ms5611_state {
- 	struct ms5611_chip_info *chip_info;
- };
- 
--int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type);
-+int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
-+                 const char* name, int type);
- int ms5611_remove(struct iio_dev *indio_dev);
- 
- #endif /* _MS5611_H */
-diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-index 84ab8d2..acd8e37 100644
---- a/drivers/iio/pressure/ms5611_core.c
-+++ b/drivers/iio/pressure/ms5611_core.c
-@@ -298,7 +298,8 @@ static int ms5611_init(struct iio_dev *indio_dev)
- 	return ms5611_read_prom(indio_dev);
- }
- 
--int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type)
-+int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
-+                 const char *name, int type)
- {
- 	int ret;
- 	struct ms5611_state *st = iio_priv(indio_dev);
-@@ -306,7 +307,7 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type)
- 	mutex_init(&st->lock);
- 	st->chip_info = &chip_info_tbl[type];
- 	indio_dev->dev.parent = dev;
--	indio_dev->name = dev->driver->name;
-+	indio_dev->name = name;
- 	indio_dev->info = &ms5611_info;
- 	indio_dev->channels = ms5611_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(ms5611_channels);
-diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
-index 42706a8..ae67539 100644
---- a/drivers/iio/pressure/ms5611_i2c.c
-+++ b/drivers/iio/pressure/ms5611_i2c.c
-@@ -105,7 +105,7 @@ static int ms5611_i2c_probe(struct i2c_client *client,
- 	st->read_adc_temp_and_pressure = ms5611_i2c_read_adc_temp_and_pressure;
- 	st->client = client;
- 
--	return ms5611_probe(indio_dev, &client->dev, id->driver_data);
-+	return ms5611_probe(indio_dev, &client->dev, id->name, id->driver_data);
- }
- 
- static int ms5611_i2c_remove(struct i2c_client *client)
-diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
-index c4bf4e8..5cc009e 100644
---- a/drivers/iio/pressure/ms5611_spi.c
-+++ b/drivers/iio/pressure/ms5611_spi.c
-@@ -105,8 +105,8 @@ static int ms5611_spi_probe(struct spi_device *spi)
- 	st->read_adc_temp_and_pressure = ms5611_spi_read_adc_temp_and_pressure;
- 	st->client = spi;
- 
--	return ms5611_probe(indio_dev, &spi->dev,
--			    spi_get_device_id(spi)->driver_data);
-+	return ms5611_probe(indio_dev, &spi->dev, spi_get_device_id(spi)->name,
-+	                    spi_get_device_id(spi)->driver_data);
- }
- 
- static int ms5611_spi_remove(struct spi_device *spi)
--- 
-2.1.4
+Thanks,
+Jonathan
+> 
+> 
+>>
+>> Jonathan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
