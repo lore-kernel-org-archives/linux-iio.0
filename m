@@ -1,333 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f45.google.com ([74.125.82.45]:35297 "EHLO
-	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753803AbcBZPNv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Feb 2016 10:13:51 -0500
-Received: by mail-wm0-f45.google.com with SMTP id c200so76560270wme.0
-        for <linux-iio@vger.kernel.org>; Fri, 26 Feb 2016 07:13:50 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <1456479396-17252-1-git-send-email-lars@metafoo.de>
-References: <1456479396-17252-1-git-send-email-lars@metafoo.de>
-Date: Fri, 26 Feb 2016 17:13:49 +0200
-Message-ID: <CAEnQRZBDz99=fwSQ9atjt+NVZe8pZe=G8+kdVn=vQiB-EeQVHA@mail.gmail.com>
-Subject: Re: [PATCH] staging:iio: Remove periodic RTC trigger driver
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+Received: from mail.aswsp.com ([193.34.35.150]:30869 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1424800AbcBSOw7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 19 Feb 2016 09:52:59 -0500
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+	Haneen Mohammed <hamohammed.sa@gmail.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Darshana Padmadas <darshanapadmadas@gmail.com>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	Octavian Purdila <octavian.purdila@intel.com>,
+	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+	Crt Mori <cmo@melexis.com>,
+	Masanari Iida <standby24x7@gmail.com>,
+	Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v2 0/1] iio:core: introduce timestamping clock selection
+Date: Fri, 19 Feb 2016 15:52:49 +0100
+Message-ID: <cover.1455892204.git.gregor.boirie@parrot.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Feb 26, 2016 at 11:36 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> With the recently introduced hrtimer based trigger we have a fully
-> functional replacement for the RTC timer trigger that is more flexible and
-> has a better interface to instantiate and manage the trigger instances. The
-> RTC trigger timer could only be instantiated using platform devices which
-> makes it unsuitable for modern devicetree based platforms, while the
-> hrtimer trigger has a configfs based interface that allows creating and
-> deletion of triggers at runtime.
->
-> In addition since a few years the periodic RTC timer is internally always
-> emulated using a hrtimer using the hrtimer interface directly will yield
-> the same timing precision. So using the RTC timer won't have any advantages
-> on this front either.
->
-> There is also no evidence that the periodic RTC trigger is currently
-> actually being used on any system. So considering all this remove the
-> driver. Also remove the related item from the TODO list.
->
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+IIO timestamping clock selection support based on the following principles :
+* selected timestamping clock is a per-device attribute which the userspace
+  may access through a sysfs file ;
+* a single reference clock is used for both buffered samples and events of a
+  given device at the same time ;
+* userspace may choose amongst the following subset of available POSIX clocks:
+  CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_MONOTONIC_RAW, CLOCK_REALTIME_COARSE,
+  CLOCK_MONOTONIC_COARSE, CLOCK_BOOTTIME and CLOCK_TAI ;
+* sample and event timestamps consistency with respect to clock changes is
+  ensured by rejecting the ability to select a new clock as long as an events
+  chrdev is opened or a buffered samples channel is enabled for a given device.
+* no in-kernel API support since :
+  * consumers work synchronously in direct mode, i.e. timestamping may be
+    peformed using traditional kernel time keeping ;
+  * any given device can only feed a single timestamping channel to all
+    consumers.
 
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Changes since v1:
+* isolate clock setup from sysfs
+* rename timestamping clock sysfs entry to "timestamp_clock"
+* make the "timestamp_clock" file content a self-describing string
+* merge all 3 patches into a single one
+* cosmetics
+* rebase onto IIO testing branch
 
-> ---
->  drivers/staging/iio/TODO                           |   8 -
->  drivers/staging/iio/trigger/Kconfig                |  10 -
->  drivers/staging/iio/trigger/Makefile               |   1 -
->  .../staging/iio/trigger/iio-trig-periodic-rtc.c    | 216 ---------------------
->  4 files changed, 235 deletions(-)
->  delete mode 100644 drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
->
-> diff --git a/drivers/staging/iio/TODO b/drivers/staging/iio/TODO
-> index c22a0ed..93a8968 100644
-> --- a/drivers/staging/iio/TODO
-> +++ b/drivers/staging/iio/TODO
-> @@ -58,14 +58,6 @@ different requirements.  This one suits mid range
->  frequencies (100Hz - 4kHz).
->  2) Lots of testing
->
-> -Periodic Timer trigger
-> -1) Move to a more general hardware periodic timer request
-> -subsystem. Current approach is abusing purpose of RTC.
-> -Initial discussions have taken place, but no actual code
-> -is in place as yet. This topic will be reopened on lkml
-> -shortly. I don't really envision this patch being merged
-> -in anything like its current form.
-> -
->  GPIO trigger
->  1) Add control over the type of interrupt etc.  This will
->  necessitate a header that is also visible from arch board
-> diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
-> index 710a2f3..0b01d24 100644
-> --- a/drivers/staging/iio/trigger/Kconfig
-> +++ b/drivers/staging/iio/trigger/Kconfig
-> @@ -5,16 +5,6 @@ comment "Triggers - standalone"
->
->  if IIO_TRIGGER
->
-> -config IIO_PERIODIC_RTC_TRIGGER
-> -       tristate "Periodic RTC triggers"
-> -       depends on RTC_CLASS
-> -       help
-> -         Provides support for using periodic capable real time
-> -         clocks as IIO triggers.
-> -
-> -         To compile this driver as a module, choose M here: the
-> -         module will be called iio-trig-periodic-rtc.
-> -
->  config IIO_BFIN_TMR_TRIGGER
->         tristate "Blackfin TIMER trigger"
->         depends on BLACKFIN
-> diff --git a/drivers/staging/iio/trigger/Makefile b/drivers/staging/iio/trigger/Makefile
-> index 238481b..1300a21 100644
-> --- a/drivers/staging/iio/trigger/Makefile
-> +++ b/drivers/staging/iio/trigger/Makefile
-> @@ -2,5 +2,4 @@
->  # Makefile for triggers not associated with iio-devices
->  #
->
-> -obj-$(CONFIG_IIO_PERIODIC_RTC_TRIGGER) += iio-trig-periodic-rtc.o
->  obj-$(CONFIG_IIO_BFIN_TMR_TRIGGER) += iio-trig-bfin-timer.o
-> diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> deleted file mode 100644
-> index 00d1393..0000000
-> --- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> +++ /dev/null
-> @@ -1,216 +0,0 @@
-> -/* The industrial I/O periodic RTC trigger driver
-> - *
-> - * Copyright (c) 2008 Jonathan Cameron
-> - *
-> - * This program is free software; you can redistribute it and/or modify it
-> - * under the terms of the GNU General Public License version 2 as published by
-> - * the Free Software Foundation.
-> - *
-> - * This is a heavily rewritten version of the periodic timer system in
-> - * earlier version of industrialio.  It supplies the same functionality
-> - * but via a trigger rather than a specific periodic timer system.
-> - */
-> -
-> -#include <linux/platform_device.h>
-> -#include <linux/kernel.h>
-> -#include <linux/module.h>
-> -#include <linux/slab.h>
-> -#include <linux/rtc.h>
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/trigger.h>
-> -
-> -static LIST_HEAD(iio_prtc_trigger_list);
-> -static DEFINE_MUTEX(iio_prtc_trigger_list_lock);
-> -
-> -struct iio_prtc_trigger_info {
-> -       struct rtc_device *rtc;
-> -       unsigned int frequency;
-> -       struct rtc_task task;
-> -       bool state;
-> -};
-> -
-> -static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
-> -{
-> -       struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
-> -       int ret;
-> -
-> -       if (trig_info->frequency == 0 && state)
-> -               return -EINVAL;
-> -       dev_dbg(&trig_info->rtc->dev, "trigger frequency is %u\n",
-> -               trig_info->frequency);
-> -       ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
-> -       if (!ret)
-> -               trig_info->state = state;
-> -
-> -       return ret;
-> -}
-> -
-> -static ssize_t iio_trig_periodic_read_freq(struct device *dev,
-> -                                          struct device_attribute *attr,
-> -                                          char *buf)
-> -{
-> -       struct iio_trigger *trig = to_iio_trigger(dev);
-> -       struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
-> -
-> -       return sprintf(buf, "%u\n", trig_info->frequency);
-> -}
-> -
-> -static ssize_t iio_trig_periodic_write_freq(struct device *dev,
-> -                                           struct device_attribute *attr,
-> -                                           const char *buf,
-> -                                           size_t len)
-> -{
-> -       struct iio_trigger *trig = to_iio_trigger(dev);
-> -       struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
-> -       unsigned int val;
-> -       int ret;
-> -
-> -       ret = kstrtouint(buf, 10, &val);
-> -       if (ret)
-> -               goto error_ret;
-> -
-> -       if (val > 0) {
-> -               ret = rtc_irq_set_freq(trig_info->rtc, &trig_info->task, val);
-> -               if (ret == 0 && trig_info->state && trig_info->frequency == 0)
-> -                       ret = rtc_irq_set_state(trig_info->rtc,
-> -                                               &trig_info->task, 1);
-> -       } else {
-> -               ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, 0);
-> -       }
-> -       if (ret)
-> -               goto error_ret;
-> -
-> -       trig_info->frequency = val;
-> -
-> -       return len;
-> -
-> -error_ret:
-> -       return ret;
-> -}
-> -
-> -static DEVICE_ATTR(frequency, S_IRUGO | S_IWUSR,
-> -           iio_trig_periodic_read_freq,
-> -           iio_trig_periodic_write_freq);
-> -
-> -static struct attribute *iio_trig_prtc_attrs[] = {
-> -       &dev_attr_frequency.attr,
-> -       NULL,
-> -};
-> -
-> -static const struct attribute_group iio_trig_prtc_attr_group = {
-> -       .attrs = iio_trig_prtc_attrs,
-> -};
-> -
-> -static const struct attribute_group *iio_trig_prtc_attr_groups[] = {
-> -       &iio_trig_prtc_attr_group,
-> -       NULL
-> -};
-> -
-> -static void iio_prtc_trigger_poll(void *private_data)
-> -{
-> -       iio_trigger_poll(private_data);
-> -}
-> -
-> -static const struct iio_trigger_ops iio_prtc_trigger_ops = {
-> -       .owner = THIS_MODULE,
-> -       .set_trigger_state = &iio_trig_periodic_rtc_set_state,
-> -};
-> -
-> -static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
-> -{
-> -       char **pdata = dev->dev.platform_data;
-> -       struct iio_prtc_trigger_info *trig_info;
-> -       struct iio_trigger *trig, *trig2;
-> -
-> -       int i, ret;
-> -
-> -       for (i = 0;; i++) {
-> -               if (!pdata[i])
-> -                       break;
-> -               trig = iio_trigger_alloc("periodic%s", pdata[i]);
-> -               if (!trig) {
-> -                       ret = -ENOMEM;
-> -                       goto error_free_completed_registrations;
-> -               }
-> -               list_add(&trig->alloc_list, &iio_prtc_trigger_list);
-> -
-> -               trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
-> -               if (!trig_info) {
-> -                       ret = -ENOMEM;
-> -                       goto error_put_trigger_and_remove_from_list;
-> -               }
-> -               iio_trigger_set_drvdata(trig, trig_info);
-> -               trig->ops = &iio_prtc_trigger_ops;
-> -               /* RTC access */
-> -               trig_info->rtc = rtc_class_open(pdata[i]);
-> -               if (!trig_info->rtc) {
-> -                       ret = -EINVAL;
-> -                       goto error_free_trig_info;
-> -               }
-> -               trig_info->task.func = iio_prtc_trigger_poll;
-> -               trig_info->task.private_data = trig;
-> -               ret = rtc_irq_register(trig_info->rtc, &trig_info->task);
-> -               if (ret)
-> -                       goto error_close_rtc;
-> -               trig->dev.groups = iio_trig_prtc_attr_groups;
-> -               ret = iio_trigger_register(trig);
-> -               if (ret)
-> -                       goto error_unregister_rtc_irq;
-> -       }
-> -       return 0;
-> -error_unregister_rtc_irq:
-> -       rtc_irq_unregister(trig_info->rtc, &trig_info->task);
-> -error_close_rtc:
-> -       rtc_class_close(trig_info->rtc);
-> -error_free_trig_info:
-> -       kfree(trig_info);
-> -error_put_trigger_and_remove_from_list:
-> -       list_del(&trig->alloc_list);
-> -       iio_trigger_put(trig);
-> -error_free_completed_registrations:
-> -       list_for_each_entry_safe(trig,
-> -                                trig2,
-> -                                &iio_prtc_trigger_list,
-> -                                alloc_list) {
-> -               trig_info = iio_trigger_get_drvdata(trig);
-> -               rtc_irq_unregister(trig_info->rtc, &trig_info->task);
-> -               rtc_class_close(trig_info->rtc);
-> -               kfree(trig_info);
-> -               iio_trigger_unregister(trig);
-> -       }
-> -       return ret;
-> -}
-> -
-> -static int iio_trig_periodic_rtc_remove(struct platform_device *dev)
-> -{
-> -       struct iio_trigger *trig, *trig2;
-> -       struct iio_prtc_trigger_info *trig_info;
-> -
-> -       mutex_lock(&iio_prtc_trigger_list_lock);
-> -       list_for_each_entry_safe(trig,
-> -                                trig2,
-> -                                &iio_prtc_trigger_list,
-> -                                alloc_list) {
-> -               trig_info = iio_trigger_get_drvdata(trig);
-> -               rtc_irq_unregister(trig_info->rtc, &trig_info->task);
-> -               rtc_class_close(trig_info->rtc);
-> -               kfree(trig_info);
-> -               iio_trigger_unregister(trig);
-> -       }
-> -       mutex_unlock(&iio_prtc_trigger_list_lock);
-> -       return 0;
-> -}
-> -
-> -static struct platform_driver iio_trig_periodic_rtc_driver = {
-> -       .probe = iio_trig_periodic_rtc_probe,
-> -       .remove = iio_trig_periodic_rtc_remove,
-> -       .driver = {
-> -               .name = "iio_prtc_trigger",
-> -       },
-> -};
-> -
-> -module_platform_driver(iio_trig_periodic_rtc_driver);
-> -
-> -MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
-> -MODULE_DESCRIPTION("Periodic realtime clock trigger for the iio subsystem");
-> -MODULE_LICENSE("GPL v2");
-> --
-> 2.1.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Regards.
+
+Gregor Boirie (1):
+  iio:core: timestamping clock selection support
+
+ Documentation/ABI/testing/sysfs-bus-iio           |   7 +
+ Documentation/DocBook/iio.tmpl                    |   2 +-
+ drivers/iio/accel/bma180.c                        |   2 +-
+ drivers/iio/accel/bmc150-accel-core.c             |   4 +-
+ drivers/iio/accel/kxcjk-1013.c                    |   2 +-
+ drivers/iio/accel/mma7455_core.c                  |   3 +-
+ drivers/iio/accel/mma8452.c                       |   4 +-
+ drivers/iio/accel/mma9551.c                       |   2 +-
+ drivers/iio/accel/mma9553.c                       |   2 +-
+ drivers/iio/adc/ad7291.c                          |   2 +-
+ drivers/iio/adc/ad7298.c                          |   2 +-
+ drivers/iio/adc/ad7476.c                          |   2 +-
+ drivers/iio/adc/ad7887.c                          |   2 +-
+ drivers/iio/adc/ad7923.c                          |   2 +-
+ drivers/iio/adc/ad799x.c                          |   4 +-
+ drivers/iio/adc/cc10001_adc.c                     |   2 +-
+ drivers/iio/adc/hi8435.c                          |   2 +-
+ drivers/iio/adc/ina2xx-adc.c                      |   6 +-
+ drivers/iio/adc/max1363.c                         |   5 +-
+ drivers/iio/adc/ti-ads1015.c                      |   3 +-
+ drivers/iio/adc/vf610_adc.c                       |   3 +-
+ drivers/iio/adc/xilinx-xadc-events.c              |   4 +-
+ drivers/iio/chemical/atlas-ph-sensor.c            |   2 +-
+ drivers/iio/dac/ad5421.c                          |   6 +-
+ drivers/iio/dac/ad5504.c                          |   2 +-
+ drivers/iio/dummy/iio_simple_dummy_buffer.c       |   3 +-
+ drivers/iio/dummy/iio_simple_dummy_events.c       |   2 +-
+ drivers/iio/gyro/bmg160_core.c                    |  30 ++--
+ drivers/iio/humidity/dht11.c                      |  16 +-
+ drivers/iio/iio_core.h                            |   3 +
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c        |   2 +-
+ drivers/iio/industrialio-core.c                   | 179 +++++++++++++++++++++-
+ drivers/iio/industrialio-event.c                  |  19 ++-
+ drivers/iio/industrialio-trigger.c                |   2 +-
+ drivers/iio/light/acpi-als.c                      |   2 +-
+ drivers/iio/light/adjd_s311.c                     |   2 +-
+ drivers/iio/light/apds9300.c                      |   2 +-
+ drivers/iio/light/apds9960.c                      |   4 +-
+ drivers/iio/light/cm36651.c                       |   2 +-
+ drivers/iio/light/gp2ap020a00f.c                  |   8 +-
+ drivers/iio/light/isl29125.c                      |   2 +-
+ drivers/iio/light/lm3533-als.c                    |   2 +-
+ drivers/iio/light/ltr501.c                        |   7 +-
+ drivers/iio/light/opt3001.c                       |   4 +-
+ drivers/iio/light/stk3310.c                       |   2 +-
+ drivers/iio/light/tcs3414.c                       |   2 +-
+ drivers/iio/light/tcs3472.c                       |   2 +-
+ drivers/iio/light/tsl2563.c                       |   2 +-
+ drivers/iio/light/us5182d.c                       |   2 +-
+ drivers/iio/magnetometer/mag3110.c                |   2 +-
+ drivers/iio/pressure/mpl3115.c                    |   2 +-
+ drivers/iio/pressure/ms5611_core.c                |   3 +-
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c |   2 +-
+ drivers/iio/proximity/sx9500.c                    |   4 +-
+ drivers/staging/iio/accel/lis3l02dq_core.c        |   2 +-
+ drivers/staging/iio/accel/sca3000_core.c          |   2 +-
+ drivers/staging/iio/adc/ad7280a.c                 |   8 +-
+ drivers/staging/iio/adc/ad7606_ring.c             |   2 +-
+ drivers/staging/iio/adc/ad7816.c                  |   3 +-
+ drivers/staging/iio/addac/adt7316.c               |   4 +-
+ drivers/staging/iio/cdc/ad7150.c                  |   2 +-
+ drivers/staging/iio/light/tsl2x7x_core.c          |   2 +-
+ drivers/staging/iio/magnetometer/hmc5843_core.c   |   2 +-
+ include/linux/iio/iio.h                           |  20 ++-
+ 64 files changed, 324 insertions(+), 114 deletions(-)
+
+-- 
+2.1.4
+
