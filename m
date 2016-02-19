@@ -1,135 +1,208 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46871 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754722AbcB1RTd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 28 Feb 2016 12:19:33 -0500
-Subject: Re: [PATCH v3 1/1] staging: coding style cleanups for
- staging/iio/light/tsl2583 driver
-To: Bijosh Thykkoottathil <bijosh.t@hotmail.com>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>
-References: <BLU437-SMTP46745C0D4BEFE546C5C7A280B90@phx.gbl>
- <56D32276.7070705@kernel.org> <BLU185-W76B271320DD25A1095861D80B90@phx.gbl>
-Cc: "mahfouz.saif.elyazal@gmail.com" <mahfouz.saif.elyazal@gmail.com>,
-	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56D32C21.8020703@kernel.org>
-Date: Sun, 28 Feb 2016 17:19:29 +0000
+Received: from mail.aswsp.com ([193.34.35.150]:30857 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S2993295AbcBSTUT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 19 Feb 2016 14:20:19 -0500
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	=?UTF-8?q?Gr=C3=A9gor=20Boirie?= <gregor.boirie@parrot.com>
+Subject: [PATCH v1 2/2] iio:iio-interrupt-trigger: sysfs poll support
+Date: Fri, 19 Feb 2016 20:18:44 +0100
+Message-ID: <87bbff0671c93b998547114d7f595a0bee57e817.1455908065.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1455908065.git.gregor.boirie@parrot.com>
+References: <cover.1455908065.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <BLU185-W76B271320DD25A1095861D80B90@phx.gbl>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/02/16 17:12, Bijosh Thykkoottathil wrote:
-> Hi Jonathan,
-> 
-> Thanks for your feed back. There was some typos in the previous commit messages and corrected them in new version.
-> I will modify start of all these comments and resubmit the patch.
-Sometimes if the issue is minor you are better off replying to your original patch noting it and saying
-it will be fixed in the next version.  Its not unheard of for people to get irritated by lots of
-versions of a patch turning up before they have had a chance to look at the first one.
+From: Grégor Boirie <gregor.boirie@parrot.com>
 
-We all make mistakes like this and it's common to find just this sort of reply to a patch from
-the original author.
+Add a sysfs file entry for each interrupt trigger instance allowing
+userspace to :
+* poll for interrupt events ;
+* retrieve number of interrupts that occurred since trigger was
+* initialized
 
-Jonathan
-> 
-> Regards,
-> -Bijosh.
-> ----------------------------------------
->> Subject: Re: [PATCH v3 1/1] staging: coding style cleanups for staging/iio/light/tsl2583 driver
->> To: bijosh.t@hotmail.com; gregkh@linuxfoundation.org; knaack.h@gmx.de; lars@metafoo.de; pmeerw@pmeerw.net
->> CC: mahfouz.saif.elyazal@gmail.com; devel@driverdev.osuosl.org; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
->> From: jic23@kernel.org
->> Date: Sun, 28 Feb 2016 16:38:14 +0000
->>
->> On 28/02/16 08:28, Bijosh Thykkoottathil wrote:
->>> This patch fixes following coding style warning reported by check patch
->>> script, in tsl2583 driver:
->>> - Block comments use a trailing */ on a separate line
->>>
->>> Signed-off-by: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
->> Hi Bijosh,
->>
->> When issuing new revisions of a patch it is best to put a brief
->> summary of what the changes were from the previous version (under the ---
->> normally) I haven't even tried to figure out what the difference is between the
->> 3 revisions you sent this morning. If you are sending a revision without any
->> changes (usually due to a formatting error or similar - please reply to the original
->> thread with a quick notes saying what was wrong and that you are going to send a new
->> version - that way we don't accidentally review the previous version)
->>
->> Also, if cleaning up comment style like this, please read the style guide as the
->> start of these comments are all wrong as well and should be fixed in the same patch.
->>
->> Thanks,
->>
->> Jonathan
->>> ---
->>> drivers/staging/iio/light/tsl2583.c | 15 ++++++++++-----
->>> 1 file changed, 10 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
->>> index 3100d96..9159298 100644
->>> --- a/drivers/staging/iio/light/tsl2583.c
->>> +++ b/drivers/staging/iio/light/tsl2583.c
->>> @@ -241,7 +241,8 @@ static int taos_get_lux(struct iio_dev *indio_dev)
->>> }
->>>
->>> /* clear status, really interrupt status (interrupts are off), but
->>> - * we use the bit anyway - don't forget 0x80 - this is a command*/
->>> + * we use the bit anyway - don't forget 0x80 - this is a command
->>> + */
->>> ret = i2c_smbus_write_byte(chip->client,
->>> (TSL258X_CMD_REG | TSL258X_CMD_SPL_FN |
->>> TSL258X_CMD_ALS_INT_CLR));
->>> @@ -430,7 +431,8 @@ static int taos_chip_on(struct iio_dev *indio_dev)
->>> chip->als_time_scale = (als_time + 25) / 50;
->>>
->>> /* TSL258x Specific power-on / adc enable sequence
->>> - * Power on the device 1st. */
->>> + * Power on the device 1st.
->>> + */
->>> utmp = TSL258X_CNTL_PWR_ON;
->>> ret = i2c_smbus_write_byte_data(chip->client,
->>> TSL258X_CMD_REG | TSL258X_CNTRL, utmp);
->>> @@ -440,7 +442,8 @@ static int taos_chip_on(struct iio_dev *indio_dev)
->>> }
->>>
->>> /* Use the following shadow copy for our delay before enabling ADC.
->>> - * Write all the registers. */
->>> + * Write all the registers.
->>> + */
->>> for (i = 0, uP = chip->taos_config; i < TSL258X_REG_MAX; i++) {
->>> ret = i2c_smbus_write_byte_data(chip->client,
->>> TSL258X_CMD_REG + i,
->>> @@ -454,7 +457,8 @@ static int taos_chip_on(struct iio_dev *indio_dev)
->>>
->>> usleep_range(3000, 3500);
->>> /* NOW enable the ADC
->>> - * initialize the desired mode of operation */
->>> + * initialize the desired mode of operation
->>> + */
->>> utmp = TSL258X_CNTL_PWR_ON | TSL258X_CNTL_ADC_ENBL;
->>> ret = i2c_smbus_write_byte_data(chip->client,
->>> TSL258X_CMD_REG | TSL258X_CNTRL,
->>> @@ -696,7 +700,8 @@ static ssize_t taos_luxtable_show(struct device *dev,
->>> taos_device_lux[i].ch1);
->>> if (taos_device_lux[i].ratio == 0) {
->>> /* We just printed the first "0" entry.
->>> - * Now get rid of the extra "," and break. */
->>> + * Now get rid of the extra "," and break.
->>> + */
->>> offset--;
->>> break;
->>> }
->>>
->>
->  		 	   		  
-> 
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ .../ABI/testing/sysfs-bus-iio-trig-interrupt       | 22 ++++++
+ drivers/iio/trigger/iio-trig-interrupt.c           | 88 ++++++++++++++++------
+ 2 files changed, 88 insertions(+), 22 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-trig-interrupt
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-trig-interrupt b/Documentation/ABI/testing/sysfs-bus-iio-trig-interrupt
+new file mode 100644
+index 0000000..cb246d2
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-trig-interrupt
+@@ -0,0 +1,22 @@
++What:		/sys/bus/iio/devices/triggerX/name
++KernelVersion:	3.11
++Contact:	linux-iio@vger.kernel.org
++Description:
++		The name attribute holds a description string for the current
++		trigger. In order to associate the trigger with an IIO device
++		one should write this name string to
++		/sys/bus/iio/devices/iio:deviceY/trigger/current_trigger.
++
++What:		/sys/bus/iio/devices/triggerX/count
++KernelVersion:	4.5
++Contact:	linux-iio@vger.kernel.org
++Description:
++		The count attribute is a unsigned int counter holding the number
++		of times the attached interrupt occurred since trigger was
++		initialized.
++		You can poll(2) on that file and poll(2) will return whenever
++		the interrupt was triggered. If you use poll(2), set the events
++		POLLPRI and POLLERR. If you use select(2), set the file
++		descriptor in exceptfds. After poll(2) returns, either lseek(2)
++		to the beginning of the sysfs file and read the new value or
++		close the file and re-open it to read the value.
+diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
+index 3c4e18f..1bf3986 100644
+--- a/drivers/iio/trigger/iio-trig-interrupt.c
++++ b/drivers/iio/trigger/iio-trig-interrupt.c
+@@ -17,14 +17,53 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+ 
+-
+ struct iio_interrupt_trigger_info {
++	struct kernfs_node *poll;
++	atomic_t count;
+ 	unsigned int irq;
+ };
+ 
++/*
++ * If interested by counter value, userspace should read often enough since
++ * counter may wrap. Userspace will miss interrupt events when counter wraps
++ * twice or more between 2 consecutive reads.
++ */
++ssize_t iio_interrupt_trigger_show_count(struct device *dev,
++					 struct device_attribute *attr,
++					 char *buf)
++{
++	struct iio_trigger *trig = to_iio_trigger(dev);
++	struct iio_interrupt_trigger_info *info = iio_trigger_get_drvdata(trig);
++	unsigned int count = atomic_read(&info->count);
++
++	return snprintf(buf, PAGE_SIZE, "%u\n", count);
++}
++
++static DEVICE_ATTR(count, S_IRUGO, iio_interrupt_trigger_show_count, NULL);
++
++static struct attribute *iio_interrupt_trigger_attrs[] = {
++	&dev_attr_count.attr,
++	NULL,
++};
++
++static const struct attribute_group iio_interrupt_trigger_attr_group = {
++	.attrs = iio_interrupt_trigger_attrs,
++};
++
++static const struct attribute_group *iio_interrupt_trigger_attr_groups[] = {
++	&iio_interrupt_trigger_attr_group,
++	NULL
++};
++
+ static irqreturn_t iio_interrupt_trigger_poll(int irq, void *private)
+ {
+-	iio_trigger_poll(private);
++	struct iio_trigger *trig = private;
++	struct iio_interrupt_trigger_info *info = iio_trigger_get_drvdata(trig);
++
++	atomic_inc(&info->count);
++	sysfs_notify_dirent(info->poll);
++	iio_trigger_poll(trig);
++
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -36,17 +75,12 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
+ {
+ 	struct iio_interrupt_trigger_info *trig_info;
+ 	struct iio_trigger *trig;
+-	unsigned long irqflags;
+ 	struct resource *irq_res;
+ 	int irq, ret = 0;
+ 
+ 	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-
+-	if (irq_res == NULL)
++	if (!irq_res)
+ 		return -ENODEV;
+-
+-	irqflags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
+-
+ 	irq = irq_res->start;
+ 
+ 	trig = iio_trigger_alloc("irqtrig%d", irq);
+@@ -60,27 +94,36 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
+ 		ret = -ENOMEM;
+ 		goto error_put_trigger;
+ 	}
+-	iio_trigger_set_drvdata(trig, trig_info);
++
++	atomic_set(&trig_info->count, 0);
+ 	trig_info->irq = irq;
++	iio_trigger_set_drvdata(trig, trig_info);
+ 	trig->ops = &iio_interrupt_trigger_ops;
+-	ret = request_irq(irq, iio_interrupt_trigger_poll,
+-			  irqflags, trig->name, trig);
+-	if (ret) {
+-		dev_err(&pdev->dev,
+-			"request IRQ-%d failed", irq);
++	trig->dev.groups = iio_interrupt_trigger_attr_groups;
++	ret = iio_trigger_register(trig);
++	if (ret)
+ 		goto error_free_trig_info;
++
++	/* Create a sysfs entry which the userspace may poll for irq events. */
++	trig_info->poll = sysfs_get_dirent(trig->dev.kobj.sd, "count");
++	if (!trig_info->poll) {
++		ret = -ENOENT;
++		goto error_unregister_trig;
+ 	}
+ 
+-	ret = iio_trigger_register(trig);
+-	if (ret)
+-		goto error_release_irq;
+-	platform_set_drvdata(pdev, trig);
++	ret = request_irq(irq, iio_interrupt_trigger_poll,
++			  (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED,
++			  trig->name, trig);
++	if (!ret) {
++		platform_set_drvdata(pdev, trig);
++		return 0;
++	}
+ 
+-	return 0;
++	sysfs_put(trig_info->poll);
+ 
+ /* First clean up the partly allocated trigger */
+-error_release_irq:
+-	free_irq(irq, trig);
++error_unregister_trig:
++	iio_trigger_unregister(trig);
+ error_free_trig_info:
+ 	kfree(trig_info);
+ error_put_trigger:
+@@ -96,8 +139,9 @@ static int iio_interrupt_trigger_remove(struct platform_device *pdev)
+ 
+ 	trig = platform_get_drvdata(pdev);
+ 	trig_info = iio_trigger_get_drvdata(trig);
+-	iio_trigger_unregister(trig);
+ 	free_irq(trig_info->irq, trig);
++	sysfs_put(trig_info->poll);
++	iio_trigger_unregister(trig);
+ 	kfree(trig_info);
+ 	iio_trigger_put(trig);
+ 
+-- 
+2.1.4
 
