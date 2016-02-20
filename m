@@ -1,50 +1,38 @@
-Return-Path: <gregor.boirie@parrot.com>
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	=?UTF-8?q?Gr=C3=A9gor=20Boirie?= <gregor.boirie@parrot.com>
-Subject: [PATCH v1 1/2] iio:iio-interrupt-trigger: device-tree support
-Date: Fri, 19 Feb 2016 20:18:43 +0100
-Message-ID: <d8f7902dbfe6e911e6ac0d1117502a02b1212022.1455908065.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1455908065.git.gregor.boirie@parrot.com>
-References: <cover.1455908065.git.gregor.boirie@parrot.com>
+Return-Path: <alexander.sverdlin@gmail.com>
+Subject: [PATCH v2 4/5] edb93xx: Add ADC platform device
+To: Hartley Sweeten <hsweeten@visionengravers.com>,
+ Ryan Mallon <rmallon@gmail.com>, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org
+References: <56C88EDD.3040007@gmail.com> <56C88FCB.30008@gmail.com>
+ <56C88FFD.9050504@gmail.com> <56C89024.3060802@gmail.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Jonathan Cameron
+ <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Jonathan Cameron <jic23@kernel.org>
+From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Message-ID: <56C8A9A5.5050908@gmail.com>
+Date: Sat, 20 Feb 2016 19:00:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <56C89024.3060802@gmail.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Grégor Boirie <gregor.boirie@parrot.com>
+This enables the creation of ADC platform device on EDB93xx series of Cirrus
+Logic evaluation boards. The driver for this device must be enabled separately,
+either as built-in, or a module.
 
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
 ---
- drivers/iio/trigger/iio-trig-interrupt.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ arch/arm/mach-ep93xx/edb93xx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
-index 572bc6f..3c4e18f 100644
---- a/drivers/iio/trigger/iio-trig-interrupt.c
-+++ b/drivers/iio/trigger/iio-trig-interrupt.c
-@@ -104,11 +104,20 @@ static int iio_interrupt_trigger_remove(struct platform_device *pdev)
- 	return 0;
+diff --git a/arch/arm/mach-ep93xx/edb93xx.c b/arch/arm/mach-ep93xx/edb93xx.c
+index ad92d9f..8da0127 100644
+--- a/arch/arm/mach-ep93xx/edb93xx.c
++++ b/arch/arm/mach-ep93xx/edb93xx.c
+@@ -264,6 +264,7 @@ static void __init edb93xx_init_machine(void)
+ 	edb93xx_register_pwm();
+ 	edb93xx_register_fb();
+ 	edb93xx_register_ide();
++	ep93xx_register_adc();
  }
- 
-+#if defined(CONFIG_OF)
-+static const struct of_device_id iio_interrupt_trigger_of_match[] = {
-+	{ .compatible = "iio-interrupt-trigger" },
-+	{}
-+};
-+#endif
-+
- static struct platform_driver iio_interrupt_trigger_driver = {
- 	.probe = iio_interrupt_trigger_probe,
- 	.remove = iio_interrupt_trigger_remove,
- 	.driver = {
--		.name = "iio_interrupt_trigger",
-+		.name           = "iio_interrupt_trigger",
-+		.owner          = THIS_MODULE,
-+		.of_match_table = of_match_ptr(iio_interrupt_trigger_of_match)
- 	},
- };
- 
--- 
-2.1.4
