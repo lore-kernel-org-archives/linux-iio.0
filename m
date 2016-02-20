@@ -1,66 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:34857 "EHLO
-	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751631AbcBOGry (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Feb 2016 01:47:54 -0500
-From: Sanchayan Maity <maitysanchayan@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, shawnguo@kernel.org, stefan@agner.ch,
-	pmeerw@pmeerw.net, Sanchayan Maity <maitysanchayan@gmail.com>
-Subject: [PATCH v2 0/2] Add DAC driver support for Vybrid SoC
-Date: Mon, 15 Feb 2016 12:12:31 +0530
-Message-Id: <cover.1455516083.git.maitysanchayan@gmail.com>
+Received: from mail-wm0-f48.google.com ([74.125.82.48]:37418 "EHLO
+	mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751896AbcBTR7l (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Feb 2016 12:59:41 -0500
+Received: by mail-wm0-f48.google.com with SMTP id g62so111550114wme.0
+        for <linux-iio@vger.kernel.org>; Sat, 20 Feb 2016 09:59:40 -0800 (PST)
+From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Subject: [PATCH v2 0/5] iio: ADC driver for EP93xx SoC
+To: Hartley Sweeten <hsweeten@visionengravers.com>,
+	Ryan Mallon <rmallon@gmail.com>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Cc: Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56C8A989.9030801@gmail.com>
+Date: Sat, 20 Feb 2016 18:59:37 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+This series prepares the necessary infrastructure for ADC platform device on
+Cirrus Logic EP93xx family of SoCs and adds the driver for ADC device using
+IIO subsystem.
 
-This patchset adds support for the DAC peripheral on Vybrid SoC.
-Patchset is based on top of shawn's for-next branch and has been
-tested on a Toradex Colibri VF50 module.
+Changelog
+v2:
+  Added Documentation/iio/ep93xx_adc.txt
+  Removed extend_name
+  Added timeout to the status polling loop
+  Used iio_device_register() instead of devm_iio_device_register()
 
-@Jonathan
-I kept the IIO_SHARED_BY_DIR instead of using IIO_SHARED_BY_ALL
-since this gives "out_conversion_mode" allowing me to distinguish
-this in the ABI documentation, that this is explicitly for the DAC.
+Alexander Sverdlin (5):
+  clk: ep93xx: Implement clk_get_parent()
+  clk: ep93xx: Add ADC clock
+  ep93xx: Add ADC platform device support to core
+  edb93xx: Add ADC platform device
+  iio: adc: New driver for Cirrus Logic EP93xx ADC
 
-Since 4.5-rc4 was released recently and assuming this makes it with
-this or next version, I assumed the target kernel version would be
-4.6 and used that in ABI documentation.
-
-Feedbacks and comments most welcome.
-
-Changes since v1:
-1. Fix return type of vf610_dac_init function
-2. Document conversion modes in sysfs-bus-iio-vf610
-3. Remove "indexed" specification from iio_chan_spec
-4. Use "return" directly from default case in switch
-5. Remove DRIVER_NAME
-6. Call vf610_dac_init before iio device registration
-7. Define and use vf610_dac_exit function in remove and suspend
-8. Add sysfs ABI documentation
-
-v1 of the patchset:
-http://www.spinics.net/lists/arm-kernel/msg481190.html
-
-Thanks & Regards,
-Sanchayan Maity.
-
-Sanchayan Maity (2):
-  ARM: dts: vfxxx: Add DAC node for Vybrid SoC
-  iio: dac: vf610_dac: Add IIO DAC driver for Vybrid SoC
-
- Documentation/ABI/testing/sysfs-bus-iio-vf610      |   9 +
- .../devicetree/bindings/iio/dac/vf610-dac.txt      |  20 ++
- arch/arm/boot/dts/vfxxx.dtsi                       |  18 ++
- drivers/iio/dac/Kconfig                            |   8 +
- drivers/iio/dac/Makefile                           |   1 +
- drivers/iio/dac/vf610_dac.c                        | 298 +++++++++++++++++++++
- 6 files changed, 354 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
- create mode 100644 drivers/iio/dac/vf610_dac.c
-
--- 
-2.7.1
-
+ Documentation/iio/ep93xx_adc.txt             |  29 +++
+ arch/arm/mach-ep93xx/clock.c                 |  14 ++
+ arch/arm/mach-ep93xx/core.c                  |  24 +++
+ arch/arm/mach-ep93xx/edb93xx.c               |   1 +
+ arch/arm/mach-ep93xx/include/mach/platform.h |   1 +
+ arch/arm/mach-ep93xx/soc.h                   |   1 +
+ drivers/iio/adc/Kconfig                      |  11 ++
+ drivers/iio/adc/Makefile                     |   1 +
+ drivers/iio/adc/ep93xx_adc.c                 | 261 +++++++++++++++++++++++++++
+ 9 files changed, 343 insertions(+)
+ create mode 100644 Documentation/iio/ep93xx_adc.txt
+ create mode 100644 drivers/iio/adc/ep93xx_adc.c
