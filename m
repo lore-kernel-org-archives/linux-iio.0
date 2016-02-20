@@ -1,2133 +1,380 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60456 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750708AbcBUU3F (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 15:29:05 -0500
-Subject: Re: [PATCH v2 3/3] iio: hmc5843: Move hmc5843 out of staging
-To: Cristina Moraru <cristina.moraru09@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	cristina.opriceana@gmail.com, marek@goldelico.com,
-	sdliyong@gmail.com, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-	linux-api@vger.kernel.org, geert@linux-m68k.org, arnd@arndb.de,
-	irina.tirdea@intel.com, k.kozlowski@samsung.com,
-	broonie@kernel.org, afd@ti.com, javier@osg.samsung.com,
-	daniel.baluta@intel.com, octavian.purdila@intel.com
-References: <1455489459-20422-1-git-send-email-cristina.moraru09@gmail.com>
- <1455489459-20422-4-git-send-email-cristina.moraru09@gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56CA1E0D.30101@kernel.org>
-Date: Sun, 21 Feb 2016 20:29:01 +0000
+Received: from mail-wm0-f42.google.com ([74.125.82.42]:36031 "EHLO
+	mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753868AbcBTSAP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Feb 2016 13:00:15 -0500
+Received: by mail-wm0-f42.google.com with SMTP id g62so118628033wme.1
+        for <linux-iio@vger.kernel.org>; Sat, 20 Feb 2016 10:00:14 -0800 (PST)
+Subject: [PATCH v2 5/5] iio: adc: New driver for Cirrus Logic EP93xx ADC
+To: Hartley Sweeten <hsweeten@visionengravers.com>,
+	Ryan Mallon <rmallon@gmail.com>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+References: <56C88EDD.3040007@gmail.com> <56C88FCB.30008@gmail.com>
+ <56C88FFD.9050504@gmail.com> <56C89024.3060802@gmail.com>
+ <56C89056.7070903@gmail.com>
+Cc: Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Jonathan Cameron <jic23@kernel.org>
+From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Message-ID: <56C8A9AB.7040506@gmail.com>
+Date: Sat, 20 Feb 2016 19:00:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <1455489459-20422-4-git-send-email-cristina.moraru09@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <56C89056.7070903@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/02/16 22:37, Cristina Moraru wrote:
-> This patch moves hmc5843 driver from staging/iio/magnetometer
-> to iio/magnetometer, updates the corresponding Makefiles and
-> moves the hmc5843* entries to the 'Industrial I/O support ->
-> Magnetometer sensors' menu.
-> 
-> Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
-> Cc: Daniel Baluta <daniel.baluta@intel.com>
-For some reason I couldn't immediately identify this patch wouldn't
-apply to my tree. I hand applied it and all seemed fine, but please do
-sanity check the result - shortly to be in the testing branch of iio.git
+New driver adding support for ADC found on Cirrus Logic EP93xx series of SoCs.
+Board specific code must take care to create plaform device with all necessary
+resources.
 
-Applied.  Thanks,
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+---
+ Documentation/iio/ep93xx_adc.txt |  29 +++++
+ drivers/iio/adc/Kconfig          |  11 ++
+ drivers/iio/adc/Makefile         |   1 +
+ drivers/iio/adc/ep93xx_adc.c     | 261 +++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 302 insertions(+)
+ create mode 100644 Documentation/iio/ep93xx_adc.txt
+ create mode 100644 drivers/iio/adc/ep93xx_adc.c
 
-Jonathan
-> ---
-> Changes since v1:
->         No change since v1
->  drivers/iio/magnetometer/Kconfig                |  33 ++
->  drivers/iio/magnetometer/Makefile               |   4 +
->  drivers/iio/magnetometer/hmc5843.h              |  65 +++
->  drivers/iio/magnetometer/hmc5843_core.c         | 686 ++++++++++++++++++++++++
->  drivers/iio/magnetometer/hmc5843_i2c.c          | 103 ++++
->  drivers/iio/magnetometer/hmc5843_spi.c          | 100 ++++
->  drivers/staging/iio/magnetometer/Kconfig        |  32 --
->  drivers/staging/iio/magnetometer/Makefile       |   4 +-
->  drivers/staging/iio/magnetometer/hmc5843.h      |  65 ---
->  drivers/staging/iio/magnetometer/hmc5843_core.c | 686 ------------------------
->  drivers/staging/iio/magnetometer/hmc5843_i2c.c  | 103 ----
->  drivers/staging/iio/magnetometer/hmc5843_spi.c  | 100 ----
->  12 files changed, 992 insertions(+), 989 deletions(-)
->  create mode 100644 drivers/iio/magnetometer/hmc5843.h
->  create mode 100644 drivers/iio/magnetometer/hmc5843_core.c
->  create mode 100644 drivers/iio/magnetometer/hmc5843_i2c.c
->  create mode 100644 drivers/iio/magnetometer/hmc5843_spi.c
->  delete mode 100644 drivers/staging/iio/magnetometer/hmc5843.h
->  delete mode 100644 drivers/staging/iio/magnetometer/hmc5843_core.c
->  delete mode 100644 drivers/staging/iio/magnetometer/hmc5843_i2c.c
->  delete mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
-> 
-> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> index 868abad..021dc53 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -105,4 +105,37 @@ config IIO_ST_MAGN_SPI_3AXIS
->  	depends on IIO_ST_MAGN_3AXIS
->  	depends on IIO_ST_SENSORS_SPI
->  
-> +config SENSORS_HMC5843
-> +	tristate
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +
-> +config SENSORS_HMC5843_I2C
-> +	tristate "Honeywell HMC5843/5883/5883L 3-Axis Magnetometer (I2C)"
-> +	depends on I2C
-> +	select SENSORS_HMC5843
-> +	select REGMAP_I2C
-> +	help
-> +	  Say Y here to add support for the Honeywell HMC5843, HMC5883 and
-> +	  HMC5883L 3-Axis Magnetometer (digital compass).
-> +
-> +	  This driver can also be compiled as a set of modules.
-> +	  If so, these modules will be created:
-> +	  - hmc5843_core (core functions)
-> +	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
-> +
-> +config SENSORS_HMC5843_SPI
-> +	tristate "Honeywell HMC5983 3-Axis Magnetometer (SPI)"
-> +	depends on SPI_MASTER
-> +	select SENSORS_HMC5843
-> +	select REGMAP_SPI
-> +	help
-> +	  Say Y here to add support for the Honeywell HMC5983 3-Axis Magnetometer
-> +	  (digital compass).
-> +
-> +	  This driver can also be compiled as a set of modules.
-> +	  If so, these modules will be created:
-> +	  - hmc5843_core (core functions)
-> +	  - hmc5843_spi (support for HMC5983)
-> +
->  endmenu
-> diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
-> index 2c72df4..dd03fe5 100644
-> --- a/drivers/iio/magnetometer/Makefile
-> +++ b/drivers/iio/magnetometer/Makefile
-> @@ -15,3 +15,7 @@ st_magn-$(CONFIG_IIO_BUFFER) += st_magn_buffer.o
->  
->  obj-$(CONFIG_IIO_ST_MAGN_I2C_3AXIS) += st_magn_i2c.o
->  obj-$(CONFIG_IIO_ST_MAGN_SPI_3AXIS) += st_magn_spi.o
-> +
-> +obj-$(CONFIG_SENSORS_HMC5843)		+= hmc5843_core.o
-> +obj-$(CONFIG_SENSORS_HMC5843_I2C)	+= hmc5843_i2c.o
-> +obj-$(CONFIG_SENSORS_HMC5843_SPI)	+= hmc5843_spi.o
-> diff --git a/drivers/iio/magnetometer/hmc5843.h b/drivers/iio/magnetometer/hmc5843.h
-> new file mode 100644
-> index 0000000..76a5d74
-> --- /dev/null
-> +++ b/drivers/iio/magnetometer/hmc5843.h
-> @@ -0,0 +1,65 @@
-> +/*
-> + * Header file for hmc5843 driver
-> + *
-> + * Split from hmc5843.c
-> + * Copyright (C) Josef Gajdusek <atx@atx.name>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#ifndef HMC5843_CORE_H
-> +#define HMC5843_CORE_H
-> +
-> +#include <linux/regmap.h>
-> +#include <linux/iio/iio.h>
-> +
-> +#define HMC5843_CONFIG_REG_A			0x00
-> +#define HMC5843_CONFIG_REG_B			0x01
-> +#define HMC5843_MODE_REG			0x02
-> +#define HMC5843_DATA_OUT_MSB_REGS		0x03
-> +#define HMC5843_STATUS_REG			0x09
-> +#define HMC5843_ID_REG				0x0a
-> +#define HMC5843_ID_END				0x0c
-> +
-> +enum hmc5843_ids {
-> +	HMC5843_ID,
-> +	HMC5883_ID,
-> +	HMC5883L_ID,
-> +	HMC5983_ID,
-> +};
-> +
-> +/**
-> + * struct hcm5843_data	- device specific data
-> + * @dev:		actual device
-> + * @lock:		update and read regmap data
-> + * @regmap:		hardware access register maps
-> + * @variant:		describe chip variants
-> + * @buffer:		3x 16-bit channels + padding + 64-bit timestamp
-> + */
-> +struct hmc5843_data {
-> +	struct device *dev;
-> +	struct mutex lock;
-> +	struct regmap *regmap;
-> +	const struct hmc5843_chip_info *variant;
-> +	__be16 buffer[8];
-> +};
-> +
-> +int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
-> +			 enum hmc5843_ids id, const char *name);
-> +int hmc5843_common_remove(struct device *dev);
-> +
-> +int hmc5843_common_suspend(struct device *dev);
-> +int hmc5843_common_resume(struct device *dev);
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static SIMPLE_DEV_PM_OPS(hmc5843_pm_ops,
-> +		hmc5843_common_suspend,
-> +		hmc5843_common_resume);
-> +#define HMC5843_PM_OPS (&hmc5843_pm_ops)
-> +#else
-> +#define HMC5843_PM_OPS NULL
-> +#endif
-> +
-> +#endif /* HMC5843_CORE_H */
-> diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
-> new file mode 100644
-> index 0000000..77882b4
-> --- /dev/null
-> +++ b/drivers/iio/magnetometer/hmc5843_core.c
-> @@ -0,0 +1,686 @@
-> +/*
-> + * Device driver for the the HMC5843 multi-chip module designed
-> + * for low field magnetic sensing.
-> + *
-> + * Copyright (C) 2010 Texas Instruments
-> + *
-> + * Author: Shubhrajyoti Datta <shubhrajyoti@ti.com>
-> + * Acknowledgment: Jonathan Cameron <jic23@kernel.org> for valuable inputs.
-> + * Support for HMC5883 and HMC5883L by Peter Meerwald <pmeerw@pmeerw.net>.
-> + * Split to multiple files by Josef Gajdusek <atx@atx.name> - 2014
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/delay.h>
-> +
-> +#include "hmc5843.h"
-> +
-> +/*
-> + * Range gain settings in (+-)Ga
-> + * Beware: HMC5843 and HMC5883 have different recommended sensor field
-> + * ranges; default corresponds to +-1.0 Ga and +-1.3 Ga, respectively
-> + */
-> +#define HMC5843_RANGE_GAIN_OFFSET		0x05
-> +#define HMC5843_RANGE_GAIN_DEFAULT		0x01
-> +#define HMC5843_RANGE_GAIN_MASK		0xe0
-> +
-> +/* Device status */
-> +#define HMC5843_DATA_READY			0x01
-> +#define HMC5843_DATA_OUTPUT_LOCK		0x02
-> +
-> +/* Mode register configuration */
-> +#define HMC5843_MODE_CONVERSION_CONTINUOUS	0x00
-> +#define HMC5843_MODE_CONVERSION_SINGLE		0x01
-> +#define HMC5843_MODE_IDLE			0x02
-> +#define HMC5843_MODE_SLEEP			0x03
-> +#define HMC5843_MODE_MASK			0x03
-> +
-> +/*
-> + * HMC5843: Minimum data output rate
-> + * HMC5883: Typical data output rate
-> + */
-> +#define HMC5843_RATE_OFFSET			0x02
-> +#define HMC5843_RATE_DEFAULT			0x04
-> +#define HMC5843_RATE_MASK		0x1c
-> +
-> +/* Device measurement configuration */
-> +#define HMC5843_MEAS_CONF_NORMAL		0x00
-> +#define HMC5843_MEAS_CONF_POSITIVE_BIAS		0x01
-> +#define HMC5843_MEAS_CONF_NEGATIVE_BIAS		0x02
-> +#define HMC5843_MEAS_CONF_MASK			0x03
-> +
-> +/*
-> + * API for setting the measurement configuration to
-> + * Normal, Positive bias and Negative bias
-> + *
-> + * From the datasheet:
-> + * 0 - Normal measurement configuration (default): In normal measurement
-> + *     configuration the device follows normal measurement flow. Pins BP
-> + *     and BN are left floating and high impedance.
-> + *
-> + * 1 - Positive bias configuration: In positive bias configuration, a
-> + *     positive current is forced across the resistive load on pins BP
-> + *     and BN.
-> + *
-> + * 2 - Negative bias configuration. In negative bias configuration, a
-> + *     negative current is forced across the resistive load on pins BP
-> + *     and BN.
-> + *
-> + * 3 - Only available on HMC5983. Magnetic sensor is disabled.
-> + *     Temperature sensor is enabled.
-> + */
-> +
-> +static const char *const hmc5843_meas_conf_modes[] = {"normal", "positivebias",
-> +						      "negativebias"};
-> +
-> +static const char *const hmc5983_meas_conf_modes[] = {"normal", "positivebias",
-> +						      "negativebias",
-> +						      "disabled"};
-> +/* Scaling factors: 10000000/Gain */
-> +static const int hmc5843_regval_to_nanoscale[] = {
-> +	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
-> +};
-> +
-> +static const int hmc5883_regval_to_nanoscale[] = {
-> +	7812, 9766, 13021, 16287, 24096, 27701, 32573, 45662
-> +};
-> +
-> +static const int hmc5883l_regval_to_nanoscale[] = {
-> +	7299, 9174, 12195, 15152, 22727, 25641, 30303, 43478
-> +};
-> +
-> +/*
-> + * From the datasheet:
-> + * Value	| HMC5843		| HMC5883/HMC5883L
-> + *		| Data output rate (Hz)	| Data output rate (Hz)
-> + * 0		| 0.5			| 0.75
-> + * 1		| 1			| 1.5
-> + * 2		| 2			| 3
-> + * 3		| 5			| 7.5
-> + * 4		| 10 (default)		| 15
-> + * 5		| 20			| 30
-> + * 6		| 50			| 75
-> + * 7		| Not used		| Not used
-> + */
-> +static const int hmc5843_regval_to_samp_freq[][2] = {
-> +	{0, 500000}, {1, 0}, {2, 0}, {5, 0}, {10, 0}, {20, 0}, {50, 0}
-> +};
-> +
-> +static const int hmc5883_regval_to_samp_freq[][2] = {
-> +	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
-> +	{75, 0}
-> +};
-> +
-> +static const int hmc5983_regval_to_samp_freq[][2] = {
-> +	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
-> +	{75, 0}, {220, 0}
-> +};
-> +
-> +/* Describe chip variants */
-> +struct hmc5843_chip_info {
-> +	const struct iio_chan_spec *channels;
-> +	const int (*regval_to_samp_freq)[2];
-> +	const int n_regval_to_samp_freq;
-> +	const int *regval_to_nanoscale;
-> +	const int n_regval_to_nanoscale;
-> +};
-> +
-> +/* The lower two bits contain the current conversion mode */
-> +static s32 hmc5843_set_mode(struct hmc5843_data *data, u8 operating_mode)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = regmap_update_bits(data->regmap, HMC5843_MODE_REG,
-> +				 HMC5843_MODE_MASK, operating_mode);
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int hmc5843_wait_measurement(struct hmc5843_data *data)
-> +{
-> +	int tries = 150;
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	while (tries-- > 0) {
-> +		ret = regmap_read(data->regmap, HMC5843_STATUS_REG, &val);
-> +		if (ret < 0)
-> +			return ret;
-> +		if (val & HMC5843_DATA_READY)
-> +			break;
-> +		msleep(20);
-> +	}
-> +
-> +	if (tries < 0) {
-> +		dev_err(data->dev, "data not ready\n");
-> +		return -EIO;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +/* Return the measurement value from the specified channel */
-> +static int hmc5843_read_measurement(struct hmc5843_data *data,
-> +				    int idx, int *val)
-> +{
-> +	__be16 values[3];
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = hmc5843_wait_measurement(data);
-> +	if (ret < 0) {
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +	}
-> +	ret = regmap_bulk_read(data->regmap, HMC5843_DATA_OUT_MSB_REGS,
-> +			       values, sizeof(values));
-> +	mutex_unlock(&data->lock);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = sign_extend32(be16_to_cpu(values[idx]), 15);
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int hmc5843_set_meas_conf(struct hmc5843_data *data, u8 meas_conf)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = regmap_update_bits(data->regmap, HMC5843_CONFIG_REG_A,
-> +				 HMC5843_MEAS_CONF_MASK, meas_conf);
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static
-> +int hmc5843_show_measurement_configuration(struct iio_dev *indio_dev,
-> +					   const struct iio_chan_spec *chan)
-> +{
-> +	struct hmc5843_data *data = iio_priv(indio_dev);
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	ret = regmap_read(data->regmap, HMC5843_CONFIG_REG_A, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return val & HMC5843_MEAS_CONF_MASK;
-> +}
-> +
-> +static
-> +int hmc5843_set_measurement_configuration(struct iio_dev *indio_dev,
-> +					  const struct iio_chan_spec *chan,
-> +					  unsigned int meas_conf)
-> +{
-> +	struct hmc5843_data *data = iio_priv(indio_dev);
-> +
-> +	return hmc5843_set_meas_conf(data, meas_conf);
-> +}
-> +
-> +static const struct iio_enum hmc5843_meas_conf_enum = {
-> +	.items = hmc5843_meas_conf_modes,
-> +	.num_items = ARRAY_SIZE(hmc5843_meas_conf_modes),
-> +	.get = hmc5843_show_measurement_configuration,
-> +	.set = hmc5843_set_measurement_configuration,
-> +};
-> +
-> +static const struct iio_chan_spec_ext_info hmc5843_ext_info[] = {
-> +	IIO_ENUM("meas_conf", true, &hmc5843_meas_conf_enum),
-> +	IIO_ENUM_AVAILABLE("meas_conf", &hmc5843_meas_conf_enum),
-> +	{ },
-> +};
-> +
-> +static const struct iio_enum hmc5983_meas_conf_enum = {
-> +	.items = hmc5983_meas_conf_modes,
-> +	.num_items = ARRAY_SIZE(hmc5983_meas_conf_modes),
-> +	.get = hmc5843_show_measurement_configuration,
-> +	.set = hmc5843_set_measurement_configuration,
-> +};
-> +
-> +static const struct iio_chan_spec_ext_info hmc5983_ext_info[] = {
-> +	IIO_ENUM("meas_conf", true, &hmc5983_meas_conf_enum),
-> +	IIO_ENUM_AVAILABLE("meas_conf", &hmc5983_meas_conf_enum),
-> +	{ },
-> +};
-> +
-> +static
-> +ssize_t hmc5843_show_samp_freq_avail(struct device *dev,
-> +				     struct device_attribute *attr, char *buf)
-> +{
-> +	struct hmc5843_data *data = iio_priv(dev_to_iio_dev(dev));
-> +	size_t len = 0;
-> +	int i;
-> +
-> +	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
-> +		len += scnprintf(buf + len, PAGE_SIZE - len,
-> +			"%d.%d ", data->variant->regval_to_samp_freq[i][0],
-> +			data->variant->regval_to_samp_freq[i][1]);
-> +
-> +	/* replace trailing space by newline */
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(hmc5843_show_samp_freq_avail);
-> +
-> +static int hmc5843_set_samp_freq(struct hmc5843_data *data, u8 rate)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = regmap_update_bits(data->regmap, HMC5843_CONFIG_REG_A,
-> +				 HMC5843_RATE_MASK,
-> +				 rate << HMC5843_RATE_OFFSET);
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int hmc5843_get_samp_freq_index(struct hmc5843_data *data,
-> +				       int val, int val2)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
-> +		if (val == data->variant->regval_to_samp_freq[i][0] &&
-> +		    val2 == data->variant->regval_to_samp_freq[i][1])
-> +			return i;
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int hmc5843_set_range_gain(struct hmc5843_data *data, u8 range)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = regmap_update_bits(data->regmap, HMC5843_CONFIG_REG_B,
-> +				 HMC5843_RANGE_GAIN_MASK,
-> +				 range << HMC5843_RANGE_GAIN_OFFSET);
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static ssize_t hmc5843_show_scale_avail(struct device *dev,
-> +					struct device_attribute *attr,
-> +					char *buf)
-> +{
-> +	struct hmc5843_data *data = iio_priv(dev_to_iio_dev(dev));
-> +
-> +	size_t len = 0;
-> +	int i;
-> +
-> +	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
-> +		len += scnprintf(buf + len, PAGE_SIZE - len,
-> +			"0.%09d ", data->variant->regval_to_nanoscale[i]);
-> +
-> +	/* replace trailing space by newline */
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +static IIO_DEVICE_ATTR(scale_available, S_IRUGO,
-> +	hmc5843_show_scale_avail, NULL, 0);
-> +
-> +static int hmc5843_get_scale_index(struct hmc5843_data *data, int val, int val2)
-> +{
-> +	int i;
-> +
-> +	if (val)
-> +		return -EINVAL;
-> +
-> +	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
-> +		if (val2 == data->variant->regval_to_nanoscale[i])
-> +			return i;
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int hmc5843_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	struct hmc5843_data *data = iio_priv(indio_dev);
-> +	unsigned int rval;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		return hmc5843_read_measurement(data, chan->scan_index, val);
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = regmap_read(data->regmap, HMC5843_CONFIG_REG_B, &rval);
-> +		if (ret < 0)
-> +			return ret;
-> +		rval >>= HMC5843_RANGE_GAIN_OFFSET;
-> +		*val = 0;
-> +		*val2 = data->variant->regval_to_nanoscale[rval];
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = regmap_read(data->regmap, HMC5843_CONFIG_REG_A, &rval);
-> +		if (ret < 0)
-> +			return ret;
-> +		rval >>= HMC5843_RATE_OFFSET;
-> +		*val = data->variant->regval_to_samp_freq[rval][0];
-> +		*val2 = data->variant->regval_to_samp_freq[rval][1];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int hmc5843_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct hmc5843_data *data = iio_priv(indio_dev);
-> +	int rate, range;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		rate = hmc5843_get_samp_freq_index(data, val, val2);
-> +		if (rate < 0)
-> +			return -EINVAL;
-> +
-> +		return hmc5843_set_samp_freq(data, rate);
-> +	case IIO_CHAN_INFO_SCALE:
-> +		range = hmc5843_get_scale_index(data, val, val2);
-> +		if (range < 0)
-> +			return -EINVAL;
-> +
-> +		return hmc5843_set_range_gain(data, range);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int hmc5843_write_raw_get_fmt(struct iio_dev *indio_dev,
-> +				     struct iio_chan_spec const *chan,
-> +				     long mask)
-> +{
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static irqreturn_t hmc5843_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct hmc5843_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = hmc5843_wait_measurement(data);
-> +	if (ret < 0) {
-> +		mutex_unlock(&data->lock);
-> +		goto done;
-> +	}
-> +
-> +	ret = regmap_bulk_read(data->regmap, HMC5843_DATA_OUT_MSB_REGS,
-> +			       data->buffer, 3 * sizeof(__be16));
-> +
-> +	mutex_unlock(&data->lock);
-> +	if (ret < 0)
-> +		goto done;
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-> +					   iio_get_time_ns());
-> +
-> +done:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +#define HMC5843_CHANNEL(axis, idx)					\
-> +	{								\
-> +		.type = IIO_MAGN,					\
-> +		.modified = 1,						\
-> +		.channel2 = IIO_MOD_##axis,				\
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> +			BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
-> +		.scan_index = idx,					\
-> +		.scan_type = {						\
-> +			.sign = 's',					\
-> +			.realbits = 16,					\
-> +			.storagebits = 16,				\
-> +			.endianness = IIO_BE,				\
-> +		},							\
-> +		.ext_info = hmc5843_ext_info,	\
-> +	}
-> +
-> +#define HMC5983_CHANNEL(axis, idx)					\
-> +	{								\
-> +		.type = IIO_MAGN,					\
-> +		.modified = 1,						\
-> +		.channel2 = IIO_MOD_##axis,				\
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> +			BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
-> +		.scan_index = idx,					\
-> +		.scan_type = {						\
-> +			.sign = 's',					\
-> +			.realbits = 16,					\
-> +			.storagebits = 16,				\
-> +			.endianness = IIO_BE,				\
-> +		},							\
-> +		.ext_info = hmc5983_ext_info,	\
-> +	}
-> +
-> +static const struct iio_chan_spec hmc5843_channels[] = {
-> +	HMC5843_CHANNEL(X, 0),
-> +	HMC5843_CHANNEL(Y, 1),
-> +	HMC5843_CHANNEL(Z, 2),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> +};
-> +
-> +/* Beware: Y and Z are exchanged on HMC5883 and 5983 */
-> +static const struct iio_chan_spec hmc5883_channels[] = {
-> +	HMC5843_CHANNEL(X, 0),
-> +	HMC5843_CHANNEL(Z, 1),
-> +	HMC5843_CHANNEL(Y, 2),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> +};
-> +
-> +static const struct iio_chan_spec hmc5983_channels[] = {
-> +	HMC5983_CHANNEL(X, 0),
-> +	HMC5983_CHANNEL(Z, 1),
-> +	HMC5983_CHANNEL(Y, 2),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> +};
-> +
-> +static struct attribute *hmc5843_attributes[] = {
-> +	&iio_dev_attr_scale_available.dev_attr.attr,
-> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group hmc5843_group = {
-> +	.attrs = hmc5843_attributes,
-> +};
-> +
-> +static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
-> +	[HMC5843_ID] = {
-> +		.channels = hmc5843_channels,
-> +		.regval_to_samp_freq = hmc5843_regval_to_samp_freq,
-> +		.n_regval_to_samp_freq =
-> +				ARRAY_SIZE(hmc5843_regval_to_samp_freq),
-> +		.regval_to_nanoscale = hmc5843_regval_to_nanoscale,
-> +		.n_regval_to_nanoscale =
-> +				ARRAY_SIZE(hmc5843_regval_to_nanoscale),
-> +	},
-> +	[HMC5883_ID] = {
-> +		.channels = hmc5883_channels,
-> +		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-> +		.n_regval_to_samp_freq =
-> +				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
-> +		.regval_to_nanoscale = hmc5883_regval_to_nanoscale,
-> +		.n_regval_to_nanoscale =
-> +				ARRAY_SIZE(hmc5883_regval_to_nanoscale),
-> +	},
-> +	[HMC5883L_ID] = {
-> +		.channels = hmc5883_channels,
-> +		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-> +		.n_regval_to_samp_freq =
-> +				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
-> +		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
-> +		.n_regval_to_nanoscale =
-> +				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
-> +	},
-> +	[HMC5983_ID] = {
-> +		.channels = hmc5983_channels,
-> +		.regval_to_samp_freq = hmc5983_regval_to_samp_freq,
-> +		.n_regval_to_samp_freq =
-> +				ARRAY_SIZE(hmc5983_regval_to_samp_freq),
-> +		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
-> +		.n_regval_to_nanoscale =
-> +				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
-> +	}
-> +};
-> +
-> +static int hmc5843_init(struct hmc5843_data *data)
-> +{
-> +	int ret;
-> +	u8 id[3];
-> +
-> +	ret = regmap_bulk_read(data->regmap, HMC5843_ID_REG,
-> +			       id, ARRAY_SIZE(id));
-> +	if (ret < 0)
-> +		return ret;
-> +	if (id[0] != 'H' || id[1] != '4' || id[2] != '3') {
-> +		dev_err(data->dev, "no HMC5843/5883/5883L/5983 sensor\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	ret = hmc5843_set_meas_conf(data, HMC5843_MEAS_CONF_NORMAL);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret = hmc5843_set_samp_freq(data, HMC5843_RATE_DEFAULT);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret = hmc5843_set_range_gain(data, HMC5843_RANGE_GAIN_DEFAULT);
-> +	if (ret < 0)
-> +		return ret;
-> +	return hmc5843_set_mode(data, HMC5843_MODE_CONVERSION_CONTINUOUS);
-> +}
-> +
-> +static const struct iio_info hmc5843_info = {
-> +	.attrs = &hmc5843_group,
-> +	.read_raw = &hmc5843_read_raw,
-> +	.write_raw = &hmc5843_write_raw,
-> +	.write_raw_get_fmt = &hmc5843_write_raw_get_fmt,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static const unsigned long hmc5843_scan_masks[] = {0x7, 0};
-> +
-> +int hmc5843_common_suspend(struct device *dev)
-> +{
-> +	return hmc5843_set_mode(iio_priv(dev_get_drvdata(dev)),
-> +				HMC5843_MODE_SLEEP);
-> +}
-> +EXPORT_SYMBOL(hmc5843_common_suspend);
-> +
-> +int hmc5843_common_resume(struct device *dev)
-> +{
-> +	return hmc5843_set_mode(iio_priv(dev_get_drvdata(dev)),
-> +		HMC5843_MODE_CONVERSION_CONTINUOUS);
-> +}
-> +EXPORT_SYMBOL(hmc5843_common_resume);
-> +
-> +int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
-> +			 enum hmc5843_ids id, const char *name)
-> +{
-> +	struct hmc5843_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	dev_set_drvdata(dev, indio_dev);
-> +
-> +	/* default settings at probe */
-> +	data = iio_priv(indio_dev);
-> +	data->dev = dev;
-> +	data->regmap = regmap;
-> +	data->variant = &hmc5843_chip_info_tbl[id];
-> +	mutex_init(&data->lock);
-> +
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->name = name;
-> +	indio_dev->info = &hmc5843_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = data->variant->channels;
-> +	indio_dev->num_channels = 4;
-> +	indio_dev->available_scan_masks = hmc5843_scan_masks;
-> +
-> +	ret = hmc5843_init(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 hmc5843_trigger_handler, NULL);
-> +	if (ret < 0)
-> +		goto buffer_setup_err;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		goto buffer_cleanup;
-> +
-> +	return 0;
-> +
-> +buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +buffer_setup_err:
-> +	hmc5843_set_mode(iio_priv(indio_dev), HMC5843_MODE_SLEEP);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(hmc5843_common_probe);
-> +
-> +int hmc5843_common_remove(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +
-> +	/*  sleep mode to save power */
-> +	hmc5843_set_mode(iio_priv(indio_dev), HMC5843_MODE_SLEEP);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL(hmc5843_common_remove);
-> +
-> +MODULE_AUTHOR("Shubhrajyoti Datta <shubhrajyoti@ti.com>");
-> +MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 core driver");
-> +MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/magnetometer/hmc5843_i2c.c b/drivers/iio/magnetometer/hmc5843_i2c.c
-> new file mode 100644
-> index 0000000..3de7f44
-> --- /dev/null
-> +++ b/drivers/iio/magnetometer/hmc5843_i2c.c
-> @@ -0,0 +1,103 @@
-> +/*
-> + * i2c driver for hmc5843/5843/5883/5883l/5983
-> + *
-> + * Split from hmc5843.c
-> + * Copyright (C) Josef Gajdusek <atx@atx.name>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/regmap.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +
-> +#include "hmc5843.h"
-> +
-> +static const struct regmap_range hmc5843_readable_ranges[] = {
-> +	regmap_reg_range(0, HMC5843_ID_END),
-> +};
-> +
-> +static const struct regmap_access_table hmc5843_readable_table = {
-> +	.yes_ranges = hmc5843_readable_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
-> +};
-> +
-> +static const struct regmap_range hmc5843_writable_ranges[] = {
-> +	regmap_reg_range(0, HMC5843_MODE_REG),
-> +};
-> +
-> +static const struct regmap_access_table hmc5843_writable_table = {
-> +	.yes_ranges = hmc5843_writable_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
-> +};
-> +
-> +static const struct regmap_range hmc5843_volatile_ranges[] = {
-> +	regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
-> +};
-> +
-> +static const struct regmap_access_table hmc5843_volatile_table = {
-> +	.yes_ranges = hmc5843_volatile_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
-> +};
-> +
-> +static const struct regmap_config hmc5843_i2c_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +
-> +	.rd_table = &hmc5843_readable_table,
-> +	.wr_table = &hmc5843_writable_table,
-> +	.volatile_table = &hmc5843_volatile_table,
-> +
-> +	.cache_type = REGCACHE_RBTREE,
-> +};
-> +
-> +static int hmc5843_i2c_probe(struct i2c_client *cli,
-> +			     const struct i2c_device_id *id)
-> +{
-> +	return hmc5843_common_probe(&cli->dev,
-> +			devm_regmap_init_i2c(cli, &hmc5843_i2c_regmap_config),
-> +			id->driver_data, id->name);
-> +}
-> +
-> +static int hmc5843_i2c_remove(struct i2c_client *client)
-> +{
-> +	return hmc5843_common_remove(&client->dev);
-> +}
-> +
-> +static const struct i2c_device_id hmc5843_id[] = {
-> +	{ "hmc5843", HMC5843_ID },
-> +	{ "hmc5883", HMC5883_ID },
-> +	{ "hmc5883l", HMC5883L_ID },
-> +	{ "hmc5983", HMC5983_ID },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, hmc5843_id);
-> +
-> +static const struct of_device_id hmc5843_of_match[] = {
-> +	{ .compatible = "honeywell,hmc5843", .data = (void *)HMC5843_ID },
-> +	{ .compatible = "honeywell,hmc5883", .data = (void *)HMC5883_ID },
-> +	{ .compatible = "honeywell,hmc5883l", .data = (void *)HMC5883L_ID },
-> +	{ .compatible = "honeywell,hmc5983", .data = (void *)HMC5983_ID },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, hmc5843_of_match);
-> +
-> +static struct i2c_driver hmc5843_driver = {
-> +	.driver = {
-> +		.name	= "hmc5843",
-> +		.pm	= HMC5843_PM_OPS,
-> +		.of_match_table = hmc5843_of_match,
-> +	},
-> +	.id_table	= hmc5843_id,
-> +	.probe		= hmc5843_i2c_probe,
-> +	.remove		= hmc5843_i2c_remove,
-> +};
-> +module_i2c_driver(hmc5843_driver);
-> +
-> +MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
-> +MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 i2c driver");
-> +MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/magnetometer/hmc5843_spi.c b/drivers/iio/magnetometer/hmc5843_spi.c
-> new file mode 100644
-> index 0000000..535f03a
-> --- /dev/null
-> +++ b/drivers/iio/magnetometer/hmc5843_spi.c
-> @@ -0,0 +1,100 @@
-> +/*
-> + * SPI driver for hmc5983
-> + *
-> + * Copyright (C) Josef Gajdusek <atx@atx.name>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/iio/iio.h>
-> +
-> +#include "hmc5843.h"
-> +
-> +static const struct regmap_range hmc5843_readable_ranges[] = {
-> +		regmap_reg_range(0, HMC5843_ID_END),
-> +};
-> +
-> +static const struct regmap_access_table hmc5843_readable_table = {
-> +		.yes_ranges = hmc5843_readable_ranges,
-> +		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
-> +};
-> +
-> +static const struct regmap_range hmc5843_writable_ranges[] = {
-> +		regmap_reg_range(0, HMC5843_MODE_REG),
-> +};
-> +
-> +static const struct regmap_access_table hmc5843_writable_table = {
-> +		.yes_ranges = hmc5843_writable_ranges,
-> +		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
-> +};
-> +
-> +static const struct regmap_range hmc5843_volatile_ranges[] = {
-> +		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
-> +};
-> +
-> +static const struct regmap_access_table hmc5843_volatile_table = {
-> +		.yes_ranges = hmc5843_volatile_ranges,
-> +		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
-> +};
-> +
-> +static const struct regmap_config hmc5843_spi_regmap_config = {
-> +		.reg_bits = 8,
-> +		.val_bits = 8,
-> +
-> +		.rd_table = &hmc5843_readable_table,
-> +		.wr_table = &hmc5843_writable_table,
-> +		.volatile_table = &hmc5843_volatile_table,
-> +
-> +		/* Autoincrement address pointer */
-> +		.read_flag_mask = 0xc0,
-> +
-> +		.cache_type = REGCACHE_RBTREE,
-> +};
-> +
-> +static int hmc5843_spi_probe(struct spi_device *spi)
-> +{
-> +	int ret;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +
-> +	spi->mode = SPI_MODE_3;
-> +	spi->max_speed_hz = 8000000;
-> +	spi->bits_per_word = 8;
-> +	ret = spi_setup(spi);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return hmc5843_common_probe(&spi->dev,
-> +			devm_regmap_init_spi(spi, &hmc5843_spi_regmap_config),
-> +			id->driver_data, id->name);
-> +}
-> +
-> +static int hmc5843_spi_remove(struct spi_device *spi)
-> +{
-> +	return hmc5843_common_remove(&spi->dev);
-> +}
-> +
-> +static const struct spi_device_id hmc5843_id[] = {
-> +	{ "hmc5983", HMC5983_ID },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, hmc5843_id);
-> +
-> +static struct spi_driver hmc5843_driver = {
-> +		.driver = {
-> +				.name = "hmc5843",
-> +				.pm = HMC5843_PM_OPS,
-> +		},
-> +		.id_table = hmc5843_id,
-> +		.probe = hmc5843_spi_probe,
-> +		.remove = hmc5843_spi_remove,
-> +};
-> +
-> +module_spi_driver(hmc5843_driver);
-> +
-> +MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
-> +MODULE_DESCRIPTION("HMC5983 SPI driver");
-> +MODULE_LICENSE("GPL");
-> diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
-> index dec814a..f2f1abd 100644
-> --- a/drivers/staging/iio/magnetometer/Kconfig
-> +++ b/drivers/staging/iio/magnetometer/Kconfig
-> @@ -3,38 +3,6 @@
->  #
->  menu "Magnetometer sensors"
->  
-> -config SENSORS_HMC5843
-> -	tristate
-> -	select IIO_BUFFER
-> -	select IIO_TRIGGERED_BUFFER
-> -
-> -config SENSORS_HMC5843_I2C
-> -	tristate "Honeywell HMC5843/5883/5883L 3-Axis Magnetometer (I2C)"
-> -	depends on I2C
-> -	select SENSORS_HMC5843
-> -	select REGMAP_I2C
-> -	help
-> -	  Say Y here to add support for the Honeywell HMC5843, HMC5883 and
-> -	  HMC5883L 3-Axis Magnetometer (digital compass).
-> -
-> -	  This driver can also be compiled as a set of modules.
-> -	  If so, these modules will be created:
-> -	  - hmc5843_core (core functions)
-> -	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
-> -
-> -config SENSORS_HMC5843_SPI
-> -	tristate "Honeywell HMC5983 3-Axis Magnetometer (SPI)"
-> -	depends on SPI_MASTER
-> -	select SENSORS_HMC5843
-> -	select REGMAP_SPI
-> -	help
-> -	  Say Y here to add support for the Honeywell HMC5983 3-Axis Magnetometer
-> -	  (digital compass).
-> -
-> -	  This driver can also be compiled as a set of modules.
-> -	  If so, these modules will be created:
-> -	  - hmc5843_core (core functions)
-> -	  - hmc5843_spi (support for HMC5983)
->  
->  
->  endmenu
-> diff --git a/drivers/staging/iio/magnetometer/Makefile b/drivers/staging/iio/magnetometer/Makefile
-> index 33761a1..5e4a7e6 100644
-> --- a/drivers/staging/iio/magnetometer/Makefile
-> +++ b/drivers/staging/iio/magnetometer/Makefile
-> @@ -2,6 +2,4 @@
->  # Makefile for industrial I/O Magnetometer sensors
->  #
->  
-> -obj-$(CONFIG_SENSORS_HMC5843)		+= hmc5843_core.o
-> -obj-$(CONFIG_SENSORS_HMC5843_I2C)	+= hmc5843_i2c.o
-> -obj-$(CONFIG_SENSORS_HMC5843_SPI)	+= hmc5843_spi.o
-> +
-> diff --git a/drivers/staging/iio/magnetometer/hmc5843.h b/drivers/staging/iio/magnetometer/hmc5843.h
-> deleted file mode 100644
-> index 76a5d74..0000000
-> --- a/drivers/staging/iio/magnetometer/hmc5843.h
-> +++ /dev/null
-> @@ -1,65 +0,0 @@
-> -/*
-> - * Header file for hmc5843 driver
-> - *
-> - * Split from hmc5843.c
-> - * Copyright (C) Josef Gajdusek <atx@atx.name>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - */
-> -
-> -#ifndef HMC5843_CORE_H
-> -#define HMC5843_CORE_H
-> -
-> -#include <linux/regmap.h>
-> -#include <linux/iio/iio.h>
-> -
-> -#define HMC5843_CONFIG_REG_A			0x00
-> -#define HMC5843_CONFIG_REG_B			0x01
-> -#define HMC5843_MODE_REG			0x02
-> -#define HMC5843_DATA_OUT_MSB_REGS		0x03
-> -#define HMC5843_STATUS_REG			0x09
-> -#define HMC5843_ID_REG				0x0a
-> -#define HMC5843_ID_END				0x0c
-> -
-> -enum hmc5843_ids {
-> -	HMC5843_ID,
-> -	HMC5883_ID,
-> -	HMC5883L_ID,
-> -	HMC5983_ID,
-> -};
-> -
-> -/**
-> - * struct hcm5843_data	- device specific data
-> - * @dev:		actual device
-> - * @lock:		update and read regmap data
-> - * @regmap:		hardware access register maps
-> - * @variant:		describe chip variants
-> - * @buffer:		3x 16-bit channels + padding + 64-bit timestamp
-> - */
-> -struct hmc5843_data {
-> -	struct device *dev;
-> -	struct mutex lock;
-> -	struct regmap *regmap;
-> -	const struct hmc5843_chip_info *variant;
-> -	__be16 buffer[8];
-> -};
-> -
-> -int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
-> -			 enum hmc5843_ids id, const char *name);
-> -int hmc5843_common_remove(struct device *dev);
-> -
-> -int hmc5843_common_suspend(struct device *dev);
-> -int hmc5843_common_resume(struct device *dev);
-> -
-> -#ifdef CONFIG_PM_SLEEP
-> -static SIMPLE_DEV_PM_OPS(hmc5843_pm_ops,
-> -		hmc5843_common_suspend,
-> -		hmc5843_common_resume);
-> -#define HMC5843_PM_OPS (&hmc5843_pm_ops)
-> -#else
-> -#define HMC5843_PM_OPS NULL
-> -#endif
-> -
-> -#endif /* HMC5843_CORE_H */
-> diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
-> deleted file mode 100644
-> index 77882b4..0000000
-> --- a/drivers/staging/iio/magnetometer/hmc5843_core.c
-> +++ /dev/null
-> @@ -1,686 +0,0 @@
-> -/*
-> - * Device driver for the the HMC5843 multi-chip module designed
-> - * for low field magnetic sensing.
-> - *
-> - * Copyright (C) 2010 Texas Instruments
-> - *
-> - * Author: Shubhrajyoti Datta <shubhrajyoti@ti.com>
-> - * Acknowledgment: Jonathan Cameron <jic23@kernel.org> for valuable inputs.
-> - * Support for HMC5883 and HMC5883L by Peter Meerwald <pmeerw@pmeerw.net>.
-> - * Split to multiple files by Josef Gajdusek <atx@atx.name> - 2014
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> - * GNU General Public License for more details.
-> - */
-> -
-> -#include <linux/module.h>
-> -#include <linux/regmap.h>
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/sysfs.h>
-> -#include <linux/iio/trigger_consumer.h>
-> -#include <linux/iio/buffer.h>
-> -#include <linux/iio/triggered_buffer.h>
-> -#include <linux/delay.h>
-> -
-> -#include "hmc5843.h"
-> -
-> -/*
-> - * Range gain settings in (+-)Ga
-> - * Beware: HMC5843 and HMC5883 have different recommended sensor field
-> - * ranges; default corresponds to +-1.0 Ga and +-1.3 Ga, respectively
-> - */
-> -#define HMC5843_RANGE_GAIN_OFFSET		0x05
-> -#define HMC5843_RANGE_GAIN_DEFAULT		0x01
-> -#define HMC5843_RANGE_GAIN_MASK		0xe0
-> -
-> -/* Device status */
-> -#define HMC5843_DATA_READY			0x01
-> -#define HMC5843_DATA_OUTPUT_LOCK		0x02
-> -
-> -/* Mode register configuration */
-> -#define HMC5843_MODE_CONVERSION_CONTINUOUS	0x00
-> -#define HMC5843_MODE_CONVERSION_SINGLE		0x01
-> -#define HMC5843_MODE_IDLE			0x02
-> -#define HMC5843_MODE_SLEEP			0x03
-> -#define HMC5843_MODE_MASK			0x03
-> -
-> -/*
-> - * HMC5843: Minimum data output rate
-> - * HMC5883: Typical data output rate
-> - */
-> -#define HMC5843_RATE_OFFSET			0x02
-> -#define HMC5843_RATE_DEFAULT			0x04
-> -#define HMC5843_RATE_MASK		0x1c
-> -
-> -/* Device measurement configuration */
-> -#define HMC5843_MEAS_CONF_NORMAL		0x00
-> -#define HMC5843_MEAS_CONF_POSITIVE_BIAS		0x01
-> -#define HMC5843_MEAS_CONF_NEGATIVE_BIAS		0x02
-> -#define HMC5843_MEAS_CONF_MASK			0x03
-> -
-> -/*
-> - * API for setting the measurement configuration to
-> - * Normal, Positive bias and Negative bias
-> - *
-> - * From the datasheet:
-> - * 0 - Normal measurement configuration (default): In normal measurement
-> - *     configuration the device follows normal measurement flow. Pins BP
-> - *     and BN are left floating and high impedance.
-> - *
-> - * 1 - Positive bias configuration: In positive bias configuration, a
-> - *     positive current is forced across the resistive load on pins BP
-> - *     and BN.
-> - *
-> - * 2 - Negative bias configuration. In negative bias configuration, a
-> - *     negative current is forced across the resistive load on pins BP
-> - *     and BN.
-> - *
-> - * 3 - Only available on HMC5983. Magnetic sensor is disabled.
-> - *     Temperature sensor is enabled.
-> - */
-> -
-> -static const char *const hmc5843_meas_conf_modes[] = {"normal", "positivebias",
-> -						      "negativebias"};
-> -
-> -static const char *const hmc5983_meas_conf_modes[] = {"normal", "positivebias",
-> -						      "negativebias",
-> -						      "disabled"};
-> -/* Scaling factors: 10000000/Gain */
-> -static const int hmc5843_regval_to_nanoscale[] = {
-> -	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
-> -};
-> -
-> -static const int hmc5883_regval_to_nanoscale[] = {
-> -	7812, 9766, 13021, 16287, 24096, 27701, 32573, 45662
-> -};
-> -
-> -static const int hmc5883l_regval_to_nanoscale[] = {
-> -	7299, 9174, 12195, 15152, 22727, 25641, 30303, 43478
-> -};
-> -
-> -/*
-> - * From the datasheet:
-> - * Value	| HMC5843		| HMC5883/HMC5883L
-> - *		| Data output rate (Hz)	| Data output rate (Hz)
-> - * 0		| 0.5			| 0.75
-> - * 1		| 1			| 1.5
-> - * 2		| 2			| 3
-> - * 3		| 5			| 7.5
-> - * 4		| 10 (default)		| 15
-> - * 5		| 20			| 30
-> - * 6		| 50			| 75
-> - * 7		| Not used		| Not used
-> - */
-> -static const int hmc5843_regval_to_samp_freq[][2] = {
-> -	{0, 500000}, {1, 0}, {2, 0}, {5, 0}, {10, 0}, {20, 0}, {50, 0}
-> -};
-> -
-> -static const int hmc5883_regval_to_samp_freq[][2] = {
-> -	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
-> -	{75, 0}
-> -};
-> -
-> -static const int hmc5983_regval_to_samp_freq[][2] = {
-> -	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
-> -	{75, 0}, {220, 0}
-> -};
-> -
-> -/* Describe chip variants */
-> -struct hmc5843_chip_info {
-> -	const struct iio_chan_spec *channels;
-> -	const int (*regval_to_samp_freq)[2];
-> -	const int n_regval_to_samp_freq;
-> -	const int *regval_to_nanoscale;
-> -	const int n_regval_to_nanoscale;
-> -};
-> -
-> -/* The lower two bits contain the current conversion mode */
-> -static s32 hmc5843_set_mode(struct hmc5843_data *data, u8 operating_mode)
-> -{
-> -	int ret;
-> -
-> -	mutex_lock(&data->lock);
-> -	ret = regmap_update_bits(data->regmap, HMC5843_MODE_REG,
-> -				 HMC5843_MODE_MASK, operating_mode);
-> -	mutex_unlock(&data->lock);
-> -
-> -	return ret;
-> -}
-> -
-> -static int hmc5843_wait_measurement(struct hmc5843_data *data)
-> -{
-> -	int tries = 150;
-> -	unsigned int val;
-> -	int ret;
-> -
-> -	while (tries-- > 0) {
-> -		ret = regmap_read(data->regmap, HMC5843_STATUS_REG, &val);
-> -		if (ret < 0)
-> -			return ret;
-> -		if (val & HMC5843_DATA_READY)
-> -			break;
-> -		msleep(20);
-> -	}
-> -
-> -	if (tries < 0) {
-> -		dev_err(data->dev, "data not ready\n");
-> -		return -EIO;
-> -	}
-> -
-> -	return 0;
-> -}
-> -
-> -/* Return the measurement value from the specified channel */
-> -static int hmc5843_read_measurement(struct hmc5843_data *data,
-> -				    int idx, int *val)
-> -{
-> -	__be16 values[3];
-> -	int ret;
-> -
-> -	mutex_lock(&data->lock);
-> -	ret = hmc5843_wait_measurement(data);
-> -	if (ret < 0) {
-> -		mutex_unlock(&data->lock);
-> -		return ret;
-> -	}
-> -	ret = regmap_bulk_read(data->regmap, HMC5843_DATA_OUT_MSB_REGS,
-> -			       values, sizeof(values));
-> -	mutex_unlock(&data->lock);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	*val = sign_extend32(be16_to_cpu(values[idx]), 15);
-> -	return IIO_VAL_INT;
-> -}
-> -
-> -static int hmc5843_set_meas_conf(struct hmc5843_data *data, u8 meas_conf)
-> -{
-> -	int ret;
-> -
-> -	mutex_lock(&data->lock);
-> -	ret = regmap_update_bits(data->regmap, HMC5843_CONFIG_REG_A,
-> -				 HMC5843_MEAS_CONF_MASK, meas_conf);
-> -	mutex_unlock(&data->lock);
-> -
-> -	return ret;
-> -}
-> -
-> -static
-> -int hmc5843_show_measurement_configuration(struct iio_dev *indio_dev,
-> -					   const struct iio_chan_spec *chan)
-> -{
-> -	struct hmc5843_data *data = iio_priv(indio_dev);
-> -	unsigned int val;
-> -	int ret;
-> -
-> -	ret = regmap_read(data->regmap, HMC5843_CONFIG_REG_A, &val);
-> -	if (ret)
-> -		return ret;
-> -
-> -	return val & HMC5843_MEAS_CONF_MASK;
-> -}
-> -
-> -static
-> -int hmc5843_set_measurement_configuration(struct iio_dev *indio_dev,
-> -					  const struct iio_chan_spec *chan,
-> -					  unsigned int meas_conf)
-> -{
-> -	struct hmc5843_data *data = iio_priv(indio_dev);
-> -
-> -	return hmc5843_set_meas_conf(data, meas_conf);
-> -}
-> -
-> -static const struct iio_enum hmc5843_meas_conf_enum = {
-> -	.items = hmc5843_meas_conf_modes,
-> -	.num_items = ARRAY_SIZE(hmc5843_meas_conf_modes),
-> -	.get = hmc5843_show_measurement_configuration,
-> -	.set = hmc5843_set_measurement_configuration,
-> -};
-> -
-> -static const struct iio_chan_spec_ext_info hmc5843_ext_info[] = {
-> -	IIO_ENUM("meas_conf", true, &hmc5843_meas_conf_enum),
-> -	IIO_ENUM_AVAILABLE("meas_conf", &hmc5843_meas_conf_enum),
-> -	{ },
-> -};
-> -
-> -static const struct iio_enum hmc5983_meas_conf_enum = {
-> -	.items = hmc5983_meas_conf_modes,
-> -	.num_items = ARRAY_SIZE(hmc5983_meas_conf_modes),
-> -	.get = hmc5843_show_measurement_configuration,
-> -	.set = hmc5843_set_measurement_configuration,
-> -};
-> -
-> -static const struct iio_chan_spec_ext_info hmc5983_ext_info[] = {
-> -	IIO_ENUM("meas_conf", true, &hmc5983_meas_conf_enum),
-> -	IIO_ENUM_AVAILABLE("meas_conf", &hmc5983_meas_conf_enum),
-> -	{ },
-> -};
-> -
-> -static
-> -ssize_t hmc5843_show_samp_freq_avail(struct device *dev,
-> -				     struct device_attribute *attr, char *buf)
-> -{
-> -	struct hmc5843_data *data = iio_priv(dev_to_iio_dev(dev));
-> -	size_t len = 0;
-> -	int i;
-> -
-> -	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
-> -		len += scnprintf(buf + len, PAGE_SIZE - len,
-> -			"%d.%d ", data->variant->regval_to_samp_freq[i][0],
-> -			data->variant->regval_to_samp_freq[i][1]);
-> -
-> -	/* replace trailing space by newline */
-> -	buf[len - 1] = '\n';
-> -
-> -	return len;
-> -}
-> -
-> -static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(hmc5843_show_samp_freq_avail);
-> -
-> -static int hmc5843_set_samp_freq(struct hmc5843_data *data, u8 rate)
-> -{
-> -	int ret;
-> -
-> -	mutex_lock(&data->lock);
-> -	ret = regmap_update_bits(data->regmap, HMC5843_CONFIG_REG_A,
-> -				 HMC5843_RATE_MASK,
-> -				 rate << HMC5843_RATE_OFFSET);
-> -	mutex_unlock(&data->lock);
-> -
-> -	return ret;
-> -}
-> -
-> -static int hmc5843_get_samp_freq_index(struct hmc5843_data *data,
-> -				       int val, int val2)
-> -{
-> -	int i;
-> -
-> -	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
-> -		if (val == data->variant->regval_to_samp_freq[i][0] &&
-> -		    val2 == data->variant->regval_to_samp_freq[i][1])
-> -			return i;
-> -
-> -	return -EINVAL;
-> -}
-> -
-> -static int hmc5843_set_range_gain(struct hmc5843_data *data, u8 range)
-> -{
-> -	int ret;
-> -
-> -	mutex_lock(&data->lock);
-> -	ret = regmap_update_bits(data->regmap, HMC5843_CONFIG_REG_B,
-> -				 HMC5843_RANGE_GAIN_MASK,
-> -				 range << HMC5843_RANGE_GAIN_OFFSET);
-> -	mutex_unlock(&data->lock);
-> -
-> -	return ret;
-> -}
-> -
-> -static ssize_t hmc5843_show_scale_avail(struct device *dev,
-> -					struct device_attribute *attr,
-> -					char *buf)
-> -{
-> -	struct hmc5843_data *data = iio_priv(dev_to_iio_dev(dev));
-> -
-> -	size_t len = 0;
-> -	int i;
-> -
-> -	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
-> -		len += scnprintf(buf + len, PAGE_SIZE - len,
-> -			"0.%09d ", data->variant->regval_to_nanoscale[i]);
-> -
-> -	/* replace trailing space by newline */
-> -	buf[len - 1] = '\n';
-> -
-> -	return len;
-> -}
-> -
-> -static IIO_DEVICE_ATTR(scale_available, S_IRUGO,
-> -	hmc5843_show_scale_avail, NULL, 0);
-> -
-> -static int hmc5843_get_scale_index(struct hmc5843_data *data, int val, int val2)
-> -{
-> -	int i;
-> -
-> -	if (val)
-> -		return -EINVAL;
-> -
-> -	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
-> -		if (val2 == data->variant->regval_to_nanoscale[i])
-> -			return i;
-> -
-> -	return -EINVAL;
-> -}
-> -
-> -static int hmc5843_read_raw(struct iio_dev *indio_dev,
-> -			    struct iio_chan_spec const *chan,
-> -			    int *val, int *val2, long mask)
-> -{
-> -	struct hmc5843_data *data = iio_priv(indio_dev);
-> -	unsigned int rval;
-> -	int ret;
-> -
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_RAW:
-> -		return hmc5843_read_measurement(data, chan->scan_index, val);
-> -	case IIO_CHAN_INFO_SCALE:
-> -		ret = regmap_read(data->regmap, HMC5843_CONFIG_REG_B, &rval);
-> -		if (ret < 0)
-> -			return ret;
-> -		rval >>= HMC5843_RANGE_GAIN_OFFSET;
-> -		*val = 0;
-> -		*val2 = data->variant->regval_to_nanoscale[rval];
-> -		return IIO_VAL_INT_PLUS_NANO;
-> -	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		ret = regmap_read(data->regmap, HMC5843_CONFIG_REG_A, &rval);
-> -		if (ret < 0)
-> -			return ret;
-> -		rval >>= HMC5843_RATE_OFFSET;
-> -		*val = data->variant->regval_to_samp_freq[rval][0];
-> -		*val2 = data->variant->regval_to_samp_freq[rval][1];
-> -		return IIO_VAL_INT_PLUS_MICRO;
-> -	}
-> -	return -EINVAL;
-> -}
-> -
-> -static int hmc5843_write_raw(struct iio_dev *indio_dev,
-> -			     struct iio_chan_spec const *chan,
-> -			     int val, int val2, long mask)
-> -{
-> -	struct hmc5843_data *data = iio_priv(indio_dev);
-> -	int rate, range;
-> -
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		rate = hmc5843_get_samp_freq_index(data, val, val2);
-> -		if (rate < 0)
-> -			return -EINVAL;
-> -
-> -		return hmc5843_set_samp_freq(data, rate);
-> -	case IIO_CHAN_INFO_SCALE:
-> -		range = hmc5843_get_scale_index(data, val, val2);
-> -		if (range < 0)
-> -			return -EINVAL;
-> -
-> -		return hmc5843_set_range_gain(data, range);
-> -	default:
-> -		return -EINVAL;
-> -	}
-> -}
-> -
-> -static int hmc5843_write_raw_get_fmt(struct iio_dev *indio_dev,
-> -				     struct iio_chan_spec const *chan,
-> -				     long mask)
-> -{
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		return IIO_VAL_INT_PLUS_MICRO;
-> -	case IIO_CHAN_INFO_SCALE:
-> -		return IIO_VAL_INT_PLUS_NANO;
-> -	default:
-> -		return -EINVAL;
-> -	}
-> -}
-> -
-> -static irqreturn_t hmc5843_trigger_handler(int irq, void *p)
-> -{
-> -	struct iio_poll_func *pf = p;
-> -	struct iio_dev *indio_dev = pf->indio_dev;
-> -	struct hmc5843_data *data = iio_priv(indio_dev);
-> -	int ret;
-> -
-> -	mutex_lock(&data->lock);
-> -	ret = hmc5843_wait_measurement(data);
-> -	if (ret < 0) {
-> -		mutex_unlock(&data->lock);
-> -		goto done;
-> -	}
-> -
-> -	ret = regmap_bulk_read(data->regmap, HMC5843_DATA_OUT_MSB_REGS,
-> -			       data->buffer, 3 * sizeof(__be16));
-> -
-> -	mutex_unlock(&data->lock);
-> -	if (ret < 0)
-> -		goto done;
-> -
-> -	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-> -					   iio_get_time_ns());
-> -
-> -done:
-> -	iio_trigger_notify_done(indio_dev->trig);
-> -
-> -	return IRQ_HANDLED;
-> -}
-> -
-> -#define HMC5843_CHANNEL(axis, idx)					\
-> -	{								\
-> -		.type = IIO_MAGN,					\
-> -		.modified = 1,						\
-> -		.channel2 = IIO_MOD_##axis,				\
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> -			BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
-> -		.scan_index = idx,					\
-> -		.scan_type = {						\
-> -			.sign = 's',					\
-> -			.realbits = 16,					\
-> -			.storagebits = 16,				\
-> -			.endianness = IIO_BE,				\
-> -		},							\
-> -		.ext_info = hmc5843_ext_info,	\
-> -	}
-> -
-> -#define HMC5983_CHANNEL(axis, idx)					\
-> -	{								\
-> -		.type = IIO_MAGN,					\
-> -		.modified = 1,						\
-> -		.channel2 = IIO_MOD_##axis,				\
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> -			BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
-> -		.scan_index = idx,					\
-> -		.scan_type = {						\
-> -			.sign = 's',					\
-> -			.realbits = 16,					\
-> -			.storagebits = 16,				\
-> -			.endianness = IIO_BE,				\
-> -		},							\
-> -		.ext_info = hmc5983_ext_info,	\
-> -	}
-> -
-> -static const struct iio_chan_spec hmc5843_channels[] = {
-> -	HMC5843_CHANNEL(X, 0),
-> -	HMC5843_CHANNEL(Y, 1),
-> -	HMC5843_CHANNEL(Z, 2),
-> -	IIO_CHAN_SOFT_TIMESTAMP(3),
-> -};
-> -
-> -/* Beware: Y and Z are exchanged on HMC5883 and 5983 */
-> -static const struct iio_chan_spec hmc5883_channels[] = {
-> -	HMC5843_CHANNEL(X, 0),
-> -	HMC5843_CHANNEL(Z, 1),
-> -	HMC5843_CHANNEL(Y, 2),
-> -	IIO_CHAN_SOFT_TIMESTAMP(3),
-> -};
-> -
-> -static const struct iio_chan_spec hmc5983_channels[] = {
-> -	HMC5983_CHANNEL(X, 0),
-> -	HMC5983_CHANNEL(Z, 1),
-> -	HMC5983_CHANNEL(Y, 2),
-> -	IIO_CHAN_SOFT_TIMESTAMP(3),
-> -};
-> -
-> -static struct attribute *hmc5843_attributes[] = {
-> -	&iio_dev_attr_scale_available.dev_attr.attr,
-> -	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-> -	NULL
-> -};
-> -
-> -static const struct attribute_group hmc5843_group = {
-> -	.attrs = hmc5843_attributes,
-> -};
-> -
-> -static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
-> -	[HMC5843_ID] = {
-> -		.channels = hmc5843_channels,
-> -		.regval_to_samp_freq = hmc5843_regval_to_samp_freq,
-> -		.n_regval_to_samp_freq =
-> -				ARRAY_SIZE(hmc5843_regval_to_samp_freq),
-> -		.regval_to_nanoscale = hmc5843_regval_to_nanoscale,
-> -		.n_regval_to_nanoscale =
-> -				ARRAY_SIZE(hmc5843_regval_to_nanoscale),
-> -	},
-> -	[HMC5883_ID] = {
-> -		.channels = hmc5883_channels,
-> -		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-> -		.n_regval_to_samp_freq =
-> -				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
-> -		.regval_to_nanoscale = hmc5883_regval_to_nanoscale,
-> -		.n_regval_to_nanoscale =
-> -				ARRAY_SIZE(hmc5883_regval_to_nanoscale),
-> -	},
-> -	[HMC5883L_ID] = {
-> -		.channels = hmc5883_channels,
-> -		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-> -		.n_regval_to_samp_freq =
-> -				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
-> -		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
-> -		.n_regval_to_nanoscale =
-> -				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
-> -	},
-> -	[HMC5983_ID] = {
-> -		.channels = hmc5983_channels,
-> -		.regval_to_samp_freq = hmc5983_regval_to_samp_freq,
-> -		.n_regval_to_samp_freq =
-> -				ARRAY_SIZE(hmc5983_regval_to_samp_freq),
-> -		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
-> -		.n_regval_to_nanoscale =
-> -				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
-> -	}
-> -};
-> -
-> -static int hmc5843_init(struct hmc5843_data *data)
-> -{
-> -	int ret;
-> -	u8 id[3];
-> -
-> -	ret = regmap_bulk_read(data->regmap, HMC5843_ID_REG,
-> -			       id, ARRAY_SIZE(id));
-> -	if (ret < 0)
-> -		return ret;
-> -	if (id[0] != 'H' || id[1] != '4' || id[2] != '3') {
-> -		dev_err(data->dev, "no HMC5843/5883/5883L/5983 sensor\n");
-> -		return -ENODEV;
-> -	}
-> -
-> -	ret = hmc5843_set_meas_conf(data, HMC5843_MEAS_CONF_NORMAL);
-> -	if (ret < 0)
-> -		return ret;
-> -	ret = hmc5843_set_samp_freq(data, HMC5843_RATE_DEFAULT);
-> -	if (ret < 0)
-> -		return ret;
-> -	ret = hmc5843_set_range_gain(data, HMC5843_RANGE_GAIN_DEFAULT);
-> -	if (ret < 0)
-> -		return ret;
-> -	return hmc5843_set_mode(data, HMC5843_MODE_CONVERSION_CONTINUOUS);
-> -}
-> -
-> -static const struct iio_info hmc5843_info = {
-> -	.attrs = &hmc5843_group,
-> -	.read_raw = &hmc5843_read_raw,
-> -	.write_raw = &hmc5843_write_raw,
-> -	.write_raw_get_fmt = &hmc5843_write_raw_get_fmt,
-> -	.driver_module = THIS_MODULE,
-> -};
-> -
-> -static const unsigned long hmc5843_scan_masks[] = {0x7, 0};
-> -
-> -int hmc5843_common_suspend(struct device *dev)
-> -{
-> -	return hmc5843_set_mode(iio_priv(dev_get_drvdata(dev)),
-> -				HMC5843_MODE_SLEEP);
-> -}
-> -EXPORT_SYMBOL(hmc5843_common_suspend);
-> -
-> -int hmc5843_common_resume(struct device *dev)
-> -{
-> -	return hmc5843_set_mode(iio_priv(dev_get_drvdata(dev)),
-> -		HMC5843_MODE_CONVERSION_CONTINUOUS);
-> -}
-> -EXPORT_SYMBOL(hmc5843_common_resume);
-> -
-> -int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
-> -			 enum hmc5843_ids id, const char *name)
-> -{
-> -	struct hmc5843_data *data;
-> -	struct iio_dev *indio_dev;
-> -	int ret;
-> -
-> -	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> -	if (!indio_dev)
-> -		return -ENOMEM;
-> -
-> -	dev_set_drvdata(dev, indio_dev);
-> -
-> -	/* default settings at probe */
-> -	data = iio_priv(indio_dev);
-> -	data->dev = dev;
-> -	data->regmap = regmap;
-> -	data->variant = &hmc5843_chip_info_tbl[id];
-> -	mutex_init(&data->lock);
-> -
-> -	indio_dev->dev.parent = dev;
-> -	indio_dev->name = name;
-> -	indio_dev->info = &hmc5843_info;
-> -	indio_dev->modes = INDIO_DIRECT_MODE;
-> -	indio_dev->channels = data->variant->channels;
-> -	indio_dev->num_channels = 4;
-> -	indio_dev->available_scan_masks = hmc5843_scan_masks;
-> -
-> -	ret = hmc5843_init(data);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> -					 hmc5843_trigger_handler, NULL);
-> -	if (ret < 0)
-> -		goto buffer_setup_err;
-> -
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0)
-> -		goto buffer_cleanup;
-> -
-> -	return 0;
-> -
-> -buffer_cleanup:
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -buffer_setup_err:
-> -	hmc5843_set_mode(iio_priv(indio_dev), HMC5843_MODE_SLEEP);
-> -	return ret;
-> -}
-> -EXPORT_SYMBOL(hmc5843_common_probe);
-> -
-> -int hmc5843_common_remove(struct device *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	iio_device_unregister(indio_dev);
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -
-> -	/*  sleep mode to save power */
-> -	hmc5843_set_mode(iio_priv(indio_dev), HMC5843_MODE_SLEEP);
-> -
-> -	return 0;
-> -}
-> -EXPORT_SYMBOL(hmc5843_common_remove);
-> -
-> -MODULE_AUTHOR("Shubhrajyoti Datta <shubhrajyoti@ti.com>");
-> -MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 core driver");
-> -MODULE_LICENSE("GPL");
-> diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-> deleted file mode 100644
-> index 3de7f44..0000000
-> --- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-> +++ /dev/null
-> @@ -1,103 +0,0 @@
-> -/*
-> - * i2c driver for hmc5843/5843/5883/5883l/5983
-> - *
-> - * Split from hmc5843.c
-> - * Copyright (C) Josef Gajdusek <atx@atx.name>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - */
-> -
-> -#include <linux/module.h>
-> -#include <linux/i2c.h>
-> -#include <linux/regmap.h>
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/triggered_buffer.h>
-> -
-> -#include "hmc5843.h"
-> -
-> -static const struct regmap_range hmc5843_readable_ranges[] = {
-> -	regmap_reg_range(0, HMC5843_ID_END),
-> -};
-> -
-> -static const struct regmap_access_table hmc5843_readable_table = {
-> -	.yes_ranges = hmc5843_readable_ranges,
-> -	.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
-> -};
-> -
-> -static const struct regmap_range hmc5843_writable_ranges[] = {
-> -	regmap_reg_range(0, HMC5843_MODE_REG),
-> -};
-> -
-> -static const struct regmap_access_table hmc5843_writable_table = {
-> -	.yes_ranges = hmc5843_writable_ranges,
-> -	.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
-> -};
-> -
-> -static const struct regmap_range hmc5843_volatile_ranges[] = {
-> -	regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
-> -};
-> -
-> -static const struct regmap_access_table hmc5843_volatile_table = {
-> -	.yes_ranges = hmc5843_volatile_ranges,
-> -	.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
-> -};
-> -
-> -static const struct regmap_config hmc5843_i2c_regmap_config = {
-> -	.reg_bits = 8,
-> -	.val_bits = 8,
-> -
-> -	.rd_table = &hmc5843_readable_table,
-> -	.wr_table = &hmc5843_writable_table,
-> -	.volatile_table = &hmc5843_volatile_table,
-> -
-> -	.cache_type = REGCACHE_RBTREE,
-> -};
-> -
-> -static int hmc5843_i2c_probe(struct i2c_client *cli,
-> -			     const struct i2c_device_id *id)
-> -{
-> -	return hmc5843_common_probe(&cli->dev,
-> -			devm_regmap_init_i2c(cli, &hmc5843_i2c_regmap_config),
-> -			id->driver_data, id->name);
-> -}
-> -
-> -static int hmc5843_i2c_remove(struct i2c_client *client)
-> -{
-> -	return hmc5843_common_remove(&client->dev);
-> -}
-> -
-> -static const struct i2c_device_id hmc5843_id[] = {
-> -	{ "hmc5843", HMC5843_ID },
-> -	{ "hmc5883", HMC5883_ID },
-> -	{ "hmc5883l", HMC5883L_ID },
-> -	{ "hmc5983", HMC5983_ID },
-> -	{ }
-> -};
-> -MODULE_DEVICE_TABLE(i2c, hmc5843_id);
-> -
-> -static const struct of_device_id hmc5843_of_match[] = {
-> -	{ .compatible = "honeywell,hmc5843", .data = (void *)HMC5843_ID },
-> -	{ .compatible = "honeywell,hmc5883", .data = (void *)HMC5883_ID },
-> -	{ .compatible = "honeywell,hmc5883l", .data = (void *)HMC5883L_ID },
-> -	{ .compatible = "honeywell,hmc5983", .data = (void *)HMC5983_ID },
-> -	{}
-> -};
-> -MODULE_DEVICE_TABLE(of, hmc5843_of_match);
-> -
-> -static struct i2c_driver hmc5843_driver = {
-> -	.driver = {
-> -		.name	= "hmc5843",
-> -		.pm	= HMC5843_PM_OPS,
-> -		.of_match_table = hmc5843_of_match,
-> -	},
-> -	.id_table	= hmc5843_id,
-> -	.probe		= hmc5843_i2c_probe,
-> -	.remove		= hmc5843_i2c_remove,
-> -};
-> -module_i2c_driver(hmc5843_driver);
-> -
-> -MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
-> -MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 i2c driver");
-> -MODULE_LICENSE("GPL");
-> diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-> deleted file mode 100644
-> index 535f03a..0000000
-> --- a/drivers/staging/iio/magnetometer/hmc5843_spi.c
-> +++ /dev/null
-> @@ -1,100 +0,0 @@
-> -/*
-> - * SPI driver for hmc5983
-> - *
-> - * Copyright (C) Josef Gajdusek <atx@atx.name>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - */
-> -
-> -#include <linux/module.h>
-> -#include <linux/spi/spi.h>
-> -#include <linux/iio/iio.h>
-> -
-> -#include "hmc5843.h"
-> -
-> -static const struct regmap_range hmc5843_readable_ranges[] = {
-> -		regmap_reg_range(0, HMC5843_ID_END),
-> -};
-> -
-> -static const struct regmap_access_table hmc5843_readable_table = {
-> -		.yes_ranges = hmc5843_readable_ranges,
-> -		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
-> -};
-> -
-> -static const struct regmap_range hmc5843_writable_ranges[] = {
-> -		regmap_reg_range(0, HMC5843_MODE_REG),
-> -};
-> -
-> -static const struct regmap_access_table hmc5843_writable_table = {
-> -		.yes_ranges = hmc5843_writable_ranges,
-> -		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
-> -};
-> -
-> -static const struct regmap_range hmc5843_volatile_ranges[] = {
-> -		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
-> -};
-> -
-> -static const struct regmap_access_table hmc5843_volatile_table = {
-> -		.yes_ranges = hmc5843_volatile_ranges,
-> -		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
-> -};
-> -
-> -static const struct regmap_config hmc5843_spi_regmap_config = {
-> -		.reg_bits = 8,
-> -		.val_bits = 8,
-> -
-> -		.rd_table = &hmc5843_readable_table,
-> -		.wr_table = &hmc5843_writable_table,
-> -		.volatile_table = &hmc5843_volatile_table,
-> -
-> -		/* Autoincrement address pointer */
-> -		.read_flag_mask = 0xc0,
-> -
-> -		.cache_type = REGCACHE_RBTREE,
-> -};
-> -
-> -static int hmc5843_spi_probe(struct spi_device *spi)
-> -{
-> -	int ret;
-> -	const struct spi_device_id *id = spi_get_device_id(spi);
-> -
-> -	spi->mode = SPI_MODE_3;
-> -	spi->max_speed_hz = 8000000;
-> -	spi->bits_per_word = 8;
-> -	ret = spi_setup(spi);
-> -	if (ret)
-> -		return ret;
-> -
-> -	return hmc5843_common_probe(&spi->dev,
-> -			devm_regmap_init_spi(spi, &hmc5843_spi_regmap_config),
-> -			id->driver_data, id->name);
-> -}
-> -
-> -static int hmc5843_spi_remove(struct spi_device *spi)
-> -{
-> -	return hmc5843_common_remove(&spi->dev);
-> -}
-> -
-> -static const struct spi_device_id hmc5843_id[] = {
-> -	{ "hmc5983", HMC5983_ID },
-> -	{ }
-> -};
-> -MODULE_DEVICE_TABLE(spi, hmc5843_id);
-> -
-> -static struct spi_driver hmc5843_driver = {
-> -		.driver = {
-> -				.name = "hmc5843",
-> -				.pm = HMC5843_PM_OPS,
-> -		},
-> -		.id_table = hmc5843_id,
-> -		.probe = hmc5843_spi_probe,
-> -		.remove = hmc5843_spi_remove,
-> -};
-> -
-> -module_spi_driver(hmc5843_driver);
-> -
-> -MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
-> -MODULE_DESCRIPTION("HMC5983 SPI driver");
-> -MODULE_LICENSE("GPL");
-> 
+diff --git a/Documentation/iio/ep93xx_adc.txt b/Documentation/iio/ep93xx_adc.txt
+new file mode 100644
+index 0000000..321e59f
+--- /dev/null
++++ b/Documentation/iio/ep93xx_adc.txt
+@@ -0,0 +1,29 @@
++Cirrus Logic EP93xx ADC driver.
++
++1. Overview
++
++The driver is intended to work on both low-end (EP9301, EP9302) devices with
++5-channel ADC and high-end (EP9307, EP9312, EP9315) devices with 10-channel
++touchscreen/ADC module.
++
++2. Channel numbering
++
++Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
++EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
++not defined. So the last three are numbered randomly, let's say.
++
++Assuming ep93xx_adc is IIO device0, you'd find following entries under
++/sys/bus/iio/devices/iio:device0/:
++
++  +-----------------+---------------+
++  | sysfs entry     | ball/pin name |
++  +-----------------+---------------+
++  | in_voltage0_raw | YM            |
++  | in_voltage1_raw | SXP           |
++  | in_voltage2_raw | SXM           |
++  | in_voltage3_raw | SYP           |
++  | in_voltage4_raw | SYM           |
++  | in_voltage5_raw | XP            |
++  | in_voltage6_raw | XM            |
++  | in_voltage7_raw | YP            |
++  +-----------------+---------------+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 283ded7..0482f29 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -172,6 +172,17 @@ config DA9150_GPADC
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called berlin2-adc.
+
++config EP93XX_ADC
++	tristate "Cirrus Logic EP93XX ADC driver"
++	depends on ARCH_EP93XX
++	help
++	  Driver for the ADC module on the EP93XX series of SoC from Cirrus Logic.
++	  It's recommended to switch on CONFIG_HIGH_RES_TIMERS option, in this
++	  case driver will reduce its CPU usage by 90% in some use cases.
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called ep93xx_adc.
++
+ config EXYNOS_ADC
+ 	tristate "Exynos ADC driver support"
+ 	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 6435780..cd7d33e 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -18,6 +18,7 @@ obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+ obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
++obj-$(CONFIG_EP93XX_ADC) += ep93xx_adc.o
+ obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+ obj-$(CONFIG_HI8435) += hi8435.o
+ obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+diff --git a/drivers/iio/adc/ep93xx_adc.c b/drivers/iio/adc/ep93xx_adc.c
+new file mode 100644
+index 0000000..3728591
+--- /dev/null
++++ b/drivers/iio/adc/ep93xx_adc.c
+@@ -0,0 +1,261 @@
++/*
++ * Driver for ADC module on the Cirrus Logic EP93xx series of SoCs
++ *
++ * Copyright (C) 2015 Alexander Sverdlin
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * The driver uses polling to get the conversion status. According to EP93xx
++ * datasheets, reading ADCResult register starts the conversion, but user is also
++ * responsible for ensuring that delay between adjacent conversion triggers is
++ * long enough so that maximum allowed conversion rate is not exceeded. This
++ * basically renders IRQ mode unusable.
++ */
++
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/iio/iio.h>
++#include <linux/io.h>
++#include <linux/irqflags.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/platform_device.h>
++
++#define EP93XX_NUM_CHANNELS 8
++
++/*
++ * This code could benefit from real HR Timers, but jiffy granularity would
++ * lower ADC conversion rate down to CONFIG_HZ, so we fallback to busy wait
++ * in such case.
++ *
++ * HR Timers-based version loads CPU only up to 10% during back to back ADC
++ * conversion, while busy wait-based version consumes whole CPU power.
++ */
++#ifdef CONFIG_HIGH_RES_TIMERS
++#define ep93xx_adc_delay(usmin, usmax) usleep_range(usmin, usmax)
++#else
++#define ep93xx_adc_delay(usmin, usmax) udelay(usmin)
++#endif
++
++#define EP93XX_ADC_RESULT	0x08
++#define   EP93XX_ADC_SDR	BIT(31)
++#define EP93XX_ADC_SWITCH	0x18
++#define EP93XX_ADC_SW_LOCK	0x20
++#define EP93XX_ADC_INT_EN	0x24
++#define   EP93XX_ADC_RINTEN	BIT(11)
++
++struct ep93xx_adc_priv {
++	struct clk *clk;
++	void __iomem *base;
++	int lastch;
++	struct mutex lock;
++};
++
++#define EP93XX_ADC_CH(index, dname, swcfg) {			\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.channel = index,					\
++	.address = swcfg,					\
++	.datasheet_name = dname,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE) |	\
++				   BIT(IIO_CHAN_INFO_OFFSET),	\
++}
++
++/*
++ * Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
++ * EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
++ * not defined. So the last three are numbered randomly, let's say.
++ */
++static const struct iio_chan_spec ep93xx_adc_channels[EP93XX_NUM_CHANNELS] = {
++	EP93XX_ADC_CH(0, "YM",	0x608),
++	EP93XX_ADC_CH(1, "SXP",	0x680),
++	EP93XX_ADC_CH(2, "SXM",	0x640),
++	EP93XX_ADC_CH(3, "SYP",	0x620),
++	EP93XX_ADC_CH(4, "SYM",	0x610),
++	EP93XX_ADC_CH(5, "XP",	0x601),
++	EP93XX_ADC_CH(6, "XM",	0x602),
++	EP93XX_ADC_CH(7, "YP",	0x604),
++};
++
++static int ep93xx_read_raw(struct iio_dev *iiodev,
++			   struct iio_chan_spec const *channel, int *value,
++			   int *shift, long mask)
++{
++	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
++	unsigned long timeout;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&priv->lock);
++		if (priv->lastch != channel->channel) {
++			priv->lastch = channel->channel;
++			/*
++			 * Switch register is software-locked, unlocking must be
++			 * immediately followed by write
++			 */
++			local_irq_disable();
++			writel_relaxed(0xAA, priv->base + EP93XX_ADC_SW_LOCK);
++			writel_relaxed(channel->address,
++				       priv->base + EP93XX_ADC_SWITCH);
++			local_irq_enable();
++			/*
++			 * Settling delay depends on module clock and could be
++			 * 2ms or 500us
++			 */
++			ep93xx_adc_delay(2000, 2000);
++		}
++		/* Start the conversion, eventually discarding old result */
++		readl_relaxed(priv->base + EP93XX_ADC_RESULT);
++		/* Ensure maximun conversion rate is not exceeded */
++		ep93xx_adc_delay(DIV_ROUND_UP(1000000, 925),
++				 DIV_ROUND_UP(1000000, 925));
++		/* At this point conversion must be completed, but anyway... */
++		ret = IIO_VAL_INT;
++		timeout = jiffies + msecs_to_jiffies(1) + 1;
++		while (1) {
++			u32 t;
++
++			t = readl_relaxed(priv->base + EP93XX_ADC_RESULT);
++			if (t & EP93XX_ADC_SDR) {
++				/* Sign extend lower 16 bits */
++				*value = (s16)t;
++				break;
++			}
++
++			if (time_after(jiffies, timeout)) {
++				dev_err(&iiodev->dev, "Conversion timeout\n");
++				ret = -ETIMEDOUT;
++				break;
++			}
++
++			cpu_relax();
++		}
++		mutex_unlock(&priv->lock);
++		return ret;
++
++	case IIO_CHAN_INFO_OFFSET:
++		/* According to datasheet, range is -25000..25000 */
++		*value = 25000;
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		/* Typical supply voltage is 3.3v */
++		*value = (1ULL << 32) * 3300 / 50000;
++		*shift = 32;
++		return IIO_VAL_FRACTIONAL_LOG2;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info ep93xx_adc_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = ep93xx_read_raw,
++};
++
++static int ep93xx_adc_probe(struct platform_device *pdev)
++{
++	int ret;
++	struct iio_dev *iiodev;
++	struct ep93xx_adc_priv *priv;
++	struct clk *pclk;
++	struct resource *res;
++
++	iiodev = devm_iio_device_alloc(&pdev->dev,
++				       sizeof(struct ep93xx_adc_priv));
++	if (!iiodev)
++		return -ENOMEM;
++	priv = iio_priv(iiodev);
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res) {
++		dev_err(&pdev->dev, "Cannot obtain memory resource\n");
++		return -ENXIO;
++	}
++	priv->base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(priv->base)) {
++		dev_err(&pdev->dev, "Cannot map memory resource\n");
++		return PTR_ERR(priv->base);
++	}
++
++	iiodev->dev.parent = &pdev->dev;
++	iiodev->name = dev_name(&pdev->dev);
++	iiodev->modes = INDIO_DIRECT_MODE;
++	iiodev->info = &ep93xx_adc_info;
++	iiodev->num_channels = ARRAY_SIZE(ep93xx_adc_channels);
++	iiodev->channels = ep93xx_adc_channels;
++
++	priv->lastch = -1;
++	mutex_init(&priv->lock);
++
++	platform_set_drvdata(pdev, iiodev);
++
++	priv->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(priv->clk)) {
++		dev_err(&pdev->dev, "Cannot obtain clock\n");
++		return PTR_ERR(priv->clk);
++	}
++
++	pclk = clk_get_parent(priv->clk);
++	if (!pclk) {
++		dev_warn(&pdev->dev, "Cannot obtain parent clock\n");
++	} else {
++		/*
++		 * This is actually a place for improvement:
++		 * EP93xx ADC supports two clock divisors -- 4 and 16,
++		 * resulting in conversion rates 3750 and 925 samples per second
++		 * respectively with 500uS or 2ms settling time respectively.
++		 * One might find this interesting enough to be configurable.
++		 */
++		ret = clk_set_rate(priv->clk, clk_get_rate(pclk) / 16);
++		if (ret)
++			dev_warn(&pdev->dev, "Cannot set clock rate\n");
++		/*
++		 * We can tolerate rate setting failure because the module should
++		 * work in any case.
++		 */
++	}
++
++	ret = clk_enable(priv->clk);
++	if (ret) {
++		dev_err(&pdev->dev, "Cannot enable clock\n");
++		return ret;
++	}
++
++	ret = iio_device_register(iiodev);
++	if (ret)
++		clk_disable(priv->clk);
++
++	return ret;
++}
++
++static int ep93xx_adc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *iiodev = platform_get_drvdata(pdev);
++	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
++
++	iio_device_unregister(iiodev);
++	clk_disable(priv->clk);
++
++	return 0;
++}
++
++static struct platform_driver ep93xx_adc_driver = {
++	.driver = {
++		.name = "ep93xx-adc",
++	},
++	.probe = ep93xx_adc_probe,
++	.remove = ep93xx_adc_remove,
++};
++module_platform_driver(ep93xx_adc_driver);
++
++MODULE_AUTHOR("Alexander Sverdlin <alexander.sverdlin@gmail.com>");
++MODULE_DESCRIPTION("Cirrus Logic EP93XX ADC driver");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:ep93xx-adc");
 
