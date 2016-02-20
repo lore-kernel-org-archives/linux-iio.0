@@ -1,80 +1,52 @@
-Return-Path: <cmo@melexis.com>
+Return-Path: <alexander.sverdlin@gmail.com>
+Subject: [PATCH v2 2/5] clk: ep93xx: Add ADC clock
+To: Hartley Sweeten <hsweeten@visionengravers.com>,
+ Ryan Mallon <rmallon@gmail.com>, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org
+References: <56C88EDD.3040007@gmail.com> <56C88FCB.30008@gmail.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Jonathan Cameron
+ <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Jonathan Cameron <jic23@kernel.org>
+From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Message-ID: <56C8A996.8040107@gmail.com>
+Date: Sat, 20 Feb 2016 18:59:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <1455810794-3188-3-git-send-email-daniel.baluta@intel.com>
-References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com> <1455810794-3188-3-git-send-email-daniel.baluta@intel.com>
-From: Crt Mori <cmo@melexis.com>
-Date: Fri, 19 Feb 2016 10:09:45 +0100
-Message-ID: <CAKv63us92Epe0go9JGNScbeOepg3_j8RyW9w2qgN01Jvnj3sUQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/9] iio: imu: inv_mpu6050: Fix Yoda conditions
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: Johnathan Iain Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, linux-i2c@vger.kernel.org,
-	lucas.demarchi@intel.com,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, ggao@invensense.com,
-	Adriana Reus <adi.reus@gmail.com>, mwelling@ieee.org
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <56C88FCB.30008@gmail.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-This is quite trivial.
+ADC and keypad controller clocks share the same control register, so use the
+existing infrastructure to add ADC clock support for Cirrus Logic EP93xx SoCs.
 
-Acked-by: Crt Mori <cmo@melexis.com>
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+---
+ arch/arm/mach-ep93xx/clock.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-On 18 February 2016 at 16:53, Daniel Baluta <daniel.baluta@intel.com> wrote:
-> This fixes the following checkpatch warning:
->         * WARNING: Comparisons should place the constant
->           on the right side of the test
->
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 +++---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 2 +-
->  2 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 84e014c..c550ebb 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -84,7 +84,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
->          * clock source be switched to gyro. Otherwise, it must be set to
->          * internal clock
->          */
-> -       if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
-> +       if (mask == INV_MPU6050_BIT_PWR_GYRO_STBY) {
->                 result = regmap_read(st->map, st->reg->pwr_mgmt_1, &mgmt_1);
->                 if (result)
->                         return result;
-> @@ -92,7 +92,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
->                 mgmt_1 &= ~INV_MPU6050_BIT_CLK_MASK;
->         }
->
-> -       if ((INV_MPU6050_BIT_PWR_GYRO_STBY == mask) && (!en)) {
-> +       if ((mask == INV_MPU6050_BIT_PWR_GYRO_STBY) && (!en)) {
->                 /*
->                  * turning off gyro requires switch to internal clock first.
->                  * Then turn off gyro engine
-> @@ -117,7 +117,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
->         if (en) {
->                 /* Wait for output stabilize */
->                 msleep(INV_MPU6050_TEMP_UP_TIME);
-> -               if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
-> +               if (mask == INV_MPU6050_BIT_PWR_GYRO_STBY) {
->                         /* switch internal clock to PLL */
->                         mgmt_1 |= INV_CLK_PLL;
->                         result = regmap_write(st->map,
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> index 1fc5fd9..441080b 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> @@ -168,7 +168,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->
->                 result = kfifo_out(&st->timestamps, &timestamp, 1);
->                 /* when there is no timestamp, put timestamp as 0 */
-> -               if (0 == result)
-> +               if (result == 0)
->                         timestamp = 0;
->
->                 result = iio_push_to_buffers_with_timestamp(indio_dev, data,
-> --
-> 2.5.0
->
+diff --git a/arch/arm/mach-ep93xx/clock.c b/arch/arm/mach-ep93xx/clock.c
+index b9cd9d7..4253426 100644
+--- a/arch/arm/mach-ep93xx/clock.c
++++ b/arch/arm/mach-ep93xx/clock.c
+@@ -98,6 +98,13 @@ static struct clk clk_keypad = {
+ 	.enable_mask	= EP93XX_SYSCON_KEYTCHCLKDIV_KEN,
+ 	.set_rate	= set_keytchclk_rate,
+ };
++static struct clk clk_adc = {
++	.parent		= &clk_xtali,
++	.sw_locked	= 1,
++	.enable_reg	= EP93XX_SYSCON_KEYTCHCLKDIV,
++	.enable_mask	= EP93XX_SYSCON_KEYTCHCLKDIV_TSEN,
++	.set_rate	= set_keytchclk_rate,
++};
+ static struct clk clk_spi = {
+ 	.parent		= &clk_xtali,
+ 	.rate		= EP93XX_EXT_CLK_RATE,
+@@ -214,6 +221,7 @@ static struct clk_lookup clocks[] = {
+ 	INIT_CK(NULL,			"pll2",		&clk_pll2),
+ 	INIT_CK("ohci-platform",	NULL,		&clk_usb_host),
+ 	INIT_CK("ep93xx-keypad",	NULL,		&clk_keypad),
++	INIT_CK("ep93xx-adc",		NULL,		&clk_adc),
+ 	INIT_CK("ep93xx-fb",		NULL,		&clk_video),
+ 	INIT_CK("ep93xx-spi.0",		NULL,		&clk_spi),
+ 	INIT_CK("ep93xx-i2s",		"mclk",		&clk_i2s_mclk),
