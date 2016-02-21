@@ -1,122 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60497 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60520 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751116AbcBUUga (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 15:36:30 -0500
-Subject: Re: [RFC PATCH 1/9] iio: imu: inv_mpu6050: Fix multiline comments
- style
-To: Daniel Baluta <daniel.baluta@intel.com>
+	with ESMTP id S1751116AbcBUUiD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 15:38:03 -0500
+Subject: Re: [RFC PATCH 2/9] iio: imu: inv_mpu6050: Fix Yoda conditions
+To: Crt Mori <cmo@melexis.com>, Daniel Baluta <daniel.baluta@intel.com>
 References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
- <1455810794-3188-2-git-send-email-daniel.baluta@intel.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+ <1455810794-3188-3-git-send-email-daniel.baluta@intel.com>
+ <CAKv63us92Epe0go9JGNScbeOepg3_j8RyW9w2qgN01Jvnj3sUQ@mail.gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	wsa@the-dreams.de, linux-i2c@vger.kernel.org,
-	lucas.demarchi@intel.com, srinivas.pandruvada@linux.intel.com,
-	ggao@invensense.com, adi.reus@gmail.com, cmo@melexis.com,
+	Wolfram Sang <wsa@the-dreams.de>, linux-i2c@vger.kernel.org,
+	lucas.demarchi@intel.com,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	ggao@invensense.com, Adriana Reus <adi.reus@gmail.com>,
 	mwelling@ieee.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56CA1FCB.40000@kernel.org>
-Date: Sun, 21 Feb 2016 20:36:27 +0000
+Message-ID: <56CA2028.90603@kernel.org>
+Date: Sun, 21 Feb 2016 20:38:00 +0000
 MIME-Version: 1.0
-In-Reply-To: <1455810794-3188-2-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAKv63us92Epe0go9JGNScbeOepg3_j8RyW9w2qgN01Jvnj3sUQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/02/16 15:53, Daniel Baluta wrote:
-> The preffered style for long (multi-line) comments is:
+On 19/02/16 09:09, Crt Mori wrote:
+> This is quite trivial.
 > 
-> /*
->  * this is a multiline
->  * comment
->  */
+> Acked-by: Crt Mori <cmo@melexis.com>
+Applied.
 > 
-> This also fixes checkpatch.pl warning:
-> WARNING: Block comments use * on subsequent lines
-> 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Applied to the togreg branch of iio.git - pushed out as testing as normal.
-
-Jonathan
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 37 +++++++++++++++++++-----------
->  1 file changed, 23 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 2258600..84e014c 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -79,10 +79,11 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
->  {
->  	unsigned int d, mgmt_1;
->  	int result;
-> -
-> -	/* switch clock needs to be careful. Only when gyro is on, can
-> -	   clock source be switched to gyro. Otherwise, it must be set to
-> -	   internal clock */
-> +	/*
-> +	 * switch clock needs to be careful. Only when gyro is on, can
-> +	 * clock source be switched to gyro. Otherwise, it must be set to
-> +	 * internal clock
-> +	 */
->  	if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
->  		result = regmap_read(st->map, st->reg->pwr_mgmt_1, &mgmt_1);
->  		if (result)
-> @@ -92,8 +93,10 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
->  	}
->  
->  	if ((INV_MPU6050_BIT_PWR_GYRO_STBY == mask) && (!en)) {
-> -		/* turning off gyro requires switch to internal clock first.
-> -		   Then turn off gyro engine */
-> +		/*
-> +		 * turning off gyro requires switch to internal clock first.
-> +		 * Then turn off gyro engine
-> +		 */
->  		mgmt_1 |= INV_CLK_INTERNAL;
->  		result = regmap_write(st->map, st->reg->pwr_mgmt_1, mgmt_1);
->  		if (result)
-> @@ -391,8 +394,10 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
->  	int result;
->  
->  	mutex_lock(&indio_dev->mlock);
-> -	/* we should only update scale when the chip is disabled, i.e.,
-> -		not running */
-> +	/*
-> +	 * we should only update scale when the chip is disabled, i.e.
-> +	 * not running
-> +	 */
->  	if (st->chip_config.enable) {
->  		result = -EBUSY;
->  		goto error_write_raw;
-> @@ -529,8 +534,10 @@ static ssize_t inv_attr_show(struct device *dev,
->  	s8 *m;
->  
->  	switch (this_attr->address) {
-> -	/* In MPU6050, the two matrix are the same because gyro and accel
-> -	   are integrated in one chip */
-> +	/*
-> +	 * In MPU6050, the two matrix are the same because gyro and accel
-> +	 * are integrated in one chip
-> +	 */
->  	case ATTR_GYRO_MATRIX:
->  	case ATTR_ACCL_MATRIX:
->  		m = st->plat_data.orientation;
-> @@ -654,10 +661,12 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
->  	if (result)
->  		return result;
->  	msleep(INV_MPU6050_POWER_UP_TIME);
-> -	/* toggle power state. After reset, the sleep bit could be on
-> -		or off depending on the OTP settings. Toggling power would
-> -		make it in a definite state as well as making the hardware
-> -		state align with the software state */
-> +	/*
-> +	 * toggle power state. After reset, the sleep bit could be on
-> +	 * or off depending on the OTP settings. Toggling power would
-> +	 * make it in a definite state as well as making the hardware
-> +	 * state align with the software state
-> +	 */
->  	result = inv_mpu6050_set_power_itg(st, false);
->  	if (result)
->  		return result;
-> 
+> On 18 February 2016 at 16:53, Daniel Baluta <daniel.baluta@intel.com> wrote:
+>> This fixes the following checkpatch warning:
+>>         * WARNING: Comparisons should place the constant
+>>           on the right side of the test
+>>
+>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>> ---
+>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 +++---
+>>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 2 +-
+>>  2 files changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> index 84e014c..c550ebb 100644
+>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> @@ -84,7 +84,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+>>          * clock source be switched to gyro. Otherwise, it must be set to
+>>          * internal clock
+>>          */
+>> -       if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
+>> +       if (mask == INV_MPU6050_BIT_PWR_GYRO_STBY) {
+>>                 result = regmap_read(st->map, st->reg->pwr_mgmt_1, &mgmt_1);
+>>                 if (result)
+>>                         return result;
+>> @@ -92,7 +92,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+>>                 mgmt_1 &= ~INV_MPU6050_BIT_CLK_MASK;
+>>         }
+>>
+>> -       if ((INV_MPU6050_BIT_PWR_GYRO_STBY == mask) && (!en)) {
+>> +       if ((mask == INV_MPU6050_BIT_PWR_GYRO_STBY) && (!en)) {
+>>                 /*
+>>                  * turning off gyro requires switch to internal clock first.
+>>                  * Then turn off gyro engine
+>> @@ -117,7 +117,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+>>         if (en) {
+>>                 /* Wait for output stabilize */
+>>                 msleep(INV_MPU6050_TEMP_UP_TIME);
+>> -               if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
+>> +               if (mask == INV_MPU6050_BIT_PWR_GYRO_STBY) {
+>>                         /* switch internal clock to PLL */
+>>                         mgmt_1 |= INV_CLK_PLL;
+>>                         result = regmap_write(st->map,
+>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+>> index 1fc5fd9..441080b 100644
+>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+>> @@ -168,7 +168,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+>>
+>>                 result = kfifo_out(&st->timestamps, &timestamp, 1);
+>>                 /* when there is no timestamp, put timestamp as 0 */
+>> -               if (0 == result)
+>> +               if (result == 0)
+>>                         timestamp = 0;
+>>
+>>                 result = iio_push_to_buffers_with_timestamp(indio_dev, data,
+>> --
+>> 2.5.0
+>>
 
