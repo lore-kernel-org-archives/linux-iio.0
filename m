@@ -1,436 +1,404 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60151 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60197 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750708AbcBUThT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 14:37:19 -0500
-Subject: Re: [PATCH v2 2/2] iio: dac: vf610_dac: Add IIO DAC driver for Vybrid
- SoC
-To: Sanchayan Maity <maitysanchayan@gmail.com>
-References: <cover.1455516083.git.maitysanchayan@gmail.com>
- <cover.1455516083.git.maitysanchayan@gmail.com>
- <597b39da08c4c1416984cf7e873f56e19975b80e.1455516083.git.maitysanchayan@gmail.com>
- <02B1DDEF-6BE7-4C4C-AAD0-4EB496734316@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, shawnguo@kernel.org, stefan@agner.ch,
-	pmeerw@pmeerw.net
+	with ESMTP id S1750806AbcBUTr4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 14:47:56 -0500
+Subject: Re: [PATCH v2 5/5] iio: adc: New driver for Cirrus Logic EP93xx ADC
+To: Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+	Hartley Sweeten <hsweeten@visionengravers.com>,
+	Ryan Mallon <rmallon@gmail.com>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+References: <56C88EDD.3040007@gmail.com> <56C88FCB.30008@gmail.com>
+ <56C88FFD.9050504@gmail.com> <56C89024.3060802@gmail.com>
+ <56C89056.7070903@gmail.com> <56C8A9AB.7040506@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56CA11EC.9030309@kernel.org>
-Date: Sun, 21 Feb 2016 19:37:16 +0000
+Cc: Russell King <linux@arm.linux.org.uk>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Message-ID: <56CA1469.70806@kernel.org>
+Date: Sun, 21 Feb 2016 19:47:53 +0000
 MIME-Version: 1.0
-In-Reply-To: <02B1DDEF-6BE7-4C4C-AAD0-4EB496734316@kernel.org>
+In-Reply-To: <56C8A9AB.7040506@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/02/16 16:48, Jonathan Cameron wrote:
+On 20/02/16 18:00, Alexander Sverdlin wrote:
+> New driver adding support for ADC found on Cirrus Logic EP93xx series of SoCs.
+> Board specific code must take care to create plaform device with all necessary
+> resources.
 > 
-> 
-> On 15 February 2016 06:42:33 GMT+00:00, Sanchayan Maity <maitysanchayan@gmail.com> wrote:
->> Add driver support for DAC peripheral on Vybrid SoC.
->>
->> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
->> Acked-by: Rob Herring <robh@kernel.org>
-> Ordering is wrong in remove. I may well fix this up and apply later today. 
-I also note that the Kconfig dependencies are rather sparse.  Presumably needs
-depends on HAS_IOMEM at the very least.  Anyhow, changes are getting less
-trivial so I'm  not going to apply this without another revision.
+> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Looks basically good to me.  A few things that might by convention in IIO
+have been slightly different framed, but nothing that matters.
+
+Given the need for the earlier arch related patches, this either needs to
+got through the relevant arm-soc trees, or I need an Ack to apply those
+through IIO.  I don't mind either way.  One aside though - is there anything
+preventing us have this build with COMPILE_TEST as an alternative to the arch
+dependency?  If not then adding that would be good to improve build test
+coverage.  Note that you will probably need to check dependencies on one or
+two things if you do that (HAS_IOMEM I would think for starters) which are
+implicitly brought in otherwise by the ARCH dependency.
+
+Should it go through the relevant arch trees then feel free to add.
+
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+
+Thanks,
 
 Jonathan
->  Otherwise looks good to me.
->> ---
->> Documentation/ABI/testing/sysfs-bus-iio-vf610      |   9 +
->> .../devicetree/bindings/iio/dac/vf610-dac.txt      |  20 ++
->> drivers/iio/dac/Kconfig                            |   8 +
->> drivers/iio/dac/Makefile                           |   1 +
->> drivers/iio/dac/vf610_dac.c                        | 298
->> +++++++++++++++++++++
->> 5 files changed, 336 insertions(+)
->> create mode 100644
->> Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
->> create mode 100644 drivers/iio/dac/vf610_dac.c
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610
->> b/Documentation/ABI/testing/sysfs-bus-iio-vf610
->> index ecbc1f4..5ea809c 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio-vf610
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
->> @@ -5,3 +5,12 @@ Description:
->> 		Specifies the hardware conversion mode used. The three
->> 		available modes are "normal", "high-speed" and "low-power",
->> 		where the last is the default mode.
->> +
->> +
->> +What:		/sys/bus/iio/devices/iio:deviceX/out_conversion_mode
->> +KernelVersion:	4.6
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		Specifies the hardware conversion mode used within DAC.
->> +		The two available modes are "high-power" and "low-power",
->> +		where "low-power" mode is the default mode.
->> \ No newline at end of file
->> diff --git a/Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
->> b/Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
->> new file mode 100644
->> index 0000000..20c6c7a
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
->> @@ -0,0 +1,20 @@
->> +Freescale vf610 Digital to Analog Converter bindings
->> +
->> +The devicetree bindings are for the new DAC driver written for
->> +vf610 SoCs from Freescale.
->> +
->> +Required properties:
->> +- compatible: Should contain "fsl,vf610-dac"
->> +- reg: Offset and length of the register set for the device
->> +- interrupts: Should contain the interrupt for the device
->> +- clocks: The clock is needed by the DAC controller
->> +- clock-names: Must contain "dac" matching entry in the clocks
->> property.
->> +
->> +Example:
->> +dac0: dac@400cc000 {
->> +	compatible = "fsl,vf610-dac";
->> +	reg = <0x400cc000 0x1000>;
->> +	interrupts = <55 IRQ_TYPE_LEVEL_HIGH>;
->> +	clock-names = "dac";
->> +	clocks = <&clks VF610_CLK_DAC0>;
->> +};
->> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
->> index e701e28..8eb0502 100644
->> --- a/drivers/iio/dac/Kconfig
->> +++ b/drivers/iio/dac/Kconfig
->> @@ -196,4 +196,12 @@ config MCP4922
->> 	  To compile this driver as a module, choose M here: the module
->> 	  will be called mcp4922.
->>
->> +config VF610_DAC
->> +	tristate "Vybrid vf610 DAC driver"
->> +	help
->> +	  Say yes here to support Vybrid board digital-to-analog converter.
->> +
->> +	  This driver can also be built as a module. If so, the module will
->> +	  be called vf610_dac.
->> +
->> endmenu
->> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
->> index 63ae056..93feb27 100644
->> --- a/drivers/iio/dac/Makefile
->> +++ b/drivers/iio/dac/Makefile
->> @@ -21,3 +21,4 @@ obj-$(CONFIG_MAX517) += max517.o
->> obj-$(CONFIG_MAX5821) += max5821.o
->> obj-$(CONFIG_MCP4725) += mcp4725.o
->> obj-$(CONFIG_MCP4922) += mcp4922.o
->> +obj-$(CONFIG_VF610_DAC) += vf610_dac.o
->> diff --git a/drivers/iio/dac/vf610_dac.c b/drivers/iio/dac/vf610_dac.c
->> new file mode 100644
->> index 0000000..3f70f96
->> --- /dev/null
->> +++ b/drivers/iio/dac/vf610_dac.c
->> @@ -0,0 +1,298 @@
->> +/*
->> + * Freescale Vybrid vf610 DAC driver
->> + *
->> + * Copyright 2016 Toradex AG
->> + *
->> + * This program is free software; you can redistribute it and/or
->> modify
->> + * it under the terms of the GNU General Public License as published
->> by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->> + * GNU General Public License for more details.
->> + */
->> +
->> +#include <linux/clk.h>
->> +#include <linux/err.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/io.h>
->> +#include <linux/kernel.h>
->> +#include <linux/module.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/regulator/consumer.h>
->> +#include <linux/slab.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +
->> +#define VF610_DACx_STATCTRL		0x20
->> +
->> +#define VF610_DAC_DACEN			BIT(15)
->> +#define VF610_DAC_DACRFS		BIT(14)
->> +#define VF610_DAC_LPEN			BIT(11)
->> +
->> +#define VF610_DAC_DAT0(x)		((x) & 0xFFF)
->> +
->> +enum vf610_conversion_mode_sel {
->> +	VF610_DAC_CONV_HIGH_POWER,
->> +	VF610_DAC_CONV_LOW_POWER,
->> +};
->> +
->> +struct vf610_dac {
->> +	struct clk *clk;
->> +	struct device *dev;
->> +	enum vf610_conversion_mode_sel conv_mode;
->> +	void __iomem *regs;
->> +};
->> +
->> +static void vf610_dac_init(struct vf610_dac *info)
->> +{
->> +	int val;
->> +
->> +	info->conv_mode = VF610_DAC_CONV_LOW_POWER;
->> +	val = VF610_DAC_DACEN | VF610_DAC_DACRFS |
->> +		VF610_DAC_LPEN;
->> +	writel(val, info->regs + VF610_DACx_STATCTRL);
->> +}
->> +
->> +static void vf610_dac_exit(struct vf610_dac *info)
->> +{
->> +	int val;
->> +
->> +	val = readl(info->regs + VF610_DACx_STATCTRL);
->> +	val &= ~VF610_DAC_DACEN;
->> +	writel(val, info->regs + VF610_DACx_STATCTRL);
->> +}
->> +
->> +static int vf610_set_conversion_mode(struct iio_dev *indio_dev,
->> +				const struct iio_chan_spec *chan,
->> +				unsigned int mode)
->> +{
->> +	struct vf610_dac *info = iio_priv(indio_dev);
->> +	int val;
->> +
->> +	mutex_lock(&indio_dev->mlock);
->> +	info->conv_mode = mode;
->> +	val = readl(info->regs + VF610_DACx_STATCTRL);
->> +	if (mode)
->> +		val |= VF610_DAC_LPEN;
->> +	else
->> +		val &= ~VF610_DAC_LPEN;
->> +	writel(val, info->regs + VF610_DACx_STATCTRL);
->> +	mutex_unlock(&indio_dev->mlock);
->> +
->> +	return 0;
->> +}
->> +
->> +static int vf610_get_conversion_mode(struct iio_dev *indio_dev,
->> +				const struct iio_chan_spec *chan)
->> +{
->> +	struct vf610_dac *info = iio_priv(indio_dev);
->> +
->> +	return info->conv_mode;
->> +}
->> +
->> +static const char * const vf610_conv_modes[] = { "high-power",
->> "low-power" };
->> +
->> +static const struct iio_enum vf610_conversion_mode = {
->> +	.items = vf610_conv_modes,
->> +	.num_items = ARRAY_SIZE(vf610_conv_modes),
->> +	.get = vf610_get_conversion_mode,
->> +	.set = vf610_set_conversion_mode,
->> +};
->> +
->> +static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
->> +	IIO_ENUM("conversion_mode", IIO_SHARED_BY_DIR,
->> +		&vf610_conversion_mode),
->> +	{},
->> +};
->> +
->> +#define VF610_DAC_CHAN(_chan_type) { \
->> +	.type = (_chan_type), \
->> +	.output = 1, \
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
->> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
->> +	.ext_info = vf610_ext_info, \
->> +}
->> +
->> +static const struct iio_chan_spec vf610_dac_iio_channels[] = {
->> +	VF610_DAC_CHAN(IIO_VOLTAGE),
->> +};
->> +
->> +static int vf610_read_raw(struct iio_dev *indio_dev,
->> +			struct iio_chan_spec const *chan,
->> +			int *val, int *val2,
->> +			long mask)
->> +{
->> +	struct vf610_dac *info = iio_priv(indio_dev);
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		*val = VF610_DAC_DAT0(readl(info->regs));
->> +		return IIO_VAL_INT;
->> +	case IIO_CHAN_INFO_SCALE:
->> +		/*
->> +		 * DACRFS is always 1 for valid reference and typical
->> +		 * reference voltage as per Vybrid datasheet is 3.3V
->> +		 * from section 9.1.2.1 of Vybrid datasheet
->> +		 */
->> +		*val = 3300 /* mV */;
->> +		*val2 = 12;
->> +		return IIO_VAL_FRACTIONAL_LOG2;
->> +
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +}
->> +
->> +static int vf610_write_raw(struct iio_dev *indio_dev,
->> +			struct iio_chan_spec const *chan,
->> +			int val, int val2,
->> +			long mask)
->> +{
->> +	struct vf610_dac *info = iio_priv(indio_dev);
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		mutex_lock(&indio_dev->mlock);
->> +		writel(VF610_DAC_DAT0(val), info->regs);
->> +		mutex_unlock(&indio_dev->mlock);
->> +		return 0;
->> +
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +}
->> +
->> +static const struct iio_info vf610_dac_iio_info = {
->> +	.driver_module = THIS_MODULE,
->> +	.read_raw = &vf610_read_raw,
->> +	.write_raw = &vf610_write_raw,
->> +};
->> +
->> +static const struct of_device_id vf610_dac_match[] = {
->> +	{ .compatible = "fsl,vf610-dac", },
->> +	{ /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(of, vf610_dac_match);
->> +
->> +static int vf610_dac_probe(struct platform_device *pdev)
->> +{
->> +	struct iio_dev *indio_dev;
->> +	struct vf610_dac *info;
->> +	struct resource *mem;
->> +	int ret;
->> +
->> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
->> +					sizeof(struct vf610_dac));
->> +	if (!indio_dev) {
->> +		dev_err(&pdev->dev, "Failed allocating iio device\n");
->> +		return -ENOMEM;
->> +	}
->> +
->> +	info = iio_priv(indio_dev);
->> +	info->dev = &pdev->dev;
->> +
->> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
->> +	if (IS_ERR(info->regs))
->> +		return PTR_ERR(info->regs);
->> +
->> +	info->clk = devm_clk_get(&pdev->dev, "dac");
->> +	if (IS_ERR(info->clk)) {
->> +		dev_err(&pdev->dev, "Failed getting clock, err = %ld\n",
->> +			PTR_ERR(info->clk));
->> +		return PTR_ERR(info->clk);
->> +	}
->> +
->> +	platform_set_drvdata(pdev, indio_dev);
->> +
->> +	indio_dev->name = dev_name(&pdev->dev);
->> +	indio_dev->dev.parent = &pdev->dev;
->> +	indio_dev->dev.of_node = pdev->dev.of_node;
->> +	indio_dev->info = &vf610_dac_iio_info;
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +	indio_dev->channels = vf610_dac_iio_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(vf610_dac_iio_channels);
->> +
->> +	ret = clk_prepare_enable(info->clk);
->> +	if (ret) {
->> +		dev_err(&pdev->dev,
->> +			"Could not prepare or enable the clock\n");
->> +		return ret;
->> +	}
->> +
->> +	vf610_dac_init(info);
->> +
->> +	ret = iio_device_register(indio_dev);
->> +	if (ret) {
->> +		dev_err(&pdev->dev, "Couldn't register the device\n");
->> +		goto error_iio_device_register;
->> +	}
->> +
->> +	return 0;
->> +
->> +error_iio_device_register:
->> +	clk_disable_unprepare(info->clk);
->> +
->> +	return ret;
->> +}
->> +
->> +static int vf610_dac_remove(struct platform_device *pdev)
->> +{
->> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->> +	struct vf610_dac *info = iio_priv(indio_dev);
->> +
->> +	vf610_dac_exit(info);
-> Should be reverse order of probe so exit after the unregister below.
-> Right now you are disabling the hardware before removing the userspace interfaces.
->> +	iio_device_unregister(indio_dev);
->> +	clk_disable_unprepare(info->clk);
->> +
->> +	return 0;
->> +}
->> +
->> +#ifdef CONFIG_PM_SLEEP
->> +static int vf610_dac_suspend(struct device *dev)
->> +{
->> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->> +	struct vf610_dac *info = iio_priv(indio_dev);
->> +
->> +	vf610_dac_exit(info);
->> +	clk_disable_unprepare(info->clk);
->> +
->> +	return 0;
->> +}
->> +
->> +static int vf610_dac_resume(struct device *dev)
->> +{
->> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->> +	struct vf610_dac *info = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	ret = clk_prepare_enable(info->clk);
->> +	if (ret)
->> +		return ret;
->> +
->> +	vf610_dac_init(info);
->> +
->> +	return 0;
->> +}
->> +#endif
->> +
->> +static SIMPLE_DEV_PM_OPS(vf610_dac_pm_ops, vf610_dac_suspend,
->> vf610_dac_resume);
->> +
->> +static struct platform_driver vf610_dac_driver = {
->> +	.probe          = vf610_dac_probe,
->> +	.remove         = vf610_dac_remove,
->> +	.driver         = {
->> +		.name   = "vf610-dac",
->> +		.of_match_table = vf610_dac_match,
->> +		.pm     = &vf610_dac_pm_ops,
->> +	},
->> +};
->> +module_platform_driver(vf610_dac_driver);
->> +
->> +MODULE_AUTHOR("Sanchayan Maity <sanchayan.maity@toradex.com");
->> +MODULE_DESCRIPTION("Freescale VF610 DAC driver");
->> +MODULE_LICENSE("GPL v2");
+> ---
+>  Documentation/iio/ep93xx_adc.txt |  29 +++++
+>  drivers/iio/adc/Kconfig          |  11 ++
+>  drivers/iio/adc/Makefile         |   1 +
+>  drivers/iio/adc/ep93xx_adc.c     | 261 +++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 302 insertions(+)
+>  create mode 100644 Documentation/iio/ep93xx_adc.txt
+>  create mode 100644 drivers/iio/adc/ep93xx_adc.c
+> 
+> diff --git a/Documentation/iio/ep93xx_adc.txt b/Documentation/iio/ep93xx_adc.txt
+> new file mode 100644
+> index 0000000..321e59f
+> --- /dev/null
+> +++ b/Documentation/iio/ep93xx_adc.txt
+> @@ -0,0 +1,29 @@
+> +Cirrus Logic EP93xx ADC driver.
+> +
+> +1. Overview
+> +
+> +The driver is intended to work on both low-end (EP9301, EP9302) devices with
+> +5-channel ADC and high-end (EP9307, EP9312, EP9315) devices with 10-channel
+> +touchscreen/ADC module.
+> +
+> +2. Channel numbering
+> +
+> +Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
+> +EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
+> +not defined. So the last three are numbered randomly, let's say.
+> +
+> +Assuming ep93xx_adc is IIO device0, you'd find following entries under
+> +/sys/bus/iio/devices/iio:device0/:
+> +
+> +  +-----------------+---------------+
+> +  | sysfs entry     | ball/pin name |
+> +  +-----------------+---------------+
+> +  | in_voltage0_raw | YM            |
+> +  | in_voltage1_raw | SXP           |
+> +  | in_voltage2_raw | SXM           |
+> +  | in_voltage3_raw | SYP           |
+> +  | in_voltage4_raw | SYM           |
+> +  | in_voltage5_raw | XP            |
+> +  | in_voltage6_raw | XM            |
+> +  | in_voltage7_raw | YP            |
+> +  +-----------------+---------------+
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 283ded7..0482f29 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -172,6 +172,17 @@ config DA9150_GPADC
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called berlin2-adc.
+> 
+> +config EP93XX_ADC
+> +	tristate "Cirrus Logic EP93XX ADC driver"
+> +	depends on ARCH_EP93XX
+> +	help
+> +	  Driver for the ADC module on the EP93XX series of SoC from Cirrus Logic.
+> +	  It's recommended to switch on CONFIG_HIGH_RES_TIMERS option, in this
+> +	  case driver will reduce its CPU usage by 90% in some use cases.
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called ep93xx_adc.
+> +
+>  config EXYNOS_ADC
+>  	tristate "Exynos ADC driver support"
+>  	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 6435780..cd7d33e 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -18,6 +18,7 @@ obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+>  obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+>  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+>  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+> +obj-$(CONFIG_EP93XX_ADC) += ep93xx_adc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>  obj-$(CONFIG_HI8435) += hi8435.o
+>  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+> diff --git a/drivers/iio/adc/ep93xx_adc.c b/drivers/iio/adc/ep93xx_adc.c
+> new file mode 100644
+> index 0000000..3728591
+> --- /dev/null
+> +++ b/drivers/iio/adc/ep93xx_adc.c
+> @@ -0,0 +1,261 @@
+> +/*
+> + * Driver for ADC module on the Cirrus Logic EP93xx series of SoCs
+> + *
+> + * Copyright (C) 2015 Alexander Sverdlin
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * The driver uses polling to get the conversion status. According to EP93xx
+> + * datasheets, reading ADCResult register starts the conversion, but user is also
+> + * responsible for ensuring that delay between adjacent conversion triggers is
+> + * long enough so that maximum allowed conversion rate is not exceeded. This
+> + * basically renders IRQ mode unusable.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/delay.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/io.h>
+> +#include <linux/irqflags.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/platform_device.h>
+> +
+> +#define EP93XX_NUM_CHANNELS 8
+> +
+> +/*
+> + * This code could benefit from real HR Timers, but jiffy granularity would
+> + * lower ADC conversion rate down to CONFIG_HZ, so we fallback to busy wait
+> + * in such case.
+> + *
+> + * HR Timers-based version loads CPU only up to 10% during back to back ADC
+> + * conversion, while busy wait-based version consumes whole CPU power.
+> + */
+> +#ifdef CONFIG_HIGH_RES_TIMERS
+> +#define ep93xx_adc_delay(usmin, usmax) usleep_range(usmin, usmax)
+> +#else
+> +#define ep93xx_adc_delay(usmin, usmax) udelay(usmin)
+> +#endif
+> +
+> +#define EP93XX_ADC_RESULT	0x08
+> +#define   EP93XX_ADC_SDR	BIT(31)
+> +#define EP93XX_ADC_SWITCH	0x18
+> +#define EP93XX_ADC_SW_LOCK	0x20
+> +#define EP93XX_ADC_INT_EN	0x24
+> +#define   EP93XX_ADC_RINTEN	BIT(11)
+> +
+> +struct ep93xx_adc_priv {
+> +	struct clk *clk;
+> +	void __iomem *base;
+> +	int lastch;
+> +	struct mutex lock;
+> +};
+> +
+> +#define EP93XX_ADC_CH(index, dname, swcfg) {			\
+> +	.type = IIO_VOLTAGE,					\
+> +	.indexed = 1,						\
+> +	.channel = index,					\
+> +	.address = swcfg,					\
+> +	.datasheet_name = dname,				\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE) |	\
+> +				   BIT(IIO_CHAN_INFO_OFFSET),	\
+> +}
+> +
+> +/*
+> + * Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
+> + * EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
+> + * not defined. So the last three are numbered randomly, let's say.
+> + */
+> +static const struct iio_chan_spec ep93xx_adc_channels[EP93XX_NUM_CHANNELS] = {
+> +	EP93XX_ADC_CH(0, "YM",	0x608),
+> +	EP93XX_ADC_CH(1, "SXP",	0x680),
+> +	EP93XX_ADC_CH(2, "SXM",	0x640),
+> +	EP93XX_ADC_CH(3, "SYP",	0x620),
+> +	EP93XX_ADC_CH(4, "SYM",	0x610),
+> +	EP93XX_ADC_CH(5, "XP",	0x601),
+> +	EP93XX_ADC_CH(6, "XM",	0x602),
+> +	EP93XX_ADC_CH(7, "YP",	0x604),
+> +};
+> +
+> +static int ep93xx_read_raw(struct iio_dev *iiodev,
+> +			   struct iio_chan_spec const *channel, int *value,
+> +			   int *shift, long mask)
+> +{
+> +	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
+> +	unsigned long timeout;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&priv->lock);
+> +		if (priv->lastch != channel->channel) {
+> +			priv->lastch = channel->channel;
+> +			/*
+> +			 * Switch register is software-locked, unlocking must be
+> +			 * immediately followed by write
+> +			 */
+> +			local_irq_disable();
+> +			writel_relaxed(0xAA, priv->base + EP93XX_ADC_SW_LOCK);
+> +			writel_relaxed(channel->address,
+> +				       priv->base + EP93XX_ADC_SWITCH);
+> +			local_irq_enable();
+> +			/*
+> +			 * Settling delay depends on module clock and could be
+> +			 * 2ms or 500us
+> +			 */
+> +			ep93xx_adc_delay(2000, 2000);
+> +		}
+> +		/* Start the conversion, eventually discarding old result */
+> +		readl_relaxed(priv->base + EP93XX_ADC_RESULT);
+> +		/* Ensure maximun conversion rate is not exceeded */
+> +		ep93xx_adc_delay(DIV_ROUND_UP(1000000, 925),
+> +				 DIV_ROUND_UP(1000000, 925));
+> +		/* At this point conversion must be completed, but anyway... */
+> +		ret = IIO_VAL_INT;
+> +		timeout = jiffies + msecs_to_jiffies(1) + 1;
+> +		while (1) {
+> +			u32 t;
+> +
+> +			t = readl_relaxed(priv->base + EP93XX_ADC_RESULT);
+> +			if (t & EP93XX_ADC_SDR) {
+> +				/* Sign extend lower 16 bits */
+> +				*value = (s16)t;
+> +				break;
+> +			}
+> +
+> +			if (time_after(jiffies, timeout)) {
+> +				dev_err(&iiodev->dev, "Conversion timeout\n");
+> +				ret = -ETIMEDOUT;
+> +				break;
+> +			}
+> +
+> +			cpu_relax();
+> +		}
+> +		mutex_unlock(&priv->lock);
+> +		return ret;
+> +
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		/* According to datasheet, range is -25000..25000 */
+> +		*value = 25000;
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* Typical supply voltage is 3.3v */
+> +		*value = (1ULL << 32) * 3300 / 50000;
+> +		*shift = 32;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info ep93xx_adc_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = ep93xx_read_raw,
+> +};
+> +
+> +static int ep93xx_adc_probe(struct platform_device *pdev)
+> +{
+> +	int ret;
+> +	struct iio_dev *iiodev;
+> +	struct ep93xx_adc_priv *priv;
+> +	struct clk *pclk;
+> +	struct resource *res;
+> +
+> +	iiodev = devm_iio_device_alloc(&pdev->dev,
+> +				       sizeof(struct ep93xx_adc_priv));
+slight preference for sizeof(*priv)
+> +	if (!iiodev)
+> +		return -ENOMEM;
+> +	priv = iio_priv(iiodev);
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!res) {
+> +		dev_err(&pdev->dev, "Cannot obtain memory resource\n");
+> +		return -ENXIO;
+> +	}
+> +	priv->base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(priv->base)) {
+> +		dev_err(&pdev->dev, "Cannot map memory resource\n");
+> +		return PTR_ERR(priv->base);
+> +	}
+> +
+> +	iiodev->dev.parent = &pdev->dev;
+> +	iiodev->name = dev_name(&pdev->dev);
+> +	iiodev->modes = INDIO_DIRECT_MODE;
+> +	iiodev->info = &ep93xx_adc_info;
+> +	iiodev->num_channels = ARRAY_SIZE(ep93xx_adc_channels);
+> +	iiodev->channels = ep93xx_adc_channels;
+> +
+> +	priv->lastch = -1;
+> +	mutex_init(&priv->lock);
+> +
+> +	platform_set_drvdata(pdev, iiodev);
+> +
+> +	priv->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(priv->clk)) {
+> +		dev_err(&pdev->dev, "Cannot obtain clock\n");
+> +		return PTR_ERR(priv->clk);
+> +	}
+> +
+> +	pclk = clk_get_parent(priv->clk);
+> +	if (!pclk) {
+> +		dev_warn(&pdev->dev, "Cannot obtain parent clock\n");
+> +	} else {
+> +		/*
+> +		 * This is actually a place for improvement:
+> +		 * EP93xx ADC supports two clock divisors -- 4 and 16,
+> +		 * resulting in conversion rates 3750 and 925 samples per second
+> +		 * respectively with 500uS or 2ms settling time respectively.
+> +		 * One might find this interesting enough to be configurable.
+> +		 */
+> +		ret = clk_set_rate(priv->clk, clk_get_rate(pclk) / 16);
+> +		if (ret)
+> +			dev_warn(&pdev->dev, "Cannot set clock rate\n");
+> +		/*
+> +		 * We can tolerate rate setting failure because the module should
+> +		 * work in any case.
+> +		 */
+> +	}
+> +
+> +	ret = clk_enable(priv->clk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Cannot enable clock\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = iio_device_register(iiodev);
+> +	if (ret)
+> +		clk_disable(priv->clk);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ep93xx_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *iiodev = platform_get_drvdata(pdev);
+> +	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
+> +
+> +	iio_device_unregister(iiodev);
+> +	clk_disable(priv->clk);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver ep93xx_adc_driver = {
+> +	.driver = {
+> +		.name = "ep93xx-adc",
+> +	},
+> +	.probe = ep93xx_adc_probe,
+> +	.remove = ep93xx_adc_remove,
+> +};
+> +module_platform_driver(ep93xx_adc_driver);
+> +
+> +MODULE_AUTHOR("Alexander Sverdlin <alexander.sverdlin@gmail.com>");
+> +MODULE_DESCRIPTION("Cirrus Logic EP93XX ADC driver");
+> +MODULE_LICENSE("GPL");
+> +MODULE_ALIAS("platform:ep93xx-adc");
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
