@@ -1,67 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-072.synserver.de ([212.40.185.72]:1168 "EHLO
-	smtp-out-033.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751496AbcBOQvb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Feb 2016 11:51:31 -0500
-Subject: Re: libiio and unindexed channel
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-	linux-iio@vger.kernel.org, paul.cercueil@analog.com
-References: <56C1F92D.2020506@parrot.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56C2020F.9000902@metafoo.de>
-Date: Mon, 15 Feb 2016 17:51:27 +0100
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60246 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750951AbcBUTz3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 14:55:29 -0500
+Subject: Re: [PATCH v1 1/2] iio:iio-interrupt-trigger: device-tree support
+To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
+References: <cover.1455908065.git.gregor.boirie@parrot.com>
+ <d8f7902dbfe6e911e6ac0d1117502a02b1212022.1455908065.git.gregor.boirie@parrot.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <Pawel.Moll@arm.com>,
+	Mark Rutland <Mark.Rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56CA162C.5010406@kernel.org>
+Date: Sun, 21 Feb 2016 19:55:24 +0000
 MIME-Version: 1.0
-In-Reply-To: <56C1F92D.2020506@parrot.com>
+In-Reply-To: <d8f7902dbfe6e911e6ac0d1117502a02b1212022.1455908065.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/15/2016 05:13 PM, Gregor Boirie wrote:
-> Hi all,
+On 19/02/16 19:18, Gregor Boirie wrote:
+> From: Grégor Boirie <gregor.boirie@parrot.com>
 > 
-> I hope it is the right place to post for libiio related problems. Please,
-> forgive my mistakeif it is not.
-> 
-> I'm facing a rather odd problem with unindexed channel (as declared
-> in ms5611 pressure driver iio_chan_spec 's). libiio does not consider
-> pressure and temperature channels exposed by the driver as...
-> channels.
-> 
-> Trying to figure out why, I looked into libiio local backend and found
-> that:
-> * on tag v0.6, libiio simply consider unindexed driver channels as
->   device attribute (see local.c:942) ;
-> * on actual master, libiio will promote unindexed driver channels to
->   channels BUT without the scan_element ability (see local.c:1130)
-> 
-> I don't fully understand what real difference it makes but libiio manual
-> says:
-> </quote>
-> a channel that is a scan element is a channel that can generate samples
-> (for an input channel) or receive samples (for an output channel) after
-> being enabled.
-> <quote/>
-> 
-> I feel a bit lost here : I thought input channels were always able to
-> generate samples. What is this iio_channel_is_scan_element() here
-> for ? From userspace point of view, what channel indices should be used
-> for ?
-> 
-> Many thanks in advancefor sharing your time and knowledge.
-> Regards,
-> Gregor.
-> 
-> P.S.: by the way, setting the "indexed" field of iio_chan_spec's in
-> ms5611_core.c makes libiio see temperature and pressure as channels.
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Snag here is that iio_interrupt_trigger is a very linux specific
+name and device tree bindings should be just about the hardware.
 
-Hi,
+Not entirely sure how we avoid this though as the use is rather
+hard to describe generically.
 
-One of the major issues of the current IIO userspace ABI is that it is not
-really machine readable friendly. libiio employs a couple of heuristics to
-try to recover the original information. Your usecase is currently not
-covered by the heuristics. But it should be fairly easy to add. If there is
-a entry in scan_elements/ whether it has a index or not it should cause
-libiio to infer a channel for it. Patches welcome.
+cc'd device tree list and bindings maintainers.
 
-- Lars
+As a brief summary - this IIO trigger driver takes a generic
+interrupt (from whatever) and uses it to drive sampling of IIO devices.
+The interrupt might be associated with particularly simple sensors directly
+but is more commonly a gpio interrupt line used cause samples to be captured
+from unrelated devices.  Sometimes the source of that interrupt can be a convoluted
+external mux setup over which linux has no control for example.
+
+Any suggestions on appropriate naming?
+
+We aren't really describing hardware here, rather a policy decision on what
+a given interrupt is to be used for.
+
+I suppose ultimately we could take the view this should be handled via another
+route (from userspace via an appropriate configfs interface for example).
+
+Jonathan
+> ---
+>  drivers/iio/trigger/iio-trig-interrupt.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
+> index 572bc6f..3c4e18f 100644
+> --- a/drivers/iio/trigger/iio-trig-interrupt.c
+> +++ b/drivers/iio/trigger/iio-trig-interrupt.c
+> @@ -104,11 +104,20 @@ static int iio_interrupt_trigger_remove(struct platform_device *pdev)
+>  	return 0;
+>  }
+>  
+> +#if defined(CONFIG_OF)
+> +static const struct of_device_id iio_interrupt_trigger_of_match[] = {
+> +	{ .compatible = "iio-interrupt-trigger" },
+> +	{}
+> +};
+> +#endif
+> +
+>  static struct platform_driver iio_interrupt_trigger_driver = {
+>  	.probe = iio_interrupt_trigger_probe,
+>  	.remove = iio_interrupt_trigger_remove,
+>  	.driver = {
+> -		.name = "iio_interrupt_trigger",
+> +		.name           = "iio_interrupt_trigger",
+> +		.owner          = THIS_MODULE,
+> +		.of_match_table = of_match_ptr(iio_interrupt_trigger_of_match)
+>  	},
+>  };
+>  
+> 
 
