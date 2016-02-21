@@ -1,404 +1,217 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60197 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60318 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750806AbcBUTr4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 14:47:56 -0500
-Subject: Re: [PATCH v2 5/5] iio: adc: New driver for Cirrus Logic EP93xx ADC
-To: Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-	Hartley Sweeten <hsweeten@visionengravers.com>,
-	Ryan Mallon <rmallon@gmail.com>,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-References: <56C88EDD.3040007@gmail.com> <56C88FCB.30008@gmail.com>
- <56C88FFD.9050504@gmail.com> <56C89024.3060802@gmail.com>
- <56C89056.7070903@gmail.com> <56C8A9AB.7040506@gmail.com>
+	with ESMTP id S1750708AbcBUUJC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 15:09:02 -0500
+Subject: Re: [PATCH v1 2/2] iio:iio-interrupt-trigger: sysfs poll support
+To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
+References: <cover.1455908065.git.gregor.boirie@parrot.com>
+ <87bbff0671c93b998547114d7f595a0bee57e817.1455908065.git.gregor.boirie@parrot.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Cc: Russell King <linux@arm.linux.org.uk>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
-Message-ID: <56CA1469.70806@kernel.org>
-Date: Sun, 21 Feb 2016 19:47:53 +0000
+Message-ID: <56CA195B.9010200@kernel.org>
+Date: Sun, 21 Feb 2016 20:08:59 +0000
 MIME-Version: 1.0
-In-Reply-To: <56C8A9AB.7040506@gmail.com>
+In-Reply-To: <87bbff0671c93b998547114d7f595a0bee57e817.1455908065.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/02/16 18:00, Alexander Sverdlin wrote:
-> New driver adding support for ADC found on Cirrus Logic EP93xx series of SoCs.
-> Board specific code must take care to create plaform device with all necessary
-> resources.
+On 19/02/16 19:18, Gregor Boirie wrote:
+> From: Grégor Boirie <gregor.boirie@parrot.com>
 > 
-> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Looks basically good to me.  A few things that might by convention in IIO
-have been slightly different framed, but nothing that matters.
+Hi Gregor.
 
-Given the need for the earlier arch related patches, this either needs to
-got through the relevant arm-soc trees, or I need an Ack to apply those
-through IIO.  I don't mind either way.  One aside though - is there anything
-preventing us have this build with COMPILE_TEST as an alternative to the arch
-dependency?  If not then adding that would be good to improve build test
-coverage.  Note that you will probably need to check dependencies on one or
-two things if you do that (HAS_IOMEM I would think for starters) which are
-implicitly brought in otherwise by the ARCH dependency.
+You certainly have some unusual requirements  - or perhaps you are
+simply the first person to show up with them here!
+> Add a sysfs file entry for each interrupt trigger instance allowing
+> userspace to :
+> * poll for interrupt events ;
+Why? 
 
-Should it go through the relevant arch trees then feel free to add.
+> * retrieve number of interrupts that occurred since trigger was
+> * initialized
+Again why?  
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-
-Thanks,
-
-Jonathan
+This is interesting stuff, but I'd like to fully understand the question
+of what you are doing with it before we go too far into the code.
+> 
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 > ---
->  Documentation/iio/ep93xx_adc.txt |  29 +++++
->  drivers/iio/adc/Kconfig          |  11 ++
->  drivers/iio/adc/Makefile         |   1 +
->  drivers/iio/adc/ep93xx_adc.c     | 261 +++++++++++++++++++++++++++++++++++++++
->  4 files changed, 302 insertions(+)
->  create mode 100644 Documentation/iio/ep93xx_adc.txt
->  create mode 100644 drivers/iio/adc/ep93xx_adc.c
+>  .../ABI/testing/sysfs-bus-iio-trig-interrupt       | 22 ++++++
+>  drivers/iio/trigger/iio-trig-interrupt.c           | 88 ++++++++++++++++------
+>  2 files changed, 88 insertions(+), 22 deletions(-)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-trig-interrupt
 > 
-> diff --git a/Documentation/iio/ep93xx_adc.txt b/Documentation/iio/ep93xx_adc.txt
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-trig-interrupt b/Documentation/ABI/testing/sysfs-bus-iio-trig-interrupt
 > new file mode 100644
-> index 0000000..321e59f
+> index 0000000..cb246d2
 > --- /dev/null
-> +++ b/Documentation/iio/ep93xx_adc.txt
-> @@ -0,0 +1,29 @@
-> +Cirrus Logic EP93xx ADC driver.
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-trig-interrupt
+> @@ -0,0 +1,22 @@
+> +What:		/sys/bus/iio/devices/triggerX/name
+> +KernelVersion:	3.11
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The name attribute holds a description string for the current
+> +		trigger. In order to associate the trigger with an IIO device
+> +		one should write this name string to
+> +		/sys/bus/iio/devices/iio:deviceY/trigger/current_trigger.
 > +
-> +1. Overview
-> +
-> +The driver is intended to work on both low-end (EP9301, EP9302) devices with
-> +5-channel ADC and high-end (EP9307, EP9312, EP9315) devices with 10-channel
-> +touchscreen/ADC module.
-> +
-> +2. Channel numbering
-> +
-> +Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
-> +EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
-> +not defined. So the last three are numbered randomly, let's say.
-> +
-> +Assuming ep93xx_adc is IIO device0, you'd find following entries under
-> +/sys/bus/iio/devices/iio:device0/:
-> +
-> +  +-----------------+---------------+
-> +  | sysfs entry     | ball/pin name |
-> +  +-----------------+---------------+
-> +  | in_voltage0_raw | YM            |
-> +  | in_voltage1_raw | SXP           |
-> +  | in_voltage2_raw | SXM           |
-> +  | in_voltage3_raw | SYP           |
-> +  | in_voltage4_raw | SYM           |
-> +  | in_voltage5_raw | XP            |
-> +  | in_voltage6_raw | XM            |
-> +  | in_voltage7_raw | YP            |
-> +  +-----------------+---------------+
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 283ded7..0482f29 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -172,6 +172,17 @@ config DA9150_GPADC
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called berlin2-adc.
-> 
-> +config EP93XX_ADC
-> +	tristate "Cirrus Logic EP93XX ADC driver"
-> +	depends on ARCH_EP93XX
-> +	help
-> +	  Driver for the ADC module on the EP93XX series of SoC from Cirrus Logic.
-> +	  It's recommended to switch on CONFIG_HIGH_RES_TIMERS option, in this
-> +	  case driver will reduce its CPU usage by 90% in some use cases.
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ep93xx_adc.
-> +
->  config EXYNOS_ADC
->  	tristate "Exynos ADC driver support"
->  	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 6435780..cd7d33e 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -18,6 +18,7 @@ obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
->  obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
->  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
->  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
-> +obj-$(CONFIG_EP93XX_ADC) += ep93xx_adc.o
->  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->  obj-$(CONFIG_HI8435) += hi8435.o
->  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
-> diff --git a/drivers/iio/adc/ep93xx_adc.c b/drivers/iio/adc/ep93xx_adc.c
-> new file mode 100644
-> index 0000000..3728591
-> --- /dev/null
-> +++ b/drivers/iio/adc/ep93xx_adc.c
-> @@ -0,0 +1,261 @@
+> +What:		/sys/bus/iio/devices/triggerX/count
+> +KernelVersion:	4.5
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The count attribute is a unsigned int counter holding the number
+> +		of times the attached interrupt occurred since trigger was
+> +		initialized.
+> +		You can poll(2) on that file and poll(2) will return whenever
+> +		the interrupt was triggered. If you use poll(2), set the events
+> +		POLLPRI and POLLERR. If you use select(2), set the file
+> +		descriptor in exceptfds. After poll(2) returns, either lseek(2)
+> +		to the beginning of the sysfs file and read the new value or
+> +		close the file and re-open it to read the value.
+> diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
+> index 3c4e18f..1bf3986 100644
+> --- a/drivers/iio/trigger/iio-trig-interrupt.c
+> +++ b/drivers/iio/trigger/iio-trig-interrupt.c
+> @@ -17,14 +17,53 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/trigger.h>
+>  
+> -
+>  struct iio_interrupt_trigger_info {
+> +	struct kernfs_node *poll;
+> +	atomic_t count;
+>  	unsigned int irq;
+>  };
+>  
 > +/*
-> + * Driver for ADC module on the Cirrus Logic EP93xx series of SoCs
-> + *
-> + * Copyright (C) 2015 Alexander Sverdlin
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * The driver uses polling to get the conversion status. According to EP93xx
-> + * datasheets, reading ADCResult register starts the conversion, but user is also
-> + * responsible for ensuring that delay between adjacent conversion triggers is
-> + * long enough so that maximum allowed conversion rate is not exceeded. This
-> + * basically renders IRQ mode unusable.
+> + * If interested by counter value, userspace should read often enough since
+> + * counter may wrap. Userspace will miss interrupt events when counter wraps
+> + * twice or more between 2 consecutive reads.
 > + */
+> +ssize_t iio_interrupt_trigger_show_count(struct device *dev,
+> +					 struct device_attribute *attr,
+> +					 char *buf)
+> +{
+> +	struct iio_trigger *trig = to_iio_trigger(dev);
+> +	struct iio_interrupt_trigger_info *info = iio_trigger_get_drvdata(trig);
+> +	unsigned int count = atomic_read(&info->count);
 > +
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/io.h>
-> +#include <linux/irqflags.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/platform_device.h>
-> +
-> +#define EP93XX_NUM_CHANNELS 8
-> +
-> +/*
-> + * This code could benefit from real HR Timers, but jiffy granularity would
-> + * lower ADC conversion rate down to CONFIG_HZ, so we fallback to busy wait
-> + * in such case.
-> + *
-> + * HR Timers-based version loads CPU only up to 10% during back to back ADC
-> + * conversion, while busy wait-based version consumes whole CPU power.
-> + */
-> +#ifdef CONFIG_HIGH_RES_TIMERS
-> +#define ep93xx_adc_delay(usmin, usmax) usleep_range(usmin, usmax)
-> +#else
-> +#define ep93xx_adc_delay(usmin, usmax) udelay(usmin)
-> +#endif
-> +
-> +#define EP93XX_ADC_RESULT	0x08
-> +#define   EP93XX_ADC_SDR	BIT(31)
-> +#define EP93XX_ADC_SWITCH	0x18
-> +#define EP93XX_ADC_SW_LOCK	0x20
-> +#define EP93XX_ADC_INT_EN	0x24
-> +#define   EP93XX_ADC_RINTEN	BIT(11)
-> +
-> +struct ep93xx_adc_priv {
-> +	struct clk *clk;
-> +	void __iomem *base;
-> +	int lastch;
-> +	struct mutex lock;
-> +};
-> +
-> +#define EP93XX_ADC_CH(index, dname, swcfg) {			\
-> +	.type = IIO_VOLTAGE,					\
-> +	.indexed = 1,						\
-> +	.channel = index,					\
-> +	.address = swcfg,					\
-> +	.datasheet_name = dname,				\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE) |	\
-> +				   BIT(IIO_CHAN_INFO_OFFSET),	\
+> +	return snprintf(buf, PAGE_SIZE, "%u\n", count);
 > +}
 > +
-> +/*
-> + * Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
-> + * EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
-> + * not defined. So the last three are numbered randomly, let's say.
-> + */
-> +static const struct iio_chan_spec ep93xx_adc_channels[EP93XX_NUM_CHANNELS] = {
-> +	EP93XX_ADC_CH(0, "YM",	0x608),
-> +	EP93XX_ADC_CH(1, "SXP",	0x680),
-> +	EP93XX_ADC_CH(2, "SXM",	0x640),
-> +	EP93XX_ADC_CH(3, "SYP",	0x620),
-> +	EP93XX_ADC_CH(4, "SYM",	0x610),
-> +	EP93XX_ADC_CH(5, "XP",	0x601),
-> +	EP93XX_ADC_CH(6, "XM",	0x602),
-> +	EP93XX_ADC_CH(7, "YP",	0x604),
+> +static DEVICE_ATTR(count, S_IRUGO, iio_interrupt_trigger_show_count, NULL);
+> +
+> +static struct attribute *iio_interrupt_trigger_attrs[] = {
+> +	&dev_attr_count.attr,
+> +	NULL,
 > +};
 > +
-> +static int ep93xx_read_raw(struct iio_dev *iiodev,
-> +			   struct iio_chan_spec const *channel, int *value,
-> +			   int *shift, long mask)
-> +{
-> +	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
-> +	unsigned long timeout;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&priv->lock);
-> +		if (priv->lastch != channel->channel) {
-> +			priv->lastch = channel->channel;
-> +			/*
-> +			 * Switch register is software-locked, unlocking must be
-> +			 * immediately followed by write
-> +			 */
-> +			local_irq_disable();
-> +			writel_relaxed(0xAA, priv->base + EP93XX_ADC_SW_LOCK);
-> +			writel_relaxed(channel->address,
-> +				       priv->base + EP93XX_ADC_SWITCH);
-> +			local_irq_enable();
-> +			/*
-> +			 * Settling delay depends on module clock and could be
-> +			 * 2ms or 500us
-> +			 */
-> +			ep93xx_adc_delay(2000, 2000);
-> +		}
-> +		/* Start the conversion, eventually discarding old result */
-> +		readl_relaxed(priv->base + EP93XX_ADC_RESULT);
-> +		/* Ensure maximun conversion rate is not exceeded */
-> +		ep93xx_adc_delay(DIV_ROUND_UP(1000000, 925),
-> +				 DIV_ROUND_UP(1000000, 925));
-> +		/* At this point conversion must be completed, but anyway... */
-> +		ret = IIO_VAL_INT;
-> +		timeout = jiffies + msecs_to_jiffies(1) + 1;
-> +		while (1) {
-> +			u32 t;
-> +
-> +			t = readl_relaxed(priv->base + EP93XX_ADC_RESULT);
-> +			if (t & EP93XX_ADC_SDR) {
-> +				/* Sign extend lower 16 bits */
-> +				*value = (s16)t;
-> +				break;
-> +			}
-> +
-> +			if (time_after(jiffies, timeout)) {
-> +				dev_err(&iiodev->dev, "Conversion timeout\n");
-> +				ret = -ETIMEDOUT;
-> +				break;
-> +			}
-> +
-> +			cpu_relax();
-> +		}
-> +		mutex_unlock(&priv->lock);
-> +		return ret;
-> +
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		/* According to datasheet, range is -25000..25000 */
-> +		*value = 25000;
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* Typical supply voltage is 3.3v */
-> +		*value = (1ULL << 32) * 3300 / 50000;
-> +		*shift = 32;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info ep93xx_adc_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = ep93xx_read_raw,
+> +static const struct attribute_group iio_interrupt_trigger_attr_group = {
+> +	.attrs = iio_interrupt_trigger_attrs,
 > +};
 > +
-> +static int ep93xx_adc_probe(struct platform_device *pdev)
-> +{
-> +	int ret;
-> +	struct iio_dev *iiodev;
-> +	struct ep93xx_adc_priv *priv;
-> +	struct clk *pclk;
-> +	struct resource *res;
+> +static const struct attribute_group *iio_interrupt_trigger_attr_groups[] = {
+> +	&iio_interrupt_trigger_attr_group,
+> +	NULL
+> +};
 > +
-> +	iiodev = devm_iio_device_alloc(&pdev->dev,
-> +				       sizeof(struct ep93xx_adc_priv));
-slight preference for sizeof(*priv)
-> +	if (!iiodev)
-> +		return -ENOMEM;
-> +	priv = iio_priv(iiodev);
+>  static irqreturn_t iio_interrupt_trigger_poll(int irq, void *private)
+>  {
+> -	iio_trigger_poll(private);
+> +	struct iio_trigger *trig = private;
+> +	struct iio_interrupt_trigger_info *info = iio_trigger_get_drvdata(trig);
 > +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (!res) {
-> +		dev_err(&pdev->dev, "Cannot obtain memory resource\n");
-> +		return -ENXIO;
-> +	}
-> +	priv->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(priv->base)) {
-> +		dev_err(&pdev->dev, "Cannot map memory resource\n");
-> +		return PTR_ERR(priv->base);
-> +	}
+> +	atomic_inc(&info->count);
+> +	sysfs_notify_dirent(info->poll);
+> +	iio_trigger_poll(trig);
 > +
-> +	iiodev->dev.parent = &pdev->dev;
-> +	iiodev->name = dev_name(&pdev->dev);
-> +	iiodev->modes = INDIO_DIRECT_MODE;
-> +	iiodev->info = &ep93xx_adc_info;
-> +	iiodev->num_channels = ARRAY_SIZE(ep93xx_adc_channels);
-> +	iiodev->channels = ep93xx_adc_channels;
+>  	return IRQ_HANDLED;
+>  }
+>  
+> @@ -36,17 +75,12 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
+>  {
+>  	struct iio_interrupt_trigger_info *trig_info;
+>  	struct iio_trigger *trig;
+> -	unsigned long irqflags;
+>  	struct resource *irq_res;
+>  	int irq, ret = 0;
+>  
+>  	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+> -
+> -	if (irq_res == NULL)
+> +	if (!irq_res)
+>  		return -ENODEV;
+> -
+> -	irqflags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
+> -
+>  	irq = irq_res->start;
+>  
+>  	trig = iio_trigger_alloc("irqtrig%d", irq);
+> @@ -60,27 +94,36 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
+>  		ret = -ENOMEM;
+>  		goto error_put_trigger;
+>  	}
+> -	iio_trigger_set_drvdata(trig, trig_info);
 > +
-> +	priv->lastch = -1;
-> +	mutex_init(&priv->lock);
-> +
-> +	platform_set_drvdata(pdev, iiodev);
-> +
-> +	priv->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(priv->clk)) {
-> +		dev_err(&pdev->dev, "Cannot obtain clock\n");
-> +		return PTR_ERR(priv->clk);
-> +	}
-> +
-> +	pclk = clk_get_parent(priv->clk);
-> +	if (!pclk) {
-> +		dev_warn(&pdev->dev, "Cannot obtain parent clock\n");
-> +	} else {
-> +		/*
-> +		 * This is actually a place for improvement:
-> +		 * EP93xx ADC supports two clock divisors -- 4 and 16,
-> +		 * resulting in conversion rates 3750 and 925 samples per second
-> +		 * respectively with 500uS or 2ms settling time respectively.
-> +		 * One might find this interesting enough to be configurable.
-> +		 */
-> +		ret = clk_set_rate(priv->clk, clk_get_rate(pclk) / 16);
-> +		if (ret)
-> +			dev_warn(&pdev->dev, "Cannot set clock rate\n");
-> +		/*
-> +		 * We can tolerate rate setting failure because the module should
-> +		 * work in any case.
-> +		 */
-> +	}
-> +
-> +	ret = clk_enable(priv->clk);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Cannot enable clock\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = iio_device_register(iiodev);
+> +	atomic_set(&trig_info->count, 0);
+>  	trig_info->irq = irq;
+> +	iio_trigger_set_drvdata(trig, trig_info);
+>  	trig->ops = &iio_interrupt_trigger_ops;
+> -	ret = request_irq(irq, iio_interrupt_trigger_poll,
+> -			  irqflags, trig->name, trig);
+> -	if (ret) {
+> -		dev_err(&pdev->dev,
+> -			"request IRQ-%d failed", irq);
+> +	trig->dev.groups = iio_interrupt_trigger_attr_groups;
+> +	ret = iio_trigger_register(trig);
 > +	if (ret)
-> +		clk_disable(priv->clk);
+>  		goto error_free_trig_info;
 > +
-> +	return ret;
-> +}
-> +
-> +static int ep93xx_adc_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *iiodev = platform_get_drvdata(pdev);
-> +	struct ep93xx_adc_priv *priv = iio_priv(iiodev);
-> +
-> +	iio_device_unregister(iiodev);
-> +	clk_disable(priv->clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver ep93xx_adc_driver = {
-> +	.driver = {
-> +		.name = "ep93xx-adc",
-> +	},
-> +	.probe = ep93xx_adc_probe,
-> +	.remove = ep93xx_adc_remove,
-> +};
-> +module_platform_driver(ep93xx_adc_driver);
-> +
-> +MODULE_AUTHOR("Alexander Sverdlin <alexander.sverdlin@gmail.com>");
-> +MODULE_DESCRIPTION("Cirrus Logic EP93XX ADC driver");
-> +MODULE_LICENSE("GPL");
-> +MODULE_ALIAS("platform:ep93xx-adc");
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> +	/* Create a sysfs entry which the userspace may poll for irq events. */
+> +	trig_info->poll = sysfs_get_dirent(trig->dev.kobj.sd, "count");
+> +	if (!trig_info->poll) {
+> +		ret = -ENOENT;
+> +		goto error_unregister_trig;
+>  	}
+>  
+> -	ret = iio_trigger_register(trig);
+> -	if (ret)
+> -		goto error_release_irq;
+> -	platform_set_drvdata(pdev, trig);
+> +	ret = request_irq(irq, iio_interrupt_trigger_poll,
+> +			  (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED,
+> +			  trig->name, trig);
+> +	if (!ret) {
+> +		platform_set_drvdata(pdev, trig);
+> +		return 0;
+> +	}
+>  
+> -	return 0;
+> +	sysfs_put(trig_info->poll);
+>  
+>  /* First clean up the partly allocated trigger */
+> -error_release_irq:
+> -	free_irq(irq, trig);
+> +error_unregister_trig:
+> +	iio_trigger_unregister(trig);
+>  error_free_trig_info:
+>  	kfree(trig_info);
+>  error_put_trigger:
+> @@ -96,8 +139,9 @@ static int iio_interrupt_trigger_remove(struct platform_device *pdev)
+>  
+>  	trig = platform_get_drvdata(pdev);
+>  	trig_info = iio_trigger_get_drvdata(trig);
+> -	iio_trigger_unregister(trig);
+>  	free_irq(trig_info->irq, trig);
+> +	sysfs_put(trig_info->poll);
+> +	iio_trigger_unregister(trig);
+>  	kfree(trig_info);
+>  	iio_trigger_put(trig);
+>  
 > 
 
