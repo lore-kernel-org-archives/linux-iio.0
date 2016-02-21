@@ -1,43 +1,62 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH v1 2/2] iio:iio-interrupt-trigger: sysfs poll support
-To: Gregor Boirie <gregor.boirie@parrot.com>,
- Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <cover.1455908065.git.gregor.boirie@parrot.com>
- <87bbff0671c93b998547114d7f595a0bee57e817.1455908065.git.gregor.boirie@parrot.com>
- <56CA195B.9010200@kernel.org> <56CAF1DD.8070807@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56CAF312.1040200@metafoo.de>
-Date: Mon, 22 Feb 2016 12:37:54 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60787 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751373AbcBUVMZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 16:12:25 -0500
+Subject: Re: [PATCH] iio: imu: mpu6050: remove trailing whitespaces
+To: Matt Ranostay <matt.ranostay@intel.com>, adriana.reus@intel.com
+References: <1455775103-18130-1-git-send-email-matt.ranostay@intel.com>
+Cc: linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56CA2836.6000908@kernel.org>
+Date: Sun, 21 Feb 2016 21:12:22 +0000
 MIME-Version: 1.0
-In-Reply-To: <56CAF1DD.8070807@parrot.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1455775103-18130-1-git-send-email-matt.ranostay@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 02/22/2016 12:32 PM, Gregor Boirie wrote:
-> On 02/21/2016 09:08 PM, Jonathan Cameron wrote:
->> On 19/02/16 19:18, Gregor Boirie wrote:
->>> From: Grégor Boirie <gregor.boirie@parrot.com>
->>>
->> Hi Gregor.
->>
->> You certainly have some unusual requirements  - or perhaps you are
->> simply the first person to show up with them here!
-> I would give preference to 2nd option :)
->>> Add a sysfs file entry for each interrupt trigger instance allowing
->>> userspace to :
->>> * poll for interrupt events ;
->> Why?
-> On our platform, several sensors are driven by a dedicated "real-time"
-> CPU (bare-metal context). This CPU interrupts Linux in a periodic manner
-> which in turn wakes a user process up to perform sensor fusion.
-> This sysfs poll support allows the user process to explictly wait for
-> this dedicated CPU interrupt to fetch data located in RAM then process
-> them.
+On 18/02/16 05:58, Matt Ranostay wrote:
+> removed several trailing whitespaces before assignment operations
+> 
+> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
+Applied with some fuzz from other recent patches on this driver.
 
-So you are only using the IIO trigger in this setup, but no buffers or
-devices? If you just want to forward the interrupt to userspace UIO might be
-the better solution in this case:
-https://www.kernel.org/doc/htmldocs/uio-howto/about.html
+Jonathan
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 225860016fed..cbc8c74d4692 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -244,7 +244,7 @@ static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+>  				if (result)
+>  					goto error_read_raw;
+>  			}
+> -			ret =  inv_mpu6050_sensor_show(st, st->reg->raw_gyro,
+> +			ret = inv_mpu6050_sensor_show(st, st->reg->raw_gyro,
+>  						chan->channel2, val);
+>  			if (!st->chip_config.gyro_fifo_enable ||
+>  					!st->chip_config.enable) {
+> @@ -567,7 +567,7 @@ static int inv_mpu6050_validate_trigger(struct iio_dev *indio_dev,
+>  		.type = _type,                                        \
+>  		.modified = 1,                                        \
+>  		.channel2 = _channel2,                                \
+> -		.info_mask_shared_by_type =  BIT(IIO_CHAN_INFO_SCALE), \
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),         \
+>  		.scan_index = _index,                                 \
+>  		.scan_type = {                                        \
+> @@ -587,7 +587,7 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
+>  	 */
+>  	{
+>  		.type = IIO_TEMP,
+> -		.info_mask_separate =  BIT(IIO_CHAN_INFO_RAW)
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
+>  				| BIT(IIO_CHAN_INFO_OFFSET)
+>  				| BIT(IIO_CHAN_INFO_SCALE),
+>  		.scan_index = -1,
+> 
 
-- Lars
