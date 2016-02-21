@@ -1,90 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:56798 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758399AbcBXRjF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 24 Feb 2016 12:39:05 -0500
-From: "Andrew F. Davis" <afd@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Marc Titinger <mtitinger@baylibre.com>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH v2 2/2] iio: ina2xx: Remove trace_printk debug statments
-Date: Wed, 24 Feb 2016 11:38:47 -0600
-Message-ID: <1456335527-3229-2-git-send-email-afd@ti.com>
-In-Reply-To: <1456335527-3229-1-git-send-email-afd@ti.com>
-References: <1456335527-3229-1-git-send-email-afd@ti.com>
+Return-Path: <wsa@the-dreams.de>
+Date: Sun, 21 Feb 2016 23:56:06 +0100
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Matt Ranostay <mranostay@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux I2C <linux-i2c@vger.kernel.org>
+Subject: Re: [RFC] i2c_check_functionality and error code
+Message-ID: <20160221225606.GA1386@katana>
+References: <CAKzfze-B4dx9aghERaRDu7xz0i6pMJcAUGMQX7OWJpWh7i=bxw@mail.gmail.com>
+ <56CA1F0D.2060707@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="uAKRQypu60I7Lcqm"
+In-Reply-To: <56CA1F0D.2060707@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-These are generally for devlopment use only, remove these
-from performance-critical code, convert to dev_dbg elswhere.
 
-Signed-off-by: Andrew F. Davis <afd@ti.com>
----
- drivers/iio/adc/ina2xx-adc.c | 21 +++++++--------------
- 1 file changed, 7 insertions(+), 14 deletions(-)
+--uAKRQypu60I7Lcqm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index d3e8207..65909d5 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -440,7 +440,6 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
- 	unsigned short data[8];
- 	int bit, ret, i = 0;
--	unsigned long buffer_us, elapsed_us;
- 	s64 time_a, time_b;
- 	unsigned int alert;
- 
-@@ -464,8 +463,6 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 				return ret;
- 
- 			alert &= INA266_CVRF;
--			trace_printk("Conversion ready: %d\n", !!alert);
--
- 		} while (!alert);
- 
- 	/*
-@@ -490,14 +487,9 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 	iio_push_to_buffers_with_timestamp(indio_dev,
- 					   (unsigned int *)data, time_a);
- 
--	buffer_us = (unsigned long)(time_b - time_a) / 1000;
--	elapsed_us = (unsigned long)(time_a - chip->prev_ns) / 1000;
--
--	trace_printk("uS: elapsed: %lu, buf: %lu\n", elapsed_us, buffer_us);
--
- 	chip->prev_ns = time_a;
- 
--	return buffer_us;
-+	return (unsigned long)(time_b - time_a) / 1000;
- };
- 
- static int ina2xx_capture_thread(void *data)
-@@ -532,12 +524,13 @@ static int ina2xx_buffer_enable(struct iio_dev *indio_dev)
- 	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
- 	unsigned int sampling_us = SAMPLING_PERIOD(chip);
- 
--	trace_printk("Enabling buffer w/ scan_mask %02x, freq = %d, avg =%u\n",
--		     (unsigned int)(*indio_dev->active_scan_mask),
--		     1000000/sampling_us, chip->avg);
-+	dev_dbg(&indio_dev->dev, "Enabling buffer w/ scan_mask %02x, freq = %d, avg =%u\n",
-+		(unsigned int)(*indio_dev->active_scan_mask),
-+		1000000 / sampling_us, chip->avg);
- 
--	trace_printk("Expected work period: %u us\n", sampling_us);
--	trace_printk("Async readout mode: %d\n", chip->allow_async_readout);
-+	dev_dbg(&indio_dev->dev, "Expected work period: %u us\n", sampling_us);
-+	dev_dbg(&indio_dev->dev, "Async readout mode: %d\n",
-+		chip->allow_async_readout);
- 
- 	chip->prev_ns = iio_get_time_ns();
- 
--- 
-2.7.1
+> Hohum. Wolfram what do you think?
 
+I'd go for "EOPNOTSUPP" since it is most descriptive. I wouldn't say we
+really need to fix it up in the kernel tree. However, I neither would
+vote against it.
+
+
+--uAKRQypu60I7Lcqm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJWykCGAAoJEBQN5MwUoCm2QSAQAKr8kPm7y/uMbwHJVCWKpinl
+VpQbA8teaquwYhR3am2EdiIiCHKNztnkovuW27x6uFyO7q2URHJ92WQrwAWZGxBT
++Xa9XK+3dZXGBN9CVoxn0WKUOZvx6dZ00pQ1Hga18IMj7VSnvDaEHE35xu5A33iV
+QAXIiLPDkypgmZc3+xtJ4x7dOxyUe08/jvjtbFcsEK9AneXIjLaiTKC7WFeIvmmp
+7aN6ZneiHX5ZVFXwVYwP/d9P3aT7rBTw7pMmr4pxEKBWEVpYsHAvOlLbfgaMBj1c
+ELgpJriNoq4IRNLNKKcoHzVZ0x94jF1Y2+us2hBraNPQHzwBvS3WDv+wpBzwJgjV
+kmwWDgfD8S3Og+IFZZzbfX6rfS7WVNN0+mt0rD4YDsoOHGPrmJcdPV/MR9TsUFWq
+RDpxp8PwYfycZ/29lV4IycLNKGkqJND6JkVs5GpxPeh0J9daOqq2i8v0QnobKRaM
+0qoBjVfOdwSiZXJ2LPKtGYOJSt3CmnDEQovGt/Xwx/QgHEKui+t50MmbYIzOD7fY
+BiZYzlxyj5owcmilLvghdfG2pVj/nzvTRPN9JSttHr5NhdjH1EM1kJEd+sQGRRzG
+R0Novgd1Dx4eUDl5bFig73lFxFdsbIkslRPMlcOJReOtiSxs/CVPyJgaDZlSUMhR
+Kum8ykG7c3bdA3C6gwEI
+=dLJR
+-----END PGP SIGNATURE-----
+
+--uAKRQypu60I7Lcqm--
