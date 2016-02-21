@@ -1,64 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtprelay0147.hostedemail.com ([216.40.44.147]:33546 "EHLO
-	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751373AbcBUU7t (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 15:59:49 -0500
-Message-ID: <1456088384.31061.2.camel@perches.com>
-Subject: Re: [RFC PATCH 7/9] iio: imu: inv_mpu6050: Fix alignment with open
- parenthesis
-From: Joe Perches <joe@perches.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	wsa@the-dreams.de, linux-i2c@vger.kernel.org,
-	lucas.demarchi@intel.com, srinivas.pandruvada@linux.intel.com,
-	ggao@invensense.com, adi.reus@gmail.com, cmo@melexis.com,
-	mwelling@ieee.org
-Date: Sun, 21 Feb 2016 12:59:44 -0800
-In-Reply-To: <56CA2101.8050805@kernel.org>
-References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
-	 <1455810794-3188-8-git-send-email-daniel.baluta@intel.com>
-	 <56CA2101.8050805@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-Mime-Version: 1.0
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60701 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751373AbcBUVAU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 16:00:20 -0500
+Subject: Re: [PATCH v3 4/6] iio:pressure:ms5611: DT bindings documentation
+To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
+References: <cover.1455731233.git.gregor.boirie@parrot.com>
+ <b94c67ed8d9148707e4b613c747fc654c52c62d3.1455731233.git.gregor.boirie@parrot.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>, "Andrew F. Davis" <afd@ti.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56CA2562.8080208@kernel.org>
+Date: Sun, 21 Feb 2016 21:00:18 +0000
+MIME-Version: 1.0
+In-Reply-To: <b94c67ed8d9148707e4b613c747fc654c52c62d3.1455731233.git.gregor.boirie@parrot.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 2016-02-21 at 20:41 +0000, Jonathan Cameron wrote:
-> On 18/02/16 15:53, Daniel Baluta wrote:
-> > This makes code consistent around inv_mpu6050 driver and
-> > fixes the following checkpatch.pl warning:
-> > CHECK: Alignment should match open parenthesis
-> > 
-> > Note that there were few cases were it was not possible to
-> > fix this due to making the line too long, but we can live with that.
-> > 
-> > Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> Applied
-[]
-> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-[]
-> > @@ -217,11 +217,10 @@ static int inv_mpu6050_sensor_show(struct inv_mpu6050_state††*st, int reg,
-> > †	return IIO_VAL_INT;
-> > †}
-> > †
-> > -static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
-> > -			††††††struct iio_chan_spec const *chan,
-> > -			††††††int *val,
-> > -			††††††int *val2,
-> > -			††††††long mask) {
-> > +static int
-> > +inv_mpu6050_read_raw(struct iio_dev *indio_dev,
-> > +		†††††struct iio_chan_spec const *chan,
-> > +		†††††int *val, int *val2, long mask) {
+On 17/02/16 17:52, Gregor Boirie wrote:
+> From: Gr√©gor Boirie <gregor.boirie@parrot.com>
+> 
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+One comment inline - though a quick look shows this idiom is common
+which isn't great.
 
-Ideally, you'd also convert this form to use
-the open brace on a new line like:
+Also ideal would be to add the device_tree id tables and have the
+documented binding include the manufacturer prefix.
+> ---
+>  .../devicetree/bindings/iio/pressure/ms5611.txt       | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/pressure/ms5611.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/pressure/ms5611.txt b/Documentation/devicetree/bindings/iio/pressure/ms5611.txt
+> new file mode 100644
+> index 0000000..986415a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/pressure/ms5611.txt
+> @@ -0,0 +1,19 @@
+> +MEAS ms5611 family pressure sensors
+> +
+> +Pressure sensors from MEAS Switzerland with SPI and I2C bus interfaces.
+> +
+> +Required properties:
+> +- compatible: "ms5611" or "ms5607"
+Preferred to be prefixed with the manufacturer though that requires adding
+tables to the various drivers.  Ideally please do so and update this to include those
+values as the preferred choices.
 
-static int
-inv_mpu6050_read_raw(struct iio_dev *indio_dev,
-		†††††struct iio_chan_spec const *chan,
-		†††††int *val, int *val2, long mask)
-{
+
+> +- reg: the I2C or SPI address the device will respond to
+SPI buses don't have an address (they do have a chip select though).
+
+> +
+> +Optional properties:
+> +- vdd-supply: an optional regulator that needs to be on to provide VDD
+> +  power to the sensor.
+> +
+> +Example:
+> +
+> +ms5607@77 {
+> +	compatible = "ms5607";
+> +	reg = <0x77>;
+> +	vdd-supply = <&ldo_3v3_gnss>;
+> +};
+> 
 
