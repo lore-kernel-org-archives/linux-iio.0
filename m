@@ -1,87 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60246 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60758 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750951AbcBUTz3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 14:55:29 -0500
-Subject: Re: [PATCH v1 1/2] iio:iio-interrupt-trigger: device-tree support
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1455908065.git.gregor.boirie@parrot.com>
- <d8f7902dbfe6e911e6ac0d1117502a02b1212022.1455908065.git.gregor.boirie@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <Pawel.Moll@arm.com>,
-	Mark Rutland <Mark.Rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
+	with ESMTP id S1751766AbcBUVIG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 16:08:06 -0500
+Subject: Re: [RFC PATCH 7/9] iio: imu: inv_mpu6050: Fix alignment with open
+ parenthesis
+To: Joe Perches <joe@perches.com>,
+	Daniel Baluta <daniel.baluta@intel.com>
+References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
+ <1455810794-3188-8-git-send-email-daniel.baluta@intel.com>
+ <56CA2101.8050805@kernel.org> <1456088384.31061.2.camel@perches.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	wsa@the-dreams.de, linux-i2c@vger.kernel.org,
+	lucas.demarchi@intel.com, srinivas.pandruvada@linux.intel.com,
+	ggao@invensense.com, adi.reus@gmail.com, cmo@melexis.com,
+	mwelling@ieee.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56CA162C.5010406@kernel.org>
-Date: Sun, 21 Feb 2016 19:55:24 +0000
+Message-ID: <56CA2733.8050303@kernel.org>
+Date: Sun, 21 Feb 2016 21:08:03 +0000
 MIME-Version: 1.0
-In-Reply-To: <d8f7902dbfe6e911e6ac0d1117502a02b1212022.1455908065.git.gregor.boirie@parrot.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1456088384.31061.2.camel@perches.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/02/16 19:18, Gregor Boirie wrote:
-> From: Grégor Boirie <gregor.boirie@parrot.com>
+On 21/02/16 20:59, Joe Perches wrote:
+> On Sun, 2016-02-21 at 20:41 +0000, Jonathan Cameron wrote:
+>> On 18/02/16 15:53, Daniel Baluta wrote:
+>>> This makes code consistent around inv_mpu6050 driver and
+>>> fixes the following checkpatch.pl warning:
+>>> CHECK: Alignment should match open parenthesis
+>>>
+>>> Note that there were few cases were it was not possible to
+>>> fix this due to making the line too long, but we can live with that.
+>>>
+>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>> Applied
+> []
+>>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> []
+>>> @@ -217,11 +217,10 @@ static int inv_mpu6050_sensor_show(struct inv_mpu6050_state  *st, int reg,
+>>>  	return IIO_VAL_INT;
+>>>  }
+>>>  
+>>> -static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+>>> -			      struct iio_chan_spec const *chan,
+>>> -			      int *val,
+>>> -			      int *val2,
+>>> -			      long mask) {
+>>> +static int
+>>> +inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+>>> +		     struct iio_chan_spec const *chan,
+>>> +		     int *val, int *val2, long mask) {
 > 
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-Snag here is that iio_interrupt_trigger is a very linux specific
-name and device tree bindings should be just about the hardware.
+> Ideally, you'd also convert this form to use
+> the open brace on a new line like:
+> 
+> static int
+> inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+> 		     struct iio_chan_spec const *chan,
+> 		     int *val, int *val2, long mask)
+> {
+> 
+Good point - as it fitted nicely in with Daniel's patch I applied a quick fixup
+doing this one and the write_raw.
 
-Not entirely sure how we avoid this though as the use is rather
-hard to describe generically.
-
-cc'd device tree list and bindings maintainers.
-
-As a brief summary - this IIO trigger driver takes a generic
-interrupt (from whatever) and uses it to drive sampling of IIO devices.
-The interrupt might be associated with particularly simple sensors directly
-but is more commonly a gpio interrupt line used cause samples to be captured
-from unrelated devices.  Sometimes the source of that interrupt can be a convoluted
-external mux setup over which linux has no control for example.
-
-Any suggestions on appropriate naming?
-
-We aren't really describing hardware here, rather a policy decision on what
-a given interrupt is to be used for.
-
-I suppose ultimately we could take the view this should be handled via another
-route (from userspace via an appropriate configfs interface for example).
+Thanks Joe,
 
 Jonathan
-> ---
->  drivers/iio/trigger/iio-trig-interrupt.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
-> index 572bc6f..3c4e18f 100644
-> --- a/drivers/iio/trigger/iio-trig-interrupt.c
-> +++ b/drivers/iio/trigger/iio-trig-interrupt.c
-> @@ -104,11 +104,20 @@ static int iio_interrupt_trigger_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> +#if defined(CONFIG_OF)
-> +static const struct of_device_id iio_interrupt_trigger_of_match[] = {
-> +	{ .compatible = "iio-interrupt-trigger" },
-> +	{}
-> +};
-> +#endif
-> +
->  static struct platform_driver iio_interrupt_trigger_driver = {
->  	.probe = iio_interrupt_trigger_probe,
->  	.remove = iio_interrupt_trigger_remove,
->  	.driver = {
-> -		.name = "iio_interrupt_trigger",
-> +		.name           = "iio_interrupt_trigger",
-> +		.owner          = THIS_MODULE,
-> +		.of_match_table = of_match_ptr(iio_interrupt_trigger_of_match)
->  	},
->  };
->  
-> 
 
