@@ -1,248 +1,428 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:2465 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751732AbcBSPc5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 19 Feb 2016 10:32:57 -0500
-Subject: Re: [PATCH v2 1/1] iio:core: timestamping clock selection support
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1455892204.git.gregor.boirie@parrot.com>
- <2acb6f5baaf83ef9f05af970d0169f1fbc89cc02.1455892204.git.gregor.boirie@parrot.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Haneen Mohammed <hamohammed.sa@gmail.com>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Darshana Padmadas <darshanapadmadas@gmail.com>,
-	Martin Fuzzey <mfuzzey@parkeon.com>,
-	Octavian Purdila <octavian.purdila@intel.com>,
-	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-	Crt Mori <cmo@melexis.com>,
-	Masanari Iida <standby24x7@gmail.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
-Message-ID: <56C73634.3000804@intel.com>
-Date: Fri, 19 Feb 2016 17:35:16 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59582 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751737AbcBUR0h (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 12:26:37 -0500
+In-Reply-To: <597b39da08c4c1416984cf7e873f56e19975b80e.1455516083.git.maitysanchayan@gmail.com>
+References: <cover.1455516083.git.maitysanchayan@gmail.com><cover.1455516083.git.maitysanchayan@gmail.com> <597b39da08c4c1416984cf7e873f56e19975b80e.1455516083.git.maitysanchayan@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <2acb6f5baaf83ef9f05af970d0169f1fbc89cc02.1455892204.git.gregor.boirie@parrot.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH v2 2/2] iio: dac: vf610_dac: Add IIO DAC driver for Vybrid SoC
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Sun, 21 Feb 2016 16:48:20 +0000
+To: Sanchayan Maity <maitysanchayan@gmail.com>
+CC: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, shawnguo@kernel.org, stefan@agner.ch,
+	pmeerw@pmeerw.net
+Message-ID: <02B1DDEF-6BE7-4C4C-AAD0-4EB496734316@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-On 19.02.2016 16:52, Gregor Boirie wrote:
-> Adds a new per-device sysfs attribute "timestamp_clock" to allow userspace
-> to select a particular POSIX clock for buffered samples and events
-> timestamping.
+On 15 February 2016 06:42:33 GMT+00:00, Sanchayan Maity <maitysanchayan@gmail.com> wrote:
+>Add driver support for DAC peripheral on Vybrid SoC.
 >
-> Following clocks, as listed in clock_gettime(2), are supported:
-> CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_MONOTONIC_RAW,
-> CLOCK_REALTIME_COARSE, CLOCK_MONOTONIC_COARSE, CLOCK_BOOTTIME and
-> CLOCK_TAI.
-
-Please run ./scripts/checkpatch.pl --strict, on your patch. There are some
-style fixes that you need to resolve :).
-
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-> ---
->   Documentation/ABI/testing/sysfs-bus-iio           |   7 +
->   Documentation/DocBook/iio.tmpl                    |   2 +-
->   drivers/iio/accel/bma180.c                        |   2 +-
->   drivers/iio/accel/bmc150-accel-core.c             |   4 +-
->   drivers/iio/accel/kxcjk-1013.c                    |   2 +-
->   drivers/iio/accel/mma7455_core.c                  |   3 +-
->   drivers/iio/accel/mma8452.c                       |   4 +-
->   drivers/iio/accel/mma9551.c                       |   2 +-
->   drivers/iio/accel/mma9553.c                       |   2 +-
->   drivers/iio/adc/ad7291.c                          |   2 +-
->   drivers/iio/adc/ad7298.c                          |   2 +-
->   drivers/iio/adc/ad7476.c                          |   2 +-
->   drivers/iio/adc/ad7887.c                          |   2 +-
->   drivers/iio/adc/ad7923.c                          |   2 +-
->   drivers/iio/adc/ad799x.c                          |   4 +-
->   drivers/iio/adc/cc10001_adc.c                     |   2 +-
->   drivers/iio/adc/hi8435.c                          |   2 +-
->   drivers/iio/adc/ina2xx-adc.c                      |   6 +-
->   drivers/iio/adc/max1363.c                         |   5 +-
->   drivers/iio/adc/ti-ads1015.c                      |   3 +-
->   drivers/iio/adc/vf610_adc.c                       |   3 +-
->   drivers/iio/adc/xilinx-xadc-events.c              |   4 +-
->   drivers/iio/chemical/atlas-ph-sensor.c            |   2 +-
->   drivers/iio/dac/ad5421.c                          |   6 +-
->   drivers/iio/dac/ad5504.c                          |   2 +-
->   drivers/iio/dummy/iio_simple_dummy_buffer.c       |   3 +-
->   drivers/iio/dummy/iio_simple_dummy_events.c       |   2 +-
->   drivers/iio/gyro/bmg160_core.c                    |  30 ++--
->   drivers/iio/humidity/dht11.c                      |  16 +-
->   drivers/iio/iio_core.h                            |   3 +
->   drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c        |   2 +-
->   drivers/iio/industrialio-core.c                   | 179 +++++++++++++++++++++-
->   drivers/iio/industrialio-event.c                  |  19 ++-
->   drivers/iio/industrialio-trigger.c                |   2 +-
->   drivers/iio/light/acpi-als.c                      |   2 +-
->   drivers/iio/light/adjd_s311.c                     |   2 +-
->   drivers/iio/light/apds9300.c                      |   2 +-
->   drivers/iio/light/apds9960.c                      |   4 +-
->   drivers/iio/light/cm36651.c                       |   2 +-
->   drivers/iio/light/gp2ap020a00f.c                  |   8 +-
->   drivers/iio/light/isl29125.c                      |   2 +-
->   drivers/iio/light/lm3533-als.c                    |   2 +-
->   drivers/iio/light/ltr501.c                        |   7 +-
->   drivers/iio/light/opt3001.c                       |   4 +-
->   drivers/iio/light/stk3310.c                       |   2 +-
->   drivers/iio/light/tcs3414.c                       |   2 +-
->   drivers/iio/light/tcs3472.c                       |   2 +-
->   drivers/iio/light/tsl2563.c                       |   2 +-
->   drivers/iio/light/us5182d.c                       |   2 +-
->   drivers/iio/magnetometer/mag3110.c                |   2 +-
->   drivers/iio/pressure/mpl3115.c                    |   2 +-
->   drivers/iio/pressure/ms5611_core.c                |   3 +-
->   drivers/iio/proximity/pulsedlight-lidar-lite-v2.c |   2 +-
->   drivers/iio/proximity/sx9500.c                    |   4 +-
->   drivers/staging/iio/accel/lis3l02dq_core.c        |   2 +-
->   drivers/staging/iio/accel/sca3000_core.c          |   2 +-
->   drivers/staging/iio/adc/ad7280a.c                 |   8 +-
->   drivers/staging/iio/adc/ad7606_ring.c             |   2 +-
->   drivers/staging/iio/adc/ad7816.c                  |   3 +-
->   drivers/staging/iio/addac/adt7316.c               |   4 +-
->   drivers/staging/iio/cdc/ad7150.c                  |   2 +-
->   drivers/staging/iio/light/tsl2x7x_core.c          |   2 +-
->   drivers/staging/iio/magnetometer/hmc5843_core.c   |   2 +-
->   include/linux/iio/iio.h                           |  20 ++-
->   64 files changed, 324 insertions(+), 114 deletions(-)
+>Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+>Acked-by: Rob Herring <robh@kernel.org>
+Ordering is wrong in remove. I may well fix this up and apply later today. 
+ Otherwise looks good to me.
+>---
+> Documentation/ABI/testing/sysfs-bus-iio-vf610      |   9 +
+> .../devicetree/bindings/iio/dac/vf610-dac.txt      |  20 ++
+> drivers/iio/dac/Kconfig                            |   8 +
+> drivers/iio/dac/Makefile                           |   1 +
+>drivers/iio/dac/vf610_dac.c                        | 298
+>+++++++++++++++++++++
+> 5 files changed, 336 insertions(+)
+>create mode 100644
+>Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
+> create mode 100644 drivers/iio/dac/vf610_dac.c
 >
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 3c66248..c374b21 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -32,6 +32,13 @@ Description:
->   		Description of the physical chip / device for device X.
->   		Typically a part number.
->   
-> +What:		/sys/bus/iio/devices/iio:deviceX/timestamp_clock
-Do we need an attribute listing available timestamp clocks?
-If so, name timestamp_clock to current_timestamp_clock would make sense.
+>diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610
+>b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+>index ecbc1f4..5ea809c 100644
+>--- a/Documentation/ABI/testing/sysfs-bus-iio-vf610
+>+++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+>@@ -5,3 +5,12 @@ Description:
+> 		Specifies the hardware conversion mode used. The three
+> 		available modes are "normal", "high-speed" and "low-power",
+> 		where the last is the default mode.
+>+
+>+
+>+What:		/sys/bus/iio/devices/iio:deviceX/out_conversion_mode
+>+KernelVersion:	4.6
+>+Contact:	linux-iio@vger.kernel.org
+>+Description:
+>+		Specifies the hardware conversion mode used within DAC.
+>+		The two available modes are "high-power" and "low-power",
+>+		where "low-power" mode is the default mode.
+>\ No newline at end of file
+>diff --git a/Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
+>b/Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
+>new file mode 100644
+>index 0000000..20c6c7a
+>--- /dev/null
+>+++ b/Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
+>@@ -0,0 +1,20 @@
+>+Freescale vf610 Digital to Analog Converter bindings
+>+
+>+The devicetree bindings are for the new DAC driver written for
+>+vf610 SoCs from Freescale.
+>+
+>+Required properties:
+>+- compatible: Should contain "fsl,vf610-dac"
+>+- reg: Offset and length of the register set for the device
+>+- interrupts: Should contain the interrupt for the device
+>+- clocks: The clock is needed by the DAC controller
+>+- clock-names: Must contain "dac" matching entry in the clocks
+>property.
+>+
+>+Example:
+>+dac0: dac@400cc000 {
+>+	compatible = "fsl,vf610-dac";
+>+	reg = <0x400cc000 0x1000>;
+>+	interrupts = <55 IRQ_TYPE_LEVEL_HIGH>;
+>+	clock-names = "dac";
+>+	clocks = <&clks VF610_CLK_DAC0>;
+>+};
+>diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+>index e701e28..8eb0502 100644
+>--- a/drivers/iio/dac/Kconfig
+>+++ b/drivers/iio/dac/Kconfig
+>@@ -196,4 +196,12 @@ config MCP4922
+> 	  To compile this driver as a module, choose M here: the module
+> 	  will be called mcp4922.
+> 
+>+config VF610_DAC
+>+	tristate "Vybrid vf610 DAC driver"
+>+	help
+>+	  Say yes here to support Vybrid board digital-to-analog converter.
+>+
+>+	  This driver can also be built as a module. If so, the module will
+>+	  be called vf610_dac.
+>+
+> endmenu
+>diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+>index 63ae056..93feb27 100644
+>--- a/drivers/iio/dac/Makefile
+>+++ b/drivers/iio/dac/Makefile
+>@@ -21,3 +21,4 @@ obj-$(CONFIG_MAX517) += max517.o
+> obj-$(CONFIG_MAX5821) += max5821.o
+> obj-$(CONFIG_MCP4725) += mcp4725.o
+> obj-$(CONFIG_MCP4922) += mcp4922.o
+>+obj-$(CONFIG_VF610_DAC) += vf610_dac.o
+>diff --git a/drivers/iio/dac/vf610_dac.c b/drivers/iio/dac/vf610_dac.c
+>new file mode 100644
+>index 0000000..3f70f96
+>--- /dev/null
+>+++ b/drivers/iio/dac/vf610_dac.c
+>@@ -0,0 +1,298 @@
+>+/*
+>+ * Freescale Vybrid vf610 DAC driver
+>+ *
+>+ * Copyright 2016 Toradex AG
+>+ *
+>+ * This program is free software; you can redistribute it and/or
+>modify
+>+ * it under the terms of the GNU General Public License as published
+>by
+>+ * the Free Software Foundation; either version 2 of the License, or
+>+ * (at your option) any later version.
+>+ *
+>+ * This program is distributed in the hope that it will be useful,
+>+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+>+ * GNU General Public License for more details.
+>+ */
+>+
+>+#include <linux/clk.h>
+>+#include <linux/err.h>
+>+#include <linux/interrupt.h>
+>+#include <linux/io.h>
+>+#include <linux/kernel.h>
+>+#include <linux/module.h>
+>+#include <linux/platform_device.h>
+>+#include <linux/regulator/consumer.h>
+>+#include <linux/slab.h>
+>+
+>+#include <linux/iio/iio.h>
+>+#include <linux/iio/sysfs.h>
+>+
+>+#define VF610_DACx_STATCTRL		0x20
+>+
+>+#define VF610_DAC_DACEN			BIT(15)
+>+#define VF610_DAC_DACRFS		BIT(14)
+>+#define VF610_DAC_LPEN			BIT(11)
+>+
+>+#define VF610_DAC_DAT0(x)		((x) & 0xFFF)
+>+
+>+enum vf610_conversion_mode_sel {
+>+	VF610_DAC_CONV_HIGH_POWER,
+>+	VF610_DAC_CONV_LOW_POWER,
+>+};
+>+
+>+struct vf610_dac {
+>+	struct clk *clk;
+>+	struct device *dev;
+>+	enum vf610_conversion_mode_sel conv_mode;
+>+	void __iomem *regs;
+>+};
+>+
+>+static void vf610_dac_init(struct vf610_dac *info)
+>+{
+>+	int val;
+>+
+>+	info->conv_mode = VF610_DAC_CONV_LOW_POWER;
+>+	val = VF610_DAC_DACEN | VF610_DAC_DACRFS |
+>+		VF610_DAC_LPEN;
+>+	writel(val, info->regs + VF610_DACx_STATCTRL);
+>+}
+>+
+>+static void vf610_dac_exit(struct vf610_dac *info)
+>+{
+>+	int val;
+>+
+>+	val = readl(info->regs + VF610_DACx_STATCTRL);
+>+	val &= ~VF610_DAC_DACEN;
+>+	writel(val, info->regs + VF610_DACx_STATCTRL);
+>+}
+>+
+>+static int vf610_set_conversion_mode(struct iio_dev *indio_dev,
+>+				const struct iio_chan_spec *chan,
+>+				unsigned int mode)
+>+{
+>+	struct vf610_dac *info = iio_priv(indio_dev);
+>+	int val;
+>+
+>+	mutex_lock(&indio_dev->mlock);
+>+	info->conv_mode = mode;
+>+	val = readl(info->regs + VF610_DACx_STATCTRL);
+>+	if (mode)
+>+		val |= VF610_DAC_LPEN;
+>+	else
+>+		val &= ~VF610_DAC_LPEN;
+>+	writel(val, info->regs + VF610_DACx_STATCTRL);
+>+	mutex_unlock(&indio_dev->mlock);
+>+
+>+	return 0;
+>+}
+>+
+>+static int vf610_get_conversion_mode(struct iio_dev *indio_dev,
+>+				const struct iio_chan_spec *chan)
+>+{
+>+	struct vf610_dac *info = iio_priv(indio_dev);
+>+
+>+	return info->conv_mode;
+>+}
+>+
+>+static const char * const vf610_conv_modes[] = { "high-power",
+>"low-power" };
+>+
+>+static const struct iio_enum vf610_conversion_mode = {
+>+	.items = vf610_conv_modes,
+>+	.num_items = ARRAY_SIZE(vf610_conv_modes),
+>+	.get = vf610_get_conversion_mode,
+>+	.set = vf610_set_conversion_mode,
+>+};
+>+
+>+static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
+>+	IIO_ENUM("conversion_mode", IIO_SHARED_BY_DIR,
+>+		&vf610_conversion_mode),
+>+	{},
+>+};
+>+
+>+#define VF610_DAC_CHAN(_chan_type) { \
+>+	.type = (_chan_type), \
+>+	.output = 1, \
+>+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+>+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+>+	.ext_info = vf610_ext_info, \
+>+}
+>+
+>+static const struct iio_chan_spec vf610_dac_iio_channels[] = {
+>+	VF610_DAC_CHAN(IIO_VOLTAGE),
+>+};
+>+
+>+static int vf610_read_raw(struct iio_dev *indio_dev,
+>+			struct iio_chan_spec const *chan,
+>+			int *val, int *val2,
+>+			long mask)
+>+{
+>+	struct vf610_dac *info = iio_priv(indio_dev);
+>+
+>+	switch (mask) {
+>+	case IIO_CHAN_INFO_RAW:
+>+		*val = VF610_DAC_DAT0(readl(info->regs));
+>+		return IIO_VAL_INT;
+>+	case IIO_CHAN_INFO_SCALE:
+>+		/*
+>+		 * DACRFS is always 1 for valid reference and typical
+>+		 * reference voltage as per Vybrid datasheet is 3.3V
+>+		 * from section 9.1.2.1 of Vybrid datasheet
+>+		 */
+>+		*val = 3300 /* mV */;
+>+		*val2 = 12;
+>+		return IIO_VAL_FRACTIONAL_LOG2;
+>+
+>+	default:
+>+		return -EINVAL;
+>+	}
+>+}
+>+
+>+static int vf610_write_raw(struct iio_dev *indio_dev,
+>+			struct iio_chan_spec const *chan,
+>+			int val, int val2,
+>+			long mask)
+>+{
+>+	struct vf610_dac *info = iio_priv(indio_dev);
+>+
+>+	switch (mask) {
+>+	case IIO_CHAN_INFO_RAW:
+>+		mutex_lock(&indio_dev->mlock);
+>+		writel(VF610_DAC_DAT0(val), info->regs);
+>+		mutex_unlock(&indio_dev->mlock);
+>+		return 0;
+>+
+>+	default:
+>+		return -EINVAL;
+>+	}
+>+}
+>+
+>+static const struct iio_info vf610_dac_iio_info = {
+>+	.driver_module = THIS_MODULE,
+>+	.read_raw = &vf610_read_raw,
+>+	.write_raw = &vf610_write_raw,
+>+};
+>+
+>+static const struct of_device_id vf610_dac_match[] = {
+>+	{ .compatible = "fsl,vf610-dac", },
+>+	{ /* sentinel */ }
+>+};
+>+MODULE_DEVICE_TABLE(of, vf610_dac_match);
+>+
+>+static int vf610_dac_probe(struct platform_device *pdev)
+>+{
+>+	struct iio_dev *indio_dev;
+>+	struct vf610_dac *info;
+>+	struct resource *mem;
+>+	int ret;
+>+
+>+	indio_dev = devm_iio_device_alloc(&pdev->dev,
+>+					sizeof(struct vf610_dac));
+>+	if (!indio_dev) {
+>+		dev_err(&pdev->dev, "Failed allocating iio device\n");
+>+		return -ENOMEM;
+>+	}
+>+
+>+	info = iio_priv(indio_dev);
+>+	info->dev = &pdev->dev;
+>+
+>+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>+	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+>+	if (IS_ERR(info->regs))
+>+		return PTR_ERR(info->regs);
+>+
+>+	info->clk = devm_clk_get(&pdev->dev, "dac");
+>+	if (IS_ERR(info->clk)) {
+>+		dev_err(&pdev->dev, "Failed getting clock, err = %ld\n",
+>+			PTR_ERR(info->clk));
+>+		return PTR_ERR(info->clk);
+>+	}
+>+
+>+	platform_set_drvdata(pdev, indio_dev);
+>+
+>+	indio_dev->name = dev_name(&pdev->dev);
+>+	indio_dev->dev.parent = &pdev->dev;
+>+	indio_dev->dev.of_node = pdev->dev.of_node;
+>+	indio_dev->info = &vf610_dac_iio_info;
+>+	indio_dev->modes = INDIO_DIRECT_MODE;
+>+	indio_dev->channels = vf610_dac_iio_channels;
+>+	indio_dev->num_channels = ARRAY_SIZE(vf610_dac_iio_channels);
+>+
+>+	ret = clk_prepare_enable(info->clk);
+>+	if (ret) {
+>+		dev_err(&pdev->dev,
+>+			"Could not prepare or enable the clock\n");
+>+		return ret;
+>+	}
+>+
+>+	vf610_dac_init(info);
+>+
+>+	ret = iio_device_register(indio_dev);
+>+	if (ret) {
+>+		dev_err(&pdev->dev, "Couldn't register the device\n");
+>+		goto error_iio_device_register;
+>+	}
+>+
+>+	return 0;
+>+
+>+error_iio_device_register:
+>+	clk_disable_unprepare(info->clk);
+>+
+>+	return ret;
+>+}
+>+
+>+static int vf610_dac_remove(struct platform_device *pdev)
+>+{
+>+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>+	struct vf610_dac *info = iio_priv(indio_dev);
+>+
+>+	vf610_dac_exit(info);
+Should be reverse order of probe so exit after the unregister below.
+Right now you are disabling the hardware before removing the userspace interfaces.
+>+	iio_device_unregister(indio_dev);
+>+	clk_disable_unprepare(info->clk);
+>+
+>+	return 0;
+>+}
+>+
+>+#ifdef CONFIG_PM_SLEEP
+>+static int vf610_dac_suspend(struct device *dev)
+>+{
+>+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>+	struct vf610_dac *info = iio_priv(indio_dev);
+>+
+>+	vf610_dac_exit(info);
+>+	clk_disable_unprepare(info->clk);
+>+
+>+	return 0;
+>+}
+>+
+>+static int vf610_dac_resume(struct device *dev)
+>+{
+>+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>+	struct vf610_dac *info = iio_priv(indio_dev);
+>+	int ret;
+>+
+>+	ret = clk_prepare_enable(info->clk);
+>+	if (ret)
+>+		return ret;
+>+
+>+	vf610_dac_init(info);
+>+
+>+	return 0;
+>+}
+>+#endif
+>+
+>+static SIMPLE_DEV_PM_OPS(vf610_dac_pm_ops, vf610_dac_suspend,
+>vf610_dac_resume);
+>+
+>+static struct platform_driver vf610_dac_driver = {
+>+	.probe          = vf610_dac_probe,
+>+	.remove         = vf610_dac_remove,
+>+	.driver         = {
+>+		.name   = "vf610-dac",
+>+		.of_match_table = vf610_dac_match,
+>+		.pm     = &vf610_dac_pm_ops,
+>+	},
+>+};
+>+module_platform_driver(vf610_dac_driver);
+>+
+>+MODULE_AUTHOR("Sanchayan Maity <sanchayan.maity@toradex.com");
+>+MODULE_DESCRIPTION("Freescale VF610 DAC driver");
+>+MODULE_LICENSE("GPL v2");
 
-<snip>
->   
-> +/**
-> + * iio_get_time_ns() - utility function to get a time stamp for events etc
-> + * @indio_dev: device
-> + */
-> +s64 iio_get_time_ns(const struct iio_dev* indio_dev)
-> +{
-> +	struct timespec tp;
-> +
-> +	switch (iio_device_get_clock(indio_dev)) {
-> +	case CLOCK_REALTIME:
-> +		ktime_get_real_ts(&tp);
-> +		break;
-> +	case CLOCK_MONOTONIC:
-> +		ktime_get_ts(&tp);
-> +		break;
-> +	case CLOCK_MONOTONIC_RAW:
-> +		getrawmonotonic(&tp);
-> +		break;
-> +	case CLOCK_REALTIME_COARSE:
-> +		tp = current_kernel_time();
-> +		break;
-> +	case CLOCK_MONOTONIC_COARSE:
-> +		tp = get_monotonic_coarse();
-> +		break;
-> +	case CLOCK_BOOTTIME:
-> +		get_monotonic_boottime(&tp);
-> +		break;
-> +	case CLOCK_TAI:
-> +		timekeeping_clocktai(&tp);
-> +		break;
-> +	default:
-> +		BUG();
-> +	}
-> +
-> +	return timespec_to_ns(&tp);
-> +}
-> +EXPORT_SYMBOL(iio_get_time_ns);
-> +
-> +/**
-> + * iio_get_time_res() - utility function to get time stamp clock resolution in
-> + *                      nano seconds.
-> + * @indio_dev: device
-> + */
-> +unsigned int iio_get_time_res(const struct iio_dev* indio_dev)
-> +{
-> +	switch (iio_device_get_clock(indio_dev)) {
-> +	case CLOCK_REALTIME:
-> +	case CLOCK_MONOTONIC:
-> +	case CLOCK_MONOTONIC_RAW:
-> +	case CLOCK_BOOTTIME:
-> +	case CLOCK_TAI:
-> +		return hrtimer_resolution;
-> +	case CLOCK_REALTIME_COARSE:
-> +	case CLOCK_MONOTONIC_COARSE:
-> +		return LOW_RES_NSEC;
-> +	default:
-> +		BUG();
-> +	}
-> +}
-> +EXPORT_SYMBOL(iio_get_time_res);
-> +
->   static int __init iio_init(void)
->   {
->   	int ret;
-> @@ -904,11 +984,91 @@ static ssize_t iio_show_dev_name(struct device *dev,
->   
->   static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
->   
-> +static ssize_t iio_show_timestamp_clock(struct device *dev,
-> +                                        struct device_attribute *attr,
-> +                                        char *buf)
-> +{
-> +	const struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	const clockid_t clk = iio_device_get_clock(indio_dev);
-> +	const char* name;
-> +	ssize_t sz;
-> +
-> +	switch (clk) {
-> +	case CLOCK_REALTIME:
-> +		name = "CLOCK_REALTIME\n";
-> +		sz = sizeof("CLOCK_REALTIME\n");
-> +		break;
-> +	case CLOCK_MONOTONIC:
-> +		name = "CLOCK_MONOTONIC\n";
-> +		sz = sizeof("CLOCK_MONOTONIC\n");
-> +		break;
-> +	case CLOCK_MONOTONIC_RAW:
-> +		name = "CLOCK_MONOTONIC_RAW\n";
-> +		sz = sizeof("CLOCK_MONOTONIC_RAW\n");
-> +		break;
-> +	case CLOCK_REALTIME_COARSE:
-> +		name = "CLOCK_REALTIME_COARSE\n";
-> +		sz = sizeof("CLOCK_REALTIME_COARSE\n");
-> +		break;
-> +	case CLOCK_MONOTONIC_COARSE:
-> +		name = "CLOCK_MONOTONIC_COARSE\n";
-> +		sz = sizeof("CLOCK_MONOTONIC_COARSE\n");
-> +		break;
-> +	case CLOCK_BOOTTIME:
-> +		name = "CLOCK_BOOTTIME\n";
-> +		sz = sizeof("CLOCK_BOOTTIME\n");
-> +		break;
-> +	case CLOCK_TAI:
-> +		name = "CLOCK_TAI\n";
-> +		sz = sizeof("CLOCK_TAI\n");
-> +		break;
-I would have expected here to see lowercase clock ids. E.g
-"realtime monotonic monotonic_raw ..." etc.
-> +	default:
-> +		BUG();
-> +	}
-> +
-> +	memcpy(buf, name, sz);
-> +	return sz;
-> +}
-> +
->
-
-thanks,
-Daniel.
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
