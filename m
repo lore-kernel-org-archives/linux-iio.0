@@ -1,82 +1,328 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Mon, 22 Feb 2016 00:17:51 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-i2c@vger.kernel.org, lucas.demarchi@intel.com,
-	srinivas.pandruvada@linux.intel.com, ggao@invensense.com,
-	adi.reus@gmail.com, cmo@melexis.com, mwelling@ieee.org
-Subject: Re: [RFC PATCH 0/9] iio: Fix ABBA deadlock in inv-mpu6050
-Message-ID: <20160221231751.GC1386@katana>
-References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60722 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752072AbcBUVCI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2016 16:02:08 -0500
+Subject: Re: [PATCH v3 5/6] iio:pressure:ms5611: oversampling rate support
+To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
+References: <cover.1455731233.git.gregor.boirie@parrot.com>
+ <ecec3e34cbbf9bccf559deaf0d116faa1cd779dc.1455731233.git.gregor.boirie@parrot.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>, "Andrew F. Davis" <afd@ti.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56CA25CD.9080203@kernel.org>
+Date: Sun, 21 Feb 2016 21:02:05 +0000
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="7gGkHNMELEOhSGF6"
-In-Reply-To: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <ecec3e34cbbf9bccf559deaf0d116faa1cd779dc.1455731233.git.gregor.boirie@parrot.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 17/02/16 17:52, Gregor Boirie wrote:
+> Add support for setting and retrieving OverSampling Rate independently for
+> each of the temperature and pressure channels. This allows userspace to
+> fine tune hardware sampling process according to the following tradeoffs :
+> * the higher the OSR, the finer the resolution ;
+> * the higher the OSR, the lower the noise ;
+> BUT:
+> * the higher the OSR, the larger the drift ;
+> * the higher the OSR, the longer the response time, i.e. less samples per
+>   unit of time.
+> 
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Whilst this looks fine to me - it's complex enough that I'd like Tomasz to take
+a look at it before I apply (ideally anyway!)
+> ---
+>  drivers/iio/pressure/ms5611.h      |  20 ++++---
+>  drivers/iio/pressure/ms5611_core.c | 105 ++++++++++++++++++++++++++++++++++++-
+>  drivers/iio/pressure/ms5611_i2c.c  |  12 ++---
+>  drivers/iio/pressure/ms5611_spi.c  |  19 +++----
+>  4 files changed, 133 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
+> index 8b08e4b..b07897f 100644
+> --- a/drivers/iio/pressure/ms5611.h
+> +++ b/drivers/iio/pressure/ms5611.h
+> @@ -19,12 +19,6 @@
+>  #define MS5611_RESET			0x1e
+>  #define MS5611_READ_ADC			0x00
+>  #define MS5611_READ_PROM_WORD		0xA0
+> -#define MS5611_START_TEMP_CONV		0x58
+> -#define MS5611_START_PRESSURE_CONV	0x48
+> -
+> -#define MS5611_CONV_TIME_MIN		9040
+> -#define MS5611_CONV_TIME_MAX		10000
+> -
+>  #define MS5611_PROM_WORDS_NB		8
+>  
+>  enum {
+> @@ -39,10 +33,24 @@ struct ms5611_chip_info {
+>  					    s32 *temp, s32 *pressure);
+>  };
+>  
+> +/*
+> + * OverSampling Rate descriptor.
+> + * Warning: cmd MUST be kept aligned on a word boundary (see
+> + * m5611_spi_read_adc_temp_and_pressure in ms5611_spi.c).
+> + */
+> +struct ms5611_osr {
+> +	unsigned long conv_usec;
+> +	uint8_t cmd;
+> +	unsigned short rate;
+> +};
+> +
+>  struct ms5611_state {
+>  	void *client;
+>  	struct mutex lock;
+>  
+> +	const struct ms5611_osr *pressure_osr;
+> +	const struct ms5611_osr *temp_osr;
+> +
+>  	int (*reset)(struct device *dev);
+>  	int (*read_prom_word)(struct device *dev, int index, u16 *word);
+>  	int (*read_adc_temp_and_pressure)(struct device *dev,
+> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+> index 992ad8d..06d453c 100644
+> --- a/drivers/iio/pressure/ms5611_core.c
+> +++ b/drivers/iio/pressure/ms5611_core.c
+> @@ -18,11 +18,44 @@
+>  #include <linux/delay.h>
+>  #include <linux/regulator/consumer.h>
+>  
+> +#include <linux/iio/sysfs.h>
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/iio/trigger_consumer.h>
+>  #include "ms5611.h"
+>  
+> +#define MS5611_INIT_OSR(_cmd, _conv_usec, _rate) \
+> +	{ .cmd = _cmd, .conv_usec = _conv_usec, .rate = _rate }
+> +
+> +static const struct ms5611_osr ms5611_avail_pressure_osr[] = {
+> +	MS5611_INIT_OSR(0x40, 600,  256),
+> +	MS5611_INIT_OSR(0x42, 1170, 512),
+> +	MS5611_INIT_OSR(0x44, 2280, 1024),
+> +	MS5611_INIT_OSR(0x46, 4540, 2048),
+> +	MS5611_INIT_OSR(0x48, 9040, 4096)
+> +};
+> +
+> +static const struct ms5611_osr ms5611_avail_temp_osr[] = {
+> +	MS5611_INIT_OSR(0x50, 600,  256),
+> +	MS5611_INIT_OSR(0x52, 1170, 512),
+> +	MS5611_INIT_OSR(0x54, 2280, 1024),
+> +	MS5611_INIT_OSR(0x56, 4540, 2048),
+> +	MS5611_INIT_OSR(0x58, 9040, 4096)
+> +};
+> +
+> +static const char ms5611_show_osr[] = "256 512 1024 2048 4096";
+> +
+> +static IIO_CONST_ATTR(oversampling_ratio_available, ms5611_show_osr);
+> +
+> +static struct attribute *ms5611_attributes[] = {
+> +	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group ms5611_attribute_group = {
+> +	.attrs = ms5611_attributes,
+> +};
+> +
+>  static bool ms5611_prom_is_valid(u16 *prom, size_t len)
+>  {
+>  	int i, j;
+> @@ -239,11 +272,70 @@ static int ms5611_read_raw(struct iio_dev *indio_dev,
+>  		default:
+>  			return -EINVAL;
+>  		}
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		if (chan->type != IIO_TEMP && chan->type != IIO_PRESSURE)
+> +			break;
+> +		mutex_lock(&st->lock);
+> +		if (chan->type == IIO_TEMP)
+> +			*val = (int) st->temp_osr->rate;
+> +		else
+> +			*val = (int) st->pressure_osr->rate;
+> +		mutex_unlock(&st->lock);
+> +		return IIO_VAL_INT;
+>  	}
+>  
+>  	return -EINVAL;
+>  }
+>  
+> +static const struct ms5611_osr* ms5611_find_osr(int rate,
+> +                                                const struct ms5611_osr *osr,
+> +                                                size_t count)
+> +{
+> +	unsigned int r;
+> +
+> +	for (r = 0; r < count; r++)
+> +		if ((unsigned short) rate == osr[r].rate)
+> +			break;
+> +	if (r >= count)
+> +		return NULL;
+> +	return &osr[r];
+> +}
+> +
+> +static int ms5611_write_raw(struct iio_dev *indio_dev,
+> +                            struct iio_chan_spec const *chan,
+> +                            int val, int val2, long mask)
+> +{
+> +	struct ms5611_state *st = iio_priv(indio_dev);
+> +	const struct ms5611_osr *osr = NULL;
+> +
+> +	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
+> +		return -EINVAL;
+> +
+> +	if (chan->type == IIO_TEMP)
+> +		osr = ms5611_find_osr(val, ms5611_avail_temp_osr,
+> +		                      ARRAY_SIZE(ms5611_avail_temp_osr));
+> +	else if (chan->type == IIO_PRESSURE)
+> +		osr = ms5611_find_osr(val, ms5611_avail_pressure_osr,
+> +		                      ARRAY_SIZE(ms5611_avail_pressure_osr));
+> +	if (!osr)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&st->lock);
+> +
+> +	if (iio_buffer_enabled(indio_dev)) {
+> +		mutex_unlock(&st->lock);
+> +		return -EBUSY;
+> +	}
+> +
+> +	if (chan->type == IIO_TEMP)
+> +		st->temp_osr = osr;
+> +	else
+> +		st->pressure_osr = osr;
+> +
+> +	mutex_unlock(&st->lock);
+> +	return 0;
+> +}
+> +
+>  static const unsigned long ms5611_scan_masks[] = {0x3, 0};
+>  
+>  static struct ms5611_chip_info chip_info_tbl[] = {
+> @@ -259,7 +351,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
+>  	{
+>  		.type = IIO_PRESSURE,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> -			BIT(IIO_CHAN_INFO_SCALE),
+> +			BIT(IIO_CHAN_INFO_SCALE) |
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>  		.scan_index = 0,
+>  		.scan_type = {
+>  			.sign = 's',
+> @@ -271,7 +364,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
+>  	{
+>  		.type = IIO_TEMP,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> -			BIT(IIO_CHAN_INFO_SCALE),
+> +			BIT(IIO_CHAN_INFO_SCALE) |
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>  		.scan_index = 1,
+>  		.scan_type = {
+>  			.sign = 's',
+> @@ -285,6 +379,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
+>  
+>  static const struct iio_info ms5611_info = {
+>  	.read_raw = &ms5611_read_raw,
+> +	.write_raw = &ms5611_write_raw,
+> +	.attrs = &ms5611_attribute_group,
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> @@ -319,6 +415,11 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
+>  
+>  	mutex_init(&st->lock);
+>  	st->chip_info = &chip_info_tbl[type];
+> +	st->temp_osr =
+> +		&ms5611_avail_temp_osr[ARRAY_SIZE(ms5611_avail_temp_osr) - 1];
+> +	st->pressure_osr =
+> +		&ms5611_avail_pressure_osr[ARRAY_SIZE(ms5611_avail_pressure_osr)
+> +		                           - 1];
+>  	indio_dev->dev.parent = dev;
+>  	indio_dev->name = name;
+>  	indio_dev->info = &ms5611_info;
+> diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
+> index ae67539..b482ca4 100644
+> --- a/drivers/iio/pressure/ms5611_i2c.c
+> +++ b/drivers/iio/pressure/ms5611_i2c.c
+> @@ -62,23 +62,23 @@ static int ms5611_i2c_read_adc_temp_and_pressure(struct device *dev,
+>  {
+>  	int ret;
+>  	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
+> +	const struct ms5611_osr *osr = st->temp_osr;
+>  
+> -	ret = i2c_smbus_write_byte(st->client, MS5611_START_TEMP_CONV);
+> +	ret = i2c_smbus_write_byte(st->client, osr->cmd);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+> -
+> +	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+>  	ret = ms5611_i2c_read_adc(st, temp);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	ret = i2c_smbus_write_byte(st->client, MS5611_START_PRESSURE_CONV);
+> +	osr = st->pressure_osr;
+> +	ret = i2c_smbus_write_byte(st->client, osr->cmd);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+> -
+> +	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+>  	return ms5611_i2c_read_adc(st, pressure);
+>  }
+>  
+> diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
+> index 5cc009e..aa6cf2d 100644
+> --- a/drivers/iio/pressure/ms5611_spi.c
+> +++ b/drivers/iio/pressure/ms5611_spi.c
+> @@ -55,28 +55,29 @@ static int ms5611_spi_read_adc(struct device *dev, s32 *val)
+>  static int ms5611_spi_read_adc_temp_and_pressure(struct device *dev,
+>  						 s32 *temp, s32 *pressure)
+>  {
+> -	u8 cmd;
+>  	int ret;
+>  	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
+> +	const struct ms5611_osr *osr = st->temp_osr;
+>  
+> -	cmd = MS5611_START_TEMP_CONV;
+> -	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
+> +	/*
+> +	 * Warning: &osr->cmd MUST be aligned on a word boundary since used as
+> +	 * 2nd argument (void*) of spi_write_then_read.
+> +	 */
+> +	ret = spi_write_then_read(st->client, &osr->cmd, 1, NULL, 0);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+> -
+> +	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+>  	ret = ms5611_spi_read_adc(dev, temp);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	cmd = MS5611_START_PRESSURE_CONV;
+> -	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
+> +	osr = st->pressure_osr;
+> +	ret = spi_write_then_read(st->client, &osr->cmd, 1, NULL, 0);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+> -
+> +	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+>  	return ms5611_spi_read_adc(dev, pressure);
+>  }
+>  
+> 
 
---7gGkHNMELEOhSGF6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Feb 18, 2016 at 05:53:05PM +0200, Daniel Baluta wrote:
-> Sending this as an RFC because I don't know if style fixes are appropriate
-> for this driver and also not sure if deadlock fix is the best solution.
->=20
-> I2C people should only look at patches 8/9 and 9/9.
->=20
-> The mpu6050 accel+gyro combo has an auxiliary I2C bus, allowing for
-> an auxiliary sensor to be connected (eg. a magnetometer).
->=20
-> The mpu can either act as an I2C master (functionality not currently
-> implemented in the driver) or it can use a bypass multiplexer which
-> directly connects the auxiliary I2C bus pins to the main I2C bus pins [1]
-> Currently the driver implements the bypass mode via an I2C mux.
->=20
-> This patchset fixes a deadlock in inv-mpu6050 IMU which happens when
-> magnetometer (on auxiliary I2C bus) runs in parallel with accel or gyro.
->=20
-> First 7 patches do some cleanup in order to make INV MPU6050 code easier
-> to read.
->=20
-> Patch number 8 allows passing NULL select callbacks to i2c_mux_master_xfer
-> and i2c_mux_smbus_xfer.
->=20
-> Patch number 9 actually fixes the deadlock.
-
-We recently had a bigger patch series fixing locking problems related to
-muxes. I sadly didn't have the time to review it. Can you have a look if
-it helps your case?
-
-http://thread.gmane.org/gmane.linux.drivers.i2c/26169
-
-Thanks,
-
-   Wolfram
-
-
---7gGkHNMELEOhSGF6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJWykWfAAoJEBQN5MwUoCm2qOkP/jKGqpHffps8ssgicIW8TKCt
-T/f9Xf4mGFJ5v/KNIEtqc7xlumEysU50wCEeD9mox2AFjdMb+UICAtaR7si/TM8n
-gIzVGGA4/UHrnVfTW4aah+cqZ+wkwTL9KcZjBzNXLi6kCqMExAct2ilArvZLJCkQ
-CJyxjTU9kMyc64m9hEmXzAsgWsyzL5RlNLnD7O8paZ7iEDJwjqmNosZBa4TEzM+B
-ZoZE/sG5Sv+COLkcQgIe9BQmk7wsQyuCGYO7q2SPj/iCyvDUD7O7rI/2BZp4WhHy
-iDuBtLPnTfMEy+tO8euPcQBcaGp9b4gDX5H9z5OIH0gOCgLMes3mexuli3/bZ4VH
-Kin/F/tHubUQZ5gT3o12QWYS08w1btOhLtwflIamfFfrgwQDZaFo24dhrNhtzKLR
-hrwvbVbOPstP4rHgRzO4yUkUkxfWUdYP/aJTSrzIzfgRibzqej8odN48uBfLvDY7
-SLxZIKNvnPktjzuBQyKeIegQuy2V+ZSPtJYuE848yz9stmfG0ODgozANVJXmPYPy
-Zov2RJgkqEKnlEal1vLrSQwJ4juN0GLlAmCN5jVpOm2RAhSd38od0VBzBkALgvbl
-8Im6RmC5RlR3MkfcPDwvwkPhNt+d6yHgfbyxtc0brz6dW7lrDo/jc13v9JMOOIlc
-Hsw/Tuat+UsdVqnWOR1e
-=sKxT
------END PGP SIGNATURE-----
-
---7gGkHNMELEOhSGF6--
