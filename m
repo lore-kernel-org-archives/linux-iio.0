@@ -1,87 +1,59 @@
-Return-Path: <alexander.sverdlin@gmail.com>
-Subject: [PATCH v2 3/5] ep93xx: Add ADC platform device support to core
-To: Hartley Sweeten <hsweeten@visionengravers.com>,
- Ryan Mallon <rmallon@gmail.com>, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org
-References: <56C88EDD.3040007@gmail.com> <56C88FCB.30008@gmail.com>
- <56C88FFD.9050504@gmail.com>
-Cc: Russell King <linux@arm.linux.org.uk>, Jonathan Cameron
- <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- Jonathan Cameron <jic23@kernel.org>
-From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Message-ID: <56C8A99C.7080201@gmail.com>
-Date: Sat, 20 Feb 2016 18:59:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <56C88FFD.9050504@gmail.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f169.google.com ([209.85.192.169]:32859 "EHLO
+	mail-pf0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750774AbcBVGYD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Feb 2016 01:24:03 -0500
+From: Sanchayan Maity <maitysanchayan@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, shawnguo@kernel.org, stefan@agner.ch,
+	pmeerw@pmeerw.net, Sanchayan Maity <maitysanchayan@gmail.com>
+Subject: [PATCH v3 1/2] ARM: dts: vfxxx: Add DAC node for Vybrid SoC
+Date: Mon, 22 Feb 2016 11:48:36 +0530
+Message-Id: <cb23ab53250603e96eb4725c266d01e5376f8a68.1456121233.git.maitysanchayan@gmail.com>
+In-Reply-To: <cover.1456121233.git.maitysanchayan@gmail.com>
+References: <cover.1456121233.git.maitysanchayan@gmail.com>
+In-Reply-To: <cover.1456121233.git.maitysanchayan@gmail.com>
+References: <cover.1456121233.git.maitysanchayan@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Newly provided ep93xx_register_adc() could be used by machine-specific code
-to create ADC platform device on Cirrus Logic EP93xx SoC-based machines.
+Add a device tree node entry for DAC peripheral on Vybrid SoC.
 
-Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
 ---
- arch/arm/mach-ep93xx/core.c                  | 24 ++++++++++++++++++++++++
- arch/arm/mach-ep93xx/include/mach/platform.h |  1 +
- arch/arm/mach-ep93xx/soc.h                   |  1 +
- 3 files changed, 26 insertions(+)
+ arch/arm/boot/dts/vfxxx.dtsi | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/arm/mach-ep93xx/core.c b/arch/arm/mach-ep93xx/core.c
-index c393b1b..f53c618 100644
---- a/arch/arm/mach-ep93xx/core.c
-+++ b/arch/arm/mach-ep93xx/core.c
-@@ -821,6 +821,30 @@ void ep93xx_ide_release_gpio(struct platform_device *pdev)
- EXPORT_SYMBOL(ep93xx_ide_release_gpio);
-
- /*************************************************************************
-+ * EP93xx ADC
-+ *************************************************************************/
-+static struct resource ep93xx_adc_resources[] = {
-+	DEFINE_RES_MEM(EP93XX_ADC_PHYS_BASE, 0x28),
-+	DEFINE_RES_IRQ(IRQ_EP93XX_TOUCH),
-+};
+diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
+index a5f07e3..8238069 100644
+--- a/arch/arm/boot/dts/vfxxx.dtsi
++++ b/arch/arm/boot/dts/vfxxx.dtsi
+@@ -602,6 +602,24 @@
+ 				status = "disabled";
+ 			};
+ 
++			dac0: dac@400cc000 {
++				compatible = "fsl,vf610-dac";
++				reg = <0x400cc000 1000>;
++				interrupts = <55 IRQ_TYPE_LEVEL_HIGH>;
++				clock-names = "dac";
++				clocks = <&clks VF610_CLK_DAC0>;
++				status = "disabled";
++			};
 +
-+static struct platform_device ep93xx_adc_device = {
-+	.name		= "ep93xx-adc",
-+	.id		= -1,
-+	.num_resources	= ARRAY_SIZE(ep93xx_adc_resources),
-+	.resource	= ep93xx_adc_resources,
-+};
++			dac1: dac@400cd000 {
++				compatible = "fsl,vf610-dac";
++				reg = <0x400cd000 1000>;
++				interrupts = <56 IRQ_TYPE_LEVEL_HIGH>;
++				clock-names = "dac";
++				clocks = <&clks VF610_CLK_DAC1>;
++				status = "disabled";
++			};
 +
-+void __init ep93xx_register_adc(void)
-+{
-+	/* Power up ADC, deactivate Touch Screen Controller */
-+	ep93xx_devcfg_set_clear(EP93XX_SYSCON_DEVCFG_TIN,
-+				EP93XX_SYSCON_DEVCFG_ADCPD);
-+
-+	platform_device_register(&ep93xx_adc_device);
-+}
-+
-+/*************************************************************************
-  * EP93xx Security peripheral
-  *************************************************************************/
+ 			fec0: ethernet@400d0000 {
+ 				compatible = "fsl,mvf600-fec";
+ 				reg = <0x400d0000 0x1000>;
+-- 
+2.7.1
 
-diff --git a/arch/arm/mach-ep93xx/include/mach/platform.h b/arch/arm/mach-ep93xx/include/mach/platform.h
-index 4c0bbd9..db08396 100644
---- a/arch/arm/mach-ep93xx/include/mach/platform.h
-+++ b/arch/arm/mach-ep93xx/include/mach/platform.h
-@@ -52,6 +52,7 @@ int ep93xx_i2s_acquire(void);
- void ep93xx_i2s_release(void);
- void ep93xx_register_ac97(void);
- void ep93xx_register_ide(void);
-+void ep93xx_register_adc(void);
- int ep93xx_ide_acquire_gpio(struct platform_device *pdev);
- void ep93xx_ide_release_gpio(struct platform_device *pdev);
-
-diff --git a/arch/arm/mach-ep93xx/soc.h b/arch/arm/mach-ep93xx/soc.h
-index 7bf7ff8..d20e631 100644
---- a/arch/arm/mach-ep93xx/soc.h
-+++ b/arch/arm/mach-ep93xx/soc.h
-@@ -95,6 +95,7 @@
- #define EP93XX_KEY_MATRIX_PHYS_BASE	EP93XX_APB_PHYS(0x000f0000)
- #define EP93XX_KEY_MATRIX_BASE		EP93XX_APB_IOMEM(0x000f0000)
-
-+#define EP93XX_ADC_PHYS_BASE		EP93XX_APB_PHYS(0x00100000)
- #define EP93XX_ADC_BASE			EP93XX_APB_IOMEM(0x00100000)
- #define EP93XX_TOUCHSCREEN_BASE		EP93XX_APB_IOMEM(0x00100000)
