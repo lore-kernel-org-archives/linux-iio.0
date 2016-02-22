@@ -1,165 +1,35 @@
-Return-Path: <amsfield22@gmail.com>
-From: Alison Schofield <amsfield22@gmail.com>
-To: outreachy-kernel@googlegroups.com,
-	daniel.baluta@intel.com
-Cc: jic23@kernel.org,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [RFC] staging: iio: isl29018: use regmap to retrieve struct device
-Date: Mon, 22 Feb 2016 12:34:32 -0800
-Message-Id: <1456173272-5217-1-git-send-email-amsfield22@gmail.com>
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <CAEnQRZBv4=UXVAzBn9rui2nyJ_UQdbqyUxDNchtZ9=mJ71Ympw@mail.gmail.com>
+References: <1456177151-15881-1-git-send-email-matt.ranostay@intel.com>
+	<1456177151-15881-2-git-send-email-matt.ranostay@intel.com>
+	<CAEnQRZBv4=UXVAzBn9rui2nyJ_UQdbqyUxDNchtZ9=mJ71Ympw@mail.gmail.com>
+Date: Mon, 22 Feb 2016 23:50:03 +0200
+Message-ID: <CAEnQRZA4o65VH=UbW9qwmEFcbWdioUnT3DMKah_m7DrVZbL32w@mail.gmail.com>
+Subject: Re: [PATCH 1/5] iio: imu: mpu6050: use inv_mpu6050_sensor_show return code
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Matt Ranostay <matt.ranostay@intel.com>, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Adriana Reus <adriana.reus@intel.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Remove struct device from drivers global data and use regmap
-API to retrieve device info instead.
+On Mon, Feb 22, 2016 at 11:49 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+> On Mon, Feb 22, 2016 at 11:39 PM, Matt Ranostay <matt.ranostay@intel.com> wrote:
+>> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
+>> ---
+>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> index 225860016fed..4324328fd304 100644
+>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> @@ -275,7 +275,7 @@ static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+>>                 case IIO_TEMP:
+>>                         /* wait for stablization */
+>
+> While at it please also fix this type :D.
 
-This replacement can be done for drivers that include regmap
-in their global data.
-
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
----
- drivers/staging/iio/light/isl29018.c | 28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 03dbfb6..76d9f74 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -100,7 +100,6 @@ static const struct isl29018_scale {
- };
- 
- struct isl29018_chip {
--	struct device		*dev;
- 	struct regmap		*regmap;
- 	struct mutex		lock;
- 	int			type;
-@@ -180,30 +179,31 @@ static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
- 	int status;
- 	unsigned int lsb;
- 	unsigned int msb;
-+	struct device *dev = regmap_get_device(chip->regmap);
- 
- 	/* Set mode */
- 	status = regmap_write(chip->regmap, ISL29018_REG_ADD_COMMAND1,
- 			      mode << COMMMAND1_OPMODE_SHIFT);
- 	if (status) {
--		dev_err(chip->dev,
-+		dev_err(dev,
- 			"Error in setting operating mode err %d\n", status);
- 		return status;
- 	}
- 	msleep(CONVERSION_TIME_MS);
- 	status = regmap_read(chip->regmap, ISL29018_REG_ADD_DATA_LSB, &lsb);
- 	if (status < 0) {
--		dev_err(chip->dev,
-+		dev_err(dev,
- 			"Error in reading LSB DATA with err %d\n", status);
- 		return status;
- 	}
- 
- 	status = regmap_read(chip->regmap, ISL29018_REG_ADD_DATA_MSB, &msb);
- 	if (status < 0) {
--		dev_err(chip->dev,
-+		dev_err(dev,
- 			"Error in reading MSB DATA with error %d\n", status);
- 		return status;
- 	}
--	dev_vdbg(chip->dev, "MSB 0x%x and LSB 0x%x\n", msb, lsb);
-+	dev_vdbg(dev, "MSB 0x%x and LSB 0x%x\n", msb, lsb);
- 
- 	return (msb << 8) | lsb;
- }
-@@ -246,13 +246,14 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
- 	int status;
- 	int prox_data = -1;
- 	int ir_data = -1;
-+	struct device *dev = regmap_get_device(chip->regmap);
- 
- 	/* Do proximity sensing with required scheme */
- 	status = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMANDII,
- 				    COMMANDII_SCHEME_MASK,
- 				    scheme << COMMANDII_SCHEME_SHIFT);
- 	if (status) {
--		dev_err(chip->dev, "Error in setting operating mode\n");
-+		dev_err(dev, "Error in setting operating mode\n");
- 		return status;
- 	}
- 
-@@ -525,10 +526,11 @@ static int isl29035_detect(struct isl29018_chip *chip)
- {
- 	int status;
- 	unsigned int id;
-+	struct device *dev = regmap_get_device(chip->regmap);
- 
- 	status = regmap_read(chip->regmap, ISL29035_REG_DEVICE_ID, &id);
- 	if (status < 0) {
--		dev_err(chip->dev,
-+		dev_err(dev,
- 			"Error reading ID register with error %d\n",
- 			status);
- 		return status;
-@@ -553,6 +555,7 @@ enum {
- static int isl29018_chip_init(struct isl29018_chip *chip)
- {
- 	int status;
-+	struct device *dev = regmap_get_device(chip->regmap);
- 
- 	if (chip->type == isl29035) {
- 		status = isl29035_detect(chip);
-@@ -582,7 +585,7 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
- 	 */
- 	status = regmap_write(chip->regmap, ISL29018_REG_TEST, 0x0);
- 	if (status < 0) {
--		dev_err(chip->dev, "Failed to clear isl29018 TEST reg.(%d)\n",
-+		dev_err(dev, "Failed to clear isl29018 TEST reg.(%d)\n",
- 			status);
- 		return status;
- 	}
-@@ -593,7 +596,7 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
- 	 */
- 	status = regmap_write(chip->regmap, ISL29018_REG_ADD_COMMAND1, 0);
- 	if (status < 0) {
--		dev_err(chip->dev, "Failed to clear isl29018 CMD1 reg.(%d)\n",
-+		dev_err(dev, "Failed to clear isl29018 CMD1 reg.(%d)\n",
- 			status);
- 		return status;
- 	}
-@@ -604,14 +607,14 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
- 	status = isl29018_set_scale(chip, chip->scale.scale,
- 				    chip->scale.uscale);
- 	if (status < 0) {
--		dev_err(chip->dev, "Init of isl29018 fails\n");
-+		dev_err(dev, "Init of isl29018 fails\n");
- 		return status;
- 	}
- 
- 	status = isl29018_set_integration_time(chip,
- 			isl29018_int_utimes[chip->type][chip->int_time]);
- 	if (status < 0) {
--		dev_err(chip->dev, "Init of isl29018 fails\n");
-+		dev_err(dev, "Init of isl29018 fails\n");
- 		return status;
- 	}
- 
-@@ -728,7 +731,6 @@ static int isl29018_probe(struct i2c_client *client,
- 	chip = iio_priv(indio_dev);
- 
- 	i2c_set_clientdata(client, indio_dev);
--	chip->dev = &client->dev;
- 
- 	if (id) {
- 		name = id->name;
-@@ -751,7 +753,7 @@ static int isl29018_probe(struct i2c_client *client,
- 				chip_info_tbl[dev_id].regmap_cfg);
- 	if (IS_ERR(chip->regmap)) {
- 		err = PTR_ERR(chip->regmap);
--		dev_err(chip->dev, "regmap initialization failed: %d\n", err);
-+		dev_err(&client->dev, "regmap initialization fails: %d\n", err);
- 		return err;
- 	}
- 
--- 
-2.1.4
+s/type/typo :)))
