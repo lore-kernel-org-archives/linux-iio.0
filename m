@@ -1,48 +1,31 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f174.google.com ([209.85.192.174]:33544 "EHLO
-	mail-pf0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751589AbcBWM7A convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Feb 2016 07:59:00 -0500
-Received: by mail-pf0-f174.google.com with SMTP id q63so111997341pfb.0
-        for <linux-iio@vger.kernel.org>; Tue, 23 Feb 2016 04:58:59 -0800 (PST)
+Received: from mail-pa0-f52.google.com ([209.85.220.52]:34721 "EHLO
+	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751666AbcBWQTF convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Feb 2016 11:19:05 -0500
+Received: by mail-pa0-f52.google.com with SMTP id fy10so112508152pac.1
+        for <linux-iio@vger.kernel.org>; Tue, 23 Feb 2016 08:19:04 -0800 (PST)
 Content-Type: text/plain; charset=utf-8
 Mime-Version: 1.0 (Mac OS X Mail 9.2 \(3112\))
 Subject: Re: iio_simple_dummy_buffer_dma
 From: John Syne <john3909@gmail.com>
 In-Reply-To: <56CB4602.6060809@metafoo.de>
-Date: Tue, 23 Feb 2016 04:58:57 -0800
+Date: Tue, 23 Feb 2016 08:19:02 -0800
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Message-Id: <1860A296-81E6-4B98-894F-FBFEF02077C3@gmail.com>
+Message-Id: <4A74D836-0747-43D6-886B-7D1C5CB2D070@gmail.com>
 References: <C78F84F2-A2D5-40B2-9291-F27FA95C8F52@gmail.com> <8CFE0549-CA65-4163-917D-5BF55DCC0E4A@gmail.com> <56CAF486.4060505@metafoo.de> <5343A235-F2C0-46B0-A0E1-853F3BC5F27D@gmail.com> <56CB4602.6060809@metafoo.de>
 To: Lars-Peter Clausen <lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Lars,
+Oops, I didn’t copy the complete config:
 
-This is set correctly
-
-#
-# IIO dummy driver
-#
 CONFIG_IIO_DUMMY_EVGEN=m
 CONFIG_IIO_SIMPLE_DUMMY=m
 CONFIG_IIO_SIMPLE_DUMMY_EVENTS=y
 CONFIG_IIO_SIMPLE_DUMMY_BUFFER=y
 # CONFIG_IIO_SIMPLE_DUMMY_BUFFER_KFIFO is not set
-
-And here is the buffer config for my second e-mail:
-
-CONFIG_IIO=m
-CONFIG_IIO_BUFFER=y
-CONFIG_IIO_BUFFER_CB=m
-CONFIG_IIO_BUFFER_DMA=y
-CONFIG_IIO_KFIFO_BUF=m
-CONFIG_IIO_TRIGGERED_BUFFER=m
-CONFIG_IIO_TRIGGER=y
-CONFIG_IIO_CONSUMERS_PER_TRIGGER=2
-
-
+CONFIG_IIO_SIMPLE_DUMMY_BUFFER_DMA=y
 
 Regards,
 John
