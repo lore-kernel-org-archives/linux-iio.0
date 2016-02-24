@@ -1,83 +1,47 @@
-Return-Path: <bijosh.t@hotmail.com>
-Message-ID: <BLU437-SMTP83D5D882D7154E7D04183D80B90@phx.gbl>
-From: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
-To: gregkh@linuxfoundation.org,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net
-CC: mahfouz.saif.elyazal@gmail.com,
-	devel@driverdev.osuosl.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/1] staging: coding style cleanups for staging/iio/light/tsl2583 driver
-Date: Sun, 28 Feb 2016 13:54:33 +0530
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51127 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750914AbcBXVIa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Feb 2016 16:08:30 -0500
+Subject: Re: [PATCH 0/5] mpu6050: code clean and calibration support
+To: Matt Ranostay <matt.ranostay@intel.com>
+References: <1456177151-15881-1-git-send-email-matt.ranostay@intel.com>
+Cc: linux-iio@vger.kernel.org, daniel.baluta@intel.com,
+	adriana.reus@intel.com, Ge Gao <ggao@invensense.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56CE1BCB.40807@kernel.org>
+Date: Wed, 24 Feb 2016 21:08:27 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1456177151-15881-1-git-send-email-matt.ranostay@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch fixes following coding style warning reported by check patch script,
-in tsl2583 driver:
-    - Block comments use a trailing */ on a separate line
+On 22/02/16 21:39, Matt Ranostay wrote:
+> The patchset series cleans up several documentation, return
+> code issues, incorrect timing delays, and adds accl/gyro offset
+> support.
+> 
+> Matt Ranostay (5):
+>   iio: imu: mpu6050: use inv_mpu6050_sensor_show return code
+>   iio: imu: mpu6050: fix INV_MPU6050_REG_UP_TIME delay
+>   iio: imu: mpu6050: add missing docstring for int_pin_cfg
+>   iio: imu: mpu6050: add calibration offset support
+>   iio: imu: mpu6050: add mpu6500 register settings
+> 
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 88 +++++++++++++++++++++++++++---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  6 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 20 ++++++-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  |  3 +-
+>  4 files changed, 105 insertions(+), 12 deletions(-)
+> 
+Whole series looks good to me (the typo fix can follow if you like :)
 
-Signed-off-by: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
----
- drivers/staging/iio/light/tsl2583.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+Ideally I'd like Ge to take a look as well (+ anyone else who fancies
+doing so!) so will leave it on list for a few days more.
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 3100d96..9159298 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -241,7 +241,8 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- 	}
- 
- 	/* clear status, really interrupt status (interrupts are off), but
--	 * we use the bit anyway - don't forget 0x80 - this is a command*/
-+	 * we use the bit anyway - don't forget 0x80 - this is a command
-+	 */
- 	ret = i2c_smbus_write_byte(chip->client,
- 				   (TSL258X_CMD_REG | TSL258X_CMD_SPL_FN |
- 				    TSL258X_CMD_ALS_INT_CLR));
-@@ -430,7 +431,8 @@ static int taos_chip_on(struct iio_dev *indio_dev)
- 	chip->als_time_scale = (als_time + 25) / 50;
- 
- 	/* TSL258x Specific power-on / adc enable sequence
--	 * Power on the device 1st. */
-+	 * Power on the device 1st.
-+	 */
- 	utmp = TSL258X_CNTL_PWR_ON;
- 	ret = i2c_smbus_write_byte_data(chip->client,
- 					TSL258X_CMD_REG | TSL258X_CNTRL, utmp);
-@@ -440,7 +442,8 @@ static int taos_chip_on(struct iio_dev *indio_dev)
- 	}
- 
- 	/* Use the following shadow copy for our delay before enabling ADC.
--	 * Write all the registers. */
-+	 * Write all the registers.
-+	 */
- 	for (i = 0, uP = chip->taos_config; i < TSL258X_REG_MAX; i++) {
- 		ret = i2c_smbus_write_byte_data(chip->client,
- 						TSL258X_CMD_REG + i,
-@@ -454,7 +457,8 @@ static int taos_chip_on(struct iio_dev *indio_dev)
- 
- 	usleep_range(3000, 3500);
- 	/* NOW enable the ADC
--	 * initialize the desired mode of operation */
-+	 * initialize the desired mode of operation
-+	 */
- 	utmp = TSL258X_CNTL_PWR_ON | TSL258X_CNTL_ADC_ENBL;
- 	ret = i2c_smbus_write_byte_data(chip->client,
- 					TSL258X_CMD_REG | TSL258X_CNTRL,
-@@ -696,7 +700,8 @@ static ssize_t taos_luxtable_show(struct device *dev,
- 				  taos_device_lux[i].ch1);
- 		if (taos_device_lux[i].ratio == 0) {
- 			/* We just printed the first "0" entry.
--			 * Now get rid of the extra "," and break. */
-+			 * Now get rid of the extra "," and break.
-+			 */
- 			offset--;
- 			break;
- 		}
--- 
-2.1.4
+Jonathan
+
+
+
+
