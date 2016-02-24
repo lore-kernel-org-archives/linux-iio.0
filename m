@@ -1,72 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f43.google.com ([209.85.220.43]:35376 "EHLO
-	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750774AbcBVGX6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Feb 2016 01:23:58 -0500
-From: Sanchayan Maity <maitysanchayan@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, shawnguo@kernel.org, stefan@agner.ch,
-	pmeerw@pmeerw.net, Sanchayan Maity <maitysanchayan@gmail.com>
-Subject: [PATCH v3 0/2] Add DAC driver support for Vybrid SoC
-Date: Mon, 22 Feb 2016 11:48:35 +0530
-Message-Id: <cover.1456121233.git.maitysanchayan@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51022 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751750AbcBXUmk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Feb 2016 15:42:40 -0500
+Subject: Re: [RFC] i2c_check_functionality and error code
+To: Wolfram Sang <wsa@the-dreams.de>
+References: <CAKzfze-B4dx9aghERaRDu7xz0i6pMJcAUGMQX7OWJpWh7i=bxw@mail.gmail.com>
+ <56CA1F0D.2060707@kernel.org> <20160221225606.GA1386@katana>
+Cc: Matt Ranostay <mranostay@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux I2C <linux-i2c@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56CE15BD.3070800@kernel.org>
+Date: Wed, 24 Feb 2016 20:42:37 +0000
+MIME-Version: 1.0
+In-Reply-To: <20160221225606.GA1386@katana>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+On 21/02/16 22:56, Wolfram Sang wrote:
+>> Hohum. Wolfram what do you think?
+> 
+> I'd go for "EOPNOTSUPP" since it is most descriptive. I wouldn't say we
+> really need to fix it up in the kernel tree. However, I neither would
+> vote against it.
+> 
+I'm certainly keen on cleaning this up in IIO at the least.
+A bit of consistency is always nice and once we have done it once
+it should be reasonably pain free.
 
-This patchset adds support for the DAC peripheral on Vybrid SoC.
-Patchset is based on top of shawn's for-next branch and has been
-tested on a Toradex Colibri VF50 module.
+Anyhow, patches welcome ;)
 
-@Jonathan
-I kept the IIO_SHARED_BY_DIR instead of using IIO_SHARED_BY_ALL
-since this gives "out_conversion_mode" allowing me to distinguish
-this in the ABI documentation, that this is explicitly for the DAC.
-
-Since 4.5-rc4 was released recently and assuming this makes it with
-this or next version, I assumed the target kernel version would be
-4.6 and used that in ABI documentation.
-
-Feedbacks and comments most welcome.
-
-Changes since v2:
-1. Add dependencies on OF and HAS_IOMEM in Kconfig
-2. Fix ordering of disabling DAC and calling iio unregister
-
-Changes since v1:
-1. Fix return type of vf610_dac_init function
-2. Document conversion modes in sysfs-bus-iio-vf610
-3. Remove "indexed" specification from iio_chan_spec
-4. Use "return" directly from default case in switch
-5. Remove DRIVER_NAME
-6. Call vf610_dac_init before iio device registration
-7. Define and use vf610_dac_exit function in remove and suspend
-
-v2 of the patchset
-http://www.spinics.net/lists/arm-kernel/msg482839.html
-
-v1 of the patchset:
-http://www.spinics.net/lists/arm-kernel/msg481190.html
-
-Thanks & Regards,
-Sanchayan Maity.
-
-Sanchayan Maity (2):
-  ARM: dts: vfxxx: Add DAC node for Vybrid SoC
-  iio: dac: vf610_dac: Add IIO DAC driver for Vybrid SoC
-
- Documentation/ABI/testing/sysfs-bus-iio-vf610      |   9 +
- .../devicetree/bindings/iio/dac/vf610-dac.txt      |  20 ++
- arch/arm/boot/dts/vfxxx.dtsi                       |  18 ++
- drivers/iio/dac/Kconfig                            |  10 +
- drivers/iio/dac/Makefile                           |   1 +
- drivers/iio/dac/vf610_dac.c                        | 298 +++++++++++++++++++++
- 6 files changed, 356 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
- create mode 100644 drivers/iio/dac/vf610_dac.c
-
--- 
-2.7.1
-
+Jonathan
