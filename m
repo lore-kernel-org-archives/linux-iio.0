@@ -1,178 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57495 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933462AbcBYTzi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 25 Feb 2016 14:55:38 -0500
-Subject: Re: [PATCH 4/5] iio: imu: mpu6050: add calibration offset support
-To: Matt Ranostay <matt.ranostay@intel.com>
-References: <1456177151-15881-1-git-send-email-matt.ranostay@intel.com>
- <1456177151-15881-5-git-send-email-matt.ranostay@intel.com>
-Cc: linux-iio@vger.kernel.org, daniel.baluta@intel.com,
-	adriana.reus@intel.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56CF5C39.4060805@kernel.org>
-Date: Thu, 25 Feb 2016 19:55:37 +0000
+Received: from bear.ext.ti.com ([192.94.94.41]:42086 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1422652AbcBZPni (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 26 Feb 2016 10:43:38 -0500
+From: Grygorii Strashko <grygorii.strashko@ti.com>
+To: Lee Jones <lee.jones@linaro.org>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+CC: <rtc-linux@googlegroups.com>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <nsekhar@ti.com>,
+	<linux-omap@vger.kernel.org>,
+	Grygorii Strashko <grygorii.strashko@ti.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Nishanth Menon <nm@ti.com>
+Subject: [PATCH 7/7] iio: adc: palmas: Drop IRQF_EARLY_RESUME flag
+Date: Fri, 26 Feb 2016 17:42:57 +0200
+Message-ID: <1456501377-16871-8-git-send-email-grygorii.strashko@ti.com>
+In-Reply-To: <1456501377-16871-1-git-send-email-grygorii.strashko@ti.com>
+References: <1456501377-16871-1-git-send-email-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <1456177151-15881-5-git-send-email-matt.ranostay@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/02/16 21:39, Matt Ranostay wrote:
-> Allow setting of the x/y/z axes calibration offsets for the gyroscope
-> and accelerometer.
-> 
-> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
-Applied - again minor fuzz, but I think it went on top fine.
+Palmas gpadc IRQs are nested threaded and this flag is not required for nested
+irqs anymore, since commit 3c646f2c6aa9 ("genirq: Don't suspend nested_thread
+irqs over system suspend") was merged.
 
-Jonathan
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 51 ++++++++++++++++++++++++++++--
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 10 ++++++
->  2 files changed, 59 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 6d4b19dd16f8..3acf0863e558 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -55,6 +55,8 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
->  	.pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
->  	.pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
->  	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
-> +	.accl_offset		= INV_MPU6050_REG_ACCEL_OFFSET,
-> +	.gyro_offset		= INV_MPU6050_REG_GYRO_OFFSET,
->  };
->  
->  static const struct inv_mpu6050_chip_config chip_config_6050 = {
-> @@ -200,6 +202,20 @@ static int inv_mpu6050_init_config(struct iio_dev *indio_dev)
->  	return result;
->  }
->  
-> +static int inv_mpu6050_sensor_set(struct inv_mpu6050_state  *st, int reg,
-> +				int axis, int val)
-> +{
-> +	int ind, result;
-> +	__be16 d = cpu_to_be16(val);
-> +
-> +	ind = (axis - IIO_MOD_X) * 2;
-> +	result = regmap_bulk_write(st->map, reg + ind, (u8 *)&d, 2);
-> +	if (result)
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
->  static int inv_mpu6050_sensor_show(struct inv_mpu6050_state  *st, int reg,
->  				int axis, int *val)
->  {
-> @@ -221,11 +237,12 @@ static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
->  			      int *val2,
->  			      long mask) {
->  	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
-> +	int ret = 0;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  	{
-> -		int ret, result;
-> +		int result;
->  
->  		ret = IIO_VAL_INT;
->  		result = 0;
-> @@ -321,6 +338,20 @@ error_read_raw:
->  		default:
->  			return -EINVAL;
->  		}
-> +	case IIO_CHAN_INFO_CALIBBIAS:
-> +		switch (chan->type) {
-> +		case IIO_ANGL_VEL:
-> +			ret = inv_mpu6050_sensor_show(st, st->reg->gyro_offset,
-> +						chan->channel2, val);
-> +			return IIO_VAL_INT;
-> +		case IIO_ACCEL:
-> +			ret = inv_mpu6050_sensor_show(st, st->reg->accl_offset,
-> +						chan->channel2, val);
-> +			return IIO_VAL_INT;
-> +
-> +		default:
-> +			return -EINVAL;
-> +		}
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -416,6 +447,21 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
->  			break;
->  		}
->  		break;
-> +	case IIO_CHAN_INFO_CALIBBIAS:
-> +		switch (chan->type) {
-> +		case IIO_ANGL_VEL:
-> +			result = inv_mpu6050_sensor_set(st,
-> +							st->reg->gyro_offset,
-> +							chan->channel2, val);
-> +			break;
-> +		case IIO_ACCEL:
-> +			result = inv_mpu6050_sensor_set(st,
-> +							st->reg->accl_offset,
-> +							chan->channel2, val);
-> +			break;
-> +		default:
-> +			result = -EINVAL;
-> +		}
->  	default:
->  		result = -EINVAL;
->  		break;
-> @@ -569,7 +615,8 @@ static int inv_mpu6050_validate_trigger(struct iio_dev *indio_dev,
->  		.modified = 1,                                        \
->  		.channel2 = _channel2,                                \
->  		.info_mask_shared_by_type =  BIT(IIO_CHAN_INFO_SCALE), \
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),         \
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |        \
-> +				      BIT(IIO_CHAN_INFO_CALIBBIAS),   \
->  		.scan_index = _index,                                 \
->  		.scan_type = {                                        \
->  				.sign = 's',                          \
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index a6c45ce459ee..c4e24148c733 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -40,6 +40,8 @@
->   *  @pwr_mgmt_1:	Controls chip's power state and clock source.
->   *  @pwr_mgmt_2:	Controls power state of individual sensors.
->   *  @int_pin_cfg;	Controls interrupt pin configuration.
-> + *  @accl_offset:	Controls the accelerometer calibration offset.
-> + *  @gyro_offset:	Controls the gyroscope calibration offset.
->   */
->  struct inv_mpu6050_reg_map {
->  	u8 sample_rate_div;
-> @@ -57,6 +59,8 @@ struct inv_mpu6050_reg_map {
->  	u8 pwr_mgmt_1;
->  	u8 pwr_mgmt_2;
->  	u8 int_pin_cfg;
-> +	u8 accl_offset;
-> +	u8 gyro_offset;
->  };
->  
->  /*device enum */
-> @@ -133,6 +137,9 @@ struct inv_mpu6050_state {
->  };
->  
->  /*register and associated bit definition*/
-> +#define INV_MPU6050_REG_ACCEL_OFFSET        0x06
-> +#define INV_MPU6050_REG_GYRO_OFFSET         0x13
-> +
->  #define INV_MPU6050_REG_SAMPLE_RATE_DIV     0x19
->  #define INV_MPU6050_REG_CONFIG              0x1A
->  #define INV_MPU6050_REG_GYRO_CONFIG         0x1B
-> @@ -174,6 +181,9 @@ struct inv_mpu6050_state {
->  #define INV_MPU6050_FIFO_COUNT_BYTE          2
->  #define INV_MPU6050_FIFO_THRESHOLD           500
->  
-> +/* mpu6500 registers */
-> +#define INV_MPU6500_REG_ACCEL_OFFSET        0x77
-> +
->  /* delay time in milliseconds */
->  #define INV_MPU6050_POWER_UP_TIME            100
->  #define INV_MPU6050_TEMP_UP_TIME             100
-> 
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Nishanth Menon <nm@ti.com>
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+ drivers/iio/adc/palmas_gpadc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
+index f42eb8a..2bbf0c5 100644
+--- a/drivers/iio/adc/palmas_gpadc.c
++++ b/drivers/iio/adc/palmas_gpadc.c
+@@ -534,7 +534,7 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
+ 	}
+ 	ret = request_threaded_irq(adc->irq, NULL,
+ 		palmas_gpadc_irq,
+-		IRQF_ONESHOT | IRQF_EARLY_RESUME, dev_name(adc->dev),
++		IRQF_ONESHOT, dev_name(adc->dev),
+ 		adc);
+ 	if (ret < 0) {
+ 		dev_err(adc->dev,
+@@ -549,7 +549,7 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
+ 		adc->irq_auto_0 =  platform_get_irq(pdev, 1);
+ 		ret = request_threaded_irq(adc->irq_auto_0, NULL,
+ 				palmas_gpadc_irq_auto,
+-				IRQF_ONESHOT | IRQF_EARLY_RESUME,
++				IRQF_ONESHOT,
+ 				"palmas-adc-auto-0", adc);
+ 		if (ret < 0) {
+ 			dev_err(adc->dev, "request auto0 irq %d failed: %d\n",
+@@ -565,7 +565,7 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
+ 		adc->irq_auto_1 =  platform_get_irq(pdev, 2);
+ 		ret = request_threaded_irq(adc->irq_auto_1, NULL,
+ 				palmas_gpadc_irq_auto,
+-				IRQF_ONESHOT | IRQF_EARLY_RESUME,
++				IRQF_ONESHOT,
+ 				"palmas-adc-auto-1", adc);
+ 		if (ret < 0) {
+ 			dev_err(adc->dev, "request auto1 irq %d failed: %d\n",
+-- 
+2.7.2
 
