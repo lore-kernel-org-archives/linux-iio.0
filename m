@@ -1,315 +1,343 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 29 Feb 2016 20:42:48 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Joachim Eastwood <manabian@gmail.com>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-    linux-iio@vger.kernel.org, robh+dt@kernel.org
-Subject: Re: [PATCH 1/4] iio: adc: add NXP LPC18xx ADC driver
-In-Reply-To: <1456772741-9402-2-git-send-email-manabian@gmail.com>
-Message-ID: <alpine.DEB.2.02.1602292040460.6192@pmeerw.net>
-References: <1456772741-9402-1-git-send-email-manabian@gmail.com> <1456772741-9402-2-git-send-email-manabian@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41038 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756340AbcB0RTo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Feb 2016 12:19:44 -0500
+Subject: Re: [PATCH] staging:iio: Remove periodic RTC trigger driver
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+References: <1456479396-17252-1-git-send-email-lars@metafoo.de>
+ <CAEnQRZBDz99=fwSQ9atjt+NVZe8pZe=G8+kdVn=vQiB-EeQVHA@mail.gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56D1DAAD.7070003@kernel.org>
+Date: Sat, 27 Feb 2016 17:19:41 +0000
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <CAEnQRZBDz99=fwSQ9atjt+NVZe8pZe=G8+kdVn=vQiB-EeQVHA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
-> Add base support for the 10-bit SAR ADC peripheral found
-> on NXP LPC18xx/43xx SoCs.
-
-nitpicking below
- 
-> This is a minimal driver that does not support burst mode,
-> interrupts, DMA or hardware triggers.
+On 26/02/16 15:13, Daniel Baluta wrote:
+> On Fri, Feb 26, 2016 at 11:36 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> With the recently introduced hrtimer based trigger we have a fully
+>> functional replacement for the RTC timer trigger that is more flexible and
+>> has a better interface to instantiate and manage the trigger instances. The
+>> RTC trigger timer could only be instantiated using platform devices which
+>> makes it unsuitable for modern devicetree based platforms, while the
+>> hrtimer trigger has a configfs based interface that allows creating and
+>> deletion of triggers at runtime.
+>>
+>> In addition since a few years the periodic RTC timer is internally always
+>> emulated using a hrtimer using the hrtimer interface directly will yield
+>> the same timing precision. So using the RTC timer won't have any advantages
+>> on this front either.
+>>
+>> There is also no evidence that the periodic RTC trigger is currently
+>> actually being used on any system. So considering all this remove the
+>> driver. Also remove the related item from the TODO list.
+>>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 > 
-> User manual with register description can be found on:
-> LPC18xx: www.nxp.com/documents/user_manual/UM10430.pdf
-> LPC43xx: www.nxp.com/documents/user_manual/UM10503.pdf
+> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied.  I'd forgotten this was still there!
+
+Thanks,
+
+Jonathan
 > 
-> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
-> ---
->  drivers/iio/adc/Kconfig       |  10 ++
->  drivers/iio/adc/Makefile      |   1 +
->  drivers/iio/adc/lpc18xx_adc.c | 226 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 237 insertions(+)
->  create mode 100644 drivers/iio/adc/lpc18xx_adc.c
+>> ---
+>>  drivers/staging/iio/TODO                           |   8 -
+>>  drivers/staging/iio/trigger/Kconfig                |  10 -
+>>  drivers/staging/iio/trigger/Makefile               |   1 -
+>>  .../staging/iio/trigger/iio-trig-periodic-rtc.c    | 216 ---------------------
+>>  4 files changed, 235 deletions(-)
+>>  delete mode 100644 drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+>>
+>> diff --git a/drivers/staging/iio/TODO b/drivers/staging/iio/TODO
+>> index c22a0ed..93a8968 100644
+>> --- a/drivers/staging/iio/TODO
+>> +++ b/drivers/staging/iio/TODO
+>> @@ -58,14 +58,6 @@ different requirements.  This one suits mid range
+>>  frequencies (100Hz - 4kHz).
+>>  2) Lots of testing
+>>
+>> -Periodic Timer trigger
+>> -1) Move to a more general hardware periodic timer request
+>> -subsystem. Current approach is abusing purpose of RTC.
+>> -Initial discussions have taken place, but no actual code
+>> -is in place as yet. This topic will be reopened on lkml
+>> -shortly. I don't really envision this patch being merged
+>> -in anything like its current form.
+>> -
+>>  GPIO trigger
+>>  1) Add control over the type of interrupt etc.  This will
+>>  necessitate a header that is also visible from arch board
+>> diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
+>> index 710a2f3..0b01d24 100644
+>> --- a/drivers/staging/iio/trigger/Kconfig
+>> +++ b/drivers/staging/iio/trigger/Kconfig
+>> @@ -5,16 +5,6 @@ comment "Triggers - standalone"
+>>
+>>  if IIO_TRIGGER
+>>
+>> -config IIO_PERIODIC_RTC_TRIGGER
+>> -       tristate "Periodic RTC triggers"
+>> -       depends on RTC_CLASS
+>> -       help
+>> -         Provides support for using periodic capable real time
+>> -         clocks as IIO triggers.
+>> -
+>> -         To compile this driver as a module, choose M here: the
+>> -         module will be called iio-trig-periodic-rtc.
+>> -
+>>  config IIO_BFIN_TMR_TRIGGER
+>>         tristate "Blackfin TIMER trigger"
+>>         depends on BLACKFIN
+>> diff --git a/drivers/staging/iio/trigger/Makefile b/drivers/staging/iio/trigger/Makefile
+>> index 238481b..1300a21 100644
+>> --- a/drivers/staging/iio/trigger/Makefile
+>> +++ b/drivers/staging/iio/trigger/Makefile
+>> @@ -2,5 +2,4 @@
+>>  # Makefile for triggers not associated with iio-devices
+>>  #
+>>
+>> -obj-$(CONFIG_IIO_PERIODIC_RTC_TRIGGER) += iio-trig-periodic-rtc.o
+>>  obj-$(CONFIG_IIO_BFIN_TMR_TRIGGER) += iio-trig-bfin-timer.o
+>> diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+>> deleted file mode 100644
+>> index 00d1393..0000000
+>> --- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+>> +++ /dev/null
+>> @@ -1,216 +0,0 @@
+>> -/* The industrial I/O periodic RTC trigger driver
+>> - *
+>> - * Copyright (c) 2008 Jonathan Cameron
+>> - *
+>> - * This program is free software; you can redistribute it and/or modify it
+>> - * under the terms of the GNU General Public License version 2 as published by
+>> - * the Free Software Foundation.
+>> - *
+>> - * This is a heavily rewritten version of the periodic timer system in
+>> - * earlier version of industrialio.  It supplies the same functionality
+>> - * but via a trigger rather than a specific periodic timer system.
+>> - */
+>> -
+>> -#include <linux/platform_device.h>
+>> -#include <linux/kernel.h>
+>> -#include <linux/module.h>
+>> -#include <linux/slab.h>
+>> -#include <linux/rtc.h>
+>> -#include <linux/iio/iio.h>
+>> -#include <linux/iio/trigger.h>
+>> -
+>> -static LIST_HEAD(iio_prtc_trigger_list);
+>> -static DEFINE_MUTEX(iio_prtc_trigger_list_lock);
+>> -
+>> -struct iio_prtc_trigger_info {
+>> -       struct rtc_device *rtc;
+>> -       unsigned int frequency;
+>> -       struct rtc_task task;
+>> -       bool state;
+>> -};
+>> -
+>> -static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
+>> -{
+>> -       struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
+>> -       int ret;
+>> -
+>> -       if (trig_info->frequency == 0 && state)
+>> -               return -EINVAL;
+>> -       dev_dbg(&trig_info->rtc->dev, "trigger frequency is %u\n",
+>> -               trig_info->frequency);
+>> -       ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
+>> -       if (!ret)
+>> -               trig_info->state = state;
+>> -
+>> -       return ret;
+>> -}
+>> -
+>> -static ssize_t iio_trig_periodic_read_freq(struct device *dev,
+>> -                                          struct device_attribute *attr,
+>> -                                          char *buf)
+>> -{
+>> -       struct iio_trigger *trig = to_iio_trigger(dev);
+>> -       struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
+>> -
+>> -       return sprintf(buf, "%u\n", trig_info->frequency);
+>> -}
+>> -
+>> -static ssize_t iio_trig_periodic_write_freq(struct device *dev,
+>> -                                           struct device_attribute *attr,
+>> -                                           const char *buf,
+>> -                                           size_t len)
+>> -{
+>> -       struct iio_trigger *trig = to_iio_trigger(dev);
+>> -       struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
+>> -       unsigned int val;
+>> -       int ret;
+>> -
+>> -       ret = kstrtouint(buf, 10, &val);
+>> -       if (ret)
+>> -               goto error_ret;
+>> -
+>> -       if (val > 0) {
+>> -               ret = rtc_irq_set_freq(trig_info->rtc, &trig_info->task, val);
+>> -               if (ret == 0 && trig_info->state && trig_info->frequency == 0)
+>> -                       ret = rtc_irq_set_state(trig_info->rtc,
+>> -                                               &trig_info->task, 1);
+>> -       } else {
+>> -               ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, 0);
+>> -       }
+>> -       if (ret)
+>> -               goto error_ret;
+>> -
+>> -       trig_info->frequency = val;
+>> -
+>> -       return len;
+>> -
+>> -error_ret:
+>> -       return ret;
+>> -}
+>> -
+>> -static DEVICE_ATTR(frequency, S_IRUGO | S_IWUSR,
+>> -           iio_trig_periodic_read_freq,
+>> -           iio_trig_periodic_write_freq);
+>> -
+>> -static struct attribute *iio_trig_prtc_attrs[] = {
+>> -       &dev_attr_frequency.attr,
+>> -       NULL,
+>> -};
+>> -
+>> -static const struct attribute_group iio_trig_prtc_attr_group = {
+>> -       .attrs = iio_trig_prtc_attrs,
+>> -};
+>> -
+>> -static const struct attribute_group *iio_trig_prtc_attr_groups[] = {
+>> -       &iio_trig_prtc_attr_group,
+>> -       NULL
+>> -};
+>> -
+>> -static void iio_prtc_trigger_poll(void *private_data)
+>> -{
+>> -       iio_trigger_poll(private_data);
+>> -}
+>> -
+>> -static const struct iio_trigger_ops iio_prtc_trigger_ops = {
+>> -       .owner = THIS_MODULE,
+>> -       .set_trigger_state = &iio_trig_periodic_rtc_set_state,
+>> -};
+>> -
+>> -static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
+>> -{
+>> -       char **pdata = dev->dev.platform_data;
+>> -       struct iio_prtc_trigger_info *trig_info;
+>> -       struct iio_trigger *trig, *trig2;
+>> -
+>> -       int i, ret;
+>> -
+>> -       for (i = 0;; i++) {
+>> -               if (!pdata[i])
+>> -                       break;
+>> -               trig = iio_trigger_alloc("periodic%s", pdata[i]);
+>> -               if (!trig) {
+>> -                       ret = -ENOMEM;
+>> -                       goto error_free_completed_registrations;
+>> -               }
+>> -               list_add(&trig->alloc_list, &iio_prtc_trigger_list);
+>> -
+>> -               trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
+>> -               if (!trig_info) {
+>> -                       ret = -ENOMEM;
+>> -                       goto error_put_trigger_and_remove_from_list;
+>> -               }
+>> -               iio_trigger_set_drvdata(trig, trig_info);
+>> -               trig->ops = &iio_prtc_trigger_ops;
+>> -               /* RTC access */
+>> -               trig_info->rtc = rtc_class_open(pdata[i]);
+>> -               if (!trig_info->rtc) {
+>> -                       ret = -EINVAL;
+>> -                       goto error_free_trig_info;
+>> -               }
+>> -               trig_info->task.func = iio_prtc_trigger_poll;
+>> -               trig_info->task.private_data = trig;
+>> -               ret = rtc_irq_register(trig_info->rtc, &trig_info->task);
+>> -               if (ret)
+>> -                       goto error_close_rtc;
+>> -               trig->dev.groups = iio_trig_prtc_attr_groups;
+>> -               ret = iio_trigger_register(trig);
+>> -               if (ret)
+>> -                       goto error_unregister_rtc_irq;
+>> -       }
+>> -       return 0;
+>> -error_unregister_rtc_irq:
+>> -       rtc_irq_unregister(trig_info->rtc, &trig_info->task);
+>> -error_close_rtc:
+>> -       rtc_class_close(trig_info->rtc);
+>> -error_free_trig_info:
+>> -       kfree(trig_info);
+>> -error_put_trigger_and_remove_from_list:
+>> -       list_del(&trig->alloc_list);
+>> -       iio_trigger_put(trig);
+>> -error_free_completed_registrations:
+>> -       list_for_each_entry_safe(trig,
+>> -                                trig2,
+>> -                                &iio_prtc_trigger_list,
+>> -                                alloc_list) {
+>> -               trig_info = iio_trigger_get_drvdata(trig);
+>> -               rtc_irq_unregister(trig_info->rtc, &trig_info->task);
+>> -               rtc_class_close(trig_info->rtc);
+>> -               kfree(trig_info);
+>> -               iio_trigger_unregister(trig);
+>> -       }
+>> -       return ret;
+>> -}
+>> -
+>> -static int iio_trig_periodic_rtc_remove(struct platform_device *dev)
+>> -{
+>> -       struct iio_trigger *trig, *trig2;
+>> -       struct iio_prtc_trigger_info *trig_info;
+>> -
+>> -       mutex_lock(&iio_prtc_trigger_list_lock);
+>> -       list_for_each_entry_safe(trig,
+>> -                                trig2,
+>> -                                &iio_prtc_trigger_list,
+>> -                                alloc_list) {
+>> -               trig_info = iio_trigger_get_drvdata(trig);
+>> -               rtc_irq_unregister(trig_info->rtc, &trig_info->task);
+>> -               rtc_class_close(trig_info->rtc);
+>> -               kfree(trig_info);
+>> -               iio_trigger_unregister(trig);
+>> -       }
+>> -       mutex_unlock(&iio_prtc_trigger_list_lock);
+>> -       return 0;
+>> -}
+>> -
+>> -static struct platform_driver iio_trig_periodic_rtc_driver = {
+>> -       .probe = iio_trig_periodic_rtc_probe,
+>> -       .remove = iio_trig_periodic_rtc_remove,
+>> -       .driver = {
+>> -               .name = "iio_prtc_trigger",
+>> -       },
+>> -};
+>> -
+>> -module_platform_driver(iio_trig_periodic_rtc_driver);
+>> -
+>> -MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
+>> -MODULE_DESCRIPTION("Periodic realtime clock trigger for the iio subsystem");
+>> -MODULE_LICENSE("GPL v2");
+>> --
+>> 2.1.4
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 932de1f9d1e7..85994e5889ec 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -234,6 +234,16 @@ config LP8788_ADC
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called lp8788_adc.
->  
-> +config LPC18XX_ADC
-> +	tristate "NXP LPC18xx ADC driver"
-> +	depends on ARCH_LPC18XX || COMPILE_TEST
-> +	depends on OF && HAS_IOMEM
-> +	help
-> +	  Say yes here to build support for NXP LPC18XX ADC.
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called lpc18xx_adc.
-> +
->  config MAX1027
->  	tristate "Maxim max1027 ADC driver"
->  	depends on SPI
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index b1aa456e6af3..1a4ac4590857 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -24,6 +24,7 @@ obj-$(CONFIG_HI8435) += hi8435.o
->  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
->  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
->  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
-> +obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
->  obj-$(CONFIG_MAX1027) += max1027.o
->  obj-$(CONFIG_MAX1363) += max1363.o
->  obj-$(CONFIG_MCP320X) += mcp320x.o
-> diff --git a/drivers/iio/adc/lpc18xx_adc.c b/drivers/iio/adc/lpc18xx_adc.c
-> new file mode 100644
-> index 000000000000..f78bd8ddbff3
-> --- /dev/null
-> +++ b/drivers/iio/adc/lpc18xx_adc.c
-> @@ -0,0 +1,226 @@
-> +/*
-> + * IIO ADC driver for NXP LPC18xx ADC
-> + *
-> + * Copyright (C) 2016 Joachim Eastwood <manabian@gmail.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * UNSUPPORTED hardware features:
-> + *  - Hardware triggers
-> + *  - Burst mode
-> + *  - Interrupts
-> + *  - DMA
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/err.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/driver.h>
-> +#include <linux/io.h>
-> +#include <linux/iopoll.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regulator/consumer.h>
-> +
-> +/* LPC18XX ADC registers and bits */
-> +#define LPC18XX_ADC_CR			0x000
-> +#define  LPC18XX_ADC_CR_CLKDIV_SHIFT	8
-> +#define  LPC18XX_ADC_CR_PDN		BIT(21)
-> +#define  LPC18XX_ADC_CR_START_NOW	(0x1 << 24)
-> +#define LPC18XX_ADC_GDR			0x004
-> +
-> +/* Data registers bits */
 
-'Data register bits' maybe
-
-> +#define LPC18XX_ADC_SAMPLE_SHIFT	6
-> +#define LPC18XX_ADC_SAMPLE_MASK		0x3ff
-> +#define LPC18XX_ADC_CONV_DONE		BIT(31)
-> +
-> +/* Clock should be 4.5 MHz or less */
-> +#define LPC18XX_ADC_CLK_TARGET		4500000
-> +
-> +struct lpc18xx_adc {
-> +	void __iomem *base;
-> +	struct device *dev;
-> +	struct clk *clk;
-> +	struct regulator *vref;
-> +	u32 cr_reg;
-> +};
-> +
-> +#define LPC18XX_ADC_CHAN(_idx) {				\
-> +	.type = IIO_VOLTAGE,					\
-> +	.indexed = 1,						\
-> +	.channel = _idx,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec lpc18xx_adc_iio_channels[] = {
-> +	LPC18XX_ADC_CHAN(0),
-> +	LPC18XX_ADC_CHAN(1),
-> +	LPC18XX_ADC_CHAN(2),
-> +	LPC18XX_ADC_CHAN(3),
-> +	LPC18XX_ADC_CHAN(4),
-> +	LPC18XX_ADC_CHAN(5),
-> +	LPC18XX_ADC_CHAN(6),
-> +	LPC18XX_ADC_CHAN(7),
-> +};
-> +
-> +static int lpc18xx_adc_read_chan(struct lpc18xx_adc *adc, unsigned int ch)
-> +{
-> +	int ret;
-> +	u32 reg;
-> +
-> +	reg = adc->cr_reg | BIT(ch) | LPC18XX_ADC_CR_START_NOW;
-> +	writel(reg, adc->base + LPC18XX_ADC_CR);
-> +
-> +	ret = readl_poll_timeout(adc->base + LPC18XX_ADC_GDR, reg,
-> +				 reg & LPC18XX_ADC_CONV_DONE, 3, 9);
-> +	if (ret) {
-> +		dev_warn(adc->dev, "adc read timed out\n");
-> +		return ret;
-> +	}
-> +
-> +	return (reg >> LPC18XX_ADC_SAMPLE_SHIFT) & LPC18XX_ADC_SAMPLE_MASK;
-> +}
-> +
-> +static int lpc18xx_adc_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct lpc18xx_adc *adc = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		*val = lpc18xx_adc_read_chan(adc, chan->channel);
-> +		if (*val < 0)
-> +			return *val;
-> +
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = regulator_get_voltage(adc->vref) / 1000;
-> +		*val2 = 10;
-> +
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info lpc18xx_adc_info = {
-> +	.read_raw = lpc18xx_adc_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int lpc18xx_adc_probe(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct lpc18xx_adc *adc;
-> +	struct resource *res;
-> +	unsigned int clkdiv;
-> +	unsigned long rate;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +	adc = iio_priv(indio_dev);
-> +	adc->dev = &pdev->dev;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	adc->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(adc->base))
-> +		return PTR_ERR(adc->base);
-> +
-> +	adc->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(adc->clk)) {
-> +		dev_err(&pdev->dev, "error getting clock\n");
-> +		return PTR_ERR(adc->clk);
-> +	}
-> +
-> +	rate = clk_get_rate(adc->clk);
-> +	clkdiv = DIV_ROUND_UP(rate, LPC18XX_ADC_CLK_TARGET);
-> +
-> +	adc->vref = devm_regulator_get(&pdev->dev, "vref");
-> +	if (IS_ERR(adc->vref)) {
-> +		dev_err(&pdev->dev, "error get regulator\n");
-
-getting
-
-> +		return PTR_ERR(adc->vref);
-> +	}
-> +
-> +	indio_dev->name = dev_name(&pdev->dev);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->info = &lpc18xx_adc_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = lpc18xx_adc_iio_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(lpc18xx_adc_iio_channels);
-> +
-> +	ret = regulator_enable(adc->vref);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to enable regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = clk_prepare_enable(adc->clk);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to enable clock.\n");
-
-maybe delete '.', it's the only message with a full stop
-
-> +		goto dis_reg;
-> +	}
-> +
-> +	adc->cr_reg = (clkdiv << LPC18XX_ADC_CR_CLKDIV_SHIFT) |
-> +			LPC18XX_ADC_CR_PDN;
-> +	writel(adc->cr_reg, adc->base + LPC18XX_ADC_CR);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to register device\n");
-> +		goto dis_clk;
-> +	}
-> +
-> +	return 0;
-> +
-> +dis_clk:
-> +	writel(0, adc->base + LPC18XX_ADC_CR);
-> +	clk_disable_unprepare(adc->clk);
-> +dis_reg:
-> +	regulator_disable(adc->vref);
-> +	return ret;
-> +}
-> +
-> +static int lpc18xx_adc_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct lpc18xx_adc *adc = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	writel(0, adc->base + LPC18XX_ADC_CR);
-> +	clk_disable_unprepare(adc->clk);
-> +	regulator_disable(adc->vref);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id lpc18xx_adc_match[] = {
-> +	{ .compatible = "nxp,lpc1850-adc" },
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(of, lpc18xx_adc_match);
-> +
-> +static struct platform_driver lpc18xx_adc_driver = {
-> +	.probe	= lpc18xx_adc_probe,
-> +	.remove	= lpc18xx_adc_remove,
-> +	.driver	= {
-> +		.name = "lpc18xx-adc",
-> +		.of_match_table = lpc18xx_adc_match,
-> +	},
-> +};
-> +module_platform_driver(lpc18xx_adc_driver);
-> +
-> +MODULE_DESCRIPTION("LPC18xx ADC driver");
-> +MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
-> +MODULE_LICENSE("GPL v2");
-> 
-
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
