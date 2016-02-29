@@ -1,99 +1,74 @@
-Return-Path: <bijosh.t@hotmail.com>
-Message-ID: <BLU436-SMTP1368781E78F120E82EF730980B90@phx.gbl>
-From: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
-To: gregkh@linuxfoundation.org,
-	knaack.h@gmx.de,
-	jic23@kernel.org,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net
-CC: mahfouz.saif.elyazal@gmail.com,
-	ciorneiioana@gmail.com,
-	cristina.moraru09@gmail.com,
-	devel@driverdev.osuosl.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v4 1/1] staging: coding style cleanups for staging/iio/light/tsl2583 driver
-Date: Sun, 28 Feb 2016 23:01:11 +0530
-MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout2.samsung.com ([203.254.224.25]:41615 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751784AbcB2CWM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 28 Feb 2016 21:22:12 -0500
+MIME-version: 1.0
+Content-type: text/plain; charset=UTF-8
+Message-id: <56D3AB50.2060502@samsung.com>
+Date: Mon, 29 Feb 2016 11:22:08 +0900
+From: Chanwoo Choi <cw00.choi@samsung.com>
+To: Grygorii Strashko <grygorii.strashko@ti.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Cc: rtc-linux@googlegroups.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, nsekhar@ti.com,
+	linux-omap@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
+	Roger Quadros <rogerq@ti.com>, Nishanth Menon <nm@ti.com>
+Subject: Re: [PATCH 1/7] extcon: palmas: Drop IRQF_EARLY_RESUME flag
+References: <1456501377-16871-1-git-send-email-grygorii.strashko@ti.com>
+ <1456501377-16871-2-git-send-email-grygorii.strashko@ti.com>
+In-reply-to: <1456501377-16871-2-git-send-email-grygorii.strashko@ti.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch fixes following coding style warning reported by check patch
-script, in tsl2583 driver:
-    - Block comments use a trailing */ on a separate line
+Hi Grygorii,
 
-Signed-off-by: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
----
- drivers/staging/iio/light/tsl2583.c | 30 ++++++++++++++++++++----------
- 1 file changed, 20 insertions(+), 10 deletions(-)
+On 2016년 02월 27일 00:42, Grygorii Strashko wrote:
+> Palams extcon IRQs are nested threaded and wired to the Palmas
+> inerrupt controller. So, this flag is not required for nested irqs
+> anymore, since commit 3c646f2c6aa9 ("genirq: Don't suspend
+> nested_thread irqs over system suspend") was merged.
+> 
+> Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
+> Cc: Chanwoo Choi <cw00.choi@samsung.com>
+> Cc: Tony Lindgren <tony@atomide.com>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Roger Quadros <rogerq@ti.com>
+> Cc: Nishanth Menon <nm@ti.com>
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> ---
+>  drivers/extcon/extcon-palmas.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/extcon/extcon-palmas.c b/drivers/extcon/extcon-palmas.c
+> index 93c30a8..0a861b3 100644
+> --- a/drivers/extcon/extcon-palmas.c
+> +++ b/drivers/extcon/extcon-palmas.c
+> @@ -266,7 +266,7 @@ static int palmas_usb_probe(struct platform_device *pdev)
+>  				palmas_usb->id_irq,
+>  				NULL, palmas_id_irq_handler,
+>  				IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING |
+> -				IRQF_ONESHOT | IRQF_EARLY_RESUME,
+> +				IRQF_ONESHOT,
+>  				"palmas_usb_id", palmas_usb);
+>  		if (status < 0) {
+>  			dev_err(&pdev->dev, "can't get IRQ %d, err %d\n",
+> @@ -304,7 +304,7 @@ static int palmas_usb_probe(struct platform_device *pdev)
+>  				palmas_usb->vbus_irq, NULL,
+>  				palmas_vbus_irq_handler,
+>  				IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING |
+> -				IRQF_ONESHOT | IRQF_EARLY_RESUME,
+> +				IRQF_ONESHOT,
+>  				"palmas_usb_vbus", palmas_usb);
+>  		if (status < 0) {
+>  			dev_err(&pdev->dev, "can't get IRQ %d, err %d\n",
+> 
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 3100d96..8c9e304 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -240,8 +240,10 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- 		}
- 	}
- 
--	/* clear status, really interrupt status (interrupts are off), but
--	 * we use the bit anyway - don't forget 0x80 - this is a command*/
-+	/*
-+	 * Clear status, really interrupt status (interrupts are off), but
-+	 * we use the bit anyway - don't forget 0x80 - this is a command
-+	 */
- 	ret = i2c_smbus_write_byte(chip->client,
- 				   (TSL258X_CMD_REG | TSL258X_CMD_SPL_FN |
- 				    TSL258X_CMD_ALS_INT_CLR));
-@@ -429,8 +431,10 @@ static int taos_chip_on(struct iio_dev *indio_dev)
- 	chip->als_saturation = als_count * 922; /* 90% of full scale */
- 	chip->als_time_scale = (als_time + 25) / 50;
- 
--	/* TSL258x Specific power-on / adc enable sequence
--	 * Power on the device 1st. */
-+	/*
-+	 * TSL258x Specific power-on / adc enable sequence
-+	 * Power on the device 1st.
-+	 */
- 	utmp = TSL258X_CNTL_PWR_ON;
- 	ret = i2c_smbus_write_byte_data(chip->client,
- 					TSL258X_CMD_REG | TSL258X_CNTRL, utmp);
-@@ -439,8 +443,10 @@ static int taos_chip_on(struct iio_dev *indio_dev)
- 		return ret;
- 	}
- 
--	/* Use the following shadow copy for our delay before enabling ADC.
--	 * Write all the registers. */
-+	/*
-+	 * Use the following shadow copy for our delay before enabling ADC.
-+	 * Write all the registers.
-+	 */
- 	for (i = 0, uP = chip->taos_config; i < TSL258X_REG_MAX; i++) {
- 		ret = i2c_smbus_write_byte_data(chip->client,
- 						TSL258X_CMD_REG + i,
-@@ -453,8 +459,10 @@ static int taos_chip_on(struct iio_dev *indio_dev)
- 	}
- 
- 	usleep_range(3000, 3500);
--	/* NOW enable the ADC
--	 * initialize the desired mode of operation */
-+	/*
-+	 * NOW enable the ADC
-+	 * initialize the desired mode of operation
-+	 */
- 	utmp = TSL258X_CNTL_PWR_ON | TSL258X_CNTL_ADC_ENBL;
- 	ret = i2c_smbus_write_byte_data(chip->client,
- 					TSL258X_CMD_REG | TSL258X_CNTRL,
-@@ -695,8 +703,10 @@ static ssize_t taos_luxtable_show(struct device *dev,
- 				  taos_device_lux[i].ch0,
- 				  taos_device_lux[i].ch1);
- 		if (taos_device_lux[i].ratio == 0) {
--			/* We just printed the first "0" entry.
--			 * Now get rid of the extra "," and break. */
-+			/*
-+			 * We just printed the first "0" entry.
-+			 * Now get rid of the extra "," and break.
-+			 */
- 			offset--;
- 			break;
- 		}
--- 
-2.1.4
+Applied it on extcon git.
+
+Thanks,
+Chanwoo Choi
+
