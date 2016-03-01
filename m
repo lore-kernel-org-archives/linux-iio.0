@@ -1,76 +1,63 @@
-Return-Path: <cmo@melexis.com>
+Return-Path: <mwelling79@gmail.com>
+Sender: Michael Welling <mwelling79@gmail.com>
+Date: Mon, 29 Feb 2016 19:33:03 -0600
+From: Michael Welling <mwelling@ieee.org>
+To: Lucas De Marchi <lucas.de.marchi@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	lkml <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Guenter Roeck <linux@roeck-us.net>, eibach@gdsys.de
+Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
+Message-ID: <20160301013303.GA18806@deathstar>
+References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>
+ <20160301005032.GA15476@deathstar>
+ <CAKi4VAKBOge=-DcT9S7+uZWUte3EFNQ95u-fHCudRXZHqYuE1w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <56D56536.9060301@posteo.de>
-References: <56D559F4.3040606@posteo.de> <CAEnQRZCx7nFhJfA31mfdTicCppfh-n7usKucQx1dvjPuFNESsA@mail.gmail.com>
- <56D56536.9060301@posteo.de>
-From: Crt Mori <cmo@melexis.com>
-Date: Tue, 1 Mar 2016 10:53:15 +0100
-Message-ID: <CAKv63usA1ptpcgtTrFraYct=7ZkOOk99qiXLcp2DetBfGWwtvg@mail.gmail.com>
-Subject: Re: extending /sys/.../iio:deviceX/in_accelX_power_mode
-To: Martin Kepplinger <martink@posteo.de>
-Cc: Daniel Baluta <daniel.baluta@intel.com>, Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Matt Ranostaj <mranostay@gmail.com>,
-	Haneen Mohammed <hamohammed.sa@gmail.com>, Darshana Padmadas <darshanapadmadas@gmail.com>,
-	mfuzzey@parkeon.com,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>, Irina Tirdea <irina.tirdea@intel.com>,
-	Cristina Georgiana Opriceana <cristina.opriceana@gmail.com>,
-	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAKi4VAKBOge=-DcT9S7+uZWUte3EFNQ95u-fHCudRXZHqYuE1w@mail.gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 1 March 2016 at 10:47, Martin Kepplinger <martink@posteo.de> wrote:
-> Am 2016-03-01 um 10:38 schrieb Daniel Baluta:
->> On Tue, Mar 1, 2016 at 10:59 AM, Martin Kepplinger <martink@posteo.de> wrote:
->>> Would it be ok, if adding in_accelX_power_mode to a driver, to extend it
->>> so that in_accel_power_mode_available offers:
->>>
->>> low_noise low_power low_power_low_noise normal
->>>
->>> if there's a default "normal" mode, plus options to increase or decrease
->>> oversampling / power consumption for my device?
->>>
->>> Specifically I'm unsure about "low_power_low_noise" being enough
->>> user-friendly. The chip I work with just happens to offer these 4 modes.
->>> Would you leave out "low_power_low_noise" and go with
->>>
->>> low_noise low_power normal
->>>
->>> or is it not even desired to add "normal" to the list?
->>>
->>> Although strictly not necessary, I would add any new addition to the
->>> Documentation as well.
->>
->> The problem with this is that is not uniform across sensors. What
->> chip are you looking at?
->>
->> For example INV6500 has:
->> * sleep mode
->> * standby mode
->> * etc.
->>
->> Daniel.
->>
+On Mon, Feb 29, 2016 at 10:09:10PM -0300, Lucas De Marchi wrote:
+> On Mon, Feb 29, 2016 at 9:50 PM, Michael Welling <mwelling@ieee.org> wrote:
+> > On Fri, Feb 05, 2016 at 03:17:18PM +0200, Daniel Baluta wrote:
+> >> The driver has sysfs readings with runtime PM support for power saving.
+> >> It also offers buffer support that can be used together with IIO software
+> >> triggers.
+> >>
+> >
+> > Daniel,
+> >
+> > So I noticed something yesterday while testing new boards.
+> > The channels are occassionally swapping when accessing data from multiple channels.
+> >
+> > I wrote a simple bash script to demonstrate.
+> 
+> This happened to me in a previous version of the patch. I remember it
+> being fixed in the last version (or at least I could not reproduce).
+> I'll test again tomorrow with your script.
 >
-> I suspect these modes are something else. I'm looking at the mma8452
-> driver, and it also has "active" "standby" and "sleep" modes, but I'm
-> talking about different *power* (oversampling) configurations in
-> "active" mode, which is what said sysfs file is about.
->
-> But yes, it should be potenially uniform across sensors, which is why I
-> would probably only add "normal" to the list. At least I can imagine
-> that many devices have an oversampling mode called "normal".
 
-If that is oversampling option then why don't you just use that as a
-setup? Power mode does not sound like oversampling to me... Maybe you
-should use a sampling_frequency parameter instead?
+Just verified that it is happening to me will the latest in linux-next.
 
->
-> A simple user interface is important so right now I think the best is to
-> leave it as it is, and not to add complexity and every possible option
-> for the user.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+root@dragonboard-410c:~# cat /proc/version 
+Linux version 4.5.0-rc6-next-20160229+ (michael@deathstar) (gcc version 5.2.0 (GCC) ) #1 SMP PREEMPT Mon Feb 29 19:27:11 CST 2016
+root@dragonboard-410c:~# ./test-analog.sh 
+ain0 = 267 ain1 = 286 ain2 = 268 ain3 = 288
+ain0 = 283 ain1 = 284 ain2 = 284 ain3 = 0
+ain0 = 0 ain1 = 284 ain2 = 287 ain3 = 0
+ain0 = 0 ain1 = 285 ain2 = 287 ain3 = 0
+ain0 = 282 ain1 = 284 ain2 = 287 ain3 = 0
+ain0 = 283 ain1 = 284 ain2 = 286 ain3 = 0
+ain0 = 283 ain1 = 290 ain2 = 285 ain3 = 288
+ain0 = 284 ain1 = 286 ain2 = 285 ain3 = 0
+ain0 = 0 ain1 = 284 ain2 = 285 ain3 = 0
+ain0 = 0 ain1 = 286 ain2 = 287 ain3 = 0
+ain0 = 0 ain1 = 284 ain2 = 289 ain3 = 0
+.
+.
+ 
+> Lucas De Marchi
