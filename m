@@ -1,80 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41062 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756340AbcB0RVc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Feb 2016 12:21:32 -0500
-Subject: Re: [PATCH 7/7] iio: adc: palmas: Drop IRQF_EARLY_RESUME flag
-To: Grygorii Strashko <grygorii.strashko@ti.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	MyungJoo Ham <myungjoo.ham@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-References: <1456501377-16871-1-git-send-email-grygorii.strashko@ti.com>
- <1456501377-16871-8-git-send-email-grygorii.strashko@ti.com>
-Cc: rtc-linux@googlegroups.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, nsekhar@ti.com,
-	linux-omap@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, Nishanth Menon <nm@ti.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56D1DB19.5030504@kernel.org>
-Date: Sat, 27 Feb 2016 17:21:29 +0000
+Received: from mail-yk0-f181.google.com ([209.85.160.181]:35025 "EHLO
+	mail-yk0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750832AbcCABJb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Feb 2016 20:09:31 -0500
 MIME-Version: 1.0
-In-Reply-To: <1456501377-16871-8-git-send-email-grygorii.strashko@ti.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20160301005032.GA15476@deathstar>
+References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com> <20160301005032.GA15476@deathstar>
+From: Lucas De Marchi <lucas.de.marchi@gmail.com>
+Date: Mon, 29 Feb 2016 22:09:10 -0300
+Message-ID: <CAKi4VAKBOge=-DcT9S7+uZWUte3EFNQ95u-fHCudRXZHqYuE1w@mail.gmail.com>
+Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
+To: Michael Welling <mwelling@ieee.org>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	lkml <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Guenter Roeck <linux@roeck-us.net>, eibach@gdsys.de
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/02/16 15:42, Grygorii Strashko wrote:
-> Palmas gpadc IRQs are nested threaded and this flag is not required for nested
-> irqs anymore, since commit 3c646f2c6aa9 ("genirq: Don't suspend nested_thread
-> irqs over system suspend") was merged.
-> 
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Nishanth Menon <nm@ti.com>
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to play with it.
+On Mon, Feb 29, 2016 at 9:50 PM, Michael Welling <mwelling@ieee.org> wrote:
+> On Fri, Feb 05, 2016 at 03:17:18PM +0200, Daniel Baluta wrote:
+>> The driver has sysfs readings with runtime PM support for power saving.
+>> It also offers buffer support that can be used together with IIO software
+>> triggers.
+>>
+>
+> Daniel,
+>
+> So I noticed something yesterday while testing new boards.
+> The channels are occassionally swapping when accessing data from multiple channels.
+>
+> I wrote a simple bash script to demonstrate.
 
-Thanks,
+This happened to me in a previous version of the patch. I remember it
+being fixed in the last version (or at least I could not reproduce).
+I'll test again tomorrow with your script.
 
-Jonathan
-> ---
->  drivers/iio/adc/palmas_gpadc.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
-> index f42eb8a..2bbf0c5 100644
-> --- a/drivers/iio/adc/palmas_gpadc.c
-> +++ b/drivers/iio/adc/palmas_gpadc.c
-> @@ -534,7 +534,7 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
->  	}
->  	ret = request_threaded_irq(adc->irq, NULL,
->  		palmas_gpadc_irq,
-> -		IRQF_ONESHOT | IRQF_EARLY_RESUME, dev_name(adc->dev),
-> +		IRQF_ONESHOT, dev_name(adc->dev),
->  		adc);
->  	if (ret < 0) {
->  		dev_err(adc->dev,
-> @@ -549,7 +549,7 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
->  		adc->irq_auto_0 =  platform_get_irq(pdev, 1);
->  		ret = request_threaded_irq(adc->irq_auto_0, NULL,
->  				palmas_gpadc_irq_auto,
-> -				IRQF_ONESHOT | IRQF_EARLY_RESUME,
-> +				IRQF_ONESHOT,
->  				"palmas-adc-auto-0", adc);
->  		if (ret < 0) {
->  			dev_err(adc->dev, "request auto0 irq %d failed: %d\n",
-> @@ -565,7 +565,7 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
->  		adc->irq_auto_1 =  platform_get_irq(pdev, 2);
->  		ret = request_threaded_irq(adc->irq_auto_1, NULL,
->  				palmas_gpadc_irq_auto,
-> -				IRQF_ONESHOT | IRQF_EARLY_RESUME,
-> +				IRQF_ONESHOT,
->  				"palmas-adc-auto-1", adc);
->  		if (ret < 0) {
->  			dev_err(adc->dev, "request auto1 irq %d failed: %d\n",
-> 
-
+Lucas De Marchi
