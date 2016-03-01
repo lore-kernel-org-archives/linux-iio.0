@@ -1,105 +1,166 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f196.google.com ([209.85.223.196]:34419 "EHLO
-	mail-io0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753969AbcCAQCM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Mar 2016 11:02:12 -0500
-Date: Tue, 1 Mar 2016 10:02:00 -0600
-From: Michael Welling <mwelling@ieee.org>
-To: jic23@jic23.retrosnub.co.uk
-Cc: Lucas De Marchi <lucas.de.marchi@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	lkml <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Guenter Roeck <linux@roeck-us.net>, eibach@gdsys.de,
-	linux-iio-owner@vger.kernel.org
-Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
-Message-ID: <20160301160159.GB5484@deathstar>
-References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>
- <20160301005032.GA15476@deathstar>
- <CAKi4VAKBOge=-DcT9S7+uZWUte3EFNQ95u-fHCudRXZHqYuE1w@mail.gmail.com>
- <20160301024217.GA12912@deathstar>
- <9d1f2caa068a7ad5d3fe3b3a5bc6af1e@jic23.retrosnub.co.uk>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59483 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751607AbcCAR1d (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Mar 2016 12:27:33 -0500
+In-Reply-To: <CAEnQRZDXd7ZU4L=95Qw-oVfK23XQ2EfNj-A=ehbRpvJRHKv5gQ@mail.gmail.com>
+References: <1456574754-23387-1-git-send-email-jic23@kernel.org> <CAEnQRZDXd7ZU4L=95Qw-oVfK23XQ2EfNj-A=ehbRpvJRHKv5gQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <9d1f2caa068a7ad5d3fe3b3a5bc6af1e@jic23.retrosnub.co.uk>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [RFC PATCH] Proposal for a kthread tight loop based trigger.
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Tue, 01 Mar 2016 17:27:27 +0000
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	gregor.boirie@parrot.com, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Message-ID: <D7521C2F-4717-4C2F-B4FA-8852D44C01A0@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 01, 2016 at 08:35:01AM +0000, jic23@jic23.retrosnub.co.uk wrote:
-> On 01.03.2016 02:42, Michael Welling wrote:
-> >On Mon, Feb 29, 2016 at 10:09:10PM -0300, Lucas De Marchi wrote:
-> >>On Mon, Feb 29, 2016 at 9:50 PM, Michael Welling <mwelling@ieee.org>
-> >>wrote:
-> >>> On Fri, Feb 05, 2016 at 03:17:18PM +0200, Daniel Baluta wrote:
-> >>>> The driver has sysfs readings with runtime PM support for power saving.
-> >>>> It also offers buffer support that can be used together with IIO software
-> >>>> triggers.
-> >>>>
-> >>>
-> >>> Daniel,
-> >>>
-> >>> So I noticed something yesterday while testing new boards.
-> >>> The channels are occassionally swapping when accessing data from multiple channels.
-> >>>
-> >>> I wrote a simple bash script to demonstrate.
-> >>
-> >>This happened to me in a previous version of the patch. I remember it
-> >>being fixed in the last version (or at least I could not reproduce).
-> >>I'll test again tomorrow with your script.
-> >>
-> >
-> >Here is what I believe is happening.
-> >
-> >The request for a conversion on a new channel comes in while the
-> >conversion
-> >for the previous channel is still converting. The driver waits
-> >approximately
-> >one conversion cycle. The previous channel completes within this timeframe
-> >and the MUX is changed and the new sample is started. The new sample is
-> >still
-> >converting and the driver returns the value from the previous conversion.
-> >
-> >For a test I multiplied the conv_time value by 2 in the
-> >ads1015_get_adc_result
-> >function. This allows time for the current sample flush out and always
-> >returns
-> >the appropriate channel's value.
-> >
-> >Looking at the buffered mode it appears that only one channel is being
-> >accessed
-> >at any time. This being the first one in the active_scan_mask found by
-> >find_first_bit. So the MUX would never change is buffered mode as far I
-> >can
-> >tell.
-> >
-> >Don't we typically want to read all of enabled channels in buffered mode?
-> In some devices that is effectively impossible (fifo's that fill only from
-> the currently
-> selected channel). That is what the onehot validation callback is about.
-> In this particular case it looks like doing a multichannel read is fair bit
-> more time
-> consuming than a single channel read and so will result in a considerable
-> reduction in
-> throughput.  This is of course why many parts include a simple sequencer!
 
-Yes the sampling rate would effectively be divided by the number of channels
-enabled.
 
-> 
-> Anyhow, supporting multi channel buffered reads could be done (probably) but
-> you
-> would want to fall back to the single channel case as it is now.
+On 1 March 2016 11:51:12 GMT+00:00, Daniel Baluta <daniel.baluta@intel.com> wrote:
+>On Sat, Feb 27, 2016 at 2:05 PM, Jonathan Cameron <jic23@kernel.org>
+>wrote:
+>> Hi Gregor and all,
+>>
+>> This patch was motivated by a proposal from Gregor to put a kthread
+>in the
+>> ms5611 driver to basically spin and grap data as fast as possible.
+>> I can see the application is realistic but was unhappy with the per
+>driver
+>> code change approach.  Hence I decided to test out another approach
+>over
+>> a couple of hours this morning.
+>
+>This is a good idea.
+>
+>>
+>> Hence in brief the use case is:
+>> 1) Read from a 'capture on demand' device as quickly as possible. 
+>For tests
+>> I used a max1363 on an ancient stargate2 because I have a few lying
+>around and
+>> it is the right sort of device.
+>> 2) Do it in a fashion that allows higher priority code to slow it
+>down if
+>>   needed
+>> 3) Allow lots of devices to run in the same fashion but without each
+>one
+>> having to wait for them all to finish.
+>>
+>> As a quick aside, configfs (or at least iio-trig-hrtimer) isn't
+>working
+>> on my platform right now so I'll need to follow that up when I get a
+>bit more
+>> time. Hence I based this off the sysfs trigger (which is an old
+>friend :)
+>>
+>
+>Which part of configfs support didn't work :).
+mkdir in the hrtimer directory. Gave a useless looking stack trace. I haven't
+ looked at it properly yet.
+>
+>> So first some background on our 'non hardware' triggers.
+>>
+>> 1) First there were hardware triggers or things that looked very much
+>like
+>>   hardware triggers (e.g. the periodic rtc driver that is on it's way
+>out -
+>>   finally).  These call 'real' interrupt handlers - they predated the
+>>   threaded interrupts stuff so everything used to have to have a top
+>half
+>>   anyway to schedule the bottom half (which later became a thread)
+>> 2) It made sense in some devices - dataready triggered ones typically
+>- to
+>>    grab timestamps and sometimes some other state in the top half.
+>> 3) Threaded interrupts came along getting rid of most of the top half
+>code but
+>>   typically leaving some timestamping etc in there.
+>> 4) Somewhere in this process we had the sysfs trigger come along as a
+>really
+>>    handy test tool (initially).  This first of all simply didn't run
+>top halfs
+>>    but later jumped through some hoops to get into interrupt context
+>to call
+>>    them so it looked like a hardware interrupt.  This is now nicely
+>wrapped up
+>>    in IRQ_WORK etc.  One major advantage of this is that we have
+>multiple
+>>    devices triggering off one interrupt they will run in their own
+>threads.
+>>
+>> Anyhow so what we have here goes back to the bottom half (now thread)
+>element
+>> only as we can do that quick and dirty (as an aside iio_poll_chained
+>is
+>> really badly named - I suspect I either messed this up or the naming
+>used
+>> in the irq subsystem was clarified sometime later)
+>>
+>> So here we launch a kthread on the spin up of a buffer attached to
+>this
+>> trigger.  That then calls all devices poll func (thread part) in the
+>thread
+>> one after another.
+>>
+>> So what are the issues with this:
+>> 1) Multiple devices connected to this trigger will not have their
+>thread
+>>    handlers potentially run in parallel. (do we care? - the usecase
+>wouldn't
+>>    put more than on on given trigger anyway)
+>> 2) We have no current way of identifying if a device needs a top half
+>called
+>>    (say to get a timestamp).  This should be easy enough to add as a
+>flag in
+>>    struct iio_dev and enforce with the validate callbacks.
+>> 3) For those devices that do something that doesn't need to be in the
+>top half
+>>    (from a not hanging point of view - if not from a get the best
+>answer point
+>>     of view) we have no way of knowing this or calling the top half
+>if we did.
+>>
+>> I think the last two can be worked around (3 might be 'tricky!)
+>>
+>> Anyhow what do people think?
+>>
+>> For some numbers I ran this on a pxa270 with a max1363 hanging of the
+>i2c
+>> bus.  generic_buffer into a ramdisk, watershed at 64 buffer length
+>128. Ran
+>> happily at upwards of a kHz though with some 5msec pauses (presumably
+>something
+>> higher priority came along).
+>>
+>> Jonathan
+>>
+>> Jonathan Cameron (1):
+>>   iio:trigger: Experimental kthread tight loop trigger (thread only)
+>>
+>>  drivers/iio/trigger/Kconfig         |   5 +
+>>  drivers/iio/trigger/Makefile        |   1 +
+>>  drivers/iio/trigger/iio-trig-loop.c | 245
+>++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 251 insertions(+)
+>>  create mode 100644 drivers/iio/trigger/iio-trig-loop.c
+>>
+>> --
+>> 2.7.1
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
+>in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-Understood.
-
-> 
-> Jonathan
-> >>Lucas De Marchi
-> >--
-> >To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> >the body of a message to majordomo@vger.kernel.org
-> >More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
