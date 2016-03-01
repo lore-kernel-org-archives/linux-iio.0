@@ -1,46 +1,149 @@
-Return-Path: <mwelling79@gmail.com>
-Sender: Michael Welling <mwelling79@gmail.com>
-Date: Mon, 29 Feb 2016 19:16:34 -0600
-From: Michael Welling <mwelling@ieee.org>
-To: Lucas De Marchi <lucas.de.marchi@gmail.com>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	lkml <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Guenter Roeck <linux@roeck-us.net>, eibach@gdsys.de
-Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
-Message-ID: <20160301011634.GA18558@deathstar>
-References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>
- <20160301005032.GA15476@deathstar>
- <CAKi4VAKBOge=-DcT9S7+uZWUte3EFNQ95u-fHCudRXZHqYuE1w@mail.gmail.com>
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>, "Andrew F. Davis" <afd@ti.com>, Rob Herring
+	<robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
+	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
+ Gala <galak@codeaurora.org>, =?UTF-8?q?Gr=C3=A9gor=20Boirie?=
+	<gregor.boirie@parrot.com>
+Subject: [PATCH v4 2/3] iio:pressure:ms5611: complete DT support
+Date: Tue, 1 Mar 2016 11:31:37 +0100
+Message-ID: <6cbaba17e57b0bdc6c3550f49af9161e33438f84.1456828051.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1456828051.git.gregor.boirie@parrot.com>
+References: <cover.1456828051.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAKi4VAKBOge=-DcT9S7+uZWUte3EFNQ95u-fHCudRXZHqYuE1w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Feb 29, 2016 at 10:09:10PM -0300, Lucas De Marchi wrote:
-> On Mon, Feb 29, 2016 at 9:50 PM, Michael Welling <mwelling@ieee.org> wrote:
-> > On Fri, Feb 05, 2016 at 03:17:18PM +0200, Daniel Baluta wrote:
-> >> The driver has sysfs readings with runtime PM support for power saving.
-> >> It also offers buffer support that can be used together with IIO software
-> >> triggers.
-> >>
-> >
-> > Daniel,
-> >
-> > So I noticed something yesterday while testing new boards.
-> > The channels are occassionally swapping when accessing data from multiple channels.
-> >
-> > I wrote a simple bash script to demonstrate.
-> 
-> This happened to me in a previous version of the patch. I remember it
-> being fixed in the last version (or at least I could not reproduce).
-> I'll test again tomorrow with your script.
->
+From: Grégor Boirie <gregor.boirie@parrot.com>
 
-Okay thanks. I will see if I am using a dated version of the driver for some reason.
+Add device-tree ID tables and document bindings.
+
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ .../devicetree/bindings/iio/pressure/ms5611.txt       | 19 +++++++++++++++++++
+ Documentation/devicetree/bindings/vendor-prefixes.txt |  1 +
+ drivers/iio/pressure/ms5611_i2c.c                     | 13 +++++++++++++
+ drivers/iio/pressure/ms5611_spi.c                     | 13 +++++++++++++
+ 4 files changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/ms5611.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/pressure/ms5611.txt b/Documentation/devicetree/bindings/iio/pressure/ms5611.txt
+new file mode 100644
+index 0000000..17bca86
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/pressure/ms5611.txt
+@@ -0,0 +1,19 @@
++MEAS ms5611 family pressure sensors
++
++Pressure sensors from MEAS Switzerland with SPI and I2C bus interfaces.
++
++Required properties:
++- compatible: "meas,ms5611" or "meas,ms5607"
++- reg: the I2C address or SPI chip select the device will respond to
++
++Optional properties:
++- vdd-supply: an optional regulator that needs to be on to provide VDD
++  power to the sensor.
++
++Example:
++
++ms5607@77 {
++	compatible = "meas,ms5607";
++	reg = <0x77>;
++	vdd-supply = <&ldo_3v3_gnss>;
++};
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index 44ddc98..7733f8c 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -136,6 +136,7 @@ lsi	LSI Corp. (LSI Logic)
+ lltc	Linear Technology Corporation
+ marvell	Marvell Technology Group Ltd.
+ maxim	Maxim Integrated Products
++meas	Measurement Specialties
+ mediatek	MediaTek Inc.
+ melexis	Melexis N.V.
+ merrii	Merrii Technology Co., Ltd.
+diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
+index 7f6fc8e..57a8f2c 100644
+--- a/drivers/iio/pressure/ms5611_i2c.c
++++ b/drivers/iio/pressure/ms5611_i2c.c
+@@ -17,6 +17,7 @@
+ #include <linux/delay.h>
+ #include <linux/i2c.h>
+ #include <linux/module.h>
++#include <linux/of_device.h>
  
-> Lucas De Marchi
+ #include "ms5611.h"
+ 
+@@ -113,6 +114,17 @@ static int ms5611_i2c_remove(struct i2c_client *client)
+ 	return ms5611_remove(i2c_get_clientdata(client));
+ }
+ 
++#if defined(CONFIG_OF)
++static const struct of_device_id ms5611_i2c_matches[] = {
++	{ .compatible = "meas,ms5611" },
++	{ .compatible = "ms5611" },
++	{ .compatible = "meas,ms5607" },
++	{ .compatible = "ms5607" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ms5611_i2c_matches);
++#endif
++
+ static const struct i2c_device_id ms5611_id[] = {
+ 	{ "ms5611", MS5611 },
+ 	{ "ms5607", MS5607 },
+@@ -123,6 +135,7 @@ MODULE_DEVICE_TABLE(i2c, ms5611_id);
+ static struct i2c_driver ms5611_driver = {
+ 	.driver = {
+ 		.name = "ms5611",
++		.of_match_table = of_match_ptr(ms5611_i2c_matches)
+ 	},
+ 	.id_table = ms5611_id,
+ 	.probe = ms5611_i2c_probe,
+diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
+index 5cc009e..7ec0c64 100644
+--- a/drivers/iio/pressure/ms5611_spi.c
++++ b/drivers/iio/pressure/ms5611_spi.c
+@@ -12,6 +12,7 @@
+ #include <linux/delay.h>
+ #include <linux/module.h>
+ #include <linux/spi/spi.h>
++#include <linux/of_device.h>
+ 
+ #include "ms5611.h"
+ 
+@@ -114,6 +115,17 @@ static int ms5611_spi_remove(struct spi_device *spi)
+ 	return ms5611_remove(spi_get_drvdata(spi));
+ }
+ 
++#if defined(CONFIG_OF)
++static const struct of_device_id ms5611_spi_matches[] = {
++	{ .compatible = "meas,ms5611" },
++	{ .compatible = "ms5611" },
++	{ .compatible = "meas,ms5607" },
++	{ .compatible = "ms5607" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ms5611_spi_matches);
++#endif
++
+ static const struct spi_device_id ms5611_id[] = {
+ 	{ "ms5611", MS5611 },
+ 	{ "ms5607", MS5607 },
+@@ -124,6 +136,7 @@ MODULE_DEVICE_TABLE(spi, ms5611_id);
+ static struct spi_driver ms5611_driver = {
+ 	.driver = {
+ 		.name = "ms5611",
++		.of_match_table = of_match_ptr(ms5611_spi_matches)
+ 	},
+ 	.id_table = ms5611_id,
+ 	.probe = ms5611_spi_probe,
+-- 
+2.1.4
