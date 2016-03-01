@@ -1,66 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:30861 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752051AbcCAKa7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 1 Mar 2016 05:30:59 -0500
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:35789 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751976AbcCAL22 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Mar 2016 06:28:28 -0500
+MIME-Version: 1.0
+In-Reply-To: <20160301024217.GA12912@deathstar>
+References: <1454678238-16313-1-git-send-email-daniel.baluta@intel.com>
+	<20160301005032.GA15476@deathstar>
+	<CAKi4VAKBOge=-DcT9S7+uZWUte3EFNQ95u-fHCudRXZHqYuE1w@mail.gmail.com>
+	<20160301024217.GA12912@deathstar>
+Date: Tue, 1 Mar 2016 13:28:26 +0200
+Message-ID: <CAEnQRZCQqGgofK7s7S1MS_e+rWXwaQCaZxaAiSnGxQaQN-Q4=A@mail.gmail.com>
+Subject: Re: [PATCH v4] iio: adc: Add TI ADS1015 ADC driver support
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Michael Welling <mwelling@ieee.org>
+Cc: Lucas De Marchi <lucas.de.marchi@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Mark Brown <broonie@kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v4 0/3] iio:pressure:ms5611: fix and enhancements
-Date: Tue, 1 Mar 2016 11:31:35 +0100
-Message-ID: <cover.1456828051.git.gregor.boirie@parrot.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	lkml <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Guenter Roeck <linux@roeck-us.net>, eibach@gdsys.de
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes since v1:
-* temperature compensation fix:
-    * reword commit message
-    * remove useless parenthesis
-* power regulator: reword commit message
-* add oversampling rate support
+On Tue, Mar 1, 2016 at 4:42 AM, Michael Welling <mwelling@ieee.org> wrote:
+> On Mon, Feb 29, 2016 at 10:09:10PM -0300, Lucas De Marchi wrote:
+>> On Mon, Feb 29, 2016 at 9:50 PM, Michael Welling <mwelling@ieee.org> wrote:
+>> > On Fri, Feb 05, 2016 at 03:17:18PM +0200, Daniel Baluta wrote:
+>> >> The driver has sysfs readings with runtime PM support for power saving.
+>> >> It also offers buffer support that can be used together with IIO software
+>> >> triggers.
+>> >>
+>> >
+>> > Daniel,
+>> >
+>> > So I noticed something yesterday while testing new boards.
+>> > The channels are occassionally swapping when accessing data from multiple channels.
+>> >
+>> > I wrote a simple bash script to demonstrate.
+>>
+>> This happened to me in a previous version of the patch. I remember it
+>> being fixed in the last version (or at least I could not reproduce).
+>> I'll test again tomorrow with your script.
+>>
+>
+> Here is what I believe is happening.
+>
+> The request for a conversion on a new channel comes in while the conversion
+> for the previous channel is still converting. The driver waits approximately
+> one conversion cycle. The previous channel completes within this timeframe
+> and the MUX is changed and the new sample is started. The new sample is still
+> converting and the driver returns the value from the previous conversion.
+>
 
-Changes since v2:
-* remove non printable characters from commit messages
+Yes, this was the problem in the initial driver. The fix was to wait
+for the conversion to complete
+but it seems that it doesn't always work on your setup :(.
 
-Changes since v3:
-* drop first 3 patches since applied onto testing
-* fix oops at regulator probing time if regulator support not compiled-in
-* complete device-tree support and documentation
-* remove continuous sampling support (see Jonathan's "kthread tight loop
-  trigger" proposal)
-* checkpatch'ed
+     if (change) {
++               conv_time = DIV_ROUND_UP(USEC_PER_SEC, ads1015_data_rate[dr]);
++               usleep_range(conv_time, conv_time + 1);
++       }
++
 
-Gregor Boirie (2):
-  iio:pressure:ms5611: fix oops when probing regulator
-  iio:pressure:ms5611: oversampling rate support
 
-Grégor Boirie (1):
-  iio:pressure:ms5611: complete DT support
+> For a test I multiplied the conv_time value by 2 in the ads1015_get_adc_result
+> function. This allows time for the current sample flush out and always returns
+> the appropriate channel's value.
+>
+> Looking at the buffered mode it appears that only one channel is being accessed
+> at any time. This being the first one in the active_scan_mask found by
+> find_first_bit. So the MUX would never change is buffered mode as far I can
+> tell.
+>
+> Don't we typically want to read all of enabled channels in buffered mode?
 
- .../devicetree/bindings/iio/pressure/ms5611.txt    |  19 ++++
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/pressure/ms5611.h                      |  20 ++--
- drivers/iio/pressure/ms5611_core.c                 | 113 ++++++++++++++++++++-
- drivers/iio/pressure/ms5611_i2c.c                  |  25 +++--
- drivers/iio/pressure/ms5611_spi.c                  |  32 ++++--
- 6 files changed, 185 insertions(+), 25 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/pressure/ms5611.txt
-
--- 
-2.1.4
-
+For the moment we allow only a single channel to be enabled in buffer mode.
