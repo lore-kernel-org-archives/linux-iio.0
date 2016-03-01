@@ -1,320 +1,299 @@
-Return-Path: <gregor.boirie@parrot.com>
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>, Daniel Baluta
-	<daniel.baluta@intel.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Mark Brown <broonie@kernel.org>, "Andrew F. Davis" <afd@ti.com>, Rob Herring
-	<robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
-	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
- Gala <galak@codeaurora.org>, Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v4 3/3] iio:pressure:ms5611: oversampling rate support
-Date: Tue, 1 Mar 2016 11:31:38 +0100
-Message-ID: <968dd61e1b2cf2fa6ba936509594d71c799226c4.1456828051.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1456828051.git.gregor.boirie@parrot.com>
-References: <cover.1456828051.git.gregor.boirie@parrot.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail01.prevas.se ([62.95.78.3]:26420 "EHLO mail01.prevas.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753381AbcCAL40 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 1 Mar 2016 06:56:26 -0500
+From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+To: <linux-iio@vger.kernel.org>
+CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
+	<devicetree@vger.kernel.org>
+Subject: [PATCH v4 3/4] iio: ad5755: added full support for devicetree
+Date: Tue, 1 Mar 2016 12:56:15 +0100
+Message-ID: <1456833376-29758-3-git-send-email-sean.nyekjaer@prevas.dk>
+In-Reply-To: <1456833376-29758-2-git-send-email-sean.nyekjaer@prevas.dk>
+References: <1456833376-29758-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <1456833376-29758-2-git-send-email-sean.nyekjaer@prevas.dk>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add support for setting and retrieving OverSampling Rate independently for
-each of the temperature and pressure channels. This allows userspace to
-fine tune hardware sampling process according to the following tradeoffs :
-* the higher the OSR, the finer the resolution ;
-* the higher the OSR, the lower the noise ;
-BUT:
-* the higher the OSR, the larger the drift ;
-* the higher the OSR, the longer the response time, i.e. less samples per
-  unit of time.
+Devicetree can provide platform data
 
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
 ---
- drivers/iio/pressure/ms5611.h      |  20 ++++---
- drivers/iio/pressure/ms5611_core.c | 105 ++++++++++++++++++++++++++++++++++++-
- drivers/iio/pressure/ms5611_i2c.c  |  12 ++---
- drivers/iio/pressure/ms5611_spi.c  |  19 +++----
- 4 files changed, 133 insertions(+), 23 deletions(-)
+These large switch cases make the driver hard to read? Does someone have any
+ideas to make this more readable?
 
-diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
-index 8b08e4b..d725a307 100644
---- a/drivers/iio/pressure/ms5611.h
-+++ b/drivers/iio/pressure/ms5611.h
-@@ -19,12 +19,6 @@
- #define MS5611_RESET			0x1e
- #define MS5611_READ_ADC			0x00
- #define MS5611_READ_PROM_WORD		0xA0
--#define MS5611_START_TEMP_CONV		0x58
--#define MS5611_START_PRESSURE_CONV	0x48
--
--#define MS5611_CONV_TIME_MIN		9040
--#define MS5611_CONV_TIME_MAX		10000
--
- #define MS5611_PROM_WORDS_NB		8
- 
- enum {
-@@ -39,10 +33,24 @@ struct ms5611_chip_info {
- 					    s32 *temp, s32 *pressure);
+The dc-dc-phase and channel mode i rather hard to do without defines? Will it
+be okay to use them here?
+Example:
+adi,mode = CURRENT_4mA_20mA or adi,mode = VOLTAGE_PLUSMINUS_10V
+They are generic DAC/ADC properties...
+
+Changes since v3:
+- replaced '_' with '-'
+- Now used actual values instead of register values.
+
+Changes since v2:
+- removed defines from DT
+
+ drivers/iio/dac/ad5755.c | 227 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 226 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+index e1b6e78..4a2866e 100644
+--- a/drivers/iio/dac/ad5755.c
++++ b/drivers/iio/dac/ad5755.c
+@@ -14,6 +14,7 @@
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+ #include <linux/delay.h>
++#include <linux/of.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/platform_data/ad5755.h>
+@@ -556,6 +557,223 @@ static const struct ad5755_platform_data ad5755_default_pdata = {
+ 	},
  };
  
-+/*
-+ * OverSampling Rate descriptor.
-+ * Warning: cmd MUST be kept aligned on a word boundary (see
-+ * m5611_spi_read_adc_temp_and_pressure in ms5611_spi.c).
-+ */
-+struct ms5611_osr {
-+	unsigned long conv_usec;
-+	u8 cmd;
-+	unsigned short rate;
-+};
-+
- struct ms5611_state {
- 	void *client;
- 	struct mutex lock;
- 
-+	const struct ms5611_osr *pressure_osr;
-+	const struct ms5611_osr *temp_osr;
-+
- 	int (*reset)(struct device *dev);
- 	int (*read_prom_word)(struct device *dev, int index, u16 *word);
- 	int (*read_adc_temp_and_pressure)(struct device *dev,
-diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-index a9c4d49..a2a871b 100644
---- a/drivers/iio/pressure/ms5611_core.c
-+++ b/drivers/iio/pressure/ms5611_core.c
-@@ -18,11 +18,44 @@
- #include <linux/delay.h>
- #include <linux/regulator/consumer.h>
- 
-+#include <linux/iio/sysfs.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/trigger_consumer.h>
- #include "ms5611.h"
- 
-+#define MS5611_INIT_OSR(_cmd, _conv_usec, _rate) \
-+	{ .cmd = _cmd, .conv_usec = _conv_usec, .rate = _rate }
-+
-+static const struct ms5611_osr ms5611_avail_pressure_osr[] = {
-+	MS5611_INIT_OSR(0x40, 600,  256),
-+	MS5611_INIT_OSR(0x42, 1170, 512),
-+	MS5611_INIT_OSR(0x44, 2280, 1024),
-+	MS5611_INIT_OSR(0x46, 4540, 2048),
-+	MS5611_INIT_OSR(0x48, 9040, 4096)
-+};
-+
-+static const struct ms5611_osr ms5611_avail_temp_osr[] = {
-+	MS5611_INIT_OSR(0x50, 600,  256),
-+	MS5611_INIT_OSR(0x52, 1170, 512),
-+	MS5611_INIT_OSR(0x54, 2280, 1024),
-+	MS5611_INIT_OSR(0x56, 4540, 2048),
-+	MS5611_INIT_OSR(0x58, 9040, 4096)
-+};
-+
-+static const char ms5611_show_osr[] = "256 512 1024 2048 4096";
-+
-+static IIO_CONST_ATTR(oversampling_ratio_available, ms5611_show_osr);
-+
-+static struct attribute *ms5611_attributes[] = {
-+	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group ms5611_attribute_group = {
-+	.attrs = ms5611_attributes,
-+};
-+
- static bool ms5611_prom_is_valid(u16 *prom, size_t len)
- {
- 	int i, j;
-@@ -239,11 +272,70 @@ static int ms5611_read_raw(struct iio_dev *indio_dev,
- 		default:
- 			return -EINVAL;
- 		}
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		if (chan->type != IIO_TEMP && chan->type != IIO_PRESSURE)
-+			break;
-+		mutex_lock(&st->lock);
-+		if (chan->type == IIO_TEMP)
-+			*val = (int)st->temp_osr->rate;
-+		else
-+			*val = (int)st->pressure_osr->rate;
-+		mutex_unlock(&st->lock);
-+		return IIO_VAL_INT;
- 	}
- 
- 	return -EINVAL;
- }
- 
-+static const struct ms5611_osr *ms5611_find_osr(int rate,
-+						const struct ms5611_osr *osr,
-+						size_t count)
++#ifdef CONFIG_OF
++static struct ad5755_platform_data *ad5755_parse_dt(struct device *dev)
 +{
-+	unsigned int r;
++	struct device_node *np = dev->of_node;
++	struct device_node *pp;
++	struct ad5755_platform_data *pdata;
++	unsigned int tmp;
++	unsigned int tmparray[3];
++	int devnr;
 +
-+	for (r = 0; r < count; r++)
-+		if ((unsigned short)rate == osr[r].rate)
-+			break;
-+	if (r >= count)
++	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
++	if (!pdata)
 +		return NULL;
-+	return &osr[r];
-+}
 +
-+static int ms5611_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
-+{
-+	struct ms5611_state *st = iio_priv(indio_dev);
-+	const struct ms5611_osr *osr = NULL;
++	pdata->ext_dc_dc_compenstation_resistor =
++	    of_property_read_bool(np, "adi,ext-dc-dc-compenstation-resistor");
 +
-+	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
-+		return -EINVAL;
++	if (!of_property_read_u32(np, "adi,dc-dc-phase", &tmp))
++		pdata->dc_dc_phase = tmp;
++	else
++		pdata->dc_dc_phase = AD5755_DC_DC_PHASE_ALL_SAME_EDGE;
 +
-+	if (chan->type == IIO_TEMP)
-+		osr = ms5611_find_osr(val, ms5611_avail_temp_osr,
-+				      ARRAY_SIZE(ms5611_avail_temp_osr));
-+	else if (chan->type == IIO_PRESSURE)
-+		osr = ms5611_find_osr(val, ms5611_avail_pressure_osr,
-+				      ARRAY_SIZE(ms5611_avail_pressure_osr));
-+	if (!osr)
-+		return -EINVAL;
++	if (!of_property_read_u32(np, "adi,dc-dc-freq", &tmp))
++		switch (tmp) {
++		case 250000:
++			pdata->dc_dc_freq = AD5755_DC_DC_FREQ_250kHZ;
++			break;
++		case 410000:
++			pdata->dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ;
++			break;
++		case 650000:
++			pdata->dc_dc_freq = AD5755_DC_DC_FREQ_650kHZ;
++			break;
++		default:
++			dev_err(dev,
++				"adi,dc-dc-freq out of range selecting 410kHz");
++			pdata->dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ;
++	} else
++		pdata->dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ;
 +
-+	mutex_lock(&st->lock);
++	if (!of_property_read_u32(np, "adi,dc-dc-maxv", &tmp))
++		switch (tmp) {
++		case 23000:
++			pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_23V;
++			break;
++		case 24500:
++			pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_24V5;
++			break;
++		case 27000:
++			pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_27V;
++			break;
++		case 29500:
++			pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_29V5;
++			break;
++		default:
++			dev_err(dev,
++				"adi,dc-dc-maxv out of range selecting 23V");
++			pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_23V;
++	} else
++		pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_23V;
 +
-+	if (iio_buffer_enabled(indio_dev)) {
-+		mutex_unlock(&st->lock);
-+		return -EBUSY;
++	devnr = 0;
++	for_each_child_of_node(np, pp) {
++		if (devnr > AD5755_NUM_CHANNELS) {
++			dev_err(dev,
++				"There is to many channels defined in DT\n");
++			goto error_out;
++		}
++
++		if (!of_property_read_u32(pp, "adi,mode", &tmp))
++			pdata->dac[devnr].mode = tmp;
++		else
++			pdata->dac[devnr].mode = AD5755_MODE_CURRENT_4mA_20mA;
++
++		pdata->dac[devnr].ext_current_sense_resistor =
++		    of_property_read_bool(pp, "adi,ext-current-sense-resistor");
++
++		pdata->dac[devnr].enable_voltage_overrange =
++		    of_property_read_bool(pp, "adi,enable-voltage-overrange");
++
++		if (!of_property_read_u32_array(pp, "adi,slew", tmparray, 3)) {
++			pdata->dac[devnr].slew.enable = tmparray[0];
++			switch (tmparray[1]) {
++			case 64000:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_64k;
++				break;
++			case 32000:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_32k;
++				break;
++			case 16000:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_16k;
++				break;
++			case 8000:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_8k;
++				break;
++			case 4000:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_4k;
++				break;
++			case 2000:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_2k;
++				break;
++			case 1000:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_1k;
++				break;
++			case 500:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_500;
++				break;
++			case 250:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_250;
++				break;
++			case 125:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_125;
++				break;
++			case 64:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_64;
++				break;
++			case 32:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_32;
++				break;
++			case 16:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_16;
++				break;
++			case 8:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_8;
++				break;
++			case 4:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_4;
++				break;
++			case 0:
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_0_5;
++				break;
++			default:
++				dev_err(dev,
++					"channel %d slew rate out of range selecting 64kHz",
++					devnr);
++				pdata->dac[devnr].slew.rate =
++				    AD5755_SLEW_RATE_64k;
++			}
++			switch (tmparray[2]) {
++			case 1:
++				pdata->dac[devnr].slew.step_size =
++				    AD5755_SLEW_STEP_SIZE_1;
++				break;
++			case 2:
++				pdata->dac[devnr].slew.step_size =
++				    AD5755_SLEW_STEP_SIZE_2;
++				break;
++			case 4:
++				pdata->dac[devnr].slew.step_size =
++				    AD5755_SLEW_STEP_SIZE_4;
++				break;
++			case 16:
++				pdata->dac[devnr].slew.step_size =
++				    AD5755_SLEW_STEP_SIZE_16;
++				break;
++			case 32:
++				pdata->dac[devnr].slew.step_size =
++				    AD5755_SLEW_STEP_SIZE_32;
++				break;
++			case 64:
++				pdata->dac[devnr].slew.step_size =
++				    AD5755_SLEW_STEP_SIZE_64;
++				break;
++			case 128:
++				pdata->dac[devnr].slew.step_size =
++				    AD5755_SLEW_STEP_SIZE_128;
++				break;
++			case 256:
++				pdata->dac[devnr].slew.step_size =
++				    AD5755_SLEW_STEP_SIZE_256;
++				break;
++			default:
++				dev_err(dev,
++					"channel %d slew step size out of range selecting 1 LSB",
++					devnr);
++				pdata->dac[devnr].slew.step_size =
++				    AD5755_SLEW_STEP_SIZE_1;
++			}
++		} else {
++			pdata->dac[devnr].slew.enable = false;
++			pdata->dac[devnr].slew.rate = AD5755_SLEW_RATE_64k;
++			pdata->dac[devnr].slew.step_size =
++			    AD5755_SLEW_STEP_SIZE_1;
++		}
++		devnr++;
 +	}
 +
-+	if (chan->type == IIO_TEMP)
-+		st->temp_osr = osr;
-+	else
-+		st->pressure_osr = osr;
++	return pdata;
 +
-+	mutex_unlock(&st->lock);
-+	return 0;
++ error_out:
++	devm_kfree(dev, pdata);
++	return NULL;
 +}
++#else
++static
++struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
++{
++	return NULL;
++}
++#endif
 +
- static const unsigned long ms5611_scan_masks[] = {0x3, 0};
- 
- static struct ms5611_chip_info chip_info_tbl[] = {
-@@ -259,7 +351,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
- 	{
- 		.type = IIO_PRESSURE,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
--			BIT(IIO_CHAN_INFO_SCALE),
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
- 		.scan_index = 0,
- 		.scan_type = {
- 			.sign = 's',
-@@ -271,7 +364,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
- 	{
- 		.type = IIO_TEMP,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
--			BIT(IIO_CHAN_INFO_SCALE),
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
- 		.scan_index = 1,
- 		.scan_type = {
- 			.sign = 's',
-@@ -285,6 +379,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
- 
- static const struct iio_info ms5611_info = {
- 	.read_raw = &ms5611_read_raw,
-+	.write_raw = &ms5611_write_raw,
-+	.attrs = &ms5611_attribute_group,
- 	.driver_module = THIS_MODULE,
- };
- 
-@@ -323,6 +419,11 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
- 
- 	mutex_init(&st->lock);
- 	st->chip_info = &chip_info_tbl[type];
-+	st->temp_osr =
-+		&ms5611_avail_temp_osr[ARRAY_SIZE(ms5611_avail_temp_osr) - 1];
-+	st->pressure_osr =
-+		&ms5611_avail_pressure_osr[ARRAY_SIZE(ms5611_avail_pressure_osr)
-+					   - 1];
- 	indio_dev->dev.parent = dev;
- 	indio_dev->name = name;
- 	indio_dev->info = &ms5611_info;
-diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
-index 57a8f2c..55fb5fc 100644
---- a/drivers/iio/pressure/ms5611_i2c.c
-+++ b/drivers/iio/pressure/ms5611_i2c.c
-@@ -63,23 +63,23 @@ static int ms5611_i2c_read_adc_temp_and_pressure(struct device *dev,
+ static int ad5755_probe(struct spi_device *spi)
  {
- 	int ret;
- 	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
-+	const struct ms5611_osr *osr = st->temp_osr;
+ 	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
+@@ -583,8 +801,15 @@ static int ad5755_probe(struct spi_device *spi)
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->num_channels = AD5755_NUM_CHANNELS;
  
--	ret = i2c_smbus_write_byte(st->client, MS5611_START_TEMP_CONV);
-+	ret = i2c_smbus_write_byte(st->client, osr->cmd);
- 	if (ret < 0)
- 		return ret;
+-	if (!pdata)
++	if (spi->dev.of_node)
++		pdata = ad5755_parse_dt(&spi->dev);
++	else
++		pdata = spi->dev.platform_data;
++
++	if (!pdata) {
++		dev_warn(&spi->dev, "no platform data? using default\n");
+ 		pdata = &ad5755_default_pdata;
++	}
  
--	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
--
-+	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
- 	ret = ms5611_i2c_read_adc(st, temp);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = i2c_smbus_write_byte(st->client, MS5611_START_PRESSURE_CONV);
-+	osr = st->pressure_osr;
-+	ret = i2c_smbus_write_byte(st->client, osr->cmd);
- 	if (ret < 0)
- 		return ret;
- 
--	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
--
-+	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
- 	return ms5611_i2c_read_adc(st, pressure);
- }
- 
-diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
-index 7ec0c64..7600483 100644
---- a/drivers/iio/pressure/ms5611_spi.c
-+++ b/drivers/iio/pressure/ms5611_spi.c
-@@ -56,28 +56,29 @@ static int ms5611_spi_read_adc(struct device *dev, s32 *val)
- static int ms5611_spi_read_adc_temp_and_pressure(struct device *dev,
- 						 s32 *temp, s32 *pressure)
- {
--	u8 cmd;
- 	int ret;
- 	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
-+	const struct ms5611_osr *osr = st->temp_osr;
- 
--	cmd = MS5611_START_TEMP_CONV;
--	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
-+	/*
-+	 * Warning: &osr->cmd MUST be aligned on a word boundary since used as
-+	 * 2nd argument (void*) of spi_write_then_read.
-+	 */
-+	ret = spi_write_then_read(st->client, &osr->cmd, 1, NULL, 0);
- 	if (ret < 0)
- 		return ret;
- 
--	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
--
-+	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
- 	ret = ms5611_spi_read_adc(dev, temp);
- 	if (ret < 0)
- 		return ret;
- 
--	cmd = MS5611_START_PRESSURE_CONV;
--	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
-+	osr = st->pressure_osr;
-+	ret = spi_write_then_read(st->client, &osr->cmd, 1, NULL, 0);
- 	if (ret < 0)
- 		return ret;
- 
--	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
--
-+	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
- 	return ms5611_spi_read_adc(dev, pressure);
- }
- 
+ 	ret = ad5755_init_channels(indio_dev, pdata);
+ 	if (ret)
 -- 
-2.1.4
+2.7.2
+
