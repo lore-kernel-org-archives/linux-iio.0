@@ -1,155 +1,152 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Geert Uytterhoeven <geert@linux-m68k.org>, Irina Tirdea
+	<irina.tirdea@intel.com>, Cristina Moraru <cristina.moraru09@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>, Julia Lawall <Julia.Lawall@lip6.fr>,
+	Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v1 5/6] iio:magnetometer:ak8975: mounting matrix support
+Date: Wed, 2 Mar 2016 12:10:27 +0100
+Message-ID: <9724fb59b280b973dc71b89b8cd47fe04de6a3ea.1456916271.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1456916271.git.gregor.boirie@parrot.com>
+References: <cover.1456916271.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <1457046598-15367-1-git-send-email-peda@lysator.liu.se>
-References: <CAEnQRZCKJuYTxckGzcFvyTfvonwBqQW37D7Y5RqyeBbd2iPkKA@mail.gmail.com>
-	<1457046598-15367-1-git-send-email-peda@lysator.liu.se>
-Date: Fri, 4 Mar 2016 12:20:16 +0200
-Message-ID: <CAEnQRZCTbcHqztwtyPH5phQMQUb48vSrf4KmQY68hKPBJr3OPQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/9] iio: Fix ABBA deadlock in inv-mpu6050
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Peter Rosin <peda@lysator.liu.se>
-Cc: Daniel Baluta <daniel.baluta@intel.com>, Peter Rosin <peda@axentia.se>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>,
-	Ge Gao <GGao@invensense.com>, Jonathan Cameron <jic23@kernel.org>, linux-i2c@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Mar 4, 2016 at 1:09 AM, Peter Rosin <peda@lysator.liu.se> wrote:
-> From: Peter Rosin <peda@axentia.se>
->
-> Hi Daniel,
->
-> Daniel Baluta wrote:
->>On Mon, Feb 22, 2016 at 1:17 AM, Wolfram Sang wrote:
->>> On Thu, Feb 18, 2016 at 05:53:05PM +0200, Daniel Baluta wrote:
->>>> Sending this as an RFC because I don't know if style fixes are appropriate
->>>> for this driver and also not sure if deadlock fix is the best solution.
->
-> *snip*
->
->>> We recently had a bigger patch series fixing locking problems related to
->>> muxes. I sadly didn't have the time to review it. Can you have a look if
->>> it helps your case?
->>>
->>> http://thread.gmane.org/gmane.linux.drivers.i2c/26169
->>
->> Tested this and the deadlock is still there :(.
->
-> I assume that when you tested v3 of my series, you did nothing
-> to actually make use of the new stuff available in the mux-core?
-> If you didn't do anything to make use of the new stuff, the
-> driver should behave as before.
+Expose a rotation matrix to indicate userspace the chip placement with
+respect to the overall hardware system. This is needed to adjust
+coordinates sampled from a magnetometer chip when its position deviates
+from the main hardware system.
 
-You are right. I used v3 as it is.
->
-> So, please try this patch on top of my recently posted v4 of the
-> "i2c mux cleanup and locking update" series [1]. I have not tested
-> this patch at all, but I have the feeling it could do the trick...
+Final coordinates computation is delegated to userspace since:
+* computation may involve floating point arithmetics ;
+* it allows an application to combine adjustments with arbitrary
+  transformations.
 
-This patch fixes the problem! :P
+This 3 dimentional space rotation matrix is expressed as 3x3 array of
+strings to support floating point numbers. It may be retrieved from a
+"in_magn_matrix" sysfs attribute file. It is declared into ak8975 DTS
+entry as a "matrix" property.
 
-> Cheers,
-> Peter
->
-> [1] https://marc.info/?l=linux-iio&m=145704469628330&w=3
->
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 642f22013d17..02b56e631973 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -79,35 +79,6 @@ int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 d)
->         return i2c_smbus_write_i2c_block_data(st->client, reg, 1, &d);
->  }
->
-> -/*
-> - * The i2c read/write needs to happen in unlocked mode. As the parent
-> - * adapter is common. If we use locked versions, it will fail as
-> - * the mux adapter will lock the parent i2c adapter, while calling
-> - * select/deselect functions.
-> - */
-> -static int inv_mpu6050_write_reg_unlocked(struct inv_mpu6050_state *st,
-> -                                         u8 reg, u8 d)
-> -{
-> -       int ret;
-> -       u8 buf[2];
-> -       struct i2c_msg msg[1] = {
-> -               {
-> -                       .addr = st->client->addr,
-> -                       .flags = 0,
-> -                       .len = sizeof(buf),
-> -                       .buf = buf,
-> -               }
-> -       };
-> -
-> -       buf[0] = reg;
-> -       buf[1] = d;
-> -       ret = __i2c_transfer(st->client->adapter, msg, 1);
-> -       if (ret != 1)
-> -               return ret;
-> -
-> -       return 0;
-> -}
-> -
->  static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
->  {
->         struct iio_dev *indio_dev = i2c_mux_priv(muxc);
-> @@ -117,8 +88,7 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
->         /* Use the same mutex which was used everywhere to protect power-op */
->         mutex_lock(&indio_dev->mlock);
->         if (!st->powerup_count) {
-> -               ret = inv_mpu6050_write_reg_unlocked(st, st->reg->pwr_mgmt_1,
-> -                                                    0);
-> +               ret = inv_mpu6050_write_reg(st, st->reg->pwr_mgmt_1, 0);
->                 if (ret)
->                         goto write_error;
->
-> @@ -126,9 +96,9 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
->         }
->         if (!ret) {
->                 st->powerup_count++;
-> -               ret = inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
-> -                                                    st->client->irq |
-> -                                                    INV_MPU6050_BIT_BYPASS_EN);
-> +               ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
-> +                                           st->client->irq |
-> +                                           INV_MPU6050_BIT_BYPASS_EN);
->         }
->  write_error:
->         mutex_unlock(&indio_dev->mlock);
-> @@ -143,12 +113,11 @@ static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
->
->         mutex_lock(&indio_dev->mlock);
->         /* It doesn't really mattter, if any of the calls fails */
-> -       inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
-> -                                      st->client->irq);
-> +       inv_mpu6050_write_reg(st, st->reg->int_pin_cfg, st->client->irq);
->         st->powerup_count--;
->         if (!st->powerup_count)
-> -               inv_mpu6050_write_reg_unlocked(st, st->reg->pwr_mgmt_1,
-> -                                              INV_MPU6050_BIT_SLEEP);
-> +               inv_mpu6050_write_reg(st, st->reg->pwr_mgmt_1,
-> +                                     INV_MPU6050_BIT_SLEEP);
->         mutex_unlock(&indio_dev->mlock);
->
->         return 0;
-> @@ -839,8 +808,8 @@ static int inv_mpu_probe(struct i2c_client *client,
->                 goto out_remove_trigger;
->         }
->
-> -       st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
-> -                                      0, 0, 0,
-> +       st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0,
-> +                                      I2C_CONTROLLED_MUX, 0, 0, 0,
->                                        inv_mpu6050_select_bypass,
->                                        inv_mpu6050_deselect_bypass);
->         if (IS_ERR(st->muxc)) {
-> --
-> 2.1.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ .../bindings/iio/magnetometer/ak8975.txt           | 10 +++++
+ drivers/iio/magnetometer/ak8975.c                  | 46 +++++++++++++++++++++-
+ 2 files changed, 55 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+index 34a3206..f936f86 100644
+--- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
++++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+@@ -9,6 +9,7 @@ Optional properties:
+ 
+   - gpios : should be device tree identifier of the magnetometer DRDY pin
+   - vdd-supply: an optional regulator that needs to be on to provide VDD
++  - matrix: an optional 3x3 mounting rotation matrix
+ 
+ Example:
+ 
+@@ -17,4 +18,13 @@ ak8975@0c {
+         reg = <0x0c>;
+         gpios = <&gpj0 7 0>;
+         vdd-supply = <&ldo_3v3_gnss>;
++        matrix = "-0.984807753012208",  /* x0 */
++                 "0",                   /* y0 */
++                 "-0.173648177666930",  /* z0 */
++                 "0",                   /* x1 */
++                 "-1",                  /* y1 */
++                 "0",                   /* z1 */
++                 "-0.173648177666930",  /* x2 */
++                 "0",                   /* y2 */
++                 "0.984807753012208";   /* z2 */
+ };
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 141954a..89a8ece 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -370,6 +370,7 @@ struct ak8975_data {
+ 	wait_queue_head_t	data_ready_queue;
+ 	unsigned long		flags;
+ 	u8			cntl_cache;
++	const char		*matrix[9];
+ };
+ 
+ /*
+@@ -698,6 +699,28 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static ssize_t ak8975_show_matrix(struct device *dev,
++				  struct device_attribute *attr,
++				  char *buf)
++{
++	const struct ak8975_data *data = iio_priv(dev_to_iio_dev(dev));
++	const char * const *m = data->matrix;
++
++	return sprintf(buf, "%s, %s, %s; %s, %s, %s; %s, %s, %s\n",
++		       m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
++}
++
++static IIO_DEVICE_ATTR(in_magn_matrix, S_IRUGO, ak8975_show_matrix, NULL, -1);
++
++static struct attribute *ak8975_attrs[] = {
++	&iio_dev_attr_in_magn_matrix.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group ak8975_attrs_group = {
++	.attrs = ak8975_attrs
++};
++
+ #define AK8975_CHANNEL(axis, index)					\
+ 	{								\
+ 		.type = IIO_MAGN,					\
+@@ -717,6 +740,12 @@ static const struct iio_info ak8975_info = {
+ 	.driver_module = THIS_MODULE,
+ };
+ 
++static const struct iio_info ak8975_matrix_info = {
++	.read_raw = &ak8975_read_raw,
++	.attrs = &ak8975_attrs_group,
++	.driver_module = THIS_MODULE,
++};
++
+ static const struct acpi_device_id ak_acpi_match[] = {
+ 	{"AK8975", AK8975},
+ 	{"AK8963", AK8963},
+@@ -786,6 +815,22 @@ static int ak8975_probe(struct i2c_client *client,
+ 	data->eoc_gpio = eoc_gpio;
+ 	data->eoc_irq = 0;
+ 
++	/*
++	 * Rotation matrix is expressed as an array of 3x3 strings to be able
++	 * to represent floating point numbers.
++	 */
++	err = of_property_read_string_array(client->dev.of_node, "matrix",
++					    data->matrix,
++					    ARRAY_SIZE(data->matrix));
++	if (err == ARRAY_SIZE(data->matrix))
++		indio_dev->info = &ak8975_matrix_info;
++	else if (err == -EINVAL)
++		indio_dev->info = &ak8975_info;
++	else if (err >= 0)
++		return -EINVAL;
++	else
++		return err;
++
+ 	/* id will be NULL when enumerated via ACPI */
+ 	if (id) {
+ 		chipset = (enum asahi_compass_chipset)(id->driver_data);
+@@ -823,7 +868,6 @@ static int ak8975_probe(struct i2c_client *client,
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->channels = ak8975_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+-	indio_dev->info = &ak8975_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->name = name;
+ 	return devm_iio_device_register(&client->dev, indio_dev);
+-- 
+2.1.4
