@@ -1,68 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:38779 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752672AbcCCDSH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 2 Mar 2016 22:18:07 -0500
-From: Matt Ranostay <matt.ranostay@intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, dan.carpenter@oracle.com,
-	Matt Ranostay <matt.ranostay@intel.com>
-Subject: [PATCH] iio: imu: mpu6050: fix possible NULL dereferences
-Date: Wed,  2 Mar 2016 19:18:12 -0800
-Message-Id: <1456975092-17992-1-git-send-email-matt.ranostay@intel.com>
+Received: from mail-pf0-f180.google.com ([209.85.192.180]:36535 "EHLO
+	mail-pf0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755204AbcCBWE7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Mar 2016 17:04:59 -0500
+Received: by mail-pf0-f180.google.com with SMTP id 63so1536380pfe.3
+        for <linux-iio@vger.kernel.org>; Wed, 02 Mar 2016 14:04:58 -0800 (PST)
+Content-Type: text/plain;
+	charset=us-ascii
+Mime-Version: 1.0 (1.0)
+Subject: Re: iio: imu: mpu6050: add mpu6500 register settings
+From: Matt Ranostay <mranostay@gmail.com>
+In-Reply-To: <20160302182144.GU5273@mwanda>
+Date: Wed, 2 Mar 2016 14:04:55 -0800
+Cc: matt.ranostay@intel.com, linux-iio@vger.kernel.org
+Message-Id: <21021227-E4C9-4D25-BD2A-F9A42927B1FD@gmail.com>
+References: <20160302181801.GA12744@mwanda> <20160302182144.GU5273@mwanda>
+To: Dan Carpenter <dan.carpenter@oracle.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix possible null dereferencing of i2c and spi driver data.
+Will fix and submit this afternoon!
 
-Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 3 ++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+Sent from my iPhone
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-index f581256d9d4c..d0c0e20c7122 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-@@ -117,6 +117,7 @@ static int inv_mpu_probe(struct i2c_client *client,
- 	struct inv_mpu6050_state *st;
- 	int result;
- 	const char *name = id ? id->name : NULL;
-+	const int chip_type = id ? id->driver_data : 0;
- 	struct regmap *regmap;
- 
- 	if (!i2c_check_functionality(client->adapter,
-@@ -131,7 +132,7 @@ static int inv_mpu_probe(struct i2c_client *client,
- 	}
- 
- 	result = inv_mpu_core_probe(regmap, client->irq, name,
--				    NULL, id->driver_data);
-+				    NULL, chip_type);
- 	if (result < 0)
- 		return result;
- 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-index dea6c4361de0..7bcb8d839f05 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-@@ -46,6 +46,7 @@ static int inv_mpu_probe(struct spi_device *spi)
- 	struct regmap *regmap;
- 	const struct spi_device_id *id = spi_get_device_id(spi);
- 	const char *name = id ? id->name : NULL;
-+	const int chip_type = id ? id->driver_data : 0;
- 
- 	regmap = devm_regmap_init_spi(spi, &inv_mpu_regmap_config);
- 	if (IS_ERR(regmap)) {
-@@ -55,7 +56,7 @@ static int inv_mpu_probe(struct spi_device *spi)
- 	}
- 
- 	return inv_mpu_core_probe(regmap, spi->irq, name,
--				  inv_mpu_i2c_disable, id->driver_data);
-+				  inv_mpu_i2c_disable, chip_type);
- }
- 
- static int inv_mpu_remove(struct spi_device *spi)
--- 
-1.9.1
-
+> On Mar 2, 2016, at 10:21, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> 
+> I sent that too quickly.  The i2c version of inv_mpu_probe() has the
+> same issue as well.
+> 
+>    drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c:134 inv_mpu_probe()
+>    error: we previously assumed 'id' could be null (see line 119)
+> 
+> regards,
+> dan carpenter
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
