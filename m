@@ -1,56 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:42203 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751001AbcCAVXe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 1 Mar 2016 16:23:34 -0500
-Date: Tue, 1 Mar 2016 22:23:24 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-	lucas.demarchi@intel.com, srinivas.pandruvada@linux.intel.com,
-	ggao@invensense.com, adi.reus@gmail.com, cmo@melexis.com,
-	mwelling@ieee.org
-Subject: Re: [RFC PATCH 2/9] iio: imu: inv_mpu6050: Fix Yoda conditions
-Message-ID: <20160301212324.GE1488@katana>
-References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
- <1455810794-3188-3-git-send-email-daniel.baluta@intel.com>
+Received: from userp1040.oracle.com ([156.151.31.81]:27543 "EHLO
+	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750898AbcCBSSK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Mar 2016 13:18:10 -0500
+Date: Wed, 2 Mar 2016 21:18:01 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: matt.ranostay@intel.com
+Cc: linux-iio@vger.kernel.org
+Subject: re: iio: imu: mpu6050: add mpu6500 register settings
+Message-ID: <20160302181801.GA12744@mwanda>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="7LkOrbQMr4cezO2T"
-In-Reply-To: <1455810794-3188-3-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hello Matt Ranostay,
 
---7LkOrbQMr4cezO2T
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This is a semi-automatic email about new static checker warnings.
 
+The patch 33da559f861b: "iio: imu: mpu6050: add mpu6500 register 
+settings" from Feb 22, 2016, leads to the following Smatch complaint:
 
-"Yoda conditions" :D Made my day...
+drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c:58 inv_mpu_probe()
+	 error: we previously assumed 'id' could be null (see line 48)
 
+drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+    47		const struct spi_device_id *id = spi_get_device_id(spi);
+    48		const char *name = id ? id->name : NULL;
+                                   ^^
+Existing code assumed id could be NULL.
 
---7LkOrbQMr4cezO2T
-Content-Type: application/pgp-signature; name="signature.asc"
+    49	
+    50		regmap = devm_regmap_init_spi(spi, &inv_mpu_regmap_config);
+    51		if (IS_ERR(regmap)) {
+    52			dev_err(&spi->dev, "Failed to register spi regmap %d\n",
+    53				(int)PTR_ERR(regmap));
+    54			return PTR_ERR(regmap);
+    55		}
+    56	
+    57		return inv_mpu_core_probe(regmap, spi->irq, name,
+    58					  inv_mpu_i2c_disable, id->driver_data);
+                                                               ^^^^^^^^^^^^^^^
+The patch adds an unchecked dereference.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+    59	}
+    60	
 
-iQIcBAEBAgAGBQJW1ghMAAoJEBQN5MwUoCm2YC4P/jwhiZkiy7Vqq22nRWaDxfK1
-7JAGlx7qwLGR19NL7w7TDm2A2hUeoDiKFmwkXsAD/7wZKJUHf5XWDVk0yklefolf
-77ILAgjEa8tOPet19rUlPLtTyOIr5PPPoKHTGQhJLHLOc9IZfVx/MkWEWq6/uSWd
-MQnzD7Kim++xIXBS3h8dXQA2lC+bucw31Xj7qsnxdjC2l43osbpkUJfB0lh4vWGF
-G3uJ/AQbx6RVoc9Y3ud1F12rjpQk6OCWGV1lHogq9O0ggocLAqdZwjO1JFdotc5G
-Ep7XRqMlfjPT9/b8GEBKftvlJUnoUF1Q0u5yISk1mityI81zI/v+9a/QCS9+8fgB
-r8WPJQ16KUDhWWuSZa3XULpZ5q/8WNGYOZrWmJFiCqMcWZNsvycBtJ+tmXEqRTSZ
-1psz99tjJ/m25L3CcDlH6A4IGPXiQ9Ygb1NOOUTFPRw93sF+ubr/UBaQrUdZbX93
-1tcln8UmRBjKFOmyFPuN+VZ4pra/g1S2rIXWk6qYVLR0T1F6eSZ95FZLvGBQF+V+
-xDLqskjV5W3G+oy3GrgP9cU1TjeY+BqMyjiI48+xuNIsfm9qXeKtYPucR4ij97Qq
-bYPUn2FDlDXSaxCqORsKMEtiPmH/4xta/JWmnbFt1eyUhsfygi+1URh92HN9E8wt
-S94tVYGRxMk3RLoC4PZQ
-=RNmk
------END PGP SIGNATURE-----
-
---7LkOrbQMr4cezO2T--
+regards,
+dan carpenter
