@@ -1,78 +1,49 @@
-Return-Path: <ludovic.desroches@atmel.com>
-From: Ludovic Desroches <ludovic.desroches@atmel.com>
-To: <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <nicolas.ferre@atmel.com>, Ludovic
- Desroches <ludovic.desroches@atmel.com>
-Subject: [PATCH 2/3] iio:adc:at91-sama5d2: fix identation
-Date: Thu, 3 Mar 2016 17:09:14 +0100
-Message-ID: <1457021355-23898-3-git-send-email-ludovic.desroches@atmel.com>
-In-Reply-To: <1457021355-23898-1-git-send-email-ludovic.desroches@atmel.com>
-References: <1457021355-23898-1-git-send-email-ludovic.desroches@atmel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.aswsp.com ([193.34.35.150]:30858 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752178AbcCBLJ4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 2 Mar 2016 06:09:56 -0500
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>,
+	Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v1 2/6] iio:magnetometer:ak8975: remove unused field
+Date: Wed, 2 Mar 2016 12:10:24 +0100
+Message-ID: <250cf66b368fb7d28ea7b02bb3e79ae580577e1c.1456916271.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1456916271.git.gregor.boirie@parrot.com>
+References: <cover.1456916271.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Remove some extra tabs.
+Remove unused struct ak8975_data attrs field.
 
-Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 33bacec..5bc038f 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -92,13 +92,13 @@
- /* Last Converted Data Register */
- #define AT91_SAMA5D2_LCDR	0x20
- /* Interrupt Enable Register */
--#define AT91_SAMA5D2_IER		0x24
-+#define AT91_SAMA5D2_IER	0x24
- /* Interrupt Disable Register */
--#define AT91_SAMA5D2_IDR		0x28
-+#define AT91_SAMA5D2_IDR	0x28
- /* Interrupt Mask Register */
--#define AT91_SAMA5D2_IMR		0x2c
-+#define AT91_SAMA5D2_IMR	0x2c
- /* Interrupt Status Register */
--#define AT91_SAMA5D2_ISR		0x30
-+#define AT91_SAMA5D2_ISR	0x30
- /* Last Channel Trigger Mode Register */
- #define AT91_SAMA5D2_LCTMR	0x34
- /* Last Channel Compare Window Register */
-@@ -106,17 +106,17 @@
- /* Overrun Status Register */
- #define AT91_SAMA5D2_OVER	0x3c
- /* Extended Mode Register */
--#define AT91_SAMA5D2_EMR		0x40
-+#define AT91_SAMA5D2_EMR	0x40
- /* Compare Window Register */
--#define AT91_SAMA5D2_CWR		0x44
-+#define AT91_SAMA5D2_CWR	0x44
- /* Channel Gain Register */
--#define AT91_SAMA5D2_CGR		0x48
-+#define AT91_SAMA5D2_CGR	0x48
- /* Channel Offset Register */
--#define AT91_SAMA5D2_COR		0x4c
-+#define AT91_SAMA5D2_COR	0x4c
- /* Channel Data Register 0 */
- #define AT91_SAMA5D2_CDR0	0x50
- /* Analog Control Register */
--#define AT91_SAMA5D2_ACR		0x94
-+#define AT91_SAMA5D2_ACR	0x94
- /* Touchscreen Mode Register */
- #define AT91_SAMA5D2_TSMR	0xb0
- /* Touchscreen X Position Register */
-@@ -130,7 +130,7 @@
- /* Correction Select Register */
- #define AT91_SAMA5D2_COSR	0xd0
- /* Correction Value Register */
--#define AT91_SAMA5D2_CVR		0xd4
-+#define AT91_SAMA5D2_CVR	0xd4
- /* Channel Error Correction Register */
- #define AT91_SAMA5D2_CECR	0xd8
- /* Write Protection Mode Register */
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 11059b2..896b13e3 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -361,7 +361,6 @@ static const struct ak_def ak_def_array[AK_MAX_TYPE] = {
+ struct ak8975_data {
+ 	struct i2c_client	*client;
+ 	const struct ak_def	*def;
+-	struct attribute_group	attrs;
+ 	struct mutex		lock;
+ 	u8			asa[3];
+ 	long			raw_to_gauss[3];
 -- 
-2.5.0
+2.1.4
+
