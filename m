@@ -1,49 +1,27 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail01.prevas.se ([62.95.78.3]:26420 "EHLO mail01.prevas.se"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753331AbcCAL4Z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 1 Mar 2016 06:56:25 -0500
-From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-To: <linux-iio@vger.kernel.org>
-CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
-	<devicetree@vger.kernel.org>
-Subject: [PATCH v4 1/4] iio: ad5755: add support for dt bindings
-Date: Tue, 1 Mar 2016 12:56:13 +0100
-Message-ID: <1456833376-29758-1-git-send-email-sean.nyekjaer@prevas.dk>
+Received: from aserp1040.oracle.com ([141.146.126.69]:23558 "EHLO
+	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756262AbcCBSVx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Mar 2016 13:21:53 -0500
+Date: Wed, 2 Mar 2016 21:21:44 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: matt.ranostay@intel.com
+Cc: linux-iio@vger.kernel.org
+Subject: Re: iio: imu: mpu6050: add mpu6500 register settings
+Message-ID: <20160302182144.GU5273@mwanda>
+References: <20160302181801.GA12744@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20160302181801.GA12744@mwanda>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Still missing a way to provide default modes and settings
-for the driver from dt, but I see this as a start.
+I sent that too quickly.  The i2c version of inv_mpu_probe() has the
+same issue as well.
 
-Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
----
- drivers/iio/dac/ad5755.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+	drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c:134 inv_mpu_probe()
+	error: we previously assumed 'id' could be null (see line 119)
 
-diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-index bfb350a..e1b6e78 100644
---- a/drivers/iio/dac/ad5755.c
-+++ b/drivers/iio/dac/ad5755.c
-@@ -607,6 +607,16 @@ static const struct spi_device_id ad5755_id[] = {
- };
- MODULE_DEVICE_TABLE(spi, ad5755_id);
- 
-+static const struct of_device_id ad5755_of_match[] = {
-+	{ .compatible = "adi,ad5755" },
-+	{ .compatible = "adi,ad5755-1" },
-+	{ .compatible = "adi,ad5757" },
-+	{ .compatible = "adi,ad5735" },
-+	{ .compatible = "adi,ad5737" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ad5755_of_match);
-+
- static struct spi_driver ad5755_driver = {
- 	.driver = {
- 		.name = "ad5755",
--- 
-2.7.2
+regards,
+dan carpenter
 
