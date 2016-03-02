@@ -1,91 +1,150 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [RFC PATCH 1/2] iio: core: implement
- iio_{claim|release}_direct_mode()
-To: Alison Schofield <amsfield22@gmail.com>, outreachy-kernel@googlegroups.com
-References: <cover.1456794364.git.amsfield22@gmail.com>
- <9a2950402af7277a4928a10eade4cc8b1187d8c8.1456794364.git.amsfield22@gmail.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
- devel@driverdev.osuosl.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56D6EA82.8090601@metafoo.de>
-Date: Wed, 2 Mar 2016 14:28:34 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.aswsp.com ([193.34.35.150]:30864 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751350AbcCBOYN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 2 Mar 2016 09:24:13 -0500
+Message-ID: <56D6F7B7.9070701@parrot.com>
+Date: Wed, 2 Mar 2016 15:24:55 +0100
+From: Gregor Boirie <gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <9a2950402af7277a4928a10eade4cc8b1187d8c8.1456794364.git.amsfield22@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+CC: <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>
+Subject: Re: [PATCH v1 6/6] iio:magnetometer:ak8975: triggered buffer support
+References: <cover.1456916271.git.gregor.boirie@parrot.com> <a41adb99826589314dbbb11f72382a72ef6a2074.1456916271.git.gregor.boirie@parrot.com> <alpine.DEB.2.02.1603021218160.30181@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.02.1603021218160.30181@pmeerw.net>
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 03/01/2016 08:02 PM, Alison Schofield wrote:
-> It is often the case that the driver wants to be sure a device stays
-> in direct mode while it is executing a task or series of tasks.  To
-> accomplish this today, the driver performs this sequence: 1) take the
-> device state lock, 2)verify it is not in a buffered mode, 3) execute
-> some tasks, and 4) release that lock.
-> 
-> This patch introduces a pair of helper functions that simplify these
-> steps and make it more semantically expressive.
-> 
-> iio_claim_direct_mode()
->         If the device is not in any buffered mode it is guaranteed
->         to stay that way until iio_release_direct_mode() is called.
-> 
-> iio_release_direct_mode()
->         Release the claim. Device is no longer guaranteed to stay
->         in direct mode.
-> 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
 
-Looks basically good.
+On 03/02/2016 12:36 PM, Peter Meerwald-Stadler wrote:
+> On Wed, 2 Mar 2016, Gregor Boirie wrote:
+>
+>> This will be used together with an external trigger (e.g hrtimer based
+>> software trigger).
+>> Samples of current acquisition round are cached in RAM in order to allow
+>> simultaneous userspace access to buffer content and synchronous
+>> "read_raw" API.
+> comments below
+>   
+>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+>> ---
+>>   drivers/iio/magnetometer/Kconfig  |   2 +
+>>   drivers/iio/magnetometer/ak8975.c | 206 ++++++++++++++++++++++++++++++++------
+>>   2 files changed, 178 insertions(+), 30 deletions(-)
+[snip...]
+>> +
+>> +	/* Clamp to valid range. */
+>> +	*axis = clamp_t(s16, le16_to_cpu((s16)ret), -def->range, def->range);
+> this looks wrong; i2c_smbus_read_word_data() reads two bytes (on chip
+> in little endian) and converts them to a word (in cpu endianness), so
+> le16_to_cpu() in not necessary
+>
+> so NAK on patch 3/6
+oops... silly mistake !
+>> +	return 0;
+>> +}
+>> +
+>> +/*
+>> + * Retrieve raw flux value for one of the x, y, or z axis.
+>> + */
+>> +static int ak8975_read_axis(struct iio_dev *indio_dev, struct ak8975_data *data,
+>> +			    int index, int *val)
+>> +{
+>> +	int ret;
+>> +	s16 *axis = &data->buff[index];
+>> +
+>> +	mutex_lock(&data->lock);
+>> +
+>> +	if (!iio_buffer_enabled(indio_dev)) {
+> most drivers return -EBUSY when buffering is enabled and a single read is
+> performed
+ From a previous discussion here:
+http://www.spinics.net/lists/linux-iio/msg22948.html
 
-> ---
->  drivers/iio/industrialio-core.c | 39 +++++++++++++++++++++++++++++++++++++++
->  include/linux/iio/iio.h         |  2 ++
->  2 files changed, 41 insertions(+)
-> 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 70cb7eb..f6f0c89 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -25,6 +25,7 @@
->  #include <linux/slab.h>
->  #include <linux/anon_inodes.h>
->  #include <linux/debugfs.h>
-> +#include <linux/mutex.h>
->  #include <linux/iio/iio.h>
->  #include "iio_core.h"
->  #include "iio_core_trigger.h"
-> @@ -1375,6 +1376,44 @@ void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev)
->  }
->  EXPORT_SYMBOL_GPL(devm_iio_device_unregister);
->  
-> +/**
-> + * iio_claim_direct_mode - Keep device in direct mode
-> + * @indio_dev:	the iio_dev associated with the device
-> + *
-> + * If the device is in direct mode it is guaranteed to
-> + * stay that way until iio_release_direct_mode() is called.
-> + *
-> + * Use with iio_release_direct_mode()
-> + *
-> + * Returns: 0 on success, -EINVAL on failure
-> + */
-> +int iio_claim_direct_mode(struct iio_dev *indio_dev)
+ From my understanding I have 2 options here:
+1) simply return EBUSY when buffering is enabled as you suggest ;
+2) lock for exclusive bus access and serialize accesses between trigger 
+handler
+   and read_raw.
 
-To be consistent with the reset of the API I'd use the iio_device_... prefix
-here, same for the release function.
+I can see no reason to prevent from concurrent access. I would prefere 
+getting
+rid of this overly complex "caching" stuff and implement point 2).
+Unless somebody states otherwise, I will follow your guidance here.
 
+[snip...]
+>> -		*val2 = data->raw_to_gauss[chan->address];
+>> +		*val2 = data->raw_to_gauss[chan->scan_index];
+> read_raw() is about reading without buffering, but scan_index relates to
+> buffering -- probably a reason to keep .address
+ok.
+
+[snip...]
+> +static int ak8975_fetch_all(const struct i2c_client *client,
+> +			    struct ak8975_data *data)
 > +{
-> +	mutex_lock(&indio_dev->mlock);
-> +
-> +	if (iio_buffer_enabled(indio_dev)) {
-> +		mutex_unlock(&indio_dev->mlock);
-> +		return -EINVAL;
+> +	int ret;
+> +	s16 x, y, z;
+> I'd rather not use the per-device cache/buffer; if buffer mode is enable,
+> read_raw() simply returns -EBUSY
+> why not use have a local variable here and save the copying?
+>
+>> +
+>> +	ret = ak8975_start_read_axis(data, client);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	/*
+>> +	 * For each axis, read the flux value from the appropriate register
+>> +	 * (the register is specified in the iio device attributes).
+>> +	 * Use a temporary storage to preserve 3D coordinate consistency.
+>> +	 */
+> it is rather inefficient to set up three separate i2c transactions; can't
+> the data be transferred in one go?
+Agreed.
+>
+>> +	ret = ak8975_fetch_axis(client, data->def, 0, &x);
+>> +	if (ret)
+> fetch axis does
+>
+>> +		return ret;
+>> +	ret = ak8975_fetch_axis(client, data->def, 1, &y);
+>> +	if (ret)
+>> +		return ret;
+>> +	ret = ak8975_fetch_axis(client, data->def, 2, &z);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	data->buff[0] = x;
+>> +	data->buff[1] = y;
+>> +	data->buff[2] = z;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int ak8975_buffer_postenable(struct iio_dev *indio_dev)
+>> +{
+>> +	struct ak8975_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	/*
+>> +	 * Update channels so that a client getting samples through read_raw
+>> +	 * retrieves valid data when buffering has just been enabled but first
+>> +	 * sampling round is not yet completed.
+>> +	 */
+> this function is not needed if -EBUSY is returned in read_raw when
+> buffering is enabled
+>
+>
+see above.
+[snip...]
 
--EINVAL doesn't make much sense here, -EBUSY is better.
-
-> +	}
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_claim_direct_mode);
-> 
+Thanks.
