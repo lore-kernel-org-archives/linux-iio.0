@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:60040 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:42497 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758440AbcCCWht (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:49 -0500
+	with ESMTP id S1758596AbcCCWh4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:56 -0500
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -27,9 +27,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-media@vger.kernel.org, devicetree@vger.kernel.org,
 	Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v4 09/18] [media] m88ds3103: convert to use an explicit i2c mux core
-Date: Thu,  3 Mar 2016 23:27:21 +0100
-Message-Id: <1457044050-15230-10-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v4 16/18] i2c: allow adapter drivers to override the adapter locking
+Date: Thu,  3 Mar 2016 23:27:28 +0100
+Message-Id: <1457044050-15230-17-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
 References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -37,82 +37,209 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Peter Rosin <peda@axentia.se>
 
-Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select op to be in terms of the i2c mux core instead
-of the child adapter.
+Add i2c_lock_bus() and i2c_unlock_bus(), which call the new lock_bus and
+unlock_bus ops in the adapter. These funcs/ops take an additional flags
+argument that indicates for what purpose the adapter is locked.
+
+There are two flags, I2C_LOCK_ADAPTER and I2C_LOCK_SEGMENT, but they are
+both implemented the same. For now. Locking the adapter means that the
+whole bus is locked, locking the segment means that only the current bus
+segment is locked (i.e. i2c traffic on the parent side of mux is still
+allowed even if the child side of the mux is locked.
+
+Also support a trylock_bus op (but no function to call it, as it is not
+expected to be needed outside of the i2c core).
+
+Implement i2c_lock_adapter/i2c_unlock_adapter in terms of the new locking
+scheme (i.e. lock with the I2C_LOCK_ADAPTER flag).
+
+Annotate some of the locking with explicit I2C_LOCK_SEGMENT flags.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/media/dvb-frontends/m88ds3103.c      | 18 +++++++++---------
- drivers/media/dvb-frontends/m88ds3103_priv.h |  2 +-
- 2 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/i2c/i2c-core.c | 40 ++++++++++++++++++++++------------------
+ include/linux/i2c.h    | 28 ++++++++++++++++++++++++++--
+ 2 files changed, 48 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/media/dvb-frontends/m88ds3103.c b/drivers/media/dvb-frontends/m88ds3103.c
-index ce73a5ec6036..845d206eb70f 100644
---- a/drivers/media/dvb-frontends/m88ds3103.c
-+++ b/drivers/media/dvb-frontends/m88ds3103.c
-@@ -1251,9 +1251,9 @@ static void m88ds3103_release(struct dvb_frontend *fe)
- 	i2c_unregister_device(client);
+diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
+index ffe715d346d8..946afd8e9f78 100644
+--- a/drivers/i2c/i2c-core.c
++++ b/drivers/i2c/i2c-core.c
+@@ -959,10 +959,10 @@ static int i2c_check_addr_busy(struct i2c_adapter *adapter, int addr)
  }
  
--static int m88ds3103_select(struct i2c_adapter *adap, void *mux_priv, u32 chan)
-+static int m88ds3103_select(struct i2c_mux_core *muxc, u32 chan)
+ /**
+- * i2c_lock_adapter - Get exclusive access to an I2C bus segment
++ * i2c_adapter_lock_bus - Get exclusive access to an I2C bus segment
+  * @adapter: Target I2C bus segment
+  */
+-void i2c_lock_adapter(struct i2c_adapter *adapter)
++static void i2c_adapter_lock_bus(struct i2c_adapter *adapter, int flags)
  {
--	struct m88ds3103_dev *dev = mux_priv;
-+	struct m88ds3103_dev *dev = i2c_mux_priv(muxc);
- 	struct i2c_client *client = dev->client;
- 	int ret;
- 	struct i2c_msg msg = {
-@@ -1374,7 +1374,7 @@ static struct i2c_adapter *m88ds3103_get_i2c_adapter(struct i2c_client *client)
+ 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
  
- 	dev_dbg(&client->dev, "\n");
+@@ -971,27 +971,26 @@ void i2c_lock_adapter(struct i2c_adapter *adapter)
+ 	else
+ 		rt_mutex_lock(&adapter->bus_lock);
+ }
+-EXPORT_SYMBOL_GPL(i2c_lock_adapter);
  
--	return dev->i2c_adapter;
-+	return dev->muxc->adapter[0];
+ /**
+- * i2c_trylock_adapter - Try to get exclusive access to an I2C bus segment
++ * i2c_adapter_trylock_bus - Try to get exclusive access to an I2C bus segment
+  * @adapter: Target I2C bus segment
+  */
+-static int i2c_trylock_adapter(struct i2c_adapter *adapter)
++static int i2c_adapter_trylock_bus(struct i2c_adapter *adapter, int flags)
+ {
+ 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
+ 
+ 	if (parent)
+-		return i2c_trylock_adapter(parent);
++		return parent->trylock_bus(parent, flags);
+ 	else
+ 		return rt_mutex_trylock(&adapter->bus_lock);
  }
  
- static int m88ds3103_probe(struct i2c_client *client,
-@@ -1467,13 +1467,13 @@ static int m88ds3103_probe(struct i2c_client *client,
- 		goto err_kfree;
+ /**
+- * i2c_unlock_adapter - Release exclusive access to an I2C bus segment
++ * i2c_adapter_unlock_bus - Release exclusive access to an I2C bus segment
+  * @adapter: Target I2C bus segment
+  */
+-void i2c_unlock_adapter(struct i2c_adapter *adapter)
++static void i2c_adapter_unlock_bus(struct i2c_adapter *adapter, int flags)
+ {
+ 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
  
- 	/* create mux i2c adapter for tuner */
--	dev->i2c_adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
--					       dev, 0, 0, 0, m88ds3103_select,
--					       NULL);
--	if (dev->i2c_adapter == NULL) {
--		ret = -ENOMEM;
-+	dev->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
-+					0, 0, 0, m88ds3103_select, NULL);
-+	if (IS_ERR(dev->muxc)) {
-+		ret = PTR_ERR(dev->muxc);
- 		goto err_kfree;
+@@ -1000,7 +999,6 @@ void i2c_unlock_adapter(struct i2c_adapter *adapter)
+ 	else
+ 		rt_mutex_unlock(&adapter->bus_lock);
+ }
+-EXPORT_SYMBOL_GPL(i2c_unlock_adapter);
+ 
+ static void i2c_dev_set_name(struct i2c_adapter *adap,
+ 			     struct i2c_client *client)
+@@ -1546,6 +1544,12 @@ static int i2c_register_adapter(struct i2c_adapter *adap)
+ 		return -EINVAL;
  	}
-+	dev->muxc->priv = dev;
  
- 	/* create dvb_frontend */
- 	memcpy(&dev->fe.ops, &m88ds3103_ops, sizeof(struct dvb_frontend_ops));
-@@ -1502,7 +1502,7 @@ static int m88ds3103_remove(struct i2c_client *client)
++	if (!adap->lock_bus) {
++		adap->lock_bus = i2c_adapter_lock_bus;
++		adap->trylock_bus = i2c_adapter_trylock_bus;
++		adap->unlock_bus = i2c_adapter_unlock_bus;
++	}
++
+ 	rt_mutex_init(&adap->bus_lock);
+ 	mutex_init(&adap->userspace_clients_lock);
+ 	INIT_LIST_HEAD(&adap->userspace_clients);
+@@ -2310,16 +2314,16 @@ int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
+ #endif
  
- 	dev_dbg(&client->dev, "\n");
+ 		if (in_atomic() || irqs_disabled()) {
+-			ret = i2c_trylock_adapter(adap);
++			ret = adap->trylock_bus(adap, I2C_LOCK_SEGMENT);
+ 			if (!ret)
+ 				/* I2C activity is ongoing. */
+ 				return -EAGAIN;
+ 		} else {
+-			i2c_lock_adapter(adap);
++			i2c_lock_bus(adap, I2C_LOCK_SEGMENT);
+ 		}
  
--	i2c_del_mux_adapter(dev->i2c_adapter);
-+	i2c_mux_del_adapters(dev->muxc);
+ 		ret = __i2c_transfer(adap, msgs, num);
+-		i2c_unlock_adapter(adap);
++		i2c_unlock_bus(adap, I2C_LOCK_SEGMENT);
  
- 	kfree(dev);
- 	return 0;
-diff --git a/drivers/media/dvb-frontends/m88ds3103_priv.h b/drivers/media/dvb-frontends/m88ds3103_priv.h
-index eee8c22c51ec..c5b4e177c6ea 100644
---- a/drivers/media/dvb-frontends/m88ds3103_priv.h
-+++ b/drivers/media/dvb-frontends/m88ds3103_priv.h
-@@ -42,7 +42,7 @@ struct m88ds3103_dev {
- 	enum fe_status fe_status;
- 	u32 dvbv3_ber; /* for old DVBv3 API read_ber */
- 	bool warm; /* FW running */
--	struct i2c_adapter *i2c_adapter;
-+	struct i2c_mux_core *muxc;
- 	/* auto detect chip id to do different config */
- 	u8 chip_id;
- 	/* main mclk is calculated for M88RS6000 dynamically */
+ 		return ret;
+ 	} else {
+@@ -3094,7 +3098,7 @@ s32 i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short flags,
+ 	flags &= I2C_M_TEN | I2C_CLIENT_PEC | I2C_CLIENT_SCCB;
+ 
+ 	if (adapter->algo->smbus_xfer) {
+-		i2c_lock_adapter(adapter);
++		i2c_lock_bus(adapter, I2C_LOCK_SEGMENT);
+ 
+ 		/* Retry automatically on arbitration loss */
+ 		orig_jiffies = jiffies;
+@@ -3108,7 +3112,7 @@ s32 i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short flags,
+ 				       orig_jiffies + adapter->timeout))
+ 				break;
+ 		}
+-		i2c_unlock_adapter(adapter);
++		i2c_unlock_bus(adapter, I2C_LOCK_SEGMENT);
+ 
+ 		if (res != -EOPNOTSUPP || !adapter->algo->master_xfer)
+ 			goto trace;
+@@ -3219,9 +3223,9 @@ int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb)
+ 
+ 	client->slave_cb = slave_cb;
+ 
+-	i2c_lock_adapter(client->adapter);
++	i2c_lock_bus(client->adapter, I2C_LOCK_SEGMENT);
+ 	ret = client->adapter->algo->reg_slave(client);
+-	i2c_unlock_adapter(client->adapter);
++	i2c_unlock_bus(client->adapter, I2C_LOCK_SEGMENT);
+ 
+ 	if (ret) {
+ 		client->slave_cb = NULL;
+@@ -3241,9 +3245,9 @@ int i2c_slave_unregister(struct i2c_client *client)
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	i2c_lock_adapter(client->adapter);
++	i2c_lock_bus(client->adapter, I2C_LOCK_SEGMENT);
+ 	ret = client->adapter->algo->unreg_slave(client);
+-	i2c_unlock_adapter(client->adapter);
++	i2c_unlock_bus(client->adapter, I2C_LOCK_SEGMENT);
+ 
+ 	if (ret == 0)
+ 		client->slave_cb = NULL;
+diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+index 200cf13b00f6..c5f79fec1bfb 100644
+--- a/include/linux/i2c.h
++++ b/include/linux/i2c.h
+@@ -538,6 +538,10 @@ struct i2c_adapter {
+ 
+ 	struct i2c_bus_recovery_info *bus_recovery_info;
+ 	const struct i2c_adapter_quirks *quirks;
++
++	void (*lock_bus)(struct i2c_adapter *, int flags);
++	int (*trylock_bus)(struct i2c_adapter *, int flags);
++	void (*unlock_bus)(struct i2c_adapter *, int flags);
+ };
+ #define to_i2c_adapter(d) container_of(d, struct i2c_adapter, dev)
+ 
+@@ -567,8 +571,28 @@ i2c_parent_is_i2c_adapter(const struct i2c_adapter *adapter)
+ int i2c_for_each_dev(void *data, int (*fn)(struct device *, void *));
+ 
+ /* Adapter locking functions, exported for shared pin cases */
+-void i2c_lock_adapter(struct i2c_adapter *);
+-void i2c_unlock_adapter(struct i2c_adapter *);
++#define I2C_LOCK_ADAPTER 0x01
++#define I2C_LOCK_SEGMENT 0x02
++static inline void
++i2c_lock_bus(struct i2c_adapter *adapter, int flags)
++{
++	adapter->lock_bus(adapter, flags);
++}
++static inline void
++i2c_unlock_bus(struct i2c_adapter *adapter, int flags)
++{
++	adapter->unlock_bus(adapter, flags);
++}
++static inline void
++i2c_lock_adapter(struct i2c_adapter *adapter)
++{
++	i2c_lock_bus(adapter, I2C_LOCK_ADAPTER);
++}
++static inline void
++i2c_unlock_adapter(struct i2c_adapter *adapter)
++{
++	i2c_unlock_bus(adapter, I2C_LOCK_ADAPTER);
++}
+ 
+ /*flags for the client struct: */
+ #define I2C_CLIENT_PEC		0x04	/* Use Packet Error Checking */
 -- 
 2.1.4
 
