@@ -1,69 +1,32 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Wed, 2 Mar 2016 18:06:30 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	linux-i2c@vger.kernel.org,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Ge Gao <ggao@invensense.com>, Adriana Reus <adi.reus@gmail.com>,
-	Crt Mori <cmo@melexis.com>, Michael Welling <mwelling@ieee.org>
-Subject: Re: [RFC PATCH 9/9] iio: imu: inv_mpu6050: Fix deadlock between i2c
- adapter lock and mpu lock
-Message-ID: <20160302170630.GA5439@katana>
-References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
- <1455810794-3188-10-git-send-email-daniel.baluta@intel.com>
- <20160301205052.GD1488@katana>
- <CAEnQRZAF-tAjDwJkUNEVQXYqWDt7RsH2bH81UBAMUhsoWEt73g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="GvXjxJ+pjyke8COw"
-In-Reply-To: <CAEnQRZAF-tAjDwJkUNEVQXYqWDt7RsH2bH81UBAMUhsoWEt73g@mail.gmail.com>
+Return-Path: <martink@posteo.de>
+From: Martin Kepplinger <martink@posteo.de>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	christoph.muellner@theobroma-systems.com,
+	mfuzzey@parkeon.com
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: iio: mma8452: power saving features for v4.7
+Date: Thu,  3 Mar 2016 09:24:00 +0100
+Message-Id: <1456993444-21320-1-git-send-email-martink@posteo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
+The accelerometers supported by mma8452 can use significantly less power if
+configured accordingly. Let's make use of this:
 
---GvXjxJ+pjyke8COw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+ * add support for runtime power management
+   (disabling the device after 2 seconds of inactivity), and
+ * add a "power_modes" property to IIO sysfs, that offers a "low_power"
+   *active* mode of operation that roughly consumes half the power of
+   the default mode.
 
+If you don't have CONFIG_PM enabled, by default nothing changes for you.
 
-> I looked into the I2C adapter / mux code but I got lost rapidly :). It
-> feels like the natural solution would be for the I2C core to not hold
-> the adapter lock while doing transactions on the muxed child adapter.
+Here's how it's done and tested on MMA8653FC:
 
-The patch series I mentioned to you does exactly that. It locks only the
-mux side of the muxed bus, not the whole parent adapter. It didn't work
-for you because the mux driver maybe needed some adaptions as well?
-
-However, I am still undecided if that series should go upstream because
-it makes the mux code another magnitude more complex. And while this
-seems to be the second issue which could be fixed by that series, both
-issues are corner cases, so I am not sure it is worth the complexity.
-
-
---GvXjxJ+pjyke8COw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJW1x2WAAoJEBQN5MwUoCm2SoYP+wZhCsIYf5HCUxo9YtA4sYB0
-41UQd1yVEe16asuC6ChA3UDvjnDGLgy3FcDzwWjPEyJAt7kbP+HhOVjjDpkCe1ux
-8C+lr274LITknO2rM+aU9hVFsUnDuMOukvELYxOGZXtQZkTnC/VwuZL4nSrD1CF6
-YMCknen+/cluY2Klg+jadpE5uBhKtRdLGU2Nj1YN+o6lhjSsn4GnZSZLGOcjgoup
-HGrprCIwU5e4rt+BVrRRCokkptQBJGOjaY6i58NARkJlJlMOXfVbruvNCU4/YLNh
-2kMnW3R7aKv54X4KeYl/vaxWg7FBIwWiiVQVj7Sc9H1FE0P1N7S4fZoylmzRvoDe
-eH9jH1SESQKqks1kWJ49q5i1e1RoGqwQXIrN49+Bc+BXEyqYOgTYbVpoeXdfhLOI
-nCrKkZ4EHxOBO9YT0NPjPdBoyKXQtSpnSl9pAsQQSo2UjC/qxBwWYq49QXs44K15
-tll9rrUeES/FUzDjVdacDgavu449MirvUJibKmbgBTib4w/YDeRYb7RPOe9yZ0VH
-KOpVR5hqhBPB7tukKq8Mc47CmFdPedbGQnUAkDlP7cxcbOJEPqPJBf1MMa+ozD0y
-jeEMGRql+UJsFFL3DiiLBQObAUid0HHjIldWp4jg4xgm7H4xvRTP37Q6uoThC8Lw
-tvmxS7J0c2l7iEP3dGL3
-=ex7G
------END PGP SIGNATURE-----
-
---GvXjxJ+pjyke8COw--
+[PATCH 1/4] iio: mma8452: coding style fixes
+[PATCH 2/4] iio: mma8452: avoid switching to active because of config
+[PATCH 3/4] iio: mma8452: add support for runtime power management
+[PATCH 4/4] iio: mma8452: add low_power mode
