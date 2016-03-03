@@ -1,74 +1,78 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:39056 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756805AbcCCQJM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 11:09:12 -0500
+Return-Path: <ludovic.desroches@atmel.com>
 From: Ludovic Desroches <ludovic.desroches@atmel.com>
 To: <jic23@kernel.org>
 CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <nicolas.ferre@atmel.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>
-Subject: [PATCH 1/3] iio:adc:at91-sama5d2: fix typo
-Date: Thu, 3 Mar 2016 17:09:13 +0100
-Message-ID: <1457021355-23898-2-git-send-email-ludovic.desroches@atmel.com>
+	<linux-arm-kernel@lists.infradead.org>, <nicolas.ferre@atmel.com>, Ludovic
+ Desroches <ludovic.desroches@atmel.com>
+Subject: [PATCH 2/3] iio:adc:at91-sama5d2: fix identation
+Date: Thu, 3 Mar 2016 17:09:14 +0100
+Message-ID: <1457021355-23898-3-git-send-email-ludovic.desroches@atmel.com>
 In-Reply-To: <1457021355-23898-1-git-send-email-ludovic.desroches@atmel.com>
 References: <1457021355-23898-1-git-send-email-ludovic.desroches@atmel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Fix typo in the name of a macro.
+Remove some extra tabs.
 
 Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/iio/adc/at91-sama5d2_adc.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index dbee13a..33bacec 100644
+index 33bacec..5bc038f 100644
 --- a/drivers/iio/adc/at91-sama5d2_adc.c
 +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -140,7 +140,7 @@
- /* Version Register */
- #define AT91_SAMA5D2_VERSION	0xfc
- 
--#define AT91_AT91_SAMA5D2_CHAN(num, addr)				\
-+#define AT91_SAMA5D2_CHAN(num, addr)					\
- 	{								\
- 		.type = IIO_VOLTAGE,					\
- 		.channel = num,						\
-@@ -185,18 +185,18 @@ struct at91_adc_state {
- };
- 
- static const struct iio_chan_spec at91_adc_channels[] = {
--	AT91_AT91_SAMA5D2_CHAN(0, 0x50),
--	AT91_AT91_SAMA5D2_CHAN(1, 0x54),
--	AT91_AT91_SAMA5D2_CHAN(2, 0x58),
--	AT91_AT91_SAMA5D2_CHAN(3, 0x5c),
--	AT91_AT91_SAMA5D2_CHAN(4, 0x60),
--	AT91_AT91_SAMA5D2_CHAN(5, 0x64),
--	AT91_AT91_SAMA5D2_CHAN(6, 0x68),
--	AT91_AT91_SAMA5D2_CHAN(7, 0x6c),
--	AT91_AT91_SAMA5D2_CHAN(8, 0x70),
--	AT91_AT91_SAMA5D2_CHAN(9, 0x74),
--	AT91_AT91_SAMA5D2_CHAN(10, 0x78),
--	AT91_AT91_SAMA5D2_CHAN(11, 0x7c),
-+	AT91_SAMA5D2_CHAN(0, 0x50),
-+	AT91_SAMA5D2_CHAN(1, 0x54),
-+	AT91_SAMA5D2_CHAN(2, 0x58),
-+	AT91_SAMA5D2_CHAN(3, 0x5c),
-+	AT91_SAMA5D2_CHAN(4, 0x60),
-+	AT91_SAMA5D2_CHAN(5, 0x64),
-+	AT91_SAMA5D2_CHAN(6, 0x68),
-+	AT91_SAMA5D2_CHAN(7, 0x6c),
-+	AT91_SAMA5D2_CHAN(8, 0x70),
-+	AT91_SAMA5D2_CHAN(9, 0x74),
-+	AT91_SAMA5D2_CHAN(10, 0x78),
-+	AT91_SAMA5D2_CHAN(11, 0x7c),
- };
- 
- static unsigned at91_adc_startup_time(unsigned startup_time_min,
+@@ -92,13 +92,13 @@
+ /* Last Converted Data Register */
+ #define AT91_SAMA5D2_LCDR	0x20
+ /* Interrupt Enable Register */
+-#define AT91_SAMA5D2_IER		0x24
++#define AT91_SAMA5D2_IER	0x24
+ /* Interrupt Disable Register */
+-#define AT91_SAMA5D2_IDR		0x28
++#define AT91_SAMA5D2_IDR	0x28
+ /* Interrupt Mask Register */
+-#define AT91_SAMA5D2_IMR		0x2c
++#define AT91_SAMA5D2_IMR	0x2c
+ /* Interrupt Status Register */
+-#define AT91_SAMA5D2_ISR		0x30
++#define AT91_SAMA5D2_ISR	0x30
+ /* Last Channel Trigger Mode Register */
+ #define AT91_SAMA5D2_LCTMR	0x34
+ /* Last Channel Compare Window Register */
+@@ -106,17 +106,17 @@
+ /* Overrun Status Register */
+ #define AT91_SAMA5D2_OVER	0x3c
+ /* Extended Mode Register */
+-#define AT91_SAMA5D2_EMR		0x40
++#define AT91_SAMA5D2_EMR	0x40
+ /* Compare Window Register */
+-#define AT91_SAMA5D2_CWR		0x44
++#define AT91_SAMA5D2_CWR	0x44
+ /* Channel Gain Register */
+-#define AT91_SAMA5D2_CGR		0x48
++#define AT91_SAMA5D2_CGR	0x48
+ /* Channel Offset Register */
+-#define AT91_SAMA5D2_COR		0x4c
++#define AT91_SAMA5D2_COR	0x4c
+ /* Channel Data Register 0 */
+ #define AT91_SAMA5D2_CDR0	0x50
+ /* Analog Control Register */
+-#define AT91_SAMA5D2_ACR		0x94
++#define AT91_SAMA5D2_ACR	0x94
+ /* Touchscreen Mode Register */
+ #define AT91_SAMA5D2_TSMR	0xb0
+ /* Touchscreen X Position Register */
+@@ -130,7 +130,7 @@
+ /* Correction Select Register */
+ #define AT91_SAMA5D2_COSR	0xd0
+ /* Correction Value Register */
+-#define AT91_SAMA5D2_CVR		0xd4
++#define AT91_SAMA5D2_CVR	0xd4
+ /* Channel Error Correction Register */
+ #define AT91_SAMA5D2_CECR	0xd8
+ /* Write Protection Mode Register */
 -- 
 2.5.0
-
