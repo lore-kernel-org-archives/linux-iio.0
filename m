@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:44318 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:50918 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758600AbcCCWh4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:56 -0500
+	with ESMTP id S1758558AbcCCWhx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:53 -0500
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -27,9 +27,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-media@vger.kernel.org, devicetree@vger.kernel.org,
 	Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v4 06/18] i2c: i2c-mux-pca954x: convert to use an explicit i2c mux core
-Date: Thu,  3 Mar 2016 23:27:18 +0100
-Message-Id: <1457044050-15230-7-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v4 01/18] i2c-mux: add common data for every i2c-mux instance
+Date: Thu,  3 Mar 2016 23:27:13 +0100
+Message-Id: <1457044050-15230-2-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
 References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -37,173 +37,428 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Peter Rosin <peda@axentia.se>
 
-Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select/deselect ops to be in terms of the i2c mux core
-instead of the child adapter.
+All i2c-muxes have a parent adapter and one or many child
+adapters. A mux also has some means of selection. Previously,
+this was stored per child adapter, but it is only needed
+to keep track of this per mux.
 
-Add a mask to handle the case where not all child adapters should
-cause a mux deselect to happen, now that there is a common deselect op
-for all child adapters.
+Add an i2c mux core, that keeps track of this consistently.
+
+Also add some glue for users of the old interface, which will
+create one implicit mux core per child adapter.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/muxes/i2c-mux-pca954x.c | 64 +++++++++++++++++++------------------
- 1 file changed, 33 insertions(+), 31 deletions(-)
+ drivers/i2c/i2c-mux.c   | 236 ++++++++++++++++++++++++++++++++++++++----------
+ include/linux/i2c-mux.h |  47 ++++++++++
+ 2 files changed, 236 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
-index acfcef3d4068..1693d29c11a4 100644
---- a/drivers/i2c/muxes/i2c-mux-pca954x.c
-+++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
-@@ -60,9 +60,10 @@ enum pca_type {
+diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
+index 00fc5b1c7b66..7df323a01661 100644
+--- a/drivers/i2c/i2c-mux.c
++++ b/drivers/i2c/i2c-mux.c
+@@ -28,33 +28,34 @@
+ #include <linux/acpi.h>
  
- struct pca954x {
- 	enum pca_type type;
--	struct i2c_adapter *virt_adaps[PCA954X_MAX_NCHANS];
- 
- 	u8 last_chan;		/* last register value */
-+	u8 deselect;
-+	struct i2c_client *client;
+ /* multiplexer per channel data */
++struct i2c_mux_priv_old {
++	void *mux_priv;
++	int (*select)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
++	int (*deselect)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
++};
++
+ struct i2c_mux_priv {
+ 	struct i2c_adapter adap;
+ 	struct i2c_algorithm algo;
+-
+-	struct i2c_adapter *parent;
+-	struct device *mux_dev;
+-	void *mux_priv;
++	struct i2c_mux_core *muxc;
+ 	u32 chan_id;
+-
+-	int (*select)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
+-	int (*deselect)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
  };
  
- struct chip_desc {
-@@ -146,10 +147,10 @@ static int pca954x_reg_write(struct i2c_adapter *adap,
- 	return ret;
- }
- 
--static int pca954x_select_chan(struct i2c_adapter *adap,
--			       void *client, u32 chan)
-+static int pca954x_select_chan(struct i2c_mux_core *muxc, u32 chan)
+ static int i2c_mux_master_xfer(struct i2c_adapter *adap,
+ 			       struct i2c_msg msgs[], int num)
  {
--	struct pca954x *data = i2c_get_clientdata(client);
-+	struct pca954x *data = i2c_mux_priv(muxc);
-+	struct i2c_client *client = data->client;
- 	const struct chip_desc *chip = &chips[data->type];
- 	u8 regval;
- 	int ret = 0;
-@@ -162,21 +163,24 @@ static int pca954x_select_chan(struct i2c_adapter *adap,
- 
- 	/* Only select the channel if its different from the last channel */
- 	if (data->last_chan != regval) {
--		ret = pca954x_reg_write(adap, client, regval);
-+		ret = pca954x_reg_write(muxc->parent, client, regval);
- 		data->last_chan = regval;
- 	}
- 
- 	return ret;
- }
- 
--static int pca954x_deselect_mux(struct i2c_adapter *adap,
--				void *client, u32 chan)
-+static int pca954x_deselect_mux(struct i2c_mux_core *muxc, u32 chan)
- {
--	struct pca954x *data = i2c_get_clientdata(client);
-+	struct pca954x *data = i2c_mux_priv(muxc);
-+	struct i2c_client *client = data->client;
-+
-+	if (!(data->deselect & (1 << chan)))
-+		return 0;
- 
- 	/* Deselect active channel */
- 	data->last_chan = 0;
--	return pca954x_reg_write(adap, client, data->last_chan);
-+	return pca954x_reg_write(muxc->parent, client, data->last_chan);
- }
- 
- /*
-@@ -191,17 +195,21 @@ static int pca954x_probe(struct i2c_client *client,
- 	bool idle_disconnect_dt;
- 	struct gpio_desc *gpio;
- 	int num, force, class;
-+	struct i2c_mux_core *muxc;
- 	struct pca954x *data;
+ 	struct i2c_mux_priv *priv = adap->algo_data;
+-	struct i2c_adapter *parent = priv->parent;
++	struct i2c_mux_core *muxc = priv->muxc;
++	struct i2c_adapter *parent = muxc->parent;
  	int ret;
  
- 	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE))
- 		return -ENODEV;
+ 	/* Switch to the right mux port and perform the transfer. */
  
--	data = devm_kzalloc(&client->dev, sizeof(struct pca954x), GFP_KERNEL);
--	if (!data)
-+	muxc = i2c_mux_alloc(adap, &client->dev, sizeof(*data), 0,
-+			     pca954x_select_chan, pca954x_deselect_mux);
-+	if (!muxc)
- 		return -ENOMEM;
-+	data = i2c_mux_priv(muxc);
+-	ret = priv->select(parent, priv->mux_priv, priv->chan_id);
++	ret = muxc->select(muxc, priv->chan_id);
+ 	if (ret >= 0)
+ 		ret = __i2c_transfer(parent, msgs, num);
+-	if (priv->deselect)
+-		priv->deselect(parent, priv->mux_priv, priv->chan_id);
++	if (muxc->deselect)
++		muxc->deselect(muxc, priv->chan_id);
  
--	i2c_set_clientdata(client, data);
-+	i2c_set_clientdata(client, muxc);
-+	data->client = client;
- 
- 	/* Get the mux out of reset if a reset GPIO is specified. */
- 	gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_LOW);
-@@ -220,6 +228,10 @@ static int pca954x_probe(struct i2c_client *client,
- 	data->type = id->driver_data;
- 	data->last_chan = 0;		   /* force the first selection */
- 
-+	ret = i2c_mux_reserve_adapters(muxc, chips[data->type].nchans);
-+	if (ret)
-+		return ret;
-+
- 	idle_disconnect_dt = of_node &&
- 		of_property_read_bool(of_node, "i2c-mux-idle-disconnect");
- 
-@@ -238,16 +250,13 @@ static int pca954x_probe(struct i2c_client *client,
- 				/* discard unconfigured channels */
- 				break;
- 			idle_disconnect_pd = pdata->modes[num].deselect_on_exit;
-+			data->deselect |= (idle_disconnect_pd
-+					   || idle_disconnect_dt) << num;
- 		}
- 
--		data->virt_adaps[num] =
--			i2c_add_mux_adapter(adap, &client->dev, client,
--				force, num, class, pca954x_select_chan,
--				(idle_disconnect_pd || idle_disconnect_dt)
--					? pca954x_deselect_mux : NULL);
-+		ret = i2c_mux_add_adapter(muxc, force, num, class);
- 
--		if (data->virt_adaps[num] == NULL) {
--			ret = -ENODEV;
-+		if (ret) {
- 			dev_err(&client->dev,
- 				"failed to register multiplexed adapter"
- 				" %d as bus %d\n", num, force);
-@@ -263,23 +272,15 @@ static int pca954x_probe(struct i2c_client *client,
- 	return 0;
- 
- virt_reg_failed:
--	for (num--; num >= 0; num--)
--		i2c_del_mux_adapter(data->virt_adaps[num]);
-+	i2c_mux_del_adapters(muxc);
  	return ret;
  }
- 
- static int pca954x_remove(struct i2c_client *client)
+@@ -65,17 +66,18 @@ static int i2c_mux_smbus_xfer(struct i2c_adapter *adap,
+ 			      int size, union i2c_smbus_data *data)
  {
--	struct pca954x *data = i2c_get_clientdata(client);
--	const struct chip_desc *chip = &chips[data->type];
--	int i;
--
--	for (i = 0; i < chip->nchans; ++i)
--		if (data->virt_adaps[i]) {
--			i2c_del_mux_adapter(data->virt_adaps[i]);
--			data->virt_adaps[i] = NULL;
--		}
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+ 	struct i2c_mux_priv *priv = adap->algo_data;
+-	struct i2c_adapter *parent = priv->parent;
++	struct i2c_mux_core *muxc = priv->muxc;
++	struct i2c_adapter *parent = muxc->parent;
+ 	int ret;
  
-+	i2c_mux_del_adapters(muxc);
- 	return 0;
+ 	/* Select the right mux port and perform the transfer. */
+ 
+-	ret = priv->select(parent, priv->mux_priv, priv->chan_id);
++	ret = muxc->select(muxc, priv->chan_id);
+ 	if (ret >= 0)
+ 		ret = parent->algo->smbus_xfer(parent, addr, flags,
+ 					read_write, command, size, data);
+-	if (priv->deselect)
+-		priv->deselect(parent, priv->mux_priv, priv->chan_id);
++	if (muxc->deselect)
++		muxc->deselect(muxc, priv->chan_id);
+ 
+ 	return ret;
+ }
+@@ -84,7 +86,7 @@ static int i2c_mux_smbus_xfer(struct i2c_adapter *adap,
+ static u32 i2c_mux_functionality(struct i2c_adapter *adap)
+ {
+ 	struct i2c_mux_priv *priv = adap->algo_data;
+-	struct i2c_adapter *parent = priv->parent;
++	struct i2c_adapter *parent = priv->muxc->parent;
+ 
+ 	return parent->algo->functionality(parent);
+ }
+@@ -102,30 +104,80 @@ static unsigned int i2c_mux_parent_classes(struct i2c_adapter *parent)
+ 	return class;
  }
  
-@@ -287,7 +288,8 @@ static int pca954x_remove(struct i2c_client *client)
- static int pca954x_resume(struct device *dev)
+-struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+-				struct device *mux_dev,
+-				void *mux_priv, u32 force_nr, u32 chan_id,
+-				unsigned int class,
+-				int (*select) (struct i2c_adapter *,
+-					       void *, u32),
+-				int (*deselect) (struct i2c_adapter *,
+-						 void *, u32))
++int i2c_mux_reserve_adapters(struct i2c_mux_core *muxc, int adapters)
++{
++	struct i2c_adapter **adapter;
++
++	if (adapters <= muxc->max_adapters)
++		return 0;
++
++	adapter = devm_kmalloc_array(muxc->dev,
++				     adapters, sizeof(*adapter),
++				     GFP_KERNEL);
++	if (!adapter)
++		return -ENOMEM;
++
++	if (muxc->adapter) {
++		memcpy(adapter, muxc->adapter,
++		       muxc->max_adapters * sizeof(*adapter));
++		devm_kfree(muxc->dev, muxc->adapter);
++	}
++
++	muxc->adapter = adapter;
++	muxc->max_adapters = adapters;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(i2c_mux_reserve_adapters);
++
++struct i2c_mux_core *i2c_mux_alloc(struct i2c_adapter *parent,
++				   struct device *dev, int sizeof_priv,
++				   u32 flags,
++				   int (*select)(struct i2c_mux_core *, u32),
++				   int (*deselect)(struct i2c_mux_core *, u32))
  {
- 	struct i2c_client *client = to_i2c_client(dev);
--	struct pca954x *data = i2c_get_clientdata(client);
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
-+	struct pca954x *data = i2c_mux_priv(muxc);
++	struct i2c_mux_core *muxc;
++
++	muxc = devm_kzalloc(dev, sizeof(*muxc) + sizeof_priv, GFP_KERNEL);
++	if (!muxc)
++		return NULL;
++	if (sizeof_priv)
++		muxc->priv = muxc + 1;
++
++	muxc->parent = parent;
++	muxc->dev = dev;
++	muxc->select = select;
++	muxc->deselect = deselect;
++
++	return muxc;
++}
++EXPORT_SYMBOL_GPL(i2c_mux_alloc);
++
++int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
++			u32 force_nr, u32 chan_id,
++			unsigned int class)
++{
++	struct i2c_adapter *parent = muxc->parent;
+ 	struct i2c_mux_priv *priv;
+ 	char symlink_name[20];
+ 	int ret;
  
- 	data->last_chan = 0;
- 	return i2c_smbus_write_byte(client, 0);
++	if (muxc->adapters >= muxc->max_adapters) {
++		int new_max = 2 * muxc->max_adapters;
++
++		if (!new_max)
++			new_max = 1;
++		ret = i2c_mux_reserve_adapters(muxc, new_max);
++		if (ret)
++			return ret;
++	}
++
+ 	priv = kzalloc(sizeof(struct i2c_mux_priv), GFP_KERNEL);
+ 	if (!priv)
+-		return NULL;
++		return -ENOMEM;
+ 
+ 	/* Set up private adapter data */
+-	priv->parent = parent;
+-	priv->mux_dev = mux_dev;
+-	priv->mux_priv = mux_priv;
++	priv->muxc = muxc;
+ 	priv->chan_id = chan_id;
+-	priv->select = select;
+-	priv->deselect = deselect;
+ 
+ 	/* Need to do algo dynamically because we don't know ahead
+ 	 * of time what sort of physical adapter we'll be dealing with.
+@@ -159,11 +211,11 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+ 	 * Try to populate the mux adapter's of_node, expands to
+ 	 * nothing if !CONFIG_OF.
+ 	 */
+-	if (mux_dev->of_node) {
++	if (muxc->dev->of_node) {
+ 		struct device_node *child;
+ 		u32 reg;
+ 
+-		for_each_child_of_node(mux_dev->of_node, child) {
++		for_each_child_of_node(muxc->dev->of_node, child) {
+ 			ret = of_property_read_u32(child, "reg", &reg);
+ 			if (ret)
+ 				continue;
+@@ -177,8 +229,9 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+ 	/*
+ 	 * Associate the mux channel with an ACPI node.
+ 	 */
+-	if (has_acpi_companion(mux_dev))
+-		acpi_preset_companion(&priv->adap.dev, ACPI_COMPANION(mux_dev),
++	if (has_acpi_companion(muxc->dev))
++		acpi_preset_companion(&priv->adap.dev,
++				      ACPI_COMPANION(muxc->dev),
+ 				      chan_id);
+ 
+ 	if (force_nr) {
+@@ -192,33 +245,122 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+ 			"failed to add mux-adapter (error=%d)\n",
+ 			ret);
+ 		kfree(priv);
+-		return NULL;
++		return ret;
+ 	}
+ 
+-	WARN(sysfs_create_link(&priv->adap.dev.kobj, &mux_dev->kobj, "mux_device"),
+-			       "can't create symlink to mux device\n");
++	WARN(sysfs_create_link(&priv->adap.dev.kobj, &muxc->dev->kobj,
++			       "mux_device"),
++	     "can't create symlink to mux device\n");
+ 
+ 	snprintf(symlink_name, sizeof(symlink_name), "channel-%u", chan_id);
+-	WARN(sysfs_create_link(&mux_dev->kobj, &priv->adap.dev.kobj, symlink_name),
+-			       "can't create symlink for channel %u\n", chan_id);
++	WARN(sysfs_create_link(&muxc->dev->kobj, &priv->adap.dev.kobj,
++			       symlink_name),
++	     "can't create symlink for channel %u\n", chan_id);
+ 	dev_info(&parent->dev, "Added multiplexed i2c bus %d\n",
+ 		 i2c_adapter_id(&priv->adap));
+ 
+-	return &priv->adap;
++	muxc->adapter[muxc->adapters++] = &priv->adap;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(i2c_mux_add_adapter);
++
++struct i2c_mux_core *i2c_mux_one_adapter(struct i2c_adapter *parent,
++					 struct device *dev, int sizeof_priv,
++					 u32 flags, u32 force_nr,
++					 u32 chan_id, unsigned int class,
++					 int (*select)(struct i2c_mux_core *,
++						       u32),
++					 int (*deselect)(struct i2c_mux_core *,
++							 u32))
++{
++	struct i2c_mux_core *muxc;
++	int ret;
++
++	muxc = i2c_mux_alloc(parent, dev, sizeof_priv, flags, select, deselect);
++	if (!muxc)
++		return ERR_PTR(-ENOMEM);
++
++	ret = i2c_mux_add_adapter(muxc, force_nr, chan_id, class);
++	if (ret) {
++		devm_kfree(dev, muxc);
++		return ERR_PTR(ret);
++	}
++
++	return muxc;
++}
++EXPORT_SYMBOL_GPL(i2c_mux_one_adapter);
++
++static int i2c_mux_select(struct i2c_mux_core *muxc, u32 chan)
++{
++	struct i2c_mux_priv_old *priv = i2c_mux_priv(muxc);
++
++	return priv->select(muxc->parent, priv->mux_priv, chan);
++}
++
++static int i2c_mux_deselect(struct i2c_mux_core *muxc, u32 chan)
++{
++	struct i2c_mux_priv_old *priv = i2c_mux_priv(muxc);
++
++	return priv->deselect(muxc->parent, priv->mux_priv, chan);
++}
++
++struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
++					struct device *mux_dev, void *mux_priv,
++					u32 force_nr, u32 chan_id,
++					unsigned int class,
++					int (*select)(struct i2c_adapter *,
++						      void *, u32),
++					int (*deselect)(struct i2c_adapter *,
++							void *, u32))
++{
++	struct i2c_mux_core *muxc;
++	struct i2c_mux_priv_old *priv;
++
++	muxc = i2c_mux_one_adapter(parent, mux_dev, sizeof(*priv), 0,
++				   force_nr, chan_id, class,
++				   i2c_mux_select,
++				   deselect ? i2c_mux_deselect : NULL);
++	if (IS_ERR(muxc))
++		return NULL;
++
++	priv = i2c_mux_priv(muxc);
++	priv->select = select;
++	priv->deselect = deselect;
++	priv->mux_priv = mux_priv;
++
++	return muxc->adapter[0];
+ }
+ EXPORT_SYMBOL_GPL(i2c_add_mux_adapter);
+ 
+-void i2c_del_mux_adapter(struct i2c_adapter *adap)
++void i2c_mux_del_adapters(struct i2c_mux_core *muxc)
+ {
+-	struct i2c_mux_priv *priv = adap->algo_data;
+ 	char symlink_name[20];
+ 
+-	snprintf(symlink_name, sizeof(symlink_name), "channel-%u", priv->chan_id);
+-	sysfs_remove_link(&priv->mux_dev->kobj, symlink_name);
++	while (muxc->adapters) {
++		struct i2c_adapter *adap = muxc->adapter[--muxc->adapters];
++		struct i2c_mux_priv *priv = adap->algo_data;
++
++		muxc->adapter[muxc->adapters] = NULL;
++
++		snprintf(symlink_name, sizeof(symlink_name),
++			 "channel-%u", priv->chan_id);
++		sysfs_remove_link(&muxc->dev->kobj, symlink_name);
++
++		sysfs_remove_link(&priv->adap.dev.kobj, "mux_device");
++		i2c_del_adapter(adap);
++		kfree(priv);
++	}
++}
++EXPORT_SYMBOL_GPL(i2c_mux_del_adapters);
++
++void i2c_del_mux_adapter(struct i2c_adapter *adap)
++{
++	struct i2c_mux_priv *priv = adap->algo_data;
++	struct i2c_mux_core *muxc = priv->muxc;
+ 
+-	sysfs_remove_link(&priv->adap.dev.kobj, "mux_device");
+-	i2c_del_adapter(adap);
+-	kfree(priv);
++	i2c_mux_del_adapters(muxc);
++	devm_kfree(muxc->dev, muxc->adapter);
++	devm_kfree(muxc->dev, muxc);
+ }
+ EXPORT_SYMBOL_GPL(i2c_del_mux_adapter);
+ 
+diff --git a/include/linux/i2c-mux.h b/include/linux/i2c-mux.h
+index b5f9a007a3ab..0d97d7a3f03c 100644
+--- a/include/linux/i2c-mux.h
++++ b/include/linux/i2c-mux.h
+@@ -27,6 +27,32 @@
+ 
+ #ifdef __KERNEL__
+ 
++struct i2c_mux_core {
++	struct i2c_adapter *parent;
++	struct i2c_adapter **adapter;
++	int adapters;
++	int max_adapters;
++	struct device *dev;
++
++	void *priv;
++
++	int (*select)(struct i2c_mux_core *, u32 chan_id);
++	int (*deselect)(struct i2c_mux_core *, u32 chan_id);
++};
++
++struct i2c_mux_core *i2c_mux_alloc(struct i2c_adapter *parent,
++				   struct device *dev, int sizeof_priv,
++				   u32 flags,
++				   int (*select)(struct i2c_mux_core *, u32),
++				   int (*deselect)(struct i2c_mux_core *, u32));
++
++static inline void *i2c_mux_priv(struct i2c_mux_core *muxc)
++{
++	return muxc->priv;
++}
++
++int i2c_mux_reserve_adapters(struct i2c_mux_core *muxc, int adapters);
++
+ /*
+  * Called to create a i2c bus on a multiplexed bus segment.
+  * The mux_dev and chan_id parameters are passed to the select
+@@ -41,8 +67,29 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+ 					       void *mux_dev, u32 chan_id),
+ 				int (*deselect) (struct i2c_adapter *,
+ 						 void *mux_dev, u32 chan_id));
++/*
++ * Called to create a i2c bus on a multiplexed bus segment.
++ * The chan_id parameter is passed to the select and deselect
++ * callback functions to perform hardware-specific mux control.
++ */
++int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
++			u32 force_nr, u32 chan_id,
++			unsigned int class);
++
++/*
++ * Allocate an i2c_mux_core and add one adapter with one call.
++ */
++struct i2c_mux_core *i2c_mux_one_adapter(struct i2c_adapter *parent,
++					 struct device *dev, int sizeof_priv,
++					 u32 flags, u32 force_nr,
++					 u32 chan_id, unsigned int class,
++					 int (*select)(struct i2c_mux_core *,
++						       u32),
++					 int (*deselect)(struct i2c_mux_core *,
++							 u32));
+ 
+ void i2c_del_mux_adapter(struct i2c_adapter *adap);
++void i2c_mux_del_adapters(struct i2c_mux_core *muxc);
+ 
+ #endif /* __KERNEL__ */
+ 
 -- 
 2.1.4
 
