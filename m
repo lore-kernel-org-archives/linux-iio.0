@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:40849 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:40355 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758592AbcCCWhz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:55 -0500
+	with ESMTP id S1758421AbcCCWhu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:50 -0500
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -27,9 +27,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-media@vger.kernel.org, devicetree@vger.kernel.org,
 	Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v4 10/18] [media] rtl2830: convert to use an explicit i2c mux core
-Date: Thu,  3 Mar 2016 23:27:22 +0100
-Message-Id: <1457044050-15230-11-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v4 15/18] i2c-mux: drop old unused i2c-mux api
+Date: Thu,  3 Mar 2016 23:27:27 +0100
+Message-Id: <1457044050-15230-16-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
 References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -37,81 +37,132 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Peter Rosin <peda@axentia.se>
 
-Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select op to be in terms of the i2c mux core instead
-of the child adapter.
+All i2c mux users are using an explicit i2c mux core, drop support
+for implicit i2c mux cores.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/media/dvb-frontends/rtl2830.c      | 17 +++++++++--------
- drivers/media/dvb-frontends/rtl2830_priv.h |  2 +-
- 2 files changed, 10 insertions(+), 9 deletions(-)
+ drivers/i2c/i2c-mux.c   | 59 -------------------------------------------------
+ include/linux/i2c-mux.h | 15 -------------
+ 2 files changed, 74 deletions(-)
 
-diff --git a/drivers/media/dvb-frontends/rtl2830.c b/drivers/media/dvb-frontends/rtl2830.c
-index b792f305cf15..0fa60fe09b81 100644
---- a/drivers/media/dvb-frontends/rtl2830.c
-+++ b/drivers/media/dvb-frontends/rtl2830.c
-@@ -677,9 +677,9 @@ err:
-  * adapter lock is already taken by tuner driver.
-  * Gate is closed automatically after single I2C transfer.
-  */
--static int rtl2830_select(struct i2c_adapter *adap, void *mux_priv, u32 chan_id)
-+static int rtl2830_select(struct i2c_mux_core *muxc, u32 chan_id)
- {
--	struct i2c_client *client = mux_priv;
-+	struct i2c_client *client = i2c_mux_priv(muxc);
- 	struct rtl2830_dev *dev = i2c_get_clientdata(client);
- 	int ret;
+diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
+index 7df323a01661..e7ac7a4a7a83 100644
+--- a/drivers/i2c/i2c-mux.c
++++ b/drivers/i2c/i2c-mux.c
+@@ -28,12 +28,6 @@
+ #include <linux/acpi.h>
  
-@@ -712,7 +712,7 @@ static struct i2c_adapter *rtl2830_get_i2c_adapter(struct i2c_client *client)
- 
- 	dev_dbg(&client->dev, "\n");
- 
--	return dev->adapter;
-+	return dev->muxc->adapter[0];
+ /* multiplexer per channel data */
+-struct i2c_mux_priv_old {
+-	void *mux_priv;
+-	int (*select)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
+-	int (*deselect)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
+-};
+-
+ struct i2c_mux_priv {
+ 	struct i2c_adapter adap;
+ 	struct i2c_algorithm algo;
+@@ -290,48 +284,6 @@ struct i2c_mux_core *i2c_mux_one_adapter(struct i2c_adapter *parent,
  }
+ EXPORT_SYMBOL_GPL(i2c_mux_one_adapter);
+ 
+-static int i2c_mux_select(struct i2c_mux_core *muxc, u32 chan)
+-{
+-	struct i2c_mux_priv_old *priv = i2c_mux_priv(muxc);
+-
+-	return priv->select(muxc->parent, priv->mux_priv, chan);
+-}
+-
+-static int i2c_mux_deselect(struct i2c_mux_core *muxc, u32 chan)
+-{
+-	struct i2c_mux_priv_old *priv = i2c_mux_priv(muxc);
+-
+-	return priv->deselect(muxc->parent, priv->mux_priv, chan);
+-}
+-
+-struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+-					struct device *mux_dev, void *mux_priv,
+-					u32 force_nr, u32 chan_id,
+-					unsigned int class,
+-					int (*select)(struct i2c_adapter *,
+-						      void *, u32),
+-					int (*deselect)(struct i2c_adapter *,
+-							void *, u32))
+-{
+-	struct i2c_mux_core *muxc;
+-	struct i2c_mux_priv_old *priv;
+-
+-	muxc = i2c_mux_one_adapter(parent, mux_dev, sizeof(*priv), 0,
+-				   force_nr, chan_id, class,
+-				   i2c_mux_select,
+-				   deselect ? i2c_mux_deselect : NULL);
+-	if (IS_ERR(muxc))
+-		return NULL;
+-
+-	priv = i2c_mux_priv(muxc);
+-	priv->select = select;
+-	priv->deselect = deselect;
+-	priv->mux_priv = mux_priv;
+-
+-	return muxc->adapter[0];
+-}
+-EXPORT_SYMBOL_GPL(i2c_add_mux_adapter);
+-
+ void i2c_mux_del_adapters(struct i2c_mux_core *muxc)
+ {
+ 	char symlink_name[20];
+@@ -353,17 +305,6 @@ void i2c_mux_del_adapters(struct i2c_mux_core *muxc)
+ }
+ EXPORT_SYMBOL_GPL(i2c_mux_del_adapters);
+ 
+-void i2c_del_mux_adapter(struct i2c_adapter *adap)
+-{
+-	struct i2c_mux_priv *priv = adap->algo_data;
+-	struct i2c_mux_core *muxc = priv->muxc;
+-
+-	i2c_mux_del_adapters(muxc);
+-	devm_kfree(muxc->dev, muxc->adapter);
+-	devm_kfree(muxc->dev, muxc);
+-}
+-EXPORT_SYMBOL_GPL(i2c_del_mux_adapter);
+-
+ MODULE_AUTHOR("Rodolfo Giometti <giometti@linux.it>");
+ MODULE_DESCRIPTION("I2C driver for multiplexed I2C busses");
+ MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/i2c-mux.h b/include/linux/i2c-mux.h
+index 0d97d7a3f03c..25c88ccf9c38 100644
+--- a/include/linux/i2c-mux.h
++++ b/include/linux/i2c-mux.h
+@@ -55,20 +55,6 @@ int i2c_mux_reserve_adapters(struct i2c_mux_core *muxc, int adapters);
  
  /*
-@@ -865,12 +865,13 @@ static int rtl2830_probe(struct i2c_client *client,
- 		goto err_regmap_exit;
+  * Called to create a i2c bus on a multiplexed bus segment.
+- * The mux_dev and chan_id parameters are passed to the select
+- * and deselect callback functions to perform hardware-specific
+- * mux control.
+- */
+-struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+-				struct device *mux_dev,
+-				void *mux_priv, u32 force_nr, u32 chan_id,
+-				unsigned int class,
+-				int (*select) (struct i2c_adapter *,
+-					       void *mux_dev, u32 chan_id),
+-				int (*deselect) (struct i2c_adapter *,
+-						 void *mux_dev, u32 chan_id));
+-/*
+- * Called to create a i2c bus on a multiplexed bus segment.
+  * The chan_id parameter is passed to the select and deselect
+  * callback functions to perform hardware-specific mux control.
+  */
+@@ -88,7 +74,6 @@ struct i2c_mux_core *i2c_mux_one_adapter(struct i2c_adapter *parent,
+ 					 int (*deselect)(struct i2c_mux_core *,
+ 							 u32));
  
- 	/* create muxed i2c adapter for tuner */
--	dev->adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
--			client, 0, 0, 0, rtl2830_select, NULL);
--	if (dev->adapter == NULL) {
--		ret = -ENODEV;
-+	dev->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
-+					0, 0, 0, rtl2830_select, NULL);
-+	if (IS_ERR(dev->muxc)) {
-+		ret = PTR_ERR(dev->muxc);
- 		goto err_regmap_exit;
- 	}
-+	dev->muxc->priv = client;
+-void i2c_del_mux_adapter(struct i2c_adapter *adap);
+ void i2c_mux_del_adapters(struct i2c_mux_core *muxc);
  
- 	/* create dvb frontend */
- 	memcpy(&dev->fe.ops, &rtl2830_ops, sizeof(dev->fe.ops));
-@@ -900,7 +901,7 @@ static int rtl2830_remove(struct i2c_client *client)
- 
- 	dev_dbg(&client->dev, "\n");
- 
--	i2c_del_mux_adapter(dev->adapter);
-+	i2c_mux_del_adapters(dev->muxc);
- 	regmap_exit(dev->regmap);
- 	kfree(dev);
- 
-diff --git a/drivers/media/dvb-frontends/rtl2830_priv.h b/drivers/media/dvb-frontends/rtl2830_priv.h
-index cf793f39a09b..da4909543da2 100644
---- a/drivers/media/dvb-frontends/rtl2830_priv.h
-+++ b/drivers/media/dvb-frontends/rtl2830_priv.h
-@@ -29,7 +29,7 @@ struct rtl2830_dev {
- 	struct rtl2830_platform_data *pdata;
- 	struct i2c_client *client;
- 	struct regmap *regmap;
--	struct i2c_adapter *adapter;
-+	struct i2c_mux_core *muxc;
- 	struct dvb_frontend fe;
- 	bool sleeping;
- 	unsigned long filters;
+ #endif /* __KERNEL__ */
 -- 
 2.1.4
 
