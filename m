@@ -1,61 +1,179 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f195.google.com ([209.85.217.195]:33749 "EHLO
-	mail-lb0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751203AbcCFLNd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Mar 2016 06:13:33 -0500
-From: Joachim Eastwood <manabian@gmail.com>
-To: jic23@kernel.org
-Cc: Joachim Eastwood <manabian@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	robh+dt@kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v2 0/4] Support for analog peripherals on LPC18xx familiy
-Date: Sun,  6 Mar 2016 12:13:11 +0100
-Message-Id: <1457262795-20282-1-git-send-email-manabian@gmail.com>
+Received: from mail.lysator.liu.se ([130.236.254.3]:35265 "EHLO
+	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758571AbcCCWhx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:53 -0500
+From: Peter Rosin <peda@lysator.liu.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Viorel Suman <viorel.suman@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+	Peter Rosin <peda@lysator.liu.se>
+Subject: [PATCH v4 13/18] [media] cx231xx: convert to use an explicit i2c mux core
+Date: Thu,  3 Mar 2016 23:27:25 +0100
+Message-Id: <1457044050-15230-14-git-send-email-peda@lysator.liu.se>
+In-Reply-To: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
+References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch set adds support for the analog (ADC and DAC) peripherals
-found on NXP LPC18xx/43xx SoCs. The ADC is a SAR converter with 10-bit
-resolution and 8 muxed inputs. The DAC is a simple single channel 10-
-bit DAC.
+From: Peter Rosin <peda@axentia.se>
 
-Note that these drivers do not support all the features found on the
-peripherals. DMA and interrupts are not supported in either drivers.
-The ADC driver also lack 'burst-mode' and hardware triggers. So for
-now the ADC is limited to single shot samples.
+Allocate an explicit i2c mux core to handle parent and child adapters
+etc. Update the select op to be in terms of the i2c mux core instead
+of the child adapter.
 
-Both drivers tested on Embedded Artists' LPC4357 Developer's Kit.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/media/usb/cx231xx/cx231xx-core.c |  6 ++--
+ drivers/media/usb/cx231xx/cx231xx-i2c.c  | 47 ++++++++++++++++----------------
+ drivers/media/usb/cx231xx/cx231xx.h      |  4 ++-
+ 3 files changed, 31 insertions(+), 26 deletions(-)
 
-Based on iio/testing branch from 29.02.15.
-
-This version address the comments from Peter Meerwald-Stadler and
-adds locking to adc read.
-
-Changes since v1:
- - Fix nits on adc/dac from Peter Meerwald-Stadler
- - Add locking around lpc18xx_adc_read_chan()
-
-
-Joachim Eastwood (4):
-  iio: adc: add NXP LPC18xx ADC driver
-  dt: document NXP LPC1850 ADC driver bindings
-  iio: dac: add NXP LPC18xx DAC driver
-  dt: document NXP LPC1850 DAC driver bindings
-
- .../devicetree/bindings/iio/adc/lpc1850-adc.txt    |  21 ++
- .../devicetree/bindings/iio/dac/lpc1850-dac.txt    |  20 ++
- drivers/iio/adc/Kconfig                            |  10 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/lpc18xx_adc.c                      | 228 +++++++++++++++++++++
- drivers/iio/dac/Kconfig                            |  10 +
- drivers/iio/dac/Makefile                           |   1 +
- drivers/iio/dac/lpc18xx_dac.c                      | 204 ++++++++++++++++++
- 8 files changed, 495 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/dac/lpc1850-dac.txt
- create mode 100644 drivers/iio/adc/lpc18xx_adc.c
- create mode 100644 drivers/iio/dac/lpc18xx_dac.c
-
+diff --git a/drivers/media/usb/cx231xx/cx231xx-core.c b/drivers/media/usb/cx231xx/cx231xx-core.c
+index f497888d94bf..f7aac2abd783 100644
+--- a/drivers/media/usb/cx231xx/cx231xx-core.c
++++ b/drivers/media/usb/cx231xx/cx231xx-core.c
+@@ -1304,6 +1304,9 @@ int cx231xx_dev_init(struct cx231xx *dev)
+ 	cx231xx_i2c_register(&dev->i2c_bus[1]);
+ 	cx231xx_i2c_register(&dev->i2c_bus[2]);
+ 
++	errCode = cx231xx_i2c_mux_create(dev);
++	if (errCode < 0)
++		return errCode;
+ 	cx231xx_i2c_mux_register(dev, 0);
+ 	cx231xx_i2c_mux_register(dev, 1);
+ 
+@@ -1426,8 +1429,7 @@ EXPORT_SYMBOL_GPL(cx231xx_dev_init);
+ void cx231xx_dev_uninit(struct cx231xx *dev)
+ {
+ 	/* Un Initialize I2C bus */
+-	cx231xx_i2c_mux_unregister(dev, 1);
+-	cx231xx_i2c_mux_unregister(dev, 0);
++	cx231xx_i2c_mux_unregister(dev);
+ 	cx231xx_i2c_unregister(&dev->i2c_bus[2]);
+ 	cx231xx_i2c_unregister(&dev->i2c_bus[1]);
+ 	cx231xx_i2c_unregister(&dev->i2c_bus[0]);
+diff --git a/drivers/media/usb/cx231xx/cx231xx-i2c.c b/drivers/media/usb/cx231xx/cx231xx-i2c.c
+index a29c345b027d..eb22e05d4add 100644
+--- a/drivers/media/usb/cx231xx/cx231xx-i2c.c
++++ b/drivers/media/usb/cx231xx/cx231xx-i2c.c
+@@ -557,40 +557,41 @@ int cx231xx_i2c_unregister(struct cx231xx_i2c *bus)
+  * cx231xx_i2c_mux_select()
+  * switch i2c master number 1 between port1 and port3
+  */
+-static int cx231xx_i2c_mux_select(struct i2c_adapter *adap,
+-			void *mux_priv, u32 chan_id)
++static int cx231xx_i2c_mux_select(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct cx231xx *dev = mux_priv;
++	struct cx231xx *dev = i2c_mux_priv(muxc);
+ 
+ 	return cx231xx_enable_i2c_port_3(dev, chan_id);
+ }
+ 
++int cx231xx_i2c_mux_create(struct cx231xx *dev)
++{
++	dev->muxc = i2c_mux_alloc(&dev->i2c_bus[1].i2c_adap, dev->dev, 0, 0,
++				  cx231xx_i2c_mux_select, NULL);
++	if (!dev->muxc)
++		return -ENOMEM;
++	dev->muxc->priv = dev;
++	return 0;
++}
++
+ int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no)
+ {
+-	struct i2c_adapter *i2c_parent = &dev->i2c_bus[1].i2c_adap;
+-	/* what is the correct mux_dev? */
+-	struct device *mux_dev = dev->dev;
+-
+-	dev->i2c_mux_adap[mux_no] = i2c_add_mux_adapter(i2c_parent,
+-				mux_dev,
+-				dev /* mux_priv */,
+-				0,
+-				mux_no /* chan_id */,
+-				0 /* class */,
+-				&cx231xx_i2c_mux_select,
+-				NULL);
+-
+-	if (!dev->i2c_mux_adap[mux_no])
++	int rc;
++
++	rc = i2c_mux_add_adapter(dev->muxc,
++				 0,
++				 mux_no /* chan_id */,
++				 0 /* class */);
++	if (rc)
+ 		dev_warn(dev->dev,
+ 			 "i2c mux %d register FAILED\n", mux_no);
+ 
+-	return 0;
++	return rc;
+ }
+ 
+-void cx231xx_i2c_mux_unregister(struct cx231xx *dev, int mux_no)
++void cx231xx_i2c_mux_unregister(struct cx231xx *dev)
+ {
+-	i2c_del_mux_adapter(dev->i2c_mux_adap[mux_no]);
+-	dev->i2c_mux_adap[mux_no] = NULL;
++	i2c_mux_del_adapters(dev->muxc);
+ }
+ 
+ struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port)
+@@ -603,9 +604,9 @@ struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port)
+ 	case I2C_2:
+ 		return &dev->i2c_bus[2].i2c_adap;
+ 	case I2C_1_MUX_1:
+-		return dev->i2c_mux_adap[0];
++		return dev->muxc->adapter[0];
+ 	case I2C_1_MUX_3:
+-		return dev->i2c_mux_adap[1];
++		return dev->muxc->adapter[1];
+ 	default:
+ 		return NULL;
+ 	}
+diff --git a/drivers/media/usb/cx231xx/cx231xx.h b/drivers/media/usb/cx231xx/cx231xx.h
+index ec6d3f5bc36d..fab222059e51 100644
+--- a/drivers/media/usb/cx231xx/cx231xx.h
++++ b/drivers/media/usb/cx231xx/cx231xx.h
+@@ -625,6 +625,7 @@ struct cx231xx {
+ 
+ 	/* I2C adapters: Master 1 & 2 (External) & Master 3 (Internal only) */
+ 	struct cx231xx_i2c i2c_bus[3];
++	struct i2c_mux_core *muxc;
+ 	struct i2c_adapter *i2c_mux_adap[2];
+ 
+ 	unsigned int xc_fw_load_done:1;
+@@ -759,8 +760,9 @@ int cx231xx_reset_analog_tuner(struct cx231xx *dev);
+ void cx231xx_do_i2c_scan(struct cx231xx *dev, int i2c_port);
+ int cx231xx_i2c_register(struct cx231xx_i2c *bus);
+ int cx231xx_i2c_unregister(struct cx231xx_i2c *bus);
++int cx231xx_i2c_mux_create(struct cx231xx *dev);
+ int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no);
+-void cx231xx_i2c_mux_unregister(struct cx231xx *dev, int mux_no);
++void cx231xx_i2c_mux_unregister(struct cx231xx *dev);
+ struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port);
+ 
+ /* Internal block control functions */
 -- 
-1.8.0
+2.1.4
 
