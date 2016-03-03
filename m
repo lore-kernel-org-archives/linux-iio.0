@@ -1,43 +1,94 @@
-Return-Path: <gregor.boirie@parrot.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.aswsp.com ([193.34.35.150]:30865 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754373AbcCCKoQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 3 Mar 2016 05:44:16 -0500
 From: Gregor Boirie <gregor.boirie@parrot.com>
 To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>, Irina Tirdea
-	<irina.tirdea@intel.com>, Cristina Moraru <cristina.moraru09@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>, Julia Lawall <Julia.Lawall@lip6.fr>,
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>,
 	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v2 0/5] iio:magnetometer:ak8975: fix and enhancements
-Date: Thu, 3 Mar 2016 11:44:02 +0100
-Message-ID: <cover.1457001111.git.gregor.boirie@parrot.com>
+Subject: [PATCH v2 3/5] iio:magnetometer:ak8975: power regulator support
+Date: Thu, 3 Mar 2016 11:44:05 +0100
+Message-ID: <436d3e01c4aab954bc836454c95360489b03f34b.1457001111.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1457001111.git.gregor.boirie@parrot.com>
+References: <cover.1457001111.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Various fixes and enhancements for the ak8975 magnetometers family driver.
+Add support for an optional regulator which, if found into device-tree,
+will power on device at probing time.
+The regulator is declared into ak8975 DTS entry as a "vdd-supply" property.
 
-Changes since v1:
-* get rid of silly le16 to cpu conversion since SMBUS handles this for us when
-  reading words (patch 3/6)
-* get rid of axes caching and serialize bus access between trigger handler and
-  read_raw
-* pack triggered buffer sampling bus accesses into a single SMBUS data block
-  access
-* use channel address within read_raw
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ .../devicetree/bindings/iio/magnetometer/ak8975.txt      |  2 ++
+ drivers/iio/magnetometer/ak8975.c                        | 16 ++++++++++++++++
+ 2 files changed, 18 insertions(+)
 
-Gregor.
-
-Gregor Boirie (5):
-  iio:magnetometer:ak8975: fix uninitialized chipset
-  iio:magnetometer:ak8975: remove unused field
-  iio:magnetometer:ak8975: power regulator support
-  iio:magnetometer:ak8975: mounting matrix support
-  iio:magnetometer:ak8975: triggered buffer support
-
- .../bindings/iio/magnetometer/ak8975.txt           |  12 ++
- drivers/iio/magnetometer/Kconfig                   |   2 +
- drivers/iio/magnetometer/ak8975.c                  | 218 ++++++++++++++++++---
- 3 files changed, 202 insertions(+), 30 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+index 011679f..34a3206 100644
+--- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
++++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+@@ -8,6 +8,7 @@ Required properties:
+ Optional properties:
+ 
+   - gpios : should be device tree identifier of the magnetometer DRDY pin
++  - vdd-supply: an optional regulator that needs to be on to provide VDD
+ 
+ Example:
+ 
+@@ -15,4 +16,5 @@ ak8975@0c {
+         compatible = "asahi-kasei,ak8975";
+         reg = <0x0c>;
+         gpios = <&gpj0 7 0>;
++        vdd-supply = <&ldo_3v3_gnss>;
+ };
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 896b13e3..72c03d9 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -32,6 +32,7 @@
+ #include <linux/gpio.h>
+ #include <linux/of_gpio.h>
+ #include <linux/acpi.h>
++#include <linux/regulator/consumer.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -379,8 +380,23 @@ static int ak8975_who_i_am(struct i2c_client *client,
+ 			   enum asahi_compass_chipset type)
+ {
+ 	u8 wia_val[2];
++	struct regulator *vdd = devm_regulator_get_optional(&client->dev,
++							    "vdd");
+ 	int ret;
+ 
++	/* Enable attached regulator if any. */
++	if (!IS_ERR(vdd)) {
++		ret = regulator_enable(vdd);
++		if (ret) {
++			dev_err(&client->dev, "Failed to enable Vdd supply\n");
++			return ret;
++		}
++	} else {
++		ret = PTR_ERR(vdd);
++		if (ret != -ENODEV)
++			return ret;
++	}
++
+ 	/*
+ 	 * Signature for each device:
+ 	 * Device   |  WIA1      |  WIA2
 -- 
 2.1.4
+
