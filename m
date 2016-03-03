@@ -1,101 +1,167 @@
-Return-Path: <tglx@linutronix.de>
-Date: Wed, 9 Mar 2016 09:43:43 +0100 (CET)
-From: Thomas Gleixner <tglx@linutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org,
-    Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-    Peter Meerwald <pmeerw@pmeerw.net>,
-    Daniel Baluta <daniel.baluta@intel.com>,
-    Haneen Mohammed <hamohammed.sa@gmail.com>,
-    Matt Ranostay <mranostay@gmail.com>, Irina Tirdea <irina.tirdea@intel.com>,
-    Darshana Padmadas <darshanapadmadas@gmail.com>,
-    Martin Fuzzey <mfuzzey@parkeon.com>,
-    Octavian Purdila <octavian.purdila@intel.com>,
-    Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-    Crt Mori <cmo@melexis.com>, Masanari Iida <standby24x7@gmail.com>,
-    Harald Geyer <harald@ccbib.org>,
-    Michael Hennerich <Michael.Hennerich@analog.com>,
-    Michal Simek <michal.simek@xilinx.com>,
-    =?ISO-8859-15?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>,
-    Kevin Tsai <ktsai@capellamicro.com>,
-    Cristina Opriceana <cristina.opriceana@gmail.com>,
-    Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-    Markus Pargmann <mpa@pengutronix.de>,
-    Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-    Bastien Nocera <hadess@hadess.net>, Antonio Ospite <ao2@ao2.it>,
-    Vlad Dogaru <vlad.dogaru@intel.com>, Ana Calinov <ana.calinov@gmail.com>,
-    Adriana Reus <adriana.reus@intel.com>,
-    Joachim Eastwood <manabian@gmail.com>,
-    Martin Kepplinger <martink@posteo.de>,
-    Christoph Muellner <christoph.muellner@theobroma-systems.com>,
-    Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-    Mika Westerberg <mika.westerberg@linux.intel.com>,
-    Naidu Tellapati <naidu.tellapati@imgtec.com>,
-    Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
-    Marc Titinger <mtitinger@baylibre.com>, Fugang Duan <b38611@freescale.com>,
-    Stefan Agner <stefan@agner.ch>, Sanchayan Maity <maitysanchayan@gmail.com>,
-    kbuild test robot <fengguang.wu@intel.com>,
-    Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>,
-    Lars Svensson <lars1.svensson@sonymobile.com>,
-    Vladimirs Ambrosovs <rodriguez.twister@gmail.com>,
-    Alan <gnomes@lxorguk.ukuu.org.uk>,
-    Lucas De Marchi <lucas.demarchi@intel.com>,
-    Viorel Suman <viorel.suman@gmail.com>,
-    Gabriele Mazzotta <gabriele.mzt@gmail.com>,
-    Martin Liska <marxin.liska@gmail.com>,
-    Javier Martinez Canillas <javier@osg.samsung.com>,
-    Bjorn Andersson <bjorn.andersson@sonymobile.com>,
-    Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
-    Markus Elfring <elfring@users.sourceforge.net>,
-    Alexander Koch <mail@alexanderkoch.net>,
-    Michael Hornung <mhornung.linux@gmail.com>, Felipe Balbi <balbi@ti.com>,
-    Andreas Dannenberg <dannenberg@ti.com>,
-    Tiberiu Breana <tiberiu.a.breana@intel.com>,
-    Dan Carpenter <dan.carpenter@oracle.com>,
-    Cristina Moraru <cristina.moraru09@gmail.com>,
-    Marek Belisko <marek@goldelico.com>, Yong Li <sdliyong@gmail.com>,
-    Tomasz Duszynski <tduszyns@gmail.com>,
-    Geert Uytterhoeven <geert@linux-m68k.org>,
-    Ioana Ciornei <ciorneiioana@gmail.com>,
-    Janani Ravichandran <janani.rvchndrn@gmail.com>,
-    "Andrew F. Davis" <afd@ti.com>, Tina Johnson <tinajohnson.1234@gmail.com>,
-    Nizam Haider <nizamhaider786@gmail.com>,
-    Shivani Bhardwaj <shivanib134@gmail.com>
-Subject: Re: [PATCH v4 1/1] iio:core: timestamping clock selection support
-In-Reply-To: <56DB27E0.2020606@kernel.org>
-Message-ID: <alpine.DEB.2.11.1603090943110.3657@nanos>
-References: <cover.1456831161.git.gregor.boirie@parrot.com> <8941aa811dc1666757105d81eccd30aacdc474eb.1456831161.git.gregor.boirie@parrot.com> <56DB27E0.2020606@kernel.org>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.lysator.liu.se ([130.236.254.3]:41055 "EHLO
+	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758577AbcCCWhx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:53 -0500
+From: Peter Rosin <peda@lysator.liu.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Viorel Suman <viorel.suman@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+	Peter Rosin <peda@lysator.liu.se>
+Subject: [PATCH v4 08/18] iio: imu: inv_mpu6050: convert to use an explicit i2c mux core
+Date: Thu,  3 Mar 2016 23:27:20 +0100
+Message-Id: <1457044050-15230-9-git-send-email-peda@lysator.liu.se>
+In-Reply-To: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
+References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, 5 Mar 2016, Jonathan Cameron wrote:
+From: Peter Rosin <peda@axentia.se>
 
-> On 01/03/16 11:27, Gregor Boirie wrote:
-> > Adds a new per-device sysfs attribute "current_timestamp_clock" to allow
-> > userspace to select a particular POSIX clock for buffered samples and
-> > events timestamping.
-> > 
-> > Following clocks, as listed in clock_gettime(2), are supported:
-> > CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_MONOTONIC_RAW,
-> > CLOCK_REALTIME_COARSE, CLOCK_MONOTONIC_COARSE, CLOCK_BOOTTIME and
-> > CLOCK_TAI.
-> > 
-> > Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-> Life is never simple :
-> 
-> ERROR: "get_monotonic_coarse64" [drivers/iio/industrialio.ko] undefined!
-> scripts/Makefile.modpost:91: recipe for target '__modpost' failed
-> make[1]: *** [__modpost] Error 1
-> 
-> Which turns out to be because get_monotonic_coarse64 isn't available to modules...
-> Can add an export to make it so, but that's a change that needs Thomas'
-> approval (I think!)
-> 
-> Thomas, would it make sense to export get_monotonic_coarse64?
+Allocate an explicit i2c mux core to handle parent and child adapters
+etc. Update the select/deselect ops to be in terms of the i2c mux core
+instead of the child adapter.
 
-If you really need it, yes.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c |  2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 30 +++++++++++++-----------------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  3 ++-
+ 3 files changed, 16 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+index 1c982a56acd5..d433e7b64011 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+@@ -182,7 +182,7 @@ int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st)
+ 			} else
+ 				return 0; /* no secondary addr, which is OK */
+ 		}
+-		st->mux_client = i2c_new_device(st->mux_adapter, &info);
++		st->mux_client = i2c_new_device(st->muxc->adapter[0], &info);
+ 		if (!st->mux_client)
+ 			return -ENODEV;
  
-Thanks,
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index f0e06093b5e8..642f22013d17 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -23,7 +23,6 @@
+ #include <linux/kfifo.h>
+ #include <linux/spinlock.h>
+ #include <linux/iio/iio.h>
+-#include <linux/i2c-mux.h>
+ #include <linux/acpi.h>
+ #include "inv_mpu_iio.h"
+ 
+@@ -109,10 +108,9 @@ static int inv_mpu6050_write_reg_unlocked(struct inv_mpu6050_state *st,
+ 	return 0;
+ }
+ 
+-static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
+-				     u32 chan_id)
++static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct iio_dev *indio_dev = mux_priv;
++	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 	int ret = 0;
+ 
+@@ -138,10 +136,9 @@ write_error:
+ 	return ret;
+ }
+ 
+-static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
+-				       void *mux_priv, u32 chan_id)
++static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct iio_dev *indio_dev = mux_priv;
++	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 
+ 	mutex_lock(&indio_dev->mlock);
+@@ -842,16 +839,15 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 		goto out_remove_trigger;
+ 	}
+ 
+-	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
+-					      &client->dev,
+-					      indio_dev,
+-					      0, 0, 0,
+-					      inv_mpu6050_select_bypass,
+-					      inv_mpu6050_deselect_bypass);
+-	if (!st->mux_adapter) {
+-		result = -ENODEV;
++	st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
++				       0, 0, 0,
++				       inv_mpu6050_select_bypass,
++				       inv_mpu6050_deselect_bypass);
++	if (IS_ERR(st->muxc)) {
++		result = PTR_ERR(st->muxc);
+ 		goto out_unreg_device;
+ 	}
++	st->muxc->priv = indio_dev;
+ 
+ 	result = inv_mpu_acpi_create_mux_client(st);
+ 	if (result)
+@@ -860,7 +856,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 	return 0;
+ 
+ out_del_mux:
+-	i2c_del_mux_adapter(st->mux_adapter);
++	i2c_mux_del_adapters(st->muxc);
+ out_unreg_device:
+ 	iio_device_unregister(indio_dev);
+ out_remove_trigger:
+@@ -876,7 +872,7 @@ static int inv_mpu_remove(struct i2c_client *client)
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 
+ 	inv_mpu_acpi_delete_mux_client(st);
+-	i2c_del_mux_adapter(st->mux_adapter);
++	i2c_mux_del_adapters(st->muxc);
+ 	iio_device_unregister(indio_dev);
+ 	inv_mpu6050_remove_trigger(st);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index db0a4a2758ab..61a3a04b84b8 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -11,6 +11,7 @@
+ * GNU General Public License for more details.
+ */
+ #include <linux/i2c.h>
++#include <linux/i2c-mux.h>
+ #include <linux/kfifo.h>
+ #include <linux/spinlock.h>
+ #include <linux/iio/iio.h>
+@@ -120,7 +121,7 @@ struct inv_mpu6050_state {
+ 	enum   inv_devices chip_type;
+ 	spinlock_t time_stamp_lock;
+ 	struct i2c_client *client;
+-	struct i2c_adapter *mux_adapter;
++	struct i2c_mux_core *muxc;
+ 	struct i2c_client *mux_client;
+ 	unsigned int powerup_count;
+ 	struct inv_mpu6050_platform_data plat_data;
+-- 
+2.1.4
 
-	tglx
