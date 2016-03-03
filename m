@@ -1,307 +1,205 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56217 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754304AbcCEPpq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 10:45:46 -0500
-Subject: Re: [PATCH v2 5/5] iio:magnetometer:ak8975: triggered buffer support
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1457001111.git.gregor.boirie@parrot.com>
- <49f851580f1e33c8753921f66935cf92bf40c62f.1457001111.git.gregor.boirie@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail.lysator.liu.se ([130.236.254.3]:35465 "EHLO
+	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757500AbcCCWhu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:50 -0500
+From: Peter Rosin <peda@lysator.liu.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56DAFF25.4080709@kernel.org>
-Date: Sat, 5 Mar 2016 15:45:41 +0000
-MIME-Version: 1.0
-In-Reply-To: <49f851580f1e33c8753921f66935cf92bf40c62f.1457001111.git.gregor.boirie@parrot.com>
-Content-Type: text/plain; charset=windows-1252
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Viorel Suman <viorel.suman@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+	Peter Rosin <peda@lysator.liu.se>
+Subject: [PATCH v4 07/18] i2c: i2c-mux-reg: convert to use an explicit i2c mux core
+Date: Thu,  3 Mar 2016 23:27:19 +0100
+Message-Id: <1457044050-15230-8-git-send-email-peda@lysator.liu.se>
+In-Reply-To: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
+References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/03/16 10:44, Gregor Boirie wrote:
-> This will be used together with an external trigger (e.g hrtimer based
-> software trigger).
-> 
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-A few little bits and bobs inline.  Mostly stuff that I think could be
-a little easier to read (at the cost of the odd extra line of code).
+From: Peter Rosin <peda@axentia.se>
 
-Jonathan
-> ---
->  drivers/iio/magnetometer/Kconfig  |   2 +
->  drivers/iio/magnetometer/ak8975.c | 150 +++++++++++++++++++++++++++++++-------
->  2 files changed, 125 insertions(+), 27 deletions(-)
-> 
-> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> index 021dc53..d9834ed 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -9,6 +9,8 @@ config AK8975
->  	tristate "Asahi Kasei AK 3-Axis Magnetometer"
->  	depends on I2C
->  	depends on GPIOLIB || COMPILE_TEST
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say yes here to build support for Asahi Kasei AK8975, AK8963,
->  	  AK09911 or AK09912 3-Axis Magnetometer.
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index 95c68952..9559ab8 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -36,6 +36,12 @@
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/regulator/consumer.h>
-> +
->  /*
->   * Register definitions, as well as various shifts and masks to get at the
->   * individual fields of the registers.
-> @@ -617,22 +623,15 @@ static int wait_conversion_complete_interrupt(struct ak8975_data *data)
->  	return ret > 0 ? 0 : -ETIME;
->  }
->  
-> -/*
-> - * Emits the raw flux value for the x, y, or z axis.
-> - */
-> -static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
-> +static int ak8975_start_read_axis(struct ak8975_data *data,
-> +				  const struct i2c_client *client)
->  {
-> -	struct ak8975_data *data = iio_priv(indio_dev);
-> -	struct i2c_client *client = data->client;
-> -	int ret;
-> -
-> -	mutex_lock(&data->lock);
-> -
->  	/* Set up the device for taking a sample. */
-> -	ret = ak8975_set_mode(data, MODE_ONCE);
-> -	if (ret < 0) {
-> +	int ret = ak8975_set_mode(data, MODE_ONCE);
-> +
-> +	if (ret) {
->  		dev_err(&client->dev, "Error in setting operating mode\n");
-> -		goto exit;
-> +		return ret;
->  	}
->  
->  	/* Wait for the conversion to complete. */
-> @@ -643,7 +642,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
->  	else
->  		ret = wait_conversion_complete_polled(data);
->  	if (ret < 0)
-> -		goto exit;
-> +		return ret;
->  
->  	/* This will be executed only for non-interrupt based waiting case */
->  	if (ret & data->def->ctrl_masks[ST1_DRDY]) {
-> @@ -651,32 +650,46 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
->  					       data->def->ctrl_regs[ST2]);
->  		if (ret < 0) {
->  			dev_err(&client->dev, "Error in reading ST2\n");
-> -			goto exit;
-> +			return ret;
->  		}
->  		if (ret & (data->def->ctrl_masks[ST2_DERR] |
->  			   data->def->ctrl_masks[ST2_HOFL])) {
->  			dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
-> -			ret = -EINVAL;
-> -			goto exit;
-> +			return -EINVAL;
->  		}
->  	}
->  
-> -	/* Read the flux value from the appropriate register
-> -	   (the register is specified in the iio device attributes). */
-> -	ret = i2c_smbus_read_word_data(client, data->def->data_regs[index]);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "Read axis data fails\n");
-> +	return 0;
-> +}
-> +
-> +/*
-> + * Retrieve raw flux value for one of the x, y, or z axis.
-Single line comment so should probably have single line comment syntax
-(or I'll get a 'fix' patch for it ;)
-> + */
-> +static int ak8975_read_axis(struct ak8975_data *data, int index, int *val)
-> +{
-> +	int ret;
-> +	const struct i2c_client *client = data->client;
-> +	const struct ak_def *def = data->def;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	ret = ak8975_start_read_axis(data, client);
-> +	if (ret)
-> +		goto exit;
-> +
-> +	ret = i2c_smbus_read_word_data(client, def->data_regs[index]);
-> +	if (ret < 0)
->  		goto exit;
-> -	}
->  
->  	mutex_unlock(&data->lock);
->  
->  	/* Clamp to valid range. */
-> -	*val = clamp_t(s16, ret, -data->def->range, data->def->range);
-> +	*val = clamp_t(s16, ret, -def->range, def->range);
->  	return IIO_VAL_INT;
->  
->  exit:
->  	mutex_unlock(&data->lock);
-> +	dev_err(&client->dev, "Error in reading axis\n");
->  	return ret;
->  }
->  
-> @@ -689,7 +702,7 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-Not sure I'd have bothered with this change...
-> -		return ak8975_read_axis(indio_dev, chan->address, val);
-> +		return ak8975_read_axis(data, chan->address, val);
->  	case IIO_CHAN_INFO_SCALE:
->  		*val = 0;
->  		*val2 = data->raw_to_gauss[chan->address];
-> @@ -728,12 +741,25 @@ static const struct attribute_group ak8975_attrs_group = {
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
->  			     BIT(IIO_CHAN_INFO_SCALE),			\
->  		.address = index,					\
-> +		.scan_index = index,					\
-> +		.scan_type = {						\
-> +			.sign = 's',					\
-> +			.realbits = 16,					\
-> +			.storagebits = 16,				\
-> +			.shift = 0,					\
-Don't specify shift if it is 0 as that's the default.
-> +			.endianness = IIO_CPU				\
-> +		}							\
->  	}
->  
->  static const struct iio_chan_spec ak8975_channels[] = {
-> -	AK8975_CHANNEL(X, 0), AK8975_CHANNEL(Y, 1), AK8975_CHANNEL(Z, 2),
-> +	AK8975_CHANNEL(X, 0),
-> +	AK8975_CHANNEL(Y, 1),
-> +	AK8975_CHANNEL(Z, 2),
-An unrelated change but I guess minor enough that it isn't worth it's own patch
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
->  };
->  
-> +static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
-> +
->  static const struct iio_info ak8975_info = {
->  	.read_raw = &ak8975_read_raw,
->  	.driver_module = THIS_MODULE,
-> @@ -768,6 +794,51 @@ static const char *ak8975_match_acpi_device(struct device *dev,
->  	return dev_name(dev);
->  }
->  
-> +static irqreturn_t ak8975_handle_trigger(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ak8975_data *data = iio_priv(indio_dev);
-> +	const struct i2c_client *client = data->client;
-> +	const struct ak_def *def = data->def;
-> +	int ret;
-> +	s16 buff[8]; /* 3 x 16 bits axis values + 1 aligned 64 bits timestamp */
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	ret = ak8975_start_read_axis(data, client);
-> +	if (ret)
-> +		goto unlock;
-> +
-> +	/*
-> +	 * For each axis, read the flux value from the appropriate register
-> +	 * (the register is specified in the iio device attributes).
-> +	 */
-> +	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
-> +							def->data_regs[0],
-> +							3 * sizeof(buff[0]),
-> +							(u8 *)buff);
-> +	if (ret < 0)
-> +		goto unlock;
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	/* Clamp to valid range. */
-> +	buff[0] = clamp_t(s16, le16_to_cpu(buff[0]), -def->range, def->range);
-> +	buff[1] = clamp_t(s16, le16_to_cpu(buff[1]), -def->range, def->range);
-> +	buff[2] = clamp_t(s16, le16_to_cpu(buff[2]), -def->range, def->range);
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, buff, iio_get_time_ns());
-> +	goto exit;
-Clearer to replicate the exit condition here I think and not have the goto.
-> +
-> +unlock:
-> +	mutex_unlock(&data->lock);
-> +	dev_err(&client->dev, "Error in reading axes block\n");
-> +exit:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static int ak8975_probe(struct i2c_client *client,
->  			const struct i2c_device_id *id)
->  {
-> @@ -867,9 +938,33 @@ static int ak8975_probe(struct i2c_client *client,
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->channels = ak8975_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
-> +	indio_dev->available_scan_masks = ak8975_scan_masks;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->name = name;
-> -	return devm_iio_device_register(&client->dev, indio_dev);
-> +
-> +	err = iio_triggered_buffer_setup(indio_dev, NULL, ak8975_handle_trigger,
-> +					 NULL);
-> +	if (err) {
-> +		dev_err(&client->dev, "triggered buffer setup failed\n");
-> +		return err;
-> +	}
-> +
-> +	err = iio_device_register(indio_dev);
-> +	if (!err)
-> +		return 0;
-Please keep to convention of error paths being the non 'standard' route.
-It adds a small amount of code, but gives slightly easier to read code.
-> +
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	dev_err(&client->dev, "device register failed\n");
-> +	return err;
-> +}
-> +
-> +static int ak8975_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-blank line here preferred  (nitpick of the day ;)
-> +	return 0;
->  }
->  
->  static const struct i2c_device_id ak8975_id[] = {
-> @@ -903,6 +998,7 @@ static struct i2c_driver ak8975_driver = {
->  		.acpi_match_table = ACPI_PTR(ak_acpi_match),
->  	},
->  	.probe		= ak8975_probe,
-> +	.remove		= ak8975_remove,
->  	.id_table	= ak8975_id,
->  };
->  module_i2c_driver(ak8975_driver);
-> 
+Allocate an explicit i2c mux core to handle parent and child adapters
+etc. Update the select/deselect ops to be in terms of the i2c mux core
+instead of the child adapter.
+
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/i2c/muxes/i2c-mux-reg.c | 63 ++++++++++++++++-------------------------
+ 1 file changed, 24 insertions(+), 39 deletions(-)
+
+diff --git a/drivers/i2c/muxes/i2c-mux-reg.c b/drivers/i2c/muxes/i2c-mux-reg.c
+index 5fbd5bd0878f..3ac9a2dab111 100644
+--- a/drivers/i2c/muxes/i2c-mux-reg.c
++++ b/drivers/i2c/muxes/i2c-mux-reg.c
+@@ -21,8 +21,6 @@
+ #include <linux/slab.h>
+ 
+ struct regmux {
+-	struct i2c_adapter *parent;
+-	struct i2c_adapter **adap; /* child busses */
+ 	struct i2c_mux_reg_platform_data data;
+ };
+ 
+@@ -64,18 +62,16 @@ static int i2c_mux_reg_set(const struct regmux *mux, unsigned int chan_id)
+ 	return 0;
+ }
+ 
+-static int i2c_mux_reg_select(struct i2c_adapter *adap, void *data,
+-			      unsigned int chan)
++static int i2c_mux_reg_select(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct regmux *mux = data;
++	struct regmux *mux = i2c_mux_priv(muxc);
+ 
+ 	return i2c_mux_reg_set(mux, chan);
+ }
+ 
+-static int i2c_mux_reg_deselect(struct i2c_adapter *adap, void *data,
+-				unsigned int chan)
++static int i2c_mux_reg_deselect(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct regmux *mux = data;
++	struct regmux *mux = i2c_mux_priv(muxc);
+ 
+ 	if (mux->data.idle_in_use)
+ 		return i2c_mux_reg_set(mux, mux->data.idle);
+@@ -87,6 +83,7 @@ static int i2c_mux_reg_deselect(struct i2c_adapter *adap, void *data,
+ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+ 					struct platform_device *pdev)
+ {
++	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct device_node *adapter_np, *child;
+ 	struct i2c_adapter *adapter;
+@@ -107,7 +104,7 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+ 	if (!adapter)
+ 		return -EPROBE_DEFER;
+ 
+-	mux->parent = adapter;
++	muxc->parent = adapter;
+ 	mux->data.parent = i2c_adapter_id(adapter);
+ 	put_device(&adapter->dev);
+ 
+@@ -169,18 +166,20 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+ 
+ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ {
++	struct i2c_mux_core *muxc;
+ 	struct regmux *mux;
+ 	struct i2c_adapter *parent;
+ 	struct resource *res;
+-	int (*deselect)(struct i2c_adapter *, void *, u32);
+ 	unsigned int class;
+ 	int i, ret, nr;
+ 
+-	mux = devm_kzalloc(&pdev->dev, sizeof(*mux), GFP_KERNEL);
+-	if (!mux)
++	muxc = i2c_mux_alloc(NULL, &pdev->dev, sizeof(*mux), 0,
++			     i2c_mux_reg_select, NULL);
++	if (!muxc)
+ 		return -ENOMEM;
++	mux = i2c_mux_priv(muxc);
+ 
+-	platform_set_drvdata(pdev, mux);
++	platform_set_drvdata(pdev, muxc);
+ 
+ 	if (dev_get_platdata(&pdev->dev)) {
+ 		memcpy(&mux->data, dev_get_platdata(&pdev->dev),
+@@ -190,7 +189,7 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ 		if (!parent)
+ 			return -EPROBE_DEFER;
+ 
+-		mux->parent = parent;
++		muxc->parent = parent;
+ 	} else {
+ 		ret = i2c_mux_reg_probe_dt(mux, pdev);
+ 		if (ret < 0) {
+@@ -215,55 +214,41 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	mux->adap = devm_kzalloc(&pdev->dev,
+-				 sizeof(*mux->adap) * mux->data.n_values,
+-				 GFP_KERNEL);
+-	if (!mux->adap) {
+-		dev_err(&pdev->dev, "Cannot allocate i2c_adapter structure");
+-		return -ENOMEM;
+-	}
++	ret = i2c_mux_reserve_adapters(muxc, mux->data.n_values);
++	if (ret)
++		return ret;
+ 
+ 	if (mux->data.idle_in_use)
+-		deselect = i2c_mux_reg_deselect;
+-	else
+-		deselect = NULL;
++		muxc->deselect = i2c_mux_reg_deselect;
+ 
+ 	for (i = 0; i < mux->data.n_values; i++) {
+ 		nr = mux->data.base_nr ? (mux->data.base_nr + i) : 0;
+ 		class = mux->data.classes ? mux->data.classes[i] : 0;
+ 
+-		mux->adap[i] = i2c_add_mux_adapter(mux->parent, &pdev->dev, mux,
+-						   nr, mux->data.values[i],
+-						   class, i2c_mux_reg_select,
+-						   deselect);
+-		if (!mux->adap[i]) {
+-			ret = -ENODEV;
++		ret = i2c_mux_add_adapter(muxc, nr, mux->data.values[i], class);
++		if (ret) {
+ 			dev_err(&pdev->dev, "Failed to add adapter %d\n", i);
+ 			goto add_adapter_failed;
+ 		}
+ 	}
+ 
+ 	dev_dbg(&pdev->dev, "%d port mux on %s adapter\n",
+-		 mux->data.n_values, mux->parent->name);
++		 mux->data.n_values, muxc->parent->name);
+ 
+ 	return 0;
+ 
+ add_adapter_failed:
+-	for (; i > 0; i--)
+-		i2c_del_mux_adapter(mux->adap[i - 1]);
++	i2c_mux_del_adapters(muxc);
+ 
+ 	return ret;
+ }
+ 
+ static int i2c_mux_reg_remove(struct platform_device *pdev)
+ {
+-	struct regmux *mux = platform_get_drvdata(pdev);
+-	int i;
+-
+-	for (i = 0; i < mux->data.n_values; i++)
+-		i2c_del_mux_adapter(mux->adap[i]);
++	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
+ 
+-	i2c_put_adapter(mux->parent);
++	i2c_mux_del_adapters(muxc);
++	i2c_put_adapter(muxc->parent);
+ 
+ 	return 0;
+ }
+-- 
+2.1.4
 
