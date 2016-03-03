@@ -1,111 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:30869 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932419AbcCILT7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 9 Mar 2016 06:19:59 -0500
-Message-ID: <56E006FA.3040201@parrot.com>
-Date: Wed, 9 Mar 2016 12:20:26 +0100
-From: Gregor Boirie <gregor.boirie@parrot.com>
-MIME-Version: 1.0
-To: Martin Kepplinger <martink@posteo.de>, <linux-iio@vger.kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: [PATCH v5 1/1] Fixes: 3145229f9191 ("iio:pressure:ms5611: power
- regulator support")
-References: <cover.1457459537.git.gregor.boirie@parrot.com> <26a4b9ab8ae9b40f9c96c51f12c977fdad36532f.1457459537.git.gregor.boirie@parrot.com> <CAEnQRZBsQ4_XPBXfuWu4WL_qLG7fo3ynsWfQ51v=Ya2O6-jXyQ@mail.gmail.com> <56DFF4D2.4000708@parrot.com> <56DFF594.8030603@posteo.de>
-In-Reply-To: <56DFF594.8030603@posteo.de>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Received: from mail.lysator.liu.se ([130.236.254.3]:37523 "EHLO
+	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758556AbcCCWhx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:53 -0500
+From: Peter Rosin <peda@lysator.liu.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Viorel Suman <viorel.suman@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+	Peter Rosin <peda@lysator.liu.se>
+Subject: [PATCH v4 12/18] [media] si2168: convert to use an explicit i2c mux core
+Date: Thu,  3 Mar 2016 23:27:24 +0100
+Message-Id: <1457044050-15230-13-git-send-email-peda@lysator.liu.se>
+In-Reply-To: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
+References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Peter Rosin <peda@axentia.se>
 
+Allocate an explicit i2c mux core to handle parent and child adapters
+etc. Update the select/deselect ops to be in terms of the i2c mux core
+instead of the child adapter.
 
-On 03/09/2016 11:06 AM, Martin Kepplinger wrote:
-> Am 2016-03-09 um 11:02 schrieb Gregor Boirie:
->> Hi Daniel,
->>
->> On 03/08/2016 10:16 PM, Daniel Baluta wrote:
->>> On Tue, Mar 8, 2016 at 8:00 PM, Gregor Boirie
->>> <gregor.boirie@parrot.com> wrote:
->>>> When not compiled-in, regulator layer will return a NULL pointer when
->>>> trying to get a reference to any regulator using
->>>> devm_regulator_get().  As
->>>> IS_ERR() does not consider this an error, the ms5611 probing
->>>> operation will
->>>> try to enable a NULL regulator, which will invariably cause a kernel
->>>> crash.
->>>> This patch fixes this situation by using devm_regulator_get_optional()
->>>> instead of devm_regulator_get().
->>>>
->>>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
->>> $Subject should be here. And the commit subject should be something
->>> more appropriate like:
->>>
->>> iio: pressure: ms5611: Fix crash when ...
->> I'm a bit lost here since when Jonathan asked for "a fixes tag" inclusion
->> (http://permalink.gmane.org/gmane.linux.kernel.iio/22425), I supposed he
->> meant a tag such as one described in the Documentation/SubmittingPatches
->> file.
->> My initial attempt was sent with the subject:
->> "iio:pressure:ms5611: fix oops when probing regulator".
->>
->> Would you please be kind enough to give me some sort of rules as to when
->> and how
->> to write subject lines related to fixes patch ?
->>
-> I guess you can just put in a "Fixes:" line, along with your
-> "Signed-off-by:" lines.
-Oh... <light bulb enlightenment/> ! I definitely need some decent 
-manners lessons :)
-Thanks.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/media/dvb-frontends/si2168.c      | 22 ++++++++++++----------
+ drivers/media/dvb-frontends/si2168_priv.h |  2 +-
+ 2 files changed, 13 insertions(+), 11 deletions(-)
 
->
->> Regards,
->> Grégor.
->>
->>>
->>>> ---
->>>>    drivers/iio/pressure/ms5611_core.c | 8 ++++++--
->>>>    1 file changed, 6 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/pressure/ms5611_core.c
->>>> b/drivers/iio/pressure/ms5611_core.c
->>>> index 37dbc04..a2a871b 100644
->>>> --- a/drivers/iio/pressure/ms5611_core.c
->>>> +++ b/drivers/iio/pressure/ms5611_core.c
->>>> @@ -387,8 +387,8 @@ static const struct iio_info ms5611_info = {
->>>>    static int ms5611_init(struct iio_dev *indio_dev)
->>>>    {
->>>>           int ret;
->>>> -       struct regulator *vdd =
->>>> devm_regulator_get(indio_dev->dev.parent,
->>>> -                                                  "vdd");
->>>> +       struct regulator *vdd =
->>>> +               devm_regulator_get_optional(indio_dev->dev.parent,
->>>> "vdd");
->>>>
->>>>           /* Enable attached regulator if any. */
->>>>           if (!IS_ERR(vdd)) {
->>>> @@ -398,6 +398,10 @@ static int ms5611_init(struct iio_dev *indio_dev)
->>>>                                   "failed to enable Vdd supply: %d\n",
->>>> ret);
->>>>                           return ret;
->>>>                   }
->>>> +       } else {
->>>> +               ret = PTR_ERR(vdd);
->>>> +               if (ret != -ENODEV)
->>>> +                       return ret;
->>>>           }
->>>>
->>>>           ret = ms5611_reset(indio_dev);
->>>> -- 
->>>> 2.1.4
->>>>
->>>> -- 
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->> -- 
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/media/dvb-frontends/si2168.c b/drivers/media/dvb-frontends/si2168.c
+index 821a8f481507..ca455d01c71d 100644
+--- a/drivers/media/dvb-frontends/si2168.c
++++ b/drivers/media/dvb-frontends/si2168.c
+@@ -615,9 +615,9 @@ static int si2168_get_tune_settings(struct dvb_frontend *fe,
+  * We must use unlocked I2C I/O because I2C adapter lock is already taken
+  * by the caller (usually tuner driver).
+  */
+-static int si2168_select(struct i2c_adapter *adap, void *mux_priv, u32 chan)
++static int si2168_select(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct i2c_client *client = mux_priv;
++	struct i2c_client *client = i2c_mux_priv(muxc);
+ 	int ret;
+ 	struct si2168_cmd cmd;
+ 
+@@ -635,9 +635,9 @@ err:
+ 	return ret;
+ }
+ 
+-static int si2168_deselect(struct i2c_adapter *adap, void *mux_priv, u32 chan)
++static int si2168_deselect(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct i2c_client *client = mux_priv;
++	struct i2c_client *client = i2c_mux_priv(muxc);
+ 	int ret;
+ 	struct si2168_cmd cmd;
+ 
+@@ -709,17 +709,19 @@ static int si2168_probe(struct i2c_client *client,
+ 	}
+ 
+ 	/* create mux i2c adapter for tuner */
+-	dev->adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
+-			client, 0, 0, 0, si2168_select, si2168_deselect);
+-	if (dev->adapter == NULL) {
+-		ret = -ENODEV;
++	dev->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
++					0, 0, 0,
++					si2168_select, si2168_deselect);
++	if (IS_ERR(dev->muxc)) {
++		ret = PTR_ERR(dev->muxc);
+ 		goto err_kfree;
+ 	}
++	dev->muxc->priv = client;
+ 
+ 	/* create dvb_frontend */
+ 	memcpy(&dev->fe.ops, &si2168_ops, sizeof(struct dvb_frontend_ops));
+ 	dev->fe.demodulator_priv = client;
+-	*config->i2c_adapter = dev->adapter;
++	*config->i2c_adapter = dev->muxc->adapter[0];
+ 	*config->fe = &dev->fe;
+ 	dev->ts_mode = config->ts_mode;
+ 	dev->ts_clock_inv = config->ts_clock_inv;
+@@ -743,7 +745,7 @@ static int si2168_remove(struct i2c_client *client)
+ 
+ 	dev_dbg(&client->dev, "\n");
+ 
+-	i2c_del_mux_adapter(dev->adapter);
++	i2c_mux_del_adapters(dev->muxc);
+ 
+ 	dev->fe.ops.release = NULL;
+ 	dev->fe.demodulator_priv = NULL;
+diff --git a/drivers/media/dvb-frontends/si2168_priv.h b/drivers/media/dvb-frontends/si2168_priv.h
+index c07e6fe2cb10..165bf1412063 100644
+--- a/drivers/media/dvb-frontends/si2168_priv.h
++++ b/drivers/media/dvb-frontends/si2168_priv.h
+@@ -29,7 +29,7 @@
+ 
+ /* state struct */
+ struct si2168_dev {
+-	struct i2c_adapter *adapter;
++	struct i2c_mux_core *muxc;
+ 	struct dvb_frontend fe;
+ 	enum fe_delivery_system delivery_system;
+ 	enum fe_status fe_status;
+-- 
+2.1.4
 
