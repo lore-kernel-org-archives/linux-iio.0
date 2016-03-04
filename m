@@ -1,54 +1,155 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:30858 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752997AbcCBLJ5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 2 Mar 2016 06:09:57 -0500
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v1 3/6] iio:magnetometer:ak8975: use explicit endianness
-Date: Wed, 2 Mar 2016 12:10:25 +0100
-Message-ID: <397338e080c043cdaa7848a875a1f54a280e34ac.1456916271.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1456916271.git.gregor.boirie@parrot.com>
-References: <cover.1456916271.git.gregor.boirie@parrot.com>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <1457046598-15367-1-git-send-email-peda@lysator.liu.se>
+References: <CAEnQRZCKJuYTxckGzcFvyTfvonwBqQW37D7Y5RqyeBbd2iPkKA@mail.gmail.com>
+	<1457046598-15367-1-git-send-email-peda@lysator.liu.se>
+Date: Fri, 4 Mar 2016 12:20:16 +0200
+Message-ID: <CAEnQRZCTbcHqztwtyPH5phQMQUb48vSrf4KmQY68hKPBJr3OPQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/9] iio: Fix ABBA deadlock in inv-mpu6050
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Peter Rosin <peda@lysator.liu.se>
+Cc: Daniel Baluta <daniel.baluta@intel.com>, Peter Rosin <peda@axentia.se>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>,
+	Ge Gao <GGao@invensense.com>, Jonathan Cameron <jic23@kernel.org>, linux-i2c@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-ak8963, ak8975, ak09911 and ak09912 all store measurements in 2's
-complement and little endian.
-This enforces le16 to CPU endianness conversion of raw measurements
-fetched from I2C bus.
+On Fri, Mar 4, 2016 at 1:09 AM, Peter Rosin <peda@lysator.liu.se> wrote:
+> From: Peter Rosin <peda@axentia.se>
+>
+> Hi Daniel,
+>
+> Daniel Baluta wrote:
+>>On Mon, Feb 22, 2016 at 1:17 AM, Wolfram Sang wrote:
+>>> On Thu, Feb 18, 2016 at 05:53:05PM +0200, Daniel Baluta wrote:
+>>>> Sending this as an RFC because I don't know if style fixes are appropriate
+>>>> for this driver and also not sure if deadlock fix is the best solution.
+>
+> *snip*
+>
+>>> We recently had a bigger patch series fixing locking problems related to
+>>> muxes. I sadly didn't have the time to review it. Can you have a look if
+>>> it helps your case?
+>>>
+>>> http://thread.gmane.org/gmane.linux.drivers.i2c/26169
+>>
+>> Tested this and the deadlock is still there :(.
+>
+> I assume that when you tested v3 of my series, you did nothing
+> to actually make use of the new stuff available in the mux-core?
+> If you didn't do anything to make use of the new stuff, the
+> driver should behave as before.
 
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- drivers/iio/magnetometer/ak8975.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+You are right. I used v3 as it is.
+>
+> So, please try this patch on top of my recently posted v4 of the
+> "i2c mux cleanup and locking update" series [1]. I have not tested
+> this patch at all, but I have the feeling it could do the trick...
 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 896b13e3..46c6bd7 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -655,7 +655,8 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	mutex_unlock(&data->lock);
- 
- 	/* Clamp to valid range. */
--	*val = clamp_t(s16, ret, -data->def->range, data->def->range);
-+	*val = clamp_t(s16, le16_to_cpu((s16)ret), -data->def->range,
-+		       data->def->range);
- 	return IIO_VAL_INT;
- 
- exit:
--- 
-2.1.4
+This patch fixes the problem! :P
 
+> Cheers,
+> Peter
+>
+> [1] https://marc.info/?l=linux-iio&m=145704469628330&w=3
+>
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 642f22013d17..02b56e631973 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -79,35 +79,6 @@ int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 d)
+>         return i2c_smbus_write_i2c_block_data(st->client, reg, 1, &d);
+>  }
+>
+> -/*
+> - * The i2c read/write needs to happen in unlocked mode. As the parent
+> - * adapter is common. If we use locked versions, it will fail as
+> - * the mux adapter will lock the parent i2c adapter, while calling
+> - * select/deselect functions.
+> - */
+> -static int inv_mpu6050_write_reg_unlocked(struct inv_mpu6050_state *st,
+> -                                         u8 reg, u8 d)
+> -{
+> -       int ret;
+> -       u8 buf[2];
+> -       struct i2c_msg msg[1] = {
+> -               {
+> -                       .addr = st->client->addr,
+> -                       .flags = 0,
+> -                       .len = sizeof(buf),
+> -                       .buf = buf,
+> -               }
+> -       };
+> -
+> -       buf[0] = reg;
+> -       buf[1] = d;
+> -       ret = __i2c_transfer(st->client->adapter, msg, 1);
+> -       if (ret != 1)
+> -               return ret;
+> -
+> -       return 0;
+> -}
+> -
+>  static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+>  {
+>         struct iio_dev *indio_dev = i2c_mux_priv(muxc);
+> @@ -117,8 +88,7 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+>         /* Use the same mutex which was used everywhere to protect power-op */
+>         mutex_lock(&indio_dev->mlock);
+>         if (!st->powerup_count) {
+> -               ret = inv_mpu6050_write_reg_unlocked(st, st->reg->pwr_mgmt_1,
+> -                                                    0);
+> +               ret = inv_mpu6050_write_reg(st, st->reg->pwr_mgmt_1, 0);
+>                 if (ret)
+>                         goto write_error;
+>
+> @@ -126,9 +96,9 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+>         }
+>         if (!ret) {
+>                 st->powerup_count++;
+> -               ret = inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
+> -                                                    st->client->irq |
+> -                                                    INV_MPU6050_BIT_BYPASS_EN);
+> +               ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
+> +                                           st->client->irq |
+> +                                           INV_MPU6050_BIT_BYPASS_EN);
+>         }
+>  write_error:
+>         mutex_unlock(&indio_dev->mlock);
+> @@ -143,12 +113,11 @@ static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+>
+>         mutex_lock(&indio_dev->mlock);
+>         /* It doesn't really mattter, if any of the calls fails */
+> -       inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
+> -                                      st->client->irq);
+> +       inv_mpu6050_write_reg(st, st->reg->int_pin_cfg, st->client->irq);
+>         st->powerup_count--;
+>         if (!st->powerup_count)
+> -               inv_mpu6050_write_reg_unlocked(st, st->reg->pwr_mgmt_1,
+> -                                              INV_MPU6050_BIT_SLEEP);
+> +               inv_mpu6050_write_reg(st, st->reg->pwr_mgmt_1,
+> +                                     INV_MPU6050_BIT_SLEEP);
+>         mutex_unlock(&indio_dev->mlock);
+>
+>         return 0;
+> @@ -839,8 +808,8 @@ static int inv_mpu_probe(struct i2c_client *client,
+>                 goto out_remove_trigger;
+>         }
+>
+> -       st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
+> -                                      0, 0, 0,
+> +       st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0,
+> +                                      I2C_CONTROLLED_MUX, 0, 0, 0,
+>                                        inv_mpu6050_select_bypass,
+>                                        inv_mpu6050_deselect_bypass);
+>         if (IS_ERR(st->muxc)) {
+> --
+> 2.1.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
