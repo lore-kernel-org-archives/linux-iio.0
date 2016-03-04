@@ -1,27 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:23558 "EHLO
-	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756262AbcCBSVx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Mar 2016 13:21:53 -0500
-Date: Wed, 2 Mar 2016 21:21:44 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: matt.ranostay@intel.com
-Cc: linux-iio@vger.kernel.org
-Subject: Re: iio: imu: mpu6050: add mpu6500 register settings
-Message-ID: <20160302182144.GU5273@mwanda>
-References: <20160302181801.GA12744@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20160302181801.GA12744@mwanda>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <k.kozlowski@samsung.com>
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: [PATCH] iio: adc: Fix build error of missing devm_ioremap_resource on
+ UM
+Date: Fri, 04 Mar 2016 10:05:26 +0900
+Message-id: <1457053526-28841-1-git-send-email-k.kozlowski@samsung.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-I sent that too quickly.  The i2c version of inv_mpu_probe() has the
-same issue as well.
+The devres.o gets linked if HAS_IOMEM is present so on ARCH=um
+allyesconfig (COMPILE_TEST) failed with:
 
-	drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c:134 inv_mpu_probe()
-	error: we previously assumed 'id' could be null (see line 119)
+drivers/built-in.o: In function `at91_adc_probe':
+at91-sama5d2_adc.c:(.text+0x48f548): undefined reference to `devm_ioremap_resource'
 
-regards,
-dan carpenter
+Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+---
+ drivers/iio/adc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index af4aea7b20f9..82c718c515a0 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -134,6 +134,7 @@ config AT91_ADC
+ config AT91_SAMA5D2_ADC
+ 	tristate "Atmel AT91 SAMA5D2 ADC"
+ 	depends on ARCH_AT91 || COMPILE_TEST
++	depends on HAS_IOMEM
+ 	help
+ 	  Say yes here to build support for Atmel SAMA5D2 ADC which is
+ 	  available on SAMA5D2 SoC family.
+-- 
+2.5.0
