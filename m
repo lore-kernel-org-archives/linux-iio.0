@@ -1,71 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57174 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57030 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750717AbcCESnN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 13:43:13 -0500
-Subject: Re: [PATCH] iio: adc: imx25-gcq: fix do_div
-To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-References: <1457009513-7069-1-git-send-email-sudipm.mukherjee@gmail.com>
-Cc: linux-kernel@vger.kernel.org, kernel-testers@vger.kernel.org,
-	linux-iio@vger.kernel.org, Markus Pargmann <mpa@pengutronix.de>
+	with ESMTP id S1750717AbcCESYM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 13:24:12 -0500
+Subject: Re: [PATCH 0/4] Support for analog peripherals on LPC18xx familiy
+To: Joachim Eastwood <manabian@gmail.com>
+References: <1456772741-9402-1-git-send-email-manabian@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, robh+dt@kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56DB28BF.9070508@kernel.org>
-Date: Sat, 5 Mar 2016 18:43:11 +0000
+Message-ID: <56DB2449.8090300@kernel.org>
+Date: Sat, 5 Mar 2016 18:24:09 +0000
 MIME-Version: 1.0
-In-Reply-To: <1457009513-7069-1-git-send-email-sudipm.mukherjee@gmail.com>
+In-Reply-To: <1456772741-9402-1-git-send-email-manabian@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/03/16 12:51, Sudip Mukherjee wrote:
-> We are getting build failure with tilepro allmodconfig with the error:
+On 29/02/16 19:05, Joachim Eastwood wrote:
+> This patch set adds support for the analog (ADC and DAC) peripherals
+> found on NXP LPC18xx/43xx SoCs. The ADC is a SAR converter with 10-bit
+> resolution and 8 muxed inputs. The DAC is a simple single channel 10-
+> bit DAC.
 > 
-> drivers/iio/adc/fsl-imx25-gcq.c:236:4: note: in expansion of macro 'do_div'
-> do_div(priv->channel_vref_mv[reg], 1000);
->     ^
+> Note that these drivers do not support all the features found on the
+> peripherals. DMA and interrupts are not supported in either drivers.
+> The ADC driver also lack 'burst-mode' and hardware triggers. So for
+> now the ADC is limited to single shot samples.
 > 
-> include/asm-generic/div64.h:198:17: note: expected 'uint64_t *
-> 	{aka long long unsigned int *}' but argument is of type 'u32 *
-> 	{aka unsigned int *}'
+> Both drivers tested on Embedded Artists' LPC4357 Developer's Kit.
 > 
-> Create a temporary variable of type u64 and use that in do_div.
-> 
-> Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-Markus, can you take a quick look at this. 
+> Based on iio/testing branch from 29.02.15.
+Series looks pretty good.  Will do a review of V2 - right now I haven't
+found anything to add to what Peter found.
 
-> ---
+Nice little ADC from a quick read of the data sheet.  Not too complex
+but still well featured.
 > 
-> tilepro allmodconfig build log is at:
-> https://travis-ci.org/sudipm-mukherjee/parport/jobs/113325889
 > 
->  drivers/iio/adc/fsl-imx25-gcq.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+> Joachim Eastwood (4):
+>   iio: adc: add NXP LPC18xx ADC driver
+>   dt: document NXP LPC1850 ADC driver bindings
+>   iio: dac: add NXP LPC18xx DAC driver
+>   dt: document NXP LPC1850 DAC driver bindings
 > 
-> diff --git a/drivers/iio/adc/fsl-imx25-gcq.c b/drivers/iio/adc/fsl-imx25-gcq.c
-> index 2fd1927..e0636d4 100644
-> --- a/drivers/iio/adc/fsl-imx25-gcq.c
-> +++ b/drivers/iio/adc/fsl-imx25-gcq.c
-> @@ -174,6 +174,7 @@ static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
->  	struct device *dev = &pdev->dev;
->  	unsigned int refp_used[4] = {};
->  	int ret, i;
-> +	u64 temp;
->  
->  	/*
->  	 * Setup all configurations registers with a default conversion
-> @@ -233,7 +234,9 @@ static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
->  			priv->channel_vref_mv[reg] =
->  				regulator_get_voltage(priv->vref[refp]);
->  			/* Conversion from uV to mV */
-> -			do_div(priv->channel_vref_mv[reg], 1000);
-> +			temp = priv->channel_vref_mv[reg];
-> +			do_div(temp, 1000);
-> +			priv->channel_vref_mv[reg] = temp;
->  			break;
->  		case MX25_ADC_REFP_INT:
->  			priv->channel_vref_mv[reg] = 2500;
+>  .../devicetree/bindings/iio/adc/lpc1850-adc.txt    |  21 ++
+>  .../devicetree/bindings/iio/dac/lpc1850-dac.txt    |  20 ++
+>  drivers/iio/adc/Kconfig                            |  10 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/lpc18xx_adc.c                      | 226 +++++++++++++++++++++
+>  drivers/iio/dac/Kconfig                            |  10 +
+>  drivers/iio/dac/Makefile                           |   1 +
+>  drivers/iio/dac/lpc18xx_dac.c                      | 204 +++++++++++++++++++
+>  8 files changed, 493 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/lpc1850-dac.txt
+>  create mode 100644 drivers/iio/adc/lpc18xx_adc.c
+>  create mode 100644 drivers/iio/dac/lpc18xx_dac.c
 > 
 
