@@ -1,168 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55826 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55953 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751148AbcCEOkh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 09:40:37 -0500
-Subject: Re: [PATCH v4 2/3] iio:pressure:ms5611: complete DT support
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-References: <cover.1456828051.git.gregor.boirie@parrot.com>
- <6cbaba17e57b0bdc6c3550f49af9161e33438f84.1456828051.git.gregor.boirie@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Mark Brown <broonie@kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
+	with ESMTP id S1751423AbcCEPCm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 10:02:42 -0500
+Subject: Re: [PATCH 1/3] iio:adc:at91-sama5d2: fix typo
+To: Ludovic Desroches <ludovic.desroches@atmel.com>
+References: <1457021355-23898-1-git-send-email-ludovic.desroches@atmel.com>
+ <1457021355-23898-2-git-send-email-ludovic.desroches@atmel.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, nicolas.ferre@atmel.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56DAEFE2.8080403@kernel.org>
-Date: Sat, 5 Mar 2016 14:40:34 +0000
+Message-ID: <56DAF50F.80109@kernel.org>
+Date: Sat, 5 Mar 2016 15:02:39 +0000
 MIME-Version: 1.0
-In-Reply-To: <6cbaba17e57b0bdc6c3550f49af9161e33438f84.1456828051.git.gregor.boirie@parrot.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1457021355-23898-2-git-send-email-ludovic.desroches@atmel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/03/16 10:31, Gregor Boirie wrote:
-> From: Grégor Boirie <gregor.boirie@parrot.com>
+On 03/03/16 16:09, Ludovic Desroches wrote:
+> Fix typo in the name of a macro.
 > 
-> Add device-tree ID tables and document bindings.
-> 
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.  May or may not make it in this cycle
-depending on what Linus says in his rc email tomorrow (and whether I get time
-to do a pull request mid week).
+> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+Oops ;)
 
-Thanks,
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.  Not sure if I will be doing another pull
+request to Greg this cycle though...
 
 Jonathan
 > ---
->  .../devicetree/bindings/iio/pressure/ms5611.txt       | 19 +++++++++++++++++++
->  Documentation/devicetree/bindings/vendor-prefixes.txt |  1 +
->  drivers/iio/pressure/ms5611_i2c.c                     | 13 +++++++++++++
->  drivers/iio/pressure/ms5611_spi.c                     | 13 +++++++++++++
->  4 files changed, 46 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/pressure/ms5611.txt
+>  drivers/iio/adc/at91-sama5d2_adc.c | 26 +++++++++++++-------------
+>  1 file changed, 13 insertions(+), 13 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/pressure/ms5611.txt b/Documentation/devicetree/bindings/iio/pressure/ms5611.txt
-> new file mode 100644
-> index 0000000..17bca86
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/pressure/ms5611.txt
-> @@ -0,0 +1,19 @@
-> +MEAS ms5611 family pressure sensors
-> +
-> +Pressure sensors from MEAS Switzerland with SPI and I2C bus interfaces.
-> +
-> +Required properties:
-> +- compatible: "meas,ms5611" or "meas,ms5607"
-> +- reg: the I2C address or SPI chip select the device will respond to
-> +
-> +Optional properties:
-> +- vdd-supply: an optional regulator that needs to be on to provide VDD
-> +  power to the sensor.
-> +
-> +Example:
-> +
-> +ms5607@77 {
-> +	compatible = "meas,ms5607";
-> +	reg = <0x77>;
-> +	vdd-supply = <&ldo_3v3_gnss>;
-> +};
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> index 44ddc98..7733f8c 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> @@ -136,6 +136,7 @@ lsi	LSI Corp. (LSI Logic)
->  lltc	Linear Technology Corporation
->  marvell	Marvell Technology Group Ltd.
->  maxim	Maxim Integrated Products
-> +meas	Measurement Specialties
->  mediatek	MediaTek Inc.
->  melexis	Melexis N.V.
->  merrii	Merrii Technology Co., Ltd.
-> diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
-> index 7f6fc8e..57a8f2c 100644
-> --- a/drivers/iio/pressure/ms5611_i2c.c
-> +++ b/drivers/iio/pressure/ms5611_i2c.c
-> @@ -17,6 +17,7 @@
->  #include <linux/delay.h>
->  #include <linux/i2c.h>
->  #include <linux/module.h>
-> +#include <linux/of_device.h>
+> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+> index dbee13a..33bacec 100644
+> --- a/drivers/iio/adc/at91-sama5d2_adc.c
+> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
+> @@ -140,7 +140,7 @@
+>  /* Version Register */
+>  #define AT91_SAMA5D2_VERSION	0xfc
 >  
->  #include "ms5611.h"
+> -#define AT91_AT91_SAMA5D2_CHAN(num, addr)				\
+> +#define AT91_SAMA5D2_CHAN(num, addr)					\
+>  	{								\
+>  		.type = IIO_VOLTAGE,					\
+>  		.channel = num,						\
+> @@ -185,18 +185,18 @@ struct at91_adc_state {
+>  };
 >  
-> @@ -113,6 +114,17 @@ static int ms5611_i2c_remove(struct i2c_client *client)
->  	return ms5611_remove(i2c_get_clientdata(client));
->  }
+>  static const struct iio_chan_spec at91_adc_channels[] = {
+> -	AT91_AT91_SAMA5D2_CHAN(0, 0x50),
+> -	AT91_AT91_SAMA5D2_CHAN(1, 0x54),
+> -	AT91_AT91_SAMA5D2_CHAN(2, 0x58),
+> -	AT91_AT91_SAMA5D2_CHAN(3, 0x5c),
+> -	AT91_AT91_SAMA5D2_CHAN(4, 0x60),
+> -	AT91_AT91_SAMA5D2_CHAN(5, 0x64),
+> -	AT91_AT91_SAMA5D2_CHAN(6, 0x68),
+> -	AT91_AT91_SAMA5D2_CHAN(7, 0x6c),
+> -	AT91_AT91_SAMA5D2_CHAN(8, 0x70),
+> -	AT91_AT91_SAMA5D2_CHAN(9, 0x74),
+> -	AT91_AT91_SAMA5D2_CHAN(10, 0x78),
+> -	AT91_AT91_SAMA5D2_CHAN(11, 0x7c),
+> +	AT91_SAMA5D2_CHAN(0, 0x50),
+> +	AT91_SAMA5D2_CHAN(1, 0x54),
+> +	AT91_SAMA5D2_CHAN(2, 0x58),
+> +	AT91_SAMA5D2_CHAN(3, 0x5c),
+> +	AT91_SAMA5D2_CHAN(4, 0x60),
+> +	AT91_SAMA5D2_CHAN(5, 0x64),
+> +	AT91_SAMA5D2_CHAN(6, 0x68),
+> +	AT91_SAMA5D2_CHAN(7, 0x6c),
+> +	AT91_SAMA5D2_CHAN(8, 0x70),
+> +	AT91_SAMA5D2_CHAN(9, 0x74),
+> +	AT91_SAMA5D2_CHAN(10, 0x78),
+> +	AT91_SAMA5D2_CHAN(11, 0x7c),
+>  };
 >  
-> +#if defined(CONFIG_OF)
-> +static const struct of_device_id ms5611_i2c_matches[] = {
-> +	{ .compatible = "meas,ms5611" },
-> +	{ .compatible = "ms5611" },
-> +	{ .compatible = "meas,ms5607" },
-> +	{ .compatible = "ms5607" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, ms5611_i2c_matches);
-> +#endif
-> +
->  static const struct i2c_device_id ms5611_id[] = {
->  	{ "ms5611", MS5611 },
->  	{ "ms5607", MS5607 },
-> @@ -123,6 +135,7 @@ MODULE_DEVICE_TABLE(i2c, ms5611_id);
->  static struct i2c_driver ms5611_driver = {
->  	.driver = {
->  		.name = "ms5611",
-> +		.of_match_table = of_match_ptr(ms5611_i2c_matches)
->  	},
->  	.id_table = ms5611_id,
->  	.probe = ms5611_i2c_probe,
-> diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
-> index 5cc009e..7ec0c64 100644
-> --- a/drivers/iio/pressure/ms5611_spi.c
-> +++ b/drivers/iio/pressure/ms5611_spi.c
-> @@ -12,6 +12,7 @@
->  #include <linux/delay.h>
->  #include <linux/module.h>
->  #include <linux/spi/spi.h>
-> +#include <linux/of_device.h>
->  
->  #include "ms5611.h"
->  
-> @@ -114,6 +115,17 @@ static int ms5611_spi_remove(struct spi_device *spi)
->  	return ms5611_remove(spi_get_drvdata(spi));
->  }
->  
-> +#if defined(CONFIG_OF)
-> +static const struct of_device_id ms5611_spi_matches[] = {
-> +	{ .compatible = "meas,ms5611" },
-> +	{ .compatible = "ms5611" },
-> +	{ .compatible = "meas,ms5607" },
-> +	{ .compatible = "ms5607" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, ms5611_spi_matches);
-> +#endif
-> +
->  static const struct spi_device_id ms5611_id[] = {
->  	{ "ms5611", MS5611 },
->  	{ "ms5607", MS5607 },
-> @@ -124,6 +136,7 @@ MODULE_DEVICE_TABLE(spi, ms5611_id);
->  static struct spi_driver ms5611_driver = {
->  	.driver = {
->  		.name = "ms5611",
-> +		.of_match_table = of_match_ptr(ms5611_spi_matches)
->  	},
->  	.id_table = ms5611_id,
->  	.probe = ms5611_spi_probe,
+>  static unsigned at91_adc_startup_time(unsigned startup_time_min,
 > 
 
