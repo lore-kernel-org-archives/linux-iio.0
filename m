@@ -1,244 +1,167 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:52769 "EHLO
-	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751391AbcCDOtj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Mar 2016 09:49:39 -0500
-Message-ID: <56D9A07A.5040106@lysator.liu.se>
-Date: Fri, 04 Mar 2016 15:49:30 +0100
-From: Peter Rosin <peda@lysator.liu.se>
+Received: from mail.kernel.org ([198.145.29.136]:47723 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1760641AbcCEEZ7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 4 Mar 2016 23:25:59 -0500
+Date: Fri, 4 Mar 2016 22:25:54 -0600
+From: Rob Herring <robh@kernel.org>
+To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 4/4] iio: ad5755: Add full DT binding documentation
+Message-ID: <20160305042554.GG13525@rob-hp-laptop>
+References: <1456833376-29758-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <1456833376-29758-2-git-send-email-sean.nyekjaer@prevas.dk>
+ <1456833376-29758-3-git-send-email-sean.nyekjaer@prevas.dk>
+ <1456833376-29758-4-git-send-email-sean.nyekjaer@prevas.dk>
 MIME-Version: 1.0
-To: linux-kernel@vger.kernel.org
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Viorel Suman <viorel.suman@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Terry Heo <terryheo@google.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Tommi Rantala <tt.rantala@gmail.com>,
-	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-media@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 00/18] i2c mux cleanup and locking update
-References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se> <56D96B15.8090806@lysator.liu.se>
-In-Reply-To: <56D96B15.8090806@lysator.liu.se>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1456833376-29758-4-git-send-email-sean.nyekjaer@prevas.dk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-I wrote:
-> I wrote:
->> Concerns:
->> - The locking is perhaps too complex?
+On Tue, Mar 01, 2016 at 12:56:16PM +0100, Sean Nyekjaer wrote:
+> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+> ---
+> Still missing some ideas to dc-dc-phase and mode options :-)
+
+Please combine patches 2 and 4. Binding changes don't have to correlate 
+one to one with driver changes.
+
 > 
-> Ok, to highlight the benefits of this series, I expect that patches such as
-> [1] and the one inlined below can follow up to clean up ad-hoc i2c locking
-> in drivers. Putting this locking in one place instead of having it spread
-> out in random drivers is a good thing.
+> Changes since v3:
+> - replaced '_' with '-'
+> - Now used actual values instead of register values.
 > 
-> PS. the inlined patch has not been tested as I have no hw, it's a proof of
-> concept. Maybe the simplifications can be extended into rtl2832_sdr.c as well?
-> Anyway, please do test this patch on top of the v4 series if you have the hw.
+> Changes since v2:
+>  - Removed defines, alot easier to read :-)
+> 
+>  .../devicetree/bindings/iio/dac/ad5755.txt         | 94 ++++++++++++++++++++++
+>  1 file changed, 94 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/dac/ad5755.txt b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+> index 4c91583..83b4c3f 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+> +++ b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+> @@ -15,10 +15,104 @@ Recommended properties:
+>   - spi-max-frequency: Definition as per
+>  		Documentation/devicetree/bindings/spi/spi-bus.txt
+>  
+> +Optional properties:
+> +See include/dt-bindings/iio/ad5755.h
+> + - adi,ext-dc-dc-compenstation-resistor: boolean set if the hardware have an
+> +					 external resistor and thereby bypasses
+> +					 the internal compensation resistor.
+> + - adi,dc-dc-phase:
+> +	Valid values for DC DC Phase control is:
+> +	0: All dc-to-dc converters clock on the same edge.
+> +	1: Channel A and Channel B clock on the same edge,
+> +	   Channel C and Channel D clock on opposite edges.
+> +	2: Channel A and Channel C clock on the same edge,
+> +	   Channel B and Channel D clock on opposite edges.
+> +	3: Channel A, Channel B, Channel C, and Channel D
+> +	   clock 90 degrees out of phase from each other.
+> + - adi,dc-dc-freq:
 
-The untested patch in the previous message indeed has some obvious problems, so
-I fixed that and folded some more removed code now that rtl2832_sdr does not
-need to do anything special to access device registers.
+Please append "-hz".
 
-The result builds for me, that's all the testing I have done.
+> +	Valid values for DC DC frequency is [Hz]:
+> +	250000
+> +	410000
+> +	650000
+> + - adi,dc-dc-maxv:
 
-diffstat for the two patches combined:
- drivers/media/dvb-frontends/rtl2832.c      | 216 ++++-------------------------
- drivers/media/dvb-frontends/rtl2832.h      |   4 +-
- drivers/media/dvb-frontends/rtl2832_priv.h |   1 -
- drivers/media/dvb-frontends/rtl2832_sdr.c  |  13 +-
- drivers/media/dvb-frontends/rtl2832_sdr.h  |   5 +-
- drivers/media/usb/dvb-usb-v2/rtl28xxu.c    |   5 +-
- 6 files changed, 34 insertions(+), 210 deletions(-)
+adi,dc-dc-max-microvolt
 
-Cheers,
-Peter
+Just trying to keep units somewhat standard.
 
-diff --git a/drivers/media/dvb-frontends/rtl2832.c b/drivers/media/dvb-frontends/rtl2832.c
-index fd1f05e9e79a..6ade321503f0 100644
---- a/drivers/media/dvb-frontends/rtl2832.c
-+++ b/drivers/media/dvb-frontends/rtl2832.c
-@@ -153,31 +153,6 @@ static const struct rtl2832_reg_entry registers[] = {
- 	[DVBT_REG_4MSEL]	= {0x013,  0, 0},
- };
- 
--/* Our regmap is bypassing I2C adapter lock, thus we do it! */
--static int rtl2832_bulk_write(struct i2c_client *client, unsigned int reg,
--			      const void *val, size_t val_count)
--{
--	struct rtl2832_dev *dev = i2c_get_clientdata(client);
--
--	return regmap_bulk_write(dev->regmap, reg, val, val_count);
--}
--
--static int rtl2832_update_bits(struct i2c_client *client, unsigned int reg,
--			       unsigned int mask, unsigned int val)
--{
--	struct rtl2832_dev *dev = i2c_get_clientdata(client);
--
--	return regmap_update_bits(dev->regmap, reg, mask, val);
--}
--
--static int rtl2832_bulk_read(struct i2c_client *client, unsigned int reg,
--			     void *val, size_t val_count)
--{
--	struct rtl2832_dev *dev = i2c_get_clientdata(client);
--
--	return regmap_bulk_read(dev->regmap, reg, val, val_count);
--}
--
- static int rtl2832_rd_demod_reg(struct rtl2832_dev *dev, int reg, u32 *val)
- {
- 	struct i2c_client *client = dev->client;
-@@ -1091,7 +1066,6 @@ static int rtl2832_probe(struct i2c_client *client,
- 	INIT_DELAYED_WORK(&dev->i2c_gate_work, rtl2832_i2c_gate_work);
- 	INIT_DELAYED_WORK(&dev->stat_work, rtl2832_stat_work);
- 	/* create regmap */
--	mutex_init(&dev->regmap_mutex);
- 	dev->regmap_config.reg_bits =  8,
- 	dev->regmap_config.val_bits =  8,
- 	dev->regmap_config.volatile_reg = rtl2832_volatile_reg,
-@@ -1099,8 +1073,7 @@ static int rtl2832_probe(struct i2c_client *client,
- 	dev->regmap_config.ranges = regmap_range_cfg,
- 	dev->regmap_config.num_ranges = ARRAY_SIZE(regmap_range_cfg),
- 	dev->regmap_config.cache_type = REGCACHE_NONE,
--	dev->regmap = regmap_init(&client->dev, NULL, client,
--				  &dev->regmap_config);
-+	dev->regmap = regmap_init_i2c(client, &dev->regmap_config);
- 	if (IS_ERR(dev->regmap)) {
- 		ret = PTR_ERR(dev->regmap);
- 		goto err_kfree;
-@@ -1131,9 +1104,7 @@ static int rtl2832_probe(struct i2c_client *client,
- 	pdata->enable_slave_ts = rtl2832_enable_slave_ts;
- 	pdata->pid_filter = rtl2832_pid_filter;
- 	pdata->pid_filter_ctrl = rtl2832_pid_filter_ctrl;
--	pdata->bulk_read = rtl2832_bulk_read;
--	pdata->bulk_write = rtl2832_bulk_write;
--	pdata->update_bits = rtl2832_update_bits;
-+	pdata->regmap = dev->regmap;
- 
- 	dev_info(&client->dev, "Realtek RTL2832 successfully attached\n");
- 	return 0;
-diff --git a/drivers/media/dvb-frontends/rtl2832.h b/drivers/media/dvb-frontends/rtl2832.h
-index c29a4c2bf71a..fab2f99672d6 100644
---- a/drivers/media/dvb-frontends/rtl2832.h
-+++ b/drivers/media/dvb-frontends/rtl2832.h
-@@ -57,9 +57,7 @@ struct rtl2832_platform_data {
- 	int (*pid_filter)(struct dvb_frontend *, u8, u16, int);
- 	int (*pid_filter_ctrl)(struct dvb_frontend *, int);
- /* private: Register access for SDR module use only */
--	int (*bulk_read)(struct i2c_client *, unsigned int, void *, size_t);
--	int (*bulk_write)(struct i2c_client *, unsigned int, const void *, size_t);
--	int (*update_bits)(struct i2c_client *, unsigned int, unsigned int, unsigned int);
-+	struct regmap *regmap;
- };
- 
- #endif /* RTL2832_H */
-diff --git a/drivers/media/dvb-frontends/rtl2832_priv.h b/drivers/media/dvb-frontends/rtl2832_priv.h
-index 6b3cd23a2c26..8657e0e578c5 100644
---- a/drivers/media/dvb-frontends/rtl2832_priv.h
-+++ b/drivers/media/dvb-frontends/rtl2832_priv.h
-@@ -33,7 +33,6 @@
- struct rtl2832_dev {
- 	struct rtl2832_platform_data *pdata;
- 	struct i2c_client *client;
--	struct mutex regmap_mutex;
- 	struct regmap_config regmap_config;
- 	struct regmap *regmap;
- 	struct i2c_mux_core *muxc;
-diff --git a/drivers/media/dvb-frontends/rtl2832_sdr.c b/drivers/media/dvb-frontends/rtl2832_sdr.c
-index b860f02a4e55..6a6b1debe277 100644
---- a/drivers/media/dvb-frontends/rtl2832_sdr.c
-+++ b/drivers/media/dvb-frontends/rtl2832_sdr.c
-@@ -35,6 +35,7 @@
- #include <linux/platform_device.h>
- #include <linux/jiffies.h>
- #include <linux/math64.h>
-+#include <linux/regmap.h>
- 
- static bool rtl2832_sdr_emulated_fmt;
- module_param_named(emulated_formats, rtl2832_sdr_emulated_fmt, bool, 0644);
-@@ -169,9 +170,9 @@ static int rtl2832_sdr_wr_regs(struct rtl2832_sdr_dev *dev, u16 reg,
- {
- 	struct platform_device *pdev = dev->pdev;
- 	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
--	struct i2c_client *client = pdata->i2c_client;
-+	struct regmap *regmap = pdata->regmap;
- 
--	return pdata->bulk_write(client, reg, val, len);
-+	return regmap_bulk_write(regmap, reg, val, len);
- }
- 
- #if 0
-@@ -181,9 +182,9 @@ static int rtl2832_sdr_rd_regs(struct rtl2832_sdr_dev *dev, u16 reg, u8 *val,
- {
- 	struct platform_device *pdev = dev->pdev;
- 	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
--	struct i2c_client *client = pdata->i2c_client;
-+	struct regmap *regmap = pdata->regmap;
- 
--	return pdata->bulk_read(client, reg, val, len);
-+	return regmap_bulk_read(regmap, reg, val, len);
- }
- #endif
- 
-@@ -199,9 +200,9 @@ static int rtl2832_sdr_wr_reg_mask(struct rtl2832_sdr_dev *dev, u16 reg,
- {
- 	struct platform_device *pdev = dev->pdev;
- 	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
--	struct i2c_client *client = pdata->i2c_client;
-+	struct regmap *regmap = pdata->regmap;
- 
--	return pdata->update_bits(client, reg, mask, val);
-+	return regmap_update_bits(regmap, reg, mask, val);
- }
- 
- /* Private functions */
-diff --git a/drivers/media/dvb-frontends/rtl2832_sdr.h b/drivers/media/dvb-frontends/rtl2832_sdr.h
-index 342ea84860df..d8fc7e7212e3 100644
---- a/drivers/media/dvb-frontends/rtl2832_sdr.h
-+++ b/drivers/media/dvb-frontends/rtl2832_sdr.h
-@@ -56,10 +56,7 @@ struct rtl2832_sdr_platform_data {
- #define RTL2832_SDR_TUNER_R828D     0x2b
- 	u8 tuner;
- 
--	struct i2c_client *i2c_client;
--	int (*bulk_read)(struct i2c_client *, unsigned int, void *, size_t);
--	int (*bulk_write)(struct i2c_client *, unsigned int, const void *, size_t);
--	int (*update_bits)(struct i2c_client *, unsigned int, unsigned int, unsigned int);
-+	struct regmap *regmap;
- 	struct dvb_frontend *dvb_frontend;
- 	struct v4l2_subdev *v4l2_subdev;
- 	struct dvb_usb_device *dvb_usb_device;
-diff --git a/drivers/media/usb/dvb-usb-v2/rtl28xxu.c b/drivers/media/usb/dvb-usb-v2/rtl28xxu.c
-index eb5787a3191e..799def499f67 100644
---- a/drivers/media/usb/dvb-usb-v2/rtl28xxu.c
-+++ b/drivers/media/usb/dvb-usb-v2/rtl28xxu.c
-@@ -1325,10 +1325,7 @@ static int rtl2832u_tuner_attach(struct dvb_usb_adapter *adap)
- 	case TUNER_RTL2832_R828D:
- 		pdata.clk = dev->rtl2832_platform_data.clk;
- 		pdata.tuner = dev->tuner;
--		pdata.i2c_client = dev->i2c_client_demod;
--		pdata.bulk_read = dev->rtl2832_platform_data.bulk_read;
--		pdata.bulk_write = dev->rtl2832_platform_data.bulk_write;
--		pdata.update_bits = dev->rtl2832_platform_data.update_bits;
-+		pdata.regmap = dev->rtl2832_platform_data.regmap;
- 		pdata.dvb_frontend = adap->fe[0];
- 		pdata.dvb_usb_device = d;
- 		pdata.v4l2_subdev = subdev;
--- 
-2.1.4
+> +	Valid values for the maximum allowed Vboost voltage supplied by
+> +	the dc-to-dc converter is [mV]:
+> +	23000
+> +	24500
+> +	27000
+> +	29500
+> +
+> +Optional for every channel:
+> + - adi,mode:
+> +	Valid values for DAC modes is:
+> +	0: 0 V to 5 V voltage range.
+> +	1: 0 V to 10 V voltage range.
+> +	2: Plus minus 5 V voltage range.
+> +	3: Plus minus 10 V voltage range.
+> +	4: 4 mA to 20 mA current range.
+> +	5: 0 mA to 20 mA current range.
+> +	6: 0 mA to 24 mA current range.
+> + - adi,ext-current-sense-resistor: boolean set if the hardware a external
+> +				   current sense resistor.
+> + - adi,enable-voltage-overrange: boolean enable voltage overrange
+> + - adi,slew: Array of slewrate settings should contain 3 fields:
+> +	1: Should be either 0 or 1 in order to enable or disable slewrate.
+> +	2: Slew rate settings:
+> +		Valid values for the slew rate update frequency:
+> +		64000
+> +		32000
+> +		16000
+> +		8000
+> +		4000
+> +		2000
+> +		1000
+> +		500
+> +		250
+> +		125
+> +		64
+> +		32
+> +		16
+> +		8
+> +		4
+> +		0
+> +	3: Slew step size:
+> +		Valid values for the step size LSBs:
+> +		1
+> +		2
+> +		4
+> +		16
+> +		32
+> +		64
+> +		128
+> +		256
+> +
+>  Example:
+>  dac@0 {
+>  	compatible = "adi,ad5755";
+>  	reg = <0>;
+>  	spi-max-frequency = <1000000>;
+>  	spi-cpha;
+> +	adi,dc-dc-phase = <0>;
+> +	adi,dc-dc-freq = <1>;
+> +	adi,dc-dc-maxv = <0>;
+> +	channel@0 {
 
+unit addresses require a reg property, so add one here.
+
+> +		adi,mode = <4>;
+> +		adi,ext-current-sense-resistor;
+> +		adi,slew = <0 64000 1>;
+> +	};
+> +	channel@1 {
+> +		adi,mode = <4>;
+> +		adi,ext-current-sense-resistor;
+> +		adi,slew = <0 64000 1>;
+> +	};
+> +	channel@2 {
+> +		adi,mode = <4>;
+> +		adi,ext-current-sense-resistor;
+> +		adi,slew = <0 64000 1>;
+> +	};
+> +	channel@3 {
+> +		adi,mode = <4>;
+> +		adi,ext-current-sense-resistor;
+> +		adi,slew = <0 64000 1>;
+> +	};
+>  };
+> -- 
+> 2.7.2
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
