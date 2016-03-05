@@ -1,179 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:35265 "EHLO
-	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758571AbcCCWhx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2016 17:37:53 -0500
-From: Peter Rosin <peda@lysator.liu.se>
-To: linux-kernel@vger.kernel.org
-Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Viorel Suman <viorel.suman@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Terry Heo <terryheo@google.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Tommi Rantala <tt.rantala@gmail.com>,
-	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-	Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v4 13/18] [media] cx231xx: convert to use an explicit i2c mux core
-Date: Thu,  3 Mar 2016 23:27:25 +0100
-Message-Id: <1457044050-15230-14-git-send-email-peda@lysator.liu.se>
-In-Reply-To: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
-References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56751 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750859AbcCERkO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 12:40:14 -0500
+Subject: Re: [PATCH 4/4] iio: mma8452: add low_power mode
+To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
+	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
+References: <1456993444-21320-1-git-send-email-martink@posteo.de>
+ <1456993444-21320-5-git-send-email-martink@posteo.de>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56DB19FA.8090403@kernel.org>
+Date: Sat, 5 Mar 2016 17:40:10 +0000
+MIME-Version: 1.0
+In-Reply-To: <1456993444-21320-5-git-send-email-martink@posteo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Peter Rosin <peda@axentia.se>
+On 03/03/16 08:24, Martin Kepplinger wrote:
+> This adds a mode of operation that consumes less power by lesser
+> oversampling. It's exposed in IIO sysfs as in_accelX_power_mode, as
+> documented.
+> 
+> It consumes roughly half the power the default low_noise mode does.
+> See the datasheet for details.
+> 
+> Signed-off-by: Martin Kepplinger <martink@posteo.de>
+> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+This is in the datasheet as oversampling.  So why are we not using the oversampling
+interface rather than adding a new one?
 
-Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select op to be in terms of the i2c mux core instead
-of the child adapter.
+It's obvious that with the interactions with sampling rate that this won't be trivial
+to support, but it doesn't look that hard.  For a given sampling_frequency only
+certain oversampling rations are possible, but that's not exactly unusual.
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- drivers/media/usb/cx231xx/cx231xx-core.c |  6 ++--
- drivers/media/usb/cx231xx/cx231xx-i2c.c  | 47 ++++++++++++++++----------------
- drivers/media/usb/cx231xx/cx231xx.h      |  4 ++-
- 3 files changed, 31 insertions(+), 26 deletions(-)
+That way everything is explicit, whereas with this approach people will need to
+read the datasheet to know if setting the power mode is having any effect at all.
 
-diff --git a/drivers/media/usb/cx231xx/cx231xx-core.c b/drivers/media/usb/cx231xx/cx231xx-core.c
-index f497888d94bf..f7aac2abd783 100644
---- a/drivers/media/usb/cx231xx/cx231xx-core.c
-+++ b/drivers/media/usb/cx231xx/cx231xx-core.c
-@@ -1304,6 +1304,9 @@ int cx231xx_dev_init(struct cx231xx *dev)
- 	cx231xx_i2c_register(&dev->i2c_bus[1]);
- 	cx231xx_i2c_register(&dev->i2c_bus[2]);
- 
-+	errCode = cx231xx_i2c_mux_create(dev);
-+	if (errCode < 0)
-+		return errCode;
- 	cx231xx_i2c_mux_register(dev, 0);
- 	cx231xx_i2c_mux_register(dev, 1);
- 
-@@ -1426,8 +1429,7 @@ EXPORT_SYMBOL_GPL(cx231xx_dev_init);
- void cx231xx_dev_uninit(struct cx231xx *dev)
- {
- 	/* Un Initialize I2C bus */
--	cx231xx_i2c_mux_unregister(dev, 1);
--	cx231xx_i2c_mux_unregister(dev, 0);
-+	cx231xx_i2c_mux_unregister(dev);
- 	cx231xx_i2c_unregister(&dev->i2c_bus[2]);
- 	cx231xx_i2c_unregister(&dev->i2c_bus[1]);
- 	cx231xx_i2c_unregister(&dev->i2c_bus[0]);
-diff --git a/drivers/media/usb/cx231xx/cx231xx-i2c.c b/drivers/media/usb/cx231xx/cx231xx-i2c.c
-index a29c345b027d..eb22e05d4add 100644
---- a/drivers/media/usb/cx231xx/cx231xx-i2c.c
-+++ b/drivers/media/usb/cx231xx/cx231xx-i2c.c
-@@ -557,40 +557,41 @@ int cx231xx_i2c_unregister(struct cx231xx_i2c *bus)
-  * cx231xx_i2c_mux_select()
-  * switch i2c master number 1 between port1 and port3
-  */
--static int cx231xx_i2c_mux_select(struct i2c_adapter *adap,
--			void *mux_priv, u32 chan_id)
-+static int cx231xx_i2c_mux_select(struct i2c_mux_core *muxc, u32 chan_id)
- {
--	struct cx231xx *dev = mux_priv;
-+	struct cx231xx *dev = i2c_mux_priv(muxc);
- 
- 	return cx231xx_enable_i2c_port_3(dev, chan_id);
- }
- 
-+int cx231xx_i2c_mux_create(struct cx231xx *dev)
-+{
-+	dev->muxc = i2c_mux_alloc(&dev->i2c_bus[1].i2c_adap, dev->dev, 0, 0,
-+				  cx231xx_i2c_mux_select, NULL);
-+	if (!dev->muxc)
-+		return -ENOMEM;
-+	dev->muxc->priv = dev;
-+	return 0;
-+}
-+
- int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no)
- {
--	struct i2c_adapter *i2c_parent = &dev->i2c_bus[1].i2c_adap;
--	/* what is the correct mux_dev? */
--	struct device *mux_dev = dev->dev;
--
--	dev->i2c_mux_adap[mux_no] = i2c_add_mux_adapter(i2c_parent,
--				mux_dev,
--				dev /* mux_priv */,
--				0,
--				mux_no /* chan_id */,
--				0 /* class */,
--				&cx231xx_i2c_mux_select,
--				NULL);
--
--	if (!dev->i2c_mux_adap[mux_no])
-+	int rc;
-+
-+	rc = i2c_mux_add_adapter(dev->muxc,
-+				 0,
-+				 mux_no /* chan_id */,
-+				 0 /* class */);
-+	if (rc)
- 		dev_warn(dev->dev,
- 			 "i2c mux %d register FAILED\n", mux_no);
- 
--	return 0;
-+	return rc;
- }
- 
--void cx231xx_i2c_mux_unregister(struct cx231xx *dev, int mux_no)
-+void cx231xx_i2c_mux_unregister(struct cx231xx *dev)
- {
--	i2c_del_mux_adapter(dev->i2c_mux_adap[mux_no]);
--	dev->i2c_mux_adap[mux_no] = NULL;
-+	i2c_mux_del_adapters(dev->muxc);
- }
- 
- struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port)
-@@ -603,9 +604,9 @@ struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port)
- 	case I2C_2:
- 		return &dev->i2c_bus[2].i2c_adap;
- 	case I2C_1_MUX_1:
--		return dev->i2c_mux_adap[0];
-+		return dev->muxc->adapter[0];
- 	case I2C_1_MUX_3:
--		return dev->i2c_mux_adap[1];
-+		return dev->muxc->adapter[1];
- 	default:
- 		return NULL;
- 	}
-diff --git a/drivers/media/usb/cx231xx/cx231xx.h b/drivers/media/usb/cx231xx/cx231xx.h
-index ec6d3f5bc36d..fab222059e51 100644
---- a/drivers/media/usb/cx231xx/cx231xx.h
-+++ b/drivers/media/usb/cx231xx/cx231xx.h
-@@ -625,6 +625,7 @@ struct cx231xx {
- 
- 	/* I2C adapters: Master 1 & 2 (External) & Master 3 (Internal only) */
- 	struct cx231xx_i2c i2c_bus[3];
-+	struct i2c_mux_core *muxc;
- 	struct i2c_adapter *i2c_mux_adap[2];
- 
- 	unsigned int xc_fw_load_done:1;
-@@ -759,8 +760,9 @@ int cx231xx_reset_analog_tuner(struct cx231xx *dev);
- void cx231xx_do_i2c_scan(struct cx231xx *dev, int i2c_port);
- int cx231xx_i2c_register(struct cx231xx_i2c *bus);
- int cx231xx_i2c_unregister(struct cx231xx_i2c *bus);
-+int cx231xx_i2c_mux_create(struct cx231xx *dev);
- int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no);
--void cx231xx_i2c_mux_unregister(struct cx231xx *dev, int mux_no);
-+void cx231xx_i2c_mux_unregister(struct cx231xx *dev);
- struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port);
- 
- /* Internal block control functions */
--- 
-2.1.4
+That will also allow appropriate trade offs to use the low noise / low power version
+if the oversampling ratio is appropriate.  All this stuff is clearly given in 
+table 59 of the datasheet google gave me.
+(actually as control mechanisms go for this sort of setting I think this one is
+reasonably elegant as such hardware goes!)
+
+Jonathan
+
+> ---
+>  drivers/iio/accel/mma8452.c | 55 +++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 55 insertions(+)
+> 
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 5ca0d16..5b5abec 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -75,6 +75,9 @@
+>  #define  MMA8452_CTRL_DR_DEFAULT		0x4 /* 50 Hz sample frequency */
+>  #define MMA8452_CTRL_REG2			0x2b
+>  #define  MMA8452_CTRL_REG2_RST			BIT(6)
+> +#define  MMA8452_CTRL_REG2_MODS_MASK		0x1b
+> +#define  MMA8452_CTRL_REG2_MODS_NORMAL		0x00
+> +#define  MMA8452_CTRL_REG2_MODS_LOW_POWER	0x1b
+>  #define MMA8452_CTRL_REG4			0x2d
+>  #define MMA8452_CTRL_REG5			0x2e
+>  #define MMA8452_OFF_X				0x2f
+> @@ -950,6 +953,56 @@ static struct attribute_group mma8452_event_attribute_group = {
+>  	.attrs = mma8452_event_attributes,
+>  };
+>  
+> +static const char * const mma8452_power_modes[] = {"low_noise", "low_power"};
+> +
+> +static int mma8452_get_power_mode(struct iio_dev *indio_dev,
+> +				  const struct iio_chan_spec *chan)
+> +{
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int reg;
+> +
+> +	reg = i2c_smbus_read_byte_data(data->client,
+> +				       MMA8452_CTRL_REG2);
+> +	if (reg < 0)
+> +		return reg;
+> +
+> +	return !(reg & MMA8452_CTRL_REG2_MODS_MASK);
+> +}
+> +
+> +static int mma8452_set_power_mode(struct iio_dev *indio_dev,
+> +				  const struct iio_chan_spec *chan,
+> +				  unsigned int mode)
+> +{
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int reg;
+> +
+> +	reg = i2c_smbus_read_byte_data(data->client,
+> +				       MMA8452_CTRL_REG2);
+> +	if (reg < 0)
+> +		return reg;
+> +
+> +	reg &= ~MMA8452_CTRL_REG2_MODS_MASK;
+> +	if (mode)
+> +		reg |= MMA8452_CTRL_REG2_MODS_LOW_POWER;
+> +	else
+> +		reg |= MMA8452_CTRL_REG2_MODS_NORMAL;
+> +
+> +	return mma8452_change_config(data, MMA8452_CTRL_REG2, reg);
+> +}
+> +
+> +static const struct iio_enum mma8452_power_mode_enum = {
+> +	.items = mma8452_power_modes,
+> +	.num_items = ARRAY_SIZE(mma8452_power_modes),
+> +	.get = mma8452_get_power_mode,
+> +	.set = mma8452_set_power_mode,
+> +};
+> +
+> +static const struct iio_chan_spec_ext_info mma8452_ext_info[] = {
+> +	IIO_ENUM("power_mode", true, &mma8452_power_mode_enum),
+> +	IIO_ENUM_AVAILABLE("power_mode", &mma8452_power_mode_enum),
+> +	{ },
+> +};
+> +
+>  #define MMA8452_FREEFALL_CHANNEL(modifier) { \
+>  	.type = IIO_ACCEL, \
+>  	.modified = 1, \
+> @@ -987,6 +1040,7 @@ static struct attribute_group mma8452_event_attribute_group = {
+>  	}, \
+>  	.event_spec = mma8452_transient_event, \
+>  	.num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
+> +	.ext_info = mma8452_ext_info, \
+>  }
+>  
+>  #define MMA8652_CHANNEL(axis, idx, bits) { \
+> @@ -1007,6 +1061,7 @@ static struct attribute_group mma8452_event_attribute_group = {
+>  	}, \
+>  	.event_spec = mma8452_motion_event, \
+>  	.num_event_specs = ARRAY_SIZE(mma8452_motion_event), \
+> +	.ext_info = mma8452_ext_info, \
+>  }
+>  
+>  static const struct iio_chan_spec mma8451_channels[] = {
+> 
 
