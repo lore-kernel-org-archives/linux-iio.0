@@ -1,76 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56777 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56672 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750724AbcCERoZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 12:44:25 -0500
-Subject: Re: [PATCH] iio: imu: mpu6050: fix possible NULL dereferences
-To: Matt Ranostay <matt.ranostay@intel.com>
-References: <1456975092-17992-1-git-send-email-matt.ranostay@intel.com>
-Cc: linux-iio@vger.kernel.org, dan.carpenter@oracle.com
+	with ESMTP id S1750702AbcCERXJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 12:23:09 -0500
+Subject: Re: [PATCH 2/4] iio: mma8452: avoid switching to active because of
+ config change
+To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
+	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
+References: <1456993444-21320-1-git-send-email-martink@posteo.de>
+ <1456993444-21320-3-git-send-email-martink@posteo.de>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56DB1AF8.6010907@kernel.org>
-Date: Sat, 5 Mar 2016 17:44:24 +0000
+Message-ID: <56DB15FB.20308@kernel.org>
+Date: Sat, 5 Mar 2016 17:23:07 +0000
 MIME-Version: 1.0
-In-Reply-To: <1456975092-17992-1-git-send-email-matt.ranostay@intel.com>
+In-Reply-To: <1456993444-21320-3-git-send-email-martink@posteo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/03/16 03:18, Matt Ranostay wrote:
-> Fix possible null dereferencing of i2c and spi driver data.
-Is there actually a way of making this happen?  Far as I know
-both i2c and spi should always provide an appropriate value...
-Is it the absence of a dt match table that is causing the issue?
+On 03/03/16 08:24, Martin Kepplinger wrote:
+> The devices' config registers can only be changed in standby mode.
+> Up until now the driver just held the device *always* active, so for
+> changing a config it was *always* necessary to switch to standby.
+> 
+> For upcoming support for runtime pm, the device can as well be in standby
+> mode. Instead of putting runtime pm functions in there, just keep the
+> device in standby if it already is. This section is protected by a lock
+> after all.
+> 
+> Signed-off-by: Martin Kepplinger <martink@posteo.de>
+> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+
+Thanks,
 
 Jonathan
-> 
-> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 3 ++-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c | 3 ++-
->  2 files changed, 4 insertions(+), 2 deletions(-)
+>  drivers/iio/accel/mma8452.c | 35 +++++++++++++++++++++++++++++------
+>  1 file changed, 29 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> index f581256d9d4c..d0c0e20c7122 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> @@ -117,6 +117,7 @@ static int inv_mpu_probe(struct i2c_client *client,
->  	struct inv_mpu6050_state *st;
->  	int result;
->  	const char *name = id ? id->name : NULL;
-> +	const int chip_type = id ? id->driver_data : 0;
->  	struct regmap *regmap;
->  
->  	if (!i2c_check_functionality(client->adapter,
-> @@ -131,7 +132,7 @@ static int inv_mpu_probe(struct i2c_client *client,
->  	}
->  
->  	result = inv_mpu_core_probe(regmap, client->irq, name,
-> -				    NULL, id->driver_data);
-> +				    NULL, chip_type);
->  	if (result < 0)
->  		return result;
->  
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> index dea6c4361de0..7bcb8d839f05 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> @@ -46,6 +46,7 @@ static int inv_mpu_probe(struct spi_device *spi)
->  	struct regmap *regmap;
->  	const struct spi_device_id *id = spi_get_device_id(spi);
->  	const char *name = id ? id->name : NULL;
-> +	const int chip_type = id ? id->driver_data : 0;
->  
->  	regmap = devm_regmap_init_spi(spi, &inv_mpu_regmap_config);
->  	if (IS_ERR(regmap)) {
-> @@ -55,7 +56,7 @@ static int inv_mpu_probe(struct spi_device *spi)
->  	}
->  
->  	return inv_mpu_core_probe(regmap, spi->irq, name,
-> -				  inv_mpu_i2c_disable, id->driver_data);
-> +				  inv_mpu_i2c_disable, chip_type);
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 17d72bc..9c4a84a 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -393,24 +393,47 @@ static int mma8452_active(struct mma8452_data *data)
+>  					 data->ctrl_reg1);
 >  }
 >  
->  static int inv_mpu_remove(struct spi_device *spi)
+> +/* returns >0 if active, 0 if in standby and <0 on error */
+> +static int mma8452_is_active(struct mma8452_data *data)
+> +{
+> +	int reg;
+> +
+> +	reg = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG1);
+> +	if (reg < 0)
+> +		return reg;
+> +
+> +	return reg & MMA8452_CTRL_ACTIVE;
+> +}
+> +
+>  static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
+>  {
+>  	int ret;
+> +	int is_active;
+>  
+>  	mutex_lock(&data->lock);
+>  
+> -	/* config can only be changed when in standby */
+> -	ret = mma8452_standby(data);
+> -	if (ret < 0)
+> +	is_active = mma8452_is_active(data);
+> +	if (is_active < 0) {
+> +		ret = is_active;
+>  		goto fail;
+> +	}
+> +
+> +	/* config can only be changed when in standby */
+> +	if (is_active > 0) {
+> +		ret = mma8452_standby(data);
+> +		if (ret < 0)
+> +			goto fail;
+> +	}
+>  
+>  	ret = i2c_smbus_write_byte_data(data->client, reg, val);
+>  	if (ret < 0)
+>  		goto fail;
+>  
+> -	ret = mma8452_active(data);
+> -	if (ret < 0)
+> -		goto fail;
+> +	if (is_active > 0) {
+> +		ret = mma8452_active(data);
+> +		if (ret < 0)
+> +			goto fail;
+> +	}
+>  
+>  	ret = 0;
+>  fail:
 > 
 
