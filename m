@@ -1,121 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56244 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56777 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751548AbcCEPuT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 10:50:19 -0500
-Subject: Re: [PATCH v4 1/1] staging: coding style cleanups for
- staging/iio/light/tsl2583 driver
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	Bijosh Thykkoottathil <bijosh.t@hotmail.com>,
-	gregkh@linuxfoundation.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net
-References: <BLU436-SMTP1368781E78F120E82EF730980B90@phx.gbl>
- <8ECF82AD-7F64-4AB5-97CE-3188FA6B73CC@jic23.retrosnub.co.uk>
-Cc: mahfouz.saif.elyazal@gmail.com, ciorneiioana@gmail.com,
-	cristina.moraru09@gmail.com, devel@driverdev.osuosl.org,
-	linux-iio@vger.kernel.org
+	with ESMTP id S1750724AbcCERoZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 12:44:25 -0500
+Subject: Re: [PATCH] iio: imu: mpu6050: fix possible NULL dereferences
+To: Matt Ranostay <matt.ranostay@intel.com>
+References: <1456975092-17992-1-git-send-email-matt.ranostay@intel.com>
+Cc: linux-iio@vger.kernel.org, dan.carpenter@oracle.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56DB0036.7010904@kernel.org>
-Date: Sat, 5 Mar 2016 15:50:14 +0000
+Message-ID: <56DB1AF8.6010907@kernel.org>
+Date: Sat, 5 Mar 2016 17:44:24 +0000
 MIME-Version: 1.0
-In-Reply-To: <8ECF82AD-7F64-4AB5-97CE-3188FA6B73CC@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1456975092-17992-1-git-send-email-matt.ranostay@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/02/16 18:49, Jonathan Cameron wrote:
-> 
-> 
-> On 28 February 2016 17:31:11 GMT+00:00, Bijosh Thykkoottathil <bijosh.t@hotmail.com> wrote:
->> This patch fixes following coding style warning reported by check patch
->> script, in tsl2583 driver:
->>    - Block comments use a trailing */ on a separate line
->>
->> Signed-off-by: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
-> Excellent. I have a pull request out at the moment, so may be a few days before I apply this. 
-> 
-Ah, looks like Greg took a series of cleanup patches for this driver directly
-so most if not all of this is originally in the tree.
-
-Sorry about that, I never saw the relevant patches and don't think they were in my tree
-until I did a merge today.
+On 03/03/16 03:18, Matt Ranostay wrote:
+> Fix possible null dereferencing of i2c and spi driver data.
+Is there actually a way of making this happen?  Far as I know
+both i2c and spi should always provide an appropriate value...
+Is it the absence of a dt match table that is causing the issue?
 
 Jonathan
-> Jonathan
->> ---
->> drivers/staging/iio/light/tsl2583.c | 30 ++++++++++++++++++++----------
->> 1 file changed, 20 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/staging/iio/light/tsl2583.c
->> b/drivers/staging/iio/light/tsl2583.c
->> index 3100d96..8c9e304 100644
->> --- a/drivers/staging/iio/light/tsl2583.c
->> +++ b/drivers/staging/iio/light/tsl2583.c
->> @@ -240,8 +240,10 @@ static int taos_get_lux(struct iio_dev *indio_dev)
->> 		}
->> 	}
->>
->> -	/* clear status, really interrupt status (interrupts are off), but
->> -	 * we use the bit anyway - don't forget 0x80 - this is a command*/
->> +	/*
->> +	 * Clear status, really interrupt status (interrupts are off), but
->> +	 * we use the bit anyway - don't forget 0x80 - this is a command
->> +	 */
->> 	ret = i2c_smbus_write_byte(chip->client,
->> 				   (TSL258X_CMD_REG | TSL258X_CMD_SPL_FN |
->> 				    TSL258X_CMD_ALS_INT_CLR));
->> @@ -429,8 +431,10 @@ static int taos_chip_on(struct iio_dev *indio_dev)
->> 	chip->als_saturation = als_count * 922; /* 90% of full scale */
->> 	chip->als_time_scale = (als_time + 25) / 50;
->>
->> -	/* TSL258x Specific power-on / adc enable sequence
->> -	 * Power on the device 1st. */
->> +	/*
->> +	 * TSL258x Specific power-on / adc enable sequence
->> +	 * Power on the device 1st.
->> +	 */
->> 	utmp = TSL258X_CNTL_PWR_ON;
->> 	ret = i2c_smbus_write_byte_data(chip->client,
->> 					TSL258X_CMD_REG | TSL258X_CNTRL, utmp);
->> @@ -439,8 +443,10 @@ static int taos_chip_on(struct iio_dev *indio_dev)
->> 		return ret;
->> 	}
->>
->> -	/* Use the following shadow copy for our delay before enabling ADC.
->> -	 * Write all the registers. */
->> +	/*
->> +	 * Use the following shadow copy for our delay before enabling ADC.
->> +	 * Write all the registers.
->> +	 */
->> 	for (i = 0, uP = chip->taos_config; i < TSL258X_REG_MAX; i++) {
->> 		ret = i2c_smbus_write_byte_data(chip->client,
->> 						TSL258X_CMD_REG + i,
->> @@ -453,8 +459,10 @@ static int taos_chip_on(struct iio_dev *indio_dev)
->> 	}
->>
->> 	usleep_range(3000, 3500);
->> -	/* NOW enable the ADC
->> -	 * initialize the desired mode of operation */
->> +	/*
->> +	 * NOW enable the ADC
->> +	 * initialize the desired mode of operation
->> +	 */
->> 	utmp = TSL258X_CNTL_PWR_ON | TSL258X_CNTL_ADC_ENBL;
->> 	ret = i2c_smbus_write_byte_data(chip->client,
->> 					TSL258X_CMD_REG | TSL258X_CNTRL,
->> @@ -695,8 +703,10 @@ static ssize_t taos_luxtable_show(struct device
->> *dev,
->> 				  taos_device_lux[i].ch0,
->> 				  taos_device_lux[i].ch1);
->> 		if (taos_device_lux[i].ratio == 0) {
->> -			/* We just printed the first "0" entry.
->> -			 * Now get rid of the extra "," and break. */
->> +			/*
->> +			 * We just printed the first "0" entry.
->> +			 * Now get rid of the extra "," and break.
->> +			 */
->> 			offset--;
->> 			break;
->> 		}
+> 
+> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 3 ++-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c | 3 ++-
+>  2 files changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> index f581256d9d4c..d0c0e20c7122 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> @@ -117,6 +117,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  	struct inv_mpu6050_state *st;
+>  	int result;
+>  	const char *name = id ? id->name : NULL;
+> +	const int chip_type = id ? id->driver_data : 0;
+>  	struct regmap *regmap;
+>  
+>  	if (!i2c_check_functionality(client->adapter,
+> @@ -131,7 +132,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  	}
+>  
+>  	result = inv_mpu_core_probe(regmap, client->irq, name,
+> -				    NULL, id->driver_data);
+> +				    NULL, chip_type);
+>  	if (result < 0)
+>  		return result;
+>  
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> index dea6c4361de0..7bcb8d839f05 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> @@ -46,6 +46,7 @@ static int inv_mpu_probe(struct spi_device *spi)
+>  	struct regmap *regmap;
+>  	const struct spi_device_id *id = spi_get_device_id(spi);
+>  	const char *name = id ? id->name : NULL;
+> +	const int chip_type = id ? id->driver_data : 0;
+>  
+>  	regmap = devm_regmap_init_spi(spi, &inv_mpu_regmap_config);
+>  	if (IS_ERR(regmap)) {
+> @@ -55,7 +56,7 @@ static int inv_mpu_probe(struct spi_device *spi)
+>  	}
+>  
+>  	return inv_mpu_core_probe(regmap, spi->irq, name,
+> -				  inv_mpu_i2c_disable, id->driver_data);
+> +				  inv_mpu_i2c_disable, chip_type);
+>  }
+>  
+>  static int inv_mpu_remove(struct spi_device *spi)
 > 
 
