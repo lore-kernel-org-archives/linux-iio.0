@@ -1,89 +1,338 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f54.google.com ([74.125.82.54]:36664 "EHLO
-	mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752542AbcCBQdk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Mar 2016 11:33:40 -0500
-MIME-Version: 1.0
-In-Reply-To: <20160301205052.GD1488@katana>
-References: <1455810794-3188-1-git-send-email-daniel.baluta@intel.com>
-	<1455810794-3188-10-git-send-email-daniel.baluta@intel.com>
-	<20160301205052.GD1488@katana>
-Date: Wed, 2 Mar 2016 18:33:38 +0200
-Message-ID: <CAEnQRZAF-tAjDwJkUNEVQXYqWDt7RsH2bH81UBAMUhsoWEt73g@mail.gmail.com>
-Subject: Re: [RFC PATCH 9/9] iio: imu: inv_mpu6050: Fix deadlock between i2c
- adapter lock and mpu lock
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55869 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752615AbcCEOp3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2016 09:45:29 -0500
+Subject: Re: [PATCH v4 3/3] iio:pressure:ms5611: oversampling rate support
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+References: <cover.1456828051.git.gregor.boirie@parrot.com>
+ <968dd61e1b2cf2fa6ba936509594d71c799226c4.1456828051.git.gregor.boirie@parrot.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	linux-i2c@vger.kernel.org,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Ge Gao <ggao@invensense.com>,
-	Adriana Reus <adi.reus@gmail.com>, Crt Mori <cmo@melexis.com>,
-	Michael Welling <mwelling@ieee.org>
-Content-Type: text/plain; charset=UTF-8
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>,
+	"Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56DAF105.3010503@kernel.org>
+Date: Sat, 5 Mar 2016 14:45:25 +0000
+MIME-Version: 1.0
+In-Reply-To: <968dd61e1b2cf2fa6ba936509594d71c799226c4.1456828051.git.gregor.boirie@parrot.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 1, 2016 at 10:50 PM, Wolfram Sang <wsa@the-dreams.de> wrote:
-> On Thu, Feb 18, 2016 at 05:53:14PM +0200, Daniel Baluta wrote:
->> From: Adriana Reus <adriana.reus@intel.com>
->>
->> This deadlock occurs if the accel/gyro and the sensor on the auxiliary
->> I2C (in my setup it's an ak8975) are working at the same time.
->>
->> Scenario:
->>
->>       T1                                      T2
->>      ====                                    ====
->> inv_mpu6050_read_fifo                  aux sensor op (eg. ak8975_read_raw)
->>         |                                     |
->> mutex_lock(&indio_dev->mlock)           i2c_transfer
->>         |                                     |
->> i2c transaction                         i2c adapter lock
->>         |                                     |
->> i2c adapter lock                        i2c_mux_master_xfer
->>                                               |
->>                                         inv_mpu6050_select_bypass
->>                                               |
->>                                         mutex_lock(&indio_dev->mlock)
->>
->> When we operate on an mpu sensor the order of locking is mpu lock
->> followed by the i2c adapter lock. However, when we operate the auxiliary
->> sensor the order of locking is the other way around.
->>
->> In order to avoid this enable the bypass mux bit once in the beginning
->> and remove the select/deselect_bypass functions.
->>
->> This patch moves the bypass enabling in a separate function
->> that is called once at probe and removes the functionality from
->> inv_mpu_select/deselect_bypass.
->>
->> Another advantage of this approach is that power-wise the mpu chip isn't
->> powered up at each auxiliary sensor i2c transaction so if only the
->> compass is used this would be more power efficient.
->
-> I think the comments (power must be enabled on select) rendered this
-> solution not acceptable. What about using mutex_trylock in
-> inv_mpu6050_select_bypass() and returning -EAGAIN if the lock is already
-> held?
+On 01/03/16 10:31, Gregor Boirie wrote:
+> Add support for setting and retrieving OverSampling Rate independently for
+> each of the temperature and pressure channels. This allows userspace to
+> fine tune hardware sampling process according to the following tradeoffs :
+> * the higher the OSR, the finer the resolution ;
+> * the higher the OSR, the lower the noise ;
+> BUT:
+> * the higher the OSR, the larger the drift ;
+> * the higher the OSR, the longer the response time, i.e. less samples per
+>   unit of time.
+> 
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
-Well, yes this would be a very good temporary solution. I'm afraid tough
-that reading at high rates accel/gyro data will starve the aux sensor readings.
+Thanks,
 
-I looked into the I2C adapter / mux code but I got lost rapidly :). It
-feels like
-the natural solution would be for the I2C core to not hold the adapter lock
-while doing transactions on the muxed child adapter.
+Jonathan
+> ---
+>  drivers/iio/pressure/ms5611.h      |  20 ++++---
+>  drivers/iio/pressure/ms5611_core.c | 105 ++++++++++++++++++++++++++++++++++++-
+>  drivers/iio/pressure/ms5611_i2c.c  |  12 ++---
+>  drivers/iio/pressure/ms5611_spi.c  |  19 +++----
+>  4 files changed, 133 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
+> index 8b08e4b..d725a307 100644
+> --- a/drivers/iio/pressure/ms5611.h
+> +++ b/drivers/iio/pressure/ms5611.h
+> @@ -19,12 +19,6 @@
+>  #define MS5611_RESET			0x1e
+>  #define MS5611_READ_ADC			0x00
+>  #define MS5611_READ_PROM_WORD		0xA0
+> -#define MS5611_START_TEMP_CONV		0x58
+> -#define MS5611_START_PRESSURE_CONV	0x48
+> -
+> -#define MS5611_CONV_TIME_MIN		9040
+> -#define MS5611_CONV_TIME_MAX		10000
+> -
+>  #define MS5611_PROM_WORDS_NB		8
+>  
+>  enum {
+> @@ -39,10 +33,24 @@ struct ms5611_chip_info {
+>  					    s32 *temp, s32 *pressure);
+>  };
+>  
+> +/*
+> + * OverSampling Rate descriptor.
+> + * Warning: cmd MUST be kept aligned on a word boundary (see
+> + * m5611_spi_read_adc_temp_and_pressure in ms5611_spi.c).
+> + */
+> +struct ms5611_osr {
+> +	unsigned long conv_usec;
+> +	u8 cmd;
+> +	unsigned short rate;
+> +};
+> +
+>  struct ms5611_state {
+>  	void *client;
+>  	struct mutex lock;
+>  
+> +	const struct ms5611_osr *pressure_osr;
+> +	const struct ms5611_osr *temp_osr;
+> +
+>  	int (*reset)(struct device *dev);
+>  	int (*read_prom_word)(struct device *dev, int index, u16 *word);
+>  	int (*read_adc_temp_and_pressure)(struct device *dev,
+> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+> index a9c4d49..a2a871b 100644
+> --- a/drivers/iio/pressure/ms5611_core.c
+> +++ b/drivers/iio/pressure/ms5611_core.c
+> @@ -18,11 +18,44 @@
+>  #include <linux/delay.h>
+>  #include <linux/regulator/consumer.h>
+>  
+> +#include <linux/iio/sysfs.h>
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/iio/trigger_consumer.h>
+>  #include "ms5611.h"
+>  
+> +#define MS5611_INIT_OSR(_cmd, _conv_usec, _rate) \
+> +	{ .cmd = _cmd, .conv_usec = _conv_usec, .rate = _rate }
+> +
+> +static const struct ms5611_osr ms5611_avail_pressure_osr[] = {
+> +	MS5611_INIT_OSR(0x40, 600,  256),
+> +	MS5611_INIT_OSR(0x42, 1170, 512),
+> +	MS5611_INIT_OSR(0x44, 2280, 1024),
+> +	MS5611_INIT_OSR(0x46, 4540, 2048),
+> +	MS5611_INIT_OSR(0x48, 9040, 4096)
+> +};
+> +
+> +static const struct ms5611_osr ms5611_avail_temp_osr[] = {
+> +	MS5611_INIT_OSR(0x50, 600,  256),
+> +	MS5611_INIT_OSR(0x52, 1170, 512),
+> +	MS5611_INIT_OSR(0x54, 2280, 1024),
+> +	MS5611_INIT_OSR(0x56, 4540, 2048),
+> +	MS5611_INIT_OSR(0x58, 9040, 4096)
+> +};
+> +
+> +static const char ms5611_show_osr[] = "256 512 1024 2048 4096";
+> +
+> +static IIO_CONST_ATTR(oversampling_ratio_available, ms5611_show_osr);
+> +
+> +static struct attribute *ms5611_attributes[] = {
+> +	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group ms5611_attribute_group = {
+> +	.attrs = ms5611_attributes,
+> +};
+> +
+>  static bool ms5611_prom_is_valid(u16 *prom, size_t len)
+>  {
+>  	int i, j;
+> @@ -239,11 +272,70 @@ static int ms5611_read_raw(struct iio_dev *indio_dev,
+>  		default:
+>  			return -EINVAL;
+>  		}
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		if (chan->type != IIO_TEMP && chan->type != IIO_PRESSURE)
+> +			break;
+> +		mutex_lock(&st->lock);
+> +		if (chan->type == IIO_TEMP)
+> +			*val = (int)st->temp_osr->rate;
+> +		else
+> +			*val = (int)st->pressure_osr->rate;
+> +		mutex_unlock(&st->lock);
+> +		return IIO_VAL_INT;
+>  	}
+>  
+>  	return -EINVAL;
+>  }
+>  
+> +static const struct ms5611_osr *ms5611_find_osr(int rate,
+> +						const struct ms5611_osr *osr,
+> +						size_t count)
+> +{
+> +	unsigned int r;
+> +
+> +	for (r = 0; r < count; r++)
+> +		if ((unsigned short)rate == osr[r].rate)
+> +			break;
+> +	if (r >= count)
+> +		return NULL;
+> +	return &osr[r];
+> +}
+> +
+> +static int ms5611_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	struct ms5611_state *st = iio_priv(indio_dev);
+> +	const struct ms5611_osr *osr = NULL;
+> +
+> +	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
+> +		return -EINVAL;
+> +
+> +	if (chan->type == IIO_TEMP)
+> +		osr = ms5611_find_osr(val, ms5611_avail_temp_osr,
+> +				      ARRAY_SIZE(ms5611_avail_temp_osr));
+> +	else if (chan->type == IIO_PRESSURE)
+> +		osr = ms5611_find_osr(val, ms5611_avail_pressure_osr,
+> +				      ARRAY_SIZE(ms5611_avail_pressure_osr));
+> +	if (!osr)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&st->lock);
+> +
+> +	if (iio_buffer_enabled(indio_dev)) {
+> +		mutex_unlock(&st->lock);
+> +		return -EBUSY;
+> +	}
+> +
+> +	if (chan->type == IIO_TEMP)
+> +		st->temp_osr = osr;
+> +	else
+> +		st->pressure_osr = osr;
+> +
+> +	mutex_unlock(&st->lock);
+> +	return 0;
+> +}
+> +
+>  static const unsigned long ms5611_scan_masks[] = {0x3, 0};
+>  
+>  static struct ms5611_chip_info chip_info_tbl[] = {
+> @@ -259,7 +351,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
+>  	{
+>  		.type = IIO_PRESSURE,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> -			BIT(IIO_CHAN_INFO_SCALE),
+> +			BIT(IIO_CHAN_INFO_SCALE) |
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>  		.scan_index = 0,
+>  		.scan_type = {
+>  			.sign = 's',
+> @@ -271,7 +364,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
+>  	{
+>  		.type = IIO_TEMP,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> -			BIT(IIO_CHAN_INFO_SCALE),
+> +			BIT(IIO_CHAN_INFO_SCALE) |
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>  		.scan_index = 1,
+>  		.scan_type = {
+>  			.sign = 's',
+> @@ -285,6 +379,8 @@ static const struct iio_chan_spec ms5611_channels[] = {
+>  
+>  static const struct iio_info ms5611_info = {
+>  	.read_raw = &ms5611_read_raw,
+> +	.write_raw = &ms5611_write_raw,
+> +	.attrs = &ms5611_attribute_group,
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> @@ -323,6 +419,11 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
+>  
+>  	mutex_init(&st->lock);
+>  	st->chip_info = &chip_info_tbl[type];
+> +	st->temp_osr =
+> +		&ms5611_avail_temp_osr[ARRAY_SIZE(ms5611_avail_temp_osr) - 1];
+> +	st->pressure_osr =
+> +		&ms5611_avail_pressure_osr[ARRAY_SIZE(ms5611_avail_pressure_osr)
+> +					   - 1];
+>  	indio_dev->dev.parent = dev;
+>  	indio_dev->name = name;
+>  	indio_dev->info = &ms5611_info;
+> diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
+> index 57a8f2c..55fb5fc 100644
+> --- a/drivers/iio/pressure/ms5611_i2c.c
+> +++ b/drivers/iio/pressure/ms5611_i2c.c
+> @@ -63,23 +63,23 @@ static int ms5611_i2c_read_adc_temp_and_pressure(struct device *dev,
+>  {
+>  	int ret;
+>  	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
+> +	const struct ms5611_osr *osr = st->temp_osr;
+>  
+> -	ret = i2c_smbus_write_byte(st->client, MS5611_START_TEMP_CONV);
+> +	ret = i2c_smbus_write_byte(st->client, osr->cmd);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+> -
+> +	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+>  	ret = ms5611_i2c_read_adc(st, temp);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	ret = i2c_smbus_write_byte(st->client, MS5611_START_PRESSURE_CONV);
+> +	osr = st->pressure_osr;
+> +	ret = i2c_smbus_write_byte(st->client, osr->cmd);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+> -
+> +	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+>  	return ms5611_i2c_read_adc(st, pressure);
+>  }
+>  
+> diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
+> index 7ec0c64..7600483 100644
+> --- a/drivers/iio/pressure/ms5611_spi.c
+> +++ b/drivers/iio/pressure/ms5611_spi.c
+> @@ -56,28 +56,29 @@ static int ms5611_spi_read_adc(struct device *dev, s32 *val)
+>  static int ms5611_spi_read_adc_temp_and_pressure(struct device *dev,
+>  						 s32 *temp, s32 *pressure)
+>  {
+> -	u8 cmd;
+>  	int ret;
+>  	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
+> +	const struct ms5611_osr *osr = st->temp_osr;
+>  
+> -	cmd = MS5611_START_TEMP_CONV;
+> -	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
+> +	/*
+> +	 * Warning: &osr->cmd MUST be aligned on a word boundary since used as
+> +	 * 2nd argument (void*) of spi_write_then_read.
+> +	 */
+> +	ret = spi_write_then_read(st->client, &osr->cmd, 1, NULL, 0);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+> -
+> +	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+>  	ret = ms5611_spi_read_adc(dev, temp);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	cmd = MS5611_START_PRESSURE_CONV;
+> -	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
+> +	osr = st->pressure_osr;
+> +	ret = spi_write_then_read(st->client, &osr->cmd, 1, NULL, 0);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
+> -
+> +	usleep_range(osr->conv_usec, osr->conv_usec + (osr->conv_usec / 10UL));
+>  	return ms5611_spi_read_adc(dev, pressure);
+>  }
+>  
+> 
 
-Anyhow, sometimes starving is better than deadlocking so I will send a patch
-with your suggestion.
-
-thanks,
-Daniel.
