@@ -1,306 +1,163 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f196.google.com ([209.85.217.196]:35370 "EHLO
-	mail-lb0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751299AbcCFLNf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Mar 2016 06:13:35 -0500
-From: Joachim Eastwood <manabian@gmail.com>
-To: jic23@kernel.org
-Cc: Joachim Eastwood <manabian@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	robh+dt@kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v2 1/4] iio: adc: add NXP LPC18xx ADC driver
-Date: Sun,  6 Mar 2016 12:13:12 +0100
-Message-Id: <1457262795-20282-2-git-send-email-manabian@gmail.com>
-In-Reply-To: <1457262795-20282-1-git-send-email-manabian@gmail.com>
-References: <1457262795-20282-1-git-send-email-manabian@gmail.com>
+Received: from mout01.posteo.de ([185.67.36.65]:33044 "EHLO mout01.posteo.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751461AbcCFPv3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 6 Mar 2016 10:51:29 -0500
+Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
+	by mout01.posteo.de (Postfix) with ESMTPS id 891C320923
+	for <linux-iio@vger.kernel.org>; Sun,  6 Mar 2016 16:51:24 +0100 (CET)
+Subject: Re: [PATCH 4/4] iio: mma8452: add low_power mode
+To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
+	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
+References: <1456993444-21320-1-git-send-email-martink@posteo.de>
+ <1456993444-21320-5-git-send-email-martink@posteo.de>
+ <56DB19FA.8090403@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Martin Kepplinger <martink@posteo.de>
+Message-ID: <56DC51A3.4000604@posteo.de>
+Date: Sun, 6 Mar 2016 16:49:55 +0100
+MIME-Version: 1.0
+In-Reply-To: <56DB19FA.8090403@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add base support for the 10-bit SAR ADC peripheral found
-on NXP LPC18xx/43xx SoCs.
+Am 2016-03-05 um 18:40 schrieb Jonathan Cameron:
+> On 03/03/16 08:24, Martin Kepplinger wrote:
+>> This adds a mode of operation that consumes less power by lesser
+>> oversampling. It's exposed in IIO sysfs as in_accelX_power_mode, as
+>> documented.
+>>
+>> It consumes roughly half the power the default low_noise mode does.
+>> See the datasheet for details.
+>>
+>> Signed-off-by: Martin Kepplinger <martink@posteo.de>
+>> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+> This is in the datasheet as oversampling.  So why are we not using the oversampling
+> interface rather than adding a new one?
+> 
+> It's obvious that with the interactions with sampling rate that this won't be trivial
+> to support, but it doesn't look that hard.  For a given sampling_frequency only
+> certain oversampling rations are possible, but that's not exactly unusual.
+> 
+> That way everything is explicit, whereas with this approach people will need to
+> read the datasheet to know if setting the power mode is having any effect at all.
+> 
+> That will also allow appropriate trade offs to use the low noise / low power version
+> if the oversampling ratio is appropriate.  All this stuff is clearly given in 
+> table 59 of the datasheet google gave me.
+> (actually as control mechanisms go for this sort of setting I think this one is
+> reasonably elegant as such hardware goes!)
+> 
+> Jonathan
+> 
 
-This is a minimal driver that does not support burst mode,
-interrupts, DMA or hardware triggers.
+True, that way a more accurate way of describing the hardware would be
+possible. I figured power_mode already is an ABI and used in another
+driver, and very convenient to use.
 
-User manual with register description can be found on:
-LPC18xx: www.nxp.com/documents/user_manual/UM10430.pdf
-LPC43xx: www.nxp.com/documents/user_manual/UM10503.pdf
+How about having both, so that the connection to saving power is obvious
+for users? This way I would have to extend "power_modes_available" to
+have 4 modes, but no reading of the data sheet would be necessary to
+understand it all.
 
-Signed-off-by: Joachim Eastwood <manabian@gmail.com>
----
- drivers/iio/adc/Kconfig       |  10 ++
- drivers/iio/adc/Makefile      |   1 +
- drivers/iio/adc/lpc18xx_adc.c | 228 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 239 insertions(+)
- create mode 100644 drivers/iio/adc/lpc18xx_adc.c
+It would not be trivial but doable and I could redo this by supporting
+oversampling ABI first, and try to add this power_mode knob seperately?
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 932de1f9d1e7..85994e5889ec 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -234,6 +234,16 @@ config LP8788_ADC
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called lp8788_adc.
- 
-+config LPC18XX_ADC
-+	tristate "NXP LPC18xx ADC driver"
-+	depends on ARCH_LPC18XX || COMPILE_TEST
-+	depends on OF && HAS_IOMEM
-+	help
-+	  Say yes here to build support for NXP LPC18XX ADC.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called lpc18xx_adc.
-+
- config MAX1027
- 	tristate "Maxim max1027 ADC driver"
- 	depends on SPI
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index b1aa456e6af3..1a4ac4590857 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -24,6 +24,7 @@ obj-$(CONFIG_HI8435) += hi8435.o
- obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
- obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
-+obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
- obj-$(CONFIG_MAX1027) += max1027.o
- obj-$(CONFIG_MAX1363) += max1363.o
- obj-$(CONFIG_MCP320X) += mcp320x.o
-diff --git a/drivers/iio/adc/lpc18xx_adc.c b/drivers/iio/adc/lpc18xx_adc.c
-new file mode 100644
-index 000000000000..fbe9b7a7e6b8
---- /dev/null
-+++ b/drivers/iio/adc/lpc18xx_adc.c
-@@ -0,0 +1,228 @@
-+/*
-+ * IIO ADC driver for NXP LPC18xx ADC
-+ *
-+ * Copyright (C) 2016 Joachim Eastwood <manabian@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * UNSUPPORTED hardware features:
-+ *  - Hardware triggers
-+ *  - Burst mode
-+ *  - Interrupts
-+ *  - DMA
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/err.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/driver.h>
-+#include <linux/io.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/regulator/consumer.h>
-+
-+/* LPC18XX ADC registers and bits */
-+#define LPC18XX_ADC_CR			0x000
-+#define  LPC18XX_ADC_CR_CLKDIV_SHIFT	8
-+#define  LPC18XX_ADC_CR_PDN		BIT(21)
-+#define  LPC18XX_ADC_CR_START_NOW	(0x1 << 24)
-+#define LPC18XX_ADC_GDR			0x004
-+
-+/* Data register bits */
-+#define LPC18XX_ADC_SAMPLE_SHIFT	6
-+#define LPC18XX_ADC_SAMPLE_MASK		0x3ff
-+#define LPC18XX_ADC_CONV_DONE		BIT(31)
-+
-+/* Clock should be 4.5 MHz or less */
-+#define LPC18XX_ADC_CLK_TARGET		4500000
-+
-+struct lpc18xx_adc {
-+	void __iomem *base;
-+	struct device *dev;
-+	struct clk *clk;
-+	struct regulator *vref;
-+	u32 cr_reg;
-+};
-+
-+#define LPC18XX_ADC_CHAN(_idx) {				\
-+	.type = IIO_VOLTAGE,					\
-+	.indexed = 1,						\
-+	.channel = _idx,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+}
-+
-+static const struct iio_chan_spec lpc18xx_adc_iio_channels[] = {
-+	LPC18XX_ADC_CHAN(0),
-+	LPC18XX_ADC_CHAN(1),
-+	LPC18XX_ADC_CHAN(2),
-+	LPC18XX_ADC_CHAN(3),
-+	LPC18XX_ADC_CHAN(4),
-+	LPC18XX_ADC_CHAN(5),
-+	LPC18XX_ADC_CHAN(6),
-+	LPC18XX_ADC_CHAN(7),
-+};
-+
-+static int lpc18xx_adc_read_chan(struct lpc18xx_adc *adc, unsigned int ch)
-+{
-+	int ret;
-+	u32 reg;
-+
-+	reg = adc->cr_reg | BIT(ch) | LPC18XX_ADC_CR_START_NOW;
-+	writel(reg, adc->base + LPC18XX_ADC_CR);
-+
-+	ret = readl_poll_timeout(adc->base + LPC18XX_ADC_GDR, reg,
-+				 reg & LPC18XX_ADC_CONV_DONE, 3, 9);
-+	if (ret) {
-+		dev_warn(adc->dev, "adc read timed out\n");
-+		return ret;
-+	}
-+
-+	return (reg >> LPC18XX_ADC_SAMPLE_SHIFT) & LPC18XX_ADC_SAMPLE_MASK;
-+}
-+
-+static int lpc18xx_adc_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	struct lpc18xx_adc *adc = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&indio_dev->mlock);
-+		*val = lpc18xx_adc_read_chan(adc, chan->channel);
-+		mutex_unlock(&indio_dev->mlock);
-+		if (*val < 0)
-+			return *val;
-+
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = regulator_get_voltage(adc->vref) / 1000;
-+		*val2 = 10;
-+
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info lpc18xx_adc_info = {
-+	.read_raw = lpc18xx_adc_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int lpc18xx_adc_probe(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev;
-+	struct lpc18xx_adc *adc;
-+	struct resource *res;
-+	unsigned int clkdiv;
-+	unsigned long rate;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+	adc = iio_priv(indio_dev);
-+	adc->dev = &pdev->dev;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	adc->base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(adc->base))
-+		return PTR_ERR(adc->base);
-+
-+	adc->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(adc->clk)) {
-+		dev_err(&pdev->dev, "error getting clock\n");
-+		return PTR_ERR(adc->clk);
-+	}
-+
-+	rate = clk_get_rate(adc->clk);
-+	clkdiv = DIV_ROUND_UP(rate, LPC18XX_ADC_CLK_TARGET);
-+
-+	adc->vref = devm_regulator_get(&pdev->dev, "vref");
-+	if (IS_ERR(adc->vref)) {
-+		dev_err(&pdev->dev, "error getting regulator\n");
-+		return PTR_ERR(adc->vref);
-+	}
-+
-+	indio_dev->name = dev_name(&pdev->dev);
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &lpc18xx_adc_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = lpc18xx_adc_iio_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(lpc18xx_adc_iio_channels);
-+
-+	ret = regulator_enable(adc->vref);
-+	if (ret) {
-+		dev_err(&pdev->dev, "unable to enable regulator\n");
-+		return ret;
-+	}
-+
-+	ret = clk_prepare_enable(adc->clk);
-+	if (ret) {
-+		dev_err(&pdev->dev, "unable to enable clock\n");
-+		goto dis_reg;
-+	}
-+
-+	adc->cr_reg = (clkdiv << LPC18XX_ADC_CR_CLKDIV_SHIFT) |
-+			LPC18XX_ADC_CR_PDN;
-+	writel(adc->cr_reg, adc->base + LPC18XX_ADC_CR);
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "unable to register device\n");
-+		goto dis_clk;
-+	}
-+
-+	return 0;
-+
-+dis_clk:
-+	writel(0, adc->base + LPC18XX_ADC_CR);
-+	clk_disable_unprepare(adc->clk);
-+dis_reg:
-+	regulator_disable(adc->vref);
-+	return ret;
-+}
-+
-+static int lpc18xx_adc_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct lpc18xx_adc *adc = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	writel(0, adc->base + LPC18XX_ADC_CR);
-+	clk_disable_unprepare(adc->clk);
-+	regulator_disable(adc->vref);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id lpc18xx_adc_match[] = {
-+	{ .compatible = "nxp,lpc1850-adc" },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, lpc18xx_adc_match);
-+
-+static struct platform_driver lpc18xx_adc_driver = {
-+	.probe	= lpc18xx_adc_probe,
-+	.remove	= lpc18xx_adc_remove,
-+	.driver	= {
-+		.name = "lpc18xx-adc",
-+		.of_match_table = lpc18xx_adc_match,
-+	},
-+};
-+module_platform_driver(lpc18xx_adc_driver);
-+
-+MODULE_DESCRIPTION("LPC18xx ADC driver");
-+MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
-+MODULE_LICENSE("GPL v2");
--- 
-1.8.0
+                       martin
+
+>> ---
+>>  drivers/iio/accel/mma8452.c | 55 +++++++++++++++++++++++++++++++++++++++++++++
+>>  1 file changed, 55 insertions(+)
+>>
+>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+>> index 5ca0d16..5b5abec 100644
+>> --- a/drivers/iio/accel/mma8452.c
+>> +++ b/drivers/iio/accel/mma8452.c
+>> @@ -75,6 +75,9 @@
+>>  #define  MMA8452_CTRL_DR_DEFAULT		0x4 /* 50 Hz sample frequency */
+>>  #define MMA8452_CTRL_REG2			0x2b
+>>  #define  MMA8452_CTRL_REG2_RST			BIT(6)
+>> +#define  MMA8452_CTRL_REG2_MODS_MASK		0x1b
+>> +#define  MMA8452_CTRL_REG2_MODS_NORMAL		0x00
+>> +#define  MMA8452_CTRL_REG2_MODS_LOW_POWER	0x1b
+>>  #define MMA8452_CTRL_REG4			0x2d
+>>  #define MMA8452_CTRL_REG5			0x2e
+>>  #define MMA8452_OFF_X				0x2f
+>> @@ -950,6 +953,56 @@ static struct attribute_group mma8452_event_attribute_group = {
+>>  	.attrs = mma8452_event_attributes,
+>>  };
+>>  
+>> +static const char * const mma8452_power_modes[] = {"low_noise", "low_power"};
+>> +
+>> +static int mma8452_get_power_mode(struct iio_dev *indio_dev,
+>> +				  const struct iio_chan_spec *chan)
+>> +{
+>> +	struct mma8452_data *data = iio_priv(indio_dev);
+>> +	int reg;
+>> +
+>> +	reg = i2c_smbus_read_byte_data(data->client,
+>> +				       MMA8452_CTRL_REG2);
+>> +	if (reg < 0)
+>> +		return reg;
+>> +
+>> +	return !(reg & MMA8452_CTRL_REG2_MODS_MASK);
+>> +}
+>> +
+>> +static int mma8452_set_power_mode(struct iio_dev *indio_dev,
+>> +				  const struct iio_chan_spec *chan,
+>> +				  unsigned int mode)
+>> +{
+>> +	struct mma8452_data *data = iio_priv(indio_dev);
+>> +	int reg;
+>> +
+>> +	reg = i2c_smbus_read_byte_data(data->client,
+>> +				       MMA8452_CTRL_REG2);
+>> +	if (reg < 0)
+>> +		return reg;
+>> +
+>> +	reg &= ~MMA8452_CTRL_REG2_MODS_MASK;
+>> +	if (mode)
+>> +		reg |= MMA8452_CTRL_REG2_MODS_LOW_POWER;
+>> +	else
+>> +		reg |= MMA8452_CTRL_REG2_MODS_NORMAL;
+>> +
+>> +	return mma8452_change_config(data, MMA8452_CTRL_REG2, reg);
+>> +}
+>> +
+>> +static const struct iio_enum mma8452_power_mode_enum = {
+>> +	.items = mma8452_power_modes,
+>> +	.num_items = ARRAY_SIZE(mma8452_power_modes),
+>> +	.get = mma8452_get_power_mode,
+>> +	.set = mma8452_set_power_mode,
+>> +};
+>> +
+>> +static const struct iio_chan_spec_ext_info mma8452_ext_info[] = {
+>> +	IIO_ENUM("power_mode", true, &mma8452_power_mode_enum),
+>> +	IIO_ENUM_AVAILABLE("power_mode", &mma8452_power_mode_enum),
+>> +	{ },
+>> +};
+>> +
+>>  #define MMA8452_FREEFALL_CHANNEL(modifier) { \
+>>  	.type = IIO_ACCEL, \
+>>  	.modified = 1, \
+>> @@ -987,6 +1040,7 @@ static struct attribute_group mma8452_event_attribute_group = {
+>>  	}, \
+>>  	.event_spec = mma8452_transient_event, \
+>>  	.num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
+>> +	.ext_info = mma8452_ext_info, \
+>>  }
+>>  
+>>  #define MMA8652_CHANNEL(axis, idx, bits) { \
+>> @@ -1007,6 +1061,7 @@ static struct attribute_group mma8452_event_attribute_group = {
+>>  	}, \
+>>  	.event_spec = mma8452_motion_event, \
+>>  	.num_event_specs = ARRAY_SIZE(mma8452_motion_event), \
+>> +	.ext_info = mma8452_ext_info, \
+>>  }
+>>  
+>>  static const struct iio_chan_spec mma8451_channels[] = {
+>>
+> 
 
