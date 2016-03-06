@@ -1,246 +1,306 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33398 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751404AbcCFM7R (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Mar 2016 07:59:17 -0500
-Subject: Re: [PATCH 3/4] iio: mma8452: add support for runtime power
- management
-To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net,
-	christoph.muellner@theobroma-systems.com, mfuzzey@parkeon.com
-References: <1456993444-21320-1-git-send-email-martink@posteo.de>
- <1456993444-21320-4-git-send-email-martink@posteo.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56DC29A0.8030603@kernel.org>
-Date: Sun, 6 Mar 2016 12:59:12 +0000
-MIME-Version: 1.0
-In-Reply-To: <1456993444-21320-4-git-send-email-martink@posteo.de>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-lb0-f196.google.com ([209.85.217.196]:35370 "EHLO
+	mail-lb0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751299AbcCFLNf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Mar 2016 06:13:35 -0500
+From: Joachim Eastwood <manabian@gmail.com>
+To: jic23@kernel.org
+Cc: Joachim Eastwood <manabian@gmail.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	robh+dt@kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v2 1/4] iio: adc: add NXP LPC18xx ADC driver
+Date: Sun,  6 Mar 2016 12:13:12 +0100
+Message-Id: <1457262795-20282-2-git-send-email-manabian@gmail.com>
+In-Reply-To: <1457262795-20282-1-git-send-email-manabian@gmail.com>
+References: <1457262795-20282-1-git-send-email-manabian@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/03/16 08:24, Martin Kepplinger wrote:
-> This adds support for runtime power management and, if configured, activates
-> automatic standby after 2 seconds of inactivity.
-> 
-> Inactivity means no read of acceleration values and no events triggered or
-> activated.
-> 
-> If CONFIG_PM is not set, this doesn't change anything for existing users.
-> 
-> Signed-off-by: Martin Kepplinger <martink@posteo.de>
-> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-Looks good.   Applied to the togreg branch of iio.git - initially pushed out
-as testing for the autobuilders to play with it.
+Add base support for the 10-bit SAR ADC peripheral found
+on NXP LPC18xx/43xx SoCs.
 
-Thanks,
+This is a minimal driver that does not support burst mode,
+interrupts, DMA or hardware triggers.
 
-Jonathan
-> ---
->  drivers/iio/accel/mma8452.c | 118 ++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 108 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 9c4a84a..5ca0d16 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -31,6 +31,7 @@
->  #include <linux/delay.h>
->  #include <linux/of_device.h>
->  #include <linux/of_irq.h>
-> +#include <linux/pm_runtime.h>
->  
->  #define MMA8452_STATUS				0x00
->  #define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
-> @@ -92,6 +93,8 @@
->  #define MMA8652_DEVICE_ID			0x4a
->  #define MMA8653_DEVICE_ID			0x5a
->  
-> +#define MMA8452_AUTO_SUSPEND_DELAY_MS		2000
-> +
->  struct mma8452_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
-> @@ -172,6 +175,31 @@ static int mma8452_drdy(struct mma8452_data *data)
->  	return -EIO;
->  }
->  
-> +static int mma8452_set_runtime_pm_state(struct i2c_client *client, bool on)
-> +{
-> +#ifdef CONFIG_PM
-> +	int ret;
-> +
-> +	if (on) {
-> +		ret = pm_runtime_get_sync(&client->dev);
-> +	} else {
-> +		pm_runtime_mark_last_busy(&client->dev);
-> +		ret = pm_runtime_put_autosuspend(&client->dev);
-> +	}
-> +
-> +	if (ret < 0) {
-> +		dev_err(&client->dev,
-> +			"failed to change power state to %d\n", on);
-> +		if (on)
-> +			pm_runtime_put_noidle(&client->dev);
-> +
-> +		return ret;
-> +	}
-> +#endif
-> +
-> +	return 0;
-> +}
-> +
->  static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
->  {
->  	int ret = mma8452_drdy(data);
-> @@ -179,8 +207,16 @@ static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
->  	if (ret < 0)
->  		return ret;
->  
-> -	return i2c_smbus_read_i2c_block_data(data->client, MMA8452_OUT_X,
-> -					     3 * sizeof(__be16), (u8 *)buf);
-> +	ret = mma8452_set_runtime_pm_state(data->client, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_read_i2c_block_data(data->client, MMA8452_OUT_X,
-> +					    3 * sizeof(__be16), (u8 *)buf);
-> +
-> +	ret = mma8452_set_runtime_pm_state(data->client, false);
-> +
-> +	return ret;
->  }
->  
->  static ssize_t mma8452_show_int_plus_micros(char *buf, const int (*vals)[2],
-> @@ -707,7 +743,11 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
->  	const struct mma_chip_info *chip = data->chip_info;
-> -	int val;
-> +	int val, ret;
-> +
-> +	ret = mma8452_set_runtime_pm_state(data->client, state);
-> +	if (ret)
-> +		return ret;
->  
->  	switch (dir) {
->  	case IIO_EV_DIR_FALLING:
-> @@ -1139,7 +1179,11 @@ static int mma8452_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  {
->  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> -	int reg;
-> +	int reg, ret;
-> +
-> +	ret = mma8452_set_runtime_pm_state(data->client, state);
-> +	if (ret)
-> +		return ret;
->  
->  	reg = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG4);
->  	if (reg < 0)
-> @@ -1365,6 +1409,15 @@ static int mma8452_probe(struct i2c_client *client,
->  			goto buffer_cleanup;
->  	}
->  
-> +	ret = pm_runtime_set_active(&client->dev);
-> +	if (ret < 0)
-> +		goto buffer_cleanup;
-> +
-> +	pm_runtime_enable(&client->dev);
-> +	pm_runtime_set_autosuspend_delay(&client->dev,
-> +					 MMA8452_AUTO_SUSPEND_DELAY_MS);
-> +	pm_runtime_use_autosuspend(&client->dev);
-> +
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0)
->  		goto buffer_cleanup;
-> @@ -1389,6 +1442,11 @@ static int mma8452_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  
->  	iio_device_unregister(indio_dev);
-> +
-> +	pm_runtime_disable(&client->dev);
-> +	pm_runtime_set_suspended(&client->dev);
-> +	pm_runtime_put_noidle(&client->dev);
-> +
->  	iio_triggered_buffer_cleanup(indio_dev);
->  	mma8452_trigger_cleanup(indio_dev);
->  	mma8452_standby(iio_priv(indio_dev));
-> @@ -1396,6 +1454,45 @@ static int mma8452_remove(struct i2c_client *client)
->  	return 0;
->  }
->  
-> +#ifdef CONFIG_PM
-> +static int mma8452_runtime_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = mma8452_standby(data);
-> +	mutex_unlock(&data->lock);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "powering off device failed\n");
-> +		return -EAGAIN;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int mma8452_runtime_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int ret, sleep_val;
-> +
-> +	ret = mma8452_active(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = mma8452_get_odr_index(data);
-> +	sleep_val = 1000 / mma8452_samp_freq[ret][0];
-> +	if (sleep_val < 20)
-> +		usleep_range(sleep_val * 1000, 20000);
-> +	else
-> +		msleep_interruptible(sleep_val);
-> +
-> +	return 0;
-> +}
-> +#endif
-> +
->  #ifdef CONFIG_PM_SLEEP
->  static int mma8452_suspend(struct device *dev)
->  {
-> @@ -1408,13 +1505,14 @@ static int mma8452_resume(struct device *dev)
->  	return mma8452_active(iio_priv(i2c_get_clientdata(
->  		to_i2c_client(dev))));
->  }
-> -
-> -static SIMPLE_DEV_PM_OPS(mma8452_pm_ops, mma8452_suspend, mma8452_resume);
-> -#define MMA8452_PM_OPS (&mma8452_pm_ops)
-> -#else
-> -#define MMA8452_PM_OPS NULL
->  #endif
->  
-> +static const struct dev_pm_ops mma8452_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(mma8452_suspend, mma8452_resume)
-> +	SET_RUNTIME_PM_OPS(mma8452_runtime_suspend,
-> +			   mma8452_runtime_resume, NULL)
-> +};
-> +
->  static const struct i2c_device_id mma8452_id[] = {
->  	{ "mma8452", mma8452 },
->  	{ "mma8453", mma8453 },
-> @@ -1428,7 +1526,7 @@ static struct i2c_driver mma8452_driver = {
->  	.driver = {
->  		.name	= "mma8452",
->  		.of_match_table = of_match_ptr(mma8452_dt_ids),
-> -		.pm	= MMA8452_PM_OPS,
-> +		.pm	= &mma8452_pm_ops,
->  	},
->  	.probe = mma8452_probe,
->  	.remove = mma8452_remove,
-> 
+User manual with register description can be found on:
+LPC18xx: www.nxp.com/documents/user_manual/UM10430.pdf
+LPC43xx: www.nxp.com/documents/user_manual/UM10503.pdf
+
+Signed-off-by: Joachim Eastwood <manabian@gmail.com>
+---
+ drivers/iio/adc/Kconfig       |  10 ++
+ drivers/iio/adc/Makefile      |   1 +
+ drivers/iio/adc/lpc18xx_adc.c | 228 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 239 insertions(+)
+ create mode 100644 drivers/iio/adc/lpc18xx_adc.c
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 932de1f9d1e7..85994e5889ec 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -234,6 +234,16 @@ config LP8788_ADC
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called lp8788_adc.
+ 
++config LPC18XX_ADC
++	tristate "NXP LPC18xx ADC driver"
++	depends on ARCH_LPC18XX || COMPILE_TEST
++	depends on OF && HAS_IOMEM
++	help
++	  Say yes here to build support for NXP LPC18XX ADC.
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called lpc18xx_adc.
++
+ config MAX1027
+ 	tristate "Maxim max1027 ADC driver"
+ 	depends on SPI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index b1aa456e6af3..1a4ac4590857 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -24,6 +24,7 @@ obj-$(CONFIG_HI8435) += hi8435.o
+ obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+ obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
++obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+ obj-$(CONFIG_MAX1027) += max1027.o
+ obj-$(CONFIG_MAX1363) += max1363.o
+ obj-$(CONFIG_MCP320X) += mcp320x.o
+diff --git a/drivers/iio/adc/lpc18xx_adc.c b/drivers/iio/adc/lpc18xx_adc.c
+new file mode 100644
+index 000000000000..fbe9b7a7e6b8
+--- /dev/null
++++ b/drivers/iio/adc/lpc18xx_adc.c
+@@ -0,0 +1,228 @@
++/*
++ * IIO ADC driver for NXP LPC18xx ADC
++ *
++ * Copyright (C) 2016 Joachim Eastwood <manabian@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * UNSUPPORTED hardware features:
++ *  - Hardware triggers
++ *  - Burst mode
++ *  - Interrupts
++ *  - DMA
++ */
++
++#include <linux/clk.h>
++#include <linux/err.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/driver.h>
++#include <linux/io.h>
++#include <linux/iopoll.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/regulator/consumer.h>
++
++/* LPC18XX ADC registers and bits */
++#define LPC18XX_ADC_CR			0x000
++#define  LPC18XX_ADC_CR_CLKDIV_SHIFT	8
++#define  LPC18XX_ADC_CR_PDN		BIT(21)
++#define  LPC18XX_ADC_CR_START_NOW	(0x1 << 24)
++#define LPC18XX_ADC_GDR			0x004
++
++/* Data register bits */
++#define LPC18XX_ADC_SAMPLE_SHIFT	6
++#define LPC18XX_ADC_SAMPLE_MASK		0x3ff
++#define LPC18XX_ADC_CONV_DONE		BIT(31)
++
++/* Clock should be 4.5 MHz or less */
++#define LPC18XX_ADC_CLK_TARGET		4500000
++
++struct lpc18xx_adc {
++	void __iomem *base;
++	struct device *dev;
++	struct clk *clk;
++	struct regulator *vref;
++	u32 cr_reg;
++};
++
++#define LPC18XX_ADC_CHAN(_idx) {				\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.channel = _idx,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
++
++static const struct iio_chan_spec lpc18xx_adc_iio_channels[] = {
++	LPC18XX_ADC_CHAN(0),
++	LPC18XX_ADC_CHAN(1),
++	LPC18XX_ADC_CHAN(2),
++	LPC18XX_ADC_CHAN(3),
++	LPC18XX_ADC_CHAN(4),
++	LPC18XX_ADC_CHAN(5),
++	LPC18XX_ADC_CHAN(6),
++	LPC18XX_ADC_CHAN(7),
++};
++
++static int lpc18xx_adc_read_chan(struct lpc18xx_adc *adc, unsigned int ch)
++{
++	int ret;
++	u32 reg;
++
++	reg = adc->cr_reg | BIT(ch) | LPC18XX_ADC_CR_START_NOW;
++	writel(reg, adc->base + LPC18XX_ADC_CR);
++
++	ret = readl_poll_timeout(adc->base + LPC18XX_ADC_GDR, reg,
++				 reg & LPC18XX_ADC_CONV_DONE, 3, 9);
++	if (ret) {
++		dev_warn(adc->dev, "adc read timed out\n");
++		return ret;
++	}
++
++	return (reg >> LPC18XX_ADC_SAMPLE_SHIFT) & LPC18XX_ADC_SAMPLE_MASK;
++}
++
++static int lpc18xx_adc_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	struct lpc18xx_adc *adc = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&indio_dev->mlock);
++		*val = lpc18xx_adc_read_chan(adc, chan->channel);
++		mutex_unlock(&indio_dev->mlock);
++		if (*val < 0)
++			return *val;
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = regulator_get_voltage(adc->vref) / 1000;
++		*val2 = 10;
++
++		return IIO_VAL_FRACTIONAL_LOG2;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info lpc18xx_adc_info = {
++	.read_raw = lpc18xx_adc_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int lpc18xx_adc_probe(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev;
++	struct lpc18xx_adc *adc;
++	struct resource *res;
++	unsigned int clkdiv;
++	unsigned long rate;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, indio_dev);
++	adc = iio_priv(indio_dev);
++	adc->dev = &pdev->dev;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	adc->base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(adc->base))
++		return PTR_ERR(adc->base);
++
++	adc->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(adc->clk)) {
++		dev_err(&pdev->dev, "error getting clock\n");
++		return PTR_ERR(adc->clk);
++	}
++
++	rate = clk_get_rate(adc->clk);
++	clkdiv = DIV_ROUND_UP(rate, LPC18XX_ADC_CLK_TARGET);
++
++	adc->vref = devm_regulator_get(&pdev->dev, "vref");
++	if (IS_ERR(adc->vref)) {
++		dev_err(&pdev->dev, "error getting regulator\n");
++		return PTR_ERR(adc->vref);
++	}
++
++	indio_dev->name = dev_name(&pdev->dev);
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->info = &lpc18xx_adc_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = lpc18xx_adc_iio_channels;
++	indio_dev->num_channels = ARRAY_SIZE(lpc18xx_adc_iio_channels);
++
++	ret = regulator_enable(adc->vref);
++	if (ret) {
++		dev_err(&pdev->dev, "unable to enable regulator\n");
++		return ret;
++	}
++
++	ret = clk_prepare_enable(adc->clk);
++	if (ret) {
++		dev_err(&pdev->dev, "unable to enable clock\n");
++		goto dis_reg;
++	}
++
++	adc->cr_reg = (clkdiv << LPC18XX_ADC_CR_CLKDIV_SHIFT) |
++			LPC18XX_ADC_CR_PDN;
++	writel(adc->cr_reg, adc->base + LPC18XX_ADC_CR);
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&pdev->dev, "unable to register device\n");
++		goto dis_clk;
++	}
++
++	return 0;
++
++dis_clk:
++	writel(0, adc->base + LPC18XX_ADC_CR);
++	clk_disable_unprepare(adc->clk);
++dis_reg:
++	regulator_disable(adc->vref);
++	return ret;
++}
++
++static int lpc18xx_adc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct lpc18xx_adc *adc = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++
++	writel(0, adc->base + LPC18XX_ADC_CR);
++	clk_disable_unprepare(adc->clk);
++	regulator_disable(adc->vref);
++
++	return 0;
++}
++
++static const struct of_device_id lpc18xx_adc_match[] = {
++	{ .compatible = "nxp,lpc1850-adc" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, lpc18xx_adc_match);
++
++static struct platform_driver lpc18xx_adc_driver = {
++	.probe	= lpc18xx_adc_probe,
++	.remove	= lpc18xx_adc_remove,
++	.driver	= {
++		.name = "lpc18xx-adc",
++		.of_match_table = lpc18xx_adc_match,
++	},
++};
++module_platform_driver(lpc18xx_adc_driver);
++
++MODULE_DESCRIPTION("LPC18xx ADC driver");
++MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
++MODULE_LICENSE("GPL v2");
+-- 
+1.8.0
 
