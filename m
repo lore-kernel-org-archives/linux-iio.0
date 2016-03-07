@@ -1,66 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f174.google.com ([209.85.213.174]:37486 "EHLO
-	mail-ig0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752151AbcCGITL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Mar 2016 03:19:11 -0500
-Received: by mail-ig0-f174.google.com with SMTP id z8so34368343ige.0
-        for <linux-iio@vger.kernel.org>; Mon, 07 Mar 2016 00:19:11 -0800 (PST)
+Return-Path: <sudipm.mukherjee@gmail.com>
+Date: Mon, 7 Mar 2016 16:36:32 +0530
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To: Markus Pargmann <mpa@pengutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-kernel@vger.kernel.org,
+	kernel-testers@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: imx25-gcq: fix do_div
+Message-ID: <20160307110632.GA10337@sudip-pc>
+References: <1457009513-7069-1-git-send-email-sudipm.mukherjee@gmail.com>
+ <56DB28BF.9070508@kernel.org>
+ <8010548.jDMIC4yOG6@adelgunde>
 MIME-Version: 1.0
-In-Reply-To: <56DB1C72.5060407@kernel.org>
-References: <20160302181801.GA12744@mwanda>
-	<20160302182144.GU5273@mwanda>
-	<21021227-E4C9-4D25-BD2A-F9A42927B1FD@gmail.com>
-	<56DB1C72.5060407@kernel.org>
-Date: Mon, 7 Mar 2016 10:19:10 +0200
-Message-ID: <CABjU8GuKAD3v48uEAXE_UmTr0q8zO=w5jLBdEa3fdkN-enTCPQ@mail.gmail.com>
-Subject: Re: iio: imu: mpu6050: add mpu6500 register settings
-From: Adriana Reus <adi.reus@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Matt Ranostay <mranostay@gmail.com>,
-	Dan Carpenter <dan.carpenter@oracle.com>,
-	matt.ranostay@intel.com, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <8010548.jDMIC4yOG6@adelgunde>
+List-ID: <linux-iio@vger.kernel.org>
 
-My understanding from the previous commits is that it might be NULL
-when enumerating via ACPI (I didn't dig into core to check this so I'm
-not able to confirm if that is still the case).
-(commit: 4f33fbae555000bf73aaacbc4f5b24668afc8c7a)
+On Mon, Mar 07, 2016 at 10:01:34AM +0100, Markus Pargmann wrote:
+> Hi,
+> 
+> On Saturday 05 March 2016 18:43:11 Jonathan Cameron wrote:
+> > On 03/03/16 12:51, Sudip Mukherjee wrote:
+> > > We are getting build failure with tilepro allmodconfig with the error:
+> > > 
+> > > drivers/iio/adc/fsl-imx25-gcq.c:236:4: note: in expansion of macro 'do_div'
+> > > do_div(priv->channel_vref_mv[reg], 1000);
+> > >     ^
+> > > 
+> > > include/asm-generic/div64.h:198:17: note: expected 'uint64_t *
+> > > 	{aka long long unsigned int *}' but argument is of type 'u32 *
+> > > 	{aka unsigned int *}'
+> > > 
+> > > Create a temporary variable of type u64 and use that in do_div.
+> > > 
+> > > Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+> > Markus, can you take a quick look at this. 
+> 
+> Thanks. I think this was already fixed by Arnd.
+> 	"iio: adc/imx25-gcq: move incorrect do_div"
 
-On Sat, Mar 5, 2016 at 7:50 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 02/03/16 22:04, Matt Ranostay wrote:
->> Will fix and submit this afternoon!
->>
->> Sent from my iPhone
->>
->>> On Mar 2, 2016, at 10:21, Dan Carpenter <dan.carpenter@oracle.com> wrote:
->>>
->>> I sent that too quickly.  The i2c version of inv_mpu_probe() has the
->>> same issue as well.
->>>
->>>    drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c:134 inv_mpu_probe()
->>>    error: we previously assumed 'id' could be null (see line 119)
->>>
->>> regards,
->>> dan carpenter
-> Whilst true, I'm now wondering why we assumed it might be.  Paranoia perhaps?
-> Hmm, guess we should keep it consistent (he says having just bounced this
-> back to Matt)- I'll take it as is but as a cleanup rather than a fix.
->
-> J
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+It should. But I still have the same build failure with next-20160307
+and not only tilepro, even m32r is also having the same build failure.
+
+regards
+sudip
