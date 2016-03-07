@@ -1,77 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f68.google.com ([209.85.220.68]:35597 "EHLO
-	mail-pa0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932624AbcCIUG7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2016 15:06:59 -0500
-Date: Wed, 9 Mar 2016 12:06:56 -0800
-From: Alison Schofield <amsfield22@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	outreachy-kernel@googlegroups.com, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Michael.Hennerich@analog.com,
-	gregkh@linuxfoundation.org, devel@driverdev.osuosl.org
-Subject: Re: [RFC PATCH 1/2] iio: core: implement
- iio_{claim|release}_direct_mode()
-Message-ID: <20160309200654.GA11631@d830.WORKGROUP>
-References: <cover.1456794364.git.amsfield22@gmail.com>
- <9a2950402af7277a4928a10eade4cc8b1187d8c8.1456794364.git.amsfield22@gmail.com>
- <56D6EA82.8090601@metafoo.de>
- <56DB1F3C.8020302@kernel.org>
+Received: from mail-ig0-f174.google.com ([209.85.213.174]:37486 "EHLO
+	mail-ig0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752151AbcCGITL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Mar 2016 03:19:11 -0500
+Received: by mail-ig0-f174.google.com with SMTP id z8so34368343ige.0
+        for <linux-iio@vger.kernel.org>; Mon, 07 Mar 2016 00:19:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <56DB1F3C.8020302@kernel.org>
+In-Reply-To: <56DB1C72.5060407@kernel.org>
+References: <20160302181801.GA12744@mwanda>
+	<20160302182144.GU5273@mwanda>
+	<21021227-E4C9-4D25-BD2A-F9A42927B1FD@gmail.com>
+	<56DB1C72.5060407@kernel.org>
+Date: Mon, 7 Mar 2016 10:19:10 +0200
+Message-ID: <CABjU8GuKAD3v48uEAXE_UmTr0q8zO=w5jLBdEa3fdkN-enTCPQ@mail.gmail.com>
+Subject: Re: iio: imu: mpu6050: add mpu6500 register settings
+From: Adriana Reus <adi.reus@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Matt Ranostay <mranostay@gmail.com>,
+	Dan Carpenter <dan.carpenter@oracle.com>,
+	matt.ranostay@intel.com, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Mar 05, 2016 at 06:02:36PM +0000, Jonathan Cameron wrote:
-> On 02/03/16 13:28, Lars-Peter Clausen wrote:
-> > On 03/01/2016 08:02 PM, Alison Schofield wrote:
-> >> It is often the case that the driver wants to be sure a device stays
-> >> in direct mode while it is executing a task or series of tasks.  To
-> >> accomplish this today, the driver performs this sequence: 1) take the
-> >> device state lock, 2)verify it is not in a buffered mode, 3) execute
-> >> some tasks, and 4) release that lock.
-> >>
-> >> This patch introduces a pair of helper functions that simplify these
-> >> steps and make it more semantically expressive.
-> >>
-> >> iio_claim_direct_mode()
-> >>         If the device is not in any buffered mode it is guaranteed
-> >>         to stay that way until iio_release_direct_mode() is called.
-> >>
-> >> iio_release_direct_mode()
-> >>         Release the claim. Device is no longer guaranteed to stay
-> >>         in direct mode.
-> >>
-> >> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> > 
-> > Looks basically good.
-> Agreed - nothing to add from me to what Lars has covered here.
-> Nice to 'hide' the accesses to mlock as well as will cut out the desire
-> to 'abuse it'.  Amusingly we only just 'fixed' the docs to to say this
-> element of iio_dev was usable by drivers.  Once we have these new functions
-> in use throughout the tree, we will want to flip that back again to internal
-> only.
-> 
-> Jonathan
+My understanding from the previous commits is that it might be NULL
+when enumerating via ACPI (I didn't dig into core to check this so I'm
+not able to confirm if that is still the case).
+(commit: 4f33fbae555000bf73aaacbc4f5b24668afc8c7a)
+
+On Sat, Mar 5, 2016 at 7:50 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 02/03/16 22:04, Matt Ranostay wrote:
+>> Will fix and submit this afternoon!
+>>
+>> Sent from my iPhone
+>>
+>>> On Mar 2, 2016, at 10:21, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>>>
+>>> I sent that too quickly.  The i2c version of inv_mpu_probe() has the
+>>> same issue as well.
+>>>
+>>>    drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c:134 inv_mpu_probe()
+>>>    error: we previously assumed 'id' could be null (see line 119)
+>>>
+>>> regards,
+>>> dan carpenter
+> Whilst true, I'm now wondering why we assumed it might be.  Paranoia perhaps?
+> Hmm, guess we should keep it consistent (he says having just bounced this
+> back to Matt)- I'll take it as is but as a cleanup rather than a fix.
 >
-Thanks for the review (& Lars too)  
-
-Thinking about your note about flipping the mlock field back to
-INTERNAL (from DRIVER), this change, even when it's applied to
-all relevant instances, doesn't get us all the way there.
-
-While these claim/release functions will remove direct access to mlock
-where a driver wants to hold direct mode, the drivers are grabbing
-mlock for other reasons also.  (too many reasons/instances for me to
-quickly understand or summarize)  
-
-I'm willing to look at it further and comment if that's helpful.
-
-alisons
-
-
-
-
-
+> J
+>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
