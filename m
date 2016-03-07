@@ -1,232 +1,95 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35244 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750798AbcCFUDJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Mar 2016 15:03:09 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: gregor.boirie@parrot.com, lars@metafoo.de, pmeerw@pmeerw.net,
-	daniel.baluta@intel.com, Jonathan Cameron <jic23@kernel.org>
-Subject: [RFC PATCH V2] iio:trigger: Experimental kthread tight loop trigger (thread only)
-Date: Sun,  6 Mar 2016 20:02:56 +0000
-Message-Id: <1457294576-10121-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <wsa@the-dreams.de>
+Date: Mon, 7 Mar 2016 11:23:09 +0100
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Peter Rosin <peda@lysator.liu.se>
+Cc: Jonathan Cameron <jic23@kernel.org>, Peter Rosin <peda@axentia.se>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Nicholas Mc Guire <hofrat@osadl.org>,
+	Olli Salonen <olli.salonen@iki.fi>, linux-i2c@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 0/8] i2c mux cleanup and locking update
+Message-ID: <20160307102309.GA1405@katana>
+References: <1452265496-22475-1-git-send-email-peda@lysator.liu.se>
+ <20160302172904.GC5439@katana>
+ <56DB1C07.4040008@kernel.org>
+ <20160305182934.GA1394@katana>
+ <56DD3E1E.5040003@lysator.liu.se>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="jI8keyz6grp/JLjh"
+In-Reply-To: <56DD3E1E.5040003@lysator.liu.se>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch is in response to that of
-Gregor Boirie <gregor.boirie@parrot.com>
-who proposed using a tight kthread within a device driver (be it with the
-support factored out into a helper library) in order to basically spin as
-fast as possible.
 
-It is meant as a talking point rather than a formal proposal of the code
-(though we are heading towards that I think).
-Also gives people some working code to mess around with.
+--jI8keyz6grp/JLjh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I proposed that this could be done with a trigger with a few constraints
-and this is the proof (be it ugly) of that.
 
-There are some constraints though, some of which we would want to relax
-if this were to move forward.
+> My offer is going to be this, I'll look after any unforeseen future problems
+> caused by this rework, and I can be the i2c-mux maintainer. But if being
 
-* Will only run the thread part of the registered pollfunc.  This is to
-  avoid the overhead of jumping in and out of interrupt context.  Is the
-  overhead significant?  Not certain but feels like it should be!
+Yay, thanks a lot!
 
-* This limitation precludes any device that 'must' do some work in
-  interrupt context.  However, that is true of few if any drivers and
-  I suspect that any that do will be restricted to using triggers they
-  provide themselves.  Usually we have a top half mainly to grab a
-  timestamp as soon after the dataready type signal as possible.
+> the i2c-mux maintainer turns out to be a huge time-sink, there is no way I
+> can stay on in the long run. But I guess that is the same for any maintainer
+> (whose job description does not explicitly include being maintainer).
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/iio/trigger/Kconfig         |  12 +++
- drivers/iio/trigger/Makefile        |   1 +
- drivers/iio/trigger/iio-trig-loop.c | 143 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 156 insertions(+)
+Well, since I became the I2C maintainer in late 2012, i2c-mux was always
+low-bandwidth:
 
-diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
-index 519e6772f6f5..9feabe95eeda 100644
---- a/drivers/iio/trigger/Kconfig
-+++ b/drivers/iio/trigger/Kconfig
-@@ -24,6 +24,18 @@ config IIO_INTERRUPT_TRIGGER
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called iio-trig-interrupt.
- 
-+config IIO_TIGHTLOOP_TRIGGER
-+	tristate "A kthread based hammering loop trigger"
-+	depends on IIO_SW_TRIGGER
-+	help
-+	  An experimental trigger, used to allow sensors to be sampled as fast
-+	  as possible under the limitations of whatever else is going on.
-+	  Uses a tight loop in a kthread.  Will only work with lower half only
-+	  trigger consumers.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called iio-trig-loop.	  
-+
- config IIO_SYSFS_TRIGGER
- 	tristate "SYSFS trigger"
- 	depends on SYSFS
-diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
-index fe06eb564367..aab4dc23303d 100644
---- a/drivers/iio/trigger/Makefile
-+++ b/drivers/iio/trigger/Makefile
-@@ -7,3 +7,4 @@
- obj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o
- obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
- obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
-+obj-$(CONFIG_IIO_TIGHTLOOP_TRIGGER) += iio-trig-loop.o
-diff --git a/drivers/iio/trigger/iio-trig-loop.c b/drivers/iio/trigger/iio-trig-loop.c
-new file mode 100644
-index 000000000000..dc6be28f96fe
---- /dev/null
-+++ b/drivers/iio/trigger/iio-trig-loop.c
-@@ -0,0 +1,143 @@
-+/*
-+ * Copyright 2016 Jonathan Cameron <jic23@kernel.org>
-+ *
-+ * Licensed under the GPL-2.
-+ *
-+ * Based on a mashup of the hrtimer trigger and continuous sampling proposal of
-+ * Gregor Boirie <gregor.boirie@parrot.com>
-+ *
-+ * Note this is still rather experimental and may eat babies.
-+ *
-+ * Todo
-+ * * Protect against connection of devices that 'need' the top half
-+ *   handler.
-+ * * Work out how to run top half handlers in this context if it is
-+ *   safe to do so (timestamp grabbing for example)
-+ *
-+ * Tested against a max1363. Used about 33% cpu for the thread and 20%
-+ * for generic_buffer piping to /dev/null. Watermark set at 64 on a 128
-+ * element kfifo buffer.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/irq_work.h>
-+#include <linux/kthread.h>
-+#include <linux/freezer.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/sw_trigger.h>
-+
-+struct iio_loop_info {
-+	struct iio_sw_trigger swt;
-+	struct task_struct *task;
-+};
-+
-+static struct config_item_type iio_loop_type = {
-+	.ct_owner = THIS_MODULE,
-+};
-+
-+static int iio_loop_thread(void *data)
-+{
-+	struct iio_trigger *trig = data;
-+
-+	set_freezable();
-+
-+	do {
-+		iio_trigger_poll_chained(trig);
-+	} while (likely(!kthread_freezable_should_stop(NULL)));
-+
-+	return 0;
-+}
-+
-+static int iio_loop_trigger_set_state(struct iio_trigger *trig, bool state)
-+{
-+	struct iio_loop_info *loop_trig = iio_trigger_get_drvdata(trig);
-+
-+	if (state) {
-+		loop_trig->task = kthread_run(iio_loop_thread,
-+					      trig, trig->name);
-+		if (unlikely(IS_ERR(loop_trig->task))) {
-+			dev_err(&trig->dev,
-+				"failed to create trigger loop thread\n");
-+			return PTR_ERR(loop_trig->task);
-+		}
-+	} else {
-+		kthread_stop(loop_trig->task);
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct iio_trigger_ops iio_loop_trigger_ops = {
-+	.set_trigger_state = iio_loop_trigger_set_state,
-+	.owner = THIS_MODULE,
-+};
-+
-+static struct iio_sw_trigger *iio_trig_loop_probe(const char *name)
-+{
-+	struct iio_loop_info *trig_info;
-+	int ret;
-+
-+	trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
-+	if (!trig_info)
-+		return ERR_PTR(-ENOMEM);
-+
-+	trig_info->swt.trigger = iio_trigger_alloc("%s", name);
-+	if (!trig_info->swt.trigger) {
-+		ret = -ENOMEM;
-+		goto err_free_trig_info;
-+	}
-+
-+	iio_trigger_set_drvdata(trig_info->swt.trigger, trig_info);
-+	trig_info->swt.trigger->ops = &iio_loop_trigger_ops;
-+
-+	ret = iio_trigger_register(trig_info->swt.trigger);
-+	if (ret)
-+		goto err_free_trigger;
-+
-+	iio_swt_group_init_type_name(&trig_info->swt, name, &iio_loop_type);
-+
-+	return &trig_info->swt;
-+
-+err_free_trigger:
-+	iio_trigger_free(trig_info->swt.trigger);
-+err_free_trig_info:
-+	kfree(trig_info);
-+
-+	return ERR_PTR(ret);
-+}
-+
-+static int iio_trig_loop_remove(struct iio_sw_trigger *swt)
-+{
-+	struct iio_loop_info *trig_info;
-+
-+	trig_info = iio_trigger_get_drvdata(swt->trigger);
-+
-+	iio_trigger_unregister(swt->trigger);
-+	iio_trigger_free(swt->trigger);
-+	kfree(trig_info);
-+
-+	return 0;
-+}
-+
-+static const struct iio_sw_trigger_ops iio_trig_loop_ops = {
-+	.probe = iio_trig_loop_probe,
-+	.remove = iio_trig_loop_remove,
-+};
-+
-+static struct iio_sw_trigger_type iio_trig_loop = {
-+	.name = "loop",
-+	.owner = THIS_MODULE,
-+	.ops = &iio_trig_loop_ops,
-+};
-+
-+module_iio_sw_trigger_driver(iio_trig_loop);
-+
-+MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
-+MODULE_DESCRIPTION("Loop based trigger for the iio subsystem");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:iio-trig-loop");
--- 
-2.7.1
+$ git log --pretty=oneline v3.2.. -- drivers/i2c/muxes/ drivers/i2c/i2c-mux.c | wc -l
+72
 
+And your patch series is already bigger than what was accepted in the
+last year altogether :) I understand the uncertainty feeling about this
+step; however, I truly think it is not much work. It is a niche -
+though, one I'd like to have supported by your expertise.
+
+> the mux update. The main commonality of the demux and the preexisting muxes
+> seems to be that the name includes "mux" and that it is all about i2c. Agreed?
+
+Yes, and because they are quite different, I wasn't sure if it a) is not
+affected at all or b) totally breaks the design. Glad to hear it is a).
+
+Thanks again, looks like we have a roadmap now for getting this series
+in \o/
+
+   Wolfram
+
+
+--jI8keyz6grp/JLjh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJW3VaNAAoJEBQN5MwUoCm22/IP/1RlgbCkTAdpLAodKwAhH57d
+ctOvoI7DNgYrKaTcy03vefZirGa79BUwkobZs4LOvXfDoIYCn/+UN3s0ykVJYJyR
+gBbGwiUoSDkHgrWI1XuP8vkg2QTG2M5W6n9XffXsdLQSUlwysLkrNICKJ+tDY0Fd
+FRH/QjQx/HLXPqjRTOKizLFXjCYeJVm9a7z3KHE3EH2QiC2Rl7tM2P+IPHpPK15V
+xOLf4ey5KszkMUrWxH4/ISngNJ2mj7agyQMEgSvFuLdo2SwRZCtjlpNXbvsv27Vw
+EcXaLPc40iFJzCrhpQb+cXaEXhn9yEPQLe/ZEO5NkGO5Q2JM11/uS/cGvjEi1Q1G
+xW9f3xbvdA3/Alku/ToqTtM5pAjFcmAf1QqacyirqJCPIHUs2MdYuXv9rkSAEm+u
+KRX6CST3E/hu/sC2qR9vLUXueaHnf14hpoeNLDIRKzxRkC5VHBEt1LBV8SHLrs/L
+JWpLkQOgBIkUaAFast6TTsr67BFOKaGYtvS8OmpnE4+nr0NGai2U+NbXie+pdB0Q
+4wi1WE6e03DKB91wexmHIWFG71okoGwE/+dOHEaDORXe8LiiQ98SwkWAuxcUtP/n
+Wk24wIWXX5IQqXpjXqTzAA+Pvt1YM1NoIU615joFlBfRUihKxnWWHi92Do7iHpPZ
+xCtR0hIAVdtg/nlLDj2y
+=2jMg
+-----END PGP SIGNATURE-----
+
+--jI8keyz6grp/JLjh--
