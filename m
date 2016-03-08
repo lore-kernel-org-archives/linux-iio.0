@@ -1,31 +1,48 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH 1/2] staging:iio:adis16204: Remove adis16204 driver
-To: Jonathan Cameron <jic23@kernel.org>
-References: <1457360552-12314-1-git-send-email-lars@metafoo.de>
- <56E09075.5070202@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56E14209.60407@metafoo.de>
-Date: Thu, 10 Mar 2016 10:44:41 +0100
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Mark Brown <broonie@kernel.org>, "Andrew F. Davis" <afd@ti.com>, Rob Herring
+	<robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
+	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
+ Gala <galak@codeaurora.org>, Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v5 0/1] iio:pressure:ms5611: fix and enhancements
+Date: Tue, 8 Mar 2016 19:00:31 +0100
+Message-ID: <cover.1457459537.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <56E09075.5070202@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On 03/09/2016 10:07 PM, Jonathan Cameron wrote:
-> On 07/03/16 14:22, Lars-Peter Clausen wrote:
->> The ADIS16204 part has been obsoleted, which makes it hard to get the
->> hardware to even test the driver. Considering this there is no expectation
->> that the driver will be cleaned up and be able to move out of staging, so
->> remove the driver.
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Applied. Pity in a way as these were interesting parts.
-> (read that as downright odd/esoteric ;)
+Changes since v1:
+* temperature compensation fix:
+    * reword commit message
+    * remove useless parenthesis
+* power regulator: reword commit message
+* add oversampling rate support
 
-The interesting one was the 220, but there are others like it and I get
-asked on a regular basis if it is supported yet, so they might come back at
-some point.
+Changes since v2:
+* remove non printable characters from commit messages
 
-- Lars
+Changes since v3:
+* drop first 3 patches since applied onto testing
+* fix oops at regulator probing time if regulator support not compiled-in
+* complete device-tree support and documentation
+* remove continuous sampling support (see Jonathan's "kthread tight loop
+  trigger" proposal)
+* checkpatch'ed
+
+Changes since v4:
+* drop first 2 patches since applied
+* amend commit to include "Fixes" tag
+
+Gregor Boirie (1):
+  Fixes: 3145229f9191 ("iio:pressure:ms5611: power regulator support")
+
+ drivers/iio/pressure/ms5611_core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+-- 
+2.1.4
