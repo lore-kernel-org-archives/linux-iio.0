@@ -1,95 +1,88 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Mon, 7 Mar 2016 11:23:09 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Peter Rosin <peda@lysator.liu.se>
-Cc: Jonathan Cameron <jic23@kernel.org>, Peter Rosin <peda@axentia.se>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:36039 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751329AbcCHVQW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Mar 2016 16:16:22 -0500
+MIME-Version: 1.0
+In-Reply-To: <26a4b9ab8ae9b40f9c96c51f12c977fdad36532f.1457459537.git.gregor.boirie@parrot.com>
+References: <cover.1457459537.git.gregor.boirie@parrot.com>
+	<26a4b9ab8ae9b40f9c96c51f12c977fdad36532f.1457459537.git.gregor.boirie@parrot.com>
+Date: Tue, 8 Mar 2016 23:16:20 +0200
+Message-ID: <CAEnQRZBsQ4_XPBXfuWu4WL_qLG7fo3ynsWfQ51v=Ya2O6-jXyQ@mail.gmail.com>
+Subject: Re: [PATCH v5 1/1] Fixes: 3145229f9191 ("iio:pressure:ms5611: power
+ regulator support")
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Devicetree List <devicetree@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Adriana Reus <adriana.reus@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
 	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Nicholas Mc Guire <hofrat@osadl.org>,
-	Olli Salonen <olli.salonen@iki.fi>, linux-i2c@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-media@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 0/8] i2c mux cleanup and locking update
-Message-ID: <20160307102309.GA1405@katana>
-References: <1452265496-22475-1-git-send-email-peda@lysator.liu.se>
- <20160302172904.GC5439@katana>
- <56DB1C07.4040008@kernel.org>
- <20160305182934.GA1394@katana>
- <56DD3E1E.5040003@lysator.liu.se>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="jI8keyz6grp/JLjh"
-In-Reply-To: <56DD3E1E.5040003@lysator.liu.se>
-List-ID: <linux-iio@vger.kernel.org>
+	Mark Brown <broonie@kernel.org>,
+	"Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+On Tue, Mar 8, 2016 at 8:00 PM, Gregor Boirie <gregor.boirie@parrot.com> wrote:
+> When not compiled-in, regulator layer will return a NULL pointer when
+> trying to get a reference to any regulator using devm_regulator_get().  As
+> IS_ERR() does not consider this an error, the ms5611 probing operation will
+> try to enable a NULL regulator, which will invariably cause a kernel
+> crash.
+> This patch fixes this situation by using devm_regulator_get_optional()
+> instead of devm_regulator_get().
+>
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+
+$Subject should be here. And the commit subject should be something
+more appropriate like:
+
+iio: pressure: ms5611: Fix crash when ...
 
 
---jI8keyz6grp/JLjh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-
-> My offer is going to be this, I'll look after any unforeseen future problems
-> caused by this rework, and I can be the i2c-mux maintainer. But if being
-
-Yay, thanks a lot!
-
-> the i2c-mux maintainer turns out to be a huge time-sink, there is no way I
-> can stay on in the long run. But I guess that is the same for any maintainer
-> (whose job description does not explicitly include being maintainer).
-
-Well, since I became the I2C maintainer in late 2012, i2c-mux was always
-low-bandwidth:
-
-$ git log --pretty=oneline v3.2.. -- drivers/i2c/muxes/ drivers/i2c/i2c-mux.c | wc -l
-72
-
-And your patch series is already bigger than what was accepted in the
-last year altogether :) I understand the uncertainty feeling about this
-step; however, I truly think it is not much work. It is a niche -
-though, one I'd like to have supported by your expertise.
-
-> the mux update. The main commonality of the demux and the preexisting muxes
-> seems to be that the name includes "mux" and that it is all about i2c. Agreed?
-
-Yes, and because they are quite different, I wasn't sure if it a) is not
-affected at all or b) totally breaks the design. Glad to hear it is a).
-
-Thanks again, looks like we have a roadmap now for getting this series
-in \o/
-
-   Wolfram
-
-
---jI8keyz6grp/JLjh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJW3VaNAAoJEBQN5MwUoCm22/IP/1RlgbCkTAdpLAodKwAhH57d
-ctOvoI7DNgYrKaTcy03vefZirGa79BUwkobZs4LOvXfDoIYCn/+UN3s0ykVJYJyR
-gBbGwiUoSDkHgrWI1XuP8vkg2QTG2M5W6n9XffXsdLQSUlwysLkrNICKJ+tDY0Fd
-FRH/QjQx/HLXPqjRTOKizLFXjCYeJVm9a7z3KHE3EH2QiC2Rl7tM2P+IPHpPK15V
-xOLf4ey5KszkMUrWxH4/ISngNJ2mj7agyQMEgSvFuLdo2SwRZCtjlpNXbvsv27Vw
-EcXaLPc40iFJzCrhpQb+cXaEXhn9yEPQLe/ZEO5NkGO5Q2JM11/uS/cGvjEi1Q1G
-xW9f3xbvdA3/Alku/ToqTtM5pAjFcmAf1QqacyirqJCPIHUs2MdYuXv9rkSAEm+u
-KRX6CST3E/hu/sC2qR9vLUXueaHnf14hpoeNLDIRKzxRkC5VHBEt1LBV8SHLrs/L
-JWpLkQOgBIkUaAFast6TTsr67BFOKaGYtvS8OmpnE4+nr0NGai2U+NbXie+pdB0Q
-4wi1WE6e03DKB91wexmHIWFG71okoGwE/+dOHEaDORXe8LiiQ98SwkWAuxcUtP/n
-Wk24wIWXX5IQqXpjXqTzAA+Pvt1YM1NoIU615joFlBfRUihKxnWWHi92Do7iHpPZ
-xCtR0hIAVdtg/nlLDj2y
-=2jMg
------END PGP SIGNATURE-----
-
---jI8keyz6grp/JLjh--
+> ---
+>  drivers/iio/pressure/ms5611_core.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+> index 37dbc04..a2a871b 100644
+> --- a/drivers/iio/pressure/ms5611_core.c
+> +++ b/drivers/iio/pressure/ms5611_core.c
+> @@ -387,8 +387,8 @@ static const struct iio_info ms5611_info = {
+>  static int ms5611_init(struct iio_dev *indio_dev)
+>  {
+>         int ret;
+> -       struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
+> -                                                  "vdd");
+> +       struct regulator *vdd =
+> +               devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
+>
+>         /* Enable attached regulator if any. */
+>         if (!IS_ERR(vdd)) {
+> @@ -398,6 +398,10 @@ static int ms5611_init(struct iio_dev *indio_dev)
+>                                 "failed to enable Vdd supply: %d\n", ret);
+>                         return ret;
+>                 }
+> +       } else {
+> +               ret = PTR_ERR(vdd);
+> +               if (ret != -ENODEV)
+> +                       return ret;
+>         }
+>
+>         ret = ms5611_reset(indio_dev);
+> --
+> 2.1.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
