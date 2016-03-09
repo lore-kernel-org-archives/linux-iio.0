@@ -1,88 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:36039 "EHLO
-	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751329AbcCHVQW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Mar 2016 16:16:22 -0500
-MIME-Version: 1.0
-In-Reply-To: <26a4b9ab8ae9b40f9c96c51f12c977fdad36532f.1457459537.git.gregor.boirie@parrot.com>
-References: <cover.1457459537.git.gregor.boirie@parrot.com>
-	<26a4b9ab8ae9b40f9c96c51f12c977fdad36532f.1457459537.git.gregor.boirie@parrot.com>
-Date: Tue, 8 Mar 2016 23:16:20 +0200
-Message-ID: <CAEnQRZBsQ4_XPBXfuWu4WL_qLG7fo3ynsWfQ51v=Ya2O6-jXyQ@mail.gmail.com>
-Subject: Re: [PATCH v5 1/1] Fixes: 3145229f9191 ("iio:pressure:ms5611: power
- regulator support")
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Gregor Boirie <gregor.boirie@parrot.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Devicetree List <devicetree@vger.kernel.org>,
+Received: from mail-pa0-f51.google.com ([209.85.220.51]:32910 "EHLO
+	mail-pa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752263AbcCIFzu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2016 00:55:50 -0500
+Received: by mail-pa0-f51.google.com with SMTP id fl4so30576597pad.0
+        for <linux-iio@vger.kernel.org>; Tue, 08 Mar 2016 21:55:50 -0800 (PST)
+Date: Wed, 9 Mar 2016 12:55:43 +0700
+From: Lee Jones <lee.jones@linaro.org>
+To: Markus Pargmann <mpa@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Jonathan Cameron <jic23@kernel.org>,
+	Denis Carikli <denis@eukrea.com>,
+	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Mark Brown <broonie@kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Content-Type: text/plain; charset=UTF-8
+	Fabio Estevam <festevam@gmail.com>
+Subject: [GIT PULL v2] Immutable branch between MFD, Input and IIO [with fix]
+Message-ID: <20160309055543.GQ13692@x1>
+References: <1450101234-2191-1-git-send-email-mpa@pengutronix.de>
+ <20160211155633.GB20693@x1>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20160211155633.GB20693@x1>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 8, 2016 at 8:00 PM, Gregor Boirie <gregor.boirie@parrot.com> wrote:
-> When not compiled-in, regulator layer will return a NULL pointer when
-> trying to get a reference to any regulator using devm_regulator_get().  As
-> IS_ERR() does not consider this an error, the ms5611 probing operation will
-> try to enable a NULL regulator, which will invariably cause a kernel
-> crash.
-> This patch fixes this situation by using devm_regulator_get_optional()
-> instead of devm_regulator_get().
->
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Please pull this new tag.  It contains a fix.
 
-$Subject should be here. And the commit subject should be something
-more appropriate like:
+The following changes since commit 36f90b0a2ddd60823fe193a85e60ff1906c2a9b3:
 
-iio: pressure: ms5611: Fix crash when ...
+  Linux 4.5-rc2 (2016-01-31 18:12:16 -0800)
 
+are available in the git repository at:
 
-> ---
->  drivers/iio/pressure/ms5611_core.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-> index 37dbc04..a2a871b 100644
-> --- a/drivers/iio/pressure/ms5611_core.c
-> +++ b/drivers/iio/pressure/ms5611_core.c
-> @@ -387,8 +387,8 @@ static const struct iio_info ms5611_info = {
->  static int ms5611_init(struct iio_dev *indio_dev)
->  {
->         int ret;
-> -       struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
-> -                                                  "vdd");
-> +       struct regulator *vdd =
-> +               devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
->
->         /* Enable attached regulator if any. */
->         if (!IS_ERR(vdd)) {
-> @@ -398,6 +398,10 @@ static int ms5611_init(struct iio_dev *indio_dev)
->                                 "failed to enable Vdd supply: %d\n", ret);
->                         return ret;
->                 }
-> +       } else {
-> +               ret = PTR_ERR(vdd);
-> +               if (ret != -ENODEV)
-> +                       return ret;
->         }
->
->         ret = ms5611_reset(indio_dev);
-> --
-> 2.1.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git tags/ib-mfd-input-iio-v4.6-v2
+
+for you to fetch changes up to 0708677558dd7d03e70292549433f0f6b04a5e00:
+
+  iio: adc/imx25-gcq: Move incorrect do_div (2016-03-09 12:50:51 +0700)
+
+----------------------------------------------------------------
+Immutable branch between MFD, Input and IIO [with fix] due for v4.6
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      iio: adc/imx25-gcq: Move incorrect do_div
+
+Markus Pargmann (6):
+      mfd: Add DT binding documentation for imx25 ADC/TSC
+      iio: Add binding documentation for imx25 GCQ
+      Input: add binding documentation for imx25 touchscreen controller
+      mfd: fsl-imx25-tsadc: Register touchscreen ADC driver
+      iio: adc: Add imx25-gcq ADC driver
+      Input: touchscreen: Add imx25 TCQ driver
+
+ .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  |  58 ++
+ .../bindings/input/touchscreen/fsl-mx25-tcq.txt    |  35 ++
+ .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |  47 ++
+ drivers/iio/adc/Kconfig                            |   7 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/fsl-imx25-gcq.c                    | 417 ++++++++++++++
+ drivers/input/touchscreen/Kconfig                  |   9 +
+ drivers/input/touchscreen/Makefile                 |   1 +
+ drivers/input/touchscreen/fsl-imx25-tcq.c          | 596 +++++++++++++++++++++
+ drivers/mfd/Kconfig                                |   9 +
+ drivers/mfd/Makefile                               |   2 +
+ drivers/mfd/fsl-imx25-tsadc.c                      | 203 +++++++
+ include/dt-bindings/iio/adc/fsl-imx25-gcq.h        |  18 +
+ include/linux/mfd/imx25-tsadc.h                    | 140 +++++
+ 14 files changed, 1543 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+ create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
+ create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
+ create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
+ create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
+ create mode 100644 include/linux/mfd/imx25-tsadc.h
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
