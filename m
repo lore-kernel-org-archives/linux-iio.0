@@ -1,82 +1,54 @@
-Return-Path: <gregor.boirie@parrot.com>
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald <pmeerw@pmeerw.net>, Daniel Baluta <daniel.baluta@intel.com>, Haneen
- Mohammed <hamohammed.sa@gmail.com>, Matt Ranostay <mranostay@gmail.com>,
-	Irina Tirdea <irina.tirdea@intel.com>, Darshana Padmadas
-	<darshanapadmadas@gmail.com>, Martin Fuzzey <mfuzzey@parkeon.com>, Octavian
- Purdila <octavian.purdila@intel.com>, Vladimir Barinov
-	<vladimir.barinov@cogentembedded.com>, Crt Mori <cmo@melexis.com>, Masanari
- Iida <standby24x7@gmail.com>, Harald Geyer <harald@ccbib.org>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Michal Simek
-	<michal.simek@xilinx.com>, =?UTF-8?q?S=C3=B6ren=20Brinkmann?=
-	<soren.brinkmann@xilinx.com>, Kevin Tsai <ktsai@capellamicro.com>, Cristina
- Opriceana <cristina.opriceana@gmail.com>, Krzysztof Kozlowski
-	<k.kozlowski@samsung.com>, Markus Pargmann <mpa@pengutronix.de>, Srinivas
- Pandruvada <srinivas.pandruvada@linux.intel.com>, Bastien Nocera
-	<hadess@hadess.net>, Antonio Ospite <ao2@ao2.it>, Vlad Dogaru
-	<vlad.dogaru@intel.com>, Ana Calinov <ana.calinov@gmail.com>, Adriana Reus
-	<adriana.reus@intel.com>, Joachim Eastwood <manabian@gmail.com>, Martin
- Kepplinger <martink@posteo.de>, Christoph Muellner
-	<christoph.muellner@theobroma-systems.com>, Roberta Dobrescu
-	<roberta.dobrescu@gmail.com>, Mika Westerberg
-	<mika.westerberg@linux.intel.com>, Naidu Tellapati
-	<naidu.tellapati@imgtec.com>, Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
-	Marc Titinger <mtitinger@baylibre.com>, Fugang Duan <b38611@freescale.com>,
-	Stefan Agner <stefan@agner.ch>, Sanchayan Maity <maitysanchayan@gmail.com>,
-	kbuild test robot <fengguang.wu@intel.com>, Bhuvanchandra DV
-	<bhuvanchandra.dv@toradex.com>, Lars Svensson
-	<lars1.svensson@sonymobile.com>, Vladimirs Ambrosovs
-	<rodriguez.twister@gmail.com>, Alan <gnomes@lxorguk.ukuu.org.uk>, Lucas De
- Marchi <lucas.demarchi@intel.com>, Viorel Suman <viorel.suman@gmail.com>,
-	Gabriele Mazzotta <gabriele.mzt@gmail.com>, Martin Liska
-	<marxin.liska@gmail.com>, Javier Martinez Canillas <javier@osg.samsung.com>,
-	Bjorn Andersson <bjorn.andersson@sonymobile.com>, Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>, Markus Elfring
-	<elfring@users.sourceforge.net>, Alexander Koch <mail@alexanderkoch.net>,
-	Michael Hornung <mhornung.linux@gmail.com>, Felipe Balbi <balbi@ti.com>,
-	Andreas Dannenberg <dannenberg@ti.com>, Tiberiu Breana
-	<tiberiu.a.breana@intel.com>, Dan Carpenter <dan.carpenter@oracle.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>, Marek Belisko
-	<marek@goldelico.com>, Yong Li <sdliyong@gmail.com>, Tomasz Duszynski
-	<tduszyns@gmail.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Ioana
- Ciornei <ciorneiioana@gmail.com>, Janani Ravichandran
-	<janani.rvchndrn@gmail.com>, "Andrew F. Davis" <afd@ti.com>, Tina Johnson
-	<tinajohnson.1234@gmail.com>, Nizam Haider <nizamhaider786@gmail.com>,
-	Shivani Bhardwaj <shivanib134@gmail.com>, Gregor Boirie
-	<gregor.boirie@parrot.com>
-Subject: [PATCH v5 1/2] timekeeping: export get_monotonic_coarse64 symbol
-Date: Wed, 9 Mar 2016 19:05:48 +0100
-Message-ID: <563d239fb3021ddf312349a5763fdca0a72b827b.1457546125.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1457546125.git.gregor.boirie@parrot.com>
-References: <cover.1457546125.git.gregor.boirie@parrot.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:35102 "EHLO
+	mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933890AbcCITZt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2016 14:25:49 -0500
+From: Alison Schofield <amsfield22@gmail.com>
+To: outreachy-kernel@googlegroups.com
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Michael.Hennerich@analog.com,
+	gregkh@linuxfoundation.org, devel@driverdev.osuosl.org
+Subject: [RFC PATCH v2 0/2] iio: introduce iio_device_{claim|release}_direct_mode()
+Date: Wed,  9 Mar 2016 11:25:23 -0800
+Message-Id: <cover.1457549841.git.amsfield22@gmail.com>
+In-Reply-To: <cover.1456794364.git.amsfield22@gmail.com>
+References: <cover.1456794364.git.amsfield22@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-EXPORT_SYMBOL() get_monotonic_coarse64 for new IIO timestamping clock
-selection usage. This provides user apps the ability to request a
-particular IIO device to timestamp samples using a monotonic coarse clock
-granularity.
+This patchset introduces two helper functions to simplify driver code
+requiring the device to be locked in direct mode during execution of a
+code path. The staging driver ad7192 is updated to demonstrate usage.
 
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- kernel/time/timekeeping.c | 1 +
- 1 file changed, 1 insertion(+)
+This could be applied to approximately 18 known cases where the driver
+is holding the lock in direct mode.  Unknown cases might be those that
+should, but don't, hold the lock.
 
-diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index 34b4ced..5a95d41 100644
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -1950,6 +1950,7 @@ struct timespec64 get_monotonic_coarse64(void)
+Alternate implementation: Generalize to support a claim on any mode.
+Do iio_claim_mode(device,mode) where if the device is in *mode*, it
+is guaranteed to stay that way until release is called. I considered
+and rejected this option because a) not sure other modes would ever
+need to be locked, and b) the semantic improvement is less when it
+is generalized.
  
- 	return now;
- }
-+EXPORT_SYMBOL(get_monotonic_coarse64);
- 
- /*
-  * Must hold jiffies_lock
+This patchset was inspired by a discussion on linux-iio:
+http://www.spinics.net/lists/linux-iio/msg18540.html
+
+Changes in v2:
+o use iio_device prefix for new functions
+o replace EINVAL with EBUSY on failure to claim direct mode
+o update commit msg & changelog to reflect new prefix
+
+Alison Schofield (2):
+  iio: core: implement iio_device_{claim|release}_direct_mode()
+  staging: iio: ad7192: use iio_device_{claim|release}_direct_mode()
+
+ drivers/iio/industrialio-core.c  | 39 +++++++++++++++++++++++++++++++++++++++
+ drivers/staging/iio/adc/ad7192.c | 24 +++++++++---------------
+ include/linux/iio/iio.h          |  2 ++
+ 3 files changed, 50 insertions(+), 15 deletions(-)
+
 -- 
 2.1.4
+
