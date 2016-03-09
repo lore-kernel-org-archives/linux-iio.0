@@ -1,242 +1,413 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55936 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56032 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751536AbcCIUqQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2016 15:46:16 -0500
-Subject: Re: [PATCH v2 4/5] iio:magnetometer:ak8975: mounting matrix support
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1457001111.git.gregor.boirie@parrot.com>
- <022da3dfc0853c6f9820b24c2d9eaaf0c5ccf294.1457001111.git.gregor.boirie@parrot.com>
- <56DAFCEB.6080905@kernel.org> <56E0014D.1040209@parrot.com>
+	with ESMTP id S932580AbcCIVHD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2016 16:07:03 -0500
+Subject: Re: [PATCH 1/2] staging:iio:adis16204: Remove adis16204 driver
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1457360552-12314-1-git-send-email-lars@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <Pawel.Moll@arm.com>,
-	Mark Rutland <Mark.Rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E08B91.6070603@kernel.org>
-Date: Wed, 9 Mar 2016 20:46:09 +0000
+Message-ID: <56E09075.5070202@kernel.org>
+Date: Wed, 9 Mar 2016 21:07:01 +0000
 MIME-Version: 1.0
-In-Reply-To: <56E0014D.1040209@parrot.com>
+In-Reply-To: <1457360552-12314-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/03/16 10:56, Gregor Boirie wrote:
+On 07/03/16 14:22, Lars-Peter Clausen wrote:
+> The ADIS16204 part has been obsoleted, which makes it hard to get the
+> hardware to even test the driver. Considering this there is no expectation
+> that the driver will be cleaned up and be able to move out of staging, so
+> remove the driver.
 > 
-> On 03/05/2016 04:36 PM, Jonathan Cameron wrote:
->> On 03/03/16 10:44, Gregor Boirie wrote:
->>> Expose a rotation matrix to indicate userspace the chip placement with
->>> respect to the overall hardware system. This is needed to adjust
->>> coordinates sampled from a magnetometer chip when its position deviates
->>> from the main hardware system.
->>>
->>> Final coordinates computation is delegated to userspace since:
->>> * computation may involve floating point arithmetics ;
->>> * it allows an application to combine adjustments with arbitrary
->>>    transformations.
->>>
->>> This 3 dimentional space rotation matrix is expressed as 3x3 array of
->>> strings to support floating point numbers. It may be retrieved from a
->>> "in_magn_matrix" sysfs attribute file. It is declared into ak8975 DTS
->>> entry as a "matrix" property.
->>>
->>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
->> This one definitely wants to go to the device tree list. I'd also like a few
->> IIO related comments as well. I was sure we'd been through this before and
->> ended up with some sort of solution, but now I can't find it... Oh well.
-> I took inv_mpu_core as an example. However matrices are exposed as integers
-> and we really need floating point support.
-> A search on the device-tree mailing list archive does not show up with a
-> solution to encode floating point numbers into DTS either.
-Certainly non obvious how to do this.
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied. Pity in a way as these were interesting parts.
+(read that as downright odd/esoteric ;)
 
-For anyone device tree related who picks this up (I've added a CC)
-we are basically talking about passing a rotation matrix from the device tree
-straight through to userspace to describe the relative orientation of
-some sensor.  An array of strings clearly works, but is this the best
-way to do it?
+Thanks,
 
-(btw as this touches device tree bindings the list and maintainers
-should have been cc'd from the start - another one of those kernel
-conventions that are non obvious to people who haven't hit it before.
-Doing this was a big news item a few years back when a policy to keep
-bindings reviewed in a manageable way was decided, but if you weren't
-active at the time then you wouldn't necessarily know).
+Jonathan
+> ---
+>  drivers/staging/iio/accel/Kconfig          |  12 --
+>  drivers/staging/iio/accel/Makefile         |   3 -
+>  drivers/staging/iio/accel/adis16204.h      |  68 --------
+>  drivers/staging/iio/accel/adis16204_core.c | 253 -----------------------------
+>  4 files changed, 336 deletions(-)
+>  delete mode 100644 drivers/staging/iio/accel/adis16204.h
+>  delete mode 100644 drivers/staging/iio/accel/adis16204_core.c
 > 
->>
->> Definitely needs ABI docs in Documentation/ABI/testing/sysfs-bus-iio
->> as well. We need the reference directions to be well specified as
->> well - how do we define the main hardware orientation?  on yours presumably
->> the usual approach of using the screen is irrelevant so that definition
->> could be a little 'interesting' to write down?
-> The standard orientation for us is defined with respect to the drone's head
-> and the propellers plane, which does not suit the nominal use cases indeed...
-> Although it really deserves some more detailed documentation, I wonder if the
-> question is relevant.
-> Given that the DTS is board specific (correct me if I'm wrong), why not
-> consider the reference orientation as board specific as well (and make the
-> whole thing implicit) ?
-I think that is fine for your sort of usecase - though might be nice to keep
-a bit of documentation somewhere (perhaps as comments in the DTS), or perhaps
-more centrally - would be nice for userspace libraries if at least all aircraft
-had a similar 'default orientation'.
-
-For the more 'standard' device with a screen I think we would want to standardise
-if at all possible.  Most hand held devices have a 'natural' orientation 
-(front facing camera at the top for example).  In those cases we are basically looking
-at whether the sensor is mounted on the back or the front of the main circuit board and
-then of course it can be at any rotation in plane but typically is at 90 degrees
-(hence the inv mpu limitations)
-
-I'm guessing there are existing userspace mappings for this.  Perhaps in the Gnome
-sensors stuff?
-
+> diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
+> index fa67da9..5bc9803 100644
+> --- a/drivers/staging/iio/accel/Kconfig
+> +++ b/drivers/staging/iio/accel/Kconfig
+> @@ -27,18 +27,6 @@ config ADIS16203
+>  	  To compile this driver as a module, say M here: the module will be
+>  	  called adis16203.
+>  
+> -config ADIS16204
+> -	tristate "Analog Devices ADIS16204 Programmable High-g Digital Impact Sensor and Recorder"
+> -	depends on SPI
+> -	select IIO_ADIS_LIB
+> -	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
+> -	help
+> -	  Say Y here to build support for Analog Devices adis16204 Programmable
+> -	  High-g Digital Impact Sensor and Recorder.
+> -
+> -	  To compile this driver as a module, say M here: the module will be
+> -	  called adis16204.
+> -
+>  config ADIS16209
+>  	tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
+>  	depends on SPI
+> diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
+> index 1ed137f..8ad9732 100644
+> --- a/drivers/staging/iio/accel/Makefile
+> +++ b/drivers/staging/iio/accel/Makefile
+> @@ -8,9 +8,6 @@ obj-$(CONFIG_ADIS16201) += adis16201.o
+>  adis16203-y             := adis16203_core.o
+>  obj-$(CONFIG_ADIS16203) += adis16203.o
+>  
+> -adis16204-y             := adis16204_core.o
+> -obj-$(CONFIG_ADIS16204) += adis16204.o
+> -
+>  adis16209-y             := adis16209_core.o
+>  obj-$(CONFIG_ADIS16209) += adis16209.o
+>  
+> diff --git a/drivers/staging/iio/accel/adis16204.h b/drivers/staging/iio/accel/adis16204.h
+> deleted file mode 100644
+> index 0b23f0b..0000000
+> --- a/drivers/staging/iio/accel/adis16204.h
+> +++ /dev/null
+> @@ -1,68 +0,0 @@
+> -#ifndef SPI_ADIS16204_H_
+> -#define SPI_ADIS16204_H_
+> -
+> -#define ADIS16204_STARTUP_DELAY	220 /* ms */
+> -
+> -#define ADIS16204_FLASH_CNT      0x00 /* Flash memory write count */
+> -#define ADIS16204_SUPPLY_OUT     0x02 /* Output, power supply */
+> -#define ADIS16204_XACCL_OUT      0x04 /* Output, x-axis accelerometer */
+> -#define ADIS16204_YACCL_OUT      0x06 /* Output, y-axis accelerometer */
+> -#define ADIS16204_AUX_ADC        0x08 /* Output, auxiliary ADC input */
+> -#define ADIS16204_TEMP_OUT       0x0A /* Output, temperature */
+> -#define ADIS16204_X_PEAK_OUT     0x0C /* Twos complement */
+> -#define ADIS16204_Y_PEAK_OUT     0x0E /* Twos complement */
+> -#define ADIS16204_XACCL_NULL     0x10 /* Calibration, x-axis acceleration offset null */
+> -#define ADIS16204_YACCL_NULL     0x12 /* Calibration, y-axis acceleration offset null */
+> -#define ADIS16204_XACCL_SCALE    0x14 /* X-axis scale factor calibration register */
+> -#define ADIS16204_YACCL_SCALE    0x16 /* Y-axis scale factor calibration register */
+> -#define ADIS16204_XY_RSS_OUT     0x18 /* XY combined acceleration (RSS) */
+> -#define ADIS16204_XY_PEAK_OUT    0x1A /* Peak, XY combined output (RSS) */
+> -#define ADIS16204_CAP_BUF_1      0x1C /* Capture buffer output register 1 */
+> -#define ADIS16204_CAP_BUF_2      0x1E /* Capture buffer output register 2 */
+> -#define ADIS16204_ALM_MAG1       0x20 /* Alarm 1 amplitude threshold */
+> -#define ADIS16204_ALM_MAG2       0x22 /* Alarm 2 amplitude threshold */
+> -#define ADIS16204_ALM_CTRL       0x28 /* Alarm control */
+> -#define ADIS16204_CAPT_PNTR      0x2A /* Capture register address pointer */
+> -#define ADIS16204_AUX_DAC        0x30 /* Auxiliary DAC data */
+> -#define ADIS16204_GPIO_CTRL      0x32 /* General-purpose digital input/output control */
+> -#define ADIS16204_MSC_CTRL       0x34 /* Miscellaneous control */
+> -#define ADIS16204_SMPL_PRD       0x36 /* Internal sample period (rate) control */
+> -#define ADIS16204_AVG_CNT        0x38 /* Operation, filter configuration */
+> -#define ADIS16204_SLP_CNT        0x3A /* Operation, sleep mode control */
+> -#define ADIS16204_DIAG_STAT      0x3C /* Diagnostics, system status register */
+> -#define ADIS16204_GLOB_CMD       0x3E /* Operation, system command register */
+> -
+> -/* MSC_CTRL */
+> -#define ADIS16204_MSC_CTRL_PWRUP_SELF_TEST	BIT(10) /* Self-test at power-on: 1 = disabled, 0 = enabled */
+> -#define ADIS16204_MSC_CTRL_SELF_TEST_EN	        BIT(8)  /* Self-test enable */
+> -#define ADIS16204_MSC_CTRL_DATA_RDY_EN	        BIT(2)  /* Data-ready enable: 1 = enabled, 0 = disabled */
+> -#define ADIS16204_MSC_CTRL_ACTIVE_HIGH	        BIT(1)  /* Data-ready polarity: 1 = active high, 0 = active low */
+> -#define ADIS16204_MSC_CTRL_DATA_RDY_DIO2	BIT(0)  /* Data-ready line selection: 1 = DIO2, 0 = DIO1 */
+> -
+> -/* DIAG_STAT */
+> -#define ADIS16204_DIAG_STAT_ALARM2        BIT(9) /* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
+> -#define ADIS16204_DIAG_STAT_ALARM1        BIT(8) /* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
+> -#define ADIS16204_DIAG_STAT_SELFTEST_FAIL_BIT 5 /* Self-test diagnostic error flag: 1 = error condition,
+> -						0 = normal operation */
+> -#define ADIS16204_DIAG_STAT_SPI_FAIL_BIT      3 /* SPI communications failure */
+> -#define ADIS16204_DIAG_STAT_FLASH_UPT_BIT     2 /* Flash update failure */
+> -#define ADIS16204_DIAG_STAT_POWER_HIGH_BIT    1 /* Power supply above 3.625 V */
+> -#define ADIS16204_DIAG_STAT_POWER_LOW_BIT     0 /* Power supply below 2.975 V */
+> -
+> -/* GLOB_CMD */
+> -#define ADIS16204_GLOB_CMD_SW_RESET	BIT(7)
+> -#define ADIS16204_GLOB_CMD_CLEAR_STAT	BIT(4)
+> -#define ADIS16204_GLOB_CMD_FACTORY_CAL	BIT(1)
+> -
+> -#define ADIS16204_ERROR_ACTIVE          BIT(14)
+> -
+> -enum adis16204_scan {
+> -	ADIS16204_SCAN_ACC_X,
+> -	ADIS16204_SCAN_ACC_Y,
+> -	ADIS16204_SCAN_ACC_XY,
+> -	ADIS16204_SCAN_SUPPLY,
+> -	ADIS16204_SCAN_AUX_ADC,
+> -	ADIS16204_SCAN_TEMP,
+> -};
+> -
+> -#endif /* SPI_ADIS16204_H_ */
+> diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
+> deleted file mode 100644
+> index 20a9df6..0000000
+> --- a/drivers/staging/iio/accel/adis16204_core.c
+> +++ /dev/null
+> @@ -1,253 +0,0 @@
+> -/*
+> - * ADIS16204 Programmable High-g Digital Impact Sensor and Recorder
+> - *
+> - * Copyright 2010 Analog Devices Inc.
+> - *
+> - * Licensed under the GPL-2 or later.
+> - */
+> -
+> -#include <linux/interrupt.h>
+> -#include <linux/irq.h>
+> -#include <linux/delay.h>
+> -#include <linux/mutex.h>
+> -#include <linux/device.h>
+> -#include <linux/kernel.h>
+> -#include <linux/spi/spi.h>
+> -#include <linux/slab.h>
+> -#include <linux/sysfs.h>
+> -#include <linux/list.h>
+> -#include <linux/module.h>
+> -
+> -#include <linux/iio/iio.h>
+> -#include <linux/iio/sysfs.h>
+> -#include <linux/iio/buffer.h>
+> -#include <linux/iio/imu/adis.h>
+> -
+> -#include "adis16204.h"
+> -
+> -/* Unique to this driver currently */
+> -
+> -static const u8 adis16204_addresses[][2] = {
+> -	[ADIS16204_SCAN_ACC_X] = { ADIS16204_XACCL_NULL, ADIS16204_X_PEAK_OUT },
+> -	[ADIS16204_SCAN_ACC_Y] = { ADIS16204_YACCL_NULL, ADIS16204_Y_PEAK_OUT },
+> -	[ADIS16204_SCAN_ACC_XY] = { 0, ADIS16204_XY_PEAK_OUT },
+> -};
+> -
+> -static int adis16204_read_raw(struct iio_dev *indio_dev,
+> -			      struct iio_chan_spec const *chan,
+> -			      int *val, int *val2,
+> -			      long mask)
+> -{
+> -	struct adis *st = iio_priv(indio_dev);
+> -	int ret;
+> -	int bits;
+> -	u8 addr;
+> -	s16 val16;
+> -	int addrind;
+> -
+> -	switch (mask) {
+> -	case IIO_CHAN_INFO_RAW:
+> -		return adis_single_conversion(indio_dev, chan,
+> -				ADIS16204_ERROR_ACTIVE, val);
+> -	case IIO_CHAN_INFO_SCALE:
+> -		switch (chan->type) {
+> -		case IIO_VOLTAGE:
+> -			if (chan->channel == 0) {
+> -				*val = 1;
+> -				*val2 = 220000; /* 1.22 mV */
+> -			} else {
+> -				*val = 0;
+> -				*val2 = 610000; /* 0.61 mV */
+> -			}
+> -			return IIO_VAL_INT_PLUS_MICRO;
+> -		case IIO_TEMP:
+> -			*val = -470; /* 0.47 C */
+> -			*val2 = 0;
+> -			return IIO_VAL_INT_PLUS_MICRO;
+> -		case IIO_ACCEL:
+> -			*val = 0;
+> -			switch (chan->channel2) {
+> -			case IIO_MOD_X:
+> -			case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
+> -				*val2 = IIO_G_TO_M_S_2(17125); /* 17.125 mg */
+> -				break;
+> -			case IIO_MOD_Y:
+> -			case IIO_MOD_Z:
+> -				*val2 = IIO_G_TO_M_S_2(8407); /* 8.407 mg */
+> -				break;
+> -			}
+> -			return IIO_VAL_INT_PLUS_MICRO;
+> -		default:
+> -			return -EINVAL;
+> -		}
+> -		break;
+> -	case IIO_CHAN_INFO_OFFSET:
+> -		*val = 25000 / -470 - 1278; /* 25 C = 1278 */
+> -		return IIO_VAL_INT;
+> -	case IIO_CHAN_INFO_CALIBBIAS:
+> -	case IIO_CHAN_INFO_PEAK:
+> -		if (mask == IIO_CHAN_INFO_CALIBBIAS) {
+> -			bits = 12;
+> -			addrind = 0;
+> -		} else { /* PEAK_SEPARATE */
+> -			bits = 14;
+> -			addrind = 1;
+> -		}
+> -		mutex_lock(&indio_dev->mlock);
+> -		addr = adis16204_addresses[chan->scan_index][addrind];
+> -		ret = adis_read_reg_16(st, addr, &val16);
+> -		if (ret) {
+> -			mutex_unlock(&indio_dev->mlock);
+> -			return ret;
+> -		}
+> -		val16 &= (1 << bits) - 1;
+> -		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+> -		*val = val16;
+> -		mutex_unlock(&indio_dev->mlock);
+> -		return IIO_VAL_INT;
+> -	}
+> -	return -EINVAL;
+> -}
+> -
+> -static int adis16204_write_raw(struct iio_dev *indio_dev,
+> -			       struct iio_chan_spec const *chan,
+> -			       int val,
+> -			       int val2,
+> -			       long mask)
+> -{
+> -	struct adis *st = iio_priv(indio_dev);
+> -	int bits;
+> -	s16 val16;
+> -	u8 addr;
+> -
+> -	switch (mask) {
+> -	case IIO_CHAN_INFO_CALIBBIAS:
+> -		switch (chan->type) {
+> -		case IIO_ACCEL:
+> -			bits = 12;
+> -			break;
+> -		default:
+> -			return -EINVAL;
+> -		}
+> -		val16 = val & ((1 << bits) - 1);
+> -		addr = adis16204_addresses[chan->scan_index][1];
+> -		return adis_write_reg_16(st, addr, val16);
+> -	}
+> -	return -EINVAL;
+> -}
+> -
+> -static const struct iio_chan_spec adis16204_channels[] = {
+> -	ADIS_SUPPLY_CHAN(ADIS16204_SUPPLY_OUT, ADIS16204_SCAN_SUPPLY, 0, 12),
+> -	ADIS_AUX_ADC_CHAN(ADIS16204_AUX_ADC, ADIS16204_SCAN_AUX_ADC, 0, 12),
+> -	ADIS_TEMP_CHAN(ADIS16204_TEMP_OUT, ADIS16204_SCAN_TEMP, 0, 12),
+> -	ADIS_ACCEL_CHAN(X, ADIS16204_XACCL_OUT, ADIS16204_SCAN_ACC_X,
+> -			BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK),
+> -			0, 14),
+> -	ADIS_ACCEL_CHAN(Y, ADIS16204_YACCL_OUT, ADIS16204_SCAN_ACC_Y,
+> -			BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK),
+> -			0, 14),
+> -	ADIS_ACCEL_CHAN(ROOT_SUM_SQUARED_X_Y, ADIS16204_XY_RSS_OUT,
+> -			ADIS16204_SCAN_ACC_XY, BIT(IIO_CHAN_INFO_PEAK), 0, 14),
+> -	IIO_CHAN_SOFT_TIMESTAMP(5),
+> -};
+> -
+> -static const struct iio_info adis16204_info = {
+> -	.read_raw = &adis16204_read_raw,
+> -	.write_raw = &adis16204_write_raw,
+> -	.update_scan_mode = adis_update_scan_mode,
+> -	.driver_module = THIS_MODULE,
+> -};
+> -
+> -static const char * const adis16204_status_error_msgs[] = {
+> -	[ADIS16204_DIAG_STAT_SELFTEST_FAIL_BIT] = "Self test failure",
+> -	[ADIS16204_DIAG_STAT_SPI_FAIL_BIT] = "SPI failure",
+> -	[ADIS16204_DIAG_STAT_FLASH_UPT_BIT] = "Flash update failed",
+> -	[ADIS16204_DIAG_STAT_POWER_HIGH_BIT] = "Power supply above 3.625V",
+> -	[ADIS16204_DIAG_STAT_POWER_LOW_BIT] = "Power supply below 2.975V",
+> -};
+> -
+> -static const struct adis_data adis16204_data = {
+> -	.read_delay = 20,
+> -	.msc_ctrl_reg = ADIS16204_MSC_CTRL,
+> -	.glob_cmd_reg = ADIS16204_GLOB_CMD,
+> -	.diag_stat_reg = ADIS16204_DIAG_STAT,
+> -
+> -	.self_test_mask = ADIS16204_MSC_CTRL_SELF_TEST_EN,
+> -	.startup_delay = ADIS16204_STARTUP_DELAY,
+> -
+> -	.status_error_msgs = adis16204_status_error_msgs,
+> -	.status_error_mask = BIT(ADIS16204_DIAG_STAT_SELFTEST_FAIL_BIT) |
+> -		BIT(ADIS16204_DIAG_STAT_SPI_FAIL_BIT) |
+> -		BIT(ADIS16204_DIAG_STAT_FLASH_UPT_BIT) |
+> -		BIT(ADIS16204_DIAG_STAT_POWER_HIGH_BIT) |
+> -		BIT(ADIS16204_DIAG_STAT_POWER_LOW_BIT),
+> -};
+> -
+> -static int adis16204_probe(struct spi_device *spi)
+> -{
+> -	int ret;
+> -	struct adis *st;
+> -	struct iio_dev *indio_dev;
+> -
+> -	/* setup the industrialio driver allocated elements */
+> -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> -	if (!indio_dev)
+> -		return -ENOMEM;
+> -	st = iio_priv(indio_dev);
+> -	/* this is only used for removal purposes */
+> -	spi_set_drvdata(spi, indio_dev);
+> -
+> -	indio_dev->name = spi->dev.driver->name;
+> -	indio_dev->dev.parent = &spi->dev;
+> -	indio_dev->info = &adis16204_info;
+> -	indio_dev->channels = adis16204_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(adis16204_channels);
+> -	indio_dev->modes = INDIO_DIRECT_MODE;
+> -
+> -	ret = adis_init(st, indio_dev, spi, &adis16204_data);
+> -	if (ret)
+> -		return ret;
+> -
+> -	ret = adis_setup_buffer_and_trigger(st, indio_dev, NULL);
+> -	if (ret)
+> -		return ret;
+> -
+> -	/* Get the device into a sane initial state */
+> -	ret = adis_initial_startup(st);
+> -	if (ret)
+> -		goto error_cleanup_buffer_trigger;
+> -	ret = iio_device_register(indio_dev);
+> -	if (ret)
+> -		goto error_cleanup_buffer_trigger;
+> -
+> -	return 0;
+> -
+> -error_cleanup_buffer_trigger:
+> -	adis_cleanup_buffer_and_trigger(st, indio_dev);
+> -	return ret;
+> -}
+> -
+> -static int adis16204_remove(struct spi_device *spi)
+> -{
+> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> -	struct adis *st = iio_priv(indio_dev);
+> -
+> -	iio_device_unregister(indio_dev);
+> -	adis_cleanup_buffer_and_trigger(st, indio_dev);
+> -
+> -	return 0;
+> -}
+> -
+> -static struct spi_driver adis16204_driver = {
+> -	.driver = {
+> -		.name = "adis16204",
+> -	},
+> -	.probe = adis16204_probe,
+> -	.remove = adis16204_remove,
+> -};
+> -module_spi_driver(adis16204_driver);
+> -
+> -MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+> -MODULE_DESCRIPTION("ADIS16204 High-g Digital Impact Sensor and Recorder");
+> -MODULE_LICENSE("GPL v2");
+> -MODULE_ALIAS("spi:adis16204");
 > 
->>
->> I'm also unsure of whether the right thing to do in the 'not provided'
->> cases is to not export the setting, or to assume that the chip is at some
->> 'standard' orientation and provide that?
-> As a self-explanatory interface, I suppose sysfs convention would expect to expose
-> this even in the case of an identity matrix.
-> However, userspace would need to either:
-> * systematically apply rotation matrix ;
-> * or detect identity matrix and skip rotation which may require an a-priori
->   knowledge of reference orientation (breaking the statement mentioned above).
-> 
-> Personally, I'd prefer not exporting the property at all when aligned with
-> the main hardware orientation : this makes application simpler and allows for
-> better performances.
-Make sense.  Much as we don't bother exporting scales of 1 or offsets of 0.
-> 
-> What do you think ?
-> Grégor.
-> 
->>
->> Jonathan
->>
->>> ---
->>>   .../bindings/iio/magnetometer/ak8975.txt           | 10 +++++
->>>   drivers/iio/magnetometer/ak8975.c                  | 46 +++++++++++++++++++++-
->>>   2 files changed, 55 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->>> index 34a3206..f936f86 100644
->>> --- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->>> +++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->>> @@ -9,6 +9,7 @@ Optional properties:
->>>       - gpios : should be device tree identifier of the magnetometer DRDY pin
->>>     - vdd-supply: an optional regulator that needs to be on to provide VDD
->>> +  - matrix: an optional 3x3 mounting rotation matrix
->>>     Example:
->>>   @@ -17,4 +18,13 @@ ak8975@0c {
->>>           reg = <0x0c>;
->>>           gpios = <&gpj0 7 0>;
->>>           vdd-supply = <&ldo_3v3_gnss>;
->>> +        matrix = "-0.984807753012208",  /* x0 */
->>> +                 "0",                   /* y0 */
->>> +                 "-0.173648177666930",  /* z0 */
->>> +                 "0",                   /* x1 */
->>> +                 "-1",                  /* y1 */
->>> +                 "0",                   /* z1 */
->>> +                 "-0.173648177666930",  /* x2 */
->>> +                 "0",                   /* y2 */
->>> +                 "0.984807753012208";   /* z2 */
->>>   };
->>> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
->>> index 72c03d9..95c68952 100644
->>> --- a/drivers/iio/magnetometer/ak8975.c
->>> +++ b/drivers/iio/magnetometer/ak8975.c
->>> @@ -370,6 +370,7 @@ struct ak8975_data {
->>>       wait_queue_head_t    data_ready_queue;
->>>       unsigned long        flags;
->>>       u8            cntl_cache;
->>> +    const char        *matrix[9];
->>>   };
->>>     /*
->>> @@ -697,6 +698,28 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
->>>       return -EINVAL;
->>>   }
->>>   +static ssize_t ak8975_show_matrix(struct device *dev,
->>> +                  struct device_attribute *attr,
->>> +                  char *buf)
->>> +{
->>> +    const struct ak8975_data *data = iio_priv(dev_to_iio_dev(dev));
->>> +    const char * const *m = data->matrix;
->>> +
->>> +    return sprintf(buf, "%s, %s, %s; %s, %s, %s; %s, %s, %s\n",
->>> +               m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
->>> +}
->>> +
->>> +static IIO_DEVICE_ATTR(in_magn_matrix, S_IRUGO, ak8975_show_matrix, NULL, -1);
->>> +
->>> +static struct attribute *ak8975_attrs[] = {
->>> +    &iio_dev_attr_in_magn_matrix.dev_attr.attr,
->>> +    NULL
->>> +};
->>> +
->>> +static const struct attribute_group ak8975_attrs_group = {
->>> +    .attrs = ak8975_attrs
->>> +};
->>> +
->>>   #define AK8975_CHANNEL(axis, index)                    \
->>>       {                                \
->>>           .type = IIO_MAGN,                    \
->>> @@ -716,6 +739,12 @@ static const struct iio_info ak8975_info = {
->>>       .driver_module = THIS_MODULE,
->>>   };
->>>   +static const struct iio_info ak8975_matrix_info = {
->>> +    .read_raw = &ak8975_read_raw,
->>> +    .attrs = &ak8975_attrs_group,
->>> +    .driver_module = THIS_MODULE,
->>> +};
->>> +
->>>   static const struct acpi_device_id ak_acpi_match[] = {
->>>       {"AK8975", AK8975},
->>>       {"AK8963", AK8963},
->>> @@ -785,6 +814,22 @@ static int ak8975_probe(struct i2c_client *client,
->>>       data->eoc_gpio = eoc_gpio;
->>>       data->eoc_irq = 0;
->>>   +    /*
->>> +     * Rotation matrix is expressed as an array of 3x3 strings to be able
->>> +     * to represent floating point numbers.
->>> +     */
->>> +    err = of_property_read_string_array(client->dev.of_node, "matrix",
->>> +                        data->matrix,
->>> +                        ARRAY_SIZE(data->matrix));
->>> +    if (err == ARRAY_SIZE(data->matrix))
->>> +        indio_dev->info = &ak8975_matrix_info;
->>> +    else if (err == -EINVAL)
->>> +        indio_dev->info = &ak8975_info;
->>> +    else if (err >= 0)
->>> +        return -EINVAL;
->>> +    else
->>> +        return err;
->>> +
->>>       /* id will be NULL when enumerated via ACPI */
->>>       if (id) {
->>>           chipset = (enum asahi_compass_chipset)(id->driver_data);
->>> @@ -822,7 +867,6 @@ static int ak8975_probe(struct i2c_client *client,
->>>       indio_dev->dev.parent = &client->dev;
->>>       indio_dev->channels = ak8975_channels;
->>>       indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
->>> -    indio_dev->info = &ak8975_info;
->>>       indio_dev->modes = INDIO_DIRECT_MODE;
->>>       indio_dev->name = name;
->>>       return devm_iio_device_register(&client->dev, indio_dev);
->>>
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
