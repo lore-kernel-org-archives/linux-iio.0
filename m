@@ -1,730 +1,1461 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56056 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752167AbcCIVJy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2016 16:09:54 -0500
-Subject: Re: [PATCH 2/2] staging:iio:adis16220: Remove adis16204 driver
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Lars-Peter Clausen <lars@metafoo.de>
-References: <1457360552-12314-1-git-send-email-lars@metafoo.de>
- <1457360552-12314-2-git-send-email-lars@metafoo.de>
- <alpine.DEB.2.02.1603071524000.17976@pmeerw.net>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E09120.40400@kernel.org>
-Date: Wed, 9 Mar 2016 21:09:52 +0000
+Received: from mail-pf0-f174.google.com ([209.85.192.174]:35160 "EHLO
+	mail-pf0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932742AbcCJHMa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 10 Mar 2016 02:12:30 -0500
+Received: by mail-pf0-f174.google.com with SMTP id n5so23622159pfn.2
+        for <linux-iio@vger.kernel.org>; Wed, 09 Mar 2016 23:12:30 -0800 (PST)
+Date: Thu, 10 Mar 2016 12:36:54 +0530
+From: maitysanchayan@gmail.com
+To: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Stefan Agner <stefan@agner.ch>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] iio:core: timestamping clock selection support
+Message-ID: <20160310070654.GA12128@Sanchayan-Arch.toradex.int>
+References: <cover.1457546125.git.gregor.boirie@parrot.com>
+ <193ad007f4156d653705d826dfd4f4987a40d2d1.1457546125.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1603071524000.17976@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <193ad007f4156d653705d826dfd4f4987a40d2d1.1457546125.git.gregor.boirie@parrot.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/03/16 14:24, Peter Meerwald-Stadler wrote:
-> 
-> the mail subject should say 'Remove adis16220 ...'
-Fixedup and applied.
+Hello Gregor,
 
-Thanks,
-
-Jonathan
+On 16-03-09 19:05:49, Gregor Boirie wrote:
+> Adds a new per-device sysfs attribute "current_timestamp_clock" to allow
+> userspace to select a particular POSIX clock for buffered samples and
+> events timestamping.
 > 
->> The ADIS16220 part has been obsoleted, which makes it hard to get the
->> hardware to even test the driver. Considering this there is no expectation
->> that the driver will be cleaned up and be able to move out of staging, so
->> remove the driver.
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> ---
->>  drivers/staging/iio/accel/Kconfig          |  11 -
->>  drivers/staging/iio/accel/Makefile         |   3 -
->>  drivers/staging/iio/accel/adis16220.h      | 140 --------
->>  drivers/staging/iio/accel/adis16220_core.c | 494 -----------------------------
->>  4 files changed, 648 deletions(-)
->>  delete mode 100644 drivers/staging/iio/accel/adis16220.h
->>  delete mode 100644 drivers/staging/iio/accel/adis16220_core.c
->>
->> diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
->> index 5bc9803..f066aa3 100644
->> --- a/drivers/staging/iio/accel/Kconfig
->> +++ b/drivers/staging/iio/accel/Kconfig
->> @@ -39,17 +39,6 @@ config ADIS16209
->>  	  To compile this driver as a module, say M here: the module will be
->>  	  called adis16209.
->>  
->> -config ADIS16220
->> -	tristate "Analog Devices ADIS16220 Programmable Digital Vibration Sensor"
->> -	depends on SPI
->> -	select IIO_ADIS_LIB
->> -	help
->> -	  Say Y here to build support for Analog Devices adis16220 programmable
->> -	  digital vibration sensor.
->> -
->> -	  To compile this driver as a module, say M here: the module will be
->> -	  called adis16220.
->> -
->>  config ADIS16240
->>  	tristate "Analog Devices ADIS16240 Programmable Impact Sensor and Recorder"
->>  	depends on SPI
->> diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
->> index 8ad9732..415329c 100644
->> --- a/drivers/staging/iio/accel/Makefile
->> +++ b/drivers/staging/iio/accel/Makefile
->> @@ -11,9 +11,6 @@ obj-$(CONFIG_ADIS16203) += adis16203.o
->>  adis16209-y             := adis16209_core.o
->>  obj-$(CONFIG_ADIS16209) += adis16209.o
->>  
->> -adis16220-y             := adis16220_core.o
->> -obj-$(CONFIG_ADIS16220) += adis16220.o
->> -
->>  adis16240-y             := adis16240_core.o
->>  obj-$(CONFIG_ADIS16240) += adis16240.o
->>  
->> diff --git a/drivers/staging/iio/accel/adis16220.h b/drivers/staging/iio/accel/adis16220.h
->> deleted file mode 100644
->> index eab8633..0000000
->> --- a/drivers/staging/iio/accel/adis16220.h
->> +++ /dev/null
->> @@ -1,140 +0,0 @@
->> -#ifndef SPI_ADIS16220_H_
->> -#define SPI_ADIS16220_H_
->> -
->> -#include <linux/iio/imu/adis.h>
->> -
->> -#define ADIS16220_STARTUP_DELAY	220 /* ms */
->> -
->> -/* Flash memory write count */
->> -#define ADIS16220_FLASH_CNT     0x00
->> -/* Control, acceleration offset adjustment control */
->> -#define ADIS16220_ACCL_NULL     0x02
->> -/* Control, AIN1 offset adjustment control */
->> -#define ADIS16220_AIN1_NULL     0x04
->> -/* Control, AIN2 offset adjustment control */
->> -#define ADIS16220_AIN2_NULL     0x06
->> -/* Output, power supply during capture */
->> -#define ADIS16220_CAPT_SUPPLY   0x0A
->> -/* Output, temperature during capture */
->> -#define ADIS16220_CAPT_TEMP     0x0C
->> -/* Output, peak acceleration during capture */
->> -#define ADIS16220_CAPT_PEAKA    0x0E
->> -/* Output, peak AIN1 level during capture */
->> -#define ADIS16220_CAPT_PEAK1    0x10
->> -/* Output, peak AIN2 level during capture */
->> -#define ADIS16220_CAPT_PEAK2    0x12
->> -/* Output, capture buffer for acceleration */
->> -#define ADIS16220_CAPT_BUFA     0x14
->> -/* Output, capture buffer for AIN1 */
->> -#define ADIS16220_CAPT_BUF1     0x16
->> -/* Output, capture buffer for AIN2 */
->> -#define ADIS16220_CAPT_BUF2     0x18
->> -/* Control, capture buffer address pointer */
->> -#define ADIS16220_CAPT_PNTR     0x1A
->> -/* Control, capture control register */
->> -#define ADIS16220_CAPT_CTRL     0x1C
->> -/* Control, capture period (automatic mode) */
->> -#define ADIS16220_CAPT_PRD      0x1E
->> -/* Control, Alarm A, acceleration peak threshold */
->> -#define ADIS16220_ALM_MAGA      0x20
->> -/* Control, Alarm 1, AIN1 peak threshold */
->> -#define ADIS16220_ALM_MAG1      0x22
->> -/* Control, Alarm 2, AIN2 peak threshold */
->> -#define ADIS16220_ALM_MAG2      0x24
->> -/* Control, Alarm S, peak threshold */
->> -#define ADIS16220_ALM_MAGS      0x26
->> -/* Control, alarm configuration register */
->> -#define ADIS16220_ALM_CTRL      0x28
->> -/* Control, general I/O configuration */
->> -#define ADIS16220_GPIO_CTRL     0x32
->> -/* Control, self-test control, AIN configuration */
->> -#define ADIS16220_MSC_CTRL      0x34
->> -/* Control, digital I/O configuration */
->> -#define ADIS16220_DIO_CTRL      0x36
->> -/* Control, filter configuration */
->> -#define ADIS16220_AVG_CNT       0x38
->> -/* Status, system status */
->> -#define ADIS16220_DIAG_STAT     0x3C
->> -/* Control, system commands */
->> -#define ADIS16220_GLOB_CMD      0x3E
->> -/* Status, self-test response */
->> -#define ADIS16220_ST_DELTA      0x40
->> -/* Lot Identification Code 1 */
->> -#define ADIS16220_LOT_ID1       0x52
->> -/* Lot Identification Code 2 */
->> -#define ADIS16220_LOT_ID2       0x54
->> -/* Product identifier; convert to decimal = 16220 */
->> -#define ADIS16220_PROD_ID       0x56
->> -/* Serial number */
->> -#define ADIS16220_SERIAL_NUM    0x58
->> -
->> -#define ADIS16220_CAPTURE_SIZE  2048
->> -
->> -/* MSC_CTRL */
->> -#define ADIS16220_MSC_CTRL_SELF_TEST_EN	        BIT(8)
->> -#define ADIS16220_MSC_CTRL_POWER_SUP_COM_AIN1	BIT(1)
->> -#define ADIS16220_MSC_CTRL_POWER_SUP_COM_AIN2	BIT(0)
->> -
->> -/* DIO_CTRL */
->> -#define ADIS16220_MSC_CTRL_DIO2_BUSY_IND     (BIT(5) | BIT(4))
->> -#define ADIS16220_MSC_CTRL_DIO1_BUSY_IND     (BIT(3) | BIT(2))
->> -#define ADIS16220_MSC_CTRL_DIO2_ACT_HIGH     BIT(1)
->> -#define ADIS16220_MSC_CTRL_DIO1_ACT_HIGH     BIT(0)
->> -
->> -/* DIAG_STAT */
->> -/* AIN2 sample > ALM_MAG2 */
->> -#define ADIS16220_DIAG_STAT_ALM_MAG2    BIT(14)
->> -/* AIN1 sample > ALM_MAG1 */
->> -#define ADIS16220_DIAG_STAT_ALM_MAG1    BIT(13)
->> -/* Acceleration sample > ALM_MAGA */
->> -#define ADIS16220_DIAG_STAT_ALM_MAGA    BIT(12)
->> -/* Error condition programmed into ALM_MAGS[11:0] and ALM_CTRL[5:4] is true */
->> -#define ADIS16220_DIAG_STAT_ALM_MAGS    BIT(11)
->> -/* |Peak value in AIN2 data capture| > ALM_MAG2 */
->> -#define ADIS16220_DIAG_STAT_PEAK_AIN2   BIT(10)
->> -/* |Peak value in AIN1 data capture| > ALM_MAG1 */
->> -#define ADIS16220_DIAG_STAT_PEAK_AIN1   BIT(9)
->> -/* |Peak value in acceleration data capture| > ALM_MAGA */
->> -#define ADIS16220_DIAG_STAT_PEAK_ACCEL  BIT(8)
->> -/* Data ready, capture complete */
->> -#define ADIS16220_DIAG_STAT_DATA_RDY    BIT(7)
->> -#define ADIS16220_DIAG_STAT_FLASH_CHK	BIT(6)
->> -#define ADIS16220_DIAG_STAT_SELF_TEST	BIT(5)
->> -/* Capture period violation/interruption */
->> -#define ADIS16220_DIAG_STAT_VIOLATION_BIT	4
->> -/* SPI communications failure */
->> -#define ADIS16220_DIAG_STAT_SPI_FAIL_BIT	3
->> -/* Flash update failure */
->> -#define ADIS16220_DIAG_STAT_FLASH_UPT_BIT	2
->> -/* Power supply above 3.625 V */
->> -#define ADIS16220_DIAG_STAT_POWER_HIGH_BIT	1
->> -/* Power supply below 3.15 V */
->> -#define ADIS16220_DIAG_STAT_POWER_LOW_BIT	0
->> -
->> -/* GLOB_CMD */
->> -#define ADIS16220_GLOB_CMD_SW_RESET	BIT(7)
->> -#define ADIS16220_GLOB_CMD_SELF_TEST	BIT(2)
->> -#define ADIS16220_GLOB_CMD_PWR_DOWN	BIT(1)
->> -
->> -#define ADIS16220_MAX_TX 2048
->> -#define ADIS16220_MAX_RX 2048
->> -
->> -#define ADIS16220_SPI_BURST	(u32)(1000 * 1000)
->> -#define ADIS16220_SPI_FAST	(u32)(2000 * 1000)
->> -
->> -/**
->> - * struct adis16220_state - device instance specific data
->> - * @adis:		adis device
->> - * @tx:			transmit buffer
->> - * @rx:			receive buffer
->> - * @buf_lock:		mutex to protect tx and rx
->> - **/
->> -struct adis16220_state {
->> -	struct adis adis;
->> -
->> -	struct mutex		buf_lock;
->> -	u8			tx[ADIS16220_MAX_TX] ____cacheline_aligned;
->> -	u8			rx[ADIS16220_MAX_RX];
->> -};
->> -
->> -#endif /* SPI_ADIS16220_H_ */
->> diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
->> deleted file mode 100644
->> index d016521..0000000
->> --- a/drivers/staging/iio/accel/adis16220_core.c
->> +++ /dev/null
->> @@ -1,494 +0,0 @@
->> -/*
->> - * ADIS16220 Programmable Digital Vibration Sensor driver
->> - *
->> - * Copyright 2010 Analog Devices Inc.
->> - *
->> - * Licensed under the GPL-2 or later.
->> - */
->> -
->> -#include <linux/delay.h>
->> -#include <linux/mutex.h>
->> -#include <linux/device.h>
->> -#include <linux/kernel.h>
->> -#include <linux/spi/spi.h>
->> -#include <linux/slab.h>
->> -#include <linux/sysfs.h>
->> -#include <linux/module.h>
->> -
->> -#include <linux/iio/iio.h>
->> -#include <linux/iio/sysfs.h>
->> -
->> -#include "adis16220.h"
->> -
->> -static ssize_t adis16220_read_16bit(struct device *dev,
->> -				    struct device_attribute *attr,
->> -				    char *buf)
->> -{
->> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> -	struct adis16220_state *st = iio_priv(indio_dev);
->> -	ssize_t ret;
->> -	u16 val;
->> -
->> -	/* Take the iio_dev status lock */
->> -	mutex_lock(&indio_dev->mlock);
->> -	ret = adis_read_reg_16(&st->adis, this_attr->address, &val);
->> -	mutex_unlock(&indio_dev->mlock);
->> -	if (ret)
->> -		return ret;
->> -	return sprintf(buf, "%u\n", val);
->> -}
->> -
->> -static ssize_t adis16220_write_16bit(struct device *dev,
->> -				     struct device_attribute *attr,
->> -				     const char *buf,
->> -				     size_t len)
->> -{
->> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->> -	struct adis16220_state *st = iio_priv(indio_dev);
->> -	int ret;
->> -	u16 val;
->> -
->> -	ret = kstrtou16(buf, 10, &val);
->> -	if (ret)
->> -		goto error_ret;
->> -	ret = adis_write_reg_16(&st->adis, this_attr->address, val);
->> -
->> -error_ret:
->> -	return ret ? ret : len;
->> -}
->> -
->> -static int adis16220_capture(struct iio_dev *indio_dev)
->> -{
->> -	struct adis16220_state *st = iio_priv(indio_dev);
->> -	int ret;
->> -
->> -	 /* initiates a manual data capture */
->> -	ret = adis_write_reg_16(&st->adis, ADIS16220_GLOB_CMD, 0xBF08);
->> -	if (ret)
->> -		dev_err(&indio_dev->dev, "problem beginning capture");
->> -
->> -	usleep_range(10000, 11000); /* delay for capture to finish */
->> -
->> -	return ret;
->> -}
->> -
->> -static ssize_t adis16220_write_capture(struct device *dev,
->> -				       struct device_attribute *attr,
->> -				       const char *buf, size_t len)
->> -{
->> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> -	bool val;
->> -	int ret;
->> -
->> -	ret = strtobool(buf, &val);
->> -	if (ret)
->> -		return ret;
->> -	if (!val)
->> -		return -EINVAL;
->> -	ret = adis16220_capture(indio_dev);
->> -	if (ret)
->> -		return ret;
->> -
->> -	return len;
->> -}
->> -
->> -static ssize_t adis16220_capture_buffer_read(struct iio_dev *indio_dev,
->> -					     char *buf,
->> -					     loff_t off,
->> -					     size_t count,
->> -					     int addr)
->> -{
->> -	struct adis16220_state *st = iio_priv(indio_dev);
->> -	struct spi_transfer xfers[] = {
->> -		{
->> -			.tx_buf = st->tx,
->> -			.bits_per_word = 8,
->> -			.len = 2,
->> -			.cs_change = 1,
->> -			.delay_usecs = 25,
->> -		}, {
->> -			.tx_buf = st->tx,
->> -			.rx_buf = st->rx,
->> -			.bits_per_word = 8,
->> -			.cs_change = 1,
->> -			.delay_usecs = 25,
->> -		},
->> -	};
->> -	int ret;
->> -	int i;
->> -
->> -	if (unlikely(!count))
->> -		return count;
->> -
->> -	if ((off >= ADIS16220_CAPTURE_SIZE) || (count & 1) || (off & 1))
->> -		return -EINVAL;
->> -
->> -	if (off + count > ADIS16220_CAPTURE_SIZE)
->> -		count = ADIS16220_CAPTURE_SIZE - off;
->> -
->> -	/* write the begin position of capture buffer */
->> -	ret = adis_write_reg_16(&st->adis,
->> -				ADIS16220_CAPT_PNTR,
->> -				off > 1);
->> -	if (ret)
->> -		return -EIO;
->> -
->> -	/* read count/2 values from capture buffer */
->> -	mutex_lock(&st->buf_lock);
->> -
->> -	for (i = 0; i < count; i += 2) {
->> -		st->tx[i] = ADIS_READ_REG(addr);
->> -		st->tx[i + 1] = 0;
->> -	}
->> -	xfers[1].len = count;
->> -
->> -	ret = spi_sync_transfer(st->adis.spi, xfers, ARRAY_SIZE(xfers));
->> -	if (ret) {
->> -		mutex_unlock(&st->buf_lock);
->> -		return -EIO;
->> -	}
->> -
->> -	memcpy(buf, st->rx, count);
->> -
->> -	mutex_unlock(&st->buf_lock);
->> -	return count;
->> -}
->> -
->> -static ssize_t adis16220_accel_bin_read(struct file *filp, struct kobject *kobj,
->> -					struct bin_attribute *attr,
->> -					char *buf,
->> -					loff_t off,
->> -					size_t count)
->> -{
->> -	struct iio_dev *indio_dev = dev_to_iio_dev(kobj_to_dev(kobj));
->> -
->> -	return adis16220_capture_buffer_read(indio_dev, buf,
->> -					off, count,
->> -					ADIS16220_CAPT_BUFA);
->> -}
->> -
->> -static struct bin_attribute accel_bin = {
->> -	.attr = {
->> -		.name = "accel_bin",
->> -		.mode = S_IRUGO,
->> -	},
->> -	.read = adis16220_accel_bin_read,
->> -	.size = ADIS16220_CAPTURE_SIZE,
->> -};
->> -
->> -static ssize_t adis16220_adc1_bin_read(struct file *filp, struct kobject *kobj,
->> -				       struct bin_attribute *attr,
->> -				       char *buf, loff_t off,
->> -				       size_t count)
->> -{
->> -	struct iio_dev *indio_dev = dev_to_iio_dev(kobj_to_dev(kobj));
->> -
->> -	return adis16220_capture_buffer_read(indio_dev, buf,
->> -					off, count,
->> -					ADIS16220_CAPT_BUF1);
->> -}
->> -
->> -static struct bin_attribute adc1_bin = {
->> -	.attr = {
->> -		.name = "in0_bin",
->> -		.mode = S_IRUGO,
->> -	},
->> -	.read =  adis16220_adc1_bin_read,
->> -	.size = ADIS16220_CAPTURE_SIZE,
->> -};
->> -
->> -static ssize_t adis16220_adc2_bin_read(struct file *filp, struct kobject *kobj,
->> -				       struct bin_attribute *attr,
->> -				       char *buf, loff_t off,
->> -				       size_t count)
->> -{
->> -	struct iio_dev *indio_dev = dev_to_iio_dev(kobj_to_dev(kobj));
->> -
->> -	return adis16220_capture_buffer_read(indio_dev, buf,
->> -					off, count,
->> -					ADIS16220_CAPT_BUF2);
->> -}
->> -
->> -static struct bin_attribute adc2_bin = {
->> -	.attr = {
->> -		.name = "in1_bin",
->> -		.mode = S_IRUGO,
->> -	},
->> -	.read =  adis16220_adc2_bin_read,
->> -	.size = ADIS16220_CAPTURE_SIZE,
->> -};
->> -
->> -#define IIO_DEV_ATTR_CAPTURE(_store)				\
->> -	IIO_DEVICE_ATTR(capture, S_IWUSR, NULL, _store, 0)
->> -
->> -static IIO_DEV_ATTR_CAPTURE(adis16220_write_capture);
->> -
->> -#define IIO_DEV_ATTR_CAPTURE_COUNT(_mode, _show, _store, _addr)		\
->> -	IIO_DEVICE_ATTR(capture_count, _mode, _show, _store, _addr)
->> -
->> -static IIO_DEV_ATTR_CAPTURE_COUNT(S_IWUSR | S_IRUGO,
->> -		adis16220_read_16bit,
->> -		adis16220_write_16bit,
->> -		ADIS16220_CAPT_PNTR);
->> -
->> -enum adis16220_channel {
->> -	in_supply, in_1, in_2, accel, temp
->> -};
->> -
->> -struct adis16220_address_spec {
->> -	u8 addr;
->> -	u8 bits;
->> -	bool sign;
->> -};
->> -
->> -/* Address / bits / signed */
->> -static const struct adis16220_address_spec adis16220_addresses[][3] = {
->> -	[in_supply] =	{ { ADIS16220_CAPT_SUPPLY,	12, 0 }, },
->> -	[in_1] =	{ { ADIS16220_CAPT_BUF1,	16, 1 },
->> -			  { ADIS16220_AIN1_NULL,	16, 1 },
->> -			  { ADIS16220_CAPT_PEAK1,	16, 1 }, },
->> -	[in_2] =	{ { ADIS16220_CAPT_BUF2,	16, 1 },
->> -			  { ADIS16220_AIN2_NULL,	16, 1 },
->> -			  { ADIS16220_CAPT_PEAK2,	16, 1 }, },
->> -	[accel] =	{ { ADIS16220_CAPT_BUFA,	16, 1 },
->> -			  { ADIS16220_ACCL_NULL,	16, 1 },
->> -			  { ADIS16220_CAPT_PEAKA,	16, 1 }, },
->> -	[temp] =	{ { ADIS16220_CAPT_TEMP,	12, 0 }, }
->> -};
->> -
->> -static int adis16220_read_raw(struct iio_dev *indio_dev,
->> -			      struct iio_chan_spec const *chan,
->> -			      int *val, int *val2,
->> -			      long mask)
->> -{
->> -	struct adis16220_state *st = iio_priv(indio_dev);
->> -	const struct adis16220_address_spec *addr;
->> -	int ret = -EINVAL;
->> -	int addrind = 0;
->> -	u16 uval;
->> -	s16 sval;
->> -	u8 bits;
->> -
->> -	switch (mask) {
->> -	case IIO_CHAN_INFO_RAW:
->> -		addrind = 0;
->> -		break;
->> -	case IIO_CHAN_INFO_OFFSET:
->> -		if (chan->type == IIO_TEMP) {
->> -			*val = 25000 / -470 - 1278; /* 25 C = 1278 */
->> -			return IIO_VAL_INT;
->> -		}
->> -		addrind = 1;
->> -		break;
->> -	case IIO_CHAN_INFO_PEAK:
->> -		addrind = 2;
->> -		break;
->> -	case IIO_CHAN_INFO_SCALE:
->> -		switch (chan->type) {
->> -		case IIO_TEMP:
->> -			*val = -470; /* -0.47 C */
->> -			*val2 = 0;
->> -			return IIO_VAL_INT_PLUS_MICRO;
->> -		case IIO_ACCEL:
->> -			*val2 = IIO_G_TO_M_S_2(19073); /* 19.073 g */
->> -			return IIO_VAL_INT_PLUS_MICRO;
->> -		case IIO_VOLTAGE:
->> -			if (chan->channel == 0) {
->> -				*val = 1;
->> -				*val2 = 220700; /* 1.2207 mV */
->> -			} else {
->> -				/* Should really be dependent on VDD */
->> -				*val2 = 305180; /* 305.18 uV */
->> -			}
->> -			return IIO_VAL_INT_PLUS_MICRO;
->> -		default:
->> -			return -EINVAL;
->> -		}
->> -	default:
->> -		return -EINVAL;
->> -	}
->> -	addr = &adis16220_addresses[chan->address][addrind];
->> -	if (addr->sign) {
->> -		ret = adis_read_reg_16(&st->adis, addr->addr, &sval);
->> -		if (ret)
->> -			return ret;
->> -		bits = addr->bits;
->> -		sval &= (1 << bits) - 1;
->> -		sval = (s16)(sval << (16 - bits)) >> (16 - bits);
->> -		*val = sval;
->> -		return IIO_VAL_INT;
->> -	}
->> -	ret = adis_read_reg_16(&st->adis, addr->addr, &uval);
->> -	if (ret)
->> -		return ret;
->> -	bits = addr->bits;
->> -	uval &= (1 << bits) - 1;
->> -	*val = uval;
->> -	return IIO_VAL_INT;
->> -}
->> -
->> -static const struct iio_chan_spec adis16220_channels[] = {
->> -	{
->> -		.type = IIO_VOLTAGE,
->> -		.indexed = 1,
->> -		.channel = 0,
->> -		.extend_name = "supply",
->> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> -			BIT(IIO_CHAN_INFO_SCALE),
->> -		.address = in_supply,
->> -	}, {
->> -		.type = IIO_ACCEL,
->> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> -			BIT(IIO_CHAN_INFO_OFFSET) |
->> -			BIT(IIO_CHAN_INFO_SCALE) |
->> -			BIT(IIO_CHAN_INFO_PEAK),
->> -		.address = accel,
->> -	}, {
->> -		.type = IIO_TEMP,
->> -		.indexed = 1,
->> -		.channel = 0,
->> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> -			BIT(IIO_CHAN_INFO_OFFSET) |
->> -			BIT(IIO_CHAN_INFO_SCALE),
->> -		.address = temp,
->> -	}, {
->> -		.type = IIO_VOLTAGE,
->> -		.indexed = 1,
->> -		.channel = 1,
->> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> -			BIT(IIO_CHAN_INFO_OFFSET) |
->> -			BIT(IIO_CHAN_INFO_SCALE),
->> -		.address = in_1,
->> -	}, {
->> -		.type = IIO_VOLTAGE,
->> -		.indexed = 1,
->> -		.channel = 2,
->> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->> -		.address = in_2,
->> -	}
->> -};
->> -
->> -static struct attribute *adis16220_attributes[] = {
->> -	&iio_dev_attr_capture.dev_attr.attr,
->> -	&iio_dev_attr_capture_count.dev_attr.attr,
->> -	NULL
->> -};
->> -
->> -static const struct attribute_group adis16220_attribute_group = {
->> -	.attrs = adis16220_attributes,
->> -};
->> -
->> -static const struct iio_info adis16220_info = {
->> -	.attrs = &adis16220_attribute_group,
->> -	.driver_module = THIS_MODULE,
->> -	.read_raw = &adis16220_read_raw,
->> -};
->> -
->> -static const char * const adis16220_status_error_msgs[] = {
->> -	[ADIS16220_DIAG_STAT_VIOLATION_BIT] = "Capture period violation/interruption",
->> -	[ADIS16220_DIAG_STAT_SPI_FAIL_BIT] = "SPI failure",
->> -	[ADIS16220_DIAG_STAT_FLASH_UPT_BIT] = "Flash update failed",
->> -	[ADIS16220_DIAG_STAT_POWER_HIGH_BIT] = "Power supply above 3.625V",
->> -	[ADIS16220_DIAG_STAT_POWER_LOW_BIT] = "Power supply below 3.15V",
->> -};
->> -
->> -static const struct adis_data adis16220_data = {
->> -	.read_delay = 35,
->> -	.write_delay = 35,
->> -	.msc_ctrl_reg = ADIS16220_MSC_CTRL,
->> -	.glob_cmd_reg = ADIS16220_GLOB_CMD,
->> -	.diag_stat_reg = ADIS16220_DIAG_STAT,
->> -
->> -	.self_test_mask = ADIS16220_MSC_CTRL_SELF_TEST_EN,
->> -	.startup_delay = ADIS16220_STARTUP_DELAY,
->> -
->> -	.status_error_msgs = adis16220_status_error_msgs,
->> -	.status_error_mask = BIT(ADIS16220_DIAG_STAT_VIOLATION_BIT) |
->> -		BIT(ADIS16220_DIAG_STAT_SPI_FAIL_BIT) |
->> -		BIT(ADIS16220_DIAG_STAT_FLASH_UPT_BIT) |
->> -		BIT(ADIS16220_DIAG_STAT_POWER_HIGH_BIT) |
->> -		BIT(ADIS16220_DIAG_STAT_POWER_LOW_BIT),
->> -};
->> -
->> -static int adis16220_probe(struct spi_device *spi)
->> -{
->> -	int ret;
->> -	struct adis16220_state *st;
->> -	struct iio_dev *indio_dev;
->> -
->> -	/* setup the industrialio driver allocated elements */
->> -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
->> -	if (!indio_dev)
->> -		return -ENOMEM;
->> -
->> -	st = iio_priv(indio_dev);
->> -	/* this is only used for removal purposes */
->> -	spi_set_drvdata(spi, indio_dev);
->> -
->> -	indio_dev->name = spi->dev.driver->name;
->> -	indio_dev->dev.parent = &spi->dev;
->> -	indio_dev->info = &adis16220_info;
->> -	indio_dev->modes = INDIO_DIRECT_MODE;
->> -	indio_dev->channels = adis16220_channels;
->> -	indio_dev->num_channels = ARRAY_SIZE(adis16220_channels);
->> -
->> -	ret = devm_iio_device_register(&spi->dev, indio_dev);
->> -	if (ret)
->> -		return ret;
->> -
->> -	ret = sysfs_create_bin_file(&indio_dev->dev.kobj, &accel_bin);
->> -	if (ret)
->> -		return ret;
->> -
->> -	ret = sysfs_create_bin_file(&indio_dev->dev.kobj, &adc1_bin);
->> -	if (ret)
->> -		goto error_rm_accel_bin;
->> -
->> -	ret = sysfs_create_bin_file(&indio_dev->dev.kobj, &adc2_bin);
->> -	if (ret)
->> -		goto error_rm_adc1_bin;
->> -
->> -	ret = adis_init(&st->adis, indio_dev, spi, &adis16220_data);
->> -	if (ret)
->> -		goto error_rm_adc2_bin;
->> -	/* Get the device into a sane initial state */
->> -	ret = adis_initial_startup(&st->adis);
->> -	if (ret)
->> -		goto error_rm_adc2_bin;
->> -	return 0;
->> -
->> -error_rm_adc2_bin:
->> -	sysfs_remove_bin_file(&indio_dev->dev.kobj, &adc2_bin);
->> -error_rm_adc1_bin:
->> -	sysfs_remove_bin_file(&indio_dev->dev.kobj, &adc1_bin);
->> -error_rm_accel_bin:
->> -	sysfs_remove_bin_file(&indio_dev->dev.kobj, &accel_bin);
->> -	return ret;
->> -}
->> -
->> -static int adis16220_remove(struct spi_device *spi)
->> -{
->> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
->> -
->> -	sysfs_remove_bin_file(&indio_dev->dev.kobj, &adc2_bin);
->> -	sysfs_remove_bin_file(&indio_dev->dev.kobj, &adc1_bin);
->> -	sysfs_remove_bin_file(&indio_dev->dev.kobj, &accel_bin);
->> -
->> -	return 0;
->> -}
->> -
->> -static struct spi_driver adis16220_driver = {
->> -	.driver = {
->> -		.name = "adis16220",
->> -	},
->> -	.probe = adis16220_probe,
->> -	.remove = adis16220_remove,
->> -};
->> -module_spi_driver(adis16220_driver);
->> -
->> -MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
->> -MODULE_DESCRIPTION("Analog Devices ADIS16220 Digital Vibration Sensor");
->> -MODULE_LICENSE("GPL v2");
->> -MODULE_ALIAS("spi:adis16220");
->>
+> Following clocks, as listed in clock_gettime(2), are supported:
+> CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_MONOTONIC_RAW,
+> CLOCK_REALTIME_COARSE, CLOCK_MONOTONIC_COARSE, CLOCK_BOOTTIME and
+> CLOCK_TAI.
 > 
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio           |   7 +
+>  Documentation/DocBook/iio.tmpl                    |   2 +-
+>  drivers/iio/accel/bma180.c                        |   2 +-
+>  drivers/iio/accel/bmc150-accel-core.c             |   4 +-
+>  drivers/iio/accel/kxcjk-1013.c                    |   2 +-
+>  drivers/iio/accel/mma7455_core.c                  |   3 +-
+>  drivers/iio/accel/mma8452.c                       |   4 +-
+>  drivers/iio/accel/mma9551.c                       |   2 +-
+>  drivers/iio/accel/mma9553.c                       |   2 +-
+>  drivers/iio/adc/ad7291.c                          |   2 +-
+>  drivers/iio/adc/ad7298.c                          |   2 +-
+>  drivers/iio/adc/ad7476.c                          |   2 +-
+>  drivers/iio/adc/ad7887.c                          |   2 +-
+>  drivers/iio/adc/ad7923.c                          |   2 +-
+>  drivers/iio/adc/ad799x.c                          |   4 +-
+>  drivers/iio/adc/cc10001_adc.c                     |   2 +-
+>  drivers/iio/adc/hi8435.c                          |   2 +-
+>  drivers/iio/adc/ina2xx-adc.c                      |   6 +-
+>  drivers/iio/adc/max1363.c                         |   5 +-
+>  drivers/iio/adc/ti-ads1015.c                      |   3 +-
+>  drivers/iio/adc/vf610_adc.c                       |   3 +-
 
+Thanks for implementing this.
+
+For what it's worth, I tested this on Colibri Vybrid VF61 for a while and
+all seems to work fine.
+
+So with the testing for vf610_adc driver
+
+Acked-by: Sanchayan Maity <maitysanchayan@gmail.com>
+
+Regards,
+Sanchayan.
+
+>  drivers/iio/adc/xilinx-xadc-events.c              |   4 +-
+>  drivers/iio/chemical/atlas-ph-sensor.c            |   2 +-
+>  drivers/iio/dac/ad5421.c                          |   6 +-
+>  drivers/iio/dac/ad5504.c                          |   2 +-
+>  drivers/iio/dummy/iio_simple_dummy_buffer.c       |   3 +-
+>  drivers/iio/dummy/iio_simple_dummy_events.c       |   2 +-
+>  drivers/iio/gyro/bmg160_core.c                    |  30 ++--
+>  drivers/iio/iio_core.h                            |   3 +
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c        |   2 +-
+>  drivers/iio/industrialio-core.c                   | 179 +++++++++++++++++++++-
+>  drivers/iio/industrialio-event.c                  |  19 ++-
+>  drivers/iio/industrialio-trigger.c                |   2 +-
+>  drivers/iio/light/acpi-als.c                      |   2 +-
+>  drivers/iio/light/adjd_s311.c                     |   2 +-
+>  drivers/iio/light/apds9300.c                      |   2 +-
+>  drivers/iio/light/apds9960.c                      |   4 +-
+>  drivers/iio/light/cm36651.c                       |   2 +-
+>  drivers/iio/light/gp2ap020a00f.c                  |   8 +-
+>  drivers/iio/light/isl29125.c                      |   2 +-
+>  drivers/iio/light/lm3533-als.c                    |   2 +-
+>  drivers/iio/light/ltr501.c                        |   7 +-
+>  dr>  drivers/iio/light/stk3310.c                       |   2 +-
+>  drivers/iio/light/tcs3414.c                       |   2 +-
+>  drivers/iio/light/tcs3472.c                       |   2 +-
+>  drivers/iio/light/tsl2563.c                       |   2 +-
+>  drivers/iio/light/us5182d.c                       |   2 +-
+>  drivers/iio/magnetometer/hmc5843_core.c           |   2 +-
+>  drivers/iio/magnetometer/mag3110.c                |   2 +-
+>  drivers/iio/pressure/mpl3115.c                    |   2 +-
+>  drivers/iio/pressure/ms5611_core.c                |   3 +-
+>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c |   2 +-
+>  drivers/iio/proximity/sx9500.c                    |   4 +-
+>  drivers/staging/iio/accel/lis3l02dq_core.c        |   2 +-
+>  drivers/staging/iio/accel/sca3000_core.c          |   2 +-
+>  drivers/staging/iio/adc/ad7280a.c                 |   8 +-
+>  drivers/staging/iio/adc/ad7606_ring.c             |   3 +-
+>  drivers/staging/iio/adc/ad7816.c                  |   3 +-
+>  drivers/staging/iio/addac/adt7316.c               |   4 +-
+>  drivers/staging/iio/cdc/ad7150.c                  |   2 +-
+>  drivers/staging/iio/light/tsl2x7x_core.c          |   2 +-
+>  include/linux/iio/iio.h                           |  22 ++-
+>  63 files changed, 317 insertions(+), 108 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 3c66248..c374b21 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -32,6 +32,13 @@ Description:
+>  		Description of the physical chip / device for device X.
+>  		Typically a part number.
+>  
+> +What:		/sys/bus/iio/devices/iio:deviceX/timestamp_clock
+> +KernelVersion:	4.5
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		String identifying current posix clock used to timestamp
+> +		buffered samples and events for device X.
+> +
+>  What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency
+>  What:		/sys/bus/iio/devices/iio:deviceX/buffer/sampling_frequency
+>  What:		/sys/bus/iio/devices/triggerX/sampling_frequency
+> diff --git a/Documentation/DocBook/iio.tmpl b/Documentation/DocBook/iio.tmpl
+> index f525bf5..e2ab6a1 100644
+> --- a/Documentation/DocBook/iio.tmpl
+> +++ b/Documentation/DocBook/iio.tmpl
+> @@ -594,7 +594,7 @@
+>  
+>      irqreturn_t sensor_iio_pollfunc(int irq, void *p)
+>      {
+> -        pf->timestamp = iio_get_time_ns();
+> +        pf->timestamp = iio_get_time_ns((struct indio_dev *)p);
+>          return IRQ_WAKE_THREAD;
+>      }
+>  
+> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+> index f04b884..e3f88ba 100644
+> --- a/drivers/iio/accel/bma180.c
+> +++ b/drivers/iio/accel/bma180.c
+> @@ -654,7 +654,7 @@ static irqreturn_t bma180_trigger_handler(int irq, void *p)
+>  	struct iio_poll_func *pf = p;
+>  	struct iio_dev *indio_dev = pf->indio_dev;
+>  	struct bma180_data *data = iio_priv(indio_dev);
+> -	int64_t time_ns = iio_get_time_ns();
+> +	s64 time_ns = iio_get_time_ns(indio_dev);
+>  	int bit, ret, i = 0;
+>  
+>  	mutex_lock(&data->mutex);
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index c73331f7..0529461 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -892,7 +892,7 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+>  	 */
+>  	if (!irq) {
+>  		data->old_timestamp = data->timestamp;
+> -		data->timestamp = iio_get_time_ns();
+> +		data->timestamp = iio_get_time_ns(indio_dev);
+>  	}
+>  
+>  	/*
+> @@ -1295,7 +1295,7 @@ static irqreturn_t bmc150_accel_irq_handler(int irq, void *private)
+>  	int i;
+>  
+>  	data->old_timestamp = data->timestamp;
+> -	data->timestamp = iio_get_time_ns();
+> +	data->timestamp = iio_get_time_ns(indio_dev);
+>  
+>  	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
+>  		if (data->triggers[i].enabled) {
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index edec1d0..36539a2 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -1131,7 +1131,7 @@ static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
+>  	struct iio_dev *indio_dev = private;
+>  	struct kxcjk1013_data *data = iio_priv(indio_dev);
+>  
+> -	data->timestamp = iio_get_time_ns();
+> +	data->timestamp = iio_get_time_ns(indio_dev);
+>  
+>  	if (data->dready_trigger_on)
+>  		iio_trigger_poll(data->dready_trig);
+> diff --git a/drivers/iio/accel/mma7455_core.c b/drivers/iio/accel/mma7455_core.c
+> index c633cc2..91e2c04 100644
+> --- a/drivers/iio/accel/mma7455_core.c
+> +++ b/drivers/iio/accel/mma7455_core.c
+> @@ -97,7 +97,8 @@ static irqreturn_t mma7455_trigger_handler(int irq, void *p)
+>  	if (ret)
+>  		goto done;
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+> +	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+> +					   iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 5ca0d16..b9ca5ad 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -783,7 +783,7 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+>  static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
+>  {
+>  	struct mma8452_data *data = iio_priv(indio_dev);
+> -	s64 ts = iio_get_time_ns();
+> +	s64 ts = iio_get_time_ns(indio_dev);
+>  	int src;
+>  
+>  	src = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_src);
+> @@ -863,7 +863,7 @@ static irqreturn_t mma8452_trigger_handler(int irq, void *p)
+>  		goto done;
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+> -					   iio_get_time_ns());
+> +					   iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+> index d899a4d..bf27044 100644
+> --- a/drivers/iio/accel/mma9551.c
+> +++ b/drivers/iio/accel/mma9551.c
+> @@ -391,7 +391,7 @@ static irqreturn_t mma9551_event_handler(int irq, void *private)
+>  	iio_push_event(indio_dev,
+>  		       IIO_MOD_EVENT_CODE(IIO_INCLI, 0, (mma_axis + 1),
+>  					  IIO_EV_TYPE_ROC, IIO_EV_DIR_RISING),
+> -		       iio_get_time_ns());
+> +		       iio_get_time_ns(indio_dev));
+>  
+>  out:
+>  	mutex_unlock(&data->mutex);
+> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+> index fa7d362..55b4868 100644
+> --- a/drivers/iio/accel/mma9553.c
+> +++ b/drivers/iio/accel/mma9553.c
+> @@ -1002,7 +1002,7 @@ static irqreturn_t mma9553_irq_handler(int irq, void *private)
+>  	struct iio_dev *indio_dev = private;
+>  	struct mma9553_data *data = iio_priv(indio_dev);
+>  
+> -	data->timestamp = iio_get_time_ns();
+> +	data->timestamp = iio_get_time_ns(indio_dev);
+>  	/*
+>  	 * Since we only configure the interrupt pin when an
+>  	 * event is enabled, we are sure we have at least
+> diff --git a/drivers/iio/adc/ad7291.c b/drivers/iio/adc/ad7291.c
+> index c0eabf1..0376309 100644
+> --- a/drivers/iio/adc/ad7291.c
+> +++ b/drivers/iio/adc/ad7291.c
+> @@ -115,7 +115,7 @@ static irqreturn_t ad7291_event_handler(int irq, void *private)
+>  	u16 t_status, v_status;
+>  	u16 command;
+>  	int i;
+> -	s64 timestamp = iio_get_time_ns();
+> +	s64 timestamp = iio_get_time_ns(indio_dev);
+>  
+>  	if (ad7291_i2c_read(chip, AD7291_T_ALERT_STATUS, &t_status))
+>  		return IRQ_HANDLED;
+> diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
+> index 62bb8f7..5dd0742 100644
+> --- a/drivers/iio/adc/ad7298.c
+> +++ b/drivers/iio/adc/ad7298.c
+> @@ -163,7 +163,7 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+>  		goto done;
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
+> -		iio_get_time_ns());
+> +		iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+> index be85c2a..6a14985 100644
+> --- a/drivers/iio/adc/ad7476.c
+> +++ b/drivers/iio/adc/ad7476.c
+> @@ -70,7 +70,7 @@ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+>  		goto done;
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, st->data,
+> -		iio_get_time_ns());
+> +		iio_get_time_ns(indio_dev));
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  
+> diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+> index 2d3c397..361fae0 100644
+> --- a/drivers/iio/adc/ad7887.c
+> +++ b/drivers/iio/adc/ad7887.c
+> @@ -122,7 +122,7 @@ static irqreturn_t ad7887_trigger_handler(int irq, void *p)
+>  		goto done;
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, st->data,
+> -		iio_get_time_ns());
+> +		iio_get_time_ns(indio_dev));
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  
+> diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
+> index 45e29cc..2a82b9e 100644
+> --- a/drivers/iio/adc/ad7923.c
+> +++ b/drivers/iio/adc/ad7923.c
+> @@ -181,7 +181,7 @@ static irqreturn_t ad7923_trigger_handler(int irq, void *p)
+>  		goto done;
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
+> -		iio_get_time_ns());
+> +		iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+> index 01d7158..ec9dccb 100644
+> --- a/drivers/iio/adc/ad799x.c
+> +++ b/drivers/iio/adc/ad799x.c
+> @@ -212,7 +212,7 @@ static irqreturn_t ad799x_trigger_handler(int irq, void *p)
+>  		goto out;
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
+> -			iio_get_time_ns());
+> +			iio_get_time_ns(indio_dev));
+>  out:
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  
+> @@ -508,7 +508,7 @@ static irqreturn_t ad799x_event_handler(int irq, void *private)
+>  							    (i >> 1),
+>  							    IIO_EV_TYPE_THRESH,
+>  							    IIO_EV_DIR_FALLING),
+> -				       iio_get_time_ns());
+> +				       iio_get_time_ns(indio_dev));
+>  	}
+>  
+>  done:
+> diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
+> index 8254f52..91636c0 100644
+> --- a/drivers/iio/adc/cc10001_adc.c
+> +++ b/drivers/iio/adc/cc10001_adc.c
+> @@ -186,7 +186,7 @@ done:
+>  
+>  	if (!sample_invalid)
+>  		iio_push_to_buffers_with_timestamp(indio_dev, data,
+> -						   iio_get_time_ns());
+> +						   iio_get_time_ns(indio_dev));
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  
+>  	return IRQ_HANDLED;
+> diff --git a/drivers/iio/adc/hi8435.c b/drivers/iio/adc/hi8435.c
+> index c73c6c6..c62bdb0 100644
+> --- a/drivers/iio/adc/hi8435.c
+> +++ b/drivers/iio/adc/hi8435.c
+> @@ -400,7 +400,7 @@ static void hi8435_iio_push_event(struct iio_dev *idev, unsigned int val)
+>  			iio_push_event(idev,
+>  				       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE, i,
+>  						    IIO_EV_TYPE_THRESH, dir),
+> -				       iio_get_time_ns());
+> +				       iio_get_time_ns(idev));
+>  		}
+>  	}
+>  
+> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+> index 65909d5..ee1baf0 100644
+> --- a/drivers/iio/adc/ina2xx-adc.c
+> +++ b/drivers/iio/adc/ina2xx-adc.c
+> @@ -443,7 +443,7 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+>  	s64 time_a, time_b;
+>  	unsigned int alert;
+>  
+> -	time_a = iio_get_time_ns();
+> +	time_a = iio_get_time_ns(indio_dev);
+>  
+>  	/*
+>  	 * Because the timer thread and the chip conversion clock
+> @@ -482,7 +482,7 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+>  		data[i++] = val;
+>  	}
+>  
+> -	time_b = iio_get_time_ns();
+> +	time_b = iio_get_time_ns(indio_dev);
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev,
+>  					   (unsigned int *)data, time_a);
+> @@ -532,7 +532,7 @@ static int ina2xx_buffer_enable(struct iio_dev *indio_dev)
+>  	dev_dbg(&indio_dev->dev, "Async readout mode: %d\n",
+>  		chip->allow_async_readout);
+>  
+> -	chip->prev_ns = iio_get_time_ns();
+> +	chip->prev_ns = iio_get_time_ns(indio_dev);
+>  
+>  	chip->task = kthread_run(ina2xx_capture_thread, (void *)indio_dev,
+>  				 "%s:%d-%uus", indio_dev->name, indio_dev->id,
+> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+> index 929508e..0a4682b 100644
+> --- a/drivers/iio/adc/max1363.c
+> +++ b/drivers/iio/adc/max1363.c
+> @@ -788,7 +788,7 @@ static irqreturn_t max1363_event_handler(int irq, void *private)
+>  {
+>  	struct iio_dev *indio_dev = private;
+>  	struct max1363_state *st = iio_priv(indio_dev);
+> -	s64 timestamp = iio_get_time_ns();
+> +	s64 timestamp = iio_get_time_ns(indio_dev);
+>  	unsigned long mask, loc;
+>  	u8 rx;
+>  	u8 tx[2] = { st->setupbyte,
+> @@ -1506,7 +1506,8 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
+>  	if (b_sent < 0)
+>  		goto done_free;
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, rxbuf, iio_get_time_ns());
+> +	iio_push_to_buffers_with_timestamp(indio_dev, rxbuf,
+> +					   iio_get_time_ns(indio_dev));
+>  
+>  done_free:
+>  	kfree(rxbuf);
+> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+> index 73cbf0b..b5f3eb9 100644
+> --- a/drivers/iio/adc/ti-ads1015.c
+> +++ b/drivers/iio/adc/ti-ads1015.c
+> @@ -225,7 +225,8 @@ static irqreturn_t ads1015_trigger_handler(int irq, void *p)
+>  	buf[0] = res;
+>  	mutex_unlock(&data->lock);
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+> +	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+> +					   iio_get_time_ns(indio_dev));
+>  
+>  err:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index b10f629..33f80a9 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -594,7 +594,8 @@ static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
+>  		if (iio_buffer_enabled(indio_dev)) {
+>  			info->buffer[0] = info->value;
+>  			iio_push_to_buffers_with_timestamp(indio_dev,
+> -					info->buffer, iio_get_time_ns());
+> +					info->buffer,
+> +					iio_get_time_ns(indio_dev));
+>  			iio_trigger_notify_done(indio_dev->trig);
+>  		} else
+>  			complete(&info->completion);
+> diff --git a/drivers/iio/adc/xilinx-xadc-events.c b/drivers/iio/adc/xilinx-xadc-events.c
+> index edcf3aa..6d5c2a6 100644
+> --- a/drivers/iio/adc/xilinx-xadc-events.c
+> +++ b/drivers/iio/adc/xilinx-xadc-events.c
+> @@ -46,7 +46,7 @@ static void xadc_handle_event(struct iio_dev *indio_dev, unsigned int event)
+>  		iio_push_event(indio_dev,
+>  			IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
+>  				IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
+> -			iio_get_time_ns());
+> +			iio_get_time_ns(indio_dev));
+>  	} else {
+>  		/*
+>  		 * For other channels we don't know whether it is a upper or
+> @@ -56,7 +56,7 @@ static void xadc_handle_event(struct iio_dev *indio_dev, unsigned int event)
+>  		iio_push_event(indio_dev,
+>  			IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
+>  				IIO_EV_TYPE_THRESH, IIO_EV_DIR_EITHER),
+> -			iio_get_time_ns());
+> +			iio_get_time_ns(indio_dev));
+>  	}
+>  }
+>  
+> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+> index 62b37cd..be37e24 100644
+> --- a/drivers/iio/chemical/atlas-ph-sensor.c
+> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+> @@ -183,7 +183,7 @@ static irqreturn_t atlas_trigger_handler(int irq, void *private)
+>  
+>  	if (!ret)
+>  		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -				iio_get_time_ns());
+> +				iio_get_time_ns(indio_dev));
+>  
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  
+> diff --git a/drivers/iio/dac/ad5421.c b/drivers/iio/dac/ad5421.c
+> index 968712b..559061a 100644
+> --- a/drivers/iio/dac/ad5421.c
+> +++ b/drivers/iio/dac/ad5421.c
+> @@ -242,7 +242,7 @@ static irqreturn_t ad5421_fault_handler(int irq, void *data)
+>  					0,
+>  					IIO_EV_TYPE_THRESH,
+>  					IIO_EV_DIR_RISING),
+> -			iio_get_time_ns());
+> +			iio_get_time_ns(indio_dev));
+>  		}
+>  
+>  		if (events & AD5421_FAULT_UNDER_CURRENT) {
+> @@ -251,7 +251,7 @@ static irqreturn_t ad5421_fault_handler(int irq, void *data)
+>  					0,
+>  					IIO_EV_TYPE_THRESH,
+>  					IIO_EV_DIR_FALLING),
+> -				iio_get_time_ns());
+> +				iio_get_time_ns(indio_dev));
+>  		}
+>  
+>  		if (events & AD5421_FAULT_TEMP_OVER_140) {
+> @@ -260,7 +260,7 @@ static irqreturn_t ad5421_fault_handler(int irq, void *data)
+>  					0,
+>  					IIO_EV_TYPE_MAG,
+>  					IIO_EV_DIR_RISING),
+> -				iio_get_time_ns());
+> +				iio_get_time_ns(indio_dev));
+>  		}
+>  
+>  		old_fault = fault;
+> diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+> index 4e4c20d..788b3d6 100644
+> --- a/drivers/iio/dac/ad5504.c
+> +++ b/drivers/iio/dac/ad5504.c
+> @@ -223,7 +223,7 @@ static irqreturn_t ad5504_event_handler(int irq, void *private)
+>  					    0,
+>  					    IIO_EV_TYPE_THRESH,
+>  					    IIO_EV_DIR_RISING),
+> -		       iio_get_time_ns());
+> +		       iio_get_time_ns((struct iio_dev *)private));
+>  
+>  	return IRQ_HANDLED;
+>  }
+> diff --git a/drivers/iio/dummy/iio_simple_dummy_buffer.c b/drivers/iio/dummy/iio_simple_dummy_buffer.c
+> index cf44a6f..b383892 100644
+> --- a/drivers/iio/dummy/iio_simple_dummy_buffer.c
+> +++ b/drivers/iio/dummy/iio_simple_dummy_buffer.c
+> @@ -85,7 +85,8 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
+>  		}
+>  	}
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, data, iio_get_time_ns());
+> +	iio_push_to_buffers_with_timestamp(indio_dev, data,
+> +					   iio_get_time_ns(indio_dev));
+>  
+>  	kfree(data);
+>  
+> diff --git a/drivers/iio/dummy/iio_simple_dummy_events.c b/drivers/iio/dummy/iio_simple_dummy_events.c
+> index 6eb600f..ed63ffd 100644
+> --- a/drivers/iio/dummy/iio_simple_dummy_events.c
+> +++ b/drivers/iio/dummy/iio_simple_dummy_events.c
+> @@ -158,7 +158,7 @@ static irqreturn_t iio_simple_dummy_get_timestamp(int irq, void *private)
+>  	struct iio_dev *indio_dev = private;
+>  	struct iio_dummy_state *st = iio_priv(indio_dev);
+>  
+> -	st->event_timestamp = iio_get_time_ns();
+> +	st->event_timestamp = iio_get_time_ns(indio_dev);
+>  	return IRQ_WAKE_THREAD;
+>  }
+>  
+> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+> index bbce3b0..4cefcc0 100644
+> --- a/drivers/iio/gyro/bmg160_core.c
+> +++ b/drivers/iio/gyro/bmg160_core.c
+> @@ -884,25 +884,25 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
+>  
+>  	if (val & BMG160_ANY_MOTION_BIT_X)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+> -							0,
+> -							IIO_MOD_X,
+> -							IIO_EV_TYPE_ROC,
+> -							dir),
+> -							iio_get_time_ns());
+> +							     0,
+> +							     IIO_MOD_X,
+> +							     IIO_EV_TYPE_ROC,
+> +							     dir),
+> +			       iio_get_time_ns(indio_dev));
+>  	if (val & BMG160_ANY_MOTION_BIT_Y)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+> -							0,
+> -							IIO_MOD_Y,
+> -							IIO_EV_TYPE_ROC,
+> -							dir),
+> -							iio_get_time_ns());
+> +							     0,
+> +							     IIO_MOD_Y,
+> +							     IIO_EV_TYPE_ROC,
+> +							     dir),
+> +			       iio_get_time_ns(indio_dev));
+>  	if (val & BMG160_ANY_MOTION_BIT_Z)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+> -							0,
+> -							IIO_MOD_Z,
+> -							IIO_EV_TYPE_ROC,
+> -							dir),
+> -							iio_get_time_ns());
+> +							     0,
+> +							     IIO_MOD_Z,
+> +							     IIO_EV_TYPE_ROC,
+> +							     dir),
+> +			       iio_get_time_ns(indio_dev));
+>  
+>  ack_intr_status:
+>  	if (!data->dready_trigger_on) {
+> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+> index 3598835..4c45488 100644
+> --- a/drivers/iio/iio_core.h
+> +++ b/drivers/iio/iio_core.h
+> @@ -79,4 +79,7 @@ void iio_device_unregister_eventset(struct iio_dev *indio_dev);
+>  void iio_device_wakeup_eventset(struct iio_dev *indio_dev);
+>  int iio_event_getfd(struct iio_dev *indio_dev);
+>  
+> +struct iio_event_interface;
+> +bool iio_event_enabled(const struct iio_event_interface *ev_int);
+> +
+>  #endif
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> index d070062..3a9f3ea 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> @@ -107,7 +107,7 @@ irqreturn_t inv_mpu6050_irq_handler(int irq, void *p)
+>  	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+>  	s64 timestamp;
+>  
+> -	timestamp = iio_get_time_ns();
+> +	timestamp = iio_get_time_ns(indio_dev);
+>  	kfifo_in_spinlocked(&st->timestamps, &timestamp, 1,
+>  			    &st->time_stamp_lock);
+>  
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 70cb7eb..dbaf56b 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -174,6 +174,86 @@ ssize_t iio_read_const_attr(struct device *dev,
+>  }
+>  EXPORT_SYMBOL(iio_read_const_attr);
+>  
+> +static int iio_device_set_clock(struct iio_dev *indio_dev, clockid_t clock_id)
+> +{
+> +	int ret;
+> +	const struct iio_event_interface *ev_int = indio_dev->event_interface;
+> +
+> +	ret = mutex_lock_interruptible(&indio_dev->mlock);
+> +	if (ret)
+> +		return ret;
+> +	if ((ev_int && iio_event_enabled(ev_int)) ||
+> +	    iio_buffer_enabled(indio_dev)) {
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return -EBUSY;
+> +	}
+> +	indio_dev->clock_id = clock_id;
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * iio_get_time_ns() - utility function to get a time stamp for events etc
+> + * @indio_dev: device
+> + */
+> +s64 iio_get_time_ns(const struct iio_dev *indio_dev)
+> +{
+> +	struct timespec tp;
+> +
+> +	switch (iio_device_get_clock(indio_dev)) {
+> +	case CLOCK_REALTIME:
+> +		ktime_get_real_ts(&tp);
+> +		break;
+> +	case CLOCK_MONOTONIC:
+> +		ktime_get_ts(&tp);
+> +		break;
+> +	case CLOCK_MONOTONIC_RAW:
+> +		getrawmonotonic(&tp);
+> +		break;
+> +	case CLOCK_REALTIME_COARSE:
+> +		tp = current_kernel_time();
+> +		break;
+> +	case CLOCK_MONOTONIC_COARSE:
+> +		tp = get_monotonic_coarse();
+> +		break;
+> +	case CLOCK_BOOTTIME:
+> +		get_monotonic_boottime(&tp);
+> +		break;
+> +	case CLOCK_TAI:
+> +		timekeeping_clocktai(&tp);
+> +		break;
+> +	default:
+> +		BUG();
+> +	}
+> +
+> +	return timespec_to_ns(&tp);
+> +}
+> +EXPORT_SYMBOL(iio_get_time_ns);
+> +
+> +/**
+> + * iio_get_time_res() - utility function to get time stamp clock resolution in
+> + *                      nano seconds.
+> + * @indio_dev: device
+> + */
+> +unsigned int iio_get_time_res(const struct iio_dev *indio_dev)
+> +{
+> +	switch (iio_device_get_clock(indio_dev)) {
+> +	case CLOCK_REALTIME:
+> +	case CLOCK_MONOTONIC:
+> +	case CLOCK_MONOTONIC_RAW:
+> +	case CLOCK_BOOTTIME:
+> +	case CLOCK_TAI:
+> +		return hrtimer_resolution;
+> +	case CLOCK_REALTIME_COARSE:
+> +	case CLOCK_MONOTONIC_COARSE:
+> +		return LOW_RES_NSEC;
+> +	default:
+> +		BUG();
+> +	}
+> +}
+> +EXPORT_SYMBOL(iio_get_time_res);
+> +
+>  static int __init iio_init(void)
+>  {
+>  	int ret;
+> @@ -904,11 +984,91 @@ static ssize_t iio_show_dev_name(struct device *dev,
+>  
+>  static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
+>  
+> +static ssize_t iio_show_timestamp_clock(struct device *dev,
+> +					struct device_attribute *attr,
+> +					char *buf)
+> +{
+> +	const struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	const clockid_t clk = iio_device_get_clock(indio_dev);
+> +	const char *name;
+> +	ssize_t sz;
+> +
+> +	switch (clk) {
+> +	case CLOCK_REALTIME:
+> +		name = "realtime\n";
+> +		sz = sizeof("realtime\n");
+> +		break;
+> +	case CLOCK_MONOTONIC:
+> +		name = "monotonic\n";
+> +		sz = sizeof("monotonic\n");
+> +		break;
+> +	case CLOCK_MONOTONIC_RAW:
+> +		name = "monotonic_raw\n";
+> +		sz = sizeof("monotonic_raw\n");
+> +		break;
+> +	case CLOCK_REALTIME_COARSE:
+> +		name = "realtime_coarse\n";
+> +		sz = sizeof("realtime_coarse\n");
+> +		break;
+> +	case CLOCK_MONOTONIC_COARSE:
+> +		name = "monotonic_coarse\n";
+> +		sz = sizeof("monotonic_coarse\n");
+> +		break;
+> +	case CLOCK_BOOTTIME:
+> +		name = "boottime\n";
+> +		sz = sizeof("boottime\n");
+> +		break;
+> +	case CLOCK_TAI:
+> +		name = "tai\n";
+> +		sz = sizeof("tai\n");
+> +		break;
+> +	default:
+> +		BUG();
+> +	}
+> +
+> +	memcpy(buf, name, sz);
+> +	return sz;
+> +}
+> +
+> +static ssize_t iio_store_timestamp_clock(struct device *dev,
+> +					 struct device_attribute *attr,
+> +					 const char *buf, size_t len)
+> +{
+> +	clockid_t clk;
+> +	int ret;
+> +
+> +	if (sysfs_streq(buf, "realtime"))
+> +		clk = CLOCK_REALTIME;
+> +	else if (sysfs_streq(buf, "monotonic"))
+> +		clk = CLOCK_MONOTONIC;
+> +	else if (sysfs_streq(buf, "monotonic_raw"))
+> +		clk = CLOCK_MONOTONIC_RAW;
+> +	else if (sysfs_streq(buf, "realtime_coarse"))
+> +		clk = CLOCK_REALTIME_COARSE;
+> +	else if (sysfs_streq(buf, "monotonic_coarse"))
+> +		clk = CLOCK_MONOTONIC_COARSE;
+> +	else if (sysfs_streq(buf, "boottime"))
+> +		clk = CLOCK_BOOTTIME;
+> +	else if (sysfs_streq(buf, "tai"))
+> +		clk = CLOCK_TAI;
+> +	else
+> +		return -EINVAL;
+> +
+> +	ret = iio_device_set_clock(dev_to_iio_dev(dev), clk);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return len;
+> +}
+> +
+> +static DEVICE_ATTR(current_timestamp_clock, S_IRUGO | S_IWUSR,
+> +		   iio_show_timestamp_clock, iio_store_timestamp_clock);
+> +
+>  static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+>  {
+>  	int i, ret = 0, attrcount, attrn, attrcount_orig = 0;
+>  	struct iio_dev_attr *p;
+> -	struct attribute **attr;
+> +	struct attribute **attr, *clk = NULL;
+>  
+>  	/* First count elements in any existing group */
+>  	if (indio_dev->info->attrs) {
+> @@ -923,16 +1083,25 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+>  	 */
+>  	if (indio_dev->channels)
+>  		for (i = 0; i < indio_dev->num_channels; i++) {
+> -			ret = iio_device_add_channel_sysfs(indio_dev,
+> -							   &indio_dev
+> -							   ->channels[i]);
+> +			const struct iio_chan_spec *chan =
+> +				&indio_dev->channels[i];
+> +
+> +			if (chan->type == IIO_TIMESTAMP)
+> +				clk = &dev_attr_current_timestamp_clock.attr;
+> +
+> +			ret = iio_device_add_channel_sysfs(indio_dev, chan);
+>  			if (ret < 0)
+>  				goto error_clear_attrs;
+>  			attrcount += ret;
+>  		}
+>  
+> +	if (indio_dev->event_interface)
+> +		clk = &dev_attr_current_timestamp_clock.attr;
+> +
+>  	if (indio_dev->name)
+>  		attrcount++;
+> +	if (clk)
+> +		attrcount++;
+>  
+>  	indio_dev->chan_attr_group.attrs = kcalloc(attrcount + 1,
+>  						   sizeof(indio_dev->chan_attr_group.attrs[0]),
+> @@ -953,6 +1122,8 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+>  		indio_dev->chan_attr_group.attrs[attrn++] = &p->dev_attr.attr;
+>  	if (indio_dev->name)
+>  		indio_dev->chan_attr_group.attrs[attrn++] = &dev_attr_name.attr;
+> +	if (clk)
+> +		indio_dev->chan_attr_group.attrs[attrn++] = clk;
+>  
+>  	indio_dev->groups[indio_dev->groupcounter++] =
+>  		&indio_dev->chan_attr_group;
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index cae332b..0ebfc92 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -44,6 +44,11 @@ struct iio_event_interface {
+>  	struct mutex		read_lock;
+>  };
+>  
+> +bool iio_event_enabled(const struct iio_event_interface *ev_int)
+> +{
+> +	return !!test_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+> +}
+> +
+>  /**
+>   * iio_push_event() - try to add event to the list for userspace reading
+>   * @indio_dev:		IIO device structure
+> @@ -60,7 +65,7 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+>  	int copied;
+>  
+>  	/* Does anyone care? */
+> -	if (test_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+> +	if (iio_event_enabled(ev_int)) {
+>  
+>  		ev.id = ev_code;
+>  		ev.timestamp = timestamp;
+> @@ -180,8 +185,14 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+>  	if (ev_int == NULL)
+>  		return -ENODEV;
+>  
+> -	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags))
+> -		return -EBUSY;
+> +	fd = mutex_lock_interruptible(&indio_dev->mlock);
+> +	if (fd)
+> +		return fd;
+> +
+> +	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+> +		fd = -EBUSY;
+> +		goto unlock;
+> +	}
+>  
+>  	iio_device_get(indio_dev);
+>  
+> @@ -194,6 +205,8 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+>  		kfifo_reset_out(&ev_int->det_events);
+>  	}
+>  
+> +unlock:
+> +	mutex_unlock(&indio_dev->mlock);
+>  	return fd;
+>  }
+>  
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index ae2806a..cf93717 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -251,7 +251,7 @@ static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+>  irqreturn_t iio_pollfunc_store_time(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
+> -	pf->timestamp = iio_get_time_ns();
+> +	pf->timestamp = iio_get_time_ns(pf->indio_dev);
+>  	return IRQ_WAKE_THREAD;
+>  }
+>  EXPORT_SYMBOL(iio_pollfunc_store_time);
+> diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
+> index 53201d9..f0b47c5 100644
+> --- a/drivers/iio/light/acpi-als.c
+> +++ b/drivers/iio/light/acpi-als.c
+> @@ -118,7 +118,7 @@ static void acpi_als_notify(struct acpi_device *device, u32 event)
+>  	struct iio_dev *indio_dev = acpi_driver_data(device);
+>  	struct acpi_als *als = iio_priv(indio_dev);
+>  	s32 *buffer = als->evt_buffer;
+> -	s64 time_ns = iio_get_time_ns();
+> +	s64 time_ns = iio_get_time_ns(indio_dev);
+>  	s32 val;
+>  	int ret;
+>  
+> diff --git a/drivers/iio/light/adjd_s311.c b/drivers/iio/light/adjd_s311.c
+> index 09ad5f1..0113fc8 100644
+> --- a/drivers/iio/light/adjd_s311.c
+> +++ b/drivers/iio/light/adjd_s311.c
+> @@ -118,7 +118,7 @@ static irqreturn_t adjd_s311_trigger_handler(int irq, void *p)
+>  	struct iio_poll_func *pf = p;
+>  	struct iio_dev *indio_dev = pf->indio_dev;
+>  	struct adjd_s311_data *data = iio_priv(indio_dev);
+> -	s64 time_ns = iio_get_time_ns();
+> +	s64 time_ns = iio_get_time_ns(indio_dev);
+>  	int i, j = 0;
+>  
+>  	int ret = adjd_s311_req_data(indio_dev);
+> diff --git a/drivers/iio/light/apds9300.c b/drivers/iio/light/apds9300.c
+> index e1b9fa5..649b26f 100644
+> --- a/drivers/iio/light/apds9300.c
+> +++ b/drivers/iio/light/apds9300.c
+> @@ -396,7 +396,7 @@ static irqreturn_t apds9300_interrupt_handler(int irq, void *private)
+>  		       IIO_UNMOD_EVENT_CODE(IIO_INTENSITY, 0,
+>  					    IIO_EV_TYPE_THRESH,
+>  					    IIO_EV_DIR_EITHER),
+> -		       iio_get_time_ns());
+> +		       iio_get_time_ns(dev_info));
+>  
+>  	apds9300_clear_intr(data);
+>  
+> diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
+> index f6a07dc..42ef6cf 100644
+> --- a/drivers/iio/light/apds9960.c
+> +++ b/drivers/iio/light/apds9960.c
+> @@ -801,7 +801,7 @@ static irqreturn_t apds9960_interrupt_handler(int irq, void *private)
+>  			       IIO_UNMOD_EVENT_CODE(IIO_INTENSITY, 0,
+>  						    IIO_EV_TYPE_THRESH,
+>  						    IIO_EV_DIR_EITHER),
+> -			       iio_get_time_ns());
+> +			       iio_get_time_ns(indio_dev));
+>  		regmap_write(data->regmap, APDS9960_REG_CICLEAR, 1);
+>  	}
+>  
+> @@ -810,7 +810,7 @@ static irqreturn_t apds9960_interrupt_handler(int irq, void *private)
+>  			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
+>  						    IIO_EV_TYPE_THRESH,
+>  						    IIO_EV_DIR_EITHER),
+> -			       iio_get_time_ns());
+> +			       iio_get_time_ns(indio_dev));
+>  		regmap_write(data->regmap, APDS9960_REG_PICLEAR, 1);
+>  	}
+>  
+> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+> index c8d7b5e..9d66e89 100644
+> --- a/drivers/iio/light/cm36651.c
+> +++ b/drivers/iio/light/cm36651.c
+> @@ -268,7 +268,7 @@ static irqreturn_t cm36651_irq_handler(int irq, void *data)
+>  				CM36651_CMD_READ_RAW_PROXIMITY,
+>  				IIO_EV_TYPE_THRESH, ev_dir);
+>  
+> -	iio_push_event(indio_dev, ev_code, iio_get_time_ns());
+> +	iio_push_event(indio_dev, ev_code, iio_get_time_ns(indio_dev));
+>  
+>  	return IRQ_HANDLED;
+>  }
+> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+> index 6d41086..f558a2b 100644
+> --- a/drivers/iio/light/gp2ap020a00f.c
+> +++ b/drivers/iio/light/gp2ap020a00f.c
+> @@ -851,7 +851,7 @@ static irqreturn_t gp2ap020a00f_prox_sensing_handler(int irq, void *data)
+>  				    GP2AP020A00F_SCAN_MODE_PROXIMITY,
+>  				    IIO_EV_TYPE_ROC,
+>  				    IIO_EV_DIR_RISING),
+> -			       iio_get_time_ns());
+> +			       iio_get_time_ns(indio_dev));
+>  		} else {
+>  			iio_push_event(indio_dev,
+>  			       IIO_UNMOD_EVENT_CODE(
+> @@ -859,7 +859,7 @@ static irqreturn_t gp2ap020a00f_prox_sensing_handler(int irq, void *data)
+>  				    GP2AP020A00F_SCAN_MODE_PROXIMITY,
+>  				    IIO_EV_TYPE_ROC,
+>  				    IIO_EV_DIR_FALLING),
+> -			       iio_get_time_ns());
+> +			       iio_get_time_ns(indio_dev));
+>  		}
+>  	}
+>  
+> @@ -925,7 +925,7 @@ static irqreturn_t gp2ap020a00f_thresh_event_handler(int irq, void *data)
+>  					    IIO_MOD_LIGHT_CLEAR,
+>  					    IIO_EV_TYPE_THRESH,
+>  					    IIO_EV_DIR_RISING),
+> -				       iio_get_time_ns());
+> +				       iio_get_time_ns(indio_dev));
+>  		}
+>  
+>  		if (test_bit(GP2AP020A00F_FLAG_ALS_FALLING_EV, &priv->flags)) {
+> @@ -939,7 +939,7 @@ static irqreturn_t gp2ap020a00f_thresh_event_handler(int irq, void *data)
+>  					    IIO_MOD_LIGHT_CLEAR,
+>  					    IIO_EV_TYPE_THRESH,
+>  					    IIO_EV_DIR_FALLING),
+> -				       iio_get_time_ns());
+> +				       iio_get_time_ns(indio_dev));
+>  		}
+>  	}
+>  
+> diff --git a/drivers/iio/light/isl29125.c b/drivers/iio/light/isl29125.c
+> index e2945a2..67ccc5e 100644
+> --- a/drivers/iio/light/isl29125.c
+> +++ b/drivers/iio/light/isl29125.c
+> @@ -189,7 +189,7 @@ static irqreturn_t isl29125_trigger_handler(int irq, void *p)
+>  	}
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -		iio_get_time_ns());
+> +		iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+> index e56937c..f409c20 100644
+> --- a/drivers/iio/light/lm3533-als.c
+> +++ b/drivers/iio/light/lm3533-als.c
+> @@ -267,7 +267,7 @@ static irqreturn_t lm3533_als_isr(int irq, void *dev_id)
+>  					    0,
+>  					    IIO_EV_TYPE_THRESH,
+>  					    IIO_EV_DIR_EITHER),
+> -		       iio_get_time_ns());
+> +		       iio_get_time_ns(indio_dev));
+>  out:
+>  	return IRQ_HANDLED;
+>  }
+> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> index 6bf89d8..3afc53a 100644
+> --- a/drivers/iio/light/ltr501.c
+> +++ b/drivers/iio/light/ltr501.c
+> @@ -1256,7 +1256,8 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
+>  		buf[j++] = psdata & LTR501_PS_DATA_MASK;
+>  	}
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+> +	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+> +					   iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> @@ -1282,14 +1283,14 @@ static irqreturn_t ltr501_interrupt_handler(int irq, void *private)
+>  			       IIO_UNMOD_EVENT_CODE(IIO_INTENSITY, 0,
+>  						    IIO_EV_TYPE_THRESH,
+>  						    IIO_EV_DIR_EITHER),
+> -			       iio_get_time_ns());
+> +			       iio_get_time_ns(indio_dev));
+>  
+>  	if (status & LTR501_STATUS_PS_INTR)
+>  		iio_push_event(indio_dev,
+>  			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
+>  						    IIO_EV_TYPE_THRESH,
+>  						    IIO_EV_DIR_EITHER),
+> -			       iio_get_time_ns());
+> +			       iio_get_time_ns(indio_dev));
+>  
+>  	return IRQ_HANDLED;
+>  }
+> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+> index b776c8e..78c9b3a 100644
+> --- a/drivers/iio/light/opt3001.c
+> +++ b/drivers/iio/light/opt3001.c
+> @@ -713,13 +713,13 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+>  					IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
+>  							IIO_EV_TYPE_THRESH,
+>  							IIO_EV_DIR_RISING),
+> -					iio_get_time_ns());
+> +					iio_get_time_ns(iio));
+>  		if (ret & OPT3001_CONFIGURATION_FL)
+>  			iio_push_event(iio,
+>  					IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
+>  							IIO_EV_TYPE_THRESH,
+>  							IIO_EV_DIR_FALLING),
+> -					iio_get_time_ns());
+> +					iio_get_time_ns(iio));
+>  	} else if (ret & OPT3001_CONFIGURATION_CRF) {
+>  		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
+>  		if (ret < 0) {
+> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+> index 42d334b..b48641d 100644
+> --- a/drivers/iio/light/stk3310.c
+> +++ b/drivers/iio/light/stk3310.c
+> @@ -529,7 +529,7 @@ static irqreturn_t stk3310_irq_handler(int irq, void *private)
+>  	struct iio_dev *indio_dev = private;
+>  	struct stk3310_data *data = iio_priv(indio_dev);
+>  
+> -	data->timestamp = iio_get_time_ns();
+> +	data->timestamp = iio_get_time_ns(indio_dev);
+>  
+>  	return IRQ_WAKE_THREAD;
+>  }
+> diff --git a/drivers/iio/light/tcs3414.c b/drivers/iio/light/tcs3414.c
+> index f90f8c5..936e764 100644
+> --- a/drivers/iio/light/tcs3414.c
+> +++ b/drivers/iio/light/tcs3414.c
+> @@ -217,7 +217,7 @@ static irqreturn_t tcs3414_trigger_handler(int irq, void *p)
+>  	}
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -		iio_get_time_ns());
+> +		iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
+> index 1b530bf..95519a3 100644
+> --- a/drivers/iio/light/tcs3472.c
+> +++ b/drivers/iio/light/tcs3472.c
+> @@ -204,7 +204,7 @@ static irqreturn_t tcs3472_trigger_handler(int irq, void *p)
+>  	}
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -		iio_get_time_ns());
+> +		iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
+> index 12731d6..27dbfdd 100644
+> --- a/drivers/iio/light/tsl2563.c
+> +++ b/drivers/iio/light/tsl2563.c
+> @@ -630,7 +630,7 @@ static irqreturn_t tsl2563_event_handler(int irq, void *private)
+>  					    0,
+>  					    IIO_EV_TYPE_THRESH,
+>  					    IIO_EV_DIR_EITHER),
+> -		       iio_get_time_ns());
+> +		       iio_get_time_ns(dev_info));
+>  
+>  	/* clear the interrupt and push the event */
+>  	i2c_smbus_write_byte(chip->client, TSL2563_CMD | TSL2563_CLEARINT);
+> diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
+> index 45bc2f7..20c40f7 100644
+> --- a/drivers/iio/light/us5182d.c
+> +++ b/drivers/iio/light/us5182d.c
+> @@ -833,7 +833,7 @@ static irqreturn_t us5182d_irq_thread_handler(int irq, void *private)
+>  	dir = ret & US5182D_CFG0_PROX ? IIO_EV_DIR_RISING : IIO_EV_DIR_FALLING;
+>  	ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 1, IIO_EV_TYPE_THRESH, dir);
+>  
+> -	iio_push_event(indio_dev, ev, iio_get_time_ns());
+> +	iio_push_event(indio_dev, ev, iio_get_time_ns(indio_dev));
+>  
+>  	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0,
+>  					ret & ~US5182D_CFG0_PX_IRQ);
+> diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
+> index 77882b4..ba3e2a3 100644
+> --- a/drivers/iio/magnetometer/hmc5843_core.c
+> +++ b/drivers/iio/magnetometer/hmc5843_core.c
+> @@ -451,7 +451,7 @@ static irqreturn_t hmc5843_trigger_handler(int irq, void *p)
+>  		goto done;
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -					   iio_get_time_ns());
+> +					   iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+> index 261d517..f2be4a0 100644
+> --- a/drivers/iio/magnetometer/mag3110.c
+> +++ b/drivers/iio/magnetometer/mag3110.c
+> @@ -261,7 +261,7 @@ static irqreturn_t mag3110_trigger_handler(int irq, void *p)
+>  	}
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+> -		iio_get_time_ns());
+> +		iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/pressure/mpl3115.c b/drivers/iio/pressure/mpl3115.c
+> index 01b2e0b..6392d7b 100644
+> --- a/drivers/iio/pressure/mpl3115.c
+> +++ b/drivers/iio/pressure/mpl3115.c
+> @@ -171,7 +171,7 @@ static irqreturn_t mpl3115_trigger_handler(int irq, void *p)
+>  	mutex_unlock(&data->lock);
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+> -		iio_get_time_ns());
+> +		iio_get_time_ns(indio_dev));
+>  
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+> index 37dbc04..8bc178b 100644
+> --- a/drivers/iio/pressure/ms5611_core.c
+> +++ b/drivers/iio/pressure/ms5611_core.c
+> @@ -224,7 +224,8 @@ static irqreturn_t ms5611_trigger_handler(int irq, void *p)
+>  	if (ret < 0)
+>  		goto err;
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+> +	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+> +					   iio_get_time_ns(indio_dev));
+>  
+>  err:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> index 4f502386..b216220 100644
+> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> @@ -244,7 +244,7 @@ static irqreturn_t lidar_trigger_handler(int irq, void *private)
+>  	ret = lidar_get_measurement(data, data->buffer);
+>  	if (!ret) {
+>  		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -						   iio_get_time_ns());
+> +						   iio_get_time_ns(indio_dev));
+>  	} else if (ret != -EINVAL) {
+>  		dev_err(&data->client->dev, "cannot read LIDAR measurement");
+>  	}
+> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+> index 66cd09a..1d74b3a 100644
+> --- a/drivers/iio/proximity/sx9500.c
+> +++ b/drivers/iio/proximity/sx9500.c
+> @@ -492,7 +492,7 @@ static void sx9500_push_events(struct iio_dev *indio_dev)
+>  		dir = new_prox ? IIO_EV_DIR_FALLING : IIO_EV_DIR_RISING;
+>  		ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, chan,
+>  					  IIO_EV_TYPE_THRESH, dir);
+> -		iio_push_event(indio_dev, ev, iio_get_time_ns());
+> +		iio_push_event(indio_dev, ev, iio_get_time_ns(indio_dev));
+>  		data->prox_stat[chan] = new_prox;
+>  	}
+>  }
+> @@ -669,7 +669,7 @@ static irqreturn_t sx9500_trigger_handler(int irq, void *private)
+>  	}
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -					   iio_get_time_ns());
+> +					   iio_get_time_ns(indio_dev));
+>  
+>  out:
+>  	mutex_unlock(&data->mutex);
+> diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+> index 7a6fed3..5c3410a 100644
+> --- a/drivers/staging/iio/accel/lis3l02dq_core.c
+> +++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+> @@ -451,7 +451,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+>  	struct iio_dev *indio_dev = private;
+>  	u8 t;
+>  
+> -	s64 timestamp = iio_get_time_ns();
+> +	s64 timestamp = iio_get_time_ns(indio_dev);
+>  
+>  	lis3l02dq_spi_read_reg_8(indio_dev,
+>  				 LIS3L02DQ_REG_WAKE_UP_SRC_ADDR,
+> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+> index a8f533a..cff7e4a 100644
+> --- a/drivers/staging/iio/accel/sca3000_core.c
+> +++ b/drivers/staging/iio/accel/sca3000_core.c
+> @@ -774,7 +774,7 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
+>  	struct iio_dev *indio_dev = private;
+>  	struct sca3000_state *st = iio_priv(indio_dev);
+>  	int ret, val;
+> -	s64 last_timestamp = iio_get_time_ns();
+> +	s64 last_timestamp = iio_get_time_ns(indio_dev);
+>  
+>  	/*
+>  	 * Could lead if badly timed to an extra read of status reg,
+> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+> index 62e5eca..69fa4eb 100644
+> --- a/drivers/staging/iio/adc/ad7280a.c
+> +++ b/drivers/staging/iio/adc/ad7280a.c
+> @@ -705,7 +705,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+>  							IIO_EV_DIR_RISING,
+>  							IIO_EV_TYPE_THRESH,
+>  							0, 0, 0),
+> -					       iio_get_time_ns());
+> +					       iio_get_time_ns(indio_dev));
+>  			else if (((channels[i] >> 11) & 0xFFF) <=
+>  				st->cell_threshlow)
+>  				iio_push_event(indio_dev,
+> @@ -715,7 +715,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+>  							IIO_EV_DIR_FALLING,
+>  							IIO_EV_TYPE_THRESH,
+>  							0, 0, 0),
+> -					       iio_get_time_ns());
+> +					       iio_get_time_ns(indio_dev));
+>  		} else {
+>  			if (((channels[i] >> 11) & 0xFFF) >= st->aux_threshhigh)
+>  				iio_push_event(indio_dev,
+> @@ -724,7 +724,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+>  							0,
+>  							IIO_EV_TYPE_THRESH,
+>  							IIO_EV_DIR_RISING),
+> -					       iio_get_time_ns());
+> +					       iio_get_time_ns(indio_dev));
+>  			else if (((channels[i] >> 11) & 0xFFF) <=
+>  				st->aux_threshlow)
+>  				iio_push_event(indio_dev,
+> @@ -733,7 +733,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+>  							0,
+>  							IIO_EV_TYPE_THRESH,
+>  							IIO_EV_DIR_FALLING),
+> -					       iio_get_time_ns());
+> +					       iio_get_time_ns(indio_dev));
+>  		}
+>  	}
+>  
+> diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+> index a6f8eb1..0572df9 100644
+> --- a/drivers/staging/iio/adc/ad7606_ring.c
+> +++ b/drivers/staging/iio/adc/ad7606_ring.c
+> @@ -77,7 +77,8 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+>  			goto done;
+>  	}
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+> +	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+> +					   iio_get_time_ns(indio_dev));
+>  done:
+>  	gpio_set_value(st->pdata->gpio_convst, 0);
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> index ac3735c..5e8115b 100644
+> --- a/drivers/staging/iio/adc/ad7816.c
+> +++ b/drivers/staging/iio/adc/ad7816.c
+> @@ -253,7 +253,8 @@ static const struct attribute_group ad7816_attribute_group = {
+>  
+>  static irqreturn_t ad7816_event_handler(int irq, void *private)
+>  {
+> -	iio_push_event(private, IIO_EVENT_CODE_AD7816_OTI, iio_get_time_ns());
+> +	iio_push_event(private, IIO_EVENT_CODE_AD7816_OTI,
+> +		       iio_get_time_ns((struct iio_dev *)private));
+>  	return IRQ_HANDLED;
+>  }
+>  
+> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> index 3adc451..f4ea954 100644
+> --- a/drivers/staging/iio/addac/adt7316.c
+> +++ b/drivers/staging/iio/addac/adt7316.c
+> @@ -1755,7 +1755,7 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+>  		if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
+>  			stat1 &= 0x1F;
+>  
+> -		time = iio_get_time_ns();
+> +		time = iio_get_time_ns(indio_dev);
+>  		if (stat1 & BIT(0))
+>  			iio_push_event(indio_dev,
+>  				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+> @@ -1807,7 +1807,7 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+>  							    0,
+>  							    IIO_EV_TYPE_THRESH,
+>  							    IIO_EV_DIR_RISING),
+> -				       iio_get_time_ns());
+> +				       iio_get_time_ns(indio_dev));
+>  	}
+>  
+>  	return IRQ_HANDLED;
+> diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
+> index f6b9a10..5578a07 100644
+> --- a/drivers/staging/iio/cdc/ad7150.c
+> +++ b/drivers/staging/iio/cdc/ad7150.c
+> @@ -493,7 +493,7 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+>  	struct iio_dev *indio_dev = private;
+>  	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+>  	u8 int_status;
+> -	s64 timestamp = iio_get_time_ns();
+> +	s64 timestamp = iio_get_time_ns(indio_dev);
+>  	int ret;
+>  
+>  	ret = i2c_smbus_read_byte_data(chip->client, AD7150_STATUS);
+> diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+> index 2a62718..d35b503 100644
+> --- a/drivers/staging/iio/light/tsl2x7x_core.c
+> +++ b/drivers/staging/iio/light/tsl2x7x_core.c
+> @@ -1524,7 +1524,7 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
+>  {
+>  	struct iio_dev *indio_dev = private;
+>  	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+> -	s64 timestamp = iio_get_time_ns();
+> +	s64 timestamp = iio_get_time_ns(indio_dev);
+>  	int ret;
+>  	u8 value;
+>  
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index b2b1677..8b1db3a 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -281,13 +281,8 @@ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
+>  		},							\
+>  }
+>  
+> -/**
+> - * iio_get_time_ns() - utility function to get a time stamp for events etc
+> - **/
+> -static inline s64 iio_get_time_ns(void)
+> -{
+> -	return ktime_get_real_ns();
+> -}
+> +s64 iio_get_time_ns(const struct iio_dev *indio_dev);
+> +unsigned int iio_get_time_res(const struct iio_dev *indio_dev);
+>  
+>  /* Device operating modes */
+>  #define INDIO_DIRECT_MODE		0x01
+> @@ -466,6 +461,7 @@ struct iio_buffer_setup_ops {
+>   * @chan_attr_group:	[INTERN] group for all attrs in base directory
+>   * @name:		[DRIVER] name of the device.
+>   * @info:		[DRIVER] callbacks and constant info from driver
+> + * @clock_id:		[INTERN] timestamping clock posix identifier
+>   * @info_exist_lock:	[INTERN] lock to prevent use during removal
+>   * @setup_ops:		[DRIVER] callbacks to call before and after buffer
+>   *			enable/disable
+> @@ -506,6 +502,7 @@ struct iio_dev {
+>  	struct attribute_group		chan_attr_group;
+>  	const char			*name;
+>  	const struct iio_info		*info;
+> +	clockid_t			clock_id;
+>  	struct mutex			info_exist_lock;
+>  	const struct iio_buffer_setup_ops	*setup_ops;
+>  	struct cdev			chrdev;
+> @@ -532,7 +529,7 @@ extern struct bus_type iio_bus_type;
+>  
+>  /**
+>   * iio_device_put() - reference counted deallocation of struct device
+> - * @indio_dev: 		IIO device structure containing the device
+> + * @indio_dev: IIO device structure containing the device
+>   **/
+>  static inline void iio_device_put(struct iio_dev *indio_dev)
+>  {
+> @@ -541,6 +538,15 @@ static inline void iio_device_put(struct iio_dev *indio_dev)
+>  }
+>  
+>  /**
+> + * iio_device_get_clock() - Retrieve current timestamping clock for the device
+> + * @indio_dev: IIO device structure containing the device
+> + */
+> +static inline clockid_t iio_device_get_clock(const struct iio_dev *indio_dev)
+> +{
+> +	return indio_dev->clock_id;
+> +}
+> +
+> +/**
+>   * dev_to_iio_dev() - Get IIO device struct from a device struct
+>   * @dev: 		The device embedded in the IIO device
+>   *
+> -- 
+> 2.1.4
+> 
