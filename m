@@ -1,155 +1,46 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <56D1E1CB.6070704@kernel.org>
-References: <1456407412-16218-1-git-send-email-michael.hennerich@analog.com>
-	<56D1E1CB.6070704@kernel.org>
-Date: Fri, 11 Mar 2016 23:28:32 +0700
-Message-ID: <CACRpkdap_8YGCAvNeK7_0H2MDDnwQ9QDJH4O2SzEkDmczPGtLg@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Michael Hennerich <michael.hennerich@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>, Paul Cercueil <paul.cercueil@analog.com>,
-	Rob Herring <robh+dt@kernel.org>, =?UTF-8?Q?Pawe=C5=82_Moll?= <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Alexandre Courbot <gnurou@gmail.com>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f44.google.com ([74.125.82.44]:34844 "EHLO
+	mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932214AbcCKOwe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2016 09:52:34 -0500
+Received: by mail-wm0-f44.google.com with SMTP id l68so22070851wml.0
+        for <linux-iio@vger.kernel.org>; Fri, 11 Mar 2016 06:52:33 -0800 (PST)
+From: Marc Titinger <mtitinger@baylibre.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: afd@ti.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH-vs-togreg 2/2] iio: ina2xx-adc: fix scale for VShunt
+Date: Fri, 11 Mar 2016 15:52:30 +0100
+Message-Id: <1457707950-17593-2-git-send-email-marc.titinger@baylibre.com>
+In-Reply-To: <1457707950-17593-1-git-send-email-marc.titinger@baylibre.com>
+References: <1457707950-17593-1-git-send-email-marc.titinger@baylibre.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Feb 28, 2016 at 12:50 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+The scale would result in uV instead of expected mV.
+Mostly cosmetic, since the value of 'Power' was computed OK.
 
->> +Analog Devices AD5592R/AD5593R DAC/ADC device driver
->> +
->> +Required properties for the AD5592R:
->> +     - compatible: Must be "adi,ad5592r"
->> +     - reg: SPI chip select number for the device
->> +     - spi-max-frequency: Max SPI frequency to use (< 30000000)
->> +     - spi-cpol: The AD5592R requires inverse clock polarity (CPOL) mode
+Signed-off-by: Marc Titinger <marc.titinger@baylibre.com>
+---
+ drivers/iio/adc/ina2xx-adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-If this should be a gpiochip, this shall also be reflected in the
-device tree bindings and the example in the bindings by
-stating gpio-controller; and #gpio-cells, referring to
-the binding in gpio/gpio.txt so consumers can pick a GPIO
-from this device.
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index e5ac120..6ada336 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -185,9 +185,9 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->address) {
+ 		case INA2XX_SHUNT_VOLTAGE:
+-			/* processed (mV) = raw*1000/shunt_div */
++			/* processed (mV) = raw/shunt_div */
+ 			*val2 = chip->config->shunt_div;
+-			*val = 1000;
++			*val = 1;
+ 			return IIO_VAL_FRACTIONAL;
+ 
+ 		case INA2XX_BUS_VOLTAGE:
+-- 
+2.5.0
 
-I haven't seen the original patch, please mail the next version
-to me so I can take a look.
-
->> +config AD5592R_BASE
->> +     tristate
->> +
->> +config AD5592R
->> +     tristate "Analog Devices AD5592R ADC/DAC driver"
->> +     depends on SPI_MASTER
->> +     depends on OF
->> +     select AD5592R_BASE
->> +     help
->> +       Say yes here to build support for Analog Devices AD5592R
->> +       Digital to Analog / Analog to Digital Converter.
->> +
->> +       To compile this driver as a module, choose M here: the
->> +       module will be called ad5592r.
->> +
->> +config AD5593R
->> +     tristate "Analog Devices AD5593R ADC/DAC driver"
->> +     depends on I2C
->> +     depends on OF
->> +     select AD5592R_BASE
->> +     help
->> +       Say yes here to build support for Analog Devices AD5593R
->> +       Digital to Analog / Analog to Digital Converter.
->> +
->> +       To compile this driver as a module, choose M here: the
->> +       module will be called ad5593r.
->> +
-
-I guess something here should select GPIOLIB
-and depend of OF_GPIO
-
->> +#ifdef CONFIG_GPIOLIB
-
-Naaaaah really? Just select GPIOLIB and get rid of ifdeffery.
-It's cool to have gpios available.
-
->> +static int ad5592r_gpio_request(struct gpio_chip *chip, unsigned offset)
->> +{
->> +     struct ad5592r_state *st = gpiochip_get_data(chip);
->> +
->> +     if (!(st->gpio_map & BIT(offset))) {
->> +             dev_err(st->dev, "GPIO %d is reserved by alternate function\n",
->> +                     offset);
-
-This gpio_map looks a bit like pin control.
-
-It might be overkill to use all of the pinctrl subsystem,
-we have circumvented it in other places.
-
->> +             return -ENODEV;
->> +     }
->> +
->> +     if (offset >= chip->ngpio)
->> +             return -EINVAL;
-
-gpiolib already guards against this I think.
-
->> +static int ad5592r_gpio_init(struct ad5592r_state *st)
->> +{
->> +     st->gpiochip.label = dev_name(st->dev);
->> +     st->gpiochip.base = -1;
->> +     st->gpiochip.ngpio = 8;
->> +     st->gpiochip.parent = st->dev;
->> +     st->gpiochip.can_sleep = true;
->> +     st->gpiochip.direction_input = ad5592r_gpio_direction_input;
->> +     st->gpiochip.direction_output = ad5592r_gpio_direction_output;
->> +     st->gpiochip.get = ad5592r_gpio_get;
->> +     st->gpiochip.set = ad5592r_gpio_set;
->> +     st->gpiochip.request = ad5592r_gpio_request;
->> +     st->gpiochip.owner = THIS_MODULE;
->> +
->> +     mutex_init(&st->gpio_lock);
->> +
->> +     return gpiochip_add_data(&st->gpiochip, st);
-
-The gpiolib should be fine with the of_node from the parent so
-looks fine.
-
->> +             mutex_lock(&iio_dev->mlock);
->> +             st->ops->reg_write(st, AD5592R_REG_RESET, 0xdac);
->> +             mutex_unlock(&iio_dev->mlock);
-
-What's that? (0xdac)? Clever magic?
-
->> +             case CH_MODE_DAC_AND_ADC:
->> +                     dac |= BIT(i);
->> +                     adc |= BIT(i);
->> +                     break;
->> +
->> +             case CH_MODE_UNUSED_PULL_DOWN:
->> +                     pulldown |= BIT(i);
->> +                     break;
->> +
->> +             case CH_MODE_UNUSED_OUT_TRISTATE:
->> +                     tristate |= BIT(i);
->> +                     break;
->> +
->> +             case CH_MODE_UNUSED_OUT_LOW:
->> +                     st->gpio_out |= BIT(i);
->> +                     break;
->> +
->> +             case CH_MODE_UNUSED_OUT_HIGH:
->> +                     st->gpio_out |= BIT(i);
->> +                     st->gpio_val |= BIT(i);
->> +                     break;
->> +
->> +             case CH_MODE_GPIO_OPEN_DRAIN:
->> +                     open_drain |= BIT(i);
-
-Deja-vu with include/linux/pinctrl/pinconf-generic.h
-
-We call tristate "bias high impedance".
-
-Yours,
-Linus Walleij
