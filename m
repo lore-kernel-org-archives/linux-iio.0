@@ -1,100 +1,170 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:30868 "EHLO mail.aswsp.com"
+Received: from mail02.prevas.se ([62.95.78.10]:31910 "EHLO mail02.prevas.se"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754760AbcCNKs0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 14 Mar 2016 06:48:26 -0400
-Message-ID: <56E69726.8050904@parrot.com>
-Date: Mon, 14 Mar 2016 11:49:10 +0100
-From: Gregor Boirie <gregor.boirie@parrot.com>
-MIME-Version: 1.0
+	id S1752754AbcCKOMv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 11 Mar 2016 09:12:51 -0500
+From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
 To: <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v6 1/1] iio:pressure:ms5611: fix crash when probing regulator
-References: <cover.1457522751.git.gregor.boirie@parrot.com> <7767ba4decd3938eb1b37990f707b016228e0ef5.1457522751.git.gregor.boirie@parrot.com> <56E3F7C0.3080408@kernel.org>
-In-Reply-To: <56E3F7C0.3080408@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+CC: Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
+	<devicetree@vger.kernel.org>
+Subject: [PATCH v5 2/2] iio: ad5755: Add DT binding documentation
+Date: Fri, 11 Mar 2016 15:12:41 +0100
+Message-ID: <1457705561-12253-2-git-send-email-sean.nyekjaer@prevas.dk>
+In-Reply-To: <1457705561-12253-1-git-send-email-sean.nyekjaer@prevas.dk>
+References: <1457705561-12253-1-git-send-email-sean.nyekjaer@prevas.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+---
+Changes since v4:
+- Appended -hz to dc-dc-freq
+- Added adi,dc-dc-max-microvolt
+- Added reg property
 
-On 03/12/2016 12:04 PM, Jonathan Cameron wrote:
-> On 09/03/16 11:34, Gregor Boirie wrote:
->> When not compiled-in, regulator layer will return a NULL pointer when
->> trying to get a reference to any regulator using devm_regulator_get().  As
->> IS_ERR() does not consider this an error, the ms5611 probing operation will
->> try to enable a NULL regulator, which will invariably cause a kernel
->> crash.
->> This patch fixes this situation by using devm_regulator_get_optional()
->> instead of devm_regulator_get().
->>
->> Fixes: 3145229f9191 ("iio:pressure:ms5611: power regulator support")
->> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-> I've been thinking a bit more about these cases and think we are missusing
-> the optional regulators.  If regulator support is present and a non optional
-> register is requested then it will feed a dummy regulator back.
-> The intent of this is to handle the case where an non optional regulator is
-> needed, but not specified (typically because it is always on).
-My intent was:
-* if regulator support not built-in, keep going ;
-* else :
-   * if regulator not declared (platform or device tree), keep going ;
-   * else :
-     * if regulator not properly declared, error ;
-     * else enable it, then go one initializing.
+Changes since v3:
+- replaced '_' with '-'
+- Now used actual values instead of register values.
 
-So, I suppose dummy regulators should be allowed to support all
-possible cases (use devm_regulator_get()).
-Have I missed something ?
-> So the question is how should we handle the regulators not built in case.
-> If you do call devm_regulator_get you'll get a null pointer.
-> Without regulators built in regulator_enable will be fine (returns 0)
-> as does regulator disable.
->
-> So I'm unclear on where the crash is coming from.
-Probably from the fact that I use an up to date IIO subsystem ported onto
-an old kernel (3.10.x), which rather complicates testing with regard to
-other subsystem dependencies.
+Changes since v2:
+ - Removed defines, alot easier to read
 
-> Also interesting is this driver enables the regulator but never disables
-> it (which it should).
-Right. I thought regulator_put() implicitly disabled the regulator, which
-is wrong...
->     I was clearly half asleep when reviewing this.
-> Sorry!
-Well, I wasn't that awake either. Sorry for the noise.
-Grégor.
->
-> Jonathan
->
->
->> ---
->>   drivers/iio/pressure/ms5611_core.c | 8 ++++++--
->>   1 file changed, 6 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
->> index 37dbc04..a2a871b 100644
->> --- a/drivers/iio/pressure/ms5611_core.c
->> +++ b/drivers/iio/pressure/ms5611_core.c
->> @@ -387,8 +387,8 @@ static const struct iio_info ms5611_info = {
->>   static int ms5611_init(struct iio_dev *indio_dev)
->>   {
->>   	int ret;
->> -	struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
->> -	                                           "vdd");
->> +	struct regulator *vdd =
->> +		devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
->>
->>   	/* Enable attached regulator if any. */
->>   	if (!IS_ERR(vdd)) {
->> @@ -398,6 +398,10 @@ static int ms5611_init(struct iio_dev *indio_dev)
->>   			        "failed to enable Vdd supply: %d\n", ret);
->>   			return ret;
->>   		}
->> +	} else {
->> +		ret = PTR_ERR(vdd);
->> +		if (ret != -ENODEV)
->> +			return ret;
->>   	}
->>
->>   	ret = ms5611_reset(indio_dev);
->>
+ .../devicetree/bindings/iio/dac/ad5755.txt         | 124 +++++++++++++++++++++
+ 1 file changed, 124 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5755.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/dac/ad5755.txt b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+new file mode 100644
+index 0000000..f0bbd7e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
+@@ -0,0 +1,124 @@
++* Analog Device AD5755 IIO Multi-Channel DAC Linux Driver
++
++Required properties:
++ - compatible: Has to contain one of the following:
++	adi,ad5755
++	adi,ad5755-1
++	adi,ad5757
++	adi,ad5735
++	adi,ad5737
++
++ - reg: spi chip select number for the device
++ - spi-cpha or spi-cpol: is the only modes that is supported
++
++Recommended properties:
++ - spi-max-frequency: Definition as per
++		Documentation/devicetree/bindings/spi/spi-bus.txt
++
++Optional properties:
++See include/dt-bindings/iio/ad5755.h
++ - adi,ext-dc-dc-compenstation-resistor: boolean set if the hardware have an
++					 external resistor and thereby bypasses
++					 the internal compensation resistor.
++ - adi,dc-dc-phase:
++	Valid values for DC DC Phase control is:
++	0: All dc-to-dc converters clock on the same edge.
++	1: Channel A and Channel B clock on the same edge,
++	   Channel C and Channel D clock on opposite edges.
++	2: Channel A and Channel C clock on the same edge,
++	   Channel B and Channel D clock on opposite edges.
++	3: Channel A, Channel B, Channel C, and Channel D
++	   clock 90 degrees out of phase from each other.
++ - adi,dc-dc-freq-hz:
++	Valid values for DC DC frequency is [Hz]:
++	250000
++	410000
++	650000
++ - adi,dc-dc-max-microvolt:
++	Valid values for the maximum allowed Vboost voltage supplied by
++	the dc-to-dc converter is:
++	23000000
++	24500000
++	27000000
++	29500000
++
++Optional for every channel:
++ - adi,mode:
++	Valid values for DAC modes is:
++	0: 0 V to 5 V voltage range.
++	1: 0 V to 10 V voltage range.
++	2: Plus minus 5 V voltage range.
++	3: Plus minus 10 V voltage range.
++	4: 4 mA to 20 mA current range.
++	5: 0 mA to 20 mA current range.
++	6: 0 mA to 24 mA current range.
++ - adi,ext-current-sense-resistor: boolean set if the hardware a external
++				   current sense resistor.
++ - adi,enable-voltage-overrange: boolean enable voltage overrange
++ - adi,slew: Array of slewrate settings should contain 3 fields:
++	1: Should be either 0 or 1 in order to enable or disable slewrate.
++	2: Slew rate settings:
++		Valid values for the slew rate update frequency:
++		64000
++		32000
++		16000
++		8000
++		4000
++		2000
++		1000
++		500
++		250
++		125
++		64
++		32
++		16
++		8
++		4
++		0
++	3: Slew step size:
++		Valid values for the step size LSBs:
++		1
++		2
++		4
++		16
++		32
++		64
++		128
++		256
++
++Example:
++dac@0 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	compatible = "adi,ad5755";
++	reg = <0>;
++	spi-max-frequency = <1000000>;
++	spi-cpha;
++	adi,dc-dc-phase = <0>;
++	adi,dc-dc-freq-hz = <410000>;
++	adi,dc-dc-max-microvolt = <23000000>;
++	channel@0 {
++		reg = <0>;
++		adi,mode = <4>;
++		adi,ext-current-sense-resistor;
++		adi,slew = <0 64000 1>;
++	};
++	channel@1 {
++		reg = <1>;
++		adi,mode = <4>;
++		adi,ext-current-sense-resistor;
++		adi,slew = <0 64000 1>;
++	};
++	channel@2 {
++		reg = <2>;
++		adi,mode = <4>;
++		adi,ext-current-sense-resistor;
++		adi,slew = <0 64000 1>;
++	};
++	channel@3 {
++		reg = <3>;
++		adi,mode = <4>;
++		adi,ext-current-sense-resistor;
++		adi,slew = <0 64000 1>;
++	};
++};
+-- 
+2.7.2
 
