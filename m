@@ -1,62 +1,66 @@
-Return-Path: <gregor.boirie@parrot.com>
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>, Daniel Baluta
-	<daniel.baluta@intel.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Mark Brown <broonie@kernel.org>, "Andrew F. Davis" <afd@ti.com>, Rob Herring
-	<robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
-	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
- Gala <galak@codeaurora.org>, Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v6 1/1] iio:pressure:ms5611: fix crash when probing regulator
-Date: Wed, 9 Mar 2016 12:34:07 +0100
-Message-ID: <7767ba4decd3938eb1b37990f707b016228e0ef5.1457522751.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1457522751.git.gregor.boirie@parrot.com>
-References: <cover.1457522751.git.gregor.boirie@parrot.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f53.google.com ([74.125.82.53]:33299 "EHLO
+	mail-wm0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932286AbcCKP0z (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2016 10:26:55 -0500
+Received: by mail-wm0-f53.google.com with SMTP id l68so22584935wml.0
+        for <linux-iio@vger.kernel.org>; Fri, 11 Mar 2016 07:26:54 -0800 (PST)
+Subject: Re: [PATCH-vs-togreg 1/2] iio: ina2xx-adc: update the CALIB. register
+ when RShunt changes
+To: "Andrew F. Davis" <afd@ti.com>, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net
+References: <1457707950-17593-1-git-send-email-marc.titinger@baylibre.com>
+ <56E2DE7E.5090905@ti.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Marc Titinger <mtitinger@baylibre.com>
+Message-ID: <56E2E3BC.6090405@baylibre.com>
+Date: Fri, 11 Mar 2016 16:26:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <56E2DE7E.5090905@ti.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-When not compiled-in, regulator layer will return a NULL pointer when
-trying to get a reference to any regulator using devm_regulator_get().  As
-IS_ERR() does not consider this an error, the ms5611 probing operation will
-try to enable a NULL regulator, which will invariably cause a kernel
-crash.
-This patch fixes this situation by using devm_regulator_get_optional()
-instead of devm_regulator_get().
 
-Fixes: 3145229f9191 ("iio:pressure:ms5611: power regulator support")
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- drivers/iio/pressure/ms5611_core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-index 37dbc04..a2a871b 100644
---- a/drivers/iio/pressure/ms5611_core.c
-+++ b/drivers/iio/pressure/ms5611_core.c
-@@ -387,8 +387,8 @@ static const struct iio_info ms5611_info = {
- static int ms5611_init(struct iio_dev *indio_dev)
- {
- 	int ret;
--	struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
--	                                           "vdd");
-+	struct regulator *vdd =
-+		devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
- 
- 	/* Enable attached regulator if any. */
- 	if (!IS_ERR(vdd)) {
-@@ -398,6 +398,10 @@ static int ms5611_init(struct iio_dev *indio_dev)
- 			        "failed to enable Vdd supply: %d\n", ret);
- 			return ret;
- 		}
-+	} else {
-+		ret = PTR_ERR(vdd);
-+		if (ret != -ENODEV)
-+			return ret;
- 	}
- 
- 	ret = ms5611_reset(indio_dev);
--- 
-2.1.4
+On 11/03/2016 16:04, Andrew F. Davis wrote:
+...
+
+>>
+>> @@ -599,6 +621,8 @@ static const struct iio_info ina2xx_info = {
+>>   	.debugfs_reg_access = ina2xx_debug_reg,
+>>   };
+>>
+>> +
+>> +
+>
+> ?
+>
+
+Ok, will fix in v2, thanks !
+
+M.
+
+>>   /* Initialize the configuration and calibration registers. */
+>>   static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
+>>   {
+>> @@ -609,17 +633,7 @@ static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
+>>   	if (ret)
+>>   		return ret;
+>>
+>> -	/*
+>> -	 * Set current LSB to 1mA, shunt is in uOhms
+>> -	 * (equation 13 in datasheet). We hardcode a Current_LSB
+>> -	 * of 1.0 x10-6. The only remaining parameter is RShunt.
+>> -	 * There is no need to expose the CALIBRATION register
+>> -	 * to the user for now.
+>> -	 */
+>> -	regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
+>> -				   chip->shunt_resistor);
+>> -
+>> -	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
+>> +	return ina2xx_set_calibration(chip);
+>>   }
+>>
+>>   static int ina2xx_probe(struct i2c_client *client,
+>>
