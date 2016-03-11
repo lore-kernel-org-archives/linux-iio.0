@@ -1,103 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:33808 "EHLO
-	mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752136AbcCITat (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2016 14:30:49 -0500
-From: Alison Schofield <amsfield22@gmail.com>
-To: outreachy-kernel@googlegroups.com
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Michael.Hennerich@analog.com,
-	gregkh@linuxfoundation.org, devel@driverdev.osuosl.org
-Subject: [RFC PATCH v2 2/2] staging: iio: ad7192: use iio_device_{claim|release}_direct_mode()
-Date: Wed,  9 Mar 2016 11:30:43 -0800
-Message-Id: <dd3f346d97cfb11f4d18e44eb67309c889639ba7.1457549841.git.amsfield22@gmail.com>
-In-Reply-To: <cover.1457549841.git.amsfield22@gmail.com>
-References: <cover.1457549841.git.amsfield22@gmail.com>
+Received: from mail-ob0-f182.google.com ([209.85.214.182]:36645 "EHLO
+	mail-ob0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932673AbcCKQhy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2016 11:37:54 -0500
+Received: by mail-ob0-f182.google.com with SMTP id m7so118208030obh.3
+        for <linux-iio@vger.kernel.org>; Fri, 11 Mar 2016 08:37:54 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <56DD7548.8050306@analog.com>
+References: <1457009883-4017-1-git-send-email-michael.hennerich@analog.com>
+	<56DAEDF4.6040008@kernel.org>
+	<56DD7548.8050306@analog.com>
+Date: Fri, 11 Mar 2016 23:37:53 +0700
+Message-ID: <CACRpkdY=n30A5UkRX7avP7eWrPffh3faF8K_Ey2f2cs1GRZP7g@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Michael Hennerich <michael.hennerich@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Alexandre Courbot <gnurou@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Paul Cercueil <paul.cercueil@analog.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	=?UTF-8?Q?Pawe=C5=82_Moll?= <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Replace the code that guarantees the device stays in direct mode with
-iio_device_{claim|release}_direct_mode() which does same.
+On Mon, Mar 7, 2016 at 7:34 PM, Michael Hennerich
+<michael.hennerich@analog.com> wrote:
+> On 03/05/2016 03:32 PM, Jonathan Cameron wrote:
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
----
- drivers/staging/iio/adc/ad7192.c | 24 +++++++++---------------
- 1 file changed, 9 insertions(+), 15 deletions(-)
+>>> Changes since v2:
+>>>         * Use child nodes to describe channels
+>>>         * Fix probe return and driver remove path
+>>>         * Move locking closer to where its used
+>>>         * Remove WARN_ON but return error
+>>>         * Remove OPEN DRAIN configuration option
+>>
+>> Why? I don't particularly mind as of course you aren't obliged to support
+>> every option in a driver, but I'm curious ;)
+>
+> I'm not aware that someone asked for that feature.
+> Supporting it the proper way requires a new GPIOF flag for gpiolib, which we
+> can still discuss later, in case someone asks for it.
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index f843f19..94a2e06 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -349,11 +349,9 @@ static ssize_t ad7192_write_frequency(struct device *dev,
- 	if (lval == 0)
- 		return -EINVAL;
- 
--	mutex_lock(&indio_dev->mlock);
--	if (iio_buffer_enabled(indio_dev)) {
--		mutex_unlock(&indio_dev->mlock);
-+	ret = iio_device_claim_direct_mode(indio_dev);
-+	if (ret)
- 		return -EBUSY;
--	}
- 
- 	div = st->mclk / (lval * st->f_order * 1024);
- 	if (div < 1 || div > 1023) {
-@@ -366,7 +364,7 @@ static ssize_t ad7192_write_frequency(struct device *dev,
- 	ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
- 
- out:
--	mutex_unlock(&indio_dev->mlock);
-+	iio_device_release_direct_mode(indio_dev);
- 
- 	return ret ? ret : len;
- }
-@@ -434,11 +432,9 @@ static ssize_t ad7192_set(struct device *dev,
- 	if (ret < 0)
- 		return ret;
- 
--	mutex_lock(&indio_dev->mlock);
--	if (iio_buffer_enabled(indio_dev)) {
--		mutex_unlock(&indio_dev->mlock);
-+	ret = iio_device_claim_direct_mode(indio_dev);
-+	if (ret)
- 		return -EBUSY;
--	}
- 
- 	switch ((u32)this_attr->address) {
- 	case AD7192_REG_GPOCON:
-@@ -461,7 +457,7 @@ static ssize_t ad7192_set(struct device *dev,
- 		ret = -EINVAL;
- 	}
- 
--	mutex_unlock(&indio_dev->mlock);
-+	iio_device_release_direct_mode(indio_dev);
- 
- 	return ret ? ret : len;
- }
-@@ -555,11 +551,9 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
- 	int ret, i;
- 	unsigned int tmp;
- 
--	mutex_lock(&indio_dev->mlock);
--	if (iio_buffer_enabled(indio_dev)) {
--		mutex_unlock(&indio_dev->mlock);
-+	ret = iio_device_claim_direct_mode(indio_dev);
-+	if (ret)
- 		return -EBUSY;
--	}
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SCALE:
-@@ -582,7 +576,7 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
- 		ret = -EINVAL;
- 	}
- 
--	mutex_unlock(&indio_dev->mlock);
-+	iio_device_release_direct_mode(indio_dev);
- 
- 	return ret;
- }
--- 
-2.1.4
+We have:
+include/dt-bindings/gpio/gpio.h
 
+/*
+ * Open Drain/Collector is the combination of single-ended active low,
+ * Open Source/Emitter is the combination of single-ended active high.
+ */
+#define GPIO_OPEN_DRAIN (GPIO_SINGLE_ENDED | GPIO_ACTIVE_LOW)
+#define GPIO_OPEN_SOURCE (GPIO_SINGLE_ENDED | GPIO_ACTIVE_HIGH)
+
+So consumers can ask (in DT) for a line in open drain mode.
+
+FLAG_OPEN_DRAIN will be set internally in gpiolibs gpio_desc
+in of_find_gpio() as a result and it will behave as expected.
+
+Yours,
+Linus Walleij
