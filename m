@@ -1,971 +1,475 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Wed, 16 Mar 2016 13:30:27 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Slawomir Stepien <sst@poczta.fm>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: add driver for Microchip MCP414X/416X/424X/426X
-In-Reply-To: <20160316113738.GB2445@x220>
-Message-ID: <alpine.DEB.2.02.1603161238590.30358@pmeerw.net>
-References: <20160316113738.GB2445@x220>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43306 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751812AbcCLJ5c (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 04:57:32 -0500
+Subject: Re: [PATCH 1/2] iio: temperature: Add support for MAX31722/MAX31723
+ temperature sensors
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	linux-iio@vger.kernel.org
+References: <1457530252-4984-1-git-send-email-tiberiu.a.breana@intel.com>
+ <1457530252-4984-2-git-send-email-tiberiu.a.breana@intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56E3E807.8040408@kernel.org>
+Date: Sat, 12 Mar 2016 09:57:27 +0000
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1457530252-4984-2-git-send-email-tiberiu.a.breana@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, 16 Mar 2016, Slawomir Stepien wrote:
-
-> The following functionalities are supported:
->  - write, read from volatile and non volatile memory
->  - increase and decrease commands
->  - read from status register
->  - write and read to tcon register
+On 09/03/16 13:30, Tiberiu Breana wrote:
+> Add basic support for the Maxim Integrated MAX31722/MAX31723 SPI
+> temperature sensors / thermostats.
 > 
-> Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22059b.pdf
+> Includes:
+> 	- ACPI support;
+> 	- raw temperature readings;
+> 	- ability to set measurement resolution;
+> 	- power management
+> 
+> Datasheet:
+> https://datasheets.maximintegrated.com/en/ds/MAX31722-MAX31723.pdf
+> 
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+I thought I'd give this a quick review, putting aside the question of
+whether it should be in IIO at all.
 
-the driver naming is a mess: the subject says MCP414X, the file name is 
-mcp41xx, the DT compatible string says mcp4113x -- this does not match
+A few really trivial suggestions, but otherwise a nice clean driver.
 
-plenty of the private API, some of which seems to be debug only?
-what is really needed to interact with a poti?
-
-comments below
- 
-> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+Jonathan
 > ---
->  .../bindings/iio/potentiometer/mcp41xx.txt         |  51 ++
->  Documentation/iio/mcp41xx.txt                      |  86 +++
->  drivers/iio/potentiometer/Kconfig                  |  18 +
->  drivers/iio/potentiometer/Makefile                 |   1 +
->  drivers/iio/potentiometer/mcp41xx.c                | 709 +++++++++++++++++++++
->  5 files changed, 865 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/mcp41xx.txt
->  create mode 100644 Documentation/iio/mcp41xx.txt
->  create mode 100644 drivers/iio/potentiometer/mcp41xx.c
+>  drivers/iio/temperature/Kconfig    |  12 ++
+>  drivers/iio/temperature/Makefile   |   1 +
+>  drivers/iio/temperature/max31722.c | 374 +++++++++++++++++++++++++++++++++++++
+>  3 files changed, 387 insertions(+)
+>  create mode 100644 drivers/iio/temperature/max31722.c
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/mcp41xx.txt b/Documentation/devicetree/bindings/iio/potentiometer/mcp41xx.txt
-> new file mode 100644
-> index 0000000..6031142
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/potentiometer/mcp41xx.txt
-> @@ -0,0 +1,51 @@
-> +* Microchip MCP414X/416X/424X/426X Digital Potentiometer driver
-> +
-> +The node for this driver must be a child node of a SPI controller, hence
-> +all mandatory properties described in
-> +
-> +        Documentation/devicetree/bindings/spi/spi-bus.txt
-> +
-> +must be specified.
-> +
-> +Required properties:
-> +	- compatible:  	Must be one of the following, depending on the
-> +			model:
-> +			"microchip,mcp4113x-502"
-> +			"microchip,mcp4113x-103"
-> +			"microchip,mcp4113x-503"
-> +			"microchip,mcp4113x-104"
-> +			"microchip,mcp4114x-502"
-> +			"microchip,mcp4114x-103"
-> +			"microchip,mcp4114x-503"
-> +			"microchip,mcp4114x-104"
-> +			"microchip,mcp4115x-502"
-> +			"microchip,mcp4115x-103"
-> +			"microchip,mcp4115x-503"
-> +			"microchip,mcp4115x-104"
-> +			"microchip,mcp4116x-502"
-> +			"microchip,mcp4116x-103"
-> +			"microchip,mcp4116x-503"
-> +			"microchip,mcp4116x-104"
-> +			"microchip,mcp4123x-502"
-> +			"microchip,mcp4123x-103"
-> +			"microchip,mcp4123x-503"
-> +			"microchip,mcp4123x-104"
-> +			"microchip,mcp4124x-502"
-> +			"microchip,mcp4124x-103"
-> +			"microchip,mcp4124x-503"
-> +			"microchip,mcp4124x-104"
-> +			"microchip,mcp4125x-502"
-> +			"microchip,mcp4125x-103"
-> +			"microchip,mcp4125x-503"
-> +			"microchip,mcp4125x-104"
-> +			"microchip,mcp4126x-502"
-> +			"microchip,mcp4126x-103"
-> +			"microchip,mcp4126x-503"
-> +			"microchip,mcp4126x-104"
-> +
-> +Example:
-> +mcp41xx: mcp41xx@0 {
-> +	compatible = "mcp416x-502";
-> +	reg = <0>;
-> +	spi-max-frequency = <500000>;
-> +};
-> diff --git a/Documentation/iio/mcp41xx.txt b/Documentation/iio/mcp41xx.txt
-> new file mode 100644
-> index 0000000..57dc889
-> --- /dev/null
-> +++ b/Documentation/iio/mcp41xx.txt
-> @@ -0,0 +1,86 @@
-> +Industrial I/O driver for MCP414X/416X/424X/426X Digital POTs
-> +-------------------------------------------------------------
-> +
-> +Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22059a.pdf
-> +
-> +sysfs interface
-> +---------------
-> +N is the wiper number (0 = first wiper, 1 = second wiper)
-> +
-> +File:	/sys/bus/iio/devices/../decr_wiperN
-> +Mode:	Write
-> +Description:
-> +	Write anything to this file to decrease wiper N position by one step.
-> +Example:
-> +	echo > decr_wiper0
-> +
-> +
-> +File:	/sys/bus/iio/devices/../incr_wiperN
-> +Mode:	Write
-> +Description:
-> +	Write anything to this file to increase wiper N position by one step.
-> +Example:
-> +	echo > incr_wiper0
-> +
-> +
-> +File:	/sys/bus/iio/devices/../memory_map
-> +Mode:	Read/Write
-> +Description:
-> +	Read the whole memory or write value to given memory address.
-> +	Read outputs two columns. First column is address and second column is
-> +	value at that address.
-> +	For write use hex values with leading 0x. First hex is address second
-> +	hex is the value.
-> +Example:
-> +	cat memory_map
-> +	echo "0x00 0x80" > memory_map
-> +
-> +
-> +File:	/sys/bus/iio/devices/../nv_wiperN
-> +Mode:	Read/Write
-> +Description:
-> +	Read or write to non volatile memory of wiper N.
-> +	Read outputs decimal value that corresponds to wiper position.
-> +	For write use decimal value that corresponds to wiper position.
-> +Example:
-> +	cat nv_wiper0
-> +	echo "128" > nv_wiper0
-> +
-> +
-> +File:	/sys/bus/iio/devices/../out_resistance_scale
-> +Mode:	Read
-> +Description:
-> +	Read the resistance scale of one step (in ohms).
-> +Example:
-> +	cat out_resistance_scale
-> +
-> +
-> +File:	/sys/bus/iio/devices/../out_resistanceN_raw
-
-this is already described in sysfs-bus-iio
-
-> +Mode:	Read/Write
-> +Description:
-> +	Read or write to volatile memory of wiper N.
-> +	Read outputs decimal value that corresponds to wiper position.
-> +	For write use decimal value that corresponds to wiper position.
-> +Example:
-> +	cat out_resistance0_raw
-> +	echo "128" > out_resistance0_raw
-> +
-> +
-> +File:	/sys/bus/iio/devices/../status_register
-> +Mode:	Read
-> +Description:
-> +	Read status register.
-> +	Read outputs content in binary format.
-> +Example:
-> +	cat status_register
-> +
-> +
-> +File:	/sys/bus/iio/devices/../tcon_register
-> +Mode:	ead/Write
-> +Description:
-> +	Read or write to tcon register.
-> +	Read outputs content in binary format.
-> +	For write use binary format string.
-> +Example:
-> +	cat tcon_register
-> +	echo "111111100" > tcon_register
-> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-> index fd75db7..4540367 100644
-> --- a/drivers/iio/potentiometer/Kconfig
-> +++ b/drivers/iio/potentiometer/Kconfig
-> @@ -5,6 +5,24 @@
+> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+> index c4664e5..7587887 100644
+> --- a/drivers/iio/temperature/Kconfig
+> +++ b/drivers/iio/temperature/Kconfig
+> @@ -3,6 +3,18 @@
+>  #
+>  menu "Temperature sensors"
 >  
->  menu "Digital potentiometers"
->  
-> +config MCP41XX
-> +	tristate "Microchip MCP414X/416X/424X/426X Digital Potentiometer driver"
+> +config MAX31722
+> +	tristate "MAX31722 temperature sensor"
 > +	depends on SPI
+> +	select REGMAP_SPI
 > +	help
-> +	  Say yes here to build support for the Microchip
-> +	  MCP4131, MCP4132,
-> +	  MCP4141, MCP4142,
-> +	  MCP4151, MCP4152,
-> +	  MCP4161, MCP4162,
-> +	  MCP4231, MCP4232,
-> +	  MCP4241, MCP4242,
-> +	  MCP4251, MCP4252,
-> +	  MCP4261, MCP4262,
-> +	  digital potentiomenter chips.
+> +	  If you say yes here you get support for the Maxim Integrated
+> +	  MAX31722/MAX31723 digital thermometers / thermostats operating
+> +	  over an SPI interface.
 > +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called mcp41xx.
+> +	  This driver can also be built as a module. If so, the module will
+> +	  be called max31722.
 > +
->  config MCP4531
->  	tristate "Microchip MCP45xx/MCP46xx Digital Potentiometer driver"
+>  config MLX90614
+>  	tristate "MLX90614 contact-less infrared sensor"
 >  	depends on I2C
-> diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
-> index 8afe492..1266ebf 100644
-> --- a/drivers/iio/potentiometer/Makefile
-> +++ b/drivers/iio/potentiometer/Makefile
-> @@ -3,4 +3,5 @@
+> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+> index 02bc79d..a9484d6 100644
+> --- a/drivers/iio/temperature/Makefile
+> +++ b/drivers/iio/temperature/Makefile
+> @@ -2,6 +2,7 @@
+>  # Makefile for industrial I/O temperature drivers
 >  #
 >  
->  # When adding new entries keep the list in alphabetical order
-> +obj-$(CONFIG_MCP41XX) += mcp41xx.o
->  obj-$(CONFIG_MCP4531) += mcp4531.o
-> diff --git a/drivers/iio/potentiometer/mcp41xx.c b/drivers/iio/potentiometer/mcp41xx.c
+> +obj-$(CONFIG_MAX31722) += max31722.o
+>  obj-$(CONFIG_MLX90614) += mlx90614.o
+>  obj-$(CONFIG_TMP006) += tmp006.o
+>  obj-$(CONFIG_TSYS01) += tsys01.o
+> diff --git a/drivers/iio/temperature/max31722.c b/drivers/iio/temperature/max31722.c
 > new file mode 100644
-> index 0000000..654965b
+> index 0000000..fa833b6
 > --- /dev/null
-> +++ b/drivers/iio/potentiometer/mcp41xx.c
-> @@ -0,0 +1,709 @@
-> +/*
-> + * Industrial I/O driver for MCP414X/416X/424X/426X Digital POTs
+> +++ b/drivers/iio/temperature/max31722.c
+> @@ -0,0 +1,374 @@
+> +/**
+> + * MAX31722/MAX31723 digital thermometer and thermostat SPI driver
 > + *
-> + * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22059a.pdf
+> + * Copyright (c) 2016, Intel Corporation.
 > + *
-> + * Copyright (c) 2016 Slawomir Stepien
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License. See the file COPYING in the main
+> + * directory of this archive for more details.
 > + */
 > +
+> +#include <linux/kernel.h>
+> +#include <linux/acpi.h>
 > +#include <linux/module.h>
+> +#include <linux/regmap.h>
 > +#include <linux/spi/spi.h>
-> +#include <linux/err.h>
-> +
 > +#include <linux/iio/iio.h>
 > +#include <linux/iio/sysfs.h>
 > +
-> +#define MCP41XX_WRITE		(0x00 << 2)
-> +#define MCP41XX_INCR		(0x01 << 2)
-> +#define MCP41XX_DECR		(0x02 << 2)
-> +#define MCP41XX_READ		(0x03 << 2)
+> +#define MAX31722_REG_CFG				0x00
+> +#define MAX31722_REG_TEMP_LSB			0x01
+> +#define MAX31722_REG_TEMP_MSB			0x02
+> +#define MAX31722_MAX_REG				0x86
 > +
-> +#define MCP41XX_FULL_SCALE(t)	(t[0] == 0xFF ? 256 : t[1])
-> +#define MCP41XX_9BIT_VALUE(t)	((t[1] + (t[0] << 8)) & 0x1FF)
+> +#define MAX31722_MODE_CONTINUOUS		0x00
+> +#define MAX31722_MODE_STANDBY			0x01
 > +
-> +#define MCP41XX_MIN_ADDR	0x00
-> +#define MCP41XX_MAX_ADDR	0x0F
+> +#define MAX31722_REGMAP_NAME			"max31722_regmap"
 > +
-> +#define MCP41XX_NV_OFFSET	0x02
+> +#define MAX31722_SCALE_AVAILABLE		"0.5 0.25 0.125 0.0625"
 > +
-> +#define MCP41XX_TCON_ADDR	0x04
-> +#define MCP41XX_STATUS_ADDR	0x05
+> +#define MAX31722_REGFIELD(name)						 \
+> +	do {								 \
+> +		data->reg_##name =					 \
+> +			devm_regmap_field_alloc(&spi->dev, regmap,	 \
+> +				max31722_reg_field_##name);		 \
+> +		if (IS_ERR(data->reg_##name)) {				 \
+> +			dev_err(&spi->dev, "reg field alloc failed.\n"); \
+> +			return PTR_ERR(data->reg_##name);		 \
+> +		}							 \
+> +	} while (0)
 > +
-> +struct mcp41xx_cfg {
-> +	unsigned long int devid;
-
-devid is not set/used
-
-> +	unsigned int wipers;
-> +	unsigned int num_pos;
-> +	unsigned int kohms;
-> +};
+> +static const struct reg_field max31722_reg_field_state =
+> +				REG_FIELD(MAX31722_REG_CFG, 0, 0);
+> +static const struct reg_field max31722_reg_field_resolution =
+> +				REG_FIELD(MAX31722_REG_CFG, 1, 2);
 > +
-> +enum mcp41xx_type {
-> +	MCP413x_502,
-> +	MCP413x_103,
-> +	MCP413x_503,
-> +	MCP413x_104,
-> +	MCP414x_502,
-> +	MCP414x_103,
-> +	MCP414x_503,
-> +	MCP414x_104,
-> +	MCP415x_502,
-> +	MCP415x_103,
-> +	MCP415x_503,
-> +	MCP415x_104,
-> +	MCP416x_502,
-> +	MCP416x_103,
-> +	MCP416x_503,
-> +	MCP416x_104,
-> +	MCP423x_502,
-> +	MCP423x_103,
-> +	MCP423x_503,
-> +	MCP423x_104,
-> +	MCP424x_502,
-> +	MCP424x_103,
-> +	MCP424x_503,
-> +	MCP424x_104,
-> +	MCP425x_502,
-> +	MCP425x_103,
-> +	MCP425x_503,
-> +	MCP425x_104,
-> +	MCP426x_502,
-> +	MCP426x_103,
-> +	MCP426x_503,
-> +	MCP426x_104,
-> +};
-> +
-> +static const struct mcp41xx_cfg mcp41xx_cfg[] = {
-> +	[MCP413x_502] =	{ .wipers = 1, .num_pos = 129, .kohms =   5 },
-> +	[MCP413x_103] = { .wipers = 1, .num_pos = 129, .kohms =  10 },
-> +	[MCP413x_503] =	{ .wipers = 1, .num_pos = 129, .kohms =  50 },
-> +	[MCP413x_104] =	{ .wipers = 1, .num_pos = 129, .kohms = 100 },
-> +	[MCP414x_502] =	{ .wipers = 1, .num_pos = 129, .kohms =   5 },
-> +	[MCP414x_103] =	{ .wipers = 1, .num_pos = 129, .kohms =  10 },
-> +	[MCP414x_503] =	{ .wipers = 1, .num_pos = 129, .kohms =  50 },
-> +	[MCP414x_104] =	{ .wipers = 1, .num_pos = 129, .kohms = 100 },
-> +	[MCP415x_502] =	{ .wipers = 1, .num_pos = 257, .kohms =   5 },
-> +	[MCP415x_103] =	{ .wipers = 1, .num_pos = 257, .kohms =  10 },
-> +	[MCP415x_503] =	{ .wipers = 1, .num_pos = 257, .kohms =  50 },
-> +	[MCP415x_104] =	{ .wipers = 1, .num_pos = 257, .kohms = 100 },
-> +	[MCP416x_502] =	{ .wipers = 1, .num_pos = 257, .kohms =   5 },
-> +	[MCP416x_103] =	{ .wipers = 1, .num_pos = 257, .kohms =  10 },
-> +	[MCP416x_503] =	{ .wipers = 1, .num_pos = 257, .kohms =  50 },
-> +	[MCP416x_104] =	{ .wipers = 1, .num_pos = 257, .kohms = 100 },
-> +	[MCP423x_502] =	{ .wipers = 2, .num_pos = 129, .kohms =   5 },
-> +	[MCP423x_103] =	{ .wipers = 2, .num_pos = 129, .kohms =  10 },
-> +	[MCP423x_503] =	{ .wipers = 2, .num_pos = 129, .kohms =  50 },
-> +	[MCP423x_104] =	{ .wipers = 2, .num_pos = 129, .kohms = 100 },
-> +	[MCP424x_502] =	{ .wipers = 2, .num_pos = 129, .kohms =   5 },
-> +	[MCP424x_103] =	{ .wipers = 2, .num_pos = 129, .kohms =  10 },
-> +	[MCP424x_503] =	{ .wipers = 2, .num_pos = 129, .kohms =  50 },
-> +	[MCP424x_104] =	{ .wipers = 2, .num_pos = 129, .kohms = 100 },
-> +	[MCP425x_502] =	{ .wipers = 2, .num_pos = 257, .kohms =   5 },
-> +	[MCP425x_103] =	{ .wipers = 2, .num_pos = 257, .kohms =  10 },
-> +	[MCP425x_503] =	{ .wipers = 2, .num_pos = 257, .kohms =  50 },
-> +	[MCP425x_104] =	{ .wipers = 2, .num_pos = 257, .kohms = 100 },
-> +	[MCP426x_502] =	{ .wipers = 2, .num_pos = 257, .kohms =   5 },
-> +	[MCP426x_103] =	{ .wipers = 2, .num_pos = 257, .kohms =  10 },
-> +	[MCP426x_503] =	{ .wipers = 2, .num_pos = 257, .kohms =  50 },
-> +	[MCP426x_104] =	{ .wipers = 2, .num_pos = 257, .kohms = 100 },
-> +};
-> +
-> +struct mcp41xx_data {
-> +	struct spi_device *spi;
+> +struct max31722_data {
+> +	struct spi_device *spi_device;
 > +	struct mutex lock;
-> +	unsigned long devid;
-> +	u8 tx[2], rx[2];
-> +	struct spi_transfer xfer;
-> +	struct spi_message msg;
+> +	struct regmap *regmap;
+> +	struct regmap_field *reg_state;
+> +	struct regmap_field *reg_resolution;
 > +};
 > +
-> +#define MCP41XX_CHANNEL(ch) {					\
-> +	.type = IIO_RESISTANCE,					\
-> +	.output = 1,						\
-> +	.indexed = 1,						\
-> +	.channel = (ch),					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec mcp41xx_channels[] = {
-> +	MCP41XX_CHANNEL(0),
-> +	MCP41XX_CHANNEL(1),
+> +/*
+> + * This table can double as a negative exponent value lookup table
+> + * (as micro units) for calculating LSB temperature values.
+> + */
+> +static const int max31722_scale_table[4] = {
+> +	500000, 250000, 125000, 62500
 > +};
 > +
-> +/* Function based on: arch/parisc/kernel/traps.c */
-> +static int printbinary(char *buf, unsigned long x, int nbits)
+> +static IIO_CONST_ATTR(in_temp_scale_available, MAX31722_SCALE_AVAILABLE);
+> +
+> +static struct attribute *max31722_attributes[] = {
+> +	&iio_const_attr_in_temp_scale_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group max31722_attribute_group = {
+> +	.attrs = max31722_attributes
+> +};
+> +
+> +static const struct iio_chan_spec max31722_channels[] = {
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +	},
+> +};
+> +
+> +static bool max31722_is_volatile_reg(struct device *dev, unsigned int reg)
 > +{
-> +	unsigned long mask = 1UL << (nbits - 2);
-> +
-> +	while (mask != 0) {
-> +		*buf++ = (mask & x ? '1' : '0');
-> +		mask >>= 1;
-> +	}
-> +	*buf++ = '\n';
-> +	*buf = '\0';
-> +
-> +	return nbits;
-> +}
-> +
-> +static int mcp41xx_exec(struct mcp41xx_data *data,
-> +		u8 addr, u8 cmd,
-> +		int *trans, size_t n)
-
-should trans really be int, not u8?
-
-> +{
-> +	int err;
-> +	struct spi_device *spi = data->spi;
-> +
-> +	/* Two bytes are needed for the response */
-> +	if (n != 2)
-> +		return -EINVAL;
-
-why pass n if it is always 2?
-
-> +
-> +	switch (cmd) {
-> +	case MCP41XX_READ:
-> +		data->xfer.len = 2; /* Two bytes transfer for this command */
-> +		data->tx[0] = (addr << 4) | MCP41XX_READ;
-> +		data->tx[1] = 0;
-> +		break;
-> +
-> +	case MCP41XX_WRITE:
-> +		data->xfer.len = 2;
-> +		/* Shift trans[0] to see if this is full scale value write */
-> +		data->tx[0] = (addr << 4) | MCP41XX_WRITE | (trans[0] >> 8);
-> +		data->tx[1] = (trans[0]) & 0xFF; /* 8 bits here */
-> +		break;
-> +
-> +	case MCP41XX_INCR:
-> +		data->xfer.len = 1; /* One byte transfer for this command */
-> +		data->tx[0] = (addr << 4) | MCP41XX_INCR;
-> +		break;
-> +
-> +	case MCP41XX_DECR:
-> +		data->xfer.len = 1;
-> +		data->tx[0] = (addr << 4) | MCP41XX_DECR;
-> +		break;
-> +
+> +	switch (reg) {
+> +	case MAX31722_REG_TEMP_LSB:
+> +	case MAX31722_REG_TEMP_MSB:
+> +		return true;
 > +	default:
-> +		return -EINVAL;
+> +		return false;
+> +	}
+> +}
+> +
+> +static bool max31722_is_writeable_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case MAX31722_REG_TEMP_LSB:
+> +	case MAX31722_REG_TEMP_MSB:
+> +		return false;
+> +	default:
+> +		return true;
+> +	}
+> +}
+> +
+> +static struct regmap_config max31722_regmap_config = {
+> +	.name = MAX31722_REGMAP_NAME,
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +
+> +	.max_register = MAX31722_MAX_REG,
+> +	.cache_type = REGCACHE_RBTREE,
+> +
+> +	.volatile_reg = max31722_is_volatile_reg,
+> +	.writeable_reg = max31722_is_writeable_reg,
+> +
+> +	.read_flag_mask = 0x00,
+> +	.write_flag_mask = 0x80,
+> +};
+> +
+> +/*
+> + * Convert a temperature register value to a floating point value.
+> + * Data is represented in 9-12 bits, two's complement.
+> + * The MSB contains the integer part of the temperature value
+> + * (signed), while the LSB contains the fractional part as
+> + * negative powers of 2, e.g.: bit 0 is 2^-1, bit 1 is 2^-2, etc.
+> + */
+> +static void max31722_reg_to_float(u16 reg_val, int *val, int *val2)
+> +{
+> +	int i;
+> +	u8 msb;
+> +	u8 lsb;
+> +
+> +	msb = reg_val >> 8;
+> +	lsb = (reg_val << 8) >> 8;
+> +
+> +	/* Calculate the integer part. */
+> +	if (msb & 0x80) {
+> +		/* Negative value. Reverse bits and add 1. */
+> +		u16 orig = reg_val;
+> +		u16 rev = 0;
+> +		int num_bits = sizeof(rev) * 8;
+> +
+> +		for (i = 0 ; i < num_bits ; i++) {
+> +			rev |= !(orig & 0x01) << i;
+> +			orig >>= 1;
+> +		}
+> +		rev += 1;
+> +		msb = rev >> 8;
+> +		lsb = (rev << 8) >> 8;
+> +		*val = (-1) * msb;
+> +	} else { /* Positive value. */
+> +		*val = msb;
 > +	}
 > +
-> +	dev_dbg(&spi->dev, "mcp41xx_exec: tx0: 0x%x tx1: 0x%x\n",
-> +			data->tx[0], data->tx[1]);
+> +	/*
+> +	 * Calculate the fractional part.
+> +	 * Only the first four LSB bits contain data.
+> +	 */
+> +	lsb >>= 4;
+> +	i = 0;
+> +	*val2 = 0;
+> +	while (i < 4) {
+> +		if ((lsb >> (4 - i - 1)) & 0x01)
+> +			*val2 += max31722_scale_table[i];
+> +		lsb <<= 1;
+> +		lsb >>= 1;
+> +		i++;
+> +	}
+> +}
 > +
-> +	mutex_lock(&data->lock);
-> +	spi_message_init(&data->msg);
-> +	spi_message_add_tail(&data->xfer, &data->msg);
+> +static int max31722_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
+> +{
+> +	int ret;
+> +	int index;
+> +	u16 buf;
+> +	struct max31722_data *data = iio_priv(indio_dev);
+> +	struct spi_device *spi = data->spi_device;
 > +
-> +	err = spi_sync(spi, &data->msg);
-> +	if (err) {
-> +		dev_err(&spi->dev, "spi_sync(): %d\n", err);
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&data->lock);
+> +		ret = regmap_bulk_read(data->regmap,
+> +				       MAX31722_REG_TEMP_LSB, &buf, 2);
+> +		if (ret < 0) {
+> +			dev_err(&spi->dev, "failed to read temperature register\n");
+> +			mutex_unlock(&data->lock);
+> +			return ret;
+> +		}
+> +		max31722_reg_to_float(buf, val, val2);
 > +		mutex_unlock(&data->lock);
-> +		return err;
-> +	}
-> +	mutex_unlock(&data->lock);
-> +
-> +	dev_dbg(&spi->dev, "mcp41xx_exec: rx0: 0x%x rx1: 0x%x\n",
-> +			data->rx[0], data->rx[1]);
-> +
-> +	/* Copy back the response */
-> +	trans[0] = data->rx[0];
-> +	trans[1] = data->rx[1];
-> +
-> +	return 0;
-> +}
-> +
-> +static ssize_t mcp41xx_show_memory_map(struct device *dev,
-> +		struct device_attribute *attr,
-> +		char *buf)
-> +{
-> +	ssize_t i = 0;
-> +	int err;
-> +	int addr;
-> +	int trans[2];
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +
-> +	/* Read the whole memory */
-> +	for (addr = MCP41XX_MIN_ADDR; addr <= MCP41XX_MAX_ADDR; addr++) {
-> +		err = mcp41xx_exec(data,
-> +				addr, MCP41XX_READ,
-> +				trans, ARRAY_SIZE(trans));
-> +		if (err)
-> +			return i;
-> +
-> +		/* First column is address, second is value */
-> +		i += scnprintf(&buf[i],
-> +				12, "0x%02x 0x%03x\n",
-> +				addr, MCP41XX_9BIT_VALUE(trans));
-> +	}
-> +
-> +	return i;
-> +}
-> +
-> +static ssize_t mcp41xx_store_memory_map(struct device *dev,
-> +		struct device_attribute *attr,
-> +		const char *buf, size_t len)
-> +{
-> +	int err;
-> +	int addr;
-> +	int trans[2];
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +
-> +	err = sscanf(buf, "0x%x 0x%x\n", &addr, &trans[0]);
-> +	if (err != 2)
-> +		return err;
-> +
-> +	err = mcp41xx_exec(data, addr, MCP41XX_WRITE, trans, ARRAY_SIZE(trans));
-> +	if (err)
-> +		return err;
-> +
-> +	return len;
-> +}
-> +
-> +static IIO_DEVICE_ATTR(memory_map, S_IRUGO | S_IWUSR,
-> +		mcp41xx_show_memory_map,
-> +		mcp41xx_store_memory_map,
-> +		0);
-> +
-> +static ssize_t mcp41xx_show_nv_wiper(struct device *dev,
-> +		struct device_attribute *attr,
-> +		char *buf)
-> +{
-> +	int err;
-> +	int trans[2];
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +
-> +	err = mcp41xx_exec(data,
-> +			this_attr->address + MCP41XX_NV_OFFSET, MCP41XX_READ,
-> +			trans, ARRAY_SIZE(trans));
-> +	if (err)
-> +		return -EINVAL;
-> +
-> +	return sprintf(buf, "%d\n", MCP41XX_FULL_SCALE(trans));
-> +}
-> +
-> +static ssize_t mcp41xx_store_nv_wiper(struct device *dev,
-> +		struct device_attribute *attr,
-> +		const char *buf, size_t len)
-> +{
-> +	int err;
-> +	int trans[2];
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +
-> +	err = kstrtoint(buf, 10, &trans[0]);
-> +	if (err)
-> +		return -EINVAL;
-> +
-> +	err = mcp41xx_exec(data,
-> +			this_attr->address + MCP41XX_NV_OFFSET, MCP41XX_WRITE,
-> +			trans, ARRAY_SIZE(trans));
-> +	if (err)
-> +		return -EINVAL;
-> +
-> +	return len;
-> +}
-> +
-> +#define MCP41XX_NV_WIPER(n) IIO_DEVICE_ATTR(nv_wiper##n, S_IRUGO | S_IWUSR, \
-> +		mcp41xx_show_nv_wiper, mcp41xx_store_nv_wiper, n)
-> +
-> +MCP41XX_NV_WIPER(0);
-> +MCP41XX_NV_WIPER(1);
-> +
-> +static ssize_t mcp41xx_store_incr_wiper(struct device *dev,
-> +		struct device_attribute *attr,
-> +		const char *buf, size_t len)
-> +{
-> +	int err;
-> +	int trans[2];
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +
-> +	err = mcp41xx_exec(data,
-> +			this_attr->address, MCP41XX_INCR,
-> +			trans, ARRAY_SIZE(trans));
-> +	if (err)
-> +		return -EINVAL;
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t mcp41xx_store_decr_wiper(struct device *dev,
-> +		struct device_attribute *attr,
-> +		const char *buf, size_t len)
-> +{
-> +	int err;
-> +	int trans[2];
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +
-> +	err = mcp41xx_exec(data,
-> +			this_attr->address, MCP41XX_DECR,
-> +			trans, ARRAY_SIZE(trans));
-> +	if (err)
-> +		return -EINVAL;
-> +
-> +	return len;
-> +}
-> +
-> +#define MCP41XX_INCR_ATTR(n) IIO_DEVICE_ATTR(incr_wiper##n, S_IWUSR,	\
-> +		NULL, mcp41xx_store_incr_wiper, n)
-> +
-> +MCP41XX_INCR_ATTR(0);
-> +MCP41XX_INCR_ATTR(1);
-> +
-> +#define MCP41XX_DECR_ATTR(n) IIO_DEVICE_ATTR(decr_wiper##n, S_IWUSR,	\
-> +		NULL, mcp41xx_store_decr_wiper, n)
-> +
-> +MCP41XX_DECR_ATTR(0);
-> +MCP41XX_DECR_ATTR(1);
-> +
-> +static ssize_t mcp41xx_show_status_register(struct device *dev,
-> +		struct device_attribute *attr,
-> +		char *buf)
-> +{
-> +	int err;
-> +	int trans[2];
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +	unsigned long val;
-> +
-> +	err = mcp41xx_exec(data,
-> +			MCP41XX_STATUS_ADDR, MCP41XX_READ,
-> +			trans, ARRAY_SIZE(trans));
-> +	if (err)
-> +		return -EINVAL;
-> +
-> +	val = MCP41XX_9BIT_VALUE(trans);
-> +	return printbinary(buf, val, 10); /* One extra for new line */
-> +}
-> +
-> +static IIO_DEVICE_ATTR(status_register, S_IRUGO,
-> +		mcp41xx_show_status_register,
-> +		NULL,
-> +		0);
-> +
-> +static ssize_t mcp41xx_show_tcon_register(struct device *dev,
-> +		struct device_attribute *attr,
-> +		char *buf)
-> +{
-> +	int err;
-> +	int trans[2];
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +	unsigned long val;
-> +
-> +	err = mcp41xx_exec(data,
-> +			MCP41XX_TCON_ADDR, MCP41XX_READ,
-> +			trans, ARRAY_SIZE(trans));
-> +	if (err)
-> +		return -EINVAL;
-> +
-> +	val = MCP41XX_9BIT_VALUE(trans);
-> +	return printbinary(buf, val, 10); /* One extra for new line */
-> +}
-> +
-> +static ssize_t mcp41xx_store_tcon_register(struct device *dev,
-> +		struct device_attribute *attr,
-> +		const char *buf, size_t len)
-> +{
-> +	int err;
-> +	int trans[2];
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +
-> +	err = kstrtoint(buf, 2, &trans[0]);
-> +	if (err)
-> +		return -EINVAL;
-> +
-> +	err = mcp41xx_exec(data,
-> +			MCP41XX_TCON_ADDR, MCP41XX_WRITE,
-> +			trans, ARRAY_SIZE(trans));
-> +	if (err)
-> +		return -EINVAL;
-> +
-> +	return len;
-> +}
-> +
-> +static IIO_DEVICE_ATTR(tcon_register, S_IRUGO | S_IWUSR,
-> +		mcp41xx_show_tcon_register,
-> +		mcp41xx_store_tcon_register,
-> +		0);
-> +
-> +/* All available attributes that can be created */
-> +static struct iio_dev_attr *mcp41xx_all_attrs[] = {
-> +	&iio_dev_attr_memory_map,
-> +	&iio_dev_attr_nv_wiper0,
-> +	&iio_dev_attr_nv_wiper1,
-> +	&iio_dev_attr_incr_wiper0,
-> +	&iio_dev_attr_incr_wiper1,
-> +	&iio_dev_attr_decr_wiper0,
-> +	&iio_dev_attr_decr_wiper1,
-> +	&iio_dev_attr_status_register,
-> +	&iio_dev_attr_tcon_register,
-> +};
-> +
-> +/* This will be filled dynamically in probe() */
-> +static struct attribute **mcp41xx_attributes;
-> +static struct attribute_group mcp41xx_attribute_group;
-> +
-> +static int mcp41xx_read_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan,
-> +		int *val, int *val2, long mask)
-> +{
-> +	int err;
-> +	int trans[2];
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +	int address = chan->channel;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		err = mcp41xx_exec(data,
-> +				address, MCP41XX_READ,
-> +				trans, ARRAY_SIZE(trans));
-> +		if (err)
-> +			return err;
-> +
-> +		*val = MCP41XX_FULL_SCALE(trans);
-> +
-> +		return IIO_VAL_INT;
-> +
+> +		return IIO_VAL_INT_PLUS_MICRO;
 > +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 1000 * mcp41xx_cfg[data->devid].kohms;
-> +		*val2 = mcp41xx_cfg[data->devid].num_pos;
-> +
-> +		return IIO_VAL_FRACTIONAL;
+> +		mutex_lock(&data->lock);
+> +		ret = regmap_field_read(data->reg_resolution, &index);
+> +		if (ret < 0) {
+> +			dev_err(&spi->dev, "failed to read configuration register\n");
+> +			mutex_unlock(&data->lock);
+> +			return ret;
+> +		}
+> +		mutex_unlock(&data->lock);
+> +		*val = 0;
+> +		*val2 = max31722_scale_table[index];
+> +		return IIO_VAL_INT_PLUS_MICRO;
 > +	}
 > +
 > +	return -EINVAL;
 > +}
 > +
-> +static int mcp41xx_write_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan,
-> +		int val, int val2, long mask)
+> +static int max31722_write_raw(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan,
+> +			      int val, int val2, long mask)
 > +{
-> +	int trans[2];
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> +	int address = chan->channel;
+> +	int i;
+> +	int ret;
+> +	int index = -1;
+> +	struct max31722_data *data = iio_priv(indio_dev);
 > +
 > +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		trans[0] = val;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		for (i = 0; i < ARRAY_SIZE(max31722_scale_table); i++) {
+> +			if (val == 0 && val2 == max31722_scale_table[i]) {
+> +				index = i;
+> +				break;
+> +			}
+> +		}
+> +		if (index < 0)
+> +			return -EINVAL;
 > +
-> +		return mcp41xx_exec(data,
-> +				address, MCP41XX_WRITE,
-> +				trans, ARRAY_SIZE(trans));
+> +		mutex_lock(&data->lock);
+> +		ret = regmap_field_write(data->reg_resolution, index);
+> +		mutex_unlock(&data->lock);
+> +
+> +		return ret;
 > +	}
-> +
 > +	return -EINVAL;
 > +}
 > +
-> +static const struct iio_info mcp41xx_info = {
-> +	.attrs = &mcp41xx_attribute_group,
-> +	.read_raw = mcp41xx_read_raw,
-> +	.write_raw = mcp41xx_write_raw,
-> +	.driver_module = THIS_MODULE,
+> +static const struct iio_info max31722_info = {
+> +	.driver_module		= THIS_MODULE,
+> +	.read_raw		= max31722_read_raw,
+> +	.write_raw		= max31722_write_raw,
+> +	.attrs			= &max31722_attribute_group,
 > +};
 > +
-> +static int mcp41xx_probe(struct spi_device *spi)
+> +static int max31722_init(struct max31722_data *data)
 > +{
-> +	int l, i, addr;
-> +	int err;
-> +	size_t attrs_count;
+> +	int ret = 0;
+> +	struct spi_device *spi = data->spi_device;
+> +	struct regmap *regmap;
+> +
+> +	/* Initialize the regmap */
+> +	regmap = devm_regmap_init_spi(spi, &max31722_regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&spi->dev, "regmap initialization failed.\n");
+> +		return PTR_ERR(regmap);
+> +	}
+> +	data->regmap = regmap;
+> +
+> +	MAX31722_REGFIELD(state);
+> +	MAX31722_REGFIELD(resolution);
+> +
+> +	/* Set SD bit to 0 so we can have continuous measurements. */
+> +	ret = regmap_field_write(data->reg_state, MAX31722_MODE_CONTINUOUS);
+> +	if (ret < 0)
+> +		dev_err(&spi->dev, "failed to configure sensor.\n");
+> +
+> +	return ret;
+> +}
+> +
+> +static int max31722_probe(struct spi_device *spi)
+> +{
+> +	int ret;
 > +	struct iio_dev *indio_dev;
-> +	struct mcp41xx_data *data;
+> +	struct max31722_data *data;
 > +
 > +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-> +	if (!indio_dev)
+> +	if (!indio_dev) {
+> +		dev_err(&spi->dev, "iio allocation failed!\n");
 > +		return -ENOMEM;
+> +	}
 > +
 > +	data = iio_priv(indio_dev);
-> +	data->spi = spi;
-> +	data->devid = spi_get_device_id(spi)->driver_data;
+> +	data->spi_device = spi;
 > +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	data->xfer.tx_buf = data->tx;
-> +	data->xfer.rx_buf = data->rx;
-> +
 > +	mutex_init(&data->lock);
 > +
 > +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->info = &mcp41xx_info;
-> +	indio_dev->channels = mcp41xx_channels;
-> +	indio_dev->num_channels = mcp41xx_cfg[data->devid].wipers;
+> +	indio_dev->info = &max31722_info;
 > +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = max31722_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max31722_channels);
 > +
-> +	/* Dynamic attributes */
-> +	attrs_count = ARRAY_SIZE(mcp41xx_all_attrs);
-> +	mcp41xx_attributes = kzalloc(
-> +			sizeof(struct attribute *) * (attrs_count + 1),
-> +			GFP_KERNEL);
-> +	if (mcp41xx_attributes == NULL)
-> +		return -ENOMEM;
+> +	ret = max31722_init(data);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +	i = 0;
-> +	for (l = 0; l < attrs_count; l++) {
-> +		/* Attrs with address == 0 or address == wipers are added */
-> +		addr = mcp41xx_all_attrs[l]->address;
-> +		if (addr == 0 || addr == indio_dev->num_channels - 1) {
-> +			mcp41xx_attributes[i] =
-> +				&mcp41xx_all_attrs[l]->dev_attr.attr;
-> +			i++;
-> +		}
-> +	}
-> +	mcp41xx_attribute_group.attrs = mcp41xx_attributes;
-> +
-> +	err = devm_iio_device_register(&spi->dev, indio_dev);
-> +	if (err) {
-> +		dev_info(&spi->dev, "Unable to register %s", indio_dev->name);
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&spi->dev, "iio_device_register failed\n");
+Given this statement is effectively unwinding max31722_init, would have
+a max31722_exit function as well with this in.  That makes for
+'obviously correct' code which is always good for reviewers!
 
-\n missing
+Alternative would be to pull the mode setting out of the init function
+and have it inline in this function making the pairing obvious as well.
 
-> +		return err;
+> +		regmap_field_write(data->reg_state, MAX31722_MODE_STANDBY);
 > +	}
 > +
-> +	dev_info(&spi->dev, "Registered %s", indio_dev->name);
-
-\n
-
-> +
-> +	return 0;
+> +	return ret;
 > +}
 > +
-> +static int mcp41xx_remove(struct spi_device *spi)
+> +static int max31722_remove(struct spi_device *spi)
 > +{
+> +	struct max31722_data *data;
 > +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +	struct mcp41xx_data *data = iio_priv(indio_dev);
 > +
-> +	mutex_destroy(&data->lock);
-> +	devm_iio_device_unregister(&spi->dev, indio_dev);
-> +	kfree(mcp41xx_attributes);
+> +	iio_device_unregister(indio_dev);
+> +	data = iio_priv(indio_dev);
+
+I would have put this inline with the declaration of data above.
+It is pretty much the same level of lookup as spi_get_drvdata.
+
 > +
-> +	dev_info(&spi->dev, "Unregistered %s", indio_dev->name);
-> +
-> +	return 0;
+> +	return regmap_field_write(data->reg_state, MAX31722_MODE_STANDBY);
 > +}
 > +
-> +#if defined CONFIG_OF
-> +static const struct of_device_id mcp41xx_dt_ids[] = {
-> +	{ .compatible = "microchip,mcp4113x-502",
-> +		.data = &mcp41xx_cfg[MCP413x_502] },
-> +	{ .compatible = "microchip,mcp4113x-103",
-> +		.data = &mcp41xx_cfg[MCP413x_103] },
-> +	{ .compatible = "microchip,mcp4113x-503",
-> +		.data = &mcp41xx_cfg[MCP413x_503] },
-> +	{ .compatible = "microchip,mcp4113x-104",
-> +		.data = &mcp41xx_cfg[MCP413x_104] },
-> +	{ .compatible = "microchip,mcp4114x-502",
-> +		.data = &mcp41xx_cfg[MCP414x_502] },
-> +	{ .compatible = "microchip,mcp4114x-103",
-> +		.data = &mcp41xx_cfg[MCP414x_103] },
-> +	{ .compatible = "microchip,mcp4114x-503",
-> +		.data = &mcp41xx_cfg[MCP414x_503] },
-> +	{ .compatible = "microchip,mcp4114x-104",
-> +		.data = &mcp41xx_cfg[MCP414x_104] },
-> +	{ .compatible = "microchip,mcp4115x-502",
-> +		.data = &mcp41xx_cfg[MCP415x_502] },
-> +	{ .compatible = "microchip,mcp4115x-103",
-> +		.data = &mcp41xx_cfg[MCP415x_103] },
-> +	{ .compatible = "microchip,mcp4115x-503",
-> +		.data = &mcp41xx_cfg[MCP415x_503] },
-> +	{ .compatible = "microchip,mcp4115x-104",
-> +		.data = &mcp41xx_cfg[MCP415x_104] },
-> +	{ .compatible = "microchip,mcp4116x-502",
-> +		.data = &mcp41xx_cfg[MCP416x_502] },
-> +	{ .compatible = "microchip,mcp4116x-103",
-> +		.data = &mcp41xx_cfg[MCP416x_103] },
-> +	{ .compatible = "microchip,mcp4116x-503",
-> +		.data = &mcp41xx_cfg[MCP416x_503] },
-> +	{ .compatible = "microchip,mcp4116x-104",
-> +		.data = &mcp41xx_cfg[MCP416x_104] },
-> +	{ .compatible = "microchip,mcp4123x-502",
-> +		.data = &mcp41xx_cfg[MCP423x_502] },
-> +	{ .compatible = "microchip,mcp4123x-103",
-> +		.data = &mcp41xx_cfg[MCP423x_103] },
-> +	{ .compatible = "microchip,mcp4123x-503",
-> +		.data = &mcp41xx_cfg[MCP423x_503] },
-> +	{ .compatible = "microchip,mcp4123x-104",
-> +		.data = &mcp41xx_cfg[MCP423x_104] },
-> +	{ .compatible = "microchip,mcp4124x-502",
-> +		.data = &mcp41xx_cfg[MCP424x_502] },
-> +	{ .compatible = "microchip,mcp4124x-103",
-> +		.data = &mcp41xx_cfg[MCP424x_103] },
-> +	{ .compatible = "microchip,mcp4124x-503",
-> +		.data = &mcp41xx_cfg[MCP424x_503] },
-> +	{ .compatible = "microchip,mcp4124x-104",
-> +		.data = &mcp41xx_cfg[MCP424x_104] },
-> +	{ .compatible = "microchip,mcp4125x-502",
-> +		.data = &mcp41xx_cfg[MCP425x_502] },
-> +	{ .compatible = "microchip,mcp4125x-103",
-> +		.data = &mcp41xx_cfg[MCP425x_103] },
-> +	{ .compatible = "microchip,mcp4125x-503",
-> +		.data = &mcp41xx_cfg[MCP425x_503] },
-> +	{ .compatible = "microchip,mcp4125x-104",
-> +		.data = &mcp41xx_cfg[MCP425x_104] },
-> +	{ .compatible = "microchip,mcp4126x-502",
-> +		.data = &mcp41xx_cfg[MCP426x_502] },
-> +	{ .compatible = "microchip,mcp4126x-103",
-> +		.data = &mcp41xx_cfg[MCP426x_103] },
-> +	{ .compatible = "microchip,mcp4126x-503",
-> +		.data = &mcp41xx_cfg[MCP426x_503] },
-> +	{ .compatible = "microchip,mcp4126x-104",
-> +		.data = &mcp41xx_cfg[MCP426x_104] },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, mcp41xx_dt_ids);
+> +#ifdef CONFIG_PM_SLEEP
+> +static int max31722_suspend(struct device *dev)
+> +{
+> +	struct max31722_data *data;
+> +
+> +	data = iio_priv(spi_get_drvdata(to_spi_device(dev)));
+> +
+> +	return regmap_field_write(data->reg_state, MAX31722_MODE_STANDBY);
+> +}
+> +
+> +static int max31722_resume(struct device *dev)
+> +{
+> +	struct max31722_data *data;
+> +
+> +	data = iio_priv(spi_get_drvdata(to_spi_device(dev)));
+> +
+> +	return regmap_field_write(data->reg_state, MAX31722_MODE_CONTINUOUS);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(max31722_pm_ops, max31722_suspend, max31722_resume);
+> +
+> +#define MAX31722_PM_OPS (&max31722_pm_ops)
+> +#else
+> +#define MAX31722_PM_OPS NULL
 > +#endif
 > +
-> +static const struct spi_device_id mcp41xx_id[] = {
-> +	{ "mcp413x-502", MCP413x_502 },
-> +	{ "mcp413x-103", MCP413x_103 },
-> +	{ "mcp413x-503", MCP413x_503 },
-> +	{ "mcp413x-104", MCP413x_104 },
-> +	{ "mcp414x-502", MCP414x_502 },
-> +	{ "mcp414x-103", MCP414x_103 },
-> +	{ "mcp414x-503", MCP414x_503 },
-> +	{ "mcp414x-104", MCP414x_104 },
-> +	{ "mcp415x-502", MCP415x_502 },
-> +	{ "mcp415x-103", MCP415x_103 },
-> +	{ "mcp415x-503", MCP415x_503 },
-> +	{ "mcp415x-104", MCP415x_104 },
-> +	{ "mcp416x-502", MCP416x_502 },
-> +	{ "mcp416x-103", MCP416x_103 },
-> +	{ "mcp416x-503", MCP416x_503 },
-> +	{ "mcp416x-104", MCP416x_104 },
-> +	{ "mcp423x-502", MCP423x_502 },
-> +	{ "mcp423x-103", MCP423x_103 },
-> +	{ "mcp423x-503", MCP423x_503 },
-> +	{ "mcp423x-104", MCP423x_104 },
-> +	{ "mcp424x-502", MCP424x_502 },
-> +	{ "mcp424x-103", MCP424x_103 },
-> +	{ "mcp424x-503", MCP424x_503 },
-> +	{ "mcp424x-104", MCP424x_104 },
-> +	{ "mcp425x-502", MCP425x_502 },
-> +	{ "mcp425x-103", MCP425x_103 },
-> +	{ "mcp425x-503", MCP425x_503 },
-> +	{ "mcp425x-104", MCP425x_104 },
-> +	{ "mcp426x-502", MCP426x_502 },
-> +	{ "mcp426x-103", MCP426x_103 },
-> +	{ "mcp426x-503", MCP426x_503 },
-> +	{ "mcp426x-104", MCP426x_104 },
+> +static const struct spi_device_id max31722_spi_id[] = {
+> +	{"max31722", 0},
+> +	{"max31723", 0},
 > +	{}
 > +};
-> +MODULE_DEVICE_TABLE(spi, mcp41xx_id);
 > +
-> +static struct spi_driver mcp41xx_driver = {
-> +	.driver = {
-> +		.name		= "mcp41xx",
-> +		.of_match_table = of_match_ptr(mcp41xx_dt_ids),
-> +	},
-> +	.probe		= mcp41xx_probe,
-> +	.remove		= mcp41xx_remove,
-> +	.id_table	= mcp41xx_id,
+> +static const struct acpi_device_id max31722_acpi_id[] = {
+> +	{"MAX31722", 0},
+> +	{"MAX31723", 0},
+> +	{}
 > +};
 > +
-> +module_spi_driver(mcp41xx_driver);
+> +MODULE_DEVICE_TABLE(spi, max31722_spi_id);
 > +
-> +MODULE_AUTHOR("Slawomir Stepien <sst@poczta.fm>");
-> +MODULE_DESCRIPTION("MCP41XX digital potentiometer");
+> +static struct spi_driver max31722_driver = {
+> +	.driver = {
+> +		.name = "max31722",
+> +		.pm = MAX31722_PM_OPS,
+> +		.acpi_match_table = ACPI_PTR(max31722_acpi_id),
+> +	},
+> +	.probe =            max31722_probe,
+> +	.remove =           max31722_remove,
+> +	.id_table =         max31722_spi_id,
+> +};
+> +
+> +module_spi_driver(max31722_driver);
+> +
+> +MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
+> +MODULE_DESCRIPTION("MAX31722 digital thermometer and thermostat SPI driver");
 > +MODULE_LICENSE("GPL v2");
 > 
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
