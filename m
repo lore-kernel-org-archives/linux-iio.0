@@ -1,88 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-214.synserver.de ([212.40.185.214]:1675 "EHLO
-	smtp-out-206.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754777AbcCOLIp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2016 07:08:45 -0400
-Subject: Re: iio and regulator api usage
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <56E7D5E8.2050003@parrot.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56E7E3BF.3000607@metafoo.de>
-Date: Tue, 15 Mar 2016 11:28:15 +0100
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43687 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751066AbcCLLJK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 06:09:10 -0500
+Subject: Re: [PATCH] iio: adc: imx25-gcq: fix do_div
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+	Markus Pargmann <mpa@pengutronix.de>
+References: <1457009513-7069-1-git-send-email-sudipm.mukherjee@gmail.com>
+ <56DB28BF.9070508@kernel.org> <8010548.jDMIC4yOG6@adelgunde>
+ <20160307110632.GA10337@sudip-pc>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	linux-kernel@vger.kernel.org, kernel-testers@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56E3F8D3.3020707@kernel.org>
+Date: Sat, 12 Mar 2016 11:09:07 +0000
 MIME-Version: 1.0
-In-Reply-To: <56E7D5E8.2050003@parrot.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20160307110632.GA10337@sudip-pc>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/15/2016 10:29 AM, Gregor Boirie wrote:
-> Hi all,
+On 07/03/16 11:06, Sudip Mukherjee wrote:
+> On Mon, Mar 07, 2016 at 10:01:34AM +0100, Markus Pargmann wrote:
+>> Hi,
+>>
+>> On Saturday 05 March 2016 18:43:11 Jonathan Cameron wrote:
+>>> On 03/03/16 12:51, Sudip Mukherjee wrote:
+>>>> We are getting build failure with tilepro allmodconfig with the error:
+>>>>
+>>>> drivers/iio/adc/fsl-imx25-gcq.c:236:4: note: in expansion of macro 'do_div'
+>>>> do_div(priv->channel_vref_mv[reg], 1000);
+>>>>     ^
+>>>>
+>>>> include/asm-generic/div64.h:198:17: note: expected 'uint64_t *
+>>>> 	{aka long long unsigned int *}' but argument is of type 'u32 *
+>>>> 	{aka unsigned int *}'
+>>>>
+>>>> Create a temporary variable of type u64 and use that in do_div.
+>>>>
+>>>> Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+>>> Markus, can you take a quick look at this. 
+>>
+>> Thanks. I think this was already fixed by Arnd.
+>> 	"iio: adc/imx25-gcq: move incorrect do_div"
 > 
-> After Jonathan's ms5611 review, I digged a bit deeper into regulator API.
-> I must confess it looks rather confusing to me, especially with regard to
-> optional regulator support.
+> It should. But I still have the same build failure with next-20160307
+> and not only tilepro, even m32r is also having the same build failure.
 > 
-> Most often, IIO drivers implement the following scheme at probing time to
-> enable an optional regulator:
-> </code>
-> /* At probing time */
-> void mydriver_power_enable(struct iio_dev *indio_dev)
-> {
->     struct mydriver_priv *priv = iio_priv(indio_dev);
-> 
->     /* Regulators not mandatory, but if requested we should enable them. */
->     priv->vdd = devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
->     if (!IS_ERR(priv->vdd)) {
->         int err = regulator_enable(priv->vdd);
->         if (err != 0)
->             dev_warn(&indio_dev->dev,
->                  "Failed to enable specified Vdd supply\n");
->     }
-> 
->     /* Keep going */
->     ...
-> }
-> 
-> /* At removal time */
-> void mydriver_power_disable(struct iio_dev *indio_dev)
-> {
->     struct mydriver_priv *priv = iio_priv(indio_dev);
-> 
->     ...
->     if (!IS_ERR(priv->vdd))
->         regulator_disable(priv->vdd);
->     ...
-> }
-> <code/>
-> 
-> A problem may arise with this piece of code: when devm_regulator_get_optional
-> returns -EPROBE_DEFER, driver will go on initializing with no regulator instead
-> of deferring their probing operations at a later time as it should (to wait
-> regulator initialization completion).
-> Although related to real troubles, other error codes are also ignored (EPERM,
-> EBUSY, ENOMEM...), which is even worse.
-> From my understanding, optional regulator usage should be enforced when present
-> and ignored if not there. The only error code which may be ignored should be
-> ENODEV when the regulator is optional.
-> This is clearly not implemented this way in the above example.
-> 
-> You can see such code in:
-> drivers/adc/max1363.c
-> drivers/common/st_sensors/st_sensors_core.c
-> drivers/dac/ad5686.c
-> 
-> The same seems to happen when using the alternate devm_regulator_get for
-> optional
-> usage purposes as in:
-> drivers/iio/amplifiers/ad8366.c
-> drivers/iio/dac/ad5624r_spi.c
-> and others...
-> 
-> So here is my simple question: how should I implement optional regulator
-> support ?
+Lee, did you pick the original fix from Arnd up?
 
-The only error code that should be ignored is ENODEV. Everything else should
-be propagated further up the stack.
+I can take this after the merge window if not.
 
-- Lars
+Jonathan
+> regards
+> sudip
+> 
 
