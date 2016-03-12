@@ -1,475 +1,1399 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43306 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43813 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751812AbcCLJ5c (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 04:57:32 -0500
-Subject: Re: [PATCH 1/2] iio: temperature: Add support for MAX31722/MAX31723
- temperature sensors
-To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	linux-iio@vger.kernel.org
-References: <1457530252-4984-1-git-send-email-tiberiu.a.breana@intel.com>
- <1457530252-4984-2-git-send-email-tiberiu.a.breana@intel.com>
+	with ESMTP id S1752430AbcCLL3J (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 06:29:09 -0500
+Subject: Re: [PATCH v4] iio: dac: Add support for the AD5592R/AD5593R
+ ADCs/DACs
+To: michael.hennerich@analog.com, linus.walleij@linaro.org,
+	gnurou@gmail.com, lars@metafoo.de, knaack.h@gmx.de,
+	paul.cercueil@analog.com, robh+dt@kernel.org, pawel.moll@arm.com,
+	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk
+References: <1457354915-30831-1-git-send-email-michael.hennerich@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-gpio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E3E807.8040408@kernel.org>
-Date: Sat, 12 Mar 2016 09:57:27 +0000
+Message-ID: <56E3FD82.6050209@kernel.org>
+Date: Sat, 12 Mar 2016 11:29:06 +0000
 MIME-Version: 1.0
-In-Reply-To: <1457530252-4984-2-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1457354915-30831-1-git-send-email-michael.hennerich@analog.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/03/16 13:30, Tiberiu Breana wrote:
-> Add basic support for the Maxim Integrated MAX31722/MAX31723 SPI
-> temperature sensors / thermostats.
+On 07/03/16 12:48, michael.hennerich@analog.com wrote:
+> From: Paul Cercueil <paul.cercueil@analog.com>
 > 
-> Includes:
-> 	- ACPI support;
-> 	- raw temperature readings;
-> 	- ability to set measurement resolution;
-> 	- power management
+> This patch adds support for the AD5592R (spi) and AD5593R (i2c)
+> ADC/DAC devices.
 > 
-> Datasheet:
-> https://datasheets.maximintegrated.com/en/ds/MAX31722-MAX31723.pdf
-> 
-> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
-I thought I'd give this a quick review, putting aside the question of
-whether it should be in IIO at all.
+> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
+> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 
-A few really trivial suggestions, but otherwise a nice clean driver.
+Changes should be below the -- otherwise they'll get picked up in the
+patch description in git.
+
+Otherwise, I think this crossed with Linus' comments on the gpio / pinctrl
+side of things so I'll wait for you to address those before taking another
+time.
 
 Jonathan
-> ---
->  drivers/iio/temperature/Kconfig    |  12 ++
->  drivers/iio/temperature/Makefile   |   1 +
->  drivers/iio/temperature/max31722.c | 374 +++++++++++++++++++++++++++++++++++++
->  3 files changed, 387 insertions(+)
->  create mode 100644 drivers/iio/temperature/max31722.c
 > 
-> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-> index c4664e5..7587887 100644
-> --- a/drivers/iio/temperature/Kconfig
-> +++ b/drivers/iio/temperature/Kconfig
-> @@ -3,6 +3,18 @@
->  #
->  menu "Temperature sensors"
->  
-> +config MAX31722
-> +	tristate "MAX31722 temperature sensor"
-> +	depends on SPI
-> +	select REGMAP_SPI
-> +	help
-> +	  If you say yes here you get support for the Maxim Integrated
-> +	  MAX31722/MAX31723 digital thermometers / thermostats operating
-> +	  over an SPI interface.
-> +
-> +	  This driver can also be built as a module. If so, the module will
-> +	  be called max31722.
-> +
->  config MLX90614
->  	tristate "MLX90614 contact-less infrared sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-> index 02bc79d..a9484d6 100644
-> --- a/drivers/iio/temperature/Makefile
-> +++ b/drivers/iio/temperature/Makefile
-> @@ -2,6 +2,7 @@
->  # Makefile for industrial I/O temperature drivers
->  #
->  
-> +obj-$(CONFIG_MAX31722) += max31722.o
->  obj-$(CONFIG_MLX90614) += mlx90614.o
->  obj-$(CONFIG_TMP006) += tmp006.o
->  obj-$(CONFIG_TSYS01) += tsys01.o
-> diff --git a/drivers/iio/temperature/max31722.c b/drivers/iio/temperature/max31722.c
+> Changes since v1:
+> 	* Fix mutex usage
+> 	* Remove unnecessary NULL pointer guards
+> 	* Add comment explaining the invalid data read
+> 	* AD5593R Remove surplus adc readback
+> 
+> Changes since v2:
+> 	* Use child nodes to describe channels
+> 	* Fix probe return and driver remove path
+> 	* Move locking closer to where its used
+> 	* Remove WARN_ON but return error
+> 	* Remove OPEN DRAIN configuration option
+> 
+> Changes since v3:
+> 	* Documentation: Add missing vendor prefixes in the examples
+> 	* Minor function reordering in remove() to match the reverse of probe()
+> 
+> ---
+>  .../devicetree/bindings/iio/dac/ad5592r.txt        | 143 +++++
+>  drivers/iio/dac/Kconfig                            |  27 +
+>  drivers/iio/dac/Makefile                           |   3 +
+>  drivers/iio/dac/ad5592r-base.c                     | 702 +++++++++++++++++++++
+>  drivers/iio/dac/ad5592r-base.h                     |  78 +++
+>  drivers/iio/dac/ad5592r.c                          | 164 +++++
+>  drivers/iio/dac/ad5593r.c                          | 131 ++++
+>  include/dt-bindings/iio/adi,ad5592r.h              |  16 +
+>  8 files changed, 1264 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5592r.txt
+>  create mode 100644 drivers/iio/dac/ad5592r-base.c
+>  create mode 100644 drivers/iio/dac/ad5592r-base.h
+>  create mode 100644 drivers/iio/dac/ad5592r.c
+>  create mode 100644 drivers/iio/dac/ad5593r.c
+>  create mode 100644 include/dt-bindings/iio/adi,ad5592r.h
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/dac/ad5592r.txt b/Documentation/devicetree/bindings/iio/dac/ad5592r.txt
 > new file mode 100644
-> index 0000000..fa833b6
+> index 0000000..07e3fc1
 > --- /dev/null
-> +++ b/drivers/iio/temperature/max31722.c
-> @@ -0,0 +1,374 @@
-> +/**
-> + * MAX31722/MAX31723 digital thermometer and thermostat SPI driver
+> +++ b/Documentation/devicetree/bindings/iio/dac/ad5592r.txt
+> @@ -0,0 +1,143 @@
+> +Analog Devices AD5592R/AD5593R DAC/ADC device driver
+> +
+> +Required properties for the AD5592R:
+> +	- compatible: Must be "adi,ad5592r"
+> +	- reg: SPI chip select number for the device
+> +	- spi-max-frequency: Max SPI frequency to use (< 30000000)
+> +	- spi-cpol: The AD5592R requires inverse clock polarity (CPOL) mode
+> +
+> +Required properties for the AD5593R:
+> +	- compatible: Must be "adi,ad5593r"
+> +	- reg: I2C address of the device
+> +
+> +Required properties for all supported chips:
+> +	- #address-cells: Should be 1.
+> +	- #size-cells: Should be 0.
+> +	- channel nodes:
+> +	  Each child node represents one channel and has the following
+> +	  Required properties:
+> +		* reg: Pin on which this channel is connected to.
+> +		* adi,mode: Mode or function of this channel.
+> +			    Macros specifying the valid values
+> +			    can be found in <dt-bindings/iio/adi,ad5592r.h>.
+> +
+> +			    The following values are currently supported:
+> +				* CH_MODE_UNUSED (the pin is unused)
+> +				* CH_MODE_ADC (the pin is ADC input)
+> +				* CH_MODE_DAC (the pin is DAC output)
+> +				* CH_MODE_DAC_AND_ADC (the pin is DAC output
+> +					but can be monitored by an ADC)
+> +				* CH_MODE_GPIO (the pin is registered
+> +					with GPIOLIB)
+> +	 Optional properties:
+> +		* adi,off-state: State of this channel when unused or the
+> +				 device gets removed. Macros specifying the
+> +				 valid values can be found in
+> +				 <dt-bindings/iio/adi,ad5592r.h>.
+> +
+> +				* CH_OFFSTATE_PULLDOWN (the pin is pulled down)
+> +				* CH_OFFSTATE_OUT_LOW  (the pin is output low)
+> +				* CH_OFFSTATE_OUT_HIGH (the pin is output high)
+> +				* CH_OFFSTATE_OUT_TRISTATE (the pin is
+> +					tristated output)
+> +
+> +
+> +Optional properties:
+> +	- vref-supply: Phandle to the external reference voltage supply. This should
+> +	  only be set if there is an external reference voltage connected to the VREF
+> +	  pin. If the property is not set the internal 2.5V reference is used.
+> +	- reset-gpios : GPIO spec for the RESET pin. If specified, it will be
+> +	  asserted during driver probe.
+> +
+> +AD5592R Example:
+> +
+> +	#include <dt-bindings/iio/adi,ad5592r.h>
+> +
+> +	vref: regulator-vref {
+> +		compatible = "regulator-fixed";
+> +		regulator-name = "vref-ad559x";
+> +		regulator-min-microvolt = <3300000>;
+> +		regulator-max-microvolt = <3300000>;
+> +		regulator-always-on;
+> +	};
+> +
+> +	ad5592r@0 {
+> +		#size-cells = <0>;
+> +		#address-cells = <1>;
+> +		compatible = "adi,ad5592r";
+> +		reg = <0>;
+> +		spi-max-frequency = <1000000>;
+> +		spi-cpol;
+> +
+> +		vref-supply = <&vref>; /* optional */
+> +		reset-gpios = <&gpio0 86 0>;  /* optional */
+> +
+> +		channel@0 {
+> +			reg = <0>;
+> +			adi,mode = <CH_MODE_DAC>;
+> +		};
+> +		channel@1 {
+> +			reg = <1>;
+> +			adi,mode = <CH_MODE_ADC>;
+> +		};
+> +		channel@2 {
+> +			reg = <2>;
+> +			adi,mode = <CH_MODE_DAC_AND_ADC>;
+> +		};
+> +		channel@3 {
+> +			reg = <3>;
+> +			adi,mode = <CH_MODE_DAC_AND_ADC>;
+> +			adi,off-state = <CH_OFFSTATE_PULLDOWN>;
+> +		};
+> +		channel@4 {
+> +			reg = <4>;
+> +			adi,mode = <CH_MODE_UNUSED>;
+> +			adi,off-state = <CH_OFFSTATE_PULLDOWN>;
+> +		};
+> +		channel@5 {
+> +			reg = <5>;
+> +			adi,mode = <CH_MODE_GPIO>;
+> +			adi,off-state = <CH_OFFSTATE_PULLDOWN>;
+> +		};
+> +		channel@6 {
+> +			reg = <6>;
+> +			adi,mode = <CH_MODE_GPIO>;
+> +			adi,off-state = <CH_OFFSTATE_PULLDOWN>;
+> +		};
+> +		channel@7 {
+> +			reg = <7>;
+> +			adi,mode = <CH_MODE_GPIO>;
+> +			adi,off-state = <CH_OFFSTATE_PULLDOWN>;
+> +		};
+> +	};
+> +
+> +AD5593R Example:
+> +
+> +	#include <dt-bindings/iio/adi,ad5592r.h>
+> +
+> +	ad5593r@10 {
+> +		#size-cells = <0>;
+> +		#address-cells = <1>;
+> +		compatible = "adi,ad5593r";
+> +		reg = <0x10>;
+> +		channel@0 {
+> +			reg = <0>;
+> +			adi,mode = <CH_MODE_DAC>;
+> +			adi,off-state = <CH_OFFSTATE_PULLDOWN>;
+> +		};
+> +		channel@1 {
+> +			reg = <1>;
+> +			adi,mode = <CH_MODE_ADC>;
+> +			adi,off-state = <CH_OFFSTATE_PULLDOWN>;
+> +		};
+> +		channel@2 {
+> +			reg = <2>;
+> +			adi,mode = <CH_MODE_DAC_AND_ADC>;
+> +			adi,off-state = <CH_OFFSTATE_PULLDOWN>;
+> +		};
+> +		channel@6 {
+> +			reg = <6>;
+> +			adi,mode = <CH_MODE_GPIO>;
+> +			adi,off-state = <CH_OFFSTATE_PULLDOWN>;
+> +		};
+> +	};
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index a995139..8c78ece 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -74,6 +74,33 @@ config AD5449
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called ad5449.
+>  
+> +config AD5592R_BASE
+> +	tristate
+> +
+> +config AD5592R
+> +	tristate "Analog Devices AD5592R ADC/DAC driver"
+> +	depends on SPI_MASTER
+> +	depends on OF
+> +	select AD5592R_BASE
+> +	help
+> +	  Say yes here to build support for Analog Devices AD5592R
+> +	  Digital to Analog / Analog to Digital Converter.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called ad5592r.
+> +
+> +config AD5593R
+> +	tristate "Analog Devices AD5593R ADC/DAC driver"
+> +	depends on I2C
+> +	depends on OF
+> +	select AD5592R_BASE
+> +	help
+> +	  Say yes here to build support for Analog Devices AD5593R
+> +	  Digital to Analog / Analog to Digital Converter.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called ad5593r.
+> +
+>  config AD5504
+>  	tristate "Analog Devices AD5504/AD5501 DAC SPI driver"
+>  	depends on SPI
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index 67b4842..de28cd2 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -11,6 +11,9 @@ obj-$(CONFIG_AD5064) += ad5064.o
+>  obj-$(CONFIG_AD5504) += ad5504.o
+>  obj-$(CONFIG_AD5446) += ad5446.o
+>  obj-$(CONFIG_AD5449) += ad5449.o
+> +obj-$(CONFIG_AD5592R_BASE) += ad5592r-base.o
+> +obj-$(CONFIG_AD5592R) += ad5592r.o
+> +obj-$(CONFIG_AD5593R) += ad5593r.o
+>  obj-$(CONFIG_AD5755) += ad5755.o
+>  obj-$(CONFIG_AD5761) += ad5761.o
+>  obj-$(CONFIG_AD5764) += ad5764.o
+> diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
+> new file mode 100644
+> index 0000000..88bdd51
+> --- /dev/null
+> +++ b/drivers/iio/dac/ad5592r-base.c
+> @@ -0,0 +1,702 @@
+> +/*
+> + * AD5592R Digital <-> Analog converters driver
 > + *
-> + * Copyright (c) 2016, Intel Corporation.
+> + * Copyright 2014-2016 Analog Devices Inc.
+> + * Author: Paul Cercueil <paul.cercueil@analog.com>
 > + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License. See the file COPYING in the main
-> + * directory of this archive for more details.
+> + * Licensed under the GPL-2.
 > + */
 > +
-> +#include <linux/kernel.h>
-> +#include <linux/acpi.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +#include <linux/spi/spi.h>
+> +#include <linux/bitops.h>
+> +#include <linux/delay.h>
 > +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/of.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/gpio/driver.h>
+> +#include <linux/gpio.h>
+> +#include <linux/property.h>
 > +
-> +#define MAX31722_REG_CFG				0x00
-> +#define MAX31722_REG_TEMP_LSB			0x01
-> +#define MAX31722_REG_TEMP_MSB			0x02
-> +#define MAX31722_MAX_REG				0x86
+> +#include <dt-bindings/iio/adi,ad5592r.h>
 > +
-> +#define MAX31722_MODE_CONTINUOUS		0x00
-> +#define MAX31722_MODE_STANDBY			0x01
+> +#include "ad5592r-base.h"
 > +
-> +#define MAX31722_REGMAP_NAME			"max31722_regmap"
+> +#ifdef CONFIG_GPIOLIB
 > +
-> +#define MAX31722_SCALE_AVAILABLE		"0.5 0.25 0.125 0.0625"
-> +
-> +#define MAX31722_REGFIELD(name)						 \
-> +	do {								 \
-> +		data->reg_##name =					 \
-> +			devm_regmap_field_alloc(&spi->dev, regmap,	 \
-> +				max31722_reg_field_##name);		 \
-> +		if (IS_ERR(data->reg_##name)) {				 \
-> +			dev_err(&spi->dev, "reg field alloc failed.\n"); \
-> +			return PTR_ERR(data->reg_##name);		 \
-> +		}							 \
-> +	} while (0)
-> +
-> +static const struct reg_field max31722_reg_field_state =
-> +				REG_FIELD(MAX31722_REG_CFG, 0, 0);
-> +static const struct reg_field max31722_reg_field_resolution =
-> +				REG_FIELD(MAX31722_REG_CFG, 1, 2);
-> +
-> +struct max31722_data {
-> +	struct spi_device *spi_device;
-> +	struct mutex lock;
-> +	struct regmap *regmap;
-> +	struct regmap_field *reg_state;
-> +	struct regmap_field *reg_resolution;
-> +};
-> +
-> +/*
-> + * This table can double as a negative exponent value lookup table
-> + * (as micro units) for calculating LSB temperature values.
-> + */
-> +static const int max31722_scale_table[4] = {
-> +	500000, 250000, 125000, 62500
-> +};
-> +
-> +static IIO_CONST_ATTR(in_temp_scale_available, MAX31722_SCALE_AVAILABLE);
-> +
-> +static struct attribute *max31722_attributes[] = {
-> +	&iio_const_attr_in_temp_scale_available.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group max31722_attribute_group = {
-> +	.attrs = max31722_attributes
-> +};
-> +
-> +static const struct iio_chan_spec max31722_channels[] = {
-> +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +};
-> +
-> +static bool max31722_is_volatile_reg(struct device *dev, unsigned int reg)
+> +static int ad5592r_gpio_get(struct gpio_chip *chip, unsigned offset)
 > +{
-> +	switch (reg) {
-> +	case MAX31722_REG_TEMP_LSB:
-> +	case MAX31722_REG_TEMP_MSB:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
+> +	struct ad5592r_state *st = gpiochip_get_data(chip);
+> +	int ret = 0;
+> +	u8 val;
+> +
+> +	mutex_lock(&st->gpio_lock);
+> +
+> +	if (st->gpio_out & BIT(offset))
+> +		val = st->gpio_val;
+> +	else
+> +		ret = st->ops->gpio_read(st, &val);
+> +
+> +	mutex_unlock(&st->gpio_lock);
+> +
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return !!(val & BIT(offset));
 > +}
 > +
-> +static bool max31722_is_writeable_reg(struct device *dev, unsigned int reg)
+> +static void ad5592r_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 > +{
-> +	switch (reg) {
-> +	case MAX31722_REG_TEMP_LSB:
-> +	case MAX31722_REG_TEMP_MSB:
-> +		return false;
-> +	default:
-> +		return true;
-> +	}
+> +	struct ad5592r_state *st = gpiochip_get_data(chip);
+> +
+> +	mutex_lock(&st->gpio_lock);
+> +
+> +	if (value)
+> +		st->gpio_val |= BIT(offset);
+> +	else
+> +		st->gpio_val &= ~BIT(offset);
+> +
+> +	st->ops->reg_write(st, AD5592R_REG_GPIO_SET, st->gpio_val);
+> +
+> +	mutex_unlock(&st->gpio_lock);
 > +}
 > +
-> +static struct regmap_config max31722_regmap_config = {
-> +	.name = MAX31722_REGMAP_NAME,
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +
-> +	.max_register = MAX31722_MAX_REG,
-> +	.cache_type = REGCACHE_RBTREE,
-> +
-> +	.volatile_reg = max31722_is_volatile_reg,
-> +	.writeable_reg = max31722_is_writeable_reg,
-> +
-> +	.read_flag_mask = 0x00,
-> +	.write_flag_mask = 0x80,
-> +};
-> +
-> +/*
-> + * Convert a temperature register value to a floating point value.
-> + * Data is represented in 9-12 bits, two's complement.
-> + * The MSB contains the integer part of the temperature value
-> + * (signed), while the LSB contains the fractional part as
-> + * negative powers of 2, e.g.: bit 0 is 2^-1, bit 1 is 2^-2, etc.
-> + */
-> +static void max31722_reg_to_float(u16 reg_val, int *val, int *val2)
+> +static int ad5592r_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 > +{
-> +	int i;
-> +	u8 msb;
-> +	u8 lsb;
+> +	struct ad5592r_state *st = gpiochip_get_data(chip);
+> +	int ret;
 > +
-> +	msb = reg_val >> 8;
-> +	lsb = (reg_val << 8) >> 8;
+> +	mutex_lock(&st->gpio_lock);
 > +
-> +	/* Calculate the integer part. */
-> +	if (msb & 0x80) {
-> +		/* Negative value. Reverse bits and add 1. */
-> +		u16 orig = reg_val;
-> +		u16 rev = 0;
-> +		int num_bits = sizeof(rev) * 8;
+> +	st->gpio_out &= ~BIT(offset);
+> +	st->gpio_in |= BIT(offset);
 > +
-> +		for (i = 0 ; i < num_bits ; i++) {
-> +			rev |= !(orig & 0x01) << i;
-> +			orig >>= 1;
-> +		}
-> +		rev += 1;
-> +		msb = rev >> 8;
-> +		lsb = (rev << 8) >> 8;
-> +		*val = (-1) * msb;
-> +	} else { /* Positive value. */
-> +		*val = msb;
-> +	}
+> +	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_OUT_EN, st->gpio_out);
+> +	if (ret < 0)
+> +		goto err_unlock;
 > +
-> +	/*
-> +	 * Calculate the fractional part.
-> +	 * Only the first four LSB bits contain data.
-> +	 */
-> +	lsb >>= 4;
-> +	i = 0;
-> +	*val2 = 0;
-> +	while (i < 4) {
-> +		if ((lsb >> (4 - i - 1)) & 0x01)
-> +			*val2 += max31722_scale_table[i];
-> +		lsb <<= 1;
-> +		lsb >>= 1;
-> +		i++;
-> +	}
+> +	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_IN_EN, st->gpio_in);
+> +
+> +err_unlock:
+> +	mutex_unlock(&st->gpio_lock);
+> +
+> +	return ret;
 > +}
 > +
-> +static int max31722_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int *val, int *val2, long mask)
+> +static int ad5592r_gpio_direction_output(struct gpio_chip *chip,
+> +					 unsigned offset, int value)
+> +{
+> +	struct ad5592r_state *st = gpiochip_get_data(chip);
+> +	int ret;
+> +
+> +	mutex_lock(&st->gpio_lock);
+> +
+> +	if (value)
+> +		st->gpio_val |= BIT(offset);
+> +	else
+> +		st->gpio_val &= ~BIT(offset);
+> +
+> +	st->gpio_in &= ~BIT(offset);
+> +	st->gpio_out |= BIT(offset);
+> +
+> +	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_SET, st->gpio_val);
+> +	if (ret < 0)
+> +		goto err_unlock;
+> +
+> +	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_OUT_EN, st->gpio_out);
+> +	if (ret < 0)
+> +		goto err_unlock;
+> +
+> +	ret = st->ops->reg_write(st, AD5592R_REG_GPIO_IN_EN, st->gpio_in);
+> +
+> +err_unlock:
+> +	mutex_unlock(&st->gpio_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad5592r_gpio_request(struct gpio_chip *chip, unsigned offset)
+> +{
+> +	struct ad5592r_state *st = gpiochip_get_data(chip);
+> +
+> +	if (!(st->gpio_map & BIT(offset))) {
+> +		dev_err(st->dev, "GPIO %d is reserved by alternate function\n",
+> +			offset);
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (offset >= chip->ngpio)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5592r_gpio_init(struct ad5592r_state *st)
+> +{
+> +	if (!st->gpio_map)
+> +		return 0;
+> +
+> +	st->gpiochip.label = dev_name(st->dev);
+> +	st->gpiochip.base = -1;
+> +	st->gpiochip.ngpio = 8;
+> +	st->gpiochip.parent = st->dev;
+> +	st->gpiochip.can_sleep = true;
+> +	st->gpiochip.direction_input = ad5592r_gpio_direction_input;
+> +	st->gpiochip.direction_output = ad5592r_gpio_direction_output;
+> +	st->gpiochip.get = ad5592r_gpio_get;
+> +	st->gpiochip.set = ad5592r_gpio_set;
+> +	st->gpiochip.request = ad5592r_gpio_request;
+> +	st->gpiochip.owner = THIS_MODULE;
+> +
+> +	mutex_init(&st->gpio_lock);
+> +
+> +	return gpiochip_add_data(&st->gpiochip, st);
+> +}
+> +
+> +static void ad5592r_gpio_cleanup(struct ad5592r_state *st)
+> +{
+> +	if (st->gpio_map)
+> +		gpiochip_remove(&st->gpiochip);
+> +}
+> +#else
+> +static int ad5592r_gpio_init(struct ad5592r_state *st) { return 0 };
+> +static void ad5592r_gpio_cleanup(struct ad5592r_state *st) { };
+> +#endif /* CONFIG_GPIOLIB */
+> +
+> +static int ad5592r_reset(struct ad5592r_state *st)
+> +{
+> +	struct gpio_desc *gpio;
+> +	struct iio_dev *iio_dev = iio_priv_to_dev(st);
+> +
+> +	gpio = devm_gpiod_get_optional(st->dev, "reset", GPIOD_OUT_LOW);
+> +	if (IS_ERR(gpio))
+> +		return PTR_ERR(gpio);
+> +
+> +	if (gpio) {
+> +		udelay(1);
+> +		gpiod_set_value(gpio, 1);
+> +	} else {
+> +		mutex_lock(&iio_dev->mlock);
+> +		st->ops->reg_write(st, AD5592R_REG_RESET, 0xdac);
+> +		mutex_unlock(&iio_dev->mlock);
+> +	}
+> +
+> +	udelay(250);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5592r_get_vref(struct ad5592r_state *st)
 > +{
 > +	int ret;
-> +	int index;
-> +	u16 buf;
-> +	struct max31722_data *data = iio_priv(indio_dev);
-> +	struct spi_device *spi = data->spi_device;
 > +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&data->lock);
-> +		ret = regmap_bulk_read(data->regmap,
-> +				       MAX31722_REG_TEMP_LSB, &buf, 2);
-> +		if (ret < 0) {
-> +			dev_err(&spi->dev, "failed to read temperature register\n");
-> +			mutex_unlock(&data->lock);
+> +	if (st->reg) {
+> +		ret = regulator_get_voltage(st->reg);
+> +		if (ret < 0)
 > +			return ret;
-> +		}
-> +		max31722_reg_to_float(buf, val, val2);
-> +		mutex_unlock(&data->lock);
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		mutex_lock(&data->lock);
-> +		ret = regmap_field_read(data->reg_resolution, &index);
-> +		if (ret < 0) {
-> +			dev_err(&spi->dev, "failed to read configuration register\n");
-> +			mutex_unlock(&data->lock);
-> +			return ret;
-> +		}
-> +		mutex_unlock(&data->lock);
-> +		*val = 0;
-> +		*val2 = max31722_scale_table[index];
-> +		return IIO_VAL_INT_PLUS_MICRO;
+> +
+> +		return ret / 1000;
+> +	} else {
+> +		return 2500;
 > +	}
-> +
-> +	return -EINVAL;
 > +}
 > +
-> +static int max31722_write_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int val, int val2, long mask)
+> +static int ad5592r_set_channel_modes(struct ad5592r_state *st)
 > +{
-> +	int i;
+> +	const struct ad5592r_rw_ops *ops = st->ops;
 > +	int ret;
-> +	int index = -1;
-> +	struct max31722_data *data = iio_priv(indio_dev);
+> +	unsigned i;
+> +	struct iio_dev *iio_dev = iio_priv_to_dev(st);
+> +	u8 pulldown = 0, tristate = 0, dac = 0, adc = 0;
+> +	u16 read_back;
 > +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		for (i = 0; i < ARRAY_SIZE(max31722_scale_table); i++) {
-> +			if (val == 0 && val2 == max31722_scale_table[i]) {
-> +				index = i;
+> +	for (i = 0; i < st->num_channels; i++) {
+> +		switch (st->channel_modes[i]) {
+> +		case CH_MODE_DAC:
+> +			dac |= BIT(i);
+> +			break;
+> +
+> +		case CH_MODE_ADC:
+> +			adc |= BIT(i);
+> +			break;
+> +
+> +		case CH_MODE_DAC_AND_ADC:
+> +			dac |= BIT(i);
+> +			adc |= BIT(i);
+> +			break;
+> +
+> +		case CH_MODE_GPIO:
+> +			st->gpio_map |= BIT(i);
+> +			st->gpio_in |= BIT(i); /* Default to input */
+> +			break;
+> +
+> +		case CH_MODE_UNUSED:
+> +			/* fall-through */
+> +		default:
+> +			switch (st->channel_offstate[i]) {
+> +			case CH_OFFSTATE_OUT_TRISTATE:
+> +				tristate |= BIT(i);
+> +				break;
+> +
+> +			case CH_OFFSTATE_OUT_LOW:
+> +				st->gpio_out |= BIT(i);
+> +				break;
+> +
+> +			case CH_OFFSTATE_OUT_HIGH:
+> +				st->gpio_out |= BIT(i);
+> +				st->gpio_val |= BIT(i);
+> +				break;
+> +
+> +			case CH_OFFSTATE_PULLDOWN:
+> +				/* fall-through */
+> +			default:
+> +				pulldown |= BIT(i);
 > +				break;
 > +			}
 > +		}
-> +		if (index < 0)
+> +	}
+> +
+> +	mutex_lock(&iio_dev->mlock);
+> +
+> +	/* Pull down unused pins to GND */
+> +	ret = ops->reg_write(st, AD5592R_REG_PULLDOWN, pulldown);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	ret = ops->reg_write(st, AD5592R_REG_TRISTATE, tristate);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	/* Configure pins that we use */
+> +	ret = ops->reg_write(st, AD5592R_REG_DAC_EN, dac);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	ret = ops->reg_write(st, AD5592R_REG_ADC_EN, adc);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	ret = ops->reg_write(st, AD5592R_REG_GPIO_SET, st->gpio_val);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	ret = ops->reg_write(st, AD5592R_REG_GPIO_OUT_EN, st->gpio_out);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	ret = ops->reg_write(st, AD5592R_REG_GPIO_IN_EN, st->gpio_in);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	/* Verify that we can read back at least one register */
+> +	ret = ops->reg_read(st, AD5592R_REG_ADC_EN, &read_back);
+> +	if (!ret && (read_back & 0xff) != adc)
+> +		ret = -EIO;
+> +
+> +err_unlock:
+> +	mutex_unlock(&iio_dev->mlock);
+> +	return ret;
+> +}
+> +
+> +static int ad5592r_reset_channel_modes(struct ad5592r_state *st)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(st->channel_modes); i++)
+> +		st->channel_modes[i] = CH_MODE_UNUSED;
+> +
+> +	return ad5592r_set_channel_modes(st);
+> +}
+> +
+> +static int ad5592r_write_raw(struct iio_dev *iio_dev,
+> +	struct iio_chan_spec const *chan, int val, int val2, long mask)
+> +{
+> +	struct ad5592r_state *st = iio_priv(iio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +
+> +		if (val >= (1 << chan->scan_type.realbits) || val < 0)
 > +			return -EINVAL;
 > +
-> +		mutex_lock(&data->lock);
-> +		ret = regmap_field_write(data->reg_resolution, index);
-> +		mutex_unlock(&data->lock);
+> +		if (!chan->output)
+> +			return -EINVAL;
 > +
+> +		mutex_lock(&iio_dev->mlock);
+> +		ret = st->ops->write_dac(st, chan->channel, val);
+> +		if (!ret)
+> +			st->cached_dac[chan->channel] = val;
+> +		mutex_unlock(&iio_dev->mlock);
 > +		return ret;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (chan->type == IIO_VOLTAGE) {
+> +			bool gain;
+> +
+> +			if (val == st->scale_avail[0][0] &&
+> +				val2 == st->scale_avail[0][1])
+> +				gain = false;
+> +			else if (val == st->scale_avail[1][0] &&
+> +				 val2 == st->scale_avail[1][1])
+> +				gain = true;
+> +			else
+> +				return -EINVAL;
+> +
+> +			mutex_lock(&iio_dev->mlock);
+> +
+> +			ret = st->ops->reg_read(st, AD5592R_REG_CTRL,
+> +						&st->cached_gp_ctrl);
+> +			if (ret < 0) {
+> +				mutex_unlock(&iio_dev->mlock);
+> +				return ret;
+> +			}
+> +
+> +			if (chan->output) {
+> +				if (gain)
+> +					st->cached_gp_ctrl |=
+> +						AD5592R_REG_CTRL_DAC_RANGE;
+> +				else
+> +					st->cached_gp_ctrl &=
+> +						~AD5592R_REG_CTRL_DAC_RANGE;
+> +			} else {
+> +				if (gain)
+> +					st->cached_gp_ctrl |=
+> +						AD5592R_REG_CTRL_ADC_RANGE;
+> +				else
+> +					st->cached_gp_ctrl &=
+> +						~AD5592R_REG_CTRL_ADC_RANGE;
+> +			}
+> +
+> +			ret = st->ops->reg_write(st, AD5592R_REG_CTRL,
+> +						 st->cached_gp_ctrl);
+> +			mutex_unlock(&iio_dev->mlock);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			return ret;
+> +
+> +		}
+> +		break;
+> +	default:
+> +		return -EINVAL;
 > +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5592r_read_raw(struct iio_dev *iio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long m)
+> +{
+> +	struct ad5592r_state *st = iio_priv(iio_dev);
+> +	u16 read_val;
+> +	int ret;
+> +
+> +	switch (m) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&iio_dev->mlock);
+> +
+> +		if (!chan->output) {
+> +			ret = st->ops->read_adc(st, chan->channel, &read_val);
+> +			if (ret)
+> +				goto unlock;
+> +
+> +			if ((read_val >> 12 & 0x7) != (chan->channel & 0x7)) {
+> +				dev_err(st->dev, "Error while reading channel %u\n",
+> +						chan->channel);
+> +				ret = -EIO;
+> +				goto unlock;
+> +			}
+> +
+> +			read_val &= GENMASK(11, 0);
+> +
+> +		} else {
+> +			read_val = st->cached_dac[chan->channel];
+> +		}
+> +
+> +		dev_dbg(st->dev, "Channel %u read: 0x%04hX\n",
+> +				chan->channel, read_val);
+> +
+> +		*val = (int) read_val;
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = ad5592r_get_vref(st);
+> +
+> +		if (chan->type == IIO_TEMP) {
+> +			s64 tmp = *val * (3767897513LL / 25LL);
+> +			*val = div_s64_rem(tmp, 1000000000LL, val2);
+> +
+> +			ret = IIO_VAL_INT_PLUS_MICRO;
+> +		} else {
+> +			int mult;
+> +
+> +			mutex_lock(&iio_dev->mlock);
+> +
+> +			if (chan->output)
+> +				mult = !!(st->cached_gp_ctrl &
+> +					AD5592R_REG_CTRL_DAC_RANGE);
+> +			else
+> +				mult = !!(st->cached_gp_ctrl &
+> +					AD5592R_REG_CTRL_ADC_RANGE);
+> +
+> +			*val *= ++mult;
+> +
+> +			*val2 = chan->scan_type.realbits;
+> +			ret = IIO_VAL_FRACTIONAL_LOG2;
+> +		}
+> +		break;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		ret = ad5592r_get_vref(st);
+> +
+> +		mutex_lock(&iio_dev->mlock);
+> +
+> +		if (st->cached_gp_ctrl & AD5592R_REG_CTRL_ADC_RANGE)
+> +			*val = (-34365 * 25) / ret;
+> +		else
+> +			*val = (-75365 * 25) / ret;
+> +		ret =  IIO_VAL_INT;
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +	}
+> +
+> +unlock:
+> +	mutex_unlock(&iio_dev->mlock);
+> +	return ret;
+> +}
+> +
+> +static int ad5592r_write_raw_get_fmt(struct iio_dev *indio_dev,
+> +				 struct iio_chan_spec const *chan, long mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +
+> +	default:
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	}
+> +
 > +	return -EINVAL;
 > +}
 > +
-> +static const struct iio_info max31722_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= max31722_read_raw,
-> +	.write_raw		= max31722_write_raw,
-> +	.attrs			= &max31722_attribute_group,
+> +static const struct iio_info ad5592r_info = {
+> +	.read_raw = ad5592r_read_raw,
+> +	.write_raw = ad5592r_write_raw,
+> +	.write_raw_get_fmt = ad5592r_write_raw_get_fmt,
+> +	.driver_module = THIS_MODULE,
 > +};
 > +
-> +static int max31722_init(struct max31722_data *data)
+> +static ssize_t ad5592r_show_scale_available(struct iio_dev *iio_dev,
+> +					   uintptr_t private,
+> +					   const struct iio_chan_spec *chan,
+> +					   char *buf)
 > +{
-> +	int ret = 0;
-> +	struct spi_device *spi = data->spi_device;
-> +	struct regmap *regmap;
+> +	struct ad5592r_state *st = iio_priv(iio_dev);
 > +
-> +	/* Initialize the regmap */
-> +	regmap = devm_regmap_init_spi(spi, &max31722_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&spi->dev, "regmap initialization failed.\n");
-> +		return PTR_ERR(regmap);
+> +	return sprintf(buf, "%d.%09u %d.%09u\n",
+> +		st->scale_avail[0][0], st->scale_avail[0][1],
+> +		st->scale_avail[1][0], st->scale_avail[1][1]);
+> +}
+> +
+> +static struct iio_chan_spec_ext_info ad5592r_ext_info[] = {
+> +	{
+> +	 .name = "scale_available",
+> +	 .read = ad5592r_show_scale_available,
+> +	 .shared = true,
+> +	 },
+> +	{},
+> +};
+> +
+> +static void ad5592r_setup_channel(struct iio_dev *iio_dev,
+> +		struct iio_chan_spec *chan, bool output, unsigned id)
+> +{
+> +	chan->type = IIO_VOLTAGE;
+> +	chan->indexed = 1;
+> +	chan->output = output;
+> +	chan->channel = id;
+> +	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
+> +	chan->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
+> +	chan->scan_type.sign = 'u';
+> +	chan->scan_type.realbits = 12;
+> +	chan->scan_type.storagebits = 16;
+> +	chan->ext_info = ad5592r_ext_info;
+> +}
+> +
+> +static int ad5592r_alloc_channels(struct ad5592r_state *st)
+> +{
+> +	unsigned i, curr_channel = 0,
+> +		 num_channels = st->num_channels;
+> +	struct iio_dev *iio_dev = iio_priv_to_dev(st);
+> +	struct iio_chan_spec *channels;
+> +	struct fwnode_handle *child;
+> +	u32 reg, tmp;
+> +	int ret;
+> +
+> +	device_for_each_child_node(st->dev, child) {
+> +		ret = fwnode_property_read_u32(child, "reg", &reg);
+> +		if (ret || reg > ARRAY_SIZE(st->channel_modes))
+> +			continue;
+> +
+> +		ret = fwnode_property_read_u32(child, "adi,mode", &tmp);
+> +		if (!ret)
+> +			st->channel_modes[reg] = tmp;
+> +
+> +		fwnode_property_read_u32(child, "adi,off-state", &tmp);
+> +		if (!ret)
+> +			st->channel_offstate[reg] = tmp;
 > +	}
-> +	data->regmap = regmap;
 > +
-> +	MAX31722_REGFIELD(state);
-> +	MAX31722_REGFIELD(resolution);
+> +	channels = devm_kzalloc(st->dev,
+> +			(1 + 2 * num_channels) * sizeof(*channels), GFP_KERNEL);
+> +	if (!channels)
+> +		return -ENOMEM;
 > +
-> +	/* Set SD bit to 0 so we can have continuous measurements. */
-> +	ret = regmap_field_write(data->reg_state, MAX31722_MODE_CONTINUOUS);
-> +	if (ret < 0)
-> +		dev_err(&spi->dev, "failed to configure sensor.\n");
+> +	for (i = 0; i < num_channels; i++) {
+> +		switch (st->channel_modes[i]) {
+> +		case CH_MODE_DAC:
+> +			ad5592r_setup_channel(iio_dev, &channels[curr_channel],
+> +					true, i);
+> +			curr_channel++;
+> +			break;
+> +
+> +		case CH_MODE_ADC:
+> +			ad5592r_setup_channel(iio_dev, &channels[curr_channel],
+> +					false, i);
+> +			curr_channel++;
+> +			break;
+> +
+> +		case CH_MODE_DAC_AND_ADC:
+> +			ad5592r_setup_channel(iio_dev, &channels[curr_channel],
+> +					true, i);
+> +			curr_channel++;
+> +			ad5592r_setup_channel(iio_dev, &channels[curr_channel],
+> +					false, i);
+> +			curr_channel++;
+> +			break;
+> +
+> +		default:
+> +			continue;
+> +		}
+> +	}
+> +
+> +	channels[curr_channel].type = IIO_TEMP;
+> +	channels[curr_channel].channel = 8;
+> +	channels[curr_channel].info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				   BIT(IIO_CHAN_INFO_SCALE) |
+> +				   BIT(IIO_CHAN_INFO_OFFSET);
+> +	curr_channel++;
+> +
+> +	iio_dev->num_channels = curr_channel;
+> +	iio_dev->channels = channels;
+> +
+> +	return 0;
+> +}
+> +
+> +static void ad5592r_init_scales(struct ad5592r_state *st, int vref_mV)
+> +{
+> +	s64 tmp = (s64)vref_mV * 1000000000LL >> 12;
+> +
+> +	st->scale_avail[0][0] =
+> +		div_s64_rem(tmp, 1000000000LL, &st->scale_avail[0][1]);
+> +	st->scale_avail[1][0] =
+> +		div_s64_rem(tmp * 2, 1000000000LL, &st->scale_avail[1][1]);
+> +}
+> +
+> +int ad5592r_probe(struct device *dev, const char *name,
+> +		const struct ad5592r_rw_ops *ops)
+> +{
+> +	struct iio_dev *iio_dev;
+> +	struct ad5592r_state *st;
+> +	int ret;
+> +
+> +	iio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!iio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(iio_dev);
+> +	st->dev = dev;
+> +	st->ops = ops;
+> +	st->num_channels = 8;
+> +	dev_set_drvdata(dev, iio_dev);
+> +
+> +	st->reg = devm_regulator_get_optional(dev, "vref");
+> +	if (IS_ERR(st->reg)) {
+> +		if ((PTR_ERR(st->reg) != -ENODEV) && dev->of_node)
+> +			return PTR_ERR(st->reg);
+> +
+> +		st->reg = NULL;
+> +	} else {
+> +		ret = regulator_enable(st->reg);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	iio_dev->dev.parent = dev;
+> +	iio_dev->name = name;
+> +	iio_dev->info = &ad5592r_info;
+> +	iio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	ad5592r_init_scales(st, ad5592r_get_vref(st));
+> +
+> +	ret = ad5592r_reset(st);
+> +	if (ret)
+> +		goto error_disable_reg;
+> +
+> +	ret = ops->reg_write(st, AD5592R_REG_PD,
+> +		     (st->reg == NULL) ? AD5592R_REG_PD_EN_REF : 0);
+> +	if (ret)
+> +		goto error_disable_reg;
+> +
+> +	ret = ad5592r_alloc_channels(st);
+> +	if (ret)
+> +		goto error_disable_reg;
+> +
+> +	ret = ad5592r_set_channel_modes(st);
+> +	if (ret)
+> +		goto error_reset_ch_modes;
+> +
+> +	ret = iio_device_register(iio_dev);
+> +	if (ret)
+> +		goto error_reset_ch_modes;
+> +
+> +	ret = ad5592r_gpio_init(st);
+> +	if (ret)
+> +		goto error_dev_unregister;
+> +
+> +	return 0;
+> +
+> +error_dev_unregister:
+> +	iio_device_unregister(iio_dev);
+> +
+> +error_reset_ch_modes:
+> +	ad5592r_reset_channel_modes(st);
+> +
+> +error_disable_reg:
+> +	if (st->reg)
+> +		regulator_disable(st->reg);
 > +
 > +	return ret;
 > +}
+> +EXPORT_SYMBOL_GPL(ad5592r_probe);
 > +
-> +static int max31722_probe(struct spi_device *spi)
+> +int ad5592r_remove(struct device *dev)
 > +{
+> +	struct iio_dev *iio_dev = dev_get_drvdata(dev);
+> +	struct ad5592r_state *st = iio_priv(iio_dev);
+> +
+> +	iio_device_unregister(iio_dev);
+> +	ad5592r_reset_channel_modes(st);
+> +	ad5592r_gpio_cleanup(st);
+> +
+> +	if (st->reg)
+> +		regulator_disable(st->reg);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(ad5592r_remove);
+> +
+> +MODULE_AUTHOR("Paul Cercueil <paul.cercueil@analog.com>");
+> +MODULE_DESCRIPTION("Analog Devices AD5592R multi-channel converters");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/dac/ad5592r-base.h b/drivers/iio/dac/ad5592r-base.h
+> new file mode 100644
+> index 0000000..2753385
+> --- /dev/null
+> +++ b/drivers/iio/dac/ad5592r-base.h
+> @@ -0,0 +1,78 @@
+> +/*
+> + * AD5592R / AD5593R Digital <-> Analog converters driver
+> + *
+> + * Copyright 2015-2016 Analog Devices Inc.
+> + * Author: Paul Cercueil <paul.cercueil@analog.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#ifndef __DRIVERS_IIO_DAC_AD5592R_BASE_H__
+> +#define __DRIVERS_IIO_DAC_AD5592R_BASE_H__
+> +
+> +#include <linux/types.h>
+> +#include <linux/cache.h>
+> +#include <linux/mutex.h>
+> +#include <linux/gpio/driver.h>
+> +
+> +struct device;
+> +struct ad5592r_state;
+> +
+> +enum ad5592r_registers {
+> +	AD5592R_REG_NOOP		= 0x0,
+> +	AD5592R_REG_DAC_READBACK	= 0x1,
+> +	AD5592R_REG_ADC_SEQ		= 0x2,
+> +	AD5592R_REG_CTRL		= 0x3,
+> +	AD5592R_REG_ADC_EN		= 0x4,
+> +	AD5592R_REG_DAC_EN		= 0x5,
+> +	AD5592R_REG_PULLDOWN		= 0x6,
+> +	AD5592R_REG_LDAC		= 0x7,
+> +	AD5592R_REG_GPIO_OUT_EN		= 0x8,
+> +	AD5592R_REG_GPIO_SET		= 0x9,
+> +	AD5592R_REG_GPIO_IN_EN		= 0xA,
+> +	AD5592R_REG_PD			= 0xB,
+> +	AD5592R_REG_OPEN_DRAIN		= 0xC,
+> +	AD5592R_REG_TRISTATE		= 0xD,
+> +	AD5592R_REG_RESET		= 0xF,
+> +};
+> +
+> +#define AD5592R_REG_PD_EN_REF		BIT(9)
+> +#define AD5592R_REG_CTRL_ADC_RANGE	BIT(5)
+> +#define AD5592R_REG_CTRL_DAC_RANGE	BIT(4)
+> +
+> +struct ad5592r_rw_ops {
+> +	int (*write_dac)(struct ad5592r_state *st, unsigned chan, u16 value);
+> +	int (*read_adc)(struct ad5592r_state *st, unsigned chan, u16 *value);
+> +	int (*reg_write)(struct ad5592r_state *st, u8 reg, u16 value);
+> +	int (*reg_read)(struct ad5592r_state *st, u8 reg, u16 *value);
+> +	int (*gpio_read)(struct ad5592r_state *st, u8 *value);
+> +};
+> +
+> +struct ad5592r_state {
+> +	struct device *dev;
+> +	struct regulator *reg;
+> +#ifdef CONFIG_GPIOLIB
+> +	struct gpio_chip gpiochip;
+> +	struct mutex gpio_lock;	/* Protect cached gpio_out, gpio_val, etc. */
+> +#endif
+> +	unsigned int num_channels;
+> +	const struct ad5592r_rw_ops *ops;
+> +	int scale_avail[2][2];
+> +	u16 cached_dac[8];
+> +	u16 cached_gp_ctrl;
+> +	u8 channel_modes[8];
+> +	u8 channel_offstate[8];
+> +	u8 gpio_map;
+> +	u8 gpio_out;
+> +	u8 gpio_in;
+> +	u8 gpio_val;
+> +
+> +	__be16 spi_msg ____cacheline_aligned;
+> +	__be16 spi_msg_nop;
+> +};
+> +
+> +int ad5592r_probe(struct device *dev, const char *name,
+> +		const struct ad5592r_rw_ops *ops);
+> +int ad5592r_remove(struct device *dev);
+> +
+> +#endif /* __DRIVERS_IIO_DAC_AD5592R_BASE_H__ */
+> diff --git a/drivers/iio/dac/ad5592r.c b/drivers/iio/dac/ad5592r.c
+> new file mode 100644
+> index 0000000..0b235a2
+> --- /dev/null
+> +++ b/drivers/iio/dac/ad5592r.c
+> @@ -0,0 +1,164 @@
+> +/*
+> + * AD5592R Digital <-> Analog converters driver
+> + *
+> + * Copyright 2015-2016 Analog Devices Inc.
+> + * Author: Paul Cercueil <paul.cercueil@analog.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include "ad5592r-base.h"
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/spi/spi.h>
+> +
+> +#define AD5592R_GPIO_READBACK_EN	BIT(10)
+> +#define AD5592R_LDAC_READBACK_EN	BIT(6)
+> +
+> +static int ad5592r_spi_wnop_r16(struct ad5592r_state *st, u16 *buf)
+> +{
+> +	struct spi_device *spi = container_of(st->dev, struct spi_device, dev);
+> +	struct spi_transfer t = {
+> +			.tx_buf	= &st->spi_msg_nop,
+> +			.rx_buf	= buf,
+> +			.len = 2
+> +		};
+> +
+> +	st->spi_msg_nop = 0; /* NOP */
+> +
+> +	return spi_sync_transfer(spi, &t, 1);
+> +}
+> +
+> +static int ad5592r_write_dac(struct ad5592r_state *st, unsigned chan, u16 value)
+> +{
+> +	struct spi_device *spi = container_of(st->dev, struct spi_device, dev);
+> +
+> +	st->spi_msg = cpu_to_be16(BIT(15) | (chan << 12) | value);
+> +
+> +	return spi_write(spi, &st->spi_msg, sizeof(st->spi_msg));
+> +}
+> +
+> +static int ad5592r_read_adc(struct ad5592r_state *st, unsigned chan, u16 *value)
+> +{
+> +	struct spi_device *spi = container_of(st->dev, struct spi_device, dev);
 > +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct max31722_data *data;
 > +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&spi->dev, "iio allocation failed!\n");
-> +		return -ENOMEM;
-> +	}
+> +	st->spi_msg = cpu_to_be16((AD5592R_REG_ADC_SEQ << 11) | BIT(chan));
 > +
-> +	data = iio_priv(indio_dev);
-> +	data->spi_device = spi;
-> +	spi_set_drvdata(spi, indio_dev);
-> +	mutex_init(&data->lock);
-> +
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->info = &max31722_info;
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = max31722_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(max31722_channels);
-> +
-> +	ret = max31722_init(data);
-> +	if (ret < 0)
+> +	ret = spi_write(spi, &st->spi_msg, sizeof(st->spi_msg));
+> +	if (ret)
 > +		return ret;
 > +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&spi->dev, "iio_device_register failed\n");
-Given this statement is effectively unwinding max31722_init, would have
-a max31722_exit function as well with this in.  That makes for
-'obviously correct' code which is always good for reviewers!
-
-Alternative would be to pull the mode setting out of the init function
-and have it inline in this function making the pairing obvious as well.
-
-> +		regmap_field_write(data->reg_state, MAX31722_MODE_STANDBY);
-> +	}
+> +	/*
+> +	 * Invalid data:
+> +	 * See Figure 40. Single-Channel ADC Conversion Sequence
+> +	 */
+> +	ret = ad5592r_spi_wnop_r16(st, &st->spi_msg);
+> +	if (ret)
+> +		return ret;
 > +
-> +	return ret;
+> +	ret = ad5592r_spi_wnop_r16(st, &st->spi_msg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*value = be16_to_cpu(st->spi_msg);
+> +
+> +	return 0;
 > +}
 > +
-> +static int max31722_remove(struct spi_device *spi)
+> +static int ad5592r_reg_write(struct ad5592r_state *st, u8 reg, u16 value)
 > +{
-> +	struct max31722_data *data;
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct spi_device *spi = container_of(st->dev, struct spi_device, dev);
 > +
-> +	iio_device_unregister(indio_dev);
-> +	data = iio_priv(indio_dev);
-
-I would have put this inline with the declaration of data above.
-It is pretty much the same level of lookup as spi_get_drvdata.
-
+> +	st->spi_msg = cpu_to_be16((reg << 11) | value);
 > +
-> +	return regmap_field_write(data->reg_state, MAX31722_MODE_STANDBY);
+> +	return spi_write(spi, &st->spi_msg, sizeof(st->spi_msg));
 > +}
 > +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int max31722_suspend(struct device *dev)
+> +static int ad5592r_reg_read(struct ad5592r_state *st, u8 reg, u16 *value)
 > +{
-> +	struct max31722_data *data;
+> +	struct spi_device *spi = container_of(st->dev, struct spi_device, dev);
+> +	int ret;
 > +
-> +	data = iio_priv(spi_get_drvdata(to_spi_device(dev)));
+> +	st->spi_msg = cpu_to_be16((AD5592R_REG_LDAC << 11) |
+> +				   AD5592R_LDAC_READBACK_EN | (reg << 2));
 > +
-> +	return regmap_field_write(data->reg_state, MAX31722_MODE_STANDBY);
+> +	ret = spi_write(spi, &st->spi_msg, sizeof(st->spi_msg));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ad5592r_spi_wnop_r16(st, &st->spi_msg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*value = be16_to_cpu(st->spi_msg);
+> +
+> +	return 0;
 > +}
 > +
-> +static int max31722_resume(struct device *dev)
+> +static int ad5593r_gpio_read(struct ad5592r_state *st, u8 *value)
 > +{
-> +	struct max31722_data *data;
+> +	int ret;
 > +
-> +	data = iio_priv(spi_get_drvdata(to_spi_device(dev)));
+> +	ret = ad5592r_reg_write(st, AD5592R_REG_GPIO_IN_EN,
+> +				AD5592R_GPIO_READBACK_EN | st->gpio_in);
+> +	if (ret)
+> +		return ret;
 > +
-> +	return regmap_field_write(data->reg_state, MAX31722_MODE_CONTINUOUS);
+> +	ret = ad5592r_spi_wnop_r16(st, &st->spi_msg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*value = (u8) be16_to_cpu(st->spi_msg);
+> +
+> +	return 0;
 > +}
 > +
-> +static SIMPLE_DEV_PM_OPS(max31722_pm_ops, max31722_suspend, max31722_resume);
-> +
-> +#define MAX31722_PM_OPS (&max31722_pm_ops)
-> +#else
-> +#define MAX31722_PM_OPS NULL
-> +#endif
-> +
-> +static const struct spi_device_id max31722_spi_id[] = {
-> +	{"max31722", 0},
-> +	{"max31723", 0},
-> +	{}
+> +static const struct ad5592r_rw_ops ad5592r_rw_ops = {
+> +	.write_dac = ad5592r_write_dac,
+> +	.read_adc = ad5592r_read_adc,
+> +	.reg_write = ad5592r_reg_write,
+> +	.reg_read = ad5592r_reg_read,
+> +	.gpio_read = ad5593r_gpio_read,
 > +};
 > +
-> +static const struct acpi_device_id max31722_acpi_id[] = {
-> +	{"MAX31722", 0},
-> +	{"MAX31723", 0},
+> +static int ad5592r_spi_probe(struct spi_device *spi)
+> +{
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +
+> +	return ad5592r_probe(&spi->dev, id->name, &ad5592r_rw_ops);
+> +}
+> +
+> +static int ad5592r_spi_remove(struct spi_device *spi)
+> +{
+> +	return ad5592r_remove(&spi->dev);
+> +}
+> +
+> +static const struct spi_device_id ad5592r_spi_ids[] = {
+> +	{ .name = "ad5592r", },
 > +	{}
 > +};
+> +MODULE_DEVICE_TABLE(spi, ad5592r_spi_ids);
 > +
-> +MODULE_DEVICE_TABLE(spi, max31722_spi_id);
+> +static const struct of_device_id ad5592r_of_match[] = {
+> +	{ .compatible = "adi,ad5592r", },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, ad5592r_of_match);
 > +
-> +static struct spi_driver max31722_driver = {
+> +static struct spi_driver ad5592r_spi_driver = {
 > +	.driver = {
-> +		.name = "max31722",
-> +		.pm = MAX31722_PM_OPS,
-> +		.acpi_match_table = ACPI_PTR(max31722_acpi_id),
+> +		.name = "ad5592r",
+> +		.of_match_table = of_match_ptr(ad5592r_of_match),
 > +	},
-> +	.probe =            max31722_probe,
-> +	.remove =           max31722_remove,
-> +	.id_table =         max31722_spi_id,
+> +	.probe = ad5592r_spi_probe,
+> +	.remove = ad5592r_spi_remove,
+> +	.id_table = ad5592r_spi_ids,
+> +};
+> +module_spi_driver(ad5592r_spi_driver);
+> +
+> +MODULE_AUTHOR("Paul Cercueil <paul.cercueil@analog.com>");
+> +MODULE_DESCRIPTION("Analog Devices AD5592R multi-channel converters");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/dac/ad5593r.c b/drivers/iio/dac/ad5593r.c
+> new file mode 100644
+> index 0000000..dca158a
+> --- /dev/null
+> +++ b/drivers/iio/dac/ad5593r.c
+> @@ -0,0 +1,131 @@
+> +/*
+> + * AD5593R Digital <-> Analog converters driver
+> + *
+> + * Copyright 2015-2016 Analog Devices Inc.
+> + * Author: Paul Cercueil <paul.cercueil@analog.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include "ad5592r-base.h"
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +
+> +#define AD5593R_MODE_CONF		(0 << 4)
+> +#define AD5593R_MODE_DAC_WRITE		(1 << 4)
+> +#define AD5593R_MODE_ADC_READBACK	(4 << 4)
+> +#define AD5593R_MODE_DAC_READBACK	(5 << 4)
+> +#define AD5593R_MODE_GPIO_READBACK	(6 << 4)
+> +#define AD5593R_MODE_REG_READBACK	(7 << 4)
+> +
+> +static int ad5593r_write_dac(struct ad5592r_state *st, unsigned chan, u16 value)
+> +{
+> +	struct i2c_client *i2c = to_i2c_client(st->dev);
+> +
+> +	return i2c_smbus_write_word_swapped(i2c,
+> +			AD5593R_MODE_DAC_WRITE | chan, value);
+> +}
+> +
+> +static int ad5593r_read_adc(struct ad5592r_state *st, unsigned chan, u16 *value)
+> +{
+> +	struct i2c_client *i2c = to_i2c_client(st->dev);
+> +	s32 val;
+> +
+> +	val = i2c_smbus_write_word_swapped(i2c,
+> +			AD5593R_MODE_CONF | AD5592R_REG_ADC_SEQ, BIT(chan));
+> +	if (val < 0)
+> +		return (int) val;
+> +
+> +	val = i2c_smbus_read_word_swapped(i2c, AD5593R_MODE_ADC_READBACK);
+> +	if (val < 0)
+> +		return (int) val;
+> +
+> +	*value = (u16) val;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5593r_reg_write(struct ad5592r_state *st, u8 reg, u16 value)
+> +{
+> +	struct i2c_client *i2c = to_i2c_client(st->dev);
+> +
+> +	return i2c_smbus_write_word_swapped(i2c,
+> +			AD5593R_MODE_CONF | reg, value);
+> +}
+> +
+> +static int ad5593r_reg_read(struct ad5592r_state *st, u8 reg, u16 *value)
+> +{
+> +	struct i2c_client *i2c = to_i2c_client(st->dev);
+> +	s32 val;
+> +
+> +	val = i2c_smbus_read_word_swapped(i2c, AD5593R_MODE_REG_READBACK | reg);
+> +	if (val < 0)
+> +		return (int) val;
+> +
+> +	*value = (u16) val;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5593r_gpio_read(struct ad5592r_state *st, u8 *value)
+> +{
+> +	struct i2c_client *i2c = to_i2c_client(st->dev);
+> +	s32 val;
+> +
+> +	val = i2c_smbus_read_word_swapped(i2c, AD5593R_MODE_GPIO_READBACK);
+> +	if (val < 0)
+> +		return (int) val;
+> +
+> +	*value = (u8) val;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct ad5592r_rw_ops ad5593r_rw_ops = {
+> +	.write_dac = ad5593r_write_dac,
+> +	.read_adc = ad5593r_read_adc,
+> +	.reg_write = ad5593r_reg_write,
+> +	.reg_read = ad5593r_reg_read,
+> +	.gpio_read = ad5593r_gpio_read,
 > +};
 > +
-> +module_spi_driver(max31722_driver);
+> +static int ad5593r_i2c_probe(struct i2c_client *i2c,
+> +		const struct i2c_device_id *id)
+> +{
+> +	return ad5592r_probe(&i2c->dev, id->name, &ad5593r_rw_ops);
+> +}
 > +
-> +MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
-> +MODULE_DESCRIPTION("MAX31722 digital thermometer and thermostat SPI driver");
+> +static int ad5593r_i2c_remove(struct i2c_client *i2c)
+> +{
+> +	return ad5592r_remove(&i2c->dev);
+> +}
+> +
+> +static const struct i2c_device_id ad5593r_i2c_ids[] = {
+> +	{ .name = "ad5593r", },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(i2c, ad5593r_i2c_ids);
+> +
+> +static const struct of_device_id ad5593r_of_match[] = {
+> +	{ .compatible = "adi,ad5593r", },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, ad5593r_of_match);
+> +
+> +static struct i2c_driver ad5593r_driver = {
+> +	.driver = {
+> +		.name = "ad5593r",
+> +		.of_match_table = of_match_ptr(ad5593r_of_match),
+> +	},
+> +	.probe = ad5593r_i2c_probe,
+> +	.remove = ad5593r_i2c_remove,
+> +	.id_table = ad5593r_i2c_ids,
+> +};
+> +module_i2c_driver(ad5593r_driver);
+> +
+> +MODULE_AUTHOR("Paul Cercueil <paul.cercueil@analog.com>");
+> +MODULE_DESCRIPTION("Analog Devices AD5592R multi-channel converters");
 > +MODULE_LICENSE("GPL v2");
+> diff --git a/include/dt-bindings/iio/adi,ad5592r.h b/include/dt-bindings/iio/adi,ad5592r.h
+> new file mode 100644
+> index 0000000..c48aca1
+> --- /dev/null
+> +++ b/include/dt-bindings/iio/adi,ad5592r.h
+> @@ -0,0 +1,16 @@
+> +
+> +#ifndef _DT_BINDINGS_ADI_AD5592R_H
+> +#define _DT_BINDINGS_ADI_AD5592R_H
+> +
+> +#define CH_MODE_UNUSED			0
+> +#define CH_MODE_ADC			1
+> +#define CH_MODE_DAC			2
+> +#define CH_MODE_DAC_AND_ADC		3
+> +#define CH_MODE_GPIO			8
+> +
+> +#define CH_OFFSTATE_PULLDOWN		0
+> +#define CH_OFFSTATE_OUT_LOW		1
+> +#define CH_OFFSTATE_OUT_HIGH		2
+> +#define CH_OFFSTATE_OUT_TRISTATE	3
+> +
+> +#endif /* _DT_BINDINGS_ADI_AD5592R_H */
 > 
 
