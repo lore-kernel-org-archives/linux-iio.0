@@ -1,296 +1,162 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43515 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43577 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751968AbcCLKjE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 05:39:04 -0500
-Subject: Re: [PATCH v2 3/4] iio: dac: add NXP LPC18xx DAC driver
-To: Joachim Eastwood <manabian@gmail.com>
-References: <1457262795-20282-1-git-send-email-manabian@gmail.com>
- <1457262795-20282-4-git-send-email-manabian@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, robh+dt@kernel.org,
-	devicetree@vger.kernel.org
+	with ESMTP id S1751569AbcCLKvT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 05:51:19 -0500
+Subject: Re: [PATCH v2 1/2] iio: mma8452: add support for FXLS8471Q
+To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, mfuzzey@parkeon.com,
+	teodora.baluta@intel.com, tiberiu.a.breana@intel.com,
+	mpa@pengutronix.de
+References: <1457514014-19032-1-git-send-email-martink@posteo.de>
+ <1457521289-32717-1-git-send-email-martink@posteo.de>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E3F1C5.6000000@kernel.org>
-Date: Sat, 12 Mar 2016 10:39:01 +0000
+Message-ID: <56E3F4A3.7030708@kernel.org>
+Date: Sat, 12 Mar 2016 10:51:15 +0000
 MIME-Version: 1.0
-In-Reply-To: <1457262795-20282-4-git-send-email-manabian@gmail.com>
+In-Reply-To: <1457521289-32717-1-git-send-email-martink@posteo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/03/16 11:13, Joachim Eastwood wrote:
-> Add base support for the 10-bit DAC peripheral found
-> on NXP LPC18xx/43xx SoCs.
+On 09/03/16 11:01, Martin Kepplinger wrote:
+> This adds support for Freescale's (now NXP's) FXLS8471Q accelerometer.
 > 
-> This is a minimal driver that does not support DMA or
-> interrupts.
+> We use MMA8451Q's configuration because for what the driver supports,
+> FXLS8471Q is the same.
 > 
-> User manual with register description can be found on:
-> LPC18xx: www.nxp.com/documents/user_manual/UM10430.pdf
-> LPC43xx: www.nxp.com/documents/user_manual/UM10503.pdf
+> Support for FXLS8471Q's features (fast SPI interface and a larger FIFO,
+> among others) can be added to this driver anytime.
 > 
-> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
-I think you probably want some locking in the raw_write function.
+> See it's datasheet for the details:
+> http://cache.nxp.com/files/sensors/doc/data_sheet/FXLS8471Q.pdf
+> 
+> Signed-off-by: Martin Kepplinger <martink@posteo.de>
+Applied to the togreg branch of iio.git.  Initially pushed out as testing
+for the autobuilders to play with it.
 
-Otherwise, looks good.
+Thanks,
 
 Jonathan
 > ---
->  drivers/iio/dac/Kconfig       |  10 +++
->  drivers/iio/dac/Makefile      |   1 +
->  drivers/iio/dac/lpc18xx_dac.c | 204 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 215 insertions(+)
->  create mode 100644 drivers/iio/dac/lpc18xx_dac.c
+> revision history:
+> v2:
+> 	forgot to add i2c_device_id to table, for consistency
 > 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index a995139f907c..210db81ca144 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -154,6 +154,16 @@ config AD7303
->  	  To compile this driver as module choose M here: the module will be called
->  	  ad7303.
+> 
+>  .../devicetree/bindings/iio/accel/mma8452.txt      |  3 ++-
+>  drivers/iio/accel/Kconfig                          |  3 ++-
+>  drivers/iio/accel/mma8452.c                        | 22 ++++++++++++++++++++++
+>  3 files changed, 26 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> index 165937e..45f5c5c 100644
+> --- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> @@ -1,4 +1,4 @@
+> -Freescale MMA8451Q, MMA8452Q, MMA8453Q, MMA8652FC or MMA8653FC
+> +Freescale MMA8451Q, MMA8452Q, MMA8453Q, MMA8652FC, MMA8653FC or FXLS8471Q
+>  triaxial accelerometer
 >  
-> +config LPC18XX_DAC
-> +	tristate "NXP LPC18xx DAC driver"
-> +	depends on ARCH_LPC18XX || COMPILE_TEST
-> +	depends on OF && HAS_IOMEM
-> +	help
-> +	  Say yes here to build support for NXP LPC18XX DAC.
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called lpc18xx_dac.
-> +
->  config M62332
->  	tristate "Mitsubishi M62332 DAC driver"
->  	depends on I2C
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index 67b48429686d..420a15cdaa53 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -17,6 +17,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
->  obj-$(CONFIG_AD5791) += ad5791.o
->  obj-$(CONFIG_AD5686) += ad5686.o
->  obj-$(CONFIG_AD7303) += ad7303.o
-> +obj-$(CONFIG_LPC18XX_DAC) += lpc18xx_dac.o
->  obj-$(CONFIG_M62332) += m62332.o
->  obj-$(CONFIG_MAX517) += max517.o
->  obj-$(CONFIG_MAX5821) += max5821.o
-> diff --git a/drivers/iio/dac/lpc18xx_dac.c b/drivers/iio/dac/lpc18xx_dac.c
-> new file mode 100644
-> index 000000000000..b44d06feca8e
-> --- /dev/null
-> +++ b/drivers/iio/dac/lpc18xx_dac.c
-> @@ -0,0 +1,204 @@
-> +/*
-> + * IIO DAC driver for NXP LPC18xx DAC
-> + *
-> + * Copyright (C) 2016 Joachim Eastwood <manabian@gmail.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * UNSUPPORTED hardware features:
-> + *  - Interrupts
-> + *  - DMA
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/err.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/driver.h>
-> +#include <linux/io.h>
-> +#include <linux/iopoll.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regulator/consumer.h>
-> +
-> +/* LPC18XX DAC registers and bits */
-> +#define LPC18XX_DAC_CR			0x000
-> +#define  LPC18XX_DAC_CR_VALUE_SHIFT	6
-> +#define  LPC18XX_DAC_CR_VALUE_MASK	0x3ff
-> +#define  LPC18XX_DAC_CR_BIAS		BIT(16)
-> +#define LPC18XX_DAC_CTRL		0x004
-> +#define  LPC18XX_DAC_CTRL_DMA_ENA	BIT(3)
-> +
-> +struct lpc18xx_dac {
-> +	struct clk *clk;
-> +	void __iomem *base;
-> +	struct regulator *vref;
-> +};
-> +
-> +static const struct iio_chan_spec lpc18xx_dac_iio_channels[] = {
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.output = 1,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
+>  Required properties:
+> @@ -9,6 +9,7 @@ Required properties:
+>      * "fsl,mma8453"
+>      * "fsl,mma8652"
+>      * "fsl,mma8653"
+> +    * "fsl,fxls8471"
+>  
+>    - reg: the I2C address of the chip
+>  
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index b0d3ecf..c0f56f4 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -143,7 +143,8 @@ config MMA8452
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
+>  	  Say yes here to build support for the following Freescale 3-axis
+> -	  accelerometers: MMA8451Q, MMA8452Q, MMA8453Q, MMA8652FC, MMA8653FC.
+> +	  accelerometers: MMA8451Q, MMA8452Q, MMA8453Q, MMA8652FC, MMA8653FC,
+> +	  FXLS8471Q.
+>  
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called mma8452.
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 5ca0d16..305ed0e 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -6,6 +6,7 @@
+>   * MMA8453Q (10 bit)
+>   * MMA8652FC (12 bit)
+>   * MMA8653FC (10 bit)
+> + * FXLS8471Q (14 bit)
+>   *
+>   * Copyright 2015 Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+>   * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
+> @@ -92,6 +93,7 @@
+>  #define MMA8453_DEVICE_ID			0x3a
+>  #define MMA8652_DEVICE_ID			0x4a
+>  #define MMA8653_DEVICE_ID			0x5a
+> +#define FXLS8471_DEVICE_ID			0x6a
+>  
+>  #define MMA8452_AUTO_SUSPEND_DELAY_MS		2000
+>  
+> @@ -1055,6 +1057,7 @@ enum {
+>  	mma8453,
+>  	mma8652,
+>  	mma8653,
+> +	fxls8471,
+>  };
+>  
+>  static const struct mma_chip_info mma_chip_info_table[] = {
+> @@ -1146,6 +1149,22 @@ static const struct mma_chip_info mma_chip_info_table[] = {
+>  		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
+>  		.ev_count = MMA8452_FF_MT_COUNT,
+>  	},
+> +	[fxls8471] = {
+> +		.chip_id = FXLS8471_DEVICE_ID,
+> +		.channels = mma8451_channels,
+> +		.num_channels = ARRAY_SIZE(mma8451_channels),
+> +		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
+> +		.ev_cfg = MMA8452_TRANSIENT_CFG,
+> +		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+> +		.ev_cfg_chan_shift = 1,
+> +		.ev_src = MMA8452_TRANSIENT_SRC,
+> +		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+> +		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+> +		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+> +		.ev_ths = MMA8452_TRANSIENT_THS,
+> +		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+> +		.ev_count = MMA8452_TRANSIENT_COUNT,
 > +	},
-> +};
-> +
-> +static int lpc18xx_dac_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct lpc18xx_dac *dac = iio_priv(indio_dev);
-> +	u32 reg;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		reg = readl(dac->base + LPC18XX_DAC_CR);
-> +		*val = reg >> LPC18XX_DAC_CR_VALUE_SHIFT;
-> +		*val &= LPC18XX_DAC_CR_VALUE_MASK;
-> +
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = regulator_get_voltage(dac->vref) / 1000;
-> +		*val2 = 10;
-> +
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int lpc18xx_dac_write_raw(struct iio_dev *indio_dev,
-> +				 struct iio_chan_spec const *chan,
-> +				 int val, int val2, long mask)
-> +{
-> +	struct lpc18xx_dac *dac = iio_priv(indio_dev);
-> +	u32 reg;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val < 0 || val > LPC18XX_DAC_CR_VALUE_MASK)
-> +			return -EINVAL;
-> +
-> +		reg = LPC18XX_DAC_CR_BIAS;
-> +		reg |= val << LPC18XX_DAC_CR_VALUE_SHIFT;
-This double write suggests to me that we need a lock in here to prevent
-possible inconsistent state.  Nothing stops two sysfs writes occuring
-at the same time.
-
-Please make it a local lock though (see comments on use of mlock in previous
-review).  Put a mutex in struct lpc18xx_dac.
-> +		writel(reg, dac->base + LPC18XX_DAC_CR);
-> +		writel(LPC18XX_DAC_CTRL_DMA_ENA, dac->base + LPC18XX_DAC_CTRL);
-> +
-> +		return 0;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info lpc18xx_dac_info = {
-> +	.read_raw = lpc18xx_dac_read_raw,
-> +	.write_raw = lpc18xx_dac_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int lpc18xx_dac_probe(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct lpc18xx_dac *dac;
-> +	struct resource *res;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*dac));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +	dac = iio_priv(indio_dev);
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	dac->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(dac->base))
-> +		return PTR_ERR(dac->base);
-> +
-> +	dac->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(dac->clk)) {
-> +		dev_err(&pdev->dev, "error getting clock\n");
-> +		return PTR_ERR(dac->clk);
-> +	}
-> +
-> +	dac->vref = devm_regulator_get(&pdev->dev, "vref");
-> +	if (IS_ERR(dac->vref)) {
-> +		dev_err(&pdev->dev, "error getting regulator\n");
-> +		return PTR_ERR(dac->vref);
-> +	}
-> +
-> +	indio_dev->name = dev_name(&pdev->dev);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->info = &lpc18xx_dac_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = lpc18xx_dac_iio_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(lpc18xx_dac_iio_channels);
-> +
-> +	ret = regulator_enable(dac->vref);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to enable regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = clk_prepare_enable(dac->clk);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to enable clock\n");
-> +		goto dis_reg;
-> +	}
-> +
-> +	writel(0, dac->base + LPC18XX_DAC_CTRL);
-> +	writel(0, dac->base + LPC18XX_DAC_CR);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to register device\n");
-> +		goto dis_clk;
-> +	}
-> +
-> +	return 0;
-> +
-> +dis_clk:
-> +	clk_disable_unprepare(dac->clk);
-> +dis_reg:
-> +	regulator_disable(dac->vref);
-> +	return ret;
-> +}
-> +
-> +static int lpc18xx_dac_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct lpc18xx_dac *dac = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	writel(0, dac->base + LPC18XX_DAC_CTRL);
-> +	clk_disable_unprepare(dac->clk);
-> +	regulator_disable(dac->vref);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id lpc18xx_dac_match[] = {
-> +	{ .compatible = "nxp,lpc1850-dac" },
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(of, lpc18xx_dac_match);
-> +
-> +static struct platform_driver lpc18xx_dac_driver = {
-> +	.probe	= lpc18xx_dac_probe,
-> +	.remove	= lpc18xx_dac_remove,
-> +	.driver	= {
-> +		.name = "lpc18xx-dac",
-> +		.of_match_table = lpc18xx_dac_match,
-> +	},
-> +};
-> +module_platform_driver(lpc18xx_dac_driver);
-> +
-> +MODULE_DESCRIPTION("LPC18xx DAC driver");
-> +MODULE_AUTHOR("Joachim Eastwood <manabian@gmail.com>");
-> +MODULE_LICENSE("GPL v2");
+>  };
+>  
+>  static struct attribute *mma8452_attributes[] = {
+> @@ -1275,6 +1294,7 @@ static const struct of_device_id mma8452_dt_ids[] = {
+>  	{ .compatible = "fsl,mma8453", .data = &mma_chip_info_table[mma8453] },
+>  	{ .compatible = "fsl,mma8652", .data = &mma_chip_info_table[mma8652] },
+>  	{ .compatible = "fsl,mma8653", .data = &mma_chip_info_table[mma8653] },
+> +	{ .compatible = "fsl,fxls8471", .data = &mma_chip_info_table[fxls8471] },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
+> @@ -1312,6 +1332,7 @@ static int mma8452_probe(struct i2c_client *client,
+>  	case MMA8453_DEVICE_ID:
+>  	case MMA8652_DEVICE_ID:
+>  	case MMA8653_DEVICE_ID:
+> +	case FXLS8471_DEVICE_ID:
+>  		if (ret == data->chip_info->chip_id)
+>  			break;
+>  	default:
+> @@ -1518,6 +1539,7 @@ static const struct i2c_device_id mma8452_id[] = {
+>  	{ "mma8453", mma8453 },
+>  	{ "mma8652", mma8652 },
+>  	{ "mma8653", mma8653 },
+> +	{ "fxls8471", fxls8471 },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(i2c, mma8452_id);
 > 
 
