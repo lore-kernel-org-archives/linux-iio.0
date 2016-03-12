@@ -1,58 +1,125 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45392 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43740 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752217AbcCLSPJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 13:15:09 -0500
-Subject: Re: [PATCH v3 2/4] dt: document NXP LPC1850 ADC driver bindings
-To: Joachim Eastwood <manabian@gmail.com>
-References: <1457785817-32328-1-git-send-email-manabian@gmail.com>
- <1457785817-32328-3-git-send-email-manabian@gmail.com>
+	with ESMTP id S1750954AbcCLLSY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 06:18:24 -0500
+Subject: Re: [RFC PATCH v2 1/2] iio: core: implement
+ iio_device_{claim|release}_direct_mode()
+To: Alison Schofield <amsfield22@gmail.com>,
+	outreachy-kernel@googlegroups.com
+References: <cover.1457549841.git.amsfield22@gmail.com>
+ <a9ed1d7bec5e0692bfd6b0e897d408fc265d4be8.1457549841.git.amsfield22@gmail.com>
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, robh+dt@kernel.org,
-	devicetree@vger.kernel.org
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E45CAB.9040803@kernel.org>
-Date: Sat, 12 Mar 2016 18:15:07 +0000
+Message-ID: <56E3FAFE.2040108@kernel.org>
+Date: Sat, 12 Mar 2016 11:18:22 +0000
 MIME-Version: 1.0
-In-Reply-To: <1457785817-32328-3-git-send-email-manabian@gmail.com>
+In-Reply-To: <a9ed1d7bec5e0692bfd6b0e897d408fc265d4be8.1457549841.git.amsfield22@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/03/16 12:30, Joachim Eastwood wrote:
-> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
-Applied.
-> ---
->  .../devicetree/bindings/iio/adc/lpc1850-adc.txt     | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
+On 09/03/16 19:30, Alison Schofield wrote:
+> It is often the case that the driver wants to be sure a device stays
+> in direct mode while it is executing a task or series of tasks.  To
+> accomplish this today, the driver performs this sequence: 1) take the
+> device state lock, 2) verify it is not in a buffered mode, 3) execute
+> some tasks, and 4) release that lock.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt b/Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
-> new file mode 100644
-> index 000000000000..0bcae5140bc5
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
-> @@ -0,0 +1,21 @@
-> +NXP LPC1850 ADC bindings
+> This patch introduces a pair of helper functions that simplify these
+> steps and make it more semantically expressive.
+> 
+> iio_device_claim_direct_mode()
+>         If the device is not in any buffered mode it is guaranteed
+>         to stay that way until iio_release_direct_mode() is called.
+> 
+> iio_device_release_direct_mode()
+>         Release the claim. Device is no longer guaranteed to stay
+>         in direct mode.
+> 
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+I like change.  Nice and clean and should help reduce 'misuse' of this
+lock by making it more focused in the long run.
+
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
+> ---
+>  drivers/iio/industrialio-core.c | 39 +++++++++++++++++++++++++++++++++++++++
+>  include/linux/iio/iio.h         |  2 ++
+>  2 files changed, 41 insertions(+)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 70cb7eb..2e768bc 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -25,6 +25,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/anon_inodes.h>
+>  #include <linux/debugfs.h>
+> +#include <linux/mutex.h>
+>  #include <linux/iio/iio.h>
+>  #include "iio_core.h"
+>  #include "iio_core_trigger.h"
+> @@ -1375,6 +1376,44 @@ void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev)
+>  }
+>  EXPORT_SYMBOL_GPL(devm_iio_device_unregister);
+>  
+> +/**
+> + * iio_device_claim_direct_mode - Keep device in direct mode
+> + * @indio_dev:	the iio_dev associated with the device
+> + *
+> + * If the device is in direct mode it is guaranteed to stay
+> + * that way until iio_device_release_direct_mode() is called.
+> + *
+> + * Use with iio_device_release_direct_mode()
+> + *
+> + * Returns: 0 on success, -EBUSY on failure
+> + */
+> +int iio_device_claim_direct_mode(struct iio_dev *indio_dev)
+> +{
+> +	mutex_lock(&indio_dev->mlock);
 > +
-> +Required properties:
-> +- compatible: Should be "nxp,lpc1850-adc"
-> +- reg: Offset and length of the register set for the ADC device
-> +- interrupts: The interrupt number for the ADC device
-> +- clocks: The root clock of the ADC controller
-> +- vref-supply: The regulator supply ADC reference voltage
-> +- resets: phandle to reset controller and line specifier
+> +	if (iio_buffer_enabled(indio_dev)) {
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return -EBUSY;
+> +	}
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_device_claim_direct_mode);
 > +
-> +Example:
+> +/**
+> + * iio_device_release_direct_mode - releases claim on direct mode
+> + * @indio_dev:	the iio_dev associated with the device
+> + *
+> + * Release the claim. Device is no longer guaranteed to stay
+> + * in direct mode.
+> + *
+> + * Use with iio_device_claim_direct_mode()
+> + */
+> +void iio_device_release_direct_mode(struct iio_dev *indio_dev)
+> +{
+> +	mutex_unlock(&indio_dev->mlock);
+> +}
+> +EXPORT_SYMBOL_GPL(iio_device_release_direct_mode);
 > +
-> +adc0: adc@400e3000 {
-> +	compatible = "nxp,lpc1850-adc";
-> +	reg = <0x400e3000 0x1000>;
-> +	interrupts = <17>;
-> +	clocks = <&ccu1 CLK_APB3_ADC0>;
-> +	vref-supply = <&reg_vdda>;
-> +	resets = <&rgu 40>;
-> +	status = "disabled";
-> +};
+>  subsys_initcall(iio_init);
+>  module_exit(iio_exit);
+>  
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index b2b1677..0b2773a 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -527,6 +527,8 @@ void iio_device_unregister(struct iio_dev *indio_dev);
+>  int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev);
+>  void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev);
+>  int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp);
+> +int iio_device_claim_direct_mode(struct iio_dev *indio_dev);
+> +void iio_device_release_direct_mode(struct iio_dev *indio_dev);
+>  
+>  extern struct bus_type iio_bus_type;
+>  
 > 
 
