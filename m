@@ -1,90 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-by2on0054.outbound.protection.outlook.com ([207.46.100.54]:22976
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752300AbcCGMdV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 7 Mar 2016 07:33:21 -0500
-Reply-To: <michael.hennerich@analog.com>
-Subject: Re: [PATCH v2] iio: dac: Add support for the AD5592R/AD5593R
- ADCs/DACs
-References: <1456407412-16218-1-git-send-email-michael.hennerich@analog.com>
- <56D1E1CB.6070704@kernel.org> <56D71309.30204@analog.com>
- <56DB1E49.3070908@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>, <lars@metafoo.de>,
-	<knaack.h@gmx.de>, <paul.cercueil@analog.com>,
-	<robh+dt@kernel.org>, <pawel.moll@arm.com>, <mark.rutland@arm.com>,
-	<ijc+devicetree@hellion.org.uk>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Alexandre Courbot <gnurou@gmail.com>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
-From: Michael Hennerich <michael.hennerich@analog.com>
-Message-ID: <56DD7342.5040101@analog.com>
-Date: Mon, 7 Mar 2016 13:25:38 +0100
+Received: from mail-io0-f193.google.com ([209.85.223.193]:34673 "EHLO
+	mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752567AbcCLLLF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 06:11:05 -0500
 MIME-Version: 1.0
-In-Reply-To: <56DB1E49.3070908@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+In-Reply-To: <56E3F104.20105@kernel.org>
+References: <1457262795-20282-1-git-send-email-manabian@gmail.com>
+	<1457262795-20282-2-git-send-email-manabian@gmail.com>
+	<56E3EFAC.8090906@kernel.org>
+	<56E3F104.20105@kernel.org>
+Date: Sat, 12 Mar 2016 12:11:03 +0100
+Message-ID: <CAGhQ9VyEywGgUv128oCSqaXUkVNniqEAi7qXbpSypZjCr-ixxQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] iio: adc: add NXP LPC18xx ADC driver
+From: Joachim Eastwood <manabian@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	devicetree@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/05/2016 06:58 PM, Jonathan Cameron wrote:
-> On 02/03/16 16:21, Michael Hennerich wrote:
->> On 02/27/2016 06:50 PM, Jonathan Cameron wrote:
->>> On 25/02/16 13:36, michael.hennerich@analog.com wrote:
->>>> From: Paul Cercueil <paul.cercueil@analog.com>
->>>>
->>>> This patch adds support for the AD5592R (spi) and AD5593R (i2c)
->>>> ADC/DAC devices.
->>>>
->>>> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
->>>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
->>>>
->>> A few bits inline.
+On 12 March 2016 at 11:35, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 12/03/16 10:30, Jonathan Cameron wrote:
+>> On 06/03/16 11:13, Joachim Eastwood wrote:
+>>> Add base support for the 10-bit SAR ADC peripheral found
+>>> on NXP LPC18xx/43xx SoCs.
 >>>
->>> I'll need a gpio review on this (looks fine to me but it does contain
->>> a gpiochip driver.) Not to mention the question of whether they will
->>> be happy with a gpio chip hiding in iio (rather than via an mfd with a
->>> separate driver - which feels like overkill here).
+>>> This is a minimal driver that does not support burst mode,
+>>> interrupts, DMA or hardware triggers.
 >>>
->>> The big question to my mind is whether we can take the view this won't
->>> be the last multipurpose chip we will see so do we need to sort the
->>> binding out to make it generic?  It'll be a bit of a pain for you
->>> but I think we can do it fairly easily.
->>> (either way I'll also need a device tree ack on this one!)
+>>> User manual with register description can be found on:
+>>> LPC18xx: www.nxp.com/documents/user_manual/UM10430.pdf
+>>> LPC43xx: www.nxp.com/documents/user_manual/UM10503.pdf
 >>>
->>> So then we get into the question of the best way of doing the bindings.
->>> The gpio approach seems a little limiting for things as flexible as
->>> this but we should certainly be using their macros where relevant.
+>>> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
+>> Applied to the togreg branch of iio.git - initially pushed out as testing
+>> for the autobuilders to play with it.
+> Actually I've backed this out.  Picked up on a few things lookint
+> at the DAC driver that apply here too.
+>
+> Clearly half asleep this morning!
+>
+> Sorry,
+>
+> Jonathan
 >>
->> Hi Jonathan,
+>> Thanks,
 >>
->> Thanks for the review.
->>
->> The problem is see is that using GPIOF_OPEN_DRAIN, will simulate OPEN DRAIN behaviour only, by configuring the device for input when outputing logic high.
->>
-> Is it actually documented as such anywhere? (that's hideous!)
+>> Jonathan
+>>> ---
+>>>  drivers/iio/adc/Kconfig       |  10 ++
+>>>  drivers/iio/adc/Makefile      |   1 +
+>>>  drivers/iio/adc/lpc18xx_adc.c | 228 ++++++++++++++++++++++++++++++++++++++++++
+>>>  3 files changed, 239 insertions(+)
+>>>  create mode 100644 drivers/iio/adc/lpc18xx_adc.c
+
+>>> +static int lpc18xx_adc_read_raw(struct iio_dev *indio_dev,
+>>> +                            struct iio_chan_spec const *chan,
+>>> +                            int *val, int *val2, long mask)
+>>> +{
+>>> +    struct lpc18xx_adc *adc = iio_priv(indio_dev);
+>>> +
+>>> +    switch (mask) {
+>>> +    case IIO_CHAN_INFO_RAW:
+> Please use a local lock to protect channels.  The mlock is specifically
+> for use in protecting against moving in and out of buffered mode for
+> drivers in which individual reads will break buffered capture.
+
+okey, got it. I'll send out a new version later today. I'll add the
+lock to the dac driver as well.
+
+Does this mean that if buffered mode support is added to the driver
+I'll have to change the lock again?
 
 
-In fact it is -
-www.kernel.org/doc/Documentation/gpio/gpio-legacy.txt
-
-"When setting the flag as GPIOF_OPEN_DRAIN then it will assume that pins is
-open drain type. Such pins will not be driven to 1 in output mode. It is
-require to connect pull-up on such pins. By enabling this flag, gpio lib 
-will
-make the direction to input when it is asked to set value of 1 in output 
-mode
-to make the pin HIGH. The pin is make to LOW by driving value 0 in 
-output mode."
-
-And that's exactly what the gpiolib code does.
-
--- 
-Greetings,
-Michael
-
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
-Margaret Seif
+regards,
+Joachim Eastwood
