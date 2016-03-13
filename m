@@ -1,79 +1,30 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36200 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757208AbcCUTgd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Mar 2016 15:36:33 -0400
-Subject: Re: [PATCH v3 2/3] iio:magnetometer:ak8975: mounting matrix support
-To: Rob Herring <robh+dt@kernel.org>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-References: <cover.1458231723.git.gregor.boirie@parrot.com>
- <a1efa2b83719dc3898c39a5886b7678892e7de3b.1458231723.git.gregor.boirie@parrot.com>
- <CAL_JsqJwE5fmHUzV-xi-hgMPSbzY_7QbXaHCSAMCpp9SggWtPw@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F044FD.6010206@kernel.org>
-Date: Mon, 21 Mar 2016 19:01:17 +0000
-MIME-Version: 1.0
-In-Reply-To: <CAL_JsqJwE5fmHUzV-xi-hgMPSbzY_7QbXaHCSAMCpp9SggWtPw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: ABI: Fix typo in in_proximity_raw description
+Date: Sun, 13 Mar 2016 16:02:22 +0100
+Message-Id: <1457881342-15418-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-Backed out patches 2 and 3 for now whilst discussion continues.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ Documentation/ABI/testing/sysfs-bus-iio |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 21/03/16 14:58, Rob Herring wrote:
-> On Thu, Mar 17, 2016 at 11:43 AM, Gregor Boirie
-> <gregor.boirie@parrot.com> wrote:
->> Expose a rotation matrix to indicate userspace the chip placement with
->> respect to the overall hardware system. This is needed to adjust
->> coordinates sampled from a magnetometer chip when its position deviates
->> from the main hardware system.
->>
->> Final coordinates computation is delegated to userspace since:
->> * computation may involve floating point arithmetics ;
->> * it allows an application to combine adjustments with arbitrary
->>   transformations.
->>
->> This 3 dimentional space rotation matrix is expressed as 3x3 array of
->> strings to support floating point numbers. It may be retrieved from a
->> "in_magn_matrix" sysfs attribute file. It is declared into ak8975 DTS
->> entry as a "matrix" property.
-> 
-> Why is the sysfs interface specific to ak8975?
-> 
-> Furthermore, why is it specific to magnetometer? Couldn't
-> accelerometers need the same thing? There's a thread discussing a
-> similar matrix on android-x86[1].
-> 
-> 
->> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->> index 34a3206..f936f86 100644
->> --- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->> +++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->> @@ -9,6 +9,7 @@ Optional properties:
->>
->>    - gpios : should be device tree identifier of the magnetometer DRDY pin
->>    - vdd-supply: an optional regulator that needs to be on to provide VDD
->> +  - matrix: an optional 3x3 mounting rotation matrix
-> 
-> Perhaps "rotation-matrx" would be a better name in case there's ever
-> any other matrix needed.
-> 
-> Rob
-> 
-> [1] https://groups.google.com/forum/#!msg/android-x86/LaKhV8cT69o/G1rrVU0_JAAJ
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 3c66248..17a9210 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1233,7 +1233,7 @@ KernelVersion:	3.4
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Proximity measurement indicating that some
+-		object is near the sensor, usually be observing
++		object is near the sensor, usually by observing
+ 		reflectivity of infrared or ultrasound emitted.
+ 		Often these sensors are unit less and as such conversion
+ 		to SI units is not possible. Higher proximity measurements
+-- 
+1.7.10.4
