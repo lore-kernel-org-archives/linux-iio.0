@@ -1,111 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:33976 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754678AbcCNGfA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Mar 2016 02:35:00 -0400
-Received: by mail-pa0-f48.google.com with SMTP id fe3so133942556pab.1
-        for <linux-iio@vger.kernel.org>; Sun, 13 Mar 2016 23:34:59 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH] iio: potentiometer: tpl0102: add hi-z enable/disable support
-Date: Sun, 13 Mar 2016 23:34:44 -0700
-Message-Id: <1457937284-16318-1-git-send-email-mranostay@gmail.com>
+Received: from mout01.posteo.de ([185.67.36.65]:48299 "EHLO mout01.posteo.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934069AbcCNL3R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Mar 2016 07:29:17 -0400
+Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
+	by mout01.posteo.de (Postfix) with ESMTPS id 7129120A60
+	for <linux-iio@vger.kernel.org>; Mon, 14 Mar 2016 12:29:12 +0100 (CET)
+From: Martin Kepplinger <martink@posteo.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Martin Kepplinger <martink@posteo.de>
+Subject: [PATCH 2/2] iio: mma8452: use runtime pm instead of device specific autosleep
+Date: Mon, 14 Mar 2016 12:26:29 +0100
+Message-Id: <1457954789-4885-2-git-send-email-martink@posteo.de>
+In-Reply-To: <1457954789-4885-1-git-send-email-martink@posteo.de>
+References: <1457954789-4885-1-git-send-email-martink@posteo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
- drivers/iio/potentiometer/tpl0102.c | 43 ++++++++++++++++++++++++++-----------
- 1 file changed, 31 insertions(+), 12 deletions(-)
+What is this autosleep?
+-----------------------
+It slows down the device after x seconds of inactivity. The thing is, we have
+really achieved almost the same by runtime pm.
 
-diff --git a/drivers/iio/potentiometer/tpl0102.c b/drivers/iio/potentiometer/tpl0102.c
-index 313124b..1413419c 100644
---- a/drivers/iio/potentiometer/tpl0102.c
-+++ b/drivers/iio/potentiometer/tpl0102.c
-@@ -12,8 +12,6 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  * GNU General Public License for more details.
-- *
-- * TODO: enable/disable hi-z output control
+differnces are:
+
+autosleep
+ * uses more power during inactivity
+ * the first read after inactivity slightly faster
+ * complicated to understand for the user
+ * no documented sysfs interface (afaik)
+ * complicated to read and maintain
+
+runtime pm
+ * already merged in mma8452
+ * uses less power during inactivity
+ * first read after inactivity slower
+ * easy to use. well documented.
+ * easy to maintain and understand
+
+The two approaches solve the same problem. runtime pm has more advantages
+than autosleep and comes quite close to it's behaviour anyways. As I see it,
+autosleep, even if somehow supported, would never be used anyways.
+
+So resolve this issue by "ignoring" autosleep.
+
+Signed-off-by: Martin Kepplinger <martink@posteo.de>
+Reviewed-by: Martina Kepplinger <martina.novakovic@zoho.com>
+---
+ drivers/iio/accel/mma8452.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index d0eeba0..375e45f 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -17,7 +17,7 @@
+  *
+  * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
+  *
+- * TODO: orientation events, autosleep
++ * TODO: orientation events
   */
  
  #include <linux/module.h>
-@@ -39,7 +37,7 @@ static const struct tpl0102_cfg tpl0102_cfg[] = {
- 	[CAT5140_503] = { .wipers = 1, .max_pos = 256, .kohms = 50, },
- 	[CAT5140_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
- 	/* ti parts */
--	[TPL0102_104] = { .wipers = 2, .max_pos = 256, .kohms = 100 },
-+	[TPL0102_104] = { .wipers = 3, .max_pos = 256, .kohms = 100 },
- 	[TPL0401_103] = { .wipers = 1, .max_pos = 128, .kohms = 10, },
- };
- 
-@@ -65,6 +63,15 @@ static const struct regmap_config tpl0102_regmap_config = {
- static const struct iio_chan_spec tpl0102_channels[] = {
- 	TPL0102_CHANNEL(0),
- 	TPL0102_CHANNEL(1),
-+	/* hi-z enable/disable */
-+	{
-+		.type = IIO_RESISTANCE,
-+		.output = 1,
-+		.address = 0x10,
-+		.channel = BIT(6),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_ENABLE),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+	}
- };
- 
- static int tpl0102_read_raw(struct iio_dev *indio_dev,
-@@ -72,13 +79,20 @@ static int tpl0102_read_raw(struct iio_dev *indio_dev,
- 			    int *val, int *val2, long mask)
- {
- 	struct tpl0102_data *data = iio_priv(indio_dev);
-+	int ret;
- 
- 	switch (mask) {
--	case IIO_CHAN_INFO_RAW: {
--		int ret = regmap_read(data->regmap, chan->channel, val);
-+	case IIO_CHAN_INFO_ENABLE:
-+		ret = regmap_read(data->regmap, chan->address, val);
-+
-+		if (!ret)
-+			*val = !!(*val & chan->channel);
-+
-+		return ret ? ret : IIO_VAL_INT;
-+	case IIO_CHAN_INFO_RAW:
-+		ret = regmap_read(data->regmap, chan->channel, val);
- 
- 		return ret ? ret : IIO_VAL_INT;
--	}
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 1000 * tpl0102_cfg[data->devid].kohms;
- 		*val2 = tpl0102_cfg[data->devid].max_pos;
-@@ -94,13 +108,18 @@ static int tpl0102_write_raw(struct iio_dev *indio_dev,
- {
- 	struct tpl0102_data *data = iio_priv(indio_dev);
- 
--	if (mask != IIO_CHAN_INFO_RAW)
--		return -EINVAL;
--
--	if (val >= tpl0102_cfg[data->devid].max_pos || val < 0)
--		return -EINVAL;
-+	switch (mask) {
-+	case IIO_CHAN_INFO_ENABLE:
-+		return regmap_update_bits(data->regmap, chan->address,
-+					  chan->channel,
-+					  !!val ? chan->channel : 0);
-+	case IIO_CHAN_INFO_RAW:
-+		if (val >= tpl0102_cfg[data->devid].max_pos || val < 0)
-+			return -EINVAL;
-+		return regmap_write(data->regmap, chan->channel, val);
-+	}
- 
--	return regmap_write(data->regmap, chan->channel, val);
-+	return -EINVAL;
- }
- 
- static const struct iio_info tpl0102_info = {
 -- 
-2.7.0
+2.1.4
 
