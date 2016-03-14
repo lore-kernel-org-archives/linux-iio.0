@@ -1,49 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f195.google.com ([209.85.213.195]:32934 "EHLO
-	mail-ig0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750782AbcCLTHA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 14:07:00 -0500
+Received: from mail.aswsp.com ([193.34.35.150]:50024 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751279AbcCNRTK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Mar 2016 13:19:10 -0400
+Message-ID: <56E6F2BA.5010101@parrot.com>
+Date: Mon, 14 Mar 2016 18:19:54 +0100
+From: Gregor Boirie <gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <56E45D45.4050605@kernel.org>
-References: <1457785817-32328-1-git-send-email-manabian@gmail.com>
-	<1457785817-32328-5-git-send-email-manabian@gmail.com>
-	<56E45D45.4050605@kernel.org>
-Date: Sat, 12 Mar 2016 20:06:59 +0100
-Message-ID: <CAGhQ9Vwys4G_pDWWDObDXVs0fTHkNr6v7aNWDZJue89GY+UV6w@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] dt: document NXP LPC1850 DAC driver bindings
-From: Joachim Eastwood <manabian@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	devicetree@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2 4/5] iio:magnetometer:ak8975: mounting matrix support
+References: <cover.1457001111.git.gregor.boirie@parrot.com> <022da3dfc0853c6f9820b24c2d9eaaf0c5ccf294.1457001111.git.gregor.boirie@parrot.com> <56DAFCEB.6080905@kernel.org> <56E0014D.1040209@parrot.com> <56E08B91.6070603@kernel.org>
+In-Reply-To: <56E08B91.6070603@kernel.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+On 03/09/2016 09:46 PM, Jonathan Cameron wrote:
 
-On 12 March 2016 at 19:17, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 12/03/16 12:30, Joachim Eastwood wrote:
->> Signed-off-by: Joachim Eastwood <manabian@gmail.com>
-> A very straight forward binding so I'm happy to apply this without
-> a devicetree ack (still time if anyone does want to take a look though as
-> it won't be in my non rebasing tree until probably next weekend now.)
+[snip...]
+> Definitely needs ABI docs in Documentation/ABI/testing/sysfs-bus-iio
+> as well. We need the reference directions to be well specified as
+> well - how do we define the main hardware orientation?  on yours presumably
+> the usual approach of using the screen is irrelevant so that definition
+> could be a little 'interesting' to write down?
+>> The standard orientation for us is defined with respect to the drone's head
+>> and the propellers plane, which does not suit the nominal use cases indeed...
+>> Although it really deserves some more detailed documentation, I wonder if the
+>> question is relevant.
+>> Given that the DTS is board specific (correct me if I'm wrong), why not
+>> consider the reference orientation as board specific as well (and make the
+>> whole thing implicit) ?
+> I think that is fine for your sort of usecase - though might be nice to keep
+> a bit of documentation somewhere (perhaps as comments in the DTS), or perhaps
+> more centrally - would be nice for userspace libraries if at least all aircraft
+> had a similar 'default orientation'.
+As you said earlier, things are never that simple. The standard orientation
+may vary with types of UAVs (quad-rotor, fixed wings, bizarre home made 
+UFOs...)
+> For the more 'standard' device with a screen I think we would want to standardise
+> if at all possible.  Most hand held devices have a 'natural' orientation
+> (front facing camera at the top for example).  In those cases we are basically looking
+> at whether the sensor is mounted on the back or the front of the main circuit board and
+> then of course it can be at any rotation in plane but typically is at 90 degrees
+> (hence the inv mpu limitations)
 >
-> Applied to the togreg branch of iio.git - initially pushed out as testing
-> for the autobuilders to play with it.
-
-Thanks!
-
-> We have unfortunately missed the merge window that will probably open tomorrow
-> (as IIO stuff must be in a few weeks before that) so this is looking at the
-> next merge window in 3 months time.  Will be in linux-next in about 3-4 weeks
-> though after I send a pull request to Greg KH post merge window closing.
-I wasn't expecting it to go upstream in the upcoming window. But I
-will be good to get it into next after the window closes so I can get
-the DT bits for lpc18xx upstream as well.
-
-
-regards,
-Joachim Eastwood
+> I'm guessing there are existing userspace mappings for this.  Perhaps in the Gnome
+> sensors stuff?
+[snip...]
