@@ -1,102 +1,111 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f48.google.com ([74.125.82.48]:33223 "EHLO
-	mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752125AbcCNKUs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Mar 2016 06:20:48 -0400
-Received: by mail-wm0-f48.google.com with SMTP id l68so95124108wml.0
-        for <linux-iio@vger.kernel.org>; Mon, 14 Mar 2016 03:20:47 -0700 (PDT)
-From: Marc Titinger <mtitinger@baylibre.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net
-Cc: afd@ti.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH-vs-togreg v2 1/2] iio: ina2xx-adc: update the CALIB. register when RShunt changes
-Date: Mon, 14 Mar 2016 11:20:44 +0100
-Message-Id: <1457950844-7261-1-git-send-email-marc.titinger@baylibre.com>
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:33976 "EHLO
+	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754678AbcCNGfA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Mar 2016 02:35:00 -0400
+Received: by mail-pa0-f48.google.com with SMTP id fe3so133942556pab.1
+        for <linux-iio@vger.kernel.org>; Sun, 13 Mar 2016 23:34:59 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH] iio: potentiometer: tpl0102: add hi-z enable/disable support
+Date: Sun, 13 Mar 2016 23:34:44 -0700
+Message-Id: <1457937284-16318-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The user (or an init script) may setup RShunt via sysfs after the
-driver was initialized, for instance based on the EEPROM contents
-of a modular probe. The calibration register must be set accordingly.
-
-Signed-off-by: Marc Titinger <marc.titinger@baylibre.com>
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
- v2 of http://www.spinics.net/lists/linux-iio/msg23402.html:
+ drivers/iio/potentiometer/tpl0102.c | 43 ++++++++++++++++++++++++++-----------
+ 1 file changed, 31 insertions(+), 12 deletions(-)
 
-	- remove unnecessary line insertions
-	- cleanup leftover unused variable (build warning)
-	- patch 2/2 is unchanged (see v1)
----
- drivers/iio/adc/ina2xx-adc.c | 39 ++++++++++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 65909d5..4e56fe3 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -350,6 +350,23 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
- 	return len;
- }
+diff --git a/drivers/iio/potentiometer/tpl0102.c b/drivers/iio/potentiometer/tpl0102.c
+index 313124b..1413419c 100644
+--- a/drivers/iio/potentiometer/tpl0102.c
++++ b/drivers/iio/potentiometer/tpl0102.c
+@@ -12,8 +12,6 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  * GNU General Public License for more details.
+- *
+- * TODO: enable/disable hi-z output control
+  */
  
-+/*
-+ * Set current LSB to 1mA, shunt is in uOhms
-+ * (equation 13 in datasheet). We hardcode a Current_LSB
-+ * of 1.0 x10-6. The only remaining parameter is RShunt.
-+ * There is no need to expose the CALIBRATION register
-+ * to the user for now. But we need to reset this register
-+ * if the user updates RShunt after driver init, e.g upon
-+ * reading an EEPROM/Probe-type value.
-+ */
-+static int ina2xx_set_calibration(struct ina2xx_chip_info *chip)
-+{
-+	u16 regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
-+				   chip->shunt_resistor);
-+
-+	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
-+}
-+
- static int set_shunt_resistor(struct ina2xx_chip_info *chip, unsigned int val)
+ #include <linux/module.h>
+@@ -39,7 +37,7 @@ static const struct tpl0102_cfg tpl0102_cfg[] = {
+ 	[CAT5140_503] = { .wipers = 1, .max_pos = 256, .kohms = 50, },
+ 	[CAT5140_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+ 	/* ti parts */
+-	[TPL0102_104] = { .wipers = 2, .max_pos = 256, .kohms = 100 },
++	[TPL0102_104] = { .wipers = 3, .max_pos = 256, .kohms = 100 },
+ 	[TPL0401_103] = { .wipers = 1, .max_pos = 128, .kohms = 10, },
+ };
+ 
+@@ -65,6 +63,15 @@ static const struct regmap_config tpl0102_regmap_config = {
+ static const struct iio_chan_spec tpl0102_channels[] = {
+ 	TPL0102_CHANNEL(0),
+ 	TPL0102_CHANNEL(1),
++	/* hi-z enable/disable */
++	{
++		.type = IIO_RESISTANCE,
++		.output = 1,
++		.address = 0x10,
++		.channel = BIT(6),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_ENABLE),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++	}
+ };
+ 
+ static int tpl0102_read_raw(struct iio_dev *indio_dev,
+@@ -72,13 +79,20 @@ static int tpl0102_read_raw(struct iio_dev *indio_dev,
+ 			    int *val, int *val2, long mask)
  {
- 	if (val <= 0 || val > chip->config->calibration_factor)
-@@ -385,6 +402,11 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
- 	if (ret)
- 		return ret;
+ 	struct tpl0102_data *data = iio_priv(indio_dev);
++	int ret;
  
-+	/* Update the Calibration register */
-+	ret = ina2xx_set_calibration(chip);
-+	if (ret)
-+		return ret;
+ 	switch (mask) {
+-	case IIO_CHAN_INFO_RAW: {
+-		int ret = regmap_read(data->regmap, chan->channel, val);
++	case IIO_CHAN_INFO_ENABLE:
++		ret = regmap_read(data->regmap, chan->address, val);
 +
- 	return len;
- }
++		if (!ret)
++			*val = !!(*val & chan->channel);
++
++		return ret ? ret : IIO_VAL_INT;
++	case IIO_CHAN_INFO_RAW:
++		ret = regmap_read(data->regmap, chan->channel, val);
  
-@@ -602,24 +624,11 @@ static const struct iio_info ina2xx_info = {
- /* Initialize the configuration and calibration registers. */
- static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
+ 		return ret ? ret : IIO_VAL_INT;
+-	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = 1000 * tpl0102_cfg[data->devid].kohms;
+ 		*val2 = tpl0102_cfg[data->devid].max_pos;
+@@ -94,13 +108,18 @@ static int tpl0102_write_raw(struct iio_dev *indio_dev,
  {
--	u16 regval;
--	int ret;
--
--	ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
-+	int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
- 	if (ret)
- 		return ret;
+ 	struct tpl0102_data *data = iio_priv(indio_dev);
  
--	/*
--	 * Set current LSB to 1mA, shunt is in uOhms
--	 * (equation 13 in datasheet). We hardcode a Current_LSB
--	 * of 1.0 x10-6. The only remaining parameter is RShunt.
--	 * There is no need to expose the CALIBRATION register
--	 * to the user for now.
--	 */
--	regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
--				   chip->shunt_resistor);
+-	if (mask != IIO_CHAN_INFO_RAW)
+-		return -EINVAL;
 -
--	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
-+	return ina2xx_set_calibration(chip);
+-	if (val >= tpl0102_cfg[data->devid].max_pos || val < 0)
+-		return -EINVAL;
++	switch (mask) {
++	case IIO_CHAN_INFO_ENABLE:
++		return regmap_update_bits(data->regmap, chan->address,
++					  chan->channel,
++					  !!val ? chan->channel : 0);
++	case IIO_CHAN_INFO_RAW:
++		if (val >= tpl0102_cfg[data->devid].max_pos || val < 0)
++			return -EINVAL;
++		return regmap_write(data->regmap, chan->channel, val);
++	}
+ 
+-	return regmap_write(data->regmap, chan->channel, val);
++	return -EINVAL;
  }
  
- static int ina2xx_probe(struct i2c_client *client,
+ static const struct iio_info tpl0102_info = {
 -- 
-2.5.0
+2.7.0
 
