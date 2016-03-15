@@ -1,113 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56989 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755106AbcCTLYt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2016 07:24:49 -0400
-Subject: Re: [PATCH-vs-togreg v2 1/2] iio: ina2xx-adc: update the CALIB.
- register when RShunt changes
-To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-References: <1457950844-7261-1-git-send-email-marc.titinger@baylibre.com>
-Cc: afd@ti.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56EE887F.7030508@kernel.org>
-Date: Sun, 20 Mar 2016 11:24:47 +0000
+Received: from mail.aswsp.com ([193.34.35.150]:62570 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932842AbcCOJ2d (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 15 Mar 2016 05:28:33 -0400
+Message-ID: <56E7D5E8.2050003@parrot.com>
+Date: Tue, 15 Mar 2016 10:29:12 +0100
+From: Gregor Boirie <gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <1457950844-7261-1-git-send-email-marc.titinger@baylibre.com>
-Content-Type: text/plain; charset=windows-1252
+To: <linux-iio@vger.kernel.org>
+Subject: iio and regulator api usage
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/03/16 10:20, Marc Titinger wrote:
-> The user (or an init script) may setup RShunt via sysfs after the
-> driver was initialized, for instance based on the EEPROM contents
-> of a modular probe. The calibration register must be set accordingly.
-> 
-> Signed-off-by: Marc Titinger <marc.titinger@baylibre.com>
-> ---
->  v2 of http://www.spinics.net/lists/linux-iio/msg23402.html:
-> 
-> 	- remove unnecessary line insertions
-> 	- cleanup leftover unused variable (build warning)
-> 	- patch 2/2 is unchanged (see v1)
-Err, can't find it for some reason.
+Hi all,
 
-Anyhow, applied this one to the togreg branch of iio.git - pushed
-out as testing for the autobuilders to play with it.
+After Jonathan's ms5611 review, I digged a bit deeper into regulator API.
+I must confess it looks rather confusing to me, especially with regard to
+optional regulator support.
 
-Thanks,
+Most often, IIO drivers implement the following scheme at probing time to
+enable an optional regulator:
+</code>
+/* At probing time */
+void mydriver_power_enable(struct iio_dev *indio_dev)
+{
+     struct mydriver_priv *priv = iio_priv(indio_dev);
 
-Jonathan
-> ---
->  drivers/iio/adc/ina2xx-adc.c | 39 ++++++++++++++++++++++++---------------
->  1 file changed, 24 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> index 65909d5..4e56fe3 100644
-> --- a/drivers/iio/adc/ina2xx-adc.c
-> +++ b/drivers/iio/adc/ina2xx-adc.c
-> @@ -350,6 +350,23 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
->  	return len;
->  }
->  
-> +/*
-> + * Set current LSB to 1mA, shunt is in uOhms
-> + * (equation 13 in datasheet). We hardcode a Current_LSB
-> + * of 1.0 x10-6. The only remaining parameter is RShunt.
-> + * There is no need to expose the CALIBRATION register
-> + * to the user for now. But we need to reset this register
-> + * if the user updates RShunt after driver init, e.g upon
-> + * reading an EEPROM/Probe-type value.
-> + */
-> +static int ina2xx_set_calibration(struct ina2xx_chip_info *chip)
-> +{
-> +	u16 regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
-> +				   chip->shunt_resistor);
-> +
-> +	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
-> +}
-> +
->  static int set_shunt_resistor(struct ina2xx_chip_info *chip, unsigned int val)
->  {
->  	if (val <= 0 || val > chip->config->calibration_factor)
-> @@ -385,6 +402,11 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
->  	if (ret)
->  		return ret;
->  
-> +	/* Update the Calibration register */
-> +	ret = ina2xx_set_calibration(chip);
-> +	if (ret)
-> +		return ret;
-> +
->  	return len;
->  }
->  
-> @@ -602,24 +624,11 @@ static const struct iio_info ina2xx_info = {
->  /* Initialize the configuration and calibration registers. */
->  static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
->  {
-> -	u16 regval;
-> -	int ret;
-> -
-> -	ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
-> +	int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
->  	if (ret)
->  		return ret;
->  
-> -	/*
-> -	 * Set current LSB to 1mA, shunt is in uOhms
-> -	 * (equation 13 in datasheet). We hardcode a Current_LSB
-> -	 * of 1.0 x10-6. The only remaining parameter is RShunt.
-> -	 * There is no need to expose the CALIBRATION register
-> -	 * to the user for now.
-> -	 */
-> -	regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
-> -				   chip->shunt_resistor);
-> -
-> -	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
-> +	return ina2xx_set_calibration(chip);
->  }
->  
->  static int ina2xx_probe(struct i2c_client *client,
-> 
+     /* Regulators not mandatory, but if requested we should enable them. */
+     priv->vdd = devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
+     if (!IS_ERR(priv->vdd)) {
+         int err = regulator_enable(priv->vdd);
+         if (err != 0)
+             dev_warn(&indio_dev->dev,
+                  "Failed to enable specified Vdd supply\n");
+     }
 
+     /* Keep going */
+     ...
+}
+
+/* At removal time */
+void mydriver_power_disable(struct iio_dev *indio_dev)
+{
+     struct mydriver_priv *priv = iio_priv(indio_dev);
+
+     ...
+     if (!IS_ERR(priv->vdd))
+         regulator_disable(priv->vdd);
+     ...
+}
+<code/>
+
+A problem may arise with this piece of code: when 
+devm_regulator_get_optional
+returns -EPROBE_DEFER, driver will go on initializing with no regulator 
+instead
+of deferring their probing operations at a later time as it should (to wait
+regulator initialization completion).
+Although related to real troubles, other error codes are also ignored 
+(EPERM,
+EBUSY, ENOMEM...), which is even worse.
+ From my understanding, optional regulator usage should be enforced when 
+present
+and ignored if not there. The only error code which may be ignored should be
+ENODEV when the regulator is optional.
+This is clearly not implemented this way in the above example.
+
+You can see such code in:
+drivers/adc/max1363.c
+drivers/common/st_sensors/st_sensors_core.c
+drivers/dac/ad5686.c
+
+The same seems to happen when using the alternate devm_regulator_get for 
+optional
+usage purposes as in:
+drivers/iio/amplifiers/ad8366.c
+drivers/iio/dac/ad5624r_spi.c
+and others...
+
+So here is my simple question: how should I implement optional regulator 
+support ?
+
+Thanks for sharing your time and knowledge. Regards,
+Grégor.
