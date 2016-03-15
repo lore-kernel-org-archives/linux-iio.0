@@ -1,123 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.208]:46614 "EHLO
-	smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752344AbcCPQZF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 12:25:05 -0400
-Date: Wed, 16 Mar 2016 17:25:45 +0100
-From: Slawomir Stepien <sst@poczta.fm>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: add driver for Microchip MCP414X/416X/424X/426X
-Message-ID: <20160316162544.GA6212@x220>
-References: <20160316113738.GB2445@x220>
- <alpine.DEB.2.02.1603161238590.30358@pmeerw.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <alpine.DEB.2.02.1603161238590.30358@pmeerw.net>
+Received: from lucky1.263xmail.com ([211.157.147.132]:34359 "EHLO
+	lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753680AbcCPJiH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 05:38:07 -0400
+From: David Wu <david.wu@rock-chips.com>
+To: jic23@kernel.org, heiko@sntech.de
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	huangtao@rock-chips.com, xjq@rock-chips.com, zyw@rock-chips.com,
+	cf@rock-chips.com, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, david.wu@rock-chips.com
+Subject: [PATCH] iio: adc: rockchip_saradc: add saradc support for rk3399
+Date: Wed, 16 Mar 2016 01:44:15 +0800
+Message-Id: <1458063855-4154-1-git-send-email-david.wu@rock-chips.com>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mar 16, 2016 13:30, Peter Meerwald-Stadler wrote:
-> On Wed, 16 Mar 2016, Slawomir Stepien wrote:
-> 
-> > The following functionalities are supported:
-> >  - write, read from volatile and non volatile memory
-> >  - increase and decrease commands
-> >  - read from status register
-> >  - write and read to tcon register
-> > 
-> > Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22059b.pdf
+The ADC is a 6-channel signal-ended 10-bit Successive
+Approximation Register (SAR) A/D Converter.
 
-Thank you for all your comments.
+Signed-off-by: David Wu <david.wu@rock-chips.com>
+---
+ .../devicetree/bindings/iio/adc/rockchip-saradc.txt   |  6 +++++-
+ drivers/iio/adc/rockchip_saradc.c                     | 19 +++++++++++++++++++
+ 2 files changed, 24 insertions(+), 1 deletion(-)
 
-> the driver naming is a mess: the subject says MCP414X, the file name is 
-> mcp41xx, the DT compatible string says mcp4113x -- this does not match
-
-OK. I will change that to mcp414x in version 2.
-
-> plenty of the private API, some of which seems to be debug only?
-> what is really needed to interact with a poti?
-
-I wanted to export both the non volatile and volatile memory addresses for wiper
-position access. That is bare minimum for the poti to operate.
-
-But I also wanted to export additional features of this chip. That is way there
-is increase and decrease API, and STATUS and TCON register access.
-
-The memory_map API is a way to access all the not used by chip memory addresses.
-This API I think could be deleted. But I still think that some people might find
-it useful.
-
-> comments below
->  
-> > +File:	/sys/bus/iio/devices/../out_resistanceN_raw
-> 
-> this is already described in sysfs-bus-iio
-
-Should I leave it and add reference to sysfs-bus-iio or delete it completely?
-
-> > +struct mcp41xx_cfg {
-> > +	unsigned long int devid;
-> 
-> devid is not set/used
-
-That's true. Will fix it in v2.
-
-> > +static int mcp41xx_exec(struct mcp41xx_data *data,
-> > +		u8 addr, u8 cmd,
-> > +		int *trans, size_t n)
-> 
-> should trans really be int, not u8?
-
-There is a need for 9 bit value write/read. I used int just for my convenience.
-However there is one piece of code missing now I see. I should check the value
-of tans[0] to see if it's > 256 or lower then 0. Will add it in v2.
-
-Using u8 will force additional bit operations. I could try using u16 to still
-have the option of parsing user input as 9 bit value (eg. 256 position).
-
-> > +{
-> > +	int err;
-> > +	struct spi_device *spi = data->spi;
-> > +
-> > +	/* Two bytes are needed for the response */
-> > +	if (n != 2)
-> > +		return -EINVAL;
-> 
-> why pass n if it is always 2?
-
-Will fix in v2.
-
-> > +	err = devm_iio_device_register(&spi->dev, indio_dev);
-> > +	if (err) {
-> > +		dev_info(&spi->dev, "Unable to register %s", indio_dev->name);
-> 
-> \n missing
-> 
-> > +		return err;
-> > +	}
-> > +
-> > +	dev_info(&spi->dev, "Registered %s", indio_dev->name);
-> 
-> \n
-> 
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int mcp41xx_remove(struct spi_device *spi)
-> > +{
-> > +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> > +	struct mcp41xx_data *data = iio_priv(indio_dev);
-> > +
-> > +	mutex_destroy(&data->lock);
-> > +	devm_iio_device_unregister(&spi->dev, indio_dev);
-> > +	kfree(mcp41xx_attributes);
-> > +
-> > +	dev_info(&spi->dev, "Unregistered %s", indio_dev->name);
-
-Also \n is missing here. Will fix in v2.
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+index a9a5fe1..bf99e2f 100644
+--- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+@@ -1,7 +1,11 @@
+ Rockchip Successive Approximation Register (SAR) A/D Converter bindings
+ 
+ Required properties:
+-- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
++- compatible: should be "rockchip,<name>-saradc" or "rockchip,rk3066-tsadc"
++   - "rockchip,saradc": for rk3188, rk3288
++   - "rockchip,rk3066-tsadc": for rk3036
++   - "rockchip,rk3399-saradc": for rk3399
++
+ - reg: physical base address of the controller and length of memory mapped
+        region.
+ - interrupts: The interrupt number to the cpu. The interrupt specifier format
+diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+index 9c311c1..f9ad6c2 100644
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -159,6 +159,22 @@ static const struct rockchip_saradc_data rk3066_tsadc_data = {
+ 	.clk_rate = 50000,
+ };
+ 
++static const struct iio_chan_spec rockchip_rk3399_saradc_iio_channels[] = {
++	ADC_CHANNEL(0, "adc0"),
++	ADC_CHANNEL(1, "adc1"),
++	ADC_CHANNEL(2, "adc2"),
++	ADC_CHANNEL(3, "adc3"),
++	ADC_CHANNEL(4, "adc4"),
++	ADC_CHANNEL(5, "adc5"),
++};
++
++static const struct rockchip_saradc_data rk3399_saradc_data = {
++	.num_bits = 10,
++	.channels = rockchip_rk3399_saradc_iio_channels,
++	.num_channels = ARRAY_SIZE(rockchip_rk3399_saradc_iio_channels),
++	.clk_rate = 1000000,
++};
++
+ static const struct of_device_id rockchip_saradc_match[] = {
+ 	{
+ 		.compatible = "rockchip,saradc",
+@@ -166,6 +182,9 @@ static const struct of_device_id rockchip_saradc_match[] = {
+ 	}, {
+ 		.compatible = "rockchip,rk3066-tsadc",
+ 		.data = &rk3066_tsadc_data,
++	}, {
++		.compatible = "rockchip,rk3399-saradc",
++		.data = &rk3399_saradc_data,
+ 	},
+ 	{},
+ };
 -- 
-Slawomir Stepien
+1.9.1
+
+
