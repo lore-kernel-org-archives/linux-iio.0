@@ -1,46 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35299 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35302 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932195AbcCOWCo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2016 18:02:44 -0400
-Subject: Re: [PATCH] MAINTAINERS: update pmeerw's name
+	with ESMTP id S932195AbcCOWDT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2016 18:03:19 -0400
+Subject: Re: [PATCH] iio: ABI: Fix typo in in_proximity_raw description
 To: Peter Meerwald <pmeerw@pmeerw.net>
-References: <1457882553-16398-1-git-send-email-pmeerw@pmeerw.net>
+References: <1457881342-15418-1-git-send-email-pmeerw@pmeerw.net>
 Cc: linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E88682.7080607@kernel.org>
-Date: Tue, 15 Mar 2016 22:02:42 +0000
+Message-ID: <56E886A5.5080509@kernel.org>
+Date: Tue, 15 Mar 2016 22:03:17 +0000
 MIME-Version: 1.0
-In-Reply-To: <1457882553-16398-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1457881342-15418-1-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/03/16 15:22, Peter Meerwald wrote:
-> From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> 
-> happily married for 4 month :)
-> 
-> Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Congratulations and it'll be another 3 months before it hits mainline ;)
-
-Jonathan
+On 13/03/16 15:02, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Applied, thanks.
 > ---
->  MAINTAINERS |    2 +-
+>  Documentation/ABI/testing/sysfs-bus-iio |    2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index dd9ee367d..048c3d1 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -5458,7 +5458,7 @@ IIO SUBSYSTEM AND DRIVERS
->  M:	Jonathan Cameron <jic23@kernel.org>
->  R:	Hartmut Knaack <knaack.h@gmx.de>
->  R:	Lars-Peter Clausen <lars@metafoo.de>
-> -R:	Peter Meerwald <pmeerw@pmeerw.net>
-> +R:	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
->  L:	linux-iio@vger.kernel.org
->  S:	Maintained
->  F:	drivers/iio/
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 3c66248..17a9210 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1233,7 +1233,7 @@ KernelVersion:	3.4
+>  Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Proximity measurement indicating that some
+> -		object is near the sensor, usually be observing
+> +		object is near the sensor, usually by observing
+>  		reflectivity of infrared or ultrasound emitted.
+>  		Often these sensors are unit less and as such conversion
+>  		to SI units is not possible. Higher proximity measurements
 > 
 
