@@ -1,275 +1,94 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43094 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751650AbcCLJZo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 04:25:44 -0500
-Subject: Re: [PATCH v5 1/2] iio: ad5755: add support for dt bindings
-To: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-iio@vger.kernel.org
-References: <1457705561-12253-1-git-send-email-sean.nyekjaer@prevas.dk>
-Cc: devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E3E096.1040605@kernel.org>
-Date: Sat, 12 Mar 2016 09:25:42 +0000
+Return-Path: <tiberiu.a.breana@intel.com>
+From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
+To: "linux@roeck-us.net" <linux@roeck-us.net>, "lm-sensors@lm-sensors.org"
+	<lm-sensors@lm-sensors.org>
+CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "Baluta, Daniel" <daniel.baluta@intel.com>
+Subject: RE: [PATCH 0/2] Add support for MAX31722/MAX31723 temperature
+ sensors
+Date: Tue, 15 Mar 2016 13:16:56 +0000
+Message-ID: <4586F61A4A291F4DA44D32824E7C0F4023568E0D@IRSMSX109.ger.corp.intel.com>
+References: <1457530252-4984-1-git-send-email-tiberiu.a.breana@intel.com>
+ <56E08834.40704@kernel.org>,<4586F61A4A291F4DA44D32824E7C0F4023568DEC@IRSMSX109.ger.corp.intel.com>
+In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F4023568DEC@IRSMSX109.ger.corp.intel.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <1457705561-12253-1-git-send-email-sean.nyekjaer@prevas.dk>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/03/16 14:12, Sean Nyekjaer wrote:
-> Devicetree can provide platform data
-> 
-> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Looks good to me. Would like an Ack / reviewed by from Lars
-and a device tree ack for the bindings.  No particular rush
-though given it has missed the current merge window now anyway.
-
-Please do cc the driver author and maintainers for the device tree
-bindings on relevant patches.  Both will probably pick it up from
-the list, but they may well read emails addressed directly to
-them earlier!
-I'll add cc's for the binding in a mo.
-
-Jonathan
-> ---
-> Changes since v4:
-> - added lookups tables instead of large switchcases
-> 
-> Changes since v3:
-> - replaced '_' with '-'
-> - Now used actual values instead of register values.
-> 
-> Changes since v2:
-> - removed defines from DT
-> 
->  drivers/iio/dac/ad5755.c | 186 ++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 185 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-> index bfb350a..b380803 100644
-> --- a/drivers/iio/dac/ad5755.c
-> +++ b/drivers/iio/dac/ad5755.c
-> @@ -14,6 +14,7 @@
->  #include <linux/slab.h>
->  #include <linux/sysfs.h>
->  #include <linux/delay.h>
-> +#include <linux/of.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  #include <linux/platform_data/ad5755.h>
-> @@ -109,6 +110,49 @@ enum ad5755_type {
->  	ID_AD5737,
->  };
->  
-> +static const int ad5755_dcdc_freq_table[][2] = {
-> +	{ 250000, AD5755_DC_DC_FREQ_250kHZ },
-> +	{ 410000, AD5755_DC_DC_FREQ_410kHZ },
-> +	{ 650000, AD5755_DC_DC_FREQ_650kHZ }
-> +};
-> +
-> +static const int ad5755_dcdc_maxv_table[][2] = {
-> +	{ 23000000, AD5755_DC_DC_MAXV_23V },
-> +	{ 24500000, AD5755_DC_DC_MAXV_24V5 },
-> +	{ 27000000, AD5755_DC_DC_MAXV_27V },
-> +	{ 29500000, AD5755_DC_DC_MAXV_29V5 },
-> +};
-> +
-> +static const int ad5755_slew_rate_table[][2] = {
-> +	{ 64000, AD5755_SLEW_RATE_64k },
-> +	{ 32000, AD5755_SLEW_RATE_32k },
-> +	{ 16000, AD5755_SLEW_RATE_16k },
-> +	{ 8000, AD5755_SLEW_RATE_8k },
-> +	{ 4000, AD5755_SLEW_RATE_4k },
-> +	{ 2000, AD5755_SLEW_RATE_2k },
-> +	{ 1000, AD5755_SLEW_RATE_1k },
-> +	{ 500, AD5755_SLEW_RATE_500 },
-> +	{ 250, AD5755_SLEW_RATE_250 },
-> +	{ 125, AD5755_SLEW_RATE_125 },
-> +	{ 64, AD5755_SLEW_RATE_64 },
-> +	{ 32, AD5755_SLEW_RATE_32 },
-> +	{ 16, AD5755_SLEW_RATE_16 },
-> +	{ 8, AD5755_SLEW_RATE_8 },
-> +	{ 4, AD5755_SLEW_RATE_4 },
-> +	{ 0, AD5755_SLEW_RATE_0_5 },
-> +};
-> +
-> +static const int ad5755_slew_step_table[][2] = {
-> +	{ 256, AD5755_SLEW_STEP_SIZE_256 },
-> +	{ 128, AD5755_SLEW_STEP_SIZE_128 },
-> +	{ 64, AD5755_SLEW_STEP_SIZE_64 },
-> +	{ 32, AD5755_SLEW_STEP_SIZE_32 },
-> +	{ 16, AD5755_SLEW_STEP_SIZE_16 },
-> +	{ 4, AD5755_SLEW_STEP_SIZE_4 },
-> +	{ 2, AD5755_SLEW_STEP_SIZE_2 },
-> +	{ 1, AD5755_SLEW_STEP_SIZE_1 },
-> +};
-> +
->  static int ad5755_write_unlocked(struct iio_dev *indio_dev,
->  	unsigned int reg, unsigned int val)
->  {
-> @@ -556,6 +600,129 @@ static const struct ad5755_platform_data ad5755_default_pdata = {
->  	},
->  };
->  
-> +#ifdef CONFIG_OF
-> +static struct ad5755_platform_data *ad5755_parse_dt(struct device *dev)
-> +{
-> +	struct device_node *np = dev->of_node;
-> +	struct device_node *pp;
-> +	struct ad5755_platform_data *pdata;
-> +	unsigned int tmp;
-> +	unsigned int tmparray[3];
-> +	int devnr, i;
-> +
-> +	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-> +	if (!pdata)
-> +		return NULL;
-> +
-> +	pdata->ext_dc_dc_compenstation_resistor =
-> +	    of_property_read_bool(np, "adi,ext-dc-dc-compenstation-resistor");
-> +
-> +	if (!of_property_read_u32(np, "adi,dc-dc-phase", &tmp))
-> +		pdata->dc_dc_phase = tmp;
-> +	else
-> +		pdata->dc_dc_phase = AD5755_DC_DC_PHASE_ALL_SAME_EDGE;
-> +
-> +	pdata->dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ;
-> +	if (!of_property_read_u32(np, "adi,dc-dc-freq-hz", &tmp)) {
-> +		for (i = 0; i < ARRAY_SIZE(ad5755_dcdc_freq_table); i++) {
-> +			if (tmp == ad5755_dcdc_freq_table[i][0]) {
-> +				pdata->dc_dc_freq = ad5755_dcdc_freq_table[i][1];
-> +				break;
-> +			}
-> +		}
-> +
-> +		if (i == ARRAY_SIZE(ad5755_dcdc_freq_table)) {
-> +			dev_err(dev,
-> +				"adi,dc-dc-freq out of range selecting 410kHz");
-> +		}
-> +	}
-> +
-> +	pdata->dc_dc_maxv = AD5755_DC_DC_MAXV_23V;
-> +	if (!of_property_read_u32(np, "adi,dc-dc-max-microvolt", &tmp)) {
-> +		for (i = 0; i < ARRAY_SIZE(ad5755_dcdc_maxv_table); i++) {
-> +			if (tmp == ad5755_dcdc_maxv_table[i][0]) {
-> +				pdata->dc_dc_maxv = ad5755_dcdc_maxv_table[i][1];
-> +				break;
-> +			}
-> +		}
-> +		if (i == ARRAY_SIZE(ad5755_dcdc_maxv_table)) {
-> +				dev_err(dev,
-> +					"adi,dc-dc-maxv out of range selecting 23V");
-> +		}
-> +	}
-> +
-> +	devnr = 0;
-> +	for_each_child_of_node(np, pp) {
-> +		if (devnr > AD5755_NUM_CHANNELS) {
-> +			dev_err(dev,
-> +				"There is to many channels defined in DT\n");
-> +			goto error_out;
-> +		}
-> +
-> +		if (!of_property_read_u32(pp, "adi,mode", &tmp))
-> +			pdata->dac[devnr].mode = tmp;
-> +		else
-> +			pdata->dac[devnr].mode = AD5755_MODE_CURRENT_4mA_20mA;
-> +
-> +		pdata->dac[devnr].ext_current_sense_resistor =
-> +		    of_property_read_bool(pp, "adi,ext-current-sense-resistor");
-> +
-> +		pdata->dac[devnr].enable_voltage_overrange =
-> +		    of_property_read_bool(pp, "adi,enable-voltage-overrange");
-> +
-> +		if (!of_property_read_u32_array(pp, "adi,slew", tmparray, 3)) {
-> +			pdata->dac[devnr].slew.enable = tmparray[0];
-> +
-> +			pdata->dac[devnr].slew.rate = AD5755_SLEW_RATE_64k;
-> +			for (i = 0; i < ARRAY_SIZE(ad5755_slew_rate_table); i++) {
-> +				if (tmparray[1] == ad5755_slew_rate_table[i][0]) {
-> +					pdata->dac[devnr].slew.rate =
-> +						ad5755_slew_rate_table[i][1];
-> +					break;
-> +				}
-> +			}
-> +			if (i == ARRAY_SIZE(ad5755_slew_rate_table)) {
-> +				dev_err(dev,
-> +					"channel %d slew rate out of range selecting 64kHz",
-> +					devnr);
-> +			}
-> +
-> +			pdata->dac[devnr].slew.step_size = AD5755_SLEW_STEP_SIZE_1;
-> +			for (i = 0; i < ARRAY_SIZE(ad5755_slew_step_table); i++) {
-> +				if (tmparray[2] == ad5755_slew_step_table[i][0]) {
-> +					pdata->dac[devnr].slew.step_size =
-> +						ad5755_slew_step_table[i][1];
-> +					break;
-> +				}
-> +			}
-> +			if (i == ARRAY_SIZE(ad5755_slew_step_table)) {
-> +				dev_err(dev,
-> +					"channel %d slew step size out of range selecting 1 LSB",
-> +					devnr);
-> +			}
-> +		} else {
-> +			pdata->dac[devnr].slew.enable = false;
-> +			pdata->dac[devnr].slew.rate = AD5755_SLEW_RATE_64k;
-> +			pdata->dac[devnr].slew.step_size =
-> +			    AD5755_SLEW_STEP_SIZE_1;
-> +		}
-> +		devnr++;
-> +	}
-> +
-> +	return pdata;
-> +
-> + error_out:
-> +	devm_kfree(dev, pdata);
-> +	return NULL;
-> +}
-> +#else
-> +static
-> +struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
-> +{
-> +	return NULL;
-> +}
-> +#endif
-> +
->  static int ad5755_probe(struct spi_device *spi)
->  {
->  	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
-> @@ -583,8 +750,15 @@ static int ad5755_probe(struct spi_device *spi)
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->num_channels = AD5755_NUM_CHANNELS;
->  
-> -	if (!pdata)
-> +	if (spi->dev.of_node)
-> +		pdata = ad5755_parse_dt(&spi->dev);
-> +	else
-> +		pdata = spi->dev.platform_data;
-> +
-> +	if (!pdata) {
-> +		dev_warn(&spi->dev, "no platform data? using default\n");
->  		pdata = &ad5755_default_pdata;
-> +	}
->  
->  	ret = ad5755_init_channels(indio_dev, pdata);
->  	if (ret)
-> @@ -607,6 +781,16 @@ static const struct spi_device_id ad5755_id[] = {
->  };
->  MODULE_DEVICE_TABLE(spi, ad5755_id);
->  
-> +static const struct of_device_id ad5755_of_match[] = {
-> +	{ .compatible = "adi,ad5755" },
-> +	{ .compatible = "adi,ad5755-1" },
-> +	{ .compatible = "adi,ad5757" },
-> +	{ .compatible = "adi,ad5735" },
-> +	{ .compatible = "adi,ad5737" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, ad5755_of_match);
-> +
->  static struct spi_driver ad5755_driver = {
->  	.driver = {
->  		.name = "ad5755",
-> 
-
+Forwarding to the proper list address.=0A=
+________________________________________=0A=
+From: linux-iio-owner@vger.kernel.org [linux-iio-owner@vger.kernel.org] on =
+behalf of Breana, Tiberiu A [tiberiu.a.breana@intel.com]=0A=
+Sent: Tuesday, March 15, 2016 2:58 PM=0A=
+To: linux@roeck-us.net; lm-sensors@vger.kernel.org=0A=
+Cc: Jonathan Cameron; linux-iio@vger.kernel.org; Baluta, Daniel=0A=
+Subject: RE: [PATCH 0/2] Add support for MAX31722/MAX31723 temperature sens=
+ors=0A=
+=0A=
+Hello Guenter, hwmon,=0A=
+=0A=
+We have a dilemma as to wether this device driver belongs in IIO or hwmon:=
+=0A=
+https://datasheets.maximintegrated.com/en/ds/MAX31722-MAX31723.pdf=0A=
+=0A=
+Could you please give us your opinion on this?=0A=
+Thanks,=0A=
+=0A=
+Tiberiu=0A=
+=0A=
+> -----Original Message-----=0A=
+> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-=0A=
+> owner@vger.kernel.org] On Behalf Of Jonathan Cameron=0A=
+> Sent: Wednesday, March 9, 2016 10:32 PM=0A=
+> To: Breana, Tiberiu A <tiberiu.a.breana@intel.com>; linux-=0A=
+> iio@vger.kernel.org=0A=
+> Subject: Re: [PATCH 0/2] Add support for MAX31722/MAX31723=0A=
+> temperature sensors=0A=
+>=0A=
+> On 09/03/16 13:30, Tiberiu Breana wrote:=0A=
+> > This patch set adds support for the MAX31722/MAX31723 temperature=0A=
+> > sensors / thermostats.=0A=
+> > Patch 1 adds basic support and power management.=0A=
+> > Patch 2 adds threshold interrupt support.=0A=
+> >=0A=
+> > Tiberiu Breana (2):=0A=
+> >   iio: temperature: Add support for MAX31722/MAX31723 temperature=0A=
+> >     sensors=0A=
+> >   iio: temperature: Add threshold interrupt support for max31722=0A=
+> >=0A=
+> >  drivers/iio/temperature/Kconfig    |  12 +=0A=
+> >  drivers/iio/temperature/Makefile   |   1 +=0A=
+> >  drivers/iio/temperature/max31722.c | 673=0A=
+> > +++++++++++++++++++++++++++++++++++++=0A=
+> >  3 files changed, 686 insertions(+)=0A=
+> >  create mode 100644 drivers/iio/temperature/max31722.c=0A=
+> >=0A=
+> Hi Tiberiu,=0A=
+>=0A=
+> When proposing a temperature sensor driver, we need some additional=0A=
+> justification for why it is suited for IIO rather than the more focused (=
+and in=0A=
+> someways simpler) hwmon.=0A=
+>=0A=
+> So far we have had thermophiles that don't fit in as devices typically us=
+ed for=0A=
+> hardware monitoring. Also in there are a few drivers which are for parts=
+=0A=
+> where they are a cut down version of a more complex sensor (the=0A=
+> measurement specialties parts are either pressure sensors or humidty=0A=
+> sensors at least in terms of what they share interfaces with)=0A=
+>=0A=
+> Also, please cc the hwmon maintainers (and probably list) as we want thei=
+r=0A=
+> agreement.=0A=
+>=0A=
+> Jonathan=0A=
+> --=0A=
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in t=
+he body=0A=
+> of a message to majordomo@vger.kernel.org More majordomo info at=0A=
+> http://vger.kernel.org/majordomo-info.html=0A=
+--=0A=
+To unsubscribe from this list: send the line "unsubscribe linux-iio" in=0A=
+the body of a message to majordomo@vger.kernel.org=0A=
+More majordomo info at  http://vger.kernel.org/majordomo-info.html=0A=
