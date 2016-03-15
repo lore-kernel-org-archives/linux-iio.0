@@ -1,133 +1,304 @@
-Return-Path: <SRS0+9QRA=PL=roeck-us.net=linux@forward.webhostbox.net>
-Date: Tue, 15 Mar 2016 11:30:15 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>,
-	LM Sensors <lm-sensors@lm-sensors.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Baluta, Daniel" <daniel.baluta@intel.com>
-Subject: Re: [PATCH 0/2] Add support for MAX31722/MAX31723 temperature sensors
-Message-ID: <20160315183015.GA18236@roeck-us.net>
-References: <1457530252-4984-1-git-send-email-tiberiu.a.breana@intel.com>
- <56E08834.40704@kernel.org>
- <4586F61A4A291F4DA44D32824E7C0F4023568DEC@IRSMSX109.ger.corp.intel.com>
- <56E80F61.4000304@roeck-us.net>
- <C29C9659-14E3-434B-ACC8-374BBCB2EB72@jic23.retrosnub.co.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f174.google.com ([209.85.192.174]:36288 "EHLO
+	mail-pf0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932212AbcCOStO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2016 14:49:14 -0400
+Received: by mail-pf0-f174.google.com with SMTP id u190so39674221pfb.3
+        for <linux-iio@vger.kernel.org>; Tue, 15 Mar 2016 11:49:14 -0700 (PDT)
+Date: Tue, 15 Mar 2016 11:49:12 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: outreachy-kernel@googlegroups.com
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH] staging: iio: isl29028: use regmap to retrieve struct device
+Message-ID: <20160315184903.GA14115@d830.WORKGROUP>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <C29C9659-14E3-434B-ACC8-374BBCB2EB72@jic23.retrosnub.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 15, 2016 at 05:28:58PM +0000, Jonathan Cameron wrote:
-> 
-> 
-> On 15 March 2016 13:34:25 GMT+00:00, Guenter Roeck <linux@roeck-us.net> wrote:
-> >On 03/15/2016 05:58 AM, Breana, Tiberiu A wrote:
-> >> Hello Guenter, hwmon,
-> >>
-> >> We have a dilemma as to wether this device driver belongs in IIO or
-> >hwmon:
-> >> https://datasheets.maximintegrated.com/en/ds/MAX31722-MAX31723.pdf
-> >>
-> >> Could you please give us your opinion on this?
-> >
-> >The chip has limit registers and an alarm signal output, suggesting
-> >that
-> >its intended use is for hardware monitoring purposes.
-> >
-> >The conversion time is between 50ms and 200ms, which suggests that the
-> >faster ABI provided by iio isn't really beneficial.
-> >
-> >Given all that, I think that hwmon would be a better place.
-> Agreed.
-> >
-> >If you want to keep the driver in iio, I would suggest to consider
-> >enhancing
-> >the iio-hwmon bridge with threshold/limit support if that is possible.
-> 
-> Possible but non trivial as no one has yet implemented the core support for allowing
-> in kernel consumers to get events. It has been on the to-do list as a blocker of iio
->  on IIO (which is really about reaching the point where the IIO userspace front end is
-> an optional nonspecial case consumer of
->  IIO backends). Would be excellent to have this but may not be that straight forward.
-> 
-I concluded that much as well after looking into it a bit more. Not just event
-handling, but the ability to set and get thresholds is missing from the kernel API
-as well. Yes, this will need some work. It would be useful, though, for other
-drivers such as max1363. If it ever gets done, please let me know, and I'll see
-if I can help testing it.
+Driver includes struct regmap and struct device in its global data.
+Remove the struct device and use regmap API to retrieve device info.
 
-Guenter
+Simplified version of Coccinelle semantic patch used:
 
-> Jonathan
-> >This would ensure that the chip can be used for its intended purpose.
-> >
-> >Thanks,
-> >Guenter
-> >
-> >> Thanks,
-> >>
-> >> Tiberiu
-> >>
-> >>> -----Original Message-----
-> >>> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
-> >>> owner@vger.kernel.org] On Behalf Of Jonathan Cameron
-> >>> Sent: Wednesday, March 9, 2016 10:32 PM
-> >>> To: Breana, Tiberiu A <tiberiu.a.breana@intel.com>; linux-
-> >>> iio@vger.kernel.org
-> >>> Subject: Re: [PATCH 0/2] Add support for MAX31722/MAX31723
-> >>> temperature sensors
-> >>>
-> >>> On 09/03/16 13:30, Tiberiu Breana wrote:
-> >>>> This patch set adds support for the MAX31722/MAX31723 temperature
-> >>>> sensors / thermostats.
-> >>>> Patch 1 adds basic support and power management.
-> >>>> Patch 2 adds threshold interrupt support.
-> >>>>
-> >>>> Tiberiu Breana (2):
-> >>>>    iio: temperature: Add support for MAX31722/MAX31723 temperature
-> >>>>      sensors
-> >>>>    iio: temperature: Add threshold interrupt support for max31722
-> >>>>
-> >>>>   drivers/iio/temperature/Kconfig    |  12 +
-> >>>>   drivers/iio/temperature/Makefile   |   1 +
-> >>>>   drivers/iio/temperature/max31722.c | 673
-> >>>> +++++++++++++++++++++++++++++++++++++
-> >>>>   3 files changed, 686 insertions(+)
-> >>>>   create mode 100644 drivers/iio/temperature/max31722.c
-> >>>>
-> >>> Hi Tiberiu,
-> >>>
-> >>> When proposing a temperature sensor driver, we need some additional
-> >>> justification for why it is suited for IIO rather than the more
-> >focused (and in
-> >>> someways simpler) hwmon.
-> >>>
-> >>> So far we have had thermophiles that don't fit in as devices
-> >typically used for
-> >>> hardware monitoring. Also in there are a few drivers which are for
-> >parts
-> >>> where they are a cut down version of a more complex sensor (the
-> >>> measurement specialties parts are either pressure sensors or humidty
-> >>> sensors at least in terms of what they share interfaces with)
-> >>>
-> >>> Also, please cc the hwmon maintainers (and probably list) as we want
-> >their
-> >>> agreement.
-> >>>
-> >>> Jonathan
-> >>> --
-> >>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
-> >in the body
-> >>> of a message to majordomo@vger.kernel.org More majordomo info at
-> >>> http://vger.kernel.org/majordomo-info.html
-> >>
-> >
-> >--
-> >To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> >the body of a message to majordomo@vger.kernel.org
-> >More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> -- 
-> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+@ a @
+identifier drvdata, r;
+position p;
+@@
+  struct drvdata@p {
+  ...
+  struct regmap *r;
+  ...
+  };
+
+@ b @
+identifier a.drvdata, d;
+position a.p;
+@@
+  struct drvdata@p {
+  ...
+- struct device *d;
+  ...
+  };
+
+@ passed depends on b @
+identifier a.drvdata, a.r, b.d, i, f;
+@@
+  f (..., struct drvdata *i ,...) {
++ struct device *dev = regmap_get_device(i->r);
+   <+...
+-	   i->d
++	   dev
+   ...+>
+  }
+
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+---
+ drivers/staging/iio/light/isl29028.c | 53 ++++++++++++++++++++----------------
+ 1 file changed, 30 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
+index 6e2ba45..0ef96e6 100644
+--- a/drivers/staging/iio/light/isl29028.c
++++ b/drivers/staging/iio/light/isl29028.c
+@@ -69,7 +69,6 @@ enum als_ir_mode {
+ };
+ 
+ struct isl29028_chip {
+-	struct device		*dev;
+ 	struct mutex		lock;
+ 	struct regmap		*regmap;
+ 
+@@ -166,20 +165,21 @@ static int isl29028_set_als_ir_mode(struct isl29028_chip *chip,
+ 
+ static int isl29028_read_als_ir(struct isl29028_chip *chip, int *als_ir)
+ {
++	struct device *dev = regmap_get_device(chip->regmap);
+ 	unsigned int lsb;
+ 	unsigned int msb;
+ 	int ret;
+ 
+ 	ret = regmap_read(chip->regmap, ISL29028_REG_ALSIR_L, &lsb);
+ 	if (ret < 0) {
+-		dev_err(chip->dev,
++		dev_err(dev,
+ 			"Error in reading register ALSIR_L err %d\n", ret);
+ 		return ret;
+ 	}
+ 
+ 	ret = regmap_read(chip->regmap, ISL29028_REG_ALSIR_U, &msb);
+ 	if (ret < 0) {
+-		dev_err(chip->dev,
++		dev_err(dev,
+ 			"Error in reading register ALSIR_U err %d\n", ret);
+ 		return ret;
+ 	}
+@@ -190,12 +190,13 @@ static int isl29028_read_als_ir(struct isl29028_chip *chip, int *als_ir)
+ 
+ static int isl29028_read_proxim(struct isl29028_chip *chip, int *prox)
+ {
++	struct device *dev = regmap_get_device(chip->regmap);
+ 	unsigned int data;
+ 	int ret;
+ 
+ 	ret = regmap_read(chip->regmap, ISL29028_REG_PROX_DATA, &data);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "Error in reading register %d, error %d\n",
++		dev_err(dev, "Error in reading register %d, error %d\n",
+ 			ISL29028_REG_PROX_DATA, ret);
+ 		return ret;
+ 	}
+@@ -218,13 +219,14 @@ static int isl29028_proxim_get(struct isl29028_chip *chip, int *prox_data)
+ 
+ static int isl29028_als_get(struct isl29028_chip *chip, int *als_data)
+ {
++	struct device *dev = regmap_get_device(chip->regmap);
+ 	int ret;
+ 	int als_ir_data;
+ 
+ 	if (chip->als_ir_mode != MODE_ALS) {
+ 		ret = isl29028_set_als_ir_mode(chip, MODE_ALS);
+ 		if (ret < 0) {
+-			dev_err(chip->dev,
++			dev_err(dev,
+ 				"Error in enabling ALS mode err %d\n", ret);
+ 			return ret;
+ 		}
+@@ -251,12 +253,13 @@ static int isl29028_als_get(struct isl29028_chip *chip, int *als_data)
+ 
+ static int isl29028_ir_get(struct isl29028_chip *chip, int *ir_data)
+ {
++	struct device *dev = regmap_get_device(chip->regmap);
+ 	int ret;
+ 
+ 	if (chip->als_ir_mode != MODE_IR) {
+ 		ret = isl29028_set_als_ir_mode(chip, MODE_IR);
+ 		if (ret < 0) {
+-			dev_err(chip->dev,
++			dev_err(dev,
+ 				"Error in enabling IR mode err %d\n", ret);
+ 			return ret;
+ 		}
+@@ -271,25 +274,26 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+ 			      int val, int val2, long mask)
+ {
+ 	struct isl29028_chip *chip = iio_priv(indio_dev);
++	struct device *dev = regmap_get_device(chip->regmap);
+ 	int ret = -EINVAL;
+ 
+ 	mutex_lock(&chip->lock);
+ 	switch (chan->type) {
+ 	case IIO_PROXIMITY:
+ 		if (mask != IIO_CHAN_INFO_SAMP_FREQ) {
+-			dev_err(chip->dev,
++			dev_err(dev,
+ 				"proximity: mask value 0x%08lx not supported\n",
+ 				mask);
+ 			break;
+ 		}
+ 		if (val < 1 || val > 100) {
+-			dev_err(chip->dev,
++			dev_err(dev,
+ 				"Samp_freq %d is not in range[1:100]\n", val);
+ 			break;
+ 		}
+ 		ret = isl29028_set_proxim_sampling(chip, val);
+ 		if (ret < 0) {
+-			dev_err(chip->dev,
++			dev_err(dev,
+ 				"Setting proximity samp_freq fail, err %d\n",
+ 				ret);
+ 			break;
+@@ -299,19 +303,19 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+ 
+ 	case IIO_LIGHT:
+ 		if (mask != IIO_CHAN_INFO_SCALE) {
+-			dev_err(chip->dev,
++			dev_err(dev,
+ 				"light: mask value 0x%08lx not supported\n",
+ 				mask);
+ 			break;
+ 		}
+ 		if ((val != 125) && (val != 2000)) {
+-			dev_err(chip->dev,
++			dev_err(dev,
+ 				"lux scale %d is invalid [125, 2000]\n", val);
+ 			break;
+ 		}
+ 		ret = isl29028_set_als_scale(chip, val);
+ 		if (ret < 0) {
+-			dev_err(chip->dev,
++			dev_err(dev,
+ 				"Setting lux scale fail with error %d\n", ret);
+ 			break;
+ 		}
+@@ -319,7 +323,7 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+ 		break;
+ 
+ 	default:
+-		dev_err(chip->dev, "Unsupported channel type\n");
++		dev_err(dev, "Unsupported channel type\n");
+ 		break;
+ 	}
+ 	mutex_unlock(&chip->lock);
+@@ -331,6 +335,7 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
+ 			     int *val, int *val2, long mask)
+ {
+ 	struct isl29028_chip *chip = iio_priv(indio_dev);
++	struct device *dev = regmap_get_device(chip->regmap);
+ 	int ret = -EINVAL;
+ 
+ 	mutex_lock(&chip->lock);
+@@ -370,7 +375,7 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
+ 		break;
+ 
+ 	default:
+-		dev_err(chip->dev, "mask value 0x%08lx not supported\n", mask);
++		dev_err(dev, "mask value 0x%08lx not supported\n", mask);
+ 		break;
+ 	}
+ 	mutex_unlock(&chip->lock);
+@@ -417,6 +422,7 @@ static const struct iio_info isl29028_info = {
+ 
+ static int isl29028_chip_init(struct isl29028_chip *chip)
+ {
++	struct device *dev = regmap_get_device(chip->regmap);
+ 	int ret;
+ 
+ 	chip->enable_prox  = false;
+@@ -426,34 +432,34 @@ static int isl29028_chip_init(struct isl29028_chip *chip)
+ 
+ 	ret = regmap_write(chip->regmap, ISL29028_REG_TEST1_MODE, 0x0);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s(): write to reg %d failed, err = %d\n",
++		dev_err(dev, "%s(): write to reg %d failed, err = %d\n",
+ 			__func__, ISL29028_REG_TEST1_MODE, ret);
+ 		return ret;
+ 	}
+ 	ret = regmap_write(chip->regmap, ISL29028_REG_TEST2_MODE, 0x0);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s(): write to reg %d failed, err = %d\n",
++		dev_err(dev, "%s(): write to reg %d failed, err = %d\n",
+ 			__func__, ISL29028_REG_TEST2_MODE, ret);
+ 		return ret;
+ 	}
+ 
+ 	ret = regmap_write(chip->regmap, ISL29028_REG_CONFIGURE, 0x0);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s(): write to reg %d failed, err = %d\n",
++		dev_err(dev, "%s(): write to reg %d failed, err = %d\n",
+ 			__func__, ISL29028_REG_CONFIGURE, ret);
+ 		return ret;
+ 	}
+ 
+ 	ret = isl29028_set_proxim_sampling(chip, chip->prox_sampling);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "setting the proximity, err = %d\n",
++		dev_err(dev, "setting the proximity, err = %d\n",
+ 			ret);
+ 		return ret;
+ 	}
+ 
+ 	ret = isl29028_set_als_scale(chip, chip->lux_scale);
+ 	if (ret < 0)
+-		dev_err(chip->dev,
++		dev_err(dev,
+ 			"setting als scale failed, err = %d\n", ret);
+ 	return ret;
+ }
+@@ -496,19 +502,19 @@ static int isl29028_probe(struct i2c_client *client,
+ 	chip = iio_priv(indio_dev);
+ 
+ 	i2c_set_clientdata(client, indio_dev);
+-	chip->dev = &client->dev;
+ 	mutex_init(&chip->lock);
+ 
+ 	chip->regmap = devm_regmap_init_i2c(client, &isl29028_regmap_config);
+ 	if (IS_ERR(chip->regmap)) {
+ 		ret = PTR_ERR(chip->regmap);
+-		dev_err(chip->dev, "regmap initialization failed: %d\n", ret);
++		dev_err(&client->dev, "regmap initialization failed: %d\n",
++			ret);
+ 		return ret;
+ 	}
+ 
+ 	ret = isl29028_chip_init(chip);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "chip initialization failed: %d\n", ret);
++		dev_err(&client->dev, "chip initialization failed: %d\n", ret);
+ 		return ret;
+ 	}
+ 
+@@ -520,7 +526,8 @@ static int isl29028_probe(struct i2c_client *client,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "iio registration fails with error %d\n",
++		dev_err(&client->dev,
++			"iio registration fails with error %d\n",
+ 			ret);
+ 		return ret;
+ 	}
+-- 
+2.1.4
+
