@@ -1,94 +1,99 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-To: "linux@roeck-us.net" <linux@roeck-us.net>, "lm-sensors@lm-sensors.org"
-	<lm-sensors@lm-sensors.org>
-CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "Baluta, Daniel" <daniel.baluta@intel.com>
-Subject: RE: [PATCH 0/2] Add support for MAX31722/MAX31723 temperature
- sensors
-Date: Tue, 15 Mar 2016 13:16:56 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F4023568E0D@IRSMSX109.ger.corp.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from forward.webhostbox.net ([5.100.155.85]:35329 "EHLO
+	forward.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965296AbcCONla (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2016 09:41:30 -0400
+Subject: Re: [PATCH 0/2] Add support for MAX31722/MAX31723 temperature sensors
+To: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>,
+	LM Sensors <lm-sensors@lm-sensors.org>
 References: <1457530252-4984-1-git-send-email-tiberiu.a.breana@intel.com>
- <56E08834.40704@kernel.org>,<4586F61A4A291F4DA44D32824E7C0F4023568DEC@IRSMSX109.ger.corp.intel.com>
-In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F4023568DEC@IRSMSX109.ger.corp.intel.com>
-Content-Type: text/plain; charset="us-ascii"
+ <56E08834.40704@kernel.org>
+ <4586F61A4A291F4DA44D32824E7C0F4023568DEC@IRSMSX109.ger.corp.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Baluta, Daniel" <daniel.baluta@intel.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Message-ID: <56E80F61.4000304@roeck-us.net>
+Date: Tue, 15 Mar 2016 06:34:25 -0700
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F4023568DEC@IRSMSX109.ger.corp.intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Forwarding to the proper list address.=0A=
-________________________________________=0A=
-From: linux-iio-owner@vger.kernel.org [linux-iio-owner@vger.kernel.org] on =
-behalf of Breana, Tiberiu A [tiberiu.a.breana@intel.com]=0A=
-Sent: Tuesday, March 15, 2016 2:58 PM=0A=
-To: linux@roeck-us.net; lm-sensors@vger.kernel.org=0A=
-Cc: Jonathan Cameron; linux-iio@vger.kernel.org; Baluta, Daniel=0A=
-Subject: RE: [PATCH 0/2] Add support for MAX31722/MAX31723 temperature sens=
-ors=0A=
-=0A=
-Hello Guenter, hwmon,=0A=
-=0A=
-We have a dilemma as to wether this device driver belongs in IIO or hwmon:=
-=0A=
-https://datasheets.maximintegrated.com/en/ds/MAX31722-MAX31723.pdf=0A=
-=0A=
-Could you please give us your opinion on this?=0A=
-Thanks,=0A=
-=0A=
-Tiberiu=0A=
-=0A=
-> -----Original Message-----=0A=
-> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-=0A=
-> owner@vger.kernel.org] On Behalf Of Jonathan Cameron=0A=
-> Sent: Wednesday, March 9, 2016 10:32 PM=0A=
-> To: Breana, Tiberiu A <tiberiu.a.breana@intel.com>; linux-=0A=
-> iio@vger.kernel.org=0A=
-> Subject: Re: [PATCH 0/2] Add support for MAX31722/MAX31723=0A=
-> temperature sensors=0A=
->=0A=
-> On 09/03/16 13:30, Tiberiu Breana wrote:=0A=
-> > This patch set adds support for the MAX31722/MAX31723 temperature=0A=
-> > sensors / thermostats.=0A=
-> > Patch 1 adds basic support and power management.=0A=
-> > Patch 2 adds threshold interrupt support.=0A=
-> >=0A=
-> > Tiberiu Breana (2):=0A=
-> >   iio: temperature: Add support for MAX31722/MAX31723 temperature=0A=
-> >     sensors=0A=
-> >   iio: temperature: Add threshold interrupt support for max31722=0A=
-> >=0A=
-> >  drivers/iio/temperature/Kconfig    |  12 +=0A=
-> >  drivers/iio/temperature/Makefile   |   1 +=0A=
-> >  drivers/iio/temperature/max31722.c | 673=0A=
-> > +++++++++++++++++++++++++++++++++++++=0A=
-> >  3 files changed, 686 insertions(+)=0A=
-> >  create mode 100644 drivers/iio/temperature/max31722.c=0A=
-> >=0A=
-> Hi Tiberiu,=0A=
->=0A=
-> When proposing a temperature sensor driver, we need some additional=0A=
-> justification for why it is suited for IIO rather than the more focused (=
-and in=0A=
-> someways simpler) hwmon.=0A=
->=0A=
-> So far we have had thermophiles that don't fit in as devices typically us=
-ed for=0A=
-> hardware monitoring. Also in there are a few drivers which are for parts=
-=0A=
-> where they are a cut down version of a more complex sensor (the=0A=
-> measurement specialties parts are either pressure sensors or humidty=0A=
-> sensors at least in terms of what they share interfaces with)=0A=
->=0A=
-> Also, please cc the hwmon maintainers (and probably list) as we want thei=
-r=0A=
-> agreement.=0A=
->=0A=
-> Jonathan=0A=
-> --=0A=
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in t=
-he body=0A=
-> of a message to majordomo@vger.kernel.org More majordomo info at=0A=
-> http://vger.kernel.org/majordomo-info.html=0A=
---=0A=
-To unsubscribe from this list: send the line "unsubscribe linux-iio" in=0A=
-the body of a message to majordomo@vger.kernel.org=0A=
-More majordomo info at  http://vger.kernel.org/majordomo-info.html=0A=
+On 03/15/2016 05:58 AM, Breana, Tiberiu A wrote:
+> Hello Guenter, hwmon,
+>
+> We have a dilemma as to wether this device driver belongs in IIO or hwmon:
+> https://datasheets.maximintegrated.com/en/ds/MAX31722-MAX31723.pdf
+>
+> Could you please give us your opinion on this?
+
+The chip has limit registers and an alarm signal output, suggesting that
+its intended use is for hardware monitoring purposes.
+
+The conversion time is between 50ms and 200ms, which suggests that the
+faster ABI provided by iio isn't really beneficial.
+
+Given all that, I think that hwmon would be a better place.
+
+If you want to keep the driver in iio, I would suggest to consider enhancing
+the iio-hwmon bridge with threshold/limit support if that is possible.
+This would ensure that the chip can be used for its intended purpose.
+
+Thanks,
+Guenter
+
+> Thanks,
+>
+> Tiberiu
+>
+>> -----Original Message-----
+>> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
+>> owner@vger.kernel.org] On Behalf Of Jonathan Cameron
+>> Sent: Wednesday, March 9, 2016 10:32 PM
+>> To: Breana, Tiberiu A <tiberiu.a.breana@intel.com>; linux-
+>> iio@vger.kernel.org
+>> Subject: Re: [PATCH 0/2] Add support for MAX31722/MAX31723
+>> temperature sensors
+>>
+>> On 09/03/16 13:30, Tiberiu Breana wrote:
+>>> This patch set adds support for the MAX31722/MAX31723 temperature
+>>> sensors / thermostats.
+>>> Patch 1 adds basic support and power management.
+>>> Patch 2 adds threshold interrupt support.
+>>>
+>>> Tiberiu Breana (2):
+>>>    iio: temperature: Add support for MAX31722/MAX31723 temperature
+>>>      sensors
+>>>    iio: temperature: Add threshold interrupt support for max31722
+>>>
+>>>   drivers/iio/temperature/Kconfig    |  12 +
+>>>   drivers/iio/temperature/Makefile   |   1 +
+>>>   drivers/iio/temperature/max31722.c | 673
+>>> +++++++++++++++++++++++++++++++++++++
+>>>   3 files changed, 686 insertions(+)
+>>>   create mode 100644 drivers/iio/temperature/max31722.c
+>>>
+>> Hi Tiberiu,
+>>
+>> When proposing a temperature sensor driver, we need some additional
+>> justification for why it is suited for IIO rather than the more focused (and in
+>> someways simpler) hwmon.
+>>
+>> So far we have had thermophiles that don't fit in as devices typically used for
+>> hardware monitoring. Also in there are a few drivers which are for parts
+>> where they are a cut down version of a more complex sensor (the
+>> measurement specialties parts are either pressure sensors or humidty
+>> sensors at least in terms of what they share interfaces with)
+>>
+>> Also, please cc the hwmon maintainers (and probably list) as we want their
+>> agreement.
+>>
+>> Jonathan
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in the body
+>> of a message to majordomo@vger.kernel.org More majordomo info at
+>> http://vger.kernel.org/majordomo-info.html
+>
+
