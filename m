@@ -1,281 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43410 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751241AbcCLKTv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Mar 2016 05:19:51 -0500
-Subject: Re: [PATCH] iio: accel: Add support for the h3lis331dl accelerometer
-To: Denis CIOCCA <denis.ciocca@st.com>,
-	"Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-References: <1457525174-19532-1-git-send-email-tiberiu.a.breana@intel.com>
- <1E815185-257A-46BF-888D-A79226703E58@st.com>
- <4586F61A4A291F4DA44D32824E7C0F4023567BE5@IRSMSX109.ger.corp.intel.com>
- <012CB519-559D-4D52-9F9E-D1DDA7CDF0EC@st.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Armando VISCONTI <armando.visconti@st.com>,
-	Giuseppe BARBA <giuseppe.barba@st.com>,
-	Marco BIANCO <marco.bianco@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E3ED40.70603@kernel.org>
-Date: Sat, 12 Mar 2016 10:19:44 +0000
+Received: from mail.kapsi.fi ([217.30.184.167]:54058 "EHLO mail.kapsi.fi"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932591AbcCORIZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 15 Mar 2016 13:08:25 -0400
+Subject: Re: [PATCH v4 00/18] i2c mux cleanup and locking update
+To: Peter Rosin <peda@lysator.liu.se>, linux-kernel@vger.kernel.org
+References: <1457044050-15230-1-git-send-email-peda@lysator.liu.se>
+ <56E817AE.2090005@lysator.liu.se>
+Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Viorel Suman <viorel.suman@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org, devicetree@vger.kernel.org
+From: Antti Palosaari <crope@iki.fi>
+Message-ID: <56E84178.2020204@iki.fi>
+Date: Tue, 15 Mar 2016 19:08:08 +0200
 MIME-Version: 1.0
-In-Reply-To: <012CB519-559D-4D52-9F9E-D1DDA7CDF0EC@st.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <56E817AE.2090005@lysator.liu.se>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/03/16 13:06, Denis CIOCCA wrote:
-> Good. Thanks again for the patch!
-> 
-> Denis
-Applied to the togreg branch of iio.git - initially pushed
-out as testing.
+On 03/15/2016 04:09 PM, Peter Rosin wrote:
 
-Thanks,
+> The series will be posted again for review. This is just a heads up.
+>
+> v5 compared to v4:
+> - Rebase on top of v4.5-rc7.
+> - A new patch making me maintainer of i2c muxes (also sent separately).
+> - A new file Documentation/i2c/i2c-topology that describes various muxing
+>    issues.
+> - Rename "i2c-controlled" muxes "self-locked" instead, as it is perfectly
+>    reasonable to have i2c-controlled muxes that use the pre-existing locking
+>    scheme. The pre-existing locking scheme for i2c muxes is from here on
+>    called "parent-locked".
+> - Rename i2c-mux.c:i2c_mux_master_xfer to __i2c_mux_master_xfer since it
+>    calls __i2c_transfer, which leaves room for a new i2c_mux_master_xfer
+>    that calls i2c_transfer. Similar rename shuffle for i2c_mux_smbus_xfer.
+> - Use sizeof(*priv) instead of sizeof(struct i2c_mux_priv). One instance.
+> - Some follow-up patches that were posted in response to v2-v4 cleaning up
+>    and simplifying various i2c muxes outside drivers/i2c/, among those is
+>    an unrelated cleanup patch to drivers/media/dvb-frontends/rtl2832.c that
+>    I carry here since it conflicts (trivially) with this series. That
+>    unrelated patch is (currently) the last patch in the series.
+>
+>
+> The series looks like this now:
+>
+> The following changes since commit f6cede5b49e822ebc41a099fe41ab4989f64e2cb:
+>
+>    Linux 4.5-rc7 (2016-03-06 14:48:03 -0800)
+>
+> are available in the git repository at:
+>
+>    https://github.com/peda-r/i2c-mux.git mux-core-and-locking-5
 
-Jonathan
-> 
-> 
-> 
->> On Mar 9, 2016, at 21:00, Breana, Tiberiu A <tiberiu.a.breana@intel.com> wrote:
->>
->> Yes Denis, I've tested it with the changes and the output values look fine.
->> Thanks for your review.
->>
->> Tiberiu
->>
->>> -----Original Message-----
->>> From: Denis CIOCCA [mailto:denis.ciocca@st.com]
->>> Sent: Wednesday, March 9, 2016 2:47 PM
->>> To: Breana, Tiberiu A <tiberiu.a.breana@intel.com>
->>> Cc: linux-iio@vger.kernel.org; Armando VISCONTI
->>> <armando.visconti@st.com>; Giuseppe BARBA <giuseppe.barba@st.com>;
->>> Marco BIANCO <marco.bianco@st.com>
->>> Subject: Re: [PATCH] iio: accel: Add support for the h3lis331dl accelerometer
->>>
->>> Hi Tiberiu,
->>>
->>> Since at the beginning u found some issue, did u finally try with my
->>> comments and it works fine?
->>>
->>> If so,
->>>
->>> Reviewed-by: Denis Ciocca <denis.ciocca@st.com>
->>> Acked-by: Denis Ciocca <denis.ciocca@st.com>
->>>
->>>
->>> Thanks for ur job.
->>>
->>> Denis
->>>
->>>
->>>
->>>
->>>>> On Mar 9, 2016, at 20:06, Tiberiu Breana <tiberiu.a.breana@intel.com>
->>>> wrote:
->>>>
->>>> This commit adds support for STMicroelectronics h3lis331dl high-g
->>>> accelerometer. The datasheet for this device can be found here:
->>>>
->>>> http://www.st.com/web/en/resource/technical/document/
->>>> datasheet/DM00053090.pdf
->>>>
->>>> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
->>>> ---
->>>> .../devicetree/bindings/iio/st-sensors.txt         |  1 +
->>>> drivers/iio/accel/Kconfig                          |  2 +-
->>>> drivers/iio/accel/st_accel.h                       |  1 +
->>>> drivers/iio/accel/st_accel_core.c                  | 92 ++++++++++++++++++++++
->>>> drivers/iio/accel/st_accel_i2c.c                   |  4 +
->>>> 5 files changed, 99 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt
->>>> b/Documentation/devicetree/bindings/iio/st-sensors.txt
->>>> index d4b87cc..71b7bdf 100644
->>>> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
->>>> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
->>>> @@ -37,6 +37,7 @@ Accelerometers:
->>>> - st,lsm330-accel
->>>> - st,lsm303agr-accel
->>>> - st,lis2dh12-accel
->>>> +- st,h3lis331dl-accel
->>>>
->>>> Gyroscopes:
->>>> - st,l3g4200d-gyro
->>>> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
->>>> index b0d3ecf..7636eec 100644
->>>> --- a/drivers/iio/accel/Kconfig
->>>> +++ b/drivers/iio/accel/Kconfig
->>>> @@ -64,7 +64,7 @@ config IIO_ST_ACCEL_3AXIS
->>>>   help
->>>>     Say yes here to build support for STMicroelectronics accelerometers:
->>>>     LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
->>>> -      LIS331DLH, LSM303DL, LSM303DLM, LSM330, LIS2DH12.
->>>> +      LIS331DLH, LSM303DL, LSM303DLM, LSM330, LIS2DH12, H3LIS331DL.
->>>>
->>>>     This driver can also be built as a module. If so, these modules
->>>>     will be created:
->>>> diff --git a/drivers/iio/accel/st_accel.h
->>>> b/drivers/iio/accel/st_accel.h index 5d4a189..57f83a6 100644
->>>> --- a/drivers/iio/accel/st_accel.h
->>>> +++ b/drivers/iio/accel/st_accel.h
->>>> @@ -14,6 +14,7 @@
->>>> #include <linux/types.h>
->>>> #include <linux/iio/common/st_sensors.h>
->>>>
->>>> +#define H3LIS331DL_DRIVER_NAME        "h3lis331dl_accel"
->>>> #define LIS3LV02DL_ACCEL_DEV_NAME    "lis3lv02dl_accel"
->>>> #define LSM303DLHC_ACCEL_DEV_NAME    "lsm303dlhc_accel"
->>>> #define LIS3DH_ACCEL_DEV_NAME        "lis3dh"
->>>> diff --git a/drivers/iio/accel/st_accel_core.c
->>>> b/drivers/iio/accel/st_accel_core.c
->>>> index a03a141..fee32e3 100644
->>>> --- a/drivers/iio/accel/st_accel_core.c
->>>> +++ b/drivers/iio/accel/st_accel_core.c
->>>> @@ -39,6 +39,9 @@
->>>> #define ST_ACCEL_FS_AVL_6G            6
->>>> #define ST_ACCEL_FS_AVL_8G            8
->>>> #define ST_ACCEL_FS_AVL_16G            16
->>>> +#define ST_ACCEL_FS_AVL_100G            100
->>>> +#define ST_ACCEL_FS_AVL_200G            200
->>>> +#define ST_ACCEL_FS_AVL_400G            400
->>>>
->>>> /* CUSTOM VALUES FOR SENSOR 1 */
->>>> #define ST_ACCEL_1_WAI_EXP            0x33
->>>> @@ -181,6 +184,33 @@
->>>> #define ST_ACCEL_5_IG1_EN_MASK            0x08
->>>> #define ST_ACCEL_5_MULTIREAD_BIT        false
->>>>
->>>> +/* CUSTOM VALUES FOR SENSOR 6 */
->>>> +#define ST_ACCEL_6_WAI_EXP            0x32
->>>> +#define ST_ACCEL_6_ODR_ADDR            0x20
->>>> +#define ST_ACCEL_6_ODR_MASK            0x18
->>>> +#define ST_ACCEL_6_ODR_AVL_50HZ_VAL        0x00
->>>> +#define ST_ACCEL_6_ODR_AVL_100HZ_VAL        0x01
->>>> +#define ST_ACCEL_6_ODR_AVL_400HZ_VAL        0x02
->>>> +#define ST_ACCEL_6_ODR_AVL_1000HZ_VAL        0x03
->>>> +#define ST_ACCEL_6_PW_ADDR            0x20
->>>> +#define ST_ACCEL_6_PW_MASK            0x20
->>>> +#define ST_ACCEL_6_FS_ADDR            0x23
->>>> +#define ST_ACCEL_6_FS_MASK            0x30
->>>> +#define ST_ACCEL_6_FS_AVL_100_VAL        0x00
->>>> +#define ST_ACCEL_6_FS_AVL_200_VAL        0x01
->>>> +#define ST_ACCEL_6_FS_AVL_400_VAL        0x03
->>>> +#define ST_ACCEL_6_FS_AVL_100_GAIN        IIO_G_TO_M_S_2(49000)
->>>> +#define ST_ACCEL_6_FS_AVL_200_GAIN        IIO_G_TO_M_S_2(98000)
->>>> +#define ST_ACCEL_6_FS_AVL_400_GAIN        IIO_G_TO_M_S_2(195000)
->>>> +#define ST_ACCEL_6_BDU_ADDR            0x23
->>>> +#define ST_ACCEL_6_BDU_MASK            0x80
->>>> +#define ST_ACCEL_6_DRDY_IRQ_ADDR        0x22
->>>> +#define ST_ACCEL_6_DRDY_IRQ_INT1_MASK        0x02
->>>> +#define ST_ACCEL_6_DRDY_IRQ_INT2_MASK        0x10
->>>> +#define ST_ACCEL_6_IHL_IRQ_ADDR            0x22
->>>> +#define ST_ACCEL_6_IHL_IRQ_MASK            0x80
->>>> +#define ST_ACCEL_6_MULTIREAD_BIT        true
->>>> +
->>>> static const struct iio_chan_spec st_accel_8bit_channels[] = {
->>>>   ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
->>>>           BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE), @@
->>>> -557,6 +587,68 @@ static const struct st_sensor_settings
->>> st_accel_sensors_settings[] = {
->>>>       .multi_read_bit = ST_ACCEL_5_MULTIREAD_BIT,
->>>>       .bootime = 2, /* guess */
->>>>   },
->>>> +    {
->>>> +        .wai = ST_ACCEL_6_WAI_EXP,
->>>> +        .wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->>>> +        .sensors_supported = {
->>>> +            [0] = H3LIS331DL_DRIVER_NAME,
->>>> +        },
->>>> +        .ch = (struct iio_chan_spec *)st_accel_12bit_channels,
->>>> +        .odr = {
->>>> +            .addr = ST_ACCEL_6_ODR_ADDR,
->>>> +            .mask = ST_ACCEL_6_ODR_MASK,
->>>> +            .odr_avl = {
->>>> +                { 50, ST_ACCEL_6_ODR_AVL_50HZ_VAL },
->>>> +                { 100, ST_ACCEL_6_ODR_AVL_100HZ_VAL, },
->>>> +                { 400, ST_ACCEL_6_ODR_AVL_400HZ_VAL, },
->>>> +                { 1000, ST_ACCEL_6_ODR_AVL_1000HZ_VAL, },
->>>> +            },
->>>> +        },
->>>> +        .pw = {
->>>> +            .addr = ST_ACCEL_6_PW_ADDR,
->>>> +            .mask = ST_ACCEL_6_PW_MASK,
->>>> +            .value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
->>>> +            .value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
->>>> +        },
->>>> +        .enable_axis = {
->>>> +            .addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
->>>> +            .mask = ST_SENSORS_DEFAULT_AXIS_MASK,
->>>> +        },
->>>> +        .fs = {
->>>> +            .addr = ST_ACCEL_6_FS_ADDR,
->>>> +            .mask = ST_ACCEL_6_FS_MASK,
->>>> +            .fs_avl = {
->>>> +                [0] = {
->>>> +                    .num = ST_ACCEL_FS_AVL_100G,
->>>> +                    .value = ST_ACCEL_6_FS_AVL_100_VAL,
->>>> +                    .gain = ST_ACCEL_6_FS_AVL_100_GAIN,
->>>> +                },
->>>> +                [1] = {
->>>> +                    .num = ST_ACCEL_FS_AVL_200G,
->>>> +                    .value = ST_ACCEL_6_FS_AVL_200_VAL,
->>>> +                    .gain = ST_ACCEL_6_FS_AVL_200_GAIN,
->>>> +                },
->>>> +                [2] = {
->>>> +                    .num = ST_ACCEL_FS_AVL_400G,
->>>> +                    .value = ST_ACCEL_6_FS_AVL_400_VAL,
->>>> +                    .gain = ST_ACCEL_6_FS_AVL_400_GAIN,
->>>> +                },
->>>> +            },
->>>> +        },
->>>> +        .bdu = {
->>>> +            .addr = ST_ACCEL_6_BDU_ADDR,
->>>> +            .mask = ST_ACCEL_6_BDU_MASK,
->>>> +        },
->>>> +        .drdy_irq = {
->>>> +            .addr = ST_ACCEL_6_DRDY_IRQ_ADDR,
->>>> +            .mask_int1 = ST_ACCEL_6_DRDY_IRQ_INT1_MASK,
->>>> +            .mask_int2 = ST_ACCEL_6_DRDY_IRQ_INT2_MASK,
->>>> +            .addr_ihl = ST_ACCEL_6_IHL_IRQ_ADDR,
->>>> +            .mask_ihl = ST_ACCEL_6_IHL_IRQ_MASK,
->>>> +        },
->>>> +        .multi_read_bit = ST_ACCEL_6_MULTIREAD_BIT,
->>>> +        .bootime = 2,
->>>> +    },
->>>> };
->>>>
->>>> static int st_accel_read_raw(struct iio_dev *indio_dev, diff --git
->>>> a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
->>>> index 294a32f..7333ee9 100644
->>>> --- a/drivers/iio/accel/st_accel_i2c.c
->>>> +++ b/drivers/iio/accel/st_accel_i2c.c
->>>> @@ -76,6 +76,10 @@ static const struct of_device_id st_accel_of_match[]
->>> = {
->>>>       .compatible = "st,lis2dh12-accel",
->>>>       .data = LIS2DH12_ACCEL_DEV_NAME,
->>>>   },
->>>> +    {
->>>> +        .compatible = "st,h3lis331dl-accel",
->>>> +        .data = H3LIS331DL_DRIVER_NAME,
->>>> +    },
->>>>   {},
->>>> };
->>>> MODULE_DEVICE_TABLE(of, st_accel_of_match);
->>>> --
->>>> 1.9.1
->>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->>>> in the body of a message to majordomo@vger.kernel.org More
->>> majordomo
->>>> info at  http://vger.kernel.org/majordomo-info.html
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+I reviewed and tested these patches:
 
+c1ef4a2 [media] rtl2832: regmap is aware of lockdep, drop local locking hack
+6636178 [media] rtl2832_sdr: get rid of empty regmap wrappers
+001ad6b [media] rtl2832: declare that the i2c gate is self-locked
+e2e82e4 [media] si2168: declare that the i2c gate is self-locked
+b52f766 [media] si2168: convert to use an explicit i2c mux core
+4ba9115 [media] rtl2832: convert to use an explicit i2c mux core
+3f1778b [media] rtl2830: convert to use an explicit i2c mux core
+5c8bfc8 [media] m88ds3103: convert to use an explicit i2c mux core
+
+
+Reviewed-by: Antti Palosaari <crope@iki.fi>
+Tested-by: Antti Palosaari <crope@iki.fi>
+
+regards
+Antti
+
+-- 
+http://palosaari.fi/
