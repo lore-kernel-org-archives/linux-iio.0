@@ -1,78 +1,58 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-To: "linux@roeck-us.net" <linux@roeck-us.net>, "lm-sensors@vger.kernel.org"
-	<lm-sensors@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "Baluta, Daniel" <daniel.baluta@intel.com>
-Subject: RE: [PATCH 0/2] Add support for MAX31722/MAX31723 temperature
- sensors
-Date: Tue, 15 Mar 2016 12:58:14 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F4023568DEC@IRSMSX109.ger.corp.intel.com>
-References: <1457530252-4984-1-git-send-email-tiberiu.a.breana@intel.com>
- <56E08834.40704@kernel.org>
-In-Reply-To: <56E08834.40704@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-004.synserver.de ([212.40.185.4]:1452 "EHLO
+	smtp-out-003.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S934953AbcCPSjH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 14:39:07 -0400
+Subject: Re: [PATCH] iio: add driver for Microchip MCP414X/416X/424X/426X
+To: Slawomir Stepien <sst@poczta.fm>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <20160316113738.GB2445@x220>
+ <alpine.DEB.2.02.1603161238590.30358@pmeerw.net> <20160316162544.GA6212@x220>
+Cc: jic23@kernel.org, knaack.h@gmx.de, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56E9A4FB.5060507@metafoo.de>
+Date: Wed, 16 Mar 2016 19:24:59 +0100
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160316162544.GA6212@x220>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello Guenter, hwmon,
+On 03/16/2016 05:25 PM, Slawomir Stepien wrote:
+> On Mar 16, 2016 13:30, Peter Meerwald-Stadler wrote:
+[...]
+>> plenty of the private API, some of which seems to be debug only?
+>> what is really needed to interact with a poti?
+> 
+> I wanted to export both the non volatile and volatile memory addresses for wiper
+> position access. That is bare minimum for the poti to operate.
+> 
+> But I also wanted to export additional features of this chip. That is way there
+> is increase and decrease API, and STATUS and TCON register access.
+> 
 
-We have a dilemma as to wether this device driver belongs in IIO or hwmon:
-https://datasheets.maximintegrated.com/en/ds/MAX31722-MAX31723.pdf
+The important part about a framework and the associated device drivers
+is to expose the features of a device using a standardized interface so
+you can write generic applications/libraries and share infrastructure.
+If an application requires device specific knowledge to access the
+features of a device you may as well write a userspace driver using i2cdev.
 
-Could you please give us your opinion on this?
-Thanks,
+So when you are introducing new ABI it should at least follow the
+standard naming scheme. And also try to think whether this is a feature
+that is present in other similar devices and come up with a device
+independent way to expose this functionality.
 
-Tiberiu
+Let's start with the simple stuff, I don't really see the advantage of
+having separate inc/dec controls. This can be handled through the
+standard raw attribute. If the newly written value is one off from the
+previous one use inc/dec otherwise write it directly. And even then it
+might make sense to just ignore that and always write the raw value.
 
-> -----Original Message-----
-> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
-> owner@vger.kernel.org] On Behalf Of Jonathan Cameron
-> Sent: Wednesday, March 9, 2016 10:32 PM
-> To: Breana, Tiberiu A <tiberiu.a.breana@intel.com>; linux-
-> iio@vger.kernel.org
-> Subject: Re: [PATCH 0/2] Add support for MAX31722/MAX31723
-> temperature sensors
->=20
-> On 09/03/16 13:30, Tiberiu Breana wrote:
-> > This patch set adds support for the MAX31722/MAX31723 temperature
-> > sensors / thermostats.
-> > Patch 1 adds basic support and power management.
-> > Patch 2 adds threshold interrupt support.
-> >
-> > Tiberiu Breana (2):
-> >   iio: temperature: Add support for MAX31722/MAX31723 temperature
-> >     sensors
-> >   iio: temperature: Add threshold interrupt support for max31722
-> >
-> >  drivers/iio/temperature/Kconfig    |  12 +
-> >  drivers/iio/temperature/Makefile   |   1 +
-> >  drivers/iio/temperature/max31722.c | 673
-> > +++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 686 insertions(+)
-> >  create mode 100644 drivers/iio/temperature/max31722.c
-> >
-> Hi Tiberiu,
->=20
-> When proposing a temperature sensor driver, we need some additional
-> justification for why it is suited for IIO rather than the more focused (=
-and in
-> someways simpler) hwmon.
->=20
-> So far we have had thermophiles that don't fit in as devices typically us=
-ed for
-> hardware monitoring. Also in there are a few drivers which are for parts
-> where they are a cut down version of a more complex sensor (the
-> measurement specialties parts are either pressure sensors or humidty
-> sensors at least in terms of what they share interfaces with)
->=20
-> Also, please cc the hwmon maintainers (and probably list) as we want thei=
-r
-> agreement.
->=20
-> Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in t=
-he body
-> of a message to majordomo@vger.kernel.org More majordomo info at
-> http://vger.kernel.org/majordomo-info.html
+> The memory_map API is a way to access all the not used by chip memory addresses.
+> This API I think could be deleted. But I still think that some people might find
+> it useful.
+
+This sounds more like it should maybe be exposed as a standard EEPROM
+device.
+
