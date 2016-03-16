@@ -1,63 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44686 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751854AbcC1KQF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 06:16:05 -0400
-Subject: Re: [PATCH] iio: tools: make generic_buffer look for "-trigger"
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1458808754-31088-1-git-send-email-linus.walleij@linaro.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F90460.9020507@kernel.org>
-Date: Mon, 28 Mar 2016 11:16:00 +0100
-MIME-Version: 1.0
-In-Reply-To: <1458808754-31088-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
+Received: from ns.pmeerw.net ([84.19.176.92]:44207 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751204AbcCPBGU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 15 Mar 2016 21:06:20 -0400
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH 1/3] iio: Add modifier for UV light
+Date: Wed, 16 Mar 2016 02:06:14 +0100
+Message-Id: <1458090376-26729-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/03/16 08:39, Linus Walleij wrote:
-> All the ST Sensors use the old "<foo>-trigger" rather than the
-> standard "<foo>-devN" new standard suffix for triggers. Now much
-> to do about it since it is ABI, but make the testing tools
-> recognize it too.
-> 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-It is a bit ugly to do the find_trigger_by_name call twice, but I couldn't
-find a cleaner way of doing it either, so fair enough.
+Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 4 +++-
+ drivers/iio/industrialio-core.c         | 1 +
+ include/uapi/linux/iio/types.h          | 1 +
+ tools/iio/iio_event_monitor.c           | 2 ++
+ 4 files changed, 7 insertions(+), 1 deletion(-)
 
-Applied to the togreg branch of iio.git. Initially pushed out as testing
-for the autobuilders to play with it (possibly - adding tools/iio has been
-requested and they weren't against it...)
-
-Jonathan
-> ---
->  tools/iio/generic_buffer.c | 14 +++++++++++++-
->  1 file changed, 13 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-> index 01c4f67801e0..c42b7f836b48 100644
-> --- a/tools/iio/generic_buffer.c
-> +++ b/tools/iio/generic_buffer.c
-> @@ -304,7 +304,19 @@ int main(int argc, char **argv)
->  			}
->  		}
->  
-> -		/* Verify the trigger exists */
-> +		/* Look for this "-devN" trigger */
-> +		trig_num = find_type_by_name(trigger_name, "trigger");
-> +		if (trig_num < 0) {
-> +			/* OK try the simpler "-trigger" suffix instead */
-> +			free(trigger_name);
-> +			ret = asprintf(&trigger_name,
-> +				       "%s-trigger", device_name);
-> +			if (ret < 0) {
-> +				ret = -ENOMEM;
-> +				goto error_free_dev_dir_name;
-> +			}
-> +		}
-> +
->  		trig_num = find_type_by_name(trigger_name, "trigger");
->  		if (trig_num < 0) {
->  			fprintf(stderr, "Failed to find the trigger %s\n",
-> 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 17a9210..6fb9180 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1255,12 +1255,14 @@ Description:
+ What:		/sys/.../iio:deviceX/in_intensityY_raw
+ What:		/sys/.../iio:deviceX/in_intensityY_ir_raw
+ What:		/sys/.../iio:deviceX/in_intensityY_both_raw
++What:		/sys/.../iio:deviceX/in_intensityY_uv_raw
+ KernelVersion:	3.4
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Unit-less light intensity. Modifiers both and ir indicate
+ 		that measurements contains visible and infrared light
+-		components or just infrared light, respectively.
++		components or just infrared light, respectively. Modifier uv indicates
++		that measurements contain ultraviolet light components.
+ 
+ What:		/sys/.../iio:deviceX/in_intensity_red_integration_time
+ What:		/sys/.../iio:deviceX/in_intensity_green_integration_time
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 2e768bc..88353ae 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -101,6 +101,7 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
++	[IIO_MOD_LIGHT_UV] = "uv",
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index c077617..9337ece 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -77,6 +77,7 @@ enum iio_modifier {
+ 	IIO_MOD_Q,
+ 	IIO_MOD_CO2,
+ 	IIO_MOD_VOC,
++	IIO_MOD_LIGHT_UV,
+ };
+ 
+ enum iio_event_type {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index 90980f5..8d7d979 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -93,6 +93,7 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
++	[IIO_MOD_LIGHT_UV] = "uv",
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
+@@ -172,6 +173,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_MOD_LIGHT_RED:
+ 	case IIO_MOD_LIGHT_GREEN:
+ 	case IIO_MOD_LIGHT_BLUE:
++	case IIO_MOD_LIGHT_UV:
+ 	case IIO_MOD_QUATERNION:
+ 	case IIO_MOD_TEMP_AMBIENT:
+ 	case IIO_MOD_TEMP_OBJECT:
+-- 
+1.9.1
 
