@@ -1,90 +1,168 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:58574 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758549AbcCVMip (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 22 Mar 2016 08:38:45 -0400
+Return-Path: <tiberiu.a.breana@intel.com>
+From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
+To: Guenter Roeck <linux@roeck-us.net>, Jonathan Cameron
+	<jic23@jic23.retrosnub.co.uk>
+CC: LM Sensors <lm-sensors@lm-sensors.org>, Jonathan Cameron
+	<jic23@kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Baluta, Daniel" <daniel.baluta@intel.com>
+Subject: RE: [PATCH 0/2] Add support for MAX31722/MAX31723 temperature
+ sensors
+Date: Wed, 16 Mar 2016 15:16:37 +0000
+Message-ID: <4586F61A4A291F4DA44D32824E7C0F4023569024@IRSMSX109.ger.corp.intel.com>
+References: <1457530252-4984-1-git-send-email-tiberiu.a.breana@intel.com>
+ <56E08834.40704@kernel.org>
+ <4586F61A4A291F4DA44D32824E7C0F4023568DEC@IRSMSX109.ger.corp.intel.com>
+ <56E80F61.4000304@roeck-us.net>
+ <C29C9659-14E3-434B-ACC8-374BBCB2EB72@jic23.retrosnub.co.uk>
+ <20160315183015.GA18236@roeck-us.net>
+In-Reply-To: <20160315183015.GA18236@roeck-us.net>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <20160321222150.GA1787@geburah.sephiroth>
-References: <cover.1458231723.git.gregor.boirie@parrot.com>
- <a1efa2b83719dc3898c39a5886b7678892e7de3b.1458231723.git.gregor.boirie@parrot.com>
- <CAL_JsqJwE5fmHUzV-xi-hgMPSbzY_7QbXaHCSAMCpp9SggWtPw@mail.gmail.com> <20160321222150.GA1787@geburah.sephiroth>
-From: Rob Herring <robh+dt@kernel.org>
-Date: Tue, 22 Mar 2016 07:38:21 -0500
-Message-ID: <CAL_Jsq+unk=UONZD-0e_VrpkC3R3hXHNoRN-gdj6TCSSHXWZXQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] iio:magnetometer:ak8975: mounting matrix support
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Mar 21, 2016 at 5:21 PM, Gregor Boirie <gregor.boirie@parrot.com> wrote:
-> Hi Rob,
->
-> On Mon, Mar 21, 2016 at 09:58:46AM -0500, Rob Herring wrote:
->> On Thu, Mar 17, 2016 at 11:43 AM, Gregor Boirie
->> <gregor.boirie@parrot.com> wrote:
->> > Expose a rotation matrix to indicate userspace the chip placement with
->> > respect to the overall hardware system. This is needed to adjust
->> > coordinates sampled from a magnetometer chip when its position deviates
->> > from the main hardware system.
->> >
->> > Final coordinates computation is delegated to userspace since:
->> > * computation may involve floating point arithmetics ;
->> > * it allows an application to combine adjustments with arbitrary
->> >   transformations.
->> >
->> > This 3 dimentional space rotation matrix is expressed as 3x3 array of
->> > strings to support floating point numbers. It may be retrieved from a
->> > "in_magn_matrix" sysfs attribute file. It is declared into ak8975 DTS
->> > entry as a "matrix" property.
->>
->> Why is the sysfs interface specific to ak8975?
-> AFAIK, this is just the first IIO driver implementation relying on floating
-> point numbers. Should a single driver be enough to justify a "generic" API,
-> I suppose code could be factored out in a similar way to over sampling rate
-> support. People could call this on a per-driver basis.
+> -----Original Message-----
+> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
+> owner@vger.kernel.org] On Behalf Of Guenter Roeck
+> Sent: Tuesday, March 15, 2016 8:30 PM
+> To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+> Cc: Breana, Tiberiu A <tiberiu.a.breana@intel.com>; LM Sensors <lm-
+> sensors@lm-sensors.org>; Jonathan Cameron <jic23@kernel.org>; linux-
+> iio@vger.kernel.org; Baluta, Daniel <daniel.baluta@intel.com>
+> Subject: Re: [PATCH 0/2] Add support for MAX31722/MAX31723
+> temperature sensors
+>=20
+> On Tue, Mar 15, 2016 at 05:28:58PM +0000, Jonathan Cameron wrote:
+> >
+> >
+> > On 15 March 2016 13:34:25 GMT+00:00, Guenter Roeck <linux@roeck-
+> us.net> wrote:
+> > >On 03/15/2016 05:58 AM, Breana, Tiberiu A wrote:
+> > >> Hello Guenter, hwmon,
+> > >>
+> > >> We have a dilemma as to wether this device driver belongs in IIO or
+> > >hwmon:
+> > >> https://datasheets.maximintegrated.com/en/ds/MAX31722-
+> MAX31723.pdf
+> > >>
+> > >> Could you please give us your opinion on this?
+> > >
+> > >The chip has limit registers and an alarm signal output, suggesting
+> > >that its intended use is for hardware monitoring purposes.
+> > >
+> > >The conversion time is between 50ms and 200ms, which suggests that
+> > >the faster ABI provided by iio isn't really beneficial.
+> > >
+> > >Given all that, I think that hwmon would be a better place.
+> > Agreed.
+> > >
+> > >If you want to keep the driver in iio, I would suggest to consider
+> > >enhancing the iio-hwmon bridge with threshold/limit support if that
+> > >is possible.
+> >
+> > Possible but non trivial as no one has yet implemented the core
+> > support for allowing in kernel consumers to get events. It has been on
+> > the to-do list as a blocker of iio  on IIO (which is really about
+> > reaching the point where the IIO userspace front end is an optional
+> > nonspecial case consumer of  IIO backends). Would be excellent to have
+> this but may not be that straight forward.
+> >
+> I concluded that much as well after looking into it a bit more. Not just =
+event
+> handling, but the ability to set and get thresholds is missing from the k=
+ernel
+> API as well. Yes, this will need some work. It would be useful, though, f=
+or
+> other drivers such as max1363. If it ever gets done, please let me know, =
+and
+> I'll see if I can help testing it.
+>=20
+> Guenter
 
-Given it is an ABI, yes I think so. We don't want to end up with a
-bunch of similar yet different interfaces.
+Thanks for your insight on this. I'll rewrite the driver for hwmon.
 
->> Furthermore, why is it specific to magnetometer? Couldn't
->> accelerometers need the same thing? There's a thread discussing a
->> similar matrix on android-x86[1].
-> Same may apply to gyro / accelero / imu and magnetometers at least.
-> inv_mpu_core.c already implements such a rotation matrix exposed as 3x3 integers
-> array. Should we be smart enough to keep this compatible with existing userspace
-> apps ?
+Tiberiu
 
-You have to maintain the ABI. If both interfaces can co-exist, then
-you can have both and mark the old one as deprecated. In time we can
-remove the old one.
-
->> > diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->> > index 34a3206..f936f86 100644
->> > --- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->> > +++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->> > @@ -9,6 +9,7 @@ Optional properties:
->> >
->> >    - gpios : should be device tree identifier of the magnetometer DRDY pin
->> >    - vdd-supply: an optional regulator that needs to be on to provide VDD
->> > +  - matrix: an optional 3x3 mounting rotation matrix
->>
->> Perhaps "rotation-matrx" would be a better name in case there's ever
->> any other matrix needed.
-> What about "mounting-matrix" ?
-
-Sure.
-
-Rob
+>=20
+> > Jonathan
+> > >This would ensure that the chip can be used for its intended purpose.
+> > >
+> > >Thanks,
+> > >Guenter
+> > >
+> > >> Thanks,
+> > >>
+> > >> Tiberiu
+> > >>
+> > >>> -----Original Message-----
+> > >>> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
+> > >>> owner@vger.kernel.org] On Behalf Of Jonathan Cameron
+> > >>> Sent: Wednesday, March 9, 2016 10:32 PM
+> > >>> To: Breana, Tiberiu A <tiberiu.a.breana@intel.com>; linux-
+> > >>> iio@vger.kernel.org
+> > >>> Subject: Re: [PATCH 0/2] Add support for MAX31722/MAX31723
+> > >>> temperature sensors
+> > >>>
+> > >>> On 09/03/16 13:30, Tiberiu Breana wrote:
+> > >>>> This patch set adds support for the MAX31722/MAX31723
+> temperature
+> > >>>> sensors / thermostats.
+> > >>>> Patch 1 adds basic support and power management.
+> > >>>> Patch 2 adds threshold interrupt support.
+> > >>>>
+> > >>>> Tiberiu Breana (2):
+> > >>>>    iio: temperature: Add support for MAX31722/MAX31723
+> temperature
+> > >>>>      sensors
+> > >>>>    iio: temperature: Add threshold interrupt support for max31722
+> > >>>>
+> > >>>>   drivers/iio/temperature/Kconfig    |  12 +
+> > >>>>   drivers/iio/temperature/Makefile   |   1 +
+> > >>>>   drivers/iio/temperature/max31722.c | 673
+> > >>>> +++++++++++++++++++++++++++++++++++++
+> > >>>>   3 files changed, 686 insertions(+)
+> > >>>>   create mode 100644 drivers/iio/temperature/max31722.c
+> > >>>>
+> > >>> Hi Tiberiu,
+> > >>>
+> > >>> When proposing a temperature sensor driver, we need some
+> > >>> additional justification for why it is suited for IIO rather than
+> > >>> the more
+> > >focused (and in
+> > >>> someways simpler) hwmon.
+> > >>>
+> > >>> So far we have had thermophiles that don't fit in as devices
+> > >typically used for
+> > >>> hardware monitoring. Also in there are a few drivers which are for
+> > >parts
+> > >>> where they are a cut down version of a more complex sensor (the
+> > >>> measurement specialties parts are either pressure sensors or
+> > >>> humidty sensors at least in terms of what they share interfaces
+> > >>> with)
+> > >>>
+> > >>> Also, please cc the hwmon maintainers (and probably list) as we
+> > >>> want
+> > >their
+> > >>> agreement.
+> > >>>
+> > >>> Jonathan
+> > >>> --
+> > >>> To unsubscribe from this list: send the line "unsubscribe linux-iio=
+"
+> > >in the body
+> > >>> of a message to majordomo@vger.kernel.org More majordomo info at
+> > >>> http://vger.kernel.org/majordomo-info.html
+> > >>
+> > >
+> > >--
+> > >To unsubscribe from this list: send the line "unsubscribe linux-iio"
+> > >in the body of a message to majordomo@vger.kernel.org More
+> majordomo
+> > >info at  http://vger.kernel.org/majordomo-info.html
+> >
+> > --
+> > Sent from my Android device with K-9 Mail. Please excuse my brevity.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in t=
+he body
+> of a message to majordomo@vger.kernel.org More majordomo info at
+> http://vger.kernel.org/majordomo-info.html
