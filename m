@@ -1,70 +1,140 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.208]:54294 "EHLO
-	smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755190AbcCPUCM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 16:02:12 -0400
-Date: Wed, 16 Mar 2016 21:02:51 +0100
-From: Slawomir Stepien <sst@poczta.fm>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>, jic23@kernel.org,
-	knaack.h@gmx.de, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: add driver for Microchip MCP414X/416X/424X/426X
-Message-ID: <20160316200251.GB6212@x220>
-References: <20160316113738.GB2445@x220>
- <alpine.DEB.2.02.1603161238590.30358@pmeerw.net>
- <20160316162544.GA6212@x220>
- <56E9A4FB.5060507@metafoo.de>
+Received: from mail-wm0-f54.google.com ([74.125.82.54]:35695 "EHLO
+	mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932618AbcCPS2Q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 14:28:16 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <56E9A4FB.5060507@metafoo.de>
+In-Reply-To: <20160316162544.GA6212@x220>
+References: <20160316113738.GB2445@x220>
+	<alpine.DEB.2.02.1603161238590.30358@pmeerw.net>
+	<20160316162544.GA6212@x220>
+Date: Wed, 16 Mar 2016 20:28:14 +0200
+Message-ID: <CAEnQRZAtpANGBsuYFuMD+tstrYc7YfeO117BYP-990vB144UbQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: add driver for Microchip MCP414X/416X/424X/426X
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Slawomir Stepien <sst@poczta.fm>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mar 16, 2016 19:24, Lars-Peter Clausen wrote:
-> On 03/16/2016 05:25 PM, Slawomir Stepien wrote:
-> > On Mar 16, 2016 13:30, Peter Meerwald-Stadler wrote:
-> [...]
-> >> plenty of the private API, some of which seems to be debug only?
-> >> what is really needed to interact with a poti?
-> > 
-> > I wanted to export both the non volatile and volatile memory addresses for wiper
-> > position access. That is bare minimum for the poti to operate.
-> > 
-> > But I also wanted to export additional features of this chip. That is way there
-> > is increase and decrease API, and STATUS and TCON register access.
-> > 
-> 
-> The important part about a framework and the associated device drivers
-> is to expose the features of a device using a standardized interface so
-> you can write generic applications/libraries and share infrastructure.
-> If an application requires device specific knowledge to access the
-> features of a device you may as well write a userspace driver using i2cdev.
-> 
-> So when you are introducing new ABI it should at least follow the
-> standard naming scheme. And also try to think whether this is a feature
-> that is present in other similar devices and come up with a device
-> independent way to expose this functionality.
-> 
-> Let's start with the simple stuff, I don't really see the advantage of
-> having separate inc/dec controls. This can be handled through the
-> standard raw attribute. If the newly written value is one off from the
-> previous one use inc/dec otherwise write it directly. And even then it
-> might make sense to just ignore that and always write the raw value.
+On Wed, Mar 16, 2016 at 6:25 PM, Slawomir Stepien <sst@poczta.fm> wrote:
+> On Mar 16, 2016 13:30, Peter Meerwald-Stadler wrote:
+>> On Wed, 16 Mar 2016, Slawomir Stepien wrote:
+>>
+>> > The following functionalities are supported:
+>> >  - write, read from volatile and non volatile memory
+>> >  - increase and decrease commands
+>> >  - read from status register
+>> >  - write and read to tcon register
+>> >
+>> > Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22059b.pdf
+>
+> Thank you for all your comments.
+>
+>> the driver naming is a mess: the subject says MCP414X, the file name is
+>> mcp41xx, the DT compatible string says mcp4113x -- this does not match
+>
+> OK. I will change that to mcp414x in version 2.
 
-I've got your point. The version 2 will use only the IIO facilities. Then I will
-try to build more based on that.
+Filename shouldn't be generic (e.g ending with xx). It should be a
+specific chip name
+(a good candidate is the first in alphabetical order), because there
+could be chips falling
+in the same name category but with a different driver.
 
-> > The memory_map API is a way to access all the not used by chip memory addresses.
-> > This API I think could be deleted. But I still think that some people might find
-> > it useful.
-> 
-> This sounds more like it should maybe be exposed as a standard EEPROM
-> device.
-
-Not quite familiar with this, but will look into that.
-
-Once more thank you for comments.
-
--- 
-Slawomir Stepien
+>
+>> plenty of the private API, some of which seems to be debug only?
+>> what is really needed to interact with a poti?
+>
+> I wanted to export both the non volatile and volatile memory addresses for wiper
+> position access. That is bare minimum for the poti to operate.
+>
+> But I also wanted to export additional features of this chip. That is way there
+> is increase and decrease API, and STATUS and TCON register access.
+>
+> The memory_map API is a way to access all the not used by chip memory addresses.
+> This API I think could be deleted. But I still think that some people might find
+> it useful.
+>
+>> comments below
+>>
+>> > +File:      /sys/bus/iio/devices/../out_resistanceN_raw
+>>
+>> this is already described in sysfs-bus-iio
+>
+> Should I leave it and add reference to sysfs-bus-iio or delete it completely?
+>
+>> > +struct mcp41xx_cfg {
+>> > +   unsigned long int devid;
+>>
+>> devid is not set/used
+>
+> That's true. Will fix it in v2.
+>
+>> > +static int mcp41xx_exec(struct mcp41xx_data *data,
+>> > +           u8 addr, u8 cmd,
+>> > +           int *trans, size_t n)
+>>
+>> should trans really be int, not u8?
+>
+> There is a need for 9 bit value write/read. I used int just for my convenience.
+> However there is one piece of code missing now I see. I should check the value
+> of tans[0] to see if it's > 256 or lower then 0. Will add it in v2.
+>
+> Using u8 will force additional bit operations. I could try using u16 to still
+> have the option of parsing user input as 9 bit value (eg. 256 position).
+>
+>> > +{
+>> > +   int err;
+>> > +   struct spi_device *spi = data->spi;
+>> > +
+>> > +   /* Two bytes are needed for the response */
+>> > +   if (n != 2)
+>> > +           return -EINVAL;
+>>
+>> why pass n if it is always 2?
+>
+> Will fix in v2.
+>
+>> > +   err = devm_iio_device_register(&spi->dev, indio_dev);
+>> > +   if (err) {
+>> > +           dev_info(&spi->dev, "Unable to register %s", indio_dev->name);
+>>
+>> \n missing
+>>
+>> > +           return err;
+>> > +   }
+>> > +
+>> > +   dev_info(&spi->dev, "Registered %s", indio_dev->name);
+>>
+>> \n
+>>
+>> > +
+>> > +   return 0;
+>> > +}
+>> > +
+>> > +static int mcp41xx_remove(struct spi_device *spi)
+>> > +{
+>> > +   struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>> > +   struct mcp41xx_data *data = iio_priv(indio_dev);
+>> > +
+>> > +   mutex_destroy(&data->lock);
+>> > +   devm_iio_device_unregister(&spi->dev, indio_dev);
+>> > +   kfree(mcp41xx_attributes);
+>> > +
+>> > +   dev_info(&spi->dev, "Unregistered %s", indio_dev->name);
+>
+> Also \n is missing here. Will fix in v2.
+>
+> --
+> Slawomir Stepien
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
