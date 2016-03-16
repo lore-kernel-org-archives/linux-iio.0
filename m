@@ -1,86 +1,943 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lucky1.263xmail.com ([211.157.147.132]:34359 "EHLO
-	lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753680AbcCPJiH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 05:38:07 -0400
-From: David Wu <david.wu@rock-chips.com>
-To: jic23@kernel.org, heiko@sntech.de
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	huangtao@rock-chips.com, xjq@rock-chips.com, zyw@rock-chips.com,
-	cf@rock-chips.com, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, david.wu@rock-chips.com
-Subject: [PATCH] iio: adc: rockchip_saradc: add saradc support for rk3399
-Date: Wed, 16 Mar 2016 01:44:15 +0800
-Message-Id: <1458063855-4154-1-git-send-email-david.wu@rock-chips.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from smtpo.poczta.interia.pl ([217.74.65.208]:47141 "EHLO
+	smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753596AbcCPLwO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 07:52:14 -0400
+Date: Wed, 16 Mar 2016 12:37:38 +0100
+From: Slawomir Stepien <sst@poczta.fm>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: add driver for Microchip MCP414X/416X/424X/426X
+Message-ID: <20160316113738.GB2445@x220>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ADC is a 6-channel signal-ended 10-bit Successive
-Approximation Register (SAR) A/D Converter.
+The following functionalities are supported:
+ - write, read from volatile and non volatile memory
+ - increase and decrease commands
+ - read from status register
+ - write and read to tcon register
 
-Signed-off-by: David Wu <david.wu@rock-chips.com>
+Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22059b.pdf
+
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
 ---
- .../devicetree/bindings/iio/adc/rockchip-saradc.txt   |  6 +++++-
- drivers/iio/adc/rockchip_saradc.c                     | 19 +++++++++++++++++++
- 2 files changed, 24 insertions(+), 1 deletion(-)
+ .../bindings/iio/potentiometer/mcp41xx.txt         |  51 ++
+ Documentation/iio/mcp41xx.txt                      |  86 +++
+ drivers/iio/potentiometer/Kconfig                  |  18 +
+ drivers/iio/potentiometer/Makefile                 |   1 +
+ drivers/iio/potentiometer/mcp41xx.c                | 709 +++++++++++++++++++++
+ 5 files changed, 865 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/mcp41xx.txt
+ create mode 100644 Documentation/iio/mcp41xx.txt
+ create mode 100644 drivers/iio/potentiometer/mcp41xx.c
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-index a9a5fe1..bf99e2f 100644
---- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-@@ -1,7 +1,11 @@
- Rockchip Successive Approximation Register (SAR) A/D Converter bindings
- 
- Required properties:
--- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
-+- compatible: should be "rockchip,<name>-saradc" or "rockchip,rk3066-tsadc"
-+   - "rockchip,saradc": for rk3188, rk3288
-+   - "rockchip,rk3066-tsadc": for rk3036
-+   - "rockchip,rk3399-saradc": for rk3399
+diff --git a/Documentation/devicetree/bindings/iio/potentiometer/mcp41xx.txt b/Documentation/devicetree/bindings/iio/potentiometer/mcp41xx.txt
+new file mode 100644
+index 0000000..6031142
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/potentiometer/mcp41xx.txt
+@@ -0,0 +1,51 @@
++* Microchip MCP414X/416X/424X/426X Digital Potentiometer driver
 +
- - reg: physical base address of the controller and length of memory mapped
-        region.
- - interrupts: The interrupt number to the cpu. The interrupt specifier format
-diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index 9c311c1..f9ad6c2 100644
---- a/drivers/iio/adc/rockchip_saradc.c
-+++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -159,6 +159,22 @@ static const struct rockchip_saradc_data rk3066_tsadc_data = {
- 	.clk_rate = 50000,
- };
++The node for this driver must be a child node of a SPI controller, hence
++all mandatory properties described in
++
++        Documentation/devicetree/bindings/spi/spi-bus.txt
++
++must be specified.
++
++Required properties:
++	- compatible:  	Must be one of the following, depending on the
++			model:
++			"microchip,mcp4113x-502"
++			"microchip,mcp4113x-103"
++			"microchip,mcp4113x-503"
++			"microchip,mcp4113x-104"
++			"microchip,mcp4114x-502"
++			"microchip,mcp4114x-103"
++			"microchip,mcp4114x-503"
++			"microchip,mcp4114x-104"
++			"microchip,mcp4115x-502"
++			"microchip,mcp4115x-103"
++			"microchip,mcp4115x-503"
++			"microchip,mcp4115x-104"
++			"microchip,mcp4116x-502"
++			"microchip,mcp4116x-103"
++			"microchip,mcp4116x-503"
++			"microchip,mcp4116x-104"
++			"microchip,mcp4123x-502"
++			"microchip,mcp4123x-103"
++			"microchip,mcp4123x-503"
++			"microchip,mcp4123x-104"
++			"microchip,mcp4124x-502"
++			"microchip,mcp4124x-103"
++			"microchip,mcp4124x-503"
++			"microchip,mcp4124x-104"
++			"microchip,mcp4125x-502"
++			"microchip,mcp4125x-103"
++			"microchip,mcp4125x-503"
++			"microchip,mcp4125x-104"
++			"microchip,mcp4126x-502"
++			"microchip,mcp4126x-103"
++			"microchip,mcp4126x-503"
++			"microchip,mcp4126x-104"
++
++Example:
++mcp41xx: mcp41xx@0 {
++	compatible = "mcp416x-502";
++	reg = <0>;
++	spi-max-frequency = <500000>;
++};
+diff --git a/Documentation/iio/mcp41xx.txt b/Documentation/iio/mcp41xx.txt
+new file mode 100644
+index 0000000..57dc889
+--- /dev/null
++++ b/Documentation/iio/mcp41xx.txt
+@@ -0,0 +1,86 @@
++Industrial I/O driver for MCP414X/416X/424X/426X Digital POTs
++-------------------------------------------------------------
++
++Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22059a.pdf
++
++sysfs interface
++---------------
++N is the wiper number (0 = first wiper, 1 = second wiper)
++
++File:	/sys/bus/iio/devices/../decr_wiperN
++Mode:	Write
++Description:
++	Write anything to this file to decrease wiper N position by one step.
++Example:
++	echo > decr_wiper0
++
++
++File:	/sys/bus/iio/devices/../incr_wiperN
++Mode:	Write
++Description:
++	Write anything to this file to increase wiper N position by one step.
++Example:
++	echo > incr_wiper0
++
++
++File:	/sys/bus/iio/devices/../memory_map
++Mode:	Read/Write
++Description:
++	Read the whole memory or write value to given memory address.
++	Read outputs two columns. First column is address and second column is
++	value at that address.
++	For write use hex values with leading 0x. First hex is address second
++	hex is the value.
++Example:
++	cat memory_map
++	echo "0x00 0x80" > memory_map
++
++
++File:	/sys/bus/iio/devices/../nv_wiperN
++Mode:	Read/Write
++Description:
++	Read or write to non volatile memory of wiper N.
++	Read outputs decimal value that corresponds to wiper position.
++	For write use decimal value that corresponds to wiper position.
++Example:
++	cat nv_wiper0
++	echo "128" > nv_wiper0
++
++
++File:	/sys/bus/iio/devices/../out_resistance_scale
++Mode:	Read
++Description:
++	Read the resistance scale of one step (in ohms).
++Example:
++	cat out_resistance_scale
++
++
++File:	/sys/bus/iio/devices/../out_resistanceN_raw
++Mode:	Read/Write
++Description:
++	Read or write to volatile memory of wiper N.
++	Read outputs decimal value that corresponds to wiper position.
++	For write use decimal value that corresponds to wiper position.
++Example:
++	cat out_resistance0_raw
++	echo "128" > out_resistance0_raw
++
++
++File:	/sys/bus/iio/devices/../status_register
++Mode:	Read
++Description:
++	Read status register.
++	Read outputs content in binary format.
++Example:
++	cat status_register
++
++
++File:	/sys/bus/iio/devices/../tcon_register
++Mode:	ead/Write
++Description:
++	Read or write to tcon register.
++	Read outputs content in binary format.
++	For write use binary format string.
++Example:
++	cat tcon_register
++	echo "111111100" > tcon_register
+diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
+index fd75db7..4540367 100644
+--- a/drivers/iio/potentiometer/Kconfig
++++ b/drivers/iio/potentiometer/Kconfig
+@@ -5,6 +5,24 @@
  
-+static const struct iio_chan_spec rockchip_rk3399_saradc_iio_channels[] = {
-+	ADC_CHANNEL(0, "adc0"),
-+	ADC_CHANNEL(1, "adc1"),
-+	ADC_CHANNEL(2, "adc2"),
-+	ADC_CHANNEL(3, "adc3"),
-+	ADC_CHANNEL(4, "adc4"),
-+	ADC_CHANNEL(5, "adc5"),
+ menu "Digital potentiometers"
+ 
++config MCP41XX
++	tristate "Microchip MCP414X/416X/424X/426X Digital Potentiometer driver"
++	depends on SPI
++	help
++	  Say yes here to build support for the Microchip
++	  MCP4131, MCP4132,
++	  MCP4141, MCP4142,
++	  MCP4151, MCP4152,
++	  MCP4161, MCP4162,
++	  MCP4231, MCP4232,
++	  MCP4241, MCP4242,
++	  MCP4251, MCP4252,
++	  MCP4261, MCP4262,
++	  digital potentiomenter chips.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called mcp41xx.
++
+ config MCP4531
+ 	tristate "Microchip MCP45xx/MCP46xx Digital Potentiometer driver"
+ 	depends on I2C
+diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
+index 8afe492..1266ebf 100644
+--- a/drivers/iio/potentiometer/Makefile
++++ b/drivers/iio/potentiometer/Makefile
+@@ -3,4 +3,5 @@
+ #
+ 
+ # When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_MCP41XX) += mcp41xx.o
+ obj-$(CONFIG_MCP4531) += mcp4531.o
+diff --git a/drivers/iio/potentiometer/mcp41xx.c b/drivers/iio/potentiometer/mcp41xx.c
+new file mode 100644
+index 0000000..654965b
+--- /dev/null
++++ b/drivers/iio/potentiometer/mcp41xx.c
+@@ -0,0 +1,709 @@
++/*
++ * Industrial I/O driver for MCP414X/416X/424X/426X Digital POTs
++ *
++ * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22059a.pdf
++ *
++ * Copyright (c) 2016 Slawomir Stepien
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/err.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define MCP41XX_WRITE		(0x00 << 2)
++#define MCP41XX_INCR		(0x01 << 2)
++#define MCP41XX_DECR		(0x02 << 2)
++#define MCP41XX_READ		(0x03 << 2)
++
++#define MCP41XX_FULL_SCALE(t)	(t[0] == 0xFF ? 256 : t[1])
++#define MCP41XX_9BIT_VALUE(t)	((t[1] + (t[0] << 8)) & 0x1FF)
++
++#define MCP41XX_MIN_ADDR	0x00
++#define MCP41XX_MAX_ADDR	0x0F
++
++#define MCP41XX_NV_OFFSET	0x02
++
++#define MCP41XX_TCON_ADDR	0x04
++#define MCP41XX_STATUS_ADDR	0x05
++
++struct mcp41xx_cfg {
++	unsigned long int devid;
++	unsigned int wipers;
++	unsigned int num_pos;
++	unsigned int kohms;
 +};
 +
-+static const struct rockchip_saradc_data rk3399_saradc_data = {
-+	.num_bits = 10,
-+	.channels = rockchip_rk3399_saradc_iio_channels,
-+	.num_channels = ARRAY_SIZE(rockchip_rk3399_saradc_iio_channels),
-+	.clk_rate = 1000000,
++enum mcp41xx_type {
++	MCP413x_502,
++	MCP413x_103,
++	MCP413x_503,
++	MCP413x_104,
++	MCP414x_502,
++	MCP414x_103,
++	MCP414x_503,
++	MCP414x_104,
++	MCP415x_502,
++	MCP415x_103,
++	MCP415x_503,
++	MCP415x_104,
++	MCP416x_502,
++	MCP416x_103,
++	MCP416x_503,
++	MCP416x_104,
++	MCP423x_502,
++	MCP423x_103,
++	MCP423x_503,
++	MCP423x_104,
++	MCP424x_502,
++	MCP424x_103,
++	MCP424x_503,
++	MCP424x_104,
++	MCP425x_502,
++	MCP425x_103,
++	MCP425x_503,
++	MCP425x_104,
++	MCP426x_502,
++	MCP426x_103,
++	MCP426x_503,
++	MCP426x_104,
 +};
 +
- static const struct of_device_id rockchip_saradc_match[] = {
- 	{
- 		.compatible = "rockchip,saradc",
-@@ -166,6 +182,9 @@ static const struct of_device_id rockchip_saradc_match[] = {
- 	}, {
- 		.compatible = "rockchip,rk3066-tsadc",
- 		.data = &rk3066_tsadc_data,
-+	}, {
-+		.compatible = "rockchip,rk3399-saradc",
-+		.data = &rk3399_saradc_data,
- 	},
- 	{},
- };
++static const struct mcp41xx_cfg mcp41xx_cfg[] = {
++	[MCP413x_502] =	{ .wipers = 1, .num_pos = 129, .kohms =   5 },
++	[MCP413x_103] = { .wipers = 1, .num_pos = 129, .kohms =  10 },
++	[MCP413x_503] =	{ .wipers = 1, .num_pos = 129, .kohms =  50 },
++	[MCP413x_104] =	{ .wipers = 1, .num_pos = 129, .kohms = 100 },
++	[MCP414x_502] =	{ .wipers = 1, .num_pos = 129, .kohms =   5 },
++	[MCP414x_103] =	{ .wipers = 1, .num_pos = 129, .kohms =  10 },
++	[MCP414x_503] =	{ .wipers = 1, .num_pos = 129, .kohms =  50 },
++	[MCP414x_104] =	{ .wipers = 1, .num_pos = 129, .kohms = 100 },
++	[MCP415x_502] =	{ .wipers = 1, .num_pos = 257, .kohms =   5 },
++	[MCP415x_103] =	{ .wipers = 1, .num_pos = 257, .kohms =  10 },
++	[MCP415x_503] =	{ .wipers = 1, .num_pos = 257, .kohms =  50 },
++	[MCP415x_104] =	{ .wipers = 1, .num_pos = 257, .kohms = 100 },
++	[MCP416x_502] =	{ .wipers = 1, .num_pos = 257, .kohms =   5 },
++	[MCP416x_103] =	{ .wipers = 1, .num_pos = 257, .kohms =  10 },
++	[MCP416x_503] =	{ .wipers = 1, .num_pos = 257, .kohms =  50 },
++	[MCP416x_104] =	{ .wipers = 1, .num_pos = 257, .kohms = 100 },
++	[MCP423x_502] =	{ .wipers = 2, .num_pos = 129, .kohms =   5 },
++	[MCP423x_103] =	{ .wipers = 2, .num_pos = 129, .kohms =  10 },
++	[MCP423x_503] =	{ .wipers = 2, .num_pos = 129, .kohms =  50 },
++	[MCP423x_104] =	{ .wipers = 2, .num_pos = 129, .kohms = 100 },
++	[MCP424x_502] =	{ .wipers = 2, .num_pos = 129, .kohms =   5 },
++	[MCP424x_103] =	{ .wipers = 2, .num_pos = 129, .kohms =  10 },
++	[MCP424x_503] =	{ .wipers = 2, .num_pos = 129, .kohms =  50 },
++	[MCP424x_104] =	{ .wipers = 2, .num_pos = 129, .kohms = 100 },
++	[MCP425x_502] =	{ .wipers = 2, .num_pos = 257, .kohms =   5 },
++	[MCP425x_103] =	{ .wipers = 2, .num_pos = 257, .kohms =  10 },
++	[MCP425x_503] =	{ .wipers = 2, .num_pos = 257, .kohms =  50 },
++	[MCP425x_104] =	{ .wipers = 2, .num_pos = 257, .kohms = 100 },
++	[MCP426x_502] =	{ .wipers = 2, .num_pos = 257, .kohms =   5 },
++	[MCP426x_103] =	{ .wipers = 2, .num_pos = 257, .kohms =  10 },
++	[MCP426x_503] =	{ .wipers = 2, .num_pos = 257, .kohms =  50 },
++	[MCP426x_104] =	{ .wipers = 2, .num_pos = 257, .kohms = 100 },
++};
++
++struct mcp41xx_data {
++	struct spi_device *spi;
++	struct mutex lock;
++	unsigned long devid;
++	u8 tx[2], rx[2];
++	struct spi_transfer xfer;
++	struct spi_message msg;
++};
++
++#define MCP41XX_CHANNEL(ch) {					\
++	.type = IIO_RESISTANCE,					\
++	.output = 1,						\
++	.indexed = 1,						\
++	.channel = (ch),					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
++
++static const struct iio_chan_spec mcp41xx_channels[] = {
++	MCP41XX_CHANNEL(0),
++	MCP41XX_CHANNEL(1),
++};
++
++/* Function based on: arch/parisc/kernel/traps.c */
++static int printbinary(char *buf, unsigned long x, int nbits)
++{
++	unsigned long mask = 1UL << (nbits - 2);
++
++	while (mask != 0) {
++		*buf++ = (mask & x ? '1' : '0');
++		mask >>= 1;
++	}
++	*buf++ = '\n';
++	*buf = '\0';
++
++	return nbits;
++}
++
++static int mcp41xx_exec(struct mcp41xx_data *data,
++		u8 addr, u8 cmd,
++		int *trans, size_t n)
++{
++	int err;
++	struct spi_device *spi = data->spi;
++
++	/* Two bytes are needed for the response */
++	if (n != 2)
++		return -EINVAL;
++
++	switch (cmd) {
++	case MCP41XX_READ:
++		data->xfer.len = 2; /* Two bytes transfer for this command */
++		data->tx[0] = (addr << 4) | MCP41XX_READ;
++		data->tx[1] = 0;
++		break;
++
++	case MCP41XX_WRITE:
++		data->xfer.len = 2;
++		/* Shift trans[0] to see if this is full scale value write */
++		data->tx[0] = (addr << 4) | MCP41XX_WRITE | (trans[0] >> 8);
++		data->tx[1] = (trans[0]) & 0xFF; /* 8 bits here */
++		break;
++
++	case MCP41XX_INCR:
++		data->xfer.len = 1; /* One byte transfer for this command */
++		data->tx[0] = (addr << 4) | MCP41XX_INCR;
++		break;
++
++	case MCP41XX_DECR:
++		data->xfer.len = 1;
++		data->tx[0] = (addr << 4) | MCP41XX_DECR;
++		break;
++
++	default:
++		return -EINVAL;
++	}
++
++	dev_dbg(&spi->dev, "mcp41xx_exec: tx0: 0x%x tx1: 0x%x\n",
++			data->tx[0], data->tx[1]);
++
++	mutex_lock(&data->lock);
++	spi_message_init(&data->msg);
++	spi_message_add_tail(&data->xfer, &data->msg);
++
++	err = spi_sync(spi, &data->msg);
++	if (err) {
++		dev_err(&spi->dev, "spi_sync(): %d\n", err);
++		mutex_unlock(&data->lock);
++		return err;
++	}
++	mutex_unlock(&data->lock);
++
++	dev_dbg(&spi->dev, "mcp41xx_exec: rx0: 0x%x rx1: 0x%x\n",
++			data->rx[0], data->rx[1]);
++
++	/* Copy back the response */
++	trans[0] = data->rx[0];
++	trans[1] = data->rx[1];
++
++	return 0;
++}
++
++static ssize_t mcp41xx_show_memory_map(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	ssize_t i = 0;
++	int err;
++	int addr;
++	int trans[2];
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++
++	/* Read the whole memory */
++	for (addr = MCP41XX_MIN_ADDR; addr <= MCP41XX_MAX_ADDR; addr++) {
++		err = mcp41xx_exec(data,
++				addr, MCP41XX_READ,
++				trans, ARRAY_SIZE(trans));
++		if (err)
++			return i;
++
++		/* First column is address, second is value */
++		i += scnprintf(&buf[i],
++				12, "0x%02x 0x%03x\n",
++				addr, MCP41XX_9BIT_VALUE(trans));
++	}
++
++	return i;
++}
++
++static ssize_t mcp41xx_store_memory_map(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf, size_t len)
++{
++	int err;
++	int addr;
++	int trans[2];
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++
++	err = sscanf(buf, "0x%x 0x%x\n", &addr, &trans[0]);
++	if (err != 2)
++		return err;
++
++	err = mcp41xx_exec(data, addr, MCP41XX_WRITE, trans, ARRAY_SIZE(trans));
++	if (err)
++		return err;
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(memory_map, S_IRUGO | S_IWUSR,
++		mcp41xx_show_memory_map,
++		mcp41xx_store_memory_map,
++		0);
++
++static ssize_t mcp41xx_show_nv_wiper(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	int err;
++	int trans[2];
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	err = mcp41xx_exec(data,
++			this_attr->address + MCP41XX_NV_OFFSET, MCP41XX_READ,
++			trans, ARRAY_SIZE(trans));
++	if (err)
++		return -EINVAL;
++
++	return sprintf(buf, "%d\n", MCP41XX_FULL_SCALE(trans));
++}
++
++static ssize_t mcp41xx_store_nv_wiper(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf, size_t len)
++{
++	int err;
++	int trans[2];
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	err = kstrtoint(buf, 10, &trans[0]);
++	if (err)
++		return -EINVAL;
++
++	err = mcp41xx_exec(data,
++			this_attr->address + MCP41XX_NV_OFFSET, MCP41XX_WRITE,
++			trans, ARRAY_SIZE(trans));
++	if (err)
++		return -EINVAL;
++
++	return len;
++}
++
++#define MCP41XX_NV_WIPER(n) IIO_DEVICE_ATTR(nv_wiper##n, S_IRUGO | S_IWUSR, \
++		mcp41xx_show_nv_wiper, mcp41xx_store_nv_wiper, n)
++
++MCP41XX_NV_WIPER(0);
++MCP41XX_NV_WIPER(1);
++
++static ssize_t mcp41xx_store_incr_wiper(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf, size_t len)
++{
++	int err;
++	int trans[2];
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	err = mcp41xx_exec(data,
++			this_attr->address, MCP41XX_INCR,
++			trans, ARRAY_SIZE(trans));
++	if (err)
++		return -EINVAL;
++
++	return len;
++}
++
++static ssize_t mcp41xx_store_decr_wiper(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf, size_t len)
++{
++	int err;
++	int trans[2];
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	err = mcp41xx_exec(data,
++			this_attr->address, MCP41XX_DECR,
++			trans, ARRAY_SIZE(trans));
++	if (err)
++		return -EINVAL;
++
++	return len;
++}
++
++#define MCP41XX_INCR_ATTR(n) IIO_DEVICE_ATTR(incr_wiper##n, S_IWUSR,	\
++		NULL, mcp41xx_store_incr_wiper, n)
++
++MCP41XX_INCR_ATTR(0);
++MCP41XX_INCR_ATTR(1);
++
++#define MCP41XX_DECR_ATTR(n) IIO_DEVICE_ATTR(decr_wiper##n, S_IWUSR,	\
++		NULL, mcp41xx_store_decr_wiper, n)
++
++MCP41XX_DECR_ATTR(0);
++MCP41XX_DECR_ATTR(1);
++
++static ssize_t mcp41xx_show_status_register(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	int err;
++	int trans[2];
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++	unsigned long val;
++
++	err = mcp41xx_exec(data,
++			MCP41XX_STATUS_ADDR, MCP41XX_READ,
++			trans, ARRAY_SIZE(trans));
++	if (err)
++		return -EINVAL;
++
++	val = MCP41XX_9BIT_VALUE(trans);
++	return printbinary(buf, val, 10); /* One extra for new line */
++}
++
++static IIO_DEVICE_ATTR(status_register, S_IRUGO,
++		mcp41xx_show_status_register,
++		NULL,
++		0);
++
++static ssize_t mcp41xx_show_tcon_register(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	int err;
++	int trans[2];
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++	unsigned long val;
++
++	err = mcp41xx_exec(data,
++			MCP41XX_TCON_ADDR, MCP41XX_READ,
++			trans, ARRAY_SIZE(trans));
++	if (err)
++		return -EINVAL;
++
++	val = MCP41XX_9BIT_VALUE(trans);
++	return printbinary(buf, val, 10); /* One extra for new line */
++}
++
++static ssize_t mcp41xx_store_tcon_register(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf, size_t len)
++{
++	int err;
++	int trans[2];
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++
++	err = kstrtoint(buf, 2, &trans[0]);
++	if (err)
++		return -EINVAL;
++
++	err = mcp41xx_exec(data,
++			MCP41XX_TCON_ADDR, MCP41XX_WRITE,
++			trans, ARRAY_SIZE(trans));
++	if (err)
++		return -EINVAL;
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(tcon_register, S_IRUGO | S_IWUSR,
++		mcp41xx_show_tcon_register,
++		mcp41xx_store_tcon_register,
++		0);
++
++/* All available attributes that can be created */
++static struct iio_dev_attr *mcp41xx_all_attrs[] = {
++	&iio_dev_attr_memory_map,
++	&iio_dev_attr_nv_wiper0,
++	&iio_dev_attr_nv_wiper1,
++	&iio_dev_attr_incr_wiper0,
++	&iio_dev_attr_incr_wiper1,
++	&iio_dev_attr_decr_wiper0,
++	&iio_dev_attr_decr_wiper1,
++	&iio_dev_attr_status_register,
++	&iio_dev_attr_tcon_register,
++};
++
++/* This will be filled dynamically in probe() */
++static struct attribute **mcp41xx_attributes;
++static struct attribute_group mcp41xx_attribute_group;
++
++static int mcp41xx_read_raw(struct iio_dev *indio_dev,
++		struct iio_chan_spec const *chan,
++		int *val, int *val2, long mask)
++{
++	int err;
++	int trans[2];
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++	int address = chan->channel;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		err = mcp41xx_exec(data,
++				address, MCP41XX_READ,
++				trans, ARRAY_SIZE(trans));
++		if (err)
++			return err;
++
++		*val = MCP41XX_FULL_SCALE(trans);
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = 1000 * mcp41xx_cfg[data->devid].kohms;
++		*val2 = mcp41xx_cfg[data->devid].num_pos;
++
++		return IIO_VAL_FRACTIONAL;
++	}
++
++	return -EINVAL;
++}
++
++static int mcp41xx_write_raw(struct iio_dev *indio_dev,
++		struct iio_chan_spec const *chan,
++		int val, int val2, long mask)
++{
++	int trans[2];
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++	int address = chan->channel;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		trans[0] = val;
++
++		return mcp41xx_exec(data,
++				address, MCP41XX_WRITE,
++				trans, ARRAY_SIZE(trans));
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info mcp41xx_info = {
++	.attrs = &mcp41xx_attribute_group,
++	.read_raw = mcp41xx_read_raw,
++	.write_raw = mcp41xx_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int mcp41xx_probe(struct spi_device *spi)
++{
++	int l, i, addr;
++	int err;
++	size_t attrs_count;
++	struct iio_dev *indio_dev;
++	struct mcp41xx_data *data;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	data->spi = spi;
++	data->devid = spi_get_device_id(spi)->driver_data;
++	spi_set_drvdata(spi, indio_dev);
++
++	data->xfer.tx_buf = data->tx;
++	data->xfer.rx_buf = data->rx;
++
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->info = &mcp41xx_info;
++	indio_dev->channels = mcp41xx_channels;
++	indio_dev->num_channels = mcp41xx_cfg[data->devid].wipers;
++	indio_dev->name = spi_get_device_id(spi)->name;
++
++	/* Dynamic attributes */
++	attrs_count = ARRAY_SIZE(mcp41xx_all_attrs);
++	mcp41xx_attributes = kzalloc(
++			sizeof(struct attribute *) * (attrs_count + 1),
++			GFP_KERNEL);
++	if (mcp41xx_attributes == NULL)
++		return -ENOMEM;
++
++	i = 0;
++	for (l = 0; l < attrs_count; l++) {
++		/* Attrs with address == 0 or address == wipers are added */
++		addr = mcp41xx_all_attrs[l]->address;
++		if (addr == 0 || addr == indio_dev->num_channels - 1) {
++			mcp41xx_attributes[i] =
++				&mcp41xx_all_attrs[l]->dev_attr.attr;
++			i++;
++		}
++	}
++	mcp41xx_attribute_group.attrs = mcp41xx_attributes;
++
++	err = devm_iio_device_register(&spi->dev, indio_dev);
++	if (err) {
++		dev_info(&spi->dev, "Unable to register %s", indio_dev->name);
++		return err;
++	}
++
++	dev_info(&spi->dev, "Registered %s", indio_dev->name);
++
++	return 0;
++}
++
++static int mcp41xx_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct mcp41xx_data *data = iio_priv(indio_dev);
++
++	mutex_destroy(&data->lock);
++	devm_iio_device_unregister(&spi->dev, indio_dev);
++	kfree(mcp41xx_attributes);
++
++	dev_info(&spi->dev, "Unregistered %s", indio_dev->name);
++
++	return 0;
++}
++
++#if defined CONFIG_OF
++static const struct of_device_id mcp41xx_dt_ids[] = {
++	{ .compatible = "microchip,mcp4113x-502",
++		.data = &mcp41xx_cfg[MCP413x_502] },
++	{ .compatible = "microchip,mcp4113x-103",
++		.data = &mcp41xx_cfg[MCP413x_103] },
++	{ .compatible = "microchip,mcp4113x-503",
++		.data = &mcp41xx_cfg[MCP413x_503] },
++	{ .compatible = "microchip,mcp4113x-104",
++		.data = &mcp41xx_cfg[MCP413x_104] },
++	{ .compatible = "microchip,mcp4114x-502",
++		.data = &mcp41xx_cfg[MCP414x_502] },
++	{ .compatible = "microchip,mcp4114x-103",
++		.data = &mcp41xx_cfg[MCP414x_103] },
++	{ .compatible = "microchip,mcp4114x-503",
++		.data = &mcp41xx_cfg[MCP414x_503] },
++	{ .compatible = "microchip,mcp4114x-104",
++		.data = &mcp41xx_cfg[MCP414x_104] },
++	{ .compatible = "microchip,mcp4115x-502",
++		.data = &mcp41xx_cfg[MCP415x_502] },
++	{ .compatible = "microchip,mcp4115x-103",
++		.data = &mcp41xx_cfg[MCP415x_103] },
++	{ .compatible = "microchip,mcp4115x-503",
++		.data = &mcp41xx_cfg[MCP415x_503] },
++	{ .compatible = "microchip,mcp4115x-104",
++		.data = &mcp41xx_cfg[MCP415x_104] },
++	{ .compatible = "microchip,mcp4116x-502",
++		.data = &mcp41xx_cfg[MCP416x_502] },
++	{ .compatible = "microchip,mcp4116x-103",
++		.data = &mcp41xx_cfg[MCP416x_103] },
++	{ .compatible = "microchip,mcp4116x-503",
++		.data = &mcp41xx_cfg[MCP416x_503] },
++	{ .compatible = "microchip,mcp4116x-104",
++		.data = &mcp41xx_cfg[MCP416x_104] },
++	{ .compatible = "microchip,mcp4123x-502",
++		.data = &mcp41xx_cfg[MCP423x_502] },
++	{ .compatible = "microchip,mcp4123x-103",
++		.data = &mcp41xx_cfg[MCP423x_103] },
++	{ .compatible = "microchip,mcp4123x-503",
++		.data = &mcp41xx_cfg[MCP423x_503] },
++	{ .compatible = "microchip,mcp4123x-104",
++		.data = &mcp41xx_cfg[MCP423x_104] },
++	{ .compatible = "microchip,mcp4124x-502",
++		.data = &mcp41xx_cfg[MCP424x_502] },
++	{ .compatible = "microchip,mcp4124x-103",
++		.data = &mcp41xx_cfg[MCP424x_103] },
++	{ .compatible = "microchip,mcp4124x-503",
++		.data = &mcp41xx_cfg[MCP424x_503] },
++	{ .compatible = "microchip,mcp4124x-104",
++		.data = &mcp41xx_cfg[MCP424x_104] },
++	{ .compatible = "microchip,mcp4125x-502",
++		.data = &mcp41xx_cfg[MCP425x_502] },
++	{ .compatible = "microchip,mcp4125x-103",
++		.data = &mcp41xx_cfg[MCP425x_103] },
++	{ .compatible = "microchip,mcp4125x-503",
++		.data = &mcp41xx_cfg[MCP425x_503] },
++	{ .compatible = "microchip,mcp4125x-104",
++		.data = &mcp41xx_cfg[MCP425x_104] },
++	{ .compatible = "microchip,mcp4126x-502",
++		.data = &mcp41xx_cfg[MCP426x_502] },
++	{ .compatible = "microchip,mcp4126x-103",
++		.data = &mcp41xx_cfg[MCP426x_103] },
++	{ .compatible = "microchip,mcp4126x-503",
++		.data = &mcp41xx_cfg[MCP426x_503] },
++	{ .compatible = "microchip,mcp4126x-104",
++		.data = &mcp41xx_cfg[MCP426x_104] },
++	{}
++};
++MODULE_DEVICE_TABLE(of, mcp41xx_dt_ids);
++#endif
++
++static const struct spi_device_id mcp41xx_id[] = {
++	{ "mcp413x-502", MCP413x_502 },
++	{ "mcp413x-103", MCP413x_103 },
++	{ "mcp413x-503", MCP413x_503 },
++	{ "mcp413x-104", MCP413x_104 },
++	{ "mcp414x-502", MCP414x_502 },
++	{ "mcp414x-103", MCP414x_103 },
++	{ "mcp414x-503", MCP414x_503 },
++	{ "mcp414x-104", MCP414x_104 },
++	{ "mcp415x-502", MCP415x_502 },
++	{ "mcp415x-103", MCP415x_103 },
++	{ "mcp415x-503", MCP415x_503 },
++	{ "mcp415x-104", MCP415x_104 },
++	{ "mcp416x-502", MCP416x_502 },
++	{ "mcp416x-103", MCP416x_103 },
++	{ "mcp416x-503", MCP416x_503 },
++	{ "mcp416x-104", MCP416x_104 },
++	{ "mcp423x-502", MCP423x_502 },
++	{ "mcp423x-103", MCP423x_103 },
++	{ "mcp423x-503", MCP423x_503 },
++	{ "mcp423x-104", MCP423x_104 },
++	{ "mcp424x-502", MCP424x_502 },
++	{ "mcp424x-103", MCP424x_103 },
++	{ "mcp424x-503", MCP424x_503 },
++	{ "mcp424x-104", MCP424x_104 },
++	{ "mcp425x-502", MCP425x_502 },
++	{ "mcp425x-103", MCP425x_103 },
++	{ "mcp425x-503", MCP425x_503 },
++	{ "mcp425x-104", MCP425x_104 },
++	{ "mcp426x-502", MCP426x_502 },
++	{ "mcp426x-103", MCP426x_103 },
++	{ "mcp426x-503", MCP426x_503 },
++	{ "mcp426x-104", MCP426x_104 },
++	{}
++};
++MODULE_DEVICE_TABLE(spi, mcp41xx_id);
++
++static struct spi_driver mcp41xx_driver = {
++	.driver = {
++		.name		= "mcp41xx",
++		.of_match_table = of_match_ptr(mcp41xx_dt_ids),
++	},
++	.probe		= mcp41xx_probe,
++	.remove		= mcp41xx_remove,
++	.id_table	= mcp41xx_id,
++};
++
++module_spi_driver(mcp41xx_driver);
++
++MODULE_AUTHOR("Slawomir Stepien <sst@poczta.fm>");
++MODULE_DESCRIPTION("MCP41XX digital potentiometer");
++MODULE_LICENSE("GPL v2");
 -- 
-1.9.1
-
+2.7.3
 
