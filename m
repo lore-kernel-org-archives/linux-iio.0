@@ -1,308 +1,297 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:20055 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S935847AbcCQQad (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 17 Mar 2016 12:30:33 -0400
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	daniel.baluta@intel.com, matt.ranostay@intel.com,
-	lucas.demarchi@intel.com, cmo@melexis.com,
-	linux-iio@vger.kernel.org, ggao@invensense.com,
-	srinivas.pandruvada@linux.intel.com, adi.reus@gmail.com
-Subject: [PATCH 3/3] iio: imu: mpu6050: Add support for auxiliary I2C master
-Date: Thu, 17 Mar 2016 18:32:46 +0200
-Message-Id: <1458232366-12773-4-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com>
-References: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40903 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753917AbcCPUse (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 16:48:34 -0400
+Subject: Re: [PATCH 3/3] iio: Add Vishay VEML6070 UV A light sensor driver
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1458090376-26729-1-git-send-email-pmeerw@pmeerw.net>
+ <1458090376-26729-3-git-send-email-pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56E9C69F.7040906@kernel.org>
+Date: Wed, 16 Mar 2016 20:48:31 +0000
+MIME-Version: 1.0
+In-Reply-To: <1458090376-26729-3-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The MPU-60X0 [1] has an auxiliary I2C bus for connecting external
-sensors. This bus has two operating modes:
-	* pass-through, which connects the primary and auxiliary busses
-	together [already implemented]
-	* I2C master mode, where MPU60X0 acts as a master to any
-	external connected sensors [implemented in this patch]
+On 16/03/16 01:06, Peter Meerwald-Stadler wrote:
+> ultraviolet (UV) light sensor with I2C interface with a peak
+> sensitivity at 355 nm
+> 
+> strangely, chip uses two addresses 0x38 and 0x39 for LSB and
+> MSB data, resp.
+Novel - by which I mean PITA.
+> 
+> datasheet: http://www.vishay.com/docs/84277/veml6070.pdf
+> 
+> Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Looks good to me - except the whole thing about uvindex as a channel
+type rather than a modifier.
 
-I2C master supports up to 5 slaves. Slaves 0-3 have a common operating
-mode while slave 4 is different.
-
-This patch only adds support for slave 4 because it has a cleaner
-interface and it has an interrupt that signals when data from slave
-to master arrived.
-
-Registers are described here [2].
-
-We use threaded handler for reading slave4 done interrupt bit.
-
-[1]
-https://www.cdiweb.com/datasheets/invensense/MPU-6050_DataSheet_V3%204.pdf
-[2]
-http://www6.in.tum.de/pub/Main/TeachingWs2015SeminarAuonomousFahren/RM-MPU-6000A.pdf
-
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 137 ++++++++++++++++++++++++++++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  38 ++++++++
- 2 files changed, 172 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 659a4be..a89854c 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -25,6 +25,8 @@
- #include <linux/iio/iio.h>
- #include <linux/i2c-mux.h>
- #include <linux/acpi.h>
-+#include <linux/completion.h>
-+
- #include "inv_mpu_iio.h"
- 
- /*
-@@ -57,6 +59,12 @@ static const struct inv_mpu6050_reg_map reg_set_6500 = {
- 	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
- 	.accl_offset		= INV_MPU6500_REG_ACCEL_OFFSET,
- 	.gyro_offset		= INV_MPU6050_REG_GYRO_OFFSET,
-+	.slv4_addr		= INV_MPU6050_REG_I2C_SLV4_ADDR,
-+	.slv4_reg		= INV_MPU6050_REG_I2C_SLV4_REG,
-+	.slv4_do		= INV_MPU6050_REG_I2C_SLV4_DO,
-+	.slv4_ctrl		= INV_MPU6050_REG_I2C_SLV4_CTRL,
-+	.slv4_di		= INV_MPU6050_REG_I2C_SLV4_DI,
-+	.mst_status		= INV_MPU6050_REG_I2C_MST_STATUS,
- };
- 
- static const struct inv_mpu6050_reg_map reg_set_6050 = {
-@@ -77,6 +85,12 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
- 	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
- 	.accl_offset		= INV_MPU6050_REG_ACCEL_OFFSET,
- 	.gyro_offset		= INV_MPU6050_REG_GYRO_OFFSET,
-+	.slv4_addr		= INV_MPU6050_REG_I2C_SLV4_ADDR,
-+	.slv4_reg		= INV_MPU6050_REG_I2C_SLV4_REG,
-+	.slv4_do		= INV_MPU6050_REG_I2C_SLV4_DO,
-+	.slv4_ctrl		= INV_MPU6050_REG_I2C_SLV4_CTRL,
-+	.slv4_di		= INV_MPU6050_REG_I2C_SLV4_DI,
-+	.mst_status		= INV_MPU6050_REG_I2C_MST_STATUS,
- };
- 
- static const struct inv_mpu6050_chip_config chip_config_6050 = {
-@@ -761,6 +775,114 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
- 	return 0;
- }
- 
-+static irqreturn_t inv_mpu_datardy_irq_handler(int irq, void *private)
-+{
-+	struct inv_mpu6050_state *st = (struct inv_mpu6050_state *)private;
-+
-+	iio_trigger_poll(st->trig);
-+
-+	return IRQ_WAKE_THREAD;
-+}
-+
-+static irqreturn_t inv_mpu_datardy_thread_handler(int irq, void *private)
-+{
-+	struct inv_mpu6050_state *st = (struct inv_mpu6050_state *)private;
-+	int ret, val;
-+
-+	ret = regmap_read(st->map, st->reg->mst_status, &val);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (val & INV_MPU6050_BIT_I2C_SLV4_DONE)
-+		complete(&st->slv4_done);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static u32 inv_mpu_i2c_functionality(struct i2c_adapter *adap)
-+{
-+	return I2C_FUNC_SMBUS_BYTE | I2C_FUNC_SMBUS_BYTE_DATA;
-+}
-+
-+static int
-+inv_mpu_i2c_smbus_xfer(struct i2c_adapter *adap, u16 addr,
-+		       unsigned short flags, char read_write, u8 command,
-+		       int size, union i2c_smbus_data *data)
-+{
-+	struct inv_mpu6050_state *st = i2c_get_adapdata(adap);
-+
-+	unsigned long time_left;
-+	int ret, val;
-+	u8 ctrl;
-+
-+	ret = inv_mpu6050_set_power_itg(st, true);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_update_bits(st->map, st->reg->user_ctrl,
-+				 INV_MPU6050_BIT_I2C_MST_EN,
-+				 INV_MPU6050_BIT_I2C_MST_EN);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_update_bits(st->map, st->reg->int_enable,
-+				 INV_MPU6050_BIT_MST_INT_EN,
-+				 INV_MPU6050_BIT_MST_INT_EN);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (read_write == I2C_SMBUS_WRITE)
-+		addr |= INV_MPU6050_BIT_I2C_SLV4_W;
-+	else
-+		addr |= INV_MPU6050_BIT_I2C_SLV4_R;
-+
-+	ret = regmap_write(st->map, st->reg->slv4_addr, addr);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_write(st->map, st->reg->slv4_reg, command);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (read_write == I2C_SMBUS_WRITE) {
-+		ret = regmap_write(st->map, st->reg->slv4_do, data->byte);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	ctrl = INV_MPU6050_BIT_SLV4_EN | INV_MPU6050_BIT_SLV4_INT_EN;
-+	ret = regmap_write(st->map, st->reg->slv4_ctrl, ctrl);
-+	if (ret < 0)
-+		return ret;
-+	if (read_write == I2C_SMBUS_READ) {
-+		time_left = wait_for_completion_timeout(&st->slv4_done, HZ);
-+		if (!time_left)
-+			return -ETIMEDOUT;
-+
-+		ret = regmap_read(st->map, st->reg->slv4_di, &val);
-+		if (ret < 0)
-+			return ret;
-+		data->byte = val;
-+	}
-+
-+	ret = inv_mpu6050_set_power_itg(st, false);
-+	if (ret < 0)
-+		return ret;
-+	return 0;
-+}
-+
-+static const struct i2c_algorithm inv_mpu_i2c_algo = {
-+	.smbus_xfer	=	inv_mpu_i2c_smbus_xfer,
-+	.functionality	=	inv_mpu_i2c_functionality,
-+};
-+
-+static struct i2c_adapter inv_mpu_i2c_adapter = {
-+	.owner		= THIS_MODULE,
-+	.class		= I2C_CLASS_HWMON,
-+	.algo		= &inv_mpu_i2c_algo,
-+	.name		= "INV MPU secondary I2C",
-+};
-+
- int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 		int (*inv_mpu_bus_setup)(struct iio_dev *), int chip_type)
- {
-@@ -796,6 +918,13 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 		return result;
- 	}
- 
-+	init_completion(&st->slv4_done);
-+
-+	result = i2c_add_adapter(&inv_mpu_i2c_adapter);
-+	if (result < 0)
-+		return result;
-+
-+	i2c_set_adapdata(&inv_mpu_i2c_adapter, st);
- 	dev_set_drvdata(dev, indio_dev);
- 	indio_dev->dev.parent = dev;
- 	/* name will be NULL when enumerated via ACPI */
-@@ -823,9 +952,11 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 		goto out_unreg_ring;
- 	}
- 
--	result = devm_request_irq(&indio_dev->dev, st->irq,
--				  &iio_trigger_generic_data_rdy_poll,
--				  IRQF_TRIGGER_RISING, "inv_mpu", st->trig);
-+	result = devm_request_threaded_irq(&indio_dev->dev, st->irq,
-+					   &inv_mpu_datardy_irq_handler,
-+					   &inv_mpu_datardy_thread_handler,
-+					   IRQF_TRIGGER_RISING, "inv_mpu",
-+					   st);
- 	if (result) {
- 		dev_err(dev, "request irq fail %d\n", result);
- 		goto out_remove_trigger;
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index e302a49..5c3ea9a 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -42,6 +42,13 @@
-  *  @int_pin_cfg;	Controls interrupt pin configuration.
-  *  @accl_offset:	Controls the accelerometer calibration offset.
-  *  @gyro_offset:	Controls the gyroscope calibration offset.
-+ *  @mst_status:	secondary I2C master interrupt source status
-+ *  @slv4_addr:		I2C slave address for slave 4 transaction
-+ *  @slv4_reg:		I2C register used with slave 4 transaction
-+ *  @slv4_di:		I2C data in register for slave 4 transaction
-+ *  @slv4_ctrl:		I2C slave 4 control register
-+ *  @slv4_do:		I2C data out register for slave 4 transaction
-+
-  */
- struct inv_mpu6050_reg_map {
- 	u8 sample_rate_div;
-@@ -61,6 +68,15 @@ struct inv_mpu6050_reg_map {
- 	u8 int_pin_cfg;
- 	u8 accl_offset;
- 	u8 gyro_offset;
-+	u8 mst_status;
-+
-+	/* slave 4 registers */
-+	u8 slv4_addr;
-+	u8 slv4_reg;
-+	u8 slv4_di; /* data in */
-+	u8 slv4_ctrl;
-+	u8 slv4_do; /* data out */
-+
- };
- 
- /*device enum */
-@@ -133,6 +149,7 @@ struct inv_mpu6050_state {
- 	struct inv_mpu6050_platform_data plat_data;
- 	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
- 	struct regmap *map;
-+	struct completion slv4_done;
- 	int irq;
- };
- 
-@@ -149,9 +166,30 @@ struct inv_mpu6050_state {
- #define INV_MPU6050_BIT_ACCEL_OUT           0x08
- #define INV_MPU6050_BITS_GYRO_OUT           0x70
- 
-+#define INV_MPU6050_REG_I2C_SLV4_ADDR       0x31
-+#define INV_MPU6050_BIT_I2C_SLV4_R          0x80
-+#define INV_MPU6050_BIT_I2C_SLV4_W          0x00
-+
-+#define INV_MPU6050_REG_I2C_SLV4_REG        0x32
-+#define INV_MPU6050_REG_I2C_SLV4_DO         0x33
-+#define INV_MPU6050_REG_I2C_SLV4_CTRL       0x34
-+
-+#define INV_MPU6050_BIT_SLV4_EN             0x80
-+#define INV_MPU6050_BIT_SLV4_INT_EN         0x40
-+#define INV_MPU6050_BIT_SLV4_DIS            0x20
-+
-+#define INV_MPU6050_REG_I2C_SLV4_DI         0x35
-+
-+#define INV_MPU6050_REG_I2C_MST_STATUS      0x36
-+#define INV_MPU6050_BIT_I2C_SLV4_DONE       0x40
-+
- #define INV_MPU6050_REG_INT_ENABLE          0x38
- #define INV_MPU6050_BIT_DATA_RDY_EN         0x01
- #define INV_MPU6050_BIT_DMP_INT_EN          0x02
-+#define INV_MPU6050_BIT_MST_INT_EN          0x08
-+
-+#define INV_MPU6050_REG_INT_STATUS          0x3A
-+#define INV_MPU6050_BIT_MST_INT             0x08
- 
- #define INV_MPU6050_REG_RAW_ACCEL           0x3B
- #define INV_MPU6050_REG_TEMPERATURE         0x41
--- 
-2.5.0
+Jonathan
+> ---
+>  drivers/iio/light/Kconfig    |  10 ++
+>  drivers/iio/light/Makefile   |   1 +
+>  drivers/iio/light/veml6070.c | 220 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 231 insertions(+)
+>  create mode 100644 drivers/iio/light/veml6070.c
+> 
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index cfd3df8..d2fe64e 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -320,4 +320,14 @@ config VCNL4000
+>  	 To compile this driver as a module, choose M here: the
+>  	 module will be called vcnl4000.
+>  
+> +config VEML6070
+> +	tristate "VEML6070 UV A light sensor"
+> +	depends on I2C
+> +	help
+> +	 Say Y here if you want to build a driver for the Vishay VEML6070 UV A
+> +	 light sensor.
+> +
+> +	 To compile this driver as a module, choose M here: the
+> +	 module will be called veml6070.
+> +
+>  endmenu
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index b2c3105..a447c62 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -30,3 +30,4 @@ obj-$(CONFIG_TCS3472)		+= tcs3472.o
+>  obj-$(CONFIG_TSL4531)		+= tsl4531.o
+>  obj-$(CONFIG_US5182D)		+= us5182d.o
+>  obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
+> +obj-$(CONFIG_VEML6070)		+= veml6070.o
+> diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
+> new file mode 100644
+> index 0000000..d70b51e
+> --- /dev/null
+> +++ b/drivers/iio/light/veml6070.c
+> @@ -0,0 +1,220 @@
+> +/*
+> + * veml6070.c - Support for Vishay VEML6070 UV A light sensor
+> + *
+> + * Copyright 2016 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * IIO driver for VEML6070 (7-bit I2C slave addresses 0x38 and 0x39)
+> + *
+> + * TODO: integration time, ACK signal
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/mutex.h>
+> +#include <linux/err.h>
+> +#include <linux/delay.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +#define VEML6070_DRV_NAME "veml6070"
+> +
+> +#define VEML6070_ADDR_CONFIG_DATA_MSB 0x38 /* read: MSB data, write: config */
+> +#define VEML6070_ADDR_DATA_LSB	0x39 /* LSB data */
+> +
+> +#define VEML6070_COMMAND_ACK	BIT(5) /* raise interrupt when over threshold */
+> +#define VEML6070_COMMAND_IT	GENMASK(3, 2) /* bit mask integration time */
+> +#define VEML6070_COMMAND_RSRVD	BIT(1) /* reserved, set to 1 */
+> +#define VEML6070_COMMAND_SD	BIT(0) /* shutdown mode when set */
+> +
+> +#define VEML6070_IT_10	0x04 /* integration time 1x */
+> +
+> +struct veml6070_data {
+> +	struct i2c_client *client1;
+> +	struct i2c_client *client2;
+> +	u8 config;
+> +	struct mutex lock;
+> +};
+> +
+> +static int veml6070_read(struct veml6070_data *data)
+> +{
+> +	int ret;
+> +	u8 msb, lsb;
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	/* disable shutdown */
+> +	ret = i2c_smbus_write_byte(data->client1,
+> +	    data->config & ~VEML6070_COMMAND_SD);
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	msleep(125 + 10); /* measurement takes up to 125 ms for IT 1x */
+> +
+> +	ret = i2c_smbus_read_byte(data->client2); /* read MSB, address 0x39 */
+> +	if (ret < 0)
+> +		goto out;
+> +	msb = ret;
+> +
+> +	ret = i2c_smbus_read_byte(data->client1); /* read LSB, address 0x38 */
+> +	if (ret < 0)
+> +		goto out;
+> +	lsb = ret;
+> +
+> +	/* shutdown again */
+> +	ret = i2c_smbus_write_byte(data->client1, data->config);
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	ret = (msb << 8) | lsb;
+> +
+> +out:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static const struct iio_chan_spec veml6070_channels[] = {
+> +	{
+> +		.type = IIO_INTENSITY,
+> +		.modified = 1,
+> +		.channel2 = IIO_MOD_LIGHT_UV,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +	},
+> +	{
+> +		.type = IIO_INTENSITY,
+> +		.modified = 1,
+> +		.channel2 = IIO_MOD_LIGHT_UV_INDEX,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +	}
+> +};
+> +
+> +static int veml6070_to_uv_index(unsigned val)
+> +{
+> +	/*
+> +	 * conversion of raw UV intensity values to UV index depends on
+> +	 * integration time (IT) and value of the resistor connected to
+> +	 * the RSET pin (default: 270 KOhm)
+> +	 */
+> +	unsigned uvi[11] = {
+> +		187, 373, 560, /* low */
+> +		746, 933, 1120, /* moderate */
+> +		1308, 1494, /* high */
+> +		1681, 1868, 2054}; /* very high */
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(uvi); i++)
+> +		if (val <= uvi[i])
+> +			return i;
+> +
+> +	return 11; /* extreme */
+> +}
+> +
+> +static int veml6070_read_raw(struct iio_dev *indio_dev,
+> +				struct iio_chan_spec const *chan,
+> +				int *val, int *val2, long mask)
+> +{
+> +	struct veml6070_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		ret = veml6070_read(data);
+> +		if (ret < 0)
+> +			return ret;
+> +		if (mask == IIO_CHAN_INFO_PROCESSED)
+> +			*val = veml6070_to_uv_index(ret);
+> +		else
+> +			*val = ret;
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info veml6070_info = {
+> +	.read_raw = veml6070_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int veml6070_probe(struct i2c_client *client,
+> +			  const struct i2c_device_id *id)
+> +{
+> +	struct veml6070_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client1 = client;
+> +	mutex_init(&data->lock);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &veml6070_info;
+> +	indio_dev->channels = veml6070_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(veml6070_channels);
+> +	indio_dev->name = VEML6070_DRV_NAME;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	data->client2 = i2c_new_dummy(client->adapter, VEML6070_ADDR_DATA_LSB);
+> +	if (!data->client2) {
+> +		dev_err(&client->dev, "i2c device for second chip address failed\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	data->config = VEML6070_IT_10 | VEML6070_COMMAND_RSRVD |
+> +		VEML6070_COMMAND_SD;
+> +	ret = i2c_smbus_write_byte(data->client1, data->config);
+> +	if (ret < 0)
+> +		goto fail;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		goto fail;
+> +
+> +	return ret;
+> +
+> +fail:
+> +	i2c_unregister_device(data->client2);
+> +	return ret;
+> +}
+> +
+> +static int veml6070_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct veml6070_data *data = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	i2c_unregister_device(data->client2);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id veml6070_id[] = {
+> +	{ "veml6070", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, veml6070_id);
+> +
+> +static struct i2c_driver veml6070_driver = {
+> +	.driver = {
+> +		.name   = VEML6070_DRV_NAME,
+> +	},
+> +	.probe  = veml6070_probe,
+> +	.remove  = veml6070_remove,
+> +	.id_table = veml6070_id,
+> +};
+> +
+> +module_i2c_driver(veml6070_driver);
+> +
+> +MODULE_AUTHOR("Peter Meerwald-Stadler <pmeerw@pmeerw.net>");
+> +MODULE_DESCRIPTION("Vishay VEML6070 UV A light sensor driver");
+> +MODULE_LICENSE("GPL");
+> 
 
