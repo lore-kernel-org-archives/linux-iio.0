@@ -7,153 +7,264 @@ CC: Rob Herring <robh+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 	Irina Tirdea <irina.tirdea@intel.com>, Cristina Moraru
 	<cristina.moraru09@gmail.com>, Daniel Baluta <daniel.baluta@intel.com>, Julia
  Lawall <Julia.Lawall@lip6.fr>, Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v3 1/3] iio:magnetometer:ak8975: fix missing regulator_disable
-Date: Thu, 17 Mar 2016 17:43:26 +0100
-Message-ID: <058df1d45949ea5ee606d9b872acb0f2771a5f99.1458231723.git.gregor.boirie@parrot.com>
+Subject: [PATCH v3 3/3] iio:magnetometer:ak8975: triggered buffer support
+Date: Thu, 17 Mar 2016 17:43:28 +0100
+Message-ID: <890b65dd4aeb57753c9a306c38ca3ef2532ba0c2.1458231723.git.gregor.boirie@parrot.com>
 In-Reply-To: <cover.1458231723.git.gregor.boirie@parrot.com>
 References: <cover.1458231723.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Ensure optional regulator is properly disabled when present.
+This will be used together with an external trigger (e.g hrtimer based
+software trigger).
 
-Fixes: 63d5d525cbbc ("iio:magnetometer:ak8975: power regulator support")
 Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 78 ++++++++++++++++++++++++++++++---------
- 1 file changed, 60 insertions(+), 18 deletions(-)
+ drivers/iio/magnetometer/Kconfig  |   2 +
+ drivers/iio/magnetometer/ak8975.c | 135 +++++++++++++++++++++++++++++++-------
+ 2 files changed, 112 insertions(+), 25 deletions(-)
 
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index 021dc53..d9834ed 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -9,6 +9,8 @@ config AK8975
+ 	tristate "Asahi Kasei AK 3-Axis Magnetometer"
+ 	depends on I2C
+ 	depends on GPIOLIB || COMPILE_TEST
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to build support for Asahi Kasei AK8975, AK8963,
+ 	  AK09911 or AK09912 3-Axis Magnetometer.
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 72c03d9..48d127a 100644
+index 3814a6a..de1663d 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -370,8 +370,40 @@ struct ak8975_data {
- 	wait_queue_head_t	data_ready_queue;
- 	unsigned long		flags;
- 	u8			cntl_cache;
-+	struct regulator	*vdd;
- };
+@@ -36,6 +36,12 @@
  
-+/* Enable attached power regulator if any. */
-+static int ak8975_power_on(struct i2c_client *client)
-+{
-+	const struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct ak8975_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	data->vdd = devm_regulator_get(&client->dev, "vdd");
-+	if (IS_ERR_OR_NULL(data->vdd)) {
-+		ret = PTR_ERR(data->vdd);
-+		if (ret == -ENODEV)
-+			ret = 0;
-+	} else {
-+		ret = regulator_enable(data->vdd);
-+	}
-+
-+	if (ret)
-+		dev_err(&client->dev, "failed to enable Vdd supply: %d\n", ret);
-+	return ret;
-+}
-+
-+/* Disable attached power regulator if any. */
-+static void ak8975_power_off(const struct i2c_client *client)
-+{
-+	const struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	const struct ak8975_data *data = iio_priv(indio_dev);
-+
-+	if (!IS_ERR_OR_NULL(data->vdd))
-+		regulator_disable(data->vdd);
-+}
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/regulator/consumer.h>
 +
  /*
-  * Return 0 if the i2c device is the one we expect.
-  * return a negative error number otherwise
-@@ -380,23 +412,8 @@ static int ak8975_who_i_am(struct i2c_client *client,
- 			   enum asahi_compass_chipset type)
- {
- 	u8 wia_val[2];
--	struct regulator *vdd = devm_regulator_get_optional(&client->dev,
--							    "vdd");
- 	int ret;
- 
--	/* Enable attached regulator if any. */
--	if (!IS_ERR(vdd)) {
--		ret = regulator_enable(vdd);
--		if (ret) {
--			dev_err(&client->dev, "Failed to enable Vdd supply\n");
--			return ret;
--		}
--	} else {
--		ret = PTR_ERR(vdd);
--		if (ret != -ENODEV)
--			return ret;
--	}
--
- 	/*
- 	 * Signature for each device:
- 	 * Device   |  WIA1      |  WIA2
-@@ -804,10 +821,15 @@ static int ak8975_probe(struct i2c_client *client,
- 	}
- 
- 	data->def = &ak_def_array[chipset];
-+
-+	err = ak8975_power_on(client);
-+	if (err)
-+		return err;
-+
- 	err = ak8975_who_i_am(client, data->def->type);
- 	if (err < 0) {
- 		dev_err(&client->dev, "Unexpected device\n");
--		return err;
-+		goto power_off;
- 	}
- 	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
- 
-@@ -815,7 +837,7 @@ static int ak8975_probe(struct i2c_client *client,
- 	err = ak8975_setup(client);
- 	if (err < 0) {
- 		dev_err(&client->dev, "%s initialization fails\n", name);
--		return err;
-+		goto power_off;
- 	}
- 
- 	mutex_init(&data->lock);
-@@ -825,7 +847,26 @@ static int ak8975_probe(struct i2c_client *client,
- 	indio_dev->info = &ak8975_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->name = name;
--	return devm_iio_device_register(&client->dev, indio_dev);
-+
-+	err = iio_device_register(indio_dev);
-+	if (err)
-+		goto power_off;
-+
-+	return 0;
-+
-+power_off:
-+	ak8975_power_off(client);
-+	return err;
-+}
-+
-+static int ak8975_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+	ak8975_power_off(client);
-+
-+	return 0;
+  * Register definitions, as well as various shifts and masks to get at the
+  * individual fields of the registers.
+@@ -634,22 +640,15 @@ static int wait_conversion_complete_interrupt(struct ak8975_data *data)
+ 	return ret > 0 ? 0 : -ETIME;
  }
  
- static const struct i2c_device_id ak8975_id[] = {
-@@ -859,6 +900,7 @@ static struct i2c_driver ak8975_driver = {
- 		.acpi_match_table = ACPI_PTR(ak_acpi_match),
- 	},
- 	.probe		= ak8975_probe,
-+	.remove		= ak8975_remove,
- 	.id_table	= ak8975_id,
+-/*
+- * Emits the raw flux value for the x, y, or z axis.
+- */
+-static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
++static int ak8975_start_read_axis(struct ak8975_data *data,
++				  const struct i2c_client *client)
+ {
+-	struct ak8975_data *data = iio_priv(indio_dev);
+-	struct i2c_client *client = data->client;
+-	int ret;
+-
+-	mutex_lock(&data->lock);
+-
+ 	/* Set up the device for taking a sample. */
+-	ret = ak8975_set_mode(data, MODE_ONCE);
++	int ret = ak8975_set_mode(data, MODE_ONCE);
++
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "Error in setting operating mode\n");
+-		goto exit;
++		return ret;
+ 	}
+ 
+ 	/* Wait for the conversion to complete. */
+@@ -660,7 +659,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+ 	else
+ 		ret = wait_conversion_complete_polled(data);
+ 	if (ret < 0)
+-		goto exit;
++		return ret;
+ 
+ 	/* This will be executed only for non-interrupt based waiting case */
+ 	if (ret & data->def->ctrl_masks[ST1_DRDY]) {
+@@ -668,32 +667,45 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+ 					       data->def->ctrl_regs[ST2]);
+ 		if (ret < 0) {
+ 			dev_err(&client->dev, "Error in reading ST2\n");
+-			goto exit;
++			return ret;
+ 		}
+ 		if (ret & (data->def->ctrl_masks[ST2_DERR] |
+ 			   data->def->ctrl_masks[ST2_HOFL])) {
+ 			dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
+-			ret = -EINVAL;
+-			goto exit;
++			return -EINVAL;
+ 		}
+ 	}
+ 
+-	/* Read the flux value from the appropriate register
+-	   (the register is specified in the iio device attributes). */
+-	ret = i2c_smbus_read_word_data(client, data->def->data_regs[index]);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "Read axis data fails\n");
++	return 0;
++}
++
++/* Retrieve raw flux value for one of the x, y, or z axis.  */
++static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
++{
++	struct ak8975_data *data = iio_priv(indio_dev);
++	const struct i2c_client *client = data->client;
++	const struct ak_def *def = data->def;
++	int ret;
++
++	mutex_lock(&data->lock);
++
++	ret = ak8975_start_read_axis(data, client);
++	if (ret)
++		goto exit;
++
++	ret = i2c_smbus_read_word_data(client, def->data_regs[index]);
++	if (ret < 0)
+ 		goto exit;
+-	}
+ 
+ 	mutex_unlock(&data->lock);
+ 
+ 	/* Clamp to valid range. */
+-	*val = clamp_t(s16, ret, -data->def->range, data->def->range);
++	*val = clamp_t(s16, ret, -def->range, def->range);
+ 	return IIO_VAL_INT;
+ 
+ exit:
+ 	mutex_unlock(&data->lock);
++	dev_err(&client->dev, "Error in reading axis\n");
+ 	return ret;
+ }
+ 
+@@ -745,12 +757,22 @@ static const struct attribute_group ak8975_attrs_group = {
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+ 			     BIT(IIO_CHAN_INFO_SCALE),			\
+ 		.address = index,					\
++		.scan_index = index,					\
++		.scan_type = {						\
++			.sign = 's',					\
++			.realbits = 16,					\
++			.storagebits = 16,				\
++			.endianness = IIO_CPU				\
++		}							\
+ 	}
+ 
+ static const struct iio_chan_spec ak8975_channels[] = {
+ 	AK8975_CHANNEL(X, 0), AK8975_CHANNEL(Y, 1), AK8975_CHANNEL(Z, 2),
++	IIO_CHAN_SOFT_TIMESTAMP(3),
  };
- module_i2c_driver(ak8975_driver);
+ 
++static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
++
+ static const struct iio_info ak8975_info = {
+ 	.read_raw = &ak8975_read_raw,
+ 	.driver_module = THIS_MODULE,
+@@ -785,6 +807,56 @@ static const char *ak8975_match_acpi_device(struct device *dev,
+ 	return dev_name(dev);
+ }
+ 
++static void ak8975_fill_buffer(struct iio_dev *indio_dev)
++{
++	struct ak8975_data *data = iio_priv(indio_dev);
++	const struct i2c_client *client = data->client;
++	const struct ak_def *def = data->def;
++	int ret;
++	s16 buff[8]; /* 3 x 16 bits axis values + 1 aligned 64 bits timestamp */
++
++	mutex_lock(&data->lock);
++
++	ret = ak8975_start_read_axis(data, client);
++	if (ret)
++		goto unlock;
++
++	/*
++	 * For each axis, read the flux value from the appropriate register
++	 * (the register is specified in the iio device attributes).
++	 */
++	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
++							def->data_regs[0],
++							3 * sizeof(buff[0]),
++							(u8 *)buff);
++	if (ret < 0)
++		goto unlock;
++
++	mutex_unlock(&data->lock);
++
++	/* Clamp to valid range. */
++	buff[0] = clamp_t(s16, le16_to_cpu(buff[0]), -def->range, def->range);
++	buff[1] = clamp_t(s16, le16_to_cpu(buff[1]), -def->range, def->range);
++	buff[2] = clamp_t(s16, le16_to_cpu(buff[2]), -def->range, def->range);
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buff, iio_get_time_ns());
++	return;
++
++unlock:
++	mutex_unlock(&data->lock);
++	dev_err(&client->dev, "Error in reading axes block\n");
++}
++
++static irqreturn_t ak8975_handle_trigger(int irq, void *p)
++{
++	const struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++
++	ak8975_fill_buffer(indio_dev);
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
+ static int ak8975_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
+@@ -889,15 +961,27 @@ static int ak8975_probe(struct i2c_client *client,
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->channels = ak8975_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
++	indio_dev->available_scan_masks = ak8975_scan_masks;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->name = name;
+ 
+-	err = iio_device_register(indio_dev);
+-	if (err)
++	err = iio_triggered_buffer_setup(indio_dev, NULL, ak8975_handle_trigger,
++					 NULL);
++	if (err) {
++		dev_err(&client->dev, "triggered buffer setup failed\n");
+ 		goto power_off;
++	}
++
++	err = iio_device_register(indio_dev);
++	if (err) {
++		dev_err(&client->dev, "device register failed\n");
++		goto cleanup_buffer;
++	}
+ 
+ 	return 0;
+ 
++cleanup_buffer:
++	iio_triggered_buffer_cleanup(indio_dev);
+ power_off:
+ 	ak8975_power_off(client);
+ 	return err;
+@@ -908,6 +992,7 @@ static int ak8975_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 
+ 	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
+ 	ak8975_power_off(client);
+ 
+ 	return 0;
 -- 
 2.1.4
