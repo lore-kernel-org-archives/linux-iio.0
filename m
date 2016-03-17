@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f42.google.com ([209.85.215.42]:34228 "EHLO
-	mail-lf0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965483AbcCQRWO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Mar 2016 13:22:14 -0400
-Received: by mail-lf0-f42.google.com with SMTP id e138so46274305lfe.1
-        for <linux-iio@vger.kernel.org>; Thu, 17 Mar 2016 10:22:13 -0700 (PDT)
+Received: from mail-lb0-f178.google.com ([209.85.217.178]:35930 "EHLO
+	mail-lb0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S967358AbcCQRYw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Mar 2016 13:24:52 -0400
+Received: by mail-lb0-f178.google.com with SMTP id qe11so18621738lbc.3
+        for <linux-iio@vger.kernel.org>; Thu, 17 Mar 2016 10:24:51 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1458232366-12773-2-git-send-email-daniel.baluta@intel.com>
-References: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com> <1458232366-12773-2-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1458232366-12773-3-git-send-email-daniel.baluta@intel.com>
+References: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com> <1458232366-12773-3-git-send-email-daniel.baluta@intel.com>
 From: Matt Ranostay <mranostay@gmail.com>
-Date: Thu, 17 Mar 2016 10:21:33 -0700
-Message-ID: <CAKzfze-nFeMJhp7oRrKaCuM+CRJpokFevCEdxB1Mu96H+pUT6A@mail.gmail.com>
-Subject: Re: [PATCH 1/3] iio: imu: mpu6050: Fix name/chip_id when using ACPI
+Date: Thu, 17 Mar 2016 10:24:10 -0700
+Message-ID: <CAKzfze_AzVcENw0i59obVw5_ksoKcF0iGheHGB=nF_4y0hS3bw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] iio: imu: mpu6050: Move request IRQ outside of probe trigger
 To: Daniel Baluta <daniel.baluta@intel.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -26,72 +26,60 @@ Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Reviewed-By: Matt Ranostay <matt.ranostay@intel.com>
+Acked-By: Matt Ranostay <matt.ranostay@intel.com>
 
 On Thu, Mar 17, 2016 at 9:32 AM, Daniel Baluta <daniel.baluta@intel.com> wrote:
-> When using ACPI, id is NULL and the current code automatically
-> defaults name to NULL and chip id to 0. We should instead use
-> the data provided in the ACPI device table.
+> Besides signalling data ready, IRQ line of Invensense MPU
+> can also signal the status of slaves attached on secondary
+> I2C bus.
 >
-> Fixes: c816d9e7a57b ("iio: imu: mpu6050: fix possible NULL dereferences")
+> In order to prepare supporting secondary I2C interface we need
+> to detach IRQ request from data ready trigger creation.
+>
 > Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 29 ++++++++++++++++++++++++++---
->  1 file changed, 26 insertions(+), 3 deletions(-)
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 8 ++++++++
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 8 --------
+>  2 files changed, 8 insertions(+), 8 deletions(-)
 >
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> index d0c0e20..5ee4e0d 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> @@ -104,6 +104,19 @@ static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
->         return 0;
->  }
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index d192953..659a4be 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -823,6 +823,14 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>                 goto out_unreg_ring;
+>         }
 >
-> +static const char *inv_mpu_match_acpi_device(struct device *dev, int *chip_id)
-> +{
-> +       const struct acpi_device_id *id;
-> +
-> +       id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +       if (!id)
-> +               return NULL;
-> +
-> +       *chip_id = (int)id->driver_data;
-> +
-> +       return dev_name(dev);
-> +}
-> +
->  /**
->   *  inv_mpu_probe() - probe function.
->   *  @client:          i2c client.
-> @@ -115,15 +128,25 @@ static int inv_mpu_probe(struct i2c_client *client,
->                          const struct i2c_device_id *id)
->  {
->         struct inv_mpu6050_state *st;
-> -       int result;
-> -       const char *name = id ? id->name : NULL;
-> -       const int chip_type = id ? id->driver_data : 0;
-> +       int result, chip_type;
->         struct regmap *regmap;
-> +       const char *name;
->
->         if (!i2c_check_functionality(client->adapter,
->                                      I2C_FUNC_SMBUS_I2C_BLOCK))
->                 return -EOPNOTSUPP;
->
-> +       if (id) {
-> +               chip_type = (int)id->driver_data;
-> +               name = id->name;
-> +       } else if (ACPI_HANDLE(&client->dev)) {
-> +               name = inv_mpu_match_acpi_device(&client->dev, &chip_type);
-> +               if (!name)
-> +                       return -ENODEV;
-> +       } else {
-> +               return -ENOSYS;
+> +       result = devm_request_irq(&indio_dev->dev, st->irq,
+> +                                 &iio_trigger_generic_data_rdy_poll,
+> +                                 IRQF_TRIGGER_RISING, "inv_mpu", st->trig);
+> +       if (result) {
+> +               dev_err(dev, "request irq fail %d\n", result);
+> +               goto out_remove_trigger;
 > +       }
 > +
->         regmap = devm_regmap_init_i2c(client, &inv_mpu_regmap_config);
->         if (IS_ERR(regmap)) {
->                 dev_err(&client->dev, "Failed to register i2c regmap %d\n",
+>         INIT_KFIFO(st->timestamps);
+>         spin_lock_init(&st->time_stamp_lock);
+>         result = iio_device_register(indio_dev);
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> index e8818d4..acfa513 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> @@ -123,14 +123,6 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
+>         if (!st->trig)
+>                 return -ENOMEM;
+>
+> -       ret = devm_request_irq(&indio_dev->dev, st->irq,
+> -                              &iio_trigger_generic_data_rdy_poll,
+> -                              IRQF_TRIGGER_RISING,
+> -                              "inv_mpu",
+> -                              st->trig);
+> -       if (ret)
+> -               return ret;
+> -
+>         st->trig->dev.parent = regmap_get_device(st->map);
+>         st->trig->ops = &inv_mpu_trigger_ops;
+>         iio_trigger_set_drvdata(st->trig, indio_dev);
 > --
 > 2.5.0
 >
