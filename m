@@ -1,46 +1,55 @@
-Return-Path: <lucas.demarchi@intel.com>
-From: "De Marchi, Lucas" <lucas.demarchi@intel.com>
-To: "Baluta, Daniel" <daniel.baluta@intel.com>, "mranostay@gmail.com"
-	<mranostay@gmail.com>, "GGao@invensense.com" <GGao@invensense.com>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"jic23@kernel.org" <jic23@kernel.org>, "cmo@melexis.com" <cmo@melexis.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "adi.reus@gmail.com"
-	<adi.reus@gmail.com>, "srinivas.pandruvada@linux.intel.com"
-	<srinivas.pandruvada@linux.intel.com>, "pmeerw@pmeerw.net"
-	<pmeerw@pmeerw.net>, "Ranostay, Matt" <matt.ranostay@intel.com>
-Subject: Re: [PATCH 3/3] iio: imu: mpu6050: Add support for auxiliary I2C
- master
-Date: Thu, 17 Mar 2016 21:15:39 +0000
-Message-ID: <1458249337.3601.18.camel@intel.com>
-References: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com>
-	 <1458232366-12773-4-git-send-email-daniel.baluta@intel.com>
-	 <CAKzfze-ZqYC0xaWj9K0GRfEECvSQeZddPviOc=iDDHfwoU1PnQ@mail.gmail.com>
-	 <DM3PR1201MB10729BD22D8500F45BE0E2B3AF8B0@DM3PR1201MB1072.namprd12.prod.outlook.com>
-In-Reply-To: <DM3PR1201MB10729BD22D8500F45BE0E2B3AF8B0@DM3PR1201MB1072.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Tomasz Duszynski <tduszyns@gmail.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v7 0/1] iio:pressure:ms5611: fix and enhancements
+Date: Thu, 17 Mar 2016 12:55:02 +0100
+Message-ID: <cover.1458215358.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-SGksDQoNCk9uIFRodSwgMjAxNi0wMy0xNyBhdCAxODoxMSArMDAwMCwgR2UgR2FvIHdyb3RlOg0K
-PiBIaSBNYXR0LA0KPiAJSSBhbSBub3Qgc3VyZSBhYm91dCBzbGF2ZSA0LiBJIGFsd2F5cyB1c2Ug
-c2xhdmUwfjMuIE1QVTYwNTAgY2FuDQo+IGNvbm5lY3QgdXAgdG8gNCBzbGF2ZXMgYnkgdXNpbmcg
-c2xhdmUgMH4zLiBIb3dldmVyLCB3ZSBvbmx5IHVzZSAzIHNsYXZlcy4NCj4gRWFjaCBzbGF2ZSBj
-YW4gYmUgY29uZmlndXJlZCBhcyByZWFkIG9yIHdyaXRlIGluZGVwZW5kZW50bHkuIEZvciBleGFt
-cGxlLA0KPiBBS004OTczIGNvbXBhc3MgYXMgYSBzbGF2ZSwgSSB1c3VhbGx5IGNvbmZpZ3VyZSBz
-bGF2ZTAgYXMgcmVhZCBhbmQgc2xhdmUgMSANCg0KSSBhbHNvIHVzdWFsbHkgdXNlIHNsYXZlcyAw
-fjMuIEhvd2V2ZXIgbm93IHlvdSBtZW50aW9uIGl0IGFzIGJlaW5nIDEwMEh6Li4uDQpkb2Vzbid0
-IHRoaXMgZGVwZW5kIG9uIGEpIHRoZSByYXRlIGNvbmZpZ3VyZWQgaW4gTVBVIGFuZCBiKSB0aGUg
-cGFydCBpdHNlbGYNCihNUFU5MjUwIGhhcyBhIGRpZmZlcmVudCBpbnRlcm5hbCBzYW1wbGluZyBy
-YXRlKT8NCg0KPiAJRm9yIHByZXNzdXJlIHNlbnNvciBvciBBTFMobGlnaHQvcHJveGltaXR5IHNl
-bnNvciksIHRoZXkgYWxsIGhhdmUNCj4gYXV0b25vbW91cyBtb2RlLiBBcyBsb25nIGFzIHRoZSBz
-YW1wbGUgcGVyaW9kIGlzIGxvbmdlciB0aGFuIHRoZSBvdXRwdXQNCj4gcmF0ZSwgdGhlIGRhdGEg
-aXMgZ3VhcmFudGVlZCB0byBiZSBuZXcgZGF0YS4NCg0KSSB0aGluayBoaXMgdXNlIG9mIHNsYXZl
-NCBpcyBtb3N0bHkgYmVjYXVzZSBvZiB0aGUgaW50ZXJydXB0IHRoYXQgaXMgYXZhaWxhYmUuDQpE
-ZXBlbmRpbmcgb24gdGhlIHNlbnNvciB5b3UgYXJlIGNvbm5lY3RpbmcsIHRoZSBzYW1wbGUgcmF0
-ZXMgbm90IG1hdGNoaW5nIG1heQ0KYmUgYSBwcm9ibGVtLg0KDQpTdXBwb3NlIHlvdXIgc2Vuc29y
-IGlzIGdpdmluZyB5b3UgZGF0YSBhdCAxMjVIei4gVGhpcyBtZWFucyBldmVyeSB+NCBzYW1wbGVz
-IHlvdSB3aWxsIGxvb3NlIG9uZSBzYW1wbGUuIMKgVGhlIG90aGVyIGNhc2Ugb2Ygc2Vuc29yIHdp
-dGggdXBkYXRlIGF0IDc1SHogaXMgYWxzbyBwcm9ibGVtYXRpYyBzaW5jZSB5b3UgbWF5IGdldCBv
-bGQgZGF0YSAtIGFuZCBkZXBlbmRpbmcgb24gdGhlIHNlbnNvciB5b3UgZG9uJ3QgaGF2ZSBhIHdh
-eSB0byBrbm93IGlmIHRoZSBkYXRhIGlzIGludmFsaWQuDQoNCldoYXQgYW0gSSBtaXNzaW5nPw0K
-DQoNCnRoYW5rcw0KDQpMdWNhcyBEZSBNYXJjaGk=
+Changes since v1:
+* temperature compensation fix:
+    * reword commit message
+    * remove useless parenthesis
+* power regulator: reword commit message
+* add oversampling rate support
+
+Changes since v2:
+* remove non printable characters from commit messages
+
+Changes since v3:
+* drop first 3 patches since applied onto testing
+* fix oops at regulator probing time if regulator support not compiled-in
+* complete device-tree support and documentation
+* remove continuous sampling support (see Jonathan's "kthread tight loop
+  trigger" proposal)
+* checkpatch'ed
+
+Changes since v4:
+* drop first 2 patches since applied
+* amend commit to include "Fixes" tag
+
+Changes since v5:
+* reword patch subject line and include "Fixes" tag in commit message
+
+Changes since v6:
+* use devm_regulator_get to allow dummy regulator usage
+* ensure regulator is properly disabled
+
+Regards,
+Gregor.
+
+Gregor Boirie (1):
+  iio:pressure:ms5611: fix missing regulator_disable
+
+ drivers/iio/pressure/ms5611.h      |  3 +++
+ drivers/iio/pressure/ms5611_core.c | 41 +++++++++++++++++++++++++++++---------
+ 2 files changed, 35 insertions(+), 9 deletions(-)
+
+-- 
+2.1.4
