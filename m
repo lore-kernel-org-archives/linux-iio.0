@@ -1,297 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40903 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753917AbcCPUse (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 16:48:34 -0400
-Subject: Re: [PATCH 3/3] iio: Add Vishay VEML6070 UV A light sensor driver
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1458090376-26729-1-git-send-email-pmeerw@pmeerw.net>
- <1458090376-26729-3-git-send-email-pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E9C69F.7040906@kernel.org>
-Date: Wed, 16 Mar 2016 20:48:31 +0000
+Return-Path: <lucas.demarchi@intel.com>
+From: "De Marchi, Lucas" <lucas.demarchi@intel.com>
+To: "Baluta, Daniel" <daniel.baluta@intel.com>, "mranostay@gmail.com"
+	<mranostay@gmail.com>, "GGao@invensense.com" <GGao@invensense.com>
+CC: "lars@metafoo.de" <lars@metafoo.de>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"jic23@kernel.org" <jic23@kernel.org>, "cmo@melexis.com" <cmo@melexis.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "adi.reus@gmail.com"
+	<adi.reus@gmail.com>, "srinivas.pandruvada@linux.intel.com"
+	<srinivas.pandruvada@linux.intel.com>, "pmeerw@pmeerw.net"
+	<pmeerw@pmeerw.net>, "Ranostay, Matt" <matt.ranostay@intel.com>
+Subject: Re: [PATCH 3/3] iio: imu: mpu6050: Add support for auxiliary I2C
+ master
+Date: Thu, 17 Mar 2016 21:15:39 +0000
+Message-ID: <1458249337.3601.18.camel@intel.com>
+References: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com>
+	 <1458232366-12773-4-git-send-email-daniel.baluta@intel.com>
+	 <CAKzfze-ZqYC0xaWj9K0GRfEECvSQeZddPviOc=iDDHfwoU1PnQ@mail.gmail.com>
+	 <DM3PR1201MB10729BD22D8500F45BE0E2B3AF8B0@DM3PR1201MB1072.namprd12.prod.outlook.com>
+In-Reply-To: <DM3PR1201MB10729BD22D8500F45BE0E2B3AF8B0@DM3PR1201MB1072.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <1458090376-26729-3-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 16/03/16 01:06, Peter Meerwald-Stadler wrote:
-> ultraviolet (UV) light sensor with I2C interface with a peak
-> sensitivity at 355 nm
-> 
-> strangely, chip uses two addresses 0x38 and 0x39 for LSB and
-> MSB data, resp.
-Novel - by which I mean PITA.
-> 
-> datasheet: http://www.vishay.com/docs/84277/veml6070.pdf
-> 
-> Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Looks good to me - except the whole thing about uvindex as a channel
-type rather than a modifier.
-
-Jonathan
-> ---
->  drivers/iio/light/Kconfig    |  10 ++
->  drivers/iio/light/Makefile   |   1 +
->  drivers/iio/light/veml6070.c | 220 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 231 insertions(+)
->  create mode 100644 drivers/iio/light/veml6070.c
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index cfd3df8..d2fe64e 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -320,4 +320,14 @@ config VCNL4000
->  	 To compile this driver as a module, choose M here: the
->  	 module will be called vcnl4000.
->  
-> +config VEML6070
-> +	tristate "VEML6070 UV A light sensor"
-> +	depends on I2C
-> +	help
-> +	 Say Y here if you want to build a driver for the Vishay VEML6070 UV A
-> +	 light sensor.
-> +
-> +	 To compile this driver as a module, choose M here: the
-> +	 module will be called veml6070.
-> +
->  endmenu
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index b2c3105..a447c62 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -30,3 +30,4 @@ obj-$(CONFIG_TCS3472)		+= tcs3472.o
->  obj-$(CONFIG_TSL4531)		+= tsl4531.o
->  obj-$(CONFIG_US5182D)		+= us5182d.o
->  obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
-> +obj-$(CONFIG_VEML6070)		+= veml6070.o
-> diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
-> new file mode 100644
-> index 0000000..d70b51e
-> --- /dev/null
-> +++ b/drivers/iio/light/veml6070.c
-> @@ -0,0 +1,220 @@
-> +/*
-> + * veml6070.c - Support for Vishay VEML6070 UV A light sensor
-> + *
-> + * Copyright 2016 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * IIO driver for VEML6070 (7-bit I2C slave addresses 0x38 and 0x39)
-> + *
-> + * TODO: integration time, ACK signal
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/mutex.h>
-> +#include <linux/err.h>
-> +#include <linux/delay.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define VEML6070_DRV_NAME "veml6070"
-> +
-> +#define VEML6070_ADDR_CONFIG_DATA_MSB 0x38 /* read: MSB data, write: config */
-> +#define VEML6070_ADDR_DATA_LSB	0x39 /* LSB data */
-> +
-> +#define VEML6070_COMMAND_ACK	BIT(5) /* raise interrupt when over threshold */
-> +#define VEML6070_COMMAND_IT	GENMASK(3, 2) /* bit mask integration time */
-> +#define VEML6070_COMMAND_RSRVD	BIT(1) /* reserved, set to 1 */
-> +#define VEML6070_COMMAND_SD	BIT(0) /* shutdown mode when set */
-> +
-> +#define VEML6070_IT_10	0x04 /* integration time 1x */
-> +
-> +struct veml6070_data {
-> +	struct i2c_client *client1;
-> +	struct i2c_client *client2;
-> +	u8 config;
-> +	struct mutex lock;
-> +};
-> +
-> +static int veml6070_read(struct veml6070_data *data)
-> +{
-> +	int ret;
-> +	u8 msb, lsb;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	/* disable shutdown */
-> +	ret = i2c_smbus_write_byte(data->client1,
-> +	    data->config & ~VEML6070_COMMAND_SD);
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	msleep(125 + 10); /* measurement takes up to 125 ms for IT 1x */
-> +
-> +	ret = i2c_smbus_read_byte(data->client2); /* read MSB, address 0x39 */
-> +	if (ret < 0)
-> +		goto out;
-> +	msb = ret;
-> +
-> +	ret = i2c_smbus_read_byte(data->client1); /* read LSB, address 0x38 */
-> +	if (ret < 0)
-> +		goto out;
-> +	lsb = ret;
-> +
-> +	/* shutdown again */
-> +	ret = i2c_smbus_write_byte(data->client1, data->config);
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	ret = (msb << 8) | lsb;
-> +
-> +out:
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static const struct iio_chan_spec veml6070_channels[] = {
-> +	{
-> +		.type = IIO_INTENSITY,
-> +		.modified = 1,
-> +		.channel2 = IIO_MOD_LIGHT_UV,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +	},
-> +	{
-> +		.type = IIO_INTENSITY,
-> +		.modified = 1,
-> +		.channel2 = IIO_MOD_LIGHT_UV_INDEX,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +	}
-> +};
-> +
-> +static int veml6070_to_uv_index(unsigned val)
-> +{
-> +	/*
-> +	 * conversion of raw UV intensity values to UV index depends on
-> +	 * integration time (IT) and value of the resistor connected to
-> +	 * the RSET pin (default: 270 KOhm)
-> +	 */
-> +	unsigned uvi[11] = {
-> +		187, 373, 560, /* low */
-> +		746, 933, 1120, /* moderate */
-> +		1308, 1494, /* high */
-> +		1681, 1868, 2054}; /* very high */
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(uvi); i++)
-> +		if (val <= uvi[i])
-> +			return i;
-> +
-> +	return 11; /* extreme */
-> +}
-> +
-> +static int veml6070_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct veml6070_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		ret = veml6070_read(data);
-> +		if (ret < 0)
-> +			return ret;
-> +		if (mask == IIO_CHAN_INFO_PROCESSED)
-> +			*val = veml6070_to_uv_index(ret);
-> +		else
-> +			*val = ret;
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info veml6070_info = {
-> +	.read_raw = veml6070_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int veml6070_probe(struct i2c_client *client,
-> +			  const struct i2c_device_id *id)
-> +{
-> +	struct veml6070_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client1 = client;
-> +	mutex_init(&data->lock);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &veml6070_info;
-> +	indio_dev->channels = veml6070_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(veml6070_channels);
-> +	indio_dev->name = VEML6070_DRV_NAME;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	data->client2 = i2c_new_dummy(client->adapter, VEML6070_ADDR_DATA_LSB);
-> +	if (!data->client2) {
-> +		dev_err(&client->dev, "i2c device for second chip address failed\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	data->config = VEML6070_IT_10 | VEML6070_COMMAND_RSRVD |
-> +		VEML6070_COMMAND_SD;
-> +	ret = i2c_smbus_write_byte(data->client1, data->config);
-> +	if (ret < 0)
-> +		goto fail;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		goto fail;
-> +
-> +	return ret;
-> +
-> +fail:
-> +	i2c_unregister_device(data->client2);
-> +	return ret;
-> +}
-> +
-> +static int veml6070_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct veml6070_data *data = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	i2c_unregister_device(data->client2);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id veml6070_id[] = {
-> +	{ "veml6070", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, veml6070_id);
-> +
-> +static struct i2c_driver veml6070_driver = {
-> +	.driver = {
-> +		.name   = VEML6070_DRV_NAME,
-> +	},
-> +	.probe  = veml6070_probe,
-> +	.remove  = veml6070_remove,
-> +	.id_table = veml6070_id,
-> +};
-> +
-> +module_i2c_driver(veml6070_driver);
-> +
-> +MODULE_AUTHOR("Peter Meerwald-Stadler <pmeerw@pmeerw.net>");
-> +MODULE_DESCRIPTION("Vishay VEML6070 UV A light sensor driver");
-> +MODULE_LICENSE("GPL");
-> 
-
+SGksDQoNCk9uIFRodSwgMjAxNi0wMy0xNyBhdCAxODoxMSArMDAwMCwgR2UgR2FvIHdyb3RlOg0K
+PiBIaSBNYXR0LA0KPiAJSSBhbSBub3Qgc3VyZSBhYm91dCBzbGF2ZSA0LiBJIGFsd2F5cyB1c2Ug
+c2xhdmUwfjMuIE1QVTYwNTAgY2FuDQo+IGNvbm5lY3QgdXAgdG8gNCBzbGF2ZXMgYnkgdXNpbmcg
+c2xhdmUgMH4zLiBIb3dldmVyLCB3ZSBvbmx5IHVzZSAzIHNsYXZlcy4NCj4gRWFjaCBzbGF2ZSBj
+YW4gYmUgY29uZmlndXJlZCBhcyByZWFkIG9yIHdyaXRlIGluZGVwZW5kZW50bHkuIEZvciBleGFt
+cGxlLA0KPiBBS004OTczIGNvbXBhc3MgYXMgYSBzbGF2ZSwgSSB1c3VhbGx5IGNvbmZpZ3VyZSBz
+bGF2ZTAgYXMgcmVhZCBhbmQgc2xhdmUgMSANCg0KSSBhbHNvIHVzdWFsbHkgdXNlIHNsYXZlcyAw
+fjMuIEhvd2V2ZXIgbm93IHlvdSBtZW50aW9uIGl0IGFzIGJlaW5nIDEwMEh6Li4uDQpkb2Vzbid0
+IHRoaXMgZGVwZW5kIG9uIGEpIHRoZSByYXRlIGNvbmZpZ3VyZWQgaW4gTVBVIGFuZCBiKSB0aGUg
+cGFydCBpdHNlbGYNCihNUFU5MjUwIGhhcyBhIGRpZmZlcmVudCBpbnRlcm5hbCBzYW1wbGluZyBy
+YXRlKT8NCg0KPiAJRm9yIHByZXNzdXJlIHNlbnNvciBvciBBTFMobGlnaHQvcHJveGltaXR5IHNl
+bnNvciksIHRoZXkgYWxsIGhhdmUNCj4gYXV0b25vbW91cyBtb2RlLiBBcyBsb25nIGFzIHRoZSBz
+YW1wbGUgcGVyaW9kIGlzIGxvbmdlciB0aGFuIHRoZSBvdXRwdXQNCj4gcmF0ZSwgdGhlIGRhdGEg
+aXMgZ3VhcmFudGVlZCB0byBiZSBuZXcgZGF0YS4NCg0KSSB0aGluayBoaXMgdXNlIG9mIHNsYXZl
+NCBpcyBtb3N0bHkgYmVjYXVzZSBvZiB0aGUgaW50ZXJydXB0IHRoYXQgaXMgYXZhaWxhYmUuDQpE
+ZXBlbmRpbmcgb24gdGhlIHNlbnNvciB5b3UgYXJlIGNvbm5lY3RpbmcsIHRoZSBzYW1wbGUgcmF0
+ZXMgbm90IG1hdGNoaW5nIG1heQ0KYmUgYSBwcm9ibGVtLg0KDQpTdXBwb3NlIHlvdXIgc2Vuc29y
+IGlzIGdpdmluZyB5b3UgZGF0YSBhdCAxMjVIei4gVGhpcyBtZWFucyBldmVyeSB+NCBzYW1wbGVz
+IHlvdSB3aWxsIGxvb3NlIG9uZSBzYW1wbGUuIMKgVGhlIG90aGVyIGNhc2Ugb2Ygc2Vuc29yIHdp
+dGggdXBkYXRlIGF0IDc1SHogaXMgYWxzbyBwcm9ibGVtYXRpYyBzaW5jZSB5b3UgbWF5IGdldCBv
+bGQgZGF0YSAtIGFuZCBkZXBlbmRpbmcgb24gdGhlIHNlbnNvciB5b3UgZG9uJ3QgaGF2ZSBhIHdh
+eSB0byBrbm93IGlmIHRoZSBkYXRhIGlzIGludmFsaWQuDQoNCldoYXQgYW0gSSBtaXNzaW5nPw0K
+DQoNCnRoYW5rcw0KDQpMdWNhcyBEZSBNYXJjaGk=
