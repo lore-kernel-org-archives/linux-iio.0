@@ -1,67 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:61651 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S936024AbcCQQmu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 17 Mar 2016 12:42:50 -0400
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: Rob Herring <robh+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v3 0/3] iio:magnetometer:ak8975: fix and enhancements
-Date: Thu, 17 Mar 2016 17:43:25 +0100
-Message-ID: <cover.1458231723.git.gregor.boirie@parrot.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mail-pf0-f178.google.com ([209.85.192.178]:33660 "EHLO
+	mail-pf0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752019AbcCRDsM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Mar 2016 23:48:12 -0400
+Received: by mail-pf0-f178.google.com with SMTP id 4so17819742pfd.0
+        for <linux-iio@vger.kernel.org>; Thu, 17 Mar 2016 20:48:12 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, dcb314@hotmail.com, pmeerw@pmeerw.net,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH] iio: light: apds9960: correct FIFO check condition
+Date: Thu, 17 Mar 2016 20:48:07 -0700
+Message-Id: <1458272888-26146-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Various fixes and enhancements for the ak8975 magnetometers family driver.
+Correct issue that the last entry in FIFO was being read twice due
+to an incorrect decrement of entry count variable before condition
+check.
 
-Changes since v1:
-* get rid of silly le16 to cpu conversion since SMBUS handles this for us when
-  reading words (patch 3/6)
-* get rid of axes caching and serialize bus access between trigger handler and
-  read_raw
-* pack triggered buffer sampling bus accesses into a single SMBUS data block
-  access
-* use channel address within read_raw
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/light/apds9960.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Changes since v2:
-* use devm_regulator_get to allow dummy regulator usage
-* ensure regulator is properly disabled
-* drop first 3 patches since applied
-* document in_magn_matrix sysfs attribute
-* single line comments where appropriate
-* remove explicit zero init for shift field of iio_chan_spec structure as that's
-  the default
-* drop unnecessary ak8975_read_axis signature modification
-* remove useless cosmetic changes related to ak8975_channels
-* normalize and make error handling code paths clearer
-* make ak8975_remove less nitpick'able :)
-
-Gregor.
-
-Gregor Boirie (3):
-  iio:magnetometer:ak8975: fix missing regulator_disable
-  iio:magnetometer:ak8975: mounting matrix support
-  iio:magnetometer:ak8975: triggered buffer support
-
- Documentation/ABI/testing/sysfs-bus-iio-ak8975     |  46 ++++
- .../bindings/iio/magnetometer/ak8975.txt           |  10 +
- drivers/iio/magnetometer/Kconfig                   |   2 +
- drivers/iio/magnetometer/ak8975.c                  | 255 +++++++++++++++++----
- 4 files changed, 271 insertions(+), 42 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ak8975
-
+diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
+index f6a07dc..a6af56a 100644
+--- a/drivers/iio/light/apds9960.c
++++ b/drivers/iio/light/apds9960.c
+@@ -769,7 +769,7 @@ static void apds9960_read_gesture_fifo(struct apds9960_data *data)
+ 	mutex_lock(&data->lock);
+ 	data->gesture_mode_running = 1;
+ 
+-	while (cnt-- || (cnt = apds9660_fifo_is_empty(data) > 0)) {
++	while (cnt || (cnt = apds9660_fifo_is_empty(data) > 0)) {
+ 		ret = regmap_bulk_read(data->regmap, APDS9960_REG_GFIFO_BASE,
+ 				      &data->buffer, 4);
+ 
+@@ -777,6 +777,7 @@ static void apds9960_read_gesture_fifo(struct apds9960_data *data)
+ 			goto err_read;
+ 
+ 		iio_push_to_buffers(data->indio_dev, data->buffer);
++		cnt--;
+ 	}
+ 
+ err_read:
 -- 
-2.1.4
+2.7.0
 
