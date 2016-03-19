@@ -1,66 +1,700 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:33204 "EHLO
-	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754985AbcCWMc3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Mar 2016 08:32:29 -0400
+Return-Path: <sst@poczta.fm>
+Date: Sat, 19 Mar 2016 14:19:52 +0100
+From: Slawomir Stepien <sst@poczta.fm>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: add driver for Microchip
+ MCP413X/414X/415X/416X/423X/424X/425X/426X
+Message-ID: <20160319131952.GA10728@x220>
 MIME-Version: 1.0
-In-Reply-To: <56EE7FD3.7050803@kernel.org>
-References: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com>
-	<1458232366-12773-4-git-send-email-daniel.baluta@intel.com>
-	<56EE7FD3.7050803@kernel.org>
-Date: Wed, 23 Mar 2016 14:32:27 +0200
-Message-ID: <CAEnQRZDxc2ju1mamgmSm8soFjv2L7WVER8oA-77hFJd7BcfP1g@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: imu: mpu6050: Add support for auxiliary I2C master
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Matt Ranostay <matt.ranostay@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Crt Mori <cmo@melexis.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Ge Gao <ggao@invensense.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Adriana Reus <adi.reus@gmail.com>,
-	Wolfram Sang <wsa@the-dreams.de>,
-	Linux I2C <linux-i2c@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Mar 20, 2016 at 12:47 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 17/03/16 16:32, Daniel Baluta wrote:
->> The MPU-60X0 [1] has an auxiliary I2C bus for connecting external
->> sensors. This bus has two operating modes:
->>       * pass-through, which connects the primary and auxiliary busses
->>       together [already implemented]
->>       * I2C master mode, where MPU60X0 acts as a master to any
->>       external connected sensors [implemented in this patch]
->>
->> I2C master supports up to 5 slaves. Slaves 0-3 have a common operating
->> mode while slave 4 is different.
->>
->> This patch only adds support for slave 4 because it has a cleaner
->> interface and it has an interrupt that signals when data from slave
->> to master arrived.
->>
->> Registers are described here [2].
->>
->> We use threaded handler for reading slave4 done interrupt bit.
->>
->> [1]
->> https://www.cdiweb.com/datasheets/invensense/MPU-6050_DataSheet_V3%204.pdf
->> [2]
->> http://www6.in.tum.de/pub/Main/TeachingWs2015SeminarAuonomousFahren/RM-MPU-6000A.pdf
->>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> hmm. Daniel - this is an i2c driver (be it within an IIO driver) so you need
-> to cc Wolfram and the i2c list.
->
-> I'll be needing an Ack from Wolfram if I am to take this,
+The following functionalities are supported:
+ - write, read from volatile memory
 
-Will do with v2.
+Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22060b.pdf
 
-Daniel.
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+---
+This is v2 of patch: "iio: add driver for Microchip MCP414X/416X/424X/426X"
+
+Changes since v1:
+- One line summary changed
+- Fixed module name and OF compatible
+- Based code on Peter Rosin's code from mcp4531.c
+- No additional sysfs attributes
+- Deleted not used devid struct memeber
+- Changed mcp4131_exec function arguments:
+  - write value is now u16
+  - no need to pass return buffer array - rx array from mcp4131_data is used
+- Added missing new line characters to dev_info
+---
+ .../bindings/iio/potentiometer/mcp4131.txt         |  84 ++++
+ drivers/iio/potentiometer/Kconfig                  |  18 +
+ drivers/iio/potentiometer/Makefile                 |   1 +
+ drivers/iio/potentiometer/mcp4131.c                | 523 +++++++++++++++++++++
+ 4 files changed, 626 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/mcp4131.txt
+ create mode 100644 drivers/iio/potentiometer/mcp4131.c
+
+diff --git a/Documentation/devicetree/bindings/iio/potentiometer/mcp4131.txt b/Documentation/devicetree/bindings/iio/potentiometer/mcp4131.txt
+new file mode 100644
+index 0000000..3ccba16
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/potentiometer/mcp4131.txt
+@@ -0,0 +1,84 @@
++* Microchip MCP413X/414X/415X/416X/423X/424X/425X/426X Digital Potentiometer
++  driver
++
++The node for this driver must be a child node of a SPI controller, hence
++all mandatory properties described in
++
++        Documentation/devicetree/bindings/spi/spi-bus.txt
++
++must be specified.
++
++Required properties:
++	- compatible:  	Must be one of the following, depending on the
++			model:
++			"microchip,mcp4131-502"
++			"microchip,mcp4131-103"
++			"microchip,mcp4131-503"
++			"microchip,mcp4131-104"
++			"microchip,mcp4132-502"
++			"microchip,mcp4132-103"
++			"microchip,mcp4132-503"
++			"microchip,mcp4132-104"
++			"microchip,mcp4141-502"
++			"microchip,mcp4141-103"
++			"microchip,mcp4141-503"
++			"microchip,mcp4141-104"
++			"microchip,mcp4142-502"
++			"microchip,mcp4142-103"
++			"microchip,mcp4142-503"
++			"microchip,mcp4142-104"
++			"microchip,mcp4151-502"
++			"microchip,mcp4151-103"
++			"microchip,mcp4151-503"
++			"microchip,mcp4151-104"
++			"microchip,mcp4152-502"
++			"microchip,mcp4152-103"
++			"microchip,mcp4152-503"
++			"microchip,mcp4152-104"
++			"microchip,mcp4161-502"
++			"microchip,mcp4161-103"
++			"microchip,mcp4161-503"
++			"microchip,mcp4161-104"
++			"microchip,mcp4162-502"
++			"microchip,mcp4162-103"
++			"microchip,mcp4162-503"
++			"microchip,mcp4162-104"
++			"microchip,mcp4231-502"
++			"microchip,mcp4231-103"
++			"microchip,mcp4231-503"
++			"microchip,mcp4231-104"
++			"microchip,mcp4232-502"
++			"microchip,mcp4232-103"
++			"microchip,mcp4232-503"
++			"microchip,mcp4232-104"
++			"microchip,mcp4241-502"
++			"microchip,mcp4241-103"
++			"microchip,mcp4241-503"
++			"microchip,mcp4241-104"
++			"microchip,mcp4242-502"
++			"microchip,mcp4242-103"
++			"microchip,mcp4242-503"
++			"microchip,mcp4242-104"
++			"microchip,mcp4251-502"
++			"microchip,mcp4251-103"
++			"microchip,mcp4251-503"
++			"microchip,mcp4251-104"
++			"microchip,mcp4252-502"
++			"microchip,mcp4252-103"
++			"microchip,mcp4252-503"
++			"microchip,mcp4252-104"
++			"microchip,mcp4261-502"
++			"microchip,mcp4261-103"
++			"microchip,mcp4261-503"
++			"microchip,mcp4261-104"
++			"microchip,mcp4262-502"
++			"microchip,mcp4262-103"
++			"microchip,mcp4262-503"
++			"microchip,mcp4262-104"
++
++Example:
++mcp4131: mcp4131@0 {
++	compatible = "mcp4131-502";
++	reg = <0>;
++	spi-max-frequency = <500000>;
++};
+diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
+index fd75db7..5ef181a 100644
+--- a/drivers/iio/potentiometer/Kconfig
++++ b/drivers/iio/potentiometer/Kconfig
+@@ -5,6 +5,24 @@
+ 
+ menu "Digital potentiometers"
+ 
++config MCP4131
++	tristate "Microchip MCP413X/414X/415X/416X/423X/424X/425X/426X Digital Potentiometer driver"
++	depends on SPI
++	help
++	  Say yes here to build support for the Microchip
++	  MCP4131, MCP4132,
++	  MCP4141, MCP4142,
++	  MCP4151, MCP4152,
++	  MCP4161, MCP4162,
++	  MCP4231, MCP4232,
++	  MCP4241, MCP4242,
++	  MCP4251, MCP4252,
++	  MCP4261, MCP4262,
++	  digital potentiomenter chips.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called mcp4131.
++
+ config MCP4531
+ 	tristate "Microchip MCP45xx/MCP46xx Digital Potentiometer driver"
+ 	depends on I2C
+diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
+index 8afe492..cd5c80b 100644
+--- a/drivers/iio/potentiometer/Makefile
++++ b/drivers/iio/potentiometer/Makefile
+@@ -3,4 +3,5 @@
+ #
+ 
+ # When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_MCP4131) += mcp4131.o
+ obj-$(CONFIG_MCP4531) += mcp4531.o
+diff --git a/drivers/iio/potentiometer/mcp4131.c b/drivers/iio/potentiometer/mcp4131.c
+new file mode 100644
+index 0000000..3553c9e
+--- /dev/null
++++ b/drivers/iio/potentiometer/mcp4131.c
+@@ -0,0 +1,523 @@
++/*
++ * Industrial I/O driver for Microchip digital potentiometers
++ *
++ * Copyright (c) 2016 Slawomir Stepien
++ * Based on: Peter Rosin's code from mcp4531.c
++ *
++ * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22060b.pdf
++ *
++ * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)
++ * mcp4131	1	129		5, 10, 50, 100
++ * mcp4132	1	129		5, 10, 50, 100
++ * mcp4141	1	129		5, 10, 50, 100
++ * mcp4142	1	129		5, 10, 50, 100
++ * mcp4151	1	257		5, 10, 50, 100
++ * mcp4152	1	257		5, 10, 50, 100
++ * mcp4161	1	257		5, 10, 50, 100
++ * mcp4162	1	257		5, 10, 50, 100
++ * mcp4231	2	129		5, 10, 50, 100
++ * mcp4232	2	129		5, 10, 50, 100
++ * mcp4241	2	129		5, 10, 50, 100
++ * mcp4242	2	129		5, 10, 50, 100
++ * mcp4251	2	257		5, 10, 50, 100
++ * mcp4252	2	257		5, 10, 50, 100
++ * mcp4261	2	257		5, 10, 50, 100
++ * mcp4262	2	257		5, 10, 50, 100
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++/*
++ * TODO:
++ * 1. Write wiper setting to EEPROM for EEPROM capable models.
++ */
++
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/err.h>
++
++#include <linux/iio/iio.h>
++
++#define MCP4131_WRITE		(0x00 << 2)
++#define MCP4131_READ		(0x03 << 2)
++
++#define MCP4131_WIPER_SHIFT	(4)
++#define MCP4131_CMDERR(r)	((r[0]) & 0x02)
++#define MCP4131_RAW(r)		((r[0]) == 0xff ? 0x100 : (r[1]))
++
++struct mcp4131_cfg {
++	int wipers;
++	int max_pos;
++	int kohms;
++};
++
++enum mcp4131_type {
++	MCP413x_502 = 0,
++	MCP413x_103,
++	MCP413x_503,
++	MCP413x_104,
++	MCP414x_502,
++	MCP414x_103,
++	MCP414x_503,
++	MCP414x_104,
++	MCP415x_502,
++	MCP415x_103,
++	MCP415x_503,
++	MCP415x_104,
++	MCP416x_502,
++	MCP416x_103,
++	MCP416x_503,
++	MCP416x_104,
++	MCP423x_502,
++	MCP423x_103,
++	MCP423x_503,
++	MCP423x_104,
++	MCP424x_502,
++	MCP424x_103,
++	MCP424x_503,
++	MCP424x_104,
++	MCP425x_502,
++	MCP425x_103,
++	MCP425x_503,
++	MCP425x_104,
++	MCP426x_502,
++	MCP426x_103,
++	MCP426x_503,
++	MCP426x_104,
++};
++
++static const struct mcp4131_cfg mcp4131_cfg[] = {
++	[MCP413x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
++	[MCP413x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
++	[MCP413x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
++	[MCP413x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
++	[MCP414x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
++	[MCP414x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
++	[MCP414x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
++	[MCP414x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
++	[MCP415x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
++	[MCP415x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
++	[MCP415x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
++	[MCP415x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
++	[MCP416x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
++	[MCP416x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
++	[MCP416x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
++	[MCP416x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
++	[MCP423x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
++	[MCP423x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
++	[MCP423x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
++	[MCP423x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
++	[MCP424x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
++	[MCP424x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
++	[MCP424x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
++	[MCP424x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
++	[MCP425x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
++	[MCP425x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
++	[MCP425x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
++	[MCP425x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
++	[MCP426x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
++	[MCP426x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
++	[MCP426x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
++	[MCP426x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
++};
++
++struct mcp4131_data {
++	struct spi_device *spi;
++	unsigned long devid;
++	struct mutex lock;
++	u8 tx[2], rx[2];
++	struct spi_transfer xfer;
++	struct spi_message msg;
++};
++
++#define MCP4131_CHANNEL(ch) {					\
++	.type = IIO_RESISTANCE,					\
++	.indexed = 1,						\
++	.output = 1,						\
++	.channel = (ch),					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
++
++static const struct iio_chan_spec mcp4131_channels[] = {
++	MCP4131_CHANNEL(0),
++	MCP4131_CHANNEL(1),
++};
++
++static int mcp4131_exec(struct mcp4131_data *data,
++		u8 addr, u8 cmd,
++		u16 val)
++{
++	int err;
++	struct spi_device *spi = data->spi;
++
++	data->rx[0] = 0;
++	data->rx[1] = 0;
++
++	switch (cmd) {
++	case MCP4131_READ:
++		data->xfer.len = 2; /* Two bytes transfer for this command */
++		data->tx[0] = (addr << MCP4131_WIPER_SHIFT) | MCP4131_READ;
++		data->tx[1] = 0;
++		break;
++
++	case MCP4131_WRITE:
++		data->xfer.len = 2;
++		data->tx[0] = (addr << MCP4131_WIPER_SHIFT) |
++			MCP4131_WRITE | (val >> 8);
++		data->tx[1] = val & 0xFF; /* 8 bits here */
++		break;
++
++	default:
++		return -EINVAL;
++	}
++
++	dev_dbg(&spi->dev, "mcp4131_exec: tx0: 0x%x tx1: 0x%x\n",
++			data->tx[0], data->tx[1]);
++
++	mutex_lock(&data->lock);
++	spi_message_init(&data->msg);
++	spi_message_add_tail(&data->xfer, &data->msg);
++
++	err = spi_sync(spi, &data->msg);
++	if (err) {
++		dev_err(&spi->dev, "spi_sync(): %d\n", err);
++		mutex_unlock(&data->lock);
++		return err;
++	}
++	mutex_unlock(&data->lock);
++
++	dev_dbg(&spi->dev, "mcp4131_exec: rx0: 0x%x rx1: 0x%x\n",
++			data->rx[0], data->rx[1]);
++
++	return 0;
++}
++
++static int mcp4131_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	int err;
++	struct mcp4131_data *data = iio_priv(indio_dev);
++	int address = chan->channel;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		err = mcp4131_exec(data, address, MCP4131_READ, 0);
++		if (err)
++			return err;
++
++		/* Error, bad address/command combination */
++		if (!MCP4131_CMDERR(data->rx))
++			return -EIO;
++
++		*val = MCP4131_RAW(data->rx);
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = 1000 * mcp4131_cfg[data->devid].kohms;
++		*val2 = mcp4131_cfg[data->devid].max_pos;
++		return IIO_VAL_FRACTIONAL;
++	}
++
++	return -EINVAL;
++}
++
++static int mcp4131_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct mcp4131_data *data = iio_priv(indio_dev);
++	int address = chan->channel << MCP4131_WIPER_SHIFT;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (val > mcp4131_cfg[data->devid].max_pos || val < 0)
++			return -EINVAL;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return mcp4131_exec(data, address, MCP4131_WRITE, val);
++}
++
++static const struct iio_info mcp4131_info = {
++	.read_raw = mcp4131_read_raw,
++	.write_raw = mcp4131_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int mcp4131_probe(struct spi_device *spi)
++{
++	int err;
++	struct device *dev = &spi->dev;
++	unsigned long devid = spi_get_device_id(spi)->driver_data;
++	struct mcp4131_data *data;
++	struct iio_dev *indio_dev;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	spi_set_drvdata(spi, indio_dev);
++	data->spi = spi;
++	data->devid = devid;
++
++	data->xfer.tx_buf = data->tx;
++	data->xfer.rx_buf = data->rx;
++
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = dev;
++	indio_dev->info = &mcp4131_info;
++	indio_dev->channels = mcp4131_channels;
++	indio_dev->num_channels = mcp4131_cfg[devid].wipers;
++	indio_dev->name = spi_get_device_id(spi)->name;
++
++	err = devm_iio_device_register(dev, indio_dev);
++	if (err) {
++		dev_info(&spi->dev, "Unable to register %s\n", indio_dev->name);
++		return err;
++	}
++
++	dev_info(&spi->dev, "Registered %s\n", indio_dev->name);
++
++	return 0;
++}
++
++static int mcp4131_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct mcp4131_data *data = iio_priv(indio_dev);
++
++	mutex_destroy(&data->lock);
++	devm_iio_device_unregister(&spi->dev, indio_dev);
++
++	dev_info(&spi->dev, "Unregistered %s\n", indio_dev->name);
++
++	return 0;
++}
++
++#if defined(CONFIG_OF)
++static const struct of_device_id mcp4131_dt_ids[] = {
++	{ .compatible = "microchip,mcp4131-502",
++		.data = &mcp4131_cfg[MCP413x_502] },
++	{ .compatible = "microchip,mcp4131-103",
++		.data = &mcp4131_cfg[MCP413x_103] },
++	{ .compatible = "microchip,mcp4131-503",
++		.data = &mcp4131_cfg[MCP413x_503] },
++	{ .compatible = "microchip,mcp4131-104",
++		.data = &mcp4131_cfg[MCP413x_104] },
++	{ .compatible = "microchip,mcp4132-502",
++		.data = &mcp4131_cfg[MCP413x_502] },
++	{ .compatible = "microchip,mcp4132-103",
++		.data = &mcp4131_cfg[MCP413x_103] },
++	{ .compatible = "microchip,mcp4132-503",
++		.data = &mcp4131_cfg[MCP413x_503] },
++	{ .compatible = "microchip,mcp4132-104",
++		.data = &mcp4131_cfg[MCP413x_104] },
++	{ .compatible = "microchip,mcp4141-502",
++		.data = &mcp4131_cfg[MCP414x_502] },
++	{ .compatible = "microchip,mcp4141-103",
++		.data = &mcp4131_cfg[MCP414x_103] },
++	{ .compatible = "microchip,mcp4141-503",
++		.data = &mcp4131_cfg[MCP414x_503] },
++	{ .compatible = "microchip,mcp4141-104",
++		.data = &mcp4131_cfg[MCP414x_104] },
++	{ .compatible = "microchip,mcp4142-502",
++		.data = &mcp4131_cfg[MCP414x_502] },
++	{ .compatible = "microchip,mcp4142-103",
++		.data = &mcp4131_cfg[MCP414x_103] },
++	{ .compatible = "microchip,mcp4142-503",
++		.data = &mcp4131_cfg[MCP414x_503] },
++	{ .compatible = "microchip,mcp4142-104",
++		.data = &mcp4131_cfg[MCP414x_104] },
++	{ .compatible = "microchip,mcp4151-502",
++		.data = &mcp4131_cfg[MCP415x_502] },
++	{ .compatible = "microchip,mcp4151-103",
++		.data = &mcp4131_cfg[MCP415x_103] },
++	{ .compatible = "microchip,mcp4151-503",
++		.data = &mcp4131_cfg[MCP415x_503] },
++	{ .compatible = "microchip,mcp4151-104",
++		.data = &mcp4131_cfg[MCP415x_104] },
++	{ .compatible = "microchip,mcp4152-502",
++		.data = &mcp4131_cfg[MCP415x_502] },
++	{ .compatible = "microchip,mcp4152-103",
++		.data = &mcp4131_cfg[MCP415x_103] },
++	{ .compatible = "microchip,mcp4152-503",
++		.data = &mcp4131_cfg[MCP415x_503] },
++	{ .compatible = "microchip,mcp4152-104",
++		.data = &mcp4131_cfg[MCP415x_104] },
++	{ .compatible = "microchip,mcp4161-502",
++		.data = &mcp4131_cfg[MCP416x_502] },
++	{ .compatible = "microchip,mcp4161-103",
++		.data = &mcp4131_cfg[MCP416x_103] },
++	{ .compatible = "microchip,mcp4161-503",
++		.data = &mcp4131_cfg[MCP416x_503] },
++	{ .compatible = "microchip,mcp4161-104",
++		.data = &mcp4131_cfg[MCP416x_104] },
++	{ .compatible = "microchip,mcp4162-502",
++		.data = &mcp4131_cfg[MCP416x_502] },
++	{ .compatible = "microchip,mcp4162-103",
++		.data = &mcp4131_cfg[MCP416x_103] },
++	{ .compatible = "microchip,mcp4162-503",
++		.data = &mcp4131_cfg[MCP416x_503] },
++	{ .compatible = "microchip,mcp4162-104",
++		.data = &mcp4131_cfg[MCP416x_104] },
++	{ .compatible = "microchip,mcp4231-502",
++		.data = &mcp4131_cfg[MCP423x_502] },
++	{ .compatible = "microchip,mcp4231-103",
++		.data = &mcp4131_cfg[MCP423x_103] },
++	{ .compatible = "microchip,mcp4231-503",
++		.data = &mcp4131_cfg[MCP423x_503] },
++	{ .compatible = "microchip,mcp4231-104",
++		.data = &mcp4131_cfg[MCP423x_104] },
++	{ .compatible = "microchip,mcp4232-502",
++		.data = &mcp4131_cfg[MCP423x_502] },
++	{ .compatible = "microchip,mcp4232-103",
++		.data = &mcp4131_cfg[MCP423x_103] },
++	{ .compatible = "microchip,mcp4232-503",
++		.data = &mcp4131_cfg[MCP423x_503] },
++	{ .compatible = "microchip,mcp4232-104",
++		.data = &mcp4131_cfg[MCP423x_104] },
++	{ .compatible = "microchip,mcp4241-502",
++		.data = &mcp4131_cfg[MCP424x_502] },
++	{ .compatible = "microchip,mcp4241-103",
++		.data = &mcp4131_cfg[MCP424x_103] },
++	{ .compatible = "microchip,mcp4241-503",
++		.data = &mcp4131_cfg[MCP424x_503] },
++	{ .compatible = "microchip,mcp4241-104",
++		.data = &mcp4131_cfg[MCP424x_104] },
++	{ .compatible = "microchip,mcp4242-502",
++		.data = &mcp4131_cfg[MCP424x_502] },
++	{ .compatible = "microchip,mcp4242-103",
++		.data = &mcp4131_cfg[MCP424x_103] },
++	{ .compatible = "microchip,mcp4242-503",
++		.data = &mcp4131_cfg[MCP424x_503] },
++	{ .compatible = "microchip,mcp4242-104",
++		.data = &mcp4131_cfg[MCP424x_104] },
++	{ .compatible = "microchip,mcp4251-502",
++		.data = &mcp4131_cfg[MCP425x_502] },
++	{ .compatible = "microchip,mcp4251-103",
++		.data = &mcp4131_cfg[MCP425x_103] },
++	{ .compatible = "microchip,mcp4251-503",
++		.data = &mcp4131_cfg[MCP425x_503] },
++	{ .compatible = "microchip,mcp4251-104",
++		.data = &mcp4131_cfg[MCP425x_104] },
++	{ .compatible = "microchip,mcp4252-502",
++		.data = &mcp4131_cfg[MCP425x_502] },
++	{ .compatible = "microchip,mcp4252-103",
++		.data = &mcp4131_cfg[MCP425x_103] },
++	{ .compatible = "microchip,mcp4252-503",
++		.data = &mcp4131_cfg[MCP425x_503] },
++	{ .compatible = "microchip,mcp4252-104",
++		.data = &mcp4131_cfg[MCP425x_104] },
++	{ .compatible = "microchip,mcp4261-502",
++		.data = &mcp4131_cfg[MCP426x_502] },
++	{ .compatible = "microchip,mcp4261-103",
++		.data = &mcp4131_cfg[MCP426x_103] },
++	{ .compatible = "microchip,mcp4261-503",
++		.data = &mcp4131_cfg[MCP426x_503] },
++	{ .compatible = "microchip,mcp4261-104",
++		.data = &mcp4131_cfg[MCP426x_104] },
++	{ .compatible = "microchip,mcp4262-502",
++		.data = &mcp4131_cfg[MCP426x_502] },
++	{ .compatible = "microchip,mcp4262-103",
++		.data = &mcp4131_cfg[MCP426x_103] },
++	{ .compatible = "microchip,mcp4262-503",
++		.data = &mcp4131_cfg[MCP426x_503] },
++	{ .compatible = "microchip,mcp4262-104",
++		.data = &mcp4131_cfg[MCP426x_104] },
++	{}
++};
++MODULE_DEVICE_TABLE(of, mcp4131_dt_ids);
++#endif /* CONFIG_OF */
++
++static const struct spi_device_id mcp4131_id[] = {
++	{ "mcp4131-502", MCP413x_502 },
++	{ "mcp4131-103", MCP413x_103 },
++	{ "mcp4131-503", MCP413x_503 },
++	{ "mcp4131-104", MCP413x_104 },
++	{ "mcp4132-502", MCP413x_502 },
++	{ "mcp4132-103", MCP413x_103 },
++	{ "mcp4132-503", MCP413x_503 },
++	{ "mcp4132-104", MCP413x_104 },
++	{ "mcp4141-502", MCP414x_502 },
++	{ "mcp4141-103", MCP414x_103 },
++	{ "mcp4141-503", MCP414x_503 },
++	{ "mcp4141-104", MCP414x_104 },
++	{ "mcp4142-502", MCP414x_502 },
++	{ "mcp4142-103", MCP414x_103 },
++	{ "mcp4142-503", MCP414x_503 },
++	{ "mcp4142-104", MCP414x_104 },
++	{ "mcp4151-502", MCP415x_502 },
++	{ "mcp4151-103", MCP415x_103 },
++	{ "mcp4151-503", MCP415x_503 },
++	{ "mcp4151-104", MCP415x_104 },
++	{ "mcp4152-502", MCP415x_502 },
++	{ "mcp4152-103", MCP415x_103 },
++	{ "mcp4152-503", MCP415x_503 },
++	{ "mcp4152-104", MCP415x_104 },
++	{ "mcp4161-502", MCP416x_502 },
++	{ "mcp4161-103", MCP416x_103 },
++	{ "mcp4161-503", MCP416x_503 },
++	{ "mcp4161-104", MCP416x_104 },
++	{ "mcp4162-502", MCP416x_502 },
++	{ "mcp4162-103", MCP416x_103 },
++	{ "mcp4162-503", MCP416x_503 },
++	{ "mcp4162-104", MCP416x_104 },
++	{ "mcp4231-502", MCP423x_502 },
++	{ "mcp4231-103", MCP423x_103 },
++	{ "mcp4231-503", MCP423x_503 },
++	{ "mcp4231-104", MCP423x_104 },
++	{ "mcp4232-502", MCP423x_502 },
++	{ "mcp4232-103", MCP423x_103 },
++	{ "mcp4232-503", MCP423x_503 },
++	{ "mcp4232-104", MCP423x_104 },
++	{ "mcp4241-502", MCP424x_502 },
++	{ "mcp4241-103", MCP424x_103 },
++	{ "mcp4241-503", MCP424x_503 },
++	{ "mcp4241-104", MCP424x_104 },
++	{ "mcp4242-502", MCP424x_502 },
++	{ "mcp4242-103", MCP424x_103 },
++	{ "mcp4242-503", MCP424x_503 },
++	{ "mcp4242-104", MCP424x_104 },
++	{ "mcp4251-502", MCP425x_502 },
++	{ "mcp4251-103", MCP425x_103 },
++	{ "mcp4251-503", MCP425x_503 },
++	{ "mcp4251-104", MCP425x_104 },
++	{ "mcp4252-502", MCP425x_502 },
++	{ "mcp4252-103", MCP425x_103 },
++	{ "mcp4252-503", MCP425x_503 },
++	{ "mcp4252-104", MCP425x_104 },
++	{ "mcp4261-502", MCP426x_502 },
++	{ "mcp4261-103", MCP426x_103 },
++	{ "mcp4261-503", MCP426x_503 },
++	{ "mcp4261-104", MCP426x_104 },
++	{ "mcp4262-502", MCP426x_502 },
++	{ "mcp4262-103", MCP426x_103 },
++	{ "mcp4262-503", MCP426x_503 },
++	{ "mcp4262-104", MCP426x_104 },
++	{}
++};
++MODULE_DEVICE_TABLE(spi, mcp4131_id);
++
++static struct spi_driver mcp4131_driver = {
++	.driver = {
++		.name	= "mcp4131",
++		.of_match_table = of_match_ptr(mcp4131_dt_ids),
++	},
++	.probe		= mcp4131_probe,
++	.remove		= mcp4131_remove,
++	.id_table	= mcp4131_id,
++};
++
++module_spi_driver(mcp4131_driver);
++
++MODULE_AUTHOR("Slawomir Stepien <sst@poczta.fm>");
++MODULE_DESCRIPTION("MCP4131 digital potentiometer");
++MODULE_LICENSE("GPL v2");
+-- 
+2.7.3
