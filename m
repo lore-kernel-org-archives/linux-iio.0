@@ -1,122 +1,126 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45594 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57024 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751769AbcC1OOq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 10:14:46 -0400
-Subject: Re: [PATCH 4/6] iio: accel: bmg160: optimize transfers in trigger
- handler
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1458811771-25217-1-git-send-email-irina.tirdea@intel.com>
- <1458811771-25217-5-git-send-email-irina.tirdea@intel.com>
- <56F8FFED.2090703@kernel.org> <alpine.DEB.2.02.1603281158290.4312@pmeerw.net>
-Cc: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1755295AbcCTLd0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2016 07:33:26 -0400
+Subject: Re: [PATCH] iio: potentiometer: tpl0102: add hi-z enable/disable
+ support
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Octavian Purdila <octavian.purdila@intel.com>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Daniel Baluta <daniel.baluta@intel.com>
+References: <1457937284-16318-1-git-send-email-mranostay@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F93C53.6070606@kernel.org>
-Date: Mon, 28 Mar 2016 15:14:43 +0100
+Message-ID: <56EE8A83.2060801@kernel.org>
+Date: Sun, 20 Mar 2016 11:33:23 +0000
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1603281158290.4312@pmeerw.net>
+In-Reply-To: <1457937284-16318-1-git-send-email-mranostay@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/03/16 11:09, Peter Meerwald-Stadler wrote:
+On 14/03/16 06:34, Matt Ranostay wrote:
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+I've been ignoring this a few days as it looked fiddly :) 
+> ---
+>  drivers/iio/potentiometer/tpl0102.c | 43 ++++++++++++++++++++++++++-----------
+>  1 file changed, 31 insertions(+), 12 deletions(-)
 > 
->>> Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
->>> enable/disable the bus at each i2c transfer and must wait for
->>> the enable/disable to happen before sending the data.
->>>
->>> When reading data in the trigger handler, the bmc150 accel driver does
-> 
-> should refer to bmg160
-Good spot.  It's also a gyroscope, not an accelerometer... I just fixed this
-up and repushed out testing.
-> 
->>> one bus transfer for each axis. This has an impact on the frequency
->>> of the accelerometer at high sample rates due to additional delays
->>> introduced by the bus at each transfer.
->>>
->>> Reading all axis values in one bus transfer reduces the delays
->>> introduced by the bus.
->>>
->>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
->> I forgot to highlight on the earlier driver that there is also 'technically'
->> a bit of an ABI change here because we are now exporting as LE rather than CPU
->> order.  However, I 'hope' anyone actually accessing the buffered data is either
->> doing it through a nice library or hasn't hacked the endian unwinding out of
->> the generic_buffer example!
-> 
-> the patch takes away the possibility to do buffered reads on individual 
-> channels (not sure if this is useful per se)
-> 
-> this optimizes for the common case, ok;
-> 
-> wondering if adding 
-> .endianness = IIO_LE
-> is actually an unrelated fix
-Good point, when I first read the code I assumed we were moving from an i2c_word
-read to a bulk read, thus necessitating this addition.  However, we aren't as it
-was previously as an i2c_bulk read of 2 bytes... 
+> diff --git a/drivers/iio/potentiometer/tpl0102.c b/drivers/iio/potentiometer/tpl0102.c
+> index 313124b..1413419c 100644
+> --- a/drivers/iio/potentiometer/tpl0102.c
+> +++ b/drivers/iio/potentiometer/tpl0102.c
+> @@ -12,8 +12,6 @@
+>   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+>   * GNU General Public License for more details.
+> - *
+> - * TODO: enable/disable hi-z output control
+>   */
+>  
+>  #include <linux/module.h>
+> @@ -39,7 +37,7 @@ static const struct tpl0102_cfg tpl0102_cfg[] = {
+>  	[CAT5140_503] = { .wipers = 1, .max_pos = 256, .kohms = 50, },
+>  	[CAT5140_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+>  	/* ti parts */
+> -	[TPL0102_104] = { .wipers = 2, .max_pos = 256, .kohms = 100 },
+> +	[TPL0102_104] = { .wipers = 3, .max_pos = 256, .kohms = 100 },
+>  	[TPL0401_103] = { .wipers = 1, .max_pos = 128, .kohms = 10, },
+>  };
+>  
+> @@ -65,6 +63,15 @@ static const struct regmap_config tpl0102_regmap_config = {
+>  static const struct iio_chan_spec tpl0102_channels[] = {
+>  	TPL0102_CHANNEL(0),
+>  	TPL0102_CHANNEL(1),
+> +	/* hi-z enable/disable */
+> +	{
+> +		.type = IIO_RESISTANCE,
+> +		.output = 1,
+> +		.address = 0x10,
+> +		.channel = BIT(6),
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_ENABLE),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +	}
+I'm confused as to what this actually is...  What is the result on the output value of
+doing this and does it apply to all other channels?  As far as I can tell this cuts
+off the upper voltage by opening a switch.  Upshot is that you end up with just resistance
+between the output and the low voltage rather than a potentiometer. So it becomes an
+rheostat between the wiper output and the other end...
 
-Irina, could you confirm if this was broken before your patches?
+That's not remotely clear from the interface you have here unfortunately.
 
-I'll leave this as is, perhaps we need an additional fix patch specifying LE to
-put out as a fix.
-> 
->> Again, fingers crossed this doesn't break anything significant.
->>
->> Applied,
->>
->> Thanks,
->>
->> Jonathan
->>> ---
->>>  drivers/iio/gyro/bmg160_core.c | 17 ++++++-----------
->>>  1 file changed, 6 insertions(+), 11 deletions(-)
->>>
->>> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
->>> index 8d6e5b1..43570b8 100644
->>> --- a/drivers/iio/gyro/bmg160_core.c
->>> +++ b/drivers/iio/gyro/bmg160_core.c
->>> @@ -734,6 +734,7 @@ static const struct iio_event_spec bmg160_event = {
->>>  		.sign = 's',						\
->>>  		.realbits = 16,					\
->>>  		.storagebits = 16,					\
->>> +		.endianness = IIO_LE,					\
->>>  	},								\
->>>  	.event_spec = &bmg160_event,					\
->>>  	.num_event_specs = 1						\
->>> @@ -773,20 +774,14 @@ static irqreturn_t bmg160_trigger_handler(int irq, void *p)
->>>  	struct iio_poll_func *pf = p;
->>>  	struct iio_dev *indio_dev = pf->indio_dev;
->>>  	struct bmg160_data *data = iio_priv(indio_dev);
->>> -	int bit, ret, i = 0;
->>> -	unsigned int val;
->>> +	int ret;
->>>  
->>>  	mutex_lock(&data->mutex);
->>> -	for (bit = 0; bit < AXIS_MAX; bit++) {
->>> -		ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(bit),
->>> -				       &val, 2);
->>> -		if (ret < 0) {
->>> -			mutex_unlock(&data->mutex);
->>> -			goto err;
->>> -		}
->>> -		data->buffer[i++] = ret;
->>> -	}
->>> +	ret = regmap_bulk_read(data->regmap, BMG160_REG_XOUT_L,
->>> +			       data->buffer, AXIS_MAX * 2);
->>>  	mutex_unlock(&data->mutex);
->>> +	if (ret < 0)
->>> +		goto err;
->>>  
->>>  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->>>  					   pf->timestamp);
->>>
->>
+Mind you I'm open to ideas on how to support this!
+>  };
+>  
+>  static int tpl0102_read_raw(struct iio_dev *indio_dev,
+> @@ -72,13 +79,20 @@ static int tpl0102_read_raw(struct iio_dev *indio_dev,
+>  			    int *val, int *val2, long mask)
+>  {
+>  	struct tpl0102_data *data = iio_priv(indio_dev);
+> +	int ret;
+>  
+>  	switch (mask) {
+> -	case IIO_CHAN_INFO_RAW: {
+> -		int ret = regmap_read(data->regmap, chan->channel, val);
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		ret = regmap_read(data->regmap, chan->address, val);
+> +
+> +		if (!ret)
+> +			*val = !!(*val & chan->channel);
+> +
+> +		return ret ? ret : IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = regmap_read(data->regmap, chan->channel, val);
+>  
+>  		return ret ? ret : IIO_VAL_INT;
+> -	}
+>  	case IIO_CHAN_INFO_SCALE:
+>  		*val = 1000 * tpl0102_cfg[data->devid].kohms;
+>  		*val2 = tpl0102_cfg[data->devid].max_pos;
+> @@ -94,13 +108,18 @@ static int tpl0102_write_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct tpl0102_data *data = iio_priv(indio_dev);
+>  
+> -	if (mask != IIO_CHAN_INFO_RAW)
+> -		return -EINVAL;
+> -
+> -	if (val >= tpl0102_cfg[data->devid].max_pos || val < 0)
+> -		return -EINVAL;
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		return regmap_update_bits(data->regmap, chan->address,
+> +					  chan->channel,
+> +					  !!val ? chan->channel : 0);
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (val >= tpl0102_cfg[data->devid].max_pos || val < 0)
+> +			return -EINVAL;
+> +		return regmap_write(data->regmap, chan->channel, val);
+> +	}
+>  
+> -	return regmap_write(data->regmap, chan->channel, val);
+> +	return -EINVAL;
+>  }
+>  
+>  static const struct iio_info tpl0102_info = {
 > 
 
