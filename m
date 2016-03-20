@@ -1,148 +1,231 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56866 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56930 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753871AbcCTLDr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2016 07:03:47 -0400
-Subject: Re: [PATCH v7 1/1] iio:pressure:ms5611: fix missing regulator_disable
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1458215358.git.gregor.boirie@parrot.com>
- <34b395320abc2c3d3c11c342ffc9ed37867c8474.1458215358.git.gregor.boirie@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1754716AbcCTLMq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2016 07:12:46 -0400
+Subject: Re: [PATCH v3 2/3] iio:magnetometer:ak8975: mounting matrix support
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+References: <cover.1458231723.git.gregor.boirie@parrot.com>
+ <a1efa2b83719dc3898c39a5886b7678892e7de3b.1458231723.git.gregor.boirie@parrot.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56EE8391.7010708@kernel.org>
-Date: Sun, 20 Mar 2016 11:03:45 +0000
+Message-ID: <56EE85AB.90503@kernel.org>
+Date: Sun, 20 Mar 2016 11:12:43 +0000
 MIME-Version: 1.0
-In-Reply-To: <34b395320abc2c3d3c11c342ffc9ed37867c8474.1458215358.git.gregor.boirie@parrot.com>
+In-Reply-To: <a1efa2b83719dc3898c39a5886b7678892e7de3b.1458231723.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/03/16 11:55, Gregor Boirie wrote:
-> Ensure optional regulator is properly disabled when present.
+On 17/03/16 16:43, Gregor Boirie wrote:
+> Expose a rotation matrix to indicate userspace the chip placement with
+> respect to the overall hardware system. This is needed to adjust
+> coordinates sampled from a magnetometer chip when its position deviates
+> from the main hardware system.
 > 
-> Fixes: 3145229f9191 ("iio:pressure:ms5611: power regulator support")
+> Final coordinates computation is delegated to userspace since:
+> * computation may involve floating point arithmetics ;
+> * it allows an application to combine adjustments with arbitrary
+>   transformations.
+> 
+> This 3 dimentional space rotation matrix is expressed as 3x3 array of
+> strings to support floating point numbers. It may be retrieved from a
+> "in_magn_matrix" sysfs attribute file. It is declared into ak8975 DTS
+> entry as a "matrix" property.
+> 
 > Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-I've applied this to the togreg branch of iio.git. Decided to do this
-rather than fixes as the worst that happens is a regulator gets left
-on.  As this support is relatively new and before that it always got
-left on, I'm not considering this to important.
+Very nice.
 
-Feel free to argue otherwise!
+Only outstanding question I think is whether it is worth making device
+tree explicitly aware of floating point.  If that happens we may
+need to play some games to support that and this existing string binding
+but I doubt that will be too hard.
+
+Applied to the togreg branch of iio.git
+
+Thanks,
 
 Jonathan
 > ---
->  drivers/iio/pressure/ms5611.h      |  3 +++
->  drivers/iio/pressure/ms5611_core.c | 41 +++++++++++++++++++++++++++++---------
->  2 files changed, 35 insertions(+), 9 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-iio-ak8975     | 46 ++++++++++++++++++++++
+>  .../bindings/iio/magnetometer/ak8975.txt           | 10 +++++
+>  drivers/iio/magnetometer/ak8975.c                  | 46 +++++++++++++++++++++-
+>  3 files changed, 101 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ak8975
 > 
-> diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
-> index d725a307..ccda63c 100644
-> --- a/drivers/iio/pressure/ms5611.h
-> +++ b/drivers/iio/pressure/ms5611.h
-> @@ -16,6 +16,8 @@
->  #include <linux/iio/iio.h>
->  #include <linux/mutex.h>
->  
-> +struct regulator;
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-ak8975 b/Documentation/ABI/testing/sysfs-bus-iio-ak8975
+> new file mode 100644
+> index 0000000..fa92ee1
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-ak8975
+> @@ -0,0 +1,46 @@
+> +What:           /sys/bus/iio/devices/iio:deviceX/in_magn_matrix
+> +KernelVersion:  4.6
+> +Contact:        linux-iio@vger.kernel.org
+> +Description:
+> +		Mounting matrix for magnetometer sensors. This is a rotation
+> +		matrix which informs userspace about sensor chip's orientation
+> +		relative to the main hardware it is mounted on.
+> +		More specifically, main hardware orientation is defined with
+> +		respect to the local earth geomagnetic reference frame where :
+> +		* Y is in the ground plane and positive towards magnetic North ;
+> +		* X is in the ground plane, perpendicular to the North axis and
+> +		  positive towards the East ;
+> +		* Z is perpendicular to the ground plane and positive upwards.
 > +
->  #define MS5611_RESET			0x1e
->  #define MS5611_READ_ADC			0x00
->  #define MS5611_READ_PROM_WORD		0xA0
-> @@ -57,6 +59,7 @@ struct ms5611_state {
->  					  s32 *temp, s32 *pressure);
+> +		Sensor orientation is defined with respect to the main hardware
+> +		reference frame. Given that the rotation matrix is defined in a
+> +		board specific way (platform data and / or device-tree), the
+> +		main hardware reference frame definition is left to the
+> +		implementor's choice.
+> +		As an examplary guideline, one can consider that for a hand-held
+> +		device, a 'natural' orientation would be 'front facing camera at
+> +		the top'. The main hardware reference frame could then be
+> +		described as :
+> +		* Y is in the plane of the screen and is positive towards the
+> +		  top of the screen ;
+> +		* X is in the plane of the screen, perpendicular to Y axis, and
+> +		  positive towards the right hand side of the screen ;
+> +		* Z is perpendicular to the screen plane and positive out of the
+> +		  screen.
+> +		Another example for a quadrotor UAV might be :
+> +		* Y is in the plane of the propellers is positive towards the
+> +		  front-view camera;
+> +		* X is in the plane of the propellers, perpendicular to Y axis,
+> +		  and positive towards the starboard side of the UAV ;
+> +		* Z is perpendicular to propellers plane and positive upwards.
+> +
+> +		Applications should apply this rotation matrix to samples so
+> +		that when main hardware reference frame is aligned onto local
+> +		earth geomagnetic reference frame, then sensor chip reference
+> +		frame is also perfectly aligned with it.
+> +
+> +		Matrix is a 3x3 unitary matrix and typically looks like
+> +		[0, 1, 0; 1, 0, 0; 0, 0, -1]. A missing in_magn_matrix sysfs
+> +		entry means sensor chip and main hardware are perfectly aligned
+> +		with each other. It would be identical to exposing the identity
+> +		matrix [1, 0, 0; 0, 1, 0; 0, 0, 1].
+
+Reads well and covers everything so I'm happy with this description.
+
+> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+> index 34a3206..f936f86 100644
+> --- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+> +++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+> @@ -9,6 +9,7 @@ Optional properties:
 >  
->  	struct ms5611_chip_info *chip_info;
-> +	struct regulator *vdd;
+>    - gpios : should be device tree identifier of the magnetometer DRDY pin
+>    - vdd-supply: an optional regulator that needs to be on to provide VDD
+> +  - matrix: an optional 3x3 mounting rotation matrix
+>  
+>  Example:
+>  
+> @@ -17,4 +18,13 @@ ak8975@0c {
+>          reg = <0x0c>;
+>          gpios = <&gpj0 7 0>;
+>          vdd-supply = <&ldo_3v3_gnss>;
+> +        matrix = "-0.984807753012208",  /* x0 */
+> +                 "0",                   /* y0 */
+> +                 "-0.173648177666930",  /* z0 */
+> +                 "0",                   /* x1 */
+> +                 "-1",                  /* y1 */
+> +                 "0",                   /* z1 */
+> +                 "-0.173648177666930",  /* x2 */
+> +                 "0",                   /* y2 */
+> +                 "0.984807753012208";   /* z2 */
+>  };
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index 48d127a..3814a6a 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -370,6 +370,7 @@ struct ak8975_data {
+>  	wait_queue_head_t	data_ready_queue;
+>  	unsigned long		flags;
+>  	u8			cntl_cache;
+> +	const char		*matrix[9];
+>  	struct regulator	*vdd;
 >  };
 >  
->  int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
-> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-> index 37dbc04..c4e6586 100644
-> --- a/drivers/iio/pressure/ms5611_core.c
-> +++ b/drivers/iio/pressure/ms5611_core.c
-> @@ -387,24 +387,45 @@ static const struct iio_info ms5611_info = {
->  static int ms5611_init(struct iio_dev *indio_dev)
->  {
->  	int ret;
-> -	struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
-> -	                                           "vdd");
-> +	struct ms5611_state *st = iio_priv(indio_dev);
+> @@ -714,6 +715,28 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
+>  	return -EINVAL;
+>  }
 >  
->  	/* Enable attached regulator if any. */
-> -	if (!IS_ERR(vdd)) {
-> -		ret = regulator_enable(vdd);
-> +	st->vdd = devm_regulator_get(indio_dev->dev.parent, "vdd");
-> +	if (!IS_ERR(st->vdd)) {
-> +		ret = regulator_enable(st->vdd);
->  		if (ret) {
->  			dev_err(indio_dev->dev.parent,
-> -			        "failed to enable Vdd supply: %d\n", ret);
-> +				"failed to enable Vdd supply: %d\n", ret);
->  			return ret;
->  		}
-> +	} else {
-> +		ret = PTR_ERR(st->vdd);
-> +		if (ret != -ENODEV)
-> +			return ret;
->  	}
->  
->  	ret = ms5611_reset(indio_dev);
->  	if (ret < 0)
-> -		return ret;
-> +		goto err_regulator_disable;
+> +static ssize_t ak8975_show_matrix(struct device *dev,
+> +				  struct device_attribute *attr,
+> +				  char *buf)
+> +{
+> +	const struct ak8975_data *data = iio_priv(dev_to_iio_dev(dev));
+> +	const char * const *m = data->matrix;
 > +
-> +	ret = ms5611_read_prom(indio_dev);
-> +	if (ret < 0)
-> +		goto err_regulator_disable;
-> +
-> +	return 0;
->  
-> -	return ms5611_read_prom(indio_dev);
-> +err_regulator_disable:
-> +	if (!IS_ERR_OR_NULL(st->vdd))
-> +		regulator_disable(st->vdd);
-> +	return ret;
+> +	return sprintf(buf, "%s, %s, %s; %s, %s, %s; %s, %s, %s\n",
+> +		       m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
 > +}
 > +
-> +static void ms5611_fini(const struct iio_dev *indio_dev)
-> +{
-> +	const struct ms5611_state *st = iio_priv(indio_dev);
+> +static IIO_DEVICE_ATTR(in_magn_matrix, S_IRUGO, ak8975_show_matrix, NULL, -1);
 > +
-> +	if (!IS_ERR_OR_NULL(st->vdd))
-> +		regulator_disable(st->vdd);
->  }
+> +static struct attribute *ak8975_attrs[] = {
+> +	&iio_dev_attr_in_magn_matrix.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group ak8975_attrs_group = {
+> +	.attrs = ak8975_attrs
+> +};
+> +
+>  #define AK8975_CHANNEL(axis, index)					\
+>  	{								\
+>  		.type = IIO_MAGN,					\
+> @@ -733,6 +756,12 @@ static const struct iio_info ak8975_info = {
+>  	.driver_module = THIS_MODULE,
+>  };
 >  
->  int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
-> @@ -436,7 +457,7 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
->  					 ms5611_trigger_handler, NULL);
->  	if (ret < 0) {
->  		dev_err(dev, "iio triggered buffer setup failed\n");
-> -		return ret;
-> +		goto err_fini;
->  	}
+> +static const struct iio_info ak8975_matrix_info = {
+> +	.read_raw = &ak8975_read_raw,
+> +	.attrs = &ak8975_attrs_group,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+>  static const struct acpi_device_id ak_acpi_match[] = {
+>  	{"AK8975", AK8975},
+>  	{"AK8963", AK8963},
+> @@ -802,6 +831,22 @@ static int ak8975_probe(struct i2c_client *client,
+>  	data->eoc_gpio = eoc_gpio;
+>  	data->eoc_irq = 0;
 >  
->  	ret = iio_device_register(indio_dev);
-> @@ -449,7 +470,8 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
+> +	/*
+> +	 * Rotation matrix is expressed as an array of 3x3 strings to be able
+> +	 * to represent floating point numbers.
+> +	 */
+> +	err = of_property_read_string_array(client->dev.of_node, "matrix",
+> +					    data->matrix,
+> +					    ARRAY_SIZE(data->matrix));
+> +	if (err == ARRAY_SIZE(data->matrix))
+> +		indio_dev->info = &ak8975_matrix_info;
+> +	else if (err == -EINVAL)
+> +		indio_dev->info = &ak8975_info;
+> +	else if (err >= 0)
+> +		return -EINVAL;
+> +	else
+> +		return err;
+> +
+>  	/* id will be NULL when enumerated via ACPI */
+>  	if (id) {
+>  		chipset = (enum asahi_compass_chipset)(id->driver_data);
+> @@ -844,7 +889,6 @@ static int ak8975_probe(struct i2c_client *client,
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->channels = ak8975_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+> -	indio_dev->info = &ak8975_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->name = name;
 >  
->  err_buffer_cleanup:
->  	iio_triggered_buffer_cleanup(indio_dev);
-> -
-> +err_fini:
-> +	ms5611_fini(indio_dev);
->  	return ret;
->  }
->  EXPORT_SYMBOL(ms5611_probe);
-> @@ -458,6 +480,7 @@ int ms5611_remove(struct iio_dev *indio_dev)
->  {
->  	iio_device_unregister(indio_dev);
->  	iio_triggered_buffer_cleanup(indio_dev);
-> +	ms5611_fini(indio_dev);
->  
->  	return 0;
->  }
 > 
 
