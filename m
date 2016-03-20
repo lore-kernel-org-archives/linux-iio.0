@@ -1,126 +1,175 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f47.google.com ([74.125.82.47]:36820 "EHLO
-	mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756299AbcCUQfh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Mar 2016 12:35:37 -0400
-Received: by mail-wm0-f47.google.com with SMTP id r129so58063614wmr.1
-        for <linux-iio@vger.kernel.org>; Mon, 21 Mar 2016 09:35:36 -0700 (PDT)
-Subject: Re: [PATCH-vs-togreg v2 1/2] iio: ina2xx-adc: update the CALIB.
- register when RShunt changes
-To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-References: <1457950844-7261-1-git-send-email-marc.titinger@baylibre.com>
- <56EE887F.7030508@kernel.org>
-Cc: afd@ti.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Marc Titinger <mtitinger@baylibre.com>
-Message-ID: <56F022D5.1070309@baylibre.com>
-Date: Mon, 21 Mar 2016 17:35:33 +0100
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56895 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753871AbcCTLHH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2016 07:07:07 -0400
+Subject: Re: [PATCH v3 1/3] iio:magnetometer:ak8975: fix missing
+ regulator_disable
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+References: <cover.1458231723.git.gregor.boirie@parrot.com>
+ <058df1d45949ea5ee606d9b872acb0f2771a5f99.1458231723.git.gregor.boirie@parrot.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56EE8458.1030707@kernel.org>
+Date: Sun, 20 Mar 2016 11:07:04 +0000
 MIME-Version: 1.0
-In-Reply-To: <56EE887F.7030508@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <058df1d45949ea5ee606d9b872acb0f2771a5f99.1458231723.git.gregor.boirie@parrot.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 17/03/16 16:43, Gregor Boirie wrote:
+> Ensure optional regulator is properly disabled when present.
+> 
+> Fixes: 63d5d525cbbc ("iio:magnetometer:ak8975: power regulator support")
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Applied to the togreg branch of iio.git
 
+Thanks,
 
-On 20/03/2016 12:24, Jonathan Cameron wrote:
-> On 14/03/16 10:20, Marc Titinger wrote:
->> The user (or an init script) may setup RShunt via sysfs after the
->> driver was initialized, for instance based on the EEPROM contents
->> of a modular probe. The calibration register must be set accordingly.
->>
->> Signed-off-by: Marc Titinger <marc.titinger@baylibre.com>
->> ---
->>   v2 of http://www.spinics.net/lists/linux-iio/msg23402.html:
->>
->> 	- remove unnecessary line insertions
->> 	- cleanup leftover unused variable (build warning)
->> 	- patch 2/2 is unchanged (see v1)
-> Err, can't find it for some reason.
+Jonathan
+> ---
+>  drivers/iio/magnetometer/ak8975.c | 78 ++++++++++++++++++++++++++++++---------
+>  1 file changed, 60 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index 72c03d9..48d127a 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -370,8 +370,40 @@ struct ak8975_data {
+>  	wait_queue_head_t	data_ready_queue;
+>  	unsigned long		flags;
+>  	u8			cntl_cache;
+> +	struct regulator	*vdd;
+>  };
+>  
+> +/* Enable attached power regulator if any. */
+> +static int ak8975_power_on(struct i2c_client *client)
+> +{
+> +	const struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct ak8975_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	data->vdd = devm_regulator_get(&client->dev, "vdd");
+> +	if (IS_ERR_OR_NULL(data->vdd)) {
+> +		ret = PTR_ERR(data->vdd);
+> +		if (ret == -ENODEV)
+> +			ret = 0;
+> +	} else {
+> +		ret = regulator_enable(data->vdd);
+> +	}
+> +
+> +	if (ret)
+> +		dev_err(&client->dev, "failed to enable Vdd supply: %d\n", ret);
+> +	return ret;
+> +}
+> +
+> +/* Disable attached power regulator if any. */
+> +static void ak8975_power_off(const struct i2c_client *client)
+> +{
+> +	const struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	const struct ak8975_data *data = iio_priv(indio_dev);
+> +
+> +	if (!IS_ERR_OR_NULL(data->vdd))
+> +		regulator_disable(data->vdd);
+> +}
+> +
+>  /*
+>   * Return 0 if the i2c device is the one we expect.
+>   * return a negative error number otherwise
+> @@ -380,23 +412,8 @@ static int ak8975_who_i_am(struct i2c_client *client,
+>  			   enum asahi_compass_chipset type)
+>  {
+>  	u8 wia_val[2];
+> -	struct regulator *vdd = devm_regulator_get_optional(&client->dev,
+> -							    "vdd");
+>  	int ret;
+>  
+> -	/* Enable attached regulator if any. */
+> -	if (!IS_ERR(vdd)) {
+> -		ret = regulator_enable(vdd);
+> -		if (ret) {
+> -			dev_err(&client->dev, "Failed to enable Vdd supply\n");
+> -			return ret;
+> -		}
+> -	} else {
+> -		ret = PTR_ERR(vdd);
+> -		if (ret != -ENODEV)
+> -			return ret;
+> -	}
+> -
+>  	/*
+>  	 * Signature for each device:
+>  	 * Device   |  WIA1      |  WIA2
+> @@ -804,10 +821,15 @@ static int ak8975_probe(struct i2c_client *client,
+>  	}
+>  
+>  	data->def = &ak_def_array[chipset];
+> +
+> +	err = ak8975_power_on(client);
+> +	if (err)
+> +		return err;
+> +
+>  	err = ak8975_who_i_am(client, data->def->type);
+>  	if (err < 0) {
+>  		dev_err(&client->dev, "Unexpected device\n");
+> -		return err;
+> +		goto power_off;
+>  	}
+>  	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
+>  
+> @@ -815,7 +837,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  	err = ak8975_setup(client);
+>  	if (err < 0) {
+>  		dev_err(&client->dev, "%s initialization fails\n", name);
+> -		return err;
+> +		goto power_off;
+>  	}
+>  
+>  	mutex_init(&data->lock);
+> @@ -825,7 +847,26 @@ static int ak8975_probe(struct i2c_client *client,
+>  	indio_dev->info = &ak8975_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->name = name;
+> -	return devm_iio_device_register(&client->dev, indio_dev);
+> +
+> +	err = iio_device_register(indio_dev);
+> +	if (err)
+> +		goto power_off;
+> +
+> +	return 0;
+> +
+> +power_off:
+> +	ak8975_power_off(client);
+> +	return err;
+> +}
+> +
+> +static int ak8975_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	ak8975_power_off(client);
+> +
+> +	return 0;
+>  }
+>  
+>  static const struct i2c_device_id ak8975_id[] = {
+> @@ -859,6 +900,7 @@ static struct i2c_driver ak8975_driver = {
+>  		.acpi_match_table = ACPI_PTR(ak_acpi_match),
+>  	},
+>  	.probe		= ak8975_probe,
+> +	.remove		= ak8975_remove,
+>  	.id_table	= ak8975_id,
+>  };
+>  module_i2c_driver(ak8975_driver);
+> 
 
-sorry, it's here http://www.spinics.net/lists/linux-iio/msg23401.html
-or here: pwclient get 8565821
-
-BR,
-Marc.
-
->
-> Anyhow, applied this one to the togreg branch of iio.git - pushed
-> out as testing for the autobuilders to play with it.
->
-> Thanks,
->
-> Jonathan
->> ---
->>   drivers/iio/adc/ina2xx-adc.c | 39 ++++++++++++++++++++++++---------------
->>   1 file changed, 24 insertions(+), 15 deletions(-)
->>
->> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
->> index 65909d5..4e56fe3 100644
->> --- a/drivers/iio/adc/ina2xx-adc.c
->> +++ b/drivers/iio/adc/ina2xx-adc.c
->> @@ -350,6 +350,23 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
->>   	return len;
->>   }
->>
->> +/*
->> + * Set current LSB to 1mA, shunt is in uOhms
->> + * (equation 13 in datasheet). We hardcode a Current_LSB
->> + * of 1.0 x10-6. The only remaining parameter is RShunt.
->> + * There is no need to expose the CALIBRATION register
->> + * to the user for now. But we need to reset this register
->> + * if the user updates RShunt after driver init, e.g upon
->> + * reading an EEPROM/Probe-type value.
->> + */
->> +static int ina2xx_set_calibration(struct ina2xx_chip_info *chip)
->> +{
->> +	u16 regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
->> +				   chip->shunt_resistor);
->> +
->> +	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
->> +}
->> +
->>   static int set_shunt_resistor(struct ina2xx_chip_info *chip, unsigned int val)
->>   {
->>   	if (val <= 0 || val > chip->config->calibration_factor)
->> @@ -385,6 +402,11 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
->>   	if (ret)
->>   		return ret;
->>
->> +	/* Update the Calibration register */
->> +	ret = ina2xx_set_calibration(chip);
->> +	if (ret)
->> +		return ret;
->> +
->>   	return len;
->>   }
->>
->> @@ -602,24 +624,11 @@ static const struct iio_info ina2xx_info = {
->>   /* Initialize the configuration and calibration registers. */
->>   static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
->>   {
->> -	u16 regval;
->> -	int ret;
->> -
->> -	ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
->> +	int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
->>   	if (ret)
->>   		return ret;
->>
->> -	/*
->> -	 * Set current LSB to 1mA, shunt is in uOhms
->> -	 * (equation 13 in datasheet). We hardcode a Current_LSB
->> -	 * of 1.0 x10-6. The only remaining parameter is RShunt.
->> -	 * There is no need to expose the CALIBRATION register
->> -	 * to the user for now.
->> -	 */
->> -	regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
->> -				   chip->shunt_resistor);
->> -
->> -	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
->> +	return ina2xx_set_calibration(chip);
->>   }
->>
->>   static int ina2xx_probe(struct i2c_client *client,
->>
->
