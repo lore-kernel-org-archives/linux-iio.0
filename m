@@ -1,92 +1,106 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:51859 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755523AbcCTPU2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 20 Mar 2016 11:20:28 -0400
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH v2 1/3] iio: Add modifier for UV light
-Date: Sun, 20 Mar 2016 16:20:22 +0100
-Message-Id: <1458487224-3872-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1458487224-3872-1-git-send-email-pmeerw@pmeerw.net>
-References: <1458487224-3872-1-git-send-email-pmeerw@pmeerw.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sst@poczta.fm>
+Date: Sun, 20 Mar 2016 18:24:14 +0100
+From: Slawomir Stepien <sst@poczta.fm>
+To: Joachim Eastwood <manabian@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] iio: add driver for Microchip
+ MCP413X/414X/415X/416X/423X/424X/425X/426X
+Message-ID: <20160320172414.GE10728@x220>
+References: <20160320143021.GD10728@x220>
+ <CAGhQ9VzO-QR7XYW2fkCDB7jj+hJTC7AU3R7UPLO5RVxoOWmsHA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAGhQ9VzO-QR7XYW2fkCDB7jj+hJTC7AU3R7UPLO5RVxoOWmsHA@mail.gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
----
- Documentation/ABI/testing/sysfs-bus-iio | 4 +++-
- drivers/iio/industrialio-core.c         | 1 +
- include/uapi/linux/iio/types.h          | 1 +
- tools/iio/iio_event_monitor.c           | 2 ++
- 4 files changed, 7 insertions(+), 1 deletion(-)
+On Mar 20, 2016 17:12, Joachim Eastwood wrote:
+> Hi Slawomir,
+> 
+> On 20 March 2016 at 15:30, Slawomir Stepien <sst@poczta.fm> wrote:
+> > The following functionalities are supported:
+> >  - write, read from volatile memory
+> 
+> I think it would be useful if you could put 'potentiometer' either in
+> the subject and/or commit text so it is more obvious what this driver
+> is for.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 17a9210..6fb9180 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1255,12 +1255,14 @@ Description:
- What:		/sys/.../iio:deviceX/in_intensityY_raw
- What:		/sys/.../iio:deviceX/in_intensityY_ir_raw
- What:		/sys/.../iio:deviceX/in_intensityY_both_raw
-+What:		/sys/.../iio:deviceX/in_intensityY_uv_raw
- KernelVersion:	3.4
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Unit-less light intensity. Modifiers both and ir indicate
- 		that measurements contains visible and infrared light
--		components or just infrared light, respectively.
-+		components or just infrared light, respectively. Modifier uv indicates
-+		that measurements contain ultraviolet light components.
+Ok
+
+> > +       spi_message_init(&data->msg);
+> > +       spi_message_add_tail(&data->xfer, &data->msg);
+> > +
+> > +       err = spi_sync(spi, &data->msg);
+> > +       if (err) {
+> > +               dev_err(&spi->dev, "spi_sync(): %d\n", err);
+> > +               return err;
+> > +       }
+> 
+> Isn't this init, add, sync sequence basically open coding of what
+> spi_write/spi_read does?
+> If you could use those you could also get rid transfer/message structs
+> in priv data.
+> Also it these any reason why the data buffer can just be a local
+> variable in mcp4131_read_raw/mcp4131_write_raw?
+> If it could be I think it should be possible to move the lock into the
+> mcp4131_exec function.
+
+Ok I'll try that.
+
+> > +       case IIO_CHAN_INFO_SCALE:
+> > +               *val = 1000 * data->cfg->kohms;
+> > +               *val2 = data->cfg->max_pos;
+> > +               mutex_unlock(&data->lock);
+> 
+> Is locking really necessary for IIO_CHAN_INFO_SCALE?
+> Isn't all data->cfg stuff constant?
  
- What:		/sys/.../iio:deviceX/in_intensity_red_integration_time
- What:		/sys/.../iio:deviceX/in_intensity_green_integration_time
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 2e768bc..88353ae 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -101,6 +101,7 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_RED] = "red",
- 	[IIO_MOD_LIGHT_GREEN] = "green",
- 	[IIO_MOD_LIGHT_BLUE] = "blue",
-+	[IIO_MOD_LIGHT_UV] = "uv",
- 	[IIO_MOD_QUATERNION] = "quaternion",
- 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
- 	[IIO_MOD_TEMP_OBJECT] = "object",
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index c077617..9337ece 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -77,6 +77,7 @@ enum iio_modifier {
- 	IIO_MOD_Q,
- 	IIO_MOD_CO2,
- 	IIO_MOD_VOC,
-+	IIO_MOD_LIGHT_UV,
- };
+Yes you're right here. Didn't see it like that.
+
+> > +static int mcp4131_write_raw(struct iio_dev *indio_dev,
+> > +                            struct iio_chan_spec const *chan,
+> > +                            int val, int val2, long mask)
+> > +{
+> > +       int err;
+> > +       struct mcp4131_data *data = iio_priv(indio_dev);
+> > +       int address = chan->channel << MCP4131_WIPER_SHIFT;
+> > +
+> > +       mutex_lock(&data->lock);
+> > +
+> > +       switch (mask) {
+> > +       case IIO_CHAN_INFO_RAW:
+> > +               if (val > data->cfg->max_pos || val < 0) {
+> > +                       mutex_unlock(&data->lock);
+> > +                       return -EINVAL;
+> > +               }
+> > +               break;
+> > +       default:
+> > +               mutex_unlock(&data->lock);
+> > +               return -EINVAL;
+> > +       }
+> > +
+> > +       err = mcp4131_exec(data, address, MCP4131_WRITE, val);
+> > +       mutex_unlock(&data->lock);
+> 
+> While this is not a huge function it is usually good practice to keep
+> the locking scope as small as possible.
+> 
+> So wouldn't this be sufficient here.
+>     mutex_lock(&data->lock);
+>     err = mcp4131_exec(data, address, MCP4131_WRITE, val);
+>     mutex_unlock(&data->lock);
+> 
+> Of course if you are able move the lock into mcp4131_exec this will go away.
  
- enum iio_event_type {
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index 90980f5..8d7d979 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -93,6 +93,7 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_RED] = "red",
- 	[IIO_MOD_LIGHT_GREEN] = "green",
- 	[IIO_MOD_LIGHT_BLUE] = "blue",
-+	[IIO_MOD_LIGHT_UV] = "uv",
- 	[IIO_MOD_QUATERNION] = "quaternion",
- 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
- 	[IIO_MOD_TEMP_OBJECT] = "object",
-@@ -172,6 +173,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_MOD_LIGHT_RED:
- 	case IIO_MOD_LIGHT_GREEN:
- 	case IIO_MOD_LIGHT_BLUE:
-+	case IIO_MOD_LIGHT_UV:
- 	case IIO_MOD_QUATERNION:
- 	case IIO_MOD_TEMP_AMBIENT:
- 	case IIO_MOD_TEMP_OBJECT:
+I'll see if it's possible to move the whole locking into this function.
+
+Thank you for comments.
+
+> regards,
+> Joachim Eastwood
+
 -- 
-1.9.1
-
+Slawomir Stepien
