@@ -1,54 +1,84 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.sigma-star.at ([95.130.255.111]:46003 "EHLO
-	mail.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754094AbcCYWqU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Mar 2016 18:46:20 -0400
-From: Richard Weinberger <richard@nod.at>
-To: linux-kernel@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, Richard Weinberger <richard@nod.at>,
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH 5/8] nvmem: Fix io memory dependencies
-Date: Fri, 25 Mar 2016 23:40:52 +0100
-Message-Id: <1458945655-5027-5-git-send-email-richard@nod.at>
-In-Reply-To: <1458945655-5027-1-git-send-email-richard@nod.at>
-References: <1458945655-5027-1-git-send-email-richard@nod.at>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sst@poczta.fm>
+Date: Sun, 20 Mar 2016 11:23:41 +0100
+From: Slawomir Stepien <sst@poczta.fm>
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: add driver for Microchip
+ MCP413X/414X/415X/416X/423X/424X/425X/426X
+Message-ID: <20160320102341.GB10728@x220>
+References: <20160319131952.GA10728@x220>
+ <alpine.DEB.2.02.1603191437060.15969@pmeerw.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <alpine.DEB.2.02.1603191437060.15969@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-Not all archs have io memory.
+On Mar 19, 2016 14:48, Peter Meerwald-Stadler wrote:
+> > +#define MCP4131_WIPER_SHIFT	(4)
+> 
+> () not needed
 
-Fixes the following build error:
-ERROR: "devm_ioremap_resource" [drivers/nvmem/nvmem_mtk-efuse.ko] undefined!
-ERROR: "devm_ioremap_resource" [drivers/nvmem/nvmem_lpc18xx_eeprom.ko] undefined!
+OK
 
-Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- drivers/nvmem/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+> > +struct mcp4131_data {
+> > +	struct spi_device *spi;
+> > +	unsigned long devid;
+> > +	struct mutex lock;
+> > +	u8 tx[2], rx[2];
+> 
+> alignment requirements for SPI transfer?
 
-diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
-index ca52952..3766da3 100644
---- a/drivers/nvmem/Kconfig
-+++ b/drivers/nvmem/Kconfig
-@@ -27,6 +27,7 @@ config NVMEM_IMX_OCOTP
+Do you mean the ____cacheline_aligned attribute?
+I did not add it because I'm not quite sure why it's needed there. Will have to
+find it out...
+Could you point me some materials where it's explained?
+
+I think I can drop two separated buffers in favor of one buffer (e.g. buf[2]). I
+saw drivers doing that. Do you think that's a good idea?
+
+> > +	data->rx[0] = 0;
+> > +	data->rx[1] = 0;
+> 
+> initialization needed?
+
+No. You're right.
+
+> setup of data->xfer + data->tx is done outside the lock, this seems wrong
+
+True. Will fix it in v3.
+
+> > +	dev_info(&spi->dev, "Registered %s\n", indio_dev->name);
+> 
+> I'd rather drop this message
+
+OK. Will leave only the dev_info for errors.
  
- config NVMEM_LPC18XX_EEPROM
- 	tristate "NXP LPC18XX EEPROM Memory Support"
-+	depends on HAS_IOMEM
- 	depends on ARCH_LPC18XX || COMPILE_TEST
- 	help
- 	  Say Y here to include support for NXP LPC18xx EEPROM memory found in
-@@ -48,6 +49,7 @@ config NVMEM_MXS_OCOTP
- 
- config MTK_EFUSE
- 	tristate "Mediatek SoCs EFUSE support"
-+	depends on HAS_IOMEM
- 	depends on ARCH_MEDIATEK || COMPILE_TEST
- 	select REGMAP_MMIO
- 	help
+> > +static int mcp4131_remove(struct spi_device *spi)
+> > +{
+> > +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> > +	struct mcp4131_data *data = iio_priv(indio_dev);
+> > +
+> > +	mutex_destroy(&data->lock);
+> 
+> no need to call
+> 
+> > +	devm_iio_device_unregister(&spi->dev, indio_dev);
+> 
+> don't call this explicitly, it is done automatically after _remove
+
+That's why it's called managed (devm_*)?
+
+> > +
+> > +	dev_info(&spi->dev, "Unregistered %s\n", indio_dev->name);
+> 
+> don't
+> 
+> I think the entire _remove can be removed
+
+OK.
+
+Thank you for the review. I'm learning a lot!
+
 -- 
-1.8.4.5
-
+Slawomir Stepien
