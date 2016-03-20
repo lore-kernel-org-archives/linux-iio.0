@@ -1,105 +1,319 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay1.mentorg.com ([192.94.38.131]:50763 "EHLO
-	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752339AbcCXOY6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2016 10:24:58 -0400
-Subject: Re: [PATCH v2 1/8] i2c-mux: add common core data for every mux
- instance
-To: Peter Rosin <peda@lysator.liu.se>
-References: <1452009438-27347-1-git-send-email-peda@lysator.liu.se>
- <1452009438-27347-2-git-send-email-peda@lysator.liu.se>
- <56F3B86E.4050002@mentor.com> <56F3CA0E.60906@lysator.liu.se>
-CC: Wolfram Sang <wsa@the-dreams.de>, Peter Rosin <peda@axentia.se>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Nicholas Mc Guire <hofrat@osadl.org>,
-	Olli Salonen <olli.salonen@iki.fi>,
-	<linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-media@vger.kernel.org>
-From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Message-ID: <56F3F89F.8000805@mentor.com>
-Date: Thu, 24 Mar 2016 16:24:31 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56803 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754897AbcCTKrv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2016 06:47:51 -0400
+Subject: Re: [PATCH 3/3] iio: imu: mpu6050: Add support for auxiliary I2C
+ master
+To: Daniel Baluta <daniel.baluta@intel.com>
+References: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com>
+ <1458232366-12773-4-git-send-email-daniel.baluta@intel.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	matt.ranostay@intel.com, lucas.demarchi@intel.com, cmo@melexis.com,
+	linux-iio@vger.kernel.org, ggao@invensense.com,
+	srinivas.pandruvada@linux.intel.com, adi.reus@gmail.com,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Linux I2C <linux-i2c@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56EE7FD3.7050803@kernel.org>
+Date: Sun, 20 Mar 2016 10:47:47 +0000
 MIME-Version: 1.0
-In-Reply-To: <56F3CA0E.60906@lysator.liu.se>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <1458232366-12773-4-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Peter,
+On 17/03/16 16:32, Daniel Baluta wrote:
+> The MPU-60X0 [1] has an auxiliary I2C bus for connecting external
+> sensors. This bus has two operating modes:
+> 	* pass-through, which connects the primary and auxiliary busses
+> 	together [already implemented]
+> 	* I2C master mode, where MPU60X0 acts as a master to any
+> 	external connected sensors [implemented in this patch]
+> 
+> I2C master supports up to 5 slaves. Slaves 0-3 have a common operating
+> mode while slave 4 is different.
+> 
+> This patch only adds support for slave 4 because it has a cleaner
+> interface and it has an interrupt that signals when data from slave
+> to master arrived.
+> 
+> Registers are described here [2].
+> 
+> We use threaded handler for reading slave4 done interrupt bit.
+> 
+> [1]
+> https://www.cdiweb.com/datasheets/invensense/MPU-6050_DataSheet_V3%204.pdf
+> [2]
+> http://www6.in.tum.de/pub/Main/TeachingWs2015SeminarAuonomousFahren/RM-MPU-6000A.pdf
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+hmm. Daniel - this is an i2c driver (be it within an IIO driver) so you need
+to cc Wolfram and the i2c list.
 
-On 24.03.2016 13:05, Peter Rosin wrote:
-> Hi Vladimir,
+I'll be needing an Ack from Wolfram if I am to take this,
+
+Jonathan
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 137 ++++++++++++++++++++++++++++-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  38 ++++++++
+>  2 files changed, 172 insertions(+), 3 deletions(-)
 > 
-> On 2016-03-24 10:50, Vladimir Zapolskiy wrote:
->> Hi Peter,
->>
->> On 05.01.2016 17:57, Peter Rosin wrote:
->>> From: Peter Rosin <peda@axentia.se>
->>>
->>> The initial core mux structure starts off small with only the parent
->>> adapter pointer, which all muxes have, and a priv pointer for mux
->>> driver private data.
->>>
->>> Add i2c_mux_alloc function to unify the creation of a mux.
->>>
->>> Where appropriate, pass around the mux core structure instead of the
->>> parent adapter or the driver private data.
->>>
->>> Remove the parent adapter pointer from the driver private data for all
->>> mux drivers.
->>>
->>> Signed-off-by: Peter Rosin <peda@axentia.se>
->>
->> is it still under review? If yes, please find one question from me below :)
-> 
-> Yes, the series is still under review/testing, with an update planned in a
-> week or so.
-> 
->> [snip]
->>
->>> @@ -196,21 +195,21 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
->>>  		dev_err(dev, "Cannot parse i2c-parent\n");
->>>  		return -EINVAL;
->>>  	}
->>> -	arb->parent = of_get_i2c_adapter_by_node(parent_np);
->>> +	muxc->parent = of_find_i2c_adapter_by_node(parent_np);
->>
->> why do you prefer here to use "unlocked" version of API?
->>
->> Foe example would it be safe/possible to unload an I2C bus device driver
->> module or unbind I2C device itself in runtime?
-> 
-> I think you ask why I change from of_get_i2c_... to of_find_i2c_..., and that
-> change was not intentional. It was the result of a bad merge during an early
-> rebase.
-> 
-> Does that cover it?
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 659a4be..a89854c 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -25,6 +25,8 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/i2c-mux.h>
+>  #include <linux/acpi.h>
+> +#include <linux/completion.h>
+> +
+>  #include "inv_mpu_iio.h"
+>  
+>  /*
+> @@ -57,6 +59,12 @@ static const struct inv_mpu6050_reg_map reg_set_6500 = {
+>  	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
+>  	.accl_offset		= INV_MPU6500_REG_ACCEL_OFFSET,
+>  	.gyro_offset		= INV_MPU6050_REG_GYRO_OFFSET,
+> +	.slv4_addr		= INV_MPU6050_REG_I2C_SLV4_ADDR,
+> +	.slv4_reg		= INV_MPU6050_REG_I2C_SLV4_REG,
+> +	.slv4_do		= INV_MPU6050_REG_I2C_SLV4_DO,
+> +	.slv4_ctrl		= INV_MPU6050_REG_I2C_SLV4_CTRL,
+> +	.slv4_di		= INV_MPU6050_REG_I2C_SLV4_DI,
+> +	.mst_status		= INV_MPU6050_REG_I2C_MST_STATUS,
+>  };
+>  
+>  static const struct inv_mpu6050_reg_map reg_set_6050 = {
+> @@ -77,6 +85,12 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
+>  	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
+>  	.accl_offset		= INV_MPU6050_REG_ACCEL_OFFSET,
+>  	.gyro_offset		= INV_MPU6050_REG_GYRO_OFFSET,
+> +	.slv4_addr		= INV_MPU6050_REG_I2C_SLV4_ADDR,
+> +	.slv4_reg		= INV_MPU6050_REG_I2C_SLV4_REG,
+> +	.slv4_do		= INV_MPU6050_REG_I2C_SLV4_DO,
+> +	.slv4_ctrl		= INV_MPU6050_REG_I2C_SLV4_CTRL,
+> +	.slv4_di		= INV_MPU6050_REG_I2C_SLV4_DI,
+> +	.mst_status		= INV_MPU6050_REG_I2C_MST_STATUS,
+>  };
+>  
+>  static const struct inv_mpu6050_chip_config chip_config_6050 = {
+> @@ -761,6 +775,114 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
+>  	return 0;
+>  }
+>  
+> +static irqreturn_t inv_mpu_datardy_irq_handler(int irq, void *private)
+> +{
+> +	struct inv_mpu6050_state *st = (struct inv_mpu6050_state *)private;
+> +
+> +	iio_trigger_poll(st->trig);
+> +
+> +	return IRQ_WAKE_THREAD;
+> +}
+> +
+> +static irqreturn_t inv_mpu_datardy_thread_handler(int irq, void *private)
+> +{
+> +	struct inv_mpu6050_state *st = (struct inv_mpu6050_state *)private;
+> +	int ret, val;
+> +
+> +	ret = regmap_read(st->map, st->reg->mst_status, &val);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (val & INV_MPU6050_BIT_I2C_SLV4_DONE)
+> +		complete(&st->slv4_done);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static u32 inv_mpu_i2c_functionality(struct i2c_adapter *adap)
+> +{
+> +	return I2C_FUNC_SMBUS_BYTE | I2C_FUNC_SMBUS_BYTE_DATA;
+> +}
+> +
+> +static int
+> +inv_mpu_i2c_smbus_xfer(struct i2c_adapter *adap, u16 addr,
+> +		       unsigned short flags, char read_write, u8 command,
+> +		       int size, union i2c_smbus_data *data)
+> +{
+> +	struct inv_mpu6050_state *st = i2c_get_adapdata(adap);
+> +
+> +	unsigned long time_left;
+> +	int ret, val;
+> +	u8 ctrl;
+> +
+> +	ret = inv_mpu6050_set_power_itg(st, true);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = regmap_update_bits(st->map, st->reg->user_ctrl,
+> +				 INV_MPU6050_BIT_I2C_MST_EN,
+> +				 INV_MPU6050_BIT_I2C_MST_EN);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = regmap_update_bits(st->map, st->reg->int_enable,
+> +				 INV_MPU6050_BIT_MST_INT_EN,
+> +				 INV_MPU6050_BIT_MST_INT_EN);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (read_write == I2C_SMBUS_WRITE)
+> +		addr |= INV_MPU6050_BIT_I2C_SLV4_W;
+> +	else
+> +		addr |= INV_MPU6050_BIT_I2C_SLV4_R;
+> +
+> +	ret = regmap_write(st->map, st->reg->slv4_addr, addr);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->map, st->reg->slv4_reg, command);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (read_write == I2C_SMBUS_WRITE) {
+> +		ret = regmap_write(st->map, st->reg->slv4_do, data->byte);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	ctrl = INV_MPU6050_BIT_SLV4_EN | INV_MPU6050_BIT_SLV4_INT_EN;
+> +	ret = regmap_write(st->map, st->reg->slv4_ctrl, ctrl);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (read_write == I2C_SMBUS_READ) {
+> +		time_left = wait_for_completion_timeout(&st->slv4_done, HZ);
+> +		if (!time_left)
+> +			return -ETIMEDOUT;
+> +
+> +		ret = regmap_read(st->map, st->reg->slv4_di, &val);
+> +		if (ret < 0)
+> +			return ret;
+> +		data->byte = val;
+> +	}
+> +
+> +	ret = inv_mpu6050_set_power_itg(st, false);
+> +	if (ret < 0)
+> +		return ret;
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_algorithm inv_mpu_i2c_algo = {
+> +	.smbus_xfer	=	inv_mpu_i2c_smbus_xfer,
+> +	.functionality	=	inv_mpu_i2c_functionality,
+> +};
+> +
+> +static struct i2c_adapter inv_mpu_i2c_adapter = {
+> +	.owner		= THIS_MODULE,
+> +	.class		= I2C_CLASS_HWMON,
+> +	.algo		= &inv_mpu_i2c_algo,
+> +	.name		= "INV MPU secondary I2C",
+> +};
+> +
+>  int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  		int (*inv_mpu_bus_setup)(struct iio_dev *), int chip_type)
+>  {
+> @@ -796,6 +918,13 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  		return result;
+>  	}
+>  
+> +	init_completion(&st->slv4_done);
+> +
+> +	result = i2c_add_adapter(&inv_mpu_i2c_adapter);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	i2c_set_adapdata(&inv_mpu_i2c_adapter, st);
+>  	dev_set_drvdata(dev, indio_dev);
+>  	indio_dev->dev.parent = dev;
+>  	/* name will be NULL when enumerated via ACPI */
+> @@ -823,9 +952,11 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  		goto out_unreg_ring;
+>  	}
+>  
+> -	result = devm_request_irq(&indio_dev->dev, st->irq,
+> -				  &iio_trigger_generic_data_rdy_poll,
+> -				  IRQF_TRIGGER_RISING, "inv_mpu", st->trig);
+> +	result = devm_request_threaded_irq(&indio_dev->dev, st->irq,
+> +					   &inv_mpu_datardy_irq_handler,
+> +					   &inv_mpu_datardy_thread_handler,
+> +					   IRQF_TRIGGER_RISING, "inv_mpu",
+> +					   st);
+>  	if (result) {
+>  		dev_err(dev, "request irq fail %d\n", result);
+>  		goto out_remove_trigger;
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index e302a49..5c3ea9a 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -42,6 +42,13 @@
+>   *  @int_pin_cfg;	Controls interrupt pin configuration.
+>   *  @accl_offset:	Controls the accelerometer calibration offset.
+>   *  @gyro_offset:	Controls the gyroscope calibration offset.
+> + *  @mst_status:	secondary I2C master interrupt source status
+> + *  @slv4_addr:		I2C slave address for slave 4 transaction
+> + *  @slv4_reg:		I2C register used with slave 4 transaction
+> + *  @slv4_di:		I2C data in register for slave 4 transaction
+> + *  @slv4_ctrl:		I2C slave 4 control register
+> + *  @slv4_do:		I2C data out register for slave 4 transaction
+> +
+>   */
+>  struct inv_mpu6050_reg_map {
+>  	u8 sample_rate_div;
+> @@ -61,6 +68,15 @@ struct inv_mpu6050_reg_map {
+>  	u8 int_pin_cfg;
+>  	u8 accl_offset;
+>  	u8 gyro_offset;
+> +	u8 mst_status;
+> +
+> +	/* slave 4 registers */
+> +	u8 slv4_addr;
+> +	u8 slv4_reg;
+> +	u8 slv4_di; /* data in */
+> +	u8 slv4_ctrl;
+> +	u8 slv4_do; /* data out */
+> +
+>  };
+>  
+>  /*device enum */
+> @@ -133,6 +149,7 @@ struct inv_mpu6050_state {
+>  	struct inv_mpu6050_platform_data plat_data;
+>  	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
+>  	struct regmap *map;
+> +	struct completion slv4_done;
+>  	int irq;
+>  };
+>  
+> @@ -149,9 +166,30 @@ struct inv_mpu6050_state {
+>  #define INV_MPU6050_BIT_ACCEL_OUT           0x08
+>  #define INV_MPU6050_BITS_GYRO_OUT           0x70
+>  
+> +#define INV_MPU6050_REG_I2C_SLV4_ADDR       0x31
+> +#define INV_MPU6050_BIT_I2C_SLV4_R          0x80
+> +#define INV_MPU6050_BIT_I2C_SLV4_W          0x00
+> +
+> +#define INV_MPU6050_REG_I2C_SLV4_REG        0x32
+> +#define INV_MPU6050_REG_I2C_SLV4_DO         0x33
+> +#define INV_MPU6050_REG_I2C_SLV4_CTRL       0x34
+> +
+> +#define INV_MPU6050_BIT_SLV4_EN             0x80
+> +#define INV_MPU6050_BIT_SLV4_INT_EN         0x40
+> +#define INV_MPU6050_BIT_SLV4_DIS            0x20
+> +
+> +#define INV_MPU6050_REG_I2C_SLV4_DI         0x35
+> +
+> +#define INV_MPU6050_REG_I2C_MST_STATUS      0x36
+> +#define INV_MPU6050_BIT_I2C_SLV4_DONE       0x40
+> +
+>  #define INV_MPU6050_REG_INT_ENABLE          0x38
+>  #define INV_MPU6050_BIT_DATA_RDY_EN         0x01
+>  #define INV_MPU6050_BIT_DMP_INT_EN          0x02
+> +#define INV_MPU6050_BIT_MST_INT_EN          0x08
+> +
+> +#define INV_MPU6050_REG_INT_STATUS          0x3A
+> +#define INV_MPU6050_BIT_MST_INT             0x08
+>  
+>  #define INV_MPU6050_REG_RAW_ACCEL           0x3B
+>  #define INV_MPU6050_REG_TEMPERATURE         0x41
 > 
 
-Yep, thank you for clarification, please account this in v3.
-
-I'll try to find some time to review the whole changeset carefully,
-in fact I briefly reviewed it two months ago, but I didn't find
-anything obviously wrong that time.
-
---
-With best wishes,
-Vladimir
