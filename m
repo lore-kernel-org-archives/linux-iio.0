@@ -1,34 +1,87 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <Michael.Hennerich@analog.com>
+Reply-To: <michael.hennerich@analog.com>
+Subject: Re: [PATCH v3] iio: dac: Add support for the AD5592R/AD5593R
+ ADCs/DACs
+References: <1457009883-4017-1-git-send-email-michael.hennerich@analog.com>
+ <56DAEDF4.6040008@kernel.org> <56DD7548.8050306@analog.com>
+ <CACRpkdY=n30A5UkRX7avP7eWrPffh3faF8K_Ey2f2cs1GRZP7g@mail.gmail.com>
+To: Linus Walleij <linus.walleij@linaro.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Alexandre Courbot <gnurou@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>, "Paul
+ Cercueil" <paul.cercueil@analog.com>, Rob Herring <robh+dt@kernel.org>,
+	=?UTF-8?Q?Pawe=c5=82_Moll?= <pawel.moll@arm.com>, Mark Rutland
+	<mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk"
+	<ijc+devicetree@hellion.org.uk>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>, "linux-gpio@vger.kernel.org"
+	<linux-gpio@vger.kernel.org>
+From: Michael Hennerich <michael.hennerich@analog.com>
+Message-ID: <56EFFBB6.40806@analog.com>
+Date: Mon, 21 Mar 2016 14:48:38 +0100
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <56EE7E34.8040608@kernel.org>
-References: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com>
-	<1458232366-12773-2-git-send-email-daniel.baluta@intel.com>
-	<CAKzfze-nFeMJhp7oRrKaCuM+CRJpokFevCEdxB1Mu96H+pUT6A@mail.gmail.com>
-	<56EE7E34.8040608@kernel.org>
-Date: Mon, 21 Mar 2016 12:16:25 +0200
-Message-ID: <CAEnQRZCb6qY+XPKyoOjatQ44c65BfGsRo3HU4ozRRMzhx=HXXw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] iio: imu: mpu6050: Fix name/chip_id when using ACPI
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Matt Ranostay <mranostay@gmail.com>, Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Matt Ranostay <matt.ranostay@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>, Crt Mori <cmo@melexis.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Ge Gao <ggao@invensense.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Adriana Reus <adi.reus@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <CACRpkdY=n30A5UkRX7avP7eWrPffh3faF8K_Ey2f2cs1GRZP7g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Mar 20, 2016 at 12:40 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 17/03/16 17:21, Matt Ranostay wrote:
->> Reviewed-By: Matt Ranostay <matt.ranostay@intel.com>
-> I'm guessing this may at some point want backporting, but right now it only
-> applies to my togreg branch (due to prior changes) so that's where I've applied
-> this.  If you want a faster path to mainline, the please send me the backport.
+On 03/11/2016 05:37 PM, Linus Walleij wrote:
+> On Mon, Mar 7, 2016 at 7:34 PM, Michael Hennerich
+> <michael.hennerich@analog.com> wrote:
+>> On 03/05/2016 03:32 PM, Jonathan Cameron wrote:
+>
+>>>> Changes since v2:
+>>>>          * Use child nodes to describe channels
+>>>>          * Fix probe return and driver remove path
+>>>>          * Move locking closer to where its used
+>>>>          * Remove WARN_ON but return error
+>>>>          * Remove OPEN DRAIN configuration option
+>>>
+>>> Why? I don't particularly mind as of course you aren't obliged to support
+>>> every option in a driver, but I'm curious ;)
+>>
+>> I'm not aware that someone asked for that feature.
+>> Supporting it the proper way requires a new GPIOF flag for gpiolib, which we
+>> can still discuss later, in case someone asks for it.
+>
+> We have:
+> include/dt-bindings/gpio/gpio.h
+>
+> /*
+>   * Open Drain/Collector is the combination of single-ended active low,
+>   * Open Source/Emitter is the combination of single-ended active high.
+>   */
+> #define GPIO_OPEN_DRAIN (GPIO_SINGLE_ENDED | GPIO_ACTIVE_LOW)
+> #define GPIO_OPEN_SOURCE (GPIO_SINGLE_ENDED | GPIO_ACTIVE_HIGH)
+>
+> So consumers can ask (in DT) for a line in open drain mode.
+>
+> FLAG_OPEN_DRAIN will be set internally in gpiolibs gpio_desc
+> in of_find_gpio() as a result and it will behave as expected.
+>
+> Yours,
+> Linus Walleij
+>
 
-Sure. One thing: on which branch should I rebase the changes?
+Hi Linus,
 
-fixes or fixes-togreg?
+The thing is that the device directly supports an OPEN DRAIN mode.
 
-Daniel.
+If the consumer asks for open drain mode - everything works as expected.
+However instead of utilizing the on-chip feature, GPIOLIB will emulate 
+open drain behaviour by configuring the chip for input when someone 
+writes logic high.
+
+So the comment above was really meant to say -
+remove on-chip OPEN DRAIN mode, consumers should use the GPIOLIB 
+implementation if required.
+
+
+
+-- 
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
+Margaret Seif
