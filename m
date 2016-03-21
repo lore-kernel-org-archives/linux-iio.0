@@ -1,110 +1,203 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40865 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751051AbcCPUl6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2016 16:41:58 -0400
-Subject: Re: [PATCH 2/3] iio: Add modifier for UV index
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1458090376-26729-1-git-send-email-pmeerw@pmeerw.net>
- <1458090376-26729-2-git-send-email-pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56E9C511.8010808@kernel.org>
-Date: Wed, 16 Mar 2016 20:41:53 +0000
+Return-Path: <Michael.Hennerich@analog.com>
+Reply-To: <michael.hennerich@analog.com>
+Subject: Re: [PATCH v2] iio: dac: Add support for the AD5592R/AD5593R
+ ADCs/DACs
+References: <1456407412-16218-1-git-send-email-michael.hennerich@analog.com>
+ <56D1E1CB.6070704@kernel.org>
+ <CACRpkdap_8YGCAvNeK7_0H2MDDnwQ9QDJH4O2SzEkDmczPGtLg@mail.gmail.com>
+To: Linus Walleij <linus.walleij@linaro.org>, Jonathan Cameron
+	<jic23@kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>,
+	Paul Cercueil <paul.cercueil@analog.com>, Rob Herring <robh+dt@kernel.org>,
+	=?UTF-8?Q?Pawe=c5=82_Moll?= <pawel.moll@arm.com>, Mark Rutland
+	<mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk"
+	<ijc+devicetree@hellion.org.uk>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>, Alexandre Courbot <gnurou@gmail.com>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+From: Michael Hennerich <michael.hennerich@analog.com>
+Message-ID: <56F0001B.9010608@analog.com>
+Date: Mon, 21 Mar 2016 15:07:23 +0100
 MIME-Version: 1.0
-In-Reply-To: <1458090376-26729-2-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <CACRpkdap_8YGCAvNeK7_0H2MDDnwQ9QDJH4O2SzEkDmczPGtLg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 16/03/16 01:06, Peter Meerwald-Stadler wrote:
-> UV index indicating strength of sunburn-producing ultraviolet (UV) radiation
-> 
-> Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-I'm not sure this wants to be a modifier rather than a new channel type
-entirely.  So far modifiers have been about 'direction' defined loosely
-or something computational based on direction (root mean square etc)
+On 03/11/2016 05:28 PM, Linus Walleij wrote:
+> On Sun, Feb 28, 2016 at 12:50 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+>>> +Analog Devices AD5592R/AD5593R DAC/ADC device driver
+>>> +
+>>> +Required properties for the AD5592R:
+>>> +     - compatible: Must be "adi,ad5592r"
+>>> +     - reg: SPI chip select number for the device
+>>> +     - spi-max-frequency: Max SPI frequency to use (< 30000000)
+>>> +     - spi-cpol: The AD5592R requires inverse clock polarity (CPOL) mode
+>
+> If this should be a gpiochip, this shall also be reflected in the
+> device tree bindings and the example in the bindings by
+> stating gpio-controller; and #gpio-cells, referring to
+> the binding in gpio/gpio.txt so consumers can pick a GPIO
+> from this device.
 
-I'd have in_uvindexX_input etc
+Hi Linus,
 
-This is kind of similar to illuminance in that it is a magic computed
-wavelength dependent number that is some sort of weighted sum of
-energies at different frequencies (assuming I read the wikipedia article
-right!)
+Thanks for the feedback.
 
-Jonathan
+- Will add this to the documentation.
 
 
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
->  drivers/iio/industrialio-core.c         | 1 +
->  include/uapi/linux/iio/types.h          | 1 +
->  tools/iio/iio_event_monitor.c           | 2 ++
->  4 files changed, 13 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 6fb9180..26da49b 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -1264,6 +1264,15 @@ Description:
->  		components or just infrared light, respectively. Modifier uv indicates
->  		that measurements contain ultraviolet light components.
->  
-> +What:		/sys/.../iio:deviceX/in_intensityY_uv_index_input
-> +KernelVersion:	4.6
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		UV light intensity index measuring the human skin's response to
-> +		different wavelength of sunlight weighted according to the
-> +		standardised CIE Erythemal Action Spectrum. UV index values range
-> +		from 0 (low) to >=11 (extreme).
-> +
->  What:		/sys/.../iio:deviceX/in_intensity_red_integration_time
->  What:		/sys/.../iio:deviceX/in_intensity_green_integration_time
->  What:		/sys/.../iio:deviceX/in_intensity_blue_integration_time
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 88353ae..420aa06 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -102,6 +102,7 @@ static const char * const iio_modifier_names[] = {
->  	[IIO_MOD_LIGHT_GREEN] = "green",
->  	[IIO_MOD_LIGHT_BLUE] = "blue",
->  	[IIO_MOD_LIGHT_UV] = "uv",
-> +	[IIO_MOD_LIGHT_UV_INDEX] = "uv_index",
->  	[IIO_MOD_QUATERNION] = "quaternion",
->  	[IIO_MOD_TEMP_AMBIENT] = "ambient",
->  	[IIO_MOD_TEMP_OBJECT] = "object",
-> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-> index 9337ece..0946c3e 100644
-> --- a/include/uapi/linux/iio/types.h
-> +++ b/include/uapi/linux/iio/types.h
-> @@ -78,6 +78,7 @@ enum iio_modifier {
->  	IIO_MOD_CO2,
->  	IIO_MOD_VOC,
->  	IIO_MOD_LIGHT_UV,
-> +	IIO_MOD_LIGHT_UV_INDEX,
->  };
->  
->  enum iio_event_type {
-> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-> index 8d7d979..0965349 100644
-> --- a/tools/iio/iio_event_monitor.c
-> +++ b/tools/iio/iio_event_monitor.c
-> @@ -94,6 +94,7 @@ static const char * const iio_modifier_names[] = {
->  	[IIO_MOD_LIGHT_GREEN] = "green",
->  	[IIO_MOD_LIGHT_BLUE] = "blue",
->  	[IIO_MOD_LIGHT_UV] = "uv",
-> +	[IIO_MOD_LIGHT_UV_INDEX] = "uv_index",
->  	[IIO_MOD_QUATERNION] = "quaternion",
->  	[IIO_MOD_TEMP_AMBIENT] = "ambient",
->  	[IIO_MOD_TEMP_OBJECT] = "object",
-> @@ -174,6 +175,7 @@ static bool event_is_known(struct iio_event_data *event)
->  	case IIO_MOD_LIGHT_GREEN:
->  	case IIO_MOD_LIGHT_BLUE:
->  	case IIO_MOD_LIGHT_UV:
-> +	case IIO_MOD_LIGHT_UV_INDEX:
->  	case IIO_MOD_QUATERNION:
->  	case IIO_MOD_TEMP_AMBIENT:
->  	case IIO_MOD_TEMP_OBJECT:
-> 
+>
+> I haven't seen the original patch, please mail the next version
+> to me so I can take a look.
+>
+>>> +config AD5592R_BASE
+>>> +     tristate
+>>> +
+>>> +config AD5592R
+>>> +     tristate "Analog Devices AD5592R ADC/DAC driver"
+>>> +     depends on SPI_MASTER
+>>> +     depends on OF
+>>> +     select AD5592R_BASE
+>>> +     help
+>>> +       Say yes here to build support for Analog Devices AD5592R
+>>> +       Digital to Analog / Analog to Digital Converter.
+>>> +
+>>> +       To compile this driver as a module, choose M here: the
+>>> +       module will be called ad5592r.
+>>> +
+>>> +config AD5593R
+>>> +     tristate "Analog Devices AD5593R ADC/DAC driver"
+>>> +     depends on I2C
+>>> +     depends on OF
+>>> +     select AD5592R_BASE
+>>> +     help
+>>> +       Say yes here to build support for Analog Devices AD5593R
+>>> +       Digital to Analog / Analog to Digital Converter.
+>>> +
+>>> +       To compile this driver as a module, choose M here: the
+>>> +       module will be called ad5593r.
+>>> +
+>
+> I guess something here should select GPIOLIB
+> and depend of OF_GPIO
 
+
+That reminds me - On my dev tree I removed to the depends on OF from 
+kconfig. But I haven't rebased this commit into my for_upstream branch.
+
+I tried to avoid any OF dependency in the driver by using the 
+linux/property API.
+
+I'll add select GPIOLIB - and gpio/Kconfig will select OF_GPIO if OF.
+
+
+>
+>>> +#ifdef CONFIG_GPIOLIB
+>
+> Naaaaah really? Just select GPIOLIB and get rid of ifdeffery.
+> It's cool to have gpios available.
+
+Convinced me.
+
+>
+>>> +static int ad5592r_gpio_request(struct gpio_chip *chip, unsigned offset)
+>>> +{
+>>> +     struct ad5592r_state *st = gpiochip_get_data(chip);
+>>> +
+>>> +     if (!(st->gpio_map & BIT(offset))) {
+>>> +             dev_err(st->dev, "GPIO %d is reserved by alternate function\n",
+>>> +                     offset);
+>
+> This gpio_map looks a bit like pin control.
+>
+> It might be overkill to use all of the pinctrl subsystem,
+> we have circumvented it in other places.
+
+I think it's overkill too.
+
+>
+>>> +             return -ENODEV;
+>>> +     }
+>>> +
+>>> +     if (offset >= chip->ngpio)
+>>> +             return -EINVAL;
+>
+> gpiolib already guards against this I think.
+
+Then I drop it
+
+>
+>>> +static int ad5592r_gpio_init(struct ad5592r_state *st)
+>>> +{
+>>> +     st->gpiochip.label = dev_name(st->dev);
+>>> +     st->gpiochip.base = -1;
+>>> +     st->gpiochip.ngpio = 8;
+>>> +     st->gpiochip.parent = st->dev;
+>>> +     st->gpiochip.can_sleep = true;
+>>> +     st->gpiochip.direction_input = ad5592r_gpio_direction_input;
+>>> +     st->gpiochip.direction_output = ad5592r_gpio_direction_output;
+>>> +     st->gpiochip.get = ad5592r_gpio_get;
+>>> +     st->gpiochip.set = ad5592r_gpio_set;
+>>> +     st->gpiochip.request = ad5592r_gpio_request;
+>>> +     st->gpiochip.owner = THIS_MODULE;
+>>> +
+>>> +     mutex_init(&st->gpio_lock);
+>>> +
+>>> +     return gpiochip_add_data(&st->gpiochip, st);
+>
+> The gpiolib should be fine with the of_node from the parent so
+> looks fine.
+>
+>>> +             mutex_lock(&iio_dev->mlock);
+>>> +             st->ops->reg_write(st, AD5592R_REG_RESET, 0xdac);
+>>> +             mutex_unlock(&iio_dev->mlock);
+>
+> What's that? (0xdac)? Clever magic?
+
+Clever magic - to avoid accidental resets.
+
+>
+>>> +             case CH_MODE_DAC_AND_ADC:
+>>> +                     dac |= BIT(i);
+>>> +                     adc |= BIT(i);
+>>> +                     break;
+>>> +
+>>> +             case CH_MODE_UNUSED_PULL_DOWN:
+>>> +                     pulldown |= BIT(i);
+>>> +                     break;
+>>> +
+>>> +             case CH_MODE_UNUSED_OUT_TRISTATE:
+>>> +                     tristate |= BIT(i);
+>>> +                     break;
+>>> +
+>>> +             case CH_MODE_UNUSED_OUT_LOW:
+>>> +                     st->gpio_out |= BIT(i);
+>>> +                     break;
+>>> +
+>>> +             case CH_MODE_UNUSED_OUT_HIGH:
+>>> +                     st->gpio_out |= BIT(i);
+>>> +                     st->gpio_val |= BIT(i);
+>>> +                     break;
+>>> +
+>>> +             case CH_MODE_GPIO_OPEN_DRAIN:
+>>> +                     open_drain |= BIT(i);
+>
+> Deja-vu with include/linux/pinctrl/pinconf-generic.h
+>
+> We call tristate "bias high impedance".
+>
+> Yours,
+> Linus Walleij
+>
+
+
+-- 
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
+Margaret Seif
