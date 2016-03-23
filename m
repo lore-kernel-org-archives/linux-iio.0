@@ -1,153 +1,75 @@
-Return-Path: <leonard.crestez@intel.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Thierry Reding <thierry.reding@avionic-design.de>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH 1/2] ti-adc081c: Add support for adc101c* and adc121c*
-Date: Thu, 31 Mar 2016 20:20:35 +0300
-Message-Id: <001c9c6fb78bcc944a89ab7af8648a2c19ac77e9.1459444547.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1459444547.git.leonard.crestez@intel.com>
-References: <cover.1459444547.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1459444547.git.leonard.crestez@intel.com>
-References: <cover.1459444547.git.leonard.crestez@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.136]:54388 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753030AbcCWPP0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Mar 2016 11:15:26 -0400
+Date: Wed, 23 Mar 2016 10:15:20 -0500
+From: Rob Herring <robh@kernel.org>
+To: michael.hennerich@analog.com
+Cc: jic23@kernel.org, linus.walleij@linaro.org, gnurou@gmail.com,
+	lars@metafoo.de, knaack.h@gmx.de, paul.cercueil@analog.com,
+	pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v5] iio: dac: Add support for the AD5592R/AD5593R
+ ADCs/DACs
+Message-ID: <20160323151520.GA19229@rob-hp-laptop>
+References: <1458721195-28915-1-git-send-email-michael.hennerich@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1458721195-28915-1-git-send-email-michael.hennerich@analog.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-These chips has an almost identical interface but a deal with a
-different number of value bits. Datasheet links for comparison:
+On Wed, Mar 23, 2016 at 09:19:55AM +0100, michael.hennerich@analog.com wrote:
+> From: Paul Cercueil <paul.cercueil@analog.com>
+> 
+> This patch adds support for the AD5592R (spi) and AD5593R (i2c)
+> ADC/DAC/GPIO devices.
+> 
+> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
+> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> 
+> ---
+> 
+> Changes since v1:
+> 	* Fix mutex usage
+> 	* Remove unnecessary NULL pointer guards
+> 	* Add comment explaining the invalid data read
+> 	* AD5593R Remove surplus adc readback
+> 
+> Changes since v2:
+> 	* Use child nodes to describe channels
+> 	* Fix probe return and driver remove path
+> 	* Move locking closer to where its used
+> 	* Remove WARN_ON but return error
+> 	* Remove OPEN DRAIN configuration option
+> 
+> Changes since v3:
+> 	* Documentation: Add missing vendor prefixes in the examples
+> 	* Minor function reordering in remove() to match the reverse of probe()
+> 
+> Changes since v4:
+> 	* Documentation: Add missing gpio bindings
+> 	* Kconfig: Select GPIOLIB and remove ifdefs in code
+> 	* Remove surplus error check in ad5592r_gpio_request()
+> 	* Add comment about reset magic
+> ---
+>  .../devicetree/bindings/iio/dac/ad5592r.txt        | 152 +++++
 
- * http://www.ti.com/lit/ds/symlink/adc081c021.pdf
- * http://www.ti.com/lit/ds/symlink/adc101c021.pdf
- * http://www.ti.com/lit/ds/symlink/adc121c021.pdf
+Acked-by: Rob Herring <robh@kernel.org>
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- drivers/iio/adc/Kconfig      |  6 +++---
- drivers/iio/adc/ti-adc081c.c | 31 +++++++++++++++++++++++++++----
- 2 files changed, 30 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 9ddcd5d..a2d0db5 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -378,11 +378,11 @@ config ROCKCHIP_SARADC
- 	  module will be called rockchip_saradc.
- 
- config TI_ADC081C
--	tristate "Texas Instruments ADC081C021/027"
-+	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
- 	depends on I2C
- 	help
--	  If you say yes here you get support for Texas Instruments ADC081C021
--	  and ADC081C027 ADC chips.
-+	  If you say yes here you get support for Texas Instruments ADC081C,
-+	  ADC101C and ADC121C ADC chips.
- 
- 	  This driver can also be built as a module. If so, the module will be
- 	  called ti-adc081c.
-diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
-index ecbc121..9b2f26f 100644
---- a/drivers/iio/adc/ti-adc081c.c
-+++ b/drivers/iio/adc/ti-adc081c.c
-@@ -1,9 +1,21 @@
- /*
-+ * TI ADC081C/ADC101C/ADC121C 8/10/12-bit ADC driver
-+ *
-  * Copyright (C) 2012 Avionic Design GmbH
-+ * Copyright (C) 2016 Intel
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License version 2 as
-  * published by the Free Software Foundation.
-+ *
-+ * Datasheets:
-+ * 	http://www.ti.com/lit/ds/symlink/adc081c021.pdf
-+ * 	http://www.ti.com/lit/ds/symlink/adc101c021.pdf
-+ *	http://www.ti.com/lit/ds/symlink/adc121c021.pdf
-+ *
-+ * The devices have a very similar interface and differ mostly in the number of
-+ * bits handled. For the 8-bit and 10-bit models the least-significant 4 or 2
-+ * bits of value registers are reserved.
-  */
- 
- #include <linux/err.h>
-@@ -17,6 +29,9 @@
- struct adc081c {
- 	struct i2c_client *i2c;
- 	struct regulator *ref;
-+
-+	/* 8, 10 or 12 */
-+	int bits;
- };
- 
- #define REG_CONV_RES 0x00
-@@ -34,7 +49,7 @@ static int adc081c_read_raw(struct iio_dev *iio,
- 		if (err < 0)
- 			return err;
- 
--		*value = (err >> 4) & 0xff;
-+		*value = (err & 0xFFF) >> (12 - adc->bits);
- 		return IIO_VAL_INT;
- 
- 	case IIO_CHAN_INFO_SCALE:
-@@ -43,7 +58,7 @@ static int adc081c_read_raw(struct iio_dev *iio,
- 			return err;
- 
- 		*value = err / 1000;
--		*shift = 8;
-+		*shift = adc->bits;
- 
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 
-@@ -72,6 +87,9 @@ static int adc081c_probe(struct i2c_client *client,
- 	struct adc081c *adc;
- 	int err;
- 
-+	if (id->driver_data != 8 && id->driver_data != 10 && id->driver_data != 12)
-+		return -EINVAL;
-+
- 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
- 		return -EOPNOTSUPP;
- 
-@@ -81,6 +99,7 @@ static int adc081c_probe(struct i2c_client *client,
- 
- 	adc = iio_priv(iio);
- 	adc->i2c = client;
-+	adc->bits = id->driver_data;
- 
- 	adc->ref = devm_regulator_get(&client->dev, "vref");
- 	if (IS_ERR(adc->ref))
-@@ -124,7 +143,9 @@ static int adc081c_remove(struct i2c_client *client)
- }
- 
- static const struct i2c_device_id adc081c_id[] = {
--	{ "adc081c", 0 },
-+	{ "adc081c",  8 },
-+	{ "adc101c", 10 },
-+	{ "adc121c", 12 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, adc081c_id);
-@@ -132,6 +153,8 @@ MODULE_DEVICE_TABLE(i2c, adc081c_id);
- #ifdef CONFIG_OF
- static const struct of_device_id adc081c_of_match[] = {
- 	{ .compatible = "ti,adc081c" },
-+	{ .compatible = "ti,adc101c" },
-+	{ .compatible = "ti,adc121c" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, adc081c_of_match);
-@@ -149,5 +172,5 @@ static struct i2c_driver adc081c_driver = {
- module_i2c_driver(adc081c_driver);
- 
- MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
--MODULE_DESCRIPTION("Texas Instruments ADC081C021/027 driver");
-+MODULE_DESCRIPTION("Texas Instruments ADC081C/ADC101C/ADC121C driver");
- MODULE_LICENSE("GPL v2");
--- 
-2.8.0.rc3
+>  drivers/iio/dac/Kconfig                            |  27 +
+>  drivers/iio/dac/Makefile                           |   3 +
+>  drivers/iio/dac/ad5592r-base.c                     | 694 +++++++++++++++++++++
+>  drivers/iio/dac/ad5592r-base.h                     |  78 +++
+>  drivers/iio/dac/ad5592r.c                          | 164 +++++
+>  drivers/iio/dac/ad5593r.c                          | 131 ++++
+>  include/dt-bindings/iio/adi,ad5592r.h              |  16 +
+>  8 files changed, 1265 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5592r.txt
+>  create mode 100644 drivers/iio/dac/ad5592r-base.c
+>  create mode 100644 drivers/iio/dac/ad5592r-base.h
+>  create mode 100644 drivers/iio/dac/ad5592r.c
+>  create mode 100644 drivers/iio/dac/ad5593r.c
+>  create mode 100644 include/dt-bindings/iio/adi,ad5592r.h
