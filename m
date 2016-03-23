@@ -1,14 +1,20 @@
-Return-Path: <sst@poczta.fm>
-Date: Sat, 19 Mar 2016 14:19:52 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtpo.poczta.interia.pl ([217.74.65.208]:35847 "EHLO
+	smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753823AbcCWI4k (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Mar 2016 04:56:40 -0400
+Date: Wed, 23 Mar 2016 09:57:20 +0100
 From: Slawomir Stepien <sst@poczta.fm>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: add driver for Microchip
+Subject: [PATCH v5] iio: potentiometer: add driver for Microchip
  MCP413X/414X/415X/416X/423X/424X/425X/426X
-Message-ID: <20160319131952.GA10728@x220>
+Message-ID: <20160323085720.GA6836@x220>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 The following functionalities are supported:
  - write, read from volatile memory
@@ -17,7 +23,23 @@ Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22060b.pdf
 
 Signed-off-by: Slawomir Stepien <sst@poczta.fm>
 ---
-This is v2 of patch: "iio: add driver for Microchip MCP414X/416X/424X/426X"
+Changes since v4:
+- Added necessary include files and sorted all includes
+- Added missing mutex unlock when there is CMDERR
+- mcp4131_write_raw spi_write/mutex_unlock/return refactor
+
+Changes since v3:
+- Added 'potentiometer' to subject
+- Replaced mcp4131_exec with spi_write and mcp4131_read
+- Narrowed mutex locking and unlocking places
+
+Changes since v2:
+- Removed unnecessary parentheses in MCP4131_WIPER_SHIFT macro
+- Replaced the rx and tx SPI buffers with one buf that is ____cacheline_aligned
+- Changed mutex locking position
+- Replaced the devid with pointer to model configuration
+- Removed positive ("Registered" & "Unregistered") dev_info prints
+- Removed the mcp4131_remove callback
 
 Changes since v1:
 - One line summary changed
@@ -26,15 +48,15 @@ Changes since v1:
 - No additional sysfs attributes
 - Deleted not used devid struct memeber
 - Changed mcp4131_exec function arguments:
-  - write value is now u16
-  - no need to pass return buffer array - rx array from mcp4131_data is used
+ - write value is now u16
+ - no need to pass return buffer array - rx array from mcp4131_data is used
 - Added missing new line characters to dev_info
 ---
  .../bindings/iio/potentiometer/mcp4131.txt         |  84 ++++
  drivers/iio/potentiometer/Kconfig                  |  18 +
  drivers/iio/potentiometer/Makefile                 |   1 +
- drivers/iio/potentiometer/mcp4131.c                | 523 +++++++++++++++++++++
- 4 files changed, 626 insertions(+)
+ drivers/iio/potentiometer/mcp4131.c                | 494 +++++++++++++++++++++
+ 4 files changed, 597 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/mcp4131.txt
  create mode 100644 drivers/iio/potentiometer/mcp4131.c
 
@@ -169,10 +191,10 @@ index 8afe492..cd5c80b 100644
  obj-$(CONFIG_MCP4531) += mcp4531.o
 diff --git a/drivers/iio/potentiometer/mcp4131.c b/drivers/iio/potentiometer/mcp4131.c
 new file mode 100644
-index 0000000..3553c9e
+index 0000000..4e7e2c6
 --- /dev/null
 +++ b/drivers/iio/potentiometer/mcp4131.c
-@@ -0,0 +1,523 @@
+@@ -0,0 +1,494 @@
 +/*
 + * Industrial I/O driver for Microchip digital potentiometers
 + *
@@ -209,16 +231,20 @@ index 0000000..3553c9e
 + * 1. Write wiper setting to EEPROM for EEPROM capable models.
 + */
 +
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
++#include <linux/cache.h>
 +#include <linux/err.h>
-+
++#include <linux/export.h>
 +#include <linux/iio/iio.h>
++#include <linux/iio/types.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/of.h>
++#include <linux/spi/spi.h>
 +
 +#define MCP4131_WRITE		(0x00 << 2)
 +#define MCP4131_READ		(0x03 << 2)
 +
-+#define MCP4131_WIPER_SHIFT	(4)
++#define MCP4131_WIPER_SHIFT	4
 +#define MCP4131_CMDERR(r)	((r[0]) & 0x02)
 +#define MCP4131_RAW(r)		((r[0]) == 0xff ? 0x100 : (r[1]))
 +
@@ -300,11 +326,9 @@ index 0000000..3553c9e
 +
 +struct mcp4131_data {
 +	struct spi_device *spi;
-+	unsigned long devid;
++	const struct mcp4131_cfg *cfg;
 +	struct mutex lock;
-+	u8 tx[2], rx[2];
-+	struct spi_transfer xfer;
-+	struct spi_message msg;
++	u8 buf[2] ____cacheline_aligned;
 +};
 +
 +#define MCP4131_CHANNEL(ch) {					\
@@ -321,53 +345,19 @@ index 0000000..3553c9e
 +	MCP4131_CHANNEL(1),
 +};
 +
-+static int mcp4131_exec(struct mcp4131_data *data,
-+		u8 addr, u8 cmd,
-+		u16 val)
++static int mcp4131_read(struct spi_device *spi, void *buf, size_t len)
 +{
-+	int err;
-+	struct spi_device *spi = data->spi;
++	struct spi_transfer t = {
++		.tx_buf = buf, /* We need to send addr, cmd and 12 bits */
++		.rx_buf	= buf,
++		.len = len,
++	};
++	struct spi_message m;
 +
-+	data->rx[0] = 0;
-+	data->rx[1] = 0;
++	spi_message_init(&m);
++	spi_message_add_tail(&t, &m);
 +
-+	switch (cmd) {
-+	case MCP4131_READ:
-+		data->xfer.len = 2; /* Two bytes transfer for this command */
-+		data->tx[0] = (addr << MCP4131_WIPER_SHIFT) | MCP4131_READ;
-+		data->tx[1] = 0;
-+		break;
-+
-+	case MCP4131_WRITE:
-+		data->xfer.len = 2;
-+		data->tx[0] = (addr << MCP4131_WIPER_SHIFT) |
-+			MCP4131_WRITE | (val >> 8);
-+		data->tx[1] = val & 0xFF; /* 8 bits here */
-+		break;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	dev_dbg(&spi->dev, "mcp4131_exec: tx0: 0x%x tx1: 0x%x\n",
-+			data->tx[0], data->tx[1]);
-+
-+	mutex_lock(&data->lock);
-+	spi_message_init(&data->msg);
-+	spi_message_add_tail(&data->xfer, &data->msg);
-+
-+	err = spi_sync(spi, &data->msg);
-+	if (err) {
-+		dev_err(&spi->dev, "spi_sync(): %d\n", err);
-+		mutex_unlock(&data->lock);
-+		return err;
-+	}
-+	mutex_unlock(&data->lock);
-+
-+	dev_dbg(&spi->dev, "mcp4131_exec: rx0: 0x%x rx1: 0x%x\n",
-+			data->rx[0], data->rx[1]);
-+
-+	return 0;
++	return spi_sync(spi, &m);
 +}
 +
 +static int mcp4131_read_raw(struct iio_dev *indio_dev,
@@ -380,20 +370,31 @@ index 0000000..3553c9e
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_RAW:
-+		err = mcp4131_exec(data, address, MCP4131_READ, 0);
-+		if (err)
++		mutex_lock(&data->lock);
++
++		data->buf[0] = (address << MCP4131_WIPER_SHIFT) | MCP4131_READ;
++		data->buf[1] = 0;
++
++		err = mcp4131_read(data->spi, data->buf, 2);
++		if (err) {
++			mutex_unlock(&data->lock);
 +			return err;
++		}
 +
 +		/* Error, bad address/command combination */
-+		if (!MCP4131_CMDERR(data->rx))
++		if (!MCP4131_CMDERR(data->buf)) {
++			mutex_unlock(&data->lock);
 +			return -EIO;
++		}
 +
-+		*val = MCP4131_RAW(data->rx);
++		*val = MCP4131_RAW(data->buf);
++		mutex_unlock(&data->lock);
++
 +		return IIO_VAL_INT;
 +
 +	case IIO_CHAN_INFO_SCALE:
-+		*val = 1000 * mcp4131_cfg[data->devid].kohms;
-+		*val2 = mcp4131_cfg[data->devid].max_pos;
++		*val = 1000 * data->cfg->kohms;
++		*val2 = data->cfg->max_pos;
 +		return IIO_VAL_FRACTIONAL;
 +	}
 +
@@ -404,19 +405,30 @@ index 0000000..3553c9e
 +			     struct iio_chan_spec const *chan,
 +			     int val, int val2, long mask)
 +{
++	int err;
 +	struct mcp4131_data *data = iio_priv(indio_dev);
 +	int address = chan->channel << MCP4131_WIPER_SHIFT;
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_RAW:
-+		if (val > mcp4131_cfg[data->devid].max_pos || val < 0)
++		if (val > data->cfg->max_pos || val < 0)
 +			return -EINVAL;
 +		break;
++
 +	default:
 +		return -EINVAL;
 +	}
 +
-+	return mcp4131_exec(data, address, MCP4131_WRITE, val);
++	mutex_lock(&data->lock);
++
++	data->buf[0] = address << MCP4131_WIPER_SHIFT;
++	data->buf[0] |= MCP4131_WRITE | (val >> 8);
++	data->buf[1] = val & 0xFF; /* 8 bits here */
++
++	err = spi_write(data->spi, data->buf, 2);
++	mutex_unlock(&data->lock);
++
++	return err;
 +}
 +
 +static const struct iio_info mcp4131_info = {
@@ -440,17 +452,14 @@ index 0000000..3553c9e
 +	data = iio_priv(indio_dev);
 +	spi_set_drvdata(spi, indio_dev);
 +	data->spi = spi;
-+	data->devid = devid;
-+
-+	data->xfer.tx_buf = data->tx;
-+	data->xfer.rx_buf = data->rx;
++	data->cfg = &mcp4131_cfg[devid];
 +
 +	mutex_init(&data->lock);
 +
 +	indio_dev->dev.parent = dev;
 +	indio_dev->info = &mcp4131_info;
 +	indio_dev->channels = mcp4131_channels;
-+	indio_dev->num_channels = mcp4131_cfg[devid].wipers;
++	indio_dev->num_channels = data->cfg->wipers;
 +	indio_dev->name = spi_get_device_id(spi)->name;
 +
 +	err = devm_iio_device_register(dev, indio_dev);
@@ -458,21 +467,6 @@ index 0000000..3553c9e
 +		dev_info(&spi->dev, "Unable to register %s\n", indio_dev->name);
 +		return err;
 +	}
-+
-+	dev_info(&spi->dev, "Registered %s\n", indio_dev->name);
-+
-+	return 0;
-+}
-+
-+static int mcp4131_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct mcp4131_data *data = iio_priv(indio_dev);
-+
-+	mutex_destroy(&data->lock);
-+	devm_iio_device_unregister(&spi->dev, indio_dev);
-+
-+	dev_info(&spi->dev, "Unregistered %s\n", indio_dev->name);
 +
 +	return 0;
 +}
@@ -687,7 +681,6 @@ index 0000000..3553c9e
 +		.of_match_table = of_match_ptr(mcp4131_dt_ids),
 +	},
 +	.probe		= mcp4131_probe,
-+	.remove		= mcp4131_remove,
 +	.id_table	= mcp4131_id,
 +};
 +
@@ -697,4 +690,5 @@ index 0000000..3553c9e
 +MODULE_DESCRIPTION("MCP4131 digital potentiometer");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.7.3
+2.7.4
+
