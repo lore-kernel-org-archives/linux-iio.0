@@ -1,147 +1,159 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.208]:49511 "EHLO
-	smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751005AbcCVRE5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2016 13:04:57 -0400
-Date: Tue, 22 Mar 2016 18:05:39 +0100
-From: Slawomir Stepien <sst@poczta.fm>
-To: Joachim Eastwood <manabian@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Received: from down.free-electrons.com ([37.187.137.238]:47660 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752119AbcCWBbw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2016 21:31:52 -0400
+Date: Wed, 23 Mar 2016 02:31:39 +0100
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Anthony Olech <anthony.olech.opensource@diasemi.com>,
+	stwiss.opensource@diasemi.com
+Cc: LKML <linux-kernel@vger.kernel.org>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4] iio: potentiometer: add driver for Microchip
- MCP413X/414X/415X/416X/423X/424X/425X/426X
-Message-ID: <20160322170538.GB871@x220>
-References: <20160322154455.GA871@x220>
- <CAGhQ9VyphbjwuWy7O7nzGj8PnWX2QqkdN+29-DO1E_t_fs38sA@mail.gmail.com>
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Randy Dunlap <rdunlap@xenotime.net>, rtc-linux@googlegroups.com
+Subject: Re: [NEW DRIVER V6 0/7] DA9058 PMIC - please comment on this new
+ driver
+Message-ID: <20160323013139.GD2365@piout.net>
+References: <201304191703.r3JH3du0017574@latitude>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAGhQ9VyphbjwuWy7O7nzGj8PnWX2QqkdN+29-DO1E_t_fs38sA@mail.gmail.com>
+In-Reply-To: <201304191703.r3JH3du0017574@latitude>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mar 22, 2016 17:10, Joachim Eastwood wrote:
-> Hi Slawomir,
-> 
-> On 22 March 2016 at 16:44, Slawomir Stepien <sst@poczta.fm> wrote:
-> > The following functionalities are supported:
-> >  - write, read from volatile memory
-> >
-> > Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22060b.pdf
-> >
-> > Signed-off-by: Slawomir Stepien <sst@poczta.fm>
-> > ---
-> 
-> > +#include <linux/module.h>
-> > +#include <linux/spi/spi.h>
-> > +#include <linux/err.h>
-> > +
-> > +#include <linux/iio/iio.h>
-> 
-> Give that you use that you have a some OF stuff in your driver you
-> should also include <linux/of.h>. Same goes for <linux/mutex.h>.
-> I am sure this builds fine without those includes, but you should
-> explicitly include stuff that you use.
+Hi Anthony, Steve,
 
-Oh yes that's true.
+This driver has been submitted a while ago and reached v6 but still had
+a few comments. Do you still have some interest in seeing it being
+accepted?
 
-> While you're at it you could also put the includes in alphabetic order.
-
-OK
-
-> > +static int mcp4131_read_raw(struct iio_dev *indio_dev,
-> > +                           struct iio_chan_spec const *chan,
-> > +                           int *val, int *val2, long mask)
-> > +{
-> > +       int err;
-> > +       struct mcp4131_data *data = iio_priv(indio_dev);
-> > +       int address = chan->channel;
-> > +
-> > +       switch (mask) {
-> > +       case IIO_CHAN_INFO_RAW:
-> > +               mutex_lock(&data->lock);
-> > +
-> > +               data->buf[0] = (address << MCP4131_WIPER_SHIFT) | MCP4131_READ;
-> > +               data->buf[1] = 0;
-> > +
-> > +               err = mcp4131_read(data->spi, data->buf, 2);
-> > +               if (err) {
-> > +                       mutex_unlock(&data->lock);
-> > +                       return err;
-> > +               }
-> > +
-> > +               /* Error, bad address/command combination */
-> > +               if (!MCP4131_CMDERR(data->buf))
-> > +                       return -EIO;
+On 19/04/2013 at 17:56:29 +0100, Anthony Olech wrote :
+> This is submission attempt number 6 to have this driver included in
+> the linux kernel source tree. This is the driver for the Dialog DA9058.
 > 
-> Missing mutex unlock here.
-
-Oh ;) I'll fix that.
-
-> > +
-> > +               *val = MCP4131_RAW(data->buf);
-> > +               mutex_unlock(&data->lock);
-> > +
-> > +               return IIO_VAL_INT;
-> > +
-> > +       case IIO_CHAN_INFO_SCALE:
-> > +               *val = 1000 * data->cfg->kohms;
-> > +               *val2 = data->cfg->max_pos;
-> > +               return IIO_VAL_FRACTIONAL;
-> > +       }
-> > +
-> > +       return -EINVAL;
-> > +}
-> > +
-> > +static int mcp4131_write_raw(struct iio_dev *indio_dev,
-> > +                            struct iio_chan_spec const *chan,
-> > +                            int val, int val2, long mask)
-> > +{
-> > +       int err;
-> > +       struct mcp4131_data *data = iio_priv(indio_dev);
-> > +       int address = chan->channel << MCP4131_WIPER_SHIFT;
-> > +
-> > +       switch (mask) {
-> > +       case IIO_CHAN_INFO_RAW:
-> > +               if (val > data->cfg->max_pos || val < 0)
-> > +                       return -EINVAL;
-> > +               break;
-> > +
-> > +       default:
-> > +               return -EINVAL;
-> > +       }
-> > +
-> > +       mutex_lock(&data->lock);
-> > +
-> > +       data->buf[0] = address << MCP4131_WIPER_SHIFT;
-> > +       data->buf[0] |= MCP4131_WRITE | (val >> 8);
-> > +       data->buf[1] = val & 0xFF; /* 8 bits here */
-> > +
-> > +       err = spi_write(data->spi, data->buf, 2);
-> > +       if (err) {
-> > +               mutex_unlock(&data->lock);
-> > +               return err;
-> > +       }
-> > +       mutex_unlock(&data->lock);
-> > +
-> > +       return 0;
+> The DA9058 is a low power Power Management Integrated Circuit with extra
+> functionality. It is a Multi Function Device controlled only from an I2C
+> bus whose components can raise an interrupt request on a single IRQ line.
 > 
-> This last part could be written as:
->   err = spi_write(data->spi, data->buf, 2);
->   mutex_unlock(&data->lock);
+> The driver for the DA9058 consists of a core (i2c) device driver that
+> instantiates the individual component device drivers for:
 > 
->   return err;
- 
-OK
-
-> Other than the things I noted driver looks good to me.
+> adc - 5 ADC channels
+> gpio - 2 available pins
+> onkey - 1 device
+> regulator - 4 BUCKS, 19 LDO and 3 fixed
+> rtc - low power clock
+> hwmon - 5 monitored voltages/temperatures
+> 
+> All the above six component device drivers depend on the 'core'
+> component driver, which is number one in the patch series.
+> 
+> Each component driver for the Dialog DA9058 will follow as an e-mail
+> patch relative to 
+> 
+> This driver has been tested on a Samsung SMDK6410 connected to a Dialog
+> DA9058 Evaluation Board via one GPIO and a 3-wire I2C connection.
+> 
+> All the components can be builtin to the kernel or compiled as modules.
+> As far as I can tell, all the latest APIs both for the core driver and
+> all the component drivers have been adhered to, but if I have missed
+> something please let me know.
+> 
+> In a clean check out of next-20130419 in linux-next, each patch has been
+> applied individually and the final result has been built successfully.
+> 
+> Many thanks,
+> Anthony Olech, Dialog Semiconductor Ltd.
+> 
+> Tony Olech (at Home) (7):
+>   drivers/mfd: DA9058 MFD core driver
+>   drivers/iio/adc: DA9058 ADC driver
+>   drivers/input/misc: DA9058 ONKEY driver
+>   drivers/rtc: DA9058 RTC driver
+>   drivers/gpio: DA9058 GPIO driver
+>   drivers/hwmon: DA9058 HWMON driver
+>   drivers/regulator: DA9058 REGULATOR driver
+> 
+>  Documentation/hwmon/da9058           |   38 ++
+>  drivers/gpio/Kconfig                 |   12 +
+>  drivers/gpio/Makefile                |    1 +
+>  drivers/gpio/gpio-da9058.c           |  376 ++++++++++++++
+>  drivers/hwmon/Kconfig                |   10 +
+>  drivers/hwmon/Makefile               |    3 +-
+>  drivers/hwmon/da9058-hwmon.c         |  330 ++++++++++++
+>  drivers/iio/adc/Kconfig              |   12 +
+>  drivers/iio/adc/Makefile             |    1 +
+>  drivers/iio/adc/da9058-adc.c         |  396 ++++++++++++++
+>  drivers/input/misc/Kconfig           |   10 +
+>  drivers/input/misc/Makefile          |    1 +
+>  drivers/input/misc/da9058_onkey.c    |  173 +++++++
+>  drivers/mfd/Kconfig                  |   17 +
+>  drivers/mfd/Makefile                 |    3 +
+>  drivers/mfd/da9058-core.c            |   73 +++
+>  drivers/mfd/da9058-i2c.c             |   96 ++++
+>  drivers/mfd/da9058-info.c            |  939 ++++++++++++++++++++++++++++++++++
+>  drivers/mfd/da9058-irq.c             |   56 ++
+>  drivers/regulator/Kconfig            |   11 +
+>  drivers/regulator/Makefile           |    1 +
+>  drivers/regulator/da9058-regulator.c |  199 +++++++
+>  drivers/rtc/Kconfig                  |   10 +
+>  drivers/rtc/Makefile                 |    1 +
+>  drivers/rtc/rtc-da9058.c             |  448 ++++++++++++++++
+>  include/linux/mfd/da9058/adc.h       |   18 +
+>  include/linux/mfd/da9058/bat.h       |   33 ++
+>  include/linux/mfd/da9058/codec.h     |   22 +
+>  include/linux/mfd/da9058/conf.h      |   22 +
+>  include/linux/mfd/da9058/core.h      |   66 +++
+>  include/linux/mfd/da9058/gpio.h      |   19 +
+>  include/linux/mfd/da9058/hwmon.h     |   32 ++
+>  include/linux/mfd/da9058/i2c.h       |   22 +
+>  include/linux/mfd/da9058/irq.h       |   50 ++
+>  include/linux/mfd/da9058/onkey.h     |   17 +
+>  include/linux/mfd/da9058/pdata.h     |   30 ++
+>  include/linux/mfd/da9058/registers.h |  480 +++++++++++++++++
+>  include/linux/mfd/da9058/regulator.h |   26 +
+>  include/linux/mfd/da9058/rtc.h       |   17 +
+>  39 files changed, 4070 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/hwmon/da9058
+>  create mode 100644 drivers/gpio/gpio-da9058.c
+>  create mode 100644 drivers/hwmon/da9058-hwmon.c
+>  create mode 100644 drivers/iio/adc/da9058-adc.c
+>  create mode 100644 drivers/input/misc/da9058_onkey.c
+>  create mode 100644 drivers/mfd/da9058-core.c
+>  create mode 100644 drivers/mfd/da9058-i2c.c
+>  create mode 100644 drivers/mfd/da9058-info.c
+>  create mode 100644 drivers/mfd/da9058-irq.c
+>  create mode 100644 drivers/regulator/da9058-regulator.c
+>  create mode 100644 drivers/rtc/rtc-da9058.c
+>  create mode 100644 include/linux/mfd/da9058/adc.h
+>  create mode 100644 include/linux/mfd/da9058/bat.h
+>  create mode 100644 include/linux/mfd/da9058/codec.h
+>  create mode 100644 include/linux/mfd/da9058/conf.h
+>  create mode 100644 include/linux/mfd/da9058/core.h
+>  create mode 100644 include/linux/mfd/da9058/gpio.h
+>  create mode 100644 include/linux/mfd/da9058/hwmon.h
+>  create mode 100644 include/linux/mfd/da9058/i2c.h
+>  create mode 100644 include/linux/mfd/da9058/irq.h
+>  create mode 100644 include/linux/mfd/da9058/onkey.h
+>  create mode 100644 include/linux/mfd/da9058/pdata.h
+>  create mode 100644 include/linux/mfd/da9058/registers.h
+>  create mode 100644 include/linux/mfd/da9058/regulator.h
+>  create mode 100644 include/linux/mfd/da9058/rtc.h
+> 
+> -- 
+> end-of-patch for NEW DRIVER V6
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-input" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 > 
-> regards,
-> Joachim Eastwood
 
 -- 
-Slawomir Stepien
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
