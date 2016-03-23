@@ -1,49 +1,178 @@
-Return-Path: <ksenija.stanojevic@gmail.com>
-From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-To: gregkh@linuxfoundation.org
-Cc: Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org,
-	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Subject: [PATCH] Staging: iio: Fix sparse endian warning
-Date: Wed, 23 Mar 2016 12:06:34 +0100
-Message-Id: <1458731194-11597-1-git-send-email-ksenija.stanojevic@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail1.bemta3.messagelabs.com ([195.245.230.164]:32087 "EHLO
+	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755005AbcCWLkb convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Mar 2016 07:40:31 -0400
+From: "Opensource [Steve Twiss]" <stwiss.opensource@diasemi.com>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: "Opensource [Anthony Olech]" <anthony.olech.opensource@diasemi.com>,
+	LKML <linux-kernel@vger.kernel.org>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	Randy Dunlap <rdunlap@xenotime.net>,
+	"rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>
+Subject: RE: [NEW DRIVER V6 0/7] DA9058 PMIC - please comment on this new
+ driver
+Date: Wed, 23 Mar 2016 11:33:44 +0000
+Message-ID: <6ED8E3B22081A4459DAC7699F3695FB70173D7FE96@SW-EX-MBX02.diasemi.com>
+References: <201304191703.r3JH3du0017574@latitude>
+ <20160323013139.GD2365@piout.net>
+In-Reply-To: <20160323013139.GD2365@piout.net>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Fix following sparse warning:
-warning: cast to restricted __be16
+On 23 March 2016, Alexandre Belloni wrote: 
 
-Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
----
- drivers/staging/iio/adc/ad7606_spi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+> To: Opensource [Anthony Olech]; Opensource [Steve Twiss]
+> Subject: Re: [NEW DRIVER V6 0/7] DA9058 PMIC - please comment on this new driver
+> 
+> Hi Anthony, Steve,
+> 
+> This driver has been submitted a while ago and reached v6 but still had
+> a few comments. Do you still have some interest in seeing it being
+> accepted?
 
-diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-index d873a51..825da07 100644
---- a/drivers/staging/iio/adc/ad7606_spi.c
-+++ b/drivers/staging/iio/adc/ad7606_spi.c
-@@ -21,7 +21,8 @@ static int ad7606_spi_read_block(struct device *dev,
- {
- 	struct spi_device *spi = to_spi_device(dev);
- 	int i, ret;
--	unsigned short *data = buf;
-+	unsigned short *data;
-+	__be16 *bdata = buf;
- 
- 	ret = spi_read(spi, buf, count * 2);
- 	if (ret < 0) {
-@@ -30,7 +31,7 @@ static int ad7606_spi_read_block(struct device *dev,
- 	}
- 
- 	for (i = 0; i < count; i++)
--		data[i] = be16_to_cpu(data[i]);
-+		data[i] = be16_to_cpu(bdata[i]);
- 
- 	return 0;
- }
--- 
-1.9.1
+Hi Alexandre,
+
+I think that Tony may have run out of time on this submission.
+I'll check with my manager on this and get back to you later today.
+
+Regards,
+Steve
+
+> 
+> On 19/04/2013 at 17:56:29 +0100, Anthony Olech wrote :
+> > This is submission attempt number 6 to have this driver included in
+> > the linux kernel source tree. This is the driver for the Dialog DA9058.
+> >
+> > The DA9058 is a low power Power Management Integrated Circuit with extra
+> > functionality. It is a Multi Function Device controlled only from an I2C
+> > bus whose components can raise an interrupt request on a single IRQ line.
+> >
+> > The driver for the DA9058 consists of a core (i2c) device driver that
+> > instantiates the individual component device drivers for:
+> >
+> > adc - 5 ADC channels
+> > gpio - 2 available pins
+> > onkey - 1 device
+> > regulator - 4 BUCKS, 19 LDO and 3 fixed
+> > rtc - low power clock
+> > hwmon - 5 monitored voltages/temperatures
+> >
+> > All the above six component device drivers depend on the 'core'
+> > component driver, which is number one in the patch series.
+> >
+> > Each component driver for the Dialog DA9058 will follow as an e-mail
+> > patch relative to
+> >
+> > This driver has been tested on a Samsung SMDK6410 connected to a Dialog
+> > DA9058 Evaluation Board via one GPIO and a 3-wire I2C connection.
+> >
+> > All the components can be builtin to the kernel or compiled as modules.
+> > As far as I can tell, all the latest APIs both for the core driver and
+> > all the component drivers have been adhered to, but if I have missed
+> > something please let me know.
+> >
+> > In a clean check out of next-20130419 in linux-next, each patch has been
+> > applied individually and the final result has been built successfully.
+> >
+> > Many thanks,
+> > Anthony Olech, Dialog Semiconductor Ltd.
+> >
+> > Tony Olech (at Home) (7):
+> >   drivers/mfd: DA9058 MFD core driver
+> >   drivers/iio/adc: DA9058 ADC driver
+> >   drivers/input/misc: DA9058 ONKEY driver
+> >   drivers/rtc: DA9058 RTC driver
+> >   drivers/gpio: DA9058 GPIO driver
+> >   drivers/hwmon: DA9058 HWMON driver
+> >   drivers/regulator: DA9058 REGULATOR driver
+> >
+> >  Documentation/hwmon/da9058           |   38 ++
+> >  drivers/gpio/Kconfig                 |   12 +
+> >  drivers/gpio/Makefile                |    1 +
+> >  drivers/gpio/gpio-da9058.c           |  376 ++++++++++++++
+> >  drivers/hwmon/Kconfig                |   10 +
+> >  drivers/hwmon/Makefile               |    3 +-
+> >  drivers/hwmon/da9058-hwmon.c         |  330 ++++++++++++
+> >  drivers/iio/adc/Kconfig              |   12 +
+> >  drivers/iio/adc/Makefile             |    1 +
+> >  drivers/iio/adc/da9058-adc.c         |  396 ++++++++++++++
+> >  drivers/input/misc/Kconfig           |   10 +
+> >  drivers/input/misc/Makefile          |    1 +
+> >  drivers/input/misc/da9058_onkey.c    |  173 +++++++
+> >  drivers/mfd/Kconfig                  |   17 +
+> >  drivers/mfd/Makefile                 |    3 +
+> >  drivers/mfd/da9058-core.c            |   73 +++
+> >  drivers/mfd/da9058-i2c.c             |   96 ++++
+> >  drivers/mfd/da9058-info.c            |  939
+> ++++++++++++++++++++++++++++++++++
+> >  drivers/mfd/da9058-irq.c             |   56 ++
+> >  drivers/regulator/Kconfig            |   11 +
+> >  drivers/regulator/Makefile           |    1 +
+> >  drivers/regulator/da9058-regulator.c |  199 +++++++
+> >  drivers/rtc/Kconfig                  |   10 +
+> >  drivers/rtc/Makefile                 |    1 +
+> >  drivers/rtc/rtc-da9058.c             |  448 ++++++++++++++++
+> >  include/linux/mfd/da9058/adc.h       |   18 +
+> >  include/linux/mfd/da9058/bat.h       |   33 ++
+> >  include/linux/mfd/da9058/codec.h     |   22 +
+> >  include/linux/mfd/da9058/conf.h      |   22 +
+> >  include/linux/mfd/da9058/core.h      |   66 +++
+> >  include/linux/mfd/da9058/gpio.h      |   19 +
+> >  include/linux/mfd/da9058/hwmon.h     |   32 ++
+> >  include/linux/mfd/da9058/i2c.h       |   22 +
+> >  include/linux/mfd/da9058/irq.h       |   50 ++
+> >  include/linux/mfd/da9058/onkey.h     |   17 +
+> >  include/linux/mfd/da9058/pdata.h     |   30 ++
+> >  include/linux/mfd/da9058/registers.h |  480 +++++++++++++++++
+> >  include/linux/mfd/da9058/regulator.h |   26 +
+> >  include/linux/mfd/da9058/rtc.h       |   17 +
+> >  39 files changed, 4070 insertions(+), 1 deletion(-)
+> >  create mode 100644 Documentation/hwmon/da9058
+> >  create mode 100644 drivers/gpio/gpio-da9058.c
+> >  create mode 100644 drivers/hwmon/da9058-hwmon.c
+> >  create mode 100644 drivers/iio/adc/da9058-adc.c
+> >  create mode 100644 drivers/input/misc/da9058_onkey.c
+> >  create mode 100644 drivers/mfd/da9058-core.c
+> >  create mode 100644 drivers/mfd/da9058-i2c.c
+> >  create mode 100644 drivers/mfd/da9058-info.c
+> >  create mode 100644 drivers/mfd/da9058-irq.c
+> >  create mode 100644 drivers/regulator/da9058-regulator.c
+> >  create mode 100644 drivers/rtc/rtc-da9058.c
+> >  create mode 100644 include/linux/mfd/da9058/adc.h
+> >  create mode 100644 include/linux/mfd/da9058/bat.h
+> >  create mode 100644 include/linux/mfd/da9058/codec.h
+> >  create mode 100644 include/linux/mfd/da9058/conf.h
+> >  create mode 100644 include/linux/mfd/da9058/core.h
+> >  create mode 100644 include/linux/mfd/da9058/gpio.h
+> >  create mode 100644 include/linux/mfd/da9058/hwmon.h
+> >  create mode 100644 include/linux/mfd/da9058/i2c.h
+> >  create mode 100644 include/linux/mfd/da9058/irq.h
+> >  create mode 100644 include/linux/mfd/da9058/onkey.h
+> >  create mode 100644 include/linux/mfd/da9058/pdata.h
+> >  create mode 100644 include/linux/mfd/da9058/registers.h
+> >  create mode 100644 include/linux/mfd/da9058/regulator.h
+> >  create mode 100644 include/linux/mfd/da9058/rtc.h
+> >
+> > --
+> > end-of-patch for NEW DRIVER V6
+> >
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-input" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> >
+> >
+> 
+> --
+> Alexandre Belloni, Free Electrons
+> Embedded Linux, Kernel and Android engineering
+> http://free-electrons.com
