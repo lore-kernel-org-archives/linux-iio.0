@@ -1,141 +1,164 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:12532 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1030211AbcCQLy1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 17 Mar 2016 07:54:27 -0400
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v7 1/1] iio:pressure:ms5611: fix missing regulator_disable
-Date: Thu, 17 Mar 2016 12:55:03 +0100
-Message-ID: <34b395320abc2c3d3c11c342ffc9ed37867c8474.1458215358.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1458215358.git.gregor.boirie@parrot.com>
-References: <cover.1458215358.git.gregor.boirie@parrot.com>
+Received: from mail1.bemta3.messagelabs.com ([195.245.230.162]:54420 "EHLO
+	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755995AbcCWRrp convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Mar 2016 13:47:45 -0400
+From: "Opensource [Steve Twiss]" <stwiss.opensource@diasemi.com>
+To: 'Alexandre Belloni' <alexandre.belloni@free-electrons.com>
+CC: 'LKML' <linux-kernel@vger.kernel.org>,
+	'Alessandro Zummo' <a.zummo@towertech.it>,
+	'Guenter Roeck' <linux@roeck-us.net>,
+	"'Jonathan Cameron'" <jic23@cam.ac.uk>,
+	'Lars-Peter Clausen' <lars@metafoo.de>,
+	"'linux-iio@vger.kernel.org'" <'linux-iio@vger.kernel.org'>,
+	"'linux-input@vger.kernel.org'" <'linux-input@vger.kernel.org'>,
+	"'Randy Dunlap'" <rdunlap@xenotime.net>,
+	"'rtc-linux@googlegroups.com'" <'rtc-linux@googlegroups.com'>
+Subject: RE: [NEW DRIVER V6 0/7] DA9058 PMIC - please comment on this new
+ driver
+Date: Wed, 23 Mar 2016 17:47:38 +0000
+Message-ID: <6ED8E3B22081A4459DAC7699F3695FB70173D800D3@SW-EX-MBX02.diasemi.com>
+References: <201304191703.r3JH3du0017574@latitude>
+ <20160323013139.GD2365@piout.net>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Ensure optional regulator is properly disabled when present.
+> On 23 March 2016, Alexandre Belloni wrote:
+> > Subject: Re: [NEW DRIVER V6 0/7] DA9058 PMIC - please comment on this new driver
+> >
+> > Hi Anthony, Steve,
+> >
+> > This driver has been submitted a while ago and reached v6 but still had
+> > a few comments. Do you still have some interest in seeing it being
+> > accepted?
 
-Fixes: 3145229f9191 ("iio:pressure:ms5611: power regulator support")
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- drivers/iio/pressure/ms5611.h      |  3 +++
- drivers/iio/pressure/ms5611_core.c | 41 +++++++++++++++++++++++++++++---------
- 2 files changed, 35 insertions(+), 9 deletions(-)
+Hi Alexandre,
 
-diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
-index d725a307..ccda63c 100644
---- a/drivers/iio/pressure/ms5611.h
-+++ b/drivers/iio/pressure/ms5611.h
-@@ -16,6 +16,8 @@
- #include <linux/iio/iio.h>
- #include <linux/mutex.h>
- 
-+struct regulator;
-+
- #define MS5611_RESET			0x1e
- #define MS5611_READ_ADC			0x00
- #define MS5611_READ_PROM_WORD		0xA0
-@@ -57,6 +59,7 @@ struct ms5611_state {
- 					  s32 *temp, s32 *pressure);
- 
- 	struct ms5611_chip_info *chip_info;
-+	struct regulator *vdd;
- };
- 
- int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
-diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-index 37dbc04..c4e6586 100644
---- a/drivers/iio/pressure/ms5611_core.c
-+++ b/drivers/iio/pressure/ms5611_core.c
-@@ -387,24 +387,45 @@ static const struct iio_info ms5611_info = {
- static int ms5611_init(struct iio_dev *indio_dev)
- {
- 	int ret;
--	struct regulator *vdd = devm_regulator_get(indio_dev->dev.parent,
--	                                           "vdd");
-+	struct ms5611_state *st = iio_priv(indio_dev);
- 
- 	/* Enable attached regulator if any. */
--	if (!IS_ERR(vdd)) {
--		ret = regulator_enable(vdd);
-+	st->vdd = devm_regulator_get(indio_dev->dev.parent, "vdd");
-+	if (!IS_ERR(st->vdd)) {
-+		ret = regulator_enable(st->vdd);
- 		if (ret) {
- 			dev_err(indio_dev->dev.parent,
--			        "failed to enable Vdd supply: %d\n", ret);
-+				"failed to enable Vdd supply: %d\n", ret);
- 			return ret;
- 		}
-+	} else {
-+		ret = PTR_ERR(st->vdd);
-+		if (ret != -ENODEV)
-+			return ret;
- 	}
- 
- 	ret = ms5611_reset(indio_dev);
- 	if (ret < 0)
--		return ret;
-+		goto err_regulator_disable;
-+
-+	ret = ms5611_read_prom(indio_dev);
-+	if (ret < 0)
-+		goto err_regulator_disable;
-+
-+	return 0;
- 
--	return ms5611_read_prom(indio_dev);
-+err_regulator_disable:
-+	if (!IS_ERR_OR_NULL(st->vdd))
-+		regulator_disable(st->vdd);
-+	return ret;
-+}
-+
-+static void ms5611_fini(const struct iio_dev *indio_dev)
-+{
-+	const struct ms5611_state *st = iio_priv(indio_dev);
-+
-+	if (!IS_ERR_OR_NULL(st->vdd))
-+		regulator_disable(st->vdd);
- }
- 
- int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
-@@ -436,7 +457,7 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
- 					 ms5611_trigger_handler, NULL);
- 	if (ret < 0) {
- 		dev_err(dev, "iio triggered buffer setup failed\n");
--		return ret;
-+		goto err_fini;
- 	}
- 
- 	ret = iio_device_register(indio_dev);
-@@ -449,7 +470,8 @@ int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
- 
- err_buffer_cleanup:
- 	iio_triggered_buffer_cleanup(indio_dev);
--
-+err_fini:
-+	ms5611_fini(indio_dev);
- 	return ret;
- }
- EXPORT_SYMBOL(ms5611_probe);
-@@ -458,6 +480,7 @@ int ms5611_remove(struct iio_dev *indio_dev)
- {
- 	iio_device_unregister(indio_dev);
- 	iio_triggered_buffer_cleanup(indio_dev);
-+	ms5611_fini(indio_dev);
- 
- 	return 0;
- }
--- 
-2.1.4
+The answer has come back.
+As the device has been obsoleted at the moment there is no real benefit in seeing this driver accepted into the kernel.
 
+Thank you.
+
+Regards,
+Steve
+
+> > On 19/04/2013 at 17:56:29 +0100, Anthony Olech wrote :
+> > > This is submission attempt number 6 to have this driver included in
+> > > the linux kernel source tree. This is the driver for the Dialog DA9058.
+> > >
+> > > The DA9058 is a low power Power Management Integrated Circuit with
+> extra
+> > > functionality. It is a Multi Function Device controlled only from an I2C
+> > > bus whose components can raise an interrupt request on a single IRQ line.
+> > >
+> > > The driver for the DA9058 consists of a core (i2c) device driver that
+> > > instantiates the individual component device drivers for:
+> > >
+> > > adc - 5 ADC channels
+> > > gpio - 2 available pins
+> > > onkey - 1 device
+> > > regulator - 4 BUCKS, 19 LDO and 3 fixed
+> > > rtc - low power clock
+> > > hwmon - 5 monitored voltages/temperatures
+> > >
+> > > All the above six component device drivers depend on the 'core'
+> > > component driver, which is number one in the patch series.
+> > >
+> > > Each component driver for the Dialog DA9058 will follow as an e-mail
+> > > patch relative to
+> > >
+> > > This driver has been tested on a Samsung SMDK6410 connected to a Dialog
+> > > DA9058 Evaluation Board via one GPIO and a 3-wire I2C connection.
+> > >
+> > > All the components can be builtin to the kernel or compiled as modules.
+> > > As far as I can tell, all the latest APIs both for the core driver and
+> > > all the component drivers have been adhered to, but if I have missed
+> > > something please let me know.
+> > >
+> > > In a clean check out of next-20130419 in linux-next, each patch has been
+> > > applied individually and the final result has been built successfully.
+> > >
+> > > Many thanks,
+> > > Anthony Olech, Dialog Semiconductor Ltd.
+> > >
+> > > Tony Olech (at Home) (7):
+> > >   drivers/mfd: DA9058 MFD core driver
+> > >   drivers/iio/adc: DA9058 ADC driver
+> > >   drivers/input/misc: DA9058 ONKEY driver
+> > >   drivers/rtc: DA9058 RTC driver
+> > >   drivers/gpio: DA9058 GPIO driver
+> > >   drivers/hwmon: DA9058 HWMON driver
+> > >   drivers/regulator: DA9058 REGULATOR driver
+> > >
+> > >  Documentation/hwmon/da9058           |   38 ++
+> > >  drivers/gpio/Kconfig                 |   12 +
+> > >  drivers/gpio/Makefile                |    1 +
+> > >  drivers/gpio/gpio-da9058.c           |  376 ++++++++++++++
+> > >  drivers/hwmon/Kconfig                |   10 +
+> > >  drivers/hwmon/Makefile               |    3 +-
+> > >  drivers/hwmon/da9058-hwmon.c         |  330 ++++++++++++
+> > >  drivers/iio/adc/Kconfig              |   12 +
+> > >  drivers/iio/adc/Makefile             |    1 +
+> > >  drivers/iio/adc/da9058-adc.c         |  396 ++++++++++++++
+> > >  drivers/input/misc/Kconfig           |   10 +
+> > >  drivers/input/misc/Makefile          |    1 +
+> > >  drivers/input/misc/da9058_onkey.c    |  173 +++++++
+> > >  drivers/mfd/Kconfig                  |   17 +
+> > >  drivers/mfd/Makefile                 |    3 +
+> > >  drivers/mfd/da9058-core.c            |   73 +++
+> > >  drivers/mfd/da9058-i2c.c             |   96 ++++
+> > >  drivers/mfd/da9058-info.c            |  939
+> > ++++++++++++++++++++++++++++++++++
+> > >  drivers/mfd/da9058-irq.c             |   56 ++
+> > >  drivers/regulator/Kconfig            |   11 +
+> > >  drivers/regulator/Makefile           |    1 +
+> > >  drivers/regulator/da9058-regulator.c |  199 +++++++
+> > >  drivers/rtc/Kconfig                  |   10 +
+> > >  drivers/rtc/Makefile                 |    1 +
+> > >  drivers/rtc/rtc-da9058.c             |  448 ++++++++++++++++
+> > >  include/linux/mfd/da9058/adc.h       |   18 +
+> > >  include/linux/mfd/da9058/bat.h       |   33 ++
+> > >  include/linux/mfd/da9058/codec.h     |   22 +
+> > >  include/linux/mfd/da9058/conf.h      |   22 +
+> > >  include/linux/mfd/da9058/core.h      |   66 +++
+> > >  include/linux/mfd/da9058/gpio.h      |   19 +
+> > >  include/linux/mfd/da9058/hwmon.h     |   32 ++
+> > >  include/linux/mfd/da9058/i2c.h       |   22 +
+> > >  include/linux/mfd/da9058/irq.h       |   50 ++
+> > >  include/linux/mfd/da9058/onkey.h     |   17 +
+> > >  include/linux/mfd/da9058/pdata.h     |   30 ++
+> > >  include/linux/mfd/da9058/registers.h |  480 +++++++++++++++++
+> > >  include/linux/mfd/da9058/regulator.h |   26 +
+> > >  include/linux/mfd/da9058/rtc.h       |   17 +
+> > >  39 files changed, 4070 insertions(+), 1 deletion(-)
+> > >  create mode 100644 Documentation/hwmon/da9058
+> > >  create mode 100644 drivers/gpio/gpio-da9058.c
+> > >  create mode 100644 drivers/hwmon/da9058-hwmon.c
+> > >  create mode 100644 drivers/iio/adc/da9058-adc.c
+> > >  create mode 100644 drivers/input/misc/da9058_onkey.c
+> > >  create mode 100644 drivers/mfd/da9058-core.c
+> > >  create mode 100644 drivers/mfd/da9058-i2c.c
+> > >  create mode 100644 drivers/mfd/da9058-info.c
+> > >  create mode 100644 drivers/mfd/da9058-irq.c
+> > >  create mode 100644 drivers/regulator/da9058-regulator.c
+> > >  create mode 100644 drivers/rtc/rtc-da9058.c
+> > >  create mode 100644 include/linux/mfd/da9058/adc.h
+> > >  create mode 100644 include/linux/mfd/da9058/bat.h
+> > >  create mode 100644 include/linux/mfd/da9058/codec.h
+> > >  create mode 100644 include/linux/mfd/da9058/conf.h
+> > >  create mode 100644 include/linux/mfd/da9058/core.h
+> > >  create mode 100644 include/linux/mfd/da9058/gpio.h
+> > >  create mode 100644 include/linux/mfd/da9058/hwmon.h
+> > >  create mode 100644 include/linux/mfd/da9058/i2c.h
+> > >  create mode 100644 include/linux/mfd/da9058/irq.h
+> > >  create mode 100644 include/linux/mfd/da9058/onkey.h
+> > >  create mode 100644 include/linux/mfd/da9058/pdata.h
+> > >  create mode 100644 include/linux/mfd/da9058/registers.h
+> > >  create mode 100644 include/linux/mfd/da9058/regulator.h
+> > >  create mode 100644 include/linux/mfd/da9058/rtc.h
+> > >
+> > > --
+> > > end-of-patch for NEW DRIVER V6
