@@ -1,95 +1,52 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 1/4] iio: st_sensors: simplify buffer address handling
-Date: Thu, 24 Mar 2016 14:18:03 +0100
-Message-Id: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
+Return-Path: <luisbg@osg.samsung.com>
+From: Luis de Bethencourt <luisbg@osg.samsung.com>
+To: linux-kernel@vger.kernel.org
+Cc: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org,
+	Luis de Bethencourt <luisbg@osg.samsung.com>
+Subject: [PATCH] iio: buffer: add missing descriptions in iio_buffer_access_funcs
+Date: Wed, 23 Mar 2016 12:34:41 +0000
+Message-Id: <1458736481-8928-1-git-send-email-luisbg@osg.samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The driver goes to some length to dynamically allocate an array
-to hold the channel addresses. However no ST sensor has more than
-three channels (x, y, z at most). Instead of kmalloc():ing and
-kfree():in the address array, just use a fixed array of three
-elements.
+The members buffer_group and attrs of iio_buffer_access_funcs have no
+descriptions for the documentation. Adding them.
 
-Cc: Giuseppe Barba <giuseppe.barba@st.com>
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 08e7e0adaa17 ("iio: buffer: Allocate standard attributes in the core")
+Signed-off-by: Luis de Bethencourt <luisbg@osg.samsung.com>
 ---
- drivers/iio/common/st_sensors/st_sensors_buffer.c | 28 ++++++-----------------
- 1 file changed, 7 insertions(+), 21 deletions(-)
+Hi,
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-index e18bc6782256..73764961feac 100644
---- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-@@ -24,19 +24,13 @@
- 
- int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
- {
--	u8 *addr;
-+	u8 addr[3]; /* no ST sensor has more than 3 channels */
- 	int i, n = 0, len;
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 	unsigned int num_data_channels = sdata->num_data_channels;
- 	unsigned int byte_for_channel =
- 			indio_dev->channels[0].scan_type.storagebits >> 3;
- 
--	addr = kmalloc(num_data_channels, GFP_KERNEL);
--	if (!addr) {
--		len = -ENOMEM;
--		goto st_sensors_get_buffer_element_error;
--	}
--
- 	for (i = 0; i < num_data_channels; i++) {
- 		if (test_bit(i, indio_dev->active_scan_mask)) {
- 			addr[n] = indio_dev->channels[i].address;
-@@ -57,10 +51,8 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
- 			u8 *rx_array;
- 			rx_array = kmalloc(byte_for_channel * num_data_channels,
- 					   GFP_KERNEL);
--			if (!rx_array) {
--				len = -ENOMEM;
--				goto st_sensors_free_memory;
--			}
-+			if (!rx_array)
-+				return -ENOMEM;
- 
- 			len = sdata->tf->read_multiple_byte(&sdata->tb,
- 				sdata->dev, addr[0],
-@@ -68,7 +60,7 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
- 				rx_array, sdata->multiread_bit);
- 			if (len < 0) {
- 				kfree(rx_array);
--				goto st_sensors_free_memory;
-+				return len;
- 			}
- 
- 			for (i = 0; i < n * byte_for_channel; i++) {
-@@ -87,17 +79,11 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
- 			buf, sdata->multiread_bit);
- 		break;
- 	default:
--		len = -EINVAL;
--		goto st_sensors_free_memory;
--	}
--	if (len != byte_for_channel * n) {
--		len = -EIO;
--		goto st_sensors_free_memory;
-+		return -EINVAL;
- 	}
-+	if (len != byte_for_channel * n)
-+		return -EIO;
- 
--st_sensors_free_memory:
--	kfree(addr);
--st_sensors_get_buffer_element_error:
- 	return len;
- }
- EXPORT_SYMBOL(st_sensors_get_buffer_element);
+I noticed these warnings when running make htmldocs:
+.//include/linux/iio/buffer.h:114: warning: No description found for parameter 'buffer_group'
+.//include/linux/iio/buffer.h:114: warning: No description found for parameter 'attrs'
+
+
+Thanks,
+Luis
+
+ include/linux/iio/buffer.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index 2ec3ad5..70a5164 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -83,10 +83,12 @@ struct iio_buffer_access_funcs {
+  * @access:		[DRIVER] buffer access functions associated with the
+  *			implementation.
+  * @scan_el_dev_attr_list:[INTERN] list of scan element related attributes.
++ * @buffer_group:	[INTERN] attributes of the buffer group
+  * @scan_el_group:	[DRIVER] attribute group for those attributes not
+  *			created from the iio_chan_info array.
+  * @pollq:		[INTERN] wait queue to allow for polling on the buffer.
+  * @stufftoread:	[INTERN] flag to indicate new data.
++ * @attrs:		[INTERN] standard attributes of the buffer
+  * @demux_list:		[INTERN] list of operations required to demux the scan.
+  * @demux_bounce:	[INTERN] buffer for doing gather from incoming scan.
+  * @buffer_list:	[INTERN] entry in the devices list of current buffers.
 -- 
-2.4.3
+2.5.1
