@@ -1,48 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:7899 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753181AbcCXJJx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 24 Mar 2016 05:09:53 -0400
+Return-Path: <irina.tirdea@intel.com>
 From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Octavian Purdila <octavian.purdila@intel.com>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 1/1] iio: fix config watermark initial value
-Date: Thu, 24 Mar 2016 11:09:45 +0200
-Message-Id: <1458810585-24555-1-git-send-email-irina.tirdea@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH 0/6] Driver optimizations in trigger handler
+Date: Thu, 24 Mar 2016 11:29:25 +0200
+Message-Id: <1458811771-25217-1-git-send-email-irina.tirdea@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-config structure is set to 0 when updating the buffers, so by
-default config->watermark will be 0. When computing the minimum
-between config->watermark and the buffer->watermark or
-insert_buffer-watermark, this will always be 0 regardless of the
-value set by the user for the buffer.
+This patchset adds optimization of i2c transactions in trigger handler
+for bmc150, bmg160 and kxcjk-1013 drivers. It also introduces the
+usage of available_scan_masks.
 
-Set as initial value for config->watermark the maximum allowed
-value so that the minimum value will always be set from one of the
-buffers.
+The code for bmc150 and bmg160 drivers is a rewrite of a previous
+version [1] that takes into account the usage of regmap. The code
+for kxcjk-1013 is the same as in the previous patch [1],
+but included here for merging (since the
+i2c_smbus_read_i2c_block_data_or_emulated API has been merged in
+the iio tree).
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- drivers/iio/industrialio-buffer.c | 1 +
- 1 file changed, 1 insertion(+)
+[1] https://lkml.org/lkml/2015/8/12/609
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index b976332..90462fc 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -653,6 +653,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
- 	unsigned int modes;
- 
- 	memset(config, 0, sizeof(*config));
-+	config->watermark = ~0;
- 
- 	/*
- 	 * If there is just one buffer and we are removing it there is nothing
+Adriana Reus (2):
+  iio: accel: kxcjk-1013: use available_scan_masks
+  iio: accel: kxcjk-1013: optimize i2c transfers in trigger handler
+
+Irina Tirdea (4):
+  iio: accel: bmc150: use available_scan_masks
+  iio: accel: bmc150: optimize transfers in trigger handler
+  iio: gyro: bmg160: use available_scan_masks
+  iio: accel: bmg160: optimize transfers in trigger handler
+
+ drivers/iio/accel/bmc150-accel-core.c | 25 ++++++++++++-------------
+ drivers/iio/accel/kxcjk-1013.c        | 24 ++++++++++++------------
+ drivers/iio/gyro/bmg160_core.c        | 24 ++++++++++++------------
+ 3 files changed, 36 insertions(+), 37 deletions(-)
+
 -- 
 1.9.1
-
