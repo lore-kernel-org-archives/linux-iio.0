@@ -1,49 +1,70 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f52.google.com ([209.85.218.52]:32776 "EHLO
-	mail-oi0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752986AbcCaIBH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Mar 2016 04:01:07 -0400
-Received: by mail-oi0-f52.google.com with SMTP id d205so50166182oia.0
-        for <linux-iio@vger.kernel.org>; Thu, 31 Mar 2016 01:01:06 -0700 (PDT)
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1458721195-28915-1-git-send-email-michael.hennerich@analog.com>
-References: <1458721195-28915-1-git-send-email-michael.hennerich@analog.com>
-Date: Thu, 31 Mar 2016 10:01:06 +0200
-Message-ID: <CACRpkdYAqPn9o-wMbb-iZn7bjad8u9JmdwRqwrjFMArPrOXEOQ@mail.gmail.com>
-Subject: Re: [PATCH v5] iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Michael Hennerich <michael.hennerich@analog.com>
+In-Reply-To: <1458812636-20904-1-git-send-email-linus.walleij@linaro.org>
+References: <1458812636-20904-1-git-send-email-linus.walleij@linaro.org>
+Date: Thu, 24 Mar 2016 11:56:40 +0200
+Message-ID: <CAEnQRZBah4zvvu00Onj-R1Q5DUiY-snz_w1SWR2jV_g5RCv39g@mail.gmail.com>
+Subject: Re: [PATCH] iio: tools: generic_buffer: auto-enable channels
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Linus Walleij <linus.walleij@linaro.org>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Alexandre Courbot <gnurou@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Paul Cercueil <paul.cercueil@analog.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	=?UTF-8?Q?Pawe=C5=82_Moll?= <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Mar 23, 2016 at 9:19 AM,  <michael.hennerich@analog.com> wrote:
-
-> From: Paul Cercueil <paul.cercueil@analog.com>
+On Thu, Mar 24, 2016 at 11:43 AM, Linus Walleij
+<linus.walleij@linaro.org> wrote:
+> If no channels are enabled when we run generic_buffer on a
+> device, well then just enable all of them, run the sampling
+> and disable them all again afterwards.
 >
-> This patch adds support for the AD5592R (spi) and AD5593R (i2c)
-> ADC/DAC/GPIO devices.
+> This is extremely useful when I'm low-level testing my
+> sensors with interrupts and triggers, sample session:
 >
-> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> root@Ux500:/ lsiio
+> Device 000: lsm303dlh_accel
+> Device 001: lis331dl_accel
+> Device 002: l3g4200d
+> Device 003: lsm303dlh_magn
+> Device 004: lps001wp
+> Trigger 000: lsm303dlh_accel-trigger
+> Trigger 001: lis331dl_accel-trigger
+> Trigger 002: l3g4200d-trigger
+>
+> root@Ux500:/ generic_buffer -c 10 -n l3g4200d
+> iio device number being used is 2
+> iio trigger number being used is 2
+> No channels are enabled, enabling all channels
+> Enabling: in_anglvel_x_en
+> Enabling: in_anglvel_y_en
+> Enabling: in_anglvel_z_en
+> Enabling: in_timestamp_en
+> /sys/bus/iio/devices/iio:device2 l3g4200d-trigger
+> -3.593664 -0.713133 4.870143 946684863662292480
+> 3.225546 0.867357 -4.945878 946684863671875000
+> -0.676413 0.127296 0.106641 946684863681488037
+> -0.661113 0.110160 0.128826 946684863690673828
+> -0.664173 0.113067 0.123471 946684863700683593
+> -0.664938 0.109395 0.124848 946684863710144042
+> -0.664173 0.110619 0.130203 946684863719512939
+> -0.666162 0.111231 0.132651 946684863729125976
+> -0.668610 0.111690 0.130662 946684863738739013
+> -0.660501 0.110466 0.131733 946684863748565673
+> Disabling: in_anglvel_x_en
+> Disabling: in_anglvel_y_en
+> Disabling: in_anglvel_z_en
+> Disabling: in_timestamp_en
+>
+> Pure awesomeness. If some channels have been enabled through
+> scripts or manual interaction, nothing happens.
+>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-For this v5 version:
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Indeed. This is very useful!
 
-I'm fine with this new gpiochip driver being merged into the
-IIO tree.
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
 
-Yours,
-Linus Walleij
+https://imgflip.com/i/11cof2  :)
+
+thanks,
+Daniel.
