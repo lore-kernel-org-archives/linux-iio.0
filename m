@@ -1,84 +1,255 @@
-Return-Path: <sst@poczta.fm>
-Date: Sun, 20 Mar 2016 11:23:41 +0100
-From: Slawomir Stepien <sst@poczta.fm>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: add driver for Microchip
- MCP413X/414X/415X/416X/423X/424X/425X/426X
-Message-ID: <20160320102341.GB10728@x220>
-References: <20160319131952.GA10728@x220>
- <alpine.DEB.2.02.1603191437060.15969@pmeerw.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <alpine.DEB.2.02.1603191437060.15969@pmeerw.net>
+Return-Path: <cristina.moraru09@gmail.com>
+From: Cristina Moraru <cristina.moraru09@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	peda@axentia.se,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	daniel.baluta@intel.com,
+	octavian.purdila@intel.com
+Cc: Cristina Moraru <cristina.moraru09@gmail.com>
+Subject: [PATCH] iio: max5487: Add support for Maxim digital potentiometers
+Date: Thu, 24 Mar 2016 13:21:25 +0200
+Message-Id: <1458818485-2770-1-git-send-email-cristina.moraru09@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mar 19, 2016 14:48, Peter Meerwald-Stadler wrote:
-> > +#define MCP4131_WIPER_SHIFT	(4)
-> 
-> () not needed
+Add implementation for Maxim MAX5487, MAX5488, MAX5489
+digital potentiometers.
 
-OK
+Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
+CC: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/potentiometer/Kconfig   |  11 +++
+ drivers/iio/potentiometer/Makefile  |   1 +
+ drivers/iio/potentiometer/max5487.c | 185 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 197 insertions(+)
+ create mode 100644 drivers/iio/potentiometer/max5487.c
 
-> > +struct mcp4131_data {
-> > +	struct spi_device *spi;
-> > +	unsigned long devid;
-> > +	struct mutex lock;
-> > +	u8 tx[2], rx[2];
-> 
-> alignment requirements for SPI transfer?
-
-Do you mean the ____cacheline_aligned attribute?
-I did not add it because I'm not quite sure why it's needed there. Will have to
-find it out...
-Could you point me some materials where it's explained?
-
-I think I can drop two separated buffers in favor of one buffer (e.g. buf[2]). I
-saw drivers doing that. Do you think that's a good idea?
-
-> > +	data->rx[0] = 0;
-> > +	data->rx[1] = 0;
-> 
-> initialization needed?
-
-No. You're right.
-
-> setup of data->xfer + data->tx is done outside the lock, this seems wrong
-
-True. Will fix it in v3.
-
-> > +	dev_info(&spi->dev, "Registered %s\n", indio_dev->name);
-> 
-> I'd rather drop this message
-
-OK. Will leave only the dev_info for errors.
+diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
+index ffc735c..3046c79 100644
+--- a/drivers/iio/potentiometer/Kconfig
++++ b/drivers/iio/potentiometer/Kconfig
+@@ -5,6 +5,17 @@
  
-> > +static int mcp4131_remove(struct spi_device *spi)
-> > +{
-> > +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> > +	struct mcp4131_data *data = iio_priv(indio_dev);
-> > +
-> > +	mutex_destroy(&data->lock);
-> 
-> no need to call
-> 
-> > +	devm_iio_device_unregister(&spi->dev, indio_dev);
-> 
-> don't call this explicitly, it is done automatically after _remove
-
-That's why it's called managed (devm_*)?
-
-> > +
-> > +	dev_info(&spi->dev, "Unregistered %s\n", indio_dev->name);
-> 
-> don't
-> 
-> I think the entire _remove can be removed
-
-OK.
-
-Thank you for the review. I'm learning a lot!
-
+ menu "Digital potentiometers"
+ 
++config MAX5487
++        tristate "Maxim MAX5487/MAX5488/MAX5489  Digital Potentiometer driver"
++        depends on SPI
++        help
++          Say yes here to build support for the Maxim
++          MAX5487, MAX5488, MAX5489 digital potentiomenter
++	  chips.
++
++          To compile this driver as a module, choose M here: the
++          module will be called max5487.
++
+ config MCP4531
+ 	tristate "Microchip MCP45xx/MCP46xx Digital Potentiometer driver"
+ 	depends on I2C
+diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
+index b563b49..dcc791a 100644
+--- a/drivers/iio/potentiometer/Makefile
++++ b/drivers/iio/potentiometer/Makefile
+@@ -3,5 +3,6 @@
+ #
+ 
+ # When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_MAX5487) += max5487.o
+ obj-$(CONFIG_MCP4531) += mcp4531.o
+ obj-$(CONFIG_TPL0102) += tpl0102.o
+diff --git a/drivers/iio/potentiometer/max5487.c b/drivers/iio/potentiometer/max5487.c
+new file mode 100644
+index 0000000..69db979
+--- /dev/null
++++ b/drivers/iio/potentiometer/max5487.c
+@@ -0,0 +1,185 @@
++/*
++ * max5487.c - Support for MAX5487, MAX5488, MAX5489 digital potentiometers
++ *
++ * Copyright (C) Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/acpi.h>
++#include <linux/regmap.h>
++
++#include <linux/iio/sysfs.h>
++#include <linux/iio/iio.h>
++
++#define MAX5487_DRV_NAME "max5487"
++
++#define MAX5487_WRITE_WIPER_A	0x01
++#define MAX5487_WRITE_WIPER_B	0x02
++
++/* copy both wiper regs to NV regs */
++#define MAX5487_COPY_AB_TO_NV	0x23
++/* copy both NV regs to wiper regs */
++#define MAX5487_COPY_NV_TO_AB	0x33
++
++enum {
++	MAX5487,
++	MAX5488,
++	MAX5489,
++};
++
++struct max5487_cfg {
++	int wipers;
++	int max_pos;
++	int kohms;
++};
++
++static const struct max5487_cfg max5487_cfg[] = {
++	[MAX5487] = { .wipers = 2, .max_pos = 256, .kohms =  10,},
++	[MAX5488] = { .wipers = 2, .max_pos = 256, .kohms =  50,},
++	[MAX5489] = { .wipers = 2, .max_pos = 256, .kohms =  100,}
++};
++
++struct max5487_data {
++	struct regmap *regmap;
++	int chip_id;
++};
++
++#define MAX5487_CHANNEL(ch, addr) {				\
++	.type = IIO_RESISTANCE,					\
++	.indexed = 1,						\
++	.output = 1,						\
++	.channel = ch,						\
++	.address = addr,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
++
++static const struct iio_chan_spec max5487_channels[] = {
++	MAX5487_CHANNEL(0, MAX5487_WRITE_WIPER_A),
++	MAX5487_CHANNEL(1, MAX5487_WRITE_WIPER_B),
++};
++
++static int max5487_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct max5487_data *data = iio_priv(indio_dev);
++
++	if (mask != IIO_CHAN_INFO_SCALE)
++		return -EINVAL;
++
++	*val = 1000 * max5487_cfg[data->chip_id].kohms;
++	*val2 = max5487_cfg[data->chip_id].max_pos;
++	return IIO_VAL_FRACTIONAL;
++}
++
++static int max5487_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct max5487_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (val < 0 || val >= max5487_cfg[data->chip_id].max_pos)
++			return -EINVAL;
++		return regmap_write(data->regmap, chan->address, val);
++	default:
++		return -EINVAL;
++	}
++	return -EINVAL;
++}
++
++static const struct iio_info max5487_info = {
++	.read_raw = &max5487_read_raw,
++	.write_raw = &max5487_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static const struct regmap_config max5487_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++
++	.max_register = MAX5487_COPY_NV_TO_AB,
++};
++
++static int max5487_spi_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct max5487_data *data;
++	const struct spi_device_id *id = spi_get_device_id(spi);
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	dev_set_drvdata(&spi->dev, indio_dev);
++	data = iio_priv(indio_dev);
++
++	data->regmap = devm_regmap_init_spi(spi, &max5487_regmap_config);
++	if (IS_ERR(data->regmap))
++		return PTR_ERR(data->regmap);
++
++	data->chip_id = id->driver_data;
++
++	indio_dev->info = &max5487_info;
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = max5487_channels;
++	indio_dev->num_channels = ARRAY_SIZE(max5487_channels);
++
++	/* restore both wiper regs from NV regs */
++	ret = regmap_write(data->regmap, MAX5487_COPY_NV_TO_AB, 0);
++	if (ret < 0)
++		return ret;
++
++	return devm_iio_device_register(&spi->dev, indio_dev);
++}
++
++static int max5487_spi_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
++	struct max5487_data *data = iio_priv(indio_dev);
++
++	/* save both wiper regs to NV regs */
++	return regmap_write(data->regmap, MAX5487_COPY_AB_TO_NV, 0);
++}
++
++static const struct spi_device_id max5487_id[] = {
++	{ "MAX5487", MAX5487 },
++	{ "MAX5488", MAX5488 },
++	{ "MAX5489", MAX5489 },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, max5487_id);
++
++static const struct acpi_device_id max5487_acpi_match[] = {
++	{ "MAX5487", MAX5487 },
++	{ "MAX5488", MAX5488 },
++	{ "MAX5489", MAX5489 },
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, max5487_acpi_match);
++
++static struct spi_driver max5487_driver = {
++	.driver = {
++		.name = MAX5487_DRV_NAME,
++		.owner = THIS_MODULE,
++		.acpi_match_table = ACPI_PTR(max5487_acpi_match),
++	},
++	.id_table = max5487_id,
++	.probe = max5487_spi_probe,
++	.remove = max5487_spi_remove
++};
++module_spi_driver(max5487_driver);
++
++MODULE_AUTHOR("Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>");
++MODULE_DESCRIPTION("max5487 SPI driver");
++MODULE_LICENSE("GPL v2");
 -- 
-Slawomir Stepien
+2.5.0
