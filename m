@@ -1,319 +1,304 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56803 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754897AbcCTKrv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2016 06:47:51 -0400
-Subject: Re: [PATCH 3/3] iio: imu: mpu6050: Add support for auxiliary I2C
- master
-To: Daniel Baluta <daniel.baluta@intel.com>
-References: <1458232366-12773-1-git-send-email-daniel.baluta@intel.com>
- <1458232366-12773-4-git-send-email-daniel.baluta@intel.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	matt.ranostay@intel.com, lucas.demarchi@intel.com, cmo@melexis.com,
-	linux-iio@vger.kernel.org, ggao@invensense.com,
-	srinivas.pandruvada@linux.intel.com, adi.reus@gmail.com,
-	Wolfram Sang <wsa@the-dreams.de>,
-	Linux I2C <linux-i2c@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56EE7FD3.7050803@kernel.org>
-Date: Sun, 20 Mar 2016 10:47:47 +0000
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: Cristina Moraru <cristina.moraru09@gmail.com>, "jic23@kernel.org"
+	<jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de"
+	<lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"daniel.baluta@intel.com" <daniel.baluta@intel.com>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>
+Subject: RE: [PATCH] iio: max5487: Add support for Maxim digital
+ potentiometers
+Date: Thu, 24 Mar 2016 21:46:43 +0000
+Message-ID: <9dc210ed21cc467699ec0a33a62507f9@EMAIL.axentia.se>
+References: <1458818485-2770-1-git-send-email-cristina.moraru09@gmail.com>
+In-Reply-To: <1458818485-2770-1-git-send-email-cristina.moraru09@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <1458232366-12773-4-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 17/03/16 16:32, Daniel Baluta wrote:
-> The MPU-60X0 [1] has an auxiliary I2C bus for connecting external
-> sensors. This bus has two operating modes:
-> 	* pass-through, which connects the primary and auxiliary busses
-> 	together [already implemented]
-> 	* I2C master mode, where MPU60X0 acts as a master to any
-> 	external connected sensors [implemented in this patch]
-> 
-> I2C master supports up to 5 slaves. Slaves 0-3 have a common operating
-> mode while slave 4 is different.
-> 
-> This patch only adds support for slave 4 because it has a cleaner
-> interface and it has an interrupt that signals when data from slave
-> to master arrived.
-> 
-> Registers are described here [2].
-> 
-> We use threaded handler for reading slave4 done interrupt bit.
-> 
-> [1]
-> https://www.cdiweb.com/datasheets/invensense/MPU-6050_DataSheet_V3%204.pdf
-> [2]
-> http://www6.in.tum.de/pub/Main/TeachingWs2015SeminarAuonomousFahren/RM-MPU-6000A.pdf
-> 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-hmm. Daniel - this is an i2c driver (be it within an IIO driver) so you need
-to cc Wolfram and the i2c list.
+Hi Cristina,
 
-I'll be needing an Ack from Wolfram if I am to take this,
+Some comments inline...
 
-Jonathan
+Cheers,
+Peter
+
+Cristina Moraru wrote:
+> Add implementation for Maxim MAX5487, MAX5488, MAX5489
+> digital potentiometers.
+>=20
+> Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
+> CC: Daniel Baluta <daniel.baluta@intel.com>
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 137 ++++++++++++++++++++++++++++-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  38 ++++++++
->  2 files changed, 172 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 659a4be..a89854c 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -25,6 +25,8 @@
->  #include <linux/iio/iio.h>
->  #include <linux/i2c-mux.h>
->  #include <linux/acpi.h>
-> +#include <linux/completion.h>
-> +
->  #include "inv_mpu_iio.h"
->  
->  /*
-> @@ -57,6 +59,12 @@ static const struct inv_mpu6050_reg_map reg_set_6500 = {
->  	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
->  	.accl_offset		= INV_MPU6500_REG_ACCEL_OFFSET,
->  	.gyro_offset		= INV_MPU6050_REG_GYRO_OFFSET,
-> +	.slv4_addr		= INV_MPU6050_REG_I2C_SLV4_ADDR,
-> +	.slv4_reg		= INV_MPU6050_REG_I2C_SLV4_REG,
-> +	.slv4_do		= INV_MPU6050_REG_I2C_SLV4_DO,
-> +	.slv4_ctrl		= INV_MPU6050_REG_I2C_SLV4_CTRL,
-> +	.slv4_di		= INV_MPU6050_REG_I2C_SLV4_DI,
-> +	.mst_status		= INV_MPU6050_REG_I2C_MST_STATUS,
->  };
->  
->  static const struct inv_mpu6050_reg_map reg_set_6050 = {
-> @@ -77,6 +85,12 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
->  	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
->  	.accl_offset		= INV_MPU6050_REG_ACCEL_OFFSET,
->  	.gyro_offset		= INV_MPU6050_REG_GYRO_OFFSET,
-> +	.slv4_addr		= INV_MPU6050_REG_I2C_SLV4_ADDR,
-> +	.slv4_reg		= INV_MPU6050_REG_I2C_SLV4_REG,
-> +	.slv4_do		= INV_MPU6050_REG_I2C_SLV4_DO,
-> +	.slv4_ctrl		= INV_MPU6050_REG_I2C_SLV4_CTRL,
-> +	.slv4_di		= INV_MPU6050_REG_I2C_SLV4_DI,
-> +	.mst_status		= INV_MPU6050_REG_I2C_MST_STATUS,
->  };
->  
->  static const struct inv_mpu6050_chip_config chip_config_6050 = {
-> @@ -761,6 +775,114 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
->  	return 0;
->  }
->  
-> +static irqreturn_t inv_mpu_datardy_irq_handler(int irq, void *private)
-> +{
-> +	struct inv_mpu6050_state *st = (struct inv_mpu6050_state *)private;
-> +
-> +	iio_trigger_poll(st->trig);
-> +
-> +	return IRQ_WAKE_THREAD;
-> +}
-> +
-> +static irqreturn_t inv_mpu_datardy_thread_handler(int irq, void *private)
-> +{
-> +	struct inv_mpu6050_state *st = (struct inv_mpu6050_state *)private;
-> +	int ret, val;
-> +
-> +	ret = regmap_read(st->map, st->reg->mst_status, &val);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (val & INV_MPU6050_BIT_I2C_SLV4_DONE)
-> +		complete(&st->slv4_done);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static u32 inv_mpu_i2c_functionality(struct i2c_adapter *adap)
-> +{
-> +	return I2C_FUNC_SMBUS_BYTE | I2C_FUNC_SMBUS_BYTE_DATA;
-> +}
-> +
-> +static int
-> +inv_mpu_i2c_smbus_xfer(struct i2c_adapter *adap, u16 addr,
-> +		       unsigned short flags, char read_write, u8 command,
-> +		       int size, union i2c_smbus_data *data)
-> +{
-> +	struct inv_mpu6050_state *st = i2c_get_adapdata(adap);
-> +
-> +	unsigned long time_left;
-> +	int ret, val;
-> +	u8 ctrl;
-> +
-> +	ret = inv_mpu6050_set_power_itg(st, true);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = regmap_update_bits(st->map, st->reg->user_ctrl,
-> +				 INV_MPU6050_BIT_I2C_MST_EN,
-> +				 INV_MPU6050_BIT_I2C_MST_EN);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = regmap_update_bits(st->map, st->reg->int_enable,
-> +				 INV_MPU6050_BIT_MST_INT_EN,
-> +				 INV_MPU6050_BIT_MST_INT_EN);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (read_write == I2C_SMBUS_WRITE)
-> +		addr |= INV_MPU6050_BIT_I2C_SLV4_W;
-> +	else
-> +		addr |= INV_MPU6050_BIT_I2C_SLV4_R;
-> +
-> +	ret = regmap_write(st->map, st->reg->slv4_addr, addr);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = regmap_write(st->map, st->reg->slv4_reg, command);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (read_write == I2C_SMBUS_WRITE) {
-> +		ret = regmap_write(st->map, st->reg->slv4_do, data->byte);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	ctrl = INV_MPU6050_BIT_SLV4_EN | INV_MPU6050_BIT_SLV4_INT_EN;
-> +	ret = regmap_write(st->map, st->reg->slv4_ctrl, ctrl);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (read_write == I2C_SMBUS_READ) {
-> +		time_left = wait_for_completion_timeout(&st->slv4_done, HZ);
-> +		if (!time_left)
-> +			return -ETIMEDOUT;
-> +
-> +		ret = regmap_read(st->map, st->reg->slv4_di, &val);
-> +		if (ret < 0)
-> +			return ret;
-> +		data->byte = val;
-> +	}
-> +
-> +	ret = inv_mpu6050_set_power_itg(st, false);
-> +	if (ret < 0)
-> +		return ret;
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_algorithm inv_mpu_i2c_algo = {
-> +	.smbus_xfer	=	inv_mpu_i2c_smbus_xfer,
-> +	.functionality	=	inv_mpu_i2c_functionality,
-> +};
-> +
-> +static struct i2c_adapter inv_mpu_i2c_adapter = {
-> +	.owner		= THIS_MODULE,
-> +	.class		= I2C_CLASS_HWMON,
-> +	.algo		= &inv_mpu_i2c_algo,
-> +	.name		= "INV MPU secondary I2C",
-> +};
-> +
->  int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  		int (*inv_mpu_bus_setup)(struct iio_dev *), int chip_type)
->  {
-> @@ -796,6 +918,13 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  		return result;
->  	}
->  
-> +	init_completion(&st->slv4_done);
-> +
-> +	result = i2c_add_adapter(&inv_mpu_i2c_adapter);
-> +	if (result < 0)
-> +		return result;
-> +
-> +	i2c_set_adapdata(&inv_mpu_i2c_adapter, st);
->  	dev_set_drvdata(dev, indio_dev);
->  	indio_dev->dev.parent = dev;
->  	/* name will be NULL when enumerated via ACPI */
-> @@ -823,9 +952,11 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  		goto out_unreg_ring;
->  	}
->  
-> -	result = devm_request_irq(&indio_dev->dev, st->irq,
-> -				  &iio_trigger_generic_data_rdy_poll,
-> -				  IRQF_TRIGGER_RISING, "inv_mpu", st->trig);
-> +	result = devm_request_threaded_irq(&indio_dev->dev, st->irq,
-> +					   &inv_mpu_datardy_irq_handler,
-> +					   &inv_mpu_datardy_thread_handler,
-> +					   IRQF_TRIGGER_RISING, "inv_mpu",
-> +					   st);
->  	if (result) {
->  		dev_err(dev, "request irq fail %d\n", result);
->  		goto out_remove_trigger;
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index e302a49..5c3ea9a 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -42,6 +42,13 @@
->   *  @int_pin_cfg;	Controls interrupt pin configuration.
->   *  @accl_offset:	Controls the accelerometer calibration offset.
->   *  @gyro_offset:	Controls the gyroscope calibration offset.
-> + *  @mst_status:	secondary I2C master interrupt source status
-> + *  @slv4_addr:		I2C slave address for slave 4 transaction
-> + *  @slv4_reg:		I2C register used with slave 4 transaction
-> + *  @slv4_di:		I2C data in register for slave 4 transaction
-> + *  @slv4_ctrl:		I2C slave 4 control register
-> + *  @slv4_do:		I2C data out register for slave 4 transaction
-> +
->   */
->  struct inv_mpu6050_reg_map {
->  	u8 sample_rate_div;
-> @@ -61,6 +68,15 @@ struct inv_mpu6050_reg_map {
->  	u8 int_pin_cfg;
->  	u8 accl_offset;
->  	u8 gyro_offset;
-> +	u8 mst_status;
-> +
-> +	/* slave 4 registers */
-> +	u8 slv4_addr;
-> +	u8 slv4_reg;
-> +	u8 slv4_di; /* data in */
-> +	u8 slv4_ctrl;
-> +	u8 slv4_do; /* data out */
-> +
->  };
->  
->  /*device enum */
-> @@ -133,6 +149,7 @@ struct inv_mpu6050_state {
->  	struct inv_mpu6050_platform_data plat_data;
->  	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
->  	struct regmap *map;
-> +	struct completion slv4_done;
->  	int irq;
->  };
->  
-> @@ -149,9 +166,30 @@ struct inv_mpu6050_state {
->  #define INV_MPU6050_BIT_ACCEL_OUT           0x08
->  #define INV_MPU6050_BITS_GYRO_OUT           0x70
->  
-> +#define INV_MPU6050_REG_I2C_SLV4_ADDR       0x31
-> +#define INV_MPU6050_BIT_I2C_SLV4_R          0x80
-> +#define INV_MPU6050_BIT_I2C_SLV4_W          0x00
-> +
-> +#define INV_MPU6050_REG_I2C_SLV4_REG        0x32
-> +#define INV_MPU6050_REG_I2C_SLV4_DO         0x33
-> +#define INV_MPU6050_REG_I2C_SLV4_CTRL       0x34
-> +
-> +#define INV_MPU6050_BIT_SLV4_EN             0x80
-> +#define INV_MPU6050_BIT_SLV4_INT_EN         0x40
-> +#define INV_MPU6050_BIT_SLV4_DIS            0x20
-> +
-> +#define INV_MPU6050_REG_I2C_SLV4_DI         0x35
-> +
-> +#define INV_MPU6050_REG_I2C_MST_STATUS      0x36
-> +#define INV_MPU6050_BIT_I2C_SLV4_DONE       0x40
-> +
->  #define INV_MPU6050_REG_INT_ENABLE          0x38
->  #define INV_MPU6050_BIT_DATA_RDY_EN         0x01
->  #define INV_MPU6050_BIT_DMP_INT_EN          0x02
-> +#define INV_MPU6050_BIT_MST_INT_EN          0x08
-> +
-> +#define INV_MPU6050_REG_INT_STATUS          0x3A
-> +#define INV_MPU6050_BIT_MST_INT             0x08
->  
->  #define INV_MPU6050_REG_RAW_ACCEL           0x3B
->  #define INV_MPU6050_REG_TEMPERATURE         0x41
-> 
+>  drivers/iio/potentiometer/Kconfig   |  11 +++
+>  drivers/iio/potentiometer/Makefile  |   1 +
+>  drivers/iio/potentiometer/max5487.c | 185 ++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 197 insertions(+)
+>  create mode 100644 drivers/iio/potentiometer/max5487.c
+>=20
+> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiomete=
+r/Kconfig
+> index ffc735c..3046c79 100644
+> --- a/drivers/iio/potentiometer/Kconfig
+> +++ b/drivers/iio/potentiometer/Kconfig
+> @@ -5,6 +5,17 @@
+> =20
+>  menu "Digital potentiometers"
+> =20
+> +config MAX5487
+> +        tristate "Maxim MAX5487/MAX5488/MAX5489  Digital Potentiometer d=
+river"
+> +        depends on SPI
+> +        help
+> +          Say yes here to build support for the Maxim
+> +          MAX5487, MAX5488, MAX5489 digital potentiomenter
+> +	  chips.
 
+The whitespace on this line is different.
+
+> +
+> +          To compile this driver as a module, choose M here: the
+> +          module will be called max5487.
+> +
+>  config MCP4531
+>  	tristate "Microchip MCP45xx/MCP46xx Digital Potentiometer driver"
+>  	depends on I2C
+> diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiomet=
+er/Makefile
+> index b563b49..dcc791a 100644
+> --- a/drivers/iio/potentiometer/Makefile
+> +++ b/drivers/iio/potentiometer/Makefile
+> @@ -3,5 +3,6 @@
+>  #
+> =20
+>  # When adding new entries keep the list in alphabetical order
+> +obj-$(CONFIG_MAX5487) +=3D max5487.o
+>  obj-$(CONFIG_MCP4531) +=3D mcp4531.o
+>  obj-$(CONFIG_TPL0102) +=3D tpl0102.o
+> diff --git a/drivers/iio/potentiometer/max5487.c b/drivers/iio/potentiome=
+ter/max5487.c
+> new file mode 100644
+> index 0000000..69db979
+> --- /dev/null
+> +++ b/drivers/iio/potentiometer/max5487.c
+> @@ -0,0 +1,185 @@
+> +/*
+> + * max5487.c - Support for MAX5487, MAX5488, MAX5489 digital potentiomet=
+ers
+> + *
+> + * Copyright (C) Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + */
+> +#include <linux/module.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/acpi.h>
+> +#include <linux/regmap.h>
+> +
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/iio.h>
+> +
+> +#define MAX5487_DRV_NAME "max5487"
+> +
+> +#define MAX5487_WRITE_WIPER_A	0x01
+> +#define MAX5487_WRITE_WIPER_B	0x02
+> +
+> +/* copy both wiper regs to NV regs */
+> +#define MAX5487_COPY_AB_TO_NV	0x23
+> +/* copy both NV regs to wiper regs */
+> +#define MAX5487_COPY_NV_TO_AB	0x33
+> +
+> +enum {
+> +	MAX5487,
+> +	MAX5488,
+> +	MAX5489,
+> +};
+> +
+> +struct max5487_cfg {
+> +	int wipers;
+> +	int max_pos;
+> +	int kohms;
+> +};
+> +
+> +static const struct max5487_cfg max5487_cfg[] =3D {
+> +	[MAX5487] =3D { .wipers =3D 2, .max_pos =3D 256, .kohms =3D  10,},
+> +	[MAX5488] =3D { .wipers =3D 2, .max_pos =3D 256, .kohms =3D  50,},
+> +	[MAX5489] =3D { .wipers =3D 2, .max_pos =3D 256, .kohms =3D  100,}
+> +};
+
+.wipers and .max_pos need not be in max5487_cfg, they are common.
+.wipers isn't even used. Which means that if you like, you can
+use the ohms reading as the driver_data directly instead of going
+via the MAX548x enumeration, see below. Or is there some reason
+not doing so?
+
+> +
+> +struct max5487_data {
+> +	struct regmap *regmap;
+> +	int chip_id;
+
+I.e., change chip_id to kohms.
+
+> +};
+> +
+> +#define MAX5487_CHANNEL(ch, addr) {				\
+> +	.type =3D IIO_RESISTANCE,					\
+> +	.indexed =3D 1,						\
+> +	.output =3D 1,						\
+> +	.channel =3D ch,						\
+> +	.address =3D addr,					\
+> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),	\
+> +}
+> +
+> +static const struct iio_chan_spec max5487_channels[] =3D {
+> +	MAX5487_CHANNEL(0, MAX5487_WRITE_WIPER_A),
+> +	MAX5487_CHANNEL(1, MAX5487_WRITE_WIPER_B),
+> +};
+> +
+> +static int max5487_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct max5487_data *data =3D iio_priv(indio_dev);
+> +
+> +	if (mask !=3D IIO_CHAN_INFO_SCALE)
+> +		return -EINVAL;
+> +
+> +	*val =3D 1000 * max5487_cfg[data->chip_id].kohms;
+
+Use data->kohms here.
+
+> +	*val2 =3D max5487_cfg[data->chip_id].max_pos;
+
+Hardcode this to 256 (using a define).
+
+> +	return IIO_VAL_FRACTIONAL;
+> +}
+> +
+> +static int max5487_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct max5487_data *data =3D iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (val < 0 || val >=3D max5487_cfg[data->chip_id].max_pos)
+
+Hardcode to 256.
+
+> +			return -EINVAL;
+> +		return regmap_write(data->regmap, chan->address, val);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info max5487_info =3D {
+> +	.read_raw =3D &max5487_read_raw,
+> +	.write_raw =3D &max5487_write_raw,
+> +	.driver_module =3D THIS_MODULE,
+> +};
+> +
+> +static const struct regmap_config max5487_regmap_config =3D {
+> +	.reg_bits =3D 8,
+> +	.val_bits =3D 8,
+> +
+> +	.max_register =3D MAX5487_COPY_NV_TO_AB,
+> +};
+> +
+> +static int max5487_spi_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct max5487_data *data;
+> +	const struct spi_device_id *id =3D spi_get_device_id(spi);
+> +	int ret;
+> +
+> +	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	dev_set_drvdata(&spi->dev, indio_dev);
+> +	data =3D iio_priv(indio_dev);
+> +
+> +	data->regmap =3D devm_regmap_init_spi(spi, &max5487_regmap_config);
+> +	if (IS_ERR(data->regmap))
+> +		return PTR_ERR(data->regmap);
+> +
+> +	data->chip_id =3D id->driver_data;
+
+Use data->kohms =3D id->driver_data
+
+> +
+> +	indio_dev->info =3D &max5487_info;
+> +	indio_dev->name =3D id->name;
+> +	indio_dev->dev.parent =3D &spi->dev;
+> +	indio_dev->modes =3D INDIO_DIRECT_MODE;
+> +	indio_dev->channels =3D max5487_channels;
+> +	indio_dev->num_channels =3D ARRAY_SIZE(max5487_channels);
+> +
+> +	/* restore both wiper regs from NV regs */
+> +	ret =3D regmap_write(data->regmap, MAX5487_COPY_NV_TO_AB, 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(&spi->dev, indio_dev);
+> +}
+> +
+> +static int max5487_spi_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev =3D dev_get_drvdata(&spi->dev);
+> +	struct max5487_data *data =3D iio_priv(indio_dev);
+> +
+> +	/* save both wiper regs to NV regs */
+> +	return regmap_write(data->regmap, MAX5487_COPY_AB_TO_NV, 0);
+> +}
+> +
+> +static const struct spi_device_id max5487_id[] =3D {
+> +	{ "MAX5487", MAX5487 },
+> +	{ "MAX5488", MAX5488 },
+> +	{ "MAX5489", MAX5489 },
+
+Use 10, 50, and 100 instead of the MAX548x enums.
+
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(spi, max5487_id);
+> +
+> +static const struct acpi_device_id max5487_acpi_match[] =3D {
+> +	{ "MAX5487", MAX5487 },
+> +	{ "MAX5488", MAX5488 },
+> +	{ "MAX5489", MAX5489 },
+
+Dito.
+
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, max5487_acpi_match);
+> +
+> +static struct spi_driver max5487_driver =3D {
+> +	.driver =3D {
+> +		.name =3D MAX5487_DRV_NAME,
+> +		.owner =3D THIS_MODULE,
+> +		.acpi_match_table =3D ACPI_PTR(max5487_acpi_match),
+> +	},
+> +	.id_table =3D max5487_id,
+> +	.probe =3D max5487_spi_probe,
+> +	.remove =3D max5487_spi_remove
+> +};
+> +module_spi_driver(max5487_driver);
+> +
+> +MODULE_AUTHOR("Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>");
+> +MODULE_DESCRIPTION("max5487 SPI driver");
+> +MODULE_LICENSE("GPL v2");
+> --=20
+> 2.5.0
+>=20
+>
