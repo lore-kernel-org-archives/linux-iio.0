@@ -1,51 +1,73 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH 1/1] iio: fix config watermark initial value
-To: Irina Tirdea <irina.tirdea@intel.com>, Jonathan Cameron
- <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <1458810585-24555-1-git-send-email-irina.tirdea@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- Octavian Purdila <octavian.purdila@intel.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56F3B217.8040206@metafoo.de>
-Date: Thu, 24 Mar 2016 10:23:35 +0100
+Return-Path: <peda@lysator.liu.se>
+Message-ID: <56F43919.1020501@lysator.liu.se>
+Date: Thu, 24 Mar 2016 19:59:37 +0100
+From: Peter Rosin <peda@lysator.liu.se>
 MIME-Version: 1.0
-In-Reply-To: <1458810585-24555-1-git-send-email-irina.tirdea@intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+CC: Wolfram Sang <wsa@the-dreams.de>, Peter Rosin <peda@axentia.se>,
+ Rob Herring <robh+dt@kernel.org>,
+ Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
+ Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Kumar Gala <galak@codeaurora.org>,
+ Peter Korsgaard <peter.korsgaard@barco.com>,
+ Guenter Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>,
+ Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Antti Palosaari <crope@iki.fi>,
+ Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+ Frank Rowand <frowand.list@gmail.com>,
+ Grant Likely <grant.likely@linaro.org>,
+ Adriana Reus <adriana.reus@intel.com>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+ Hans Verkuil <hans.verkuil@cisco.com>,
+ Nicholas Mc Guire <hofrat@osadl.org>,
+ Olli Salonen <olli.salonen@iki.fi>, linux-i2c@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-media@vger.kernel.org
+Subject: Re: [PATCH v2 1/8] i2c-mux: add common core data for every mux instance
+References: <1452009438-27347-1-git-send-email-peda@lysator.liu.se> <1452009438-27347-2-git-send-email-peda@lysator.liu.se> <56F3B86E.4050002@mentor.com> <56F3CA0E.60906@lysator.liu.se> <56F3F89F.8000805@mentor.com>
+In-Reply-To: <56F3F89F.8000805@mentor.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 03/24/2016 10:09 AM, Irina Tirdea wrote:
-> config structure is set to 0 when updating the buffers, so by
-> default config->watermark will be 0. When computing the minimum
-> between config->watermark and the buffer->watermark or
-> insert_buffer-watermark, this will always be 0 regardless of the
-> value set by the user for the buffer.
-> 
-> Set as initial value for config->watermark the maximum allowed
-> value so that the minimum value will always be set from one of the
-> buffers.
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Hi Vladimir,
 
-Looks good. This bug was my fault, sorry.
-
-Fixes: f0566c0c405d ("iio: Set device watermark based on watermark of all
-attached buffers")
-
-> ---
->  drivers/iio/industrialio-buffer.c | 1 +
->  1 file changed, 1 insertion(+)
+On 2016-03-24 15:24, Vladimir Zapolskiy wrote:
+> On 24.03.2016 13:05, Peter Rosin wrote:
+>> On 2016-03-24 10:50, Vladimir Zapolskiy wrote:
+>>> On 05.01.2016 17:57, Peter Rosin wrote:
+>>>> @@ -196,21 +195,21 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
+>>>>  		dev_err(dev, "Cannot parse i2c-parent\n");
+>>>>  		return -EINVAL;
+>>>>  	}
+>>>> -	arb->parent = of_get_i2c_adapter_by_node(parent_np);
+>>>> +	muxc->parent = of_find_i2c_adapter_by_node(parent_np);
+>>>
+>>> why do you prefer here to use "unlocked" version of API?
+>>>
+>>> Foe example would it be safe/possible to unload an I2C bus device driver
+>>> module or unbind I2C device itself in runtime?
+>>
+>> I think you ask why I change from of_get_i2c_... to of_find_i2c_..., and that
+>> change was not intentional. It was the result of a bad merge during an early
+>> rebase.
+>>
+>> Does that cover it?
+>>
 > 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index b976332..90462fc 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -653,6 +653,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
->  	unsigned int modes;
->  
->  	memset(config, 0, sizeof(*config));
-> +	config->watermark = ~0;
->  
->  	/*
->  	 * If there is just one buffer and we are removing it there is nothing
-> 
+> Yep, thank you for clarification, please account this in v3.
+
+Oh , v3 is old news, v4 was sent out some weeks ago, and there is a v5
+on a github branch. This bad rebase was fixed in v4.
+
+> I'll try to find some time to review the whole changeset carefully,
+> in fact I briefly reviewed it two months ago, but I didn't find
+> anything obviously wrong that time.
+
+Please put that on hold until I have rebased ontop of v4.6-rc1 and
+changed a couple of other things. I'd hate for you to waste your
+time on outdated patches.
+
+Cheers,
+Peter
