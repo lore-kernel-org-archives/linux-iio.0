@@ -1,80 +1,265 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:11670 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757063AbcCXJ3y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 24 Mar 2016 05:29:54 -0400
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Octavian Purdila <octavian.purdila@intel.com>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 4/6] iio: accel: bmg160: optimize transfers in trigger handler
-Date: Thu, 24 Mar 2016 11:29:29 +0200
-Message-Id: <1458811771-25217-5-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1458811771-25217-1-git-send-email-irina.tirdea@intel.com>
-References: <1458811771-25217-1-git-send-email-irina.tirdea@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <linus.walleij@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	devicetree@vger.kernel.org,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 4/4] iio: st_sensors: support open drain mode
+Date: Thu, 24 Mar 2016 14:18:06 +0100
+Message-Id: <1458825486-17188-4-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
+References: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
-enable/disable the bus at each i2c transfer and must wait for
-the enable/disable to happen before sending the data.
+Some types of ST Sensors can be connected to the same IRQ line
+as other peripherals using open drain. Add a device tree binding
+and a sensor data property to flip the right bit in the interrupt
+control register to enable open drain mode on the INT line.
 
-When reading data in the trigger handler, the bmc150 accel driver does
-one bus transfer for each axis. This has an impact on the frequency
-of the accelerometer at high sample rates due to additional delays
-introduced by the bus at each transfer.
+If the line is set to be open drain, also tag on IRQF_SHARED
+to the IRQ flags when requesting the interrupt, as the whole
+point of using open drain interrupt lines is to share them with
+more than one peripheral (wire-or).
 
-Reading all axis values in one bus transfer reduces the delays
-introduced by the bus.
-
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Cc: devicetree@vger.kernel.org
+Cc: Giuseppe Barba <giuseppe.barba@st.com>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/gyro/bmg160_core.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ChangeLog v2->v3:
+- Rebase on top of the patches fixing the other issues (handling
+  IRQ status check and channel reading bug).
+ChangeLog v1->v2:
+- Rebased to fit the new patch order.
+---
+ Documentation/devicetree/bindings/iio/st-sensors.txt |  3 +++
+ drivers/iio/accel/st_accel_core.c                    |  8 ++++++++
+ drivers/iio/common/st_sensors/st_sensors_core.c      | 20 ++++++++++++++++++++
+ drivers/iio/common/st_sensors/st_sensors_trigger.c   | 13 +++++++++++++
+ drivers/iio/pressure/st_pressure_core.c              |  8 ++++++++
+ include/linux/iio/common/st_sensors.h                |  6 ++++++
+ include/linux/platform_data/st_sensors_pdata.h       |  2 ++
+ 7 files changed, 60 insertions(+)
 
-diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-index 8d6e5b1..43570b8 100644
---- a/drivers/iio/gyro/bmg160_core.c
-+++ b/drivers/iio/gyro/bmg160_core.c
-@@ -734,6 +734,7 @@ static const struct iio_event_spec bmg160_event = {
- 		.sign = 's',						\
- 		.realbits = 16,					\
- 		.storagebits = 16,					\
-+		.endianness = IIO_LE,					\
- 	},								\
- 	.event_spec = &bmg160_event,					\
- 	.num_event_specs = 1						\
-@@ -773,20 +774,14 @@ static irqreturn_t bmg160_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct bmg160_data *data = iio_priv(indio_dev);
--	int bit, ret, i = 0;
--	unsigned int val;
-+	int ret;
+diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+index d4b87cc1e446..accb5681fbbb 100644
+--- a/Documentation/devicetree/bindings/iio/st-sensors.txt
++++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+@@ -16,6 +16,9 @@ Optional properties:
+ - st,drdy-int-pin: the pin on the package that will be used to signal
+   "data ready" (valid values: 1 or 2). This property is not configurable
+   on all sensors.
++- st,int-pin-open-drain: the interrupt/data ready line will be configured
++  as open drain, which is useful if several sensors share the same
++  interrupt line.
  
- 	mutex_lock(&data->mutex);
--	for (bit = 0; bit < AXIS_MAX; bit++) {
--		ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(bit),
--				       &val, 2);
--		if (ret < 0) {
--			mutex_unlock(&data->mutex);
--			goto err;
--		}
--		data->buffer[i++] = ret;
--	}
-+	ret = regmap_bulk_read(data->regmap, BMG160_REG_XOUT_L,
-+			       data->buffer, AXIS_MAX * 2);
- 	mutex_unlock(&data->mutex);
-+	if (ret < 0)
-+		goto err;
+ Sensors may also have applicable pin control settings, those use the
+ standard bindings from pinctrl/pinctrl-bindings.txt.
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 4df4c278af23..f06f4329db5b 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -96,6 +96,8 @@
+ #define ST_ACCEL_2_DRDY_IRQ_INT2_MASK		0x10
+ #define ST_ACCEL_2_IHL_IRQ_ADDR			0x22
+ #define ST_ACCEL_2_IHL_IRQ_MASK			0x80
++#define ST_ACCEL_2_OD_IRQ_ADDR			0x22
++#define ST_ACCEL_2_OD_IRQ_MASK			0x40
+ #define ST_ACCEL_2_MULTIREAD_BIT		true
  
- 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
- 					   pf->timestamp);
+ /* CUSTOM VALUES FOR SENSOR 3 */
+@@ -177,6 +179,8 @@
+ #define ST_ACCEL_5_DRDY_IRQ_INT2_MASK		0x20
+ #define ST_ACCEL_5_IHL_IRQ_ADDR			0x22
+ #define ST_ACCEL_5_IHL_IRQ_MASK			0x80
++#define ST_ACCEL_5_OD_IRQ_ADDR			0x22
++#define ST_ACCEL_5_OD_IRQ_MASK			0x40
+ #define ST_ACCEL_5_IG1_EN_ADDR			0x21
+ #define ST_ACCEL_5_IG1_EN_MASK			0x08
+ #define ST_ACCEL_5_MULTIREAD_BIT		false
+@@ -368,6 +372,8 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.mask_int2 = ST_ACCEL_2_DRDY_IRQ_INT2_MASK,
+ 			.addr_ihl = ST_ACCEL_2_IHL_IRQ_ADDR,
+ 			.mask_ihl = ST_ACCEL_2_IHL_IRQ_MASK,
++			.addr_od = ST_ACCEL_2_OD_IRQ_ADDR,
++			.mask_od = ST_ACCEL_2_OD_IRQ_MASK,
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+ 		.multi_read_bit = ST_ACCEL_2_MULTIREAD_BIT,
+@@ -557,6 +563,8 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.mask_int2 = ST_ACCEL_5_DRDY_IRQ_INT2_MASK,
+ 			.addr_ihl = ST_ACCEL_5_IHL_IRQ_ADDR,
+ 			.mask_ihl = ST_ACCEL_5_IHL_IRQ_MASK,
++			.addr_od = ST_ACCEL_5_OD_IRQ_ADDR,
++			.mask_od = ST_ACCEL_5_OD_IRQ_MASK,
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+ 		.multi_read_bit = ST_ACCEL_5_MULTIREAD_BIT,
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index f5a2d445d0c0..2e03c1220d1f 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -301,6 +301,14 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
+ 		return -EINVAL;
+ 	}
+ 
++	if (pdata->open_drain) {
++		if (!sdata->sensor_settings->drdy_irq.addr_od)
++			dev_err(&indio_dev->dev,
++				"open drain requested but unsupported.\n");
++		else
++			sdata->int_pin_open_drain = true;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -321,6 +329,8 @@ static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
+ 	else
+ 		pdata->drdy_int_pin = defdata ? defdata->drdy_int_pin : 0;
+ 
++	pdata->open_drain = of_property_read_bool(np, "st,int-pin-open-drain");
++
+ 	return pdata;
+ }
+ #else
+@@ -374,6 +384,16 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 			return err;
+ 	}
+ 
++	if (sdata->int_pin_open_drain) {
++		dev_info(&indio_dev->dev,
++			 "set interrupt line to open drain mode\n");
++		err = st_sensors_write_data_with_mask(indio_dev,
++				sdata->sensor_settings->drdy_irq.addr_od,
++				sdata->sensor_settings->drdy_irq.mask_od, 1);
++		if (err < 0)
++			return err;
++	}
++
+ 	err = st_sensors_set_axis_enable(indio_dev, ST_SENSORS_ENABLE_ALL_AXIS);
+ 
+ 	return err;
+diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+index 6a8c98327945..da72279fcf99 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
++++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+@@ -64,6 +64,19 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 			"rising edge\n", irq_trig);
+ 		irq_trig = IRQF_TRIGGER_RISING;
+ 	}
++
++	/*
++	 * If the interrupt pin is Open Drain, by definition this
++	 * means that the interrupt line may be shared with other
++	 * peripherals. But to do this we also need to have a status
++	 * register and mask to figure out if this sensor was firing
++	 * the IRQ or not, so we can tell the interrupt handle that
++	 * it was "our" interrupt.
++	 */
++	if (sdata->int_pin_open_drain &&
++	    sdata->sensor_settings->drdy_irq.addr_stat_drdy)
++		irq_trig |= IRQF_SHARED;
++
+ 	err = request_threaded_irq(irq,
+ 			iio_trigger_generic_data_rdy_poll,
+ 			NULL,
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 1cd37eaa4a57..9e9b72a8f18f 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -64,6 +64,8 @@
+ #define ST_PRESS_LPS331AP_DRDY_IRQ_INT2_MASK	0x20
+ #define ST_PRESS_LPS331AP_IHL_IRQ_ADDR		0x22
+ #define ST_PRESS_LPS331AP_IHL_IRQ_MASK		0x80
++#define ST_PRESS_LPS331AP_OD_IRQ_ADDR		0x22
++#define ST_PRESS_LPS331AP_OD_IRQ_MASK		0x40
+ #define ST_PRESS_LPS331AP_MULTIREAD_BIT		true
+ #define ST_PRESS_LPS331AP_TEMP_OFFSET		42500
+ 
+@@ -104,6 +106,8 @@
+ #define ST_PRESS_LPS25H_DRDY_IRQ_INT2_MASK	0x10
+ #define ST_PRESS_LPS25H_IHL_IRQ_ADDR		0x22
+ #define ST_PRESS_LPS25H_IHL_IRQ_MASK		0x80
++#define ST_PRESS_LPS25H_OD_IRQ_ADDR		0x22
++#define ST_PRESS_LPS25H_OD_IRQ_MASK		0x40
+ #define ST_PRESS_LPS25H_MULTIREAD_BIT		true
+ #define ST_PRESS_LPS25H_TEMP_OFFSET		42500
+ #define ST_PRESS_LPS25H_OUT_XL_ADDR		0x28
+@@ -226,6 +230,8 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
+ 			.mask_int2 = ST_PRESS_LPS331AP_DRDY_IRQ_INT2_MASK,
+ 			.addr_ihl = ST_PRESS_LPS331AP_IHL_IRQ_ADDR,
+ 			.mask_ihl = ST_PRESS_LPS331AP_IHL_IRQ_MASK,
++			.addr_od = ST_PRESS_LPS331AP_OD_IRQ_ADDR,
++			.mask_od = ST_PRESS_LPS331AP_OD_IRQ_MASK,
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+ 		.multi_read_bit = ST_PRESS_LPS331AP_MULTIREAD_BIT,
+@@ -313,6 +319,8 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
+ 			.mask_int2 = ST_PRESS_LPS25H_DRDY_IRQ_INT2_MASK,
+ 			.addr_ihl = ST_PRESS_LPS25H_IHL_IRQ_ADDR,
+ 			.mask_ihl = ST_PRESS_LPS25H_IHL_IRQ_MASK,
++			.addr_od = ST_PRESS_LPS25H_OD_IRQ_ADDR,
++			.mask_od = ST_PRESS_LPS25H_OD_IRQ_MASK,
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+ 		.multi_read_bit = ST_PRESS_LPS25H_MULTIREAD_BIT,
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index d8da075bfda0..d029ffac0d69 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -122,6 +122,8 @@ struct st_sensor_bdu {
+  * @mask_int2: mask to enable/disable IRQ on INT2 pin.
+  * @addr_ihl: address to enable/disable active low on the INT lines.
+  * @mask_ihl: mask to enable/disable active low on the INT lines.
++ * @addr_od: address to enable/disable Open Drain on the INT lines.
++ * @mask_od: mask to enable/disable Open Drain on the INT lines.
+  * @addr_stat_drdy: address to read status of DRDY (data ready) interrupt
+  * struct ig1 - represents the Interrupt Generator 1 of sensors.
+  * @en_addr: address of the enable ig1 register.
+@@ -133,6 +135,8 @@ struct st_sensor_data_ready_irq {
+ 	u8 mask_int2;
+ 	u8 addr_ihl;
+ 	u8 mask_ihl;
++	u8 addr_od;
++	u8 mask_od;
+ 	u8 addr_stat_drdy;
+ 	struct {
+ 		u8 en_addr;
+@@ -215,6 +219,7 @@ struct st_sensor_settings {
+  * @odr: Output data rate of the sensor [Hz].
+  * num_data_channels: Number of data channels used in buffer.
+  * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
++ * @int_pin_open_drain: Set the interrupt/DRDY to open drain.
+  * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
+  * @tf: Transfer function structure used by I/O operations.
+  * @tb: Transfer buffers and mutex used by I/O operations.
+@@ -236,6 +241,7 @@ struct st_sensor_data {
+ 	unsigned int num_data_channels;
+ 
+ 	u8 drdy_int_pin;
++	bool int_pin_open_drain;
+ 
+ 	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
+ 
+diff --git a/include/linux/platform_data/st_sensors_pdata.h b/include/linux/platform_data/st_sensors_pdata.h
+index 753839187ba0..79b0e4cdb814 100644
+--- a/include/linux/platform_data/st_sensors_pdata.h
++++ b/include/linux/platform_data/st_sensors_pdata.h
+@@ -16,9 +16,11 @@
+  * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
+  *	Available only for accelerometer and pressure sensors.
+  *	Accelerometer DRDY on LSM330 available only on pin 1 (see datasheet).
++ * @open_drain: set the interrupt line to be open drain if possible.
+  */
+ struct st_sensors_platform_data {
+ 	u8 drdy_int_pin;
++	bool open_drain;
+ };
+ 
+ #endif /* ST_SENSORS_PDATA_H */
 -- 
-1.9.1
-
+2.4.3
