@@ -1,57 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.sigma-star.at ([95.130.255.111]:46002 "EHLO
-	mail.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753991AbcCYWqU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Mar 2016 18:46:20 -0400
-From: Richard Weinberger <richard@nod.at>
-To: linux-kernel@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, Richard Weinberger <richard@nod.at>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 8/8] iio: imu: Fix inv_mpu6050 dependencies
-Date: Fri, 25 Mar 2016 23:40:55 +0100
-Message-Id: <1458945655-5027-8-git-send-email-richard@nod.at>
-In-Reply-To: <1458945655-5027-1-git-send-email-richard@nod.at>
-References: <1458945655-5027-1-git-send-email-richard@nod.at>
+Received: from mail-lf0-f45.google.com ([209.85.215.45]:36649 "EHLO
+	mail-lf0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752348AbcCZDnk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Mar 2016 23:43:40 -0400
+Received: by mail-lf0-f45.google.com with SMTP id e133so6887863lfe.3
+        for <linux-iio@vger.kernel.org>; Fri, 25 Mar 2016 20:43:39 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1458272888-26146-2-git-send-email-mranostay@gmail.com>
+References: <1458272888-26146-1-git-send-email-mranostay@gmail.com> <1458272888-26146-2-git-send-email-mranostay@gmail.com>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Fri, 25 Mar 2016 20:42:58 -0700
+Message-ID: <CAKzfze9pQwB0F2P+76gtn26ULMo4UDSyA9e-g+YTP7J5eF9LeQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: health: max30100: correct FIFO check condition
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	David Binderman <dcb314@hotmail.com>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Matt Ranostay <mranostay@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Not all archs have io memory.
-Instead of selecting I2C_MUX (and bypassing the HAS_IOMEM dependency)
-depend directly on it.
+This get lost in the inbox? :)
+Same fix as for APDS9660 issue in the FIFO
 
-Fixes the following kconfig warning:
-warning: (MEDIA_SUBDRV_AUTOSELECT && VIDEO_CX231XX && INV_MPU6050_I2C) selects I2C_MUX which has unmet direct dependencies (I2C && HAS_IOMEM)
-And this build error:
-ERROR: "devm_ioremap_resource" [drivers/i2c/muxes/i2c-mux-reg.ko] undefined!
-ERROR: "of_address_to_resource" [drivers/i2c/muxes/i2c-mux-reg.ko] undefined!
-
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- drivers/iio/imu/inv_mpu6050/Kconfig | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
-index a7f557a..847455a 100644
---- a/drivers/iio/imu/inv_mpu6050/Kconfig
-+++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-@@ -9,9 +9,8 @@ config INV_MPU6050_IIO
- 
- config INV_MPU6050_I2C
- 	tristate "Invensense MPU6050 devices (I2C)"
--	depends on I2C
-+	depends on I2C_MUX
- 	select INV_MPU6050_IIO
--	select I2C_MUX
- 	select REGMAP_I2C
- 	help
- 	  This driver supports the Invensense MPU6050 devices.
--- 
-1.8.4.5
-
+On Thu, Mar 17, 2016 at 8:48 PM, Matt Ranostay <mranostay@gmail.com> wrote:
+> Correct issue that the last entry in FIFO was being read twice due
+> to an incorrect decrement of entry count variable before condition
+> check.
+>
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> ---
+>  drivers/iio/health/max30100.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/health/max30100.c b/drivers/iio/health/max30100.c
+> index 09db893..90ab8a2d 100644
+> --- a/drivers/iio/health/max30100.c
+> +++ b/drivers/iio/health/max30100.c
+> @@ -238,12 +238,13 @@ static irqreturn_t max30100_interrupt_handler(int irq, void *private)
+>
+>         mutex_lock(&data->lock);
+>
+> -       while (cnt-- || (cnt = max30100_fifo_count(data) > 0)) {
+> +       while (cnt || (cnt = max30100_fifo_count(data) > 0)) {
+>                 ret = max30100_read_measurement(data);
+>                 if (ret)
+>                         break;
+>
+>                 iio_push_to_buffers(data->indio_dev, data->buffer);
+> +               cnt--;
+>         }
+>
+>         mutex_unlock(&data->lock);
+> --
+> 2.7.0
+>
