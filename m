@@ -1,295 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56974 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754961AbcCTLVe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2016 07:21:34 -0400
-Subject: Re: [PATCH v3 3/3] iio:magnetometer:ak8975: triggered buffer support
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-References: <cover.1458231723.git.gregor.boirie@parrot.com>
- <890b65dd4aeb57753c9a306c38ca3ef2532ba0c2.1458231723.git.gregor.boirie@parrot.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56EE87B8.50509@kernel.org>
-Date: Sun, 20 Mar 2016 11:21:28 +0000
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <890b65dd4aeb57753c9a306c38ca3ef2532ba0c2.1458231723.git.gregor.boirie@parrot.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20160327011133.GA13730@d830.WORKGROUP>
+References: <20160327011133.GA13730@d830.WORKGROUP>
+Date: Sun, 27 Mar 2016 15:46:01 +0300
+Message-ID: <CAEnQRZAYuFQQ-HyyckTNo17rJAhTCbUKa_XnqKLsyUEPE+a4EQ@mail.gmail.com>
+Subject: Re: git tree for linux-iio
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Alison Schofield <amsfield22@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 17/03/16 16:43, Gregor Boirie wrote:
-> This will be used together with an external trigger (e.g hrtimer based
-> software trigger).
-> 
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-Applied.
+Hi Alison,
 
-I had a slight argument with myself over the data resolution.  Its actually
-only 13bits, but they pad the rest of the register out to 16 bits.  Hence
-whilst technically misleading userspace will have an easier time of it if
-we claim it was 16bits in the first place (no need to sign extend)
+On Sun, Mar 27, 2016 at 4:11 AM, Alison Schofield <amsfield22@gmail.com> wrote:
+> Jonathan,
+>
+> What is the correct git tree to use for iio development - both
+> staging and upstream?
 
-So have left it as is.
+linux-iio tree is at https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/
 
-Jonathan
-> ---
->  drivers/iio/magnetometer/Kconfig  |   2 +
->  drivers/iio/magnetometer/ak8975.c | 135 +++++++++++++++++++++++++++++++-------
->  2 files changed, 112 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> index 021dc53..d9834ed 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -9,6 +9,8 @@ config AK8975
->  	tristate "Asahi Kasei AK 3-Axis Magnetometer"
->  	depends on I2C
->  	depends on GPIOLIB || COMPILE_TEST
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say yes here to build support for Asahi Kasei AK8975, AK8963,
->  	  AK09911 or AK09912 3-Axis Magnetometer.
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index 3814a6a..de1663d 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -36,6 +36,12 @@
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/regulator/consumer.h>
-> +
->  /*
->   * Register definitions, as well as various shifts and masks to get at the
->   * individual fields of the registers.
-> @@ -634,22 +640,15 @@ static int wait_conversion_complete_interrupt(struct ak8975_data *data)
->  	return ret > 0 ? 0 : -ETIME;
->  }
->  
-> -/*
-> - * Emits the raw flux value for the x, y, or z axis.
-> - */
-> -static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
-> +static int ak8975_start_read_axis(struct ak8975_data *data,
-> +				  const struct i2c_client *client)
->  {
-> -	struct ak8975_data *data = iio_priv(indio_dev);
-> -	struct i2c_client *client = data->client;
-> -	int ret;
-> -
-> -	mutex_lock(&data->lock);
-> -
->  	/* Set up the device for taking a sample. */
-> -	ret = ak8975_set_mode(data, MODE_ONCE);
-> +	int ret = ak8975_set_mode(data, MODE_ONCE);
-> +
->  	if (ret < 0) {
->  		dev_err(&client->dev, "Error in setting operating mode\n");
-> -		goto exit;
-> +		return ret;
->  	}
->  
->  	/* Wait for the conversion to complete. */
-> @@ -660,7 +659,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
->  	else
->  		ret = wait_conversion_complete_polled(data);
->  	if (ret < 0)
-> -		goto exit;
-> +		return ret;
->  
->  	/* This will be executed only for non-interrupt based waiting case */
->  	if (ret & data->def->ctrl_masks[ST1_DRDY]) {
-> @@ -668,32 +667,45 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
->  					       data->def->ctrl_regs[ST2]);
->  		if (ret < 0) {
->  			dev_err(&client->dev, "Error in reading ST2\n");
-> -			goto exit;
-> +			return ret;
->  		}
->  		if (ret & (data->def->ctrl_masks[ST2_DERR] |
->  			   data->def->ctrl_masks[ST2_HOFL])) {
->  			dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
-> -			ret = -EINVAL;
-> -			goto exit;
-> +			return -EINVAL;
->  		}
->  	}
->  
-> -	/* Read the flux value from the appropriate register
-> -	   (the register is specified in the iio device attributes). */
-> -	ret = i2c_smbus_read_word_data(client, data->def->data_regs[index]);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "Read axis data fails\n");
-> +	return 0;
-> +}
-> +
-> +/* Retrieve raw flux value for one of the x, y, or z axis.  */
-> +static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
-> +{
-> +	struct ak8975_data *data = iio_priv(indio_dev);
-> +	const struct i2c_client *client = data->client;
-> +	const struct ak_def *def = data->def;
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	ret = ak8975_start_read_axis(data, client);
-> +	if (ret)
-> +		goto exit;
-> +
-> +	ret = i2c_smbus_read_word_data(client, def->data_regs[index]);
-> +	if (ret < 0)
->  		goto exit;
-> -	}
->  
->  	mutex_unlock(&data->lock);
->  
->  	/* Clamp to valid range. */
-> -	*val = clamp_t(s16, ret, -data->def->range, data->def->range);
-> +	*val = clamp_t(s16, ret, -def->range, def->range);
->  	return IIO_VAL_INT;
->  
->  exit:
->  	mutex_unlock(&data->lock);
-> +	dev_err(&client->dev, "Error in reading axis\n");
->  	return ret;
->  }
->  
-> @@ -745,12 +757,22 @@ static const struct attribute_group ak8975_attrs_group = {
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
->  			     BIT(IIO_CHAN_INFO_SCALE),			\
->  		.address = index,					\
-> +		.scan_index = index,					\
-> +		.scan_type = {						\
-> +			.sign = 's',					\
-> +			.realbits = 16,					\
-Data sheet says 13bit.  Why are we claiming 16? Obviously doesn't have
-much practical effect if the top 3 bits are simply the sign bit (seems to
-be the case).  Anyhow, lets leave this be as it will save userspace doing
-the sign extend and it is clearly documented that the top 3 bits will be
-correct.
-> +			.storagebits = 16,				\
-> +			.endianness = IIO_CPU				\
-> +		}							\
->  	}
->  
->  static const struct iio_chan_spec ak8975_channels[] = {
->  	AK8975_CHANNEL(X, 0), AK8975_CHANNEL(Y, 1), AK8975_CHANNEL(Z, 2),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
->  };
->  
-> +static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
-> +
->  static const struct iio_info ak8975_info = {
->  	.read_raw = &ak8975_read_raw,
->  	.driver_module = THIS_MODULE,
-> @@ -785,6 +807,56 @@ static const char *ak8975_match_acpi_device(struct device *dev,
->  	return dev_name(dev);
->  }
->  
-> +static void ak8975_fill_buffer(struct iio_dev *indio_dev)
-> +{
-> +	struct ak8975_data *data = iio_priv(indio_dev);
-> +	const struct i2c_client *client = data->client;
-> +	const struct ak_def *def = data->def;
-> +	int ret;
-> +	s16 buff[8]; /* 3 x 16 bits axis values + 1 aligned 64 bits timestamp */
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	ret = ak8975_start_read_axis(data, client);
-> +	if (ret)
-> +		goto unlock;
-> +
-> +	/*
-> +	 * For each axis, read the flux value from the appropriate register
-> +	 * (the register is specified in the iio device attributes).
-> +	 */
-> +	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
-> +							def->data_regs[0],
-> +							3 * sizeof(buff[0]),
-> +							(u8 *)buff);
-> +	if (ret < 0)
-> +		goto unlock;
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	/* Clamp to valid range. */
-> +	buff[0] = clamp_t(s16, le16_to_cpu(buff[0]), -def->range, def->range);
-> +	buff[1] = clamp_t(s16, le16_to_cpu(buff[1]), -def->range, def->range);
-> +	buff[2] = clamp_t(s16, le16_to_cpu(buff[2]), -def->range, def->range);
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, buff, iio_get_time_ns());
-> +	return;
-> +
-> +unlock:
-> +	mutex_unlock(&data->lock);
-> +	dev_err(&client->dev, "Error in reading axes block\n");
-> +}
-> +
-> +static irqreturn_t ak8975_handle_trigger(int irq, void *p)
-> +{
-> +	const struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +
-> +	ak8975_fill_buffer(indio_dev);
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static int ak8975_probe(struct i2c_client *client,
->  			const struct i2c_device_id *id)
->  {
-> @@ -889,15 +961,27 @@ static int ak8975_probe(struct i2c_client *client,
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->channels = ak8975_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
-> +	indio_dev->available_scan_masks = ak8975_scan_masks;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->name = name;
->  
-> -	err = iio_device_register(indio_dev);
-> -	if (err)
-> +	err = iio_triggered_buffer_setup(indio_dev, NULL, ak8975_handle_trigger,
-> +					 NULL);
-> +	if (err) {
-> +		dev_err(&client->dev, "triggered buffer setup failed\n");
->  		goto power_off;
-> +	}
-> +
-> +	err = iio_device_register(indio_dev);
-> +	if (err) {
-> +		dev_err(&client->dev, "device register failed\n");
-> +		goto cleanup_buffer;
-> +	}
->  
->  	return 0;
->  
-> +cleanup_buffer:
-> +	iio_triggered_buffer_cleanup(indio_dev);
->  power_off:
->  	ak8975_power_off(client);
->  	return err;
-> @@ -908,6 +992,7 @@ static int ak8975_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  
->  	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
->  	ak8975_power_off(client);
->  
->  	return 0;
-> 
+Here how I think things work with IIO:
 
+* new features are based on togreg branch, but first tested on testing branch.
+* bugfixes are based on togreg and integrated in fixes-togreg, but
+first tested on testing branch.
+
+I always use the testing branch when sending patches.
+
+Jonathan please correct me if I'm wrong.
+
+thanks,
+Daniel.
