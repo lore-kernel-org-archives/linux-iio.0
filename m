@@ -1,47 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-072.synserver.de ([212.40.185.72]:1108 "EHLO
-	smtp-out-069.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753840AbcC1Ix7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 04:53:59 -0400
-Subject: Re: [PATCH 28/31] iio: gyro: use parity32 in adxrs450.c
-To: Jonathan Cameron <jic23@kernel.org>,
-	"zhaoxiu.zeng" <zhaoxiu.zeng@gmail.com>,
+Received: from mail-pa0-f65.google.com ([209.85.220.65]:36582 "EHLO
+	mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753375AbcC0Hmp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2016 03:42:45 -0400
+Subject: [PATCH 28/31] iio: gyro: use parity32 in adxrs450.c
+References: <1458788612-4367-1-git-send-email-zhaoxiu.zeng@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+To: Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
-References: <1458788612-4367-1-git-send-email-zhaoxiu.zeng@gmail.com>
- <56F78ED3.8080603@gmail.com> <56F8ECDE.3010701@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <56F8F045.7060409@metafoo.de>
-Date: Mon, 28 Mar 2016 10:50:13 +0200
+From: "zhaoxiu.zeng" <zhaoxiu.zeng@gmail.com>
+Message-ID: <56F78ED3.8080603@gmail.com>
+Date: Sun, 27 Mar 2016 15:42:11 +0800
 MIME-Version: 1.0
-In-Reply-To: <56F8ECDE.3010701@kernel.org>
+In-Reply-To: <1458788612-4367-1-git-send-email-zhaoxiu.zeng@gmail.com>
 Content-Type: text/plain; charset=gbk
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/28/2016 10:35 AM, Jonathan Cameron wrote:
-> On 27/03/16 08:42, zhaoxiu.zeng wrote:
->> From: Zeng Zhaoxiu <zhaoxiu.zeng@gmail.com>
->>
->> Signed-off-by: Zeng Zhaoxiu <zhaoxiu.zeng@gmail.com>
-> Interesting.  Whilst obviously correct I wonder if this obscures the
-> intent of the code a little. Lars, what do you think?
+From: Zeng Zhaoxiu <zhaoxiu.zeng@gmail.com>
 
-The parity function is newly introduced in this series and can be more
-efficient that  just hw_weight() & 1 on certain architectures. Since the
-result is the same using it is certainly an improvement. But ...
+Signed-off-by: Zeng Zhaoxiu <zhaoxiu.zeng@gmail.com>
+---
+ drivers/iio/gyro/adxrs450.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-[...]
->> -	if (!(hweight32(tx) & 1))
->> -		tx |= ADXRS450_P;
->> +	tx |= !parity32(tx) * ADXRS450_P;
+diff --git a/drivers/iio/gyro/adxrs450.c b/drivers/iio/gyro/adxrs450.c
+index a330d42..f1f19fc20 100644
+--- a/drivers/iio/gyro/adxrs450.c
++++ b/drivers/iio/gyro/adxrs450.c
+@@ -108,9 +108,7 @@ static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&st->buf_lock);
+ 	tx = ADXRS450_READ_DATA | (reg_address << 17);
+-
+-	if (!(hweight32(tx) & 1))
+-		tx |= ADXRS450_P;
++	tx |= !parity32(tx) * ADXRS450_P;
+ 
+ 	st->tx = cpu_to_be32(tx);
+ 	ret = spi_sync_transfer(st->us, xfers, ARRAY_SIZE(xfers));
+@@ -144,9 +142,7 @@ static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&st->buf_lock);
+ 	tx = ADXRS450_WRITE_DATA | (reg_address << 17) | (val << 1);
+-
+-	if (!(hweight32(tx) & 1))
+-		tx |= ADXRS450_P;
++	tx |= !parity32(tx) * ADXRS450_P;
+ 
+ 	st->tx = cpu_to_be32(tx);
+ 	ret = spi_write(st->us, &st->tx, sizeof(st->tx));
+-- 
+2.5.5
 
-... this should still be
-
-if (!parity32(tx))
-	tx |= ADXRS450_P;
-
-Otherwise it's a bit too much obfuscated for my taste. Just leave it to the
-compiler to optimize it as it sees it fit.
