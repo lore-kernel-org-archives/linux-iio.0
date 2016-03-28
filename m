@@ -1,123 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43895 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44517 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753303AbcC1Hwy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 03:52:54 -0400
-Subject: Re: [PATCH 1/4] iio: st_sensors: simplify buffer address handling
-To: Denis Ciocca <denis.ciocca@st.com>,
-	Linus Walleij <linus.walleij@linaro.org>
-References: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
- <20160328034233.GA5682@beicxl1122>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Giuseppe BARBA <giuseppe.barba@st.com>
+	with ESMTP id S1753327AbcC1JvZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 05:51:25 -0400
+Subject: Re: [PATCH 1/6] iio: accel: bmc150: use available_scan_masks
+To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
+References: <1458811771-25217-1-git-send-email-irina.tirdea@intel.com>
+ <1458811771-25217-2-git-send-email-irina.tirdea@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Octavian Purdila <octavian.purdila@intel.com>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F8E2D6.2040908@kernel.org>
-Date: Mon, 28 Mar 2016 08:52:54 +0100
+Message-ID: <56F8FE98.8000203@kernel.org>
+Date: Mon, 28 Mar 2016 10:51:20 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160328034233.GA5682@beicxl1122>
+In-Reply-To: <1458811771-25217-2-git-send-email-irina.tirdea@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/03/16 04:42, Denis Ciocca wrote:
-> Hi Linus,
+On 24/03/16 09:29, Irina Tirdea wrote:
+> Use available_scan_masks to allow the iio core to select
+> the data to send to userspace depending on which axes are
+> enabled, instead of doing this in the driver's interrupt
+> handler.
 > 
-> it makes sense to me. Thanks
-> 
-> Acked-by: Denis Ciocca <denis.ciocca@st.com>
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 Applied to the togreg branch of iio.git.
 
-Denis, any comments on the rest of the series?
+Thanks,
+> ---
+>  drivers/iio/accel/bmc150-accel-core.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
 > 
-> 
-> On |24 Mar 16 @ 14:18|, Linus Walleij wrote:
->> The driver goes to some length to dynamically allocate an array
->> to hold the channel addresses. However no ST sensor has more than
->> three channels (x, y, z at most). Instead of kmalloc():ing and
->> kfree():in the address array, just use a fixed array of three
->> elements.
->>
->> Cc: Giuseppe Barba <giuseppe.barba@st.com>
->> Cc: Denis Ciocca <denis.ciocca@st.com>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->> ---
->>  drivers/iio/common/st_sensors/st_sensors_buffer.c | 28 ++++++-----------------
->>  1 file changed, 7 insertions(+), 21 deletions(-)
->>
->> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
->> index e18bc6782256..73764961feac 100644
->> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
->> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
->> @@ -24,19 +24,13 @@
->>  
->>  int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->>  {
->> -	u8 *addr;
->> +	u8 addr[3]; /* no ST sensor has more than 3 channels */
->>  	int i, n = 0, len;
->>  	struct st_sensor_data *sdata = iio_priv(indio_dev);
->>  	unsigned int num_data_channels = sdata->num_data_channels;
->>  	unsigned int byte_for_channel =
->>  			indio_dev->channels[0].scan_type.storagebits >> 3;
->>  
->> -	addr = kmalloc(num_data_channels, GFP_KERNEL);
->> -	if (!addr) {
->> -		len = -ENOMEM;
->> -		goto st_sensors_get_buffer_element_error;
->> -	}
->> -
->>  	for (i = 0; i < num_data_channels; i++) {
->>  		if (test_bit(i, indio_dev->active_scan_mask)) {
->>  			addr[n] = indio_dev->channels[i].address;
->> @@ -57,10 +51,8 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->>  			u8 *rx_array;
->>  			rx_array = kmalloc(byte_for_channel * num_data_channels,
->>  					   GFP_KERNEL);
->> -			if (!rx_array) {
->> -				len = -ENOMEM;
->> -				goto st_sensors_free_memory;
->> -			}
->> +			if (!rx_array)
->> +				return -ENOMEM;
->>  
->>  			len = sdata->tf->read_multiple_byte(&sdata->tb,
->>  				sdata->dev, addr[0],
->> @@ -68,7 +60,7 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->>  				rx_array, sdata->multiread_bit);
->>  			if (len < 0) {
->>  				kfree(rx_array);
->> -				goto st_sensors_free_memory;
->> +				return len;
->>  			}
->>  
->>  			for (i = 0; i < n * byte_for_channel; i++) {
->> @@ -87,17 +79,11 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->>  			buf, sdata->multiread_bit);
->>  		break;
->>  	default:
->> -		len = -EINVAL;
->> -		goto st_sensors_free_memory;
->> -	}
->> -	if (len != byte_for_channel * n) {
->> -		len = -EIO;
->> -		goto st_sensors_free_memory;
->> +		return -EINVAL;
->>  	}
->> +	if (len != byte_for_channel * n)
->> +		return -EIO;
->>  
->> -st_sensors_free_memory:
->> -	kfree(addr);
->> -st_sensors_get_buffer_element_error:
->>  	return len;
->>  }
->>  EXPORT_SYMBOL(st_sensors_get_buffer_element);
->> -- 
->> 2.4.3
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index c73331f7..cc52366 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -138,6 +138,7 @@ enum bmc150_accel_axis {
+>  	AXIS_X,
+>  	AXIS_Y,
+>  	AXIS_Z,
+> +	AXIS_MAX,
+>  };
+>  
+>  enum bmc150_power_modes {
+> @@ -1104,6 +1105,10 @@ static const struct iio_info bmc150_accel_info_fifo = {
+>  	.driver_module		= THIS_MODULE,
+>  };
+>  
+> +static const unsigned long bmc150_accel_scan_masks[] = {
+> +					BIT(AXIS_X) | BIT(AXIS_Y) | BIT(AXIS_Z),
+> +					0};
+> +
+>  static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
+> @@ -1113,8 +1118,7 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+>  	unsigned int raw_val;
+>  
+>  	mutex_lock(&data->mutex);
+> -	for_each_set_bit(bit, indio_dev->active_scan_mask,
+> -			 indio_dev->masklength) {
+> +	for (bit = 0; bit < AXIS_MAX; bit++) {
+>  		ret = regmap_bulk_read(data->regmap,
+>  				       BMC150_ACCEL_AXIS_TO_REG(bit), &raw_val,
+>  				       2);
+> @@ -1574,6 +1578,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+>  	indio_dev->channels = data->chip_info->channels;
+>  	indio_dev->num_channels = data->chip_info->num_channels;
+>  	indio_dev->name = name ? name : data->chip_info->name;
+> +	indio_dev->available_scan_masks = bmc150_accel_scan_masks;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &bmc150_accel_info;
+>  
 > 
 
