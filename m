@@ -1,89 +1,95 @@
-Return-Path: <Vladimir_Zapolskiy@mentor.com>
-Subject: Re: [PATCH v2 1/8] i2c-mux: add common core data for every mux
- instance
-To: Peter Rosin <peda@lysator.liu.se>
-References: <1452009438-27347-1-git-send-email-peda@lysator.liu.se>
- <1452009438-27347-2-git-send-email-peda@lysator.liu.se>
-CC: Wolfram Sang <wsa@the-dreams.de>, Peter Rosin <peda@axentia.se>, Rob
- Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
-	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
- Gala <galak@codeaurora.org>, Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, Mauro Carvalho
- Chehab <mchehab@osg.samsung.com>, Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>, Adriana Reus
-	<adriana.reus@intel.com>, Srinivas Pandruvada
-	<srinivas.pandruvada@linux.intel.com>, Krzysztof Kozlowski
-	<k.kozlowski@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Nicholas Mc
- Guire <hofrat@osadl.org>, Olli Salonen <olli.salonen@iki.fi>,
-	<linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-media@vger.kernel.org>
-From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Message-ID: <56F3B86E.4050002@mentor.com>
-Date: Thu, 24 Mar 2016 11:50:38 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46028 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751783AbcC1Pg7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 11:36:59 -0400
+Subject: Re: [PATCH v2 1/3] iio: Add modifier for UV light
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1458487224-3872-1-git-send-email-pmeerw@pmeerw.net>
+ <1458487224-3872-2-git-send-email-pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56F94F99.30003@kernel.org>
+Date: Mon, 28 Mar 2016 16:36:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <1452009438-27347-2-git-send-email-peda@lysator.liu.se>
-Content-Type: text/plain; charset="utf-8"
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1458487224-3872-2-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Peter,
-
-On 05.01.2016 17:57, Peter Rosin wrote:
-> From: Peter Rosin <peda@axentia.se>
+On 20/03/16 15:20, Peter Meerwald-Stadler wrote:
+> Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Applied.
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 4 +++-
+>  drivers/iio/industrialio-core.c         | 1 +
+>  include/uapi/linux/iio/types.h          | 1 +
+>  tools/iio/iio_event_monitor.c           | 2 ++
+>  4 files changed, 7 insertions(+), 1 deletion(-)
 > 
-> The initial core mux structure starts off small with only the parent
-> adapter pointer, which all muxes have, and a priv pointer for mux
-> driver private data.
-> 
-> Add i2c_mux_alloc function to unify the creation of a mux.
-> 
-> Where appropriate, pass around the mux core structure instead of the
-> parent adapter or the driver private data.
-> 
-> Remove the parent adapter pointer from the driver private data for all
-> mux drivers.
-> 
-> Signed-off-by: Peter Rosin <peda@axentia.se>
-
-is it still under review? If yes, please find one question from me below :)
-
-[snip]
-
-> @@ -196,21 +195,21 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
->  		dev_err(dev, "Cannot parse i2c-parent\n");
->  		return -EINVAL;
->  	}
-> -	arb->parent = of_get_i2c_adapter_by_node(parent_np);
-> +	muxc->parent = of_find_i2c_adapter_by_node(parent_np);
-
-why do you prefer here to use "unlocked" version of API?
-
-Foe example would it be safe/possible to unload an I2C bus device driver
-module or unbind I2C device itself in runtime?
-
->  	of_node_put(parent_np);
-> -	if (!arb->parent) {
-> +	if (!muxc->parent) {
->  		dev_err(dev, "Cannot find parent bus\n");
->  		return -EPROBE_DEFER;
->  	}
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 17a9210..6fb9180 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1255,12 +1255,14 @@ Description:
+>  What:		/sys/.../iio:deviceX/in_intensityY_raw
+>  What:		/sys/.../iio:deviceX/in_intensityY_ir_raw
+>  What:		/sys/.../iio:deviceX/in_intensityY_both_raw
+> +What:		/sys/.../iio:deviceX/in_intensityY_uv_raw
+>  KernelVersion:	3.4
+>  Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Unit-less light intensity. Modifiers both and ir indicate
+>  		that measurements contains visible and infrared light
+> -		components or just infrared light, respectively.
+> +		components or just infrared light, respectively. Modifier uv indicates
+> +		that measurements contain ultraviolet light components.
 >  
->  	/* Actually add the mux adapter */
-> -	arb->child = i2c_add_mux_adapter(arb->parent, dev, arb, 0, 0, 0,
-> +	arb->child = i2c_add_mux_adapter(muxc, dev, arb, 0, 0, 0,
->  					 i2c_arbitrator_select,
->  					 i2c_arbitrator_deselect);
->  	if (!arb->child) {
->  		dev_err(dev, "Failed to add adapter\n");
->  		ret = -ENODEV;
-> -		i2c_put_adapter(arb->parent);
-> +		i2c_put_adapter(muxc->parent);
->  	}
+>  What:		/sys/.../iio:deviceX/in_intensity_red_integration_time
+>  What:		/sys/.../iio:deviceX/in_intensity_green_integration_time
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 2e768bc..88353ae 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -101,6 +101,7 @@ static const char * const iio_modifier_names[] = {
+>  	[IIO_MOD_LIGHT_RED] = "red",
+>  	[IIO_MOD_LIGHT_GREEN] = "green",
+>  	[IIO_MOD_LIGHT_BLUE] = "blue",
+> +	[IIO_MOD_LIGHT_UV] = "uv",
+>  	[IIO_MOD_QUATERNION] = "quaternion",
+>  	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+>  	[IIO_MOD_TEMP_OBJECT] = "object",
+> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+> index c077617..9337ece 100644
+> --- a/include/uapi/linux/iio/types.h
+> +++ b/include/uapi/linux/iio/types.h
+> @@ -77,6 +77,7 @@ enum iio_modifier {
+>  	IIO_MOD_Q,
+>  	IIO_MOD_CO2,
+>  	IIO_MOD_VOC,
+> +	IIO_MOD_LIGHT_UV,
+>  };
 >  
->  	return ret;
+>  enum iio_event_type {
+> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+> index 90980f5..8d7d979 100644
+> --- a/tools/iio/iio_event_monitor.c
+> +++ b/tools/iio/iio_event_monitor.c
+> @@ -93,6 +93,7 @@ static const char * const iio_modifier_names[] = {
+>  	[IIO_MOD_LIGHT_RED] = "red",
+>  	[IIO_MOD_LIGHT_GREEN] = "green",
+>  	[IIO_MOD_LIGHT_BLUE] = "blue",
+> +	[IIO_MOD_LIGHT_UV] = "uv",
+>  	[IIO_MOD_QUATERNION] = "quaternion",
+>  	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+>  	[IIO_MOD_TEMP_OBJECT] = "object",
+> @@ -172,6 +173,7 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_MOD_LIGHT_RED:
+>  	case IIO_MOD_LIGHT_GREEN:
+>  	case IIO_MOD_LIGHT_BLUE:
+> +	case IIO_MOD_LIGHT_UV:
+>  	case IIO_MOD_QUATERNION:
+>  	case IIO_MOD_TEMP_AMBIENT:
+>  	case IIO_MOD_TEMP_OBJECT:
+> 
 
---
-With best wishes,
-Vladimir
