@@ -1,69 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45854 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44471 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752468AbcC1PGB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 11:06:01 -0400
-Subject: Re: [PATCH v3] iio: dac: Add support for the AD5592R/AD5593R
- ADCs/DACs
-To: Linus Walleij <linus.walleij@linaro.org>,
-	Michael Hennerich <michael.hennerich@analog.com>
-References: <1457009883-4017-1-git-send-email-michael.hennerich@analog.com>
- <56DAEDF4.6040008@kernel.org> <56DD7548.8050306@analog.com>
- <CACRpkdY=n30A5UkRX7avP7eWrPffh3faF8K_Ey2f2cs1GRZP7g@mail.gmail.com>
- <56EFFBB6.40806@analog.com>
- <CACRpkdYFUUoG--47qFA_za9X07qukST1vMBEoVC6J4z2LHcs3w@mail.gmail.com>
-Cc: Alexandre Courbot <gnurou@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Paul Cercueil <paul.cercueil@analog.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	=?UTF-8?Q?Pawe=c5=82_Moll?= <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+	with ESMTP id S1751854AbcC1Jnl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 05:43:41 -0400
+Subject: Re: [PATCH] iio: tools: generic_buffer: auto-enable channels
+To: Daniel Baluta <daniel.baluta@gmail.com>,
+	Linus Walleij <linus.walleij@linaro.org>
+References: <1458812636-20904-1-git-send-email-linus.walleij@linaro.org>
+ <CAEnQRZBah4zvvu00Onj-R1Q5DUiY-snz_w1SWR2jV_g5RCv39g@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F94856.60504@kernel.org>
-Date: Mon, 28 Mar 2016 16:05:58 +0100
+Message-ID: <56F8FCCA.5050601@kernel.org>
+Date: Mon, 28 Mar 2016 10:43:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdYFUUoG--47qFA_za9X07qukST1vMBEoVC6J4z2LHcs3w@mail.gmail.com>
+In-Reply-To: <CAEnQRZBah4zvvu00Onj-R1Q5DUiY-snz_w1SWR2jV_g5RCv39g@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/03/16 08:49, Linus Walleij wrote:
-> On Mon, Mar 21, 2016 at 2:48 PM, Michael Hennerich
-> <michael.hennerich@analog.com> wrote:
-> 
->> The thing is that the device directly supports an OPEN DRAIN mode.
+On 24/03/16 09:56, Daniel Baluta wrote:
+> On Thu, Mar 24, 2016 at 11:43 AM, Linus Walleij
+> <linus.walleij@linaro.org> wrote:
+>> If no channels are enabled when we run generic_buffer on a
+>> device, well then just enable all of them, run the sampling
+>> and disable them all again afterwards.
 >>
->> If the consumer asks for open drain mode - everything works as expected.
->> However instead of utilizing the on-chip feature, GPIOLIB will emulate open
->> drain behaviour by configuring the chip for input when someone writes logic
->> high.
+>> This is extremely useful when I'm low-level testing my
+>> sensors with interrupts and triggers, sample session:
 >>
->> So the comment above was really meant to say -
->> remove on-chip OPEN DRAIN mode, consumers should use the GPIOLIB
->> implementation if required.
+>> root@Ux500:/ lsiio
+>> Device 000: lsm303dlh_accel
+>> Device 001: lis331dl_accel
+>> Device 002: l3g4200d
+>> Device 003: lsm303dlh_magn
+>> Device 004: lps001wp
+>> Trigger 000: lsm303dlh_accel-trigger
+>> Trigger 001: lis331dl_accel-trigger
+>> Trigger 002: l3g4200d-trigger
+>>
+>> root@Ux500:/ generic_buffer -c 10 -n l3g4200d
+>> iio device number being used is 2
+>> iio trigger number being used is 2
+>> No channels are enabled, enabling all channels
+>> Enabling: in_anglvel_x_en
+>> Enabling: in_anglvel_y_en
+>> Enabling: in_anglvel_z_en
+>> Enabling: in_timestamp_en
+>> /sys/bus/iio/devices/iio:device2 l3g4200d-trigger
+>> -3.593664 -0.713133 4.870143 946684863662292480
+>> 3.225546 0.867357 -4.945878 946684863671875000
+>> -0.676413 0.127296 0.106641 946684863681488037
+>> -0.661113 0.110160 0.128826 946684863690673828
+>> -0.664173 0.113067 0.123471 946684863700683593
+>> -0.664938 0.109395 0.124848 946684863710144042
+>> -0.664173 0.110619 0.130203 946684863719512939
+>> -0.666162 0.111231 0.132651 946684863729125976
+>> -0.668610 0.111690 0.130662 946684863738739013
+>> -0.660501 0.110466 0.131733 946684863748565673
+>> Disabling: in_anglvel_x_en
+>> Disabling: in_anglvel_y_en
+>> Disabling: in_anglvel_z_en
+>> Disabling: in_timestamp_en
+>>
+>> Pure awesomeness. If some channels have been enabled through
+>> scripts or manual interaction, nothing happens.
+>>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 > 
-> This is very interesting.
+> Indeed. This is very useful!
 > 
-> So if a hardware has *real* open drain, i.e. a bit in hardware that says
-> "set me in open drain mode" we should manage this in gpiolib
-> and provide a special callback in the vtable for it, right? Because it
-> is certainly better to do this with hardware, if we can.
-H*** yeah.  Funny how open drain stuff is popping up left right and centre
-all of a sudden.
+> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
 > 
-> I'll send a draft patch and we can see if this is what you want.
-Cool.  I like fast solutions ;)
+> https://imgflip.com/i/11cof2  :)
+It's extremely useful on devices where all the channels can be enabled.
+Unfortunately the possible channel sets are not exported and for
+quite a lot of devices you cannot configure reading all channels at once.
+
+Look at the more complex available_scan_mask options that exist or
+anything with the onehot callback used.
+
+How about doing it on a parameter so -a (if not used - can't remember)
+for enable all channels?  Then it won't do weird things unless someone
+foolishly enables it on a device where you can't have buffered access
+to all channels at once.
+
+Jonathan
+
 > 
-> Yours,
-> Linus Walleij
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> thanks,
+> Daniel.
 > 
 
