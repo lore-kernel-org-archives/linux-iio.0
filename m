@@ -1,60 +1,85 @@
-Return-Path: <irina.tirdea@intel.com>
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44566 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752381AbcC1J6R (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 05:58:17 -0400
+Subject: Re: [PATCH 5/6] iio: accel: kxcjk-1013: use available_scan_masks
+To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
+References: <1458811771-25217-1-git-send-email-irina.tirdea@intel.com>
+ <1458811771-25217-6-git-send-email-irina.tirdea@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
+	Octavian Purdila <octavian.purdila@intel.com>,
 	Markus Pargmann <mpa@pengutronix.de>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 1/1] iio: accel: bmc150: remove unused definition
-Date: Thu, 24 Mar 2016 11:00:55 +0200
-Message-Id: <1458810056-24236-1-git-send-email-irina.tirdea@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56F90037.9000101@kernel.org>
+Date: Mon, 28 Mar 2016 10:58:15 +0100
+MIME-Version: 1.0
+In-Reply-To: <1458811771-25217-6-git-send-email-irina.tirdea@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-bmc150_i2c_regmap_conf is defined in bmc150-accel-core.c, but
-never used here. The definition is needed in bmc150-accel-i2c.c,
-where it is again defined.
+On 24/03/16 09:29, Irina Tirdea wrote:
+> From: Adriana Reus <adriana.reus@intel.com>
+> 
+> Use available_scan_masks to allow the iio core to select
+> the data to send to userspace depending on which axes are
+> enabled, instead of doing this in the driver's interrupt
+> handler.
+> 
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied, thanks,
 
-Remove the unnecessary definition of bmc150_i2c_regmap_conf from
-bmc150-accel-core.c and update the one from bmc150-accel-i2c.c
-to contain all fields.
+Jonathan
+> ---
+>  drivers/iio/accel/kxcjk-1013.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index edec1d0..3861fe9 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -115,6 +115,7 @@ enum kxcjk1013_axis {
+>  	AXIS_X,
+>  	AXIS_Y,
+>  	AXIS_Z,
+> +	AXIS_MAX,
+>  };
+>  
+>  enum kxcjk1013_mode {
+> @@ -953,6 +954,8 @@ static const struct iio_info kxcjk1013_info = {
+>  	.driver_module		= THIS_MODULE,
+>  };
+>  
+> +static const unsigned long kxcjk1013_scan_masks[] = {0x7, 0};
+> +
+>  static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
+> @@ -962,8 +965,7 @@ static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
+>  
+>  	mutex_lock(&data->mutex);
+>  
+> -	for_each_set_bit(bit, indio_dev->active_scan_mask,
+> -			 indio_dev->masklength) {
+> +	for (bit = 0; bit < AXIS_MAX; bit++) {
+>  		ret = kxcjk1013_get_acc_reg(data, bit);
+>  		if (ret < 0) {
+>  			mutex_unlock(&data->mutex);
+> @@ -1204,6 +1206,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->channels = kxcjk1013_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(kxcjk1013_channels);
+> +	indio_dev->available_scan_masks = kxcjk1013_scan_masks;
+>  	indio_dev->name = name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &kxcjk1013_info;
+> 
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- drivers/iio/accel/bmc150-accel-core.c | 6 ------
- drivers/iio/accel/bmc150-accel-i2c.c  | 1 +
- 2 files changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index c73331f7..feff894 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -246,12 +246,6 @@ static const struct {
- 				       {500000, BMC150_ACCEL_SLEEP_500_MS},
- 				       {1000000, BMC150_ACCEL_SLEEP_1_SEC} };
- 
--static const struct regmap_config bmc150_i2c_regmap_conf = {
--	.reg_bits = 8,
--	.val_bits = 8,
--	.max_register = 0x3f,
--};
--
- static int bmc150_accel_set_mode(struct bmc150_accel_data *data,
- 				 enum bmc150_power_modes mode,
- 				 int dur_us)
-diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
-index b41404b..f0969fe 100644
---- a/drivers/iio/accel/bmc150-accel-i2c.c
-+++ b/drivers/iio/accel/bmc150-accel-i2c.c
-@@ -31,6 +31,7 @@
- static const struct regmap_config bmc150_i2c_regmap_conf = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
-+	.max_register = 0x3f,
- };
- 
- static int bmc150_accel_probe(struct i2c_client *client,
--- 
-1.9.1
