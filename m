@@ -1,68 +1,139 @@
-Return-Path: <irina.tirdea@intel.com>
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 1/1] iio: gyro: bmg160: fix endianness when reading axes
-Date: Mon, 28 Mar 2016 20:14:31 +0300
-Message-Id: <1459185271-18514-1-git-send-email-irina.tirdea@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45894 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752529AbcC1PJ6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 11:09:58 -0400
+Subject: Re: [PATCH-vs-togreg v2 1/2] iio: ina2xx-adc: update the CALIB.
+ register when RShunt changes
+To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net
+References: <1457950844-7261-1-git-send-email-marc.titinger@baylibre.com>
+ <56EE887F.7030508@kernel.org> <56F022D5.1070309@baylibre.com>
+Cc: afd@ti.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56F94943.8010905@kernel.org>
+Date: Mon, 28 Mar 2016 16:09:55 +0100
+MIME-Version: 1.0
+In-Reply-To: <56F022D5.1070309@baylibre.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-For big endian platforms, reading the axes will return
-invalid values.
+On 21/03/16 16:35, Marc Titinger wrote:
+> 
+> 
+> On 20/03/2016 12:24, Jonathan Cameron wrote:
+>> On 14/03/16 10:20, Marc Titinger wrote:
+>>> The user (or an init script) may setup RShunt via sysfs after the
+>>> driver was initialized, for instance based on the EEPROM contents
+>>> of a modular probe. The calibration register must be set accordingly.
+>>>
+>>> Signed-off-by: Marc Titinger <marc.titinger@baylibre.com>
+>>> ---
+>>>   v2 of http://www.spinics.net/lists/linux-iio/msg23402.html:
+>>>
+>>>     - remove unnecessary line insertions
+>>>     - cleanup leftover unused variable (build warning)
+>>>     - patch 2/2 is unchanged (see v1)
+>> Err, can't find it for some reason.
+> 
+> sorry, it's here http://www.spinics.net/lists/linux-iio/msg23401.html
+> or here: pwclient get 8565821
+Meh, thunderbird was hiding it in completely the wrong thread.
+Really should see about changing my email client one of these days.
 
-The device stores each axis value in a 16 bit little
-endian register. The driver uses regmap_read_bulk to get
-the axis value, resulting in a 16 bit little endian value.
-This needs to be converted to cpu endianness to work
-on big endian platforms.
+Anyhow, applied that one now to the togreg branch of iio.git - pushed out
+as testing.
 
-Fix endianness for big endian platforms by converting
-the values for the axes read from little endian to
-cpu.
+thanks,
 
-This is also partially fixed in commit 82d8e5da1a33 ("iio:
-accel: bmg160: optimize transfers in trigger handler").
+Jonathan
+> 
+> BR,
+> Marc.
+> 
+>>
+>> Anyhow, applied this one to the togreg branch of iio.git - pushed
+>> out as testing for the autobuilders to play with it.
+>>
+>> Thanks,
+>>
+>> Jonathan
+>>> ---
+>>>   drivers/iio/adc/ina2xx-adc.c | 39 ++++++++++++++++++++++++---------------
+>>>   1 file changed, 24 insertions(+), 15 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+>>> index 65909d5..4e56fe3 100644
+>>> --- a/drivers/iio/adc/ina2xx-adc.c
+>>> +++ b/drivers/iio/adc/ina2xx-adc.c
+>>> @@ -350,6 +350,23 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
+>>>       return len;
+>>>   }
+>>>
+>>> +/*
+>>> + * Set current LSB to 1mA, shunt is in uOhms
+>>> + * (equation 13 in datasheet). We hardcode a Current_LSB
+>>> + * of 1.0 x10-6. The only remaining parameter is RShunt.
+>>> + * There is no need to expose the CALIBRATION register
+>>> + * to the user for now. But we need to reset this register
+>>> + * if the user updates RShunt after driver init, e.g upon
+>>> + * reading an EEPROM/Probe-type value.
+>>> + */
+>>> +static int ina2xx_set_calibration(struct ina2xx_chip_info *chip)
+>>> +{
+>>> +    u16 regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
+>>> +                   chip->shunt_resistor);
+>>> +
+>>> +    return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
+>>> +}
+>>> +
+>>>   static int set_shunt_resistor(struct ina2xx_chip_info *chip, unsigned int val)
+>>>   {
+>>>       if (val <= 0 || val > chip->config->calibration_factor)
+>>> @@ -385,6 +402,11 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+>>>       if (ret)
+>>>           return ret;
+>>>
+>>> +    /* Update the Calibration register */
+>>> +    ret = ina2xx_set_calibration(chip);
+>>> +    if (ret)
+>>> +        return ret;
+>>> +
+>>>       return len;
+>>>   }
+>>>
+>>> @@ -602,24 +624,11 @@ static const struct iio_info ina2xx_info = {
+>>>   /* Initialize the configuration and calibration registers. */
+>>>   static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
+>>>   {
+>>> -    u16 regval;
+>>> -    int ret;
+>>> -
+>>> -    ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
+>>> +    int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
+>>>       if (ret)
+>>>           return ret;
+>>>
+>>> -    /*
+>>> -     * Set current LSB to 1mA, shunt is in uOhms
+>>> -     * (equation 13 in datasheet). We hardcode a Current_LSB
+>>> -     * of 1.0 x10-6. The only remaining parameter is RShunt.
+>>> -     * There is no need to expose the CALIBRATION register
+>>> -     * to the user for now.
+>>> -     */
+>>> -    regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
+>>> -                   chip->shunt_resistor);
+>>> -
+>>> -    return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
+>>> +    return ina2xx_set_calibration(chip);
+>>>   }
+>>>
+>>>   static int ina2xx_probe(struct i2c_client *client,
+>>>
+>>
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- drivers/iio/gyro/bmg160_core.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-index bbce3b0..295cf1d 100644
---- a/drivers/iio/gyro/bmg160_core.c
-+++ b/drivers/iio/gyro/bmg160_core.c
-@@ -452,7 +452,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
- static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
- {
- 	int ret;
--	unsigned int raw_val;
-+	__le16 raw_val;
- 
- 	mutex_lock(&data->mutex);
- 	ret = bmg160_set_power_state(data, true);
-@@ -470,7 +470,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
- 		return ret;
- 	}
- 
--	*val = sign_extend32(raw_val, 15);
-+	*val = sign_extend32(le16_to_cpu(raw_val), 15);
- 	ret = bmg160_set_power_state(data, false);
- 	mutex_unlock(&data->mutex);
- 	if (ret < 0)
-@@ -733,6 +733,7 @@ static const struct iio_event_spec bmg160_event = {
- 		.sign = 's',						\
- 		.realbits = 16,					\
- 		.storagebits = 16,					\
-+		.endianness = IIO_LE,					\
- 	},								\
- 	.event_spec = &bmg160_event,					\
- 	.num_event_specs = 1						\
--- 
-1.9.1
