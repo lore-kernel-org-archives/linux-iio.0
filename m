@@ -1,106 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44435 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44445 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754086AbcC1Jh2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 05:37:28 -0400
-Subject: Re: [PATCH 2/4] iio: st_sensors: read each channel individually
-To: Linus Walleij <linus.walleij@linaro.org>
-References: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
- <1458825486-17188-2-git-send-email-linus.walleij@linaro.org>
- <56F8E550.6040305@kernel.org>
- <CACRpkdZx2L8JZ76iypApN7WCz7vgSVvamBamkzhQfyG+NdUcbw@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
+	with ESMTP id S1751159AbcC1Jjk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 05:39:40 -0400
+Subject: Re: [PATCH] iio: potentiometer: mcp4531: use pointer to access model
+ parameters
+To: Slawomir Stepien <sst@poczta.fm>, peda@axentia.se
+References: <20160324160601.GA7819@x220>
+Cc: linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F8FB55.5070702@kernel.org>
-Date: Mon, 28 Mar 2016 10:37:25 +0100
+Message-ID: <56F8FBD9.6030805@kernel.org>
+Date: Mon, 28 Mar 2016 10:39:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdZx2L8JZ76iypApN7WCz7vgSVvamBamkzhQfyG+NdUcbw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20160324160601.GA7819@x220>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/03/16 10:20, Linus Walleij wrote:
-> On Mon, Mar 28, 2016 at 10:03 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+On 24/03/16 16:06, Slawomir Stepien wrote:
+> Use const pointer to element from model configuration array rather then array
+> index, as it will not change anyway.
 > 
->> No problem with the patch itself, but I'd like to get a better
->> understanding of the issue.  Are we talking a weird hardware 'bug' that
->> occurs only in these particular circumstances?  Can we pin down which of
->> the above conditions are necessary to make it not work?
-> 
-> I have. I have the following patch in my tree
-> (Giuseppe, tell me if I should send this as patch if you
-> want to try it on your designs.):
-> 
-> From 24fe4792c3bc92f587f44a5c54435be5745e424c Mon Sep 17 00:00:00 2001
-> From: Linus Walleij <linus.walleij@linaro.org>
-> Date: Thu, 24 Mar 2016 09:21:01 +0100
-> Subject: [PATCH] iio: st_sensors: detect residue in channels
-> 
-> Hack.
-> 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  drivers/iio/common/st_sensors/st_sensors_buffer.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
-> 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> index c55898543a47..71c079b50548 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> @@ -83,6 +83,26 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
->      iio_push_to_buffers_with_timestamp(indio_dev, sdata->buffer_data,
->          pf->timestamp);
-> 
-> +    if (sdata->sensor_settings->drdy_irq.addr_stat_drdy) {
-> +        u8 status;
-> +
-> +        len = sdata->tf->read_byte(&sdata->tb, sdata->dev,
-> +               sdata->sensor_settings->drdy_irq.addr_stat_drdy,
-> +               &status);
-> +        if (len < 0)
-> +            dev_err(sdata->dev, "could not read channel status\n");
-> +
-> +        /*
-> +         * If this was not caused by any channels on this sensor,
-> +         * return IRQ_NONE
-> +         */
-> +        if (status & (u8)indio_dev->active_scan_mask[0])
-> +            dev_err(sdata->dev,
-> +                "ERROR residue data status = %02x, scan_mask = %02x\n",
-> +                status,
-> +                (u8)indio_dev->active_scan_mask[0]);
-> +    }
-> +
->  st_sensors_get_buffer_element_error:
->      iio_trigger_notify_done(indio_dev->trig);
-> 
-> This triggers when I use active-low IRQs and open drain setting.
-> The register contains 0x07 or 0xee indicating that the X axis status
-> bit was cleared but not Y, Z.
-> 
->> I'd just like to know if this is a fix that needs to go upstream faster
->> than the open drain support or not.
-> 
-> I cannot test active-high IRQs on the LIS331DL since it is wired
-> up as it is (requireing active-low+open drain). I don't think it's an
-> issue with that sensor in general but rather with the active-low+OD
-> mode in general but admittedly it is a rough guess.
-> 
-> It *might* be that LIS331DL needs this to even work properly :/
-That was precisely what I was wondering!
-
-Let's see if we can pin this down a bit further.  More info would certainly
-help anyone trying to use this with an older kernel.
+> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.  Thanks for cleaning this up.
 
 Jonathan
+> ---
+>  drivers/iio/potentiometer/mcp4531.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
 > 
-> Yours,
-> Linus Walleij
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
+> index a3f6687..385f568 100644
+> --- a/drivers/iio/potentiometer/mcp4531.c
+> +++ b/drivers/iio/potentiometer/mcp4531.c
+> @@ -79,7 +79,7 @@ static const struct mcp4531_cfg mcp4531_cfg[] = {
+>  
+>  struct mcp4531_data {
+>  	struct i2c_client *client;
+> -	unsigned long devid;
+> +	const struct mcp4531_cfg *cfg;
+>  };
+>  
+>  #define MCP4531_CHANNEL(ch) {					\
+> @@ -113,8 +113,8 @@ static int mcp4531_read_raw(struct iio_dev *indio_dev,
+>  		*val = ret;
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+> -		*val = 1000 * mcp4531_cfg[data->devid].kohms;
+> -		*val2 = mcp4531_cfg[data->devid].max_pos;
+> +		*val = 1000 * data->cfg->kohms;
+> +		*val2 = data->cfg->max_pos;
+>  		return IIO_VAL_FRACTIONAL;
+>  	}
+>  
+> @@ -130,7 +130,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		if (val > mcp4531_cfg[data->devid].max_pos || val < 0)
+> +		if (val > data->cfg->max_pos || val < 0)
+>  			return -EINVAL;
+>  		break;
+>  	default:
+> @@ -152,7 +152,6 @@ static int mcp4531_probe(struct i2c_client *client,
+>  			 const struct i2c_device_id *id)
+>  {
+>  	struct device *dev = &client->dev;
+> -	unsigned long devid = id->driver_data;
+>  	struct mcp4531_data *data;
+>  	struct iio_dev *indio_dev;
+>  
+> @@ -168,12 +167,12 @@ static int mcp4531_probe(struct i2c_client *client,
+>  	data = iio_priv(indio_dev);
+>  	i2c_set_clientdata(client, indio_dev);
+>  	data->client = client;
+> -	data->devid = devid;
+> +	data->cfg = &mcp4531_cfg[id->driver_data];
+>  
+>  	indio_dev->dev.parent = dev;
+>  	indio_dev->info = &mcp4531_info;
+>  	indio_dev->channels = mcp4531_channels;
+> -	indio_dev->num_channels = mcp4531_cfg[devid].wipers;
+> +	indio_dev->num_channels = data->cfg->wipers;
+>  	indio_dev->name = client->name;
+>  
+>  	return devm_iio_device_register(dev, indio_dev);
+> 
 
