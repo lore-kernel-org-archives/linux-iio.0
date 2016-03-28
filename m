@@ -1,66 +1,145 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44602 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44612 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753891AbcC1KCS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 06:02:18 -0400
-Subject: Re: [PATCH 1/1] iio: fix config watermark initial value
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	linux-iio@vger.kernel.org
-References: <1458810585-24555-1-git-send-email-irina.tirdea@intel.com>
- <56F3B217.8040206@metafoo.de>
+	with ESMTP id S1753054AbcC1KDp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 06:03:45 -0400
+Subject: Re: [PATCH 1/1] iio: remove unused gpio consumer.h include
+To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
+References: <1458810518-24459-1-git-send-email-irina.tirdea@intel.com>
 Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Octavian Purdila <octavian.purdila@intel.com>
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F90127.4000807@kernel.org>
-Date: Mon, 28 Mar 2016 11:02:15 +0100
+Message-ID: <56F9017F.50303@kernel.org>
+Date: Mon, 28 Mar 2016 11:03:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <56F3B217.8040206@metafoo.de>
+In-Reply-To: <1458810518-24459-1-git-send-email-irina.tirdea@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/03/16 09:23, Lars-Peter Clausen wrote:
-> On 03/24/2016 10:09 AM, Irina Tirdea wrote:
->> config structure is set to 0 when updating the buffers, so by
->> default config->watermark will be 0. When computing the minimum
->> between config->watermark and the buffer->watermark or
->> insert_buffer-watermark, this will always be 0 regardless of the
->> value set by the user for the buffer.
->>
->> Set as initial value for config->watermark the maximum allowed
->> value so that the minimum value will always be set from one of the
->> buffers.
->>
->> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+On 24/03/16 09:08, Irina Tirdea wrote:
+> GPIO handling code has been removed from the drivers (since
+> this is now handled by the ACPI core) in commit 0f0796509c07 ("iio:
+> remove gpio interrupt probing from drivers that use a single interrupt").
 > 
-> Looks good. This bug was my fault, sorry.
+> Remove the include for linux/gpio/consumer.h since it is no longer
+> used.
 > 
-> Fixes: f0566c0c405d ("iio: Set device watermark based on watermark of all
-> attached buffers")
-Applied to the fixes-togreg-post-rc1 branch of iio.git and marked for stable.
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+oops and good spot!
+
+Applied to the togreg branch of iio.git
 
 Thanks,
 
 Jonathan
+> ---
+>  drivers/iio/accel/bmc150-accel-core.c  | 1 -
+>  drivers/iio/accel/kxcjk-1013.c         | 1 -
+>  drivers/iio/accel/mma9553.c            | 1 -
+>  drivers/iio/accel/stk8312.c            | 1 -
+>  drivers/iio/accel/stk8ba50.c           | 1 -
+>  drivers/iio/imu/kmx61.c                | 1 -
+>  drivers/iio/light/stk3310.c            | 1 -
+>  drivers/iio/magnetometer/bmc150_magn.c | 1 -
+>  8 files changed, 8 deletions(-)
 > 
->> ---
->>  drivers/iio/industrialio-buffer.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->> index b976332..90462fc 100644
->> --- a/drivers/iio/industrialio-buffer.c
->> +++ b/drivers/iio/industrialio-buffer.c
->> @@ -653,6 +653,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
->>  	unsigned int modes;
->>  
->>  	memset(config, 0, sizeof(*config));
->> +	config->watermark = ~0;
->>  
->>  	/*
->>  	 * If there is just one buffer and we are removing it there is nothing
->>
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index feff894..65966e5 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -25,7 +25,6 @@
+>  #include <linux/delay.h>
+>  #include <linux/slab.h>
+>  #include <linux/acpi.h>
+> -#include <linux/gpio/consumer.h>
+>  #include <linux/pm.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/iio/iio.h>
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index edec1d0..47305dc 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -20,7 +20,6 @@
+>  #include <linux/slab.h>
+>  #include <linux/string.h>
+>  #include <linux/acpi.h>
+> -#include <linux/gpio/consumer.h>
+>  #include <linux/pm.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/iio/iio.h>
+> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+> index fa7d362..bb05f3e 100644
+> --- a/drivers/iio/accel/mma9553.c
+> +++ b/drivers/iio/accel/mma9553.c
+> @@ -17,7 +17,6 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/slab.h>
+>  #include <linux/acpi.h>
+> -#include <linux/gpio/consumer.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/iio/events.h>
+> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+> index 85fe7f7..e31023d 100644
+> --- a/drivers/iio/accel/stk8312.c
+> +++ b/drivers/iio/accel/stk8312.c
+> @@ -11,7 +11,6 @@
+>   */
+>  
+>  #include <linux/acpi.h>
+> -#include <linux/gpio/consumer.h>
+>  #include <linux/i2c.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/kernel.h>
+> diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
+> index 5709d9e..300d955 100644
+> --- a/drivers/iio/accel/stk8ba50.c
+> +++ b/drivers/iio/accel/stk8ba50.c
+> @@ -11,7 +11,6 @@
+>   */
+>  
+>  #include <linux/acpi.h>
+> -#include <linux/gpio/consumer.h>
+>  #include <linux/i2c.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/kernel.h>
+> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+> index e5306b4..2e7dd57 100644
+> --- a/drivers/iio/imu/kmx61.c
+> +++ b/drivers/iio/imu/kmx61.c
+> @@ -14,7 +14,6 @@
+>  #include <linux/module.h>
+>  #include <linux/i2c.h>
+>  #include <linux/acpi.h>
+> -#include <linux/gpio/consumer.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/pm.h>
+>  #include <linux/pm_runtime.h>
+> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+> index 42d334b..9e847f8 100644
+> --- a/drivers/iio/light/stk3310.c
+> +++ b/drivers/iio/light/stk3310.c
+> @@ -16,7 +16,6 @@
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/regmap.h>
+> -#include <linux/gpio/consumer.h>
+>  #include <linux/iio/events.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+> index ffcb75e..0e9da18 100644
+> --- a/drivers/iio/magnetometer/bmc150_magn.c
+> +++ b/drivers/iio/magnetometer/bmc150_magn.c
+> @@ -23,7 +23,6 @@
+>  #include <linux/delay.h>
+>  #include <linux/slab.h>
+>  #include <linux/acpi.h>
+> -#include <linux/gpio/consumer.h>
+>  #include <linux/pm.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/iio/iio.h>
 > 
 
