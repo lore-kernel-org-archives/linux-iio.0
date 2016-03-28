@@ -1,84 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.208]:42343 "EHLO
-	smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751834AbcCXQFW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2016 12:05:22 -0400
-Date: Thu, 24 Mar 2016 17:06:01 +0100
-From: Slawomir Stepien <sst@poczta.fm>
-To: peda@axentia.se
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-Subject: [PATCH] iio: potentiometer: mcp4531: use pointer to access model
- parameters
-Message-ID: <20160324160601.GA7819@x220>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from mga04.intel.com ([192.55.52.120]:26121 "EHLO mga04.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754022AbcC1RWk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 28 Mar 2016 13:22:40 -0400
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH v2 1/1] iio: accel: bmc150: use common definition for regmap conf
+Date: Mon, 28 Mar 2016 20:22:34 +0300
+Message-Id: <1459185754-18776-1-git-send-email-irina.tirdea@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use const pointer to element from model configuration array rather then array
-index, as it will not change anyway.
+bmc150_i2c_regmap_conf is defined three times (in bmc150-accel-core.c,
+bmc150-accel-i2c.c and and bmc150-accel-spi.c), although the
+definition is the same.
 
-Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+Use one common definition for bmc150_i2c_regmap_conf in all
+included files.
+
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 ---
- drivers/iio/potentiometer/mcp4531.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
-index a3f6687..385f568 100644
---- a/drivers/iio/potentiometer/mcp4531.c
-+++ b/drivers/iio/potentiometer/mcp4531.c
-@@ -79,7 +79,7 @@ static const struct mcp4531_cfg mcp4531_cfg[] = {
+Changes from v1:
+  - instead of removing the unused definition from the core,
+share it between the i2c and spi files
+  - renamed the subject line from "iio: accel: bmc150: remove
+unused definition" to better reflect the new change
+
+ drivers/iio/accel/bmc150-accel-core.c | 3 ++-
+ drivers/iio/accel/bmc150-accel-i2c.c  | 5 -----
+ drivers/iio/accel/bmc150-accel-spi.c  | 6 ------
+ drivers/iio/accel/bmc150-accel.h      | 1 +
+ 4 files changed, 3 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index f3d096f..14d0ee6 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -246,11 +246,12 @@ static const struct {
+ 				       {500000, BMC150_ACCEL_SLEEP_500_MS},
+ 				       {1000000, BMC150_ACCEL_SLEEP_1_SEC} };
  
- struct mcp4531_data {
- 	struct i2c_client *client;
--	unsigned long devid;
-+	const struct mcp4531_cfg *cfg;
+-static const struct regmap_config bmc150_i2c_regmap_conf = {
++const struct regmap_config bmc150_i2c_regmap_conf = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
+ 	.max_register = 0x3f,
  };
++EXPORT_SYMBOL_GPL(bmc150_i2c_regmap_conf);
  
- #define MCP4531_CHANNEL(ch) {					\
-@@ -113,8 +113,8 @@ static int mcp4531_read_raw(struct iio_dev *indio_dev,
- 		*val = ret;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = 1000 * mcp4531_cfg[data->devid].kohms;
--		*val2 = mcp4531_cfg[data->devid].max_pos;
-+		*val = 1000 * data->cfg->kohms;
-+		*val2 = data->cfg->max_pos;
- 		return IIO_VAL_FRACTIONAL;
- 	}
+ static int bmc150_accel_set_mode(struct bmc150_accel_data *data,
+ 				 enum bmc150_power_modes mode,
+diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
+index b41404b..4852ecb 100644
+--- a/drivers/iio/accel/bmc150-accel-i2c.c
++++ b/drivers/iio/accel/bmc150-accel-i2c.c
+@@ -28,11 +28,6 @@
  
-@@ -130,7 +130,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
+ #include "bmc150-accel.h"
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val > mcp4531_cfg[data->devid].max_pos || val < 0)
-+		if (val > data->cfg->max_pos || val < 0)
- 			return -EINVAL;
- 		break;
- 	default:
-@@ -152,7 +152,6 @@ static int mcp4531_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
+-static const struct regmap_config bmc150_i2c_regmap_conf = {
+-	.reg_bits = 8,
+-	.val_bits = 8,
+-};
+-
+ static int bmc150_accel_probe(struct i2c_client *client,
+ 			      const struct i2c_device_id *id)
  {
- 	struct device *dev = &client->dev;
--	unsigned long devid = id->driver_data;
- 	struct mcp4531_data *data;
- 	struct iio_dev *indio_dev;
+diff --git a/drivers/iio/accel/bmc150-accel-spi.c b/drivers/iio/accel/bmc150-accel-spi.c
+index 16b66f2..e89f460 100644
+--- a/drivers/iio/accel/bmc150-accel-spi.c
++++ b/drivers/iio/accel/bmc150-accel-spi.c
+@@ -25,12 +25,6 @@
  
-@@ -168,12 +167,12 @@ static int mcp4531_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
--	data->devid = devid;
-+	data->cfg = &mcp4531_cfg[id->driver_data];
+ #include "bmc150-accel.h"
  
- 	indio_dev->dev.parent = dev;
- 	indio_dev->info = &mcp4531_info;
- 	indio_dev->channels = mcp4531_channels;
--	indio_dev->num_channels = mcp4531_cfg[devid].wipers;
-+	indio_dev->num_channels = data->cfg->wipers;
- 	indio_dev->name = client->name;
+-static const struct regmap_config bmc150_spi_regmap_conf = {
+-	.reg_bits = 8,
+-	.val_bits = 8,
+-	.max_register = 0x3f,
+-};
+-
+ static int bmc150_accel_probe(struct spi_device *spi)
+ {
+ 	struct regmap *regmap;
+diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
+index ba03359..f2fe611 100644
+--- a/drivers/iio/accel/bmc150-accel.h
++++ b/drivers/iio/accel/bmc150-accel.h
+@@ -16,5 +16,6 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 			    const char *name, bool block_supported);
+ int bmc150_accel_core_remove(struct device *dev);
+ extern const struct dev_pm_ops bmc150_accel_pm_ops;
++extern const struct regmap_config bmc150_i2c_regmap_conf;
  
- 	return devm_iio_device_register(dev, indio_dev);
+ #endif  /* _BMC150_ACCEL_H_ */
 -- 
-2.7.4
+1.9.1
+
