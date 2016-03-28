@@ -1,70 +1,47 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <irina.tirdea@intel.com>
+From: "Tirdea, Irina" <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Hartmut
+ Knaack" <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, "Peter
+ Meerwald" <pmeerw@pmeerw.net>, Markus Pargmann <mpa@pengutronix.de>
+Subject: RE: [PATCH 1/1] iio: accel: bmc150: remove unused definition
+Date: Mon, 28 Mar 2016 16:08:44 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F2F2155BE@irsmsx105.ger.corp.intel.com>
+References: <1458810056-24236-1-git-send-email-irina.tirdea@intel.com>
+ <56F902A6.9020307@kernel.org>
+In-Reply-To: <56F902A6.9020307@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <1458812636-20904-1-git-send-email-linus.walleij@linaro.org>
-References: <1458812636-20904-1-git-send-email-linus.walleij@linaro.org>
-Date: Thu, 24 Mar 2016 11:56:40 +0200
-Message-ID: <CAEnQRZBah4zvvu00Onj-R1Q5DUiY-snz_w1SWR2jV_g5RCv39g@mail.gmail.com>
-Subject: Re: [PATCH] iio: tools: generic_buffer: auto-enable channels
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Mar 24, 2016 at 11:43 AM, Linus Walleij
-<linus.walleij@linaro.org> wrote:
-> If no channels are enabled when we run generic_buffer on a
-> device, well then just enable all of them, run the sampling
-> and disable them all again afterwards.
->
-> This is extremely useful when I'm low-level testing my
-> sensors with interrupts and triggers, sample session:
->
-> root@Ux500:/ lsiio
-> Device 000: lsm303dlh_accel
-> Device 001: lis331dl_accel
-> Device 002: l3g4200d
-> Device 003: lsm303dlh_magn
-> Device 004: lps001wp
-> Trigger 000: lsm303dlh_accel-trigger
-> Trigger 001: lis331dl_accel-trigger
-> Trigger 002: l3g4200d-trigger
->
-> root@Ux500:/ generic_buffer -c 10 -n l3g4200d
-> iio device number being used is 2
-> iio trigger number being used is 2
-> No channels are enabled, enabling all channels
-> Enabling: in_anglvel_x_en
-> Enabling: in_anglvel_y_en
-> Enabling: in_anglvel_z_en
-> Enabling: in_timestamp_en
-> /sys/bus/iio/devices/iio:device2 l3g4200d-trigger
-> -3.593664 -0.713133 4.870143 946684863662292480
-> 3.225546 0.867357 -4.945878 946684863671875000
-> -0.676413 0.127296 0.106641 946684863681488037
-> -0.661113 0.110160 0.128826 946684863690673828
-> -0.664173 0.113067 0.123471 946684863700683593
-> -0.664938 0.109395 0.124848 946684863710144042
-> -0.664173 0.110619 0.130203 946684863719512939
-> -0.666162 0.111231 0.132651 946684863729125976
-> -0.668610 0.111690 0.130662 946684863738739013
-> -0.660501 0.110466 0.131733 946684863748565673
-> Disabling: in_anglvel_x_en
-> Disabling: in_anglvel_y_en
-> Disabling: in_anglvel_z_en
-> Disabling: in_timestamp_en
->
-> Pure awesomeness. If some channels have been enabled through
-> scripts or manual interaction, nothing happens.
->
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-Indeed. This is very useful!
 
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+> -----Original Message-----
+> From: Jonathan Cameron [mailto:jic23@kernel.org]
+> Sent: 28 March, 2016 13:09
+> To: Tirdea, Irina; linux-iio@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org; Hartmut Knaack; Lars-Peter Clausen; Pet=
+er Meerwald; Markus Pargmann
+> Subject: Re: [PATCH 1/1] iio: accel: bmc150: remove unused definition
+>=20
+> On 24/03/16 09:00, Irina Tirdea wrote:
+> > bmc150_i2c_regmap_conf is defined in bmc150-accel-core.c, but
+> > never used here. The definition is needed in bmc150-accel-i2c.c,
+> > where it is again defined.
+> >
+> > Remove the unnecessary definition of bmc150_i2c_regmap_conf from
+> > bmc150-accel-core.c and update the one from bmc150-accel-i2c.c
+> > to contain all fields.
+> >
+> > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> Silly question.  Why isn't it shared between the i2c and spi drivers?
+> Looks to be the same in both cases (as we'd expect from regmap most
+> of the time!).  I think it would be better to share it.
+>
 
-https://imgflip.com/i/11cof2  :)
+Good point.  I'll keep the definition in the core file and share the regmap
+with the rest.
 
-thanks,
-Daniel.
+Thanks,
+Irina
