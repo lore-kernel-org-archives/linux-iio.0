@@ -1,82 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45798 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45822 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753731AbcC1O7K (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 10:59:10 -0400
-Subject: Re: [PATCH 1/2] iio:adc:at91-sama5d2: cleanup mode register use
-To: Ludovic Desroches <ludovic.desroches@atmel.com>
-References: <1458662926-8791-1-git-send-email-ludovic.desroches@atmel.com>
-Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, nicolas.ferre@atmel.com,
-	alexandre.belloni@free-electrons.com,
-	linux-arm-kernel@lists.infradead.org
+	with ESMTP id S1753198AbcC1PDT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 11:03:19 -0400
+Subject: Re: [PATCH v3 2/3] iio:magnetometer:ak8975: mounting matrix support
+To: Rob Herring <robh+dt@kernel.org>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>
+References: <cover.1458231723.git.gregor.boirie@parrot.com>
+ <a1efa2b83719dc3898c39a5886b7678892e7de3b.1458231723.git.gregor.boirie@parrot.com>
+ <CAL_JsqJwE5fmHUzV-xi-hgMPSbzY_7QbXaHCSAMCpp9SggWtPw@mail.gmail.com>
+ <20160321222150.GA1787@geburah.sephiroth>
+ <CAL_Jsq+unk=UONZD-0e_VrpkC3R3hXHNoRN-gdj6TCSSHXWZXQ@mail.gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F946BC.30008@kernel.org>
-Date: Mon, 28 Mar 2016 15:59:08 +0100
+Message-ID: <56F947B4.3090503@kernel.org>
+Date: Mon, 28 Mar 2016 16:03:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <1458662926-8791-1-git-send-email-ludovic.desroches@atmel.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAL_Jsq+unk=UONZD-0e_VrpkC3R3hXHNoRN-gdj6TCSSHXWZXQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/03/16 16:08, Ludovic Desroches wrote:
-> Do not erase previous configuration of the mode register when setting
-> the sampling frequency.
+On 22/03/16 12:38, Rob Herring wrote:
+> On Mon, Mar 21, 2016 at 5:21 PM, Gregor Boirie <gregor.boirie@parrot.com> wrote:
+>> Hi Rob,
+>>
+>> On Mon, Mar 21, 2016 at 09:58:46AM -0500, Rob Herring wrote:
+>>> On Thu, Mar 17, 2016 at 11:43 AM, Gregor Boirie
+>>> <gregor.boirie@parrot.com> wrote:
+>>>> Expose a rotation matrix to indicate userspace the chip placement with
+>>>> respect to the overall hardware system. This is needed to adjust
+>>>> coordinates sampled from a magnetometer chip when its position deviates
+>>>> from the main hardware system.
+>>>>
+>>>> Final coordinates computation is delegated to userspace since:
+>>>> * computation may involve floating point arithmetics ;
+>>>> * it allows an application to combine adjustments with arbitrary
+>>>>   transformations.
+>>>>
+>>>> This 3 dimentional space rotation matrix is expressed as 3x3 array of
+>>>> strings to support floating point numbers. It may be retrieved from a
+>>>> "in_magn_matrix" sysfs attribute file. It is declared into ak8975 DTS
+>>>> entry as a "matrix" property.
+>>>
+>>> Why is the sysfs interface specific to ak8975?
+>> AFAIK, this is just the first IIO driver implementation relying on floating
+>> point numbers. Should a single driver be enough to justify a "generic" API,
+>> I suppose code could be factored out in a similar way to over sampling rate
+>> support. People could call this on a per-driver basis.
 > 
-> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-Applied.
-> ---
->  drivers/iio/adc/at91-sama5d2_adc.c | 15 ++++++++++-----
->  1 file changed, 10 insertions(+), 5 deletions(-)
+> Given it is an ABI, yes I think so. We don't want to end up with a
+> bunch of similar yet different interfaces.
 > 
-> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-> index 5bc038f..01ba106 100644
-> --- a/drivers/iio/adc/at91-sama5d2_adc.c
-> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-> @@ -66,8 +66,10 @@
->  #define	AT91_SAMA5D2_MR_PRESCAL(v)	((v) << AT91_SAMA5D2_MR_PRESCAL_OFFSET)
->  #define	AT91_SAMA5D2_MR_PRESCAL_OFFSET	8
->  #define	AT91_SAMA5D2_MR_PRESCAL_MAX	0xff
-> +#define AT91_SAMA5D2_MR_PRESCAL_MASK	GENMASK(15, 8)
->  /* Startup Time */
->  #define	AT91_SAMA5D2_MR_STARTUP(v)	((v) << 16)
-> +#define AT91_SAMA5D2_MR_STARTUP_MASK	GENMASK(19, 16)
->  /* Analog Change */
->  #define	AT91_SAMA5D2_MR_ANACH		BIT(23)
->  /* Tracking Time */
-> @@ -226,7 +228,7 @@ static unsigned at91_adc_startup_time(unsigned startup_time_min,
->  static void at91_adc_setup_samp_freq(struct at91_adc_state *st, unsigned freq)
->  {
->  	struct iio_dev *indio_dev = iio_priv_to_dev(st);
-> -	unsigned f_per, prescal, startup;
-> +	unsigned f_per, prescal, startup, mr;
->  
->  	f_per = clk_get_rate(st->per_clk);
->  	prescal = (f_per / (2 * freq)) - 1;
-> @@ -234,10 +236,11 @@ static void at91_adc_setup_samp_freq(struct at91_adc_state *st, unsigned freq)
->  	startup = at91_adc_startup_time(st->soc_info.startup_time,
->  					freq / 1000);
->  
-> -	at91_adc_writel(st, AT91_SAMA5D2_MR,
-> -			AT91_SAMA5D2_MR_TRANSFER(2)
-> -			| AT91_SAMA5D2_MR_STARTUP(startup)
-> -			| AT91_SAMA5D2_MR_PRESCAL(prescal));
-> +	mr = at91_adc_readl(st, AT91_SAMA5D2_MR);
-> +	mr &= ~(AT91_SAMA5D2_MR_STARTUP_MASK | AT91_SAMA5D2_MR_PRESCAL_MASK);
-> +	mr |= AT91_SAMA5D2_MR_STARTUP(startup);
-> +	mr |= AT91_SAMA5D2_MR_PRESCAL(prescal);
-> +	at91_adc_writel(st, AT91_SAMA5D2_MR, mr);
->  
->  	dev_dbg(&indio_dev->dev, "freq: %u, startup: %u, prescal: %u\n",
->  		freq, startup, prescal);
-> @@ -444,6 +447,8 @@ static int at91_adc_probe(struct platform_device *pdev)
->  
->  	at91_adc_writel(st, AT91_SAMA5D2_CR, AT91_SAMA5D2_CR_SWRST);
->  	at91_adc_writel(st, AT91_SAMA5D2_IDR, 0xffffffff);
-> +	/* Transfer field must be set to 2 according to the datasheet. */
-> +	at91_adc_writel(st, AT91_SAMA5D2_MR, AT91_SAMA5D2_MR_TRANSFER(2));
->  
->  	at91_adc_setup_samp_freq(st, st->soc_info.min_sample_rate);
->  
+Absolutely.  Most interfaces get made up based on one implementation ;)
+A second is always nice, but here the interface is obvious enough we don't
+need to wait.
+>>> Furthermore, why is it specific to magnetometer? Couldn't
+>>> accelerometers need the same thing? There's a thread discussing a
+>>> similar matrix on android-x86[1].
+>> Same may apply to gyro / accelero / imu and magnetometers at least.
+>> inv_mpu_core.c already implements such a rotation matrix exposed as 3x3 integers
+>> array. Should we be smart enough to keep this compatible with existing userspace
+>> apps ?
+> 
+> You have to maintain the ABI. If both interfaces can co-exist, then
+> you can have both and mark the old one as deprecated. In time we can
+> remove the old one.
+If you want to (or someone else does) it would be good to add the new abi to
+inv_mpu_core as well and indeed mark the old one as deprecated. 
+The cost of keeping it is negligible, so we may never actually bother to
+remove it. 
+> 
+>>>> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+>>>> index 34a3206..f936f86 100644
+>>>> --- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+>>>> +++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+>>>> @@ -9,6 +9,7 @@ Optional properties:
+>>>>
+>>>>    - gpios : should be device tree identifier of the magnetometer DRDY pin
+>>>>    - vdd-supply: an optional regulator that needs to be on to provide VDD
+>>>> +  - matrix: an optional 3x3 mounting rotation matrix
+>>>
+>>> Perhaps "rotation-matrx" would be a better name in case there's ever
+>>> any other matrix needed.
+>> What about "mounting-matrix" ?
+> 
+> Sure.
+Works for me as well.
+> 
+> Rob
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
