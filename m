@@ -1,187 +1,715 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45790 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45794 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751714AbcC1O6k (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 10:58:40 -0400
-Subject: Re: [PATCH 2/2] iio:adc:at91-sama5d2: add support for differential
- conversions
-To: Ludovic Desroches <ludovic.desroches@atmel.com>
-References: <1458662926-8791-1-git-send-email-ludovic.desroches@atmel.com>
- <1458662926-8791-2-git-send-email-ludovic.desroches@atmel.com>
-Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, nicolas.ferre@atmel.com,
-	alexandre.belloni@free-electrons.com,
-	linux-arm-kernel@lists.infradead.org
+	with ESMTP id S1753731AbcC1O6x (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 10:58:53 -0400
+Subject: Re: [PATCH v5] iio: potentiometer: add driver for Microchip
+ MCP413X/414X/415X/416X/423X/424X/425X/426X
+To: Slawomir Stepien <sst@poczta.fm>, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+References: <20160323085720.GA6836@x220>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F9469D.8000507@kernel.org>
-Date: Mon, 28 Mar 2016 15:58:37 +0100
+Message-ID: <56F946AA.9070203@kernel.org>
+Date: Mon, 28 Mar 2016 15:58:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <1458662926-8791-2-git-send-email-ludovic.desroches@atmel.com>
+In-Reply-To: <20160323085720.GA6836@x220>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/03/16 16:08, Ludovic Desroches wrote:
-> Add signed differential channels and update the voltage scale for
-> differential conversions.
+On 23/03/16 08:57, Slawomir Stepien wrote:
+> The following functionalities are supported:
+>  - write, read from volatile memory
 > 
-> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-Looks good to me.
+> Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22060b.pdf
+> 
+> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+One process comment below... And git actually copes fine with what you
+did (I wondered which way it would go until I tried it :)
 
-Applied to the togreg branch of iio.git - initially pushed out as testing
-etc etc.
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play pingpong with it.
+
+A very nice, clean driver.  Thanks for your hard work on this.
+
+Note it is in a branch I happy to rebase for the next week, so if Joachim
+in particular would like to add a reviewed by tag, I'd be delighted to append
+it.  Often reviewers don't get enough credit in my opinion!
 
 Jonathan
+
 > ---
+> Changes since v4:
+> - Added necessary include files and sorted all includes
+> - Added missing mutex unlock when there is CMDERR
+> - mcp4131_write_raw spi_write/mutex_unlock/return refactor
 > 
-> This patch is based on:
-> iio:adc:at91-sama5d2: fix identation
-> iio:adc:at91-sama5d2: fix typo
+> Changes since v3:
+> - Added 'potentiometer' to subject
+> - Replaced mcp4131_exec with spi_write and mcp4131_read
+> - Narrowed mutex locking and unlocking places
 > 
->  drivers/iio/adc/at91-sama5d2_adc.c | 71 ++++++++++++++++++++++++++++++--------
->  1 file changed, 56 insertions(+), 15 deletions(-)
+> Changes since v2:
+> - Removed unnecessary parentheses in MCP4131_WIPER_SHIFT macro
+> - Replaced the rx and tx SPI buffers with one buf that is ____cacheline_aligned
+> - Changed mutex locking position
+> - Replaced the devid with pointer to model configuration
+> - Removed positive ("Registered" & "Unregistered") dev_info prints
+> - Removed the mcp4131_remove callback
 > 
-> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-> index 01ba106..07adb10 100644
-> --- a/drivers/iio/adc/at91-sama5d2_adc.c
-> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-> @@ -113,8 +113,11 @@
->  #define AT91_SAMA5D2_CWR	0x44
->  /* Channel Gain Register */
->  #define AT91_SAMA5D2_CGR	0x48
+> Changes since v1:
+> - One line summary changed
+> - Fixed module name and OF compatible
+> - Based code on Peter Rosin's code from mcp4531.c
+> - No additional sysfs attributes
+> - Deleted not used devid struct memeber
+> - Changed mcp4131_exec function arguments:
+>  - write value is now u16
+>  - no need to pass return buffer array - rx array from mcp4131_data is used
+> - Added missing new line characters to dev_info
+Funnily enough, this is the only thing I can find wrong in this patch.
+Should not introduce an additional --- as you have done here.
+The version stuff should simply have a blank line between it and the stats ;)
+
+
+> ---
+>  .../bindings/iio/potentiometer/mcp4131.txt         |  84 ++++
+>  drivers/iio/potentiometer/Kconfig                  |  18 +
+>  drivers/iio/potentiometer/Makefile                 |   1 +
+>  drivers/iio/potentiometer/mcp4131.c                | 494 +++++++++++++++++++++
+>  4 files changed, 597 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/mcp4131.txt
+>  create mode 100644 drivers/iio/potentiometer/mcp4131.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/mcp4131.txt b/Documentation/devicetree/bindings/iio/potentiometer/mcp4131.txt
+> new file mode 100644
+> index 0000000..3ccba16
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/potentiometer/mcp4131.txt
+> @@ -0,0 +1,84 @@
+> +* Microchip MCP413X/414X/415X/416X/423X/424X/425X/426X Digital Potentiometer
+> +  driver
 > +
-Ever so slight gripe here as this is unconnected to this patch so should have
-been in a trivial additional patch... 
->  /* Channel Offset Register */
->  #define AT91_SAMA5D2_COR	0x4c
-> +#define AT91_SAMA5D2_COR_DIFF_OFFSET	16
+> +The node for this driver must be a child node of a SPI controller, hence
+> +all mandatory properties described in
 > +
->  /* Channel Data Register 0 */
->  #define AT91_SAMA5D2_CDR0	0x50
->  /* Analog Control Register */
-> @@ -142,7 +145,7 @@
->  /* Version Register */
->  #define AT91_SAMA5D2_VERSION	0xfc
+> +        Documentation/devicetree/bindings/spi/spi-bus.txt
+> +
+> +must be specified.
+> +
+> +Required properties:
+> +	- compatible:  	Must be one of the following, depending on the
+> +			model:
+> +			"microchip,mcp4131-502"
+> +			"microchip,mcp4131-103"
+> +			"microchip,mcp4131-503"
+> +			"microchip,mcp4131-104"
+> +			"microchip,mcp4132-502"
+> +			"microchip,mcp4132-103"
+> +			"microchip,mcp4132-503"
+> +			"microchip,mcp4132-104"
+> +			"microchip,mcp4141-502"
+> +			"microchip,mcp4141-103"
+> +			"microchip,mcp4141-503"
+> +			"microchip,mcp4141-104"
+> +			"microchip,mcp4142-502"
+> +			"microchip,mcp4142-103"
+> +			"microchip,mcp4142-503"
+> +			"microchip,mcp4142-104"
+> +			"microchip,mcp4151-502"
+> +			"microchip,mcp4151-103"
+> +			"microchip,mcp4151-503"
+> +			"microchip,mcp4151-104"
+> +			"microchip,mcp4152-502"
+> +			"microchip,mcp4152-103"
+> +			"microchip,mcp4152-503"
+> +			"microchip,mcp4152-104"
+> +			"microchip,mcp4161-502"
+> +			"microchip,mcp4161-103"
+> +			"microchip,mcp4161-503"
+> +			"microchip,mcp4161-104"
+> +			"microchip,mcp4162-502"
+> +			"microchip,mcp4162-103"
+> +			"microchip,mcp4162-503"
+> +			"microchip,mcp4162-104"
+> +			"microchip,mcp4231-502"
+> +			"microchip,mcp4231-103"
+> +			"microchip,mcp4231-503"
+> +			"microchip,mcp4231-104"
+> +			"microchip,mcp4232-502"
+> +			"microchip,mcp4232-103"
+> +			"microchip,mcp4232-503"
+> +			"microchip,mcp4232-104"
+> +			"microchip,mcp4241-502"
+> +			"microchip,mcp4241-103"
+> +			"microchip,mcp4241-503"
+> +			"microchip,mcp4241-104"
+> +			"microchip,mcp4242-502"
+> +			"microchip,mcp4242-103"
+> +			"microchip,mcp4242-503"
+> +			"microchip,mcp4242-104"
+> +			"microchip,mcp4251-502"
+> +			"microchip,mcp4251-103"
+> +			"microchip,mcp4251-503"
+> +			"microchip,mcp4251-104"
+> +			"microchip,mcp4252-502"
+> +			"microchip,mcp4252-103"
+> +			"microchip,mcp4252-503"
+> +			"microchip,mcp4252-104"
+> +			"microchip,mcp4261-502"
+> +			"microchip,mcp4261-103"
+> +			"microchip,mcp4261-503"
+> +			"microchip,mcp4261-104"
+> +			"microchip,mcp4262-502"
+> +			"microchip,mcp4262-103"
+> +			"microchip,mcp4262-503"
+> +			"microchip,mcp4262-104"
+> +
+> +Example:
+> +mcp4131: mcp4131@0 {
+> +	compatible = "mcp4131-502";
+> +	reg = <0>;
+> +	spi-max-frequency = <500000>;
+> +};
+> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
+> index fd75db7..5ef181a 100644
+> --- a/drivers/iio/potentiometer/Kconfig
+> +++ b/drivers/iio/potentiometer/Kconfig
+> @@ -5,6 +5,24 @@
 >  
-> -#define AT91_SAMA5D2_CHAN(num, addr)					\
-> +#define AT91_SAMA5D2_CHAN_SINGLE(num, addr)				\
->  	{								\
->  		.type = IIO_VOLTAGE,					\
->  		.channel = num,						\
-> @@ -158,6 +161,24 @@
->  		.indexed = 1,						\
->  	}
+>  menu "Digital potentiometers"
 >  
-> +#define AT91_SAMA5D2_CHAN_DIFF(num, num2, addr)				\
-> +	{								\
-> +		.type = IIO_VOLTAGE,					\
-> +		.differential = 1,					\
-> +		.channel = num,						\
-> +		.channel2 = num2,					\
-> +		.address = addr,					\
-> +		.scan_type = {						\
-> +			.sign = 's',					\
-> +			.realbits = 12,					\
-> +		},							\
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
-> +		.datasheet_name = "CH"#num"-CH"#num2,			\
-> +		.indexed = 1,						\
+> +config MCP4131
+> +	tristate "Microchip MCP413X/414X/415X/416X/423X/424X/425X/426X Digital Potentiometer driver"
+> +	depends on SPI
+> +	help
+> +	  Say yes here to build support for the Microchip
+> +	  MCP4131, MCP4132,
+> +	  MCP4141, MCP4142,
+> +	  MCP4151, MCP4152,
+> +	  MCP4161, MCP4162,
+> +	  MCP4231, MCP4232,
+> +	  MCP4241, MCP4242,
+> +	  MCP4251, MCP4252,
+> +	  MCP4261, MCP4262,
+> +	  digital potentiomenter chips.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called mcp4131.
+> +
+>  config MCP4531
+>  	tristate "Microchip MCP45xx/MCP46xx Digital Potentiometer driver"
+>  	depends on I2C
+> diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
+> index 8afe492..cd5c80b 100644
+> --- a/drivers/iio/potentiometer/Makefile
+> +++ b/drivers/iio/potentiometer/Makefile
+> @@ -3,4 +3,5 @@
+>  #
+>  
+>  # When adding new entries keep the list in alphabetical order
+> +obj-$(CONFIG_MCP4131) += mcp4131.o
+>  obj-$(CONFIG_MCP4531) += mcp4531.o
+> diff --git a/drivers/iio/potentiometer/mcp4131.c b/drivers/iio/potentiometer/mcp4131.c
+> new file mode 100644
+> index 0000000..4e7e2c6
+> --- /dev/null
+> +++ b/drivers/iio/potentiometer/mcp4131.c
+> @@ -0,0 +1,494 @@
+> +/*
+> + * Industrial I/O driver for Microchip digital potentiometers
+> + *
+> + * Copyright (c) 2016 Slawomir Stepien
+> + * Based on: Peter Rosin's code from mcp4531.c
+> + *
+> + * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22060b.pdf
+> + *
+> + * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)
+> + * mcp4131	1	129		5, 10, 50, 100
+> + * mcp4132	1	129		5, 10, 50, 100
+> + * mcp4141	1	129		5, 10, 50, 100
+> + * mcp4142	1	129		5, 10, 50, 100
+> + * mcp4151	1	257		5, 10, 50, 100
+> + * mcp4152	1	257		5, 10, 50, 100
+> + * mcp4161	1	257		5, 10, 50, 100
+> + * mcp4162	1	257		5, 10, 50, 100
+> + * mcp4231	2	129		5, 10, 50, 100
+> + * mcp4232	2	129		5, 10, 50, 100
+> + * mcp4241	2	129		5, 10, 50, 100
+> + * mcp4242	2	129		5, 10, 50, 100
+> + * mcp4251	2	257		5, 10, 50, 100
+> + * mcp4252	2	257		5, 10, 50, 100
+> + * mcp4261	2	257		5, 10, 50, 100
+> + * mcp4262	2	257		5, 10, 50, 100
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + */
+> +
+> +/*
+> + * TODO:
+> + * 1. Write wiper setting to EEPROM for EEPROM capable models.
+> + */
+> +
+> +#include <linux/cache.h>
+> +#include <linux/err.h>
+> +#include <linux/export.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/types.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/of.h>
+> +#include <linux/spi/spi.h>
+> +
+> +#define MCP4131_WRITE		(0x00 << 2)
+> +#define MCP4131_READ		(0x03 << 2)
+> +
+> +#define MCP4131_WIPER_SHIFT	4
+> +#define MCP4131_CMDERR(r)	((r[0]) & 0x02)
+> +#define MCP4131_RAW(r)		((r[0]) == 0xff ? 0x100 : (r[1]))
+> +
+> +struct mcp4131_cfg {
+> +	int wipers;
+> +	int max_pos;
+> +	int kohms;
+> +};
+> +
+> +enum mcp4131_type {
+> +	MCP413x_502 = 0,
+> +	MCP413x_103,
+> +	MCP413x_503,
+> +	MCP413x_104,
+> +	MCP414x_502,
+> +	MCP414x_103,
+> +	MCP414x_503,
+> +	MCP414x_104,
+> +	MCP415x_502,
+> +	MCP415x_103,
+> +	MCP415x_503,
+> +	MCP415x_104,
+> +	MCP416x_502,
+> +	MCP416x_103,
+> +	MCP416x_503,
+> +	MCP416x_104,
+> +	MCP423x_502,
+> +	MCP423x_103,
+> +	MCP423x_503,
+> +	MCP423x_104,
+> +	MCP424x_502,
+> +	MCP424x_103,
+> +	MCP424x_503,
+> +	MCP424x_104,
+> +	MCP425x_502,
+> +	MCP425x_103,
+> +	MCP425x_503,
+> +	MCP425x_104,
+> +	MCP426x_502,
+> +	MCP426x_103,
+> +	MCP426x_503,
+> +	MCP426x_104,
+> +};
+> +
+> +static const struct mcp4131_cfg mcp4131_cfg[] = {
+> +	[MCP413x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
+> +	[MCP413x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
+> +	[MCP413x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
+> +	[MCP413x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
+> +	[MCP414x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
+> +	[MCP414x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
+> +	[MCP414x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
+> +	[MCP414x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
+> +	[MCP415x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
+> +	[MCP415x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
+> +	[MCP415x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
+> +	[MCP415x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+> +	[MCP416x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
+> +	[MCP416x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
+> +	[MCP416x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
+> +	[MCP416x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+> +	[MCP423x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
+> +	[MCP423x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
+> +	[MCP423x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
+> +	[MCP423x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
+> +	[MCP424x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
+> +	[MCP424x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
+> +	[MCP424x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
+> +	[MCP424x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
+> +	[MCP425x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
+> +	[MCP425x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
+> +	[MCP425x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
+> +	[MCP425x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
+> +	[MCP426x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
+> +	[MCP426x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
+> +	[MCP426x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
+> +	[MCP426x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
+> +};
+> +
+> +struct mcp4131_data {
+> +	struct spi_device *spi;
+> +	const struct mcp4131_cfg *cfg;
+> +	struct mutex lock;
+> +	u8 buf[2] ____cacheline_aligned;
+> +};
+> +
+> +#define MCP4131_CHANNEL(ch) {					\
+> +	.type = IIO_RESISTANCE,					\
+> +	.indexed = 1,						\
+> +	.output = 1,						\
+> +	.channel = (ch),					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +}
+> +
+> +static const struct iio_chan_spec mcp4131_channels[] = {
+> +	MCP4131_CHANNEL(0),
+> +	MCP4131_CHANNEL(1),
+> +};
+> +
+> +static int mcp4131_read(struct spi_device *spi, void *buf, size_t len)
+> +{
+> +	struct spi_transfer t = {
+> +		.tx_buf = buf, /* We need to send addr, cmd and 12 bits */
+> +		.rx_buf	= buf,
+> +		.len = len,
+> +	};
+> +	struct spi_message m;
+> +
+> +	spi_message_init(&m);
+> +	spi_message_add_tail(&t, &m);
+> +
+> +	return spi_sync(spi, &m);
+> +}
+> +
+> +static int mcp4131_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	int err;
+> +	struct mcp4131_data *data = iio_priv(indio_dev);
+> +	int address = chan->channel;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&data->lock);
+> +
+> +		data->buf[0] = (address << MCP4131_WIPER_SHIFT) | MCP4131_READ;
+> +		data->buf[1] = 0;
+> +
+> +		err = mcp4131_read(data->spi, data->buf, 2);
+> +		if (err) {
+> +			mutex_unlock(&data->lock);
+> +			return err;
+> +		}
+> +
+> +		/* Error, bad address/command combination */
+> +		if (!MCP4131_CMDERR(data->buf)) {
+> +			mutex_unlock(&data->lock);
+> +			return -EIO;
+> +		}
+> +
+> +		*val = MCP4131_RAW(data->buf);
+> +		mutex_unlock(&data->lock);
+> +
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 1000 * data->cfg->kohms;
+> +		*val2 = data->cfg->max_pos;
+> +		return IIO_VAL_FRACTIONAL;
 > +	}
 > +
->  #define at91_adc_readl(st, reg)		readl_relaxed(st->base + reg)
->  #define at91_adc_writel(st, reg, val)	writel_relaxed(val, st->base + reg)
->  
-> @@ -187,18 +208,24 @@ struct at91_adc_state {
->  };
->  
->  static const struct iio_chan_spec at91_adc_channels[] = {
-> -	AT91_SAMA5D2_CHAN(0, 0x50),
-> -	AT91_SAMA5D2_CHAN(1, 0x54),
-> -	AT91_SAMA5D2_CHAN(2, 0x58),
-> -	AT91_SAMA5D2_CHAN(3, 0x5c),
-> -	AT91_SAMA5D2_CHAN(4, 0x60),
-> -	AT91_SAMA5D2_CHAN(5, 0x64),
-> -	AT91_SAMA5D2_CHAN(6, 0x68),
-> -	AT91_SAMA5D2_CHAN(7, 0x6c),
-> -	AT91_SAMA5D2_CHAN(8, 0x70),
-> -	AT91_SAMA5D2_CHAN(9, 0x74),
-> -	AT91_SAMA5D2_CHAN(10, 0x78),
-> -	AT91_SAMA5D2_CHAN(11, 0x7c),
-> +	AT91_SAMA5D2_CHAN_SINGLE(0, 0x50),
-> +	AT91_SAMA5D2_CHAN_SINGLE(1, 0x54),
-> +	AT91_SAMA5D2_CHAN_SINGLE(2, 0x58),
-> +	AT91_SAMA5D2_CHAN_SINGLE(3, 0x5c),
-> +	AT91_SAMA5D2_CHAN_SINGLE(4, 0x60),
-> +	AT91_SAMA5D2_CHAN_SINGLE(5, 0x64),
-> +	AT91_SAMA5D2_CHAN_SINGLE(6, 0x68),
-> +	AT91_SAMA5D2_CHAN_SINGLE(7, 0x6c),
-> +	AT91_SAMA5D2_CHAN_SINGLE(8, 0x70),
-> +	AT91_SAMA5D2_CHAN_SINGLE(9, 0x74),
-> +	AT91_SAMA5D2_CHAN_SINGLE(10, 0x78),
-> +	AT91_SAMA5D2_CHAN_SINGLE(11, 0x7c),
-> +	AT91_SAMA5D2_CHAN_DIFF(0, 1, 0x50),
-> +	AT91_SAMA5D2_CHAN_DIFF(2, 3, 0x58),
-> +	AT91_SAMA5D2_CHAN_DIFF(4, 5, 0x60),
-> +	AT91_SAMA5D2_CHAN_DIFF(6, 7, 0x68),
-> +	AT91_SAMA5D2_CHAN_DIFF(8, 9, 0x70),
-> +	AT91_SAMA5D2_CHAN_DIFF(10, 11, 0x78),
->  };
->  
->  static unsigned at91_adc_startup_time(unsigned startup_time_min,
-> @@ -281,6 +308,7 @@ static int at91_adc_read_raw(struct iio_dev *indio_dev,
->  			     int *val, int *val2, long mask)
->  {
->  	struct at91_adc_state *st = iio_priv(indio_dev);
-> +	u32 cor = 0;
->  	int ret;
->  
->  	switch (mask) {
-> @@ -289,6 +317,11 @@ static int at91_adc_read_raw(struct iio_dev *indio_dev,
->  
->  		st->chan = chan;
->  
-> +		if (chan->differential)
-> +			cor = (BIT(chan->channel) | BIT(chan->channel2)) <<
-> +			      AT91_SAMA5D2_COR_DIFF_OFFSET;
+> +	return -EINVAL;
+> +}
 > +
-> +		at91_adc_writel(st, AT91_SAMA5D2_COR, cor);
->  		at91_adc_writel(st, AT91_SAMA5D2_CHER, BIT(chan->channel));
->  		at91_adc_writel(st, AT91_SAMA5D2_IER, BIT(chan->channel));
->  		at91_adc_writel(st, AT91_SAMA5D2_CR, AT91_SAMA5D2_CR_START);
-> @@ -301,6 +334,8 @@ static int at91_adc_read_raw(struct iio_dev *indio_dev,
->  
->  		if (ret > 0) {
->  			*val = st->conversion_value;
-> +			if (chan->scan_type.sign == 's')
-> +				*val = sign_extend32(*val, 11);
->  			ret = IIO_VAL_INT;
->  			st->conversion_done = false;
->  		}
-> @@ -313,6 +348,8 @@ static int at91_adc_read_raw(struct iio_dev *indio_dev,
->  
->  	case IIO_CHAN_INFO_SCALE:
->  		*val = st->vref_uv / 1000;
-> +		if (chan->differential)
-> +			*val *= 2;
->  		*val2 = chan->scan_type.realbits;
->  		return IIO_VAL_FRACTIONAL_LOG2;
->  
-> @@ -447,8 +484,12 @@ static int at91_adc_probe(struct platform_device *pdev)
->  
->  	at91_adc_writel(st, AT91_SAMA5D2_CR, AT91_SAMA5D2_CR_SWRST);
->  	at91_adc_writel(st, AT91_SAMA5D2_IDR, 0xffffffff);
-> -	/* Transfer field must be set to 2 according to the datasheet. */
-> -	at91_adc_writel(st, AT91_SAMA5D2_MR, AT91_SAMA5D2_MR_TRANSFER(2));
-> +	/*
-> +	 * Transfer field must be set to 2 according to the datasheet and
-> +	 * allows different analog settings for each channel.
-> +	 */
-> +	at91_adc_writel(st, AT91_SAMA5D2_MR,
-> +			AT91_SAMA5D2_MR_TRANSFER(2) | AT91_SAMA5D2_MR_ANACH);
->  
->  	at91_adc_setup_samp_freq(st, st->soc_info.min_sample_rate);
->  
+> +static int mcp4131_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	int err;
+> +	struct mcp4131_data *data = iio_priv(indio_dev);
+> +	int address = chan->channel << MCP4131_WIPER_SHIFT;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (val > data->cfg->max_pos || val < 0)
+> +			return -EINVAL;
+> +		break;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	data->buf[0] = address << MCP4131_WIPER_SHIFT;
+> +	data->buf[0] |= MCP4131_WRITE | (val >> 8);
+> +	data->buf[1] = val & 0xFF; /* 8 bits here */
+> +
+> +	err = spi_write(data->spi, data->buf, 2);
+> +	mutex_unlock(&data->lock);
+> +
+> +	return err;
+> +}
+> +
+> +static const struct iio_info mcp4131_info = {
+> +	.read_raw = mcp4131_read_raw,
+> +	.write_raw = mcp4131_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int mcp4131_probe(struct spi_device *spi)
+> +{
+> +	int err;
+> +	struct device *dev = &spi->dev;
+> +	unsigned long devid = spi_get_device_id(spi)->driver_data;
+> +	struct mcp4131_data *data;
+> +	struct iio_dev *indio_dev;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	spi_set_drvdata(spi, indio_dev);
+> +	data->spi = spi;
+> +	data->cfg = &mcp4131_cfg[devid];
+> +
+> +	mutex_init(&data->lock);
+> +
+> +	indio_dev->dev.parent = dev;
+> +	indio_dev->info = &mcp4131_info;
+> +	indio_dev->channels = mcp4131_channels;
+> +	indio_dev->num_channels = data->cfg->wipers;
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +
+> +	err = devm_iio_device_register(dev, indio_dev);
+> +	if (err) {
+> +		dev_info(&spi->dev, "Unable to register %s\n", indio_dev->name);
+> +		return err;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +#if defined(CONFIG_OF)
+> +static const struct of_device_id mcp4131_dt_ids[] = {
+> +	{ .compatible = "microchip,mcp4131-502",
+> +		.data = &mcp4131_cfg[MCP413x_502] },
+> +	{ .compatible = "microchip,mcp4131-103",
+> +		.data = &mcp4131_cfg[MCP413x_103] },
+> +	{ .compatible = "microchip,mcp4131-503",
+> +		.data = &mcp4131_cfg[MCP413x_503] },
+> +	{ .compatible = "microchip,mcp4131-104",
+> +		.data = &mcp4131_cfg[MCP413x_104] },
+> +	{ .compatible = "microchip,mcp4132-502",
+> +		.data = &mcp4131_cfg[MCP413x_502] },
+> +	{ .compatible = "microchip,mcp4132-103",
+> +		.data = &mcp4131_cfg[MCP413x_103] },
+> +	{ .compatible = "microchip,mcp4132-503",
+> +		.data = &mcp4131_cfg[MCP413x_503] },
+> +	{ .compatible = "microchip,mcp4132-104",
+> +		.data = &mcp4131_cfg[MCP413x_104] },
+> +	{ .compatible = "microchip,mcp4141-502",
+> +		.data = &mcp4131_cfg[MCP414x_502] },
+> +	{ .compatible = "microchip,mcp4141-103",
+> +		.data = &mcp4131_cfg[MCP414x_103] },
+> +	{ .compatible = "microchip,mcp4141-503",
+> +		.data = &mcp4131_cfg[MCP414x_503] },
+> +	{ .compatible = "microchip,mcp4141-104",
+> +		.data = &mcp4131_cfg[MCP414x_104] },
+> +	{ .compatible = "microchip,mcp4142-502",
+> +		.data = &mcp4131_cfg[MCP414x_502] },
+> +	{ .compatible = "microchip,mcp4142-103",
+> +		.data = &mcp4131_cfg[MCP414x_103] },
+> +	{ .compatible = "microchip,mcp4142-503",
+> +		.data = &mcp4131_cfg[MCP414x_503] },
+> +	{ .compatible = "microchip,mcp4142-104",
+> +		.data = &mcp4131_cfg[MCP414x_104] },
+> +	{ .compatible = "microchip,mcp4151-502",
+> +		.data = &mcp4131_cfg[MCP415x_502] },
+> +	{ .compatible = "microchip,mcp4151-103",
+> +		.data = &mcp4131_cfg[MCP415x_103] },
+> +	{ .compatible = "microchip,mcp4151-503",
+> +		.data = &mcp4131_cfg[MCP415x_503] },
+> +	{ .compatible = "microchip,mcp4151-104",
+> +		.data = &mcp4131_cfg[MCP415x_104] },
+> +	{ .compatible = "microchip,mcp4152-502",
+> +		.data = &mcp4131_cfg[MCP415x_502] },
+> +	{ .compatible = "microchip,mcp4152-103",
+> +		.data = &mcp4131_cfg[MCP415x_103] },
+> +	{ .compatible = "microchip,mcp4152-503",
+> +		.data = &mcp4131_cfg[MCP415x_503] },
+> +	{ .compatible = "microchip,mcp4152-104",
+> +		.data = &mcp4131_cfg[MCP415x_104] },
+> +	{ .compatible = "microchip,mcp4161-502",
+> +		.data = &mcp4131_cfg[MCP416x_502] },
+> +	{ .compatible = "microchip,mcp4161-103",
+> +		.data = &mcp4131_cfg[MCP416x_103] },
+> +	{ .compatible = "microchip,mcp4161-503",
+> +		.data = &mcp4131_cfg[MCP416x_503] },
+> +	{ .compatible = "microchip,mcp4161-104",
+> +		.data = &mcp4131_cfg[MCP416x_104] },
+> +	{ .compatible = "microchip,mcp4162-502",
+> +		.data = &mcp4131_cfg[MCP416x_502] },
+> +	{ .compatible = "microchip,mcp4162-103",
+> +		.data = &mcp4131_cfg[MCP416x_103] },
+> +	{ .compatible = "microchip,mcp4162-503",
+> +		.data = &mcp4131_cfg[MCP416x_503] },
+> +	{ .compatible = "microchip,mcp4162-104",
+> +		.data = &mcp4131_cfg[MCP416x_104] },
+> +	{ .compatible = "microchip,mcp4231-502",
+> +		.data = &mcp4131_cfg[MCP423x_502] },
+> +	{ .compatible = "microchip,mcp4231-103",
+> +		.data = &mcp4131_cfg[MCP423x_103] },
+> +	{ .compatible = "microchip,mcp4231-503",
+> +		.data = &mcp4131_cfg[MCP423x_503] },
+> +	{ .compatible = "microchip,mcp4231-104",
+> +		.data = &mcp4131_cfg[MCP423x_104] },
+> +	{ .compatible = "microchip,mcp4232-502",
+> +		.data = &mcp4131_cfg[MCP423x_502] },
+> +	{ .compatible = "microchip,mcp4232-103",
+> +		.data = &mcp4131_cfg[MCP423x_103] },
+> +	{ .compatible = "microchip,mcp4232-503",
+> +		.data = &mcp4131_cfg[MCP423x_503] },
+> +	{ .compatible = "microchip,mcp4232-104",
+> +		.data = &mcp4131_cfg[MCP423x_104] },
+> +	{ .compatible = "microchip,mcp4241-502",
+> +		.data = &mcp4131_cfg[MCP424x_502] },
+> +	{ .compatible = "microchip,mcp4241-103",
+> +		.data = &mcp4131_cfg[MCP424x_103] },
+> +	{ .compatible = "microchip,mcp4241-503",
+> +		.data = &mcp4131_cfg[MCP424x_503] },
+> +	{ .compatible = "microchip,mcp4241-104",
+> +		.data = &mcp4131_cfg[MCP424x_104] },
+> +	{ .compatible = "microchip,mcp4242-502",
+> +		.data = &mcp4131_cfg[MCP424x_502] },
+> +	{ .compatible = "microchip,mcp4242-103",
+> +		.data = &mcp4131_cfg[MCP424x_103] },
+> +	{ .compatible = "microchip,mcp4242-503",
+> +		.data = &mcp4131_cfg[MCP424x_503] },
+> +	{ .compatible = "microchip,mcp4242-104",
+> +		.data = &mcp4131_cfg[MCP424x_104] },
+> +	{ .compatible = "microchip,mcp4251-502",
+> +		.data = &mcp4131_cfg[MCP425x_502] },
+> +	{ .compatible = "microchip,mcp4251-103",
+> +		.data = &mcp4131_cfg[MCP425x_103] },
+> +	{ .compatible = "microchip,mcp4251-503",
+> +		.data = &mcp4131_cfg[MCP425x_503] },
+> +	{ .compatible = "microchip,mcp4251-104",
+> +		.data = &mcp4131_cfg[MCP425x_104] },
+> +	{ .compatible = "microchip,mcp4252-502",
+> +		.data = &mcp4131_cfg[MCP425x_502] },
+> +	{ .compatible = "microchip,mcp4252-103",
+> +		.data = &mcp4131_cfg[MCP425x_103] },
+> +	{ .compatible = "microchip,mcp4252-503",
+> +		.data = &mcp4131_cfg[MCP425x_503] },
+> +	{ .compatible = "microchip,mcp4252-104",
+> +		.data = &mcp4131_cfg[MCP425x_104] },
+> +	{ .compatible = "microchip,mcp4261-502",
+> +		.data = &mcp4131_cfg[MCP426x_502] },
+> +	{ .compatible = "microchip,mcp4261-103",
+> +		.data = &mcp4131_cfg[MCP426x_103] },
+> +	{ .compatible = "microchip,mcp4261-503",
+> +		.data = &mcp4131_cfg[MCP426x_503] },
+> +	{ .compatible = "microchip,mcp4261-104",
+> +		.data = &mcp4131_cfg[MCP426x_104] },
+> +	{ .compatible = "microchip,mcp4262-502",
+> +		.data = &mcp4131_cfg[MCP426x_502] },
+> +	{ .compatible = "microchip,mcp4262-103",
+> +		.data = &mcp4131_cfg[MCP426x_103] },
+> +	{ .compatible = "microchip,mcp4262-503",
+> +		.data = &mcp4131_cfg[MCP426x_503] },
+> +	{ .compatible = "microchip,mcp4262-104",
+> +		.data = &mcp4131_cfg[MCP426x_104] },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, mcp4131_dt_ids);
+> +#endif /* CONFIG_OF */
+> +
+> +static const struct spi_device_id mcp4131_id[] = {
+> +	{ "mcp4131-502", MCP413x_502 },
+> +	{ "mcp4131-103", MCP413x_103 },
+> +	{ "mcp4131-503", MCP413x_503 },
+> +	{ "mcp4131-104", MCP413x_104 },
+> +	{ "mcp4132-502", MCP413x_502 },
+> +	{ "mcp4132-103", MCP413x_103 },
+> +	{ "mcp4132-503", MCP413x_503 },
+> +	{ "mcp4132-104", MCP413x_104 },
+> +	{ "mcp4141-502", MCP414x_502 },
+> +	{ "mcp4141-103", MCP414x_103 },
+> +	{ "mcp4141-503", MCP414x_503 },
+> +	{ "mcp4141-104", MCP414x_104 },
+> +	{ "mcp4142-502", MCP414x_502 },
+> +	{ "mcp4142-103", MCP414x_103 },
+> +	{ "mcp4142-503", MCP414x_503 },
+> +	{ "mcp4142-104", MCP414x_104 },
+> +	{ "mcp4151-502", MCP415x_502 },
+> +	{ "mcp4151-103", MCP415x_103 },
+> +	{ "mcp4151-503", MCP415x_503 },
+> +	{ "mcp4151-104", MCP415x_104 },
+> +	{ "mcp4152-502", MCP415x_502 },
+> +	{ "mcp4152-103", MCP415x_103 },
+> +	{ "mcp4152-503", MCP415x_503 },
+> +	{ "mcp4152-104", MCP415x_104 },
+> +	{ "mcp4161-502", MCP416x_502 },
+> +	{ "mcp4161-103", MCP416x_103 },
+> +	{ "mcp4161-503", MCP416x_503 },
+> +	{ "mcp4161-104", MCP416x_104 },
+> +	{ "mcp4162-502", MCP416x_502 },
+> +	{ "mcp4162-103", MCP416x_103 },
+> +	{ "mcp4162-503", MCP416x_503 },
+> +	{ "mcp4162-104", MCP416x_104 },
+> +	{ "mcp4231-502", MCP423x_502 },
+> +	{ "mcp4231-103", MCP423x_103 },
+> +	{ "mcp4231-503", MCP423x_503 },
+> +	{ "mcp4231-104", MCP423x_104 },
+> +	{ "mcp4232-502", MCP423x_502 },
+> +	{ "mcp4232-103", MCP423x_103 },
+> +	{ "mcp4232-503", MCP423x_503 },
+> +	{ "mcp4232-104", MCP423x_104 },
+> +	{ "mcp4241-502", MCP424x_502 },
+> +	{ "mcp4241-103", MCP424x_103 },
+> +	{ "mcp4241-503", MCP424x_503 },
+> +	{ "mcp4241-104", MCP424x_104 },
+> +	{ "mcp4242-502", MCP424x_502 },
+> +	{ "mcp4242-103", MCP424x_103 },
+> +	{ "mcp4242-503", MCP424x_503 },
+> +	{ "mcp4242-104", MCP424x_104 },
+> +	{ "mcp4251-502", MCP425x_502 },
+> +	{ "mcp4251-103", MCP425x_103 },
+> +	{ "mcp4251-503", MCP425x_503 },
+> +	{ "mcp4251-104", MCP425x_104 },
+> +	{ "mcp4252-502", MCP425x_502 },
+> +	{ "mcp4252-103", MCP425x_103 },
+> +	{ "mcp4252-503", MCP425x_503 },
+> +	{ "mcp4252-104", MCP425x_104 },
+> +	{ "mcp4261-502", MCP426x_502 },
+> +	{ "mcp4261-103", MCP426x_103 },
+> +	{ "mcp4261-503", MCP426x_503 },
+> +	{ "mcp4261-104", MCP426x_104 },
+> +	{ "mcp4262-502", MCP426x_502 },
+> +	{ "mcp4262-103", MCP426x_103 },
+> +	{ "mcp4262-503", MCP426x_503 },
+> +	{ "mcp4262-104", MCP426x_104 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, mcp4131_id);
+> +
+> +static struct spi_driver mcp4131_driver = {
+> +	.driver = {
+> +		.name	= "mcp4131",
+> +		.of_match_table = of_match_ptr(mcp4131_dt_ids),
+> +	},
+> +	.probe		= mcp4131_probe,
+> +	.id_table	= mcp4131_id,
+> +};
+> +
+> +module_spi_driver(mcp4131_driver);
+> +
+> +MODULE_AUTHOR("Slawomir Stepien <sst@poczta.fm>");
+> +MODULE_DESCRIPTION("MCP4131 digital potentiometer");
+> +MODULE_LICENSE("GPL v2");
 > 
 
