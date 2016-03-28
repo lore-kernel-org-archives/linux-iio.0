@@ -1,139 +1,112 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45894 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752529AbcC1PJ6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 11:09:58 -0400
-Subject: Re: [PATCH-vs-togreg v2 1/2] iio: ina2xx-adc: update the CALIB.
- register when RShunt changes
-To: Marc Titinger <mtitinger@baylibre.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-References: <1457950844-7261-1-git-send-email-marc.titinger@baylibre.com>
- <56EE887F.7030508@kernel.org> <56F022D5.1070309@baylibre.com>
-Cc: afd@ti.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F94943.8010905@kernel.org>
-Date: Mon, 28 Mar 2016 16:09:55 +0100
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:16384 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751781AbcC1Dmm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2016 23:42:42 -0400
+Date: Mon, 28 Mar 2016 11:42:33 +0800
+From: Denis Ciocca <denis.ciocca@st.com>
+To: Linus Walleij <linus.walleij@linaro.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Giuseppe BARBA <giuseppe.barba@st.com>
+Subject: Re: [PATCH 1/4] iio: st_sensors: simplify buffer address handling
+Message-ID: <20160328034233.GA5682@beicxl1122>
+References: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <56F022D5.1070309@baylibre.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/03/16 16:35, Marc Titinger wrote:
-> 
-> 
-> On 20/03/2016 12:24, Jonathan Cameron wrote:
->> On 14/03/16 10:20, Marc Titinger wrote:
->>> The user (or an init script) may setup RShunt via sysfs after the
->>> driver was initialized, for instance based on the EEPROM contents
->>> of a modular probe. The calibration register must be set accordingly.
->>>
->>> Signed-off-by: Marc Titinger <marc.titinger@baylibre.com>
->>> ---
->>>   v2 of http://www.spinics.net/lists/linux-iio/msg23402.html:
->>>
->>>     - remove unnecessary line insertions
->>>     - cleanup leftover unused variable (build warning)
->>>     - patch 2/2 is unchanged (see v1)
->> Err, can't find it for some reason.
-> 
-> sorry, it's here http://www.spinics.net/lists/linux-iio/msg23401.html
-> or here: pwclient get 8565821
-Meh, thunderbird was hiding it in completely the wrong thread.
-Really should see about changing my email client one of these days.
+Hi Linus,
 
-Anyhow, applied that one now to the togreg branch of iio.git - pushed out
-as testing.
+it makes sense to me. Thanks
 
-thanks,
+Acked-by: Denis Ciocca <denis.ciocca@st.com>
 
-Jonathan
+
+On |24 Mar 16 @ 14:18|, Linus Walleij wrote:
+> The driver goes to some length to dynamically allocate an array
+> to hold the channel addresses. However no ST sensor has more than
+> three channels (x, y, z at most). Instead of kmalloc():ing and
+> kfree():in the address array, just use a fixed array of three
+> elements.
 > 
-> BR,
-> Marc.
+> Cc: Giuseppe Barba <giuseppe.barba@st.com>
+> Cc: Denis Ciocca <denis.ciocca@st.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  drivers/iio/common/st_sensors/st_sensors_buffer.c | 28 ++++++-----------------
+>  1 file changed, 7 insertions(+), 21 deletions(-)
 > 
->>
->> Anyhow, applied this one to the togreg branch of iio.git - pushed
->> out as testing for the autobuilders to play with it.
->>
->> Thanks,
->>
->> Jonathan
->>> ---
->>>   drivers/iio/adc/ina2xx-adc.c | 39 ++++++++++++++++++++++++---------------
->>>   1 file changed, 24 insertions(+), 15 deletions(-)
->>>
->>> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
->>> index 65909d5..4e56fe3 100644
->>> --- a/drivers/iio/adc/ina2xx-adc.c
->>> +++ b/drivers/iio/adc/ina2xx-adc.c
->>> @@ -350,6 +350,23 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
->>>       return len;
->>>   }
->>>
->>> +/*
->>> + * Set current LSB to 1mA, shunt is in uOhms
->>> + * (equation 13 in datasheet). We hardcode a Current_LSB
->>> + * of 1.0 x10-6. The only remaining parameter is RShunt.
->>> + * There is no need to expose the CALIBRATION register
->>> + * to the user for now. But we need to reset this register
->>> + * if the user updates RShunt after driver init, e.g upon
->>> + * reading an EEPROM/Probe-type value.
->>> + */
->>> +static int ina2xx_set_calibration(struct ina2xx_chip_info *chip)
->>> +{
->>> +    u16 regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
->>> +                   chip->shunt_resistor);
->>> +
->>> +    return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
->>> +}
->>> +
->>>   static int set_shunt_resistor(struct ina2xx_chip_info *chip, unsigned int val)
->>>   {
->>>       if (val <= 0 || val > chip->config->calibration_factor)
->>> @@ -385,6 +402,11 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
->>>       if (ret)
->>>           return ret;
->>>
->>> +    /* Update the Calibration register */
->>> +    ret = ina2xx_set_calibration(chip);
->>> +    if (ret)
->>> +        return ret;
->>> +
->>>       return len;
->>>   }
->>>
->>> @@ -602,24 +624,11 @@ static const struct iio_info ina2xx_info = {
->>>   /* Initialize the configuration and calibration registers. */
->>>   static int ina2xx_init(struct ina2xx_chip_info *chip, unsigned int config)
->>>   {
->>> -    u16 regval;
->>> -    int ret;
->>> -
->>> -    ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
->>> +    int ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
->>>       if (ret)
->>>           return ret;
->>>
->>> -    /*
->>> -     * Set current LSB to 1mA, shunt is in uOhms
->>> -     * (equation 13 in datasheet). We hardcode a Current_LSB
->>> -     * of 1.0 x10-6. The only remaining parameter is RShunt.
->>> -     * There is no need to expose the CALIBRATION register
->>> -     * to the user for now.
->>> -     */
->>> -    regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
->>> -                   chip->shunt_resistor);
->>> -
->>> -    return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
->>> +    return ina2xx_set_calibration(chip);
->>>   }
->>>
->>>   static int ina2xx_probe(struct i2c_client *client,
->>>
->>
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> index e18bc6782256..73764961feac 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> @@ -24,19 +24,13 @@
+>  
+>  int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>  {
+> -	u8 *addr;
+> +	u8 addr[3]; /* no ST sensor has more than 3 channels */
+>  	int i, n = 0, len;
+>  	struct st_sensor_data *sdata = iio_priv(indio_dev);
+>  	unsigned int num_data_channels = sdata->num_data_channels;
+>  	unsigned int byte_for_channel =
+>  			indio_dev->channels[0].scan_type.storagebits >> 3;
+>  
+> -	addr = kmalloc(num_data_channels, GFP_KERNEL);
+> -	if (!addr) {
+> -		len = -ENOMEM;
+> -		goto st_sensors_get_buffer_element_error;
+> -	}
+> -
+>  	for (i = 0; i < num_data_channels; i++) {
+>  		if (test_bit(i, indio_dev->active_scan_mask)) {
+>  			addr[n] = indio_dev->channels[i].address;
+> @@ -57,10 +51,8 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>  			u8 *rx_array;
+>  			rx_array = kmalloc(byte_for_channel * num_data_channels,
+>  					   GFP_KERNEL);
+> -			if (!rx_array) {
+> -				len = -ENOMEM;
+> -				goto st_sensors_free_memory;
+> -			}
+> +			if (!rx_array)
+> +				return -ENOMEM;
+>  
+>  			len = sdata->tf->read_multiple_byte(&sdata->tb,
+>  				sdata->dev, addr[0],
+> @@ -68,7 +60,7 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>  				rx_array, sdata->multiread_bit);
+>  			if (len < 0) {
+>  				kfree(rx_array);
+> -				goto st_sensors_free_memory;
+> +				return len;
+>  			}
+>  
+>  			for (i = 0; i < n * byte_for_channel; i++) {
+> @@ -87,17 +79,11 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>  			buf, sdata->multiread_bit);
+>  		break;
+>  	default:
+> -		len = -EINVAL;
+> -		goto st_sensors_free_memory;
+> -	}
+> -	if (len != byte_for_channel * n) {
+> -		len = -EIO;
+> -		goto st_sensors_free_memory;
+> +		return -EINVAL;
+>  	}
+> +	if (len != byte_for_channel * n)
+> +		return -EIO;
+>  
+> -st_sensors_free_memory:
+> -	kfree(addr);
+> -st_sensors_get_buffer_element_error:
+>  	return len;
+>  }
+>  EXPORT_SYMBOL(st_sensors_get_buffer_element);
 > -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+> 2.4.3
+> 
