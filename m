@@ -1,99 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44576 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44647 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751936AbcC1J7g (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 05:59:36 -0400
-Subject: Re: [PATCH 6/6] iio: accel: kxcjk-1013: optimize i2c transfers in
- trigger handler
+	with ESMTP id S1753999AbcC1KIk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 06:08:40 -0400
+Subject: Re: [PATCH 1/1] iio: accel: bmc150: remove unused definition
 To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
-References: <1458811771-25217-1-git-send-email-irina.tirdea@intel.com>
- <1458811771-25217-7-git-send-email-irina.tirdea@intel.com>
+References: <1458810056-24236-1-git-send-email-irina.tirdea@intel.com>
 Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Octavian Purdila <octavian.purdila@intel.com>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Adriana Reus <adriana.reus@intel.com>
+	Markus Pargmann <mpa@pengutronix.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <56F90086.1080506@kernel.org>
-Date: Mon, 28 Mar 2016 10:59:34 +0100
+Message-ID: <56F902A6.9020307@kernel.org>
+Date: Mon, 28 Mar 2016 11:08:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <1458811771-25217-7-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1458810056-24236-1-git-send-email-irina.tirdea@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/03/16 09:29, Irina Tirdea wrote:
-> From: Adriana Reus <adriana.reus@intel.com>
+On 24/03/16 09:00, Irina Tirdea wrote:
+> bmc150_i2c_regmap_conf is defined in bmc150-accel-core.c, but
+> never used here. The definition is needed in bmc150-accel-i2c.c,
+> where it is again defined.
 > 
-> Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
-> enable/disable the bus at each i2c transfer and must wait for
-> the enable/disable to happen before sending the data.
+> Remove the unnecessary definition of bmc150_i2c_regmap_conf from
+> bmc150-accel-core.c and update the one from bmc150-accel-i2c.c
+> to contain all fields.
 > 
-> When reading data in the trigger handler, the kxcjk-1013 accel driver
-> does one i2c transfer for each axis. This has an impact on the
-> frequency of the accelerometer at high sample rates due to additional
-> delays introduced by the i2c bus at each transfer.
-> 
-> Reading all axis values in one i2c transfer reduces the delays
-> introduced by the i2c bus. Uses i2c_smbus_read_i2c_block_data_or_emulated
-> that will fallback to reading each axis as a separate word in case i2c
-> block read is not supported.
-> 
-> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
 > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
-> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied - with all the others to the togreg branch of iio.git - initially pushed out
-as testing for the autobuilders to play with it.
-
-Thanks,
+Silly question.  Why isn't it shared between the i2c and spi drivers?
+Looks to be the same in both cases (as we'd expect from regmap most
+of the time!).  I think it would be better to share it.
 
 Jonathan
 > ---
->  drivers/iio/accel/kxcjk-1013.c | 19 ++++++++-----------
->  1 file changed, 8 insertions(+), 11 deletions(-)
+>  drivers/iio/accel/bmc150-accel-core.c | 6 ------
+>  drivers/iio/accel/bmc150-accel-i2c.c  | 1 +
+>  2 files changed, 1 insertion(+), 6 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 3861fe9..4881856 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -923,7 +923,7 @@ static const struct iio_event_spec kxcjk1013_event = {
->  		.realbits = 12,						\
->  		.storagebits = 16,					\
->  		.shift = 4,						\
-> -		.endianness = IIO_CPU,					\
-> +		.endianness = IIO_LE,					\
->  	},								\
->  	.event_spec = &kxcjk1013_event,				\
->  	.num_event_specs = 1						\
-> @@ -961,19 +961,16 @@ static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> -	int bit, ret, i = 0;
-> +	int ret;
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index c73331f7..feff894 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -246,12 +246,6 @@ static const struct {
+>  				       {500000, BMC150_ACCEL_SLEEP_500_MS},
+>  				       {1000000, BMC150_ACCEL_SLEEP_1_SEC} };
 >  
->  	mutex_lock(&data->mutex);
+> -static const struct regmap_config bmc150_i2c_regmap_conf = {
+> -	.reg_bits = 8,
+> -	.val_bits = 8,
+> -	.max_register = 0x3f,
+> -};
 > -
-> -	for (bit = 0; bit < AXIS_MAX; bit++) {
-> -		ret = kxcjk1013_get_acc_reg(data, bit);
-> -		if (ret < 0) {
-> -			mutex_unlock(&data->mutex);
-> -			goto err;
-> -		}
-> -		data->buffer[i++] = ret;
-> -	}
-> +	ret = i2c_smbus_read_i2c_block_data_or_emulated(data->client,
-> +							KXCJK1013_REG_XOUT_L,
-> +							AXIS_MAX * 2,
-> +							(u8 *)data->buffer);
->  	mutex_unlock(&data->mutex);
-> +	if (ret < 0)
-> +		goto err;
+>  static int bmc150_accel_set_mode(struct bmc150_accel_data *data,
+>  				 enum bmc150_power_modes mode,
+>  				 int dur_us)
+> diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
+> index b41404b..f0969fe 100644
+> --- a/drivers/iio/accel/bmc150-accel-i2c.c
+> +++ b/drivers/iio/accel/bmc150-accel-i2c.c
+> @@ -31,6 +31,7 @@
+>  static const struct regmap_config bmc150_i2c_regmap_conf = {
+>  	.reg_bits = 8,
+>  	.val_bits = 8,
+> +	.max_register = 0x3f,
+>  };
 >  
->  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->  					   data->timestamp);
+>  static int bmc150_accel_probe(struct i2c_client *client,
 > 
 
