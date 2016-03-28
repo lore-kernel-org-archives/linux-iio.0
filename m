@@ -1,75 +1,122 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:54388 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753030AbcCWPP0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 23 Mar 2016 11:15:26 -0400
-Date: Wed, 23 Mar 2016 10:15:20 -0500
-From: Rob Herring <robh@kernel.org>
-To: michael.hennerich@analog.com
-Cc: jic23@kernel.org, linus.walleij@linaro.org, gnurou@gmail.com,
-	lars@metafoo.de, knaack.h@gmx.de, paul.cercueil@analog.com,
-	pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH v5] iio: dac: Add support for the AD5592R/AD5593R
- ADCs/DACs
-Message-ID: <20160323151520.GA19229@rob-hp-laptop>
-References: <1458721195-28915-1-git-send-email-michael.hennerich@analog.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45594 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751769AbcC1OOq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2016 10:14:46 -0400
+Subject: Re: [PATCH 4/6] iio: accel: bmg160: optimize transfers in trigger
+ handler
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1458811771-25217-1-git-send-email-irina.tirdea@intel.com>
+ <1458811771-25217-5-git-send-email-irina.tirdea@intel.com>
+ <56F8FFED.2090703@kernel.org> <alpine.DEB.2.02.1603281158290.4312@pmeerw.net>
+Cc: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Octavian Purdila <octavian.purdila@intel.com>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <56F93C53.6070606@kernel.org>
+Date: Mon, 28 Mar 2016 15:14:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1458721195-28915-1-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <alpine.DEB.2.02.1603281158290.4312@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Mar 23, 2016 at 09:19:55AM +0100, michael.hennerich@analog.com wrote:
-> From: Paul Cercueil <paul.cercueil@analog.com>
+On 28/03/16 11:09, Peter Meerwald-Stadler wrote:
 > 
-> This patch adds support for the AD5592R (spi) and AD5593R (i2c)
-> ADC/DAC/GPIO devices.
+>>> Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
+>>> enable/disable the bus at each i2c transfer and must wait for
+>>> the enable/disable to happen before sending the data.
+>>>
+>>> When reading data in the trigger handler, the bmc150 accel driver does
 > 
-> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> should refer to bmg160
+Good spot.  It's also a gyroscope, not an accelerometer... I just fixed this
+up and repushed out testing.
 > 
-> ---
+>>> one bus transfer for each axis. This has an impact on the frequency
+>>> of the accelerometer at high sample rates due to additional delays
+>>> introduced by the bus at each transfer.
+>>>
+>>> Reading all axis values in one bus transfer reduces the delays
+>>> introduced by the bus.
+>>>
+>>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+>> I forgot to highlight on the earlier driver that there is also 'technically'
+>> a bit of an ABI change here because we are now exporting as LE rather than CPU
+>> order.  However, I 'hope' anyone actually accessing the buffered data is either
+>> doing it through a nice library or hasn't hacked the endian unwinding out of
+>> the generic_buffer example!
 > 
-> Changes since v1:
-> 	* Fix mutex usage
-> 	* Remove unnecessary NULL pointer guards
-> 	* Add comment explaining the invalid data read
-> 	* AD5593R Remove surplus adc readback
+> the patch takes away the possibility to do buffered reads on individual 
+> channels (not sure if this is useful per se)
 > 
-> Changes since v2:
-> 	* Use child nodes to describe channels
-> 	* Fix probe return and driver remove path
-> 	* Move locking closer to where its used
-> 	* Remove WARN_ON but return error
-> 	* Remove OPEN DRAIN configuration option
+> this optimizes for the common case, ok;
 > 
-> Changes since v3:
-> 	* Documentation: Add missing vendor prefixes in the examples
-> 	* Minor function reordering in remove() to match the reverse of probe()
-> 
-> Changes since v4:
-> 	* Documentation: Add missing gpio bindings
-> 	* Kconfig: Select GPIOLIB and remove ifdefs in code
-> 	* Remove surplus error check in ad5592r_gpio_request()
-> 	* Add comment about reset magic
-> ---
->  .../devicetree/bindings/iio/dac/ad5592r.txt        | 152 +++++
+> wondering if adding 
+> .endianness = IIO_LE
+> is actually an unrelated fix
+Good point, when I first read the code I assumed we were moving from an i2c_word
+read to a bulk read, thus necessitating this addition.  However, we aren't as it
+was previously as an i2c_bulk read of 2 bytes... 
 
-Acked-by: Rob Herring <robh@kernel.org>
+Irina, could you confirm if this was broken before your patches?
 
->  drivers/iio/dac/Kconfig                            |  27 +
->  drivers/iio/dac/Makefile                           |   3 +
->  drivers/iio/dac/ad5592r-base.c                     | 694 +++++++++++++++++++++
->  drivers/iio/dac/ad5592r-base.h                     |  78 +++
->  drivers/iio/dac/ad5592r.c                          | 164 +++++
->  drivers/iio/dac/ad5593r.c                          | 131 ++++
->  include/dt-bindings/iio/adi,ad5592r.h              |  16 +
->  8 files changed, 1265 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5592r.txt
->  create mode 100644 drivers/iio/dac/ad5592r-base.c
->  create mode 100644 drivers/iio/dac/ad5592r-base.h
->  create mode 100644 drivers/iio/dac/ad5592r.c
->  create mode 100644 drivers/iio/dac/ad5593r.c
->  create mode 100644 include/dt-bindings/iio/adi,ad5592r.h
+I'll leave this as is, perhaps we need an additional fix patch specifying LE to
+put out as a fix.
+> 
+>> Again, fingers crossed this doesn't break anything significant.
+>>
+>> Applied,
+>>
+>> Thanks,
+>>
+>> Jonathan
+>>> ---
+>>>  drivers/iio/gyro/bmg160_core.c | 17 ++++++-----------
+>>>  1 file changed, 6 insertions(+), 11 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+>>> index 8d6e5b1..43570b8 100644
+>>> --- a/drivers/iio/gyro/bmg160_core.c
+>>> +++ b/drivers/iio/gyro/bmg160_core.c
+>>> @@ -734,6 +734,7 @@ static const struct iio_event_spec bmg160_event = {
+>>>  		.sign = 's',						\
+>>>  		.realbits = 16,					\
+>>>  		.storagebits = 16,					\
+>>> +		.endianness = IIO_LE,					\
+>>>  	},								\
+>>>  	.event_spec = &bmg160_event,					\
+>>>  	.num_event_specs = 1						\
+>>> @@ -773,20 +774,14 @@ static irqreturn_t bmg160_trigger_handler(int irq, void *p)
+>>>  	struct iio_poll_func *pf = p;
+>>>  	struct iio_dev *indio_dev = pf->indio_dev;
+>>>  	struct bmg160_data *data = iio_priv(indio_dev);
+>>> -	int bit, ret, i = 0;
+>>> -	unsigned int val;
+>>> +	int ret;
+>>>  
+>>>  	mutex_lock(&data->mutex);
+>>> -	for (bit = 0; bit < AXIS_MAX; bit++) {
+>>> -		ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(bit),
+>>> -				       &val, 2);
+>>> -		if (ret < 0) {
+>>> -			mutex_unlock(&data->mutex);
+>>> -			goto err;
+>>> -		}
+>>> -		data->buffer[i++] = ret;
+>>> -	}
+>>> +	ret = regmap_bulk_read(data->regmap, BMG160_REG_XOUT_L,
+>>> +			       data->buffer, AXIS_MAX * 2);
+>>>  	mutex_unlock(&data->mutex);
+>>> +	if (ret < 0)
+>>> +		goto err;
+>>>  
+>>>  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+>>>  					   pf->timestamp);
+>>>
+>>
+> 
+
