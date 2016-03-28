@@ -1,64 +1,68 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1603300946280.14313@pmeerw.net>
-References: <1459261653-13070-1-git-send-email-linus.walleij@linaro.org>
-	<alpine.DEB.2.02.1603291632370.16868@pmeerw.net>
-	<CACRpkdYQ1tZdfQew456Q1iFT=MO_2PB_fBPaE_wd5XqKO8cs-w@mail.gmail.com>
-	<alpine.DEB.2.02.1603300946280.14313@pmeerw.net>
-Date: Wed, 30 Mar 2016 10:28:30 +0200
-Message-ID: <CACRpkdY2AP=UOg=yqyQi61+Z=rs+cvf4xmkZhnGgekdht1wfOg@mail.gmail.com>
-Subject: Re: [PATCH] iio: light: new driver for the ROHM BH1780
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Daniel Mack <daniel@caiaq.de>
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <irina.tirdea@intel.com>
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH 1/1] iio: gyro: bmg160: fix endianness when reading axes
+Date: Mon, 28 Mar 2016 20:14:31 +0300
+Message-Id: <1459185271-18514-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Mar 30, 2016 at 9:48 AM, Peter Meerwald-Stadler
-<pmeerw@pmeerw.net> wrote:
+For big endian platforms, reading the axes will return
+invalid values.
 
->> >> +     case IIO_CHAN_INFO_SCALE:
->> >> +             /* Returns raw lux value */
->> >> +             *val = 1;
->> >
->> > not needed to scale by 1.0
->> >
->> >> +             *val2 = 0;
->> >> +             return IIO_VAL_INT;
->>
->> How do you mean?
->> If I don't implement this (just let this function return negative)
->> this happens:
->>
->> iio:device1 ls
->> dev                              of_node
->> in_illuminance_integration_time  power
->> in_illuminance_raw               subsystem
->> in_illuminance_scale             uevent
->>
->> iio:device1 cat in_illuminance_scale
->> cat: read error: Invalid argument
->>
->> Do you mean all userspace programs should assume scale by 1x
->> if they get an error when they try to read the scale file, or is there
->> a bug in IIO such that this file should return "1" if the callback asking for
->> IIO_CHAN_INFO_SCALE returns negative?
->
-> IIO_CHAN_INFO_SCALE is optional, if it is not given 1.0 is to be assumed
->
-> you do not give _OFFSET as well and assume that offset is 0.0 when
-> interpreting _RAW
+The device stores each axis value in a 16 bit little
+endian register. The driver uses regmap_read_bulk to get
+the axis value, resulting in a 16 bit little endian value.
+This needs to be converted to cpu endianness to work
+on big endian platforms.
 
-I see what you mean, but the actual error I did was this:
+Fix endianness for big endian platforms by converting
+the values for the axes read from little endian to
+cpu.
 
-> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +                                   BIT(IIO_CHAN_INFO_SCALE) |
-> +                                   BIT(IIO_CHAN_INFO_INT_TIME)
+This is also partially fixed in commit 82d8e5da1a33 ("iio:
+accel: bmg160: optimize transfers in trigger handler").
 
-If I drop IIO_CHAN_INFO_SCALE I don't get the file in sysfs
-even and then the userspace should assume scale by 1.
-I assume. OK changed it like so...
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+---
+ drivers/iio/gyro/bmg160_core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Yours,
-Linus Walleij
+diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+index bbce3b0..295cf1d 100644
+--- a/drivers/iio/gyro/bmg160_core.c
++++ b/drivers/iio/gyro/bmg160_core.c
+@@ -452,7 +452,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+ {
+ 	int ret;
+-	unsigned int raw_val;
++	__le16 raw_val;
+ 
+ 	mutex_lock(&data->mutex);
+ 	ret = bmg160_set_power_state(data, true);
+@@ -470,7 +470,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+ 		return ret;
+ 	}
+ 
+-	*val = sign_extend32(raw_val, 15);
++	*val = sign_extend32(le16_to_cpu(raw_val), 15);
+ 	ret = bmg160_set_power_state(data, false);
+ 	mutex_unlock(&data->mutex);
+ 	if (ret < 0)
+@@ -733,6 +733,7 @@ static const struct iio_event_spec bmg160_event = {
+ 		.sign = 's',						\
+ 		.realbits = 16,					\
+ 		.storagebits = 16,					\
++		.endianness = IIO_LE,					\
+ 	},								\
+ 	.event_spec = &bmg160_event,					\
+ 	.num_event_specs = 1						\
+-- 
+1.9.1
