@@ -1,19 +1,16 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:10523 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750828AbcC2MgV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 29 Mar 2016 08:36:21 -0400
+Return-Path: <irina.tirdea@intel.com>
 From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v2 1/1] iio: accel: bmc150: fix endianness when reading axes
-Date: Tue, 29 Mar 2016 15:35:45 +0300
-Message-Id: <1459254945-2012-1-git-send-email-irina.tirdea@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH v2 1/1] iio: gyro: bmg160: fix endianness when reading axes
+Date: Tue, 29 Mar 2016 15:37:30 +0300
+Message-Id: <1459255050-2142-1-git-send-email-irina.tirdea@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 For big endian platforms, reading the axes will return
 invalid values.
@@ -28,8 +25,8 @@ Fix endianness for big endian platforms by converting
 the values for the axes read from little endian to
 cpu.
 
-This is also partially fixed in commit b6fb9b6d6552 ("iio:
-accel: bmc150: optimize transfers in trigger handler").
+This is also partially fixed in commit 82d8e5da1a33 ("iio:
+accel: bmg160: optimize transfers in trigger handler").
 
 Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 ---
@@ -38,47 +35,47 @@ Changes from v1:
  - pass sizeof(raw_val) to regmap_bulk_read instead of
 hardcoded value
 
- drivers/iio/accel/bmc150-accel-core.c | 7 ++++---
+ drivers/iio/gyro/bmg160_core.c | 7 ++++---
  1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index c73331f7..2072a31 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -547,7 +547,7 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+index bbce3b0..8d3f0b3 100644
+--- a/drivers/iio/gyro/bmg160_core.c
++++ b/drivers/iio/gyro/bmg160_core.c
+@@ -452,7 +452,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
  {
  	int ret;
- 	int axis = chan->scan_index;
 -	unsigned int raw_val;
 +	__le16 raw_val;
  
  	mutex_lock(&data->mutex);
- 	ret = bmc150_accel_set_power_state(data, true);
-@@ -557,14 +557,14 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+ 	ret = bmg160_set_power_state(data, true);
+@@ -462,7 +462,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
  	}
  
- 	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_AXIS_TO_REG(axis),
--			       &raw_val, 2);
-+			       &raw_val, sizeof(raw_val));
+ 	ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(axis), &raw_val,
+-			       2);
++			       sizeof(raw_val));
  	if (ret < 0) {
  		dev_err(data->dev, "Error reading axis %d\n", axis);
- 		bmc150_accel_set_power_state(data, false);
- 		mutex_unlock(&data->mutex);
+ 		bmg160_set_power_state(data, false);
+@@ -470,7 +470,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
  		return ret;
  	}
--	*val = sign_extend32(raw_val >> chan->scan_type.shift,
-+	*val = sign_extend32(le16_to_cpu(raw_val) >> chan->scan_type.shift,
- 			     chan->scan_type.realbits - 1);
- 	ret = bmc150_accel_set_power_state(data, false);
+ 
+-	*val = sign_extend32(raw_val, 15);
++	*val = sign_extend32(le16_to_cpu(raw_val), 15);
+ 	ret = bmg160_set_power_state(data, false);
  	mutex_unlock(&data->mutex);
-@@ -988,6 +988,7 @@ static const struct iio_event_spec bmc150_accel_event = {
- 		.realbits = (bits),					\
+ 	if (ret < 0)
+@@ -733,6 +733,7 @@ static const struct iio_event_spec bmg160_event = {
+ 		.sign = 's',						\
+ 		.realbits = 16,					\
  		.storagebits = 16,					\
- 		.shift = 16 - (bits),					\
 +		.endianness = IIO_LE,					\
  	},								\
- 	.event_spec = &bmc150_accel_event,				\
+ 	.event_spec = &bmg160_event,					\
  	.num_event_specs = 1						\
 -- 
 1.9.1
-
