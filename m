@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:14669 "EHLO mga09.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:18897 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751646AbcC2Pai (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 29 Mar 2016 11:30:38 -0400
+	id S1751724AbcC2QS4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Mar 2016 12:18:56 -0400
 From: Crestez Dan Leonard <leonard.crestez@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
@@ -10,20 +10,24 @@ Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>
-Subject: [PATCH v3] hp206c: Initial support for reading sensor values
-Date: Tue, 29 Mar 2016 18:30:01 +0300
-Message-Id: <801ae3aaa5139b1584d55fd95cddbce37a1fbb66.1459265293.git.leonard.crestez@intel.com>
+Subject: [PATCH v4] hp206c: Initial support for reading sensor values
+Date: Tue, 29 Mar 2016 19:14:27 +0300
+Message-Id: <eb3ac4a5f907f21289b36a28e97f4f1478ca283b.1459267411.git.leonard.crestez@intel.com>
+In-Reply-To: <801ae3aaa5139b1584d55fd95cddbce37a1fbb66.1459265293.git.leonard.crestez@intel.com>
+References: <801ae3aaa5139b1584d55fd95cddbce37a1fbb66.1459265293.git.leonard.crestez@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Differences from last version are mostly based on Peter's review.
-
 Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
+
+Previous version had an extra printk on pressure read, please ignore. Also
+patch update notes were above the ---.
+
  drivers/iio/pressure/Kconfig  |  10 +
  drivers/iio/pressure/Makefile |   1 +
- drivers/iio/pressure/hp206c.c | 427 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 438 insertions(+)
+ drivers/iio/pressure/hp206c.c | 426 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 437 insertions(+)
  create mode 100644 drivers/iio/pressure/hp206c.c
 
 diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
@@ -59,10 +63,10 @@ index d336af1..6e60863 100644
  obj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o
 diff --git a/drivers/iio/pressure/hp206c.c b/drivers/iio/pressure/hp206c.c
 new file mode 100644
-index 0000000..9f15b88
+index 0000000..90f2b6e
 --- /dev/null
 +++ b/drivers/iio/pressure/hp206c.c
-@@ -0,0 +1,427 @@
+@@ -0,0 +1,426 @@
 +/*
 + * hp206c.c - HOPERF HP206C precision barometer and altimeter sensor
 + *
@@ -325,7 +329,6 @@ index 0000000..9f15b88
 +					HP206C_CMD_READ_P,
 +					osr_setting->pres_conv_time_us);
 +			if (ret >= 0) {
-+				dev_err(&indio_dev->dev, "ret=%#08x\n", ret);
 +				*val = ret;
 +				ret = IIO_VAL_INT;
 +			}
