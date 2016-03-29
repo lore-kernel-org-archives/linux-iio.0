@@ -1,85 +1,152 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:37073 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751587AbcC2JnD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 29 Mar 2016 05:43:03 -0400
-Message-ID: <56FA4E76.1000406@parrot.com>
-Date: Tue, 29 Mar 2016 11:44:22 +0200
-From: Gregor Boirie <gregor.boirie@parrot.com>
-MIME-Version: 1.0
+Return-Path: <leonard.crestez@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-kernel@vger.kernel.org,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: Re: [PATCH v3 2/3] iio:magnetometer:ak8975: mounting matrix support
-References: <cover.1458231723.git.gregor.boirie@parrot.com> <a1efa2b83719dc3898c39a5886b7678892e7de3b.1458231723.git.gregor.boirie@parrot.com> <CAL_JsqJwE5fmHUzV-xi-hgMPSbzY_7QbXaHCSAMCpp9SggWtPw@mail.gmail.com> <20160321222150.GA1787@geburah.sephiroth> <CAL_Jsq+unk=UONZD-0e_VrpkC3R3hXHNoRN-gdj6TCSSHXWZXQ@mail.gmail.com> <56F947B4.3090503@kernel.org>
-In-Reply-To: <56F947B4.3090503@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Subject: [PATCH] ti-adc081c: Add support for adc101c* and adc121c*
+Date: Tue, 29 Mar 2016 16:19:10 +0300
+Message-Id: <60e0a596e452b5059013ce8bcee3a54246d39983.1459257392.git.leonard.crestez@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+These chips has an almost identical interface but a deal with a
+different number of value bits. Datasheet links for comparison:
 
+ * http://www.ti.com/lit/ds/symlink/adc081c021.pdf
+ * http://www.ti.com/lit/ds/symlink/adc101c021.pdf
+ * http://www.ti.com/lit/ds/symlink/adc121c021.pdf
 
-On 03/28/2016 05:03 PM, Jonathan Cameron wrote:
+I am working with an ADC121C021 chip but it makes a lot of sense to support the
+entire family with a single driver.
 
-[snip...]
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+---
+ drivers/iio/adc/Kconfig      |  6 +++---
+ drivers/iio/adc/ti-adc081c.c | 33 ++++++++++++++++++++++++++++-----
+ 2 files changed, 31 insertions(+), 8 deletions(-)
 
->
-> Why is the sysfs interface specific to ak8975?
->>> AFAIK, this is just the first IIO driver implementation relying on floating
->>> point numbers. Should a single driver be enough to justify a "generic" API,
->>> I suppose code could be factored out in a similar way to over sampling rate
->>> support. People could call this on a per-driver basis.
->> Given it is an ABI, yes I think so. We don't want to end up with a
->> bunch of similar yet different interfaces.
->>
-> Absolutely.  Most interfaces get made up based on one implementation ;)
-> A second is always nice, but here the interface is obvious enough we don't
-> need to wait.
-Right. I'll post a separate patch then.
->>>> Furthermore, why is it specific to magnetometer? Couldn't
->>>> accelerometers need the same thing? There's a thread discussing a
->>>> similar matrix on android-x86[1].
->>> Same may apply to gyro / accelero / imu and magnetometers at least.
->>> inv_mpu_core.c already implements such a rotation matrix exposed as 3x3 integers
->>> array. Should we be smart enough to keep this compatible with existing userspace
->>> apps ?
->> You have to maintain the ABI. If both interfaces can co-exist, then
->> you can have both and mark the old one as deprecated. In time we can
->> remove the old one.
-> If you want to (or someone else does) it would be good to add the new abi to
-> inv_mpu_core as well and indeed mark the old one as deprecated.
-> The cost of keeping it is negligible, so we may never actually bother to
-> remove it.
-What's the better way to mark this as deprecated ? dev_warn() ? 
-__deprecated ?
-Anything else ?
->>>>> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->>>>> index 34a3206..f936f86 100644
->>>>> --- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->>>>> +++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
->>>>> @@ -9,6 +9,7 @@ Optional properties:
->>>>>
->>>>>     - gpios : should be device tree identifier of the magnetometer DRDY pin
->>>>>     - vdd-supply: an optional regulator that needs to be on to provide VDD
->>>>> +  - matrix: an optional 3x3 mounting rotation matrix
->>>> Perhaps "rotation-matrx" would be a better name in case there's ever
->>>> any other matrix needed.
->>> What about "mounting-matrix" ?
->> Sure.
-> Works for me as well.
->> Rob
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 9ddcd5d..a2d0db5 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -378,11 +378,11 @@ config ROCKCHIP_SARADC
+ 	  module will be called rockchip_saradc.
+ 
+ config TI_ADC081C
+-	tristate "Texas Instruments ADC081C021/027"
++	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
+ 	depends on I2C
+ 	help
+-	  If you say yes here you get support for Texas Instruments ADC081C021
+-	  and ADC081C027 ADC chips.
++	  If you say yes here you get support for Texas Instruments ADC081C,
++	  ADC101C and ADC121C ADC chips.
+ 
+ 	  This driver can also be built as a module. If so, the module will be
+ 	  called ti-adc081c.
+diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
+index ecbc121..66ade3f 100644
+--- a/drivers/iio/adc/ti-adc081c.c
++++ b/drivers/iio/adc/ti-adc081c.c
+@@ -1,9 +1,21 @@
+ /*
++ * TI ADC081C/ADC101C/ADC121C 8/10/12-bit ADC driver
++ *
+  * Copyright (C) 2012 Avionic Design GmbH
++ * Copyright (C) 2016 Intel
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+  * published by the Free Software Foundation.
++ *
++ * Datasheets:
++ * 	http://www.ti.com/lit/ds/symlink/adc081c021.pdf
++ * 	http://www.ti.com/lit/ds/symlink/adc101c021.pdf
++ *	http://www.ti.com/lit/ds/symlink/adc121c021.pdf
++ *
++ * The devices have a very similar interface and differ mostly in the number of
++ * bits handled. For the 8-bit and 10-bit models the least-significant 4 or 2
++ * bits of value registers are reserved.
+  */
+ 
+ #include <linux/err.h>
+@@ -17,6 +29,9 @@
+ struct adc081c {
+ 	struct i2c_client *i2c;
+ 	struct regulator *ref;
++
++	/* 8, 10 or 12 */
++	int bits;
+ };
+ 
+ #define REG_CONV_RES 0x00
+@@ -34,7 +49,7 @@ static int adc081c_read_raw(struct iio_dev *iio,
+ 		if (err < 0)
+ 			return err;
+ 
+-		*value = (err >> 4) & 0xff;
++		*value = (err & 0xFFF) >> (12 - adc->bits);
+ 		return IIO_VAL_INT;
+ 
+ 	case IIO_CHAN_INFO_SCALE:
+@@ -43,7 +58,7 @@ static int adc081c_read_raw(struct iio_dev *iio,
+ 			return err;
+ 
+ 		*value = err / 1000;
+-		*shift = 8;
++		*shift = adc->bits;
+ 
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 
+@@ -72,6 +87,9 @@ static int adc081c_probe(struct i2c_client *client,
+ 	struct adc081c *adc;
+ 	int err;
+ 
++	if (id->driver_data != 8 && id->driver_data != 10 && id->driver_data != 12)
++		return -EINVAL;
++
+ 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+ 		return -EOPNOTSUPP;
+ 
+@@ -81,6 +99,7 @@ static int adc081c_probe(struct i2c_client *client,
+ 
+ 	adc = iio_priv(iio);
+ 	adc->i2c = client;
++	adc->bits = id->driver_data;
+ 
+ 	adc->ref = devm_regulator_get(&client->dev, "vref");
+ 	if (IS_ERR(adc->ref))
+@@ -124,14 +143,18 @@ static int adc081c_remove(struct i2c_client *client)
+ }
+ 
+ static const struct i2c_device_id adc081c_id[] = {
+-	{ "adc081c", 0 },
++	{ "adc081c",  8 },
++	{ "adc101c", 10 },
++	{ "adc121c", 12 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, adc081c_id);
+ 
+ #ifdef CONFIG_OF
+ static const struct of_device_id adc081c_of_match[] = {
+-	{ .compatible = "ti,adc081c" },
++	{ .compatible = "ti,adc081c", .data = (void*) 8 },
++	{ .compatible = "ti,adc101c", .data = (void*)10 },
++	{ .compatible = "ti,adc121c", .data = (void*)12 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, adc081c_of_match);
+@@ -149,5 +172,5 @@ static struct i2c_driver adc081c_driver = {
+ module_i2c_driver(adc081c_driver);
+ 
+ MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
+-MODULE_DESCRIPTION("Texas Instruments ADC081C021/027 driver");
++MODULE_DESCRIPTION("Texas Instruments ADC081C/ADC101C/ADC121C driver");
+ MODULE_LICENSE("GPL v2");
+-- 
+2.8.0.rc3
