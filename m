@@ -1,405 +1,495 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:59611 "EHLO pmeerw.net"
+Received: from mga09.intel.com ([134.134.136.24]:14669 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751540AbcC2OqW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 29 Mar 2016 10:46:22 -0400
-Date: Tue, 29 Mar 2016 16:46:17 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Linus Walleij <linus.walleij@linaro.org>
-cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>,
-	Shubhrajyoti Datta <shubhrajyoti@ti.com>,
-	Hemanth V <hemanthv@ti.com>, Daniel Mack <daniel@caiaq.de>
-Subject: Re: [PATCH] iio: light: new driver for the ROHM BH1780
-In-Reply-To: <1459261653-13070-1-git-send-email-linus.walleij@linaro.org>
-Message-ID: <alpine.DEB.2.02.1603291632370.16868@pmeerw.net>
-References: <1459261653-13070-1-git-send-email-linus.walleij@linaro.org>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+	id S1751646AbcC2Pai (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Mar 2016 11:30:38 -0400
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Subject: [PATCH v3] hp206c: Initial support for reading sensor values
+Date: Tue, 29 Mar 2016 18:30:01 +0300
+Message-Id: <801ae3aaa5139b1584d55fd95cddbce37a1fbb66.1459265293.git.leonard.crestez@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Differences from last version are mostly based on Peter's review.
 
-> This is a reimplementation of the old misc device driver for the
-> ROHM BH1780 ambient light sensor (drivers/misc/bh1780gli.c).
-> 
-> Differences from the old driver:
-> - Uses the IIO framework
-> - Uses runtime PM to idle the hardware after 5 seconds
-> - No weird custom power management from userspace
-> - No homebrewn values in sysfs
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+---
+ drivers/iio/pressure/Kconfig  |  10 +
+ drivers/iio/pressure/Makefile |   1 +
+ drivers/iio/pressure/hp206c.c | 427 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 438 insertions(+)
+ create mode 100644 drivers/iio/pressure/hp206c.c
 
-my nitpicking below
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index 31c0e1f..8de0192 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -148,4 +148,14 @@ config T5403
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called t5403.
  
-> This uses the same (undocumented) device tree compatible-string
-> as the old driver ("rohm,bh1780gli").
-> 
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Shubhrajyoti Datta <shubhrajyoti@ti.com>
-> Cc: Hemanth V <hemanthv@ti.com>
-> Cc: Daniel Mack <daniel@caiaq.de>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> I want to phase out the misc driver, but don't know how that
-> should properly be handled. The driver has an old (totally
-> undocumented) sysfs ABI for raw measurements, should I add
-> this as backward-compatibility and symlink the device to the old
-> location?
-> ---
->  drivers/iio/light/Kconfig  |  11 ++
->  drivers/iio/light/Makefile |   1 +
->  drivers/iio/light/bh1780.c | 284 +++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 296 insertions(+)
->  create mode 100644 drivers/iio/light/bh1780.c
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index cfd3df8416bb..5ee1d453b3d8 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -73,6 +73,17 @@ config BH1750
->  	 To compile this driver as a module, choose M here: the module will
->  	 be called bh1750.
->  
-> +config BH1780
-> +	tristate "ROHM BH1780 ambient light sensor"
-> +	depends on I2C
-> +	depends on !SENSORS_BH1780
-> +	help
-> +	 Say Y here to build support for the ROHM BH1780GLI ambient
-> +	 light sensor.
-> +
-> +	 To compile this driver as a module, choose M here: the module will
-> +	 be called bh1780.
-> +
->  config CM32181
->  	depends on I2C
->  	tristate "CM32181 driver"
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index b2c31053db0c..4aeee2bd8f49 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -9,6 +9,7 @@ obj-$(CONFIG_AL3320A)		+= al3320a.o
->  obj-$(CONFIG_APDS9300)		+= apds9300.o
->  obj-$(CONFIG_APDS9960)		+= apds9960.o
->  obj-$(CONFIG_BH1750)		+= bh1750.o
-> +obj-$(CONFIG_BH1780)		+= bh1780.o
->  obj-$(CONFIG_CM32181)		+= cm32181.o
->  obj-$(CONFIG_CM3232)		+= cm3232.o
->  obj-$(CONFIG_CM3323)		+= cm3323.o
-> diff --git a/drivers/iio/light/bh1780.c b/drivers/iio/light/bh1780.c
-> new file mode 100644
-> index 000000000000..2aa336578871
-> --- /dev/null
-> +++ b/drivers/iio/light/bh1780.c
-> @@ -0,0 +1,284 @@
-> +/*
-> + * ROHM 1780GLI Ambient Light Sensor Driver
-> + *
-> + * Copyright (C) 2016 Linaro Ltd.
-> + * Author: Linus Walleij <linus.walleij@linaro.org>
-> + * Loosely based on the previous BH1780 ALS misc driver
-> + * Copyright (C) 2010 Texas Instruments
-> + * Author: Hemanth V <hemanthv@ti.com>
-> + */
-> +#include <linux/i2c.h>
-> +#include <linux/slab.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/delay.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define BH1780_CMD_BIT		0x80
-
-maybit BIT(7)
-
-> +#define BH1780_REG_CONTROL	0x00
-> +#define BH1780_REG_PARTID	0x0A
-> +#define BH1780_REG_MANFID	0x0B
-> +#define BH1780_REG_DLOW		0x0C
-> +#define BH1780_REG_DHIGH	0x0D
-> +
-> +#define BH1780_REVMASK		(0xf)
-> +#define BH1780_POWMASK		(0x3)
-> +#define BH1780_POFF		(0x0)
-> +#define BH1780_PON		(0x3)
-
-why parenthesis? maybe use GENMASK()
-
-> +
-> +/* power on settling time in ms */
-> +#define BH1780_PON_DELAY	2
-> +/* max time before value available in ms */
-> +#define BH1780_INTERVAL		250
-> +
-> +struct bh1780_data {
-> +	struct i2c_client *client;
-> +};
-> +
-> +static int bh1780_write(struct bh1780_data *bh1780, u8 reg, u8 val)
-> +{
-> +	int ret = i2c_smbus_write_byte_data(bh1780->client,
-> +					    BH1780_CMD_BIT | reg,
-> +					    val);
-> +	if (ret < 0)
-> +		dev_err(&bh1780->client->dev,
-> +			"i2c_smbus_write_byte_data failed error "
-> +			"%d, register %01x\n",
-> +			ret, reg);
-> +	return ret;
-> +}
-> +
-> +static int bh1780_read(struct bh1780_data *bh1780, u8 reg)
-> +{
-> +	int ret = i2c_smbus_read_byte_data(bh1780->client,
-> +					   BH1780_CMD_BIT | reg);
-> +	if (ret < 0)
-> +		dev_err(&bh1780->client->dev,
-> +			"i2c_smbus_read_byte_data failed error "
-> +			"%d, register %01x\n",
-> +			ret, reg);
-> +	return ret;
-> +}
-> +
-> +int bh1780_debugfs_reg_access(struct iio_dev *indio_dev,
-> +			      unsigned int reg, unsigned int writeval,
-> +			      unsigned int *readval)
-> +{
-> +	struct bh1780_data *bh1780 = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (!readval)
-> +		bh1780_write(bh1780, (u8)reg, (u8)writeval);
-> +
-> +	ret = bh1780_read(bh1780, (u8)reg);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*readval = (unsigned int)ret;
-
-cast needed?
-
-> +
-> +	return 0;
-> +}
-> +
-> +static int bh1780_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
-> +{
-> +	struct bh1780_data *bh1780 = iio_priv(indio_dev);
-> +	int lsb, msb;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			pm_runtime_get_sync(&bh1780->client->dev);
-> +			lsb = bh1780_read(bh1780, BH1780_REG_DLOW);
-> +			if (lsb < 0)
-> +				return lsb;
-> +			msb = bh1780_read(bh1780, BH1780_REG_DHIGH);
-> +			if (msb < 0)
-> +				return msb;
-> +			pm_runtime_mark_last_busy(&bh1780->client->dev);
-> +			pm_runtime_put_autosuspend(&bh1780->client->dev);
-> +			*val = (msb << 8 | lsb);
-> +
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* Returns raw lux value */
-> +		*val = 1;
-
-not needed to scale by 1.0
-
-> +		*val2 = 0;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		/* Datasheet states typ 150 ms */
-
-BH1780_INTERVAL is 250 above?
-
-> +		*val = 0;
-> +		*val2 = BH1780_INTERVAL * 1000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info bh1780_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = bh1780_read_raw,
-> +	.debugfs_reg_access = bh1780_debugfs_reg_access,
-> +};
-> +
-> +static const struct iio_chan_spec bh1780_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE) |
-> +				      BIT(IIO_CHAN_INFO_INT_TIME)
-> +	}
-> +};
-> +
-> +static int bh1780_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct bh1780_data *bh1780;
-> +	struct i2c_adapter *adapter = to_i2c_adapter(client->dev.parent);
-> +	struct iio_dev *indio_dev;
-> +
-> +	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE))
-> +		return -EIO;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*bh1780));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	bh1780 = iio_priv(indio_dev);
-> +	bh1780->client = client;
-> +	i2c_set_clientdata(client, bh1780);
-> +
-> +	/* Power up the device */
-> +	ret = bh1780_write(bh1780, BH1780_REG_CONTROL, BH1780_PON);
-> +	if (ret < 0)
-> +		return ret;
-> +	msleep(BH1780_PON_DELAY);
-> +	pm_runtime_get_noresume(&client->dev);
-> +	pm_runtime_set_active(&client->dev);
-> +	pm_runtime_enable(&client->dev);
-> +
-> +	ret = bh1780_read(bh1780, BH1780_REG_PARTID);
-> +	if (ret < 0)
-> +		goto out_disable_pm;
-> +
-> +	dev_info(&client->dev, "Ambient Light Sensor, Rev : %d\n",
-
-maybe remove whitespace before :
-
-> +			(ret & BH1780_REVMASK));
-> +	/*
-> +	 * As the device takes 250 ms to even come up with a fresh
-> +	 * measurement after power-on, do not shut it down unnecessarily.
-> +	 * Set autosuspend to a five seconds.
-> +	 */
-> +	pm_runtime_set_autosuspend_delay(&client->dev, 5000);
-> +	pm_runtime_use_autosuspend(&client->dev);
-> +	pm_runtime_put(&client->dev);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &bh1780_info;
-> +	indio_dev->name = id->name;
-> +	indio_dev->channels = bh1780_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(bh1780_channels);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret)
-> +		goto out_disable_pm;
-> +	return 0;
-> +
-> +out_disable_pm:
-> +	pm_runtime_put_noidle(&client->dev);
-> +	pm_runtime_disable(&client->dev);
-> +	return ret;
-> +}
-> +
-> +static int bh1780_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	pm_runtime_get_sync(&client->dev);
-> +	pm_runtime_put_noidle(&client->dev);
-> +	pm_runtime_disable(&client->dev);
-> +
-> +	return 0;
-> +}
-> +
-> +#ifdef CONFIG_PM
-> +static int bh1780_runtime_suspend(struct device *dev)
-> +{
-> +	struct bh1780_data *bh1780;
-> +	int state, ret;
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +
-> +	bh1780 = i2c_get_clientdata(client);
-> +	state = bh1780_read(bh1780, BH1780_REG_CONTROL);
-> +	if (state < 0)
-> +		return state;
-
-why read the state, could use variable ret?
-
-> +	ret = bh1780_write(bh1780, BH1780_REG_CONTROL, BH1780_POFF);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int bh1780_runtime_resume(struct device *dev)
-> +{
-> +	struct bh1780_data *bh1780;
-> +	int ret;
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +
-> +	bh1780 = i2c_get_clientdata(client);
-> +	ret = bh1780_write(bh1780, BH1780_REG_CONTROL, BH1780_PON);
-> +	if (ret < 0)
-> +		return ret;
-> +	/* Wait for power on, then for a value to be available */
-> +	msleep(BH1780_PON_DELAY + BH1780_INTERVAL);
-> +
-> +	return 0;
-> +}
-> +#endif /* CONFIG_PM */
-> +
-> +static const struct dev_pm_ops bh1780_dev_pm_ops = {
-> +	SET_RUNTIME_PM_OPS(bh1780_runtime_suspend,
-> +			   bh1780_runtime_resume, NULL)
-> +};
-> +
-> +static const struct i2c_device_id bh1780_id[] = {
-> +	{ "bh1780", 0 },
-> +	{ },
-> +};
-> +
-> +MODULE_DEVICE_TABLE(i2c, bh1780_id);
-> +
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id of_bh1780_match[] = {
-> +	{ .compatible = "rohm,bh1780gli", },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, of_bh1780_match);
-> +#endif
-> +
-> +static struct i2c_driver bh1780_driver = {
-> +	.probe		= bh1780_probe,
-> +	.remove		= bh1780_remove,
-> +	.id_table	= bh1780_id,
-> +	.driver = {
-> +		.name = "bh1780",
-> +		.pm = &bh1780_dev_pm_ops,
-> +		.of_match_table = of_match_ptr(of_bh1780_match),
-> +	},
-> +};
-> +
-> +module_i2c_driver(bh1780_driver);
-> +
-> +MODULE_DESCRIPTION("ROHM BH1780GLI Ambient Light Sensor Driver");
-> +MODULE_LICENSE("GPL");
-> +MODULE_AUTHOR("Linus Walleij <linus.walleij@linaro.org>");
-> 
-
++config HP206C
++	tristate "HOPERF HP206C precision barometer and altimeter sensor"
++	depends on I2C
++	help
++	  Say yes here to build support for the HOPREF HP206C precision
++	  barometer and altimeter sensor.
++
++	  This driver can also be built as a module. If so, the module will
++	  be called hp206c.
++
+ endmenu
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index d336af1..6e60863 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
+ st_pressure-y := st_pressure_core.o
+ st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
+ obj-$(CONFIG_T5403) += t5403.o
++obj-$(CONFIG_HP206C) += hp206c.o
+ 
+ obj-$(CONFIG_IIO_ST_PRESS_I2C) += st_pressure_i2c.o
+ obj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o
+diff --git a/drivers/iio/pressure/hp206c.c b/drivers/iio/pressure/hp206c.c
+new file mode 100644
+index 0000000..9f15b88
+--- /dev/null
++++ b/drivers/iio/pressure/hp206c.c
+@@ -0,0 +1,427 @@
++/*
++ * hp206c.c - HOPERF HP206C precision barometer and altimeter sensor
++ *
++ * Copyright (c) 2016, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * (7-bit I2C slave address 0x76)
++ *
++ * Datasheet:
++ *  http://www.hoperf.com/upload/sensor/HP206C_DataSheet_EN_V2.0.pdf
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/delay.h>
++#include <linux/util_macros.h>
++#include <linux/acpi.h>
++
++/* I2C commands: */
++#define HP206C_CMD_SOFT_RST	0x06
++
++#define HP206C_CMD_ADC_CVT	0x40
++
++#define HP206C_CMD_ADC_CVT_OSR_4096	0x00
++#define HP206C_CMD_ADC_CVT_OSR_2048	0x04
++#define HP206C_CMD_ADC_CVT_OSR_1024	0x08
++#define HP206C_CMD_ADC_CVT_OSR_512	0x0c
++#define HP206C_CMD_ADC_CVT_OSR_256	0x10
++#define HP206C_CMD_ADC_CVT_OSR_128	0x14
++
++#define HP206C_CMD_ADC_CVT_CHNL_PT	0x00
++#define HP206C_CMD_ADC_CVT_CHNL_T	0x02
++
++#define HP206C_CMD_READ_P	0x30
++#define HP206C_CMD_READ_T	0x32
++
++#define HP206C_CMD_READ_REG	0x80
++#define HP206C_CMD_WRITE_REG	0xc0
++
++#define HP206C_REG_INT_EN	0x0b
++#define HP206C_REG_INT_CFG	0x0c
++
++#define HP206C_REG_INT_SRC	0x0d
++#define HP206C_FLAG_DEV_RDY	0x40
++
++#define HP206C_REG_PARA		0x0f
++#define HP206C_FLAG_CMPS_EN	0x80
++
++/* Maximum spin for DEV_RDY */
++#define HP206C_MAX_DEV_RDY_WAIT_COUNT 20
++#define HP206C_DEV_RDY_WAIT_US    20000
++
++struct hp206c_data {
++	struct mutex mutex;
++	struct i2c_client *client;
++	int temp_osr_index;
++	int pres_osr_index;
++};
++
++struct hp206c_osr_setting {
++	u8 osr_mask;
++	unsigned int temp_conv_time_us;
++	unsigned int pres_conv_time_us;
++};
++
++/* Data from Table 5 in datasheet. */
++static const struct hp206c_osr_setting hp206c_osr_settings[] = {
++	{ HP206C_CMD_ADC_CVT_OSR_4096,	65600,	131100	},
++	{ HP206C_CMD_ADC_CVT_OSR_2048,	32800,	65600	},
++	{ HP206C_CMD_ADC_CVT_OSR_1024,	16400,	32800	},
++	{ HP206C_CMD_ADC_CVT_OSR_512,	8200,	16400	},
++	{ HP206C_CMD_ADC_CVT_OSR_256,	4100,	8200	},
++	{ HP206C_CMD_ADC_CVT_OSR_128,	2100,	4100	},
++};
++static const int hp206c_osr_rates[] = { 4096, 2048, 1024, 512, 256, 128 };
++static const char hp206c_osr_rates_str[] = "4096 2048 1024 512 256 128";
++
++static inline int hp206c_read_reg(struct i2c_client *client, u8 reg)
++{
++	return i2c_smbus_read_byte_data(client, HP206C_CMD_READ_REG | reg);
++}
++
++static inline int hp206c_write_reg(struct i2c_client *client, u8 reg, u8 val)
++{
++	return i2c_smbus_write_byte_data(client,
++			HP206C_CMD_WRITE_REG | reg, val);
++}
++
++static int hp206c_read_20bit(struct i2c_client *client, u8 cmd)
++{
++	int ret;
++	u8 values[3];
++
++	ret = i2c_smbus_read_i2c_block_data(client, cmd, 3, values);
++	if (ret < 0)
++		return ret;
++	if (ret != 3)
++		return -EIO;
++	return ((values[0] & 0xF) << 16) | (values[1] << 8) | (values[2]);
++}
++
++/* Spin for max 160ms until DEV_RDY is 1, or return error. */
++static int hp206c_wait_dev_rdy(struct iio_dev *indio_dev)
++{
++	int ret;
++	int count = 0;
++	struct hp206c_data *data = iio_priv(indio_dev);
++	struct i2c_client *client = data->client;
++
++	while (++count <= HP206C_MAX_DEV_RDY_WAIT_COUNT) {
++		ret = hp206c_read_reg(client, HP206C_REG_INT_SRC);
++		if (ret < 0) {
++			dev_err(&indio_dev->dev, "Failed READ_REG INT_SRC: %d\n", ret);
++			return ret;
++		}
++		if (ret & HP206C_FLAG_DEV_RDY)
++			return 0;
++		usleep_range(HP206C_DEV_RDY_WAIT_US, HP206C_DEV_RDY_WAIT_US * 3 / 2);
++	}
++	return -ETIMEDOUT;
++}
++
++static int hp206c_set_compensation(struct i2c_client *client, bool enabled)
++{
++	int val;
++
++	val = hp206c_read_reg(client, HP206C_REG_PARA);
++	if (val < 0)
++		return val;
++	if (enabled)
++		val |= HP206C_FLAG_CMPS_EN;
++	else
++		val &= ~HP206C_FLAG_CMPS_EN;
++
++	return hp206c_write_reg(client, HP206C_REG_PARA, val);
++}
++
++/* Do a soft reset */
++static int hp206c_soft_reset(struct iio_dev *indio_dev)
++{
++	int ret;
++	struct hp206c_data *data = iio_priv(indio_dev);
++	struct i2c_client *client = data->client;
++
++	ret = i2c_smbus_write_byte(client, HP206C_CMD_SOFT_RST);
++	if (ret) {
++		dev_err(&client->dev, "Failed to reset device: %d\n", ret);
++		return ret;
++	}
++
++	usleep_range(400, 600);
++
++	ret = hp206c_wait_dev_rdy(indio_dev);
++	if (ret) {
++		dev_err(&client->dev, "Device not ready after soft reset: %d\n", ret);
++		return ret;
++	}
++
++	ret = hp206c_set_compensation(client, true);
++	if (ret)
++		dev_err(&client->dev, "Failed to enable compensation: %d\n", ret);
++	return ret;
++}
++
++static int hp206c_conv_and_read(struct iio_dev *indio_dev,
++				u8 conv_cmd, u8 read_cmd,
++				unsigned int sleep_us)
++{
++	int ret;
++	struct hp206c_data *data = iio_priv(indio_dev);
++	struct i2c_client *client = data->client;
++
++	ret = hp206c_wait_dev_rdy(indio_dev);
++	if (ret < 0) {
++		dev_err(&indio_dev->dev, "Device not ready: %d\n", ret);
++		return ret;
++	}
++
++	ret = i2c_smbus_write_byte(client, conv_cmd);
++	if (ret < 0) {
++		dev_err(&indio_dev->dev, "Failed convert: %d\n", ret);
++		return ret;
++	}
++
++	usleep_range(sleep_us, sleep_us * 3 / 2);
++
++	ret = hp206c_wait_dev_rdy(indio_dev);
++	if (ret < 0) {
++		dev_err(&indio_dev->dev, "Device not ready: %d\n", ret);
++		return ret;
++	}
++
++	ret = hp206c_read_20bit(client, read_cmd);
++	if (ret < 0)
++		dev_err(&indio_dev->dev, "Failed read: %d\n", ret);
++
++	return ret;
++}
++
++static int hp206c_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan, int *val,
++			   int *val2, long mask)
++{
++	int ret;
++	struct hp206c_data *data = iio_priv(indio_dev);
++	const struct hp206c_osr_setting *osr_setting;
++	u8 conv_cmd;
++
++	mutex_lock(&data->mutex);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		switch (chan->type) {
++		case IIO_TEMP:
++			*val = hp206c_osr_rates[data->temp_osr_index];
++			ret = IIO_VAL_INT;
++			break;
++
++		case IIO_PRESSURE:
++			*val = hp206c_osr_rates[data->pres_osr_index];
++			ret = IIO_VAL_INT;
++			break;
++		default:
++			ret = -EINVAL;
++		}
++		break;
++
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_TEMP:
++			osr_setting = &hp206c_osr_settings[data->temp_osr_index];
++			conv_cmd = HP206C_CMD_ADC_CVT |
++					osr_setting->osr_mask |
++					HP206C_CMD_ADC_CVT_CHNL_T;
++			ret = hp206c_conv_and_read(indio_dev,
++					conv_cmd,
++					HP206C_CMD_READ_T,
++					osr_setting->temp_conv_time_us);
++			if (ret >= 0) {
++				/* 20 significant bits are provided.
++				 * Extend sign over the rest.
++				 */
++				*val = sign_extend32(ret, 19);
++				ret = IIO_VAL_INT;
++			}
++			break;
++
++		case IIO_PRESSURE:
++			osr_setting = &hp206c_osr_settings[data->pres_osr_index];
++			conv_cmd = HP206C_CMD_ADC_CVT |
++					osr_setting->osr_mask |
++					HP206C_CMD_ADC_CVT_CHNL_PT;
++			ret = hp206c_conv_and_read(indio_dev,
++					conv_cmd,
++					HP206C_CMD_READ_P,
++					osr_setting->pres_conv_time_us);
++			if (ret >= 0) {
++				dev_err(&indio_dev->dev, "ret=%#08x\n", ret);
++				*val = ret;
++				ret = IIO_VAL_INT;
++			}
++			break;
++		default:
++			ret = -EINVAL;
++		}
++		break;
++
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_TEMP:
++			*val = 0;
++			*val2 = 10000;
++			ret = IIO_VAL_INT_PLUS_MICRO;
++			break;
++
++		case IIO_PRESSURE:
++			*val = 0;
++			*val2 = 1000;
++			ret = IIO_VAL_INT_PLUS_MICRO;
++			break;
++		default:
++			ret = -EINVAL;
++		}
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++	mutex_unlock(&data->mutex);
++	return ret;
++}
++
++static int hp206c_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	int ret = 0;
++	struct hp206c_data *data = iio_priv(indio_dev);
++
++	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
++		return -EINVAL;
++	mutex_lock(&data->mutex);
++	switch (chan->type) {
++	case IIO_TEMP:
++		data->temp_osr_index = find_closest_descending(val,
++			hp206c_osr_rates, ARRAY_SIZE(hp206c_osr_rates));
++		break;
++	case IIO_PRESSURE:
++		data->pres_osr_index = find_closest_descending(val,
++			hp206c_osr_rates, ARRAY_SIZE(hp206c_osr_rates));
++		break;
++	default:
++		ret = -EINVAL;
++	}
++	mutex_unlock(&data->mutex);
++	return ret;
++}
++
++static const struct iio_chan_spec hp206c_channels[] = {
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE) |
++				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
++	},
++	{
++		.type = IIO_PRESSURE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE) |
++				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
++	}
++};
++
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(hp206c_osr_rates_str);
++
++static struct attribute *hp206c_attributes[] = {
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group hp206c_attribute_group = {
++	.attrs = hp206c_attributes,
++};
++
++static const struct iio_info hp206c_info = {
++	.attrs = &hp206c_attribute_group,
++	.read_raw = hp206c_read_raw,
++	.write_raw = hp206c_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int hp206c_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct iio_dev *indio_dev;
++	struct hp206c_data *data;
++	int ret;
++
++	if (!i2c_check_functionality(client->adapter,
++				     I2C_FUNC_SMBUS_BYTE |
++				     I2C_FUNC_SMBUS_BYTE_DATA |
++				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
++		dev_err(&client->dev, "Adapter does not support "
++				"all required i2c functionality\n");
++		return -ENODEV;
++	}
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	data->client = client;
++	mutex_init(&data->mutex);
++
++	indio_dev->info = &hp206c_info;
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = hp206c_channels;
++	indio_dev->num_channels = ARRAY_SIZE(hp206c_channels);
++
++	i2c_set_clientdata(client, indio_dev);
++
++	/* Do a soft reset on probe */
++	ret = hp206c_soft_reset(indio_dev);
++	if (ret) {
++		dev_err(&client->dev, "Failed to reset on startup: %d\n", ret);
++		return -ENODEV;
++	}
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static const struct i2c_device_id hp206c_id[] = {
++	{"hp206c"},
++	{}
++};
++
++#ifdef CONFIG_ACPI
++static const struct acpi_device_id hp206c_acpi_match[] = {
++	{"HOP206C", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, hp206c_acpi_match);
++#endif
++
++static struct i2c_driver hp206c_driver = {
++	.probe = hp206c_probe,
++	.id_table = hp206c_id,
++	.driver = {
++		.name = "hp206c",
++		.acpi_match_table = ACPI_PTR(hp206c_acpi_match),
++	},
++};
++
++module_i2c_driver(hp206c_driver);
++
++MODULE_DESCRIPTION("HOPERF HP206C precision barometer and altimeter sensor");
++MODULE_AUTHOR("Leonard Crestez <leonard.crestez@intel.com>");
++MODULE_LICENSE("GPL v2");
 -- 
+2.8.0.rc3
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
