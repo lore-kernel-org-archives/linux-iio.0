@@ -1,49 +1,63 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f193.google.com ([209.85.217.193]:35866 "EHLO
-	mail-lb0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750841AbcC3EPN convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Mar 2016 00:15:13 -0400
+Return-Path: <denis.ciocca@st.com>
+Date: Wed, 30 Mar 2016 14:33:53 +0800
+From: Denis Ciocca <denis.ciocca@st.com>
+To: Arnd Bergmann <arnd@arndb.de>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Giuseppe BARBA <giuseppe.barba@st.com>,
+        Linus Walleij
+	<linus.walleij@linaro.org>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: st_magn: always define ST_MAGN_TRIGGER_SET_STATE
+Message-ID: <20160330063353.GA6253@beicxl1122>
+References: <1459283273-1059478-1-git-send-email-arnd@arndb.de>
 MIME-Version: 1.0
-In-Reply-To: <1458945655-5027-1-git-send-email-richard@nod.at>
-References: <1458945655-5027-1-git-send-email-richard@nod.at>
-Date: Wed, 30 Mar 2016 13:15:10 +0900
-Message-ID: <CAJKOXPfeBpMLNpeiZXVvXv-kB_Kp9FH786ETsqBNN_1vrfG05w@mail.gmail.com>
-Subject: Re: [PATCH 1/8] phy: Fix phy-hi6220-usb dependencies
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-To: Richard Weinberger <richard@nod.at>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Kishon Vijay Abraham I <kishon@ti.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <1459283273-1059478-1-git-send-email-arnd@arndb.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Mar 26, 2016 at 7:40 AM, Richard Weinberger <richard@nod.at> wrote:
-> This driver needs io memory.
->
-> Fixes the following Kconfig warning:
-> warning: (ST_IRQCHIP && STMMAC_PLATFORM && DWMAC_IPQ806X && DWMAC_LPC18XX && DWMAC_ROCKCHIP && DWMAC_SOCFPGA && DWMAC_STI && TI_CPSW && PINCTRL_ROCKCHIP && PINCTRL_DOVE && POWER_RESET_KEYSTONE && S3C2410_WATCHDOG && VIDEO_OMAP3 && VIDEO_S5P_FIMC && USB_XHCI_MTK && RTC_DRV_AT91SAM9 && LPC18XX_DMAMUX && VIDEO_OMAP4 && HWSPINLOCK_QCOM && ATMEL_ST && QCOM_GSBI && PHY_HI6220_USB) selects MFD_SYSCON which has unmet direct dependencies (HAS_IOMEM)
->
-> And this build error:
-> drivers/mfd/syscon.c: In function ‘of_syscon_register’:
-> drivers/mfd/syscon.c:67:2: error: implicit declaration of function ‘ioremap’ [-Werror=implicit-function-declaration]
->   base = ioremap(res.start, resource_size(&res));
->   ^
-> drivers/mfd/syscon.c:67:7: warning: assignment makes pointer from integer without a cast [enabled by default]
->   base = ioremap(res.start, resource_size(&res));
->        ^
-> drivers/mfd/syscon.c:109:2: error: implicit declaration of function ‘iounmap’ [-Werror=implicit-function-declaration]
->   iounmap(base);
->
-> Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Fixes: d896910f3 ("phy: Restrict phy-hi6220-usb to HiSilicon arm64")
-> Signed-off-by: Richard Weinberger <richard@nod.at>
+Hi Arnd,
 
-Waiting with this from 3rd March...
-https://www.spinics.net/lists/linux-usb/msg137114.html
-(and resent on 15th https://lkml.org/lkml/2016/3/16/408)
-...but indeed recent Rob's work is a better solution.
+yup, my fault. Thanks.
 
-BR,
-Krzysztof
+Acked-by: Denis Ciocca <denis.ciocca@st.com>
+
+
+On |29 Mar 16 @ 22:27|, Arnd Bergmann wrote:
+> When CONFIG_IIO_TRIGGER is enabled but CONFIG_IIO_BUFFER is
+> not, we get a build error in the st_magn driver:
+> 
+> drivers/iio/magnetometer/st_magn_core.c:573:23: error: 'ST_MAGN_TRIGGER_SET_STATE' undeclared here (not in a function)
+>   .set_trigger_state = ST_MAGN_TRIGGER_SET_STATE,
+>                        ^~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> Apparently, this ST_MAGN_TRIGGER_SET_STATE macro was meant to
+> be set to NULL when the definition is not available because
+> st_magn_buffer.c is not compiled, but the alternative definition
+> was not included in the original patch. This adds it.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: 74f5683f35fe ("iio: st_magn: Add irq trigger handling")
+> ---
+>  drivers/iio/magnetometer/st_magn.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
+> index 06a4d9c35581..9daca4681922 100644
+> --- a/drivers/iio/magnetometer/st_magn.h
+> +++ b/drivers/iio/magnetometer/st_magn.h
+> @@ -44,6 +44,7 @@ static inline int st_magn_allocate_ring(struct iio_dev *indio_dev)
+>  static inline void st_magn_deallocate_ring(struct iio_dev *indio_dev)
+>  {
+>  }
+> +#define ST_MAGN_TRIGGER_SET_STATE NULL
+>  #endif /* CONFIG_IIO_BUFFER */
+>  
+>  #endif /* ST_MAGN_H */
+> -- 
+> 2.7.0
+> 
