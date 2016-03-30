@@ -1,37 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:35148 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757525AbcCaRbm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 31 Mar 2016 13:31:42 -0400
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Thierry Reding <thierry.reding@avionic-design.de>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH 0/2] Add support for adc101c* and adc121c* 
-Date: Thu, 31 Mar 2016 20:20:34 +0300
-Message-Id: <cover.1459444547.git.leonard.crestez@intel.com>
+Received: from www381.your-server.de ([78.46.137.84]:32996 "EHLO
+	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752458AbcC3PpR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Mar 2016 11:45:17 -0400
+Subject: Re: iio_simple_dummy_buffer_dma
+To: John Syne <john3909@gmail.com>
+References: <C78F84F2-A2D5-40B2-9291-F27FA95C8F52@gmail.com>
+ <8CFE0549-CA65-4163-917D-5BF55DCC0E4A@gmail.com>
+ <56CAF486.4060505@metafoo.de>
+ <5343A235-F2C0-46B0-A0E1-853F3BC5F27D@gmail.com>
+ <56CB4602.6060809@metafoo.de>
+ <4A74D836-0747-43D6-886B-7D1C5CB2D070@gmail.com>
+ <56CC89E7.4030700@metafoo.de>
+ <9310CAE0-D5C3-4571-A979-779C7483BBE5@gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <56FBF012.4000702@metafoo.de>
+Date: Wed, 30 Mar 2016 17:26:10 +0200
+MIME-Version: 1.0
+In-Reply-To: <9310CAE0-D5C3-4571-A979-779C7483BBE5@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds support for adc101c* and adc121c* using the ti-adc081c driver.
-
-I send just the first patch earlier but got no response. The first patch now no
-longer sets .data in of_device_id because that was not actually used.
-
-The second patch adds buffer support based on external trigger.
-
-Crestez Dan Leonard (2):
-  ti-adc081c: Add support for adc101c* and adc121c*
-  ti-adc081c: Initial triggered buffer support
-
- drivers/iio/adc/Kconfig      |   6 +--
- drivers/iio/adc/ti-adc081c.c | 116 ++++++++++++++++++++++++++++++++++++++-----
- 2 files changed, 106 insertions(+), 16 deletions(-)
-
--- 
-2.8.0.rc3
+On 03/30/2016 08:08 AM, John Syne wrote:
+> Hi Lars,
+>
+> I did manage to get the dummy example with iio_simple_dummy_buffer_dma working. It turns out I had an issue in my dummy Kconfig when I added back the iio_simple_dummy_buffer_dma support. Now I can run iiod and connect iioScope and see sine, square, etc waveforms. I can also use generic_buffer and that works also. 
+Great!
+>
+> Now I’m trying to figure out how to add my own hardware using part 2 of iio_simple_dummy_buffer_dma as a template. I was wondering when you expect to release the “overhauled version”.
+Soon... Sorry I don't have a estimated date, at the moment this is not
+top priority. I'll get to it as soon as I'm not completely 
+>
+> Has anyone used the IIO-DMA framework in a real driver? In your IIO-DMA patch notes, you said "Andrey Yurovsky has also successfully added DMA buffer support to the existing AT91 ADC”, but I have looked at this driver and I don’t see any IIO-DMA framework added. 
+The iio-buffer-dmaengine driver is in a sense a real driver, but uses
+the DMAengine framework to execute the DMA transfers. But you can easily
+replace the calls to the DMAengine framework with direct access to the
+DMA hardware. The AT91 support never made it upstream and Andrey's
+e-mail bounces these days, no idea what happened to the code.
+>
+> Also, have you made any progress on adding the high speed interface via mmap or vmsplice. 
+Nope, not yet. Again, I can't say when I'll get to this.
+>
+> Thank you and Jonathan for all the work you guys do on IIO. The IIO framework is a really helpful for what I need, especially with the DMA support. 
+>
+>
+> Regards,
+> John
+>
+>
+>> On Feb 22, 2016, at 3:44 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>
+>> On 02/22/2016 05:51 AM, John Syne wrote:
+>>> BTW, I seem to remember that Lars removed iio_simple_dummy_buffer_dma.c in his V3 patch so this won’t be in the IIO repo, but I don’t know how to test the IIO DMA framework without this file.
+>>>
+>> Hi,
+>>
+>> The patch was dropped for now to avoid conflicts with other ongoing work on
+>> the dummy driver. The patch will come back in a slightly overhauled version
+>> soonish.
 
