@@ -1,48 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f49.google.com ([209.85.220.49]:34277 "EHLO
-	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752185AbcC3GIl convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Mar 2016 02:08:41 -0400
-Received: by mail-pa0-f49.google.com with SMTP id fe3so32191096pab.1
-        for <linux-iio@vger.kernel.org>; Tue, 29 Mar 2016 23:08:41 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: iio_simple_dummy_buffer_dma
-From: John Syne <john3909@gmail.com>
-In-Reply-To: <56CC89E7.4030700@metafoo.de>
-Date: Tue, 29 Mar 2016 23:08:25 -0700
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Message-Id: <9310CAE0-D5C3-4571-A979-779C7483BBE5@gmail.com>
-References: <C78F84F2-A2D5-40B2-9291-F27FA95C8F52@gmail.com> <8CFE0549-CA65-4163-917D-5BF55DCC0E4A@gmail.com> <56CAF486.4060505@metafoo.de> <5343A235-F2C0-46B0-A0E1-853F3BC5F27D@gmail.com> <56CB4602.6060809@metafoo.de> <4A74D836-0747-43D6-886B-7D1C5CB2D070@gmail.com> <56CC89E7.4030700@metafoo.de>
-To: Lars-Peter Clausen <lars@metafoo.de>
+Received: from ns.pmeerw.net ([84.19.176.92]:44409 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1758514AbcC3HsG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 30 Mar 2016 03:48:06 -0400
+Date: Wed, 30 Mar 2016 09:48:01 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Linus Walleij <linus.walleij@linaro.org>
+cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Daniel Mack <daniel@caiaq.de>
+Subject: Re: [PATCH] iio: light: new driver for the ROHM BH1780
+In-Reply-To: <CACRpkdYQ1tZdfQew456Q1iFT=MO_2PB_fBPaE_wd5XqKO8cs-w@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1603300946280.14313@pmeerw.net>
+References: <1459261653-13070-1-git-send-email-linus.walleij@linaro.org> <alpine.DEB.2.02.1603291632370.16868@pmeerw.net> <CACRpkdYQ1tZdfQew456Q1iFT=MO_2PB_fBPaE_wd5XqKO8cs-w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Lars,
 
-I did manage to get the dummy example with iio_simple_dummy_buffer_dma working. It turns out I had an issue in my dummy Kconfig when I added back the iio_simple_dummy_buffer_dma support. Now I can run iiod and connect iioScope and see sine, square, etc waveforms. I can also use generic_buffer and that works also. 
-
-Now I’m trying to figure out how to add my own hardware using part 2 of iio_simple_dummy_buffer_dma as a template. I was wondering when you expect to release the “overhauled version”.
-
-Has anyone used the IIO-DMA framework in a real driver? In your IIO-DMA patch notes, you said "Andrey Yurovsky has also successfully added DMA buffer support to the existing AT91 ADC”, but I have looked at this driver and I don’t see any IIO-DMA framework added. 
-
-Also, have you made any progress on adding the high speed interface via mmap or vmsplice. 
-
-Thank you and Jonathan for all the work you guys do on IIO. The IIO framework is a really helpful for what I need, especially with the DMA support. 
-
-
-Regards,
-John
-
-
-> On Feb 22, 2016, at 3:44 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> >> +     case IIO_CHAN_INFO_SCALE:
+> >> +             /* Returns raw lux value */
+> >> +             *val = 1;
+> >
+> > not needed to scale by 1.0
+> >
+> >> +             *val2 = 0;
+> >> +             return IIO_VAL_INT;
 > 
-> On 02/22/2016 05:51 AM, John Syne wrote:
->> BTW, I seem to remember that Lars removed iio_simple_dummy_buffer_dma.c in his V3 patch so this won’t be in the IIO repo, but I don’t know how to test the IIO DMA framework without this file.
->> 
+> How do you mean?
+> If I don't implement this (just let this function return negative)
+> this happens:
 > 
-> Hi,
+> iio:device1 ls
+> dev                              of_node
+> in_illuminance_integration_time  power
+> in_illuminance_raw               subsystem
+> in_illuminance_scale             uevent
 > 
-> The patch was dropped for now to avoid conflicts with other ongoing work on
-> the dummy driver. The patch will come back in a slightly overhauled version
-> soonish.
+> iio:device1 cat in_illuminance_scale
+> cat: read error: Invalid argument
+> 
+> Do you mean all userspace programs should assume scale by 1x
+> if they get an error when they try to read the scale file, or is there
+> a bug in IIO such that this file should return "1" if the callback asking for
+> IIO_CHAN_INFO_SCALE returns negative?
+
+IIO_CHAN_INFO_SCALE is optional, if it is not given 1.0 is to be assumed
+
+you do not give _OFFSET as well and assume that offset is 0.0 when 
+interpreting _RAW
+
+p.
+
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
