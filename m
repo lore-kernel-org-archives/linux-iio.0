@@ -1,51 +1,38 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from axentia.se ([87.96.186.132]:46046 "EHLO EMAIL.axentia.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751231AbcDAFxV convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Apr 2016 01:53:21 -0400
+From: Peter Rosin <peda@axentia.se>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Slawomir Stepien <sst@poczta.fm>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>
+Subject: RE: [PATCH] iio: potentiometer: mcp4531: use pointer to access
+ model parameters
+Date: Fri, 1 Apr 2016 05:51:15 +0000
+Message-ID: <6604872ea82842589376a2d2bc902822@EMAIL.axentia.se>
+References: <20160324160601.GA7819@x220> <56F8FBD9.6030805@kernel.org>
+In-Reply-To: <56F8FBD9.6030805@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1603291632370.16868@pmeerw.net>
-References: <1459261653-13070-1-git-send-email-linus.walleij@linaro.org>
-	<alpine.DEB.2.02.1603291632370.16868@pmeerw.net>
-Date: Wed, 30 Mar 2016 09:43:43 +0200
-Message-ID: <CACRpkdYQ1tZdfQew456Q1iFT=MO_2PB_fBPaE_wd5XqKO8cs-w@mail.gmail.com>
-Subject: Re: [PATCH] iio: light: new driver for the ROHM BH1780
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Daniel Mack <daniel@caiaq.de>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 29, 2016 at 4:46 PM, Peter Meerwald-Stadler
-<pmeerw@pmeerw.net> wrote:
-> [Me]
+Jonathan Cameron wrote:
+> On 24/03/16 16:06, Slawomir Stepien wrote:
+> > Use const pointer to element from model configuration array rather then array
+> > index, as it will not change anyway.
+> > 
+> > Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+> Applied to the togreg branch of iio.git - initially pushed out as testing
+> for the autobuilders to play with it.  Thanks for cleaning this up.
 
-> my nitpicking below
+I guess it's too late, but FWIW,
 
-Fixed all of it, except:
+Signed-off-by: Peter Rosin <peda@axentia.se>
 
->> +     case IIO_CHAN_INFO_SCALE:
->> +             /* Returns raw lux value */
->> +             *val = 1;
->
-> not needed to scale by 1.0
->
->> +             *val2 = 0;
->> +             return IIO_VAL_INT;
-
-How do you mean?
-If I don't implement this (just let this function return negative)
-this happens:
-
-iio:device1 ls
-dev                              of_node
-in_illuminance_integration_time  power
-in_illuminance_raw               subsystem
-in_illuminance_scale             uevent
-
-iio:device1 cat in_illuminance_scale
-cat: read error: Invalid argument
-
-Do you mean all userspace programs should assume scale by 1x
-if they get an error when they try to read the scale file, or is there
-a bug in IIO such that this file should return "1" if the callback asking for
-IIO_CHAN_INFO_SCALE returns negative?
-
-Yours,
-Linus Walleij
+Cheers,
+Peter (mcp4531 maintainer)
