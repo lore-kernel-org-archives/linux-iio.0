@@ -1,58 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48998 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49021 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752419AbcDCKOI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 06:14:08 -0400
-Subject: Re: [PATCH v5] iio: potentiometer: add driver for Microchip
- MCP413X/414X/415X/416X/423X/424X/425X/426X
-To: Joachim Eastwood <manabian@gmail.com>
-References: <20160323085720.GA6836@x220> <56F946AA.9070203@kernel.org>
- <CAGhQ9Vztpo7gdrxxFdmjcNLe_dMXjYx1QHdiRUoXN4quhsPRNw@mail.gmail.com>
-Cc: Slawomir Stepien <sst@poczta.fm>, Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1753338AbcDCKRv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 06:17:51 -0400
+Subject: Re: [PATCH v2 1/1] iio: accel: bmc150: fix endianness when reading
+ axes
+To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
+References: <1459254945-2012-1-git-send-email-irina.tirdea@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5700ECED.10803@kernel.org>
-Date: Sun, 3 Apr 2016 11:14:05 +0100
+Message-ID: <5700EDCD.7030909@kernel.org>
+Date: Sun, 3 Apr 2016 11:17:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAGhQ9Vztpo7gdrxxFdmjcNLe_dMXjYx1QHdiRUoXN4quhsPRNw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1459254945-2012-1-git-send-email-irina.tirdea@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/03/16 19:17, Joachim Eastwood wrote:
-> On 28 March 2016 at 16:58, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 23/03/16 08:57, Slawomir Stepien wrote:
->>> The following functionalities are supported:
->>>  - write, read from volatile memory
->>>
->>> Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22060b.pdf
->>>
->>> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
->> One process comment below... And git actually copes fine with what you
->> did (I wondered which way it would go until I tried it :)
->>
->> Applied to the togreg branch of iio.git - initially pushed out as
->> testing for the autobuilders to play pingpong with it.
->>
->> A very nice, clean driver.  Thanks for your hard work on this.
->>
->> Note it is in a branch I happy to rebase for the next week, so if Joachim
->> in particular would like to add a reviewed by tag, I'd be delighted to append
->> it.  Often reviewers don't get enough credit in my opinion!
+On 29/03/16 13:35, Irina Tirdea wrote:
+> For big endian platforms, reading the axes will return
+> invalid values.
 > 
-> Sure;
-> Reviewed-by: Joachim Eastwood <manabian@gmail.com>
-Added, thanks
+> The device stores each axis value in a 16 bit little
+> endian register. The driver uses regmap_read_bulk to get
+> the axis value, resulting in a 16 bit little endian value.
+> This needs to be converted to cpu endianness to work
+> on big endian platforms.
 > 
+> Fix endianness for big endian platforms by converting
+> the values for the axes read from little endian to
+> cpu.
 > 
-> regards,
-> Joachim Eastwood
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> This is also partially fixed in commit b6fb9b6d6552 ("iio:
+> accel: bmc150: optimize transfers in trigger handler").
+> 
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Applied to the fixes-togreg-post-rc1 branch of iio.git and marked for
+stable.
+> ---
+> 
+> Changes from v1:
+>  - pass sizeof(raw_val) to regmap_bulk_read instead of
+> hardcoded value
+> 
+>  drivers/iio/accel/bmc150-accel-core.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index c73331f7..2072a31 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -547,7 +547,7 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+>  {
+>  	int ret;
+>  	int axis = chan->scan_index;
+> -	unsigned int raw_val;
+> +	__le16 raw_val;
+>  
+>  	mutex_lock(&data->mutex);
+>  	ret = bmc150_accel_set_power_state(data, true);
+> @@ -557,14 +557,14 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+>  	}
+>  
+>  	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_AXIS_TO_REG(axis),
+> -			       &raw_val, 2);
+> +			       &raw_val, sizeof(raw_val));
+>  	if (ret < 0) {
+>  		dev_err(data->dev, "Error reading axis %d\n", axis);
+>  		bmc150_accel_set_power_state(data, false);
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+>  	}
+> -	*val = sign_extend32(raw_val >> chan->scan_type.shift,
+> +	*val = sign_extend32(le16_to_cpu(raw_val) >> chan->scan_type.shift,
+>  			     chan->scan_type.realbits - 1);
+>  	ret = bmc150_accel_set_power_state(data, false);
+>  	mutex_unlock(&data->mutex);
+> @@ -988,6 +988,7 @@ static const struct iio_event_spec bmc150_accel_event = {
+>  		.realbits = (bits),					\
+>  		.storagebits = 16,					\
+>  		.shift = 16 - (bits),					\
+> +		.endianness = IIO_LE,					\
+>  	},								\
+>  	.event_spec = &bmc150_accel_event,				\
+>  	.num_event_specs = 1						\
 > 
 
