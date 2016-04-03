@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:55979 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:42668 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752962AbcDCIyN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:54:13 -0400
+	with ESMTP id S1752898AbcDCIyE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:54:04 -0400
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -35,9 +35,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
 	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v6 04/24] i2c: i2c-arb-gpio-challenge: convert to use an explicit i2c mux core
-Date: Sun,  3 Apr 2016 10:52:34 +0200
-Message-Id: <1459673574-11440-5-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v6 03/24] i2c: i2c-mux-pinctrl: convert to use an explicit i2c mux core
+Date: Sun,  3 Apr 2016 10:52:33 +0200
+Message-Id: <1459673574-11440-4-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -51,127 +51,211 @@ instead of the child adapter.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/muxes/i2c-arb-gpio-challenge.c | 47 +++++++++++++-----------------
- 1 file changed, 20 insertions(+), 27 deletions(-)
+ drivers/i2c/muxes/i2c-mux-pinctrl.c | 86 +++++++++++++------------------------
+ 1 file changed, 30 insertions(+), 56 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-arb-gpio-challenge.c b/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
-index 402e3a6c671a..a42827b3c672 100644
---- a/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
-+++ b/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
-@@ -28,8 +28,6 @@
- /**
-  * struct i2c_arbitrator_data - Driver data for I2C arbitrator
-  *
-- * @parent: Parent adapter
-- * @child: Child bus
-  * @our_gpio: GPIO we'll use to claim.
-  * @our_gpio_release: 0 if active high; 1 if active low; AKA if the GPIO ==
-  *   this then consider it released.
-@@ -42,8 +40,6 @@
-  */
+diff --git a/drivers/i2c/muxes/i2c-mux-pinctrl.c b/drivers/i2c/muxes/i2c-mux-pinctrl.c
+index b5a982ba8898..bbfabf4f52be 100644
+--- a/drivers/i2c/muxes/i2c-mux-pinctrl.c
++++ b/drivers/i2c/muxes/i2c-mux-pinctrl.c
+@@ -26,27 +26,22 @@
+ #include <linux/of.h>
  
- struct i2c_arbitrator_data {
+ struct i2c_mux_pinctrl {
+-	struct device *dev;
+ 	struct i2c_mux_pinctrl_platform_data *pdata;
+ 	struct pinctrl *pinctrl;
+ 	struct pinctrl_state **states;
+ 	struct pinctrl_state *state_idle;
 -	struct i2c_adapter *parent;
--	struct i2c_adapter *child;
- 	int our_gpio;
- 	int our_gpio_release;
- 	int their_gpio;
-@@ -59,9 +55,9 @@ struct i2c_arbitrator_data {
-  *
-  * Use the GPIO-based signalling protocol; return -EBUSY if we fail.
-  */
--static int i2c_arbitrator_select(struct i2c_adapter *adap, void *data, u32 chan)
-+static int i2c_arbitrator_select(struct i2c_mux_core *muxc, u32 chan)
- {
--	const struct i2c_arbitrator_data *arb = data;
-+	const struct i2c_arbitrator_data *arb = i2c_mux_priv(muxc);
- 	unsigned long stop_retry, stop_time;
+-	struct i2c_adapter **busses;
+ };
  
- 	/* Start a round of trying to claim the bus */
-@@ -93,7 +89,7 @@ static int i2c_arbitrator_select(struct i2c_adapter *adap, void *data, u32 chan)
- 	/* Give up, release our claim */
- 	gpio_set_value(arb->our_gpio, arb->our_gpio_release);
- 	udelay(arb->slew_delay_us);
--	dev_err(&adap->dev, "Could not claim bus, timeout\n");
-+	dev_err(muxc->dev, "Could not claim bus, timeout\n");
- 	return -EBUSY;
+-static int i2c_mux_pinctrl_select(struct i2c_adapter *adap, void *data,
+-				  u32 chan)
++static int i2c_mux_pinctrl_select(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct i2c_mux_pinctrl *mux = data;
++	struct i2c_mux_pinctrl *mux = i2c_mux_priv(muxc);
+ 
+ 	return pinctrl_select_state(mux->pinctrl, mux->states[chan]);
  }
  
-@@ -102,10 +98,9 @@ static int i2c_arbitrator_select(struct i2c_adapter *adap, void *data, u32 chan)
-  *
-  * Release the I2C bus using the GPIO-based signalling protocol.
-  */
--static int i2c_arbitrator_deselect(struct i2c_adapter *adap, void *data,
--				   u32 chan)
-+static int i2c_arbitrator_deselect(struct i2c_mux_core *muxc, u32 chan)
+-static int i2c_mux_pinctrl_deselect(struct i2c_adapter *adap, void *data,
+-				    u32 chan)
++static int i2c_mux_pinctrl_deselect(struct i2c_mux_core *muxc, u32 chan)
  {
--	const struct i2c_arbitrator_data *arb = data;
-+	const struct i2c_arbitrator_data *arb = i2c_mux_priv(muxc);
+-	struct i2c_mux_pinctrl *mux = data;
++	struct i2c_mux_pinctrl *mux = i2c_mux_priv(muxc);
  
- 	/* Release the bus and wait for the other master to notice */
- 	gpio_set_value(arb->our_gpio, arb->our_gpio_release);
-@@ -119,6 +114,7 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct device_node *np = dev->of_node;
- 	struct device_node *parent_np;
-+	struct i2c_mux_core *muxc;
- 	struct i2c_arbitrator_data *arb;
- 	enum of_gpio_flags gpio_flags;
- 	unsigned long out_init;
-@@ -134,12 +130,13 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
+ 	return pinctrl_select_state(mux->pinctrl, mux->state_idle);
+ }
+@@ -55,6 +50,7 @@ static int i2c_mux_pinctrl_deselect(struct i2c_adapter *adap, void *data,
+ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
+ 				struct platform_device *pdev)
+ {
++	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
+ 	struct device_node *np = pdev->dev.of_node;
+ 	int num_names, i, ret;
+ 	struct device_node *adapter_np;
+@@ -64,15 +60,12 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
+ 		return 0;
  
--	arb = devm_kzalloc(dev, sizeof(*arb), GFP_KERNEL);
--	if (!arb) {
--		dev_err(dev, "Cannot allocate i2c_arbitrator_data\n");
-+	muxc = i2c_mux_alloc(NULL, dev, sizeof(*arb), 0,
-+			     i2c_arbitrator_select, i2c_arbitrator_deselect);
-+	if (!muxc)
+ 	mux->pdata = devm_kzalloc(&pdev->dev, sizeof(*mux->pdata), GFP_KERNEL);
+-	if (!mux->pdata) {
+-		dev_err(mux->dev,
+-			"Cannot allocate i2c_mux_pinctrl_platform_data\n");
++	if (!mux->pdata)
  		return -ENOMEM;
 -	}
--	platform_set_drvdata(pdev, arb);
-+	arb = i2c_mux_priv(muxc);
-+
-+	platform_set_drvdata(pdev, muxc);
  
- 	/* Request GPIOs */
- 	ret = of_get_named_gpio_flags(np, "our-claim-gpio", 0, &gpio_flags);
-@@ -196,21 +193,18 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
- 		dev_err(dev, "Cannot parse i2c-parent\n");
- 		return -EINVAL;
+ 	num_names = of_property_count_strings(np, "pinctrl-names");
+ 	if (num_names < 0) {
+-		dev_err(mux->dev, "Cannot parse pinctrl-names: %d\n",
++		dev_err(muxc->dev, "Cannot parse pinctrl-names: %d\n",
+ 			num_names);
+ 		return num_names;
  	}
--	arb->parent = of_get_i2c_adapter_by_node(parent_np);
-+	muxc->parent = of_get_i2c_adapter_by_node(parent_np);
- 	of_node_put(parent_np);
--	if (!arb->parent) {
-+	if (!muxc->parent) {
- 		dev_err(dev, "Cannot find parent bus\n");
+@@ -80,23 +73,21 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
+ 	mux->pdata->pinctrl_states = devm_kzalloc(&pdev->dev,
+ 		sizeof(*mux->pdata->pinctrl_states) * num_names,
+ 		GFP_KERNEL);
+-	if (!mux->pdata->pinctrl_states) {
+-		dev_err(mux->dev, "Cannot allocate pinctrl_states\n");
++	if (!mux->pdata->pinctrl_states)
+ 		return -ENOMEM;
+-	}
+ 
+ 	for (i = 0; i < num_names; i++) {
+ 		ret = of_property_read_string_index(np, "pinctrl-names", i,
+ 			&mux->pdata->pinctrl_states[mux->pdata->bus_count]);
+ 		if (ret < 0) {
+-			dev_err(mux->dev, "Cannot parse pinctrl-names: %d\n",
++			dev_err(muxc->dev, "Cannot parse pinctrl-names: %d\n",
+ 				ret);
+ 			return ret;
+ 		}
+ 		if (!strcmp(mux->pdata->pinctrl_states[mux->pdata->bus_count],
+ 			    "idle")) {
+ 			if (i != num_names - 1) {
+-				dev_err(mux->dev, "idle state must be last\n");
++				dev_err(muxc->dev, "idle state must be last\n");
+ 				return -EINVAL;
+ 			}
+ 			mux->pdata->pinctrl_state_idle = "idle";
+@@ -107,13 +98,13 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
+ 
+ 	adapter_np = of_parse_phandle(np, "i2c-parent", 0);
+ 	if (!adapter_np) {
+-		dev_err(mux->dev, "Cannot parse i2c-parent\n");
++		dev_err(muxc->dev, "Cannot parse i2c-parent\n");
+ 		return -ENODEV;
+ 	}
+ 	adapter = of_find_i2c_adapter_by_node(adapter_np);
+ 	of_node_put(adapter_np);
+ 	if (!adapter) {
+-		dev_err(mux->dev, "Cannot find parent bus\n");
++		dev_err(muxc->dev, "Cannot find parent bus\n");
  		return -EPROBE_DEFER;
  	}
+ 	mux->pdata->parent_bus_num = i2c_adapter_id(adapter);
+@@ -131,19 +122,18 @@ static inline int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
  
- 	/* Actually add the mux adapter */
--	arb->child = i2c_add_mux_adapter(arb->parent, dev, arb, 0, 0, 0,
--					 i2c_arbitrator_select,
--					 i2c_arbitrator_deselect);
--	if (!arb->child) {
-+	ret = i2c_mux_add_adapter(muxc, 0, 0, 0);
-+	if (ret) {
- 		dev_err(dev, "Failed to add adapter\n");
--		ret = -ENODEV;
--		i2c_put_adapter(arb->parent);
-+		i2c_put_adapter(muxc->parent);
+ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+ {
++	struct i2c_mux_core *muxc;
+ 	struct i2c_mux_pinctrl *mux;
+-	int (*deselect)(struct i2c_adapter *, void *, u32);
+ 	int i, ret;
+ 
+-	mux = devm_kzalloc(&pdev->dev, sizeof(*mux), GFP_KERNEL);
+-	if (!mux) {
+-		dev_err(&pdev->dev, "Cannot allocate i2c_mux_pinctrl\n");
++	muxc = i2c_mux_alloc(NULL, &pdev->dev, sizeof(*mux), 0,
++			     i2c_mux_pinctrl_select, NULL);
++	if (!muxc) {
+ 		ret = -ENOMEM;
+ 		goto err;
+ 	}
+-	platform_set_drvdata(pdev, mux);
+-
+-	mux->dev = &pdev->dev;
++	mux = i2c_mux_priv(muxc);
++	platform_set_drvdata(pdev, muxc);
+ 
+ 	mux->pdata = dev_get_platdata(&pdev->dev);
+ 	if (!mux->pdata) {
+@@ -166,14 +156,9 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+ 		goto err;
  	}
  
- 	return ret;
-@@ -218,11 +212,10 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
+-	mux->busses = devm_kzalloc(&pdev->dev,
+-				   sizeof(*mux->busses) * mux->pdata->bus_count,
+-				   GFP_KERNEL);
+-	if (!mux->busses) {
+-		dev_err(&pdev->dev, "Cannot allocate busses\n");
+-		ret = -ENOMEM;
++	ret = i2c_mux_reserve_adapters(muxc, mux->pdata->bus_count);
++	if (ret)
+ 		goto err;
+-	}
  
- static int i2c_arbitrator_remove(struct platform_device *pdev)
+ 	mux->pinctrl = devm_pinctrl_get(&pdev->dev);
+ 	if (IS_ERR(mux->pinctrl)) {
+@@ -203,13 +188,11 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+ 			goto err;
+ 		}
+ 
+-		deselect = i2c_mux_pinctrl_deselect;
+-	} else {
+-		deselect = NULL;
++		muxc->deselect = i2c_mux_pinctrl_deselect;
+ 	}
+ 
+-	mux->parent = i2c_get_adapter(mux->pdata->parent_bus_num);
+-	if (!mux->parent) {
++	muxc->parent = i2c_get_adapter(mux->pdata->parent_bus_num);
++	if (!muxc->parent) {
+ 		dev_err(&pdev->dev, "Parent adapter (%d) not found\n",
+ 			mux->pdata->parent_bus_num);
+ 		ret = -EPROBE_DEFER;
+@@ -220,12 +203,8 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+ 		u32 bus = mux->pdata->base_bus_num ?
+ 				(mux->pdata->base_bus_num + i) : 0;
+ 
+-		mux->busses[i] = i2c_add_mux_adapter(mux->parent, &pdev->dev,
+-						     mux, bus, i, 0,
+-						     i2c_mux_pinctrl_select,
+-						     deselect);
+-		if (!mux->busses[i]) {
+-			ret = -ENODEV;
++		ret = i2c_mux_add_adapter(muxc, bus, i, 0);
++		if (ret) {
+ 			dev_err(&pdev->dev, "Failed to add adapter %d\n", i);
+ 			goto err_del_adapter;
+ 		}
+@@ -234,23 +213,18 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ err_del_adapter:
+-	for (; i > 0; i--)
+-		i2c_del_mux_adapter(mux->busses[i - 1]);
+-	i2c_put_adapter(mux->parent);
++	i2c_mux_del_adapters(muxc);
++	i2c_put_adapter(muxc->parent);
+ err:
+ 	return ret;
+ }
+ 
+ static int i2c_mux_pinctrl_remove(struct platform_device *pdev)
  {
--	struct i2c_arbitrator_data *arb = platform_get_drvdata(pdev);
+-	struct i2c_mux_pinctrl *mux = platform_get_drvdata(pdev);
+-	int i;
 -
--	i2c_del_mux_adapter(arb->child);
--	i2c_put_adapter(arb->parent);
+-	for (i = 0; i < mux->pdata->bus_count; i++)
+-		i2c_del_mux_adapter(mux->busses[i]);
+-
+-	i2c_put_adapter(mux->parent);
 +	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
  
 +	i2c_mux_del_adapters(muxc);
