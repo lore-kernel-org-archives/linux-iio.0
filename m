@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:55607 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:59282 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752419AbcDCI4U (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:56:20 -0400
+	with ESMTP id S1752419AbcDCIzl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:55:41 -0400
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -35,9 +35,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
 	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v6 14/24] of/unittest: convert to use an explicit i2c mux core
-Date: Sun,  3 Apr 2016 10:52:44 +0200
-Message-Id: <1459673574-11440-15-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v6 11/24] [media] rtl2832: convert to use an explicit i2c mux core
+Date: Sun,  3 Apr 2016 10:52:41 +0200
+Message-Id: <1459673574-11440-12-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -46,98 +46,94 @@ List-Id: linux-iio@vger.kernel.org
 From: Peter Rosin <peda@axentia.se>
 
 Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select op to be in terms of the i2c mux core instead
-of the child adapter.
+etc. Update the select/deselect ops to be in terms of the i2c mux core
+instead of the child adapter.
 
+Reviewed-by: Antti Palosaari <crope@iki.fi>
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/of/unittest.c | 40 +++++++++++++++-------------------------
- 1 file changed, 15 insertions(+), 25 deletions(-)
+ drivers/media/dvb-frontends/rtl2832.c      | 22 +++++++++++-----------
+ drivers/media/dvb-frontends/rtl2832_priv.h |  2 +-
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-index e986e6ee52e0..84a65b711e8c 100644
---- a/drivers/of/unittest.c
-+++ b/drivers/of/unittest.c
-@@ -1692,13 +1692,7 @@ static struct i2c_driver unittest_i2c_dev_driver = {
- 
- #if IS_BUILTIN(CONFIG_I2C_MUX)
- 
--struct unittest_i2c_mux_data {
--	int nchans;
--	struct i2c_adapter *adap[];
--};
--
--static int unittest_i2c_mux_select_chan(struct i2c_adapter *adap,
--			       void *client, u32 chan)
-+static int unittest_i2c_mux_select_chan(struct i2c_mux_core *muxc, u32 chan)
- {
- 	return 0;
+diff --git a/drivers/media/dvb-frontends/rtl2832.c b/drivers/media/dvb-frontends/rtl2832.c
+index 7c96f7679669..545c3bbbc668 100644
+--- a/drivers/media/dvb-frontends/rtl2832.c
++++ b/drivers/media/dvb-frontends/rtl2832.c
+@@ -847,9 +847,9 @@ err:
+ 	dev_dbg(&client->dev, "failed=%d\n", ret);
  }
-@@ -1706,11 +1700,11 @@ static int unittest_i2c_mux_select_chan(struct i2c_adapter *adap,
- static int unittest_i2c_mux_probe(struct i2c_client *client,
- 		const struct i2c_device_id *id)
+ 
+-static int rtl2832_select(struct i2c_adapter *adap, void *mux_priv, u32 chan_id)
++static int rtl2832_select(struct i2c_mux_core *muxc, u32 chan_id)
  {
--	int ret, i, nchans, size;
-+	int ret, i, nchans;
- 	struct device *dev = &client->dev;
- 	struct i2c_adapter *adap = to_i2c_adapter(dev->parent);
- 	struct device_node *np = client->dev.of_node, *child;
--	struct unittest_i2c_mux_data *stm;
+-	struct rtl2832_dev *dev = mux_priv;
++	struct rtl2832_dev *dev = i2c_mux_priv(muxc);
+ 	struct i2c_client *client = dev->client;
+ 	int ret;
+ 
+@@ -870,10 +870,9 @@ err:
+ 	return ret;
+ }
+ 
+-static int rtl2832_deselect(struct i2c_adapter *adap, void *mux_priv,
+-			    u32 chan_id)
++static int rtl2832_deselect(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct rtl2832_dev *dev = mux_priv;
++	struct rtl2832_dev *dev = i2c_mux_priv(muxc);
+ 
+ 	schedule_delayed_work(&dev->i2c_gate_work, usecs_to_jiffies(100));
+ 	return 0;
+@@ -1059,7 +1058,7 @@ static struct i2c_adapter *rtl2832_get_i2c_adapter(struct i2c_client *client)
+ 	struct rtl2832_dev *dev = i2c_get_clientdata(client);
+ 
+ 	dev_dbg(&client->dev, "\n");
+-	return dev->i2c_adapter_tuner;
++	return dev->muxc->adapter[0];
+ }
+ 
+ static int rtl2832_slave_ts_ctrl(struct i2c_client *client, bool enable)
+@@ -1242,12 +1241,13 @@ static int rtl2832_probe(struct i2c_client *client,
+ 		goto err_regmap_exit;
+ 
+ 	/* create muxed i2c adapter for demod tuner bus */
+-	dev->i2c_adapter_tuner = i2c_add_mux_adapter(i2c, &i2c->dev, dev,
+-			0, 0, 0, rtl2832_select, rtl2832_deselect);
+-	if (dev->i2c_adapter_tuner == NULL) {
+-		ret = -ENODEV;
++	dev->muxc = i2c_mux_one_adapter(i2c, &i2c->dev, 0, 0, 0, 0, 0,
++					rtl2832_select, rtl2832_deselect);
++	if (IS_ERR(dev->muxc)) {
++		ret = PTR_ERR(dev->muxc);
+ 		goto err_regmap_exit;
+ 	}
++	dev->muxc->priv = dev;
+ 
+ 	/* create dvb_frontend */
+ 	memcpy(&dev->fe.ops, &rtl2832_ops, sizeof(struct dvb_frontend_ops));
+@@ -1282,7 +1282,7 @@ static int rtl2832_remove(struct i2c_client *client)
+ 
+ 	cancel_delayed_work_sync(&dev->i2c_gate_work);
+ 
+-	i2c_del_mux_adapter(dev->i2c_adapter_tuner);
++	i2c_mux_del_adapters(dev->muxc);
+ 
+ 	regmap_exit(dev->regmap);
+ 
+diff --git a/drivers/media/dvb-frontends/rtl2832_priv.h b/drivers/media/dvb-frontends/rtl2832_priv.h
+index 6b875f462f8b..d8f97d14f6fd 100644
+--- a/drivers/media/dvb-frontends/rtl2832_priv.h
++++ b/drivers/media/dvb-frontends/rtl2832_priv.h
+@@ -36,7 +36,7 @@ struct rtl2832_dev {
+ 	struct mutex regmap_mutex;
+ 	struct regmap_config regmap_config;
+ 	struct regmap *regmap;
+-	struct i2c_adapter *i2c_adapter_tuner;
 +	struct i2c_mux_core *muxc;
- 	u32 reg, max_reg;
- 
- 	dev_dbg(dev, "%s for node @%s\n", __func__, np->full_name);
-@@ -1734,25 +1728,23 @@ static int unittest_i2c_mux_probe(struct i2c_client *client,
- 		return -EINVAL;
- 	}
- 
--	size = offsetof(struct unittest_i2c_mux_data, adap[nchans]);
--	stm = devm_kzalloc(dev, size, GFP_KERNEL);
--	if (!stm) {
--		dev_err(dev, "Out of memory\n");
-+	muxc = i2c_mux_alloc(adap, dev, 0, 0,
-+			     unittest_i2c_mux_select_chan, NULL);
-+	if (!muxc)
- 		return -ENOMEM;
--	}
--	stm->nchans = nchans;
-+	ret = i2c_mux_reserve_adapters(muxc, nchans);
-+	if (ret)
-+		return ret;
- 	for (i = 0; i < nchans; i++) {
--		stm->adap[i] = i2c_add_mux_adapter(adap, dev, client,
--				0, i, 0, unittest_i2c_mux_select_chan, NULL);
--		if (!stm->adap[i]) {
-+		ret = i2c_mux_add_adapter(muxc, 0, i, 0);
-+		if (ret) {
- 			dev_err(dev, "Failed to register mux #%d\n", i);
--			for (i--; i >= 0; i--)
--				i2c_del_mux_adapter(stm->adap[i]);
-+			i2c_mux_del_adapters(muxc);
- 			return -ENODEV;
- 		}
- 	}
- 
--	i2c_set_clientdata(client, stm);
-+	i2c_set_clientdata(client, muxc);
- 
- 	return 0;
- };
-@@ -1761,12 +1753,10 @@ static int unittest_i2c_mux_remove(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
- 	struct device_node *np = client->dev.of_node;
--	struct unittest_i2c_mux_data *stm = i2c_get_clientdata(client);
--	int i;
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
- 
- 	dev_dbg(dev, "%s for node @%s\n", __func__, np->full_name);
--	for (i = stm->nchans - 1; i >= 0; i--)
--		i2c_del_mux_adapter(stm->adap[i]);
-+	i2c_mux_del_adapters(muxc);
- 	return 0;
- }
- 
+ 	struct dvb_frontend fe;
+ 	enum fe_status fe_status;
+ 	u64 post_bit_error_prev; /* for old DVBv3 read_ber() calculation */
 -- 
 2.1.4
 
