@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:37069 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:49483 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751865AbcDCI6A (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:58:00 -0400
+	with ESMTP id S1753232AbcDCI51 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:57:27 -0400
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -35,9 +35,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
 	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v6 23/24] [media] rtl2832_sdr: get rid of empty regmap wrappers
-Date: Sun,  3 Apr 2016 10:52:53 +0200
-Message-Id: <1459673574-11440-24-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v6 20/24] iio: imu: inv_mpu6050: change the i2c gate to be mux-locked
+Date: Sun,  3 Apr 2016 10:52:50 +0200
+Message-Id: <1459673574-11440-21-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -45,445 +45,178 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Peter Rosin <peda@axentia.se>
 
-Reviewed-by: Antti Palosaari <crope@iki.fi>
+The root i2c adapter lock is then no longer held by the i2c mux during
+accesses behind the i2c gate, and such accesses need to take that lock
+just like any other ordinary i2c accesses do.
+
+So, declare the i2c gate mux-locked, and zap the code that makes the
+unlocked i2c accesses and just use ordinary regmap_write accesses.
+
+This also happens to fix the deadlock described in
+http://patchwork.ozlabs.org/patch/584776/ authored by
+Adriana Reus <adriana.reus@intel.com> and submitted by
+Daniel Baluta <daniel.baluta@intel.com>
+
+----------8<----------
+iio: imu: inv_mpu6050: Fix deadlock between i2c adapter lock and mpu lock
+
+This deadlock occurs if the accel/gyro and the sensor on the auxiliary
+I2C (in my setup it's an ak8975) are working at the same time.
+
+Scenario:
+
+      T1					T2
+     ====				       ====
+inv_mpu6050_read_fifo                  aux sensor op (eg. ak8975_read_raw)
+        |                                     |
+mutex_lock(&indio_dev->mlock)           i2c_transfer
+        |                                     |
+i2c transaction                         i2c adapter lock
+        |                                     |
+i2c adapter lock                        i2c_mux_master_xfer
+                                              |
+                                        inv_mpu6050_select_bypass
+                                              |
+                                        mutex_lock(&indio_dev->mlock)
+
+When we operate on an mpu sensor the order of locking is mpu lock
+followed by the i2c adapter lock. However, when we operate the auxiliary
+sensor the order of locking is the other way around.
+
+...
+----------8<----------
+
+The reason this patch fixes the deadlock is that T2 does not grab the
+i2c adapter lock until the very end (and grabs the newfangled i2c mux
+lock where it previously grabbed the i2c adapter lock).
+
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/media/dvb-frontends/rtl2832_sdr.c | 302 +++++++++++++-----------------
- 1 file changed, 132 insertions(+), 170 deletions(-)
+ Documentation/i2c/i2c-topology            |  2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 56 +++++++------------------------
+ 2 files changed, 13 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/media/dvb-frontends/rtl2832_sdr.c b/drivers/media/dvb-frontends/rtl2832_sdr.c
-index 6a6b1debe277..47a480a7d46c 100644
---- a/drivers/media/dvb-frontends/rtl2832_sdr.c
-+++ b/drivers/media/dvb-frontends/rtl2832_sdr.c
-@@ -120,6 +120,7 @@ struct rtl2832_sdr_dev {
- 	unsigned long flags;
+diff --git a/Documentation/i2c/i2c-topology b/Documentation/i2c/i2c-topology
+index 7a10edd0874f..346623a80bd1 100644
+--- a/Documentation/i2c/i2c-topology
++++ b/Documentation/i2c/i2c-topology
+@@ -50,7 +50,7 @@ i2c-mux-pinctrl           Normally parent-locked, mux-locked iff
+ i2c-mux-reg               Parent-locked
  
- 	struct platform_device *pdev;
-+	struct regmap *regmap;
+ In drivers/iio/
+-imu/inv_mpu6050/          Parent-locked
++imu/inv_mpu6050/          Mux-locked
  
- 	struct video_device vdev;
- 	struct v4l2_device v4l2_dev;
-@@ -164,47 +165,6 @@ struct rtl2832_sdr_dev {
- 	unsigned long jiffies_next;
+ In drivers/media/
+ dvb-frontends/m88ds3103   Parent-locked
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index 0d429d788106..71ad31a275c9 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -24,45 +24,16 @@ static const struct regmap_config inv_mpu_regmap_config = {
+ 	.val_bits = 8,
  };
  
--/* write multiple registers */
--static int rtl2832_sdr_wr_regs(struct rtl2832_sdr_dev *dev, u16 reg,
--		const u8 *val, int len)
+-/*
+- * The i2c read/write needs to happen in unlocked mode. As the parent
+- * adapter is common. If we use locked versions, it will fail as
+- * the mux adapter will lock the parent i2c adapter, while calling
+- * select/deselect functions.
+- */
+-static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
+-					  u8 reg, u8 d)
 -{
--	struct platform_device *pdev = dev->pdev;
--	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
--	struct regmap *regmap = pdata->regmap;
+-	int ret;
+-	u8 buf[2] = {reg, d};
+-	struct i2c_msg msg[1] = {
+-		{
+-			.addr = client->addr,
+-			.flags = 0,
+-			.len = sizeof(buf),
+-			.buf = buf,
+-		}
+-	};
 -
--	return regmap_bulk_write(regmap, reg, val, len);
+-	ret = __i2c_transfer(client->adapter, msg, 1);
+-	if (ret != 1)
+-		return ret;
+-
+-	return 0;
 -}
 -
--#if 0
--/* read multiple registers */
--static int rtl2832_sdr_rd_regs(struct rtl2832_sdr_dev *dev, u16 reg, u8 *val,
--		int len)
--{
--	struct platform_device *pdev = dev->pdev;
--	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
--	struct regmap *regmap = pdata->regmap;
--
--	return regmap_bulk_read(regmap, reg, val, len);
--}
--#endif
--
--/* write single register */
--static int rtl2832_sdr_wr_reg(struct rtl2832_sdr_dev *dev, u16 reg, u8 val)
--{
--	return rtl2832_sdr_wr_regs(dev, reg, &val, 1);
--}
--
--/* write single register with mask */
--static int rtl2832_sdr_wr_reg_mask(struct rtl2832_sdr_dev *dev, u16 reg,
--		u8 val, u8 mask)
--{
--	struct platform_device *pdev = dev->pdev;
--	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
--	struct regmap *regmap = pdata->regmap;
--
--	return regmap_update_bits(regmap, reg, mask, val);
--}
--
- /* Private functions */
- static struct rtl2832_sdr_frame_buf *rtl2832_sdr_get_next_fill_buf(
- 		struct rtl2832_sdr_dev *dev)
-@@ -559,11 +519,11 @@ static int rtl2832_sdr_set_adc(struct rtl2832_sdr_dev *dev)
+ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct i2c_client *client = i2c_mux_priv(muxc);
+-	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
++	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 	int ret = 0;
  
- 	f_sr = dev->f_adc;
+ 	/* Use the same mutex which was used everywhere to protect power-op */
+ 	mutex_lock(&indio_dev->mlock);
+ 	if (!st->powerup_count) {
+-		ret = inv_mpu6050_write_reg_unlocked(client,
+-						     st->reg->pwr_mgmt_1, 0);
++		ret = regmap_write(st->map, st->reg->pwr_mgmt_1, 0);
+ 		if (ret)
+ 			goto write_error;
  
--	ret = rtl2832_sdr_wr_regs(dev, 0x13e, "\x00\x00", 2);
-+	ret = regmap_bulk_write(dev->regmap, 0x13e, "\x00\x00", 2);
- 	if (ret)
- 		goto err;
- 
--	ret = rtl2832_sdr_wr_regs(dev, 0x115, "\x00\x00\x00\x00", 4);
-+	ret = regmap_bulk_write(dev->regmap, 0x115, "\x00\x00\x00\x00", 4);
- 	if (ret)
- 		goto err;
- 
-@@ -589,7 +549,7 @@ static int rtl2832_sdr_set_adc(struct rtl2832_sdr_dev *dev)
- 	buf[1] = (u32tmp >>  8) & 0xff;
- 	buf[2] = (u32tmp >>  0) & 0xff;
- 
--	ret = rtl2832_sdr_wr_regs(dev, 0x119, buf, 3);
-+	ret = regmap_bulk_write(dev->regmap, 0x119, buf, 3);
- 	if (ret)
- 		goto err;
- 
-@@ -603,15 +563,15 @@ static int rtl2832_sdr_set_adc(struct rtl2832_sdr_dev *dev)
- 		u8tmp2 = 0xcd; /* enable ADC I, ADC Q */
+@@ -71,10 +42,9 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
  	}
- 
--	ret = rtl2832_sdr_wr_reg(dev, 0x1b1, u8tmp1);
-+	ret = regmap_write(dev->regmap, 0x1b1, u8tmp1);
- 	if (ret)
- 		goto err;
- 
--	ret = rtl2832_sdr_wr_reg(dev, 0x008, u8tmp2);
-+	ret = regmap_write(dev->regmap, 0x008, u8tmp2);
- 	if (ret)
- 		goto err;
- 
--	ret = rtl2832_sdr_wr_reg(dev, 0x006, 0x80);
-+	ret = regmap_write(dev->regmap, 0x006, 0x80);
- 	if (ret)
- 		goto err;
- 
-@@ -622,168 +582,169 @@ static int rtl2832_sdr_set_adc(struct rtl2832_sdr_dev *dev)
- 	buf[1] = (u32tmp >> 16) & 0xff;
- 	buf[2] = (u32tmp >>  8) & 0xff;
- 	buf[3] = (u32tmp >>  0) & 0xff;
--	ret = rtl2832_sdr_wr_regs(dev, 0x19f, buf, 4);
-+	ret = regmap_bulk_write(dev->regmap, 0x19f, buf, 4);
- 	if (ret)
- 		goto err;
- 
- 	/* low-pass filter */
--	ret = rtl2832_sdr_wr_regs(dev, 0x11c,
--			"\xca\xdc\xd7\xd8\xe0\xf2\x0e\x35\x06\x50\x9c\x0d\x71\x11\x14\x71\x74\x19\x41\xa5",
--			20);
-+	ret = regmap_bulk_write(dev->regmap, 0x11c,
-+				"\xca\xdc\xd7\xd8\xe0\xf2\x0e\x35\x06\x50\x9c\x0d\x71\x11\x14\x71\x74\x19\x41\xa5",
-+				20);
- 	if (ret)
- 		goto err;
- 
--	ret = rtl2832_sdr_wr_regs(dev, 0x017, "\x11\x10", 2);
-+	ret = regmap_bulk_write(dev->regmap, 0x017, "\x11\x10", 2);
- 	if (ret)
- 		goto err;
- 
- 	/* mode */
--	ret = rtl2832_sdr_wr_regs(dev, 0x019, "\x05", 1);
-+	ret = regmap_write(dev->regmap, 0x019, 0x05);
- 	if (ret)
- 		goto err;
- 
--	ret = rtl2832_sdr_wr_regs(dev, 0x01a, "\x1b\x16\x0d\x06\x01\xff", 6);
-+	ret = regmap_bulk_write(dev->regmap, 0x01a,
-+				"\x1b\x16\x0d\x06\x01\xff", 6);
- 	if (ret)
- 		goto err;
- 
- 	/* FSM */
--	ret = rtl2832_sdr_wr_regs(dev, 0x192, "\x00\xf0\x0f", 3);
-+	ret = regmap_bulk_write(dev->regmap, 0x192, "\x00\xf0\x0f", 3);
- 	if (ret)
- 		goto err;
- 
- 	/* PID filter */
--	ret = rtl2832_sdr_wr_regs(dev, 0x061, "\x60", 1);
-+	ret = regmap_write(dev->regmap, 0x061, 0x60);
- 	if (ret)
- 		goto err;
- 
- 	/* used RF tuner based settings */
- 	switch (pdata->tuner) {
- 	case RTL2832_SDR_TUNER_E4000:
--		ret = rtl2832_sdr_wr_regs(dev, 0x112, "\x5a", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x102, "\x40", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x103, "\x5a", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c7, "\x30", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x104, "\xd0", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x105, "\xbe", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c8, "\x18", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x106, "\x35", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c9, "\x21", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1ca, "\x21", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1cb, "\x00", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x107, "\x40", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1cd, "\x10", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1ce, "\x10", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x108, "\x80", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x109, "\x7f", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x10a, "\x80", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x10b, "\x7f", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x011, "\xd4", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1e5, "\xf0", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1d9, "\x00", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1db, "\x00", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1dd, "\x14", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1de, "\xec", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1d8, "\x0c", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1e6, "\x02", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1d7, "\x09", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00d, "\x83", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x010, "\x49", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00d, "\x87", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00d, "\x85", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x013, "\x02", 1);
-+		ret = regmap_write(dev->regmap, 0x112, 0x5a);
-+		ret = regmap_write(dev->regmap, 0x102, 0x40);
-+		ret = regmap_write(dev->regmap, 0x103, 0x5a);
-+		ret = regmap_write(dev->regmap, 0x1c7, 0x30);
-+		ret = regmap_write(dev->regmap, 0x104, 0xd0);
-+		ret = regmap_write(dev->regmap, 0x105, 0xbe);
-+		ret = regmap_write(dev->regmap, 0x1c8, 0x18);
-+		ret = regmap_write(dev->regmap, 0x106, 0x35);
-+		ret = regmap_write(dev->regmap, 0x1c9, 0x21);
-+		ret = regmap_write(dev->regmap, 0x1ca, 0x21);
-+		ret = regmap_write(dev->regmap, 0x1cb, 0x00);
-+		ret = regmap_write(dev->regmap, 0x107, 0x40);
-+		ret = regmap_write(dev->regmap, 0x1cd, 0x10);
-+		ret = regmap_write(dev->regmap, 0x1ce, 0x10);
-+		ret = regmap_write(dev->regmap, 0x108, 0x80);
-+		ret = regmap_write(dev->regmap, 0x109, 0x7f);
-+		ret = regmap_write(dev->regmap, 0x10a, 0x80);
-+		ret = regmap_write(dev->regmap, 0x10b, 0x7f);
-+		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
-+		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
-+		ret = regmap_write(dev->regmap, 0x011, 0xd4);
-+		ret = regmap_write(dev->regmap, 0x1e5, 0xf0);
-+		ret = regmap_write(dev->regmap, 0x1d9, 0x00);
-+		ret = regmap_write(dev->regmap, 0x1db, 0x00);
-+		ret = regmap_write(dev->regmap, 0x1dd, 0x14);
-+		ret = regmap_write(dev->regmap, 0x1de, 0xec);
-+		ret = regmap_write(dev->regmap, 0x1d8, 0x0c);
-+		ret = regmap_write(dev->regmap, 0x1e6, 0x02);
-+		ret = regmap_write(dev->regmap, 0x1d7, 0x09);
-+		ret = regmap_write(dev->regmap, 0x00d, 0x83);
-+		ret = regmap_write(dev->regmap, 0x010, 0x49);
-+		ret = regmap_write(dev->regmap, 0x00d, 0x87);
-+		ret = regmap_write(dev->regmap, 0x00d, 0x85);
-+		ret = regmap_write(dev->regmap, 0x013, 0x02);
- 		break;
- 	case RTL2832_SDR_TUNER_FC0012:
- 	case RTL2832_SDR_TUNER_FC0013:
--		ret = rtl2832_sdr_wr_regs(dev, 0x112, "\x5a", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x102, "\x40", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x103, "\x5a", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c7, "\x2c", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x104, "\xcc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x105, "\xbe", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c8, "\x16", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x106, "\x35", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c9, "\x21", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1ca, "\x21", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1cb, "\x00", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x107, "\x40", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1cd, "\x10", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1ce, "\x10", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x108, "\x80", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x109, "\x7f", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x10a, "\x80", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x10b, "\x7f", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x011, "\xe9\xbf", 2);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1e5, "\xf0", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1d9, "\x00", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1db, "\x00", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1dd, "\x11", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1de, "\xef", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1d8, "\x0c", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1e6, "\x02", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1d7, "\x09", 1);
-+		ret = regmap_write(dev->regmap, 0x112, 0x5a);
-+		ret = regmap_write(dev->regmap, 0x102, 0x40);
-+		ret = regmap_write(dev->regmap, 0x103, 0x5a);
-+		ret = regmap_write(dev->regmap, 0x1c7, 0x2c);
-+		ret = regmap_write(dev->regmap, 0x104, 0xcc);
-+		ret = regmap_write(dev->regmap, 0x105, 0xbe);
-+		ret = regmap_write(dev->regmap, 0x1c8, 0x16);
-+		ret = regmap_write(dev->regmap, 0x106, 0x35);
-+		ret = regmap_write(dev->regmap, 0x1c9, 0x21);
-+		ret = regmap_write(dev->regmap, 0x1ca, 0x21);
-+		ret = regmap_write(dev->regmap, 0x1cb, 0x00);
-+		ret = regmap_write(dev->regmap, 0x107, 0x40);
-+		ret = regmap_write(dev->regmap, 0x1cd, 0x10);
-+		ret = regmap_write(dev->regmap, 0x1ce, 0x10);
-+		ret = regmap_write(dev->regmap, 0x108, 0x80);
-+		ret = regmap_write(dev->regmap, 0x109, 0x7f);
-+		ret = regmap_write(dev->regmap, 0x10a, 0x80);
-+		ret = regmap_write(dev->regmap, 0x10b, 0x7f);
-+		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
-+		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
-+		ret = regmap_bulk_write(dev->regmap, 0x011, "\xe9\xbf", 2);
-+		ret = regmap_write(dev->regmap, 0x1e5, 0xf0);
-+		ret = regmap_write(dev->regmap, 0x1d9, 0x00);
-+		ret = regmap_write(dev->regmap, 0x1db, 0x00);
-+		ret = regmap_write(dev->regmap, 0x1dd, 0x11);
-+		ret = regmap_write(dev->regmap, 0x1de, 0xef);
-+		ret = regmap_write(dev->regmap, 0x1d8, 0x0c);
-+		ret = regmap_write(dev->regmap, 0x1e6, 0x02);
-+		ret = regmap_write(dev->regmap, 0x1d7, 0x09);
- 		break;
- 	case RTL2832_SDR_TUNER_R820T:
- 	case RTL2832_SDR_TUNER_R828D:
--		ret = rtl2832_sdr_wr_regs(dev, 0x112, "\x5a", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x102, "\x40", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x115, "\x01", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x103, "\x80", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c7, "\x24", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x104, "\xcc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x105, "\xbe", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c8, "\x14", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x106, "\x35", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c9, "\x21", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1ca, "\x21", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1cb, "\x00", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x107, "\x40", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1cd, "\x10", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1ce, "\x10", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x108, "\x80", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x109, "\x7f", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x10a, "\x80", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x10b, "\x7f", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x011, "\xf4", 1);
-+		ret = regmap_write(dev->regmap, 0x112, 0x5a);
-+		ret = regmap_write(dev->regmap, 0x102, 0x40);
-+		ret = regmap_write(dev->regmap, 0x115, 0x01);
-+		ret = regmap_write(dev->regmap, 0x103, 0x80);
-+		ret = regmap_write(dev->regmap, 0x1c7, 0x24);
-+		ret = regmap_write(dev->regmap, 0x104, 0xcc);
-+		ret = regmap_write(dev->regmap, 0x105, 0xbe);
-+		ret = regmap_write(dev->regmap, 0x1c8, 0x14);
-+		ret = regmap_write(dev->regmap, 0x106, 0x35);
-+		ret = regmap_write(dev->regmap, 0x1c9, 0x21);
-+		ret = regmap_write(dev->regmap, 0x1ca, 0x21);
-+		ret = regmap_write(dev->regmap, 0x1cb, 0x00);
-+		ret = regmap_write(dev->regmap, 0x107, 0x40);
-+		ret = regmap_write(dev->regmap, 0x1cd, 0x10);
-+		ret = regmap_write(dev->regmap, 0x1ce, 0x10);
-+		ret = regmap_write(dev->regmap, 0x108, 0x80);
-+		ret = regmap_write(dev->regmap, 0x109, 0x7f);
-+		ret = regmap_write(dev->regmap, 0x10a, 0x80);
-+		ret = regmap_write(dev->regmap, 0x10b, 0x7f);
-+		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
-+		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
-+		ret = regmap_write(dev->regmap, 0x011, 0xf4);
- 		break;
- 	case RTL2832_SDR_TUNER_FC2580:
--		ret = rtl2832_sdr_wr_regs(dev, 0x112, "\x39", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x102, "\x40", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x103, "\x5a", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c7, "\x2c", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x104, "\xcc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x105, "\xbe", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c8, "\x16", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x106, "\x35", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1c9, "\x21", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1ca, "\x21", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1cb, "\x00", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x107, "\x40", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1cd, "\x10", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x1ce, "\x10", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x108, "\x80", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x109, "\x7f", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x10a, "\x9c", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x10b, "\x7f", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
--		ret = rtl2832_sdr_wr_regs(dev, 0x011, "\xe9\xf4", 2);
-+		ret = regmap_write(dev->regmap, 0x112, 0x39);
-+		ret = regmap_write(dev->regmap, 0x102, 0x40);
-+		ret = regmap_write(dev->regmap, 0x103, 0x5a);
-+		ret = regmap_write(dev->regmap, 0x1c7, 0x2c);
-+		ret = regmap_write(dev->regmap, 0x104, 0xcc);
-+		ret = regmap_write(dev->regmap, 0x105, 0xbe);
-+		ret = regmap_write(dev->regmap, 0x1c8, 0x16);
-+		ret = regmap_write(dev->regmap, 0x106, 0x35);
-+		ret = regmap_write(dev->regmap, 0x1c9, 0x21);
-+		ret = regmap_write(dev->regmap, 0x1ca, 0x21);
-+		ret = regmap_write(dev->regmap, 0x1cb, 0x00);
-+		ret = regmap_write(dev->regmap, 0x107, 0x40);
-+		ret = regmap_write(dev->regmap, 0x1cd, 0x10);
-+		ret = regmap_write(dev->regmap, 0x1ce, 0x10);
-+		ret = regmap_write(dev->regmap, 0x108, 0x80);
-+		ret = regmap_write(dev->regmap, 0x109, 0x7f);
-+		ret = regmap_write(dev->regmap, 0x10a, 0x9c);
-+		ret = regmap_write(dev->regmap, 0x10b, 0x7f);
-+		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
-+		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
-+		ret = regmap_bulk_write(dev->regmap, 0x011, "\xe9\xf4", 2);
- 		break;
- 	default:
- 		dev_notice(&pdev->dev, "Unsupported tuner\n");
+ 	if (!ret) {
+ 		st->powerup_count++;
+-		ret = inv_mpu6050_write_reg_unlocked(client,
+-						     st->reg->int_pin_cfg,
+-						     INV_MPU6050_INT_PIN_CFG |
+-						     INV_MPU6050_BIT_BYPASS_EN);
++		ret = regmap_write(st->map, st->reg->int_pin_cfg,
++				   INV_MPU6050_INT_PIN_CFG |
++				   INV_MPU6050_BIT_BYPASS_EN);
  	}
+ write_error:
+ 	mutex_unlock(&indio_dev->mlock);
+@@ -84,18 +54,16 @@ write_error:
  
- 	/* software reset */
--	ret = rtl2832_sdr_wr_reg_mask(dev, 0x101, 0x04, 0x04);
-+	ret = regmap_update_bits(dev->regmap, 0x101, 0x04, 0x04);
- 	if (ret)
- 		goto err;
+ static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct i2c_client *client = i2c_mux_priv(muxc);
+-	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
++	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
  
--	ret = rtl2832_sdr_wr_reg_mask(dev, 0x101, 0x00, 0x04);
-+	ret = regmap_update_bits(dev->regmap, 0x101, 0x04, 0x00);
- 	if (ret)
- 		goto err;
- err:
-@@ -798,29 +759,29 @@ static void rtl2832_sdr_unset_adc(struct rtl2832_sdr_dev *dev)
- 	dev_dbg(&pdev->dev, "\n");
+ 	mutex_lock(&indio_dev->mlock);
+ 	/* It doesn't really mattter, if any of the calls fails */
+-	inv_mpu6050_write_reg_unlocked(client, st->reg->int_pin_cfg,
+-				       INV_MPU6050_INT_PIN_CFG);
++	regmap_write(st->map, st->reg->int_pin_cfg, INV_MPU6050_INT_PIN_CFG);
+ 	st->powerup_count--;
+ 	if (!st->powerup_count)
+-		inv_mpu6050_write_reg_unlocked(client, st->reg->pwr_mgmt_1,
+-					       INV_MPU6050_BIT_SLEEP);
++		regmap_write(st->map, st->reg->pwr_mgmt_1,
++			     INV_MPU6050_BIT_SLEEP);
+ 	mutex_unlock(&indio_dev->mlock);
  
- 	/* PID filter */
--	ret = rtl2832_sdr_wr_regs(dev, 0x061, "\xe0", 1);
-+	ret = regmap_write(dev->regmap, 0x061, 0xe0);
- 	if (ret)
- 		goto err;
+ 	return 0;
+@@ -133,15 +101,15 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 		return result;
  
- 	/* mode */
--	ret = rtl2832_sdr_wr_regs(dev, 0x019, "\x20", 1);
-+	ret = regmap_write(dev->regmap, 0x019, 0x20);
- 	if (ret)
- 		goto err;
+ 	st = iio_priv(dev_get_drvdata(&client->dev));
+-	st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
+-				       0, 0, 0,
++	st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0,
++				       I2C_MUX_LOCKED, 0, 0, 0,
+ 				       inv_mpu6050_select_bypass,
+ 				       inv_mpu6050_deselect_bypass);
+ 	if (IS_ERR(st->muxc)) {
+ 		result = PTR_ERR(st->muxc);
+ 		goto out_unreg_device;
+ 	}
+-	st->muxc->priv = client;
++	st->muxc->priv = dev_get_drvdata(&client->dev);
  
--	ret = rtl2832_sdr_wr_regs(dev, 0x017, "\x11\x10", 2);
-+	ret = regmap_bulk_write(dev->regmap, 0x017, "\x11\x10", 2);
- 	if (ret)
- 		goto err;
- 
- 	/* FSM */
--	ret = rtl2832_sdr_wr_regs(dev, 0x192, "\x00\x0f\xff", 3);
-+	ret = regmap_bulk_write(dev->regmap, 0x192, "\x00\x0f\xff", 3);
- 	if (ret)
- 		goto err;
- 
--	ret = rtl2832_sdr_wr_regs(dev, 0x13e, "\x40\x00", 2);
-+	ret = regmap_bulk_write(dev->regmap, 0x13e, "\x40\x00", 2);
- 	if (ret)
- 		goto err;
- 
--	ret = rtl2832_sdr_wr_regs(dev, 0x115, "\x06\x3f\xce\xcc", 4);
-+	ret = regmap_bulk_write(dev->regmap, 0x115, "\x06\x3f\xce\xcc", 4);
- 	if (ret)
- 		goto err;
- err:
-@@ -1400,6 +1361,7 @@ static int rtl2832_sdr_probe(struct platform_device *pdev)
- 	subdev = pdata->v4l2_subdev;
- 	dev->v4l2_subdev = pdata->v4l2_subdev;
- 	dev->pdev = pdev;
-+	dev->regmap = pdata->regmap;
- 	dev->udev = pdata->dvb_usb_device->udev;
- 	dev->f_adc = bands_adc[0].rangelow;
- 	dev->f_tuner = bands_fm[0].rangelow;
+ 	result = inv_mpu_acpi_create_mux_client(client);
+ 	if (result)
 -- 
 2.1.4
 
