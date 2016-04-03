@@ -1,73 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48930 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48998 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752426AbcDCJ50 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 05:57:26 -0400
-Subject: Re: [PATCH] iio: st_magn: always define ST_MAGN_TRIGGER_SET_STATE
-To: Denis Ciocca <denis.ciocca@st.com>, Arnd Bergmann <arnd@arndb.de>
-References: <1459283273-1059478-1-git-send-email-arnd@arndb.de>
- <20160330063353.GA6253@beicxl1122>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1752419AbcDCKOI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 06:14:08 -0400
+Subject: Re: [PATCH v5] iio: potentiometer: add driver for Microchip
+ MCP413X/414X/415X/416X/423X/424X/425X/426X
+To: Joachim Eastwood <manabian@gmail.com>
+References: <20160323085720.GA6836@x220> <56F946AA.9070203@kernel.org>
+ <CAGhQ9Vztpo7gdrxxFdmjcNLe_dMXjYx1QHdiRUoXN4quhsPRNw@mail.gmail.com>
+Cc: Slawomir Stepien <sst@poczta.fm>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Giuseppe BARBA <giuseppe.barba@st.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5700E902.5050705@kernel.org>
-Date: Sun, 3 Apr 2016 10:57:22 +0100
+Message-ID: <5700ECED.10803@kernel.org>
+Date: Sun, 3 Apr 2016 11:14:05 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160330063353.GA6253@beicxl1122>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAGhQ9Vztpo7gdrxxFdmjcNLe_dMXjYx1QHdiRUoXN4quhsPRNw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/03/16 07:33, Denis Ciocca wrote:
-> Hi Arnd,
+On 28/03/16 19:17, Joachim Eastwood wrote:
+> On 28 March 2016 at 16:58, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 23/03/16 08:57, Slawomir Stepien wrote:
+>>> The following functionalities are supported:
+>>>  - write, read from volatile memory
+>>>
+>>> Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/22060b.pdf
+>>>
+>>> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+>> One process comment below... And git actually copes fine with what you
+>> did (I wondered which way it would go until I tried it :)
+>>
+>> Applied to the togreg branch of iio.git - initially pushed out as
+>> testing for the autobuilders to play pingpong with it.
+>>
+>> A very nice, clean driver.  Thanks for your hard work on this.
+>>
+>> Note it is in a branch I happy to rebase for the next week, so if Joachim
+>> in particular would like to add a reviewed by tag, I'd be delighted to append
+>> it.  Often reviewers don't get enough credit in my opinion!
 > 
-> yup, my fault. Thanks.
-> 
-> Acked-by: Denis Ciocca <denis.ciocca@st.com>
-Applied to my fixes-togreg-post-rc1 branch and marked for stable.
-
-Thanks,
-
-Jonathan
+> Sure;
+> Reviewed-by: Joachim Eastwood <manabian@gmail.com>
+Added, thanks
 > 
 > 
-> On |29 Mar 16 @ 22:27|, Arnd Bergmann wrote:
->> When CONFIG_IIO_TRIGGER is enabled but CONFIG_IIO_BUFFER is
->> not, we get a build error in the st_magn driver:
->>
->> drivers/iio/magnetometer/st_magn_core.c:573:23: error: 'ST_MAGN_TRIGGER_SET_STATE' undeclared here (not in a function)
->>   .set_trigger_state = ST_MAGN_TRIGGER_SET_STATE,
->>                        ^~~~~~~~~~~~~~~~~~~~~~~~~
->>
->> Apparently, this ST_MAGN_TRIGGER_SET_STATE macro was meant to
->> be set to NULL when the definition is not available because
->> st_magn_buffer.c is not compiled, but the alternative definition
->> was not included in the original patch. This adds it.
->>
->> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->> Fixes: 74f5683f35fe ("iio: st_magn: Add irq trigger handling")
->> ---
->>  drivers/iio/magnetometer/st_magn.h | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
->> index 06a4d9c35581..9daca4681922 100644
->> --- a/drivers/iio/magnetometer/st_magn.h
->> +++ b/drivers/iio/magnetometer/st_magn.h
->> @@ -44,6 +44,7 @@ static inline int st_magn_allocate_ring(struct iio_dev *indio_dev)
->>  static inline void st_magn_deallocate_ring(struct iio_dev *indio_dev)
->>  {
->>  }
->> +#define ST_MAGN_TRIGGER_SET_STATE NULL
->>  #endif /* CONFIG_IIO_BUFFER */
->>  
->>  #endif /* ST_MAGN_H */
->> -- 
->> 2.7.0
->>
+> regards,
+> Joachim Eastwood
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
