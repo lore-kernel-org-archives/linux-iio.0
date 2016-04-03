@@ -1,437 +1,213 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:33230 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750941AbcDBX7F (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Apr 2016 19:59:05 -0400
-Message-ID: <57004C9C.4040004@denx.de>
-Date: Sun, 03 Apr 2016 00:50:04 +0200
-From: Marek Vasut <marex@denx.de>
-MIME-Version: 1.0
-To: Matt Ranostay <mranostay@gmail.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] iio: pressure: hp03: Add Hope RF HP03 sensor support
-References: <1459523460-5469-1-git-send-email-marex@denx.de> <CAKzfze8mei27UPaD39dJaJk3gZrq3p40kcSMMy5K7Zj-ovpwAw@mail.gmail.com>
-In-Reply-To: <CAKzfze8mei27UPaD39dJaJk3gZrq3p40kcSMMy5K7Zj-ovpwAw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from mail.lysator.liu.se ([130.236.254.3]:55692 "EHLO
+	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753185AbcDCIyp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:54:45 -0400
+From: Peter Rosin <peda@lysator.liu.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Kalle Valo <kvalo@codeaurora.org>,
+	Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
+Subject: [PATCH v6 07/24] i2c: i2c-mux-reg: convert to use an explicit i2c mux core
+Date: Sun,  3 Apr 2016 10:52:37 +0200
+Message-Id: <1459673574-11440-8-git-send-email-peda@lysator.liu.se>
+In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
+References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/02/2016 09:41 PM, Matt Ranostay wrote:
+From: Peter Rosin <peda@axentia.se>
 
-Dear Mr. Ranostay,
+Allocate an explicit i2c mux core to handle parent and child adapters
+etc. Update the select/deselect ops to be in terms of the i2c mux core
+instead of the child adapter.
 
-> Overall seems fine. But few comments in line
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/i2c/muxes/i2c-mux-reg.c | 63 ++++++++++++++++-------------------------
+ 1 file changed, 24 insertions(+), 39 deletions(-)
 
-Thank you for your kind input.
-
-> On Fri, Apr 1, 2016 at 8:11 AM, Marek Vasut <marex@denx.de> wrote:
->> Add support for HopeRF pressure and temperature sensor.
->>
->> This device uses two fixed I2C addresses, one for storing
->> calibration coefficients and another for accessing the ADC.
->>
->> Signed-off-by: Marek Vasut <marex@denx.de>
->> Cc: Matt Ranostay <mranostay@gmail.com>
->> Cc: Jonathan Cameron <jic23@kernel.org>
->> ---
->>  .../devicetree/bindings/iio/pressure/hp03.txt      |  13 +
->>  drivers/iio/pressure/Kconfig                       |  11 +
->>  drivers/iio/pressure/Makefile                      |   1 +
->>  drivers/iio/pressure/hp03.c                        | 290 +++++++++++++++++++++
->>  4 files changed, 315 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/pressure/hp03.txt
->>  create mode 100644 drivers/iio/pressure/hp03.c
->>
->> diff --git a/Documentation/devicetree/bindings/iio/pressure/hp03.txt b/Documentation/devicetree/bindings/iio/pressure/hp03.txt
->> new file mode 100644
->> index 0000000..c9551b2
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/pressure/hp03.txt
->> @@ -0,0 +1,13 @@
->> +HopeRF HP03 digital pressure/temperature sensors
->> +
->> +Required properties:
->> +- compatible: must be "hoperf,hp03"
->> +- xclr-gpio:  must be device tree identifier of the XCLR pin
-> 
-> Can you explain a little more what this XCLR pin is in the documentation?
-
-According to documentation [1], page 2, the XCLR resets the on-die ADC.
-
-On page 5 bottom, section "Remark", the datasheet states that XCLR pin
-must be pulled HI before starting the conversion. In fact, the XCLR pin
-seems to gate the ADC altogether and if the XCLR is pulled low, the ADC
-registers are not accessible at all.
-
-On page 3 middle, the "Note" states that in all other times, the XCLR
-must be held low, otherwise readout of the calibration coefficients from
-the EEPROM might be influenced. I did not observe this problem.
-
-The driver behaves according to the datasheet and toggles the XCLR only
-before performing the ADC readout, after which the XCLR is set to LO again.
-
-btw this design is braindead, it is not possible to easily synchronize
-GPIO toggling and I2C register access, since both the GPIO and I2C can
-be on totally different interconnects in the system, but at these low
-speeds, it probably doesn't pose a problem.
-
-[1] http://www.hoperf.com/upload/sensor/HP03S.pdf
-
->> +
->> +Example:
->> +
->> +hp03@0x77 {
->> +       compatible = "hoperf,hp03";
->> +       reg = <0x77>;
->> +       xclr-gpio = <&portc 0 0x0>;
->> +};
->> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
->> index 31c0e1f..3f2b1ed 100644
->> --- a/drivers/iio/pressure/Kconfig
->> +++ b/drivers/iio/pressure/Kconfig
->> @@ -30,6 +30,17 @@ config HID_SENSOR_PRESS
->>           To compile this driver as a module, choose M here: the module
->>           will be called hid-sensor-press.
->>
->> +config HP03
->> +       tristate "Hope RF HP03 temperature and pressure sensor driver"
->> +       depends on I2C
->> +       select REGMAP_I2C
->> +       help
->> +         Say yes here to build support for Hope RF HP03 pressure and
->> +         temperature sensor.
->> +
->> +         To compile this driver as a module, choose M here: the module
->> +         will be called hp03.
->> +
->>  config MPL115
->>         tristate
->>
->> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
->> index d336af1..cb21ab1 100644
->> --- a/drivers/iio/pressure/Makefile
->> +++ b/drivers/iio/pressure/Makefile
->> @@ -5,6 +5,7 @@
->>  # When adding new entries keep the list in alphabetical order
->>  obj-$(CONFIG_BMP280) += bmp280.o
->>  obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
->> +obj-$(CONFIG_HP03) += hp03.o
->>  obj-$(CONFIG_MPL115) += mpl115.o
->>  obj-$(CONFIG_MPL115_I2C) += mpl115_i2c.o
->>  obj-$(CONFIG_MPL115_SPI) += mpl115_spi.o
->> diff --git a/drivers/iio/pressure/hp03.c b/drivers/iio/pressure/hp03.c
->> new file mode 100644
->> index 0000000..e8e80f5
->> --- /dev/null
->> +++ b/drivers/iio/pressure/hp03.c
->> @@ -0,0 +1,290 @@
->> +/*
->> + * Copyright (c) 2016 Marek Vasut <marex@denx.de>
->> + *
->> + * Driver for Hope RF HP03 digital temperature and pressure sensor.
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License version 2 as
->> + * published by the Free Software Foundation.
->> + *
->> + */
->> +
->> +#define pr_fmt(fmt) "hp03: " fmt
->> +
->> +#include <linux/module.h>
->> +#include <linux/delay.h>
->> +#include <linux/gpio/consumer.h>
->> +#include <linux/i2c.h>
->> +#include <linux/regmap.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +
->> +/*
->> + * The HP03 sensor occupies two fixed I2C addresses:
->> + *  0x50 ... read-only EEPROM with calibration data
->> + *  0x77 ... read-write ADC for pressure and temperature
->> + */
->> +#define HP03_EEPROM_ADDR               0x50
->> +#define HP03_ADC_ADDR                  0x77
->> +
->> +#define HP03_EEPROM_CX_OFFSET          0x10
->> +#define HP03_EEPROM_AB_OFFSET          0x1e
->> +#define HP03_EEPROM_CD_OFFSET          0x20
->> +
->> +#define HP03_ADC_WRITE_REG             0xff
->> +#define HP03_ADC_READ_REG              0xfd
->> +#define HP03_ADC_READ_PRESSURE         0xf0    /* D1 in datasheet */
->> +#define HP03_ADC_READ_TEMP             0xe8    /* D2 in datasheet */
->> +
->> +struct hp03_priv {
->> +       struct i2c_client       *client;
->> +       struct mutex            lock;
->> +       struct gpio_desc        *xclr_gpio;
->> +
->> +       struct i2c_client       *eeprom_client;
->> +       struct regmap           *eeprom_regmap;
->> +
->> +       s32                     pressure;       /* kPa */
->> +       s32                     temp;           /* Deg. C */
->> +};
->> +
->> +static const struct iio_chan_spec hp03_channels[] = {
->> +       {
->> +               .type = IIO_PRESSURE,
->> +               .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->> +       },
->> +       {
->> +               .type = IIO_TEMP,
->> +               .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->> +       },
->> +};
->> +
->> +static bool hp03_is_writeable_reg(struct device *dev, unsigned int reg)
->> +{
->> +       return false;
->> +}
->> +
->> +static bool hp03_is_volatile_reg(struct device *dev, unsigned int reg)
->> +{
->> +       return false;
->> +}
->> +
->> +static const struct regmap_config hp03_regmap_config = {
->> +       .reg_bits       = 8,
->> +       .val_bits       = 8,
->> +
->> +       .max_register   = HP03_EEPROM_CD_OFFSET + 1,
->> +       .cache_type     = REGCACHE_RBTREE,
->> +
->> +       .writeable_reg  = hp03_is_writeable_reg,
->> +       .volatile_reg   = hp03_is_volatile_reg,
->> +};
->> +
->> +static int hp03_get_temp_pressure(struct hp03_priv *priv, const u8 reg)
->> +{
->> +       int ret;
->> +
->> +       ret = i2c_smbus_write_byte_data(priv->client, HP03_ADC_WRITE_REG, reg);
->> +       if (ret < 0)
->> +               return ret;
->> +
->> +       msleep(50);     /* Wait for conversion to finish */
->> +
->> +       return i2c_smbus_read_word_data(priv->client, HP03_ADC_READ_REG);
->> +}
->> +
->> +static int hp03_update_temp_pressure(struct hp03_priv *priv)
->> +{
->> +       struct device *dev = &priv->client->dev;
->> +       u8 coefs[18];
->> +       u16 cx_val[7];
->> +       int ab_val, d1_val, d2_val, diff_val, dut, off, sens, x;
->> +       int i, ret;
->> +
->> +       /* Sample coefficients from EEPROM */
->> +       ret = regmap_bulk_read(priv->eeprom_regmap, HP03_EEPROM_CX_OFFSET,
->> +                              coefs, sizeof(coefs));
->> +       if (ret < 0) {
->> +               dev_err(dev, "Failed to read EEPROM (reg=%02x)\n",
->> +                       HP03_EEPROM_CX_OFFSET);
->> +               return ret;
->> +       }
->> +
->> +       /* Sample Temperature and Pressure */
->> +       gpiod_set_value_cansleep(priv->xclr_gpio, 1);
->> +
->> +       ret = hp03_get_temp_pressure(priv, HP03_ADC_READ_PRESSURE);
->> +       if (ret < 0) {
->> +               dev_err(dev, "Failed to read pressure\n");
->> +               return ret;
->> +       }
->> +       d1_val = ret;
->> +
->> +       ret = hp03_get_temp_pressure(priv, HP03_ADC_READ_TEMP);
->> +       if (ret < 0) {
->> +               dev_err(dev, "Failed to read temperature\n");
->> +               return ret;
->> +       }
->> +       d2_val = ret;
->> +
->> +       gpiod_set_value_cansleep(priv->xclr_gpio, 0);
->> +
->> +       /* The Cx coefficients and Temp/Pressure values are MSB first. */
->> +       for (i = 0; i < 7; i++)
->> +               cx_val[i] = (coefs[2 * i] << 8) | (coefs[(2 * i) + 1] << 0);
->> +       d1_val = ((d1_val >> 8) & 0xff) | ((d1_val & 0xff) << 8);
->> +       d2_val = ((d2_val >> 8) & 0xff) | ((d2_val & 0xff) << 8);
->> +
->> +       /* Coefficient voodoo from the HP03 datasheet. */
->> +       if (d2_val >= cx_val[4])
->> +               ab_val = coefs[14];     /* A-value */
->> +       else
->> +               ab_val = coefs[15];     /* B-value */
->> +
->> +       diff_val = d2_val - cx_val[4];
->> +       dut = (ab_val * (diff_val >> 7) * (diff_val >> 7)) >> coefs[16];
->> +       dut = diff_val - dut;
->> +
->> +       off = (cx_val[1] + (((cx_val[3] - 1024) * dut) >> 14)) * 4;
->> +       sens = cx_val[0] + ((cx_val[2] * dut) >> 10);
->> +       x = ((sens * (d1_val - 7168)) >> 14) - off;
->> +
->> +       priv->pressure = ((x * 100) >> 5) + (cx_val[6] * 10);
->> +       priv->temp = 250 + ((dut * cx_val[5]) >> 16) - (dut >> coefs[17]);
->> +
->> +       return 0;
->> +}
->> +
->> +static int hp03_read_raw(struct iio_dev *indio_dev,
->> +                        struct iio_chan_spec const *chan,
->> +                        int *val, int *val2, long mask)
->> +{
->> +       struct hp03_priv *priv = iio_priv(indio_dev);
->> +       int ret;
->> +
->> +       mutex_lock(&priv->lock);
->> +       ret = hp03_update_temp_pressure(priv);
->> +       mutex_unlock(&priv->lock);
->> +
->> +       if (ret)
->> +               return ret;
->> +
->> +       switch (mask) {
->> +       case IIO_CHAN_INFO_PROCESSED:
->> +               switch (chan->type) {
->> +               case IIO_PRESSURE:
->> +                       *val = priv->pressure / 100;
->> +                       *val2 = (priv->pressure % 100) * 10000;
->> +                       ret = IIO_VAL_INT_PLUS_MICRO;
->> +                       break;
->> +               case IIO_TEMP:
->> +                       *val = priv->temp / 100;
->> +                       *val2 = (priv->temp % 100) * 10000;
->> +                       ret = IIO_VAL_INT_PLUS_MICRO;
->> +                       break;
-> Better to use IIO_CHAN_INFO_RAW, and have the respective IIO_CHAN_INFO_SCALE.
-
-OK, this sounds indeed better.
-
->> +               default:
->> +                       ret = -EINVAL;
->> +                       break;
->> +               }
->> +               break;
->> +       default:
->> +               ret = -EINVAL;
->> +               break;
->> +       }
->> +
->> +       return ret;
->> +}
->> +
->> +static const struct iio_info hp03_info = {
->> +       .driver_module  = THIS_MODULE,
->> +       .read_raw       = &hp03_read_raw,
->> +};
->> +
->> +static int hp03_probe(struct i2c_client *client,
->> +                     const struct i2c_device_id *id)
->> +{
->> +       struct device *dev = &client->dev;
->> +       struct iio_dev *indio_dev;
->> +       struct hp03_priv *priv;
->> +       int ret;
->> +
->> +       indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
->> +       if (!indio_dev)
->> +               return -ENOMEM;
->> +
->> +       priv = iio_priv(indio_dev);
->> +       priv->client = client;
->> +       mutex_init(&priv->lock);
->> +
->> +       indio_dev->dev.parent = dev;
->> +       indio_dev->name = id->name;
->> +       indio_dev->channels = hp03_channels;
->> +       indio_dev->num_channels = ARRAY_SIZE(hp03_channels);
->> +       indio_dev->info = &hp03_info;
->> +       indio_dev->modes = INDIO_DIRECT_MODE;
->> +
-> 
-> Can you document in a comment why it needs to access another i2c
-> device. Know this is where the calibration data is stored, but that
-> isn't obvious at first.
-
-Comment is OK ?
-
->> +       priv->eeprom_client = i2c_new_dummy(client->adapter, HP03_EEPROM_ADDR);
->> +       if (!priv->eeprom_client) {
->> +               dev_err(dev, "New EEPROM I2C device failed\n");
->> +               return -ENODEV;
->> +       }
->> +
->> +       priv->eeprom_regmap = devm_regmap_init_i2c(priv->eeprom_client,
->> +                                                  &hp03_regmap_config);
->> +       if (IS_ERR(priv->eeprom_regmap)) {
->> +               dev_err(dev, "Failed to allocate EEPROM regmap\n");
->> +               ret = PTR_ERR(priv->eeprom_regmap);
->> +               goto err;
->> +       }
->> +
->> +       priv->xclr_gpio = devm_gpiod_get_index(dev, "xclr", 0, GPIOD_OUT_HIGH);
->> +       if (IS_ERR(priv->xclr_gpio)) {
->> +               dev_err(dev, "Failed to claim XCLR GPIO\n");
->> +               ret = PTR_ERR(priv->xclr_gpio);
->> +               goto err;
->> +       }
->> +
->> +       ret = devm_iio_device_register(dev, indio_dev);
->> +       if (ret) {
->> +               dev_err(dev, "Failed to register IIO device\n");
->> +               goto err;
->> +       }
->> +
->> +       i2c_set_clientdata(client, indio_dev);
->> +
->> +       return 0;
->> +
->> +err:
->> +       i2c_unregister_device(priv->eeprom_client);
->> +       return ret;
->> +}
->> +
->> +static int hp03_remove(struct i2c_client *client)
->> +{
->> +       struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +       struct hp03_priv *priv = iio_priv(indio_dev);
->> +
->> +       i2c_unregister_device(priv->eeprom_client);
->> +
->> +       return 0;
->> +}
->> +
->> +static const struct i2c_device_id hp03_id[] = {
->> +       { "hp03", 0 },
->> +       { },
->> +};
->> +MODULE_DEVICE_TABLE(i2c, hp03_id);
->> +
->> +static struct i2c_driver hp03_driver = {
->> +       .driver = {
->> +               .name   = "hp03",
->> +       },
->> +       .probe          = hp03_probe,
->> +       .remove         = hp03_remove,
->> +       .id_table       = hp03_id,
->> +};
->> +module_i2c_driver(hp03_driver);
->> +
->> +MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
->> +MODULE_DESCRIPTION("Driver for Hope RF HP03 pressure and temperature sensor");
->> +MODULE_LICENSE("GPL v2");
->> --
->> 2.7.0
->>
-
-
+diff --git a/drivers/i2c/muxes/i2c-mux-reg.c b/drivers/i2c/muxes/i2c-mux-reg.c
+index 5fbd5bd0878f..3ac9a2dab111 100644
+--- a/drivers/i2c/muxes/i2c-mux-reg.c
++++ b/drivers/i2c/muxes/i2c-mux-reg.c
+@@ -21,8 +21,6 @@
+ #include <linux/slab.h>
+ 
+ struct regmux {
+-	struct i2c_adapter *parent;
+-	struct i2c_adapter **adap; /* child busses */
+ 	struct i2c_mux_reg_platform_data data;
+ };
+ 
+@@ -64,18 +62,16 @@ static int i2c_mux_reg_set(const struct regmux *mux, unsigned int chan_id)
+ 	return 0;
+ }
+ 
+-static int i2c_mux_reg_select(struct i2c_adapter *adap, void *data,
+-			      unsigned int chan)
++static int i2c_mux_reg_select(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct regmux *mux = data;
++	struct regmux *mux = i2c_mux_priv(muxc);
+ 
+ 	return i2c_mux_reg_set(mux, chan);
+ }
+ 
+-static int i2c_mux_reg_deselect(struct i2c_adapter *adap, void *data,
+-				unsigned int chan)
++static int i2c_mux_reg_deselect(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct regmux *mux = data;
++	struct regmux *mux = i2c_mux_priv(muxc);
+ 
+ 	if (mux->data.idle_in_use)
+ 		return i2c_mux_reg_set(mux, mux->data.idle);
+@@ -87,6 +83,7 @@ static int i2c_mux_reg_deselect(struct i2c_adapter *adap, void *data,
+ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+ 					struct platform_device *pdev)
+ {
++	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct device_node *adapter_np, *child;
+ 	struct i2c_adapter *adapter;
+@@ -107,7 +104,7 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+ 	if (!adapter)
+ 		return -EPROBE_DEFER;
+ 
+-	mux->parent = adapter;
++	muxc->parent = adapter;
+ 	mux->data.parent = i2c_adapter_id(adapter);
+ 	put_device(&adapter->dev);
+ 
+@@ -169,18 +166,20 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+ 
+ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ {
++	struct i2c_mux_core *muxc;
+ 	struct regmux *mux;
+ 	struct i2c_adapter *parent;
+ 	struct resource *res;
+-	int (*deselect)(struct i2c_adapter *, void *, u32);
+ 	unsigned int class;
+ 	int i, ret, nr;
+ 
+-	mux = devm_kzalloc(&pdev->dev, sizeof(*mux), GFP_KERNEL);
+-	if (!mux)
++	muxc = i2c_mux_alloc(NULL, &pdev->dev, sizeof(*mux), 0,
++			     i2c_mux_reg_select, NULL);
++	if (!muxc)
+ 		return -ENOMEM;
++	mux = i2c_mux_priv(muxc);
+ 
+-	platform_set_drvdata(pdev, mux);
++	platform_set_drvdata(pdev, muxc);
+ 
+ 	if (dev_get_platdata(&pdev->dev)) {
+ 		memcpy(&mux->data, dev_get_platdata(&pdev->dev),
+@@ -190,7 +189,7 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ 		if (!parent)
+ 			return -EPROBE_DEFER;
+ 
+-		mux->parent = parent;
++		muxc->parent = parent;
+ 	} else {
+ 		ret = i2c_mux_reg_probe_dt(mux, pdev);
+ 		if (ret < 0) {
+@@ -215,55 +214,41 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	mux->adap = devm_kzalloc(&pdev->dev,
+-				 sizeof(*mux->adap) * mux->data.n_values,
+-				 GFP_KERNEL);
+-	if (!mux->adap) {
+-		dev_err(&pdev->dev, "Cannot allocate i2c_adapter structure");
+-		return -ENOMEM;
+-	}
++	ret = i2c_mux_reserve_adapters(muxc, mux->data.n_values);
++	if (ret)
++		return ret;
+ 
+ 	if (mux->data.idle_in_use)
+-		deselect = i2c_mux_reg_deselect;
+-	else
+-		deselect = NULL;
++		muxc->deselect = i2c_mux_reg_deselect;
+ 
+ 	for (i = 0; i < mux->data.n_values; i++) {
+ 		nr = mux->data.base_nr ? (mux->data.base_nr + i) : 0;
+ 		class = mux->data.classes ? mux->data.classes[i] : 0;
+ 
+-		mux->adap[i] = i2c_add_mux_adapter(mux->parent, &pdev->dev, mux,
+-						   nr, mux->data.values[i],
+-						   class, i2c_mux_reg_select,
+-						   deselect);
+-		if (!mux->adap[i]) {
+-			ret = -ENODEV;
++		ret = i2c_mux_add_adapter(muxc, nr, mux->data.values[i], class);
++		if (ret) {
+ 			dev_err(&pdev->dev, "Failed to add adapter %d\n", i);
+ 			goto add_adapter_failed;
+ 		}
+ 	}
+ 
+ 	dev_dbg(&pdev->dev, "%d port mux on %s adapter\n",
+-		 mux->data.n_values, mux->parent->name);
++		 mux->data.n_values, muxc->parent->name);
+ 
+ 	return 0;
+ 
+ add_adapter_failed:
+-	for (; i > 0; i--)
+-		i2c_del_mux_adapter(mux->adap[i - 1]);
++	i2c_mux_del_adapters(muxc);
+ 
+ 	return ret;
+ }
+ 
+ static int i2c_mux_reg_remove(struct platform_device *pdev)
+ {
+-	struct regmux *mux = platform_get_drvdata(pdev);
+-	int i;
+-
+-	for (i = 0; i < mux->data.n_values; i++)
+-		i2c_del_mux_adapter(mux->adap[i]);
++	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
+ 
+-	i2c_put_adapter(mux->parent);
++	i2c_mux_del_adapters(muxc);
++	i2c_put_adapter(muxc->parent);
+ 
+ 	return 0;
+ }
 -- 
-Best regards,
-Marek Vasut
+2.1.4
+
