@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:58029 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:55607 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752419AbcDCI4J (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:56:09 -0400
+	with ESMTP id S1752419AbcDCI4U (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:56:20 -0400
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -35,9 +35,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
 	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v6 13/24] [media] cx231xx: convert to use an explicit i2c mux core
-Date: Sun,  3 Apr 2016 10:52:43 +0200
-Message-Id: <1459673574-11440-14-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v6 14/24] of/unittest: convert to use an explicit i2c mux core
+Date: Sun,  3 Apr 2016 10:52:44 +0200
+Message-Id: <1459673574-11440-15-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -51,137 +51,93 @@ of the child adapter.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/media/usb/cx231xx/cx231xx-core.c |  6 ++--
- drivers/media/usb/cx231xx/cx231xx-i2c.c  | 47 ++++++++++++++++----------------
- drivers/media/usb/cx231xx/cx231xx.h      |  4 ++-
- 3 files changed, 31 insertions(+), 26 deletions(-)
+ drivers/of/unittest.c | 40 +++++++++++++++-------------------------
+ 1 file changed, 15 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/media/usb/cx231xx/cx231xx-core.c b/drivers/media/usb/cx231xx/cx231xx-core.c
-index f497888d94bf..f7aac2abd783 100644
---- a/drivers/media/usb/cx231xx/cx231xx-core.c
-+++ b/drivers/media/usb/cx231xx/cx231xx-core.c
-@@ -1304,6 +1304,9 @@ int cx231xx_dev_init(struct cx231xx *dev)
- 	cx231xx_i2c_register(&dev->i2c_bus[1]);
- 	cx231xx_i2c_register(&dev->i2c_bus[2]);
+diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+index e986e6ee52e0..84a65b711e8c 100644
+--- a/drivers/of/unittest.c
++++ b/drivers/of/unittest.c
+@@ -1692,13 +1692,7 @@ static struct i2c_driver unittest_i2c_dev_driver = {
  
-+	errCode = cx231xx_i2c_mux_create(dev);
-+	if (errCode < 0)
-+		return errCode;
- 	cx231xx_i2c_mux_register(dev, 0);
- 	cx231xx_i2c_mux_register(dev, 1);
+ #if IS_BUILTIN(CONFIG_I2C_MUX)
  
-@@ -1426,8 +1429,7 @@ EXPORT_SYMBOL_GPL(cx231xx_dev_init);
- void cx231xx_dev_uninit(struct cx231xx *dev)
- {
- 	/* Un Initialize I2C bus */
--	cx231xx_i2c_mux_unregister(dev, 1);
--	cx231xx_i2c_mux_unregister(dev, 0);
-+	cx231xx_i2c_mux_unregister(dev);
- 	cx231xx_i2c_unregister(&dev->i2c_bus[2]);
- 	cx231xx_i2c_unregister(&dev->i2c_bus[1]);
- 	cx231xx_i2c_unregister(&dev->i2c_bus[0]);
-diff --git a/drivers/media/usb/cx231xx/cx231xx-i2c.c b/drivers/media/usb/cx231xx/cx231xx-i2c.c
-index a29c345b027d..eb22e05d4add 100644
---- a/drivers/media/usb/cx231xx/cx231xx-i2c.c
-+++ b/drivers/media/usb/cx231xx/cx231xx-i2c.c
-@@ -557,40 +557,41 @@ int cx231xx_i2c_unregister(struct cx231xx_i2c *bus)
-  * cx231xx_i2c_mux_select()
-  * switch i2c master number 1 between port1 and port3
-  */
--static int cx231xx_i2c_mux_select(struct i2c_adapter *adap,
--			void *mux_priv, u32 chan_id)
-+static int cx231xx_i2c_mux_select(struct i2c_mux_core *muxc, u32 chan_id)
- {
--	struct cx231xx *dev = mux_priv;
-+	struct cx231xx *dev = i2c_mux_priv(muxc);
- 
- 	return cx231xx_enable_i2c_port_3(dev, chan_id);
- }
- 
-+int cx231xx_i2c_mux_create(struct cx231xx *dev)
-+{
-+	dev->muxc = i2c_mux_alloc(&dev->i2c_bus[1].i2c_adap, dev->dev, 0, 0,
-+				  cx231xx_i2c_mux_select, NULL);
-+	if (!dev->muxc)
-+		return -ENOMEM;
-+	dev->muxc->priv = dev;
-+	return 0;
-+}
-+
- int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no)
- {
--	struct i2c_adapter *i2c_parent = &dev->i2c_bus[1].i2c_adap;
--	/* what is the correct mux_dev? */
--	struct device *mux_dev = dev->dev;
+-struct unittest_i2c_mux_data {
+-	int nchans;
+-	struct i2c_adapter *adap[];
+-};
 -
--	dev->i2c_mux_adap[mux_no] = i2c_add_mux_adapter(i2c_parent,
--				mux_dev,
--				dev /* mux_priv */,
--				0,
--				mux_no /* chan_id */,
--				0 /* class */,
--				&cx231xx_i2c_mux_select,
--				NULL);
--
--	if (!dev->i2c_mux_adap[mux_no])
-+	int rc;
-+
-+	rc = i2c_mux_add_adapter(dev->muxc,
-+				 0,
-+				 mux_no /* chan_id */,
-+				 0 /* class */);
-+	if (rc)
- 		dev_warn(dev->dev,
- 			 "i2c mux %d register FAILED\n", mux_no);
- 
--	return 0;
-+	return rc;
- }
- 
--void cx231xx_i2c_mux_unregister(struct cx231xx *dev, int mux_no)
-+void cx231xx_i2c_mux_unregister(struct cx231xx *dev)
+-static int unittest_i2c_mux_select_chan(struct i2c_adapter *adap,
+-			       void *client, u32 chan)
++static int unittest_i2c_mux_select_chan(struct i2c_mux_core *muxc, u32 chan)
  {
--	i2c_del_mux_adapter(dev->i2c_mux_adap[mux_no]);
--	dev->i2c_mux_adap[mux_no] = NULL;
-+	i2c_mux_del_adapters(dev->muxc);
+ 	return 0;
  }
- 
- struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port)
-@@ -603,9 +604,9 @@ struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port)
- 	case I2C_2:
- 		return &dev->i2c_bus[2].i2c_adap;
- 	case I2C_1_MUX_1:
--		return dev->i2c_mux_adap[0];
-+		return dev->muxc->adapter[0];
- 	case I2C_1_MUX_3:
--		return dev->i2c_mux_adap[1];
-+		return dev->muxc->adapter[1];
- 	default:
- 		return NULL;
- 	}
-diff --git a/drivers/media/usb/cx231xx/cx231xx.h b/drivers/media/usb/cx231xx/cx231xx.h
-index 69f6d20870f5..90c867683076 100644
---- a/drivers/media/usb/cx231xx/cx231xx.h
-+++ b/drivers/media/usb/cx231xx/cx231xx.h
-@@ -624,6 +624,7 @@ struct cx231xx {
- 
- 	/* I2C adapters: Master 1 & 2 (External) & Master 3 (Internal only) */
- 	struct cx231xx_i2c i2c_bus[3];
+@@ -1706,11 +1700,11 @@ static int unittest_i2c_mux_select_chan(struct i2c_adapter *adap,
+ static int unittest_i2c_mux_probe(struct i2c_client *client,
+ 		const struct i2c_device_id *id)
+ {
+-	int ret, i, nchans, size;
++	int ret, i, nchans;
+ 	struct device *dev = &client->dev;
+ 	struct i2c_adapter *adap = to_i2c_adapter(dev->parent);
+ 	struct device_node *np = client->dev.of_node, *child;
+-	struct unittest_i2c_mux_data *stm;
 +	struct i2c_mux_core *muxc;
- 	struct i2c_adapter *i2c_mux_adap[2];
+ 	u32 reg, max_reg;
  
- 	unsigned int xc_fw_load_done:1;
-@@ -760,8 +761,9 @@ int cx231xx_reset_analog_tuner(struct cx231xx *dev);
- void cx231xx_do_i2c_scan(struct cx231xx *dev, int i2c_port);
- int cx231xx_i2c_register(struct cx231xx_i2c *bus);
- int cx231xx_i2c_unregister(struct cx231xx_i2c *bus);
-+int cx231xx_i2c_mux_create(struct cx231xx *dev);
- int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no);
--void cx231xx_i2c_mux_unregister(struct cx231xx *dev, int mux_no);
-+void cx231xx_i2c_mux_unregister(struct cx231xx *dev);
- struct i2c_adapter *cx231xx_get_i2c_adap(struct cx231xx *dev, int i2c_port);
+ 	dev_dbg(dev, "%s for node @%s\n", __func__, np->full_name);
+@@ -1734,25 +1728,23 @@ static int unittest_i2c_mux_probe(struct i2c_client *client,
+ 		return -EINVAL;
+ 	}
  
- /* Internal block control functions */
+-	size = offsetof(struct unittest_i2c_mux_data, adap[nchans]);
+-	stm = devm_kzalloc(dev, size, GFP_KERNEL);
+-	if (!stm) {
+-		dev_err(dev, "Out of memory\n");
++	muxc = i2c_mux_alloc(adap, dev, 0, 0,
++			     unittest_i2c_mux_select_chan, NULL);
++	if (!muxc)
+ 		return -ENOMEM;
+-	}
+-	stm->nchans = nchans;
++	ret = i2c_mux_reserve_adapters(muxc, nchans);
++	if (ret)
++		return ret;
+ 	for (i = 0; i < nchans; i++) {
+-		stm->adap[i] = i2c_add_mux_adapter(adap, dev, client,
+-				0, i, 0, unittest_i2c_mux_select_chan, NULL);
+-		if (!stm->adap[i]) {
++		ret = i2c_mux_add_adapter(muxc, 0, i, 0);
++		if (ret) {
+ 			dev_err(dev, "Failed to register mux #%d\n", i);
+-			for (i--; i >= 0; i--)
+-				i2c_del_mux_adapter(stm->adap[i]);
++			i2c_mux_del_adapters(muxc);
+ 			return -ENODEV;
+ 		}
+ 	}
+ 
+-	i2c_set_clientdata(client, stm);
++	i2c_set_clientdata(client, muxc);
+ 
+ 	return 0;
+ };
+@@ -1761,12 +1753,10 @@ static int unittest_i2c_mux_remove(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+ 	struct device_node *np = client->dev.of_node;
+-	struct unittest_i2c_mux_data *stm = i2c_get_clientdata(client);
+-	int i;
++	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+ 
+ 	dev_dbg(dev, "%s for node @%s\n", __func__, np->full_name);
+-	for (i = stm->nchans - 1; i >= 0; i--)
+-		i2c_del_mux_adapter(stm->adap[i]);
++	i2c_mux_del_adapters(muxc);
+ 	return 0;
+ }
+ 
 -- 
 2.1.4
 
