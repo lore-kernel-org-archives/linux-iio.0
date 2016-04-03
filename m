@@ -1,193 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:40581 "EHLO
-	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752724AbcDCIzJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:55:09 -0400
-From: Peter Rosin <peda@lysator.liu.se>
-To: linux-kernel@vger.kernel.org
-Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Kalle Valo <kvalo@codeaurora.org>,
-	Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Matt Ranostay <matt.ranostay@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Terry Heo <terryheo@google.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Tommi Rantala <tt.rantala@gmail.com>,
-	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v6 08/24] iio: imu: inv_mpu6050: convert to use an explicit i2c mux core
-Date: Sun,  3 Apr 2016 10:52:38 +0200
-Message-Id: <1459673574-11440-9-git-send-email-peda@lysator.liu.se>
-In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
-References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48801 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751865AbcDCJdc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 05:33:32 -0400
+Subject: Re: [PATCH 4/4] iio: st_sensors: support open drain mode
+To: Linus Walleij <linus.walleij@linaro.org>
+References: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
+ <1458825486-17188-4-git-send-email-linus.walleij@linaro.org>
+ <56F8F592.9010807@kernel.org>
+ <CACRpkdZ37dpKsHr01M0+waXgP4xZJjxxFrNQW13Zxi1a9H+-Rg@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5700E36A.6080608@kernel.org>
+Date: Sun, 3 Apr 2016 10:33:30 +0100
+MIME-Version: 1.0
+In-Reply-To: <CACRpkdZ37dpKsHr01M0+waXgP4xZJjxxFrNQW13Zxi1a9H+-Rg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Peter Rosin <peda@axentia.se>
+On 31/03/16 09:15, Linus Walleij wrote:
+> On Mon, Mar 28, 2016 at 11:12 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 24/03/16 13:18, Linus Walleij wrote:
+> 
+>>> +- st,int-pin-open-drain: the interrupt/data ready line will be configured
+>>> +  as open drain, which is useful if several sensors share the same
+>>> +  interrupt line.
+>>
+>> Really feels like this one ought to be more generic.. Mind you so does
+>> drdy-int-pin!
+> 
+> Sorry about drdy-int-pin, it wasn't me ;)
+> 
+> That one is a mux kind of thing: interrupt goes out on IRQ line
+> INT1 or INT2, select one...
+> 
+>> Hmm. Looks like most open drain controls are chip specific - other than
+>> your pinctrl ones and that doesn't really map to here I guess.
+> 
+> Both the muxing and the OD setting can be done with pin control,
+> it's just that it is like swatting a fly with a skyscraper - vast overkill
+> for two interrupt lines.
+> 
+> I came to the conclusion that with small chips or IP blocks just
+> randomly doing some muxing or biasing of a few pins isn't necessarily
+> worth all the trouble of implementing pin control, the latter was
+> conceived for real big arrays of pins really. There are already a
+> few of these all over the kernel, e.g. the ST Multi-Purpose expander
+> drivers/mfd/stmpe.c - could be pin control muxed but it'd be overkill.
+> 
+> So as pin control maintainer when this kind of hardware comes up
+> I usually just "think it over" and then "OK then".
+I can indeed see the advantages of that flexibility, but from an IIO point
+of view, we are going to have a number of very similar bindings.  I can't
+see a reason not to generalize the form of the binding away from a single
+driver.
 
-Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select/deselect ops to be in terms of the i2c mux core
-instead of the child adapter.
+So lets drop the vendor prefix from this one and have
+int-pin-open-drain (and drdy-int-pin ideally).
+> 
+>>> +     if (sdata->int_pin_open_drain) {
+>>> +             dev_info(&indio_dev->dev,
+>>> +                      "set interrupt line to open drain mode\n");
+>>
+>> Hmm. Curriously I have a board with an lis3l02dq on it where the interrupt
+>> is shared, but doesn't explicitly support open drain. In that case it
+>> is done with some external circuitry.
+> 
+> That should run fine with just the status read patch from earlier
+> in the series I guess?
+I'll go with a 'probably'.  Getting that part to run at all is 'interesting'
+as it's minimum rate is 440Hz and my board can't keep up.
+> 
+>> Anyhow - I guess when I actually add support for that I'll just add a sanity
+>> check in here that addr_od and mask_od are specified :)
+> 
+> Hm, yeah. Otherwise just patch out my enforcement of the
+> OD flag for a shared line and add a comment in.
+Will figure it out when / if I ever actually do those patches...
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c |  2 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  1 -
- drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  | 32 +++++++++++++-----------------
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  3 ++-
- 4 files changed, 17 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-index 2771106fd650..f62b8bd9ad7e 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-@@ -183,7 +183,7 @@ int inv_mpu_acpi_create_mux_client(struct i2c_client *client)
- 			} else
- 				return 0; /* no secondary addr, which is OK */
- 		}
--		st->mux_client = i2c_new_device(st->mux_adapter, &info);
-+		st->mux_client = i2c_new_device(st->muxc->adapter[0], &info);
- 		if (!st->mux_client)
- 			return -ENODEV;
- 	}
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index d192953e9a38..0c2bded2b5b7 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -23,7 +23,6 @@
- #include <linux/kfifo.h>
- #include <linux/spinlock.h>
- #include <linux/iio/iio.h>
--#include <linux/i2c-mux.h>
- #include <linux/acpi.h>
- #include "inv_mpu_iio.h"
- 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-index f581256d9d4c..0d429d788106 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-@@ -15,7 +15,6 @@
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/i2c.h>
--#include <linux/i2c-mux.h>
- #include <linux/iio/iio.h>
- #include <linux/module.h>
- #include "inv_mpu_iio.h"
-@@ -52,10 +51,9 @@ static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
- 	return 0;
- }
- 
--static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
--				     u32 chan_id)
-+static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
- {
--	struct i2c_client *client = mux_priv;
-+	struct i2c_client *client = i2c_mux_priv(muxc);
- 	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 	int ret = 0;
-@@ -84,10 +82,9 @@ write_error:
- 	return ret;
- }
- 
--static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
--				       void *mux_priv, u32 chan_id)
-+static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
- {
--	struct i2c_client *client = mux_priv;
-+	struct i2c_client *client = i2c_mux_priv(muxc);
- 	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 
-@@ -136,16 +133,15 @@ static int inv_mpu_probe(struct i2c_client *client,
- 		return result;
- 
- 	st = iio_priv(dev_get_drvdata(&client->dev));
--	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
--					      &client->dev,
--					      client,
--					      0, 0, 0,
--					      inv_mpu6050_select_bypass,
--					      inv_mpu6050_deselect_bypass);
--	if (!st->mux_adapter) {
--		result = -ENODEV;
-+	st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
-+				       0, 0, 0,
-+				       inv_mpu6050_select_bypass,
-+				       inv_mpu6050_deselect_bypass);
-+	if (IS_ERR(st->muxc)) {
-+		result = PTR_ERR(st->muxc);
- 		goto out_unreg_device;
- 	}
-+	st->muxc->priv = client;
- 
- 	result = inv_mpu_acpi_create_mux_client(client);
- 	if (result)
-@@ -154,7 +150,7 @@ static int inv_mpu_probe(struct i2c_client *client,
- 	return 0;
- 
- out_del_mux:
--	i2c_del_mux_adapter(st->mux_adapter);
-+	i2c_mux_del_adapters(st->muxc);
- out_unreg_device:
- 	inv_mpu_core_remove(&client->dev);
- 	return result;
-@@ -162,11 +158,11 @@ out_unreg_device:
- 
- static int inv_mpu_remove(struct i2c_client *client)
- {
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 
- 	inv_mpu_acpi_delete_mux_client(client);
--	i2c_del_mux_adapter(st->mux_adapter);
-+	i2c_mux_del_adapters(st->muxc);
- 
- 	return inv_mpu_core_remove(&client->dev);
- }
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index e302a49703bf..bb3cef6d7059 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -11,6 +11,7 @@
- * GNU General Public License for more details.
- */
- #include <linux/i2c.h>
-+#include <linux/i2c-mux.h>
- #include <linux/kfifo.h>
- #include <linux/spinlock.h>
- #include <linux/iio/iio.h>
-@@ -127,7 +128,7 @@ struct inv_mpu6050_state {
- 	const struct inv_mpu6050_hw *hw;
- 	enum   inv_devices chip_type;
- 	spinlock_t time_stamp_lock;
--	struct i2c_adapter *mux_adapter;
-+	struct i2c_mux_core *muxc;
- 	struct i2c_client *mux_client;
- 	unsigned int powerup_count;
- 	struct inv_mpu6050_platform_data plat_data;
--- 
-2.1.4
+J
+> 
+> Yours,
+> Linus Walleij
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
