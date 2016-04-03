@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:55692 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:49400 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753185AbcDCIyp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:54:45 -0400
+	with ESMTP id S1752516AbcDCIzT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:55:19 -0400
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -35,9 +35,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
 	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v6 07/24] i2c: i2c-mux-reg: convert to use an explicit i2c mux core
-Date: Sun,  3 Apr 2016 10:52:37 +0200
-Message-Id: <1459673574-11440-8-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v6 09/24] [media] m88ds3103: convert to use an explicit i2c mux core
+Date: Sun,  3 Apr 2016 10:52:39 +0200
+Message-Id: <1459673574-11440-10-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -46,168 +46,82 @@ List-Id: linux-iio@vger.kernel.org
 From: Peter Rosin <peda@axentia.se>
 
 Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select/deselect ops to be in terms of the i2c mux core
-instead of the child adapter.
+etc. Update the select op to be in terms of the i2c mux core instead
+of the child adapter.
 
+Reviewed-by: Antti Palosaari <crope@iki.fi>
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/muxes/i2c-mux-reg.c | 63 ++++++++++++++++-------------------------
- 1 file changed, 24 insertions(+), 39 deletions(-)
+ drivers/media/dvb-frontends/m88ds3103.c      | 18 +++++++++---------
+ drivers/media/dvb-frontends/m88ds3103_priv.h |  2 +-
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-mux-reg.c b/drivers/i2c/muxes/i2c-mux-reg.c
-index 5fbd5bd0878f..3ac9a2dab111 100644
---- a/drivers/i2c/muxes/i2c-mux-reg.c
-+++ b/drivers/i2c/muxes/i2c-mux-reg.c
-@@ -21,8 +21,6 @@
- #include <linux/slab.h>
+diff --git a/drivers/media/dvb-frontends/m88ds3103.c b/drivers/media/dvb-frontends/m88ds3103.c
+index 76883600ec6f..bf5ffcda7797 100644
+--- a/drivers/media/dvb-frontends/m88ds3103.c
++++ b/drivers/media/dvb-frontends/m88ds3103.c
+@@ -1251,9 +1251,9 @@ static void m88ds3103_release(struct dvb_frontend *fe)
+ 	i2c_unregister_device(client);
+ }
  
- struct regmux {
--	struct i2c_adapter *parent;
--	struct i2c_adapter **adap; /* child busses */
- 	struct i2c_mux_reg_platform_data data;
- };
+-static int m88ds3103_select(struct i2c_adapter *adap, void *mux_priv, u32 chan)
++static int m88ds3103_select(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct m88ds3103_dev *dev = mux_priv;
++	struct m88ds3103_dev *dev = i2c_mux_priv(muxc);
+ 	struct i2c_client *client = dev->client;
+ 	int ret;
+ 	struct i2c_msg msg = {
+@@ -1374,7 +1374,7 @@ static struct i2c_adapter *m88ds3103_get_i2c_adapter(struct i2c_client *client)
  
-@@ -64,18 +62,16 @@ static int i2c_mux_reg_set(const struct regmux *mux, unsigned int chan_id)
+ 	dev_dbg(&client->dev, "\n");
+ 
+-	return dev->i2c_adapter;
++	return dev->muxc->adapter[0];
+ }
+ 
+ static int m88ds3103_probe(struct i2c_client *client,
+@@ -1467,13 +1467,13 @@ static int m88ds3103_probe(struct i2c_client *client,
+ 		goto err_kfree;
+ 
+ 	/* create mux i2c adapter for tuner */
+-	dev->i2c_adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
+-					       dev, 0, 0, 0, m88ds3103_select,
+-					       NULL);
+-	if (dev->i2c_adapter == NULL) {
+-		ret = -ENOMEM;
++	dev->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
++					0, 0, 0, m88ds3103_select, NULL);
++	if (IS_ERR(dev->muxc)) {
++		ret = PTR_ERR(dev->muxc);
+ 		goto err_kfree;
+ 	}
++	dev->muxc->priv = dev;
+ 
+ 	/* create dvb_frontend */
+ 	memcpy(&dev->fe.ops, &m88ds3103_ops, sizeof(struct dvb_frontend_ops));
+@@ -1502,7 +1502,7 @@ static int m88ds3103_remove(struct i2c_client *client)
+ 
+ 	dev_dbg(&client->dev, "\n");
+ 
+-	i2c_del_mux_adapter(dev->i2c_adapter);
++	i2c_mux_del_adapters(dev->muxc);
+ 
+ 	kfree(dev);
  	return 0;
- }
- 
--static int i2c_mux_reg_select(struct i2c_adapter *adap, void *data,
--			      unsigned int chan)
-+static int i2c_mux_reg_select(struct i2c_mux_core *muxc, u32 chan)
- {
--	struct regmux *mux = data;
-+	struct regmux *mux = i2c_mux_priv(muxc);
- 
- 	return i2c_mux_reg_set(mux, chan);
- }
- 
--static int i2c_mux_reg_deselect(struct i2c_adapter *adap, void *data,
--				unsigned int chan)
-+static int i2c_mux_reg_deselect(struct i2c_mux_core *muxc, u32 chan)
- {
--	struct regmux *mux = data;
-+	struct regmux *mux = i2c_mux_priv(muxc);
- 
- 	if (mux->data.idle_in_use)
- 		return i2c_mux_reg_set(mux, mux->data.idle);
-@@ -87,6 +83,7 @@ static int i2c_mux_reg_deselect(struct i2c_adapter *adap, void *data,
- static int i2c_mux_reg_probe_dt(struct regmux *mux,
- 					struct platform_device *pdev)
- {
-+	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
- 	struct device_node *np = pdev->dev.of_node;
- 	struct device_node *adapter_np, *child;
- 	struct i2c_adapter *adapter;
-@@ -107,7 +104,7 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
- 	if (!adapter)
- 		return -EPROBE_DEFER;
- 
--	mux->parent = adapter;
-+	muxc->parent = adapter;
- 	mux->data.parent = i2c_adapter_id(adapter);
- 	put_device(&adapter->dev);
- 
-@@ -169,18 +166,20 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
- 
- static int i2c_mux_reg_probe(struct platform_device *pdev)
- {
+diff --git a/drivers/media/dvb-frontends/m88ds3103_priv.h b/drivers/media/dvb-frontends/m88ds3103_priv.h
+index eee8c22c51ec..c5b4e177c6ea 100644
+--- a/drivers/media/dvb-frontends/m88ds3103_priv.h
++++ b/drivers/media/dvb-frontends/m88ds3103_priv.h
+@@ -42,7 +42,7 @@ struct m88ds3103_dev {
+ 	enum fe_status fe_status;
+ 	u32 dvbv3_ber; /* for old DVBv3 API read_ber */
+ 	bool warm; /* FW running */
+-	struct i2c_adapter *i2c_adapter;
 +	struct i2c_mux_core *muxc;
- 	struct regmux *mux;
- 	struct i2c_adapter *parent;
- 	struct resource *res;
--	int (*deselect)(struct i2c_adapter *, void *, u32);
- 	unsigned int class;
- 	int i, ret, nr;
- 
--	mux = devm_kzalloc(&pdev->dev, sizeof(*mux), GFP_KERNEL);
--	if (!mux)
-+	muxc = i2c_mux_alloc(NULL, &pdev->dev, sizeof(*mux), 0,
-+			     i2c_mux_reg_select, NULL);
-+	if (!muxc)
- 		return -ENOMEM;
-+	mux = i2c_mux_priv(muxc);
- 
--	platform_set_drvdata(pdev, mux);
-+	platform_set_drvdata(pdev, muxc);
- 
- 	if (dev_get_platdata(&pdev->dev)) {
- 		memcpy(&mux->data, dev_get_platdata(&pdev->dev),
-@@ -190,7 +189,7 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
- 		if (!parent)
- 			return -EPROBE_DEFER;
- 
--		mux->parent = parent;
-+		muxc->parent = parent;
- 	} else {
- 		ret = i2c_mux_reg_probe_dt(mux, pdev);
- 		if (ret < 0) {
-@@ -215,55 +214,41 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	mux->adap = devm_kzalloc(&pdev->dev,
--				 sizeof(*mux->adap) * mux->data.n_values,
--				 GFP_KERNEL);
--	if (!mux->adap) {
--		dev_err(&pdev->dev, "Cannot allocate i2c_adapter structure");
--		return -ENOMEM;
--	}
-+	ret = i2c_mux_reserve_adapters(muxc, mux->data.n_values);
-+	if (ret)
-+		return ret;
- 
- 	if (mux->data.idle_in_use)
--		deselect = i2c_mux_reg_deselect;
--	else
--		deselect = NULL;
-+		muxc->deselect = i2c_mux_reg_deselect;
- 
- 	for (i = 0; i < mux->data.n_values; i++) {
- 		nr = mux->data.base_nr ? (mux->data.base_nr + i) : 0;
- 		class = mux->data.classes ? mux->data.classes[i] : 0;
- 
--		mux->adap[i] = i2c_add_mux_adapter(mux->parent, &pdev->dev, mux,
--						   nr, mux->data.values[i],
--						   class, i2c_mux_reg_select,
--						   deselect);
--		if (!mux->adap[i]) {
--			ret = -ENODEV;
-+		ret = i2c_mux_add_adapter(muxc, nr, mux->data.values[i], class);
-+		if (ret) {
- 			dev_err(&pdev->dev, "Failed to add adapter %d\n", i);
- 			goto add_adapter_failed;
- 		}
- 	}
- 
- 	dev_dbg(&pdev->dev, "%d port mux on %s adapter\n",
--		 mux->data.n_values, mux->parent->name);
-+		 mux->data.n_values, muxc->parent->name);
- 
- 	return 0;
- 
- add_adapter_failed:
--	for (; i > 0; i--)
--		i2c_del_mux_adapter(mux->adap[i - 1]);
-+	i2c_mux_del_adapters(muxc);
- 
- 	return ret;
- }
- 
- static int i2c_mux_reg_remove(struct platform_device *pdev)
- {
--	struct regmux *mux = platform_get_drvdata(pdev);
--	int i;
--
--	for (i = 0; i < mux->data.n_values; i++)
--		i2c_del_mux_adapter(mux->adap[i]);
-+	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
- 
--	i2c_put_adapter(mux->parent);
-+	i2c_mux_del_adapters(muxc);
-+	i2c_put_adapter(muxc->parent);
- 
- 	return 0;
- }
+ 	/* auto detect chip id to do different config */
+ 	u8 chip_id;
+ 	/* main mclk is calculated for M88RS6000 dynamically */
 -- 
 2.1.4
 
