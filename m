@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:43452 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:35171 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752516AbcDCIza (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:55:30 -0400
+	with ESMTP id S1753131AbcDCIyf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:54:35 -0400
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -35,9 +35,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
 	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v6 10/24] [media] rtl2830: convert to use an explicit i2c mux core
-Date: Sun,  3 Apr 2016 10:52:40 +0200
-Message-Id: <1459673574-11440-11-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v6 06/24] i2c: i2c-mux-pca954x: convert to use an explicit i2c mux core
+Date: Sun,  3 Apr 2016 10:52:36 +0200
+Message-Id: <1459673574-11440-7-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -46,81 +46,172 @@ List-Id: linux-iio@vger.kernel.org
 From: Peter Rosin <peda@axentia.se>
 
 Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select op to be in terms of the i2c mux core instead
-of the child adapter.
+etc. Update the select/deselect ops to be in terms of the i2c mux core
+instead of the child adapter.
 
-Reviewed-by: Antti Palosaari <crope@iki.fi>
+Add a mask to handle the case where not all child adapters should
+cause a mux deselect to happen, now that there is a common deselect op
+for all child adapters.
+
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/media/dvb-frontends/rtl2830.c      | 17 +++++++++--------
- drivers/media/dvb-frontends/rtl2830_priv.h |  2 +-
- 2 files changed, 10 insertions(+), 9 deletions(-)
+ drivers/i2c/muxes/i2c-mux-pca954x.c | 64 +++++++++++++++++++------------------
+ 1 file changed, 33 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/media/dvb-frontends/rtl2830.c b/drivers/media/dvb-frontends/rtl2830.c
-index 3f96429af0e5..ab02c3a07194 100644
---- a/drivers/media/dvb-frontends/rtl2830.c
-+++ b/drivers/media/dvb-frontends/rtl2830.c
-@@ -677,9 +677,9 @@ err:
-  * adapter lock is already taken by tuner driver.
-  * Gate is closed automatically after single I2C transfer.
-  */
--static int rtl2830_select(struct i2c_adapter *adap, void *mux_priv, u32 chan_id)
-+static int rtl2830_select(struct i2c_mux_core *muxc, u32 chan_id)
+diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
+index acfcef3d4068..1693d29c11a4 100644
+--- a/drivers/i2c/muxes/i2c-mux-pca954x.c
++++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
+@@ -60,9 +60,10 @@ enum pca_type {
+ 
+ struct pca954x {
+ 	enum pca_type type;
+-	struct i2c_adapter *virt_adaps[PCA954X_MAX_NCHANS];
+ 
+ 	u8 last_chan;		/* last register value */
++	u8 deselect;
++	struct i2c_client *client;
+ };
+ 
+ struct chip_desc {
+@@ -146,10 +147,10 @@ static int pca954x_reg_write(struct i2c_adapter *adap,
+ 	return ret;
+ }
+ 
+-static int pca954x_select_chan(struct i2c_adapter *adap,
+-			       void *client, u32 chan)
++static int pca954x_select_chan(struct i2c_mux_core *muxc, u32 chan)
  {
--	struct i2c_client *client = mux_priv;
-+	struct i2c_client *client = i2c_mux_priv(muxc);
- 	struct rtl2830_dev *dev = i2c_get_clientdata(client);
- 	int ret;
+-	struct pca954x *data = i2c_get_clientdata(client);
++	struct pca954x *data = i2c_mux_priv(muxc);
++	struct i2c_client *client = data->client;
+ 	const struct chip_desc *chip = &chips[data->type];
+ 	u8 regval;
+ 	int ret = 0;
+@@ -162,21 +163,24 @@ static int pca954x_select_chan(struct i2c_adapter *adap,
  
-@@ -712,7 +712,7 @@ static struct i2c_adapter *rtl2830_get_i2c_adapter(struct i2c_client *client)
+ 	/* Only select the channel if its different from the last channel */
+ 	if (data->last_chan != regval) {
+-		ret = pca954x_reg_write(adap, client, regval);
++		ret = pca954x_reg_write(muxc->parent, client, regval);
+ 		data->last_chan = regval;
+ 	}
  
- 	dev_dbg(&client->dev, "\n");
+ 	return ret;
+ }
  
--	return dev->adapter;
-+	return dev->muxc->adapter[0];
+-static int pca954x_deselect_mux(struct i2c_adapter *adap,
+-				void *client, u32 chan)
++static int pca954x_deselect_mux(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct pca954x *data = i2c_get_clientdata(client);
++	struct pca954x *data = i2c_mux_priv(muxc);
++	struct i2c_client *client = data->client;
++
++	if (!(data->deselect & (1 << chan)))
++		return 0;
+ 
+ 	/* Deselect active channel */
+ 	data->last_chan = 0;
+-	return pca954x_reg_write(adap, client, data->last_chan);
++	return pca954x_reg_write(muxc->parent, client, data->last_chan);
  }
  
  /*
-@@ -865,12 +865,13 @@ static int rtl2830_probe(struct i2c_client *client,
- 		goto err_regmap_exit;
- 
- 	/* create muxed i2c adapter for tuner */
--	dev->adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
--			client, 0, 0, 0, rtl2830_select, NULL);
--	if (dev->adapter == NULL) {
--		ret = -ENODEV;
-+	dev->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
-+					0, 0, 0, rtl2830_select, NULL);
-+	if (IS_ERR(dev->muxc)) {
-+		ret = PTR_ERR(dev->muxc);
- 		goto err_regmap_exit;
- 	}
-+	dev->muxc->priv = client;
- 
- 	/* create dvb frontend */
- 	memcpy(&dev->fe.ops, &rtl2830_ops, sizeof(dev->fe.ops));
-@@ -903,7 +904,7 @@ static int rtl2830_remove(struct i2c_client *client)
- 	/* stop statistics polling */
- 	cancel_delayed_work_sync(&dev->stat_work);
- 
--	i2c_del_mux_adapter(dev->adapter);
-+	i2c_mux_del_adapters(dev->muxc);
- 	regmap_exit(dev->regmap);
- 	kfree(dev);
- 
-diff --git a/drivers/media/dvb-frontends/rtl2830_priv.h b/drivers/media/dvb-frontends/rtl2830_priv.h
-index cf793f39a09b..da4909543da2 100644
---- a/drivers/media/dvb-frontends/rtl2830_priv.h
-+++ b/drivers/media/dvb-frontends/rtl2830_priv.h
-@@ -29,7 +29,7 @@ struct rtl2830_dev {
- 	struct rtl2830_platform_data *pdata;
- 	struct i2c_client *client;
- 	struct regmap *regmap;
--	struct i2c_adapter *adapter;
+@@ -191,17 +195,21 @@ static int pca954x_probe(struct i2c_client *client,
+ 	bool idle_disconnect_dt;
+ 	struct gpio_desc *gpio;
+ 	int num, force, class;
 +	struct i2c_mux_core *muxc;
- 	struct dvb_frontend fe;
- 	bool sleeping;
- 	unsigned long filters;
+ 	struct pca954x *data;
+ 	int ret;
+ 
+ 	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE))
+ 		return -ENODEV;
+ 
+-	data = devm_kzalloc(&client->dev, sizeof(struct pca954x), GFP_KERNEL);
+-	if (!data)
++	muxc = i2c_mux_alloc(adap, &client->dev, sizeof(*data), 0,
++			     pca954x_select_chan, pca954x_deselect_mux);
++	if (!muxc)
+ 		return -ENOMEM;
++	data = i2c_mux_priv(muxc);
+ 
+-	i2c_set_clientdata(client, data);
++	i2c_set_clientdata(client, muxc);
++	data->client = client;
+ 
+ 	/* Get the mux out of reset if a reset GPIO is specified. */
+ 	gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_LOW);
+@@ -220,6 +228,10 @@ static int pca954x_probe(struct i2c_client *client,
+ 	data->type = id->driver_data;
+ 	data->last_chan = 0;		   /* force the first selection */
+ 
++	ret = i2c_mux_reserve_adapters(muxc, chips[data->type].nchans);
++	if (ret)
++		return ret;
++
+ 	idle_disconnect_dt = of_node &&
+ 		of_property_read_bool(of_node, "i2c-mux-idle-disconnect");
+ 
+@@ -238,16 +250,13 @@ static int pca954x_probe(struct i2c_client *client,
+ 				/* discard unconfigured channels */
+ 				break;
+ 			idle_disconnect_pd = pdata->modes[num].deselect_on_exit;
++			data->deselect |= (idle_disconnect_pd
++					   || idle_disconnect_dt) << num;
+ 		}
+ 
+-		data->virt_adaps[num] =
+-			i2c_add_mux_adapter(adap, &client->dev, client,
+-				force, num, class, pca954x_select_chan,
+-				(idle_disconnect_pd || idle_disconnect_dt)
+-					? pca954x_deselect_mux : NULL);
++		ret = i2c_mux_add_adapter(muxc, force, num, class);
+ 
+-		if (data->virt_adaps[num] == NULL) {
+-			ret = -ENODEV;
++		if (ret) {
+ 			dev_err(&client->dev,
+ 				"failed to register multiplexed adapter"
+ 				" %d as bus %d\n", num, force);
+@@ -263,23 +272,15 @@ static int pca954x_probe(struct i2c_client *client,
+ 	return 0;
+ 
+ virt_reg_failed:
+-	for (num--; num >= 0; num--)
+-		i2c_del_mux_adapter(data->virt_adaps[num]);
++	i2c_mux_del_adapters(muxc);
+ 	return ret;
+ }
+ 
+ static int pca954x_remove(struct i2c_client *client)
+ {
+-	struct pca954x *data = i2c_get_clientdata(client);
+-	const struct chip_desc *chip = &chips[data->type];
+-	int i;
+-
+-	for (i = 0; i < chip->nchans; ++i)
+-		if (data->virt_adaps[i]) {
+-			i2c_del_mux_adapter(data->virt_adaps[i]);
+-			data->virt_adaps[i] = NULL;
+-		}
++	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+ 
++	i2c_mux_del_adapters(muxc);
+ 	return 0;
+ }
+ 
+@@ -287,7 +288,8 @@ static int pca954x_remove(struct i2c_client *client)
+ static int pca954x_resume(struct device *dev)
+ {
+ 	struct i2c_client *client = to_i2c_client(dev);
+-	struct pca954x *data = i2c_get_clientdata(client);
++	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
++	struct pca954x *data = i2c_mux_priv(muxc);
+ 
+ 	data->last_chan = 0;
+ 	return i2c_smbus_write_byte(client, 0);
 -- 
 2.1.4
 
