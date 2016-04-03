@@ -1,64 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f193.google.com ([209.85.213.193]:33456 "EHLO
-	mail-ig0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751601AbcDFHfv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2016 03:35:51 -0400
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48666 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752656AbcDCJJT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 05:09:19 -0400
+Subject: Re: [PATCH] staging: iio: ad7606: use
+ iio_device_{claim|release}_direct_mode()
+To: Alison Schofield <amsfield22@gmail.com>, linux-iio@vger.kernel.org
+References: <20160401165349.GA2678@d830.WORKGROUP>
+Cc: lars@metafoo.de, knaack.h@gmx.de, Michael.Hennerich@analog.com,
+	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5700DDB9.5060100@kernel.org>
+Date: Sun, 3 Apr 2016 10:09:13 +0100
 MIME-Version: 1.0
-In-Reply-To: <acaeee6c3c1f99900614baf99ab31e6e5b515970.1459918214.git.amsfield22@gmail.com>
-References: <cover.1459918214.git.amsfield22@gmail.com>
-	<acaeee6c3c1f99900614baf99ab31e6e5b515970.1459918214.git.amsfield22@gmail.com>
-Date: Wed, 6 Apr 2016 09:35:49 +0200
-Message-ID: <CAGhQ9VxnwX6n6PfOFAhYSPfP7eAA+YFLjTcJf+Ay60R8sHV_Ww@mail.gmail.com>
-Subject: Re: [PATCH 5/9] iio: accel: mma7455: use regmap to retrieve struct device
-From: Joachim Eastwood <manabian@gmail.com>
-To: Alison Schofield <amsfield22@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Kukjin Kim <kgene@kernel.org>,
-	=?UTF-8?Q?Krzysztof_Koz=C5=82owski?= <k.kozlowski@samsung.com>,
-	linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	linux-samsung-soc@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20160401165349.GA2678@d830.WORKGROUP>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Alison,
-
-On 6 April 2016 at 07:18, Alison Schofield <amsfield22@gmail.com> wrote:
-> Driver includes struct regmap and struct device in its global data.
-> Remove the struct device and use regmap API to retrieve device info.
->
-> Patch created using Coccinelle plus manual edits.
->
+On 01/04/16 17:53, Alison Schofield wrote:
+> Two instances are moved to the new claim/release API:
+> 
+> In the first instance, the driver was using mlock followed by
+> iio_buffer_enabled(). Replace that code with the new API to guarantee
+> the device stays in direct mode. There is no change in driver behavior.
+> 
+> In the second instance, the driver was not using mlock to hold the
+> device in direct mode, but should have been.  Here we introduce the
+> new API to guarantee direct mode. This is a change in driver behavior.
+> 
 > Signed-off-by: Alison Schofield <amsfield22@gmail.com>
 > ---
->  drivers/iio/accel/mma7455_core.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iio/accel/mma7455_core.c b/drivers/iio/accel/mma7455_core.c
-> index c633cc2..c902f54 100644
-> --- a/drivers/iio/accel/mma7455_core.c
-> +++ b/drivers/iio/accel/mma7455_core.c
-> @@ -55,11 +55,11 @@
->
->  struct mma7455_data {
->         struct regmap *regmap;
-> -       struct device *dev;
->  };
->
->  static int mma7455_drdy(struct mma7455_data *mma7455)
->  {
-> +       struct device *dev = regmap_get_device(mma7455->regmap);
+>  drivers/staging/iio/adc/ad7606_core.c | 15 ++++++++-------
+>  1 file changed, 8 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+> index 6dbc811..f914b8d 100644
+> --- a/drivers/staging/iio/adc/ad7606_core.c
+> +++ b/drivers/staging/iio/adc/ad7606_core.c
+> @@ -88,12 +88,12 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
+>  
+>  	switch (m) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		mutex_lock(&indio_dev->mlock);
+> -		if (iio_buffer_enabled(indio_dev))
+> -			ret = -EBUSY;
+> -		else
+> -			ret = ad7606_scan_direct(indio_dev, chan->address);
+> -		mutex_unlock(&indio_dev->mlock);
+> +		ret = iio_device_claim_direct_mode(indio_dev);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = ad7606_scan_direct(indio_dev, chan->address);
+> +		iio_device_release_direct_mode(indio_dev);
+>  
+>  		if (ret < 0)
+>  			return ret;
+> @@ -411,8 +411,9 @@ static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
+>  	struct iio_dev *indio_dev = dev_id;
+>  	struct ad7606_state *st = iio_priv(indio_dev);
+>  
+> -	if (iio_buffer_enabled(indio_dev)) {
+> +	if (!iio_device_claim_direct_mode(indio_dev))  {
+>  		schedule_work(&st->poll_work);
+> +		iio_device_release_direct_mode(indio_dev);
+Unfortunately this won't work.  That interrupt is still in traditional non
+threaded form.  This will take a mutex in a top half interrupt handler
+where a sleep cannot occur.
 
-ah, nice!
+I'm just wondering how expensive it would be to fix this by moving that over
+to a threaded handler.  In the poll_work case (buffer) it would be cleaner to do
+so. I'm really confused what the intended interrupt handler
+is in here.  I 'think' the sequence is:
 
-Acked-by: Joachim Eastwood <manabian@gmail.com>
+Trigger fires the convst pin whether in top half or the bottom half of
+a threaded interrupt, but not both - I guess this works, if it is rather
+'unusual'.
+
+We then get a interrupt to indicate that it has finished conversion and that
+filters through to actually fill the buffer via a traditional top half /
+bottom half interrupt handler.
+
+So if we were to convert that to a threaded interrupt (with no top half / non
+threaded part), we could drop the schedule_work and just call
+ad7606_poll_bh_to_ring from the thread handler.
+
+In the direct read case I doubt we care about the delay in dropping to a
+thread prior to signalling the data is ready.
+
+Can't think why this driver is still in staging :)
+
+Lars, any interest from Analog in getting this one cleaned up?  Also
+do you have any test hardware, if we mess around with this interrupt handling?
+
+Jonathan
 
 
-regards,
-Joachim Eastwood
+>  	} else {
+>  		st->done = true;
+>  		wake_up_interruptible(&st->wq_data_avail);
+> 
+
