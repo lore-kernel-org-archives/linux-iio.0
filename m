@@ -1,914 +1,473 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48618 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751865AbcDCIxT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:53:19 -0400
-Subject: Re: [PATCH] iio: imu: Add initial support for Bosch BMI160
-To: Daniel Baluta <daniel.baluta@intel.com>
-References: <1459513870-3852-1-git-send-email-daniel.baluta@intel.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5700D9FA.4020600@kernel.org>
-Date: Sun, 3 Apr 2016 09:53:14 +0100
-MIME-Version: 1.0
-In-Reply-To: <1459513870-3852-1-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail.lysator.liu.se ([130.236.254.3]:52858 "EHLO
+	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751835AbcDCIxk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:53:40 -0400
+From: Peter Rosin <peda@lysator.liu.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Kalle Valo <kvalo@codeaurora.org>,
+	Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
+Subject: [PATCH v6 01/24] i2c-mux: add common data for every i2c-mux instance
+Date: Sun,  3 Apr 2016 10:52:31 +0200
+Message-Id: <1459673574-11440-2-git-send-email-peda@lysator.liu.se>
+In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
+References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/04/16 13:31, Daniel Baluta wrote:
-> BMI160 is an Inertial Measurement Unit (IMU) which provides acceleration
-> and angular rate measurement. It also offers a secondary I2C interface
-> for connecting a magnetometer sensor (usually BMM160).
-> 
-> Current driver offers support for accelerometer and gyroscope readings
-> via sysfs or via buffer interface using an external trigger (e.g.
-> hrtimer). Data is retrieved from IMU via I2C or SPI interface.
-> 
-> Datasheet is at:
-> 	http://www.mouser.com/ds/2/783/BST-BMI160-DS000-07-786474.pdf
-> 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-A few bits inline.  Mostly around the trigger handler...
+From: Peter Rosin <peda@axentia.se>
 
-J
-> ---
->  drivers/iio/imu/Kconfig              |   2 +
->  drivers/iio/imu/Makefile             |   1 +
->  drivers/iio/imu/bmi160/Kconfig       |  32 ++
->  drivers/iio/imu/bmi160/Makefile      |   6 +
->  drivers/iio/imu/bmi160/bmi160.h      |   8 +
->  drivers/iio/imu/bmi160/bmi160_core.c | 588 +++++++++++++++++++++++++++++++++++
->  drivers/iio/imu/bmi160/bmi160_i2c.c  |  79 +++++
->  drivers/iio/imu/bmi160/bmi160_spi.c  |  71 +++++
->  8 files changed, 787 insertions(+)
->  create mode 100644 drivers/iio/imu/bmi160/Kconfig
->  create mode 100644 drivers/iio/imu/bmi160/Makefile
->  create mode 100644 drivers/iio/imu/bmi160/bmi160.h
->  create mode 100644 drivers/iio/imu/bmi160/bmi160_core.c
->  create mode 100644 drivers/iio/imu/bmi160/bmi160_i2c.c
->  create mode 100644 drivers/iio/imu/bmi160/bmi160_spi.c
-> 
-> diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
-> index 5e610f7..1f1ad41 100644
-> --- a/drivers/iio/imu/Kconfig
-> +++ b/drivers/iio/imu/Kconfig
-> @@ -25,6 +25,8 @@ config ADIS16480
->  	  Say yes here to build support for Analog Devices ADIS16375, ADIS16480,
->  	  ADIS16485, ADIS16488 inertial sensors.
->  
-> +source "drivers/iio/imu/bmi160/Kconfig"
-> +
->  config KMX61
->  	tristate "Kionix KMX61 6-axis accelerometer and magnetometer"
->  	depends on I2C
-> diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
-> index e1e6e3d..c71bcd3 100644
-> --- a/drivers/iio/imu/Makefile
-> +++ b/drivers/iio/imu/Makefile
-> @@ -13,6 +13,7 @@ adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_trigger.o
->  adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_buffer.o
->  obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
->  
-> +obj-y += bmi160/
->  obj-y += inv_mpu6050/
->  
->  obj-$(CONFIG_KMX61) += kmx61.o
-> diff --git a/drivers/iio/imu/bmi160/Kconfig b/drivers/iio/imu/bmi160/Kconfig
-> new file mode 100644
-> index 0000000..adb512f
-> --- /dev/null
-> +++ b/drivers/iio/imu/bmi160/Kconfig
-> @@ -0,0 +1,32 @@
-> +#
-> +# BMI160 IMU driver
-> +#
-> +
-> +config BMI160
-> +	tristate
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +
-> +config BMI160_I2C
-> +	tristate "Bosch BMI160 I2C driver"
-> +	depends on I2C
-> +	select BMI160
-> +	select REGMAP_I2C
-> +	help
-> +	  If you say yes you get support BMI160 IMU on I2C with accelerometer,
-> +	  gyroscope and external BMG160 magnetometer.
-> +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called bmi160_i2c.
-> +
-> +config BMI160_SPI
-> +	tristate "Bosch BMI160 SPI driver"
-> +	depends on SPI
-> +	select BMI160
-> +	select REGMAP_SPI
-> +	help
-> +	  If you say yes you get support BMI160 IMU on SPI with accelerometer,
-> +	  gyroscope and external BMG160 magnetometer.
-> +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called bmi160_i2c.
-> diff --git a/drivers/iio/imu/bmi160/Makefile b/drivers/iio/imu/bmi160/Makefile
-> new file mode 100644
-> index 0000000..10365e4
-> --- /dev/null
-> +++ b/drivers/iio/imu/bmi160/Makefile
-> @@ -0,0 +1,6 @@
-> +#
-> +# Makefile for Bosch BMI160 IMU
-> +#
-> +obj-$(CONFIG_BMI160) += bmi160_core.o
-> +obj-$(CONFIG_BMI160_I2C) += bmi160_i2c.o
-> +obj-$(CONFIG_BMI160_SPI) += bmi160_spi.o
-> diff --git a/drivers/iio/imu/bmi160/bmi160.h b/drivers/iio/imu/bmi160/bmi160.h
-> new file mode 100644
-> index 0000000..c5f7b2d
-> --- /dev/null
-> +++ b/drivers/iio/imu/bmi160/bmi160.h
-> @@ -0,0 +1,8 @@
-> +#ifndef BMI160_H_
-> +#define BMI160_H_
-> +
-> +int bmi160_core_probe(struct device *dev, struct regmap *regmap,
-> +		      const char *name, bool use_spi);
-> +void bmi160_core_remove(struct device *dev);
-> +
-> +#endif  /* BMI160_H_ */
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> new file mode 100644
-> index 0000000..d6ce643
-> --- /dev/null
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -0,0 +1,588 @@
-> +/*
-> + * BMI160 - Bosch IMU (accel, gyro plus external magnetometer)
-> + *
-> + * Copyright (c) 2016, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * IIO core driver for BMI160, with support for I2C/SPI busses
-> + *
-> + * TODO: magnetometer, interrupts, hardware FIFO
-> + */
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +#include <linux/acpi.h>
-> +#include <linux/delay.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/buffer.h>
-> +
-> +#include "bmi160.h"
-> +
-> +#define BMI160_REG_CHIP_ID	0x00
-> +#define BMI160_CHIP_ID_VAL	0xD1
-> +
-> +#define BMI160_REG_PMU_STATUS	0x03
-> +
-> +/* X axis data low byte address, the rest can be obtained using axis offset */
-> +#define BMI160_REG_DATA_MAGN_XOUT_L	0x04
-> +#define BMI160_REG_DATA_GYRO_XOUT_L	0x0C
-> +#define BMI160_REG_DATA_ACCEL_XOUT_L	0x12
-> +
-> +#define BMI160_REG_ACCEL_CONFIG		0x40
-> +#define BMI160_ACCEL_CONFIG_ODR_MASK	GENMASK(3, 0)
-> +#define BMI160_ACCEL_CONFIG_BWP_MASK	GENMASK(6, 4)
-> +
-> +#define BMI160_REG_ACCEL_RANGE		0x41
-> +#define BMI160_ACCEL_RANGE_2G		0x03
-> +#define BMI160_ACCEL_RANGE_4G		0x05
-> +#define BMI160_ACCEL_RANGE_8G		0x08
-> +#define BMI160_ACCEL_RANGE_16G		0x0C
-> +
-> +#define BMI160_REG_GYRO_CONFIG		0x42
-> +#define BMI160_GYRO_CONFIG_ODR_MASK	GENMASK(3, 0)
-> +#define BMI160_GYRO_CONFIG_BWP_MASK	GENMASK(5, 4)
-> +
-> +#define BMI160_REG_GYRO_RANGE		0x43
-> +#define BMI160_GYRO_RANGE_2000DPS	0x00
-> +#define BMI160_GYRO_RANGE_1000DPS	0x01
-> +#define BMI160_GYRO_RANGE_500DPS	0x02
-> +#define BMI160_GYRO_RANGE_250DPS	0x03
-> +#define BMI160_GYRO_RANGE_125DPS	0x04
-> +
-> +#define BMI160_REG_CMD			0x7E
-> +#define BMI160_CMD_ACCEL_PM_SUSPEND	0x10
-> +#define BMI160_CMD_ACCEL_PM_NORMAL	0x11
-> +#define BMI160_CMD_ACCEL_PM_LOW_POWER	0x12
-> +#define BMI160_CMD_GYRO_PM_SUSPEND	0x14
-> +#define BMI160_CMD_GYRO_PM_NORMAL	0x15
-> +#define BMI160_CMD_GYRO_PM_FAST_STARTUP	0x17
-> +#define BMI160_CMD_SOFTRESET		0xB6
-> +
-> +#define BMI160_REG_DUMMY		0x7F
-> +
-> +#define BMI160_ACCEL_PMU_MIN_SLEEP	3200 /* usec */
-> +#define BMI160_ACCEL_PMU_MAX_SLEEP	3800
-> +#define BMI160_GYRO_PMU_MIN_SLEEP	55000
-> +#define BMI160_GYRO_PMU_MAX_SLEEP	80000
-> +#define BMI160_SOFTRESET_SLEEP		1000
-> +
-> +#define BMI160_CHANNEL(_type, _axis, _index) {			\
-> +	.type = _type,						\
-> +	.modified = 1,						\
-> +	.channel2 = IIO_MOD_##_axis,				\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |  \
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
-> +	.scan_index = _index,					\
-> +	.scan_type = {						\
-> +		.sign = 's',					\
-> +		.realbits = 16,					\
-> +		.storagebits = 16,				\
-> +		.shift = 0,					\
-> +		.endianness = IIO_LE,				\
-> +	},							\
-> +}
-> +
-> +/* scan indexes follow DATA register order */
-> +enum bmi160_scan_axis {
-> +	BMI160_SCAN_EXT_MAGN_X = 0,
-> +	BMI160_SCAN_EXT_MAGN_Y,
-> +	BMI160_SCAN_EXT_MAGN_Z,
-> +	BMI160_SCAN_RHALL,
-Given the ordering in here is arbitary, why include the unsupported elements
-at this stage?  Don't suppose it does any harm though.
-> +	BMI160_SCAN_GYRO_X,
-> +	BMI160_SCAN_GYRO_Y,
-> +	BMI160_SCAN_GYRO_Z,
-> +	BMI160_SCAN_ACCEL_X,
-> +	BMI160_SCAN_ACCEL_Y,
-> +	BMI160_SCAN_ACCEL_Z,
-> +	BMI160_SCAN_TIMESTAMP,
-> +};
-> +
-> +enum bmi160_sensor_type {
-> +	BMI160_ACCEL	= 0,
-> +	BMI160_GYRO,
-> +	BMI160_EXT_MAGN,
-> +	BMI160_NUM_SENSORS /* must be last */
-> +};
-> +
-> +struct bmi160_data {
-> +	struct regmap *regmap;
-> +};
-> +
-> +struct bmi160_regs {
-> +	u8 data; /* LSB byte register for X-axis */
-> +	u8 config;
-> +	u8 config_odr_mask;
-> +	u8 config_bwp_mask;
-> +	u8 range;
-> +	u8 pmu_cmd_normal;
-> +	u8 pmu_cmd_suspend;
-> +};
-> +
-> +struct bmi160_regs bmi160_regs[] = {
-> +	[BMI160_ACCEL] = {
-> +		.data	= BMI160_REG_DATA_ACCEL_XOUT_L,
-> +		.config	= BMI160_REG_ACCEL_CONFIG,
-> +		.config_odr_mask = BMI160_ACCEL_CONFIG_ODR_MASK,
-> +		.config_bwp_mask = BMI160_ACCEL_CONFIG_BWP_MASK,
-> +		.range	= BMI160_REG_ACCEL_RANGE,
-> +		.pmu_cmd_normal = BMI160_CMD_ACCEL_PM_NORMAL,
-> +		.pmu_cmd_suspend = BMI160_CMD_ACCEL_PM_SUSPEND,
-> +	},
-> +	[BMI160_GYRO] = {
-> +		.data	= BMI160_REG_DATA_GYRO_XOUT_L,
-> +		.config	= BMI160_REG_GYRO_CONFIG,
-> +		.config_odr_mask = BMI160_GYRO_CONFIG_ODR_MASK,
-> +		.config_bwp_mask = BMI160_GYRO_CONFIG_BWP_MASK,
-> +		.range	= BMI160_REG_GYRO_RANGE,
-> +		.pmu_cmd_normal = BMI160_CMD_GYRO_PM_NORMAL,
-> +		.pmu_cmd_suspend = BMI160_CMD_GYRO_PM_SUSPEND,
-> +	},
-> +};
-> +
-> +struct bmi160_pmu_time {
-> +	unsigned long min;
-> +	unsigned long max;
-> +};
-> +
-> +struct bmi160_pmu_time bmi160_pmu_time[] = {
-> +	[BMI160_ACCEL] = {
-> +		.min = BMI160_ACCEL_PMU_MIN_SLEEP,
-> +		.max = BMI160_ACCEL_PMU_MAX_SLEEP
-> +	},
-> +	[BMI160_GYRO] = {
-> +		.min = BMI160_GYRO_PMU_MIN_SLEEP,
-> +		.max = BMI160_GYRO_PMU_MIN_SLEEP,
-> +	},
-> +};
-> +
-> +struct bmi160_scale {
-> +	u8 bits;
-> +	int uscale;
-> +};
-> +
-> +struct bmi160_odr {
-> +	u8 bits;
-> +	int odr;
-> +	int uodr;
-> +};
-> +
-> +static const struct bmi160_scale bmi160_accel_scale[] = {
-> +	{ BMI160_ACCEL_RANGE_2G, 598},
-> +	{ BMI160_ACCEL_RANGE_4G, 1197},
-> +	{ BMI160_ACCEL_RANGE_8G, 2394},
-> +	{ BMI160_ACCEL_RANGE_16G, 4788},
-> +};
-> +
-> +static const struct bmi160_scale bmi160_gyro_scale[] = {
-> +	{ BMI160_GYRO_RANGE_2000DPS, 1065},
-> +	{ BMI160_GYRO_RANGE_1000DPS, 532},
-> +	{ BMI160_GYRO_RANGE_500DPS, 266},
-> +	{ BMI160_GYRO_RANGE_250DPS, 133},
-> +	{ BMI160_GYRO_RANGE_125DPS, 66},
-> +
-> +};
-> +
-> +struct bmi160_scale_item {
-> +	const struct bmi160_scale *tbl;
-> +	int num;
-> +};
-> +
-> +static const struct  bmi160_scale_item bmi160_scale_table[] = {
-> +	[BMI160_ACCEL] = {
-> +		.tbl	= bmi160_accel_scale,
-> +		.num	= ARRAY_SIZE(bmi160_accel_scale),
-> +	},
-> +	[BMI160_GYRO] = {
-> +		.tbl	= bmi160_gyro_scale,
-> +		.num	= ARRAY_SIZE(bmi160_gyro_scale),
-> +	},
-> +};
-> +
-> +static const struct bmi160_odr bmi160_accel_odr[] = {
-> +	{0x01, 0, 78125},
-> +	{0x02, 1, 5625},
-> +	{0x03, 3, 125},
-> +	{0x04, 6, 25},
-> +	{0x05, 12, 5},
-> +	{0x06, 25, 0},
-> +	{0x07, 50, 0},
-> +	{0x08, 100, 0},
-> +	{0x09, 200, 0},
-> +	{0x0A, 400, 0},
-> +	{0x0B, 800, 0},
-> +	{0x0C, 1600, 0},
-> +};
-> +
-> +static const struct bmi160_odr bmi160_gyro_odr[] = {
-> +	{0x06, 25, 0},
-> +	{0x07, 50, 0},
-> +	{0x08, 100, 0},
-> +	{0x09, 200, 0},
-> +	{0x0A, 400, 0},
-> +	{0x0B, 8000, 0},
-> +	{0x0C, 1600, 0},
-> +	{0x0D, 3200, 0},
-> +};
-> +
-> +struct bmi160_odr_item {
-> +	const struct bmi160_odr *tbl;
-> +	int num;
-> +};
-> +
-> +static const struct  bmi160_odr_item bmi160_odr_table[] = {
-> +	[BMI160_ACCEL] = {
-> +		.tbl	= bmi160_accel_odr,
-> +		.num	= ARRAY_SIZE(bmi160_accel_odr),
-> +	},
-> +	[BMI160_GYRO] = {
-> +		.tbl	= bmi160_gyro_odr,
-> +		.num	= ARRAY_SIZE(bmi160_gyro_odr),
-> +	},
-> +};
-> +
-> +static const struct iio_chan_spec bmi160_channels[] = {
-> +	BMI160_CHANNEL(IIO_ACCEL, X, BMI160_SCAN_ACCEL_X),
-> +	BMI160_CHANNEL(IIO_ACCEL, Y, BMI160_SCAN_ACCEL_Y),
-> +	BMI160_CHANNEL(IIO_ACCEL, Z, BMI160_SCAN_ACCEL_Z),
-> +	BMI160_CHANNEL(IIO_ANGL_VEL, X, BMI160_SCAN_GYRO_X),
-> +	BMI160_CHANNEL(IIO_ANGL_VEL, Y, BMI160_SCAN_GYRO_Y),
-> +	BMI160_CHANNEL(IIO_ANGL_VEL, Z, BMI160_SCAN_GYRO_Z),
-> +	IIO_CHAN_SOFT_TIMESTAMP(BMI160_SCAN_TIMESTAMP),
-> +};
-> +
-> +static enum bmi160_sensor_type bmi160_to_sensor(enum iio_chan_type iio_type)
-> +{
-> +	switch (iio_type) {
-> +	case IIO_ACCEL:
-> +		return BMI160_ACCEL;
-> +	case IIO_ANGL_VEL:
-> +		return BMI160_GYRO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static
-> +int bmi160_set_mode(struct bmi160_data *data, enum bmi160_sensor_type t,
-> +		    int mode)
-> +{
-> +	int ret;
-> +	u8 cmd;
-> +
-> +	if (mode)
-> +		cmd = bmi160_regs[t].pmu_cmd_normal;
-> +	else
-> +		cmd = bmi160_regs[t].pmu_cmd_suspend;
-> +
-> +	ret = regmap_write(data->regmap, BMI160_REG_CMD, cmd);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	usleep_range(bmi160_pmu_time[t].min, bmi160_pmu_time[t].max);
-> +
-> +	return 0;
-> +}
-> +
-> +static
-> +int bmi160_set_scale(struct bmi160_data *data, enum bmi160_sensor_type t,
-> +		     int uscale)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < bmi160_scale_table[t].num; i++)
-> +		if (bmi160_scale_table[t].tbl[i].uscale == uscale)
-> +			break;
-> +
-> +	if (i == bmi160_scale_table[t].num)
-> +		return -EINVAL;
-> +
-> +	return regmap_write(data->regmap, bmi160_regs[t].range,
-> +			    bmi160_scale_table[t].tbl[i].bits);
-> +}
-> +
-> +static
-> +int bmi160_get_scale(struct bmi160_data *data, enum bmi160_sensor_type t,
-> +		     int *uscale)
-> +{
-> +	int i, ret, val;
-> +
-> +	ret = regmap_read(data->regmap, bmi160_regs[t].range, &val);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	for (i = 0; i < bmi160_scale_table[t].num; i++)
-> +		if (bmi160_scale_table[t].tbl[i].bits == val) {
-> +			*uscale = bmi160_scale_table[t].tbl[i].uscale;
-> +			return 0;
-> +		}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int bmi160_get_data(struct bmi160_data *data, int chan_type,
-> +			   int axis, int *val)
-> +{
-> +	u8 reg;
-> +	int ret;
-> +	__le16 sample;
-> +	enum bmi160_sensor_type t = bmi160_to_sensor(chan_type);
-> +
-> +	reg = bmi160_regs[t].data + (axis - IIO_MOD_X) * 2;
-> +
-> +	ret = regmap_bulk_read(data->regmap, reg, &sample, sizeof(sample));
-This looks better for sample than in the trigger handler below.
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = sign_extend32(le16_to_cpu(sample), 15);
-> +
-> +	return 0;
-> +}
-> +
-> +static
-> +int bmi160_set_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
-> +		   int odr, int uodr)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < bmi160_odr_table[t].num; i++)
-> +		if (bmi160_odr_table[t].tbl[i].odr == odr &&
-> +		    bmi160_odr_table[t].tbl[i].uodr == uodr)
-> +			break;
-> +
-> +	if (i >= bmi160_odr_table[t].num)
-> +		return -EINVAL;
-> +
-> +	return regmap_update_bits(data->regmap,
-> +				  bmi160_regs[t].config,
-> +				  bmi160_odr_table[t].tbl[i].bits,
-> +				  bmi160_regs[t].config_odr_mask);
-> +}
-> +
-> +static int bmi160_get_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
-> +			  int *odr, int *uodr)
-> +{
-> +	int i, val, ret;
-> +
-> +	ret = regmap_read(data->regmap, bmi160_regs[t].config, &val);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	val &= bmi160_regs[t].config_odr_mask;
-> +
-> +	for (i = 0; i < bmi160_odr_table[t].num; i++)
-> +		if (val == bmi160_odr_table[t].tbl[i].bits)
-> +			break;
-> +
-> +	if (i >= bmi160_odr_table[t].num)
-> +		return -EINVAL;
-> +
-> +	*odr = bmi160_odr_table[t].tbl[i].odr;
-> +	*uodr = bmi160_odr_table[t].tbl[i].uodr;
-> +
-> +	return 0;
-> +}
-> +
-> +static irqreturn_t bmi160_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +	s16 buf[16]; /* 3 sens x 3 axis x s16 + 3 x s16 pad + 4 x s16 tstamp */
-> +	int i, ret, sample, j = 0, base = BMI160_REG_DATA_MAGN_XOUT_L;
-> +
-> +	for_each_set_bit(i, indio_dev->active_scan_mask,
-> +			 indio_dev->masklength) {
-Unless I'm missing something this could pass a stack variable into a
-dma transfer - where alignment needs to be right...
+All i2c-muxes have a parent adapter and one or many child
+adapters. A mux also has some means of selection. Previously,
+this was stored per child adapter, but it is only needed
+to keep track of this per mux.
 
-Also, a fixed integer size would probably be wise for sample.
+Add an i2c mux core, that keeps track of this consistently.
 
-> +		ret = regmap_bulk_read(data->regmap, base + 2 * i, &sample,
-> +				       sizeof(sample));
-> +		if (ret < 0)
-> +			goto done;
-> +		buf[j++] = sample;
-> +	}
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
-> +done:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int bmi160_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
-> +{
-> +	int ret;
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = bmi160_get_data(data, chan->type, chan->channel2, val);
-> +		if (ret < 0)
-> +			return ret;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		ret = bmi160_get_scale(data,
-> +				       bmi160_to_sensor(chan->type), val2);
-> +		return ret < 0 ? ret : IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = bmi160_get_odr(data, bmi160_to_sensor(chan->type),
-> +				     val, val2);
-> +		return ret < 0 ? ret : IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int bmi160_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val, int val2, long mask)
-> +{
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		return bmi160_set_scale(data,
-> +					bmi160_to_sensor(chan->type), val2);
-> +		break;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		return bmi160_set_odr(data, bmi160_to_sensor(chan->type),
-> +				      val, val2);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_info bmi160_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = bmi160_read_raw,
-> +	.write_raw = bmi160_write_raw,
-> +};
-> +
-> +static const char *bmi160_match_acpi_device(struct device *dev)
-> +{
-> +	const struct acpi_device_id *id;
-> +
-> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +	if (!id)
-> +		return NULL;
-> +
-> +	return dev_name(dev);
-> +}
-> +
-> +static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
-> +{
-> +	int ret;
-> +	unsigned int val;
-> +	struct device *dev = regmap_get_device(data->regmap);
-> +
-> +	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	usleep_range(BMI160_SOFTRESET_SLEEP, BMI160_SOFTRESET_SLEEP + 1);
-> +
-> +	/* CS rising edge is needed before starting SPI, so do a dummy read */
-Is this documented?  Seems a little 'interesting'!
-> +	if (use_spi) {
-> +		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
-> +	if (ret < 0) {
-> +		dev_err(dev, "Error reading chip id\n");
-> +		return ret;
-> +	}
-> +	if (val != BMI160_CHIP_ID_VAL) {
-> +		dev_err(dev, "Wrong chip id, got %x expected %x\n",
-> +			val, BMI160_CHIP_ID_VAL);
-> +		return -ENODEV;
-> +	}
-> +
-> +	ret = bmi160_set_mode(data, BMI160_ACCEL, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = bmi160_set_mode(data, BMI160_GYRO, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static void bmi160_chip_uninit(struct bmi160_data *data)
-> +{
-> +	bmi160_set_mode(data, BMI160_GYRO, 0);
-> +	bmi160_set_mode(data, BMI160_ACCEL, 0);
-> +}
-> +
-> +int bmi160_core_probe(struct device *dev, struct regmap *regmap,
-> +		      const char *name, bool use_spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct bmi160_data *data;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	dev_set_drvdata(dev, indio_dev);
-> +	data->regmap = regmap;
-> +
-> +	ret = bmi160_chip_init(data, use_spi);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (!name && ACPI_HANDLE(dev))
-> +		name = bmi160_match_acpi_device(dev);
-> +
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->channels = bmi160_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(bmi160_channels);
-> +	indio_dev->name = name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &bmi160_info;
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 bmi160_trigger_handler, NULL);
-> +	if (ret < 0)
-> +		goto uninit;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		goto buffer_cleanup;
-> +
-> +	return 0;
-> +uninit:
-> +	bmi160_chip_uninit(data);
-> +buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(bmi160_core_probe);
-> +
-> +void bmi160_core_remove(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	bmi160_chip_uninit(data);
-> +}
-> +EXPORT_SYMBOL_GPL(bmi160_core_remove);
-> +
-> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
-> +MODULE_DESCRIPTION("Bosch BMI160 driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
-> new file mode 100644
-> index 0000000..af1feac
-> --- /dev/null
-> +++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
-> @@ -0,0 +1,79 @@
-> +/*
-> + * BMI160 - Bosch IMU, I2C bits
-> + *
-> + * Copyright (c) 2016, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * 7-bit I2C slave address is:
-> + *      - 0x68 if SDO is pulled to GND
-> + *      - 0x69 if SDO is pulled to VDDIO
-> + */
-> +#include <linux/i2c.h>
-> +#include <linux/regmap.h>
-> +#include <linux/acpi.h>
-> +
-> +#include "bmi160.h"
-> +
-> +#define BMI160_I2C_DRV_NAME	"bmi160_i2c"
-Could just use it inline given the one location in which it's used.
-> +
-> +static const struct regmap_config bmi160_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +};
-Could share the regmap config between the two drivers by moving it to the
-core..  Not sure it's worth bothering though.
-> +
-> +static int bmi160_i2c_probe(struct i2c_client *client,
-> +			    const struct i2c_device_id *id)
-> +{
-> +	struct regmap *regmap;
-> +	const char *name = NULL;
-> +
-> +	regmap = devm_regmap_init_i2c(client, &bmi160_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
-> +			(int)PTR_ERR(regmap));
-> +		return PTR_ERR(regmap);
-> +	}
-> +
-> +	if (id)
-> +		name = id->name;
-> +
-> +	return bmi160_core_probe(&client->dev, regmap, name, false);
-> +}
-> +
-> +static int bmi160_i2c_remove(struct i2c_client *client)
-> +{
-> +	bmi160_core_remove(&client->dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id bmi160_i2c_id[] = {
-> +	{"bmi160", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, bmi160_i2c_id);
-> +
-> +static const struct acpi_device_id bmi160_acpi_match[] = {
-> +	{"BMI0160", 0},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
-> +
-> +static struct i2c_driver bmi160_i2c_driver = {
-> +	.driver = {
-> +		.name			= BMI160_I2C_DRV_NAME,
-> +		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
-> +	},
-> +	.probe		= bmi160_i2c_probe,
-> +	.remove		= bmi160_i2c_remove,
-> +	.id_table	= bmi160_i2c_id,
-> +};
-> +
-No blank line here - at least be consistent!
-> +module_i2c_driver(bmi160_i2c_driver);
-> +
-> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
-> +MODULE_DESCRIPTION("BMI160 I2C driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
-> new file mode 100644
-> index 0000000..444b723
-> --- /dev/null
-> +++ b/drivers/iio/imu/bmi160/bmi160_spi.c
-> @@ -0,0 +1,71 @@
-> +/*
-> + * BMI160 - Bosch IMU, SPI bits
-> + *
-> + * Copyright (c) 2016, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-No need for this blank line ;)
-> + */
-> +#include <linux/spi/spi.h>
-> +#include <linux/regmap.h>
-> +#include <linux/acpi.h>
-> +
-> +#include "bmi160.h"
-> +
-> +#define BMI160_SPI_DRV_NAME	"bmi160_spi"
-Again, could just put the string inline without any loss of readability.
-> +
-> +static const struct regmap_config bmi160_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +};
-> +
-> +static int bmi160_spi_probe(struct spi_device *spi)
-> +{
-> +	struct regmap *regmap;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +
-> +	regmap = devm_regmap_init_spi(spi, &bmi160_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
-> +			(int)PTR_ERR(regmap));
-> +		return PTR_ERR(regmap);
-> +	}
-> +	return bmi160_core_probe(&spi->dev, regmap, id->name, true);
-> +}
-> +
-> +static int bmi160_spi_remove(struct spi_device *spi)
-> +{
-> +	bmi160_core_remove(&spi->dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id bmi160_spi_id[] = {
-> +	{"bmi160", 0},
-> +	{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(spi, bmi160_spi_id);
-> +
-> +static const struct acpi_device_id bmi160_acpi_match[] = {
-> +	{"BMI0160", 0},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
-> +
-> +static struct spi_driver bmi160_spi_driver = {
-> +	.probe		= bmi160_spi_probe,
-> +	.remove		= bmi160_spi_remove,
-> +	.id_table	= bmi160_spi_id,
-> +	.driver = {
-> +		.acpi_match_table = ACPI_PTR(bmi160_acpi_match),
-> +		.name	= BMI160_SPI_DRV_NAME,
-> +	},
-> +};
-> +module_spi_driver(bmi160_spi_driver);
-> +
-> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
-> +MODULE_DESCRIPTION("Bosch BMI160 SPI driver");
-> +MODULE_LICENSE("GPL v2");
-> 
+Also add some glue for users of the old interface, which will
+create one implicit mux core per child adapter.
+
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/i2c/i2c-mux.c   | 238 ++++++++++++++++++++++++++++++++++++++----------
+ include/linux/i2c-mux.h |  47 ++++++++++
+ 2 files changed, 237 insertions(+), 48 deletions(-)
+
+diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
+index d4022878b2f0..d95eb66e11bf 100644
+--- a/drivers/i2c/i2c-mux.c
++++ b/drivers/i2c/i2c-mux.c
+@@ -28,33 +28,34 @@
+ #include <linux/slab.h>
+ 
+ /* multiplexer per channel data */
++struct i2c_mux_priv_old {
++	void *mux_priv;
++	int (*select)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
++	int (*deselect)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
++};
++
+ struct i2c_mux_priv {
+ 	struct i2c_adapter adap;
+ 	struct i2c_algorithm algo;
+-
+-	struct i2c_adapter *parent;
+-	struct device *mux_dev;
+-	void *mux_priv;
++	struct i2c_mux_core *muxc;
+ 	u32 chan_id;
+-
+-	int (*select)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
+-	int (*deselect)(struct i2c_adapter *, void *mux_priv, u32 chan_id);
+ };
+ 
+ static int i2c_mux_master_xfer(struct i2c_adapter *adap,
+ 			       struct i2c_msg msgs[], int num)
+ {
+ 	struct i2c_mux_priv *priv = adap->algo_data;
+-	struct i2c_adapter *parent = priv->parent;
++	struct i2c_mux_core *muxc = priv->muxc;
++	struct i2c_adapter *parent = muxc->parent;
+ 	int ret;
+ 
+ 	/* Switch to the right mux port and perform the transfer. */
+ 
+-	ret = priv->select(parent, priv->mux_priv, priv->chan_id);
++	ret = muxc->select(muxc, priv->chan_id);
+ 	if (ret >= 0)
+ 		ret = __i2c_transfer(parent, msgs, num);
+-	if (priv->deselect)
+-		priv->deselect(parent, priv->mux_priv, priv->chan_id);
++	if (muxc->deselect)
++		muxc->deselect(muxc, priv->chan_id);
+ 
+ 	return ret;
+ }
+@@ -65,17 +66,18 @@ static int i2c_mux_smbus_xfer(struct i2c_adapter *adap,
+ 			      int size, union i2c_smbus_data *data)
+ {
+ 	struct i2c_mux_priv *priv = adap->algo_data;
+-	struct i2c_adapter *parent = priv->parent;
++	struct i2c_mux_core *muxc = priv->muxc;
++	struct i2c_adapter *parent = muxc->parent;
+ 	int ret;
+ 
+ 	/* Select the right mux port and perform the transfer. */
+ 
+-	ret = priv->select(parent, priv->mux_priv, priv->chan_id);
++	ret = muxc->select(muxc, priv->chan_id);
+ 	if (ret >= 0)
+ 		ret = parent->algo->smbus_xfer(parent, addr, flags,
+ 					read_write, command, size, data);
+-	if (priv->deselect)
+-		priv->deselect(parent, priv->mux_priv, priv->chan_id);
++	if (muxc->deselect)
++		muxc->deselect(muxc, priv->chan_id);
+ 
+ 	return ret;
+ }
+@@ -84,7 +86,7 @@ static int i2c_mux_smbus_xfer(struct i2c_adapter *adap,
+ static u32 i2c_mux_functionality(struct i2c_adapter *adap)
+ {
+ 	struct i2c_mux_priv *priv = adap->algo_data;
+-	struct i2c_adapter *parent = priv->parent;
++	struct i2c_adapter *parent = priv->muxc->parent;
+ 
+ 	return parent->algo->functionality(parent);
+ }
+@@ -102,30 +104,80 @@ static unsigned int i2c_mux_parent_classes(struct i2c_adapter *parent)
+ 	return class;
+ }
+ 
+-struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+-				struct device *mux_dev,
+-				void *mux_priv, u32 force_nr, u32 chan_id,
+-				unsigned int class,
+-				int (*select) (struct i2c_adapter *,
+-					       void *, u32),
+-				int (*deselect) (struct i2c_adapter *,
+-						 void *, u32))
++int i2c_mux_reserve_adapters(struct i2c_mux_core *muxc, int adapters)
++{
++	struct i2c_adapter **adapter;
++
++	if (adapters <= muxc->max_adapters)
++		return 0;
++
++	adapter = devm_kmalloc_array(muxc->dev,
++				     adapters, sizeof(*adapter),
++				     GFP_KERNEL);
++	if (!adapter)
++		return -ENOMEM;
++
++	if (muxc->adapter) {
++		memcpy(adapter, muxc->adapter,
++		       muxc->max_adapters * sizeof(*adapter));
++		devm_kfree(muxc->dev, muxc->adapter);
++	}
++
++	muxc->adapter = adapter;
++	muxc->max_adapters = adapters;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(i2c_mux_reserve_adapters);
++
++struct i2c_mux_core *i2c_mux_alloc(struct i2c_adapter *parent,
++				   struct device *dev, int sizeof_priv,
++				   u32 flags,
++				   int (*select)(struct i2c_mux_core *, u32),
++				   int (*deselect)(struct i2c_mux_core *, u32))
+ {
++	struct i2c_mux_core *muxc;
++
++	muxc = devm_kzalloc(dev, sizeof(*muxc) + sizeof_priv, GFP_KERNEL);
++	if (!muxc)
++		return NULL;
++	if (sizeof_priv)
++		muxc->priv = muxc + 1;
++
++	muxc->parent = parent;
++	muxc->dev = dev;
++	muxc->select = select;
++	muxc->deselect = deselect;
++
++	return muxc;
++}
++EXPORT_SYMBOL_GPL(i2c_mux_alloc);
++
++int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
++			u32 force_nr, u32 chan_id,
++			unsigned int class)
++{
++	struct i2c_adapter *parent = muxc->parent;
+ 	struct i2c_mux_priv *priv;
+ 	char symlink_name[20];
+ 	int ret;
+ 
+-	priv = kzalloc(sizeof(struct i2c_mux_priv), GFP_KERNEL);
++	if (muxc->adapters >= muxc->max_adapters) {
++		int new_max = 2 * muxc->max_adapters;
++
++		if (!new_max)
++			new_max = 1;
++		ret = i2c_mux_reserve_adapters(muxc, new_max);
++		if (ret)
++			return ret;
++	}
++
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+-		return NULL;
++		return -ENOMEM;
+ 
+ 	/* Set up private adapter data */
+-	priv->parent = parent;
+-	priv->mux_dev = mux_dev;
+-	priv->mux_priv = mux_priv;
++	priv->muxc = muxc;
+ 	priv->chan_id = chan_id;
+-	priv->select = select;
+-	priv->deselect = deselect;
+ 
+ 	/* Need to do algo dynamically because we don't know ahead
+ 	 * of time what sort of physical adapter we'll be dealing with.
+@@ -159,11 +211,11 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+ 	 * Try to populate the mux adapter's of_node, expands to
+ 	 * nothing if !CONFIG_OF.
+ 	 */
+-	if (mux_dev->of_node) {
++	if (muxc->dev->of_node) {
+ 		struct device_node *child;
+ 		u32 reg;
+ 
+-		for_each_child_of_node(mux_dev->of_node, child) {
++		for_each_child_of_node(muxc->dev->of_node, child) {
+ 			ret = of_property_read_u32(child, "reg", &reg);
+ 			if (ret)
+ 				continue;
+@@ -177,8 +229,9 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+ 	/*
+ 	 * Associate the mux channel with an ACPI node.
+ 	 */
+-	if (has_acpi_companion(mux_dev))
+-		acpi_preset_companion(&priv->adap.dev, ACPI_COMPANION(mux_dev),
++	if (has_acpi_companion(muxc->dev))
++		acpi_preset_companion(&priv->adap.dev,
++				      ACPI_COMPANION(muxc->dev),
+ 				      chan_id);
+ 
+ 	if (force_nr) {
+@@ -192,33 +245,122 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+ 			"failed to add mux-adapter (error=%d)\n",
+ 			ret);
+ 		kfree(priv);
+-		return NULL;
++		return ret;
+ 	}
+ 
+-	WARN(sysfs_create_link(&priv->adap.dev.kobj, &mux_dev->kobj, "mux_device"),
+-			       "can't create symlink to mux device\n");
++	WARN(sysfs_create_link(&priv->adap.dev.kobj, &muxc->dev->kobj,
++			       "mux_device"),
++	     "can't create symlink to mux device\n");
+ 
+ 	snprintf(symlink_name, sizeof(symlink_name), "channel-%u", chan_id);
+-	WARN(sysfs_create_link(&mux_dev->kobj, &priv->adap.dev.kobj, symlink_name),
+-			       "can't create symlink for channel %u\n", chan_id);
++	WARN(sysfs_create_link(&muxc->dev->kobj, &priv->adap.dev.kobj,
++			       symlink_name),
++	     "can't create symlink for channel %u\n", chan_id);
+ 	dev_info(&parent->dev, "Added multiplexed i2c bus %d\n",
+ 		 i2c_adapter_id(&priv->adap));
+ 
+-	return &priv->adap;
++	muxc->adapter[muxc->adapters++] = &priv->adap;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(i2c_mux_add_adapter);
++
++struct i2c_mux_core *i2c_mux_one_adapter(struct i2c_adapter *parent,
++					 struct device *dev, int sizeof_priv,
++					 u32 flags, u32 force_nr,
++					 u32 chan_id, unsigned int class,
++					 int (*select)(struct i2c_mux_core *,
++						       u32),
++					 int (*deselect)(struct i2c_mux_core *,
++							 u32))
++{
++	struct i2c_mux_core *muxc;
++	int ret;
++
++	muxc = i2c_mux_alloc(parent, dev, sizeof_priv, flags, select, deselect);
++	if (!muxc)
++		return ERR_PTR(-ENOMEM);
++
++	ret = i2c_mux_add_adapter(muxc, force_nr, chan_id, class);
++	if (ret) {
++		devm_kfree(dev, muxc);
++		return ERR_PTR(ret);
++	}
++
++	return muxc;
++}
++EXPORT_SYMBOL_GPL(i2c_mux_one_adapter);
++
++static int i2c_mux_select(struct i2c_mux_core *muxc, u32 chan)
++{
++	struct i2c_mux_priv_old *priv = i2c_mux_priv(muxc);
++
++	return priv->select(muxc->parent, priv->mux_priv, chan);
++}
++
++static int i2c_mux_deselect(struct i2c_mux_core *muxc, u32 chan)
++{
++	struct i2c_mux_priv_old *priv = i2c_mux_priv(muxc);
++
++	return priv->deselect(muxc->parent, priv->mux_priv, chan);
++}
++
++struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
++					struct device *mux_dev, void *mux_priv,
++					u32 force_nr, u32 chan_id,
++					unsigned int class,
++					int (*select)(struct i2c_adapter *,
++						      void *, u32),
++					int (*deselect)(struct i2c_adapter *,
++							void *, u32))
++{
++	struct i2c_mux_core *muxc;
++	struct i2c_mux_priv_old *priv;
++
++	muxc = i2c_mux_one_adapter(parent, mux_dev, sizeof(*priv), 0,
++				   force_nr, chan_id, class,
++				   i2c_mux_select,
++				   deselect ? i2c_mux_deselect : NULL);
++	if (IS_ERR(muxc))
++		return NULL;
++
++	priv = i2c_mux_priv(muxc);
++	priv->select = select;
++	priv->deselect = deselect;
++	priv->mux_priv = mux_priv;
++
++	return muxc->adapter[0];
+ }
+ EXPORT_SYMBOL_GPL(i2c_add_mux_adapter);
+ 
+-void i2c_del_mux_adapter(struct i2c_adapter *adap)
++void i2c_mux_del_adapters(struct i2c_mux_core *muxc)
+ {
+-	struct i2c_mux_priv *priv = adap->algo_data;
+ 	char symlink_name[20];
+ 
+-	snprintf(symlink_name, sizeof(symlink_name), "channel-%u", priv->chan_id);
+-	sysfs_remove_link(&priv->mux_dev->kobj, symlink_name);
++	while (muxc->adapters) {
++		struct i2c_adapter *adap = muxc->adapter[--muxc->adapters];
++		struct i2c_mux_priv *priv = adap->algo_data;
++
++		muxc->adapter[muxc->adapters] = NULL;
++
++		snprintf(symlink_name, sizeof(symlink_name),
++			 "channel-%u", priv->chan_id);
++		sysfs_remove_link(&muxc->dev->kobj, symlink_name);
++
++		sysfs_remove_link(&priv->adap.dev.kobj, "mux_device");
++		i2c_del_adapter(adap);
++		kfree(priv);
++	}
++}
++EXPORT_SYMBOL_GPL(i2c_mux_del_adapters);
++
++void i2c_del_mux_adapter(struct i2c_adapter *adap)
++{
++	struct i2c_mux_priv *priv = adap->algo_data;
++	struct i2c_mux_core *muxc = priv->muxc;
+ 
+-	sysfs_remove_link(&priv->adap.dev.kobj, "mux_device");
+-	i2c_del_adapter(adap);
+-	kfree(priv);
++	i2c_mux_del_adapters(muxc);
++	devm_kfree(muxc->dev, muxc->adapter);
++	devm_kfree(muxc->dev, muxc);
+ }
+ EXPORT_SYMBOL_GPL(i2c_del_mux_adapter);
+ 
+diff --git a/include/linux/i2c-mux.h b/include/linux/i2c-mux.h
+index b5f9a007a3ab..0d97d7a3f03c 100644
+--- a/include/linux/i2c-mux.h
++++ b/include/linux/i2c-mux.h
+@@ -27,6 +27,32 @@
+ 
+ #ifdef __KERNEL__
+ 
++struct i2c_mux_core {
++	struct i2c_adapter *parent;
++	struct i2c_adapter **adapter;
++	int adapters;
++	int max_adapters;
++	struct device *dev;
++
++	void *priv;
++
++	int (*select)(struct i2c_mux_core *, u32 chan_id);
++	int (*deselect)(struct i2c_mux_core *, u32 chan_id);
++};
++
++struct i2c_mux_core *i2c_mux_alloc(struct i2c_adapter *parent,
++				   struct device *dev, int sizeof_priv,
++				   u32 flags,
++				   int (*select)(struct i2c_mux_core *, u32),
++				   int (*deselect)(struct i2c_mux_core *, u32));
++
++static inline void *i2c_mux_priv(struct i2c_mux_core *muxc)
++{
++	return muxc->priv;
++}
++
++int i2c_mux_reserve_adapters(struct i2c_mux_core *muxc, int adapters);
++
+ /*
+  * Called to create a i2c bus on a multiplexed bus segment.
+  * The mux_dev and chan_id parameters are passed to the select
+@@ -41,8 +67,29 @@ struct i2c_adapter *i2c_add_mux_adapter(struct i2c_adapter *parent,
+ 					       void *mux_dev, u32 chan_id),
+ 				int (*deselect) (struct i2c_adapter *,
+ 						 void *mux_dev, u32 chan_id));
++/*
++ * Called to create a i2c bus on a multiplexed bus segment.
++ * The chan_id parameter is passed to the select and deselect
++ * callback functions to perform hardware-specific mux control.
++ */
++int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
++			u32 force_nr, u32 chan_id,
++			unsigned int class);
++
++/*
++ * Allocate an i2c_mux_core and add one adapter with one call.
++ */
++struct i2c_mux_core *i2c_mux_one_adapter(struct i2c_adapter *parent,
++					 struct device *dev, int sizeof_priv,
++					 u32 flags, u32 force_nr,
++					 u32 chan_id, unsigned int class,
++					 int (*select)(struct i2c_mux_core *,
++						       u32),
++					 int (*deselect)(struct i2c_mux_core *,
++							 u32));
+ 
+ void i2c_del_mux_adapter(struct i2c_adapter *adap);
++void i2c_mux_del_adapters(struct i2c_mux_core *muxc);
+ 
+ #endif /* __KERNEL__ */
+ 
+-- 
+2.1.4
 
