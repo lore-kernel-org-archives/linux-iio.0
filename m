@@ -1,368 +1,514 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:44514 "EHLO mga04.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756076AbcDGQWh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 7 Apr 2016 12:22:37 -0400
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48958 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752652AbcDCKDt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 06:03:49 -0400
+Subject: Re: [PATCH v4] hp206c: Initial support for reading sensor values
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <801ae3aaa5139b1584d55fd95cddbce37a1fbb66.1459265293.git.leonard.crestez@intel.com>
+ <eb3ac4a5f907f21289b36a28e97f4f1478ca283b.1459267411.git.leonard.crestez@intel.com>
 Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH 1/5] max44000: Initial commit
-Date: Thu,  7 Apr 2016 19:21:50 +0300
-Message-Id: <5dbbd82290c575f595ae0907aaf8e03117a6d017.1460045763.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
-References: <cover.1460045763.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
-References: <cover.1460045763.git.leonard.crestez@intel.com>
+	Daniel Baluta <daniel.baluta@intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5700EA83.6040702@kernel.org>
+Date: Sun, 3 Apr 2016 11:03:47 +0100
+MIME-Version: 1.0
+In-Reply-To: <eb3ac4a5f907f21289b36a28e97f4f1478ca283b.1459267411.git.leonard.crestez@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This just adds support for reporting illuminance with default settings.
+On 29/03/16 17:14, Crestez Dan Leonard wrote:
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+> ---
+> 
+> Previous version had an extra printk on pressure read, please ignore. Also
+> patch update notes were above the ---.
+As a general process point, it is useful to have the complete history
+here rather than just since the last version.  Often reviewers (particularly me
+will only catch up once a week so it's useful to have a record of all the
+updates in one place).
 
-All default registers are written on probe because the device otherwise
-lacks a reset function.
+Anyhow, looks good.
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- drivers/iio/light/Kconfig    |  11 ++
- drivers/iio/light/Makefile   |   1 +
- drivers/iio/light/max44000.c | 295 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 307 insertions(+)
- create mode 100644 drivers/iio/light/max44000.c
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index cfd3df8..42c15c1 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -320,4 +320,15 @@ config VCNL4000
- 	 To compile this driver as a module, choose M here: the
- 	 module will be called vcnl4000.
- 
-+config MAX44000
-+	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	 Say Y here if you want to build support for Maxim Integrated's
-+	 MAX44000 ambient and infrared proximity sensor device.
-+
-+	 To compile this driver as a module, choose M here:
-+	 the module will be called max44000.
-+
- endmenu
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index b2c3105..14b2f36 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -30,3 +30,4 @@ obj-$(CONFIG_TCS3472)		+= tcs3472.o
- obj-$(CONFIG_TSL4531)		+= tsl4531.o
- obj-$(CONFIG_US5182D)		+= us5182d.o
- obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
-+obj-$(CONFIG_MAX44000)		+= max44000.o
-diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-new file mode 100644
-index 0000000..7c12153
---- /dev/null
-+++ b/drivers/iio/light/max44000.c
-@@ -0,0 +1,295 @@
-+/*
-+ * MAX44000 Ambient and Infrared Proximity Sensor
-+ *
-+ * Copyright (c) 2016, Intel Corporation.
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License.  See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * Data sheet: https://datasheets.maximintegrated.com/en/ds/MAX44000.pdf
-+ *
-+ * 7-bit I2C slave address 0x4a
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/i2c.h>
-+#include <linux/regmap.h>
-+#include <linux/util_macros.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/acpi.h>
-+
-+#define MAX44000_DRV_NAME		"max44000"
-+
-+/* Registers in datasheet order */
-+#define MAX44000_REG_STATUS		0x00
-+#define MAX44000_REG_CFG_MAIN		0x01
-+#define MAX44000_REG_CFG_RX		0x02
-+#define MAX44000_REG_CFG_TX		0x03
-+#define MAX44000_REG_ALS_DATA_HI	0x04
-+#define MAX44000_REG_ALS_DATA_LO	0x05
-+#define MAX44000_REG_PRX_DATA		0x16
-+#define MAX44000_REG_ALS_UPTHR_HI	0x06
-+#define MAX44000_REG_ALS_UPTHR_LO	0x07
-+#define MAX44000_REG_ALS_LOTHR_HI	0x08
-+#define MAX44000_REG_ALS_LOTHR_LO	0x09
-+#define MAX44000_REG_PST		0x0a
-+#define MAX44000_REG_PRX_IND		0x0b
-+#define MAX44000_REG_PRX_THR		0x0c
-+#define MAX44000_REG_TRIM_GAIN_GREEN	0x0f
-+#define MAX44000_REG_TRIM_GAIN_IR	0x10
-+
-+#define MAX44000_ALSDATA_OVERFLOW	0x4000
-+
-+#define MAX44000_REGMASK_READABLE	0x419fff
-+#define MAX44000_REGMASK_WRITEABLE	0x019fce
-+#define MAX44000_REGMASK_VOLATILE	0x400031
-+
-+struct max44000_data {
-+	struct mutex lock;
-+	struct i2c_client *client;
-+	struct regmap *regmap;
-+};
-+
-+/* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
-+#define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
-+
-+static const struct iio_chan_spec max44000_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+	},
-+};
-+
-+static inline int max44000_read_alsval(struct max44000_data *data)
-+{
-+	u16 regval;
-+	int ret;
-+
-+	regval = 0;
-+	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI, &regval, 2);
-+	if (ret < 0)
-+		return ret;
-+
-+	regval = be16_to_cpu(regval);
-+
-+	/* Overflow is explained on datasheet page 17.
-+	 *
-+	 * It's a warning that either the G or IR channel has become saturated
-+	 * and that the value in the register is likely incorrect.
-+	 *
-+	 * The recommendation is to change the scale (ALSPGA).
-+	 * The driver just returns the max representable value.
-+	 */
-+	if (regval & MAX44000_ALSDATA_OVERFLOW)
-+		return 0x3FFF;
-+
-+	return regval;
-+}
-+
-+static int max44000_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct max44000_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			mutex_lock(&data->lock);
-+			ret = max44000_read_alsval(data);
-+			mutex_unlock(&data->lock);
-+			if (ret < 0)
-+				return ret;
-+			*val = ret;
-+			return IIO_VAL_INT;
-+
-+		default:
-+			return -EINVAL;
-+		}
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			*val = 1;
-+			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
-+			return IIO_VAL_FRACTIONAL_LOG2;
-+
-+		default:
-+			return -EINVAL;
-+		}
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info max44000_info = {
-+	.driver_module		= THIS_MODULE,
-+	.read_raw		= max44000_read_raw,
-+};
-+
-+static bool max44000_readable_reg(struct device *dev, unsigned int reg)
-+{
-+	return (1 << reg) & MAX44000_REGMASK_READABLE;
-+}
-+
-+static bool max44000_writeable_reg(struct device *dev, unsigned int reg)
-+{
-+	return (1 << reg) & MAX44000_REGMASK_WRITEABLE;
-+}
-+
-+static bool max44000_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	return (1 << reg) & MAX44000_REGMASK_VOLATILE;
-+}
-+
-+static bool max44000_precious_reg(struct device *dev, unsigned int reg)
-+{
-+	return reg == MAX44000_REG_STATUS;
-+}
-+
-+/* Datasheet pages 9-10: */
-+static const struct reg_default max44000_reg_defaults[] = {
-+	{ MAX44000_REG_CFG_MAIN,	0x24 },
-+	/* Upper 4 bits are not documented but start as 1 on powerup
-+	 * Setting them to 0 causes proximity to misbehave so set them to 1
-+	 */
-+	{ MAX44000_REG_CFG_RX,		0xf0 },
-+	{ MAX44000_REG_CFG_TX,		0x00 },
-+	{ MAX44000_REG_ALS_UPTHR_HI,	0x00 },
-+	{ MAX44000_REG_ALS_UPTHR_LO,	0x00 },
-+	{ MAX44000_REG_ALS_LOTHR_HI,	0x00 },
-+	{ MAX44000_REG_ALS_LOTHR_LO,	0x00 },
-+	{ MAX44000_REG_PST,		0x00 },
-+	{ MAX44000_REG_PRX_IND,		0x00 },
-+	{ MAX44000_REG_PRX_THR,		0x00 },
-+	{ MAX44000_REG_TRIM_GAIN_GREEN,	0x80 },
-+	{ MAX44000_REG_TRIM_GAIN_IR,	0x80 },
-+};
-+
-+static const struct regmap_config max44000_regmap_config = {
-+	.reg_bits	= 8,
-+	.val_bits	= 8,
-+
-+	.max_register	= MAX44000_REG_PRX_DATA,
-+	.readable_reg	= max44000_readable_reg,
-+	.writeable_reg	= max44000_writeable_reg,
-+	.volatile_reg	= max44000_volatile_reg,
-+	.precious_reg	= max44000_precious_reg,
-+
-+	.use_single_rw	= 1,
-+	.cache_type	= REGCACHE_FLAT,
-+
-+	.reg_defaults		= max44000_reg_defaults,
-+	.num_reg_defaults	= ARRAY_SIZE(max44000_reg_defaults),
-+};
-+
-+static int max44000_force_write_defaults(struct max44000_data *data)
-+{
-+	int i, ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(max44000_reg_defaults); ++i) {
-+		ret = regmap_write(data->regmap,
-+				   max44000_reg_defaults[i].reg,
-+				   max44000_reg_defaults[i].def);
-+		if (ret)
-+			return ret;
-+	}
-+	return 0;
-+}
-+
-+static int max44000_probe(struct i2c_client *client,
-+			  const struct i2c_device_id *id)
-+{
-+	struct max44000_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret, reg;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+	data = iio_priv(indio_dev);
-+	data->regmap = devm_regmap_init_i2c(client, &max44000_regmap_config);
-+	if (IS_ERR(data->regmap)) {
-+		dev_err(&client->dev, "regmap_init failed!\n");
-+		return PTR_ERR(data->regmap);
-+	}
-+
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+	mutex_init(&data->lock);
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &max44000_info;
-+	indio_dev->name = MAX44000_DRV_NAME;
-+	indio_dev->channels = max44000_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(max44000_channels);
-+
-+	/* Read status at least once to clear the power-on-reset bit. */
-+	ret = regmap_read(data->regmap, MAX44000_REG_STATUS, &reg);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to read init status: %d\n", ret);
-+		return ret;
-+	}
-+
-+	/* The device has no reset command, write defaults explicitly. */
-+	ret = max44000_force_write_defaults(data);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to write defaults: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return iio_device_register(indio_dev);
-+}
-+
-+static int max44000_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+	return 0;
-+}
-+
-+static const struct i2c_device_id max44000_id[] = {
-+	{"max44000", 0},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, max44000_id);
-+
-+#ifdef CONFIG_OF
-+static const struct of_device_id max44000_of_match[] = {
-+	{ .compatible = "maxim,max44000" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, max44000_of_match);
-+#endif
-+
-+#ifdef CONFIG_ACPI
-+static const struct acpi_device_id max44000_acpi_match[] = {
-+	{"MAX44000", 0},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(acpi, max44000_acpi_match);
-+#endif
-+
-+static struct i2c_driver max44000_driver = {
-+	.driver = {
-+		.name	= MAX44000_DRV_NAME,
-+		.of_match_table = of_match_ptr(max44000_of_match),
-+		.acpi_match_table = ACPI_PTR(max44000_acpi_match),
-+	},
-+	.probe		= max44000_probe,
-+	.remove		= max44000_remove,
-+	.id_table	= max44000_id,
-+};
-+
-+module_i2c_driver(max44000_driver);
-+
-+MODULE_AUTHOR("Crestez Dan Leonard <leonard.crestez@intel.com>");
-+MODULE_DESCRIPTION("MAX44000 Ambient and Infrared Proximity Sensor");
-+MODULE_LICENSE("GPL v2");
--- 
-2.8.0.rc3
+Thanks,
+
+Jonathan
+> 
+>  drivers/iio/pressure/Kconfig  |  10 +
+>  drivers/iio/pressure/Makefile |   1 +
+>  drivers/iio/pressure/hp206c.c | 426 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 437 insertions(+)
+>  create mode 100644 drivers/iio/pressure/hp206c.c
+> 
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index 31c0e1f..8de0192 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -148,4 +148,14 @@ config T5403
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called t5403.
+>  
+> +config HP206C
+> +	tristate "HOPERF HP206C precision barometer and altimeter sensor"
+> +	depends on I2C
+> +	help
+> +	  Say yes here to build support for the HOPREF HP206C precision
+> +	  barometer and altimeter sensor.
+> +
+> +	  This driver can also be built as a module. If so, the module will
+> +	  be called hp206c.
+> +
+>  endmenu
+> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+> index d336af1..6e60863 100644
+> --- a/drivers/iio/pressure/Makefile
+> +++ b/drivers/iio/pressure/Makefile
+> @@ -17,6 +17,7 @@ obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
+>  st_pressure-y := st_pressure_core.o
+>  st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
+>  obj-$(CONFIG_T5403) += t5403.o
+> +obj-$(CONFIG_HP206C) += hp206c.o
+>  
+>  obj-$(CONFIG_IIO_ST_PRESS_I2C) += st_pressure_i2c.o
+>  obj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o
+> diff --git a/drivers/iio/pressure/hp206c.c b/drivers/iio/pressure/hp206c.c
+> new file mode 100644
+> index 0000000..90f2b6e
+> --- /dev/null
+> +++ b/drivers/iio/pressure/hp206c.c
+> @@ -0,0 +1,426 @@
+> +/*
+> + * hp206c.c - HOPERF HP206C precision barometer and altimeter sensor
+> + *
+> + * Copyright (c) 2016, Intel Corporation.
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * (7-bit I2C slave address 0x76)
+> + *
+> + * Datasheet:
+> + *  http://www.hoperf.com/upload/sensor/HP206C_DataSheet_EN_V2.0.pdf
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/delay.h>
+> +#include <linux/util_macros.h>
+> +#include <linux/acpi.h>
+> +
+> +/* I2C commands: */
+> +#define HP206C_CMD_SOFT_RST	0x06
+> +
+> +#define HP206C_CMD_ADC_CVT	0x40
+> +
+> +#define HP206C_CMD_ADC_CVT_OSR_4096	0x00
+> +#define HP206C_CMD_ADC_CVT_OSR_2048	0x04
+> +#define HP206C_CMD_ADC_CVT_OSR_1024	0x08
+> +#define HP206C_CMD_ADC_CVT_OSR_512	0x0c
+> +#define HP206C_CMD_ADC_CVT_OSR_256	0x10
+> +#define HP206C_CMD_ADC_CVT_OSR_128	0x14
+> +
+> +#define HP206C_CMD_ADC_CVT_CHNL_PT	0x00
+> +#define HP206C_CMD_ADC_CVT_CHNL_T	0x02
+> +
+> +#define HP206C_CMD_READ_P	0x30
+> +#define HP206C_CMD_READ_T	0x32
+> +
+> +#define HP206C_CMD_READ_REG	0x80
+> +#define HP206C_CMD_WRITE_REG	0xc0
+> +
+> +#define HP206C_REG_INT_EN	0x0b
+> +#define HP206C_REG_INT_CFG	0x0c
+> +
+> +#define HP206C_REG_INT_SRC	0x0d
+> +#define HP206C_FLAG_DEV_RDY	0x40
+> +
+> +#define HP206C_REG_PARA		0x0f
+> +#define HP206C_FLAG_CMPS_EN	0x80
+> +
+> +/* Maximum spin for DEV_RDY */
+> +#define HP206C_MAX_DEV_RDY_WAIT_COUNT 20
+> +#define HP206C_DEV_RDY_WAIT_US    20000
+> +
+> +struct hp206c_data {
+> +	struct mutex mutex;
+> +	struct i2c_client *client;
+> +	int temp_osr_index;
+> +	int pres_osr_index;
+> +};
+> +
+> +struct hp206c_osr_setting {
+> +	u8 osr_mask;
+> +	unsigned int temp_conv_time_us;
+> +	unsigned int pres_conv_time_us;
+> +};
+> +
+> +/* Data from Table 5 in datasheet. */
+> +static const struct hp206c_osr_setting hp206c_osr_settings[] = {
+> +	{ HP206C_CMD_ADC_CVT_OSR_4096,	65600,	131100	},
+> +	{ HP206C_CMD_ADC_CVT_OSR_2048,	32800,	65600	},
+> +	{ HP206C_CMD_ADC_CVT_OSR_1024,	16400,	32800	},
+> +	{ HP206C_CMD_ADC_CVT_OSR_512,	8200,	16400	},
+> +	{ HP206C_CMD_ADC_CVT_OSR_256,	4100,	8200	},
+> +	{ HP206C_CMD_ADC_CVT_OSR_128,	2100,	4100	},
+> +};
+> +static const int hp206c_osr_rates[] = { 4096, 2048, 1024, 512, 256, 128 };
+> +static const char hp206c_osr_rates_str[] = "4096 2048 1024 512 256 128";
+> +
+> +static inline int hp206c_read_reg(struct i2c_client *client, u8 reg)
+> +{
+> +	return i2c_smbus_read_byte_data(client, HP206C_CMD_READ_REG | reg);
+> +}
+> +
+> +static inline int hp206c_write_reg(struct i2c_client *client, u8 reg, u8 val)
+> +{
+> +	return i2c_smbus_write_byte_data(client,
+> +			HP206C_CMD_WRITE_REG | reg, val);
+> +}
+> +
+> +static int hp206c_read_20bit(struct i2c_client *client, u8 cmd)
+> +{
+> +	int ret;
+> +	u8 values[3];
+> +
+> +	ret = i2c_smbus_read_i2c_block_data(client, cmd, 3, values);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != 3)
+> +		return -EIO;
+> +	return ((values[0] & 0xF) << 16) | (values[1] << 8) | (values[2]);
+> +}
+> +
+> +/* Spin for max 160ms until DEV_RDY is 1, or return error. */
+> +static int hp206c_wait_dev_rdy(struct iio_dev *indio_dev)
+> +{
+> +	int ret;
+> +	int count = 0;
+> +	struct hp206c_data *data = iio_priv(indio_dev);
+> +	struct i2c_client *client = data->client;
+> +
+> +	while (++count <= HP206C_MAX_DEV_RDY_WAIT_COUNT) {
+> +		ret = hp206c_read_reg(client, HP206C_REG_INT_SRC);
+> +		if (ret < 0) {
+> +			dev_err(&indio_dev->dev, "Failed READ_REG INT_SRC: %d\n", ret);
+> +			return ret;
+> +		}
+> +		if (ret & HP206C_FLAG_DEV_RDY)
+> +			return 0;
+> +		usleep_range(HP206C_DEV_RDY_WAIT_US, HP206C_DEV_RDY_WAIT_US * 3 / 2);
+> +	}
+> +	return -ETIMEDOUT;
+> +}
+> +
+> +static int hp206c_set_compensation(struct i2c_client *client, bool enabled)
+> +{
+> +	int val;
+> +
+> +	val = hp206c_read_reg(client, HP206C_REG_PARA);
+> +	if (val < 0)
+> +		return val;
+> +	if (enabled)
+> +		val |= HP206C_FLAG_CMPS_EN;
+> +	else
+> +		val &= ~HP206C_FLAG_CMPS_EN;
+> +
+> +	return hp206c_write_reg(client, HP206C_REG_PARA, val);
+> +}
+> +
+> +/* Do a soft reset */
+> +static int hp206c_soft_reset(struct iio_dev *indio_dev)
+> +{
+> +	int ret;
+> +	struct hp206c_data *data = iio_priv(indio_dev);
+> +	struct i2c_client *client = data->client;
+> +
+> +	ret = i2c_smbus_write_byte(client, HP206C_CMD_SOFT_RST);
+> +	if (ret) {
+> +		dev_err(&client->dev, "Failed to reset device: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	usleep_range(400, 600);
+> +
+> +	ret = hp206c_wait_dev_rdy(indio_dev);
+> +	if (ret) {
+> +		dev_err(&client->dev, "Device not ready after soft reset: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = hp206c_set_compensation(client, true);
+> +	if (ret)
+> +		dev_err(&client->dev, "Failed to enable compensation: %d\n", ret);
+> +	return ret;
+> +}
+> +
+> +static int hp206c_conv_and_read(struct iio_dev *indio_dev,
+> +				u8 conv_cmd, u8 read_cmd,
+> +				unsigned int sleep_us)
+> +{
+> +	int ret;
+> +	struct hp206c_data *data = iio_priv(indio_dev);
+> +	struct i2c_client *client = data->client;
+> +
+> +	ret = hp206c_wait_dev_rdy(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&indio_dev->dev, "Device not ready: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = i2c_smbus_write_byte(client, conv_cmd);
+> +	if (ret < 0) {
+> +		dev_err(&indio_dev->dev, "Failed convert: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	usleep_range(sleep_us, sleep_us * 3 / 2);
+> +
+> +	ret = hp206c_wait_dev_rdy(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&indio_dev->dev, "Device not ready: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = hp206c_read_20bit(client, read_cmd);
+> +	if (ret < 0)
+> +		dev_err(&indio_dev->dev, "Failed read: %d\n", ret);
+> +
+> +	return ret;
+> +}
+> +
+> +static int hp206c_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan, int *val,
+> +			   int *val2, long mask)
+> +{
+> +	int ret;
+> +	struct hp206c_data *data = iio_priv(indio_dev);
+> +	const struct hp206c_osr_setting *osr_setting;
+> +	u8 conv_cmd;
+> +
+> +	mutex_lock(&data->mutex);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			*val = hp206c_osr_rates[data->temp_osr_index];
+> +			ret = IIO_VAL_INT;
+> +			break;
+> +
+> +		case IIO_PRESSURE:
+> +			*val = hp206c_osr_rates[data->pres_osr_index];
+> +			ret = IIO_VAL_INT;
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +		}
+> +		break;
+> +
+> +	case IIO_CHAN_INFO_RAW:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			osr_setting = &hp206c_osr_settings[data->temp_osr_index];
+> +			conv_cmd = HP206C_CMD_ADC_CVT |
+> +					osr_setting->osr_mask |
+> +					HP206C_CMD_ADC_CVT_CHNL_T;
+> +			ret = hp206c_conv_and_read(indio_dev,
+> +					conv_cmd,
+> +					HP206C_CMD_READ_T,
+> +					osr_setting->temp_conv_time_us);
+> +			if (ret >= 0) {
+> +				/* 20 significant bits are provided.
+> +				 * Extend sign over the rest.
+> +				 */
+> +				*val = sign_extend32(ret, 19);
+> +				ret = IIO_VAL_INT;
+> +			}
+> +			break;
+> +
+> +		case IIO_PRESSURE:
+> +			osr_setting = &hp206c_osr_settings[data->pres_osr_index];
+> +			conv_cmd = HP206C_CMD_ADC_CVT |
+> +					osr_setting->osr_mask |
+> +					HP206C_CMD_ADC_CVT_CHNL_PT;
+> +			ret = hp206c_conv_and_read(indio_dev,
+> +					conv_cmd,
+> +					HP206C_CMD_READ_P,
+> +					osr_setting->pres_conv_time_us);
+> +			if (ret >= 0) {
+> +				*val = ret;
+> +				ret = IIO_VAL_INT;
+> +			}
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +		}
+> +		break;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			*val = 0;
+> +			*val2 = 10000;
+> +			ret = IIO_VAL_INT_PLUS_MICRO;
+> +			break;
+> +
+> +		case IIO_PRESSURE:
+> +			*val = 0;
+> +			*val2 = 1000;
+> +			ret = IIO_VAL_INT_PLUS_MICRO;
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +		}
+> +		break;
+> +
+> +	default:
+> +		ret = -EINVAL;
+> +	}
+> +
+> +	mutex_unlock(&data->mutex);
+> +	return ret;
+> +}
+> +
+> +static int hp206c_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	int ret = 0;
+> +	struct hp206c_data *data = iio_priv(indio_dev);
+> +
+> +	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
+> +		return -EINVAL;
+> +	mutex_lock(&data->mutex);
+> +	switch (chan->type) {
+> +	case IIO_TEMP:
+> +		data->temp_osr_index = find_closest_descending(val,
+> +			hp206c_osr_rates, ARRAY_SIZE(hp206c_osr_rates));
+> +		break;
+> +	case IIO_PRESSURE:
+> +		data->pres_osr_index = find_closest_descending(val,
+> +			hp206c_osr_rates, ARRAY_SIZE(hp206c_osr_rates));
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +	}
+> +	mutex_unlock(&data->mutex);
+> +	return ret;
+> +}
+> +
+> +static const struct iio_chan_spec hp206c_channels[] = {
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE) |
+> +				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +	},
+> +	{
+> +		.type = IIO_PRESSURE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE) |
+> +				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +	}
+> +};
+> +
+> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(hp206c_osr_rates_str);
+> +
+> +static struct attribute *hp206c_attributes[] = {
+> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group hp206c_attribute_group = {
+> +	.attrs = hp206c_attributes,
+> +};
+> +
+> +static const struct iio_info hp206c_info = {
+> +	.attrs = &hp206c_attribute_group,
+> +	.read_raw = hp206c_read_raw,
+> +	.write_raw = hp206c_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int hp206c_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct hp206c_data *data;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_BYTE |
+> +				     I2C_FUNC_SMBUS_BYTE_DATA |
+> +				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
+> +		dev_err(&client->dev, "Adapter does not support "
+> +				"all required i2c functionality\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +	mutex_init(&data->mutex);
+> +
+> +	indio_dev->info = &hp206c_info;
+> +	indio_dev->name = id->name;
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = hp206c_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(hp206c_channels);
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +
+> +	/* Do a soft reset on probe */
+> +	ret = hp206c_soft_reset(indio_dev);
+> +	if (ret) {
+> +		dev_err(&client->dev, "Failed to reset on startup: %d\n", ret);
+> +		return -ENODEV;
+> +	}
+> +
+> +	return devm_iio_device_register(&client->dev, indio_dev);
+> +}
+> +
+> +static const struct i2c_device_id hp206c_id[] = {
+> +	{"hp206c"},
+> +	{}
+> +};
+> +
+> +#ifdef CONFIG_ACPI
+> +static const struct acpi_device_id hp206c_acpi_match[] = {
+> +	{"HOP206C", 0},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, hp206c_acpi_match);
+> +#endif
+> +
+> +static struct i2c_driver hp206c_driver = {
+> +	.probe = hp206c_probe,
+> +	.id_table = hp206c_id,
+> +	.driver = {
+> +		.name = "hp206c",
+> +		.acpi_match_table = ACPI_PTR(hp206c_acpi_match),
+> +	},
+> +};
+> +
+> +module_i2c_driver(hp206c_driver);
+> +
+> +MODULE_DESCRIPTION("HOPERF HP206C precision barometer and altimeter sensor");
+> +MODULE_AUTHOR("Leonard Crestez <leonard.crestez@intel.com>");
+> +MODULE_LICENSE("GPL v2");
+> 
 
