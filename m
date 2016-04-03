@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.lysator.liu.se ([130.236.254.3]:35171 "EHLO
+Received: from mail.lysator.liu.se ([130.236.254.3]:55979 "EHLO
 	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753131AbcDCIyf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:54:35 -0400
+	with ESMTP id S1752962AbcDCIyN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 04:54:13 -0400
 From: Peter Rosin <peda@lysator.liu.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -35,9 +35,9 @@ Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
 	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v6 06/24] i2c: i2c-mux-pca954x: convert to use an explicit i2c mux core
-Date: Sun,  3 Apr 2016 10:52:36 +0200
-Message-Id: <1459673574-11440-7-git-send-email-peda@lysator.liu.se>
+Subject: [PATCH v6 04/24] i2c: i2c-arb-gpio-challenge: convert to use an explicit i2c mux core
+Date: Sun,  3 Apr 2016 10:52:34 +0200
+Message-Id: <1459673574-11440-5-git-send-email-peda@lysator.liu.se>
 In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
@@ -49,169 +49,136 @@ Allocate an explicit i2c mux core to handle parent and child adapters
 etc. Update the select/deselect ops to be in terms of the i2c mux core
 instead of the child adapter.
 
-Add a mask to handle the case where not all child adapters should
-cause a mux deselect to happen, now that there is a common deselect op
-for all child adapters.
-
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/muxes/i2c-mux-pca954x.c | 64 +++++++++++++++++++------------------
- 1 file changed, 33 insertions(+), 31 deletions(-)
+ drivers/i2c/muxes/i2c-arb-gpio-challenge.c | 47 +++++++++++++-----------------
+ 1 file changed, 20 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
-index acfcef3d4068..1693d29c11a4 100644
---- a/drivers/i2c/muxes/i2c-mux-pca954x.c
-+++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
-@@ -60,9 +60,10 @@ enum pca_type {
+diff --git a/drivers/i2c/muxes/i2c-arb-gpio-challenge.c b/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
+index 402e3a6c671a..a42827b3c672 100644
+--- a/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
++++ b/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
+@@ -28,8 +28,6 @@
+ /**
+  * struct i2c_arbitrator_data - Driver data for I2C arbitrator
+  *
+- * @parent: Parent adapter
+- * @child: Child bus
+  * @our_gpio: GPIO we'll use to claim.
+  * @our_gpio_release: 0 if active high; 1 if active low; AKA if the GPIO ==
+  *   this then consider it released.
+@@ -42,8 +40,6 @@
+  */
  
- struct pca954x {
- 	enum pca_type type;
--	struct i2c_adapter *virt_adaps[PCA954X_MAX_NCHANS];
+ struct i2c_arbitrator_data {
+-	struct i2c_adapter *parent;
+-	struct i2c_adapter *child;
+ 	int our_gpio;
+ 	int our_gpio_release;
+ 	int their_gpio;
+@@ -59,9 +55,9 @@ struct i2c_arbitrator_data {
+  *
+  * Use the GPIO-based signalling protocol; return -EBUSY if we fail.
+  */
+-static int i2c_arbitrator_select(struct i2c_adapter *adap, void *data, u32 chan)
++static int i2c_arbitrator_select(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	const struct i2c_arbitrator_data *arb = data;
++	const struct i2c_arbitrator_data *arb = i2c_mux_priv(muxc);
+ 	unsigned long stop_retry, stop_time;
  
- 	u8 last_chan;		/* last register value */
-+	u8 deselect;
-+	struct i2c_client *client;
- };
- 
- struct chip_desc {
-@@ -146,10 +147,10 @@ static int pca954x_reg_write(struct i2c_adapter *adap,
- 	return ret;
+ 	/* Start a round of trying to claim the bus */
+@@ -93,7 +89,7 @@ static int i2c_arbitrator_select(struct i2c_adapter *adap, void *data, u32 chan)
+ 	/* Give up, release our claim */
+ 	gpio_set_value(arb->our_gpio, arb->our_gpio_release);
+ 	udelay(arb->slew_delay_us);
+-	dev_err(&adap->dev, "Could not claim bus, timeout\n");
++	dev_err(muxc->dev, "Could not claim bus, timeout\n");
+ 	return -EBUSY;
  }
  
--static int pca954x_select_chan(struct i2c_adapter *adap,
--			       void *client, u32 chan)
-+static int pca954x_select_chan(struct i2c_mux_core *muxc, u32 chan)
+@@ -102,10 +98,9 @@ static int i2c_arbitrator_select(struct i2c_adapter *adap, void *data, u32 chan)
+  *
+  * Release the I2C bus using the GPIO-based signalling protocol.
+  */
+-static int i2c_arbitrator_deselect(struct i2c_adapter *adap, void *data,
+-				   u32 chan)
++static int i2c_arbitrator_deselect(struct i2c_mux_core *muxc, u32 chan)
  {
--	struct pca954x *data = i2c_get_clientdata(client);
-+	struct pca954x *data = i2c_mux_priv(muxc);
-+	struct i2c_client *client = data->client;
- 	const struct chip_desc *chip = &chips[data->type];
- 	u8 regval;
- 	int ret = 0;
-@@ -162,21 +163,24 @@ static int pca954x_select_chan(struct i2c_adapter *adap,
+-	const struct i2c_arbitrator_data *arb = data;
++	const struct i2c_arbitrator_data *arb = i2c_mux_priv(muxc);
  
- 	/* Only select the channel if its different from the last channel */
- 	if (data->last_chan != regval) {
--		ret = pca954x_reg_write(adap, client, regval);
-+		ret = pca954x_reg_write(muxc->parent, client, regval);
- 		data->last_chan = regval;
+ 	/* Release the bus and wait for the other master to notice */
+ 	gpio_set_value(arb->our_gpio, arb->our_gpio_release);
+@@ -119,6 +114,7 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *np = dev->of_node;
+ 	struct device_node *parent_np;
++	struct i2c_mux_core *muxc;
+ 	struct i2c_arbitrator_data *arb;
+ 	enum of_gpio_flags gpio_flags;
+ 	unsigned long out_init;
+@@ -134,12 +130,13 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	arb = devm_kzalloc(dev, sizeof(*arb), GFP_KERNEL);
+-	if (!arb) {
+-		dev_err(dev, "Cannot allocate i2c_arbitrator_data\n");
++	muxc = i2c_mux_alloc(NULL, dev, sizeof(*arb), 0,
++			     i2c_arbitrator_select, i2c_arbitrator_deselect);
++	if (!muxc)
+ 		return -ENOMEM;
+-	}
+-	platform_set_drvdata(pdev, arb);
++	arb = i2c_mux_priv(muxc);
++
++	platform_set_drvdata(pdev, muxc);
+ 
+ 	/* Request GPIOs */
+ 	ret = of_get_named_gpio_flags(np, "our-claim-gpio", 0, &gpio_flags);
+@@ -196,21 +193,18 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
+ 		dev_err(dev, "Cannot parse i2c-parent\n");
+ 		return -EINVAL;
+ 	}
+-	arb->parent = of_get_i2c_adapter_by_node(parent_np);
++	muxc->parent = of_get_i2c_adapter_by_node(parent_np);
+ 	of_node_put(parent_np);
+-	if (!arb->parent) {
++	if (!muxc->parent) {
+ 		dev_err(dev, "Cannot find parent bus\n");
+ 		return -EPROBE_DEFER;
+ 	}
+ 
+ 	/* Actually add the mux adapter */
+-	arb->child = i2c_add_mux_adapter(arb->parent, dev, arb, 0, 0, 0,
+-					 i2c_arbitrator_select,
+-					 i2c_arbitrator_deselect);
+-	if (!arb->child) {
++	ret = i2c_mux_add_adapter(muxc, 0, 0, 0);
++	if (ret) {
+ 		dev_err(dev, "Failed to add adapter\n");
+-		ret = -ENODEV;
+-		i2c_put_adapter(arb->parent);
++		i2c_put_adapter(muxc->parent);
  	}
  
  	return ret;
- }
+@@ -218,11 +212,10 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
  
--static int pca954x_deselect_mux(struct i2c_adapter *adap,
--				void *client, u32 chan)
-+static int pca954x_deselect_mux(struct i2c_mux_core *muxc, u32 chan)
+ static int i2c_arbitrator_remove(struct platform_device *pdev)
  {
--	struct pca954x *data = i2c_get_clientdata(client);
-+	struct pca954x *data = i2c_mux_priv(muxc);
-+	struct i2c_client *client = data->client;
-+
-+	if (!(data->deselect & (1 << chan)))
-+		return 0;
- 
- 	/* Deselect active channel */
- 	data->last_chan = 0;
--	return pca954x_reg_write(adap, client, data->last_chan);
-+	return pca954x_reg_write(muxc->parent, client, data->last_chan);
- }
- 
- /*
-@@ -191,17 +195,21 @@ static int pca954x_probe(struct i2c_client *client,
- 	bool idle_disconnect_dt;
- 	struct gpio_desc *gpio;
- 	int num, force, class;
-+	struct i2c_mux_core *muxc;
- 	struct pca954x *data;
- 	int ret;
- 
- 	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE))
- 		return -ENODEV;
- 
--	data = devm_kzalloc(&client->dev, sizeof(struct pca954x), GFP_KERNEL);
--	if (!data)
-+	muxc = i2c_mux_alloc(adap, &client->dev, sizeof(*data), 0,
-+			     pca954x_select_chan, pca954x_deselect_mux);
-+	if (!muxc)
- 		return -ENOMEM;
-+	data = i2c_mux_priv(muxc);
- 
--	i2c_set_clientdata(client, data);
-+	i2c_set_clientdata(client, muxc);
-+	data->client = client;
- 
- 	/* Get the mux out of reset if a reset GPIO is specified. */
- 	gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_LOW);
-@@ -220,6 +228,10 @@ static int pca954x_probe(struct i2c_client *client,
- 	data->type = id->driver_data;
- 	data->last_chan = 0;		   /* force the first selection */
- 
-+	ret = i2c_mux_reserve_adapters(muxc, chips[data->type].nchans);
-+	if (ret)
-+		return ret;
-+
- 	idle_disconnect_dt = of_node &&
- 		of_property_read_bool(of_node, "i2c-mux-idle-disconnect");
- 
-@@ -238,16 +250,13 @@ static int pca954x_probe(struct i2c_client *client,
- 				/* discard unconfigured channels */
- 				break;
- 			idle_disconnect_pd = pdata->modes[num].deselect_on_exit;
-+			data->deselect |= (idle_disconnect_pd
-+					   || idle_disconnect_dt) << num;
- 		}
- 
--		data->virt_adaps[num] =
--			i2c_add_mux_adapter(adap, &client->dev, client,
--				force, num, class, pca954x_select_chan,
--				(idle_disconnect_pd || idle_disconnect_dt)
--					? pca954x_deselect_mux : NULL);
-+		ret = i2c_mux_add_adapter(muxc, force, num, class);
- 
--		if (data->virt_adaps[num] == NULL) {
--			ret = -ENODEV;
-+		if (ret) {
- 			dev_err(&client->dev,
- 				"failed to register multiplexed adapter"
- 				" %d as bus %d\n", num, force);
-@@ -263,23 +272,15 @@ static int pca954x_probe(struct i2c_client *client,
- 	return 0;
- 
- virt_reg_failed:
--	for (num--; num >= 0; num--)
--		i2c_del_mux_adapter(data->virt_adaps[num]);
-+	i2c_mux_del_adapters(muxc);
- 	return ret;
- }
- 
- static int pca954x_remove(struct i2c_client *client)
- {
--	struct pca954x *data = i2c_get_clientdata(client);
--	const struct chip_desc *chip = &chips[data->type];
--	int i;
+-	struct i2c_arbitrator_data *arb = platform_get_drvdata(pdev);
 -
--	for (i = 0; i < chip->nchans; ++i)
--		if (data->virt_adaps[i]) {
--			i2c_del_mux_adapter(data->virt_adaps[i]);
--			data->virt_adaps[i] = NULL;
--		}
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+-	i2c_del_mux_adapter(arb->child);
+-	i2c_put_adapter(arb->parent);
++	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
  
 +	i2c_mux_del_adapters(muxc);
++	i2c_put_adapter(muxc->parent);
  	return 0;
  }
  
-@@ -287,7 +288,8 @@ static int pca954x_remove(struct i2c_client *client)
- static int pca954x_resume(struct device *dev)
- {
- 	struct i2c_client *client = to_i2c_client(dev);
--	struct pca954x *data = i2c_get_clientdata(client);
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
-+	struct pca954x *data = i2c_mux_priv(muxc);
- 
- 	data->last_chan = 0;
- 	return i2c_smbus_write_byte(client, 0);
 -- 
 2.1.4
 
