@@ -1,56 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f195.google.com ([209.85.192.195]:32929 "EHLO
-	mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753605AbcDFEL5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2016 00:11:57 -0400
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, knaack.h@gmx.de, Michael.Hennerich@analog.com,
-	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] staging: iio: ad7606: use iio_device_{claim|release}_direct_mode()
-Date: Tue,  5 Apr 2016 21:11:31 -0700
-Message-Id: <1459915891-2586-1-git-send-email-amsfield22@gmail.com>
-In-Reply-To: <20160401165349.GA2678@d830.WORKGROUP>
-References: <20160401165349.GA2678@d830.WORKGROUP>
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:11642 "EHLO
+	hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751310AbcDDHmq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Apr 2016 03:42:46 -0400
+Date: Mon, 4 Apr 2016 10:42:40 +0300
+From: Peter De Schrijver <pdeschrijver@nvidia.com>
+To: Linus Walleij <linus.walleij@linaro.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Tony Lindgren <tony@atomide.com>,
+	Paul Walmsley <paul@pwsan.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@caiaq.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v3] iio: light: new driver for the ROHM BH1780
+Message-ID: <20160404074239.GT7800@tbergstrom-lnx.Nvidia.com>
+References: <1459326847-9444-1-git-send-email-linus.walleij@linaro.org>
+ <5700E7AF.6040903@kernel.org>
+ <CACRpkdYkqzvu_fMcDPy8i0OCpGdGQ39S534HbCQL8T93gadKmQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <CACRpkdYkqzvu_fMcDPy8i0OCpGdGQ39S534HbCQL8T93gadKmQ@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Replace the code that guarantees the device stays in direct mode with
-iio_device_{claim|release}_direct_mode() which does same.
+On Sun, Apr 03, 2016 at 06:30:49PM +0200, Linus Walleij wrote:
+> On Sun, Apr 3, 2016 at 11:51 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> > On 30/03/16 09:34, Linus Walleij wrote:
+> 
+> >> I want to phase out the old misc driver, but don't know how that
+> >> should properly be handled. The driver has an old (totally
+> >> undocumented) sysfs ABI for raw measurements, should I add
+> >> this as backward-compatibility and symlink the device to the old
+> >> location?
+> >
+> > Good question.  I guess we unfortunately do need to jump through the hoops as
+> > who knows what userspace code there is out there using that interface.
+> > At least it is small!
+> 
+> The maintainer Hemanth seems to have disappeared.
+> 
+> Let's ask some of the OMAP and ex-OMAP people, I think they know
+> or know who knows...
+> 
+> Tony, Peter, Paul: drivers/misc/bh1780gli.c has a funky sysfs ABI.
+> It is only used in arch/arm/boot/dts/omap4-sdp.dts as far as I can
+> tell. What device is this, and more importantly, who is running it
+> and with what userspace? I'm happy to go and patch that userspace
+> if I can just get a pointer to whoever is developing it. Sailfish?
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
----
-Changed in v2:
- - removed improper application of claim/release from intr handler
- - updated changelog
+Sailfish has never used OMAP4 afaik. OMAP4 sdp is a TI dev board, so maybe
+someone from TI knows what this is for?
 
- drivers/staging/iio/adc/ad7606_core.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Peter.
 
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index 6dbc811..f79ee61 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -88,12 +88,12 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--		mutex_lock(&indio_dev->mlock);
--		if (iio_buffer_enabled(indio_dev))
--			ret = -EBUSY;
--		else
--			ret = ad7606_scan_direct(indio_dev, chan->address);
--		mutex_unlock(&indio_dev->mlock);
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+
-+		ret = ad7606_scan_direct(indio_dev, chan->address);
-+		iio_device_release_direct_mode(indio_dev);
- 
- 		if (ret < 0)
- 			return ret;
--- 
-2.1.4
-
+-----------------------------------------------------------------------------------
+This email message is for the sole use of the intended recipient(s) and may contain
+confidential information.  Any unauthorized review, use, disclosure or distribution
+is prohibited.  If you are not the intended recipient, please contact the sender by
+reply email and destroy all copies of the original message.
+-----------------------------------------------------------------------------------
