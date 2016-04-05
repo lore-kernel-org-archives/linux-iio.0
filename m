@@ -1,49 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:62610 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756369AbcDELDU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 5 Apr 2016 07:03:20 -0400
-Subject: Re: [PATCH 0/2] Add support for adc101c* and adc121c*
-To: Drew Fustini <drew@beagleboard.org>
-References: <cover.1459444547.git.leonard.crestez@intel.com>
- <CAPgEAj5bGwGXqgJQg1Qdu=rVsMFEGWKvUTKy7c17RjsawZN9Og@mail.gmail.com>
-Cc: linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@intel.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <57039B6F.6090908@intel.com>
-Date: Tue, 5 Apr 2016 14:03:11 +0300
+Return-Path: <peda@lysator.liu.se>
+Message-ID: <57036C70.5070301@lysator.liu.se>
+Date: Tue, 05 Apr 2016 09:42:40 +0200
+From: Peter Rosin <peda@lysator.liu.se>
 MIME-Version: 1.0
-In-Reply-To: <CAPgEAj5bGwGXqgJQg1Qdu=rVsMFEGWKvUTKy7c17RjsawZN9Og@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+CC: linux-kernel@vger.kernel.org, Peter Rosin <peda@axentia.se>,
+ Wolfram Sang <wsa@the-dreams.de>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Peter Korsgaard <peter.korsgaard@barco.com>,
+ Guenter Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>,
+ Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Antti Palosaari <crope@iki.fi>,
+ Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+ Frank Rowand <frowand.list@gmail.com>,
+ Grant Likely <grant.likely@linaro.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "David S. Miller" <davem@davemloft.net>,
+ Kalle Valo <kvalo@codeaurora.org>, Joe Perches <joe@perches.com>,
+ Jiri Slaby <jslaby@suse.com>,
+ Daniel Baluta <daniel.baluta@intel.com>,
+ Adriana Reus <adriana.reus@intel.com>,
+ Lucas De Marchi <lucas.demarchi@intel.com>,
+ Matt Ranostay <matt.ranostay@intel.com>,
+ Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+ Terry Heo <terryheo@google.com>,
+ Hans Verkuil <hans.verkuil@cisco.com>, Arnd Bergmann <arnd@arndb.de>,
+ Tommi Rantala <tt.rantala@gmail.com>,
+ linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+ devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 14/24] of/unittest: convert to use an explicit i2c
+ mux core
+References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se> <1459673574-11440-15-git-send-email-peda@lysator.liu.se> <20160404051628.GO17806@rob-hp-laptop>
+In-Reply-To: <20160404051628.GO17806@rob-hp-laptop>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/01/2016 07:38 PM, Drew Fustini wrote:
-> On Thu, Mar 31, 2016 at 12:20 PM, Crestez Dan Leonard
-> <leonard.crestez@intel.com> wrote:
->> This adds support for adc101c* and adc121c* using the ti-adc081c driver.
->
-> Thanks for posting this.  I am eager to try it out on the BeagleBone
-> Green for this SeeedStudio Grove I2C ADC module which uses ADC121C021:
-> http://www.seeedstudio.com/wiki/Grove_-_I2C_ADC
+On 2016-04-04 07:16, Rob Herring wrote:
+> On Sun, Apr 03, 2016 at 10:52:44AM +0200, Peter Rosin wrote:
+>> From: Peter Rosin <peda@axentia.se>
+>>
+>> Allocate an explicit i2c mux core to handle parent and child adapters
+>> etc. Update the select op to be in terms of the i2c mux core instead
+>> of the child adapter.
+>>
+>> Signed-off-by: Peter Rosin <peda@axentia.se>
+>> ---
+>>  drivers/of/unittest.c | 40 +++++++++++++++-------------------------
+>>  1 file changed, 15 insertions(+), 25 deletions(-)
+> 
+> I assume you ran the unittest...
 
-It would be nice if somebody else confirmed that this driver used 
-correctly, especially on another arch.
+It's one of the few drivers I do have hardware for, so yes, I did
+indeed test it!
 
-Please note that in order for the driver to correctly report actual 
-voltage a "voltage regulator" needs to be configured somehow. These 
-chips report voltage relative to I2C supply voltage (which can vary) and 
-correctly calculating the input voltage requires fetching the current 
-voltage from a regulator. If no regulator is available then reading 
-in_voltage_raw will work but in_voltage_scale will fail.
+> Acked-by: Rob Herring <robh@kernel.org>
 
-The module you linked ensures that the chip input voltage is 3V no 
-matter the i2c supply voltage. This is specific to that PCB not the 
-actual ti adc chip.
+Thanks!
 
-The easiest way to handle this would be to create a fixed-regulator 
-reporting a constant 3V in your device tree and pointing the adc's 
-vref-supply to it.
-
-Regards,
-Leonard
-
+Cheers,
+Peter
