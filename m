@@ -1,90 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49016 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752419AbcDCKRU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 06:17:20 -0400
-Subject: Re: [PATCH v2 1/1] iio: gyro: bmg160: fix endianness when reading
- axes
-To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
-References: <1459255050-2142-1-git-send-email-irina.tirdea@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-bl2on0090.outbound.protection.outlook.com ([65.55.169.90]:30784
+	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1757335AbcDEH3I (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 5 Apr 2016 03:29:08 -0400
+Reply-To: <michael.hennerich@analog.com>
+Subject: Re: [PATCH v5] iio: dac: Add support for the AD5592R/AD5593R
+ ADCs/DACs
+References: <1458721195-28915-1-git-send-email-michael.hennerich@analog.com>
+ <CACRpkdYAqPn9o-wMbb-iZn7bjad8u9JmdwRqwrjFMArPrOXEOQ@mail.gmail.com>
+ <5700E4E8.40304@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>
+CC: Alexandre Courbot <gnurou@gmail.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5700EDAE.2060605@kernel.org>
-Date: Sun, 3 Apr 2016 11:17:18 +0100
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Paul Cercueil <paul.cercueil@analog.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	=?UTF-8?Q?Pawe=c5=82_Moll?= <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+From: Michael Hennerich <michael.hennerich@analog.com>
+Message-ID: <57036769.4070102@analog.com>
+Date: Tue, 5 Apr 2016 09:21:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <1459255050-2142-1-git-send-email-irina.tirdea@intel.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <5700E4E8.40304@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/03/16 13:37, Irina Tirdea wrote:
-> For big endian platforms, reading the axes will return
-> invalid values.
-> 
-> The device stores each axis value in a 16 bit little
-> endian register. The driver uses regmap_read_bulk to get
-> the axis value, resulting in a 16 bit little endian value.
-> This needs to be converted to cpu endianness to work
-> on big endian platforms.
-> 
-> Fix endianness for big endian platforms by converting
-> the values for the axes read from little endian to
-> cpu.
-> 
-> This is also partially fixed in commit 82d8e5da1a33 ("iio:
-> accel: bmg160: optimize transfers in trigger handler").
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Applied to the fixes-togreg-post-rc1 branch and marked for stable.
-> ---
-> 
-> Changes from v1:
->  - pass sizeof(raw_val) to regmap_bulk_read instead of
-> hardcoded value
-> 
->  drivers/iio/gyro/bmg160_core.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-> index bbce3b0..8d3f0b3 100644
-> --- a/drivers/iio/gyro/bmg160_core.c
-> +++ b/drivers/iio/gyro/bmg160_core.c
-> @@ -452,7 +452,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
->  static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
->  {
->  	int ret;
-> -	unsigned int raw_val;
-> +	__le16 raw_val;
->  
->  	mutex_lock(&data->mutex);
->  	ret = bmg160_set_power_state(data, true);
-> @@ -462,7 +462,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
->  	}
->  
->  	ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(axis), &raw_val,
-> -			       2);
-> +			       sizeof(raw_val));
->  	if (ret < 0) {
->  		dev_err(data->dev, "Error reading axis %d\n", axis);
->  		bmg160_set_power_state(data, false);
-> @@ -470,7 +470,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
->  		return ret;
->  	}
->  
-> -	*val = sign_extend32(raw_val, 15);
-> +	*val = sign_extend32(le16_to_cpu(raw_val), 15);
->  	ret = bmg160_set_power_state(data, false);
->  	mutex_unlock(&data->mutex);
->  	if (ret < 0)
-> @@ -733,6 +733,7 @@ static const struct iio_event_spec bmg160_event = {
->  		.sign = 's',						\
->  		.realbits = 16,					\
->  		.storagebits = 16,					\
-> +		.endianness = IIO_LE,					\
->  	},								\
->  	.event_spec = &bmg160_event,					\
->  	.num_event_specs = 1						\
-> 
+On 04/03/2016 11:39 AM, Jonathan Cameron wrote:
+> On 31/03/16 09:01, Linus Walleij wrote:
+>> On Wed, Mar 23, 2016 at 9:19 AM,  <michael.hennerich@analog.com> wrote:
+>>
+>>> From: Paul Cercueil <paul.cercueil@analog.com>
+>>>
+>>> This patch adds support for the AD5592R (spi) and AD5593R (i2c)
+>>> ADC/DAC/GPIO devices.
+>>>
+>>> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
+>>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+>>
+>> For this v5 version:
+>> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+>>
+>> I'm fine with this new gpiochip driver being merged into the
+>> IIO tree.
+>>
+> Cool,  Paul / Michael,
+>
+> I still had a few trivial outstanding comments. Please remember to add
+> this reviewed-by to V6.
 
+
+Hi Jonathan,
+
+Sorry I missed these -
+
+With the comment added to the CH_MODE_DAC_AND_ADC description in the 
+bindings. Do you think we need another ACK from Rob?
+
+-- 
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
+Margaret Seif
