@@ -1,43 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f54.google.com ([209.85.218.54]:36045 "EHLO
-	mail-oi0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753633AbcDEHuX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Apr 2016 03:50:23 -0400
-Received: by mail-oi0-f54.google.com with SMTP id y204so7609249oie.3
-        for <linux-iio@vger.kernel.org>; Tue, 05 Apr 2016 00:50:23 -0700 (PDT)
+Received: from mga14.intel.com ([192.55.52.115]:62610 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756369AbcDELDU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 5 Apr 2016 07:03:20 -0400
+Subject: Re: [PATCH 0/2] Add support for adc101c* and adc121c*
+To: Drew Fustini <drew@beagleboard.org>
+References: <cover.1459444547.git.leonard.crestez@intel.com>
+ <CAPgEAj5bGwGXqgJQg1Qdu=rVsMFEGWKvUTKy7c17RjsawZN9Og@mail.gmail.com>
+Cc: linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Message-ID: <57039B6F.6090908@intel.com>
+Date: Tue, 5 Apr 2016 14:03:11 +0300
 MIME-Version: 1.0
-In-Reply-To: <20160404223546.GC8755@atomide.com>
-References: <1459326847-9444-1-git-send-email-linus.walleij@linaro.org>
-	<5700E7AF.6040903@kernel.org>
-	<CACRpkdYkqzvu_fMcDPy8i0OCpGdGQ39S534HbCQL8T93gadKmQ@mail.gmail.com>
-	<20160404074239.GT7800@tbergstrom-lnx.Nvidia.com>
-	<20160404223546.GC8755@atomide.com>
-Date: Tue, 5 Apr 2016 09:50:23 +0200
-Message-ID: <CACRpkdbi=big65-yMXXipE1i_YSDo=7BMWDohXcVCpwSi5HMPg@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: light: new driver for the ROHM BH1780
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Tony Lindgren <tony@atomide.com>
-Cc: Peter De Schrijver <pdeschrijver@nvidia.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Paul Walmsley <paul@pwsan.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@caiaq.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Linux-OMAP <linux-omap@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <CAPgEAj5bGwGXqgJQg1Qdu=rVsMFEGWKvUTKy7c17RjsawZN9Og@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Apr 5, 2016 at 12:35 AM, Tony Lindgren <tony@atomide.com> wrote:
+On 04/01/2016 07:38 PM, Drew Fustini wrote:
+> On Thu, Mar 31, 2016 at 12:20 PM, Crestez Dan Leonard
+> <leonard.crestez@intel.com> wrote:
+>> This adds support for adc101c* and adc121c* using the ti-adc081c driver.
+>
+> Thanks for posting this.  I am eager to try it out on the BeagleBone
+> Green for this SeeedStudio Grove I2C ADC module which uses ADC121C021:
+> http://www.seeedstudio.com/wiki/Grove_-_I2C_ADC
 
-> Adding linux-omap to Cc. I suggest do a minimal patch to remove the
-> sysfs interface, then revert the patch if needed. I don't think
-> people are using it.
+It would be nice if somebody else confirmed that this driver used 
+correctly, especially on another arch.
 
-The old driver in misc is just using sysfs for everything, so removing the
-sysfs is like deleting the driver. Once the IIO driver is merged I guess
-I'll boldly post a patch to delete it and then a patch to activate the new
-driver in the OMAP defconfig.
+Please note that in order for the driver to correctly report actual 
+voltage a "voltage regulator" needs to be configured somehow. These 
+chips report voltage relative to I2C supply voltage (which can vary) and 
+correctly calculating the input voltage requires fetching the current 
+voltage from a regulator. If no regulator is available then reading 
+in_voltage_raw will work but in_voltage_scale will fail.
 
-Yours,
-Linus Walleij
+The module you linked ensures that the chip input voltage is 3V no 
+matter the i2c supply voltage. This is specific to that PCB not the 
+actual ti adc chip.
+
+The easiest way to handle this would be to create a fixed-regulator 
+reporting a constant 3V in your device tree and pointing the adc's 
+vref-supply to it.
+
+Regards,
+Leonard
+
