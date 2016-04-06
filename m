@@ -1,118 +1,899 @@
-Return-Path: <ulf.hansson@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <1459947832-23004-1-git-send-email-linus.walleij@linaro.org>
-References: <1459947832-23004-1-git-send-email-linus.walleij@linaro.org>
-Date: Wed, 6 Apr 2016 15:32:12 +0200
-Message-ID: <CAPDyKFp+Ok2WBnRnwbHVLiV7K2kpsDqzjcEUWrL1JFa0vxxQHQ@mail.gmail.com>
-Subject: Re: [PATCH v4] iio: light: new driver for the ROHM BH1780
-From: Ulf Hansson <ulf.hansson@linaro.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@caiaq.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:50309 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751022AbcDFO4D (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 6 Apr 2016 10:56:03 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	lucas.demarchi@intel.com, daniel.baluta@intel.com
+Subject: [PATCH v3] iio: imu: Add initial support for Bosch BMI160
+Date: Wed,  6 Apr 2016 17:58:46 +0300
+Message-Id: <1459954726-19553-1-git-send-email-daniel.baluta@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-[...]
+BMI160 is an Inertial Measurement Unit (IMU) which provides acceleration
+and angular rate measurement. It also offers a secondary I2C interface
+for connecting a magnetometer sensor (usually BMM160).
 
-> +
-> +static int bh1780_probe(struct i2c_client *client,
-> +                       const struct i2c_device_id *id)
-> +{
-> +       int ret;
-> +       struct bh1780_data *bh1780;
-> +       struct i2c_adapter *adapter = to_i2c_adapter(client->dev.parent);
-> +       struct iio_dev *indio_dev;
-> +
-> +       if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE))
-> +               return -EIO;
-> +
-> +       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*bh1780));
-> +       if (!indio_dev)
-> +               return -ENOMEM;
-> +
-> +       bh1780 = iio_priv(indio_dev);
-> +       bh1780->client = client;
-> +       i2c_set_clientdata(client, bh1780);
-> +
-> +       /* Power up the device */
-> +       ret = bh1780_write(bh1780, BH1780_REG_CONTROL, BH1780_PON);
-> +       if (ret < 0)
-> +               return ret;
-> +       msleep(BH1780_PON_DELAY);
-> +       pm_runtime_get_noresume(&client->dev);
-> +       pm_runtime_set_active(&client->dev);
-> +       pm_runtime_enable(&client->dev);
-> +
-> +       ret = bh1780_read(bh1780, BH1780_REG_PARTID);
-> +       if (ret < 0)
-> +               goto out_disable_pm;
-> +       dev_info(&client->dev,
-> +                "Ambient Light Sensor, Rev : %lu\n",
-> +                (ret & BH1780_REVMASK));
-> +
-> +       /*
-> +        * As the device takes 250 ms to even come up with a fresh
-> +        * measurement after power-on, do not shut it down unnecessarily.
-> +        * Set autosuspend to a five seconds.
-> +        */
-> +       pm_runtime_set_autosuspend_delay(&client->dev, 5000);
+Current driver offers support for accelerometer and gyroscope readings
+via sysfs or via buffer interface using an external trigger (e.g.
+hrtimer). Data is retrieved from IMU via I2C or SPI interface.
 
-I assume the parent device is the i2c controller for the sensor device!?
+Datasheet is at:
+	http://www.mouser.com/ds/2/783/BST-BMI160-DS000-07-786474.pdf
 
-In the ux500 case, this i2c controller device resides in the VAPE PM
-domain, thus when you keep the sensor device runtime resumed, it means
-the VAPE PM domain will stay active.
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+Changes since v2:
+	* include <linux/module.h> to fix compile errors reported by
+	Kbuild test robot
 
-Therefore, I am a bit concerned about the 5 s autosuspend delay here.
-Do you have an idea of how a regular use case would be for the sensor?
-In other words, at what frequency would you expect a new sensor value
-to be read?
+Changes since v1:
+        * addressed comments from Jonathan and Peter
+        * fixed Kconfig spelling
+        * shared bmi160_regmap_config between i2c and spi modules
+        * clarify timeouts unit (useconds)
+        * use sizeof(_le16) consistently
+        * 1 -> true
+        * clarify documentation references to datasheet
 
-Moreover, what are the resume latency requirement of reading a new
-sensor value? Is it a problem to have a 250 ms latency for each new
-value?
+ drivers/iio/imu/Kconfig              |   2 +
+ drivers/iio/imu/Makefile             |   1 +
+ drivers/iio/imu/bmi160/Kconfig       |  32 ++
+ drivers/iio/imu/bmi160/Makefile      |   6 +
+ drivers/iio/imu/bmi160/bmi160.h      |  10 +
+ drivers/iio/imu/bmi160/bmi160_core.c | 594 +++++++++++++++++++++++++++++++++++
+ drivers/iio/imu/bmi160/bmi160_i2c.c  |  72 +++++
+ drivers/iio/imu/bmi160/bmi160_spi.c  |  63 ++++
+ 8 files changed, 780 insertions(+)
+ create mode 100644 drivers/iio/imu/bmi160/Kconfig
+ create mode 100644 drivers/iio/imu/bmi160/Makefile
+ create mode 100644 drivers/iio/imu/bmi160/bmi160.h
+ create mode 100644 drivers/iio/imu/bmi160/bmi160_core.c
+ create mode 100644 drivers/iio/imu/bmi160/bmi160_i2c.c
+ create mode 100644 drivers/iio/imu/bmi160/bmi160_spi.c
 
-> +       pm_runtime_use_autosuspend(&client->dev);
-> +       pm_runtime_put(&client->dev);
-> +
-> +       indio_dev->dev.parent = &client->dev;
-> +       indio_dev->info = &bh1780_info;
-> +       indio_dev->name = id->name;
-> +       indio_dev->channels = bh1780_channels;
-> +       indio_dev->num_channels = ARRAY_SIZE(bh1780_channels);
-> +       indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +       ret = iio_device_register(indio_dev);
-> +       if (ret)
-> +               goto out_disable_pm;
-> +       return 0;
-> +
-> +out_disable_pm:
-> +       pm_runtime_put_noidle(&client->dev);
-> +       pm_runtime_disable(&client->dev);
-> +       return ret;
-> +}
-> +
-> +static int bh1780_remove(struct i2c_client *client)
-> +{
-> +       struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +       iio_device_unregister(indio_dev);
-> +       pm_runtime_get_sync(&client->dev);
+diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
+index 5e610f7..1f1ad41 100644
+--- a/drivers/iio/imu/Kconfig
++++ b/drivers/iio/imu/Kconfig
+@@ -25,6 +25,8 @@ config ADIS16480
+ 	  Say yes here to build support for Analog Devices ADIS16375, ADIS16480,
+ 	  ADIS16485, ADIS16488 inertial sensors.
+ 
++source "drivers/iio/imu/bmi160/Kconfig"
++
+ config KMX61
+ 	tristate "Kionix KMX61 6-axis accelerometer and magnetometer"
+ 	depends on I2C
+diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
+index e1e6e3d..c71bcd3 100644
+--- a/drivers/iio/imu/Makefile
++++ b/drivers/iio/imu/Makefile
+@@ -13,6 +13,7 @@ adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_trigger.o
+ adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_buffer.o
+ obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
+ 
++obj-y += bmi160/
+ obj-y += inv_mpu6050/
+ 
+ obj-$(CONFIG_KMX61) += kmx61.o
+diff --git a/drivers/iio/imu/bmi160/Kconfig b/drivers/iio/imu/bmi160/Kconfig
+new file mode 100644
+index 0000000..005c17c
+--- /dev/null
++++ b/drivers/iio/imu/bmi160/Kconfig
+@@ -0,0 +1,32 @@
++#
++# BMI160 IMU driver
++#
++
++config BMI160
++	tristate
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++
++config BMI160_I2C
++	tristate "Bosch BMI160 I2C driver"
++	depends on I2C
++	select BMI160
++	select REGMAP_I2C
++	help
++	  If you say yes here you get support for BMI160 IMU on I2C with
++	  accelerometer, gyroscope and external BMG160 magnetometer.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called bmi160_i2c.
++
++config BMI160_SPI
++	tristate "Bosch BMI160 SPI driver"
++	depends on SPI
++	select BMI160
++	select REGMAP_SPI
++	help
++	  If you say yes here you get support for BMI160 IMU on SPI with
++	  accelerometer, gyroscope and external BMG160 magnetometer.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called bmi160_spi.
+diff --git a/drivers/iio/imu/bmi160/Makefile b/drivers/iio/imu/bmi160/Makefile
+new file mode 100644
+index 0000000..10365e4
+--- /dev/null
++++ b/drivers/iio/imu/bmi160/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for Bosch BMI160 IMU
++#
++obj-$(CONFIG_BMI160) += bmi160_core.o
++obj-$(CONFIG_BMI160_I2C) += bmi160_i2c.o
++obj-$(CONFIG_BMI160_SPI) += bmi160_spi.o
+diff --git a/drivers/iio/imu/bmi160/bmi160.h b/drivers/iio/imu/bmi160/bmi160.h
+new file mode 100644
+index 0000000..d2ae6ed
+--- /dev/null
++++ b/drivers/iio/imu/bmi160/bmi160.h
+@@ -0,0 +1,10 @@
++#ifndef BMI160_H_
++#define BMI160_H_
++
++extern const struct regmap_config bmi160_regmap_config;
++
++int bmi160_core_probe(struct device *dev, struct regmap *regmap,
++		      const char *name, bool use_spi);
++void bmi160_core_remove(struct device *dev);
++
++#endif  /* BMI160_H_ */
+diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+new file mode 100644
+index 0000000..eef04a3
+--- /dev/null
++++ b/drivers/iio/imu/bmi160/bmi160_core.c
+@@ -0,0 +1,594 @@
++/*
++ * BMI160 - Bosch IMU (accel, gyro plus external magnetometer)
++ *
++ * Copyright (c) 2016, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO core driver for BMI160, with support for I2C/SPI busses
++ *
++ * TODO: magnetometer, interrupts, hardware FIFO
++ */
++#include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/acpi.h>
++#include <linux/delay.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/buffer.h>
++
++#include "bmi160.h"
++
++#define BMI160_REG_CHIP_ID	0x00
++#define BMI160_CHIP_ID_VAL	0xD1
++
++#define BMI160_REG_PMU_STATUS	0x03
++
++/* X axis data low byte address, the rest can be obtained using axis offset */
++#define BMI160_REG_DATA_MAGN_XOUT_L	0x04
++#define BMI160_REG_DATA_GYRO_XOUT_L	0x0C
++#define BMI160_REG_DATA_ACCEL_XOUT_L	0x12
++
++#define BMI160_REG_ACCEL_CONFIG		0x40
++#define BMI160_ACCEL_CONFIG_ODR_MASK	GENMASK(3, 0)
++#define BMI160_ACCEL_CONFIG_BWP_MASK	GENMASK(6, 4)
++
++#define BMI160_REG_ACCEL_RANGE		0x41
++#define BMI160_ACCEL_RANGE_2G		0x03
++#define BMI160_ACCEL_RANGE_4G		0x05
++#define BMI160_ACCEL_RANGE_8G		0x08
++#define BMI160_ACCEL_RANGE_16G		0x0C
++
++#define BMI160_REG_GYRO_CONFIG		0x42
++#define BMI160_GYRO_CONFIG_ODR_MASK	GENMASK(3, 0)
++#define BMI160_GYRO_CONFIG_BWP_MASK	GENMASK(5, 4)
++
++#define BMI160_REG_GYRO_RANGE		0x43
++#define BMI160_GYRO_RANGE_2000DPS	0x00
++#define BMI160_GYRO_RANGE_1000DPS	0x01
++#define BMI160_GYRO_RANGE_500DPS	0x02
++#define BMI160_GYRO_RANGE_250DPS	0x03
++#define BMI160_GYRO_RANGE_125DPS	0x04
++
++#define BMI160_REG_CMD			0x7E
++#define BMI160_CMD_ACCEL_PM_SUSPEND	0x10
++#define BMI160_CMD_ACCEL_PM_NORMAL	0x11
++#define BMI160_CMD_ACCEL_PM_LOW_POWER	0x12
++#define BMI160_CMD_GYRO_PM_SUSPEND	0x14
++#define BMI160_CMD_GYRO_PM_NORMAL	0x15
++#define BMI160_CMD_GYRO_PM_FAST_STARTUP	0x17
++#define BMI160_CMD_SOFTRESET		0xB6
++
++#define BMI160_REG_DUMMY		0x7F
++
++#define BMI160_ACCEL_PMU_MIN_USLEEP	3200
++#define BMI160_ACCEL_PMU_MAX_USLEEP	3800
++#define BMI160_GYRO_PMU_MIN_USLEEP	55000
++#define BMI160_GYRO_PMU_MAX_USLEEP	80000
++#define BMI160_SOFTRESET_USLEEP		1000
++
++#define BMI160_CHANNEL(_type, _axis, _index) {			\
++	.type = _type,						\
++	.modified = 1,						\
++	.channel2 = IIO_MOD_##_axis,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |  \
++		BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
++	.scan_index = _index,					\
++	.scan_type = {						\
++		.sign = 's',					\
++		.realbits = 16,					\
++		.storagebits = 16,				\
++		.endianness = IIO_LE,				\
++	},							\
++}
++
++/* scan indexes follow DATA register order */
++enum bmi160_scan_axis {
++	BMI160_SCAN_EXT_MAGN_X = 0,
++	BMI160_SCAN_EXT_MAGN_Y,
++	BMI160_SCAN_EXT_MAGN_Z,
++	BMI160_SCAN_RHALL,
++	BMI160_SCAN_GYRO_X,
++	BMI160_SCAN_GYRO_Y,
++	BMI160_SCAN_GYRO_Z,
++	BMI160_SCAN_ACCEL_X,
++	BMI160_SCAN_ACCEL_Y,
++	BMI160_SCAN_ACCEL_Z,
++	BMI160_SCAN_TIMESTAMP,
++};
++
++enum bmi160_sensor_type {
++	BMI160_ACCEL	= 0,
++	BMI160_GYRO,
++	BMI160_EXT_MAGN,
++	BMI160_NUM_SENSORS /* must be last */
++};
++
++struct bmi160_data {
++	struct regmap *regmap;
++};
++
++const struct regmap_config bmi160_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++};
++EXPORT_SYMBOL(bmi160_regmap_config);
++
++struct bmi160_regs {
++	u8 data; /* LSB byte register for X-axis */
++	u8 config;
++	u8 config_odr_mask;
++	u8 config_bwp_mask;
++	u8 range;
++	u8 pmu_cmd_normal;
++	u8 pmu_cmd_suspend;
++};
++
++struct bmi160_regs bmi160_regs[] = {
++	[BMI160_ACCEL] = {
++		.data	= BMI160_REG_DATA_ACCEL_XOUT_L,
++		.config	= BMI160_REG_ACCEL_CONFIG,
++		.config_odr_mask = BMI160_ACCEL_CONFIG_ODR_MASK,
++		.config_bwp_mask = BMI160_ACCEL_CONFIG_BWP_MASK,
++		.range	= BMI160_REG_ACCEL_RANGE,
++		.pmu_cmd_normal = BMI160_CMD_ACCEL_PM_NORMAL,
++		.pmu_cmd_suspend = BMI160_CMD_ACCEL_PM_SUSPEND,
++	},
++	[BMI160_GYRO] = {
++		.data	= BMI160_REG_DATA_GYRO_XOUT_L,
++		.config	= BMI160_REG_GYRO_CONFIG,
++		.config_odr_mask = BMI160_GYRO_CONFIG_ODR_MASK,
++		.config_bwp_mask = BMI160_GYRO_CONFIG_BWP_MASK,
++		.range	= BMI160_REG_GYRO_RANGE,
++		.pmu_cmd_normal = BMI160_CMD_GYRO_PM_NORMAL,
++		.pmu_cmd_suspend = BMI160_CMD_GYRO_PM_SUSPEND,
++	},
++};
++
++struct bmi160_pmu_time {
++	unsigned long min;
++	unsigned long max;
++};
++
++struct bmi160_pmu_time bmi160_pmu_time[] = {
++	[BMI160_ACCEL] = {
++		.min = BMI160_ACCEL_PMU_MIN_USLEEP,
++		.max = BMI160_ACCEL_PMU_MAX_USLEEP
++	},
++	[BMI160_GYRO] = {
++		.min = BMI160_GYRO_PMU_MIN_USLEEP,
++		.max = BMI160_GYRO_PMU_MIN_USLEEP,
++	},
++};
++
++struct bmi160_scale {
++	u8 bits;
++	int uscale;
++};
++
++struct bmi160_odr {
++	u8 bits;
++	int odr;
++	int uodr;
++};
++
++static const struct bmi160_scale bmi160_accel_scale[] = {
++	{ BMI160_ACCEL_RANGE_2G, 598},
++	{ BMI160_ACCEL_RANGE_4G, 1197},
++	{ BMI160_ACCEL_RANGE_8G, 2394},
++	{ BMI160_ACCEL_RANGE_16G, 4788},
++};
++
++static const struct bmi160_scale bmi160_gyro_scale[] = {
++	{ BMI160_GYRO_RANGE_2000DPS, 1065},
++	{ BMI160_GYRO_RANGE_1000DPS, 532},
++	{ BMI160_GYRO_RANGE_500DPS, 266},
++	{ BMI160_GYRO_RANGE_250DPS, 133},
++	{ BMI160_GYRO_RANGE_125DPS, 66},
++};
++
++struct bmi160_scale_item {
++	const struct bmi160_scale *tbl;
++	int num;
++};
++
++static const struct  bmi160_scale_item bmi160_scale_table[] = {
++	[BMI160_ACCEL] = {
++		.tbl	= bmi160_accel_scale,
++		.num	= ARRAY_SIZE(bmi160_accel_scale),
++	},
++	[BMI160_GYRO] = {
++		.tbl	= bmi160_gyro_scale,
++		.num	= ARRAY_SIZE(bmi160_gyro_scale),
++	},
++};
++
++static const struct bmi160_odr bmi160_accel_odr[] = {
++	{0x01, 0, 78125},
++	{0x02, 1, 5625},
++	{0x03, 3, 125},
++	{0x04, 6, 25},
++	{0x05, 12, 5},
++	{0x06, 25, 0},
++	{0x07, 50, 0},
++	{0x08, 100, 0},
++	{0x09, 200, 0},
++	{0x0A, 400, 0},
++	{0x0B, 800, 0},
++	{0x0C, 1600, 0},
++};
++
++static const struct bmi160_odr bmi160_gyro_odr[] = {
++	{0x06, 25, 0},
++	{0x07, 50, 0},
++	{0x08, 100, 0},
++	{0x09, 200, 0},
++	{0x0A, 400, 0},
++	{0x0B, 8000, 0},
++	{0x0C, 1600, 0},
++	{0x0D, 3200, 0},
++};
++
++struct bmi160_odr_item {
++	const struct bmi160_odr *tbl;
++	int num;
++};
++
++static const struct  bmi160_odr_item bmi160_odr_table[] = {
++	[BMI160_ACCEL] = {
++		.tbl	= bmi160_accel_odr,
++		.num	= ARRAY_SIZE(bmi160_accel_odr),
++	},
++	[BMI160_GYRO] = {
++		.tbl	= bmi160_gyro_odr,
++		.num	= ARRAY_SIZE(bmi160_gyro_odr),
++	},
++};
++
++static const struct iio_chan_spec bmi160_channels[] = {
++	BMI160_CHANNEL(IIO_ACCEL, X, BMI160_SCAN_ACCEL_X),
++	BMI160_CHANNEL(IIO_ACCEL, Y, BMI160_SCAN_ACCEL_Y),
++	BMI160_CHANNEL(IIO_ACCEL, Z, BMI160_SCAN_ACCEL_Z),
++	BMI160_CHANNEL(IIO_ANGL_VEL, X, BMI160_SCAN_GYRO_X),
++	BMI160_CHANNEL(IIO_ANGL_VEL, Y, BMI160_SCAN_GYRO_Y),
++	BMI160_CHANNEL(IIO_ANGL_VEL, Z, BMI160_SCAN_GYRO_Z),
++	IIO_CHAN_SOFT_TIMESTAMP(BMI160_SCAN_TIMESTAMP),
++};
++
++static enum bmi160_sensor_type bmi160_to_sensor(enum iio_chan_type iio_type)
++{
++	switch (iio_type) {
++	case IIO_ACCEL:
++		return BMI160_ACCEL;
++	case IIO_ANGL_VEL:
++		return BMI160_GYRO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static
++int bmi160_set_mode(struct bmi160_data *data, enum bmi160_sensor_type t,
++		    bool mode)
++{
++	int ret;
++	u8 cmd;
++
++	if (mode)
++		cmd = bmi160_regs[t].pmu_cmd_normal;
++	else
++		cmd = bmi160_regs[t].pmu_cmd_suspend;
++
++	ret = regmap_write(data->regmap, BMI160_REG_CMD, cmd);
++	if (ret < 0)
++		return ret;
++
++	usleep_range(bmi160_pmu_time[t].min, bmi160_pmu_time[t].max);
++
++	return 0;
++}
++
++static
++int bmi160_set_scale(struct bmi160_data *data, enum bmi160_sensor_type t,
++		     int uscale)
++{
++	int i;
++
++	for (i = 0; i < bmi160_scale_table[t].num; i++)
++		if (bmi160_scale_table[t].tbl[i].uscale == uscale)
++			break;
++
++	if (i == bmi160_scale_table[t].num)
++		return -EINVAL;
++
++	return regmap_write(data->regmap, bmi160_regs[t].range,
++			    bmi160_scale_table[t].tbl[i].bits);
++}
++
++static
++int bmi160_get_scale(struct bmi160_data *data, enum bmi160_sensor_type t,
++		     int *uscale)
++{
++	int i, ret, val;
++
++	ret = regmap_read(data->regmap, bmi160_regs[t].range, &val);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < bmi160_scale_table[t].num; i++)
++		if (bmi160_scale_table[t].tbl[i].bits == val) {
++			*uscale = bmi160_scale_table[t].tbl[i].uscale;
++			return 0;
++		}
++
++	return -EINVAL;
++}
++
++static int bmi160_get_data(struct bmi160_data *data, int chan_type,
++			   int axis, int *val)
++{
++	u8 reg;
++	int ret;
++	__le16 sample;
++	enum bmi160_sensor_type t = bmi160_to_sensor(chan_type);
++
++	reg = bmi160_regs[t].data + (axis - IIO_MOD_X) * sizeof(__le16);
++
++	ret = regmap_bulk_read(data->regmap, reg, &sample, sizeof(__le16));
++	if (ret < 0)
++		return ret;
++
++	*val = sign_extend32(le16_to_cpu(sample), 15);
++
++	return 0;
++}
++
++static
++int bmi160_set_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
++		   int odr, int uodr)
++{
++	int i;
++
++	for (i = 0; i < bmi160_odr_table[t].num; i++)
++		if (bmi160_odr_table[t].tbl[i].odr == odr &&
++		    bmi160_odr_table[t].tbl[i].uodr == uodr)
++			break;
++
++	if (i >= bmi160_odr_table[t].num)
++		return -EINVAL;
++
++	return regmap_update_bits(data->regmap,
++				  bmi160_regs[t].config,
++				  bmi160_odr_table[t].tbl[i].bits,
++				  bmi160_regs[t].config_odr_mask);
++}
++
++static int bmi160_get_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
++			  int *odr, int *uodr)
++{
++	int i, val, ret;
++
++	ret = regmap_read(data->regmap, bmi160_regs[t].config, &val);
++	if (ret < 0)
++		return ret;
++
++	val &= bmi160_regs[t].config_odr_mask;
++
++	for (i = 0; i < bmi160_odr_table[t].num; i++)
++		if (val == bmi160_odr_table[t].tbl[i].bits)
++			break;
++
++	if (i >= bmi160_odr_table[t].num)
++		return -EINVAL;
++
++	*odr = bmi160_odr_table[t].tbl[i].odr;
++	*uodr = bmi160_odr_table[t].tbl[i].uodr;
++
++	return 0;
++}
++
++static irqreturn_t bmi160_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct bmi160_data *data = iio_priv(indio_dev);
++	s16 buf[16]; /* 3 sens x 3 axis x s16 + 3 x s16 pad + 4 x s16 tstamp */
++	int i, ret, sample, j = 0, base = BMI160_REG_DATA_MAGN_XOUT_L;
++
++	for_each_set_bit(i, indio_dev->active_scan_mask,
++			 indio_dev->masklength) {
++		ret = regmap_bulk_read(data->regmap, base + i * sizeof(__le16),
++				       &sample, sizeof(__le16));
++		if (ret < 0)
++			goto done;
++		buf[j++] = sample;
++	}
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
++static int bmi160_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	int ret;
++	struct bmi160_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = bmi160_get_data(data, chan->type, chan->channel2, val);
++		if (ret < 0)
++			return ret;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 0;
++		ret = bmi160_get_scale(data,
++				       bmi160_to_sensor(chan->type), val2);
++		return ret < 0 ? ret : IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = bmi160_get_odr(data, bmi160_to_sensor(chan->type),
++				     val, val2);
++		return ret < 0 ? ret : IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int bmi160_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	struct bmi160_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		return bmi160_set_scale(data,
++					bmi160_to_sensor(chan->type), val2);
++		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		return bmi160_set_odr(data, bmi160_to_sensor(chan->type),
++				      val, val2);
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static const struct iio_info bmi160_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = bmi160_read_raw,
++	.write_raw = bmi160_write_raw,
++};
++
++static const char *bmi160_match_acpi_device(struct device *dev)
++{
++	const struct acpi_device_id *id;
++
++	id = acpi_match_device(dev->driver->acpi_match_table, dev);
++	if (!id)
++		return NULL;
++
++	return dev_name(dev);
++}
++
++static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
++{
++	int ret;
++	unsigned int val;
++	struct device *dev = regmap_get_device(data->regmap);
++
++	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
++	if (ret < 0)
++		return ret;
++
++	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
++
++	/* CS rising edge is needed before starting SPI, so do a dummy read
++	 * See Section 3.2.1, page 86 of the datasheet
++	 */
++	if (use_spi) {
++		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
++		if (ret < 0)
++			return ret;
++	}
++
++	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
++	if (ret < 0) {
++		dev_err(dev, "Error reading chip id\n");
++		return ret;
++	}
++	if (val != BMI160_CHIP_ID_VAL) {
++		dev_err(dev, "Wrong chip id, got %x expected %x\n",
++			val, BMI160_CHIP_ID_VAL);
++		return -ENODEV;
++	}
++
++	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
++	if (ret < 0)
++		return ret;
++
++	ret = bmi160_set_mode(data, BMI160_GYRO, true);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static void bmi160_chip_uninit(struct bmi160_data *data)
++{
++	bmi160_set_mode(data, BMI160_GYRO, false);
++	bmi160_set_mode(data, BMI160_ACCEL, false);
++}
++
++int bmi160_core_probe(struct device *dev, struct regmap *regmap,
++		      const char *name, bool use_spi)
++{
++	struct iio_dev *indio_dev;
++	struct bmi160_data *data;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	dev_set_drvdata(dev, indio_dev);
++	data->regmap = regmap;
++
++	ret = bmi160_chip_init(data, use_spi);
++	if (ret < 0)
++		return ret;
++
++	if (!name && ACPI_HANDLE(dev))
++		name = bmi160_match_acpi_device(dev);
++
++	indio_dev->dev.parent = dev;
++	indio_dev->channels = bmi160_channels;
++	indio_dev->num_channels = ARRAY_SIZE(bmi160_channels);
++	indio_dev->name = name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &bmi160_info;
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++					 bmi160_trigger_handler, NULL);
++	if (ret < 0)
++		goto uninit;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		goto buffer_cleanup;
++
++	return 0;
++uninit:
++	bmi160_chip_uninit(data);
++buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(bmi160_core_probe);
++
++void bmi160_core_remove(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct bmi160_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	bmi160_chip_uninit(data);
++}
++EXPORT_SYMBOL_GPL(bmi160_core_remove);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
++MODULE_DESCRIPTION("Bosch BMI160 driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
+new file mode 100644
+index 0000000..07a179d
+--- /dev/null
++++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
+@@ -0,0 +1,72 @@
++/*
++ * BMI160 - Bosch IMU, I2C bits
++ *
++ * Copyright (c) 2016, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * 7-bit I2C slave address is:
++ *      - 0x68 if SDO is pulled to GND
++ *      - 0x69 if SDO is pulled to VDDIO
++ */
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/regmap.h>
++#include <linux/acpi.h>
++
++#include "bmi160.h"
++
++static int bmi160_i2c_probe(struct i2c_client *client,
++			    const struct i2c_device_id *id)
++{
++	struct regmap *regmap;
++	const char *name = NULL;
++
++	regmap = devm_regmap_init_i2c(client, &bmi160_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
++			(int)PTR_ERR(regmap));
++		return PTR_ERR(regmap);
++	}
++
++	if (id)
++		name = id->name;
++
++	return bmi160_core_probe(&client->dev, regmap, name, false);
++}
++
++static int bmi160_i2c_remove(struct i2c_client *client)
++{
++	bmi160_core_remove(&client->dev);
++
++	return 0;
++}
++
++static const struct i2c_device_id bmi160_i2c_id[] = {
++	{"bmi160", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, bmi160_i2c_id);
++
++static const struct acpi_device_id bmi160_acpi_match[] = {
++	{"BMI0160", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
++
++static struct i2c_driver bmi160_i2c_driver = {
++	.driver = {
++		.name			= "bmi160_i2c",
++		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
++	},
++	.probe		= bmi160_i2c_probe,
++	.remove		= bmi160_i2c_remove,
++	.id_table	= bmi160_i2c_id,
++};
++module_i2c_driver(bmi160_i2c_driver);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
++MODULE_DESCRIPTION("BMI160 I2C driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
+new file mode 100644
+index 0000000..1ec8b12
+--- /dev/null
++++ b/drivers/iio/imu/bmi160/bmi160_spi.c
+@@ -0,0 +1,63 @@
++/*
++ * BMI160 - Bosch IMU, SPI bits
++ *
++ * Copyright (c) 2016, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ */
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/regmap.h>
++#include <linux/acpi.h>
++
++#include "bmi160.h"
++
++static int bmi160_spi_probe(struct spi_device *spi)
++{
++	struct regmap *regmap;
++	const struct spi_device_id *id = spi_get_device_id(spi);
++
++	regmap = devm_regmap_init_spi(spi, &bmi160_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
++			(int)PTR_ERR(regmap));
++		return PTR_ERR(regmap);
++	}
++	return bmi160_core_probe(&spi->dev, regmap, id->name, true);
++}
++
++static int bmi160_spi_remove(struct spi_device *spi)
++{
++	bmi160_core_remove(&spi->dev);
++
++	return 0;
++}
++
++static const struct spi_device_id bmi160_spi_id[] = {
++	{"bmi160", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, bmi160_spi_id);
++
++static const struct acpi_device_id bmi160_acpi_match[] = {
++	{"BMI0160", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
++
++static struct spi_driver bmi160_spi_driver = {
++	.probe		= bmi160_spi_probe,
++	.remove		= bmi160_spi_remove,
++	.id_table	= bmi160_spi_id,
++	.driver = {
++		.acpi_match_table = ACPI_PTR(bmi160_acpi_match),
++		.name	= "bmi160_spi",
++	},
++};
++module_spi_driver(bmi160_spi_driver);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
++MODULE_DESCRIPTION("Bosch BMI160 SPI driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.5.0
 
-I believe you want to power off as well:
-
-bh1780_write(bh1780, BH1780_REG_CONTROL, BH1780_POFF);
-
-> +       pm_runtime_put_noidle(&client->dev);
-> +       pm_runtime_disable(&client->dev);
-> +
-> +       return 0;
-> +}
-> +
-
-Otherwise this looks great!
-
-Kind regards
-Uffe
