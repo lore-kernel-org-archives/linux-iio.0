@@ -1,58 +1,56 @@
-Return-Path: <peda@lysator.liu.se>
-Message-ID: <57036E48.9080404@lysator.liu.se>
-Date: Tue, 05 Apr 2016 09:50:32 +0200
-From: Peter Rosin <peda@lysator.liu.se>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
- Jonathan Corbet <corbet@lwn.net>,
- Peter Korsgaard <peter.korsgaard@barco.com>,
- Guenter Roeck <linux@roeck-us.net>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- Antti Palosaari <crope@iki.fi>,
- Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
- Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
- Grant Likely <grant.likely@linaro.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "David S. Miller" <davem@davemloft.net>,
- Kalle Valo <kvalo@codeaurora.org>,
- Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>,
- Daniel Baluta <daniel.baluta@intel.com>,
- Adriana Reus <adriana.reus@intel.com>,
- Lucas De Marchi <lucas.demarchi@intel.com>,
- Matt Ranostay <matt.ranostay@intel.com>,
- Krzysztof Kozlowski <k.kozlowski@samsung.com>,
- Terry Heo <terryheo@google.com>, Hans Verkuil <hans.verkuil@cisco.com>,
- Arnd Bergmann <arnd@arndb.de>,
- Tommi Rantala <tt.rantala@gmail.com>, linux-i2c@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v6 19/24] i2c-mux: document i2c muxes and elaborate on
- parent-/mux-locked muxes
-References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se> <1459673574-11440-20-git-send-email-peda@lysator.liu.se> <5700F9DA.1040501@kernel.org>
-In-Reply-To: <5700F9DA.1040501@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:32929 "EHLO
+	mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753605AbcDFEL5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2016 00:11:57 -0400
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, knaack.h@gmx.de, Michael.Hennerich@analog.com,
+	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] staging: iio: ad7606: use iio_device_{claim|release}_direct_mode()
+Date: Tue,  5 Apr 2016 21:11:31 -0700
+Message-Id: <1459915891-2586-1-git-send-email-amsfield22@gmail.com>
+In-Reply-To: <20160401165349.GA2678@d830.WORKGROUP>
+References: <20160401165349.GA2678@d830.WORKGROUP>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2016-04-03 13:09, Jonathan Cameron wrote:
-> On 03/04/16 09:52, Peter Rosin wrote:
->> From: Peter Rosin <peda@axentia.se>
->>
->> Signed-off-by: Peter Rosin <peda@axentia.se>
-> Very nice, one typo that I could see.
+Replace the code that guarantees the device stays in direct mode with
+iio_device_{claim|release}_direct_mode() which does same.
 
-Thanks!
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+---
+Changed in v2:
+ - removed improper application of claim/release from intr handler
+ - updated changelog
 
-*snip*
+ drivers/staging/iio/adc/ad7606_core.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
->> +     and the actual transfer (e.g. if the child mux is auto-closing
->> +     and the parent mux issus i2c-transfers as part of its select).
->> +     This is especailly the case if the parent mux is mux-locked, but
-> especially
+diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+index 6dbc811..f79ee61 100644
+--- a/drivers/staging/iio/adc/ad7606_core.c
++++ b/drivers/staging/iio/adc/ad7606_core.c
+@@ -88,12 +88,12 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-		mutex_lock(&indio_dev->mlock);
+-		if (iio_buffer_enabled(indio_dev))
+-			ret = -EBUSY;
+-		else
+-			ret = ad7606_scan_direct(indio_dev, chan->address);
+-		mutex_unlock(&indio_dev->mlock);
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++
++		ret = ad7606_scan_direct(indio_dev, chan->address);
++		iio_device_release_direct_mode(indio_dev);
+ 
+ 		if (ret < 0)
+ 			return ret;
+-- 
+2.1.4
 
-Fixed now in my local repo.
-
-Cheers,
-Peter
