@@ -4,126 +4,117 @@ To: <jic23@kernel.org>, <corbet@lwn.net>, <knaack.h@gmx.de>,
 	<lars@metafoo.de>, <pmeerw@pmeerw.net>
 CC: <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-iio@vger.kernel.org>, Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH 1/3] iio: core: Add devm_ APIs for iio_channel_{get,release}
-Date: Wed, 6 Apr 2016 16:01:06 +0530
-Message-ID: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com>
+Subject: [PATCH 2/3] iio: core: Add devm_ APIs for iio_channel_{get,release}_all
+Date: Wed, 6 Apr 2016 16:01:07 +0530
+Message-ID: <1459938668-9180-2-git-send-email-ldewangan@nvidia.com>
+In-Reply-To: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com>
+References: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
 Some of kernel driver uses the IIO framework to get the sensor
 value via ADC or IIO HW driver. The client driver get iio channel
-by iio_channel_get() and release it by calling iio_channel_release().
+by iio_channel_get_all() and release it by calling
+iio_channel_release_all().
 
 Add resource managed version (devm_*) of these APIs so that if client
-calls the devm_iio_channel_get() then it need not to release it explicitly,
-it can be done by managed device framework when driver get un-binded.
+calls the devm_iio_channel_get_all() then it need not to release it
+explicitly, it can be done by managed device framework when driver
+get un-binded.
 
 This reduces the code in error path and also need of .remove callback in
 some cases.
 
 Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
 ---
- drivers/iio/inkern.c         | 48 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/iio/consumer.h | 27 +++++++++++++++++++++++++
- 2 files changed, 75 insertions(+)
+ drivers/iio/inkern.c         | 36 ++++++++++++++++++++++++++++++++++++
+ include/linux/iio/consumer.h | 26 ++++++++++++++++++++++++++
+ 2 files changed, 62 insertions(+)
 
 diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 734a004..18e623f 100644
+index 18e623f..8c1abfe 100644
 --- a/drivers/iio/inkern.c
 +++ b/drivers/iio/inkern.c
-@@ -356,6 +356,54 @@ void iio_channel_release(struct iio_channel *channel)
+@@ -489,6 +489,42 @@ void iio_channel_release_all(struct iio_channel *channels)
  }
- EXPORT_SYMBOL_GPL(iio_channel_release);
+ EXPORT_SYMBOL_GPL(iio_channel_release_all);
  
-+static void devm_iio_channel_free(struct device *dev, void *res)
++static void devm_iio_channel_free_all(struct device *dev, void *res)
 +{
-+	struct iio_channel *channel = *(struct iio_channel **)res;
++	struct iio_channel *channels = *(struct iio_channel **)res;
 +
-+	iio_channel_release(channel);
++	iio_channel_release_all(channels);
 +}
 +
-+static int devm_iio_channel_match(struct device *dev, void *res, void *data)
++struct iio_channel *devm_iio_channel_get_all(struct device *dev)
 +{
-+	struct iio_channel **r = res;
++	struct iio_channel **ptr, *channels;
 +
-+	if (!r || !*r) {
-+		WARN_ON(!r || !*r);
-+		return 0;
-+	}
-+
-+	return *r == data;
-+}
-+
-+struct iio_channel *devm_iio_channel_get(struct device *dev,
-+					 const char *channel_name)
-+{
-+	struct iio_channel **ptr, *channel;
-+
-+	ptr = devres_alloc(devm_iio_channel_free, sizeof(*ptr), GFP_KERNEL);
++	ptr = devres_alloc(devm_iio_channel_free_all, sizeof(*ptr), GFP_KERNEL);
 +	if (!ptr)
 +		return ERR_PTR(-ENOMEM);
 +
-+	channel = iio_channel_get(dev, channel_name);
-+	if (IS_ERR(channel)) {
++	channels = iio_channel_get_all(dev);
++	if (IS_ERR(channels)) {
 +		devres_free(ptr);
-+		return channel;
++		return channels;
 +	}
 +
-+	*ptr = channel;
++	*ptr = channels;
 +	devres_add(dev, ptr);
 +
-+	return channel;
++	return channels;
 +}
-+EXPORT_SYMBOL_GPL(devm_iio_channel_get);
++EXPORT_SYMBOL_GPL(devm_iio_channel_get_all);
 +
-+void devm_iio_channel_release(struct device *dev, struct iio_channel *channel)
++void devm_iio_channel_release_all(struct device *dev,
++				  struct iio_channel *channels)
 +{
-+	WARN_ON(devres_release(dev, devm_iio_channel_free,
-+			       devm_iio_channel_match, channel));
++	WARN_ON(devres_release(dev, devm_iio_channel_free_all,
++			       devm_iio_channel_match, channels));
 +}
-+EXPORT_SYMBOL_GPL(devm_iio_channel_release);
++EXPORT_SYMBOL_GPL(devm_iio_channel_release_all);
 +
- struct iio_channel *iio_channel_get_all(struct device *dev)
+ static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
+ 	enum iio_chan_info_enum info)
  {
- 	const char *name;
 diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-index fad5867..e1e033d 100644
+index e1e033d..3d672f7 100644
 --- a/include/linux/iio/consumer.h
 +++ b/include/linux/iio/consumer.h
-@@ -49,6 +49,33 @@ struct iio_channel *iio_channel_get(struct device *dev,
- void iio_channel_release(struct iio_channel *chan);
+@@ -92,6 +92,32 @@ struct iio_channel *iio_channel_get_all(struct device *dev);
+  */
+ void iio_channel_release_all(struct iio_channel *chan);
  
- /**
-+ * devm_iio_channel_get() - Resource managed version of iio_channel_get().
-+ * @dev:		Pointer to consumer device. Device name must match
-+ *			the name of the device as provided in the iio_map
-+ *			with which the desired provider to consumer mapping
-+ *			was registered.
-+ * @consumer_channel:	Unique name to identify the channel on the consumer
-+ *			side. This typically describes the channels use within
-+ *			the consumer. E.g. 'battery_voltage'
++/**
++ * devm_iio_channel_get_all() - Resource managed version of
++ *				iio_channel_get_all().
++ * @dev: Pointer to consumer device.
 + *
 + * Returns a pointer to negative errno if it is not able to get the iio channel
-+ * otherwise returns valid pointer for iio channel.
++ * otherwise returns an array of iio_channel structures terminated with one with
++ * null iio_dev pointer.
 + *
-+ * The allocated iio channel is automatically released when the device is
-+ * unbound.
++ * This function is used by fairly generic consumers to get all the
++ * channels registered as having this consumer.
++ *
++ * The allocated iio channels are automatically released when the device is
++ * unbounded.
 + */
-+struct iio_channel *devm_iio_channel_get(struct device *dev,
-+					 const char *consumer_channel);
-+/**
-+ * devm_iio_channel_release() - Resource managed version of
-+ *				iio_channel_release().
-+ * @dev:		Pointer to consumer device for which resource
-+ *			is allocared.
-+ * @chan:		The channel to be released.
-+ */
-+void devm_iio_channel_release(struct device *dev, struct iio_channel *chan);
++struct iio_channel *devm_iio_channel_get_all(struct device *dev);
 +
 +/**
-  * iio_channel_get_all() - get all channels associated with a client
-  * @dev:		Pointer to consumer device.
-  *
++ * devm_iio_channel_release_all() - Resource managed version of
++ *				    iio_channel_release_all().
++ * @dev:		Pointer to consumer device for which resource
++ *			is allocared.
++ * @chan:		Array channel to be released.
++ */
++void devm_iio_channel_release_all(struct device *dev, struct iio_channel *chan);
++
+ struct iio_cb_buffer;
+ /**
+  * iio_channel_get_all_cb() - register callback for triggered capture
 -- 
 2.1.4
