@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f66.google.com ([209.85.220.66]:34018 "EHLO
-	mail-pa0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760262AbcDFFT2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2016 01:19:28 -0400
-Date: Tue, 5 Apr 2016 22:19:25 -0700
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:35711 "EHLO
+	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1761055AbcDFFQe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2016 01:16:34 -0400
+Date: Tue, 5 Apr 2016 22:16:31 -0700
 From: Alison Schofield <amsfield22@gmail.com>
 To: jic23@kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
@@ -11,8 +11,9 @@ Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-samsung-soc@vger.kernel.org
-Subject: [PATCH 6/9] iio: accel: mxc4005: use regmap to retrieve struct device
-Message-ID: <765e752b36e9b809217ed15aad75efb9593f22ce.1459918214.git.amsfield22@gmail.com>
+Subject: [PATCH 2/9] iio: adc: qcom-spmi-iadc: use regmap to retrieve struct
+ device
+Message-ID: <aaffb79b464a361556e098d42081406813c511c4.1459918214.git.amsfield22@gmail.com>
 References: <cover.1459918214.git.amsfield22@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -27,146 +28,185 @@ Patch created using Coccinelle plus manual edits.
 
 Signed-off-by: Alison Schofield <amsfield22@gmail.com>
 ---
- drivers/iio/accel/mxc4005.c | 26 +++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+ drivers/iio/adc/qcom-spmi-iadc.c | 32 +++++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
-index c23f47a..013d511 100644
---- a/drivers/iio/accel/mxc4005.c
-+++ b/drivers/iio/accel/mxc4005.c
-@@ -60,7 +60,6 @@ enum mxc4005_range {
- };
+diff --git a/drivers/iio/adc/qcom-spmi-iadc.c b/drivers/iio/adc/qcom-spmi-iadc.c
+index fabd24e..f69a057 100644
+--- a/drivers/iio/adc/qcom-spmi-iadc.c
++++ b/drivers/iio/adc/qcom-spmi-iadc.c
+@@ -102,7 +102,6 @@
+ /**
+  * struct iadc_chip - IADC Current ADC device structure.
+  * @regmap: regmap for register read/write.
+- * @dev: This device pointer.
+  * @base: base offset for the ADC peripheral.
+  * @rsense: Values of the internal and external sense resister in micro Ohms.
+  * @poll_eoc: Poll for end of conversion instead of waiting for IRQ.
+@@ -113,7 +112,6 @@
+  */
+ struct iadc_chip {
+ 	struct regmap	*regmap;
+-	struct device	*dev;
+ 	u16		base;
+ 	bool		poll_eoc;
+ 	u32		rsense[2];
+@@ -170,6 +168,7 @@ static int iadc_set_state(struct iadc_chip *iadc, bool state)
  
- struct mxc4005_data {
--	struct device *dev;
- 	struct mutex mutex;
- 	struct regmap *regmap;
- 	struct iio_trigger *dready_trig;
-@@ -140,12 +139,13 @@ static const struct regmap_config mxc4005_regmap_config = {
- 
- static int mxc4005_read_xyz(struct mxc4005_data *data)
+ static void iadc_status_show(struct iadc_chip *iadc)
  {
-+	struct device *dev = regmap_get_device(data->regmap);
++	struct device *dev = regmap_get_device(iadc->regmap);
+ 	u8 mode, sta1, chan, dig, en, req;
  	int ret;
  
- 	ret = regmap_bulk_read(data->regmap, MXC4005_REG_XOUT_UPPER,
- 			       (u8 *) data->buffer, sizeof(data->buffer));
- 	if (ret < 0) {
--		dev_err(data->dev, "failed to read axes\n");
-+		dev_err(dev, "failed to read axes\n");
- 		return ret;
- 	}
+@@ -197,7 +196,7 @@ static void iadc_status_show(struct iadc_chip *iadc)
+ 	if (ret < 0)
+ 		return;
  
-@@ -155,12 +155,13 @@ static int mxc4005_read_xyz(struct mxc4005_data *data)
- static int mxc4005_read_axis(struct mxc4005_data *data,
- 			     unsigned int addr)
- {
-+	struct device *dev = regmap_get_device(data->regmap);
- 	__be16 reg;
- 	int ret;
- 
- 	ret = regmap_bulk_read(data->regmap, addr, (u8 *) &reg, sizeof(reg));
- 	if (ret < 0) {
--		dev_err(data->dev, "failed to read reg %02x\n", addr);
-+		dev_err(dev, "failed to read reg %02x\n", addr);
- 		return ret;
- 	}
- 
-@@ -169,13 +170,14 @@ static int mxc4005_read_axis(struct mxc4005_data *data,
- 
- static int mxc4005_read_scale(struct mxc4005_data *data)
- {
-+	struct device *dev = regmap_get_device(data->regmap);
- 	unsigned int reg;
- 	int ret;
- 	int i;
- 
- 	ret = regmap_read(data->regmap, MXC4005_REG_CONTROL, &reg);
- 	if (ret < 0) {
--		dev_err(data->dev, "failed to read reg_control\n");
-+		dev_err(dev, "failed to read reg_control\n");
- 		return ret;
- 	}
- 
-@@ -189,6 +191,7 @@ static int mxc4005_read_scale(struct mxc4005_data *data)
- 
- static int mxc4005_set_scale(struct mxc4005_data *data, int val)
- {
-+	struct device *dev = regmap_get_device(data->regmap);
- 	unsigned int reg;
- 	int i;
- 	int ret;
-@@ -201,8 +204,7 @@ static int mxc4005_set_scale(struct mxc4005_data *data, int val)
- 						 MXC4005_REG_CONTROL_MASK_FSR,
- 						 reg);
- 			if (ret < 0)
--				dev_err(data->dev,
--					"failed to write reg_control\n");
-+				dev_err(dev, "failed to write reg_control\n");
- 			return ret;
- 		}
- 	}
-@@ -321,13 +323,14 @@ err:
- 
- static int mxc4005_clr_intr(struct mxc4005_data *data)
- {
-+	struct device *dev = regmap_get_device(data->regmap);
- 	int ret;
- 
- 	/* clear interrupt */
- 	ret = regmap_write(data->regmap, MXC4005_REG_INT_CLR1,
- 			   MXC4005_REG_INT_CLR1_BIT_DRDYC);
- 	if (ret < 0) {
--		dev_err(data->dev, "failed to write to reg_int_clr1\n");
-+		dev_err(dev, "failed to write to reg_int_clr1\n");
- 		return ret;
- 	}
- 
-@@ -339,6 +342,7 @@ static int mxc4005_set_trigger_state(struct iio_trigger *trig,
- {
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
- 	struct mxc4005_data *data = iio_priv(indio_dev);
-+	struct device *dev = regmap_get_device(data->regmap);
- 	int ret;
- 
- 	mutex_lock(&data->mutex);
-@@ -352,7 +356,7 @@ static int mxc4005_set_trigger_state(struct iio_trigger *trig,
- 
- 	if (ret < 0) {
- 		mutex_unlock(&data->mutex);
--		dev_err(data->dev, "failed to update reg_int_mask1");
-+		dev_err(dev, "failed to update reg_int_mask1");
- 		return ret;
- 	}
- 
-@@ -381,16 +385,17 @@ static const struct iio_trigger_ops mxc4005_trigger_ops = {
- 
- static int mxc4005_chip_init(struct mxc4005_data *data)
- {
-+	struct device *dev = regmap_get_device(data->regmap);
- 	int ret;
- 	unsigned int reg;
- 
- 	ret = regmap_read(data->regmap, MXC4005_REG_DEVICE_ID, &reg);
- 	if (ret < 0) {
--		dev_err(data->dev, "failed to read chip id\n");
-+		dev_err(dev, "failed to read chip id\n");
- 		return ret;
- 	}
- 
--	dev_dbg(data->dev, "MXC4005 chip id %02x\n", reg);
-+	dev_dbg(dev, "MXC4005 chip id %02x\n", reg);
- 
- 	return 0;
+-	dev_err(iadc->dev,
++	dev_err(dev,
+ 		"mode:%02x en:%02x chan:%02x dig:%02x req:%02x sta1:%02x\n",
+ 		mode, en, chan, dig, req, sta1);
  }
-@@ -415,7 +420,6 @@ static int mxc4005_probe(struct i2c_client *client,
+@@ -284,6 +283,7 @@ static int iadc_read_result(struct iadc_chip *iadc, u16 *data)
  
- 	data = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
--	data->dev = &client->dev;
- 	data->regmap = regmap;
+ static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
+ {
++	struct device *dev = regmap_get_device(iadc->regmap);
+ 	unsigned int wait;
+ 	int ret;
  
- 	ret = mxc4005_chip_init(data);
+@@ -310,7 +310,7 @@ static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
+ exit:
+ 	iadc_set_state(iadc, false);
+ 	if (ret < 0)
+-		dev_err(iadc->dev, "conversion failed\n");
++		dev_err(dev, "conversion failed\n");
+ 
+ 	return ret;
+ }
+@@ -320,6 +320,7 @@ static int iadc_read_raw(struct iio_dev *indio_dev,
+ 			 int *val, int *val2, long mask)
+ {
+ 	struct iadc_chip *iadc = iio_priv(indio_dev);
++	struct device *dev = regmap_get_device(iadc->regmap);
+ 	s32 isense_ua, vsense_uv;
+ 	u16 adc_raw, vsense_raw;
+ 	int ret;
+@@ -339,7 +340,7 @@ static int iadc_read_raw(struct iio_dev *indio_dev,
+ 
+ 		isense_ua = vsense_uv / iadc->rsense[chan->channel];
+ 
+-		dev_dbg(iadc->dev, "off %d gain %d adc %d %duV I %duA\n",
++		dev_dbg(dev, "off %d gain %d adc %d %duV I %duA\n",
+ 			iadc->offset[chan->channel], iadc->gain,
+ 			adc_raw, vsense_uv, isense_ua);
+ 
+@@ -370,6 +371,7 @@ static irqreturn_t iadc_isr(int irq, void *dev_id)
+ 
+ static int iadc_update_offset(struct iadc_chip *iadc)
+ {
++	struct device *dev = regmap_get_device(iadc->regmap);
+ 	int ret;
+ 
+ 	ret = iadc_do_conversion(iadc, IADC_GAIN_17P857MV, &iadc->gain);
+@@ -382,7 +384,7 @@ static int iadc_update_offset(struct iadc_chip *iadc)
+ 		return ret;
+ 
+ 	if (iadc->gain == iadc->offset[IADC_INT_RSENSE]) {
+-		dev_err(iadc->dev, "error: internal offset == gain %d\n",
++		dev_err(dev, "error: internal offset == gain %d\n",
+ 			iadc->gain);
+ 		return -EINVAL;
+ 	}
+@@ -393,8 +395,7 @@ static int iadc_update_offset(struct iadc_chip *iadc)
+ 		return ret;
+ 
+ 	if (iadc->gain == iadc->offset[IADC_EXT_RSENSE]) {
+-		dev_err(iadc->dev, "error: external offset == gain %d\n",
+-			iadc->gain);
++		dev_err(dev, "error: external offset == gain %d\n", iadc->gain);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -403,6 +404,7 @@ static int iadc_update_offset(struct iadc_chip *iadc)
+ 
+ static int iadc_version_check(struct iadc_chip *iadc)
+ {
++	struct device *dev = regmap_get_device(iadc->regmap);
+ 	u8 val;
+ 	int ret;
+ 
+@@ -411,7 +413,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
+ 		return ret;
+ 
+ 	if (val < IADC_PERPH_TYPE_ADC) {
+-		dev_err(iadc->dev, "%d is not ADC\n", val);
++		dev_err(dev, "%d is not ADC\n", val);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -420,7 +422,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
+ 		return ret;
+ 
+ 	if (val < IADC_PERPH_SUBTYPE_IADC) {
+-		dev_err(iadc->dev, "%d is not IADC\n", val);
++		dev_err(dev, "%d is not IADC\n", val);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -429,7 +431,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
+ 		return ret;
+ 
+ 	if (val < IADC_REVISION2_SUPPORTED_IADC) {
+-		dev_err(iadc->dev, "revision %d not supported\n", val);
++		dev_err(dev, "revision %d not supported\n", val);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -438,6 +440,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
+ 
+ static int iadc_rsense_read(struct iadc_chip *iadc, struct device_node *node)
+ {
++	struct device *dev = regmap_get_device(iadc->regmap);
+ 	int ret, sign, int_sense;
+ 	u8 deviation;
+ 
+@@ -447,7 +450,7 @@ static int iadc_rsense_read(struct iadc_chip *iadc, struct device_node *node)
+ 		iadc->rsense[IADC_EXT_RSENSE] = IADC_INT_RSENSE_IDEAL_VALUE;
+ 
+ 	if (!iadc->rsense[IADC_EXT_RSENSE]) {
+-		dev_err(iadc->dev, "external resistor can't be zero Ohms");
++		dev_err(dev, "external resistor can't be zero Ohms");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -505,7 +508,6 @@ static int iadc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	iadc = iio_priv(indio_dev);
+-	iadc->dev = dev;
+ 
+ 	iadc->regmap = dev_get_regmap(dev->parent, NULL);
+ 	if (!iadc->regmap)
+@@ -528,7 +530,7 @@ static int iadc_probe(struct platform_device *pdev)
+ 	if (ret < 0)
+ 		return -ENODEV;
+ 
+-	dev_dbg(iadc->dev, "sense resistors %d and %d micro Ohm\n",
++	dev_dbg(&pdev->dev, "sense resistors %d and %d micro Ohm\n",
+ 		iadc->rsense[IADC_INT_RSENSE],
+ 		iadc->rsense[IADC_EXT_RSENSE]);
+ 
+@@ -553,7 +555,7 @@ static int iadc_probe(struct platform_device *pdev)
+ 		else
+ 			return ret;
+ 	} else {
+-		device_init_wakeup(iadc->dev, 1);
++		device_init_wakeup(&pdev->dev, 1);
+ 	}
+ 
+ 	ret = iadc_update_offset(iadc);
 -- 
 2.1.4
 
