@@ -1,43 +1,110 @@
-Return-Path: <ldewangan@nvidia.com>
-Message-ID: <57052432.8070700@nvidia.com>
-Date: Wed, 6 Apr 2016 20:28:58 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
+Return-Path: <lars@metafoo.de>
+Subject: Re: [PATCH] staging: iio: ad7606: use
+ iio_device_{claim|release}_direct_mode()
+To: Jonathan Cameron <jic23@kernel.org>,
+ Alison Schofield <amsfield22@gmail.com>, linux-iio@vger.kernel.org
+References: <20160401165349.GA2678@d830.WORKGROUP>
+ <5700DDB9.5060100@kernel.org>
+Cc: knaack.h@gmx.de, Michael.Hennerich@analog.com, pmeerw@pmeerw.net,
+ gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+ linux-kernel@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <5705501D.60504@metafoo.de>
+Date: Wed, 6 Apr 2016 20:06:21 +0200
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, <linux-doc@vger.kernel.org>,
-	"Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 1/3] iio: core: Add devm_ APIs for iio_channel_{get,release}
-References: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com> <CAEnQRZBtqDQjydDKywYy9oLecFtjntfWhgOtd2xekVyFrYkH3w@mail.gmail.com>
-In-Reply-To: <CAEnQRZBtqDQjydDKywYy9oLecFtjntfWhgOtd2xekVyFrYkH3w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+In-Reply-To: <5700DDB9.5060100@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Daniel,
-
-
-On Wednesday 06 April 2016 07:19 PM, Daniel Baluta wrote:
-> On Wed, Apr 6, 2016 at 1:31 PM, Laxman Dewangan <ldewangan@nvidia.com> wrote:
->> Some of kernel driver uses the IIO framework to get the sensor
->> value via ADC or IIO HW driver. The client driver get iio channel
->> by iio_channel_get() and release it by calling iio_channel_release().
+On 04/03/2016 11:09 AM, Jonathan Cameron wrote:
+> On 01/04/16 17:53, Alison Schofield wrote:
+>> Two instances are moved to the new claim/release API:
 >>
->> Add resource managed version (devm_*) of these APIs so that if client
->> calls the devm_iio_channel_get() then it need not to release it explicitly,
->> it can be done by managed device framework when driver get un-binded.
+>> In the first instance, the driver was using mlock followed by
+>> iio_buffer_enabled(). Replace that code with the new API to guarantee
+>> the device stays in direct mode. There is no change in driver behavior.
 >>
->> This reduces the code in error path and also need of .remove callback in
->> some cases.
+>> In the second instance, the driver was not using mlock to hold the
+>> device in direct mode, but should have been.  Here we introduce the
+>> new API to guarantee direct mode. This is a change in driver behavior.
 >>
-> Please provide at least one example of code that uses this API.
+>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+>> ---
+>>  drivers/staging/iio/adc/ad7606_core.c | 15 ++++++++-------
+>>  1 file changed, 8 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/adc/ad7606_core.c
+b/drivers/staging/iio/adc/ad7606_core.c
+>> index 6dbc811..f914b8d 100644
+>> --- a/drivers/staging/iio/adc/ad7606_core.c
+>> +++ b/drivers/staging/iio/adc/ad7606_core.c
+>> @@ -88,12 +88,12 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
+>>
+>>  	switch (m) {
+>>  	case IIO_CHAN_INFO_RAW:
+>> -		mutex_lock(&indio_dev->mlock);
+>> -		if (iio_buffer_enabled(indio_dev))
+>> -			ret = -EBUSY;
+>> -		else
+>> -			ret = ad7606_scan_direct(indio_dev, chan->address);
+>> -		mutex_unlock(&indio_dev->mlock);
+>> +		ret = iio_device_claim_direct_mode(indio_dev);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = ad7606_scan_direct(indio_dev, chan->address);
+>> +		iio_device_release_direct_mode(indio_dev);
+>>
+>>  		if (ret < 0)
+>>  			return ret;
+>> @@ -411,8 +411,9 @@ static irqreturn_t ad7606_interrupt(int irq, void
+*dev_id)
+>>  	struct iio_dev *indio_dev = dev_id;
+>>  	struct ad7606_state *st = iio_priv(indio_dev);
+>>
+>> -	if (iio_buffer_enabled(indio_dev)) {
+>> +	if (!iio_device_claim_direct_mode(indio_dev))  {
+>>  		schedule_work(&st->poll_work);
+>> +		iio_device_release_direct_mode(indio_dev);
+> Unfortunately this won't work.  That interrupt is still in traditional non
+> threaded form.  This will take a mutex in a top half interrupt handler
+> where a sleep cannot occur.
+>
+> I'm just wondering how expensive it would be to fix this by moving that over
+> to a threaded handler.  In the poll_work case (buffer) it would be cleaner
+to do
+> so. I'm really confused what the intended interrupt handler
+> is in here.  I 'think' the sequence is:
+>
+> Trigger fires the convst pin whether in top half or the bottom half of
+> a threaded interrupt, but not both - I guess this works, if it is rather
+> 'unusual'.
+>
+> We then get a interrupt to indicate that it has finished conversion and that
+> filters through to actually fill the buffer via a traditional top half /
+> bottom half interrupt handler.
+>
+> So if we were to convert that to a threaded interrupt (with no top half / non
+> threaded part), we could drop the schedule_work and just call
+> ad7606_poll_bh_to_ring from the thread handler.
+>
+> In the direct read case I doubt we care about the delay in dropping to a
+> thread prior to signalling the data is ready.
+>
+> Can't think why this driver is still in staging :)
 
-Most of client for this APIs are in other subsystem.
-When I was working on the patch
-[PATCH 2/2] thermal: generic-adc: Add ADC based thermal sensor driver
+Yeah, we should leave this driver out from the conversion for now. The whole
+convst pin handling need a major rework. It shouldn't really be in the
+driver and usually you wouldn't want to use to use a GPIO and software timer
+since that gives you way to much jitter for good results. You'd probably use
+something like a PWM.
 
-if I have devm_iio_channel_get() then I can get .remove callback at all.
+>
+> Lars, any interest from Analog in getting this one cleaned up?  Also
+> do you have any test hardware, if we mess around with this interrupt handling?
 
-I did not use this new APIs in my patch because they are in different 
-subsystem.
+I have the hardware somewhere in some storage bay, but just converting this
+over to threaded interrupt handling is not really a solution. So, if you
+want to get rid of the iio_buffer_enabled() in the interrupt handler a
+simple solution is to register preenable and postdisable callbacks where you
+set a flag in the driver struct to indicate that it is in buffered mode or not.
