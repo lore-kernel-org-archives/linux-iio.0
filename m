@@ -1,110 +1,144 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH] staging: iio: ad7606: use
- iio_device_{claim|release}_direct_mode()
-To: Jonathan Cameron <jic23@kernel.org>,
- Alison Schofield <amsfield22@gmail.com>, linux-iio@vger.kernel.org
-References: <20160401165349.GA2678@d830.WORKGROUP>
- <5700DDB9.5060100@kernel.org>
-Cc: knaack.h@gmx.de, Michael.Hennerich@analog.com, pmeerw@pmeerw.net,
- gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
- linux-kernel@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <5705501D.60504@metafoo.de>
-Date: Wed, 6 Apr 2016 20:06:21 +0200
+Return-Path: <amsfield22@gmail.com>
+Date: Wed, 6 Apr 2016 13:33:10 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	kgene@kernel.org, k.kozlowski@samsung.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org
+Subject: Re: [PATCH 1/9] iio: adc: exynos_adc: use regmap to retrieve struct
+ device
+Message-ID: <20160406203308.GA3462@d830.WORKGROUP>
+References: <cover.1459918214.git.amsfield22@gmail.com>
+ <2329d20396db00b60f4e7d2e783ea46b48eea9c1.1459918214.git.amsfield22@gmail.com>
+ <5704B4A4.1070704@samsung.com>
 MIME-Version: 1.0
-In-Reply-To: <5700DDB9.5060100@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5704B4A4.1070704@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 04/03/2016 11:09 AM, Jonathan Cameron wrote:
-> On 01/04/16 17:53, Alison Schofield wrote:
->> Two instances are moved to the new claim/release API:
->>
->> In the first instance, the driver was using mlock followed by
->> iio_buffer_enabled(). Replace that code with the new API to guarantee
->> the device stays in direct mode. There is no change in driver behavior.
->>
->> In the second instance, the driver was not using mlock to hold the
->> device in direct mode, but should have been.  Here we introduce the
->> new API to guarantee direct mode. This is a change in driver behavior.
->>
->> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
->> ---
->>  drivers/staging/iio/adc/ad7606_core.c | 15 ++++++++-------
->>  1 file changed, 8 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/staging/iio/adc/ad7606_core.c
-b/drivers/staging/iio/adc/ad7606_core.c
->> index 6dbc811..f914b8d 100644
->> --- a/drivers/staging/iio/adc/ad7606_core.c
->> +++ b/drivers/staging/iio/adc/ad7606_core.c
->> @@ -88,12 +88,12 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
->>
->>  	switch (m) {
->>  	case IIO_CHAN_INFO_RAW:
->> -		mutex_lock(&indio_dev->mlock);
->> -		if (iio_buffer_enabled(indio_dev))
->> -			ret = -EBUSY;
->> -		else
->> -			ret = ad7606_scan_direct(indio_dev, chan->address);
->> -		mutex_unlock(&indio_dev->mlock);
->> +		ret = iio_device_claim_direct_mode(indio_dev);
->> +		if (ret)
->> +			return ret;
->> +
->> +		ret = ad7606_scan_direct(indio_dev, chan->address);
->> +		iio_device_release_direct_mode(indio_dev);
->>
->>  		if (ret < 0)
->>  			return ret;
->> @@ -411,8 +411,9 @@ static irqreturn_t ad7606_interrupt(int irq, void
-*dev_id)
->>  	struct iio_dev *indio_dev = dev_id;
->>  	struct ad7606_state *st = iio_priv(indio_dev);
->>
->> -	if (iio_buffer_enabled(indio_dev)) {
->> +	if (!iio_device_claim_direct_mode(indio_dev))  {
->>  		schedule_work(&st->poll_work);
->> +		iio_device_release_direct_mode(indio_dev);
-> Unfortunately this won't work.  That interrupt is still in traditional non
-> threaded form.  This will take a mutex in a top half interrupt handler
-> where a sleep cannot occur.
->
-> I'm just wondering how expensive it would be to fix this by moving that over
-> to a threaded handler.  In the poll_work case (buffer) it would be cleaner
-to do
-> so. I'm really confused what the intended interrupt handler
-> is in here.  I 'think' the sequence is:
->
-> Trigger fires the convst pin whether in top half or the bottom half of
-> a threaded interrupt, but not both - I guess this works, if it is rather
-> 'unusual'.
->
-> We then get a interrupt to indicate that it has finished conversion and that
-> filters through to actually fill the buffer via a traditional top half /
-> bottom half interrupt handler.
->
-> So if we were to convert that to a threaded interrupt (with no top half / non
-> threaded part), we could drop the schedule_work and just call
-> ad7606_poll_bh_to_ring from the thread handler.
->
-> In the direct read case I doubt we care about the delay in dropping to a
-> thread prior to signalling the data is ready.
->
-> Can't think why this driver is still in staging :)
+On Wed, Apr 06, 2016 at 09:03:00AM +0200, Marek Szyprowski wrote:
+> Hello,
+> 
+> On 2016-04-06 07:15, Alison Schofield wrote:
+> >Driver includes struct regmap and struct device in its global data.
+> >Remove the struct device and use regmap API to retrieve device info.
+> >
+> >Patch created using Coccinelle plus manual edits.
+> >
+> >Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+> 
+> This patch changes the struct device which is used by the driver to report
+> errors. The driver used correctly the struct device associated with its
+> device tree node, while after the patch it will use device which is
+> associated with PMU regmap, which is a different device. PMU regmap is there
+> only to enable/disable the ADC block and it is not the regmap used to access
+> registers of the ADC device.
+> 
+> I would prefer to drop this patch.
+> 
 
-Yeah, we should leave this driver out from the conversion for now. The whole
-convst pin handling need a major rework. It shouldn't really be in the
-driver and usually you wouldn't want to use to use a GPIO and software timer
-since that gives you way to much jitter for good results. You'd probably use
-something like a PWM.
+Thanks Marek!  Please check my understanding.  Driver is not carrying
+a duplicate struct device. The regmap in exynos_adc is *not* this
+devices regmap. It belongs to the PMU, (power mgmt unit?) 
 
->
-> Lars, any interest from Analog in getting this one cleaned up?  Also
-> do you have any test hardware, if we mess around with this interrupt handling?
+It seemed excessive to carry around a struct device just for the
+dev_err messages, but, we need that struct to extract the correct
+iio_dev struct. Without a regmap belonging to this actual device,
+no efficiencies can be gained in exynos, and the patch will be
+dropped from set v2.
 
-I have the hardware somewhere in some storage bay, but just converting this
-over to threaded interrupt handling is not really a solution. So, if you
-want to get rid of the iio_buffer_enabled() in the interrupt handler a
-simple solution is to register preenable and postdisable callbacks where you
-set a flag in the driver struct to indicate that it is in buffered mode or not.
+Now I need to be able to recognize such cases elsewhere. I'm going
+back though other patches in this set looking for that, but I'm not
+so sure I would recognize it.
+
+Jonathan & all, Any hints on the rule of regmap?
+
+Thanks,
+alisons
+
+
+
+> >---
+> >  drivers/iio/adc/exynos_adc.c | 18 +++++++++---------
+> >  1 file changed, 9 insertions(+), 9 deletions(-)
+> >
+> >diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> >index c15756d..0313e0f 100644
+> >--- a/drivers/iio/adc/exynos_adc.c
+> >+++ b/drivers/iio/adc/exynos_adc.c
+> >@@ -130,7 +130,6 @@
+> >  struct exynos_adc {
+> >  	struct exynos_adc_data	*data;
+> >-	struct device		*dev;
+> >  	struct input_dev	*input;
+> >  	void __iomem		*regs;
+> >  	struct regmap		*pmu_map;
+> >@@ -173,11 +172,12 @@ static void exynos_adc_unprepare_clk(struct exynos_adc *info)
+> >  static int exynos_adc_prepare_clk(struct exynos_adc *info)
+> >  {
+> >+	struct device *dev = regmap_get_device(info->pmu_map);
+> >  	int ret;
+> >  	ret = clk_prepare(info->clk);
+> >  	if (ret) {
+> >-		dev_err(info->dev, "failed preparing adc clock: %d\n", ret);
+> >+		dev_err(dev, "failed preparing adc clock: %d\n", ret);
+> >  		return ret;
+> >  	}
+> >@@ -185,7 +185,7 @@ static int exynos_adc_prepare_clk(struct exynos_adc *info)
+> >  		ret = clk_prepare(info->sclk);
+> >  		if (ret) {
+> >  			clk_unprepare(info->clk);
+> >-			dev_err(info->dev,
+> >+			dev_err(dev,
+> >  				"failed preparing sclk_adc clock: %d\n", ret);
+> >  			return ret;
+> >  		}
+> >@@ -203,11 +203,12 @@ static void exynos_adc_disable_clk(struct exynos_adc *info)
+> >  static int exynos_adc_enable_clk(struct exynos_adc *info)
+> >  {
+> >+	struct device *dev = regmap_get_device(info->pmu_map);
+> >  	int ret;
+> >  	ret = clk_enable(info->clk);
+> >  	if (ret) {
+> >-		dev_err(info->dev, "failed enabling adc clock: %d\n", ret);
+> >+		dev_err(dev, "failed enabling adc clock: %d\n", ret);
+> >  		return ret;
+> >  	}
+> >@@ -215,7 +216,7 @@ static int exynos_adc_enable_clk(struct exynos_adc *info)
+> >  		ret = clk_enable(info->sclk);
+> >  		if (ret) {
+> >  			clk_disable(info->clk);
+> >-			dev_err(info->dev,
+> >+			dev_err(dev,
+> >  				"failed enabling sclk_adc clock: %d\n", ret);
+> >  			return ret;
+> >  		}
+> >@@ -610,13 +611,14 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+> >  static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
+> >  {
+> >  	struct exynos_adc *info = dev_id;
+> >-	struct iio_dev *dev = dev_get_drvdata(info->dev);
+> >+	struct device *dev = regmap_get_device(info->pmu_map);
+> >+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> >  	u32 x, y;
+> >  	bool pressed;
+> >  	int ret;
+> >  	while (info->input->users) {
+> >-		ret = exynos_read_s3c64xx_ts(dev, &x, &y);
+> >+		ret = exynos_read_s3c64xx_ts(indio_dev, &x, &y);
+> >  		if (ret == -ETIMEDOUT)
+> >  			break;
+> >@@ -800,8 +802,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
+> >  	info->tsirq = irq;
+> >-	info->dev = &pdev->dev;
+> >-
+> >  	init_completion(&info->completion);
+> >  	info->clk = devm_clk_get(&pdev->dev, "adc");
+> 
+> Best regards
+> -- 
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+> 
