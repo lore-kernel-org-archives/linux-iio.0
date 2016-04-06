@@ -1,114 +1,225 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.208]:52152 "EHLO
-	smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755464AbcDHP22 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Apr 2016 11:28:28 -0400
-Date: Fri, 8 Apr 2016 17:28:17 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: potentiometer: add driver for Maxim Integrated
- DS1803
-Message-ID: <20160408152817.GA2847@x220>
-References: <20160407165118.GA2333@x220>
- <alpine.DEB.2.02.1604072130040.26969@pmeerw.net>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:36213 "EHLO
+	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754234AbcDFFRc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2016 01:17:32 -0400
+Date: Tue, 5 Apr 2016 22:17:30 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	kgene@kernel.org, k.kozlowski@samsung.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org
+Subject: [PATCH 3/9] iio: adc: qcom-spmi-vadc: use regmap to retrieve struct
+ device
+Message-ID: <13e62b042435dba9edc127a29691bd3519c8e2c0.1459918214.git.amsfield22@gmail.com>
+References: <cover.1459918214.git.amsfield22@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <alpine.DEB.2.02.1604072130040.26969@pmeerw.net>
+In-Reply-To: <cover.1459918214.git.amsfield22@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Apr 07, 2016 21:36, Peter Meerwald-Stadler wrote:
-> 
-> > The following functions are supported:
-> >  - write, read potentiometer value
-> >  - potentiometer scale
-> 
-> minor comments below, nice driver
+Driver includes struct regmap and struct device in its global data.
+Remove the struct device and use regmap API to retrieve device info.
 
-Thank you for your comments!
+Patch created using Coccinelle plus manual edits.
 
-> > +#include <linux/cache.h>
-> 
-> for what is cache.h needed?
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+---
+ drivers/iio/adc/qcom-spmi-vadc.c | 37 ++++++++++++++++++++-----------------
+ 1 file changed, 20 insertions(+), 17 deletions(-)
 
-It is not needed here. I will delete it in v2.
-
-> > +static int ds1803_read_raw(struct iio_dev *indio_dev,
-> > +			    struct iio_chan_spec const *chan,
-> > +			    int *val, int *val2, long mask)
-> > +{
-> > +	struct ds1803_data *data = iio_priv(indio_dev);
-> > +	int pot = chan->channel;
-> > +	s32 ret;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		ret = i2c_smbus_read_word_swapped(data->client, 0);
-> 
-> maybe a #define to explain the name of register 0
-
-Well this zero is not register nor any kind of command that DS1803 needs to send
-back pots values.
-DS1803 only requires the standard R/W bit to be set as read.
-I used _word_ function series to get back a word (16 bits) as this poti returns
-16 bits.
-
-How should I named it?
-
-#define NON_COMMAND 0
-?
-
-Or should I use different function? (2x i2c_smbus_read_byte?)
-
-The i2c_smbus_read_byte() function also used 0 as command
-for its transfers...
-
-> > +		if (ret < 0)
-> > +			return ret;
-> > +
-> > +		/* Get bits for given pot */
-> > +		*val = (pot == 0 ? ret >> 8 : ret & 255);
-> 
-> often 0xff is used to mask a byte
-
-OK.
-
-> > +		return IIO_VAL_INT;
-> > +
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		*val = 1000 * data->cfg->kohms;
-> > +		*val2 = DS1803_MAX_POS;
-> > +		return IIO_VAL_FRACTIONAL;
-> > +	}
-> > +
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static int ds1803_write_raw(struct iio_dev *indio_dev,
-> > +			     struct iio_chan_spec const *chan,
-> > +			     int val, int val2, long mask)
-> > +{
-> > +	struct ds1803_data *data = iio_priv(indio_dev);
-> > +	int pot = chan->channel;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		if (val > DS1803_MAX_POS || val < 0)
-> 
-> check that val2 is 0 or use .write_raw_get_fmt
-
-At this point I do not know why should I do it, but I will look into that.
-
-> > +	indio_dev->dev.parent = dev;
-> > +	indio_dev->info = &ds1803_info;
-> > +	indio_dev->channels = ds1803_channels;
-> > +	indio_dev->num_channels = DS1803_NUM_WIPERS;
-> 
-> ARRAY_SIZE(ds1803_channels)
-
-Good point.
-
+diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+index c2babe5..9e7aeca 100644
+--- a/drivers/iio/adc/qcom-spmi-vadc.c
++++ b/drivers/iio/adc/qcom-spmi-vadc.c
+@@ -161,7 +161,6 @@ struct vadc_channel_prop {
+ /**
+  * struct vadc_priv - VADC private structure.
+  * @regmap: pointer to struct regmap.
+- * @dev: pointer to struct device.
+  * @base: base address for the ADC peripheral.
+  * @nchannels: number of VADC channels.
+  * @chan_props: array of VADC channel properties.
+@@ -174,7 +173,6 @@ struct vadc_channel_prop {
+  */
+ struct vadc_priv {
+ 	struct regmap		 *regmap;
+-	struct device		 *dev;
+ 	u16			 base;
+ 	unsigned int		 nchannels;
+ 	struct vadc_channel_prop *chan_props;
+@@ -236,6 +234,7 @@ static int vadc_set_state(struct vadc_priv *vadc, bool state)
+ 
+ static void vadc_show_status(struct vadc_priv *vadc)
+ {
++	struct device *dev = regmap_get_device(vadc->regmap);
+ 	u8 mode, sta1, chan, dig, en, req;
+ 	int ret;
+ 
+@@ -263,7 +262,7 @@ static void vadc_show_status(struct vadc_priv *vadc)
+ 	if (ret)
+ 		return;
+ 
+-	dev_err(vadc->dev,
++	dev_err(dev,
+ 		"mode:%02x en:%02x chan:%02x dig:%02x req:%02x sta1:%02x\n",
+ 		mode, en, chan, dig, req, sta1);
+ }
+@@ -350,13 +349,14 @@ static int vadc_read_result(struct vadc_priv *vadc, u16 *data)
+ static struct vadc_channel_prop *vadc_get_channel(struct vadc_priv *vadc,
+ 						  unsigned int num)
+ {
++	struct device *dev = regmap_get_device(vadc->regmap);
+ 	unsigned int i;
+ 
+ 	for (i = 0; i < vadc->nchannels; i++)
+ 		if (vadc->chan_props[i].channel == num)
+ 			return &vadc->chan_props[i];
+ 
+-	dev_dbg(vadc->dev, "no such channel %02x\n", num);
++	dev_dbg(dev, "no such channel %02x\n", num);
+ 
+ 	return NULL;
+ }
+@@ -364,6 +364,7 @@ static struct vadc_channel_prop *vadc_get_channel(struct vadc_priv *vadc,
+ static int vadc_do_conversion(struct vadc_priv *vadc,
+ 			      struct vadc_channel_prop *prop, u16 *data)
+ {
++	struct device *dev = regmap_get_device(vadc->regmap);
+ 	unsigned int timeout;
+ 	int ret;
+ 
+@@ -406,7 +407,7 @@ static int vadc_do_conversion(struct vadc_priv *vadc,
+ err_disable:
+ 	vadc_set_state(vadc, false);
+ 	if (ret)
+-		dev_err(vadc->dev, "conversion failed\n");
++		dev_err(dev, "conversion failed\n");
+ unlock:
+ 	mutex_unlock(&vadc->lock);
+ 	return ret;
+@@ -414,6 +415,7 @@ unlock:
+ 
+ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+ {
++	struct device *dev = regmap_get_device(vadc->regmap);
+ 	struct vadc_channel_prop *prop;
+ 	u16 read_1, read_2;
+ 	int ret;
+@@ -463,7 +465,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+ 	vadc->graph[VADC_CALIB_RATIOMETRIC].gnd = read_2;
+ err:
+ 	if (ret)
+-		dev_err(vadc->dev, "measure reference points failed\n");
++		dev_err(dev, "measure reference points failed\n");
+ 
+ 	return ret;
+ }
+@@ -814,6 +816,7 @@ static int vadc_get_dt_channel_data(struct device *dev,
+ 
+ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+ {
++	struct device *dev = regmap_get_device(vadc->regmap);
+ 	const struct vadc_channels *vadc_chan;
+ 	struct iio_chan_spec *iio_chan;
+ 	struct vadc_channel_prop prop;
+@@ -825,12 +828,12 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+ 	if (!vadc->nchannels)
+ 		return -EINVAL;
+ 
+-	vadc->iio_chans = devm_kcalloc(vadc->dev, vadc->nchannels,
++	vadc->iio_chans = devm_kcalloc(dev, vadc->nchannels,
+ 				       sizeof(*vadc->iio_chans), GFP_KERNEL);
+ 	if (!vadc->iio_chans)
+ 		return -ENOMEM;
+ 
+-	vadc->chan_props = devm_kcalloc(vadc->dev, vadc->nchannels,
++	vadc->chan_props = devm_kcalloc(dev, vadc->nchannels,
+ 					sizeof(*vadc->chan_props), GFP_KERNEL);
+ 	if (!vadc->chan_props)
+ 		return -ENOMEM;
+@@ -838,7 +841,7 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+ 	iio_chan = vadc->iio_chans;
+ 
+ 	for_each_available_child_of_node(node, child) {
+-		ret = vadc_get_dt_channel_data(vadc->dev, &prop, child);
++		ret = vadc_get_dt_channel_data(dev, &prop, child);
+ 		if (ret) {
+ 			of_node_put(child);
+ 			return ret;
+@@ -860,22 +863,22 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+ 
+ 	/* These channels are mandatory, they are used as reference points */
+ 	if (!vadc_get_channel(vadc, VADC_REF_1250MV)) {
+-		dev_err(vadc->dev, "Please define 1.25V channel\n");
++		dev_err(dev, "Please define 1.25V channel\n");
+ 		return -ENODEV;
+ 	}
+ 
+ 	if (!vadc_get_channel(vadc, VADC_REF_625MV)) {
+-		dev_err(vadc->dev, "Please define 0.625V channel\n");
++		dev_err(dev, "Please define 0.625V channel\n");
+ 		return -ENODEV;
+ 	}
+ 
+ 	if (!vadc_get_channel(vadc, VADC_VDD_VADC)) {
+-		dev_err(vadc->dev, "Please define VDD channel\n");
++		dev_err(dev, "Please define VDD channel\n");
+ 		return -ENODEV;
+ 	}
+ 
+ 	if (!vadc_get_channel(vadc, VADC_GND_REF)) {
+-		dev_err(vadc->dev, "Please define GND channel\n");
++		dev_err(dev, "Please define GND channel\n");
+ 		return -ENODEV;
+ 	}
+ 
+@@ -893,6 +896,7 @@ static irqreturn_t vadc_isr(int irq, void *dev_id)
+ 
+ static int vadc_check_revision(struct vadc_priv *vadc)
+ {
++	struct device *dev = regmap_get_device(vadc->regmap);
+ 	u8 val;
+ 	int ret;
+ 
+@@ -901,7 +905,7 @@ static int vadc_check_revision(struct vadc_priv *vadc)
+ 		return ret;
+ 
+ 	if (val < VADC_PERPH_TYPE_ADC) {
+-		dev_err(vadc->dev, "%d is not ADC\n", val);
++		dev_err(dev, "%d is not ADC\n", val);
+ 		return -ENODEV;
+ 	}
+ 
+@@ -910,7 +914,7 @@ static int vadc_check_revision(struct vadc_priv *vadc)
+ 		return ret;
+ 
+ 	if (val < VADC_PERPH_SUBTYPE_VADC) {
+-		dev_err(vadc->dev, "%d is not VADC\n", val);
++		dev_err(dev, "%d is not VADC\n", val);
+ 		return -ENODEV;
+ 	}
+ 
+@@ -919,7 +923,7 @@ static int vadc_check_revision(struct vadc_priv *vadc)
+ 		return ret;
+ 
+ 	if (val < VADC_REVISION2_SUPPORTED_VADC) {
+-		dev_err(vadc->dev, "revision %d not supported\n", val);
++		dev_err(dev, "revision %d not supported\n", val);
+ 		return -ENODEV;
+ 	}
+ 
+@@ -950,7 +954,6 @@ static int vadc_probe(struct platform_device *pdev)
+ 
+ 	vadc = iio_priv(indio_dev);
+ 	vadc->regmap = regmap;
+-	vadc->dev = dev;
+ 	vadc->base = reg;
+ 	vadc->are_ref_measured = false;
+ 	init_completion(&vadc->complete);
 -- 
-Slawomir Stepien
+2.1.4
+
