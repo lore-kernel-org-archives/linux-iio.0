@@ -1,60 +1,62 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH v2] staging: iio: ad7606: use
- iio_device_{claim|release}_direct_mode()
-To: Alison Schofield <amsfield22@gmail.com>, jic23@kernel.org,
- linux-iio@vger.kernel.org
-References: <20160401165349.GA2678@d830.WORKGROUP>
- <1459915891-2586-1-git-send-email-amsfield22@gmail.com>
-Cc: knaack.h@gmx.de, Michael.Hennerich@analog.com, pmeerw@pmeerw.net,
- gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
- linux-kernel@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <57057A4E.208@metafoo.de>
-Date: Wed, 6 Apr 2016 23:06:22 +0200
+Return-Path: <amsfield22@gmail.com>
+Date: Tue, 5 Apr 2016 22:18:44 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, kgene@kernel.org,
+	k.kozlowski@samsung.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org
+Subject: [PATCH 5/9] iio: accel: mma7455: use regmap to retrieve struct device
+Message-ID: <acaeee6c3c1f99900614baf99ab31e6e5b515970.1459918214.git.amsfield22@gmail.com>
+References: <cover.1459918214.git.amsfield22@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1459915891-2586-1-git-send-email-amsfield22@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <cover.1459918214.git.amsfield22@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 04/06/2016 06:11 AM, Alison Schofield wrote:
-> Replace the code that guarantees the device stays in direct mode with
-> iio_device_{claim|release}_direct_mode() which does same.
-> 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+Driver includes struct regmap and struct device in its global data.
+Remove the struct device and use regmap API to retrieve device info.
 
-Looks good, thanks.
+Patch created using Coccinelle plus manual edits.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+---
+ drivers/iio/accel/mma7455_core.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-> ---
-> Changed in v2:
->  - removed improper application of claim/release from intr handler
->  - updated changelog
-> 
->  drivers/staging/iio/adc/ad7606_core.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index 6dbc811..f79ee61 100644
-> --- a/drivers/staging/iio/adc/ad7606_core.c
-> +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -88,12 +88,12 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (m) {
->  	case IIO_CHAN_INFO_RAW:
-> -		mutex_lock(&indio_dev->mlock);
-> -		if (iio_buffer_enabled(indio_dev))
-> -			ret = -EBUSY;
-> -		else
-> -			ret = ad7606_scan_direct(indio_dev, chan->address);
-> -		mutex_unlock(&indio_dev->mlock);
-> +		ret = iio_device_claim_direct_mode(indio_dev);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = ad7606_scan_direct(indio_dev, chan->address);
-> +		iio_device_release_direct_mode(indio_dev);
->  
->  		if (ret < 0)
->  			return ret;
-> 
+diff --git a/drivers/iio/accel/mma7455_core.c b/drivers/iio/accel/mma7455_core.c
+index c633cc2..c902f54 100644
+--- a/drivers/iio/accel/mma7455_core.c
++++ b/drivers/iio/accel/mma7455_core.c
+@@ -55,11 +55,11 @@
+ 
+ struct mma7455_data {
+ 	struct regmap *regmap;
+-	struct device *dev;
+ };
+ 
+ static int mma7455_drdy(struct mma7455_data *mma7455)
+ {
++	struct device *dev = regmap_get_device(mma7455->regmap);
+ 	unsigned int reg;
+ 	int tries = 3;
+ 	int ret;
+@@ -75,7 +75,7 @@ static int mma7455_drdy(struct mma7455_data *mma7455)
+ 		msleep(20);
+ 	}
+ 
+-	dev_warn(mma7455->dev, "data not ready\n");
++	dev_warn(dev, "data not ready\n");
+ 
+ 	return -EIO;
+ }
+@@ -260,7 +260,6 @@ int mma7455_core_probe(struct device *dev, struct regmap *regmap,
+ 	dev_set_drvdata(dev, indio_dev);
+ 	mma7455 = iio_priv(indio_dev);
+ 	mma7455->regmap = regmap;
+-	mma7455->dev = dev;
+ 
+ 	indio_dev->info = &mma7455_info;
+ 	indio_dev->name = name;
+-- 
+2.1.4
