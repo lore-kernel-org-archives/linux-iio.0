@@ -1,32 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f172.google.com ([209.85.223.172]:36332 "EHLO
-	mail-io0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750985AbcDGDwP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2016 23:52:15 -0400
-Received: by mail-io0-f172.google.com with SMTP id q128so79942652iof.3
-        for <linux-iio@vger.kernel.org>; Wed, 06 Apr 2016 20:52:15 -0700 (PDT)
-MIME-Version: 1.0
-From: Yong Li <sdliyong@gmail.com>
-Date: Thu, 7 Apr 2016 11:51:55 +0800
-Message-ID: <CADO9-pckFN67QpCHs3Z-vLqH9-6zrdUazgth3Xd=Q++=V8Zkyg@mail.gmail.com>
-Subject: How to use GPIO pin as the trigger for IIO devices?
-To: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-io0-f193.google.com ([209.85.223.193]:35044 "EHLO
+	mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756107AbcDGOsH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Apr 2016 10:48:07 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: gregkh@linuxfoundation.org, tglx@linutronix.de, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wim@iguana.be,
+	linux@roeck-us.net, linus.walleij@linaro.org, gnurou@gmail.com
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 01/10] isa: Implement the module_isa_driver macro
+Date: Thu,  7 Apr 2016 10:47:22 -0400
+Message-Id: <e15a74f1cc7a72f97060f0f1acb2991ffa82bd97.1460040201.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1460040201.git.vilhelm.gray@gmail.com>
+References: <cover.1460040201.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1460040201.git.vilhelm.gray@gmail.com>
+References: <cover.1460040201.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
- am testing an IIO gyro sensor using kernel 4.4, currently I can use
-the sysfs trigger as a trigger, I can read the data from
-/dev/iio:deviceX after "echo 1 > trigger_now".
+The module_isa_driver macro is a helper macro for ISA drivers which do
+not do anything special in module init/exit. This eliminates a lot of
+boilerplate code. Each module may only use this macro once, and calling
+it replaces module_init and module_exit.
 
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ include/linux/isa.h | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-I want to use a gpio pin for the data trigger. For example, when the
-GPIO pin 62 is low, the data will be ready.
+diff --git a/include/linux/isa.h b/include/linux/isa.h
+index 2a02862..d410259 100644
+--- a/include/linux/isa.h
++++ b/include/linux/isa.h
+@@ -36,4 +36,25 @@ static inline void isa_unregister_driver(struct isa_driver *d)
+ }
+ #endif
+ 
++/**
++ * module_isa_driver() - Helper macro for registering a ISA driver
++ * @__isa_driver: isa_driver struct
++ * @__num_isa_dev: number of devices to register
++ *
++ * Helper macro for ISA drivers which do not do anything special in module
++ * init/exit. This eliminates a lot of boilerplate code. Each module may only
++ * use this macro once, and calling it replaces module_init and module_exit.
++ */
++#define module_isa_driver(__isa_driver, __num_isa_dev) \
++static int __init __isa_driver##_init(void) \
++{ \
++	return isa_register_driver(&(__isa_driver), __num_isa_dev); \
++} \
++module_init(__isa_driver##_init); \
++static void __exit __isa_driver##_exit(void) \
++{ \
++	isa_unregister_driver(&(__isa_driver)); \
++} \
++module_exit(__isa_driver##_exit);
++
+ #endif /* __LINUX_ISA_H */
+-- 
+2.7.3
 
-
-How to connect/setup the gpio with the IIO triggers, how can I use the
-iio_trig_interrupt.ko? I found there is new triggers in the
-/sys/bus/iio/devices after I loaded the iio_trig_interrupt.ko.
-
-Thanks,
-Yong
