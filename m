@@ -1,68 +1,101 @@
-Return-Path: <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 1/9] iio: adc: exynos_adc: use regmap to retrieve struct
- device
-To: Alison Schofield <amsfield22@gmail.com>
-References: <cover.1459918214.git.amsfield22@gmail.com>
- <2329d20396db00b60f4e7d2e783ea46b48eea9c1.1459918214.git.amsfield22@gmail.com>
- <5704B4A4.1070704@samsung.com> <20160406203308.GA3462@d830.WORKGROUP>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
- kgene@kernel.org, k.kozlowski@samsung.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Message-id: <5705F131.4090201@samsung.com>
-Date: Thu, 07 Apr 2016 07:33:37 +0200
-MIME-version: 1.0
-In-reply-to: <20160406203308.GA3462@d830.WORKGROUP>
-Content-type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:41777 "EHLO
+	metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750963AbcDGGt5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Apr 2016 02:49:57 -0400
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Irina Tirdea <irina.tirdea@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 1/1] iio: gyro: bmg160: fix buffer read values
+Date: Thu, 07 Apr 2016 08:49:34 +0200
+Message-ID: <3060271.2J7W1aO51c@adelgunde>
+In-Reply-To: <1459185346-18600-1-git-send-email-irina.tirdea@intel.com>
+References: <1459185346-18600-1-git-send-email-irina.tirdea@intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPart2882786.5W8LGWqXg4"; micalg="pgp-sha256"; protocol="application/pgp-signature"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello,
 
-On 2016-04-06 22:33, Alison Schofield wrote:
-> On Wed, Apr 06, 2016 at 09:03:00AM +0200, Marek Szyprowski wrote:
->> Hello,
->>
->> On 2016-04-06 07:15, Alison Schofield wrote:
->>> Driver includes struct regmap and struct device in its global data.
->>> Remove the struct device and use regmap API to retrieve device info.
->>>
->>> Patch created using Coccinelle plus manual edits.
->>>
->>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
->> This patch changes the struct device which is used by the driver to report
->> errors. The driver used correctly the struct device associated with its
->> device tree node, while after the patch it will use device which is
->> associated with PMU regmap, which is a different device. PMU regmap is there
->> only to enable/disable the ADC block and it is not the regmap used to access
->> registers of the ADC device.
->>
->> I would prefer to drop this patch.
-> Thanks Marek!  Please check my understanding.  Driver is not carrying
-> a duplicate struct device. The regmap in exynos_adc is *not* this
-> devices regmap. It belongs to the PMU, (power mgmt unit?)
+--nextPart2882786.5W8LGWqXg4
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
 
-Exactly.
+Hi,
 
-> It seemed excessive to carry around a struct device just for the
-> dev_err messages, but, we need that struct to extract the correct
-> iio_dev struct. Without a regmap belonging to this actual device,
-> no efficiencies can be gained in exynos, and the patch will be
-> dropped from set v2.
+On Monday 28 March 2016 20:15:46 Irina Tirdea wrote:
+> When reading gyroscope axes using iio buffers, the values
+> returned are always 0. In the interrupt handler, the return
+> value of the read operation is returned to the user instead
+> of the value read. Return the value read to the user.
+>=20
+> This is also fixed in commit 82d8e5da1a33 ("iio:
+> accel: bmg160: optimize transfers in trigger handler").
+>=20
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 
-Thanks.
+Thanks a lot for fixing all the bugs I introduced.
 
-> Now I need to be able to recognize such cases elsewhere. I'm going
-> back though other patches in this set looking for that, but I'm not
-> so sure I would recognize it.
->
-> Jonathan & all, Any hints on the rule of regmap?
+Best Regards,
 
-You may check how the regmap is initialized. When it is retrieved by
-phandle from device tree, then you might be almost sure that it refers
-to the different device.
+Markus
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+> ---
+>  drivers/iio/gyro/bmg160_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160=
+_core.c
+> index 295cf1d..e165ce9 100644
+> --- a/drivers/iio/gyro/bmg160_core.c
+> +++ b/drivers/iio/gyro/bmg160_core.c
+> @@ -781,7 +781,7 @@ static irqreturn_t bmg160_trigger_handler(int irq=
+, void *p)
+>  =09=09=09mutex_unlock(&data->mutex);
+>  =09=09=09goto err;
+>  =09=09}
+> -=09=09data->buffer[i++] =3D ret;
+> +=09=09data->buffer[i++] =3D val;
+>  =09}
+>  =09mutex_unlock(&data->mutex);
+> =20
+>=20
+
+=2D-=20
+Pengutronix e.K.                           |                           =
+  |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
+  |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
+5 |
+
+--nextPart2882786.5W8LGWqXg4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXBgMMAAoJEEpcgKtcEGQQifUQALXBD1xDtJz3YAbLGWjGEg9m
+a9AWm31pAi6De0rGQZfcSZvLEex4sHTHqo84P2ttXv79jPBUbTCnDLykijC3+fjb
+9inGG72awp3tnckwGfgc26PnJX4/98lZvhXLXQ8SRtCp8n1ow/GgZJfHQ9rnZHTD
+WTqqSaZfEaKBxIHpwpzV0AJRs7XeVG3hhpCAo6v/bVPzAzwl2mC43hclEVqKh6WF
+F65NhWmLt4rl6yam++LgPSdK/5SL93tP/6xaE9/0exrEmtVKiwWwmQEXEtWbKDNU
+R+1Ax48OaLO6eh+rZMaSoyTShMhph44Qu39hdtf5tRpm0EcSjJeB2lvuSUV83WnD
+mZ1Z5enUVdYLXG0UznRjsxGL5uGce6cBDQFlSnsMY7O7/iESFcKwx6NfXxJUzg1F
+riz8ONjKpBPr3YeS8hHpF1JXV15gxkhMl/Eb9nd5iAkJW9kP8+9+01UxPqXOUKhS
+pB2W8rT0nGw/9UbcA9a4QtwLYPzLvFZIBeoXGk2kj2A1zW2dKxEWgwtbtW0qsXhZ
+kUJWlEMJp3xKNbFqtpzzkTSOvhAeG9vdvsVNsgW5gSX9vuzHUrAVFV6gxVBDbMNo
+h8tS72F/D+3RP60Px3stkQ45iJKAHHL5gHZtRyCZspfbI3zqUNQy8luJ+GjmR+pR
+Xzp3kpyDIcp9/+pmXln0
+=DdFs
+-----END PGP SIGNATURE-----
+
+--nextPart2882786.5W8LGWqXg4--
+
