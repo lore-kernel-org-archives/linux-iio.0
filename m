@@ -1,69 +1,37 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Fri, 8 Apr 2016 18:00:03 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Slawomir Stepien <sst@poczta.fm>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: potentiometer: add driver for Maxim Integrated
- DS1803
-In-Reply-To: <20160408152817.GA2847@x220>
-Message-ID: <alpine.DEB.2.02.1604081755420.8980@pmeerw.net>
-References: <20160407165118.GA2333@x220> <alpine.DEB.2.02.1604072130040.26969@pmeerw.net> <20160408152817.GA2847@x220>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-Path: <leonard.crestez@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH 0/5] Support for max44000 Ambient and Infrared Proximity Sensor
+Date: Thu,  7 Apr 2016 19:21:49 +0300
+Message-Id: <cover.1460045763.git.leonard.crestez@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+The driver supports reporting illuminance and proximity (via raw reads or
+software-triggered) buffers and controling the scaling factors.
 
-> > maybe a #define to explain the name of register 0
-> 
-> Well this zero is not register nor any kind of command that DS1803 needs to send
-> back pots values.
-> DS1803 only requires the standard R/W bit to be set as read.
-> I used _word_ function series to get back a word (16 bits) as this poti returns
-> 16 bits.
-> 
-> How should I named it?
-> 
-> #define NON_COMMAND 0
-> ?
+There is no support for power management, events or reporting the IR/green
+channels separately. The device is always set in the ALS/PROX mode in order to
+report all data.
 
-maybe i2c_transfer() is more appropriate then
+Crestez Dan Leonard (5):
+  max44000: Initial commit
+  max44000: Initial support for proximity reading
+  max44000: Support controlling LED current output
+  max44000: Expose ambient sensor scaling
+  max44000: Initial triggered buffer support
 
-        u8 databuf[2];
-        struct i2c_msg msgs[2] = {
-                { .addr = client->addr, .len = sizeof(databuf), .buf = databuf,
-                  .flags = I2C_M_RD } };
-        ret = i2c_transfer(client->adapter, msgs, 2);
+ drivers/iio/light/Kconfig    |  11 +
+ drivers/iio/light/Makefile   |   1 +
+ drivers/iio/light/max44000.c | 627 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 639 insertions(+)
+ create mode 100644 drivers/iio/light/max44000.c
 
-this does not send any data to the chip but only reads two bytes
- 
-> Or should I use different function? (2x i2c_smbus_read_byte?)
-> 
-> The i2c_smbus_read_byte() function also used 0 as command
-> for its transfers...
-
-> > > +static int ds1803_write_raw(struct iio_dev *indio_dev,
-> > > +			     struct iio_chan_spec const *chan,
-> > > +			     int val, int val2, long mask)
-> > > +{
-> > > +	struct ds1803_data *data = iio_priv(indio_dev);
-> > > +	int pot = chan->channel;
-> > > +
-> > > +	switch (mask) {
-> > > +	case IIO_CHAN_INFO_RAW:
-> > > +		if (val > DS1803_MAX_POS || val < 0)
-> > 
-> > check that val2 is 0 or use .write_raw_get_fmt
-> 
-> At this point I do not know why should I do it, but I will look into that.
-
-write_raw expects a VAL_INT_PLUS_MICROS per default, passed 
-in val and val2
-
-you can change that with .write_raw_get_fmt (e.g. to expect VAL_INT),
-or just make sure that the micros are 0
- 
 -- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+2.8.0.rc3
