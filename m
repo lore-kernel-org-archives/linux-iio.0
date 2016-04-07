@@ -1,92 +1,130 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:37055 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751186AbcDHS2A (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Apr 2016 14:28:00 -0400
-Date: Fri, 8 Apr 2016 11:28:01 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: gregkh@linuxfoundation.org, tglx@linutronix.de, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wim@iguana.be,
-	linus.walleij@linaro.org, gnurou@gmail.com,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH 04/10] iio: stx104: Change STX104 dependency to ISA_BUS
-Message-ID: <20160408182801.GB7083@roeck-us.net>
-References: <cover.1460040201.git.vilhelm.gray@gmail.com>
- <783be62acf68b35f3fe4785a2cedfe017624688b.1460040201.git.vilhelm.gray@gmail.com>
- <20160408004503.GB10211@roeck-us.net>
- <20160408123158.GB18202@sophia>
- <5707AF91.5010704@roeck-us.net>
- <20160408150922.GA28058@sophia>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20160408150922.GA28058@sophia>
+Received: from mga04.intel.com ([192.55.52.120]:44514 "EHLO mga04.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756076AbcDGQWm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 7 Apr 2016 12:22:42 -0400
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH 3/5] max44000: Support controlling LED current output
+Date: Thu,  7 Apr 2016 19:21:52 +0300
+Message-Id: <1f9ec5350bd3349236887ed89378c319eddc005f.1460045763.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
+References: <cover.1460045763.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
+References: <cover.1460045763.git.leonard.crestez@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Apr 08, 2016 at 11:09:22AM -0400, William Breathitt Gray wrote:
-> On Fri, Apr 08, 2016 at 06:18:09AM -0700, Guenter Roeck wrote:
-> > From the context, arm and mips use "select ISA". For those, adding and
-> >auto-selecting ISA_BUS would make sense. For the remaining architectures
-> >you could simply add "config ISA_BUS". I would suggest to update default
-> >configurations, though.
-> >
-> >There is also "um", for which you effectively disabled ISA support
-> >as far as I can see. You might want to look into that as well.
-> >
-> >> My avoidance of making ISA a selection of ISA_BUS is the possibility of
-> >> an invalid configuration: a user may initially enable ISA_BUS, then
-> >> later disable ISA, resulting in ISA_BUS remaining enabled without ISA
-> >> selected.
-> >>
-> >Does that even make sense ? Not sure I understand why you don't just
-> >select ISA_BUS if ISA is selected. That would also be backward compatible
-> >and avoid the problem I was concerned about.
-> 
-> I feel now that the introduction of the ISA_BUS option may the wrong
-> approach to resolve lack of ISA support for the X86_64 architecture;
-> adding ISA_BUS depends or selects through various Kconfigs would simply
-> obfuscate the ISA option. The true issue is that various driver
-> configs are assuming X86_32 architecture when they depend on the ISA
-> option, but the ISA bus does not require an X86_32 architecture.
-> 
-> The proper resolution then is to remove the misguided ISA_BUS option and
-> move the X86_32 dependency to the relevant drivers configs explicitly.
-> A grep for isa_register_driver calls within the kernel reveals that only
-> a few drivers explicitly use it. It should be trivial to create a patch
-> to add the explicit X86_32 dependency to the relevant drivers, so I will
-> submit one soon when I get the time to decouple X86_32 from the ISA
-> config option.
-> 
+This is exposed as an output channel with "led" as an extend_name.
 
-That might be tricky: At least some if not many of those drivers are expected
-to run on non-X86 architectures, and thus don't really depend on X86_32
-(possibly some depend on 32 bit - I didn't check).
+Other sensors also have support for controlling an external LED. It's
+not clear that simply exposing an undecorated output channel is the
+correct approach.
 
-I count 44 calls to isa_register_driver() in the current mainline.
-Not sure if this counts as "only a few drivers".
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+---
+ drivers/iio/light/max44000.c | 53 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-Thanks,
-Guenter
+diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+index 10a0fe8..1dc10b9 100644
+--- a/drivers/iio/light/max44000.c
++++ b/drivers/iio/light/max44000.c
+@@ -85,6 +85,13 @@ static const struct iio_chan_spec max44000_channels[] = {
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+ 	},
++	{
++		.type = IIO_CURRENT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.extend_name = "led",
++		.output = 1,
++	},
+ };
+ 
+ static inline int max44000_read_alsval(struct max44000_data *data)
+@@ -124,6 +131,20 @@ static inline int max44000_write_led_current_raw(struct max44000_data *data, int
+ 				 MAX44000_LED_CURRENT_MASK, val);
+ }
+ 
++static inline int max44000_read_led_current_raw(struct max44000_data *data)
++{
++	unsigned int regval;
++	int ret;
++
++	ret = regmap_read(data->regmap, MAX44000_REG_CFG_TX, &regval);
++	if (ret < 0)
++		return ret;
++	regval &= MAX44000_LED_CURRENT_MASK;
++	if (regval >= 8)
++		regval -= 4;
++	return regval;
++}
++
+ static int max44000_read_raw(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int *val, int *val2, long mask)
+@@ -153,12 +174,26 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
+ 			*val = regval;
+ 			return IIO_VAL_INT;
+ 
++		case IIO_CURRENT:
++			mutex_lock(&data->lock);
++			ret = max44000_read_led_current_raw(data);
++			mutex_unlock(&data->lock);
++			if (ret < 0)
++				return ret;
++			*val = ret;
++			return IIO_VAL_INT;
++
+ 		default:
+ 			return -EINVAL;
+ 		}
+ 
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
++		case IIO_CURRENT:
++			/* Output register is in 10s of miliamps */
++			*val = 10;
++			return IIO_VAL_INT;
++
+ 		case IIO_LIGHT:
+ 			*val = 1;
+ 			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
+@@ -173,9 +208,27 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static int max44000_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int val, int val2, long mask)
++{
++	struct max44000_data *data = iio_priv(indio_dev);
++	int ret;
++
++	if (mask == IIO_CHAN_INFO_RAW && chan->type == IIO_CURRENT) {
++		mutex_lock(&data->lock);
++		ret = max44000_write_led_current_raw(data, val);
++		mutex_unlock(&data->lock);
++		return ret;
++	}
++
++	return -EINVAL;
++}
++
+ static const struct iio_info max44000_info = {
+ 	.driver_module		= THIS_MODULE,
+ 	.read_raw		= max44000_read_raw,
++	.write_raw		= max44000_write_raw,
+ };
+ 
+ static bool max44000_readable_reg(struct device *dev, unsigned int reg)
+-- 
+2.8.0.rc3
 
-> Once ISA is freed from the X86_32 dependency, I will simply use it
-> instead of ISA_BUS, and rebase this patchset for version 2.
-> 
-> >> As a side note, should the dummy isa_register_driver return 0? Would it
-> >> be more appropriate for it to return an error code to indicate lack of
-> >> support for ISA, rather than silently fail?
-> >>
-> >One should think so.
-> >
-> >Thanks,
-> >Guenter
-> >
-> 
-> I'll submit a separate patch for this as well then.
-> 
-> William Breathitt Gray
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
