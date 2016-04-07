@@ -1,76 +1,180 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:44670 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752258AbcDHNSJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Apr 2016 09:18:09 -0400
-Subject: Re: [PATCH 04/10] iio: stx104: Change STX104 dependency to ISA_BUS
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-References: <cover.1460040201.git.vilhelm.gray@gmail.com>
- <783be62acf68b35f3fe4785a2cedfe017624688b.1460040201.git.vilhelm.gray@gmail.com>
- <20160408004503.GB10211@roeck-us.net> <20160408123158.GB18202@sophia>
-Cc: gregkh@linuxfoundation.org, tglx@linutronix.de, jic23@kernel.org,
+Received: from mail-yw0-f195.google.com ([209.85.161.195]:34804 "EHLO
+	mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756017AbcDGOsZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Apr 2016 10:48:25 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: gregkh@linuxfoundation.org, tglx@linutronix.de, jic23@kernel.org,
 	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wim@iguana.be,
-	linus.walleij@linaro.org, gnurou@gmail.com,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org
-From: Guenter Roeck <linux@roeck-us.net>
-Message-ID: <5707AF91.5010704@roeck-us.net>
-Date: Fri, 8 Apr 2016 06:18:09 -0700
-MIME-Version: 1.0
-In-Reply-To: <20160408123158.GB18202@sophia>
-Content-Type: text/plain; charset=utf-8; format=flowed
+	linux@roeck-us.net, linus.walleij@linaro.org, gnurou@gmail.com
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 03/10] Documentation: Add ISA bus driver documentation
+Date: Thu,  7 Apr 2016 10:47:24 -0400
+Message-Id: <e43db27011750537e86e8176bf532e20757133fd.1460040201.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1460040201.git.vilhelm.gray@gmail.com>
+References: <cover.1460040201.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1460040201.git.vilhelm.gray@gmail.com>
+References: <cover.1460040201.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/08/2016 05:31 AM, William Breathitt Gray wrote:
-> On Thu, Apr 07, 2016 at 05:45:03PM -0700, Guenter Roeck wrote:
->> This means for this and other similar drivers that the driver is no longer
->> supported on architectures which support ISA but not the newly introduced
->> ISA_BUS. Affected architectures are alpha, arm, m32r, m68k, mips, powerpc,
->> and parisc.
->>
->> A typical example is SCSI_AHA1542, which is no longer supported on those
->> architectures. It builds, but isa_register_driver() will be a dummy and fail.
->> Actually, this is true for _all_ drivers calling isa_register_driver().
->>
->> I hope this is understood and doesn't cause any problems.
->>
->> Thanks,
->> Guenter
->
-> That's a good catch. I overlooked this when I submitted the ISA_BUS
-> patch; I had improperly assumed the ISA option to have a dependency on
-> X86_32 based on arch/x86/Kconfig. The intention of the ISA_BUS is to
-> allow the proper definition of the isa_register_driver and
-> isa_unregister_driver functions without the dependency on X86_32 (e.g.
-> on X86_64 systems). How can this be resolved without ending support for
-> ISA on these other architectures? Would it be appropriate to add the
-> ISA_BUS dependency to every "config ISA" block for the other
-> architectures?
->
- From the context, arm and mips use "select ISA". For those, adding and
-auto-selecting ISA_BUS would make sense. For the remaining architectures
-you could simply add "config ISA_BUS". I would suggest to update default
-configurations, though.
+This is a verbatim copy of the original commit message of the initial
+commit of the ISA bus driver authored by Rene Herman. Descriptions of
+the module_isa_driver macro and max_num_isa_dev macro are provided at
+the end.
 
-There is also "um", for which you effectively disabled ISA support
-as far as I can see. You might want to look into that as well.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ Documentation/isa.txt | 121 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ MAINTAINERS           |   5 +++
+ 2 files changed, 126 insertions(+)
+ create mode 100644 Documentation/isa.txt
 
-> My avoidance of making ISA a selection of ISA_BUS is the possibility of
-> an invalid configuration: a user may initially enable ISA_BUS, then
-> later disable ISA, resulting in ISA_BUS remaining enabled without ISA
-> selected.
->
-Does that even make sense ? Not sure I understand why you don't just
-select ISA_BUS if ISA is selected. That would also be backward compatible
-and avoid the problem I was concerned about.
-
-> As a side note, should the dummy isa_register_driver return 0? Would it
-> be more appropriate for it to return an error code to indicate lack of
-> support for ISA, rather than silently fail?
->
-One should think so.
-
-Thanks,
-Guenter
+diff --git a/Documentation/isa.txt b/Documentation/isa.txt
+new file mode 100644
+index 0000000..f232c26
+--- /dev/null
++++ b/Documentation/isa.txt
+@@ -0,0 +1,121 @@
++ISA Drivers
++-----------
++
++The following text is adapted from the commit message of the initial
++commit of the ISA bus driver authored by Rene Herman.
++
++During the recent "isa drivers using platform devices" discussion it was
++pointed out that (ALSA) ISA drivers ran into the problem of not having
++the option to fail driver load (device registration rather) upon not
++finding their hardware due to a probe() error not being passed up
++through the driver model. In the course of that, I suggested a separate
++ISA bus might be best; Russell King agreed and suggested this bus could
++use the .match() method for the actual device discovery.
++
++The attached does this. For this old non (generically) discoverable ISA
++hardware only the driver itself can do discovery so as a difference with
++the platform_bus, this isa_bus also distributes match() up to the
++driver.
++
++As another difference: these devices only exist in the driver model due
++to the driver creating them because it might want to drive them, meaning
++that all device creation has been made internal as well.
++
++The usage model this provides is nice, and has been acked from the ALSA
++side by Takashi Iwai and Jaroslav Kysela. The ALSA driver module_init's
++now (for oldisa-only drivers) become:
++
++static int __init alsa_card_foo_init(void)
++{
++	return isa_register_driver(&snd_foo_isa_driver, SNDRV_CARDS);
++}
++
++static void __exit alsa_card_foo_exit(void)
++{
++	isa_unregister_driver(&snd_foo_isa_driver);
++}
++
++Quite like the other bus models therefore. This removes a lot of
++duplicated init code from the ALSA ISA drivers.
++
++The passed in isa_driver struct is the regular driver struct embedding a
++struct device_driver, the normal probe/remove/shutdown/suspend/resume
++callbacks, and as indicated that .match callback.
++
++The "SNDRV_CARDS" you see being passed in is a "unsigned int ndev"
++parameter, indicating how many devices to create and call our methods
++with.
++
++The platform_driver callbacks are called with a platform_device param;
++the isa_driver callbacks are being called with a "struct device *dev,
++unsigned int id" pair directly -- with the device creation completely
++internal to the bus it's much cleaner to not leak isa_dev's by passing
++them in at all. The id is the only thing we ever want other then the
++struct device * anyways, and it makes for nicer code in the callbacks as
++well.
++
++With this additional .match() callback ISA drivers have all options. If
++ALSA would want to keep the old non-load behaviour, it could stick all
++of the old .probe in .match, which would only keep them registered after
++everything was found to be present and accounted for. If it wanted the
++behaviour of always loading as it inadvertently did for a bit after the
++changeover to platform devices, it could just not provide a .match() and
++do everything in .probe() as before.
++
++If it, as Takashi Iwai already suggested earlier as a way of following
++the model from saner buses more closely, wants to load when a later bind
++could conceivably succeed, it could use .match() for the prerequisites
++(such as checking the user wants the card enabled and that port/irq/dma
++values have been passed in) and .probe() for everything else. This is
++the nicest model.
++
++To the code...
++
++This exports only two functions; isa_{,un}register_driver().
++
++isa_register_driver() register's the struct device_driver, and then
++loops over the passed in ndev creating devices and registering them.
++This causes the bus match method to be called for them, which is:
++
++int isa_bus_match(struct device *dev, struct device_driver *driver)
++{
++          struct isa_driver *isa_driver = to_isa_driver(driver);
++
++          if (dev->platform_data == isa_driver) {
++                  if (!isa_driver->match ||
++                          isa_driver->match(dev, to_isa_dev(dev)->id))
++                          return 1;
++                  dev->platform_data = NULL;
++          }
++          return 0;
++}
++
++The first thing this does is check if this device is in fact one of this
++driver's devices by seeing if the device's platform_data pointer is set
++to this driver. Platform devices compare strings, but we don't need to
++do that with everything being internal, so isa_register_driver() abuses
++dev->platform_data as a isa_driver pointer which we can then check here.
++I believe platform_data is available for this, but if rather not, moving
++the isa_driver pointer to the private struct isa_dev is ofcourse fine as
++well.
++
++Then, if the the driver did not provide a .match, it matches. If it did,
++the driver match() method is called to determine a match.
++
++If it did _not_ match, dev->platform_data is reset to indicate this to
++isa_register_driver which can then unregister the device again.
++
++If during all this, there's any error, or no devices matched at all
++everything is backed out again and the error, or -ENODEV, is returned.
++
++isa_unregister_driver() just unregisters the matched devices and the
++driver itself.
++
++module_isa_driver is a helper macro for ISA drivers which do not do
++anything special in module init/exit. This eliminates a lot of
++boilerplate code. Each module may only use this macro once, and calling
++it replaces module_init and module_exit.
++
++max_num_isa_dev is a macro to determine the maximum possible number of
++ISA devices which may be registered in the I/O port address space given
++the address extent of the ISA devices.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 03e00c7..3713010 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5994,6 +5994,11 @@ F:	include/linux/irqdomain.h
+ F:	kernel/irq/irqdomain.c
+ F:	kernel/irq/msi.c
+ 
++ISA
++M:	William Breathitt Gray <vilhelm.gray@gmail.com>
++S:	Maintained
++F:	Documentation/isa.txt
++
+ ISAPNP
+ M:	Jaroslav Kysela <perex@perex.cz>
+ S:	Maintained
+-- 
+2.7.3
 
