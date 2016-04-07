@@ -1,90 +1,105 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f194.google.com ([209.85.223.194]:35134 "EHLO
-	mail-io0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752071AbcDHT1c (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Apr 2016 15:27:32 -0400
-Date: Fri, 8 Apr 2016 15:27:23 -0400
+Return-Path: <vilhelm.gray@gmail.com>
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: gregkh@linuxfoundation.org, tglx@linutronix.de, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wim@iguana.be,
-	linus.walleij@linaro.org, gnurou@gmail.com,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH 04/10] iio: stx104: Change STX104 dependency to ISA_BUS
-Message-ID: <20160408192723.GA31687@sophia>
-References: <cover.1460040201.git.vilhelm.gray@gmail.com>
- <783be62acf68b35f3fe4785a2cedfe017624688b.1460040201.git.vilhelm.gray@gmail.com>
- <20160408004503.GB10211@roeck-us.net>
- <20160408123158.GB18202@sophia>
- <5707AF91.5010704@roeck-us.net>
- <20160408150922.GA28058@sophia>
- <20160408182801.GB7083@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20160408182801.GB7083@roeck-us.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: gregkh@linuxfoundation.org,
+	tglx@linutronix.de,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	wim@iguana.be,
+	linux@roeck-us.net,
+	linus.walleij@linaro.org,
+	gnurou@gmail.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-watchdog@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 00/10] Use the ISA bus driver for PC/104 and ISA devices
+Date: Thu,  7 Apr 2016 10:47:21 -0400
+Message-Id: <cover.1460040201.git.vilhelm.gray@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Apr 08, 2016 at 11:28:01AM -0700, Guenter Roeck wrote:
->On Fri, Apr 08, 2016 at 11:09:22AM -0400, William Breathitt Gray wrote:
->> I feel now that the introduction of the ISA_BUS option may the wrong
->> approach to resolve lack of ISA support for the X86_64 architecture;
->> adding ISA_BUS depends or selects through various Kconfigs would simply
->> obfuscate the ISA option. The true issue is that various driver
->> configs are assuming X86_32 architecture when they depend on the ISA
->> option, but the ISA bus does not require an X86_32 architecture.
->> 
->> The proper resolution then is to remove the misguided ISA_BUS option and
->> move the X86_32 dependency to the relevant drivers configs explicitly.
->> A grep for isa_register_driver calls within the kernel reveals that only
->> a few drivers explicitly use it. It should be trivial to create a patch
->> to add the explicit X86_32 dependency to the relevant drivers, so I will
->> submit one soon when I get the time to decouple X86_32 from the ISA
->> config option.
->> 
->
->That might be tricky: At least some if not many of those drivers are expected
->to run on non-X86 architectures, and thus don't really depend on X86_32
->(possibly some depend on 32 bit - I didn't check).
->
->I count 44 calls to isa_register_driver() in the current mainline.
->Not sure if this counts as "only a few drivers".
->
->Thanks,
->Guenter
+This patchset is based on top of commit 3a3a5fece6f2 ("fs: kernfs: Replace
+CURRENT_TIME by current_fs_time()") of the driver-core-next branch of the
+driver-core repository.
 
-You're right, I there are more drivers that call isa_register_driver
-than I had estimated. I think a different approach may work however.
+Two new ISA bus driver macros are introduced in this patchset:
+module_isa_driver and max_num_isa_dev.
 
-When I initially proposed a patch to decouple the X86_32 dependency from
-the ISA config option, I received a reply from the 0-DAY kernel test
-auto-build indicating the errors from the drivers assuming a X86_32
-architecture
-(http://www.gossamer-threads.com/lists/linux/kernel/2350122#2350122).
-After reviewing the debug messages, I realized there are only four main
-issues:
+The module_isa_driver macro is a helper macro for ISA drivers which do not
+do anything special in module init/exit. This macro is modelled after the
+module_pci_driver macro and eliminates a lot of module init/exit
+boilerplate code.
 
- 1. sound/isa/sscape.c:594:14:
-     snd_printk format uses '%d' but a size_t is passed in
- 2. arch/x86/mm/extable.c:23:15:
-     'SEGMENT_IS_PNP_CODE' is undeclared
- 3. drivers/pnp/pnpbios/bioscall.c:
-     a slew of undeclared symbols and casting type mismatches
- 4. drivers/scsi/ultrastor.c:674:29:
-     sprintf format uses '%05X' but a kernel pointer is passed in
+The max_num_isa_dev macro is used to determine the maximum possible number
+of ISA devices which may be registered in the I/O port address space given
+the address extent of the ISA devices. This macro is useful for computing
+the maximum number of elements necessary to hold the base addresses and
+interrupt line numbers of ISA devices for the respective ISA driver.
 
-Both issue 1 and issue 4 are easily fixed by patching the respective
-lines to match the format string with the variable type and vice-versa.
+Lacking other documentation, I often found myself repeatedly returning to
+the commit message of the initial commit for drivers/base/isa.c authored by
+Rene Herman. A verbatim copy of this commit message has been added to
+Documentation/isa.txt, along with descriptions for the module_isa driver
+and max_num_isa_dev macros, for posterity.
 
-Issue 2 and 3 are the actual X86_32 assumption I had suspected: these
-files depend on symbols declared in the include/asm/segment.h file; the
-declaration of these symbols is conditional: #ifdef CONFIG_X86_32.
+The Apex Embedded Systems STX104 may be used on 64-bit X86 systems. This
+patchset allows the Apex Embedded Systems STX104 DAC driver to be compiled
+for both 32-bit and 64-bit X86 systems by depending on the ISA_BUS
+configuration option rather than the ISA configuration option.
 
-I believe this is the source of the issues I encountered on my initial
-attempt to decouple the X86_32 dependency from the ISA option. I suspect
-if I add an explicit X86_32 dependency to the PNPBIOS driver, I will be
-able to remove the X86_32 dependency from the ISA option without
-incident from the other drivers.
+Similarly, many PC/104 and ISA devices may also be used on 64-bit X86
+systems. The platform driver had been used to enable support for these
+devices on 64-bit X86 systems. With the introduction of the ISA_BUS
+configuration option, the respective drivers for these devices may now
+utilize the ISA bus driver without restricting support to only 32-bit X86
+systems; the following drivers now utilize the ISA bus driver over the
+platform driver:
 
-William Breathitt Gray
+ * WinSystems EBC-C384 watchdog timer
+ * ACCES 104-DIO-48E GPIO driver
+ * ACCES 104-IDI-48 GPIO driver
+ * ACCES 104-IDIO-16 GPIO driver
+ * WinSystems WS16C48 GPIO driver
+
+With the utilization of the ISA bus driver, the GPIO drivers in this
+patchset may now support multiple devices for each of their respective ISA
+drivers. A naming convention for module array parameters has been set based
+on the Apex Embedded Systems STX104 DAC driver.
+
+The "base" array module parameter sets the I/O port base address of each
+device. The "irq" array module parameter sets the interrupt line number of
+each device. Each element of the "base" array corresponds to a discrete
+device; each element of the "irq" array corresponds to the respective
+device addressed in the respective "base" array element.
+
+William Breathitt Gray (10):
+  isa: Implement the module_isa_driver macro
+  isa: Implement the max_num_isa_dev macro
+  Documentation: Add ISA bus driver documentation
+  iio: stx104: Change STX104 dependency to ISA_BUS
+  iio: stx104: Utilize the module_isa_driver and max_num_isa_dev macros
+  watchdog: ebc-c384_wdt: Utilize the ISA bus driver
+  gpio: 104-dio-48e: Utilize the ISA bus driver
+  gpio: 104-idi-48: Utilize the ISA bus driver
+  gpio: 104-idio-16: Utilize the ISA bus driver
+  gpio: ws16c48: Utilize the ISA bus driver
+
+ Documentation/isa.txt           | 121 ++++++++++++++++++++++++++++++++++++++++
+ MAINTAINERS                     |   5 ++
+ drivers/gpio/Kconfig            |  38 +++++++------
+ drivers/gpio/gpio-104-dio-48e.c | 106 +++++++++++++----------------------
+ drivers/gpio/gpio-104-idi-48.c  |  86 ++++++++++------------------
+ drivers/gpio/gpio-104-idio-16.c |  85 ++++++++++------------------
+ drivers/gpio/gpio-ws16c48.c     |  88 ++++++++++-------------------
+ drivers/iio/dac/Kconfig         |   2 +-
+ drivers/iio/dac/stx104.c        |  24 +-------
+ drivers/watchdog/Kconfig        |   2 +-
+ drivers/watchdog/ebc-c384_wdt.c |  43 ++++----------
+ include/linux/isa.h             |  32 +++++++++++
+ 12 files changed, 317 insertions(+), 315 deletions(-)
+ create mode 100644 Documentation/isa.txt
+
+-- 
+2.7.3
