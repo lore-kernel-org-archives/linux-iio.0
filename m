@@ -1,172 +1,170 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44236 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753517AbcDJO3M (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 10:29:12 -0400
-Subject: Re: [PATCH v2 2/2] ti-adc081c: Initial triggered buffer support
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <cover.1459793615.git.leonard.crestez@intel.com>
- <d2d8157e906c428111752c36d13e35815f6dc194.1459793615.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <570A6333.3010809@kernel.org>
-Date: Sun, 10 Apr 2016 15:29:07 +0100
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <d2d8157e906c428111752c36d13e35815f6dc194.1459793615.git.leonard.crestez@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <CAPDyKFp+Ok2WBnRnwbHVLiV7K2kpsDqzjcEUWrL1JFa0vxxQHQ@mail.gmail.com>
+References: <1459947832-23004-1-git-send-email-linus.walleij@linaro.org>
+	<CAPDyKFp+Ok2WBnRnwbHVLiV7K2kpsDqzjcEUWrL1JFa0vxxQHQ@mail.gmail.com>
+Date: Thu, 7 Apr 2016 12:18:12 +0200
+Message-ID: <CACRpkdZCB4oytr3DtRXiH7Nj=CUoTTFvPPDT357gFev2aK3ZVg@mail.gmail.com>
+Subject: Re: [PATCH v4] iio: light: new driver for the ROHM BH1780
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@caiaq.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Daniel Baluta <daniel.baluta@intel.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/04/16 19:21, Crestez Dan Leonard wrote:
-> Using this requires software triggers like CONFIG_IIO_HRTIMER_TRIGGER.
-> 
-> The device can be configured to do internal periodic sampling but does not
-> offer some sort of interrupt on data ready. Interrupts can only trigger when
-> values get out of a specific range.
-> 
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-basically fine, but just use a fixed size allocation for your buffer in the
-trigger handler.
-> ---
->  drivers/iio/adc/ti-adc081c.c | 63 +++++++++++++++++++++++++++++++++++++-------
->  1 file changed, 54 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
-> index 3b3c656..d024df2 100644
-> --- a/drivers/iio/adc/ti-adc081c.c
-> +++ b/drivers/iio/adc/ti-adc081c.c
-> @@ -24,6 +24,9 @@
->  #include <linux/of.h>
->  
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
->  #include <linux/regulator/consumer.h>
->  
->  struct adc081c {
-> @@ -69,18 +72,31 @@ static int adc081c_read_raw(struct iio_dev *iio,
->  	return -EINVAL;
->  }
->  
-> -static const struct iio_chan_spec adc081c_channel = {
-> -	.type = IIO_VOLTAGE,
-> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> -};
-> +#define ADCxx1C_CHAN(_bits) {					\
-> +	.type = IIO_VOLTAGE,					\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.scan_type = {						\
-> +		.sign = 'u',					\
-> +		.realbits = (_bits),				\
-> +		.storagebits = 16,				\
-> +		.shift = 12 - (_bits),				\
-> +		.endianness = IIO_CPU,				\
-> +	},							\
-> +}
->  
->  struct adcxx1c_model {
-> +	const struct iio_chan_spec* channels;
->  	int bits;
->  };
->  
->  #define DEFINE_ADCxx1C_MODEL(_name, _bits)				\
-> +	static const struct iio_chan_spec _name ## _channels[] = {	\
-> +		ADCxx1C_CHAN((_bits)),					\
-> +		IIO_CHAN_SOFT_TIMESTAMP(1),				\
-> +	};								\
->  	static const struct adcxx1c_model _name ## _model = {		\
-> +		.channels = _name ## _channels,				\
->  		.bits = (_bits),					\
->  	}
->  
-> @@ -88,11 +104,31 @@ DEFINE_ADCxx1C_MODEL(adc081c,  8);
->  DEFINE_ADCxx1C_MODEL(adc101c, 10);
->  DEFINE_ADCxx1C_MODEL(adc121c, 12);
->  
-> +#define ADC081C_NUM_CHANNELS 2
-> +
->  static const struct iio_info adc081c_info = {
->  	.read_raw = adc081c_read_raw,
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +static irqreturn_t adc081c_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct adc081c *data = iio_priv(indio_dev);
-> +	u16 buf[indio_dev->scan_bytes / 2];
-Just use a fixed size that is beig enough for whatever you may
-get.  Here you need room for a word + an aligned 8 byte timestamp
-so 16 bytes, or 8 u16s.  It's not variable so don't let the compiler think
-it is.
+(Looping in Daniel Baluta so he can tell me if I get the Android bits
+wrong.)
 
-Also you shouldn't be accessing indio_dev->scan_bytes directly in a driver.
-A long time back we spent a while pulling that idiom out of drivers as it
-was causing a lot more trouble than the convenience was worth (can't
-actually recall why now though!)
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_word_swapped(data->i2c, REG_CONV_RES);
-> +	if (ret < 0)
-> +		goto out;
-> +	buf[0] = ret;
-> +	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
-> +out:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static int adc081c_probe(struct i2c_client *client,
->  			 const struct i2c_device_id *id)
->  {
-> @@ -125,18 +161,26 @@ static int adc081c_probe(struct i2c_client *client,
->  	iio->modes = INDIO_DIRECT_MODE;
->  	iio->info = &adc081c_info;
->  
-> -	iio->channels = &adc081c_channel;
-> -	iio->num_channels = 1;
-> +	iio->channels = model->channels;
-> +	iio->num_channels = ADC081C_NUM_CHANNELS;
-I'm not sure the define adds anything here!  Kind of obvious what 2 means anyway -
-rather than it being a magic number :)
-> +
-> +	err = iio_triggered_buffer_setup(iio, NULL, adc081c_trigger_handler, NULL);
-> +	if (err < 0) {
-> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
-> +		goto err_regulator_disable;
-> +	}
->  
->  	err = iio_device_register(iio);
->  	if (err < 0)
-> -		goto regulator_disable;
-> +		goto err_buffer_cleanup;
->  
->  	i2c_set_clientdata(client, iio);
->  
->  	return 0;
->  
-> -regulator_disable:
-> +err_buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(iio);
-> +err_regulator_disable:
->  	regulator_disable(adc->ref);
->  
->  	return err;
-> @@ -148,6 +192,7 @@ static int adc081c_remove(struct i2c_client *client)
->  	struct adc081c *adc = iio_priv(iio);
->  
->  	iio_device_unregister(iio);
-> +	iio_triggered_buffer_cleanup(iio);
->  	regulator_disable(adc->ref);
->  
->  	return 0;
-> 
+On Wed, Apr 6, 2016 at 3:32 PM, Ulf Hansson <ulf.hansson@linaro.org> wrote:
 
+>> +       /*
+>> +        * As the device takes 250 ms to even come up with a fresh
+>> +        * measurement after power-on, do not shut it down unnecessarily.
+>> +        * Set autosuspend to a five seconds.
+>> +        */
+>> +       pm_runtime_set_autosuspend_delay(&client->dev, 5000);
+>
+> I assume the parent device is the i2c controller for the sensor device!?
+
+Yup.
+
+> In the ux500 case, this i2c controller device resides in the VAPE PM
+> domain, thus when you keep the sensor device runtime resumed, it means
+> the VAPE PM domain will stay active.
+
+After investigating: nope!
+
+The I2C bus is not an issue in this context: the I2C host
+will aggressively pm_runtime_suspend()/resume() even
+between I2C transactions. With drivers/i2c/busses/i2c-nomadik.c
+I get these debug prints:
+
+cat in_illuminance_raw
+[   83.656036] nmk-i2c 80128000.i2c: 80128000.i2c nmk_i2c_runtime_resume()
+[   83.663543] nmk-i2c 80128000.i2c: 80128000.i2c nmk_i2c_runtime_suspend()
+[   83.937103] nmk-i2c 80128000.i2c: 80128000.i2c nmk_i2c_runtime_resume()
+[   83.945465] nmk-i2c 80128000.i2c: 80128000.i2c nmk_i2c_runtime_suspend()
+[   83.952178] nmk-i2c 80128000.i2c: 80128000.i2c nmk_i2c_runtime_resume()
+[   83.960540] nmk-i2c 80128000.i2c: 80128000.i2c nmk_i2c_runtime_suspend()
+324
+
+Then some time passes and the light sensor autosuspens leading to some
+more i2c traffic:
+
+[   89.137084] nmk-i2c 80128000.i2c: 80128000.i2c nmk_i2c_runtim)
+[   89.143951] nmk-i2c 80128000.i2c: 80128000.i2c nmk_i2c_runtime_suspend()
+
+Nice, the bus is actually clocked off, hardware can even power down
+and the power domain is released. So your concern is addressed.
+
+The reason it works so nicely I think is because the I2C driver
+does this in probe():
+pm_suspend_ignore_children(&adev->dev, true);
+
+Which is what every i2c and spi driver should be doing, as there is
+no need for the I2c/spi etc hardware to be clocked between
+transactions. (I think some of them could be better off using
+autosuspend though, aggressively hammering down the hardware
+between every transaction seems a bit over the top.)
+
+Let's look at the big picture though, as this driver can be
+used on any I2C bus.
+
+What do you think about auditing all i2c, spi and other external
+bus drivers and send RFT patches to add a
+pm_suspend_ignore_children() call to all of those missing it?
+It seems to be a common mistake, these I2C drivers are
+using runtime PM but not setting pm_suspend_ignore_children():
+i2c-at91.c
+i2c-cadence.c
+i2c-designware-core.c
+i2c-imx.c
+i2c-omap.c
+i2c-qup.c
+i2c-rcar.c
+i2c-s3c2410.c
+i2c-xiic.c
+
+Only Nomadik, hisilicon and SH seems to do it right :(
+
+> Therefore, I am a bit concerned about the 5 s autosuspend delay here.
+> Do you have an idea of how a regular use case would be for the sensor?
+> In other words, at what frequency would you expect a new sensor value
+> to be read?
+
+Even if the I2C bus is not the issue (as described above) there
+is still the question about a reasonable timeout.
+
+For a suitable timeout value, let's see what Android does.
+The framework lets you read values from the sensor at any
+time of course.
+
+Then the framework has a way for applications to register to
+SENSOR_LIGHT events like this:
+
+sensorManager.registerListener(sensorEventListener,
+        sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
+        SensorManager.SENSOR_DELAY_FASTEST);
+
+Possible delays are SENSOR_DELAY_NORMAL,
+SENSOR_DELAY_GAME, SENSOR_DELAY_UI and
+SENSOR_DELAY_FASTEST.
+
+This is then translated deep in the Android framework
+android/platform/frameworks/base in the file
+core/java/android/hardware/SensorManager.java
+to some chosen microsecond constants (how these were
+chosen I have no clue about) here is the essence, the
+delays are in microseconds:
+
+SENSOR_DELAY_FASTEST: delay = 0;
+SENSOR_DELAY_GAME: delay = 20000;
+SENSOR_DELAY_UI: delay = 66667;
+SENSOR_DELAY_NORMAL: delay = 200000;
+
+So the delay between readings unless we're constantly
+polling the sensor (this is wrong by the way: when using
+Intels IIO android HAL, the fastest delay should be capped
+to what the sensor reports in its sysfs file *_integration_time
+but yeah, sigh) the delay will vary between 20 and 200 ms.
+
+So in theory, Android would ask the sensor for a new value
+every 200 ms for the normal usecase. Which is faster than
+what the sensor can deliver, so it would report the same
+value twice at times.
+
+However I think there is execution overhead in Android,
+so it's not really going to happen at that speed. I would have
+to run a test rig to get a more reasonable value out.
+
+I don't know if I can choose a better timeout value after
+investigating (2)... I feel I know a lot more but to no avail.
+Android will just hammer the device with requests when using
+the above API, so we could set the timeout to 1 second for
+example. Does that sound good?
+
+I guess the algorithm that goes out to read the ambient light
+to dim the backlight of the screen is just doing an odd
+measurement every now and then. I haven't found this code,
+but I strongly suspect it does not subscribe to events like
+this, it just calls the raw API to get a sensor value at its
+own interval.
+
+> Moreover, what are the resume latency requirement of reading a new
+> sensor value? Is it a problem to have a 250 ms latency for each new
+> value?
+
+We cannot do very much about that as it is a hardware property.
+What you can do if you want lower latency is choose a different
+component :)
+
+In Android the sensor has methods like .getMinDelay() and
+.getMaxDelay() and the application can adjust its behaviour.
+It seems that its event manager doesn't care though, it just
+goes and reads the sensor anyway. Maybe it's up to the
+Android hardware layer to sleep and wait for a new value.
+
+Yours,
+Linus Walleij
