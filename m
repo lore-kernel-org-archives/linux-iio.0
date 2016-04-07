@@ -1,225 +1,304 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:36213 "EHLO
-	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754234AbcDFFRc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2016 01:17:32 -0400
-Date: Tue, 5 Apr 2016 22:17:30 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	kgene@kernel.org, k.kozlowski@samsung.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org
-Subject: [PATCH 3/9] iio: adc: qcom-spmi-vadc: use regmap to retrieve struct
- device
-Message-ID: <13e62b042435dba9edc127a29691bd3519c8e2c0.1459918214.git.amsfield22@gmail.com>
-References: <cover.1459918214.git.amsfield22@gmail.com>
+Received: from ns.pmeerw.net ([84.19.176.92]:48207 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753791AbcDGTgE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 7 Apr 2016 15:36:04 -0400
+Date: Thu, 7 Apr 2016 21:36:00 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Slawomir Stepien <sst@poczta.fm>
+cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: potentiometer: add driver for Maxim Integrated
+ DS1803
+In-Reply-To: <20160407165118.GA2333@x220>
+Message-ID: <alpine.DEB.2.02.1604072130040.26969@pmeerw.net>
+References: <20160407165118.GA2333@x220>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1459918214.git.amsfield22@gmail.com>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Driver includes struct regmap and struct device in its global data.
-Remove the struct device and use regmap API to retrieve device info.
 
-Patch created using Coccinelle plus manual edits.
+> The following functions are supported:
+>  - write, read potentiometer value
+>  - potentiometer scale
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
----
- drivers/iio/adc/qcom-spmi-vadc.c | 37 ++++++++++++++++++++-----------------
- 1 file changed, 20 insertions(+), 17 deletions(-)
+minor comments below, nice driver
+ 
+> Datasheet: https://datasheets.maximintegrated.com/en/ds/DS1803.pdf
+> 
+> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+> ---
+>  .../bindings/iio/potentiometer/ds1803.txt          |  21 +++
+>  drivers/iio/potentiometer/Kconfig                  |  10 ++
+>  drivers/iio/potentiometer/Makefile                 |   1 +
+>  drivers/iio/potentiometer/ds1803.c                 | 178 +++++++++++++++++++++
+>  4 files changed, 210 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
+>  create mode 100644 drivers/iio/potentiometer/ds1803.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt b/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
+> new file mode 100644
+> index 0000000..df77bf5
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
+> @@ -0,0 +1,21 @@
+> +* Maxim Integrated DS1803 digital potentiometer driver
+> +
+> +The node for this driver must be a child node of a I2C controller, hence
+> +all mandatory properties for your controller must be specified. See directory:
+> +
+> +        Documentation/devicetree/bindings/i2c
+> +
+> +for more details.
+> +
+> +Required properties:
+> +	- compatible:  	Must be one of the following, depending on the
+> +			model:
+> +			"maxim,ds1803-010",
+> +			"maxim,ds1803-050",
+> +			"maxim,ds1803-100"
+> +
+> +Example:
+> +ds1803: ds1803@1 {
+> +	reg = <0x28>;
+> +	compatible = "maxim,ds1803-010";
+> +};
+> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
+> index 7ea069b..6acb238 100644
+> --- a/drivers/iio/potentiometer/Kconfig
+> +++ b/drivers/iio/potentiometer/Kconfig
+> @@ -5,6 +5,16 @@
+>  
+>  menu "Digital potentiometers"
+>  
+> +config DS1803
+> +	tristate "Maxim Integrated DS1803 Digital Potentiometer driver"
+> +	depends on I2C
+> +	help
+> +	  Say yes here to build support for the Maxim Integrated DS1803
+> +	  digital potentiomenter chip.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called ds1803.
+> +
+>  config MCP4131
+>  	tristate "Microchip MCP413X/414X/415X/416X/423X/424X/425X/426X Digital Potentiometer driver"
+>  	depends on SPI
+> diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
+> index 91a80f8..6007faa 100644
+> --- a/drivers/iio/potentiometer/Makefile
+> +++ b/drivers/iio/potentiometer/Makefile
+> @@ -3,6 +3,7 @@
+>  #
+>  
+>  # When adding new entries keep the list in alphabetical order
+> +obj-$(CONFIG_DS1803) += ds1803.o
+>  obj-$(CONFIG_MCP4131) += mcp4131.o
+>  obj-$(CONFIG_MCP4531) += mcp4531.o
+>  obj-$(CONFIG_TPL0102) += tpl0102.o
+> diff --git a/drivers/iio/potentiometer/ds1803.c b/drivers/iio/potentiometer/ds1803.c
+> new file mode 100644
+> index 0000000..b5e5b1c
+> --- /dev/null
+> +++ b/drivers/iio/potentiometer/ds1803.c
+> @@ -0,0 +1,178 @@
+> +/*
+> + * Maxim Integrated DS1803 digital potentiometer driver
+> + * Copyright (c) 2016 Slawomir Stepien
+> + *
+> + * Datasheet: https://datasheets.maximintegrated.com/en/ds/DS1803.pdf
+> + *
+> + * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
+> + * ds1803	2	256		10, 50, 100		0101xxx
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + */
+> +
+> +#include <linux/cache.h>
 
-diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-index c2babe5..9e7aeca 100644
---- a/drivers/iio/adc/qcom-spmi-vadc.c
-+++ b/drivers/iio/adc/qcom-spmi-vadc.c
-@@ -161,7 +161,6 @@ struct vadc_channel_prop {
- /**
-  * struct vadc_priv - VADC private structure.
-  * @regmap: pointer to struct regmap.
-- * @dev: pointer to struct device.
-  * @base: base address for the ADC peripheral.
-  * @nchannels: number of VADC channels.
-  * @chan_props: array of VADC channel properties.
-@@ -174,7 +173,6 @@ struct vadc_channel_prop {
-  */
- struct vadc_priv {
- 	struct regmap		 *regmap;
--	struct device		 *dev;
- 	u16			 base;
- 	unsigned int		 nchannels;
- 	struct vadc_channel_prop *chan_props;
-@@ -236,6 +234,7 @@ static int vadc_set_state(struct vadc_priv *vadc, bool state)
- 
- static void vadc_show_status(struct vadc_priv *vadc)
- {
-+	struct device *dev = regmap_get_device(vadc->regmap);
- 	u8 mode, sta1, chan, dig, en, req;
- 	int ret;
- 
-@@ -263,7 +262,7 @@ static void vadc_show_status(struct vadc_priv *vadc)
- 	if (ret)
- 		return;
- 
--	dev_err(vadc->dev,
-+	dev_err(dev,
- 		"mode:%02x en:%02x chan:%02x dig:%02x req:%02x sta1:%02x\n",
- 		mode, en, chan, dig, req, sta1);
- }
-@@ -350,13 +349,14 @@ static int vadc_read_result(struct vadc_priv *vadc, u16 *data)
- static struct vadc_channel_prop *vadc_get_channel(struct vadc_priv *vadc,
- 						  unsigned int num)
- {
-+	struct device *dev = regmap_get_device(vadc->regmap);
- 	unsigned int i;
- 
- 	for (i = 0; i < vadc->nchannels; i++)
- 		if (vadc->chan_props[i].channel == num)
- 			return &vadc->chan_props[i];
- 
--	dev_dbg(vadc->dev, "no such channel %02x\n", num);
-+	dev_dbg(dev, "no such channel %02x\n", num);
- 
- 	return NULL;
- }
-@@ -364,6 +364,7 @@ static struct vadc_channel_prop *vadc_get_channel(struct vadc_priv *vadc,
- static int vadc_do_conversion(struct vadc_priv *vadc,
- 			      struct vadc_channel_prop *prop, u16 *data)
- {
-+	struct device *dev = regmap_get_device(vadc->regmap);
- 	unsigned int timeout;
- 	int ret;
- 
-@@ -406,7 +407,7 @@ static int vadc_do_conversion(struct vadc_priv *vadc,
- err_disable:
- 	vadc_set_state(vadc, false);
- 	if (ret)
--		dev_err(vadc->dev, "conversion failed\n");
-+		dev_err(dev, "conversion failed\n");
- unlock:
- 	mutex_unlock(&vadc->lock);
- 	return ret;
-@@ -414,6 +415,7 @@ unlock:
- 
- static int vadc_measure_ref_points(struct vadc_priv *vadc)
- {
-+	struct device *dev = regmap_get_device(vadc->regmap);
- 	struct vadc_channel_prop *prop;
- 	u16 read_1, read_2;
- 	int ret;
-@@ -463,7 +465,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- 	vadc->graph[VADC_CALIB_RATIOMETRIC].gnd = read_2;
- err:
- 	if (ret)
--		dev_err(vadc->dev, "measure reference points failed\n");
-+		dev_err(dev, "measure reference points failed\n");
- 
- 	return ret;
- }
-@@ -814,6 +816,7 @@ static int vadc_get_dt_channel_data(struct device *dev,
- 
- static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
- {
-+	struct device *dev = regmap_get_device(vadc->regmap);
- 	const struct vadc_channels *vadc_chan;
- 	struct iio_chan_spec *iio_chan;
- 	struct vadc_channel_prop prop;
-@@ -825,12 +828,12 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
- 	if (!vadc->nchannels)
- 		return -EINVAL;
- 
--	vadc->iio_chans = devm_kcalloc(vadc->dev, vadc->nchannels,
-+	vadc->iio_chans = devm_kcalloc(dev, vadc->nchannels,
- 				       sizeof(*vadc->iio_chans), GFP_KERNEL);
- 	if (!vadc->iio_chans)
- 		return -ENOMEM;
- 
--	vadc->chan_props = devm_kcalloc(vadc->dev, vadc->nchannels,
-+	vadc->chan_props = devm_kcalloc(dev, vadc->nchannels,
- 					sizeof(*vadc->chan_props), GFP_KERNEL);
- 	if (!vadc->chan_props)
- 		return -ENOMEM;
-@@ -838,7 +841,7 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
- 	iio_chan = vadc->iio_chans;
- 
- 	for_each_available_child_of_node(node, child) {
--		ret = vadc_get_dt_channel_data(vadc->dev, &prop, child);
-+		ret = vadc_get_dt_channel_data(dev, &prop, child);
- 		if (ret) {
- 			of_node_put(child);
- 			return ret;
-@@ -860,22 +863,22 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
- 
- 	/* These channels are mandatory, they are used as reference points */
- 	if (!vadc_get_channel(vadc, VADC_REF_1250MV)) {
--		dev_err(vadc->dev, "Please define 1.25V channel\n");
-+		dev_err(dev, "Please define 1.25V channel\n");
- 		return -ENODEV;
- 	}
- 
- 	if (!vadc_get_channel(vadc, VADC_REF_625MV)) {
--		dev_err(vadc->dev, "Please define 0.625V channel\n");
-+		dev_err(dev, "Please define 0.625V channel\n");
- 		return -ENODEV;
- 	}
- 
- 	if (!vadc_get_channel(vadc, VADC_VDD_VADC)) {
--		dev_err(vadc->dev, "Please define VDD channel\n");
-+		dev_err(dev, "Please define VDD channel\n");
- 		return -ENODEV;
- 	}
- 
- 	if (!vadc_get_channel(vadc, VADC_GND_REF)) {
--		dev_err(vadc->dev, "Please define GND channel\n");
-+		dev_err(dev, "Please define GND channel\n");
- 		return -ENODEV;
- 	}
- 
-@@ -893,6 +896,7 @@ static irqreturn_t vadc_isr(int irq, void *dev_id)
- 
- static int vadc_check_revision(struct vadc_priv *vadc)
- {
-+	struct device *dev = regmap_get_device(vadc->regmap);
- 	u8 val;
- 	int ret;
- 
-@@ -901,7 +905,7 @@ static int vadc_check_revision(struct vadc_priv *vadc)
- 		return ret;
- 
- 	if (val < VADC_PERPH_TYPE_ADC) {
--		dev_err(vadc->dev, "%d is not ADC\n", val);
-+		dev_err(dev, "%d is not ADC\n", val);
- 		return -ENODEV;
- 	}
- 
-@@ -910,7 +914,7 @@ static int vadc_check_revision(struct vadc_priv *vadc)
- 		return ret;
- 
- 	if (val < VADC_PERPH_SUBTYPE_VADC) {
--		dev_err(vadc->dev, "%d is not VADC\n", val);
-+		dev_err(dev, "%d is not VADC\n", val);
- 		return -ENODEV;
- 	}
- 
-@@ -919,7 +923,7 @@ static int vadc_check_revision(struct vadc_priv *vadc)
- 		return ret;
- 
- 	if (val < VADC_REVISION2_SUPPORTED_VADC) {
--		dev_err(vadc->dev, "revision %d not supported\n", val);
-+		dev_err(dev, "revision %d not supported\n", val);
- 		return -ENODEV;
- 	}
- 
-@@ -950,7 +954,6 @@ static int vadc_probe(struct platform_device *pdev)
- 
- 	vadc = iio_priv(indio_dev);
- 	vadc->regmap = regmap;
--	vadc->dev = dev;
- 	vadc->base = reg;
- 	vadc->are_ref_measured = false;
- 	init_completion(&vadc->complete);
+for what is cache.h needed?
+
+> +#include <linux/err.h>
+> +#include <linux/export.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +
+> +#define DS1803_NUM_WIPERS	2
+> +#define DS1803_MAX_POS		255
+> +#define DS1803_WRITE(n)		(0xA8 | ((n) + 1))
+> +
+> +enum ds1803_type {
+> +	DS1803_010,
+> +	DS1803_050,
+> +	DS1803_100,
+> +};
+> +
+> +struct ds1803_cfg {
+> +	int kohms;
+> +};
+> +
+> +static const struct ds1803_cfg ds1803_cfg[] = {
+> +	[DS1803_010] = { .kohms =  10, },
+> +	[DS1803_050] = { .kohms =  50, },
+> +	[DS1803_100] = { .kohms = 100, },
+> +};
+> +
+> +struct ds1803_data {
+> +	struct i2c_client *client;
+> +	const struct ds1803_cfg *cfg;
+> +};
+> +
+> +#define DS1803_CHANNEL(ch) {					\
+> +	.type = IIO_RESISTANCE,					\
+> +	.indexed = 1,						\
+> +	.output = 1,						\
+> +	.channel = (ch),					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +}
+> +
+> +static const struct iio_chan_spec ds1803_channels[] = {
+> +	DS1803_CHANNEL(0),
+> +	DS1803_CHANNEL(1),
+> +};
+> +
+> +static int ds1803_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct ds1803_data *data = iio_priv(indio_dev);
+> +	int pot = chan->channel;
+> +	s32 ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = i2c_smbus_read_word_swapped(data->client, 0);
+
+maybe a #define to explain the name of register 0
+
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		/* Get bits for given pot */
+> +		*val = (pot == 0 ? ret >> 8 : ret & 255);
+
+often 0xff is used to mask a byte
+
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 1000 * data->cfg->kohms;
+> +		*val2 = DS1803_MAX_POS;
+> +		return IIO_VAL_FRACTIONAL;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ds1803_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct ds1803_data *data = iio_priv(indio_dev);
+> +	int pot = chan->channel;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (val > DS1803_MAX_POS || val < 0)
+
+check that val2 is 0 or use .write_raw_get_fmt
+
+> +			return -EINVAL;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return i2c_smbus_write_byte_data(data->client, DS1803_WRITE(pot), val);
+> +}
+> +
+> +static const struct iio_info ds1803_info = {
+> +	.read_raw = ds1803_read_raw,
+> +	.write_raw = ds1803_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int ds1803_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct ds1803_data *data;
+> +	struct iio_dev *indio_dev;
+> +
+> +	/* Value of two pots is read at the same time */
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_WORD_DATA)) {
+> +		dev_err(dev, "SMBUS Word Data not supported\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +	data->cfg = &ds1803_cfg[id->driver_data];
+> +
+> +	indio_dev->dev.parent = dev;
+> +	indio_dev->info = &ds1803_info;
+> +	indio_dev->channels = ds1803_channels;
+> +	indio_dev->num_channels = DS1803_NUM_WIPERS;
+
+ARRAY_SIZE(ds1803_channels)
+
+> +	indio_dev->name = client->name;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> +
+> +#if defined(CONFIG_OF)
+> +static const struct of_device_id ds1803_dt_ids[] = {
+> +	{ .compatible = "maxim,ds1803-010", .data = &ds1803_cfg[DS1803_010] },
+> +	{ .compatible = "maxim,ds1803-050", .data = &ds1803_cfg[DS1803_050] },
+> +	{ .compatible = "maxim,ds1803-100", .data = &ds1803_cfg[DS1803_100] },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, ds1803_dt_ids);
+> +#endif /* CONFIG_OF */
+> +
+> +static const struct i2c_device_id ds1803_id[] = {
+> +	{ "ds1803-010", DS1803_010 },
+> +	{ "ds1803-050", DS1803_050 },
+> +	{ "ds1803-100", DS1803_100 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, ds1803_id);
+> +
+> +static struct i2c_driver ds1803_driver = {
+> +	.driver = {
+> +		.name	= "ds1803",
+> +		.of_match_table = of_match_ptr(ds1803_dt_ids),
+> +	},
+> +	.probe		= ds1803_probe,
+> +	.id_table	= ds1803_id,
+> +};
+> +
+> +module_i2c_driver(ds1803_driver);
+> +
+> +MODULE_AUTHOR("Slawomir Stepien <sst@poczta.fm>");
+> +MODULE_DESCRIPTION("DS1803 digital potentiometer");
+> +MODULE_LICENSE("GPL v2");
+> 
+
 -- 
-2.1.4
 
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
