@@ -1,86 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:60564 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932386AbcDGR56 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 7 Apr 2016 13:57:58 -0400
-Date: Thu, 7 Apr 2016 12:57:48 -0500
-From: Rob Herring <robh@kernel.org>
-To: michael.hennerich@analog.com
-Cc: jic23@kernel.org, linus.walleij@linaro.org, gnurou@gmail.com,
-	lars@metafoo.de, knaack.h@gmx.de, paul.cercueil@analog.com,
-	pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH v6] iio: dac: Add support for the AD5592R/AD5593R
- ADCs/DACs
-Message-ID: <20160407175748.GL32257@rob-hp-laptop>
-References: <1459842379-26275-1-git-send-email-michael.hennerich@analog.com>
+Return-Path: <paul@pwsan.com>
+Date: Thu, 7 Apr 2016 18:51:36 +0000 (UTC)
+From: Paul Walmsley <paul@pwsan.com>
+To: Linus Walleij <linus.walleij@linaro.org>
+cc: Jonathan Cameron <jic23@kernel.org>, Tony Lindgren <tony@atomide.com>,
+  Peter De Schrijver <pdeschrijver@nvidia.com>,
+  "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+  Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@caiaq.de>,
+  Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v3] iio: light: new driver for the ROHM BH1780
+In-Reply-To: <CACRpkdYkqzvu_fMcDPy8i0OCpGdGQ39S534HbCQL8T93gadKmQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.02.1604071849540.19674@utopia.booyaka.com>
+References: <1459326847-9444-1-git-send-email-linus.walleij@linaro.org> <5700E7AF.6040903@kernel.org> <CACRpkdYkqzvu_fMcDPy8i0OCpGdGQ39S534HbCQL8T93gadKmQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1459842379-26275-1-git-send-email-michael.hennerich@analog.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Apr 05, 2016 at 09:46:19AM +0200, michael.hennerich@analog.com wrote:
-> From: Paul Cercueil <paul.cercueil@analog.com>
-> 
-> This patch adds support for the AD5592R (spi) and AD5593R (i2c)
-> ADC/DAC/GPIO devices.
-> 
-> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> 
-> ---
-> 
-> Changes since v1:
-> 	* Fix mutex usage
-> 	* Remove unnecessary NULL pointer guards
-> 	* Add comment explaining the invalid data read
-> 	* AD5593R Remove surplus adc readback
-> 
-> Changes since v2:
-> 	* Use child nodes to describe channels
-> 	* Fix probe return and driver remove path
-> 	* Move locking closer to where its used
-> 	* Remove WARN_ON but return error
-> 	* Remove OPEN DRAIN configuration option
-> 
-> Changes since v3:
-> 	* Documentation: Add missing vendor prefixes in the examples
-> 	* Minor function reordering in remove() to match the reverse of probe()
-> 
-> Changes since v4:
-> 	* Documentation: Add missing gpio bindings
-> 	* Kconfig: Select GPIOLIB and remove ifdefs in code
-> 	* Remove surplus error check in ad5592r_gpio_request()
-> 	* Add comment about reset magic
-> 
-> Changes since v5:
-> 	* Remove surplus error check
-> 	* Remove additional ifdef CONFIG_GPIOLIB guards in the header
-> 	* Bindings: Add additional comments about CH_MODE_DAC_AND_ADC mode
-> ---
->  .../devicetree/bindings/iio/dac/ad5592r.txt        | 155 +++++
+On Sun, 3 Apr 2016, Linus Walleij wrote:
 
-I've acked this twice before, and the last change seems minor. 
-Please add acks unless it is more than minor changes and you need it 
-reviewed again.
-
-Acked-by: Rob Herring <robh@kernel.org>
-
->  drivers/iio/dac/Kconfig                            |  27 +
->  drivers/iio/dac/Makefile                           |   3 +
->  drivers/iio/dac/ad5592r-base.c                     | 691 +++++++++++++++++++++
->  drivers/iio/dac/ad5592r-base.h                     |  76 +++
->  drivers/iio/dac/ad5592r.c                          | 164 +++++
->  drivers/iio/dac/ad5593r.c                          | 131 ++++
->  include/dt-bindings/iio/adi,ad5592r.h              |  16 +
->  8 files changed, 1263 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5592r.txt
->  create mode 100644 drivers/iio/dac/ad5592r-base.c
->  create mode 100644 drivers/iio/dac/ad5592r-base.h
->  create mode 100644 drivers/iio/dac/ad5592r.c
->  create mode 100644 drivers/iio/dac/ad5593r.c
->  create mode 100644 include/dt-bindings/iio/adi,ad5592r.h
+> On Sun, Apr 3, 2016 at 11:51 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> > On 30/03/16 09:34, Linus Walleij wrote:
 > 
+> >> I want to phase out the old misc driver, but don't know how that
+> >> should properly be handled. The driver has an old (totally
+> >> undocumented) sysfs ABI for raw measurements, should I add
+> >> this as backward-compatibility and symlink the device to the old
+> >> location?
+> >
+> > Good question.  I guess we unfortunately do need to jump through the hoops as
+> > who knows what userspace code there is out there using that interface.
+> > At least it is small!
+> 
+> The maintainer Hemanth seems to have disappeared.
+> 
+> Let's ask some of the OMAP and ex-OMAP people, I think they know
+> or know who knows...
+> 
+> Tony, Peter, Paul: drivers/misc/bh1780gli.c has a funky sysfs ABI.
+> It is only used in arch/arm/boot/dts/omap4-sdp.dts as far as I can
+> tell. What device is this, and more importantly, who is running it
+> and with what userspace? I'm happy to go and patch that userspace
+> if I can just get a pointer to whoever is developing it. Sailfish?
+
+If it's only used in the OMAP4 SDP DT file in upstream, then you probably 
+don't need to worry much about who's using it... Sounds like you should 
+just fix it.
+
+
+- Paul
