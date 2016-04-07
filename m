@@ -1,791 +1,278 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f68.google.com ([209.85.220.68]:34114 "EHLO
-	mail-pa0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751397AbcDGP5Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Apr 2016 11:57:25 -0400
-Received: by mail-pa0-f68.google.com with SMTP id hb4so7132693pac.1
-        for <linux-iio@vger.kernel.org>; Thu, 07 Apr 2016 08:57:20 -0700 (PDT)
-From: Akinobu Mita <akinobu.mita@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Akinobu Mita <akinobu.mita@gmail.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	Christoph Mair <christoph.mair@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mga04.intel.com ([192.55.52.120]:44514 "EHLO mga04.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756822AbcDGQWo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 7 Apr 2016 12:22:44 -0400
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH] iio: pressure: bmp280: add support for BMP180
-Date: Fri,  8 Apr 2016 00:57:01 +0900
-Message-Id: <1460044621-17274-1-git-send-email-akinobu.mita@gmail.com>
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH 4/5] max44000: Expose ambient sensor scaling
+Date: Thu,  7 Apr 2016 19:21:53 +0300
+Message-Id: <b32d7ec4e609d0a287e078eeb9514955f79dee43.1460045763.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
+References: <cover.1460045763.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
+References: <cover.1460045763.git.leonard.crestez@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds support for the BMP180 to the bmp280 iio driver.
-The BMP180 has already been supported by misc/bmp085 driver but it
-doesn't use iio framework.
+This patch exposes ALSTIM as illuminance_integration_time and ALSPGA as
+illuminance_scale.
 
-This also adds ability to control the oversampling ratio of the
-temperature and pressure measurement for both bmp180 and bmp280.
-(bmp280 is untested)
+Changing ALSTIM also changes the number of bits available in the data
+register. This is handled inside raw value reading because:
+* It's very easy to shift a few bits
+* It allows SCALE and INT_TIME to be completely independent controls
+* Buffer support requires constant scan_type.realbits per-channel
 
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Cc: Christoph Mair <christoph.mair@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
- drivers/iio/pressure/Kconfig  |   4 +-
- drivers/iio/pressure/bmp280.c | 574 +++++++++++++++++++++++++++++++++++++++---
- 2 files changed, 548 insertions(+), 30 deletions(-)
+ drivers/iio/light/max44000.c | 163 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 159 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index e8f60db..c9131f8 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -6,11 +6,11 @@
- menu "Pressure sensors"
+diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+index 1dc10b9..e479c53 100644
+--- a/drivers/iio/light/max44000.c
++++ b/drivers/iio/light/max44000.c
+@@ -53,6 +53,12 @@
+ #define MAX44000_CFG_MODE_PRX		0x14
+ #define MAX44000_CFG_TRIM		0x20
  
- config BMP280
--	tristate "Bosch Sensortec BMP280 pressure sensor driver"
-+	tristate "Bosch Sensortec BMP180 and BMP280 pressure sensor driver"
- 	depends on I2C
- 	select REGMAP_I2C
- 	help
--	 Say yes here to build support for Bosch Sensortec BMP280
-+	 Say yes here to build support for Bosch Sensortec BMP180 and BMP280
- 	 pressure and temperature sensor.
++/* REG_RX bits */
++#define MAX44000_CFG_RX_ALSTIM_MASK	0x0c
++#define MAX44000_CFG_RX_ALSTIM_SHIFT	2
++#define MAX44000_CFG_RX_ALSPGA_MASK	0x03
++#define MAX44000_CFG_RX_ALSPGA_SHIFT	0
++
+ /* REG_TX bits */
+ #define MAX44000_LED_CURRENT_MASK	0xf
+ #define MAX44000_LED_CURRENT_MAX	11
+@@ -73,6 +79,50 @@ struct max44000_data {
+ /* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
+ #define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
  
- 	 To compile this driver as a module, choose M here: the module
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index a2602d8..8f64012 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -1,12 +1,15 @@
- /*
-  * Copyright (c) 2014 Intel Corporation
-  *
-- * Driver for Bosch Sensortec BMP280 digital pressure sensor.
-+ * Driver for Bosch Sensortec BMP180 and BMP280 digital pressure sensor.
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License version 2 as
-  * published by the Free Software Foundation.
-  *
-+ * Datasheet:
-+ * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP180-DS000-121.pdf
-+ * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-DS001-12.pdf
-  */
- 
- #define pr_fmt(fmt) "bmp280: " fmt
-@@ -15,9 +18,13 @@
- #include <linux/i2c.h>
- #include <linux/acpi.h>
- #include <linux/regmap.h>
-+#include <linux/delay.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- 
-+/*
-+ * BMP280 specific registers
++/* Scale can be multiplied by up to 128x via ALSPGA for measurement gain */
++static const int max44000_alspga_shift[] = {0, 2, 4, 7};
++#define MAX44000_ALSPGA_MAX_SHIFT 7
++
++/* Scale can be multiplied by up to 64x via ALSTIM because of lost resolution
++ *
++ * This scaling factor is hidden from userspace and instead accounted for when
++ * reading raw values from the device.
++ *
++ * This makes it possible to cleanly expose ALSPGA as IIO_CHAN_INFO_SCALE and
++ * ALSTIM as IIO_CHAN_INFO_INT_TIME without the values affecting each other.
++ *
++ * Hanlding this internally is also required for buffer support because the
++ * channel's scan_type can't be modified dynamically.
 + */
- #define BMP280_REG_TEMP_XLSB		0xFC
- #define BMP280_REG_TEMP_LSB		0xFB
- #define BMP280_REG_TEMP_MSB		0xFA
-@@ -26,10 +33,7 @@
- #define BMP280_REG_PRESS_MSB		0xF7
- 
- #define BMP280_REG_CONFIG		0xF5
--#define BMP280_REG_CTRL_MEAS		0xF4
- #define BMP280_REG_STATUS		0xF3
--#define BMP280_REG_RESET		0xE0
--#define BMP280_REG_ID			0xD0
- 
- #define BMP280_REG_COMP_TEMP_START	0x88
- #define BMP280_COMP_TEMP_REG_COUNT	6
-@@ -46,25 +50,53 @@
- 
- #define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
- #define BMP280_OSRS_TEMP_SKIP		0
--#define BMP280_OSRS_TEMP_1X		BIT(5)
--#define BMP280_OSRS_TEMP_2X		BIT(6)
--#define BMP280_OSRS_TEMP_4X		(BIT(6) | BIT(5))
--#define BMP280_OSRS_TEMP_8X		BIT(7)
--#define BMP280_OSRS_TEMP_16X		(BIT(7) | BIT(5))
-+#define BMP280_OSRS_TEMP_X(osrs_t)	((osrs_t) << 5)
-+#define BMP280_OSRS_TEMP_1X		BMP280_OSRS_TEMP_X(1)
-+#define BMP280_OSRS_TEMP_2X		BMP280_OSRS_TEMP_X(2)
-+#define BMP280_OSRS_TEMP_4X		BMP280_OSRS_TEMP_X(3)
-+#define BMP280_OSRS_TEMP_8X		BMP280_OSRS_TEMP_X(4)
-+#define BMP280_OSRS_TEMP_16X		BMP280_OSRS_TEMP_X(5)
- 
- #define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | BIT(2))
- #define BMP280_OSRS_PRESS_SKIP		0
--#define BMP280_OSRS_PRESS_1X		BIT(2)
--#define BMP280_OSRS_PRESS_2X		BIT(3)
--#define BMP280_OSRS_PRESS_4X		(BIT(3) | BIT(2))
--#define BMP280_OSRS_PRESS_8X		BIT(4)
--#define BMP280_OSRS_PRESS_16X		(BIT(4) | BIT(2))
-+#define BMP280_OSRS_PRESS_X(osrs_p)	((osrs_p) << 2)
-+#define BMP280_OSRS_PRESS_1X		BMP280_OSRS_PRESS_X(1)
-+#define BMP280_OSRS_PRESS_2X		BMP280_OSRS_PRESS_X(2)
-+#define BMP280_OSRS_PRESS_4X		BMP280_OSRS_PRESS_X(3)
-+#define BMP280_OSRS_PRESS_8X		BMP280_OSRS_PRESS_X(4)
-+#define BMP280_OSRS_PRESS_16X		BMP280_OSRS_PRESS_X(5)
- 
- #define BMP280_MODE_MASK		(BIT(1) | BIT(0))
- #define BMP280_MODE_SLEEP		0
- #define BMP280_MODE_FORCED		BIT(0)
- #define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
- 
-+/*
-+ * BMP180 specific registers
-+ */
-+#define BMP180_REG_OUT_XLSB		0xF8
-+#define BMP180_REG_OUT_LSB		0xF7
-+#define BMP180_REG_OUT_MSB		0xF6
++static const int max44000_alstim_shift[] = {0, 2, 4, 6};
++#define MAX44000_ALSTIM_SHIFT(alstim) (2 * (alstim))
 +
-+#define BMP180_REG_CALIB_START		0xAA
-+#define BMP180_REG_CALIB_COUNT		22
-+
-+#define BMP180_MEAS_SCO			BIT(5)
-+#define BMP180_MEAS_TEMP		(0x0E | BMP180_MEAS_SCO)
-+#define BMP180_MEAS_PRESS_X(oss)	((oss) << 6 | 0x14 | BMP180_MEAS_SCO)
-+#define BMP180_MEAS_PRESS_1X		BMP180_MEAS_PRESS_X(0)
-+#define BMP180_MEAS_PRESS_2X		BMP180_MEAS_PRESS_X(1)
-+#define BMP180_MEAS_PRESS_4X		BMP180_MEAS_PRESS_X(2)
-+#define BMP180_MEAS_PRESS_8X		BMP180_MEAS_PRESS_X(3)
-+
-+/*
-+ * BMP180 and BMP280 common registers
-+ */
-+#define BMP280_REG_CTRL_MEAS		0xF4
-+#define BMP280_REG_RESET		0xE0
-+#define BMP280_REG_ID			0xD0
-+
-+#define BMP180_CHIP_ID			0x55
- #define BMP280_CHIP_ID			0x58
- #define BMP280_SOFT_RESET_VAL		0xB6
- 
-@@ -72,6 +104,15 @@ struct bmp280_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	struct regmap *regmap;
-+	const struct bmp280_ops *ops;
-+
-+	const int *oversampling_temp_avail;
-+	int num_oversampling_temp_avail;
-+	const int *oversampling_press_avail;
-+	int num_oversampling_press_avail;
-+
-+	u8 oversampling_press;
-+	u8 oversampling_temp;
- 
- 	/*
- 	 * Carryover value from temperature conversion, used in pressure
-@@ -80,9 +121,15 @@ struct bmp280_data {
- 	s32 t_fine;
- };
- 
-+struct bmp280_ops {
-+	int (*init)(struct bmp280_data *);
-+	int (*read_temp)(struct bmp280_data *, int *);
-+	int (*read_press)(struct bmp280_data *, int *, int *);
++/* Available integration times with pretty manual alignment: */
++static const int max44000_int_time_avail_ns_array[] = {
++	   100000000,
++	    25000000,
++	     6250000,
++	     1562500,
 +};
++static const char max44000_int_time_avail_str[] =
++	"0.100 "
++	"0.025 "
++	"0.00625 "
++	"0.001625";
 +
- /*
-  * These enums are used for indexing into the array of compensation
-- * parameters.
-+ * parameters for BMP280.
-  */
- enum { T1, T2, T3 };
- enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
-@@ -90,11 +137,13 @@ enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
- static const struct iio_chan_spec bmp280_channels[] = {
++/* Available scales (internal to ulux) with pretty manual alignment: */
++static const int max44000_scale_avail_ulux_array[] = {
++	    31250,
++	   125000,
++	   500000,
++	  4000000,
++};
++static const char max44000_scale_avail_str[] =
++	"0.03125 "
++	"0.125 "
++	"0.5 "
++	 "4";
++
+ static const struct iio_chan_spec max44000_channels[] = {
  	{
- 		.type = IIO_PRESSURE,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
- 	},
- 	{
- 		.type = IIO_TEMP,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+ 		.type = IIO_LIGHT,
+@@ -94,15 +144,54 @@ static const struct iio_chan_spec max44000_channels[] = {
  	},
  };
  
-@@ -290,10 +339,25 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_PROCESSED:
- 		switch (chan->type) {
- 		case IIO_PRESSURE:
--			ret = bmp280_read_press(data, val, val2);
-+			ret = data->ops->read_press(data, val, val2);
-+			break;
-+		case IIO_TEMP:
-+			ret = data->ops->read_temp(data, val);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		break;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			*val = 1 << data->oversampling_press;
-+			ret = IIO_VAL_INT;
- 			break;
- 		case IIO_TEMP:
--			ret = bmp280_read_temp(data, val);
-+			*val = 1 << data->oversampling_temp;
-+			ret = IIO_VAL_INT;
- 			break;
- 		default:
- 			ret = -EINVAL;
-@@ -310,22 +374,135 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int bmp280_write_oversampling_ratio_temp(struct bmp280_data *data,
-+					       int val)
++static inline int max44000_read_alstim(struct max44000_data *data)
 +{
-+	int i;
-+	const int *avail = data->oversampling_temp_avail;
-+	const int n = data->num_oversampling_temp_avail;
++	unsigned int val;
++	int ret;
 +
-+	for (i = 0; i < n; i++) {
-+		if (avail[i] == val) {
-+			data->oversampling_temp = ilog2(val);
-+
-+			return data->ops->init(data);
-+		}
-+	}
-+	return -EINVAL;
++	ret = regmap_read(data->regmap, MAX44000_REG_CFG_RX, &val);
++	if (ret < 0)
++		return ret;
++	return (val & MAX44000_CFG_RX_ALSTIM_MASK) >> MAX44000_CFG_RX_ALSTIM_SHIFT;
 +}
 +
-+static int bmp280_write_oversampling_ratio_press(struct bmp280_data *data,
-+					       int val)
++static inline int max44000_write_alstim(struct max44000_data *data, int val)
 +{
-+	int i;
-+	const int *avail = data->oversampling_press_avail;
-+	const int n = data->num_oversampling_press_avail;
-+
-+	for (i = 0; i < n; i++) {
-+		if (avail[i] == val) {
-+			data->oversampling_press = ilog2(val);
-+
-+			return data->ops->init(data);
-+		}
-+	}
-+	return -EINVAL;
++	return regmap_write_bits(data->regmap, MAX44000_REG_CFG_RX,
++				 MAX44000_CFG_RX_ALSTIM_MASK,
++				 val << MAX44000_CFG_RX_ALSTIM_SHIFT);
 +}
 +
-+static int bmp280_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
++static inline int max44000_read_alspga(struct max44000_data *data)
 +{
-+	int ret = 0;
-+	struct bmp280_data *data = iio_priv(indio_dev);
++	unsigned int val;
++	int ret;
 +
-+	switch (mask) {
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		mutex_lock(&data->lock);
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			ret = bmp280_write_oversampling_ratio_press(data, val);
-+			break;
-+		case IIO_TEMP:
-+			ret = bmp280_write_oversampling_ratio_temp(data, val);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		mutex_unlock(&data->lock);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ret;
++	ret = regmap_read(data->regmap, MAX44000_REG_CFG_RX, &val);
++	if (ret < 0)
++		return ret;
++	return (val & MAX44000_CFG_RX_ALSPGA_MASK) >> MAX44000_CFG_RX_ALSPGA_SHIFT;
 +}
 +
-+static ssize_t bmp280_show_avail(char *buf, const int *vals, const int n)
++static inline int max44000_write_alspga(struct max44000_data *data, int val)
 +{
-+	size_t len = 0;
-+	int i;
-+
-+	for (i = 0; i < n; i++)
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ", vals[i]);
-+
-+	buf[len - 1] = '\n';
-+
-+	return len;
++	return regmap_write_bits(data->regmap, MAX44000_REG_CFG_RX,
++				 MAX44000_CFG_RX_ALSPGA_MASK,
++				 val << MAX44000_CFG_RX_ALSPGA_SHIFT);
 +}
 +
-+static ssize_t bmp280_show_temp_oversampling_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bmp280_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bmp280_show_avail(buf, data->oversampling_temp_avail,
-+				 data->num_oversampling_temp_avail);
-+}
-+
-+static ssize_t bmp280_show_press_oversampling_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bmp280_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bmp280_show_avail(buf, data->oversampling_press_avail,
-+				 data->num_oversampling_press_avail);
-+}
-+
-+static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available,
-+	S_IRUGO, bmp280_show_temp_oversampling_avail, NULL, 0);
-+
-+static IIO_DEVICE_ATTR(in_pressure_oversampling_ratio_available,
-+	S_IRUGO, bmp280_show_press_oversampling_avail, NULL, 0);
-+
-+static struct attribute *bmp280_attributes[] = {
-+	&iio_dev_attr_in_temp_oversampling_ratio_available.dev_attr.attr,
-+	&iio_dev_attr_in_pressure_oversampling_ratio_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group bmp280_attrs_group = {
-+	.attrs = bmp280_attributes,
-+};
-+
- static const struct iio_info bmp280_info = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &bmp280_read_raw,
-+	.write_raw = &bmp280_write_raw,
-+	.attrs = &bmp280_attrs_group,
- };
- 
- static int bmp280_chip_init(struct bmp280_data *data)
+ static inline int max44000_read_alsval(struct max44000_data *data)
  {
- 	int ret;
-+	u8 osrs = BMP280_OSRS_TEMP_X(data->oversampling_temp) |
-+		  BMP280_OSRS_PRESS_X(data->oversampling_press);
+ 	u16 regval;
+-	int ret;
++	int alstim, ret;
  
- 	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
- 				 BMP280_OSRS_TEMP_MASK |
- 				 BMP280_OSRS_PRESS_MASK |
- 				 BMP280_MODE_MASK,
--				 BMP280_OSRS_TEMP_2X |
--				 BMP280_OSRS_PRESS_16X |
--				 BMP280_MODE_NORMAL);
-+				 osrs | BMP280_MODE_NORMAL);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev,
- 			"failed to write ctrl_meas register\n");
-@@ -344,12 +521,315 @@ static int bmp280_chip_init(struct bmp280_data *data)
- 	return ret;
- }
- 
-+static const int bmp280_oversampling_avail[] = { 1, 2, 4, 8, 16 };
-+
-+static const struct bmp280_ops bmp280_ops = {
-+	.init = bmp280_chip_init,
-+	.read_temp = bmp280_read_temp,
-+	.read_press = bmp280_read_press,
-+};
-+
-+static bool bmp180_is_writeable_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case BMP280_REG_CTRL_MEAS:
-+	case BMP280_REG_RESET:
-+		return true;
-+	default:
-+		return false;
-+	};
-+}
-+
-+static bool bmp180_is_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case BMP180_REG_OUT_XLSB:
-+	case BMP180_REG_OUT_LSB:
-+	case BMP180_REG_OUT_MSB:
-+	case BMP280_REG_CTRL_MEAS:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static const struct regmap_config bmp180_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+
-+	.max_register = BMP180_REG_OUT_XLSB,
-+	.cache_type = REGCACHE_RBTREE,
-+
-+	.writeable_reg = bmp180_is_writeable_reg,
-+	.volatile_reg = bmp180_is_volatile_reg,
-+};
-+
-+static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
-+{
-+	int ret;
-+	const int conversion_time_max[] = { 4500, 7500, 13500, 25500 };
-+	unsigned int delay_us;
-+	unsigned int ctrl;
-+
-+	ret = regmap_write(data->regmap, BMP280_REG_CTRL_MEAS, ctrl_meas);
-+	if (ret)
-+		return ret;
-+
-+	if (ctrl_meas == BMP180_MEAS_TEMP)
-+		delay_us = 4500;
-+	else
-+		delay_us = conversion_time_max[data->oversampling_press];
-+
-+	usleep_range(delay_us, delay_us + 1000);
-+
-+	ret = regmap_read(data->regmap, BMP280_REG_CTRL_MEAS, &ctrl);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * The value of this bit reset to "0" after conversion is complete
-+	 */
-+	if (ctrl & BMP180_MEAS_SCO)
-+		return -EIO;
-+
-+	return 0;
-+}
-+
-+static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
-+{
-+	int ret;
-+	__be16 tmp = 0;
-+
-+	ret = bmp180_measure(data, BMP180_MEAS_TEMP);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 *)&tmp, 2);
-+	if (ret)
-+		return ret;
-+
-+	*val = be16_to_cpu(tmp);
-+
-+	return 0;
-+}
-+
-+/*
-+ * These enums are used for indexing into the array of calibration
-+ * coefficients for BMP180.
-+ */
-+enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
-+
-+struct bmp180_calib {
-+	s32 AC1;
-+	s32 AC2;
-+	s32 AC3;
-+	u32 AC4;
-+	u32 AC5;
-+	u32 AC6;
-+	s32 B1;
-+	s32 B2;
-+	s32 MB;
-+	s32 MC;
-+	s32 MD;
-+};
-+
-+static int bmp180_read_calib(struct bmp280_data *data,
-+			     struct bmp180_calib *calib)
-+{
-+	int ret;
-+	int i;
-+	__be16 buf[BMP180_REG_CALIB_COUNT / 2];
-+
-+	ret = regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, buf,
-+			       sizeof(buf));
-+
-+	/*
-+	 * None of the words has the value 0 or 0xFFFF
-+	 */
-+	for (i = 0; i < ARRAY_SIZE(buf); i++) {
-+		if (buf[i] == be16_to_cpu(0) || buf[i] == be16_to_cpu(0xffff))
-+			return -EIO;
-+	}
-+
-+	/*
-+	 * The double casts are necessary because be16_to_cpu returns an
-+	 * unsigned 16-bit value.  Casting that value directly to a
-+	 * signed 32-bit will not do proper sign extension.
-+	 *
-+	 * Conversely, AC4, AC5 and AC6 are unsigned values, so they can be
-+	 * cast straight to the larger type.
-+	 */
-+	calib->AC1 = (s32)(s16)be16_to_cpu(buf[AC1]);
-+	calib->AC2 = (s32)(s16)be16_to_cpu(buf[AC2]);
-+	calib->AC3 = (s32)(s16)be16_to_cpu(buf[AC3]);
-+	calib->AC4 = be16_to_cpu(buf[AC4]);
-+	calib->AC5 = be16_to_cpu(buf[AC5]);
-+	calib->AC6 = be16_to_cpu(buf[AC6]);
-+	calib->B1 = (s32)(s16)be16_to_cpu(buf[B1]);
-+	calib->B2 = (s32)(s16)be16_to_cpu(buf[B2]);
-+	calib->MB = (s32)(s16)be16_to_cpu(buf[MB]);
-+	calib->MC = (s32)(s16)be16_to_cpu(buf[MC]);
-+	calib->MD = (s32)(s16)be16_to_cpu(buf[MD]);
-+
-+	return 0;
-+}
-+
-+/*
-+ * Returns temperature in DegC, resolution is 0.1 DegC.
-+ * t_fine carries fine temperature as global value.
-+ *
-+ * Taken from datasheet, Section 3.5, "Calculating pressure and temperature".
-+ */
-+static s32 bmp180_compensate_temp(struct bmp280_data *data, s32 adc_temp)
-+{
-+	int ret;
-+	s32 x1, x2;
-+	struct bmp180_calib calib;
-+
-+	ret = bmp180_read_calib(data, &calib);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"failed to read calibration coefficients\n");
-+		return ret;
-+	}
-+
-+	x1 = ((adc_temp - calib.AC6) * calib.AC5) >> 15;
-+	x2 = (calib.MC << 11) / (x1 + calib.MD);
-+	data->t_fine = x1 + x2;
-+
-+	return (data->t_fine + 8) >> 4;
-+}
-+
-+static int bmp180_read_temp(struct bmp280_data *data, int *val)
-+{
-+	int ret;
-+	s32 adc_temp, comp_temp;
-+
-+	ret = bmp180_read_adc_temp(data, &adc_temp);
-+	if (ret)
-+		return ret;
-+
-+	comp_temp = bmp180_compensate_temp(data, adc_temp);
-+
-+	/*
-+	 * val might be NULL if we're called by the read_press routine,
-+	 * who only cares about the carry over t_fine value.
-+	 */
-+	if (val) {
-+		*val = comp_temp * 100;
-+		return IIO_VAL_INT;
-+	}
-+
-+	return 0;
-+}
-+
-+static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
-+{
-+	int ret;
-+	__be32 tmp = 0;
-+	u8 oss = data->oversampling_press;
-+
-+	ret = bmp180_measure(data, BMP180_MEAS_PRESS_X(oss));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 *)&tmp, 3);
-+	if (ret)
-+		return ret;
-+
-+	*val = (be32_to_cpu(tmp) >> 8) >> (8 - oss);
-+
-+	return 0;
-+}
-+
-+/*
-+ * Returns pressure in Pa, resolution is 1 Pa.
-+ *
-+ * Taken from datasheet, Section 3.5, "Calculating pressure and temperature".
-+ */
-+static u32 bmp180_compensate_press(struct bmp280_data *data, s32 adc_press)
-+{
-+	int ret;
-+	s32 x1, x2, x3, p;
-+	s32 b3, b6;
-+	u32 b4, b7;
-+	s32 oss = data->oversampling_press;
-+	struct bmp180_calib calib;
-+
-+	ret = bmp180_read_calib(data, &calib);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"failed to read calibration coefficients\n");
-+		return ret;
-+	}
-+
-+	b6 = data->t_fine - 4000;
-+	x1 = (calib.B2 * (b6 * b6 >> 12)) >> 11;
-+	x2 = calib.AC2 * b6 >> 11;
-+	x3 = x1 + x2;
-+	b3 = (((calib.AC1 * 4 + x3) << oss) + 2) / 4;
-+	x1 = calib.AC3 * b6 >> 13;
-+	x2 = (calib.B1 * ((b6 * b6) >> 12)) >> 16;
-+	x3 = (x1 + x2 + 2) >> 2;
-+	b4 = calib.AC4 * (u32)(x3 + 32768) >> 15;
-+	b7 = ((u32)adc_press - b3) * (50000 >> oss);
-+	if (b7 < 0x80000000)
-+		p = (b7 * 2) / b4;
-+	else
-+		p = (b7 / b4) * 2;
-+
-+	x1 = (p >> 8) * (p >> 8);
-+	x1 = (x1 * 3038) >> 16;
-+	x2 = (-7357 * p) >> 16;
-+
-+	return p + ((x1 + x2 + 3791) >> 4);
-+}
-+
-+static int bmp180_read_press(struct bmp280_data *data,
-+			     int *val, int *val2)
-+{
-+	int ret;
-+	s32 adc_press;
-+	u32 comp_press;
-+
-+	/* Read and compensate temperature so we get a reading of t_fine. */
-+	ret = bmp180_read_temp(data, NULL);
-+	if (ret)
-+		return ret;
-+
-+	ret = bmp180_read_adc_press(data, &adc_press);
-+	if (ret)
-+		return ret;
-+
-+	comp_press = bmp180_compensate_press(data, adc_press);
-+
-+	*val = comp_press;
-+	*val2 = 1000;
-+
-+	return IIO_VAL_FRACTIONAL;
-+}
-+
-+static int bmp180_chip_init(struct bmp280_data *data)
-+{
-+	return 0;
-+}
-+
-+static const int bmp180_oversampling_temp_avail[] = { 1 };
-+static const int bmp180_oversampling_press_avail[] = { 1, 2, 4, 8 };
-+
-+static const struct bmp280_ops bmp180_ops = {
-+	.read_temp = bmp180_read_temp,
-+	.read_press = bmp180_read_press,
-+	.init = bmp180_chip_init,
-+};
-+
- static int bmp280_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
- 	int ret;
- 	struct iio_dev *indio_dev;
- 	struct bmp280_data *data;
-+	const struct regmap_config *config;
- 	unsigned int chip_id;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-@@ -367,7 +847,43 @@ static int bmp280_probe(struct i2c_client *client,
- 	indio_dev->info = &bmp280_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	data->regmap = devm_regmap_init_i2c(client, &bmp280_regmap_config);
-+	switch (id->driver_data) {
-+	case BMP180_CHIP_ID:
-+		data->ops = &bmp180_ops;
-+
-+		data->oversampling_press_avail =
-+			bmp180_oversampling_press_avail;
-+		data->num_oversampling_press_avail =
-+			ARRAY_SIZE(bmp180_oversampling_press_avail);
-+		data->oversampling_press = ilog2(1);
-+
-+		data->oversampling_temp_avail = bmp180_oversampling_temp_avail;
-+		data->num_oversampling_temp_avail =
-+			ARRAY_SIZE(bmp180_oversampling_temp_avail);
-+		data->oversampling_temp = ilog2(1);
-+
-+		config = &bmp180_regmap_config;
-+		break;
-+	case BMP280_CHIP_ID:
-+		data->ops = &bmp280_ops;
-+
-+		data->oversampling_press_avail = bmp280_oversampling_avail;
-+		data->num_oversampling_press_avail =
-+			ARRAY_SIZE(bmp280_oversampling_avail);
-+		data->oversampling_press = ilog2(16);
-+
-+		data->oversampling_temp_avail = bmp280_oversampling_avail;
-+		data->num_oversampling_temp_avail =
-+			ARRAY_SIZE(bmp280_oversampling_avail);
-+		data->oversampling_temp = ilog2(2);
-+
-+		config = &bmp280_regmap_config;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	data->regmap = devm_regmap_init_i2c(client, config);
- 	if (IS_ERR(data->regmap)) {
- 		dev_err(&client->dev, "failed to allocate register map\n");
- 		return PTR_ERR(data->regmap);
-@@ -376,13 +892,13 @@ static int bmp280_probe(struct i2c_client *client,
- 	ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
+ 	regval = 0;
+ 	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI, &regval, 2);
  	if (ret < 0)
  		return ret;
--	if (chip_id != BMP280_CHIP_ID) {
-+	if (chip_id != id->driver_data) {
- 		dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
- 			BMP280_CHIP_ID, chip_id);
++	alstim = ret = max44000_read_alstim(data);
++	if (ret < 0)
++		return ret;
+ 
+ 	regval = be16_to_cpu(regval);
+ 
+@@ -117,7 +206,7 @@ static inline int max44000_read_alsval(struct max44000_data *data)
+ 	if (regval & MAX44000_ALSDATA_OVERFLOW)
+ 		return 0x3FFF;
+ 
+-	return regval;
++	return regval << MAX44000_ALSTIM_SHIFT(alstim);
+ }
+ 
+ static inline int max44000_write_led_current_raw(struct max44000_data *data, int val)
+@@ -150,6 +239,7 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
+ 			     int *val, int *val2, long mask)
+ {
+ 	struct max44000_data *data = iio_priv(indio_dev);
++	int alstim, alspga;
+ 	unsigned int regval;
+ 	int ret;
+ 
+@@ -195,14 +285,34 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
+ 			return IIO_VAL_INT;
+ 
+ 		case IIO_LIGHT:
+-			*val = 1;
+-			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
++			mutex_lock(&data->lock);
++			alspga = ret = max44000_read_alspga(data);
++			mutex_unlock(&data->lock);
++			if (ret < 0)
++				return ret;
++
++			/* Avoid negative shifts */
++			*val = (1 << MAX44000_ALSPGA_MAX_SHIFT);
++			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2
++					+ MAX44000_ALSPGA_MAX_SHIFT
++					- max44000_alspga_shift[alspga];
+ 			return IIO_VAL_FRACTIONAL_LOG2;
+ 
+ 		default:
+ 			return -EINVAL;
+ 		}
+ 
++	case IIO_CHAN_INFO_INT_TIME:
++		mutex_lock(&data->lock);
++		alstim = ret = max44000_read_alstim(data);
++		mutex_unlock(&data->lock);
++
++		if (ret < 0)
++			return ret;
++		*val = 0;
++		*val2 = max44000_int_time_avail_ns_array[alstim];
++		return IIO_VAL_INT_PLUS_NANO;
++
+ 	default:
  		return -EINVAL;
  	}
- 
--	ret = bmp280_chip_init(data);
-+	ret = data->ops->init(data);
- 	if (ret < 0)
+@@ -220,15 +330,60 @@ static int max44000_write_raw(struct iio_dev *indio_dev,
+ 		ret = max44000_write_led_current_raw(data, val);
+ 		mutex_unlock(&data->lock);
  		return ret;
++	} else if (mask == IIO_CHAN_INFO_INT_TIME && chan->type == IIO_LIGHT) {
++		s64 valns = val * NSEC_PER_SEC + val2;
++		int alstim = find_closest_descending(valns,
++				max44000_int_time_avail_ns_array,
++				ARRAY_SIZE(max44000_int_time_avail_ns_array));
++		mutex_lock(&data->lock);
++		ret = max44000_write_alstim(data, alstim);
++		mutex_unlock(&data->lock);
++		return ret;
++	} else if (mask == IIO_CHAN_INFO_SCALE && chan->type == IIO_LIGHT) {
++		s64 valus = val * USEC_PER_SEC + val2;
++		int alspga = find_closest(valus,
++				max44000_scale_avail_ulux_array,
++				ARRAY_SIZE(max44000_scale_avail_ulux_array));
++		mutex_lock(&data->lock);
++		ret = max44000_write_alspga(data, alspga);
++		mutex_unlock(&data->lock);
++		return ret;
+ 	}
  
-@@ -390,13 +906,15 @@ static int bmp280_probe(struct i2c_client *client,
+ 	return -EINVAL;
  }
  
- static const struct acpi_device_id bmp280_acpi_match[] = {
--	{"BMP0280", 0},
-+	{"BMP0280", BMP280_CHIP_ID },
- 	{ },
++static int max44000_write_raw_get_fmt(struct iio_dev *indio_dev,
++				      struct iio_chan_spec const *chan,
++				      long mask)
++{
++	if (mask == IIO_CHAN_INFO_INT_TIME && chan->type == IIO_LIGHT)
++		return IIO_VAL_INT_PLUS_NANO;
++	else if (mask == IIO_CHAN_INFO_SCALE && chan->type == IIO_LIGHT)
++		return IIO_VAL_INT_PLUS_MICRO;
++	else
++		return IIO_VAL_INT;
++}
++
++static IIO_CONST_ATTR(illuminance_integration_time_available, max44000_int_time_avail_str);
++static IIO_CONST_ATTR(illuminance_scale_available, max44000_scale_avail_str);
++
++static struct attribute *max44000_attributes[] = {
++	&iio_const_attr_illuminance_integration_time_available.dev_attr.attr,
++	&iio_const_attr_illuminance_scale_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group max44000_attribute_group = {
++	.attrs = max44000_attributes,
++};
++
+ static const struct iio_info max44000_info = {
+ 	.driver_module		= THIS_MODULE,
+ 	.read_raw		= max44000_read_raw,
+ 	.write_raw		= max44000_write_raw,
++	.write_raw_get_fmt	= max44000_write_raw_get_fmt,
++	.attrs			= &max44000_attribute_group,
  };
- MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
  
- static const struct i2c_device_id bmp280_id[] = {
--	{"bmp280", 0},
-+	{"bmp280", BMP280_CHIP_ID },
-+	{"bmp180", BMP180_CHIP_ID },
-+	{"bmp085", BMP180_CHIP_ID },
- 	{ },
- };
- MODULE_DEVICE_TABLE(i2c, bmp280_id);
-@@ -412,5 +930,5 @@ static struct i2c_driver bmp280_driver = {
- module_i2c_driver(bmp280_driver);
- 
- MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
--MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP280 pressure and temperature sensor");
-+MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP180/BMP280 pressure and temperature sensor");
- MODULE_LICENSE("GPL v2");
+ static bool max44000_readable_reg(struct device *dev, unsigned int reg)
 -- 
-2.5.0
+2.8.0.rc3
 
