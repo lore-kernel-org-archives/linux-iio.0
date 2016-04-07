@@ -1,95 +1,388 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44090 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753263AbcDJOFm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 10:05:42 -0400
-Subject: Re: [PATCH 1/3] iio: core: Add devm_ APIs for
- iio_channel_{get,release}
-To: Laxman Dewangan <ldewangan@nvidia.com>,
-	Daniel Baluta <daniel.baluta@gmail.com>
-References: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com>
- <CAEnQRZBtqDQjydDKywYy9oLecFtjntfWhgOtd2xekVyFrYkH3w@mail.gmail.com>
- <57052432.8070700@nvidia.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from ns.pmeerw.net ([84.19.176.92]:51781 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757419AbcDGTsR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 7 Apr 2016 15:48:17 -0400
+Date: Thu, 7 Apr 2016 21:48:14 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Crestez Dan Leonard <leonard.crestez@intel.com>
+cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-doc@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <570A5DB3.3080805@kernel.org>
-Date: Sun, 10 Apr 2016 15:05:39 +0100
+	Daniel Baluta <daniel.baluta@intel.com>
+Subject: Re: [PATCH 1/5] max44000: Initial commit
+In-Reply-To: <5dbbd82290c575f595ae0907aaf8e03117a6d017.1460045763.git.leonard.crestez@intel.com>
+Message-ID: <alpine.DEB.2.02.1604072142510.26969@pmeerw.net>
+References: <cover.1460045763.git.leonard.crestez@intel.com> <5dbbd82290c575f595ae0907aaf8e03117a6d017.1460045763.git.leonard.crestez@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <57052432.8070700@nvidia.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/04/16 15:58, Laxman Dewangan wrote:
-> Hi Daniel,
-> 
-> 
-> On Wednesday 06 April 2016 07:19 PM, Daniel Baluta wrote:
->> On Wed, Apr 6, 2016 at 1:31 PM, Laxman Dewangan <ldewangan@nvidia.com> wrote:
->>> Some of kernel driver uses the IIO framework to get the sensor
->>> value via ADC or IIO HW driver. The client driver get iio channel
->>> by iio_channel_get() and release it by calling iio_channel_release().
->>>
->>> Add resource managed version (devm_*) of these APIs so that if client
->>> calls the devm_iio_channel_get() then it need not to release it explicitly,
->>> it can be done by managed device framework when driver get un-binded.
->>>
->>> This reduces the code in error path and also need of .remove callback in
->>> some cases.
->>>
->> Please provide at least one example of code that uses this API.
-> 
-> Most of client for this APIs are in other subsystem.
-> When I was working on the patch
-> [PATCH 2/2] thermal: generic-adc: Add ADC based thermal sensor driver
-> 
-> if I have devm_iio_channel_get() then I can get .remove callback at all.
-> 
-> I did not use this new APIs in my patch because they are in different subsystem.
-It's actually worse than that having taken a quick look at the generic-adc thermal patch
-you reference above.
-(perhaps worth cc'ing linux-iio for next version of that).
 
-Without this devm function set you have a race in remove in which I think you can
-get attempts to access the channels after they have been released...
+> This just adds support for reporting illuminance with default settings.
+> 
+> All default registers are written on probe because the device otherwise
+> lacks a reset function.
 
+comments below
+ 
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+> ---
+>  drivers/iio/light/Kconfig    |  11 ++
+>  drivers/iio/light/Makefile   |   1 +
+>  drivers/iio/light/max44000.c | 295 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 307 insertions(+)
+>  create mode 100644 drivers/iio/light/max44000.c
+> 
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index cfd3df8..42c15c1 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -320,4 +320,15 @@ config VCNL4000
+>  	 To compile this driver as a module, choose M here: the
+>  	 module will be called vcnl4000.
+>  
+> +config MAX44000
+> +	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
+> +	depends on I2C
+> +	select REGMAP_I2C
+> +	help
+> +	 Say Y here if you want to build support for Maxim Integrated's
+> +	 MAX44000 ambient and infrared proximity sensor device.
 > +
-> +	gti->tz_dev = devm_thermal_zone_of_sensor_register(&pdev->dev, 0,
-> +				gti, &gadc_thermal_ops);
-> +	if (IS_ERR(gti->tz_dev)) {
-> +		ret = PTR_ERR(gti->tz_dev);
-> +		dev_err(&pdev->dev, "Thermal zone sensor register failed: %d\n",
-> +			ret);
-> +		goto sensor_fail;
-> +	}
-This will get cleaned up in remove 'after' the iio_channels are released.
-Hence you have a race in which they can probably be accessed after release
-(unless some magic is going on that I've missed).
+> +	 To compile this driver as a module, choose M here:
+> +	 the module will be called max44000.
 > +
-> +	return 0;
+>  endmenu
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index b2c3105..14b2f36 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -30,3 +30,4 @@ obj-$(CONFIG_TCS3472)		+= tcs3472.o
+>  obj-$(CONFIG_TSL4531)		+= tsl4531.o
+>  obj-$(CONFIG_US5182D)		+= us5182d.o
+>  obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
+> +obj-$(CONFIG_MAX44000)		+= max44000.o
+
+alphabetical order please
+
+> diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+> new file mode 100644
+> index 0000000..7c12153
+> --- /dev/null
+> +++ b/drivers/iio/light/max44000.c
+> @@ -0,0 +1,295 @@
+> +/*
+> + * MAX44000 Ambient and Infrared Proximity Sensor
+> + *
+> + * Copyright (c) 2016, Intel Corporation.
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * Data sheet: https://datasheets.maximintegrated.com/en/ds/MAX44000.pdf
+> + *
+> + * 7-bit I2C slave address 0x4a
+> + */
 > +
-> +sensor_fail:
-> +	iio_channel_release(gti->channel);
-> +	return ret;
-> +}
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/i2c.h>
+> +#include <linux/regmap.h>
+> +#include <linux/util_macros.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/acpi.h>
 > +
-> +static int gadc_thermal_remove(struct platform_device *pdev)
+> +#define MAX44000_DRV_NAME		"max44000"
+> +
+> +/* Registers in datasheet order */
+> +#define MAX44000_REG_STATUS		0x00
+> +#define MAX44000_REG_CFG_MAIN		0x01
+> +#define MAX44000_REG_CFG_RX		0x02
+> +#define MAX44000_REG_CFG_TX		0x03
+> +#define MAX44000_REG_ALS_DATA_HI	0x04
+> +#define MAX44000_REG_ALS_DATA_LO	0x05
+> +#define MAX44000_REG_PRX_DATA		0x16
+> +#define MAX44000_REG_ALS_UPTHR_HI	0x06
+> +#define MAX44000_REG_ALS_UPTHR_LO	0x07
+> +#define MAX44000_REG_ALS_LOTHR_HI	0x08
+> +#define MAX44000_REG_ALS_LOTHR_LO	0x09
+> +#define MAX44000_REG_PST		0x0a
+> +#define MAX44000_REG_PRX_IND		0x0b
+> +#define MAX44000_REG_PRX_THR		0x0c
+> +#define MAX44000_REG_TRIM_GAIN_GREEN	0x0f
+> +#define MAX44000_REG_TRIM_GAIN_IR	0x10
+> +
+> +#define MAX44000_ALSDATA_OVERFLOW	0x4000
+> +
+> +#define MAX44000_REGMASK_READABLE	0x419fff
+> +#define MAX44000_REGMASK_WRITEABLE	0x019fce
+> +#define MAX44000_REGMASK_VOLATILE	0x400031
+> +
+> +struct max44000_data {
+> +	struct mutex lock;
+> +	struct i2c_client *client;
+> +	struct regmap *regmap;
+> +};
+> +
+> +/* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
+> +#define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
+> +
+> +static const struct iio_chan_spec max44000_channels[] = {
+> +	{
+> +		.type = IIO_LIGHT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +	},
+> +};
+> +
+> +static inline int max44000_read_alsval(struct max44000_data *data)
+
+drop inline, let the compiler figure out if inlining is beneficial
+
 > +{
-> +	struct gadc_thermal_info *gti = platform_get_drvdata(pdev);
+> +	u16 regval;
+> +	int ret;
 > +
-> +	iio_channel_release(gti->channel);
+> +	regval = 0;
+
+needed?
+
+> +	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI, &regval, 2);
+
+sizeof(regval)
+
+> +	if (ret < 0)
+> +		return ret;
 > +
+> +	regval = be16_to_cpu(regval);
+> +
+> +	/* Overflow is explained on datasheet page 17.
+> +	 *
+> +	 * It's a warning that either the G or IR channel has become saturated
+> +	 * and that the value in the register is likely incorrect.
+> +	 *
+> +	 * The recommendation is to change the scale (ALSPGA).
+> +	 * The driver just returns the max representable value.
+> +	 */
+> +	if (regval & MAX44000_ALSDATA_OVERFLOW)
+> +		return 0x3FFF;
+> +
+> +	return regval;
+> +}
+> +
+> +static int max44000_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
+> +{
+> +	struct max44000_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			mutex_lock(&data->lock);
+> +			ret = max44000_read_alsval(data);
+> +			mutex_unlock(&data->lock);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = ret;
+> +			return IIO_VAL_INT;
+> +
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			*val = 1;
+> +			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
+> +			return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info max44000_info = {
+> +	.driver_module		= THIS_MODULE,
+> +	.read_raw		= max44000_read_raw,
+> +};
+> +
+> +static bool max44000_readable_reg(struct device *dev, unsigned int reg)
+> +{
+> +	return (1 << reg) & MAX44000_REGMASK_READABLE;
+> +}
+> +
+> +static bool max44000_writeable_reg(struct device *dev, unsigned int reg)
+> +{
+> +	return (1 << reg) & MAX44000_REGMASK_WRITEABLE;
+> +}
+> +
+> +static bool max44000_volatile_reg(struct device *dev, unsigned int reg)
+> +{
+> +	return (1 << reg) & MAX44000_REGMASK_VOLATILE;
+> +}
+> +
+> +static bool max44000_precious_reg(struct device *dev, unsigned int reg)
+> +{
+> +	return reg == MAX44000_REG_STATUS;
+> +}
+> +
+> +/* Datasheet pages 9-10: */
+> +static const struct reg_default max44000_reg_defaults[] = {
+> +	{ MAX44000_REG_CFG_MAIN,	0x24 },
+> +	/* Upper 4 bits are not documented but start as 1 on powerup
+> +	 * Setting them to 0 causes proximity to misbehave so set them to 1
+> +	 */
+> +	{ MAX44000_REG_CFG_RX,		0xf0 },
+> +	{ MAX44000_REG_CFG_TX,		0x00 },
+> +	{ MAX44000_REG_ALS_UPTHR_HI,	0x00 },
+> +	{ MAX44000_REG_ALS_UPTHR_LO,	0x00 },
+> +	{ MAX44000_REG_ALS_LOTHR_HI,	0x00 },
+> +	{ MAX44000_REG_ALS_LOTHR_LO,	0x00 },
+> +	{ MAX44000_REG_PST,		0x00 },
+> +	{ MAX44000_REG_PRX_IND,		0x00 },
+> +	{ MAX44000_REG_PRX_THR,		0x00 },
+> +	{ MAX44000_REG_TRIM_GAIN_GREEN,	0x80 },
+> +	{ MAX44000_REG_TRIM_GAIN_IR,	0x80 },
+> +};
+> +
+> +static const struct regmap_config max44000_regmap_config = {
+> +	.reg_bits	= 8,
+> +	.val_bits	= 8,
+> +
+> +	.max_register	= MAX44000_REG_PRX_DATA,
+> +	.readable_reg	= max44000_readable_reg,
+> +	.writeable_reg	= max44000_writeable_reg,
+> +	.volatile_reg	= max44000_volatile_reg,
+> +	.precious_reg	= max44000_precious_reg,
+> +
+> +	.use_single_rw	= 1,
+> +	.cache_type	= REGCACHE_FLAT,
+> +
+> +	.reg_defaults		= max44000_reg_defaults,
+> +	.num_reg_defaults	= ARRAY_SIZE(max44000_reg_defaults),
+> +};
+> +
+> +static int max44000_force_write_defaults(struct max44000_data *data)
+> +{
+> +	int i, ret;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(max44000_reg_defaults); ++i) {
+> +		ret = regmap_write(data->regmap,
+> +				   max44000_reg_defaults[i].reg,
+> +				   max44000_reg_defaults[i].def);
+> +		if (ret)
+> +			return ret;
+> +	}
 > +	return 0;
 > +}
 > +
+> +static int max44000_probe(struct i2c_client *client,
+> +			  const struct i2c_device_id *id)
+> +{
+> +	struct max44000_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret, reg;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +	data = iio_priv(indio_dev);
+> +	data->regmap = devm_regmap_init_i2c(client, &max44000_regmap_config);
+> +	if (IS_ERR(data->regmap)) {
+> +		dev_err(&client->dev, "regmap_init failed!\n");
+> +		return PTR_ERR(data->regmap);
+> +	}
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +	mutex_init(&data->lock);
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &max44000_info;
+> +	indio_dev->name = MAX44000_DRV_NAME;
+> +	indio_dev->channels = max44000_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max44000_channels);
+> +
+> +	/* Read status at least once to clear the power-on-reset bit. */
+> +	ret = regmap_read(data->regmap, MAX44000_REG_STATUS, &reg);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "failed to read init status: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* The device has no reset command, write defaults explicitly. */
+> +	ret = max44000_force_write_defaults(data);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "failed to write defaults: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	return iio_device_register(indio_dev);
 
+devm_ would work here to make _remove obsolete
 
-> 
-> 
+> +}
+> +
+> +static int max44000_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id max44000_id[] = {
+> +	{"max44000", 0},
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, max44000_id);
+> +
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id max44000_of_match[] = {
+> +	{ .compatible = "maxim,max44000" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, max44000_of_match);
+> +#endif
+> +
+> +#ifdef CONFIG_ACPI
+> +static const struct acpi_device_id max44000_acpi_match[] = {
+> +	{"MAX44000", 0},
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(acpi, max44000_acpi_match);
+> +#endif
+> +
+> +static struct i2c_driver max44000_driver = {
+> +	.driver = {
+> +		.name	= MAX44000_DRV_NAME,
+> +		.of_match_table = of_match_ptr(max44000_of_match),
+> +		.acpi_match_table = ACPI_PTR(max44000_acpi_match),
+> +	},
+> +	.probe		= max44000_probe,
+> +	.remove		= max44000_remove,
+> +	.id_table	= max44000_id,
+> +};
+> +
+> +module_i2c_driver(max44000_driver);
+> +
+> +MODULE_AUTHOR("Crestez Dan Leonard <leonard.crestez@intel.com>");
+> +MODULE_DESCRIPTION("MAX44000 Ambient and Infrared Proximity Sensor");
+> +MODULE_LICENSE("GPL v2");
 > 
 
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
