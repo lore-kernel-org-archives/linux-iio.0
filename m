@@ -1,245 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48747 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752710AbcDCJZF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2016 05:25:05 -0400
-Subject: Re: [PATCH 2/2] ti-adc081c: Initial triggered buffer support
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-References: <cover.1459444547.git.leonard.crestez@intel.com>
- <b0276dfaa9a6a8ac1777bf5d92753dab1fc493b1.1459444547.git.leonard.crestez@intel.com>
- <alpine.DEB.2.02.1604011017450.15685@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Thierry Reding <thierry.reding@avionic-design.de>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5700E16C.4000209@kernel.org>
-Date: Sun, 3 Apr 2016 10:25:00 +0100
+Received: from smtpo.poczta.interia.pl ([217.74.65.208]:55151 "EHLO
+	smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753723AbcDHRGT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Apr 2016 13:06:19 -0400
+Date: Fri, 8 Apr 2016 19:06:06 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: potentiometer: add driver for Maxim Integrated
+ DS1803
+Message-ID: <20160408170606.GA20159@x220>
+References: <20160407165118.GA2333@x220>
+ <alpine.DEB.2.02.1604072130040.26969@pmeerw.net>
+ <20160408152817.GA2847@x220>
+ <alpine.DEB.2.02.1604081755420.8980@pmeerw.net>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1604011017450.15685@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <alpine.DEB.2.02.1604081755420.8980@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/04/16 09:34, Peter Meerwald-Stadler wrote:
+On Apr 08, 2016 18:00, Peter Meerwald-Stadler wrote:
 > 
->> Using this requires software triggers like CONFIG_IIO_HRTIMER_TRIGGER.
->>
->> The device can be configured to do internal periodic sampling but does
->> not appear to offer some sort of interrupt on data ready. It only offers
->> interrupts on values out of a specific range.
-This isn't uncommon on chips that have some 'alarm' type capability.  max1363
-would be another example.
->>
->> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-Mostly good, but a few little points inline to add to Peter's.
+> > > maybe a #define to explain the name of register 0
+> > 
+> > Well this zero is not register nor any kind of command that DS1803 needs to send
+> > back pots values.
+> > DS1803 only requires the standard R/W bit to be set as read.
+> > I used _word_ function series to get back a word (16 bits) as this poti returns
+> > 16 bits.
+> > 
+> > How should I named it?
+> > 
+> > #define NON_COMMAND 0
+> > ?
+> 
+> maybe i2c_transfer() is more appropriate then
+> 
+>         u8 databuf[2];
+>         struct i2c_msg msgs[2] = {
+>                 { .addr = client->addr, .len = sizeof(databuf), .buf = databuf,
+>                   .flags = I2C_M_RD } };
+>         ret = i2c_transfer(client->adapter, msgs, 2);
+> 
+> this does not send any data to the chip but only reads two bytes
 
-Jonathan
->> ---
->>  drivers/iio/adc/ti-adc081c.c | 99 +++++++++++++++++++++++++++++++++++++-------
->>  1 file changed, 83 insertions(+), 16 deletions(-)
->>
->> diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
->> index 9b2f26f..040e2aa 100644
->> --- a/drivers/iio/adc/ti-adc081c.c
->> +++ b/drivers/iio/adc/ti-adc081c.c
->> @@ -24,6 +24,9 @@
->>  #include <linux/of.h>
->>  
->>  #include <linux/iio/iio.h>
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/trigger_consumer.h>
->> +#include <linux/iio/triggered_buffer.h>
->>  #include <linux/regulator/consumer.h>
->>  
->>  struct adc081c {
->> @@ -69,27 +72,83 @@ static int adc081c_read_raw(struct iio_dev *iio,
->>  	return -EINVAL;
->>  }
->>  
->> -static const struct iio_chan_spec adc081c_channel = {
->> -	.type = IIO_VOLTAGE,
->> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
->> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->> -};
-> 
-> the patch would look cleaner/shorter if adc081c_channel won't get moved 
-> around
-> 
->> +static irqreturn_t adc081c_trigger_handler(int irq, void *p)
->> +{
->> +	struct iio_poll_func *pf = p;
->> +	struct iio_dev *indio_dev = pf->indio_dev;
->> +	struct adc081c *data = iio_priv(indio_dev);
->> +	s64 ts;
->> +	u16 buf[8];
-> 
-> comment: 2 bytes data + 6 bytes padding + 8 bytes timestamp
-> 
->> +	int ret;
->> +
->> +	/* Otherwise iio_push_to_buffers will corrupt the stack. */
->> +	if (indio_dev->scan_bytes > sizeof(buf)) {
->> +		dev_crit_once(&indio_dev->dev, "Bad iio_scan_bytes=%d > %d\n",
->> +				indio_dev->scan_bytes, (int)sizeof(buf));
-> 
-> rather than casting sizeof(buf), use the correct printf length modifier, 
-> i.e. %z
-> 
-> not sure if this check is needed
-> 
->> +		goto out;
->> +	}
->> +
->> +	ret = i2c_smbus_read_word_swapped(data->i2c, REG_CONV_RES);
-> 
-> REG_CONV_RES should be called ADC081C_REG_CONV_RES, but that's a separate 
-> issue
-> 
->> +	ts = iio_get_time_ns();
-> 
-> why is the timestamp taken here?, seems strange
-> often this is done together with iio_push_to_buffers_with_timestamp()
+Good point. But maybe the better solution would be to use i2c_master_recv?
+Anyhow I will check both options ;)
 
-Depends on where the trigger is coming from - here this is the correct option
-as it is the best guess on when the reading was actually taken, however
-the local variable is pointless, just roll this into the place it is
-used below.
+> > Or should I use different function? (2x i2c_smbus_read_byte?)
+> > 
+> > The i2c_smbus_read_byte() function also used 0 as command
+> > for its transfers...
 > 
->> +	if (ret < 0)
->> +		goto out;
->> +	buf[0] = ret;
->> +	iio_push_to_buffers_with_timestamp(indio_dev, buf, ts);
->> +out:
->> +	iio_trigger_notify_done(indio_dev->trig);
->> +	return IRQ_HANDLED;
->> +}
->>  
->>  static const struct iio_info adc081c_info = {
->>  	.read_raw = adc081c_read_raw,
->>  	.driver_module = THIS_MODULE,
->>  };
->>  
->> +struct adcxx1c_model {
->> +	int bits;
->> +	const struct iio_chan_spec* channels;
->> +};
->> +
->> +#define ADCxx1C_CHAN(_bits) {					\
->> +	.type = IIO_VOLTAGE,					\
->> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
->> +	.scan_type = {						\
->> +		.sign = 'u',					\
->> +		.realbits = (_bits),				\
->> +		.storagebits = 16,				\
->> +		.shift = 12 - (_bits),				\
->> +		.endianness = IIO_CPU,				\
->> +	},							\
->> +}
->> +
->> +#define DEFINE_ADCxx1C_MODEL(_name, _bits)				\
->> +	static const struct iio_chan_spec _name ## _channels[] = {	\
->> +		ADCxx1C_CHAN((_bits)),					\
->> +		IIO_CHAN_SOFT_TIMESTAMP(1),				\
->> +	};								\
->> +	static const struct adcxx1c_model _name ## _model = {		\
->> +		.bits = (_bits),					\
-Worth replicating bits?  I would imagine that everywhere it is needed
-the channel pointer is also available, complete with this information.
->> +		.channels = _name ## _channels,				\
->> +	}
->> +
->> +DEFINE_ADCxx1C_MODEL(adc081c,  8);
->> +DEFINE_ADCxx1C_MODEL(adc101c, 10);
->> +DEFINE_ADCxx1C_MODEL(adc121c, 12);
->> +
->> +struct adcxx1c_info {
->> +	int bits;
->> +	const struct adc081c_channels* channels;
->> +};
->> +
->>  static int adc081c_probe(struct i2c_client *client,
->>  			 const struct i2c_device_id *id)
->>  {
->>  	struct iio_dev *iio;
->>  	struct adc081c *adc;
->> +	struct adcxx1c_model *model = (struct adcxx1c_model*)id->driver_data;
->>  	int err;
->>  
->> -	if (id->driver_data != 8 && id->driver_data != 10 && id->driver_data != 12)
->> -		return -EINVAL;
->> -
-Interesting that you have dropped this check entirely (rather than making
-it work with the new structures).  Good, but drop it from the previous patch.
->>  	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
->>  		return -EOPNOTSUPP;
->>  
->> @@ -99,7 +158,7 @@ static int adc081c_probe(struct i2c_client *client,
->>  
->>  	adc = iio_priv(iio);
->>  	adc->i2c = client;
->> -	adc->bits = id->driver_data;
->> +	adc->bits = model->bits;
->>  
->>  	adc->ref = devm_regulator_get(&client->dev, "vref");
->>  	if (IS_ERR(adc->ref))
->> @@ -114,18 +173,26 @@ static int adc081c_probe(struct i2c_client *client,
->>  	iio->modes = INDIO_DIRECT_MODE;
->>  	iio->info = &adc081c_info;
->>  
->> -	iio->channels = &adc081c_channel;
->> -	iio->num_channels = 1;
->> +	iio->channels = model->channels;
->> +	iio->num_channels = 2;
+> > > > +static int ds1803_write_raw(struct iio_dev *indio_dev,
+> > > > +			     struct iio_chan_spec const *chan,
+> > > > +			     int val, int val2, long mask)
+> > > > +{
+> > > > +	struct ds1803_data *data = iio_priv(indio_dev);
+> > > > +	int pot = chan->channel;
+> > > > +
+> > > > +	switch (mask) {
+> > > > +	case IIO_CHAN_INFO_RAW:
+> > > > +		if (val > DS1803_MAX_POS || val < 0)
+> > > 
+> > > check that val2 is 0 or use .write_raw_get_fmt
+> > 
+> > At this point I do not know why should I do it, but I will look into that.
 > 
-> the number of channels could go into the adcxx1c_info struct
+> write_raw expects a VAL_INT_PLUS_MICROS per default, passed 
+> in val and val2
 > 
->> +
->> +	err = iio_triggered_buffer_setup(iio, NULL, adc081c_trigger_handler, NULL);
->> +	if (err < 0) {
->> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
->> +		goto err_regulator_disable;
->> +	}
->>  
->>  	err = iio_device_register(iio);
->>  	if (err < 0)
->> -		goto regulator_disable;
->> +		goto err_buffer_cleanup;
->>  
->>  	i2c_set_clientdata(client, iio);
->>  
->>  	return 0;
->>  
->> -regulator_disable:
->> +err_buffer_cleanup:
->> +	iio_triggered_buffer_cleanup(iio);
->> +err_regulator_disable:
->>  	regulator_disable(adc->ref);
->>  
->>  	return err;
->> @@ -143,9 +210,9 @@ static int adc081c_remove(struct i2c_client *client)
->>  }
-> 
-> iio_triggered_buffer_cleanup() in _remove()?
-> 
->   
->>  static const struct i2c_device_id adc081c_id[] = {
->> -	{ "adc081c",  8 },
->> -	{ "adc101c", 10 },
->> -	{ "adc121c", 12 },
->> +	{ "adc081c", (long)&adc081c_model },
-> 
-> often an enum is used instead of a pointer
-Tends to end up slightly cleaner.
-> 
->> +	{ "adc101c", (long)&adc101c_model },
->> +	{ "adc121c", (long)&adc121c_model },
->>  	{ }
->>  };
->>  MODULE_DEVICE_TABLE(i2c, adc081c_id);
->>
-> 
+> you can change that with .write_raw_get_fmt (e.g. to expect VAL_INT),
+> or just make sure that the micros are 0
 
+Thank you for the explanation.
+
+-- 
+Slawomir Stepien
