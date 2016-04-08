@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:35110 "EHLO
+Received: from bh-25.webhostbox.net ([208.91.199.152]:36348 "EHLO
 	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755818AbcDHAfl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Apr 2016 20:35:41 -0400
-Date: Thu, 7 Apr 2016 17:35:35 -0700
+	with ESMTP id S1752133AbcDHApB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Apr 2016 20:45:01 -0400
+Date: Thu, 7 Apr 2016 17:45:03 -0700
 From: Guenter Roeck <linux@roeck-us.net>
 To: William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc: gregkh@linuxfoundation.org, tglx@linutronix.de, jic23@kernel.org,
@@ -11,159 +11,54 @@ Cc: gregkh@linuxfoundation.org, tglx@linutronix.de, jic23@kernel.org,
 	linus.walleij@linaro.org, gnurou@gmail.com,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH 06/10] watchdog: ebc-c384_wdt: Utilize the ISA bus driver
-Message-ID: <20160408003535.GA10211@roeck-us.net>
+Subject: Re: [PATCH 04/10] iio: stx104: Change STX104 dependency to ISA_BUS
+Message-ID: <20160408004503.GB10211@roeck-us.net>
 References: <cover.1460040201.git.vilhelm.gray@gmail.com>
- <1f5bf2e21006f0fd4f10ab3948cf69a737c0b039.1460040201.git.vilhelm.gray@gmail.com>
+ <783be62acf68b35f3fe4785a2cedfe017624688b.1460040201.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1f5bf2e21006f0fd4f10ab3948cf69a737c0b039.1460040201.git.vilhelm.gray@gmail.com>
+In-Reply-To: <783be62acf68b35f3fe4785a2cedfe017624688b.1460040201.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Apr 07, 2016 at 10:47:27AM -0400, William Breathitt Gray wrote:
-> The WinSystems EBC-C384 watchdog timer is controlled via ISA bus
-> communication. As such, the ISA bus driver is more appropriate than the
-> platform driver for the WinSystems EBC-C384 watchdog timer driver.
+On Thu, Apr 07, 2016 at 10:47:25AM -0400, William Breathitt Gray wrote:
+> The Apex Embedded Systems STX104 may be used on 64-bit X86 systems. This
+> patch allows the Apex Embedded Systems STX104 DAC driver to be compiled
+> for both 32-bit and 64-bit X86 systems.
 > 
 > Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 > ---
->  drivers/watchdog/Kconfig        |  2 +-
->  drivers/watchdog/ebc-c384_wdt.c | 43 ++++++++++-------------------------------
->  2 files changed, 11 insertions(+), 34 deletions(-)
+>  drivers/iio/dac/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-> index fb94765..b10761d 100644
-> --- a/drivers/watchdog/Kconfig
-> +++ b/drivers/watchdog/Kconfig
-> @@ -738,7 +738,7 @@ config ALIM7101_WDT
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index a995139..df4b55d 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -210,7 +210,7 @@ config MCP4922
 >  
->  config EBC_C384_WDT
->  	tristate "WinSystems EBC-C384 Watchdog Timer"
-> -	depends on X86
+>  config STX104
+>  	tristate "Apex Embedded Systems STX104 DAC driver"
+> -	depends on ISA
 > +	depends on X86 && ISA_BUS
 
-I am a bit concerend that the newly introduced ISA_BUS is not automatically
-enabled. Effectively this means that all drivers depending on it will
-be disabled until someone enables ISA_BUS in the distribution.
+This means for this and other similar drivers that the driver is no longer
+supported on architectures which support ISA but not the newly introduced
+ISA_BUS. Affected architectures are alpha, arm, m32r, m68k, mips, powerpc,
+and parisc.
 
-Is this a concern for anyone but me ?
+A typical example is SCSI_AHA1542, which is no longer supported on those
+architectures. It builds, but isa_register_driver() will be a dummy and fail.
+Actually, this is true for _all_ drivers calling isa_register_driver().
 
-Anyway, since you are the driver maintainer, I assume that you are ok
-with it, so
+I hope this is understood and doesn't cause any problems.
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
-
-Side note for Wim: ISA_BUS was introduced with commit b3c1be1b789c
-("base: isa: Remove X86_32 dependency") in -next.
-
+Thanks,
 Guenter
 
->  	select WATCHDOG_CORE
 >  	help
->  	  Enables watchdog timer support for the watchdog timer on the
-> diff --git a/drivers/watchdog/ebc-c384_wdt.c b/drivers/watchdog/ebc-c384_wdt.c
-> index 77fda0b..4b849b8 100644
-> --- a/drivers/watchdog/ebc-c384_wdt.c
-> +++ b/drivers/watchdog/ebc-c384_wdt.c
-> @@ -16,10 +16,10 @@
->  #include <linux/errno.h>
->  #include <linux/io.h>
->  #include <linux/ioport.h>
-> +#include <linux/isa.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/moduleparam.h>
-> -#include <linux/platform_device.h>
->  #include <linux/types.h>
->  #include <linux/watchdog.h>
->  
-> @@ -95,9 +95,8 @@ static const struct watchdog_info ebc_c384_wdt_info = {
->  	.identity = MODULE_NAME
->  };
->  
-> -static int __init ebc_c384_wdt_probe(struct platform_device *pdev)
-> +static int ebc_c384_wdt_probe(struct device *dev, unsigned int id)
->  {
-> -	struct device *dev = &pdev->dev;
->  	struct watchdog_device *wdd;
->  
->  	if (!devm_request_region(dev, BASE_ADDR, ADDR_EXTENT, dev_name(dev))) {
-> @@ -122,61 +121,39 @@ static int __init ebc_c384_wdt_probe(struct platform_device *pdev)
->  		dev_warn(dev, "Invalid timeout (%u seconds), using default (%u seconds)\n",
->  			timeout, WATCHDOG_TIMEOUT);
->  
-> -	platform_set_drvdata(pdev, wdd);
-> +	dev_set_drvdata(dev, wdd);
->  
->  	return watchdog_register_device(wdd);
->  }
->  
-> -static int ebc_c384_wdt_remove(struct platform_device *pdev)
-> +static int ebc_c384_wdt_remove(struct device *dev, unsigned int id)
->  {
-> -	struct watchdog_device *wdd = platform_get_drvdata(pdev);
-> +	struct watchdog_device *wdd = dev_get_drvdata(dev);
->  
->  	watchdog_unregister_device(wdd);
->  
->  	return 0;
->  }
->  
-> -static struct platform_driver ebc_c384_wdt_driver = {
-> +static struct isa_driver ebc_c384_wdt_driver = {
-> +	.probe = ebc_c384_wdt_probe,
->  	.driver = {
->  		.name = MODULE_NAME
->  	},
->  	.remove = ebc_c384_wdt_remove
->  };
->  
-> -static struct platform_device *ebc_c384_wdt_device;
-> -
->  static int __init ebc_c384_wdt_init(void)
->  {
-> -	int err;
-> -
->  	if (!dmi_match(DMI_BOARD_NAME, "EBC-C384 SBC"))
->  		return -ENODEV;
->  
-> -	ebc_c384_wdt_device = platform_device_alloc(MODULE_NAME, -1);
-> -	if (!ebc_c384_wdt_device)
-> -		return -ENOMEM;
-> -
-> -	err = platform_device_add(ebc_c384_wdt_device);
-> -	if (err)
-> -		goto err_platform_device;
-> -
-> -	err = platform_driver_probe(&ebc_c384_wdt_driver, ebc_c384_wdt_probe);
-> -	if (err)
-> -		goto err_platform_driver;
-> -
-> -	return 0;
-> -
-> -err_platform_driver:
-> -	platform_device_del(ebc_c384_wdt_device);
-> -err_platform_device:
-> -	platform_device_put(ebc_c384_wdt_device);
-> -	return err;
-> +	return isa_register_driver(&ebc_c384_wdt_driver, 1);
->  }
->  
->  static void __exit ebc_c384_wdt_exit(void)
->  {
-> -	platform_device_unregister(ebc_c384_wdt_device);
-> -	platform_driver_unregister(&ebc_c384_wdt_driver);
-> +	isa_unregister_driver(&ebc_c384_wdt_driver);
->  }
->  
->  module_init(ebc_c384_wdt_init);
-> @@ -185,4 +162,4 @@ module_exit(ebc_c384_wdt_exit);
->  MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
->  MODULE_DESCRIPTION("WinSystems EBC-C384 watchdog timer driver");
->  MODULE_LICENSE("GPL v2");
-> -MODULE_ALIAS("platform:" MODULE_NAME);
-> +MODULE_ALIAS("isa:" MODULE_NAME);
+>  	  Say yes here to build support for the 2-channel DAC on the Apex
+>  	  Embedded Systems STX104 integrated analog PC/104 card. The base port
 > -- 
 > 2.7.3
 > 
