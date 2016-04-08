@@ -1,280 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:16637 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758353AbcDHPHw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 8 Apr 2016 11:07:52 -0400
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v4 1/1] iio:magnetometer:ak8975: triggered buffer support
-Date: Fri, 8 Apr 2016 17:09:08 +0200
-Message-ID: <c4f84b6daad4068e390e2ed3ab39269ecfe23656.1460127559.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1460127559.git.gregor.boirie@parrot.com>
-References: <cover.1460127559.git.gregor.boirie@parrot.com>
+Received: from mail-yw0-f194.google.com ([209.85.161.194]:35251 "EHLO
+	mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754126AbcDHPJf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Apr 2016 11:09:35 -0400
+Date: Fri, 8 Apr 2016 11:09:22 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: gregkh@linuxfoundation.org, tglx@linutronix.de, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wim@iguana.be,
+	linus.walleij@linaro.org, gnurou@gmail.com,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH 04/10] iio: stx104: Change STX104 dependency to ISA_BUS
+Message-ID: <20160408150922.GA28058@sophia>
+References: <cover.1460040201.git.vilhelm.gray@gmail.com>
+ <783be62acf68b35f3fe4785a2cedfe017624688b.1460040201.git.vilhelm.gray@gmail.com>
+ <20160408004503.GB10211@roeck-us.net>
+ <20160408123158.GB18202@sophia>
+ <5707AF91.5010704@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <5707AF91.5010704@roeck-us.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This will be used together with an external trigger (e.g hrtimer based
-software trigger).
+On Fri, Apr 08, 2016 at 06:18:09AM -0700, Guenter Roeck wrote:
+> From the context, arm and mips use "select ISA". For those, adding and
+>auto-selecting ISA_BUS would make sense. For the remaining architectures
+>you could simply add "config ISA_BUS". I would suggest to update default
+>configurations, though.
+>
+>There is also "um", for which you effectively disabled ISA support
+>as far as I can see. You might want to look into that as well.
+>
+>> My avoidance of making ISA a selection of ISA_BUS is the possibility of
+>> an invalid configuration: a user may initially enable ISA_BUS, then
+>> later disable ISA, resulting in ISA_BUS remaining enabled without ISA
+>> selected.
+>>
+>Does that even make sense ? Not sure I understand why you don't just
+>select ISA_BUS if ISA is selected. That would also be backward compatible
+>and avoid the problem I was concerned about.
 
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- drivers/iio/magnetometer/Kconfig  |   2 +
- drivers/iio/magnetometer/ak8975.c | 135 +++++++++++++++++++++++++++++++-------
- 2 files changed, 112 insertions(+), 25 deletions(-)
+I feel now that the introduction of the ISA_BUS option may the wrong
+approach to resolve lack of ISA support for the X86_64 architecture;
+adding ISA_BUS depends or selects through various Kconfigs would simply
+obfuscate the ISA option. The true issue is that various driver
+configs are assuming X86_32 architecture when they depend on the ISA
+option, but the ISA bus does not require an X86_32 architecture.
 
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index 021dc53..d9834ed 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -9,6 +9,8 @@ config AK8975
- 	tristate "Asahi Kasei AK 3-Axis Magnetometer"
- 	depends on I2C
- 	depends on GPIOLIB || COMPILE_TEST
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes here to build support for Asahi Kasei AK8975, AK8963,
- 	  AK09911 or AK09912 3-Axis Magnetometer.
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 48d127a..1e68981 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -36,6 +36,12 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/regulator/consumer.h>
-+
- /*
-  * Register definitions, as well as various shifts and masks to get at the
-  * individual fields of the registers.
-@@ -633,22 +639,15 @@ static int wait_conversion_complete_interrupt(struct ak8975_data *data)
- 	return ret > 0 ? 0 : -ETIME;
- }
- 
--/*
-- * Emits the raw flux value for the x, y, or z axis.
-- */
--static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
-+static int ak8975_start_read_axis(struct ak8975_data *data,
-+				  const struct i2c_client *client)
- {
--	struct ak8975_data *data = iio_priv(indio_dev);
--	struct i2c_client *client = data->client;
--	int ret;
--
--	mutex_lock(&data->lock);
--
- 	/* Set up the device for taking a sample. */
--	ret = ak8975_set_mode(data, MODE_ONCE);
-+	int ret = ak8975_set_mode(data, MODE_ONCE);
-+
- 	if (ret < 0) {
- 		dev_err(&client->dev, "Error in setting operating mode\n");
--		goto exit;
-+		return ret;
- 	}
- 
- 	/* Wait for the conversion to complete. */
-@@ -659,7 +658,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	else
- 		ret = wait_conversion_complete_polled(data);
- 	if (ret < 0)
--		goto exit;
-+		return ret;
- 
- 	/* This will be executed only for non-interrupt based waiting case */
- 	if (ret & data->def->ctrl_masks[ST1_DRDY]) {
-@@ -667,32 +666,45 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 					       data->def->ctrl_regs[ST2]);
- 		if (ret < 0) {
- 			dev_err(&client->dev, "Error in reading ST2\n");
--			goto exit;
-+			return ret;
- 		}
- 		if (ret & (data->def->ctrl_masks[ST2_DERR] |
- 			   data->def->ctrl_masks[ST2_HOFL])) {
- 			dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
--			ret = -EINVAL;
--			goto exit;
-+			return -EINVAL;
- 		}
- 	}
- 
--	/* Read the flux value from the appropriate register
--	   (the register is specified in the iio device attributes). */
--	ret = i2c_smbus_read_word_data(client, data->def->data_regs[index]);
--	if (ret < 0) {
--		dev_err(&client->dev, "Read axis data fails\n");
-+	return 0;
-+}
-+
-+/* Retrieve raw flux value for one of the x, y, or z axis.  */
-+static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
-+{
-+	struct ak8975_data *data = iio_priv(indio_dev);
-+	const struct i2c_client *client = data->client;
-+	const struct ak_def *def = data->def;
-+	int ret;
-+
-+	mutex_lock(&data->lock);
-+
-+	ret = ak8975_start_read_axis(data, client);
-+	if (ret)
-+		goto exit;
-+
-+	ret = i2c_smbus_read_word_data(client, def->data_regs[index]);
-+	if (ret < 0)
- 		goto exit;
--	}
- 
- 	mutex_unlock(&data->lock);
- 
- 	/* Clamp to valid range. */
--	*val = clamp_t(s16, ret, -data->def->range, data->def->range);
-+	*val = clamp_t(s16, ret, -def->range, def->range);
- 	return IIO_VAL_INT;
- 
- exit:
- 	mutex_unlock(&data->lock);
-+	dev_err(&client->dev, "Error in reading axis\n");
- 	return ret;
- }
- 
-@@ -722,12 +734,22 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
- 			     BIT(IIO_CHAN_INFO_SCALE),			\
- 		.address = index,					\
-+		.scan_index = index,					\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 16,					\
-+			.storagebits = 16,				\
-+			.endianness = IIO_CPU				\
-+		}							\
- 	}
- 
- static const struct iio_chan_spec ak8975_channels[] = {
- 	AK8975_CHANNEL(X, 0), AK8975_CHANNEL(Y, 1), AK8975_CHANNEL(Z, 2),
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
-+static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
-+
- static const struct iio_info ak8975_info = {
- 	.read_raw = &ak8975_read_raw,
- 	.driver_module = THIS_MODULE,
-@@ -756,6 +778,56 @@ static const char *ak8975_match_acpi_device(struct device *dev,
- 	return dev_name(dev);
- }
- 
-+static void ak8975_fill_buffer(struct iio_dev *indio_dev)
-+{
-+	struct ak8975_data *data = iio_priv(indio_dev);
-+	const struct i2c_client *client = data->client;
-+	const struct ak_def *def = data->def;
-+	int ret;
-+	s16 buff[8]; /* 3 x 16 bits axis values + 1 aligned 64 bits timestamp */
-+
-+	mutex_lock(&data->lock);
-+
-+	ret = ak8975_start_read_axis(data, client);
-+	if (ret)
-+		goto unlock;
-+
-+	/*
-+	 * For each axis, read the flux value from the appropriate register
-+	 * (the register is specified in the iio device attributes).
-+	 */
-+	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
-+							def->data_regs[0],
-+							3 * sizeof(buff[0]),
-+							(u8 *)buff);
-+	if (ret < 0)
-+		goto unlock;
-+
-+	mutex_unlock(&data->lock);
-+
-+	/* Clamp to valid range. */
-+	buff[0] = clamp_t(s16, le16_to_cpu(buff[0]), -def->range, def->range);
-+	buff[1] = clamp_t(s16, le16_to_cpu(buff[1]), -def->range, def->range);
-+	buff[2] = clamp_t(s16, le16_to_cpu(buff[2]), -def->range, def->range);
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, buff, iio_get_time_ns());
-+	return;
-+
-+unlock:
-+	mutex_unlock(&data->lock);
-+	dev_err(&client->dev, "Error in reading axes block\n");
-+}
-+
-+static irqreturn_t ak8975_handle_trigger(int irq, void *p)
-+{
-+	const struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+
-+	ak8975_fill_buffer(indio_dev);
-+	iio_trigger_notify_done(indio_dev->trig);
-+	return IRQ_HANDLED;
-+}
-+
- static int ak8975_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
-@@ -845,15 +917,27 @@ static int ak8975_probe(struct i2c_client *client,
- 	indio_dev->channels = ak8975_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
- 	indio_dev->info = &ak8975_info;
-+	indio_dev->available_scan_masks = ak8975_scan_masks;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->name = name;
- 
--	err = iio_device_register(indio_dev);
--	if (err)
-+	err = iio_triggered_buffer_setup(indio_dev, NULL, ak8975_handle_trigger,
-+					 NULL);
-+	if (err) {
-+		dev_err(&client->dev, "triggered buffer setup failed\n");
- 		goto power_off;
-+	}
-+
-+	err = iio_device_register(indio_dev);
-+	if (err) {
-+		dev_err(&client->dev, "device register failed\n");
-+		goto cleanup_buffer;
-+	}
- 
- 	return 0;
- 
-+cleanup_buffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
- power_off:
- 	ak8975_power_off(client);
- 	return err;
-@@ -864,6 +948,7 @@ static int ak8975_remove(struct i2c_client *client)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 
- 	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
- 	ak8975_power_off(client);
- 
- 	return 0;
--- 
-2.1.4
+The proper resolution then is to remove the misguided ISA_BUS option and
+move the X86_32 dependency to the relevant drivers configs explicitly.
+A grep for isa_register_driver calls within the kernel reveals that only
+a few drivers explicitly use it. It should be trivial to create a patch
+to add the explicit X86_32 dependency to the relevant drivers, so I will
+submit one soon when I get the time to decouple X86_32 from the ISA
+config option.
 
+Once ISA is freed from the X86_32 dependency, I will simply use it
+instead of ISA_BUS, and rebase this patchset for version 2.
+
+>> As a side note, should the dummy isa_register_driver return 0? Would it
+>> be more appropriate for it to return an error code to indicate lack of
+>> support for ISA, rather than silently fail?
+>>
+>One should think so.
+>
+>Thanks,
+>Guenter
+>
+
+I'll submit a separate patch for this as well then.
+
+William Breathitt Gray
