@@ -1,150 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:44514 "EHLO mga04.intel.com"
+Received: from mail.aswsp.com ([193.34.35.150]:26944 "EHLO mail.aswsp.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756076AbcDGQWq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 7 Apr 2016 12:22:46 -0400
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	id S1751757AbcDHOKm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 8 Apr 2016 10:10:42 -0400
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Matt Ranostay <mranostay@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH 5/5] max44000: Initial triggered buffer support
-Date: Thu,  7 Apr 2016 19:21:54 +0300
-Message-Id: <dc82c7c28df002717a2668708cc96732a0856fac.1460045763.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
-References: <cover.1460045763.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
-References: <cover.1460045763.git.leonard.crestez@intel.com>
+	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	Cristina Opriceana <cristina.opriceana@gmail.com>,
+	Varka Bhadram <varkabhadram@gmail.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>,
+	Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [RFC PATCH v1 0/3] iio sensor mounting matrix support
+Date: Fri, 8 Apr 2016 16:12:02 +0200
+Message-ID: <cover.1460113510.git.gregor.boirie@parrot.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- drivers/iio/light/max44000.c | 63 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
+This RFC patch series follows up on Rob Herring and Jonathan Cameron comments
+about ak8975 magnetometer mounting matrix support. Thread starts here:
+http://www.spinics.net/lists/linux-iio/msg23505.html
 
-diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-index e479c53..7b1f8bc 100644
---- a/drivers/iio/light/max44000.c
-+++ b/drivers/iio/light/max44000.c
-@@ -19,6 +19,9 @@
- #include <linux/util_macros.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
- #include <linux/acpi.h>
- 
- #define MAX44000_DRV_NAME		"max44000"
-@@ -123,24 +126,41 @@ static const char max44000_scale_avail_str[] =
- 	"0.5 "
- 	 "4";
- 
-+#define MAX44000_SCAN_INDEX_ALS 0
-+#define MAX44000_SCAN_INDEX_PRX 1
-+
- static const struct iio_chan_spec max44000_channels[] = {
- 	{
- 		.type = IIO_LIGHT,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
- 					    BIT(IIO_CHAN_INFO_INT_TIME),
-+		.scan_index = MAX44000_SCAN_INDEX_ALS,
-+		.scan_type = {
-+			.sign		= 'u',
-+			.realbits	= 14,
-+			.storagebits	= 16,
-+		}
- 	},
- 	{
- 		.type = IIO_PROXIMITY,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = MAX44000_SCAN_INDEX_PRX,
-+		.scan_type = {
-+			.sign		= 'u',
-+			.realbits	= 8,
-+			.storagebits	= 8,
-+		}
- 	},
-+	IIO_CHAN_SOFT_TIMESTAMP(2),
- 	{
- 		.type = IIO_CURRENT,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				      BIT(IIO_CHAN_INFO_SCALE),
- 		.extend_name = "led",
- 		.output = 1,
-+		.scan_index = -1,
- 	},
- };
- 
-@@ -456,6 +476,42 @@ static int max44000_force_write_defaults(struct max44000_data *data)
- 	return 0;
- }
- 
-+static irqreturn_t max44000_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct max44000_data *data = iio_priv(indio_dev);
-+	u16 buf[indio_dev->scan_bytes / 2];
-+	u8 *pos = (u8 *)buf;
-+	unsigned int regval;
-+	int ret;
-+
-+	mutex_lock(&data->lock);
-+	if (*indio_dev->active_scan_mask & (1 << MAX44000_SCAN_INDEX_ALS)) {
-+		ret = max44000_read_alsval(data);
-+		if (ret < 0)
-+			goto out_unlock;
-+		*((u16 *)pos) = ret;
-+		pos += 2;
-+	}
-+	if (*indio_dev->active_scan_mask & (1 << MAX44000_SCAN_INDEX_PRX)) {
-+		ret = regmap_read(data->regmap, MAX44000_REG_PRX_DATA, &regval);
-+		if (ret < 0)
-+			goto out_unlock;
-+		*pos = regval;
-+	}
-+	mutex_unlock(&data->lock);
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
-+	iio_trigger_notify_done(indio_dev->trig);
-+	return IRQ_HANDLED;
-+
-+out_unlock:
-+	mutex_unlock(&data->lock);
-+	iio_trigger_notify_done(indio_dev->trig);
-+	return IRQ_HANDLED;
-+}
-+
- static int max44000_probe(struct i2c_client *client,
- 			  const struct i2c_device_id *id)
- {
-@@ -513,6 +569,12 @@ static int max44000_probe(struct i2c_client *client,
- 		return ret;
- 	}
- 
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL, max44000_trigger_handler, NULL);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "iio triggered buffer setup failed\n");
-+		return ret;
-+	}
-+
- 	return iio_device_register(indio_dev);
- }
- 
-@@ -521,6 +583,7 @@ static int max44000_remove(struct i2c_client *client)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 
- 	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
- 	return 0;
- }
- 
+As a recall, we want to expose a rotation matrix to indicate userspace the chip
+placement with respect to the overall hardware system. This allows an
+application to adjust coordinates sampled from a sensor chip when its position
+deviates from the main hardware system.
+Rob mentionned that the interface could be appropriate for other sensors such as
+gyro, accelero, etc... This would prevent from "ending up with a bunch of
+similar yet different interfaces".
+
+Requirements:
+1. delegate computation to userspace ;
+2. floating point arithmetics support ;
+3. per sample type matrix ;
+4. remain compliant with legacy interface (mpu6050).
+
+Point 1. above allows application to perform arbitrary transformations in
+addition to sensor alignment handling.
+Point 2. is required for flexible chip positioning.
+Point 3. comes from the fact that chips, such as ADIS16407, may implement
+different axis direction references for each measurement space.
+See http://www.analog.com/media/en/technical-documentation/data-sheets/ADIS16407.pdf
+
+Firs patch attached raise several questions for which I'd like to hear your
+suggestions.
+
+>From point 3. above, we should end up with something like the following for a
+a magneto + gyro + accelero chip :
+iio:deviceX/in_anglvel_mount_matrix, applicable to all 3 gyro channels
+iio:deviceX/in_accel_mount_matrix, applicable to all 3 accelero channels
+iio:deviceX/in_magn_mount_matrix, applicable to all 3 magneto channels
+
+Do we need to ensure proper naming consistency for sysfs attributes ? How ?
+Reuse iio_chan_type_name_spec array ?
+
+Should we limit matrix sysfs attribute instantiation to a subset of sensor
+types ? Which ones ? Or should we leave this to driver writers choice ?
+
+Last patch relates to mpu6050 mounting matrix evolutions : legacy attribute was
+extracted from platform_data. For sake of simplicity and as platform data
+mechanism is becoming more and more "obsolete", I implemented new mounting
+matrix API support for device-tree nodes only. Good enought ?
+
+Best regards,
+gregor.
+
+Gregor Boirie (3):
+  iio:core: mounting matrix support
+  iio:ak8975: add mounting matrix support
+  iio:imu:mpu6050: enhance mounting matrix support
+
+ Documentation/ABI/testing/sysfs-bus-iio            | 51 ++++++++++++++
+ .../devicetree/bindings/iio/imu/inv_mpu6050.txt    | 13 ++++
+ .../bindings/iio/magnetometer/ak8975.txt           | 10 +++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         | 56 +++++++++++++--
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  4 +-
+ drivers/iio/industrialio-core.c                    | 81 ++++++++++++++++++++++
+ drivers/iio/magnetometer/ak8975.c                  | 40 ++++++++++-
+ include/linux/iio/magnetometer/ak8975.h            | 16 +++++
+ include/linux/iio/sysfs.h                          | 25 +++++++
+ include/linux/platform_data/invensense_mpu6050.h   |  5 +-
+ 10 files changed, 293 insertions(+), 8 deletions(-)
+ create mode 100644 include/linux/iio/magnetometer/ak8975.h
+
 -- 
-2.8.0.rc3
+2.1.4
 
