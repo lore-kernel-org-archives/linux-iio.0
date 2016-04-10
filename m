@@ -1,215 +1,149 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43998 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44738 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753192AbcDJNyt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 09:54:49 -0400
-Subject: Re: [PATCH 2/9] iio: adc: qcom-spmi-iadc: use regmap to retrieve
- struct device
-To: Alison Schofield <amsfield22@gmail.com>
-References: <cover.1459918214.git.amsfield22@gmail.com>
- <aaffb79b464a361556e098d42081406813c511c4.1459918214.git.amsfield22@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	kgene@kernel.org, k.kozlowski@samsung.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org
+	with ESMTP id S1753506AbcDJQkc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 12:40:32 -0400
+Subject: Re: [PATCHv2 3/3] iio: dht11: Improve logging
+To: Harald Geyer <harald@ccbib.org>
+References: <1453047211-16661-1-git-send-email-harald@ccbib.org>
+ <1453047211-16661-3-git-send-email-harald@ccbib.org>
+ <56A50301.7030407@kernel.org>
+ <E1apHBj-0000bd-AP@stardust.g4.wien.funkfeuer.at>
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Bell <jonathan@raspberrypi.org>,
+	Richard Weinberger <richard@nod.at>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <570A5B25.8060308@kernel.org>
-Date: Sun, 10 Apr 2016 14:54:45 +0100
+Message-ID: <570A81FC.1060108@kernel.org>
+Date: Sun, 10 Apr 2016 17:40:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <aaffb79b464a361556e098d42081406813c511c4.1459918214.git.amsfield22@gmail.com>
+In-Reply-To: <E1apHBj-0000bd-AP@stardust.g4.wien.funkfeuer.at>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/04/16 06:16, Alison Schofield wrote:
-> Driver includes struct regmap and struct device in its global data.
-> Remove the struct device and use regmap API to retrieve device info.
+On 10/04/16 16:22, Harald Geyer wrote:
+> Hi Jonathan!
 > 
-> Patch created using Coccinelle plus manual edits.
+> Jonathan Cameron writes:
+>> On 17/01/16 16:13, Harald Geyer wrote:
+>>> * Unify log messages
+>>> * Add more DEBUG messages
+>>>
+>>> Apparently this driver is working unreliably on some platforms that I can't
+>>> test. Therefore I want an easy way for bug reporters to provide useful
+>>> information without making the driver too chatty by default.
+>>>
+>>> Signed-off-by: Harald Geyer <harald@ccbib.org>
+>> Applied.
 > 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-This has the same issue as the exynos driver - in that the regmap belongs
-to the parent, not this device.
-> ---
->  drivers/iio/adc/qcom-spmi-iadc.c | 32 +++++++++++++++++---------------
->  1 file changed, 17 insertions(+), 15 deletions(-)
+> I can't find this patch in any repository (while the other patches of the
+> series are there). Did I miss a reason this was dropped or is this an
+> oversightr? Should I resend this patch?
+Hi Harald,
+
+Not sure where this disappeared to.  Anyhow, I've just applied it (with a spot of fuzz)
+to the togreg branch of iio.git, currently pushed out as testing for the autobuilders to
+play with it.
+
+Sorry about that.
+
+Jonathan
 > 
-> diff --git a/drivers/iio/adc/qcom-spmi-iadc.c b/drivers/iio/adc/qcom-spmi-iadc.c
-> index fabd24e..f69a057 100644
-> --- a/drivers/iio/adc/qcom-spmi-iadc.c
-> +++ b/drivers/iio/adc/qcom-spmi-iadc.c
-> @@ -102,7 +102,6 @@
->  /**
->   * struct iadc_chip - IADC Current ADC device structure.
->   * @regmap: regmap for register read/write.
-> - * @dev: This device pointer.
->   * @base: base offset for the ADC peripheral.
->   * @rsense: Values of the internal and external sense resister in micro Ohms.
->   * @poll_eoc: Poll for end of conversion instead of waiting for IRQ.
-> @@ -113,7 +112,6 @@
->   */
->  struct iadc_chip {
->  	struct regmap	*regmap;
-> -	struct device	*dev;
->  	u16		base;
->  	bool		poll_eoc;
->  	u32		rsense[2];
-> @@ -170,6 +168,7 @@ static int iadc_set_state(struct iadc_chip *iadc, bool state)
+> TIA,
+> Harald
 >  
->  static void iadc_status_show(struct iadc_chip *iadc)
->  {
-> +	struct device *dev = regmap_get_device(iadc->regmap);
->  	u8 mode, sta1, chan, dig, en, req;
->  	int ret;
->  
-> @@ -197,7 +196,7 @@ static void iadc_status_show(struct iadc_chip *iadc)
->  	if (ret < 0)
->  		return;
->  
-> -	dev_err(iadc->dev,
-> +	dev_err(dev,
->  		"mode:%02x en:%02x chan:%02x dig:%02x req:%02x sta1:%02x\n",
->  		mode, en, chan, dig, req, sta1);
->  }
-> @@ -284,6 +283,7 @@ static int iadc_read_result(struct iadc_chip *iadc, u16 *data)
->  
->  static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
->  {
-> +	struct device *dev = regmap_get_device(iadc->regmap);
->  	unsigned int wait;
->  	int ret;
->  
-> @@ -310,7 +310,7 @@ static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
->  exit:
->  	iadc_set_state(iadc, false);
->  	if (ret < 0)
-> -		dev_err(iadc->dev, "conversion failed\n");
-> +		dev_err(dev, "conversion failed\n");
->  
->  	return ret;
->  }
-> @@ -320,6 +320,7 @@ static int iadc_read_raw(struct iio_dev *indio_dev,
->  			 int *val, int *val2, long mask)
->  {
->  	struct iadc_chip *iadc = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(iadc->regmap);
->  	s32 isense_ua, vsense_uv;
->  	u16 adc_raw, vsense_raw;
->  	int ret;
-> @@ -339,7 +340,7 @@ static int iadc_read_raw(struct iio_dev *indio_dev,
->  
->  		isense_ua = vsense_uv / iadc->rsense[chan->channel];
->  
-> -		dev_dbg(iadc->dev, "off %d gain %d adc %d %duV I %duA\n",
-> +		dev_dbg(dev, "off %d gain %d adc %d %duV I %duA\n",
->  			iadc->offset[chan->channel], iadc->gain,
->  			adc_raw, vsense_uv, isense_ua);
->  
-> @@ -370,6 +371,7 @@ static irqreturn_t iadc_isr(int irq, void *dev_id)
->  
->  static int iadc_update_offset(struct iadc_chip *iadc)
->  {
-> +	struct device *dev = regmap_get_device(iadc->regmap);
->  	int ret;
->  
->  	ret = iadc_do_conversion(iadc, IADC_GAIN_17P857MV, &iadc->gain);
-> @@ -382,7 +384,7 @@ static int iadc_update_offset(struct iadc_chip *iadc)
->  		return ret;
->  
->  	if (iadc->gain == iadc->offset[IADC_INT_RSENSE]) {
-> -		dev_err(iadc->dev, "error: internal offset == gain %d\n",
-> +		dev_err(dev, "error: internal offset == gain %d\n",
->  			iadc->gain);
->  		return -EINVAL;
->  	}
-> @@ -393,8 +395,7 @@ static int iadc_update_offset(struct iadc_chip *iadc)
->  		return ret;
->  
->  	if (iadc->gain == iadc->offset[IADC_EXT_RSENSE]) {
-> -		dev_err(iadc->dev, "error: external offset == gain %d\n",
-> -			iadc->gain);
-> +		dev_err(dev, "error: external offset == gain %d\n", iadc->gain);
->  		return -EINVAL;
->  	}
->  
-> @@ -403,6 +404,7 @@ static int iadc_update_offset(struct iadc_chip *iadc)
->  
->  static int iadc_version_check(struct iadc_chip *iadc)
->  {
-> +	struct device *dev = regmap_get_device(iadc->regmap);
->  	u8 val;
->  	int ret;
->  
-> @@ -411,7 +413,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
->  		return ret;
->  
->  	if (val < IADC_PERPH_TYPE_ADC) {
-> -		dev_err(iadc->dev, "%d is not ADC\n", val);
-> +		dev_err(dev, "%d is not ADC\n", val);
->  		return -EINVAL;
->  	}
->  
-> @@ -420,7 +422,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
->  		return ret;
->  
->  	if (val < IADC_PERPH_SUBTYPE_IADC) {
-> -		dev_err(iadc->dev, "%d is not IADC\n", val);
-> +		dev_err(dev, "%d is not IADC\n", val);
->  		return -EINVAL;
->  	}
->  
-> @@ -429,7 +431,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
->  		return ret;
->  
->  	if (val < IADC_REVISION2_SUPPORTED_IADC) {
-> -		dev_err(iadc->dev, "revision %d not supported\n", val);
-> +		dev_err(dev, "revision %d not supported\n", val);
->  		return -EINVAL;
->  	}
->  
-> @@ -438,6 +440,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
->  
->  static int iadc_rsense_read(struct iadc_chip *iadc, struct device_node *node)
->  {
-> +	struct device *dev = regmap_get_device(iadc->regmap);
->  	int ret, sign, int_sense;
->  	u8 deviation;
->  
-> @@ -447,7 +450,7 @@ static int iadc_rsense_read(struct iadc_chip *iadc, struct device_node *node)
->  		iadc->rsense[IADC_EXT_RSENSE] = IADC_INT_RSENSE_IDEAL_VALUE;
->  
->  	if (!iadc->rsense[IADC_EXT_RSENSE]) {
-> -		dev_err(iadc->dev, "external resistor can't be zero Ohms");
-> +		dev_err(dev, "external resistor can't be zero Ohms");
->  		return -EINVAL;
->  	}
->  
-> @@ -505,7 +508,6 @@ static int iadc_probe(struct platform_device *pdev)
->  		return -ENOMEM;
->  
->  	iadc = iio_priv(indio_dev);
-> -	iadc->dev = dev;
->  
->  	iadc->regmap = dev_get_regmap(dev->parent, NULL);
->  	if (!iadc->regmap)
-> @@ -528,7 +530,7 @@ static int iadc_probe(struct platform_device *pdev)
->  	if (ret < 0)
->  		return -ENODEV;
->  
-> -	dev_dbg(iadc->dev, "sense resistors %d and %d micro Ohm\n",
-> +	dev_dbg(&pdev->dev, "sense resistors %d and %d micro Ohm\n",
->  		iadc->rsense[IADC_INT_RSENSE],
->  		iadc->rsense[IADC_EXT_RSENSE]);
->  
-> @@ -553,7 +555,7 @@ static int iadc_probe(struct platform_device *pdev)
->  		else
->  			return ret;
->  	} else {
-> -		device_init_wakeup(iadc->dev, 1);
-> +		device_init_wakeup(&pdev->dev, 1);
->  	}
->  
->  	ret = iadc_update_offset(iadc);
+>> Thanks,
+>>
+>> Jonathan
+>>> ---
+>>> changes since V1:
+>>>  * rebased onto the updated series
+>>>
+>>>  drivers/iio/humidity/dht11.c | 40 ++++++++++++++++++++++++++++++++++------
+>>>  1 file changed, 34 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+>>> index 96185f8..4992e8c 100644
+>>> --- a/drivers/iio/humidity/dht11.c
+>>> +++ b/drivers/iio/humidity/dht11.c
+>>> @@ -96,6 +96,24 @@ struct dht11 {
+>>>  	struct {s64 ts; int value; }	edges[DHT11_EDGES_PER_READ];
+>>>  };
+>>>  
+>>> +#ifdef CONFIG_DYNAMIC_DEBUG
+>>> +/*
+>>> + * dht11_edges_print: show the data as actually received by the
+>>> + *                    driver.
+>>> + */
+>>> +static void dht11_edges_print(struct dht11 *dht11)
+>>> +{
+>>> +	int i;
+>>> +
+>>> +	dev_dbg(dht11->dev, "%d edges detected:\n", dht11->num_edges);
+>>> +	for (i = 1; i < dht11->num_edges; ++i) {
+>>> +		dev_dbg(dht11->dev, "%d: %lld ns %s\n", i,
+>>> +			dht11->edges[i].ts - dht11->edges[i - 1].ts,
+>>> +			dht11->edges[i - 1].value ? "high" : "low");
+>>> +	}
+>>> +}
+>>> +#endif /* CONFIG_DYNAMIC_DEBUG */
+>>> +
+>>>  static unsigned char dht11_decode_byte(char *bits)
+>>>  {
+>>>  	unsigned char ret = 0;
+>>> @@ -119,8 +137,12 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+>>>  	for (i = 0; i < DHT11_BITS_PER_READ; ++i) {
+>>>  		t = dht11->edges[offset + 2 * i + 2].ts -
+>>>  			dht11->edges[offset + 2 * i + 1].ts;
+>>> -		if (!dht11->edges[offset + 2 * i + 1].value)
+>>> -			return -EIO;  /* lost synchronisation */
+>>> +		if (!dht11->edges[offset + 2 * i + 1].value) {
+>>> +			dev_dbg(dht11->dev,
+>>> +				"lost synchronisation at edge %d\n",
+>>> +				offset + 2 * i + 1);
+>>> +			return -EIO;
+>>> +		}
+>>>  		bits[i] = t > DHT11_THRESHOLD;
+>>>  	}
+>>>  
+>>> @@ -130,8 +152,10 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+>>>  	temp_dec = dht11_decode_byte(&bits[24]);
+>>>  	checksum = dht11_decode_byte(&bits[32]);
+>>>  
+>>> -	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
+>>> +	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum) {
+>>> +		dev_dbg(dht11->dev, "invalid checksum\n");
+>>>  		return -EIO;
+>>> +	}
+>>>  
+>>>  	dht11->timestamp = ktime_get_real_ns();
+>>>  	if (hum_int < 20) {  /* DHT22 */
+>>> @@ -182,6 +206,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+>>>  	mutex_lock(&dht11->lock);
+>>>  	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns()) {
+>>>  		timeres = ktime_get_resolution_ns();
+>>> +		dev_dbg(dht11->dev, "current timeresolution: %dns\n", timeres);
+>>>  		if (timeres > DHT11_MIN_TIMERES) {
+>>>  			dev_err(dht11->dev, "timeresolution %dns too low\n",
+>>>  				timeres);
+>>> @@ -219,10 +244,13 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+>>>  
+>>>  		free_irq(dht11->irq, iio_dev);
+>>>  
+>>> +#ifdef CONFIG_DYNAMIC_DEBUG
+>>> +		dht11_edges_print(dht11);
+>>> +#endif
+>>> +
+>>>  		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
+>>> -			dev_err(&iio_dev->dev,
+>>> -				"Only %d signal edges detected\n",
+>>> -					dht11->num_edges);
+>>> +			dev_err(dht11->dev, "Only %d signal edges detected\n",
+>>> +				dht11->num_edges);
+>>>  			ret = -ETIMEDOUT;
+>>>  		}
+>>>  		if (ret < 0)
+>>>
+>>
 > 
 
