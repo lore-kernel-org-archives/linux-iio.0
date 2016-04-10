@@ -1,86 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([217.72.192.75]:53956 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932317AbcDNPtr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2016 11:49:47 -0400
-From: Stefan Wahren <stefan.wahren@i2se.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Marek Vasut <marex@denx.de>
-Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH RFT 3/5] iio: mxs-lradc: move STMP reset out of ADC init
-Date: Thu, 14 Apr 2016 15:48:27 +0000
-Message-Id: <1460648909-2657-4-git-send-email-stefan.wahren@i2se.com>
-In-Reply-To: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
-References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <amsfield22@gmail.com>
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	kgene@kernel.org,
+	k.kozlowski@samsung.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org
+Subject: [PATCH v2 0/5] iio: use regmap to retrieve struct device
+Date: Sun, 10 Apr 2016 12:03:50 -0700
+Message-Id: <cover.1460314070.git.amsfield22@gmail.com>
+In-Reply-To: <cover.1459918214.git.amsfield22@gmail.com>
+References: <cover.1459918214.git.amsfield22@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch moves the STMP reset out of ADC init function
-in order to make it never fail. This is also necessary
-for PM ops.
+These drivers include both struct regmap and struct device in their
+global data.  Remove the redundant copy by deleting struct device 
+from the drivers global data and using regmap API to retrieve when
+needed.
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- drivers/iio/adc/mxs-lradc.c |   15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+This patchset removes all such redundancies in drivers/iio/.
 
-diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-index 7118fca..95d84c9 100644
---- a/drivers/iio/adc/mxs-lradc.c
-+++ b/drivers/iio/adc/mxs-lradc.c
-@@ -1482,18 +1482,13 @@ static const struct iio_chan_spec mx28_lradc_chan_spec[] = {
- 	MXS_ADC_CHAN(15, IIO_VOLTAGE, "VDD5V"),
- };
- 
--static int mxs_lradc_hw_init(struct mxs_lradc *lradc)
-+static void mxs_lradc_hw_init(struct mxs_lradc *lradc)
- {
- 	/* The ADC always uses DELAY CHANNEL 0. */
- 	const u32 adc_cfg =
- 		(1 << (LRADC_DELAY_TRIGGER_DELAYS_OFFSET + 0)) |
- 		(LRADC_DELAY_TIMER_PER << LRADC_DELAY_DELAY_OFFSET);
- 
--	int ret = stmp_reset_block(lradc->base);
--
--	if (ret)
--		return ret;
--
- 	/* Configure DELAY CHANNEL 0 for generic ADC sampling. */
- 	mxs_lradc_reg_wrt(lradc, adc_cfg, LRADC_DELAY(0));
- 
-@@ -1504,8 +1499,6 @@ static int mxs_lradc_hw_init(struct mxs_lradc *lradc)
- 
- 	/* Start internal temperature sensing. */
- 	mxs_lradc_reg_wrt(lradc, 0, LRADC_CTRL2);
--
--	return 0;
- }
- 
- static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
-@@ -1705,11 +1698,13 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	/* Configure the hardware. */
--	ret = mxs_lradc_hw_init(lradc);
-+	ret = stmp_reset_block(lradc->base);
- 	if (ret)
- 		goto err_dev;
- 
-+	/* Configure the hardware. */
-+	mxs_lradc_hw_init(lradc);
-+
- 	/* Register the touchscreen input device. */
- 	if (touch_ret == 0) {
- 		ret = mxs_lradc_ts_register(lradc);
+Patches created using Coccinelle plus hand edits for whitespace.
+
+Changes v1->v2:
+	This set is updated following reviews teaching me that not
+	all regmaps in global data will be of that device.  Discards
+	and keepers are noted below.  No actual code changes just a
+	remake of the patchset.
+
+	Jonathan - I saw you want to let it simmer, just want to
+	let it simmer cleaner ;)
+
+  accel: mma7455
+	Removing: Joachim ack'd, Jonathan took v1 
+
+  adc: exynos_adc
+	Discard: regmap is of PMU parent
+
+  adc: qcom-spmi-iadc
+  adc: qcom-spmi-vadc
+	Discard: first line of _probe gets regmap from parent
+
+  accel: bmc150
+  gyro: bmg160
+	Keep: regmap passed into _probe from i2c,spi_probe where
+	it was initialized for this device
+
+  accel: mxc4005
+  health: afe4403
+  health: afe4404
+	Keep: regmap initialized in _probe for this device
+
+
+Alison Schofield (5):
+  iio: accel: bmc150: use regmap to retrieve struct device
+  iio: accel: mxc4005: use regmap to retrieve struct device
+  iio: health: afe4403: use regmap to retrieve struct device
+  iio: health: afe4404: use regmap to retrieve struct device
+  iio: gyro: bmg160: use regmap to retrieve struct device
+
+ drivers/iio/accel/bmc150-accel-core.c | 99 +++++++++++++++++++----------------
+ drivers/iio/accel/mxc4005.c           | 26 +++++----
+ drivers/iio/gyro/bmg160_core.c        | 86 +++++++++++++++---------------
+ drivers/iio/health/afe4403.c          | 36 ++++++-------
+ drivers/iio/health/afe4404.c          | 38 +++++++-------
+ 5 files changed, 149 insertions(+), 136 deletions(-)
+
 -- 
-1.7.9.5
-
+2.1.4
