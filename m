@@ -1,52 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44312 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44406 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753026AbcDJOqc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 10:46:32 -0400
-Subject: Re: How to use GPIO pin as the trigger for IIO devices?
-To: Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org
-References: <CADO9-pckFN67QpCHs3Z-vLqH9-6zrdUazgth3Xd=Q++=V8Zkyg@mail.gmail.com>
+	with ESMTP id S1753655AbcDJPNd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 11:13:33 -0400
+Subject: Re: [PATCH v2 27/30] iio: use parity32 in adxrs450
+To: Lars-Peter Clausen <lars@metafoo.de>, zengzhaoxiu@163.com,
+	Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net
+References: <57031D9D.801@gmail.com>
+ <1459937776-8438-1-git-send-email-zengzhaoxiu@163.com>
+ <570A6536.3000308@kernel.org> <570A662E.8030807@metafoo.de>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <570A6743.4090003@kernel.org>
-Date: Sun, 10 Apr 2016 15:46:27 +0100
+Message-ID: <570A6D99.6000103@kernel.org>
+Date: Sun, 10 Apr 2016 16:13:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <CADO9-pckFN67QpCHs3Z-vLqH9-6zrdUazgth3Xd=Q++=V8Zkyg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <570A662E.8030807@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/04/16 04:51, Yong Li wrote:
->  am testing an IIO gyro sensor using kernel 4.4, currently I can use
-> the sysfs trigger as a trigger, I can read the data from
-> /dev/iio:deviceX after "echo 1 > trigger_now".
+On 10/04/16 15:41, Lars-Peter Clausen wrote:
+> On 04/10/2016 04:37 PM, Jonathan Cameron wrote:
+>> On 06/04/16 11:16, zengzhaoxiu@163.com wrote:
+>>> From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+>>>
+>>> Signed-off-by: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+>> Applied to the togreg branch of iio.git as you seem to have addressed
+>> Lars' comments.
 > 
+> The whole series needs to go through the same tree since the new functions
+> are introduced in the beginning.
+Yeah, I just realized that when my build test failed!
+
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 > 
-> I want to use a gpio pin for the data trigger. For example, when the
-> GPIO pin 62 is low, the data will be ready.
-> 
-> 
-> How to connect/setup the gpio with the IIO triggers, how can I use the
-> iio_trig_interrupt.ko? I found there is new triggers in the
-> /sys/bus/iio/devices after I loaded the iio_trig_interrupt.ko.
-Hi Yong,
-
-Unfortunately a means of identifying that a given IRQ (GPIO or otherwise)
-is to be used as an iio_trigger is needed.  At the moment, that driver
-only supports getting this from an IORESOURCE_IRQ in a board file.
-
-There was a recent thread on device tree bindings for these;
-http://marc.info/?l=linux-iio&m=145621588017248&w=2
-
-It got a little non obvious from the point of view of what the bindings
-should look like and buried under other work.
-
-Still the patches there will probably get you going.
-
-Jonathan
-
-> 
-> Thanks,
-> Yong
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
