@@ -1,130 +1,158 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:44514 "EHLO mga04.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756076AbcDGQWm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 7 Apr 2016 12:22:42 -0400
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH 3/5] max44000: Support controlling LED current output
-Date: Thu,  7 Apr 2016 19:21:52 +0300
-Message-Id: <1f9ec5350bd3349236887ed89378c319eddc005f.1460045763.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
-References: <cover.1460045763.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1460045763.git.leonard.crestez@intel.com>
-References: <cover.1460045763.git.leonard.crestez@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <harald@ccbib.org>
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: linux-iio@vger.kernel.org, Jonathan Bell <jonathan@raspberrypi.org>,
+    Richard Weinberger <richard@nod.at>
+Subject: Re: [PATCHv2 3/3] iio: dht11: Improve logging
+In-reply-to: <56A50301.7030407@kernel.org>
+References: <1453047211-16661-1-git-send-email-harald@ccbib.org> <1453047211-16661-3-git-send-email-harald@ccbib.org> <56A50301.7030407@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date: Sun, 10 Apr 2016 17:22:10 +0200
+Message-Id: <E1apHBj-0000bd-AP@stardust.g4.wien.funkfeuer.at>
+List-ID: <linux-iio@vger.kernel.org>
 
-This is exposed as an output channel with "led" as an extend_name.
+Hi Jonathan!
 
-Other sensors also have support for controlling an external LED. It's
-not clear that simply exposing an undecorated output channel is the
-correct approach.
+Jonathan Cameron writes:
+> On 17/01/16 16:13, Harald Geyer wrote:
+> > * Unify log messages
+> > * Add more DEBUG messages
+> > =
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- drivers/iio/light/max44000.c | 53 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+> > Apparently this driver is working unreliably on some platforms that I =
+can't
+> > test. Therefore I want an easy way for bug reporters to provide useful
+> > information without making the driver too chatty by default.
+> > =
 
-diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-index 10a0fe8..1dc10b9 100644
---- a/drivers/iio/light/max44000.c
-+++ b/drivers/iio/light/max44000.c
-@@ -85,6 +85,13 @@ static const struct iio_chan_spec max44000_channels[] = {
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
- 	},
-+	{
-+		.type = IIO_CURRENT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.extend_name = "led",
-+		.output = 1,
-+	},
- };
- 
- static inline int max44000_read_alsval(struct max44000_data *data)
-@@ -124,6 +131,20 @@ static inline int max44000_write_led_current_raw(struct max44000_data *data, int
- 				 MAX44000_LED_CURRENT_MASK, val);
- }
- 
-+static inline int max44000_read_led_current_raw(struct max44000_data *data)
-+{
-+	unsigned int regval;
-+	int ret;
-+
-+	ret = regmap_read(data->regmap, MAX44000_REG_CFG_TX, &regval);
-+	if (ret < 0)
-+		return ret;
-+	regval &= MAX44000_LED_CURRENT_MASK;
-+	if (regval >= 8)
-+		regval -= 4;
-+	return regval;
-+}
-+
- static int max44000_read_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     int *val, int *val2, long mask)
-@@ -153,12 +174,26 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
- 			*val = regval;
- 			return IIO_VAL_INT;
- 
-+		case IIO_CURRENT:
-+			mutex_lock(&data->lock);
-+			ret = max44000_read_led_current_raw(data);
-+			mutex_unlock(&data->lock);
-+			if (ret < 0)
-+				return ret;
-+			*val = ret;
-+			return IIO_VAL_INT;
-+
- 		default:
- 			return -EINVAL;
- 		}
- 
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
-+		case IIO_CURRENT:
-+			/* Output register is in 10s of miliamps */
-+			*val = 10;
-+			return IIO_VAL_INT;
-+
- 		case IIO_LIGHT:
- 			*val = 1;
- 			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
-@@ -173,9 +208,27 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
-+static int max44000_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long mask)
-+{
-+	struct max44000_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (mask == IIO_CHAN_INFO_RAW && chan->type == IIO_CURRENT) {
-+		mutex_lock(&data->lock);
-+		ret = max44000_write_led_current_raw(data, val);
-+		mutex_unlock(&data->lock);
-+		return ret;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static const struct iio_info max44000_info = {
- 	.driver_module		= THIS_MODULE,
- 	.read_raw		= max44000_read_raw,
-+	.write_raw		= max44000_write_raw,
- };
- 
- static bool max44000_readable_reg(struct device *dev, unsigned int reg)
--- 
-2.8.0.rc3
+> > Signed-off-by: Harald Geyer <harald@ccbib.org>
+> Applied.
 
+I can't find this patch in any repository (while the other patches of the
+series are there). Did I miss a reason this was dropped or is this an
+oversightr? Should I resend this patch?
+
+TIA,
+Harald
+ =
+
+> Thanks,
+> =
+
+> Jonathan
+> > ---
+> > changes since V1:
+> >  * rebased onto the updated series
+> > =
+
+> >  drivers/iio/humidity/dht11.c | 40 ++++++++++++++++++++++++++++++++++-=
+-----
+> >  1 file changed, 34 insertions(+), 6 deletions(-)
+> > =
+
+> > diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11=
+.c
+> > index 96185f8..4992e8c 100644
+> > --- a/drivers/iio/humidity/dht11.c
+> > +++ b/drivers/iio/humidity/dht11.c
+> > @@ -96,6 +96,24 @@ struct dht11 {
+> >  	struct {s64 ts; int value; }	edges[DHT11_EDGES_PER_READ];
+> >  };
+> >  =
+
+> > +#ifdef CONFIG_DYNAMIC_DEBUG
+> > +/*
+> > + * dht11_edges_print: show the data as actually received by the
+> > + *                    driver.
+> > + */
+> > +static void dht11_edges_print(struct dht11 *dht11)
+> > +{
+> > +	int i;
+> > +
+> > +	dev_dbg(dht11->dev, "%d edges detected:\n", dht11->num_edges);
+> > +	for (i =3D 1; i < dht11->num_edges; ++i) {
+> > +		dev_dbg(dht11->dev, "%d: %lld ns %s\n", i,
+> > +			dht11->edges[i].ts - dht11->edges[i - 1].ts,
+> > +			dht11->edges[i - 1].value ? "high" : "low");
+> > +	}
+> > +}
+> > +#endif /* CONFIG_DYNAMIC_DEBUG */
+> > +
+> >  static unsigned char dht11_decode_byte(char *bits)
+> >  {
+> >  	unsigned char ret =3D 0;
+> > @@ -119,8 +137,12 @@ static int dht11_decode(struct dht11 *dht11, int =
+offset)
+> >  	for (i =3D 0; i < DHT11_BITS_PER_READ; ++i) {
+> >  		t =3D dht11->edges[offset + 2 * i + 2].ts -
+> >  			dht11->edges[offset + 2 * i + 1].ts;
+> > -		if (!dht11->edges[offset + 2 * i + 1].value)
+> > -			return -EIO;  /* lost synchronisation */
+> > +		if (!dht11->edges[offset + 2 * i + 1].value) {
+> > +			dev_dbg(dht11->dev,
+> > +				"lost synchronisation at edge %d\n",
+> > +				offset + 2 * i + 1);
+> > +			return -EIO;
+> > +		}
+> >  		bits[i] =3D t > DHT11_THRESHOLD;
+> >  	}
+> >  =
+
+> > @@ -130,8 +152,10 @@ static int dht11_decode(struct dht11 *dht11, int =
+offset)
+> >  	temp_dec =3D dht11_decode_byte(&bits[24]);
+> >  	checksum =3D dht11_decode_byte(&bits[32]);
+> >  =
+
+> > -	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) !=3D checksum=
+)
+> > +	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) !=3D checksum=
+) {
+> > +		dev_dbg(dht11->dev, "invalid checksum\n");
+> >  		return -EIO;
+> > +	}
+> >  =
+
+> >  	dht11->timestamp =3D ktime_get_real_ns();
+> >  	if (hum_int < 20) {  /* DHT22 */
+> > @@ -182,6 +206,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+> >  	mutex_lock(&dht11->lock);
+> >  	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns()) =
+{
+> >  		timeres =3D ktime_get_resolution_ns();
+> > +		dev_dbg(dht11->dev, "current timeresolution: %dns\n", timeres);
+> >  		if (timeres > DHT11_MIN_TIMERES) {
+> >  			dev_err(dht11->dev, "timeresolution %dns too low\n",
+> >  				timeres);
+> > @@ -219,10 +244,13 @@ static int dht11_read_raw(struct iio_dev *iio_de=
+v,
+> >  =
+
+> >  		free_irq(dht11->irq, iio_dev);
+> >  =
+
+> > +#ifdef CONFIG_DYNAMIC_DEBUG
+> > +		dht11_edges_print(dht11);
+> > +#endif
+> > +
+> >  		if (ret =3D=3D 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
+> > -			dev_err(&iio_dev->dev,
+> > -				"Only %d signal edges detected\n",
+> > -					dht11->num_edges);
+> > +			dev_err(dht11->dev, "Only %d signal edges detected\n",
+> > +				dht11->num_edges);
+> >  			ret =3D -ETIMEDOUT;
+> >  		}
+> >  		if (ret < 0)
+> > =
+
+> =
+
+
+-- =
+
+If you want to support my work:
+see http://friends.ccbib.org/harald/supporting/
+or donate via peercoin to P98LRdhit3gZbHDBe7ta5jtXrMJUms4p7w
+or bitcoin 1FUtd8T9jRN1rFz63vZz7s2fDtB6d6A7aS
