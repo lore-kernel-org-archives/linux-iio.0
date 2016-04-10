@@ -1,59 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44278 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44312 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752734AbcDJOhq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 10:37:46 -0400
-Subject: Re: [PATCH v2 27/30] iio: use parity32 in adxrs450
-To: zengzhaoxiu@163.com, lars@metafoo.de, Michael.Hennerich@analog.com,
-	knaack.h@gmx.de, pmeerw@pmeerw.net
-References: <57031D9D.801@gmail.com>
- <1459937776-8438-1-git-send-email-zengzhaoxiu@163.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+	with ESMTP id S1753026AbcDJOqc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 10:46:32 -0400
+Subject: Re: How to use GPIO pin as the trigger for IIO devices?
+To: Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org
+References: <CADO9-pckFN67QpCHs3Z-vLqH9-6zrdUazgth3Xd=Q++=V8Zkyg@mail.gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <570A6536.3000308@kernel.org>
-Date: Sun, 10 Apr 2016 15:37:42 +0100
+Message-ID: <570A6743.4090003@kernel.org>
+Date: Sun, 10 Apr 2016 15:46:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <1459937776-8438-1-git-send-email-zengzhaoxiu@163.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CADO9-pckFN67QpCHs3Z-vLqH9-6zrdUazgth3Xd=Q++=V8Zkyg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/04/16 11:16, zengzhaoxiu@163.com wrote:
-> From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+On 07/04/16 04:51, Yong Li wrote:
+>  am testing an IIO gyro sensor using kernel 4.4, currently I can use
+> the sysfs trigger as a trigger, I can read the data from
+> /dev/iio:deviceX after "echo 1 > trigger_now".
 > 
-> Signed-off-by: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
-Applied to the togreg branch of iio.git as you seem to have addressed
-Lars' comments.
+> 
+> I want to use a gpio pin for the data trigger. For example, when the
+> GPIO pin 62 is low, the data will be ready.
+> 
+> 
+> How to connect/setup the gpio with the IIO triggers, how can I use the
+> iio_trig_interrupt.ko? I found there is new triggers in the
+> /sys/bus/iio/devices after I loaded the iio_trig_interrupt.ko.
+Hi Yong,
 
-Thanks,
+Unfortunately a means of identifying that a given IRQ (GPIO or otherwise)
+is to be used as an iio_trigger is needed.  At the moment, that driver
+only supports getting this from an IORESOURCE_IRQ in a board file.
+
+There was a recent thread on device tree bindings for these;
+http://marc.info/?l=linux-iio&m=145621588017248&w=2
+
+It got a little non obvious from the point of view of what the bindings
+should look like and buried under other work.
+
+Still the patches there will probably get you going.
 
 Jonathan
-> ---
->  drivers/iio/gyro/adxrs450.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+
 > 
-> diff --git a/drivers/iio/gyro/adxrs450.c b/drivers/iio/gyro/adxrs450.c
-> index a330d42..307f55b 100644
-> --- a/drivers/iio/gyro/adxrs450.c
-> +++ b/drivers/iio/gyro/adxrs450.c
-> @@ -109,7 +109,7 @@ static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
->  	mutex_lock(&st->buf_lock);
->  	tx = ADXRS450_READ_DATA | (reg_address << 17);
->  
-> -	if (!(hweight32(tx) & 1))
-> +	if (!parity32(tx))
->  		tx |= ADXRS450_P;
->  
->  	st->tx = cpu_to_be32(tx);
-> @@ -145,7 +145,7 @@ static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
->  	mutex_lock(&st->buf_lock);
->  	tx = ADXRS450_WRITE_DATA | (reg_address << 17) | (val << 1);
->  
-> -	if (!(hweight32(tx) & 1))
-> +	if (!parity32(tx))
->  		tx |= ADXRS450_P;
->  
->  	st->tx = cpu_to_be32(tx);
+> Thanks,
+> Yong
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
