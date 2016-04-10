@@ -1,408 +1,285 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:33413 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760203AbcDEXlG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Apr 2016 19:41:06 -0400
-Message-ID: <57044A61.5060308@denx.de>
-Date: Wed, 06 Apr 2016 01:29:37 +0200
-From: Marek Vasut <marex@denx.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43606 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752592AbcDJMhK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 08:37:10 -0400
+Subject: Re: [PATCH v4 1/1] iio:magnetometer:ak8975: triggered buffer support
+To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
+References: <cover.1460127559.git.gregor.boirie@parrot.com>
+ <c4f84b6daad4068e390e2ed3ab39269ecfe23656.1460127559.git.gregor.boirie@parrot.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <570A48EF.30509@kernel.org>
+Date: Sun, 10 Apr 2016 13:37:03 +0100
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: Matt Ranostay <mranostay@gmail.com>
-Subject: Re: [PATCH] iio: pressure: hp03: Add Hope RF HP03 sensor support
-References: <1459523460-5469-1-git-send-email-marex@denx.de> <5700D296.1030106@kernel.org>
-In-Reply-To: <5700D296.1030106@kernel.org>
+In-Reply-To: <c4f84b6daad4068e390e2ed3ab39269ecfe23656.1460127559.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/03/2016 10:21 AM, Jonathan Cameron wrote:
-> On 01/04/16 16:11, Marek Vasut wrote:
->> Add support for HopeRF pressure and temperature sensor.
->>
->> This device uses two fixed I2C addresses, one for storing
->> calibration coefficients and another for accessing the ADC.
->>
->> Signed-off-by: Marek Vasut <marex@denx.de>
->> Cc: Matt Ranostay <mranostay@gmail.com>
->> Cc: Jonathan Cameron <jic23@kernel.org>
-> Only one real comment inline - I'd try to unwind the gpio on an error
-> in the i2c read out.  Feels a little more consistent to do that than to
-> just leave it in whatever state it is in when the error occurs.
+On 08/04/16 16:09, Gregor Boirie wrote:
+> This will be used together with an external trigger (e.g hrtimer based
+> software trigger).
+> 
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing for the
+autobuilders to play with it.
 
-Stupid me, certainly fixed, thanks!
+Thanks,
 
-> Jonathan
->> ---
->>  .../devicetree/bindings/iio/pressure/hp03.txt      |  13 +
->>  drivers/iio/pressure/Kconfig                       |  11 +
->>  drivers/iio/pressure/Makefile                      |   1 +
->>  drivers/iio/pressure/hp03.c                        | 290 +++++++++++++++++++++
->>  4 files changed, 315 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/pressure/hp03.txt
->>  create mode 100644 drivers/iio/pressure/hp03.c
->>
->> diff --git a/Documentation/devicetree/bindings/iio/pressure/hp03.txt b/Documentation/devicetree/bindings/iio/pressure/hp03.txt
->> new file mode 100644
->> index 0000000..c9551b2
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/pressure/hp03.txt
->> @@ -0,0 +1,13 @@
->> +HopeRF HP03 digital pressure/temperature sensors
->> +
->> +Required properties:
->> +- compatible: must be "hoperf,hp03"
->> +- xclr-gpio:  must be device tree identifier of the XCLR pin
->> +
->> +Example:
->> +
->> +hp03@0x77 {
->> +	compatible = "hoperf,hp03";
->> +	reg = <0x77>;
->> +	xclr-gpio = <&portc 0 0x0>;
->> +};
->> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
->> index 31c0e1f..3f2b1ed 100644
->> --- a/drivers/iio/pressure/Kconfig
->> +++ b/drivers/iio/pressure/Kconfig
->> @@ -30,6 +30,17 @@ config HID_SENSOR_PRESS
->>  	  To compile this driver as a module, choose M here: the module
->>  	  will be called hid-sensor-press.
->>  
->> +config HP03
->> +	tristate "Hope RF HP03 temperature and pressure sensor driver"
->> +	depends on I2C
->> +	select REGMAP_I2C
->> +	help
->> +	  Say yes here to build support for Hope RF HP03 pressure and
->> +	  temperature sensor.
->> +
->> +	  To compile this driver as a module, choose M here: the module
->> +	  will be called hp03.
->> +
->>  config MPL115
->>  	tristate
->>  
->> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
->> index d336af1..cb21ab1 100644
->> --- a/drivers/iio/pressure/Makefile
->> +++ b/drivers/iio/pressure/Makefile
->> @@ -5,6 +5,7 @@
->>  # When adding new entries keep the list in alphabetical order
->>  obj-$(CONFIG_BMP280) += bmp280.o
->>  obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
->> +obj-$(CONFIG_HP03) += hp03.o
->>  obj-$(CONFIG_MPL115) += mpl115.o
->>  obj-$(CONFIG_MPL115_I2C) += mpl115_i2c.o
->>  obj-$(CONFIG_MPL115_SPI) += mpl115_spi.o
->> diff --git a/drivers/iio/pressure/hp03.c b/drivers/iio/pressure/hp03.c
->> new file mode 100644
->> index 0000000..e8e80f5
->> --- /dev/null
->> +++ b/drivers/iio/pressure/hp03.c
->> @@ -0,0 +1,290 @@
->> +/*
->> + * Copyright (c) 2016 Marek Vasut <marex@denx.de>
->> + *
->> + * Driver for Hope RF HP03 digital temperature and pressure sensor.
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License version 2 as
->> + * published by the Free Software Foundation.
->> + *
-> No need for the blank line here <nitpick of the day>
-
-Fixed
-
->> + */
->> +
->> +#define pr_fmt(fmt) "hp03: " fmt
->> +
->> +#include <linux/module.h>
->> +#include <linux/delay.h>
->> +#include <linux/gpio/consumer.h>
->> +#include <linux/i2c.h>
->> +#include <linux/regmap.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +
->> +/*
->> + * The HP03 sensor occupies two fixed I2C addresses:
->> + *  0x50 ... read-only EEPROM with calibration data
->> + *  0x77 ... read-write ADC for pressure and temperature
->> + */
->> +#define HP03_EEPROM_ADDR		0x50
->> +#define HP03_ADC_ADDR			0x77
->> +
->> +#define HP03_EEPROM_CX_OFFSET		0x10
->> +#define HP03_EEPROM_AB_OFFSET		0x1e
->> +#define HP03_EEPROM_CD_OFFSET		0x20
->> +
->> +#define HP03_ADC_WRITE_REG		0xff
->> +#define HP03_ADC_READ_REG		0xfd
->> +#define HP03_ADC_READ_PRESSURE		0xf0	/* D1 in datasheet */
->> +#define HP03_ADC_READ_TEMP		0xe8	/* D2 in datasheet */
->> +
->> +struct hp03_priv {
->> +	struct i2c_client	*client;
->> +	struct mutex		lock;
->> +	struct gpio_desc	*xclr_gpio;
->> +
->> +	struct i2c_client	*eeprom_client;
->> +	struct regmap		*eeprom_regmap;
->> +
->> +	s32			pressure;	/* kPa */
->> +	s32			temp;		/* Deg. C */
->> +};
->> +
->> +static const struct iio_chan_spec hp03_channels[] = {
->> +	{
->> +		.type = IIO_PRESSURE,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->> +	},
->> +	{
->> +		.type = IIO_TEMP,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->> +	},
->> +};
->> +
->> +static bool hp03_is_writeable_reg(struct device *dev, unsigned int reg)
->> +{
->> +	return false;
->> +}
->> +
->> +static bool hp03_is_volatile_reg(struct device *dev, unsigned int reg)
->> +{
->> +	return false;
->> +}
->> +
->> +static const struct regmap_config hp03_regmap_config = {
->> +	.reg_bits	= 8,
->> +	.val_bits	= 8,
->> +
->> +	.max_register	= HP03_EEPROM_CD_OFFSET + 1,
->> +	.cache_type	= REGCACHE_RBTREE,
->> +
->> +	.writeable_reg	= hp03_is_writeable_reg,
->> +	.volatile_reg	= hp03_is_volatile_reg,
->> +};
->> +
->> +static int hp03_get_temp_pressure(struct hp03_priv *priv, const u8 reg)
->> +{
->> +	int ret;
->> +
->> +	ret = i2c_smbus_write_byte_data(priv->client, HP03_ADC_WRITE_REG, reg);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	msleep(50);	/* Wait for conversion to finish */
->> +
->> +	return i2c_smbus_read_word_data(priv->client, HP03_ADC_READ_REG);
->> +}
->> +
->> +static int hp03_update_temp_pressure(struct hp03_priv *priv)
->> +{
->> +	struct device *dev = &priv->client->dev;
->> +	u8 coefs[18];
->> +	u16 cx_val[7];
->> +	int ab_val, d1_val, d2_val, diff_val, dut, off, sens, x;
->> +	int i, ret;
->> +
->> +	/* Sample coefficients from EEPROM */
->> +	ret = regmap_bulk_read(priv->eeprom_regmap, HP03_EEPROM_CX_OFFSET,
->> +			       coefs, sizeof(coefs));
->> +	if (ret < 0) {
->> +		dev_err(dev, "Failed to read EEPROM (reg=%02x)\n",
->> +			HP03_EEPROM_CX_OFFSET);
->> +		return ret;
->> +	}
->> +
->> +	/* Sample Temperature and Pressure */
->> +	gpiod_set_value_cansleep(priv->xclr_gpio, 1);
->> +
->> +	ret = hp03_get_temp_pressure(priv, HP03_ADC_READ_PRESSURE);
->> +	if (ret < 0) {
->> +		dev_err(dev, "Failed to read pressure\n");
->> +		return ret;
-> I'd be tempted to drop the gpio in these error conditions.
-
-Standard failpath which sets the GPIO to 0 added, thanks.
-
->> +	}
->> +	d1_val = ret;
->> +
->> +	ret = hp03_get_temp_pressure(priv, HP03_ADC_READ_TEMP);
->> +	if (ret < 0) {
->> +		dev_err(dev, "Failed to read temperature\n");
->> +		return ret;
->> +	}
->> +	d2_val = ret;
->> +
->> +	gpiod_set_value_cansleep(priv->xclr_gpio, 0);
->> +
->> +	/* The Cx coefficients and Temp/Pressure values are MSB first. */
->> +	for (i = 0; i < 7; i++)
->> +		cx_val[i] = (coefs[2 * i] << 8) | (coefs[(2 * i) + 1] << 0);
->> +	d1_val = ((d1_val >> 8) & 0xff) | ((d1_val & 0xff) << 8);
->> +	d2_val = ((d2_val >> 8) & 0xff) | ((d2_val & 0xff) << 8);
->> +
->> +	/* Coefficient voodoo from the HP03 datasheet. */
->> +	if (d2_val >= cx_val[4])
->> +		ab_val = coefs[14];	/* A-value */
->> +	else
->> +		ab_val = coefs[15];	/* B-value */
->> +
->> +	diff_val = d2_val - cx_val[4];
->> +	dut = (ab_val * (diff_val >> 7) * (diff_val >> 7)) >> coefs[16];
->> +	dut = diff_val - dut;
->> +
->> +	off = (cx_val[1] + (((cx_val[3] - 1024) * dut) >> 14)) * 4;
->> +	sens = cx_val[0] + ((cx_val[2] * dut) >> 10);
->> +	x = ((sens * (d1_val - 7168)) >> 14) - off;
->> +
->> +	priv->pressure = ((x * 100) >> 5) + (cx_val[6] * 10);
->> +	priv->temp = 250 + ((dut * cx_val[5]) >> 16) - (dut >> coefs[17]);
->> +
->> +	return 0;
->> +}
->> +
->> +static int hp03_read_raw(struct iio_dev *indio_dev,
->> +			 struct iio_chan_spec const *chan,
->> +			 int *val, int *val2, long mask)
->> +{
->> +	struct hp03_priv *priv = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	mutex_lock(&priv->lock);
->> +	ret = hp03_update_temp_pressure(priv);
->> +	mutex_unlock(&priv->lock);
->> +
->> +	if (ret)
->> +		return ret;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_PROCESSED:
->> +		switch (chan->type) {
->> +		case IIO_PRESSURE:
->> +			*val = priv->pressure / 100;
->> +			*val2 = (priv->pressure % 100) * 10000;
->> +			ret = IIO_VAL_INT_PLUS_MICRO;
->> +			break;
->> +		case IIO_TEMP:
->> +			*val = priv->temp / 100;
->> +			*val2 = (priv->temp % 100) * 10000;
->> +			ret = IIO_VAL_INT_PLUS_MICRO;
->> +			break;
->> +		default:
->> +			ret = -EINVAL;
->> +			break;
->> +		}
->> +		break;
->> +	default:
->> +		ret = -EINVAL;
->> +		break;
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static const struct iio_info hp03_info = {
->> +	.driver_module	= THIS_MODULE,
->> +	.read_raw	= &hp03_read_raw,
->> +};
->> +
->> +static int hp03_probe(struct i2c_client *client,
->> +		      const struct i2c_device_id *id)
->> +{
->> +	struct device *dev = &client->dev;
->> +	struct iio_dev *indio_dev;
->> +	struct hp03_priv *priv;
->> +	int ret;
->> +
->> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
->> +	if (!indio_dev)
->> +		return -ENOMEM;
->> +
->> +	priv = iio_priv(indio_dev);
->> +	priv->client = client;
->> +	mutex_init(&priv->lock);
->> +
->> +	indio_dev->dev.parent = dev;
->> +	indio_dev->name = id->name;
->> +	indio_dev->channels = hp03_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(hp03_channels);
->> +	indio_dev->info = &hp03_info;
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +
->> +	priv->eeprom_client = i2c_new_dummy(client->adapter, HP03_EEPROM_ADDR);
->> +	if (!priv->eeprom_client) {
->> +		dev_err(dev, "New EEPROM I2C device failed\n");
->> +		return -ENODEV;
->> +	}
->> +
->> +	priv->eeprom_regmap = devm_regmap_init_i2c(priv->eeprom_client,
->> +						   &hp03_regmap_config);
->> +	if (IS_ERR(priv->eeprom_regmap)) {
->> +		dev_err(dev, "Failed to allocate EEPROM regmap\n");
->> +		ret = PTR_ERR(priv->eeprom_regmap);
->> +		goto err;
->> +	}
->> +
->> +	priv->xclr_gpio = devm_gpiod_get_index(dev, "xclr", 0, GPIOD_OUT_HIGH);
->> +	if (IS_ERR(priv->xclr_gpio)) {
->> +		dev_err(dev, "Failed to claim XCLR GPIO\n");
->> +		ret = PTR_ERR(priv->xclr_gpio);
->> +		goto err;
->> +	}
->> +
->> +	ret = devm_iio_device_register(dev, indio_dev);
->> +	if (ret) {
->> +		dev_err(dev, "Failed to register IIO device\n");
->> +		goto err;
->> +	}
->> +
->> +	i2c_set_clientdata(client, indio_dev);
->> +
->> +	return 0;
->> +
->> +err:
->> +	i2c_unregister_device(priv->eeprom_client);
->> +	return ret;
->> +}
->> +
->> +static int hp03_remove(struct i2c_client *client)
->> +{
->> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +	struct hp03_priv *priv = iio_priv(indio_dev);
->> +
->> +	i2c_unregister_device(priv->eeprom_client);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct i2c_device_id hp03_id[] = {
->> +	{ "hp03", 0 },
->> +	{ },
->> +};
->> +MODULE_DEVICE_TABLE(i2c, hp03_id);
->> +
->> +static struct i2c_driver hp03_driver = {
->> +	.driver = {
->> +		.name	= "hp03",
->> +	},
->> +	.probe		= hp03_probe,
->> +	.remove		= hp03_remove,
->> +	.id_table	= hp03_id,
->> +};
->> +module_i2c_driver(hp03_driver);
->> +
->> +MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
->> +MODULE_DESCRIPTION("Driver for Hope RF HP03 pressure and temperature sensor");
->> +MODULE_LICENSE("GPL v2");
->>
+Jonathan
+> ---
+>  drivers/iio/magnetometer/Kconfig  |   2 +
+>  drivers/iio/magnetometer/ak8975.c | 135 +++++++++++++++++++++++++++++++-------
+>  2 files changed, 112 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+> index 021dc53..d9834ed 100644
+> --- a/drivers/iio/magnetometer/Kconfig
+> +++ b/drivers/iio/magnetometer/Kconfig
+> @@ -9,6 +9,8 @@ config AK8975
+>  	tristate "Asahi Kasei AK 3-Axis Magnetometer"
+>  	depends on I2C
+>  	depends on GPIOLIB || COMPILE_TEST
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+>  	help
+>  	  Say yes here to build support for Asahi Kasei AK8975, AK8963,
+>  	  AK09911 or AK09912 3-Axis Magnetometer.
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index 48d127a..1e68981 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -36,6 +36,12 @@
+>  
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/regulator/consumer.h>
+> +
+>  /*
+>   * Register definitions, as well as various shifts and masks to get at the
+>   * individual fields of the registers.
+> @@ -633,22 +639,15 @@ static int wait_conversion_complete_interrupt(struct ak8975_data *data)
+>  	return ret > 0 ? 0 : -ETIME;
+>  }
+>  
+> -/*
+> - * Emits the raw flux value for the x, y, or z axis.
+> - */
+> -static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+> +static int ak8975_start_read_axis(struct ak8975_data *data,
+> +				  const struct i2c_client *client)
+>  {
+> -	struct ak8975_data *data = iio_priv(indio_dev);
+> -	struct i2c_client *client = data->client;
+> -	int ret;
+> -
+> -	mutex_lock(&data->lock);
+> -
+>  	/* Set up the device for taking a sample. */
+> -	ret = ak8975_set_mode(data, MODE_ONCE);
+> +	int ret = ak8975_set_mode(data, MODE_ONCE);
+> +
+>  	if (ret < 0) {
+>  		dev_err(&client->dev, "Error in setting operating mode\n");
+> -		goto exit;
+> +		return ret;
+>  	}
+>  
+>  	/* Wait for the conversion to complete. */
+> @@ -659,7 +658,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+>  	else
+>  		ret = wait_conversion_complete_polled(data);
+>  	if (ret < 0)
+> -		goto exit;
+> +		return ret;
+>  
+>  	/* This will be executed only for non-interrupt based waiting case */
+>  	if (ret & data->def->ctrl_masks[ST1_DRDY]) {
+> @@ -667,32 +666,45 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+>  					       data->def->ctrl_regs[ST2]);
+>  		if (ret < 0) {
+>  			dev_err(&client->dev, "Error in reading ST2\n");
+> -			goto exit;
+> +			return ret;
+>  		}
+>  		if (ret & (data->def->ctrl_masks[ST2_DERR] |
+>  			   data->def->ctrl_masks[ST2_HOFL])) {
+>  			dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
+> -			ret = -EINVAL;
+> -			goto exit;
+> +			return -EINVAL;
+>  		}
+>  	}
+>  
+> -	/* Read the flux value from the appropriate register
+> -	   (the register is specified in the iio device attributes). */
+> -	ret = i2c_smbus_read_word_data(client, data->def->data_regs[index]);
+> -	if (ret < 0) {
+> -		dev_err(&client->dev, "Read axis data fails\n");
+> +	return 0;
+> +}
+> +
+> +/* Retrieve raw flux value for one of the x, y, or z axis.  */
+> +static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+> +{
+> +	struct ak8975_data *data = iio_priv(indio_dev);
+> +	const struct i2c_client *client = data->client;
+> +	const struct ak_def *def = data->def;
+> +	int ret;
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	ret = ak8975_start_read_axis(data, client);
+> +	if (ret)
+> +		goto exit;
+> +
+> +	ret = i2c_smbus_read_word_data(client, def->data_regs[index]);
+> +	if (ret < 0)
+>  		goto exit;
+> -	}
+>  
+>  	mutex_unlock(&data->lock);
+>  
+>  	/* Clamp to valid range. */
+> -	*val = clamp_t(s16, ret, -data->def->range, data->def->range);
+> +	*val = clamp_t(s16, ret, -def->range, def->range);
+>  	return IIO_VAL_INT;
+>  
+>  exit:
+>  	mutex_unlock(&data->lock);
+> +	dev_err(&client->dev, "Error in reading axis\n");
+>  	return ret;
+>  }
+>  
+> @@ -722,12 +734,22 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+>  			     BIT(IIO_CHAN_INFO_SCALE),			\
+>  		.address = index,					\
+> +		.scan_index = index,					\
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 16,					\
+> +			.storagebits = 16,				\
+> +			.endianness = IIO_CPU				\
+> +		}							\
+>  	}
+>  
+>  static const struct iio_chan_spec ak8975_channels[] = {
+>  	AK8975_CHANNEL(X, 0), AK8975_CHANNEL(Y, 1), AK8975_CHANNEL(Z, 2),
+> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+>  };
+>  
+> +static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
+> +
+>  static const struct iio_info ak8975_info = {
+>  	.read_raw = &ak8975_read_raw,
+>  	.driver_module = THIS_MODULE,
+> @@ -756,6 +778,56 @@ static const char *ak8975_match_acpi_device(struct device *dev,
+>  	return dev_name(dev);
+>  }
+>  
+> +static void ak8975_fill_buffer(struct iio_dev *indio_dev)
+> +{
+> +	struct ak8975_data *data = iio_priv(indio_dev);
+> +	const struct i2c_client *client = data->client;
+> +	const struct ak_def *def = data->def;
+> +	int ret;
+> +	s16 buff[8]; /* 3 x 16 bits axis values + 1 aligned 64 bits timestamp */
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	ret = ak8975_start_read_axis(data, client);
+> +	if (ret)
+> +		goto unlock;
+> +
+> +	/*
+> +	 * For each axis, read the flux value from the appropriate register
+> +	 * (the register is specified in the iio device attributes).
+> +	 */
+> +	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
+> +							def->data_regs[0],
+> +							3 * sizeof(buff[0]),
+> +							(u8 *)buff);
+> +	if (ret < 0)
+> +		goto unlock;
+> +
+> +	mutex_unlock(&data->lock);
+> +
+> +	/* Clamp to valid range. */
+> +	buff[0] = clamp_t(s16, le16_to_cpu(buff[0]), -def->range, def->range);
+> +	buff[1] = clamp_t(s16, le16_to_cpu(buff[1]), -def->range, def->range);
+> +	buff[2] = clamp_t(s16, le16_to_cpu(buff[2]), -def->range, def->range);
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, buff, iio_get_time_ns());
+> +	return;
+> +
+> +unlock:
+> +	mutex_unlock(&data->lock);
+> +	dev_err(&client->dev, "Error in reading axes block\n");
+> +}
+> +
+> +static irqreturn_t ak8975_handle_trigger(int irq, void *p)
+> +{
+> +	const struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +
+> +	ak8975_fill_buffer(indio_dev);
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  static int ak8975_probe(struct i2c_client *client,
+>  			const struct i2c_device_id *id)
+>  {
+> @@ -845,15 +917,27 @@ static int ak8975_probe(struct i2c_client *client,
+>  	indio_dev->channels = ak8975_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+>  	indio_dev->info = &ak8975_info;
+> +	indio_dev->available_scan_masks = ak8975_scan_masks;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->name = name;
+>  
+> -	err = iio_device_register(indio_dev);
+> -	if (err)
+> +	err = iio_triggered_buffer_setup(indio_dev, NULL, ak8975_handle_trigger,
+> +					 NULL);
+> +	if (err) {
+> +		dev_err(&client->dev, "triggered buffer setup failed\n");
+>  		goto power_off;
+> +	}
+> +
+> +	err = iio_device_register(indio_dev);
+> +	if (err) {
+> +		dev_err(&client->dev, "device register failed\n");
+> +		goto cleanup_buffer;
+> +	}
+>  
+>  	return 0;
+>  
+> +cleanup_buffer:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+>  power_off:
+>  	ak8975_power_off(client);
+>  	return err;
+> @@ -864,6 +948,7 @@ static int ak8975_remove(struct i2c_client *client)
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>  
+>  	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+>  	ak8975_power_off(client);
+>  
+>  	return 0;
 > 
 
-
--- 
-Best regards,
-Marek Vasut
