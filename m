@@ -1,277 +1,277 @@
-Return-Path: <sst@poczta.fm>
-Date: Sun, 10 Apr 2016 13:23:09 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iio: potentiometer: add driver for Maxim Integrated DS1803
-Message-ID: <20160410112309.GA8957@x220.localdomain>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43330 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752353AbcDJLYI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 07:24:08 -0400
+Subject: Re: [PATCH v2] iio: max5487: Add support for Maxim digital
+ potentiometers
+To: Cristina Moraru <cristina.moraru09@gmail.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, peda@axentia.se,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	daniel.baluta@intel.com, octavian.purdila@intel.com
+References: <1458818485-2770-1-git-send-email-cristina.moraru09@gmail.com>
+ <1460190283-3296-1-git-send-email-cristina.moraru09@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <570A37D4.6010003@kernel.org>
+Date: Sun, 10 Apr 2016 12:24:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1460190283-3296-1-git-send-email-cristina.moraru09@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The following functions are supported:
- - write, read potentiometer value
- - potentiometer scale
+On 09/04/16 09:24, Cristina Moraru wrote:
+> Add implementation for Maxim MAX5487, MAX5488, MAX5489
+> digital potentiometers.
+> 
+> Datasheet:
+> http://datasheets.maximintegrated.com/en/ds/MAX5487-MAX5489.pdf
+> 
+> Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
+> CC: Daniel Baluta <daniel.baluta@intel.com>
+Looks pretty good.  A few nitpicks + a somewhat theoretical race condition
+in the remove function due to use of devm_iio_device_register.
+Rule of thumb is you can't use this unless you have no remove function at all.
+(less obviously than normal in this case though!)
 
-Datasheet: https://datasheets.maximintegrated.com/en/ds/DS1803.pdf
+Jonathan
+> ---
+> Changes since v1:
+>         Fix spacing
+>         Eliminate max5487_cfg struct
+>         Add kohms as driver data
+>  drivers/iio/potentiometer/Kconfig   |  11 +++
+>  drivers/iio/potentiometer/Makefile  |   1 +
+>  drivers/iio/potentiometer/max5487.c | 169 ++++++++++++++++++++++++++++++++++++
+>  3 files changed, 181 insertions(+)
+>  create mode 100644 drivers/iio/potentiometer/max5487.c
+> 
+> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
+> index fd75db7..242c62d 100644
+> --- a/drivers/iio/potentiometer/Kconfig
+> +++ b/drivers/iio/potentiometer/Kconfig
+> @@ -5,6 +5,17 @@
+>  
+>  menu "Digital potentiometers"
+>  
+> +config MAX5487
+> +        tristate "Maxim MAX5487/MAX5488/MAX5489  Digital Potentiometer driver"
+> +        depends on SPI
+> +        help
+> +          Say yes here to build support for the Maxim
+> +          MAX5487, MAX5488, MAX5489 digital potentiomenter
+> +          chips.
+> +
+> +          To compile this driver as a module, choose M here: the
+> +          module will be called max5487.
+> +
+>  config MCP4531
+>  	tristate "Microchip MCP45xx/MCP46xx Digital Potentiometer driver"
+>  	depends on I2C
+> diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
+> index 8afe492..bc2dfd8 100644
+> --- a/drivers/iio/potentiometer/Makefile
+> +++ b/drivers/iio/potentiometer/Makefile
+> @@ -3,4 +3,5 @@
+>  #
+>  
+>  # When adding new entries keep the list in alphabetical order
+> +obj-$(CONFIG_MAX5487) += max5487.o
+>  obj-$(CONFIG_MCP4531) += mcp4531.o
+> diff --git a/drivers/iio/potentiometer/max5487.c b/drivers/iio/potentiometer/max5487.c
+> new file mode 100644
+> index 0000000..fa455b8
+> --- /dev/null
+> +++ b/drivers/iio/potentiometer/max5487.c
+> @@ -0,0 +1,169 @@
+> +/*
+> + * max5487.c - Support for MAX5487, MAX5488, MAX5489 digital potentiometers
+> + *
+> + * Copyright (C) Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + */
+> +#include <linux/module.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/acpi.h>
+> +#include <linux/regmap.h>
+> +
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/iio.h>
+> +
+> +#define MAX5487_DRV_NAME "max5487"
+This is one of my pet hates ;)  Why have this in a define at the top
+of the driver if it is used in only one place - and that place is where
+I would expect to look to see what that the driver is called.
+Still I don't care that much if you want to leave it here.  Just being fussy.
+> +
+> +#define MAX5487_WRITE_WIPER_A	0x01
+> +#define MAX5487_WRITE_WIPER_B	0x02
+> +
+> +/* copy both wiper regs to NV regs */
+> +#define MAX5487_COPY_AB_TO_NV	0x23
+> +/* copy both NV regs to wiper regs */
+> +#define MAX5487_COPY_NV_TO_AB	0x33
+> +
+> +#define MAX5487_MAX_POS		255
+> +
+> +struct max5487_data {
+> +	struct regmap *regmap;
+> +	int kohms;
+> +};
+> +
+> +#define MAX5487_CHANNEL(ch, addr) {				\
+> +	.type = IIO_RESISTANCE,					\
+> +	.indexed = 1,						\
+> +	.output = 1,						\
+> +	.channel = ch,						\
+> +	.address = addr,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +}
+> +
+> +static const struct iio_chan_spec max5487_channels[] = {
+> +	MAX5487_CHANNEL(0, MAX5487_WRITE_WIPER_A),
+> +	MAX5487_CHANNEL(1, MAX5487_WRITE_WIPER_B),
+> +};
+> +
+> +static int max5487_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct max5487_data *data = iio_priv(indio_dev);
+> +
+> +	if (mask != IIO_CHAN_INFO_SCALE)
+> +		return -EINVAL;
+> +
+> +	*val = 1000 * data->kohms;
+> +	*val2 = MAX5487_MAX_POS;
+Blank line here marginally preferred.
+> +	return IIO_VAL_FRACTIONAL;
+> +}
+> +
+> +static int max5487_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct max5487_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (val < 0 || val > MAX5487_MAX_POS)
+> +			return -EINVAL;
+> +		return regmap_write(data->regmap, chan->address, val);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info max5487_info = {
+> +	.read_raw = &max5487_read_raw,
+> +	.write_raw = &max5487_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static const struct regmap_config max5487_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +
+> +	.max_register = MAX5487_COPY_NV_TO_AB,
+> +};
+> +
+> +static int max5487_spi_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct max5487_data *data;
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	dev_set_drvdata(&spi->dev, indio_dev);
+> +	data = iio_priv(indio_dev);
+> +
+> +	data->regmap = devm_regmap_init_spi(spi, &max5487_regmap_config);
+> +	if (IS_ERR(data->regmap))
+> +		return PTR_ERR(data->regmap);
+> +
+> +	data->kohms = id->driver_data;
+> +
+> +	indio_dev->info = &max5487_info;
+> +	indio_dev->name = id->name;
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = max5487_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max5487_channels);
+> +
+> +	/* restore both wiper regs from NV regs */
+> +	ret = regmap_write(data->regmap, MAX5487_COPY_NV_TO_AB, 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(&spi->dev, indio_dev);
+Hmm. Interesting case here - using this clearly doesn't result in a driver
+crash, but it could in theory result in a 'race' of expectations...
 
-Signed-off-by: Slawomir Stepien <sst@poczta.fm>
----
-Changes since v2:
-- Use array of u8 as a result type for i2c_master_recv() call
+As you are using the devm_ register here, the unregister will only occur
+after everything in max5487_spi_remove has run. As the userspace api will
+remain available until then, it is in theory possible to have the wiper
+values stored to the non volatile memory and then get a sneaky change in
+after that on request from userspace.  Thus userspace may think that the
+value has been writen to the non volatile memory but it hasn't.
 
-Changes since v1:
-- Removed unnecessary include file
-- Use i2c_master_recv() in place of i2c_smbus_read_word_swapped()
-- On raw write make sure val2 is zero
-- Use ARRAY_SIZE when possible
+Hence, pleasee switch to the non devm_ version of iio_device_register
+and call iio_device_unregister before you save the wiper regs out.
+It's also more 'obviously correct' to unwind in a remove in the precise
+reverse order of the probe.  Makes reviewer's job easier :)
 
- .../bindings/iio/potentiometer/ds1803.txt          |  21 +++
- drivers/iio/potentiometer/Kconfig                  |  10 ++
- drivers/iio/potentiometer/Makefile                 |   1 +
- drivers/iio/potentiometer/ds1803.c                 | 173 +++++++++++++++++++++
- 4 files changed, 205 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
- create mode 100644 drivers/iio/potentiometer/ds1803.c
+> +}
+> +
+> +static int max5487_spi_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
+> +	struct max5487_data *data = iio_priv(indio_dev);
+> +
+> +	/* save both wiper regs to NV regs */
+> +	return regmap_write(data->regmap, MAX5487_COPY_AB_TO_NV, 0);
+> +}
+> +
+> +static const struct spi_device_id max5487_id[] = {
+> +	{ "MAX5487", 10 },
+> +	{ "MAX5488", 50 },
+> +	{ "MAX5489", 100 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(spi, max5487_id);
+> +
+> +static const struct acpi_device_id max5487_acpi_match[] = {
+> +	{ "MAX5487", 10 },
+> +	{ "MAX5488", 50 },
+> +	{ "MAX5489", 100 },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, max5487_acpi_match);
+> +
+> +static struct spi_driver max5487_driver = {
+> +	.driver = {
+> +		.name = MAX5487_DRV_NAME,
+> +		.owner = THIS_MODULE,
+> +		.acpi_match_table = ACPI_PTR(max5487_acpi_match),
+> +	},
+> +	.id_table = max5487_id,
+> +	.probe = max5487_spi_probe,
+> +	.remove = max5487_spi_remove
+> +};
+> +module_spi_driver(max5487_driver);
+> +
+> +MODULE_AUTHOR("Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>");
+> +MODULE_DESCRIPTION("max5487 SPI driver");
+> +MODULE_LICENSE("GPL v2");
+> 
 
-diff --git a/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt b/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
-new file mode 100644
-index 0000000..df77bf5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
-@@ -0,0 +1,21 @@
-+* Maxim Integrated DS1803 digital potentiometer driver
-+
-+The node for this driver must be a child node of a I2C controller, hence
-+all mandatory properties for your controller must be specified. See directory:
-+
-+        Documentation/devicetree/bindings/i2c
-+
-+for more details.
-+
-+Required properties:
-+	- compatible:  	Must be one of the following, depending on the
-+			model:
-+			"maxim,ds1803-010",
-+			"maxim,ds1803-050",
-+			"maxim,ds1803-100"
-+
-+Example:
-+ds1803: ds1803@1 {
-+	reg = <0x28>;
-+	compatible = "maxim,ds1803-010";
-+};
-diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-index 7ea069b..6acb238 100644
---- a/drivers/iio/potentiometer/Kconfig
-+++ b/drivers/iio/potentiometer/Kconfig
-@@ -5,6 +5,16 @@
- 
- menu "Digital potentiometers"
- 
-+config DS1803
-+	tristate "Maxim Integrated DS1803 Digital Potentiometer driver"
-+	depends on I2C
-+	help
-+	  Say yes here to build support for the Maxim Integrated DS1803
-+	  digital potentiomenter chip.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ds1803.
-+
- config MCP4131
- 	tristate "Microchip MCP413X/414X/415X/416X/423X/424X/425X/426X Digital Potentiometer driver"
- 	depends on SPI
-diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
-index 91a80f8..6007faa 100644
---- a/drivers/iio/potentiometer/Makefile
-+++ b/drivers/iio/potentiometer/Makefile
-@@ -3,6 +3,7 @@
- #
- 
- # When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_DS1803) += ds1803.o
- obj-$(CONFIG_MCP4131) += mcp4131.o
- obj-$(CONFIG_MCP4531) += mcp4531.o
- obj-$(CONFIG_TPL0102) += tpl0102.o
-diff --git a/drivers/iio/potentiometer/ds1803.c b/drivers/iio/potentiometer/ds1803.c
-new file mode 100644
-index 0000000..fb9e2a3
---- /dev/null
-+++ b/drivers/iio/potentiometer/ds1803.c
-@@ -0,0 +1,173 @@
-+/*
-+ * Maxim Integrated DS1803 digital potentiometer driver
-+ * Copyright (c) 2016 Slawomir Stepien
-+ *
-+ * Datasheet: https://datasheets.maximintegrated.com/en/ds/DS1803.pdf
-+ *
-+ * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
-+ * ds1803	2	256		10, 50, 100		0101xxx
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/export.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+
-+#define DS1803_MAX_POS		255
-+#define DS1803_WRITE(chan)	(0xa8 | ((chan) + 1))
-+
-+enum ds1803_type {
-+	DS1803_010,
-+	DS1803_050,
-+	DS1803_100,
-+};
-+
-+struct ds1803_cfg {
-+	int kohms;
-+};
-+
-+static const struct ds1803_cfg ds1803_cfg[] = {
-+	[DS1803_010] = { .kohms =  10, },
-+	[DS1803_050] = { .kohms =  50, },
-+	[DS1803_100] = { .kohms = 100, },
-+};
-+
-+struct ds1803_data {
-+	struct i2c_client *client;
-+	const struct ds1803_cfg *cfg;
-+};
-+
-+#define DS1803_CHANNEL(ch) {					\
-+	.type = IIO_RESISTANCE,					\
-+	.indexed = 1,						\
-+	.output = 1,						\
-+	.channel = (ch),					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+}
-+
-+static const struct iio_chan_spec ds1803_channels[] = {
-+	DS1803_CHANNEL(0),
-+	DS1803_CHANNEL(1),
-+};
-+
-+static int ds1803_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long mask)
-+{
-+	struct ds1803_data *data = iio_priv(indio_dev);
-+	int pot = chan->channel;
-+	int ret;
-+	u8 result[indio_dev->num_channels];
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = i2c_master_recv(data->client, result,
-+				indio_dev->num_channels);
-+		if (ret < 0)
-+			return ret;
-+
-+		*val = result[pot];
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 1000 * data->cfg->kohms;
-+		*val2 = DS1803_MAX_POS;
-+		return IIO_VAL_FRACTIONAL;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int ds1803_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long mask)
-+{
-+	struct ds1803_data *data = iio_priv(indio_dev);
-+	int pot = chan->channel;
-+
-+	if (val2 != 0)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (val > DS1803_MAX_POS || val < 0)
-+			return -EINVAL;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return i2c_smbus_write_byte_data(data->client, DS1803_WRITE(pot), val);
-+}
-+
-+static const struct iio_info ds1803_info = {
-+	.read_raw = ds1803_read_raw,
-+	.write_raw = ds1803_write_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int ds1803_probe(struct i2c_client *client,
-+			 const struct i2c_device_id *id)
-+{
-+	struct device *dev = &client->dev;
-+	struct ds1803_data *data;
-+	struct iio_dev *indio_dev;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	data = iio_priv(indio_dev);
-+	data->client = client;
-+	data->cfg = &ds1803_cfg[id->driver_data];
-+
-+	indio_dev->dev.parent = dev;
-+	indio_dev->info = &ds1803_info;
-+	indio_dev->channels = ds1803_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ds1803_channels);
-+	indio_dev->name = client->name;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+#if defined(CONFIG_OF)
-+static const struct of_device_id ds1803_dt_ids[] = {
-+	{ .compatible = "maxim,ds1803-010", .data = &ds1803_cfg[DS1803_010] },
-+	{ .compatible = "maxim,ds1803-050", .data = &ds1803_cfg[DS1803_050] },
-+	{ .compatible = "maxim,ds1803-100", .data = &ds1803_cfg[DS1803_100] },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, ds1803_dt_ids);
-+#endif /* CONFIG_OF */
-+
-+static const struct i2c_device_id ds1803_id[] = {
-+	{ "ds1803-010", DS1803_010 },
-+	{ "ds1803-050", DS1803_050 },
-+	{ "ds1803-100", DS1803_100 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(i2c, ds1803_id);
-+
-+static struct i2c_driver ds1803_driver = {
-+	.driver = {
-+		.name	= "ds1803",
-+		.of_match_table = of_match_ptr(ds1803_dt_ids),
-+	},
-+	.probe		= ds1803_probe,
-+	.id_table	= ds1803_id,
-+};
-+
-+module_i2c_driver(ds1803_driver);
-+
-+MODULE_AUTHOR("Slawomir Stepien <sst@poczta.fm>");
-+MODULE_DESCRIPTION("DS1803 digital potentiometer");
-+MODULE_LICENSE("GPL v2");
--- 
-2.8.0
