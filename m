@@ -1,65 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f193.google.com ([209.85.223.193]:35044 "EHLO
-	mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756107AbcDGOsH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Apr 2016 10:48:07 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: gregkh@linuxfoundation.org, tglx@linutronix.de, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wim@iguana.be,
-	linux@roeck-us.net, linus.walleij@linaro.org, gnurou@gmail.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org,
-	William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH 01/10] isa: Implement the module_isa_driver macro
-Date: Thu,  7 Apr 2016 10:47:22 -0400
-Message-Id: <e15a74f1cc7a72f97060f0f1acb2991ffa82bd97.1460040201.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1460040201.git.vilhelm.gray@gmail.com>
-References: <cover.1460040201.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1460040201.git.vilhelm.gray@gmail.com>
-References: <cover.1460040201.git.vilhelm.gray@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44090 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753263AbcDJOFm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 10:05:42 -0400
+Subject: Re: [PATCH 1/3] iio: core: Add devm_ APIs for
+ iio_channel_{get,release}
+To: Laxman Dewangan <ldewangan@nvidia.com>,
+	Daniel Baluta <daniel.baluta@gmail.com>
+References: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com>
+ <CAEnQRZBtqDQjydDKywYy9oLecFtjntfWhgOtd2xekVyFrYkH3w@mail.gmail.com>
+ <57052432.8070700@nvidia.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-doc@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <570A5DB3.3080805@kernel.org>
+Date: Sun, 10 Apr 2016 15:05:39 +0100
+MIME-Version: 1.0
+In-Reply-To: <57052432.8070700@nvidia.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The module_isa_driver macro is a helper macro for ISA drivers which do
-not do anything special in module init/exit. This eliminates a lot of
-boilerplate code. Each module may only use this macro once, and calling
-it replaces module_init and module_exit.
+On 06/04/16 15:58, Laxman Dewangan wrote:
+> Hi Daniel,
+> 
+> 
+> On Wednesday 06 April 2016 07:19 PM, Daniel Baluta wrote:
+>> On Wed, Apr 6, 2016 at 1:31 PM, Laxman Dewangan <ldewangan@nvidia.com> wrote:
+>>> Some of kernel driver uses the IIO framework to get the sensor
+>>> value via ADC or IIO HW driver. The client driver get iio channel
+>>> by iio_channel_get() and release it by calling iio_channel_release().
+>>>
+>>> Add resource managed version (devm_*) of these APIs so that if client
+>>> calls the devm_iio_channel_get() then it need not to release it explicitly,
+>>> it can be done by managed device framework when driver get un-binded.
+>>>
+>>> This reduces the code in error path and also need of .remove callback in
+>>> some cases.
+>>>
+>> Please provide at least one example of code that uses this API.
+> 
+> Most of client for this APIs are in other subsystem.
+> When I was working on the patch
+> [PATCH 2/2] thermal: generic-adc: Add ADC based thermal sensor driver
+> 
+> if I have devm_iio_channel_get() then I can get .remove callback at all.
+> 
+> I did not use this new APIs in my patch because they are in different subsystem.
+It's actually worse than that having taken a quick look at the generic-adc thermal patch
+you reference above.
+(perhaps worth cc'ing linux-iio for next version of that).
 
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- include/linux/isa.h | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+Without this devm function set you have a race in remove in which I think you can
+get attempts to access the channels after they have been released...
 
-diff --git a/include/linux/isa.h b/include/linux/isa.h
-index 2a02862..d410259 100644
---- a/include/linux/isa.h
-+++ b/include/linux/isa.h
-@@ -36,4 +36,25 @@ static inline void isa_unregister_driver(struct isa_driver *d)
- }
- #endif
- 
-+/**
-+ * module_isa_driver() - Helper macro for registering a ISA driver
-+ * @__isa_driver: isa_driver struct
-+ * @__num_isa_dev: number of devices to register
-+ *
-+ * Helper macro for ISA drivers which do not do anything special in module
-+ * init/exit. This eliminates a lot of boilerplate code. Each module may only
-+ * use this macro once, and calling it replaces module_init and module_exit.
-+ */
-+#define module_isa_driver(__isa_driver, __num_isa_dev) \
-+static int __init __isa_driver##_init(void) \
-+{ \
-+	return isa_register_driver(&(__isa_driver), __num_isa_dev); \
-+} \
-+module_init(__isa_driver##_init); \
-+static void __exit __isa_driver##_exit(void) \
-+{ \
-+	isa_unregister_driver(&(__isa_driver)); \
-+} \
-+module_exit(__isa_driver##_exit);
-+
- #endif /* __LINUX_ISA_H */
--- 
-2.7.3
+> +
+> +	gti->tz_dev = devm_thermal_zone_of_sensor_register(&pdev->dev, 0,
+> +				gti, &gadc_thermal_ops);
+> +	if (IS_ERR(gti->tz_dev)) {
+> +		ret = PTR_ERR(gti->tz_dev);
+> +		dev_err(&pdev->dev, "Thermal zone sensor register failed: %d\n",
+> +			ret);
+> +		goto sensor_fail;
+> +	}
+This will get cleaned up in remove 'after' the iio_channels are released.
+Hence you have a race in which they can probably be accessed after release
+(unless some magic is going on that I've missed).
+> +
+> +	return 0;
+> +
+> +sensor_fail:
+> +	iio_channel_release(gti->channel);
+> +	return ret;
+> +}
+> +
+> +static int gadc_thermal_remove(struct platform_device *pdev)
+> +{
+> +	struct gadc_thermal_info *gti = platform_get_drvdata(pdev);
+> +
+> +	iio_channel_release(gti->channel);
+> +
+> +	return 0;
+> +}
+> +
+
+
+> 
+> 
+> 
 
