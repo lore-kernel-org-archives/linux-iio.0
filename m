@@ -1,73 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44045 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44110 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753060AbcDJN72 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 09:59:28 -0400
-Subject: Re: [PATCH v2] staging: iio: ad7606: use
- iio_device_{claim|release}_direct_mode()
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Alison Schofield <amsfield22@gmail.com>,
+	with ESMTP id S1753226AbcDJOIt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 10:08:49 -0400
+Subject: Re: [PATCH 1/3] iio: core: Add devm_ APIs for
+ iio_channel_{get,release}
+To: Laxman Dewangan <ldewangan@nvidia.com>, corbet@lwn.net,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+References: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com>
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-References: <20160401165349.GA2678@d830.WORKGROUP>
- <1459915891-2586-1-git-send-email-amsfield22@gmail.com>
- <57057A4E.208@metafoo.de>
-Cc: knaack.h@gmx.de, Michael.Hennerich@analog.com, pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <570A5C3D.2020102@kernel.org>
-Date: Sun, 10 Apr 2016 14:59:25 +0100
+Message-ID: <570A5E6F.1030401@kernel.org>
+Date: Sun, 10 Apr 2016 15:08:47 +0100
 MIME-Version: 1.0
-In-Reply-To: <57057A4E.208@metafoo.de>
+In-Reply-To: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/04/16 22:06, Lars-Peter Clausen wrote:
-> On 04/06/2016 06:11 AM, Alison Schofield wrote:
->> Replace the code that guarantees the device stays in direct mode with
->> iio_device_{claim|release}_direct_mode() which does same.
->>
->> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+On 06/04/16 11:31, Laxman Dewangan wrote:
+> Some of kernel driver uses the IIO framework to get the sensor
+> value via ADC or IIO HW driver. The client driver get iio channel
+> by iio_channel_get() and release it by calling iio_channel_release().
 > 
-> Looks good, thanks.
+> Add resource managed version (devm_*) of these APIs so that if client
+> calls the devm_iio_channel_get() then it need not to release it explicitly,
+> it can be done by managed device framework when driver get un-binded.
 > 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> This reduces the code in error path and also need of .remove callback in
+> some cases.
 > 
-Applied to the togreg branch of iio.git - thanks.
+> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
 
-Jonathan
->> ---
->> Changed in v2:
->>  - removed improper application of claim/release from intr handler
->>  - updated changelog
->>
->>  drivers/staging/iio/adc/ad7606_core.c | 12 ++++++------
->>  1 file changed, 6 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
->> index 6dbc811..f79ee61 100644
->> --- a/drivers/staging/iio/adc/ad7606_core.c
->> +++ b/drivers/staging/iio/adc/ad7606_core.c
->> @@ -88,12 +88,12 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
->>  
->>  	switch (m) {
->>  	case IIO_CHAN_INFO_RAW:
->> -		mutex_lock(&indio_dev->mlock);
->> -		if (iio_buffer_enabled(indio_dev))
->> -			ret = -EBUSY;
->> -		else
->> -			ret = ad7606_scan_direct(indio_dev, chan->address);
->> -		mutex_unlock(&indio_dev->mlock);
->> +		ret = iio_device_claim_direct_mode(indio_dev);
->> +		if (ret)
->> +			return ret;
->> +
->> +		ret = ad7606_scan_direct(indio_dev, chan->address);
->> +		iio_device_release_direct_mode(indio_dev);
->>  
->>  		if (ret < 0)
->>  			return ret;
->>
+I'm fine with this - but would like it to sit for a few more days to see
+if it gets any other feedback.
+> ---
+>  drivers/iio/inkern.c         | 48 ++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/iio/consumer.h | 27 +++++++++++++++++++++++++
+>  2 files changed, 75 insertions(+)
+> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 734a004..18e623f 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -356,6 +356,54 @@ void iio_channel_release(struct iio_channel *channel)
+>  }
+>  EXPORT_SYMBOL_GPL(iio_channel_release);
+>  
+> +static void devm_iio_channel_free(struct device *dev, void *res)
+> +{
+> +	struct iio_channel *channel = *(struct iio_channel **)res;
+> +
+> +	iio_channel_release(channel);
+> +}
+> +
+> +static int devm_iio_channel_match(struct device *dev, void *res, void *data)
+> +{
+> +	struct iio_channel **r = res;
+> +
+> +	if (!r || !*r) {
+> +		WARN_ON(!r || !*r);
+> +		return 0;
+> +	}
+> +
+> +	return *r == data;
+> +}
+> +
+> +struct iio_channel *devm_iio_channel_get(struct device *dev,
+> +					 const char *channel_name)
+> +{
+> +	struct iio_channel **ptr, *channel;
+> +
+> +	ptr = devres_alloc(devm_iio_channel_free, sizeof(*ptr), GFP_KERNEL);
+> +	if (!ptr)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	channel = iio_channel_get(dev, channel_name);
+> +	if (IS_ERR(channel)) {
+> +		devres_free(ptr);
+> +		return channel;
+> +	}
+> +
+> +	*ptr = channel;
+> +	devres_add(dev, ptr);
+> +
+> +	return channel;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_iio_channel_get);
+> +
+> +void devm_iio_channel_release(struct device *dev, struct iio_channel *channel)
+> +{
+> +	WARN_ON(devres_release(dev, devm_iio_channel_free,
+> +			       devm_iio_channel_match, channel));
+> +}
+> +EXPORT_SYMBOL_GPL(devm_iio_channel_release);
+> +
+>  struct iio_channel *iio_channel_get_all(struct device *dev)
+>  {
+>  	const char *name;
+> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> index fad5867..e1e033d 100644
+> --- a/include/linux/iio/consumer.h
+> +++ b/include/linux/iio/consumer.h
+> @@ -49,6 +49,33 @@ struct iio_channel *iio_channel_get(struct device *dev,
+>  void iio_channel_release(struct iio_channel *chan);
+>  
+>  /**
+> + * devm_iio_channel_get() - Resource managed version of iio_channel_get().
+> + * @dev:		Pointer to consumer device. Device name must match
+> + *			the name of the device as provided in the iio_map
+> + *			with which the desired provider to consumer mapping
+> + *			was registered.
+> + * @consumer_channel:	Unique name to identify the channel on the consumer
+> + *			side. This typically describes the channels use within
+> + *			the consumer. E.g. 'battery_voltage'
+> + *
+> + * Returns a pointer to negative errno if it is not able to get the iio channel
+> + * otherwise returns valid pointer for iio channel.
+> + *
+> + * The allocated iio channel is automatically released when the device is
+> + * unbound.
+> + */
+> +struct iio_channel *devm_iio_channel_get(struct device *dev,
+> +					 const char *consumer_channel);
+> +/**
+> + * devm_iio_channel_release() - Resource managed version of
+> + *				iio_channel_release().
+> + * @dev:		Pointer to consumer device for which resource
+> + *			is allocared.
+> + * @chan:		The channel to be released.
+> + */
+> +void devm_iio_channel_release(struct device *dev, struct iio_channel *chan);
+> +
+> +/**
+>   * iio_channel_get_all() - get all channels associated with a client
+>   * @dev:		Pointer to consumer device.
+>   *
 > 
 
