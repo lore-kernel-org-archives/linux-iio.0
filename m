@@ -1,43 +1,125 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44406 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44054 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753655AbcDJPNd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 11:13:33 -0400
-Subject: Re: [PATCH v2 27/30] iio: use parity32 in adxrs450
-To: Lars-Peter Clausen <lars@metafoo.de>, zengzhaoxiu@163.com,
-	Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net
-References: <57031D9D.801@gmail.com>
- <1459937776-8438-1-git-send-email-zengzhaoxiu@163.com>
- <570A6536.3000308@kernel.org> <570A662E.8030807@metafoo.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+	with ESMTP id S1753660AbcDJOAS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 10:00:18 -0400
+Subject: Re: [PATCH] staging: iio: ad7606: use
+ iio_device_{claim|release}_direct_mode()
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Alison Schofield <amsfield22@gmail.com>,
+	linux-iio@vger.kernel.org
+References: <20160401165349.GA2678@d830.WORKGROUP>
+ <5700DDB9.5060100@kernel.org> <5705501D.60504@metafoo.de>
+Cc: knaack.h@gmx.de, Michael.Hennerich@analog.com, pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <570A6D99.6000103@kernel.org>
-Date: Sun, 10 Apr 2016 16:13:29 +0100
+Message-ID: <570A5C70.1030401@kernel.org>
+Date: Sun, 10 Apr 2016 15:00:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <570A662E.8030807@metafoo.de>
+In-Reply-To: <5705501D.60504@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/04/16 15:41, Lars-Peter Clausen wrote:
-> On 04/10/2016 04:37 PM, Jonathan Cameron wrote:
->> On 06/04/16 11:16, zengzhaoxiu@163.com wrote:
->>> From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+On 06/04/16 19:06, Lars-Peter Clausen wrote:
+> On 04/03/2016 11:09 AM, Jonathan Cameron wrote:
+>> On 01/04/16 17:53, Alison Schofield wrote:
+>>> Two instances are moved to the new claim/release API:
 >>>
->>> Signed-off-by: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
->> Applied to the togreg branch of iio.git as you seem to have addressed
->> Lars' comments.
+>>> In the first instance, the driver was using mlock followed by
+>>> iio_buffer_enabled(). Replace that code with the new API to guarantee
+>>> the device stays in direct mode. There is no change in driver behavior.
+>>>
+>>> In the second instance, the driver was not using mlock to hold the
+>>> device in direct mode, but should have been.  Here we introduce the
+>>> new API to guarantee direct mode. This is a change in driver behavior.
+>>>
+>>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+>>> ---
+>>>  drivers/staging/iio/adc/ad7606_core.c | 15 ++++++++-------
+>>>  1 file changed, 8 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/drivers/staging/iio/adc/ad7606_core.c
+> b/drivers/staging/iio/adc/ad7606_core.c
+>>> index 6dbc811..f914b8d 100644
+>>> --- a/drivers/staging/iio/adc/ad7606_core.c
+>>> +++ b/drivers/staging/iio/adc/ad7606_core.c
+>>> @@ -88,12 +88,12 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
+>>>
+>>>  	switch (m) {
+>>>  	case IIO_CHAN_INFO_RAW:
+>>> -		mutex_lock(&indio_dev->mlock);
+>>> -		if (iio_buffer_enabled(indio_dev))
+>>> -			ret = -EBUSY;
+>>> -		else
+>>> -			ret = ad7606_scan_direct(indio_dev, chan->address);
+>>> -		mutex_unlock(&indio_dev->mlock);
+>>> +		ret = iio_device_claim_direct_mode(indio_dev);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +
+>>> +		ret = ad7606_scan_direct(indio_dev, chan->address);
+>>> +		iio_device_release_direct_mode(indio_dev);
+>>>
+>>>  		if (ret < 0)
+>>>  			return ret;
+>>> @@ -411,8 +411,9 @@ static irqreturn_t ad7606_interrupt(int irq, void
+> *dev_id)
+>>>  	struct iio_dev *indio_dev = dev_id;
+>>>  	struct ad7606_state *st = iio_priv(indio_dev);
+>>>
+>>> -	if (iio_buffer_enabled(indio_dev)) {
+>>> +	if (!iio_device_claim_direct_mode(indio_dev))  {
+>>>  		schedule_work(&st->poll_work);
+>>> +		iio_device_release_direct_mode(indio_dev);
+>> Unfortunately this won't work.  That interrupt is still in traditional non
+>> threaded form.  This will take a mutex in a top half interrupt handler
+>> where a sleep cannot occur.
+>>
+>> I'm just wondering how expensive it would be to fix this by moving that over
+>> to a threaded handler.  In the poll_work case (buffer) it would be cleaner
+> to do
+>> so. I'm really confused what the intended interrupt handler
+>> is in here.  I 'think' the sequence is:
+>>
+>> Trigger fires the convst pin whether in top half or the bottom half of
+>> a threaded interrupt, but not both - I guess this works, if it is rather
+>> 'unusual'.
+>>
+>> We then get a interrupt to indicate that it has finished conversion and that
+>> filters through to actually fill the buffer via a traditional top half /
+>> bottom half interrupt handler.
+>>
+>> So if we were to convert that to a threaded interrupt (with no top half / non
+>> threaded part), we could drop the schedule_work and just call
+>> ad7606_poll_bh_to_ring from the thread handler.
+>>
+>> In the direct read case I doubt we care about the delay in dropping to a
+>> thread prior to signalling the data is ready.
+>>
+>> Can't think why this driver is still in staging :)
 > 
-> The whole series needs to go through the same tree since the new functions
-> are introduced in the beginning.
-Yeah, I just realized that when my build test failed!
+> Yeah, we should leave this driver out from the conversion for now. The whole
+> convst pin handling need a major rework. It shouldn't really be in the
+> driver and usually you wouldn't want to use to use a GPIO and software timer
+> since that gives you way to much jitter for good results. You'd probably use
+> something like a PWM.
+Agreed, you would normally move this into hardware, but we'd still need to allow
+for the possibility of it being software triggered - even if ugly.
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+Anyhow, lets park this for now.
+
+J
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>> Lars, any interest from Analog in getting this one cleaned up?  Also
+>> do you have any test hardware, if we mess around with this interrupt handling?
+> 
+> I have the hardware somewhere in some storage bay, but just converting this
+> over to threaded interrupt handling is not really a solution. So, if you
+> want to get rid of the iio_buffer_enabled() in the interrupt handler a
+> simple solution is to register preenable and postdisable callbacks where you
+> set a flag in the driver struct to indicate that it is in buffered mode or not.
 > 
 
