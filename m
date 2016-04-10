@@ -10,9 +10,9 @@ Cc: knaack.h@gmx.de,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v2 4/5] iio: health: afe4404: use regmap to retrieve struct device
-Date: Sun, 10 Apr 2016 12:07:42 -0700
-Message-Id: <2dd23e55fa7c2d16c577146eefd4a84046d2b838.1460314070.git.amsfield22@gmail.com>
+Subject: [PATCH v2 5/5] iio: gyro: bmg160: use regmap to retrieve struct device
+Date: Sun, 10 Apr 2016 12:08:14 -0700
+Message-Id: <63dd9227f9a7e56f7e03f8963e798e6d7d8bb70f.1460314070.git.amsfield22@gmail.com>
 In-Reply-To: <cover.1460314070.git.amsfield22@gmail.com>
 References: <cover.1460314070.git.amsfield22@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -24,151 +24,353 @@ Patch created using Coccinelle plus manual edits.
 
 Signed-off-by: Alison Schofield <amsfield22@gmail.com>
 ---
- drivers/iio/health/afe4404.c | 38 +++++++++++++++++++-------------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
+ drivers/iio/gyro/bmg160_core.c | 86 +++++++++++++++++++++---------------------
+ 1 file changed, 44 insertions(+), 42 deletions(-)
 
-diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
-index 5096a46..9cd8590 100644
---- a/drivers/iio/health/afe4404.c
-+++ b/drivers/iio/health/afe4404.c
-@@ -107,14 +107,12 @@
+diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+index 2493bb1..b2b1071 100644
+--- a/drivers/iio/gyro/bmg160_core.c
++++ b/drivers/iio/gyro/bmg160_core.c
+@@ -95,7 +95,6 @@
+ #define BMG160_AUTO_SUSPEND_DELAY_MS	2000
  
- /**
-  * struct afe4404_data
-- * @dev - Device structure
-  * @regmap - Register map of the device
-  * @regulator - Pointer to the regulator for the IC
-  * @trig - IIO trigger for this device
-  * @irq - ADC_RDY line interrupt number
-  */
- struct afe4404_data {
+ struct bmg160_data {
 -	struct device *dev;
  	struct regmap *regmap;
- 	struct regulator *regulator;
- 	struct iio_trigger *trig;
-@@ -534,54 +532,54 @@ static int afe4404_probe(struct i2c_client *client,
- 	afe = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
+ 	struct iio_trigger *dready_trig;
+ 	struct iio_trigger *motion_trig;
+@@ -137,11 +136,12 @@ static const struct {
  
--	afe->dev = &client->dev;
- 	afe->irq = client->irq;
- 
- 	afe->regmap = devm_regmap_init_i2c(client, &afe4404_regmap_config);
- 	if (IS_ERR(afe->regmap)) {
--		dev_err(afe->dev, "Unable to allocate register map\n");
-+		dev_err(&client->dev, "Unable to allocate register map\n");
- 		return PTR_ERR(afe->regmap);
- 	}
- 
--	afe->regulator = devm_regulator_get(afe->dev, "tx_sup");
-+	afe->regulator = devm_regulator_get(&client->dev, "tx_sup");
- 	if (IS_ERR(afe->regulator)) {
--		dev_err(afe->dev, "Unable to get regulator\n");
-+		dev_err(&client->dev, "Unable to get regulator\n");
- 		return PTR_ERR(afe->regulator);
- 	}
- 	ret = regulator_enable(afe->regulator);
- 	if (ret) {
--		dev_err(afe->dev, "Unable to enable regulator\n");
-+		dev_err(&client->dev, "Unable to enable regulator\n");
- 		return ret;
- 	}
- 
- 	ret = regmap_write(afe->regmap, AFE440X_CONTROL0,
- 			   AFE440X_CONTROL0_SW_RESET);
- 	if (ret) {
--		dev_err(afe->dev, "Unable to reset device\n");
-+		dev_err(&client->dev, "Unable to reset device\n");
- 		goto disable_reg;
- 	}
- 
- 	ret = regmap_multi_reg_write(afe->regmap, afe4404_reg_sequences,
- 				     ARRAY_SIZE(afe4404_reg_sequences));
- 	if (ret) {
--		dev_err(afe->dev, "Unable to set register defaults\n");
-+		dev_err(&client->dev, "Unable to set register defaults\n");
- 		goto disable_reg;
- 	}
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	indio_dev->dev.parent = afe->dev;
-+	indio_dev->dev.parent = &client->dev;
- 	indio_dev->channels = afe4404_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(afe4404_channels);
- 	indio_dev->name = AFE4404_DRIVER_NAME;
- 	indio_dev->info = &afe4404_iio_info;
- 
- 	if (afe->irq > 0) {
--		afe->trig = devm_iio_trigger_alloc(afe->dev,
-+		afe->trig = devm_iio_trigger_alloc(&client->dev,
- 						   "%s-dev%d",
- 						   indio_dev->name,
- 						   indio_dev->id);
- 		if (!afe->trig) {
--			dev_err(afe->dev, "Unable to allocate IIO trigger\n");
-+			dev_err(&client->dev,
-+				"Unable to allocate IIO trigger\n");
- 			ret = -ENOMEM;
- 			goto disable_reg;
- 		}
-@@ -589,21 +587,22 @@ static int afe4404_probe(struct i2c_client *client,
- 		iio_trigger_set_drvdata(afe->trig, indio_dev);
- 
- 		afe->trig->ops = &afe4404_trigger_ops;
--		afe->trig->dev.parent = afe->dev;
-+		afe->trig->dev.parent = &client->dev;
- 
- 		ret = iio_trigger_register(afe->trig);
- 		if (ret) {
--			dev_err(afe->dev, "Unable to register IIO trigger\n");
-+			dev_err(&client->dev,
-+				"Unable to register IIO trigger\n");
- 			goto disable_reg;
- 		}
- 
--		ret = devm_request_threaded_irq(afe->dev, afe->irq,
-+		ret = devm_request_threaded_irq(&client->dev, afe->irq,
- 						iio_trigger_generic_data_rdy_poll,
- 						NULL, IRQF_ONESHOT,
- 						AFE4404_DRIVER_NAME,
- 						afe->trig);
- 		if (ret) {
--			dev_err(afe->dev, "Unable to request IRQ\n");
-+			dev_err(&client->dev, "Unable to request IRQ\n");
- 			goto disable_reg;
- 		}
- 	}
-@@ -611,13 +610,13 @@ static int afe4404_probe(struct i2c_client *client,
- 	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
- 					 afe4404_trigger_handler, NULL);
- 	if (ret) {
--		dev_err(afe->dev, "Unable to setup buffer\n");
-+		dev_err(&client->dev, "Unable to setup buffer\n");
- 		goto unregister_trigger;
- 	}
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret) {
--		dev_err(afe->dev, "Unable to register IIO device\n");
-+		dev_err(&client->dev, "Unable to register IIO device\n");
- 		goto unregister_triggered_buffer;
- 	}
- 
-@@ -638,6 +637,7 @@ static int afe4404_remove(struct i2c_client *client)
+ static int bmg160_set_mode(struct bmg160_data *data, u8 mode)
  {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 	struct afe4404_data *afe = iio_priv(indio_dev);
-+	struct device *dev = regmap_get_device(afe->regmap);
++	struct device *dev = regmap_get_device(data->regmap);
  	int ret;
  
- 	iio_device_unregister(indio_dev);
-@@ -649,7 +649,7 @@ static int afe4404_remove(struct i2c_client *client)
- 
- 	ret = regulator_disable(afe->regulator);
- 	if (ret) {
--		dev_err(afe->dev, "Unable to disable regulator\n");
-+		dev_err(dev, "Unable to disable regulator\n");
+ 	ret = regmap_write(data->regmap, BMG160_REG_PMU_LPW, mode);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error writing reg_pmu_lpw\n");
++		dev_err(dev, "Error writing reg_pmu_lpw\n");
  		return ret;
+ 	}
+ 
+@@ -162,6 +162,7 @@ static int bmg160_convert_freq_to_bit(int val)
+ 
+ static int bmg160_set_bw(struct bmg160_data *data, int val)
+ {
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 	int bw_bits;
+ 
+@@ -171,7 +172,7 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
+ 
+ 	ret = regmap_write(data->regmap, BMG160_REG_PMU_BW, bw_bits);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error writing reg_pmu_bw\n");
++		dev_err(dev, "Error writing reg_pmu_bw\n");
+ 		return ret;
+ 	}
+ 
+@@ -182,18 +183,19 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
+ 
+ static int bmg160_chip_init(struct bmg160_data *data)
+ {
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 	unsigned int val;
+ 
+ 	ret = regmap_read(data->regmap, BMG160_REG_CHIP_ID, &val);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error reading reg_chip_id\n");
++		dev_err(dev, "Error reading reg_chip_id\n");
+ 		return ret;
+ 	}
+ 
+-	dev_dbg(data->dev, "Chip Id %x\n", val);
++	dev_dbg(dev, "Chip Id %x\n", val);
+ 	if (val != BMG160_CHIP_ID_VAL) {
+-		dev_err(data->dev, "invalid chip %x\n", val);
++		dev_err(dev, "invalid chip %x\n", val);
+ 		return -ENODEV;
+ 	}
+ 
+@@ -212,14 +214,14 @@ static int bmg160_chip_init(struct bmg160_data *data)
+ 	/* Set Default Range */
+ 	ret = regmap_write(data->regmap, BMG160_REG_RANGE, BMG160_RANGE_500DPS);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error writing reg_range\n");
++		dev_err(dev, "Error writing reg_range\n");
+ 		return ret;
+ 	}
+ 	data->dps_range = BMG160_RANGE_500DPS;
+ 
+ 	ret = regmap_read(data->regmap, BMG160_REG_SLOPE_THRES, &val);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error reading reg_slope_thres\n");
++		dev_err(dev, "Error reading reg_slope_thres\n");
+ 		return ret;
+ 	}
+ 	data->slope_thres = val;
+@@ -228,7 +230,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
+ 	ret = regmap_update_bits(data->regmap, BMG160_REG_INT_EN_1,
+ 				 BMG160_INT1_BIT_OD, 0);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error updating bits in reg_int_en_1\n");
++		dev_err(dev, "Error updating bits in reg_int_en_1\n");
+ 		return ret;
+ 	}
+ 
+@@ -236,7 +238,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
+ 			   BMG160_INT_MODE_LATCH_INT |
+ 			   BMG160_INT_MODE_LATCH_RESET);
+ 	if (ret < 0) {
+-		dev_err(data->dev,
++		dev_err(dev,
+ 			"Error writing reg_motion_intr\n");
+ 		return ret;
+ 	}
+@@ -247,20 +249,21 @@ static int bmg160_chip_init(struct bmg160_data *data)
+ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+ {
+ #ifdef CONFIG_PM
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 
+ 	if (on)
+-		ret = pm_runtime_get_sync(data->dev);
++		ret = pm_runtime_get_sync(dev);
+ 	else {
+-		pm_runtime_mark_last_busy(data->dev);
+-		ret = pm_runtime_put_autosuspend(data->dev);
++		pm_runtime_mark_last_busy(dev);
++		ret = pm_runtime_put_autosuspend(dev);
+ 	}
+ 
+ 	if (ret < 0) {
+-		dev_err(data->dev,
+-			"Failed: bmg160_set_power_state for %d\n", on);
++		dev_err(dev, "Failed: bmg160_set_power_state for %d\n", on);
++
+ 		if (on)
+-			pm_runtime_put_noidle(data->dev);
++			pm_runtime_put_noidle(dev);
+ 
+ 		return ret;
+ 	}
+@@ -272,6 +275,7 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+ 					     bool status)
+ {
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 
+ 	/* Enable/Disable INT_MAP0 mapping */
+@@ -279,7 +283,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+ 				 BMG160_INT_MAP_0_BIT_ANY,
+ 				 (status ? BMG160_INT_MAP_0_BIT_ANY : 0));
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error updating bits reg_int_map0\n");
++		dev_err(dev, "Error updating bits reg_int_map0\n");
+ 		return ret;
+ 	}
+ 
+@@ -289,8 +293,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+ 		ret = regmap_write(data->regmap, BMG160_REG_SLOPE_THRES,
+ 				   data->slope_thres);
+ 		if (ret < 0) {
+-			dev_err(data->dev,
+-				"Error writing reg_slope_thres\n");
++			dev_err(dev, "Error writing reg_slope_thres\n");
+ 			return ret;
+ 		}
+ 
+@@ -298,8 +301,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+ 				   BMG160_INT_MOTION_X | BMG160_INT_MOTION_Y |
+ 				   BMG160_INT_MOTION_Z);
+ 		if (ret < 0) {
+-			dev_err(data->dev,
+-				"Error writing reg_motion_intr\n");
++			dev_err(dev, "Error writing reg_motion_intr\n");
+ 			return ret;
+ 		}
+ 
+@@ -314,8 +316,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+ 					   BMG160_INT_MODE_LATCH_INT |
+ 					   BMG160_INT_MODE_LATCH_RESET);
+ 			if (ret < 0) {
+-				dev_err(data->dev,
+-					"Error writing reg_rst_latch\n");
++				dev_err(dev, "Error writing reg_rst_latch\n");
+ 				return ret;
+ 			}
+ 		}
+@@ -328,7 +329,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+ 	}
+ 
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error writing reg_int_en0\n");
++		dev_err(dev, "Error writing reg_int_en0\n");
+ 		return ret;
+ 	}
+ 
+@@ -338,6 +339,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+ 					   bool status)
+ {
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 
+ 	/* Enable/Disable INT_MAP1 mapping */
+@@ -345,7 +347,7 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+ 				 BMG160_INT_MAP_1_BIT_NEW_DATA,
+ 				 (status ? BMG160_INT_MAP_1_BIT_NEW_DATA : 0));
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error updating bits in reg_int_map1\n");
++		dev_err(dev, "Error updating bits in reg_int_map1\n");
+ 		return ret;
+ 	}
+ 
+@@ -354,9 +356,8 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+ 				   BMG160_INT_MODE_NON_LATCH_INT |
+ 				   BMG160_INT_MODE_LATCH_RESET);
+ 		if (ret < 0) {
+-			dev_err(data->dev,
+-				"Error writing reg_rst_latch\n");
+-				return ret;
++			dev_err(dev, "Error writing reg_rst_latch\n");
++			return ret;
+ 		}
+ 
+ 		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0,
+@@ -368,16 +369,15 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+ 				   BMG160_INT_MODE_LATCH_INT |
+ 				   BMG160_INT_MODE_LATCH_RESET);
+ 		if (ret < 0) {
+-			dev_err(data->dev,
+-				"Error writing reg_rst_latch\n");
+-				return ret;
++			dev_err(dev, "Error writing reg_rst_latch\n");
++			return ret;
+ 		}
+ 
+ 		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0, 0);
+ 	}
+ 
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error writing reg_int_en0\n");
++		dev_err(dev, "Error writing reg_int_en0\n");
+ 		return ret;
+ 	}
+ 
+@@ -400,6 +400,7 @@ static int bmg160_get_bw(struct bmg160_data *data, int *val)
+ 
+ static int bmg160_set_scale(struct bmg160_data *data, int val)
+ {
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret, i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(bmg160_scale_table); ++i) {
+@@ -407,8 +408,7 @@ static int bmg160_set_scale(struct bmg160_data *data, int val)
+ 			ret = regmap_write(data->regmap, BMG160_REG_RANGE,
+ 					   bmg160_scale_table[i].dps_range);
+ 			if (ret < 0) {
+-				dev_err(data->dev,
+-					"Error writing reg_range\n");
++				dev_err(dev, "Error writing reg_range\n");
+ 				return ret;
+ 			}
+ 			data->dps_range = bmg160_scale_table[i].dps_range;
+@@ -421,6 +421,7 @@ static int bmg160_set_scale(struct bmg160_data *data, int val)
+ 
+ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+ {
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 	unsigned int raw_val;
+ 
+@@ -433,7 +434,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+ 
+ 	ret = regmap_read(data->regmap, BMG160_REG_TEMP, &raw_val);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error reading reg_temp\n");
++		dev_err(dev, "Error reading reg_temp\n");
+ 		bmg160_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+@@ -450,6 +451,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+ 
+ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+ {
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 	unsigned int raw_val;
+ 
+@@ -463,7 +465,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+ 	ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(axis), &raw_val,
+ 			       2);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error reading axis %d\n", axis);
++		dev_err(dev, "Error reading axis %d\n", axis);
+ 		bmg160_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+@@ -793,6 +795,7 @@ static int bmg160_trig_try_reen(struct iio_trigger *trig)
+ {
+ 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+ 	struct bmg160_data *data = iio_priv(indio_dev);
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 
+ 	/* new data interrupts don't need ack */
+@@ -804,7 +807,7 @@ static int bmg160_trig_try_reen(struct iio_trigger *trig)
+ 			   BMG160_INT_MODE_LATCH_INT |
+ 			   BMG160_INT_MODE_LATCH_RESET);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error writing reg_rst_latch\n");
++		dev_err(dev, "Error writing reg_rst_latch\n");
+ 		return ret;
+ 	}
+ 
+@@ -864,13 +867,14 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
+ {
+ 	struct iio_dev *indio_dev = private;
+ 	struct bmg160_data *data = iio_priv(indio_dev);
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 	int dir;
+ 	unsigned int val;
+ 
+ 	ret = regmap_read(data->regmap, BMG160_REG_INT_STATUS_2, &val);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "Error reading reg_int_status2\n");
++		dev_err(dev, "Error reading reg_int_status2\n");
+ 		goto ack_intr_status;
+ 	}
+ 
+@@ -907,8 +911,7 @@ ack_intr_status:
+ 				   BMG160_INT_MODE_LATCH_INT |
+ 				   BMG160_INT_MODE_LATCH_RESET);
+ 		if (ret < 0)
+-			dev_err(data->dev,
+-				"Error writing reg_rst_latch\n");
++			dev_err(dev, "Error writing reg_rst_latch\n");
+ 	}
+ 
+ 	return IRQ_HANDLED;
+@@ -976,7 +979,6 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 
+ 	data = iio_priv(indio_dev);
+ 	dev_set_drvdata(dev, indio_dev);
+-	data->dev = dev;
+ 	data->irq = irq;
+ 	data->regmap = regmap;
+ 
+@@ -1139,7 +1141,7 @@ static int bmg160_runtime_suspend(struct device *dev)
+ 
+ 	ret = bmg160_set_mode(data, BMG160_MODE_SUSPEND);
+ 	if (ret < 0) {
+-		dev_err(data->dev, "set mode failed\n");
++		dev_err(dev, "set mode failed\n");
+ 		return -EAGAIN;
  	}
  
 -- 
