@@ -1,138 +1,143 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1.radempa.de ([176.9.142.194]:44882 "EHLO mail.cosmopool.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751351AbcDJNLO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 10 Apr 2016 09:11:14 -0400
-From: Harald Geyer <harald@ccbib.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43761 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753760AbcDJNO1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 09:14:27 -0400
+Subject: Re: [PATCH 2/5] max44000: Initial support for proximity reading
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
 	linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Harald Geyer <harald@ccbib.org>
-Subject: [PATCH] iio: mxs-lradc: Move binding document out of staging as well
-Date: Sun, 10 Apr 2016 13:03:18 +0000
-Message-Id: <1460293398-23654-1-git-send-email-harald@ccbib.org>
+References: <cover.1460045763.git.leonard.crestez@intel.com>
+ <807fa69227e6745e73c207ca0b2af59255893bdb.1460045763.git.leonard.crestez@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <570A51AC.1000503@kernel.org>
+Date: Sun, 10 Apr 2016 14:14:20 +0100
+MIME-Version: 1.0
+In-Reply-To: <807fa69227e6745e73c207ca0b2af59255893bdb.1460045763.git.leonard.crestez@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-commit f836c45922446df872250a12dd08e48978aceb2f moved mxs-lradc driver
-out of staging. However the binding document was left in the old place.
-
-Signed-off-by: Harald Geyer <harald@ccbib.org>
----
- .../devicetree/bindings/iio/adc/mxs-lradc.txt      | 47 ++++++++++++++++++++++
- .../bindings/staging/iio/adc/mxs-lradc.txt         | 47 ----------------------
- 2 files changed, 47 insertions(+), 47 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
- delete mode 100644 Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-new file mode 100644
-index 0000000..555fb11
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-@@ -0,0 +1,47 @@
-+* Freescale MXS LRADC device driver
-+
-+Required properties:
-+- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
-+              for i.MX28 SoC
-+- reg: Address and length of the register set for the device
-+- interrupts: Should contain the LRADC interrupts
-+
-+Optional properties:
-+- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
-+                               to LRADC. Valid value is either 4 or 5. If this
-+                               property is not present, then the touchscreen is
-+                               disabled. 5 wires is valid for i.MX28 SoC only.
-+- fsl,ave-ctrl: number of samples per direction to calculate an average value.
-+                Allowed value is 1 ... 32, default is 4
-+- fsl,ave-delay: delay between consecutive samples. Allowed value is
-+                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
-+                 2 kHz and its default is 2 (= 1 ms)
-+- fsl,settling: delay between plate switch to next sample. Allowed value is
-+                1 ... 2047. It counts at 2 kHz and its default is
-+                10 (= 5 ms)
-+
-+Example for i.MX23 SoC:
-+
-+	lradc@80050000 {
-+		compatible = "fsl,imx23-lradc";
-+		reg = <0x80050000 0x2000>;
-+		interrupts = <36 37 38 39 40 41 42 43 44>;
-+		status = "okay";
-+		fsl,lradc-touchscreen-wires = <4>;
-+		fsl,ave-ctrl = <4>;
-+		fsl,ave-delay = <2>;
-+		fsl,settling = <10>;
-+	};
-+
-+Example for i.MX28 SoC:
-+
-+	lradc@80050000 {
-+		compatible = "fsl,imx28-lradc";
-+		reg = <0x80050000 0x2000>;
-+		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
-+		status = "okay";
-+		fsl,lradc-touchscreen-wires = <5>;
-+		fsl,ave-ctrl = <4>;
-+		fsl,ave-delay = <2>;
-+		fsl,settling = <10>;
-+	};
-diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-deleted file mode 100644
-index 555fb11..0000000
---- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-+++ /dev/null
-@@ -1,47 +0,0 @@
--* Freescale MXS LRADC device driver
--
--Required properties:
--- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
--              for i.MX28 SoC
--- reg: Address and length of the register set for the device
--- interrupts: Should contain the LRADC interrupts
--
--Optional properties:
--- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
--                               to LRADC. Valid value is either 4 or 5. If this
--                               property is not present, then the touchscreen is
--                               disabled. 5 wires is valid for i.MX28 SoC only.
--- fsl,ave-ctrl: number of samples per direction to calculate an average value.
--                Allowed value is 1 ... 32, default is 4
--- fsl,ave-delay: delay between consecutive samples. Allowed value is
--                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
--                 2 kHz and its default is 2 (= 1 ms)
--- fsl,settling: delay between plate switch to next sample. Allowed value is
--                1 ... 2047. It counts at 2 kHz and its default is
--                10 (= 5 ms)
--
--Example for i.MX23 SoC:
--
--	lradc@80050000 {
--		compatible = "fsl,imx23-lradc";
--		reg = <0x80050000 0x2000>;
--		interrupts = <36 37 38 39 40 41 42 43 44>;
--		status = "okay";
--		fsl,lradc-touchscreen-wires = <4>;
--		fsl,ave-ctrl = <4>;
--		fsl,ave-delay = <2>;
--		fsl,settling = <10>;
--	};
--
--Example for i.MX28 SoC:
--
--	lradc@80050000 {
--		compatible = "fsl,imx28-lradc";
--		reg = <0x80050000 0x2000>;
--		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
--		status = "okay";
--		fsl,lradc-touchscreen-wires = <5>;
--		fsl,ave-ctrl = <4>;
--		fsl,ave-delay = <2>;
--		fsl,settling = <10>;
--	};
--- 
-2.1.4
+On 07/04/16 17:21, Crestez Dan Leonard wrote:
+> The proximity sensor relies on sending pulses to an external IR led and
+> it is disabled by default on powerup. The driver will enable it with a
+> default power setting.
+> 
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+One trivial point inline...
+> ---
+>  drivers/iio/light/max44000.c | 61 ++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 61 insertions(+)
+> 
+> diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+> index 7c12153..10a0fe8 100644
+> --- a/drivers/iio/light/max44000.c
+> +++ b/drivers/iio/light/max44000.c
+> @@ -41,6 +41,23 @@
+>  #define MAX44000_REG_TRIM_GAIN_GREEN	0x0f
+>  #define MAX44000_REG_TRIM_GAIN_IR	0x10
+>  
+> +/* REG_CFG bits */
+> +#define MAX44000_CFG_ALSINTE		0x01
+> +#define MAX44000_CFG_PRXINTE		0x02
+> +#define MAX44000_CFG_MASK		0x1c
+> +#define MAX44000_CFG_MODE_SHUTDOWN	0x00
+> +#define MAX44000_CFG_MODE_ALS_GIR	0x04
+> +#define MAX44000_CFG_MODE_ALS_G		0x08
+> +#define MAX44000_CFG_MODE_ALS_IR	0x0c
+> +#define MAX44000_CFG_MODE_ALS_PRX	0x10
+> +#define MAX44000_CFG_MODE_PRX		0x14
+> +#define MAX44000_CFG_TRIM		0x20
+> +
+> +/* REG_TX bits */
+> +#define MAX44000_LED_CURRENT_MASK	0xf
+> +#define MAX44000_LED_CURRENT_MAX	11
+> +#define MAX44000_LED_CURRENT_DEFAULT	6
+> +
+>  #define MAX44000_ALSDATA_OVERFLOW	0x4000
+>  
+>  #define MAX44000_REGMASK_READABLE	0x419fff
+> @@ -60,6 +77,12 @@ static const struct iio_chan_spec max44000_channels[] = {
+>  	{
+>  		.type = IIO_LIGHT,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
+> +					    BIT(IIO_CHAN_INFO_INT_TIME),
+> +	},
+> +	{
+> +		.type = IIO_PROXIMITY,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+>  	},
+>  };
+> @@ -90,11 +113,23 @@ static inline int max44000_read_alsval(struct max44000_data *data)
+>  	return regval;
+>  }
+>  
+> +static inline int max44000_write_led_current_raw(struct max44000_data *data, int val)
+> +{
+> +	/* Maybe we should clamp the value instead? */
+> +	if (val < 0 || val > MAX44000_LED_CURRENT_MAX)
+> +		return -ERANGE;
+> +	if (val >= 8)
+> +		val += 4;
+> +	return regmap_write_bits(data->regmap, MAX44000_REG_CFG_TX,
+> +				 MAX44000_LED_CURRENT_MASK, val);
+> +}
+> +
+>  static int max44000_read_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     int *val, int *val2, long mask)
+>  {
+>  	struct max44000_data *data = iio_priv(indio_dev);
+> +	unsigned int regval;
+>  	int ret;
+>  
+>  	switch (mask) {
+> @@ -109,6 +144,15 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
+>  			*val = ret;
+>  			return IIO_VAL_INT;
+>  
+> +		case IIO_PROXIMITY:
+> +			mutex_lock(&data->lock);
+> +			ret = regmap_read(data->regmap, MAX44000_REG_PRX_DATA, &regval);
+> +			mutex_unlock(&data->lock);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = regval;
+> +			return IIO_VAL_INT;
+> +
+>  		default:
+>  			return -EINVAL;
+>  		}
+> @@ -244,6 +288,23 @@ static int max44000_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  
+> +	/* By default the LED pulse used for the proximity sensor is disabled.
+Please run checkpatch.pl on these.  It would probably have complained about
+the multiline comment syntax here.
+> +	 * Set a middle value so that we get some sort of valid data by default.
+> +	 */
+> +	ret = max44000_write_led_current_raw(data, MAX44000_LED_CURRENT_DEFAULT);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "failed to write init config: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* By default set in ALS_PRX mode which allows easy reading of both values. */
+> +	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_PRX;
+> +	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "failed to write init config: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+>  	return iio_device_register(indio_dev);
+>  }
+>  
+> 
 
