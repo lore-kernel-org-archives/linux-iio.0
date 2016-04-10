@@ -1,100 +1,138 @@
-Return-Path: <manabian@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <CAGhQ9Vz7S1H8BO5YqzQFj7VFn36jF6poHK+fRUOyn05KUdgTPg@mail.gmail.com>
-References: <1458818485-2770-1-git-send-email-cristina.moraru09@gmail.com>
-	<1460190283-3296-1-git-send-email-cristina.moraru09@gmail.com>
-	<CAGhQ9Vz7S1H8BO5YqzQFj7VFn36jF6poHK+fRUOyn05KUdgTPg@mail.gmail.com>
-Date: Sun, 10 Apr 2016 15:10:05 +0200
-Message-ID: <CAGhQ9Vz6iLyGsQQEexT2CO4Op5rqnBuHJEDSG45X-Xqe+dGtWw@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: max5487: Add support for Maxim digital potentiometers
-From: Joachim  Eastwood <manabian@gmail.com>
-To: Cristina Moraru <cristina.moraru09@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, peda@axentia.se,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
-	daniel.baluta@intel.com, octavian.purdila@intel.com
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from h1.radempa.de ([176.9.142.194]:44882 "EHLO mail.cosmopool.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751351AbcDJNLO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 10 Apr 2016 09:11:14 -0400
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	linux-iio@vger.kernel.org
+Cc: devicetree@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Harald Geyer <harald@ccbib.org>
+Subject: [PATCH] iio: mxs-lradc: Move binding document out of staging as well
+Date: Sun, 10 Apr 2016 13:03:18 +0000
+Message-Id: <1460293398-23654-1-git-send-email-harald@ccbib.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10 April 2016 at 14:47, Joachim  Eastwood <manabian@gmail.com> wrote:
-> Hi Cristina,
->
-> On 9 April 2016 at 10:24, Cristina Moraru <cristina.moraru09@gmail.com> wrote:
->> Add implementation for Maxim MAX5487, MAX5488, MAX5489
->> digital potentiometers.
->>
->> Datasheet:
->> http://datasheets.maximintegrated.com/en/ds/MAX5487-MAX5489.pdf
->>
->> Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
->> CC: Daniel Baluta <daniel.baluta@intel.com>
->> ---
-> ...
->> +static int max5487_read_raw(struct iio_dev *indio_dev,
->> +                           struct iio_chan_spec const *chan,
->> +                           int *val, int *val2, long mask)
->> +{
->> +       struct max5487_data *data = iio_priv(indio_dev);
->> +
->> +       if (mask != IIO_CHAN_INFO_SCALE)
->> +               return -EINVAL;
->> +
->> +       *val = 1000 * data->kohms;
->> +       *val2 = MAX5487_MAX_POS;
->
-> Newline before return.
->
->> +       return IIO_VAL_FRACTIONAL;
->> +}
->> +
->> +static int max5487_write_raw(struct iio_dev *indio_dev,
->> +                            struct iio_chan_spec const *chan,
->> +                            int val, int val2, long mask)
->> +{
->> +       struct max5487_data *data = iio_priv(indio_dev);
->> +
->> +       switch (mask) {
->> +       case IIO_CHAN_INFO_RAW:
->> +               if (val < 0 || val > MAX5487_MAX_POS)
->> +                       return -EINVAL;
->> +               return regmap_write(data->regmap, chan->address, val);
->> +       default:
->> +               return -EINVAL;
->> +       }
->> +       return -EINVAL;
->
-> To be consistent with your max5487_read_raw() function you could do a:
->        if (mask != IIO_CHAN_INFO_RAW)
->                return -EINVAL;
->
->
->> +static const struct iio_info max5487_info = {
->> +       .read_raw = &max5487_read_raw,
->> +       .write_raw = &max5487_write_raw,
->
-> Address operator should be unnecessary on functions.
->
->
->> +       data->regmap = devm_regmap_init_spi(spi, &max5487_regmap_config);
->> +       if (IS_ERR(data->regmap))
->> +               return PTR_ERR(data->regmap);
->
-> Nothing wrong with using regmap here, but since you are only using
-> simple regmap_write()'s you might as well have used spi_write()
-> directly. I am not telling you to switch, but I don't see the point of
-> using regmap here.
+commit f836c45922446df872250a12dd08e48978aceb2f moved mxs-lradc driver
+out of staging. However the binding document was left in the old place.
 
-Looking again: it seem that spi.h doesn't have a function that do
-write(cmd, data) which regmap does. So I guess that is one reason for
-using regmap. But it wouldn't be hard to create a write(cmd,
-data)-function for spi either. Just wrap spi_write() and have a local
-buf var. I am a bit surprised that spi.h doesn't have such a function
-as it should be quite a common pattern for spi chips.
+Signed-off-by: Harald Geyer <harald@ccbib.org>
+---
+ .../devicetree/bindings/iio/adc/mxs-lradc.txt      | 47 ++++++++++++++++++++++
+ .../bindings/staging/iio/adc/mxs-lradc.txt         | 47 ----------------------
+ 2 files changed, 47 insertions(+), 47 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+ delete mode 100644 Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
 
->
-> Which reminds me; for regmap you need to select REGMAP_SPI in your
-> Kconfig entry.
->
->
-> regards,
-> Joachim Eastwood
+diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+new file mode 100644
+index 0000000..555fb11
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+@@ -0,0 +1,47 @@
++* Freescale MXS LRADC device driver
++
++Required properties:
++- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
++              for i.MX28 SoC
++- reg: Address and length of the register set for the device
++- interrupts: Should contain the LRADC interrupts
++
++Optional properties:
++- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
++                               to LRADC. Valid value is either 4 or 5. If this
++                               property is not present, then the touchscreen is
++                               disabled. 5 wires is valid for i.MX28 SoC only.
++- fsl,ave-ctrl: number of samples per direction to calculate an average value.
++                Allowed value is 1 ... 32, default is 4
++- fsl,ave-delay: delay between consecutive samples. Allowed value is
++                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
++                 2 kHz and its default is 2 (= 1 ms)
++- fsl,settling: delay between plate switch to next sample. Allowed value is
++                1 ... 2047. It counts at 2 kHz and its default is
++                10 (= 5 ms)
++
++Example for i.MX23 SoC:
++
++	lradc@80050000 {
++		compatible = "fsl,imx23-lradc";
++		reg = <0x80050000 0x2000>;
++		interrupts = <36 37 38 39 40 41 42 43 44>;
++		status = "okay";
++		fsl,lradc-touchscreen-wires = <4>;
++		fsl,ave-ctrl = <4>;
++		fsl,ave-delay = <2>;
++		fsl,settling = <10>;
++	};
++
++Example for i.MX28 SoC:
++
++	lradc@80050000 {
++		compatible = "fsl,imx28-lradc";
++		reg = <0x80050000 0x2000>;
++		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
++		status = "okay";
++		fsl,lradc-touchscreen-wires = <5>;
++		fsl,ave-ctrl = <4>;
++		fsl,ave-delay = <2>;
++		fsl,settling = <10>;
++	};
+diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+deleted file mode 100644
+index 555fb11..0000000
+--- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
++++ /dev/null
+@@ -1,47 +0,0 @@
+-* Freescale MXS LRADC device driver
+-
+-Required properties:
+-- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
+-              for i.MX28 SoC
+-- reg: Address and length of the register set for the device
+-- interrupts: Should contain the LRADC interrupts
+-
+-Optional properties:
+-- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
+-                               to LRADC. Valid value is either 4 or 5. If this
+-                               property is not present, then the touchscreen is
+-                               disabled. 5 wires is valid for i.MX28 SoC only.
+-- fsl,ave-ctrl: number of samples per direction to calculate an average value.
+-                Allowed value is 1 ... 32, default is 4
+-- fsl,ave-delay: delay between consecutive samples. Allowed value is
+-                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
+-                 2 kHz and its default is 2 (= 1 ms)
+-- fsl,settling: delay between plate switch to next sample. Allowed value is
+-                1 ... 2047. It counts at 2 kHz and its default is
+-                10 (= 5 ms)
+-
+-Example for i.MX23 SoC:
+-
+-	lradc@80050000 {
+-		compatible = "fsl,imx23-lradc";
+-		reg = <0x80050000 0x2000>;
+-		interrupts = <36 37 38 39 40 41 42 43 44>;
+-		status = "okay";
+-		fsl,lradc-touchscreen-wires = <4>;
+-		fsl,ave-ctrl = <4>;
+-		fsl,ave-delay = <2>;
+-		fsl,settling = <10>;
+-	};
+-
+-Example for i.MX28 SoC:
+-
+-	lradc@80050000 {
+-		compatible = "fsl,imx28-lradc";
+-		reg = <0x80050000 0x2000>;
+-		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
+-		status = "okay";
+-		fsl,lradc-touchscreen-wires = <5>;
+-		fsl,ave-ctrl = <4>;
+-		fsl,ave-delay = <2>;
+-		fsl,settling = <10>;
+-	};
+-- 
+2.1.4
+
