@@ -1,304 +1,215 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:48207 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753791AbcDGTgE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 7 Apr 2016 15:36:04 -0400
-Date: Thu, 7 Apr 2016 21:36:00 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Slawomir Stepien <sst@poczta.fm>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: potentiometer: add driver for Maxim Integrated
- DS1803
-In-Reply-To: <20160407165118.GA2333@x220>
-Message-ID: <alpine.DEB.2.02.1604072130040.26969@pmeerw.net>
-References: <20160407165118.GA2333@x220>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43998 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753192AbcDJNyt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Apr 2016 09:54:49 -0400
+Subject: Re: [PATCH 2/9] iio: adc: qcom-spmi-iadc: use regmap to retrieve
+ struct device
+To: Alison Schofield <amsfield22@gmail.com>
+References: <cover.1459918214.git.amsfield22@gmail.com>
+ <aaffb79b464a361556e098d42081406813c511c4.1459918214.git.amsfield22@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	kgene@kernel.org, k.kozlowski@samsung.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <570A5B25.8060308@kernel.org>
+Date: Sun, 10 Apr 2016 14:54:45 +0100
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <aaffb79b464a361556e098d42081406813c511c4.1459918214.git.amsfield22@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-> The following functions are supported:
->  - write, read potentiometer value
->  - potentiometer scale
-
-minor comments below, nice driver
- 
-> Datasheet: https://datasheets.maximintegrated.com/en/ds/DS1803.pdf
+On 06/04/16 06:16, Alison Schofield wrote:
+> Driver includes struct regmap and struct device in its global data.
+> Remove the struct device and use regmap API to retrieve device info.
 > 
-> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+> Patch created using Coccinelle plus manual edits.
+> 
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+This has the same issue as the exynos driver - in that the regmap belongs
+to the parent, not this device.
 > ---
->  .../bindings/iio/potentiometer/ds1803.txt          |  21 +++
->  drivers/iio/potentiometer/Kconfig                  |  10 ++
->  drivers/iio/potentiometer/Makefile                 |   1 +
->  drivers/iio/potentiometer/ds1803.c                 | 178 +++++++++++++++++++++
->  4 files changed, 210 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
->  create mode 100644 drivers/iio/potentiometer/ds1803.c
+>  drivers/iio/adc/qcom-spmi-iadc.c | 32 +++++++++++++++++---------------
+>  1 file changed, 17 insertions(+), 15 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt b/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
-> new file mode 100644
-> index 0000000..df77bf5
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
-> @@ -0,0 +1,21 @@
-> +* Maxim Integrated DS1803 digital potentiometer driver
-> +
-> +The node for this driver must be a child node of a I2C controller, hence
-> +all mandatory properties for your controller must be specified. See directory:
-> +
-> +        Documentation/devicetree/bindings/i2c
-> +
-> +for more details.
-> +
-> +Required properties:
-> +	- compatible:  	Must be one of the following, depending on the
-> +			model:
-> +			"maxim,ds1803-010",
-> +			"maxim,ds1803-050",
-> +			"maxim,ds1803-100"
-> +
-> +Example:
-> +ds1803: ds1803@1 {
-> +	reg = <0x28>;
-> +	compatible = "maxim,ds1803-010";
-> +};
-> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-> index 7ea069b..6acb238 100644
-> --- a/drivers/iio/potentiometer/Kconfig
-> +++ b/drivers/iio/potentiometer/Kconfig
-> @@ -5,6 +5,16 @@
+> diff --git a/drivers/iio/adc/qcom-spmi-iadc.c b/drivers/iio/adc/qcom-spmi-iadc.c
+> index fabd24e..f69a057 100644
+> --- a/drivers/iio/adc/qcom-spmi-iadc.c
+> +++ b/drivers/iio/adc/qcom-spmi-iadc.c
+> @@ -102,7 +102,6 @@
+>  /**
+>   * struct iadc_chip - IADC Current ADC device structure.
+>   * @regmap: regmap for register read/write.
+> - * @dev: This device pointer.
+>   * @base: base offset for the ADC peripheral.
+>   * @rsense: Values of the internal and external sense resister in micro Ohms.
+>   * @poll_eoc: Poll for end of conversion instead of waiting for IRQ.
+> @@ -113,7 +112,6 @@
+>   */
+>  struct iadc_chip {
+>  	struct regmap	*regmap;
+> -	struct device	*dev;
+>  	u16		base;
+>  	bool		poll_eoc;
+>  	u32		rsense[2];
+> @@ -170,6 +168,7 @@ static int iadc_set_state(struct iadc_chip *iadc, bool state)
 >  
->  menu "Digital potentiometers"
+>  static void iadc_status_show(struct iadc_chip *iadc)
+>  {
+> +	struct device *dev = regmap_get_device(iadc->regmap);
+>  	u8 mode, sta1, chan, dig, en, req;
+>  	int ret;
 >  
-> +config DS1803
-> +	tristate "Maxim Integrated DS1803 Digital Potentiometer driver"
-> +	depends on I2C
-> +	help
-> +	  Say yes here to build support for the Maxim Integrated DS1803
-> +	  digital potentiomenter chip.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ds1803.
-> +
->  config MCP4131
->  	tristate "Microchip MCP413X/414X/415X/416X/423X/424X/425X/426X Digital Potentiometer driver"
->  	depends on SPI
-> diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
-> index 91a80f8..6007faa 100644
-> --- a/drivers/iio/potentiometer/Makefile
-> +++ b/drivers/iio/potentiometer/Makefile
-> @@ -3,6 +3,7 @@
->  #
+> @@ -197,7 +196,7 @@ static void iadc_status_show(struct iadc_chip *iadc)
+>  	if (ret < 0)
+>  		return;
 >  
->  # When adding new entries keep the list in alphabetical order
-> +obj-$(CONFIG_DS1803) += ds1803.o
->  obj-$(CONFIG_MCP4131) += mcp4131.o
->  obj-$(CONFIG_MCP4531) += mcp4531.o
->  obj-$(CONFIG_TPL0102) += tpl0102.o
-> diff --git a/drivers/iio/potentiometer/ds1803.c b/drivers/iio/potentiometer/ds1803.c
-> new file mode 100644
-> index 0000000..b5e5b1c
-> --- /dev/null
-> +++ b/drivers/iio/potentiometer/ds1803.c
-> @@ -0,0 +1,178 @@
-> +/*
-> + * Maxim Integrated DS1803 digital potentiometer driver
-> + * Copyright (c) 2016 Slawomir Stepien
-> + *
-> + * Datasheet: https://datasheets.maximintegrated.com/en/ds/DS1803.pdf
-> + *
-> + * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
-> + * ds1803	2	256		10, 50, 100		0101xxx
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
-> + */
-> +
-> +#include <linux/cache.h>
-
-for what is cache.h needed?
-
-> +#include <linux/err.h>
-> +#include <linux/export.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +
-> +#define DS1803_NUM_WIPERS	2
-> +#define DS1803_MAX_POS		255
-> +#define DS1803_WRITE(n)		(0xA8 | ((n) + 1))
-> +
-> +enum ds1803_type {
-> +	DS1803_010,
-> +	DS1803_050,
-> +	DS1803_100,
-> +};
-> +
-> +struct ds1803_cfg {
-> +	int kohms;
-> +};
-> +
-> +static const struct ds1803_cfg ds1803_cfg[] = {
-> +	[DS1803_010] = { .kohms =  10, },
-> +	[DS1803_050] = { .kohms =  50, },
-> +	[DS1803_100] = { .kohms = 100, },
-> +};
-> +
-> +struct ds1803_data {
-> +	struct i2c_client *client;
-> +	const struct ds1803_cfg *cfg;
-> +};
-> +
-> +#define DS1803_CHANNEL(ch) {					\
-> +	.type = IIO_RESISTANCE,					\
-> +	.indexed = 1,						\
-> +	.output = 1,						\
-> +	.channel = (ch),					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec ds1803_channels[] = {
-> +	DS1803_CHANNEL(0),
-> +	DS1803_CHANNEL(1),
-> +};
-> +
-> +static int ds1803_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	struct ds1803_data *data = iio_priv(indio_dev);
-> +	int pot = chan->channel;
-> +	s32 ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = i2c_smbus_read_word_swapped(data->client, 0);
-
-maybe a #define to explain the name of register 0
-
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		/* Get bits for given pot */
-> +		*val = (pot == 0 ? ret >> 8 : ret & 255);
-
-often 0xff is used to mask a byte
-
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 1000 * data->cfg->kohms;
-> +		*val2 = DS1803_MAX_POS;
-> +		return IIO_VAL_FRACTIONAL;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int ds1803_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct ds1803_data *data = iio_priv(indio_dev);
-> +	int pot = chan->channel;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val > DS1803_MAX_POS || val < 0)
-
-check that val2 is 0 or use .write_raw_get_fmt
-
-> +			return -EINVAL;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return i2c_smbus_write_byte_data(data->client, DS1803_WRITE(pot), val);
-> +}
-> +
-> +static const struct iio_info ds1803_info = {
-> +	.read_raw = ds1803_read_raw,
-> +	.write_raw = ds1803_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int ds1803_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct device *dev = &client->dev;
-> +	struct ds1803_data *data;
-> +	struct iio_dev *indio_dev;
-> +
-> +	/* Value of two pots is read at the same time */
-> +	if (!i2c_check_functionality(client->adapter,
-> +				     I2C_FUNC_SMBUS_WORD_DATA)) {
-> +		dev_err(dev, "SMBUS Word Data not supported\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	data->cfg = &ds1803_cfg[id->driver_data];
-> +
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->info = &ds1803_info;
-> +	indio_dev->channels = ds1803_channels;
-> +	indio_dev->num_channels = DS1803_NUM_WIPERS;
-
-ARRAY_SIZE(ds1803_channels)
-
-> +	indio_dev->name = client->name;
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +#if defined(CONFIG_OF)
-> +static const struct of_device_id ds1803_dt_ids[] = {
-> +	{ .compatible = "maxim,ds1803-010", .data = &ds1803_cfg[DS1803_010] },
-> +	{ .compatible = "maxim,ds1803-050", .data = &ds1803_cfg[DS1803_050] },
-> +	{ .compatible = "maxim,ds1803-100", .data = &ds1803_cfg[DS1803_100] },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, ds1803_dt_ids);
-> +#endif /* CONFIG_OF */
-> +
-> +static const struct i2c_device_id ds1803_id[] = {
-> +	{ "ds1803-010", DS1803_010 },
-> +	{ "ds1803-050", DS1803_050 },
-> +	{ "ds1803-100", DS1803_100 },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, ds1803_id);
-> +
-> +static struct i2c_driver ds1803_driver = {
-> +	.driver = {
-> +		.name	= "ds1803",
-> +		.of_match_table = of_match_ptr(ds1803_dt_ids),
-> +	},
-> +	.probe		= ds1803_probe,
-> +	.id_table	= ds1803_id,
-> +};
-> +
-> +module_i2c_driver(ds1803_driver);
-> +
-> +MODULE_AUTHOR("Slawomir Stepien <sst@poczta.fm>");
-> +MODULE_DESCRIPTION("DS1803 digital potentiometer");
-> +MODULE_LICENSE("GPL v2");
+> -	dev_err(iadc->dev,
+> +	dev_err(dev,
+>  		"mode:%02x en:%02x chan:%02x dig:%02x req:%02x sta1:%02x\n",
+>  		mode, en, chan, dig, req, sta1);
+>  }
+> @@ -284,6 +283,7 @@ static int iadc_read_result(struct iadc_chip *iadc, u16 *data)
+>  
+>  static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
+>  {
+> +	struct device *dev = regmap_get_device(iadc->regmap);
+>  	unsigned int wait;
+>  	int ret;
+>  
+> @@ -310,7 +310,7 @@ static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
+>  exit:
+>  	iadc_set_state(iadc, false);
+>  	if (ret < 0)
+> -		dev_err(iadc->dev, "conversion failed\n");
+> +		dev_err(dev, "conversion failed\n");
+>  
+>  	return ret;
+>  }
+> @@ -320,6 +320,7 @@ static int iadc_read_raw(struct iio_dev *indio_dev,
+>  			 int *val, int *val2, long mask)
+>  {
+>  	struct iadc_chip *iadc = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(iadc->regmap);
+>  	s32 isense_ua, vsense_uv;
+>  	u16 adc_raw, vsense_raw;
+>  	int ret;
+> @@ -339,7 +340,7 @@ static int iadc_read_raw(struct iio_dev *indio_dev,
+>  
+>  		isense_ua = vsense_uv / iadc->rsense[chan->channel];
+>  
+> -		dev_dbg(iadc->dev, "off %d gain %d adc %d %duV I %duA\n",
+> +		dev_dbg(dev, "off %d gain %d adc %d %duV I %duA\n",
+>  			iadc->offset[chan->channel], iadc->gain,
+>  			adc_raw, vsense_uv, isense_ua);
+>  
+> @@ -370,6 +371,7 @@ static irqreturn_t iadc_isr(int irq, void *dev_id)
+>  
+>  static int iadc_update_offset(struct iadc_chip *iadc)
+>  {
+> +	struct device *dev = regmap_get_device(iadc->regmap);
+>  	int ret;
+>  
+>  	ret = iadc_do_conversion(iadc, IADC_GAIN_17P857MV, &iadc->gain);
+> @@ -382,7 +384,7 @@ static int iadc_update_offset(struct iadc_chip *iadc)
+>  		return ret;
+>  
+>  	if (iadc->gain == iadc->offset[IADC_INT_RSENSE]) {
+> -		dev_err(iadc->dev, "error: internal offset == gain %d\n",
+> +		dev_err(dev, "error: internal offset == gain %d\n",
+>  			iadc->gain);
+>  		return -EINVAL;
+>  	}
+> @@ -393,8 +395,7 @@ static int iadc_update_offset(struct iadc_chip *iadc)
+>  		return ret;
+>  
+>  	if (iadc->gain == iadc->offset[IADC_EXT_RSENSE]) {
+> -		dev_err(iadc->dev, "error: external offset == gain %d\n",
+> -			iadc->gain);
+> +		dev_err(dev, "error: external offset == gain %d\n", iadc->gain);
+>  		return -EINVAL;
+>  	}
+>  
+> @@ -403,6 +404,7 @@ static int iadc_update_offset(struct iadc_chip *iadc)
+>  
+>  static int iadc_version_check(struct iadc_chip *iadc)
+>  {
+> +	struct device *dev = regmap_get_device(iadc->regmap);
+>  	u8 val;
+>  	int ret;
+>  
+> @@ -411,7 +413,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
+>  		return ret;
+>  
+>  	if (val < IADC_PERPH_TYPE_ADC) {
+> -		dev_err(iadc->dev, "%d is not ADC\n", val);
+> +		dev_err(dev, "%d is not ADC\n", val);
+>  		return -EINVAL;
+>  	}
+>  
+> @@ -420,7 +422,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
+>  		return ret;
+>  
+>  	if (val < IADC_PERPH_SUBTYPE_IADC) {
+> -		dev_err(iadc->dev, "%d is not IADC\n", val);
+> +		dev_err(dev, "%d is not IADC\n", val);
+>  		return -EINVAL;
+>  	}
+>  
+> @@ -429,7 +431,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
+>  		return ret;
+>  
+>  	if (val < IADC_REVISION2_SUPPORTED_IADC) {
+> -		dev_err(iadc->dev, "revision %d not supported\n", val);
+> +		dev_err(dev, "revision %d not supported\n", val);
+>  		return -EINVAL;
+>  	}
+>  
+> @@ -438,6 +440,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
+>  
+>  static int iadc_rsense_read(struct iadc_chip *iadc, struct device_node *node)
+>  {
+> +	struct device *dev = regmap_get_device(iadc->regmap);
+>  	int ret, sign, int_sense;
+>  	u8 deviation;
+>  
+> @@ -447,7 +450,7 @@ static int iadc_rsense_read(struct iadc_chip *iadc, struct device_node *node)
+>  		iadc->rsense[IADC_EXT_RSENSE] = IADC_INT_RSENSE_IDEAL_VALUE;
+>  
+>  	if (!iadc->rsense[IADC_EXT_RSENSE]) {
+> -		dev_err(iadc->dev, "external resistor can't be zero Ohms");
+> +		dev_err(dev, "external resistor can't be zero Ohms");
+>  		return -EINVAL;
+>  	}
+>  
+> @@ -505,7 +508,6 @@ static int iadc_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  
+>  	iadc = iio_priv(indio_dev);
+> -	iadc->dev = dev;
+>  
+>  	iadc->regmap = dev_get_regmap(dev->parent, NULL);
+>  	if (!iadc->regmap)
+> @@ -528,7 +530,7 @@ static int iadc_probe(struct platform_device *pdev)
+>  	if (ret < 0)
+>  		return -ENODEV;
+>  
+> -	dev_dbg(iadc->dev, "sense resistors %d and %d micro Ohm\n",
+> +	dev_dbg(&pdev->dev, "sense resistors %d and %d micro Ohm\n",
+>  		iadc->rsense[IADC_INT_RSENSE],
+>  		iadc->rsense[IADC_EXT_RSENSE]);
+>  
+> @@ -553,7 +555,7 @@ static int iadc_probe(struct platform_device *pdev)
+>  		else
+>  			return ret;
+>  	} else {
+> -		device_init_wakeup(iadc->dev, 1);
+> +		device_init_wakeup(&pdev->dev, 1);
+>  	}
+>  
+>  	ret = iadc_update_offset(iadc);
 > 
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
