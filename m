@@ -1,35 +1,42 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Mon, 11 Apr 2016 09:56:57 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: Re: [PULL] First round of new device support, features and cleanups
- for IIO in the 4.7 cycle.
-Message-ID: <20160411165657.GA27572@kroah.com>
-References: <57018AAA.8070800@kernel.org>
- <57018BBB.7040106@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <57018BBB.7040106@kernel.org>
+Return-Path: <leonard.crestez@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH v2 0/5] Support for max44000 Ambient and Infrared Proximity Sensor
+Date: Mon, 11 Apr 2016 21:52:37 +0300
+Message-Id: <cover.1460400449.git.leonard.crestez@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Apr 03, 2016 at 10:31:39PM +0100, Jonathan Cameron wrote:
-> Hi Greg,
-> 
-> Note there is a merge conflict with one of the patches in the second lot of fixes
-> I sent early today.  This is because the change got queued up here first then
-> we noticed and issue which it fixed by accident.
-> 
-> Anyhow, conflict is in bmg160-core.c and you want the 'short option'.
-> For comparison, the code is pretty much identical to bmc150-accel-core.c.
-> 
-> Otherwise, various automerged corners that seem to be fine. My build tests
-> failed on a random thermal driver which I'll assume has long since been fixed,
-> but otherwise seemed fine.
+Changes since v1:
+* Remove max44000_data.client
+* Maintain alphabetical order in kconfig/makefile
+* Avoid pointless inlines
+* Remove explicit CONFIG_OF because no special handling is done
+* Set storagebits = 16 for proximity channel and avoid VLAs
+* Expand MAX44000_REGMASK for readability/reviewability
+* Clear irq bits at the end of the probe function
+* Only write important bits on probe rather than everything
 
-I've done the merge now, can you verify I got it correct?
+I'm not sure about only partially resetting the device on probe.
 
-thanks,
+Crestez Dan Leonard (5):
+  max44000: Initial support
+  max44000: Initial support for proximity reading
+  max44000: Support controlling LED current output
+  max44000: Expose ambient sensor scaling
+  max44000: Initial triggered buffer support
 
-greg k-h
+ drivers/iio/light/Kconfig    |  11 +
+ drivers/iio/light/Makefile   |   1 +
+ drivers/iio/light/max44000.c | 649 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 661 insertions(+)
+ create mode 100644 drivers/iio/light/max44000.c
+
+-- 
+2.5.5
