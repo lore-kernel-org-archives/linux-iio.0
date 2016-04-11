@@ -1,193 +1,414 @@
-Return-Path: <afd@ti.com>
-Subject: Re: [PATCH 1/1] iio: adc: Add driver for the TI INA3221 Triple
- Current/Voltage Monitor
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Marc Titinger <mtitinger@baylibre.com>
-References: <1460139580-11865-1-git-send-email-afd@ti.com>
- <570A3FB2.7000600@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jean Delvare
-	<jdelvare@suse.de>, Guenter Roeck <linux@roeck-us.net>,
-        <linux-hwmon@vger.kernel.org>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <570BC74B.3000208@ti.com>
-Date: Mon, 11 Apr 2016 10:48:27 -0500
-MIME-Version: 1.0
-In-Reply-To: <570A3FB2.7000600@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:45619 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754933AbcDKSwy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 11 Apr 2016 14:52:54 -0400
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH v2 1/5] max44000: Initial support
+Date: Mon, 11 Apr 2016 21:52:38 +0300
+Message-Id: <f92d1baee684715edfedf6038bceaf9b08d80447.1460400449.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1460400449.git.leonard.crestez@intel.com>
+References: <cover.1460400449.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1460400449.git.leonard.crestez@intel.com>
+References: <cover.1460400449.git.leonard.crestez@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/10/2016 06:57 AM, Jonathan Cameron wrote:
-> On 08/04/16 19:19, Andrew F. Davis wrote:
->> The INA3221 is a three-channel, high-side current and bus voltage monitor
->> with an I2C and SMBUS compatible interface.
->>
->> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> Hi Andrew,
-> 
-> My immediate thought on this one is whether it would be better off in hwmon.
-> I'm not convinced either way from a quick glance at the data sheet, but the
-> question needs to be addressed.
-> 
+This just adds support for reporting illuminance with default settings.
 
-I was on the fence with this also, I was leaning towards hwmod until I
-looked onto how the ina2xx driver has been ported to iio. This is almost
-the same part but the ina3x has three monitors vs one. In addition it
-looks like NVIDIA has written a hwmod driver for this part
-(https://github.com/Bogdacutu/STLinux-Kernel/blob/master/drivers/hwmon/ina3221.c)
-but then also ported it over to IIO (although doesn't appear to be
-upstream ready or ever has been submitted for such)
-(https://github.com/SuperPichu/shield-tablet-kernel/blob/master/drivers/staging/iio/meter/ina3221.c)
-So I figured this was the way things are moving, but I have no problem
-working this as a hwmod driver. The IIO work is already done here, I'll
-write the hwmod version also but keep working this, I see no reason we
-cant have both if needed. (unless using this and just using iio_hwmod.c
-if needed is more acceptable?)
+Important default registers are written on probe because the device
+otherwise lacks a reset function.
 
-> It's not exactly a clean fit for the IIO ABI either at the moment though
-> I think some elements of that could be easily sorted out. 
-> The key think in my mind is to look at what is actually being measured
-> rather than assume all the external components will be as the datasheet
-> assumes them to be...
-> 
-> + where do the alert lines actually go?
-> 
-> Jonathan
->> ---
->>  .../ABI/testing/sysfs-bus-iio-adc-ina3221          |  23 ++
->>  drivers/iio/adc/Kconfig                            |   7 +
->>  drivers/iio/adc/Makefile                           |   1 +
->>  drivers/iio/adc/ina3221.c                          | 417 +++++++++++++++++++++
->>  4 files changed, 448 insertions(+)
->>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-ina3221
->>  create mode 100644 drivers/iio/adc/ina3221.c
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-ina3221 b/Documentation/ABI/testing/sysfs-bus-iio-adc-ina3221
->> new file mode 100644
->> index 0000000..bbe4f8c
->> --- /dev/null
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-ina3221
->> @@ -0,0 +1,23 @@
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_shunt_(raw|scale)
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_bus_(raw|scale)
->> +Date:		April 2016
->> +KernelVersion:	4.7
->> +Contact:	Andrew F. Davis <afd@ti.com>
->> +Description:
->> +		Shunt and Bus voltage for each channel.
-> Units etc need specifying or at least a reference to the main in_voltageY_raw
-> docs etc.  These are really completely separate measurements be it differential measurements where the + on one is the - on the other (second is really a
-> unipolar measurement as it's relative to 0).  I wonder if we are
-> better off supporting them as such so define this device as having the channels.
-> in_voltage1-voltage0_raw (shunt voltage 1)
-> in_voltage0_raw (bus voltage 1)
-> in_voltage3-voltage2_raw (shunt voltage 2)
-> in_voltage2_raw (bus voltage 2)
-> in_voltage5-voltage4_raw (shunt voltage 3)
-> in_voltage4_raw
-> 
-> That I think reflects the actual measuring options, without applying
-> assumptions on what is connected to them.  Yes the datasheet says you should
-> put a shunt between the first two connections and the load between the
-> second connection and the 0 volt line, but I can't see anything preventing
-> this being used differently...
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+---
+ drivers/iio/light/Kconfig    |  11 ++
+ drivers/iio/light/Makefile   |   1 +
+ drivers/iio/light/max44000.c | 336 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 348 insertions(+)
+ create mode 100644 drivers/iio/light/max44000.c
 
-I feel this may become confusing to some, but I have no real objection
-to this.
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index cfd3df8..b4ab65b 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -223,6 +223,17 @@ config LTR501
+ 	 This driver can also be built as a module.  If so, the module
+          will be called ltr501.
+ 
++config MAX44000
++	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
++	depends on I2C
++	select REGMAP_I2C
++	help
++	 Say Y here if you want to build support for Maxim Integrated's
++	 MAX44000 ambient and infrared proximity sensor device.
++
++	 To compile this driver as a module, choose M here:
++	 the module will be called max44000.
++
+ config OPT3001
+ 	tristate "Texas Instruments OPT3001 Light Sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index b2c3105..c77f27f 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
+ obj-$(CONFIG_JSA1212)		+= jsa1212.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
++obj-$(CONFIG_MAX44000)		+= max44000.o
+ obj-$(CONFIG_OPT3001)		+= opt3001.o
+ obj-$(CONFIG_PA12203001)	+= pa12203001.o
+ obj-$(CONFIG_RPR0521)		+= rpr0521.o
+diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+new file mode 100644
+index 0000000..707cc24
+--- /dev/null
++++ b/drivers/iio/light/max44000.c
+@@ -0,0 +1,336 @@
++/*
++ * MAX44000 Ambient and Infrared Proximity Sensor
++ *
++ * Copyright (c) 2016, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * Data sheet: https://datasheets.maximintegrated.com/en/ds/MAX44000.pdf
++ *
++ * 7-bit I2C slave address 0x4a
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/i2c.h>
++#include <linux/regmap.h>
++#include <linux/util_macros.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/acpi.h>
++
++#define MAX44000_DRV_NAME		"max44000"
++
++/* Registers in datasheet order */
++#define MAX44000_REG_STATUS		0x00
++#define MAX44000_REG_CFG_MAIN		0x01
++#define MAX44000_REG_CFG_RX		0x02
++#define MAX44000_REG_CFG_TX		0x03
++#define MAX44000_REG_ALS_DATA_HI	0x04
++#define MAX44000_REG_ALS_DATA_LO	0x05
++#define MAX44000_REG_PRX_DATA		0x16
++#define MAX44000_REG_ALS_UPTHR_HI	0x06
++#define MAX44000_REG_ALS_UPTHR_LO	0x07
++#define MAX44000_REG_ALS_LOTHR_HI	0x08
++#define MAX44000_REG_ALS_LOTHR_LO	0x09
++#define MAX44000_REG_PST		0x0a
++#define MAX44000_REG_PRX_IND		0x0b
++#define MAX44000_REG_PRX_THR		0x0c
++#define MAX44000_REG_TRIM_GAIN_GREEN	0x0f
++#define MAX44000_REG_TRIM_GAIN_IR	0x10
++
++/* REG_CFG bits */
++#define MAX44000_CFG_ALSINTE            0x01
++#define MAX44000_CFG_PRXINTE            0x02
++#define MAX44000_CFG_MASK               0x1c
++#define MAX44000_CFG_MODE_SHUTDOWN      0x00
++#define MAX44000_CFG_MODE_ALS_GIR       0x04
++#define MAX44000_CFG_MODE_ALS_G         0x08
++#define MAX44000_CFG_MODE_ALS_IR        0x0c
++#define MAX44000_CFG_MODE_ALS_PRX       0x10
++#define MAX44000_CFG_MODE_PRX           0x14
++#define MAX44000_CFG_TRIM               0x20
++
++/*
++ * Upper 4 bits are not documented but start as 1 on powerup
++ * Setting them to 0 causes proximity to misbehave so set them to 1
++ */
++#define MAX44000_REG_CFG_RX_DEFAULT 0xf0
++
++#define MAX44000_ALSDATA_OVERFLOW	0x4000
++
++#define MAX44000_REGMASK_READABLE ( \
++		(1 << MAX44000_REG_STATUS) | \
++		(1 << MAX44000_REG_CFG_MAIN) | \
++		(1 << MAX44000_REG_CFG_RX) | \
++		(1 << MAX44000_REG_CFG_TX) | \
++		(1 << MAX44000_REG_ALS_DATA_HI) | \
++		(1 << MAX44000_REG_ALS_DATA_LO) | \
++		(1 << MAX44000_REG_PRX_DATA) | \
++		(1 << MAX44000_REG_ALS_UPTHR_HI) | \
++		(1 << MAX44000_REG_ALS_UPTHR_LO) | \
++		(1 << MAX44000_REG_ALS_LOTHR_HI) | \
++		(1 << MAX44000_REG_ALS_LOTHR_LO) | \
++		(1 << MAX44000_REG_PST) | \
++		(1 << MAX44000_REG_PRX_IND) | \
++		(1 << MAX44000_REG_PRX_THR) | \
++		(1 << MAX44000_REG_TRIM_GAIN_GREEN) | \
++		(1 << MAX44000_REG_TRIM_GAIN_IR))
++
++#define MAX44000_REGMASK_WRITEABLE ( \
++		(1 << MAX44000_REG_CFG_MAIN) | \
++		(1 << MAX44000_REG_CFG_RX) | \
++		(1 << MAX44000_REG_CFG_TX) | \
++		(1 << MAX44000_REG_ALS_UPTHR_HI) | \
++		(1 << MAX44000_REG_ALS_UPTHR_LO) | \
++		(1 << MAX44000_REG_ALS_LOTHR_HI) | \
++		(1 << MAX44000_REG_ALS_LOTHR_LO) | \
++		(1 << MAX44000_REG_PST) | \
++		(1 << MAX44000_REG_PRX_IND) | \
++		(1 << MAX44000_REG_PRX_THR) | \
++		(1 << MAX44000_REG_TRIM_GAIN_GREEN) | \
++		(1 << MAX44000_REG_TRIM_GAIN_IR))
++
++#define MAX44000_REGMASK_VOLATILE ( \
++		(1 << MAX44000_REG_STATUS) | \
++		(1 << MAX44000_REG_ALS_DATA_HI) | \
++		(1 << MAX44000_REG_ALS_DATA_LO) | \
++		(1 << MAX44000_REG_PRX_DATA))
++
++struct max44000_data {
++	struct mutex lock;
++	struct regmap *regmap;
++};
++
++/* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
++#define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
++
++static const struct iio_chan_spec max44000_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++	},
++};
++
++static int max44000_read_alsval(struct max44000_data *data)
++{
++	u16 regval;
++	int ret;
++
++	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI,
++			       &regval, sizeof(regval));
++	if (ret < 0)
++		return ret;
++
++	regval = be16_to_cpu(regval);
++
++	/*
++	 * Overflow is explained on datasheet page 17.
++	 *
++	 * It's a warning that either the G or IR channel has become saturated
++	 * and that the value in the register is likely incorrect.
++	 *
++	 * The recommendation is to change the scale (ALSPGA).
++	 * The driver just returns the max representable value.
++	 */
++	if (regval & MAX44000_ALSDATA_OVERFLOW)
++		return 0x3FFF;
++
++	return regval;
++}
++
++static int max44000_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val, int *val2, long mask)
++{
++	struct max44000_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			mutex_lock(&data->lock);
++			ret = max44000_read_alsval(data);
++			mutex_unlock(&data->lock);
++			if (ret < 0)
++				return ret;
++			*val = ret;
++			return IIO_VAL_INT;
++
++		default:
++			return -EINVAL;
++		}
++
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			*val = 1;
++			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
++			return IIO_VAL_FRACTIONAL_LOG2;
++
++		default:
++			return -EINVAL;
++		}
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info max44000_info = {
++	.driver_module		= THIS_MODULE,
++	.read_raw		= max44000_read_raw,
++};
++
++static bool max44000_readable_reg(struct device *dev, unsigned int reg)
++{
++	return (1 << reg) & MAX44000_REGMASK_READABLE;
++}
++
++static bool max44000_writeable_reg(struct device *dev, unsigned int reg)
++{
++	return (1 << reg) & MAX44000_REGMASK_WRITEABLE;
++}
++
++static bool max44000_volatile_reg(struct device *dev, unsigned int reg)
++{
++	return (1 << reg) & MAX44000_REGMASK_VOLATILE;
++}
++
++static bool max44000_precious_reg(struct device *dev, unsigned int reg)
++{
++	return reg == MAX44000_REG_STATUS;
++}
++
++/* Datasheet pages 9-10: */
++static const struct reg_default max44000_reg_defaults[] = {
++	{ MAX44000_REG_CFG_MAIN,	0x24 },
++	{ MAX44000_REG_CFG_RX,		MAX44000_REG_CFG_RX_DEFAULT },
++	{ MAX44000_REG_CFG_TX,		0x00 },
++	{ MAX44000_REG_ALS_UPTHR_HI,	0x00 },
++	{ MAX44000_REG_ALS_UPTHR_LO,	0x00 },
++	{ MAX44000_REG_ALS_LOTHR_HI,	0x00 },
++	{ MAX44000_REG_ALS_LOTHR_LO,	0x00 },
++	{ MAX44000_REG_PST,		0x00 },
++	{ MAX44000_REG_PRX_IND,		0x00 },
++	{ MAX44000_REG_PRX_THR,		0x00 },
++	{ MAX44000_REG_TRIM_GAIN_GREEN,	0x80 },
++	{ MAX44000_REG_TRIM_GAIN_IR,	0x80 },
++};
++
++static const struct regmap_config max44000_regmap_config = {
++	.reg_bits	= 8,
++	.val_bits	= 8,
++
++	.max_register	= MAX44000_REG_PRX_DATA,
++	.readable_reg	= max44000_readable_reg,
++	.writeable_reg	= max44000_writeable_reg,
++	.volatile_reg	= max44000_volatile_reg,
++	.precious_reg	= max44000_precious_reg,
++
++	.use_single_rw	= 1,
++	.cache_type	= REGCACHE_FLAT,
++
++	.reg_defaults		= max44000_reg_defaults,
++	.num_reg_defaults	= ARRAY_SIZE(max44000_reg_defaults),
++};
++
++static int max44000_probe(struct i2c_client *client,
++			  const struct i2c_device_id *id)
++{
++	struct max44000_data *data;
++	struct iio_dev *indio_dev;
++	int ret, reg;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++	data = iio_priv(indio_dev);
++	data->regmap = devm_regmap_init_i2c(client, &max44000_regmap_config);
++	if (IS_ERR(data->regmap)) {
++		dev_err(&client->dev, "regmap_init failed!\n");
++		return PTR_ERR(data->regmap);
++	}
++
++	i2c_set_clientdata(client, indio_dev);
++	mutex_init(&data->lock);
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &max44000_info;
++	indio_dev->name = MAX44000_DRV_NAME;
++	indio_dev->channels = max44000_channels;
++	indio_dev->num_channels = ARRAY_SIZE(max44000_channels);
++
++	/*
++	 * The device doesn't have a reset function so we just clear some
++	 * important bits at probe time to ensure sane operation.
++	 *
++	 * Since we don't support interrupts/events the threshold values are
++	 * not important. We also don't touch trim values.
++	 */
++
++	/* Reset ALS scaling bits */
++	ret = regmap_write(data->regmap, MAX44000_REG_CFG_RX, MAX44000_REG_CFG_RX_DEFAULT);
++	if (ret < 0) {
++		dev_err(&client->dev, "failed to write default CFG_RX: %d\n", ret);
++		return ret;
++	}
++
++	/* Reset CFG bits to ALS-only mode and no interrupts */
++	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_GIR;
++	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
++	if (ret < 0) {
++		dev_err(&client->dev, "failed to write init config: %d\n", ret);
++		return ret;
++	}
++
++	/* Read status at least once to clear any stale interrupt bits. */
++	ret = regmap_read(data->regmap, MAX44000_REG_STATUS, &reg);
++	if (ret < 0) {
++		dev_err(&client->dev, "failed to read init status: %d\n", ret);
++		return ret;
++	}
++
++	return iio_device_register(indio_dev);
++}
++
++static int max44000_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++	return 0;
++}
++
++static const struct i2c_device_id max44000_id[] = {
++	{"max44000", 0},
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, max44000_id);
++
++#ifdef CONFIG_ACPI
++static const struct acpi_device_id max44000_acpi_match[] = {
++	{"MAX44000", 0},
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, max44000_acpi_match);
++#endif
++
++static struct i2c_driver max44000_driver = {
++	.driver = {
++		.name	= MAX44000_DRV_NAME,
++		.acpi_match_table = ACPI_PTR(max44000_acpi_match),
++	},
++	.probe		= max44000_probe,
++	.remove		= max44000_remove,
++	.id_table	= max44000_id,
++};
++
++module_i2c_driver(max44000_driver);
++
++MODULE_AUTHOR("Crestez Dan Leonard <leonard.crestez@intel.com>");
++MODULE_DESCRIPTION("MAX44000 Ambient and Infrared Proximity Sensor");
++MODULE_LICENSE("GPL v2");
+-- 
+2.5.5
 
->> +
->> +What:		/sys/bus/iio/devices/iio:deviceX/shunt_integration_time[_available]
->> +What:		/sys/bus/iio/devices/iio:deviceX/bus_integration_time[_available]
->> +Date:		April 2016
->> +KernelVersion:	4.7
->> +Contact:	Andrew F. Davis <afd@ti.com>
->> +Description:
->> +		Shunt and Bus integration time for each channel.
-> I'd keep these tightly associated with the channels as then they become
-> standard abi elements, just for channels with extended names.
-
-The other option is to have each channel have an integration_time, but
-this may give the false impression that they are individually adjustable
-when they are actually all linked together, change one, they all change
-(of the same type (bus/shunt)).
-
->> +
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_shunt_critical_(raw|scale)
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_shunt_warning_(raw|scale)
->> +Date:		April 2016
->> +KernelVersion:	4.7
->> +Contact:	Andrew F. Davis <afd@ti.com>
->> +Description:
->> +		Shunt voltage critical and warning trigger levels.
-> This is why I think this may really belong in hwmon.
-> The way you currently have this done is a bodge on the relevant IIO interfaces.
-> If there is good reason to look at multiple equivalent event types on a
-> given channel in IIO we can look at adding that support to the core.
-> This is a lot more common in explicit hardware monitoring chips than in
-> more general ADCs.
-> 
-
-Agree, we already have threshold events, perhaps a way to set the
-threshold for devices like this that have adjustable ones could be
-useful, but I see what you mean, why would regular ADCs need an
-adjustable threshold?
-
-> Also I see nothing in the driver that is actually detecting if these
-> conditions have been passed?  If that is assumed to be a problem for external
-> hardware then it should be clearly documented as such.
-> 
-
-I was thinking about leaving these to the user to do something with,
-they may want them tie them to an alert event somehow. Or I could
-probably tie them to channel events?
-
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index af4aea7..d713c9c 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -232,6 +232,13 @@ config IMX7D_ADC
->>  	  This driver can also be built as a module. If so, the module will be
->>  	  called imx7d_adc.
->>  
->> +config INA3221
->> +	tristate "Texas Instruments INA3221 Triple Power Monitor"
->> +	depends on I2C
->> +	select REGMAP_I2C
->> +	help
->> +	  Say yes here to build support for TI INA3221 Triple Power Monitor.
-> Need more detail here really.  Something about what it provides and the name
-> of the module would be conventional.
-
-Will add.
-
-[...]
-
->> +	INA3221_CHAN(3, INA3221_SHUNT3, "shunt"),
->> +	INA3221_CHAN(3, INA3221_BUS3, "bus"),
->> +	INA3221_CHAN(3, INA3221_CRIT3, "shunt_critical"),
->> +	INA3221_CHAN(3, INA3221_WARN3, "shunt_warning"),
-> I'm not really sure how these work at all...  You can set the thresholds
-> but how does the driver know if they have been tripped?
-> Or are we dealing with the assumption that it is a problem for external
-> hardware?
-> 
-
-They just trigger a pin when reached, these can then be hooked to
-anything the designer would like, I wasn't sure how to best handle this
-so I left them un-wired to anything in this driver, but I can see how
-this would make these channels seem out of place. :/
-
-
-
-A quick look though hwmod seems to reveal a lot of basic
-Voltage/Current/Temp parts, what seems to separates them is hwmon
-drivers expose more alerts, perhaps the IIO framework could be expanded
-to handle some hwmon like alerts, then the frameworks could move towards
-being merged, as opposed to parts having a driver for each framework
-depending on use ( not volunteering, just suggesting :) ). I guess there
-is little keeping me from simply registering with both frameworks in one
-driver...
-
-Andrew
