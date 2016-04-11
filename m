@@ -1,74 +1,44 @@
-Return-Path: <amsfield22@gmail.com>
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	kgene@kernel.org,
-	k.kozlowski@samsung.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v2 0/5] iio: use regmap to retrieve struct device
-Date: Sun, 10 Apr 2016 12:03:50 -0700
-Message-Id: <cover.1460314070.git.amsfield22@gmail.com>
-In-Reply-To: <cover.1459918214.git.amsfield22@gmail.com>
-References: <cover.1459918214.git.amsfield22@gmail.com>
+Return-Path: <leonard.crestez@intel.com>
+Subject: Re: [PATCH 5/5] max44000: Initial triggered buffer support
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <cover.1460045763.git.leonard.crestez@intel.com>
+ <dc82c7c28df002717a2668708cc96732a0856fac.1460045763.git.leonard.crestez@intel.com>
+ <alpine.DEB.2.02.1604072152010.26969@pmeerw.net>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Daniel Baluta <daniel.baluta@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Message-ID: <570BCCA5.7020004@intel.com>
+Date: Mon, 11 Apr 2016 19:11:17 +0300
+MIME-Version: 1.0
+In-Reply-To: <alpine.DEB.2.02.1604072152010.26969@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-These drivers include both struct regmap and struct device in their
-global data.  Remove the redundant copy by deleting struct device 
-from the drivers global data and using regmap API to retrieve when
-needed.
+On 04/07/2016 10:59 PM, Peter Meerwald-Stadler wrote:
+>>   static int max44000_probe(struct i2c_client *client,
+>>   			  const struct i2c_device_id *id)
+>>   {
+>> @@ -513,6 +569,12 @@ static int max44000_probe(struct i2c_client *client,
+>>   		return ret;
+>>   	}
+>>
+>> +	ret = iio_triggered_buffer_setup(indio_dev, NULL, max44000_trigger_handler, NULL);
+>> +	if (ret < 0) {
+>> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+>> +		return ret;
+>> +	}
+>> +
+>>   	return iio_device_register(indio_dev);
+>
+> no devm_ possible anymore :-)
 
-This patchset removes all such redundancies in drivers/iio/.
+It's not clear to me why explicit calls to iio_triggered_buffer_cleanup 
+are done in every driver. Wouldn't it be possible for iio_dev_release to 
+call iio_triggered_buffer_cleanup? That would require 
+triggered_buffer_cleanup to explictly NULL the fields it deallocates so 
+that duplicate cleanups don't crash.
 
-Patches created using Coccinelle plus hand edits for whitespace.
-
-Changes v1->v2:
-	This set is updated following reviews teaching me that not
-	all regmaps in global data will be of that device.  Discards
-	and keepers are noted below.  No actual code changes just a
-	remake of the patchset.
-
-	Jonathan - I saw you want to let it simmer, just want to
-	let it simmer cleaner ;)
-
-  accel: mma7455
-	Removing: Joachim ack'd, Jonathan took v1 
-
-  adc: exynos_adc
-	Discard: regmap is of PMU parent
-
-  adc: qcom-spmi-iadc
-  adc: qcom-spmi-vadc
-	Discard: first line of _probe gets regmap from parent
-
-  accel: bmc150
-  gyro: bmg160
-	Keep: regmap passed into _probe from i2c,spi_probe where
-	it was initialized for this device
-
-  accel: mxc4005
-  health: afe4403
-  health: afe4404
-	Keep: regmap initialized in _probe for this device
-
-
-Alison Schofield (5):
-  iio: accel: bmc150: use regmap to retrieve struct device
-  iio: accel: mxc4005: use regmap to retrieve struct device
-  iio: health: afe4403: use regmap to retrieve struct device
-  iio: health: afe4404: use regmap to retrieve struct device
-  iio: gyro: bmg160: use regmap to retrieve struct device
-
- drivers/iio/accel/bmc150-accel-core.c | 99 +++++++++++++++++++----------------
- drivers/iio/accel/mxc4005.c           | 26 +++++----
- drivers/iio/gyro/bmg160_core.c        | 86 +++++++++++++++---------------
- drivers/iio/health/afe4403.c          | 36 ++++++-------
- drivers/iio/health/afe4404.c          | 38 +++++++-------
- 5 files changed, 149 insertions(+), 136 deletions(-)
-
--- 
-2.1.4
+--
+Regards,
+Leonard
