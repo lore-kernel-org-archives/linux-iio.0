@@ -1,71 +1,85 @@
-Return-Path: <akinobu.mita@gmail.com>
+Return-Path: <wsa@the-dreams.de>
+Date: Mon, 11 Apr 2016 14:39:59 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Peter Rosin <peda@lysator.liu.se>
+Cc: linux-kernel@vger.kernel.org, Peter Rosin <peda@axentia.se>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Kalle Valo <kvalo@codeaurora.org>, Joe Perches <joe@perches.com>,
+	Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Arnd Bergmann <arnd@arndb.de>, Tommi Rantala <tt.rantala@gmail.com>,
+	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 00/24] i2c mux cleanup and locking update
+Message-ID: <20160411123959.GA4719@katana>
+References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 MIME-Version: 1.0
-In-Reply-To: <570A39CB.9060901@kernel.org>
-References: <1460044621-17274-1-git-send-email-akinobu.mita@gmail.com>
-	<570A39CB.9060901@kernel.org>
-Date: Mon, 11 Apr 2016 09:33:14 +0900
-Message-ID: <CAC5umyikBxs_WLrBEj1K_G5cTVs+6dHHXWKPLo86_zh=KvJFmQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: pressure: bmp280: add support for BMP180
-From: Akinobu Mita <akinobu.mita@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Christoph Mair <christoph.mair@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HcAYCG3uE/tztfnV"
+In-Reply-To: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
 List-ID: <linux-iio@vger.kernel.org>
 
-2016-04-10 20:32 GMT+09:00 Jonathan Cameron <jic23@kernel.org>:
-> On 07/04/16 16:57, Akinobu Mita wrote:
->> This adds support for the BMP180 to the bmp280 iio driver.
->> The BMP180 has already been supported by misc/bmp085 driver but it
->> doesn't use iio framework.
->>
->> This also adds ability to control the oversampling ratio of the
->> temperature and pressure measurement for both bmp180 and bmp280.
->> (bmp280 is untested)
->>
->> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
->> Cc: Vlad Dogaru <vlad.dogaru@intel.com>
->> Cc: Christoph Mair <christoph.mair@gmail.com>
->> Cc: Jonathan Cameron <jic23@kernel.org>
->> Cc: Hartmut Knaack <knaack.h@gmx.de>
->> Cc: Lars-Peter Clausen <lars@metafoo.de>
->> Cc: Peter Meerwald <pmeerw@pmeerw.net>
-> I absolutely agree that this should be two patches, one for the device
-> support and one for the oversampling support.
 
-OK.
+--HcAYCG3uE/tztfnV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> A few suggestions on how to simplify the code inline.
->
-> Also, we need to be careful in Kconfig whilst we have two drivers supporting
-> the chip.  They probably need to depend on the other one not being selected
-> to avoid any issues.
+Hi Peter,
 
-OK.  I'll add the following dependency for CONFIG_BMP280
+> To summarize the series, there's some i2c-mux infrastructure cleanup work
+> first (I think that part stands by itself as desireable regardless), the
+> locking changes are in 16/24 and after with the real meat in 18/24. There
+> is some documentation added in 19/24 while 20/24 and after are cleanups to
+> existing drivers utilizing the new stuff.
 
-+       depends on !(BMP085_I2C=y || BMP085_I2C=m)
+My idea is to review and pull in the infrastructure work for 4.7 and the
+locking changes to 4.8. This gives us one cycle to fix regressions (if
+any) in the infrastructure work first. Is that okay with you?
 
->> @@ -72,6 +104,15 @@ struct bmp280_data {
->>       struct i2c_client *client;
->>       struct mutex lock;
->>       struct regmap *regmap;
->> +     const struct bmp280_ops *ops;
-> I'd define this slightly differently as say
-> const struct bmp280_chip_info  and include all the ops as well as the
-> various other elements in here that you set depending on which chip it is.
->
-> The big assignment in probe should be done in one line rather than 10ish.
+Thanks,
 
-OK.  Make a lot of sense.
+   Wolfram
 
->> @@ -390,13 +906,15 @@ static int bmp280_probe(struct i2c_client *client,
->>  }
->>
->>  static const struct acpi_device_id bmp280_acpi_match[] = {
->> -     {"BMP0280", 0},
->> +     {"BMP0280", BMP280_CHIP_ID },
-> Why not provide ACPI id's for the other devices?
 
-Can I just add "BMP0180" for bmp180 support?
-I thought that assigning ACPI id requires someone's agreement.
+--HcAYCG3uE/tztfnV
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJXC5sfAAoJEBQN5MwUoCm2kUAP/jQGfszmD3bynHq8tQGbqTIh
++jYVRM0/CXpQCPklXZgusOuo99Aq8PqHnuQz8FA4s8OJbdbJcYqlxUFzoFOWwRu2
+1OU4hQRfFKEgcbn8uDdH0nkV+Gzs9TLKQX1PJDOQEITi19kK7nncaOJanY1PWhc3
+5ySA/jXCjB43IGOicUNyOt9uJKv/+tL2UzZmYB6vR8HaFhlVSneBuVMERsDrDjBl
+8IZnUHxPrehmgQCRB/2mc7+8X2Urm1tayi0wslLrFxKr9++as3+UPK3cJ+7GT/Hu
+IvuuC20hlyjW2H5e/KhN60rP/sXmz10nZeZk662VpAkC2Y0euqBQbcnT7eO5VCKx
+Ovk5cs1VIYpMIn/0QR0ZAMM246v7M+Pjk+6Wi+v+TavG9Fxprd1iNcjD5dz9wi1L
+lz/5P3McULOS09SPbUTF4YhqcPPpma0JsMTjz5MqiEryXbqd0Zv/xx3PIzQ6czVA
+/PBHtZkkAp3Brmc0Xh7suVwuayxNBypCKHk61/Ka7dO1UYHQsK3kL+GFEbMeky00
+2J7jGXyW/HLvQRPHBAn1PJ8feFpNL0PqYY/i1M9HobHeb1PFOh3yndX3TXaBlVDA
+L2dASNJ4hfMqjkp2TqoO7LmFnR7ccQLBI9XezCSRQtrOQdQA3Ym3MvRKKsFAR6uE
++1TcE5VAF4XveeTtw0qp
+=D4yv
+-----END PGP SIGNATURE-----
+
+--HcAYCG3uE/tztfnV--
