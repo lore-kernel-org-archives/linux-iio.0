@@ -1,50 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48151 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751262AbcDPMfT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 08:35:19 -0400
-Subject: Re: [PATCH 08/10] iio: common: hid-sensors: use tab for indention
-To: Slawomir Stepien <sst@poczta.fm>, knaack.h@gmx.de,
-	pmeerw@pmeerw.net
-References: <1460662602-2951-1-git-send-email-sst@poczta.fm>
- <1460662602-2951-9-git-send-email-sst@poczta.fm>
-Cc: linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57123185.8040807@kernel.org>
-Date: Sat, 16 Apr 2016 13:35:17 +0100
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <1460662602-2951-9-git-send-email-sst@poczta.fm>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <570A6364.4070600@kernel.org>
+References: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
+	<1458825486-17188-2-git-send-email-linus.walleij@linaro.org>
+	<56F8E550.6040305@kernel.org>
+	<CACRpkdZx2L8JZ76iypApN7WCz7vgSVvamBamkzhQfyG+NdUcbw@mail.gmail.com>
+	<CACRpkdb3JaL1KGOMmRCwUPPUW_NNQa4_hsQYCwazo8Q-SNbnLQ@mail.gmail.com>
+	<570A6364.4070600@kernel.org>
+Date: Mon, 11 Apr 2016 08:50:48 +0200
+Message-ID: <CACRpkdYW2iSKtHhJUj5ZaWdFJjmbhF+wRw+P04sQZ=7mwxcefw@mail.gmail.com>
+Subject: Re: [PATCH 2/4] iio: st_sensors: read each channel individually
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 14/04/16 20:36, Slawomir Stepien wrote:
-> This fixes the error reported by checkpatch.pl:
-> 
-> ERROR: code indent should use tabs where possible
-> 
-> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
-Applied,
+On Sun, Apr 10, 2016 at 4:29 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 29/03/16 09:15, Linus Walleij wrote:
+>> On Mon, Mar 28, 2016 at 11:20 AM, Linus Walleij <linus.walleij@linaro.org> wrote:
 
-Thanks,
+>> So there are sensors out there that doesn't work well
+>> with the bulk read optimization.
+>>
+>> I think this patch should be applied for fixes, tell me if
+>> you need it rebased as the first patch (though I think it
+>> will just apply).
+>>
+>> Giuseppe/Denis? Agree?
+>
+> Anyone want to comment on this?
 
-Jonathan
-> ---
->  drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 5955110..5b41f9d 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -115,7 +115,7 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
->  		return ret;
->  	}
->  
-> - 	return 0;
-> +	return 0;
->  #else
->  	atomic_set(&st->user_requested_state, state);
->  	return _hid_sensor_power_state(st, state);
-> 
+I'd say apply it.
 
+If bulk mode should be supported it needs to be opt-in
+since the LIS331DL obviously cannot handle it.
+
+Yours,
+Linus Walleij
