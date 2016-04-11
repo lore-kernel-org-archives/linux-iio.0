@@ -1,172 +1,66 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 2/2] iio: temperature: Add triggered buffer support for AM2315
-Date: Fri, 15 Apr 2016 18:36:08 +0300
-Message-Id: <1460734568-6306-3-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1460734568-6306-1-git-send-email-tiberiu.a.breana@intel.com>
-References: <1460734568-6306-1-git-send-email-tiberiu.a.breana@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.aswsp.com ([193.34.35.150]:23385 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753398AbcDKVog (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 11 Apr 2016 17:44:36 -0400
+Date: Mon, 11 Apr 2016 23:44:28 +0200
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: Rob Herring <robh@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	Cristina Opriceana <cristina.opriceana@gmail.com>,
+	Varka Bhadram <varkabhadram@gmail.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>
+Subject: Re: [RFC PATCH v1 3/3] iio:imu:mpu6050: enhance mounting matrix
+ support
+Message-ID: <20160411214428.GB1997@geburah.sephiroth>
+References: <cover.1460113510.git.gregor.boirie@parrot.com>
+ <594bc2f45d1894c9c3308509062b991e4a5fcc7e.1460113510.git.gregor.boirie@parrot.com>
+ <20160411191212.GA30801@rob-hp-laptop>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20160411191212.GA30801@rob-hp-laptop>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
----
- drivers/iio/temperature/am2315.c | 83 ++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 80 insertions(+), 3 deletions(-)
+On Mon, Apr 11, 2016 at 02:12:12PM -0500, Rob Herring wrote:
+> On Fri, Apr 08, 2016 at 04:12:05PM +0200, Gregor Boirie wrote:
+> > Add a new rotation matrix sysfs attribute compliant with IIO core
+> > mounting matrix API.
+> > Matrix is retrieved from "in_anglvel_mount_matrix" and
+> > "in_accel_mount_matrix" sysfs attributes. It is declared into mpu6050 DTS
+> > entry as a "mount-matrix" property.
+> 
+> We have a common DT property, but can't have common sysfs interface?
+Agreed. Original driver was structured that way. In fact, a single matrix is
+enought for this sensor: AFAIK, reference frames are the same for gyro and
+accelero.
+I suppose that having a DTS and sysfs attribute per type of sample /
+"sub-device" ensure better userspace API consistency across drivers.
+Jonathan ?
 
-diff --git a/drivers/iio/temperature/am2315.c b/drivers/iio/temperature/am2315.c
-index 2642bae..c65653c 100644
---- a/drivers/iio/temperature/am2315.c
-+++ b/drivers/iio/temperature/am2315.c
-@@ -15,8 +15,11 @@
- #include <linux/i2c.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
- 
- #define AM2315_REG_HUM_MSB			0x00
- #define AM2315_REG_HUM_LSB			0x01
-@@ -26,24 +29,43 @@
- #define AM2315_FUNCTION_READ			0x03
- #define AM2315_HUM_OFFSET			0
- #define AM2315_TEMP_OFFSET			2
-+#define AM2315_ALL_CHANNEL_MASK			GENMASK(1, 0)
- 
- #define AM2315_DRIVER_NAME			"am2315"
- 
- struct am2315_data {
- 	struct i2c_client *client;
-+	struct mutex lock;
-+	s16 buffer[8]; /* 2x16-bit channels + 2x16 padding + 4x16 timestamp */
- };
- 
- static const struct iio_chan_spec am2315_channels[] = {
- 	{
- 		.type = IIO_HUMIDITYRELATIVE,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--				      BIT(IIO_CHAN_INFO_SCALE)
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.endianness = IIO_CPU,
-+		},
- 	},
- 	{
- 		.type = IIO_TEMP,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--				      BIT(IIO_CHAN_INFO_SCALE)
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.endianness = IIO_CPU,
-+		},
-+
- 	},
-+		IIO_CHAN_SOFT_TIMESTAMP(2),
- };
- 
- /* CRC calculation algorithm, as specified in the datasheet (page 13). */
-@@ -109,6 +131,43 @@ static int am2315_read_data(struct i2c_client *client, u8 *rx_buf)
- 	return ret;
- }
- 
-+static irqreturn_t am2315_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct am2315_data *data = iio_priv(indio_dev);
-+	int ret;
-+	int bit;
-+	int i;
-+	u8 rx_buf[8];
-+
-+	mutex_lock(&data->lock);
-+	ret = am2315_read_data(data->client, rx_buf);
-+	if (ret < 0) {
-+		mutex_unlock(&data->lock);
-+		goto err;
-+	}
-+	if (*(indio_dev->active_scan_mask) == AM2315_ALL_CHANNEL_MASK) {
-+		data->buffer[0] = (rx_buf[2] << 8) | rx_buf[3];
-+		data->buffer[1] = (rx_buf[4] << 8) | rx_buf[5];
-+	} else {
-+		i = 0;
-+		for_each_set_bit(bit, indio_dev->active_scan_mask,
-+				 indio_dev->masklength) {
-+			data->buffer[i] = (rx_buf[(bit * 2) + 2] << 8) |
-+					   rx_buf[(bit * 2) + 3];
-+			i++;
-+		}
-+	}
-+	mutex_unlock(&data->lock);
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+					   pf->timestamp);
-+err:
-+	iio_trigger_notify_done(indio_dev->trig);
-+	return IRQ_HANDLED;
-+}
-+
- static int am2315_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
-@@ -155,6 +214,7 @@ static const struct iio_info am2315_info = {
- static int am2315_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
-+	int ret;
- 	struct iio_dev *indio_dev;
- 	struct am2315_data *data;
- 
-@@ -167,6 +227,7 @@ static int am2315_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	data->client = client;
- 	i2c_set_clientdata(client, indio_dev);
-+	mutex_init(&data->lock);
- 
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->info = &am2315_info;
-@@ -175,7 +236,22 @@ static int am2315_probe(struct i2c_client *client,
- 	indio_dev->channels = am2315_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(am2315_channels);
- 
--	return iio_device_register(indio_dev);
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 am2315_trigger_handler, NULL);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "iio triggered buffer setup failed\n");
-+		return ret;
-+	}
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto err_buffer_cleanup;
-+
-+	return 0;
-+
-+err_buffer_cleanup:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	return ret;
- }
- 
- static int am2315_remove(struct i2c_client *client)
-@@ -183,6 +259,7 @@ static int am2315_remove(struct i2c_client *client)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 
- 	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
- 
- 	return 0;
- }
--- 
-1.9.1
+> 
+> BTW, sysfs interfaces also have to be documented.
+Ok
+
+> 
+> > 
+> > Old interface is kept for backward userspace compatibility and may be
+> > retrieved from legacy platform_data mechanism only.
+> > 
+> > Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+> > ---
+> >  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    | 13 +++++
+> >  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         | 56 ++++++++++++++++++++--
+> >  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  4 +-
+> >  include/linux/platform_data/invensense_mpu6050.h   |  5 +-
+> >  4 files changed, 72 insertions(+), 6 deletions(-)
