@@ -1,124 +1,224 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Date: Tue, 12 Apr 2016 09:34:39 +0100
-From: jic23@jic23.retrosnub.co.uk
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: "Andrew F. Davis" <afd@ti.com>, Jonathan Cameron <jic23@kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, Marc Titinger <mtitinger@baylibre.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Jean Delvare
- <jdelvare@suse.de>, linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: adc: Add driver for the TI INA3221 Triple
- Current/Voltage Monitor
-In-Reply-To: <20160411180839.GA10942@roeck-us.net>
-References: <1460139580-11865-1-git-send-email-afd@ti.com>
- <570A3FB2.7000600@kernel.org> <570BC74B.3000208@ti.com>
- <20160411163843.GA27218@roeck-us.net> <570BD530.8060508@ti.com>
- <20160411180839.GA10942@roeck-us.net>
-Message-ID: <e5bf29a1db784fa428235b59b812d666@jic23.retrosnub.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f46.google.com ([209.85.215.46]:33150 "EHLO
+	mail-lf0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756266AbcDLIzS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Apr 2016 04:55:18 -0400
+Received: by mail-lf0-f46.google.com with SMTP id e190so15694388lfe.0
+        for <linux-iio@vger.kernel.org>; Tue, 12 Apr 2016 01:55:17 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v2] iio: tools: generic_buffer: auto-enable channels
+Date: Tue, 12 Apr 2016 10:55:11 +0200
+Message-Id: <1460451311-9819-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 11.04.2016 19:08, Guenter Roeck wrote:
-> On Mon, Apr 11, 2016 at 11:47:44AM -0500, Andrew F. Davis wrote:
->> On 04/11/2016 11:38 AM, Guenter Roeck wrote:
->> > On Mon, Apr 11, 2016 at 10:48:27AM -0500, Andrew F. Davis wrote:
->> >> On 04/10/2016 06:57 AM, Jonathan Cameron wrote:
->> >>> On 08/04/16 19:19, Andrew F. Davis wrote:
->> >>>> The INA3221 is a three-channel, high-side current and bus voltage monitor
->> >>>> with an I2C and SMBUS compatible interface.
->> >>>>
->> >>>> Signed-off-by: Andrew F. Davis <afd@ti.com>
->> >>> Hi Andrew,
->> >>>
->> >>> My immediate thought on this one is whether it would be better off in hwmon.
->> >>> I'm not convinced either way from a quick glance at the data sheet, but the
->> >>> question needs to be addressed.
->> >>>
->> >>
->> >> I was on the fence with this also, I was leaning towards hwmod until I
->> >> looked onto how the ina2xx driver has been ported to iio. This is almost
->> >> the same part but the ina3x has three monitors vs one. In addition it
->> >> looks like NVIDIA has written a hwmod driver for this part
->> >> (https://github.com/Bogdacutu/STLinux-Kernel/blob/master/drivers/hwmon/ina3221.c)
->> >> but then also ported it over to IIO (although doesn't appear to be
->> >> upstream ready or ever has been submitted for such)
->> >> (https://github.com/SuperPichu/shield-tablet-kernel/blob/master/drivers/staging/iio/meter/ina3221.c)
->> >> So I figured this was the way things are moving, but I have no problem
->> >> working this as a hwmod driver. The IIO work is already done here, I'll
->> >> write the hwmod version also but keep working this, I see no reason we
->> >> cant have both if needed. (unless using this and just using iio_hwmod.c
->> >> if needed is more acceptable?)
->> >>
->> >
->> > You can not have both since they would conflict with each other.
->> > ina2xx has possibly created a bad precedent. I am not inclined to accept
->> > a hwmon driver if an iio driver already exists. If you want an iio driver,
->> > fine with me, but then you (and its users) will have to live with its
->> > limitations when it comes to hardware monitoring.
->> >
->> 
->> Hmm, my plan was an MFD device core, that then could mediate the two
->> sub-drivers, but I'm not sure about this yet.
->> 
-> mfd is intended to separate multi-function devices, not multiple
-> linux subsystems accessing the same logical functionality in a chip 
-> just
-> because the subsystems don't have a means to communicate with each 
-> other.
-> I don't think using mfd for this purpose is a good idea; someone would
-> have to work hard to convince me that it is.
-> 
->> > I don't really mind if things are going all towards iio if that is where
->> > the community wants to go. However, if that is the case, I would suggest
->> > that someone should spend the time to define a clear sense of 'limits'
->> > as well as alert handling in iio, in a way that is exportable to other
->> > subsystems (hwmon and thermal come into mind).
->> >
->> 
->> I agree. I think both frameworks offer useful interfaces, so I would
->> hate to limit users to one, but for now I'll just post the hwmon 
->> version
->> here in a bit and live with that until someone requests the IIO 
->> support.
->> 
-> Ultimately it might make sense to create a hwmon->iio bridge in the 
-> hwmon
-> core (just like it would make sense to create a hwmon->thermal bridge).
-> This way drivers could be implemented whereever it is more convenient,
-> and where the primary use case fits best. The basic idea would be for a
-> hwmon driver to register with a flag such as "register with the iio
-> subsystem as well".
-> 
-> However, that would require substantial structural changes (or call it
-> modernization) of the hwmon driver core API. Unfortunately, that is 
-> unlikely
-> to happen anytime soon - I don't have the time, and no one else seems 
-> to
-> show much interest in hwmon lately. So instead of doing that, people 
-> end up
-> writing drivers for the same chip in multiple subsystems, and end up 
-> with
-> limitations one way or another. ina2xx is a perfect example.
-The aim from the IIO side was to take a kind of different approach to 
-this.
-Original suggest was Mark Brown's (I like to blame him whenever possible 
-;).
-His usecase was SoC ADCs where one single ADC is commonly used to do a 
-whole
-load of parallel tasks.  It's not uncommon to have one logic block 
-doing,
-touchscreen, hwmon and general purpose ADC channels.
+If no channels are enabled when we run generic_buffer on a
+device, add a command-line option to just enable all of them,
+run the sampling and disable them all again afterwards.
 
-Anyhow, what he brought up is that, as we were adding the ability to 
-have
-other consumers of IIO data in the kernel we can separate the backend 
-from
-the front end.
+This is extremely useful when I'm low-level testing my
+sensors with interrupts and triggers, sample session:
 
-The backend :
-* Handles the hardware providing any of:
+root@Ux500:/ lsiio
+Device 000: lsm303dlh_accel
+Device 001: lis331dl_accel
+Device 002: l3g4200d
+Device 003: lsm303dlh_magn
+Device 004: lps001wp
+Trigger 000: lsm303dlh_accel-trigger
+Trigger 001: lis331dl_accel-trigger
+Trigger 002: l3g4200d-trigger
 
-> 
-> Guenter
+root@Ux500:/ generic_buffer -a -c 10 -n l3g4200d
+iio device number being used is 2
+iio trigger number being used is 2
+No channels are enabled, enabling all channels
+Enabling: in_anglvel_x_en
+Enabling: in_anglvel_y_en
+Enabling: in_anglvel_z_en
+Enabling: in_timestamp_en
+/sys/bus/iio/devices/iio:device2 l3g4200d-trigger
+-3.593664 -0.713133 4.870143 946684863662292480
+3.225546 0.867357 -4.945878 946684863671875000
+-0.676413 0.127296 0.106641 946684863681488037
+-0.661113 0.110160 0.128826 946684863690673828
+-0.664173 0.113067 0.123471 946684863700683593
+-0.664938 0.109395 0.124848 946684863710144042
+-0.664173 0.110619 0.130203 946684863719512939
+-0.666162 0.111231 0.132651 946684863729125976
+-0.668610 0.111690 0.130662 946684863738739013
+-0.660501 0.110466 0.131733 946684863748565673
+Disabling: in_anglvel_x_en
+Disabling: in_anglvel_y_en
+Disabling: in_anglvel_z_en
+Disabling: in_timestamp_en
+
+Pure awesomeness. If some channels have been enabled through
+scripts or manual interaction, nothing happens.
+
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Provide for using the -a flag to indicate that you want all
+  available channels enabled.
+---
+ tools/iio/generic_buffer.c | 90 +++++++++++++++++++++++++++++++++++++++++-----
+ tools/iio/iio_utils.h      |  7 ++++
+ 2 files changed, 88 insertions(+), 9 deletions(-)
+
+diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+index c42b7f836b48..81ebead47547 100644
+--- a/tools/iio/generic_buffer.c
++++ b/tools/iio/generic_buffer.c
+@@ -191,10 +191,51 @@ void process_scan(char *data,
+ 	printf("\n");
+ }
+ 
++int enable_disable_all_channels(char *dev_dir_name, int enable)
++{
++	const struct dirent *ent;
++	char scanelemdir[256];
++	DIR *dp;
++	int ret;
++
++	snprintf(scanelemdir, sizeof(scanelemdir),
++		 FORMAT_SCAN_ELEMENTS_DIR, dev_dir_name);
++	scanelemdir[sizeof(scanelemdir)-1] = '\0';
++
++	dp = opendir(scanelemdir);
++	if (!dp) {
++		fprintf(stderr, "Enabling/disabling channels: can't open %s\n",
++			scanelemdir);
++		return -EIO;
++	}
++
++	ret = -ENOENT;
++	while (ent = readdir(dp), ent) {
++		if (check_suffix(ent->d_name, "_en")) {
++			printf("%sabling: %s\n",
++			       enable ? "En" : "Dis",
++			       ent->d_name);
++			ret = write_sysfs_int(ent->d_name, scanelemdir,
++					      enable);
++			if (ret < 0)
++				fprintf(stderr, "Failed to enable/disable %s\n",
++					ent->d_name);
++		}
++	}
++
++	if (closedir(dp) == -1) {
++		perror("Enabling/disabling channels: "
++		       "Failed to close directory");
++		return -errno;
++	}
++	return 0;
++}
++
+ void print_usage(void)
+ {
+ 	fprintf(stderr, "Usage: generic_buffer [options]...\n"
+ 		"Capture, convert and output data from IIO device buffer\n"
++		"  -a         Auto-activate all available channels\n"
+ 		"  -c <n>     Do n conversions\n"
+ 		"  -e         Disable wait for event (new data)\n"
+ 		"  -g         Use trigger-less mode\n"
+@@ -225,12 +266,16 @@ int main(int argc, char **argv)
+ 	int scan_size;
+ 	int noevents = 0;
+ 	int notrigger = 0;
++	int autochannels = 0;
+ 	char *dummy;
+ 
+ 	struct iio_channel_info *channels;
+ 
+-	while ((c = getopt(argc, argv, "c:egl:n:t:w:")) != -1) {
++	while ((c = getopt(argc, argv, "ac:egl:n:t:w:")) != -1) {
+ 		switch (c) {
++		case 'a':
++			autochannels = 1;
++			break;
+ 		case 'c':
+ 			errno = 0;
+ 			num_loops = strtoul(optarg, &dummy, 10);
+@@ -340,14 +385,36 @@ int main(int argc, char **argv)
+ 			"diag %s\n", dev_dir_name);
+ 		goto error_free_triggername;
+ 	}
+-	if (!num_channels) {
++	if (num_channels && autochannels) {
++		fprintf(stderr, "Auto-channels selected but some channels "
++			"are already activated in sysfs\n");
++		fprintf(stderr, "Proceeding without activating any channels\n");
++	}
++	if (!num_channels && autochannels) {
+ 		fprintf(stderr,
+-			"No channels are enabled, we have nothing to scan.\n");
+-		fprintf(stderr, "Enable channels manually in "
+-			FORMAT_SCAN_ELEMENTS_DIR
+-			"/*_en and try again.\n", dev_dir_name);
+-		ret = -ENOENT;
+-		goto error_free_triggername;
++			"No channels are enabled, enabling all channels\n");
++
++		ret = enable_disable_all_channels(dev_dir_name, 1);
++		if (ret) {
++			fprintf(stderr, "Failed to enable all channels\n");
++			goto error_free_triggername;
++		}
++
++		/* This flags that we need to disable the channels again */
++		autochannels = 2;
++		ret = build_channel_array(dev_dir_name, &channels,
++					  &num_channels);
++		if (ret) {
++			fprintf(stderr, "Problem reading scan element "
++				"information\n"
++				"diag %s\n", dev_dir_name);
++			goto error_disable_channels;
++		}
++		if (!num_channels) {
++			fprintf(stderr, "Still no channels after "
++				"auto-enabling, giving up\n");
++			goto error_disable_channels;
++		}
+ 	}
+ 
+ 	/*
+@@ -479,7 +546,12 @@ error_free_channels:
+ error_free_triggername:
+ 	if (datardytrigger)
+ 		free(trigger_name);
+-
++error_disable_channels:
++	if (autochannels == 2) {
++		ret = enable_disable_all_channels(dev_dir_name, 0);
++		if (ret)
++			fprintf(stderr, "Failed to disable all channels\n");
++	}
+ error_free_dev_dir_name:
+ 	free(dev_dir_name);
+ 
+diff --git a/tools/iio/iio_utils.h b/tools/iio/iio_utils.h
+index e3503bfe538b..9d5601421820 100644
+--- a/tools/iio/iio_utils.h
++++ b/tools/iio/iio_utils.h
+@@ -52,6 +52,13 @@ struct iio_channel_info {
+ 	unsigned location;
+ };
+ 
++static inline int check_suffix(const char *str, const char *suffix)
++{
++	return strlen(str) > strlen(suffix) &&
++		strncmp(str+strlen(str)-strlen(suffix),
++			suffix, strlen(suffix)) == 0;
++}
++
+ int iioutils_break_up_name(const char *full_name, char **generic_name);
+ int iioutils_get_type(unsigned *is_signed, unsigned *bytes, unsigned *bits_used,
+ 		      unsigned *shift, uint64_t *mask, unsigned *be,
+-- 
+2.4.3
+
