@@ -1,388 +1,261 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49656 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751574AbcDPTYK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 15:24:10 -0400
-Subject: Re: [PATCH v2 5/5] iio: gyro: bmg160: use regmap to retrieve struct
- device
-To: Alison Schofield <amsfield22@gmail.com>
-References: <cover.1460314070.git.amsfield22@gmail.com>
- <63dd9227f9a7e56f7e03f8963e798e6d7d8bb70f.1460314070.git.amsfield22@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	kgene@kernel.org, k.kozlowski@samsung.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57129157.3080603@kernel.org>
-Date: Sat, 16 Apr 2016 20:24:07 +0100
-MIME-Version: 1.0
-In-Reply-To: <63dd9227f9a7e56f7e03f8963e798e6d7d8bb70f.1460314070.git.amsfield22@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <matt.ranostay@intel.com>
+From: Matt Ranostay <matt.ranostay@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Matt Ranostay <matt.ranostay@intel.com>
+Subject: [PATCH 3/3] iio: pressure: bmp280: add humidity support
+Date: Mon, 11 Apr 2016 22:21:34 -0700
+Message-Id: <1460438494-16135-4-git-send-email-matt.ranostay@intel.com>
+In-Reply-To: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com>
+References: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/04/16 20:08, Alison Schofield wrote:
-> Driver includes struct regmap and struct device in its global data.
-> Remove the struct device and use regmap API to retrieve device info.
-> 
-> Patch created using Coccinelle plus manual edits.
-> 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Cc'd Srinivas
+Enable humidity support for the BME280 part
 
-Actually I'm curious as to why linux-arm-kernel and linux-samsung-soc are cc'd?
-Not terribly relevant lists...
-> ---
->  drivers/iio/gyro/bmg160_core.c | 86 +++++++++++++++++++++---------------------
->  1 file changed, 44 insertions(+), 42 deletions(-)
-> 
-> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-> index 2493bb1..b2b1071 100644
-> --- a/drivers/iio/gyro/bmg160_core.c
-> +++ b/drivers/iio/gyro/bmg160_core.c
-> @@ -95,7 +95,6 @@
->  #define BMG160_AUTO_SUSPEND_DELAY_MS	2000
->  
->  struct bmg160_data {
-> -	struct device *dev;
->  	struct regmap *regmap;
->  	struct iio_trigger *dready_trig;
->  	struct iio_trigger *motion_trig;
-> @@ -137,11 +136,12 @@ static const struct {
->  
->  static int bmg160_set_mode(struct bmg160_data *data, u8 mode)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  
->  	ret = regmap_write(data->regmap, BMG160_REG_PMU_LPW, mode);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error writing reg_pmu_lpw\n");
-> +		dev_err(dev, "Error writing reg_pmu_lpw\n");
->  		return ret;
->  	}
->  
-> @@ -162,6 +162,7 @@ static int bmg160_convert_freq_to_bit(int val)
->  
->  static int bmg160_set_bw(struct bmg160_data *data, int val)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  	int bw_bits;
->  
-> @@ -171,7 +172,7 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
->  
->  	ret = regmap_write(data->regmap, BMG160_REG_PMU_BW, bw_bits);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error writing reg_pmu_bw\n");
-> +		dev_err(dev, "Error writing reg_pmu_bw\n");
->  		return ret;
->  	}
->  
-> @@ -182,18 +183,19 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
->  
->  static int bmg160_chip_init(struct bmg160_data *data)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  	unsigned int val;
->  
->  	ret = regmap_read(data->regmap, BMG160_REG_CHIP_ID, &val);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error reading reg_chip_id\n");
-> +		dev_err(dev, "Error reading reg_chip_id\n");
->  		return ret;
->  	}
->  
-> -	dev_dbg(data->dev, "Chip Id %x\n", val);
-> +	dev_dbg(dev, "Chip Id %x\n", val);
->  	if (val != BMG160_CHIP_ID_VAL) {
-> -		dev_err(data->dev, "invalid chip %x\n", val);
-> +		dev_err(dev, "invalid chip %x\n", val);
->  		return -ENODEV;
->  	}
->  
-> @@ -212,14 +214,14 @@ static int bmg160_chip_init(struct bmg160_data *data)
->  	/* Set Default Range */
->  	ret = regmap_write(data->regmap, BMG160_REG_RANGE, BMG160_RANGE_500DPS);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error writing reg_range\n");
-> +		dev_err(dev, "Error writing reg_range\n");
->  		return ret;
->  	}
->  	data->dps_range = BMG160_RANGE_500DPS;
->  
->  	ret = regmap_read(data->regmap, BMG160_REG_SLOPE_THRES, &val);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error reading reg_slope_thres\n");
-> +		dev_err(dev, "Error reading reg_slope_thres\n");
->  		return ret;
->  	}
->  	data->slope_thres = val;
-> @@ -228,7 +230,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
->  	ret = regmap_update_bits(data->regmap, BMG160_REG_INT_EN_1,
->  				 BMG160_INT1_BIT_OD, 0);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error updating bits in reg_int_en_1\n");
-> +		dev_err(dev, "Error updating bits in reg_int_en_1\n");
->  		return ret;
->  	}
->  
-> @@ -236,7 +238,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
->  			   BMG160_INT_MODE_LATCH_INT |
->  			   BMG160_INT_MODE_LATCH_RESET);
->  	if (ret < 0) {
-> -		dev_err(data->dev,
-> +		dev_err(dev,
->  			"Error writing reg_motion_intr\n");
->  		return ret;
->  	}
-> @@ -247,20 +249,21 @@ static int bmg160_chip_init(struct bmg160_data *data)
->  static int bmg160_set_power_state(struct bmg160_data *data, bool on)
->  {
->  #ifdef CONFIG_PM
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  
->  	if (on)
-> -		ret = pm_runtime_get_sync(data->dev);
-> +		ret = pm_runtime_get_sync(dev);
->  	else {
-> -		pm_runtime_mark_last_busy(data->dev);
-> -		ret = pm_runtime_put_autosuspend(data->dev);
-> +		pm_runtime_mark_last_busy(dev);
-> +		ret = pm_runtime_put_autosuspend(dev);
->  	}
->  
->  	if (ret < 0) {
-> -		dev_err(data->dev,
-> -			"Failed: bmg160_set_power_state for %d\n", on);
-> +		dev_err(dev, "Failed: bmg160_set_power_state for %d\n", on);
-> +
->  		if (on)
-> -			pm_runtime_put_noidle(data->dev);
-> +			pm_runtime_put_noidle(dev);
->  
->  		return ret;
->  	}
-> @@ -272,6 +275,7 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
->  static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
->  					     bool status)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  
->  	/* Enable/Disable INT_MAP0 mapping */
-> @@ -279,7 +283,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
->  				 BMG160_INT_MAP_0_BIT_ANY,
->  				 (status ? BMG160_INT_MAP_0_BIT_ANY : 0));
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error updating bits reg_int_map0\n");
-> +		dev_err(dev, "Error updating bits reg_int_map0\n");
->  		return ret;
->  	}
->  
-> @@ -289,8 +293,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
->  		ret = regmap_write(data->regmap, BMG160_REG_SLOPE_THRES,
->  				   data->slope_thres);
->  		if (ret < 0) {
-> -			dev_err(data->dev,
-> -				"Error writing reg_slope_thres\n");
-> +			dev_err(dev, "Error writing reg_slope_thres\n");
->  			return ret;
->  		}
->  
-> @@ -298,8 +301,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
->  				   BMG160_INT_MOTION_X | BMG160_INT_MOTION_Y |
->  				   BMG160_INT_MOTION_Z);
->  		if (ret < 0) {
-> -			dev_err(data->dev,
-> -				"Error writing reg_motion_intr\n");
-> +			dev_err(dev, "Error writing reg_motion_intr\n");
->  			return ret;
->  		}
->  
-> @@ -314,8 +316,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
->  					   BMG160_INT_MODE_LATCH_INT |
->  					   BMG160_INT_MODE_LATCH_RESET);
->  			if (ret < 0) {
-> -				dev_err(data->dev,
-> -					"Error writing reg_rst_latch\n");
-> +				dev_err(dev, "Error writing reg_rst_latch\n");
->  				return ret;
->  			}
->  		}
-> @@ -328,7 +329,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
->  	}
->  
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error writing reg_int_en0\n");
-> +		dev_err(dev, "Error writing reg_int_en0\n");
->  		return ret;
->  	}
->  
-> @@ -338,6 +339,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
->  static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
->  					   bool status)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  
->  	/* Enable/Disable INT_MAP1 mapping */
-> @@ -345,7 +347,7 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
->  				 BMG160_INT_MAP_1_BIT_NEW_DATA,
->  				 (status ? BMG160_INT_MAP_1_BIT_NEW_DATA : 0));
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error updating bits in reg_int_map1\n");
-> +		dev_err(dev, "Error updating bits in reg_int_map1\n");
->  		return ret;
->  	}
->  
-> @@ -354,9 +356,8 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
->  				   BMG160_INT_MODE_NON_LATCH_INT |
->  				   BMG160_INT_MODE_LATCH_RESET);
->  		if (ret < 0) {
-> -			dev_err(data->dev,
-> -				"Error writing reg_rst_latch\n");
-> -				return ret;
-> +			dev_err(dev, "Error writing reg_rst_latch\n");
-> +			return ret;
->  		}
->  
->  		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0,
-> @@ -368,16 +369,15 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
->  				   BMG160_INT_MODE_LATCH_INT |
->  				   BMG160_INT_MODE_LATCH_RESET);
->  		if (ret < 0) {
-> -			dev_err(data->dev,
-> -				"Error writing reg_rst_latch\n");
-> -				return ret;
-> +			dev_err(dev, "Error writing reg_rst_latch\n");
-> +			return ret;
->  		}
->  
->  		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0, 0);
->  	}
->  
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error writing reg_int_en0\n");
-> +		dev_err(dev, "Error writing reg_int_en0\n");
->  		return ret;
->  	}
->  
-> @@ -400,6 +400,7 @@ static int bmg160_get_bw(struct bmg160_data *data, int *val)
->  
->  static int bmg160_set_scale(struct bmg160_data *data, int val)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret, i;
->  
->  	for (i = 0; i < ARRAY_SIZE(bmg160_scale_table); ++i) {
-> @@ -407,8 +408,7 @@ static int bmg160_set_scale(struct bmg160_data *data, int val)
->  			ret = regmap_write(data->regmap, BMG160_REG_RANGE,
->  					   bmg160_scale_table[i].dps_range);
->  			if (ret < 0) {
-> -				dev_err(data->dev,
-> -					"Error writing reg_range\n");
-> +				dev_err(dev, "Error writing reg_range\n");
->  				return ret;
->  			}
->  			data->dps_range = bmg160_scale_table[i].dps_range;
-> @@ -421,6 +421,7 @@ static int bmg160_set_scale(struct bmg160_data *data, int val)
->  
->  static int bmg160_get_temp(struct bmg160_data *data, int *val)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  	unsigned int raw_val;
->  
-> @@ -433,7 +434,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
->  
->  	ret = regmap_read(data->regmap, BMG160_REG_TEMP, &raw_val);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error reading reg_temp\n");
-> +		dev_err(dev, "Error reading reg_temp\n");
->  		bmg160_set_power_state(data, false);
->  		mutex_unlock(&data->mutex);
->  		return ret;
-> @@ -450,6 +451,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
->  
->  static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  	unsigned int raw_val;
->  
-> @@ -463,7 +465,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
->  	ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(axis), &raw_val,
->  			       2);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error reading axis %d\n", axis);
-> +		dev_err(dev, "Error reading axis %d\n", axis);
->  		bmg160_set_power_state(data, false);
->  		mutex_unlock(&data->mutex);
->  		return ret;
-> @@ -793,6 +795,7 @@ static int bmg160_trig_try_reen(struct iio_trigger *trig)
->  {
->  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
->  	struct bmg160_data *data = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  
->  	/* new data interrupts don't need ack */
-> @@ -804,7 +807,7 @@ static int bmg160_trig_try_reen(struct iio_trigger *trig)
->  			   BMG160_INT_MODE_LATCH_INT |
->  			   BMG160_INT_MODE_LATCH_RESET);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error writing reg_rst_latch\n");
-> +		dev_err(dev, "Error writing reg_rst_latch\n");
->  		return ret;
->  	}
->  
-> @@ -864,13 +867,14 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
->  {
->  	struct iio_dev *indio_dev = private;
->  	struct bmg160_data *data = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  	int dir;
->  	unsigned int val;
->  
->  	ret = regmap_read(data->regmap, BMG160_REG_INT_STATUS_2, &val);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "Error reading reg_int_status2\n");
-> +		dev_err(dev, "Error reading reg_int_status2\n");
->  		goto ack_intr_status;
->  	}
->  
-> @@ -907,8 +911,7 @@ ack_intr_status:
->  				   BMG160_INT_MODE_LATCH_INT |
->  				   BMG160_INT_MODE_LATCH_RESET);
->  		if (ret < 0)
-> -			dev_err(data->dev,
-> -				"Error writing reg_rst_latch\n");
-> +			dev_err(dev, "Error writing reg_rst_latch\n");
->  	}
->  
->  	return IRQ_HANDLED;
-> @@ -976,7 +979,6 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
->  
->  	data = iio_priv(indio_dev);
->  	dev_set_drvdata(dev, indio_dev);
-> -	data->dev = dev;
->  	data->irq = irq;
->  	data->regmap = regmap;
->  
-> @@ -1139,7 +1141,7 @@ static int bmg160_runtime_suspend(struct device *dev)
->  
->  	ret = bmg160_set_mode(data, BMG160_MODE_SUSPEND);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "set mode failed\n");
-> +		dev_err(dev, "set mode failed\n");
->  		return -EAGAIN;
->  	}
->  
-> 
+Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
+---
+ drivers/iio/pressure/bmp280.c | 137 ++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 133 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index e80cbf3b21fc..9e3a9f00cd84 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -18,6 +18,8 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ 
++#define BMP280_REG_HUMIDITY_LSB		0xFE
++#define BMP280_REG_HUMIDITY_MSB		0xFD
+ #define BMP280_REG_TEMP_XLSB		0xFC
+ #define BMP280_REG_TEMP_LSB		0xFB
+ #define BMP280_REG_TEMP_MSB		0xFA
+@@ -26,11 +28,20 @@
+ #define BMP280_REG_PRESS_MSB		0xF7
+ 
+ #define BMP280_REG_CONFIG		0xF5
++#define BMP280_REG_CTRL_HUMIDITY	0xF2
+ #define BMP280_REG_CTRL_MEAS		0xF4
+ #define BMP280_REG_STATUS		0xF3
+ #define BMP280_REG_RESET		0xE0
+ #define BMP280_REG_ID			0xD0
+ 
++/* Due to non linear mapping, and data sizes we can't do a bulk read */
++#define BMP280_REG_COMP_H1		0xA1
++#define BMP280_REG_COMP_H2		0xE1
++#define BMP280_REG_COMP_H3		0xE3
++#define BMP280_REG_COMP_H4		0xE4
++#define BMP280_REG_COMP_H5		0xE5
++#define BMP280_REG_COMP_H6		0xE7
++
+ #define BMP280_REG_COMP_TEMP_START	0x88
+ #define BMP280_COMP_TEMP_REG_COUNT	6
+ 
+@@ -44,6 +55,14 @@
+ #define BMP280_FILTER_8X		(BIT(3) | BIT(2))
+ #define BMP280_FILTER_16X		BIT(4)
+ 
++#define BMP280_OSRS_HUMIDITY_MASK	(BIT(2) | BIT(1) | BIT(0))
++#define BMP280_OSRS_HUMIDITY_SKIP	0
++#define BMP280_OSRS_HUMIDITY_1X		BIT(0)
++#define BMP280_OSRS_HUMIDITY_2X		BIT(1)
++#define BMP280_OSRS_HUMIDITY_4X		(BIT(1) | BIT(0))
++#define BMP280_OSRS_HUMIDITY_8X		BIT(2)
++#define BMP280_OSRS_HUMIDITY_16X	(BIT(2) | BIT(0))
++
+ #define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
+ #define BMP280_OSRS_TEMP_SKIP		0
+ #define BMP280_OSRS_TEMP_1X		BIT(5)
+@@ -93,6 +112,13 @@ struct bmp280_chip_info {
+ 	int (*init)(struct bmp280_data *);
+ };
+ 
++static int bme280_chip_init(struct bmp280_data *data)
++{
++	return regmap_update_bits(data->regmap, BMP280_REG_CTRL_HUMIDITY,
++				  BMP280_OSRS_HUMIDITY_MASK,
++				  BMP280_OSRS_HUMIDITY_16X);
++}
++
+ static struct bmp280_chip_info bmp280_chip_info_table[] = {
+ 	[bmp280] = {
+ 		.id = BMP280_CHIP_ID,
+@@ -100,7 +126,8 @@ static struct bmp280_chip_info bmp280_chip_info_table[] = {
+ 	},
+ 	[bme280] = {
+ 		.id = BME280_CHIP_ID,
+-		.num_channels = 2,
++		.num_channels = 3,
++		.init = bme280_chip_init,
+ 	},
+ };
+ 
+@@ -120,12 +147,17 @@ static const struct iio_chan_spec bmp280_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+ 	},
++	{
++		.type = IIO_HUMIDITYRELATIVE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++	},
+ };
+ 
+ static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg) {
+ 	case BMP280_REG_CONFIG:
++	case BMP280_REG_CTRL_HUMIDITY:
+ 	case BMP280_REG_CTRL_MEAS:
+ 	case BMP280_REG_RESET:
+ 		return true;
+@@ -137,6 +169,8 @@ static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
+ static bool bmp280_is_volatile_reg(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg) {
++	case BMP280_REG_HUMIDITY_LSB:
++	case BMP280_REG_HUMIDITY_MSB:
+ 	case BMP280_REG_TEMP_XLSB:
+ 	case BMP280_REG_TEMP_LSB:
+ 	case BMP280_REG_TEMP_MSB:
+@@ -154,7 +188,7 @@ static const struct regmap_config bmp280_regmap_config = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
+ 
+-	.max_register = BMP280_REG_TEMP_XLSB,
++	.max_register = BMP280_REG_HUMIDITY_LSB,
+ 	.cache_type = REGCACHE_RBTREE,
+ 
+ 	.writeable_reg = bmp280_is_writeable_reg,
+@@ -162,11 +196,74 @@ static const struct regmap_config bmp280_regmap_config = {
+ };
+ 
+ /*
++ * Returns humidity in percent, resolution is 0.01 percent. Output value of
++ * "47445" represents 47445/1024 = 46.333 %RH.
++ *
++ * Taken from BME280 datasheet, Section 4.2.3, "Compensation formula".
++ */
++
++static u32 bmp280_compensate_humidity(struct bmp280_data *data,
++				      s32 adc_humidity)
++{
++	struct device *dev = &data->client->dev;
++	unsigned int H1, H3, tmp;
++	int H2, H4, H5, H6, ret, var;
++
++	ret = regmap_read(data->regmap, BMP280_REG_COMP_H1, &H1);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H1 comp value\n");
++		return ret;
++	}
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H2, &tmp, 2);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H2 comp value\n");
++		return ret;
++	}
++	H2 = sign_extend32(le16_to_cpu(tmp), 15);
++
++	ret = regmap_read(data->regmap, BMP280_REG_COMP_H3, &H3);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H3 comp value\n");
++		return ret;
++	}
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H4, &tmp, 2);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H4 comp value\n");
++		return ret;
++	}
++	H4 = sign_extend32(le16_to_cpu(tmp) >> 4 | (le16_to_cpu(tmp) & 0xf), 11);
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H5, &tmp, 2);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H5 comp value\n");
++		return ret;
++	}
++	H5 = sign_extend32(le16_to_cpu(tmp) & 0xfff, 11);
++
++	ret = regmap_read(data->regmap, BMP280_REG_COMP_H6, &tmp);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H6 comp value\n");
++		return ret;
++	}
++	H6 = sign_extend32(tmp, 7);
++
++	var = ((s32)data->t_fine) - 76800;
++	var = ((((adc_humidity << 14) - (H4 << 20) - (H5 * var)) + 16384) >> 15)
++		* (((((((var * H6) >> 10) * (((var * H3) >> 11) + 32768)) >> 10)
++		+ 2097152) * H2 + 8192) >> 14);
++	var -= ((((var >> 15) * (var >> 15)) >> 7) * H1) >> 4;
++
++	return var >> 12;
++};
++
++/*
+  * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
+  * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
+  * value.
+  *
+- * Taken from datasheet, Section 3.11.3, "Compensation formula".
++ * Taken from BMP280 datasheet, Section 3.11.3, "Compensation formula".
+  */
+ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+ 				  s32 adc_temp)
+@@ -206,7 +303,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+  * integer bits and 8 fractional bits).  Output value of "24674867"
+  * represents 24674867/256 = 96386.2 Pa = 963.862 hPa
+  *
+- * Taken from datasheet, Section 3.11.3, "Compensation formula".
++ * Taken from BMP280 datasheet, Section 3.11.3, "Compensation formula".
+  */
+ static u32 bmp280_compensate_press(struct bmp280_data *data,
+ 				   s32 adc_press)
+@@ -301,6 +398,35 @@ static int bmp280_read_press(struct bmp280_data *data,
+ 	return IIO_VAL_FRACTIONAL;
+ }
+ 
++static int bmp280_read_humidity(struct bmp280_data *data,
++				int *val, int *val2)
++{
++	int ret;
++	__be16 tmp = 0;
++	s32 adc_humidity;
++	u32 comp_humidity;
++
++	/* Read and compensate temperature so we get a reading of t_fine. */
++	ret = bmp280_read_temp(data, NULL);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
++			       (u8 *) &tmp, 2);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "failed to read humidity\n");
++		return ret;
++	}
++
++	adc_humidity = be16_to_cpu(tmp);
++	comp_humidity = bmp280_compensate_humidity(data, adc_humidity);
++
++	*val = comp_humidity;
++	*val2 = 1024;
++
++	return IIO_VAL_FRACTIONAL;
++}
++
+ static int bmp280_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+@@ -313,6 +439,9 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		switch (chan->type) {
++		case IIO_HUMIDITYRELATIVE:
++			ret = bmp280_read_humidity(data, val, val2);
++			break;
+ 		case IIO_PRESSURE:
+ 			ret = bmp280_read_press(data, val, val2);
+ 			break;
+-- 
+1.9.1
