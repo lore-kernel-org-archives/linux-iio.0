@@ -1,47 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:12224 "EHLO mga04.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756611AbcDLNEv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 12 Apr 2016 09:04:51 -0400
-Subject: Re: IIO driver for si114x
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <570CDFD0.7060702@intel.com>
- <alpine.DEB.2.02.1604121404050.4383@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <570CF267.4020804@intel.com>
-Date: Tue, 12 Apr 2016 16:04:39 +0300
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1604121404050.4383@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Received: from mail-lf0-f52.google.com ([209.85.215.52]:35829 "EHLO
+	mail-lf0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756903AbcDLNFv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Apr 2016 09:05:51 -0400
+Received: by mail-lf0-f52.google.com with SMTP id c126so24158445lfb.2
+        for <linux-iio@vger.kernel.org>; Tue, 12 Apr 2016 06:05:50 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] ARM: dts: ux500: configure the accelerometers open drain
+Date: Tue, 12 Apr 2016 15:05:44 +0200
+Message-Id: <1460466344-17516-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/12/2016 03:06 PM, Peter Meerwald-Stadler wrote:
->> I want to add support for a si1145 light sensor. Some brief googling finds a
->> bunch of old (2012) patches for an si114x driver in drivers/iio/light. Here's
->> the link to the old thread:
->>
->> http://comments.gmane.org/gmane.linux.kernel.iio/5478
->
-> I have updated sources, not yet posted
-> Matt Ranostay also indicated that he'd be willing to work on the device
-I found some reasonably recent sources in the chromeos kernel:
+Configure the two accelerometers sharing GPIO line 82 as:
 
-https://chromium.googlesource.com/chromiumos/third_party/kernel-next/+/chromeos-4.4/drivers/iio/light/si114x.c
+- Open drain so that they can share the same interrupt line.
 
-This driver seems to be only for si1141/42/43 models and will explicitly 
-fail on probe with the part_id values reported by si1145. Some hacking 
-made the driver probe and report some sort of values.
+Configure the corresponding interrupt pin:
 
-I'm not sure how well that driver is tested, it failed for me at 
-register time because SI114X_CURRENT_CHANNEL has the default scan_index 
-0 and this is detected as a duplicate despite the fact that scan_type is 
-not otherwise filled. This check has been in the IIO core since 3.18.
+- Trigger on the falling edge since open drain implies that we
+  do not actively drive the line high, but we will actively drive
+  it low to generate interrupts and then it moves from high to low
+  i.e. a falling edge.
 
-If you have updated sources can you please post them?
+- Pulled up so the line will be biased to high unless an IRQ
+  is active on any device on the line, and thus it goes high
+  again after the interrupt is deasserted.
 
---
-Regards,
-Leonard
+Cc: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ arch/arm/boot/dts/ste-href-tvk1281618.dtsi | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/boot/dts/ste-href-tvk1281618.dtsi b/arch/arm/boot/dts/ste-href-tvk1281618.dtsi
+index 55f9d0cc90f3..4e94a4197b18 100644
+--- a/arch/arm/boot/dts/ste-href-tvk1281618.dtsi
++++ b/arch/arm/boot/dts/ste-href-tvk1281618.dtsi
+@@ -93,14 +93,15 @@
+ 				/* Accelerometer */
+ 				compatible = "st,lsm303dlh-accel";
+ 				st,drdy-int-pin = <1>;
++				int-pin-open-drain;
+ 				reg = <0x18>;
+ 				vdd-supply = <&ab8500_ldo_aux1_reg>;
+ 				vddio-supply = <&db8500_vsmps2_reg>;
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&accel_tvk_mode>;
+ 				interrupt-parent = <&gpio2>;
+-				interrupts = <18 IRQ_TYPE_EDGE_RISING>,
+-					     <19 IRQ_TYPE_EDGE_RISING>;
++				interrupts = <18 IRQ_TYPE_EDGE_FALLING>,
++					     <19 IRQ_TYPE_EDGE_FALLING>;
+ 			};
+ 			lsm303dlh@1e {
+ 				/*
+@@ -118,14 +119,15 @@
+ 				/* Accelerometer */
+ 				compatible = "st,lis331dl-accel";
+ 				st,drdy-int-pin = <1>;
++				int-pin-open-drain;
+ 				reg = <0x1c>;
+ 				vdd-supply = <&ab8500_ldo_aux1_reg>;
+ 				vddio-supply = <&db8500_vsmps2_reg>;
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&accel_tvk_mode>;
+ 				interrupt-parent = <&gpio2>;
+-				interrupts = <18 IRQ_TYPE_EDGE_RISING>,
+-					     <19 IRQ_TYPE_EDGE_RISING>;
++				interrupts = <18 IRQ_TYPE_EDGE_FALLING>,
++					     <19 IRQ_TYPE_EDGE_FALLING>;
+ 			};
+ 			ak8974@0f {
+ 				/* Magnetometer */
+@@ -216,7 +218,7 @@
+ 					/* Accelerometer interrupt lines 1 & 2 */
+ 					tvk_cfg {
+ 						pins = "GPIO82_C1", "GPIO83_D3";
+-						ste,config = <&gpio_in_pd>;
++						ste,config = <&gpio_in_pu>;
+ 					};
+ 				};
+ 			};
+-- 
+2.4.3
+
