@@ -1,71 +1,174 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f196.google.com ([209.85.213.196]:36795 "EHLO
-	mail-ig0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751866AbcDINvA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Apr 2016 09:51:00 -0400
-Date: Sat, 9 Apr 2016 09:50:50 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Guenter Roeck <linux@roeck-us.net>, gregkh@linuxfoundation.org,
-	tglx@linutronix.de, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, wim@iguana.be,
-	linus.walleij@linaro.org, gnurou@gmail.com,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH 04/10] iio: stx104: Change STX104 dependency to ISA_BUS
-Message-ID: <20160409135050.GA10418@sophia>
-References: <cover.1460040201.git.vilhelm.gray@gmail.com>
- <783be62acf68b35f3fe4785a2cedfe017624688b.1460040201.git.vilhelm.gray@gmail.com>
- <20160408004503.GB10211@roeck-us.net>
- <20160408123158.GB18202@sophia>
- <5707AF91.5010704@roeck-us.net>
- <20160408150922.GA28058@sophia>
- <20160408182801.GB7083@roeck-us.net>
- <20160408192723.GA31687@sophia>
- <20160409135814.359e24d6@lxorguk.ukuu.org.uk>
+Received: from mail-lf0-f43.google.com ([209.85.215.43]:33648 "EHLO
+	mail-lf0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750888AbcDLF1m (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Apr 2016 01:27:42 -0400
+Received: by mail-lf0-f43.google.com with SMTP id e190so9592412lfe.0
+        for <linux-iio@vger.kernel.org>; Mon, 11 Apr 2016 22:27:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20160409135814.359e24d6@lxorguk.ukuu.org.uk>
+In-Reply-To: <alpine.DEB.2.20.12.1604120722430.31934@pmeerw.net>
+References: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com>
+ <1460438494-16135-2-git-send-email-matt.ranostay@intel.com> <alpine.DEB.2.20.12.1604120722430.31934@pmeerw.net>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Mon, 11 Apr 2016 22:27:00 -0700
+Message-ID: <CAKzfze9GLqEUXhnVvOxbV9jf+8G6ZUDHRf2-w4g2WpWVyReYmw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] iio: pressure: bmp280: add initial support for
+ multiple chips
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Matt Ranostay <matt.ranostay@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Apr 09, 2016 at 01:58:14PM +0100, One Thousand Gnomes wrote:
->> I believe this is the source of the issues I encountered on my initial
->> attempt to decouple the X86_32 dependency from the ISA option. I suspect
->> if I add an explicit X86_32 dependency to the PNPBIOS driver, I will be
->> able to remove the X86_32 dependency from the ISA option without
->> incident from the other drivers.
->
->That would be correct. PnPBIOS is obsoleted by ACPI so a 64bit x86
->platform shouldn't be using PnPBIOS nor anything non x86. Strictly
->speaking PnpBIOS is not ISA, it's onboard devices.
->
->ISA devices that can be enumerated are usually enumerated via ISAPnP
->which is platform independent.
->
->Quite a few of the ISA drivers if you review them more carefully have
->other endian and size assumptions, IRQ assumptions and probably fun bugs
->because they've simply never been run on anything else even when it is
->possible.
->
->Alan
+Ah noticed that just now... ironically I was thinking about submitting
+this last night :)
 
-It looks like I'm in quite a pickle. Even if the patch for the PnPBIOS
-driver removes the errors and warnings, there may be runtime bugs in
-other drivers expecting X86_32. The only way I can see to prevent that
-is to audit all the drivers which depend on the ISA option -- a behemoth
-undertaking which would be far too impractical and error-prone for me to
-do.
-
-The alternative then is to do as Guenter Roeck suggests and
-introduce/select ISA_BUS in the various other architectures which lack
-it. In this scenario, I would expect the ISA option to be avoided for
-new drivers, wherefore the ISA_BUS option can be used regardless of
-architecture configuration.
-
-I would prefer for a single ISA configuration option, but not at the
-expense on breaking existing drivers; therefore, I will work instead on
-adding the necessary ISA_BUS code to the various areas which require
-them. If there are problems with this plan too, let me know.
-
-William Breathitt Gray
+On Mon, Apr 11, 2016 at 10:23 PM, Peter Meerwald-Stadler
+<pmeerw@pmeerw.net> wrote:
+>
+>> Bosch has several chipsets that use BMP280 as core features, this enables
+>> chip information for each variant.
+>
+> these patches clash with work to add BMP180 to the same driver, Akinobu
+> Mita was first :)
+>
+>> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
+>> ---
+>>  drivers/iio/pressure/bmp280.c | 59 +++++++++++++++++++++++++++++++++++++++----
+>>  1 file changed, 54 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+>> index a2602d8dd6d5..2e7cff38f5ff 100644
+>> --- a/drivers/iio/pressure/bmp280.c
+>> +++ b/drivers/iio/pressure/bmp280.c
+>> @@ -66,12 +66,15 @@
+>>  #define BMP280_MODE_NORMAL           (BIT(1) | BIT(0))
+>>
+>>  #define BMP280_CHIP_ID                       0x58
+>> +#define BME280_CHIP_ID                       0x60
+>> +
+>>  #define BMP280_SOFT_RESET_VAL                0xB6
+>>
+>>  struct bmp280_data {
+>>       struct i2c_client *client;
+>>       struct mutex lock;
+>>       struct regmap *regmap;
+>> +     struct bmp280_chip_info *chip;
+>>
+>>       /*
+>>        * Carryover value from temperature conversion, used in pressure
+>> @@ -80,6 +83,24 @@ struct bmp280_data {
+>>       s32 t_fine;
+>>  };
+>>
+>> +enum { bmp280, bme280 };
+>> +
+>> +struct bmp280_chip_info {
+>> +     int id;
+>> +     int num_channels;
+>> +};
+>> +
+>> +static struct bmp280_chip_info bmp280_chip_info_table[] = {
+>> +     [bmp280] = {
+>> +             .id = BMP280_CHIP_ID,
+>> +             .num_channels = 2,
+>> +     },
+>> +     [bme280] = {
+>> +             .id = BME280_CHIP_ID,
+>> +             .num_channels = 2,
+>> +     },
+>> +};
+>> +
+>>  /*
+>>   * These enums are used for indexing into the array of compensation
+>>   * parameters.
+>> @@ -344,6 +365,20 @@ static int bmp280_chip_init(struct bmp280_data *data)
+>>       return ret;
+>>  }
+>>
+>> +static int bmp280_match_acpi_device(struct device *dev,
+>> +                                 struct bmp280_chip_info **chipset)
+>> +{
+>> +     const struct acpi_device_id *id;
+>> +
+>> +     id = acpi_match_device(dev->driver->acpi_match_table, dev);
+>> +     if (!id)
+>> +             return -ENODEV;
+>> +
+>> +     *chipset = &bmp280_chip_info_table[id->driver_data];
+>> +
+>> +     return 0;
+>> +}
+>> +
+>>  static int bmp280_probe(struct i2c_client *client,
+>>                       const struct i2c_device_id *id)
+>>  {
+>> @@ -357,13 +392,25 @@ static int bmp280_probe(struct i2c_client *client,
+>>               return -ENOMEM;
+>>
+>>       data = iio_priv(indio_dev);
+>> +
+>> +     if (id) {
+>> +             data->chip = &bmp280_chip_info_table[id->driver_data];
+>> +     } else if (ACPI_HANDLE(&client->dev)) {
+>> +             ret = bmp280_match_acpi_device(&client->dev, &data->chip);
+>> +             if (ret < 0)
+>> +                     return ret;
+>> +     } else {
+>> +             /* Don't break sysfs registration of BMP280 devices */
+>> +             data->chip = &bmp280_chip_info_table[bmp280];
+>> +     }
+>> +
+>>       mutex_init(&data->lock);
+>>       data->client = client;
+>>
+>>       indio_dev->dev.parent = &client->dev;
+>>       indio_dev->name = id->name;
+>>       indio_dev->channels = bmp280_channels;
+>> -     indio_dev->num_channels = ARRAY_SIZE(bmp280_channels);
+>> +     indio_dev->num_channels = data->chip->num_channels;
+>>       indio_dev->info = &bmp280_info;
+>>       indio_dev->modes = INDIO_DIRECT_MODE;
+>>
+>> @@ -376,9 +423,9 @@ static int bmp280_probe(struct i2c_client *client,
+>>       ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
+>>       if (ret < 0)
+>>               return ret;
+>> -     if (chip_id != BMP280_CHIP_ID) {
+>> +     if (chip_id != data->chip->id) {
+>>               dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
+>> -                     BMP280_CHIP_ID, chip_id);
+>> +                     data->chip->id, chip_id);
+>>               return -EINVAL;
+>>       }
+>>
+>> @@ -390,13 +437,15 @@ static int bmp280_probe(struct i2c_client *client,
+>>  }
+>>
+>>  static const struct acpi_device_id bmp280_acpi_match[] = {
+>> -     {"BMP0280", 0},
+>> +     {"BMP0280", bmp280},
+>> +     {"BME0280", bme280},
+>>       { },
+>>  };
+>>  MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
+>>
+>>  static const struct i2c_device_id bmp280_id[] = {
+>> -     {"bmp280", 0},
+>> +     {"bmp280", bmp280},
+>> +     {"bme280", bme280},
+>>       { },
+>>  };
+>>  MODULE_DEVICE_TABLE(i2c, bmp280_id);
+>>
+>
+> --
+>
+> Peter Meerwald-Stadler
+> +43-664-2444418 (mobile)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
