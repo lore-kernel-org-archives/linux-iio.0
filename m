@@ -1,47 +1,77 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48200 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751286AbcDPMoV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 08:44:21 -0400
-Subject: Re: [PATCH 5/5] staging:iio:adis16240: Set self_test_no_autoclear
- flag
-To: Lars-Peter Clausen <lars@metafoo.de>
-References: <1460732382-6840-1-git-send-email-lars@metafoo.de>
- <1460732382-6840-5-git-send-email-lars@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <571233A4.6060002@kernel.org>
-Date: Sat, 16 Apr 2016 13:44:20 +0100
+Return-Path: <pmeerw@pmeerw.net>
+Date: Tue, 12 Apr 2016 07:17:57 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Matt Ranostay <matt.ranostay@intel.com>
+cc: linux-iio@vger.kernel.org, jic23@kernel.org
+Subject: Re: [PATCH 2/3] iio: pressure: bmp280: add per chip initialize
+ function pointer
+In-Reply-To: <1460438494-16135-3-git-send-email-matt.ranostay@intel.com>
+Message-ID: <alpine.DEB.2.20.12.1604120717320.31934@pmeerw.net>
+References: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com> <1460438494-16135-3-git-send-email-matt.ranostay@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1460732382-6840-5-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 15/04/16 15:59, Lars-Peter Clausen wrote:
-> The ADIS16201 does not automatically clear the self test flag bit the self
-> test has been, so clear it manually. Otherwise we'll see a offset caused by
-> the self-test bias on the output values during normal operation.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.
+
+> Some variants have functions that need to be enabled outside of an core
+> chip initialization.
+
+comment below
+ 
+> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
 > ---
->  drivers/staging/iio/accel/adis16240_core.c | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/iio/pressure/bmp280.c | 15 +++++++++++++--
+>  1 file changed, 13 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-> index a425e18..d5b99e6 100644
-> --- a/drivers/staging/iio/accel/adis16240_core.c
-> +++ b/drivers/staging/iio/accel/adis16240_core.c
-> @@ -222,6 +222,7 @@ static const struct adis_data adis16240_data = {
->  	.diag_stat_reg = ADIS16240_DIAG_STAT,
+> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+> index 2e7cff38f5ff..e80cbf3b21fc 100644
+> --- a/drivers/iio/pressure/bmp280.c
+> +++ b/drivers/iio/pressure/bmp280.c
+> @@ -88,6 +88,9 @@ enum { bmp280, bme280 };
+>  struct bmp280_chip_info {
+>  	int id;
+>  	int num_channels;
+> +
+> +	/* per chip initialization function */
+> +	int (*init)(struct bmp280_data *);
+>  };
 >  
->  	.self_test_mask = ADIS16240_MSC_CTRL_SELF_TEST_EN,
-> +	.self_test_no_autoclear = true,
->  	.startup_delay = ADIS16240_STARTUP_DELAY,
+>  static struct bmp280_chip_info bmp280_chip_info_table[] = {
+> @@ -336,10 +339,18 @@ static const struct iio_info bmp280_info = {
+>  	.read_raw = &bmp280_read_raw,
+>  };
 >  
->  	.status_error_msgs = adis16240_status_error_msgs,
+> -static int bmp280_chip_init(struct bmp280_data *data)
+> +static int bmp280_common_init(struct bmp280_data *data)
+>  {
+>  	int ret;
+>  
+> +	if (data->chip->init) {
+> +		ret = data->chip->init(data);
+> +		if (ret < 0) {
+> +			dev_err(&data->client->dev, "failed to run chip init");
+
+should have \n I think
+
+> +			return ret;
+> +		}
+> +	}
+> +
+>  	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
+>  				 BMP280_OSRS_TEMP_MASK |
+>  				 BMP280_OSRS_PRESS_MASK |
+> @@ -429,7 +440,7 @@ static int bmp280_probe(struct i2c_client *client,
+>  		return -EINVAL;
+>  	}
+>  
+> -	ret = bmp280_chip_init(data);
+> +	ret = bmp280_common_init(data);
+>  	if (ret < 0)
+>  		return ret;
+>  
 > 
 
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
