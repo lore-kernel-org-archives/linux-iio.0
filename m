@@ -1,42 +1,65 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:36126 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751506AbcDOO74 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2016 10:59:56 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 4/5] staging:iio:adis16209: Set self_test_no_autoclear flag
-Date: Fri, 15 Apr 2016 16:59:41 +0200
-Message-Id: <1460732382-6840-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1460732382-6840-1-git-send-email-lars@metafoo.de>
-References: <1460732382-6840-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <matt.ranostay@intel.com>
+From: Matt Ranostay <matt.ranostay@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Matt Ranostay <matt.ranostay@intel.com>
+Subject: [PATCH 2/3] iio: pressure: bmp280: add per chip initialize function pointer
+Date: Mon, 11 Apr 2016 22:21:33 -0700
+Message-Id: <1460438494-16135-3-git-send-email-matt.ranostay@intel.com>
+In-Reply-To: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com>
+References: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The ADIS16201 does not automatically clear the self test flag bit the self
-test has been, so clear it manually. Otherwise we'll see a offset caused by
-the self-test bias on the output values during normal operation.
+Some variants have functions that need to be enabled outside of an core
+chip initialization.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
 ---
- drivers/staging/iio/accel/adis16209_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/pressure/bmp280.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index 8b42bf8..8dbad58 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -168,6 +168,7 @@ static const struct adis_data adis16209_data = {
- 	.diag_stat_reg = ADIS16209_DIAG_STAT,
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index 2e7cff38f5ff..e80cbf3b21fc 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -88,6 +88,9 @@ enum { bmp280, bme280 };
+ struct bmp280_chip_info {
+ 	int id;
+ 	int num_channels;
++
++	/* per chip initialization function */
++	int (*init)(struct bmp280_data *);
+ };
  
- 	.self_test_mask = ADIS16209_MSC_CTRL_SELF_TEST_EN,
-+	.self_test_no_autoclear = true,
- 	.startup_delay = ADIS16209_STARTUP_DELAY,
+ static struct bmp280_chip_info bmp280_chip_info_table[] = {
+@@ -336,10 +339,18 @@ static const struct iio_info bmp280_info = {
+ 	.read_raw = &bmp280_read_raw,
+ };
  
- 	.status_error_msgs = adis16209_status_error_msgs,
+-static int bmp280_chip_init(struct bmp280_data *data)
++static int bmp280_common_init(struct bmp280_data *data)
+ {
+ 	int ret;
+ 
++	if (data->chip->init) {
++		ret = data->chip->init(data);
++		if (ret < 0) {
++			dev_err(&data->client->dev, "failed to run chip init");
++			return ret;
++		}
++	}
++
+ 	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
+ 				 BMP280_OSRS_TEMP_MASK |
+ 				 BMP280_OSRS_PRESS_MASK |
+@@ -429,7 +440,7 @@ static int bmp280_probe(struct i2c_client *client,
+ 		return -EINVAL;
+ 	}
+ 
+-	ret = bmp280_chip_init(data);
++	ret = bmp280_common_init(data);
+ 	if (ret < 0)
+ 		return ret;
+ 
 -- 
-2.1.4
-
+1.9.1
