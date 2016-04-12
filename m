@@ -1,414 +1,145 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:45619 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754933AbcDKSwy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 11 Apr 2016 14:52:54 -0400
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH v2 1/5] max44000: Initial support
-Date: Mon, 11 Apr 2016 21:52:38 +0300
-Message-Id: <f92d1baee684715edfedf6038bceaf9b08d80447.1460400449.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1460400449.git.leonard.crestez@intel.com>
-References: <cover.1460400449.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1460400449.git.leonard.crestez@intel.com>
-References: <cover.1460400449.git.leonard.crestez@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <matt.ranostay@intel.com>
+From: Matt Ranostay <matt.ranostay@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Matt Ranostay <matt.ranostay@intel.com>
+Subject: [PATCH 1/3] iio: pressure: bmp280: add initial support for multiple chips
+Date: Mon, 11 Apr 2016 22:21:32 -0700
+Message-Id: <1460438494-16135-2-git-send-email-matt.ranostay@intel.com>
+In-Reply-To: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com>
+References: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This just adds support for reporting illuminance with default settings.
+Bosch has several chipsets that use BMP280 as core features, this enables
+chip information for each variant.
 
-Important default registers are written on probe because the device
-otherwise lacks a reset function.
-
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
 ---
- drivers/iio/light/Kconfig    |  11 ++
- drivers/iio/light/Makefile   |   1 +
- drivers/iio/light/max44000.c | 336 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 348 insertions(+)
- create mode 100644 drivers/iio/light/max44000.c
+ drivers/iio/pressure/bmp280.c | 59 +++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 54 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index cfd3df8..b4ab65b 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -223,6 +223,17 @@ config LTR501
- 	 This driver can also be built as a module.  If so, the module
-          will be called ltr501.
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index a2602d8dd6d5..2e7cff38f5ff 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -66,12 +66,15 @@
+ #define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
  
-+config MAX44000
-+	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	 Say Y here if you want to build support for Maxim Integrated's
-+	 MAX44000 ambient and infrared proximity sensor device.
+ #define BMP280_CHIP_ID			0x58
++#define BME280_CHIP_ID			0x60
 +
-+	 To compile this driver as a module, choose M here:
-+	 the module will be called max44000.
+ #define BMP280_SOFT_RESET_VAL		0xB6
+ 
+ struct bmp280_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+ 	struct regmap *regmap;
++	struct bmp280_chip_info *chip;
+ 
+ 	/*
+ 	 * Carryover value from temperature conversion, used in pressure
+@@ -80,6 +83,24 @@ struct bmp280_data {
+ 	s32 t_fine;
+ };
+ 
++enum { bmp280, bme280 };
 +
- config OPT3001
- 	tristate "Texas Instruments OPT3001 Light Sensor"
- 	depends on I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index b2c3105..c77f27f 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -20,6 +20,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
- obj-$(CONFIG_JSA1212)		+= jsa1212.o
- obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
- obj-$(CONFIG_LTR501)		+= ltr501.o
-+obj-$(CONFIG_MAX44000)		+= max44000.o
- obj-$(CONFIG_OPT3001)		+= opt3001.o
- obj-$(CONFIG_PA12203001)	+= pa12203001.o
- obj-$(CONFIG_RPR0521)		+= rpr0521.o
-diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-new file mode 100644
-index 0000000..707cc24
---- /dev/null
-+++ b/drivers/iio/light/max44000.c
-@@ -0,0 +1,336 @@
-+/*
-+ * MAX44000 Ambient and Infrared Proximity Sensor
-+ *
-+ * Copyright (c) 2016, Intel Corporation.
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License.  See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * Data sheet: https://datasheets.maximintegrated.com/en/ds/MAX44000.pdf
-+ *
-+ * 7-bit I2C slave address 0x4a
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/i2c.h>
-+#include <linux/regmap.h>
-+#include <linux/util_macros.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/acpi.h>
-+
-+#define MAX44000_DRV_NAME		"max44000"
-+
-+/* Registers in datasheet order */
-+#define MAX44000_REG_STATUS		0x00
-+#define MAX44000_REG_CFG_MAIN		0x01
-+#define MAX44000_REG_CFG_RX		0x02
-+#define MAX44000_REG_CFG_TX		0x03
-+#define MAX44000_REG_ALS_DATA_HI	0x04
-+#define MAX44000_REG_ALS_DATA_LO	0x05
-+#define MAX44000_REG_PRX_DATA		0x16
-+#define MAX44000_REG_ALS_UPTHR_HI	0x06
-+#define MAX44000_REG_ALS_UPTHR_LO	0x07
-+#define MAX44000_REG_ALS_LOTHR_HI	0x08
-+#define MAX44000_REG_ALS_LOTHR_LO	0x09
-+#define MAX44000_REG_PST		0x0a
-+#define MAX44000_REG_PRX_IND		0x0b
-+#define MAX44000_REG_PRX_THR		0x0c
-+#define MAX44000_REG_TRIM_GAIN_GREEN	0x0f
-+#define MAX44000_REG_TRIM_GAIN_IR	0x10
-+
-+/* REG_CFG bits */
-+#define MAX44000_CFG_ALSINTE            0x01
-+#define MAX44000_CFG_PRXINTE            0x02
-+#define MAX44000_CFG_MASK               0x1c
-+#define MAX44000_CFG_MODE_SHUTDOWN      0x00
-+#define MAX44000_CFG_MODE_ALS_GIR       0x04
-+#define MAX44000_CFG_MODE_ALS_G         0x08
-+#define MAX44000_CFG_MODE_ALS_IR        0x0c
-+#define MAX44000_CFG_MODE_ALS_PRX       0x10
-+#define MAX44000_CFG_MODE_PRX           0x14
-+#define MAX44000_CFG_TRIM               0x20
-+
-+/*
-+ * Upper 4 bits are not documented but start as 1 on powerup
-+ * Setting them to 0 causes proximity to misbehave so set them to 1
-+ */
-+#define MAX44000_REG_CFG_RX_DEFAULT 0xf0
-+
-+#define MAX44000_ALSDATA_OVERFLOW	0x4000
-+
-+#define MAX44000_REGMASK_READABLE ( \
-+		(1 << MAX44000_REG_STATUS) | \
-+		(1 << MAX44000_REG_CFG_MAIN) | \
-+		(1 << MAX44000_REG_CFG_RX) | \
-+		(1 << MAX44000_REG_CFG_TX) | \
-+		(1 << MAX44000_REG_ALS_DATA_HI) | \
-+		(1 << MAX44000_REG_ALS_DATA_LO) | \
-+		(1 << MAX44000_REG_PRX_DATA) | \
-+		(1 << MAX44000_REG_ALS_UPTHR_HI) | \
-+		(1 << MAX44000_REG_ALS_UPTHR_LO) | \
-+		(1 << MAX44000_REG_ALS_LOTHR_HI) | \
-+		(1 << MAX44000_REG_ALS_LOTHR_LO) | \
-+		(1 << MAX44000_REG_PST) | \
-+		(1 << MAX44000_REG_PRX_IND) | \
-+		(1 << MAX44000_REG_PRX_THR) | \
-+		(1 << MAX44000_REG_TRIM_GAIN_GREEN) | \
-+		(1 << MAX44000_REG_TRIM_GAIN_IR))
-+
-+#define MAX44000_REGMASK_WRITEABLE ( \
-+		(1 << MAX44000_REG_CFG_MAIN) | \
-+		(1 << MAX44000_REG_CFG_RX) | \
-+		(1 << MAX44000_REG_CFG_TX) | \
-+		(1 << MAX44000_REG_ALS_UPTHR_HI) | \
-+		(1 << MAX44000_REG_ALS_UPTHR_LO) | \
-+		(1 << MAX44000_REG_ALS_LOTHR_HI) | \
-+		(1 << MAX44000_REG_ALS_LOTHR_LO) | \
-+		(1 << MAX44000_REG_PST) | \
-+		(1 << MAX44000_REG_PRX_IND) | \
-+		(1 << MAX44000_REG_PRX_THR) | \
-+		(1 << MAX44000_REG_TRIM_GAIN_GREEN) | \
-+		(1 << MAX44000_REG_TRIM_GAIN_IR))
-+
-+#define MAX44000_REGMASK_VOLATILE ( \
-+		(1 << MAX44000_REG_STATUS) | \
-+		(1 << MAX44000_REG_ALS_DATA_HI) | \
-+		(1 << MAX44000_REG_ALS_DATA_LO) | \
-+		(1 << MAX44000_REG_PRX_DATA))
-+
-+struct max44000_data {
-+	struct mutex lock;
-+	struct regmap *regmap;
++struct bmp280_chip_info {
++	int id;
++	int num_channels;
 +};
 +
-+/* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
-+#define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
-+
-+static const struct iio_chan_spec max44000_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++static struct bmp280_chip_info bmp280_chip_info_table[] = {
++	[bmp280] = {
++		.id = BMP280_CHIP_ID,
++		.num_channels = 2,
++	},
++	[bme280] = {
++		.id = BME280_CHIP_ID,
++		.num_channels = 2,
 +	},
 +};
 +
-+static int max44000_read_alsval(struct max44000_data *data)
+ /*
+  * These enums are used for indexing into the array of compensation
+  * parameters.
+@@ -344,6 +365,20 @@ static int bmp280_chip_init(struct bmp280_data *data)
+ 	return ret;
+ }
+ 
++static int bmp280_match_acpi_device(struct device *dev,
++				    struct bmp280_chip_info **chipset)
 +{
-+	u16 regval;
-+	int ret;
++	const struct acpi_device_id *id;
 +
-+	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI,
-+			       &regval, sizeof(regval));
-+	if (ret < 0)
-+		return ret;
++	id = acpi_match_device(dev->driver->acpi_match_table, dev);
++	if (!id)
++		return -ENODEV;
 +
-+	regval = be16_to_cpu(regval);
++	*chipset = &bmp280_chip_info_table[id->driver_data];
 +
-+	/*
-+	 * Overflow is explained on datasheet page 17.
-+	 *
-+	 * It's a warning that either the G or IR channel has become saturated
-+	 * and that the value in the register is likely incorrect.
-+	 *
-+	 * The recommendation is to change the scale (ALSPGA).
-+	 * The driver just returns the max representable value.
-+	 */
-+	if (regval & MAX44000_ALSDATA_OVERFLOW)
-+		return 0x3FFF;
-+
-+	return regval;
-+}
-+
-+static int max44000_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct max44000_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			mutex_lock(&data->lock);
-+			ret = max44000_read_alsval(data);
-+			mutex_unlock(&data->lock);
-+			if (ret < 0)
-+				return ret;
-+			*val = ret;
-+			return IIO_VAL_INT;
-+
-+		default:
-+			return -EINVAL;
-+		}
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			*val = 1;
-+			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
-+			return IIO_VAL_FRACTIONAL_LOG2;
-+
-+		default:
-+			return -EINVAL;
-+		}
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info max44000_info = {
-+	.driver_module		= THIS_MODULE,
-+	.read_raw		= max44000_read_raw,
-+};
-+
-+static bool max44000_readable_reg(struct device *dev, unsigned int reg)
-+{
-+	return (1 << reg) & MAX44000_REGMASK_READABLE;
-+}
-+
-+static bool max44000_writeable_reg(struct device *dev, unsigned int reg)
-+{
-+	return (1 << reg) & MAX44000_REGMASK_WRITEABLE;
-+}
-+
-+static bool max44000_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	return (1 << reg) & MAX44000_REGMASK_VOLATILE;
-+}
-+
-+static bool max44000_precious_reg(struct device *dev, unsigned int reg)
-+{
-+	return reg == MAX44000_REG_STATUS;
-+}
-+
-+/* Datasheet pages 9-10: */
-+static const struct reg_default max44000_reg_defaults[] = {
-+	{ MAX44000_REG_CFG_MAIN,	0x24 },
-+	{ MAX44000_REG_CFG_RX,		MAX44000_REG_CFG_RX_DEFAULT },
-+	{ MAX44000_REG_CFG_TX,		0x00 },
-+	{ MAX44000_REG_ALS_UPTHR_HI,	0x00 },
-+	{ MAX44000_REG_ALS_UPTHR_LO,	0x00 },
-+	{ MAX44000_REG_ALS_LOTHR_HI,	0x00 },
-+	{ MAX44000_REG_ALS_LOTHR_LO,	0x00 },
-+	{ MAX44000_REG_PST,		0x00 },
-+	{ MAX44000_REG_PRX_IND,		0x00 },
-+	{ MAX44000_REG_PRX_THR,		0x00 },
-+	{ MAX44000_REG_TRIM_GAIN_GREEN,	0x80 },
-+	{ MAX44000_REG_TRIM_GAIN_IR,	0x80 },
-+};
-+
-+static const struct regmap_config max44000_regmap_config = {
-+	.reg_bits	= 8,
-+	.val_bits	= 8,
-+
-+	.max_register	= MAX44000_REG_PRX_DATA,
-+	.readable_reg	= max44000_readable_reg,
-+	.writeable_reg	= max44000_writeable_reg,
-+	.volatile_reg	= max44000_volatile_reg,
-+	.precious_reg	= max44000_precious_reg,
-+
-+	.use_single_rw	= 1,
-+	.cache_type	= REGCACHE_FLAT,
-+
-+	.reg_defaults		= max44000_reg_defaults,
-+	.num_reg_defaults	= ARRAY_SIZE(max44000_reg_defaults),
-+};
-+
-+static int max44000_probe(struct i2c_client *client,
-+			  const struct i2c_device_id *id)
-+{
-+	struct max44000_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret, reg;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+	data = iio_priv(indio_dev);
-+	data->regmap = devm_regmap_init_i2c(client, &max44000_regmap_config);
-+	if (IS_ERR(data->regmap)) {
-+		dev_err(&client->dev, "regmap_init failed!\n");
-+		return PTR_ERR(data->regmap);
-+	}
-+
-+	i2c_set_clientdata(client, indio_dev);
-+	mutex_init(&data->lock);
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &max44000_info;
-+	indio_dev->name = MAX44000_DRV_NAME;
-+	indio_dev->channels = max44000_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(max44000_channels);
-+
-+	/*
-+	 * The device doesn't have a reset function so we just clear some
-+	 * important bits at probe time to ensure sane operation.
-+	 *
-+	 * Since we don't support interrupts/events the threshold values are
-+	 * not important. We also don't touch trim values.
-+	 */
-+
-+	/* Reset ALS scaling bits */
-+	ret = regmap_write(data->regmap, MAX44000_REG_CFG_RX, MAX44000_REG_CFG_RX_DEFAULT);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to write default CFG_RX: %d\n", ret);
-+		return ret;
-+	}
-+
-+	/* Reset CFG bits to ALS-only mode and no interrupts */
-+	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_GIR;
-+	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to write init config: %d\n", ret);
-+		return ret;
-+	}
-+
-+	/* Read status at least once to clear any stale interrupt bits. */
-+	ret = regmap_read(data->regmap, MAX44000_REG_STATUS, &reg);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to read init status: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return iio_device_register(indio_dev);
-+}
-+
-+static int max44000_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
 +	return 0;
 +}
 +
-+static const struct i2c_device_id max44000_id[] = {
-+	{"max44000", 0},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, max44000_id);
+ static int bmp280_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
+@@ -357,13 +392,25 @@ static int bmp280_probe(struct i2c_client *client,
+ 		return -ENOMEM;
+ 
+ 	data = iio_priv(indio_dev);
 +
-+#ifdef CONFIG_ACPI
-+static const struct acpi_device_id max44000_acpi_match[] = {
-+	{"MAX44000", 0},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(acpi, max44000_acpi_match);
-+#endif
++	if (id) {
++		data->chip = &bmp280_chip_info_table[id->driver_data];
++	} else if (ACPI_HANDLE(&client->dev)) {
++		ret = bmp280_match_acpi_device(&client->dev, &data->chip);
++		if (ret < 0)
++			return ret;
++	} else {
++		/* Don't break sysfs registration of BMP280 devices */
++		data->chip = &bmp280_chip_info_table[bmp280];
++	}
 +
-+static struct i2c_driver max44000_driver = {
-+	.driver = {
-+		.name	= MAX44000_DRV_NAME,
-+		.acpi_match_table = ACPI_PTR(max44000_acpi_match),
-+	},
-+	.probe		= max44000_probe,
-+	.remove		= max44000_remove,
-+	.id_table	= max44000_id,
-+};
-+
-+module_i2c_driver(max44000_driver);
-+
-+MODULE_AUTHOR("Crestez Dan Leonard <leonard.crestez@intel.com>");
-+MODULE_DESCRIPTION("MAX44000 Ambient and Infrared Proximity Sensor");
-+MODULE_LICENSE("GPL v2");
+ 	mutex_init(&data->lock);
+ 	data->client = client;
+ 
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->name = id->name;
+ 	indio_dev->channels = bmp280_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(bmp280_channels);
++	indio_dev->num_channels = data->chip->num_channels;
+ 	indio_dev->info = &bmp280_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+@@ -376,9 +423,9 @@ static int bmp280_probe(struct i2c_client *client,
+ 	ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
+ 	if (ret < 0)
+ 		return ret;
+-	if (chip_id != BMP280_CHIP_ID) {
++	if (chip_id != data->chip->id) {
+ 		dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
+-			BMP280_CHIP_ID, chip_id);
++			data->chip->id, chip_id);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -390,13 +437,15 @@ static int bmp280_probe(struct i2c_client *client,
+ }
+ 
+ static const struct acpi_device_id bmp280_acpi_match[] = {
+-	{"BMP0280", 0},
++	{"BMP0280", bmp280},
++	{"BME0280", bme280},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
+ 
+ static const struct i2c_device_id bmp280_id[] = {
+-	{"bmp280", 0},
++	{"bmp280", bmp280},
++	{"bme280", bme280},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(i2c, bmp280_id);
 -- 
-2.5.5
-
+1.9.1
