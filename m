@@ -1,89 +1,110 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52823 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752319AbcDQKIh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 06:08:37 -0400
-Subject: Re: [PATCH RFT 1/5] iio: mxs-lradc: fix memory leak
-To: Marek Vasut <marex@denx.de>,
-	Stefan Wahren <stefan.wahren@i2se.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
- <1460648909-2657-2-git-send-email-stefan.wahren@i2se.com>
- <570FF70F.3000501@denx.de>
-Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <571360A3.3060809@kernel.org>
-Date: Sun, 17 Apr 2016 11:08:35 +0100
+Return-Path: <stefan.wahren@i2se.com>
+In-Reply-To: 20160411194204.GA17762@rob-hp-laptop
+To: Harald Geyer <harald@ccbib.org>, Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+ Fabio Estevam <fabio.estevam@nxp.com>, Marek Vasut <marex@denx.de>,
+ linux-iio@vger.kernel.org,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH] iio: mxs-lradc: Move binding document out of staging as
+ well
+Message-ID: <570E78D9.7080902@i2se.com>
+Date: Wed, 13 Apr 2016 18:50:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <570FF70F.3000501@denx.de>
 Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 14/04/16 21:01, Marek Vasut wrote:
-> On 04/14/2016 05:48 PM, Stefan Wahren wrote:
->> After successful touchscreen registration the input device was
->> never freed. So fix this issue by using devm_input_allocate_device().
->>
->> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
->> ---
->>  drivers/iio/adc/mxs-lradc.c |    8 ++------
->>  1 file changed, 2 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
->> index 33051b8..0576953 100644
->> --- a/drivers/iio/adc/mxs-lradc.c
->> +++ b/drivers/iio/adc/mxs-lradc.c
->> @@ -1109,12 +1109,11 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->>  {
->>  	struct input_dev *input;
->>  	struct device *dev = lradc->dev;
->> -	int ret;
->>  
->>  	if (!lradc->use_touchscreen)
->>  		return 0;
->>  
->> -	input = input_allocate_device();
->> +	input = devm_input_allocate_device(dev);
->>  	if (!input)
->>  		return -ENOMEM;
->>  
->> @@ -1134,11 +1133,8 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->>  
->>  	lradc->ts_input = input;
->>  	input_set_drvdata(input, lradc);
->> -	ret = input_register_device(input);
->> -	if (ret)
->> -		input_free_device(lradc->ts_input);
->>  
->> -	return ret;
->> +	return input_register_device(input);
->>  }
->>  
->>  static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
->>
+Hi,
+
+[added Fabio, Marek and linux-arm-kernel]
+
+> On Sun, Apr 10, 2016 at 01:03:18PM +0000, Harald Geyer wrote:
+> > commit f836c45922446df872250a12dd08e48978aceb2f moved mxs-lradc driver
+> > out of staging. However the binding document was left in the old place.
 > 
-> Nice find.
+> A move out of staging should probably imply a review. Though we don't 
+> have clear rules around that for bindings.
+>
+> >  
+> > Signed-off-by: Harald Geyer <harald@ccbib.org>
+> > ---
+> >  .../devicetree/bindings/iio/adc/mxs-lradc.txt      | 47 ++++++++++++++++++++++
+> >  .../bindings/staging/iio/adc/mxs-lradc.txt         | 47 ----------------------
+> >  2 files changed, 47 insertions(+), 47 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+> >  delete mode 100644 Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+> > new file mode 100644
+> > index 0000000..555fb11
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+> > @@ -0,0 +1,47 @@
+> > +* Freescale MXS LRADC device driver
+> > +
+> > +Required properties:
+> > +- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
+> > +              for i.MX28 SoC
+> > +- reg: Address and length of the register set for the device
+> > +- interrupts: Should contain the LRADC interrupts
+> > +
+> > +Optional properties:
+> > +- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
+> > +                               to LRADC. Valid value is either 4 or 5. If this
+> > +                               property is not present, then the touchscreen is
+> > +                               disabled. 5 wires is valid for i.MX28 SoC only.
+>
+> Standard touchscreen property?
+
+There is a similiar one in input/touchscreen/ti-tsc-adc.txt with the name ti,wires.
+But i'm not sure about the others.
+
+Stefan
+
 > 
-> Looks like at91_adc.c and exynos_adc.c suffer from the exact same issue.
-> The leak looks a bit more severe on exynos even, exynos_adc_ts_init()
-> could use a proper fail path. Do you want to send patches or shall I ?
+> > +- fsl,ave-ctrl: number of samples per direction to calculate an average value.
+> > +                Allowed value is 1 ... 32, default is 4
+> > +- fsl,ave-delay: delay between consecutive samples. Allowed value is
+> > +                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
+> > +                 2 kHz and its default is 2 (= 1 ms)
+>
+> ditto.
 > 
-As this has been there a long time I'm not going to rush it in as a fix.
-I suspect no platform is probing and removing it enough to get a significant
-amount of memory leaked.
-
-Good to clear it up though!
-
-Applied to the togreg branch of iio.git, initially pushed out as testing for
-the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
+> If not, it should have units.
+>
+> > +- fsl,settling: delay between plate switch to next sample. Allowed value is
+> > +                1 ... 2047. It counts at 2 kHz and its default is
+> > +                10 (= 5 ms)
+>
+> ditto.
+>
+> > +
+> > +Example for i.MX23 SoC:
+> > +
+> > +	lradc@80050000 {
+> > +		compatible = "fsl,imx23-lradc";
+> > +		reg = <0x80050000 0x2000>;
+> > +		interrupts = <36 37 38 39 40 41 42 43 44>;
+> > +		status = "okay";
+> > +		fsl,lradc-touchscreen-wires = <4>;
+> > +		fsl,ave-ctrl = <4>;
+> > +		fsl,ave-delay = <2>;
+> > +		fsl,settling = <10>;
+> > +	};
+> > +
+> > +Example for i.MX28 SoC:
+> > +
+> > +	lradc@80050000 {
+> > +		compatible = "fsl,imx28-lradc";
+> > +		reg = <0x80050000 0x2000>;
+> > +		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
+> > +		status = "okay";
+> > +		fsl,lradc-touchscreen-wires = <5>;
+> > +		fsl,ave-ctrl = <4>;
+> > +		fsl,ave-delay = <2>;
+> > +		fsl,settling = <10>;
+> > +	};
