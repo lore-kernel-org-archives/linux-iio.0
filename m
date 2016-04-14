@@ -1,105 +1,70 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.208]:55519 "EHLO
-	smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755237AbcDNPkf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2016 11:40:35 -0400
-Date: Thu, 14 Apr 2016 17:40:24 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] iio: frequency: ad9523: use unsigned int rather then bare
- unsigned
-Message-ID: <20160414154024.GA16253@x220.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <stefan.wahren@i2se.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Marek Vasut <marex@denx.de>
+Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	Fabio Estevam <fabio.estevam@nxp.com>,
+	Juergen Borleis <jbe@pengutronix.de>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH RFT 4/5] iio: mxs-lradc: disable only mapped channels in mxs_lradc_hw_stop
+Date: Thu, 14 Apr 2016 15:48:28 +0000
+Message-Id: <1460648909-2657-5-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
+References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This fix checkpatch warnings:
+Disabling of the touchscreen IRQs is already done in
+mxs_lradc_disable_ts. There is no need to disable them in
+mxs_lradc_hw_stop again. So we only need to care of the
+mapped channels which are common for i.MX23 and i.MX28
+and we remove the now unused function mxs_lradc_irq_en_mask.
 
-WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
-
-Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
- drivers/iio/frequency/ad9523.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/iio/adc/mxs-lradc.c |   11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index 44a30f2..99eba52 100644
---- a/drivers/iio/frequency/ad9523.c
-+++ b/drivers/iio/frequency/ad9523.c
-@@ -284,7 +284,7 @@ struct ad9523_state {
- 	} data[2] ____cacheline_aligned;
- };
- 
--static int ad9523_read(struct iio_dev *indio_dev, unsigned addr)
-+static int ad9523_read(struct iio_dev *indio_dev, unsigned int addr)
- {
- 	struct ad9523_state *st = iio_priv(indio_dev);
- 	int ret;
-@@ -318,7 +318,8 @@ static int ad9523_read(struct iio_dev *indio_dev, unsigned addr)
- 	return ret;
- };
- 
--static int ad9523_write(struct iio_dev *indio_dev, unsigned addr, unsigned val)
-+static int ad9523_write(struct iio_dev *indio_dev,
-+		unsigned int addr, unsigned int val)
- {
- 	struct ad9523_state *st = iio_priv(indio_dev);
- 	int ret;
-@@ -351,11 +352,11 @@ static int ad9523_io_update(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+index 95d84c9..97c993f 100644
+--- a/drivers/iio/adc/mxs-lradc.c
++++ b/drivers/iio/adc/mxs-lradc.c
+@@ -295,6 +295,7 @@ struct mxs_lradc {
+ #define	LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
+ #define	LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
+ #define	LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
++#define	LRADC_CTRL1_MAPPED_CHANS_IRQ_EN_MASK	(0x00ff << 16)
+ #define	LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
+ #define	LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
+ #define	LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
+@@ -373,13 +374,6 @@ static u32 mxs_lradc_plate_mask(struct mxs_lradc *lradc)
+ 	return LRADC_CTRL0_MX28_PLATE_MASK;
  }
  
- static int ad9523_vco_out_map(struct iio_dev *indio_dev,
--			      unsigned ch, unsigned out)
-+			      unsigned int ch, unsigned int out)
+-static u32 mxs_lradc_irq_en_mask(struct mxs_lradc *lradc)
+-{
+-	if (lradc->soc == IMX23_LRADC)
+-		return LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK;
+-	return LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK;
+-}
+-
+ static u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
  {
- 	struct ad9523_state *st = iio_priv(indio_dev);
- 	int ret;
--	unsigned mask;
-+	unsigned int mask;
- 
- 	switch (ch) {
- 	case 0 ... 3:
-@@ -405,7 +406,7 @@ static int ad9523_vco_out_map(struct iio_dev *indio_dev,
- }
- 
- static int ad9523_set_clock_provider(struct iio_dev *indio_dev,
--			      unsigned ch, unsigned long freq)
-+			      unsigned int ch, unsigned long freq)
+ 	if (lradc->soc == IMX23_LRADC)
+@@ -1505,7 +1499,8 @@ static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
  {
- 	struct ad9523_state *st = iio_priv(indio_dev);
- 	long tmp1, tmp2;
-@@ -619,7 +620,7 @@ static int ad9523_read_raw(struct iio_dev *indio_dev,
- 			   long m)
- {
- 	struct ad9523_state *st = iio_priv(indio_dev);
--	unsigned code;
-+	unsigned int code;
- 	int ret;
+ 	int i;
  
- 	mutex_lock(&indio_dev->mlock);
-@@ -655,7 +656,7 @@ static int ad9523_write_raw(struct iio_dev *indio_dev,
- 			    long mask)
- {
- 	struct ad9523_state *st = iio_priv(indio_dev);
--	unsigned reg;
-+	unsigned int reg;
- 	int ret, tmp, code;
+-	mxs_lradc_reg_clear(lradc, mxs_lradc_irq_en_mask(lradc), LRADC_CTRL1);
++	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MAPPED_CHANS_IRQ_EN_MASK,
++			    LRADC_CTRL1);
  
- 	mutex_lock(&indio_dev->mlock);
-@@ -709,8 +710,8 @@ out:
- }
- 
- static int ad9523_reg_access(struct iio_dev *indio_dev,
--			      unsigned reg, unsigned writeval,
--			      unsigned *readval)
-+			      unsigned int reg, unsigned int writeval,
-+			      unsigned int *readval)
- {
- 	int ret;
- 
+ 	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
+ 		mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(i));
 -- 
-2.8.0
-
+1.7.9.5
