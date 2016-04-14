@@ -1,90 +1,39 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:55094 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757693AbcDMPGl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 13 Apr 2016 11:06:41 -0400
-Date: Wed, 13 Apr 2016 10:06:35 -0500
-From: Rob Herring <robh@kernel.org>
-To: Laxman Dewangan <ldewangan@nvidia.com>
-Cc: edubezval@gmail.com, rui.zhang@intel.com, mark.rutland@arm.com,
-	pawel.moll@arm.com, ijc+devicetree@hellion.org.uk,
-	linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	jic23@kernel.org
-Subject: Re: [PATCH V2 1/2] thermal: generic-adc: Add DT binding for ADC
- based thermal sensor
-Message-ID: <20160413150635.GA15596@rob-hp-laptop>
-References: <1460382102-27755-1-git-send-email-ldewangan@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1460382102-27755-1-git-send-email-ldewangan@nvidia.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sst@poczta.fm>
+From: Slawomir Stepien <sst@poczta.fm>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Slawomir Stepien <sst@poczta.fm>
+Subject: [PATCH 06/10] iio: adc: ad799x: remove space before comma
+Date: Thu, 14 Apr 2016 21:36:38 +0200
+Message-Id: <1460662602-2951-7-git-send-email-sst@poczta.fm>
+In-Reply-To: <1460662602-2951-1-git-send-email-sst@poczta.fm>
+References: <1460662602-2951-1-git-send-email-sst@poczta.fm>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Apr 11, 2016 at 07:11:41PM +0530, Laxman Dewangan wrote:
-> Sometimes, thermal sensors like NCT thermistors are connected to
-> the ADC channel. The temperature is read by reading the voltage
-> across the sensor resistance via ADC and referring the lookup
-> table for ADC value to temperature.
-> 
-> Add DT binding doc for the ADC based thermal sensor driver to
-> detail the DT property and provide the example for how to use it.
-> 
-> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
-> 
-> ---
-> Changes from V1:
-> - Make the lookup table to two dimensional instead of single array of linear
->   step of temperature.
-> - Remove detailing of IIO frameowrk and drivers.
-> - Added proper braces, indenting and labels.
-> 
->  .../bindings/thermal/thermal-generic-adc.txt       | 86 ++++++++++++++++++++++
->  1 file changed, 86 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/thermal/thermal-generic-adc.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/thermal/thermal-generic-adc.txt b/Documentation/devicetree/bindings/thermal/thermal-generic-adc.txt
-> new file mode 100644
-> index 0000000..c5c2e5b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/thermal/thermal-generic-adc.txt
-> @@ -0,0 +1,86 @@
-> +General Purpose Analog To Digital Converter (ADC) based thermal sensor.
-> +
-> +On some of platforms, thermal sensor like thermistors are connected to
-> +one of ADC channel and sensor resistance is read via voltage across the
-> +sensor resistor. The voltage read across the sensor is mapped to
-> +temperature using voltage-temperature lookup table.
-> +
-> +Required properties:
-> +===================
-> +- compatible:		     Must be "generic-adc-thermal".
-> +- temperature-lookup-table:  Two dimensional array of Integer; lookup table
-> +			     to map the relation between ADC value and
-> +			     temperature. When ADC is read, the value is
-> +			     looked up on the table to get the equivalent
-> +			     temperature.
+This fixes the error reported by checkpatch.pl:
 
-First value is ?, 2nd value is ? The units are milliCelsius?
+ERROR: space prohibited before that ',' (ctx:WxW)
 
-> +- #thermal-sensor-cells:     Should be 1. See ./thermal.txt for a description
-> +			     of this property.
-> +
-> +Example :
-> +#include <dt-bindings/thermal/thermal.h>
-> +
-> +i2c@7000c400 {
-> +	ads1015: ads1015@4a {
-> +		reg = <0x4a>;
-> +		compatible = "ads1015";
-> +		sampling-frequency = <3300>;
-> +		#io-channel-cells = <1>;
-> +	};
-> +};
-> +
-> +tboard_thermistor: thermal-sensor@1 {
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+---
+ drivers/iio/adc/ad799x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Drop the unit address.
-
-> +	compatible = "generic-adc-thermal";
-
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index 01d7158..a3f5254 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -477,7 +477,7 @@ static int ad799x_read_event_value(struct iio_dev *indio_dev,
+ 	if (ret < 0)
+ 		return ret;
+ 	*val = (ret >> chan->scan_type.shift) &
+-		GENMASK(chan->scan_type.realbits - 1 , 0);
++		GENMASK(chan->scan_type.realbits - 1, 0);
+ 
+ 	return IIO_VAL_INT;
+ }
+-- 
+2.8.0
