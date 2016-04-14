@@ -1,49 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from slow1-d.mail.gandi.net ([217.70.178.86]:33476 "EHLO
-	slow1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754128AbcDNMUO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2016 08:20:14 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-	by slow1-d.mail.gandi.net (Postfix) with ESMTP id C982847F1A7
-	for <linux-iio@vger.kernel.org>; Thu, 14 Apr 2016 14:16:58 +0200 (CEST)
-Message-ID: <1460636212.5584.3.camel@hadess.net>
-Subject: Re: [PATCH] iio: add Capella CM3218 ambient light sensor driver.
-From: Bastien Nocera <hadess@hadess.net>
-To: "K. T." <capellamicro@gmail.com>
-Cc: linux-iio@vger.kernel.org, Kevin Tsai <ktsai@capellamicro.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Date: Thu, 14 Apr 2016 14:16:52 +0200
-In-Reply-To: <CAHvdCWhHzsuRZ0Kj9BbOSBoCQswR-=vrQErDG9J57yDaE30+2A@mail.gmail.com>
-References: <1460381347-26873-1-git-send-email-hadess@hadess.net>
-	 <1460384362.2370.0.camel@hadess.net>
-	 <CAHvdCWhHzsuRZ0Kj9BbOSBoCQswR-=vrQErDG9J57yDaE30+2A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mail.kernel.org ([198.145.29.136]:53698 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753659AbcDNNaj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 14 Apr 2016 09:30:39 -0400
+Date: Thu, 14 Apr 2016 08:30:34 -0500
+From: Rob Herring <robh@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: Re: [PATCH 4/4 v4] iio: st_sensors: support open drain mode
+Message-ID: <20160414133034.GA10104@rob-hp-laptop>
+References: <1460466079-15392-1-git-send-email-linus.walleij@linaro.org>
+ <CAL_JsqKudTxbK9goinYCQhGLK=Gd_+PHgQ+mnpkU=cz4pB0k2w@mail.gmail.com>
+ <CACRpkdZs6g+UEOo+pEd1bS1tV7JpUhA1uJ9s6i=Jr39R=2RGfQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CACRpkdZs6g+UEOo+pEd1bS1tV7JpUhA1uJ9s6i=Jr39R=2RGfQ@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hey Kevin,
-
-On Wed, 2016-04-13 at 11:44 -0700, K. T. wrote:
-> Hi Bastien,
+On Thu, Apr 14, 2016 at 10:36:53AM +0200, Linus Walleij wrote:
+> On Wed, Apr 13, 2016 at 10:52 PM, Rob Herring <robh@kernel.org> wrote:
+> > On Tue, Apr 12, 2016 at 8:01 AM, Linus Walleij <linus.walleij@linaro.org> wrote:
+> >> Some types of ST Sensors can be connected to the same IRQ line
+> >> as other peripherals using open drain. Add a device tree binding
+> >> and a sensor data property to flip the right bit in the interrupt
+> >> control register to enable open drain mode on the INT line.
+> >>
+> >> If the line is set to be open drain, also tag on IRQF_SHARED
+> >> to the IRQ flags when requesting the interrupt, as the whole
+> >> point of using open drain interrupt lines is to share them with
+> >> more than one peripheral (wire-or).
+> >>
+> >> Cc: devicetree@vger.kernel.org
+> >> Cc: Giuseppe Barba <giuseppe.barba@st.com>
+> >> Cc: Denis Ciocca <denis.ciocca@st.com>
+> >> Cc: Rob Herring <robh@kernel.org>
+> >> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> >> ---
+> >> ChangeLog v3->v4:
+> >> - Rename DT bool property st,int-pin-open-drain to int-pin-open-drain
+> >> - Rob Herring ACKed st,int-pin-open-drain but not including his ACK
+> >>   on this even though it's close
+> >
+> > We already have st,irq-open-drain, gpio-open-drain, linux,open-drain
+> > and drive-open-drain (from pinctrl).
+> >
+> > If we want something common, then it should probably be part of
+> > interrupt bindings, not something common to IIO.
 > 
-> What do you mean "doesn't survive"?  Can you read the sensor data or
-> data is not change?  I use Shuttle XPC desktop to test sensor
-> driver.  In my environment, suspend/resume works.  But,
-> hibernate/resume may cause sensor won't update issue.  Let me know
-> more detail about your issue and I will update driver.
+> I could agree to use the pin control drive-open-drain;
+> 
+> It has very little to do with the interrupt bindings, there are
+> so many interrupt lines in the world, the fact that some of them
+> go over open drain rails doesn't matter to the interrupt-controller
+> devices, it needs to be below them.
 
-I don't know how I tested it, but it seems to work as expected now. I
-tested it by suspending and resuming, and the first time I tested, I
-couldn't get any more data out of it, not sure why.
+Yes, but it is open drain because the interrupt is shared. That fact is 
+enough to determine how to configure the pin. Unfortunately, it is a bit 
+hard to determine an interrupt is shared based on how the interrupt 
+bindings work. Adding a flag doesn't work because the cell contents are 
+specific to the interrupt controller (though we have standardized them 
+to some extent).
 
-It might have been a problem in iio-sensor-proxy, which is due a clean
-up anyway, so let me retract my retraction :)
+> I will resubmit using the pin control binding.
 
-If anyone has comments about the driver, let me know, and I'll work
-with Kevin to get those sorted out.
+Given I don't have a better suggestion, that sounds fine.
 
-Cheers
+Rob
