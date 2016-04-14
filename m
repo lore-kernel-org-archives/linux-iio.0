@@ -1,35 +1,71 @@
-Return-Path: <jbe@pengutronix.de>
-From: Juergen Borleis <jbe@pengutronix.de>
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH RFT 3/5] iio: mxs-lradc: move STMP reset out of ADC init
-Date: Fri, 15 Apr 2016 08:48:44 +0200
-Cc: Jonathan Cameron <jic23@kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>,
- "Lars-Peter Clausen" <lars@metafoo.de>,
- "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
- Marek Vasut <marex@denx.de>,
- Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
- Fabio Estevam <fabio.estevam@nxp.com>,
- Alexandre Belloni <alexandre.belloni@free-electrons.com>,
- linux-iio@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
-References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com> <1460648909-2657-4-git-send-email-stefan.wahren@i2se.com>
-In-Reply-To: <1460648909-2657-4-git-send-email-stefan.wahren@i2se.com>
+Return-Path: <marex@denx.de>
+Message-ID: <570FF70F.3000501@denx.de>
+Date: Thu, 14 Apr 2016 22:01:19 +0200
+From: Marek Vasut <marex@denx.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
-Message-Id: <201604150848.44242.jbe@pengutronix.de>
+To: Stefan Wahren <stefan.wahren@i2se.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+CC: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+ Fabio Estevam <fabio.estevam@nxp.com>,
+ Juergen Borleis <jbe@pengutronix.de>,
+ Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+ linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH RFT 1/5] iio: mxs-lradc: fix memory leak
+References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com> <1460648909-2657-2-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <1460648909-2657-2-git-send-email-stefan.wahren@i2se.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Stefan,
+On 04/14/2016 05:48 PM, Stefan Wahren wrote:
+> After successful touchscreen registration the input device was
+> never freed. So fix this issue by using devm_input_allocate_device().
+> 
+> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+> ---
+>  drivers/iio/adc/mxs-lradc.c |    8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+> index 33051b8..0576953 100644
+> --- a/drivers/iio/adc/mxs-lradc.c
+> +++ b/drivers/iio/adc/mxs-lradc.c
+> @@ -1109,12 +1109,11 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+>  {
+>  	struct input_dev *input;
+>  	struct device *dev = lradc->dev;
+> -	int ret;
+>  
+>  	if (!lradc->use_touchscreen)
+>  		return 0;
+>  
+> -	input = input_allocate_device();
+> +	input = devm_input_allocate_device(dev);
+>  	if (!input)
+>  		return -ENOMEM;
+>  
+> @@ -1134,11 +1133,8 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+>  
+>  	lradc->ts_input = input;
+>  	input_set_drvdata(input, lradc);
+> -	ret = input_register_device(input);
+> -	if (ret)
+> -		input_free_device(lradc->ts_input);
+>  
+> -	return ret;
+> +	return input_register_device(input);
+>  }
+>  
+>  static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
+> 
 
-On Thursday 14 April 2016 17:48:27 Stefan Wahren wrote:
-> This patch moves the STMP reset out of ADC init function
-> in order to make it never fail. This is also necessary
-> for PM ops.
+Nice find.
 
-What do you mean with "make it never fail"?
+Looks like at91_adc.c and exynos_adc.c suffer from the exact same issue.
+The leak looks a bit more severe on exynos even, exynos_adc_ts_init()
+could use a proper fail path. Do you want to send patches or shall I ?
 
-> [...]
-
-jb
+-- 
+Best regards,
+Marek Vasut
