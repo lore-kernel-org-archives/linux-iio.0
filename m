@@ -1,47 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48197 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751286AbcDPMoO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 08:44:14 -0400
-Subject: Re: [PATCH 4/5] staging:iio:adis16209: Set self_test_no_autoclear
- flag
-To: Lars-Peter Clausen <lars@metafoo.de>
-References: <1460732382-6840-1-git-send-email-lars@metafoo.de>
- <1460732382-6840-4-git-send-email-lars@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5712339C.9090703@kernel.org>
-Date: Sat, 16 Apr 2016 13:44:12 +0100
+Received: from www381.your-server.de ([78.46.137.84]:54502 "EHLO
+	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756121AbcDNQAK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2016 12:00:10 -0400
+Subject: Re: generic_buffer and 24 bits samples
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <570FB712.5070903@parrot.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <570FBE87.9050006@metafoo.de>
+Date: Thu, 14 Apr 2016 18:00:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <1460732382-6840-4-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <570FB712.5070903@parrot.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/04/16 15:59, Lars-Peter Clausen wrote:
-> The ADIS16201 does not automatically clear the self test flag bit the self
-> test has been, so clear it manually. Otherwise we'll see a offset caused by
-> the self-test bias on the output values during normal operation.
+On 04/14/2016 05:28 PM, Gregor Boirie wrote:
+> Greetings,
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.
-> ---
->  drivers/staging/iio/accel/adis16209_core.c | 1 +
->  1 file changed, 1 insertion(+)
+> I'm trying to use an st_pressure based sensor to sample pressure
+> data using generic_buffer tool. However it seems that it does not
+> support data packed onto 24 bits samples.
+> st_pressure driver defines scan_type for my device as:
+> <code>
+> /* ... */
+>     .scan_type = {
+>         .sign = 'u',
+>         .realbits = 24,
+>         .storagebits = 24,
+>         .endianness = IIO_LE,
+>     },
+> </code>
 > 
-> diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-> index 8b42bf8..8dbad58 100644
-> --- a/drivers/staging/iio/accel/adis16209_core.c
-> +++ b/drivers/staging/iio/accel/adis16209_core.c
-> @@ -168,6 +168,7 @@ static const struct adis_data adis16209_data = {
->  	.diag_stat_reg = ADIS16209_DIAG_STAT,
->  
->  	.self_test_mask = ADIS16209_MSC_CTRL_SELF_TEST_EN,
-> +	.self_test_no_autoclear = true,
->  	.startup_delay = ADIS16209_STARTUP_DELAY,
->  
->  	.status_error_msgs = adis16209_status_error_msgs,
+> What is the proper way to make this work ? Using 32 bits storagebits
+> field ? Enhance generic_buffer to support 24 bits samples ? Anything
+> else ??
 > 
+> It seems iio_compute_scan_bytes consider sample data as a simple byte
+> stream. So I'm wondering what are the alignment constraints for sample
+> start address ? Should they be aligned onto their natural "word"
+> boundaries, i.e. 16 bits for u16, 32 bits for u32, etc... ? And for
+> 24 bits samples ?
+
+IIO really only supports powers of two >= 8 for the storagebits size.
+Everything else is undefined.
+
+Samples are aligned to their storage size.
 
