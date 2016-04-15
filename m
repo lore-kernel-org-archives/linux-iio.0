@@ -1,181 +1,172 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Mon, 11 Apr 2016 22:46:30 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Peter Rosin <peda@lysator.liu.se>
-Cc: linux-kernel@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Kalle Valo <kvalo@codeaurora.org>, Joe Perches <joe@perches.com>,
-	Jiri Slaby <jslaby@suse.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Matt Ranostay <matt.ranostay@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Terry Heo <terryheo@google.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Arnd Bergmann <arnd@arndb.de>, Tommi Rantala <tt.rantala@gmail.com>,
-	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v6 01/24] i2c-mux: add common data for every i2c-mux
- instance
-Message-ID: <20160411204630.GA10401@katana>
-References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
- <1459673574-11440-2-git-send-email-peda@lysator.liu.se>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="k+w/mQv8wyuph6w0"
-In-Reply-To: <1459673574-11440-2-git-send-email-peda@lysator.liu.se>
+Return-Path: <tiberiu.a.breana@intel.com>
+From: Tiberiu Breana <tiberiu.a.breana@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 2/2] iio: temperature: Add triggered buffer support for AM2315
+Date: Fri, 15 Apr 2016 18:36:08 +0300
+Message-Id: <1460734568-6306-3-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1460734568-6306-1-git-send-email-tiberiu.a.breana@intel.com>
+References: <1460734568-6306-1-git-send-email-tiberiu.a.breana@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+---
+ drivers/iio/temperature/am2315.c | 83 ++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 80 insertions(+), 3 deletions(-)
 
---k+w/mQv8wyuph6w0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi Peter,
-
-first high-level review:
-
-> +int i2c_mux_reserve_adapters(struct i2c_mux_core *muxc, int adapters)
-
-I'd suggest to rename 'adapters' into 'num_adapters' throughout this
-patch. I think it makes the code a lot easier to understand.
-
-> +{
-> +	struct i2c_adapter **adapter;
-> +
-> +	if (adapters <=3D muxc->max_adapters)
-> +		return 0;
-> +
-> +	adapter =3D devm_kmalloc_array(muxc->dev,
-> +				     adapters, sizeof(*adapter),
-> +				     GFP_KERNEL);
-> +	if (!adapter)
-> +		return -ENOMEM;
-> +
-> +	if (muxc->adapter) {
-> +		memcpy(adapter, muxc->adapter,
-> +		       muxc->max_adapters * sizeof(*adapter));
-> +		devm_kfree(muxc->dev, muxc->adapter);
-> +	}
-> +
-> +	muxc->adapter =3D adapter;
-> +	muxc->max_adapters =3D adapters;
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_mux_reserve_adapters);
-
-Despite that I wonder why not using some of the realloc functions, I
-wonder even more if we couldn't supply num_adapters to i2c_mux_alloc()
-and reserve the memory statically. i2c busses are not
-dynamic/hot-pluggable so that should be good enough?
-
-> -	WARN(sysfs_create_link(&priv->adap.dev.kobj, &mux_dev->kobj, "mux_devic=
-e"),
-> -			       "can't create symlink to mux device\n");
-> +	WARN(sysfs_create_link(&priv->adap.dev.kobj, &muxc->dev->kobj,
-> +			       "mux_device"),
-
-Ignoring the 80 char limit here makes the code more readable.
-
-> +	     "can't create symlink to mux device\n");
-> =20
->  	snprintf(symlink_name, sizeof(symlink_name), "channel-%u", chan_id);
-> -	WARN(sysfs_create_link(&mux_dev->kobj, &priv->adap.dev.kobj, symlink_na=
-me),
-> -			       "can't create symlink for channel %u\n", chan_id);
-> +	WARN(sysfs_create_link(&muxc->dev->kobj, &priv->adap.dev.kobj,
-> +			       symlink_name),
-
-ditto.
-
-> +	     "can't create symlink for channel %u\n", chan_id);
->  	dev_info(&parent->dev, "Added multiplexed i2c bus %d\n",
->  		 i2c_adapter_id(&priv->adap));
-> =20
-> -	return &priv->adap;
-> +	muxc->adapter[muxc->adapters++] =3D &priv->adap;
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_mux_add_adapter);
-> +
-> +struct i2c_mux_core *i2c_mux_one_adapter(struct i2c_adapter *parent,
-> +					 struct device *dev, int sizeof_priv,
-> +					 u32 flags, u32 force_nr,
-> +					 u32 chan_id, unsigned int class,
-> +					 int (*select)(struct i2c_mux_core *,
-> +						       u32),
-
-ditto
-
-> +					 int (*deselect)(struct i2c_mux_core *,
-> +							 u32))
-
-ditto
-
-> +{
-> +	struct i2c_mux_core *muxc;
-> +	int ret;
-> +
-> +	muxc =3D i2c_mux_alloc(parent, dev, sizeof_priv, flags, select, deselec=
-t);
-> +	if (!muxc)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	ret =3D i2c_mux_add_adapter(muxc, force_nr, chan_id, class);
-> +	if (ret) {
-> +		devm_kfree(dev, muxc);
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	return muxc;
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_mux_one_adapter);
-
-Are you sure the above function pays off? Its argument list is very
-complex and it doesn't save a lot of code. Having seperate calls is
-probably more understandable in drivers? Then again, I assume it makes
-the conversion of existing drivers easier.
-
-So much for now. Thanks!
-
-   Wolfram
-
-
---k+w/mQv8wyuph6w0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXDA0lAAoJEBQN5MwUoCm2HswQAKtNuTfMBpUoo7AigaI3Fpxd
-LLJzQxBDJMJ98MgPpUyIuVZhMSi3BXtfCpbNCzNlr0p2VwPtKO50EJGVy95raOrX
-FESTq7soy3HQsqfaQjzXeF0YMsKkOvsxiKpL9vBz/bazIjzKDVWlJkLapGwOgchV
-hPyRAIC5f0+imUl9g3HVCIQcV6mtc5uGQRCMQA7NljM9FAvdAPBXWzAC4QSS2PZz
-6kNUxoJPNpvLwMm1htg2qBofIxbI5H7veNqnJm6QhiXjCkt9MsaJRPGw9+srZbnT
-R2VlfRqC6nhdarFcF0NCqWUdiyM2ogRQFMwrgxu6SIppQGUc9ZYTyZhJgIvAouEJ
-Xx5/W1BtcUd0RnS43Q/XX8ibi3IF6tQPH5SHT2nIulBe2wJ0j7/hPImxH2pc4vTN
-XcPGTBWoH4F0typK0RnvqcO5KctzJtelczOeQbGF4MhbMsxp6CIVSGqX1YDaZlT3
-w1ruL4FoLl/Zx5DLRjSNkIfE3gv/d73DXgE/NjVXcEcblNDVPp7a2eOuk8nKhb8x
-eeqmtFs+GvQeNoOLFtwtktMvMhDMSAk1FRher+5mPjMEl+nllT6RSX4c7UHuvF8r
-VNQeqE1xNt6Zv/aWc/pAlxdOz96a886yQntXgEImnOcTMof+KEFCUj0ZIxzH6195
-2a4U0wa6gVECaJytR+We
-=8CWa
------END PGP SIGNATURE-----
-
---k+w/mQv8wyuph6w0--
+diff --git a/drivers/iio/temperature/am2315.c b/drivers/iio/temperature/am2315.c
+index 2642bae..c65653c 100644
+--- a/drivers/iio/temperature/am2315.c
++++ b/drivers/iio/temperature/am2315.c
+@@ -15,8 +15,11 @@
+ #include <linux/i2c.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ #define AM2315_REG_HUM_MSB			0x00
+ #define AM2315_REG_HUM_LSB			0x01
+@@ -26,24 +29,43 @@
+ #define AM2315_FUNCTION_READ			0x03
+ #define AM2315_HUM_OFFSET			0
+ #define AM2315_TEMP_OFFSET			2
++#define AM2315_ALL_CHANNEL_MASK			GENMASK(1, 0)
+ 
+ #define AM2315_DRIVER_NAME			"am2315"
+ 
+ struct am2315_data {
+ 	struct i2c_client *client;
++	struct mutex lock;
++	s16 buffer[8]; /* 2x16-bit channels + 2x16 padding + 4x16 timestamp */
+ };
+ 
+ static const struct iio_chan_spec am2315_channels[] = {
+ 	{
+ 		.type = IIO_HUMIDITYRELATIVE,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-				      BIT(IIO_CHAN_INFO_SCALE)
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_CPU,
++		},
+ 	},
+ 	{
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-				      BIT(IIO_CHAN_INFO_SCALE)
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_CPU,
++		},
++
+ 	},
++		IIO_CHAN_SOFT_TIMESTAMP(2),
+ };
+ 
+ /* CRC calculation algorithm, as specified in the datasheet (page 13). */
+@@ -109,6 +131,43 @@ static int am2315_read_data(struct i2c_client *client, u8 *rx_buf)
+ 	return ret;
+ }
+ 
++static irqreturn_t am2315_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct am2315_data *data = iio_priv(indio_dev);
++	int ret;
++	int bit;
++	int i;
++	u8 rx_buf[8];
++
++	mutex_lock(&data->lock);
++	ret = am2315_read_data(data->client, rx_buf);
++	if (ret < 0) {
++		mutex_unlock(&data->lock);
++		goto err;
++	}
++	if (*(indio_dev->active_scan_mask) == AM2315_ALL_CHANNEL_MASK) {
++		data->buffer[0] = (rx_buf[2] << 8) | rx_buf[3];
++		data->buffer[1] = (rx_buf[4] << 8) | rx_buf[5];
++	} else {
++		i = 0;
++		for_each_set_bit(bit, indio_dev->active_scan_mask,
++				 indio_dev->masklength) {
++			data->buffer[i] = (rx_buf[(bit * 2) + 2] << 8) |
++					   rx_buf[(bit * 2) + 3];
++			i++;
++		}
++	}
++	mutex_unlock(&data->lock);
++
++	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
++					   pf->timestamp);
++err:
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
+ static int am2315_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+@@ -155,6 +214,7 @@ static const struct iio_info am2315_info = {
+ static int am2315_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
++	int ret;
+ 	struct iio_dev *indio_dev;
+ 	struct am2315_data *data;
+ 
+@@ -167,6 +227,7 @@ static int am2315_probe(struct i2c_client *client,
+ 	data = iio_priv(indio_dev);
+ 	data->client = client;
+ 	i2c_set_clientdata(client, indio_dev);
++	mutex_init(&data->lock);
+ 
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->info = &am2315_info;
+@@ -175,7 +236,22 @@ static int am2315_probe(struct i2c_client *client,
+ 	indio_dev->channels = am2315_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(am2315_channels);
+ 
+-	return iio_device_register(indio_dev);
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++					 am2315_trigger_handler, NULL);
++	if (ret < 0) {
++		dev_err(&client->dev, "iio triggered buffer setup failed\n");
++		return ret;
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		goto err_buffer_cleanup;
++
++	return 0;
++
++err_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++	return ret;
+ }
+ 
+ static int am2315_remove(struct i2c_client *client)
+@@ -183,6 +259,7 @@ static int am2315_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 
+ 	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
+ 
+ 	return 0;
+ }
+-- 
+1.9.1
