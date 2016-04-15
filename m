@@ -1,42 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:36133 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750773AbcDOO74 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2016 10:59:56 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 5/5] staging:iio:adis16240: Set self_test_no_autoclear flag
-Date: Fri, 15 Apr 2016 16:59:42 +0200
-Message-Id: <1460732382-6840-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1460732382-6840-1-git-send-email-lars@metafoo.de>
-References: <1460732382-6840-1-git-send-email-lars@metafoo.de>
+Received: from mga09.intel.com ([134.134.136.24]:5999 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750904AbcDOOLA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 15 Apr 2016 10:11:00 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, irina.tirdea@intel.com
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	daniel.baluta@intel.com, geert@linux-m68k.org,
+	vlad.dogaru@intel.com, octavian.purdila@intel.com,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH 0/2] Introduce SPI support for BMC150 chip
+Date: Fri, 15 Apr 2016 17:13:08 +0300
+Message-Id: <1460729590-18886-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ADIS16201 does not automatically clear the self test flag bit the self
-test has been, so clear it manually. Otherwise we'll see a offset caused by
-the self-test bias on the output values during normal operation.
+First patch splits the current architecture into a common part
+and a bus specific part. Second patch adds SPI support.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/accel/adis16240_core.c | 1 +
- 1 file changed, 1 insertion(+)
+We will have 3 modules:
 
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index a425e18..d5b99e6 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -222,6 +222,7 @@ static const struct adis_data adis16240_data = {
- 	.diag_stat_reg = ADIS16240_DIAG_STAT,
- 
- 	.self_test_mask = ADIS16240_MSC_CTRL_SELF_TEST_EN,
-+	.self_test_no_autoclear = true,
- 	.startup_delay = ADIS16240_STARTUP_DELAY,
- 
- 	.status_error_msgs = adis16240_status_error_msgs,
+* bmc150_magn.ko - exposes core functionality
+* bmc150_magn_i2c.ko - instantiates I2C regmap and uses core
+* bmc150_magn_spi.ko - instantiates SPI regmap and uses core
+
+Daniel Baluta (2):
+  iio: magn: Split bmc150 driver in common/i2c parts
+  iio: magn: bmc150: Introduce SPI support
+
+ drivers/iio/magnetometer/Kconfig           |  31 ++++--
+ drivers/iio/magnetometer/Makefile          |   3 +
+ drivers/iio/magnetometer/bmc150_magn.c     | 155 ++++++++++++-----------------
+ drivers/iio/magnetometer/bmc150_magn.h     |  11 ++
+ drivers/iio/magnetometer/bmc150_magn_i2c.c |  77 ++++++++++++++
+ drivers/iio/magnetometer/bmc150_magn_spi.c |  68 +++++++++++++
+ 6 files changed, 247 insertions(+), 98 deletions(-)
+ create mode 100644 drivers/iio/magnetometer/bmc150_magn.h
+ create mode 100644 drivers/iio/magnetometer/bmc150_magn_i2c.c
+ create mode 100644 drivers/iio/magnetometer/bmc150_magn_spi.c
+
 -- 
-2.1.4
+2.5.0
 
