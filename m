@@ -1,71 +1,62 @@
-Return-Path: <marex@denx.de>
-Message-ID: <570FF70F.3000501@denx.de>
-Date: Thu, 14 Apr 2016 22:01:19 +0200
-From: Marek Vasut <marex@denx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:36523 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750716AbcDOJ4y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 15 Apr 2016 05:56:54 -0400
+Subject: Re: generic_buffer and 24 bits samples
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <570FB712.5070903@parrot.com> <570FBE87.9050006@metafoo.de>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Message-ID: <5710BADC.3000000@intel.com>
+Date: Fri, 15 Apr 2016 12:56:44 +0300
 MIME-Version: 1.0
-To: Stefan Wahren <stefan.wahren@i2se.com>,
- Jonathan Cameron <jic23@kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
- Fabio Estevam <fabio.estevam@nxp.com>,
- Juergen Borleis <jbe@pengutronix.de>,
- Alexandre Belloni <alexandre.belloni@free-electrons.com>,
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH RFT 1/5] iio: mxs-lradc: fix memory leak
-References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com> <1460648909-2657-2-git-send-email-stefan.wahren@i2se.com>
-In-Reply-To: <1460648909-2657-2-git-send-email-stefan.wahren@i2se.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <570FBE87.9050006@metafoo.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/14/2016 05:48 PM, Stefan Wahren wrote:
-> After successful touchscreen registration the input device was
-> never freed. So fix this issue by using devm_input_allocate_device().
-> 
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> ---
->  drivers/iio/adc/mxs-lradc.c |    8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-> index 33051b8..0576953 100644
-> --- a/drivers/iio/adc/mxs-lradc.c
-> +++ b/drivers/iio/adc/mxs-lradc.c
-> @@ -1109,12 +1109,11 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->  {
->  	struct input_dev *input;
->  	struct device *dev = lradc->dev;
-> -	int ret;
->  
->  	if (!lradc->use_touchscreen)
->  		return 0;
->  
-> -	input = input_allocate_device();
-> +	input = devm_input_allocate_device(dev);
->  	if (!input)
->  		return -ENOMEM;
->  
-> @@ -1134,11 +1133,8 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->  
->  	lradc->ts_input = input;
->  	input_set_drvdata(input, lradc);
-> -	ret = input_register_device(input);
-> -	if (ret)
-> -		input_free_device(lradc->ts_input);
->  
-> -	return ret;
-> +	return input_register_device(input);
->  }
->  
->  static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
-> 
+On 04/14/2016 07:00 PM, Lars-Peter Clausen wrote:
+> On 04/14/2016 05:28 PM, Gregor Boirie wrote:
+>> Greetings,
+>>
+>> I'm trying to use an st_pressure based sensor to sample pressure
+>> data using generic_buffer tool. However it seems that it does not
+>> support data packed onto 24 bits samples.
+>> st_pressure driver defines scan_type for my device as:
+>> <code>
+>> /* ... */
+>>      .scan_type = {
+>>          .sign = 'u',
+>>          .realbits = 24,
+>>          .storagebits = 24,
+>>          .endianness = IIO_LE,
+>>      },
+>> </code>
+>>
+>> What is the proper way to make this work ? Using 32 bits storagebits
+>> field ? Enhance generic_buffer to support 24 bits samples ? Anything
+>> else ??
+>>
+>> It seems iio_compute_scan_bytes consider sample data as a simple byte
+>> stream. So I'm wondering what are the alignment constraints for sample
+>> start address ? Should they be aligned onto their natural "word"
+>> boundaries, i.e. 16 bits for u16, 32 bits for u32, etc... ? And for
+>> 24 bits samples ?
+>
+> IIO really only supports powers of two >= 8 for the storagebits size.
+> Everything else is undefined.
+>
+> Samples are aligned to their storage size.
 
-Nice find.
+How does 24-bit alignment work?
 
-Looks like at91_adc.c and exynos_adc.c suffer from the exact same issue.
-The leak looks a bit more severe on exynos even, exynos_adc_ts_init()
-could use a proper fail path. Do you want to send patches or shall I ?
+Maybe the IIO core should check that storagebits is one of 8/16/32/64 
+and otherwise fail at register time? A quick grep finds only 2 drivers 
+using storagebits = 24 and they could easily be modified to 32.
 
--- 
-Best regards,
-Marek Vasut
+--
+Regards,
+Leonard
+
