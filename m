@@ -1,132 +1,81 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Fri, 15 Apr 2016 13:23:19 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Peter Rosin <peda@lysator.liu.se>
-Cc: linux-kernel@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Kalle Valo <kvalo@codeaurora.org>, Joe Perches <joe@perches.com>,
-	Jiri Slaby <jslaby@suse.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Matt Ranostay <matt.ranostay@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Terry Heo <terryheo@google.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Arnd Bergmann <arnd@arndb.de>, Tommi Rantala <tt.rantala@gmail.com>,
-	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v6 01/24] i2c-mux: add common data for every i2c-mux
- instance
-Message-ID: <20160415112318.GA3999@katana>
-References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
- <1459673574-11440-2-git-send-email-peda@lysator.liu.se>
- <20160411204630.GA10401@katana>
- <570E4BAE.7060108@lysator.liu.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga03.intel.com ([134.134.136.65]:49230 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751915AbcDONGw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 15 Apr 2016 09:06:52 -0400
+Subject: Re: generic_buffer and 24 bits samples
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <570FB712.5070903@parrot.com> <570FBE87.9050006@metafoo.de>
+ <5710BADC.3000000@intel.com> <5710C2E6.2080303@metafoo.de>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Message-ID: <5710E746.1080102@intel.com>
+Date: Fri, 15 Apr 2016 16:06:14 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ew6BAiZeqk4r7MaW"
-In-Reply-To: <570E4BAE.7060108@lysator.liu.se>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <5710C2E6.2080303@metafoo.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 04/15/2016 01:31 PM, Lars-Peter Clausen wrote:
+> On 04/15/2016 11:56 AM, Crestez Dan Leonard wrote:
+>> On 04/14/2016 07:00 PM, Lars-Peter Clausen wrote:
+>>> On 04/14/2016 05:28 PM, Gregor Boirie wrote:
+>>>> Greetings,
+>>>>
+>>>> I'm trying to use an st_pressure based sensor to sample pressure
+>>>> data using generic_buffer tool. However it seems that it does not
+>>>> support data packed onto 24 bits samples.
+>>>> st_pressure driver defines scan_type for my device as:
+>>>> <code>
+>>>> /* ... */
+>>>>       .scan_type = {
+>>>>           .sign = 'u',
+>>>>           .realbits = 24,
+>>>>           .storagebits = 24,
+>>>>           .endianness = IIO_LE,
+>>>>       },
+>>>> </code>
+>>>>
+>>>> What is the proper way to make this work ? Using 32 bits storagebits
+>>>> field ? Enhance generic_buffer to support 24 bits samples ? Anything
+>>>> else ??
+>>>>
+>>>> It seems iio_compute_scan_bytes consider sample data as a simple byte
+>>>> stream. So I'm wondering what are the alignment constraints for sample
+>>>> start address ? Should they be aligned onto their natural "word"
+>>>> boundaries, i.e. 16 bits for u16, 32 bits for u32, etc... ? And for
+>>>> 24 bits samples ?
+>>>
+>>> IIO really only supports powers of two >= 8 for the storagebits size.
+>>> Everything else is undefined.
+>>>
+>>> Samples are aligned to their storage size.
+>>
+>> How does 24-bit alignment work?
+>
+> It does not work ;)
+>
+>>
+>> Maybe the IIO core should check that storagebits is one of 8/16/32/64 and
+>> otherwise fail at register time? A quick grep finds only 2 drivers using
+>> storagebits = 24 and they could easily be modified to 32.
+>
+> Yes, sounds reasonable. Do you want to send a patch?
+Not really, I don't want to break stuff.
 
---ew6BAiZeqk4r7MaW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The only drivers that seem to use an unusual storagebits value are 
+st_pressure (the one that this thread is about) and AD5791 which doesn't 
+seem to actually expose buffer support.
 
+There is also the curious case of AD7303 which specifies realbits and 
+storage bits as the char value '8', again without exposing buffer support.
 
-> > I'd suggest to rename 'adapters' into 'num_adapters' throughout this
-> > patch. I think it makes the code a lot easier to understand.
->=20
-> Hmm, you mean just the variable names, right? And not function names
-> such as i2c_mux_reserve_(num_)adapters?
+Perhaps storagebits=24 in st_pressure should be considered a bug. Maybe 
+try to modify this to 32 and check the readings?
 
-Yes, only variable names.
+I don't have any of these devices.
 
-> > Despite that I wonder why not using some of the realloc functions, I
->=20
-> When I wrote it, I found no devm_ version of realloc. I'm not finding
-> anything now either...
-
-Right, there is no devm_ version of it :(
-
-> > wonder even more if we couldn't supply num_adapters to i2c_mux_alloc()
-> > and reserve the memory statically. i2c busses are not
-> > dynamic/hot-pluggable so that should be good enough?
->=20
-> Yes, that would work, but it would take some restructuring in some of
-> the drivers that currently don't know how many child adapters they
-> are going to need when they call i2c_mux_alloc.
-
-Which ones?
-
-> Because you thought about removing i2c_mux_reserve_adapters completely,
-> and not provide any means of adding more adapters than specified in
-> the i2c_mux_alloc call, right?
-
-Yes. I assumed I2C to be static enough that such information is known in
-advance.
-
-> > Ignoring the 80 char limit here makes the code more readable.
->=20
-> That is only true if you actually have more than 80 characters, so I don't
-> agree. Are you adamant about it? (I'm not)
-
-No. Keep it if you prefer it.
-
-> >> +EXPORT_SYMBOL_GPL(i2c_mux_one_adapter);
-> >=20
-> > Are you sure the above function pays off? Its argument list is very
-> > complex and it doesn't save a lot of code. Having seperate calls is
-> > probably more understandable in drivers? Then again, I assume it makes
-> > the conversion of existing drivers easier.
->=20
-> I added it in v4, you can check earlier versions if you like. Without
-> it most gate-muxes (i.e. typically the muxes in drivers/media) grew
-> since the i2c_add_mux_adapter call got replaced by two calls, i.e.
-> i2c_mux_alloc followed by i2c_max_add_adapter, and coupled with
-> error checks made it look more complex than before. So, this wasn't
-> much of a cleanup from the point of those drivers.
-
-Hmm, v3 didn't have the driver patches posted with it. Can you push it
-to your branch? I am also not too strong with this one, but having a
-look how it looks without would be nice.
-
-
---ew6BAiZeqk4r7MaW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXEM8mAAoJEBQN5MwUoCm2vqsQAI3yJI+B6O3czvil6A1eykpH
-g4woawT6xVkslGuCxiz+bXsjE3ldfGG7YH2BICfyhYLEvIkvVBgfVb1JQrsEsR4C
-AfpX3HyO2N29JO+S0Zk5NUToJ+6W2e6cMiAXKgBCGP3sODITuqx0Fku3Nvf7zfTB
-pR1wOH9lAg/+qSiBTtpclX0l8i2chQiRHJqFxUJUoErClZudrZkizbTugMkfsXJf
-qiywt1GsBgkPLcnAmISq71J/9QgsQZeMfJc85qCeEWng0YEkOruK8JFDHvqhffZw
-10P1GWYsFF3do2qeMgCh90xeZNWijzOJl8a/YcOnTRGgJRjfLeUu5Y93k+IhdZiq
-wJkSiybtFrz9Qq84DVwG53QHu9huZN/MW+GUxWKi45B2ZikM4UkPQMA3DBUVcn23
-AWTYhhGI7FenWI63NceG0Nl9+o3UxAO97SHIRcqvNmeZfMd0lsYi7oqDI+SuaOSy
-wI0NhdoWSl1mutULlojkMqWBiGHN+RweLTNpv6dVUgR+qBb/7+tCC7DRFQBA/G9a
-mA3d8EEEOoxo7mcP2F7PYmYiA42gN6TRiP+Lce3rqNyRMe+G3YoA/agWwgcsoehf
-p0pIWzU8vH/5jcz32FTHlooMQIgsx5IqT0FxbxIDPoTaNOuNcsgdOHArv84v/9j4
-H7duOm2CeCS5eX2uuQPU
-=Px0Y
------END PGP SIGNATURE-----
-
---ew6BAiZeqk4r7MaW--
+Regards,
+Leonard
