@@ -1,350 +1,135 @@
-Return-Path: <akinobu.mita@gmail.com>
-From: Akinobu Mita <akinobu.mita@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Akinobu Mita <akinobu.mita@gmail.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	Christoph Mair <christoph.mair@gmail.com>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-he1eur01on0096.outbound.protection.outlook.com ([104.47.0.96]:23037
+	"EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751751AbcDOXJ7 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2016 19:09:59 -0400
+From: Peter Rosin <peda@axentia.se>
+To: Wolfram Sang <wsa@the-dreams.de>, Peter Rosin <peda@lysator.liu.se>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Jonathan Corbet" <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v2 2/2] iio: pressure: bmp280: add ability to control oversampling rate
-Date: Sat, 16 Apr 2016 02:53:47 +0900
-Message-Id: <1460742827-6502-3-git-send-email-akinobu.mita@gmail.com>
-In-Reply-To: <1460742827-6502-1-git-send-email-akinobu.mita@gmail.com>
-References: <1460742827-6502-1-git-send-email-akinobu.mita@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+	"Peter Meerwald" <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	"Mauro Carvalho Chehab" <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	"Frank Rowand" <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	"Kalle Valo" <kvalo@codeaurora.org>, Joe Perches <joe@perches.com>,
+	Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	"Matt Ranostay" <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v6 01/24] i2c-mux: add common data for every i2c-mux
+ instance
+Date: Fri, 15 Apr 2016 15:52:55 +0000
+Message-ID: <AM4PR02MB1299030956B02941183DF239BC680@AM4PR02MB1299.eurprd02.prod.outlook.com>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds ability to control the oversampling ratio of the temperature
-and pressure measurement for both bmp180 and bmp280.
-(bmp280 is untested for now)
+Wolfram Sang wrote:
+> > > wonder even more if we couldn't supply num_adapters to i2c_mux_alloc()
+> > > and reserve the memory statically. i2c busses are not
+> > > dynamic/hot-pluggable so that should be good enough?
+> > 
+> > Yes, that would work, but it would take some restructuring in some of
+> > the drivers that currently don't know how many child adapters they
+> > are going to need when they call i2c_mux_alloc.
+> 
+> Which ones?
 
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Cc: Christoph Mair <christoph.mair@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
----
- drivers/iio/pressure/bmp280.c | 202 ++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 184 insertions(+), 18 deletions(-)
+If you look at i2c-mux-reg.c, it currently allocates its private
+struct regmux, then fills it with various platform things and then
+when it knows how many children it needs it allocates them. After
+v6 it first allocates a mux core and private struct regmux in one go
+using i2c_mux_alloc, then continues in much the same way as before.
 
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index 28daa74..fd931c7 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -50,19 +50,21 @@
- 
- #define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
- #define BMP280_OSRS_TEMP_SKIP		0
--#define BMP280_OSRS_TEMP_1X		BIT(5)
--#define BMP280_OSRS_TEMP_2X		BIT(6)
--#define BMP280_OSRS_TEMP_4X		(BIT(6) | BIT(5))
--#define BMP280_OSRS_TEMP_8X		BIT(7)
--#define BMP280_OSRS_TEMP_16X		(BIT(7) | BIT(5))
-+#define BMP280_OSRS_TEMP_X(osrs_t)	((osrs_t) << 5)
-+#define BMP280_OSRS_TEMP_1X		BMP280_OSRS_TEMP_X(1)
-+#define BMP280_OSRS_TEMP_2X		BMP280_OSRS_TEMP_X(2)
-+#define BMP280_OSRS_TEMP_4X		BMP280_OSRS_TEMP_X(3)
-+#define BMP280_OSRS_TEMP_8X		BMP280_OSRS_TEMP_X(4)
-+#define BMP280_OSRS_TEMP_16X		BMP280_OSRS_TEMP_X(5)
- 
- #define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | BIT(2))
- #define BMP280_OSRS_PRESS_SKIP		0
--#define BMP280_OSRS_PRESS_1X		BIT(2)
--#define BMP280_OSRS_PRESS_2X		BIT(3)
--#define BMP280_OSRS_PRESS_4X		(BIT(3) | BIT(2))
--#define BMP280_OSRS_PRESS_8X		BIT(4)
--#define BMP280_OSRS_PRESS_16X		(BIT(4) | BIT(2))
-+#define BMP280_OSRS_PRESS_X(osrs_p)	((osrs_p) << 2)
-+#define BMP280_OSRS_PRESS_1X		BMP280_OSRS_PRESS_X(1)
-+#define BMP280_OSRS_PRESS_2X		BMP280_OSRS_PRESS_X(2)
-+#define BMP280_OSRS_PRESS_4X		BMP280_OSRS_PRESS_X(3)
-+#define BMP280_OSRS_PRESS_8X		BMP280_OSRS_PRESS_X(4)
-+#define BMP280_OSRS_PRESS_16X		BMP280_OSRS_PRESS_X(5)
- 
- #define BMP280_MODE_MASK		(BIT(1) | BIT(0))
- #define BMP280_MODE_SLEEP		0
-@@ -104,6 +106,9 @@ struct bmp280_data {
- 	struct regmap *regmap;
- 	const struct bmp280_chip_info *chip_info;
- 
-+	u8 oversampling_press;
-+	u8 oversampling_temp;
-+
- 	/*
- 	 * Carryover value from temperature conversion, used in pressure
- 	 * calculation.
-@@ -114,6 +119,12 @@ struct bmp280_data {
- struct bmp280_chip_info {
- 	const struct regmap_config *regmap_config;
- 
-+	const int *oversampling_temp_avail;
-+	int num_oversampling_temp_avail;
-+
-+	const int *oversampling_press_avail;
-+	int num_oversampling_press_avail;
-+
- 	int (*chip_config)(struct bmp280_data *);
- 	int (*read_temp)(struct bmp280_data *, int *);
- 	int (*read_press)(struct bmp280_data *, int *, int *);
-@@ -129,11 +140,13 @@ enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
- static const struct iio_chan_spec bmp280_channels[] = {
- 	{
- 		.type = IIO_PRESSURE,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
- 	},
- 	{
- 		.type = IIO_TEMP,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
- 	},
- };
- 
-@@ -339,6 +352,21 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
- 			break;
- 		}
- 		break;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			*val = 1 << data->oversampling_press;
-+			ret = IIO_VAL_INT;
-+			break;
-+		case IIO_TEMP:
-+			*val = 1 << data->oversampling_temp;
-+			ret = IIO_VAL_INT;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		break;
- 	default:
- 		ret = -EINVAL;
- 		break;
-@@ -349,22 +377,135 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int bmp280_write_oversampling_ratio_temp(struct bmp280_data *data,
-+					       int val)
-+{
-+	int i;
-+	const int *avail = data->chip_info->oversampling_temp_avail;
-+	const int n = data->chip_info->num_oversampling_temp_avail;
-+
-+	for (i = 0; i < n; i++) {
-+		if (avail[i] == val) {
-+			data->oversampling_temp = ilog2(val);
-+
-+			return data->chip_info->chip_config(data);
-+		}
-+	}
-+	return -EINVAL;
-+}
-+
-+static int bmp280_write_oversampling_ratio_press(struct bmp280_data *data,
-+					       int val)
-+{
-+	int i;
-+	const int *avail = data->chip_info->oversampling_press_avail;
-+	const int n = data->chip_info->num_oversampling_press_avail;
-+
-+	for (i = 0; i < n; i++) {
-+		if (avail[i] == val) {
-+			data->oversampling_press = ilog2(val);
-+
-+			return data->chip_info->chip_config(data);
-+		}
-+	}
-+	return -EINVAL;
-+}
-+
-+static int bmp280_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
-+{
-+	int ret = 0;
-+	struct bmp280_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		mutex_lock(&data->lock);
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			ret = bmp280_write_oversampling_ratio_press(data, val);
-+			break;
-+		case IIO_TEMP:
-+			ret = bmp280_write_oversampling_ratio_temp(data, val);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		mutex_unlock(&data->lock);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static ssize_t bmp280_show_avail(char *buf, const int *vals, const int n)
-+{
-+	size_t len = 0;
-+	int i;
-+
-+	for (i = 0; i < n; i++)
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ", vals[i]);
-+
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
-+static ssize_t bmp280_show_temp_oversampling_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bmp280_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bmp280_show_avail(buf, data->chip_info->oversampling_temp_avail,
-+				 data->chip_info->num_oversampling_temp_avail);
-+}
-+
-+static ssize_t bmp280_show_press_oversampling_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bmp280_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bmp280_show_avail(buf, data->chip_info->oversampling_press_avail,
-+				 data->chip_info->num_oversampling_press_avail);
-+}
-+
-+static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available,
-+	S_IRUGO, bmp280_show_temp_oversampling_avail, NULL, 0);
-+
-+static IIO_DEVICE_ATTR(in_pressure_oversampling_ratio_available,
-+	S_IRUGO, bmp280_show_press_oversampling_avail, NULL, 0);
-+
-+static struct attribute *bmp280_attributes[] = {
-+	&iio_dev_attr_in_temp_oversampling_ratio_available.dev_attr.attr,
-+	&iio_dev_attr_in_pressure_oversampling_ratio_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group bmp280_attrs_group = {
-+	.attrs = bmp280_attributes,
-+};
-+
- static const struct iio_info bmp280_info = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &bmp280_read_raw,
-+	.write_raw = &bmp280_write_raw,
-+	.attrs = &bmp280_attrs_group,
- };
- 
- static int bmp280_chip_config(struct bmp280_data *data)
- {
- 	int ret;
-+	u8 osrs = BMP280_OSRS_TEMP_X(data->oversampling_temp) |
-+		  BMP280_OSRS_PRESS_X(data->oversampling_press);
- 
- 	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
- 				 BMP280_OSRS_TEMP_MASK |
- 				 BMP280_OSRS_PRESS_MASK |
- 				 BMP280_MODE_MASK,
--				 BMP280_OSRS_TEMP_2X |
--				 BMP280_OSRS_PRESS_16X |
--				 BMP280_MODE_NORMAL);
-+				 osrs | BMP280_MODE_NORMAL);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev,
- 			"failed to write ctrl_meas register\n");
-@@ -383,8 +524,17 @@ static int bmp280_chip_config(struct bmp280_data *data)
- 	return ret;
- }
- 
-+static const int bmp280_oversampling_avail[] = { 1, 2, 4, 8, 16 };
-+
- static const struct bmp280_chip_info bmp280_chip_info = {
- 	.regmap_config = &bmp280_regmap_config,
-+
-+	.oversampling_temp_avail = bmp280_oversampling_avail,
-+	.num_oversampling_temp_avail = ARRAY_SIZE(bmp280_oversampling_avail),
-+
-+	.oversampling_press_avail = bmp280_oversampling_avail,
-+	.num_oversampling_press_avail = ARRAY_SIZE(bmp280_oversampling_avail),
-+
- 	.chip_config = bmp280_chip_config,
- 	.read_temp = bmp280_read_temp,
- 	.read_press = bmp280_read_press,
-@@ -439,7 +589,7 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
- 	if (ctrl_meas == BMP180_MEAS_TEMP)
- 		delay_us = 4500;
- 	else
--		delay_us = conversion_time_max[ilog2(8)];
-+		delay_us = conversion_time_max[data->oversampling_press];
- 
- 	usleep_range(delay_us, delay_us + 1000);
- 
-@@ -591,7 +741,7 @@ static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
- {
- 	int ret;
- 	__be32 tmp = 0;
--	u8 oss = ilog2(8);
-+	u8 oss = data->oversampling_press;
- 
- 	ret = bmp180_measure(data, BMP180_MEAS_PRESS_X(oss));
- 	if (ret)
-@@ -617,7 +767,7 @@ static u32 bmp180_compensate_press(struct bmp280_data *data, s32 adc_press)
- 	s32 x1, x2, x3, p;
- 	s32 b3, b6;
- 	u32 b4, b7;
--	s32 oss = ilog2(8);
-+	s32 oss = data->oversampling_press;
- 	struct bmp180_calib calib;
- 
- 	ret = bmp180_read_calib(data, &calib);
-@@ -678,8 +828,20 @@ static int bmp180_chip_config(struct bmp280_data *data)
- 	return 0;
- }
- 
-+static const int bmp180_oversampling_temp_avail[] = { 1 };
-+static const int bmp180_oversampling_press_avail[] = { 1, 2, 4, 8 };
-+
- static const struct bmp280_chip_info bmp180_chip_info = {
- 	.regmap_config = &bmp180_regmap_config,
-+
-+	.oversampling_temp_avail = bmp180_oversampling_temp_avail,
-+	.num_oversampling_temp_avail =
-+		ARRAY_SIZE(bmp180_oversampling_temp_avail),
-+
-+	.oversampling_press_avail = bmp180_oversampling_press_avail,
-+	.num_oversampling_press_avail =
-+		ARRAY_SIZE(bmp180_oversampling_press_avail),
-+
- 	.chip_config = bmp180_chip_config,
- 	.read_temp = bmp180_read_temp,
- 	.read_press = bmp180_read_press,
-@@ -711,9 +873,13 @@ static int bmp280_probe(struct i2c_client *client,
- 	switch (id->driver_data) {
- 	case BMP180_CHIP_ID:
- 		data->chip_info = &bmp180_chip_info;
-+		data->oversampling_press = ilog2(8);
-+		data->oversampling_temp = ilog2(1);
- 		break;
- 	case BMP280_CHIP_ID:
- 		data->chip_info = &bmp280_chip_info;
-+		data->oversampling_press = ilog2(16);
-+		data->oversampling_temp = ilog2(2);
- 		break;
- 	default:
- 		return -EINVAL;
--- 
-2.5.0
+If the number of children is needed for the i2c_mux_alloc call, then
+this is certainly doable, and it would probably not be all that bad,
+but the simplest approach would probably be to allocate the private
+struct regmux first, then dig through the platform data, then allocate
+the mux core when the number of children is known. Which would still
+be two allocations separated by the platform data dig.
+
+So, your suggestion would basically move the mux core allocation
+from generally being done early together with other private data to
+later when the driver has figured out how many children it's going
+to create.
+
+The restructuring I thought about is needed if the intention of this
+was to reduce number of allocations, but maybe you just wanted
+what I described above? Because what I did in v6 and what you are
+suggesting is quite similar in complexity, but your version has the
+advantage of not having the need for realloc.
+
+So, I have made this change locally (and the adapters->num_adapters
+change) and I like it. I haven't even compile-tested it yet though,
+but I'll get back when I have done some testing.
+
+> > Because you thought about removing i2c_mux_reserve_adapters completely,
+> > and not provide any means of adding more adapters than specified in
+> > the i2c_mux_alloc call, right?
+> 
+> Yes. I assumed I2C to be static enough that such information is known in
+> advance.
+> 
+> > > Ignoring the 80 char limit here makes the code more readable.
+> > 
+> > That is only true if you actually have more than 80 characters, so I don't
+> > agree. Are you adamant about it? (I'm not)
+> 
+> No. Keep it if you prefer it.
+> 
+> > >> +EXPORT_SYMBOL_GPL(i2c_mux_one_adapter);
+> > > 
+> > > Are you sure the above function pays off? Its argument list is very
+> > > complex and it doesn't save a lot of code. Having seperate calls is
+> > > probably more understandable in drivers? Then again, I assume it makes
+> > > the conversion of existing drivers easier.
+> > 
+> > I added it in v4, you can check earlier versions if you like. Without
+> > it most gate-muxes (i.e. typically the muxes in drivers/media) grew
+> > since the i2c_add_mux_adapter call got replaced by two calls, i.e.
+> > i2c_mux_alloc followed by i2c_max_add_adapter, and coupled with
+> > error checks made it look more complex than before. So, this wasn't
+> > much of a cleanup from the point of those drivers.
+> 
+> Hmm, v3 didn't have the driver patches posted with it. Can you push it
+> to your branch? I am also not too strong with this one, but having a
+> look how it looks without would be nice.
+
+Although I'm not sure what you meant by "driver patches", I have pushed
+mux-core-and-locking-2 and mux-core-and-locking-3 to
+https://github.com/peda-r/i2c-mux/ (note that these are the branches as
+they where when I posted v2 and v3 to the list, i.e. w/o fixups)
+
+Those early versions updated all drivers with each change, making each
+patch big, so if that was what you meant by missing "driver patches" then
+there simply were no driver patches.
+
+If you meant the follow-up patches to relax locking in the media drivers
+etc, I only compile-tested them using throwaway branches back then (if I
+even had branches). So, I don't have anything ready to push, sorry.
+
+Cheers,
+Peter
