@@ -1,123 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:55744 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752391AbcDMWjj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Apr 2016 18:39:39 -0400
-Message-ID: <570EC62C.7010306@denx.de>
-Date: Thu, 14 Apr 2016 00:20:28 +0200
-From: Marek Vasut <marex@denx.de>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:33323 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751537AbcDOSmx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 15 Apr 2016 14:42:53 -0400
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: "Andrew F. Davis" <afd@ti.com>
+Subject: Question about differential muxing
+Message-ID: <5711362A.1020700@ti.com>
+Date: Fri, 15 Apr 2016 13:42:50 -0500
 MIME-Version: 1.0
-To: Rob Herring <robh@kernel.org>, Harald Geyer <harald@ccbib.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] iio: mxs-lradc: Move binding document out of staging
- as well
-References: <1460293398-23654-1-git-send-email-harald@ccbib.org> <20160411194204.GA17762@rob-hp-laptop>
-In-Reply-To: <20160411194204.GA17762@rob-hp-laptop>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/11/2016 09:42 PM, Rob Herring wrote:
-> On Sun, Apr 10, 2016 at 01:03:18PM +0000, Harald Geyer wrote:
->> commit f836c45922446df872250a12dd08e48978aceb2f moved mxs-lradc driver
->> out of staging. However the binding document was left in the old place.
-> 
-> A move out of staging should probably imply a review. Though we don't 
-> have clear rules around that for bindings.
-> 
->>
->> Signed-off-by: Harald Geyer <harald@ccbib.org>
->> ---
->>  .../devicetree/bindings/iio/adc/mxs-lradc.txt      | 47 ++++++++++++++++++++++
->>  .../bindings/staging/iio/adc/mxs-lradc.txt         | 47 ----------------------
->>  2 files changed, 47 insertions(+), 47 deletions(-)
->>  create mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
->>  delete mode 100644 Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
->> new file mode 100644
->> index 0000000..555fb11
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
->> @@ -0,0 +1,47 @@
->> +* Freescale MXS LRADC device driver
->> +
->> +Required properties:
->> +- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
->> +              for i.MX28 SoC
->> +- reg: Address and length of the register set for the device
->> +- interrupts: Should contain the LRADC interrupts
->> +
->> +Optional properties:
->> +- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
->> +                               to LRADC. Valid value is either 4 or 5. If this
->> +                               property is not present, then the touchscreen is
->> +                               disabled. 5 wires is valid for i.MX28 SoC only.
-> 
-> Standard touchscreen property?
+Hello all,
 
-Looks quite standard-ish to me indeed. It is my fault for bringing this
-baggage in back when I wrote the driver, but now that we're moving the
-driver out of staging, it would make sense to deprecate such properties
-and use standard ones (if they got fleshed out during that time).
+I am currently working on a driver for a part similar to the AFE4300. I
+was hoping to get some information on the recommended way to handle a
+mux such as the one in the AFE4300 BCM front-end (page 13 of
+http://www.ti.com/lit/ds/symlink/afe4300.pdf has a good image).
 
-We now have "atmel,adc-ts-wires" , "ti,wires" ,
-"fsl,lradc-touchscreen-wires" , so some sort of pattern is developing here.
+The top several pins are outputs that can be routed to the OP-AMP, but
+only one at a time, because of this I'm not sure if they should be
+exposed as output channels, or sysfs switches.
 
->> +- fsl,ave-ctrl: number of samples per direction to calculate an average value.
->> +                Allowed value is 1 ... 32, default is 4
->> +- fsl,ave-delay: delay between consecutive samples. Allowed value is
->> +                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
->> +                 2 kHz and its default is 2 (= 1 ms)
-> 
-> ditto.
-> 
-> If not, it should have units.
+The other issue is with the input pins, I believe the standard way to
+handle this is by exposing every mux setting as a separate channel, then
+only allowing one bit set in the scan mask, but for this part, when all
+differential combinations are exposed we have more than 100 channels,
+and the other part I'm working on makes this several times worse.
 
-Agreed, this is standard ADC sampling frequency I think.
+Could someone point to any information, or an existing driver, that
+explains the preferred way to handle this?
 
->> +- fsl,settling: delay between plate switch to next sample. Allowed value is
->> +                1 ... 2047. It counts at 2 kHz and its default is
->> +                10 (= 5 ms)
-> 
-> ditto.
-> 
->> +
->> +Example for i.MX23 SoC:
->> +
->> +	lradc@80050000 {
->> +		compatible = "fsl,imx23-lradc";
->> +		reg = <0x80050000 0x2000>;
->> +		interrupts = <36 37 38 39 40 41 42 43 44>;
->> +		status = "okay";
->> +		fsl,lradc-touchscreen-wires = <4>;
->> +		fsl,ave-ctrl = <4>;
->> +		fsl,ave-delay = <2>;
->> +		fsl,settling = <10>;
->> +	};
->> +
->> +Example for i.MX28 SoC:
->> +
->> +	lradc@80050000 {
->> +		compatible = "fsl,imx28-lradc";
->> +		reg = <0x80050000 0x2000>;
->> +		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
->> +		status = "okay";
->> +		fsl,lradc-touchscreen-wires = <5>;
->> +		fsl,ave-ctrl = <4>;
->> +		fsl,ave-delay = <2>;
->> +		fsl,settling = <10>;
->> +	};
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
-
--- 
-Best regards,
-Marek Vasut
+Thanks,
+Andrew
