@@ -1,50 +1,388 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:54502 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756121AbcDNQAK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2016 12:00:10 -0400
-Subject: Re: generic_buffer and 24 bits samples
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <570FB712.5070903@parrot.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <570FBE87.9050006@metafoo.de>
-Date: Thu, 14 Apr 2016 18:00:07 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49656 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751574AbcDPTYK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 15:24:10 -0400
+Subject: Re: [PATCH v2 5/5] iio: gyro: bmg160: use regmap to retrieve struct
+ device
+To: Alison Schofield <amsfield22@gmail.com>
+References: <cover.1460314070.git.amsfield22@gmail.com>
+ <63dd9227f9a7e56f7e03f8963e798e6d7d8bb70f.1460314070.git.amsfield22@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	kgene@kernel.org, k.kozlowski@samsung.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <57129157.3080603@kernel.org>
+Date: Sat, 16 Apr 2016 20:24:07 +0100
 MIME-Version: 1.0
-In-Reply-To: <570FB712.5070903@parrot.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <63dd9227f9a7e56f7e03f8963e798e6d7d8bb70f.1460314070.git.amsfield22@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/14/2016 05:28 PM, Gregor Boirie wrote:
-> Greetings,
+On 10/04/16 20:08, Alison Schofield wrote:
+> Driver includes struct regmap and struct device in its global data.
+> Remove the struct device and use regmap API to retrieve device info.
 > 
-> I'm trying to use an st_pressure based sensor to sample pressure
-> data using generic_buffer tool. However it seems that it does not
-> support data packed onto 24 bits samples.
-> st_pressure driver defines scan_type for my device as:
-> <code>
-> /* ... */
->     .scan_type = {
->         .sign = 'u',
->         .realbits = 24,
->         .storagebits = 24,
->         .endianness = IIO_LE,
->     },
-> </code>
+> Patch created using Coccinelle plus manual edits.
 > 
-> What is the proper way to make this work ? Using 32 bits storagebits
-> field ? Enhance generic_buffer to support 24 bits samples ? Anything
-> else ??
-> 
-> It seems iio_compute_scan_bytes consider sample data as a simple byte
-> stream. So I'm wondering what are the alignment constraints for sample
-> start address ? Should they be aligned onto their natural "word"
-> boundaries, i.e. 16 bits for u16, 32 bits for u32, etc... ? And for
-> 24 bits samples ?
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+Cc'd Srinivas
 
-IIO really only supports powers of two >= 8 for the storagebits size.
-Everything else is undefined.
-
-Samples are aligned to their storage size.
+Actually I'm curious as to why linux-arm-kernel and linux-samsung-soc are cc'd?
+Not terribly relevant lists...
+> ---
+>  drivers/iio/gyro/bmg160_core.c | 86 +++++++++++++++++++++---------------------
+>  1 file changed, 44 insertions(+), 42 deletions(-)
+> 
+> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+> index 2493bb1..b2b1071 100644
+> --- a/drivers/iio/gyro/bmg160_core.c
+> +++ b/drivers/iio/gyro/bmg160_core.c
+> @@ -95,7 +95,6 @@
+>  #define BMG160_AUTO_SUSPEND_DELAY_MS	2000
+>  
+>  struct bmg160_data {
+> -	struct device *dev;
+>  	struct regmap *regmap;
+>  	struct iio_trigger *dready_trig;
+>  	struct iio_trigger *motion_trig;
+> @@ -137,11 +136,12 @@ static const struct {
+>  
+>  static int bmg160_set_mode(struct bmg160_data *data, u8 mode)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  
+>  	ret = regmap_write(data->regmap, BMG160_REG_PMU_LPW, mode);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error writing reg_pmu_lpw\n");
+> +		dev_err(dev, "Error writing reg_pmu_lpw\n");
+>  		return ret;
+>  	}
+>  
+> @@ -162,6 +162,7 @@ static int bmg160_convert_freq_to_bit(int val)
+>  
+>  static int bmg160_set_bw(struct bmg160_data *data, int val)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  	int bw_bits;
+>  
+> @@ -171,7 +172,7 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
+>  
+>  	ret = regmap_write(data->regmap, BMG160_REG_PMU_BW, bw_bits);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error writing reg_pmu_bw\n");
+> +		dev_err(dev, "Error writing reg_pmu_bw\n");
+>  		return ret;
+>  	}
+>  
+> @@ -182,18 +183,19 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
+>  
+>  static int bmg160_chip_init(struct bmg160_data *data)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  	unsigned int val;
+>  
+>  	ret = regmap_read(data->regmap, BMG160_REG_CHIP_ID, &val);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error reading reg_chip_id\n");
+> +		dev_err(dev, "Error reading reg_chip_id\n");
+>  		return ret;
+>  	}
+>  
+> -	dev_dbg(data->dev, "Chip Id %x\n", val);
+> +	dev_dbg(dev, "Chip Id %x\n", val);
+>  	if (val != BMG160_CHIP_ID_VAL) {
+> -		dev_err(data->dev, "invalid chip %x\n", val);
+> +		dev_err(dev, "invalid chip %x\n", val);
+>  		return -ENODEV;
+>  	}
+>  
+> @@ -212,14 +214,14 @@ static int bmg160_chip_init(struct bmg160_data *data)
+>  	/* Set Default Range */
+>  	ret = regmap_write(data->regmap, BMG160_REG_RANGE, BMG160_RANGE_500DPS);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error writing reg_range\n");
+> +		dev_err(dev, "Error writing reg_range\n");
+>  		return ret;
+>  	}
+>  	data->dps_range = BMG160_RANGE_500DPS;
+>  
+>  	ret = regmap_read(data->regmap, BMG160_REG_SLOPE_THRES, &val);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error reading reg_slope_thres\n");
+> +		dev_err(dev, "Error reading reg_slope_thres\n");
+>  		return ret;
+>  	}
+>  	data->slope_thres = val;
+> @@ -228,7 +230,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
+>  	ret = regmap_update_bits(data->regmap, BMG160_REG_INT_EN_1,
+>  				 BMG160_INT1_BIT_OD, 0);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error updating bits in reg_int_en_1\n");
+> +		dev_err(dev, "Error updating bits in reg_int_en_1\n");
+>  		return ret;
+>  	}
+>  
+> @@ -236,7 +238,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
+>  			   BMG160_INT_MODE_LATCH_INT |
+>  			   BMG160_INT_MODE_LATCH_RESET);
+>  	if (ret < 0) {
+> -		dev_err(data->dev,
+> +		dev_err(dev,
+>  			"Error writing reg_motion_intr\n");
+>  		return ret;
+>  	}
+> @@ -247,20 +249,21 @@ static int bmg160_chip_init(struct bmg160_data *data)
+>  static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+>  {
+>  #ifdef CONFIG_PM
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  
+>  	if (on)
+> -		ret = pm_runtime_get_sync(data->dev);
+> +		ret = pm_runtime_get_sync(dev);
+>  	else {
+> -		pm_runtime_mark_last_busy(data->dev);
+> -		ret = pm_runtime_put_autosuspend(data->dev);
+> +		pm_runtime_mark_last_busy(dev);
+> +		ret = pm_runtime_put_autosuspend(dev);
+>  	}
+>  
+>  	if (ret < 0) {
+> -		dev_err(data->dev,
+> -			"Failed: bmg160_set_power_state for %d\n", on);
+> +		dev_err(dev, "Failed: bmg160_set_power_state for %d\n", on);
+> +
+>  		if (on)
+> -			pm_runtime_put_noidle(data->dev);
+> +			pm_runtime_put_noidle(dev);
+>  
+>  		return ret;
+>  	}
+> @@ -272,6 +275,7 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+>  static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  					     bool status)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  
+>  	/* Enable/Disable INT_MAP0 mapping */
+> @@ -279,7 +283,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  				 BMG160_INT_MAP_0_BIT_ANY,
+>  				 (status ? BMG160_INT_MAP_0_BIT_ANY : 0));
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error updating bits reg_int_map0\n");
+> +		dev_err(dev, "Error updating bits reg_int_map0\n");
+>  		return ret;
+>  	}
+>  
+> @@ -289,8 +293,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  		ret = regmap_write(data->regmap, BMG160_REG_SLOPE_THRES,
+>  				   data->slope_thres);
+>  		if (ret < 0) {
+> -			dev_err(data->dev,
+> -				"Error writing reg_slope_thres\n");
+> +			dev_err(dev, "Error writing reg_slope_thres\n");
+>  			return ret;
+>  		}
+>  
+> @@ -298,8 +301,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  				   BMG160_INT_MOTION_X | BMG160_INT_MOTION_Y |
+>  				   BMG160_INT_MOTION_Z);
+>  		if (ret < 0) {
+> -			dev_err(data->dev,
+> -				"Error writing reg_motion_intr\n");
+> +			dev_err(dev, "Error writing reg_motion_intr\n");
+>  			return ret;
+>  		}
+>  
+> @@ -314,8 +316,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  					   BMG160_INT_MODE_LATCH_INT |
+>  					   BMG160_INT_MODE_LATCH_RESET);
+>  			if (ret < 0) {
+> -				dev_err(data->dev,
+> -					"Error writing reg_rst_latch\n");
+> +				dev_err(dev, "Error writing reg_rst_latch\n");
+>  				return ret;
+>  			}
+>  		}
+> @@ -328,7 +329,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  	}
+>  
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error writing reg_int_en0\n");
+> +		dev_err(dev, "Error writing reg_int_en0\n");
+>  		return ret;
+>  	}
+>  
+> @@ -338,6 +339,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+>  					   bool status)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  
+>  	/* Enable/Disable INT_MAP1 mapping */
+> @@ -345,7 +347,7 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+>  				 BMG160_INT_MAP_1_BIT_NEW_DATA,
+>  				 (status ? BMG160_INT_MAP_1_BIT_NEW_DATA : 0));
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error updating bits in reg_int_map1\n");
+> +		dev_err(dev, "Error updating bits in reg_int_map1\n");
+>  		return ret;
+>  	}
+>  
+> @@ -354,9 +356,8 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+>  				   BMG160_INT_MODE_NON_LATCH_INT |
+>  				   BMG160_INT_MODE_LATCH_RESET);
+>  		if (ret < 0) {
+> -			dev_err(data->dev,
+> -				"Error writing reg_rst_latch\n");
+> -				return ret;
+> +			dev_err(dev, "Error writing reg_rst_latch\n");
+> +			return ret;
+>  		}
+>  
+>  		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0,
+> @@ -368,16 +369,15 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+>  				   BMG160_INT_MODE_LATCH_INT |
+>  				   BMG160_INT_MODE_LATCH_RESET);
+>  		if (ret < 0) {
+> -			dev_err(data->dev,
+> -				"Error writing reg_rst_latch\n");
+> -				return ret;
+> +			dev_err(dev, "Error writing reg_rst_latch\n");
+> +			return ret;
+>  		}
+>  
+>  		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0, 0);
+>  	}
+>  
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error writing reg_int_en0\n");
+> +		dev_err(dev, "Error writing reg_int_en0\n");
+>  		return ret;
+>  	}
+>  
+> @@ -400,6 +400,7 @@ static int bmg160_get_bw(struct bmg160_data *data, int *val)
+>  
+>  static int bmg160_set_scale(struct bmg160_data *data, int val)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret, i;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(bmg160_scale_table); ++i) {
+> @@ -407,8 +408,7 @@ static int bmg160_set_scale(struct bmg160_data *data, int val)
+>  			ret = regmap_write(data->regmap, BMG160_REG_RANGE,
+>  					   bmg160_scale_table[i].dps_range);
+>  			if (ret < 0) {
+> -				dev_err(data->dev,
+> -					"Error writing reg_range\n");
+> +				dev_err(dev, "Error writing reg_range\n");
+>  				return ret;
+>  			}
+>  			data->dps_range = bmg160_scale_table[i].dps_range;
+> @@ -421,6 +421,7 @@ static int bmg160_set_scale(struct bmg160_data *data, int val)
+>  
+>  static int bmg160_get_temp(struct bmg160_data *data, int *val)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  	unsigned int raw_val;
+>  
+> @@ -433,7 +434,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+>  
+>  	ret = regmap_read(data->regmap, BMG160_REG_TEMP, &raw_val);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error reading reg_temp\n");
+> +		dev_err(dev, "Error reading reg_temp\n");
+>  		bmg160_set_power_state(data, false);
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+> @@ -450,6 +451,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+>  
+>  static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  	unsigned int raw_val;
+>  
+> @@ -463,7 +465,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+>  	ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(axis), &raw_val,
+>  			       2);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error reading axis %d\n", axis);
+> +		dev_err(dev, "Error reading axis %d\n", axis);
+>  		bmg160_set_power_state(data, false);
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+> @@ -793,6 +795,7 @@ static int bmg160_trig_try_reen(struct iio_trigger *trig)
+>  {
+>  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+>  	struct bmg160_data *data = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  
+>  	/* new data interrupts don't need ack */
+> @@ -804,7 +807,7 @@ static int bmg160_trig_try_reen(struct iio_trigger *trig)
+>  			   BMG160_INT_MODE_LATCH_INT |
+>  			   BMG160_INT_MODE_LATCH_RESET);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error writing reg_rst_latch\n");
+> +		dev_err(dev, "Error writing reg_rst_latch\n");
+>  		return ret;
+>  	}
+>  
+> @@ -864,13 +867,14 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
+>  {
+>  	struct iio_dev *indio_dev = private;
+>  	struct bmg160_data *data = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  	int dir;
+>  	unsigned int val;
+>  
+>  	ret = regmap_read(data->regmap, BMG160_REG_INT_STATUS_2, &val);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error reading reg_int_status2\n");
+> +		dev_err(dev, "Error reading reg_int_status2\n");
+>  		goto ack_intr_status;
+>  	}
+>  
+> @@ -907,8 +911,7 @@ ack_intr_status:
+>  				   BMG160_INT_MODE_LATCH_INT |
+>  				   BMG160_INT_MODE_LATCH_RESET);
+>  		if (ret < 0)
+> -			dev_err(data->dev,
+> -				"Error writing reg_rst_latch\n");
+> +			dev_err(dev, "Error writing reg_rst_latch\n");
+>  	}
+>  
+>  	return IRQ_HANDLED;
+> @@ -976,7 +979,6 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
+>  
+>  	data = iio_priv(indio_dev);
+>  	dev_set_drvdata(dev, indio_dev);
+> -	data->dev = dev;
+>  	data->irq = irq;
+>  	data->regmap = regmap;
+>  
+> @@ -1139,7 +1141,7 @@ static int bmg160_runtime_suspend(struct device *dev)
+>  
+>  	ret = bmg160_set_mode(data, BMG160_MODE_SUSPEND);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "set mode failed\n");
+> +		dev_err(dev, "set mode failed\n");
+>  		return -EAGAIN;
+>  	}
+>  
+> 
 
