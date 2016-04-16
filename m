@@ -1,19 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48120 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48125 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751259AbcDPMbv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 08:31:51 -0400
-Subject: Re: [PATCH 03/10] iio: adc: vf610_adc: fix case label indent
+	with ESMTP id S1751259AbcDPMcd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 08:32:33 -0400
+Subject: Re: [PATCH 04/10] iio: adc: mcp3422: remove spaces before comma
 To: Slawomir Stepien <sst@poczta.fm>, knaack.h@gmx.de,
 	pmeerw@pmeerw.net
 References: <1460662602-2951-1-git-send-email-sst@poczta.fm>
- <1460662602-2951-4-git-send-email-sst@poczta.fm>
+ <1460662602-2951-5-git-send-email-sst@poczta.fm>
 Cc: linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <571230B5.1040207@kernel.org>
-Date: Sat, 16 Apr 2016 13:31:49 +0100
+Message-ID: <571230DF.6060602@kernel.org>
+Date: Sat, 16 Apr 2016 13:32:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <1460662602-2951-4-git-send-email-sst@poczta.fm>
+In-Reply-To: <1460662602-2951-5-git-send-email-sst@poczta.fm>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
@@ -21,53 +21,30 @@ List-Id: linux-iio@vger.kernel.org
 On 14/04/16 20:36, Slawomir Stepien wrote:
 > This fixes the error reported by checkpatch.pl:
 > 
-> ERROR: switch and case should be at the same indent
+> ERROR: space prohibited before that ',' (ctx:WxW)
 > 
 > Signed-off-by: Slawomir Stepien <sst@poczta.fm>
-Applied.
-
-Thanks,
-
-Jonathan
+Applied - thanks
 > ---
->  drivers/iio/adc/vf610_adc.c | 24 ++++++++++++------------
->  1 file changed, 12 insertions(+), 12 deletions(-)
+>  drivers/iio/adc/mcp3422.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index b10f629..653bf13 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -714,19 +714,19 @@ static int vf610_write_raw(struct iio_dev *indio_dev,
->  	int i;
+> diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+> index d7b36ef..d1172dc 100644
+> --- a/drivers/iio/adc/mcp3422.c
+> +++ b/drivers/iio/adc/mcp3422.c
+> @@ -61,9 +61,9 @@
 >  
->  	switch (mask) {
-> -		case IIO_CHAN_INFO_SAMP_FREQ:
-> -			for (i = 0;
-> -				i < ARRAY_SIZE(info->sample_freq_avail);
-> -				i++)
-> -				if (val == info->sample_freq_avail[i]) {
-> -					info->adc_feature.sample_rate = i;
-> -					vf610_adc_sample_set(info);
-> -					return 0;
-> -				}
-> -			break;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		for (i = 0;
-> +			i < ARRAY_SIZE(info->sample_freq_avail);
-> +			i++)
-> +			if (val == info->sample_freq_avail[i]) {
-> +				info->adc_feature.sample_rate = i;
-> +				vf610_adc_sample_set(info);
-> +				return 0;
-> +			}
-> +		break;
+>  static const int mcp3422_scales[4][4] = {
+>  	{ 1000000, 500000, 250000, 125000 },
+> -	{ 250000 , 125000, 62500 , 31250  },
+> -	{ 62500  , 31250 , 15625 , 7812   },
+> -	{ 15625  , 7812  , 3906  , 1953   } };
+> +	{ 250000,  125000, 62500,  31250  },
+> +	{ 62500,   31250,  15625,  7812   },
+> +	{ 15625,   7812,   3906,   1953   } };
 >  
-> -		default:
-> -			break;
-> +	default:
-> +		break;
->  	}
->  
->  	return -EINVAL;
+>  /* Constant msleep times for data acquisitions */
+>  static const int mcp3422_read_times[4] = {
 > 
 
