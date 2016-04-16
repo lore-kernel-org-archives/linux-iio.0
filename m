@@ -1,261 +1,58 @@
-Return-Path: <matt.ranostay@intel.com>
-From: Matt Ranostay <matt.ranostay@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	Matt Ranostay <matt.ranostay@intel.com>
-Subject: [PATCH 3/3] iio: pressure: bmp280: add humidity support
-Date: Mon, 11 Apr 2016 22:21:34 -0700
-Message-Id: <1460438494-16135-4-git-send-email-matt.ranostay@intel.com>
-In-Reply-To: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com>
-References: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:10171 "EHLO
+	hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751464AbcDPPyQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 11:54:16 -0400
+Message-ID: <57125D7B.2060200@nvidia.com>
+Date: Sat, 16 Apr 2016 21:12:51 +0530
+From: Laxman Dewangan <ldewangan@nvidia.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>,
+	Daniel Baluta <daniel.baluta@gmail.com>
+CC: Jonathan Corbet <corbet@lwn.net>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	<linux-doc@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 1/3] iio: core: Add devm_ APIs for iio_channel_{get,release}
+References: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com> <CAEnQRZBtqDQjydDKywYy9oLecFtjntfWhgOtd2xekVyFrYkH3w@mail.gmail.com> <57052432.8070700@nvidia.com> <570A5DB3.3080805@kernel.org> <570A8ECE.8030007@nvidia.com> <57123D37.7020601@kernel.org>
+In-Reply-To: <57123D37.7020601@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Enable humidity support for the BME280 part
 
-Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
----
- drivers/iio/pressure/bmp280.c | 137 ++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 133 insertions(+), 4 deletions(-)
+On Saturday 16 April 2016 06:55 PM, Jonathan Cameron wrote:
+> On 10/04/16 18:35, Laxman Dewangan wrote:
+>>
+>> Yaah, possibly race for very small time possible.
+>>
+>> The limitation of devm_ api usage is that, we can keep using this
+>> till we have devm_ api continuous and if some resource are not there
+>> for devm_ then we can not use further. Possibly, I need to wait for
+>> the devm_iio_channel_get() to merge and available for all subsystem
+>> to use (next release) and then only I can use
+>> devm_thermal_zone_of_sensor_register().
+>>
+> The alternative would be to merge this devm_ support as a prerequisite for your thermal
+> patches and have it go through that tree.  As it's self contained I have
+> no particular problem with that if you'd prefer to do it that way.
+>
+> Otherwise, you will need to do as you say above (not use
+> devm_thermal_zone_of_sensor_register) to make sure it isn't broken in the meantime.
+>
+>
 
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index e80cbf3b21fc..9e3a9f00cd84 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -18,6 +18,8 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- 
-+#define BMP280_REG_HUMIDITY_LSB		0xFE
-+#define BMP280_REG_HUMIDITY_MSB		0xFD
- #define BMP280_REG_TEMP_XLSB		0xFC
- #define BMP280_REG_TEMP_LSB		0xFB
- #define BMP280_REG_TEMP_MSB		0xFA
-@@ -26,11 +28,20 @@
- #define BMP280_REG_PRESS_MSB		0xF7
- 
- #define BMP280_REG_CONFIG		0xF5
-+#define BMP280_REG_CTRL_HUMIDITY	0xF2
- #define BMP280_REG_CTRL_MEAS		0xF4
- #define BMP280_REG_STATUS		0xF3
- #define BMP280_REG_RESET		0xE0
- #define BMP280_REG_ID			0xD0
- 
-+/* Due to non linear mapping, and data sizes we can't do a bulk read */
-+#define BMP280_REG_COMP_H1		0xA1
-+#define BMP280_REG_COMP_H2		0xE1
-+#define BMP280_REG_COMP_H3		0xE3
-+#define BMP280_REG_COMP_H4		0xE4
-+#define BMP280_REG_COMP_H5		0xE5
-+#define BMP280_REG_COMP_H6		0xE7
-+
- #define BMP280_REG_COMP_TEMP_START	0x88
- #define BMP280_COMP_TEMP_REG_COUNT	6
- 
-@@ -44,6 +55,14 @@
- #define BMP280_FILTER_8X		(BIT(3) | BIT(2))
- #define BMP280_FILTER_16X		BIT(4)
- 
-+#define BMP280_OSRS_HUMIDITY_MASK	(BIT(2) | BIT(1) | BIT(0))
-+#define BMP280_OSRS_HUMIDITY_SKIP	0
-+#define BMP280_OSRS_HUMIDITY_1X		BIT(0)
-+#define BMP280_OSRS_HUMIDITY_2X		BIT(1)
-+#define BMP280_OSRS_HUMIDITY_4X		(BIT(1) | BIT(0))
-+#define BMP280_OSRS_HUMIDITY_8X		BIT(2)
-+#define BMP280_OSRS_HUMIDITY_16X	(BIT(2) | BIT(0))
-+
- #define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
- #define BMP280_OSRS_TEMP_SKIP		0
- #define BMP280_OSRS_TEMP_1X		BIT(5)
-@@ -93,6 +112,13 @@ struct bmp280_chip_info {
- 	int (*init)(struct bmp280_data *);
- };
- 
-+static int bme280_chip_init(struct bmp280_data *data)
-+{
-+	return regmap_update_bits(data->regmap, BMP280_REG_CTRL_HUMIDITY,
-+				  BMP280_OSRS_HUMIDITY_MASK,
-+				  BMP280_OSRS_HUMIDITY_16X);
-+}
-+
- static struct bmp280_chip_info bmp280_chip_info_table[] = {
- 	[bmp280] = {
- 		.id = BMP280_CHIP_ID,
-@@ -100,7 +126,8 @@ static struct bmp280_chip_info bmp280_chip_info_table[] = {
- 	},
- 	[bme280] = {
- 		.id = BME280_CHIP_ID,
--		.num_channels = 2,
-+		.num_channels = 3,
-+		.init = bme280_chip_init,
- 	},
- };
- 
-@@ -120,12 +147,17 @@ static const struct iio_chan_spec bmp280_channels[] = {
- 		.type = IIO_TEMP,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
- 	},
-+	{
-+		.type = IIO_HUMIDITYRELATIVE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+	},
- };
- 
- static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
- {
- 	switch (reg) {
- 	case BMP280_REG_CONFIG:
-+	case BMP280_REG_CTRL_HUMIDITY:
- 	case BMP280_REG_CTRL_MEAS:
- 	case BMP280_REG_RESET:
- 		return true;
-@@ -137,6 +169,8 @@ static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
- static bool bmp280_is_volatile_reg(struct device *dev, unsigned int reg)
- {
- 	switch (reg) {
-+	case BMP280_REG_HUMIDITY_LSB:
-+	case BMP280_REG_HUMIDITY_MSB:
- 	case BMP280_REG_TEMP_XLSB:
- 	case BMP280_REG_TEMP_LSB:
- 	case BMP280_REG_TEMP_MSB:
-@@ -154,7 +188,7 @@ static const struct regmap_config bmp280_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
- 
--	.max_register = BMP280_REG_TEMP_XLSB,
-+	.max_register = BMP280_REG_HUMIDITY_LSB,
- 	.cache_type = REGCACHE_RBTREE,
- 
- 	.writeable_reg = bmp280_is_writeable_reg,
-@@ -162,11 +196,74 @@ static const struct regmap_config bmp280_regmap_config = {
- };
- 
- /*
-+ * Returns humidity in percent, resolution is 0.01 percent. Output value of
-+ * "47445" represents 47445/1024 = 46.333 %RH.
-+ *
-+ * Taken from BME280 datasheet, Section 4.2.3, "Compensation formula".
-+ */
-+
-+static u32 bmp280_compensate_humidity(struct bmp280_data *data,
-+				      s32 adc_humidity)
-+{
-+	struct device *dev = &data->client->dev;
-+	unsigned int H1, H3, tmp;
-+	int H2, H4, H5, H6, ret, var;
-+
-+	ret = regmap_read(data->regmap, BMP280_REG_COMP_H1, &H1);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to read H1 comp value\n");
-+		return ret;
-+	}
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H2, &tmp, 2);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to read H2 comp value\n");
-+		return ret;
-+	}
-+	H2 = sign_extend32(le16_to_cpu(tmp), 15);
-+
-+	ret = regmap_read(data->regmap, BMP280_REG_COMP_H3, &H3);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to read H3 comp value\n");
-+		return ret;
-+	}
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H4, &tmp, 2);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to read H4 comp value\n");
-+		return ret;
-+	}
-+	H4 = sign_extend32(le16_to_cpu(tmp) >> 4 | (le16_to_cpu(tmp) & 0xf), 11);
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H5, &tmp, 2);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to read H5 comp value\n");
-+		return ret;
-+	}
-+	H5 = sign_extend32(le16_to_cpu(tmp) & 0xfff, 11);
-+
-+	ret = regmap_read(data->regmap, BMP280_REG_COMP_H6, &tmp);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to read H6 comp value\n");
-+		return ret;
-+	}
-+	H6 = sign_extend32(tmp, 7);
-+
-+	var = ((s32)data->t_fine) - 76800;
-+	var = ((((adc_humidity << 14) - (H4 << 20) - (H5 * var)) + 16384) >> 15)
-+		* (((((((var * H6) >> 10) * (((var * H3) >> 11) + 32768)) >> 10)
-+		+ 2097152) * H2 + 8192) >> 14);
-+	var -= ((((var >> 15) * (var >> 15)) >> 7) * H1) >> 4;
-+
-+	return var >> 12;
-+};
-+
-+/*
-  * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
-  * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
-  * value.
-  *
-- * Taken from datasheet, Section 3.11.3, "Compensation formula".
-+ * Taken from BMP280 datasheet, Section 3.11.3, "Compensation formula".
-  */
- static s32 bmp280_compensate_temp(struct bmp280_data *data,
- 				  s32 adc_temp)
-@@ -206,7 +303,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
-  * integer bits and 8 fractional bits).  Output value of "24674867"
-  * represents 24674867/256 = 96386.2 Pa = 963.862 hPa
-  *
-- * Taken from datasheet, Section 3.11.3, "Compensation formula".
-+ * Taken from BMP280 datasheet, Section 3.11.3, "Compensation formula".
-  */
- static u32 bmp280_compensate_press(struct bmp280_data *data,
- 				   s32 adc_press)
-@@ -301,6 +398,35 @@ static int bmp280_read_press(struct bmp280_data *data,
- 	return IIO_VAL_FRACTIONAL;
- }
- 
-+static int bmp280_read_humidity(struct bmp280_data *data,
-+				int *val, int *val2)
-+{
-+	int ret;
-+	__be16 tmp = 0;
-+	s32 adc_humidity;
-+	u32 comp_humidity;
-+
-+	/* Read and compensate temperature so we get a reading of t_fine. */
-+	ret = bmp280_read_temp(data, NULL);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
-+			       (u8 *) &tmp, 2);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to read humidity\n");
-+		return ret;
-+	}
-+
-+	adc_humidity = be16_to_cpu(tmp);
-+	comp_humidity = bmp280_compensate_humidity(data, adc_humidity);
-+
-+	*val = comp_humidity;
-+	*val2 = 1024;
-+
-+	return IIO_VAL_FRACTIONAL;
-+}
-+
- static int bmp280_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
-@@ -313,6 +439,9 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_PROCESSED:
- 		switch (chan->type) {
-+		case IIO_HUMIDITYRELATIVE:
-+			ret = bmp280_read_humidity(data, val, val2);
-+			break;
- 		case IIO_PRESSURE:
- 			ret = bmp280_read_press(data, val, val2);
- 			break;
--- 
-1.9.1
+I have recycled patch of thermal driver to not use devm_ for sensor 
+registration.
+
+I will post another patch in future once these changes will be available 
+for all, most probably next release.
+
+I think there is no further comment now on the series so you can 
+consider for next step.
+
+Thanks,
+Laxman
+
