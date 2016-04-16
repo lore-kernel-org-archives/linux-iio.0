@@ -1,58 +1,46 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/5] iio:adis: Add support for manual self-test flag clear
-Date: Fri, 15 Apr 2016 16:59:38 +0200
-Message-Id: <1460732382-6840-1-git-send-email-lars@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49676 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751574AbcDPT0u (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 15:26:50 -0400
+Subject: Re: [PATCH 2/2] iio: adc: set INPUT_PROP_DIRECT
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	dmitry.torokhov@gmail.com
+References: <cover.1460316098.git.ksenija.stanojevic@gmail.com>
+ <7838d255676f6f778bf9710454f632cd68a35185.1460316098.git.ksenija.stanojevic@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Torokhov <dmitry.torokhov@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <571291F8.1010804@kernel.org>
+Date: Sat, 16 Apr 2016 20:26:48 +0100
+MIME-Version: 1.0
+In-Reply-To: <7838d255676f6f778bf9710454f632cd68a35185.1460316098.git.ksenija.stanojevic@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Some variants of the devices from the ADIS family don't auto-clear the
-self-test bit after the self-test has completed. Instead we have to
-manually clear. Add support for this to the ADIS library.
+On 10/04/16 20:22, Ksenija Stanojevic wrote:
+> Set INPUT_PROP_DIRECT to indicate that it is a touchscreen on the
+> device to help userspace classify it.
+> 
+> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Sounds correct to me.  Dmitry?
+> ---
+>  drivers/iio/adc/mxs-lradc.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+> index 07287af..e4c4c5c 100644
+> --- a/drivers/iio/adc/mxs-lradc.c
+> +++ b/drivers/iio/adc/mxs-lradc.c
+> @@ -1127,6 +1127,7 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+>  	__set_bit(EV_ABS, input->evbit);
+>  	__set_bit(EV_KEY, input->evbit);
+>  	__set_bit(BTN_TOUCH, input->keybit);
+> +	__set_bit(INPUT_PROP_DIRECT, input->propbit);
+>  	input_set_abs_params(input, ABS_X, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
+>  	input_set_abs_params(input, ABS_Y, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
+>  	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_SINGLE_SAMPLE_MASK,
+> 
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
-I think we can get away without applying this to stable since the drivers
-have been broken since forever and so this is more of a new feature rather
-than a regression fix.
----
- drivers/iio/imu/adis.c       | 7 ++++++-
- include/linux/iio/imu/adis.h | 1 +
- 2 files changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-index 911255d..ad6f91d 100644
---- a/drivers/iio/imu/adis.c
-+++ b/drivers/iio/imu/adis.c
-@@ -324,7 +324,12 @@ static int adis_self_test(struct adis *adis)
- 
- 	msleep(adis->data->startup_delay);
- 
--	return adis_check_status(adis);
-+	ret = adis_check_status(adis);
-+
-+	if (adis->data->self_test_no_autoclear)
-+		adis_write_reg_16(adis, adis->data->msc_ctrl_reg, 0x00);
-+
-+	return ret;
- }
- 
- /**
-diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-index fa2d01e..360da7d 100644
---- a/include/linux/iio/imu/adis.h
-+++ b/include/linux/iio/imu/adis.h
-@@ -41,6 +41,7 @@ struct adis_data {
- 	unsigned int diag_stat_reg;
- 
- 	unsigned int self_test_mask;
-+	bool self_test_no_autoclear;
- 	unsigned int startup_delay;
- 
- 	const char * const *status_error_msgs;
--- 
-2.1.4
