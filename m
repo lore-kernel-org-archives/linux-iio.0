@@ -1,113 +1,335 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47626 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47758 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751163AbcDPKUY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 06:20:24 -0400
-Subject: Re: [RFC PATCH v1 3/3] iio:imu:mpu6050: enhance mounting matrix
- support
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-	Rob Herring <robh@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-	Martin Fuzzey <mfuzzey@parkeon.com>,
-	Cristina Opriceana <cristina.opriceana@gmail.com>,
-	Varka Bhadram <varkabhadram@gmail.com>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>
-References: <cover.1460113510.git.gregor.boirie@parrot.com>
- <594bc2f45d1894c9c3308509062b991e4a5fcc7e.1460113510.git.gregor.boirie@parrot.com>
- <20160411191212.GA30801@rob-hp-laptop>
- <20160411214428.GB1997@geburah.sephiroth> <5712118E.30103@kernel.org>
+	with ESMTP id S1751213AbcDPKwk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 06:52:40 -0400
+Subject: Re: [PATCH 1/2] iio: temperature: Add support for AM2315
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	linux-iio@vger.kernel.org
+References: <1460734568-6306-1-git-send-email-tiberiu.a.breana@intel.com>
+ <1460734568-6306-2-git-send-email-tiberiu.a.breana@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <571211E5.7040504@kernel.org>
-Date: Sat, 16 Apr 2016 11:20:21 +0100
+Message-ID: <57121974.80103@kernel.org>
+Date: Sat, 16 Apr 2016 11:52:36 +0100
 MIME-Version: 1.0
-In-Reply-To: <5712118E.30103@kernel.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1460734568-6306-2-git-send-email-tiberiu.a.breana@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/04/16 11:18, Jonathan Cameron wrote:
-> On 11/04/16 22:44, Gregor Boirie wrote:
->> On Mon, Apr 11, 2016 at 02:12:12PM -0500, Rob Herring wrote:
->>> On Fri, Apr 08, 2016 at 04:12:05PM +0200, Gregor Boirie wrote:
->>>> Add a new rotation matrix sysfs attribute compliant with IIO core
->>>> mounting matrix API.
->>>> Matrix is retrieved from "in_anglvel_mount_matrix" and
->>>> "in_accel_mount_matrix" sysfs attributes. It is declared into mpu6050 DTS
->>>> entry as a "mount-matrix" property.
->>>
->>> We have a common DT property, but can't have common sysfs interface?
->> Agreed. Original driver was structured that way. In fact, a single matrix is
->> enought for this sensor: AFAIK, reference frames are the same for gyro and
->> accelero.
->> I suppose that having a DTS and sysfs attribute per type of sample /
->> "sub-device" ensure better userspace API consistency across drivers.
->> Jonathan ?
-> If shared by all channels in device, could just be mount_matrix
-> (as per normal info_mask_shared_by_all elements on which we drop all reference
-> to the channel name).
+On 15/04/16 16:36, Tiberiu Breana wrote:
+> Add basic support for the Aosong AM2315 ambient temperature
+> and humidity sensor.
+> Includes support for raw readings and ACPI detection.
 > 
-> However, we do have to allow for the per channel type version (and at least in theory
-> the per channel entry)  There are are weird devices combining multiple parallel accelerometers
-> in a package.  Possible for some reason that these could be other than parallel in some future
-> device.
-> So we end up with a sort of pyramid with any of the following being possible (and needing
-> a sysfs entry if they occur)  Taking a few examples...
+> Datasheet:
+> http://www.aosong.com/asp_bin/Products/en/AM2315.pdf
 > 
-> mount_matrix
-> in_mount_matrix
-> out_mount_matrix
-> in_accel_mount_matrix
-> in_magn_mount_matrix
-> in_accel_x_mount_matrix
-> in_accel_y_mount_matrix
-> in_accel_x1_mount_matrix
-> in_accel_x2_mount_matrix 
-> etc where convention is to use the element highest up that covers the device in question.
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+I think I'd prefer this in drivers/iio/humidty/.  If people just want a temperature
+sensor they'll not use the much more complex device needed to measure humidity,
+whereas to measure humidity you have to know what the temperature is.  Hence I'd
+argue that here the humidity side of the device in the primary one.
+'Interestingly' temperature and humidity seems to sound better to me in English than
+humidity and temperature... hohum.
+
+I suppose we could roll these two directories together if people think that is sensible?
+
+Various little bits inline..
+
+Jonathan
+> ---
+>  drivers/iio/temperature/Kconfig  |  10 ++
+>  drivers/iio/temperature/Makefile |   1 +
+>  drivers/iio/temperature/am2315.c | 216 +++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 227 insertions(+)
+>  create mode 100644 drivers/iio/temperature/am2315.c
 > 
-> It gets awkward if you have say an additional general purpose ADC channel on the device
-> as then clearly the mount matrix has nothing to do with it, but convention says we still
-> have to drop down to say in_accel_mount_matrix rather than using the mount_matrix form
-> that implies that it applies to the in_voltage0 channel.  Common sense and ABIs never
-> combine that well ;)
-> 
->>
->>>
->>> BTW, sysfs interfaces also have to be documented.
->> Ok
-> Yes - update Documentation/sysfs/testing/sysfs-bus-iio with an appropriate entry please.
-> Btw - the above pyramid structure is why that document is huge (and often missing
-> entries that we all assumed were there for particular combinations of the above!)
-You have documented it in patch 1.  I'd forgotten about that.
-:)
->>
->>>
->>>>
->>>> Old interface is kept for backward userspace compatibility and may be
->>>> retrieved from legacy platform_data mechanism only.
->>>>
->>>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
->>>> ---
->>>>  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    | 13 +++++
->>>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         | 56 ++++++++++++++++++++--
->>>>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  4 +-
->>>>  include/linux/platform_data/invensense_mpu6050.h   |  5 +-
->>>>  4 files changed, 72 insertions(+), 6 deletions(-)
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+> index c4664e5..79e4409 100644
+> --- a/drivers/iio/temperature/Kconfig
+> +++ b/drivers/iio/temperature/Kconfig
+> @@ -3,6 +3,16 @@
+>  #
+>  menu "Temperature sensors"
+>  
+> +config AM2315
+> +	tristate "Aosong AM2315 temperature and humidity sensor"
+> +	depends on I2C
+> +	help
+> +	  If you say yes here you get support for the Aosong AM2315
+> +	  ambient temperature and humidity sensor.
+> +
+> +	  This driver can also be built as a module. If so, the module will
+> +	  be called am2315.
+> +
+>  config MLX90614
+>  	tristate "MLX90614 contact-less infrared sensor"
+>  	depends on I2C
+> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+> index 02bc79d..2e7521b 100644
+> --- a/drivers/iio/temperature/Makefile
+> +++ b/drivers/iio/temperature/Makefile
+> @@ -2,6 +2,7 @@
+>  # Makefile for industrial I/O temperature drivers
+>  #
+>  
+> +obj-$(CONFIG_AM2315) += am2315.o
+>  obj-$(CONFIG_MLX90614) += mlx90614.o
+>  obj-$(CONFIG_TMP006) += tmp006.o
+>  obj-$(CONFIG_TSYS01) += tsys01.o
+> diff --git a/drivers/iio/temperature/am2315.c b/drivers/iio/temperature/am2315.c
+> new file mode 100644
+> index 0000000..2642bae
+> --- /dev/null
+> +++ b/drivers/iio/temperature/am2315.c
+> @@ -0,0 +1,216 @@
+> +/**
+> + * Aosong AM2315 ambient temperature & humidity sensor driver
+> + *
+> + * Copyright (c) 2016, Intel Corporation.
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License. See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * 7-bit I2C address: 0x5C.
+> + */
+> +
+> +#include <linux/acpi.h>
+> +#include <linux/delay.h>
+> +#include <linux/i2c.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +#define AM2315_REG_HUM_MSB			0x00
+> +#define AM2315_REG_HUM_LSB			0x01
+> +#define AM2315_REG_TEMP_MSB			0x02
+> +#define AM2315_REG_TEMP_LSB			0x03
+> +
+> +#define AM2315_FUNCTION_READ			0x03
+> +#define AM2315_HUM_OFFSET			0
+> +#define AM2315_TEMP_OFFSET			2
+> +
+> +#define AM2315_DRIVER_NAME			"am2315"
+> +
+> +struct am2315_data {
+> +	struct i2c_client *client;
+> +};
+> +
+> +static const struct iio_chan_spec am2315_channels[] = {
+> +	{
+> +		.type = IIO_HUMIDITYRELATIVE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE)
+> +	},
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE)
+> +	},
+> +};
+> +
+> +/* CRC calculation algorithm, as specified in the datasheet (page 13). */
+> +static u16 am2315_crc(u8 *data, u8 nr_bytes)
+
+I think this 'might' be reverse CRC16-IBM according to wikipedia...
+Which is obscure enough that it probably doesn't have a generic implementation
+already in the kernel...
+
+There is one other user of this polynomial that I can fine, not enough
+to justify a common implementation at this point I guess.
+
+Note that 16bit polynomials tend to get implemented as lookup tables
+if generalized.  Speed isn't that important here though I guess.
+
+> +{
+> +	int i;
+> +	u16 crc = 0xffff;
+> +
+> +	while (nr_bytes--) {
+> +		crc ^= *data++;
+> +		for (i = 0; i < 8; i++) {
+> +			if (crc & 0x01) {
+> +				crc >>= 1;
+> +				crc ^= 0xA001;
+> +			} else {
+> +				crc >>= 1;
+> +			}
+> +		}
+> +	}
+> +
+> +	return crc;
+> +}
+> +
+> +/* Simple function that sends a few bytes to the device to wake it up. */
+We always like novel hardware corners <groans>
+> +static inline void am2315_ping(struct i2c_client *client)
+> +{
+> +	i2c_smbus_read_byte_data(client, AM2315_REG_HUM_MSB);
+> +}
+> +
+> +static int am2315_read_data(struct i2c_client *client, u8 *rx_buf)
+> +{
+> +	int ret;
+> +	/* tx_buf format: <function code> <start addr> <nr of regs to read> */
+> +	u8 tx_buf[3] = { AM2315_FUNCTION_READ, AM2315_REG_HUM_MSB, 4 };
+> +	u16 crc;
+> +
+> +	/* First wake up the device. */
+> +	am2315_ping(client);
+> +
+> +	ret = i2c_master_send(client, tx_buf, sizeof(tx_buf));
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "failed to send read request\n");
+> +		return ret;
+> +	}
+> +	/* Wait 2-3 ms, then read back the data sent by the device. */
+> +	usleep_range(2000, 3000);
+> +
+> +	ret = i2c_master_recv(client, rx_buf, sizeof(rx_buf));
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "failed to read sensor data\n");
+> +		return ret;
+> +	}
+> +	/*
+> +	 * Do a CRC check on the data and compare it to the value
+> +	 * calculated by the device.
+> +	 */
+> +	crc = am2315_crc(rx_buf, sizeof(rx_buf) - 2);
+> +	if ((crc & 0xff) != rx_buf[6] || (crc >> 8) != rx_buf[7]) {
+> +		dev_err(&client->dev, "failed to verify sensor data\n");
+> +		return -1;
+Provide a more informative error code... -EIO maybe...
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int am2315_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long mask)
+> +{
+> +	int ret;
+> +	s16 value;
+> +	u8 rx_buf[8];
+> +	u8 offset;
+> +	struct am2315_data *data = iio_priv(indio_dev);
+> +	struct i2c_client *client = data->client;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		offset = (chan->type == IIO_HUMIDITYRELATIVE) ?
+> +				AM2315_HUM_OFFSET : AM2315_TEMP_OFFSET;
+> +		/* Do a bulk data read, then pick out what we need. */
+> +		ret = am2315_read_data(client, rx_buf);
+> +		if (ret < 0)
+> +			return ret;
+> +		/*
+> +		 * rx_buf format:
+> +		 * <function code> <number of registers read>
+> +		 * <humidity MSB> <humidity LSB> <temp MSB> <temp LSB>
+> +		 * <CRC LSB> <CRC MSB>
+> +		 */
+> +		value = (rx_buf[offset + 2] << 8) | rx_buf[offset + 3];
+> +		*val = value / 10;
+> +		*val2 = (value % 10) * 100000;
+
+So for temperature this is outputing a value in degrees?  Give you are
+outputting as raw, don't divide by 10 and just return IIO_VAL_INT;  Leave the maths
+to userspace.
+
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0;
+> +		*val2 = 100000;
+For temp to be presented in standard base units (milli degrees C) this should be
+*val2 = 1000 I think...
+
+Same for humidity - obviously this will change if you don't do the divide by
+10 in the raw read out.
+
+
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info am2315_info = {
+> +	.driver_module		= THIS_MODULE,
+> +	.read_raw		= am2315_read_raw,
+> +};
+> +
+> +static int am2315_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct am2315_data *data;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev) {
+> +		dev_err(&client->dev, "iio allocation failed!\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +	i2c_set_clientdata(client, indio_dev);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &am2315_info;
+> +	indio_dev->name = AM2315_DRIVER_NAME;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = am2315_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(am2315_channels);
+> +
+> +	return iio_device_register(indio_dev);
+> +}
+> +
+> +static int am2315_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+
+If all you have in remove is the iio_device_unregister, you are
+safe to use devm_iio_device_unregister in probe and drop the remove
+entirely. (It's relatively rare that there is nothing to do in remove,
+but it is to simiplify that rare case that we have the devm_iio_device_register
+call)
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id am2315_i2c_id[] = {
+> +	{"am2315", 0},
+> +	{}
+> +};
+> +
+> +static const struct acpi_device_id am2315_acpi_id[] = {
+> +	{"AOS2315", 0},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(acpi, am2315_acpi_id);
+> +
+> +static struct i2c_driver am2315_driver = {
+> +	.driver = {
+> +		.name = "am2315",
+> +		.acpi_match_table = ACPI_PTR(am2315_acpi_id),
+> +	},
+> +	.probe =            am2315_probe,
+> +	.remove =	    am2315_remove,
+> +	.id_table =         am2315_i2c_id,
+> +};
+> +
+> +module_i2c_driver(am2315_driver);
+> +
+> +MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
+> +MODULE_DESCRIPTION("Aosong AM2315 ambient temperature & humidity sensor driver");
+> +MODULE_LICENSE("GPL v2");
 > 
 
