@@ -1,116 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f169.google.com ([209.85.192.169]:34224 "EHLO
-	mail-pf0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751474AbcDQMTP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 08:19:15 -0400
-Date: Sun, 17 Apr 2016 05:19:12 -0700
-From: Torokhov <dmitry.torokhov@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Marek Vasut <marex@denx.de>,
-	Stefan Wahren <stefan.wahren@i2se.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Subject: Re: [PATCH RFT 2/5] iio: mxs-lradc: move TS config into suitable
- function
-Message-ID: <20160417121912.GA33215@dtor-ws>
-References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
- <1460648909-2657-3-git-send-email-stefan.wahren@i2se.com>
- <570FF737.4050606@denx.de>
- <571361DD.1090001@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48315 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751286AbcDPNS2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 09:18:28 -0400
+Subject: Re: Question about differential muxing
+To: "Andrew F. Davis" <afd@ti.com>
+References: <5711362A.1020700@ti.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <57123BA0.4070501@kernel.org>
+Date: Sat, 16 Apr 2016 14:18:24 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <571361DD.1090001@kernel.org>
+In-Reply-To: <5711362A.1020700@ti.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Apr 17, 2016 at 11:13:49AM +0100, Jonathan Cameron wrote:
-> On 14/04/16 21:01, Marek Vasut wrote:
-> > On 04/14/2016 05:48 PM, Stefan Wahren wrote:
-> >> This patch moves the touchscreen type configuration into
-> >> a more suitable function. Btw this simplifies PM ops later.
-> >>
-> >> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> > 
-> > Looks OK
-> > 
-> > Reviewed-by: Marek Vasut <marex@denx.de>
-> Please do CC Dmitry and linux-input on any patches 'touching' the
-> touchscreen parts of the driver.  I'm happy this one is simple
-> enough to apply anyway, but best to make sure everyone is in the
-> loop.
+On 15/04/16 19:42, Andrew F. Davis wrote:
+> Hello all,
+> 
+> I am currently working on a driver for a part similar to the AFE4300. I
+> was hoping to get some information on the recommended way to handle a
+> mux such as the one in the AFE4300 BCM front-end (page 13 of
+> http://www.ti.com/lit/ds/symlink/afe4300.pdf has a good image).
+That's marginally bonkers..
 
-FWIW:
+You do seem to get the weird and wonderful ;)  I'd never appreciated
+some of these weird devices existed!  Much more interesting than
+the average ADC.
+> 
+> The top several pins are outputs that can be routed to the OP-AMP, but
+> only one at a time, because of this I'm not sure if they should be
+> exposed as output channels, or sysfs switches.
+So they are outputs the whole time?  But sometime internally fed back
+in to that amplifier.. both connecting to the input and output...
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Is there a finite list of what the outputs can actually be at any time?
+I'm not sure if we can map this onto standard output channels or not.
+
+It's described in the text as selecting between 6 contact points and
+4 impedances so I'll pretend I can see exactly how the circuit is doing that
+as this is far too much thinking for a Saturday afternoon.
+
+If treated as output channels it would have to be done on a last come
+basis with the others all being set to 0.  That's fine under the ABI that
+allows for any value to result in a change to any other but clunky.
+
+Hmm. Treating it as output channels does kind of match with how the device
+is used I think?  Fire a current out of pointN and read the resulting
+voltage between 2 points (one of which might be a reference)...
+
+It's all channels, there is just a lot of restrictions on what can happen
+at a time.
 
 > 
-> Something a little odd happened when applying the patch.  Automerging
-> failed so I did it by hand. Not sure what had changed!
+> The other issue is with the input pins, I believe the standard way to
+> handle this is by exposing every mux setting as a separate channel, then
+> only allowing one bit set in the scan mask, but for this part, when all
+> differential combinations are exposed we have more than 100 channels,
+> and the other part I'm working on makes this several times worse.
 > 
-> Anyhow, please sanity check I haven't messed it up.
-> 
-> Applied to the togreg branch of iio.git - initially pushed out as
-> testing for the autobuilders to play with it.
+> Could someone point to any information, or an existing driver, that
+> explains the preferred way to handle this?
+You have it correct above.  At the end of the day there isn't much we can
+do to provide a compact yet general interface and occasionally we do end
+up with an awful lot of channels.  There are some analog devices battery
+chargers for example that end up as a cascade resulting in similar numbers
+of channels.
+
+Each channel doesn't cost us that much other than making for a big set of
+files. 
+
+Doing it as mux switches would work, but be extremely difficult to describe
+simply to userspace in any way that would generalize.  The resulting programs
+would have to know too much about the sensor routing or to have a lot
+of complexity decoding how to set up the channel combinations they actually
+want.
+
+As for existing drivers... Hmm. any of the differential ADC drivers provide a
+reference of sorts. For high channel counts, the ad7280a driver is still in
+staging but the principles are fine...
+
+Lars, any input on this sort of highly complex device?  Looks a bit like some
+of the more nuts audio chips in some ways.
+
+Jonathan
 > 
 > Thanks,
-> 
-> 
-> Jonathan
-> > 
-> >> ---
-> >>  drivers/iio/adc/mxs-lradc.c |   21 +++++++++++----------
-> >>  1 file changed, 11 insertions(+), 10 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-> >> index 0576953..7118fca 100644
-> >> --- a/drivers/iio/adc/mxs-lradc.c
-> >> +++ b/drivers/iio/adc/mxs-lradc.c
-> >> @@ -686,6 +686,17 @@ static void mxs_lradc_prepare_pressure(struct mxs_lradc *lradc)
-> >>  
-> >>  static void mxs_lradc_enable_touch_detection(struct mxs_lradc *lradc)
-> >>  {
-> >> +	/* Configure the touchscreen type */
-> >> +	if (lradc->soc == IMX28_LRADC) {
-> >> +		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
-> >> +				    LRADC_CTRL0);
-> >> +
-> >> +		if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
-> >> +			mxs_lradc_reg_set(lradc,
-> >> +					  LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
-> >> +					  LRADC_CTRL0);
-> >> +	}
-> >> +
-> >>  	mxs_lradc_setup_touch_detection(lradc);
-> >>  
-> >>  	lradc->cur_plate = LRADC_TOUCH;
-> >> @@ -1491,16 +1502,6 @@ static int mxs_lradc_hw_init(struct mxs_lradc *lradc)
-> >>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(2));
-> >>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(3));
-> >>  
-> >> -	/* Configure the touchscreen type */
-> >> -	if (lradc->soc == IMX28_LRADC) {
-> >> -		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
-> >> -				    LRADC_CTRL0);
-> >> -
-> >> -	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
-> >> -		mxs_lradc_reg_set(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
-> >> -				  LRADC_CTRL0);
-> >> -	}
-> >> -
-> >>  	/* Start internal temperature sensing. */
-> >>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_CTRL2);
-> >>  
-> >>
-> > 
-> > 
+> Andrew
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
--- 
-Dmitry
