@@ -1,279 +1,467 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v2 1/2] iio: humidity: Add support for AM2315
-Date: Mon, 18 Apr 2016 12:42:22 +0300
-Message-Id: <1460972543-27175-2-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1460972543-27175-1-git-send-email-tiberiu.a.breana@intel.com>
-References: <1460972543-27175-1-git-send-email-tiberiu.a.breana@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49613 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751894AbcDPTUK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 15:20:10 -0400
+Subject: Re: [PATCH v2 1/5] iio: accel: bmc150: use regmap to retrieve struct
+ device
+To: Alison Schofield <amsfield22@gmail.com>
+References: <cover.1460314070.git.amsfield22@gmail.com>
+ <f3cae5dd803486a774248afad096032f3f0546a2.1460314070.git.amsfield22@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	kgene@kernel.org, k.kozlowski@samsung.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Irina Tirdea <irina.tirdea@intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <57129064.9050508@kernel.org>
+Date: Sat, 16 Apr 2016 20:20:04 +0100
+MIME-Version: 1.0
+In-Reply-To: <f3cae5dd803486a774248afad096032f3f0546a2.1460314070.git.amsfield22@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add basic support for the Aosong AM2315 relative humidity
-and ambient temperature sensor.
-Includes support for raw readings and ACPI detection.
+On 10/04/16 20:05, Alison Schofield wrote:
+> Driver includes struct regmap and struct device in its global data.
+> Remove the struct device and use regmap API to retrieve device info.
+> 
+> Patch created using Coccinelle plus manual edits.
+> 
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+I'm happy with this but please do make sure to cc the maintainer / author
+of drivers if possible (often the email addresses are out of date!)
 
-Datasheet:
-http://www.aosong.com/asp_bin/Products/en/AM2315.pdf
+Srinivas, this is one of yours.  Are you happy with this?
+I've also cc'd Irina who has worked on this driver recently for any
+comments.
 
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
----
- drivers/iio/humidity/Kconfig  |  10 ++
- drivers/iio/humidity/Makefile |   1 +
- drivers/iio/humidity/am2315.c | 212 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 223 insertions(+)
- create mode 100644 drivers/iio/humidity/am2315.c
+If no one comments in the meantime I'll probably pick these up sometime
+in the next week.
 
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index 866dda1..738a86d 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -3,6 +3,16 @@
- #
- menu "Humidity sensors"
- 
-+config AM2315
-+    tristate "Aosong AM2315 relative humidity and temperature sensor"
-+    depends on I2C
-+    help
-+      If you say yes here you get support for the Aosong AM2315
-+      relative humidity and ambient temperature sensor.
-+
-+      This driver can also be built as a module. If so, the module will
-+      be called am2315.
-+
- config DHT11
- 	tristate "DHT11 (and compatible sensors) driver"
- 	depends on GPIOLIB || COMPILE_TEST
-diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
-index c9f089a..4a73442 100644
---- a/drivers/iio/humidity/Makefile
-+++ b/drivers/iio/humidity/Makefile
-@@ -2,6 +2,7 @@
- # Makefile for IIO humidity sensor drivers
- #
- 
-+obj-$(CONFIG_AM2315) += am2315.o
- obj-$(CONFIG_DHT11) += dht11.o
- obj-$(CONFIG_HDC100X) += hdc100x.o
- obj-$(CONFIG_HTU21) += htu21.o
-diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
-new file mode 100644
-index 0000000..c374078
---- /dev/null
-+++ b/drivers/iio/humidity/am2315.c
-@@ -0,0 +1,212 @@
-+/**
-+ * Aosong AM2315 relative humidity and temperature
-+ *
-+ * Copyright (c) 2016, Intel Corporation.
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License. See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * 7-bit I2C address: 0x5C.
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#define AM2315_REG_HUM_MSB			0x00
-+#define AM2315_REG_HUM_LSB			0x01
-+#define AM2315_REG_TEMP_MSB			0x02
-+#define AM2315_REG_TEMP_LSB			0x03
-+
-+#define AM2315_FUNCTION_READ			0x03
-+#define AM2315_HUM_OFFSET			0
-+#define AM2315_TEMP_OFFSET			2
-+
-+#define AM2315_DRIVER_NAME			"am2315"
-+
-+struct am2315_data {
-+	struct i2c_client *client;
-+};
-+
-+static const struct iio_chan_spec am2315_channels[] = {
-+	{
-+		.type = IIO_HUMIDITYRELATIVE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE)
-+	},
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE)
-+	},
-+};
-+
-+/* CRC calculation algorithm, as specified in the datasheet (page 13). */
-+static u16 am2315_crc(u8 *data, u8 nr_bytes)
-+{
-+	int i;
-+	u16 crc = 0xffff;
-+
-+	while (nr_bytes--) {
-+		crc ^= *data++;
-+		for (i = 0; i < 8; i++) {
-+			if (crc & 0x01) {
-+				crc >>= 1;
-+				crc ^= 0xA001;
-+			} else {
-+				crc >>= 1;
-+			}
-+		}
-+	}
-+
-+	return crc;
-+}
-+
-+/* Simple function that sends a few bytes to the device to wake it up. */
-+static inline void am2315_ping(struct i2c_client *client)
-+{
-+	i2c_smbus_read_byte_data(client, AM2315_REG_HUM_MSB);
-+}
-+
-+static int am2315_read_data(struct i2c_client *client, u8 *rx_buf)
-+{
-+	int ret;
-+	/* tx_buf format: <function code> <start addr> <nr of regs to read> */
-+	u8 tx_buf[3] = { AM2315_FUNCTION_READ, AM2315_REG_HUM_MSB, 4 };
-+	u16 crc;
-+
-+	/* First wake up the device. */
-+	am2315_ping(client);
-+
-+	ret = i2c_master_send(client, tx_buf, sizeof(tx_buf));
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to send read request\n");
-+		return ret;
-+	}
-+	/* Wait 2-3 ms, then read back the data sent by the device. */
-+	usleep_range(2000, 3000);
-+
-+	ret = i2c_master_recv(client, rx_buf, sizeof(rx_buf));
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to read sensor data\n");
-+		return ret;
-+	}
-+	/*
-+	 * Do a CRC check on the data and compare it to the value
-+	 * calculated by the device.
-+	 */
-+	crc = am2315_crc(rx_buf, sizeof(rx_buf) - 2);
-+	if ((crc & 0xff) != rx_buf[6] || (crc >> 8) != rx_buf[7]) {
-+		dev_err(&client->dev, "failed to verify sensor data\n");
-+		return -EIO;
-+	}
-+
-+	return ret;
-+}
-+
-+static int am2315_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	int ret;
-+	u8 rx_buf[8];
-+	u8 offset;
-+	struct am2315_data *data = iio_priv(indio_dev);
-+	struct i2c_client *client = data->client;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		offset = (chan->type == IIO_HUMIDITYRELATIVE) ?
-+				AM2315_HUM_OFFSET : AM2315_TEMP_OFFSET;
-+		/* Do a bulk data read, then pick out what we need. */
-+		ret = am2315_read_data(client, rx_buf);
-+		if (ret < 0)
-+			return ret;
-+		/*
-+		 * rx_buf format:
-+		 * <function code> <number of registers read>
-+		 * <humidity MSB> <humidity LSB> <temp MSB> <temp LSB>
-+		 * <CRC LSB> <CRC MSB>
-+		 */
-+		*val = (rx_buf[offset + 2] << 8) | rx_buf[offset + 3];
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 100;
-+		return IIO_VAL_INT;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info am2315_info = {
-+	.driver_module		= THIS_MODULE,
-+	.read_raw		= am2315_read_raw,
-+};
-+
-+static int am2315_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct am2315_data *data;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev) {
-+		dev_err(&client->dev, "iio allocation failed!\n");
-+		return -ENOMEM;
-+	}
-+
-+	data = iio_priv(indio_dev);
-+	data->client = client;
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &am2315_info;
-+	indio_dev->name = AM2315_DRIVER_NAME;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = am2315_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(am2315_channels);
-+
-+	return iio_device_register(indio_dev);
-+}
-+
-+static int am2315_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id am2315_i2c_id[] = {
-+	{"am2315", 0},
-+	{}
-+};
-+
-+static const struct acpi_device_id am2315_acpi_id[] = {
-+	{"AOS2315", 0},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(acpi, am2315_acpi_id);
-+
-+static struct i2c_driver am2315_driver = {
-+	.driver = {
-+		.name = "am2315",
-+		.acpi_match_table = ACPI_PTR(am2315_acpi_id),
-+	},
-+	.probe =            am2315_probe,
-+	.remove =	    am2315_remove,
-+	.id_table =         am2315_i2c_id,
-+};
-+
-+module_i2c_driver(am2315_driver);
-+
-+MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
-+MODULE_DESCRIPTION("Aosong AM2315 relative humidity and temperature");
-+MODULE_LICENSE("GPL v2");
--- 
-1.9.1
+Jonathan
+> ---
+>  drivers/iio/accel/bmc150-accel-core.c | 99 +++++++++++++++++++----------------
+>  1 file changed, 54 insertions(+), 45 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index f3d096f..ad5310b 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -188,7 +188,6 @@ enum bmc150_accel_trigger_id {
+>  
+>  struct bmc150_accel_data {
+>  	struct regmap *regmap;
+> -	struct device *dev;
+>  	int irq;
+>  	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
+>  	atomic_t active_intr;
+> @@ -256,6 +255,7 @@ static int bmc150_accel_set_mode(struct bmc150_accel_data *data,
+>  				 enum bmc150_power_modes mode,
+>  				 int dur_us)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int i;
+>  	int ret;
+>  	u8 lpw_bits;
+> @@ -279,11 +279,11 @@ static int bmc150_accel_set_mode(struct bmc150_accel_data *data,
+>  	lpw_bits = mode << BMC150_ACCEL_PMU_MODE_SHIFT;
+>  	lpw_bits |= (dur_val << BMC150_ACCEL_PMU_BIT_SLEEP_DUR_SHIFT);
+>  
+> -	dev_dbg(data->dev, "Set Mode bits %x\n", lpw_bits);
+> +	dev_dbg(dev, "Set Mode bits %x\n", lpw_bits);
+>  
+>  	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_PMU_LPW, lpw_bits);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error writing reg_pmu_lpw\n");
+> +		dev_err(dev, "Error writing reg_pmu_lpw\n");
+>  		return ret;
+>  	}
+>  
+> @@ -316,23 +316,24 @@ static int bmc150_accel_set_bw(struct bmc150_accel_data *data, int val,
+>  
+>  static int bmc150_accel_update_slope(struct bmc150_accel_data *data)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  
+>  	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_6,
+>  					data->slope_thres);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error writing reg_int_6\n");
+> +		dev_err(dev, "Error writing reg_int_6\n");
+>  		return ret;
+>  	}
+>  
+>  	ret = regmap_update_bits(data->regmap, BMC150_ACCEL_REG_INT_5,
+>  				 BMC150_ACCEL_SLOPE_DUR_MASK, data->slope_dur);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error updating reg_int_5\n");
+> +		dev_err(dev, "Error updating reg_int_5\n");
+>  		return ret;
+>  	}
+>  
+> -	dev_dbg(data->dev, "%s: %x %x\n", __func__, data->slope_thres,
+> +	dev_dbg(dev, "%s: %x %x\n", __func__, data->slope_thres,
+>  		data->slope_dur);
+>  
+>  	return ret;
+> @@ -378,20 +379,21 @@ static int bmc150_accel_get_startup_times(struct bmc150_accel_data *data)
+>  
+>  static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  
+>  	if (on) {
+> -		ret = pm_runtime_get_sync(data->dev);
+> +		ret = pm_runtime_get_sync(dev);
+>  	} else {
+> -		pm_runtime_mark_last_busy(data->dev);
+> -		ret = pm_runtime_put_autosuspend(data->dev);
+> +		pm_runtime_mark_last_busy(dev);
+> +		ret = pm_runtime_put_autosuspend(dev);
+>  	}
+>  
+>  	if (ret < 0) {
+> -		dev_err(data->dev,
+> +		dev_err(dev,
+>  			"Failed: bmc150_accel_set_power_state for %d\n", on);
+>  		if (on)
+> -			pm_runtime_put_noidle(data->dev);
+> +			pm_runtime_put_noidle(dev);
+>  
+>  		return ret;
+>  	}
+> @@ -445,6 +447,7 @@ static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
+>  static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data, int i,
+>  				      bool state)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	struct bmc150_accel_interrupt *intr = &data->interrupts[i];
+>  	const struct bmc150_accel_interrupt_info *info = intr->info;
+>  	int ret;
+> @@ -474,7 +477,7 @@ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data, int i,
+>  	ret = regmap_update_bits(data->regmap, info->map_reg, info->map_bitmask,
+>  				 (state ? info->map_bitmask : 0));
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error updating reg_int_map\n");
+> +		dev_err(dev, "Error updating reg_int_map\n");
+>  		goto out_fix_power_state;
+>  	}
+>  
+> @@ -482,7 +485,7 @@ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data, int i,
+>  	ret = regmap_update_bits(data->regmap, info->en_reg, info->en_bitmask,
+>  				 (state ? info->en_bitmask : 0));
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error updating reg_int_en\n");
+> +		dev_err(dev, "Error updating reg_int_en\n");
+>  		goto out_fix_power_state;
+>  	}
+>  
+> @@ -500,6 +503,7 @@ out_fix_power_state:
+>  
+>  static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret, i;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(data->chip_info->scale_table); ++i) {
+> @@ -508,8 +512,7 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+>  				     BMC150_ACCEL_REG_PMU_RANGE,
+>  				     data->chip_info->scale_table[i].reg_range);
+>  			if (ret < 0) {
+> -				dev_err(data->dev,
+> -					"Error writing pmu_range\n");
+> +				dev_err(dev, "Error writing pmu_range\n");
+>  				return ret;
+>  			}
+>  
+> @@ -523,6 +526,7 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+>  
+>  static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  	unsigned int value;
+>  
+> @@ -530,7 +534,7 @@ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
+>  
+>  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_TEMP, &value);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error reading reg_temp\n");
+> +		dev_err(dev, "Error reading reg_temp\n");
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+>  	}
+> @@ -545,6 +549,7 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+>  				 struct iio_chan_spec const *chan,
+>  				 int *val)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  	int axis = chan->scan_index;
+>  	unsigned int raw_val;
+> @@ -559,7 +564,7 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+>  	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_AXIS_TO_REG(axis),
+>  			       &raw_val, 2);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error reading axis %d\n", axis);
+> +		dev_err(dev, "Error reading axis %d\n", axis);
+>  		bmc150_accel_set_power_state(data, false);
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+> @@ -831,6 +836,7 @@ static int bmc150_accel_set_watermark(struct iio_dev *indio_dev, unsigned val)
+>  static int bmc150_accel_fifo_transfer(struct bmc150_accel_data *data,
+>  				      char *buffer, int samples)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int sample_length = 3 * 2;
+>  	int ret;
+>  	int total_length = samples * sample_length;
+> @@ -854,7 +860,8 @@ static int bmc150_accel_fifo_transfer(struct bmc150_accel_data *data,
+>  	}
+>  
+>  	if (ret)
+> -		dev_err(data->dev, "Error transferring data from fifo in single steps of %zu\n",
+> +		dev_err(dev,
+> +			"Error transferring data from fifo in single steps of %zu\n",
+>  			step);
+>  
+>  	return ret;
+> @@ -864,6 +871,7 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+>  				     unsigned samples, bool irq)
+>  {
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret, i;
+>  	u8 count;
+>  	u16 buffer[BMC150_ACCEL_FIFO_LENGTH * 3];
+> @@ -873,7 +881,7 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+>  
+>  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_FIFO_STATUS, &val);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error reading reg_fifo_status\n");
+> +		dev_err(dev, "Error reading reg_fifo_status\n");
+>  		return ret;
+>  	}
+>  
+> @@ -1135,6 +1143,7 @@ static int bmc150_accel_trig_try_reen(struct iio_trigger *trig)
+>  {
+>  	struct bmc150_accel_trigger *t = iio_trigger_get_drvdata(trig);
+>  	struct bmc150_accel_data *data = t->data;
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+>  
+>  	/* new data interrupts don't need ack */
+> @@ -1148,8 +1157,7 @@ static int bmc150_accel_trig_try_reen(struct iio_trigger *trig)
+>  			   BMC150_ACCEL_INT_MODE_LATCH_RESET);
+>  	mutex_unlock(&data->mutex);
+>  	if (ret < 0) {
+> -		dev_err(data->dev,
+> -			"Error writing reg_int_rst_latch\n");
+> +		dev_err(dev, "Error writing reg_int_rst_latch\n");
+>  		return ret;
+>  	}
+>  
+> @@ -1200,13 +1208,14 @@ static const struct iio_trigger_ops bmc150_accel_trigger_ops = {
+>  static int bmc150_accel_handle_roc_event(struct iio_dev *indio_dev)
+>  {
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int dir;
+>  	int ret;
+>  	unsigned int val;
+>  
+>  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_INT_STATUS_2, &val);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error reading reg_int_status_2\n");
+> +		dev_err(dev, "Error reading reg_int_status_2\n");
+>  		return ret;
+>  	}
+>  
+> @@ -1249,6 +1258,7 @@ static irqreturn_t bmc150_accel_irq_thread_handler(int irq, void *private)
+>  {
+>  	struct iio_dev *indio_dev = private;
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	bool ack = false;
+>  	int ret;
+>  
+> @@ -1272,7 +1282,7 @@ static irqreturn_t bmc150_accel_irq_thread_handler(int irq, void *private)
+>  				   BMC150_ACCEL_INT_MODE_LATCH_INT |
+>  				   BMC150_ACCEL_INT_MODE_LATCH_RESET);
+>  		if (ret)
+> -			dev_err(data->dev, "Error writing reg_int_rst_latch\n");
+> +			dev_err(dev, "Error writing reg_int_rst_latch\n");
+>  
+>  		ret = IRQ_HANDLED;
+>  	} else {
+> @@ -1343,13 +1353,14 @@ static void bmc150_accel_unregister_triggers(struct bmc150_accel_data *data,
+>  static int bmc150_accel_triggers_setup(struct iio_dev *indio_dev,
+>  				       struct bmc150_accel_data *data)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int i, ret;
+>  
+>  	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
+>  		struct bmc150_accel_trigger *t = &data->triggers[i];
+>  
+> -		t->indio_trig = devm_iio_trigger_alloc(data->dev,
+> -					       bmc150_accel_triggers[i].name,
+> +		t->indio_trig = devm_iio_trigger_alloc(dev,
+> +					bmc150_accel_triggers[i].name,
+>  						       indio_dev->name,
+>  						       indio_dev->id);
+>  		if (!t->indio_trig) {
+> @@ -1357,7 +1368,7 @@ static int bmc150_accel_triggers_setup(struct iio_dev *indio_dev,
+>  			break;
+>  		}
+>  
+> -		t->indio_trig->dev.parent = data->dev;
+> +		t->indio_trig->dev.parent = dev;
+>  		t->indio_trig->ops = &bmc150_accel_trigger_ops;
+>  		t->intr = bmc150_accel_triggers[i].intr;
+>  		t->data = data;
+> @@ -1381,12 +1392,13 @@ static int bmc150_accel_triggers_setup(struct iio_dev *indio_dev,
+>  
+>  static int bmc150_accel_fifo_set_mode(struct bmc150_accel_data *data)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	u8 reg = BMC150_ACCEL_REG_FIFO_CONFIG1;
+>  	int ret;
+>  
+>  	ret = regmap_write(data->regmap, reg, data->fifo_mode);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Error writing reg_fifo_config1\n");
+> +		dev_err(dev, "Error writing reg_fifo_config1\n");
+>  		return ret;
+>  	}
+>  
+> @@ -1396,7 +1408,7 @@ static int bmc150_accel_fifo_set_mode(struct bmc150_accel_data *data)
+>  	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_FIFO_CONFIG0,
+>  			   data->watermark);
+>  	if (ret < 0)
+> -		dev_err(data->dev, "Error writing reg_fifo_config0\n");
+> +		dev_err(dev, "Error writing reg_fifo_config0\n");
+>  
+>  	return ret;
+>  }
+> @@ -1480,17 +1492,17 @@ static const struct iio_buffer_setup_ops bmc150_accel_buffer_ops = {
+>  
+>  static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+>  {
+> +	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret, i;
+>  	unsigned int val;
+>  
+>  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID, &val);
+>  	if (ret < 0) {
+> -		dev_err(data->dev,
+> -			"Error: Reading chip id\n");
+> +		dev_err(dev, "Error: Reading chip id\n");
+>  		return ret;
+>  	}
+>  
+> -	dev_dbg(data->dev, "Chip Id %x\n", val);
+> +	dev_dbg(dev, "Chip Id %x\n", val);
+>  	for (i = 0; i < ARRAY_SIZE(bmc150_accel_chip_info_tbl); i++) {
+>  		if (bmc150_accel_chip_info_tbl[i].chip_id == val) {
+>  			data->chip_info = &bmc150_accel_chip_info_tbl[i];
+> @@ -1499,7 +1511,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+>  	}
+>  
+>  	if (!data->chip_info) {
+> -		dev_err(data->dev, "Invalid chip %x\n", val);
+> +		dev_err(dev, "Invalid chip %x\n", val);
+>  		return -ENODEV;
+>  	}
+>  
+> @@ -1516,8 +1528,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+>  	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_PMU_RANGE,
+>  			   BMC150_ACCEL_DEF_RANGE_4G);
+>  	if (ret < 0) {
+> -		dev_err(data->dev,
+> -					"Error writing reg_pmu_range\n");
+> +		dev_err(dev, "Error writing reg_pmu_range\n");
+>  		return ret;
+>  	}
+>  
+> @@ -1535,8 +1546,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+>  			   BMC150_ACCEL_INT_MODE_LATCH_INT |
+>  			   BMC150_ACCEL_INT_MODE_LATCH_RESET);
+>  	if (ret < 0) {
+> -		dev_err(data->dev,
+> -			"Error writing reg_int_rst_latch\n");
+> +		dev_err(dev, "Error writing reg_int_rst_latch\n");
+>  		return ret;
+>  	}
+>  
+> @@ -1556,7 +1566,6 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+>  
+>  	data = iio_priv(indio_dev);
+>  	dev_set_drvdata(dev, indio_dev);
+> -	data->dev = dev;
+>  	data->irq = irq;
+>  
+>  	data->regmap = regmap;
+> @@ -1580,13 +1589,13 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+>  					 bmc150_accel_trigger_handler,
+>  					 &bmc150_accel_buffer_ops);
+>  	if (ret < 0) {
+> -		dev_err(data->dev, "Failed: iio triggered buffer setup\n");
+> +		dev_err(dev, "Failed: iio triggered buffer setup\n");
+>  		return ret;
+>  	}
+>  
+>  	if (data->irq > 0) {
+>  		ret = devm_request_threaded_irq(
+> -						data->dev, data->irq,
+> +						dev, data->irq,
+>  						bmc150_accel_irq_handler,
+>  						bmc150_accel_irq_thread_handler,
+>  						IRQF_TRIGGER_RISING,
+> @@ -1604,7 +1613,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+>  		ret = regmap_write(data->regmap, BMC150_ACCEL_REG_INT_RST_LATCH,
+>  				   BMC150_ACCEL_INT_MODE_LATCH_RESET);
+>  		if (ret < 0) {
+> -			dev_err(data->dev, "Error writing reg_int_rst_latch\n");
+> +			dev_err(dev, "Error writing reg_int_rst_latch\n");
+>  			goto err_buffer_cleanup;
+>  		}
+>  
+> @@ -1653,9 +1662,9 @@ int bmc150_accel_core_remove(struct device *dev)
+>  
+>  	iio_device_unregister(indio_dev);
+>  
+> -	pm_runtime_disable(data->dev);
+> -	pm_runtime_set_suspended(data->dev);
+> -	pm_runtime_put_noidle(data->dev);
+> +	pm_runtime_disable(dev);
+> +	pm_runtime_set_suspended(dev);
+> +	pm_runtime_put_noidle(dev);
+>  
+>  	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+>  
+> @@ -1704,7 +1713,7 @@ static int bmc150_accel_runtime_suspend(struct device *dev)
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+>  	int ret;
+>  
+> -	dev_dbg(data->dev,  __func__);
+> +	dev_dbg(dev,  __func__);
+>  	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_SUSPEND, 0);
+>  	if (ret < 0)
+>  		return -EAGAIN;
+> @@ -1719,7 +1728,7 @@ static int bmc150_accel_runtime_resume(struct device *dev)
+>  	int ret;
+>  	int sleep_val;
+>  
+> -	dev_dbg(data->dev,  __func__);
+> +	dev_dbg(dev,  __func__);
+>  
+>  	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
+>  	if (ret < 0)
+> 
+
