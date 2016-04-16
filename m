@@ -1,129 +1,227 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:10892 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753378AbcDSJSj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Apr 2016 05:18:39 -0400
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [RFC PATCH v1 6/9] iio:st_pressure: temperature triggered buffering
-Date: Tue, 19 Apr 2016 11:18:37 +0200
-Message-ID: <daed8183e0916a573de8e40f166bdd8fb364395d.1461056711.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1461056711.git.gregor.boirie@parrot.com>
-References: <cover.1461056711.git.gregor.boirie@parrot.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48213 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751213AbcDPMp4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 08:45:56 -0400
+Subject: Re: [PATCH v2] iio: tools: generic_buffer: auto-enable channels
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1460451311-9819-1-git-send-email-linus.walleij@linaro.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <57123402.4000003@kernel.org>
+Date: Sat, 16 Apr 2016 13:45:54 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1460451311-9819-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Enable support for triggered buffering of temperature samples.
-
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- drivers/iio/pressure/st_pressure_core.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index 13f1c2d..bacdf6c 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -39,8 +39,6 @@
- #define ST_PRESS_LSB_PER_CELSIUS		480UL
- #define ST_PRESS_MILLI_CELSIUS_OFFSET		42500UL
- 
--#define ST_PRESS_NUMBER_DATA_CHANNELS		1
--
- /* FULLSCALE */
- #define ST_PRESS_FS_AVL_1100MB			1100
- #define ST_PRESS_FS_AVL_1260MB			1260
-@@ -163,7 +161,7 @@ static const struct iio_chan_spec st_press_1_channels[] = {
- 		.type = IIO_PRESSURE,
- 		.channel2 = IIO_NO_MOD,
- 		.address = ST_PRESS_1_OUT_XL_ADDR,
--		.scan_index = ST_SENSORS_SCAN_X,
-+		.scan_index = 0,
- 		.scan_type = {
- 			.sign = 'u',
- 			.realbits = 24,
-@@ -178,7 +176,7 @@ static const struct iio_chan_spec st_press_1_channels[] = {
- 		.type = IIO_TEMP,
- 		.channel2 = IIO_NO_MOD,
- 		.address = ST_TEMP_1_OUT_L_ADDR,
--		.scan_index = -1,
-+		.scan_index = 1,
- 		.scan_type = {
- 			.sign = 'u',
- 			.realbits = 16,
-@@ -191,7 +189,7 @@ static const struct iio_chan_spec st_press_1_channels[] = {
- 			BIT(IIO_CHAN_INFO_OFFSET),
- 		.modified = 0,
- 	},
--	IIO_CHAN_SOFT_TIMESTAMP(1)
-+	IIO_CHAN_SOFT_TIMESTAMP(2)
- };
- 
- static const struct iio_chan_spec st_press_lps001wp_channels[] = {
-@@ -199,7 +197,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
- 		.type = IIO_PRESSURE,
- 		.channel2 = IIO_NO_MOD,
- 		.address = ST_PRESS_LPS001WP_OUT_L_ADDR,
--		.scan_index = ST_SENSORS_SCAN_X,
-+		.scan_index = 0,
- 		.scan_type = {
- 			.sign = 'u',
- 			.realbits = 16,
-@@ -215,7 +213,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
- 		.type = IIO_TEMP,
- 		.channel2 = IIO_NO_MOD,
- 		.address = ST_TEMP_LPS001WP_OUT_L_ADDR,
--		.scan_index = -1,
-+		.scan_index = 1,
- 		.scan_type = {
- 			.sign = 'u',
- 			.realbits = 16,
-@@ -227,7 +225,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
- 			BIT(IIO_CHAN_INFO_SCALE),
- 		.modified = 0,
- 	},
--	IIO_CHAN_SOFT_TIMESTAMP(1)
-+	IIO_CHAN_SOFT_TIMESTAMP(2)
- };
- 
- static const struct iio_chan_spec st_press_lps22hb_channels[] = {
-@@ -252,7 +250,7 @@ static const struct iio_chan_spec st_press_lps22hb_channels[] = {
- 		.type = IIO_TEMP,
- 		.channel2 = IIO_NO_MOD,
- 		.address = ST_TEMP_1_OUT_L_ADDR,
--		.scan_index = -1,
-+		.scan_index = 1,
- 		.scan_type = {
- 			.sign = 'u',
- 			.realbits = 16,
-@@ -265,7 +263,7 @@ static const struct iio_chan_spec st_press_lps22hb_channels[] = {
- 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 		.modified = 0,
- 	},
--	IIO_CHAN_SOFT_TIMESTAMP(1)
-+	IIO_CHAN_SOFT_TIMESTAMP(2)
- };
- 
- static const struct st_sensor_settings st_press_sensors_settings[] = {
-@@ -598,7 +596,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
- 	if (err < 0)
- 		return err;
- 
--	press_data->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
-+	press_data->num_data_channels = press_data->sensor_settings->num_ch - 1;
- 	press_data->multiread_bit = press_data->sensor_settings->multi_read_bit;
- 	indio_dev->channels = press_data->sensor_settings->ch;
- 	indio_dev->num_channels = press_data->sensor_settings->num_ch;
--- 
-2.1.4
+On 12/04/16 09:55, Linus Walleij wrote:
+> If no channels are enabled when we run generic_buffer on a
+> device, add a command-line option to just enable all of them,
+> run the sampling and disable them all again afterwards.
+> 
+> This is extremely useful when I'm low-level testing my
+> sensors with interrupts and triggers, sample session:
+> 
+> root@Ux500:/ lsiio
+> Device 000: lsm303dlh_accel
+> Device 001: lis331dl_accel
+> Device 002: l3g4200d
+> Device 003: lsm303dlh_magn
+> Device 004: lps001wp
+> Trigger 000: lsm303dlh_accel-trigger
+> Trigger 001: lis331dl_accel-trigger
+> Trigger 002: l3g4200d-trigger
+> 
+> root@Ux500:/ generic_buffer -a -c 10 -n l3g4200d
+> iio device number being used is 2
+> iio trigger number being used is 2
+> No channels are enabled, enabling all channels
+> Enabling: in_anglvel_x_en
+> Enabling: in_anglvel_y_en
+> Enabling: in_anglvel_z_en
+> Enabling: in_timestamp_en
+> /sys/bus/iio/devices/iio:device2 l3g4200d-trigger
+> -3.593664 -0.713133 4.870143 946684863662292480
+> 3.225546 0.867357 -4.945878 946684863671875000
+> -0.676413 0.127296 0.106641 946684863681488037
+> -0.661113 0.110160 0.128826 946684863690673828
+> -0.664173 0.113067 0.123471 946684863700683593
+> -0.664938 0.109395 0.124848 946684863710144042
+> -0.664173 0.110619 0.130203 946684863719512939
+> -0.666162 0.111231 0.132651 946684863729125976
+> -0.668610 0.111690 0.130662 946684863738739013
+> -0.660501 0.110466 0.131733 946684863748565673
+> Disabling: in_anglvel_x_en
+> Disabling: in_anglvel_y_en
+> Disabling: in_anglvel_z_en
+> Disabling: in_timestamp_en
+> 
+> Pure awesomeness. If some channels have been enabled through
+> scripts or manual interaction, nothing happens.
+> 
+> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v1->v2:
+> - Provide for using the -a flag to indicate that you want all
+>   available channels enabled.
+Good plan.  I'll wait for the updated version but am fine with this
+in principle.
+> ---
+>  tools/iio/generic_buffer.c | 90 +++++++++++++++++++++++++++++++++++++++++-----
+>  tools/iio/iio_utils.h      |  7 ++++
+>  2 files changed, 88 insertions(+), 9 deletions(-)
+> 
+> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+> index c42b7f836b48..81ebead47547 100644
+> --- a/tools/iio/generic_buffer.c
+> +++ b/tools/iio/generic_buffer.c
+> @@ -191,10 +191,51 @@ void process_scan(char *data,
+>  	printf("\n");
+>  }
+>  
+> +int enable_disable_all_channels(char *dev_dir_name, int enable)
+> +{
+> +	const struct dirent *ent;
+> +	char scanelemdir[256];
+> +	DIR *dp;
+> +	int ret;
+> +
+> +	snprintf(scanelemdir, sizeof(scanelemdir),
+> +		 FORMAT_SCAN_ELEMENTS_DIR, dev_dir_name);
+> +	scanelemdir[sizeof(scanelemdir)-1] = '\0';
+> +
+> +	dp = opendir(scanelemdir);
+> +	if (!dp) {
+> +		fprintf(stderr, "Enabling/disabling channels: can't open %s\n",
+> +			scanelemdir);
+> +		return -EIO;
+> +	}
+> +
+> +	ret = -ENOENT;
+> +	while (ent = readdir(dp), ent) {
+> +		if (check_suffix(ent->d_name, "_en")) {
+> +			printf("%sabling: %s\n",
+> +			       enable ? "En" : "Dis",
+> +			       ent->d_name);
+> +			ret = write_sysfs_int(ent->d_name, scanelemdir,
+> +					      enable);
+> +			if (ret < 0)
+> +				fprintf(stderr, "Failed to enable/disable %s\n",
+> +					ent->d_name);
+> +		}
+> +	}
+> +
+> +	if (closedir(dp) == -1) {
+> +		perror("Enabling/disabling channels: "
+> +		       "Failed to close directory");
+> +		return -errno;
+> +	}
+> +	return 0;
+> +}
+> +
+>  void print_usage(void)
+>  {
+>  	fprintf(stderr, "Usage: generic_buffer [options]...\n"
+>  		"Capture, convert and output data from IIO device buffer\n"
+> +		"  -a         Auto-activate all available channels\n"
+>  		"  -c <n>     Do n conversions\n"
+>  		"  -e         Disable wait for event (new data)\n"
+>  		"  -g         Use trigger-less mode\n"
+> @@ -225,12 +266,16 @@ int main(int argc, char **argv)
+>  	int scan_size;
+>  	int noevents = 0;
+>  	int notrigger = 0;
+> +	int autochannels = 0;
+>  	char *dummy;
+>  
+>  	struct iio_channel_info *channels;
+>  
+> -	while ((c = getopt(argc, argv, "c:egl:n:t:w:")) != -1) {
+> +	while ((c = getopt(argc, argv, "ac:egl:n:t:w:")) != -1) {
+>  		switch (c) {
+> +		case 'a':
+> +			autochannels = 1;
+> +			break;
+>  		case 'c':
+>  			errno = 0;
+>  			num_loops = strtoul(optarg, &dummy, 10);
+> @@ -340,14 +385,36 @@ int main(int argc, char **argv)
+>  			"diag %s\n", dev_dir_name);
+>  		goto error_free_triggername;
+>  	}
+> -	if (!num_channels) {
+> +	if (num_channels && autochannels) {
+> +		fprintf(stderr, "Auto-channels selected but some channels "
+> +			"are already activated in sysfs\n");
+> +		fprintf(stderr, "Proceeding without activating any channels\n");
+> +	}
+> +	if (!num_channels && autochannels) {
+>  		fprintf(stderr,
+> -			"No channels are enabled, we have nothing to scan.\n");
+> -		fprintf(stderr, "Enable channels manually in "
+> -			FORMAT_SCAN_ELEMENTS_DIR
+> -			"/*_en and try again.\n", dev_dir_name);
+> -		ret = -ENOENT;
+> -		goto error_free_triggername;
+> +			"No channels are enabled, enabling all channels\n");
+> +
+> +		ret = enable_disable_all_channels(dev_dir_name, 1);
+> +		if (ret) {
+> +			fprintf(stderr, "Failed to enable all channels\n");
+> +			goto error_free_triggername;
+> +		}
+> +
+> +		/* This flags that we need to disable the channels again */
+> +		autochannels = 2;
+> +		ret = build_channel_array(dev_dir_name, &channels,
+> +					  &num_channels);
+> +		if (ret) {
+> +			fprintf(stderr, "Problem reading scan element "
+> +				"information\n"
+> +				"diag %s\n", dev_dir_name);
+> +			goto error_disable_channels;
+> +		}
+> +		if (!num_channels) {
+> +			fprintf(stderr, "Still no channels after "
+> +				"auto-enabling, giving up\n");
+> +			goto error_disable_channels;
+> +		}
+>  	}
+>  
+>  	/*
+> @@ -479,7 +546,12 @@ error_free_channels:
+>  error_free_triggername:
+>  	if (datardytrigger)
+>  		free(trigger_name);
+> -
+> +error_disable_channels:
+> +	if (autochannels == 2) {
+> +		ret = enable_disable_all_channels(dev_dir_name, 0);
+> +		if (ret)
+> +			fprintf(stderr, "Failed to disable all channels\n");
+> +	}
+>  error_free_dev_dir_name:
+>  	free(dev_dir_name);
+>  
+> diff --git a/tools/iio/iio_utils.h b/tools/iio/iio_utils.h
+> index e3503bfe538b..9d5601421820 100644
+> --- a/tools/iio/iio_utils.h
+> +++ b/tools/iio/iio_utils.h
+> @@ -52,6 +52,13 @@ struct iio_channel_info {
+>  	unsigned location;
+>  };
+>  
+> +static inline int check_suffix(const char *str, const char *suffix)
+> +{
+> +	return strlen(str) > strlen(suffix) &&
+> +		strncmp(str+strlen(str)-strlen(suffix),
+> +			suffix, strlen(suffix)) == 0;
+> +}
+> +
+>  int iioutils_break_up_name(const char *full_name, char **generic_name);
+>  int iioutils_get_type(unsigned *is_signed, unsigned *bytes, unsigned *bits_used,
+>  		      unsigned *shift, uint64_t *mask, unsigned *be,
+> 
 
