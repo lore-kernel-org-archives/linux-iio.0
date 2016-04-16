@@ -1,152 +1,186 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52803 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49636 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752993AbcDQKEM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 06:04:12 -0400
-Subject: Re: [PATCH 2/2] iio: magn: bmc150: Introduce SPI support
-To: Daniel Baluta <daniel.baluta@intel.com>, irina.tirdea@intel.com
-References: <1460729590-18886-1-git-send-email-daniel.baluta@intel.com>
- <1460729590-18886-3-git-send-email-daniel.baluta@intel.com>
+	with ESMTP id S1751508AbcDPTWV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 15:22:21 -0400
+Subject: Re: [PATCH v2 3/5] iio: health: afe4403: use regmap to retrieve
+ struct device
+To: Alison Schofield <amsfield22@gmail.com>
+References: <cover.1460314070.git.amsfield22@gmail.com>
+ <566ccb722e22834d934e7897e90a5ebdf39024e2.1460314070.git.amsfield22@gmail.com>
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	geert@linux-m68k.org, vlad.dogaru@intel.com,
-	octavian.purdila@intel.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
+	kgene@kernel.org, k.kozlowski@samsung.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57135F99.8010100@kernel.org>
-Date: Sun, 17 Apr 2016 11:04:09 +0100
+Message-ID: <571290EA.9090702@kernel.org>
+Date: Sat, 16 Apr 2016 20:22:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <1460729590-18886-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <566ccb722e22834d934e7897e90a5ebdf39024e2.1460314070.git.amsfield22@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/04/16 15:13, Daniel Baluta wrote:
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Looks good.  I like regmap sometimes ;)
+On 10/04/16 20:07, Alison Schofield wrote:
+> Driver includes struct regmap and struct device in its global data.
+> Remove the struct device and use regmap API to retrieve device info.
+> 
+> Patch created using Coccinelle plus manual edits.
+> 
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+cc'd Andrew for info and comment.
 
-Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to try spotting what we've missed.
+Again I'm happy with this one myself.
 
 Jonathan
 > ---
->  drivers/iio/magnetometer/Kconfig           | 16 +++++++
->  drivers/iio/magnetometer/Makefile          |  1 +
->  drivers/iio/magnetometer/bmc150_magn_spi.c | 68 ++++++++++++++++++++++++++++++
->  3 files changed, 85 insertions(+)
->  create mode 100644 drivers/iio/magnetometer/bmc150_magn_spi.c
+>  drivers/iio/health/afe4403.c | 36 +++++++++++++++++-------------------
+>  1 file changed, 17 insertions(+), 19 deletions(-)
 > 
-> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> index e916005..33609c23 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -45,6 +45,22 @@ config BMC150_MAGN_I2C
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called bmc150_magn_i2c.
+> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
+> index 88e43f8..71b8f70 100644
+> --- a/drivers/iio/health/afe4403.c
+> +++ b/drivers/iio/health/afe4403.c
+> @@ -104,7 +104,6 @@
 >  
-> +config BMC150_MAGN_SPI
-> +	tristate "Bosch BMC150 SPI Magnetometer Driver"
-> +	depends on SPI
-> +	select BMC150_MAGN
-> +	select REGMAP_SPI
-> +	help
-> +	  Say yes here to build support for the BMC150 magnetometer with
-> +	  SPI interface.
-> +
-> +	  This is a combo module with both accelerometer and magnetometer.
-> +	  This driver is only implementing magnetometer part, which has
-> +	  its own address and register map.
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called bmc150_magn_spi.
-> +
->  config MAG3110
->  	tristate "Freescale MAG3110 3-Axis Magnetometer"
->  	depends on I2C
-> diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
-> index 5647773..92a745c 100644
-> --- a/drivers/iio/magnetometer/Makefile
-> +++ b/drivers/iio/magnetometer/Makefile
-> @@ -6,6 +6,7 @@
->  obj-$(CONFIG_AK8975)	+= ak8975.o
->  obj-$(CONFIG_BMC150_MAGN) += bmc150_magn.o
->  obj-$(CONFIG_BMC150_MAGN_I2C) += bmc150_magn_i2c.o
-> +obj-$(CONFIG_BMC150_MAGN_SPI) += bmc150_magn_spi.o
+>  /**
+>   * struct afe4403_data
+> - * @dev - Device structure
+>   * @spi - SPI device handle
+>   * @regmap - Register map of the device
+>   * @regulator - Pointer to the regulator for the IC
+> @@ -112,7 +111,6 @@
+>   * @irq - ADC_RDY line interrupt number
+>   */
+>  struct afe4403_data {
+> -	struct device *dev;
+>  	struct spi_device *spi;
+>  	struct regmap *regmap;
+>  	struct regulator *regulator;
+> @@ -562,55 +560,54 @@ static int afe4403_probe(struct spi_device *spi)
+>  	afe = iio_priv(indio_dev);
+>  	spi_set_drvdata(spi, indio_dev);
 >  
->  obj-$(CONFIG_MAG3110)	+= mag3110.o
->  obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o
-> diff --git a/drivers/iio/magnetometer/bmc150_magn_spi.c b/drivers/iio/magnetometer/bmc150_magn_spi.c
-> new file mode 100644
-> index 0000000..c4c738a
-> --- /dev/null
-> +++ b/drivers/iio/magnetometer/bmc150_magn_spi.c
-> @@ -0,0 +1,68 @@
-> +/*
-> + * 3-axis magnetometer driver support following SPI Bosch-Sensortec chips:
-> + *  - BMC150
-> + *  - BMC156
-> + *
-> + * Copyright (c) 2016, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + */
-> +#include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/acpi.h>
-> +#include <linux/regmap.h>
-> +
-> +#include "bmc150_magn.h"
-> +
-> +static int bmc150_magn_spi_probe(struct spi_device *spi)
-> +{
-> +	struct regmap *regmap;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +
-> +	regmap = devm_regmap_init_spi(spi, &bmc150_magn_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
-> +			(int)PTR_ERR(regmap));
-> +		return PTR_ERR(regmap);
-> +	}
-> +	return bmc150_magn_probe(&spi->dev, regmap, spi->irq, id->name);
-> +}
-> +
-> +static int bmc150_magn_spi_remove(struct spi_device *spi)
-> +{
-> +	bmc150_magn_remove(&spi->dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id bmc150_magn_spi_id[] = {
-> +	{"bmc150_magn", 0},
-> +	{"bmc156_magn", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, bmc150_magn_spi_id);
-> +
-> +static const struct acpi_device_id bmc150_magn_acpi_match[] = {
-> +	{"BMC150B", 0},
-> +	{"BMC156B", 0},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(acpi, bmc150_magn_acpi_match);
-> +
-> +static struct spi_driver bmc150_magn_spi_driver = {
-> +	.probe		= bmc150_magn_spi_probe,
-> +	.remove		= bmc150_magn_spi_remove,
-> +	.id_table	= bmc150_magn_spi_id,
-> +	.driver = {
-> +		.acpi_match_table = ACPI_PTR(bmc150_magn_acpi_match),
-> +		.name	= "bmc150_magn_spi",
-> +	},
-> +};
-> +module_spi_driver(bmc150_magn_spi_driver);
-> +
-> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
-> +MODULE_DESCRIPTION("BMC150 magnetometer SPI driver");
-> +MODULE_LICENSE("GPL v2");
+> -	afe->dev = &spi->dev;
+>  	afe->spi = spi;
+>  	afe->irq = spi->irq;
+>  
+>  	afe->regmap = devm_regmap_init_spi(spi, &afe4403_regmap_config);
+>  	if (IS_ERR(afe->regmap)) {
+> -		dev_err(afe->dev, "Unable to allocate register map\n");
+> +		dev_err(&spi->dev, "Unable to allocate register map\n");
+>  		return PTR_ERR(afe->regmap);
+>  	}
+>  
+> -	afe->regulator = devm_regulator_get(afe->dev, "tx_sup");
+> +	afe->regulator = devm_regulator_get(&spi->dev, "tx_sup");
+>  	if (IS_ERR(afe->regulator)) {
+> -		dev_err(afe->dev, "Unable to get regulator\n");
+> +		dev_err(&spi->dev, "Unable to get regulator\n");
+>  		return PTR_ERR(afe->regulator);
+>  	}
+>  	ret = regulator_enable(afe->regulator);
+>  	if (ret) {
+> -		dev_err(afe->dev, "Unable to enable regulator\n");
+> +		dev_err(&spi->dev, "Unable to enable regulator\n");
+>  		return ret;
+>  	}
+>  
+>  	ret = regmap_write(afe->regmap, AFE440X_CONTROL0,
+>  			   AFE440X_CONTROL0_SW_RESET);
+>  	if (ret) {
+> -		dev_err(afe->dev, "Unable to reset device\n");
+> +		dev_err(&spi->dev, "Unable to reset device\n");
+>  		goto err_disable_reg;
+>  	}
+>  
+>  	ret = regmap_multi_reg_write(afe->regmap, afe4403_reg_sequences,
+>  				     ARRAY_SIZE(afe4403_reg_sequences));
+>  	if (ret) {
+> -		dev_err(afe->dev, "Unable to set register defaults\n");
+> +		dev_err(&spi->dev, "Unable to set register defaults\n");
+>  		goto err_disable_reg;
+>  	}
+>  
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> -	indio_dev->dev.parent = afe->dev;
+> +	indio_dev->dev.parent = &spi->dev;
+>  	indio_dev->channels = afe4403_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(afe4403_channels);
+>  	indio_dev->name = AFE4403_DRIVER_NAME;
+>  	indio_dev->info = &afe4403_iio_info;
+>  
+>  	if (afe->irq > 0) {
+> -		afe->trig = devm_iio_trigger_alloc(afe->dev,
+> +		afe->trig = devm_iio_trigger_alloc(&spi->dev,
+>  						   "%s-dev%d",
+>  						   indio_dev->name,
+>  						   indio_dev->id);
+>  		if (!afe->trig) {
+> -			dev_err(afe->dev, "Unable to allocate IIO trigger\n");
+> +			dev_err(&spi->dev, "Unable to allocate IIO trigger\n");
+>  			ret = -ENOMEM;
+>  			goto err_disable_reg;
+>  		}
+> @@ -618,21 +615,21 @@ static int afe4403_probe(struct spi_device *spi)
+>  		iio_trigger_set_drvdata(afe->trig, indio_dev);
+>  
+>  		afe->trig->ops = &afe4403_trigger_ops;
+> -		afe->trig->dev.parent = afe->dev;
+> +		afe->trig->dev.parent = &spi->dev;
+>  
+>  		ret = iio_trigger_register(afe->trig);
+>  		if (ret) {
+> -			dev_err(afe->dev, "Unable to register IIO trigger\n");
+> +			dev_err(&spi->dev, "Unable to register IIO trigger\n");
+>  			goto err_disable_reg;
+>  		}
+>  
+> -		ret = devm_request_threaded_irq(afe->dev, afe->irq,
+> +		ret = devm_request_threaded_irq(&spi->dev, afe->irq,
+>  						iio_trigger_generic_data_rdy_poll,
+>  						NULL, IRQF_ONESHOT,
+>  						AFE4403_DRIVER_NAME,
+>  						afe->trig);
+>  		if (ret) {
+> -			dev_err(afe->dev, "Unable to request IRQ\n");
+> +			dev_err(&spi->dev, "Unable to request IRQ\n");
+>  			goto err_trig;
+>  		}
+>  	}
+> @@ -640,13 +637,13 @@ static int afe4403_probe(struct spi_device *spi)
+>  	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+>  					 afe4403_trigger_handler, NULL);
+>  	if (ret) {
+> -		dev_err(afe->dev, "Unable to setup buffer\n");
+> +		dev_err(&spi->dev, "Unable to setup buffer\n");
+>  		goto err_trig;
+>  	}
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret) {
+> -		dev_err(afe->dev, "Unable to register IIO device\n");
+> +		dev_err(&spi->dev, "Unable to register IIO device\n");
+>  		goto err_buff;
+>  	}
+>  
+> @@ -667,6 +664,7 @@ static int afe4403_remove(struct spi_device *spi)
+>  {
+>  	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>  	struct afe4403_data *afe = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(afe->regmap);
+>  	int ret;
+>  
+>  	iio_device_unregister(indio_dev);
+> @@ -678,7 +676,7 @@ static int afe4403_remove(struct spi_device *spi)
+>  
+>  	ret = regulator_disable(afe->regulator);
+>  	if (ret) {
+> -		dev_err(afe->dev, "Unable to disable regulator\n");
+> +		dev_err(dev, "Unable to disable regulator\n");
+>  		return ret;
+>  	}
+>  
 > 
 
