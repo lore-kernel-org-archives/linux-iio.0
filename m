@@ -1,589 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47524 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47603 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751119AbcDPKEJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 06:04:09 -0400
-Subject: Re: [PATCH v2 1/2] iio: pressure: bmp280: add support for BMP180
-To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org
-References: <1460742827-6502-1-git-send-email-akinobu.mita@gmail.com>
- <1460742827-6502-2-git-send-email-akinobu.mita@gmail.com>
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>,
-	Christoph Mair <christoph.mair@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1751163AbcDPKS6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 06:18:58 -0400
+Subject: Re: [RFC PATCH v1 3/3] iio:imu:mpu6050: enhance mounting matrix
+ support
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+	Rob Herring <robh@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	Cristina Opriceana <cristina.opriceana@gmail.com>,
+	Varka Bhadram <varkabhadram@gmail.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>
+References: <cover.1460113510.git.gregor.boirie@parrot.com>
+ <594bc2f45d1894c9c3308509062b991e4a5fcc7e.1460113510.git.gregor.boirie@parrot.com>
+ <20160411191212.GA30801@rob-hp-laptop>
+ <20160411214428.GB1997@geburah.sephiroth>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57120E15.2020105@kernel.org>
-Date: Sat, 16 Apr 2016 11:04:05 +0100
+Message-ID: <5712118E.30103@kernel.org>
+Date: Sat, 16 Apr 2016 11:18:54 +0100
 MIME-Version: 1.0
-In-Reply-To: <1460742827-6502-2-git-send-email-akinobu.mita@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20160411214428.GB1997@geburah.sephiroth>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/04/16 18:53, Akinobu Mita wrote:
-> This adds support for the BMP180 to the bmp280 iio driver.
+On 11/04/16 22:44, Gregor Boirie wrote:
+> On Mon, Apr 11, 2016 at 02:12:12PM -0500, Rob Herring wrote:
+>> On Fri, Apr 08, 2016 at 04:12:05PM +0200, Gregor Boirie wrote:
+>>> Add a new rotation matrix sysfs attribute compliant with IIO core
+>>> mounting matrix API.
+>>> Matrix is retrieved from "in_anglvel_mount_matrix" and
+>>> "in_accel_mount_matrix" sysfs attributes. It is declared into mpu6050 DTS
+>>> entry as a "mount-matrix" property.
+>>
+>> We have a common DT property, but can't have common sysfs interface?
+> Agreed. Original driver was structured that way. In fact, a single matrix is
+> enought for this sensor: AFAIK, reference frames are the same for gyro and
+> accelero.
+> I suppose that having a DTS and sysfs attribute per type of sample /
+> "sub-device" ensure better userspace API consistency across drivers.
+> Jonathan ?
+If shared by all channels in device, could just be mount_matrix
+(as per normal info_mask_shared_by_all elements on which we drop all reference
+to the channel name).
+
+However, we do have to allow for the per channel type version (and at least in theory
+the per channel entry)  There are are weird devices combining multiple parallel accelerometers
+in a package.  Possible for some reason that these could be other than parallel in some future
+device.
+So we end up with a sort of pyramid with any of the following being possible (and needing
+a sysfs entry if they occur)  Taking a few examples...
+
+mount_matrix
+in_mount_matrix
+out_mount_matrix
+in_accel_mount_matrix
+in_magn_mount_matrix
+in_accel_x_mount_matrix
+in_accel_y_mount_matrix
+in_accel_x1_mount_matrix
+in_accel_x2_mount_matrix 
+etc where convention is to use the element highest up that covers the device in question.
+
+It gets awkward if you have say an additional general purpose ADC channel on the device
+as then clearly the mount matrix has nothing to do with it, but convention says we still
+have to drop down to say in_accel_mount_matrix rather than using the mount_matrix form
+that implies that it applies to the in_voltage0 channel.  Common sense and ABIs never
+combine that well ;)
+
 > 
-> The BMP180 has already been supported by misc/bmp085 driver but it
-> doesn't use iio framework.  This change adds the kconfig dependency
-> not to be selected both of them in order to avoid any issues.
+>>
+>> BTW, sysfs interfaces also have to be documented.
+> Ok
+Yes - update Documentation/sysfs/testing/sysfs-bus-iio with an appropriate entry please.
+Btw - the above pyramid structure is why that document is huge (and often missing
+entries that we all assumed were there for particular combinations of the above!)
 > 
-> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-> Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-> Cc: Christoph Mair <christoph.mair@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald <pmeerw@pmeerw.net>
-A few comments inline - some on things that could have been done slightly
-better in the original driver but which we are now stuck with for ABI
-compatibility reasons.. Ah well.
-
-Jonathan
-> ---
->  drivers/iio/pressure/Kconfig  |   5 +-
->  drivers/iio/pressure/bmp280.c | 385 ++++++++++++++++++++++++++++++++++++++++--
->  2 files changed, 374 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index e8f60db..31e5d36 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -6,11 +6,12 @@
->  menu "Pressure sensors"
->  
->  config BMP280
-> -	tristate "Bosch Sensortec BMP280 pressure sensor driver"
-> +	tristate "Bosch Sensortec BMP180 and BMP280 pressure sensor driver"
->  	depends on I2C
-> +	depends on !(BMP085_I2C=y || BMP085_I2C=m)
->  	select REGMAP_I2C
->  	help
-> -	 Say yes here to build support for Bosch Sensortec BMP280
-> +	 Say yes here to build support for Bosch Sensortec BMP180 and BMP280
->  	 pressure and temperature sensor.
->  
->  	 To compile this driver as a module, choose M here: the module
-> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-> index a2602d8..28daa74 100644
-> --- a/drivers/iio/pressure/bmp280.c
-> +++ b/drivers/iio/pressure/bmp280.c
-> @@ -1,12 +1,15 @@
->  /*
->   * Copyright (c) 2014 Intel Corporation
->   *
-> - * Driver for Bosch Sensortec BMP280 digital pressure sensor.
-> + * Driver for Bosch Sensortec BMP180 and BMP280 digital pressure sensor.
->   *
->   * This program is free software; you can redistribute it and/or modify
->   * it under the terms of the GNU General Public License version 2 as
->   * published by the Free Software Foundation.
->   *
-> + * Datasheet:
-> + * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP180-DS000-121.pdf
-> + * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-DS001-12.pdf
->   */
->  
->  #define pr_fmt(fmt) "bmp280: " fmt
-> @@ -15,9 +18,13 @@
->  #include <linux/i2c.h>
->  #include <linux/acpi.h>
->  #include <linux/regmap.h>
-> +#include <linux/delay.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  
-> +/*
-> + * BMP280 specific registers
-> + */
-single line comment syntax preferred.
->  #define BMP280_REG_TEMP_XLSB		0xFC
->  #define BMP280_REG_TEMP_LSB		0xFB
->  #define BMP280_REG_TEMP_MSB		0xFA
-> @@ -26,10 +33,7 @@
->  #define BMP280_REG_PRESS_MSB		0xF7
->  
->  #define BMP280_REG_CONFIG		0xF5
-> -#define BMP280_REG_CTRL_MEAS		0xF4
->  #define BMP280_REG_STATUS		0xF3
-> -#define BMP280_REG_RESET		0xE0
-> -#define BMP280_REG_ID			0xD0
->  
->  #define BMP280_REG_COMP_TEMP_START	0x88
->  #define BMP280_COMP_TEMP_REG_COUNT	6
-> @@ -65,6 +69,32 @@
->  #define BMP280_MODE_FORCED		BIT(0)
->  #define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
->  
-> +/*
-> + * BMP180 specific registers
-> + */
-> +#define BMP180_REG_OUT_XLSB		0xF8
-> +#define BMP180_REG_OUT_LSB		0xF7
-> +#define BMP180_REG_OUT_MSB		0xF6
-> +
-> +#define BMP180_REG_CALIB_START		0xAA
-> +#define BMP180_REG_CALIB_COUNT		22
-> +
-> +#define BMP180_MEAS_SCO			BIT(5)
-> +#define BMP180_MEAS_TEMP		(0x0E | BMP180_MEAS_SCO)
-> +#define BMP180_MEAS_PRESS_X(oss)	((oss) << 6 | 0x14 | BMP180_MEAS_SCO)
-> +#define BMP180_MEAS_PRESS_1X		BMP180_MEAS_PRESS_X(0)
-> +#define BMP180_MEAS_PRESS_2X		BMP180_MEAS_PRESS_X(1)
-> +#define BMP180_MEAS_PRESS_4X		BMP180_MEAS_PRESS_X(2)
-> +#define BMP180_MEAS_PRESS_8X		BMP180_MEAS_PRESS_X(3)
-> +
-> +/*
-> + * BMP180 and BMP280 common registers
-> + */
-> +#define BMP280_REG_CTRL_MEAS		0xF4
-> +#define BMP280_REG_RESET		0xE0
-> +#define BMP280_REG_ID			0xD0
-> +
-> +#define BMP180_CHIP_ID			0x55
->  #define BMP280_CHIP_ID			0x58
->  #define BMP280_SOFT_RESET_VAL		0xB6
->  
-> @@ -72,6 +102,7 @@ struct bmp280_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
->  	struct regmap *regmap;
-> +	const struct bmp280_chip_info *chip_info;
->  
->  	/*
->  	 * Carryover value from temperature conversion, used in pressure
-> @@ -80,9 +111,17 @@ struct bmp280_data {
->  	s32 t_fine;
->  };
->  
-> +struct bmp280_chip_info {
-> +	const struct regmap_config *regmap_config;
-> +
-> +	int (*chip_config)(struct bmp280_data *);
-> +	int (*read_temp)(struct bmp280_data *, int *);
-> +	int (*read_press)(struct bmp280_data *, int *, int *);
-> +};
-> +
->  /*
->   * These enums are used for indexing into the array of compensation
-> - * parameters.
-> + * parameters for BMP280.
->   */
->  enum { T1, T2, T3 };
->  enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
-> @@ -290,10 +329,10 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_PROCESSED:
->  		switch (chan->type) {
->  		case IIO_PRESSURE:
-> -			ret = bmp280_read_press(data, val, val2);
-> +			ret = data->chip_info->read_press(data, val, val2);
->  			break;
->  		case IIO_TEMP:
-> -			ret = bmp280_read_temp(data, val);
-> +			ret = data->chip_info->read_temp(data, val);
->  			break;
->  		default:
->  			ret = -EINVAL;
-> @@ -315,7 +354,7 @@ static const struct iio_info bmp280_info = {
->  	.read_raw = &bmp280_read_raw,
->  };
->  
-> -static int bmp280_chip_init(struct bmp280_data *data)
-> +static int bmp280_chip_config(struct bmp280_data *data)
->  {
->  	int ret;
->  
-> @@ -344,6 +383,308 @@ static int bmp280_chip_init(struct bmp280_data *data)
->  	return ret;
->  }
->  
-> +static const struct bmp280_chip_info bmp280_chip_info = {
-> +	.regmap_config = &bmp280_regmap_config,
-> +	.chip_config = bmp280_chip_config,
-> +	.read_temp = bmp280_read_temp,
-> +	.read_press = bmp280_read_press,
-> +};
-> +
-> +static bool bmp180_is_writeable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case BMP280_REG_CTRL_MEAS:
-> +	case BMP280_REG_RESET:
-> +		return true;
-> +	default:
-> +		return false;
-> +	};
-> +}
-> +
-> +static bool bmp180_is_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case BMP180_REG_OUT_XLSB:
-> +	case BMP180_REG_OUT_LSB:
-> +	case BMP180_REG_OUT_MSB:
-> +	case BMP280_REG_CTRL_MEAS:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static const struct regmap_config bmp180_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +
-> +	.max_register = BMP180_REG_OUT_XLSB,
-> +	.cache_type = REGCACHE_RBTREE,
-> +
-> +	.writeable_reg = bmp180_is_writeable_reg,
-> +	.volatile_reg = bmp180_is_volatile_reg,
-> +};
-> +
-> +static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
-> +{
-> +	int ret;
-> +	const int conversion_time_max[] = { 4500, 7500, 13500, 25500 };
-> +	unsigned int delay_us;
-> +	unsigned int ctrl;
-> +
-> +	ret = regmap_write(data->regmap, BMP280_REG_CTRL_MEAS, ctrl_meas);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (ctrl_meas == BMP180_MEAS_TEMP)
-> +		delay_us = 4500;
-> +	else
-> +		delay_us = conversion_time_max[ilog2(8)];
-> +
-> +	usleep_range(delay_us, delay_us + 1000);
-> +
-> +	ret = regmap_read(data->regmap, BMP280_REG_CTRL_MEAS, &ctrl);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * The value of this bit reset to "0" after conversion is complete
-> +	 */
-Single line comment syntax...
-> +	if (ctrl & BMP180_MEAS_SCO)
-> +		return -EIO;
-> +
-> +	return 0;
-> +}
-> +
-> +static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
-> +{
-> +	int ret;
-> +	__be16 tmp = 0;
-> +
-> +	ret = bmp180_measure(data, BMP180_MEAS_TEMP);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 *)&tmp, 2);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*val = be16_to_cpu(tmp);
-> +
-> +	return 0;
-> +}
-> +
-> +/*
-> + * These enums are used for indexing into the array of calibration
-> + * coefficients for BMP180.
-> + */
-> +enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
-> +
-> +struct bmp180_calib {
-> +	s32 AC1;
-> +	s32 AC2;
-> +	s32 AC3;
-> +	u32 AC4;
-> +	u32 AC5;
-> +	u32 AC6;
-> +	s32 B1;
-> +	s32 B2;
-> +	s32 MB;
-> +	s32 MC;
-> +	s32 MD;
-> +};
-> +
-> +static int bmp180_read_calib(struct bmp280_data *data,
-> +			     struct bmp180_calib *calib)
-> +{
-> +	int ret;
-> +	int i;
-> +	__be16 buf[BMP180_REG_CALIB_COUNT / 2];
-> +
-> +	ret = regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, buf,
-> +			       sizeof(buf));
-> +
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/*
-> +	 * None of the words has the value 0 or 0xFFFF
-> +	 */
-Single line comment, so single line comment syntax please (nitpick!)
-> +	for (i = 0; i < ARRAY_SIZE(buf); i++) {
-> +		if (buf[i] == cpu_to_be16(0) || buf[i] == cpu_to_be16(0xffff))
-> +			return -EIO;
-> +	}
-> +
-> +	/*
-> +	 * The double casts are necessary because be16_to_cpu returns an
-> +	 * unsigned 16-bit value.  Casting that value directly to a
-> +	 * signed 32-bit will not do proper sign extension.
-> +	 *
-Would using sign_extend32 perhaps make this clear without the need for the
-comment?
-
-I think you'd need
-calib->AC1 = sign_extend32(be16_to_cpu(buf[AC1]), 16);
-etc.  Compiler should optimize that to end up with similar assembler..
-
-Or alternatively just define them as s16 if that is what they are...
-> +	 * Conversely, AC4, AC5 and AC6 are unsigned values, so they can be
-> +	 * cast straight to the larger type.
-> +	 */
-> +	calib->AC1 = (s32)(s16)be16_to_cpu(buf[AC1]);
-> +	calib->AC2 = (s32)(s16)be16_to_cpu(buf[AC2]);
-> +	calib->AC3 = (s32)(s16)be16_to_cpu(buf[AC3]);
-> +	calib->AC4 = be16_to_cpu(buf[AC4]);
-> +	calib->AC5 = be16_to_cpu(buf[AC5]);
-> +	calib->AC6 = be16_to_cpu(buf[AC6]);
-> +	calib->B1 = (s32)(s16)be16_to_cpu(buf[B1]);
-> +	calib->B2 = (s32)(s16)be16_to_cpu(buf[B2]);
-> +	calib->MB = (s32)(s16)be16_to_cpu(buf[MB]);
-> +	calib->MC = (s32)(s16)be16_to_cpu(buf[MC]);
-> +	calib->MD = (s32)(s16)be16_to_cpu(buf[MD]);
-> +
-> +	return 0;
-> +}
-> +
-> +/*
-> + * Returns temperature in DegC, resolution is 0.1 DegC.
-> + * t_fine carries fine temperature as global value.
-> + *
-> + * Taken from datasheet, Section 3.5, "Calculating pressure and temperature".
-> + */
-> +static s32 bmp180_compensate_temp(struct bmp280_data *data, s32 adc_temp)
-> +{
-> +	int ret;
-> +	s32 x1, x2;
-> +	struct bmp180_calib calib;
-> +
-> +	ret = bmp180_read_calib(data, &calib);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"failed to read calibration coefficients\n");
-> +		return ret;
-> +	}
-> +
-> +	x1 = ((adc_temp - calib.AC6) * calib.AC5) >> 15;
-> +	x2 = (calib.MC << 11) / (x1 + calib.MD);
-> +	data->t_fine = x1 + x2;
-> +
-> +	return (data->t_fine + 8) >> 4;
-> +}
-> +
-> +static int bmp180_read_temp(struct bmp280_data *data, int *val)
-> +{
-> +	int ret;
-> +	s32 adc_temp, comp_temp;
-> +
-> +	ret = bmp180_read_adc_temp(data, &adc_temp);
-> +	if (ret)
-> +		return ret;
-> +
-> +	comp_temp = bmp180_compensate_temp(data, adc_temp);
-> +
-> +	/*
-> +	 * val might be NULL if we're called by the read_press routine,
-> +	 * who only cares about the carry over t_fine value.
-> +	 */
-> +	if (val) {
-> +		*val = comp_temp * 100;
-> +		return IIO_VAL_INT;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
-> +{
-> +	int ret;
-> +	__be32 tmp = 0;
-> +	u8 oss = ilog2(8);
-> +
-> +	ret = bmp180_measure(data, BMP180_MEAS_PRESS_X(oss));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 *)&tmp, 3);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*val = (be32_to_cpu(tmp) >> 8) >> (8 - oss);
-> +
-> +	return 0;
-> +}
-> +
-> +/*
-> + * Returns pressure in Pa, resolution is 1 Pa.
-> + *
-> + * Taken from datasheet, Section 3.5, "Calculating pressure and temperature".
-> + */
-> +static u32 bmp180_compensate_press(struct bmp280_data *data, s32 adc_press)
-> +{
-> +	int ret;
-> +	s32 x1, x2, x3, p;
-> +	s32 b3, b6;
-> +	u32 b4, b7;
-> +	s32 oss = ilog2(8);
-> +	struct bmp180_calib calib;
-> +
-> +	ret = bmp180_read_calib(data, &calib);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"failed to read calibration coefficients\n");
-> +		return ret;
-> +	}
-> +
-> +	b6 = data->t_fine - 4000;
-> +	x1 = (calib.B2 * (b6 * b6 >> 12)) >> 11;
-> +	x2 = calib.AC2 * b6 >> 11;
-> +	x3 = x1 + x2;
-> +	b3 = (((calib.AC1 * 4 + x3) << oss) + 2) / 4;
-> +	x1 = calib.AC3 * b6 >> 13;
-> +	x2 = (calib.B1 * ((b6 * b6) >> 12)) >> 16;
-> +	x3 = (x1 + x2 + 2) >> 2;
-> +	b4 = calib.AC4 * (u32)(x3 + 32768) >> 15;
-> +	b7 = ((u32)adc_press - b3) * (50000 >> oss);
-> +	if (b7 < 0x80000000)
-> +		p = (b7 * 2) / b4;
-> +	else
-> +		p = (b7 / b4) * 2;
-> +
-> +	x1 = (p >> 8) * (p >> 8);
-> +	x1 = (x1 * 3038) >> 16;
-> +	x2 = (-7357 * p) >> 16;
-> +
-> +	return p + ((x1 + x2 + 3791) >> 4);
-> +}
-> +
-> +static int bmp180_read_press(struct bmp280_data *data,
-> +			     int *val, int *val2)
-> +{
-> +	int ret;
-> +	s32 adc_press;
-> +	u32 comp_press;
-> +
-> +	/* Read and compensate temperature so we get a reading of t_fine. */
-> +	ret = bmp180_read_temp(data, NULL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = bmp180_read_adc_press(data, &adc_press);
-> +	if (ret)
-> +		return ret;
-> +
-> +	comp_press = bmp180_compensate_press(data, adc_press);
-> +
-> +	*val = comp_press;
-> +	*val2 = 1000;
-This would be better done using a _scale info_mask element to handle the divide
-by 1000.  That lets the decision on whether the conversion is even needed be
-moved to userspace.
-
-Unfortunately that's also true for the bmp280 as it stands which is annoying
-as that makes it ABI which we shouldn't be changing.  Ah well, the device
-is slow anyway so not terrible to leave this as it is.  I should have picked
-that up when reviewing that driver originally - sometimes we have live with
-our mistakes!
-> +
-> +	return IIO_VAL_FRACTIONAL;
-> +}
-> +
-> +static int bmp180_chip_config(struct bmp280_data *data)
-> +{
-> +	return 0;
-> +}
-> +
-> +static const struct bmp280_chip_info bmp180_chip_info = {
-> +	.regmap_config = &bmp180_regmap_config,
-> +	.chip_config = bmp180_chip_config,
-> +	.read_temp = bmp180_read_temp,
-> +	.read_press = bmp180_read_press,
-> +};
-> +
->  static int bmp280_probe(struct i2c_client *client,
->  			const struct i2c_device_id *id)
->  {
-> @@ -367,7 +708,19 @@ static int bmp280_probe(struct i2c_client *client,
->  	indio_dev->info = &bmp280_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  
-> -	data->regmap = devm_regmap_init_i2c(client, &bmp280_regmap_config);
-> +	switch (id->driver_data) {
-> +	case BMP180_CHIP_ID:
-> +		data->chip_info = &bmp180_chip_info;
-> +		break;
-> +	case BMP280_CHIP_ID:
-> +		data->chip_info = &bmp280_chip_info;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	data->regmap = devm_regmap_init_i2c(client,
-> +					data->chip_info->regmap_config);
->  	if (IS_ERR(data->regmap)) {
->  		dev_err(&client->dev, "failed to allocate register map\n");
->  		return PTR_ERR(data->regmap);
-> @@ -376,13 +729,13 @@ static int bmp280_probe(struct i2c_client *client,
->  	ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
->  	if (ret < 0)
->  		return ret;
-> -	if (chip_id != BMP280_CHIP_ID) {
-> +	if (chip_id != id->driver_data) {
->  		dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
->  			BMP280_CHIP_ID, chip_id);
->  		return -EINVAL;
->  	}
->  
-> -	ret = bmp280_chip_init(data);
-> +	ret = data->chip_info->chip_config(data);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -390,13 +743,17 @@ static int bmp280_probe(struct i2c_client *client,
->  }
->  
->  static const struct acpi_device_id bmp280_acpi_match[] = {
-> -	{"BMP0280", 0},
-> +	{"BMP0280", BMP280_CHIP_ID },
-> +	{"BMP0180", BMP180_CHIP_ID },
-> +	{"BMP0085", BMP180_CHIP_ID },
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
->  
->  static const struct i2c_device_id bmp280_id[] = {
-> -	{"bmp280", 0},
-> +	{"bmp280", BMP280_CHIP_ID },
-> +	{"bmp180", BMP180_CHIP_ID },
-> +	{"bmp085", BMP180_CHIP_ID },
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(i2c, bmp280_id);
-> @@ -412,5 +769,5 @@ static struct i2c_driver bmp280_driver = {
->  module_i2c_driver(bmp280_driver);
->  
->  MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
-> -MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP280 pressure and temperature sensor");
-> +MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP180/BMP280 pressure and temperature sensor");
->  MODULE_LICENSE("GPL v2");
+>>
+>>>
+>>> Old interface is kept for backward userspace compatibility and may be
+>>> retrieved from legacy platform_data mechanism only.
+>>>
+>>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+>>> ---
+>>>  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    | 13 +++++
+>>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         | 56 ++++++++++++++++++++--
+>>>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  4 +-
+>>>  include/linux/platform_data/invensense_mpu6050.h   |  5 +-
+>>>  4 files changed, 72 insertions(+), 6 deletions(-)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
