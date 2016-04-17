@@ -1,62 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53211 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53230 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751385AbcDQLYp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 07:24:45 -0400
-Subject: Re: [PATCH 3/4] iio: st_sensors: verify interrupt event to status
-To: Linus Walleij <linus.walleij@linaro.org>
-References: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
- <1458825486-17188-3-git-send-email-linus.walleij@linaro.org>
- <56F8E6AC.9090609@kernel.org>
- <CACRpkdbBKXmgC+1BMFB66CwwfMdLpYaMHzRz6OxBJEV9TTA8Cg@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
+	with ESMTP id S1751617AbcDQL2l (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 07:28:41 -0400
+Subject: Re: [PATCH v2] ARM: dts: ux500: configure the accelerometers open
+ drain
+To: Linus Walleij <linus.walleij@linaro.org>,
+	linux-arm-kernel@lists.infradead.org
+References: <1460623720-8965-1-git-send-email-linus.walleij@linaro.org>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5713727B.9030309@kernel.org>
-Date: Sun, 17 Apr 2016 12:24:43 +0100
+Message-ID: <57137366.9000102@kernel.org>
+Date: Sun, 17 Apr 2016 12:28:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdbBKXmgC+1BMFB66CwwfMdLpYaMHzRz6OxBJEV9TTA8Cg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1460623720-8965-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/04/16 13:34, Linus Walleij wrote:
-> On Mon, Mar 28, 2016 at 10:09 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 24/03/16 13:18, Linus Walleij wrote:
->>> This makes all ST sensor drivers check that they actually have
->>> new data available for the requested channel(s) before claiming
->>> an IRQ, by reading the status register (which is conveniently
->>> the same for all ST sensors) and check that the channel has new
->>> data before proceeding to read it and fill the buffer.
->>>
->>> This way sensors can share an interrupt line: it can be flaged
->>> as shared and then the sensor that did not fire will return
->>> NO_IRQ, and the sensor that fired will handle the IRQ and
->>> return IRQ_HANDLED.
->>>
->> Looks good and even matches on the archaic lis3l02dq I keep meaning
->> to add to the driver :) (had that datasheet lying around)
->>
->> One day we'll figure out how to report 'overruns' sensibly at
->> which point we can use the other bits in that register as well.
->>
->> Anyhow, will let this sit just a little longer as would like Denis
->> and/or Giuseppe to have a look at it as well.
+On 14/04/16 09:48, Linus Walleij wrote:
+> Configure the two accelerometers sharing GPIO line 82 as:
 > 
-> If no further comments I guess this could be applied?
+> - Open drain so that they can share the same interrupt line.
 > 
-> Yours,
-> Linus Walleij
-Agreed and applied to the togreg branch of iio.git - initially pushed
-out as testing for the autobuilders to play with it.
-
-Thanks,
+> Configure the corresponding interrupt pin:
+> 
+> - Trigger on the falling edge since open drain implies that we
+>   do not actively drive the line high, but we will actively drive
+>   it low to generate interrupts and then it moves from high to low
+>   i.e. a falling edge.
+> 
+> - Pulled up so the line will be biased to high unless an IRQ
+>   is active on any device on the line, and thus it goes high
+>   again after the interrupt is deasserted.
+> 
+> Cc: linux-iio@vger.kernel.org
+> Cc: Jonathan Cameron <jic23@cam.ac.uk>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+I have just applied the patch supporting this to the iio tree
+for the next merge window.
 
 Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+> ChangeLog v1->v2:
+> - Switch to using the drive-mode-open-drain; setting
+> ---
+>  arch/arm/boot/dts/ste-href-tvk1281618.dtsi | 12 +++++++-----
+>  1 file changed, 7 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/ste-href-tvk1281618.dtsi b/arch/arm/boot/dts/ste-href-tvk1281618.dtsi
+> index 55f9d0cc90f3..aec816c8ecb6 100644
+> --- a/arch/arm/boot/dts/ste-href-tvk1281618.dtsi
+> +++ b/arch/arm/boot/dts/ste-href-tvk1281618.dtsi
+> @@ -93,14 +93,15 @@
+>  				/* Accelerometer */
+>  				compatible = "st,lsm303dlh-accel";
+>  				st,drdy-int-pin = <1>;
+> +				drive-open-drain;
+>  				reg = <0x18>;
+>  				vdd-supply = <&ab8500_ldo_aux1_reg>;
+>  				vddio-supply = <&db8500_vsmps2_reg>;
+>  				pinctrl-names = "default";
+>  				pinctrl-0 = <&accel_tvk_mode>;
+>  				interrupt-parent = <&gpio2>;
+> -				interrupts = <18 IRQ_TYPE_EDGE_RISING>,
+> -					     <19 IRQ_TYPE_EDGE_RISING>;
+> +				interrupts = <18 IRQ_TYPE_EDGE_FALLING>,
+> +					     <19 IRQ_TYPE_EDGE_FALLING>;
+>  			};
+>  			lsm303dlh@1e {
+>  				/*
+> @@ -118,14 +119,15 @@
+>  				/* Accelerometer */
+>  				compatible = "st,lis331dl-accel";
+>  				st,drdy-int-pin = <1>;
+> +				drive-open-drain;
+>  				reg = <0x1c>;
+>  				vdd-supply = <&ab8500_ldo_aux1_reg>;
+>  				vddio-supply = <&db8500_vsmps2_reg>;
+>  				pinctrl-names = "default";
+>  				pinctrl-0 = <&accel_tvk_mode>;
+>  				interrupt-parent = <&gpio2>;
+> -				interrupts = <18 IRQ_TYPE_EDGE_RISING>,
+> -					     <19 IRQ_TYPE_EDGE_RISING>;
+> +				interrupts = <18 IRQ_TYPE_EDGE_FALLING>,
+> +					     <19 IRQ_TYPE_EDGE_FALLING>;
+>  			};
+>  			ak8974@0f {
+>  				/* Magnetometer */
+> @@ -216,7 +218,7 @@
+>  					/* Accelerometer interrupt lines 1 & 2 */
+>  					tvk_cfg {
+>  						pins = "GPIO82_C1", "GPIO83_D3";
+> -						ste,config = <&gpio_in_pd>;
+> +						ste,config = <&gpio_in_pu>;
+>  					};
+>  				};
+>  			};
 > 
 
