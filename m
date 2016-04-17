@@ -1,277 +1,295 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:44041 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751247AbcDLFV7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 12 Apr 2016 01:21:59 -0400
-Date: Tue, 12 Apr 2016 07:21:57 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Matt Ranostay <matt.ranostay@intel.com>
-cc: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH 3/3] iio: pressure: bmp280: add humidity support
-In-Reply-To: <1460438494-16135-4-git-send-email-matt.ranostay@intel.com>
-Message-ID: <alpine.DEB.2.20.12.1604120720230.31934@pmeerw.net>
-References: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com> <1460438494-16135-4-git-send-email-matt.ranostay@intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53079 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751584AbcDQKy5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 06:54:57 -0400
+Subject: Re: [PATCH V3 2/2] thermal: generic-adc: Add ADC based thermal sensor
+ driver
+To: Laxman Dewangan <ldewangan@nvidia.com>, robh@kernel.org,
+	edubezval@gmail.com, rui.zhang@intel.com, mark.rutland@arm.com,
+	pawel.moll@arm.com, ijc+devicetree@hellion.org.uk
+References: <1460644878-19943-1-git-send-email-ldewangan@nvidia.com>
+ <1460644878-19943-2-git-send-email-ldewangan@nvidia.com>
+Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <57136B7C.6030204@kernel.org>
+Date: Sun, 17 Apr 2016 11:54:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <1460644878-19943-2-git-send-email-ldewangan@nvidia.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-> Enable humidity support for the BME280 part
-
-this also changes unrelated comments referring to datasheets
-
-does this chip really use both, LE (in _compensate_humidity) and BE in 
-(read_humidity)?
- 
-> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
-> ---
->  drivers/iio/pressure/bmp280.c | 137 ++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 133 insertions(+), 4 deletions(-)
+On 14/04/16 15:41, Laxman Dewangan wrote:
+> In some of platform, thermal sensors like NCT thermistors are
+> connected to the one of ADC channel. The temperature is read by
+> reading the voltage across the sensor resistance via ADC. Lookup
+> table for ADC read value to temperature is referred to get
+> temperature. ADC is read via IIO framework.
 > 
-> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-> index e80cbf3b21fc..9e3a9f00cd84 100644
-> --- a/drivers/iio/pressure/bmp280.c
-> +++ b/drivers/iio/pressure/bmp280.c
-> @@ -18,6 +18,8 @@
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
+> Add support for thermal sensor driver which read the voltage across
+> sensor resistance from ADC through IIO framework.
+> 
+> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+One question inline on whether it makes sense to fall back to a
+raw IIO value read if the processed one isn't available.  Looks to me
+like a solution that will fail if anyone 'fixes' the underlying ADC driver
+as then the tables will suddenly be wrong.
+
+Jonathan
+> 
+> ---
+> Changes from V1:
+> - Use the two dimensional lookup table for temperature vs ADC value.
+> - Use non devm_ for thermal zone sensor registration as there may be
+>   race between IIO channel release and temperature read.
+> 
+> Changes from V2:
+> - None.
+> 
+>  drivers/thermal/Kconfig               |  10 ++
+>  drivers/thermal/Makefile              |   1 +
+>  drivers/thermal/thermal-generic-adc.c | 195 ++++++++++++++++++++++++++++++++++
+>  3 files changed, 206 insertions(+)
+>  create mode 100644 drivers/thermal/thermal-generic-adc.c
+> 
+> diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
+> index 594748e..d7d0136 100644
+> --- a/drivers/thermal/Kconfig
+> +++ b/drivers/thermal/Kconfig
+> @@ -400,4 +400,14 @@ config QCOM_SPMI_TEMP_ALARM
+>  	  real time die temperature if an ADC is present or an estimate of the
+>  	  temperature based upon the over temperature stage value.
 >  
-> +#define BMP280_REG_HUMIDITY_LSB		0xFE
-> +#define BMP280_REG_HUMIDITY_MSB		0xFD
->  #define BMP280_REG_TEMP_XLSB		0xFC
->  #define BMP280_REG_TEMP_LSB		0xFB
->  #define BMP280_REG_TEMP_MSB		0xFA
-> @@ -26,11 +28,20 @@
->  #define BMP280_REG_PRESS_MSB		0xF7
->  
->  #define BMP280_REG_CONFIG		0xF5
-> +#define BMP280_REG_CTRL_HUMIDITY	0xF2
->  #define BMP280_REG_CTRL_MEAS		0xF4
->  #define BMP280_REG_STATUS		0xF3
->  #define BMP280_REG_RESET		0xE0
->  #define BMP280_REG_ID			0xD0
->  
-> +/* Due to non linear mapping, and data sizes we can't do a bulk read */
-> +#define BMP280_REG_COMP_H1		0xA1
-> +#define BMP280_REG_COMP_H2		0xE1
-> +#define BMP280_REG_COMP_H3		0xE3
-> +#define BMP280_REG_COMP_H4		0xE4
-> +#define BMP280_REG_COMP_H5		0xE5
-> +#define BMP280_REG_COMP_H6		0xE7
+> +config GENERIC_ADC_THERMAL
+> +	tristate "Generic ADC based thermal sensor"
+> +	depends on IIO
+> +	help
+> +	  This enabled a thermal sysfs driver for the temperature sensor
+> +	  which is connected to the General Purpose ADC. The ADC channel
+> +	  is read via IIO framework and the channel information is provided
+> +	  to this driver. This driver reports the temperature by reading ADC
+> +	  channel and converts it to temperature based on lookup table.
 > +
->  #define BMP280_REG_COMP_TEMP_START	0x88
->  #define BMP280_COMP_TEMP_REG_COUNT	6
->  
-> @@ -44,6 +55,14 @@
->  #define BMP280_FILTER_8X		(BIT(3) | BIT(2))
->  #define BMP280_FILTER_16X		BIT(4)
->  
-> +#define BMP280_OSRS_HUMIDITY_MASK	(BIT(2) | BIT(1) | BIT(0))
-> +#define BMP280_OSRS_HUMIDITY_SKIP	0
-> +#define BMP280_OSRS_HUMIDITY_1X		BIT(0)
-> +#define BMP280_OSRS_HUMIDITY_2X		BIT(1)
-> +#define BMP280_OSRS_HUMIDITY_4X		(BIT(1) | BIT(0))
-> +#define BMP280_OSRS_HUMIDITY_8X		BIT(2)
-> +#define BMP280_OSRS_HUMIDITY_16X	(BIT(2) | BIT(0))
-> +
->  #define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
->  #define BMP280_OSRS_TEMP_SKIP		0
->  #define BMP280_OSRS_TEMP_1X		BIT(5)
-> @@ -93,6 +112,13 @@ struct bmp280_chip_info {
->  	int (*init)(struct bmp280_data *);
->  };
->  
-> +static int bme280_chip_init(struct bmp280_data *data)
-> +{
-> +	return regmap_update_bits(data->regmap, BMP280_REG_CTRL_HUMIDITY,
-> +				  BMP280_OSRS_HUMIDITY_MASK,
-> +				  BMP280_OSRS_HUMIDITY_16X);
-> +}
-> +
->  static struct bmp280_chip_info bmp280_chip_info_table[] = {
->  	[bmp280] = {
->  		.id = BMP280_CHIP_ID,
-> @@ -100,7 +126,8 @@ static struct bmp280_chip_info bmp280_chip_info_table[] = {
->  	},
->  	[bme280] = {
->  		.id = BME280_CHIP_ID,
-> -		.num_channels = 2,
-> +		.num_channels = 3,
-> +		.init = bme280_chip_init,
->  	},
->  };
->  
-> @@ -120,12 +147,17 @@ static const struct iio_chan_spec bmp280_channels[] = {
->  		.type = IIO_TEMP,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->  	},
-> +	{
-> +		.type = IIO_HUMIDITYRELATIVE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +	},
->  };
->  
->  static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
->  {
->  	switch (reg) {
->  	case BMP280_REG_CONFIG:
-> +	case BMP280_REG_CTRL_HUMIDITY:
->  	case BMP280_REG_CTRL_MEAS:
->  	case BMP280_REG_RESET:
->  		return true;
-> @@ -137,6 +169,8 @@ static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
->  static bool bmp280_is_volatile_reg(struct device *dev, unsigned int reg)
->  {
->  	switch (reg) {
-> +	case BMP280_REG_HUMIDITY_LSB:
-> +	case BMP280_REG_HUMIDITY_MSB:
->  	case BMP280_REG_TEMP_XLSB:
->  	case BMP280_REG_TEMP_LSB:
->  	case BMP280_REG_TEMP_MSB:
-> @@ -154,7 +188,7 @@ static const struct regmap_config bmp280_regmap_config = {
->  	.reg_bits = 8,
->  	.val_bits = 8,
->  
-> -	.max_register = BMP280_REG_TEMP_XLSB,
-> +	.max_register = BMP280_REG_HUMIDITY_LSB,
->  	.cache_type = REGCACHE_RBTREE,
->  
->  	.writeable_reg = bmp280_is_writeable_reg,
-> @@ -162,11 +196,74 @@ static const struct regmap_config bmp280_regmap_config = {
->  };
->  
->  /*
-> + * Returns humidity in percent, resolution is 0.01 percent. Output value of
-> + * "47445" represents 47445/1024 = 46.333 %RH.
+>  endif
+> diff --git a/drivers/thermal/Makefile b/drivers/thermal/Makefile
+> index d64f7f7..904593a 100644
+> --- a/drivers/thermal/Makefile
+> +++ b/drivers/thermal/Makefile
+> @@ -49,3 +49,4 @@ obj-$(CONFIG_ST_THERMAL)	+= st/
+>  obj-$(CONFIG_TEGRA_SOCTHERM)	+= tegra/
+>  obj-$(CONFIG_HISI_THERMAL)     += hisi_thermal.o
+>  obj-$(CONFIG_MTK_THERMAL)	+= mtk_thermal.o
+> +obj-$(CONFIG_GENERIC_ADC_THERMAL)	+= thermal-generic-adc.o
+> diff --git a/drivers/thermal/thermal-generic-adc.c b/drivers/thermal/thermal-generic-adc.c
+> new file mode 100644
+> index 0000000..902cf12
+> --- /dev/null
+> +++ b/drivers/thermal/thermal-generic-adc.c
+> @@ -0,0 +1,195 @@
+> +/*
+> + * Generic ADC thermal driver
 > + *
-> + * Taken from BME280 datasheet, Section 4.2.3, "Compensation formula".
+> + * Copyright (C) 2016 NVIDIA CORPORATION. All rights reserved.
+> + *
+> + * Author: Laxman Dewangan <ldewangan@nvidia.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
 > + */
+> +#include <linux/iio/consumer.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +#include <linux/thermal.h>
 > +
-> +static u32 bmp280_compensate_humidity(struct bmp280_data *data,
-> +				      s32 adc_humidity)
-> +{
-> +	struct device *dev = &data->client->dev;
-> +	unsigned int H1, H3, tmp;
-> +	int H2, H4, H5, H6, ret, var;
-> +
-> +	ret = regmap_read(data->regmap, BMP280_REG_COMP_H1, &H1);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to read H1 comp value\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H2, &tmp, 2);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to read H2 comp value\n");
-> +		return ret;
-> +	}
-> +	H2 = sign_extend32(le16_to_cpu(tmp), 15);
-> +
-> +	ret = regmap_read(data->regmap, BMP280_REG_COMP_H3, &H3);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to read H3 comp value\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H4, &tmp, 2);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to read H4 comp value\n");
-> +		return ret;
-> +	}
-> +	H4 = sign_extend32(le16_to_cpu(tmp) >> 4 | (le16_to_cpu(tmp) & 0xf), 11);
-> +
-> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H5, &tmp, 2);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to read H5 comp value\n");
-> +		return ret;
-> +	}
-> +	H5 = sign_extend32(le16_to_cpu(tmp) & 0xfff, 11);
-> +
-> +	ret = regmap_read(data->regmap, BMP280_REG_COMP_H6, &tmp);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to read H6 comp value\n");
-> +		return ret;
-> +	}
-> +	H6 = sign_extend32(tmp, 7);
-> +
-> +	var = ((s32)data->t_fine) - 76800;
-> +	var = ((((adc_humidity << 14) - (H4 << 20) - (H5 * var)) + 16384) >> 15)
-> +		* (((((((var * H6) >> 10) * (((var * H3) >> 11) + 32768)) >> 10)
-> +		+ 2097152) * H2 + 8192) >> 14);
-> +	var -= ((((var >> 15) * (var >> 15)) >> 7) * H1) >> 4;
-> +
-> +	return var >> 12;
+> +struct gadc_thermal_info {
+> +	struct device *dev;
+> +	struct thermal_zone_device *tz_dev;
+> +	struct iio_channel *channel;
+> +	s32 *lookup_table;
+> +	int nlookup_table;
 > +};
 > +
-> +/*
->   * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
->   * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
->   * value.
->   *
-> - * Taken from datasheet, Section 3.11.3, "Compensation formula".
-> + * Taken from BMP280 datasheet, Section 3.11.3, "Compensation formula".
->   */
->  static s32 bmp280_compensate_temp(struct bmp280_data *data,
->  				  s32 adc_temp)
-> @@ -206,7 +303,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
->   * integer bits and 8 fractional bits).  Output value of "24674867"
->   * represents 24674867/256 = 96386.2 Pa = 963.862 hPa
->   *
-> - * Taken from datasheet, Section 3.11.3, "Compensation formula".
-> + * Taken from BMP280 datasheet, Section 3.11.3, "Compensation formula".
->   */
->  static u32 bmp280_compensate_press(struct bmp280_data *data,
->  				   s32 adc_press)
-> @@ -301,6 +398,35 @@ static int bmp280_read_press(struct bmp280_data *data,
->  	return IIO_VAL_FRACTIONAL;
->  }
->  
-> +static int bmp280_read_humidity(struct bmp280_data *data,
-> +				int *val, int *val2)
+> +static int gadc_thermal_read_channel(struct gadc_thermal_info *gti, int *val)
 > +{
 > +	int ret;
-> +	__be16 tmp = 0;
-> +	s32 adc_humidity;
-> +	u32 comp_humidity;
 > +
-> +	/* Read and compensate temperature so we get a reading of t_fine. */
-> +	ret = bmp280_read_temp(data, NULL);
+> +	ret = iio_read_channel_processed(gti->channel, val);
+> +	if (ret < 0)
+> +		ret = iio_read_channel_raw(gti->channel, val);
+Is this case actually useful given it means the scaling of the adc
+isn't known?
+
+I suppose you might have defined the table in terms of raw readings,
+but then when someone comes along and 'fixes' the ADC driver to output
+it's scale your table will be wrong.
+
+
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
-> +			       (u8 *) &tmp, 2);
+> +	return ret;
+> +}
+> +
+> +static int gadc_thermal_adc_to_temp(struct gadc_thermal_info *gti, int val)
+> +{
+> +	int temp, adc_hi, adc_lo;
+> +	int i;
+> +
+> +	for (i = 0; i < gti->nlookup_table; i++) {
+> +		if (val >= gti->lookup_table[2 * i + 1])
+> +			break;
+> +	}
+> +
+> +	if (i == 0) {
+> +		temp = gti->lookup_table[0];
+> +	} else if (i >= (gti->nlookup_table - 1)) {
+> +		temp = gti->lookup_table[2 * (gti->nlookup_table - 1)];
+> +	} else {
+> +		adc_hi = gti->lookup_table[2 * i - 1];
+> +		adc_lo = gti->lookup_table[2 * i + 1];
+> +		temp = gti->lookup_table[2 * i];
+> +		temp -= ((val - adc_lo) * 1000) / (adc_hi - adc_lo);
+> +	}
+> +
+> +	return temp;
+> +}
+> +
+> +static int gadc_thermal_get_temp(void *data, int *temp)
+> +{
+> +	struct gadc_thermal_info *gti = data;
+> +	int val;
+> +	int ret;
+> +
+> +	ret = gadc_thermal_read_channel(gti, &val);
 > +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "failed to read humidity\n");
+> +		dev_err(gti->dev, "IIO channel read failed %d\n", ret);
+> +		return ret;
+> +	}
+> +	*temp = gadc_thermal_adc_to_temp(gti, val);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct thermal_zone_of_device_ops gadc_thermal_ops = {
+> +	.get_temp = gadc_thermal_get_temp,
+> +};
+> +
+> +static int gadc_thermal_read_linear_lookup_table(struct device *dev,
+> +						 struct gadc_thermal_info *gti)
+> +{
+> +	struct device_node *np = dev->of_node;
+> +	int ntable;
+> +	int ret;
+> +
+> +	ntable = of_property_count_elems_of_size(np, "temperature-lookup-table",
+> +						 sizeof(u32));
+> +	if (ntable < 0) {
+> +		dev_err(dev, "Lookup table is not provided\n");
+> +		return ntable;
+> +	}
+> +
+> +	if (ntable % 2) {
+> +		dev_err(dev, "Pair of temperature vs ADC read value missing\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	gti->lookup_table = devm_kzalloc(dev, sizeof(*gti->lookup_table) *
+> +					 ntable, GFP_KERNEL);
+> +	if (!gti->lookup_table)
+> +		return -ENOMEM;
+> +
+> +	ret = of_property_read_u32_array(np, "temperature-lookup-table",
+> +					 (u32 *)gti->lookup_table, ntable);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Failed to read temperature lookup table: %d\n",
+> +			ret);
 > +		return ret;
 > +	}
 > +
-> +	adc_humidity = be16_to_cpu(tmp);
-> +	comp_humidity = bmp280_compensate_humidity(data, adc_humidity);
+> +	gti->nlookup_table = ntable / 2;
 > +
-> +	*val = comp_humidity;
-> +	*val2 = 1024;
-> +
-> +	return IIO_VAL_FRACTIONAL;
+> +	return 0;
 > +}
 > +
->  static int bmp280_read_raw(struct iio_dev *indio_dev,
->  			   struct iio_chan_spec const *chan,
->  			   int *val, int *val2, long mask)
-> @@ -313,6 +439,9 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
->  	switch (mask) {
->  	case IIO_CHAN_INFO_PROCESSED:
->  		switch (chan->type) {
-> +		case IIO_HUMIDITYRELATIVE:
-> +			ret = bmp280_read_humidity(data, val, val2);
-> +			break;
->  		case IIO_PRESSURE:
->  			ret = bmp280_read_press(data, val, val2);
->  			break;
+> +static int gadc_thermal_probe(struct platform_device *pdev)
+> +{
+> +	struct gadc_thermal_info *gti;
+> +	int ret;
+> +
+> +	if (!pdev->dev.of_node) {
+> +		dev_err(&pdev->dev, "Only DT based supported\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	gti = devm_kzalloc(&pdev->dev, sizeof(*gti), GFP_KERNEL);
+> +	if (!gti)
+> +		return -ENOMEM;
+> +
+> +	ret = gadc_thermal_read_linear_lookup_table(&pdev->dev, gti);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	gti->dev = &pdev->dev;
+> +	platform_set_drvdata(pdev, gti);
+> +
+> +	gti->channel = iio_channel_get(&pdev->dev, "sensor-channel");
+> +	if (IS_ERR(gti->channel)) {
+> +		ret = PTR_ERR(gti->channel);
+> +		dev_err(&pdev->dev, "IIO channel not found: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	gti->tz_dev = thermal_zone_of_sensor_register(&pdev->dev, 0,
+> +						      gti, &gadc_thermal_ops);
+> +	if (IS_ERR(gti->tz_dev)) {
+> +		ret = PTR_ERR(gti->tz_dev);
+> +		dev_err(&pdev->dev, "Thermal zone sensor register failed: %d\n",
+> +			ret);
+> +		goto sensor_fail;
+> +	}
+> +
+> +	return 0;
+> +
+> +sensor_fail:
+> +	iio_channel_release(gti->channel);
+> +
+> +	return ret;
+> +}
+> +
+> +static int gadc_thermal_remove(struct platform_device *pdev)
+> +{
+> +	struct gadc_thermal_info *gti = platform_get_drvdata(pdev);
+> +
+> +	thermal_zone_of_sensor_unregister(&pdev->dev, gti->tz_dev);
+> +	iio_channel_release(gti->channel);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id of_adc_thermal_match[] = {
+> +	{ .compatible = "generic-adc-thermal", },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, of_adc_thermal_match);
+> +
+> +static struct platform_driver gadc_thermal_driver = {
+> +	.driver = {
+> +		.name = "generic-adc-thermal",
+> +		.of_match_table = of_adc_thermal_match,
+> +	},
+> +	.probe = gadc_thermal_probe,
+> +	.remove = gadc_thermal_remove,
+> +};
+> +
+> +module_platform_driver(gadc_thermal_driver);
+> +
+> +MODULE_AUTHOR("Laxman Dewangan <ldewangan@nvidia.com>");
+> +MODULE_DESCRIPTION("Generic ADC thermal driver using IIO framework with DT");
+> +MODULE_LICENSE("GPL v2");
 > 
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
