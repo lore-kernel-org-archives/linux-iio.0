@@ -1,144 +1,116 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53369 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751585AbcDQMAV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 08:00:21 -0400
-Subject: Re: [PATCH 1/3] iio: core: Add devm_ APIs for
- iio_channel_{get,release}
-To: Laxman Dewangan <ldewangan@nvidia.com>, corbet@lwn.net,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-References: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com>
-Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57137AD1.5030902@kernel.org>
-Date: Sun, 17 Apr 2016 13:00:17 +0100
+Received: from mail-pf0-f169.google.com ([209.85.192.169]:34224 "EHLO
+	mail-pf0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751474AbcDQMTP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 08:19:15 -0400
+Date: Sun, 17 Apr 2016 05:19:12 -0700
+From: Torokhov <dmitry.torokhov@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Marek Vasut <marex@denx.de>,
+	Stefan Wahren <stefan.wahren@i2se.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	Fabio Estevam <fabio.estevam@nxp.com>,
+	Juergen Borleis <jbe@pengutronix.de>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+Subject: Re: [PATCH RFT 2/5] iio: mxs-lradc: move TS config into suitable
+ function
+Message-ID: <20160417121912.GA33215@dtor-ws>
+References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
+ <1460648909-2657-3-git-send-email-stefan.wahren@i2se.com>
+ <570FF737.4050606@denx.de>
+ <571361DD.1090001@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1459938668-9180-1-git-send-email-ldewangan@nvidia.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <571361DD.1090001@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/04/16 11:31, Laxman Dewangan wrote:
-> Some of kernel driver uses the IIO framework to get the sensor
-> value via ADC or IIO HW driver. The client driver get iio channel
-> by iio_channel_get() and release it by calling iio_channel_release().
-> 
-> Add resource managed version (devm_*) of these APIs so that if client
-> calls the devm_iio_channel_get() then it need not to release it explicitly,
-> it can be done by managed device framework when driver get un-binded.
-> 
-> This reduces the code in error path and also need of .remove callback in
-> some cases.
-> 
-> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
-Applied to the togreg branch of iio.git.  
-I guess the thermal driver use case will hit a cycle or so behind this.
+On Sun, Apr 17, 2016 at 11:13:49AM +0100, Jonathan Cameron wrote:
+> On 14/04/16 21:01, Marek Vasut wrote:
+> > On 04/14/2016 05:48 PM, Stefan Wahren wrote:
+> >> This patch moves the touchscreen type configuration into
+> >> a more suitable function. Btw this simplifies PM ops later.
+> >>
+> >> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+> > 
+> > Looks OK
+> > 
+> > Reviewed-by: Marek Vasut <marex@denx.de>
+> Please do CC Dmitry and linux-input on any patches 'touching' the
+> touchscreen parts of the driver.  I'm happy this one is simple
+> enough to apply anyway, but best to make sure everyone is in the
+> loop.
 
-Thanks,
+FWIW:
 
-Jonathan
-> ---
->  drivers/iio/inkern.c         | 48 ++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/iio/consumer.h | 27 +++++++++++++++++++++++++
->  2 files changed, 75 insertions(+)
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+
 > 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index 734a004..18e623f 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -356,6 +356,54 @@ void iio_channel_release(struct iio_channel *channel)
->  }
->  EXPORT_SYMBOL_GPL(iio_channel_release);
->  
-> +static void devm_iio_channel_free(struct device *dev, void *res)
-> +{
-> +	struct iio_channel *channel = *(struct iio_channel **)res;
-> +
-> +	iio_channel_release(channel);
-> +}
-> +
-> +static int devm_iio_channel_match(struct device *dev, void *res, void *data)
-> +{
-> +	struct iio_channel **r = res;
-> +
-> +	if (!r || !*r) {
-> +		WARN_ON(!r || !*r);
-> +		return 0;
-> +	}
-> +
-> +	return *r == data;
-> +}
-> +
-> +struct iio_channel *devm_iio_channel_get(struct device *dev,
-> +					 const char *channel_name)
-> +{
-> +	struct iio_channel **ptr, *channel;
-> +
-> +	ptr = devres_alloc(devm_iio_channel_free, sizeof(*ptr), GFP_KERNEL);
-> +	if (!ptr)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	channel = iio_channel_get(dev, channel_name);
-> +	if (IS_ERR(channel)) {
-> +		devres_free(ptr);
-> +		return channel;
-> +	}
-> +
-> +	*ptr = channel;
-> +	devres_add(dev, ptr);
-> +
-> +	return channel;
-> +}
-> +EXPORT_SYMBOL_GPL(devm_iio_channel_get);
-> +
-> +void devm_iio_channel_release(struct device *dev, struct iio_channel *channel)
-> +{
-> +	WARN_ON(devres_release(dev, devm_iio_channel_free,
-> +			       devm_iio_channel_match, channel));
-> +}
-> +EXPORT_SYMBOL_GPL(devm_iio_channel_release);
-> +
->  struct iio_channel *iio_channel_get_all(struct device *dev)
->  {
->  	const char *name;
-> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index fad5867..e1e033d 100644
-> --- a/include/linux/iio/consumer.h
-> +++ b/include/linux/iio/consumer.h
-> @@ -49,6 +49,33 @@ struct iio_channel *iio_channel_get(struct device *dev,
->  void iio_channel_release(struct iio_channel *chan);
->  
->  /**
-> + * devm_iio_channel_get() - Resource managed version of iio_channel_get().
-> + * @dev:		Pointer to consumer device. Device name must match
-> + *			the name of the device as provided in the iio_map
-> + *			with which the desired provider to consumer mapping
-> + *			was registered.
-> + * @consumer_channel:	Unique name to identify the channel on the consumer
-> + *			side. This typically describes the channels use within
-> + *			the consumer. E.g. 'battery_voltage'
-> + *
-> + * Returns a pointer to negative errno if it is not able to get the iio channel
-> + * otherwise returns valid pointer for iio channel.
-> + *
-> + * The allocated iio channel is automatically released when the device is
-> + * unbound.
-> + */
-> +struct iio_channel *devm_iio_channel_get(struct device *dev,
-> +					 const char *consumer_channel);
-> +/**
-> + * devm_iio_channel_release() - Resource managed version of
-> + *				iio_channel_release().
-> + * @dev:		Pointer to consumer device for which resource
-> + *			is allocared.
-> + * @chan:		The channel to be released.
-> + */
-> +void devm_iio_channel_release(struct device *dev, struct iio_channel *chan);
-> +
-> +/**
->   * iio_channel_get_all() - get all channels associated with a client
->   * @dev:		Pointer to consumer device.
->   *
+> Something a little odd happened when applying the patch.  Automerging
+> failed so I did it by hand. Not sure what had changed!
+> 
+> Anyhow, please sanity check I haven't messed it up.
+> 
+> Applied to the togreg branch of iio.git - initially pushed out as
+> testing for the autobuilders to play with it.
+> 
+> Thanks,
+> 
+> 
+> Jonathan
+> > 
+> >> ---
+> >>  drivers/iio/adc/mxs-lradc.c |   21 +++++++++++----------
+> >>  1 file changed, 11 insertions(+), 10 deletions(-)
+> >>
+> >> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+> >> index 0576953..7118fca 100644
+> >> --- a/drivers/iio/adc/mxs-lradc.c
+> >> +++ b/drivers/iio/adc/mxs-lradc.c
+> >> @@ -686,6 +686,17 @@ static void mxs_lradc_prepare_pressure(struct mxs_lradc *lradc)
+> >>  
+> >>  static void mxs_lradc_enable_touch_detection(struct mxs_lradc *lradc)
+> >>  {
+> >> +	/* Configure the touchscreen type */
+> >> +	if (lradc->soc == IMX28_LRADC) {
+> >> +		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
+> >> +				    LRADC_CTRL0);
+> >> +
+> >> +		if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
+> >> +			mxs_lradc_reg_set(lradc,
+> >> +					  LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
+> >> +					  LRADC_CTRL0);
+> >> +	}
+> >> +
+> >>  	mxs_lradc_setup_touch_detection(lradc);
+> >>  
+> >>  	lradc->cur_plate = LRADC_TOUCH;
+> >> @@ -1491,16 +1502,6 @@ static int mxs_lradc_hw_init(struct mxs_lradc *lradc)
+> >>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(2));
+> >>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(3));
+> >>  
+> >> -	/* Configure the touchscreen type */
+> >> -	if (lradc->soc == IMX28_LRADC) {
+> >> -		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
+> >> -				    LRADC_CTRL0);
+> >> -
+> >> -	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
+> >> -		mxs_lradc_reg_set(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
+> >> -				  LRADC_CTRL0);
+> >> -	}
+> >> -
+> >>  	/* Start internal temperature sensing. */
+> >>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_CTRL2);
+> >>  
+> >>
+> > 
+> > 
 > 
 
+-- 
+Dmitry
