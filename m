@@ -1,192 +1,152 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52730 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52803 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751468AbcDQJqf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 05:46:35 -0400
-Subject: Re: [PATCH v3 1/2] ti-adc081c: Add support for adc101c and adc121c
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	with ESMTP id S1752993AbcDQKEM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 06:04:12 -0400
+Subject: Re: [PATCH 2/2] iio: magn: bmc150: Introduce SPI support
+To: Daniel Baluta <daniel.baluta@intel.com>, irina.tirdea@intel.com
+References: <1460729590-18886-1-git-send-email-daniel.baluta@intel.com>
+ <1460729590-18886-3-git-send-email-daniel.baluta@intel.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	geert@linux-m68k.org, vlad.dogaru@intel.com,
+	octavian.purdila@intel.com, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-References: <cover.1460384543.git.leonard.crestez@intel.com>
- <879d0c2afc33e22efbfbc8746bb3dd1ca96394cd.1460384543.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57135B79.4080805@kernel.org>
-Date: Sun, 17 Apr 2016 10:46:33 +0100
+Message-ID: <57135F99.8010100@kernel.org>
+Date: Sun, 17 Apr 2016 11:04:09 +0100
 MIME-Version: 1.0
-In-Reply-To: <879d0c2afc33e22efbfbc8746bb3dd1ca96394cd.1460384543.git.leonard.crestez@intel.com>
+In-Reply-To: <1460729590-18886-3-git-send-email-daniel.baluta@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/04/16 15:24, Crestez Dan Leonard wrote:
-> These chips have an almost identical interface but support a different
-> number of value bits. Datasheet links for comparison:
-> 
->  * http://www.ti.com/lit/ds/symlink/adc081c021.pdf
->  * http://www.ti.com/lit/ds/symlink/adc101c021.pdf
->  * http://www.ti.com/lit/ds/symlink/adc121c021.pdf
-> 
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-Very nice.
+On 15/04/16 15:13, Daniel Baluta wrote:
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Looks good.  I like regmap sometimes ;)
 
 Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to play with it.
-
-Thanks,
+testing for the autobuilders to try spotting what we've missed.
 
 Jonathan
 > ---
->  drivers/iio/adc/Kconfig      |  6 +++---
->  drivers/iio/adc/ti-adc081c.c | 51 ++++++++++++++++++++++++++++++++++++++++----
->  2 files changed, 50 insertions(+), 7 deletions(-)
+>  drivers/iio/magnetometer/Kconfig           | 16 +++++++
+>  drivers/iio/magnetometer/Makefile          |  1 +
+>  drivers/iio/magnetometer/bmc150_magn_spi.c | 68 ++++++++++++++++++++++++++++++
+>  3 files changed, 85 insertions(+)
+>  create mode 100644 drivers/iio/magnetometer/bmc150_magn_spi.c
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 5937030..25378c5 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -385,11 +385,11 @@ config ROCKCHIP_SARADC
->  	  module will be called rockchip_saradc.
+> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+> index e916005..33609c23 100644
+> --- a/drivers/iio/magnetometer/Kconfig
+> +++ b/drivers/iio/magnetometer/Kconfig
+> @@ -45,6 +45,22 @@ config BMC150_MAGN_I2C
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called bmc150_magn_i2c.
 >  
->  config TI_ADC081C
-> -	tristate "Texas Instruments ADC081C021/027"
-> +	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
+> +config BMC150_MAGN_SPI
+> +	tristate "Bosch BMC150 SPI Magnetometer Driver"
+> +	depends on SPI
+> +	select BMC150_MAGN
+> +	select REGMAP_SPI
+> +	help
+> +	  Say yes here to build support for the BMC150 magnetometer with
+> +	  SPI interface.
+> +
+> +	  This is a combo module with both accelerometer and magnetometer.
+> +	  This driver is only implementing magnetometer part, which has
+> +	  its own address and register map.
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called bmc150_magn_spi.
+> +
+>  config MAG3110
+>  	tristate "Freescale MAG3110 3-Axis Magnetometer"
 >  	depends on I2C
->  	help
-> -	  If you say yes here you get support for Texas Instruments ADC081C021
-> -	  and ADC081C027 ADC chips.
-> +	  If you say yes here you get support for Texas Instruments ADC081C,
-> +	  ADC101C and ADC121C ADC chips.
+> diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
+> index 5647773..92a745c 100644
+> --- a/drivers/iio/magnetometer/Makefile
+> +++ b/drivers/iio/magnetometer/Makefile
+> @@ -6,6 +6,7 @@
+>  obj-$(CONFIG_AK8975)	+= ak8975.o
+>  obj-$(CONFIG_BMC150_MAGN) += bmc150_magn.o
+>  obj-$(CONFIG_BMC150_MAGN_I2C) += bmc150_magn_i2c.o
+> +obj-$(CONFIG_BMC150_MAGN_SPI) += bmc150_magn_spi.o
 >  
->  	  This driver can also be built as a module. If so, the module will be
->  	  called ti-adc081c.
-> diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
-> index ecbc121..b977340 100644
-> --- a/drivers/iio/adc/ti-adc081c.c
-> +++ b/drivers/iio/adc/ti-adc081c.c
-> @@ -1,9 +1,21 @@
->  /*
-> + * TI ADC081C/ADC101C/ADC121C 8/10/12-bit ADC driver
+>  obj-$(CONFIG_MAG3110)	+= mag3110.o
+>  obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o
+> diff --git a/drivers/iio/magnetometer/bmc150_magn_spi.c b/drivers/iio/magnetometer/bmc150_magn_spi.c
+> new file mode 100644
+> index 0000000..c4c738a
+> --- /dev/null
+> +++ b/drivers/iio/magnetometer/bmc150_magn_spi.c
+> @@ -0,0 +1,68 @@
+> +/*
+> + * 3-axis magnetometer driver support following SPI Bosch-Sensortec chips:
+> + *  - BMC150
+> + *  - BMC156
 > + *
->   * Copyright (C) 2012 Avionic Design GmbH
-> + * Copyright (C) 2016 Intel
->   *
->   * This program is free software; you can redistribute it and/or modify
->   * it under the terms of the GNU General Public License version 2 as
->   * published by the Free Software Foundation.
+> + * Copyright (c) 2016, Intel Corporation.
 > + *
-> + * Datasheets:
-> + *	http://www.ti.com/lit/ds/symlink/adc081c021.pdf
-> + *	http://www.ti.com/lit/ds/symlink/adc101c021.pdf
-> + *	http://www.ti.com/lit/ds/symlink/adc121c021.pdf
-> + *
-> + * The devices have a very similar interface and differ mostly in the number of
-> + * bits handled. For the 8-bit and 10-bit models the least-significant 4 or 2
-> + * bits of value registers are reserved.
->   */
->  
->  #include <linux/err.h>
-> @@ -17,6 +29,9 @@
->  struct adc081c {
->  	struct i2c_client *i2c;
->  	struct regulator *ref;
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + */
+> +#include <linux/module.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/acpi.h>
+> +#include <linux/regmap.h>
 > +
-> +	/* 8, 10 or 12 */
-> +	int bits;
->  };
->  
->  #define REG_CONV_RES 0x00
-> @@ -34,7 +49,7 @@ static int adc081c_read_raw(struct iio_dev *iio,
->  		if (err < 0)
->  			return err;
->  
-> -		*value = (err >> 4) & 0xff;
-> +		*value = (err & 0xFFF) >> (12 - adc->bits);
->  		return IIO_VAL_INT;
->  
->  	case IIO_CHAN_INFO_SCALE:
-> @@ -43,7 +58,7 @@ static int adc081c_read_raw(struct iio_dev *iio,
->  			return err;
->  
->  		*value = err / 1000;
-> -		*shift = 8;
-> +		*shift = adc->bits;
->  
->  		return IIO_VAL_FRACTIONAL_LOG2;
->  
-> @@ -60,6 +75,28 @@ static const struct iio_chan_spec adc081c_channel = {
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->  };
->  
-> +struct adcxx1c_model {
-> +	int bits;
-> +};
+> +#include "bmc150_magn.h"
 > +
-> +#define ADCxx1C_MODEL(_bits)						\
-> +	{								\
-> +		.bits = (_bits),					\
+> +static int bmc150_magn_spi_probe(struct spi_device *spi)
+> +{
+> +	struct regmap *regmap;
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +
+> +	regmap = devm_regmap_init_spi(spi, &bmc150_magn_regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
+> +			(int)PTR_ERR(regmap));
+> +		return PTR_ERR(regmap);
 > +	}
+> +	return bmc150_magn_probe(&spi->dev, regmap, spi->irq, id->name);
+> +}
 > +
-> +/* Model ids are indexes in _models array */
-> +enum adcxx1c_model_id {
-> +	ADC081C = 0,
-> +	ADC101C = 1,
-> +	ADC121C = 2,
+> +static int bmc150_magn_spi_remove(struct spi_device *spi)
+> +{
+> +	bmc150_magn_remove(&spi->dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id bmc150_magn_spi_id[] = {
+> +	{"bmc150_magn", 0},
+> +	{"bmc156_magn", 0},
+> +	{}
 > +};
+> +MODULE_DEVICE_TABLE(spi, bmc150_magn_spi_id);
 > +
-> +static struct adcxx1c_model adcxx1c_models[] = {
-> +	ADCxx1C_MODEL( 8),
-> +	ADCxx1C_MODEL(10),
-> +	ADCxx1C_MODEL(12),
+> +static const struct acpi_device_id bmc150_magn_acpi_match[] = {
+> +	{"BMC150B", 0},
+> +	{"BMC156B", 0},
+> +	{},
 > +};
+> +MODULE_DEVICE_TABLE(acpi, bmc150_magn_acpi_match);
 > +
->  static const struct iio_info adc081c_info = {
->  	.read_raw = adc081c_read_raw,
->  	.driver_module = THIS_MODULE,
-> @@ -70,6 +107,7 @@ static int adc081c_probe(struct i2c_client *client,
->  {
->  	struct iio_dev *iio;
->  	struct adc081c *adc;
-> +	struct adcxx1c_model *model = &adcxx1c_models[id->driver_data];
->  	int err;
->  
->  	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-> @@ -81,6 +119,7 @@ static int adc081c_probe(struct i2c_client *client,
->  
->  	adc = iio_priv(iio);
->  	adc->i2c = client;
-> +	adc->bits = model->bits;
->  
->  	adc->ref = devm_regulator_get(&client->dev, "vref");
->  	if (IS_ERR(adc->ref))
-> @@ -124,7 +163,9 @@ static int adc081c_remove(struct i2c_client *client)
->  }
->  
->  static const struct i2c_device_id adc081c_id[] = {
-> -	{ "adc081c", 0 },
-> +	{ "adc081c", ADC081C },
-> +	{ "adc101c", ADC101C },
-> +	{ "adc121c", ADC121C },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, adc081c_id);
-> @@ -132,6 +173,8 @@ MODULE_DEVICE_TABLE(i2c, adc081c_id);
->  #ifdef CONFIG_OF
->  static const struct of_device_id adc081c_of_match[] = {
->  	{ .compatible = "ti,adc081c" },
-> +	{ .compatible = "ti,adc101c" },
-> +	{ .compatible = "ti,adc121c" },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, adc081c_of_match);
-> @@ -149,5 +192,5 @@ static struct i2c_driver adc081c_driver = {
->  module_i2c_driver(adc081c_driver);
->  
->  MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
-> -MODULE_DESCRIPTION("Texas Instruments ADC081C021/027 driver");
-> +MODULE_DESCRIPTION("Texas Instruments ADC081C/ADC101C/ADC121C driver");
->  MODULE_LICENSE("GPL v2");
+> +static struct spi_driver bmc150_magn_spi_driver = {
+> +	.probe		= bmc150_magn_spi_probe,
+> +	.remove		= bmc150_magn_spi_remove,
+> +	.id_table	= bmc150_magn_spi_id,
+> +	.driver = {
+> +		.acpi_match_table = ACPI_PTR(bmc150_magn_acpi_match),
+> +		.name	= "bmc150_magn_spi",
+> +	},
+> +};
+> +module_spi_driver(bmc150_magn_spi_driver);
+> +
+> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
+> +MODULE_DESCRIPTION("BMC150 magnetometer SPI driver");
+> +MODULE_LICENSE("GPL v2");
 > 
 
