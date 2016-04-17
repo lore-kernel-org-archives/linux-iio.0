@@ -1,110 +1,53 @@
-Return-Path: <stefan.wahren@i2se.com>
-In-Reply-To: 20160411194204.GA17762@rob-hp-laptop
-To: Harald Geyer <harald@ccbib.org>, Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jonathan Cameron <jic23@kernel.org>,
- Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
- Fabio Estevam <fabio.estevam@nxp.com>, Marek Vasut <marex@denx.de>,
- linux-iio@vger.kernel.org,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH] iio: mxs-lradc: Move binding document out of staging as
- well
-Message-ID: <570E78D9.7080902@i2se.com>
-Date: Wed, 13 Apr 2016 18:50:33 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52921 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751531AbcDQKYJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 06:24:09 -0400
+Subject: Re: [PATCH RFT 3/5] iio: mxs-lradc: move STMP reset out of ADC init
+To: Marek Vasut <marex@denx.de>, Juergen Borleis <jbe@pengutronix.de>,
+	Stefan Wahren <stefan.wahren@i2se.com>
+References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
+ <1460648909-2657-4-git-send-email-stefan.wahren@i2se.com>
+ <201604150848.44242.jbe@pengutronix.de> <5710BE85.10403@denx.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	Fabio Estevam <fabio.estevam@nxp.com>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <57136444.2010002@kernel.org>
+Date: Sun, 17 Apr 2016 11:24:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <5710BE85.10403@denx.de>
+Content-Type: text/plain; charset=iso-8859-15
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
-
-[added Fabio, Marek and linux-arm-kernel]
-
-> On Sun, Apr 10, 2016 at 01:03:18PM +0000, Harald Geyer wrote:
-> > commit f836c45922446df872250a12dd08e48978aceb2f moved mxs-lradc driver
-> > out of staging. However the binding document was left in the old place.
+On 15/04/16 11:12, Marek Vasut wrote:
+> On 04/15/2016 08:48 AM, Juergen Borleis wrote:
+>> Hi Stefan,
+>>
+>> On Thursday 14 April 2016 17:48:27 Stefan Wahren wrote:
+>>> This patch moves the STMP reset out of ADC init function
+>>> in order to make it never fail. This is also necessary
+>>> for PM ops.
+>>
+>> What do you mean with "make it never fail"?
 > 
-> A move out of staging should probably imply a review. Though we don't 
-> have clear rules around that for bindings.
->
-> >  
-> > Signed-off-by: Harald Geyer <harald@ccbib.org>
-> > ---
-> >  .../devicetree/bindings/iio/adc/mxs-lradc.txt      | 47 ++++++++++++++++++++++
-> >  .../bindings/staging/iio/adc/mxs-lradc.txt         | 47 ----------------------
-> >  2 files changed, 47 insertions(+), 47 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-> >  delete mode 100644 Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-> > new file mode 100644
-> > index 0000000..555fb11
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-> > @@ -0,0 +1,47 @@
-> > +* Freescale MXS LRADC device driver
-> > +
-> > +Required properties:
-> > +- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
-> > +              for i.MX28 SoC
-> > +- reg: Address and length of the register set for the device
-> > +- interrupts: Should contain the LRADC interrupts
-> > +
-> > +Optional properties:
-> > +- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
-> > +                               to LRADC. Valid value is either 4 or 5. If this
-> > +                               property is not present, then the touchscreen is
-> > +                               disabled. 5 wires is valid for i.MX28 SoC only.
->
-> Standard touchscreen property?
+> He wants to make the function invoke only functions which don't return
+> error value. Not a great wording, but the patch makes it clear.
+I've reworded to make this a little clearer and applied it to the togreg branch
+of iio.git initially pushed out as testing for the autobuilders
+to play with it (also giving time for any more comments on it to come through)
 
-There is a similiar one in input/touchscreen/ti-tsc-adc.txt with the name ti,wires.
-But i'm not sure about the others.
-
-Stefan
-
+Jonathan
 > 
-> > +- fsl,ave-ctrl: number of samples per direction to calculate an average value.
-> > +                Allowed value is 1 ... 32, default is 4
-> > +- fsl,ave-delay: delay between consecutive samples. Allowed value is
-> > +                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
-> > +                 2 kHz and its default is 2 (= 1 ms)
->
-> ditto.
+>>> [...]
+>>
+>> jb
+>>
 > 
-> If not, it should have units.
->
-> > +- fsl,settling: delay between plate switch to next sample. Allowed value is
-> > +                1 ... 2047. It counts at 2 kHz and its default is
-> > +                10 (= 5 ms)
->
-> ditto.
->
-> > +
-> > +Example for i.MX23 SoC:
-> > +
-> > +	lradc@80050000 {
-> > +		compatible = "fsl,imx23-lradc";
-> > +		reg = <0x80050000 0x2000>;
-> > +		interrupts = <36 37 38 39 40 41 42 43 44>;
-> > +		status = "okay";
-> > +		fsl,lradc-touchscreen-wires = <4>;
-> > +		fsl,ave-ctrl = <4>;
-> > +		fsl,ave-delay = <2>;
-> > +		fsl,settling = <10>;
-> > +	};
-> > +
-> > +Example for i.MX28 SoC:
-> > +
-> > +	lradc@80050000 {
-> > +		compatible = "fsl,imx28-lradc";
-> > +		reg = <0x80050000 0x2000>;
-> > +		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
-> > +		status = "okay";
-> > +		fsl,lradc-touchscreen-wires = <5>;
-> > +		fsl,ave-ctrl = <4>;
-> > +		fsl,ave-delay = <2>;
-> > +		fsl,settling = <10>;
-> > +	};
+> 
+
