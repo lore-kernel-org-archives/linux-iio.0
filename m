@@ -1,119 +1,143 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mezzanine.sirena.org.uk ([106.187.55.193]:50922 "EHLO
-	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752229AbcDRKcf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 06:32:35 -0400
-Date: Mon, 18 Apr 2016 11:32:12 +0100
-From: Mark Brown <broonie@kernel.org>
+Return-Path: <afd@ti.com>
+Subject: Re: Question about differential muxing
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Message-ID: <20160418103212.GQ3217@sirena.org.uk>
-References: <cover.1460045763.git.leonard.crestez@intel.com>
- <5dbbd82290c575f595ae0907aaf8e03117a6d017.1460045763.git.leonard.crestez@intel.com>
- <alpine.DEB.2.02.1604072142510.26969@pmeerw.net>
- <570A513A.4020106@kernel.org>
- <570BBDFC.6010601@intel.com>
- <57134AFA.3040406@kernel.org>
+References: <5711362A.1020700@ti.com> <57123BA0.4070501@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Lars-Peter
+ Clausen <lars@metafoo.de>
+From: "Andrew F. Davis" <afd@ti.com>
+Message-ID: <5713D9A7.4060106@ti.com>
+Date: Sun, 17 Apr 2016 13:44:55 -0500
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="By57YlnFViWR/M0S"
-In-Reply-To: <57134AFA.3040406@kernel.org>
-Subject: Re: [PATCH 1/5] max44000: Initial commit
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <57123BA0.4070501@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
+On 04/16/2016 08:18 AM, Jonathan Cameron wrote:
+> On 15/04/16 19:42, Andrew F. Davis wrote:
+>> Hello all,
+>>
+>> I am currently working on a driver for a part similar to the AFE4300. I
+>> was hoping to get some information on the recommended way to handle a
+>> mux such as the one in the AFE4300 BCM front-end (page 13 of
+>> http://www.ti.com/lit/ds/symlink/afe4300.pdf has a good image).
+> That's marginally bonkers..
+> 
+> You do seem to get the weird and wonderful ;)  I'd never appreciated
+> some of these weird devices existed!  Much more interesting than
+> the average ADC.
 
---By57YlnFViWR/M0S
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I do wish one of these days they put a regular ADC on my desk, but what
+fun would that be :)
 
-On Sun, Apr 17, 2016 at 09:36:10AM +0100, Jonathan Cameron wrote:
-> On 11/04/16 16:08, Crestez Dan Leonard wrote:
+>>
+>> The top several pins are outputs that can be routed to the OP-AMP, but
+>> only one at a time, because of this I'm not sure if they should be
+>> exposed as output channels, or sysfs switches.
+> So they are outputs the whole time?  But sometime internally fed back
+> in to that amplifier.. both connecting to the input and output...
+> 
+> Is there a finite list of what the outputs can actually be at any time?
+> I'm not sure if we can map this onto standard output channels or not.
+> 
 
-Please leave blank lines between paragraphs, it makes things much easier
-to read.
+Yes, the list is technically finite, but any combination of one pin for
+output and one for feedback is valid.
 
-> > Would it be
-> > acceptable to just expand the REGMASK_* into a large or-ing of (1 <<
-> > MAX44000_REG_*)? Then it would be clear in the source what's going on
-> > but binary will be the same.
+> It's described in the text as selecting between 6 contact points and
+> 4 impedances so I'll pretend I can see exactly how the circuit is doing that
+> as this is far too much thinking for a Saturday afternoon.
+> 
 
-> Would be interesting to see but I doubt the optimized code will be that
-> different, and the switch is pretty much the 'standard' way of handling
-> these long register lists cleanly.
+It's been far to much thinking for my work-week too :) I think in the
+data sheet they make the assumption that the PR0/1 and RN0/1 will be
+connected external to a reference load, then any 2 pin combo of IOUTx
+pins will be used to actually transmit. But this is not a hard
+requirement so I don't really want to limit the device by not providing
+a way to connect the combo IOUT3 and RN1, for instance.
 
-> Often it comes down to doing things the way people expect them to
-> be done as that makes review easier for a tiny possible cost in
-> run time.
+> If treated as output channels it would have to be done on a last come
+> basis with the others all being set to 0.  That's fine under the ABI that
+> allows for any value to result in a change to any other but clunky.
+> 
 
-You can also specify ranges of registers if the map mostly has large
-blocks of contiguous registers, a switch statement tends to be easier
-and is probably more efficient for most register maps.
+This was my concern, it seems kinda odd to automatically disable an
+output when enabling another, but if it's explicitly allowed I'll do it.
 
-> >>>> +    .use_single_rw    = 1,
-> >>>> +    .cache_type    = REGCACHE_FLAT,
+> Hmm. Treating it as output channels does kind of match with how the device
+> is used I think?  Fire a current out of pointN and read the resulting
+> voltage between 2 points (one of which might be a reference)...
+> 
 
-> >> This always seems like a good idea, but tends to cause issues.
-> >> FLAT is really only meant for very high performance devices, you
-> >> are probably better with something else here.  If you are doing this
-> >> deliberately to make the below writes actually occur, then please
-> >> add a comment here.
+I really don't know myself about all this, but the way it was explained
+to me is that the user will connect a transmitter (for testing they gave
+me simple resistors, so some kind of resistive load) between the output
+pins, then they will read the value across a receiver (again probably
+just some contacts with the subjects skin tied to a pair of input pins),
+by switching between different transmit/receiver pairs placed at
+different points and frequencies (and polarities I believe) you can get
+a map of body impedance.
 
-> > I used REGCACHE_FLAT because my device has a very small number of
-> > registers and I assume it uses less memory. Honestly it would make
-> > sense for regmap to include a REGCACHE_AUTO cache_type and pick the
-> > cache implementation automatically based on number of registers.
+So I would like every combination of pins exposed in some way if I can.
 
-> I've fallen for that one in the past as well.  AUTO would indeed
-> be good if it was easy to do.
+> It's all channels, there is just a lot of restrictions on what can happen
+> at a time.
+> 
 
-It's extremely easy to do.  Unless you've got a good reason to do
-anything else you should always be using an rbtree.  The core would
-never select anything else.
+Yeah, I also like them as channels as you can set the frequency sent to
+the output pins using the standard IIO_CHAN_INFO_FREQUENCY.
 
-> > Yes. It would not work otherwise since the regmap cache is explicitly
-> > initialized with my listed defaults.
-> > As far as I can tell regmap_write will always write to the hardware.
+>>
+>> The other issue is with the input pins, I believe the standard way to
+>> handle this is by exposing every mux setting as a separate channel, then
+>> only allowing one bit set in the scan mask, but for this part, when all
+>> differential combinations are exposed we have more than 100 channels,
+>> and the other part I'm working on makes this several times worse.
+>>
+>> Could someone point to any information, or an existing driver, that
+>> explains the preferred way to handle this?
+> You have it correct above.  At the end of the day there isn't much we can
+> do to provide a compact yet general interface and occasionally we do end
+> up with an awful lot of channels.  There are some analog devices battery
+> chargers for example that end up as a cascade resulting in similar numbers
+> of channels.
+> 
+> Each channel doesn't cost us that much other than making for a big set of
+> files. 
+> 
 
-> Interesting and counter intuitive if true...
+What about for buffered reads, active_scan_mask seems to be sent as bits
+in a 64bit variable, does this then lead to a hard limitation of 64
+channels?
 
-No, if the driver asked to write then we write.  If the driver wants to
-do a read/modify/write cycle it should use regmap_update_bits().
+> Doing it as mux switches would work, but be extremely difficult to describe
+> simply to userspace in any way that would generalize.  The resulting programs
+> would have to know too much about the sensor routing or to have a lot
+> of complexity decoding how to set up the channel combinations they actually
+> want.
+> 
 
-> > If the device had a reset command I should have used that, right?
-> > What is happening is that I am implementing a reset command in
-> > software.
+Maybe:
 
-> Not necessarily.  Lots of drivers don't - but instead have their interfaces
-> reflect their current state on startup.  Reset's are often there to get
-> the internal state of the device cleaned up if it is in an unknowable state
-> rather than to get the defaults to any particular state.  They are always
-> read from the hardware or a known good cache when queried from userspace
-> anyway.
+#cat in_voltage3_mux_available
+VSENSE0
+VSENSERP1
+etc..
+#echo VSENCE4 > in_voltage3_mux
 
-That's not entirely it.  Doing a reset is often faster than rewriting
-the entire register map and is more robust against undocumented
-registers or things the driver didn't think about which means that
-the behaviour is going to be more consistent.
+or such for each real ADC channel with a mux in-front of it?
 
---By57YlnFViWR/M0S
-Content-Type: application/pgp-signature; name="signature.asc"
+> As for existing drivers... Hmm. any of the differential ADC drivers provide a
+> reference of sorts. For high channel counts, the ad7280a driver is still in
+> staging but the principles are fine...
+> 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Okay, I'll give that a look.
 
-iQEcBAEBCAAGBQJXFLerAAoJECTWi3JdVIfQeO8H/135GAXn7LM6Lyj+aTvWKUJs
-IcRKYkDgVSiq6VDO50mtjoviFcnQeVZyVenKgIksSv+PShnPsHuetZuUaXPd1e2L
-JPT6P7qerqba1fJb/guLEs96W7T4w7XiK9JIV24AZNcLy5Q+60Gi5tDfme+EVcvX
-Pc2rHBM2y92ALBUyXVs7ytP0r1zEtVXtewbPU2FBaqXydma2bPAOh+UO91U/iNKt
-ycPFxbd3F/CvCQ6UeMxKsCwbdSj5tZkn5nxhNI15kk3ipErZc8ECD5/bOD6q+arB
-IlFeCcu3n8WLFiRQn8zuPUQP5kmm2N7ptxciOMH92lNR3Ra9StTQrKHZ7vWhGmU=
-=o2P9
------END PGP SIGNATURE-----
+Thanks,
+Andrew
 
---By57YlnFViWR/M0S--
+> Lars, any input on this sort of highly complex device?  Looks a bit like some
+> of the more nuts audio chips in some ways.
+> 
+> Jonathan
