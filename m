@@ -1,71 +1,192 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53226 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52730 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751385AbcDQL1v (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 07:27:51 -0400
-Subject: Re: [PATCH 4/4 v5] iio: st_sensors: support open drain mode
-To: Rob Herring <robh@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>
-References: <1460623521-8755-1-git-send-email-linus.walleij@linaro.org>
- <20160414170901.GA9172@rob-hp-laptop>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
+	with ESMTP id S1751468AbcDQJqf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 05:46:35 -0400
+Subject: Re: [PATCH v3 1/2] ti-adc081c: Add support for adc101c and adc121c
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1460384543.git.leonard.crestez@intel.com>
+ <879d0c2afc33e22efbfbc8746bb3dd1ca96394cd.1460384543.git.leonard.crestez@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57137335.4060605@kernel.org>
-Date: Sun, 17 Apr 2016 12:27:49 +0100
+Message-ID: <57135B79.4080805@kernel.org>
+Date: Sun, 17 Apr 2016 10:46:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160414170901.GA9172@rob-hp-laptop>
+In-Reply-To: <879d0c2afc33e22efbfbc8746bb3dd1ca96394cd.1460384543.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/04/16 18:09, Rob Herring wrote:
-> On Thu, Apr 14, 2016 at 10:45:21AM +0200, Linus Walleij wrote:
->> Some types of ST Sensors can be connected to the same IRQ line
->> as other peripherals using open drain. Add a device tree binding
->> and a sensor data property to flip the right bit in the interrupt
->> control register to enable open drain mode on the INT line.
->>
->> If the line is set to be open drain, also tag on IRQF_SHARED
->> to the IRQ flags when requesting the interrupt, as the whole
->> point of using open drain interrupt lines is to share them with
->> more than one peripheral (wire-or).
->>
->> Cc: devicetree@vger.kernel.org
->> Cc: Giuseppe Barba <giuseppe.barba@st.com>
->> Cc: Denis Ciocca <denis.ciocca@st.com>
->> Cc: Rob Herring <robh@kernel.org>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->> ---
->> ChangeLog v4->v5:
->> - Rename DT bool property int-pin-open-drain to drive-mode-open-drain
->>   reusing the pin control subsystem binding.
->> ChangeLog v3->v4:
->> - Rename DT bool property st,int-pin-open-drain to int-pin-open-drain
->> - Rob Herring ACKed st,int-pin-open-drain but not including his ACK
->>   on this even though it's close
->> ChangeLog v2->v3:
->> - Rebase on top of the patches fixing the other issues (handling
->>   IRQ status check and channel reading bug).
->> ChangeLog v1->v2:
->> - Rebased to fit the new patch order.
->> ---
->>  Documentation/devicetree/bindings/iio/st-sensors.txt |  4 ++++
+On 11/04/16 15:24, Crestez Dan Leonard wrote:
+> These chips have an almost identical interface but support a different
+> number of value bits. Datasheet links for comparison:
 > 
-> Acked-by: Rob Herring <rob@kernel.org>
+>  * http://www.ti.com/lit/ds/symlink/adc081c021.pdf
+>  * http://www.ti.com/lit/ds/symlink/adc101c021.pdf
+>  * http://www.ti.com/lit/ds/symlink/adc121c021.pdf
+> 
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+Very nice.
+
 Applied to the togreg branch of iio.git - initially pushed out as
 testing for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
+> ---
+>  drivers/iio/adc/Kconfig      |  6 +++---
+>  drivers/iio/adc/ti-adc081c.c | 51 ++++++++++++++++++++++++++++++++++++++++----
+>  2 files changed, 50 insertions(+), 7 deletions(-)
 > 
->>  drivers/iio/accel/st_accel_core.c                    |  8 ++++++++
->>  drivers/iio/common/st_sensors/st_sensors_core.c      | 20 ++++++++++++++++++++
->>  drivers/iio/common/st_sensors/st_sensors_trigger.c   | 13 +++++++++++++
->>  drivers/iio/pressure/st_pressure_core.c              |  8 ++++++++
->>  include/linux/iio/common/st_sensors.h                |  6 ++++++
->>  include/linux/platform_data/st_sensors_pdata.h       |  2 ++
->>  7 files changed, 61 insertions(+)
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 5937030..25378c5 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -385,11 +385,11 @@ config ROCKCHIP_SARADC
+>  	  module will be called rockchip_saradc.
+>  
+>  config TI_ADC081C
+> -	tristate "Texas Instruments ADC081C021/027"
+> +	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
+>  	depends on I2C
+>  	help
+> -	  If you say yes here you get support for Texas Instruments ADC081C021
+> -	  and ADC081C027 ADC chips.
+> +	  If you say yes here you get support for Texas Instruments ADC081C,
+> +	  ADC101C and ADC121C ADC chips.
+>  
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called ti-adc081c.
+> diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
+> index ecbc121..b977340 100644
+> --- a/drivers/iio/adc/ti-adc081c.c
+> +++ b/drivers/iio/adc/ti-adc081c.c
+> @@ -1,9 +1,21 @@
+>  /*
+> + * TI ADC081C/ADC101C/ADC121C 8/10/12-bit ADC driver
+> + *
+>   * Copyright (C) 2012 Avionic Design GmbH
+> + * Copyright (C) 2016 Intel
+>   *
+>   * This program is free software; you can redistribute it and/or modify
+>   * it under the terms of the GNU General Public License version 2 as
+>   * published by the Free Software Foundation.
+> + *
+> + * Datasheets:
+> + *	http://www.ti.com/lit/ds/symlink/adc081c021.pdf
+> + *	http://www.ti.com/lit/ds/symlink/adc101c021.pdf
+> + *	http://www.ti.com/lit/ds/symlink/adc121c021.pdf
+> + *
+> + * The devices have a very similar interface and differ mostly in the number of
+> + * bits handled. For the 8-bit and 10-bit models the least-significant 4 or 2
+> + * bits of value registers are reserved.
+>   */
+>  
+>  #include <linux/err.h>
+> @@ -17,6 +29,9 @@
+>  struct adc081c {
+>  	struct i2c_client *i2c;
+>  	struct regulator *ref;
+> +
+> +	/* 8, 10 or 12 */
+> +	int bits;
+>  };
+>  
+>  #define REG_CONV_RES 0x00
+> @@ -34,7 +49,7 @@ static int adc081c_read_raw(struct iio_dev *iio,
+>  		if (err < 0)
+>  			return err;
+>  
+> -		*value = (err >> 4) & 0xff;
+> +		*value = (err & 0xFFF) >> (12 - adc->bits);
+>  		return IIO_VAL_INT;
+>  
+>  	case IIO_CHAN_INFO_SCALE:
+> @@ -43,7 +58,7 @@ static int adc081c_read_raw(struct iio_dev *iio,
+>  			return err;
+>  
+>  		*value = err / 1000;
+> -		*shift = 8;
+> +		*shift = adc->bits;
+>  
+>  		return IIO_VAL_FRACTIONAL_LOG2;
+>  
+> @@ -60,6 +75,28 @@ static const struct iio_chan_spec adc081c_channel = {
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  };
+>  
+> +struct adcxx1c_model {
+> +	int bits;
+> +};
+> +
+> +#define ADCxx1C_MODEL(_bits)						\
+> +	{								\
+> +		.bits = (_bits),					\
+> +	}
+> +
+> +/* Model ids are indexes in _models array */
+> +enum adcxx1c_model_id {
+> +	ADC081C = 0,
+> +	ADC101C = 1,
+> +	ADC121C = 2,
+> +};
+> +
+> +static struct adcxx1c_model adcxx1c_models[] = {
+> +	ADCxx1C_MODEL( 8),
+> +	ADCxx1C_MODEL(10),
+> +	ADCxx1C_MODEL(12),
+> +};
+> +
+>  static const struct iio_info adc081c_info = {
+>  	.read_raw = adc081c_read_raw,
+>  	.driver_module = THIS_MODULE,
+> @@ -70,6 +107,7 @@ static int adc081c_probe(struct i2c_client *client,
+>  {
+>  	struct iio_dev *iio;
+>  	struct adc081c *adc;
+> +	struct adcxx1c_model *model = &adcxx1c_models[id->driver_data];
+>  	int err;
+>  
+>  	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+> @@ -81,6 +119,7 @@ static int adc081c_probe(struct i2c_client *client,
+>  
+>  	adc = iio_priv(iio);
+>  	adc->i2c = client;
+> +	adc->bits = model->bits;
+>  
+>  	adc->ref = devm_regulator_get(&client->dev, "vref");
+>  	if (IS_ERR(adc->ref))
+> @@ -124,7 +163,9 @@ static int adc081c_remove(struct i2c_client *client)
+>  }
+>  
+>  static const struct i2c_device_id adc081c_id[] = {
+> -	{ "adc081c", 0 },
+> +	{ "adc081c", ADC081C },
+> +	{ "adc101c", ADC101C },
+> +	{ "adc121c", ADC121C },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(i2c, adc081c_id);
+> @@ -132,6 +173,8 @@ MODULE_DEVICE_TABLE(i2c, adc081c_id);
+>  #ifdef CONFIG_OF
+>  static const struct of_device_id adc081c_of_match[] = {
+>  	{ .compatible = "ti,adc081c" },
+> +	{ .compatible = "ti,adc101c" },
+> +	{ .compatible = "ti,adc121c" },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, adc081c_of_match);
+> @@ -149,5 +192,5 @@ static struct i2c_driver adc081c_driver = {
+>  module_i2c_driver(adc081c_driver);
+>  
+>  MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
+> -MODULE_DESCRIPTION("Texas Instruments ADC081C021/027 driver");
+> +MODULE_DESCRIPTION("Texas Instruments ADC081C/ADC101C/ADC121C driver");
+>  MODULE_LICENSE("GPL v2");
+> 
 
