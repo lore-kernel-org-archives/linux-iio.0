@@ -1,64 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:55893 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752140AbcDQM0C (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 17 Apr 2016 08:26:02 -0400
-Date: Sun, 17 Apr 2016 14:25:49 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org, Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52863 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751493AbcDQKNw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 06:13:52 -0400
+Subject: Re: [PATCH RFT 2/5] iio: mxs-lradc: move TS config into suitable
+ function
+To: Marek Vasut <marex@denx.de>,
+	Stefan Wahren <stefan.wahren@i2se.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Peter Rosin <peda@lysator.liu.se>
-Subject: Re: [RFC] iio: st: Add lsm9ds0 support for gyro accel and magn
-Message-ID: <20160417122548.GA4954@katana>
-References: <2bcce23e64d53f542a9436b11509b107d63cb8dc.1460573498.git.leonard.crestez@intel.com>
- <57137732.40507@kernel.org>
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
+ <1460648909-2657-3-git-send-email-stefan.wahren@i2se.com>
+ <570FF737.4050606@denx.de>
+Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	Fabio Estevam <fabio.estevam@nxp.com>,
+	Juergen Borleis <jbe@pengutronix.de>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Torokhov <dmitry.torokhov@gmail.com>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <571361DD.1090001@kernel.org>
+Date: Sun, 17 Apr 2016 11:13:49 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
-In-Reply-To: <57137732.40507@kernel.org>
+In-Reply-To: <570FF737.4050606@denx.de>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 14/04/16 21:01, Marek Vasut wrote:
+> On 04/14/2016 05:48 PM, Stefan Wahren wrote:
+>> This patch moves the touchscreen type configuration into
+>> a more suitable function. Btw this simplifies PM ops later.
+>>
+>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+> 
+> Looks OK
+> 
+> Reviewed-by: Marek Vasut <marex@denx.de>
+Please do CC Dmitry and linux-input on any patches 'touching' the
+touchscreen parts of the driver.  I'm happy this one is simple
+enough to apply anyway, but best to make sure everyone is in the
+loop.
 
---fUYQa+Pmc3FrFX/N
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Something a little odd happened when applying the patch.  Automerging
+failed so I did it by hand. Not sure what had changed!
+
+Anyhow, please sanity check I haven't messed it up.
+
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play with it.
+
+Thanks,
 
 
-> To bring you two up to date, we have effectively two separate devices
-> (very nearly) sat behind a single i2c address.  They have non overlapping
-> register maps.
+Jonathan
+> 
+>> ---
+>>  drivers/iio/adc/mxs-lradc.c |   21 +++++++++++----------
+>>  1 file changed, 11 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+>> index 0576953..7118fca 100644
+>> --- a/drivers/iio/adc/mxs-lradc.c
+>> +++ b/drivers/iio/adc/mxs-lradc.c
+>> @@ -686,6 +686,17 @@ static void mxs_lradc_prepare_pressure(struct mxs_lradc *lradc)
+>>  
+>>  static void mxs_lradc_enable_touch_detection(struct mxs_lradc *lradc)
+>>  {
+>> +	/* Configure the touchscreen type */
+>> +	if (lradc->soc == IMX28_LRADC) {
+>> +		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
+>> +				    LRADC_CTRL0);
+>> +
+>> +		if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
+>> +			mxs_lradc_reg_set(lradc,
+>> +					  LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
+>> +					  LRADC_CTRL0);
+>> +	}
+>> +
+>>  	mxs_lradc_setup_touch_detection(lradc);
+>>  
+>>  	lradc->cur_plate = LRADC_TOUCH;
+>> @@ -1491,16 +1502,6 @@ static int mxs_lradc_hw_init(struct mxs_lradc *lradc)
+>>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(2));
+>>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(3));
+>>  
+>> -	/* Configure the touchscreen type */
+>> -	if (lradc->soc == IMX28_LRADC) {
+>> -		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
+>> -				    LRADC_CTRL0);
+>> -
+>> -	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
+>> -		mxs_lradc_reg_set(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
+>> -				  LRADC_CTRL0);
+>> -	}
+>> -
+>>  	/* Start internal temperature sensing. */
+>>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_CTRL2);
+>>  
+>>
+> 
+> 
 
-I think the MFD subsystem should have a few multifunction I2C devices
-handled already. You migh get ideas there. Never needed it myself yet,
-though.
-
-
---fUYQa+Pmc3FrFX/N
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXE4DMAAoJEBQN5MwUoCm2FKQP/38O58yVUOfkSwVkjZbQk1OU
-gGP86q/vDiAvHbIJQ7E4G9mHO9VXkLeXGdVewCqJYw5QE/p/8qBmqV3/EwanKpvv
-6aWu2Zhgg1pVb9Xc/GFsgQV5SqBFxuFNouZUfRvy0k0bKRD4gdUafA0SI8Zag3wB
-h0rWUOAF0SmL4dYEPy6+y9HIsmC78upJn9kBUkvHS7J7Jf0h313kxEvhYbY/2qPx
-7jU2Ir7xKh/r2mXKt0BhtgxoHvjkxMYU0ncVYfjeSXmdq3HroZd9rWKCC5LkSPNQ
-WR1IPR/LiQSOCQJRXA8qBLLyqvBlBcX82LUYd4gURP57xPMLjZnMMuzVDWnxuNKv
-8DzD0SJsZy59IwI92V1+Cl95ifgUcnLdz7xWkU4dZMOf7RsWl8iAg160rV3V9E/l
-tg1+wCvklHYibvzBuZqC4L6scX80+WbgS9jaDB6JlIMaLcnpy6tWXNhTQ6GIeZpM
-c/snxEC1ca4P41AgtAoqymSJHSwBdiTTLGekzXG11EHhZYkUDxu9A2o3rjIqAfV+
-4E1UxrPXym4IfWbqKNRSQCFi6oYOkF0iP7rwLcHmkcvQfuebm62Aj/u+aNEyS5Pn
-pS5DtjKBBQk0cdDrUPS9gUZ87KwZbZFmuXUMdIYDBtz0NJbmzTnFTulyFaGSMb93
-uajpt6f4zGLlcO6D5Rrk
-=YbAu
------END PGP SIGNATURE-----
-
---fUYQa+Pmc3FrFX/N--
