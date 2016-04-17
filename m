@@ -1,67 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:37575 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750970AbcDOKbH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2016 06:31:07 -0400
-Subject: Re: generic_buffer and 24 bits samples
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <570FB712.5070903@parrot.com> <570FBE87.9050006@metafoo.de>
- <5710BADC.3000000@intel.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <5710C2E6.2080303@metafoo.de>
-Date: Fri, 15 Apr 2016 12:31:02 +0200
+Received: from sauhun.de ([89.238.76.85]:55893 "EHLO pokefinder.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752140AbcDQM0C (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 17 Apr 2016 08:26:02 -0400
+Date: Sun, 17 Apr 2016 14:25:49 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org, Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>,
+	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Peter Rosin <peda@lysator.liu.se>
+Subject: Re: [RFC] iio: st: Add lsm9ds0 support for gyro accel and magn
+Message-ID: <20160417122548.GA4954@katana>
+References: <2bcce23e64d53f542a9436b11509b107d63cb8dc.1460573498.git.leonard.crestez@intel.com>
+ <57137732.40507@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <5710BADC.3000000@intel.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
+In-Reply-To: <57137732.40507@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/15/2016 11:56 AM, Crestez Dan Leonard wrote:
-> On 04/14/2016 07:00 PM, Lars-Peter Clausen wrote:
->> On 04/14/2016 05:28 PM, Gregor Boirie wrote:
->>> Greetings,
->>>
->>> I'm trying to use an st_pressure based sensor to sample pressure
->>> data using generic_buffer tool. However it seems that it does not
->>> support data packed onto 24 bits samples.
->>> st_pressure driver defines scan_type for my device as:
->>> <code>
->>> /* ... */
->>>      .scan_type = {
->>>          .sign = 'u',
->>>          .realbits = 24,
->>>          .storagebits = 24,
->>>          .endianness = IIO_LE,
->>>      },
->>> </code>
->>>
->>> What is the proper way to make this work ? Using 32 bits storagebits
->>> field ? Enhance generic_buffer to support 24 bits samples ? Anything
->>> else ??
->>>
->>> It seems iio_compute_scan_bytes consider sample data as a simple byte
->>> stream. So I'm wondering what are the alignment constraints for sample
->>> start address ? Should they be aligned onto their natural "word"
->>> boundaries, i.e. 16 bits for u16, 32 bits for u32, etc... ? And for
->>> 24 bits samples ?
->>
->> IIO really only supports powers of two >= 8 for the storagebits size.
->> Everything else is undefined.
->>
->> Samples are aligned to their storage size.
-> 
-> How does 24-bit alignment work?
 
-It does not work ;)
+--fUYQa+Pmc3FrFX/N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> 
-> Maybe the IIO core should check that storagebits is one of 8/16/32/64 and
-> otherwise fail at register time? A quick grep finds only 2 drivers using
-> storagebits = 24 and they could easily be modified to 32.
 
-Yes, sounds reasonable. Do you want to send a patch?
+> To bring you two up to date, we have effectively two separate devices
+> (very nearly) sat behind a single i2c address.  They have non overlapping
+> register maps.
 
-Thanks,
-- Lars
+I think the MFD subsystem should have a few multifunction I2C devices
+handled already. You migh get ideas there. Never needed it myself yet,
+though.
+
+
+--fUYQa+Pmc3FrFX/N
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJXE4DMAAoJEBQN5MwUoCm2FKQP/38O58yVUOfkSwVkjZbQk1OU
+gGP86q/vDiAvHbIJQ7E4G9mHO9VXkLeXGdVewCqJYw5QE/p/8qBmqV3/EwanKpvv
+6aWu2Zhgg1pVb9Xc/GFsgQV5SqBFxuFNouZUfRvy0k0bKRD4gdUafA0SI8Zag3wB
+h0rWUOAF0SmL4dYEPy6+y9HIsmC78upJn9kBUkvHS7J7Jf0h313kxEvhYbY/2qPx
+7jU2Ir7xKh/r2mXKt0BhtgxoHvjkxMYU0ncVYfjeSXmdq3HroZd9rWKCC5LkSPNQ
+WR1IPR/LiQSOCQJRXA8qBLLyqvBlBcX82LUYd4gURP57xPMLjZnMMuzVDWnxuNKv
+8DzD0SJsZy59IwI92V1+Cl95ifgUcnLdz7xWkU4dZMOf7RsWl8iAg160rV3V9E/l
+tg1+wCvklHYibvzBuZqC4L6scX80+WbgS9jaDB6JlIMaLcnpy6tWXNhTQ6GIeZpM
+c/snxEC1ca4P41AgtAoqymSJHSwBdiTTLGekzXG11EHhZYkUDxu9A2o3rjIqAfV+
+4E1UxrPXym4IfWbqKNRSQCFi6oYOkF0iP7rwLcHmkcvQfuebm62Aj/u+aNEyS5Pn
+pS5DtjKBBQk0cdDrUPS9gUZ87KwZbZFmuXUMdIYDBtz0NJbmzTnFTulyFaGSMb93
+uajpt6f4zGLlcO6D5Rrk
+=YbAu
+-----END PGP SIGNATURE-----
+
+--fUYQa+Pmc3FrFX/N--
