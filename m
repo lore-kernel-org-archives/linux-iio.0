@@ -1,186 +1,186 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49636 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52725 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751508AbcDPTWV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 15:22:21 -0400
-Subject: Re: [PATCH v2 3/5] iio: health: afe4403: use regmap to retrieve
- struct device
-To: Alison Schofield <amsfield22@gmail.com>
-References: <cover.1460314070.git.amsfield22@gmail.com>
- <566ccb722e22834d934e7897e90a5ebdf39024e2.1460314070.git.amsfield22@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	kgene@kernel.org, k.kozlowski@samsung.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org
+	with ESMTP id S1751463AbcDQJqf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 05:46:35 -0400
+Subject: Re: [PATCH v3 2/2] ti-adc081c: Initial triggered buffer support
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1460384543.git.leonard.crestez@intel.com>
+ <0031e3eb1f3a5bb4a29a201698cc6a6ba75dc7ec.1460384543.git.leonard.crestez@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <571290EA.9090702@kernel.org>
-Date: Sat, 16 Apr 2016 20:22:18 +0100
+Message-ID: <57135B75.6010103@kernel.org>
+Date: Sun, 17 Apr 2016 10:46:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <566ccb722e22834d934e7897e90a5ebdf39024e2.1460314070.git.amsfield22@gmail.com>
+In-Reply-To: <0031e3eb1f3a5bb4a29a201698cc6a6ba75dc7ec.1460384543.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/04/16 20:07, Alison Schofield wrote:
-> Driver includes struct regmap and struct device in its global data.
-> Remove the struct device and use regmap API to retrieve device info.
+On 11/04/16 15:24, Crestez Dan Leonard wrote:
+> Using this requires software triggers like CONFIG_IIO_HRTIMER_TRIGGER.
 > 
-> Patch created using Coccinelle plus manual edits.
+> The device can be configured to do internal periodic sampling but does not
+> offer some sort of interrupt on data ready. Interrupts can only trigger when
+> values get out of a specific range.
 > 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-cc'd Andrew for info and comment.
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+One totally trivial comment inline.
 
-Again I'm happy with this one myself.
+Applied to the togreg branch of iio.git - pushed out as testing for
+the autobuilders to play with it.
+
+Thanks,
 
 Jonathan
 > ---
->  drivers/iio/health/afe4403.c | 36 +++++++++++++++++-------------------
->  1 file changed, 17 insertions(+), 19 deletions(-)
+>  drivers/iio/adc/ti-adc081c.c | 77 ++++++++++++++++++++++++++++++++++++--------
+>  1 file changed, 64 insertions(+), 13 deletions(-)
 > 
-> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
-> index 88e43f8..71b8f70 100644
-> --- a/drivers/iio/health/afe4403.c
-> +++ b/drivers/iio/health/afe4403.c
-> @@ -104,7 +104,6 @@
+> diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
+> index b977340..9fd032d 100644
+> --- a/drivers/iio/adc/ti-adc081c.c
+> +++ b/drivers/iio/adc/ti-adc081c.c
+> @@ -24,6 +24,9 @@
+>  #include <linux/of.h>
 >  
->  /**
->   * struct afe4403_data
-> - * @dev - Device structure
->   * @spi - SPI device handle
->   * @regmap - Register map of the device
->   * @regulator - Pointer to the regulator for the IC
-> @@ -112,7 +111,6 @@
->   * @irq - ADC_RDY line interrupt number
->   */
->  struct afe4403_data {
-> -	struct device *dev;
->  	struct spi_device *spi;
->  	struct regmap *regmap;
->  	struct regulator *regulator;
-> @@ -562,55 +560,54 @@ static int afe4403_probe(struct spi_device *spi)
->  	afe = iio_priv(indio_dev);
->  	spi_set_drvdata(spi, indio_dev);
+>  #include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+>  #include <linux/regulator/consumer.h>
 >  
-> -	afe->dev = &spi->dev;
->  	afe->spi = spi;
->  	afe->irq = spi->irq;
+>  struct adc081c {
+> @@ -69,21 +72,42 @@ static int adc081c_read_raw(struct iio_dev *iio,
+>  	return -EINVAL;
+>  }
 >  
->  	afe->regmap = devm_regmap_init_spi(spi, &afe4403_regmap_config);
->  	if (IS_ERR(afe->regmap)) {
-> -		dev_err(afe->dev, "Unable to allocate register map\n");
-> +		dev_err(&spi->dev, "Unable to allocate register map\n");
->  		return PTR_ERR(afe->regmap);
+> -static const struct iio_chan_spec adc081c_channel = {
+> -	.type = IIO_VOLTAGE,
+> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> -};
+> +#define ADCxx1C_CHAN(_bits) {					\
+> +	.type = IIO_VOLTAGE,					\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.scan_type = {						\
+> +		.sign = 'u',					\
+> +		.realbits = (_bits),				\
+> +		.storagebits = 16,				\
+> +		.shift = 12 - (_bits),				\
+> +		.endianness = IIO_CPU,				\
+> +	},							\
+> +}
+> +
+> +#define DEFINE_ADCxx1C_CHANNELS(_name, _bits)				\
+> +	static const struct iio_chan_spec _name ## _channels[] = {	\
+> +		ADCxx1C_CHAN((_bits)),					\
+> +		IIO_CHAN_SOFT_TIMESTAMP(1),				\
+> +	};								\
+> +
+> +#define ADC081C_NUM_CHANNELS 2
+>  
+>  struct adcxx1c_model {
+> +	const struct iio_chan_spec* channels;
+>  	int bits;
+>  };
+>  
+> -#define ADCxx1C_MODEL(_bits)						\
+> +#define ADCxx1C_MODEL(_name, _bits)					\
+>  	{								\
+> +		.channels = _name ## _channels,				\
+>  		.bits = (_bits),					\
 >  	}
 >  
-> -	afe->regulator = devm_regulator_get(afe->dev, "tx_sup");
-> +	afe->regulator = devm_regulator_get(&spi->dev, "tx_sup");
->  	if (IS_ERR(afe->regulator)) {
-> -		dev_err(afe->dev, "Unable to get regulator\n");
-> +		dev_err(&spi->dev, "Unable to get regulator\n");
->  		return PTR_ERR(afe->regulator);
->  	}
->  	ret = regulator_enable(afe->regulator);
->  	if (ret) {
-> -		dev_err(afe->dev, "Unable to enable regulator\n");
-> +		dev_err(&spi->dev, "Unable to enable regulator\n");
->  		return ret;
->  	}
+> +DEFINE_ADCxx1C_CHANNELS(adc081c,  8);
+> +DEFINE_ADCxx1C_CHANNELS(adc101c, 10);
+> +DEFINE_ADCxx1C_CHANNELS(adc121c, 12);
+> +
+>  /* Model ids are indexes in _models array */
+>  enum adcxx1c_model_id {
+>  	ADC081C = 0,
+> @@ -92,9 +116,9 @@ enum adcxx1c_model_id {
+>  };
 >  
->  	ret = regmap_write(afe->regmap, AFE440X_CONTROL0,
->  			   AFE440X_CONTROL0_SW_RESET);
->  	if (ret) {
-> -		dev_err(afe->dev, "Unable to reset device\n");
-> +		dev_err(&spi->dev, "Unable to reset device\n");
->  		goto err_disable_reg;
->  	}
+>  static struct adcxx1c_model adcxx1c_models[] = {
+> -	ADCxx1C_MODEL( 8),
+> -	ADCxx1C_MODEL(10),
+> -	ADCxx1C_MODEL(12),
+> +	ADCxx1C_MODEL(adc081c,  8),
+> +	ADCxx1C_MODEL(adc101c, 10),
+> +	ADCxx1C_MODEL(adc121c, 12),
+>  };
 >  
->  	ret = regmap_multi_reg_write(afe->regmap, afe4403_reg_sequences,
->  				     ARRAY_SIZE(afe4403_reg_sequences));
->  	if (ret) {
-> -		dev_err(afe->dev, "Unable to set register defaults\n");
-> +		dev_err(&spi->dev, "Unable to set register defaults\n");
->  		goto err_disable_reg;
->  	}
+>  static const struct iio_info adc081c_info = {
+> @@ -102,6 +126,24 @@ static const struct iio_info adc081c_info = {
+>  	.driver_module = THIS_MODULE,
+>  };
 >  
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> -	indio_dev->dev.parent = afe->dev;
-> +	indio_dev->dev.parent = &spi->dev;
->  	indio_dev->channels = afe4403_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(afe4403_channels);
->  	indio_dev->name = AFE4403_DRIVER_NAME;
->  	indio_dev->info = &afe4403_iio_info;
->  
->  	if (afe->irq > 0) {
-> -		afe->trig = devm_iio_trigger_alloc(afe->dev,
-> +		afe->trig = devm_iio_trigger_alloc(&spi->dev,
->  						   "%s-dev%d",
->  						   indio_dev->name,
->  						   indio_dev->id);
->  		if (!afe->trig) {
-> -			dev_err(afe->dev, "Unable to allocate IIO trigger\n");
-> +			dev_err(&spi->dev, "Unable to allocate IIO trigger\n");
->  			ret = -ENOMEM;
->  			goto err_disable_reg;
->  		}
-> @@ -618,21 +615,21 @@ static int afe4403_probe(struct spi_device *spi)
->  		iio_trigger_set_drvdata(afe->trig, indio_dev);
->  
->  		afe->trig->ops = &afe4403_trigger_ops;
-> -		afe->trig->dev.parent = afe->dev;
-> +		afe->trig->dev.parent = &spi->dev;
->  
->  		ret = iio_trigger_register(afe->trig);
->  		if (ret) {
-> -			dev_err(afe->dev, "Unable to register IIO trigger\n");
-> +			dev_err(&spi->dev, "Unable to register IIO trigger\n");
->  			goto err_disable_reg;
->  		}
->  
-> -		ret = devm_request_threaded_irq(afe->dev, afe->irq,
-> +		ret = devm_request_threaded_irq(&spi->dev, afe->irq,
->  						iio_trigger_generic_data_rdy_poll,
->  						NULL, IRQF_ONESHOT,
->  						AFE4403_DRIVER_NAME,
->  						afe->trig);
->  		if (ret) {
-> -			dev_err(afe->dev, "Unable to request IRQ\n");
-> +			dev_err(&spi->dev, "Unable to request IRQ\n");
->  			goto err_trig;
->  		}
->  	}
-> @@ -640,13 +637,13 @@ static int afe4403_probe(struct spi_device *spi)
->  	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
->  					 afe4403_trigger_handler, NULL);
->  	if (ret) {
-> -		dev_err(afe->dev, "Unable to setup buffer\n");
-> +		dev_err(&spi->dev, "Unable to setup buffer\n");
->  		goto err_trig;
->  	}
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret) {
-> -		dev_err(afe->dev, "Unable to register IIO device\n");
-> +		dev_err(&spi->dev, "Unable to register IIO device\n");
->  		goto err_buff;
->  	}
->  
-> @@ -667,6 +664,7 @@ static int afe4403_remove(struct spi_device *spi)
+> +static irqreturn_t adc081c_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct adc081c *data = iio_priv(indio_dev);
+> +	u16 buf[8]; /* 2 bytes data + 6 bytes padding + 8 bytes timestamp */
+> +	int ret;
+> +
+> +	ret = i2c_smbus_read_word_swapped(data->i2c, REG_CONV_RES);
+> +	if (ret < 0)
+> +		goto out;
+> +	buf[0] = ret;
+> +	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+> +out:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  static int adc081c_probe(struct i2c_client *client,
+>  			 const struct i2c_device_id *id)
 >  {
->  	struct iio_dev *indio_dev = spi_get_drvdata(spi);
->  	struct afe4403_data *afe = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(afe->regmap);
->  	int ret;
+> @@ -134,18 +176,26 @@ static int adc081c_probe(struct i2c_client *client,
+>  	iio->modes = INDIO_DIRECT_MODE;
+>  	iio->info = &adc081c_info;
 >  
->  	iio_device_unregister(indio_dev);
-> @@ -678,7 +676,7 @@ static int afe4403_remove(struct spi_device *spi)
+> -	iio->channels = &adc081c_channel;
+> -	iio->num_channels = 1;
+> +	iio->channels = model->channels;
+> +	iio->num_channels = ADC081C_NUM_CHANNELS;
+> +
+> +	err = iio_triggered_buffer_setup(iio, NULL, adc081c_trigger_handler, NULL);
+> +	if (err < 0) {
+> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+> +		goto err_regulator_disable;
+> +	}
 >  
->  	ret = regulator_disable(afe->regulator);
->  	if (ret) {
-> -		dev_err(afe->dev, "Unable to disable regulator\n");
-> +		dev_err(dev, "Unable to disable regulator\n");
->  		return ret;
->  	}
+>  	err = iio_device_register(iio);
+>  	if (err < 0)
+> -		goto regulator_disable;
+> +		goto err_buffer_cleanup;
 >  
+>  	i2c_set_clientdata(client, iio);
+>  
+>  	return 0;
+>  
+> -regulator_disable:
+Technically an unrelated change, but can't say I really care!
+> +err_buffer_cleanup:
+> +	iio_triggered_buffer_cleanup(iio);
+> +err_regulator_disable:
+>  	regulator_disable(adc->ref);
+>  
+>  	return err;
+> @@ -157,6 +207,7 @@ static int adc081c_remove(struct i2c_client *client)
+>  	struct adc081c *adc = iio_priv(iio);
+>  
+>  	iio_device_unregister(iio);
+> +	iio_triggered_buffer_cleanup(iio);
+>  	regulator_disable(adc->ref);
+>  
+>  	return 0;
 > 
 
