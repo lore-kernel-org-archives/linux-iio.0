@@ -1,443 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52585 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52617 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751583AbcDQJTJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 05:19:09 -0400
-Subject: Re: [PATCH v2 1/5] max44000: Initial support
+	with ESMTP id S1751824AbcDQJY1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 05:24:27 -0400
+Subject: Re: [PATCH v2 2/5] max44000: Initial support for proximity reading
 To: Crestez Dan Leonard <leonard.crestez@intel.com>,
 	linux-iio@vger.kernel.org
 References: <cover.1460400449.git.leonard.crestez@intel.com>
- <f92d1baee684715edfedf6038bceaf9b08d80447.1460400449.git.leonard.crestez@intel.com>
-From: Jonathan Cameron <jic23@kernel.org>
+ <1887658e9667257b1b43ed82c58a4155fb0e85fb.1460400449.git.leonard.crestez@intel.com>
 Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Mark Brown <broonie@linaro.org>
-Message-ID: <57135509.9020508@kernel.org>
-Date: Sun, 17 Apr 2016 10:19:05 +0100
+	Daniel Baluta <daniel.baluta@intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <57135649.7060305@kernel.org>
+Date: Sun, 17 Apr 2016 10:24:25 +0100
 MIME-Version: 1.0
-In-Reply-To: <f92d1baee684715edfedf6038bceaf9b08d80447.1460400449.git.leonard.crestez@intel.com>
+In-Reply-To: <1887658e9667257b1b43ed82c58a4155fb0e85fb.1460400449.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 11/04/16 19:52, Crestez Dan Leonard wrote:
-> This just adds support for reporting illuminance with default settings.
-> 
-> Important default registers are written on probe because the device
-> otherwise lacks a reset function.
+> The proximity sensor relies on sending pulses to an external IR led and
+> it is disabled by default on powerup. The driver will enable it with a
+> default power setting.
 > 
 > Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-cc'ing Mark Brown for regcache flat discussion..   Mark I don't suppose you
-have any docs anywhere I can point people at on this.  It comes round rather
-to frequently for my taste and I can't immediately find any references in
-the tree or code to explain what REGCACHE_FLAT is for...  I've cc'd your
-previous email on the subject, but it's not really documentation.
-
-
 > ---
->  drivers/iio/light/Kconfig    |  11 ++
->  drivers/iio/light/Makefile   |   1 +
->  drivers/iio/light/max44000.c | 336 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 348 insertions(+)
->  create mode 100644 drivers/iio/light/max44000.c
+>  drivers/iio/light/max44000.c | 46 ++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 44 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index cfd3df8..b4ab65b 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -223,6 +223,17 @@ config LTR501
->  	 This driver can also be built as a module.  If so, the module
->           will be called ltr501.
->  
-> +config MAX44000
-> +	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
-> +	depends on I2C
-> +	select REGMAP_I2C
-> +	help
-> +	 Say Y here if you want to build support for Maxim Integrated's
-> +	 MAX44000 ambient and infrared proximity sensor device.
-> +
-> +	 To compile this driver as a module, choose M here:
-> +	 the module will be called max44000.
-> +
->  config OPT3001
->  	tristate "Texas Instruments OPT3001 Light Sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index b2c3105..c77f27f 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -20,6 +20,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
->  obj-$(CONFIG_JSA1212)		+= jsa1212.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
->  obj-$(CONFIG_LTR501)		+= ltr501.o
-> +obj-$(CONFIG_MAX44000)		+= max44000.o
->  obj-$(CONFIG_OPT3001)		+= opt3001.o
->  obj-$(CONFIG_PA12203001)	+= pa12203001.o
->  obj-$(CONFIG_RPR0521)		+= rpr0521.o
 > diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-> new file mode 100644
-> index 0000000..707cc24
-> --- /dev/null
+> index 707cc24..39853ff 100644
+> --- a/drivers/iio/light/max44000.c
 > +++ b/drivers/iio/light/max44000.c
-> @@ -0,0 +1,336 @@
-> +/*
-> + * MAX44000 Ambient and Infrared Proximity Sensor
-> + *
-> + * Copyright (c) 2016, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * Data sheet: https://datasheets.maximintegrated.com/en/ds/MAX44000.pdf
-> + *
-> + * 7-bit I2C slave address 0x4a
-> + */
+> @@ -59,6 +59,11 @@
+>   */
+>  #define MAX44000_REG_CFG_RX_DEFAULT 0xf0
+>  
+> +/* REG_TX bits */
+> +#define MAX44000_LED_CURRENT_MASK	0xf
+> +#define MAX44000_LED_CURRENT_MAX	11
+> +#define MAX44000_LED_CURRENT_DEFAULT	6
 > +
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/i2c.h>
-> +#include <linux/regmap.h>
-> +#include <linux/util_macros.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/acpi.h>
-> +
-> +#define MAX44000_DRV_NAME		"max44000"
-> +
-> +/* Registers in datasheet order */
-> +#define MAX44000_REG_STATUS		0x00
-> +#define MAX44000_REG_CFG_MAIN		0x01
-> +#define MAX44000_REG_CFG_RX		0x02
-> +#define MAX44000_REG_CFG_TX		0x03
-> +#define MAX44000_REG_ALS_DATA_HI	0x04
-> +#define MAX44000_REG_ALS_DATA_LO	0x05
-> +#define MAX44000_REG_PRX_DATA		0x16
-> +#define MAX44000_REG_ALS_UPTHR_HI	0x06
-> +#define MAX44000_REG_ALS_UPTHR_LO	0x07
-> +#define MAX44000_REG_ALS_LOTHR_HI	0x08
-> +#define MAX44000_REG_ALS_LOTHR_LO	0x09
-> +#define MAX44000_REG_PST		0x0a
-> +#define MAX44000_REG_PRX_IND		0x0b
-> +#define MAX44000_REG_PRX_THR		0x0c
-> +#define MAX44000_REG_TRIM_GAIN_GREEN	0x0f
-> +#define MAX44000_REG_TRIM_GAIN_IR	0x10
-> +
-> +/* REG_CFG bits */
-> +#define MAX44000_CFG_ALSINTE            0x01
-> +#define MAX44000_CFG_PRXINTE            0x02
-> +#define MAX44000_CFG_MASK               0x1c
-> +#define MAX44000_CFG_MODE_SHUTDOWN      0x00
-> +#define MAX44000_CFG_MODE_ALS_GIR       0x04
-> +#define MAX44000_CFG_MODE_ALS_G         0x08
-> +#define MAX44000_CFG_MODE_ALS_IR        0x0c
-> +#define MAX44000_CFG_MODE_ALS_PRX       0x10
-> +#define MAX44000_CFG_MODE_PRX           0x14
-> +#define MAX44000_CFG_TRIM               0x20
-> +
-> +/*
-> + * Upper 4 bits are not documented but start as 1 on powerup
-> + * Setting them to 0 causes proximity to misbehave so set them to 1
-> + */
-> +#define MAX44000_REG_CFG_RX_DEFAULT 0xf0
-> +
-> +#define MAX44000_ALSDATA_OVERFLOW	0x4000
-> +
-> +#define MAX44000_REGMASK_READABLE ( \
-Whilst an improvement I'd still prefer the nice clean
-switch statement in the function.  Let the compiler do the magic for
-you.
-> +		(1 << MAX44000_REG_STATUS) | \
-> +		(1 << MAX44000_REG_CFG_MAIN) | \
-> +		(1 << MAX44000_REG_CFG_RX) | \
-> +		(1 << MAX44000_REG_CFG_TX) | \
-> +		(1 << MAX44000_REG_ALS_DATA_HI) | \
-> +		(1 << MAX44000_REG_ALS_DATA_LO) | \
-> +		(1 << MAX44000_REG_PRX_DATA) | \
-> +		(1 << MAX44000_REG_ALS_UPTHR_HI) | \
-> +		(1 << MAX44000_REG_ALS_UPTHR_LO) | \
-> +		(1 << MAX44000_REG_ALS_LOTHR_HI) | \
-> +		(1 << MAX44000_REG_ALS_LOTHR_LO) | \
-> +		(1 << MAX44000_REG_PST) | \
-> +		(1 << MAX44000_REG_PRX_IND) | \
-> +		(1 << MAX44000_REG_PRX_THR) | \
-> +		(1 << MAX44000_REG_TRIM_GAIN_GREEN) | \
-> +		(1 << MAX44000_REG_TRIM_GAIN_IR))
-> +
-> +#define MAX44000_REGMASK_WRITEABLE ( \
-> +		(1 << MAX44000_REG_CFG_MAIN) | \
-> +		(1 << MAX44000_REG_CFG_RX) | \
-> +		(1 << MAX44000_REG_CFG_TX) | \
-> +		(1 << MAX44000_REG_ALS_UPTHR_HI) | \
-> +		(1 << MAX44000_REG_ALS_UPTHR_LO) | \
-> +		(1 << MAX44000_REG_ALS_LOTHR_HI) | \
-> +		(1 << MAX44000_REG_ALS_LOTHR_LO) | \
-> +		(1 << MAX44000_REG_PST) | \
-> +		(1 << MAX44000_REG_PRX_IND) | \
-> +		(1 << MAX44000_REG_PRX_THR) | \
-> +		(1 << MAX44000_REG_TRIM_GAIN_GREEN) | \
-> +		(1 << MAX44000_REG_TRIM_GAIN_IR))
-> +
-> +#define MAX44000_REGMASK_VOLATILE ( \
-> +		(1 << MAX44000_REG_STATUS) | \
-> +		(1 << MAX44000_REG_ALS_DATA_HI) | \
-> +		(1 << MAX44000_REG_ALS_DATA_LO) | \
-> +		(1 << MAX44000_REG_PRX_DATA))
-> +
-> +struct max44000_data {
-> +	struct mutex lock;
-> +	struct regmap *regmap;
-> +};
-> +
-> +/* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
-> +#define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
-> +
-> +static const struct iio_chan_spec max44000_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+>  #define MAX44000_ALSDATA_OVERFLOW	0x4000
+>  
+>  #define MAX44000_REGMASK_READABLE ( \
+> @@ -111,6 +116,12 @@ static const struct iio_chan_spec max44000_channels[] = {
+>  	{
+>  		.type = IIO_LIGHT,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
+> +					    BIT(IIO_CHAN_INFO_INT_TIME),
+Where did INT_TIME for the ambient light channel sneak in from?
+Astray from patch 4?
 > +	},
-> +};
-> +
-> +static int max44000_read_alsval(struct max44000_data *data)
+> +	{
+> +		.type = IIO_PROXIMITY,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+>  	},
+>  };
+> @@ -142,11 +153,23 @@ static int max44000_read_alsval(struct max44000_data *data)
+>  	return regval;
+>  }
+>  
+> +static int max44000_write_led_current_raw(struct max44000_data *data, int val)
 > +{
-> +	u16 regval;
-> +	int ret;
-> +
-> +	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI,
-> +			       &regval, sizeof(regval));
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	regval = be16_to_cpu(regval);
-> +
-> +	/*
-> +	 * Overflow is explained on datasheet page 17.
-> +	 *
-> +	 * It's a warning that either the G or IR channel has become saturated
-> +	 * and that the value in the register is likely incorrect.
-> +	 *
-> +	 * The recommendation is to change the scale (ALSPGA).
-> +	 * The driver just returns the max representable value.
-> +	 */
-Good comment. Thanks for adding it.
-> +	if (regval & MAX44000_ALSDATA_OVERFLOW)
-> +		return 0x3FFF;
-> +
-> +	return regval;
+> +	/* Maybe we should clamp the value instead? */
+> +	if (val < 0 || val > MAX44000_LED_CURRENT_MAX)
+> +		return -ERANGE;
+> +	if (val >= 8)
+> +		val += 4;
+> +	return regmap_write_bits(data->regmap, MAX44000_REG_CFG_TX,
+> +				 MAX44000_LED_CURRENT_MASK, val);
 > +}
 > +
-> +static int max44000_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int *val, int *val2, long mask)
-> +{
-> +	struct max44000_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
+>  static int max44000_read_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     int *val, int *val2, long mask)
+>  {
+>  	struct max44000_data *data = iio_priv(indio_dev);
+> +	unsigned int regval;
+>  	int ret;
+>  
+>  	switch (mask) {
+> @@ -161,6 +184,15 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
+>  			*val = ret;
+>  			return IIO_VAL_INT;
+>  
+> +		case IIO_PROXIMITY:
 > +			mutex_lock(&data->lock);
-> +			ret = max44000_read_alsval(data);
+> +			ret = regmap_read(data->regmap, MAX44000_REG_PRX_DATA, &regval);
 > +			mutex_unlock(&data->lock);
 > +			if (ret < 0)
 > +				return ret;
-> +			*val = ret;
+> +			*val = regval;
 > +			return IIO_VAL_INT;
 > +
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			*val = 1;
-On this one I'm not sure the define adds anything given it really is a
-numerical value.. I'd just put it inline here.
-> +			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
-> +			return IIO_VAL_FRACTIONAL_LOG2;
-> +
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info max44000_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= max44000_read_raw,
-> +};
-> +
-> +static bool max44000_readable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	return (1 << reg) & MAX44000_REGMASK_READABLE;
-> +}
-> +
-> +static bool max44000_writeable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	return (1 << reg) & MAX44000_REGMASK_WRITEABLE;
-> +}
-> +
-> +static bool max44000_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	return (1 << reg) & MAX44000_REGMASK_VOLATILE;
-> +}
-> +
-> +static bool max44000_precious_reg(struct device *dev, unsigned int reg)
-> +{
-> +	return reg == MAX44000_REG_STATUS;
-> +}
-> +
-> +/* Datasheet pages 9-10: */
-> +static const struct reg_default max44000_reg_defaults[] = {
-> +	{ MAX44000_REG_CFG_MAIN,	0x24 },
-This must be broken down into defines showing what the various bits are
-doing.
-
-> +	{ MAX44000_REG_CFG_RX,		MAX44000_REG_CFG_RX_DEFAULT },
-> +	{ MAX44000_REG_CFG_TX,		0x00 },
-> +	{ MAX44000_REG_ALS_UPTHR_HI,	0x00 },
-> +	{ MAX44000_REG_ALS_UPTHR_LO,	0x00 },
-> +	{ MAX44000_REG_ALS_LOTHR_HI,	0x00 },
-> +	{ MAX44000_REG_ALS_LOTHR_LO,	0x00 },
-> +	{ MAX44000_REG_PST,		0x00 },
-> +	{ MAX44000_REG_PRX_IND,		0x00 },
-> +	{ MAX44000_REG_PRX_THR,		0x00 },
-> +	{ MAX44000_REG_TRIM_GAIN_GREEN,	0x80 },
-> +	{ MAX44000_REG_TRIM_GAIN_IR,	0x80 },
-> +};
-> +
-> +static const struct regmap_config max44000_regmap_config = {
-> +	.reg_bits	= 8,
-> +	.val_bits	= 8,
-> +
-> +	.max_register	= MAX44000_REG_PRX_DATA,
-> +	.readable_reg	= max44000_readable_reg,
-> +	.writeable_reg	= max44000_writeable_reg,
-> +	.volatile_reg	= max44000_volatile_reg,
-> +	.precious_reg	= max44000_precious_reg,
-> +
-> +	.use_single_rw	= 1,
-> +	.cache_type	= REGCACHE_FLAT,
-
-Please read:
-http://www.spinics.net/lists/linux-iio/msg22996.html
-You definitely want REGCACHE_RBTREE which behaves quite differently wrt
-to what happens on startup of the cache.
-> +
-If we aren't assuming particular values, what is the purpose of providing
-defaults?  They are probably wrong..
-> +	.reg_defaults		= max44000_reg_defaults,
-> +	.num_reg_defaults	= ARRAY_SIZE(max44000_reg_defaults),
-> +};
-> +
-> +static int max44000_probe(struct i2c_client *client,
-> +			  const struct i2c_device_id *id)
-> +{
-> +	struct max44000_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret, reg;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +	data = iio_priv(indio_dev);
-> +	data->regmap = devm_regmap_init_i2c(client, &max44000_regmap_config);
-> +	if (IS_ERR(data->regmap)) {
-> +		dev_err(&client->dev, "regmap_init failed!\n");
-> +		return PTR_ERR(data->regmap);
-> +	}
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +	mutex_init(&data->lock);
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &max44000_info;
-> +	indio_dev->name = MAX44000_DRV_NAME;
-> +	indio_dev->channels = max44000_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(max44000_channels);
-> +
+>  		default:
+>  			return -EINVAL;
+>  		}
+> @@ -279,8 +311,18 @@ static int max44000_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  
+> -	/* Reset CFG bits to ALS-only mode and no interrupts */
+> -	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_GIR;
 > +	/*
-> +	 * The device doesn't have a reset function so we just clear some
-> +	 * important bits at probe time to ensure sane operation.
-> +	 *
-> +	 * Since we don't support interrupts/events the threshold values are
-> +	 * not important. We also don't touch trim values.
+> +	 * By default the LED pulse used for the proximity sensor is disabled.
+> +	 * Set a middle value so that we get some sort of valid data by default.
 > +	 */
-> +
-> +	/* Reset ALS scaling bits */
-> +	ret = regmap_write(data->regmap, MAX44000_REG_CFG_RX, MAX44000_REG_CFG_RX_DEFAULT);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to write default CFG_RX: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* Reset CFG bits to ALS-only mode and no interrupts */
-> +	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_GIR;
-> +	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
+> +	ret = max44000_write_led_current_raw(data, MAX44000_LED_CURRENT_DEFAULT);
 > +	if (ret < 0) {
 > +		dev_err(&client->dev, "failed to write init config: %d\n", ret);
 > +		return ret;
 > +	}
 > +
-I prefer this careful code making it clear what you are doing on setting the
-defaults to the previous wholesale version.
-
-> +	/* Read status at least once to clear any stale interrupt bits. */
-> +	ret = regmap_read(data->regmap, MAX44000_REG_STATUS, &reg);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to read init status: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	return iio_device_register(indio_dev);
-> +}
-> +
-> +static int max44000_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-blank line here ideally (nitpick on the day :)
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id max44000_id[] = {
-> +	{"max44000", 0},
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, max44000_id);
-> +
-> +#ifdef CONFIG_ACPI
-> +static const struct acpi_device_id max44000_acpi_match[] = {
-> +	{"MAX44000", 0},
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(acpi, max44000_acpi_match);
-> +#endif
-> +
-> +static struct i2c_driver max44000_driver = {
-> +	.driver = {
-> +		.name	= MAX44000_DRV_NAME,
-> +		.acpi_match_table = ACPI_PTR(max44000_acpi_match),
-> +	},
-> +	.probe		= max44000_probe,
-> +	.remove		= max44000_remove,
-> +	.id_table	= max44000_id,
-> +};
-> +
-> +module_i2c_driver(max44000_driver);
-> +
-> +MODULE_AUTHOR("Crestez Dan Leonard <leonard.crestez@intel.com>");
-> +MODULE_DESCRIPTION("MAX44000 Ambient and Infrared Proximity Sensor");
-> +MODULE_LICENSE("GPL v2");
+> +	/* Reset CFG bits to ALS_PRX mode which allows easy reading of both values. */
+> +	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_PRX;
+>  	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
+>  	if (ret < 0) {
+>  		dev_err(&client->dev, "failed to write init config: %d\n", ret);
 > 
 
