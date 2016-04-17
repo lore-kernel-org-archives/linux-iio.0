@@ -1,106 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52863 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53226 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751493AbcDQKNw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 06:13:52 -0400
-Subject: Re: [PATCH RFT 2/5] iio: mxs-lradc: move TS config into suitable
- function
-To: Marek Vasut <marex@denx.de>,
-	Stefan Wahren <stefan.wahren@i2se.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
- <1460648909-2657-3-git-send-email-stefan.wahren@i2se.com>
- <570FF737.4050606@denx.de>
-Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Torokhov <dmitry.torokhov@gmail.com>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+	with ESMTP id S1751385AbcDQL1v (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2016 07:27:51 -0400
+Subject: Re: [PATCH 4/4 v5] iio: st_sensors: support open drain mode
+To: Rob Herring <robh@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>
+References: <1460623521-8755-1-git-send-email-linus.walleij@linaro.org>
+ <20160414170901.GA9172@rob-hp-laptop>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <571361DD.1090001@kernel.org>
-Date: Sun, 17 Apr 2016 11:13:49 +0100
+Message-ID: <57137335.4060605@kernel.org>
+Date: Sun, 17 Apr 2016 12:27:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <570FF737.4050606@denx.de>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20160414170901.GA9172@rob-hp-laptop>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/04/16 21:01, Marek Vasut wrote:
-> On 04/14/2016 05:48 PM, Stefan Wahren wrote:
->> This patch moves the touchscreen type configuration into
->> a more suitable function. Btw this simplifies PM ops later.
+On 14/04/16 18:09, Rob Herring wrote:
+> On Thu, Apr 14, 2016 at 10:45:21AM +0200, Linus Walleij wrote:
+>> Some types of ST Sensors can be connected to the same IRQ line
+>> as other peripherals using open drain. Add a device tree binding
+>> and a sensor data property to flip the right bit in the interrupt
+>> control register to enable open drain mode on the INT line.
 >>
->> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+>> If the line is set to be open drain, also tag on IRQF_SHARED
+>> to the IRQ flags when requesting the interrupt, as the whole
+>> point of using open drain interrupt lines is to share them with
+>> more than one peripheral (wire-or).
+>>
+>> Cc: devicetree@vger.kernel.org
+>> Cc: Giuseppe Barba <giuseppe.barba@st.com>
+>> Cc: Denis Ciocca <denis.ciocca@st.com>
+>> Cc: Rob Herring <robh@kernel.org>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>> ---
+>> ChangeLog v4->v5:
+>> - Rename DT bool property int-pin-open-drain to drive-mode-open-drain
+>>   reusing the pin control subsystem binding.
+>> ChangeLog v3->v4:
+>> - Rename DT bool property st,int-pin-open-drain to int-pin-open-drain
+>> - Rob Herring ACKed st,int-pin-open-drain but not including his ACK
+>>   on this even though it's close
+>> ChangeLog v2->v3:
+>> - Rebase on top of the patches fixing the other issues (handling
+>>   IRQ status check and channel reading bug).
+>> ChangeLog v1->v2:
+>> - Rebased to fit the new patch order.
+>> ---
+>>  Documentation/devicetree/bindings/iio/st-sensors.txt |  4 ++++
 > 
-> Looks OK
-> 
-> Reviewed-by: Marek Vasut <marex@denx.de>
-Please do CC Dmitry and linux-input on any patches 'touching' the
-touchscreen parts of the driver.  I'm happy this one is simple
-enough to apply anyway, but best to make sure everyone is in the
-loop.
-
-Something a little odd happened when applying the patch.  Automerging
-failed so I did it by hand. Not sure what had changed!
-
-Anyhow, please sanity check I haven't messed it up.
-
+> Acked-by: Rob Herring <rob@kernel.org>
 Applied to the togreg branch of iio.git - initially pushed out as
 testing for the autobuilders to play with it.
 
 Thanks,
 
-
 Jonathan
 > 
->> ---
->>  drivers/iio/adc/mxs-lradc.c |   21 +++++++++++----------
->>  1 file changed, 11 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
->> index 0576953..7118fca 100644
->> --- a/drivers/iio/adc/mxs-lradc.c
->> +++ b/drivers/iio/adc/mxs-lradc.c
->> @@ -686,6 +686,17 @@ static void mxs_lradc_prepare_pressure(struct mxs_lradc *lradc)
->>  
->>  static void mxs_lradc_enable_touch_detection(struct mxs_lradc *lradc)
->>  {
->> +	/* Configure the touchscreen type */
->> +	if (lradc->soc == IMX28_LRADC) {
->> +		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
->> +				    LRADC_CTRL0);
->> +
->> +		if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
->> +			mxs_lradc_reg_set(lradc,
->> +					  LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
->> +					  LRADC_CTRL0);
->> +	}
->> +
->>  	mxs_lradc_setup_touch_detection(lradc);
->>  
->>  	lradc->cur_plate = LRADC_TOUCH;
->> @@ -1491,16 +1502,6 @@ static int mxs_lradc_hw_init(struct mxs_lradc *lradc)
->>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(2));
->>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(3));
->>  
->> -	/* Configure the touchscreen type */
->> -	if (lradc->soc == IMX28_LRADC) {
->> -		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
->> -				    LRADC_CTRL0);
->> -
->> -	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
->> -		mxs_lradc_reg_set(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
->> -				  LRADC_CTRL0);
->> -	}
->> -
->>  	/* Start internal temperature sensing. */
->>  	mxs_lradc_reg_wrt(lradc, 0, LRADC_CTRL2);
->>  
->>
-> 
-> 
+>>  drivers/iio/accel/st_accel_core.c                    |  8 ++++++++
+>>  drivers/iio/common/st_sensors/st_sensors_core.c      | 20 ++++++++++++++++++++
+>>  drivers/iio/common/st_sensors/st_sensors_trigger.c   | 13 +++++++++++++
+>>  drivers/iio/pressure/st_pressure_core.c              |  8 ++++++++
+>>  include/linux/iio/common/st_sensors.h                |  6 ++++++
+>>  include/linux/platform_data/st_sensors_pdata.h       |  2 ++
+>>  7 files changed, 61 insertions(+)
 
