@@ -1,148 +1,166 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:18324 "EHLO
-	hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751747AbcDSHdg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Apr 2016 03:33:36 -0400
-From: Laxman Dewangan <ldewangan@nvidia.com>
-To: <jic23@kernel.org>, <robh@kernel.org>, <edubezval@gmail.com>,
-	<rui.zhang@intel.com>, <mark.rutland@arm.com>,
-	<pawel.moll@arm.com>, <ijc+devicetree@hellion.org.uk>
-CC: <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH V4 1/2] thermal: generic-adc: Add DT binding for ADC based thermal sensor
-Date: Tue, 19 Apr 2016 12:52:00 +0530
-Message-ID: <1461050521-6080-1-git-send-email-ldewangan@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <tiberiu.a.breana@intel.com>
+From: Tiberiu Breana <tiberiu.a.breana@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v3 2/2] iio: humidity: Add triggered buffer support for AM2315
+Date: Mon, 18 Apr 2016 17:50:44 +0300
+Message-Id: <1460991044-8484-3-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1460991044-8484-1-git-send-email-tiberiu.a.breana@intel.com>
+References: <1460991044-8484-1-git-send-email-tiberiu.a.breana@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Sometimes, thermal sensors like NCT thermistors are connected to
-the ADC channel. The temperature is read by reading the voltage
-across the sensor resistance via ADC and referring the lookup
-table for ADC value to temperature.
-
-Add DT binding doc for the ADC based thermal sensor driver to
-detail the DT property and provide the example for how to use it.
-
-Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
-Acked-by: Rob Herring <rob@kernel.org>
-
+Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
 ---
-Changes from V1:
-- Make the lookup table to two dimensional instead of single array of linear
-  step of temperature.
-- Remove detailing of IIO frameowrk and drivers.
-- Added proper braces, indenting and labels.
+ drivers/iio/humidity/am2315.c | 81 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 78 insertions(+), 3 deletions(-)
 
-Changes from V2:
-- Handle comment from Rob for detailing the first and second value of the array
-  and remove @ in the node name.
-
-Changes from V3:
-- Collected acks from Rob.
-- No change from V2 in content.
----
- .../bindings/thermal/thermal-generic-adc.txt       | 89 ++++++++++++++++++++++
- 1 file changed, 89 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/thermal/thermal-generic-adc.txt
-
-diff --git a/Documentation/devicetree/bindings/thermal/thermal-generic-adc.txt b/Documentation/devicetree/bindings/thermal/thermal-generic-adc.txt
-new file mode 100644
-index 0000000..d7235550
---- /dev/null
-+++ b/Documentation/devicetree/bindings/thermal/thermal-generic-adc.txt
-@@ -0,0 +1,89 @@
-+General Purpose Analog To Digital Converter (ADC) based thermal sensor.
+diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
+index d392fc8..3be6d20 100644
+--- a/drivers/iio/humidity/am2315.c
++++ b/drivers/iio/humidity/am2315.c
+@@ -15,8 +15,11 @@
+ #include <linux/i2c.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ #define AM2315_REG_HUM_MSB			0x00
+ #define AM2315_REG_HUM_LSB			0x01
+@@ -26,12 +29,14 @@
+ #define AM2315_FUNCTION_READ			0x03
+ #define AM2315_HUM_OFFSET			2
+ #define AM2315_TEMP_OFFSET			4
++#define AM2315_ALL_CHANNEL_MASK			GENMASK(1, 0)
+ 
+ #define AM2315_DRIVER_NAME			"am2315"
+ 
+ struct am2315_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
++	s16 buffer[8]; /* 2x16-bit channels + 2x16 padding + 4x16 timestamp */
+ };
+ 
+ struct am2315_sensor_data {
+@@ -43,13 +48,28 @@ static const struct iio_chan_spec am2315_channels[] = {
+ 	{
+ 		.type = IIO_HUMIDITYRELATIVE,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-				      BIT(IIO_CHAN_INFO_SCALE)
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_CPU,
++		},
+ 	},
+ 	{
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-				      BIT(IIO_CHAN_INFO_SCALE)
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_CPU,
++		},
+ 	},
++	IIO_CHAN_SOFT_TIMESTAMP(2),
+ };
+ 
+ /* CRC calculation algorithm, as specified in the datasheet (page 13). */
+@@ -134,6 +154,44 @@ exit_unlock:
+ 	return ret;
+ }
+ 
++static irqreturn_t am2315_trigger_handler(int irq, void *p)
++{
++	int i;
++	int ret;
++	int bit;
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct am2315_data *data = iio_priv(indio_dev);
++	struct am2315_sensor_data sensor_data;
 +
-+On some of platforms, thermal sensor like thermistors are connected to
-+one of ADC channel and sensor resistance is read via voltage across the
-+sensor resistor. The voltage read across the sensor is mapped to
-+temperature using voltage-temperature lookup table.
++	ret = am2315_read_data(data, &sensor_data);
++	if (ret < 0) {
++		mutex_unlock(&data->lock);
++		goto err;
++	}
 +
-+Required properties:
-+===================
-+- compatible:		     Must be "generic-adc-thermal".
-+- temperature-lookup-table:  Two dimensional array of Integer; lookup table
-+			     to map the relation between ADC value and
-+			     temperature. When ADC is read, the value is
-+			     looked up on the table to get the equivalent
-+			     temperature.
-+			     The first value of the each row of array is the
-+			     temperature in milliCelsius and second value of
-+			     the each row of array is the ADC read value.
-+- #thermal-sensor-cells:     Should be 1. See ./thermal.txt for a description
-+			     of this property.
++	mutex_lock(&data->lock);
++	if (*(indio_dev->active_scan_mask) == AM2315_ALL_CHANNEL_MASK) {
++		data->buffer[0] = sensor_data.hum_data;
++		data->buffer[1] = sensor_data.temp_data;
++	} else {
++		i = 0;
++		for_each_set_bit(bit, indio_dev->active_scan_mask,
++				 indio_dev->masklength) {
++			data->buffer[i] = (bit ? sensor_data.temp_data :
++						 sensor_data.hum_data);
++			i++;
++		}
++	}
++	mutex_unlock(&data->lock);
 +
-+Example :
-+#include <dt-bindings/thermal/thermal.h>
++	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
++					   pf->timestamp);
++err:
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
 +
-+i2c@7000c400 {
-+	ads1015: ads1015@4a {
-+		reg = <0x4a>;
-+		compatible = "ads1015";
-+		sampling-frequency = <3300>;
-+		#io-channel-cells = <1>;
-+	};
-+};
+ static int am2315_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+@@ -166,6 +224,7 @@ static const struct iio_info am2315_info = {
+ static int am2315_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
++	int ret;
+ 	struct iio_dev *indio_dev;
+ 	struct am2315_data *data;
+ 
+@@ -187,7 +246,22 @@ static int am2315_probe(struct i2c_client *client,
+ 	indio_dev->channels = am2315_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(am2315_channels);
+ 
+-	return iio_device_register(indio_dev);
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++					 am2315_trigger_handler, NULL);
++	if (ret < 0) {
++		dev_err(&client->dev, "iio triggered buffer setup failed\n");
++		return ret;
++	}
 +
-+tboard_thermistor: thermal-sensor {
-+	compatible = "generic-adc-thermal";
-+	#thermal-sensor-cells = <0>;
-+	io-channels = <&ads1015 1>;
-+	io-channel-names = "sensor-channel";
-+	temperature-lookup-table = <    (-40000) 2578
-+					(-39000) 2577
-+					(-38000) 2576
-+					(-37000) 2575
-+					(-36000) 2574
-+					(-35000) 2573
-+					(-34000) 2572
-+					(-33000) 2571
-+					(-32000) 2569
-+					(-31000) 2568
-+					(-30000) 2567
-+					::::::::::
-+					118000 254
-+					119000 247
-+					120000 240
-+					121000 233
-+					122000 226
-+					123000 220
-+					124000 214
-+					125000 208>;
-+};
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		goto err_buffer_cleanup;
 +
-+dummy_cool_dev: dummy-cool-dev {
-+	compatible = "dummy-cooling-dev";
-+	#cooling-cells = <2>; /* min followed by max */
-+};
++	return 0;
 +
-+thermal-zones {
-+	Tboard {
-+		polling-delay = <15000>; /* milliseconds */
-+		polling-delay-passive = <0>; /* milliseconds */
-+		thermal-sensors = <&tboard_thermistor>;
-+
-+		trips {
-+			therm_est_trip: therm_est_trip {
-+				temperature = <40000>;
-+				type = "active";
-+				hysteresis = <1000>;
-+			};
-+		};
-+
-+		cooling-maps {
-+			map0 {
-+				trip = <&therm_est_trip>;
-+				cooling-device = <&dummy_cool_dev THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-+				contribution = <100>;
-+			};
-+
-+		};
-+	};
-+};
++err_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++	return ret;
+ }
+ 
+ static int am2315_remove(struct i2c_client *client)
+@@ -195,6 +269,7 @@ static int am2315_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 
+ 	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
+ 
+ 	return 0;
+ }
 -- 
-2.1.4
-
+1.9.1
