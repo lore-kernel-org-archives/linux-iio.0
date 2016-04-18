@@ -1,65 +1,65 @@
-Return-Path: <leonard.crestez@intel.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: Re: [RFC] iio: st: Add lsm9ds0 support for gyro accel and magny
-To: Denis Ciocca <denis.ciocca@st.com>, Jonathan Cameron <jic23@kernel.org>
-References: <2bcce23e64d53f542a9436b11509b107d63cb8dc.1460573498.git.leonard.crestez@intel.com>
- <57137732.40507@kernel.org> <20160418060742.GA2981@beicxl1122>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Giuseppe BARBA <giuseppe.barba@st.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Daniel Baluta <daniel.baluta@intel.com>, Peter Rosin <peda@lysator.liu.se>,
- Wolfram Sang <wsa@the-dreams.de>
-Message-ID: <5714B609.4020502@intel.com>
-Date: Mon, 18 Apr 2016 13:25:13 +0300
+Return-Path: <vlad.dogaru@intel.com>
+Date: Mon, 18 Apr 2016 15:01:22 +0300
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org,
+	Christoph Mair <christoph.mair@gmail.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 1/2] iio: pressure: bmp280: add support for BMP180
+Message-ID: <20160418120122.GC20350@vdogaru>
+References: <1460742827-6502-1-git-send-email-akinobu.mita@gmail.com>
+ <1460742827-6502-2-git-send-email-akinobu.mita@gmail.com>
+ <57120E15.2020105@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20160418060742.GA2981@beicxl1122>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <57120E15.2020105@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 04/18/2016 09:07 AM, Denis Ciocca wrote:
-> Hi Leonard and Jonathan,
->
-> basically the patch can not work.
-Well, it can work as long as you don't initialize both the accel and the
-magn at the same time. There is no issue with the gyro driver. Would it
-be OK if I resend this as a [PATCH] intended for inclusion?
+Hi Jonathan,
 
-There are small some issues that I found in further testing and fixed
-locally.
+On Sat, Apr 16, 2016 at 11:04:05AM +0100, Jonathan Cameron wrote:
+> On 15/04/16 18:53, Akinobu Mita wrote:
+[...]
+> > +static int bmp180_read_press(struct bmp280_data *data,
+> > +			     int *val, int *val2)
+> > +{
+> > +	int ret;
+> > +	s32 adc_press;
+> > +	u32 comp_press;
+> > +
+> > +	/* Read and compensate temperature so we get a reading of t_fine. */
+> > +	ret = bmp180_read_temp(data, NULL);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = bmp180_read_adc_press(data, &adc_press);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	comp_press = bmp180_compensate_press(data, adc_press);
+> > +
+> > +	*val = comp_press;
+> > +	*val2 = 1000;
+> This would be better done using a _scale info_mask element to handle the divide
+> by 1000.  That lets the decision on whether the conversion is even needed be
+> moved to userspace.
+> 
+> Unfortunately that's also true for the bmp280 as it stands which is annoying
+> as that makes it ABI which we shouldn't be changing.  Ah well, the device
+> is slow anyway so not terrible to leave this as it is.  I should have picked
+> that up when reviewing that driver originally - sometimes we have live with
+> our mistakes!
 
-> Current ST infrastructure needs to use one i2c slave per driver (accel or magn or gyro).
-> All sensors currently supported (including lsm303agr) have one i2c address per sensor type (for example in lsm303agr, accel has one i2c address, magn has another one).
+I don't think that qualifies as breaking ABI.  The ABI specifies which
+files *may* exist and how they should be interpreted, if they exist.
+It does not guarantee that a specific sensor such as BMP280 exposes its
+measurement as in_temp_input, rather than in_temp_raw and in_temp_scale.
 
-I was skimming multiple datasheets from ST and missed the fact that
-lsm303agr has two I2C addresses. The accel and magn parts have distinct
-register ranges (despite being separated by address anyway) and that
-threw me off
+That said, I don't feel strongly about the changes either way.  When I
+initially wrote the driver I thought the operations were harmless enough
+to do in the kernel.
 
-> What you are doing now it is not possible with current implementation. You can't have two drivers that manage one singol i2c device.
-> A possible solution is to use MDF device that let IIO drivers probe, the only driver that really manage i2c is MDF (check HID implementation), But I'm not sure it is ok because in combo device (two sensors sharing same i2c address) maybe you have some constrains you should verify (for example one odr is related to the other one, ...), you can't basically try to use those as totally separated.
->
-> I've started months ago to modify ST infrastructure in order to manage combo device but so far it is still work in progess...
-
-This device has some bits and registers that are shared between the
-accel/magn part and this kind of stuff will have to be dealt with.
-Attempting to treat the two parts can sort of work but it's not a very
-good solution.
-
-I agree that the good solution would be to create some sort of st_combo
-infrastructure (perhaps in drivers/iio/imu) and have a single iio_dev
-which contains multiple st_sensor_data structs inside priv. Something
-like this:
-
-struct st_combo_sensor_data {
-    struct st_sensor_data *accel;
-    struct st_sensor_data *magn;
-}
-
-Then st_combo_* implementation functions would forward to st_magn_* or
-st_accel_* depending on chan->type. Does this make sense?
-
---
-Regards,
-Leonard
+Thanks,
+Vlad
