@@ -1,104 +1,94 @@
-Return-Path: <denis.ciocca@st.com>
-Date: Tue, 19 Apr 2016 19:22:17 +0800
-From: Denis Ciocca <denis.ciocca@st.com>
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
-CC: Lucas De Marchi <lucas.de.marchi@gmail.com>,
-        Jonathan Cameron
-	<jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Giuseppe BARBA <giuseppe.barba@st.com>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter
- Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Daniel
- Baluta <daniel.baluta@intel.com>,
-        Peter Rosin <peda@lysator.liu.se>, Wolfram
- Sang <wsa@the-dreams.de>
-Subject: Re: [RFC] iio: st: Add lsm9ds0 support for gyro accel and magny
-Message-ID: <20160419112217.GC9712@beicxl1122>
-References: <2bcce23e64d53f542a9436b11509b107d63cb8dc.1460573498.git.leonard.crestez@intel.com>
- <57137732.40507@kernel.org>
- <20160418060742.GA2981@beicxl1122>
- <5714B609.4020502@intel.com>
- <57153AC3.9020603@kernel.org>
- <CAKi4VAKExQPMFgFv+VGvqxGsu47aF1UxDtoExWWh5DXY36B=LA@mail.gmail.com>
- <57160E37.2040401@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60525 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751525AbcDRSzo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 14:55:44 -0400
+Subject: Re: [PATCH] iio:adc:at91-sama5d2: Repair crash on module removal
+To: Marek Vasut <marex@denx.de>, linux-iio@vger.kernel.org
+References: <1460997005-8786-1-git-send-email-marex@denx.de>
+Cc: Ludovic Desroches <ludovic.desroches@atmel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <57152DA8.8060106@kernel.org>
+Date: Mon, 18 Apr 2016 19:55:36 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <57160E37.2040401@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1460997005-8786-1-git-send-email-marex@denx.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Leonard,
-
-On |19 Apr 16 @ 12:53|, Crestez Dan Leonard wrote:
-> On 04/19/2016 08:10 AM, Lucas De Marchi wrote:
-> > On Mon, Apr 18, 2016 at 4:51 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> >> On 18/04/16 11:25, Crestez Dan Leonard wrote:
-> >>> On 04/18/2016 09:07 AM, Denis Ciocca wrote:
-> >>> Then st_combo_* implementation functions would forward to st_magn_* or
-> >>> st_accel_* depending on chan->type. Does this make sense?
-> >> Perhaps. If you have a short term need for this perhaps Denis and you can
-> >> work together to speed up what he has 'in the works' for this?
-> >> No point in duplicating work!
-> >>
-> >> The gyro element can go forward separately in the meantime.
-> > 
-> > Isn't LSM9DS0 just a package of LSM303D and L3GD20 that could reuse
-> > the drivers already present?
+On 18/04/16 17:30, Marek Vasut wrote:
+> The driver never calls platform_set_drvdata() , so platform_get_drvdata()
+> in .remove returns NULL and thus $indio_dev variable in .remove is NULL.
+> Then it's only a matter of dereferencing the indio_dev variable to make
+> the kernel blow as seen below. This patch adds the platform_set_drvdata()
+> call to fix the problem.
 > 
-> That doesn't seem to be mentioned in the datasheets but I guessed that
-> is a repacking of existing devices.
-
-There is no such info. But since whoIam and register map is same, we can use
-same table of l3gd20.
-
-
-
+> root@armhf:~# rmmod at91-sama5d2_adc
 > 
-> The gyro part of the patch only adds IDs. It's ~10 lines spread around
-> many files.
+> Unable to handle kernel NULL pointer dereference at virtual address 000001d4
+> pgd = dd57c000
+> [000001d4] *pgd=00000000
+> Internal error: Oops: 5 [#1] ARM
+> Modules linked in: at91_sama5d2_adc(-)
+> CPU: 0 PID: 1334 Comm: rmmod Not tainted 4.6.0-rc3-next-20160418+ #3
+> Hardware name: Atmel SAMA5
+> task: dd4fcc40 ti: de910000 task.ti: de910000
+> PC is at mutex_lock+0x4/0x24
+> LR is at iio_device_unregister+0x14/0x6c
+> pc : [<c05f4624>]    lr : [<c0471f74>]    psr: a00d0013
+>                sp : de911f00  ip : 00000000  fp : be898bd8
+> r10: 00000000  r9 : de910000  r8 : c0107724
+> r7 : 00000081  r6 : bf001048  r5 : 000001d4  r4 : 00000000
+> r3 : bf000000  r2 : 00000000  r1 : 00000004  r0 : 000001d4
+> Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+> Control: 10c53c7d  Table: 3d57c059  DAC: 00000051
+> Process rmmod (pid: 1334, stack limit = 0xde910208)
+> Stack: (0xde911f00 to 0xde912000)
+> 1f00: bf000000 00000000 df5c7e10 bf000010 bf000000 df5c7e10 df5c7e10 c0351ca8
+> 1f20: c0351c84 df5c7e10 bf001048 c0350734 bf001048 df5c7e10 df5c7e44 c035087c
+> 1f40: bf001048 7f62dd4c 00000800 c034fb30 bf0010c0 c0158ee8 de910000 31397461
+> 1f60: 6d61735f 32643561 6364615f 00000000 de911f90 de910000 de910000 00000000
+> 1f80: de911fb0 10c53c7d de911f9c c05f33d8 de911fa0 00910000 be898ecb 7f62dd10
+> 1fa0: 00000000 c0107560 be898ecb 7f62dd10 7f62dd4c 00000800 6f844800 6f844800
+> 1fc0: be898ecb 7f62dd10 00000000 00000081 00000000 7f62dd10 be898bd8 be898bd8
+> 1fe0: b6eedab1 be898b6c 7f61056b b6eedab6 000d0030 7f62dd4c 00000000 00000000
+> [<c05f4624>] (mutex_lock) from [<c0471f74>] (iio_device_unregister+0x14/0x6c)
+> [<c0471f74>] (iio_device_unregister) from [<bf000010>] (at91_adc_remove+0x10/0x3c [at91_sama5d2_adc])
+> [<bf000010>] (at91_adc_remove [at91_sama5d2_adc]) from [<c0351ca8>] (platform_drv_remove+0x24/0x3c)
+> [<c0351ca8>] (platform_drv_remove) from [<c0350734>] (__device_release_driver+0x84/0x110)
+> [<c0350734>] (__device_release_driver) from [<c035087c>] (driver_detach+0x8c/0x90)
+> [<c035087c>] (driver_detach) from [<c034fb30>] (bus_remove_driver+0x4c/0xa0)
+> [<c034fb30>] (bus_remove_driver) from [<c0158ee8>] (SyS_delete_module+0x110/0x1d0)
+> [<c0158ee8>] (SyS_delete_module) from [<c0107560>] (ret_fast_syscall+0x0/0x3c)
+> Code: e3520001 1affffd5 eafffff4 f5d0f000 (e1902f9f)
+> ---[ end trace 86914d7ad3696fca ]---
 > 
-> For accel/magn parts there is a WHOAMI different from all others present
-> and some registers also seem to be different. There doesn't seem to be
-> explicit support for "LSM303D".
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Ludovic Desroches <ludovic.desroches@atmel.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+Applied to the fixes-togreg branch and marked for stable.
 
-lsm303d is a combo device, not currently supported into ST architecture.
-When it will be ok, we can support in same table lsm303d and lsm9ds0 (accel & magn)
-if I remember corretly (since are sharing ID and register map).
+Thanks and oops :)
 
+Who removes modules anyway?
 
-
+Jonathan
+> ---
+>  drivers/iio/adc/at91-sama5d2_adc.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> I have no urgent need for this to work, I'm fine with waiting some time
-> for st_sensor combo support.
-
-That's great. I will keep you updated.
-
-
-
+> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+> index 07adb10..e10dca3 100644
+> --- a/drivers/iio/adc/at91-sama5d2_adc.c
+> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
+> @@ -497,6 +497,8 @@ static int at91_adc_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto vref_disable;
+>  
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0)
+>  		goto per_clk_disable_unprepare;
 > 
-> I can repost the gyro and accel+magn parts separately. But it's not
-> clear that supporting an accel-only device would still make sense once
-> combo support is available. So maybe I should just repost the gyro patch
-> adding IDs?
 
-I think we can proceed with gyro patch. So, you can provide a patch that adds
-lsm9ds0_gyro part.
-
-
-Thanks,
-Denis
-
-
-> 
-> Regards,
-> Leonard
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
