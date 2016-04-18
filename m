@@ -1,160 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:44386 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750795AbcDLFXn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 12 Apr 2016 01:23:43 -0400
-Date: Tue, 12 Apr 2016 07:23:41 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Matt Ranostay <matt.ranostay@intel.com>
-cc: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH 1/3] iio: pressure: bmp280: add initial support for
- multiple chips
-In-Reply-To: <1460438494-16135-2-git-send-email-matt.ranostay@intel.com>
-Message-ID: <alpine.DEB.2.20.12.1604120722430.31934@pmeerw.net>
-References: <1460438494-16135-1-git-send-email-matt.ranostay@intel.com> <1460438494-16135-2-git-send-email-matt.ranostay@intel.com>
+Received: from bh-25.webhostbox.net ([208.91.199.152]:35512 "EHLO
+	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752194AbcDRXuM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 19:50:12 -0400
+Date: Mon, 18 Apr 2016 16:50:15 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: tthayer@opensource.altera.com,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org, arnd@arndb.de,
+	gregkh@linuxfoundation.org, linux-pm <linux-pm@vger.kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Dmitry <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>
+Subject: Re: Driver directory selection for Power Supply Status chip
+Message-ID: <20160418235015.GA20720@roeck-us.net>
+References: <571507DE.3080408@opensource.altera.com>
+ <57150E47.4020503@metafoo.de>
+ <571538D5.5020209@opensource.altera.com>
+ <57153E2A.7030207@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <57153E2A.7030207@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Mon, Apr 18, 2016 at 09:06:02PM +0100, Jonathan Cameron wrote:
+> On 18/04/16 20:43, Thor Thayer wrote:
+> > 
+> > 
+> > On 04/18/2016 11:41 AM, Lars-Peter Clausen wrote:
+> >> On 04/18/2016 06:14 PM, Thor Thayer wrote:
+> >>> Hi,
+> >>>
+> >>> The Arria10 System Resource chip (A10SR) is a SPI based MFD implementing a
+> >>> GPIO expander, reset controller, and power supply monitoring. I'm not sure
+> >>> where the driver for the A10SR power monitoring driver should reside and I'm
+> >>> hoping someone can offer some advice.
+> >>>
+> >>> I'd originally submitted the RFC to the HWMON list but the maintainer
+> >>> pointed out that it wasn't a good fit because the A10SR only indicates
+> >>> boolean power supply status - not the voltage level as required by HWMON.
+> >>>
+> >>> I read that IIO acts as a bridge between IO and HWMON but I'm also not sure
+> >>> this fits those drivers (although I did find some power supply supervistors
+> >>> there). It isn't quite a power supply supervisor - the A10SR is a comparator
+> >>> instead of an Analog-to-Digital Converter.
+> >>>
+> >>> One additional thing, the A10SR also had a number of enable bits for
+> >>> enabling devices external to Altera's SoC (but still on the development
+> >>> board). These don't quite fit into the reset controller framework but would
+> >>> seem to fit a MISC directory driver better.
+> >>>
+> >>> If neither IIO or MISC is a good fit, can someone suggest a more appropriate
+> >>> place?
+> >>
+> >> How does the device work, does it generate an interrupt when the voltage
+> >> level goes below the threshold? I'd like to pass the ball back and say that
+> >> this sounds like something that should go into hwmon.
+> >>
+> > 
+> > Good question but no, there is no interrupt.
+> > 
+> > The chip is actually a power supply sequencer for bringing up the
+> > power supplies in the correct order. Since the sequence, timings, and
+> > thresholds are hard coded in the chip and can't be changed
+> > programatically, I assume it was decided that a power fail interrupt
+> > was not needed. However, the status of the power (OK/Fail) can be
+> > read from the chip.
+> > 
+> > I was directed to look at Documentation/hwmon/sysfs-interface which
+> > states the units are in millivolts and I didn't see any references to
+> > a boolean output so I'm leaning away from hwmon.
+> That's one impressively uninformative output...  Hmm.
 
-> Bosch has several chipsets that use BMP280 as core features, this enables
-> chip information for each variant.
+Please clarify what you mean with "impressively uninformative output".
 
-these patches clash with work to add BMP180 to the same driver, Akinobu 
-Mita was first :)
- 
-> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
-> ---
->  drivers/iio/pressure/bmp280.c | 59 +++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 54 insertions(+), 5 deletions(-)
+FWIW, hwmon alarm attributes are boolean.
+
+Thanks,
+Guenter
+
+> Not obvious where to put it - it doesn't fit in IIO really either.
 > 
-> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-> index a2602d8dd6d5..2e7cff38f5ff 100644
-> --- a/drivers/iio/pressure/bmp280.c
-> +++ b/drivers/iio/pressure/bmp280.c
-> @@ -66,12 +66,15 @@
->  #define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
->  
->  #define BMP280_CHIP_ID			0x58
-> +#define BME280_CHIP_ID			0x60
-> +
->  #define BMP280_SOFT_RESET_VAL		0xB6
->  
->  struct bmp280_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
->  	struct regmap *regmap;
-> +	struct bmp280_chip_info *chip;
->  
->  	/*
->  	 * Carryover value from temperature conversion, used in pressure
-> @@ -80,6 +83,24 @@ struct bmp280_data {
->  	s32 t_fine;
->  };
->  
-> +enum { bmp280, bme280 };
-> +
-> +struct bmp280_chip_info {
-> +	int id;
-> +	int num_channels;
-> +};
-> +
-> +static struct bmp280_chip_info bmp280_chip_info_table[] = {
-> +	[bmp280] = {
-> +		.id = BMP280_CHIP_ID,
-> +		.num_channels = 2,
-> +	},
-> +	[bme280] = {
-> +		.id = BME280_CHIP_ID,
-> +		.num_channels = 2,
-> +	},
-> +};
-> +
->  /*
->   * These enums are used for indexing into the array of compensation
->   * parameters.
-> @@ -344,6 +365,20 @@ static int bmp280_chip_init(struct bmp280_data *data)
->  	return ret;
->  }
->  
-> +static int bmp280_match_acpi_device(struct device *dev,
-> +				    struct bmp280_chip_info **chipset)
-> +{
-> +	const struct acpi_device_id *id;
-> +
-> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +	if (!id)
-> +		return -ENODEV;
-> +
-> +	*chipset = &bmp280_chip_info_table[id->driver_data];
-> +
-> +	return 0;
-> +}
-> +
->  static int bmp280_probe(struct i2c_client *client,
->  			const struct i2c_device_id *id)
->  {
-> @@ -357,13 +392,25 @@ static int bmp280_probe(struct i2c_client *client,
->  		return -ENOMEM;
->  
->  	data = iio_priv(indio_dev);
-> +
-> +	if (id) {
-> +		data->chip = &bmp280_chip_info_table[id->driver_data];
-> +	} else if (ACPI_HANDLE(&client->dev)) {
-> +		ret = bmp280_match_acpi_device(&client->dev, &data->chip);
-> +		if (ret < 0)
-> +			return ret;
-> +	} else {
-> +		/* Don't break sysfs registration of BMP280 devices */
-> +		data->chip = &bmp280_chip_info_table[bmp280];
-> +	}
-> +
->  	mutex_init(&data->lock);
->  	data->client = client;
->  
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->name = id->name;
->  	indio_dev->channels = bmp280_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(bmp280_channels);
-> +	indio_dev->num_channels = data->chip->num_channels;
->  	indio_dev->info = &bmp280_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  
-> @@ -376,9 +423,9 @@ static int bmp280_probe(struct i2c_client *client,
->  	ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
->  	if (ret < 0)
->  		return ret;
-> -	if (chip_id != BMP280_CHIP_ID) {
-> +	if (chip_id != data->chip->id) {
->  		dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
-> -			BMP280_CHIP_ID, chip_id);
-> +			data->chip->id, chip_id);
->  		return -EINVAL;
->  	}
->  
-> @@ -390,13 +437,15 @@ static int bmp280_probe(struct i2c_client *client,
->  }
->  
->  static const struct acpi_device_id bmp280_acpi_match[] = {
-> -	{"BMP0280", 0},
-> +	{"BMP0280", bmp280},
-> +	{"BME0280", bme280},
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
->  
->  static const struct i2c_device_id bmp280_id[] = {
-> -	{"bmp280", 0},
-> +	{"bmp280", bmp280},
-> +	{"bme280", bme280},
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(i2c, bmp280_id);
+> Could report as a power supply?  There is 'health' support in there.
+> See Documentation/power/power_supply_class.txt
+> and include/linux/power_supply.h
+> though I'm not sure which type a fail on this would count as...
+> perhaps UNSPEC_FAILURE.
 > 
-
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+> It's intended for batteries really - not sure how far you can stretch
+> that.
+> 
+> Cc'd linux-pm and maintainers.  Perhaps they will have a better idea!
+> > 
+> > Thank you for your reply!
+> > -- 
+> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
