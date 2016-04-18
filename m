@@ -1,79 +1,180 @@
-Return-Path: <marex@denx.de>
-Message-ID: <5714E78F.6020305@denx.de>
-Date: Mon, 18 Apr 2016 15:56:31 +0200
-From: Marek Vasut <marex@denx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-vk0-f68.google.com ([209.85.213.68]:33777 "EHLO
+	mail-vk0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753114AbcDRNqK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 09:46:10 -0400
+Received: by mail-vk0-f68.google.com with SMTP id v68so22916804vka.0
+        for <linux-iio@vger.kernel.org>; Mon, 18 Apr 2016 06:46:09 -0700 (PDT)
 MIME-Version: 1.0
-To: jic23@jic23.retrosnub.co.uk
-CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Matt Ranostay <mranostay@gmail.com>,
- devicetree@vger.kernel.org, Mark Rutland <Mark.Rutland@arm.com>,
- Rob Herring <robh+dt@kernel.org>,
- Pawel Moll <Pawel.Moll@arm.com>,
- Ian Campbell <ijc+devicetree@hellion.org.uk>,
- Kumar Gala <galak@codeaurora.org>, linux-iio-owner@vger.kernel.org
-Subject: Re: [PATCH V3] iio: pressure: hp03: Add Hope RF HP03 sensor support
-References: <1460321544-8619-1-git-send-email-marex@denx.de> <57129538.6010300@kernel.org> <5714E07B.4090902@denx.de> <1a6d907d4f0229c80eae5075139febbb@jic23.retrosnub.co.uk>
-In-Reply-To: <1a6d907d4f0229c80eae5075139febbb@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160418115216.GB20350@vdogaru>
+References: <1460742827-6502-1-git-send-email-akinobu.mita@gmail.com>
+	<1460742827-6502-3-git-send-email-akinobu.mita@gmail.com>
+	<20160418115216.GB20350@vdogaru>
+Date: Mon, 18 Apr 2016 22:46:08 +0900
+Message-ID: <CAC5umyjCzZhA2+TMT+pWxVWrxecgfLa0d=eH6pEcTk0yfmw4zw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] iio: pressure: bmp280: add ability to control
+ oversampling rate
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: Vlad Dogaru <vlad.dogaru@intel.com>
+Cc: linux-iio@vger.kernel.org,
+	Christoph Mair <christoph.mair@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/18/2016 03:44 PM, jic23@jic23.retrosnub.co.uk wrote:
-> On 18.04.2016 14:26, Marek Vasut wrote:
->> On 04/16/2016 09:40 PM, Jonathan Cameron wrote:
->>> On 10/04/16 21:52, Marek Vasut wrote:
->>>> Add support for HopeRF pressure and temperature sensor.
->>>>
->>>> This device uses two fixed I2C addresses, one for storing
->>>> calibration coefficients and another for accessing the ADC.
->>>>
->>>> Signed-off-by: Marek Vasut <marex@denx.de>
->>>> Cc: Matt Ranostay <mranostay@gmail.com>
->>>> Cc: Jonathan Cameron <jic23@kernel.org>
->>> Sorry I didn't get to this earlier in the week.
->>>
->>> Unfortunately the resulting scales don't match the standard ABI for
->>> these
->>> two channel types.
->>
->> Ah, sorry for the inconvenience.
->>
->>> Otherwise, looks good. I've cc'd the devicetree list and maintainers.
->>> The binding is trivial I think, but always good to give people a
->>> opportunity to comment.
->>>
->>> Jonathan
->>>> ---
->>>> V2: - Expand the binding document with more details on the XCLR pin
->>>>     - Switch from IIO_CHAN_INFO_PROCESSED to RAW + SCALE
->>>>     - Add failpath into hp03_update_temp_pressure() for the case
->>>>       when ADC readout fails. This correctly sets the XCLR pin back
->>>>       to LO now.
->>>>     - Add comment explaining the need for allocation of child device
->>>>       in hp03_probe().
->>>> V3: - Fix indent in the DT binding documentation
->>>>     - Report raw pressure and temperature unmodified
->>> Good
->>>>     - Report pressure scale to be 1 , since pressure is in Pa
->>> Standard units for pressure (see Documentation/ABI/testing/sysfs-bus-iio
->>> are KPa so it wants to report 0.001)
->>
->> OK, got it.
->>
->>>>     - Report temperature scale to be 0.01 , since temp is in 0.01C
->>>> steps
->>> Unfortunately the documented base unit for temp (originally from
->>> hwmon before
->>> we started going for SI units every time) are milli Celcius.  Thus
->>> the value
->>> reported * scale should end up in milli degrees Celcius. Hence if it
->>> is in 0.01
->>> steps the scale should be 0.1
->>
->> Shouldn't this be 10 ? The value is in 0.01C steps , so the value has to
->> be multiplied by 10 to convert it into mC units.
-> err. yes I'm clearly wrong :)
+Hi Vlad,
 
-Thanks for confirming :) V4 is coming.
+2016-04-18 20:52 GMT+09:00 Vlad Dogaru <vlad.dogaru@intel.com>:
+> Hi Akinobu,
+>
+> On Sat, Apr 16, 2016 at 02:53:47AM +0900, Akinobu Mita wrote:
+>> This adds ability to control the oversampling ratio of the temperature
+>> and pressure measurement for both bmp180 and bmp280.
+>> (bmp280 is untested for now)
+>
+> Code looks good, but I found a pretty big issue when testing with the
+> actual device.  Details inline.
+>
+>>
+>> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+>> Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+>> Cc: Christoph Mair <christoph.mair@gmail.com>
+>> Cc: Jonathan Cameron <jic23@kernel.org>
+>> Cc: Hartmut Knaack <knaack.h@gmx.de>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+>> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+>> ---
+>>  drivers/iio/pressure/bmp280.c | 202 ++++++++++++++++++++++++++++++++++++++----
+>>  1 file changed, 184 insertions(+), 18 deletions(-)
+>>
+>> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+>> index 28daa74..fd931c7 100644
+>> --- a/drivers/iio/pressure/bmp280.c
+>> +++ b/drivers/iio/pressure/bmp280.c
+>> @@ -50,19 +50,21 @@
+>>
+>>  #define BMP280_OSRS_TEMP_MASK                (BIT(7) | BIT(6) | BIT(5))
+>>  #define BMP280_OSRS_TEMP_SKIP                0
+>> -#define BMP280_OSRS_TEMP_1X          BIT(5)
+>> -#define BMP280_OSRS_TEMP_2X          BIT(6)
+>> -#define BMP280_OSRS_TEMP_4X          (BIT(6) | BIT(5))
+>> -#define BMP280_OSRS_TEMP_8X          BIT(7)
+>> -#define BMP280_OSRS_TEMP_16X         (BIT(7) | BIT(5))
+>> +#define BMP280_OSRS_TEMP_X(osrs_t)   ((osrs_t) << 5)
+>> +#define BMP280_OSRS_TEMP_1X          BMP280_OSRS_TEMP_X(1)
+>> +#define BMP280_OSRS_TEMP_2X          BMP280_OSRS_TEMP_X(2)
+>> +#define BMP280_OSRS_TEMP_4X          BMP280_OSRS_TEMP_X(3)
+>> +#define BMP280_OSRS_TEMP_8X          BMP280_OSRS_TEMP_X(4)
+>> +#define BMP280_OSRS_TEMP_16X         BMP280_OSRS_TEMP_X(5)
+>>
+>>  #define BMP280_OSRS_PRESS_MASK               (BIT(4) | BIT(3) | BIT(2))
+>>  #define BMP280_OSRS_PRESS_SKIP               0
+>> -#define BMP280_OSRS_PRESS_1X         BIT(2)
+>> -#define BMP280_OSRS_PRESS_2X         BIT(3)
+>> -#define BMP280_OSRS_PRESS_4X         (BIT(3) | BIT(2))
+>> -#define BMP280_OSRS_PRESS_8X         BIT(4)
+>> -#define BMP280_OSRS_PRESS_16X                (BIT(4) | BIT(2))
+>> +#define BMP280_OSRS_PRESS_X(osrs_p)  ((osrs_p) << 2)
+>> +#define BMP280_OSRS_PRESS_1X         BMP280_OSRS_PRESS_X(1)
+>> +#define BMP280_OSRS_PRESS_2X         BMP280_OSRS_PRESS_X(2)
+>> +#define BMP280_OSRS_PRESS_4X         BMP280_OSRS_PRESS_X(3)
+>> +#define BMP280_OSRS_PRESS_8X         BMP280_OSRS_PRESS_X(4)
+>> +#define BMP280_OSRS_PRESS_16X                BMP280_OSRS_PRESS_X(5)
+>>
+>>  #define BMP280_MODE_MASK             (BIT(1) | BIT(0))
+>>  #define BMP280_MODE_SLEEP            0
+>> @@ -104,6 +106,9 @@ struct bmp280_data {
+>>       struct regmap *regmap;
+>>       const struct bmp280_chip_info *chip_info;
+>>
+>> +     u8 oversampling_press;
+>> +     u8 oversampling_temp;
+>> +
+>>       /*
+>>        * Carryover value from temperature conversion, used in pressure
+>>        * calculation.
+>> @@ -114,6 +119,12 @@ struct bmp280_data {
+>>  struct bmp280_chip_info {
+>>       const struct regmap_config *regmap_config;
+>>
+>> +     const int *oversampling_temp_avail;
+>> +     int num_oversampling_temp_avail;
+>> +
+>> +     const int *oversampling_press_avail;
+>> +     int num_oversampling_press_avail;
+>> +
+>>       int (*chip_config)(struct bmp280_data *);
+>>       int (*read_temp)(struct bmp280_data *, int *);
+>>       int (*read_press)(struct bmp280_data *, int *, int *);
+>> @@ -129,11 +140,13 @@ enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
+>>  static const struct iio_chan_spec bmp280_channels[] = {
+>>       {
+>>               .type = IIO_PRESSURE,
+>> -             .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+>> +             .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+>> +                                   BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>>       },
+>>       {
+>>               .type = IIO_TEMP,
+>> -             .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+>> +             .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+>> +                                   BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>>       },
+>>  };
+>>
+>> @@ -339,6 +352,21 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+>>                       break;
+>>               }
+>>               break;
+>> +     case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>> +             switch (chan->type) {
+>> +             case IIO_PRESSURE:
+>> +                     *val = 1 << data->oversampling_press;
+>> +                     ret = IIO_VAL_INT;
+>> +                     break;
+>> +             case IIO_TEMP:
+>> +                     *val = 1 << data->oversampling_temp;
+>> +                     ret = IIO_VAL_INT;
+>> +                     break;
+>> +             default:
+>> +                     ret = -EINVAL;
+>> +                     break;
+>> +             }
+>> +             break;
+>>       default:
+>>               ret = -EINVAL;
+>>               break;
+>> @@ -349,22 +377,135 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+>>       return ret;
+>>  }
+>>
+>> +static int bmp280_write_oversampling_ratio_temp(struct bmp280_data *data,
+>> +                                            int val)
+>> +{
+>> +     int i;
+>> +     const int *avail = data->chip_info->oversampling_temp_avail;
+>> +     const int n = data->chip_info->num_oversampling_temp_avail;
+>> +
+>> +     for (i = 0; i < n; i++) {
+>> +             if (avail[i] == val) {
+>> +                     data->oversampling_temp = ilog2(val);
+>
+> This is incorrect.  According to the datasheet, you should add 1 to the
+> return value of ilog2.  Thus, if val is 16, ilog2 is 4 and the
+> oversampling factor should be set to 5.  See Table 21 and Table 22 of
+> the BMP280 datasheet.
+>
+> I wouldn't have noticed this but for the following bug: as the code
+> stands right now, setting an oversampling factor of 1 will result in
+> setting the bits in the register to 0, which corresponds to "skip
+> measurement" and a constant reading of 25.0C and ~77kPa.
 
-Best regards,
-Marek Vasut
+Thanks for testing and spotting the issue!
+
+I'll fix the calculation for osrs_t and osrs_p in bmp280_chip_config().
+And also add comment describing bmp280_data->oversampling_{temp,press}
+are log of base 2 of oversampling rate, not oversampling register settings.
