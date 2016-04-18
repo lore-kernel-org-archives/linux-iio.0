@@ -8,119 +8,138 @@ Cc: linux-kernel@vger.kernel.org,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH v3 3/5] max44000: Support controlling LED current output
-Date: Mon, 18 Apr 2016 17:31:55 +0300
-Message-Id: <630a03ff02d238793019267f0e144f08665104a5.1460989642.git.leonard.crestez@intel.com>
+Subject: [PATCH v3 5/5] max44000: Initial triggered buffer support
+Date: Mon, 18 Apr 2016 17:31:57 +0300
+Message-Id: <d809963f51912bd9d879030ec113e15becf313d6.1460989642.git.leonard.crestez@intel.com>
 In-Reply-To: <cover.1460989642.git.leonard.crestez@intel.com>
 References: <cover.1460989642.git.leonard.crestez@intel.com>
 In-Reply-To: <cover.1460989642.git.leonard.crestez@intel.com>
 References: <cover.1460989642.git.leonard.crestez@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This is exposed as an output channel with "led" as an extend_name.
-
-Other sensors also have support for controlling an external LED. It's
-not clear that simply exposing an undecorated output channel is the
-correct approach.
-
 Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
- drivers/iio/light/max44000.c | 53 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+ drivers/iio/light/max44000.c | 62 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
 diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-index dc63de2..0ccd110 100644
+index c58bb78..b83d47d 100644
 --- a/drivers/iio/light/max44000.c
 +++ b/drivers/iio/light/max44000.c
-@@ -85,6 +85,13 @@ static const struct iio_chan_spec max44000_channels[] = {
+@@ -19,6 +19,9 @@
+ #include <linux/util_macros.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ #include <linux/acpi.h>
+ 
+ #define MAX44000_DRV_NAME		"max44000"
+@@ -125,24 +128,41 @@ static const char max44000_scale_avail_str[] =
+ 	"0.5 "
+ 	 "4";
+ 
++#define MAX44000_SCAN_INDEX_ALS 0
++#define MAX44000_SCAN_INDEX_PRX 1
++
+ static const struct iio_chan_spec max44000_channels[] = {
+ 	{
+ 		.type = IIO_LIGHT,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
+ 					    BIT(IIO_CHAN_INFO_INT_TIME),
++		.scan_index = MAX44000_SCAN_INDEX_ALS,
++		.scan_type = {
++			.sign		= 'u',
++			.realbits	= 14,
++			.storagebits	= 16,
++		}
+ 	},
+ 	{
+ 		.type = IIO_PROXIMITY,
  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = MAX44000_SCAN_INDEX_PRX,
++		.scan_type = {
++			.sign		= 'u',
++			.realbits	= 8,
++			.storagebits	= 16,
++		}
  	},
-+	{
-+		.type = IIO_CURRENT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.extend_name = "led",
-+		.output = 1,
-+	},
++	IIO_CHAN_SOFT_TIMESTAMP(2),
+ 	{
+ 		.type = IIO_CURRENT,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 				      BIT(IIO_CHAN_INFO_SCALE),
+ 		.extend_name = "led",
+ 		.output = 1,
++		.scan_index = -1,
+ 	},
  };
  
- static int max44000_read_alsval(struct max44000_data *data)
-@@ -125,6 +132,20 @@ static int max44000_write_led_current_raw(struct max44000_data *data, int val)
- 				 MAX44000_LED_CURRENT_MASK, val);
- }
+@@ -467,6 +487,41 @@ static const struct regmap_config max44000_regmap_config = {
+ 	.cache_type	= REGCACHE_RBTREE,
+ };
  
-+static int max44000_read_led_current_raw(struct max44000_data *data)
++static irqreturn_t max44000_trigger_handler(int irq, void *p)
 +{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct max44000_data *data = iio_priv(indio_dev);
++	u16 buf[8]; /* 2x u16 + padding + 8 bytes timestamp */
++	int index = 0;
 +	unsigned int regval;
 +	int ret;
 +
-+	ret = regmap_read(data->regmap, MAX44000_REG_CFG_TX, &regval);
-+	if (ret < 0)
-+		return ret;
-+	regval &= MAX44000_LED_CURRENT_MASK;
-+	if (regval >= 8)
-+		regval -= 4;
-+	return regval;
++	mutex_lock(&data->lock);
++	if (test_bit(MAX44000_SCAN_INDEX_ALS, indio_dev->active_scan_mask)) {
++		ret = max44000_read_alsval(data);
++		if (ret < 0)
++			goto out_unlock;
++		buf[index++] = ret;
++	}
++	if (test_bit(MAX44000_SCAN_INDEX_PRX, indio_dev->active_scan_mask)) {
++		ret = regmap_read(data->regmap, MAX44000_REG_PRX_DATA, &regval);
++		if (ret < 0)
++			goto out_unlock;
++		buf[index] = regval;
++	}
++	mutex_unlock(&data->lock);
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++
++out_unlock:
++	mutex_unlock(&data->lock);
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
 +}
 +
- static int max44000_read_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     int *val, int *val2, long mask)
-@@ -154,12 +175,26 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
- 			*val = regval;
- 			return IIO_VAL_INT;
- 
-+		case IIO_CURRENT:
-+			mutex_lock(&data->lock);
-+			ret = max44000_read_led_current_raw(data);
-+			mutex_unlock(&data->lock);
-+			if (ret < 0)
-+				return ret;
-+			*val = ret;
-+			return IIO_VAL_INT;
-+
- 		default:
- 			return -EINVAL;
- 		}
- 
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
-+		case IIO_CURRENT:
-+			/* Output register is in 10s of miliamps */
-+			*val = 10;
-+			return IIO_VAL_INT;
-+
- 		case IIO_LIGHT:
- 			*val = 1;
- 			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
-@@ -174,9 +209,27 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
+ static int max44000_probe(struct i2c_client *client,
+ 			  const struct i2c_device_id *id)
+ {
+@@ -532,6 +587,12 @@ static int max44000_probe(struct i2c_client *client,
+ 		return ret;
  	}
- }
  
-+static int max44000_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long mask)
-+{
-+	struct max44000_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (mask == IIO_CHAN_INFO_RAW && chan->type == IIO_CURRENT) {
-+		mutex_lock(&data->lock);
-+		ret = max44000_write_led_current_raw(data, val);
-+		mutex_unlock(&data->lock);
++	ret = iio_triggered_buffer_setup(indio_dev, NULL, max44000_trigger_handler, NULL);
++	if (ret < 0) {
++		dev_err(&client->dev, "iio triggered buffer setup failed\n");
 +		return ret;
 +	}
 +
-+	return -EINVAL;
-+}
-+
- static const struct iio_info max44000_info = {
- 	.driver_module		= THIS_MODULE,
- 	.read_raw		= max44000_read_raw,
-+	.write_raw		= max44000_write_raw,
- };
+ 	return iio_device_register(indio_dev);
+ }
  
- static bool max44000_readable_reg(struct device *dev, unsigned int reg)
+@@ -540,6 +601,7 @@ static int max44000_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 
+ 	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
+ 
+ 	return 0;
+ }
 -- 
 2.5.5
