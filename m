@@ -1,299 +1,119 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:11223 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752183AbcDSJV6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Apr 2016 05:21:58 -0400
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
+Return-Path: <leonard.crestez@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [RFC PATCH v1 9/9] iio:st_sensors: fix power regulator usage
-Date: Tue, 19 Apr 2016 11:18:40 +0200
-Message-ID: <66af1630513a8e14900a0257c6c376742a298a86.1461056711.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1461056711.git.gregor.boirie@parrot.com>
-References: <cover.1461056711.git.gregor.boirie@parrot.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH v3 2/5] max44000: Initial support for proximity reading
+Date: Mon, 18 Apr 2016 17:31:54 +0300
+Message-Id: <e24ce55933b4e6923535015a0e5ce5adea20804f.1460989642.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1460989642.git.leonard.crestez@intel.com>
+References: <cover.1460989642.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1460989642.git.leonard.crestez@intel.com>
+References: <cover.1460989642.git.leonard.crestez@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Ensure failure to enable power regulators is properly handled.
+The proximity sensor relies on sending pulses to an external IR led and
+it is disabled by default on powerup. The driver will enable it with a
+default power setting.
 
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
- drivers/iio/accel/st_accel_core.c               | 12 ++++++----
- drivers/iio/common/st_sensors/st_sensors_core.c | 29 ++++++++++++++++++++-----
- drivers/iio/gyro/st_gyro_core.c                 | 12 ++++++----
- drivers/iio/magnetometer/st_magn_core.c         | 12 ++++++----
- drivers/iio/pressure/st_pressure_core.c         | 12 ++++++----
- include/linux/iio/common/st_sensors.h           |  2 +-
- 6 files changed, 57 insertions(+), 22 deletions(-)
+ drivers/iio/light/max44000.c | 45 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 43 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index dc73f2d..b8d3c3c 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -757,13 +757,15 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
- 	indio_dev->info = &accel_info;
- 	mutex_init(&adata->tb.buf_lock);
+diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+index 5ed7934..dc63de2 100644
+--- a/drivers/iio/light/max44000.c
++++ b/drivers/iio/light/max44000.c
+@@ -59,6 +59,11 @@
+  */
+ #define MAX44000_REG_CFG_RX_DEFAULT 0xf0
  
--	st_sensors_power_enable(indio_dev);
-+	err = st_sensors_power_enable(indio_dev);
-+	if (err)
-+		return err;
++/* REG_TX bits */
++#define MAX44000_LED_CURRENT_MASK	0xf
++#define MAX44000_LED_CURRENT_MAX	11
++#define MAX44000_LED_CURRENT_DEFAULT	6
++
+ #define MAX44000_ALSDATA_OVERFLOW	0x4000
  
- 	err = st_sensors_check_device_support(indio_dev,
- 					ARRAY_SIZE(st_accel_sensors_settings),
- 					st_accel_sensors_settings);
- 	if (err < 0)
--		return err;
-+		goto st_accel_power_off;
+ struct max44000_data {
+@@ -75,6 +80,11 @@ static const struct iio_chan_spec max44000_channels[] = {
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+ 	},
++	{
++		.type = IIO_PROXIMITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++	},
+ };
  
- 	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
- 	adata->multiread_bit = adata->sensor_settings->multi_read_bit;
-@@ -780,11 +782,11 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
- 
- 	err = st_sensors_init_sensor(indio_dev, adata->dev->platform_data);
- 	if (err < 0)
--		return err;
-+		goto st_accel_power_off;
- 
- 	err = st_accel_allocate_ring(indio_dev);
- 	if (err < 0)
--		return err;
-+		goto st_accel_power_off;
- 
- 	if (irq > 0) {
- 		err = st_sensors_allocate_trigger(indio_dev,
-@@ -807,6 +809,8 @@ st_accel_device_register_error:
- 		st_sensors_deallocate_trigger(indio_dev);
- st_accel_probe_trigger_error:
- 	st_accel_deallocate_ring(indio_dev);
-+st_accel_power_off:
-+	st_sensors_power_disable(indio_dev);
- 
- 	return err;
+ static int max44000_read_alsval(struct max44000_data *data)
+@@ -104,11 +114,23 @@ static int max44000_read_alsval(struct max44000_data *data)
+ 	return regval;
  }
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 6901c7f..286f28c 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -228,7 +228,7 @@ int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable)
- }
- EXPORT_SYMBOL(st_sensors_set_axis_enable);
  
--void st_sensors_power_enable(struct iio_dev *indio_dev)
-+int st_sensors_power_enable(struct iio_dev *indio_dev)
++static int max44000_write_led_current_raw(struct max44000_data *data, int val)
++{
++	/* Maybe we should clamp the value instead? */
++	if (val < 0 || val > MAX44000_LED_CURRENT_MAX)
++		return -ERANGE;
++	if (val >= 8)
++		val += 4;
++	return regmap_write_bits(data->regmap, MAX44000_REG_CFG_TX,
++				 MAX44000_LED_CURRENT_MASK, val);
++}
++
+ static int max44000_read_raw(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int *val, int *val2, long mask)
  {
- 	struct st_sensor_data *pdata = iio_priv(indio_dev);
- 	int err;
-@@ -237,18 +237,37 @@ void st_sensors_power_enable(struct iio_dev *indio_dev)
- 	pdata->vdd = devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
- 	if (!IS_ERR(pdata->vdd)) {
- 		err = regulator_enable(pdata->vdd);
--		if (err != 0)
-+		if (err != 0) {
- 			dev_warn(&indio_dev->dev,
- 				 "Failed to enable specified Vdd supply\n");
-+			return err;
-+		}
-+	} else {
-+		err = PTR_ERR(pdata->vdd);
-+		if (err != -ENODEV)
-+			return err;
+ 	struct max44000_data *data = iio_priv(indio_dev);
++	unsigned int regval;
+ 	int ret;
+ 
+ 	switch (mask) {
+@@ -123,6 +145,15 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
+ 			*val = ret;
+ 			return IIO_VAL_INT;
+ 
++		case IIO_PROXIMITY:
++			mutex_lock(&data->lock);
++			ret = regmap_read(data->regmap, MAX44000_REG_PRX_DATA, &regval);
++			mutex_unlock(&data->lock);
++			if (ret < 0)
++				return ret;
++			*val = regval;
++			return IIO_VAL_INT;
++
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -266,8 +297,18 @@ static int max44000_probe(struct i2c_client *client,
+ 		return ret;
  	}
  
- 	pdata->vdd_io = devm_regulator_get_optional(indio_dev->dev.parent, "vddio");
- 	if (!IS_ERR(pdata->vdd_io)) {
- 		err = regulator_enable(pdata->vdd_io);
--		if (err != 0)
-+		if (err != 0) {
- 			dev_warn(&indio_dev->dev,
- 				 "Failed to enable specified Vdd_IO supply\n");
-+			goto st_sensors_disable_vdd;
-+		}
-+	} else {
-+		err = PTR_ERR(pdata->vdd_io);
-+		if (err != -ENODEV)
-+			goto st_sensors_disable_vdd;
- 	}
+-	/* Reset CFG bits to ALS-only mode and no interrupts */
+-	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_GIR;
++	/*
++	 * By default the LED pulse used for the proximity sensor is disabled.
++	 * Set a middle value so that we get some sort of valid data by default.
++	 */
++	ret = max44000_write_led_current_raw(data, MAX44000_LED_CURRENT_DEFAULT);
++	if (ret < 0) {
++		dev_err(&client->dev, "failed to write init config: %d\n", ret);
++		return ret;
++	}
 +
-+	return 0;
-+
-+st_sensors_disable_vdd:
-+	if (!IS_ERR_OR_NULL(pdata->vdd))
-+		regulator_disable(pdata->vdd);
-+	return err;
- }
- EXPORT_SYMBOL(st_sensors_power_enable);
- 
-@@ -256,10 +275,10 @@ void st_sensors_power_disable(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *pdata = iio_priv(indio_dev);
- 
--	if (!IS_ERR(pdata->vdd))
-+	if (!IS_ERR_OR_NULL(pdata->vdd))
- 		regulator_disable(pdata->vdd);
- 
--	if (!IS_ERR(pdata->vdd_io))
-+	if (!IS_ERR_OR_NULL(pdata->vdd_io))
- 		regulator_disable(pdata->vdd_io);
- }
- EXPORT_SYMBOL(st_sensors_power_disable);
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index be9057e..f07f105 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -424,13 +424,15 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
- 	indio_dev->info = &gyro_info;
- 	mutex_init(&gdata->tb.buf_lock);
- 
--	st_sensors_power_enable(indio_dev);
-+	err = st_sensors_power_enable(indio_dev);
-+	if (err)
-+		return err;
- 
- 	err = st_sensors_check_device_support(indio_dev,
- 					ARRAY_SIZE(st_gyro_sensors_settings),
- 					st_gyro_sensors_settings);
- 	if (err < 0)
--		return err;
-+		goto st_gyro_power_off;
- 
- 	gdata->num_data_channels = ST_GYRO_NUMBER_DATA_CHANNELS;
- 	gdata->multiread_bit = gdata->sensor_settings->multi_read_bit;
-@@ -444,11 +446,11 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
- 	err = st_sensors_init_sensor(indio_dev,
- 				(struct st_sensors_platform_data *)&gyro_pdata);
- 	if (err < 0)
--		return err;
-+		goto st_gyro_power_off;
- 
- 	err = st_gyro_allocate_ring(indio_dev);
- 	if (err < 0)
--		return err;
-+		goto st_gyro_power_off;
- 
- 	if (irq > 0) {
- 		err = st_sensors_allocate_trigger(indio_dev,
-@@ -471,6 +473,8 @@ st_gyro_device_register_error:
- 		st_sensors_deallocate_trigger(indio_dev);
- st_gyro_probe_trigger_error:
- 	st_gyro_deallocate_ring(indio_dev);
-+st_gyro_power_off:
-+	st_sensors_power_disable(indio_dev);
- 
- 	return err;
- }
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 62036d2..7c94adc 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -588,13 +588,15 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
- 	indio_dev->info = &magn_info;
- 	mutex_init(&mdata->tb.buf_lock);
- 
--	st_sensors_power_enable(indio_dev);
-+	err = st_sensors_power_enable(indio_dev);
-+	if (err)
-+		return err;
- 
- 	err = st_sensors_check_device_support(indio_dev,
- 					ARRAY_SIZE(st_magn_sensors_settings),
- 					st_magn_sensors_settings);
- 	if (err < 0)
--		return err;
-+		goto st_magn_power_off;
- 
- 	mdata->num_data_channels = ST_MAGN_NUMBER_DATA_CHANNELS;
- 	mdata->multiread_bit = mdata->sensor_settings->multi_read_bit;
-@@ -607,11 +609,11 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
- 
- 	err = st_sensors_init_sensor(indio_dev, NULL);
- 	if (err < 0)
--		return err;
-+		goto st_magn_power_off;
- 
- 	err = st_magn_allocate_ring(indio_dev);
- 	if (err < 0)
--		return err;
-+		goto st_magn_power_off;
- 
- 	if (irq > 0) {
- 		err = st_sensors_allocate_trigger(indio_dev,
-@@ -634,6 +636,8 @@ st_magn_device_register_error:
- 		st_sensors_deallocate_trigger(indio_dev);
- st_magn_probe_trigger_error:
- 	st_magn_deallocate_ring(indio_dev);
-+st_magn_power_off:
-+	st_sensors_power_disable(indio_dev);
- 
- 	return err;
- }
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index bacdf6c..4b01b19 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -588,13 +588,15 @@ int st_press_common_probe(struct iio_dev *indio_dev)
- 	indio_dev->info = &press_info;
- 	mutex_init(&press_data->tb.buf_lock);
- 
--	st_sensors_power_enable(indio_dev);
-+	err = st_sensors_power_enable(indio_dev);
-+	if (err)
-+		return err;
- 
- 	err = st_sensors_check_device_support(indio_dev,
- 					ARRAY_SIZE(st_press_sensors_settings),
- 					st_press_sensors_settings);
- 	if (err < 0)
--		return err;
-+		goto st_press_power_off;
- 
- 	press_data->num_data_channels = press_data->sensor_settings->num_ch - 1;
- 	press_data->multiread_bit = press_data->sensor_settings->multi_read_bit;
-@@ -615,11 +617,11 @@ int st_press_common_probe(struct iio_dev *indio_dev)
- 
- 	err = st_sensors_init_sensor(indio_dev, press_data->dev->platform_data);
- 	if (err < 0)
--		return err;
-+		goto st_press_power_off;
- 
- 	err = st_press_allocate_ring(indio_dev);
- 	if (err < 0)
--		return err;
-+		goto st_press_power_off;
- 
- 	if (irq > 0) {
- 		err = st_sensors_allocate_trigger(indio_dev,
-@@ -642,6 +644,8 @@ st_press_device_register_error:
- 		st_sensors_deallocate_trigger(indio_dev);
- st_press_probe_trigger_error:
- 	st_press_deallocate_ring(indio_dev);
-+st_press_power_off:
-+	st_sensors_power_disable(indio_dev);
- 
- 	return err;
- }
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 78a1934..91d5f68 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -278,7 +278,7 @@ int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable);
- 
- int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable);
- 
--void st_sensors_power_enable(struct iio_dev *indio_dev);
-+int st_sensors_power_enable(struct iio_dev *indio_dev);
- 
- void st_sensors_power_disable(struct iio_dev *indio_dev);
- 
++	/* Reset CFG bits to ALS_PRX mode which allows easy reading of both values. */
++	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_PRX;
+ 	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to write init config: %d\n", ret);
 -- 
-2.1.4
-
+2.5.5
