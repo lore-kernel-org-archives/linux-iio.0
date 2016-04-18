@@ -1,179 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49624 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751482AbcDPTVS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 15:21:18 -0400
-Subject: Re: [PATCH v2 2/5] iio: accel: mxc4005: use regmap to retrieve struct
- device
+Received: from comal.ext.ti.com ([198.47.26.152]:36640 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752011AbcDRPxh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 18 Apr 2016 11:53:37 -0400
+Subject: Re: [PATCH v2 4/5] iio: health: afe4404: use regmap to retrieve
+ struct device
 To: Alison Schofield <amsfield22@gmail.com>
 References: <cover.1460314070.git.amsfield22@gmail.com>
- <d537eefe0ed83b8fc4b33e94f3a1dab2cfe94708.1460314070.git.amsfield22@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	kgene@kernel.org, k.kozlowski@samsung.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	Teodora Baluta <teodora.baluta@intel.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <571290AC.4080908@kernel.org>
-Date: Sat, 16 Apr 2016 20:21:16 +0100
+ <2dd23e55fa7c2d16c577146eefd4a84046d2b838.1460314070.git.amsfield22@gmail.com>
+ <57129101.7000503@kernel.org> <5713D0F8.20303@ti.com>
+ <20160418045621.GA2835@d830.WORKGROUP>
+CC: Jonathan Cameron <jic23@kernel.org>, <knaack.h@gmx.de>,
+	<lars@metafoo.de>, <pmeerw@pmeerw.net>, <kgene@kernel.org>,
+	<k.kozlowski@samsung.com>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+From: "Andrew F. Davis" <afd@ti.com>
+Message-ID: <571502E6.2090405@ti.com>
+Date: Mon, 18 Apr 2016 10:53:10 -0500
 MIME-Version: 1.0
-In-Reply-To: <d537eefe0ed83b8fc4b33e94f3a1dab2cfe94708.1460314070.git.amsfield22@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20160418045621.GA2835@d830.WORKGROUP>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/04/16 20:06, Alison Schofield wrote:
-> Driver includes struct regmap and struct device in its global data.
-> Remove the struct device and use regmap API to retrieve device info.
+On 04/17/2016 11:56 PM, Alison Schofield wrote:
+> On Sun, Apr 17, 2016 at 01:07:52PM -0500, Andrew F. Davis wrote:
+>> On 04/16/2016 02:22 PM, Jonathan Cameron wrote:
+>>> On 10/04/16 20:07, Alison Schofield wrote:
+>>>> Driver includes struct regmap and struct device in its global data.
+>>>> Remove the struct device and use regmap API to retrieve device info.
+>>>>
+>>
+>> Why? This adds nothing but more code to get dev through some
+>> container_of trickery when we could just keep a dev pointer in the data
+>> structure.
+>>
+>> Andrew
 > 
-> Patch created using Coccinelle plus manual edits.
-> 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Again, I'm happy with this, but have cc'd Teodora whose driver this is
-for info and comment.
-
-Jonathan
-> ---
->  drivers/iio/accel/mxc4005.c | 26 +++++++++++++++-----------
->  1 file changed, 15 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
-> index c23f47a..013d511 100644
-> --- a/drivers/iio/accel/mxc4005.c
-> +++ b/drivers/iio/accel/mxc4005.c
-> @@ -60,7 +60,6 @@ enum mxc4005_range {
->  };
->  
->  struct mxc4005_data {
-> -	struct device *dev;
->  	struct mutex mutex;
->  	struct regmap *regmap;
->  	struct iio_trigger *dready_trig;
-> @@ -140,12 +139,13 @@ static const struct regmap_config mxc4005_regmap_config = {
->  
->  static int mxc4005_read_xyz(struct mxc4005_data *data)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  
->  	ret = regmap_bulk_read(data->regmap, MXC4005_REG_XOUT_UPPER,
->  			       (u8 *) data->buffer, sizeof(data->buffer));
->  	if (ret < 0) {
-> -		dev_err(data->dev, "failed to read axes\n");
-> +		dev_err(dev, "failed to read axes\n");
->  		return ret;
->  	}
->  
-> @@ -155,12 +155,13 @@ static int mxc4005_read_xyz(struct mxc4005_data *data)
->  static int mxc4005_read_axis(struct mxc4005_data *data,
->  			     unsigned int addr)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	__be16 reg;
->  	int ret;
->  
->  	ret = regmap_bulk_read(data->regmap, addr, (u8 *) &reg, sizeof(reg));
->  	if (ret < 0) {
-> -		dev_err(data->dev, "failed to read reg %02x\n", addr);
-> +		dev_err(dev, "failed to read reg %02x\n", addr);
->  		return ret;
->  	}
->  
-> @@ -169,13 +170,14 @@ static int mxc4005_read_axis(struct mxc4005_data *data,
->  
->  static int mxc4005_read_scale(struct mxc4005_data *data)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	unsigned int reg;
->  	int ret;
->  	int i;
->  
->  	ret = regmap_read(data->regmap, MXC4005_REG_CONTROL, &reg);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "failed to read reg_control\n");
-> +		dev_err(dev, "failed to read reg_control\n");
->  		return ret;
->  	}
->  
-> @@ -189,6 +191,7 @@ static int mxc4005_read_scale(struct mxc4005_data *data)
->  
->  static int mxc4005_set_scale(struct mxc4005_data *data, int val)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	unsigned int reg;
->  	int i;
->  	int ret;
-> @@ -201,8 +204,7 @@ static int mxc4005_set_scale(struct mxc4005_data *data, int val)
->  						 MXC4005_REG_CONTROL_MASK_FSR,
->  						 reg);
->  			if (ret < 0)
-> -				dev_err(data->dev,
-> -					"failed to write reg_control\n");
-> +				dev_err(dev, "failed to write reg_control\n");
->  			return ret;
->  		}
->  	}
-> @@ -321,13 +323,14 @@ err:
->  
->  static int mxc4005_clr_intr(struct mxc4005_data *data)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  
->  	/* clear interrupt */
->  	ret = regmap_write(data->regmap, MXC4005_REG_INT_CLR1,
->  			   MXC4005_REG_INT_CLR1_BIT_DRDYC);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "failed to write to reg_int_clr1\n");
-> +		dev_err(dev, "failed to write to reg_int_clr1\n");
->  		return ret;
->  	}
->  
-> @@ -339,6 +342,7 @@ static int mxc4005_set_trigger_state(struct iio_trigger *trig,
->  {
->  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
->  	struct mxc4005_data *data = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  
->  	mutex_lock(&data->mutex);
-> @@ -352,7 +356,7 @@ static int mxc4005_set_trigger_state(struct iio_trigger *trig,
->  
->  	if (ret < 0) {
->  		mutex_unlock(&data->mutex);
-> -		dev_err(data->dev, "failed to update reg_int_mask1");
-> +		dev_err(dev, "failed to update reg_int_mask1");
->  		return ret;
->  	}
->  
-> @@ -381,16 +385,17 @@ static const struct iio_trigger_ops mxc4005_trigger_ops = {
->  
->  static int mxc4005_chip_init(struct mxc4005_data *data)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  	unsigned int reg;
->  
->  	ret = regmap_read(data->regmap, MXC4005_REG_DEVICE_ID, &reg);
->  	if (ret < 0) {
-> -		dev_err(data->dev, "failed to read chip id\n");
-> +		dev_err(dev, "failed to read chip id\n");
->  		return ret;
->  	}
->  
-> -	dev_dbg(data->dev, "MXC4005 chip id %02x\n", reg);
-> +	dev_dbg(dev, "MXC4005 chip id %02x\n", reg);
->  
->  	return 0;
->  }
-> @@ -415,7 +420,6 @@ static int mxc4005_probe(struct i2c_client *client,
->  
->  	data = iio_priv(indio_dev);
->  	i2c_set_clientdata(client, indio_dev);
-> -	data->dev = &client->dev;
->  	data->regmap = regmap;
->  
->  	ret = mxc4005_chip_init(data);
+> Thanks for the review and response.  The why would be for
+> simplification and uniformity across IIO.
 > 
 
+I'm all for simplification and uniformity but I think this will take us
+in the wrong direction, a lot drivers do not use regmap for instance and
+so will need another method to lookup the device struct.
+
+> I think I see your point in general, but not sure I get your
+> specific concerns with these afe4403/04 drivers.
+> 
+> The drivers only use the device struct in probe and then
+> again at device remove time.  At probe, the change no
+> longer stores it in the global data. At remove the
+> regmap_get_device() func is a simple dereference to retrieve
+> the device struct. That's the simplification: we don't carry
+> that ptr in global data waiting for the opportunity to use it
+> at device remove.  We just find it when we need it at device
+> remove.
+
+A lot of what drivers store in their per-instance data structure is only
+held for use in remove. Using afe4404 as an example trig and irq are
+also only stored for removal. A good driver framework will pass in
+relevant information to the driver callbacks, and so instance data
+structures have gotten very small, for afe4404 only regmap and regulator
+are actually used during runtime currently.
+
+The direction that would really be of best simplification would be to
+remove the need for the remove function from these drivers, if
+iio_trigger_register and iio_triggered_buffer_setup had devm_ versions
+(like most other setup functions) everything would automatically be
+cleaned up properly without needing a remove function. Then I would have
+no problem removing the unused device structure pointer, but for now
+their will never be a simpler trick to getting the device pointer than
+simply storing it in the instance data.
+
+> (Perhaps these devices are getting removed frequently?)
+> 
+
+Quite the opposite, same for many drivers, the remove path is
+dangerously untested in the real world, even more reason it's nice to
+not need remove and let devm_ cleanup for us :)
+
+Thanks,
+Andrew
