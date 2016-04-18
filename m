@@ -1,101 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:54634 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753249AbcDSLaq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Apr 2016 07:30:46 -0400
-Message-ID: <5716095B.5010808@denx.de>
-Date: Tue, 19 Apr 2016 12:32:59 +0200
-From: Marek Vasut <marex@denx.de>
+Received: from mail-bn1on0079.outbound.protection.outlook.com ([157.56.110.79]:11712
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752095AbcDRTwp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 18 Apr 2016 15:52:45 -0400
+Reply-To: <tthayer@opensource.altera.com>
+Subject: Re: Driver directory selection for Power Supply Status chip
+References: <571507DE.3080408@opensource.altera.com>
+ <57150E47.4020503@metafoo.de>
+To: Lars-Peter Clausen <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
+	<arnd@arndb.de>, <gregkh@linuxfoundation.org>,
+	Guenter Roeck <linux@roeck-us.net>
+From: Thor Thayer <tthayer@opensource.altera.com>
+Message-ID: <571538D5.5020209@opensource.altera.com>
+Date: Mon, 18 Apr 2016 14:43:17 -0500
 MIME-Version: 1.0
-To: Ludovic Desroches <ludovic.desroches@atmel.com>
-CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] iio:adc:at91-sama5d2: Repair crash on module removal
-References: <1460997005-8786-1-git-send-email-marex@denx.de> <20160419061238.GE7225@odux.rfo.atmel.com>
-In-Reply-To: <20160419061238.GE7225@odux.rfo.atmel.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <57150E47.4020503@metafoo.de>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/19/2016 08:12 AM, Ludovic Desroches wrote:
-> On Mon, Apr 18, 2016 at 06:30:05PM +0200, Marek Vasut wrote:
->> The driver never calls platform_set_drvdata() , so platform_get_drvdata()
->> in .remove returns NULL and thus $indio_dev variable in .remove is NULL.
->> Then it's only a matter of dereferencing the indio_dev variable to make
->> the kernel blow as seen below. This patch adds the platform_set_drvdata()
->> call to fix the problem.
-> 
-> Thanks for the fix.
-
-You're welcome :)
-
-> Ludovic
-> 
->>
->> root@armhf:~# rmmod at91-sama5d2_adc
->>
->> Unable to handle kernel NULL pointer dereference at virtual address 000001d4
->> pgd = dd57c000
->> [000001d4] *pgd=00000000
->> Internal error: Oops: 5 [#1] ARM
->> Modules linked in: at91_sama5d2_adc(-)
->> CPU: 0 PID: 1334 Comm: rmmod Not tainted 4.6.0-rc3-next-20160418+ #3
->> Hardware name: Atmel SAMA5
->> task: dd4fcc40 ti: de910000 task.ti: de910000
->> PC is at mutex_lock+0x4/0x24
->> LR is at iio_device_unregister+0x14/0x6c
->> pc : [<c05f4624>]    lr : [<c0471f74>]    psr: a00d0013
->>                sp : de911f00  ip : 00000000  fp : be898bd8
->> r10: 00000000  r9 : de910000  r8 : c0107724
->> r7 : 00000081  r6 : bf001048  r5 : 000001d4  r4 : 00000000
->> r3 : bf000000  r2 : 00000000  r1 : 00000004  r0 : 000001d4
->> Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
->> Control: 10c53c7d  Table: 3d57c059  DAC: 00000051
->> Process rmmod (pid: 1334, stack limit = 0xde910208)
->> Stack: (0xde911f00 to 0xde912000)
->> 1f00: bf000000 00000000 df5c7e10 bf000010 bf000000 df5c7e10 df5c7e10 c0351ca8
->> 1f20: c0351c84 df5c7e10 bf001048 c0350734 bf001048 df5c7e10 df5c7e44 c035087c
->> 1f40: bf001048 7f62dd4c 00000800 c034fb30 bf0010c0 c0158ee8 de910000 31397461
->> 1f60: 6d61735f 32643561 6364615f 00000000 de911f90 de910000 de910000 00000000
->> 1f80: de911fb0 10c53c7d de911f9c c05f33d8 de911fa0 00910000 be898ecb 7f62dd10
->> 1fa0: 00000000 c0107560 be898ecb 7f62dd10 7f62dd4c 00000800 6f844800 6f844800
->> 1fc0: be898ecb 7f62dd10 00000000 00000081 00000000 7f62dd10 be898bd8 be898bd8
->> 1fe0: b6eedab1 be898b6c 7f61056b b6eedab6 000d0030 7f62dd4c 00000000 00000000
->> [<c05f4624>] (mutex_lock) from [<c0471f74>] (iio_device_unregister+0x14/0x6c)
->> [<c0471f74>] (iio_device_unregister) from [<bf000010>] (at91_adc_remove+0x10/0x3c [at91_sama5d2_adc])
->> [<bf000010>] (at91_adc_remove [at91_sama5d2_adc]) from [<c0351ca8>] (platform_drv_remove+0x24/0x3c)
->> [<c0351ca8>] (platform_drv_remove) from [<c0350734>] (__device_release_driver+0x84/0x110)
->> [<c0350734>] (__device_release_driver) from [<c035087c>] (driver_detach+0x8c/0x90)
->> [<c035087c>] (driver_detach) from [<c034fb30>] (bus_remove_driver+0x4c/0xa0)
->> [<c034fb30>] (bus_remove_driver) from [<c0158ee8>] (SyS_delete_module+0x110/0x1d0)
->> [<c0158ee8>] (SyS_delete_module) from [<c0107560>] (ret_fast_syscall+0x0/0x3c)
->> Code: e3520001 1affffd5 eafffff4 f5d0f000 (e1902f9f)
->> ---[ end trace 86914d7ad3696fca ]---
->>
->> Signed-off-by: Marek Vasut <marex@denx.de>
->> Cc: Ludovic Desroches <ludovic.desroches@atmel.com>
->> Cc: Jonathan Cameron <jic23@kernel.org>
->> ---
->>  drivers/iio/adc/at91-sama5d2_adc.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
->> index 07adb10..e10dca3 100644
->> --- a/drivers/iio/adc/at91-sama5d2_adc.c
->> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
->> @@ -497,6 +497,8 @@ static int at91_adc_probe(struct platform_device *pdev)
->>  	if (ret)
->>  		goto vref_disable;
->>  
->> +	platform_set_drvdata(pdev, indio_dev);
->> +
->>  	ret = iio_device_register(indio_dev);
->>  	if (ret < 0)
->>  		goto per_clk_disable_unprepare;
->> -- 
->> 2.7.0
->>
 
 
--- 
-Best regards,
-Marek Vasut
+On 04/18/2016 11:41 AM, Lars-Peter Clausen wrote:
+> On 04/18/2016 06:14 PM, Thor Thayer wrote:
+>> Hi,
+>>
+>> The Arria10 System Resource chip (A10SR) is a SPI based MFD implementing a
+>> GPIO expander, reset controller, and power supply monitoring. I'm not sure
+>> where the driver for the A10SR power monitoring driver should reside and I'm
+>> hoping someone can offer some advice.
+>>
+>> I'd originally submitted the RFC to the HWMON list but the maintainer
+>> pointed out that it wasn't a good fit because the A10SR only indicates
+>> boolean power supply status - not the voltage level as required by HWMON.
+>>
+>> I read that IIO acts as a bridge between IO and HWMON but I'm also not sure
+>> this fits those drivers (although I did find some power supply supervistors
+>> there). It isn't quite a power supply supervisor - the A10SR is a comparator
+>> instead of an Analog-to-Digital Converter.
+>>
+>> One additional thing, the A10SR also had a number of enable bits for
+>> enabling devices external to Altera's SoC (but still on the development
+>> board). These don't quite fit into the reset controller framework but would
+>> seem to fit a MISC directory driver better.
+>>
+>> If neither IIO or MISC is a good fit, can someone suggest a more appropriate
+>> place?
+>
+> How does the device work, does it generate an interrupt when the voltage
+> level goes below the threshold? I'd like to pass the ball back and say that
+> this sounds like something that should go into hwmon.
+>
+
+Good question but no, there is no interrupt.
+
+The chip is actually a power supply sequencer for bringing up the power 
+supplies in the correct order. Since the sequence, timings, and 
+thresholds are hard coded in the chip and can't be changed 
+programatically, I assume it was decided that a power fail interrupt was 
+not needed. However, the status of the power (OK/Fail) can be read from 
+the chip.
+
+I was directed to look at Documentation/hwmon/sysfs-interface which 
+states the units are in millivolts and I didn't see any references to a 
+boolean output so I'm leaning away from hwmon.
+
+Thank you for your reply!
