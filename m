@@ -1,103 +1,99 @@
-Return-Path: <tthayer@opensource.altera.com>
-Reply-To: <tthayer@opensource.altera.com>
-Subject: Re: Driver directory selection for Power Supply Status chip
-References: <571507DE.3080408@opensource.altera.com>
- <57150E47.4020503@metafoo.de> <571538D5.5020209@opensource.altera.com>
- <57153E2A.7030207@kernel.org> <20160418235015.GA20720@roeck-us.net>
-To: Guenter Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
-	<arnd@arndb.de>, <gregkh@linuxfoundation.org>, linux-pm
-	<linux-pm@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>, Dmitry
-	<dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>
-From: Thor Thayer <tthayer@opensource.altera.com>
-Message-ID: <57165A5B.4050909@opensource.altera.com>
-Date: Tue, 19 Apr 2016 11:18:35 -0500
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60748 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751405AbcDRTiV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 15:38:21 -0400
+Subject: Re: [PATCH 1/5] max44000: Initial commit
+To: Mark Brown <broonie@kernel.org>
+References: <cover.1460045763.git.leonard.crestez@intel.com>
+ <5dbbd82290c575f595ae0907aaf8e03117a6d017.1460045763.git.leonard.crestez@intel.com>
+ <alpine.DEB.2.02.1604072142510.26969@pmeerw.net>
+ <570A513A.4020106@kernel.org> <570BBDFC.6010601@intel.com>
+ <57134AFA.3040406@kernel.org> <20160418103212.GQ3217@sirena.org.uk>
+Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Daniel Baluta <daniel.baluta@intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <571537AB.30005@kernel.org>
+Date: Mon, 18 Apr 2016 20:38:19 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160418235015.GA20720@roeck-us.net>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160418103212.GQ3217@sirena.org.uk>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Guenter,
+On 18/04/16 11:32, Mark Brown wrote:
+> On Sun, Apr 17, 2016 at 09:36:10AM +0100, Jonathan Cameron wrote:
+>> On 11/04/16 16:08, Crestez Dan Leonard wrote:
+> 
+> Please leave blank lines between paragraphs, it makes things much easier
+> to read.
+> 
+>>> Would it be
+>>> acceptable to just expand the REGMASK_* into a large or-ing of (1 <<
+>>> MAX44000_REG_*)? Then it would be clear in the source what's going on
+>>> but binary will be the same.
+> 
+>> Would be interesting to see but I doubt the optimized code will be that
+>> different, and the switch is pretty much the 'standard' way of handling
+>> these long register lists cleanly.
+> 
+>> Often it comes down to doing things the way people expect them to
+>> be done as that makes review easier for a tiny possible cost in
+>> run time.
+> 
+> You can also specify ranges of registers if the map mostly has large
+> blocks of contiguous registers, a switch statement tends to be easier
+> and is probably more efficient for most register maps.
+> 
+>>>>>> +    .use_single_rw    = 1,
+>>>>>> +    .cache_type    = REGCACHE_FLAT,
+> 
+>>>> This always seems like a good idea, but tends to cause issues.
+>>>> FLAT is really only meant for very high performance devices, you
+>>>> are probably better with something else here.  If you are doing this
+>>>> deliberately to make the below writes actually occur, then please
+>>>> add a comment here.
+> 
+>>> I used REGCACHE_FLAT because my device has a very small number of
+>>> registers and I assume it uses less memory. Honestly it would make
+>>> sense for regmap to include a REGCACHE_AUTO cache_type and pick the
+>>> cache implementation automatically based on number of registers.
+> 
+>> I've fallen for that one in the past as well.  AUTO would indeed
+>> be good if it was easy to do.
+> 
+> It's extremely easy to do.  Unless you've got a good reason to do
+> anything else you should always be using an rbtree.  The core would
+> never select anything else.
+> 
+>>> Yes. It would not work otherwise since the regmap cache is explicitly
+>>> initialized with my listed defaults.
+>>> As far as I can tell regmap_write will always write to the hardware.
+> 
+>> Interesting and counter intuitive if true...
+> 
+> No, if the driver asked to write then we write.  If the driver wants to
+> do a read/modify/write cycle it should use regmap_update_bits().
+> 
+>>> If the device had a reset command I should have used that, right?
+>>> What is happening is that I am implementing a reset command in
+>>> software.
+> 
+>> Not necessarily.  Lots of drivers don't - but instead have their interfaces
+>> reflect their current state on startup.  Reset's are often there to get
+>> the internal state of the device cleaned up if it is in an unknowable state
+>> rather than to get the defaults to any particular state.  They are always
+>> read from the hardware or a known good cache when queried from userspace
+>> anyway.
+> 
+> That's not entirely it.  Doing a reset is often faster than rewriting
+> the entire register map and is more robust against undocumented
+> registers or things the driver didn't think about which means that
+> the behaviour is going to be more consistent.
+Hmm. Fair enough on the undocumented register argument...
+> 
 
-On 04/18/2016 06:50 PM, Guenter Roeck wrote:
-> On Mon, Apr 18, 2016 at 09:06:02PM +0100, Jonathan Cameron wrote:
->> On 18/04/16 20:43, Thor Thayer wrote:
->>>
->>>
->>> On 04/18/2016 11:41 AM, Lars-Peter Clausen wrote:
->>>> On 04/18/2016 06:14 PM, Thor Thayer wrote:
->>>>> Hi,
->>>>>
->>>>> The Arria10 System Resource chip (A10SR) is a SPI based MFD implementing a
->>>>> GPIO expander, reset controller, and power supply monitoring. I'm not sure
->>>>> where the driver for the A10SR power monitoring driver should reside and I'm
->>>>> hoping someone can offer some advice.
->>>>>
->>>>> I'd originally submitted the RFC to the HWMON list but the maintainer
->>>>> pointed out that it wasn't a good fit because the A10SR only indicates
->>>>> boolean power supply status - not the voltage level as required by HWMON.
->>>>>
->>>>> I read that IIO acts as a bridge between IO and HWMON but I'm also not sure
->>>>> this fits those drivers (although I did find some power supply supervistors
->>>>> there). It isn't quite a power supply supervisor - the A10SR is a comparator
->>>>> instead of an Analog-to-Digital Converter.
->>>>>
->>>>> One additional thing, the A10SR also had a number of enable bits for
->>>>> enabling devices external to Altera's SoC (but still on the development
->>>>> board). These don't quite fit into the reset controller framework but would
->>>>> seem to fit a MISC directory driver better.
->>>>>
->>>>> If neither IIO or MISC is a good fit, can someone suggest a more appropriate
->>>>> place?
->>>>
->>>> How does the device work, does it generate an interrupt when the voltage
->>>> level goes below the threshold? I'd like to pass the ball back and say that
->>>> this sounds like something that should go into hwmon.
->>>>
->>>
->>> Good question but no, there is no interrupt.
->>>
->>> The chip is actually a power supply sequencer for bringing up the
->>> power supplies in the correct order. Since the sequence, timings, and
->>> thresholds are hard coded in the chip and can't be changed
->>> programatically, I assume it was decided that a power fail interrupt
->>> was not needed. However, the status of the power (OK/Fail) can be
->>> read from the chip.
->>>
->>> I was directed to look at Documentation/hwmon/sysfs-interface which
->>> states the units are in millivolts and I didn't see any references to
->>> a boolean output so I'm leaning away from hwmon.
->> That's one impressively uninformative output...  Hmm.
->
-> Please clarify what you mean with "impressively uninformative output".
->
-> FWIW, hwmon alarm attributes are boolean.
->
-> Thanks,
-> Guenter
->
-
-Thank you for pointing out the alarms - I missed that but they would 
-fit. I'll investigate further.
-
-Thanks!
-
->> Not obvious where to put it - it doesn't fit in IIO really either.
->>
->> Could report as a power supply?  There is 'health' support in there.
->> See Documentation/power/power_supply_class.txt
->> and include/linux/power_supply.h
->> though I'm not sure which type a fail on this would count as...
->> perhaps UNSPEC_FAILURE.
->>
->> It's intended for batteries really - not sure how far you can stretch
->> that.
->>
->> Cc'd linux-pm and maintainers.  Perhaps they will have a better idea!
->>>
->>> Thank you for your reply!
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
