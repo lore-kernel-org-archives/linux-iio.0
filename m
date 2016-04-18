@@ -1,33 +1,51 @@
-Return-Path: <afd@ti.com>
-Subject: Re: [PATCH v2 4/5] iio: health: afe4404: use regmap to retrieve
- struct device
-To: Jonathan Cameron <jic23@kernel.org>,
-        Alison Schofield
-	<amsfield22@gmail.com>
-References: <cover.1460314070.git.amsfield22@gmail.com>
- <2dd23e55fa7c2d16c577146eefd4a84046d2b838.1460314070.git.amsfield22@gmail.com>
- <57129101.7000503@kernel.org>
-CC: <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <kgene@kernel.org>, <k.kozlowski@samsung.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <5713D0F8.20303@ti.com>
-Date: Sun, 17 Apr 2016 13:07:52 -0500
+Return-Path: <stefan.wahren@i2se.com>
+Subject: Re: [PATCH RFT 0/5] iio: mxs-lradc: fix leak and implement PM ops
+To: Marek Vasut <marex@denx.de>, Jonathan Cameron <jic23@kernel.org>,
+ Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
+ <570FF5AF.7010801@denx.de>
+Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+ linux-iio@vger.kernel.org,
+ Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+ Fabio Estevam <fabio.estevam@nxp.com>, linux-arm-kernel@lists.infradead.org,
+ linux-input@vger.kernel.org, dmitry.torokhov@gmail.com
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Message-ID: <57147BEF.4070606@i2se.com>
+Date: Mon, 18 Apr 2016 08:17:19 +0200
 MIME-Version: 1.0
-In-Reply-To: <57129101.7000503@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <570FF5AF.7010801@denx.de>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-On 04/16/2016 02:22 PM, Jonathan Cameron wrote:
-> On 10/04/16 20:07, Alison Schofield wrote:
->> Driver includes struct regmap and struct device in its global data.
->> Remove the struct device and use regmap API to retrieve device info.
+Am 14.04.2016 um 21:55 schrieb Marek Vasut:
+> On 04/14/2016 05:48 PM, Stefan Wahren wrote:
+>> This patch series fix a memory leak and implements suspend/resume
+>> support for mxs-lradc.
 >>
+>> Patch 1: fix the memory leak
+>> Patch 2-4: refactor mxs-lradc in order to prepare PM implementation
+>> Patch 5: implement suspend/resume support
+>>
+>> These patches has been tested with i.MX23 and i.MX28 but without
+>> a touchscreen. I added only a bogus touchscreen in devicetree.
+>>
+>> It would be nice if someone with a real touchscreen could test it.
+>>
+>> Stefan Wahren (5):
+>>   iio: mxs-lradc: fix memory leak
+>>   iio: mxs-lradc: move TS config into suitable function
+>>   iio: mxs-lradc: move STMP reset out of ADC init
+>>   iio: mxs-lradc: disable only mapped channels in mxs_lradc_hw_stop
+>>   iio: mxs-lradc: implement suspend/resume support
+>>
+>>  drivers/iio/adc/mxs-lradc.c |  116 ++++++++++++++++++++++++++++++-------------
+>>  1 file changed, 82 insertions(+), 34 deletions(-)
+>>
+> On M28EVK:
+>
+> Tested-by: Marek Vasut <marex@denx.de>
+>
 
-Why? This adds nothing but more code to get dev through some
-container_of trickery when we could just keep a dev pointer in the data
-structure.
 
-Andrew
+Thanks. Only one question, does it imply a test with a touchscreen?
