@@ -1,83 +1,85 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:9739 "EHLO
-	hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751342AbcDRRqU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 13:46:20 -0400
-Message-ID: <57151AB8.7040405@nvidia.com>
-Date: Mon, 18 Apr 2016 23:04:48 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	Jonathan Cameron <jic23@kernel.org>, <robh@kernel.org>,
-	<edubezval@gmail.com>, <rui.zhang@intel.com>,
-	<mark.rutland@arm.com>, <pawel.moll@arm.com>,
-	<ijc+devicetree@hellion.org.uk>
-CC: <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH V3 2/2] thermal: generic-adc: Add ADC based thermal sensor
- driver
-References: <1460644878-19943-1-git-send-email-ldewangan@nvidia.com> <1460644878-19943-2-git-send-email-ldewangan@nvidia.com> <57136B7C.6030204@kernel.org> <57151023.8010505@nvidia.com> <D84D2ED7-81D4-4635-8244-4017D66C6A3B@jic23.retrosnub.co.uk>
-In-Reply-To: <D84D2ED7-81D4-4635-8244-4017D66C6A3B@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Date: Mon, 18 Apr 2016 14:47:50 +0100
+From: jic23@jic23.retrosnub.co.uk
+To: Vlad Dogaru <vlad.dogaru@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Akinobu Mita
+ <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org, Christoph Mair
+ <christoph.mair@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
+ Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 1/2] iio: pressure: bmp280: add support for BMP180
+In-Reply-To: <20160418120122.GC20350@vdogaru>
+References: <1460742827-6502-1-git-send-email-akinobu.mita@gmail.com>
+ <1460742827-6502-2-git-send-email-akinobu.mita@gmail.com>
+ <57120E15.2020105@kernel.org> <20160418120122.GC20350@vdogaru>
+Message-ID: <97d89155f9255d1f1dc257d2d6e8e484@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
+On 18.04.2016 13:01, Vlad Dogaru wrote:
+> Hi Jonathan,
+> 
+> On Sat, Apr 16, 2016 at 11:04:05AM +0100, Jonathan Cameron wrote:
+>> On 15/04/16 18:53, Akinobu Mita wrote:
+> [...]
+>> > +static int bmp180_read_press(struct bmp280_data *data,
+>> > +			     int *val, int *val2)
+>> > +{
+>> > +	int ret;
+>> > +	s32 adc_press;
+>> > +	u32 comp_press;
+>> > +
+>> > +	/* Read and compensate temperature so we get a reading of t_fine. */
+>> > +	ret = bmp180_read_temp(data, NULL);
+>> > +	if (ret)
+>> > +		return ret;
+>> > +
+>> > +	ret = bmp180_read_adc_press(data, &adc_press);
+>> > +	if (ret)
+>> > +		return ret;
+>> > +
+>> > +	comp_press = bmp180_compensate_press(data, adc_press);
+>> > +
+>> > +	*val = comp_press;
+>> > +	*val2 = 1000;
+>> This would be better done using a _scale info_mask element to handle 
+>> the divide
+>> by 1000.  That lets the decision on whether the conversion is even 
+>> needed be
+>> moved to userspace.
+>> 
+>> Unfortunately that's also true for the bmp280 as it stands which is 
+>> annoying
+>> as that makes it ABI which we shouldn't be changing.  Ah well, the 
+>> device
+>> is slow anyway so not terrible to leave this as it is.  I should have 
+>> picked
+>> that up when reviewing that driver originally - sometimes we have live 
+>> with
+>> our mistakes!
+> 
+> I don't think that qualifies as breaking ABI.  The ABI specifies which
+> files *may* exist and how they should be interpreted, if they exist.
+> It does not guarantee that a specific sensor such as BMP280 exposes its
+> measurement as in_temp_input, rather than in_temp_raw and 
+> in_temp_scale.
+It's kind of an open question when this happens.  Sadly it counts as 
+breaking the
+ABI even if the program that was using it was using it wrongly.  
+However, rule
+1 of ABI breakage is 'If no one notices then it isn't broken ;)'.  So if
+people are all using the ABI correctly then we are fine...  The question 
+is
+'Do we think they are?' :)
+> 
+> That said, I don't feel strongly about the changes either way.  When I
+> initially wrote the driver I thought the operations were harmless 
+> enough
+> to do in the kernel.
+Leave it as is, doesn't really matter either way.
 
-On Monday 18 April 2016 11:01 PM, Jonathan Cameron wrote:
->
-> On 18 April 2016 17:49:39 BST, Laxman Dewangan <ldewangan@nvidia.com> wrote:
->> On Sunday 17 April 2016 04:24 PM, Jonathan Cameron wrote:
->>> On 14/04/16 15:41, Laxman Dewangan wrote:
->>> +static int gadc_thermal_read_channel(struct gadc_thermal_info *gti,
->> int *val)
->>> +{
->>> +	int ret;
->>> +
->>> +	ret = iio_read_channel_processed(gti->channel, val);
->>> +	if (ret < 0)
->>> +		ret = iio_read_channel_raw(gti->channel, val);
->>> Is this case actually useful given it means the scaling of the adc
->>> isn't known?
->>>
->>> I suppose you might have defined the table in terms of raw readings,
->>> but then when someone comes along and 'fixes' the ADC driver to
->> output
->>> it's scale your table will be wrong.
->>>
->> Yes, that may be possible if someone just move the implementation of
->> processed read to raw read.
->> I assumed that some of adc driver implemented as raw and some of
->> implemented as processed and so fallback.
->>
->> However, if adc driver has processed implementation then it should not
->> move to raw and deprecate the processed.
->>
->> It seems raw as default should be better option. We can have two option
->> now:
->>
->> - Support raw only, not to processed.
->>
->> - Or support the raw as default and processed as the optional from DT.
->> if (!processed)
->>      read_raw()
->> else
->>    read_processed()
->>
->>
->> Your opinion?
-> Processed only. It will compute the right value if raw and scale are provided by the
->   device (which they should be for an ADC). The read_processed function does
->   the maths if needed.
->
->   The only time devices should
->   supply raw without scale is if their is no direct transform ( e.g. an infrared
->   intensity measure where only known transform involves combining it with
->   another signal) or their is an external unknown (e.g. proximity sensors where
->   you have to know what they were close to in order to know the scaling!)
->
-> If there is a conventional ADC driver not providing either processed directly or
->   both raw and scale let us know and we will fix it!
->
-
-Thanks, I will recycle this patch to use processed only.
-
+Jonathan
+> 
+> Thanks,
+> Vlad
