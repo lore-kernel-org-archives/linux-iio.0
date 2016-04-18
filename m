@@ -1,109 +1,312 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.24]:60072 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751604AbcDSGeR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Apr 2016 02:34:17 -0400
-Subject: Re: [PATCH RFT 1/5] iio: mxs-lradc: fix memory leak
-To: Marek Vasut <marex@denx.de>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
- <1460648909-2657-2-git-send-email-stefan.wahren@i2se.com>
- <570FF70F.3000501@denx.de> <571360A3.3060809@kernel.org>
- <57151652.4020709@denx.de>
-Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Message-ID: <5715D12D.1020303@i2se.com>
-Date: Tue, 19 Apr 2016 08:33:17 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60502 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750849AbcDRSuq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 14:50:46 -0400
+Subject: Re: [PATCH v2 3/3] iio: Add Vishay VEML6070 UV A light sensor driver
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1458487224-3872-1-git-send-email-pmeerw@pmeerw.net>
+ <1458487224-3872-4-git-send-email-pmeerw@pmeerw.net>
+ <56F95595.4040607@kernel.org>
+Cc: linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <57152C82.60202@kernel.org>
+Date: Mon, 18 Apr 2016 19:50:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <57151652.4020709@denx.de>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <56F95595.4040607@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Marek,
-
-Am 18.04.2016 um 19:16 schrieb Marek Vasut:
-> On 04/17/2016 12:08 PM, Jonathan Cameron wrote:
->> On 14/04/16 21:01, Marek Vasut wrote:
->>> On 04/14/2016 05:48 PM, Stefan Wahren wrote:
->>>> After successful touchscreen registration the input device was
->>>> never freed. So fix this issue by using devm_input_allocate_device().
->>>>
->>>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
->>>> ---
->>>>  drivers/iio/adc/mxs-lradc.c |    8 ++------
->>>>  1 file changed, 2 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
->>>> index 33051b8..0576953 100644
->>>> --- a/drivers/iio/adc/mxs-lradc.c
->>>> +++ b/drivers/iio/adc/mxs-lradc.c
->>>> @@ -1109,12 +1109,11 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->>>>  {
->>>>  	struct input_dev *input;
->>>>  	struct device *dev = lradc->dev;
->>>> -	int ret;
->>>>  
->>>>  	if (!lradc->use_touchscreen)
->>>>  		return 0;
->>>>  
->>>> -	input = input_allocate_device();
->>>> +	input = devm_input_allocate_device(dev);
->>>>  	if (!input)
->>>>  		return -ENOMEM;
->>>>  
->>>> @@ -1134,11 +1133,8 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->>>>  
->>>>  	lradc->ts_input = input;
->>>>  	input_set_drvdata(input, lradc);
->>>> -	ret = input_register_device(input);
->>>> -	if (ret)
->>>> -		input_free_device(lradc->ts_input);
->>>>  
->>>> -	return ret;
->>>> +	return input_register_device(input);
->>>>  }
->>>>  
->>>>  static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
->>>>
->>> Nice find.
->>>
->>> Looks like at91_adc.c and exynos_adc.c suffer from the exact same issue.
->>> The leak looks a bit more severe on exynos even, exynos_adc_ts_init()
->>> could use a proper fail path. Do you want to send patches or shall I ?
->>>
->> As this has been there a long time I'm not going to rush it in as a fix.
-> I did take a proper look today and it seems they do the right thing
-> afterall. I checked them with kmemleak too to be sure.
-
-thanks, input_unregister_device already free the memory.
-
-Sorry for the mess :-(
-
-I think it would be the best to remove / revert this patch.
-
-Stefan
-
->
->> I suspect no platform is probing and removing it enough to get a significant
->> amount of memory leaked.
+On 28/03/16 17:02, Jonathan Cameron wrote:
+> On 20/03/16 15:20, Peter Meerwald-Stadler wrote:
+>> ultraviolet (UV) light sensor with I2C interface with a peak
+>> sensitivity at 355 nm
 >>
->> Good to clear it up though!
+>> strangely, chip uses two addresses 0x38 and 0x39 for LSB and
+>> MSB data, resp.
 >>
->> Applied to the togreg branch of iio.git, initially pushed out as testing for
->> the autobuilders to play with it.
+>> datasheet: http://www.vishay.com/docs/84277/veml6070.pdf
 >>
->> Thanks,
->>
->> Jonathan
->>
->
+>> Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Looks good.
+> 
+> Applied to the togreg branch of iio.git - initially pushed out as testing
+> for the autobuilders to play with it.
+Except that apparently I didn't. Odd.  Now applied and pushed out 
+for the autobuilders to play with it.  Thanks for poking me Peter!
 
+I am regularly incompetent and never mind someone pointing out I've
+mysteriously dropped their patches! (just in case anyone was
+wondering)
+
+Jonathan
+> 
+> Jonathan
+>> ---
+>>  drivers/iio/light/Kconfig    |  10 ++
+>>  drivers/iio/light/Makefile   |   1 +
+>>  drivers/iio/light/veml6070.c | 218 +++++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 229 insertions(+)
+>>  create mode 100644 drivers/iio/light/veml6070.c
+>>
+>> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+>> index cfd3df8..d2fe64e 100644
+>> --- a/drivers/iio/light/Kconfig
+>> +++ b/drivers/iio/light/Kconfig
+>> @@ -320,4 +320,14 @@ config VCNL4000
+>>  	 To compile this driver as a module, choose M here: the
+>>  	 module will be called vcnl4000.
+>>  
+>> +config VEML6070
+>> +	tristate "VEML6070 UV A light sensor"
+>> +	depends on I2C
+>> +	help
+>> +	 Say Y here if you want to build a driver for the Vishay VEML6070 UV A
+>> +	 light sensor.
+>> +
+>> +	 To compile this driver as a module, choose M here: the
+>> +	 module will be called veml6070.
+>> +
+>>  endmenu
+>> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+>> index b2c3105..a447c62 100644
+>> --- a/drivers/iio/light/Makefile
+>> +++ b/drivers/iio/light/Makefile
+>> @@ -30,3 +30,4 @@ obj-$(CONFIG_TCS3472)		+= tcs3472.o
+>>  obj-$(CONFIG_TSL4531)		+= tsl4531.o
+>>  obj-$(CONFIG_US5182D)		+= us5182d.o
+>>  obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
+>> +obj-$(CONFIG_VEML6070)		+= veml6070.o
+>> diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
+>> new file mode 100644
+>> index 0000000..bc1c4cb
+>> --- /dev/null
+>> +++ b/drivers/iio/light/veml6070.c
+>> @@ -0,0 +1,218 @@
+>> +/*
+>> + * veml6070.c - Support for Vishay VEML6070 UV A light sensor
+>> + *
+>> + * Copyright 2016 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+>> + *
+>> + * This file is subject to the terms and conditions of version 2 of
+>> + * the GNU General Public License.  See the file COPYING in the main
+>> + * directory of this archive for more details.
+>> + *
+>> + * IIO driver for VEML6070 (7-bit I2C slave addresses 0x38 and 0x39)
+>> + *
+>> + * TODO: integration time, ACK signal
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/mutex.h>
+>> +#include <linux/err.h>
+>> +#include <linux/delay.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +
+>> +#define VEML6070_DRV_NAME "veml6070"
+>> +
+>> +#define VEML6070_ADDR_CONFIG_DATA_MSB 0x38 /* read: MSB data, write: config */
+>> +#define VEML6070_ADDR_DATA_LSB	0x39 /* LSB data */
+>> +
+>> +#define VEML6070_COMMAND_ACK	BIT(5) /* raise interrupt when over threshold */
+>> +#define VEML6070_COMMAND_IT	GENMASK(3, 2) /* bit mask integration time */
+>> +#define VEML6070_COMMAND_RSRVD	BIT(1) /* reserved, set to 1 */
+>> +#define VEML6070_COMMAND_SD	BIT(0) /* shutdown mode when set */
+>> +
+>> +#define VEML6070_IT_10	0x04 /* integration time 1x */
+>> +
+>> +struct veml6070_data {
+>> +	struct i2c_client *client1;
+>> +	struct i2c_client *client2;
+>> +	u8 config;
+>> +	struct mutex lock;
+>> +};
+>> +
+>> +static int veml6070_read(struct veml6070_data *data)
+>> +{
+>> +	int ret;
+>> +	u8 msb, lsb;
+>> +
+>> +	mutex_lock(&data->lock);
+>> +
+>> +	/* disable shutdown */
+>> +	ret = i2c_smbus_write_byte(data->client1,
+>> +	    data->config & ~VEML6070_COMMAND_SD);
+>> +	if (ret < 0)
+>> +		goto out;
+>> +
+>> +	msleep(125 + 10); /* measurement takes up to 125 ms for IT 1x */
+>> +
+>> +	ret = i2c_smbus_read_byte(data->client2); /* read MSB, address 0x39 */
+>> +	if (ret < 0)
+>> +		goto out;
+>> +	msb = ret;
+>> +
+>> +	ret = i2c_smbus_read_byte(data->client1); /* read LSB, address 0x38 */
+>> +	if (ret < 0)
+>> +		goto out;
+>> +	lsb = ret;
+>> +
+>> +	/* shutdown again */
+>> +	ret = i2c_smbus_write_byte(data->client1, data->config);
+>> +	if (ret < 0)
+>> +		goto out;
+>> +
+>> +	ret = (msb << 8) | lsb;
+>> +
+>> +out:
+>> +	mutex_unlock(&data->lock);
+>> +	return ret;
+>> +}
+>> +
+>> +static const struct iio_chan_spec veml6070_channels[] = {
+>> +	{
+>> +		.type = IIO_INTENSITY,
+>> +		.modified = 1,
+>> +		.channel2 = IIO_MOD_LIGHT_UV,
+>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> +	},
+>> +	{
+>> +		.type = IIO_UVINDEX,
+>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+>> +	}
+>> +};
+>> +
+>> +static int veml6070_to_uv_index(unsigned val)
+>> +{
+>> +	/*
+>> +	 * conversion of raw UV intensity values to UV index depends on
+>> +	 * integration time (IT) and value of the resistor connected to
+>> +	 * the RSET pin (default: 270 KOhm)
+>> +	 */
+>> +	unsigned uvi[11] = {
+>> +		187, 373, 560, /* low */
+>> +		746, 933, 1120, /* moderate */
+>> +		1308, 1494, /* high */
+>> +		1681, 1868, 2054}; /* very high */
+>> +	int i;
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(uvi); i++)
+>> +		if (val <= uvi[i])
+>> +			return i;
+>> +
+>> +	return 11; /* extreme */
+>> +}
+>> +
+>> +static int veml6070_read_raw(struct iio_dev *indio_dev,
+>> +				struct iio_chan_spec const *chan,
+>> +				int *val, int *val2, long mask)
+>> +{
+>> +	struct veml6070_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +	case IIO_CHAN_INFO_PROCESSED:
+>> +		ret = veml6070_read(data);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +		if (mask == IIO_CHAN_INFO_PROCESSED)
+>> +			*val = veml6070_to_uv_index(ret);
+>> +		else
+>> +			*val = ret;
+>> +		return IIO_VAL_INT;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>> +static const struct iio_info veml6070_info = {
+>> +	.read_raw = veml6070_read_raw,
+>> +	.driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +static int veml6070_probe(struct i2c_client *client,
+>> +			  const struct i2c_device_id *id)
+>> +{
+>> +	struct veml6070_data *data;
+>> +	struct iio_dev *indio_dev;
+>> +	int ret;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	data = iio_priv(indio_dev);
+>> +	i2c_set_clientdata(client, indio_dev);
+>> +	data->client1 = client;
+>> +	mutex_init(&data->lock);
+>> +
+>> +	indio_dev->dev.parent = &client->dev;
+>> +	indio_dev->info = &veml6070_info;
+>> +	indio_dev->channels = veml6070_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(veml6070_channels);
+>> +	indio_dev->name = VEML6070_DRV_NAME;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +	data->client2 = i2c_new_dummy(client->adapter, VEML6070_ADDR_DATA_LSB);
+>> +	if (!data->client2) {
+>> +		dev_err(&client->dev, "i2c device for second chip address failed\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	data->config = VEML6070_IT_10 | VEML6070_COMMAND_RSRVD |
+>> +		VEML6070_COMMAND_SD;
+>> +	ret = i2c_smbus_write_byte(data->client1, data->config);
+>> +	if (ret < 0)
+>> +		goto fail;
+>> +
+>> +	ret = iio_device_register(indio_dev);
+>> +	if (ret < 0)
+>> +		goto fail;
+>> +
+>> +	return ret;
+>> +
+>> +fail:
+>> +	i2c_unregister_device(data->client2);
+>> +	return ret;
+>> +}
+>> +
+>> +static int veml6070_remove(struct i2c_client *client)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +	struct veml6070_data *data = iio_priv(indio_dev);
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +	i2c_unregister_device(data->client2);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct i2c_device_id veml6070_id[] = {
+>> +	{ "veml6070", 0 },
+>> +	{ }
+>> +};
+>> +MODULE_DEVICE_TABLE(i2c, veml6070_id);
+>> +
+>> +static struct i2c_driver veml6070_driver = {
+>> +	.driver = {
+>> +		.name   = VEML6070_DRV_NAME,
+>> +	},
+>> +	.probe  = veml6070_probe,
+>> +	.remove  = veml6070_remove,
+>> +	.id_table = veml6070_id,
+>> +};
+>> +
+>> +module_i2c_driver(veml6070_driver);
+>> +
+>> +MODULE_AUTHOR("Peter Meerwald-Stadler <pmeerw@pmeerw.net>");
+>> +MODULE_DESCRIPTION("Vishay VEML6070 UV A light sensor driver");
+>> +MODULE_LICENSE("GPL");
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
