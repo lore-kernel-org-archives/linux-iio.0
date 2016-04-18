@@ -1,36 +1,55 @@
-Return-Path: <lucas.de.marchi@gmail.com>
+Return-Path: <ldewangan@nvidia.com>
+Message-ID: <57151023.8010505@nvidia.com>
+Date: Mon, 18 Apr 2016 22:19:39 +0530
+From: Laxman Dewangan <ldewangan@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <57153AC3.9020603@kernel.org>
-References: <2bcce23e64d53f542a9436b11509b107d63cb8dc.1460573498.git.leonard.crestez@intel.com>
- <57137732.40507@kernel.org> <20160418060742.GA2981@beicxl1122>
- <5714B609.4020502@intel.com> <57153AC3.9020603@kernel.org>
-From: Lucas De Marchi <lucas.de.marchi@gmail.com>
-Date: Tue, 19 Apr 2016 02:10:16 -0300
-Message-ID: <CAKi4VAKExQPMFgFv+VGvqxGsu47aF1UxDtoExWWh5DXY36B=LA@mail.gmail.com>
-Subject: Re: [RFC] iio: st: Add lsm9ds0 support for gyro accel and magny
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Crestez Dan Leonard <leonard.crestez@intel.com>, Denis Ciocca <denis.ciocca@st.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Giuseppe BARBA <giuseppe.barba@st.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>, Peter Rosin <peda@lysator.liu.se>,
-	Wolfram Sang <wsa@the-dreams.de>
-Content-Type: text/plain; charset=UTF-8
+To: Jonathan Cameron <jic23@kernel.org>, <robh@kernel.org>,
+	<edubezval@gmail.com>, <rui.zhang@intel.com>, <mark.rutland@arm.com>,
+	<pawel.moll@arm.com>, <ijc+devicetree@hellion.org.uk>
+CC: <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH V3 2/2] thermal: generic-adc: Add ADC based thermal sensor
+ driver
+References: <1460644878-19943-1-git-send-email-ldewangan@nvidia.com> <1460644878-19943-2-git-send-email-ldewangan@nvidia.com> <57136B7C.6030204@kernel.org>
+In-Reply-To: <57136B7C.6030204@kernel.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Apr 18, 2016 at 4:51 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 18/04/16 11:25, Crestez Dan Leonard wrote:
->> On 04/18/2016 09:07 AM, Denis Ciocca wrote:
->> Then st_combo_* implementation functions would forward to st_magn_* or
->> st_accel_* depending on chan->type. Does this make sense?
-> Perhaps. If you have a short term need for this perhaps Denis and you can
-> work together to speed up what he has 'in the works' for this?
-> No point in duplicating work!
+
+On Sunday 17 April 2016 04:24 PM, Jonathan Cameron wrote:
+> On 14/04/16 15:41, Laxman Dewangan wrote:
+> +static int gadc_thermal_read_channel(struct gadc_thermal_info *gti, int *val)
+> +{
+> +	int ret;
+> +
+> +	ret = iio_read_channel_processed(gti->channel, val);
+> +	if (ret < 0)
+> +		ret = iio_read_channel_raw(gti->channel, val);
+> Is this case actually useful given it means the scaling of the adc
+> isn't known?
 >
-> The gyro element can go forward separately in the meantime.
+> I suppose you might have defined the table in terms of raw readings,
+> but then when someone comes along and 'fixes' the ADC driver to output
+> it's scale your table will be wrong.
+>
 
-Isn't LSM9DS0 just a package of LSM303D and L3GD20 that could reuse
-the drivers already present?
+Yes, that may be possible if someone just move the implementation of 
+processed read to raw read.
+I assumed that some of adc driver implemented as raw and some of 
+implemented as processed and so fallback.
+
+However, if adc driver has processed implementation then it should not 
+move to raw and deprecate the processed.
+
+It seems raw as default should be better option. We can have two option now:
+
+- Support raw only, not to processed.
+
+- Or support the raw as default and processed as the optional from DT.
+if (!processed)
+     read_raw()
+else
+   read_processed()
 
 
-Lucas De Marchi
+Your opinion?
