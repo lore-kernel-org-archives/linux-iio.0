@@ -1,76 +1,185 @@
-Return-Path: <peda@lysator.liu.se>
-Subject: Re: [RFC] iio: st: Add lsm9ds0 support for gyro accel and magn
-To: Jonathan Cameron <jic23@kernel.org>,
- Crestez Dan Leonard <leonard.crestez@intel.com>, linux-iio@vger.kernel.org,
- Giuseppe Barba <giuseppe.barba@st.com>, Denis Ciocca <denis.ciocca@st.com>
-References: <2bcce23e64d53f542a9436b11509b107d63cb8dc.1460573498.git.leonard.crestez@intel.com>
- <57137732.40507@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Daniel Baluta <daniel.baluta@intel.com>, Wolfram Sang <wsa@the-dreams.de>
-From: Peter Rosin <peda@lysator.liu.se>
-Message-ID: <57139BF1.5060200@lysator.liu.se>
-Date: Sun, 17 Apr 2016 16:21:37 +0200
+Return-Path: <vlad.dogaru@intel.com>
+Date: Mon, 18 Apr 2016 14:52:17 +0300
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: linux-iio@vger.kernel.org, Christoph Mair <christoph.mair@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 2/2] iio: pressure: bmp280: add ability to control
+ oversampling rate
+Message-ID: <20160418115216.GB20350@vdogaru>
+References: <1460742827-6502-1-git-send-email-akinobu.mita@gmail.com>
+ <1460742827-6502-3-git-send-email-akinobu.mita@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <57137732.40507@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1460742827-6502-3-git-send-email-akinobu.mita@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Hi Akinobu,
 
+On Sat, Apr 16, 2016 at 02:53:47AM +0900, Akinobu Mita wrote:
+> This adds ability to control the oversampling ratio of the temperature
+> and pressure measurement for both bmp180 and bmp280.
+> (bmp280 is untested for now)
 
-On 2016-04-17 13:44, Jonathan Cameron wrote:
-> On 13/04/16 20:01, Crestez Dan Leonard wrote:
->> Device is an integrated gyro/accel/magn and temperature sensor. The
->> device has two i2c/spi interfaces: one for the gyro and one for the
->> accel/magn/temp sensor.
->>
->> Datasheet: http://www2.st.com/resource/en/datasheet/lsm9ds0.pdf
->>
->> The patch uses existing iio st_sensor infrastructure and just adds a
->> bunch of new device IDs and the new register mappings.
->>
->> Temperature support is not included.
->>
->> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-> This looks fine to me.  Needs acks from Denis though.
-> Also, clearly your questions need addressing.
->> ---
->>
->> I tested basic reading of values using software triggers and i2c and the values
->> seems plausible.
->>
->> I tested lsm9ds0-accel and lsm9ds0-magn separately because I don't know how to
->> instantiate two iio drivers for the same I2C device using devicetree. Can you
->> provide a sample of this or is this not currently supported?
->>
->> It seems to me that the LSM303AGR device has the same problem: it's an
->> accel+magn combo behind a single I2C address. How is that supposed to be
->> instantiated? Other supported combo devices seem to have multiple I2C
->> addresses.
-> Excellent question. I'd not picked up on this before.
-> It could be done with a 'dummy mux' I guess though that's messy.
-> Guiseppe how are you doing it for the lsm303agr?
+Code looks good, but I found a pretty big issue when testing with the
+actual device.  Details inline.
+
 > 
-> Cc'd Peter Rosin who has kindly walked into maintainer I2C mux
-> support recently ;) An Wolfram for obvious reasons..
-> To bring you two up to date, we have effectively two separate devices
-> (very nearly) sat behind a single i2c address.  They have non overlapping
-> register maps.
-> We have a big overarching st_sensors driver framework which contains numerous
-> examples of parts with just a magnetometer or just an accelerometer but in this
-> case they have combined these two.  It would be nice to reuse the infrastructure
-> without having to have a separate version for the two cases that exist so far. 
-> I suppose such a separate handling wouldn't be too terrible if we have to do it
-> though - just a new device implementation of magnaccel for the st-sensors.
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+> Cc: Christoph Mair <christoph.mair@gmail.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> ---
+>  drivers/iio/pressure/bmp280.c | 202 ++++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 184 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+> index 28daa74..fd931c7 100644
+> --- a/drivers/iio/pressure/bmp280.c
+> +++ b/drivers/iio/pressure/bmp280.c
+> @@ -50,19 +50,21 @@
+>  
+>  #define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
+>  #define BMP280_OSRS_TEMP_SKIP		0
+> -#define BMP280_OSRS_TEMP_1X		BIT(5)
+> -#define BMP280_OSRS_TEMP_2X		BIT(6)
+> -#define BMP280_OSRS_TEMP_4X		(BIT(6) | BIT(5))
+> -#define BMP280_OSRS_TEMP_8X		BIT(7)
+> -#define BMP280_OSRS_TEMP_16X		(BIT(7) | BIT(5))
+> +#define BMP280_OSRS_TEMP_X(osrs_t)	((osrs_t) << 5)
+> +#define BMP280_OSRS_TEMP_1X		BMP280_OSRS_TEMP_X(1)
+> +#define BMP280_OSRS_TEMP_2X		BMP280_OSRS_TEMP_X(2)
+> +#define BMP280_OSRS_TEMP_4X		BMP280_OSRS_TEMP_X(3)
+> +#define BMP280_OSRS_TEMP_8X		BMP280_OSRS_TEMP_X(4)
+> +#define BMP280_OSRS_TEMP_16X		BMP280_OSRS_TEMP_X(5)
+>  
+>  #define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | BIT(2))
+>  #define BMP280_OSRS_PRESS_SKIP		0
+> -#define BMP280_OSRS_PRESS_1X		BIT(2)
+> -#define BMP280_OSRS_PRESS_2X		BIT(3)
+> -#define BMP280_OSRS_PRESS_4X		(BIT(3) | BIT(2))
+> -#define BMP280_OSRS_PRESS_8X		BIT(4)
+> -#define BMP280_OSRS_PRESS_16X		(BIT(4) | BIT(2))
+> +#define BMP280_OSRS_PRESS_X(osrs_p)	((osrs_p) << 2)
+> +#define BMP280_OSRS_PRESS_1X		BMP280_OSRS_PRESS_X(1)
+> +#define BMP280_OSRS_PRESS_2X		BMP280_OSRS_PRESS_X(2)
+> +#define BMP280_OSRS_PRESS_4X		BMP280_OSRS_PRESS_X(3)
+> +#define BMP280_OSRS_PRESS_8X		BMP280_OSRS_PRESS_X(4)
+> +#define BMP280_OSRS_PRESS_16X		BMP280_OSRS_PRESS_X(5)
+>  
+>  #define BMP280_MODE_MASK		(BIT(1) | BIT(0))
+>  #define BMP280_MODE_SLEEP		0
+> @@ -104,6 +106,9 @@ struct bmp280_data {
+>  	struct regmap *regmap;
+>  	const struct bmp280_chip_info *chip_info;
+>  
+> +	u8 oversampling_press;
+> +	u8 oversampling_temp;
+> +
+>  	/*
+>  	 * Carryover value from temperature conversion, used in pressure
+>  	 * calculation.
+> @@ -114,6 +119,12 @@ struct bmp280_data {
+>  struct bmp280_chip_info {
+>  	const struct regmap_config *regmap_config;
+>  
+> +	const int *oversampling_temp_avail;
+> +	int num_oversampling_temp_avail;
+> +
+> +	const int *oversampling_press_avail;
+> +	int num_oversampling_press_avail;
+> +
+>  	int (*chip_config)(struct bmp280_data *);
+>  	int (*read_temp)(struct bmp280_data *, int *);
+>  	int (*read_press)(struct bmp280_data *, int *, int *);
+> @@ -129,11 +140,13 @@ enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
+>  static const struct iio_chan_spec bmp280_channels[] = {
+>  	{
+>  		.type = IIO_PRESSURE,
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>  	},
+>  	{
+>  		.type = IIO_TEMP,
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>  	},
+>  };
+>  
+> @@ -339,6 +352,21 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+>  			break;
+>  		}
+>  		break;
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		switch (chan->type) {
+> +		case IIO_PRESSURE:
+> +			*val = 1 << data->oversampling_press;
+> +			ret = IIO_VAL_INT;
+> +			break;
+> +		case IIO_TEMP:
+> +			*val = 1 << data->oversampling_temp;
+> +			ret = IIO_VAL_INT;
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +		break;
+>  	default:
+>  		ret = -EINVAL;
+>  		break;
+> @@ -349,22 +377,135 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+>  	return ret;
+>  }
+>  
+> +static int bmp280_write_oversampling_ratio_temp(struct bmp280_data *data,
+> +					       int val)
+> +{
+> +	int i;
+> +	const int *avail = data->chip_info->oversampling_temp_avail;
+> +	const int n = data->chip_info->num_oversampling_temp_avail;
+> +
+> +	for (i = 0; i < n; i++) {
+> +		if (avail[i] == val) {
+> +			data->oversampling_temp = ilog2(val);
 
-My knee-jerk was also mfd, just like Wolfram already said, but I do not know
-if mfd covers sub-devices with the same i2c address?
+This is incorrect.  According to the datasheet, you should add 1 to the
+return value of ilog2.  Thus, if val is 16, ilog2 is 4 and the
+oversampling factor should be set to 5.  See Table 21 and Table 22 of
+the BMP280 datasheet.
 
-The reason I also answered is to say that adding a dummy i2c-mux to the
-device tree just so that you can instantiate two drivers for one device
-is (ab)using the dt to describe the software, where its purpose is to
-describe hw. I think that is frown upon by the dt crowd?
+I wouldn't have noticed this but for the following bug: as the code
+stands right now, setting an oversampling factor of 1 will result in
+setting the bits in the register to 0, which corresponds to "skip
+measurement" and a constant reading of 25.0C and ~77kPa.
 
-Cheers,
-Peter
+> +
+> +			return data->chip_info->chip_config(data);
+> +		}
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int bmp280_write_oversampling_ratio_press(struct bmp280_data *data,
+> +					       int val)
+> +{
+> +	int i;
+> +	const int *avail = data->chip_info->oversampling_press_avail;
+> +	const int n = data->chip_info->num_oversampling_press_avail;
+> +
+> +	for (i = 0; i < n; i++) {
+> +		if (avail[i] == val) {
+> +			data->oversampling_press = ilog2(val);
+
+Same remark as above.
+
+Thanks,
+Vlad
