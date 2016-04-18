@@ -1,54 +1,157 @@
-Return-Path: <stefan.wahren@i2se.com>
-Subject: Re: [PATCH RFT 2/5] iio: mxs-lradc: move TS config into suitable
- function
-To: Jonathan Cameron <jic23@kernel.org>, Marek Vasut <marex@denx.de>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
- <1460648909-2657-3-git-send-email-stefan.wahren@i2se.com>
- <570FF737.4050606@denx.de> <571361DD.1090001@kernel.org>
-Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
- linux-iio@vger.kernel.org, Torokhov <dmitry.torokhov@gmail.com>,
- Alexandre Belloni <alexandre.belloni@free-electrons.com>,
- "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
- Fabio Estevam <fabio.estevam@nxp.com>, linux-arm-kernel@lists.infradead.org,
- dmitry.torokhov@gmail.com, linux-input@vger.kernel.org
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Message-ID: <57147E11.8020201@i2se.com>
-Date: Mon, 18 Apr 2016 08:26:25 +0200
+Return-Path: <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-In-Reply-To: <571361DD.1090001@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Date: Mon, 18 Apr 2016 14:44:41 +0100
+From: jic23@jic23.retrosnub.co.uk
+To: Marek Vasut <marex@denx.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, Matt
+ Ranostay <mranostay@gmail.com>, devicetree@vger.kernel.org, Mark Rutland
+ <Mark.Rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll
+ <Pawel.Moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
+ Gala <galak@codeaurora.org>, linux-iio-owner@vger.kernel.org
+Subject: Re: [PATCH V3] iio: pressure: hp03: Add Hope RF HP03 sensor support
+In-Reply-To: <5714E07B.4090902@denx.de>
+References: <1460321544-8619-1-git-send-email-marex@denx.de>
+ <57129538.6010300@kernel.org> <5714E07B.4090902@denx.de>
+Message-ID: <1a6d907d4f0229c80eae5075139febbb@jic23.retrosnub.co.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Am 17.04.2016 um 12:13 schrieb Jonathan Cameron:
-> On 14/04/16 21:01, Marek Vasut wrote:
->> On 04/14/2016 05:48 PM, Stefan Wahren wrote:
->>> This patch moves the touchscreen type configuration into
->>> a more suitable function. Btw this simplifies PM ops later.
->>>
->>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
->> Looks OK
->>
->> Reviewed-by: Marek Vasut <marex@denx.de>
-> Please do CC Dmitry and linux-input on any patches 'touching' the
-> touchscreen parts of the driver.  I'm happy this one is simple
-> enough to apply anyway, but best to make sure everyone is in the
-> loop.
->
-> Something a little odd happened when applying the patch.  Automerging
-> failed so I did it by hand. Not sure what had changed!
->
-> Anyhow, please sanity check I haven't messed it up.
+On 18.04.2016 14:26, Marek Vasut wrote:
+> On 04/16/2016 09:40 PM, Jonathan Cameron wrote:
+>> On 10/04/16 21:52, Marek Vasut wrote:
+>>> Add support for HopeRF pressure and temperature sensor.
+>>> 
+>>> This device uses two fixed I2C addresses, one for storing
+>>> calibration coefficients and another for accessing the ADC.
+>>> 
+>>> Signed-off-by: Marek Vasut <marex@denx.de>
+>>> Cc: Matt Ranostay <mranostay@gmail.com>
+>>> Cc: Jonathan Cameron <jic23@kernel.org>
+>> Sorry I didn't get to this earlier in the week.
+>> 
+>> Unfortunately the resulting scales don't match the standard ABI for 
+>> these
+>> two channel types.
+> 
+> Ah, sorry for the inconvenience.
+> 
+>> Otherwise, looks good. I've cc'd the devicetree list and maintainers.
+>> The binding is trivial I think, but always good to give people a
+>> opportunity to comment.
+>> 
+>> Jonathan
+>>> ---
+>>> V2: - Expand the binding document with more details on the XCLR pin
+>>>     - Switch from IIO_CHAN_INFO_PROCESSED to RAW + SCALE
+>>>     - Add failpath into hp03_update_temp_pressure() for the case
+>>>       when ADC readout fails. This correctly sets the XCLR pin back
+>>>       to LO now.
+>>>     - Add comment explaining the need for allocation of child device
+>>>       in hp03_probe().
+>>> V3: - Fix indent in the DT binding documentation
+>>>     - Report raw pressure and temperature unmodified
+>> Good
+>>>     - Report pressure scale to be 1 , since pressure is in Pa
+>> Standard units for pressure (see 
+>> Documentation/ABI/testing/sysfs-bus-iio
+>> are KPa so it wants to report 0.001)
+> 
+> OK, got it.
+> 
+>>>     - Report temperature scale to be 0.01 , since temp is in 0.01C 
+>>> steps
+>> Unfortunately the documented base unit for temp (originally from hwmon 
+>> before
+>> we started going for SI units every time) are milli Celcius.  Thus the 
+>> value
+>> reported * scale should end up in milli degrees Celcius. Hence if it 
+>> is in 0.01
+>> steps the scale should be 0.1
+> 
+> Shouldn't this be 10 ? The value is in 0.01C steps , so the value has 
+> to
+> be multiplied by 10 to convert it into mC units.
+err. yes I'm clearly wrong :)
 
-Everything is fine. There was a indention conflict between Ksenija's and
-my patch.
-
->
-> Applied to the togreg branch of iio.git - initially pushed out as
-> testing for the autobuilders to play with it.
->
-> Thanks,
->
->
-> Jonathan
+> 
+>>> ---
+>>>  .../devicetree/bindings/iio/pressure/hp03.txt      |  17 ++
+>>>  drivers/iio/pressure/Kconfig                       |  11 +
+>>>  drivers/iio/pressure/Makefile                      |   1 +
+>>>  drivers/iio/pressure/hp03.c                        | 307 
+>>> +++++++++++++++++++++
+>>>  4 files changed, 336 insertions(+)
+>>>  create mode 100644 
+>>> Documentation/devicetree/bindings/iio/pressure/hp03.txt
+>>>  create mode 100644 drivers/iio/pressure/hp03.c
+> 
+> 
+> [...]
+> 
+>>> +static int hp03_read_raw(struct iio_dev *indio_dev,
+>>> +			 struct iio_chan_spec const *chan,
+>>> +			 int *val, int *val2, long mask)
+>>> +{
+>>> +	struct hp03_priv *priv = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	mutex_lock(&priv->lock);
+>>> +	ret = hp03_update_temp_pressure(priv);
+>>> +	mutex_unlock(&priv->lock);
+>>> +
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_RAW:
+>>> +		switch (chan->type) {
+>>> +		case IIO_PRESSURE:
+>>> +			*val = priv->pressure;
+>>> +			return IIO_VAL_INT;
+>>> +		case IIO_TEMP:
+>>> +			*val = priv->temp;
+>>> +			return IIO_VAL_INT;
+>>> +		default:
+>>> +			return -EINVAL;
+>>> +		}
+>>> +		break;
+>>> +	case IIO_CHAN_INFO_SCALE:
+>>> +		switch (chan->type) {
+>>> +		case IIO_PRESSURE:
+>>> +			*val = 1;
+>>> +			return IIO_VAL_INT;
+>> *val = 0, *val2 = 1000;
+>> return IIO_VAL_INT_PLUS_MICRO;
+>>> +		case IIO_TEMP:
+>>> +			*val = 0;
+>>> +			*val2 = 10000;
+>> Val2 should I think be 100000 giving scale * lsb of 0.001 degrees.
+> 
+> I think this should be:
+> 
+> val = 10;
+> return IIO_VAL_INT;
+> 
+> Since the temp value is in 10mC steps.
+> 
+>>> +			return IIO_VAL_INT_PLUS_MICRO;
+>>> +		default:
+>>> +			return -EINVAL;
+>>> +		}
+>>> +		break;
+>>> +	default:
+>>> +		return -EINVAL;
+>>> +	}
+>>> +
+>>> +	return -EINVAL;
+>>> +}
+> 
+> [...]
+> 
+> Best regards,
+> Marek Vasut
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
