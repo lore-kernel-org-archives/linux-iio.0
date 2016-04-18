@@ -1,35 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f53.google.com ([209.85.218.53]:33507 "EHLO
-	mail-oi0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751246AbcDPOFg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2016 10:05:36 -0400
-Received: by mail-oi0-f53.google.com with SMTP id r78so15137983oie.0
-        for <linux-iio@vger.kernel.org>; Sat, 16 Apr 2016 07:05:36 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <57123402.4000003@kernel.org>
-References: <1460451311-9819-1-git-send-email-linus.walleij@linaro.org>
-	<57123402.4000003@kernel.org>
-Date: Sat, 16 Apr 2016 16:05:35 +0200
-Message-ID: <CACRpkdaHmZf=fKznQk4jXYig8pE7v3RSE--QeeCnk=ucVxdvEA@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: tools: generic_buffer: auto-enable channels
-From: Linus Walleij <linus.walleij@linaro.org>
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:50922 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752229AbcDRKcf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 06:32:35 -0400
+Date: Mon, 18 Apr 2016 11:32:12 +0100
+From: Mark Brown <broonie@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Message-ID: <20160418103212.GQ3217@sirena.org.uk>
+References: <cover.1460045763.git.leonard.crestez@intel.com>
+ <5dbbd82290c575f595ae0907aaf8e03117a6d017.1460045763.git.leonard.crestez@intel.com>
+ <alpine.DEB.2.02.1604072142510.26969@pmeerw.net>
+ <570A513A.4020106@kernel.org>
+ <570BBDFC.6010601@intel.com>
+ <57134AFA.3040406@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="By57YlnFViWR/M0S"
+In-Reply-To: <57134AFA.3040406@kernel.org>
+Subject: Re: [PATCH 1/5] max44000: Initial commit
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Apr 16, 2016 at 2:45 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 12/04/16 09:55, Linus Walleij wrote:
 
->> ChangeLog v1->v2:
->> - Provide for using the -a flag to indicate that you want all
->>   available channels enabled.
->
-> Good plan.  I'll wait for the updated version but am fine with this
-> in principle.
+--By57YlnFViWR/M0S
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I think I sent out v3 already, you have mail ;)
+On Sun, Apr 17, 2016 at 09:36:10AM +0100, Jonathan Cameron wrote:
+> On 11/04/16 16:08, Crestez Dan Leonard wrote:
 
-Yours,
-Linus Walleij
+Please leave blank lines between paragraphs, it makes things much easier
+to read.
+
+> > Would it be
+> > acceptable to just expand the REGMASK_* into a large or-ing of (1 <<
+> > MAX44000_REG_*)? Then it would be clear in the source what's going on
+> > but binary will be the same.
+
+> Would be interesting to see but I doubt the optimized code will be that
+> different, and the switch is pretty much the 'standard' way of handling
+> these long register lists cleanly.
+
+> Often it comes down to doing things the way people expect them to
+> be done as that makes review easier for a tiny possible cost in
+> run time.
+
+You can also specify ranges of registers if the map mostly has large
+blocks of contiguous registers, a switch statement tends to be easier
+and is probably more efficient for most register maps.
+
+> >>>> +    .use_single_rw    = 1,
+> >>>> +    .cache_type    = REGCACHE_FLAT,
+
+> >> This always seems like a good idea, but tends to cause issues.
+> >> FLAT is really only meant for very high performance devices, you
+> >> are probably better with something else here.  If you are doing this
+> >> deliberately to make the below writes actually occur, then please
+> >> add a comment here.
+
+> > I used REGCACHE_FLAT because my device has a very small number of
+> > registers and I assume it uses less memory. Honestly it would make
+> > sense for regmap to include a REGCACHE_AUTO cache_type and pick the
+> > cache implementation automatically based on number of registers.
+
+> I've fallen for that one in the past as well.  AUTO would indeed
+> be good if it was easy to do.
+
+It's extremely easy to do.  Unless you've got a good reason to do
+anything else you should always be using an rbtree.  The core would
+never select anything else.
+
+> > Yes. It would not work otherwise since the regmap cache is explicitly
+> > initialized with my listed defaults.
+> > As far as I can tell regmap_write will always write to the hardware.
+
+> Interesting and counter intuitive if true...
+
+No, if the driver asked to write then we write.  If the driver wants to
+do a read/modify/write cycle it should use regmap_update_bits().
+
+> > If the device had a reset command I should have used that, right?
+> > What is happening is that I am implementing a reset command in
+> > software.
+
+> Not necessarily.  Lots of drivers don't - but instead have their interfaces
+> reflect their current state on startup.  Reset's are often there to get
+> the internal state of the device cleaned up if it is in an unknowable state
+> rather than to get the defaults to any particular state.  They are always
+> read from the hardware or a known good cache when queried from userspace
+> anyway.
+
+That's not entirely it.  Doing a reset is often faster than rewriting
+the entire register map and is more robust against undocumented
+registers or things the driver didn't think about which means that
+the behaviour is going to be more consistent.
+
+--By57YlnFViWR/M0S
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJXFLerAAoJECTWi3JdVIfQeO8H/135GAXn7LM6Lyj+aTvWKUJs
+IcRKYkDgVSiq6VDO50mtjoviFcnQeVZyVenKgIksSv+PShnPsHuetZuUaXPd1e2L
+JPT6P7qerqba1fJb/guLEs96W7T4w7XiK9JIV24AZNcLy5Q+60Gi5tDfme+EVcvX
+Pc2rHBM2y92ALBUyXVs7ytP0r1zEtVXtewbPU2FBaqXydma2bPAOh+UO91U/iNKt
+ycPFxbd3F/CvCQ6UeMxKsCwbdSj5tZkn5nxhNI15kk3ipErZc8ECD5/bOD6q+arB
+IlFeCcu3n8WLFiRQn8zuPUQP5kmm2N7ptxciOMH92lNR3Ra9StTQrKHZ7vWhGmU=
+=o2P9
+-----END PGP SIGNATURE-----
+
+--By57YlnFViWR/M0S--
