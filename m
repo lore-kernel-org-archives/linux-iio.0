@@ -1,47 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:54414 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751712AbcDRQlr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 12:41:47 -0400
-Subject: Re: Driver directory selection for Power Supply Status chip
-To: tthayer@opensource.altera.com, linux-iio@vger.kernel.org,
-	arnd@arndb.de, gregkh@linuxfoundation.org,
-	Guenter Roeck <linux@roeck-us.net>
-References: <571507DE.3080408@opensource.altera.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <57150E47.4020503@metafoo.de>
-Date: Mon, 18 Apr 2016 18:41:43 +0200
+Return-Path: <marex@denx.de>
+Message-ID: <5714E78F.6020305@denx.de>
+Date: Mon, 18 Apr 2016 15:56:31 +0200
+From: Marek Vasut <marex@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <571507DE.3080408@opensource.altera.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: jic23@jic23.retrosnub.co.uk
+CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+ Matt Ranostay <mranostay@gmail.com>,
+ devicetree@vger.kernel.org, Mark Rutland <Mark.Rutland@arm.com>,
+ Rob Herring <robh+dt@kernel.org>,
+ Pawel Moll <Pawel.Moll@arm.com>,
+ Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Kumar Gala <galak@codeaurora.org>, linux-iio-owner@vger.kernel.org
+Subject: Re: [PATCH V3] iio: pressure: hp03: Add Hope RF HP03 sensor support
+References: <1460321544-8619-1-git-send-email-marex@denx.de> <57129538.6010300@kernel.org> <5714E07B.4090902@denx.de> <1a6d907d4f0229c80eae5075139febbb@jic23.retrosnub.co.uk>
+In-Reply-To: <1a6d907d4f0229c80eae5075139febbb@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/18/2016 06:14 PM, Thor Thayer wrote:
-> Hi,
-> 
-> The Arria10 System Resource chip (A10SR) is a SPI based MFD implementing a
-> GPIO expander, reset controller, and power supply monitoring. I'm not sure
-> where the driver for the A10SR power monitoring driver should reside and I'm
-> hoping someone can offer some advice.
-> 
-> I'd originally submitted the RFC to the HWMON list but the maintainer
-> pointed out that it wasn't a good fit because the A10SR only indicates
-> boolean power supply status - not the voltage level as required by HWMON.
-> 
-> I read that IIO acts as a bridge between IO and HWMON but I'm also not sure
-> this fits those drivers (although I did find some power supply supervistors
-> there). It isn't quite a power supply supervisor - the A10SR is a comparator
-> instead of an Analog-to-Digital Converter.
-> 
-> One additional thing, the A10SR also had a number of enable bits for
-> enabling devices external to Altera's SoC (but still on the development
-> board). These don't quite fit into the reset controller framework but would
-> seem to fit a MISC directory driver better.
-> 
-> If neither IIO or MISC is a good fit, can someone suggest a more appropriate
-> place?
+On 04/18/2016 03:44 PM, jic23@jic23.retrosnub.co.uk wrote:
+> On 18.04.2016 14:26, Marek Vasut wrote:
+>> On 04/16/2016 09:40 PM, Jonathan Cameron wrote:
+>>> On 10/04/16 21:52, Marek Vasut wrote:
+>>>> Add support for HopeRF pressure and temperature sensor.
+>>>>
+>>>> This device uses two fixed I2C addresses, one for storing
+>>>> calibration coefficients and another for accessing the ADC.
+>>>>
+>>>> Signed-off-by: Marek Vasut <marex@denx.de>
+>>>> Cc: Matt Ranostay <mranostay@gmail.com>
+>>>> Cc: Jonathan Cameron <jic23@kernel.org>
+>>> Sorry I didn't get to this earlier in the week.
+>>>
+>>> Unfortunately the resulting scales don't match the standard ABI for
+>>> these
+>>> two channel types.
+>>
+>> Ah, sorry for the inconvenience.
+>>
+>>> Otherwise, looks good. I've cc'd the devicetree list and maintainers.
+>>> The binding is trivial I think, but always good to give people a
+>>> opportunity to comment.
+>>>
+>>> Jonathan
+>>>> ---
+>>>> V2: - Expand the binding document with more details on the XCLR pin
+>>>>     - Switch from IIO_CHAN_INFO_PROCESSED to RAW + SCALE
+>>>>     - Add failpath into hp03_update_temp_pressure() for the case
+>>>>       when ADC readout fails. This correctly sets the XCLR pin back
+>>>>       to LO now.
+>>>>     - Add comment explaining the need for allocation of child device
+>>>>       in hp03_probe().
+>>>> V3: - Fix indent in the DT binding documentation
+>>>>     - Report raw pressure and temperature unmodified
+>>> Good
+>>>>     - Report pressure scale to be 1 , since pressure is in Pa
+>>> Standard units for pressure (see Documentation/ABI/testing/sysfs-bus-iio
+>>> are KPa so it wants to report 0.001)
+>>
+>> OK, got it.
+>>
+>>>>     - Report temperature scale to be 0.01 , since temp is in 0.01C
+>>>> steps
+>>> Unfortunately the documented base unit for temp (originally from
+>>> hwmon before
+>>> we started going for SI units every time) are milli Celcius.  Thus
+>>> the value
+>>> reported * scale should end up in milli degrees Celcius. Hence if it
+>>> is in 0.01
+>>> steps the scale should be 0.1
+>>
+>> Shouldn't this be 10 ? The value is in 0.01C steps , so the value has to
+>> be multiplied by 10 to convert it into mC units.
+> err. yes I'm clearly wrong :)
 
-How does the device work, does it generate an interrupt when the voltage
-level goes below the threshold? I'd like to pass the ball back and say that
-this sounds like something that should go into hwmon.
+Thanks for confirming :) V4 is coming.
+
+Best regards,
+Marek Vasut
