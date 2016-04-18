@@ -1,86 +1,124 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:53064 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753166AbcDRLMq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 07:12:46 -0400
-Message-ID: <5714BAAD.3020009@denx.de>
-Date: Mon, 18 Apr 2016 12:45:01 +0200
-From: Marek Vasut <marex@denx.de>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-To: Stefan Wahren <stefan.wahren@i2se.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	linux-iio@vger.kernel.org,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Fabio Estevam <fabio.estevam@nxp.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH RFT 1/5] iio: mxs-lradc: fix memory leak
-References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com> <1460648909-2657-2-git-send-email-stefan.wahren@i2se.com> <570FF70F.3000501@denx.de> <57147C64.8030504@i2se.com>
-In-Reply-To: <57147C64.8030504@i2se.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <5714CD81.6000100@metafoo.de>
+References: <5711362A.1020700@ti.com>
+	<57123BA0.4070501@kernel.org>
+	<5714CD81.6000100@metafoo.de>
+Date: Mon, 18 Apr 2016 17:25:46 +0300
+Message-ID: <CAEnQRZAJ9g97X9uSkFmg01irfM==wEyA3=9iFrRCnYnZ74cr6A@mail.gmail.com>
+Subject: Re: Question about differential muxing
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, "Andrew F. Davis" <afd@ti.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/18/2016 08:19 AM, Stefan Wahren wrote:
-> Hi Marek,
-> 
-> Am 14.04.2016 um 22:01 schrieb Marek Vasut:
->> On 04/14/2016 05:48 PM, Stefan Wahren wrote:
->>> After successful touchscreen registration the input device was
->>> never freed. So fix this issue by using devm_input_allocate_device().
+On Mon, Apr 18, 2016 at 3:05 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 04/16/2016 03:18 PM, Jonathan Cameron wrote:
+> [...]
+>>> The other issue is with the input pins, I believe the standard way to
+>>> handle this is by exposing every mux setting as a separate channel, then
+>>> only allowing one bit set in the scan mask, but for this part, when all
+>>> differential combinations are exposed we have more than 100 channels,
+>>> and the other part I'm working on makes this several times worse.
 >>>
->>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
->>> ---
->>>  drivers/iio/adc/mxs-lradc.c |    8 ++------
->>>  1 file changed, 2 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
->>> index 33051b8..0576953 100644
->>> --- a/drivers/iio/adc/mxs-lradc.c
->>> +++ b/drivers/iio/adc/mxs-lradc.c
->>> @@ -1109,12 +1109,11 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->>>  {
->>>  	struct input_dev *input;
->>>  	struct device *dev = lradc->dev;
->>> -	int ret;
->>>  
->>>  	if (!lradc->use_touchscreen)
->>>  		return 0;
->>>  
->>> -	input = input_allocate_device();
->>> +	input = devm_input_allocate_device(dev);
->>>  	if (!input)
->>>  		return -ENOMEM;
->>>  
->>> @@ -1134,11 +1133,8 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->>>  
->>>  	lradc->ts_input = input;
->>>  	input_set_drvdata(input, lradc);
->>> -	ret = input_register_device(input);
->>> -	if (ret)
->>> -		input_free_device(lradc->ts_input);
->>>  
->>> -	return ret;
->>> +	return input_register_device(input);
->>>  }
->>>  
->>>  static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
->>>
->> Nice find.
+>>> Could someone point to any information, or an existing driver, that
+>>> explains the preferred way to handle this?
+>> You have it correct above.  At the end of the day there isn't much we can
+>> do to provide a compact yet general interface and occasionally we do end
+>> up with an awful lot of channels.  There are some analog devices battery
+>> chargers for example that end up as a cascade resulting in similar numbers
+>> of channels.
 >>
->> Looks like at91_adc.c and exynos_adc.c suffer from the exact same issue.
->> The leak looks a bit more severe on exynos even, exynos_adc_ts_init()
->> could use a proper fail path. Do you want to send patches or shall I ?
+>> Each channel doesn't cost us that much other than making for a big set of
+>> files.
 >>
-> 
-> since you found them it would be better if you handle them.
+>> Doing it as mux switches would work, but be extremely difficult to describe
+>> simply to userspace in any way that would generalize.  The resulting programs
+>> would have to know too much about the sensor routing or to have a lot
+>> of complexity decoding how to set up the channel combinations they actually
+>> want.
+>>
+>> As for existing drivers... Hmm. any of the differential ADC drivers provide a
+>> reference of sorts. For high channel counts, the ad7280a driver is still in
+>> staging but the principles are fine...
+>>
+>> Lars, any input on this sort of highly complex device?  Looks a bit like some
+>> of the more nuts audio chips in some ways.
+>
+> In my opinion we need to model MUXs and assorted sequencers properly in IIO
+> and not hide the real hardware topology behind a simplified view. It causes
+> all kinds of trouble since it obfuscates the real behavior of the device and
+> makes it very hard for generic applications to understand what is going on.
+>
+> It worked somewhat OK, when we had a simple hardware with a single fixed
+> sequencer where you could easily expose the sequencer settings as multiple
+> channels. But even for those what we expose to userspace is wrong. We only
+> get a single scan set for all enabled channels with a single timestamp, even
+> though when you use a sequencer these measurements are not taken at the same
+> time.
+>
+> More recent hardware usually has a completely freely programmable sequencer,
+> this means it is possible to e.g. have a sample sequence like 1,2,1,3,...
+> this can currently not be modeled. We can't model sequences where one
+> channel is sampled more often than other and we can't model sequences where
+> the channel order is different from the default. Both are valid use cases
 
-Roger. Since Atmel was so kind to provide sama5d2 and I also have
-sama5d4 board here, I will check the Atmel one at least.
+I'm particularly interested in this and working on a proposal to allow some sort
+of metadata attached with the buffer elements.
 
--- 
-Best regards,
-Marek Vasut
+For example, this would be very useful with IMU drivers where sampling frequency
+is different for separate sensors. With the current implementation we
+either create
+different IIO devices for IMU subsensors or use one IIO device with
+the limitation
+that we cannot use different sampling frequencies.
+
+
+> and not being able to support them hurts framework adoption. And even if
+> we'd model all the possible combinations we get a combinatorial explosion of
+> channels where only a subset can be selected at the same time which requires
+> complex validation routines.
+>
+> There is also hardware with multiple ADCs, where each ADC has it's own MUX
+> and own sequencer and the ADCs do synchronous conversion. This is a
+> extension of the above case, which we can't model for similar reasons.
+>
+> And then you have the case where you have external MUXs. These can either be
+> used together with internal sequencer or a external sequencer (e.g. just
+> some GPIOs). We can't model these either with the current approach since the
+> driver for the ADC would need to have support for the specific external MUX,
+> which doesn't really scale if you want to support different types of MUXs.
+>
+> While this part only has a single ADC, it has multiple chained MUXs. Since
+> they are all internal you could model them as a single MUX and then by
+> extension the single ADC as multiple channels, but as Andrew said that leads
+> to state explosion, especially with the feedback paths.
+>
+> Btw. I found the Comedi approach quite interesting:
+> http://www.comedi.org/doc/index.html#acquisitionterminology
+>
+> Looking back I think this was one of the biggest mistakes we made in the IIO
+> ABI design, thinking that it was OK to hide the hardware complexities behind
+> a simplified view (Part of the problem is that the scope of IIO has grown
+> and back then we didn't really thing about the more complex usecases). If
+> you simplify at the lowest level there it is not possible to get the more
+> complex hardware representation which might be required for certain
+> applications. And to workaround the limitations you end up with all kind of
+> hacks and heuristics and hardware specific interfaces. On the other hand if
+> you adequately describe the hardware itself at the lowest level you can get
+> the information to those applications which need it and for those who don't
+> need it you can built simplified views on top.
+>
+> Similar approaches can be seen in the e.g. the audio world, where ALSA
+> exposed the raw hardware capabilities and pulseaudio provides a simplified
+> view for simple applications. Or e.g. in the video world you now have the
+> new Vulcan API which exposes the raw hardware capabilities and simplified
+> APIs like OpenGL and DirectX are being built on top of it rather than being
+> at the lowest level themselves.
+
+Agree with all of these. Let's hope we can make some improvements without
+increasing the complexity.
+
+Daniel.
