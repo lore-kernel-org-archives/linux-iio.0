@@ -1,70 +1,60 @@
-Return-Path: <broonie@sirena.org.uk>
-Date: Tue, 19 Apr 2016 10:06:54 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Message-ID: <20160419090654.GN3217@sirena.org.uk>
-References: <cover.1460045763.git.leonard.crestez@intel.com>
- <5dbbd82290c575f595ae0907aaf8e03117a6d017.1460045763.git.leonard.crestez@intel.com>
- <alpine.DEB.2.02.1604072142510.26969@pmeerw.net>
- <570A513A.4020106@kernel.org>
- <570BBDFC.6010601@intel.com>
- <57134AFA.3040406@kernel.org>
- <20160418103212.GQ3217@sirena.org.uk>
- <5714CFFA.2080309@intel.com>
- <20160418123451.GB3217@sirena.org.uk>
- <57153733.1070605@kernel.org>
+Return-Path: <stefan.wahren@i2se.com>
+Subject: Re: [PATCH RFT 4/5] iio: mxs-lradc: disable only mapped channels in
+ mxs_lradc_hw_stop
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Marek Vasut <marex@denx.de>
+References: <1460648909-2657-1-git-send-email-stefan.wahren@i2se.com>
+ <1460648909-2657-5-git-send-email-stefan.wahren@i2se.com>
+ <571369AA.8060106@kernel.org>
+Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+ linux-iio@vger.kernel.org,
+ Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+ Fabio Estevam <fabio.estevam@nxp.com>, linux-arm-kernel@lists.infradead.org,
+ Torokhov <dmitry.torokhov@gmail.com>,
+ "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Message-ID: <57148080.4010200@i2se.com>
+Date: Mon, 18 Apr 2016 08:36:48 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="gkQsIeIyLzf1kMz9"
-In-Reply-To: <57153733.1070605@kernel.org>
-Subject: Re: [PATCH 1/5] max44000: Initial commit
+In-Reply-To: <571369AA.8060106@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
+Hi Jonathan,
 
---gkQsIeIyLzf1kMz9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Am 17.04.2016 um 12:47 schrieb Jonathan Cameron:
+> On 14/04/16 16:48, Stefan Wahren wrote:
+>> Disabling of the touchscreen IRQs is already done in
+>> mxs_lradc_disable_ts. There is no need to disable them in
+>> mxs_lradc_hw_stop again.
+> We could do with a little more documentation in the driver on
+> which bits in this register are doing what.
+>
+> The disable_ts deals with bits 22-24... 
+> The only other bit I think is ever used by the driver currently is
+> 16 (channel 0).  
+>
+> So whilst this change probably works, I'm not sure of the logic behind it.
+> As far as I can tell your new clear is fine but in reality you could
+> just clear (0x3f << 16) and get the same result (which would be clearer
+> to my mind).
+>
+> The key think here is that we don't support the higher bits on i.mx28
+> yet... Which are for button detection and threshold detection.
+>
+> Have I understood this correctly?
 
-On Mon, Apr 18, 2016 at 08:36:19PM +0100, Jonathan Cameron wrote:
-> On 18/04/16 13:34, Mark Brown wrote:
+Yes, you are. I've have looked to long in the reference manual instead
+of the code.
+I've missed the point that virtual channel 6 and 7 are used in case of a
+connected touchscreen.
 
-> > Yes.  I have to say that you are the first person I've encountered who
-> > has been confused by this, I'm not sure why you'd expect writes to be
-> > discarded.
+I should use the member buffer_vchans for masking the enable IRQs.
 
-> It confused me too :)  To my mind a classic cache optimization would be
-> to not write to the hardware if the value is already known to be as
-> desired.
+Regards
+Stefan
 
-> Still, I guess it would add another check to identify which
-> registers you really wanted to hammer whatever vs which can be assumed
-> not to read the write is not worth the effort for this case that=20
-> inherently won't be hit that often.
-
-We'd also have to add another API for cases where someone explicitly
-wants to write the same thing to the hardware, you get things like
-latched "do it" bits in registers.
-
---gkQsIeIyLzf1kMz9
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJXFfUsAAoJECTWi3JdVIfQ7t0H/2rITv0sDOvuuC1tf1C16/3G
-D8+m+6iQjRi5LJsqtDW/OwkLiSjdWam83w04RNB3K/6QtkE3SjTsIUfnkMLN+fOl
-Y5y8mmb35BDbSfBj6NzkX4faEVv9l8wMjMTGrEAtpiCzPRRDlDKrhMdSjn5c7GSt
-l+cFvAal9E4ZrliaaGufLBbtHcwdTBjn8G7znZ1yrgFulDz000tJfCknOKaLIJom
-Mblx1BwUUZ0ycUTHBHanBJqGALevrKgxowMOsA0y8wq1TUvgdYptBSw0i7qW9MXN
-cll6asdAnkP13vzMi0sIYwkLDKW3L+ja6W7iYt68+tHtnb5sPWGSoOxIcQxgQnA=
-=09AY
------END PGP SIGNATURE-----
-
---gkQsIeIyLzf1kMz9--
+>
+> Jonathan
+>  So we only need to care of the
