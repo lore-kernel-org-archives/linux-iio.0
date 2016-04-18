@@ -1,85 +1,296 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:37384 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751669AbcDRQaP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 12:30:15 -0400
-From: Marek Vasut <marex@denx.de>
+Return-Path: <tiberiu.a.breana@intel.com>
+From: Tiberiu Breana <tiberiu.a.breana@intel.com>
 To: linux-iio@vger.kernel.org
-Cc: Marek Vasut <marex@denx.de>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio:adc:at91-sama5d2: Repair crash on module removal
-Date: Mon, 18 Apr 2016 18:30:05 +0200
-Message-Id: <1460997005-8786-1-git-send-email-marex@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v3 1/2] iio: humidity: Add support for AM2315
+Date: Mon, 18 Apr 2016 17:50:43 +0300
+Message-Id: <1460991044-8484-2-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1460991044-8484-1-git-send-email-tiberiu.a.breana@intel.com>
+References: <1460991044-8484-1-git-send-email-tiberiu.a.breana@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The driver never calls platform_set_drvdata() , so platform_get_drvdata()
-in .remove returns NULL and thus $indio_dev variable in .remove is NULL.
-Then it's only a matter of dereferencing the indio_dev variable to make
-the kernel blow as seen below. This patch adds the platform_set_drvdata()
-call to fix the problem.
+Add basic support for the Aosong AM2315 relative humidity
+and ambient temperature sensor.
+Includes support for raw readings and ACPI detection.
 
-root@armhf:~# rmmod at91-sama5d2_adc
+Datasheet:
+http://www.aosong.com/asp_bin/Products/en/AM2315.pdf
 
-Unable to handle kernel NULL pointer dereference at virtual address 000001d4
-pgd = dd57c000
-[000001d4] *pgd=00000000
-Internal error: Oops: 5 [#1] ARM
-Modules linked in: at91_sama5d2_adc(-)
-CPU: 0 PID: 1334 Comm: rmmod Not tainted 4.6.0-rc3-next-20160418+ #3
-Hardware name: Atmel SAMA5
-task: dd4fcc40 ti: de910000 task.ti: de910000
-PC is at mutex_lock+0x4/0x24
-LR is at iio_device_unregister+0x14/0x6c
-pc : [<c05f4624>]    lr : [<c0471f74>]    psr: a00d0013
-               sp : de911f00  ip : 00000000  fp : be898bd8
-r10: 00000000  r9 : de910000  r8 : c0107724
-r7 : 00000081  r6 : bf001048  r5 : 000001d4  r4 : 00000000
-r3 : bf000000  r2 : 00000000  r1 : 00000004  r0 : 000001d4
-Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-Control: 10c53c7d  Table: 3d57c059  DAC: 00000051
-Process rmmod (pid: 1334, stack limit = 0xde910208)
-Stack: (0xde911f00 to 0xde912000)
-1f00: bf000000 00000000 df5c7e10 bf000010 bf000000 df5c7e10 df5c7e10 c0351ca8
-1f20: c0351c84 df5c7e10 bf001048 c0350734 bf001048 df5c7e10 df5c7e44 c035087c
-1f40: bf001048 7f62dd4c 00000800 c034fb30 bf0010c0 c0158ee8 de910000 31397461
-1f60: 6d61735f 32643561 6364615f 00000000 de911f90 de910000 de910000 00000000
-1f80: de911fb0 10c53c7d de911f9c c05f33d8 de911fa0 00910000 be898ecb 7f62dd10
-1fa0: 00000000 c0107560 be898ecb 7f62dd10 7f62dd4c 00000800 6f844800 6f844800
-1fc0: be898ecb 7f62dd10 00000000 00000081 00000000 7f62dd10 be898bd8 be898bd8
-1fe0: b6eedab1 be898b6c 7f61056b b6eedab6 000d0030 7f62dd4c 00000000 00000000
-[<c05f4624>] (mutex_lock) from [<c0471f74>] (iio_device_unregister+0x14/0x6c)
-[<c0471f74>] (iio_device_unregister) from [<bf000010>] (at91_adc_remove+0x10/0x3c [at91_sama5d2_adc])
-[<bf000010>] (at91_adc_remove [at91_sama5d2_adc]) from [<c0351ca8>] (platform_drv_remove+0x24/0x3c)
-[<c0351ca8>] (platform_drv_remove) from [<c0350734>] (__device_release_driver+0x84/0x110)
-[<c0350734>] (__device_release_driver) from [<c035087c>] (driver_detach+0x8c/0x90)
-[<c035087c>] (driver_detach) from [<c034fb30>] (bus_remove_driver+0x4c/0xa0)
-[<c034fb30>] (bus_remove_driver) from [<c0158ee8>] (SyS_delete_module+0x110/0x1d0)
-[<c0158ee8>] (SyS_delete_module) from [<c0107560>] (ret_fast_syscall+0x0/0x3c)
-Code: e3520001 1affffd5 eafffff4 f5d0f000 (e1902f9f)
----[ end trace 86914d7ad3696fca ]---
-
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Ludovic Desroches <ludovic.desroches@atmel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/humidity/Kconfig  |  10 ++
+ drivers/iio/humidity/Makefile |   1 +
+ drivers/iio/humidity/am2315.c | 228 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 239 insertions(+)
+ create mode 100644 drivers/iio/humidity/am2315.c
 
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 07adb10..e10dca3 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -497,6 +497,8 @@ static int at91_adc_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto vref_disable;
+diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+index 866dda1..738a86d 100644
+--- a/drivers/iio/humidity/Kconfig
++++ b/drivers/iio/humidity/Kconfig
+@@ -3,6 +3,16 @@
+ #
+ menu "Humidity sensors"
  
-+	platform_set_drvdata(pdev, indio_dev);
++config AM2315
++    tristate "Aosong AM2315 relative humidity and temperature sensor"
++    depends on I2C
++    help
++      If you say yes here you get support for the Aosong AM2315
++      relative humidity and ambient temperature sensor.
 +
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
- 		goto per_clk_disable_unprepare;
++      This driver can also be built as a module. If so, the module will
++      be called am2315.
++
+ config DHT11
+ 	tristate "DHT11 (and compatible sensors) driver"
+ 	depends on GPIOLIB || COMPILE_TEST
+diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
+index c9f089a..4a73442 100644
+--- a/drivers/iio/humidity/Makefile
++++ b/drivers/iio/humidity/Makefile
+@@ -2,6 +2,7 @@
+ # Makefile for IIO humidity sensor drivers
+ #
+ 
++obj-$(CONFIG_AM2315) += am2315.o
+ obj-$(CONFIG_DHT11) += dht11.o
+ obj-$(CONFIG_HDC100X) += hdc100x.o
+ obj-$(CONFIG_HTU21) += htu21.o
+diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
+new file mode 100644
+index 0000000..d392fc8
+--- /dev/null
++++ b/drivers/iio/humidity/am2315.c
+@@ -0,0 +1,228 @@
++/**
++ * Aosong AM2315 relative humidity and temperature
++ *
++ * Copyright (c) 2016, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License. See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * 7-bit I2C address: 0x5C.
++ */
++
++#include <linux/acpi.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define AM2315_REG_HUM_MSB			0x00
++#define AM2315_REG_HUM_LSB			0x01
++#define AM2315_REG_TEMP_MSB			0x02
++#define AM2315_REG_TEMP_LSB			0x03
++
++#define AM2315_FUNCTION_READ			0x03
++#define AM2315_HUM_OFFSET			2
++#define AM2315_TEMP_OFFSET			4
++
++#define AM2315_DRIVER_NAME			"am2315"
++
++struct am2315_data {
++	struct i2c_client *client;
++	struct mutex lock;
++};
++
++struct am2315_sensor_data {
++	s16 hum_data;
++	s16 temp_data;
++};
++
++static const struct iio_chan_spec am2315_channels[] = {
++	{
++		.type = IIO_HUMIDITYRELATIVE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE)
++	},
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE)
++	},
++};
++
++/* CRC calculation algorithm, as specified in the datasheet (page 13). */
++static u16 am2315_crc(u8 *data, u8 nr_bytes)
++{
++	int i;
++	u16 crc = 0xffff;
++
++	while (nr_bytes--) {
++		crc ^= *data++;
++		for (i = 0; i < 8; i++) {
++			if (crc & 0x01) {
++				crc >>= 1;
++				crc ^= 0xA001;
++			} else {
++				crc >>= 1;
++			}
++		}
++	}
++
++	return crc;
++}
++
++/* Simple function that sends a few bytes to the device to wake it up. */
++static void am2315_ping(struct i2c_client *client)
++{
++	i2c_smbus_read_byte_data(client, AM2315_REG_HUM_MSB);
++}
++
++static int am2315_read_data(struct am2315_data *data,
++			    struct am2315_sensor_data *sensor_data)
++{
++	int ret;
++	/* tx_buf format: <function code> <start addr> <nr of regs to read> */
++	u8 tx_buf[3] = { AM2315_FUNCTION_READ, AM2315_REG_HUM_MSB, 4 };
++	/*
++	 * rx_buf format:
++	 * <function code> <number of registers read>
++	 * <humidity MSB> <humidity LSB> <temp MSB> <temp LSB>
++	 * <CRC LSB> <CRC MSB>
++	 */
++	u8 rx_buf[8];
++	u16 crc;
++
++	/* First wake up the device. */
++	am2315_ping(data->client);
++
++	mutex_lock(&data->lock);
++	ret = i2c_master_send(data->client, tx_buf, sizeof(tx_buf));
++	if (ret < 0) {
++		dev_err(&data->client->dev, "failed to send read request\n");
++		goto exit_unlock;
++	}
++	/* Wait 2-3 ms, then read back the data sent by the device. */
++	usleep_range(2000, 3000);
++	/* Do a bulk data read, then pick out what we need. */
++	ret = i2c_master_recv(data->client, rx_buf, sizeof(rx_buf));
++	if (ret < 0) {
++		dev_err(&data->client->dev, "failed to read sensor data\n");
++		goto exit_unlock;
++	}
++	mutex_unlock(&data->lock);
++	/*
++	 * Do a CRC check on the data and compare it to the value
++	 * calculated by the device.
++	 */
++	crc = am2315_crc(rx_buf, sizeof(rx_buf) - 2);
++	if ((crc & 0xff) != rx_buf[6] || (crc >> 8) != rx_buf[7]) {
++		dev_err(&data->client->dev, "failed to verify sensor data\n");
++		return -EIO;
++	}
++
++	sensor_data->hum_data = (rx_buf[AM2315_HUM_OFFSET] << 8) |
++				 rx_buf[AM2315_HUM_OFFSET + 1];
++	sensor_data->temp_data = (rx_buf[AM2315_TEMP_OFFSET] << 8) |
++				  rx_buf[AM2315_TEMP_OFFSET + 1];
++
++	return ret;
++
++exit_unlock:
++	mutex_unlock(&data->lock);
++	return ret;
++}
++
++static int am2315_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	int ret;
++	struct am2315_sensor_data sensor_data;
++	struct am2315_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = am2315_read_data(data, &sensor_data);
++		if (ret < 0)
++			return ret;
++		*val = (chan->type == IIO_HUMIDITYRELATIVE) ?
++				sensor_data.hum_data : sensor_data.temp_data;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 100;
++		return IIO_VAL_INT;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info am2315_info = {
++	.driver_module		= THIS_MODULE,
++	.read_raw		= am2315_read_raw,
++};
++
++static int am2315_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct iio_dev *indio_dev;
++	struct am2315_data *data;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev) {
++		dev_err(&client->dev, "iio allocation failed!\n");
++		return -ENOMEM;
++	}
++
++	data = iio_priv(indio_dev);
++	data->client = client;
++	i2c_set_clientdata(client, indio_dev);
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &am2315_info;
++	indio_dev->name = AM2315_DRIVER_NAME;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = am2315_channels;
++	indio_dev->num_channels = ARRAY_SIZE(am2315_channels);
++
++	return iio_device_register(indio_dev);
++}
++
++static int am2315_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
++static const struct i2c_device_id am2315_i2c_id[] = {
++	{"am2315", 0},
++	{}
++};
++
++static const struct acpi_device_id am2315_acpi_id[] = {
++	{"AOS2315", 0},
++	{}
++};
++
++MODULE_DEVICE_TABLE(acpi, am2315_acpi_id);
++
++static struct i2c_driver am2315_driver = {
++	.driver = {
++		.name = "am2315",
++		.acpi_match_table = ACPI_PTR(am2315_acpi_id),
++	},
++	.probe =            am2315_probe,
++	.remove =	    am2315_remove,
++	.id_table =         am2315_i2c_id,
++};
++
++module_i2c_driver(am2315_driver);
++
++MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
++MODULE_DESCRIPTION("Aosong AM2315 relative humidity and temperature");
++MODULE_LICENSE("GPL v2");
 -- 
-2.7.0
-
+1.9.1
