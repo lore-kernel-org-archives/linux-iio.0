@@ -1,312 +1,271 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60502 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750849AbcDRSuq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 14:50:46 -0400
-Subject: Re: [PATCH v2 3/3] iio: Add Vishay VEML6070 UV A light sensor driver
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1458487224-3872-1-git-send-email-pmeerw@pmeerw.net>
- <1458487224-3872-4-git-send-email-pmeerw@pmeerw.net>
- <56F95595.4040607@kernel.org>
-Cc: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57152C82.60202@kernel.org>
-Date: Mon, 18 Apr 2016 19:50:42 +0100
+Received: from nat-hk.nvidia.com ([203.18.50.4]:62421 "EHLO
+	hkmmgate102.nvidia.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751747AbcDSHdo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Apr 2016 03:33:44 -0400
+From: Laxman Dewangan <ldewangan@nvidia.com>
+To: <jic23@kernel.org>, <robh@kernel.org>, <edubezval@gmail.com>,
+	<rui.zhang@intel.com>, <mark.rutland@arm.com>,
+	<pawel.moll@arm.com>, <ijc+devicetree@hellion.org.uk>
+CC: <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	Laxman Dewangan <ldewangan@nvidia.com>
+Subject: [PATCH V4 2/2] thermal: generic-adc: Add ADC based thermal sensor driver
+Date: Tue, 19 Apr 2016 12:52:01 +0530
+Message-ID: <1461050521-6080-2-git-send-email-ldewangan@nvidia.com>
+In-Reply-To: <1461050521-6080-1-git-send-email-ldewangan@nvidia.com>
+References: <1461050521-6080-1-git-send-email-ldewangan@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <56F95595.4040607@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/03/16 17:02, Jonathan Cameron wrote:
-> On 20/03/16 15:20, Peter Meerwald-Stadler wrote:
->> ultraviolet (UV) light sensor with I2C interface with a peak
->> sensitivity at 355 nm
->>
->> strangely, chip uses two addresses 0x38 and 0x39 for LSB and
->> MSB data, resp.
->>
->> datasheet: http://www.vishay.com/docs/84277/veml6070.pdf
->>
->> Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Looks good.
-> 
-> Applied to the togreg branch of iio.git - initially pushed out as testing
-> for the autobuilders to play with it.
-Except that apparently I didn't. Odd.  Now applied and pushed out 
-for the autobuilders to play with it.  Thanks for poking me Peter!
+In some of platform, thermal sensors like NCT thermistors are
+connected to the one of ADC channel. The temperature is read by
+reading the voltage across the sensor resistance via ADC. Lookup
+table for ADC read value to temperature is referred to get
+temperature. ADC is read via IIO framework.
 
-I am regularly incompetent and never mind someone pointing out I've
-mysteriously dropped their patches! (just in case anyone was
-wondering)
+Add support for thermal sensor driver which read the voltage across
+sensor resistance from ADC through IIO framework.
 
-Jonathan
-> 
-> Jonathan
->> ---
->>  drivers/iio/light/Kconfig    |  10 ++
->>  drivers/iio/light/Makefile   |   1 +
->>  drivers/iio/light/veml6070.c | 218 +++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 229 insertions(+)
->>  create mode 100644 drivers/iio/light/veml6070.c
->>
->> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
->> index cfd3df8..d2fe64e 100644
->> --- a/drivers/iio/light/Kconfig
->> +++ b/drivers/iio/light/Kconfig
->> @@ -320,4 +320,14 @@ config VCNL4000
->>  	 To compile this driver as a module, choose M here: the
->>  	 module will be called vcnl4000.
->>  
->> +config VEML6070
->> +	tristate "VEML6070 UV A light sensor"
->> +	depends on I2C
->> +	help
->> +	 Say Y here if you want to build a driver for the Vishay VEML6070 UV A
->> +	 light sensor.
->> +
->> +	 To compile this driver as a module, choose M here: the
->> +	 module will be called veml6070.
->> +
->>  endmenu
->> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
->> index b2c3105..a447c62 100644
->> --- a/drivers/iio/light/Makefile
->> +++ b/drivers/iio/light/Makefile
->> @@ -30,3 +30,4 @@ obj-$(CONFIG_TCS3472)		+= tcs3472.o
->>  obj-$(CONFIG_TSL4531)		+= tsl4531.o
->>  obj-$(CONFIG_US5182D)		+= us5182d.o
->>  obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
->> +obj-$(CONFIG_VEML6070)		+= veml6070.o
->> diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
->> new file mode 100644
->> index 0000000..bc1c4cb
->> --- /dev/null
->> +++ b/drivers/iio/light/veml6070.c
->> @@ -0,0 +1,218 @@
->> +/*
->> + * veml6070.c - Support for Vishay VEML6070 UV A light sensor
->> + *
->> + * Copyright 2016 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
->> + *
->> + * This file is subject to the terms and conditions of version 2 of
->> + * the GNU General Public License.  See the file COPYING in the main
->> + * directory of this archive for more details.
->> + *
->> + * IIO driver for VEML6070 (7-bit I2C slave addresses 0x38 and 0x39)
->> + *
->> + * TODO: integration time, ACK signal
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/i2c.h>
->> +#include <linux/mutex.h>
->> +#include <linux/err.h>
->> +#include <linux/delay.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +
->> +#define VEML6070_DRV_NAME "veml6070"
->> +
->> +#define VEML6070_ADDR_CONFIG_DATA_MSB 0x38 /* read: MSB data, write: config */
->> +#define VEML6070_ADDR_DATA_LSB	0x39 /* LSB data */
->> +
->> +#define VEML6070_COMMAND_ACK	BIT(5) /* raise interrupt when over threshold */
->> +#define VEML6070_COMMAND_IT	GENMASK(3, 2) /* bit mask integration time */
->> +#define VEML6070_COMMAND_RSRVD	BIT(1) /* reserved, set to 1 */
->> +#define VEML6070_COMMAND_SD	BIT(0) /* shutdown mode when set */
->> +
->> +#define VEML6070_IT_10	0x04 /* integration time 1x */
->> +
->> +struct veml6070_data {
->> +	struct i2c_client *client1;
->> +	struct i2c_client *client2;
->> +	u8 config;
->> +	struct mutex lock;
->> +};
->> +
->> +static int veml6070_read(struct veml6070_data *data)
->> +{
->> +	int ret;
->> +	u8 msb, lsb;
->> +
->> +	mutex_lock(&data->lock);
->> +
->> +	/* disable shutdown */
->> +	ret = i2c_smbus_write_byte(data->client1,
->> +	    data->config & ~VEML6070_COMMAND_SD);
->> +	if (ret < 0)
->> +		goto out;
->> +
->> +	msleep(125 + 10); /* measurement takes up to 125 ms for IT 1x */
->> +
->> +	ret = i2c_smbus_read_byte(data->client2); /* read MSB, address 0x39 */
->> +	if (ret < 0)
->> +		goto out;
->> +	msb = ret;
->> +
->> +	ret = i2c_smbus_read_byte(data->client1); /* read LSB, address 0x38 */
->> +	if (ret < 0)
->> +		goto out;
->> +	lsb = ret;
->> +
->> +	/* shutdown again */
->> +	ret = i2c_smbus_write_byte(data->client1, data->config);
->> +	if (ret < 0)
->> +		goto out;
->> +
->> +	ret = (msb << 8) | lsb;
->> +
->> +out:
->> +	mutex_unlock(&data->lock);
->> +	return ret;
->> +}
->> +
->> +static const struct iio_chan_spec veml6070_channels[] = {
->> +	{
->> +		.type = IIO_INTENSITY,
->> +		.modified = 1,
->> +		.channel2 = IIO_MOD_LIGHT_UV,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->> +	},
->> +	{
->> +		.type = IIO_UVINDEX,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->> +	}
->> +};
->> +
->> +static int veml6070_to_uv_index(unsigned val)
->> +{
->> +	/*
->> +	 * conversion of raw UV intensity values to UV index depends on
->> +	 * integration time (IT) and value of the resistor connected to
->> +	 * the RSET pin (default: 270 KOhm)
->> +	 */
->> +	unsigned uvi[11] = {
->> +		187, 373, 560, /* low */
->> +		746, 933, 1120, /* moderate */
->> +		1308, 1494, /* high */
->> +		1681, 1868, 2054}; /* very high */
->> +	int i;
->> +
->> +	for (i = 0; i < ARRAY_SIZE(uvi); i++)
->> +		if (val <= uvi[i])
->> +			return i;
->> +
->> +	return 11; /* extreme */
->> +}
->> +
->> +static int veml6070_read_raw(struct iio_dev *indio_dev,
->> +				struct iio_chan_spec const *chan,
->> +				int *val, int *val2, long mask)
->> +{
->> +	struct veml6070_data *data = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +	case IIO_CHAN_INFO_PROCESSED:
->> +		ret = veml6070_read(data);
->> +		if (ret < 0)
->> +			return ret;
->> +		if (mask == IIO_CHAN_INFO_PROCESSED)
->> +			*val = veml6070_to_uv_index(ret);
->> +		else
->> +			*val = ret;
->> +		return IIO_VAL_INT;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +}
->> +
->> +static const struct iio_info veml6070_info = {
->> +	.read_raw = veml6070_read_raw,
->> +	.driver_module = THIS_MODULE,
->> +};
->> +
->> +static int veml6070_probe(struct i2c_client *client,
->> +			  const struct i2c_device_id *id)
->> +{
->> +	struct veml6070_data *data;
->> +	struct iio_dev *indio_dev;
->> +	int ret;
->> +
->> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> +	if (!indio_dev)
->> +		return -ENOMEM;
->> +
->> +	data = iio_priv(indio_dev);
->> +	i2c_set_clientdata(client, indio_dev);
->> +	data->client1 = client;
->> +	mutex_init(&data->lock);
->> +
->> +	indio_dev->dev.parent = &client->dev;
->> +	indio_dev->info = &veml6070_info;
->> +	indio_dev->channels = veml6070_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(veml6070_channels);
->> +	indio_dev->name = VEML6070_DRV_NAME;
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +
->> +	data->client2 = i2c_new_dummy(client->adapter, VEML6070_ADDR_DATA_LSB);
->> +	if (!data->client2) {
->> +		dev_err(&client->dev, "i2c device for second chip address failed\n");
->> +		return -ENODEV;
->> +	}
->> +
->> +	data->config = VEML6070_IT_10 | VEML6070_COMMAND_RSRVD |
->> +		VEML6070_COMMAND_SD;
->> +	ret = i2c_smbus_write_byte(data->client1, data->config);
->> +	if (ret < 0)
->> +		goto fail;
->> +
->> +	ret = iio_device_register(indio_dev);
->> +	if (ret < 0)
->> +		goto fail;
->> +
->> +	return ret;
->> +
->> +fail:
->> +	i2c_unregister_device(data->client2);
->> +	return ret;
->> +}
->> +
->> +static int veml6070_remove(struct i2c_client *client)
->> +{
->> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +	struct veml6070_data *data = iio_priv(indio_dev);
->> +
->> +	iio_device_unregister(indio_dev);
->> +	i2c_unregister_device(data->client2);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct i2c_device_id veml6070_id[] = {
->> +	{ "veml6070", 0 },
->> +	{ }
->> +};
->> +MODULE_DEVICE_TABLE(i2c, veml6070_id);
->> +
->> +static struct i2c_driver veml6070_driver = {
->> +	.driver = {
->> +		.name   = VEML6070_DRV_NAME,
->> +	},
->> +	.probe  = veml6070_probe,
->> +	.remove  = veml6070_remove,
->> +	.id_table = veml6070_id,
->> +};
->> +
->> +module_i2c_driver(veml6070_driver);
->> +
->> +MODULE_AUTHOR("Peter Meerwald-Stadler <pmeerw@pmeerw.net>");
->> +MODULE_DESCRIPTION("Vishay VEML6070 UV A light sensor driver");
->> +MODULE_LICENSE("GPL");
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+
+---
+Changes from V1:
+- Use the two dimensional lookup table for temperature vs ADC value.
+- Use non devm_ for thermal zone sensor registration as there may be
+  race between IIO channel release and temperature read.
+
+Changes from V2:
+- None.
+
+Changes from V3:
+- Jonathan suggested to use the iio_channel_read_processed only. Making
+  changes accordingly.
+---
+ drivers/thermal/Kconfig               |  10 ++
+ drivers/thermal/Makefile              |   1 +
+ drivers/thermal/thermal-generic-adc.c | 182 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 193 insertions(+)
+ create mode 100644 drivers/thermal/thermal-generic-adc.c
+
+diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
+index 594748e..d7d0136 100644
+--- a/drivers/thermal/Kconfig
++++ b/drivers/thermal/Kconfig
+@@ -400,4 +400,14 @@ config QCOM_SPMI_TEMP_ALARM
+ 	  real time die temperature if an ADC is present or an estimate of the
+ 	  temperature based upon the over temperature stage value.
+ 
++config GENERIC_ADC_THERMAL
++	tristate "Generic ADC based thermal sensor"
++	depends on IIO
++	help
++	  This enabled a thermal sysfs driver for the temperature sensor
++	  which is connected to the General Purpose ADC. The ADC channel
++	  is read via IIO framework and the channel information is provided
++	  to this driver. This driver reports the temperature by reading ADC
++	  channel and converts it to temperature based on lookup table.
++
+ endif
+diff --git a/drivers/thermal/Makefile b/drivers/thermal/Makefile
+index d64f7f7..904593a 100644
+--- a/drivers/thermal/Makefile
++++ b/drivers/thermal/Makefile
+@@ -49,3 +49,4 @@ obj-$(CONFIG_ST_THERMAL)	+= st/
+ obj-$(CONFIG_TEGRA_SOCTHERM)	+= tegra/
+ obj-$(CONFIG_HISI_THERMAL)     += hisi_thermal.o
+ obj-$(CONFIG_MTK_THERMAL)	+= mtk_thermal.o
++obj-$(CONFIG_GENERIC_ADC_THERMAL)	+= thermal-generic-adc.o
+diff --git a/drivers/thermal/thermal-generic-adc.c b/drivers/thermal/thermal-generic-adc.c
+new file mode 100644
+index 0000000..73f55d6
+--- /dev/null
++++ b/drivers/thermal/thermal-generic-adc.c
+@@ -0,0 +1,182 @@
++/*
++ * Generic ADC thermal driver
++ *
++ * Copyright (C) 2016 NVIDIA CORPORATION. All rights reserved.
++ *
++ * Author: Laxman Dewangan <ldewangan@nvidia.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++#include <linux/iio/consumer.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/thermal.h>
++
++struct gadc_thermal_info {
++	struct device *dev;
++	struct thermal_zone_device *tz_dev;
++	struct iio_channel *channel;
++	s32 *lookup_table;
++	int nlookup_table;
++};
++
++static int gadc_thermal_adc_to_temp(struct gadc_thermal_info *gti, int val)
++{
++	int temp, adc_hi, adc_lo;
++	int i;
++
++	for (i = 0; i < gti->nlookup_table; i++) {
++		if (val >= gti->lookup_table[2 * i + 1])
++			break;
++	}
++
++	if (i == 0) {
++		temp = gti->lookup_table[0];
++	} else if (i >= (gti->nlookup_table - 1)) {
++		temp = gti->lookup_table[2 * (gti->nlookup_table - 1)];
++	} else {
++		adc_hi = gti->lookup_table[2 * i - 1];
++		adc_lo = gti->lookup_table[2 * i + 1];
++		temp = gti->lookup_table[2 * i];
++		temp -= ((val - adc_lo) * 1000) / (adc_hi - adc_lo);
++	}
++
++	return temp;
++}
++
++static int gadc_thermal_get_temp(void *data, int *temp)
++{
++	struct gadc_thermal_info *gti = data;
++	int val;
++	int ret;
++
++	ret = iio_read_channel_processed(gti->channel, &val);
++	if (ret < 0) {
++		dev_err(gti->dev, "IIO channel read failed %d\n", ret);
++		return ret;
++	}
++	*temp = gadc_thermal_adc_to_temp(gti, val);
++
++	return 0;
++}
++
++static const struct thermal_zone_of_device_ops gadc_thermal_ops = {
++	.get_temp = gadc_thermal_get_temp,
++};
++
++static int gadc_thermal_read_linear_lookup_table(struct device *dev,
++						 struct gadc_thermal_info *gti)
++{
++	struct device_node *np = dev->of_node;
++	int ntable;
++	int ret;
++
++	ntable = of_property_count_elems_of_size(np, "temperature-lookup-table",
++						 sizeof(u32));
++	if (ntable < 0) {
++		dev_err(dev, "Lookup table is not provided\n");
++		return ntable;
++	}
++
++	if (ntable % 2) {
++		dev_err(dev, "Pair of temperature vs ADC read value missing\n");
++		return -EINVAL;
++	}
++
++	gti->lookup_table = devm_kzalloc(dev, sizeof(*gti->lookup_table) *
++					 ntable, GFP_KERNEL);
++	if (!gti->lookup_table)
++		return -ENOMEM;
++
++	ret = of_property_read_u32_array(np, "temperature-lookup-table",
++					 (u32 *)gti->lookup_table, ntable);
++	if (ret < 0) {
++		dev_err(dev, "Failed to read temperature lookup table: %d\n",
++			ret);
++		return ret;
++	}
++
++	gti->nlookup_table = ntable / 2;
++
++	return 0;
++}
++
++static int gadc_thermal_probe(struct platform_device *pdev)
++{
++	struct gadc_thermal_info *gti;
++	int ret;
++
++	if (!pdev->dev.of_node) {
++		dev_err(&pdev->dev, "Only DT based supported\n");
++		return -ENODEV;
++	}
++
++	gti = devm_kzalloc(&pdev->dev, sizeof(*gti), GFP_KERNEL);
++	if (!gti)
++		return -ENOMEM;
++
++	ret = gadc_thermal_read_linear_lookup_table(&pdev->dev, gti);
++	if (ret < 0)
++		return ret;
++
++	gti->dev = &pdev->dev;
++	platform_set_drvdata(pdev, gti);
++
++	gti->channel = iio_channel_get(&pdev->dev, "sensor-channel");
++	if (IS_ERR(gti->channel)) {
++		ret = PTR_ERR(gti->channel);
++		dev_err(&pdev->dev, "IIO channel not found: %d\n", ret);
++		return ret;
++	}
++
++	gti->tz_dev = thermal_zone_of_sensor_register(&pdev->dev, 0,
++						      gti, &gadc_thermal_ops);
++	if (IS_ERR(gti->tz_dev)) {
++		ret = PTR_ERR(gti->tz_dev);
++		dev_err(&pdev->dev, "Thermal zone sensor register failed: %d\n",
++			ret);
++		goto sensor_fail;
++	}
++
++	return 0;
++
++sensor_fail:
++	iio_channel_release(gti->channel);
++
++	return ret;
++}
++
++static int gadc_thermal_remove(struct platform_device *pdev)
++{
++	struct gadc_thermal_info *gti = platform_get_drvdata(pdev);
++
++	thermal_zone_of_sensor_unregister(&pdev->dev, gti->tz_dev);
++	iio_channel_release(gti->channel);
++
++	return 0;
++}
++
++static const struct of_device_id of_adc_thermal_match[] = {
++	{ .compatible = "generic-adc-thermal", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, of_adc_thermal_match);
++
++static struct platform_driver gadc_thermal_driver = {
++	.driver = {
++		.name = "generic-adc-thermal",
++		.of_match_table = of_adc_thermal_match,
++	},
++	.probe = gadc_thermal_probe,
++	.remove = gadc_thermal_remove,
++};
++
++module_platform_driver(gadc_thermal_driver);
++
++MODULE_AUTHOR("Laxman Dewangan <ldewangan@nvidia.com>");
++MODULE_DESCRIPTION("Generic ADC thermal driver using IIO framework with DT");
++MODULE_LICENSE("GPL v2");
+-- 
+2.1.4
 
