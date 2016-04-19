@@ -1,296 +1,81 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH v3 1/2] iio: humidity: Add support for AM2315
-Date: Mon, 18 Apr 2016 17:50:43 +0300
-Message-Id: <1460991044-8484-2-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1460991044-8484-1-git-send-email-tiberiu.a.breana@intel.com>
-References: <1460991044-8484-1-git-send-email-tiberiu.a.breana@intel.com>
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, Denis Ciocca <denis.ciocca@st.com>, Linus Walleij
+	<linus.walleij@linaro.org>, Giuseppe Barba <giuseppe.barba@st.com>, Gregor
+ Boirie <gregor.boirie@parrot.com>
+Subject: [RFC PATCH v1 3/9] iio:st_pressure: lps22hb temperature support
+Date: Tue, 19 Apr 2016 11:18:34 +0200
+Message-ID: <b8fc5b8818494fb3dd4950ba32dd515dd04c8b8c.1461056711.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1461056711.git.gregor.boirie@parrot.com>
+References: <cover.1461056711.git.gregor.boirie@parrot.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Add basic support for the Aosong AM2315 relative humidity
-and ambient temperature sensor.
-Includes support for raw readings and ACPI detection.
+Implement lps22hb temperature sampling channel.
 
-Datasheet:
-http://www.aosong.com/asp_bin/Products/en/AM2315.pdf
-
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 ---
- drivers/iio/humidity/Kconfig  |  10 ++
- drivers/iio/humidity/Makefile |   1 +
- drivers/iio/humidity/am2315.c | 228 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 239 insertions(+)
- create mode 100644 drivers/iio/humidity/am2315.c
+ drivers/iio/pressure/st_pressure_core.c | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index 866dda1..738a86d 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -3,6 +3,16 @@
- #
- menu "Humidity sensors"
- 
-+config AM2315
-+    tristate "Aosong AM2315 relative humidity and temperature sensor"
-+    depends on I2C
-+    help
-+      If you say yes here you get support for the Aosong AM2315
-+      relative humidity and ambient temperature sensor.
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index b8087b9..24754eed 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -135,6 +135,10 @@
+  * See LPS22HB datasheet:
+  * http://www2.st.com/resource/en/datasheet/lps22hb.pdf
+  */
 +
-+      This driver can also be built as a module. If so, the module will
-+      be called am2315.
++/* LPS22HB temperature sensitivity */
++#define ST_PRESS_LPS22HB_LSB_PER_CELSIUS	100UL
 +
- config DHT11
- 	tristate "DHT11 (and compatible sensors) driver"
- 	depends on GPIOLIB || COMPILE_TEST
-diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
-index c9f089a..4a73442 100644
---- a/drivers/iio/humidity/Makefile
-+++ b/drivers/iio/humidity/Makefile
-@@ -2,6 +2,7 @@
- # Makefile for IIO humidity sensor drivers
- #
- 
-+obj-$(CONFIG_AM2315) += am2315.o
- obj-$(CONFIG_DHT11) += dht11.o
- obj-$(CONFIG_HDC100X) += hdc100x.o
- obj-$(CONFIG_HTU21) += htu21.o
-diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
-new file mode 100644
-index 0000000..d392fc8
---- /dev/null
-+++ b/drivers/iio/humidity/am2315.c
-@@ -0,0 +1,228 @@
-+/**
-+ * Aosong AM2315 relative humidity and temperature
-+ *
-+ * Copyright (c) 2016, Intel Corporation.
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License. See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * 7-bit I2C address: 0x5C.
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#define AM2315_REG_HUM_MSB			0x00
-+#define AM2315_REG_HUM_LSB			0x01
-+#define AM2315_REG_TEMP_MSB			0x02
-+#define AM2315_REG_TEMP_LSB			0x03
-+
-+#define AM2315_FUNCTION_READ			0x03
-+#define AM2315_HUM_OFFSET			2
-+#define AM2315_TEMP_OFFSET			4
-+
-+#define AM2315_DRIVER_NAME			"am2315"
-+
-+struct am2315_data {
-+	struct i2c_client *client;
-+	struct mutex lock;
-+};
-+
-+struct am2315_sensor_data {
-+	s16 hum_data;
-+	s16 temp_data;
-+};
-+
-+static const struct iio_chan_spec am2315_channels[] = {
-+	{
-+		.type = IIO_HUMIDITYRELATIVE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE)
-+	},
+ #define ST_PRESS_LPS22HB_WAI_EXP		0xb1
+ #define ST_PRESS_LPS22HB_ODR_ADDR		0x10
+ #define ST_PRESS_LPS22HB_ODR_MASK		0x70
+@@ -244,6 +248,23 @@ static const struct iio_chan_spec st_press_lps22hb_channels[] = {
+ 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 		.modified = 0,
+ 	},
 +	{
 +		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE)
++		.channel2 = IIO_NO_MOD,
++		.address = ST_TEMP_1_OUT_L_ADDR,
++		.scan_index = -1,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.modified = 0,
 +	},
-+};
-+
-+/* CRC calculation algorithm, as specified in the datasheet (page 13). */
-+static u16 am2315_crc(u8 *data, u8 nr_bytes)
-+{
-+	int i;
-+	u16 crc = 0xffff;
-+
-+	while (nr_bytes--) {
-+		crc ^= *data++;
-+		for (i = 0; i < 8; i++) {
-+			if (crc & 0x01) {
-+				crc >>= 1;
-+				crc ^= 0xA001;
-+			} else {
-+				crc >>= 1;
-+			}
-+		}
-+	}
-+
-+	return crc;
-+}
-+
-+/* Simple function that sends a few bytes to the device to wake it up. */
-+static void am2315_ping(struct i2c_client *client)
-+{
-+	i2c_smbus_read_byte_data(client, AM2315_REG_HUM_MSB);
-+}
-+
-+static int am2315_read_data(struct am2315_data *data,
-+			    struct am2315_sensor_data *sensor_data)
-+{
-+	int ret;
-+	/* tx_buf format: <function code> <start addr> <nr of regs to read> */
-+	u8 tx_buf[3] = { AM2315_FUNCTION_READ, AM2315_REG_HUM_MSB, 4 };
-+	/*
-+	 * rx_buf format:
-+	 * <function code> <number of registers read>
-+	 * <humidity MSB> <humidity LSB> <temp MSB> <temp LSB>
-+	 * <CRC LSB> <CRC MSB>
-+	 */
-+	u8 rx_buf[8];
-+	u16 crc;
-+
-+	/* First wake up the device. */
-+	am2315_ping(data->client);
-+
-+	mutex_lock(&data->lock);
-+	ret = i2c_master_send(data->client, tx_buf, sizeof(tx_buf));
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to send read request\n");
-+		goto exit_unlock;
-+	}
-+	/* Wait 2-3 ms, then read back the data sent by the device. */
-+	usleep_range(2000, 3000);
-+	/* Do a bulk data read, then pick out what we need. */
-+	ret = i2c_master_recv(data->client, rx_buf, sizeof(rx_buf));
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to read sensor data\n");
-+		goto exit_unlock;
-+	}
-+	mutex_unlock(&data->lock);
-+	/*
-+	 * Do a CRC check on the data and compare it to the value
-+	 * calculated by the device.
-+	 */
-+	crc = am2315_crc(rx_buf, sizeof(rx_buf) - 2);
-+	if ((crc & 0xff) != rx_buf[6] || (crc >> 8) != rx_buf[7]) {
-+		dev_err(&data->client->dev, "failed to verify sensor data\n");
-+		return -EIO;
-+	}
-+
-+	sensor_data->hum_data = (rx_buf[AM2315_HUM_OFFSET] << 8) |
-+				 rx_buf[AM2315_HUM_OFFSET + 1];
-+	sensor_data->temp_data = (rx_buf[AM2315_TEMP_OFFSET] << 8) |
-+				  rx_buf[AM2315_TEMP_OFFSET + 1];
-+
-+	return ret;
-+
-+exit_unlock:
-+	mutex_unlock(&data->lock);
-+	return ret;
-+}
-+
-+static int am2315_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	int ret;
-+	struct am2315_sensor_data sensor_data;
-+	struct am2315_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = am2315_read_data(data, &sensor_data);
-+		if (ret < 0)
-+			return ret;
-+		*val = (chan->type == IIO_HUMIDITYRELATIVE) ?
-+				sensor_data.hum_data : sensor_data.temp_data;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 100;
-+		return IIO_VAL_INT;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info am2315_info = {
-+	.driver_module		= THIS_MODULE,
-+	.read_raw		= am2315_read_raw,
-+};
-+
-+static int am2315_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct am2315_data *data;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev) {
-+		dev_err(&client->dev, "iio allocation failed!\n");
-+		return -ENOMEM;
-+	}
-+
-+	data = iio_priv(indio_dev);
-+	data->client = client;
-+	i2c_set_clientdata(client, indio_dev);
-+	mutex_init(&data->lock);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &am2315_info;
-+	indio_dev->name = AM2315_DRIVER_NAME;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = am2315_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(am2315_channels);
-+
-+	return iio_device_register(indio_dev);
-+}
-+
-+static int am2315_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id am2315_i2c_id[] = {
-+	{"am2315", 0},
-+	{}
-+};
-+
-+static const struct acpi_device_id am2315_acpi_id[] = {
-+	{"AOS2315", 0},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(acpi, am2315_acpi_id);
-+
-+static struct i2c_driver am2315_driver = {
-+	.driver = {
-+		.name = "am2315",
-+		.acpi_match_table = ACPI_PTR(am2315_acpi_id),
-+	},
-+	.probe =            am2315_probe,
-+	.remove =	    am2315_remove,
-+	.id_table =         am2315_i2c_id,
-+};
-+
-+module_i2c_driver(am2315_driver);
-+
-+MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
-+MODULE_DESCRIPTION("Aosong AM2315 relative humidity and temperature");
-+MODULE_LICENSE("GPL v2");
+ 	IIO_CHAN_SOFT_TIMESTAMP(1)
+ };
+ 
+@@ -431,12 +452,13 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
+ 		.fs = {
+ 			.fs_avl = {
+ 				/*
+-				 * Sensitivity values as defined in table 3 of
+-				 * LPS22HB datasheet.
++				 * Pressure and temperature sensitivity values
++				 * as defined in table 3 of LPS22HB datasheet.
+ 				 */
+ 				[0] = {
+ 					.num = ST_PRESS_FS_AVL_1260MB,
+ 					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
++					.gain2 = ST_PRESS_LPS22HB_LSB_PER_CELSIUS,
+ 				},
+ 			},
+ 		},
 -- 
-1.9.1
+2.1.4
