@@ -1,38 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:46054 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751984AbcDRPXg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 18 Apr 2016 11:23:36 -0400
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "axel.kittenberger@univie.ac.at" <axel.kittenberger@univie.ac.at>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: hid-sensor-hub.c for pci device 9d35?
-Date: Mon, 18 Apr 2016 15:22:39 +0000
-Message-ID: <1460992987.8946.25.camel@intel.com>
-References: <CABg07fvws_FfFygL8NbW_4_w1MujwKzQobLQ9hLpb-v0niU_PA@mail.gmail.com>
-	 <1460991270.8946.8.camel@intel.com>
-	 <CABg07fs6DmfvUQJAbAtFpOzaY4O0i7gdfxPeXcFQSKQ_NgUbMQ@mail.gmail.com>
-In-Reply-To: <CABg07fs6DmfvUQJAbAtFpOzaY4O0i7gdfxPeXcFQSKQ_NgUbMQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, Denis Ciocca <denis.ciocca@st.com>, Linus Walleij
+	<linus.walleij@linaro.org>, Giuseppe Barba <giuseppe.barba@st.com>, Gregor
+ Boirie <gregor.boirie@parrot.com>
+Subject: [RFC PATCH v1 7/9] iio:st_sensors: unexport st_sensors_get_buffer_element
+Date: Tue, 19 Apr 2016 11:18:38 +0200
+Message-ID: <467cc5525789973e7dced2d12e1e57abdee8767f.1461056711.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1461056711.git.gregor.boirie@parrot.com>
+References: <cover.1461056711.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-T24gTW9uLCAyMDE2LTA0LTE4IGF0IDE3OjIwICswMjAwLCBBeGVsIEtpdHRlbmJlcmdlciB3cm90
-ZToNCj4gVGhhbmsgeW91IGZvciB5b3VyIHByb21wdCByZXBseS4NCj4gSSBkb250IHdhbnQgdG8g
-ZGlzcmVwZWN0ZnVsbCwgYnV0IHdoYXQgaXMgdGhlIHJvdWdobHkgZXN0aW1hdGVkDQo+IHRpbWVm
-cmFtZT8NCkdvb2QgcXVlc3Rpb24uIFRhcmdldCBpbiA0LjguIEJ1dCBJIGFtIG5vdCB0aGUgb25l
-IGRldmVsb3BpbmcgdGhpcy4NCg0KVGhhbmtzLA0KU3Jpbml2YXMNCg0KPiBheGVsDQo+IA0KPiBP
-biBNb24sIDIwMTYtMDQtMTggYXQgMTU6NTMgKzAyMDAsIEF4ZWwgS2l0dGVuYmVyZ2VyIHdyb3Rl
-Og0KPiA+IGhlbGxvLA0KPiA+DQo+ID4gSSBnb3QgYSBuZXcgTGVub3ZvIFlvZ2EgNDYwIGNvbnZl
-cnRpYmxlIGhlcmUgYW5kIEknZCBsaWtlIHRvIGdldA0KPiB0aGUNCj4gPiBhY2NlbGVyb21ldGVy
-IGdvaW5nIHVuZGVyIExpbnV4Lg0KPiA+DQo+ID4gSW4gbHNwY2kgSSBzZWUNCj4gPiAiIiIwMDox
-My4wIE5vbi1WR0EgdW5jbGFzc2lmaWVkIGRldmljZTogSW50ZWwgQ29ycG9yYXRpb24gRGV2aWNl
-DQo+IDlkMzUNCj4gPiAocmV2IDIxKSIiIg0KPiA+IFdoaWNoIEknbSBwcmV0dHkgc3VyZSBpcyB0
-aGUgc2Vuc29yIGh1YiBoYW5naW5nIGRpcmVjdGx5IG9uIHRoZSBwY2kNCj4gPiBidXMgYW5kIGxz
-dXNiIHNob3dzIG5vdGhpbmcgdGhhdCB3b3VsZCBxdWFsaWZ5Lg0KPiA+DQo+ID4gJ2hpZC1zZW5z
-b3ItaHViLmMnIG9ubHkgY29udGFpbnMgY29kZSBmb3IgdXNiLiBXb3VsZCBpdCBldmVuIHdvcmsN
-Cj4gZm9yDQo+ID4gdGhlIHBjaSB0aGluZz8NCj4gPg0KPiA+IEFueSBpZGVhIGhvdyBJIGNhbiBw
-cm9jZWVkIGZyb20gaGVyZT8NCj4gPg0KPiBUaGlzIHdpbGwgbm90IHdvcmsuIEl0IG5lZWRzIGEg
-bmV3IHRyYW5zcG9ydCwgd2hpY2ggaXMgdW5kZXINCj4gZGV2ZWxvcG1lbnQuDQo+IA0KPiBUaGFu
-a3MsDQo+IFNyaW5pdmFzDQo+IA0KPiA+IGtpbmQgcmVnYXJkcywNCj4gPiBheGVs
+Remove st_sensors_get_buffer_element symbol export since not explicitly
+used outside of st_sensors driver.
+
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ drivers/iio/common/st_sensors/st_sensors_buffer.c | 3 +--
+ include/linux/iio/common/st_sensors.h             | 2 --
+ 2 files changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+index a7f1ced..9343d74 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -21,7 +21,7 @@
+ 
+ #include <linux/iio/common/st_sensors.h>
+ 
+-int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
++static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+ {
+ 	unsigned int cid;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+@@ -45,7 +45,6 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL(st_sensors_get_buffer_element);
+ 
+ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
+ {
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index d029ffa..78a1934 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -251,8 +251,6 @@ struct st_sensor_data {
+ 
+ #ifdef CONFIG_IIO_BUFFER
+ irqreturn_t st_sensors_trigger_handler(int irq, void *p);
+-
+-int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf);
+ #endif
+ 
+ #ifdef CONFIG_IIO_TRIGGER
+-- 
+2.1.4
