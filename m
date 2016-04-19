@@ -1,223 +1,109 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.aswsp.com ([193.34.35.150]:10891 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752966AbcDSJST (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 19 Apr 2016 05:18:19 -0400
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Denis Ciocca <denis.ciocca@st.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [RFC PATCH v1 4/9] iio:st_sensors: align on storagebits boundaries
+Date: Tue, 19 Apr 2016 11:18:35 +0200
+Message-ID: <6b0ff9259418de8dacf125f642f2737ffcb62065.1461056711.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1461056711.git.gregor.boirie@parrot.com>
+References: <cover.1461056711.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <5700F648.1010804@kernel.org>
-References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
-	<1459673574-11440-21-git-send-email-peda@lysator.liu.se>
-	<5700F648.1010804@kernel.org>
-Date: Mon, 18 Apr 2016 10:37:44 +0300
-Message-ID: <CAEnQRZBEUC4DUmZci0MrXWzEBFXDR0bLN_taDuWR+mt6LMe-5w@mail.gmail.com>
-Subject: Re: [PATCH v6 20/24] iio: imu: inv_mpu6050: change the i2c gate to be mux-locked
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Peter Rosin <peda@lysator.liu.se>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Peter Rosin <peda@axentia.se>,
-	Wolfram Sang <wsa@the-dreams.de>, Jonathan Corbet <corbet@lwn.net>,
-	Peter Korsgaard <peter.korsgaard@barco.com>, Guenter Roeck <linux@roeck-us.net>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Antti Palosaari <crope@iki.fi>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"David S. Miller" <davem@davemloft.net>, Kalle Valo <kvalo@codeaurora.org>,
-	Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>,
-	Daniel Baluta <daniel.baluta@intel.com>, Adriana Reus <adriana.reus@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>, Matt Ranostay <matt.ranostay@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>, Terry Heo <terryheo@google.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>, Arnd Bergmann <arnd@arndb.de>,
-	Tommi Rantala <tt.rantala@gmail.com>, Linux I2C <linux-i2c@vger.kernel.org>,
-	linux-doc@vger.kernel.org,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, linux-media@vger.kernel.org,
-	Devicetree List <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Apr 3, 2016 at 1:54 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 03/04/16 09:52, Peter Rosin wrote:
->> From: Peter Rosin <peda@axentia.se>
->>
->> The root i2c adapter lock is then no longer held by the i2c mux during
->> accesses behind the i2c gate, and such accesses need to take that lock
->> just like any other ordinary i2c accesses do.
->>
->> So, declare the i2c gate mux-locked, and zap the code that makes the
->> unlocked i2c accesses and just use ordinary regmap_write accesses.
->>
->> This also happens to fix the deadlock described in
->> http://patchwork.ozlabs.org/patch/584776/ authored by
->> Adriana Reus <adriana.reus@intel.com> and submitted by
->> Daniel Baluta <daniel.baluta@intel.com>
->>
->> ----------8<----------
->> iio: imu: inv_mpu6050: Fix deadlock between i2c adapter lock and mpu lock
->>
->> This deadlock occurs if the accel/gyro and the sensor on the auxiliary
->> I2C (in my setup it's an ak8975) are working at the same time.
->>
->> Scenario:
->>
->>       T1                                      T2
->>      ====                                    ====
->> inv_mpu6050_read_fifo                  aux sensor op (eg. ak8975_read_raw)
->>         |                                     |
->> mutex_lock(&indio_dev->mlock)           i2c_transfer
->>         |                                     |
->> i2c transaction                         i2c adapter lock
->>         |                                     |
->> i2c adapter lock                        i2c_mux_master_xfer
->>                                               |
->>                                         inv_mpu6050_select_bypass
->>                                               |
->>                                         mutex_lock(&indio_dev->mlock)
->>
->> When we operate on an mpu sensor the order of locking is mpu lock
->> followed by the i2c adapter lock. However, when we operate the auxiliary
->> sensor the order of locking is the other way around.
->>
->> ...
->> ----------8<----------
->>
->> The reason this patch fixes the deadlock is that T2 does not grab the
->> i2c adapter lock until the very end (and grabs the newfangled i2c mux
->> lock where it previously grabbed the i2c adapter lock).
->>
->> Signed-off-by: Peter Rosin <peda@axentia.se>
-> This one obviously wants a ack from Adriana or Daniel in addition to mine.
-> I'm more than happy for these to go through the i2c tree btw.
->
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
+Triggered buffering memory accesses are not aligned on per channel
+storagebits boundaries. Fix this by reading each channel individually to
+ensure proper alignment.
+Note that this patch drops the earlier optimisation that packs multiple
+channels reading into a single data block transaction when their
+respective I2C register addresses are contiguous.
 
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ drivers/iio/common/st_sensors/st_sensors_buffer.c | 38 ++++++++++-------------
+ drivers/iio/common/st_sensors/st_sensors_core.c   |  2 +-
+ 2 files changed, 18 insertions(+), 22 deletions(-)
 
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+index c558985..a7f1ced 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -21,33 +21,29 @@
+ 
+ #include <linux/iio/common/st_sensors.h>
+ 
+-
+ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+ {
+-	int i, len;
+-	int total = 0;
++	unsigned int cid;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+-	unsigned int num_data_channels = sdata->num_data_channels;
+-
+-	for (i = 0; i < num_data_channels; i++) {
+-		unsigned int bytes_to_read;
+-
+-		if (test_bit(i, indio_dev->active_scan_mask)) {
+-			bytes_to_read = indio_dev->channels[i].scan_type.storagebits >> 3;
+-			len = sdata->tf->read_multiple_byte(&sdata->tb,
+-				sdata->dev, indio_dev->channels[i].address,
+-				bytes_to_read,
+-				buf + total, sdata->multiread_bit);
+-
+-			if (len < bytes_to_read)
+-				return -EIO;
+ 
+-			/* Advance the buffer pointer */
+-			total += len;
+-		}
++	for_each_set_bit(cid, indio_dev->active_scan_mask,
++			 sdata->num_data_channels) {
++		const struct iio_chan_spec *chan = &indio_dev->channels[cid];
++		int sb = chan->scan_type.storagebits / 8;
++		int rb = chan->scan_type.realbits / 8;
++		int err;
++
++		buf = PTR_ALIGN(buf, sb);
++		err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
++						    chan->address, rb, buf,
++						    sdata->multiread_bit);
++		if (err != rb)
++			return (err < 0) ? err : -EIO;
++
++		buf += sb;
+ 	}
+ 
+-	return total;
++	return 0;
+ }
+ EXPORT_SYMBOL(st_sensors_get_buffer_element);
+ 
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index dffe006..6901c7f 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -463,7 +463,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+ 	int err;
+ 	u8 *outdata;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+-	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
++	unsigned int byte_for_channel = ch->scan_type.realbits >> 3;
+ 
+ 	outdata = kmalloc(byte_for_channel, GFP_KERNEL);
+ 	if (!outdata)
+-- 
+2.1.4
 
->> ---
->>  Documentation/i2c/i2c-topology            |  2 +-
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 56 +++++++------------------------
->>  2 files changed, 13 insertions(+), 45 deletions(-)
->>
->> diff --git a/Documentation/i2c/i2c-topology b/Documentation/i2c/i2c-topology
->> index 7a10edd0874f..346623a80bd1 100644
->> --- a/Documentation/i2c/i2c-topology
->> +++ b/Documentation/i2c/i2c-topology
->> @@ -50,7 +50,7 @@ i2c-mux-pinctrl           Normally parent-locked, mux-locked iff
->>  i2c-mux-reg               Parent-locked
->>
->>  In drivers/iio/
->> -imu/inv_mpu6050/          Parent-locked
->> +imu/inv_mpu6050/          Mux-locked
->>
->>  In drivers/media/
->>  dvb-frontends/m88ds3103   Parent-locked
->> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
->> index 0d429d788106..71ad31a275c9 100644
->> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
->> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
->> @@ -24,45 +24,16 @@ static const struct regmap_config inv_mpu_regmap_config = {
->>       .val_bits = 8,
->>  };
->>
->> -/*
->> - * The i2c read/write needs to happen in unlocked mode. As the parent
->> - * adapter is common. If we use locked versions, it will fail as
->> - * the mux adapter will lock the parent i2c adapter, while calling
->> - * select/deselect functions.
->> - */
->> -static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
->> -                                       u8 reg, u8 d)
->> -{
->> -     int ret;
->> -     u8 buf[2] = {reg, d};
->> -     struct i2c_msg msg[1] = {
->> -             {
->> -                     .addr = client->addr,
->> -                     .flags = 0,
->> -                     .len = sizeof(buf),
->> -                     .buf = buf,
->> -             }
->> -     };
->> -
->> -     ret = __i2c_transfer(client->adapter, msg, 1);
->> -     if (ret != 1)
->> -             return ret;
->> -
->> -     return 0;
->> -}
->> -
->>  static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
->>  {
->> -     struct i2c_client *client = i2c_mux_priv(muxc);
->> -     struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
->> +     struct iio_dev *indio_dev = i2c_mux_priv(muxc);
->>       struct inv_mpu6050_state *st = iio_priv(indio_dev);
->>       int ret = 0;
->>
->>       /* Use the same mutex which was used everywhere to protect power-op */
->>       mutex_lock(&indio_dev->mlock);
->>       if (!st->powerup_count) {
->> -             ret = inv_mpu6050_write_reg_unlocked(client,
->> -                                                  st->reg->pwr_mgmt_1, 0);
->> +             ret = regmap_write(st->map, st->reg->pwr_mgmt_1, 0);
->>               if (ret)
->>                       goto write_error;
->>
->> @@ -71,10 +42,9 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
->>       }
->>       if (!ret) {
->>               st->powerup_count++;
->> -             ret = inv_mpu6050_write_reg_unlocked(client,
->> -                                                  st->reg->int_pin_cfg,
->> -                                                  INV_MPU6050_INT_PIN_CFG |
->> -                                                  INV_MPU6050_BIT_BYPASS_EN);
->> +             ret = regmap_write(st->map, st->reg->int_pin_cfg,
->> +                                INV_MPU6050_INT_PIN_CFG |
->> +                                INV_MPU6050_BIT_BYPASS_EN);
->>       }
->>  write_error:
->>       mutex_unlock(&indio_dev->mlock);
->> @@ -84,18 +54,16 @@ write_error:
->>
->>  static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
->>  {
->> -     struct i2c_client *client = i2c_mux_priv(muxc);
->> -     struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
->> +     struct iio_dev *indio_dev = i2c_mux_priv(muxc);
->>       struct inv_mpu6050_state *st = iio_priv(indio_dev);
->>
->>       mutex_lock(&indio_dev->mlock);
->>       /* It doesn't really mattter, if any of the calls fails */
->> -     inv_mpu6050_write_reg_unlocked(client, st->reg->int_pin_cfg,
->> -                                    INV_MPU6050_INT_PIN_CFG);
->> +     regmap_write(st->map, st->reg->int_pin_cfg, INV_MPU6050_INT_PIN_CFG);
->>       st->powerup_count--;
->>       if (!st->powerup_count)
->> -             inv_mpu6050_write_reg_unlocked(client, st->reg->pwr_mgmt_1,
->> -                                            INV_MPU6050_BIT_SLEEP);
->> +             regmap_write(st->map, st->reg->pwr_mgmt_1,
->> +                          INV_MPU6050_BIT_SLEEP);
->>       mutex_unlock(&indio_dev->mlock);
->>
->>       return 0;
->> @@ -133,15 +101,15 @@ static int inv_mpu_probe(struct i2c_client *client,
->>               return result;
->>
->>       st = iio_priv(dev_get_drvdata(&client->dev));
->> -     st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
->> -                                    0, 0, 0,
->> +     st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0,
->> +                                    I2C_MUX_LOCKED, 0, 0, 0,
->>                                      inv_mpu6050_select_bypass,
->>                                      inv_mpu6050_deselect_bypass);
->>       if (IS_ERR(st->muxc)) {
->>               result = PTR_ERR(st->muxc);
->>               goto out_unreg_device;
->>       }
->> -     st->muxc->priv = client;
->> +     st->muxc->priv = dev_get_drvdata(&client->dev);
->>
->>       result = inv_mpu_acpi_create_mux_client(client);
->>       if (result)
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
