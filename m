@@ -1,120 +1,105 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:18586 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752506AbcDSMC0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Apr 2016 08:02:26 -0400
+Return-Path: <leonard.crestez@intel.com>
+Subject: Re: [PATCH v6 08/24] iio: imu: inv_mpu6050: convert to use an
+ explicit i2c mux core
+To: Peter Rosin <peda@lysator.liu.se>, linux-kernel@vger.kernel.org
+References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se>
+ <1459673574-11440-9-git-send-email-peda@lysator.liu.se>
+Cc: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+ Jonathan Corbet <corbet@lwn.net>, Peter Korsgaard
+ <peter.korsgaard@barco.com>, Guenter Roeck <linux@roeck-us.net>,
+ Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Antti Palosaari <crope@iki.fi>,
+ Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+ Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
+ Grant Likely <grant.likely@linaro.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "David S. Miller" <davem@davemloft.net>, Kalle Valo <kvalo@codeaurora.org>,
+ Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>,
+ Daniel Baluta <daniel.baluta@intel.com>,
+ Adriana Reus <adriana.reus@intel.com>,
+ Lucas De Marchi <lucas.demarchi@intel.com>,
+ Matt Ranostay <matt.ranostay@intel.com>,
+ Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+ Terry Heo <terryheo@google.com>, Hans Verkuil <hans.verkuil@cisco.com>,
+ Arnd Bergmann <arnd@arndb.de>, Tommi Rantala <tt.rantala@gmail.com>,
+ linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+ devicetree@vger.kernel.org
 From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Denis Ciocca <denis.ciocca@st.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Giuseppe Barba <giuseppe.barba@st.com>
-Subject: [PATCH] iio: st_gyro: Add lsm9ds0-gyro support
-Date: Tue, 19 Apr 2016 15:02:11 +0300
-Message-Id: <ac4fe7acfefefbb33219fc395838443c00bce8ba.1461067167.git.leonard.crestez@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-ID: <57165593.4040700@intel.com>
+Date: Tue, 19 Apr 2016 18:58:11 +0300
+MIME-Version: 1.0
+In-Reply-To: <1459673574-11440-9-git-send-email-peda@lysator.liu.se>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-This device has an identical interface to other supported sensors and the patch
-only adds IDs.
+On 04/03/2016 11:52 AM, Peter Rosin wrote:
+> From: Peter Rosin <peda@axentia.se>
+> 
+> Allocate an explicit i2c mux core to handle parent and child adapters
+> etc. Update the select/deselect ops to be in terms of the i2c mux core
+> instead of the child adapter.
+> 
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> @@ -136,16 +133,15 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  		return result;
+>  
+>  	st = iio_priv(dev_get_drvdata(&client->dev));
+> -	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
+> -					      &client->dev,
+> -					      client,
+> -					      0, 0, 0,
+> -					      inv_mpu6050_select_bypass,
+> -					      inv_mpu6050_deselect_bypass);
+> -	if (!st->mux_adapter) {
+> -		result = -ENODEV;
+> +	st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0, 0,
+> +				       0, 0, 0,
+> +				       inv_mpu6050_select_bypass,
+> +				       inv_mpu6050_deselect_bypass);
+> +	if (IS_ERR(st->muxc)) {
+> +		result = PTR_ERR(st->muxc);
+>  		goto out_unreg_device;
+>  	}
+> +	st->muxc->priv = client;
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
- drivers/iio/gyro/Kconfig                             | 2 +-
- drivers/iio/gyro/st_gyro.h                           | 1 +
- drivers/iio/gyro/st_gyro_core.c                      | 1 +
- drivers/iio/gyro/st_gyro_i2c.c                       | 5 +++++
- drivers/iio/gyro/st_gyro_spi.c                       | 1 +
- 6 files changed, 10 insertions(+), 1 deletion(-)
+I just tested this patch on mpu9150 (combo mpu6050+ak8975) and I got a
+crash on probe which looks sort of like this:
 
-diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-index 637e283..5844cf7 100644
---- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-+++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-@@ -51,6 +51,7 @@ Gyroscopes:
- - st,l3gd20-gyro
- - st,l3g4is-gyro
- - st,lsm330-gyro
-+- st,lsm9ds0-gyro
- 
- Magnetometers:
- - st,lsm303agr-magn
-diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-index e816d29..205a844 100644
---- a/drivers/iio/gyro/Kconfig
-+++ b/drivers/iio/gyro/Kconfig
-@@ -93,7 +93,7 @@ config IIO_ST_GYRO_3AXIS
- 	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
- 	help
- 	  Say yes here to build support for STMicroelectronics gyroscopes:
--	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330.
-+	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330, LSM9DS0.
- 
- 	  This driver can also be built as a module. If so, these modules
- 	  will be created:
-diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
-index 5353d63..a5c5c4e 100644
---- a/drivers/iio/gyro/st_gyro.h
-+++ b/drivers/iio/gyro/st_gyro.h
-@@ -21,6 +21,7 @@
- #define L3GD20_GYRO_DEV_NAME		"l3gd20"
- #define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
- #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
-+#define LSM9DS0_GYRO_DEV_NAME		"lsm9ds0_gyro"
- 
- /**
-  * struct st_sensors_platform_data - gyro platform data
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index be9057e..52a3c87 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -204,6 +204,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
- 			[2] = LSM330DLC_GYRO_DEV_NAME,
- 			[3] = L3G4IS_GYRO_DEV_NAME,
- 			[4] = LSM330_GYRO_DEV_NAME,
-+			[5] = LSM9DS0_GYRO_DEV_NAME,
- 		},
- 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
- 		.odr = {
-diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-index 6848451..40056b8 100644
---- a/drivers/iio/gyro/st_gyro_i2c.c
-+++ b/drivers/iio/gyro/st_gyro_i2c.c
-@@ -48,6 +48,10 @@ static const struct of_device_id st_gyro_of_match[] = {
- 		.compatible = "st,lsm330-gyro",
- 		.data = LSM330_GYRO_DEV_NAME,
- 	},
-+	{
-+		.compatible = "st,lsm9ds0-gyro",
-+		.data = LSM9DS0_GYRO_DEV_NAME,
-+	},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, st_gyro_of_match);
-@@ -93,6 +97,7 @@ static const struct i2c_device_id st_gyro_id_table[] = {
- 	{ L3GD20_GYRO_DEV_NAME },
- 	{ L3G4IS_GYRO_DEV_NAME },
- 	{ LSM330_GYRO_DEV_NAME },
-+	{ LSM9DS0_GYRO_DEV_NAME },
- 	{},
- };
- MODULE_DEVICE_TABLE(i2c, st_gyro_id_table);
-diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-index d2b7a5f..fbf2fae 100644
---- a/drivers/iio/gyro/st_gyro_spi.c
-+++ b/drivers/iio/gyro/st_gyro_spi.c
-@@ -54,6 +54,7 @@ static const struct spi_device_id st_gyro_id_table[] = {
- 	{ L3GD20_GYRO_DEV_NAME },
- 	{ L3G4IS_GYRO_DEV_NAME },
- 	{ LSM330_GYRO_DEV_NAME },
-+	{ LSM9DS0_GYRO_DEV_NAME },
- 	{},
- };
- MODULE_DEVICE_TABLE(spi, st_gyro_id_table);
--- 
-2.5.5
+[    5.565374] RIP: 0010:[<ffffffff81481aed>] [<ffffffff81481aed>]
+mutex_lock+0xd/0x30
+[    5.565374] Call Trace:
+[    5.565374]  [<ffffffff813be34c>] inv_mpu6050_select_bypass+0x1c/0xa0
+...
+[    5.565374]  [<ffffffff81392141>] i2c_transfer+0x51/0x90
+...
+[    5.565374]  [<ffffffff81392cb5>] i2c_smbus_read_i2c_block_data+0x45/0xd0
+[    5.565374]  [<ffffffff813bec5a>] ak8975_probe+0x14a/0x5c0
+...
+[    5.565374]  [<ffffffff813933d8>] i2c_new_device+0x178/0x1e0
+[    5.565374]  [<ffffffff8139362d>] of_i2c_register_device+0xdd/0x1a0
+[    5.565374]  [<ffffffff8139372b>] of_i2c_register_devices+0x3b/0x60
+[    5.565374]  [<ffffffff81393e88>] i2c_register_adapter+0x178/0x410
+[    5.565374]  [<ffffffff81394203>] i2c_add_adapter+0x73/0x90
+[    5.565374]  [<ffffffff81395f3d>] i2c_mux_add_adapter+0x2ed/0x400
+[    5.565374]  [<ffffffff81396091>] i2c_mux_one_adapter+0x41/0x70
+[    5.565374]  [<ffffffff813be48a>] inv_mpu_probe+0xba/0x1a0
 
+This happens because muxc->priv is not initialized when probing devices
+behind the mux as described by devicetree. This can be easily fixed by
+using muxc->dev instead of muxc->priv, or perhaps by calling
+i2c_mux_alloc, initializing priv and later doing i2c_mux_add_adapter.
+
+These fixes are driver-specific and other drivers might experience
+similar issues. Perhaps i2c_mux_one_adapter should take void *priv just
+like old i2c_add_mux_adapter?
+
+After I fix this locally the deadlock when reading from both devices no
+longer happens.
+
+--
+Regards,
+Leonard
