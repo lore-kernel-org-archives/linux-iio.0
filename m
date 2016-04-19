@@ -1,59 +1,120 @@
-Return-Path: <leonard.crestez@intel.com>
-Subject: Re: [RFC] iio: st: Add lsm9ds0 support for gyro accel and magny
-To: Lucas De Marchi <lucas.de.marchi@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>
-References: <2bcce23e64d53f542a9436b11509b107d63cb8dc.1460573498.git.leonard.crestez@intel.com>
- <57137732.40507@kernel.org> <20160418060742.GA2981@beicxl1122>
- <5714B609.4020502@intel.com> <57153AC3.9020603@kernel.org>
- <CAKi4VAKExQPMFgFv+VGvqxGsu47aF1UxDtoExWWh5DXY36B=LA@mail.gmail.com>
-Cc: Denis Ciocca <denis.ciocca@st.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Giuseppe BARBA <giuseppe.barba@st.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Daniel Baluta <daniel.baluta@intel.com>, Peter Rosin <peda@lysator.liu.se>,
- Wolfram Sang <wsa@the-dreams.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:18586 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752506AbcDSMC0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 19 Apr 2016 08:02:26 -0400
 From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <57160E37.2040401@intel.com>
-Date: Tue, 19 Apr 2016 13:53:43 +0300
-MIME-Version: 1.0
-In-Reply-To: <CAKi4VAKExQPMFgFv+VGvqxGsu47aF1UxDtoExWWh5DXY36B=LA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Denis Ciocca <denis.ciocca@st.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	Giuseppe Barba <giuseppe.barba@st.com>
+Subject: [PATCH] iio: st_gyro: Add lsm9ds0-gyro support
+Date: Tue, 19 Apr 2016 15:02:11 +0300
+Message-Id: <ac4fe7acfefefbb33219fc395838443c00bce8ba.1461067167.git.leonard.crestez@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/19/2016 08:10 AM, Lucas De Marchi wrote:
-> On Mon, Apr 18, 2016 at 4:51 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 18/04/16 11:25, Crestez Dan Leonard wrote:
->>> On 04/18/2016 09:07 AM, Denis Ciocca wrote:
->>> Then st_combo_* implementation functions would forward to st_magn_* or
->>> st_accel_* depending on chan->type. Does this make sense?
->> Perhaps. If you have a short term need for this perhaps Denis and you can
->> work together to speed up what he has 'in the works' for this?
->> No point in duplicating work!
->>
->> The gyro element can go forward separately in the meantime.
-> 
-> Isn't LSM9DS0 just a package of LSM303D and L3GD20 that could reuse
-> the drivers already present?
+This device has an identical interface to other supported sensors and the patch
+only adds IDs.
 
-That doesn't seem to be mentioned in the datasheets but I guessed that
-is a repacking of existing devices.
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+---
+ Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
+ drivers/iio/gyro/Kconfig                             | 2 +-
+ drivers/iio/gyro/st_gyro.h                           | 1 +
+ drivers/iio/gyro/st_gyro_core.c                      | 1 +
+ drivers/iio/gyro/st_gyro_i2c.c                       | 5 +++++
+ drivers/iio/gyro/st_gyro_spi.c                       | 1 +
+ 6 files changed, 10 insertions(+), 1 deletion(-)
 
-The gyro part of the patch only adds IDs. It's ~10 lines spread around
-many files.
+diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+index 637e283..5844cf7 100644
+--- a/Documentation/devicetree/bindings/iio/st-sensors.txt
++++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+@@ -51,6 +51,7 @@ Gyroscopes:
+ - st,l3gd20-gyro
+ - st,l3g4is-gyro
+ - st,lsm330-gyro
++- st,lsm9ds0-gyro
+ 
+ Magnetometers:
+ - st,lsm303agr-magn
+diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+index e816d29..205a844 100644
+--- a/drivers/iio/gyro/Kconfig
++++ b/drivers/iio/gyro/Kconfig
+@@ -93,7 +93,7 @@ config IIO_ST_GYRO_3AXIS
+ 	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
+ 	help
+ 	  Say yes here to build support for STMicroelectronics gyroscopes:
+-	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330.
++	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330, LSM9DS0.
+ 
+ 	  This driver can also be built as a module. If so, these modules
+ 	  will be created:
+diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
+index 5353d63..a5c5c4e 100644
+--- a/drivers/iio/gyro/st_gyro.h
++++ b/drivers/iio/gyro/st_gyro.h
+@@ -21,6 +21,7 @@
+ #define L3GD20_GYRO_DEV_NAME		"l3gd20"
+ #define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
+ #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
++#define LSM9DS0_GYRO_DEV_NAME		"lsm9ds0_gyro"
+ 
+ /**
+  * struct st_sensors_platform_data - gyro platform data
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+index be9057e..52a3c87 100644
+--- a/drivers/iio/gyro/st_gyro_core.c
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -204,6 +204,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 			[2] = LSM330DLC_GYRO_DEV_NAME,
+ 			[3] = L3G4IS_GYRO_DEV_NAME,
+ 			[4] = LSM330_GYRO_DEV_NAME,
++			[5] = LSM9DS0_GYRO_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+ 		.odr = {
+diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
+index 6848451..40056b8 100644
+--- a/drivers/iio/gyro/st_gyro_i2c.c
++++ b/drivers/iio/gyro/st_gyro_i2c.c
+@@ -48,6 +48,10 @@ static const struct of_device_id st_gyro_of_match[] = {
+ 		.compatible = "st,lsm330-gyro",
+ 		.data = LSM330_GYRO_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lsm9ds0-gyro",
++		.data = LSM9DS0_GYRO_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_gyro_of_match);
+@@ -93,6 +97,7 @@ static const struct i2c_device_id st_gyro_id_table[] = {
+ 	{ L3GD20_GYRO_DEV_NAME },
+ 	{ L3G4IS_GYRO_DEV_NAME },
+ 	{ LSM330_GYRO_DEV_NAME },
++	{ LSM9DS0_GYRO_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_gyro_id_table);
+diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
+index d2b7a5f..fbf2fae 100644
+--- a/drivers/iio/gyro/st_gyro_spi.c
++++ b/drivers/iio/gyro/st_gyro_spi.c
+@@ -54,6 +54,7 @@ static const struct spi_device_id st_gyro_id_table[] = {
+ 	{ L3GD20_GYRO_DEV_NAME },
+ 	{ L3G4IS_GYRO_DEV_NAME },
+ 	{ LSM330_GYRO_DEV_NAME },
++	{ LSM9DS0_GYRO_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_gyro_id_table);
+-- 
+2.5.5
 
-For accel/magn parts there is a WHOAMI different from all others present
-and some registers also seem to be different. There doesn't seem to be
-explicit support for "LSM303D".
-
-I have no urgent need for this to work, I'm fine with waiting some time
-for st_sensor combo support.
-
-I can repost the gyro and accel+magn parts separately. But it's not
-clear that supporting an accel-only device would still make sense once
-combo support is available. So maybe I should just repost the gyro patch
-adding IDs?
-
-Regards,
-Leonard
