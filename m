@@ -1,94 +1,137 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60525 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751525AbcDRSzo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2016 14:55:44 -0400
-Subject: Re: [PATCH] iio:adc:at91-sama5d2: Repair crash on module removal
-To: Marek Vasut <marex@denx.de>, linux-iio@vger.kernel.org
-References: <1460997005-8786-1-git-send-email-marex@denx.de>
-Cc: Ludovic Desroches <ludovic.desroches@atmel.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57152DA8.8060106@kernel.org>
-Date: Mon, 18 Apr 2016 19:55:36 +0100
+Received: from mail.lysator.liu.se ([130.236.254.3]:44003 "EHLO
+	mail.lysator.liu.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753377AbcDSQiE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Apr 2016 12:38:04 -0400
+In-Reply-To: <57165593.4040700@intel.com>
+References: <1459673574-11440-1-git-send-email-peda@lysator.liu.se> <1459673574-11440-9-git-send-email-peda@lysator.liu.se> <57165593.4040700@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1460997005-8786-1-git-send-email-marex@denx.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH v6 08/24] iio: imu: inv_mpu6050: convert to use an explicit i2c mux core
+From: Peter Rosin <peda@lysator.liu.se>
+Date: Tue, 19 Apr 2016 18:37:41 +0200
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-kernel@vger.kernel.org
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Kalle Valo <kvalo@codeaurora.org>,
+	Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Terry Heo <terryheo@google.com>, Hans@lysator.liu.se,
+	Verkuil@lysator.liu.se
+Message-Id: <20160419163748.9129940005@mail.lysator.liu.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/04/16 17:30, Marek Vasut wrote:
-> The driver never calls platform_set_drvdata() , so platform_get_drvdata()
-> in .remove returns NULL and thus $indio_dev variable in .remove is NULL.
-> Then it's only a matter of dereferencing the indio_dev variable to make
-> the kernel blow as seen below. This patch adds the platform_set_drvdata()
-> call to fix the problem.
-> 
-> root@armhf:~# rmmod at91-sama5d2_adc
-> 
-> Unable to handle kernel NULL pointer dereference at virtual address 000001d4
-> pgd = dd57c000
-> [000001d4] *pgd=00000000
-> Internal error: Oops: 5 [#1] ARM
-> Modules linked in: at91_sama5d2_adc(-)
-> CPU: 0 PID: 1334 Comm: rmmod Not tainted 4.6.0-rc3-next-20160418+ #3
-> Hardware name: Atmel SAMA5
-> task: dd4fcc40 ti: de910000 task.ti: de910000
-> PC is at mutex_lock+0x4/0x24
-> LR is at iio_device_unregister+0x14/0x6c
-> pc : [<c05f4624>]    lr : [<c0471f74>]    psr: a00d0013
->                sp : de911f00  ip : 00000000  fp : be898bd8
-> r10: 00000000  r9 : de910000  r8 : c0107724
-> r7 : 00000081  r6 : bf001048  r5 : 000001d4  r4 : 00000000
-> r3 : bf000000  r2 : 00000000  r1 : 00000004  r0 : 000001d4
-> Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-> Control: 10c53c7d  Table: 3d57c059  DAC: 00000051
-> Process rmmod (pid: 1334, stack limit = 0xde910208)
-> Stack: (0xde911f00 to 0xde912000)
-> 1f00: bf000000 00000000 df5c7e10 bf000010 bf000000 df5c7e10 df5c7e10 c0351ca8
-> 1f20: c0351c84 df5c7e10 bf001048 c0350734 bf001048 df5c7e10 df5c7e44 c035087c
-> 1f40: bf001048 7f62dd4c 00000800 c034fb30 bf0010c0 c0158ee8 de910000 31397461
-> 1f60: 6d61735f 32643561 6364615f 00000000 de911f90 de910000 de910000 00000000
-> 1f80: de911fb0 10c53c7d de911f9c c05f33d8 de911fa0 00910000 be898ecb 7f62dd10
-> 1fa0: 00000000 c0107560 be898ecb 7f62dd10 7f62dd4c 00000800 6f844800 6f844800
-> 1fc0: be898ecb 7f62dd10 00000000 00000081 00000000 7f62dd10 be898bd8 be898bd8
-> 1fe0: b6eedab1 be898b6c 7f61056b b6eedab6 000d0030 7f62dd4c 00000000 00000000
-> [<c05f4624>] (mutex_lock) from [<c0471f74>] (iio_device_unregister+0x14/0x6c)
-> [<c0471f74>] (iio_device_unregister) from [<bf000010>] (at91_adc_remove+0x10/0x3c [at91_sama5d2_adc])
-> [<bf000010>] (at91_adc_remove [at91_sama5d2_adc]) from [<c0351ca8>] (platform_drv_remove+0x24/0x3c)
-> [<c0351ca8>] (platform_drv_remove) from [<c0350734>] (__device_release_driver+0x84/0x110)
-> [<c0350734>] (__device_release_driver) from [<c035087c>] (driver_detach+0x8c/0x90)
-> [<c035087c>] (driver_detach) from [<c034fb30>] (bus_remove_driver+0x4c/0xa0)
-> [<c034fb30>] (bus_remove_driver) from [<c0158ee8>] (SyS_delete_module+0x110/0x1d0)
-> [<c0158ee8>] (SyS_delete_module) from [<c0107560>] (ret_fast_syscall+0x0/0x3c)
-> Code: e3520001 1affffd5 eafffff4 f5d0f000 (e1902f9f)
-> ---[ end trace 86914d7ad3696fca ]---
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Ludovic Desroches <ludovic.desroches@atmel.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-Applied to the fixes-togreg branch and marked for stable.
+<hans.verkuil@cisco.com>,Arnd Bergmann <arnd@arndb.de>,Tommi Rantala <tt.rantala@gmail.com>,linux-i2c@vger.kernel.org,linux-doc@vger.kernel.org,linux-iio@vger.kernel.org,linux-media@vger.kernel.org,devicetree@vger.kernel.org
+Message-ID: <B09CD200-56D1-4BE0-B567-90CC23507ED5@lysator.liu.se>
 
-Thanks and oops :)
-
-Who removes modules anyway?
-
-Jonathan
-> ---
->  drivers/iio/adc/at91-sama5d2_adc.c | 2 ++
->  1 file changed, 2 insertions(+)
+On April 19, 2016 5:58:11 PM CEST, Crestez Dan Leonard <leonard.crestez@intel.com> wrote:
+> On 04/03/2016 11:52 AM, Peter Rosin wrote:
+> > From: Peter Rosin <peda@axentia.se>
+> > 
+> > Allocate an explicit i2c mux core to handle parent and child
+> adapters
+> > etc. Update the select/deselect ops to be in terms of the i2c mux
+> core
+> > instead of the child adapter.
+> > 
+> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> > @@ -136,16 +133,15 @@ static int inv_mpu_probe(struct i2c_client
+> *client,
+> >  		return result;
+> >  
+> >  	st = iio_priv(dev_get_drvdata(&client->dev));
+> > -	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
+> > -					      &client->dev,
+> > -					      client,
+> > -					      0, 0, 0,
+> > -					      inv_mpu6050_select_bypass,
+> > -					      inv_mpu6050_deselect_bypass);
+> > -	if (!st->mux_adapter) {
+> > -		result = -ENODEV;
+> > +	st->muxc = i2c_mux_one_adapter(client->adapter, &client->dev, 0,
+> 0,
+> > +				       0, 0, 0,
+> > +				       inv_mpu6050_select_bypass,
+> > +				       inv_mpu6050_deselect_bypass);
+> > +	if (IS_ERR(st->muxc)) {
+> > +		result = PTR_ERR(st->muxc);
+> >  		goto out_unreg_device;
+> >  	}
+> > +	st->muxc->priv = client;
 > 
-> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-> index 07adb10..e10dca3 100644
-> --- a/drivers/iio/adc/at91-sama5d2_adc.c
-> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-> @@ -497,6 +497,8 @@ static int at91_adc_probe(struct platform_device *pdev)
->  	if (ret)
->  		goto vref_disable;
->  
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0)
->  		goto per_clk_disable_unprepare;
+> I just tested this patch on mpu9150 (combo mpu6050+ak8975) and I got a
+> crash on probe which looks sort of like this:
 > 
+> [    5.565374] RIP: 0010:[<ffffffff81481aed>] [<ffffffff81481aed>]
+> mutex_lock+0xd/0x30
+> [    5.565374] Call Trace:
+> [    5.565374]  [<ffffffff813be34c>]
+> inv_mpu6050_select_bypass+0x1c/0xa0
+> ...
+> [    5.565374]  [<ffffffff81392141>] i2c_transfer+0x51/0x90
+> ...
+> [    5.565374]  [<ffffffff81392cb5>]
+> i2c_smbus_read_i2c_block_data+0x45/0xd0
+> [    5.565374]  [<ffffffff813bec5a>] ak8975_probe+0x14a/0x5c0
+> ...
+> [    5.565374]  [<ffffffff813933d8>] i2c_new_device+0x178/0x1e0
+> [    5.565374]  [<ffffffff8139362d>] of_i2c_register_device+0xdd/0x1a0
+> [    5.565374]  [<ffffffff8139372b>] of_i2c_register_devices+0x3b/0x60
+> [    5.565374]  [<ffffffff81393e88>] i2c_register_adapter+0x178/0x410
+> [    5.565374]  [<ffffffff81394203>] i2c_add_adapter+0x73/0x90
+> [    5.565374]  [<ffffffff81395f3d>] i2c_mux_add_adapter+0x2ed/0x400
+> [    5.565374]  [<ffffffff81396091>] i2c_mux_one_adapter+0x41/0x70
+> [    5.565374]  [<ffffffff813be48a>] inv_mpu_probe+0xba/0x1a0
+> 
+> This happens because muxc->priv is not initialized when probing
+> devices
+> behind the mux as described by devicetree. This can be easily fixed by
+> using muxc->dev instead of muxc->priv, or perhaps by calling
+> i2c_mux_alloc, initializing priv and later doing i2c_mux_add_adapter.
+> 
+> These fixes are driver-specific and other drivers might experience
+> similar issues. Perhaps i2c_mux_one_adapter should take void *priv
+> just
+> like old i2c_add_mux_adapter?
+> 
+> After I fix this locally the deadlock when reading from both devices
+> no
+> longer happens.
+> 
+> --
+> Regards,
+> Leonard
+
+Duh. Obvious now that you point it out. Thanks for catching this!
+
+I will just remove the i2c_mux_one_adapter interface for v7 and
+have the affected drivers do i2c_mux_alloc as a separate step
+(which was one of your suggested paths forward...)
+
+Thanks again, and sorry for the inconvenience,
+Peter
+
+(Written on my phone, sorry for crappy formatting)
 
