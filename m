@@ -1,58 +1,76 @@
-Return-Path: <denis.ciocca@st.com>
-Date: Tue, 19 Apr 2016 14:05:10 +0800
-From: Denis Ciocca <denis.ciocca@st.com>
-To: Lucas De Marchi <lucas.de.marchi@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-        Crestez Dan Leonard
-	<leonard.crestez@intel.com>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        Giuseppe BARBA <giuseppe.barba@st.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Hartmut Knaack
-	<knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter
- Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Daniel Baluta
-	<daniel.baluta@intel.com>,
-        Peter Rosin <peda@lysator.liu.se>, Wolfram Sang
-	<wsa@the-dreams.de>
-Subject: Re: [RFC] iio: st: Add lsm9ds0 support for gyro accel and magn
-Message-ID: <20160419060510.GB9712@beicxl1122>
-References: <2bcce23e64d53f542a9436b11509b107d63cb8dc.1460573498.git.leonard.crestez@intel.com>
- <57137732.40507@kernel.org>
- <20160418060742.GA2981@beicxl1122>
- <5714B609.4020502@intel.com>
- <57153AC3.9020603@kernel.org>
- <CAKi4VAKExQPMFgFv+VGvqxGsu47aF1UxDtoExWWh5DXY36B=LA@mail.gmail.com>
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, Denis Ciocca <denis.ciocca@st.com>, Linus Walleij
+	<linus.walleij@linaro.org>, Giuseppe Barba <giuseppe.barba@st.com>, Gregor
+ Boirie <gregor.boirie@parrot.com>
+Subject: [RFC PATCH v1 0/9] iio:st_sensors: fixes and lps22hb pressure sensor
+Date: Tue, 19 Apr 2016 11:18:31 +0200
+Message-ID: <cover.1461056711.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <CAKi4VAKExQPMFgFv+VGvqxGsu47aF1UxDtoExWWh5DXY36B=LA@mail.gmail.com>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Lucas,
+This preliminary patch series adds support for a new ST LPS22HB pressure sensor
+and introduce a few fixes related to st_pressure core and st_sensors triggered
+buffering.
+It is not meant to be reviewed for definitive inclusion as it touches too many
+drivers / devices I cannot test with.
+Note that as a few minor and more controversial patches (7, 8 and 9) might also
+be candidate for a seperate series.
 
-yup. Just need to add the lsm9ds0_gyro entry in the same table of l3gd20.
+Patch 2 makes st_pressure sensors compliant with ABI and fixes a few missing
+sampling gains. Scale / offset computation is modified to address all gains
+currently possible. It impacts LPS331AP, LPS001WP and LPS25H sensors.
+Please please please ! If anyone owning one of these could run some tests, I'd
+be glad to get some feedback since I have none of them.
 
-Thanks,
-Denis
+Patch 4 is a rework of the way st_sensors samples are stored in memory to comply
+with IIO expected alignment contraints (some st_pressure samples are 24 bits
+long). It is heavily based upon Linux Walleij' approach where each channel is
+captured individually. See http://www.spinics.net/lists/linux-iio/msg24028.html
+and http://www.spinics.net/lists/linux-iio/msg23598.html threads for more infos.
+This patch impacts all st_sensors.
+Please please please ! If anyone owning one of these could run some tests...
 
+Patch 5 enforces 32 bits storage alignment for 24 bits long st_pressure
+sampling channels.
+Patch 6 enables triggered buffering for st_pressure temperature channels. We
+need temperature samples to control on-board device temperature (noise and
+drift removal).
+Both patches impact st_pressure sensors mentionned above. Please please please !
+If anyone owning one of these could run some tests...
 
-On |19 Apr 16 @ 07:10|, Lucas De Marchi wrote:
-> On Mon, Apr 18, 2016 at 4:51 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> > On 18/04/16 11:25, Crestez Dan Leonard wrote:
-> >> On 04/18/2016 09:07 AM, Denis Ciocca wrote:
-> >> Then st_combo_* implementation functions would forward to st_magn_* or
-> >> st_accel_* depending on chan->type. Does this make sense?
-> > Perhaps. If you have a short term need for this perhaps Denis and you can
-> > work together to speed up what he has 'in the works' for this?
-> > No point in duplicating work!
-> >
-> > The gyro element can go forward separately in the meantime.
-> 
-> Isn't LSM9DS0 just a package of LSM303D and L3GD20 that could reuse
-> the drivers already present?
-> 
-> 
-> Lucas De Marchi
+Regards,
+gregor.
+
+Gregor Boirie (9):
+  iio:st_pressure:initial lps22hb sensor support
+  iio:st_pressure: fix sampling gains
+  iio:st_pressure: lps22hb temperature support
+  iio:st_sensors: align on storagebits boundaries
+  iio:st_pressure: align storagebits on power of 2
+  iio:st_pressure: temperature triggered buffering
+  iio:st_sensors: unexport st_sensors_get_buffer_element
+  iio:st_sensors: emulate SMBus block read if needed
+  iio:st_sensors: fix power regulator usage
+
+ .../devicetree/bindings/iio/st-sensors.txt         |   1 +
+ drivers/iio/accel/st_accel_core.c                  |  12 +-
+ drivers/iio/common/st_sensors/st_sensors_buffer.c  |  41 ++--
+ drivers/iio/common/st_sensors/st_sensors_core.c    |  31 ++-
+ drivers/iio/common/st_sensors/st_sensors_i2c.c     |   4 +-
+ drivers/iio/gyro/st_gyro_core.c                    |  12 +-
+ drivers/iio/magnetometer/st_magn_core.c            |  12 +-
+ drivers/iio/pressure/Kconfig                       |   2 +-
+ drivers/iio/pressure/st_pressure.h                 |   1 +
+ drivers/iio/pressure/st_pressure_core.c            | 250 ++++++++++++++++-----
+ drivers/iio/pressure/st_pressure_i2c.c             |   4 +
+ drivers/iio/pressure/st_pressure_spi.c             |   1 +
+ include/linux/iio/common/st_sensors.h              |   4 +-
+ 13 files changed, 278 insertions(+), 97 deletions(-)
+
+-- 
+2.1.4
