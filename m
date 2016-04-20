@@ -2,12 +2,11 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mail-db3on0144.outbound.protection.outlook.com ([157.55.234.144]:48427
 	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752378AbcDTPf7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 20 Apr 2016 11:35:59 -0400
+	id S1752270AbcDTPf4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 20 Apr 2016 11:35:56 -0400
 From: Peter Rosin <peda@axentia.se>
 To: <linux-kernel@vger.kernel.org>
-CC: Antti Palosaari <crope@iki.fi>, Peter Rosin <peda@axentia.se>,
-	Wolfram Sang <wsa@the-dreams.de>,
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	Jonathan Corbet <corbet@lwn.net>,
 	Peter Korsgaard <peter.korsgaard@barco.com>,
 	Guenter Roeck <linux@roeck-us.net>,
@@ -15,6 +14,7 @@ CC: Antti Palosaari <crope@iki.fi>, Peter Rosin <peda@axentia.se>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
 	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
 	Rob Herring <robh+dt@kernel.org>,
 	Frank Rowand <frowand.list@gmail.com>,
@@ -36,9 +36,9 @@ CC: Antti Palosaari <crope@iki.fi>, Peter Rosin <peda@axentia.se>,
 	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
 	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v7 21/24] [media] si2168: change the i2c gate to be mux-locked
-Date: Wed, 20 Apr 2016 17:18:01 +0200
-Message-ID: <1461165484-2314-22-git-send-email-peda@axentia.se>
+Subject: [PATCH v7 20/24] iio: imu: inv_mpu6050: change the i2c gate to be mux-locked
+Date: Wed, 20 Apr 2016 17:18:00 +0200
+Message-ID: <1461165484-2314-21-git-send-email-peda@axentia.se>
 In-Reply-To: <1461165484-2314-1-git-send-email-peda@axentia.se>
 References: <1461165484-2314-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
@@ -46,212 +46,170 @@ Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Antti Palosaari <crope@iki.fi>
-
 The root i2c adapter lock is then no longer held by the i2c mux during
 accesses behind the i2c gate, and such accesses need to take that lock
 just like any other ordinary i2c accesses do.
 
 So, declare the i2c gate mux-locked, and zap the code that makes the
-i2c accesses unlocked. But add a mutex so that firmware commands are
-still serialized.
+unlocked i2c accesses and just use ordinary regmap_write accesses.
 
-Signed-off-by: Antti Palosaari <crope@iki.fi>
+This also happens to fix the deadlock described in
+http://patchwork.ozlabs.org/patch/584776/ authored by
+Adriana Reus <adriana.reus@intel.com> and submitted by
+Daniel Baluta <daniel.baluta@intel.com>
+
+----------8<----------
+iio: imu: inv_mpu6050: Fix deadlock between i2c adapter lock and mpu lock
+
+This deadlock occurs if the accel/gyro and the sensor on the auxiliary
+I2C (in my setup it's an ak8975) are working at the same time.
+
+Scenario:
+
+      T1					T2
+     ====				       ====
+inv_mpu6050_read_fifo                  aux sensor op (eg. ak8975_read_raw)
+        |                                     |
+mutex_lock(&indio_dev->mlock)           i2c_transfer
+        |                                     |
+i2c transaction                         i2c adapter lock
+        |                                     |
+i2c adapter lock                        i2c_mux_master_xfer
+                                              |
+                                        inv_mpu6050_select_bypass
+                                              |
+                                        mutex_lock(&indio_dev->mlock)
+
+When we operate on an mpu sensor the order of locking is mpu lock
+followed by the i2c adapter lock. However, when we operate the auxiliary
+sensor the order of locking is the other way around.
+
+...
+----------8<----------
+
+The reason this patch fixes the deadlock is that T2 does not grab the
+i2c adapter lock until the very end (and grabs the newfangled i2c mux
+lock where it previously grabbed the i2c adapter lock).
+
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
  Documentation/i2c/i2c-topology            |  2 +-
- drivers/media/dvb-frontends/si2168.c      | 83 ++++++++-----------------------
- drivers/media/dvb-frontends/si2168_priv.h |  1 +
- 3 files changed, 22 insertions(+), 64 deletions(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 52 ++++++-------------------------
+ 2 files changed, 11 insertions(+), 43 deletions(-)
 
 diff --git a/Documentation/i2c/i2c-topology b/Documentation/i2c/i2c-topology
-index 69b008518454..5e40802f0be2 100644
+index 27bfd682808d..69b008518454 100644
 --- a/Documentation/i2c/i2c-topology
 +++ b/Documentation/i2c/i2c-topology
-@@ -56,7 +56,7 @@ In drivers/media/
+@@ -50,7 +50,7 @@ i2c-mux-pinctrl           Normally parent-locked, mux-locked iff
+ i2c-mux-reg               Parent-locked
+ 
+ In drivers/iio/
+-imu/inv_mpu6050/          Parent-locked
++imu/inv_mpu6050/          Mux-locked
+ 
+ In drivers/media/
  dvb-frontends/m88ds3103   Parent-locked
- dvb-frontends/rtl2830     Parent-locked
- dvb-frontends/rtl2832     Parent-locked
--dvb-frontends/si2168      Parent-locked
-+dvb-frontends/si2168      Mux-locked
- usb/cx231xx/              Parent-locked
- 
- 
-diff --git a/drivers/media/dvb-frontends/si2168.c b/drivers/media/dvb-frontends/si2168.c
-index 5583827c386e..108a069fa1ae 100644
---- a/drivers/media/dvb-frontends/si2168.c
-+++ b/drivers/media/dvb-frontends/si2168.c
-@@ -18,53 +18,23 @@
- 
- static const struct dvb_frontend_ops si2168_ops;
- 
--/* Own I2C adapter locking is needed because of I2C gate logic. */
--static int si2168_i2c_master_send_unlocked(const struct i2c_client *client,
--					   const char *buf, int count)
--{
--	int ret;
--	struct i2c_msg msg = {
--		.addr = client->addr,
--		.flags = 0,
--		.len = count,
--		.buf = (char *)buf,
--	};
--
--	ret = __i2c_transfer(client->adapter, &msg, 1);
--	return (ret == 1) ? count : ret;
--}
--
--static int si2168_i2c_master_recv_unlocked(const struct i2c_client *client,
--					   char *buf, int count)
--{
--	int ret;
--	struct i2c_msg msg = {
--		.addr = client->addr,
--		.flags = I2C_M_RD,
--		.len = count,
--		.buf = buf,
--	};
--
--	ret = __i2c_transfer(client->adapter, &msg, 1);
--	return (ret == 1) ? count : ret;
--}
--
- /* execute firmware command */
--static int si2168_cmd_execute_unlocked(struct i2c_client *client,
--				       struct si2168_cmd *cmd)
-+static int si2168_cmd_execute(struct i2c_client *client, struct si2168_cmd *cmd)
- {
-+	struct si2168_dev *dev = i2c_get_clientdata(client);
- 	int ret;
- 	unsigned long timeout;
- 
-+	mutex_lock(&dev->i2c_mutex);
-+
- 	if (cmd->wlen) {
- 		/* write cmd and args for firmware */
--		ret = si2168_i2c_master_send_unlocked(client, cmd->args,
--						      cmd->wlen);
-+		ret = i2c_master_send(client, cmd->args, cmd->wlen);
- 		if (ret < 0) {
--			goto err;
-+			goto err_mutex_unlock;
- 		} else if (ret != cmd->wlen) {
- 			ret = -EREMOTEIO;
--			goto err;
-+			goto err_mutex_unlock;
- 		}
- 	}
- 
-@@ -73,13 +43,12 @@ static int si2168_cmd_execute_unlocked(struct i2c_client *client,
- 		#define TIMEOUT 70
- 		timeout = jiffies + msecs_to_jiffies(TIMEOUT);
- 		while (!time_after(jiffies, timeout)) {
--			ret = si2168_i2c_master_recv_unlocked(client, cmd->args,
--							      cmd->rlen);
-+			ret = i2c_master_recv(client, cmd->args, cmd->rlen);
- 			if (ret < 0) {
--				goto err;
-+				goto err_mutex_unlock;
- 			} else if (ret != cmd->rlen) {
- 				ret = -EREMOTEIO;
--				goto err;
-+				goto err_mutex_unlock;
- 			}
- 
- 			/* firmware ready? */
-@@ -94,32 +63,23 @@ static int si2168_cmd_execute_unlocked(struct i2c_client *client,
- 		/* error bit set? */
- 		if ((cmd->args[0] >> 6) & 0x01) {
- 			ret = -EREMOTEIO;
--			goto err;
-+			goto err_mutex_unlock;
- 		}
- 
- 		if (!((cmd->args[0] >> 7) & 0x01)) {
- 			ret = -ETIMEDOUT;
--			goto err;
-+			goto err_mutex_unlock;
- 		}
- 	}
- 
-+	mutex_unlock(&dev->i2c_mutex);
- 	return 0;
--err:
-+err_mutex_unlock:
-+	mutex_unlock(&dev->i2c_mutex);
- 	dev_dbg(&client->dev, "failed=%d\n", ret);
- 	return ret;
- }
- 
--static int si2168_cmd_execute(struct i2c_client *client, struct si2168_cmd *cmd)
--{
--	int ret;
--
--	i2c_lock_adapter(client->adapter);
--	ret = si2168_cmd_execute_unlocked(client, cmd);
--	i2c_unlock_adapter(client->adapter);
--
--	return ret;
--}
--
- static int si2168_read_status(struct dvb_frontend *fe, enum fe_status *status)
- {
- 	struct i2c_client *client = fe->demodulator_priv;
-@@ -610,11 +570,6 @@ static int si2168_get_tune_settings(struct dvb_frontend *fe,
- 	return 0;
- }
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index 664a45082d39..2c4188db8634 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -24,45 +24,16 @@ static const struct regmap_config inv_mpu_regmap_config = {
+ 	.val_bits = 8,
+ };
  
 -/*
-- * I2C gate logic
-- * We must use unlocked I2C I/O because I2C adapter lock is already taken
-- * by the caller (usually tuner driver).
+- * The i2c read/write needs to happen in unlocked mode. As the parent
+- * adapter is common. If we use locked versions, it will fail as
+- * the mux adapter will lock the parent i2c adapter, while calling
+- * select/deselect functions.
 - */
- static int si2168_select(struct i2c_mux_core *muxc, u32 chan)
+-static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
+-					  u8 reg, u8 d)
+-{
+-	int ret;
+-	u8 buf[2] = {reg, d};
+-	struct i2c_msg msg[1] = {
+-		{
+-			.addr = client->addr,
+-			.flags = 0,
+-			.len = sizeof(buf),
+-			.buf = buf,
+-		}
+-	};
+-
+-	ret = __i2c_transfer(client->adapter, msg, 1);
+-	if (ret != 1)
+-		return ret;
+-
+-	return 0;
+-}
+-
+ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
  {
- 	struct i2c_client *client = i2c_mux_priv(muxc);
-@@ -625,7 +580,7 @@ static int si2168_select(struct i2c_mux_core *muxc, u32 chan)
- 	memcpy(cmd.args, "\xc0\x0d\x01", 3);
- 	cmd.wlen = 3;
- 	cmd.rlen = 0;
--	ret = si2168_cmd_execute_unlocked(client, &cmd);
-+	ret = si2168_cmd_execute(client, &cmd);
- 	if (ret)
- 		goto err;
+-	struct i2c_client *client = i2c_mux_priv(muxc);
+-	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
++	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 	int ret = 0;
  
-@@ -645,7 +600,7 @@ static int si2168_deselect(struct i2c_mux_core *muxc, u32 chan)
- 	memcpy(cmd.args, "\xc0\x0d\x00", 3);
- 	cmd.wlen = 3;
- 	cmd.rlen = 0;
--	ret = si2168_cmd_execute_unlocked(client, &cmd);
-+	ret = si2168_cmd_execute(client, &cmd);
- 	if (ret)
- 		goto err;
+ 	/* Use the same mutex which was used everywhere to protect power-op */
+ 	mutex_lock(&indio_dev->mlock);
+ 	if (!st->powerup_count) {
+-		ret = inv_mpu6050_write_reg_unlocked(client,
+-						     st->reg->pwr_mgmt_1, 0);
++		ret = regmap_write(st->map, st->reg->pwr_mgmt_1, 0);
+ 		if (ret)
+ 			goto write_error;
  
-@@ -708,9 +663,11 @@ static int si2168_probe(struct i2c_client *client,
- 		goto err;
+@@ -71,10 +42,9 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
  	}
+ 	if (!ret) {
+ 		st->powerup_count++;
+-		ret = inv_mpu6050_write_reg_unlocked(client,
+-						     st->reg->int_pin_cfg,
+-						     INV_MPU6050_INT_PIN_CFG |
+-						     INV_MPU6050_BIT_BYPASS_EN);
++		ret = regmap_write(st->map, st->reg->int_pin_cfg,
++				   INV_MPU6050_INT_PIN_CFG |
++				   INV_MPU6050_BIT_BYPASS_EN);
+ 	}
+ write_error:
+ 	mutex_unlock(&indio_dev->mlock);
+@@ -84,18 +54,16 @@ write_error:
  
-+	mutex_init(&dev->i2c_mutex);
-+
- 	/* create mux i2c adapter for tuner */
- 	dev->muxc = i2c_mux_alloc(client->adapter, &client->dev,
--				  1, 0, 0,
-+				  1, 0, I2C_MUX_LOCKED,
- 				  si2168_select, si2168_deselect);
- 	if (!dev->muxc) {
- 		ret = -ENOMEM;
-diff --git a/drivers/media/dvb-frontends/si2168_priv.h b/drivers/media/dvb-frontends/si2168_priv.h
-index 165bf1412063..8a1f36d2014d 100644
---- a/drivers/media/dvb-frontends/si2168_priv.h
-+++ b/drivers/media/dvb-frontends/si2168_priv.h
-@@ -29,6 +29,7 @@
+ static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct i2c_client *client = i2c_mux_priv(muxc);
+-	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
++	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
  
- /* state struct */
- struct si2168_dev {
-+	struct mutex i2c_mutex;
- 	struct i2c_mux_core *muxc;
- 	struct dvb_frontend fe;
- 	enum fe_delivery_system delivery_system;
+ 	mutex_lock(&indio_dev->mlock);
+ 	/* It doesn't really mattter, if any of the calls fails */
+-	inv_mpu6050_write_reg_unlocked(client, st->reg->int_pin_cfg,
+-				       INV_MPU6050_INT_PIN_CFG);
++	regmap_write(st->map, st->reg->int_pin_cfg, INV_MPU6050_INT_PIN_CFG);
+ 	st->powerup_count--;
+ 	if (!st->powerup_count)
+-		inv_mpu6050_write_reg_unlocked(client, st->reg->pwr_mgmt_1,
+-					       INV_MPU6050_BIT_SLEEP);
++		regmap_write(st->map, st->reg->pwr_mgmt_1,
++			     INV_MPU6050_BIT_SLEEP);
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+ 	return 0;
+@@ -134,7 +102,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 
+ 	st = iio_priv(dev_get_drvdata(&client->dev));
+ 	st->muxc = i2c_mux_alloc(client->adapter, &client->dev,
+-				 1, 0, 0,
++				 1, 0, I2C_MUX_LOCKED,
+ 				 inv_mpu6050_select_bypass,
+ 				 inv_mpu6050_deselect_bypass);
+ 	if (!st->muxc) {
 -- 
 2.1.4
 
