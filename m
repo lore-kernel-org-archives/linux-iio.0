@@ -1,75 +1,116 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.24]:58485 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751658AbcDUUMX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2016 16:12:23 -0400
-From: Stefan Wahren <stefan.wahren@i2se.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mga11.intel.com ([192.55.52.93]:46766 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932186AbcDTNPf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 20 Apr 2016 09:15:35 -0400
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Marek Vasut <marex@denx.de>
-Cc: Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH RFT V2 1/3] iio: mxs-lradc: simplify TS registration
-Date: Thu, 21 Apr 2016 20:11:16 +0000
-Message-Id: <1461269478-449-2-git-send-email-stefan.wahren@i2se.com>
-In-Reply-To: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com>
-References: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com>
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH 3/5] iio: inv_mpu6050: Check WHO_AM_I register on probe
+Date: Wed, 20 Apr 2016 16:15:11 +0300
+Message-Id: <de4fc83c1c049176bbea7eeb4617166df593dcee.1461156671.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1461156671.git.leonard.crestez@intel.com>
+References: <cover.1461156671.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1461156671.git.leonard.crestez@intel.com>
+References: <cover.1461156671.git.leonard.crestez@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch simplifies the TS registration of mxs-lradc by
-using devm_input_allocate_device.
+This can be used to distinguish mpu6500. This is a warning rather than
+an error because the differences are mostly irrelevant and it's nice to
+avoid breaking users with slightly incorrect ACPI/DT.
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
- drivers/iio/adc/mxs-lradc.c |    9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 15 +++++++++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  8 ++++++++
+ 2 files changed, 23 insertions(+)
 
-diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-index ad26da1..223650b 100644
---- a/drivers/iio/adc/mxs-lradc.c
-+++ b/drivers/iio/adc/mxs-lradc.c
-@@ -1120,12 +1120,11 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index faccabafc..273b7fa7 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -91,16 +91,19 @@ static const struct inv_mpu6050_chip_config chip_config_6050 = {
+ /* Indexed by enum inv_devices */
+ static const struct inv_mpu6050_hw hw_info[] = {
+ 	{
++		.whoami = INV_MPU6050_WHOAMI_VALUE,
+ 		.name = "MPU6050",
+ 		.reg = &reg_set_6050,
+ 		.config = &chip_config_6050,
+ 	},
+ 	{
++		.whoami = INV_MPU6500_WHOAMI_VALUE,
+ 		.name = "MPU6500",
+ 		.reg = &reg_set_6500,
+ 		.config = &chip_config_6050,
+ 	},
+ 	{
++		.whoami = INV_MPU6000_WHOAMI_VALUE,
+ 		.name = "MPU6000",
+ 		.reg = &reg_set_6050,
+ 		.config = &chip_config_6050,
+@@ -730,6 +733,7 @@ static const struct iio_info mpu_info = {
+ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
  {
- 	struct input_dev *input;
- 	struct device *dev = lradc->dev;
--	int ret;
+ 	int result;
++	unsigned int regval;
  
- 	if (!lradc->use_touchscreen)
- 		return 0;
+ 	st->hw  = &hw_info[st->chip_type];
+ 	st->reg = hw_info[st->chip_type].reg;
+@@ -740,6 +744,17 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
+ 	if (result)
+ 		return result;
+ 	msleep(INV_MPU6050_POWER_UP_TIME);
++
++	/* check chip self-identification */
++	result = regmap_read(st->map, INV_MPU6050_REG_WHOAMI, &regval);
++	if (result)
++		return result;
++	if (regval != st->hw->whoami) {
++		dev_warn(regmap_get_device(st->map),
++				"whoami mismatch got %#02x expected %#02hhx for %s\n",
++				regval, st->hw->whoami, st->hw->name);
++	}
++
+ 	/*
+ 	 * toggle power state. After reset, the sleep bit could be on
+ 	 * or off depending on the OTP settings. Toggling power would
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index c66dbfc..564cabd 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -93,11 +93,13 @@ struct inv_mpu6050_chip_config {
  
--	input = input_allocate_device();
-+	input = devm_input_allocate_device(dev);
- 	if (!input)
- 		return -ENOMEM;
+ /**
+  *  struct inv_mpu6050_hw - Other important hardware information.
++ *  @whoami:	Self identification byte from WHO_AM_I register
+  *  @name:      name of the chip.
+  *  @reg:   register map of the chip.
+  *  @config:    configuration of the chip.
+  */
+ struct inv_mpu6050_hw {
++	u8 whoami;
+ 	u8 *name;
+ 	const struct inv_mpu6050_reg_map *reg;
+ 	const struct inv_mpu6050_chip_config *config;
+@@ -213,6 +215,12 @@ struct inv_mpu6050_state {
+ #define INV_MPU6050_MIN_FIFO_RATE            4
+ #define INV_MPU6050_ONE_K_HZ                 1000
  
-@@ -1146,11 +1145,8 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
- 
- 	lradc->ts_input = input;
- 	input_set_drvdata(input, lradc);
--	ret = input_register_device(input);
--	if (ret)
--		input_free_device(lradc->ts_input);
- 
--	return ret;
-+	return input_register_device(input);
- }
- 
- static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
-@@ -1159,7 +1155,6 @@ static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
- 		return;
- 
- 	mxs_lradc_disable_ts(lradc);
--	input_unregister_device(lradc->ts_input);
- }
- 
- /*
++#define INV_MPU6050_REG_WHOAMI			117
++
++#define INV_MPU6000_WHOAMI_VALUE		0x68
++#define INV_MPU6050_WHOAMI_VALUE		0x68
++#define INV_MPU6500_WHOAMI_VALUE		0x70
++
+ /* scan element definition */
+ enum inv_mpu6050_scan {
+ 	INV_MPU6050_SCAN_ACCL_X,
 -- 
-1.7.9.5
+2.5.5
 
