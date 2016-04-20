@@ -20,9 +20,9 @@ CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
 	<linux-doc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>, Peter Rosin
 	<peda@lysator.liu.se>
-Subject: [PATCH v7 12/24] [media] si2168: convert to use an explicit i2c mux core
-Date: Wed, 20 Apr 2016 17:17:52 +0200
-Message-ID: <1461165484-2314-13-git-send-email-peda@axentia.se>
+Subject: [PATCH v7 14/24] of/unittest: convert to use an explicit i2c mux core
+Date: Wed, 20 Apr 2016 17:17:54 +0200
+Message-ID: <1461165484-2314-15-git-send-email-peda@axentia.se>
 In-Reply-To: <1461165484-2314-1-git-send-email-peda@axentia.se>
 References: <1461165484-2314-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
@@ -30,93 +30,95 @@ Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
 Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select/deselect ops to be in terms of the i2c mux core
-instead of the child adapter.
+etc. Update the select op to be in terms of the i2c mux core instead
+of the child adapter.
 
-Reviewed-by: Antti Palosaari <crope@iki.fi>
+Acked-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/media/dvb-frontends/si2168.c      | 25 +++++++++++++++----------
- drivers/media/dvb-frontends/si2168_priv.h |  2 +-
- 2 files changed, 16 insertions(+), 11 deletions(-)
+ drivers/of/unittest.c | 37 ++++++++++++-------------------------
+ 1 file changed, 12 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/media/dvb-frontends/si2168.c b/drivers/media/dvb-frontends/si2168.c
-index 821a8f481507..5583827c386e 100644
---- a/drivers/media/dvb-frontends/si2168.c
-+++ b/drivers/media/dvb-frontends/si2168.c
-@@ -615,9 +615,9 @@ static int si2168_get_tune_settings(struct dvb_frontend *fe,
-  * We must use unlocked I2C I/O because I2C adapter lock is already taken
-  * by the caller (usually tuner driver).
-  */
--static int si2168_select(struct i2c_adapter *adap, void *mux_priv, u32 chan)
-+static int si2168_select(struct i2c_mux_core *muxc, u32 chan)
- {
--	struct i2c_client *client = mux_priv;
-+	struct i2c_client *client = i2c_mux_priv(muxc);
- 	int ret;
- 	struct si2168_cmd cmd;
+diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+index e986e6ee52e0..c1ebbfb79453 100644
+--- a/drivers/of/unittest.c
++++ b/drivers/of/unittest.c
+@@ -1692,13 +1692,7 @@ static struct i2c_driver unittest_i2c_dev_driver = {
  
-@@ -635,9 +635,9 @@ err:
- 	return ret;
+ #if IS_BUILTIN(CONFIG_I2C_MUX)
+ 
+-struct unittest_i2c_mux_data {
+-	int nchans;
+-	struct i2c_adapter *adap[];
+-};
+-
+-static int unittest_i2c_mux_select_chan(struct i2c_adapter *adap,
+-			       void *client, u32 chan)
++static int unittest_i2c_mux_select_chan(struct i2c_mux_core *muxc, u32 chan)
+ {
+ 	return 0;
+ }
+@@ -1706,11 +1700,11 @@ static int unittest_i2c_mux_select_chan(struct i2c_adapter *adap,
+ static int unittest_i2c_mux_probe(struct i2c_client *client,
+ 		const struct i2c_device_id *id)
+ {
+-	int ret, i, nchans, size;
++	int ret, i, nchans;
+ 	struct device *dev = &client->dev;
+ 	struct i2c_adapter *adap = to_i2c_adapter(dev->parent);
+ 	struct device_node *np = client->dev.of_node, *child;
+-	struct unittest_i2c_mux_data *stm;
++	struct i2c_mux_core *muxc;
+ 	u32 reg, max_reg;
+ 
+ 	dev_dbg(dev, "%s for node @%s\n", __func__, np->full_name);
+@@ -1734,25 +1728,20 @@ static int unittest_i2c_mux_probe(struct i2c_client *client,
+ 		return -EINVAL;
+ 	}
+ 
+-	size = offsetof(struct unittest_i2c_mux_data, adap[nchans]);
+-	stm = devm_kzalloc(dev, size, GFP_KERNEL);
+-	if (!stm) {
+-		dev_err(dev, "Out of memory\n");
++	muxc = i2c_mux_alloc(adap, dev, nchans, 0, 0,
++			     unittest_i2c_mux_select_chan, NULL);
++	if (!muxc)
+ 		return -ENOMEM;
+-	}
+-	stm->nchans = nchans;
+ 	for (i = 0; i < nchans; i++) {
+-		stm->adap[i] = i2c_add_mux_adapter(adap, dev, client,
+-				0, i, 0, unittest_i2c_mux_select_chan, NULL);
+-		if (!stm->adap[i]) {
++		ret = i2c_mux_add_adapter(muxc, 0, i, 0);
++		if (ret) {
+ 			dev_err(dev, "Failed to register mux #%d\n", i);
+-			for (i--; i >= 0; i--)
+-				i2c_del_mux_adapter(stm->adap[i]);
++			i2c_mux_del_adapters(muxc);
+ 			return -ENODEV;
+ 		}
+ 	}
+ 
+-	i2c_set_clientdata(client, stm);
++	i2c_set_clientdata(client, muxc);
+ 
+ 	return 0;
+ };
+@@ -1761,12 +1750,10 @@ static int unittest_i2c_mux_remove(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+ 	struct device_node *np = client->dev.of_node;
+-	struct unittest_i2c_mux_data *stm = i2c_get_clientdata(client);
+-	int i;
++	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+ 
+ 	dev_dbg(dev, "%s for node @%s\n", __func__, np->full_name);
+-	for (i = stm->nchans - 1; i >= 0; i--)
+-		i2c_del_mux_adapter(stm->adap[i]);
++	i2c_mux_del_adapters(muxc);
+ 	return 0;
  }
  
--static int si2168_deselect(struct i2c_adapter *adap, void *mux_priv, u32 chan)
-+static int si2168_deselect(struct i2c_mux_core *muxc, u32 chan)
- {
--	struct i2c_client *client = mux_priv;
-+	struct i2c_client *client = i2c_mux_priv(muxc);
- 	int ret;
- 	struct si2168_cmd cmd;
- 
-@@ -709,17 +709,22 @@ static int si2168_probe(struct i2c_client *client,
- 	}
- 
- 	/* create mux i2c adapter for tuner */
--	dev->adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
--			client, 0, 0, 0, si2168_select, si2168_deselect);
--	if (dev->adapter == NULL) {
--		ret = -ENODEV;
-+	dev->muxc = i2c_mux_alloc(client->adapter, &client->dev,
-+				  1, 0, 0,
-+				  si2168_select, si2168_deselect);
-+	if (!dev->muxc) {
-+		ret = -ENOMEM;
- 		goto err_kfree;
- 	}
-+	dev->muxc->priv = client;
-+	ret = i2c_mux_add_adapter(dev->muxc, 0, 0, 0);
-+	if (ret)
-+		goto err_kfree;
- 
- 	/* create dvb_frontend */
- 	memcpy(&dev->fe.ops, &si2168_ops, sizeof(struct dvb_frontend_ops));
- 	dev->fe.demodulator_priv = client;
--	*config->i2c_adapter = dev->adapter;
-+	*config->i2c_adapter = dev->muxc->adapter[0];
- 	*config->fe = &dev->fe;
- 	dev->ts_mode = config->ts_mode;
- 	dev->ts_clock_inv = config->ts_clock_inv;
-@@ -743,7 +748,7 @@ static int si2168_remove(struct i2c_client *client)
- 
- 	dev_dbg(&client->dev, "\n");
- 
--	i2c_del_mux_adapter(dev->adapter);
-+	i2c_mux_del_adapters(dev->muxc);
- 
- 	dev->fe.ops.release = NULL;
- 	dev->fe.demodulator_priv = NULL;
-diff --git a/drivers/media/dvb-frontends/si2168_priv.h b/drivers/media/dvb-frontends/si2168_priv.h
-index c07e6fe2cb10..165bf1412063 100644
---- a/drivers/media/dvb-frontends/si2168_priv.h
-+++ b/drivers/media/dvb-frontends/si2168_priv.h
-@@ -29,7 +29,7 @@
- 
- /* state struct */
- struct si2168_dev {
--	struct i2c_adapter *adapter;
-+	struct i2c_mux_core *muxc;
- 	struct dvb_frontend fe;
- 	enum fe_delivery_system delivery_system;
- 	enum fe_status fe_status;
 -- 
 2.1.4
