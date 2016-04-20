@@ -1,116 +1,252 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:46766 "EHLO mga11.intel.com"
+Received: from mail.aswsp.com ([193.34.35.150]:11227 "EHLO mail.aswsp.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932186AbcDTNPf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 20 Apr 2016 09:15:35 -0400
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	id S1751179AbcDTRWf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 20 Apr 2016 13:22:35 -0400
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Matt Ranostay <mranostay@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH 3/5] iio: inv_mpu6050: Check WHO_AM_I register on probe
-Date: Wed, 20 Apr 2016 16:15:11 +0300
-Message-Id: <de4fc83c1c049176bbea7eeb4617166df593dcee.1461156671.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1461156671.git.leonard.crestez@intel.com>
-References: <cover.1461156671.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1461156671.git.leonard.crestez@intel.com>
-References: <cover.1461156671.git.leonard.crestez@intel.com>
+	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	Cristina Opriceana <cristina.opriceana@gmail.com>,
+	Varka Bhadram <varkabhadram@gmail.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Julia Lawall <Julia.Lawall@lip6.fr>,
+	Peter Rosin <peda@axentia.se>,
+	Leonard Crestez <leonard.crestez@intel.com>,
+	Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v1 1/3] iio:core: mounting matrix support
+Date: Wed, 20 Apr 2016 19:23:43 +0200
+Message-ID: <0910cde3dad40284f8aad9148a156c5ef54dacc4.1461170293.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1461170293.git.gregor.boirie@parrot.com>
+References: <cover.1461170293.git.gregor.boirie@parrot.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This can be used to distinguish mpu6500. This is a warning rather than
-an error because the differences are mostly irrelevant and it's nice to
-avoid breaking users with slightly incorrect ACPI/DT.
+Expose a rotation matrix to indicate userspace the chip placement with
+respect to the overall hardware system. This is needed to adjust
+coordinates sampled from a sensor chip when its position deviates from the
+main hardware system.
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+Final coordinates computation is delegated to userspace since:
+* computation may involve floating point arithmetics ;
+* it allows an application to combine adjustments with arbitrary
+  transformations.
+
+This 3 dimentional space rotation matrix is expressed as 3x3 array of
+strings to support floating point numbers. It may be retrieved from a
+"[<dir>_][<type>_]mount_matrix" sysfs attribute file. It is declared into a
+device / driver specific DTS property or platform data.
+
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 15 +++++++++++++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  8 ++++++++
- 2 files changed, 23 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 51 ++++++++++++++++++++
+ drivers/iio/industrialio-core.c         | 82 +++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h                 | 31 +++++++++++++
+ 3 files changed, 164 insertions(+)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index faccabafc..273b7fa7 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -91,16 +91,19 @@ static const struct inv_mpu6050_chip_config chip_config_6050 = {
- /* Indexed by enum inv_devices */
- static const struct inv_mpu6050_hw hw_info[] = {
- 	{
-+		.whoami = INV_MPU6050_WHOAMI_VALUE,
- 		.name = "MPU6050",
- 		.reg = &reg_set_6050,
- 		.config = &chip_config_6050,
- 	},
- 	{
-+		.whoami = INV_MPU6500_WHOAMI_VALUE,
- 		.name = "MPU6500",
- 		.reg = &reg_set_6500,
- 		.config = &chip_config_6050,
- 	},
- 	{
-+		.whoami = INV_MPU6000_WHOAMI_VALUE,
- 		.name = "MPU6000",
- 		.reg = &reg_set_6050,
- 		.config = &chip_config_6050,
-@@ -730,6 +733,7 @@ static const struct iio_info mpu_info = {
- static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
- {
- 	int result;
-+	unsigned int regval;
- 
- 	st->hw  = &hw_info[st->chip_type];
- 	st->reg = hw_info[st->chip_type].reg;
-@@ -740,6 +744,17 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
- 	if (result)
- 		return result;
- 	msleep(INV_MPU6050_POWER_UP_TIME);
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index f155eff..ba8df69 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1512,3 +1512,54 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw (unscaled no offset etc.) pH reading of a substance as a negative
+ 		base-10 logarithm of hydrodium ions in a litre of water.
 +
-+	/* check chip self-identification */
-+	result = regmap_read(st->map, INV_MPU6050_REG_WHOAMI, &regval);
-+	if (result)
-+		return result;
-+	if (regval != st->hw->whoami) {
-+		dev_warn(regmap_get_device(st->map),
-+				"whoami mismatch got %#02x expected %#02hhx for %s\n",
-+				regval, st->hw->whoami, st->hw->name);
++What:           /sys/bus/iio/devices/iio:deviceX/mount_matrix
++What:           /sys/bus/iio/devices/iio:deviceX/in_mount_matrix
++What:           /sys/bus/iio/devices/iio:deviceX/out_mount_matrix
++KernelVersion:  4.6
++Contact:        linux-iio@vger.kernel.org
++Description:
++		Mounting matrix for IIO sensors. This is a rotation matrix which
++		informs userspace about sensor chip's placement relative to the
++		main hardware it is mounted on.
++		Main hardware placement is defined according to the local
++		reference frame related to the physical quantity the sensor
++		measures.
++		Given that the rotation matrix is defined in a board specific
++		way (platform data and / or device-tree), the main hardware
++		reference frame definition is left to the implementor's choice
++		(see below for a magnetometer example).
++		Applications should apply this rotation matrix to samples so
++		that when main hardware reference frame is aligned onto local
++		reference frame, then sensor chip reference frame is also
++		perfectly aligned with it.
++		Matrix is a 3x3 unitary matrix and typically looks like
++		[0, 1, 0; 1, 0, 0; 0, 0, -1]. Identity matrix
++		[1, 0, 0; 0, 1, 0; 0, 0, 1] means sensor chip and main hardware
++		are perfectly aligned with each other.
++
++		For example, a mounting matrix for a magnetometer sensor informs
++		userspace about sensor chip's ORIENTATION relative to the main
++		hardware.
++		More specifically, main hardware orientation is defined with
++		respect to the LOCAL EARTH GEOMAGNETIC REFERENCE FRAME where :
++		* Y is in the ground plane and positive towards magnetic North ;
++		* X is in the ground plane, perpendicular to the North axis and
++		  positive towards the East ;
++		* Z is perpendicular to the ground plane and positive upwards.
++
++		An implementor might consider that for a hand-held device, a
++		'natural' orientation would be 'front facing camera at the top'.
++		The main hardware reference frame could then be described as :
++		* Y is in the plane of the screen and is positive towards the
++		  top of the screen ;
++		* X is in the plane of the screen, perpendicular to Y axis, and
++		  positive towards the right hand side of the screen ;
++		* Z is perpendicular to the screen plane and positive out of the
++		  screen.
++		Another example for a quadrotor UAV might be :
++		* Y is in the plane of the propellers and positive towards the
++		  front-view camera;
++		* X is in the plane of the propellers, perpendicular to Y axis,
++		  and positive towards the starboard side of the UAV ;
++		* Z is perpendicular to propellers plane and positive upwards.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 190a593..e6319a9 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -412,6 +412,88 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+ }
+ EXPORT_SYMBOL_GPL(iio_enum_write);
+ 
++static const struct iio_mount_matrix iio_mount_idmatrix = {
++	.rotation = {
++		"1", "0", "0",
++		"0", "1", "0",
++		"0", "0", "1"
++	}
++};
++
++static int iio_setup_mount_idmatrix(const struct device *dev,
++				    struct iio_mount_matrix *matrix)
++{
++	*matrix = iio_mount_idmatrix;
++	dev_info(dev, "mounting matrix not found: using identity...\n");
++	return 0;
++}
++
++ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
++			      const struct iio_chan_spec *chan, char *buf)
++{
++	const struct iio_mount_matrix *mtx = ((iio_get_mount_matrix_t *)
++					      priv)(indio_dev, chan);
++
++	if (IS_ERR(mtx))
++		return PTR_ERR(mtx);
++
++	if (!mtx)
++		mtx = &iio_mount_idmatrix;
++
++	return snprintf(buf, PAGE_SIZE, "%s, %s, %s; %s, %s, %s; %s, %s, %s\n",
++			mtx->rotation[0], mtx->rotation[1], mtx->rotation[2],
++			mtx->rotation[3], mtx->rotation[4], mtx->rotation[5],
++			mtx->rotation[6], mtx->rotation[7], mtx->rotation[8]);
++}
++EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
++
++/**
++ * of_iio_read_mount_matrix() - retrieve iio device mounting matrix from
++ *                              device-tree "mount-matrix" property
++ * @dev:	device the mounting matrix property is assigned to
++ * @propname:	device specific mounting matrix property name
++ * @matrix:	where to store retrieved matrix
++ *
++ * If device is assigned no mounting matrix property, a default 3x3 identity
++ * matrix will be filled in.
++ *
++ * Return: 0 if success, or a negative error code on failure.
++ */
++#ifdef CONFIG_OF
++int of_iio_read_mount_matrix(const struct device *dev,
++			     const char *propname,
++			     struct iio_mount_matrix *matrix)
++{
++	if (dev->of_node) {
++		int err = of_property_read_string_array(dev->of_node,
++				propname, matrix->rotation,
++				ARRAY_SIZE(iio_mount_idmatrix.rotation));
++
++		if (err == ARRAY_SIZE(iio_mount_idmatrix.rotation))
++			return 0;
++
++		if (err >= 0)
++			/* Invalid number of matrix entries. */
++			return -EINVAL;
++
++		if (err != -EINVAL)
++			/* Invalid matrix declaration format. */
++			return err;
 +	}
 +
- 	/*
- 	 * toggle power state. After reset, the sleep bit could be on
- 	 * or off depending on the OTP settings. Toggling power would
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index c66dbfc..564cabd 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -93,11 +93,13 @@ struct inv_mpu6050_chip_config {
++	/* Matrix was not declared at all: fallback to identity. */
++	return iio_setup_mount_idmatrix(dev, matrix);
++}
++#else
++int of_iio_read_mount_matrix(const struct device *dev,
++			     const char *propname,
++			     struct iio_mount_matrix *matrix)
++{
++	return iio_setup_mount_idmatrix(dev, matrix);
++}
++#endif
++EXPORT_SYMBOL(of_iio_read_mount_matrix);
++
+ /**
+  * iio_format_value() - Formats a IIO value into its string representation
+  * @buf:	The buffer to which the formatted value gets written
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 0b2773a..7c29cb0 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -148,6 +148,37 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+ }
  
  /**
-  *  struct inv_mpu6050_hw - Other important hardware information.
-+ *  @whoami:	Self identification byte from WHO_AM_I register
-  *  @name:      name of the chip.
-  *  @reg:   register map of the chip.
-  *  @config:    configuration of the chip.
-  */
- struct inv_mpu6050_hw {
-+	u8 whoami;
- 	u8 *name;
- 	const struct inv_mpu6050_reg_map *reg;
- 	const struct inv_mpu6050_chip_config *config;
-@@ -213,6 +215,12 @@ struct inv_mpu6050_state {
- #define INV_MPU6050_MIN_FIFO_RATE            4
- #define INV_MPU6050_ONE_K_HZ                 1000
- 
-+#define INV_MPU6050_REG_WHOAMI			117
++ * struct iio_mount_matrix - iio mounting matrix
++ * @rotation: 3 dimensional space rotation matrix defining sensor alignment with
++ *            main hardware
++ */
++struct iio_mount_matrix {
++	const char *rotation[9];
++};
 +
-+#define INV_MPU6000_WHOAMI_VALUE		0x68
-+#define INV_MPU6050_WHOAMI_VALUE		0x68
-+#define INV_MPU6500_WHOAMI_VALUE		0x70
++ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
++			      const struct iio_chan_spec *chan, char *buf);
++int of_iio_read_mount_matrix(const struct device *dev, const char *propname,
++			     struct iio_mount_matrix *matrix);
 +
- /* scan element definition */
- enum inv_mpu6050_scan {
- 	INV_MPU6050_SCAN_ACCL_X,
++typedef const struct iio_mount_matrix *
++	(iio_get_mount_matrix_t)(const struct iio_dev *indio_dev,
++				 const struct iio_chan_spec *chan);
++
++/**
++ * IIO_MOUNT_MATRIX() - Initialize mount matrix extended channel attribute
++ * @_shared:	Whether the attribute is shared between all channels
++ * @_get:	Pointer to an iio_get_mount_matrix_t accessor
++ */
++#define IIO_MOUNT_MATRIX(_shared, _get) \
++{ \
++	.name = "mount_matrix", \
++	.shared = (_shared), \
++	.read = iio_show_mount_matrix, \
++	.private = (uintptr_t)(_get), \
++}
++
++/**
+  * struct iio_event_spec - specification for a channel event
+  * @type:		    Type of the event
+  * @dir:		    Direction of the event
 -- 
-2.5.5
+2.1.4
 
