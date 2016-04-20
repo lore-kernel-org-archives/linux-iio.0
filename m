@@ -20,9 +20,9 @@ CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
 	<linux-doc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>, Peter Rosin
 	<peda@lysator.liu.se>
-Subject: [PATCH v7 03/24] i2c: i2c-mux-pinctrl: convert to use an explicit i2c mux core
-Date: Wed, 20 Apr 2016 17:17:43 +0200
-Message-ID: <1461165484-2314-4-git-send-email-peda@axentia.se>
+Subject: [PATCH v7 07/24] i2c: i2c-mux-reg: convert to use an explicit i2c mux core
+Date: Wed, 20 Apr 2016 17:17:47 +0200
+Message-ID: <1461165484-2314-8-git-send-email-peda@axentia.se>
 In-Reply-To: <1461165484-2314-1-git-send-email-peda@axentia.se>
 References: <1461165484-2314-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
@@ -35,217 +35,181 @@ instead of the child adapter.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/muxes/i2c-mux-pinctrl.c | 83 ++++++++++++++-----------------------
- 1 file changed, 30 insertions(+), 53 deletions(-)
+ drivers/i2c/muxes/i2c-mux-reg.c | 69 +++++++++++++++--------------------------
+ 1 file changed, 25 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-mux-pinctrl.c b/drivers/i2c/muxes/i2c-mux-pinctrl.c
-index b5a982ba8898..1b8dc711815e 100644
---- a/drivers/i2c/muxes/i2c-mux-pinctrl.c
-+++ b/drivers/i2c/muxes/i2c-mux-pinctrl.c
-@@ -26,34 +26,29 @@
- #include <linux/of.h>
+diff --git a/drivers/i2c/muxes/i2c-mux-reg.c b/drivers/i2c/muxes/i2c-mux-reg.c
+index 5fbd5bd0878f..6773cadf7c9f 100644
+--- a/drivers/i2c/muxes/i2c-mux-reg.c
++++ b/drivers/i2c/muxes/i2c-mux-reg.c
+@@ -21,8 +21,6 @@
+ #include <linux/slab.h>
  
- struct i2c_mux_pinctrl {
--	struct device *dev;
- 	struct i2c_mux_pinctrl_platform_data *pdata;
- 	struct pinctrl *pinctrl;
- 	struct pinctrl_state **states;
- 	struct pinctrl_state *state_idle;
+ struct regmux {
 -	struct i2c_adapter *parent;
--	struct i2c_adapter **busses;
+-	struct i2c_adapter **adap; /* child busses */
+ 	struct i2c_mux_reg_platform_data data;
  };
  
--static int i2c_mux_pinctrl_select(struct i2c_adapter *adap, void *data,
--				  u32 chan)
-+static int i2c_mux_pinctrl_select(struct i2c_mux_core *muxc, u32 chan)
- {
--	struct i2c_mux_pinctrl *mux = data;
-+	struct i2c_mux_pinctrl *mux = i2c_mux_priv(muxc);
- 
- 	return pinctrl_select_state(mux->pinctrl, mux->states[chan]);
+@@ -64,18 +62,16 @@ static int i2c_mux_reg_set(const struct regmux *mux, unsigned int chan_id)
+ 	return 0;
  }
  
--static int i2c_mux_pinctrl_deselect(struct i2c_adapter *adap, void *data,
--				    u32 chan)
-+static int i2c_mux_pinctrl_deselect(struct i2c_mux_core *muxc, u32 chan)
+-static int i2c_mux_reg_select(struct i2c_adapter *adap, void *data,
+-			      unsigned int chan)
++static int i2c_mux_reg_select(struct i2c_mux_core *muxc, u32 chan)
  {
--	struct i2c_mux_pinctrl *mux = data;
-+	struct i2c_mux_pinctrl *mux = i2c_mux_priv(muxc);
+-	struct regmux *mux = data;
++	struct regmux *mux = i2c_mux_priv(muxc);
  
- 	return pinctrl_select_state(mux->pinctrl, mux->state_idle);
+ 	return i2c_mux_reg_set(mux, chan);
  }
+ 
+-static int i2c_mux_reg_deselect(struct i2c_adapter *adap, void *data,
+-				unsigned int chan)
++static int i2c_mux_reg_deselect(struct i2c_mux_core *muxc, u32 chan)
+ {
+-	struct regmux *mux = data;
++	struct regmux *mux = i2c_mux_priv(muxc);
+ 
+ 	if (mux->data.idle_in_use)
+ 		return i2c_mux_reg_set(mux, mux->data.idle);
+@@ -85,7 +81,7 @@ static int i2c_mux_reg_deselect(struct i2c_adapter *adap, void *data,
  
  #ifdef CONFIG_OF
- static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
--				struct platform_device *pdev)
-+				    struct platform_device *pdev)
+ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+-					struct platform_device *pdev)
++				struct platform_device *pdev)
  {
  	struct device_node *np = pdev->dev.of_node;
- 	int num_names, i, ret;
-@@ -64,15 +59,12 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
- 		return 0;
- 
- 	mux->pdata = devm_kzalloc(&pdev->dev, sizeof(*mux->pdata), GFP_KERNEL);
--	if (!mux->pdata) {
--		dev_err(mux->dev,
--			"Cannot allocate i2c_mux_pinctrl_platform_data\n");
-+	if (!mux->pdata)
- 		return -ENOMEM;
--	}
- 
- 	num_names = of_property_count_strings(np, "pinctrl-names");
- 	if (num_names < 0) {
--		dev_err(mux->dev, "Cannot parse pinctrl-names: %d\n",
-+		dev_err(&pdev->dev, "Cannot parse pinctrl-names: %d\n",
- 			num_names);
- 		return num_names;
- 	}
-@@ -80,23 +72,22 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
- 	mux->pdata->pinctrl_states = devm_kzalloc(&pdev->dev,
- 		sizeof(*mux->pdata->pinctrl_states) * num_names,
- 		GFP_KERNEL);
--	if (!mux->pdata->pinctrl_states) {
--		dev_err(mux->dev, "Cannot allocate pinctrl_states\n");
-+	if (!mux->pdata->pinctrl_states)
- 		return -ENOMEM;
--	}
- 
- 	for (i = 0; i < num_names; i++) {
- 		ret = of_property_read_string_index(np, "pinctrl-names", i,
- 			&mux->pdata->pinctrl_states[mux->pdata->bus_count]);
- 		if (ret < 0) {
--			dev_err(mux->dev, "Cannot parse pinctrl-names: %d\n",
-+			dev_err(&pdev->dev, "Cannot parse pinctrl-names: %d\n",
- 				ret);
- 			return ret;
- 		}
- 		if (!strcmp(mux->pdata->pinctrl_states[mux->pdata->bus_count],
- 			    "idle")) {
- 			if (i != num_names - 1) {
--				dev_err(mux->dev, "idle state must be last\n");
-+				dev_err(&pdev->dev,
-+					"idle state must be last\n");
- 				return -EINVAL;
- 			}
- 			mux->pdata->pinctrl_state_idle = "idle";
-@@ -107,13 +98,13 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
- 
- 	adapter_np = of_parse_phandle(np, "i2c-parent", 0);
- 	if (!adapter_np) {
--		dev_err(mux->dev, "Cannot parse i2c-parent\n");
-+		dev_err(&pdev->dev, "Cannot parse i2c-parent\n");
- 		return -ENODEV;
- 	}
- 	adapter = of_find_i2c_adapter_by_node(adapter_np);
- 	of_node_put(adapter_np);
- 	if (!adapter) {
--		dev_err(mux->dev, "Cannot find parent bus\n");
-+		dev_err(&pdev->dev, "Cannot find parent bus\n");
+ 	struct device_node *adapter_np, *child;
+@@ -107,7 +103,6 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+ 	if (!adapter)
  		return -EPROBE_DEFER;
- 	}
- 	mux->pdata->parent_bus_num = i2c_adapter_id(adapter);
-@@ -131,19 +122,15 @@ static inline int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
  
- static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+-	mux->parent = adapter;
+ 	mux->data.parent = i2c_adapter_id(adapter);
+ 	put_device(&adapter->dev);
+ 
+@@ -161,7 +156,7 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+ }
+ #else
+ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+-					struct platform_device *pdev)
++				struct platform_device *pdev)
+ {
+ 	return 0;
+ }
+@@ -169,10 +164,10 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
+ 
+ static int i2c_mux_reg_probe(struct platform_device *pdev)
  {
 +	struct i2c_mux_core *muxc;
- 	struct i2c_mux_pinctrl *mux;
+ 	struct regmux *mux;
+ 	struct i2c_adapter *parent;
+ 	struct resource *res;
 -	int (*deselect)(struct i2c_adapter *, void *, u32);
- 	int i, ret;
+ 	unsigned int class;
+ 	int i, ret, nr;
  
- 	mux = devm_kzalloc(&pdev->dev, sizeof(*mux), GFP_KERNEL);
- 	if (!mux) {
--		dev_err(&pdev->dev, "Cannot allocate i2c_mux_pinctrl\n");
- 		ret = -ENOMEM;
- 		goto err;
- 	}
+@@ -180,17 +175,9 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ 	if (!mux)
+ 		return -ENOMEM;
+ 
 -	platform_set_drvdata(pdev, mux);
 -
--	mux->dev = &pdev->dev;
- 
- 	mux->pdata = dev_get_platdata(&pdev->dev);
- 	if (!mux->pdata) {
-@@ -166,14 +153,15 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
- 		goto err;
+ 	if (dev_get_platdata(&pdev->dev)) {
+ 		memcpy(&mux->data, dev_get_platdata(&pdev->dev),
+ 			sizeof(mux->data));
+-
+-		parent = i2c_get_adapter(mux->data.parent);
+-		if (!parent)
+-			return -EPROBE_DEFER;
+-
+-		mux->parent = parent;
+ 	} else {
+ 		ret = i2c_mux_reg_probe_dt(mux, pdev);
+ 		if (ret < 0) {
+@@ -199,6 +186,10 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ 		}
  	}
  
--	mux->busses = devm_kzalloc(&pdev->dev,
--				   sizeof(*mux->busses) * mux->pdata->bus_count,
--				   GFP_KERNEL);
--	if (!mux->busses) {
--		dev_err(&pdev->dev, "Cannot allocate busses\n");
-+	muxc = i2c_mux_alloc(NULL, &pdev->dev, mux->pdata->bus_count, 0, 0,
-+			     i2c_mux_pinctrl_select, NULL);
-+	if (!muxc) {
- 		ret = -ENOMEM;
- 		goto err;
++	parent = i2c_get_adapter(mux->data.parent);
++	if (!parent)
++		return -EPROBE_DEFER;
++
+ 	if (!mux->data.reg) {
+ 		dev_info(&pdev->dev,
+ 			"Register not set, using platform resource\n");
+@@ -215,55 +206,45 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
+ 		return -EINVAL;
  	}
+ 
+-	mux->adap = devm_kzalloc(&pdev->dev,
+-				 sizeof(*mux->adap) * mux->data.n_values,
+-				 GFP_KERNEL);
+-	if (!mux->adap) {
+-		dev_err(&pdev->dev, "Cannot allocate i2c_adapter structure");
++	muxc = i2c_mux_alloc(parent, &pdev->dev, mux->data.n_values, 0, 0,
++			     i2c_mux_reg_select, NULL);
++	if (!muxc)
+ 		return -ENOMEM;
+-	}
 +	muxc->priv = mux;
 +
 +	platform_set_drvdata(pdev, muxc);
  
- 	mux->pinctrl = devm_pinctrl_get(&pdev->dev);
- 	if (IS_ERR(mux->pinctrl)) {
-@@ -203,13 +191,11 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
- 			goto err;
- 		}
- 
--		deselect = i2c_mux_pinctrl_deselect;
--	} else {
+ 	if (mux->data.idle_in_use)
+-		deselect = i2c_mux_reg_deselect;
+-	else
 -		deselect = NULL;
-+		muxc->deselect = i2c_mux_pinctrl_deselect;
- 	}
++		muxc->deselect = i2c_mux_reg_deselect;
  
--	mux->parent = i2c_get_adapter(mux->pdata->parent_bus_num);
--	if (!mux->parent) {
-+	muxc->parent = i2c_get_adapter(mux->pdata->parent_bus_num);
-+	if (!muxc->parent) {
- 		dev_err(&pdev->dev, "Parent adapter (%d) not found\n",
- 			mux->pdata->parent_bus_num);
- 		ret = -EPROBE_DEFER;
-@@ -220,12 +206,8 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
- 		u32 bus = mux->pdata->base_bus_num ?
- 				(mux->pdata->base_bus_num + i) : 0;
+ 	for (i = 0; i < mux->data.n_values; i++) {
+ 		nr = mux->data.base_nr ? (mux->data.base_nr + i) : 0;
+ 		class = mux->data.classes ? mux->data.classes[i] : 0;
  
--		mux->busses[i] = i2c_add_mux_adapter(mux->parent, &pdev->dev,
--						     mux, bus, i, 0,
--						     i2c_mux_pinctrl_select,
--						     deselect);
--		if (!mux->busses[i]) {
+-		mux->adap[i] = i2c_add_mux_adapter(mux->parent, &pdev->dev, mux,
+-						   nr, mux->data.values[i],
+-						   class, i2c_mux_reg_select,
+-						   deselect);
+-		if (!mux->adap[i]) {
 -			ret = -ENODEV;
-+		ret = i2c_mux_add_adapter(muxc, bus, i, 0);
++		ret = i2c_mux_add_adapter(muxc, nr, mux->data.values[i], class);
 +		if (ret) {
  			dev_err(&pdev->dev, "Failed to add adapter %d\n", i);
- 			goto err_del_adapter;
+ 			goto add_adapter_failed;
  		}
-@@ -234,23 +216,18 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	dev_dbg(&pdev->dev, "%d port mux on %s adapter\n",
+-		 mux->data.n_values, mux->parent->name);
++		 mux->data.n_values, muxc->parent->name);
+ 
  	return 0;
  
- err_del_adapter:
+ add_adapter_failed:
 -	for (; i > 0; i--)
--		i2c_del_mux_adapter(mux->busses[i - 1]);
--	i2c_put_adapter(mux->parent);
+-		i2c_del_mux_adapter(mux->adap[i - 1]);
 +	i2c_mux_del_adapters(muxc);
-+	i2c_put_adapter(muxc->parent);
- err:
+ 
  	return ret;
  }
  
- static int i2c_mux_pinctrl_remove(struct platform_device *pdev)
+ static int i2c_mux_reg_remove(struct platform_device *pdev)
  {
--	struct i2c_mux_pinctrl *mux = platform_get_drvdata(pdev);
+-	struct regmux *mux = platform_get_drvdata(pdev);
 -	int i;
 -
--	for (i = 0; i < mux->pdata->bus_count; i++)
--		i2c_del_mux_adapter(mux->busses[i]);
--
--	i2c_put_adapter(mux->parent);
+-	for (i = 0; i < mux->data.n_values; i++)
+-		i2c_del_mux_adapter(mux->adap[i]);
 +	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
  
+-	i2c_put_adapter(mux->parent);
 +	i2c_mux_del_adapters(muxc);
 +	i2c_put_adapter(muxc->parent);
+ 
  	return 0;
  }
- 
 -- 
 2.1.4
