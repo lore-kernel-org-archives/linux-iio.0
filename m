@@ -20,9 +20,9 @@ CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
 	<linux-doc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>, Peter Rosin
 	<peda@lysator.liu.se>
-Subject: [PATCH v7 05/24] i2c: i2c-mux-pca9541: convert to use an explicit i2c mux core
-Date: Wed, 20 Apr 2016 17:17:45 +0200
-Message-ID: <1461165484-2314-6-git-send-email-peda@axentia.se>
+Subject: [PATCH v7 09/24] [media] m88ds3103: convert to use an explicit i2c mux core
+Date: Wed, 20 Apr 2016 17:17:49 +0200
+Message-ID: <1461165484-2314-10-git-send-email-peda@axentia.se>
 In-Reply-To: <1461165484-2314-1-git-send-email-peda@axentia.se>
 References: <1461165484-2314-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
@@ -30,136 +30,83 @@ Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
 Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select/deselect ops to be in terms of the i2c mux core
-instead of the child adapter.
+etc. Update the select op to be in terms of the i2c mux core instead
+of the child adapter.
 
+Reviewed-by: Antti Palosaari <crope@iki.fi>
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/muxes/i2c-mux-pca9541.c | 58 +++++++++++++++++--------------------
- 1 file changed, 27 insertions(+), 31 deletions(-)
+ drivers/media/dvb-frontends/m88ds3103.c      | 19 +++++++++++--------
+ drivers/media/dvb-frontends/m88ds3103_priv.h |  2 +-
+ 2 files changed, 12 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-mux-pca9541.c b/drivers/i2c/muxes/i2c-mux-pca9541.c
-index d0ba424adebc..3cb8af635db5 100644
---- a/drivers/i2c/muxes/i2c-mux-pca9541.c
-+++ b/drivers/i2c/muxes/i2c-mux-pca9541.c
-@@ -73,7 +73,7 @@
- #define SELECT_DELAY_LONG	1000
- 
- struct pca9541 {
--	struct i2c_adapter *mux_adap;
-+	struct i2c_client *client;
- 	unsigned long select_timeout;
- 	unsigned long arb_timeout;
- };
-@@ -217,7 +217,8 @@ static const u8 pca9541_control[16] = {
-  */
- static int pca9541_arbitrate(struct i2c_client *client)
- {
--	struct pca9541 *data = i2c_get_clientdata(client);
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
-+	struct pca9541 *data = i2c_mux_priv(muxc);
- 	int reg;
- 
- 	reg = pca9541_reg_read(client, PCA9541_CONTROL);
-@@ -285,9 +286,10 @@ static int pca9541_arbitrate(struct i2c_client *client)
- 	return 0;
+diff --git a/drivers/media/dvb-frontends/m88ds3103.c b/drivers/media/dvb-frontends/m88ds3103.c
+index 76883600ec6f..5557ef8fc704 100644
+--- a/drivers/media/dvb-frontends/m88ds3103.c
++++ b/drivers/media/dvb-frontends/m88ds3103.c
+@@ -1251,9 +1251,9 @@ static void m88ds3103_release(struct dvb_frontend *fe)
+ 	i2c_unregister_device(client);
  }
  
--static int pca9541_select_chan(struct i2c_adapter *adap, void *client, u32 chan)
-+static int pca9541_select_chan(struct i2c_mux_core *muxc, u32 chan)
+-static int m88ds3103_select(struct i2c_adapter *adap, void *mux_priv, u32 chan)
++static int m88ds3103_select(struct i2c_mux_core *muxc, u32 chan)
  {
--	struct pca9541 *data = i2c_get_clientdata(client);
-+	struct pca9541 *data = i2c_mux_priv(muxc);
-+	struct i2c_client *client = data->client;
+-	struct m88ds3103_dev *dev = mux_priv;
++	struct m88ds3103_dev *dev = i2c_mux_priv(muxc);
+ 	struct i2c_client *client = dev->client;
  	int ret;
- 	unsigned long timeout = jiffies + ARB2_TIMEOUT;
- 		/* give up after this time */
-@@ -309,9 +311,11 @@ static int pca9541_select_chan(struct i2c_adapter *adap, void *client, u32 chan)
- 	return -ETIMEDOUT;
+ 	struct i2c_msg msg = {
+@@ -1374,7 +1374,7 @@ static struct i2c_adapter *m88ds3103_get_i2c_adapter(struct i2c_client *client)
+ 
+ 	dev_dbg(&client->dev, "\n");
+ 
+-	return dev->i2c_adapter;
++	return dev->muxc->adapter[0];
  }
  
--static int pca9541_release_chan(struct i2c_adapter *adap,
--				void *client, u32 chan)
-+static int pca9541_release_chan(struct i2c_mux_core *muxc, u32 chan)
- {
-+	struct pca9541 *data = i2c_mux_priv(muxc);
-+	struct i2c_client *client = data->client;
-+
- 	pca9541_release_bus(client);
- 	return 0;
- }
-@@ -324,20 +328,13 @@ static int pca9541_probe(struct i2c_client *client,
- {
- 	struct i2c_adapter *adap = client->adapter;
- 	struct pca954x_platform_data *pdata = dev_get_platdata(&client->dev);
-+	struct i2c_mux_core *muxc;
- 	struct pca9541 *data;
- 	int force;
--	int ret = -ENODEV;
-+	int ret;
+ static int m88ds3103_probe(struct i2c_client *client,
+@@ -1467,13 +1467,16 @@ static int m88ds3103_probe(struct i2c_client *client,
+ 		goto err_kfree;
  
- 	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE_DATA))
--		goto err;
--
--	data = kzalloc(sizeof(struct pca9541), GFP_KERNEL);
--	if (!data) {
--		ret = -ENOMEM;
--		goto err;
--	}
--
--	i2c_set_clientdata(client, data);
-+		return -ENODEV;
- 
- 	/*
- 	 * I2C accesses are unprotected here.
-@@ -352,34 +349,33 @@ static int pca9541_probe(struct i2c_client *client,
- 	force = 0;
- 	if (pdata)
- 		force = pdata->modes[0].adap_id;
--	data->mux_adap = i2c_add_mux_adapter(adap, &client->dev, client,
--					     force, 0, 0,
--					     pca9541_select_chan,
--					     pca9541_release_chan);
-+	muxc = i2c_mux_alloc(adap, &client->dev, 1, sizeof(*data), 0,
-+			     pca9541_select_chan, pca9541_release_chan);
-+	if (!muxc)
-+		return -ENOMEM;
- 
--	if (data->mux_adap == NULL) {
-+	data = i2c_mux_priv(muxc);
-+	data->client = client;
-+
-+	i2c_set_clientdata(client, muxc);
-+
-+	ret = i2c_mux_add_adapter(muxc, force, 0, 0);
-+	if (ret) {
- 		dev_err(&client->dev, "failed to register master selector\n");
--		goto exit_free;
-+		return ret;
+ 	/* create mux i2c adapter for tuner */
+-	dev->i2c_adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
+-					       dev, 0, 0, 0, m88ds3103_select,
+-					       NULL);
+-	if (dev->i2c_adapter == NULL) {
++	dev->muxc = i2c_mux_alloc(client->adapter, &client->dev, 1, 0, 0,
++				  m88ds3103_select, NULL);
++	if (!dev->muxc) {
+ 		ret = -ENOMEM;
+ 		goto err_kfree;
  	}
++	dev->muxc->priv = dev;
++	ret = i2c_mux_add_adapter(dev->muxc, 0, 0, 0);
++	if (ret)
++		goto err_kfree;
  
- 	dev_info(&client->dev, "registered master selector for I2C %s\n",
- 		 client->name);
+ 	/* create dvb_frontend */
+ 	memcpy(&dev->fe.ops, &m88ds3103_ops, sizeof(struct dvb_frontend_ops));
+@@ -1502,7 +1505,7 @@ static int m88ds3103_remove(struct i2c_client *client)
  
+ 	dev_dbg(&client->dev, "\n");
+ 
+-	i2c_del_mux_adapter(dev->i2c_adapter);
++	i2c_mux_del_adapters(dev->muxc);
+ 
+ 	kfree(dev);
  	return 0;
--
--exit_free:
--	kfree(data);
--err:
--	return ret;
- }
- 
- static int pca9541_remove(struct i2c_client *client)
- {
--	struct pca9541 *data = i2c_get_clientdata(client);
--
--	i2c_del_mux_adapter(data->mux_adap);
-+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
- 
--	kfree(data);
-+	i2c_mux_del_adapters(muxc);
- 	return 0;
- }
- 
+diff --git a/drivers/media/dvb-frontends/m88ds3103_priv.h b/drivers/media/dvb-frontends/m88ds3103_priv.h
+index eee8c22c51ec..c5b4e177c6ea 100644
+--- a/drivers/media/dvb-frontends/m88ds3103_priv.h
++++ b/drivers/media/dvb-frontends/m88ds3103_priv.h
+@@ -42,7 +42,7 @@ struct m88ds3103_dev {
+ 	enum fe_status fe_status;
+ 	u32 dvbv3_ber; /* for old DVBv3 API read_ber */
+ 	bool warm; /* FW running */
+-	struct i2c_adapter *i2c_adapter;
++	struct i2c_mux_core *muxc;
+ 	/* auto detect chip id to do different config */
+ 	u8 chip_id;
+ 	/* main mclk is calculated for M88RS6000 dynamically */
 -- 
 2.1.4
