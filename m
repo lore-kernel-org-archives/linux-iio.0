@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db3on0125.outbound.protection.outlook.com ([157.55.234.125]:54592
+Received: from mail-db3on0134.outbound.protection.outlook.com ([157.55.234.134]:44038
 	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752082AbcDTPfB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 20 Apr 2016 11:35:01 -0400
+	id S1752082AbcDTPew (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 20 Apr 2016 11:34:52 -0400
 From: Peter Rosin <peda@axentia.se>
 To: <linux-kernel@vger.kernel.org>
 CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
@@ -36,9 +36,9 @@ CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
 	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
 	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, Peter Rosin <peda@lysator.liu.se>
-Subject: [PATCH v7 10/24] [media] rtl2830: convert to use an explicit i2c mux core
-Date: Wed, 20 Apr 2016 17:17:50 +0200
-Message-ID: <1461165484-2314-11-git-send-email-peda@axentia.se>
+Subject: [PATCH v7 08/24] iio: imu: inv_mpu6050: convert to use an explicit i2c mux core
+Date: Wed, 20 Apr 2016 17:17:48 +0200
+Message-ID: <1461165484-2314-9-git-send-email-peda@axentia.se>
 In-Reply-To: <1461165484-2314-1-git-send-email-peda@axentia.se>
 References: <1461165484-2314-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
@@ -47,84 +47,152 @@ Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select op to be in terms of the i2c mux core instead
-of the child adapter.
+etc. Update the select/deselect ops to be in terms of the i2c mux core
+instead of the child adapter.
 
-Reviewed-by: Antti Palosaari <crope@iki.fi>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/media/dvb-frontends/rtl2830.c      | 20 ++++++++++++--------
- drivers/media/dvb-frontends/rtl2830_priv.h |  2 +-
- 2 files changed, 13 insertions(+), 9 deletions(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c |  2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  1 -
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  | 35 +++++++++++++++---------------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  3 ++-
+ 4 files changed, 20 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/media/dvb-frontends/rtl2830.c b/drivers/media/dvb-frontends/rtl2830.c
-index 3f96429af0e5..d25d1e0cd4ca 100644
---- a/drivers/media/dvb-frontends/rtl2830.c
-+++ b/drivers/media/dvb-frontends/rtl2830.c
-@@ -677,9 +677,9 @@ err:
-  * adapter lock is already taken by tuner driver.
-  * Gate is closed automatically after single I2C transfer.
-  */
--static int rtl2830_select(struct i2c_adapter *adap, void *mux_priv, u32 chan_id)
-+static int rtl2830_select(struct i2c_mux_core *muxc, u32 chan_id)
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+index 2771106fd650..f62b8bd9ad7e 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+@@ -183,7 +183,7 @@ int inv_mpu_acpi_create_mux_client(struct i2c_client *client)
+ 			} else
+ 				return 0; /* no secondary addr, which is OK */
+ 		}
+-		st->mux_client = i2c_new_device(st->mux_adapter, &info);
++		st->mux_client = i2c_new_device(st->muxc->adapter[0], &info);
+ 		if (!st->mux_client)
+ 			return -ENODEV;
+ 	}
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index d192953e9a38..0c2bded2b5b7 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -23,7 +23,6 @@
+ #include <linux/kfifo.h>
+ #include <linux/spinlock.h>
+ #include <linux/iio/iio.h>
+-#include <linux/i2c-mux.h>
+ #include <linux/acpi.h>
+ #include "inv_mpu_iio.h"
+ 
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index f581256d9d4c..664a45082d39 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -15,7 +15,6 @@
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
+-#include <linux/i2c-mux.h>
+ #include <linux/iio/iio.h>
+ #include <linux/module.h>
+ #include "inv_mpu_iio.h"
+@@ -52,10 +51,9 @@ static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
+ 	return 0;
+ }
+ 
+-static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
+-				     u32 chan_id)
++static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
  {
 -	struct i2c_client *client = mux_priv;
 +	struct i2c_client *client = i2c_mux_priv(muxc);
- 	struct rtl2830_dev *dev = i2c_get_clientdata(client);
- 	int ret;
- 
-@@ -712,7 +712,7 @@ static struct i2c_adapter *rtl2830_get_i2c_adapter(struct i2c_client *client)
- 
- 	dev_dbg(&client->dev, "\n");
- 
--	return dev->adapter;
-+	return dev->muxc->adapter[0];
+ 	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 	int ret = 0;
+@@ -84,10 +82,9 @@ write_error:
+ 	return ret;
  }
  
- /*
-@@ -865,12 +865,16 @@ static int rtl2830_probe(struct i2c_client *client,
- 		goto err_regmap_exit;
+-static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
+-				       void *mux_priv, u32 chan_id)
++static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct i2c_client *client = mux_priv;
++	struct i2c_client *client = i2c_mux_priv(muxc);
+ 	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
  
- 	/* create muxed i2c adapter for tuner */
--	dev->adapter = i2c_add_mux_adapter(client->adapter, &client->dev,
--			client, 0, 0, 0, rtl2830_select, NULL);
--	if (dev->adapter == NULL) {
--		ret = -ENODEV;
-+	dev->muxc = i2c_mux_alloc(client->adapter, &client->dev, 1, 0, 0,
-+				  rtl2830_select, NULL);
-+	if (!dev->muxc) {
-+		ret = -ENOMEM;
- 		goto err_regmap_exit;
+@@ -136,16 +133,18 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 		return result;
+ 
+ 	st = iio_priv(dev_get_drvdata(&client->dev));
+-	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
+-					      &client->dev,
+-					      client,
+-					      0, 0, 0,
+-					      inv_mpu6050_select_bypass,
+-					      inv_mpu6050_deselect_bypass);
+-	if (!st->mux_adapter) {
+-		result = -ENODEV;
++	st->muxc = i2c_mux_alloc(client->adapter, &client->dev,
++				 1, 0, 0,
++				 inv_mpu6050_select_bypass,
++				 inv_mpu6050_deselect_bypass);
++	if (!st->muxc) {
++		result = -ENOMEM;
+ 		goto out_unreg_device;
  	}
-+	dev->muxc->priv = client;
-+	ret = i2c_mux_add_adapter(dev->muxc, 0, 0, 0);
-+	if (ret)
-+		goto err_regmap_exit;
++	st->muxc->priv = dev_get_drvdata(&client->dev);
++	result = i2c_mux_add_adapter(st->muxc, 0, 0, 0);
++	if (result)
++		goto out_unreg_device;
  
- 	/* create dvb frontend */
- 	memcpy(&dev->fe.ops, &rtl2830_ops, sizeof(dev->fe.ops));
-@@ -903,7 +907,7 @@ static int rtl2830_remove(struct i2c_client *client)
- 	/* stop statistics polling */
- 	cancel_delayed_work_sync(&dev->stat_work);
+ 	result = inv_mpu_acpi_create_mux_client(client);
+ 	if (result)
+@@ -154,7 +153,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 	return 0;
  
--	i2c_del_mux_adapter(dev->adapter);
-+	i2c_mux_del_adapters(dev->muxc);
- 	regmap_exit(dev->regmap);
- 	kfree(dev);
+ out_del_mux:
+-	i2c_del_mux_adapter(st->mux_adapter);
++	i2c_mux_del_adapters(st->muxc);
+ out_unreg_device:
+ 	inv_mpu_core_remove(&client->dev);
+ 	return result;
+@@ -162,11 +161,11 @@ out_unreg_device:
  
-diff --git a/drivers/media/dvb-frontends/rtl2830_priv.h b/drivers/media/dvb-frontends/rtl2830_priv.h
-index cf793f39a09b..da4909543da2 100644
---- a/drivers/media/dvb-frontends/rtl2830_priv.h
-+++ b/drivers/media/dvb-frontends/rtl2830_priv.h
-@@ -29,7 +29,7 @@ struct rtl2830_dev {
- 	struct rtl2830_platform_data *pdata;
- 	struct i2c_client *client;
- 	struct regmap *regmap;
--	struct i2c_adapter *adapter;
+ static int inv_mpu_remove(struct i2c_client *client)
+ {
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 
+ 	inv_mpu_acpi_delete_mux_client(client);
+-	i2c_del_mux_adapter(st->mux_adapter);
++	i2c_mux_del_adapters(st->muxc);
+ 
+ 	return inv_mpu_core_remove(&client->dev);
+ }
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index e302a49703bf..bb3cef6d7059 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -11,6 +11,7 @@
+ * GNU General Public License for more details.
+ */
+ #include <linux/i2c.h>
++#include <linux/i2c-mux.h>
+ #include <linux/kfifo.h>
+ #include <linux/spinlock.h>
+ #include <linux/iio/iio.h>
+@@ -127,7 +128,7 @@ struct inv_mpu6050_state {
+ 	const struct inv_mpu6050_hw *hw;
+ 	enum   inv_devices chip_type;
+ 	spinlock_t time_stamp_lock;
+-	struct i2c_adapter *mux_adapter;
 +	struct i2c_mux_core *muxc;
- 	struct dvb_frontend fe;
- 	bool sleeping;
- 	unsigned long filters;
+ 	struct i2c_client *mux_client;
+ 	unsigned int powerup_count;
+ 	struct inv_mpu6050_platform_data plat_data;
 -- 
 2.1.4
 
