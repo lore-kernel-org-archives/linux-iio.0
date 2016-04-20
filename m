@@ -1,74 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f170.google.com ([209.85.192.170]:33499 "EHLO
-	mail-pf0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751229AbcDUCun (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Apr 2016 22:50:43 -0400
-Date: Wed, 20 Apr 2016 19:50:39 -0700
-From: Eduardo Valentin <edubezval@gmail.com>
-To: Laxman Dewangan <ldewangan@nvidia.com>
-Cc: jic23@kernel.org, robh@kernel.org, rui.zhang@intel.com,
-	mark.rutland@arm.com, pawel.moll@arm.com,
-	ijc+devicetree@hellion.org.uk, linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH V4 2/2] thermal: generic-adc: Add ADC based thermal
- sensor driver
-Message-ID: <20160421025038.GA4761@localhost.localdomain>
-References: <1461050521-6080-1-git-send-email-ldewangan@nvidia.com>
- <1461050521-6080-2-git-send-email-ldewangan@nvidia.com>
- <20160420234322.GA2558@localhost.localdomain>
- <571828F0.8000101@nvidia.com>
+Received: from sauhun.de ([89.238.76.85]:45636 "EHLO pokefinder.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751029AbcDTUwg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 20 Apr 2016 16:52:36 -0400
+Date: Wed, 20 Apr 2016 22:52:22 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Peter Rosin <peda@axentia.se>
+Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Kalle Valo <kvalo@codeaurora.org>,
+	Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Terry Heo <terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
+Subject: Re: [PATCH v7 00/24] i2c mux cleanup and locking update
+Message-ID: <20160420205221.GB1546@katana>
+References: <1461165484-2314-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <571828F0.8000101@nvidia.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Pk6IbRAofICFmK5e"
+In-Reply-To: <1461165484-2314-1-git-send-email-peda@axentia.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Apr 21, 2016 at 06:42:16AM +0530, Laxman Dewangan wrote:
-> 
-> On Thursday 21 April 2016 05:13 AM, Eduardo Valentin wrote:
-> >Laxman,
-> >
-> >On Tue, Apr 19, 2016 at 12:52:01PM +0530, Laxman Dewangan wrote:
-> >>In some of platform, thermal sensors like NCT thermistors are
-> >>connected to the one of ADC channel. The temperature is read by
-> >>reading the voltage across the sensor resistance via ADC. Lookup
-> >>table for ADC read value to temperature is referred to get
-> >>temperature. ADC is read via IIO framework.
-> >>
-> >>Add support for thermal sensor driver which read the voltage across
-> >>sensor resistance from ADC through IIO framework.
-> >>
-> >>Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
-> >I really like this driver, as I mentioned  before. Just one comment
-> >though.
-> >
-> >>+
-> >>+	gti->tz_dev = thermal_zone_of_sensor_register(&pdev->dev, 0,
-> >>+						      gti, &gadc_thermal_ops);
-> >Why not using the devm_ version you introduced?
-> >
-> >Any particular reason?
-> >
-> 
-> Yaah, the reason is just to maintain the proper sequence in releasing of
-> resource during driver unbinding.
-> 
-> Sequence in probe are:
->         iio_channel_get()
->         thermal_zone_of_sensor_register()
-> 
-> and on release, sensor should be released first before iio channel.
-> As of now, we do not have devm_iio_channel_get() [I already post patch and
-> it is accepted by Jonathan in iio sub system] and hence I can not use the
-> devm_ for sensor register to avoid race.
-> 
-> However, once the devm_ for iio channel get available in all subsystem (may
-> be in next release), I will post the patch to use devm_.
-> 
-> Currently, we can go with these APIs.
 
-Ok. We can have it in this way then.
+--Pk6IbRAofICFmK5e
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> 
-> 
+
+This was the diff of v6:
+
+>  32 files changed, 1277 insertions(+), 915 deletions(-)
+
+This is v7:
+
+>  32 files changed, 1225 insertions(+), 916 deletions(-)
+
+So, we gained a little overall. And while the individual drivers have a
+few lines more now, I still think it is more readable.
+
+So, thanks for doing that!
+
+I'll give people some time for testing. I'll have a further look, too.
+Hopefully, I can pick up patches 1-14 by the end of the week.
+
+   Wolfram
+
+
+--Pk6IbRAofICFmK5e
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJXF+wFAAoJEBQN5MwUoCm25mEP/i6NKQYFWJO25EYSZWJCerM3
+UEw0k1CInID3LqMNI8/8LmcFiLArc1gA7TqmWksf9M9oW0TPi967rmSRnarI6zQN
+QbpT0qF7gUHYX0XFo7XlARaz/78s6AbdEvkGdicrXx9GzJz1KQQF8L8pZemUS7xY
+FcXsRnCL7/lhzqI+yKyNXrhwlCRLjLd8E6MtLHE20optmZN3nmMuy/jLgD+z3EQs
+fulGOcIjJZWgidiHrNZn6BB2dsd71lXN0ZBb5XNZgHjeevnn2HRgSYzXTtzk7Xye
+9nOR9EWJ8HCWLqeulEohEwOE95Q4uKPoDrQnSGbeQwEpXksHp21miW9T+AWa91gX
+9SI5BYG4aPlDqYGgUrS+pt8+q42Tb0V/gVwP0pFkxMSpZdmpDJxydTZhJ7kCvcQq
+h7Xm2VWE3SMKepnb5agzfhnCgZXIH86SBfv6pciVCq6Rzf3ZahEd3zMnbHl8gJu0
+BtamEGnghtuoSLWzRGEREg+vGPK3LEL4VvZaSJSfv838VcpG0ePMI6a7N7bRU3ah
+y4YTyUi5dd19WCwsqwldSD+zbcJ82xvtbc0Akb3F/bVJBWCdgmh6cAE2cNgfoh/Z
+uhQ94aUFRFQLZSuHO2nHYTX6QeJEAxB6IIK0I4bHXg2oAuHDaPsRmcuHaoz8LIE0
+PmVKkaxsAB7Wa/6TaR25
+=UCS6
+-----END PGP SIGNATURE-----
+
+--Pk6IbRAofICFmK5e--
