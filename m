@@ -1,68 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kapsi.fi ([217.30.184.167]:45140 "EHLO mail.kapsi.fi"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751430AbcDUBLW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 20 Apr 2016 21:11:22 -0400
-Subject: Re: [PATCH v7 00/24] i2c mux cleanup and locking update
-To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
-References: <1461165484-2314-1-git-send-email-peda@axentia.se>
-Cc: Wolfram Sang <wsa@the-dreams.de>, Jonathan Corbet <corbet@lwn.net>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
+Received: from mout.kundenserver.de ([217.72.192.75]:57213 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751761AbcDUUMY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2016 16:12:24 -0400
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Kalle Valo <kvalo@codeaurora.org>,
-	Jiri Slaby <jslaby@suse.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Matt Ranostay <matt.ranostay@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Terry Heo <terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>,
-	Tommi Rantala <tt.rantala@gmail.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-From: Antti Palosaari <crope@iki.fi>
-Message-ID: <571828A3.7090007@iki.fi>
-Date: Thu, 21 Apr 2016 04:10:59 +0300
-MIME-Version: 1.0
-In-Reply-To: <1461165484-2314-1-git-send-email-peda@axentia.se>
-Content-Type: text/plain; charset=utf-8; format=flowed
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Marek Vasut <marex@denx.de>
+Cc: Fabio Estevam <fabio.estevam@nxp.com>,
+	Juergen Borleis <jbe@pengutronix.de>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH RFT V2 2/3] iio: mxs-lradc: disable only masked channels in mxs_lradc_hw_stop
+Date: Thu, 21 Apr 2016 20:11:17 +0000
+Message-Id: <1461269478-449-3-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com>
+References: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/20/2016 06:17 PM, Peter Rosin wrote:
+Disabling of the touchscreen IRQs should be done in
+mxs_lradc_disable_ts. So disable only the masked virtual channels
+in mxs_lradc_hw_stop and finally remove the unused function
+mxs_lradc_irq_en_mask.
 
-Retested all the previously tested + now I tested also cx231xx with 
-Hauppauge 930C HD device having eeprom other mux port and demod on the 
-other port.
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/iio/adc/mxs-lradc.c |   11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
->    [media] si2168: change the i2c gate to be mux-locked
->    [media] m88ds3103: convert to use an explicit i2c mux core
->    [media] rtl2830: convert to use an explicit i2c mux core
->    [media] rtl2832: convert to use an explicit i2c mux core
->    [media] si2168: convert to use an explicit i2c mux core
->    [media] cx231xx: convert to use an explicit i2c mux core
->    [media] rtl2832: change the i2c gate to be mux-locked
->    [media] rtl2832_sdr: get rid of empty regmap wrappers
->    [media] rtl2832: regmap is aware of lockdep, drop local locking hack
-
-I really hope that this whole patch series will arrive asap to mainline.
-
-regards
-Antti
-
+diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+index 223650b..cfc558f 100644
+--- a/drivers/iio/adc/mxs-lradc.c
++++ b/drivers/iio/adc/mxs-lradc.c
+@@ -373,13 +373,6 @@ static u32 mxs_lradc_plate_mask(struct mxs_lradc *lradc)
+ 	return LRADC_CTRL0_MX28_PLATE_MASK;
+ }
+ 
+-static u32 mxs_lradc_irq_en_mask(struct mxs_lradc *lradc)
+-{
+-	if (lradc->soc == IMX23_LRADC)
+-		return LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK;
+-	return LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK;
+-}
+-
+ static u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
+ {
+ 	if (lradc->soc == IMX23_LRADC)
+@@ -1505,7 +1498,9 @@ static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
+ {
+ 	int i;
+ 
+-	mxs_lradc_reg_clear(lradc, mxs_lradc_irq_en_mask(lradc), LRADC_CTRL1);
++	mxs_lradc_reg_clear(lradc,
++		lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
++		LRADC_CTRL1);
+ 
+ 	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
+ 		mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(i));
 -- 
-http://palosaari.fi/
+1.7.9.5
+
