@@ -1,45 +1,209 @@
-Return-Path: <leonard.crestez@intel.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: Re: [PATCH] iio: inv_mpu6050: Add support for auxiliary I2C master
-To: linux-iio@vger.kernel.org
-References: <201604210259.xtIWnZqM%fengguang.wu@intel.com>
-Cc: kbuild-all@01.org, linux-kernel@vger.kernel.org,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Daniel Baluta <daniel.baluta@intel.com>, linux-i2c@vger.kernel.org,
- Wolfram Sang <wsa@the-dreams.de>, Peter Rosin <peda@axentia.se>,
- Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5718A53E.90101@intel.com>
-Date: Thu, 21 Apr 2016 13:02:38 +0300
-MIME-Version: 1.0
-In-Reply-To: <201604210259.xtIWnZqM%fengguang.wu@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Return-Path: <str@pengutronix.de>
+From: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	kernel@pengutronix.de,
+	Steffen Trumtrar <s.trumtrar@pengutronix.de>
+Subject: [PATCH] iio: bmg160: add callbacks for the filter frequency
+Date: Thu, 21 Apr 2016 12:49:00 +0200
+Message-Id: <1461235740-18710-1-git-send-email-s.trumtrar@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 04/20/2016 09:17 PM, kbuild test robot wrote:
-> Hi,
-> 
-> [auto build test ERROR on iio/togreg]
-> [also build test ERROR on v4.6-rc4 next-20160420]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improving the system]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Crestez-Dan-Leonard/iio-inv_mpu6050-Add-support-for-auxiliary-I2C-master/20160421-012042
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-> config: i386-randconfig-i1-201616 (attached as .config)
-> reproduce:
->         # save the attached .config to linux build tree
->         make ARCH=i386 
-> 
-> All errors (new ones prefixed by >>):
-> 
->    drivers/iio/imu/inv_mpu6050/inv_mpu_core.c: In function 'inv_mpu_core_probe':
->>> drivers/iio/imu/inv_mpu6050/inv_mpu_core.c:966:11: error: implicit declaration of function 'i2c_add_adapter' [-Werror=implicit-function-declaration]
->      result = i2c_add_adapter(&st->aux_master_adapter);
->               ^
->>> drivers/iio/imu/inv_mpu6050/inv_mpu_core.c:983:2: error: implicit declaration of function 'i2c_del_adapter' [-Werror=implicit-function-declaration]
->      i2c_del_adapter(&st->aux_master_adapter);
->      ^
->    cc1: some warnings being treated as errors
+The filter frequency and sample rate have a fixed relationship.
+Only the filter frequency is unique, however.
+Currently the driver ignores the filter settings for 32 Hz and
+64 Hz.
 
-This error happens if you disable CONFIG_I2C and only compile with SPI
-support. I will add a bunch of #ifdef CONFIG_I2C in the next version.
+This patch adds the necessary callbacks to be able to configure
+and read the filter setting from sysfs.
+
+Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+---
+
+Changing the sample rate will result in using the first match
+and therefore selecting the filter accordingly. Is this a misuse
+of the ABI and should be handled differently or is this okay?
+
+ drivers/iio/gyro/bmg160_core.c | 105 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 93 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+index bbce3b09ac45..ea0243eb393a 100644
+--- a/drivers/iio/gyro/bmg160_core.c
++++ b/drivers/iio/gyro/bmg160_core.c
+@@ -52,6 +52,7 @@
+ #define BMG160_REG_PMU_BW		0x10
+ #define BMG160_NO_FILTER		0
+ #define BMG160_DEF_BW			100
++#define BMG160_REG_PMU_BW_RES		BIT(7)
+ 
+ #define BMG160_REG_INT_MAP_0		0x17
+ #define BMG160_INT_MAP_0_BIT_ANY	BIT(1)
+@@ -103,7 +104,6 @@ struct bmg160_data {
+ 	struct iio_trigger *motion_trig;
+ 	struct mutex mutex;
+ 	s16 buffer[8];
+-	u8 bw_bits;
+ 	u32 dps_range;
+ 	int ev_enable_state;
+ 	int slope_thres;
+@@ -119,13 +119,16 @@ enum bmg160_axis {
+ };
+ 
+ static const struct {
+-	int val;
++	int odr;
++	int filter;
+ 	int bw_bits;
+-} bmg160_samp_freq_table[] = { {100, 0x07},
+-			       {200, 0x06},
+-			       {400, 0x03},
+-			       {1000, 0x02},
+-			       {2000, 0x01} };
++} bmg160_samp_freq_table[] = { {100, 32, 0x07},
++			       {200, 64, 0x06},
++			       {100, 12, 0x05},
++			       {200, 23, 0x04},
++			       {400, 47, 0x03},
++			       {1000, 116, 0x02},
++			       {2000, 230, 0x01} };
+ 
+ static const struct {
+ 	int scale;
+@@ -154,7 +157,7 @@ static int bmg160_convert_freq_to_bit(int val)
+ 	int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
+-		if (bmg160_samp_freq_table[i].val == val)
++		if (bmg160_samp_freq_table[i].odr == val)
+ 			return bmg160_samp_freq_table[i].bw_bits;
+ 	}
+ 
+@@ -176,7 +179,51 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
+ 		return ret;
+ 	}
+ 
+-	data->bw_bits = bw_bits;
++	return 0;
++}
++
++static int bmg160_get_filter(struct bmg160_data *data, int *val)
++{
++	int ret;
++	int i;
++	unsigned int bw_bits;
++
++	ret = regmap_read(data->regmap, BMG160_REG_PMU_BW, &bw_bits);
++	if (ret < 0) {
++		dev_err(data->dev, "Error reading reg_pmu_bw\n");
++		return ret;
++	}
++
++	/* Ignore the readonly reserved bit. */
++	bw_bits &= ~BMG160_REG_PMU_BW_RES;
++
++	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
++		if (bmg160_samp_freq_table[i].bw_bits == bw_bits)
++			break;
++	}
++
++	*val = bmg160_samp_freq_table[i].filter;
++
++	return ret ? ret : IIO_VAL_INT;
++}
++
++
++static int bmg160_set_filter(struct bmg160_data *data, int val)
++{
++	int ret;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
++		if (bmg160_samp_freq_table[i].filter == val)
++			break;
++	}
++
++	ret = regmap_write(data->regmap, BMG160_REG_PMU_BW,
++			   bmg160_samp_freq_table[i].bw_bits);
++	if (ret < 0) {
++		dev_err(data->dev, "Error writing reg_pmu_bw\n");
++		return ret;
++	}
+ 
+ 	return 0;
+ }
+@@ -388,10 +435,21 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+ static int bmg160_get_bw(struct bmg160_data *data, int *val)
+ {
+ 	int i;
++	unsigned int bw_bits;
++	int ret;
++
++	ret = regmap_read(data->regmap, BMG160_REG_PMU_BW, &bw_bits);
++	if (ret < 0) {
++		dev_err(data->dev, "Error reading reg_pmu_bw\n");
++		return ret;
++	}
++
++	/* Ignore the readonly reserved bit. */
++	bw_bits &= ~BMG160_REG_PMU_BW_RES;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
+-		if (bmg160_samp_freq_table[i].bw_bits == data->bw_bits) {
+-			*val = bmg160_samp_freq_table[i].val;
++		if (bmg160_samp_freq_table[i].bw_bits == bw_bits) {
++			*val = bmg160_samp_freq_table[i].odr;
+ 			return IIO_VAL_INT;
+ 		}
+ 	}
+@@ -506,6 +564,8 @@ static int bmg160_read_raw(struct iio_dev *indio_dev,
+ 			return IIO_VAL_INT;
+ 		} else
+ 			return -EINVAL;
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++		return bmg160_get_filter(data, val);
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = 0;
+ 		switch (chan->type) {
+@@ -570,6 +630,26 @@ static int bmg160_write_raw(struct iio_dev *indio_dev,
+ 		ret = bmg160_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++		if (val2)
++			return -EINVAL;
++
++		mutex_lock(&data->mutex);
++		ret = bmg160_set_power_state(data, true);
++		if (ret < 0) {
++			bmg160_set_power_state(data, false);
++			mutex_unlock(&data->mutex);
++			return ret;
++		}
++		ret = bmg160_set_filter(data, val);
++		if (ret < 0) {
++			bmg160_set_power_state(data, false);
++			mutex_unlock(&data->mutex);
++			return ret;
++		}
++		ret = bmg160_set_power_state(data, false);
++		mutex_unlock(&data->mutex);
++		return ret;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (val)
+ 			return -EINVAL;
+@@ -727,7 +807,8 @@ static const struct iio_event_spec bmg160_event = {
+ 	.channel2 = IIO_MOD_##_axis,					\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
+-				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |				\
++		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
+ 	.scan_index = AXIS_##_axis,					\
+ 	.scan_type = {							\
+ 		.sign = 's',						\
+-- 
+2.8.0.rc3
