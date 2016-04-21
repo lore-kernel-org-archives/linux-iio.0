@@ -1,141 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35680 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751770AbcDXLKX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 07:10:23 -0400
-Subject: Re: [PATCH 1/5] iio: inv_mpu6050: Cleanup hw_info mapping
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <cover.1461156671.git.leonard.crestez@intel.com>
- <d5a4a668fae77d35cd8567570651f7c57e8bb2df.1461156671.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Ge Gao <ggao@invensense.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <cf777a5a-a549-d55b-ec15-2234b2c2feb5@kernel.org>
-Date: Sun, 24 Apr 2016 12:10:20 +0100
+Received: from mail-out.m-online.net ([212.18.0.10]:52842 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751794AbcDUVEr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2016 17:04:47 -0400
+Message-ID: <57193A7C.9050607@denx.de>
+Date: Thu, 21 Apr 2016 22:39:24 +0200
+From: Marek Vasut <marex@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <d5a4a668fae77d35cd8567570651f7c57e8bb2df.1461156671.git.leonard.crestez@intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: Stefan Wahren <stefan.wahren@i2se.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+CC: Fabio Estevam <fabio.estevam@nxp.com>,
+	Juergen Borleis <jbe@pengutronix.de>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH RFT V2 1/3] iio: mxs-lradc: simplify TS registration
+References: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com> <1461269478-449-2-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <1461269478-449-2-git-send-email-stefan.wahren@i2se.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/04/16 14:15, Crestez Dan Leonard wrote:
-> The hw_info array was indexed by enum inv_devices chip_type despite the
-> fact that the enumeration had more members than the array and was
-> ordered differently.
+On 04/21/2016 10:11 PM, Stefan Wahren wrote:
+> This patch simplifies the TS registration of mxs-lradc by
+> using devm_input_allocate_device.
 > 
-> The patch cleans this up and adds explicit chip_types to i2c/spi/acpi
-> IDs. It also adds some stricter checks inside the driver core.
-> 
-> This happened to work so far because the differences between the
-> supported models are very minor.
-> 
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>h
-Ideally I'd like an Ack / review from Ge on these.
-The same is true for the whole series.
-
-Looks good to me though!
-
-Jonathan
+> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 15 ++++++++++++++-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  2 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  | 18 ++++++++++++++----
->  3 files changed, 29 insertions(+), 6 deletions(-)
+>  drivers/iio/adc/mxs-lradc.c |    9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index d192953..52e62b3 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -88,16 +88,23 @@ static const struct inv_mpu6050_chip_config chip_config_6050 = {
->  	.accl_fs = INV_MPU6050_FS_02G,
->  };
+> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+> index ad26da1..223650b 100644
+> --- a/drivers/iio/adc/mxs-lradc.c
+> +++ b/drivers/iio/adc/mxs-lradc.c
+> @@ -1120,12 +1120,11 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+>  {
+>  	struct input_dev *input;
+>  	struct device *dev = lradc->dev;
+> -	int ret;
 >  
-> +/* Indexed by enum inv_devices */
->  static const struct inv_mpu6050_hw hw_info[] = {
->  	{
->  		.num_reg = 117,
-> +		.name = "MPU6050",
-> +		.reg = &reg_set_6050,
-> +		.config = &chip_config_6050,
-> +	},
-> +	{
-> +		.num_reg = 117,
->  		.name = "MPU6500",
->  		.reg = &reg_set_6500,
->  		.config = &chip_config_6050,
->  	},
->  	{
->  		.num_reg = 117,
-> -		.name = "MPU6050",
-> +		.name = "MPU6000",
->  		.reg = &reg_set_6050,
->  		.config = &chip_config_6050,
->  	},
-> @@ -774,6 +781,12 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  	if (!indio_dev)
+>  	if (!lradc->use_touchscreen)
+>  		return 0;
+>  
+> -	input = input_allocate_device();
+> +	input = devm_input_allocate_device(dev);
+>  	if (!input)
 >  		return -ENOMEM;
 >  
-> +	BUILD_BUG_ON(ARRAY_SIZE(hw_info) != INV_NUM_PARTS);
-> +	if (chip_type < 0 || chip_type >= INV_NUM_PARTS) {
-> +		dev_err(dev, "Bad invensense chip_type=%d name=%s\n",
-> +				chip_type, name);
-> +		return -ENODEV;
-> +	}
->  	st = iio_priv(indio_dev);
->  	st->chip_type = chip_type;
->  	st->powerup_count = 0;
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> index 5ee4e0d..bb1a7b1 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> @@ -208,7 +208,7 @@ static const struct i2c_device_id inv_mpu_id[] = {
->  MODULE_DEVICE_TABLE(i2c, inv_mpu_id);
+> @@ -1146,11 +1145,8 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
 >  
->  static const struct acpi_device_id inv_acpi_match[] = {
-> -	{"INVN6500", 0},
-> +	{"INVN6500", INV_MPU6500},
->  	{ },
->  };
+>  	lradc->ts_input = input;
+>  	input_set_drvdata(input, lradc);
+> -	ret = input_register_device(input);
+> -	if (ret)
+> -		input_free_device(lradc->ts_input);
 >  
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> index 7bcb8d8..3972a46 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> @@ -44,9 +44,19 @@ static int inv_mpu_i2c_disable(struct iio_dev *indio_dev)
->  static int inv_mpu_probe(struct spi_device *spi)
->  {
->  	struct regmap *regmap;
-> -	const struct spi_device_id *id = spi_get_device_id(spi);
-> -	const char *name = id ? id->name : NULL;
-> -	const int chip_type = id ? id->driver_data : 0;
-> +	const struct spi_device_id *spi_id;
-> +	const struct acpi_device_id *acpi_id;
-> +	const char *name = NULL;
-> +	enum inv_devices chip_type;
-> +
-> +	if ((spi_id = spi_get_device_id(spi))) {
-> +		chip_type = (enum inv_devices)spi_id->driver_data;
-> +		name = spi_id->name;
-> +	} else if ((acpi_id = acpi_match_device(spi->dev.driver->acpi_match_table, &spi->dev))) {
-> +		chip_type = (enum inv_devices)acpi_id->driver_data;
-> +	} else {
-> +		return -ENODEV;
-> +	}
+> -	return ret;
+> +	return input_register_device(input);
+>  }
 >  
->  	regmap = devm_regmap_init_spi(spi, &inv_mpu_regmap_config);
->  	if (IS_ERR(regmap)) {
-> @@ -76,7 +86,7 @@ static const struct spi_device_id inv_mpu_id[] = {
->  MODULE_DEVICE_TABLE(spi, inv_mpu_id);
+>  static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
+> @@ -1159,7 +1155,6 @@ static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
+>  		return;
 >  
->  static const struct acpi_device_id inv_acpi_match[] = {
-> -	{"INVN6000", 0},
-> +	{"INVN6000", INV_MPU6000},
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
+>  	mxs_lradc_disable_ts(lradc);
+> -	input_unregister_device(lradc->ts_input);
+>  }
+>  
+>  /*
 > 
+This seems to be done right now :)
 
+Reviewed-by: Marek Vasut <marex@denx.de>
+
+-- 
+Best regards,
+Marek Vasut
