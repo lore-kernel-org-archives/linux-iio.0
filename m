@@ -1,90 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f54.google.com ([209.85.220.54]:33839 "EHLO
-	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964911AbcDYVAp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Apr 2016 17:00:45 -0400
-Date: Mon, 25 Apr 2016 14:00:41 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+Received: from mga04.intel.com ([192.55.52.120]:63968 "EHLO mga04.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752044AbcDUMBg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 21 Apr 2016 08:01:36 -0400
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: Re: [PATCH] iio: inv_mpu6050: Add support for auxiliary I2C master
+To: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <AM4PR02MB129981BAE6A4E893DDD38173BC6D0@AM4PR02MB1299.eurprd02.prod.outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Marek Vasut <marex@denx.de>,
-	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH V3 2/3] iio: mxs-lradc: remove mxs_lradc_ts_unregister
-Message-ID: <20160425210041.GB26059@dtor-ws>
-References: <1461441479-23218-1-git-send-email-stefan.wahren@i2se.com>
- <1461441479-23218-3-git-send-email-stefan.wahren@i2se.com>
+	Daniel Baluta <daniel.baluta@intel.com>,
+	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Message-ID: <5718C11A.6010001@intel.com>
+Date: Thu, 21 Apr 2016 15:01:30 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1461441479-23218-3-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <AM4PR02MB129981BAE6A4E893DDD38173BC6D0@AM4PR02MB1299.eurprd02.prod.outlook.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Apr 23, 2016 at 07:57:58PM +0000, Stefan Wahren wrote:
-> After using devm_input_allocate_device for registration
-> the function mxs_lradc_ts_unregister isn't necessary anymore
-> since mxs_lradc_ts_close already does the job.
+On 04/20/2016 11:31 PM, Peter Rosin wrote:
+> Crestez Dan Leonard wrote:
+>> Changes since that version:
+>> * Nest the adapter in inv_mpu6050_state instead of making it static
+>> * Explicitly forward of_node "i2c-aux-master" to allow describing aux devices
+>> via devicetree.
+>>
+>> For bypass/mux mode devicetree works automatically. The forwarding is based on
+>> the "chan_id" parameter to i2c_add_mux_adapter and is implemented here:
+>>
+>> http://lxr.free-electrons.com/source/drivers/i2c/i2c-mux.c?v=4.5#L158
+>>
+>> Perhaps it might be better for devices handled via master mode to be described
+>> via i2c@1? This would work by scanning the mpu node's children for something
+>> with reg == 1.
 > 
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> Suggested-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> The 0 in i2c@0 (which is used by the mux mode) is the index of the mux slave
+> meaning that i2c@1 would be a second mux slave on the same mux, but this is
+> not a real mux as such, it is a gate which is piggybacking on the i2c mux infra.
+> So, this "mux" can't have a second slave which is why only 0 is valid.
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+This behavior is automatic in i2c mux code and seems to assume that all
+the children of mux_dev are i2c muxes. This might be obviously correct
+and useful for dedicated i2c mux devices but in my case mux_dev is just
+the i2c_client for a sensor.
 
-> ---
->  drivers/iio/adc/mxs-lradc.c |   13 +------------
->  1 file changed, 1 insertion(+), 12 deletions(-)
+>From Documentation/devicetree/bindings/i2c/i2c-mux.txt:
+
+> An i2c bus multiplexer/switch will have several child busses that are
+> numbered uniquely in a device dependent manner.  The nodes for an i2c
+> bus multiplexer/switch will have one child node for each child bus.
+
+This seems to be written in a way that would allow me to define the
+"auxiliary i2c master" as bus "1". After all, the numbering is device
+dependent and it's not clear that all the child busses need to be
+accessible through muxing rather than indirect access through device
+registers.
+
+>> Or maybe the two busses should be called i2c-aux-master and i2c-aux-mux? Not
+>> sure how to deal with that on the mux side.
 > 
-> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-> index 3d1d370..90242ba 100644
-> --- a/drivers/iio/adc/mxs-lradc.c
-> +++ b/drivers/iio/adc/mxs-lradc.c
-> @@ -1148,14 +1148,6 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->  	return input_register_device(input);
->  }
->  
-> -static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
-> -{
-> -	if (!lradc->use_touchscreen)
-> -		return;
-> -
-> -	mxs_lradc_disable_ts(lradc);
-> -}
-> -
->  /*
->   * IRQ Handling
->   */
-> @@ -1715,13 +1707,11 @@ static int mxs_lradc_probe(struct platform_device *pdev)
->  	ret = iio_device_register(iio);
->  	if (ret) {
->  		dev_err(dev, "Failed to register IIO device\n");
-> -		goto err_ts;
-> +		return ret;
->  	}
->  
->  	return 0;
->  
-> -err_ts:
-> -	mxs_lradc_ts_unregister(lradc);
->  err_ts_register:
->  	mxs_lradc_hw_stop(lradc);
->  err_dev:
-> @@ -1739,7 +1729,6 @@ static int mxs_lradc_remove(struct platform_device *pdev)
->  	struct mxs_lradc *lradc = iio_priv(iio);
->  
->  	iio_device_unregister(iio);
-> -	mxs_lradc_ts_unregister(lradc);
->  	mxs_lradc_hw_stop(lradc);
->  	mxs_lradc_trigger_remove(iio);
->  	iio_triggered_buffer_cleanup(iio);
-> -- 
-> 1.7.9.5
-> 
+> Changing i2c to i2c-aux-mux would break existing device trees, that seems
+> like a bad thing, no?
 
--- 
-Dmitry
+That support was not documented in mpu6050's bindings and might not be
+actually used.
+
+>> It is not clear how to properly handle this and suggestions are welcome. The
+>> way it currently works with this patch is documented immediately below.
+> 
+> I think the naming could be i2c-master0, i2c-master1 etc if it, with
+> future work, would be possible to add more than one master (you talked about
+> 5 i2c slaves..).
+
+The device has 5 sets of registers for controlling i2c slaves but only
+one physical auxiliary i2c bus. As far as I can tell slaves 0-3 are
+intended to be used for gathering readings for slaved sensors
+periodically without external intervention. Slave 4 can generate an
+interrupt on completion and is more suitable for general-purpose
+communication with any number of devices.
