@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([217.72.192.75]:57213 "EHLO
+Received: from mout.kundenserver.de ([217.72.192.75]:52198 "EHLO
 	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751761AbcDUUMY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2016 16:12:24 -0400
+	with ESMTP id S1751742AbcDUUMX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2016 16:12:23 -0400
 From: Stefan Wahren <stefan.wahren@i2se.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
@@ -15,53 +15,105 @@ Cc: Fabio Estevam <fabio.estevam@nxp.com>,
 	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH RFT V2 2/3] iio: mxs-lradc: disable only masked channels in mxs_lradc_hw_stop
-Date: Thu, 21 Apr 2016 20:11:17 +0000
-Message-Id: <1461269478-449-3-git-send-email-stefan.wahren@i2se.com>
+Subject: [PATCH RFT V2 3/3] iio: mxs-lradc: implement suspend/resume support
+Date: Thu, 21 Apr 2016 20:11:18 +0000
+Message-Id: <1461269478-449-4-git-send-email-stefan.wahren@i2se.com>
 In-Reply-To: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com>
 References: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Disabling of the touchscreen IRQs should be done in
-mxs_lradc_disable_ts. So disable only the masked virtual channels
-in mxs_lradc_hw_stop and finally remove the unused function
-mxs_lradc_irq_en_mask.
+This patch implements suspend/resume support for mxs-lradc.
+It's possible to use the touchscreen as wakeup source.
 
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
- drivers/iio/adc/mxs-lradc.c |   11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/iio/adc/mxs-lradc.c |   61 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
 
 diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-index 223650b..cfc558f 100644
+index cfc558f..6bd387f 100644
 --- a/drivers/iio/adc/mxs-lradc.c
 +++ b/drivers/iio/adc/mxs-lradc.c
-@@ -373,13 +373,6 @@ static u32 mxs_lradc_plate_mask(struct mxs_lradc *lradc)
- 	return LRADC_CTRL0_MX28_PLATE_MASK;
+@@ -29,6 +29,7 @@
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
++#include <linux/pm.h>
+ #include <linux/slab.h>
+ #include <linux/stmp_device.h>
+ #include <linux/sysfs.h>
+@@ -1745,10 +1746,70 @@ static int mxs_lradc_remove(struct platform_device *pdev)
+ 	return 0;
  }
  
--static u32 mxs_lradc_irq_en_mask(struct mxs_lradc *lradc)
--{
--	if (lradc->soc == IMX23_LRADC)
--		return LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK;
--	return LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK;
--}
--
- static u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
- {
- 	if (lradc->soc == IMX23_LRADC)
-@@ -1505,7 +1498,9 @@ static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
- {
- 	int i;
- 
--	mxs_lradc_reg_clear(lradc, mxs_lradc_irq_en_mask(lradc), LRADC_CTRL1);
-+	mxs_lradc_reg_clear(lradc,
-+		lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
-+		LRADC_CTRL1);
- 
- 	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
- 		mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(i));
++static int __maybe_unused mxs_lradc_suspend(struct device *dev)
++{
++	struct iio_dev *iio = dev_get_drvdata(dev);
++	struct mxs_lradc *lradc = iio_priv(iio);
++	struct input_dev *input = lradc->ts_input;
++	int ret = 0;
++
++	if (input) {
++		mutex_lock(&input->mutex);
++
++		/* Enable touchscreen wakeup irq */
++		if (input->users && device_may_wakeup(dev))
++			ret = enable_irq_wake(lradc->irq[0]);
++		else
++			mxs_lradc_disable_ts(lradc);
++
++		mutex_unlock(&input->mutex);
++	}
++
++	if (ret)
++		return ret;
++
++	mxs_lradc_hw_stop(lradc);
++
++	clk_disable_unprepare(lradc->clk);
++
++	return ret;
++}
++
++static int __maybe_unused mxs_lradc_resume(struct device *dev)
++{
++	struct iio_dev *iio = dev_get_drvdata(dev);
++	struct mxs_lradc *lradc = iio_priv(iio);
++	struct input_dev *input = lradc->ts_input;
++	int ret;
++
++	ret = clk_prepare_enable(lradc->clk);
++	if (ret)
++		return ret;
++
++	mxs_lradc_hw_init(lradc);
++
++	if (input) {
++		mutex_lock(&input->mutex);
++
++		/* Disable touchscreen wakeup irq */
++		if (input->users && device_may_wakeup(dev))
++			ret = disable_irq_wake(lradc->irq[0]);
++		else
++			mxs_lradc_enable_touch_detection(lradc);
++
++		mutex_unlock(&input->mutex);
++	}
++
++	return ret;
++}
++
++static SIMPLE_DEV_PM_OPS(mxs_lradc_pm_ops, mxs_lradc_suspend, mxs_lradc_resume);
++
+ static struct platform_driver mxs_lradc_driver = {
+ 	.driver	= {
+ 		.name	= DRIVER_NAME,
+ 		.of_match_table = mxs_lradc_dt_ids,
++		.pm	= &mxs_lradc_pm_ops,
+ 	},
+ 	.probe	= mxs_lradc_probe,
+ 	.remove	= mxs_lradc_remove,
 -- 
 1.7.9.5
 
