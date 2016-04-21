@@ -1,29 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:49347 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752235AbcDTR7S (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Apr 2016 13:59:18 -0400
-Subject: Re: bmg160 driver
-To: Patrick Doyle <wpdster@gmail.com>, linux-iio@vger.kernel.org
-References: <CAF_dkJBTS9s6x4Fq+E5eJSRwsd=m6tRHZ9m8hotC6mLzeLberg@mail.gmail.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <5717C372.3070702@metafoo.de>
-Date: Wed, 20 Apr 2016 19:59:14 +0200
+Return-Path: <leonard.crestez@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: Re: [PATCH] iio: inv_mpu6050: Add support for auxiliary I2C master
+To: linux-iio@vger.kernel.org
+References: <201604210259.xtIWnZqM%fengguang.wu@intel.com>
+Cc: kbuild-all@01.org, linux-kernel@vger.kernel.org,
+ Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+ Daniel Baluta <daniel.baluta@intel.com>, linux-i2c@vger.kernel.org,
+ Wolfram Sang <wsa@the-dreams.de>, Peter Rosin <peda@axentia.se>,
+ Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5718A53E.90101@intel.com>
+Date: Thu, 21 Apr 2016 13:02:38 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAF_dkJBTS9s6x4Fq+E5eJSRwsd=m6tRHZ9m8hotC6mLzeLberg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <201604210259.xtIWnZqM%fengguang.wu@intel.com>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/20/2016 07:55 PM, Patrick Doyle wrote:
-> Hello,
-> I need to write a SPI mode Linux device driver for the Bosch BMI055
-> IMU.  I notice that an I2C version of the driver for this part exists
-> already (at least, in the 4.1 kernel I am using).  I was wondering if
-> anyone knew of an existing SPI mode driver for this part, or if
-> anybody had some hints or direction that they could give me regarding
-> writing such a driver myself.
+On 04/20/2016 09:17 PM, kbuild test robot wrote:
+> Hi,
+> 
+> [auto build test ERROR on iio/togreg]
+> [also build test ERROR on v4.6-rc4 next-20160420]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improving the system]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Crestez-Dan-Leonard/iio-inv_mpu6050-Add-support-for-auxiliary-I2C-master/20160421-012042
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+> config: i386-randconfig-i1-201616 (attached as .config)
+> reproduce:
+>         # save the attached .config to linux build tree
+>         make ARCH=i386 
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    drivers/iio/imu/inv_mpu6050/inv_mpu_core.c: In function 'inv_mpu_core_probe':
+>>> drivers/iio/imu/inv_mpu6050/inv_mpu_core.c:966:11: error: implicit declaration of function 'i2c_add_adapter' [-Werror=implicit-function-declaration]
+>      result = i2c_add_adapter(&st->aux_master_adapter);
+>               ^
+>>> drivers/iio/imu/inv_mpu6050/inv_mpu_core.c:983:2: error: implicit declaration of function 'i2c_del_adapter' [-Werror=implicit-function-declaration]
+>      i2c_del_adapter(&st->aux_master_adapter);
+>      ^
+>    cc1: some warnings being treated as errors
 
-The latest IIO tree has SPI support. See
-http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/gyro/bmg160_spi.c
-
+This error happens if you disable CONFIG_I2C and only compile with SPI
+support. I will add a bunch of #ifdef CONFIG_I2C in the next version.
