@@ -1,75 +1,92 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:34053 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751707AbcDUVEr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2016 17:04:47 -0400
-Message-ID: <57193B91.9030704@denx.de>
-Date: Thu, 21 Apr 2016 22:44:01 +0200
-From: Marek Vasut <marex@denx.de>
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: Wolfram Sang <wsa@the-dreams.de>, Peter Rosin <peda@axentia.se>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Jonathan
+ Corbet" <corbet@lwn.net>, Peter Korsgaard <peter.korsgaard@barco.com>,
+	"Guenter Roeck" <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>,
+	"Hartmut Knaack" <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	"Peter Meerwald" <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, "Mauro
+ Carvalho Chehab" <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>,
+	"Frank Rowand" <frowand.list@gmail.com>, Grant Likely
+	<grant.likely@linaro.org>, Andrew Morton <akpm@linux-foundation.org>, "David
+ S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, "Kalle Valo" <kvalo@codeaurora.org>, Jiri Slaby
+	<jslaby@suse.com>, Daniel Baluta <daniel.baluta@intel.com>, Lucas De Marchi
+	<lucas.demarchi@intel.com>, Adriana Reus <adriana.reus@intel.com>, Matt
+ Ranostay <matt.ranostay@intel.com>, Krzysztof Kozlowski
+	<k.kozlowski@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Terry Heo
+	<terryheo@google.com>, "Arnd Bergmann" <arnd@arndb.de>, Tommi Rantala
+	<tt.rantala@gmail.com>, "Crestez Dan Leonard" <leonard.crestez@intel.com>,
+	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Peter Rosin
+	<peda@lysator.liu.se>
+Subject: Re: [PATCH v7 00/24] i2c mux cleanup and locking update
+Date: Fri, 22 Apr 2016 07:54:12 +0000
+Message-ID: <AM4PR02MB1299DD7DBCE30E8EFE9E1259BC6F0@AM4PR02MB1299.eurprd02.prod.outlook.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Stefan Wahren <stefan.wahren@i2se.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH RFT V2 2/3] iio: mxs-lradc: disable only masked channels
- in mxs_lradc_hw_stop
-References: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com> <1461269478-449-3-git-send-email-stefan.wahren@i2se.com>
-In-Reply-To: <1461269478-449-3-git-send-email-stefan.wahren@i2se.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/21/2016 10:11 PM, Stefan Wahren wrote:
-> Disabling of the touchscreen IRQs should be done in
-> mxs_lradc_disable_ts. So disable only the masked virtual channels
-> in mxs_lradc_hw_stop and finally remove the unused function
-> mxs_lradc_irq_en_mask.
-> 
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> ---
->  drivers/iio/adc/mxs-lradc.c |   11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-> index 223650b..cfc558f 100644
-> --- a/drivers/iio/adc/mxs-lradc.c
-> +++ b/drivers/iio/adc/mxs-lradc.c
-> @@ -373,13 +373,6 @@ static u32 mxs_lradc_plate_mask(struct mxs_lradc *lradc)
->  	return LRADC_CTRL0_MX28_PLATE_MASK;
->  }
->  
-> -static u32 mxs_lradc_irq_en_mask(struct mxs_lradc *lradc)
-> -{
-> -	if (lradc->soc == IMX23_LRADC)
-> -		return LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK;
-> -	return LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK;
-> -}
-> -
->  static u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
->  {
->  	if (lradc->soc == IMX23_LRADC)
-> @@ -1505,7 +1498,9 @@ static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
->  {
->  	int i;
->  
-> -	mxs_lradc_reg_clear(lradc, mxs_lradc_irq_en_mask(lradc), LRADC_CTRL1);
-> +	mxs_lradc_reg_clear(lradc,
-> +		lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
-> +		LRADC_CTRL1);
->  
->  	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
->  		mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(i));
-> 
-Looks sane too:
+Hi Wolfram,
 
-Reviewed-by: Marek Vasut <marex@denx.de>
+Wolfram Sang wrote:
+> This was the diff of v6:
+>=20
+> >  32 files changed, 1277 insertions(+), 915 deletions(-)
+>=20
+> This is v7:
+>=20
+> >  32 files changed, 1225 insertions(+), 916 deletions(-)
+>=20
+> So, we gained a little overall. And while the individual drivers have a
+> few lines more now, I still think it is more readable.
+>=20
+> So, thanks for doing that!
 
--- 
-Best regards,
-Marek Vasut
+Most, if not all, of these ~50 lines gained in v7 come from removing
+i2c_mux_reserve_adapters and realloc. I.e., I think we might even have
+lost a few lines with the i2c_mux_one_adapter removal, but not that many.
+If the doc patch is taken out of the equation, we gain new functionality,
+fix a bug and lose lines of code. Feels good!
+However, this is not why I'm writing this message...
+
+> I'll give people some time for testing. I'll have a further look, too.
+> Hopefully, I can pick up patches 1-14 by the end of the week.
+
+The reason for this message is that I just realized a couple of things.
+
+First, you have suggested to merge patches 1-14 about now, and I assumed
+that implied merging with Linus for 4.6, but on rereading I realize that
+you have consistently targeted 4.7. I must be sloppy, and that had escaped
+me. Is it really necessary to be that cautious? Maybe I'm overly confident,
+but is 1-14 really such a big deal that it has to float in next for a whole
+cycle?
+
+The problem with waiting until 4.8 with the rest of the series is that it
+will likely go stale, e.g. patch 22 ([media] rtl2832: change the i2c gate
+to be mux-locked) touches a ton of register accesses in that driver since
+it removes a regmap wrapper that is rendered obsolete. Expecting that
+patch to work for 4.8 is overly optimistic, and while patching things up
+is (probably) easy, it also renders any previous testing suspect.
+
+That said, maybe I'm just impatient and reckless?
+
+Second, should we not add 15-24 to the next branch now as well to get
+testing going asap, even if we do not intend to merge it just yet or even
+in that exact form? Or is that abusing the next branch?
+
+Third, should we deprecate the old i2c_add_mux_adapter, so that new
+users do not crop up behind our backs in the transition? Or not bother?
+
+Fourth, I forgot to change patch 8 (iio: imu: inv_mpu6050: convert to
+use an explicit i2c mux core) to not change i2c_get_clientdata() ->
+dev_get_drvdata() as requested by Jonathan Cameron. How should I handle
+that? There are also some new Tested-by tags that I have added to my
+local branch but have not pushed anywhere. I'm ready to push all that
+to a new branch once you are ready to take it.
+
+Cheers,
+Peter
