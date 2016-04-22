@@ -1,145 +1,177 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:4430 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751172AbcDVKP0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 22 Apr 2016 06:15:26 -0400
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: Re: [PATCH] iio: inv_mpu6050: Add support for auxiliary I2C master
-To: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <AM4PR02MB1299B78B76BF112B2E06F20BBC6E0@AM4PR02MB1299.eurprd02.prod.outlook.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-	Wolfram Sang <wsa@the-dreams.de>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Message-ID: <5719F9B4.1020704@intel.com>
-Date: Fri, 22 Apr 2016 13:15:16 +0300
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
+ Corbet <corbet@lwn.net>, Peter Korsgaard <peter.korsgaard@barco.com>, Guenter
+ Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>, Hartmut
+ Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
+ Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, Mauro Carvalho
+ Chehab <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>, Frank
+ Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>, "David S. Miller"
+	<davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kalle
+ Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Lucas De Marchi <lucas.demarchi@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>, Matt Ranostay
+	<matt.ranostay@intel.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>, Terry Heo <terryheo@google.com>, Arnd
+ Bergmann <arnd@arndb.de>, Tommi Rantala <tt.rantala@gmail.com>, Crestez Dan
+ Leonard <leonard.crestez@intel.com>, <linux-i2c@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>, Peter Rosin
+	<peda@lysator.liu.se>
+Subject: [PATCH v8 08/24] iio: imu: inv_mpu6050: convert to use an explicit i2c mux core
+Date: Fri, 22 Apr 2016 13:37:12 +0200
+Message-ID: <1461325032-24299-1-git-send-email-peda@axentia.se>
+In-Reply-To: <1461165484-2314-9-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <AM4PR02MB1299B78B76BF112B2E06F20BBC6E0@AM4PR02MB1299.eurprd02.prod.outlook.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/21/2016 04:56 PM, Peter Rosin wrote:
-> Crestez Dan Leonard wrote:
->> On 04/20/2016 11:31 PM, Peter Rosin wrote:
->>> Crestez Dan Leonard wrote:
->>>> Changes since that version:
->>>> * Nest the adapter in inv_mpu6050_state instead of making it static
->>>> * Explicitly forward of_node "i2c-aux-master" to allow describing aux devices
->>>> via devicetree.
->>>>
->>>> For bypass/mux mode devicetree works automatically. The forwarding is based on
->>>> the "chan_id" parameter to i2c_add_mux_adapter and is implemented here:
->>>>
->>>> http://lxr.free-electrons.com/source/drivers/i2c/i2c-mux.c?v=4.5#L158
->>>>
->>>> Perhaps it might be better for devices handled via master mode to be described
->>>> via i2c@1? This would work by scanning the mpu node's children for something
->>>> with reg == 1.
->>>
->>> The 0 in i2c@0 (which is used by the mux mode) is the index of the mux slave
->>> meaning that i2c@1 would be a second mux slave on the same mux, but this is
->>> not a real mux as such, it is a gate which is piggybacking on the i2c mux infra.
->>> So, this "mux" can't have a second slave which is why only 0 is valid.
->>
->> This behavior is automatic in i2c mux code and seems to assume that all
->> the children of mux_dev are i2c muxes. This might be obviously correct
->> and useful for dedicated i2c mux devices but in my case mux_dev is just
->> the i2c_client for a sensor.
->>
->> From Documentation/devicetree/bindings/i2c/i2c-mux.txt:
->>
->>> An i2c bus multiplexer/switch will have several child busses that are
->>> numbered uniquely in a device dependent manner.  The nodes for an i2c
->>> bus multiplexer/switch will have one child node for each child bus.
->>
->> This seems to be written in a way that would allow me to define the
->> "auxiliary i2c master" as bus "1". After all, the numbering is device
->> dependent and it's not clear that all the child busses need to be
->> accessible through muxing rather than indirect access through device
->> registers.
-> 
-> You are correct that if you have devicetree children where reg does
-> not match the chan_id given to i2c_add_mux_adapter() those children
-> will be ignored by the i2c-mux code. So, the code would be happy with
-> a devicetree such as:
-> 
-> 	mpu6050@68 {
-> 		compatible = "...";
-> 		reg = <0x68>;
-> 		...
-> 		i2c-aux-mux@0 {
-> 			#address-cells = <1>;
-> 			#size-cells = <0>;
-> 			reg = <0>;
-> 
-> 			foo@44 {
-> 				compatible = "bar";
-> 				reg = <0x44>;
-> 				...
-> 			}
-> 		}
-> 		i2c-aux-master@1 {
-> 			#address-cells = <1>;
-> 			#size-cells = <0>;
-> 			reg = <1>;
-> 
-> 			gazonk@44 {
-> 				compatible = "baz";
-> 				reg = <0x44>;
-> 				...
-> 			}
-> 		}
-> 	}
-> 
-> as long as you do only call i2c_add_mux_adapter() with chan_id = 0. And that
-> is what you are doing. But I think it is a bit subtle...
+Allocate an explicit i2c mux core to handle parent and child adapters
+etc. Update the select/deselect ops to be in terms of the i2c mux core
+instead of the child adapter.
 
-This kind of stuff needs to be written up in
-Documentation/devicetree/bindings anyway.
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c |  2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  1 -
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  | 33 +++++++++++++++---------------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  3 ++-
+ 4 files changed, 19 insertions(+), 20 deletions(-)
 
->>> I think the naming could be i2c-master0, i2c-master1 etc if it, with
->>> future work, would be possible to add more than one master (you talked about
->>> 5 i2c slaves..).
->>
->> The device has 5 sets of registers for controlling i2c slaves but only
->> one physical auxiliary i2c bus. As far as I can tell slaves 0-3 are
->> intended to be used for gathering readings for slaved sensors
->> periodically without external intervention. Slave 4 can generate an
->> interrupt on completion and is more suitable for general-purpose
->> communication with any number of devices.
-> 
-> Ah, ok, so all 5 sets of slave registers are about the same physical i2c
-> bus. So, you basically cannot sanely use this physical aux i2c bus as an
-> i2c-mux and an extra i2c adapter in the same hw design. Correct?
+v8 compared to v7:
+- Do not change i2c_get_clientdata() into dev_get_drvdata()
 
-You can access devices on the auxiliary i2c bus either through mux-ing
-or the adapter added by this patch. I think mux mode works better (lower
-latency) but is not available when the primary connection is via SPI.
-You can use both but it doesn't particularly make sense.
-
-> In that case, couldn't you look at the names of any devicetree children
-> and use that to decide if you should even attempt to call
-> i2c_add_mux_adapter or i2c_add_adapter?
-
-But the adapter should be added even if nothing is defined for it.
-Registering i2c clients by echoing in new_device is a valid usecase.
-
-What could be done is only register the i2c mux in i2c mode and the i2c
-master in spi mode and make the bindings identical.
-
-> (But please don't clobber stuff for my i2c-mux rework, or you will
-> have to wait even longer for that deadlock to be resolved)
-
-I won't. I should have sent this as an [RFC] anyway, it will take a
-while to get it.
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+index 2771106fd650..f62b8bd9ad7e 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+@@ -183,7 +183,7 @@ int inv_mpu_acpi_create_mux_client(struct i2c_client *client)
+ 			} else
+ 				return 0; /* no secondary addr, which is OK */
+ 		}
+-		st->mux_client = i2c_new_device(st->mux_adapter, &info);
++		st->mux_client = i2c_new_device(st->muxc->adapter[0], &info);
+ 		if (!st->mux_client)
+ 			return -ENODEV;
+ 	}
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index d192953e9a38..0c2bded2b5b7 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -23,7 +23,6 @@
+ #include <linux/kfifo.h>
+ #include <linux/spinlock.h>
+ #include <linux/iio/iio.h>
+-#include <linux/i2c-mux.h>
+ #include <linux/acpi.h>
+ #include "inv_mpu_iio.h"
+ 
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index f581256d9d4c..3a078df84224 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -15,7 +15,6 @@
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
+-#include <linux/i2c-mux.h>
+ #include <linux/iio/iio.h>
+ #include <linux/module.h>
+ #include "inv_mpu_iio.h"
+@@ -52,10 +51,9 @@ static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
+ 	return 0;
+ }
+ 
+-static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
+-				     u32 chan_id)
++static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct i2c_client *client = mux_priv;
++	struct i2c_client *client = i2c_mux_priv(muxc);
+ 	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 	int ret = 0;
+@@ -84,10 +82,9 @@ write_error:
+ 	return ret;
+ }
+ 
+-static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
+-				       void *mux_priv, u32 chan_id)
++static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct i2c_client *client = mux_priv;
++	struct i2c_client *client = i2c_mux_priv(muxc);
+ 	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 
+@@ -136,16 +133,18 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 		return result;
+ 
+ 	st = iio_priv(dev_get_drvdata(&client->dev));
+-	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
+-					      &client->dev,
+-					      client,
+-					      0, 0, 0,
+-					      inv_mpu6050_select_bypass,
+-					      inv_mpu6050_deselect_bypass);
+-	if (!st->mux_adapter) {
+-		result = -ENODEV;
++	st->muxc = i2c_mux_alloc(client->adapter, &client->dev,
++				 1, 0, 0,
++				 inv_mpu6050_select_bypass,
++				 inv_mpu6050_deselect_bypass);
++	if (!st->muxc) {
++		result = -ENOMEM;
+ 		goto out_unreg_device;
+ 	}
++	st->muxc->priv = dev_get_drvdata(&client->dev);
++	result = i2c_mux_add_adapter(st->muxc, 0, 0, 0);
++	if (result)
++		goto out_unreg_device;
+ 
+ 	result = inv_mpu_acpi_create_mux_client(client);
+ 	if (result)
+@@ -154,7 +153,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 	return 0;
+ 
+ out_del_mux:
+-	i2c_del_mux_adapter(st->mux_adapter);
++	i2c_mux_del_adapters(st->muxc);
+ out_unreg_device:
+ 	inv_mpu_core_remove(&client->dev);
+ 	return result;
+@@ -166,7 +165,7 @@ static int inv_mpu_remove(struct i2c_client *client)
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 
+ 	inv_mpu_acpi_delete_mux_client(client);
+-	i2c_del_mux_adapter(st->mux_adapter);
++	i2c_mux_del_adapters(st->muxc);
+ 
+ 	return inv_mpu_core_remove(&client->dev);
+ }
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index e302a49703bf..bb3cef6d7059 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -11,6 +11,7 @@
+ * GNU General Public License for more details.
+ */
+ #include <linux/i2c.h>
++#include <linux/i2c-mux.h>
+ #include <linux/kfifo.h>
+ #include <linux/spinlock.h>
+ #include <linux/iio/iio.h>
+@@ -127,7 +128,7 @@ struct inv_mpu6050_state {
+ 	const struct inv_mpu6050_hw *hw;
+ 	enum   inv_devices chip_type;
+ 	spinlock_t time_stamp_lock;
+-	struct i2c_adapter *mux_adapter;
++	struct i2c_mux_core *muxc;
+ 	struct i2c_client *mux_client;
+ 	unsigned int powerup_count;
+ 	struct inv_mpu6050_platform_data plat_data;
+-- 
+2.1.4
