@@ -1,128 +1,152 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:46766 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932304AbcDTNPk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 20 Apr 2016 09:15:40 -0400
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-out.m-online.net ([212.18.0.9]:59165 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754142AbcDVQyX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Apr 2016 12:54:23 -0400
+Message-ID: <571A4781.5020407@denx.de>
+Date: Fri, 22 Apr 2016 17:47:13 +0200
+From: Marek Vasut <marex@denx.de>
+MIME-Version: 1.0
+To: Stefan Wahren <stefan.wahren@i2se.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH 5/5] iio: inv_mpu6050: Add explicit support for MPU9150
-Date: Wed, 20 Apr 2016 16:15:13 +0300
-Message-Id: <cb9b1ec69032c501a4c74d6554c25d336d65ac8e.1461156671.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1461156671.git.leonard.crestez@intel.com>
-References: <cover.1461156671.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1461156671.git.leonard.crestez@intel.com>
-References: <cover.1461156671.git.leonard.crestez@intel.com>
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+CC: Fabio Estevam <fabio.estevam@nxp.com>,
+	Juergen Borleis <jbe@pengutronix.de>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH RFT V2 3/3] iio: mxs-lradc: implement suspend/resume support
+References: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com> <1461269478-449-4-git-send-email-stefan.wahren@i2se.com> <57193C01.20709@denx.de> <571A2DB8.9050509@i2se.com>
+In-Reply-To: <571A2DB8.9050509@i2se.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This device is a package containing a MPU6050-like sensor and an AK8975
-magnetometer. The magnetometer component is supported by the existing
-ak8975 driver.
+On 04/22/2016 03:57 PM, Stefan Wahren wrote:
+> Hi Marek,
+> 
+> Am 21.04.2016 um 22:45 schrieb Marek Vasut:
+>> On 04/21/2016 10:11 PM, Stefan Wahren wrote:
+>>> This patch implements suspend/resume support for mxs-lradc.
+>>> It's possible to use the touchscreen as wakeup source.
+>>>
+>>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+>>> ---
+>>>  drivers/iio/adc/mxs-lradc.c |   61 +++++++++++++++++++++++++++++++++++++++++++
+>>>  1 file changed, 61 insertions(+)
+>>>
+>>> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+>>> index cfc558f..6bd387f 100644
+>>> --- a/drivers/iio/adc/mxs-lradc.c
+>>> +++ b/drivers/iio/adc/mxs-lradc.c
+>>> @@ -29,6 +29,7 @@
+>>>  #include <linux/of.h>
+>>>  #include <linux/of_device.h>
+>>>  #include <linux/platform_device.h>
+>>> +#include <linux/pm.h>
+>>>  #include <linux/slab.h>
+>>>  #include <linux/stmp_device.h>
+>>>  #include <linux/sysfs.h>
+>>> @@ -1745,10 +1746,70 @@ static int mxs_lradc_remove(struct platform_device *pdev)
+>>>  	return 0;
+>>>  }
+>>>  
+>>> +static int __maybe_unused mxs_lradc_suspend(struct device *dev)
+>>> +{
+>>> +	struct iio_dev *iio = dev_get_drvdata(dev);
+>>> +	struct mxs_lradc *lradc = iio_priv(iio);
+>>> +	struct input_dev *input = lradc->ts_input;
+>> Can lradc->ts_input contain some non-valid pointer ? You should make
+>> sure it's either inited to NULL or valid pointer, which I'm not sure
+>> you do.
+> 
+> the whole content of lradc get initialized with zero by
+> devm_iio_device_alloc.
 
-This patch also rephrases the Kconfig descriptions.
+Ah, good.
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- drivers/iio/imu/inv_mpu6050/Kconfig        | 10 ++++------
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  6 ++++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  1 +
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  2 ++
- drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  |  1 +
- 5 files changed, 14 insertions(+), 6 deletions(-)
+> Or do you mean the error case that input registration failed and a
+> suspend occur (if it's possible)|?
 
-diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
-index a7f557a..c05d474 100644
---- a/drivers/iio/imu/inv_mpu6050/Kconfig
-+++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-@@ -14,10 +14,8 @@ config INV_MPU6050_I2C
- 	select I2C_MUX
- 	select REGMAP_I2C
- 	help
--	  This driver supports the Invensense MPU6050 devices.
--	  This driver can also support MPU6500 in MPU6050 compatibility mode
--	  and also in MPU6500 mode with some limitations.
--	  It is a gyroscope/accelerometer combo device.
-+	  This driver supports the Invensense MPU6050/6500/9150 motion tracking
-+	  devices over I2C.
- 	  This driver can be built as a module. The module will be called
- 	  inv-mpu6050-i2c.
- 
-@@ -27,7 +25,7 @@ config INV_MPU6050_SPI
- 	select INV_MPU6050_IIO
- 	select REGMAP_SPI
- 	help
--	  This driver supports the Invensense MPU6050 devices.
--	  It is a gyroscope/accelerometer combo device.
-+	  This driver supports the Invensense MPU6000/6500/9150 motion tracking
-+	  devices over SPI.
- 	  This driver can be built as a module. The module will be called
- 	  inv-mpu6050-spi.
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 273b7fa7..3a82a49 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -108,6 +108,12 @@ static const struct inv_mpu6050_hw hw_info[] = {
- 		.reg = &reg_set_6050,
- 		.config = &chip_config_6050,
- 	},
-+	{
-+		.whoami = INV_MPU9150_WHOAMI_VALUE,
-+		.name = "MPU9150",
-+		.reg = &reg_set_6050,
-+		.config = &chip_config_6050,
-+	},
- };
- 
- int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-index bb1a7b1..1a424a6 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-@@ -202,6 +202,7 @@ static int inv_mpu_remove(struct i2c_client *client)
- static const struct i2c_device_id inv_mpu_id[] = {
- 	{"mpu6050", INV_MPU6050},
- 	{"mpu6500", INV_MPU6500},
-+	{"mpu9150", INV_MPU9150},
- 	{}
- };
- 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index 564cabd..38d6a09 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -68,6 +68,7 @@ enum inv_devices {
- 	INV_MPU6050,
- 	INV_MPU6500,
- 	INV_MPU6000,
-+	INV_MPU9150,
- 	INV_NUM_PARTS
- };
- 
-@@ -220,6 +221,7 @@ struct inv_mpu6050_state {
- #define INV_MPU6000_WHOAMI_VALUE		0x68
- #define INV_MPU6050_WHOAMI_VALUE		0x68
- #define INV_MPU6500_WHOAMI_VALUE		0x70
-+#define INV_MPU9150_WHOAMI_VALUE		0x68
- 
- /* scan element definition */
- enum inv_mpu6050_scan {
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-index a0f8df2..190a4a5 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-@@ -81,6 +81,7 @@ static int inv_mpu_remove(struct spi_device *spi)
- static const struct spi_device_id inv_mpu_id[] = {
- 	{"mpu6000", INV_MPU6000},
- 	{"mpu6500", INV_MPU6500},
-+	{"mpu9150", INV_MPU9150},
- 	{}
- };
- 
+No, you cannot get suspend call before you registered the device.
+
+> Stefan
+> 
+> |
+>>
+>>> +	int ret = 0;
+>>> +
+>>> +	if (input) {
+>>> +		mutex_lock(&input->mutex);
+>>> +
+>>> +		/* Enable touchscreen wakeup irq */
+>>> +		if (input->users && device_may_wakeup(dev))
+>>> +			ret = enable_irq_wake(lradc->irq[0]);
+>>> +		else
+>>> +			mxs_lradc_disable_ts(lradc);
+>>> +
+>>> +		mutex_unlock(&input->mutex);
+>>> +	}
+>>> +
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	mxs_lradc_hw_stop(lradc);
+>>> +
+>>> +	clk_disable_unprepare(lradc->clk);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int __maybe_unused mxs_lradc_resume(struct device *dev)
+>>> +{
+>>> +	struct iio_dev *iio = dev_get_drvdata(dev);
+>>> +	struct mxs_lradc *lradc = iio_priv(iio);
+>>> +	struct input_dev *input = lradc->ts_input;
+>>> +	int ret;
+>>> +
+>>> +	ret = clk_prepare_enable(lradc->clk);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	mxs_lradc_hw_init(lradc);
+>>> +
+>>> +	if (input) {
+>>> +		mutex_lock(&input->mutex);
+>>> +
+>>> +		/* Disable touchscreen wakeup irq */
+>>> +		if (input->users && device_may_wakeup(dev))
+>>> +			ret = disable_irq_wake(lradc->irq[0]);
+>>> +		else
+>>> +			mxs_lradc_enable_touch_detection(lradc);
+>>> +
+>>> +		mutex_unlock(&input->mutex);
+>>> +	}
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static SIMPLE_DEV_PM_OPS(mxs_lradc_pm_ops, mxs_lradc_suspend, mxs_lradc_resume);
+>>> +
+>>>  static struct platform_driver mxs_lradc_driver = {
+>>>  	.driver	= {
+>>>  		.name	= DRIVER_NAME,
+>>>  		.of_match_table = mxs_lradc_dt_ids,
+>>> +		.pm	= &mxs_lradc_pm_ops,
+>>>  	},
+>>>  	.probe	= mxs_lradc_probe,
+>>>  	.remove	= mxs_lradc_remove,
+>>>
+>> Looks OK otherwise:
+>>
+>> Reviewed-by: Marek Vasut <marex@denx.de>
+>>
+> 
+> 
+
+
 -- 
-2.5.5
-
+Best regards,
+Marek Vasut
