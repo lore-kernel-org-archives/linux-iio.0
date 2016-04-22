@@ -1,161 +1,354 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db3on0103.outbound.protection.outlook.com ([157.55.234.103]:8019
-	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752364AbcDVLQy convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Apr 2016 07:16:54 -0400
-From: Peter Rosin <peda@axentia.se>
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Peter Rosin <peda@axentia.se>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Hartmut Knaack" <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-	Wolfram Sang <wsa@the-dreams.de>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	"Kumar Gala" <galak@codeaurora.org>
-Subject: Re: [PATCH] iio: inv_mpu6050: Add support for auxiliary I2C master
-Date: Fri, 22 Apr 2016 11:01:35 +0000
-Message-ID: <AM4PR02MB12996F8CFFC48B32E64F5115BC6F0@AM4PR02MB1299.eurprd02.prod.outlook.com>
-Content-Type: text/plain; charset="us-ascii"
+Received: from h1.radempa.de ([176.9.142.194]:38627 "EHLO mail.cosmopool.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753881AbcDVQLI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 22 Apr 2016 12:11:08 -0400
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Date: Fri, 22 Apr 2016 18:11:02 +0200
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <kernel@pengutronix.de>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+	Marek Vasut <marex@denx.de>,
+	<linux-arm-kernel@lists.infradead.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 1/3] iio: mxs-lradc: Add regulators for current sources
+In-Reply-To: <1461333147-11873-2-git-send-email-harald@ccbib.org>
+References: <1461333147-11873-1-git-send-email-harald@ccbib.org>
+ <1461333147-11873-2-git-send-email-harald@ccbib.org>
+Message-ID: <a9431e81a361a19254bbcceae8930d22@ccbib.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Crestez Dan Leonard wrote:
-> On 04/21/2016 04:56 PM, Peter Rosin wrote:
-> > Crestez Dan Leonard wrote:
-> >> On 04/20/2016 11:31 PM, Peter Rosin wrote:
-> >>> Crestez Dan Leonard wrote:
-> >>>> Changes since that version:
-> >>>> * Nest the adapter in inv_mpu6050_state instead of making it static
-> >>>> * Explicitly forward of_node "i2c-aux-master" to allow describing aux devices
-> >>>> via devicetree.
-> >>>>
-> >>>> For bypass/mux mode devicetree works automatically. The forwarding is based on
-> >>>> the "chan_id" parameter to i2c_add_mux_adapter and is implemented here:
-> >>>>
-> >>>> http://lxr.free-electrons.com/source/drivers/i2c/i2c-mux.c?v=4.5#L158
-> >>>>
-> >>>> Perhaps it might be better for devices handled via master mode to be described
-> >>>> via i2c@1? This would work by scanning the mpu node's children for something
-> >>>> with reg == 1.
-> >>>
-> >>> The 0 in i2c@0 (which is used by the mux mode) is the index of the mux slave
-> >>> meaning that i2c@1 would be a second mux slave on the same mux, but this is
-> >>> not a real mux as such, it is a gate which is piggybacking on the i2c mux infra.
-> >>> So, this "mux" can't have a second slave which is why only 0 is valid.
-> >>
-> >> This behavior is automatic in i2c mux code and seems to assume that all
-> >> the children of mux_dev are i2c muxes. This might be obviously correct
-> >> and useful for dedicated i2c mux devices but in my case mux_dev is just
-> >> the i2c_client for a sensor.
-> >>
-> >> From Documentation/devicetree/bindings/i2c/i2c-mux.txt:
-> >>
-> >>> An i2c bus multiplexer/switch will have several child busses that are
-> >>> numbered uniquely in a device dependent manner.  The nodes for an i2c
-> >>> bus multiplexer/switch will have one child node for each child bus.
-> >>
-> >> This seems to be written in a way that would allow me to define the
-> >> "auxiliary i2c master" as bus "1". After all, the numbering is device
-> >> dependent and it's not clear that all the child busses need to be
-> >> accessible through muxing rather than indirect access through device
-> >> registers.
-> > 
-> > You are correct that if you have devicetree children where reg does
-> > not match the chan_id given to i2c_add_mux_adapter() those children
-> > will be ignored by the i2c-mux code. So, the code would be happy with
-> > a devicetree such as:
-> > 
-> > 	mpu6050@68 {
-> > 		compatible = "...";
-> > 		reg = <0x68>;
-> > 		...
-> > 		i2c-aux-mux@0 {
-> > 			#address-cells = <1>;
-> > 			#size-cells = <0>;
-> > 			reg = <0>;
-> > 
-> > 			foo@44 {
-> > 				compatible = "bar";
-> > 				reg = <0x44>;
-> > 				...
-> > 			}
-> > 		}
-> > 		i2c-aux-master@1 {
-> > 			#address-cells = <1>;
-> > 			#size-cells = <0>;
-> > 			reg = <1>;
-> > 
-> > 			gazonk@44 {
-> > 				compatible = "baz";
-> > 				reg = <0x44>;
-> > 				...
-> > 			}
-> > 		}
-> > 	}
-> > 
-> > as long as you do only call i2c_add_mux_adapter() with chan_id = 0. And that
-> > is what you are doing. But I think it is a bit subtle...
-> 
-> This kind of stuff needs to be written up in
-> Documentation/devicetree/bindings anyway.
+CCing Mark and Liam.
 
-Yes, but it helps if similar things are done in similar ways. I simply
-don't know devicetree stuff well enough to know how issues like this
-are resolved elsewhere. So, I don't really know, but it just seemed
-subtle.
+I guess I shouldn't rely blindly on get_maintainer.pl ...
 
-> >>> I think the naming could be i2c-master0, i2c-master1 etc if it, with
-> >>> future work, would be possible to add more than one master (you talked about
-> >>> 5 i2c slaves..).
-> >>
-> >> The device has 5 sets of registers for controlling i2c slaves but only
-> >> one physical auxiliary i2c bus. As far as I can tell slaves 0-3 are
-> >> intended to be used for gathering readings for slaved sensors
-> >> periodically without external intervention. Slave 4 can generate an
-> >> interrupt on completion and is more suitable for general-purpose
-> >> communication with any number of devices.
-> > 
-> > Ah, ok, so all 5 sets of slave registers are about the same physical i2c
-> > bus. So, you basically cannot sanely use this physical aux i2c bus as an
-> > i2c-mux and an extra i2c adapter in the same hw design. Correct?
-> 
-> You can access devices on the auxiliary i2c bus either through mux-ing
-> or the adapter added by this patch. I think mux mode works better (lower
-> latency) but is not available when the primary connection is via SPI.
-> You can use both but it doesn't particularly make sense.
+On 22.04.2016 15:52, Harald Geyer wrote:
+> The hardware has two current sources ISRC0 and ISRC1 to allow 
+> measuring
+> resistors without additional circuitry. This commit makes them 
+> available
+> as regulators.
+>
+> Tested on an imx233-olinuxino board.
+>
+> Signed-off-by: Harald Geyer <harald@ccbib.org>
+> ---
+> The current regulator API doesn't fit this type of device very well:
+> Typically
+> consumers will want to set a defined current, ie. min_uA == max_uA, 
+> but they
+> can't without help from configuration data, because the valid values 
+> aren't
+> reported by the API for current regulators. I have been thinking 
+> about
+> extending the API, but currently AFAIK no such consumers exist and 
+> most
+> users, like myself, will force the regulator to a defined value in
+> devicetree anyway.
+>
+>  .../bindings/staging/iio/adc/mxs-lradc.txt         |  29 ++++
+>  drivers/iio/adc/Kconfig                            |   1 +
+>  drivers/iio/adc/mxs-lradc.c                        | 152
+> +++++++++++++++++++++
+>  3 files changed, 182 insertions(+)
+>
+> diff --git
+> a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> index 555fb11..983952c 100644
+> --- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> +++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> @@ -19,6 +19,15 @@ Optional properties:
+>  - fsl,settling: delay between plate switch to next sample. Allowed 
+> value is
+>                  1 ... 2047. It counts at 2 kHz and its default is
+>                  10 (= 5 ms)
+> +- ISRC0: A node describing the regulator of internal current source 
+> 0
+> +- ISRC1: A node describing the regulator of internal current source 
+> 1
+> +
+> +Required properties for the ISRCx sub-nodes:
+> +- regulator-max-microamp: See standard regulator binding 
+> documentation.
+> +                          Valid values are from 0 to 300 in steps of 
+> 20.
+> +
+> +Optional properties for the ISRCx sub-nodes:
+> +Any standard regulator properties that apply to current regulators.
+>
+>  Example for i.MX23 SoC:
+>
+> @@ -31,6 +40,16 @@ Example for i.MX23 SoC:
+>  		fsl,ave-ctrl = <4>;
+>  		fsl,ave-delay = <2>;
+>  		fsl,settling = <10>;
+> +
+> +		isrc_lradc0: ISRC0 {
+> +			regulator-max-microamp = <300>;
+> +		};
+> +
+> +		isrc_lradc1: ISRC1 {
+> +			regulator-max-microamp = <120>;
+> +			regulator-min-microamp = <120>;
+> +			regulator-always-on;
+> +		};
+>  	};
+>
+>  Example for i.MX28 SoC:
+> @@ -44,4 +63,14 @@ Example for i.MX28 SoC:
+>  		fsl,ave-ctrl = <4>;
+>  		fsl,ave-delay = <2>;
+>  		fsl,settling = <10>;
+> +
+> +		isrc_lradc0: ISRC0 {
+> +			regulator-max-microamp = <300>;
+> +		};
+> +
+> +		isrc_lradc6: ISRC1 {
+> +			regulator-max-microamp = <120>;
+> +			regulator-min-microamp = <120>;
+> +			regulator-always-on;
+> +		};
+>  	};
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 5937030..1968d1c 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -319,6 +319,7 @@ config MXS_LRADC
+>          tristate "Freescale i.MX23/i.MX28 LRADC"
+>          depends on (ARCH_MXS || COMPILE_TEST) && HAS_IOMEM
+>          depends on INPUT
+> +        depends on REGULATOR
+>          select STMP_DEVICE
+>          select IIO_BUFFER
+>          select IIO_TRIGGERED_BUFFER
+> diff --git a/drivers/iio/adc/mxs-lradc.c 
+> b/drivers/iio/adc/mxs-lradc.c
+> index 33051b8..f22f339 100644
+> --- a/drivers/iio/adc/mxs-lradc.c
+> +++ b/drivers/iio/adc/mxs-lradc.c
+> @@ -40,6 +40,10 @@
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/iio/sysfs.h>
+>
+> +#include <linux/regulator/driver.h>
+> +#include <linux/regulator/machine.h>
+> +#include <linux/regulator/of_regulator.h>
+> +
+>  #define DRIVER_NAME		"mxs-lradc"
+>
+>  #define LRADC_MAX_DELAY_CHANS	4
+> @@ -261,6 +265,9 @@ struct mxs_lradc {
+>  	unsigned		over_sample_delay;
+>  	/* time in clocks to wait after the plates where switched */
+>  	unsigned		settling_delay;
+> +
+> +	struct regulator_desc isrc0;
+> +	struct regulator_desc isrc1;
+>  };
+>
+>  #define	LRADC_CTRL0				0x00
+> @@ -305,6 +312,11 @@ struct mxs_lradc {
+>  #define	LRADC_CTRL2				0x20
+>  #define	LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
+>  #define	LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
+> +#define	LRADC_CTRL2_TEMP_SENSOR_IENABLE1	BIT(9)
+> +#define	LRADC_CTRL2_TEMP_SENSOR_IENABLE0	BIT(8)
+> +#define	LRADC_CTRL2_TEMP_ISRC1_OFFSET		4
+> +#define	LRADC_CTRL2_TEMP_ISRC0_OFFSET		0
+> +#define	LRADC_CTRL2_TEMP_ISRC_MASK		0x0f
+>
+>  #define	LRADC_STATUS				0x40
+>  #define	LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
+> @@ -1383,6 +1395,109 @@ static const struct iio_buffer_setup_ops
+> mxs_lradc_buffer_ops = {
+>  	.validate_scan_mask = &mxs_lradc_validate_scan_mask,
+>  };
+>
+> +static int mxs_lradc_regulator_is_enabled(struct regulator_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +	int reg = readl(lradc->base + LRADC_CTRL2);
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		return reg & LRADC_CTRL2_TEMP_SENSOR_IENABLE0;
+> +	else if (dev->desc == &lradc->isrc1)
+> +		return reg & LRADC_CTRL2_TEMP_SENSOR_IENABLE1;
+> +
+> +	/* This should never happen */
+> +	return -ENODEV;
+> +}
+> +
+> +#define LRADC_REGVALUE2uA(regval, offset) \
+> +	(20 * ((regval >> offset) & LRADC_CTRL2_TEMP_ISRC_MASK))
+> +
+> +static int mxs_lradc_regulator_get_current_limit(struct 
+> regulator_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +	int reg = readl(lradc->base + LRADC_CTRL2);
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		return LRADC_REGVALUE2uA(reg, LRADC_CTRL2_TEMP_ISRC0_OFFSET);
+> +	else if (dev->desc == &lradc->isrc1)
+> +		return LRADC_REGVALUE2uA(reg, LRADC_CTRL2_TEMP_ISRC1_OFFSET);
+> +
+> +	/* This should never happen */
+> +	return -ENODEV;
+> +}
+> +
+> +static int mxs_lradc_regulator_enable(struct regulator_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		mxs_lradc_reg_set(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE0,
+> +				  LRADC_CTRL2);
+> +	else if (dev->desc == &lradc->isrc1)
+> +		mxs_lradc_reg_set(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE1,
+> +				  LRADC_CTRL2);
+> +	else
+> +		/* This should never happen */
+> +		return -ENODEV;
+> +
+> +	return 0;
+> +}
+> +
+> +static int mxs_lradc_regulator_disable(struct regulator_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		mxs_lradc_reg_clear(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE0,
+> +				    LRADC_CTRL2);
+> +	else if (dev->desc == &lradc->isrc1)
+> +		mxs_lradc_reg_clear(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE1,
+> +				    LRADC_CTRL2);
+> +	else
+> +		/* This should never happen */
+> +		return -ENODEV;
+> +
+> +	return 0;
+> +}
+> +
+> +static int mxs_lradc_regulator_set_current_limit(struct 
+> regulator_dev *dev,
+> +						 int min_uA, int max_uA)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +	int offset, value;
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		offset = LRADC_CTRL2_TEMP_ISRC0_OFFSET;
+> +	else if (dev->desc == &lradc->isrc1)
+> +		offset = LRADC_CTRL2_TEMP_ISRC1_OFFSET;
+> +	else
+> +		/* This should never happen */
+> +		return -ENODEV;
+> +
+> +	value = min_uA / 20;
+> +	if (min_uA % 20)
+> +		value++;
+> +	if (value * 20 > max_uA)
+> +		return -EINVAL;
+> +	if (value & ~LRADC_CTRL2_TEMP_ISRC_MASK)
+> +		/* This should never happen */
+> +		return -EPERM;
+> +
+> +	mxs_lradc_reg_clear(lradc, LRADC_CTRL2_TEMP_ISRC_MASK << offset,
+> +			    LRADC_CTRL2);
+> +	mxs_lradc_reg_set(lradc, value << offset, LRADC_CTRL2);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct regulator_ops mxs_lradc_regulator_current_ops = {
+> +	.enable = mxs_lradc_regulator_enable,
+> +	.is_enabled = mxs_lradc_regulator_is_enabled,
+> +	.disable = mxs_lradc_regulator_disable,
+> +	.get_current_limit = mxs_lradc_regulator_get_current_limit,
+> +	.set_current_limit = mxs_lradc_regulator_set_current_limit,
+> +};
+> +
+>  /*
+>   * Driver initialization
+>   */
+> @@ -1519,6 +1634,10 @@ static void mxs_lradc_hw_stop(struct mxs_lradc 
+> *lradc)
+>
+>  	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
+>  		mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(i));
+> +
+> +	mxs_lradc_reg_clear(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE0 |
+> +					LRADC_CTRL2_TEMP_SENSOR_IENABLE1,
+> +			    LRADC_CTRL2);
+>  }
+>
+>  static const struct of_device_id mxs_lradc_dt_ids[] = {
+> @@ -1592,6 +1711,32 @@ static int mxs_lradc_probe_touchscreen(struct
+> mxs_lradc *lradc,
+>  	return 0;
+>  }
+>
+> +static void mxs_lradc_reg_helper(struct device_node *np, const char 
+> *name,
+> +				 struct regulator_config *conf,
+> +				 struct regulator_desc *desc)
+> +{
+> +	struct regulator_dev *ret;
+> +
+> +	conf->of_node = of_get_child_by_name(np, name);
+> +	if (!conf->of_node)
+> +		return;
+> +
+> +	desc->name = name;
+> +	desc->owner = THIS_MODULE;
+> +	desc->type = REGULATOR_CURRENT;
+> +	desc->ops = &mxs_lradc_regulator_current_ops;
+> +
+> +	conf->init_data = of_get_regulator_init_data(conf->dev, 
+> conf->of_node,
+> +						     desc);
+> +	ret = devm_regulator_register(conf->dev, desc, conf);
+> +	if (IS_ERR(ret))
+> +		/* Just pretend the regulator isn't there */
+> +		dev_err(conf->dev, "Failed to register regulator %s: %ld\n",
+> +			desc->name, PTR_ERR(ret));
+> +
+> +	of_node_put(conf->of_node);
+> +}
+> +
+>  static int mxs_lradc_probe(struct platform_device *pdev)
+>  {
+>  	const struct of_device_id *of_id =
+> @@ -1603,6 +1748,7 @@ static int mxs_lradc_probe(struct
+> platform_device *pdev)
+>  	struct mxs_lradc *lradc;
+>  	struct iio_dev *iio;
+>  	struct resource *iores;
+> +	struct regulator_config regconf;
+>  	int ret = 0, touch_ret;
+>  	int i, s;
+>  	u64 scale_uv;
+> @@ -1727,6 +1873,12 @@ static int mxs_lradc_probe(struct
+> platform_device *pdev)
+>  		goto err_ts;
+>  	}
+>
+> +	/* Setup regulator devices for current source. */
+> +	regconf.dev = dev;
+> +	regconf.driver_data = lradc;
+> +	mxs_lradc_reg_helper(node, "ISRC0", &regconf, &lradc->isrc0);
+> +	mxs_lradc_reg_helper(node, "ISRC1", &regconf, &lradc->isrc1);
+> +
+>  	return 0;
+>
+>  err_ts:
 
-Right, it wouldn't make sense to use i2c-master mode for some devices
-and i2c-mux mode for some devices, when all the those devices sit on the
-same bus.
-
-> > In that case, couldn't you look at the names of any devicetree children
-> > and use that to decide if you should even attempt to call
-> > i2c_add_mux_adapter or i2c_add_adapter?
-> 
-> But the adapter should be added even if nothing is defined for it.
-> Registering i2c clients by echoing in new_device is a valid usecase.
-
-Oh, you misunderstand, I meant looking at the name of the children of
-the mpu6050 node, not the grand-children. I.e. i2c-aux-mux vs.
-i2c-aux-master in the above example.
-
-> What could be done is only register the i2c mux in i2c mode and the i2c
-> master in spi mode and make the bindings identical.
-
-That is also possible of course, but if you allow i2c-master also
-when connected with i2c, that can be used to resolve address
-conflicts between the main i2c bus and the aux bus.
-
-Cheers,
-Peter
