@@ -1,177 +1,86 @@
-Return-Path: <peda@axentia.se>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
- Corbet <corbet@lwn.net>, Peter Korsgaard <peter.korsgaard@barco.com>, Guenter
- Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>, Hartmut
- Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, Mauro Carvalho
- Chehab <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>, Frank
- Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>, "David S. Miller"
-	<davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kalle
- Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>, Daniel Baluta
-	<daniel.baluta@intel.com>, Lucas De Marchi <lucas.demarchi@intel.com>,
-	Adriana Reus <adriana.reus@intel.com>, Matt Ranostay
-	<matt.ranostay@intel.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>, Terry Heo <terryheo@google.com>, Arnd
- Bergmann <arnd@arndb.de>, Tommi Rantala <tt.rantala@gmail.com>, Crestez Dan
- Leonard <leonard.crestez@intel.com>, <linux-i2c@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>, Peter Rosin
-	<peda@lysator.liu.se>
-Subject: [PATCH v8 08/24] iio: imu: inv_mpu6050: convert to use an explicit i2c mux core
-Date: Fri, 22 Apr 2016 13:37:12 +0200
-Message-ID: <1461325032-24299-1-git-send-email-peda@axentia.se>
-In-Reply-To: <1461165484-2314-9-git-send-email-peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.126.130]:56669 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753284AbcDVNd2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Apr 2016 09:33:28 -0400
+Subject: Re: [PATCH RFT V2 3/3] iio: mxs-lradc: implement suspend/resume
+ support
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+References: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com>
+ <1461269478-449-4-git-send-email-stefan.wahren@i2se.com>
+ <20160421210810.GC25466@dtor-ws>
+Cc: Marek Vasut <marex@denx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fabio Estevam <fabio.estevam@nxp.com>,
+	Jonathan Cameron <jic23@kernel.org>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Message-ID: <571A27FC.4030301@i2se.com>
+Date: Fri, 22 Apr 2016 15:32:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160421210810.GC25466@dtor-ws>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Allocate an explicit i2c mux core to handle parent and child adapters
-etc. Update the select/deselect ops to be in terms of the i2c mux core
-instead of the child adapter.
+Hi Dmitry,
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c |  2 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  1 -
- drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  | 33 +++++++++++++++---------------
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  3 ++-
- 4 files changed, 19 insertions(+), 20 deletions(-)
+Am 21.04.2016 um 23:08 schrieb Dmitry Torokhov:
+> On Thu, Apr 21, 2016 at 08:11:18PM +0000, Stefan Wahren wrote:
+>> This patch implements suspend/resume support for mxs-lradc.
+>> It's possible to use the touchscreen as wakeup source.
+>>
+>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+>> ---
+>>  drivers/iio/adc/mxs-lradc.c |   61 +++++++++++++++++++++++++++++++++++++++++++
+>>  1 file changed, 61 insertions(+)
+>>
+>> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+>> index cfc558f..6bd387f 100644
+>> --- a/drivers/iio/adc/mxs-lradc.c
+>> +++ b/drivers/iio/adc/mxs-lradc.c
+>> @@ -29,6 +29,7 @@
+>>  #include <linux/of.h>
+>>  #include <linux/of_device.h>
+>>  #include <linux/platform_device.h>
+>> +#include <linux/pm.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/stmp_device.h>
+>>  #include <linux/sysfs.h>
+>> @@ -1745,10 +1746,70 @@ static int mxs_lradc_remove(struct platform_device *pdev)
+>>  	return 0;
+>>  }
+>>  
+>> +static int __maybe_unused mxs_lradc_suspend(struct device *dev)
+>> +{
+>> +	struct iio_dev *iio = dev_get_drvdata(dev);
+>> +	struct mxs_lradc *lradc = iio_priv(iio);
+>> +	struct input_dev *input = lradc->ts_input;
+>> +	int ret = 0;
+>> +
+>> +	if (input) {
+>> +		mutex_lock(&input->mutex);
+>> +
+>> +		/* Enable touchscreen wakeup irq */
+>> +		if (input->users && device_may_wakeup(dev))
+>> +			ret = enable_irq_wake(lradc->irq[0]);
+>> +		else
+>> +			mxs_lradc_disable_ts(lradc);
+>> +
+>> +		mutex_unlock(&input->mutex);
+>> +	}
+>> +
+>> +	if (ret)
+>> +		return ret;
+> I'd rather we had it right after we do:
+>
+> 			ret = enable_irq_wake(lradc->irq[0]);
 
-v8 compared to v7:
-- Do not change i2c_get_clientdata() into dev_get_drvdata()
+but we must unlock the mutex first before return. An option would be to
+place the return inside the input branch.
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-index 2771106fd650..f62b8bd9ad7e 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-@@ -183,7 +183,7 @@ int inv_mpu_acpi_create_mux_client(struct i2c_client *client)
- 			} else
- 				return 0; /* no secondary addr, which is OK */
- 		}
--		st->mux_client = i2c_new_device(st->mux_adapter, &info);
-+		st->mux_client = i2c_new_device(st->muxc->adapter[0], &info);
- 		if (!st->mux_client)
- 			return -ENODEV;
- 	}
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index d192953e9a38..0c2bded2b5b7 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -23,7 +23,6 @@
- #include <linux/kfifo.h>
- #include <linux/spinlock.h>
- #include <linux/iio/iio.h>
--#include <linux/i2c-mux.h>
- #include <linux/acpi.h>
- #include "inv_mpu_iio.h"
- 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-index f581256d9d4c..3a078df84224 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-@@ -15,7 +15,6 @@
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/i2c.h>
--#include <linux/i2c-mux.h>
- #include <linux/iio/iio.h>
- #include <linux/module.h>
- #include "inv_mpu_iio.h"
-@@ -52,10 +51,9 @@ static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
- 	return 0;
- }
- 
--static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
--				     u32 chan_id)
-+static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
- {
--	struct i2c_client *client = mux_priv;
-+	struct i2c_client *client = i2c_mux_priv(muxc);
- 	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 	int ret = 0;
-@@ -84,10 +82,9 @@ write_error:
- 	return ret;
- }
- 
--static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
--				       void *mux_priv, u32 chan_id)
-+static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
- {
--	struct i2c_client *client = mux_priv;
-+	struct i2c_client *client = i2c_mux_priv(muxc);
- 	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 
-@@ -136,16 +133,18 @@ static int inv_mpu_probe(struct i2c_client *client,
- 		return result;
- 
- 	st = iio_priv(dev_get_drvdata(&client->dev));
--	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
--					      &client->dev,
--					      client,
--					      0, 0, 0,
--					      inv_mpu6050_select_bypass,
--					      inv_mpu6050_deselect_bypass);
--	if (!st->mux_adapter) {
--		result = -ENODEV;
-+	st->muxc = i2c_mux_alloc(client->adapter, &client->dev,
-+				 1, 0, 0,
-+				 inv_mpu6050_select_bypass,
-+				 inv_mpu6050_deselect_bypass);
-+	if (!st->muxc) {
-+		result = -ENOMEM;
- 		goto out_unreg_device;
- 	}
-+	st->muxc->priv = dev_get_drvdata(&client->dev);
-+	result = i2c_mux_add_adapter(st->muxc, 0, 0, 0);
-+	if (result)
-+		goto out_unreg_device;
- 
- 	result = inv_mpu_acpi_create_mux_client(client);
- 	if (result)
-@@ -154,7 +153,7 @@ static int inv_mpu_probe(struct i2c_client *client,
- 	return 0;
- 
- out_del_mux:
--	i2c_del_mux_adapter(st->mux_adapter);
-+	i2c_mux_del_adapters(st->muxc);
- out_unreg_device:
- 	inv_mpu_core_remove(&client->dev);
- 	return result;
-@@ -166,7 +165,7 @@ static int inv_mpu_remove(struct i2c_client *client)
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 
- 	inv_mpu_acpi_delete_mux_client(client);
--	i2c_del_mux_adapter(st->mux_adapter);
-+	i2c_mux_del_adapters(st->muxc);
- 
- 	return inv_mpu_core_remove(&client->dev);
- }
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index e302a49703bf..bb3cef6d7059 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -11,6 +11,7 @@
- * GNU General Public License for more details.
- */
- #include <linux/i2c.h>
-+#include <linux/i2c-mux.h>
- #include <linux/kfifo.h>
- #include <linux/spinlock.h>
- #include <linux/iio/iio.h>
-@@ -127,7 +128,7 @@ struct inv_mpu6050_state {
- 	const struct inv_mpu6050_hw *hw;
- 	enum   inv_devices chip_type;
- 	spinlock_t time_stamp_lock;
--	struct i2c_adapter *mux_adapter;
-+	struct i2c_mux_core *muxc;
- 	struct i2c_client *mux_client;
- 	unsigned int powerup_count;
- 	struct inv_mpu6050_platform_data plat_data;
--- 
-2.1.4
+Stefan
+
+
