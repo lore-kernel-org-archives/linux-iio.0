@@ -1,126 +1,332 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:54828 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752031AbcDVLPU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 22 Apr 2016 07:15:20 -0400
-Date: Fri, 22 Apr 2016 13:14:59 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Peter Rosin <peda@axentia.se>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Kalle Valo <kvalo@codeaurora.org>,
-	Jiri Slaby <jslaby@suse.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Matt Ranostay <matt.ranostay@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Terry Heo <terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>,
-	Tommi Rantala <tt.rantala@gmail.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Peter Rosin <peda@lysator.liu.se>
-Subject: Re: [PATCH v7 00/24] i2c mux cleanup and locking update
-Message-ID: <20160422111459.GA1538@katana>
-References: <AM4PR02MB1299DD7DBCE30E8EFE9E1259BC6F0@AM4PR02MB1299.eurprd02.prod.outlook.com>
+Received: from mail-out.m-online.net ([212.18.0.10]:47049 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754242AbcDVQyX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Apr 2016 12:54:23 -0400
+Message-ID: <571A4831.2020604@denx.de>
+Date: Fri, 22 Apr 2016 17:50:09 +0200
+From: Marek Vasut <marex@denx.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="KsGdsel6WgEHnImy"
-In-Reply-To: <AM4PR02MB1299DD7DBCE30E8EFE9E1259BC6F0@AM4PR02MB1299.eurprd02.prod.outlook.com>
+To: Harald Geyer <harald@ccbib.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <kernel@pengutronix.de>
+CC: Stefan Wahren <stefan.wahren@i2se.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/3] iio: mxs-lradc: Add regulators for current sources
+References: <1461333147-11873-1-git-send-email-harald@ccbib.org> <1461333147-11873-2-git-send-email-harald@ccbib.org>
+In-Reply-To: <1461333147-11873-2-git-send-email-harald@ccbib.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 04/22/2016 03:52 PM, Harald Geyer wrote:
+> The hardware has two current sources ISRC0 and ISRC1 to allow measuring
+> resistors without additional circuitry. This commit makes them available
+> as regulators.
+> 
+> Tested on an imx233-olinuxino board.
+> 
+> Signed-off-by: Harald Geyer <harald@ccbib.org>
+> ---
+> The current regulator API doesn't fit this type of device very well: Typically
+> consumers will want to set a defined current, ie. min_uA == max_uA, but they
+> can't without help from configuration data, because the valid values aren't
+> reported by the API for current regulators. I have been thinking about
+> extending the API, but currently AFAIK no such consumers exist and most
+> users, like myself, will force the regulator to a defined value in
+> devicetree anyway.
 
---KsGdsel6WgEHnImy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I am tempted to block this patch and ask you to properly split the
+mxs-lradc driver into MFD with touchscreen and IIO part and only then
+add the regulator bits. The lradc is becoming a katamari of ad-hoc
+misplaced functionality.
+
+>  .../bindings/staging/iio/adc/mxs-lradc.txt         |  29 ++++
+>  drivers/iio/adc/Kconfig                            |   1 +
+>  drivers/iio/adc/mxs-lradc.c                        | 152 +++++++++++++++++++++
+>  3 files changed, 182 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> index 555fb11..983952c 100644
+> --- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> +++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> @@ -19,6 +19,15 @@ Optional properties:
+>  - fsl,settling: delay between plate switch to next sample. Allowed value is
+>                  1 ... 2047. It counts at 2 kHz and its default is
+>                  10 (= 5 ms)
+> +- ISRC0: A node describing the regulator of internal current source 0
+> +- ISRC1: A node describing the regulator of internal current source 1
+> +
+> +Required properties for the ISRCx sub-nodes:
+> +- regulator-max-microamp: See standard regulator binding documentation.
+> +                          Valid values are from 0 to 300 in steps of 20.
+> +
+> +Optional properties for the ISRCx sub-nodes:
+> +Any standard regulator properties that apply to current regulators.
+>  
+>  Example for i.MX23 SoC:
+>  
+> @@ -31,6 +40,16 @@ Example for i.MX23 SoC:
+>  		fsl,ave-ctrl = <4>;
+>  		fsl,ave-delay = <2>;
+>  		fsl,settling = <10>;
+> +
+> +		isrc_lradc0: ISRC0 {
+> +			regulator-max-microamp = <300>;
+> +		};
+> +
+> +		isrc_lradc1: ISRC1 {
+> +			regulator-max-microamp = <120>;
+> +			regulator-min-microamp = <120>;
+> +			regulator-always-on;
+> +		};
+>  	};
+>  
+>  Example for i.MX28 SoC:
+> @@ -44,4 +63,14 @@ Example for i.MX28 SoC:
+>  		fsl,ave-ctrl = <4>;
+>  		fsl,ave-delay = <2>;
+>  		fsl,settling = <10>;
+> +
+> +		isrc_lradc0: ISRC0 {
+> +			regulator-max-microamp = <300>;
+> +		};
+> +
+> +		isrc_lradc6: ISRC1 {
+> +			regulator-max-microamp = <120>;
+> +			regulator-min-microamp = <120>;
+> +			regulator-always-on;
+> +		};
+>  	};
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 5937030..1968d1c 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -319,6 +319,7 @@ config MXS_LRADC
+>          tristate "Freescale i.MX23/i.MX28 LRADC"
+>          depends on (ARCH_MXS || COMPILE_TEST) && HAS_IOMEM
+>          depends on INPUT
+> +        depends on REGULATOR
+>          select STMP_DEVICE
+>          select IIO_BUFFER
+>          select IIO_TRIGGERED_BUFFER
+> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+> index 33051b8..f22f339 100644
+> --- a/drivers/iio/adc/mxs-lradc.c
+> +++ b/drivers/iio/adc/mxs-lradc.c
+> @@ -40,6 +40,10 @@
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/iio/sysfs.h>
+>  
+> +#include <linux/regulator/driver.h>
+> +#include <linux/regulator/machine.h>
+> +#include <linux/regulator/of_regulator.h>
+> +
+>  #define DRIVER_NAME		"mxs-lradc"
+>  
+>  #define LRADC_MAX_DELAY_CHANS	4
+> @@ -261,6 +265,9 @@ struct mxs_lradc {
+>  	unsigned		over_sample_delay;
+>  	/* time in clocks to wait after the plates where switched */
+>  	unsigned		settling_delay;
+> +
+> +	struct regulator_desc isrc0;
+> +	struct regulator_desc isrc1;
+>  };
+>  
+>  #define	LRADC_CTRL0				0x00
+> @@ -305,6 +312,11 @@ struct mxs_lradc {
+>  #define	LRADC_CTRL2				0x20
+>  #define	LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
+>  #define	LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
+> +#define	LRADC_CTRL2_TEMP_SENSOR_IENABLE1	BIT(9)
+> +#define	LRADC_CTRL2_TEMP_SENSOR_IENABLE0	BIT(8)
+> +#define	LRADC_CTRL2_TEMP_ISRC1_OFFSET		4
+> +#define	LRADC_CTRL2_TEMP_ISRC0_OFFSET		0
+> +#define	LRADC_CTRL2_TEMP_ISRC_MASK		0x0f
+>  
+>  #define	LRADC_STATUS				0x40
+>  #define	LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
+> @@ -1383,6 +1395,109 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
+>  	.validate_scan_mask = &mxs_lradc_validate_scan_mask,
+>  };
+>  
+> +static int mxs_lradc_regulator_is_enabled(struct regulator_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +	int reg = readl(lradc->base + LRADC_CTRL2);
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		return reg & LRADC_CTRL2_TEMP_SENSOR_IENABLE0;
+> +	else if (dev->desc == &lradc->isrc1)
+> +		return reg & LRADC_CTRL2_TEMP_SENSOR_IENABLE1;
+> +
+> +	/* This should never happen */
+> +	return -ENODEV;
+> +}
+> +
+> +#define LRADC_REGVALUE2uA(regval, offset) \
+> +	(20 * ((regval >> offset) & LRADC_CTRL2_TEMP_ISRC_MASK))
+> +
+> +static int mxs_lradc_regulator_get_current_limit(struct regulator_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +	int reg = readl(lradc->base + LRADC_CTRL2);
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		return LRADC_REGVALUE2uA(reg, LRADC_CTRL2_TEMP_ISRC0_OFFSET);
+> +	else if (dev->desc == &lradc->isrc1)
+> +		return LRADC_REGVALUE2uA(reg, LRADC_CTRL2_TEMP_ISRC1_OFFSET);
+> +
+> +	/* This should never happen */
+> +	return -ENODEV;
+> +}
+> +
+> +static int mxs_lradc_regulator_enable(struct regulator_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		mxs_lradc_reg_set(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE0,
+> +				  LRADC_CTRL2);
+> +	else if (dev->desc == &lradc->isrc1)
+> +		mxs_lradc_reg_set(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE1,
+> +				  LRADC_CTRL2);
+> +	else
+> +		/* This should never happen */
+> +		return -ENODEV;
+> +
+> +	return 0;
+> +}
+> +
+> +static int mxs_lradc_regulator_disable(struct regulator_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		mxs_lradc_reg_clear(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE0,
+> +				    LRADC_CTRL2);
+> +	else if (dev->desc == &lradc->isrc1)
+> +		mxs_lradc_reg_clear(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE1,
+> +				    LRADC_CTRL2);
+> +	else
+> +		/* This should never happen */
+> +		return -ENODEV;
+> +
+> +	return 0;
+> +}
+> +
+> +static int mxs_lradc_regulator_set_current_limit(struct regulator_dev *dev,
+> +						 int min_uA, int max_uA)
+> +{
+> +	struct mxs_lradc *lradc = rdev_get_drvdata(dev);
+> +	int offset, value;
+> +
+> +	if (dev->desc == &lradc->isrc0)
+> +		offset = LRADC_CTRL2_TEMP_ISRC0_OFFSET;
+> +	else if (dev->desc == &lradc->isrc1)
+> +		offset = LRADC_CTRL2_TEMP_ISRC1_OFFSET;
+> +	else
+> +		/* This should never happen */
+> +		return -ENODEV;
+> +
+> +	value = min_uA / 20;
+> +	if (min_uA % 20)
+> +		value++;
+> +	if (value * 20 > max_uA)
+> +		return -EINVAL;
+> +	if (value & ~LRADC_CTRL2_TEMP_ISRC_MASK)
+> +		/* This should never happen */
+> +		return -EPERM;
+> +
+> +	mxs_lradc_reg_clear(lradc, LRADC_CTRL2_TEMP_ISRC_MASK << offset,
+> +			    LRADC_CTRL2);
+> +	mxs_lradc_reg_set(lradc, value << offset, LRADC_CTRL2);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct regulator_ops mxs_lradc_regulator_current_ops = {
+> +	.enable = mxs_lradc_regulator_enable,
+> +	.is_enabled = mxs_lradc_regulator_is_enabled,
+> +	.disable = mxs_lradc_regulator_disable,
+> +	.get_current_limit = mxs_lradc_regulator_get_current_limit,
+> +	.set_current_limit = mxs_lradc_regulator_set_current_limit,
+> +};
+> +
+>  /*
+>   * Driver initialization
+>   */
+> @@ -1519,6 +1634,10 @@ static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
+>  
+>  	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
+>  		mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(i));
+> +
+> +	mxs_lradc_reg_clear(lradc, LRADC_CTRL2_TEMP_SENSOR_IENABLE0 |
+> +					LRADC_CTRL2_TEMP_SENSOR_IENABLE1,
+> +			    LRADC_CTRL2);
+>  }
+>  
+>  static const struct of_device_id mxs_lradc_dt_ids[] = {
+> @@ -1592,6 +1711,32 @@ static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
+>  	return 0;
+>  }
+>  
+> +static void mxs_lradc_reg_helper(struct device_node *np, const char *name,
+> +				 struct regulator_config *conf,
+> +				 struct regulator_desc *desc)
+> +{
+> +	struct regulator_dev *ret;
+> +
+> +	conf->of_node = of_get_child_by_name(np, name);
+> +	if (!conf->of_node)
+> +		return;
+> +
+> +	desc->name = name;
+> +	desc->owner = THIS_MODULE;
+> +	desc->type = REGULATOR_CURRENT;
+> +	desc->ops = &mxs_lradc_regulator_current_ops;
+> +
+> +	conf->init_data = of_get_regulator_init_data(conf->dev, conf->of_node,
+> +						     desc);
+> +	ret = devm_regulator_register(conf->dev, desc, conf);
+> +	if (IS_ERR(ret))
+> +		/* Just pretend the regulator isn't there */
+> +		dev_err(conf->dev, "Failed to register regulator %s: %ld\n",
+> +			desc->name, PTR_ERR(ret));
+> +
+> +	of_node_put(conf->of_node);
+> +}
+> +
+>  static int mxs_lradc_probe(struct platform_device *pdev)
+>  {
+>  	const struct of_device_id *of_id =
+> @@ -1603,6 +1748,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+>  	struct mxs_lradc *lradc;
+>  	struct iio_dev *iio;
+>  	struct resource *iores;
+> +	struct regulator_config regconf;
+>  	int ret = 0, touch_ret;
+>  	int i, s;
+>  	u64 scale_uv;
+> @@ -1727,6 +1873,12 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+>  		goto err_ts;
+>  	}
+>  
+> +	/* Setup regulator devices for current source. */
+> +	regconf.dev = dev;
+> +	regconf.driver_data = lradc;
+> +	mxs_lradc_reg_helper(node, "ISRC0", &regconf, &lradc->isrc0);
+> +	mxs_lradc_reg_helper(node, "ISRC1", &regconf, &lradc->isrc1);
+> +
+>  	return 0;
+>  
+>  err_ts:
+> 
 
 
-> The problem with waiting until 4.8 with the rest of the series is that it
-> will likely go stale, e.g. patch 22 ([media] rtl2832: change the i2c gate
-> to be mux-locked) touches a ton of register accesses in that driver since
-> it removes a regmap wrapper that is rendered obsolete. Expecting that
-> patch to work for 4.8 is overly optimistic, and while patching things up
-
-Okay, that can be argued, I understand that. So, what about this
-suggestion: I pull in patches 1-15 today, and we schedule the rest of
-the patches for like next week or so. That still gives the first set of
-patches some time in linux-next for further exposure and testing whilst
-the whole series should arrive in 4.7.
-
-However, I need help with that. There are serious locking changes
-involved and ideally these patches are reviewed by multiple people,
-especially patches 16-19. I first want to say that the collaboration
-experience with this series was great so far, lots of testing and
-reporting back. Thanks for that already. Yet, if we want to have this in
-4.7, this needs to be a group effort. So, if people interested could
-review even a little and report back this would be extremly helpful.
-
-> Third, should we deprecate the old i2c_add_mux_adapter, so that new
-> users do not crop up behind our backs in the transition? Or not bother?
-
-Usually it is fine to change in-kernel-APIs when you take care that all
-current users are converted. But I am also fine with being nice and
-keeping the old call around for a few cycles. It is your call.
-
-> Fourth, I forgot to change patch 8 (iio: imu: inv_mpu6050: convert to
-> use an explicit i2c mux core) to not change i2c_get_clientdata() ->
-> dev_get_drvdata() as requested by Jonathan Cameron. How should I handle
-> that?
-
-I'll pull in the first patches this eveneing. You can choose to send me
-an incremental patch or resend patch 8. I am fine with both, but it
-should appear on the mailing list somehow.
-
-> There are also some new Tested-by tags that I have added to my
-> local branch but have not pushed anywhere. I'm ready to push all that
-> to a new branch once you are ready to take it.
-
-For the patches 1-15, I am ready when you are :)
-
-Thanks,
-
-   Wolfram
-
-
---KsGdsel6WgEHnImy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXGgezAAoJEBQN5MwUoCm2HvQQAKUUSxnW4Ou397cODJ7ZWtcE
-3rI1hYz5r58o2Kmc00QiNdlJQyuzpWrqLc2WmN5omxlzSEprNup5jzePbk5aEo9l
-fov+IMbgGAMsRsUyJ98G7Mpoij0mTNrFKR33QqqgGhUANR4QE/xDJPNnfMBnebJj
-OG0ZHmGNnPqu1IIusIbUp762VqxKl1ZR8XjeywJO1z01KC1B6gK7q49/5B5bsjnz
-DxriRYHGlcQdlis6Jp/wyHrYKVPkWLOCD4dEB7Cv9gH4uODbtjcMgHgKjATEPyXc
-eimE7Xx9dbXjn8oxmm827eFBq6Km/DDi4N6osaKXlhT/vyPe8L/QEqLlRY+Sx1ni
-RheGIbkzu5ORGgrc5onQG8A7PBsCdagdo7cbGKl0JV5531yYj2Z4sFJjzgoPGJye
-3jim9C3aJxEzd6zRnV1kbl1NHeqJgr5SrDNA/sH/9VGAG6lLbb6V1Ij/fTgZAt0N
-XM0C+Ke0JG3NvG3qpC/Mb6X9+64uTXv7V4+AxT+G7em167VQW4hG5CVEu+rCkW1N
-qR66vsvkv8Ueoso29OprwGcYyDCXz62CCJcJRDSdAFqb50+K0FRmFMvmbZg4iU4g
-sbHLXRTRGkSaXzFFxUbzVAYl6H2aIGZdlf1xfrlg6wQQfU7v9LMOuQoNXI9bYsuy
-hKQNEWOQekSIwjypYw2t
-=ijYn
------END PGP SIGNATURE-----
-
---KsGdsel6WgEHnImy--
+-- 
+Best regards,
+Marek Vasut
