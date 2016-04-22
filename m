@@ -1,144 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.131]:51775 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754221AbcDVN6g (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Apr 2016 09:58:36 -0400
-Subject: Re: [PATCH RFT V2 3/3] iio: mxs-lradc: implement suspend/resume
- support
-To: Marek Vasut <marex@denx.de>, Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com>
- <1461269478-449-4-git-send-email-stefan.wahren@i2se.com>
- <57193C01.20709@denx.de>
-Cc: Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Message-ID: <571A2DB8.9050509@i2se.com>
-Date: Fri, 22 Apr 2016 15:57:12 +0200
-MIME-Version: 1.0
-In-Reply-To: <57193C01.20709@denx.de>
-Content-Type: text/plain; charset=utf-8
+Received: from h1.radempa.de ([176.9.142.194]:37420 "EHLO mail.cosmopool.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753379AbcDVNxN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 22 Apr 2016 09:53:13 -0400
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <kernel@pengutronix.de>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+	Marek Vasut <marex@denx.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Harald Geyer <harald@ccbib.org>
+Subject: [PATCH 2/3] ARM: dts: imx23: Provide regulators for the current sources of the LRADC
+Date: Fri, 22 Apr 2016 13:52:26 +0000
+Message-Id: <1461333147-11873-3-git-send-email-harald@ccbib.org>
+In-Reply-To: <1461333147-11873-1-git-send-email-harald@ccbib.org>
+References: <1461333147-11873-1-git-send-email-harald@ccbib.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Marek,
+This adds the devicetree nodes to make the mxs-lradc driver register
+regulator devices for the integrated current sources.
 
-Am 21.04.2016 um 22:45 schrieb Marek Vasut:
-> On 04/21/2016 10:11 PM, Stefan Wahren wrote:
->> This patch implements suspend/resume support for mxs-lradc.
->> It's possible to use the touchscreen as wakeup source.
->>
->> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
->> ---
->>  drivers/iio/adc/mxs-lradc.c |   61 +++++++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 61 insertions(+)
->>
->> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
->> index cfc558f..6bd387f 100644
->> --- a/drivers/iio/adc/mxs-lradc.c
->> +++ b/drivers/iio/adc/mxs-lradc.c
->> @@ -29,6 +29,7 @@
->>  #include <linux/of.h>
->>  #include <linux/of_device.h>
->>  #include <linux/platform_device.h>
->> +#include <linux/pm.h>
->>  #include <linux/slab.h>
->>  #include <linux/stmp_device.h>
->>  #include <linux/sysfs.h>
->> @@ -1745,10 +1746,70 @@ static int mxs_lradc_remove(struct platform_device *pdev)
->>  	return 0;
->>  }
->>  
->> +static int __maybe_unused mxs_lradc_suspend(struct device *dev)
->> +{
->> +	struct iio_dev *iio = dev_get_drvdata(dev);
->> +	struct mxs_lradc *lradc = iio_priv(iio);
->> +	struct input_dev *input = lradc->ts_input;
-> Can lradc->ts_input contain some non-valid pointer ? You should make
-> sure it's either inited to NULL or valid pointer, which I'm not sure
-> you do.
+Tested on an imx23-olinuxino board.
 
-the whole content of lradc get initialized with zero by
-devm_iio_device_alloc.
+Signed-off-by: Harald Geyer <harald@ccbib.org>
+---
+Note: with this configuration the regulator devices will be present but
+disabled by default.
 
-Or do you mean the error case that input registration failed and a
-suspend occur (if it's possible)|?
+ arch/arm/boot/dts/imx23.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Stefan
-
-|
->
->> +	int ret = 0;
->> +
->> +	if (input) {
->> +		mutex_lock(&input->mutex);
->> +
->> +		/* Enable touchscreen wakeup irq */
->> +		if (input->users && device_may_wakeup(dev))
->> +			ret = enable_irq_wake(lradc->irq[0]);
->> +		else
->> +			mxs_lradc_disable_ts(lradc);
->> +
->> +		mutex_unlock(&input->mutex);
->> +	}
->> +
->> +	if (ret)
->> +		return ret;
->> +
->> +	mxs_lradc_hw_stop(lradc);
->> +
->> +	clk_disable_unprepare(lradc->clk);
->> +
->> +	return ret;
->> +}
->> +
->> +static int __maybe_unused mxs_lradc_resume(struct device *dev)
->> +{
->> +	struct iio_dev *iio = dev_get_drvdata(dev);
->> +	struct mxs_lradc *lradc = iio_priv(iio);
->> +	struct input_dev *input = lradc->ts_input;
->> +	int ret;
->> +
->> +	ret = clk_prepare_enable(lradc->clk);
->> +	if (ret)
->> +		return ret;
->> +
->> +	mxs_lradc_hw_init(lradc);
->> +
->> +	if (input) {
->> +		mutex_lock(&input->mutex);
->> +
->> +		/* Disable touchscreen wakeup irq */
->> +		if (input->users && device_may_wakeup(dev))
->> +			ret = disable_irq_wake(lradc->irq[0]);
->> +		else
->> +			mxs_lradc_enable_touch_detection(lradc);
->> +
->> +		mutex_unlock(&input->mutex);
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static SIMPLE_DEV_PM_OPS(mxs_lradc_pm_ops, mxs_lradc_suspend, mxs_lradc_resume);
->> +
->>  static struct platform_driver mxs_lradc_driver = {
->>  	.driver	= {
->>  		.name	= DRIVER_NAME,
->>  		.of_match_table = mxs_lradc_dt_ids,
->> +		.pm	= &mxs_lradc_pm_ops,
->>  	},
->>  	.probe	= mxs_lradc_probe,
->>  	.remove	= mxs_lradc_remove,
->>
-> Looks OK otherwise:
->
-> Reviewed-by: Marek Vasut <marex@denx.de>
->
-
+diff --git a/arch/arm/boot/dts/imx23.dtsi b/arch/arm/boot/dts/imx23.dtsi
+index 302d116..05ff6f1 100644
+--- a/arch/arm/boot/dts/imx23.dtsi
++++ b/arch/arm/boot/dts/imx23.dtsi
+@@ -471,6 +471,14 @@
+ 				status = "disabled";
+ 				clocks = <&clks 26>;
+ 				#io-channel-cells = <1>;
++
++				isrc_lradc0: ISRC0 {
++					regulator-max-microamp = <300>;
++				};
++
++				isrc_lradc1: ISRC1 {
++					regulator-max-microamp = <300>;
++				};
+ 			};
+ 
+ 			spdif@80054000 {
+-- 
+2.1.4
 
