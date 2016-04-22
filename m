@@ -1,99 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:11222 "EHLO mail.aswsp.com"
+Received: from mx1.emlix.com ([88.198.252.230]:54415 "EHLO mx1.emlix.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752135AbcD1PBM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 28 Apr 2016 11:01:12 -0400
-Message-ID: <57222613.30408@parrot.com>
-Date: Thu, 28 Apr 2016 17:02:43 +0200
-From: Gregor Boirie <gregor.boirie@parrot.com>
+	id S1751422AbcDVTgG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 22 Apr 2016 15:36:06 -0400
+Received: from mx1.emlix.com (localhost [127.0.0.1])
+	by mx1.emlix.com (Postfix) with ESMTP id 99DF323F2CC
+	for <linux-iio@vger.kernel.org>; Fri, 22 Apr 2016 21:27:57 +0200 (CEST)
+Received: from mailer.emlix.com (unknown [80.150.94.234])
+	(using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
+	(No client certificate requested)
+	by mx1.emlix.com (Postfix) with ESMTPS id 8871A23F0E9
+	for <linux-iio@vger.kernel.org>; Fri, 22 Apr 2016 21:27:57 +0200 (CEST)
+Date: Fri, 22 Apr 2016 21:27:57 +0200
+From: Daniel =?iso-8859-1?Q?Gl=F6ckner?= <dg@emlix.com>
+To: linux-iio@vger.kernel.org
+Subject: Nonlinear outputs
+Message-ID: <20160422192757.GA18225@homes.emlix.com>
 MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [RFC PATCH v1 0/9] iio:st_sensors: fixes and lps22hb pressure
- sensor
-References: <cover.1461056711.git.gregor.boirie@parrot.com>	<CACRpkdZxE4Z6f_0uVV0sD5EUxEigzbMvWRD+MTDWNZbuauVweg@mail.gmail.com>	<CACRpkdZ=DSEKi6dOBuxA23ivsQYsoigvG_cC11HR-66aN_BUpQ@mail.gmail.com>	<5720B9DA.1000409@parrot.com> <CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com>
-In-Reply-To: <CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/28/2016 09:47 AM, Linus Walleij wrote:
-> On Wed, Apr 27, 2016 at 3:08 PM, Gregor Boirie<gregor.boirie@parrot.com>  wrote:
->
->> Many thanks for taking time to test this. ~95 kPa seems rather a small value
->> to me.
->>
->> For reference, it seems 950 hPa at sea level would be found under a...
->> hurricane !
->> (may vary with location)
->>
->> Does it match with your local weather forecast / report ?
-> Hmmmm no :)
->
-> Checking with local weather site it should be ~1006 hPa.
->
-> Do you think the sensor is just badly calibrated?
+Hi,
 
-Amongst significant error sources, we regularly struggle against:
-* soldering (mechanical, overheat)
-* pcb bending and vibrations
-* bad device lots, bad storage (esd, wrong calibration, nearby mechanical vibration sources like ultra-sound...)
-* electrical noise (power supply, ground...)
-* light intensity if not protected by a cover
-* temperature, air flow
-* probably others we are not aware of yet
+currently all outputs listed in Documentation/ABI/testing/sysfs-bus-iio
+are _raw. What about f.ex. a nonlinear resistive output?
 
-All comes with various effects in terms of constant offset, noise and drift. Some are destructive, some are not.
-Welcome to world of MEMS :)
+Shall I mark it as processed value which implies giving it an _input name
+or shall I fake raw values with offset = 0 and scale = 1?
 
-> I tested now with another sensor on the Snowball board.
-> It gives (after scaling):
->
-> 101.4
-> 28.8
-> 101.9
-> 28.8
-> 101.9
-> 29.5
->
-> This sensor seems more accurate wrt pressure.
-> However here instead the temperature seems bananas,
-> this is a Swedish office, we don't have ~30degrees here...
-> And it's not the board is just turned on so I don't think it's
-> that warm.
-For pressure, LPS001WP may sample with typical absolute error up to 
-+/-25 mBar and resolution of
-one 16th mBar : not consistent with your first results of ~95 kPa, but 
-should comply with pressure
-sampling gain modified in patch 4.
-No typical accuracy is given for temperature, and resolution is one 64th 
-of degree Celsius. I suppose
-temperature gain applied in patch 4 is also compliant with all your results.
-As a reference for comparison, temperature accuracy for LPS22HB, which 
-is much more precise, is +/-1.5
-degree Celsius...
+Best regards,
 
-So I simply suggest your erroneous results are not induced by wrong 
-software sampling gains, which was
-my primary fear. No more no less. Maybe Denis may be of any help once he 
-has some time to review the
-whole patch series.
+  Daniel
 
->   One sensor gives believeable pressure, the other
-> gives believeable temperature...
->
-> The data sheet says this sensor is calibrated for two
-> pressure+temperature combinations at manufacturing.
-> I wonder if there are "secret registers" in the device that
-> can update the calibration...
-As this device is deprecated I suppose we won't get much support from 
-ST... Maybe Denis may help if
-this really worth the pain :)
-> Anyways, the measures are not totally off scale so
-> I guess they are in the right ballpark. And these patches
-> makes it work better for sure.
->
-> Yours,
-> Linus Walleij
-I do greatly appreciate your feedback. Many thanks.
-Regards,
-greg
+
+-- 
+Dipl.-Math. Daniel Glöckner, emlix GmbH, http://www.emlix.com
+Fon +49 551 30664-0, Fax +49 551 30664-11,
+Bertha-von-Suttner-Straße 9, 37085 Göttingen, Germany
+Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
+Geschäftsführung: Heike Jordan, Dr. Uwe Kracke
+Ust-IdNr.: DE 205 198 055
+
+emlix - your embedded linux partner
