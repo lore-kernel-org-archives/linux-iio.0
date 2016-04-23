@@ -1,64 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60923 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60944 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752031AbcDWVQg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Apr 2016 17:16:36 -0400
-Subject: Re: [PATCH v1 3/3] iio:imu:mpu6050: enhance mounting matrix support
-To: Rob Herring <robh@kernel.org>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-References: <cover.1461170293.git.gregor.boirie@parrot.com>
- <09429500c3879ba07731ce170d0a2242a0399422.1461170293.git.gregor.boirie@parrot.com>
- <20160422200508.GA28036@rob-hp-laptop>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1752113AbcDWVSl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Apr 2016 17:18:41 -0400
+Subject: Re: [patch] iio: light: apds9960: silence uninitialized variable
+ warning
+To: Dan Carpenter <dan.carpenter@oracle.com>
+References: <20160422100414.GG11398@mwanda>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-	Martin Fuzzey <mfuzzey@parkeon.com>,
-	Cristina Opriceana <cristina.opriceana@gmail.com>,
-	Varka Bhadram <varkabhadram@gmail.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Julia Lawall <Julia.Lawall@lip6.fr>,
-	Peter Rosin <peda@axentia.se>,
-	Leonard Crestez <leonard.crestez@intel.com>
+	Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <34a1dcf9-ce32-17f7-30ed-4168c6be6c4f@kernel.org>
-Date: Sat, 23 Apr 2016 22:16:33 +0100
+Message-ID: <9772b4fa-8a26-9ddd-7a16-c6f404cccbc1@kernel.org>
+Date: Sat, 23 Apr 2016 22:18:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160422200508.GA28036@rob-hp-laptop>
+In-Reply-To: <20160422100414.GG11398@mwanda>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/04/16 21:05, Rob Herring wrote:
-> On Wed, Apr 20, 2016 at 07:23:45PM +0200, Gregor Boirie wrote:
->> Add a new rotation matrix sysfs attribute compliant with IIO core
->> mounting matrix API.
->> Matrix is retrieved from "in_anglvel_mount_matrix" and
->> "in_accel_mount_matrix" sysfs attributes. It is declared into mpu6050 DTS
->> entry as a "mount-matrix" property.
->>
->> Old interface is kept for backward userspace compatibility and may be
->> retrieved from legacy platform_data mechanism only.
->>
->> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
->> ---
->>  Documentation/ABI/testing/sysfs-bus-iio            |  2 ++
->>  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    | 13 ++++++++
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         | 36 ++++++++++++++++++++--
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  4 ++-
->>  include/linux/platform_data/invensense_mpu6050.h   |  5 ++-
->>  5 files changed, 55 insertions(+), 5 deletions(-)
+On 22/04/16 11:04, Dan Carpenter wrote:
+> It causes a static checker warning if we use "buf" on the failure path
+> so move that inside the if statement.
 > 
-> Acked-by: Rob Herring <robh@kernel.org>
-Applied, thanks,
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Applied to the togreg branch of iio.git,
+
+Thanks,
 
 Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
+> index a6af56a..fbdd172 100644
+> --- a/drivers/iio/light/apds9960.c
+> +++ b/drivers/iio/light/apds9960.c
+> @@ -491,9 +491,10 @@ static int apds9960_read_raw(struct iio_dev *indio_dev,
+>  		case IIO_INTENSITY:
+>  			ret = regmap_bulk_read(data->regmap, chan->address,
+>  					       &buf, 2);
+> -			if (!ret)
+> +			if (!ret) {
+>  				ret = IIO_VAL_INT;
+> -			*val = le16_to_cpu(buf);
+> +				*val = le16_to_cpu(buf);
+> +			}
+>  			break;
+>  		default:
+>  			ret = -EINVAL;
 > 
 
