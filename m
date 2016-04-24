@@ -1,31 +1,34 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32832 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35039 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752113AbcDWVsF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Apr 2016 17:48:05 -0400
-Subject: Re: [PATCH] iio: st_gyro: Add lsm9ds0-gyro support
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
-References: <ac4fe7acfefefbb33219fc395838443c00bce8ba.1461067167.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Giuseppe Barba <giuseppe.barba@st.com>
+	with ESMTP id S1752090AbcDXI7U (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 04:59:20 -0400
+Subject: Re: [PATCH v3 1/2] iio: humidity: Add support for AM2315
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	linux-iio@vger.kernel.org
+References: <1460991044-8484-1-git-send-email-tiberiu.a.breana@intel.com>
+ <1460991044-8484-2-git-send-email-tiberiu.a.breana@intel.com>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <52abd7e1-0816-254c-aa47-78727aeaaf05@kernel.org>
-Date: Sat, 23 Apr 2016 22:48:01 +0100
+Message-ID: <4dc4c5c8-ec84-7d3b-62c6-3de37b095f1e@kernel.org>
+Date: Sun, 24 Apr 2016 09:59:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <ac4fe7acfefefbb33219fc395838443c00bce8ba.1461067167.git.leonard.crestez@intel.com>
+In-Reply-To: <1460991044-8484-2-git-send-email-tiberiu.a.breana@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/04/16 13:02, Crestez Dan Leonard wrote:
-> This device has an identical interface to other supported sensors and the patch
-> only adds IDs.
+On 18/04/16 15:50, Tiberiu Breana wrote:
+> Add basic support for the Aosong AM2315 relative humidity
+> and ambient temperature sensor.
+> Includes support for raw readings and ACPI detection.
 > 
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+> Datasheet:
+> http://www.aosong.com/asp_bin/Products/en/AM2315.pdf
+> 
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Looks good.
+
 Applied to the togreg branch of iio.git - initially pushed out as testing
 for the autobuilders to play with it.
 
@@ -33,97 +36,278 @@ Thanks,
 
 Jonathan
 > ---
->  Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
->  drivers/iio/gyro/Kconfig                             | 2 +-
->  drivers/iio/gyro/st_gyro.h                           | 1 +
->  drivers/iio/gyro/st_gyro_core.c                      | 1 +
->  drivers/iio/gyro/st_gyro_i2c.c                       | 5 +++++
->  drivers/iio/gyro/st_gyro_spi.c                       | 1 +
->  6 files changed, 10 insertions(+), 1 deletion(-)
+>  drivers/iio/humidity/Kconfig  |  10 ++
+>  drivers/iio/humidity/Makefile |   1 +
+>  drivers/iio/humidity/am2315.c | 228 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 239 insertions(+)
+>  create mode 100644 drivers/iio/humidity/am2315.c
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> index 637e283..5844cf7 100644
-> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> @@ -51,6 +51,7 @@ Gyroscopes:
->  - st,l3gd20-gyro
->  - st,l3g4is-gyro
->  - st,lsm330-gyro
-> +- st,lsm9ds0-gyro
+> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+> index 866dda1..738a86d 100644
+> --- a/drivers/iio/humidity/Kconfig
+> +++ b/drivers/iio/humidity/Kconfig
+> @@ -3,6 +3,16 @@
+>  #
+>  menu "Humidity sensors"
 >  
->  Magnetometers:
->  - st,lsm303agr-magn
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index e816d29..205a844 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -93,7 +93,7 @@ config IIO_ST_GYRO_3AXIS
->  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
->  	help
->  	  Say yes here to build support for STMicroelectronics gyroscopes:
-> -	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330.
-> +	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330, LSM9DS0.
+> +config AM2315
+> +    tristate "Aosong AM2315 relative humidity and temperature sensor"
+> +    depends on I2C
+> +    help
+> +      If you say yes here you get support for the Aosong AM2315
+> +      relative humidity and ambient temperature sensor.
+> +
+> +      This driver can also be built as a module. If so, the module will
+> +      be called am2315.
+> +
+>  config DHT11
+>  	tristate "DHT11 (and compatible sensors) driver"
+>  	depends on GPIOLIB || COMPILE_TEST
+> diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
+> index c9f089a..4a73442 100644
+> --- a/drivers/iio/humidity/Makefile
+> +++ b/drivers/iio/humidity/Makefile
+> @@ -2,6 +2,7 @@
+>  # Makefile for IIO humidity sensor drivers
+>  #
 >  
->  	  This driver can also be built as a module. If so, these modules
->  	  will be created:
-> diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
-> index 5353d63..a5c5c4e 100644
-> --- a/drivers/iio/gyro/st_gyro.h
-> +++ b/drivers/iio/gyro/st_gyro.h
-> @@ -21,6 +21,7 @@
->  #define L3GD20_GYRO_DEV_NAME		"l3gd20"
->  #define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
->  #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
-> +#define LSM9DS0_GYRO_DEV_NAME		"lsm9ds0_gyro"
->  
->  /**
->   * struct st_sensors_platform_data - gyro platform data
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index be9057e..52a3c87 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -204,6 +204,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			[2] = LSM330DLC_GYRO_DEV_NAME,
->  			[3] = L3G4IS_GYRO_DEV_NAME,
->  			[4] = LSM330_GYRO_DEV_NAME,
-> +			[5] = LSM9DS0_GYRO_DEV_NAME,
->  		},
->  		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
->  		.odr = {
-> diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-> index 6848451..40056b8 100644
-> --- a/drivers/iio/gyro/st_gyro_i2c.c
-> +++ b/drivers/iio/gyro/st_gyro_i2c.c
-> @@ -48,6 +48,10 @@ static const struct of_device_id st_gyro_of_match[] = {
->  		.compatible = "st,lsm330-gyro",
->  		.data = LSM330_GYRO_DEV_NAME,
->  	},
+> +obj-$(CONFIG_AM2315) += am2315.o
+>  obj-$(CONFIG_DHT11) += dht11.o
+>  obj-$(CONFIG_HDC100X) += hdc100x.o
+>  obj-$(CONFIG_HTU21) += htu21.o
+> diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
+> new file mode 100644
+> index 0000000..d392fc8
+> --- /dev/null
+> +++ b/drivers/iio/humidity/am2315.c
+> @@ -0,0 +1,228 @@
+> +/**
+> + * Aosong AM2315 relative humidity and temperature
+> + *
+> + * Copyright (c) 2016, Intel Corporation.
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License. See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * 7-bit I2C address: 0x5C.
+> + */
+> +
+> +#include <linux/acpi.h>
+> +#include <linux/delay.h>
+> +#include <linux/i2c.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +#define AM2315_REG_HUM_MSB			0x00
+> +#define AM2315_REG_HUM_LSB			0x01
+> +#define AM2315_REG_TEMP_MSB			0x02
+> +#define AM2315_REG_TEMP_LSB			0x03
+> +
+> +#define AM2315_FUNCTION_READ			0x03
+> +#define AM2315_HUM_OFFSET			2
+> +#define AM2315_TEMP_OFFSET			4
+> +
+> +#define AM2315_DRIVER_NAME			"am2315"
+> +
+> +struct am2315_data {
+> +	struct i2c_client *client;
+> +	struct mutex lock;
+> +};
+> +
+> +struct am2315_sensor_data {
+> +	s16 hum_data;
+> +	s16 temp_data;
+> +};
+> +
+> +static const struct iio_chan_spec am2315_channels[] = {
 > +	{
-> +		.compatible = "st,lsm9ds0-gyro",
-> +		.data = LSM9DS0_GYRO_DEV_NAME,
+> +		.type = IIO_HUMIDITYRELATIVE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE)
 > +	},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, st_gyro_of_match);
-> @@ -93,6 +97,7 @@ static const struct i2c_device_id st_gyro_id_table[] = {
->  	{ L3GD20_GYRO_DEV_NAME },
->  	{ L3G4IS_GYRO_DEV_NAME },
->  	{ LSM330_GYRO_DEV_NAME },
-> +	{ LSM9DS0_GYRO_DEV_NAME },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(i2c, st_gyro_id_table);
-> diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-> index d2b7a5f..fbf2fae 100644
-> --- a/drivers/iio/gyro/st_gyro_spi.c
-> +++ b/drivers/iio/gyro/st_gyro_spi.c
-> @@ -54,6 +54,7 @@ static const struct spi_device_id st_gyro_id_table[] = {
->  	{ L3GD20_GYRO_DEV_NAME },
->  	{ L3G4IS_GYRO_DEV_NAME },
->  	{ LSM330_GYRO_DEV_NAME },
-> +	{ LSM9DS0_GYRO_DEV_NAME },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(spi, st_gyro_id_table);
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE)
+> +	},
+> +};
+> +
+> +/* CRC calculation algorithm, as specified in the datasheet (page 13). */
+> +static u16 am2315_crc(u8 *data, u8 nr_bytes)
+> +{
+> +	int i;
+> +	u16 crc = 0xffff;
+> +
+> +	while (nr_bytes--) {
+> +		crc ^= *data++;
+> +		for (i = 0; i < 8; i++) {
+> +			if (crc & 0x01) {
+> +				crc >>= 1;
+> +				crc ^= 0xA001;
+> +			} else {
+> +				crc >>= 1;
+> +			}
+> +		}
+> +	}
+> +
+> +	return crc;
+> +}
+> +
+> +/* Simple function that sends a few bytes to the device to wake it up. */
+> +static void am2315_ping(struct i2c_client *client)
+> +{
+> +	i2c_smbus_read_byte_data(client, AM2315_REG_HUM_MSB);
+> +}
+> +
+> +static int am2315_read_data(struct am2315_data *data,
+> +			    struct am2315_sensor_data *sensor_data)
+> +{
+> +	int ret;
+> +	/* tx_buf format: <function code> <start addr> <nr of regs to read> */
+> +	u8 tx_buf[3] = { AM2315_FUNCTION_READ, AM2315_REG_HUM_MSB, 4 };
+> +	/*
+> +	 * rx_buf format:
+> +	 * <function code> <number of registers read>
+> +	 * <humidity MSB> <humidity LSB> <temp MSB> <temp LSB>
+> +	 * <CRC LSB> <CRC MSB>
+> +	 */
+> +	u8 rx_buf[8];
+> +	u16 crc;
+> +
+> +	/* First wake up the device. */
+> +	am2315_ping(data->client);
+> +
+> +	mutex_lock(&data->lock);
+> +	ret = i2c_master_send(data->client, tx_buf, sizeof(tx_buf));
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "failed to send read request\n");
+> +		goto exit_unlock;
+> +	}
+> +	/* Wait 2-3 ms, then read back the data sent by the device. */
+> +	usleep_range(2000, 3000);
+> +	/* Do a bulk data read, then pick out what we need. */
+> +	ret = i2c_master_recv(data->client, rx_buf, sizeof(rx_buf));
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "failed to read sensor data\n");
+> +		goto exit_unlock;
+> +	}
+> +	mutex_unlock(&data->lock);
+> +	/*
+> +	 * Do a CRC check on the data and compare it to the value
+> +	 * calculated by the device.
+> +	 */
+> +	crc = am2315_crc(rx_buf, sizeof(rx_buf) - 2);
+> +	if ((crc & 0xff) != rx_buf[6] || (crc >> 8) != rx_buf[7]) {
+> +		dev_err(&data->client->dev, "failed to verify sensor data\n");
+> +		return -EIO;
+> +	}
+> +
+> +	sensor_data->hum_data = (rx_buf[AM2315_HUM_OFFSET] << 8) |
+> +				 rx_buf[AM2315_HUM_OFFSET + 1];
+> +	sensor_data->temp_data = (rx_buf[AM2315_TEMP_OFFSET] << 8) |
+> +				  rx_buf[AM2315_TEMP_OFFSET + 1];
+> +
+> +	return ret;
+> +
+> +exit_unlock:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static int am2315_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long mask)
+> +{
+> +	int ret;
+> +	struct am2315_sensor_data sensor_data;
+> +	struct am2315_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = am2315_read_data(data, &sensor_data);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = (chan->type == IIO_HUMIDITYRELATIVE) ?
+> +				sensor_data.hum_data : sensor_data.temp_data;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 100;
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info am2315_info = {
+> +	.driver_module		= THIS_MODULE,
+> +	.read_raw		= am2315_read_raw,
+> +};
+> +
+> +static int am2315_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct am2315_data *data;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev) {
+> +		dev_err(&client->dev, "iio allocation failed!\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +	i2c_set_clientdata(client, indio_dev);
+> +	mutex_init(&data->lock);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &am2315_info;
+> +	indio_dev->name = AM2315_DRIVER_NAME;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = am2315_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(am2315_channels);
+> +
+> +	return iio_device_register(indio_dev);
+> +}
+> +
+> +static int am2315_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id am2315_i2c_id[] = {
+> +	{"am2315", 0},
+> +	{}
+> +};
+> +
+> +static const struct acpi_device_id am2315_acpi_id[] = {
+> +	{"AOS2315", 0},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(acpi, am2315_acpi_id);
+> +
+> +static struct i2c_driver am2315_driver = {
+> +	.driver = {
+> +		.name = "am2315",
+> +		.acpi_match_table = ACPI_PTR(am2315_acpi_id),
+> +	},
+> +	.probe =            am2315_probe,
+> +	.remove =	    am2315_remove,
+> +	.id_table =         am2315_i2c_id,
+> +};
+> +
+> +module_i2c_driver(am2315_driver);
+> +
+> +MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
+> +MODULE_DESCRIPTION("Aosong AM2315 relative humidity and temperature");
+> +MODULE_LICENSE("GPL v2");
 > 
 
