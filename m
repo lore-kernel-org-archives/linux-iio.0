@@ -1,179 +1,125 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35050 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35130 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752288AbcDXJAl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 05:00:41 -0400
-Subject: Re: [PATCH v3 2/2] iio: humidity: Add triggered buffer support for
- AM2315
-To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	with ESMTP id S1752566AbcDXJUT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 05:20:19 -0400
+Subject: Re: [PATCH v3 2/5] max44000: Initial support for proximity reading
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
 	linux-iio@vger.kernel.org
-References: <1460991044-8484-1-git-send-email-tiberiu.a.breana@intel.com>
- <1460991044-8484-3-git-send-email-tiberiu.a.breana@intel.com>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <cover.1460989642.git.leonard.crestez@intel.com>
+ <e24ce55933b4e6923535015a0e5ce5adea20804f.1460989642.git.leonard.crestez@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <da963b58-67b0-05d1-b9c6-03ce13f0be39@kernel.org>
-Date: Sun, 24 Apr 2016 10:00:39 +0100
+Message-ID: <78915b62-ea3e-8e0b-d3e0-020596e8c89c@kernel.org>
+Date: Sun, 24 Apr 2016 10:20:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <1460991044-8484-3-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <e24ce55933b4e6923535015a0e5ce5adea20804f.1460989642.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/04/16 15:50, Tiberiu Breana wrote:
-> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
-Applied, thanks,
-
-Jonathan
-> ---
->  drivers/iio/humidity/am2315.c | 81 +++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 78 insertions(+), 3 deletions(-)
+On 18/04/16 15:31, Crestez Dan Leonard wrote:
+> The proximity sensor relies on sending pulses to an external IR led and
+> it is disabled by default on powerup. The driver will enable it with a
+> default power setting.
 > 
-> diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
-> index d392fc8..3be6d20 100644
-> --- a/drivers/iio/humidity/am2315.c
-> +++ b/drivers/iio/humidity/am2315.c
-> @@ -15,8 +15,11 @@
->  #include <linux/i2c.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/iio/buffer.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+Applied.
+> ---
+>  drivers/iio/light/max44000.c | 45 ++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 43 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+> index 5ed7934..dc63de2 100644
+> --- a/drivers/iio/light/max44000.c
+> +++ b/drivers/iio/light/max44000.c
+> @@ -59,6 +59,11 @@
+>   */
+>  #define MAX44000_REG_CFG_RX_DEFAULT 0xf0
 >  
->  #define AM2315_REG_HUM_MSB			0x00
->  #define AM2315_REG_HUM_LSB			0x01
-> @@ -26,12 +29,14 @@
->  #define AM2315_FUNCTION_READ			0x03
->  #define AM2315_HUM_OFFSET			2
->  #define AM2315_TEMP_OFFSET			4
-> +#define AM2315_ALL_CHANNEL_MASK			GENMASK(1, 0)
+> +/* REG_TX bits */
+> +#define MAX44000_LED_CURRENT_MASK	0xf
+> +#define MAX44000_LED_CURRENT_MAX	11
+> +#define MAX44000_LED_CURRENT_DEFAULT	6
+> +
+>  #define MAX44000_ALSDATA_OVERFLOW	0x4000
 >  
->  #define AM2315_DRIVER_NAME			"am2315"
->  
->  struct am2315_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
-> +	s16 buffer[8]; /* 2x16-bit channels + 2x16 padding + 4x16 timestamp */
+>  struct max44000_data {
+> @@ -75,6 +80,11 @@ static const struct iio_chan_spec max44000_channels[] = {
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+>  	},
+> +	{
+> +		.type = IIO_PROXIMITY,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +	},
 >  };
 >  
->  struct am2315_sensor_data {
-> @@ -43,13 +48,28 @@ static const struct iio_chan_spec am2315_channels[] = {
->  	{
->  		.type = IIO_HUMIDITYRELATIVE,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -				      BIT(IIO_CHAN_INFO_SCALE)
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 's',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +			.endianness = IIO_CPU,
-> +		},
->  	},
->  	{
->  		.type = IIO_TEMP,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -				      BIT(IIO_CHAN_INFO_SCALE)
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 1,
-> +		.scan_type = {
-> +			.sign = 's',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +			.endianness = IIO_CPU,
-> +		},
->  	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(2),
->  };
->  
->  /* CRC calculation algorithm, as specified in the datasheet (page 13). */
-> @@ -134,6 +154,44 @@ exit_unlock:
->  	return ret;
+>  static int max44000_read_alsval(struct max44000_data *data)
+> @@ -104,11 +114,23 @@ static int max44000_read_alsval(struct max44000_data *data)
+>  	return regval;
 >  }
 >  
-> +static irqreturn_t am2315_trigger_handler(int irq, void *p)
+> +static int max44000_write_led_current_raw(struct max44000_data *data, int val)
 > +{
-> +	int i;
-> +	int ret;
-> +	int bit;
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct am2315_data *data = iio_priv(indio_dev);
-> +	struct am2315_sensor_data sensor_data;
-> +
-> +	ret = am2315_read_data(data, &sensor_data);
-> +	if (ret < 0) {
-> +		mutex_unlock(&data->lock);
-> +		goto err;
-> +	}
-> +
-> +	mutex_lock(&data->lock);
-> +	if (*(indio_dev->active_scan_mask) == AM2315_ALL_CHANNEL_MASK) {
-> +		data->buffer[0] = sensor_data.hum_data;
-> +		data->buffer[1] = sensor_data.temp_data;
-> +	} else {
-> +		i = 0;
-> +		for_each_set_bit(bit, indio_dev->active_scan_mask,
-> +				 indio_dev->masklength) {
-> +			data->buffer[i] = (bit ? sensor_data.temp_data :
-> +						 sensor_data.hum_data);
-> +			i++;
-> +		}
-> +	}
-> +	mutex_unlock(&data->lock);
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-> +					   pf->timestamp);
-> +err:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	return IRQ_HANDLED;
+> +	/* Maybe we should clamp the value instead? */
+> +	if (val < 0 || val > MAX44000_LED_CURRENT_MAX)
+> +		return -ERANGE;
+> +	if (val >= 8)
+> +		val += 4;
+> +	return regmap_write_bits(data->regmap, MAX44000_REG_CFG_TX,
+> +				 MAX44000_LED_CURRENT_MASK, val);
 > +}
 > +
->  static int am2315_read_raw(struct iio_dev *indio_dev,
->  			   struct iio_chan_spec const *chan,
->  			   int *val, int *val2, long mask)
-> @@ -166,6 +224,7 @@ static const struct iio_info am2315_info = {
->  static int am2315_probe(struct i2c_client *client,
->  			const struct i2c_device_id *id)
+>  static int max44000_read_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     int *val, int *val2, long mask)
 >  {
-> +	int ret;
->  	struct iio_dev *indio_dev;
->  	struct am2315_data *data;
+>  	struct max44000_data *data = iio_priv(indio_dev);
+> +	unsigned int regval;
+>  	int ret;
 >  
-> @@ -187,7 +246,22 @@ static int am2315_probe(struct i2c_client *client,
->  	indio_dev->channels = am2315_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(am2315_channels);
+>  	switch (mask) {
+> @@ -123,6 +145,15 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
+>  			*val = ret;
+>  			return IIO_VAL_INT;
 >  
-> -	return iio_device_register(indio_dev);
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 am2315_trigger_handler, NULL);
+> +		case IIO_PROXIMITY:
+> +			mutex_lock(&data->lock);
+> +			ret = regmap_read(data->regmap, MAX44000_REG_PRX_DATA, &regval);
+> +			mutex_unlock(&data->lock);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = regval;
+> +			return IIO_VAL_INT;
+> +
+>  		default:
+>  			return -EINVAL;
+>  		}
+> @@ -266,8 +297,18 @@ static int max44000_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  
+> -	/* Reset CFG bits to ALS-only mode and no interrupts */
+> -	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_GIR;
+> +	/*
+> +	 * By default the LED pulse used for the proximity sensor is disabled.
+> +	 * Set a middle value so that we get some sort of valid data by default.
+> +	 */
+> +	ret = max44000_write_led_current_raw(data, MAX44000_LED_CURRENT_DEFAULT);
 > +	if (ret < 0) {
-> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+> +		dev_err(&client->dev, "failed to write init config: %d\n", ret);
 > +		return ret;
 > +	}
 > +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		goto err_buffer_cleanup;
-> +
-> +	return 0;
-> +
-> +err_buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	return ret;
->  }
->  
->  static int am2315_remove(struct i2c_client *client)
-> @@ -195,6 +269,7 @@ static int am2315_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  
->  	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
->  
->  	return 0;
->  }
+> +	/* Reset CFG bits to ALS_PRX mode which allows easy reading of both values. */
+> +	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_PRX;
+>  	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
+>  	if (ret < 0) {
+>  		dev_err(&client->dev, "failed to write init config: %d\n", ret);
 > 
 
