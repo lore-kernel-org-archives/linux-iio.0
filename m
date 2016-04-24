@@ -1,385 +1,411 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35787 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35097 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751770AbcDXL2x (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 07:28:53 -0400
-Subject: Re: [RFC PATCH 0/3] Introduce support for creating IIO devices via
- configfs
-To: Daniel Baluta <daniel.baluta@intel.com>
-References: <1461167126-23399-1-git-send-email-daniel.baluta@intel.com>
+	with ESMTP id S1752090AbcDXJKv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 05:10:51 -0400
+Subject: Re: [PATCH v3 1/5] max44000: Initial support
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1460989642.git.leonard.crestez@intel.com>
+ <21ea1e822e4f105700daaa8374d9483c7d0c3ebc.1460989642.git.leonard.crestez@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <a7957593-1a18-39fc-a12f-2e60019f8908@kernel.org>
-Date: Sun, 24 Apr 2016 12:28:48 +0100
+Message-ID: <28da2232-2cc9-eef5-17ea-6f702dd17157@kernel.org>
+Date: Sun, 24 Apr 2016 10:10:48 +0100
 MIME-Version: 1.0
-In-Reply-To: <1461167126-23399-1-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <21ea1e822e4f105700daaa8374d9483c7d0c3ebc.1460989642.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/04/16 16:45, Daniel Baluta wrote:
-> For testing purposes is nice to have a quick way of creating IIO devices.
-> This patch series introduces support for creating IIO devices via configs
-> (patch 1), allowing users to register "device types". For the moment we
-> support "dummy" device type (patch 2).
+On 18/04/16 15:31, Crestez Dan Leonard wrote:
+> This just adds support for reporting illuminance with default settings.
 > 
-> This is just a RFC in order to see if the interface is acceptable. We also
-> need a way to create IIO devices with configurable number of channels.
+> Important default registers are written on probe because the device
+> otherwise lacks a reset function.
 > 
-> Patch 3 introduces configfs entries documentation for easier review.
-> 
-> Daniel Baluta (3):
->   iio: Add support for creating IIO devices via configfs
->   iio: dummy: Convert IIO dummy to configfs
->   Documentation: iio: Add IIO software devices docs
-> 
->  Documentation/ABI/testing/configfs-iio |  13 +++
->  drivers/iio/Kconfig                    |   9 ++
->  drivers/iio/Makefile                   |   1 +
->  drivers/iio/dummy/iio_simple_dummy.c   |  98 ++++++------------
->  drivers/iio/industrialio-sw-device.c   | 181 +++++++++++++++++++++++++++++++++
->  include/linux/iio/sw_device.h          |  70 +++++++++++++
->  6 files changed, 307 insertions(+), 65 deletions(-)
->  create mode 100644 drivers/iio/industrialio-sw-device.c
->  create mode 100644 include/linux/iio/sw_device.h
-> 
-Sorry, I was a muppet and delete patch one due to a misstap on my phone...
-Anyhow, pasting it in here to review...
-
-> This is similar with support for creating triggers via configfs.
-> Devices will be hosted under:
-> 	* /config/iio/devices
-> 
-> We allow users to register "device types" under:
-> 	* /config/iio/devices/<device_types>/
-> 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-As you observed, there is room in here to share some code with the sw-trigger
-support.  Looks like we are going to have an iio-configfs helper library
-or perhaps just move them into the industrialio-configfs module...
-
-However, I'm not sure it's actually a good idea.  Seems to me that the amount
-of fiddly indirection needed would outway the advantages in reduced code
-replication.
-
-Other than a few nitpicks this looks good to me - though that's not surprising
-as it's a find and replace job on the trigger version!
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+Looks good to me - applied to the togreg branch of iio.git
+initially pushed out as testing for the autobuilders to play with it.
+I did fix up a couple of overly long lines though.  They weren't cases where
+breaking them effected readability so checkpatch warnings should have been
+fixed.  Otherwise I end up with patches for them a few days after I push
+the tree out!  Easier to fix them now.
 
 Jonathan
 > ---
->  drivers/iio/Kconfig                  |   9 ++
->  drivers/iio/Makefile                 |   1 +
->  drivers/iio/industrialio-sw-device.c | 181 +++++++++++++++++++++++++++++++++++
->  include/linux/iio/sw_device.h        |  70 ++++++++++++++
->  4 files changed, 261 insertions(+)
->  create mode 100644 drivers/iio/industrialio-sw-device.c
->  create mode 100644 include/linux/iio/sw_device.h
+>  drivers/iio/light/Kconfig    |  11 ++
+>  drivers/iio/light/Makefile   |   1 +
+>  drivers/iio/light/max44000.c | 324 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 336 insertions(+)
+>  create mode 100644 drivers/iio/light/max44000.c
 > 
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index 505e921..77711a3 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -46,6 +46,15 @@ config IIO_CONSUMERS_PER_TRIGGER
->  	This value controls the maximum number of consumers that a
->  	given trigger may handle. Default is 2.
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index 5ee1d45..d146c2c 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -234,6 +234,17 @@ config LTR501
+>  	 This driver can also be built as a module.  If so, the module
+>           will be called ltr501.
 >  
-> +config IIO_SW_DEVICE
-> +	tristate "Enable software IIO device support"
-> +	select IIO_CONFIGFS
+> +config MAX44000
+> +	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
+> +	depends on I2C
+> +	select REGMAP_I2C
 > +	help
-> +	 Provides IIO core support for software device. A software
-> +	 device can be created via configfs or directly by a driver
-> +	 using the API provided.
+> +	 Say Y here if you want to build support for Maxim Integrated's
+> +	 MAX44000 ambient and infrared proximity sensor device.
 > +
-One blank line too many here...
+> +	 To compile this driver as a module, choose M here:
+> +	 the module will be called max44000.
 > +
->  config IIO_SW_TRIGGER
->  	tristate "Enable software triggers support"
->  	select IIO_CONFIGFS
-> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-> index 20f6490..87e4c43 100644
-> --- a/drivers/iio/Makefile
-> +++ b/drivers/iio/Makefile
-> @@ -8,6 +8,7 @@ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
->  industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
->  
->  obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
-> +obj-$(CONFIG_IIO_SW_DEVICE) += industrialio-sw-device.o
->  obj-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
->  obj-$(CONFIG_IIO_TRIGGERED_EVENT) += industrialio-triggered-event.o
->  
-> diff --git a/drivers/iio/industrialio-sw-device.c b/drivers/iio/industrialio-sw-device.c
+>  config OPT3001
+>  	tristate "Texas Instruments OPT3001 Light Sensor"
+>  	depends on I2C
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index 4aeee2b..6e640cf 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -21,6 +21,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
+>  obj-$(CONFIG_JSA1212)		+= jsa1212.o
+>  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+>  obj-$(CONFIG_LTR501)		+= ltr501.o
+> +obj-$(CONFIG_MAX44000)		+= max44000.o
+>  obj-$(CONFIG_OPT3001)		+= opt3001.o
+>  obj-$(CONFIG_PA12203001)	+= pa12203001.o
+>  obj-$(CONFIG_RPR0521)		+= rpr0521.o
+> diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
 > new file mode 100644
-> index 0000000..243aaf4
+> index 0000000..5ed7934
 > --- /dev/null
-> +++ b/drivers/iio/industrialio-sw-device.c
-> @@ -0,0 +1,181 @@
+> +++ b/drivers/iio/light/max44000.c
+> @@ -0,0 +1,324 @@
 > +/*
-> + * The Industrial I/O core, software IIO devices functions
+> + * MAX44000 Ambient and Infrared Proximity Sensor
 > + *
-> + * Copyright (c) 2015 Intel Corporation
-I think you can reasonably claim 2016 - but up to you.
+> + * Copyright (c) 2016, Intel Corporation.
 > + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * Data sheet: https://datasheets.maximintegrated.com/en/ds/MAX44000.pdf
+> + *
+> + * 7-bit I2C slave address 0x4a
 > + */
 > +
 > +#include <linux/module.h>
 > +#include <linux/init.h>
-> +#include <linux/kmod.h>
-> +#include <linux/list.h>
-> +#include <linux/slab.h>
+> +#include <linux/i2c.h>
+> +#include <linux/regmap.h>
+> +#include <linux/util_macros.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/acpi.h>
 > +
-> +#include <linux/iio/sw_device.h>
-> +#include <linux/iio/configfs.h>
-> +#include <linux/configfs.h>
+> +#define MAX44000_DRV_NAME		"max44000"
 > +
-> +static struct config_group *iio_devices_group;
-> +static struct config_item_type iio_device_type_group_type;
+> +/* Registers in datasheet order */
+> +#define MAX44000_REG_STATUS		0x00
+> +#define MAX44000_REG_CFG_MAIN		0x01
+> +#define MAX44000_REG_CFG_RX		0x02
+> +#define MAX44000_REG_CFG_TX		0x03
+> +#define MAX44000_REG_ALS_DATA_HI	0x04
+> +#define MAX44000_REG_ALS_DATA_LO	0x05
+> +#define MAX44000_REG_PRX_DATA		0x16
+> +#define MAX44000_REG_ALS_UPTHR_HI	0x06
+> +#define MAX44000_REG_ALS_UPTHR_LO	0x07
+> +#define MAX44000_REG_ALS_LOTHR_HI	0x08
+> +#define MAX44000_REG_ALS_LOTHR_LO	0x09
+> +#define MAX44000_REG_PST		0x0a
+> +#define MAX44000_REG_PRX_IND		0x0b
+> +#define MAX44000_REG_PRX_THR		0x0c
+> +#define MAX44000_REG_TRIM_GAIN_GREEN	0x0f
+> +#define MAX44000_REG_TRIM_GAIN_IR	0x10
 > +
-> +static struct config_item_type iio_devices_group_type = {
-> +	.ct_owner = THIS_MODULE,
+> +/* REG_CFG bits */
+> +#define MAX44000_CFG_ALSINTE            0x01
+> +#define MAX44000_CFG_PRXINTE            0x02
+> +#define MAX44000_CFG_MASK               0x1c
+> +#define MAX44000_CFG_MODE_SHUTDOWN      0x00
+> +#define MAX44000_CFG_MODE_ALS_GIR       0x04
+> +#define MAX44000_CFG_MODE_ALS_G         0x08
+> +#define MAX44000_CFG_MODE_ALS_IR        0x0c
+> +#define MAX44000_CFG_MODE_ALS_PRX       0x10
+> +#define MAX44000_CFG_MODE_PRX           0x14
+> +#define MAX44000_CFG_TRIM               0x20
+> +
+> +/*
+> + * Upper 4 bits are not documented but start as 1 on powerup
+> + * Setting them to 0 causes proximity to misbehave so set them to 1
+> + */
+> +#define MAX44000_REG_CFG_RX_DEFAULT 0xf0
+> +
+> +#define MAX44000_ALSDATA_OVERFLOW	0x4000
+> +
+> +struct max44000_data {
+> +	struct mutex lock;
+> +	struct regmap *regmap;
 > +};
 > +
-> +static LIST_HEAD(iio_device_types_list);
-> +static DEFINE_MUTEX(iio_device_types_lock);
+> +/* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
+> +#define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
 > +
-> +static
-> +struct iio_sw_device_type *__iio_find_sw_device_type(const char *name,
-> +						     unsigned len)
+> +static const struct iio_chan_spec max44000_channels[] = {
+> +	{
+> +		.type = IIO_LIGHT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +	},
+> +};
+> +
+> +static int max44000_read_alsval(struct max44000_data *data)
 > +{
-> +	struct iio_sw_device_type *d = NULL, *iter;
+> +	u16 regval;
+> +	int ret;
 > +
-> +	list_for_each_entry(iter, &iio_device_types_list, list)
-> +		if (!strcmp(iter->name, name)) {
-> +			d = iter;
-> +			break;
-> +		}
-> +
-> +	return d;
-> +}
-> +
-> +int iio_register_sw_device_type(struct iio_sw_device_type *d)
-> +{
-> +	struct iio_sw_device_type *iter;
-> +	int ret = 0;
-> +
-> +	mutex_lock(&iio_device_types_lock);
-> +	iter = __iio_find_sw_device_type(d->name, strlen(d->name));
-> +	if (iter)
-> +		ret = -EBUSY;
-> +	else
-> +		list_add_tail(&d->list, &iio_device_types_list);
-> +	mutex_unlock(&iio_device_types_lock);
-> +
-> +	if (ret)
+> +	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI,
+> +			       &regval, sizeof(regval));
+> +	if (ret < 0)
 > +		return ret;
 > +
-> +	d->group = configfs_register_default_group(iio_devices_group, d->name,
-> +						&iio_device_type_group_type);
-> +	if (IS_ERR(d->group))
-> +		ret = PTR_ERR(d->group);
+> +	regval = be16_to_cpu(regval);
 > +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(iio_register_sw_device_type);
+> +	/*
+> +	 * Overflow is explained on datasheet page 17.
+> +	 *
+> +	 * It's a warning that either the G or IR channel has become saturated
+> +	 * and that the value in the register is likely incorrect.
+> +	 *
+> +	 * The recommendation is to change the scale (ALSPGA).
+> +	 * The driver just returns the max representable value.
+> +	 */
+> +	if (regval & MAX44000_ALSDATA_OVERFLOW)
+> +		return 0x3FFF;
 > +
-> +void iio_unregister_sw_device_type(struct iio_sw_device_type *dt)
-> +{
-> +	struct iio_sw_device_type *iter;
-> +
-> +	mutex_lock(&iio_device_types_lock);
-> +	iter = __iio_find_sw_device_type(dt->name, strlen(dt->name));
-> +	if (iter)
-> +		list_del(&dt->list);
-> +	mutex_unlock(&iio_device_types_lock);
-> +
-> +	configfs_unregister_default_group(dt->group);
-> +}
-> +EXPORT_SYMBOL(iio_unregister_sw_device_type);
-> +
-> +static
-> +struct iio_sw_device_type *iio_get_sw_device_type(const char *name)
-> +{
-> +	struct iio_sw_device_type *dt;
-> +
-> +	mutex_lock(&iio_device_types_lock);
-> +	dt = __iio_find_sw_device_type(name, strlen(name));
-> +	if (dt && !try_module_get(dt->owner))
-> +		dt = NULL;
-> +	mutex_unlock(&iio_device_types_lock);
-> +
-> +	return dt;
+> +	return regval;
 > +}
 > +
-> +struct iio_sw_device *iio_sw_device_create(const char *type, const char *name)
+> +static int max44000_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
 > +{
-> +	struct iio_sw_device *d;
-> +	struct iio_sw_device_type *dt;
+> +	struct max44000_data *data = iio_priv(indio_dev);
+> +	int ret;
 > +
-> +	dt = iio_get_sw_device_type(type);
-> +	if (!dt) {
-> +		pr_err("Invalid device type: %s\n", type);
-> +		return ERR_PTR(-EINVAL);
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			mutex_lock(&data->lock);
+> +			ret = max44000_read_alsval(data);
+> +			mutex_unlock(&data->lock);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = ret;
+> +			return IIO_VAL_INT;
+> +
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			*val = 1;
+> +			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
+> +			return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +
+> +	default:
+> +		return -EINVAL;
 > +	}
-> +	d = dt->ops->probe(name);
-> +	if (IS_ERR(d))
-> +		goto out_module_put;
-> +
-> +	d->device_type = dt;
-> +
-> +	return d;
-> +out_module_put:
-> +	module_put(dt->owner);
-> +	return d;
-> +}
-> +EXPORT_SYMBOL(iio_sw_device_create);
-> +
-> +void iio_sw_device_destroy(struct iio_sw_device *d)
-> +{
-> +	struct iio_sw_device_type *dt = d->device_type;
-> +
-> +	dt->ops->remove(d);
-> +	module_put(dt->owner);
-> +}
-> +EXPORT_SYMBOL(iio_sw_device_destroy);
-> +
-> +static struct config_group *device_make_group(struct config_group *group,
-> +					      const char *name)
-> +{
-> +	struct iio_sw_device *d;
-> +
-> +	d = iio_sw_device_create(group->cg_item.ci_name, name);
-> +	if (IS_ERR(d))
-> +		return ERR_CAST(d);
-> +
-> +	config_item_set_name(&d->group.cg_item, "%s", name);
-blank line here (funilly enough yuo have one in the trigger version)
-> +	return &d->group;
 > +}
 > +
-> +static void device_drop_group(struct config_group *group,
-> +			      struct config_item *item)
-> +{
-> +	struct iio_sw_device *d = to_iio_sw_device(item);
-> +
-> +	iio_sw_device_destroy(d);
-> +	config_item_put(item);
-> +}
-> +
-> +static struct configfs_group_operations device_ops = {
-> +	.make_group	= &device_make_group,
-> +	.drop_item	= &device_drop_group,
+> +static const struct iio_info max44000_info = {
+> +	.driver_module		= THIS_MODULE,
+> +	.read_raw		= max44000_read_raw,
 > +};
 > +
-> +static struct config_item_type iio_device_type_group_type = {
-> +	.ct_group_ops = &device_ops,
-> +	.ct_owner       = THIS_MODULE,
-> +};
-> +
-> +static int __init iio_sw_device_init(void)
+> +static bool max44000_readable_reg(struct device *dev, unsigned int reg)
 > +{
-> +	iio_devices_group =
-> +		configfs_register_default_group(&iio_configfs_subsys.su_group,
-> +						"devices",
-> +						&iio_devices_group_type);
-> +	return PTR_ERR_OR_ZERO(iio_devices_group);
-> +}
-> +module_init(iio_sw_device_init);
-> +
-> +static void __exit iio_sw_device_exit(void)
-> +{
-> +	configfs_unregister_default_group(iio_devices_group);
-> +}
-> +module_exit(iio_sw_device_exit);
-> +
-> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
-> +MODULE_DESCRIPTION("Industrial I/O software devices support");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/iio/sw_device.h b/include/linux/iio/sw_device.h
-> new file mode 100644
-> index 0000000..672a9ad
-> --- /dev/null
-> +++ b/include/linux/iio/sw_device.h
-> @@ -0,0 +1,70 @@
-> +/*
-> + * Industrial I/O software device interface
-> + *
-> + * Copyright (c) 2015 Intel Corporation
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
-> + */
-> +
-> +#ifndef __IIO_SW_DEVICE
-> +#define __IIO_SW_DEVICE
-> +
-> +#include <linux/module.h>
-> +#include <linux/device.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/configfs.h>
-> +
-> +#define module_iio_sw_device_driver(__iio_sw_device_type) \
-> +	module_driver(__iio_sw_device_type, iio_register_sw_device_type, \
-> +		      iio_unregister_sw_device_type)
-> +
-> +struct iio_sw_device_ops;
-> +
-> +struct iio_sw_device_type {
-> +	const char *name;
-> +	struct module *owner;
-> +	const struct iio_sw_device_ops *ops;
-> +	struct list_head list;
-> +	struct config_group *group;
-> +};
-> +
-> +struct iio_sw_device {
-> +	struct iio_dev *device;
-> +	struct iio_sw_device_type *device_type;
-> +	struct config_group group;
-> +};
-> +
-> +struct iio_sw_device_ops {
-> +	struct iio_sw_device* (*probe)(const char *);
-> +	int (*remove)(struct iio_sw_device *);
-> +};
-> +
-> +static inline
-> +struct iio_sw_device *to_iio_sw_device(struct config_item *item)
-> +{
-> +	return container_of(to_config_group(item), struct iio_sw_device,
-> +			    group);
+> +	switch (reg) {
+> +	case MAX44000_REG_STATUS:
+> +	case MAX44000_REG_CFG_MAIN:
+> +	case MAX44000_REG_CFG_RX:
+> +	case MAX44000_REG_CFG_TX:
+> +	case MAX44000_REG_ALS_DATA_HI:
+> +	case MAX44000_REG_ALS_DATA_LO:
+> +	case MAX44000_REG_PRX_DATA:
+> +	case MAX44000_REG_ALS_UPTHR_HI:
+> +	case MAX44000_REG_ALS_UPTHR_LO:
+> +	case MAX44000_REG_ALS_LOTHR_HI:
+> +	case MAX44000_REG_ALS_LOTHR_LO:
+> +	case MAX44000_REG_PST:
+> +	case MAX44000_REG_PRX_IND:
+> +	case MAX44000_REG_PRX_THR:
+> +	case MAX44000_REG_TRIM_GAIN_GREEN:
+> +	case MAX44000_REG_TRIM_GAIN_IR:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
 > +}
 > +
-> +int iio_register_sw_device_type(struct iio_sw_device_type *dt);
-> +void iio_unregister_sw_device_type(struct iio_sw_device_type *dt);
-> +
-> +struct iio_sw_device *iio_sw_device_create(const char *, const char *);
-> +void iio_sw_device_destroy(struct iio_sw_device *);
-> +
-> +int iio_sw_device_type_configfs_register(struct iio_sw_device_type *dt);
-> +void iio_sw_device_type_configfs_unregister(struct iio_sw_device_type *dt);
-> +
-> +static inline
-> +void iio_swd_group_init_type_name(struct iio_sw_device *d,
-> +				  const char *name,
-> +				  struct config_item_type *type)
+> +static bool max44000_writeable_reg(struct device *dev, unsigned int reg)
 > +{
-> +#ifdef CONFIG_CONFIGFS_FS
-> +	config_group_init_type_name(&d->group, name, type);
+> +	switch (reg) {
+> +	case MAX44000_REG_CFG_MAIN:
+> +	case MAX44000_REG_CFG_RX:
+> +	case MAX44000_REG_CFG_TX:
+> +	case MAX44000_REG_ALS_UPTHR_HI:
+> +	case MAX44000_REG_ALS_UPTHR_LO:
+> +	case MAX44000_REG_ALS_LOTHR_HI:
+> +	case MAX44000_REG_ALS_LOTHR_LO:
+> +	case MAX44000_REG_PST:
+> +	case MAX44000_REG_PRX_IND:
+> +	case MAX44000_REG_PRX_THR:
+> +	case MAX44000_REG_TRIM_GAIN_GREEN:
+> +	case MAX44000_REG_TRIM_GAIN_IR:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static bool max44000_volatile_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case MAX44000_REG_STATUS:
+> +	case MAX44000_REG_ALS_DATA_HI:
+> +	case MAX44000_REG_ALS_DATA_LO:
+> +	case MAX44000_REG_PRX_DATA:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static bool max44000_precious_reg(struct device *dev, unsigned int reg)
+> +{
+> +	return reg == MAX44000_REG_STATUS;
+> +}
+> +
+> +static const struct regmap_config max44000_regmap_config = {
+> +	.reg_bits	= 8,
+> +	.val_bits	= 8,
+> +
+> +	.max_register	= MAX44000_REG_PRX_DATA,
+> +	.readable_reg	= max44000_readable_reg,
+> +	.writeable_reg	= max44000_writeable_reg,
+> +	.volatile_reg	= max44000_volatile_reg,
+> +	.precious_reg	= max44000_precious_reg,
+> +
+> +	.use_single_rw	= 1,
+> +	.cache_type	= REGCACHE_RBTREE,
+> +};
+> +
+> +static int max44000_probe(struct i2c_client *client,
+> +			  const struct i2c_device_id *id)
+> +{
+> +	struct max44000_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret, reg;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +	data = iio_priv(indio_dev);
+> +	data->regmap = devm_regmap_init_i2c(client, &max44000_regmap_config);
+> +	if (IS_ERR(data->regmap)) {
+> +		dev_err(&client->dev, "regmap_init failed!\n");
+> +		return PTR_ERR(data->regmap);
+> +	}
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +	mutex_init(&data->lock);
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &max44000_info;
+> +	indio_dev->name = MAX44000_DRV_NAME;
+> +	indio_dev->channels = max44000_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max44000_channels);
+> +
+> +	/*
+> +	 * The device doesn't have a reset function so we just clear some
+> +	 * important bits at probe time to ensure sane operation.
+> +	 *
+> +	 * Since we don't support interrupts/events the threshold values are
+> +	 * not important. We also don't touch trim values.
+> +	 */
+> +
+> +	/* Reset ALS scaling bits */
+> +	ret = regmap_write(data->regmap, MAX44000_REG_CFG_RX, MAX44000_REG_CFG_RX_DEFAULT);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "failed to write default CFG_RX: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* Reset CFG bits to ALS-only mode and no interrupts */
+> +	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_GIR;
+> +	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "failed to write init config: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* Read status at least once to clear any stale interrupt bits. */
+> +	ret = regmap_read(data->regmap, MAX44000_REG_STATUS, &reg);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "failed to read init status: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	return iio_device_register(indio_dev);
+> +}
+> +
+> +static int max44000_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id max44000_id[] = {
+> +	{"max44000", 0},
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, max44000_id);
+> +
+> +#ifdef CONFIG_ACPI
+> +static const struct acpi_device_id max44000_acpi_match[] = {
+> +	{"MAX44000", 0},
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(acpi, max44000_acpi_match);
 > +#endif
-> +}
 > +
-> +#endif /* __IIO_SW_DEVICE */
-> -- 
-> 2.5.0
+> +static struct i2c_driver max44000_driver = {
+> +	.driver = {
+> +		.name	= MAX44000_DRV_NAME,
+> +		.acpi_match_table = ACPI_PTR(max44000_acpi_match),
+> +	},
+> +	.probe		= max44000_probe,
+> +	.remove		= max44000_remove,
+> +	.id_table	= max44000_id,
+> +};
+> +
+> +module_i2c_driver(max44000_driver);
+> +
+> +MODULE_AUTHOR("Crestez Dan Leonard <leonard.crestez@intel.com>");
+> +MODULE_DESCRIPTION("MAX44000 Ambient and Infrared Proximity Sensor");
+> +MODULE_LICENSE("GPL v2");
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
 
