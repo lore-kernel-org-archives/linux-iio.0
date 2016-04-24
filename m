@@ -1,281 +1,372 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:34553 "EHLO
-	mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753198AbcDXUnZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 16:43:25 -0400
-Received: by mail-pf0-f196.google.com with SMTP id 145so7352483pfz.1
-        for <linux-iio@vger.kernel.org>; Sun, 24 Apr 2016 13:43:24 -0700 (PDT)
+Received: from mail-lb0-f194.google.com ([209.85.217.194]:33322 "EHLO
+	mail-lb0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753198AbcDXVjV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 17:39:21 -0400
+Received: by mail-lb0-f194.google.com with SMTP id qf3so980361lbb.0
+        for <linux-iio@vger.kernel.org>; Sun, 24 Apr 2016 14:39:20 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1461505931-21884-3-git-send-email-akinobu.mita@gmail.com>
+References: <1461505931-21884-1-git-send-email-akinobu.mita@gmail.com> <1461505931-21884-3-git-send-email-akinobu.mita@gmail.com>
 From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH 1/2] iio: chemical: atlas-ph-sensor: reorg driver to allow multiple chips
-Date: Sun, 24 Apr 2016 13:43:15 -0700
-Message-Id: <1461530596-2142-2-git-send-email-mranostay@gmail.com>
-In-Reply-To: <1461530596-2142-1-git-send-email-mranostay@gmail.com>
-References: <1461530596-2142-1-git-send-email-mranostay@gmail.com>
+Date: Sun, 24 Apr 2016 14:38:39 -0700
+Message-ID: <CAKzfze_vW92PaGAou3KpBJtvs9fZbtM79bayNSBC7cqfpq7NWg@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] iio: pressure: bmp280: add ability to control
+ oversampling rate
+To: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Christoph Mair <christoph.mair@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
- drivers/iio/chemical/atlas-ph-sensor.c | 131 +++++++++++++++++++++------------
- 1 file changed, 83 insertions(+), 48 deletions(-)
+On Sun, Apr 24, 2016 at 6:52 AM, Akinobu Mita <akinobu.mita@gmail.com> wrote:
+> This adds ability to control the oversampling ratio of the temperature
+> and pressure measurement for both bmp180 and bmp280.
+>
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+> Cc: Christoph Mair <christoph.mair@gmail.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> ---
+> * v3
+> - fix oversampling register setting for bmp280, spotted by Vlad Dogaru
+>
+>  drivers/iio/pressure/bmp280.c | 203 ++++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 185 insertions(+), 18 deletions(-)
+>
+> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+> index dcf3b0a..2f1498e 100644
+> --- a/drivers/iio/pressure/bmp280.c
+> +++ b/drivers/iio/pressure/bmp280.c
+> @@ -48,19 +48,21 @@
+>
+>  #define BMP280_OSRS_TEMP_MASK          (BIT(7) | BIT(6) | BIT(5))
+>  #define BMP280_OSRS_TEMP_SKIP          0
+> -#define BMP280_OSRS_TEMP_1X            BIT(5)
+> -#define BMP280_OSRS_TEMP_2X            BIT(6)
+> -#define BMP280_OSRS_TEMP_4X            (BIT(6) | BIT(5))
+> -#define BMP280_OSRS_TEMP_8X            BIT(7)
+> -#define BMP280_OSRS_TEMP_16X           (BIT(7) | BIT(5))
+> +#define BMP280_OSRS_TEMP_X(osrs_t)     ((osrs_t) << 5)
+> +#define BMP280_OSRS_TEMP_1X            BMP280_OSRS_TEMP_X(1)
+> +#define BMP280_OSRS_TEMP_2X            BMP280_OSRS_TEMP_X(2)
+> +#define BMP280_OSRS_TEMP_4X            BMP280_OSRS_TEMP_X(3)
+> +#define BMP280_OSRS_TEMP_8X            BMP280_OSRS_TEMP_X(4)
+> +#define BMP280_OSRS_TEMP_16X           BMP280_OSRS_TEMP_X(5)
+>
+>  #define BMP280_OSRS_PRESS_MASK         (BIT(4) | BIT(3) | BIT(2))
+>  #define BMP280_OSRS_PRESS_SKIP         0
+> -#define BMP280_OSRS_PRESS_1X           BIT(2)
+> -#define BMP280_OSRS_PRESS_2X           BIT(3)
+> -#define BMP280_OSRS_PRESS_4X           (BIT(3) | BIT(2))
+> -#define BMP280_OSRS_PRESS_8X           BIT(4)
+> -#define BMP280_OSRS_PRESS_16X          (BIT(4) | BIT(2))
+> +#define BMP280_OSRS_PRESS_X(osrs_p)    ((osrs_p) << 2)
+> +#define BMP280_OSRS_PRESS_1X           BMP280_OSRS_PRESS_X(1)
+> +#define BMP280_OSRS_PRESS_2X           BMP280_OSRS_PRESS_X(2)
+> +#define BMP280_OSRS_PRESS_4X           BMP280_OSRS_PRESS_X(3)
+> +#define BMP280_OSRS_PRESS_8X           BMP280_OSRS_PRESS_X(4)
+> +#define BMP280_OSRS_PRESS_16X          BMP280_OSRS_PRESS_X(5)
+>
+>  #define BMP280_MODE_MASK               (BIT(1) | BIT(0))
+>  #define BMP280_MODE_SLEEP              0
+> @@ -98,6 +100,10 @@ struct bmp280_data {
+>         struct regmap *regmap;
+>         const struct bmp280_chip_info *chip_info;
+>
+> +       /* log of base 2 of oversampling rate */
+> +       u8 oversampling_press;
+> +       u8 oversampling_temp;
+> +
+>         /*
+>          * Carryover value from temperature conversion, used in pressure
+>          * calculation.
+> @@ -108,6 +114,12 @@ struct bmp280_data {
+>  struct bmp280_chip_info {
+>         const struct regmap_config *regmap_config;
+>
+> +       const int *oversampling_temp_avail;
+> +       int num_oversampling_temp_avail;
+> +
+> +       const int *oversampling_press_avail;
+> +       int num_oversampling_press_avail;
 
-diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-index 62b37cd..c57f9c2 100644
---- a/drivers/iio/chemical/atlas-ph-sensor.c
-+++ b/drivers/iio/chemical/atlas-ph-sensor.c
-@@ -24,6 +24,7 @@
- #include <linux/irq_work.h>
- #include <linux/gpio.h>
- #include <linux/i2c.h>
-+#include <linux/of_device.h>
- #include <linux/regmap.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/buffer.h>
-@@ -43,20 +44,25 @@
- 
- #define ATLAS_REG_PWR_CONTROL		0x06
- 
--#define ATLAS_REG_CALIB_STATUS		0x0d
--#define ATLAS_REG_CALIB_STATUS_MASK	0x07
--#define ATLAS_REG_CALIB_STATUS_LOW	BIT(0)
--#define ATLAS_REG_CALIB_STATUS_MID	BIT(1)
--#define ATLAS_REG_CALIB_STATUS_HIGH	BIT(2)
-+#define ATLAS_REG_PH_CALIB_STATUS	0x0d
-+#define ATLAS_REG_PH_CALIB_STATUS_MASK	0x07
-+#define ATLAS_REG_PH_CALIB_STATUS_LOW	BIT(0)
-+#define ATLAS_REG_PH_CALIB_STATUS_MID	BIT(1)
-+#define ATLAS_REG_PH_CALIB_STATUS_HIGH	BIT(2)
- 
--#define ATLAS_REG_TEMP_DATA		0x0e
-+#define ATLAS_REG_PH_TEMP_DATA		0x0e
- #define ATLAS_REG_PH_DATA		0x16
- 
- #define ATLAS_PH_INT_TIME_IN_US		450000
- 
-+enum {
-+	ATLAS_PH_SM,
-+};
-+
- struct atlas_data {
- 	struct i2c_client *client;
- 	struct iio_trigger *trig;
-+	struct atlas_device *chip;
- 	struct regmap *regmap;
- 	struct irq_work work;
- 
-@@ -84,9 +90,10 @@ static const struct regmap_config atlas_regmap_config = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static const struct iio_chan_spec atlas_channels[] = {
-+static const struct iio_chan_spec atlas_ph_channels[] = {
- 	{
- 		.type = IIO_PH,
-+		.address = ATLAS_REG_PH_DATA,
- 		.info_mask_separate =
- 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
- 		.scan_index = 0,
-@@ -100,7 +107,7 @@ static const struct iio_chan_spec atlas_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(1),
- 	{
- 		.type = IIO_TEMP,
--		.address = ATLAS_REG_TEMP_DATA,
-+		.address = ATLAS_REG_PH_TEMP_DATA,
- 		.info_mask_separate =
- 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
- 		.output = 1,
-@@ -108,6 +115,52 @@ static const struct iio_chan_spec atlas_channels[] = {
- 	},
- };
- 
-+static int atlas_check_ph_calibration(struct atlas_data *data)
-+{
-+	struct device *dev = &data->client->dev;
-+	int ret;
-+	unsigned int val;
-+
-+	ret = regmap_read(data->regmap, ATLAS_REG_PH_CALIB_STATUS, &val);
-+	if (ret)
-+		return ret;
-+
-+	if (!(val & ATLAS_REG_PH_CALIB_STATUS_MASK)) {
-+		dev_warn(dev, "device has not been calibrated\n");
-+		return 0;
-+	}
-+
-+	if (!(val & ATLAS_REG_PH_CALIB_STATUS_LOW))
-+		dev_warn(dev, "device missing low point calibration\n");
-+
-+	if (!(val & ATLAS_REG_PH_CALIB_STATUS_MID))
-+		dev_warn(dev, "device missing mid point calibration\n");
-+
-+	if (!(val & ATLAS_REG_PH_CALIB_STATUS_HIGH))
-+		dev_warn(dev, "device missing high point calibration\n");
-+
-+	return 0;
-+}
-+
-+struct atlas_device {
-+	const struct iio_chan_spec *channels;
-+	int num_channels;
-+	int data_reg;
-+
-+	int (*calibration)(struct atlas_data *data);
-+	int delay;
-+};
-+
-+static struct atlas_device atlas_devices[] = {
-+	[ATLAS_PH_SM] = {
-+				.channels = atlas_ph_channels,
-+				.num_channels = 3,
-+				.data_reg = ATLAS_REG_PH_DATA,
-+				.calibration = &atlas_check_ph_calibration,
-+				.delay = ATLAS_PH_INT_TIME_IN_US,
-+	},
-+};
-+
- static int atlas_set_powermode(struct atlas_data *data, int on)
- {
- 	return regmap_write(data->regmap, ATLAS_REG_PWR_CONTROL, on);
-@@ -178,8 +231,9 @@ static irqreturn_t atlas_trigger_handler(int irq, void *private)
- 	struct atlas_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	ret = regmap_bulk_read(data->regmap, ATLAS_REG_PH_DATA,
--			      (u8 *) &data->buffer, sizeof(data->buffer[0]));
-+	ret = regmap_bulk_read(data->regmap, data->chip->data_reg,
-+			      (u8 *) &data->buffer,
-+			      sizeof(__be32) * (data->chip->num_channels - 2));
- 
- 	if (!ret)
- 		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-@@ -200,7 +254,7 @@ static irqreturn_t atlas_interrupt_handler(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
--static int atlas_read_ph_measurement(struct atlas_data *data, __be32 *val)
-+static int atlas_read_measurement(struct atlas_data *data, int reg, __be32 *val)
- {
- 	struct device *dev = &data->client->dev;
- 	int suspended = pm_runtime_suspended(dev);
-@@ -213,11 +267,9 @@ static int atlas_read_ph_measurement(struct atlas_data *data, __be32 *val)
- 	}
- 
- 	if (suspended)
--		usleep_range(ATLAS_PH_INT_TIME_IN_US,
--			     ATLAS_PH_INT_TIME_IN_US + 100000);
-+		usleep_range(data->chip->delay, data->chip->delay + 100000);
- 
--	ret = regmap_bulk_read(data->regmap, ATLAS_REG_PH_DATA,
--			      (u8 *) val, sizeof(*val));
-+	ret = regmap_bulk_read(data->regmap, reg, (u8 *) val, sizeof(*val));
- 
- 	pm_runtime_mark_last_busy(dev);
- 	pm_runtime_put_autosuspend(dev);
-@@ -247,7 +299,8 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
- 			if (iio_buffer_enabled(indio_dev))
- 				ret = -EBUSY;
- 			else
--				ret = atlas_read_ph_measurement(data, &reg);
-+				ret = atlas_read_measurement(data,
-+							chan->address, &reg);
- 
- 			mutex_unlock(&indio_dev->mlock);
- 			break;
-@@ -303,37 +356,12 @@ static const struct iio_info atlas_info = {
- 	.write_raw = atlas_write_raw,
- };
- 
--static int atlas_check_calibration(struct atlas_data *data)
--{
--	struct device *dev = &data->client->dev;
--	int ret;
--	unsigned int val;
--
--	ret = regmap_read(data->regmap, ATLAS_REG_CALIB_STATUS, &val);
--	if (ret)
--		return ret;
--
--	if (!(val & ATLAS_REG_CALIB_STATUS_MASK)) {
--		dev_warn(dev, "device has not been calibrated\n");
--		return 0;
--	}
--
--	if (!(val & ATLAS_REG_CALIB_STATUS_LOW))
--		dev_warn(dev, "device missing low point calibration\n");
--
--	if (!(val & ATLAS_REG_CALIB_STATUS_MID))
--		dev_warn(dev, "device missing mid point calibration\n");
--
--	if (!(val & ATLAS_REG_CALIB_STATUS_HIGH))
--		dev_warn(dev, "device missing high point calibration\n");
--
--	return 0;
--};
--
- static int atlas_probe(struct i2c_client *client,
- 		       const struct i2c_device_id *id)
- {
- 	struct atlas_data *data;
-+	struct atlas_device *chip;
-+	const struct of_device_id *of_id;
- 	struct iio_trigger *trig;
- 	struct iio_dev *indio_dev;
- 	int ret;
-@@ -342,10 +370,16 @@ static int atlas_probe(struct i2c_client *client,
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
-+	of_id = of_match_device(atlas_dt_ids, &client->dev);
-+	if (!of_id)
-+		chip = &atlas_devices[id->driver_data];
-+	else
-+		chip = &atlas_devices[(unsigned long)of_id->data];
-+
- 	indio_dev->info = &atlas_info;
- 	indio_dev->name = ATLAS_DRV_NAME;
--	indio_dev->channels = atlas_channels;
--	indio_dev->num_channels = ARRAY_SIZE(atlas_channels);
-+	indio_dev->channels = chip->channels;
-+	indio_dev->num_channels = chip->num_channels;
- 	indio_dev->modes = INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE;
- 	indio_dev->dev.parent = &client->dev;
- 
-@@ -358,6 +392,7 @@ static int atlas_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	data->client = client;
- 	data->trig = trig;
-+	data->chip = chip;
- 	trig->dev.parent = indio_dev->dev.parent;
- 	trig->ops = &atlas_interrupt_trigger_ops;
- 	iio_trigger_set_drvdata(trig, indio_dev);
-@@ -379,7 +414,7 @@ static int atlas_probe(struct i2c_client *client,
- 		return -EINVAL;
- 	}
- 
--	ret = atlas_check_calibration(data);
-+	ret = chip->calibration(data);
- 	if (ret)
- 		return ret;
- 
-@@ -481,13 +516,13 @@ static const struct dev_pm_ops atlas_pm_ops = {
- };
- 
- static const struct i2c_device_id atlas_id[] = {
--	{ "atlas-ph-sm", 0 },
-+	{ "atlas-ph-sm", ATLAS_PH_SM},
- 	{}
- };
- MODULE_DEVICE_TABLE(i2c, atlas_id);
- 
- static const struct of_device_id atlas_dt_ids[] = {
--	{ .compatible = "atlas,ph-sm" },
-+	{ .compatible = "atlas,ph-sm", .data = (void *)ATLAS_PH_SM, },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, atlas_dt_ids);
--- 
-2.7.4
+You declare oversampling_press_avail and num_ oversampling_press_avail twice!
 
+> +
+>         int (*chip_config)(struct bmp280_data *);
+>         int (*read_temp)(struct bmp280_data *, int *);
+>         int (*read_press)(struct bmp280_data *, int *, int *);
+> @@ -123,11 +135,13 @@ enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
+>  static const struct iio_chan_spec bmp280_channels[] = {
+>         {
+>                 .type = IIO_PRESSURE,
+> -               .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +               .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +                                     BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>         },
+>         {
+>                 .type = IIO_TEMP,
+> -               .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +               .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +                                     BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>         },
+>  };
+>
+> @@ -333,6 +347,21 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+>                         break;
+>                 }
+>                 break;
+> +       case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +               switch (chan->type) {
+> +               case IIO_PRESSURE:
+> +                       *val = 1 << data->oversampling_press;
+> +                       ret = IIO_VAL_INT;
+> +                       break;
+> +               case IIO_TEMP:
+> +                       *val = 1 << data->oversampling_temp;
+> +                       ret = IIO_VAL_INT;
+> +                       break;
+> +               default:
+> +                       ret = -EINVAL;
+> +                       break;
+> +               }
+> +               break;
+>         default:
+>                 ret = -EINVAL;
+>                 break;
+> @@ -343,22 +372,135 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+>         return ret;
+>  }
+>
+> +static int bmp280_write_oversampling_ratio_temp(struct bmp280_data *data,
+> +                                              int val)
+> +{
+> +       int i;
+> +       const int *avail = data->chip_info->oversampling_temp_avail;
+> +       const int n = data->chip_info->num_oversampling_temp_avail;
+> +
+> +       for (i = 0; i < n; i++) {
+> +               if (avail[i] == val) {
+> +                       data->oversampling_temp = ilog2(val);
+> +
+> +                       return data->chip_info->chip_config(data);
+> +               }
+> +       }
+> +       return -EINVAL;
+> +}
+> +
+> +static int bmp280_write_oversampling_ratio_press(struct bmp280_data *data,
+> +                                              int val)
+> +{
+> +       int i;
+> +       const int *avail = data->chip_info->oversampling_press_avail;
+> +       const int n = data->chip_info->num_oversampling_press_avail;
+> +
+> +       for (i = 0; i < n; i++) {
+> +               if (avail[i] == val) {
+> +                       data->oversampling_press = ilog2(val);
+> +
+> +                       return data->chip_info->chip_config(data);
+> +               }
+> +       }
+> +       return -EINVAL;
+> +}
+> +
+> +static int bmp280_write_raw(struct iio_dev *indio_dev,
+> +                           struct iio_chan_spec const *chan,
+> +                           int val, int val2, long mask)
+> +{
+> +       int ret = 0;
+> +       struct bmp280_data *data = iio_priv(indio_dev);
+> +
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +               mutex_lock(&data->lock);
+> +               switch (chan->type) {
+> +               case IIO_PRESSURE:
+> +                       ret = bmp280_write_oversampling_ratio_press(data, val);
+> +                       break;
+> +               case IIO_TEMP:
+> +                       ret = bmp280_write_oversampling_ratio_temp(data, val);
+> +                       break;
+> +               default:
+> +                       ret = -EINVAL;
+> +                       break;
+> +               }
+> +               mutex_unlock(&data->lock);
+> +               break;
+> +       default:
+> +               return -EINVAL;
+> +       }
+> +
+> +       return ret;
+> +}
+> +
+> +static ssize_t bmp280_show_avail(char *buf, const int *vals, const int n)
+> +{
+> +       size_t len = 0;
+> +       int i;
+> +
+> +       for (i = 0; i < n; i++)
+> +               len += scnprintf(buf + len, PAGE_SIZE - len, "%d ", vals[i]);
+> +
+> +       buf[len - 1] = '\n';
+> +
+> +       return len;
+> +}
+> +
+> +static ssize_t bmp280_show_temp_oversampling_avail(struct device *dev,
+> +                               struct device_attribute *attr, char *buf)
+> +{
+> +       struct bmp280_data *data = iio_priv(dev_to_iio_dev(dev));
+> +
+> +       return bmp280_show_avail(buf, data->chip_info->oversampling_temp_avail,
+> +                                data->chip_info->num_oversampling_temp_avail);
+> +}
+> +
+> +static ssize_t bmp280_show_press_oversampling_avail(struct device *dev,
+> +                               struct device_attribute *attr, char *buf)
+> +{
+> +       struct bmp280_data *data = iio_priv(dev_to_iio_dev(dev));
+> +
+> +       return bmp280_show_avail(buf, data->chip_info->oversampling_press_avail,
+> +                                data->chip_info->num_oversampling_press_avail);
+> +}
+> +
+> +static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available,
+> +       S_IRUGO, bmp280_show_temp_oversampling_avail, NULL, 0);
+> +
+> +static IIO_DEVICE_ATTR(in_pressure_oversampling_ratio_available,
+> +       S_IRUGO, bmp280_show_press_oversampling_avail, NULL, 0);
+> +
+> +static struct attribute *bmp280_attributes[] = {
+> +       &iio_dev_attr_in_temp_oversampling_ratio_available.dev_attr.attr,
+> +       &iio_dev_attr_in_pressure_oversampling_ratio_available.dev_attr.attr,
+> +       NULL,
+> +};
+> +
+> +static const struct attribute_group bmp280_attrs_group = {
+> +       .attrs = bmp280_attributes,
+> +};
+> +
+>  static const struct iio_info bmp280_info = {
+>         .driver_module = THIS_MODULE,
+>         .read_raw = &bmp280_read_raw,
+> +       .write_raw = &bmp280_write_raw,
+> +       .attrs = &bmp280_attrs_group,
+>  };
+>
+>  static int bmp280_chip_config(struct bmp280_data *data)
+>  {
+>         int ret;
+> +       u8 osrs = BMP280_OSRS_TEMP_X(data->oversampling_temp + 1) |
+> +                 BMP280_OSRS_PRESS_X(data->oversampling_press + 1);
+>
+>         ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
+>                                  BMP280_OSRS_TEMP_MASK |
+>                                  BMP280_OSRS_PRESS_MASK |
+>                                  BMP280_MODE_MASK,
+> -                                BMP280_OSRS_TEMP_2X |
+> -                                BMP280_OSRS_PRESS_16X |
+> -                                BMP280_MODE_NORMAL);
+> +                                osrs | BMP280_MODE_NORMAL);
+>         if (ret < 0) {
+>                 dev_err(&data->client->dev,
+>                         "failed to write ctrl_meas register\n");
+> @@ -377,8 +519,17 @@ static int bmp280_chip_config(struct bmp280_data *data)
+>         return ret;
+>  }
+>
+> +static const int bmp280_oversampling_avail[] = { 1, 2, 4, 8, 16 };
+> +
+>  static const struct bmp280_chip_info bmp280_chip_info = {
+>         .regmap_config = &bmp280_regmap_config,
+> +
+> +       .oversampling_temp_avail = bmp280_oversampling_avail,
+> +       .num_oversampling_temp_avail = ARRAY_SIZE(bmp280_oversampling_avail),
+> +
+> +       .oversampling_press_avail = bmp280_oversampling_avail,
+> +       .num_oversampling_press_avail = ARRAY_SIZE(bmp280_oversampling_avail),
+> +
+>         .chip_config = bmp280_chip_config,
+>         .read_temp = bmp280_read_temp,
+>         .read_press = bmp280_read_press,
+> @@ -433,7 +584,7 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
+>         if (ctrl_meas == BMP180_MEAS_TEMP)
+>                 delay_us = 4500;
+>         else
+> -               delay_us = conversion_time_max[ilog2(8)];
+> +               delay_us = conversion_time_max[data->oversampling_press];
+>
+>         usleep_range(delay_us, delay_us + 1000);
+>
+> @@ -573,7 +724,7 @@ static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
+>  {
+>         int ret;
+>         __be32 tmp = 0;
+> -       u8 oss = ilog2(8);
+> +       u8 oss = data->oversampling_press;
+>
+>         ret = bmp180_measure(data, BMP180_MEAS_PRESS_X(oss));
+>         if (ret)
+> @@ -599,7 +750,7 @@ static u32 bmp180_compensate_press(struct bmp280_data *data, s32 adc_press)
+>         s32 x1, x2, x3, p;
+>         s32 b3, b6;
+>         u32 b4, b7;
+> -       s32 oss = ilog2(8);
+> +       s32 oss = data->oversampling_press;
+>         struct bmp180_calib calib;
+>
+>         ret = bmp180_read_calib(data, &calib);
+> @@ -660,8 +811,20 @@ static int bmp180_chip_config(struct bmp280_data *data)
+>         return 0;
+>  }
+>
+> +static const int bmp180_oversampling_temp_avail[] = { 1 };
+> +static const int bmp180_oversampling_press_avail[] = { 1, 2, 4, 8 };
+> +
+>  static const struct bmp280_chip_info bmp180_chip_info = {
+>         .regmap_config = &bmp180_regmap_config,
+> +
+> +       .oversampling_temp_avail = bmp180_oversampling_temp_avail,
+> +       .num_oversampling_temp_avail =
+> +               ARRAY_SIZE(bmp180_oversampling_temp_avail),
+> +
+> +       .oversampling_press_avail = bmp180_oversampling_press_avail,
+> +       .num_oversampling_press_avail =
+> +               ARRAY_SIZE(bmp180_oversampling_press_avail),
+> +
+>         .chip_config = bmp180_chip_config,
+>         .read_temp = bmp180_read_temp,
+>         .read_press = bmp180_read_press,
+> @@ -693,9 +856,13 @@ static int bmp280_probe(struct i2c_client *client,
+>         switch (id->driver_data) {
+>         case BMP180_CHIP_ID:
+>                 data->chip_info = &bmp180_chip_info;
+> +               data->oversampling_press = ilog2(8);
+> +               data->oversampling_temp = ilog2(1);
+>                 break;
+>         case BMP280_CHIP_ID:
+>                 data->chip_info = &bmp280_chip_info;
+> +               data->oversampling_press = ilog2(16);
+> +               data->oversampling_temp = ilog2(2);
+>                 break;
+>         default:
+>                 return -EINVAL;
+> --
+> 2.5.0
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
