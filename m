@@ -1,13 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35651 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35621 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752550AbcDXLCY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 07:02:24 -0400
-Subject: Re: [RFC PATCH v1 9/9] iio:st_sensors: fix power regulator usage
+	with ESMTP id S1751770AbcDXK7D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 06:59:03 -0400
+Subject: Re: [RFC PATCH v1 6/9] iio:st_pressure: temperature triggered
+ buffering
 To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
 References: <cover.1461056711.git.gregor.boirie@parrot.com>
- <66af1630513a8e14900a0257c6c376742a298a86.1461056711.git.gregor.boirie@parrot.com>
- <1142452f-e705-b528-2478-3eed2c4e5319@kernel.org>
+ <daed8183e0916a573de8e40f166bdd8fb364395d.1461056711.git.gregor.boirie@parrot.com>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -15,297 +15,120 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Linus Walleij <linus.walleij@linaro.org>,
 	Giuseppe Barba <giuseppe.barba@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <eec343a8-63ed-d33c-0d11-712481a63ecf@kernel.org>
-Date: Sun, 24 Apr 2016 12:02:22 +0100
+Message-ID: <940bb299-878f-0799-1b04-c241ae165127@kernel.org>
+Date: Sun, 24 Apr 2016 11:58:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <1142452f-e705-b528-2478-3eed2c4e5319@kernel.org>
+In-Reply-To: <daed8183e0916a573de8e40f166bdd8fb364395d.1461056711.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/04/16 12:01, Jonathan Cameron wrote:
-> On 19/04/16 10:18, Gregor Boirie wrote:
->> Ensure failure to enable power regulators is properly handled.
->>
->> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-> All looks sensible to me.  I'm happy with the whole series, so will just let
-> this sit until Denis / others have had plenty of time to look at it.
+On 19/04/16 10:18, Gregor Boirie wrote:
+> Enable support for triggered buffering of temperature samples.
 > 
-Other than patch 4 that is!  Forgot about that one :)
-> Jonathan
->> ---
->>  drivers/iio/accel/st_accel_core.c               | 12 ++++++----
->>  drivers/iio/common/st_sensors/st_sensors_core.c | 29 ++++++++++++++++++++-----
->>  drivers/iio/gyro/st_gyro_core.c                 | 12 ++++++----
->>  drivers/iio/magnetometer/st_magn_core.c         | 12 ++++++----
->>  drivers/iio/pressure/st_pressure_core.c         | 12 ++++++----
->>  include/linux/iio/common/st_sensors.h           |  2 +-
->>  6 files changed, 57 insertions(+), 22 deletions(-)
->>
->> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
->> index dc73f2d..b8d3c3c 100644
->> --- a/drivers/iio/accel/st_accel_core.c
->> +++ b/drivers/iio/accel/st_accel_core.c
->> @@ -757,13 +757,15 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
->>  	indio_dev->info = &accel_info;
->>  	mutex_init(&adata->tb.buf_lock);
->>  
->> -	st_sensors_power_enable(indio_dev);
->> +	err = st_sensors_power_enable(indio_dev);
->> +	if (err)
->> +		return err;
->>  
->>  	err = st_sensors_check_device_support(indio_dev,
->>  					ARRAY_SIZE(st_accel_sensors_settings),
->>  					st_accel_sensors_settings);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_accel_power_off;
->>  
->>  	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
->>  	adata->multiread_bit = adata->sensor_settings->multi_read_bit;
->> @@ -780,11 +782,11 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
->>  
->>  	err = st_sensors_init_sensor(indio_dev, adata->dev->platform_data);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_accel_power_off;
->>  
->>  	err = st_accel_allocate_ring(indio_dev);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_accel_power_off;
->>  
->>  	if (irq > 0) {
->>  		err = st_sensors_allocate_trigger(indio_dev,
->> @@ -807,6 +809,8 @@ st_accel_device_register_error:
->>  		st_sensors_deallocate_trigger(indio_dev);
->>  st_accel_probe_trigger_error:
->>  	st_accel_deallocate_ring(indio_dev);
->> +st_accel_power_off:
->> +	st_sensors_power_disable(indio_dev);
->>  
->>  	return err;
->>  }
->> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
->> index 6901c7f..286f28c 100644
->> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
->> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
->> @@ -228,7 +228,7 @@ int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable)
->>  }
->>  EXPORT_SYMBOL(st_sensors_set_axis_enable);
->>  
->> -void st_sensors_power_enable(struct iio_dev *indio_dev)
->> +int st_sensors_power_enable(struct iio_dev *indio_dev)
->>  {
->>  	struct st_sensor_data *pdata = iio_priv(indio_dev);
->>  	int err;
->> @@ -237,18 +237,37 @@ void st_sensors_power_enable(struct iio_dev *indio_dev)
->>  	pdata->vdd = devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
->>  	if (!IS_ERR(pdata->vdd)) {
->>  		err = regulator_enable(pdata->vdd);
->> -		if (err != 0)
->> +		if (err != 0) {
->>  			dev_warn(&indio_dev->dev,
->>  				 "Failed to enable specified Vdd supply\n");
->> +			return err;
->> +		}
->> +	} else {
->> +		err = PTR_ERR(pdata->vdd);
->> +		if (err != -ENODEV)
->> +			return err;
->>  	}
->>  
->>  	pdata->vdd_io = devm_regulator_get_optional(indio_dev->dev.parent, "vddio");
->>  	if (!IS_ERR(pdata->vdd_io)) {
->>  		err = regulator_enable(pdata->vdd_io);
->> -		if (err != 0)
->> +		if (err != 0) {
->>  			dev_warn(&indio_dev->dev,
->>  				 "Failed to enable specified Vdd_IO supply\n");
->> +			goto st_sensors_disable_vdd;
->> +		}
->> +	} else {
->> +		err = PTR_ERR(pdata->vdd_io);
->> +		if (err != -ENODEV)
->> +			goto st_sensors_disable_vdd;
->>  	}
->> +
->> +	return 0;
->> +
->> +st_sensors_disable_vdd:
->> +	if (!IS_ERR_OR_NULL(pdata->vdd))
->> +		regulator_disable(pdata->vdd);
->> +	return err;
->>  }
->>  EXPORT_SYMBOL(st_sensors_power_enable);
->>  
->> @@ -256,10 +275,10 @@ void st_sensors_power_disable(struct iio_dev *indio_dev)
->>  {
->>  	struct st_sensor_data *pdata = iio_priv(indio_dev);
->>  
->> -	if (!IS_ERR(pdata->vdd))
->> +	if (!IS_ERR_OR_NULL(pdata->vdd))
->>  		regulator_disable(pdata->vdd);
->>  
->> -	if (!IS_ERR(pdata->vdd_io))
->> +	if (!IS_ERR_OR_NULL(pdata->vdd_io))
->>  		regulator_disable(pdata->vdd_io);
->>  }
->>  EXPORT_SYMBOL(st_sensors_power_disable);
->> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
->> index be9057e..f07f105 100644
->> --- a/drivers/iio/gyro/st_gyro_core.c
->> +++ b/drivers/iio/gyro/st_gyro_core.c
->> @@ -424,13 +424,15 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
->>  	indio_dev->info = &gyro_info;
->>  	mutex_init(&gdata->tb.buf_lock);
->>  
->> -	st_sensors_power_enable(indio_dev);
->> +	err = st_sensors_power_enable(indio_dev);
->> +	if (err)
->> +		return err;
->>  
->>  	err = st_sensors_check_device_support(indio_dev,
->>  					ARRAY_SIZE(st_gyro_sensors_settings),
->>  					st_gyro_sensors_settings);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_gyro_power_off;
->>  
->>  	gdata->num_data_channels = ST_GYRO_NUMBER_DATA_CHANNELS;
->>  	gdata->multiread_bit = gdata->sensor_settings->multi_read_bit;
->> @@ -444,11 +446,11 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
->>  	err = st_sensors_init_sensor(indio_dev,
->>  				(struct st_sensors_platform_data *)&gyro_pdata);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_gyro_power_off;
->>  
->>  	err = st_gyro_allocate_ring(indio_dev);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_gyro_power_off;
->>  
->>  	if (irq > 0) {
->>  		err = st_sensors_allocate_trigger(indio_dev,
->> @@ -471,6 +473,8 @@ st_gyro_device_register_error:
->>  		st_sensors_deallocate_trigger(indio_dev);
->>  st_gyro_probe_trigger_error:
->>  	st_gyro_deallocate_ring(indio_dev);
->> +st_gyro_power_off:
->> +	st_sensors_power_disable(indio_dev);
->>  
->>  	return err;
->>  }
->> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
->> index 62036d2..7c94adc 100644
->> --- a/drivers/iio/magnetometer/st_magn_core.c
->> +++ b/drivers/iio/magnetometer/st_magn_core.c
->> @@ -588,13 +588,15 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
->>  	indio_dev->info = &magn_info;
->>  	mutex_init(&mdata->tb.buf_lock);
->>  
->> -	st_sensors_power_enable(indio_dev);
->> +	err = st_sensors_power_enable(indio_dev);
->> +	if (err)
->> +		return err;
->>  
->>  	err = st_sensors_check_device_support(indio_dev,
->>  					ARRAY_SIZE(st_magn_sensors_settings),
->>  					st_magn_sensors_settings);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_magn_power_off;
->>  
->>  	mdata->num_data_channels = ST_MAGN_NUMBER_DATA_CHANNELS;
->>  	mdata->multiread_bit = mdata->sensor_settings->multi_read_bit;
->> @@ -607,11 +609,11 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
->>  
->>  	err = st_sensors_init_sensor(indio_dev, NULL);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_magn_power_off;
->>  
->>  	err = st_magn_allocate_ring(indio_dev);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_magn_power_off;
->>  
->>  	if (irq > 0) {
->>  		err = st_sensors_allocate_trigger(indio_dev,
->> @@ -634,6 +636,8 @@ st_magn_device_register_error:
->>  		st_sensors_deallocate_trigger(indio_dev);
->>  st_magn_probe_trigger_error:
->>  	st_magn_deallocate_ring(indio_dev);
->> +st_magn_power_off:
->> +	st_sensors_power_disable(indio_dev);
->>  
->>  	return err;
->>  }
->> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
->> index bacdf6c..4b01b19 100644
->> --- a/drivers/iio/pressure/st_pressure_core.c
->> +++ b/drivers/iio/pressure/st_pressure_core.c
->> @@ -588,13 +588,15 @@ int st_press_common_probe(struct iio_dev *indio_dev)
->>  	indio_dev->info = &press_info;
->>  	mutex_init(&press_data->tb.buf_lock);
->>  
->> -	st_sensors_power_enable(indio_dev);
->> +	err = st_sensors_power_enable(indio_dev);
->> +	if (err)
->> +		return err;
->>  
->>  	err = st_sensors_check_device_support(indio_dev,
->>  					ARRAY_SIZE(st_press_sensors_settings),
->>  					st_press_sensors_settings);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_press_power_off;
->>  
->>  	press_data->num_data_channels = press_data->sensor_settings->num_ch - 1;
->>  	press_data->multiread_bit = press_data->sensor_settings->multi_read_bit;
->> @@ -615,11 +617,11 @@ int st_press_common_probe(struct iio_dev *indio_dev)
->>  
->>  	err = st_sensors_init_sensor(indio_dev, press_data->dev->platform_data);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_press_power_off;
->>  
->>  	err = st_press_allocate_ring(indio_dev);
->>  	if (err < 0)
->> -		return err;
->> +		goto st_press_power_off;
->>  
->>  	if (irq > 0) {
->>  		err = st_sensors_allocate_trigger(indio_dev,
->> @@ -642,6 +644,8 @@ st_press_device_register_error:
->>  		st_sensors_deallocate_trigger(indio_dev);
->>  st_press_probe_trigger_error:
->>  	st_press_deallocate_ring(indio_dev);
->> +st_press_power_off:
->> +	st_sensors_power_disable(indio_dev);
->>  
->>  	return err;
->>  }
->> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
->> index 78a1934..91d5f68 100644
->> --- a/include/linux/iio/common/st_sensors.h
->> +++ b/include/linux/iio/common/st_sensors.h
->> @@ -278,7 +278,7 @@ int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable);
->>  
->>  int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable);
->>  
->> -void st_sensors_power_enable(struct iio_dev *indio_dev);
->> +int st_sensors_power_enable(struct iio_dev *indio_dev);
->>  
->>  void st_sensors_power_disable(struct iio_dev *indio_dev);
->>  
->>
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+I was a little curious as to why this wasn't done previously!
+
+Anyhow, again ideally would like an Ack from Denis.
+
+Jonathan
+> ---
+>  drivers/iio/pressure/st_pressure_core.c | 20 +++++++++-----------
+>  1 file changed, 9 insertions(+), 11 deletions(-)
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+> index 13f1c2d..bacdf6c 100644
+> --- a/drivers/iio/pressure/st_pressure_core.c
+> +++ b/drivers/iio/pressure/st_pressure_core.c
+> @@ -39,8 +39,6 @@
+>  #define ST_PRESS_LSB_PER_CELSIUS		480UL
+>  #define ST_PRESS_MILLI_CELSIUS_OFFSET		42500UL
+>  
+> -#define ST_PRESS_NUMBER_DATA_CHANNELS		1
+> -
+>  /* FULLSCALE */
+>  #define ST_PRESS_FS_AVL_1100MB			1100
+>  #define ST_PRESS_FS_AVL_1260MB			1260
+> @@ -163,7 +161,7 @@ static const struct iio_chan_spec st_press_1_channels[] = {
+>  		.type = IIO_PRESSURE,
+>  		.channel2 = IIO_NO_MOD,
+>  		.address = ST_PRESS_1_OUT_XL_ADDR,
+> -		.scan_index = ST_SENSORS_SCAN_X,
+> +		.scan_index = 0,
+>  		.scan_type = {
+>  			.sign = 'u',
+>  			.realbits = 24,
+> @@ -178,7 +176,7 @@ static const struct iio_chan_spec st_press_1_channels[] = {
+>  		.type = IIO_TEMP,
+>  		.channel2 = IIO_NO_MOD,
+>  		.address = ST_TEMP_1_OUT_L_ADDR,
+> -		.scan_index = -1,
+> +		.scan_index = 1,
+>  		.scan_type = {
+>  			.sign = 'u',
+>  			.realbits = 16,
+> @@ -191,7 +189,7 @@ static const struct iio_chan_spec st_press_1_channels[] = {
+>  			BIT(IIO_CHAN_INFO_OFFSET),
+>  		.modified = 0,
+>  	},
+> -	IIO_CHAN_SOFT_TIMESTAMP(1)
+> +	IIO_CHAN_SOFT_TIMESTAMP(2)
+>  };
+>  
+>  static const struct iio_chan_spec st_press_lps001wp_channels[] = {
+> @@ -199,7 +197,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
+>  		.type = IIO_PRESSURE,
+>  		.channel2 = IIO_NO_MOD,
+>  		.address = ST_PRESS_LPS001WP_OUT_L_ADDR,
+> -		.scan_index = ST_SENSORS_SCAN_X,
+> +		.scan_index = 0,
+>  		.scan_type = {
+>  			.sign = 'u',
+>  			.realbits = 16,
+> @@ -215,7 +213,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
+>  		.type = IIO_TEMP,
+>  		.channel2 = IIO_NO_MOD,
+>  		.address = ST_TEMP_LPS001WP_OUT_L_ADDR,
+> -		.scan_index = -1,
+> +		.scan_index = 1,
+>  		.scan_type = {
+>  			.sign = 'u',
+>  			.realbits = 16,
+> @@ -227,7 +225,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
+>  			BIT(IIO_CHAN_INFO_SCALE),
+>  		.modified = 0,
+>  	},
+> -	IIO_CHAN_SOFT_TIMESTAMP(1)
+> +	IIO_CHAN_SOFT_TIMESTAMP(2)
+>  };
+>  
+>  static const struct iio_chan_spec st_press_lps22hb_channels[] = {
+> @@ -252,7 +250,7 @@ static const struct iio_chan_spec st_press_lps22hb_channels[] = {
+>  		.type = IIO_TEMP,
+>  		.channel2 = IIO_NO_MOD,
+>  		.address = ST_TEMP_1_OUT_L_ADDR,
+> -		.scan_index = -1,
+> +		.scan_index = 1,
+>  		.scan_type = {
+>  			.sign = 'u',
+>  			.realbits = 16,
+> @@ -265,7 +263,7 @@ static const struct iio_chan_spec st_press_lps22hb_channels[] = {
+>  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>  		.modified = 0,
+>  	},
+> -	IIO_CHAN_SOFT_TIMESTAMP(1)
+> +	IIO_CHAN_SOFT_TIMESTAMP(2)
+>  };
+>  
+>  static const struct st_sensor_settings st_press_sensors_settings[] = {
+> @@ -598,7 +596,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
+>  	if (err < 0)
+>  		return err;
+>  
+> -	press_data->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
+> +	press_data->num_data_channels = press_data->sensor_settings->num_ch - 1;
+>  	press_data->multiread_bit = press_data->sensor_settings->multi_read_bit;
+>  	indio_dev->channels = press_data->sensor_settings->ch;
+>  	indio_dev->num_channels = press_data->sensor_settings->num_ch;
 > 
 
