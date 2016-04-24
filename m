@@ -1,133 +1,290 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35142 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35154 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752462AbcDXJVn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 05:21:43 -0400
-Subject: Re: [PATCH v3 3/5] max44000: Support controlling LED current output
+	with ESMTP id S1752288AbcDXJX1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 05:23:27 -0400
+Subject: Re: [PATCH v3 4/5] max44000: Expose ambient sensor scaling
 To: Crestez Dan Leonard <leonard.crestez@intel.com>,
 	linux-iio@vger.kernel.org
 References: <cover.1460989642.git.leonard.crestez@intel.com>
- <630a03ff02d238793019267f0e144f08665104a5.1460989642.git.leonard.crestez@intel.com>
+ <58f61cb552d6f8d30e55f36225e86eb76c954933.1460989642.git.leonard.crestez@intel.com>
 Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d677ea85-a4d8-0f6a-e7c4-9d59b2fcc6a0@kernel.org>
-Date: Sun, 24 Apr 2016 10:21:41 +0100
+Message-ID: <1455a2ad-e36e-d016-942f-92b03235b16e@kernel.org>
+Date: Sun, 24 Apr 2016 10:23:25 +0100
 MIME-Version: 1.0
-In-Reply-To: <630a03ff02d238793019267f0e144f08665104a5.1460989642.git.leonard.crestez@intel.com>
+In-Reply-To: <58f61cb552d6f8d30e55f36225e86eb76c954933.1460989642.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 18/04/16 15:31, Crestez Dan Leonard wrote:
-> This is exposed as an output channel with "led" as an extend_name.
+> This patch exposes ALSTIM as illuminance_integration_time and ALSPGA as
+> illuminance_scale.
 > 
-> Other sensors also have support for controlling an external LED. It's
-> not clear that simply exposing an undecorated output channel is thee
-> correct approach.
+> Changing ALSTIM also changes the number of bits available in the data
+> register. This is handled inside raw value reading because:
+> * It's very easy to shift a few bits
+> * It allows SCALE and INT_TIME to be completely independent controls
+> * Buffer support requires constant scan_type.realbits per-channel
 > 
 > Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-While I suspect we will sometime have a better solution for this common problem,
-it won't be a problem to maintain this interface as well
+Applied to togreg branch of iio.git.
 
-Applied
+Thanks,
+
+Jonathan
 > ---
->  drivers/iio/light/max44000.c | 53 ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 53 insertions(+)
+>  drivers/iio/light/max44000.c | 167 +++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 162 insertions(+), 5 deletions(-)
 > 
 > diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-> index dc63de2..0ccd110 100644
+> index 0ccd110..c58bb78 100644
 > --- a/drivers/iio/light/max44000.c
 > +++ b/drivers/iio/light/max44000.c
-> @@ -85,6 +85,13 @@ static const struct iio_chan_spec max44000_channels[] = {
+> @@ -59,6 +59,12 @@
+>   */
+>  #define MAX44000_REG_CFG_RX_DEFAULT 0xf0
+>  
+> +/* REG_RX bits */
+> +#define MAX44000_CFG_RX_ALSTIM_MASK	0x0c
+> +#define MAX44000_CFG_RX_ALSTIM_SHIFT	2
+> +#define MAX44000_CFG_RX_ALSPGA_MASK	0x03
+> +#define MAX44000_CFG_RX_ALSPGA_SHIFT	0
+> +
+>  /* REG_TX bits */
+>  #define MAX44000_LED_CURRENT_MASK	0xf
+>  #define MAX44000_LED_CURRENT_MAX	11
+> @@ -74,11 +80,57 @@ struct max44000_data {
+>  /* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
+>  #define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
+>  
+> +/* Scale can be multiplied by up to 128x via ALSPGA for measurement gain */
+> +static const int max44000_alspga_shift[] = {0, 2, 4, 7};
+> +#define MAX44000_ALSPGA_MAX_SHIFT 7
+> +
+> +/*
+> + * Scale can be multiplied by up to 64x via ALSTIM because of lost resolution
+> + *
+> + * This scaling factor is hidden from userspace and instead accounted for when
+> + * reading raw values from the device.
+> + *
+> + * This makes it possible to cleanly expose ALSPGA as IIO_CHAN_INFO_SCALE and
+> + * ALSTIM as IIO_CHAN_INFO_INT_TIME without the values affecting each other.
+> + *
+> + * Handling this internally is also required for buffer support because the
+> + * channel's scan_type can't be modified dynamically.
+> + */
+> +static const int max44000_alstim_shift[] = {0, 2, 4, 6};
+> +#define MAX44000_ALSTIM_SHIFT(alstim) (2 * (alstim))
+> +
+> +/* Available integration times with pretty manual alignment: */
+> +static const int max44000_int_time_avail_ns_array[] = {
+> +	   100000000,
+> +	    25000000,
+> +	     6250000,
+> +	     1562500,
+> +};
+> +static const char max44000_int_time_avail_str[] =
+> +	"0.100 "
+> +	"0.025 "
+> +	"0.00625 "
+> +	"0.001625";
+> +
+> +/* Available scales (internal to ulux) with pretty manual alignment: */
+> +static const int max44000_scale_avail_ulux_array[] = {
+> +	    31250,
+> +	   125000,
+> +	   500000,
+> +	  4000000,
+> +};
+> +static const char max44000_scale_avail_str[] =
+> +	"0.03125 "
+> +	"0.125 "
+> +	"0.5 "
+> +	 "4";
+> +
+>  static const struct iio_chan_spec max44000_channels[] = {
+>  	{
+>  		.type = IIO_LIGHT,
 >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
+> +					    BIT(IIO_CHAN_INFO_INT_TIME),
 >  	},
-> +	{
-> +		.type = IIO_CURRENT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.extend_name = "led",
-> +		.output = 1,
-> +	},
+>  	{
+>  		.type = IIO_PROXIMITY,
+> @@ -94,15 +146,54 @@ static const struct iio_chan_spec max44000_channels[] = {
+>  	},
 >  };
 >  
->  static int max44000_read_alsval(struct max44000_data *data)
-> @@ -125,6 +132,20 @@ static int max44000_write_led_current_raw(struct max44000_data *data, int val)
->  				 MAX44000_LED_CURRENT_MASK, val);
->  }
->  
-> +static int max44000_read_led_current_raw(struct max44000_data *data)
+> +static int max44000_read_alstim(struct max44000_data *data)
 > +{
-> +	unsigned int regval;
+> +	unsigned int val;
 > +	int ret;
 > +
-> +	ret = regmap_read(data->regmap, MAX44000_REG_CFG_TX, &regval);
+> +	ret = regmap_read(data->regmap, MAX44000_REG_CFG_RX, &val);
 > +	if (ret < 0)
 > +		return ret;
-> +	regval &= MAX44000_LED_CURRENT_MASK;
-> +	if (regval >= 8)
-> +		regval -= 4;
-> +	return regval;
+> +	return (val & MAX44000_CFG_RX_ALSTIM_MASK) >> MAX44000_CFG_RX_ALSTIM_SHIFT;
 > +}
 > +
->  static int max44000_read_raw(struct iio_dev *indio_dev,
->  			     struct iio_chan_spec const *chan,
+> +static int max44000_write_alstim(struct max44000_data *data, int val)
+> +{
+> +	return regmap_write_bits(data->regmap, MAX44000_REG_CFG_RX,
+> +				 MAX44000_CFG_RX_ALSTIM_MASK,
+> +				 val << MAX44000_CFG_RX_ALSTIM_SHIFT);
+> +}
+> +
+> +static int max44000_read_alspga(struct max44000_data *data)
+> +{
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	ret = regmap_read(data->regmap, MAX44000_REG_CFG_RX, &val);
+> +	if (ret < 0)
+> +		return ret;
+> +	return (val & MAX44000_CFG_RX_ALSPGA_MASK) >> MAX44000_CFG_RX_ALSPGA_SHIFT;
+> +}
+> +
+> +static int max44000_write_alspga(struct max44000_data *data, int val)
+> +{
+> +	return regmap_write_bits(data->regmap, MAX44000_REG_CFG_RX,
+> +				 MAX44000_CFG_RX_ALSPGA_MASK,
+> +				 val << MAX44000_CFG_RX_ALSPGA_SHIFT);
+> +}
+> +
+>  static int max44000_read_alsval(struct max44000_data *data)
+>  {
+>  	u16 regval;
+> -	int ret;
+> +	int alstim, ret;
+>  
+>  	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI,
+>  			       &regval, sizeof(regval));
+>  	if (ret < 0)
+>  		return ret;
+> +	alstim = ret = max44000_read_alstim(data);
+> +	if (ret < 0)
+> +		return ret;
+>  
+>  	regval = be16_to_cpu(regval);
+>  
+> @@ -118,7 +209,7 @@ static int max44000_read_alsval(struct max44000_data *data)
+>  	if (regval & MAX44000_ALSDATA_OVERFLOW)
+>  		return 0x3FFF;
+>  
+> -	return regval;
+> +	return regval << MAX44000_ALSTIM_SHIFT(alstim);
+>  }
+>  
+>  static int max44000_write_led_current_raw(struct max44000_data *data, int val)
+> @@ -151,6 +242,7 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
 >  			     int *val, int *val2, long mask)
-> @@ -154,12 +175,26 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
->  			*val = regval;
+>  {
+>  	struct max44000_data *data = iio_priv(indio_dev);
+> +	int alstim, alspga;
+>  	unsigned int regval;
+>  	int ret;
+>  
+> @@ -196,14 +288,34 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
 >  			return IIO_VAL_INT;
 >  
-> +		case IIO_CURRENT:
+>  		case IIO_LIGHT:
+> -			*val = 1;
+> -			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
 > +			mutex_lock(&data->lock);
-> +			ret = max44000_read_led_current_raw(data);
+> +			alspga = ret = max44000_read_alspga(data);
 > +			mutex_unlock(&data->lock);
 > +			if (ret < 0)
 > +				return ret;
-> +			*val = ret;
-> +			return IIO_VAL_INT;
 > +
+> +			/* Avoid negative shifts */
+> +			*val = (1 << MAX44000_ALSPGA_MAX_SHIFT);
+> +			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2
+> +					+ MAX44000_ALSPGA_MAX_SHIFT
+> +					- max44000_alspga_shift[alspga];
+>  			return IIO_VAL_FRACTIONAL_LOG2;
+>  
 >  		default:
 >  			return -EINVAL;
 >  		}
 >  
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
-> +		case IIO_CURRENT:
-> +			/* Output register is in 10s of miliamps */
-> +			*val = 10;
-> +			return IIO_VAL_INT;
-> +
->  		case IIO_LIGHT:
->  			*val = 1;
->  			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
-> @@ -174,9 +209,27 @@ static int max44000_read_raw(struct iio_dev *indio_dev,
->  	}
->  }
->  
-> +static int max44000_write_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int val, int val2, long mask)
-> +{
-> +	struct max44000_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (mask == IIO_CHAN_INFO_RAW && chan->type == IIO_CURRENT) {
+> +	case IIO_CHAN_INFO_INT_TIME:
 > +		mutex_lock(&data->lock);
-> +		ret = max44000_write_led_current_raw(data, val);
+> +		alstim = ret = max44000_read_alstim(data);
+> +		mutex_unlock(&data->lock);
+> +
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = 0;
+> +		*val2 = max44000_int_time_avail_ns_array[alstim];
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -221,15 +333,60 @@ static int max44000_write_raw(struct iio_dev *indio_dev,
+>  		ret = max44000_write_led_current_raw(data, val);
+>  		mutex_unlock(&data->lock);
+>  		return ret;
+> +	} else if (mask == IIO_CHAN_INFO_INT_TIME && chan->type == IIO_LIGHT) {
+> +		s64 valns = val * NSEC_PER_SEC + val2;
+> +		int alstim = find_closest_descending(valns,
+> +				max44000_int_time_avail_ns_array,
+> +				ARRAY_SIZE(max44000_int_time_avail_ns_array));
+> +		mutex_lock(&data->lock);
+> +		ret = max44000_write_alstim(data, alstim);
 > +		mutex_unlock(&data->lock);
 > +		return ret;
-> +	}
-> +
-> +	return -EINVAL;
+> +	} else if (mask == IIO_CHAN_INFO_SCALE && chan->type == IIO_LIGHT) {
+> +		s64 valus = val * USEC_PER_SEC + val2;
+> +		int alspga = find_closest(valus,
+> +				max44000_scale_avail_ulux_array,
+> +				ARRAY_SIZE(max44000_scale_avail_ulux_array));
+> +		mutex_lock(&data->lock);
+> +		ret = max44000_write_alspga(data, alspga);
+> +		mutex_unlock(&data->lock);
+> +		return ret;
+>  	}
+>  
+>  	return -EINVAL;
+>  }
+>  
+> +static int max44000_write_raw_get_fmt(struct iio_dev *indio_dev,
+> +				      struct iio_chan_spec const *chan,
+> +				      long mask)
+> +{
+> +	if (mask == IIO_CHAN_INFO_INT_TIME && chan->type == IIO_LIGHT)
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	else if (mask == IIO_CHAN_INFO_SCALE && chan->type == IIO_LIGHT)
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	else
+> +		return IIO_VAL_INT;
 > +}
+> +
+> +static IIO_CONST_ATTR(illuminance_integration_time_available, max44000_int_time_avail_str);
+> +static IIO_CONST_ATTR(illuminance_scale_available, max44000_scale_avail_str);
+> +
+> +static struct attribute *max44000_attributes[] = {
+> +	&iio_const_attr_illuminance_integration_time_available.dev_attr.attr,
+> +	&iio_const_attr_illuminance_scale_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group max44000_attribute_group = {
+> +	.attrs = max44000_attributes,
+> +};
 > +
 >  static const struct iio_info max44000_info = {
 >  	.driver_module		= THIS_MODULE,
 >  	.read_raw		= max44000_read_raw,
-> +	.write_raw		= max44000_write_raw,
+>  	.write_raw		= max44000_write_raw,
+> +	.write_raw_get_fmt	= max44000_write_raw_get_fmt,
+> +	.attrs			= &max44000_attribute_group,
 >  };
 >  
 >  static bool max44000_readable_reg(struct device *dev, unsigned int reg)
