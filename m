@@ -1,230 +1,123 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35830 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35714 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751770AbcDXLga (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 07:36:30 -0400
-Subject: Re: [RFC PATCH 2/3] iio: dummy: Convert IIO dummy to configfs
-To: Daniel Baluta <daniel.baluta@intel.com>
-References: <1461167126-23399-1-git-send-email-daniel.baluta@intel.com>
- <1461167126-23399-3-git-send-email-daniel.baluta@intel.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1751770AbcDXLOX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 07:14:23 -0400
+Subject: Re: [PATCH 3/5] iio: inv_mpu6050: Check WHO_AM_I register on probe
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1461156671.git.leonard.crestez@intel.com>
+ <de4fc83c1c049176bbea7eeb4617166df593dcee.1461156671.git.leonard.crestez@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <2ddba9c6-1f62-468d-da71-7819934f0869@kernel.org>
-Date: Sun, 24 Apr 2016 12:36:28 +0100
+Message-ID: <db4459f9-7cb4-ff85-658d-a21f363aee3a@kernel.org>
+Date: Sun, 24 Apr 2016 12:14:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <1461167126-23399-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <de4fc83c1c049176bbea7eeb4617166df593dcee.1461156671.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/04/16 16:45, Daniel Baluta wrote:
-> We register a new device type named "dummy", this will create a
-> configfs entry under:
-> 	* /config/iio/devices/dummy.
+On 20/04/16 14:15, Crestez Dan Leonard wrote:
+> This can be used to distinguish mpu6500. This is a warning rather than
+> an error because the differences are mostly irrelevant and it's nice to
+> avoid breaking users with slightly incorrect ACPI/DT.
 > 
-> Creating dummy devices is now as simple as:
-> 
-> $ mkdir /config/iio/devices/dummy/my_dummy_device
-> 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Looks very nice.
-
-I don't think it is unreasonable to demand people have configfs for
-the dummy driver so very happy to have this cleaned up.
-
-Now to try it with a few thousand devices and see what breaks ;)
-
-1 trivial point inline.
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+Would we be better off fixing their configuration though by using the right part
+if we can identify it?  So if wrong, maybe we should search the info table to 
+figure out what it is?  I'm not certain on this though as then we are trying to
+deal with unknown future cases - maybe what you have here is the best balance.
 
 Jonathan
 > ---
->  drivers/iio/dummy/iio_simple_dummy.c | 98 ++++++++++++------------------------
->  1 file changed, 33 insertions(+), 65 deletions(-)
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 15 +++++++++++++++
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  8 ++++++++
+>  2 files changed, 23 insertions(+)
 > 
-> diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
-> index 43fe4ba..65f92f8 100644
-> --- a/drivers/iio/dummy/iio_simple_dummy.c
-> +++ b/drivers/iio/dummy/iio_simple_dummy.c
-> @@ -22,21 +22,12 @@
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/events.h>
->  #include <linux/iio/buffer.h>
-> +#include <linux/iio/sw_device.h>
->  #include "iio_simple_dummy.h"
->  
-> -/*
-> - * A few elements needed to fake a bus for this driver
-> - * Note instances parameter controls how many of these
-> - * dummy devices are registered.
-> - */
-> -static unsigned instances = 1;
-> -module_param(instances, uint, 0);
-> -
-> -/* Pointer array used to fake bus elements */
-> -static struct iio_dev **iio_dummy_devs;
-> -
-> -/* Fake a name for the part number, usually obtained from the id table */
-> -static const char *iio_dummy_part_number = "iio_dummy_part_no";
-> +static struct config_item_type iio_dummy_type = {
-> +	.ct_owner = THIS_MODULE,
-> +};
->  
->  /**
->   * struct iio_dummy_accel_calibscale - realworld to register mapping
-> @@ -572,12 +563,18 @@ static int iio_dummy_init_device(struct iio_dev *indio_dev)
->   *                      const struct i2c_device_id *id)
->   * SPI: iio_dummy_probe(struct spi_device *spi)
->   */
-> -static int iio_dummy_probe(int index)
-> +static struct iio_sw_device *iio_dummy_probe(const char *name)
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index faccabafc..273b7fa7 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -91,16 +91,19 @@ static const struct inv_mpu6050_chip_config chip_config_6050 = {
+>  /* Indexed by enum inv_devices */
+>  static const struct inv_mpu6050_hw hw_info[] = {
+>  	{
+> +		.whoami = INV_MPU6050_WHOAMI_VALUE,
+>  		.name = "MPU6050",
+>  		.reg = &reg_set_6050,
+>  		.config = &chip_config_6050,
+>  	},
+>  	{
+> +		.whoami = INV_MPU6500_WHOAMI_VALUE,
+>  		.name = "MPU6500",
+>  		.reg = &reg_set_6500,
+>  		.config = &chip_config_6050,
+>  	},
+>  	{
+> +		.whoami = INV_MPU6000_WHOAMI_VALUE,
+>  		.name = "MPU6000",
+>  		.reg = &reg_set_6050,
+>  		.config = &chip_config_6050,
+> @@ -730,6 +733,7 @@ static const struct iio_info mpu_info = {
+>  static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
 >  {
->  	int ret;
->  	struct iio_dev *indio_dev;
->  	struct iio_dummy_state *st;
-> +	struct iio_sw_device *swd;
+>  	int result;
+> +	unsigned int regval;
 >  
-> +	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
-> +	if (!swd) {
-> +		ret = -ENOMEM;
-> +		goto error_kzalloc;
+>  	st->hw  = &hw_info[st->chip_type];
+>  	st->reg = hw_info[st->chip_type].reg;
+> @@ -740,6 +744,17 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
+>  	if (result)
+>  		return result;
+>  	msleep(INV_MPU6050_POWER_UP_TIME);
+> +
+> +	/* check chip self-identification */
+> +	result = regmap_read(st->map, INV_MPU6050_REG_WHOAMI, &regval);
+> +	if (result)
+> +		return result;
+> +	if (regval != st->hw->whoami) {
+> +		dev_warn(regmap_get_device(st->map),
+> +				"whoami mismatch got %#02x expected %#02hhx for %s\n",
+> +				regval, st->hw->whoami, st->hw->name);
 > +	}
+> +
 >  	/*
->  	 * Allocate an IIO device.
->  	 *
-> @@ -608,7 +605,7 @@ static int iio_dummy_probe(int index)
->  	 * i2c_set_clientdata(client, indio_dev);
->  	 * spi_set_drvdata(spi, indio_dev);
->  	 */
-> -	iio_dummy_devs[index] = indio_dev;
-> +	swd->device = indio_dev;
->  
->  	/*
->  	 * Set the device name.
-> @@ -619,7 +616,7 @@ static int iio_dummy_probe(int index)
->  	 *    indio_dev->name = id->name;
->  	 *    indio_dev->name = spi_get_device_id(spi)->name;
->  	 */
-> -	indio_dev->name = iio_dummy_part_number;
-> +	indio_dev->name = name;
->  
->  	/* Provide description of available channels */
->  	indio_dev->channels = iio_dummy_channels;
-> @@ -646,7 +643,8 @@ static int iio_dummy_probe(int index)
->  	if (ret < 0)
->  		goto error_unconfigure_buffer;
->  
-> -	return 0;
-> +	iio_swd_group_init_type_name(swd, name, &iio_dummy_type);
-> +	return swd;
->  error_unconfigure_buffer:
->  	iio_simple_dummy_unconfigure_buffer(indio_dev);
->  error_unregister_events:
-> @@ -654,16 +652,18 @@ error_unregister_events:
->  error_free_device:
->  	iio_device_free(indio_dev);
->  error_ret:
-> -	return ret;
-> +	kfree(swd);
-> +error_kzalloc:
-> +	return ERR_PTR(ret);
->  }
+>  	 * toggle power state. After reset, the sleep bit could be on
+>  	 * or off depending on the OTP settings. Toggling power would
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index c66dbfc..564cabd 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -93,11 +93,13 @@ struct inv_mpu6050_chip_config {
 >  
 >  /**
->   * iio_dummy_remove() - device instance removal function
-> - * @index: device index.
-> + * @swd: pointer to software IIO device abstraction
->   *
->   * Parameters follow those of iio_dummy_probe for buses.
+>   *  struct inv_mpu6050_hw - Other important hardware information.
+> + *  @whoami:	Self identification byte from WHO_AM_I register
+>   *  @name:      name of the chip.
+>   *  @reg:   register map of the chip.
+>   *  @config:    configuration of the chip.
 >   */
-> -static void iio_dummy_remove(int index)
-> +static int iio_dummy_remove(struct iio_sw_device *swd)
->  {
->  	/*
->  	 * Get a pointer to the device instance iio_dev structure
-> @@ -671,7 +671,7 @@ static void iio_dummy_remove(int index)
->  	 * struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	 * struct iio_dev *indio_dev = spi_get_drvdata(spi);
->  	 */
-> -	struct iio_dev *indio_dev = iio_dummy_devs[index];
-> +	struct iio_dev *indio_dev = swd->device;
+>  struct inv_mpu6050_hw {
+> +	u8 whoami;
+>  	u8 *name;
+>  	const struct inv_mpu6050_reg_map *reg;
+>  	const struct inv_mpu6050_chip_config *config;
+> @@ -213,6 +215,12 @@ struct inv_mpu6050_state {
+>  #define INV_MPU6050_MIN_FIFO_RATE            4
+>  #define INV_MPU6050_ONE_K_HZ                 1000
 >  
->  	/* Unregister the device */
->  	iio_device_unregister(indio_dev);
-> @@ -685,10 +685,10 @@ static void iio_dummy_remove(int index)
->  
->  	/* Free all structures */
->  	iio_device_free(indio_dev);
-blank line here (nitpick of the day ;)
-> +	return 0;
->  }
-> -
->  /**
-> - * iio_dummy_init() -  device driver registration
-> + * module_iio_sw_device_driver() -  device driver registration
->   *
->   * Varies depending on bus type of the device. As there is no device
->   * here, call probe directly. For information on device registration
-> @@ -697,50 +697,18 @@ static void iio_dummy_remove(int index)
->   * spi:
->   * Documentation/spi/spi-summary
->   */
-> -static __init int iio_dummy_init(void)
-> -{
-> -	int i, ret;
-> -
-> -	if (instances > 10) {
-> -		instances = 1;
-> -		return -EINVAL;
-> -	}
-> -
-> -	/* Fake a bus */
-> -	iio_dummy_devs = kcalloc(instances, sizeof(*iio_dummy_devs),
-> -				 GFP_KERNEL);
-> -	/* Here we have no actual device so call probe */
-> -	for (i = 0; i < instances; i++) {
-> -		ret = iio_dummy_probe(i);
-> -		if (ret < 0)
-> -			goto error_remove_devs;
-> -	}
-> -	return 0;
-> -
-> -error_remove_devs:
-> -	while (i--)
-> -		iio_dummy_remove(i);
-> -
-> -	kfree(iio_dummy_devs);
-> -	return ret;
-> -}
-> -module_init(iio_dummy_init);
-> +static const struct iio_sw_device_ops iio_dummy_device_ops = {
-> +	.probe = iio_dummy_probe,
-> +	.remove = iio_dummy_remove,
-> +};
->  
-> -/**
-> - * iio_dummy_exit() - device driver removal
-> - *
-> - * Varies depending on bus type of the device.
-> - * As there is no device here, call remove directly.
-> - */
-> -static __exit void iio_dummy_exit(void)
-> -{
-> -	int i;
-> +static struct iio_sw_device_type iio_dummy_device = {
-> +	.name = "dummy",
-> +	.owner = THIS_MODULE,
-> +	.ops = &iio_dummy_device_ops,
-> +};
->  
-> -	for (i = 0; i < instances; i++)
-> -		iio_dummy_remove(i);
-> -	kfree(iio_dummy_devs);
-> -}
-> -module_exit(iio_dummy_exit);
-> +module_iio_sw_device_driver(iio_dummy_device);
->  
->  MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
->  MODULE_DESCRIPTION("IIO dummy driver");
+> +#define INV_MPU6050_REG_WHOAMI			117
+> +
+> +#define INV_MPU6000_WHOAMI_VALUE		0x68
+> +#define INV_MPU6050_WHOAMI_VALUE		0x68
+> +#define INV_MPU6500_WHOAMI_VALUE		0x70
+> +
+>  /* scan element definition */
+>  enum inv_mpu6050_scan {
+>  	INV_MPU6050_SCAN_ACCL_X,
 > 
 
