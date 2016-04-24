@@ -1,411 +1,230 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35097 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35830 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752090AbcDXJKv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 05:10:51 -0400
-Subject: Re: [PATCH v3 1/5] max44000: Initial support
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <cover.1460989642.git.leonard.crestez@intel.com>
- <21ea1e822e4f105700daaa8374d9483c7d0c3ebc.1460989642.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
+	with ESMTP id S1751770AbcDXLga (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 07:36:30 -0400
+Subject: Re: [RFC PATCH 2/3] iio: dummy: Convert IIO dummy to configfs
+To: Daniel Baluta <daniel.baluta@intel.com>
+References: <1461167126-23399-1-git-send-email-daniel.baluta@intel.com>
+ <1461167126-23399-3-git-send-email-daniel.baluta@intel.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <28da2232-2cc9-eef5-17ea-6f702dd17157@kernel.org>
-Date: Sun, 24 Apr 2016 10:10:48 +0100
+Message-ID: <2ddba9c6-1f62-468d-da71-7819934f0869@kernel.org>
+Date: Sun, 24 Apr 2016 12:36:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <21ea1e822e4f105700daaa8374d9483c7d0c3ebc.1460989642.git.leonard.crestez@intel.com>
+In-Reply-To: <1461167126-23399-3-git-send-email-daniel.baluta@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/04/16 15:31, Crestez Dan Leonard wrote:
-> This just adds support for reporting illuminance with default settings.
+On 20/04/16 16:45, Daniel Baluta wrote:
+> We register a new device type named "dummy", this will create a
+> configfs entry under:
+> 	* /config/iio/devices/dummy.
 > 
-> Important default registers are written on probe because the device
-> otherwise lacks a reset function.
+> Creating dummy devices is now as simple as:
 > 
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-Looks good to me - applied to the togreg branch of iio.git
-initially pushed out as testing for the autobuilders to play with it.
-I did fix up a couple of overly long lines though.  They weren't cases where
-breaking them effected readability so checkpatch warnings should have been
-fixed.  Otherwise I end up with patches for them a few days after I push
-the tree out!  Easier to fix them now.
+> $ mkdir /config/iio/devices/dummy/my_dummy_device
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Looks very nice.
+
+I don't think it is unreasonable to demand people have configfs for
+the dummy driver so very happy to have this cleaned up.
+
+Now to try it with a few thousand devices and see what breaks ;)
+
+1 trivial point inline.
 
 Jonathan
 > ---
->  drivers/iio/light/Kconfig    |  11 ++
->  drivers/iio/light/Makefile   |   1 +
->  drivers/iio/light/max44000.c | 324 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 336 insertions(+)
->  create mode 100644 drivers/iio/light/max44000.c
+>  drivers/iio/dummy/iio_simple_dummy.c | 98 ++++++++++++------------------------
+>  1 file changed, 33 insertions(+), 65 deletions(-)
 > 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 5ee1d45..d146c2c 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -234,6 +234,17 @@ config LTR501
->  	 This driver can also be built as a module.  If so, the module
->           will be called ltr501.
+> diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+> index 43fe4ba..65f92f8 100644
+> --- a/drivers/iio/dummy/iio_simple_dummy.c
+> +++ b/drivers/iio/dummy/iio_simple_dummy.c
+> @@ -22,21 +22,12 @@
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/iio/events.h>
+>  #include <linux/iio/buffer.h>
+> +#include <linux/iio/sw_device.h>
+>  #include "iio_simple_dummy.h"
 >  
-> +config MAX44000
-> +	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
-> +	depends on I2C
-> +	select REGMAP_I2C
-> +	help
-> +	 Say Y here if you want to build support for Maxim Integrated's
-> +	 MAX44000 ambient and infrared proximity sensor device.
-> +
-> +	 To compile this driver as a module, choose M here:
-> +	 the module will be called max44000.
-> +
->  config OPT3001
->  	tristate "Texas Instruments OPT3001 Light Sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 4aeee2b..6e640cf 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -21,6 +21,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
->  obj-$(CONFIG_JSA1212)		+= jsa1212.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
->  obj-$(CONFIG_LTR501)		+= ltr501.o
-> +obj-$(CONFIG_MAX44000)		+= max44000.o
->  obj-$(CONFIG_OPT3001)		+= opt3001.o
->  obj-$(CONFIG_PA12203001)	+= pa12203001.o
->  obj-$(CONFIG_RPR0521)		+= rpr0521.o
-> diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-> new file mode 100644
-> index 0000000..5ed7934
-> --- /dev/null
-> +++ b/drivers/iio/light/max44000.c
-> @@ -0,0 +1,324 @@
-> +/*
-> + * MAX44000 Ambient and Infrared Proximity Sensor
-> + *
-> + * Copyright (c) 2016, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * Data sheet: https://datasheets.maximintegrated.com/en/ds/MAX44000.pdf
-> + *
-> + * 7-bit I2C slave address 0x4a
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/i2c.h>
-> +#include <linux/regmap.h>
-> +#include <linux/util_macros.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/acpi.h>
-> +
-> +#define MAX44000_DRV_NAME		"max44000"
-> +
-> +/* Registers in datasheet order */
-> +#define MAX44000_REG_STATUS		0x00
-> +#define MAX44000_REG_CFG_MAIN		0x01
-> +#define MAX44000_REG_CFG_RX		0x02
-> +#define MAX44000_REG_CFG_TX		0x03
-> +#define MAX44000_REG_ALS_DATA_HI	0x04
-> +#define MAX44000_REG_ALS_DATA_LO	0x05
-> +#define MAX44000_REG_PRX_DATA		0x16
-> +#define MAX44000_REG_ALS_UPTHR_HI	0x06
-> +#define MAX44000_REG_ALS_UPTHR_LO	0x07
-> +#define MAX44000_REG_ALS_LOTHR_HI	0x08
-> +#define MAX44000_REG_ALS_LOTHR_LO	0x09
-> +#define MAX44000_REG_PST		0x0a
-> +#define MAX44000_REG_PRX_IND		0x0b
-> +#define MAX44000_REG_PRX_THR		0x0c
-> +#define MAX44000_REG_TRIM_GAIN_GREEN	0x0f
-> +#define MAX44000_REG_TRIM_GAIN_IR	0x10
-> +
-> +/* REG_CFG bits */
-> +#define MAX44000_CFG_ALSINTE            0x01
-> +#define MAX44000_CFG_PRXINTE            0x02
-> +#define MAX44000_CFG_MASK               0x1c
-> +#define MAX44000_CFG_MODE_SHUTDOWN      0x00
-> +#define MAX44000_CFG_MODE_ALS_GIR       0x04
-> +#define MAX44000_CFG_MODE_ALS_G         0x08
-> +#define MAX44000_CFG_MODE_ALS_IR        0x0c
-> +#define MAX44000_CFG_MODE_ALS_PRX       0x10
-> +#define MAX44000_CFG_MODE_PRX           0x14
-> +#define MAX44000_CFG_TRIM               0x20
-> +
-> +/*
-> + * Upper 4 bits are not documented but start as 1 on powerup
-> + * Setting them to 0 causes proximity to misbehave so set them to 1
-> + */
-> +#define MAX44000_REG_CFG_RX_DEFAULT 0xf0
-> +
-> +#define MAX44000_ALSDATA_OVERFLOW	0x4000
-> +
-> +struct max44000_data {
-> +	struct mutex lock;
-> +	struct regmap *regmap;
+> -/*
+> - * A few elements needed to fake a bus for this driver
+> - * Note instances parameter controls how many of these
+> - * dummy devices are registered.
+> - */
+> -static unsigned instances = 1;
+> -module_param(instances, uint, 0);
+> -
+> -/* Pointer array used to fake bus elements */
+> -static struct iio_dev **iio_dummy_devs;
+> -
+> -/* Fake a name for the part number, usually obtained from the id table */
+> -static const char *iio_dummy_part_number = "iio_dummy_part_no";
+> +static struct config_item_type iio_dummy_type = {
+> +	.ct_owner = THIS_MODULE,
 > +};
-> +
-> +/* Default scale is set to the minimum of 0.03125 or 1 / (1 << 5) lux */
-> +#define MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2 5
-> +
-> +static const struct iio_chan_spec max44000_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +};
-> +
-> +static int max44000_read_alsval(struct max44000_data *data)
-> +{
-> +	u16 regval;
-> +	int ret;
-> +
-> +	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI,
-> +			       &regval, sizeof(regval));
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	regval = be16_to_cpu(regval);
-> +
-> +	/*
-> +	 * Overflow is explained on datasheet page 17.
-> +	 *
-> +	 * It's a warning that either the G or IR channel has become saturated
-> +	 * and that the value in the register is likely incorrect.
-> +	 *
-> +	 * The recommendation is to change the scale (ALSPGA).
-> +	 * The driver just returns the max representable value.
-> +	 */
-> +	if (regval & MAX44000_ALSDATA_OVERFLOW)
-> +		return 0x3FFF;
-> +
-> +	return regval;
-> +}
-> +
-> +static int max44000_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int *val, int *val2, long mask)
-> +{
-> +	struct max44000_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			mutex_lock(&data->lock);
-> +			ret = max44000_read_alsval(data);
-> +			mutex_unlock(&data->lock);
-> +			if (ret < 0)
-> +				return ret;
-> +			*val = ret;
-> +			return IIO_VAL_INT;
-> +
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			*val = 1;
-> +			*val2 = MAX44000_ALS_TO_LUX_DEFAULT_FRACTION_LOG2;
-> +			return IIO_VAL_FRACTIONAL_LOG2;
-> +
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +
-> +	default:
-> +		return -EINVAL;
+>  
+>  /**
+>   * struct iio_dummy_accel_calibscale - realworld to register mapping
+> @@ -572,12 +563,18 @@ static int iio_dummy_init_device(struct iio_dev *indio_dev)
+>   *                      const struct i2c_device_id *id)
+>   * SPI: iio_dummy_probe(struct spi_device *spi)
+>   */
+> -static int iio_dummy_probe(int index)
+> +static struct iio_sw_device *iio_dummy_probe(const char *name)
+>  {
+>  	int ret;
+>  	struct iio_dev *indio_dev;
+>  	struct iio_dummy_state *st;
+> +	struct iio_sw_device *swd;
+>  
+> +	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
+> +	if (!swd) {
+> +		ret = -ENOMEM;
+> +		goto error_kzalloc;
 > +	}
-> +}
-> +
-> +static const struct iio_info max44000_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= max44000_read_raw,
-> +};
-> +
-> +static bool max44000_readable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case MAX44000_REG_STATUS:
-> +	case MAX44000_REG_CFG_MAIN:
-> +	case MAX44000_REG_CFG_RX:
-> +	case MAX44000_REG_CFG_TX:
-> +	case MAX44000_REG_ALS_DATA_HI:
-> +	case MAX44000_REG_ALS_DATA_LO:
-> +	case MAX44000_REG_PRX_DATA:
-> +	case MAX44000_REG_ALS_UPTHR_HI:
-> +	case MAX44000_REG_ALS_UPTHR_LO:
-> +	case MAX44000_REG_ALS_LOTHR_HI:
-> +	case MAX44000_REG_ALS_LOTHR_LO:
-> +	case MAX44000_REG_PST:
-> +	case MAX44000_REG_PRX_IND:
-> +	case MAX44000_REG_PRX_THR:
-> +	case MAX44000_REG_TRIM_GAIN_GREEN:
-> +	case MAX44000_REG_TRIM_GAIN_IR:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static bool max44000_writeable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case MAX44000_REG_CFG_MAIN:
-> +	case MAX44000_REG_CFG_RX:
-> +	case MAX44000_REG_CFG_TX:
-> +	case MAX44000_REG_ALS_UPTHR_HI:
-> +	case MAX44000_REG_ALS_UPTHR_LO:
-> +	case MAX44000_REG_ALS_LOTHR_HI:
-> +	case MAX44000_REG_ALS_LOTHR_LO:
-> +	case MAX44000_REG_PST:
-> +	case MAX44000_REG_PRX_IND:
-> +	case MAX44000_REG_PRX_THR:
-> +	case MAX44000_REG_TRIM_GAIN_GREEN:
-> +	case MAX44000_REG_TRIM_GAIN_IR:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static bool max44000_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case MAX44000_REG_STATUS:
-> +	case MAX44000_REG_ALS_DATA_HI:
-> +	case MAX44000_REG_ALS_DATA_LO:
-> +	case MAX44000_REG_PRX_DATA:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static bool max44000_precious_reg(struct device *dev, unsigned int reg)
-> +{
-> +	return reg == MAX44000_REG_STATUS;
-> +}
-> +
-> +static const struct regmap_config max44000_regmap_config = {
-> +	.reg_bits	= 8,
-> +	.val_bits	= 8,
-> +
-> +	.max_register	= MAX44000_REG_PRX_DATA,
-> +	.readable_reg	= max44000_readable_reg,
-> +	.writeable_reg	= max44000_writeable_reg,
-> +	.volatile_reg	= max44000_volatile_reg,
-> +	.precious_reg	= max44000_precious_reg,
-> +
-> +	.use_single_rw	= 1,
-> +	.cache_type	= REGCACHE_RBTREE,
-> +};
-> +
-> +static int max44000_probe(struct i2c_client *client,
-> +			  const struct i2c_device_id *id)
-> +{
-> +	struct max44000_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret, reg;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +	data = iio_priv(indio_dev);
-> +	data->regmap = devm_regmap_init_i2c(client, &max44000_regmap_config);
-> +	if (IS_ERR(data->regmap)) {
-> +		dev_err(&client->dev, "regmap_init failed!\n");
-> +		return PTR_ERR(data->regmap);
-> +	}
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +	mutex_init(&data->lock);
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &max44000_info;
-> +	indio_dev->name = MAX44000_DRV_NAME;
-> +	indio_dev->channels = max44000_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(max44000_channels);
-> +
-> +	/*
-> +	 * The device doesn't have a reset function so we just clear some
-> +	 * important bits at probe time to ensure sane operation.
-> +	 *
-> +	 * Since we don't support interrupts/events the threshold values are
-> +	 * not important. We also don't touch trim values.
-> +	 */
-> +
-> +	/* Reset ALS scaling bits */
-> +	ret = regmap_write(data->regmap, MAX44000_REG_CFG_RX, MAX44000_REG_CFG_RX_DEFAULT);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to write default CFG_RX: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* Reset CFG bits to ALS-only mode and no interrupts */
-> +	reg = MAX44000_CFG_TRIM | MAX44000_CFG_MODE_ALS_GIR;
-> +	ret = regmap_write(data->regmap, MAX44000_REG_CFG_MAIN, reg);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to write init config: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* Read status at least once to clear any stale interrupt bits. */
-> +	ret = regmap_read(data->regmap, MAX44000_REG_STATUS, &reg);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to read init status: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	return iio_device_register(indio_dev);
-> +}
-> +
-> +static int max44000_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
+>  	/*
+>  	 * Allocate an IIO device.
+>  	 *
+> @@ -608,7 +605,7 @@ static int iio_dummy_probe(int index)
+>  	 * i2c_set_clientdata(client, indio_dev);
+>  	 * spi_set_drvdata(spi, indio_dev);
+>  	 */
+> -	iio_dummy_devs[index] = indio_dev;
+> +	swd->device = indio_dev;
+>  
+>  	/*
+>  	 * Set the device name.
+> @@ -619,7 +616,7 @@ static int iio_dummy_probe(int index)
+>  	 *    indio_dev->name = id->name;
+>  	 *    indio_dev->name = spi_get_device_id(spi)->name;
+>  	 */
+> -	indio_dev->name = iio_dummy_part_number;
+> +	indio_dev->name = name;
+>  
+>  	/* Provide description of available channels */
+>  	indio_dev->channels = iio_dummy_channels;
+> @@ -646,7 +643,8 @@ static int iio_dummy_probe(int index)
+>  	if (ret < 0)
+>  		goto error_unconfigure_buffer;
+>  
+> -	return 0;
+> +	iio_swd_group_init_type_name(swd, name, &iio_dummy_type);
+> +	return swd;
+>  error_unconfigure_buffer:
+>  	iio_simple_dummy_unconfigure_buffer(indio_dev);
+>  error_unregister_events:
+> @@ -654,16 +652,18 @@ error_unregister_events:
+>  error_free_device:
+>  	iio_device_free(indio_dev);
+>  error_ret:
+> -	return ret;
+> +	kfree(swd);
+> +error_kzalloc:
+> +	return ERR_PTR(ret);
+>  }
+>  
+>  /**
+>   * iio_dummy_remove() - device instance removal function
+> - * @index: device index.
+> + * @swd: pointer to software IIO device abstraction
+>   *
+>   * Parameters follow those of iio_dummy_probe for buses.
+>   */
+> -static void iio_dummy_remove(int index)
+> +static int iio_dummy_remove(struct iio_sw_device *swd)
+>  {
+>  	/*
+>  	 * Get a pointer to the device instance iio_dev structure
+> @@ -671,7 +671,7 @@ static void iio_dummy_remove(int index)
+>  	 * struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>  	 * struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>  	 */
+> -	struct iio_dev *indio_dev = iio_dummy_devs[index];
+> +	struct iio_dev *indio_dev = swd->device;
+>  
+>  	/* Unregister the device */
+>  	iio_device_unregister(indio_dev);
+> @@ -685,10 +685,10 @@ static void iio_dummy_remove(int index)
+>  
+>  	/* Free all structures */
+>  	iio_device_free(indio_dev);
+blank line here (nitpick of the day ;)
 > +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id max44000_id[] = {
-> +	{"max44000", 0},
-> +	{ }
+>  }
+> -
+>  /**
+> - * iio_dummy_init() -  device driver registration
+> + * module_iio_sw_device_driver() -  device driver registration
+>   *
+>   * Varies depending on bus type of the device. As there is no device
+>   * here, call probe directly. For information on device registration
+> @@ -697,50 +697,18 @@ static void iio_dummy_remove(int index)
+>   * spi:
+>   * Documentation/spi/spi-summary
+>   */
+> -static __init int iio_dummy_init(void)
+> -{
+> -	int i, ret;
+> -
+> -	if (instances > 10) {
+> -		instances = 1;
+> -		return -EINVAL;
+> -	}
+> -
+> -	/* Fake a bus */
+> -	iio_dummy_devs = kcalloc(instances, sizeof(*iio_dummy_devs),
+> -				 GFP_KERNEL);
+> -	/* Here we have no actual device so call probe */
+> -	for (i = 0; i < instances; i++) {
+> -		ret = iio_dummy_probe(i);
+> -		if (ret < 0)
+> -			goto error_remove_devs;
+> -	}
+> -	return 0;
+> -
+> -error_remove_devs:
+> -	while (i--)
+> -		iio_dummy_remove(i);
+> -
+> -	kfree(iio_dummy_devs);
+> -	return ret;
+> -}
+> -module_init(iio_dummy_init);
+> +static const struct iio_sw_device_ops iio_dummy_device_ops = {
+> +	.probe = iio_dummy_probe,
+> +	.remove = iio_dummy_remove,
 > +};
-> +MODULE_DEVICE_TABLE(i2c, max44000_id);
-> +
-> +#ifdef CONFIG_ACPI
-> +static const struct acpi_device_id max44000_acpi_match[] = {
-> +	{"MAX44000", 0},
-> +	{ }
+>  
+> -/**
+> - * iio_dummy_exit() - device driver removal
+> - *
+> - * Varies depending on bus type of the device.
+> - * As there is no device here, call remove directly.
+> - */
+> -static __exit void iio_dummy_exit(void)
+> -{
+> -	int i;
+> +static struct iio_sw_device_type iio_dummy_device = {
+> +	.name = "dummy",
+> +	.owner = THIS_MODULE,
+> +	.ops = &iio_dummy_device_ops,
 > +};
-> +MODULE_DEVICE_TABLE(acpi, max44000_acpi_match);
-> +#endif
-> +
-> +static struct i2c_driver max44000_driver = {
-> +	.driver = {
-> +		.name	= MAX44000_DRV_NAME,
-> +		.acpi_match_table = ACPI_PTR(max44000_acpi_match),
-> +	},
-> +	.probe		= max44000_probe,
-> +	.remove		= max44000_remove,
-> +	.id_table	= max44000_id,
-> +};
-> +
-> +module_i2c_driver(max44000_driver);
-> +
-> +MODULE_AUTHOR("Crestez Dan Leonard <leonard.crestez@intel.com>");
-> +MODULE_DESCRIPTION("MAX44000 Ambient and Infrared Proximity Sensor");
-> +MODULE_LICENSE("GPL v2");
+>  
+> -	for (i = 0; i < instances; i++)
+> -		iio_dummy_remove(i);
+> -	kfree(iio_dummy_devs);
+> -}
+> -module_exit(iio_dummy_exit);
+> +module_iio_sw_device_driver(iio_dummy_device);
+>  
+>  MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
+>  MODULE_DESCRIPTION("IIO dummy driver");
 > 
 
