@@ -1,353 +1,141 @@
-Return-Path: <akinobu.mita@gmail.com>
-From: Akinobu Mita <akinobu.mita@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Akinobu Mita <akinobu.mita@gmail.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	Christoph Mair <christoph.mair@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35680 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751770AbcDXLKX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Apr 2016 07:10:23 -0400
+Subject: Re: [PATCH 1/5] iio: inv_mpu6050: Cleanup hw_info mapping
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1461156671.git.leonard.crestez@intel.com>
+ <d5a4a668fae77d35cd8567570651f7c57e8bb2df.1461156671.git.leonard.crestez@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v3 2/2] iio: pressure: bmp280: add ability to control oversampling rate
-Date: Sun, 24 Apr 2016 22:52:11 +0900
-Message-Id: <1461505931-21884-3-git-send-email-akinobu.mita@gmail.com>
-In-Reply-To: <1461505931-21884-1-git-send-email-akinobu.mita@gmail.com>
-References: <1461505931-21884-1-git-send-email-akinobu.mita@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Ge Gao <ggao@invensense.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <cf777a5a-a549-d55b-ec15-2234b2c2feb5@kernel.org>
+Date: Sun, 24 Apr 2016 12:10:20 +0100
+MIME-Version: 1.0
+In-Reply-To: <d5a4a668fae77d35cd8567570651f7c57e8bb2df.1461156671.git.leonard.crestez@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds ability to control the oversampling ratio of the temperature
-and pressure measurement for both bmp180 and bmp280.
+On 20/04/16 14:15, Crestez Dan Leonard wrote:
+> The hw_info array was indexed by enum inv_devices chip_type despite the
+> fact that the enumeration had more members than the array and was
+> ordered differently.
+> 
+> The patch cleans this up and adds explicit chip_types to i2c/spi/acpi
+> IDs. It also adds some stricter checks inside the driver core.
+> 
+> This happened to work so far because the differences between the
+> supported models are very minor.
+> 
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>h
+Ideally I'd like an Ack / review from Ge on these.
+The same is true for the whole series.
 
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Cc: Christoph Mair <christoph.mair@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
----
-* v3
-- fix oversampling register setting for bmp280, spotted by Vlad Dogaru
+Looks good to me though!
 
- drivers/iio/pressure/bmp280.c | 203 ++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 185 insertions(+), 18 deletions(-)
+Jonathan
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 15 ++++++++++++++-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  2 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  | 18 ++++++++++++++----
+>  3 files changed, 29 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index d192953..52e62b3 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -88,16 +88,23 @@ static const struct inv_mpu6050_chip_config chip_config_6050 = {
+>  	.accl_fs = INV_MPU6050_FS_02G,
+>  };
+>  
+> +/* Indexed by enum inv_devices */
+>  static const struct inv_mpu6050_hw hw_info[] = {
+>  	{
+>  		.num_reg = 117,
+> +		.name = "MPU6050",
+> +		.reg = &reg_set_6050,
+> +		.config = &chip_config_6050,
+> +	},
+> +	{
+> +		.num_reg = 117,
+>  		.name = "MPU6500",
+>  		.reg = &reg_set_6500,
+>  		.config = &chip_config_6050,
+>  	},
+>  	{
+>  		.num_reg = 117,
+> -		.name = "MPU6050",
+> +		.name = "MPU6000",
+>  		.reg = &reg_set_6050,
+>  		.config = &chip_config_6050,
+>  	},
+> @@ -774,6 +781,12 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+>  
+> +	BUILD_BUG_ON(ARRAY_SIZE(hw_info) != INV_NUM_PARTS);
+> +	if (chip_type < 0 || chip_type >= INV_NUM_PARTS) {
+> +		dev_err(dev, "Bad invensense chip_type=%d name=%s\n",
+> +				chip_type, name);
+> +		return -ENODEV;
+> +	}
+>  	st = iio_priv(indio_dev);
+>  	st->chip_type = chip_type;
+>  	st->powerup_count = 0;
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> index 5ee4e0d..bb1a7b1 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> @@ -208,7 +208,7 @@ static const struct i2c_device_id inv_mpu_id[] = {
+>  MODULE_DEVICE_TABLE(i2c, inv_mpu_id);
+>  
+>  static const struct acpi_device_id inv_acpi_match[] = {
+> -	{"INVN6500", 0},
+> +	{"INVN6500", INV_MPU6500},
+>  	{ },
+>  };
+>  
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> index 7bcb8d8..3972a46 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> @@ -44,9 +44,19 @@ static int inv_mpu_i2c_disable(struct iio_dev *indio_dev)
+>  static int inv_mpu_probe(struct spi_device *spi)
+>  {
+>  	struct regmap *regmap;
+> -	const struct spi_device_id *id = spi_get_device_id(spi);
+> -	const char *name = id ? id->name : NULL;
+> -	const int chip_type = id ? id->driver_data : 0;
+> +	const struct spi_device_id *spi_id;
+> +	const struct acpi_device_id *acpi_id;
+> +	const char *name = NULL;
+> +	enum inv_devices chip_type;
+> +
+> +	if ((spi_id = spi_get_device_id(spi))) {
+> +		chip_type = (enum inv_devices)spi_id->driver_data;
+> +		name = spi_id->name;
+> +	} else if ((acpi_id = acpi_match_device(spi->dev.driver->acpi_match_table, &spi->dev))) {
+> +		chip_type = (enum inv_devices)acpi_id->driver_data;
+> +	} else {
+> +		return -ENODEV;
+> +	}
+>  
+>  	regmap = devm_regmap_init_spi(spi, &inv_mpu_regmap_config);
+>  	if (IS_ERR(regmap)) {
+> @@ -76,7 +86,7 @@ static const struct spi_device_id inv_mpu_id[] = {
+>  MODULE_DEVICE_TABLE(spi, inv_mpu_id);
+>  
+>  static const struct acpi_device_id inv_acpi_match[] = {
+> -	{"INVN6000", 0},
+> +	{"INVN6000", INV_MPU6000},
+>  	{ },
+>  };
+>  MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
+> 
 
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index dcf3b0a..2f1498e 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -48,19 +48,21 @@
- 
- #define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
- #define BMP280_OSRS_TEMP_SKIP		0
--#define BMP280_OSRS_TEMP_1X		BIT(5)
--#define BMP280_OSRS_TEMP_2X		BIT(6)
--#define BMP280_OSRS_TEMP_4X		(BIT(6) | BIT(5))
--#define BMP280_OSRS_TEMP_8X		BIT(7)
--#define BMP280_OSRS_TEMP_16X		(BIT(7) | BIT(5))
-+#define BMP280_OSRS_TEMP_X(osrs_t)	((osrs_t) << 5)
-+#define BMP280_OSRS_TEMP_1X		BMP280_OSRS_TEMP_X(1)
-+#define BMP280_OSRS_TEMP_2X		BMP280_OSRS_TEMP_X(2)
-+#define BMP280_OSRS_TEMP_4X		BMP280_OSRS_TEMP_X(3)
-+#define BMP280_OSRS_TEMP_8X		BMP280_OSRS_TEMP_X(4)
-+#define BMP280_OSRS_TEMP_16X		BMP280_OSRS_TEMP_X(5)
- 
- #define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | BIT(2))
- #define BMP280_OSRS_PRESS_SKIP		0
--#define BMP280_OSRS_PRESS_1X		BIT(2)
--#define BMP280_OSRS_PRESS_2X		BIT(3)
--#define BMP280_OSRS_PRESS_4X		(BIT(3) | BIT(2))
--#define BMP280_OSRS_PRESS_8X		BIT(4)
--#define BMP280_OSRS_PRESS_16X		(BIT(4) | BIT(2))
-+#define BMP280_OSRS_PRESS_X(osrs_p)	((osrs_p) << 2)
-+#define BMP280_OSRS_PRESS_1X		BMP280_OSRS_PRESS_X(1)
-+#define BMP280_OSRS_PRESS_2X		BMP280_OSRS_PRESS_X(2)
-+#define BMP280_OSRS_PRESS_4X		BMP280_OSRS_PRESS_X(3)
-+#define BMP280_OSRS_PRESS_8X		BMP280_OSRS_PRESS_X(4)
-+#define BMP280_OSRS_PRESS_16X		BMP280_OSRS_PRESS_X(5)
- 
- #define BMP280_MODE_MASK		(BIT(1) | BIT(0))
- #define BMP280_MODE_SLEEP		0
-@@ -98,6 +100,10 @@ struct bmp280_data {
- 	struct regmap *regmap;
- 	const struct bmp280_chip_info *chip_info;
- 
-+	/* log of base 2 of oversampling rate */
-+	u8 oversampling_press;
-+	u8 oversampling_temp;
-+
- 	/*
- 	 * Carryover value from temperature conversion, used in pressure
- 	 * calculation.
-@@ -108,6 +114,12 @@ struct bmp280_data {
- struct bmp280_chip_info {
- 	const struct regmap_config *regmap_config;
- 
-+	const int *oversampling_temp_avail;
-+	int num_oversampling_temp_avail;
-+
-+	const int *oversampling_press_avail;
-+	int num_oversampling_press_avail;
-+
- 	int (*chip_config)(struct bmp280_data *);
- 	int (*read_temp)(struct bmp280_data *, int *);
- 	int (*read_press)(struct bmp280_data *, int *, int *);
-@@ -123,11 +135,13 @@ enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
- static const struct iio_chan_spec bmp280_channels[] = {
- 	{
- 		.type = IIO_PRESSURE,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
- 	},
- 	{
- 		.type = IIO_TEMP,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
- 	},
- };
- 
-@@ -333,6 +347,21 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
- 			break;
- 		}
- 		break;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			*val = 1 << data->oversampling_press;
-+			ret = IIO_VAL_INT;
-+			break;
-+		case IIO_TEMP:
-+			*val = 1 << data->oversampling_temp;
-+			ret = IIO_VAL_INT;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		break;
- 	default:
- 		ret = -EINVAL;
- 		break;
-@@ -343,22 +372,135 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int bmp280_write_oversampling_ratio_temp(struct bmp280_data *data,
-+					       int val)
-+{
-+	int i;
-+	const int *avail = data->chip_info->oversampling_temp_avail;
-+	const int n = data->chip_info->num_oversampling_temp_avail;
-+
-+	for (i = 0; i < n; i++) {
-+		if (avail[i] == val) {
-+			data->oversampling_temp = ilog2(val);
-+
-+			return data->chip_info->chip_config(data);
-+		}
-+	}
-+	return -EINVAL;
-+}
-+
-+static int bmp280_write_oversampling_ratio_press(struct bmp280_data *data,
-+					       int val)
-+{
-+	int i;
-+	const int *avail = data->chip_info->oversampling_press_avail;
-+	const int n = data->chip_info->num_oversampling_press_avail;
-+
-+	for (i = 0; i < n; i++) {
-+		if (avail[i] == val) {
-+			data->oversampling_press = ilog2(val);
-+
-+			return data->chip_info->chip_config(data);
-+		}
-+	}
-+	return -EINVAL;
-+}
-+
-+static int bmp280_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
-+{
-+	int ret = 0;
-+	struct bmp280_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		mutex_lock(&data->lock);
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			ret = bmp280_write_oversampling_ratio_press(data, val);
-+			break;
-+		case IIO_TEMP:
-+			ret = bmp280_write_oversampling_ratio_temp(data, val);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		mutex_unlock(&data->lock);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static ssize_t bmp280_show_avail(char *buf, const int *vals, const int n)
-+{
-+	size_t len = 0;
-+	int i;
-+
-+	for (i = 0; i < n; i++)
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ", vals[i]);
-+
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
-+static ssize_t bmp280_show_temp_oversampling_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bmp280_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bmp280_show_avail(buf, data->chip_info->oversampling_temp_avail,
-+				 data->chip_info->num_oversampling_temp_avail);
-+}
-+
-+static ssize_t bmp280_show_press_oversampling_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bmp280_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bmp280_show_avail(buf, data->chip_info->oversampling_press_avail,
-+				 data->chip_info->num_oversampling_press_avail);
-+}
-+
-+static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available,
-+	S_IRUGO, bmp280_show_temp_oversampling_avail, NULL, 0);
-+
-+static IIO_DEVICE_ATTR(in_pressure_oversampling_ratio_available,
-+	S_IRUGO, bmp280_show_press_oversampling_avail, NULL, 0);
-+
-+static struct attribute *bmp280_attributes[] = {
-+	&iio_dev_attr_in_temp_oversampling_ratio_available.dev_attr.attr,
-+	&iio_dev_attr_in_pressure_oversampling_ratio_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group bmp280_attrs_group = {
-+	.attrs = bmp280_attributes,
-+};
-+
- static const struct iio_info bmp280_info = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &bmp280_read_raw,
-+	.write_raw = &bmp280_write_raw,
-+	.attrs = &bmp280_attrs_group,
- };
- 
- static int bmp280_chip_config(struct bmp280_data *data)
- {
- 	int ret;
-+	u8 osrs = BMP280_OSRS_TEMP_X(data->oversampling_temp + 1) |
-+		  BMP280_OSRS_PRESS_X(data->oversampling_press + 1);
- 
- 	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
- 				 BMP280_OSRS_TEMP_MASK |
- 				 BMP280_OSRS_PRESS_MASK |
- 				 BMP280_MODE_MASK,
--				 BMP280_OSRS_TEMP_2X |
--				 BMP280_OSRS_PRESS_16X |
--				 BMP280_MODE_NORMAL);
-+				 osrs | BMP280_MODE_NORMAL);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev,
- 			"failed to write ctrl_meas register\n");
-@@ -377,8 +519,17 @@ static int bmp280_chip_config(struct bmp280_data *data)
- 	return ret;
- }
- 
-+static const int bmp280_oversampling_avail[] = { 1, 2, 4, 8, 16 };
-+
- static const struct bmp280_chip_info bmp280_chip_info = {
- 	.regmap_config = &bmp280_regmap_config,
-+
-+	.oversampling_temp_avail = bmp280_oversampling_avail,
-+	.num_oversampling_temp_avail = ARRAY_SIZE(bmp280_oversampling_avail),
-+
-+	.oversampling_press_avail = bmp280_oversampling_avail,
-+	.num_oversampling_press_avail = ARRAY_SIZE(bmp280_oversampling_avail),
-+
- 	.chip_config = bmp280_chip_config,
- 	.read_temp = bmp280_read_temp,
- 	.read_press = bmp280_read_press,
-@@ -433,7 +584,7 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
- 	if (ctrl_meas == BMP180_MEAS_TEMP)
- 		delay_us = 4500;
- 	else
--		delay_us = conversion_time_max[ilog2(8)];
-+		delay_us = conversion_time_max[data->oversampling_press];
- 
- 	usleep_range(delay_us, delay_us + 1000);
- 
-@@ -573,7 +724,7 @@ static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
- {
- 	int ret;
- 	__be32 tmp = 0;
--	u8 oss = ilog2(8);
-+	u8 oss = data->oversampling_press;
- 
- 	ret = bmp180_measure(data, BMP180_MEAS_PRESS_X(oss));
- 	if (ret)
-@@ -599,7 +750,7 @@ static u32 bmp180_compensate_press(struct bmp280_data *data, s32 adc_press)
- 	s32 x1, x2, x3, p;
- 	s32 b3, b6;
- 	u32 b4, b7;
--	s32 oss = ilog2(8);
-+	s32 oss = data->oversampling_press;
- 	struct bmp180_calib calib;
- 
- 	ret = bmp180_read_calib(data, &calib);
-@@ -660,8 +811,20 @@ static int bmp180_chip_config(struct bmp280_data *data)
- 	return 0;
- }
- 
-+static const int bmp180_oversampling_temp_avail[] = { 1 };
-+static const int bmp180_oversampling_press_avail[] = { 1, 2, 4, 8 };
-+
- static const struct bmp280_chip_info bmp180_chip_info = {
- 	.regmap_config = &bmp180_regmap_config,
-+
-+	.oversampling_temp_avail = bmp180_oversampling_temp_avail,
-+	.num_oversampling_temp_avail =
-+		ARRAY_SIZE(bmp180_oversampling_temp_avail),
-+
-+	.oversampling_press_avail = bmp180_oversampling_press_avail,
-+	.num_oversampling_press_avail =
-+		ARRAY_SIZE(bmp180_oversampling_press_avail),
-+
- 	.chip_config = bmp180_chip_config,
- 	.read_temp = bmp180_read_temp,
- 	.read_press = bmp180_read_press,
-@@ -693,9 +856,13 @@ static int bmp280_probe(struct i2c_client *client,
- 	switch (id->driver_data) {
- 	case BMP180_CHIP_ID:
- 		data->chip_info = &bmp180_chip_info;
-+		data->oversampling_press = ilog2(8);
-+		data->oversampling_temp = ilog2(1);
- 		break;
- 	case BMP280_CHIP_ID:
- 		data->chip_info = &bmp280_chip_info;
-+		data->oversampling_press = ilog2(16);
-+		data->oversampling_temp = ilog2(2);
- 		break;
- 	default:
- 		return -EINVAL;
--- 
-2.5.0
