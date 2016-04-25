@@ -1,153 +1,222 @@
-Return-Path: <GGao@invensense.com>
-From: Ge Gao <GGao@invensense.com>
-To: Jonathan Cameron <jic23@kernel.org>, Crestez Dan Leonard
-	<leonard.crestez@intel.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Hartmut
- Knaack" <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, "Peter
- Meerwald-Stadler" <pmeerw@pmeerw.net>, Daniel Baluta
-	<daniel.baluta@intel.com>
-Subject: RE: [PATCH 5/5] iio: inv_mpu6050: Add explicit support for MPU9150
-Date: Mon, 25 Apr 2016 17:56:07 +0000
-Message-ID: <DM3PR1201MB107242867FAACB76EF80ED45AF620@DM3PR1201MB1072.namprd12.prod.outlook.com>
-References: <cover.1461156671.git.leonard.crestez@intel.com>
- <cb9b1ec69032c501a4c74d6554c25d336d65ac8e.1461156671.git.leonard.crestez@intel.com>
- <76645673-6d2c-3d51-a689-1c9310cbc765@kernel.org>
-In-Reply-To: <76645673-6d2c-3d51-a689-1c9310cbc765@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42845 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933424AbcDYTcB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Apr 2016 15:32:01 -0400
+Subject: Re: [PATCH] iio: bmg160: add callbacks for the filter frequency
+To: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+References: <1461235740-18710-1-git-send-email-s.trumtrar@pengutronix.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	kernel@pengutronix.de,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <59d35d82-8ca8-646b-8629-c2bba666286b@kernel.org>
+Date: Mon, 25 Apr 2016 20:31:58 +0100
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1461235740-18710-1-git-send-email-s.trumtrar@pengutronix.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This looks good to me.
+On 21/04/16 11:49, Steffen Trumtrar wrote:
+> The filter frequency and sample rate have a fixed relationship.
+> Only the filter frequency is unique, however.
+> Currently the driver ignores the filter settings for 32 Hz and
+> 64 Hz.
+> 
+> This patch adds the necessary callbacks to be able to configure
+> and read the filter setting from sysfs.
+> 
+> Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
 
-Acked-by: Ge Gao <ggao@invensense.com >
-
-
-
------Original Message-----
-From: Jonathan Cameron [mailto:jic23@kernel.org]=20
-Sent: Sunday, April 24, 2016 4:16 AM
-To: Crestez Dan Leonard; linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org; Hartmut Knaack; Lars-Peter Clausen; Peter=
- Meerwald-Stadler; Daniel Baluta; Ge Gao
-Subject: Re: [PATCH 5/5] iio: inv_mpu6050: Add explicit support for MPU9150
-
-On 20/04/16 14:15, Crestez Dan Leonard wrote:
-> This device is a package containing a MPU6050-like sensor and an=20
-> AK8975 magnetometer. The magnetometer component is supported by the=20
-> existing
-> ak8975 driver.
->=20
-> This patch also rephrases the Kconfig descriptions.
->=20
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-Looks good.  Will just wait for Ge to hopefully have time to take a look at=
- the whole series.  For future reference, it's always worth making sure you=
- have cc'd the original author of a driver unless you know someone else is =
-definitely maintaining it.
-
-Ge was reply to emails recently so I guess he is still very much active!
+cc'd Srinivas as it's his driver...  Looks superficially fine to me.
 
 Jonathan
 > ---
->  drivers/iio/imu/inv_mpu6050/Kconfig        | 10 ++++------
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  6 ++++++ =20
-> drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  1 + =20
-> drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  2 ++ =20
-> drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  |  1 +
->  5 files changed, 14 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig=20
-> b/drivers/iio/imu/inv_mpu6050/Kconfig
-> index a7f557a..c05d474 100644
-> --- a/drivers/iio/imu/inv_mpu6050/Kconfig
-> +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-> @@ -14,10 +14,8 @@ config INV_MPU6050_I2C
->  	select I2C_MUX
->  	select REGMAP_I2C
->  	help
-> -	  This driver supports the Invensense MPU6050 devices.
-> -	  This driver can also support MPU6500 in MPU6050 compatibility mode
-> -	  and also in MPU6500 mode with some limitations.
-> -	  It is a gyroscope/accelerometer combo device.
-> +	  This driver supports the Invensense MPU6050/6500/9150 motion tracking
-> +	  devices over I2C.
->  	  This driver can be built as a module. The module will be called
->  	  inv-mpu6050-i2c.
-> =20
-> @@ -27,7 +25,7 @@ config INV_MPU6050_SPI
->  	select INV_MPU6050_IIO
->  	select REGMAP_SPI
->  	help
-> -	  This driver supports the Invensense MPU6050 devices.
-> -	  It is a gyroscope/accelerometer combo device.
-> +	  This driver supports the Invensense MPU6000/6500/9150 motion tracking
-> +	  devices over SPI.
->  	  This driver can be built as a module. The module will be called
->  	  inv-mpu6050-spi.
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c=20
-> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 273b7fa7..3a82a49 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -108,6 +108,12 @@ static const struct inv_mpu6050_hw hw_info[] =3D {
->  		.reg =3D &reg_set_6050,
->  		.config =3D &chip_config_6050,
->  	},
-> +	{
-> +		.whoami =3D INV_MPU9150_WHOAMI_VALUE,
-> +		.name =3D "MPU9150",
-> +		.reg =3D &reg_set_6050,
-> +		.config =3D &chip_config_6050,
-> +	},
+> 
+> Changing the sample rate will result in using the first match
+> and therefore selecting the filter accordingly. Is this a misuse
+> of the ABI and should be handled differently or is this okay?
+> 
+>  drivers/iio/gyro/bmg160_core.c | 105 ++++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 93 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+> index bbce3b09ac45..ea0243eb393a 100644
+> --- a/drivers/iio/gyro/bmg160_core.c
+> +++ b/drivers/iio/gyro/bmg160_core.c
+> @@ -52,6 +52,7 @@
+>  #define BMG160_REG_PMU_BW		0x10
+>  #define BMG160_NO_FILTER		0
+>  #define BMG160_DEF_BW			100
+> +#define BMG160_REG_PMU_BW_RES		BIT(7)
+>  
+>  #define BMG160_REG_INT_MAP_0		0x17
+>  #define BMG160_INT_MAP_0_BIT_ANY	BIT(1)
+> @@ -103,7 +104,6 @@ struct bmg160_data {
+>  	struct iio_trigger *motion_trig;
+>  	struct mutex mutex;
+>  	s16 buffer[8];
+> -	u8 bw_bits;
+>  	u32 dps_range;
+>  	int ev_enable_state;
+>  	int slope_thres;
+> @@ -119,13 +119,16 @@ enum bmg160_axis {
 >  };
-> =20
->  int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en,=20
-> u32 mask) diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c=20
-> b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> index bb1a7b1..1a424a6 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> @@ -202,6 +202,7 @@ static int inv_mpu_remove(struct i2c_client=20
-> *client)  static const struct i2c_device_id inv_mpu_id[] =3D {
->  	{"mpu6050", INV_MPU6050},
->  	{"mpu6500", INV_MPU6500},
-> +	{"mpu9150", INV_MPU9150},
->  	{}
->  };
-> =20
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h=20
-> b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index 564cabd..38d6a09 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -68,6 +68,7 @@ enum inv_devices {
->  	INV_MPU6050,
->  	INV_MPU6500,
->  	INV_MPU6000,
-> +	INV_MPU9150,
->  	INV_NUM_PARTS
->  };
-> =20
-> @@ -220,6 +221,7 @@ struct inv_mpu6050_state {
->  #define INV_MPU6000_WHOAMI_VALUE		0x68
->  #define INV_MPU6050_WHOAMI_VALUE		0x68
->  #define INV_MPU6500_WHOAMI_VALUE		0x70
-> +#define INV_MPU9150_WHOAMI_VALUE		0x68
-> =20
->  /* scan element definition */
->  enum inv_mpu6050_scan {
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c=20
-> b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> index a0f8df2..190a4a5 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> @@ -81,6 +81,7 @@ static int inv_mpu_remove(struct spi_device *spi) =20
-> static const struct spi_device_id inv_mpu_id[] =3D {
->  	{"mpu6000", INV_MPU6000},
->  	{"mpu6500", INV_MPU6500},
-> +	{"mpu9150", INV_MPU9150},
->  	{}
->  };
-> =20
->=20
+>  
+>  static const struct {
+> -	int val;
+> +	int odr;
+> +	int filter;
+>  	int bw_bits;
+> -} bmg160_samp_freq_table[] = { {100, 0x07},
+> -			       {200, 0x06},
+> -			       {400, 0x03},
+> -			       {1000, 0x02},
+> -			       {2000, 0x01} };
+> +} bmg160_samp_freq_table[] = { {100, 32, 0x07},
+> +			       {200, 64, 0x06},
+> +			       {100, 12, 0x05},
+> +			       {200, 23, 0x04},
+> +			       {400, 47, 0x03},
+> +			       {1000, 116, 0x02},
+> +			       {2000, 230, 0x01} };
+>  
+>  static const struct {
+>  	int scale;
+> @@ -154,7 +157,7 @@ static int bmg160_convert_freq_to_bit(int val)
+>  	int i;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
+> -		if (bmg160_samp_freq_table[i].val == val)
+> +		if (bmg160_samp_freq_table[i].odr == val)
+>  			return bmg160_samp_freq_table[i].bw_bits;
+>  	}
+>  
+> @@ -176,7 +179,51 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
+>  		return ret;
+>  	}
+>  
+> -	data->bw_bits = bw_bits;
+> +	return 0;
+> +}
+> +
+> +static int bmg160_get_filter(struct bmg160_data *data, int *val)
+> +{
+> +	int ret;
+> +	int i;
+> +	unsigned int bw_bits;
+> +
+> +	ret = regmap_read(data->regmap, BMG160_REG_PMU_BW, &bw_bits);
+> +	if (ret < 0) {
+> +		dev_err(data->dev, "Error reading reg_pmu_bw\n");
+> +		return ret;
+> +	}
+> +
+> +	/* Ignore the readonly reserved bit. */
+> +	bw_bits &= ~BMG160_REG_PMU_BW_RES;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
+> +		if (bmg160_samp_freq_table[i].bw_bits == bw_bits)
+> +			break;
+> +	}
+> +
+> +	*val = bmg160_samp_freq_table[i].filter;
+> +
+> +	return ret ? ret : IIO_VAL_INT;
+> +}
+> +
+> +
+> +static int bmg160_set_filter(struct bmg160_data *data, int val)
+> +{
+> +	int ret;
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
+> +		if (bmg160_samp_freq_table[i].filter == val)
+> +			break;
+> +	}
+> +
+> +	ret = regmap_write(data->regmap, BMG160_REG_PMU_BW,
+> +			   bmg160_samp_freq_table[i].bw_bits);
+> +	if (ret < 0) {
+> +		dev_err(data->dev, "Error writing reg_pmu_bw\n");
+> +		return ret;
+> +	}
+>  
+>  	return 0;
+>  }
+> @@ -388,10 +435,21 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+>  static int bmg160_get_bw(struct bmg160_data *data, int *val)
+>  {
+>  	int i;
+> +	unsigned int bw_bits;
+> +	int ret;
+> +
+> +	ret = regmap_read(data->regmap, BMG160_REG_PMU_BW, &bw_bits);
+> +	if (ret < 0) {
+> +		dev_err(data->dev, "Error reading reg_pmu_bw\n");
+> +		return ret;
+> +	}
+> +
+> +	/* Ignore the readonly reserved bit. */
+> +	bw_bits &= ~BMG160_REG_PMU_BW_RES;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
+> -		if (bmg160_samp_freq_table[i].bw_bits == data->bw_bits) {
+> -			*val = bmg160_samp_freq_table[i].val;
+> +		if (bmg160_samp_freq_table[i].bw_bits == bw_bits) {
+> +			*val = bmg160_samp_freq_table[i].odr;
+>  			return IIO_VAL_INT;
+>  		}
+>  	}
+> @@ -506,6 +564,8 @@ static int bmg160_read_raw(struct iio_dev *indio_dev,
+>  			return IIO_VAL_INT;
+>  		} else
+>  			return -EINVAL;
+> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> +		return bmg160_get_filter(data, val);
+>  	case IIO_CHAN_INFO_SCALE:
+>  		*val = 0;
+>  		switch (chan->type) {
+> @@ -570,6 +630,26 @@ static int bmg160_write_raw(struct iio_dev *indio_dev,
+>  		ret = bmg160_set_power_state(data, false);
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> +		if (val2)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&data->mutex);
+> +		ret = bmg160_set_power_state(data, true);
+> +		if (ret < 0) {
+> +			bmg160_set_power_state(data, false);
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		}
+> +		ret = bmg160_set_filter(data, val);
+> +		if (ret < 0) {
+> +			bmg160_set_power_state(data, false);
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		}
+> +		ret = bmg160_set_power_state(data, false);
+> +		mutex_unlock(&data->mutex);
+> +		return ret;
+>  	case IIO_CHAN_INFO_SCALE:
+>  		if (val)
+>  			return -EINVAL;
+> @@ -727,7 +807,8 @@ static const struct iio_event_spec bmg160_event = {
+>  	.channel2 = IIO_MOD_##_axis,					\
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+>  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
+> -				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |				\
+> +		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
+>  	.scan_index = AXIS_##_axis,					\
+>  	.scan_type = {							\
+>  		.sign = 's',						\
+> 
+
