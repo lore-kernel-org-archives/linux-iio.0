@@ -1,84 +1,58 @@
-Return-Path: <dmitry.torokhov@gmail.com>
-Date: Mon, 25 Apr 2016 14:14:12 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Marek Vasut <marex@denx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fabio Estevam <fabio.estevam@nxp.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH RFT V2 3/3] iio: mxs-lradc: implement suspend/resume
- support
-Message-ID: <20160425211412.GF26059@dtor-ws>
-References: <1461269478-449-1-git-send-email-stefan.wahren@i2se.com>
- <1461269478-449-4-git-send-email-stefan.wahren@i2se.com>
- <20160421210810.GC25466@dtor-ws>
- <571A27FC.4030301@i2se.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:33435 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S964989AbcDYU76 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Apr 2016 16:59:58 -0400
+Subject: Re: [PATCH] iio: tmp006: Set correct iio name
+To: Jonathan Cameron <jic23@kernel.org>, Yong Li <sdliyong@gmail.com>
+References: <1461296584-11918-1-git-send-email-sdliyong@gmail.com>
+ <43150fbd-37ac-2d51-dd87-f41670417b96@kernel.org>
+From: Crestez Dan Leonard <cdleonard@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	k.kozlowski@samsung.com, mranostay@gmail.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <571E854A.90404@gmail.com>
+Date: Mon, 25 Apr 2016 23:59:54 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <571A27FC.4030301@i2se.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <43150fbd-37ac-2d51-dd87-f41670417b96@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Apr 22, 2016 at 03:32:44PM +0200, Stefan Wahren wrote:
-> Hi Dmitry,
-> 
-> Am 21.04.2016 um 23:08 schrieb Dmitry Torokhov:
-> > On Thu, Apr 21, 2016 at 08:11:18PM +0000, Stefan Wahren wrote:
-> >> This patch implements suspend/resume support for mxs-lradc.
-> >> It's possible to use the touchscreen as wakeup source.
-> >>
-> >> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> >> ---
-> >>  drivers/iio/adc/mxs-lradc.c |   61 +++++++++++++++++++++++++++++++++++++++++++
-> >>  1 file changed, 61 insertions(+)
-> >>
-> >> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-> >> index cfc558f..6bd387f 100644
-> >> --- a/drivers/iio/adc/mxs-lradc.c
-> >> +++ b/drivers/iio/adc/mxs-lradc.c
-> >> @@ -29,6 +29,7 @@
-> >>  #include <linux/of.h>
-> >>  #include <linux/of_device.h>
-> >>  #include <linux/platform_device.h>
-> >> +#include <linux/pm.h>
-> >>  #include <linux/slab.h>
-> >>  #include <linux/stmp_device.h>
-> >>  #include <linux/sysfs.h>
-> >> @@ -1745,10 +1746,70 @@ static int mxs_lradc_remove(struct platform_device *pdev)
-> >>  	return 0;
-> >>  }
-> >>  
-> >> +static int __maybe_unused mxs_lradc_suspend(struct device *dev)
-> >> +{
-> >> +	struct iio_dev *iio = dev_get_drvdata(dev);
-> >> +	struct mxs_lradc *lradc = iio_priv(iio);
-> >> +	struct input_dev *input = lradc->ts_input;
-> >> +	int ret = 0;
-> >> +
-> >> +	if (input) {
-> >> +		mutex_lock(&input->mutex);
-> >> +
-> >> +		/* Enable touchscreen wakeup irq */
-> >> +		if (input->users && device_may_wakeup(dev))
-> >> +			ret = enable_irq_wake(lradc->irq[0]);
-> >> +		else
-> >> +			mxs_lradc_disable_ts(lradc);
-> >> +
-> >> +		mutex_unlock(&input->mutex);
-> >> +	}
-> >> +
-> >> +	if (ret)
-> >> +		return ret;
-> > I'd rather we had it right after we do:
-> >
-> > 			ret = enable_irq_wake(lradc->irq[0]);
-> 
-> but we must unlock the mutex first before return. An option would be to
-> place the return inside the input branch.
+On 04/25/2016 10:33 PM, Jonathan Cameron wrote:
+> On 22/04/16 04:43, Yong Li wrote:
+>> When load the driver using the below command:
+>> echo tmp006 0x40 > /sys/bus/i2c/devices/i2c-0/new_device
+>>
+>> In sysfs, the i2c name is tmp006, however the iio name is 0-0040,
+>> they are inconsistent. With this patch,
+>> the iio name will be the same as the i2c device name
+>>
+>> Signed-off-by: Yong Li <sdliyong@gmail.com>
+> Peter, this looks right to me, but could you take a quick look as I guess
+> there might be a reason you did this in an unusual way originally?
+>
+Is there a "correct" or "usual" way to set indio_dev->name? Some quick 
+grepping shows no clear standard:
 
-Ah, right, ignore me then.
+$ git grep -h 'indio_dev->name =' drivers/iio/ | wc -l
+148
+$ git grep -h 'indio_dev->name =' drivers/iio/ | grep id | wc -l
+52
+$ git grep -h 'indio_dev->name =' drivers/iio/ | grep dev_name | wc -l
+20
+$ git grep -h 'indio_dev->name =' drivers/iio/ | grep -i drv | wc -l
+19
+$ git grep -h 'indio_dev->name =' drivers/iio/ | grep -i driver | wc -l
+15
+
+It seems that many devices use dev_name(&i2c_client->dev) or otherwise 
+some sort of "ABC123_DRIVER_NAME" constant.
+
+It's also not clear what this "name" field is for. Is it more than just 
+a cosmetic sysfs attribute? It seems to me that names don't have to be 
+unique so it would be wrong to use them for identification.
 
 -- 
-Dmitry
+Regards,
+Leonard
