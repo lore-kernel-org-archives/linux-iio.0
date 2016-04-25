@@ -1,333 +1,174 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:19620 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932214AbcDYNMa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 25 Apr 2016 09:12:30 -0400
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	daniel.baluta@intel.com
-Subject: [PATCH v2 1/3] iio: Add support for creating IIO devices via configfs
-Date: Mon, 25 Apr 2016 16:15:51 +0300
-Message-Id: <1461590153-22308-2-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1461590153-22308-1-git-send-email-daniel.baluta@intel.com>
-References: <1461590153-22308-1-git-send-email-daniel.baluta@intel.com>
+Received: from mail-out.m-online.net ([212.18.0.9]:45149 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752601AbcDYPVu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Apr 2016 11:21:50 -0400
+Message-ID: <571E1241.3050101@denx.de>
+Date: Mon, 25 Apr 2016 14:49:05 +0200
+From: Marek Vasut <marex@denx.de>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+CC: Matt Ranostay <mranostay@gmail.com>
+Subject: Re: [PATCH V4] iio: pressure: hp03: Add Hope RF HP03 sensor support
+References: <1460988324-7494-1-git-send-email-marex@denx.de> <ae85624e-23ba-3ced-ca7d-c8bf98a85efb@kernel.org>
+In-Reply-To: <ae85624e-23ba-3ced-ca7d-c8bf98a85efb@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is similar with support for creating triggers via configfs.
-Devices will be hosted under:
-	* /config/iio/devices
+On 04/24/2016 10:48 AM, Jonathan Cameron wrote:
+> On 18/04/16 15:05, Marek Vasut wrote:
+>> Add support for HopeRF pressure and temperature sensor.
+>>
+>> This device uses two fixed I2C addresses, one for storing
+>> calibration coefficients and another for accessing the ADC.
+>>
+>> Signed-off-by: Marek Vasut <marex@denx.de>
+>> Cc: Matt Ranostay <mranostay@gmail.com>
+>> Cc: Jonathan Cameron <jic23@kernel.org>
+> Not sure how I missed this earlier (sorry!) but you have some ordering issues
+> in the probe vs remove functions that need sorting out.
 
-We allow users to register "device types" under:
-	* /config/iio/devices/<device_types>/
+I will comment on that below. Thanks for spotting this.
 
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/iio/Kconfig                  |   8 ++
- drivers/iio/Makefile                 |   1 +
- drivers/iio/industrialio-sw-device.c | 182 +++++++++++++++++++++++++++++++++++
- include/linux/iio/sw_device.h        |  70 ++++++++++++++
- 4 files changed, 261 insertions(+)
- create mode 100644 drivers/iio/industrialio-sw-device.c
- create mode 100644 include/linux/iio/sw_device.h
+> As they were easily fixed, I've done it and applied the result to the
+> togreg branch of iio.git.  Please check I didn't mess anything up.
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 505e921..6743b18 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -46,6 +46,14 @@ config IIO_CONSUMERS_PER_TRIGGER
- 	This value controls the maximum number of consumers that a
- 	given trigger may handle. Default is 2.
- 
-+config IIO_SW_DEVICE
-+	tristate "Enable software IIO device support"
-+	select IIO_CONFIGFS
-+	help
-+	 Provides IIO core support for software devices. A software
-+	 device can be created via configfs or directly by a driver
-+	 using the API provided.
-+
- config IIO_SW_TRIGGER
- 	tristate "Enable software triggers support"
- 	select IIO_CONFIGFS
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 20f6490..87e4c43 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -8,6 +8,7 @@ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
- industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
- 
- obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
-+obj-$(CONFIG_IIO_SW_DEVICE) += industrialio-sw-device.o
- obj-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
- obj-$(CONFIG_IIO_TRIGGERED_EVENT) += industrialio-triggered-event.o
- 
-diff --git a/drivers/iio/industrialio-sw-device.c b/drivers/iio/industrialio-sw-device.c
-new file mode 100644
-index 0000000..81b49cf
---- /dev/null
-+++ b/drivers/iio/industrialio-sw-device.c
-@@ -0,0 +1,182 @@
-+/*
-+ * The Industrial I/O core, software IIO devices functions
-+ *
-+ * Copyright (c) 2016 Intel Corporation
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/kmod.h>
-+#include <linux/list.h>
-+#include <linux/slab.h>
-+
-+#include <linux/iio/sw_device.h>
-+#include <linux/iio/configfs.h>
-+#include <linux/configfs.h>
-+
-+static struct config_group *iio_devices_group;
-+static struct config_item_type iio_device_type_group_type;
-+
-+static struct config_item_type iio_devices_group_type = {
-+	.ct_owner = THIS_MODULE,
-+};
-+
-+static LIST_HEAD(iio_device_types_list);
-+static DEFINE_MUTEX(iio_device_types_lock);
-+
-+static
-+struct iio_sw_device_type *__iio_find_sw_device_type(const char *name,
-+						     unsigned len)
-+{
-+	struct iio_sw_device_type *d = NULL, *iter;
-+
-+	list_for_each_entry(iter, &iio_device_types_list, list)
-+		if (!strcmp(iter->name, name)) {
-+			d = iter;
-+			break;
-+		}
-+
-+	return d;
-+}
-+
-+int iio_register_sw_device_type(struct iio_sw_device_type *d)
-+{
-+	struct iio_sw_device_type *iter;
-+	int ret = 0;
-+
-+	mutex_lock(&iio_device_types_lock);
-+	iter = __iio_find_sw_device_type(d->name, strlen(d->name));
-+	if (iter)
-+		ret = -EBUSY;
-+	else
-+		list_add_tail(&d->list, &iio_device_types_list);
-+	mutex_unlock(&iio_device_types_lock);
-+
-+	if (ret)
-+		return ret;
-+
-+	d->group = configfs_register_default_group(iio_devices_group, d->name,
-+						&iio_device_type_group_type);
-+	if (IS_ERR(d->group))
-+		ret = PTR_ERR(d->group);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(iio_register_sw_device_type);
-+
-+void iio_unregister_sw_device_type(struct iio_sw_device_type *dt)
-+{
-+	struct iio_sw_device_type *iter;
-+
-+	mutex_lock(&iio_device_types_lock);
-+	iter = __iio_find_sw_device_type(dt->name, strlen(dt->name));
-+	if (iter)
-+		list_del(&dt->list);
-+	mutex_unlock(&iio_device_types_lock);
-+
-+	configfs_unregister_default_group(dt->group);
-+}
-+EXPORT_SYMBOL(iio_unregister_sw_device_type);
-+
-+static
-+struct iio_sw_device_type *iio_get_sw_device_type(const char *name)
-+{
-+	struct iio_sw_device_type *dt;
-+
-+	mutex_lock(&iio_device_types_lock);
-+	dt = __iio_find_sw_device_type(name, strlen(name));
-+	if (dt && !try_module_get(dt->owner))
-+		dt = NULL;
-+	mutex_unlock(&iio_device_types_lock);
-+
-+	return dt;
-+}
-+
-+struct iio_sw_device *iio_sw_device_create(const char *type, const char *name)
-+{
-+	struct iio_sw_device *d;
-+	struct iio_sw_device_type *dt;
-+
-+	dt = iio_get_sw_device_type(type);
-+	if (!dt) {
-+		pr_err("Invalid device type: %s\n", type);
-+		return ERR_PTR(-EINVAL);
-+	}
-+	d = dt->ops->probe(name);
-+	if (IS_ERR(d))
-+		goto out_module_put;
-+
-+	d->device_type = dt;
-+
-+	return d;
-+out_module_put:
-+	module_put(dt->owner);
-+	return d;
-+}
-+EXPORT_SYMBOL(iio_sw_device_create);
-+
-+void iio_sw_device_destroy(struct iio_sw_device *d)
-+{
-+	struct iio_sw_device_type *dt = d->device_type;
-+
-+	dt->ops->remove(d);
-+	module_put(dt->owner);
-+}
-+EXPORT_SYMBOL(iio_sw_device_destroy);
-+
-+static struct config_group *device_make_group(struct config_group *group,
-+					      const char *name)
-+{
-+	struct iio_sw_device *d;
-+
-+	d = iio_sw_device_create(group->cg_item.ci_name, name);
-+	if (IS_ERR(d))
-+		return ERR_CAST(d);
-+
-+	config_item_set_name(&d->group.cg_item, "%s", name);
-+
-+	return &d->group;
-+}
-+
-+static void device_drop_group(struct config_group *group,
-+			      struct config_item *item)
-+{
-+	struct iio_sw_device *d = to_iio_sw_device(item);
-+
-+	iio_sw_device_destroy(d);
-+	config_item_put(item);
-+}
-+
-+static struct configfs_group_operations device_ops = {
-+	.make_group	= &device_make_group,
-+	.drop_item	= &device_drop_group,
-+};
-+
-+static struct config_item_type iio_device_type_group_type = {
-+	.ct_group_ops = &device_ops,
-+	.ct_owner       = THIS_MODULE,
-+};
-+
-+static int __init iio_sw_device_init(void)
-+{
-+	iio_devices_group =
-+		configfs_register_default_group(&iio_configfs_subsys.su_group,
-+						"devices",
-+						&iio_devices_group_type);
-+	return PTR_ERR_OR_ZERO(iio_devices_group);
-+}
-+module_init(iio_sw_device_init);
-+
-+static void __exit iio_sw_device_exit(void)
-+{
-+	configfs_unregister_default_group(iio_devices_group);
-+}
-+module_exit(iio_sw_device_exit);
-+
-+MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
-+MODULE_DESCRIPTION("Industrial I/O software devices support");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/iio/sw_device.h b/include/linux/iio/sw_device.h
-new file mode 100644
-index 0000000..23ca415
---- /dev/null
-+++ b/include/linux/iio/sw_device.h
-@@ -0,0 +1,70 @@
-+/*
-+ * Industrial I/O software device interface
-+ *
-+ * Copyright (c) 2016 Intel Corporation
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#ifndef __IIO_SW_DEVICE
-+#define __IIO_SW_DEVICE
-+
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/iio/iio.h>
-+#include <linux/configfs.h>
-+
-+#define module_iio_sw_device_driver(__iio_sw_device_type) \
-+	module_driver(__iio_sw_device_type, iio_register_sw_device_type, \
-+		      iio_unregister_sw_device_type)
-+
-+struct iio_sw_device_ops;
-+
-+struct iio_sw_device_type {
-+	const char *name;
-+	struct module *owner;
-+	const struct iio_sw_device_ops *ops;
-+	struct list_head list;
-+	struct config_group *group;
-+};
-+
-+struct iio_sw_device {
-+	struct iio_dev *device;
-+	struct iio_sw_device_type *device_type;
-+	struct config_group group;
-+};
-+
-+struct iio_sw_device_ops {
-+	struct iio_sw_device* (*probe)(const char *);
-+	int (*remove)(struct iio_sw_device *);
-+};
-+
-+static inline
-+struct iio_sw_device *to_iio_sw_device(struct config_item *item)
-+{
-+	return container_of(to_config_group(item), struct iio_sw_device,
-+			    group);
-+}
-+
-+int iio_register_sw_device_type(struct iio_sw_device_type *dt);
-+void iio_unregister_sw_device_type(struct iio_sw_device_type *dt);
-+
-+struct iio_sw_device *iio_sw_device_create(const char *, const char *);
-+void iio_sw_device_destroy(struct iio_sw_device *);
-+
-+int iio_sw_device_type_configfs_register(struct iio_sw_device_type *dt);
-+void iio_sw_device_type_configfs_unregister(struct iio_sw_device_type *dt);
-+
-+static inline
-+void iio_swd_group_init_type_name(struct iio_sw_device *d,
-+				  const char *name,
-+				  struct config_item_type *type)
-+{
-+#ifdef CONFIG_CONFIGFS_FS
-+	config_group_init_type_name(&d->group, name, type);
-+#endif
-+}
-+
-+#endif /* __IIO_SW_DEVICE */
+You mean 'testing' branch :)
+
+> The binding is straight forward enough that I don't feel I need a devicetree
+> ack, though of course one is always welcome!
+> 
+> Thanks,
+
+[...]
+
+>> +static int hp03_probe(struct i2c_client *client,
+>> +		      const struct i2c_device_id *id)
+>> +{
+>> +	struct device *dev = &client->dev;
+>> +	struct iio_dev *indio_dev;
+>> +	struct hp03_priv *priv;
+>> +	int ret;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	priv = iio_priv(indio_dev);
+>> +	priv->client = client;
+>> +	mutex_init(&priv->lock);
+>> +
+>> +	indio_dev->dev.parent = dev;
+>> +	indio_dev->name = id->name;
+>> +	indio_dev->channels = hp03_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(hp03_channels);
+>> +	indio_dev->info = &hp03_info;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +	/*
+>> +	 * Allocate another device for the on-sensor EEPROM,
+>> +	 * which has it's dedicated I2C address and contains
+>> +	 * the calibration constants for the sensor.
+>> +	 */
+>> +	priv->eeprom_client = i2c_new_dummy(client->adapter, HP03_EEPROM_ADDR);
+>> +	if (!priv->eeprom_client) {
+>> +		dev_err(dev, "New EEPROM I2C device failed\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	priv->eeprom_regmap = devm_regmap_init_i2c(priv->eeprom_client,
+>> +						   &hp03_regmap_config);
+>> +	if (IS_ERR(priv->eeprom_regmap)) {
+>> +		dev_err(dev, "Failed to allocate EEPROM regmap\n");
+>> +		ret = PTR_ERR(priv->eeprom_regmap);
+>> +		goto err;
+>> +	}
+>> +
+>> +	priv->xclr_gpio = devm_gpiod_get_index(dev, "xclr", 0, GPIOD_OUT_HIGH);
+>> +	if (IS_ERR(priv->xclr_gpio)) {
+>> +		dev_err(dev, "Failed to claim XCLR GPIO\n");
+>> +		ret = PTR_ERR(priv->xclr_gpio);
+>> +		goto err;
+>> +	}
+>> +
+>> +	ret = devm_iio_device_register(dev, indio_dev);
+>> +	if (ret) {
+>> +		dev_err(dev, "Failed to register IIO device\n");
+>> +		goto err;
+>> +	}
+>> +
+>> +	i2c_set_clientdata(client, indio_dev);
+>> +
+>> +	return 0;
+>> +
+>> +err:
+>> +	i2c_unregister_device(priv->eeprom_client);
+>> +	return ret;
+>> +}
+>> +
+>> +static int hp03_remove(struct i2c_client *client)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +	struct hp03_priv *priv = iio_priv(indio_dev);
+>> +
+>> +	i2c_unregister_device(priv->eeprom_client);
+> There is a race here unfortunately.
+
+After reading the explanation, I agree. It's subtle and quite nasty.
+
+> As you have used devm_iio_device_register the usespace interaces are still
+> exposed at this point.  So can they cause any use of the eeprom i2c device?
+> Yes, they can so if we happen to get a userspace read between here and
+> the devm initiallised unregister it will crash...
+
+Yes, true.
+
+> It is less obvious whether we can even use the devm_ regmap call for the
+> eeprom i2c device.  It can't be accessed as long as the iio_device
+> has been deregistered.  However, this isn't immediately obvious when
+> reviewing so on that basis alone it should be unwound here rather than
+> relying on devm...
+> 
+> You will also want to reorganise the probe function to move the registration
+> of this bus past the gpio stuff so as to avoid needing to unwind that by hand
+> as well.
+> 
+> Anyhow, rule of thumb is that probe order must be reversed in remove
+> including devm related cleanup.
+
+Right. I went through the updated HP03 code and it does make sense.
+Thanks for catching this race and explaining it in this much detail,
+I enjoyed reading this breakdown. And sorry for the hassle, I'll be
+more careful next time.
+
+>> +
+>  > +	return 0;
+>> +}
+>> +
+>> +static const struct i2c_device_id hp03_id[] = {
+>> +	{ "hp03", 0 },
+>> +	{ },
+>> +};
+>> +MODULE_DEVICE_TABLE(i2c, hp03_id);
+>> +
+>> +static struct i2c_driver hp03_driver = {
+>> +	.driver = {
+>> +		.name	= "hp03",
+>> +	},
+>> +	.probe		= hp03_probe,
+>> +	.remove		= hp03_remove,
+>> +	.id_table	= hp03_id,
+>> +};
+>> +module_i2c_driver(hp03_driver);
+>> +
+>> +MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
+>> +MODULE_DESCRIPTION("Driver for Hope RF HP03 pressure and temperature sensor");
+>> +MODULE_LICENSE("GPL v2");
+>>
+> 
+
+
 -- 
-2.5.0
-
+Best regards,
+Marek Vasut
