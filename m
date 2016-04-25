@@ -1,67 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43287 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964811AbcDYVLl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Apr 2016 17:11:41 -0400
-Subject: Re: [PATCH] iio: tmp006: Set correct iio name
-To: Crestez Dan Leonard <cdleonard@gmail.com>,
-	Yong Li <sdliyong@gmail.com>
-References: <1461296584-11918-1-git-send-email-sdliyong@gmail.com>
- <43150fbd-37ac-2d51-dd87-f41670417b96@kernel.org> <571E854A.90404@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	k.kozlowski@samsung.com, mranostay@gmail.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7621197a-95ed-239e-8baa-83014bc27a26@kernel.org>
-Date: Mon, 25 Apr 2016 22:11:38 +0100
+Received: from mail-pa0-f54.google.com ([209.85.220.54]:33839 "EHLO
+	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S964911AbcDYVAp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Apr 2016 17:00:45 -0400
+Date: Mon, 25 Apr 2016 14:00:41 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Marek Vasut <marex@denx.de>,
+	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	Fabio Estevam <fabio.estevam@nxp.com>,
+	Juergen Borleis <jbe@pengutronix.de>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH V3 2/3] iio: mxs-lradc: remove mxs_lradc_ts_unregister
+Message-ID: <20160425210041.GB26059@dtor-ws>
+References: <1461441479-23218-1-git-send-email-stefan.wahren@i2se.com>
+ <1461441479-23218-3-git-send-email-stefan.wahren@i2se.com>
 MIME-Version: 1.0
-In-Reply-To: <571E854A.90404@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1461441479-23218-3-git-send-email-stefan.wahren@i2se.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/04/16 21:59, Crestez Dan Leonard wrote:
-> On 04/25/2016 10:33 PM, Jonathan Cameron wrote:
->> On 22/04/16 04:43, Yong Li wrote:
->>> When load the driver using the below command:
->>> echo tmp006 0x40 > /sys/bus/i2c/devices/i2c-0/new_device
->>>
->>> In sysfs, the i2c name is tmp006, however the iio name is 0-0040,
->>> they are inconsistent. With this patch,
->>> the iio name will be the same as the i2c device name
->>>
->>> Signed-off-by: Yong Li <sdliyong@gmail.com>
->> Peter, this looks right to me, but could you take a quick look as I guess
->> there might be a reason you did this in an unusual way originally?
->>
-> Is there a "correct" or "usual" way to set indio_dev->name? Some quick grepping shows no clear standard:
+On Sat, Apr 23, 2016 at 07:57:58PM +0000, Stefan Wahren wrote:
+> After using devm_input_allocate_device for registration
+> the function mxs_lradc_ts_unregister isn't necessary anymore
+> since mxs_lradc_ts_close already does the job.
 > 
-> $ git grep -h 'indio_dev->name =' drivers/iio/ | wc -l
-> 148
-> $ git grep -h 'indio_dev->name =' drivers/iio/ | grep id | wc -l
-> 52
-> $ git grep -h 'indio_dev->name =' drivers/iio/ | grep dev_name | wc -l
-> 20
-> $ git grep -h 'indio_dev->name =' drivers/iio/ | grep -i drv | wc -l
-> 19
-> $ git grep -h 'indio_dev->name =' drivers/iio/ | grep -i driver | wc -l
-> 15
-> 
-> It seems that many devices use dev_name(&i2c_client->dev) or
-> otherwise some sort of "ABC123_DRIVER_NAME" constant.
-> 
-> It's also not clear what this "name" field is for. Is it more than
-> just a cosmetic sysfs attribute? It seems to me that names don't have
-> to be unique so it would be wrong to use them for identification.
-> 
-It's a convenience field really as there is no clear standard for where else
-to find out what a part actually is (i.e. if it is an i2c part you can look
-in the name attribute i2c supplies - but otherwise you are on your own).
+> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+> Suggested-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-For i2c drivers it should typically be the id->name.  Which is what this
-patch changes it to for this part.
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-The constant case should only be used for drivers that only support one
-part (which is quite a few of them!)
+> ---
+>  drivers/iio/adc/mxs-lradc.c |   13 +------------
+>  1 file changed, 1 insertion(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+> index 3d1d370..90242ba 100644
+> --- a/drivers/iio/adc/mxs-lradc.c
+> +++ b/drivers/iio/adc/mxs-lradc.c
+> @@ -1148,14 +1148,6 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+>  	return input_register_device(input);
+>  }
+>  
+> -static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
+> -{
+> -	if (!lradc->use_touchscreen)
+> -		return;
+> -
+> -	mxs_lradc_disable_ts(lradc);
+> -}
+> -
+>  /*
+>   * IRQ Handling
+>   */
+> @@ -1715,13 +1707,11 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+>  	ret = iio_device_register(iio);
+>  	if (ret) {
+>  		dev_err(dev, "Failed to register IIO device\n");
+> -		goto err_ts;
+> +		return ret;
+>  	}
+>  
+>  	return 0;
+>  
+> -err_ts:
+> -	mxs_lradc_ts_unregister(lradc);
+>  err_ts_register:
+>  	mxs_lradc_hw_stop(lradc);
+>  err_dev:
+> @@ -1739,7 +1729,6 @@ static int mxs_lradc_remove(struct platform_device *pdev)
+>  	struct mxs_lradc *lradc = iio_priv(iio);
+>  
+>  	iio_device_unregister(iio);
+> -	mxs_lradc_ts_unregister(lradc);
+>  	mxs_lradc_hw_stop(lradc);
+>  	mxs_lradc_trigger_remove(iio);
+>  	iio_triggered_buffer_cleanup(iio);
+> -- 
+> 1.7.9.5
+> 
 
-Jonathan
+-- 
+Dmitry
