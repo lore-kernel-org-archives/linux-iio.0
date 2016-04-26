@@ -1,365 +1,314 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout01.posteo.de ([185.67.36.65]:41793 "EHLO mout01.posteo.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753439AbcD2NIG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 29 Apr 2016 09:08:06 -0400
-Received: from dovecot03.posteo.de (dovecot03.posteo.de [172.16.0.13])
-	by mout01.posteo.de (Postfix) with ESMTPS id C0A9520968
-	for <linux-iio@vger.kernel.org>; Fri, 29 Apr 2016 15:08:03 +0200 (CEST)
-Subject: Re: [PATCH v3] iio: accel: Add support for Freescale MMA7660FC
-To: Constantin Musca <constantin.musca@intel.com>, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-References: <1461932343-14967-1-git-send-email-constantin.musca@intel.com>
-Cc: daniel.baluta@intel.com
-From: Martin Kepplinger <martink@posteo.de>
-Message-ID: <57235CB0.40803@posteo.de>
-Date: Fri, 29 Apr 2016 15:08:00 +0200
-MIME-Version: 1.0
-In-Reply-To: <1461932343-14967-1-git-send-email-constantin.musca@intel.com>
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <1461706611.14657.66.camel@linux.intel.com>
+Subject: Re: [PATCH] iio: bmg160: add callbacks for the filter frequency
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Jonathan Cameron
+	 <jic23@kernel.org>, Steffen Trumtrar <s.trumtrar@pengutronix.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+ kernel@pengutronix.de
+Date: Tue, 26 Apr 2016 14:36:51 -0700
+In-Reply-To: <8AAC9055-0140-4975-AF49-A3553B81D23B@jic23.retrosnub.co.uk>
+References: <1461235740-18710-1-git-send-email-s.trumtrar@pengutronix.de>
+	 <59d35d82-8ca8-646b-8629-c2bba666286b@kernel.org>
+	 <1461702322.14657.15.camel@linux.intel.com>
+	 <8AAC9055-0140-4975-AF49-A3553B81D23B@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Am 2016-04-29 um 14:19 schrieb Constantin Musca:
-> Minimal implementation of an IIO driver for the Freescale
-> MMA7660FC 3-axis accelerometer. Datasheet:
-> http://www.freescale.com.cn/files/sensors/doc/data_sheet/MMA7660FC.pdf
-
-it's nxp.com now, which would probably be valid for a longer time.
-
-Theoretically there would be a way to add it to mma8452, but with quite
-some rewriting of register definitions. I guess it's ok to start over
-here to keep it simple. If everyone is aware of this, feel free to add
-my reviewed-by.
-
-Are you planning to support it's orienation detection via iio in the future?
-
-                      martin
-
+On Tue, 2016-04-26 at 22:15 +0100, Jonathan Cameron wrote:
 > 
-> Includes:
-> - ACPI support;
-> - read_raw for x,y,z axes;
-> - reading and setting the scale (range) parameter.
-> - power management
+> On 26 April 2016 21:25:22 BST, Srinivas Pandruvada <srinivas.pandruva
+> da@linux.intel.com> wrote:
+> > 
+> > On Mon, 2016-04-25 at 20:31 +0100, Jonathan Cameron wrote:
+> > > 
+> > > On 21/04/16 11:49, Steffen Trumtrar wrote:
+> > > > 
+> > > > 
+> > > > The filter frequency and sample rate have a fixed relationship.
+> > > > Only the filter frequency is unique, however.
+> > > > Currently the driver ignores the filter settings for 32 Hz and
+> > > > 64 Hz.
+> > > > 
+> > > > This patch adds the necessary callbacks to be able to configure
+> > > > and read the filter setting from sysfs.
+> > > > 
+> > > > Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+> > > cc'd Srinivas as it's his driver...  Looks superficially fine to
+> > > me.
+> > > 
+> > > Jonathan
+> > > > 
+> > > > 
+> > > > ---
+> > > > 
+> > > > Changing the sample rate will result in using the first match
+> > > > and therefore selecting the filter accordingly. Is this a
+> > > > misuse
+> > > > of the ABI and should be handled differently or is this okay?
+> > > > 
+> > This is the reason they were omitted. Now you can't uniquely set
+> > 100Hz
+> > sampling frequency. Depending on filter it will have different
+> > results.
+> > 
+> > I think this needs some ABI level changes, where you display
+> > available
+> > and allow to specify both ODR and Filter to uniquely select.
+> Unfortunately the moment the ABI allows for combined elements it
+> becomes a
+>  nightmare for complexity. In some devices a single parameter change
+> can
+>  change everything else. There are no simple rules unfortunately. 
 > 
-> Signed-off-by: Constantin Musca <constantin.musca@intel.com>
-> ---
->  drivers/iio/accel/Kconfig   |  10 ++
->  drivers/iio/accel/Makefile  |   2 +
->  drivers/iio/accel/mma7660.c | 269 ++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 281 insertions(+)
->  create mode 100644 drivers/iio/accel/mma7660.c
+> The way we avoid this being a problem is that we very deliberately
+> allow any ABI element
+> to be able to result in a change in any other.  This includes
+> changing the
+>  available values list as here. It might be slightly nicer to jump to
+> the nearest
+>  available option though.
 > 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index e4a758c..1df6361 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -136,6 +136,16 @@ config MMA7455_SPI
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called mma7455_spi.
->  
-> +config MMA7660
-> +	tristate "Freescale MMA7660FC 3-Axis Accelerometer Driver"
-> +	depends on I2C
-> +	help
-> +	  Say yes here to get support for the Freescale MMA7660FC 3-Axis
-> +	  accelerometer.
-> +
-> +	  Choosing M will build the driver as a module. If so, the module
-> +	  will be called mma7660.
-> +
->  config MMA8452
->  	tristate "Freescale MMA8452Q and similar Accelerometers Driver"
->  	depends on I2C
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index 71b6794..ba1165f 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -15,6 +15,8 @@ obj-$(CONFIG_MMA7455)		+= mma7455_core.o
->  obj-$(CONFIG_MMA7455_I2C)	+= mma7455_i2c.o
->  obj-$(CONFIG_MMA7455_SPI)	+= mma7455_spi.o
->  
-> +obj-$(CONFIG_MMA7660)	+= mma7660.o
-> +
->  obj-$(CONFIG_MMA8452)	+= mma8452.o
->  
->  obj-$(CONFIG_MMA9551_CORE)	+= mma9551_core.o
-> diff --git a/drivers/iio/accel/mma7660.c b/drivers/iio/accel/mma7660.c
-> new file mode 100644
-> index 0000000..94b2999
-> --- /dev/null
-> +++ b/drivers/iio/accel/mma7660.c
-> @@ -0,0 +1,269 @@
-> +/**
-> + * Freescale MMA7660FC 3-Axis Accelerometer
-> + *
-> + * Copyright (c) 2016, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License. See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * IIO driver for Freescale MMA7660FC; 7-bit I2C address: 0x4c.
-> + */
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define MMA7660_DRIVER_NAME	"mma7660"
-> +
-> +#define MMA7660_REG_XOUT	0x00
-> +#define MMA7660_REG_YOUT	0x01
-> +#define MMA7660_REG_ZOUT	0x02
-> +#define MMA7660_REG_OUT_BIT_ALERT	BIT(6)
-> +
-> +#define MMA7660_REG_MODE	0x07
-> +#define MMA7660_REG_MODE_BIT_MODE	BIT(0)
-> +#define MMA7660_REG_MODE_BIT_TON	BIT(2)
-> +
-> +#define MMA7660_I2C_READ_RETRIES	5
-> +
-> +/*
-> + * The accelerometer has one measurement range:
-> + *
-> + * -1.5g - +1.5g (6-bit, signed)
-> + *
-> + * scale = (1.5 + 1.5) * 9.81 / (2^6 - 1)	= 0.467142857
-> + */
-> +
-> +#define MMA7660_SCALE_AVAIL	"0.467142857"
-> +
-> +const int mma7660_nscale = 467142857;
-> +
-> +#define MMA7660_CHANNEL(reg, axis) {	\
-> +	.type = IIO_ACCEL,	\
-> +	.address = reg,	\
-> +	.modified = 1,	\
-> +	.channel2 = IIO_MOD_##axis,	\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec mma7660_channels[] = {
-> +	MMA7660_CHANNEL(MMA7660_REG_XOUT, X),
-> +	MMA7660_CHANNEL(MMA7660_REG_YOUT, Y),
-> +	MMA7660_CHANNEL(MMA7660_REG_ZOUT, Z),
-> +};
-> +
-> +enum mma7660_mode {
-> +	MMA7660_MODE_STANDBY,
-> +	MMA7660_MODE_ACTIVE
-> +};
-> +
-> +struct mma7660_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	enum mma7660_mode mode;
-> +};
-> +
-> +static IIO_CONST_ATTR(in_accel_scale_available, MMA7660_SCALE_AVAIL);
-> +
-> +static struct attribute *mma7660_attributes[] = {
-> +	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group mma7660_attribute_group = {
-> +	.attrs = mma7660_attributes
-> +};
-> +
-> +static int mma7660_set_mode(struct mma7660_data *data,
-> +				enum mma7660_mode mode)
-> +{
-> +	int ret;
-> +	struct i2c_client *client = data->client;
-> +
-> +	if (mode == data->mode)
-> +		return 0;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, MMA7660_REG_MODE);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to read sensor mode\n");
-> +		return ret;
-> +	}
-> +
-> +	if (mode == MMA7660_MODE_ACTIVE) {
-> +		ret &= ~MMA7660_REG_MODE_BIT_TON;
-> +		ret |= MMA7660_REG_MODE_BIT_MODE;
-> +	} else {
-> +		ret &= ~MMA7660_REG_MODE_BIT_TON;
-> +		ret &= ~MMA7660_REG_MODE_BIT_MODE;
-> +	}
-> +
-> +	ret = i2c_smbus_write_byte_data(client, MMA7660_REG_MODE, ret);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to change sensor mode\n");
-> +		return ret;
-> +	}
-> +
-> +	data->mode = mode;
-> +	return ret;
-> +}
-> +
-> +static int mma7660_read_accel(struct mma7660_data *data, u8 address)
-> +{
-> +	int ret, retries = MMA7660_I2C_READ_RETRIES;
-> +	struct i2c_client *client = data->client;
-> +
-> +	do {
-> +		ret = i2c_smbus_read_byte_data(client, address);
-> +		if (ret < 0) {
-> +			dev_err(&client->dev, "register read failed\n");
-> +			return ret;
-> +		}
-> +	} while (retries-- > 0 && ret & MMA7660_REG_OUT_BIT_ALERT);
-> +
-> +	if (ret & MMA7660_REG_OUT_BIT_ALERT) {
-> +		dev_err(&client->dev, "all register read retries failed\n");
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int mma7660_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct mma7660_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&data->lock);
-> +		ret = mma7660_read_accel(data, chan->address);
-> +		mutex_unlock(&data->lock);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = sign_extend32(ret, 5);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = mma7660_nscale;
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info mma7660_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw		= mma7660_read_raw,
-> +	.attrs			= &mma7660_attribute_group,
-> +};
-> +
-> +static int mma7660_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct mma7660_data *data;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "iio allocation failed!\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	i2c_set_clientdata(client, indio_dev);
-> +	mutex_init(&data->lock);
-> +	data->mode = MMA7660_MODE_STANDBY;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &mma7660_info;
-> +	indio_dev->name = MMA7660_DRIVER_NAME;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mma7660_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mma7660_channels);
-> +
-> +	ret = mma7660_set_mode(data, MMA7660_MODE_ACTIVE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "device_register failed\n");
-> +		mma7660_set_mode(data, MMA7660_MODE_STANDBY);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int mma7660_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	return mma7660_set_mode(iio_priv(indio_dev), MMA7660_MODE_STANDBY);
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int mma7660_suspend(struct device *dev)
-> +{
-> +	struct mma7660_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return mma7660_set_mode(data, MMA7660_MODE_STANDBY);
-> +}
-> +
-> +static int mma7660_resume(struct device *dev)
-> +{
-> +	struct mma7660_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return mma7660_set_mode(data, MMA7660_MODE_ACTIVE);
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(mma7660_pm_ops, mma7660_suspend, mma7660_resume);
-> +
-> +#define MMA7660_PM_OPS (&mma7660_pm_ops)
-> +#else
-> +#define MMA7660_PM_OPS NULL
-> +#endif
-> +
-> +static const struct i2c_device_id mma7660_i2c_id[] = {
-> +	{"mma7660", 0},
-> +	{}
-> +};
-> +
-> +static const struct acpi_device_id mma7660_acpi_id[] = {
-> +	{"MMA7660", 0},
-> +	{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(acpi, mma7660_acpi_id);
-> +
-> +static struct i2c_driver mma7660_driver = {
-> +	.driver = {
-> +		.name = "mma7660",
-> +		.pm = MMA7660_PM_OPS,
-> +		.acpi_match_table = ACPI_PTR(mma7660_acpi_id),
-> +	},
-> +	.probe		= mma7660_probe,
-> +	.remove		= mma7660_remove,
-> +	.id_table	= mma7660_i2c_id,
-> +};
-> +
-> +module_i2c_driver(mma7660_driver);
-> +
-> +MODULE_AUTHOR("Constantin Musca <constantin.musca@intel.com>");
-> +MODULE_DESCRIPTION("Freescale MMA7660FC 3-Axis Accelerometer driver");
-> +MODULE_LICENSE("GPL v2");
+> An alternative would be to have an interface to fake such changes
+> then
+> apply them atomically if possible. 
+> That level of complexity just does seem warranted here and would
+> still need userspace to check valid ranges as it
+>  pretends to change the state. Hence no real gain....
 > 
+I think we should add some documentation for this driver about this.
+They should rather change filer rather than sampling freq to have
+unique setting.
 
+Thanks,
+Srinivas
+
+> Jonathan
+> > 
+> > 
+> > Thanks,
+> > Srinivas
+> > 
+> > 
+> > > 
+> > > > 
+> > > >  drivers/iio/gyro/bmg160_core.c | 105
+> > > > ++++++++++++++++++++++++++++++++++++-----
+> > > >  1 file changed, 93 insertions(+), 12 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/iio/gyro/bmg160_core.c
+> > > > b/drivers/iio/gyro/bmg160_core.c
+> > > > index bbce3b09ac45..ea0243eb393a 100644
+> > > > --- a/drivers/iio/gyro/bmg160_core.c
+> > > > +++ b/drivers/iio/gyro/bmg160_core.c
+> > > > @@ -52,6 +52,7 @@
+> > > >  #define BMG160_REG_PMU_BW		0x10
+> > > >  #define BMG160_NO_FILTER		0
+> > > >  #define BMG160_DEF_BW			100
+> > > > +#define BMG160_REG_PMU_BW_RES		BIT(7)
+> > > >  
+> > > >  #define BMG160_REG_INT_MAP_0		0x17
+> > > >  #define BMG160_INT_MAP_0_BIT_ANY	BIT(1)
+> > > > @@ -103,7 +104,6 @@ struct bmg160_data {
+> > > >  	struct iio_trigger *motion_trig;
+> > > >  	struct mutex mutex;
+> > > >  	s16 buffer[8];
+> > > > -	u8 bw_bits;
+> > > >  	u32 dps_range;
+> > > >  	int ev_enable_state;
+> > > >  	int slope_thres;
+> > > > @@ -119,13 +119,16 @@ enum bmg160_axis {
+> > > >  };
+> > > >  
+> > > >  static const struct {
+> > > > -	int val;
+> > > > +	int odr;
+> > > > +	int filter;
+> > > >  	int bw_bits;
+> > > > -} bmg160_samp_freq_table[] = { {100, 0x07},
+> > > > -			       {200, 0x06},
+> > > > -			       {400, 0x03},
+> > > > -			       {1000, 0x02},
+> > > > -			       {2000, 0x01} };
+> > > > +} bmg160_samp_freq_table[] = { {100, 32, 0x07},
+> > > > +			       {200, 64, 0x06},
+> > > > +			       {100, 12, 0x05},
+> > > > +			       {200, 23, 0x04},
+> > > > +			       {400, 47, 0x03},
+> > > > +			       {1000, 116, 0x02},
+> > > > +			       {2000, 230, 0x01} };
+> > > >  
+> > > >  static const struct {
+> > > >  	int scale;
+> > > > @@ -154,7 +157,7 @@ static int bmg160_convert_freq_to_bit(int
+> > > > val)
+> > > >  	int i;
+> > > >  
+> > > >  	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table);
+> > > > ++i) {
+> > > > -		if (bmg160_samp_freq_table[i].val == val)
+> > > > +		if (bmg160_samp_freq_table[i].odr == val)
+> > > >  			return
+> > > > bmg160_samp_freq_table[i].bw_bits;
+> > > >  	}
+> > > >  
+> > > > @@ -176,7 +179,51 @@ static int bmg160_set_bw(struct
+> > > > bmg160_data
+> > > > *data, int val)
+> > > >  		return ret;
+> > > >  	}
+> > > >  
+> > > > -	data->bw_bits = bw_bits;
+> > > > +	return 0;
+> > > > +}
+> > > > +
+> > > > +static int bmg160_get_filter(struct bmg160_data *data, int
+> > > > *val)
+> > > > +{
+> > > > +	int ret;
+> > > > +	int i;
+> > > > +	unsigned int bw_bits;
+> > > > +
+> > > > +	ret = regmap_read(data->regmap, BMG160_REG_PMU_BW,
+> > > > &bw_bits);
+> > > > +	if (ret < 0) {
+> > > > +		dev_err(data->dev, "Error reading
+> > > > reg_pmu_bw\n");
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	/* Ignore the readonly reserved bit. */
+> > > > +	bw_bits &= ~BMG160_REG_PMU_BW_RES;
+> > > > +
+> > > > +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table);
+> > > > ++i) {
+> > > > +		if (bmg160_samp_freq_table[i].bw_bits ==
+> > > > bw_bits)
+> > > > +			break;
+> > > > +	}
+> > > > +
+> > > > +	*val = bmg160_samp_freq_table[i].filter;
+> > > > +
+> > > > +	return ret ? ret : IIO_VAL_INT;
+> > > > +}
+> > > > +
+> > > > +
+> > > > +static int bmg160_set_filter(struct bmg160_data *data, int
+> > > > val)
+> > > > +{
+> > > > +	int ret;
+> > > > +	int i;
+> > > > +
+> > > > +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table);
+> > > > ++i) {
+> > > > +		if (bmg160_samp_freq_table[i].filter == val)
+> > > > +			break;
+> > > > +	}
+> > > > +
+> > > > +	ret = regmap_write(data->regmap, BMG160_REG_PMU_BW,
+> > > > +			   bmg160_samp_freq_table[i].bw_bits);
+> > > > +	if (ret < 0) {
+> > > > +		dev_err(data->dev, "Error writing
+> > > > reg_pmu_bw\n");
+> > > > +		return ret;
+> > > > +	}
+> > > >  
+> > > >  	return 0;
+> > > >  }
+> > > > @@ -388,10 +435,21 @@ static int
+> > > > bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+> > > >  static int bmg160_get_bw(struct bmg160_data *data, int *val)
+> > > >  {
+> > > >  	int i;
+> > > > +	unsigned int bw_bits;
+> > > > +	int ret;
+> > > > +
+> > > > +	ret = regmap_read(data->regmap, BMG160_REG_PMU_BW,
+> > > > &bw_bits);
+> > > > +	if (ret < 0) {
+> > > > +		dev_err(data->dev, "Error reading
+> > > > reg_pmu_bw\n");
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	/* Ignore the readonly reserved bit. */
+> > > > +	bw_bits &= ~BMG160_REG_PMU_BW_RES;
+> > > >  
+> > > >  	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table);
+> > > > ++i) {
+> > > > -		if (bmg160_samp_freq_table[i].bw_bits == data-
+> > > > > 
+> > > > > bw_bits) {
+> > > > -			*val = bmg160_samp_freq_table[i].val;
+> > > > +		if (bmg160_samp_freq_table[i].bw_bits ==
+> > > > bw_bits)
+> > > > {
+> > > > +			*val = bmg160_samp_freq_table[i].odr;
+> > > >  			return IIO_VAL_INT;
+> > > >  		}
+> > > >  	}
+> > > > @@ -506,6 +564,8 @@ static int bmg160_read_raw(struct iio_dev
+> > > > *indio_dev,
+> > > >  			return IIO_VAL_INT;
+> > > >  		} else
+> > > >  			return -EINVAL;
+> > > > +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> > > > +		return bmg160_get_filter(data, val);
+> > > >  	case IIO_CHAN_INFO_SCALE:
+> > > >  		*val = 0;
+> > > >  		switch (chan->type) {
+> > > > @@ -570,6 +630,26 @@ static int bmg160_write_raw(struct iio_dev
+> > > > *indio_dev,
+> > > >  		ret = bmg160_set_power_state(data, false);
+> > > >  		mutex_unlock(&data->mutex);
+> > > >  		return ret;
+> > > > +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> > > > +		if (val2)
+> > > > +			return -EINVAL;
+> > > > +
+> > > > +		mutex_lock(&data->mutex);
+> > > > +		ret = bmg160_set_power_state(data, true);
+> > > > +		if (ret < 0) {
+> > > > +			bmg160_set_power_state(data, false);
+> > > > +			mutex_unlock(&data->mutex);
+> > > > +			return ret;
+> > > > +		}
+> > > > +		ret = bmg160_set_filter(data, val);
+> > > > +		if (ret < 0) {
+> > > > +			bmg160_set_power_state(data, false);
+> > > > +			mutex_unlock(&data->mutex);
+> > > > +			return ret;
+> > > > +		}
+> > > > +		ret = bmg160_set_power_state(data, false);
+> > > > +		mutex_unlock(&data->mutex);
+> > > > +		return ret;
+> > > >  	case IIO_CHAN_INFO_SCALE:
+> > > >  		if (val)
+> > > >  			return -EINVAL;
+> > > > @@ -727,7 +807,8 @@ static const struct iio_event_spec
+> > > > bmg160_event
+> > > > = {
+> > > >  	.channel2 = IIO_MOD_##_axis,				
+> > > > 	\
+> > > >  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		
+> > > > 	\
+> > > >  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
+> > > > 	
+> > > > 	\
+> > > > -				    BIT(IIO_CHAN_INFO_SAMP_FRE
+> > > > Q),	
+> > > > \
+> > > > +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |			
+> > > > 	\
+> > > > +		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENC
+> > > > Y),	
+> > > > \
+> > > >  	.scan_index = AXIS_##_axis,				
+> > > > 	\
+> > > >  	.scan_type = {						
+> > > > 	\
+> > > >  		.sign = 's',					
+> > > > 	\
+> > > > 
