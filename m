@@ -1,84 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f41.google.com ([209.85.215.41]:35071 "EHLO
-	mail-lf0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751771AbcDYHic (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Apr 2016 03:38:32 -0400
+Received: from mail-io0-f193.google.com ([209.85.223.193]:33275 "EHLO
+	mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752529AbcD0DnC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Apr 2016 23:43:02 -0400
 MIME-Version: 1.0
-In-Reply-To: <a7957593-1a18-39fc-a12f-2e60019f8908@kernel.org>
-References: <1461167126-23399-1-git-send-email-daniel.baluta@intel.com>
-	<a7957593-1a18-39fc-a12f-2e60019f8908@kernel.org>
-Date: Mon, 25 Apr 2016 10:38:30 +0300
-Message-ID: <CAEnQRZDKV2K6f0peVnJX-Q2Gcuq_2hER6G1cvCbUhrBkomotmQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/3] Introduce support for creating IIO devices via configfs
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
+In-Reply-To: <CAEnQRZCkcwDUPZHpEOTzcHxQ23xgq429fJQg63s5TUi0w69iWw@mail.gmail.com>
+References: <1461296584-11918-1-git-send-email-sdliyong@gmail.com>
+ <43150fbd-37ac-2d51-dd87-f41670417b96@kernel.org> <571E854A.90404@gmail.com>
+ <7621197a-95ed-239e-8baa-83014bc27a26@kernel.org> <571F49B0.4060407@metafoo.de>
+ <CADO9-peu32UCxaep8yZUD6XW=ABLGiTYuQJewn-C3Gedc2JewA@mail.gmail.com>
+ <571F588D.3010800@metafoo.de> <CADO9-peqytsYKxVCsEbYt_fLKH3CaiAeQzfgvA+4CsP6u2yJOQ@mail.gmail.com>
+ <CAEnQRZCkcwDUPZHpEOTzcHxQ23xgq429fJQg63s5TUi0w69iWw@mail.gmail.com>
+From: Yong Li <sdliyong@gmail.com>
+Date: Wed, 27 Apr 2016 11:42:41 +0800
+Message-ID: <CADO9-pdJF8KKAB0c2KyWABqOdZ0BfwfrNpkhzeMv-95FrWn7SQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: tmp006: Set correct iio name
+To: Daniel Baluta <daniel.baluta@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Crestez Dan Leonard <cdleonard@gmail.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	=?UTF-8?Q?Krzysztof_Koz=C5=82owski?= <k.kozlowski@samsung.com>,
+	Matt Ranostaj <mranostay@gmail.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Apr 24, 2016 at 2:28 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 20/04/16 16:45, Daniel Baluta wrote:
->> For testing purposes is nice to have a quick way of creating IIO devices.
->> This patch series introduces support for creating IIO devices via configs
->> (patch 1), allowing users to register "device types". For the moment we
->> support "dummy" device type (patch 2).
->>
->> This is just a RFC in order to see if the interface is acceptable. We also
->> need a way to create IIO devices with configurable number of channels.
->>
->> Patch 3 introduces configfs entries documentation for easier review.
->>
->> Daniel Baluta (3):
->>   iio: Add support for creating IIO devices via configfs
->>   iio: dummy: Convert IIO dummy to configfs
->>   Documentation: iio: Add IIO software devices docs
->>
->>  Documentation/ABI/testing/configfs-iio |  13 +++
->>  drivers/iio/Kconfig                    |   9 ++
->>  drivers/iio/Makefile                   |   1 +
->>  drivers/iio/dummy/iio_simple_dummy.c   |  98 ++++++------------
->>  drivers/iio/industrialio-sw-device.c   | 181 +++++++++++++++++++++++++++++++++
->>  include/linux/iio/sw_device.h          |  70 +++++++++++++
->>  6 files changed, 307 insertions(+), 65 deletions(-)
->>  create mode 100644 drivers/iio/industrialio-sw-device.c
->>  create mode 100644 include/linux/iio/sw_device.h
->>
-> Sorry, I was a muppet and delete patch one due to a misstap on my phone...
-> Anyhow, pasting it in here to review...
+Thanks for your mails. Is it possible to just merge this patch, then
+test if there is any application is using it?  Considering almost all
+other I2C devices are using the correct ID name, it should be low
+risky
+
+Yong
+
+2016-04-26 23:21 GMT+08:00 Daniel Baluta <daniel.baluta@gmail.com>:
+> On Tue, Apr 26, 2016 at 4:14 PM, Yong Li <sdliyong@gmail.com> wrote:
+>> I am thinking if there is any application is using this incorrect
+>> name, the application should be fix too
 >
->> This is similar with support for creating triggers via configfs.
->> Devices will be hosted under:
->>       * /config/iio/devices
->>
->> We allow users to register "device types" under:
->>       * /config/iio/devices/<device_types>/
->>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> As you observed, there is room in here to share some code with the sw-trigger
-> support.  Looks like we are going to have an iio-configfs helper library
-> or perhaps just move them into the industrialio-configfs module...
+> The rule is: "Don't break the userspace ABI". So, if we got this wrong
+> from the beginning we are stuck with this name.
 >
-> However, I'm not sure it's actually a good idea.  Seems to me that the amount
-> of fiddly indirection needed would outway the advantages in reduced code
-> replication.
->
-> Other than a few nitpicks this looks good to me - though that's not surprising
-> as it's a find and replace job on the trigger version!
-
-Yes, I think we can live with the code as it is now.
-
-I'm now thinking of a more flexibly interface, that will allow us creating an
-IIO devices with configurable number and types of IIO channels.
-
-This will be later useful in evaluating the choices for sensor hubs with lots
-of sensors attached:
-
-Single IIO device for all sensors VS One IIO device per sensor type.
-
-Daniel.
+> The only thing that can save the situation is to know that there is no
+> application relying on the name :).
