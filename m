@@ -1,54 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:29281 "EHLO mga04.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753479AbcD0Q63 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 27 Apr 2016 12:58:29 -0400
-Subject: Re: [PATCH] iio: tmp006: Set correct iio name
-To: Daniel Baluta <daniel.baluta@gmail.com>,
-	Yong Li <sdliyong@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-References: <1461296584-11918-1-git-send-email-sdliyong@gmail.com>
- <43150fbd-37ac-2d51-dd87-f41670417b96@kernel.org> <571E854A.90404@gmail.com>
- <7621197a-95ed-239e-8baa-83014bc27a26@kernel.org>
- <571F49B0.4060407@metafoo.de>
- <CADO9-peu32UCxaep8yZUD6XW=ABLGiTYuQJewn-C3Gedc2JewA@mail.gmail.com>
- <571F588D.3010800@metafoo.de>
- <CADO9-peqytsYKxVCsEbYt_fLKH3CaiAeQzfgvA+4CsP6u2yJOQ@mail.gmail.com>
- <CAEnQRZCkcwDUPZHpEOTzcHxQ23xgq429fJQg63s5TUi0w69iWw@mail.gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	=?UTF-8?Q?Krzysztof_Koz=c5=82owski?= <k.kozlowski@samsung.com>,
-	Matt Ranostaj <mranostay@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <5720EFAA.3040407@intel.com>
-Date: Wed, 27 Apr 2016 19:58:18 +0300
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:50522 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750785AbcD0P4d (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Apr 2016 11:56:33 -0400
+Date: Wed, 27 Apr 2016 16:56:13 +0100
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+To: Michael Welling <mwelling@ieee.org>
+Cc: linux-kernel@vger.kernel.org, mranostay@gmail.com,
+	jic23@kernel.org, daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org
+Subject: Re: Regression in inv_mpu6050: 4.6.0-rc5
+Message-ID: <20160427165613.4d464792@lxorguk.ukuu.org.uk>
+In-Reply-To: <20160426230755.GA6235@deathstar>
+References: <20160426232651.099a18d7@lxorguk.ukuu.org.uk>
+	<20160426230755.GA6235@deathstar>
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZCkcwDUPZHpEOTzcHxQ23xgq429fJQg63s5TUi0w69iWw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/26/2016 06:21 PM, Daniel Baluta wrote:
-> On Tue, Apr 26, 2016 at 4:14 PM, Yong Li <sdliyong@gmail.com> wrote:
->> I am thinking if there is any application is using this incorrect
->> name, the application should be fix too
-> 
-> The rule is: "Don't break the userspace ABI". So, if we got this wrong
-> from the beginning we are stuck with this name.
-> 
-> The only thing that can save the situation is to know that there is no
-> application relying on the name :).
-> 
-But if iio_dev->name is supposed to be the "model name" then setting it
-to the i2c dev_name is just plain wrong, right? Correcting this could be
-considered a bugfix.
+On Tue, 26 Apr 2016 18:07:55 -0500
+Michael Welling <mwelling@ieee.org> wrote:
 
-There are also other ways to deal with this in userspace. Perhaps you
-could look at $(basename $(readlink /sys/bus/i2c/devices/*/driver))?
+> On Tue, Apr 26, 2016 at 11:26:51PM +0100, One Thousand Gnomes wrote:
+> > 
+> > This now causes us to crash and burn on the ASUS T100TA Baytrail/T
+> > platforms
+> >  
+> 
+> I believe this regression has already been patched.
+> 
+> Check the latest commits in linux-next.
+> 
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/log/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> 
+> See if the latest patches fix your issue.
 
--- 
-Regards,
-Leonard
+It does - as this is a regression can we please get those fixes into the
+next -rc ?
+
+Alan
