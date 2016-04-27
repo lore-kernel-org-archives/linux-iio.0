@@ -1,110 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db3on0119.outbound.protection.outlook.com ([157.55.234.119]:8992
-	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750721AbcD0Ijb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 27 Apr 2016 04:39:31 -0400
-Subject: Re: [PATCH] iio: inv_mpu6050: Add support for auxiliary I2C master
-To: Jonathan Cameron <jic23@kernel.org>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	<linux-iio@vger.kernel.org>
-References: <5b1937140558514b3e43ed2c21ee860ecbac61ec.1461172603.git.leonard.crestez@intel.com>
- <a978ad85-8191-7506-8090-809f89d0b2e2@kernel.org>
-CC: <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-yw0-f177.google.com ([209.85.161.177]:34254 "EHLO
+	mail-yw0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752210AbcD0O4N (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Apr 2016 10:56:13 -0400
+MIME-Version: 1.0
+In-Reply-To: <1461674398-18374-1-git-send-email-daniel.baluta@intel.com>
+References: <1461674398-18374-1-git-send-email-daniel.baluta@intel.com>
+From: Lucas De Marchi <lucas.de.marchi@gmail.com>
+Date: Wed, 27 Apr 2016 11:55:52 -0300
+Message-ID: <CAKi4VA+JgdEa9owULm_hg8fiJGMCwv286y-0J-rRX_Ukups8QQ@mail.gmail.com>
+Subject: Re: [RFT PATCH] iio: magn: Add support for BMM150 magnetometer
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	<linux-i2c@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>,
-	<devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <6ab228db-9695-ac22-9c65-fd15c4837c45@axentia.se>
-Date: Wed, 27 Apr 2016 10:39:17 +0200
-MIME-Version: 1.0
-In-Reply-To: <a978ad85-8191-7506-8090-809f89d0b2e2@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+	linux-iio@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+	Lucas De Marchi <lucas.demarchi@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi!
-
-On 2016-04-23 23:32, Jonathan Cameron wrote:
-> On 20/04/16 18:17, Crestez Dan Leonard wrote:
->> The MPU has an auxiliary I2C bus for connecting external
->> sensors. This bus has two operating modes:
->> * pass-through, which connects the primary and auxiliary busses
->> together. This is already supported via an i2c mux.
->> * I2C master mode, where the mpu60x0 acts as a master to any external
->> connected sensors. This is implemented by this patch.
->>
->> This I2C master mode also works when the MPU itself is connected via
->> SPI.
->>
->> I2C master supports up to 5 slaves. Slaves 0-3 have a common operating
->> mode while slave 4 is different. This patch implements an i2c adapter
->> using slave 4 because it has a cleaner interface and it has an
->> interrupt that signals when data from slave to master arrived.
->>
->> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-> This one needs acks from:
+On Tue, Apr 26, 2016 at 9:39 AM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+> BMM150 is register compatible with magnetometer part of
+> BMC156.
 >
-> Device tree maintainer (odd binding ;)
-> Peter Rosin (odd binding interacting with the mux support)
-> Wolfram (it has a whole i2c master driver in here).
+> Datasheet is at:
+> http://www.mouser.com/ds/2/783/BST-BMM150-DS001-01-786480.pdf
 >
-> (just thought I'd list these for the avoidance of doubt).
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> ---
+> Lucas let me know if it works for you. I don't have yet the BMM150 evaluation
+> board. It should be available in few weeks.
+>
+> I'll just leave this patch here in case anyone steps in to test it.
 
-I spot some overlap with the questions in "[RFC] i2c: device-tree:
-Handling child nodes which are not i2c devices"
-http://marc.info/?l=linux-i2c&m=146073452819116&w=2
+It will take a while for my test board to arrive here, so expect delay
+on testing this.
 
-And I think I agree with Stephen Warren that an intermediate placeholder
-node would make sense. I.e.
-
-    mpu6050@68 {
-        compatible = "...";
-        reg = <0x68>;
-        ...
-        i2c-aux-mux {
-            i2c@0 {
-                #address-cells = <1>;
-                #size-cells = <0>;
-                reg = <0>;
-
-                foo@44 {
-                    compatible = "bar";
-                    reg = <0x44>;
-                    ...
-                }
-            }
-        }
-    }
-
-Or
-
-    mpu6050@68 {
-        compatible = "...";
-        reg = <0x68>;
-        ...
-        i2c-aux-master {
-            #address-cells = <1>;
-            #size-cells = <0>;
-
-            gazonk@44 {
-                compatible = "baz";
-                reg = <0x44>;
-                ...
-            }
-        }
-    }
-
-depending on if you want an aux-mux or an aux-master.
-
-But I don't know if that intermediate i2c-aux-mux node causes any
-problems?
-
-Cheers,
-Peter
+thanks
+Lucas De Marchi
