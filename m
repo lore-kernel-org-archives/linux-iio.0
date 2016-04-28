@@ -1,72 +1,99 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH] iio: tmp006: Set correct iio name
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-References: <1461296584-11918-1-git-send-email-sdliyong@gmail.com>
- <43150fbd-37ac-2d51-dd87-f41670417b96@kernel.org> <571E854A.90404@gmail.com>
- <7621197a-95ed-239e-8baa-83014bc27a26@kernel.org>
- <571F49B0.4060407@metafoo.de>
- <CADO9-peu32UCxaep8yZUD6XW=ABLGiTYuQJewn-C3Gedc2JewA@mail.gmail.com>
- <571F588D.3010800@metafoo.de>
- <CADO9-peqytsYKxVCsEbYt_fLKH3CaiAeQzfgvA+4CsP6u2yJOQ@mail.gmail.com>
- <CAEnQRZCkcwDUPZHpEOTzcHxQ23xgq429fJQg63s5TUi0w69iWw@mail.gmail.com>
- <5720EFAA.3040407@intel.com> <5721C904.3010505@metafoo.de>
- <20160428142458.09e498e2@lxorguk.ukuu.org.uk>
- <alpine.DEB.2.02.1604281527010.10610@pmeerw.net>
-Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
- Daniel Baluta <daniel.baluta@gmail.com>, Yong Li <sdliyong@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- =?UTF-8?Q?Krzysztof_Koz=c5=82owski?= <k.kozlowski@samsung.com>,
- Matt Ranostaj <mranostay@gmail.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <57221BF5.6000001@metafoo.de>
-Date: Thu, 28 Apr 2016 16:19:33 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.aswsp.com ([193.34.35.150]:11222 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752135AbcD1PBM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 28 Apr 2016 11:01:12 -0400
+Message-ID: <57222613.30408@parrot.com>
+Date: Thu, 28 Apr 2016 17:02:43 +0200
+From: Gregor Boirie <gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1604281527010.10610@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [RFC PATCH v1 0/9] iio:st_sensors: fixes and lps22hb pressure
+ sensor
+References: <cover.1461056711.git.gregor.boirie@parrot.com>	<CACRpkdZxE4Z6f_0uVV0sD5EUxEigzbMvWRD+MTDWNZbuauVweg@mail.gmail.com>	<CACRpkdZ=DSEKi6dOBuxA23ivsQYsoigvG_cC11HR-66aN_BUpQ@mail.gmail.com>	<5720B9DA.1000409@parrot.com> <CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com>
+In-Reply-To: <CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/28/2016 03:30 PM, Peter Meerwald-Stadler wrote:
-> 
->>> It's clearly wrong. But the problem is there might be an application that
->>> depends on the wrong behavior, the driver has been around for 2.5 years. So
->>> it's difficult to fix. We might just go ahead in this case and take the
->>> chance that nobody will complain. But if somebody complains this will bring
->>> us the wrath of the Linus.
+On 04/28/2016 09:47 AM, Linus Walleij wrote:
+> On Wed, Apr 27, 2016 at 3:08 PM, Gregor Boirie<gregor.boirie@parrot.com>  wrote:
+>
+>> Many thanks for taking time to test this. ~95 kPa seems rather a small value
+>> to me.
 >>
->> Not if you put it into next, test it, then into a new release as early as
->> possible (for -rc1), clearly document that it's got a user visible change
->> that should not matter with instructions if anyone hits this as a
->> bisection for their app failing to email so you know and can revert it.
-> 
-> is this the only driver doing it wrong?
-> 
-> pmeerw@pmeerw:/var/git/linux/drivers/iio$ rgrep "indio_dev->name = dev_name" . 
-> ./imu/inv_mpu6050/inv_mpu_core.c:		indio_dev->name = dev_name(dev);
-> ./light/lm3533-als.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./dac/vf610_dac.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./dac/stx104.c:	indio_dev->name = dev_name(dev);
-> ./dac/lpc18xx_dac.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./adc/mcp3422.c:	indio_dev->name = dev_name(&client->dev);
-> ./adc/at91-sama5d2_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./adc/vf610_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./adc/ti_am335x_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./adc/nau7802.c:	indio_dev->name = dev_name(&client->dev);
-> ./adc/da9150-gpadc.c:	indio_dev->name = dev_name(dev);
-> ./adc/lpc18xx_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./adc/rockchip_saradc.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./adc/imx7d_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./adc/cc10001_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./adc/berlin2-adc.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./adc/exynos_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-> ./temperature/tmp006.c:	indio_dev->name = dev_name(&client->dev);
-> ./chemical/ams-iaq-core.c:	indio_dev->name = dev_name(&client->dev);
-> ./chemical/vz89x.c:	indio_dev->name = dev_name(&client->dev);
-> ./humidity/si7005.c:	indio_dev->name = dev_name(&client->dev);
-> ./humidity/hdc100x.c:	indio_dev->name = dev_name(&client->dev);
-> ./humidity/si7020.c:	indio_dev->name = dev_name(&client->dev);
+>> For reference, it seems 950 hPa at sea level would be found under a...
+>> hurricane !
+>> (may vary with location)
+>>
+>> Does it match with your local weather forecast / report ?
+> Hmmmm no :)
+>
+> Checking with local weather site it should be ~1006 hPa.
+>
+> Do you think the sensor is just badly calibrated?
 
-Yes, they are all wrong. Mostly of it is just copy'n'paste. We need to be
-more careful to catch these in the future.
+Amongst significant error sources, we regularly struggle against:
+* soldering (mechanical, overheat)
+* pcb bending and vibrations
+* bad device lots, bad storage (esd, wrong calibration, nearby mechanical vibration sources like ultra-sound...)
+* electrical noise (power supply, ground...)
+* light intensity if not protected by a cover
+* temperature, air flow
+* probably others we are not aware of yet
+
+All comes with various effects in terms of constant offset, noise and drift. Some are destructive, some are not.
+Welcome to world of MEMS :)
+
+> I tested now with another sensor on the Snowball board.
+> It gives (after scaling):
+>
+> 101.4
+> 28.8
+> 101.9
+> 28.8
+> 101.9
+> 29.5
+>
+> This sensor seems more accurate wrt pressure.
+> However here instead the temperature seems bananas,
+> this is a Swedish office, we don't have ~30degrees here...
+> And it's not the board is just turned on so I don't think it's
+> that warm.
+For pressure, LPS001WP may sample with typical absolute error up to 
++/-25 mBar and resolution of
+one 16th mBar : not consistent with your first results of ~95 kPa, but 
+should comply with pressure
+sampling gain modified in patch 4.
+No typical accuracy is given for temperature, and resolution is one 64th 
+of degree Celsius. I suppose
+temperature gain applied in patch 4 is also compliant with all your results.
+As a reference for comparison, temperature accuracy for LPS22HB, which 
+is much more precise, is +/-1.5
+degree Celsius...
+
+So I simply suggest your erroneous results are not induced by wrong 
+software sampling gains, which was
+my primary fear. No more no less. Maybe Denis may be of any help once he 
+has some time to review the
+whole patch series.
+
+>   One sensor gives believeable pressure, the other
+> gives believeable temperature...
+>
+> The data sheet says this sensor is calibrated for two
+> pressure+temperature combinations at manufacturing.
+> I wonder if there are "secret registers" in the device that
+> can update the calibration...
+As this device is deprecated I suppose we won't get much support from 
+ST... Maybe Denis may help if
+this really worth the pain :)
+> Anyways, the measures are not totally off scale so
+> I guess they are in the right ballpark. And these patches
+> makes it work better for sure.
+>
+> Yours,
+> Linus Walleij
+I do greatly appreciate your feedback. Many thanks.
+Regards,
+greg
