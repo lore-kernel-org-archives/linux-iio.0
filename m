@@ -1,226 +1,107 @@
-Return-Path: <gregor.boirie@parrot.com>
-Message-ID: <572224EA.2040303@parrot.com>
-Date: Thu, 28 Apr 2016 16:57:46 +0200
-From: Gregor Boirie <gregor.boirie@parrot.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from sauhun.de ([89.238.76.85]:36642 "EHLO pokefinder.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753779AbcD1Uuo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 28 Apr 2016 16:50:44 -0400
+Date: Thu, 28 Apr 2016 22:50:26 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Peter Rosin <peda@axentia.se>
+Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Kalle Valo <kvalo@codeaurora.org>,
+	Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Terry Heo <terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
+Subject: Re: [PATCH v7 16/24] i2c: allow adapter drivers to override the
+ adapter locking
+Message-ID: <20160428205018.GA3553@katana>
+References: <1461165484-2314-1-git-send-email-peda@axentia.se>
+ <1461165484-2314-17-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron
-	<jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen
-	<lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Denis Ciocca
-	<denis.ciocca@st.com>, Giuseppe Barba <giuseppe.barba@st.com>
-Subject: Re: [RFC PATCH v1 0/9] iio:st_sensors: fixes and lps22hb pressure
- sensor
-References: <cover.1461056711.git.gregor.boirie@parrot.com>	<CACRpkdZxE4Z6f_0uVV0sD5EUxEigzbMvWRD+MTDWNZbuauVweg@mail.gmail.com>	<CACRpkdZ=DSEKi6dOBuxA23ivsQYsoigvG_cC11HR-66aN_BUpQ@mail.gmail.com>	<5720B9DA.1000409@parrot.com> <CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com>
-In-Reply-To: <CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com>
-Content-Type: multipart/alternative;
-	boundary="------------020500070906030904080705"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
+In-Reply-To: <1461165484-2314-17-git-send-email-peda@axentia.se>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---------------020500070906030904080705
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 04/28/2016 09:47 AM, Linus Walleij wrote:
-> On Wed, Apr 27, 2016 at 3:08 PM, Gregor Boirie <gregor.boirie@parrot.com> wrote:
->
->> Many thanks for taking time to test this. ~95 kPa seems rather a small value
->> to me.
->>
->> For reference, it seems 950 hPa at sea level would be found under a...
->> hurricane !
->> (may vary with location)
->>
->> Does it match with your local weather forecast / report ?
-> Hmmmm no :)
->
-> Checking with local weather site it should be ~1006 hPa.
->
-> Do you think the sensor is just badly calibrated?
+--gBBFr7Ir9EOA20Yy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Amongst significant error sources, we regularly struggle against:
-* soldering (mechanical, overheat)
-* pcb bending and vibrations
-* bad device lots, bad storage (esd, wrong calibration, nearby mechanical vibration sources like ultra-sound...)
-* electrical noise (power supply, ground...)
-* light intensity if not protected by a cover
-* temperature, air flow
-* probably others we are not aware of yet
+On Wed, Apr 20, 2016 at 05:17:56PM +0200, Peter Rosin wrote:
+> Add i2c_lock_bus() and i2c_unlock_bus(), which call the new lock_bus and
+> unlock_bus ops in the adapter. These funcs/ops take an additional flags
+> argument that indicates for what purpose the adapter is locked.
+>=20
+> There are two flags, I2C_LOCK_ADAPTER and I2C_LOCK_SEGMENT, but they are
+> both implemented the same. For now. Locking the adapter means that the
+> whole bus is locked, locking the segment means that only the current bus
+> segment is locked (i.e. i2c traffic on the parent side of mux is still
+> allowed even if the child side of the mux is locked.
+>=20
+> Also support a trylock_bus op (but no function to call it, as it is not
+> expected to be needed outside of the i2c core).
+>=20
+> Implement i2c_lock_adapter/i2c_unlock_adapter in terms of the new locking
+> scheme (i.e. lock with the I2C_LOCK_ADAPTER flag).
+>=20
+> Annotate some of the locking with explicit I2C_LOCK_SEGMENT flags.
+>=20
+> Signed-off-by: Peter Rosin <peda@axentia.se>
 
-All comes with various effects in terms of constant offset, noise and drift. Some are destructive, some are not.
-Welcome to world of MEMS :)
+Letting you know that I start reviewing the 2nd part of your series. Did
+the first glimpse today. Will hopefully do the in-depth part this
+weekend. One thing already:
 
-> I tested now with another sensor on the Snowball board.
-> It gives (after scaling):
->
-> 101.4
-> 28.8
-> 101.9
-> 28.8
-> 101.9
-> 29.5
->
-> This sensor seems more accurate wrt pressure.
-> However here instead the temperature seems bananas,
-> this is a Swedish office, we don't have ~30degrees here...
-> And it's not the board is just turned on so I don't think it's
-> that warm.
-For pressure, LPS001WP may sample with typical absolute error up to 
-+/-25 mBar and resolution of
-one 16th mBar : not consistent with your first results of ~95 kPa, but 
-should comply with pressure
-sampling gain modified in patch 4.
-No typical accuracy is given for temperature, and resolution is one 64th 
-of degree Celsius. I suppose
-temperature gain applied in patch 4 is also compliant with all your results.
-As a reference for comparison, temperature accuracy for LPS22HB, which 
-is much more precise, is +/-1.5
-degree Celsius...
+> +static void i2c_adapter_lock_bus(struct i2c_adapter *adapter, int flags)
 
-So I simply suggest your erroneous results are not induced by wrong 
-software sampling gains, which was
-my primary fear. No more no less. Maybe Denis may be of any help once he 
-has some time to review the
-whole patch series.
+Shouldn't flags be unsigned?
 
->   One sensor gives believeable pressure, the other
-> gives believeable temperature...
->
-> The data sheet says this sensor is calibrated for two
-> pressure+temperature combinations at manufacturing.
-> I wonder if there are "secret registers" in the device that
-> can update the calibration...
-As this device is deprecated I suppose we won't get much support from 
-ST... Maybe Denis may help if
-this really worth the pain :)
->
-> Anyways, the measures are not totally off scale so
-> I guess they are in the right ballpark. And these patches
-> makes it work better for sure.
->
-> Yours,
-> Linus Walleij
-I do greatly appreciate your feedback. Many thanks.
-Regards,
-greg
 
---------------020500070906030904080705
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+--gBBFr7Ir9EOA20Yy
+Content-Type: application/pgp-signature; name="signature.asc"
 
-<html>
-  <head>
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-  </head>
-  <body bgcolor="#FFFFFF" text="#000000">
-    On 04/28/2016 09:47 AM, Linus Walleij wrote:<br>
-    <blockquote
-cite="mid:CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com"
-      type="cite">
-      <pre wrap="">On Wed, Apr 27, 2016 at 3:08 PM, Gregor Boirie <a class="moz-txt-link-rfc2396E" href="mailto:gregor.boirie@parrot.com">&lt;gregor.boirie@parrot.com&gt;</a> wrote:
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-</pre>
-      <blockquote type="cite">
-        <pre wrap="">Many thanks for taking time to test this. ~95 kPa seems rather a small value
-to me.
+iQIcBAEBAgAGBQJXIneKAAoJEBQN5MwUoCm2FRAP/0xqKvNG6PKzooja0h+oXlg/
+KBYBC56fJQkwEQRL80huZaBLGsXFOc8Jllxiz1y0iXfWP9EiyaOfNyngi1bt5YY3
+M29BL8wZzxHFE3iMaCcMPTsgkqLTw0+CaQ9MkNl86qtBoHy+vVp/h7xGl0o2h65a
+UISpfvdN+wPnWty1EPfXjVdwlz4DVCk9KGJMB6EaRzqYUrGRynkTnv2mrQn9PDeS
+KhphipVSSX7ay81wdb/ttVTZ0WyVTwKJiga8k1ntMBiqMCRslzVWT9YlcxSanHh0
+aZKJ28Kp81ptTh63aK0XIdHc4cgEFECzR2ZI0P1koSICsjXg4MOnJGmIvHaen+AI
+AGqQJq1EmveMMucJOHYaHUcJHUeV/cYicQSrdE9Xt8CFrXmZzTo7y3S3M0HpOguW
+xCVouwKg20orkPCH43XQyH+rWMfJEugy05OAs4ZB1PK5DChtpjckFYGfV8v35lx6
+iBJVcl1ZP0JATIu45qHv93brTgS8Qu2LeCAgEJDQOnbQOA4UDVrKUnIsN/usBpxe
+714LkDFbCq4nF+jEaRcJcIl3S1368fdL2T2lxBXctBzNiuVeToIa0IlwQvwtBYyo
+O4XhpD6nbPSXO3AleprLukGGlltBGnJ8AbEN/sQ5cyLYYZD7EhLNAtDnwlSkL2Cj
+D133ZEu3VvqGwDKH+Q5H
+=qGk7
+-----END PGP SIGNATURE-----
 
-For reference, it seems 950 hPa at sea level would be found under a...
-hurricane !
-(may vary with location)
-
-Does it match with your local weather forecast / report ?
-</pre>
-      </blockquote>
-      <pre wrap="">
-Hmmmm no :)
-
-Checking with local weather site it should be ~1006 hPa.
-
-Do you think the sensor is just badly calibrated?</pre>
-    </blockquote>
-    <br>
-    <pre wrap="">Amongst significant error sources, we regularly struggle against:
-* soldering (mechanical, overheat)
-* pcb bending and vibrations
-* bad device lots, bad storage (esd, wrong calibration, nearby mechanical vibration sources like ultra-sound...)
-* electrical noise (power supply, ground...)
-* light intensity if not protected by a cover
-* temperature, air flow
-* probably others we are not aware of yet
-
-All comes with various effects in terms of constant offset, noise and drift. Some are destructive, some are not.
-Welcome to world of MEMS :)
-</pre>
-    <blockquote
-cite="mid:CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com"
-      type="cite">
-      <pre wrap="">I tested now with another sensor on the Snowball board.
-It gives (after scaling):
-
-101.4
-28.8
-101.9
-28.8
-101.9
-29.5
-
-This sensor seems more accurate wrt pressure.
-However here instead the temperature seems bananas,
-this is a Swedish office, we don't have ~30degrees here...
-And it's not the board is just turned on so I don't think it's
-that warm.</pre>
-    </blockquote>
-    <tt>For pressure, </tt><tt>LPS001WP may sample with typical
-      absolute error up to +/-25 mBar and resolution of<br>
-      one 16th mBar : not consistent with your first results of ~95 kPa,
-      but should comply with pressure<br>
-      sampling gain modified in patch 4.<br>
-      No typical accuracy is given for temperature, and resolution is
-      one 64th of degree Celsius. I suppose<br>
-      temperature gain applied in patch 4 is also compliant with all
-      your results.<br>
-      As a reference for comparison, temperature accuracy for LPS22HB,
-      which is much more precise, is +/-1.5<br>
-      degree Celsius...<br>
-      <br>
-      So I simply suggest your erroneous results are not induced by
-      wrong software sampling gains, which was<br>
-      my primary fear. No more no less. Maybe Denis may be of any help
-      once he has some time to review the<br>
-      whole patch series.<br>
-    </tt><br>
-    <blockquote
-cite="mid:CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com"
-      type="cite">
-      <pre wrap=""> One sensor gives believeable pressure, the other
-gives believeable temperature...
-
-The data sheet says this sensor is calibrated for two
-pressure+temperature combinations at manufacturing.
-I wonder if there are "secret registers" in the device that
-can update the calibration...</pre>
-    </blockquote>
-    <tt>As this device is deprecated I suppose we won't get much support
-      from ST... Maybe Denis may help if<br>
-      this really worth the pain :)<br>
-    </tt>
-    <blockquote
-cite="mid:CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com"
-      type="cite">
-      <pre wrap="">
-
-Anyways, the measures are not totally off scale so
-I guess they are in the right ballpark. And these patches
-makes it work better for sure.
-
-Yours,
-Linus Walleij
-</pre>
-    </blockquote>
-    <tt>I do greatly appreciate your feedback. Many th</tt><tt>anks.</tt><tt><br>
-    </tt><tt>Regards,</tt><tt><br>
-    </tt><tt>greg</tt><font face="Times New Roman, Times, serif"><br>
-    </font>
-  </body>
-</html>
-
---------------020500070906030904080705--
+--gBBFr7Ir9EOA20Yy--
