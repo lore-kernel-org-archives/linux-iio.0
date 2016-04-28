@@ -1,352 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:4931 "EHLO mga09.intel.com"
+Received: from ns.pmeerw.net ([84.19.176.92]:34887 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751439AbcD1NE0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 28 Apr 2016 09:04:26 -0400
-From: Constantin Musca <constantin.musca@intel.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Cc: daniel.baluta@intel.com, constantin.musca@intel.com
-Subject: [PATCH] iio: accel: Add support for Freescale MMA7660FC
-Date: Thu, 28 Apr 2016 16:03:53 +0300
-Message-Id: <1461848633-7644-1-git-send-email-constantin.musca@intel.com>
+	id S1752654AbcD1NaS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 28 Apr 2016 09:30:18 -0400
+Date: Thu, 28 Apr 2016 15:30:13 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	Daniel Baluta <daniel.baluta@gmail.com>,
+	Yong Li <sdliyong@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	=?ISO-8859-2?Q?Krzysztof_Koz=B3owski?= <k.kozlowski@samsung.com>,
+	Matt Ranostaj <mranostay@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: tmp006: Set correct iio name
+In-Reply-To: <20160428142458.09e498e2@lxorguk.ukuu.org.uk>
+Message-ID: <alpine.DEB.2.02.1604281527010.10610@pmeerw.net>
+References: <1461296584-11918-1-git-send-email-sdliyong@gmail.com> <43150fbd-37ac-2d51-dd87-f41670417b96@kernel.org> <571E854A.90404@gmail.com> <7621197a-95ed-239e-8baa-83014bc27a26@kernel.org> <571F49B0.4060407@metafoo.de>
+ <CADO9-peu32UCxaep8yZUD6XW=ABLGiTYuQJewn-C3Gedc2JewA@mail.gmail.com> <571F588D.3010800@metafoo.de> <CADO9-peqytsYKxVCsEbYt_fLKH3CaiAeQzfgvA+4CsP6u2yJOQ@mail.gmail.com> <CAEnQRZCkcwDUPZHpEOTzcHxQ23xgq429fJQg63s5TUi0w69iWw@mail.gmail.com> <5720EFAA.3040407@intel.com>
+ <5721C904.3010505@metafoo.de> <20160428142458.09e498e2@lxorguk.ukuu.org.uk>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Minimal implementation of an IIO driver for the Freescale
-MMA7660FC 3-axis accelerometer. Datasheet:
-http://www.freescale.com.cn/files/sensors/doc/data_sheet/MMA7660FC.pdf
 
-Includes:
-- ACPI support;
-- read_raw for x,y,z axes;
-- reading and setting the scale (range) parameter.
-- power management
+> > It's clearly wrong. But the problem is there might be an application that
+> > depends on the wrong behavior, the driver has been around for 2.5 years. So
+> > it's difficult to fix. We might just go ahead in this case and take the
+> > chance that nobody will complain. But if somebody complains this will bring
+> > us the wrath of the Linus.
+> 
+> Not if you put it into next, test it, then into a new release as early as
+> possible (for -rc1), clearly document that it's got a user visible change
+> that should not matter with instructions if anyone hits this as a
+> bisection for their app failing to email so you know and can revert it.
 
-Signed-off-by: Constantin Musca <constantin.musca@intel.com>
----
- drivers/iio/accel/Kconfig   |  10 ++
- drivers/iio/accel/Makefile  |   2 +
- drivers/iio/accel/mma7660.c | 275 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 287 insertions(+)
- create mode 100644 drivers/iio/accel/mma7660.c
+is this the only driver doing it wrong?
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index e4a758c..db6e79e 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -54,6 +54,16 @@ config HID_SENSOR_ACCEL_3D
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called hid-sensor-accel-3d.
- 
-+config MMA7660
-+	tristate "Freescale MMA7660FC 3-Axis Accelerometer Driver"
-+	depends on I2C
-+	help
-+	  Say yes here to get support for the Freescale MMA7660FC 3-Axis
-+	  accelerometer.
-+
-+	  Choosing M will build the driver as a module. If so, the module
-+	  will be called grove_accel.
-+
- config IIO_ST_ACCEL_3AXIS
- 	tristate "STMicroelectronics accelerometers 3-Axis Driver"
- 	depends on (I2C || SPI_MASTER) && SYSFS
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-index 71b6794..ba1165f 100644
---- a/drivers/iio/accel/Makefile
-+++ b/drivers/iio/accel/Makefile
-@@ -15,6 +15,8 @@ obj-$(CONFIG_MMA7455)		+= mma7455_core.o
- obj-$(CONFIG_MMA7455_I2C)	+= mma7455_i2c.o
- obj-$(CONFIG_MMA7455_SPI)	+= mma7455_spi.o
- 
-+obj-$(CONFIG_MMA7660)	+= mma7660.o
-+
- obj-$(CONFIG_MMA8452)	+= mma8452.o
- 
- obj-$(CONFIG_MMA9551_CORE)	+= mma9551_core.o
-diff --git a/drivers/iio/accel/mma7660.c b/drivers/iio/accel/mma7660.c
-new file mode 100644
-index 0000000..9aad91d
---- /dev/null
-+++ b/drivers/iio/accel/mma7660.c
-@@ -0,0 +1,275 @@
-+/**
-+ * Freescale MMA7660FC 3-Axis Accelerometer
-+ *
-+ * Copyright (c) 2016, Intel Corporation.
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License. See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * IIO driver for Freescale MMA7660FC; 7-bit I2C address: 0x4c.
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#define MMA7660_DRIVER_NAME	"mma7660"
-+
-+#define MMA7660_REG_XOUT	0x00
-+#define MMA7660_REG_YOUT	0x01
-+#define MMA7660_REG_ZOUT	0x02
-+#define MMA7660_REG_OUT_BIT_ALERT	BIT(6)
-+
-+#define MMA7660_REG_MODE	0x07
-+#define MMA7660_REG_MODE_BIT_MODE	BIT(0)
-+#define MMA7660_REG_MODE_BIT_TON	BIT(2)
-+
-+#define MMA7660_MODE_STANDBY	0
-+#define MMA7660_MODE_ACTIVE		1
-+
-+#define MMA7660_I2C_READ_RETRIES	5
-+
-+/*
-+ * The accelerometer has one measurement range:
-+ *
-+ * -1.5g - +1.5g (6-bit, signed)
-+ *
-+ * scale1 = (1.5 + 1.5) * 9.81 / (2^6 - 1)     = 0.467142857
-+ */
-+
-+#define MMA7660_SCALE_AVAIL	"0.467142857"
-+
-+const int mma7660_nscale = 467142857;
-+
-+#define MMA7660_CHANNEL(reg, axis) {	\
-+	.type = IIO_ACCEL,	\
-+	.address = reg,	\
-+	.modified = 1,	\
-+	.channel2 = IIO_MOD_##axis,	\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+}
-+
-+static const struct iio_chan_spec mma7660_channels[] = {
-+	MMA7660_CHANNEL(MMA7660_REG_XOUT, X),
-+	MMA7660_CHANNEL(MMA7660_REG_YOUT, Y),
-+	MMA7660_CHANNEL(MMA7660_REG_ZOUT, Z),
-+};
-+
-+struct mma7660_data {
-+	struct i2c_client *client;
-+	struct mutex lock;
-+	u8 mode;
-+};
-+
-+static IIO_CONST_ATTR(in_accel_scale_available, MMA7660_SCALE_AVAIL);
-+
-+static struct attribute *mma7660_attributes[] = {
-+	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group mma7660_attribute_group = {
-+	.attrs = mma7660_attributes
-+};
-+
-+static int mma7660_set_mode(struct mma7660_data *data, u8 mode)
-+{
-+	int ret;
-+	struct i2c_client *client = data->client;
-+
-+	if (mode > 1)
-+		return -EINVAL;
-+
-+	if (mode == data->mode)
-+		return 0;
-+
-+	ret = i2c_smbus_read_byte_data(client, MMA7660_REG_MODE);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to change sensor mode\n");
-+		return ret;
-+	}
-+
-+	if (mode == MMA7660_MODE_ACTIVE) {
-+		ret &= ~MMA7660_REG_MODE_BIT_TON;
-+		ret |= MMA7660_REG_MODE_BIT_MODE;
-+	} else {
-+		ret &= ~MMA7660_REG_MODE_BIT_TON;
-+		ret &= ~MMA7660_REG_MODE_BIT_MODE;
-+	}
-+
-+	ret = i2c_smbus_write_byte_data(client, MMA7660_REG_MODE, ret);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to change sensor mode\n");
-+		return ret;
-+	}
-+
-+	data->mode = mode;
-+	return ret;
-+}
-+
-+static int mma7660_read_accel(struct mma7660_data *data, u8 address)
-+{
-+	int ret, retries = MMA7660_I2C_READ_RETRIES;
-+	struct i2c_client *client = data->client;
-+
-+	if (address > 2)
-+		return -EINVAL;
-+
-+	do {
-+		ret = i2c_smbus_read_byte_data(client, address);
-+		if (ret < 0) {
-+			dev_err(&client->dev, "register read failed\n");
-+			return ret;
-+		}
-+	} while (--retries > 0 && ret & MMA7660_REG_OUT_BIT_ALERT);
-+
-+	if (retries == 0) {
-+		dev_err(&client->dev, "all register read retries failed");
-+		return -ETIMEDOUT;
-+	}
-+
-+	return ret;
-+}
-+
-+static int mma7660_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	struct mma7660_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (chan->type != IIO_ACCEL)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&data->lock);
-+		ret = mma7660_read_accel(data, chan->address);
-+		mutex_unlock(&data->lock);
-+		if (ret < 0)
-+			return ret;
-+		*val = sign_extend32(ret, 5);
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		*val2 = mma7660_nscale;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info mma7660_info = {
-+	.driver_module	= THIS_MODULE,
-+	.read_raw		= mma7660_read_raw,
-+	.attrs			= &mma7660_attribute_group,
-+};
-+
-+static int mma7660_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	int ret;
-+	struct iio_dev *indio_dev;
-+	struct mma7660_data *data;
-+
-+	indio_dev = iio_device_alloc(sizeof(*data));
-+	if (!indio_dev) {
-+		dev_err(&client->dev, "iio allocation failed!\n");
-+		return -ENOMEM;
-+	}
-+
-+	data = iio_priv(indio_dev);
-+	data->client = client;
-+	i2c_set_clientdata(client, indio_dev);
-+	mutex_init(&data->lock);
-+	data->mode = -1;
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &mma7660_info;
-+	indio_dev->name = MMA7660_DRIVER_NAME;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = mma7660_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(mma7660_channels);
-+
-+	ret = mma7660_set_mode(data, MMA7660_MODE_ACTIVE);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "device_register failed\n");
-+		mma7660_set_mode(data, MMA7660_MODE_STANDBY);
-+	}
-+
-+	return ret;
-+}
-+
-+static int mma7660_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	return mma7660_set_mode(iio_priv(indio_dev), MMA7660_MODE_STANDBY);
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int mma7660_suspend(struct device *dev)
-+{
-+	struct mma7660_data *data;
-+
-+	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-+
-+	return mma7660_set_mode(data, MMA7660_MODE_STANDBY);
-+}
-+
-+static int mma7660_resume(struct device *dev)
-+{
-+	struct mma7660_data *data;
-+
-+	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-+
-+	return mma7660_set_mode(data, MMA7660_MODE_ACTIVE);
-+}
-+
-+static SIMPLE_DEV_PM_OPS(mma7660_pm_ops, mma7660_suspend, mma7660_resume);
-+
-+#define MMA7660_PM_OPS (&mma7660_pm_ops)
-+#else
-+#define MMA7660_PM_OPS NULL
-+#endif
-+
-+static const struct i2c_device_id mma7660_i2c_id[] = {
-+	{"MMA7660", 0},
-+	{}
-+};
-+
-+static const struct acpi_device_id mma7660_acpi_id[] = {
-+	{"MMA7660", 0},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(acpi, mma7660_acpi_id);
-+
-+static struct i2c_driver mma7660_driver = {
-+	.driver = {
-+		.name = "mma7660",
-+		.pm = MMA7660_PM_OPS,
-+		.acpi_match_table = ACPI_PTR(mma7660_acpi_id),
-+	},
-+	.probe		= mma7660_probe,
-+	.remove		= mma7660_remove,
-+	.id_table	= mma7660_i2c_id,
-+};
-+
-+module_i2c_driver(mma7660_driver);
-+
-+MODULE_AUTHOR("Constantin Musca <constantin.musca@intel.com>");
-+MODULE_DESCRIPTION("Freescale MMA7660FC 3-Axis Accelerometer driver");
-+MODULE_LICENSE("GPL v2");
+pmeerw@pmeerw:/var/git/linux/drivers/iio$ rgrep "indio_dev->name = dev_name" . 
+./imu/inv_mpu6050/inv_mpu_core.c:		indio_dev->name = dev_name(dev);
+./light/lm3533-als.c:	indio_dev->name = dev_name(&pdev->dev);
+./dac/vf610_dac.c:	indio_dev->name = dev_name(&pdev->dev);
+./dac/stx104.c:	indio_dev->name = dev_name(dev);
+./dac/lpc18xx_dac.c:	indio_dev->name = dev_name(&pdev->dev);
+./adc/mcp3422.c:	indio_dev->name = dev_name(&client->dev);
+./adc/at91-sama5d2_adc.c:	indio_dev->name = dev_name(&pdev->dev);
+./adc/vf610_adc.c:	indio_dev->name = dev_name(&pdev->dev);
+./adc/ti_am335x_adc.c:	indio_dev->name = dev_name(&pdev->dev);
+./adc/nau7802.c:	indio_dev->name = dev_name(&client->dev);
+./adc/da9150-gpadc.c:	indio_dev->name = dev_name(dev);
+./adc/lpc18xx_adc.c:	indio_dev->name = dev_name(&pdev->dev);
+./adc/rockchip_saradc.c:	indio_dev->name = dev_name(&pdev->dev);
+./adc/imx7d_adc.c:	indio_dev->name = dev_name(&pdev->dev);
+./adc/cc10001_adc.c:	indio_dev->name = dev_name(&pdev->dev);
+./adc/berlin2-adc.c:	indio_dev->name = dev_name(&pdev->dev);
+./adc/exynos_adc.c:	indio_dev->name = dev_name(&pdev->dev);
+./temperature/tmp006.c:	indio_dev->name = dev_name(&client->dev);
+./chemical/ams-iaq-core.c:	indio_dev->name = dev_name(&client->dev);
+./chemical/vz89x.c:	indio_dev->name = dev_name(&client->dev);
+./humidity/si7005.c:	indio_dev->name = dev_name(&client->dev);
+./humidity/hdc100x.c:	indio_dev->name = dev_name(&client->dev);
+./humidity/si7020.c:	indio_dev->name = dev_name(&client->dev);
+
+regards, p.
+
 -- 
-1.9.1
 
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
