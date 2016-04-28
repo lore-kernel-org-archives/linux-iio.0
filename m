@@ -1,30 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:50480 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752755AbcDZV7Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Apr 2016 17:59:25 -0400
-Date: Tue, 26 Apr 2016 14:59:19 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] Third set of IIO fixes in the 4.6 cycle.
-Message-ID: <20160426215919.GA5947@kroah.com>
-References: <8ad08229-52e8-05f1-e7dc-e711d4901da7@kernel.org>
+Received: from userp1040.oracle.com ([156.151.31.81]:31704 "EHLO
+	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753427AbcD1Jkz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Apr 2016 05:40:55 -0400
+Date: Thu, 28 Apr 2016 12:40:34 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: linus.walleij@linaro.org
+Cc: linux-iio@vger.kernel.org
+Subject: re: iio: light: new driver for the ROHM BH1780
+Message-ID: <20160428094034.GA7255@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <8ad08229-52e8-05f1-e7dc-e711d4901da7@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Apr 25, 2016 at 07:34:05PM +0100, Jonathan Cameron wrote:
-> The following changes since commit bf16200689118d19de1b8d2a3c314fc21f5dc7bb:
-> 
->   Linux 4.6-rc3 (2016-04-10 17:58:30 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.6c
+Hello Linus Walleij,
 
-Pulled and pushed out, thanks.
+This is a semi-automatic email about new static checker warnings.
 
-greg k-h
+The patch 1f0477f18306: "iio: light: new driver for the ROHM BH1780" 
+from Apr 11, 2016, leads to the following Smatch complaint:
+
+drivers/iio/light/bh1780.c:93 bh1780_debugfs_reg_access()
+	 error: we previously assumed 'readval' could be null (see line 86)
+
+drivers/iio/light/bh1780.c
+    85	
+    86		if (!readval)
+                    ^^^^^^^^
+    87			bh1780_write(bh1780, (u8)reg, (u8)writeval);
+
+Should this be:
+			return bh1780_write(bh1780, (u8)reg, (u8)writeval);
+
+    88	
+    89		ret = bh1780_read(bh1780, (u8)reg);
+    90		if (ret < 0)
+    91			return ret;
+    92	
+    93		*readval = ret;
+                ^^^^^^^^
+    94	
+    95		return 0;
+
+regards,
+dan carpenter
