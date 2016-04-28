@@ -1,45 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx1.emlix.com ([88.198.252.230]:54415 "EHLO mx1.emlix.com"
+Received: from sauhun.de ([89.238.76.85]:36958 "EHLO pokefinder.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751422AbcDVTgG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 22 Apr 2016 15:36:06 -0400
-Received: from mx1.emlix.com (localhost [127.0.0.1])
-	by mx1.emlix.com (Postfix) with ESMTP id 99DF323F2CC
-	for <linux-iio@vger.kernel.org>; Fri, 22 Apr 2016 21:27:57 +0200 (CEST)
-Received: from mailer.emlix.com (unknown [80.150.94.234])
-	(using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
-	(No client certificate requested)
-	by mx1.emlix.com (Postfix) with ESMTPS id 8871A23F0E9
-	for <linux-iio@vger.kernel.org>; Fri, 22 Apr 2016 21:27:57 +0200 (CEST)
-Date: Fri, 22 Apr 2016 21:27:57 +0200
-From: Daniel =?iso-8859-1?Q?Gl=F6ckner?= <dg@emlix.com>
-To: linux-iio@vger.kernel.org
-Subject: Nonlinear outputs
-Message-ID: <20160422192757.GA18225@homes.emlix.com>
+	id S1753104AbcD1VsL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 28 Apr 2016 17:48:11 -0400
+Date: Thu, 28 Apr 2016 23:47:58 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Peter Rosin <peda@axentia.se>
+Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Kalle Valo <kvalo@codeaurora.org>,
+	Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Terry Heo <terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
+Subject: Re: [PATCH v7 22/24] [media] rtl2832: change the i2c gate to be
+ mux-locked
+Message-ID: <20160428214758.GA4531@katana>
+References: <1461165484-2314-1-git-send-email-peda@axentia.se>
+ <1461165484-2314-23-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="bg08WKrSYDhXBjb5"
+In-Reply-To: <1461165484-2314-23-git-send-email-peda@axentia.se>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
 
-currently all outputs listed in Documentation/ABI/testing/sysfs-bus-iio
-are _raw. What about f.ex. a nonlinear resistive output?
+--bg08WKrSYDhXBjb5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Shall I mark it as processed value which implies giving it an _input name
-or shall I fake raw values with offset = 0 and scale = 1?
+On Wed, Apr 20, 2016 at 05:18:02PM +0200, Peter Rosin wrote:
+> The root i2c adapter lock is then no longer held by the i2c mux during
+> accesses behind the i2c gate, and such accesses need to take that lock
+> just like any other ordinary i2c accesses do.
+>=20
+> So, declare the i2c gate mux-locked, and zap the regmap overrides
+> that makes the i2c accesses unlocked and use plain old regmap
+> accesses. This also removes the need for the regmap wrappers used by
+> rtl2832_sdr, so deconvolute the code further and provide the regmap
+> handle directly instead of the wrapper functions.
+>=20
+> Signed-off-by: Peter Rosin <peda@axentia.se>
 
-Best regards,
-
-  Daniel
+Antti, I'd need some tag from you since this is not the i2c realm.
 
 
--- 
-Dipl.-Math. Daniel Glöckner, emlix GmbH, http://www.emlix.com
-Fon +49 551 30664-0, Fax +49 551 30664-11,
-Bertha-von-Suttner-Straße 9, 37085 Göttingen, Germany
-Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
-Geschäftsführung: Heike Jordan, Dr. Uwe Kracke
-Ust-IdNr.: DE 205 198 055
+--bg08WKrSYDhXBjb5
+Content-Type: application/pgp-signature; name="signature.asc"
 
-emlix - your embedded linux partner
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJXIoUOAAoJEBQN5MwUoCm2jusP/j3ToNlZQahVV1UtMvPujy94
+AF3AWGq+Gn1OWavfKFBdJXxQHsqAydIuu5lsxX5+sZALJgR7KjOX3mGRdBS5Nle2
+xDVL5vQzm8QsXHHJ5r4CKL8nKTFxZaDZZ51i+CeuBuuOVVwR/nzUK8Kdgth0s1az
+leYSe8gc7znMcipW5+5JeaCsFOkUX/gHZHcORur5g5vXYHoHjhMvCxbO+KqhTrFc
+VHFhGAMN8ltRlayIHpFMvTW3s4chO5/cONVILcTS3uMpV1VftovuwV2fC9TKaUq5
+NqB2heSPeEAYboNk4cG6FC2LxOkpsl6ux11HrODI/YkMz2he2bbQG7qod6AT0RW2
+yTSPH2Wr0gxlJPBq0JOX4XQF+l0Arx7KY3iR//1H5cCNbBHVE1ABVM7wwTRMhJAF
+9mYON8A1OTmWHyaJ/QRVevdU/0jt2iCvrerctBCljkjRtQZGBSNQyhqwS23HIL+0
+RDSWK7H/L9Hv0lbzNEUPiUpupDxu5HLveu4oYivrTrt6RCN4HWnVr3sIsaa4x7TD
+o0p1LiUew+g2mx0SzGzAy8oXiGxZ6WwYP06GY7jrbqIYwvD180zr+VoFdoKARPzs
+GY7gUsgh87x4fQrQ4XYVRqarp4xMuyzhTUYOD8AAbGbaFCiLPEKK58ytDLqoRctO
+vGQQGn0rRRdpd3Zq8Fn+
+=3zSS
+-----END PGP SIGNATURE-----
+
+--bg08WKrSYDhXBjb5--
