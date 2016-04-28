@@ -1,74 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:34887 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752654AbcD1NaS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 28 Apr 2016 09:30:18 -0400
-Date: Thu, 28 Apr 2016 15:30:13 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
-	Yong Li <sdliyong@gmail.com>,
+Received: from mail-pf0-f177.google.com ([209.85.192.177]:32966 "EHLO
+	mail-pf0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751734AbcD1OkY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Apr 2016 10:40:24 -0400
+Received: by mail-pf0-f177.google.com with SMTP id 206so34642345pfu.0
+        for <linux-iio@vger.kernel.org>; Thu, 28 Apr 2016 07:40:24 -0700 (PDT)
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Christoph Mair <christoph.mair@gmail.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	=?ISO-8859-2?Q?Krzysztof_Koz=B3owski?= <k.kozlowski@samsung.com>,
-	Matt Ranostaj <mranostay@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: tmp006: Set correct iio name
-In-Reply-To: <20160428142458.09e498e2@lxorguk.ukuu.org.uk>
-Message-ID: <alpine.DEB.2.02.1604281527010.10610@pmeerw.net>
-References: <1461296584-11918-1-git-send-email-sdliyong@gmail.com> <43150fbd-37ac-2d51-dd87-f41670417b96@kernel.org> <571E854A.90404@gmail.com> <7621197a-95ed-239e-8baa-83014bc27a26@kernel.org> <571F49B0.4060407@metafoo.de>
- <CADO9-peu32UCxaep8yZUD6XW=ABLGiTYuQJewn-C3Gedc2JewA@mail.gmail.com> <571F588D.3010800@metafoo.de> <CADO9-peqytsYKxVCsEbYt_fLKH3CaiAeQzfgvA+4CsP6u2yJOQ@mail.gmail.com> <CAEnQRZCkcwDUPZHpEOTzcHxQ23xgq429fJQg63s5TUi0w69iWw@mail.gmail.com> <5720EFAA.3040407@intel.com>
- <5721C904.3010505@metafoo.de> <20160428142458.09e498e2@lxorguk.ukuu.org.uk>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH -next] iio: pressure: bmp280: fix error message for wrong chip id
+Date: Thu, 28 Apr 2016 23:39:53 +0900
+Message-Id: <1461854393-2853-1-git-send-email-akinobu.mita@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The bmp280 driver also supports BMP180 which has a different chip id
+with BMP280.  The probe routine verifies that the device reports the
+correct chip id but the error message is confusing as if BMP280's chip
+id is always expected.
 
-> > It's clearly wrong. But the problem is there might be an application that
-> > depends on the wrong behavior, the driver has been around for 2.5 years. So
-> > it's difficult to fix. We might just go ahead in this case and take the
-> > chance that nobody will complain. But if somebody complains this will bring
-> > us the wrath of the Linus.
-> 
-> Not if you put it into next, test it, then into a new release as early as
-> possible (for -rc1), clearly document that it's got a user visible change
-> that should not matter with instructions if anyone hits this as a
-> bisection for their app failing to email so you know and can revert it.
+Reported-by: Matt Ranostay <mranostay@gmail.com>
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: Matt Ranostay <mranostay@gmail.com>
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Cc: Christoph Mair <christoph.mair@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/pressure/bmp280.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-is this the only driver doing it wrong?
-
-pmeerw@pmeerw:/var/git/linux/drivers/iio$ rgrep "indio_dev->name = dev_name" . 
-./imu/inv_mpu6050/inv_mpu_core.c:		indio_dev->name = dev_name(dev);
-./light/lm3533-als.c:	indio_dev->name = dev_name(&pdev->dev);
-./dac/vf610_dac.c:	indio_dev->name = dev_name(&pdev->dev);
-./dac/stx104.c:	indio_dev->name = dev_name(dev);
-./dac/lpc18xx_dac.c:	indio_dev->name = dev_name(&pdev->dev);
-./adc/mcp3422.c:	indio_dev->name = dev_name(&client->dev);
-./adc/at91-sama5d2_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-./adc/vf610_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-./adc/ti_am335x_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-./adc/nau7802.c:	indio_dev->name = dev_name(&client->dev);
-./adc/da9150-gpadc.c:	indio_dev->name = dev_name(dev);
-./adc/lpc18xx_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-./adc/rockchip_saradc.c:	indio_dev->name = dev_name(&pdev->dev);
-./adc/imx7d_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-./adc/cc10001_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-./adc/berlin2-adc.c:	indio_dev->name = dev_name(&pdev->dev);
-./adc/exynos_adc.c:	indio_dev->name = dev_name(&pdev->dev);
-./temperature/tmp006.c:	indio_dev->name = dev_name(&client->dev);
-./chemical/ams-iaq-core.c:	indio_dev->name = dev_name(&client->dev);
-./chemical/vz89x.c:	indio_dev->name = dev_name(&client->dev);
-./humidity/si7005.c:	indio_dev->name = dev_name(&client->dev);
-./humidity/hdc100x.c:	indio_dev->name = dev_name(&client->dev);
-./humidity/si7020.c:	indio_dev->name = dev_name(&client->dev);
-
-regards, p.
-
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index 2f1498e..724452d 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -879,8 +879,8 @@ static int bmp280_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		return ret;
+ 	if (chip_id != id->driver_data) {
+-		dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
+-			BMP280_CHIP_ID, chip_id);
++		dev_err(&client->dev, "bad chip id.  expected %lx got %x\n",
++			id->driver_data, chip_id);
+ 		return -EINVAL;
+ 	}
+ 
 -- 
+2.5.0
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
