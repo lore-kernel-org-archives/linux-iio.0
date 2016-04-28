@@ -1,111 +1,74 @@
-Return-Path: <leonard.crestez@intel.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ob0-f171.google.com ([209.85.214.171]:35808 "EHLO
+	mail-ob0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750810AbcD1Hr5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Apr 2016 03:47:57 -0400
+Received: by mail-ob0-f171.google.com with SMTP id n10so30769385obb.2
+        for <linux-iio@vger.kernel.org>; Thu, 28 Apr 2016 00:47:57 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <5720B9DA.1000409@parrot.com>
+References: <cover.1461056711.git.gregor.boirie@parrot.com>
+	<CACRpkdZxE4Z6f_0uVV0sD5EUxEigzbMvWRD+MTDWNZbuauVweg@mail.gmail.com>
+	<CACRpkdZ=DSEKi6dOBuxA23ivsQYsoigvG_cC11HR-66aN_BUpQ@mail.gmail.com>
+	<5720B9DA.1000409@parrot.com>
+Date: Thu, 28 Apr 2016 09:47:56 +0200
+Message-ID: <CACRpkdY08X6O=OukhngMR_EKp-gsy=_H7dp1ifm9P7yFto4PLw@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 0/9] iio:st_sensors: fixes and lps22hb pressure sensor
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Ge Gao <GGao@invensense.com>
-Subject: [PATCH 6/7] iio: inv_mpu6050: Check channel configuration on preenable
-Date: Fri, 29 Apr 2016 22:02:35 +0300
-Message-Id: <d1135276814b870a7b0e7e079e47c625b25c4ad9.1461953982.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1461953982.git.leonard.crestez@intel.com>
-References: <cover.1461953982.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1461953982.git.leonard.crestez@intel.com>
-References: <cover.1461953982.git.leonard.crestez@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+	Denis Ciocca <denis.ciocca@st.com>,
+	Giuseppe Barba <giuseppe.barba@st.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Right now it is possible to only enable some of the x/y/z channels, for
-example you can enable accel_z without x or y. If you actually do that
-what you get is actually only the x channel.
+On Wed, Apr 27, 2016 at 3:08 PM, Gregor Boirie <gregor.boirie@parrot.com> wrote:
 
-In theory the device supports selecting gyro x/y/z channels
-individually. It would also be possible to selectively enable x/y/z
-accel by unpacking the data read from the hardware into a format the iio
-core accepts.
+> Many thanks for taking time to test this. ~95 kPa seems rather a small value
+> to me.
+>
+> For reference, it seems 950 hPa at sea level would be found under a...
+> hurricane !
+> (may vary with location)
+>
+> Does it match with your local weather forecast / report ?
 
-It is easier to simply refuse incorrect configuration.
+Hmmmm no :)
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  2 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 31 ++++++++++++++++++++++++++++++
- 3 files changed, 36 insertions(+), 1 deletion(-)
+Checking with local weather site it should be ~1006 hPa.
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 064fc07..712e901 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -1130,7 +1130,7 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 	result = iio_triggered_buffer_setup(indio_dev,
- 					    inv_mpu6050_irq_handler,
- 					    inv_mpu6050_read_fifo,
--					    NULL);
-+					    &inv_mpu_buffer_ops);
- 	if (result) {
- 		dev_err(dev, "configure buffer fail %d\n", result);
- 		return result;
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index 9d15633..9d406df 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -284,6 +284,9 @@ enum inv_mpu6050_scan {
- 	INV_MPU6050_SCAN_TIMESTAMP,
- };
- 
-+#define INV_MPU6050_SCAN_MASK_ACCEL	0x07
-+#define INV_MPU6050_SCAN_MASK_GYRO	0x38
-+
- enum inv_mpu6050_filter_e {
- 	INV_MPU6050_FILTER_256HZ_NOLPF2 = 0,
- 	INV_MPU6050_FILTER_188HZ,
-@@ -340,3 +343,4 @@ int inv_mpu_core_remove(struct device *dev);
- int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on);
- extern const struct dev_pm_ops inv_mpu_pmops;
- extern const struct regmap_config inv_mpu_regmap_config;
-+extern const struct iio_buffer_setup_ops inv_mpu_buffer_ops;
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-index 56ee1e2..e8bda7f 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-@@ -222,3 +222,34 @@ flush_fifo:
- 
- 	return IRQ_HANDLED;
- }
-+
-+/* Validate channels are set in a correct configuration */
-+static int inv_mpu_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct inv_mpu6050_state *st = iio_priv(indio_dev);
-+	unsigned long mask = *indio_dev->active_scan_mask;
-+
-+	if ((mask & INV_MPU6050_SCAN_MASK_GYRO) &&
-+	    (mask & INV_MPU6050_SCAN_MASK_GYRO) != INV_MPU6050_SCAN_MASK_GYRO)
-+	{
-+		dev_warn(regmap_get_device(st->map),
-+			 "Gyro channels can only be enabled together\n");
-+		return -EINVAL;
-+	}
-+
-+	if ((mask & INV_MPU6050_SCAN_MASK_ACCEL) &&
-+	    (mask & INV_MPU6050_SCAN_MASK_ACCEL) != INV_MPU6050_SCAN_MASK_ACCEL)
-+	{
-+		dev_warn(regmap_get_device(st->map),
-+			 "Accel channels can only be enabled together\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+const struct iio_buffer_setup_ops inv_mpu_buffer_ops = {
-+	.preenable = inv_mpu_buffer_preenable,
-+	.postenable = iio_triggered_buffer_postenable,
-+	.predisable = iio_triggered_buffer_predisable,
-+};
--- 
-2.5.5
+Do you think the sensor is just badly calibrated?
+
+I tested now with another sensor on the Snowball board.
+It gives (after scaling):
+
+101.4
+28.8
+101.9
+28.8
+101.9
+29.5
+
+This sensor seems more accurate wrt pressure.
+However here instead the temperature seems bananas,
+this is a Swedish office, we don't have ~30degrees here...
+And it's not the board is just turned on so I don't think it's
+that warm. One sensor gives believeable pressure, the other
+gives believeable temperature...
+
+The data sheet says this sensor is calibrated for two
+pressure+temperature combinations at manufacturing.
+I wonder if there are "secret registers" in the device that
+can update the calibration...
+
+Anyways, the measures are not totally off scale so
+I guess they are in the right ballpark. And these patches
+makes it work better for sure.
+
+Yours,
+Linus Walleij
