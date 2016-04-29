@@ -1,70 +1,131 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db3on0105.outbound.protection.outlook.com ([157.55.234.105]:48864
-	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
+Received: from mail-am1on0109.outbound.protection.outlook.com ([157.56.112.109]:57002
+	"EHLO emea01-am1-obe.outbound.protection.outlook.com"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752066AbcD2JRG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 29 Apr 2016 05:17:06 -0400
-Subject: Re: [PATCH v7 16/24] i2c: allow adapter drivers to override the
- adapter locking
-To: Wolfram Sang <wsa@the-dreams.de>
-References: <1461165484-2314-1-git-send-email-peda@axentia.se>
- <1461165484-2314-17-git-send-email-peda@axentia.se>
- <20160428205018.GA3553@katana>
- <470abe38-ab5f-2d0a-305b-e1a3253ce5a9@axentia.se>
- <20160429071604.GB1870@katana>
-CC: <linux-kernel@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
+	id S1751225AbcD2J30 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 29 Apr 2016 05:29:26 -0400
+Subject: Re: [PATCH] iio: inv_mpu6050: Add support for auxiliary I2C master
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+	<linux-iio@vger.kernel.org>
+References: <5b1937140558514b3e43ed2c21ee860ecbac61ec.1461172603.git.leonard.crestez@intel.com>
+ <a978ad85-8191-7506-8090-809f89d0b2e2@kernel.org>
+ <6ab228db-9695-ac22-9c65-fd15c4837c45@axentia.se>
+ <5721E871.8010003@intel.com>
+CC: <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Kalle Valo <kvalo@codeaurora.org>,
-	Jiri Slaby <jslaby@suse.com>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Matt Ranostay <matt.ranostay@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Terry Heo <terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>,
-	Tommi Rantala <tt.rantala@gmail.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, Peter Rosin <peda@lysator.liu.se>
+	<linux-i2c@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>,
+	<devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
 From: Peter Rosin <peda@axentia.se>
-Message-ID: <357e6fda-73b3-fb7f-c341-97f09af1943f@axentia.se>
-Date: Fri, 29 Apr 2016 11:16:51 +0200
+Message-ID: <14f3be16-2912-cbed-ab89-08b1c22d827c@axentia.se>
+Date: Fri, 29 Apr 2016 11:29:15 +0200
 MIME-Version: 1.0
-In-Reply-To: <20160429071604.GB1870@katana>
+In-Reply-To: <5721E871.8010003@intel.com>
 Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2016-04-29 09:16, Wolfram Sang wrote:
->> Yes, obviously... I'll make that change locally and wait for the rest.
-> Another nit: You could use '--strict' with checkpatch and see if you
-> want to fix the issues reported. I am not keen on those (except for
-> 'space around operators'), it's a matter of taste I guess, but maybe you
-> like some of the suggestions.
+On 2016-04-28 12:39, Crestez Dan Leonard wrote:
+> On 04/27/2016 11:39 AM, Peter Rosin wrote:
+>> On 2016-04-23 23:32, Jonathan Cameron wrote:
+>>> On 20/04/16 18:17, Crestez Dan Leonard wrote:
+>>>> The MPU has an auxiliary I2C bus for connecting external
+>>>> sensors. This bus has two operating modes:
+>>>> * pass-through, which connects the primary and auxiliary busses
+>>>> together. This is already supported via an i2c mux.
+>>>> * I2C master mode, where the mpu60x0 acts as a master to any external
+>>>> connected sensors. This is implemented by this patch.
+>>>>
+>>>> This I2C master mode also works when the MPU itself is connected via
+>>>> SPI.
+>>>>
+>>>> I2C master supports up to 5 slaves. Slaves 0-3 have a common operating
+>>>> mode while slave 4 is different. This patch implements an i2c adapter
+>>>> using slave 4 because it has a cleaner interface and it has an
+>>>> interrupt that signals when data from slave to master arrived.
+>>>>
+>>>> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+>>> This one needs acks from:
+>>>
+>>> Device tree maintainer (odd binding ;)
+>>> Peter Rosin (odd binding interacting with the mux support)
+>>> Wolfram (it has a whole i2c master driver in here).
+>>>
+>>> (just thought I'd list these for the avoidance of doubt).
+>> I spot some overlap with the questions in "[RFC] i2c: device-tree:
+>> Handling child nodes which are not i2c devices"
+>> http://marc.info/?l=linux-i2c&m=146073452819116&w=2
+>>
+>> And I think I agree with Stephen Warren that an intermediate placeholder
+>> node would make sense. I.e.
+>>
+>>     mpu6050@68 {
+>>         compatible = "...";
+>>         reg = <0x68>;
+>>         ...
+>>         i2c-aux-mux {
+>>             i2c@0 {
+>>                 #address-cells = <1>;
+>>                 #size-cells = <0>;
+>>                 reg = <0>;
+>>
+>>                 foo@44 {
+>>                     compatible = "bar";
+>>                     reg = <0x44>;
+>>                     ...
+>>                 }
+>>             }
+>>         }
+>>     }
+>>
+>> Or
+>>
+>>     mpu6050@68 {
+>>         compatible = "...";
+>>         reg = <0x68>;
+>>         ...
+>>         i2c-aux-master {
+>>             #address-cells = <1>;
+>>             #size-cells = <0>;
+>>
+>>             gazonk@44 {
+>>                 compatible = "baz";
+>>                 reg = <0x44>;
+>>                 ...
+>>             }
+>>         }
+>>     }
+>>
+>> depending on if you want an aux-mux or an aux-master.
+>>
+>> But I don't know if that intermediate i2c-aux-mux node causes any
+>> problems?
+> It's not clear how that would be implemented. It seems to me that right
+> now i2c_add_mux_adapter assumes that the parent device is a dedicated
+> mux device and all it's children are mux branches. Would this require
+> introducing a new "struct device" for the i2c-aux-master node?
 >
-Yes, they look like reasonable complaints.
-
-So, I fixed all of them locally except the complaint about lack of comment
-on the new struct mutex member in struct si2168_dev (patch 21/24),
-because that patch is Anttis and he's the maintainer of that driver...
-
-Antti, if you want that fixed as part of this series, send a suitable comment
-for the mutex this way and I'll incorporate it.
+> It might make sense to make the automatic processing of the parents
+> node's of_node optional and let the caller assign the of_node describing
+> the attached devices.
+>
+> I think the most natural solution would be to require child nodes named
+> i2c-aux-mux and i2c-aux-master to describe aux devices. For backwards
+> compatibility it would be easiest to go with i2c@0/i2c@1 (identified by
+> reg=0/1).
+>
+> But I don't know much about devicetree and I'd rather accept an external
+> suggestion.
+>
+I was thinking that with the new i2c_mux_core in place, it should be pretty simple
+to add a hook to point to another node and only use dev->of_node as a default
+value for where to look for the mux child adapters?
 
 Cheers,
 Peter
