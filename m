@@ -1,60 +1,41 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron
-	<jic23@kernel.org>
-Subject: RE: [PATCH 2/2] iio: accel: Add triggered buffer support for BMA220
-Date: Fri, 29 Apr 2016 12:41:24 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F402358932C@IRSMSX109.ger.corp.intel.com>
-References: <1461928076-22076-1-git-send-email-tiberiu.a.breana@intel.com>
- <1461928076-22076-3-git-send-email-tiberiu.a.breana@intel.com>
- <alpine.DEB.2.02.1604291320170.23132@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1604291320170.23132@pmeerw.net>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:42661 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753112AbcD2NGA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 29 Apr 2016 09:06:00 -0400
+From: Tiberiu Breana <tiberiu.a.breana@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v2 0/2] Add support for the Bosch BMA220 accelerometer
+Date: Fri, 29 Apr 2016 16:05:15 +0300
+Message-Id: <1461935117-16124-1-git-send-email-tiberiu.a.breana@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> -----Original Message-----
-> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
-> owner@vger.kernel.org] On Behalf Of Peter Meerwald-Stadler
-> Sent: Friday, April 29, 2016 2:25 PM
-> To: Breana, Tiberiu A <tiberiu.a.breana@intel.com>
-> Cc: linux-iio@vger.kernel.org; Jonathan Cameron <jic23@kernel.org>
-> Subject: Re: [PATCH 2/2] iio: accel: Add triggered buffer support for BMA=
-220
->=20
->=20
-> > Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
->=20
-> comments below
->=20
-> > ---
-> >  drivers/iio/accel/bma220_spi.c | 67
-> > ++++++++++++++++++++++++++++++++++++++++--
-> >  1 file changed, 65 insertions(+), 2 deletions(-)
-> >
+This patch set adds support for the Bosch Sensortec BMA220 accelerometer.
+Patch 1 adds basic support, raw readings and ACPI detection.
+Patch 2 adds triggered buffer support.
 
-<snip>
+v2 change log:
+patch 1:
+- addressed Peter's comments
+- added the bma220_init function that handles chip id
+  checking and waking up the device at probing time
 
-> > -70,6 +84,42 @@ static inline int bma220_read_reg(struct spi_device *sp=
-i,
-> u8 reg)
-> >  	return spi_w8r8(spi, reg | BMA220_READ_MASK);  }
-> >
-> > +static irqreturn_t bma220_trigger_handler(int irq, void *p) {
-> > +	int i;
-> > +	int ret;
-> > +	int bit;
-> > +	struct iio_poll_func *pf =3D p;
-> > +	struct iio_dev *indio_dev =3D pf->indio_dev;
-> > +	struct bma220_data *data =3D iio_priv(indio_dev);
-> > +	struct spi_device *spi =3D data->spi_device;
-> > +	u8 tx_buf =3D BMA220_REG_ACCEL_X | BMA220_READ_MASK;
-> > +	u8 rx_buf[3];
->=20
-> alignment requirements for SPI?
+patch 2:
+- addressed Peter's comments
 
-I'm not sure what you mean by this. The chip seems to respond correctly
-to the testing I've done so far.
+Tiberiu Breana (2):
+  iio: accel: Add support for Bosch BMA220
+  iio: accel: Add triggered buffer support for BMA220
 
-Tiberiu
+ drivers/iio/accel/Kconfig      |  10 ++
+ drivers/iio/accel/Makefile     |   1 +
+ drivers/iio/accel/bma220_spi.c | 319 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 330 insertions(+)
+ create mode 100644 drivers/iio/accel/bma220_spi.c
+
+-- 
+1.9.1
+
