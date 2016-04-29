@@ -1,116 +1,129 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1.radempa.de ([176.9.142.194]:40240 "EHLO mail.cosmopool.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752404AbcD2RpW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 29 Apr 2016 13:45:22 -0400
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Date: Fri, 29 Apr 2016 19:45:18 +0200
-From: Harald Geyer <harald@ccbib.org>
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	Marek Vasut <marex@denx.de>,
-	<linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 0/3] mxs-lradc: Add support for current sources
-In-Reply-To: <572379F5.8000501@i2se.com>
-References: <1461333147-11873-1-git-send-email-harald@ccbib.org>
- <572379F5.8000501@i2se.com>
-Message-ID: <aadb3f41413d093312c0af3e4c207a8a@ccbib.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <leonard.crestez@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	Ge Gao <GGao@invensense.com>
+Subject: [PATCH 2/7] iio: inv_mpu6050: Initial regcache support
+Date: Fri, 29 Apr 2016 22:02:31 +0300
+Message-Id: <f2950ebbb5468c8b7fbcfb8213ba9ebfd2133b8a.1461953982.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1461953982.git.leonard.crestez@intel.com>
+References: <cover.1461953982.git.leonard.crestez@intel.com>
+In-Reply-To: <cover.1461953982.git.leonard.crestez@intel.com>
+References: <cover.1461953982.git.leonard.crestez@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Stefan!
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 47 ++++++++++++++++++++++++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  5 ----
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  1 +
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  |  5 ----
+ 4 files changed, 48 insertions(+), 10 deletions(-)
 
-On 29.04.2016 17:12, Stefan Wahren wrote:
-> Hi Harald,
->
-> Am 22.04.2016 um 15:52 schrieb Harald Geyer:
->> Patch 1/3 changes the driver and updates the binding documentation
->> (I guess it is still in staging.)
->>
->> Patches 2/3 and 3/3 add the devicetree nodes to imx23 and imx28 
->> boards.
->> I'd like to get input whether this is actually desired. On boards 
->> where
->> these regulators would never be enabled this costs a few extra bytes 
->> of
->> RAM for allocation of the device data, because the nodes can't be 
->> easily
->> removed in .dts files which are including the .dtsi files. The 
->> alternative
->> is to add the new nodes to many .dts files, which would be a lot 
->> code
->> duplication.
->
-> if i get it right the real intention of this patch series is to make 
-> the
-> mxs-lradc provide resistance values instead of voltages.
-
-... or even temperature values if a thermistor is connected.
-
-> So how about
-> dropping the whole regulator stuff and provide the values as
-> IIO_RESISTANCE via iio interface?
-
-Can you elaborate on this?
-
-My thinking is that there should be a thermistor (or whatever else) 
-driver,
-that is a consumer of the regulator and a consumer of the IIO_VOLTAGE
-iio channel and provides a new device with an IIO_RESISTANCE or 
-IIO_TEMP
-channel. Maybe there is a simpler solution, that I'm missing?
-
-Actually I'm not 100% happy with the above solution myself, because if 
-we
-start supporting devices that act as an iio-multiplexer (some device 
-that
-is an iio consumer and provides many new iio channels and can control
-via gpios which of it child channels is actually routed to the upstream
-device) I don't know how to properly manage the regulator device.
-However since this is only hypothetical ATM, I think we don't have to
-worry about this too much.
-
-> Btw this feature should be only added to dts files where is actually 
-> used.
-
-Ok, so how do we figure out which boards these are?
-I use this on the olinuxino and I guess all evaluation boards support 
-the
-use case too. The others I don't know enough about to be sure and I 
-guess
-it's not a good idea to just wait until somebody speaks up and 
-complains
-that the feature is missing on board X ...
-
-Thanks,
-Harald
-
-> Regards
-> Stefan
->
->>
->> Harald Geyer (3):
->>   iio: mxs-lradc: Add regulators for current sources
->>   ARM: dts: imx23: Provide regulators for the current sources of the
->>     LRADC
->>   ARM: dts: imx28: Provide regulators for the current sources of the
->>     LRADC
->>
->>  .../bindings/staging/iio/adc/mxs-lradc.txt         |  29 ++++
->>  arch/arm/boot/dts/imx23.dtsi                       |   8 ++
->>  arch/arm/boot/dts/imx28.dtsi                       |   8 ++
->>  drivers/iio/adc/Kconfig                            |   1 +
->>  drivers/iio/adc/mxs-lradc.c                        | 152 
->> +++++++++++++++++++++
->>  5 files changed, 198 insertions(+)
->>
-
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index b269b37..5918c23 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -116,6 +116,53 @@ static const struct inv_mpu6050_hw hw_info[] = {
+ 	},
+ };
+ 
++static bool inv_mpu6050_volatile_reg(struct device *dev, unsigned int reg)
++{
++	if (reg >= INV_MPU6050_REG_RAW_ACCEL && reg < INV_MPU6050_REG_RAW_ACCEL + 6)
++		return true;
++	if (reg >= INV_MPU6050_REG_RAW_GYRO && reg < INV_MPU6050_REG_RAW_GYRO + 6)
++		return true;
++	switch (reg) {
++	case INV_MPU6050_REG_TEMPERATURE:
++	case INV_MPU6050_REG_TEMPERATURE + 1:
++	case INV_MPU6050_REG_USER_CTRL:
++	case INV_MPU6050_REG_PWR_MGMT_1:
++	case INV_MPU6050_REG_FIFO_COUNT_H:
++	case INV_MPU6050_REG_FIFO_COUNT_H + 1:
++	case INV_MPU6050_REG_FIFO_R_W:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static bool inv_mpu6050_precious_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case INV_MPU6050_REG_FIFO_R_W:
++		return true;
++	default:
++		return false;
++	}
++}
++
++/*
++ * Common regmap config for inv_mpu devices
++ *
++ * The current volatile/precious registers are common among supported devices.
++ * When that changes the volatile/precious callbacks should go through the
++ * inv_mpu6050_reg_map structs.
++ */
++const struct regmap_config inv_mpu_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++
++	.cache_type = REGCACHE_RBTREE,
++	.volatile_reg = inv_mpu6050_volatile_reg,
++	.precious_reg = inv_mpu6050_precious_reg,
++};
++EXPORT_SYMBOL_GPL(inv_mpu_regmap_config);
++
+ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+ {
+ 	unsigned int d, mgmt_1;
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index 1a424a6..1a8d1a5 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -20,11 +20,6 @@
+ #include <linux/module.h>
+ #include "inv_mpu_iio.h"
+ 
+-static const struct regmap_config inv_mpu_regmap_config = {
+-	.reg_bits = 8,
+-	.val_bits = 8,
+-};
+-
+ /*
+  * The i2c read/write needs to happen in unlocked mode. As the parent
+  * adapter is common. If we use locked versions, it will fail as
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index 47ca25b..297b0ef 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -291,3 +291,4 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ int inv_mpu_core_remove(struct device *dev);
+ int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on);
+ extern const struct dev_pm_ops inv_mpu_pmops;
++extern const struct regmap_config inv_mpu_regmap_config;
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+index 190a4a5..b3bd977 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+@@ -17,11 +17,6 @@
+ #include <linux/iio/iio.h>
+ #include "inv_mpu_iio.h"
+ 
+-static const struct regmap_config inv_mpu_regmap_config = {
+-	.reg_bits = 8,
+-	.val_bits = 8,
+-};
+-
+ static int inv_mpu_i2c_disable(struct iio_dev *indio_dev)
+ {
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
 -- 
-If you want to support my work:
-see http://friends.ccbib.org/harald/supporting/
-or donate via peercoin to P98LRdhit3gZbHDBe7ta5jtXrMJUms4p7w
-or bitcoin 1FUtd8T9jRN1rFz63vZz7s2fDtB6d6A7aS
+2.5.5
