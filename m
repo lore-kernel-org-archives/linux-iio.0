@@ -1,156 +1,342 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:9218 "EHLO mga11.intel.com"
+Received: from ns.pmeerw.net ([84.19.176.92]:44124 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752135AbcD2LHY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 29 Apr 2016 07:07:24 -0400
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 2/2] iio: accel: Add triggered buffer support for BMA220
-Date: Fri, 29 Apr 2016 14:07:56 +0300
-Message-Id: <1461928076-22076-3-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1461928076-22076-1-git-send-email-tiberiu.a.breana@intel.com>
-References: <1461928076-22076-1-git-send-email-tiberiu.a.breana@intel.com>
+	id S1752655AbcD2LTh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 29 Apr 2016 07:19:37 -0400
+Date: Fri, 29 Apr 2016 13:19:34 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>
+cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH 1/2] iio: accel: Add support for Bosch BMA220
+In-Reply-To: <1461928076-22076-2-git-send-email-tiberiu.a.breana@intel.com>
+Message-ID: <alpine.DEB.2.02.1604291311590.23132@pmeerw.net>
+References: <1461928076-22076-1-git-send-email-tiberiu.a.breana@intel.com> <1461928076-22076-2-git-send-email-tiberiu.a.breana@intel.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
----
- drivers/iio/accel/bma220_spi.c | 67 ++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 65 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
-index 440e045..d3c8bd6 100644
---- a/drivers/iio/accel/bma220_spi.c
-+++ b/drivers/iio/accel/bma220_spi.c
-@@ -11,9 +11,12 @@
- #include <linux/acpi.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/spi/spi.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
+> This commit adds basic support for the Bosch Sensortec BMA220
+> digital triaxial acceleration sensor.
+
+comments below
  
- #define BMA220_REG_ID				0x00
- #define BMA220_REG_ACCEL_X			0x02
-@@ -37,6 +40,14 @@
- 	.channel2 = IIO_MOD_##axis,					\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.scan_index = index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 6,						\
-+		.storagebits = 8,					\
-+		.shift = BMA220_DATA_SHIFT,				\
-+		.endianness = IIO_CPU,					\
-+	},								\
- }
- 
- static IIO_CONST_ATTR(in_accel_scale_available, BMA220_SCALE_AVAILABLE);
-@@ -57,12 +68,15 @@ static const int bma220_scale_table[][4] = {
- struct bma220_data {
- 	struct spi_device *spi_device;
- 	u8 range;
-+	struct mutex lock;
-+	s8 buffer[16]; /* 2x8-bit channels + 6x8 padding + 8x8 timestamp */
- };
- 
- static const struct iio_chan_spec bma220_channels[] = {
- 	BMA220_ACCEL_CHANNEL(0, BMA220_REG_ACCEL_X, X),
- 	BMA220_ACCEL_CHANNEL(1, BMA220_REG_ACCEL_Y, Y),
- 	BMA220_ACCEL_CHANNEL(2, BMA220_REG_ACCEL_Z, Z),
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
- static inline int bma220_read_reg(struct spi_device *spi, u8 reg)
-@@ -70,6 +84,42 @@ static inline int bma220_read_reg(struct spi_device *spi, u8 reg)
- 	return spi_w8r8(spi, reg | BMA220_READ_MASK);
- }
- 
-+static irqreturn_t bma220_trigger_handler(int irq, void *p)
-+{
-+	int i;
-+	int ret;
-+	int bit;
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct bma220_data *data = iio_priv(indio_dev);
-+	struct spi_device *spi = data->spi_device;
-+	u8 tx_buf = BMA220_REG_ACCEL_X | BMA220_READ_MASK;
-+	u8 rx_buf[3];
-+
-+	/* Do a bulk read, then pick out what we need. */
-+	mutex_lock(&data->lock);
-+	ret = spi_write_then_read(spi, &tx_buf, sizeof(tx_buf),
-+					rx_buf, sizeof(rx_buf));
-+	if (ret < 0) {
-+		mutex_unlock(&data->lock);
-+		goto err;
-+	}
-+
-+	i = 0;
-+	for_each_set_bit(bit, indio_dev->active_scan_mask,
-+			      indio_dev->masklength) {
-+		data->buffer[i] = rx_buf[i];
-+		i++;
-+	}
-+	mutex_unlock(&data->lock);
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+					   pf->timestamp);
-+err:
-+	iio_trigger_notify_done(indio_dev->trig);
-+	return IRQ_HANDLED;
-+}
-+
- static int bma220_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
-@@ -155,6 +205,7 @@ static int bma220_probe(struct spi_device *spi)
- 	data = iio_priv(indio_dev);
- 	data->spi_device = spi;
- 	spi_set_drvdata(spi, indio_dev);
-+	mutex_init(&data->lock);
- 
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->info = &bma220_info;
-@@ -167,11 +218,22 @@ static int bma220_probe(struct spi_device *spi)
- 	if (ret != BMA220_CHIP_ID)
- 		return -ENODEV;
- 
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 bma220_trigger_handler, NULL);
-+	if (ret < 0) {
-+		dev_err(&data->spi_device->dev,
-+			"iio triggered buffer setup failed\n");
-+		return ret;
-+	}
-+
- 	ret = iio_device_register(indio_dev);
--	if (ret < 0)
-+	if (ret < 0) {
- 		dev_err(&spi->dev, "iio_device_register failed\n");
-+		iio_triggered_buffer_cleanup(indio_dev);
-+		return ret;
-+	}
- 
--	return ret;
-+	return 0;
- }
- 
- static int bma220_remove(struct spi_device *spi)
-@@ -180,6 +242,7 @@ static int bma220_remove(struct spi_device *spi)
- 	struct bma220_data *data = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
- 
- 	return bma220_read_reg(data->spi_device, BMA220_REG_SUSPEND);
- }
+> Includes:
+> - raw readings
+> - ACPI detection
+> - power management
+> 
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+> ---
+>  drivers/iio/accel/Kconfig      |  10 ++
+>  drivers/iio/accel/Makefile     |   1 +
+>  drivers/iio/accel/bma220_spi.c | 239 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 250 insertions(+)
+>  create mode 100644 drivers/iio/accel/bma220_spi.c
+> 
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index e4a758c..048fb91 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -40,6 +40,16 @@ config BMC150_ACCEL_SPI
+>  	tristate
+>  	select REGMAP_SPI
+>  
+> +config BMA220
+
+alphabetic order please
+
+> +    tristate "Bosch BMA220 3-Axis Accelerometer Driver"
+> +	depends on SPI
+> +    help
+> +      Say yes here to add support for the Bosch BMA220 triaxial
+> +      acceleration sensor.
+> +
+> +      To compile this driver as a module, choose M here: the
+> +      module will be called bma220_spi.
+> +
+>  config HID_SENSOR_ACCEL_3D
+>  	depends on HID_SENSOR_HUB
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> index 71b6794..7ccbcde 100644
+> --- a/drivers/iio/accel/Makefile
+> +++ b/drivers/iio/accel/Makefile
+> @@ -7,6 +7,7 @@ obj-$(CONFIG_BMA180) += bma180.o
+>  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+>  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+>  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+> +obj-$(CONFIG_BMA220) += bma220_spi.o
+
+alphabetic order please
+
+>  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+>  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+>  obj-$(CONFIG_KXSD9)	+= kxsd9.o
+> diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
+> new file mode 100644
+> index 0000000..440e045
+> --- /dev/null
+> +++ b/drivers/iio/accel/bma220_spi.c
+> @@ -0,0 +1,239 @@
+> +/**
+> + * BMA220 Digital triaxial acceleration sensor driver
+> + *
+> + * Copyright (c) 2016, Intel Corporation.
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License. See the file COPYING in the main
+> + * directory of this archive for more details.
+> + */
+> +
+> +#include <linux/acpi.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/spi/spi.h>
+> +
+> +#define BMA220_REG_ID				0x00
+> +#define BMA220_REG_ACCEL_X			0x02
+> +#define BMA220_REG_ACCEL_Y			0x03
+> +#define BMA220_REG_ACCEL_Z			0x04
+> +#define BMA220_REG_RANGE			0x11
+> +#define BMA220_REG_SUSPEND			0x18
+> +
+> +#define BMA220_CHIP_ID				0xDD
+> +#define BMA220_READ_MASK			0x80
+> +#define BMA220_RANGE_MASK			0x03
+> +#define BMA220_DATA_SHIFT			2
+> +
+> +#define BMA220_DEVICE_NAME			"bma220"
+> +#define BMA220_SCALE_AVAILABLE			"0.623 1.248 2.491 4.983"
+> +
+> +#define BMA220_ACCEL_CHANNEL(index, reg, axis) {			\
+> +	.type = IIO_ACCEL,						\
+> +	.address = reg,							\
+> +	.modified = 1,							\
+> +	.channel2 = IIO_MOD_##axis,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
+> +}
+> +
+> +static IIO_CONST_ATTR(in_accel_scale_available, BMA220_SCALE_AVAILABLE);
+> +
+> +static struct attribute *bma220_attributes[] = {
+> +	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group bma220_attribute_group = {
+> +	.attrs = bma220_attributes
+
+end with , to keep it easily extensible
+
+> +};
+> +
+> +static const int bma220_scale_table[][4] = {
+> +	{0, 623000}, {1, 248000}, {2, 491000}, {4, 983000}
+> +};
+> +
+> +struct bma220_data {
+> +	struct spi_device *spi_device;
+> +	u8 range;
+
+range is not needed
+
+> +};
+> +
+> +static const struct iio_chan_spec bma220_channels[] = {
+> +	BMA220_ACCEL_CHANNEL(0, BMA220_REG_ACCEL_X, X),
+> +	BMA220_ACCEL_CHANNEL(1, BMA220_REG_ACCEL_Y, Y),
+> +	BMA220_ACCEL_CHANNEL(2, BMA220_REG_ACCEL_Z, Z),
+> +};
+> +
+> +static inline int bma220_read_reg(struct spi_device *spi, u8 reg)
+> +{
+> +	return spi_w8r8(spi, reg | BMA220_READ_MASK);
+> +}
+> +
+> +static int bma220_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long mask)
+> +{
+> +	int ret;
+> +	struct bma220_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = bma220_read_reg(data->spi_device, chan->address);
+> +		if (ret < 0)
+> +			return -EINVAL;
+> +		*val = sign_extend32(ret >> BMA220_DATA_SHIFT, 5);
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = bma220_read_reg(data->spi_device, BMA220_REG_RANGE);
+> +		if (ret < 0)
+> +			return ret;
+> +		data->range = ret & BMA220_RANGE_MASK;
+> +		*val = bma220_scale_table[data->range][0];
+> +		*val2 = bma220_scale_table[data->range][1];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int bma220_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	int i;
+> +	int ret;
+> +	u8 buf[2];
+
+alignment requirements?
+
+> +	int index = -1;
+> +	struct bma220_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		for (i = 0; i < ARRAY_SIZE(bma220_scale_table); i++)
+> +			if (val == bma220_scale_table[i][0] &&
+> +			    val2 == bma220_scale_table[i][1]) {
+> +				index = i;
+> +				break;
+> +			}
+> +		if (index < 0)
+> +			return -EINVAL;
+> +
+> +		buf[0] = BMA220_REG_RANGE;
+> +		buf[1] = index;
+> +		ret = spi_write(data->spi_device, &buf, sizeof(buf));
+> +		if (ret < 0)
+> +			dev_err(&data->spi_device->dev,
+> +				"failed to set measurement range\n");
+> +		else
+> +			data->range = index;
+> +
+> +		return ret;
+
+return 0
+
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info bma220_info = {
+> +	.driver_module		= THIS_MODULE,
+> +	.read_raw		= bma220_read_raw,
+> +	.write_raw		= bma220_write_raw,
+> +	.attrs			= &bma220_attribute_group,
+> +};
+> +
+> +static int bma220_probe(struct spi_device *spi)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev;
+> +	struct bma220_data *data;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
+> +	if (!indio_dev) {
+> +		dev_err(&spi->dev, "iio allocation failed!\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->spi_device = spi;
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->info = &bma220_info;
+> +	indio_dev->name = BMA220_DEVICE_NAME;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = bma220_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(bma220_channels);
+> +
+> +	ret = bma220_read_reg(data->spi_device, BMA220_REG_ID);
+> +	if (ret != BMA220_CHIP_ID)
+> +		return -ENODEV;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		dev_err(&spi->dev, "iio_device_register failed\n");
+> +
+> +	return ret;
+> +}
+> +
+> +static int bma220_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct bma220_data *data = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return bma220_read_reg(data->spi_device, BMA220_REG_SUSPEND);
+
+where is the 'resume' in _probe()?
+
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int bma220_suspend(struct device *dev)
+> +{
+> +	struct bma220_data *data =
+> +			iio_priv(spi_get_drvdata(to_spi_device(dev)));
+> +
+> +	/* The chip can be suspended/woken up by a simple register read. */
+> +	return bma220_read_reg(data->spi_device, BMA220_REG_SUSPEND);
+> +}
+> +
+> +static int bma220_resume(struct device *dev)
+> +{
+> +	struct bma220_data *data =
+> +			iio_priv(spi_get_drvdata(to_spi_device(dev)));
+> +
+> +	return bma220_read_reg(data->spi_device, BMA220_REG_SUSPEND);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(bma220_pm_ops, bma220_suspend, bma220_resume);
+> +
+> +#define BMA220_PM_OPS (&bma220_pm_ops)
+> +#else
+> +#define BMA220_PM_OPS NULL
+> +#endif
+> +
+> +static const struct spi_device_id bma220_spi_id[] = {
+> +	{"bma220", 0},
+> +	{}
+> +};
+> +
+> +static const struct acpi_device_id bma220_acpi_id[] = {
+> +	{"BMA0220", 0},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(spi, bma220_spi_id);
+> +
+> +static struct spi_driver bma220_driver = {
+> +	.driver = {
+> +		.name = "bma220_spi",
+> +		.pm = BMA220_PM_OPS,
+> +		.acpi_match_table = ACPI_PTR(bma220_acpi_id),
+> +	},
+> +	.probe =            bma220_probe,
+> +	.remove =           bma220_remove,
+> +	.id_table =         bma220_spi_id,
+> +};
+> +
+> +module_spi_driver(bma220_driver);
+> +
+> +MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
+> +MODULE_DESCRIPTION("BMA220 acceleration sensor driver");
+> +MODULE_LICENSE("GPL v2");
+> 
+
 -- 
-1.9.1
 
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
