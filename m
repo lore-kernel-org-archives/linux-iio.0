@@ -1,38 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:37651 "EHLO
-	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753069AbcD2JEX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Apr 2016 05:04:23 -0400
-Date: Fri, 29 Apr 2016 12:03:31 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+Received: from mail-db3on0105.outbound.protection.outlook.com ([157.55.234.105]:48864
+	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752066AbcD2JRG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 29 Apr 2016 05:17:06 -0400
+Subject: Re: [PATCH v7 16/24] i2c: allow adapter drivers to override the
+ adapter locking
+To: Wolfram Sang <wsa@the-dreams.de>
+References: <1461165484-2314-1-git-send-email-peda@axentia.se>
+ <1461165484-2314-17-git-send-email-peda@axentia.se>
+ <20160428205018.GA3553@katana>
+ <470abe38-ab5f-2d0a-305b-e1a3253ce5a9@axentia.se>
+ <20160429071604.GB1870@katana>
+CC: <linux-kernel@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: [patch] iio: dac: ad5592r: Off by one bug in ad5592r_alloc_channels()
-Message-ID: <20160429090330.GB18656@mwanda>
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Kalle Valo <kvalo@codeaurora.org>,
+	Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Terry Heo <terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, Peter Rosin <peda@lysator.liu.se>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <357e6fda-73b3-fb7f-c341-97f09af1943f@axentia.se>
+Date: Fri, 29 Apr 2016 11:16:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20160429071604.GB1870@katana>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The > here should be >= or we go beyond the end for the array.
+On 2016-04-29 09:16, Wolfram Sang wrote:
+>> Yes, obviously... I'll make that change locally and wait for the rest.
+> Another nit: You could use '--strict' with checkpatch and see if you
+> want to fix the issues reported. I am not keen on those (except for
+> 'space around operators'), it's a matter of taste I guess, but maybe you
+> like some of the suggestions.
+>
+Yes, they look like reasonable complaints.
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+So, I fixed all of them locally except the complaint about lack of comment
+on the new struct mutex member in struct si2168_dev (patch 21/24),
+because that patch is Anttis and he's the maintainer of that driver...
 
-diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
-index 948f600..69bde59 100644
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -525,7 +525,7 @@ static int ad5592r_alloc_channels(struct ad5592r_state *st)
- 
- 	device_for_each_child_node(st->dev, child) {
- 		ret = fwnode_property_read_u32(child, "reg", &reg);
--		if (ret || reg > ARRAY_SIZE(st->channel_modes))
-+		if (ret || reg >= ARRAY_SIZE(st->channel_modes))
- 			continue;
- 
- 		ret = fwnode_property_read_u32(child, "adi,mode", &tmp);
+Antti, if you want that fixed as part of this series, send a suitable comment
+for the mutex this way and I'll incorporate it.
+
+Cheers,
+Peter
+
