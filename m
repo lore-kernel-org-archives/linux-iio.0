@@ -1,75 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga11.intel.com ([192.55.52.93]:14880 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753098AbcD2LnO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 29 Apr 2016 07:43:14 -0400
+	id S1752685AbcD2LnL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 29 Apr 2016 07:43:11 -0400
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: jic23@kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	daniel.baluta@intel.com
-Subject: [PATCH 3/3] imu: bmi160: Add avail frequency and scale attributes
-Date: Fri, 29 Apr 2016 14:42:35 +0300
-Message-Id: <1461930155-13871-4-git-send-email-daniel.baluta@intel.com>
+Subject: [PATCH 1/3] iio: bmi160: Fix output data rate for accel
+Date: Fri, 29 Apr 2016 14:42:33 +0300
+Message-Id: <1461930155-13871-2-git-send-email-daniel.baluta@intel.com>
 In-Reply-To: <1461930155-13871-1-git-send-email-daniel.baluta@intel.com>
 References: <1461930155-13871-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Format is INT_PLUS_MICRO and micro odr part of ODR should
+be parts of a micro.
+
+Also s/8000/800 this is obviously a typo.
+
+Fixes: 77c4ad2d6a9 ("iio: imu: Add initial support for Bosch BMI160")
 Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- drivers/iio/imu/bmi160/bmi160_core.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/iio/imu/bmi160/bmi160_core.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index b8a290e..97928d5 100644
+index 0bf92b0..cd9b75e 100644
 --- a/drivers/iio/imu/bmi160/bmi160_core.c
 +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -20,6 +20,7 @@
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/buffer.h>
-+#include <linux/iio/sysfs.h>
- 
- #include "bmi160.h"
- 
-@@ -466,10 +467,36 @@ static int bmi160_write_raw(struct iio_dev *indio_dev,
- 	return 0;
- }
- 
-+static
-+IIO_CONST_ATTR(in_accel_sampling_frequency_available,
-+	       "0.78125 1.5625 3.125 6.25 12.5 25 50 100 200 400 800 1600");
-+static
-+IIO_CONST_ATTR(in_anglvel_sampling_frequency_available,
-+	       "25 50 100 200 400 800 1600 3200");
-+static
-+IIO_CONST_ATTR(in_accel_scale_available,
-+	       "0.000598 0.001197 0.002394 0.004788");
-+static
-+IIO_CONST_ATTR(in_anglvel_scale_available,
-+	       "0.001065 0.000532 0.000266 0.000133 0.000066");
-+
-+static struct attribute *bmi160_attrs[] = {
-+	&iio_const_attr_in_accel_sampling_frequency_available.dev_attr.attr,
-+	&iio_const_attr_in_anglvel_sampling_frequency_available.dev_attr.attr,
-+	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-+	&iio_const_attr_in_anglvel_scale_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group bmi160_attrs_group = {
-+	.attrs = bmi160_attrs,
-+};
-+
- static const struct iio_info bmi160_info = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = bmi160_read_raw,
- 	.write_raw = bmi160_write_raw,
-+	.attrs = &bmi160_attrs_group,
+@@ -209,11 +209,11 @@ static const struct  bmi160_scale_item bmi160_scale_table[] = {
  };
  
- static const char *bmi160_match_acpi_device(struct device *dev)
+ static const struct bmi160_odr bmi160_accel_odr[] = {
+-	{0x01, 0, 78125},
+-	{0x02, 1, 5625},
+-	{0x03, 3, 125},
+-	{0x04, 6, 25},
+-	{0x05, 12, 5},
++	{0x01, 0, 781250},
++	{0x02, 1, 562500},
++	{0x03, 3, 125000},
++	{0x04, 6, 250000},
++	{0x05, 12, 500000},
+ 	{0x06, 25, 0},
+ 	{0x07, 50, 0},
+ 	{0x08, 100, 0},
+@@ -229,7 +229,7 @@ static const struct bmi160_odr bmi160_gyro_odr[] = {
+ 	{0x08, 100, 0},
+ 	{0x09, 200, 0},
+ 	{0x0A, 400, 0},
+-	{0x0B, 8000, 0},
++	{0x0B, 800, 0},
+ 	{0x0C, 1600, 0},
+ 	{0x0D, 3200, 0},
+ };
 -- 
 2.5.0
 
