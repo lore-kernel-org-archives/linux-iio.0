@@ -1,30 +1,27 @@
-Return-Path: <akinobu.mita@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <CAKzfze_U835vkSvXCpcPxE3wuUZTraFEMy88mouXyExQYhq-9g@mail.gmail.com>
-References: <1461505931-21884-1-git-send-email-akinobu.mita@gmail.com>
-	<1461505931-21884-2-git-send-email-akinobu.mita@gmail.com>
-	<CAKzfze_U835vkSvXCpcPxE3wuUZTraFEMy88mouXyExQYhq-9g@mail.gmail.com>
-Date: Wed, 27 Apr 2016 20:33:18 +0900
-Message-ID: <CAC5umyh4mQj9ADcF1h4GrGbUbQX89NWio8hTR_eFYyeXL2qthg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] iio: pressure: bmp280: add support for BMP180
-From: Akinobu Mita <akinobu.mita@gmail.com>
-To: Matt Ranostay <mranostay@gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Christoph Mair <christoph.mair@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	daniel.baluta@intel.com
+Subject: [PATCH 0/3] Add available sampling frequency and scale attributes
+Date: Fri, 29 Apr 2016 14:42:32 +0300
+Message-Id: <1461930155-13871-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-2016-04-27 12:21 GMT+09:00 Matt Ranostay <mranostay@gmail.com>:
->> @@ -376,13 +711,13 @@ static int bmp280_probe(struct i2c_client *client,
->>         ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
->>         if (ret < 0)
->>                 return ret;
->> -       if (chip_id != BMP280_CHIP_ID) {
->> +       if (chip_id != id->driver_data) {
->>                 dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
->>                         BMP280_CHIP_ID, chip_id);
->
-> BMP280_CHIP_ID should be id->driver_data as well
+First two patches are bugfixes related to sampling frequency and the last
+one is adding support for exporting available sampling frequency and scale.
 
-Good catch!  I'll prepare a fix.
+Daniel Baluta (3):
+  iio: bmi160: Fix output data rate for accel
+  iio: bmi160: Fix ODR setting
+  imu: bmi160: Add avail frequency and scale attributes
+
+ drivers/iio/imu/bmi160/bmi160_core.c | 43 +++++++++++++++++++++++++++++-------
+ 1 file changed, 35 insertions(+), 8 deletions(-)
+
+-- 
+2.5.0
