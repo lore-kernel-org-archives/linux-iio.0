@@ -1,83 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f65.google.com ([74.125.82.65]:34567 "EHLO
-	mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751623AbcEBGHA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2016 02:07:00 -0400
-MIME-Version: 1.0
-In-Reply-To: <500c5874-4ef8-b37b-e12f-80fd5205c172@kernel.org>
-References: <1461441479-23218-1-git-send-email-stefan.wahren@i2se.com>
-	<500c5874-4ef8-b37b-e12f-80fd5205c172@kernel.org>
-Date: Mon, 2 May 2016 08:06:58 +0200
-Message-ID: <CAL7P5jJF9EL4Zk-AC9csyadfrmUp4R+6ceVAN_kNm7dKgo+ZgQ@mail.gmail.com>
-Subject: Re: [PATCH V3 0/3] iio: mxs-lradc: simplify TS handling
-From: =?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Stefan Wahren <stefan.wahren@i2se.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Marek Vasut <marex@denx.de>,
-	Fabio Estevam <fabio.estevam@nxp.com>,
-	Juergen Borleis <jbe@pengutronix.de>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-yw0-f177.google.com ([209.85.161.177]:34172 "EHLO
+	mail-yw0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752323AbcEAWm4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 18:42:56 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v2 01/10] isa: Implement the module_isa_driver macro
+Date: Sun,  1 May 2016 18:42:47 -0400
+Message-Id: <76b1401413d22c0b6e095a6fdeda59ca75f7ef4b.1462141338.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1462141338.git.vilhelm.gray@gmail.com>
+References: <cover.1462141338.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+The module_isa_driver macro is a helper macro for ISA drivers which do
+not do anything special in module init/exit. This eliminates a lot of
+boilerplate code. Each module may only use this macro once, and calling
+it replaces module_init and module_exit.
 
-On Sun, May 1, 2016 at 10:08 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> Ksenija,
->
-> How would you prefer we handle this interaction of this set and your series.
-> Options are:
->
-> 1. I apply these now and you rebase on top of the result.
-> 2. You pull these into your series, probably after the driver split making sure these
->    improvements end up in the new drivers.
-> 3. We ask Stephan to re roll them at a later date (least preferred option as that adds
-> another person we need to chase down to get to the end of this process!)
->
-> No immediate rush on any of the above as we've probably missed this cycle now anyway.
-> I've been cut off today so not sure what Linus has said today.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ include/linux/isa.h | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-My understanding was that you will take this patch series so I already included
-changes made by this patch set in touchscreen part, I will check if I missed
-something.
-I think the best is to apply these now.
+diff --git a/include/linux/isa.h b/include/linux/isa.h
+index b0270e3..e394917 100644
+--- a/include/linux/isa.h
++++ b/include/linux/isa.h
+@@ -36,4 +36,25 @@ static inline void isa_unregister_driver(struct isa_driver *d)
+ }
+ #endif
+ 
++/**
++ * module_isa_driver() - Helper macro for registering a ISA driver
++ * @__isa_driver: isa_driver struct
++ * @__num_isa_dev: number of devices to register
++ *
++ * Helper macro for ISA drivers which do not do anything special in module
++ * init/exit. This eliminates a lot of boilerplate code. Each module may only
++ * use this macro once, and calling it replaces module_init and module_exit.
++ */
++#define module_isa_driver(__isa_driver, __num_isa_dev) \
++static int __init __isa_driver##_init(void) \
++{ \
++	return isa_register_driver(&(__isa_driver), __num_isa_dev); \
++} \
++module_init(__isa_driver##_init); \
++static void __exit __isa_driver##_exit(void) \
++{ \
++	isa_unregister_driver(&(__isa_driver)); \
++} \
++module_exit(__isa_driver##_exit);
++
+ #endif /* __LINUX_ISA_H */
+-- 
+2.7.3
 
-Thanks,
-Ksenija
-
-> Jonathan
-> On 23/04/16 20:57, Stefan Wahren wrote:
->> This patch series simplifies TS handling of mxs-lradc.
->>
->> These patches has been tested with i.MX23 and i.MX28 but without
->> a touchscreen. I added only a bogus touchscreen in devicetree.
->>
->> It would be nice if someone with a real touchscreen could test it.
->>
->> Changes in V3:
->> - remove dev.parent assignment as suggested by Dimitry
->> - add new patch to remove mxs_lradc_ts_unregister
->> - remove PM implementation from series in order to wait until
->>   Ksenija has split the driver
->>
->> Changes in V2:
->> - rebase on iio/testing since patch 2 and 3 from V1 has been applied
->> - also remove input_unregister_device in patch 1
->> - use mask of virtual channels for IRQ disabling in patch 2
->>
->> Stefan Wahren (3):
->>   iio: mxs-lradc: simplify TS registration
->>   iio: mxs-lradc: remove mxs_lradc_ts_unregister
->>   iio: mxs-lradc: disable only masked channels in
->>     mxs_lradc_hw_stop
->>
->>  drivers/iio/adc/mxs-lradc.c |   34 ++++++----------------------------
->>  1 file changed, 6 insertions(+), 28 deletions(-)
->>
->
