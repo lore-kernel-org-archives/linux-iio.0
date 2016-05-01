@@ -1,251 +1,565 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48850 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48888 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752891AbcEAV02 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:26:28 -0400
-Subject: Re: [RFC PATCH v1 1/9] iio:st_pressure:initial lps22hb sensor support
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1461056711.git.gregor.boirie@parrot.com>
- <64f4465fa47a34107b58ab29ad07e2817e3d9a92.1461056711.git.gregor.boirie@parrot.com>
- <a4333aa7-5403-3110-5c8f-e7ee977104eb@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>
+	with ESMTP id S1752524AbcEAV05 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:26:57 -0400
+Subject: Re: [PATCH 1/3] mfd: mxs-lradc: Add support for mxs-lradc MFD
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	linux-kernel@vger.kernel.org
+References: <cover.1461930102.git.ksenija.stanojevic@gmail.com>
+ <a93050366ed452b147652abfad21a87f4af87bfb.1461930102.git.ksenija.stanojevic@gmail.com>
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+	linux-input@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, marex@denx.de, linux-iio@vger.kernel.org,
+	harald@ccbib.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7670eb99-fdec-f14d-c8ac-35b155398479@kernel.org>
-Date: Sun, 1 May 2016 20:28:39 +0100
+Message-ID: <53b9653d-0d22-9fa1-a63f-cc320edc470f@kernel.org>
+Date: Sun, 1 May 2016 14:06:03 +0100
 MIME-Version: 1.0
-In-Reply-To: <a4333aa7-5403-3110-5c8f-e7ee977104eb@kernel.org>
+In-Reply-To: <a93050366ed452b147652abfad21a87f4af87bfb.1461930102.git.ksenija.stanojevic@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/04/16 10:29, Jonathan Cameron wrote:
-> On 19/04/16 10:18, Gregor Boirie wrote:
->> Initial support for ST LPS22HB pressure sensor. Datasheet:
->> http://www2.st.com/resource/en/datasheet/lps22hb.pdf
->>
->> Features:
->> * pressure data and timestamping channels
->> * sampling frequency selection
->> * interrupt based trigger
->> * over I2C or SPI
->>
->> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-> Looks good to me.  I would however like an Ack from Denis if possible
-> as this is his driver.  Same is true for this whole series.
-Denis, are you likely to get a chance to look at this series?
+On 29/04/16 12:47, Ksenija Stanojevic wrote:
+> Add core files for mxs-lradc MFD driver.
+> 
+> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Only a few trivial additions to others comments from me.
 
-No immediate rush if you are busy right now as we've almost certainly
-missed the merge window anyway and there are open questions on approach
-taken in patch 4.
+Looking pretty good.
 
 Jonathan
+> ---
+>  drivers/mfd/Kconfig           |  33 +++++--
+>  drivers/mfd/Makefile          |   1 +
+>  drivers/mfd/mxs-lradc.c       | 213 ++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/mfd/mxs-lradc.h | 210 +++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 449 insertions(+), 8 deletions(-)
+>  create mode 100644 drivers/mfd/mxs-lradc.c
+>  create mode 100644 include/linux/mfd/mxs-lradc.h
 > 
-> Jonathan
->> ---
->>  .../devicetree/bindings/iio/st-sensors.txt         |  1 +
->>  drivers/iio/pressure/Kconfig                       |  2 +-
->>  drivers/iio/pressure/st_pressure.h                 |  1 +
->>  drivers/iio/pressure/st_pressure_core.c            | 93 +++++++++++++++++++++-
->>  drivers/iio/pressure/st_pressure_i2c.c             |  4 +
->>  drivers/iio/pressure/st_pressure_spi.c             |  1 +
->>  6 files changed, 97 insertions(+), 5 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
->> index 637e283..2bb8931 100644
->> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
->> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
->> @@ -63,3 +63,4 @@ Pressure sensors:
->>  - st,lps001wp-press
->>  - st,lps25h-press
->>  - st,lps331ap-press
->> +- st,lps22hb-press
->> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
->> index 8de0192..d63d280 100644
->> --- a/drivers/iio/pressure/Kconfig
->> +++ b/drivers/iio/pressure/Kconfig
->> @@ -118,7 +118,7 @@ config IIO_ST_PRESS
->>  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
->>  	help
->>  	  Say yes here to build support for STMicroelectronics pressure
->> -	  sensors: LPS001WP, LPS25H, LPS331AP.
->> +	  sensors: LPS001WP, LPS25H, LPS331AP, LPS22HB.
->>  
->>  	  This driver can also be built as a module. If so, these modules
->>  	  will be created:
->> diff --git a/drivers/iio/pressure/st_pressure.h b/drivers/iio/pressure/st_pressure.h
->> index f5f4149..903a21e 100644
->> --- a/drivers/iio/pressure/st_pressure.h
->> +++ b/drivers/iio/pressure/st_pressure.h
->> @@ -17,6 +17,7 @@
->>  #define LPS001WP_PRESS_DEV_NAME		"lps001wp"
->>  #define LPS25H_PRESS_DEV_NAME		"lps25h"
->>  #define LPS331AP_PRESS_DEV_NAME		"lps331ap"
->> +#define LPS22HB_PRESS_DEV_NAME		"lps22hb"
->>  
->>  /**
->>   * struct st_sensors_platform_data - default press platform data
->> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
->> index 9e9b72a..c0ff3bf 100644
->> --- a/drivers/iio/pressure/st_pressure_core.c
->> +++ b/drivers/iio/pressure/st_pressure_core.c
->> @@ -113,6 +113,26 @@
->>  #define ST_PRESS_LPS25H_OUT_XL_ADDR		0x28
->>  #define ST_TEMP_LPS25H_OUT_L_ADDR		0x2b
->>  
->> +/* CUSTOM VALUES FOR LPS22HB SENSOR */
->> +#define ST_PRESS_LPS22HB_WAI_EXP		0xb1
->> +#define ST_PRESS_LPS22HB_ODR_ADDR		0x10
->> +#define ST_PRESS_LPS22HB_ODR_MASK		0x70
->> +#define ST_PRESS_LPS22HB_ODR_AVL_1HZ_VAL	0x01
->> +#define ST_PRESS_LPS22HB_ODR_AVL_10HZ_VAL	0x02
->> +#define ST_PRESS_LPS22HB_ODR_AVL_25HZ_VAL	0x03
->> +#define ST_PRESS_LPS22HB_ODR_AVL_50HZ_VAL	0x04
->> +#define ST_PRESS_LPS22HB_ODR_AVL_75HZ_VAL	0x05
->> +#define ST_PRESS_LPS22HB_PW_ADDR		0x10
->> +#define ST_PRESS_LPS22HB_PW_MASK		0x70
->> +#define ST_PRESS_LPS22HB_BDU_ADDR		0x10
->> +#define ST_PRESS_LPS22HB_BDU_MASK		0x02
->> +#define ST_PRESS_LPS22HB_DRDY_IRQ_ADDR		0x12
->> +#define ST_PRESS_LPS22HB_DRDY_IRQ_INT1_MASK	0x04
->> +#define ST_PRESS_LPS22HB_DRDY_IRQ_INT2_MASK	0x08
->> +#define ST_PRESS_LPS22HB_IHL_IRQ_ADDR		0x12
->> +#define ST_PRESS_LPS22HB_IHL_IRQ_MASK		0x80
->> +#define ST_PRESS_LPS22HB_MULTIREAD_BIT		true
->> +
->>  static const struct iio_chan_spec st_press_1_channels[] = {
->>  	{
->>  		.type = IIO_PRESSURE,
->> @@ -183,6 +203,27 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
->>  	IIO_CHAN_SOFT_TIMESTAMP(1)
->>  };
->>  
->> +static const struct iio_chan_spec st_press_lps22hb_channels[] = {
->> +	{
->> +		.type = IIO_PRESSURE,
->> +		.channel2 = IIO_NO_MOD,
->> +		.address = ST_PRESS_1_OUT_XL_ADDR,
->> +		.scan_index = 0,
->> +		.scan_type = {
->> +			.sign = 'u',
->> +			.realbits = 24,
->> +			.storagebits = 24,
->> +			.endianness = IIO_LE,
->> +		},
->> +		.info_mask_separate =
->> +			BIT(IIO_CHAN_INFO_RAW) |
->> +			BIT(IIO_CHAN_INFO_SCALE),
->> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->> +		.modified = 0,
->> +	},
->> +	IIO_CHAN_SOFT_TIMESTAMP(1)
->> +};
->> +
->>  static const struct st_sensor_settings st_press_sensors_settings[] = {
->>  	{
->>  		.wai = ST_PRESS_LPS331AP_WAI_EXP,
->> @@ -326,6 +367,51 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
->>  		.multi_read_bit = ST_PRESS_LPS25H_MULTIREAD_BIT,
->>  		.bootime = 2,
->>  	},
->> +	{
->> +		.wai = ST_PRESS_LPS22HB_WAI_EXP,
->> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->> +		.sensors_supported = {
->> +			[0] = LPS22HB_PRESS_DEV_NAME,
->> +		},
->> +		.ch = (struct iio_chan_spec *)st_press_lps22hb_channels,
->> +		.num_ch = ARRAY_SIZE(st_press_lps22hb_channels),
->> +		.odr = {
->> +			.addr = ST_PRESS_LPS22HB_ODR_ADDR,
->> +			.mask = ST_PRESS_LPS22HB_ODR_MASK,
->> +			.odr_avl = {
->> +				{ 1, ST_PRESS_LPS22HB_ODR_AVL_1HZ_VAL, },
->> +				{ 10, ST_PRESS_LPS22HB_ODR_AVL_10HZ_VAL, },
->> +				{ 25, ST_PRESS_LPS22HB_ODR_AVL_25HZ_VAL, },
->> +				{ 50, ST_PRESS_LPS22HB_ODR_AVL_50HZ_VAL, },
->> +				{ 75, ST_PRESS_LPS22HB_ODR_AVL_75HZ_VAL, },
->> +			},
->> +		},
->> +		.pw = {
->> +			.addr = ST_PRESS_LPS22HB_PW_ADDR,
->> +			.mask = ST_PRESS_LPS22HB_PW_MASK,
->> +			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
->> +		},
->> +		.fs = {
->> +			.fs_avl = {
->> +				[0] = {
->> +					.num = ST_PRESS_FS_AVL_1260MB,
->> +					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
->> +				},
->> +			},
->> +		},
->> +		.bdu = {
->> +			.addr = ST_PRESS_LPS22HB_BDU_ADDR,
->> +			.mask = ST_PRESS_LPS22HB_BDU_MASK,
->> +		},
->> +		.drdy_irq = {
->> +			.addr = ST_PRESS_LPS22HB_DRDY_IRQ_ADDR,
->> +			.mask_int1 = ST_PRESS_LPS22HB_DRDY_IRQ_INT1_MASK,
->> +			.mask_int2 = ST_PRESS_LPS22HB_DRDY_IRQ_INT2_MASK,
->> +			.addr_ihl = ST_PRESS_LPS22HB_IHL_IRQ_ADDR,
->> +			.mask_ihl = ST_PRESS_LPS22HB_IHL_IRQ_MASK,
->> +		},
->> +		.multi_read_bit = ST_PRESS_LPS22HB_MULTIREAD_BIT,
->> +	},
->>  };
->>  
->>  static int st_press_write_raw(struct iio_dev *indio_dev,
->> @@ -454,10 +540,9 @@ int st_press_common_probe(struct iio_dev *indio_dev)
->>  	indio_dev->channels = press_data->sensor_settings->ch;
->>  	indio_dev->num_channels = press_data->sensor_settings->num_ch;
->>  
->> -	if (press_data->sensor_settings->fs.addr != 0)
->> -		press_data->current_fullscale =
->> -			(struct st_sensor_fullscale_avl *)
->> -				&press_data->sensor_settings->fs.fs_avl[0];
->> +	press_data->current_fullscale =
->> +		(struct st_sensor_fullscale_avl *)
->> +			&press_data->sensor_settings->fs.fs_avl[0];
->>  
->>  	press_data->odr = press_data->sensor_settings->odr.odr_avl[0].hz;
->>  
->> diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
->> index 8fcf976..ed18701 100644
->> --- a/drivers/iio/pressure/st_pressure_i2c.c
->> +++ b/drivers/iio/pressure/st_pressure_i2c.c
->> @@ -32,6 +32,10 @@ static const struct of_device_id st_press_of_match[] = {
->>  		.compatible = "st,lps331ap-press",
->>  		.data = LPS331AP_PRESS_DEV_NAME,
->>  	},
->> +	{
->> +		.compatible = "st,lps22hb-press",
->> +		.data = LPS22HB_PRESS_DEV_NAME,
->> +	},
->>  	{},
->>  };
->>  MODULE_DEVICE_TABLE(of, st_press_of_match);
->> diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
->> index 40c0692..5505080 100644
->> --- a/drivers/iio/pressure/st_pressure_spi.c
->> +++ b/drivers/iio/pressure/st_pressure_spi.c
->> @@ -50,6 +50,7 @@ static const struct spi_device_id st_press_id_table[] = {
->>  	{ LPS001WP_PRESS_DEV_NAME },
->>  	{ LPS25H_PRESS_DEV_NAME },
->>  	{ LPS331AP_PRESS_DEV_NAME },
->> +	{ LPS22HB_PRESS_DEV_NAME },
->>  	{},
->>  };
->>  MODULE_DEVICE_TABLE(spi, st_press_id_table);
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index eea61e3..fff44d6 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -16,7 +16,7 @@ config MFD_CS5535
+>  	depends on PCI && (X86_32 || (X86 && COMPILE_TEST))
+>  	---help---
+>  	  This is the core driver for CS5535/CS5536 MFD functions.  This is
+> -          necessary for using the board's GPIO and MFGPT functionality.
+> +	  necessary for using the board's GPIO and MFGPT functionality.
+>  
+>  config MFD_ACT8945A
+>  	tristate "Active-semi ACT8945A"
+> @@ -319,6 +319,23 @@ config MFD_HI6421_PMIC
+>  	  menus in order to enable them.
+>  	  We communicate with the Hi6421 via memory-mapped I/O.
+>  
+> +config MFD_MXS_LRADC
+> +	tristate "Freescale i.MX23/i.MX28 LRADC"
+> +	depends on ARCH_MXS || COMPILE_TEST
+> +	select MFD_CORE
+> +	select STMP_DEVICE
+> +	help
+> +	  Say yes here to build support for the low-resolution
+> +	  analog-to-digital converter (LRADC) found on the i.MX23 and i.MX28
+> +	  processors. This driver provides common support for accessing the
+> +	  device, additional drivers must be enabled in order to use the
+> +	  functionality of the device:
+> +		mxs-lradc-adc for ADC readings
+> +		mxs-lradc-ts  for touchscreen support
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called mxs-lradc.
+> +
+>  config HTC_EGPIO
+>  	bool "HTC EGPIO support"
+>  	depends on GPIOLIB && ARM
+> @@ -650,7 +667,7 @@ config EZX_PCAP
+>  	  needed for MMC, TouchScreen, Sound, USB, etc..
+>  
+>  config MFD_VIPERBOARD
+> -        tristate "Nano River Technologies Viperboard"
+> +	tristate "Nano River Technologies Viperboard"
+>  	select MFD_CORE
+>  	depends on USB
+>  	default n
+> @@ -898,11 +915,11 @@ config MFD_SMSC
+>         select MFD_CORE
+>         select REGMAP_I2C
+>         help
+> -        If you say yes here you get support for the
+> -        ece1099 chips from SMSC.
+> +	If you say yes here you get support for the
+> +	ece1099 chips from SMSC.
+>  
+> -        To compile this driver as a module, choose M here: the
+> -        module will be called smsc.
+> +	To compile this driver as a module, choose M here: the
+> +	module will be called smsc.
+>  
+>  config ABX500_CORE
+>  	bool "ST-Ericsson ABX500 Mixed Signal Circuit register functions"
+> @@ -956,8 +973,8 @@ config AB8500_DEBUG
+>         depends on AB8500_GPADC && DEBUG_FS
+>         default y if DEBUG_FS
+>         help
+> -         Select this option if you want debug information using the debug
+> -         filesystem, debugfs.
+> +	 Select this option if you want debug information using the debug
+> +	 filesystem, debugfs.
+>  
+>  config AB8500_GPADC
+>  	bool "ST-Ericsson AB8500 GPADC driver"
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index 5eaa6465d..236b831 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -203,3 +203,4 @@ intel-soc-pmic-objs		:= intel_soc_pmic_core.o intel_soc_pmic_crc.o
+>  intel-soc-pmic-$(CONFIG_INTEL_PMC_IPC)	+= intel_soc_pmic_bxtwc.o
+>  obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
+>  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
+> +obj-$(CONFIG_MFD_MXS_LRADC)	+= mxs-lradc.o
+> diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
+> new file mode 100644
+> index 0000000..e1c8f9e
+> --- /dev/null
+> +++ b/drivers/mfd/mxs-lradc.c
+> @@ -0,0 +1,213 @@
+> +/*
+> + * Freescale MXS LRADC driver
+> + *
+> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
+> + * Marek Vasut <marex@denx.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/device.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/mfd/mxs-lradc.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +
+> +static struct mfd_cell lradc_adc_dev = {
+> +	.name = DRIVER_NAME_ADC,
+> +};
+> +
+> +static struct mfd_cell lradc_ts_dev = {
+> +	.name = DRIVER_NAME_TS,
+> +};
+> +
+> +static const char * const mx23_lradc_irq_names[] = {
+> +	"mxs-lradc-touchscreen",
+> +	"mxs-lradc-channel0",
+> +	"mxs-lradc-channel1",
+> +	"mxs-lradc-channel2",
+> +	"mxs-lradc-channel3",
+> +	"mxs-lradc-channel4",
+> +	"mxs-lradc-channel5",
+> +	"mxs-lradc-channel6",
+> +	"mxs-lradc-channel7",
+> +};
+> +
+> +static const char * const mx28_lradc_irq_names[] = {
+> +	"mxs-lradc-touchscreen",
+> +	"mxs-lradc-thresh0",
+> +	"mxs-lradc-thresh1",
+> +	"mxs-lradc-channel0",
+> +	"mxs-lradc-channel1",
+> +	"mxs-lradc-channel2",
+> +	"mxs-lradc-channel3",
+> +	"mxs-lradc-channel4",
+> +	"mxs-lradc-channel5",
+> +	"mxs-lradc-channel6",
+> +	"mxs-lradc-channel7",
+> +	"mxs-lradc-button0",
+> +	"mxs-lradc-button1",
+> +};
+> +
+> +struct mxs_lradc_of_config {
+> +	const int		irq_count;
+> +	const char * const	*irq_name;
+> +};
+> +
+> +static const struct mxs_lradc_of_config mxs_lradc_of_config[] = {
+> +	[IMX23_LRADC] = {
+> +		.irq_count	= ARRAY_SIZE(mx23_lradc_irq_names),
+> +		.irq_name	= mx23_lradc_irq_names,
+> +	},
+> +	[IMX28_LRADC] = {
+> +		.irq_count	= ARRAY_SIZE(mx28_lradc_irq_names),
+> +		.irq_name	= mx28_lradc_irq_names,
+> +	},
+> +};
+> +
+> +static const struct of_device_id mxs_lradc_dt_ids[] = {
+> +	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
+> +	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
+> +
+> +static int mxs_lradc_probe(struct platform_device *pdev)
+> +{
+> +	const struct of_device_id *of_id =
+> +		of_match_device(mxs_lradc_dt_ids, &pdev->dev);
+> +	const struct mxs_lradc_of_config *of_cfg =
+> +		&mxs_lradc_of_config[(enum mxs_lradc_id)of_id->data];
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *node = dev->of_node;
+> +	struct mxs_lradc *lradc;
+> +	struct resource *iores;
+> +	int ret = 0, touch_ret, i;
+> +	u32 ts_wires = 0;
+> +
+> +	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
+> +	if (!lradc)
+> +		return -ENOMEM;
+> +	lradc->soc = (enum mxs_lradc_id)of_id->data;
+> +
+> +	/* Grab the memory area */
+> +	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	lradc->base = devm_ioremap_resource(dev, iores);
+> +	if (IS_ERR(lradc->base))
+> +		return PTR_ERR(lradc->base);
+> +
+> +	lradc->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(lradc->clk)) {
+> +		dev_err(dev, "Failed to get the delay unit clock\n");
+> +		return PTR_ERR(lradc->clk);
+> +	}
+> +	ret = clk_prepare_enable(lradc->clk);
+> +	if (ret != 0) {
+> +		dev_err(dev, "Failed to enable the delay unit clock\n");
+> +		return ret;
+> +	}
+> +
+> +	touch_ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
+> +					 &ts_wires);
+> +
+> +	if (touch_ret == 0)
+> +		lradc->buffer_vchans = BUFFER_VCHANS_LIMITED;
+> +	else
+> +		lradc->buffer_vchans = BUFFER_VCHANS_ALL;
+> +
+> +	lradc->irq_count = of_cfg->irq_count;
+> +	lradc->irq_name = of_cfg->irq_name;
+> +	for (i = 0; i < lradc->irq_count; i++) {
+> +		lradc->irq[i] = platform_get_irq(pdev, i);
+> +		if (lradc->irq[i] < 0) {
+> +			ret = lradc->irq[i];
+> +			goto err_clk;
+> +		}
+> +	}
+> +
+> +	platform_set_drvdata(pdev, lradc);
+> +
+> +	ret = stmp_reset_block(lradc->base);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	lradc_adc_dev.platform_data = lradc;
+> +	lradc_adc_dev.pdata_size = sizeof(*lradc);
+> +
+> +	ret = mfd_add_devices(&pdev->dev, -1, &lradc_adc_dev, 1, NULL, 0, NULL);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failed to add the ADC subdevice\n");
+> +		return ret;
+> +	}
+> +
+> +	lradc_ts_dev.platform_data = lradc;
+> +	lradc_ts_dev.pdata_size = sizeof(*lradc);
+> +
+> +	switch (ts_wires) {
+> +	case 4:
+> +		lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_4WIRE;
+> +		break;
+> +	case 5:
+> +		if (lradc->soc == IMX28_LRADC) {
+> +			lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_5WIRE;
+> +			break;
+> +		}
+> +		/* fall through an error message for i.MX23 */
+> +	default:
+> +		dev_err(&pdev->dev,
+> +			"Unsupported number of touchscreen wires (%d)\n",
+> +			ts_wires);
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = mfd_add_devices(&pdev->dev, -1, &lradc_ts_dev, 1, NULL, 0, NULL);
+> +	if (ret) {
+> +		dev_err(&pdev->dev,
+> +			"Failed to add the touchscreen subdevice\n");
+> +		goto err_remove_adc;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_remove_adc:
+> +	mfd_remove_devices(&pdev->dev);
+> +err_clk:
+> +	clk_disable_unprepare(lradc->clk);
+> +	return ret;
+> +}
+> +
+> +static int mxs_lradc_remove(struct platform_device *pdev)
+> +{
+> +	struct mxs_lradc *lradc = platform_get_drvdata(pdev);
+> +
+> +	mfd_remove_devices(&pdev->dev)
+> +	clk_disable_unprepare(lradc->clk);
+blank line here ideally...
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver mxs_lradc_driver = {
+> +	.driver = {
+> +		.name = "mxs-lradc",
+> +		.of_match_table = mxs_lradc_dt_ids,
+> +	},
+> +	.probe = mxs_lradc_probe,
+> +	.remove = mxs_lradc_remove,
+> +};
+> +
+> +module_platform_driver(mxs_lradc_driver);
+> +
+> +MODULE_DESCRIPTION("Freescale i.MX23/i.MX28 LRADC driver");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_ALIAS("platform:mxs-lradc");
+> diff --git a/include/linux/mfd/mxs-lradc.h b/include/linux/mfd/mxs-lradc.h
+> new file mode 100644
+> index 0000000..c062969
+> --- /dev/null
+> +++ b/include/linux/mfd/mxs-lradc.h
+> @@ -0,0 +1,210 @@
+> +/*
+> + * Freescale MXS LRADC driver
+> + *
+> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
+> + * Marek Vasut <marex@denx.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#ifndef __MXS_LRADC_H
+> +#define __MXS_LRADC_H
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/clk.h>
+> +#include <linux/completion.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/input.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +#include <linux/stmp_device.h>
+> +#include <linux/sysfs.h>
+> +
+> +#define DRIVER_NAME_ADC "mxs-lradc-adc"
+> +#define DRIVER_NAME_TS "mxs-lradc-ts"
+> +
+> +#define LRADC_MAX_DELAY_CHANS	4
+> +#define LRADC_MAX_MAPPED_CHANS	8
+> +#define LRADC_MAX_TOTAL_CHANS	16
+> +
+> +#define LRADC_DELAY_TIMER_HZ	2000
+> +
+> +#define LRADC_CTRL0				0x00
+> +# define LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE	BIT(23)
+> +# define LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE	BIT(22)
+> +# define LRADC_CTRL0_MX28_YNNSW /* YM */	BIT(21)
+> +# define LRADC_CTRL0_MX28_YPNSW /* YP */	BIT(20)
+> +# define LRADC_CTRL0_MX28_YPPSW /* YP */	BIT(19)
+> +# define LRADC_CTRL0_MX28_XNNSW /* XM */	BIT(18)
+> +# define LRADC_CTRL0_MX28_XNPSW /* XM */	BIT(17)
+> +# define LRADC_CTRL0_MX28_XPPSW /* XP */	BIT(16)
+> +
+> +# define LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE	BIT(20)
+> +# define LRADC_CTRL0_MX23_YM			BIT(19)
+> +# define LRADC_CTRL0_MX23_XM			BIT(18)
+> +# define LRADC_CTRL0_MX23_YP			BIT(17)
+> +# define LRADC_CTRL0_MX23_XP			BIT(16)
+> +
+> +# define LRADC_CTRL0_MX28_PLATE_MASK \
+> +		(LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE | \
+> +		LRADC_CTRL0_MX28_YNNSW | LRADC_CTRL0_MX28_YPNSW | \
+> +		LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW | \
+> +		LRADC_CTRL0_MX28_XNPSW | LRADC_CTRL0_MX28_XPPSW)
+> +
+> +# define LRADC_CTRL0_MX23_PLATE_MASK \
+> +		(LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE | \
+> +		LRADC_CTRL0_MX23_YM | LRADC_CTRL0_MX23_XM | \
+> +		LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XP)
+> +
+> +#define LRADC_CTRL1				0x10
+> +#define LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		BIT(24)
+> +#define LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
+> +#define LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
+> +#define LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
+> +#define LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
+> +#define LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
+> +#define LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
+> +#define LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
+> +#define LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
+> +#define LRADC_CTRL1_LRADC_IRQ_OFFSET		0
+> +
+> +#define LRADC_CTRL2				0x20
+> +#define LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
+> +#define LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
+> +
+> +#define LRADC_STATUS				0x40
+> +#define LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
+> +
+> +#define LRADC_CH(n)				(0x50 + (0x10 * (n)))
+> +#define LRADC_CH_ACCUMULATE			BIT(29)
+> +#define LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
+> +#define LRADC_CH_NUM_SAMPLES_OFFSET		24
+> +#define LRADC_CH_NUM_SAMPLES(x) \
+> +				((x) << LRADC_CH_NUM_SAMPLES_OFFSET)
+> +#define LRADC_CH_VALUE_MASK			0x3ffff
+> +#define LRADC_CH_VALUE_OFFSET			0
+> +
+> +#define LRADC_DELAY(n)				(0xd0 + (0x10 * (n)))
+> +#define LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xffUL << 24)
+> +#define LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
+> +#define LRADC_DELAY_TRIGGER(x) \
+> +				(((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
+> +				LRADC_DELAY_TRIGGER_LRADCS_MASK)
+> +#define LRADC_DELAY_KICK			BIT(20)
+> +#define LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
+> +#define LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
+> +#define LRADC_DELAY_TRIGGER_DELAYS(x) \
+> +				(((x) << LRADC_DELAY_TRIGGER_DELAYS_OFFSET) & \
+> +				LRADC_DELAY_TRIGGER_DELAYS_MASK)
+> +#define LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
+> +#define LRADC_DELAY_LOOP_COUNT_OFFSET		11
+> +#define LRADC_DELAY_LOOP(x) \
+> +				(((x) << LRADC_DELAY_LOOP_COUNT_OFFSET) & \
+> +				LRADC_DELAY_LOOP_COUNT_MASK)
+> +#define LRADC_DELAY_DELAY_MASK			0x7ff
+> +#define LRADC_DELAY_DELAY_OFFSET		0
+> +#define LRADC_DELAY_DELAY(x) \
+> +				(((x) << LRADC_DELAY_DELAY_OFFSET) & \
+> +				LRADC_DELAY_DELAY_MASK)
+> +
+> +#define LRADC_CTRL4				0x140
+> +#define LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
+> +#define LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
+> +#define LRADC_CTRL4_LRADCSELECT(n, x) \
+> +				(((x) << LRADC_CTRL4_LRADCSELECT_OFFSET(n)) & \
+> +				LRADC_CTRL4_LRADCSELECT_MASK(n))
+> +
+> +#define LRADC_RESOLUTION			12
+> +#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
+> +
+> +enum mxs_lradc_id {
+> +	IMX23_LRADC,
+> +	IMX28_LRADC,
+> +};
+> +
+> +enum mxs_lradc_ts_wires {
+> +	MXS_LRADC_TOUCHSCREEN_NONE = 0,
+> +	MXS_LRADC_TOUCHSCREEN_4WIRE,
+> +	MXS_LRADC_TOUCHSCREEN_5WIRE,
+> +};
+> +
+> +struct mxs_lradc {
+> +	enum mxs_lradc_id	soc;
+> +
+> +	void __iomem		*base;
+> +	struct clk		*clk;
+> +
+> +	int			irq[13];
+> +	const char * const	*irq_name;
+> +	int			irq_count;
+> +
+> +#define BUFFER_VCHANS_LIMITED		0x3f
+> +#define BUFFER_VCHANS_ALL		0xff
+> +	u8			buffer_vchans;
+> +
+> +	/*
+> +	 * Certain LRADC channels are shared between touchscreen
+> +	 * and/or touch-buttons and generic LRADC block. Therefore when using
+> +	 * either of these, these channels are not available for the regular
+> +	 * sampling. The shared channels are as follows:
+> +	 *
+> +	 * CH0 -- Touch button #0
+> +	 * CH1 -- Touch button #1
+> +	 * CH2 -- Touch screen XPUL
+> +	 * CH3 -- Touch screen YPLL
+> +	 * CH4 -- Touch screen XNUL
+> +	 * CH5 -- Touch screen YNLR
+> +	 * CH6 -- Touch screen WIPER (5-wire only)
+> +	 *
+> +	 * The bit fields below represents which parts of the LRADC block are
+> +	 * switched into special mode of operation. These channels can not
+> +	 * be sampled as regular LRADC channels. The driver will refuse any
+> +	 * attempt to sample these channels.
+> +	 */
+> +#define CHAN_MASK_TOUCHBUTTON		(BIT(1) | BIT(0))
+> +#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
+> +#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
+> +	enum mxs_lradc_ts_wires	use_touchscreen;
+> +	bool			use_touchbutton;
+> +};
+> +
+> +static inline void mxs_lradc_reg_set(struct mxs_lradc *lradc, u32 val, u32 reg)
+> +{
+> +	writel(val, lradc->base + reg + STMP_OFFSET_REG_SET);
+> +}
+> +
+> +static inline void mxs_lradc_reg_clear(struct mxs_lradc *lradc, u32 val,
+> +				       u32 reg)
+> +{
+> +	writel(val, lradc->base + reg + STMP_OFFSET_REG_CLR);
+> +}
+> +
+> +static inline void mxs_lradc_reg_wrt(struct mxs_lradc *lradc, u32 val, u32 reg)
+> +{
+> +	writel(val, lradc->base + reg);
+> +}
+> +
+> +static inline u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
+> +{
+As we are changing the driver here I would ever so slightly prefer
+this to be a switch statement rather than an if. Takes a couple of lines more
+but makes adding new parts in the future easier!
+
+> +	if (lradc->soc == IMX23_LRADC)
+> +		return LRADC_CTRL1_MX23_LRADC_IRQ_MASK;
+> +	return LRADC_CTRL1_MX28_LRADC_IRQ_MASK;
+> +}
+> +
+> +#endif /* __MXS_LRADC_H */
 > 
 
