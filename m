@@ -1,56 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:34568 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752261AbcEAUha (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 1 May 2016 16:37:30 -0400
-From: "Andrew F. Davis" <afd@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: <linux-iio@vger.kernel.org>, <linux-api@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, "Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH 13/13] iio: health/afe4404: ENSEPGAIN is part of CONTROL2 register
-Date: Sun, 1 May 2016 15:37:03 -0500
-Message-ID: <1462135023-14445-14-git-send-email-afd@ti.com>
-In-Reply-To: <1462135023-14445-1-git-send-email-afd@ti.com>
-References: <1462135023-14445-1-git-send-email-afd@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48862 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752764AbcEAV0b (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:26:31 -0400
+Subject: Re: [PATCH] iio: light: bh1780: return after write
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1461844961-28558-1-git-send-email-linus.walleij@linaro.org>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5fed5120-ed2c-60ab-704b-8a832ff91c23@kernel.org>
+Date: Sun, 1 May 2016 20:42:06 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1461844961-28558-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Rename this definition, no functional changes.
+On 28/04/16 13:02, Linus Walleij wrote:
+> When writing a value using direct reg access from debugfs
+> we need to return and not fall through to reading the
+> value, lest we'll dereference a NULL pointer.
+> 
+> Cc: Dan Carpenter <dan.carpenter@oracle.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+This is another one I'll have to pick up when I can create a fixes branch for
+post the merge window.
 
-Signed-off-by: Andrew F. Davis <afd@ti.com>
----
- drivers/iio/health/afe4404.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Poke me if I forget it.
 
-diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
-index 3a8131d..4526640 100644
---- a/drivers/iio/health/afe4404.c
-+++ b/drivers/iio/health/afe4404.c
-@@ -48,8 +48,8 @@
- #define AFE4404_AVG_LED2_ALED2VAL	0x3f
- #define AFE4404_AVG_LED1_ALED1VAL	0x40
- 
--/* AFE4404 CONTROL3 register fields */
--#define AFE440X_CONTROL3_OSC_ENABLE	BIT(9)
-+/* AFE4404 CONTROL2 register fields */
-+#define AFE440X_CONTROL2_OSC_ENABLE	BIT(9)
- 
- enum afe4404_fields {
- 	/* Gains */
-@@ -398,7 +398,7 @@ static const struct reg_sequence afe4404_reg_sequences[] = {
- 	AFE4404_TIMING_PAIRS,
- 	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
- 	{ AFE4404_TIA_GAIN_SEP, AFE440X_TIAGAIN_ENSEPGAIN },
--	{ AFE440X_CONTROL2, AFE440X_CONTROL3_OSC_ENABLE	},
-+	{ AFE440X_CONTROL2, AFE440X_CONTROL2_OSC_ENABLE	},
- };
- 
- static const struct regmap_range afe4404_yes_ranges[] = {
--- 
-2.8.1
+Jonathan
+> ---
+>  drivers/iio/light/bh1780.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/light/bh1780.c b/drivers/iio/light/bh1780.c
+> index 72b364e4aa72..f83595334ff1 100644
+> --- a/drivers/iio/light/bh1780.c
+> +++ b/drivers/iio/light/bh1780.c
+> @@ -84,7 +84,7 @@ static int bh1780_debugfs_reg_access(struct iio_dev *indio_dev,
+>  	int ret;
+>  
+>  	if (!readval)
+> -		bh1780_write(bh1780, (u8)reg, (u8)writeval);
+> +		return bh1780_write(bh1780, (u8)reg, (u8)writeval);
+>  
+>  	ret = bh1780_read(bh1780, (u8)reg);
+>  	if (ret < 0)
+> 
 
