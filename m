@@ -1,314 +1,197 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <1461706611.14657.66.camel@linux.intel.com>
-Subject: Re: [PATCH] iio: bmg160: add callbacks for the filter frequency
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Jonathan Cameron
-	 <jic23@kernel.org>, Steffen Trumtrar <s.trumtrar@pengutronix.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- kernel@pengutronix.de
-Date: Tue, 26 Apr 2016 14:36:51 -0700
-In-Reply-To: <8AAC9055-0140-4975-AF49-A3553B81D23B@jic23.retrosnub.co.uk>
-References: <1461235740-18710-1-git-send-email-s.trumtrar@pengutronix.de>
-	 <59d35d82-8ca8-646b-8629-c2bba666286b@kernel.org>
-	 <1461702322.14657.15.camel@linux.intel.com>
-	 <8AAC9055-0140-4975-AF49-A3553B81D23B@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:41521 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752454AbcEAUhc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 1 May 2016 16:37:32 -0400
+From: "Andrew F. Davis" <afd@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: <linux-iio@vger.kernel.org>, <linux-api@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, "Andrew F. Davis" <afd@ti.com>
+Subject: [PATCH 10/13] iio: health/afe440x: Make gain settings a modifier for the stages
+Date: Sun, 1 May 2016 15:37:00 -0500
+Message-ID: <1462135023-14445-11-git-send-email-afd@ti.com>
+In-Reply-To: <1462135023-14445-1-git-send-email-afd@ti.com>
+References: <1462135023-14445-1-git-send-email-afd@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, 2016-04-26 at 22:15 +0100, Jonathan Cameron wrote:
-> 
-> On 26 April 2016 21:25:22 BST, Srinivas Pandruvada <srinivas.pandruva
-> da@linux.intel.com> wrote:
-> > 
-> > On Mon, 2016-04-25 at 20:31 +0100, Jonathan Cameron wrote:
-> > > 
-> > > On 21/04/16 11:49, Steffen Trumtrar wrote:
-> > > > 
-> > > > 
-> > > > The filter frequency and sample rate have a fixed relationship.
-> > > > Only the filter frequency is unique, however.
-> > > > Currently the driver ignores the filter settings for 32 Hz and
-> > > > 64 Hz.
-> > > > 
-> > > > This patch adds the necessary callbacks to be able to configure
-> > > > and read the filter setting from sysfs.
-> > > > 
-> > > > Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-> > > cc'd Srinivas as it's his driver...  Looks superficially fine to
-> > > me.
-> > > 
-> > > Jonathan
-> > > > 
-> > > > 
-> > > > ---
-> > > > 
-> > > > Changing the sample rate will result in using the first match
-> > > > and therefore selecting the filter accordingly. Is this a
-> > > > misuse
-> > > > of the ABI and should be handled differently or is this okay?
-> > > > 
-> > This is the reason they were omitted. Now you can't uniquely set
-> > 100Hz
-> > sampling frequency. Depending on filter it will have different
-> > results.
-> > 
-> > I think this needs some ABI level changes, where you display
-> > available
-> > and allow to specify both ODR and Filter to uniquely select.
-> Unfortunately the moment the ABI allows for combined elements it
-> becomes a
->  nightmare for complexity. In some devices a single parameter change
-> can
->  change everything else. There are no simple rules unfortunately. 
-> 
-> The way we avoid this being a problem is that we very deliberately
-> allow any ABI element
-> to be able to result in a change in any other.  This includes
-> changing the
->  available values list as here. It might be slightly nicer to jump to
-> the nearest
->  available option though.
-> 
-> An alternative would be to have an interface to fake such changes
-> then
-> apply them atomically if possible. 
-> That level of complexity just does seem warranted here and would
-> still need userspace to check valid ranges as it
->  pretends to change the state. Hence no real gain....
-> 
-I think we should add some documentation for this driver about this.
-They should rather change filer rather than sampling freq to have
-unique setting.
+Currently the TIA gain settings are exported to userspace as sysfs
+entries that do not clearly represent their internal relation to the
+sampling stages. The gain settings are enabled on a per-stage basis,
+this can be seen in figure 24 of the current AFE4404 datasheet.
+These gain settings should therefore be tied to the channels that are
+read during these stages. Make this change here.
 
-Thanks,
-Srinivas
+Signed-off-by: Andrew F. Davis <afd@ti.com>
+---
+ .../ABI/testing/sysfs-bus-iio-health-afe440x       | 19 ++++++------
+ drivers/iio/health/afe4403.c                       | 34 ++++++++++++++--------
+ drivers/iio/health/afe4404.c                       | 34 ++++++++++++++--------
+ 3 files changed, 53 insertions(+), 34 deletions(-)
 
-> Jonathan
-> > 
-> > 
-> > Thanks,
-> > Srinivas
-> > 
-> > 
-> > > 
-> > > > 
-> > > >  drivers/iio/gyro/bmg160_core.c | 105
-> > > > ++++++++++++++++++++++++++++++++++++-----
-> > > >  1 file changed, 93 insertions(+), 12 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/iio/gyro/bmg160_core.c
-> > > > b/drivers/iio/gyro/bmg160_core.c
-> > > > index bbce3b09ac45..ea0243eb393a 100644
-> > > > --- a/drivers/iio/gyro/bmg160_core.c
-> > > > +++ b/drivers/iio/gyro/bmg160_core.c
-> > > > @@ -52,6 +52,7 @@
-> > > >  #define BMG160_REG_PMU_BW		0x10
-> > > >  #define BMG160_NO_FILTER		0
-> > > >  #define BMG160_DEF_BW			100
-> > > > +#define BMG160_REG_PMU_BW_RES		BIT(7)
-> > > >  
-> > > >  #define BMG160_REG_INT_MAP_0		0x17
-> > > >  #define BMG160_INT_MAP_0_BIT_ANY	BIT(1)
-> > > > @@ -103,7 +104,6 @@ struct bmg160_data {
-> > > >  	struct iio_trigger *motion_trig;
-> > > >  	struct mutex mutex;
-> > > >  	s16 buffer[8];
-> > > > -	u8 bw_bits;
-> > > >  	u32 dps_range;
-> > > >  	int ev_enable_state;
-> > > >  	int slope_thres;
-> > > > @@ -119,13 +119,16 @@ enum bmg160_axis {
-> > > >  };
-> > > >  
-> > > >  static const struct {
-> > > > -	int val;
-> > > > +	int odr;
-> > > > +	int filter;
-> > > >  	int bw_bits;
-> > > > -} bmg160_samp_freq_table[] = { {100, 0x07},
-> > > > -			       {200, 0x06},
-> > > > -			       {400, 0x03},
-> > > > -			       {1000, 0x02},
-> > > > -			       {2000, 0x01} };
-> > > > +} bmg160_samp_freq_table[] = { {100, 32, 0x07},
-> > > > +			       {200, 64, 0x06},
-> > > > +			       {100, 12, 0x05},
-> > > > +			       {200, 23, 0x04},
-> > > > +			       {400, 47, 0x03},
-> > > > +			       {1000, 116, 0x02},
-> > > > +			       {2000, 230, 0x01} };
-> > > >  
-> > > >  static const struct {
-> > > >  	int scale;
-> > > > @@ -154,7 +157,7 @@ static int bmg160_convert_freq_to_bit(int
-> > > > val)
-> > > >  	int i;
-> > > >  
-> > > >  	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table);
-> > > > ++i) {
-> > > > -		if (bmg160_samp_freq_table[i].val == val)
-> > > > +		if (bmg160_samp_freq_table[i].odr == val)
-> > > >  			return
-> > > > bmg160_samp_freq_table[i].bw_bits;
-> > > >  	}
-> > > >  
-> > > > @@ -176,7 +179,51 @@ static int bmg160_set_bw(struct
-> > > > bmg160_data
-> > > > *data, int val)
-> > > >  		return ret;
-> > > >  	}
-> > > >  
-> > > > -	data->bw_bits = bw_bits;
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +static int bmg160_get_filter(struct bmg160_data *data, int
-> > > > *val)
-> > > > +{
-> > > > +	int ret;
-> > > > +	int i;
-> > > > +	unsigned int bw_bits;
-> > > > +
-> > > > +	ret = regmap_read(data->regmap, BMG160_REG_PMU_BW,
-> > > > &bw_bits);
-> > > > +	if (ret < 0) {
-> > > > +		dev_err(data->dev, "Error reading
-> > > > reg_pmu_bw\n");
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > > +	/* Ignore the readonly reserved bit. */
-> > > > +	bw_bits &= ~BMG160_REG_PMU_BW_RES;
-> > > > +
-> > > > +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table);
-> > > > ++i) {
-> > > > +		if (bmg160_samp_freq_table[i].bw_bits ==
-> > > > bw_bits)
-> > > > +			break;
-> > > > +	}
-> > > > +
-> > > > +	*val = bmg160_samp_freq_table[i].filter;
-> > > > +
-> > > > +	return ret ? ret : IIO_VAL_INT;
-> > > > +}
-> > > > +
-> > > > +
-> > > > +static int bmg160_set_filter(struct bmg160_data *data, int
-> > > > val)
-> > > > +{
-> > > > +	int ret;
-> > > > +	int i;
-> > > > +
-> > > > +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table);
-> > > > ++i) {
-> > > > +		if (bmg160_samp_freq_table[i].filter == val)
-> > > > +			break;
-> > > > +	}
-> > > > +
-> > > > +	ret = regmap_write(data->regmap, BMG160_REG_PMU_BW,
-> > > > +			   bmg160_samp_freq_table[i].bw_bits);
-> > > > +	if (ret < 0) {
-> > > > +		dev_err(data->dev, "Error writing
-> > > > reg_pmu_bw\n");
-> > > > +		return ret;
-> > > > +	}
-> > > >  
-> > > >  	return 0;
-> > > >  }
-> > > > @@ -388,10 +435,21 @@ static int
-> > > > bmg160_setup_new_data_interrupt(struct bmg160_data *data,
-> > > >  static int bmg160_get_bw(struct bmg160_data *data, int *val)
-> > > >  {
-> > > >  	int i;
-> > > > +	unsigned int bw_bits;
-> > > > +	int ret;
-> > > > +
-> > > > +	ret = regmap_read(data->regmap, BMG160_REG_PMU_BW,
-> > > > &bw_bits);
-> > > > +	if (ret < 0) {
-> > > > +		dev_err(data->dev, "Error reading
-> > > > reg_pmu_bw\n");
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > > +	/* Ignore the readonly reserved bit. */
-> > > > +	bw_bits &= ~BMG160_REG_PMU_BW_RES;
-> > > >  
-> > > >  	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table);
-> > > > ++i) {
-> > > > -		if (bmg160_samp_freq_table[i].bw_bits == data-
-> > > > > 
-> > > > > bw_bits) {
-> > > > -			*val = bmg160_samp_freq_table[i].val;
-> > > > +		if (bmg160_samp_freq_table[i].bw_bits ==
-> > > > bw_bits)
-> > > > {
-> > > > +			*val = bmg160_samp_freq_table[i].odr;
-> > > >  			return IIO_VAL_INT;
-> > > >  		}
-> > > >  	}
-> > > > @@ -506,6 +564,8 @@ static int bmg160_read_raw(struct iio_dev
-> > > > *indio_dev,
-> > > >  			return IIO_VAL_INT;
-> > > >  		} else
-> > > >  			return -EINVAL;
-> > > > +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-> > > > +		return bmg160_get_filter(data, val);
-> > > >  	case IIO_CHAN_INFO_SCALE:
-> > > >  		*val = 0;
-> > > >  		switch (chan->type) {
-> > > > @@ -570,6 +630,26 @@ static int bmg160_write_raw(struct iio_dev
-> > > > *indio_dev,
-> > > >  		ret = bmg160_set_power_state(data, false);
-> > > >  		mutex_unlock(&data->mutex);
-> > > >  		return ret;
-> > > > +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-> > > > +		if (val2)
-> > > > +			return -EINVAL;
-> > > > +
-> > > > +		mutex_lock(&data->mutex);
-> > > > +		ret = bmg160_set_power_state(data, true);
-> > > > +		if (ret < 0) {
-> > > > +			bmg160_set_power_state(data, false);
-> > > > +			mutex_unlock(&data->mutex);
-> > > > +			return ret;
-> > > > +		}
-> > > > +		ret = bmg160_set_filter(data, val);
-> > > > +		if (ret < 0) {
-> > > > +			bmg160_set_power_state(data, false);
-> > > > +			mutex_unlock(&data->mutex);
-> > > > +			return ret;
-> > > > +		}
-> > > > +		ret = bmg160_set_power_state(data, false);
-> > > > +		mutex_unlock(&data->mutex);
-> > > > +		return ret;
-> > > >  	case IIO_CHAN_INFO_SCALE:
-> > > >  		if (val)
-> > > >  			return -EINVAL;
-> > > > @@ -727,7 +807,8 @@ static const struct iio_event_spec
-> > > > bmg160_event
-> > > > = {
-> > > >  	.channel2 = IIO_MOD_##_axis,				
-> > > > 	\
-> > > >  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		
-> > > > 	\
-> > > >  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
-> > > > 	
-> > > > 	\
-> > > > -				    BIT(IIO_CHAN_INFO_SAMP_FRE
-> > > > Q),	
-> > > > \
-> > > > +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |			
-> > > > 	\
-> > > > +		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENC
-> > > > Y),	
-> > > > \
-> > > >  	.scan_index = AXIS_##_axis,				
-> > > > 	\
-> > > >  	.scan_type = {						
-> > > > 	\
-> > > >  		.sign = 's',					
-> > > > 	\
-> > > > 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
+index a067073..6adba90 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
++++ b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
+@@ -1,13 +1,3 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/tia_resistanceY
+-		/sys/bus/iio/devices/iio:deviceX/tia_capacitanceY
+-Date:		December 2015
+-KernelVersion:
+-Contact:	Andrew F. Davis <afd@ti.com>
+-Description:
+-		Get and set the resistance and the capacitance settings for the
+-		Transimpedance Amplifier. Y is 1 for Rf1 and Cf1, Y is 2 for
+-		Rf2 and Cf2 values.
+-
+ What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_raw
+ Date:		May 2016
+ KernelVersion:
+@@ -33,6 +23,15 @@ Description:
+ 		Get and set the offset cancellation DAC setting for these
+ 		stages. The values are expressed in 5-bit sign-magnitude.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_resistance
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_capacitance
++Date:		May 2016
++KernelVersion:
++Contact:	Andrew F. Davis <afd@ti.com>
++Description:
++		Get and set the resistance and the capacitance settings for the
++		Transimpedance Amplifier during the associated stage.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_raw
+ Date:		May 2016
+ KernelVersion:
+diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
+index 1950155..610631b 100644
+--- a/drivers/iio/health/afe4403.c
++++ b/drivers/iio/health/afe4403.c
+@@ -161,7 +161,7 @@ static const struct afe440x_val_table afe4403_res_table[] = {
+ 	{ 500000 }, { 250000 }, { 100000 }, { 50000 },
+ 	{ 25000 }, { 10000 }, { 1000000 }, { 0 },
+ };
+-AFE440X_TABLE_ATTR(tia_resistance_available, afe4403_res_table);
++AFE440X_TABLE_ATTR(in_intensity_resistance_available, afe4403_res_table);
+ 
+ static const struct afe440x_val_table afe4403_cap_table[] = {
+ 	{ 0, 5000 }, { 0, 10000 }, { 0, 20000 }, { 0, 25000 },
+@@ -173,7 +173,7 @@ static const struct afe440x_val_table afe4403_cap_table[] = {
+ 	{ 0, 205000 }, { 0, 210000 }, { 0, 220000 }, { 0, 225000 },
+ 	{ 0, 230000 }, { 0, 235000 }, { 0, 245000 }, { 0, 250000 },
+ };
+-AFE440X_TABLE_ATTR(tia_capacitance_available, afe4403_cap_table);
++AFE440X_TABLE_ATTR(in_intensity_capacitance_available, afe4403_cap_table);
+ 
+ static ssize_t afe440x_show_register(struct device *dev,
+ 				     struct device_attribute *attr,
+@@ -226,19 +226,29 @@ static ssize_t afe440x_store_register(struct device *dev,
+ 	return count;
+ }
+ 
+-static AFE440X_ATTR(tia_resistance1, F_RF_LED1, afe4403_res_table);
+-static AFE440X_ATTR(tia_capacitance1, F_CF_LED1, afe4403_cap_table);
++static AFE440X_ATTR(in_intensity1_resistance, F_RF_LED, afe4403_res_table);
++static AFE440X_ATTR(in_intensity1_capacitance, F_CF_LED, afe4403_cap_table);
+ 
+-static AFE440X_ATTR(tia_resistance2, F_RF_LED, afe4403_res_table);
+-static AFE440X_ATTR(tia_capacitance2, F_CF_LED, afe4403_cap_table);
++static AFE440X_ATTR(in_intensity2_resistance, F_RF_LED, afe4403_res_table);
++static AFE440X_ATTR(in_intensity2_capacitance, F_CF_LED, afe4403_cap_table);
++
++static AFE440X_ATTR(in_intensity3_resistance, F_RF_LED1, afe4403_res_table);
++static AFE440X_ATTR(in_intensity3_capacitance, F_CF_LED1, afe4403_cap_table);
++
++static AFE440X_ATTR(in_intensity4_resistance, F_RF_LED1, afe4403_res_table);
++static AFE440X_ATTR(in_intensity4_capacitance, F_CF_LED1, afe4403_cap_table);
+ 
+ static struct attribute *afe440x_attributes[] = {
+-	&afe440x_attr_tia_resistance1.dev_attr.attr,
+-	&afe440x_attr_tia_capacitance1.dev_attr.attr,
+-	&afe440x_attr_tia_resistance2.dev_attr.attr,
+-	&afe440x_attr_tia_capacitance2.dev_attr.attr,
+-	&dev_attr_tia_resistance_available.attr,
+-	&dev_attr_tia_capacitance_available.attr,
++	&dev_attr_in_intensity_resistance_available.attr,
++	&dev_attr_in_intensity_capacitance_available.attr,
++	&afe440x_attr_in_intensity1_resistance.dev_attr.attr,
++	&afe440x_attr_in_intensity1_capacitance.dev_attr.attr,
++	&afe440x_attr_in_intensity2_resistance.dev_attr.attr,
++	&afe440x_attr_in_intensity2_capacitance.dev_attr.attr,
++	&afe440x_attr_in_intensity3_resistance.dev_attr.attr,
++	&afe440x_attr_in_intensity3_capacitance.dev_attr.attr,
++	&afe440x_attr_in_intensity4_resistance.dev_attr.attr,
++	&afe440x_attr_in_intensity4_capacitance.dev_attr.attr,
+ 	NULL
+ };
+ 
+diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
+index 0d1af4a..69116cd 100644
+--- a/drivers/iio/health/afe4404.c
++++ b/drivers/iio/health/afe4404.c
+@@ -179,7 +179,7 @@ static const struct afe440x_val_table afe4404_res_table[] = {
+ 	{ .integer = 1000000, .fract = 0 },
+ 	{ .integer = 2000000, .fract = 0 },
+ };
+-AFE440X_TABLE_ATTR(tia_resistance_available, afe4404_res_table);
++AFE440X_TABLE_ATTR(in_intensity_resistance_available, afe4404_res_table);
+ 
+ static const struct afe440x_val_table afe4404_cap_table[] = {
+ 	{ .integer = 0, .fract = 5000 },
+@@ -191,7 +191,7 @@ static const struct afe440x_val_table afe4404_cap_table[] = {
+ 	{ .integer = 0, .fract = 25000 },
+ 	{ .integer = 0, .fract = 22500 },
+ };
+-AFE440X_TABLE_ATTR(tia_capacitance_available, afe4404_cap_table);
++AFE440X_TABLE_ATTR(in_intensity_capacitance_available, afe4404_cap_table);
+ 
+ static ssize_t afe440x_show_register(struct device *dev,
+ 				     struct device_attribute *attr,
+@@ -244,19 +244,29 @@ static ssize_t afe440x_store_register(struct device *dev,
+ 	return count;
+ }
+ 
+-static AFE440X_ATTR(tia_resistance1, F_TIA_GAIN, afe4404_res_table);
+-static AFE440X_ATTR(tia_capacitance1, TIA_CF, afe4404_cap_table);
++static AFE440X_ATTR(in_intensity1_resistance, F_TIA_GAIN_SEP, afe4404_res_table);
++static AFE440X_ATTR(in_intensity1_capacitance, F_TIA_CF_SEP, afe4404_cap_table);
+ 
+-static AFE440X_ATTR(tia_resistance2, F_TIA_GAIN_SEP, afe4404_res_table);
+-static AFE440X_ATTR(tia_capacitance2, F_TIA_CF_SEP, afe4404_cap_table);
++static AFE440X_ATTR(in_intensity2_resistance, F_TIA_GAIN_SEP, afe4404_res_table);
++static AFE440X_ATTR(in_intensity2_capacitance, F_TIA_CF_SEP, afe4404_cap_table);
++
++static AFE440X_ATTR(in_intensity3_resistance, F_TIA_GAIN, afe4404_res_table);
++static AFE440X_ATTR(in_intensity3_capacitance, TIA_CF, afe4404_cap_table);
++
++static AFE440X_ATTR(in_intensity4_resistance, F_TIA_GAIN, afe4404_res_table);
++static AFE440X_ATTR(in_intensity4_capacitance, TIA_CF, afe4404_cap_table);
+ 
+ static struct attribute *afe440x_attributes[] = {
+-	&afe440x_attr_tia_resistance1.dev_attr.attr,
+-	&afe440x_attr_tia_capacitance1.dev_attr.attr,
+-	&afe440x_attr_tia_resistance2.dev_attr.attr,
+-	&afe440x_attr_tia_capacitance2.dev_attr.attr,
+-	&dev_attr_tia_resistance_available.attr,
+-	&dev_attr_tia_capacitance_available.attr,
++	&dev_attr_in_intensity_resistance_available.attr,
++	&dev_attr_in_intensity_capacitance_available.attr,
++	&afe440x_attr_in_intensity1_resistance.dev_attr.attr,
++	&afe440x_attr_in_intensity1_capacitance.dev_attr.attr,
++	&afe440x_attr_in_intensity2_resistance.dev_attr.attr,
++	&afe440x_attr_in_intensity2_capacitance.dev_attr.attr,
++	&afe440x_attr_in_intensity3_resistance.dev_attr.attr,
++	&afe440x_attr_in_intensity3_capacitance.dev_attr.attr,
++	&afe440x_attr_in_intensity4_resistance.dev_attr.attr,
++	&afe440x_attr_in_intensity4_capacitance.dev_attr.attr,
+ 	NULL
+ };
+ 
+-- 
+2.8.1
+
