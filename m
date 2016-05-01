@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:34563 "EHLO comal.ext.ti.com"
+Received: from arroyo.ext.ti.com ([192.94.94.40]:41518 "EHLO arroyo.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752173AbcEAUh3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 1 May 2016 16:37:29 -0400
+	id S1752344AbcEAUha (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 1 May 2016 16:37:30 -0400
 From: "Andrew F. Davis" <afd@ti.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -10,9 +10,9 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Peter Meerwald <pmeerw@pmeerw.net>
 CC: <linux-iio@vger.kernel.org>, <linux-api@vger.kernel.org>,
 	<linux-kernel@vger.kernel.org>, "Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH 01/13] iio: health/afe440x: Fix kernel-doc format
-Date: Sun, 1 May 2016 15:36:51 -0500
-Message-ID: <1462135023-14445-2-git-send-email-afd@ti.com>
+Subject: [PATCH 03/13] iio: health/afe440x: Remove unneeded initializers
+Date: Sun, 1 May 2016 15:36:53 -0500
+Message-ID: <1462135023-14445-4-git-send-email-afd@ti.com>
 In-Reply-To: <1462135023-14445-1-git-send-email-afd@ti.com>
 References: <1462135023-14445-1-git-send-email-afd@ti.com>
 MIME-Version: 1.0
@@ -20,95 +20,49 @@ Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix kernel-doc formatting for structs, and while we are making little
-fixes, clarify the module description and update the copywrite.
+The drivers set some register values during initialization that can be
+set at runtime, these defaults were used in testing but are not
+necessary, remove these.
 
 Signed-off-by: Andrew F. Davis <afd@ti.com>
 ---
- drivers/iio/health/afe4403.c | 18 +++++++++---------
- drivers/iio/health/afe4404.c | 16 ++++++++--------
- 2 files changed, 17 insertions(+), 17 deletions(-)
+ drivers/iio/health/afe4403.c | 7 +------
+ drivers/iio/health/afe4404.c | 4 ----
+ 2 files changed, 1 insertion(+), 10 deletions(-)
 
 diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
-index 88e43f8..2094113 100644
+index e3700cf..5484785 100644
 --- a/drivers/iio/health/afe4403.c
 +++ b/drivers/iio/health/afe4403.c
-@@ -1,7 +1,7 @@
- /*
-  * AFE4403 Heart Rate Monitors and Low-Cost Pulse Oximeters
-  *
-- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
-+ * Copyright (C) 2015-2016 Texas Instruments Incorporated - http://www.ti.com/
-  *	Andrew F. Davis <afd@ti.com>
-  *
-  * This program is free software; you can redistribute it and/or modify
-@@ -103,13 +103,13 @@
- #define AFE4403_TIAGAIN_RES_NONE	0x7
+@@ -472,12 +472,7 @@ static const struct iio_trigger_ops afe4403_trigger_ops = {
  
- /**
-- * struct afe4403_data
-- * @dev - Device structure
-- * @spi - SPI device handle
-- * @regmap - Register map of the device
-- * @regulator - Pointer to the regulator for the IC
-- * @trig - IIO trigger for this device
-- * @irq - ADC_RDY line interrupt number
-+ * struct afe4403_data - AFE4403 device instance data
-+ * @dev: Device structure
-+ * @spi: SPI device handle
-+ * @regmap: Register map of the device
-+ * @regulator: Pointer to the regulator for the IC
-+ * @trig: IIO trigger for this device
-+ * @irq: ADC_RDY line interrupt number
-  */
- struct afe4403_data {
- 	struct device *dev;
-@@ -704,5 +704,5 @@ static struct spi_driver afe4403_spi_driver = {
- module_spi_driver(afe4403_spi_driver);
+ static const struct reg_sequence afe4403_reg_sequences[] = {
+ 	AFE4403_TIMING_PAIRS,
+-	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN | 0x000007},
+-	{ AFE4403_TIA_AMB_GAIN, AFE4403_TIAGAIN_RES_1_M },
+-	{ AFE440X_LEDCNTRL, (0x14 << AFE440X_LEDCNTRL_LED1_SHIFT) |
+-			    (0x14 << AFE440X_LEDCNTRL_LED2_SHIFT) },
+-	{ AFE440X_CONTROL2, AFE440X_CONTROL2_TX_REF_050 <<
+-			    AFE440X_CONTROL2_TX_REF_SHIFT },
++	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
+ };
  
- MODULE_AUTHOR("Andrew F. Davis <afd@ti.com>");
--MODULE_DESCRIPTION("TI AFE4403 Heart Rate and Pulse Oximeter");
-+MODULE_DESCRIPTION("TI AFE4403 Heart Rate Monitor and Pulse Oximeter AFE");
- MODULE_LICENSE("GPL v2");
+ static const struct regmap_range afe4403_yes_ranges[] = {
 diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
-index 5096a46..7127d03 100644
+index 783b9b4..2d4c522 100644
 --- a/drivers/iio/health/afe4404.c
 +++ b/drivers/iio/health/afe4404.c
-@@ -1,7 +1,7 @@
- /*
-  * AFE4404 Heart Rate Monitors and Low-Cost Pulse Oximeters
-  *
-- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
-+ * Copyright (C) 2015-2016 Texas Instruments Incorporated - http://www.ti.com/
-  *	Andrew F. Davis <afd@ti.com>
-  *
-  * This program is free software; you can redistribute it and/or modify
-@@ -106,12 +106,12 @@
- #define AFE4404_TIA_GAIN_RES_2_M	0x7
+@@ -443,10 +443,6 @@ static const struct iio_trigger_ops afe4404_trigger_ops = {
+ static const struct reg_sequence afe4404_reg_sequences[] = {
+ 	AFE4404_TIMING_PAIRS,
+ 	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
+-	{ AFE4404_TIA_GAIN, AFE4404_TIA_GAIN_RES_50_K },
+-	{ AFE440X_LEDCNTRL, (0xf << AFE4404_LEDCNTRL_ILED1_SHIFT) |
+-			    (0x3 << AFE4404_LEDCNTRL_ILED2_SHIFT) |
+-			    (0x3 << AFE4404_LEDCNTRL_ILED3_SHIFT) },
+ 	{ AFE440X_CONTROL2, AFE440X_CONTROL3_OSC_ENABLE	},
+ };
  
- /**
-- * struct afe4404_data
-- * @dev - Device structure
-- * @regmap - Register map of the device
-- * @regulator - Pointer to the regulator for the IC
-- * @trig - IIO trigger for this device
-- * @irq - ADC_RDY line interrupt number
-+ * struct afe4404_data - AFE4404 device instance data
-+ * @dev: Device structure
-+ * @regmap: Register map of the device
-+ * @regulator: Pointer to the regulator for the IC
-+ * @trig: IIO trigger for this device
-+ * @irq: ADC_RDY line interrupt number
-  */
- struct afe4404_data {
- 	struct device *dev;
-@@ -675,5 +675,5 @@ static struct i2c_driver afe4404_i2c_driver = {
- module_i2c_driver(afe4404_i2c_driver);
- 
- MODULE_AUTHOR("Andrew F. Davis <afd@ti.com>");
--MODULE_DESCRIPTION("TI AFE4404 Heart Rate and Pulse Oximeter");
-+MODULE_DESCRIPTION("TI AFE4404 Heart Rate Monitor and Pulse Oximeter AFE");
- MODULE_LICENSE("GPL v2");
 -- 
 2.8.1
 
