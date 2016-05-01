@@ -1,106 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48744 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752548AbcEAVZy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:25:54 -0400
-Subject: Re: [PATCH 1/7] iio: inv_mpu6050: Do burst reads using spi/i2c
- directly
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <cover.1461953982.git.leonard.crestez@intel.com>
- <bb7637a178248e7d5e6c139343cf97d09e6e6a2f.1461953982.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from bear.ext.ti.com ([192.94.94.41]:52894 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752225AbcEAUh3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 1 May 2016 16:37:29 -0400
+From: "Andrew F. Davis" <afd@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Ge Gao <GGao@invensense.com>, Mark Brown <broonie@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <bd07f4f4-4105-9ff8-13b5-e549030d5d4c@kernel.org>
-Date: Sun, 1 May 2016 18:11:50 +0100
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: <linux-iio@vger.kernel.org>, <linux-api@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, "Andrew F. Davis" <afd@ti.com>
+Subject: [PATCH 00/13] Rework for AFE440x drivers to prepare for AFE4405
+Date: Sun, 1 May 2016 15:36:50 -0500
+Message-ID: <1462135023-14445-1-git-send-email-afd@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <bb7637a178248e7d5e6c139343cf97d09e6e6a2f.1461953982.git.leonard.crestez@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
- On 29/04/16 20:02, Crestez Dan Leonard wrote:
-> Using regmap_read_bulk is wrong because it assumes that a range of
-> registers is being read. In our case reading from the fifo register will
-> return multiple values but this is *not* auto-increment.
-> 
-> This currently works by accident.
-Cc'd Mark again.  He's the regmap maintainer (amongst other things) so
-a series doing slightly odd things with regmap should probably have been
-cc'd to him in the first place.
+Hello all,
 
-Perhaps regmap should have a repeat read function for this sort of fifo access?
-Mark, is this something you'd consider?  Easy enough to implement after all as
-a variant on regmap_read_bulk...
+I will be posting a driver for the AFE4405 soon and in preparation
+for this I have made some changes to the existing drivers to better
+align them with the new part. Some of these changes are trivial, others
+change the sysfs entries, I understand these are considered ABIs and
+changes to even testing ABIs should not be made lightly, but my hope is
+that these changes will more accurately reflect the devices intended use
+and improve functionality as the first users begin to appear.
 
-Having the below in a driver just feels wrong to me....
-> 
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 33 ++++++++++++++++++++++++++----
->  1 file changed, 29 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> index d070062..8455af0 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> @@ -21,6 +21,7 @@
->  #include <linux/interrupt.h>
->  #include <linux/kfifo.h>
->  #include <linux/poll.h>
-> +#include <linux/spi/spi.h>
->  #include "inv_mpu_iio.h"
->  
->  static void inv_clear_kfifo(struct inv_mpu6050_state *st)
-> @@ -128,6 +129,13 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->  	u16 fifo_count;
->  	s64 timestamp;
->  
-> +	struct device *regmap_dev = regmap_get_device(st->map);
-> +	struct i2c_client *i2c;
-> +	struct spi_device *spi = NULL;
-> +
-> +	i2c = i2c_verify_client(regmap_dev);
-> +	spi = i2c ? NULL: to_spi_device(regmap_dev);
-> +
->  	mutex_lock(&indio_dev->mlock);
->  	if (!(st->chip_config.accl_fifo_enable |
->  		st->chip_config.gyro_fifo_enable))
-> @@ -160,10 +168,27 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->  	    fifo_count / bytes_per_datum + INV_MPU6050_TIME_STAMP_TOR)
->  		goto flush_fifo;
->  	while (fifo_count >= bytes_per_datum) {
-> -		result = regmap_bulk_read(st->map, st->reg->fifo_r_w,
-> -					  data, bytes_per_datum);
-> -		if (result)
-> -			goto flush_fifo;
-> +		/*
-> +		 * We need to do a large burst read from a single register.
-> +		 *
-> +		 * regmap_read_bulk assumes that multiple registers are
-> +		 * involved but in our case st->reg->fifo_r_w + 1 is something
-> +		 * completely unrelated.
-> +		 */
-> +		if (spi) {
-> +			u8 cmd = st->reg->fifo_r_w | 0x80;
-> +			result = spi_write_then_read(spi,
-> +					&cmd, 1,
-> +					data, bytes_per_datum);
-> +			if (result)
-> +				goto flush_fifo;
-> +		} else {
-> +			result = i2c_smbus_read_i2c_block_data(i2c,
-> +					st->reg->fifo_r_w,
-> +					bytes_per_datum, data);
-> +			if (result != bytes_per_datum)
-> +				goto flush_fifo;
-> +		}
->  
->  		result = kfifo_out(&st->timestamps, &timestamp, 1);
->  		/* when there is no timestamp, put timestamp as 0 */
-> 
+Thanks,
+Andrew
+
+Andrew F. Davis (13):
+  iio: health/afe440x: Fix kernel-doc format
+  iio: health/afe440x: Remove of_match_ptr and ifdefs
+  iio: health/afe440x: Remove unneeded initializers
+  iio: health/afe440x: Always use separate gain values
+  iio: health/afe440x: Fix scan_index assignment
+  iio: health/afe440x: Remove unneeded offset handling
+  iio: health/afe4404: Remove LED3 input channel
+  iio: health/afe440x: Remove channel names
+  iio: health/afe440x: Use regmap fields
+  iio: health/afe440x: Make gain settings a modifier for the stages
+  iio: health/afe440x: Match LED currents to stages
+  iio: health/afe440x: Remove unused definitions
+  iio: health/afe4404: ENSEPGAIN is part of CONTROL2 register
+
+ .../ABI/testing/sysfs-bus-iio-health-afe440x       |  95 +++----
+ drivers/iio/health/afe4403.c                       | 299 ++++++++------------
+ drivers/iio/health/afe4404.c                       | 308 +++++++++------------
+ drivers/iio/health/afe440x.h                       |  48 +---
+ 4 files changed, 295 insertions(+), 455 deletions(-)
+ rewrite Documentation/ABI/testing/sysfs-bus-iio-health-afe440x (72%)
+
+-- 
+2.8.1
 
