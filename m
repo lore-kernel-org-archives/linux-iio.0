@@ -1,565 +1,568 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48888 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48760 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752524AbcEAV05 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:26:57 -0400
-Subject: Re: [PATCH 1/3] mfd: mxs-lradc: Add support for mxs-lradc MFD
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	linux-kernel@vger.kernel.org
-References: <cover.1461930102.git.ksenija.stanojevic@gmail.com>
- <a93050366ed452b147652abfad21a87f4af87bfb.1461930102.git.ksenija.stanojevic@gmail.com>
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-	linux-input@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, marex@denx.de, linux-iio@vger.kernel.org,
-	harald@ccbib.org
+	with ESMTP id S1752690AbcEAV0C (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:26:02 -0400
+Subject: Re: [RFC 5/7] iio: inv_mpu6050: Add support for auxiliary I2C master
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1461953982.git.leonard.crestez@intel.com>
+ <4aeaced7c1c8e222996df4c1b4b71e505ab256f7.1461953982.git.leonard.crestez@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <53b9653d-0d22-9fa1-a63f-cc320edc470f@kernel.org>
-Date: Sun, 1 May 2016 14:06:03 +0100
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Ge Gao <GGao@invensense.com>, Peter Rosin <peda@axentia.se>,
+	Linux I2C <linux-i2c@vger.kernel.org>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Mark Rutland <Mark.Rutland@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <Pawel.Moll@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Message-ID: <7168c23b-8b82-5e57-42fd-b164bee9fa85@kernel.org>
+Date: Sun, 1 May 2016 18:27:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <a93050366ed452b147652abfad21a87f4af87bfb.1461930102.git.ksenija.stanojevic@gmail.com>
+In-Reply-To: <4aeaced7c1c8e222996df4c1b4b71e505ab256f7.1461953982.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/04/16 12:47, Ksenija Stanojevic wrote:
-> Add core files for mxs-lradc MFD driver.
+On 29/04/16 20:02, Crestez Dan Leonard wrote:
+> The MPU has an auxiliary I2C bus for connecting external
+> sensors. This bus has two operating modes:
+> * pass-through, which connects the primary and auxiliary busses
+> together. This is already supported via an i2c mux.
+> * I2C master mode, where the mpu60x0 acts as a master to any external
+> connected sensors. This is implemented by this patch.
 > 
-> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Only a few trivial additions to others comments from me.
+> This I2C master mode also works when the MPU itself is connected via
+> SPI.
+> 
+> I2C master supports up to 5 slaves. Slaves 0-3 have a common operating
+> mode while slave 4 is different. This patch implements an i2c adapter
+> using slave 4 because it has a cleaner interface and it has an
+> interrupt that signals when data from slave to master arrived.
+> 
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+Quite a few missing cc's here.  Device tree bindings => device tree list
+and maintainers.  Master i2c device => wolfram + linux-i2c.
+All these people need to be included in this sort of discussion.
 
-Looking pretty good.
-
-Jonathan
+The quirk used to avoid unecessary writes to one of the registers bothers
+me in that it's not obviously correct.  Perhaps using a read / write pair
+would be nicer?
 > ---
->  drivers/mfd/Kconfig           |  33 +++++--
->  drivers/mfd/Makefile          |   1 +
->  drivers/mfd/mxs-lradc.c       | 213 ++++++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/mxs-lradc.h | 210 +++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 449 insertions(+), 8 deletions(-)
->  create mode 100644 drivers/mfd/mxs-lradc.c
->  create mode 100644 include/linux/mfd/mxs-lradc.h
+>  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    |  61 +++++-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         | 239 ++++++++++++++++++++-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  46 ++++
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c      |   8 -
+>  4 files changed, 341 insertions(+), 13 deletions(-)
 > 
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index eea61e3..fff44d6 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -16,7 +16,7 @@ config MFD_CS5535
->  	depends on PCI && (X86_32 || (X86 && COMPILE_TEST))
->  	---help---
->  	  This is the core driver for CS5535/CS5536 MFD functions.  This is
-> -          necessary for using the board's GPIO and MFGPT functionality.
-> +	  necessary for using the board's GPIO and MFGPT functionality.
+> diff --git a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+> index a9fc11e..aaf12b4 100644
+> --- a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+> +++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+> @@ -1,16 +1,27 @@
+>  InvenSense MPU-6050 Six-Axis (Gyro + Accelerometer) MEMS MotionTracking Device
 >  
->  config MFD_ACT8945A
->  	tristate "Active-semi ACT8945A"
-> @@ -319,6 +319,23 @@ config MFD_HI6421_PMIC
->  	  menus in order to enable them.
->  	  We communicate with the Hi6421 via memory-mapped I/O.
+> -http://www.invensense.com/mems/gyro/mpu6050.html
+If this is invalid, please add an up to date link if possible.
+> -
+>  Required properties:
+> - - compatible : should be "invensense,mpu6050"
+> - - reg : the I2C address of the sensor
+> + - compatible : should be "invensense,mpuXXXX"
+List them all explicitly here rather than wild cards.
+> + - reg : the I2C or SPI address of the sensor
+>   - interrupt-parent : should be the phandle for the interrupt controller
+>   - interrupts : interrupt mapping for GPIO IRQ
 >  
-> +config MFD_MXS_LRADC
-> +	tristate "Freescale i.MX23/i.MX28 LRADC"
-> +	depends on ARCH_MXS || COMPILE_TEST
-> +	select MFD_CORE
-> +	select STMP_DEVICE
-> +	help
-> +	  Say yes here to build support for the low-resolution
-> +	  analog-to-digital converter (LRADC) found on the i.MX23 and i.MX28
-> +	  processors. This driver provides common support for accessing the
-> +	  device, additional drivers must be enabled in order to use the
-> +	  functionality of the device:
-> +		mxs-lradc-adc for ADC readings
-> +		mxs-lradc-ts  for touchscreen support
+>  Optional properties:
+>   - mount-matrix: an optional 3x3 mounting rotation matrix
+> + - inv,i2c-aux-master: operate aux i2c in "master mode" (default is mux).
 > +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called mxs-lradc.
+> +Valid compatible strings:
+Vendor prefix? These will work for historical reasons, but now vendor
+prefix should definitely be there as well.
+> + - mpu6000
+> + - mpu6050
+> + - mpu6500
+> + - mpu9150
 > +
->  config HTC_EGPIO
->  	bool "HTC EGPIO support"
->  	depends on GPIOLIB && ARM
-> @@ -650,7 +667,7 @@ config EZX_PCAP
->  	  needed for MMC, TouchScreen, Sound, USB, etc..
+> +It is possible to attach auxiliary sensors to the MPU and have them be handled
+> +by linux. Those auxiliary sensors are described as an i2c bus.
+> +
+> +Devices connected in "bypass" mode must be listed behind i2c@0 with the address 0
 >  
->  config MFD_VIPERBOARD
-> -        tristate "Nano River Technologies Viperboard"
-> +	tristate "Nano River Technologies Viperboard"
->  	select MFD_CORE
->  	depends on USB
->  	default n
-> @@ -898,11 +915,11 @@ config MFD_SMSC
->         select MFD_CORE
->         select REGMAP_I2C
->         help
-> -        If you say yes here you get support for the
-> -        ece1099 chips from SMSC.
-> +	If you say yes here you get support for the
-> +	ece1099 chips from SMSC.
+> +Devices connected in "master" mode must be listed behind i2c@1 with the address 1
 >  
-> -        To compile this driver as a module, choose M here: the
-> -        module will be called smsc.
-> +	To compile this driver as a module, choose M here: the
-> +	module will be called smsc.
+>  Example:
+>  	mpu6050@68 {
+> @@ -28,3 +39,45 @@ Example:
+>  		               "0",                   /* y2 */
+>  		               "0.984807753012208";   /* z2 */
+>  	};
+> +
+> +Example describing mpu9150 (which includes an ak9875 on chip):
+> +	mpu9150@68 {
+> +		compatible = "invensense,mpu9150";
+> +		reg = <0x68>;
+> +		interrupt-parent = <&gpio1>;
+> +		interrupts = <18 1>;
+> +
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		i2c@0 {
+> +			reg = <0>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			ak8975@0c {
+> +				compatible = "ak,ak8975";
+> +				reg = <0x0c>;
+> +			};
+> +		};
+> +	};
+> +
+> +Example describing a mpu6500 via SPI with an hmc5883l on auxiliary i2c:
+> +	mpu6500@0 {
+> +		compatible = "inv,mpu6500";
+> +		reg = <0x0>;
+> +		spi-max-frequency = <1000000>;
+> +		interrupt-parent = <&gpio1>;
+> +		interrupts = <31 1>;
+> +
+> +		inv,i2c-aux-master
+> +		i2c@1 {
+> +			reg = <1>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			hmc5883l@1e {
+> +				compatible = "honeywell,hmc5883l";
+> +				reg = <0x1e>;
+> +			};
+> +		};
+> +	};
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 5918c23..064fc07 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -25,6 +25,8 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/i2c-mux.h>
+>  #include <linux/acpi.h>
+> +#include <linux/completion.h>
+> +
+>  #include "inv_mpu_iio.h"
 >  
->  config ABX500_CORE
->  	bool "ST-Ericsson ABX500 Mixed Signal Circuit register functions"
-> @@ -956,8 +973,8 @@ config AB8500_DEBUG
->         depends on AB8500_GPADC && DEBUG_FS
->         default y if DEBUG_FS
->         help
-> -         Select this option if you want debug information using the debug
-> -         filesystem, debugfs.
-> +	 Select this option if you want debug information using the debug
-> +	 filesystem, debugfs.
+>  /*
+> @@ -57,6 +59,12 @@ static const struct inv_mpu6050_reg_map reg_set_6500 = {
+>  	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
+>  	.accl_offset		= INV_MPU6500_REG_ACCEL_OFFSET,
+>  	.gyro_offset		= INV_MPU6050_REG_GYRO_OFFSET,
+> +	.slv4_addr		= INV_MPU6050_REG_I2C_SLV4_ADDR,
+> +	.slv4_reg		= INV_MPU6050_REG_I2C_SLV4_REG,
+> +	.slv4_do		= INV_MPU6050_REG_I2C_SLV4_DO,
+> +	.slv4_ctrl		= INV_MPU6050_REG_I2C_SLV4_CTRL,
+> +	.slv4_di		= INV_MPU6050_REG_I2C_SLV4_DI,
+> +	.mst_status		= INV_MPU6050_REG_I2C_MST_STATUS,
+>  };
 >  
->  config AB8500_GPADC
->  	bool "ST-Ericsson AB8500 GPADC driver"
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index 5eaa6465d..236b831 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -203,3 +203,4 @@ intel-soc-pmic-objs		:= intel_soc_pmic_core.o intel_soc_pmic_crc.o
->  intel-soc-pmic-$(CONFIG_INTEL_PMC_IPC)	+= intel_soc_pmic_bxtwc.o
->  obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
->  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
-> +obj-$(CONFIG_MFD_MXS_LRADC)	+= mxs-lradc.o
-> diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
-> new file mode 100644
-> index 0000000..e1c8f9e
-> --- /dev/null
-> +++ b/drivers/mfd/mxs-lradc.c
-> @@ -0,0 +1,213 @@
-> +/*
-> + * Freescale MXS LRADC driver
-> + *
-> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
-> + * Marek Vasut <marex@denx.de>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/device.h>
-> +#include <linux/mfd/core.h>
-> +#include <linux/mfd/mxs-lradc.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +
-> +static struct mfd_cell lradc_adc_dev = {
-> +	.name = DRIVER_NAME_ADC,
-> +};
-> +
-> +static struct mfd_cell lradc_ts_dev = {
-> +	.name = DRIVER_NAME_TS,
-> +};
-> +
-> +static const char * const mx23_lradc_irq_names[] = {
-> +	"mxs-lradc-touchscreen",
-> +	"mxs-lradc-channel0",
-> +	"mxs-lradc-channel1",
-> +	"mxs-lradc-channel2",
-> +	"mxs-lradc-channel3",
-> +	"mxs-lradc-channel4",
-> +	"mxs-lradc-channel5",
-> +	"mxs-lradc-channel6",
-> +	"mxs-lradc-channel7",
-> +};
-> +
-> +static const char * const mx28_lradc_irq_names[] = {
-> +	"mxs-lradc-touchscreen",
-> +	"mxs-lradc-thresh0",
-> +	"mxs-lradc-thresh1",
-> +	"mxs-lradc-channel0",
-> +	"mxs-lradc-channel1",
-> +	"mxs-lradc-channel2",
-> +	"mxs-lradc-channel3",
-> +	"mxs-lradc-channel4",
-> +	"mxs-lradc-channel5",
-> +	"mxs-lradc-channel6",
-> +	"mxs-lradc-channel7",
-> +	"mxs-lradc-button0",
-> +	"mxs-lradc-button1",
-> +};
-> +
-> +struct mxs_lradc_of_config {
-> +	const int		irq_count;
-> +	const char * const	*irq_name;
-> +};
-> +
-> +static const struct mxs_lradc_of_config mxs_lradc_of_config[] = {
-> +	[IMX23_LRADC] = {
-> +		.irq_count	= ARRAY_SIZE(mx23_lradc_irq_names),
-> +		.irq_name	= mx23_lradc_irq_names,
-> +	},
-> +	[IMX28_LRADC] = {
-> +		.irq_count	= ARRAY_SIZE(mx28_lradc_irq_names),
-> +		.irq_name	= mx28_lradc_irq_names,
-> +	},
-> +};
-> +
-> +static const struct of_device_id mxs_lradc_dt_ids[] = {
-> +	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
-> +	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
-> +
-> +static int mxs_lradc_probe(struct platform_device *pdev)
+>  static const struct inv_mpu6050_reg_map reg_set_6050 = {
+> @@ -77,6 +85,12 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
+>  	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
+>  	.accl_offset		= INV_MPU6050_REG_ACCEL_OFFSET,
+>  	.gyro_offset		= INV_MPU6050_REG_GYRO_OFFSET,
+> +	.slv4_addr		= INV_MPU6050_REG_I2C_SLV4_ADDR,
+> +	.slv4_reg		= INV_MPU6050_REG_I2C_SLV4_REG,
+> +	.slv4_do		= INV_MPU6050_REG_I2C_SLV4_DO,
+> +	.slv4_ctrl		= INV_MPU6050_REG_I2C_SLV4_CTRL,
+> +	.slv4_di		= INV_MPU6050_REG_I2C_SLV4_DI,
+> +	.mst_status		= INV_MPU6050_REG_I2C_MST_STATUS,
+>  };
+>  
+>  static const struct inv_mpu6050_chip_config chip_config_6050 = {
+> @@ -130,6 +144,10 @@ static bool inv_mpu6050_volatile_reg(struct device *dev, unsigned int reg)
+>  	case INV_MPU6050_REG_FIFO_COUNT_H:
+>  	case INV_MPU6050_REG_FIFO_COUNT_H + 1:
+>  	case INV_MPU6050_REG_FIFO_R_W:
+> +	case INV_MPU6050_REG_I2C_MST_STATUS:
+> +	case INV_MPU6050_REG_INT_STATUS:
+> +	case INV_MPU6050_REG_I2C_SLV4_CTRL:
+> +	case INV_MPU6050_REG_I2C_SLV4_DI:
+>  		return true;
+>  	default:
+>  		return false;
+> @@ -140,6 +158,8 @@ static bool inv_mpu6050_precious_reg(struct device *dev, unsigned int reg)
+>  {
+>  	switch (reg) {
+>  	case INV_MPU6050_REG_FIFO_R_W:
+> +	case INV_MPU6050_REG_I2C_MST_STATUS:
+> +	case INV_MPU6050_REG_INT_STATUS:
+>  		return true;
+>  	default:
+>  		return false;
+> @@ -852,6 +872,196 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
+>  	return 0;
+>  }
+>  
+> +static irqreturn_t inv_mpu_irq_handler(int irq, void *private)
 > +{
-> +	const struct of_device_id *of_id =
-> +		of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-> +	const struct mxs_lradc_of_config *of_cfg =
-> +		&mxs_lradc_of_config[(enum mxs_lradc_id)of_id->data];
-> +	struct device *dev = &pdev->dev;
-> +	struct device_node *node = dev->of_node;
-> +	struct mxs_lradc *lradc;
-> +	struct resource *iores;
-> +	int ret = 0, touch_ret, i;
-> +	u32 ts_wires = 0;
+> +	struct inv_mpu6050_state *st = (struct inv_mpu6050_state *)private;
 > +
-> +	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
-> +	if (!lradc)
-> +		return -ENOMEM;
-> +	lradc->soc = (enum mxs_lradc_id)of_id->data;
+> +	iio_trigger_poll(st->trig);
 > +
-> +	/* Grab the memory area */
-> +	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	lradc->base = devm_ioremap_resource(dev, iores);
-> +	if (IS_ERR(lradc->base))
-> +		return PTR_ERR(lradc->base);
+> +	return IRQ_WAKE_THREAD;
+> +}
 > +
-> +	lradc->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(lradc->clk)) {
-> +		dev_err(dev, "Failed to get the delay unit clock\n");
-> +		return PTR_ERR(lradc->clk);
-> +	}
-> +	ret = clk_prepare_enable(lradc->clk);
-> +	if (ret != 0) {
-> +		dev_err(dev, "Failed to enable the delay unit clock\n");
-> +		return ret;
-> +	}
+> +static irqreturn_t inv_mpu_irq_thread_handler(int irq, void *private)
+> +{
+> +	struct inv_mpu6050_state *st = (struct inv_mpu6050_state *)private;
+> +	int ret, val;
 > +
-> +	touch_ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
-> +					 &ts_wires);
-> +
-> +	if (touch_ret == 0)
-> +		lradc->buffer_vchans = BUFFER_VCHANS_LIMITED;
-> +	else
-> +		lradc->buffer_vchans = BUFFER_VCHANS_ALL;
-> +
-> +	lradc->irq_count = of_cfg->irq_count;
-> +	lradc->irq_name = of_cfg->irq_name;
-> +	for (i = 0; i < lradc->irq_count; i++) {
-> +		lradc->irq[i] = platform_get_irq(pdev, i);
-> +		if (lradc->irq[i] < 0) {
-> +			ret = lradc->irq[i];
-> +			goto err_clk;
-> +		}
-> +	}
-> +
-> +	platform_set_drvdata(pdev, lradc);
-> +
-> +	ret = stmp_reset_block(lradc->base);
-> +
-> +	if (ret)
+> +	ret = regmap_read(st->map, st->reg->mst_status, &val);
+> +	if (ret < 0)
 > +		return ret;
 > +
-> +	lradc_adc_dev.platform_data = lradc;
-> +	lradc_adc_dev.pdata_size = sizeof(*lradc);
+> +#ifdef CONFIG_I2C
+> +	if (val & INV_MPU6050_BIT_I2C_SLV4_DONE)
+> +		complete(&st->slv4_done);
+> +#endif
 > +
-> +	ret = mfd_add_devices(&pdev->dev, -1, &lradc_adc_dev, 1, NULL, 0, NULL);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Failed to add the ADC subdevice\n");
-> +		return ret;
-> +	}
+> +	return IRQ_HANDLED;
+> +}
 > +
-> +	lradc_ts_dev.platform_data = lradc;
-> +	lradc_ts_dev.pdata_size = sizeof(*lradc);
+> +#ifdef CONFIG_I2C
+> +static u32 inv_mpu_i2c_functionality(struct i2c_adapter *adap)
+> +{
+> +	return I2C_FUNC_SMBUS_BYTE_DATA;
+> +}
 > +
-> +	switch (ts_wires) {
-> +	case 4:
-> +		lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_4WIRE;
-> +		break;
-> +	case 5:
-> +		if (lradc->soc == IMX28_LRADC) {
-> +			lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_5WIRE;
-> +			break;
-> +		}
-> +		/* fall through an error message for i.MX23 */
-> +	default:
-> +		dev_err(&pdev->dev,
-> +			"Unsupported number of touchscreen wires (%d)\n",
-> +			ts_wires);
+> +static int
+> +inv_mpu_i2c_smbus_xfer(struct i2c_adapter *adap, u16 addr,
+> +		       unsigned short flags, char read_write, u8 command,
+> +		       int size, union i2c_smbus_data *data)
+> +{
+> +	struct inv_mpu6050_state *st = i2c_get_adapdata(adap);
+> +	struct iio_dev *indio_dev = iio_priv_to_dev(st);
+> +
+> +	unsigned long time_left;
+> +	int result, val;
+> +	u8 ctrl;
+> +
+> +	/*
+> +	 * The i2c adapter we implement is extremely limited.
+> +	 * Check for callers that don't check functionality bits.
+> +	 *
+> +	 * If we don't check we might succesfully return incorrect data.
+> +	 */
+> +	if (size != I2C_SMBUS_BYTE_DATA) {
+> +		dev_err(&adap->dev, "unsupported xfer rw=%d size=%d\n",
+> +			read_write, size);
+> +		dump_stack();
 > +		return -EINVAL;
 > +	}
 > +
-> +	ret = mfd_add_devices(&pdev->dev, -1, &lradc_ts_dev, 1, NULL, 0, NULL);
-> +	if (ret) {
-> +		dev_err(&pdev->dev,
-> +			"Failed to add the touchscreen subdevice\n");
-> +		goto err_remove_adc;
+> +	mutex_lock(&indio_dev->mlock);
+> +	result = inv_mpu6050_set_power_itg(st, true);
+> +	mutex_unlock(&indio_dev->mlock);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	if (read_write == I2C_SMBUS_WRITE)
+> +		addr |= INV_MPU6050_BIT_I2C_SLV4_W;
+> +	else
+> +		addr |= INV_MPU6050_BIT_I2C_SLV4_R;
+> +
+> +	/*
+> +	 * Regmap will never ignore writes but it will ignore full-register
+> +	 * updates to the same value.
+Hmm. I'd missed this distinction.  Feels decidely 'interesting'... and makes
+my earlier suggestion invalid as I guess the fields stuff uses update bits
+internally.
+
+> +	 *
+> +	 * This avoids having to touch slv4_addr when doing consecutive
+> +	 * reads/writes with the same device.
+> +	 */
+> +	result = regmap_update_bits(st->map, st->reg->slv4_addr, 0xff, addr);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	result = regmap_write(st->map, st->reg->slv4_reg, command);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	if (read_write == I2C_SMBUS_WRITE) {
+> +		result = regmap_write(st->map, st->reg->slv4_do, data->byte);
+> +		if (result < 0)
+> +			return result;
+> +	}
+> +
+> +	ctrl = INV_MPU6050_BIT_SLV4_EN | INV_MPU6050_BIT_SLV4_INT_EN;
+> +	result = regmap_write(st->map, st->reg->slv4_ctrl, ctrl);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	/* Wait for completion for both reads and writes */
+> +	time_left = wait_for_completion_timeout(&st->slv4_done, HZ);
+> +	if (!time_left)
+> +		return -ETIMEDOUT;
+> +
+> +	if (read_write == I2C_SMBUS_READ) {
+> +		result = regmap_read(st->map, st->reg->slv4_di, &val);
+> +		if (result < 0)
+> +			return result;
+> +		data->byte = val;
+> +	}
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	result = inv_mpu6050_set_power_itg(st, false);
+> +	mutex_unlock(&indio_dev->mlock);
+> +	if (result < 0)
+> +		return result;
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_algorithm inv_mpu_i2c_algo = {
+> +	.smbus_xfer	=	inv_mpu_i2c_smbus_xfer,
+> +	.functionality	=	inv_mpu_i2c_functionality,
+> +};
+> +
+> +static struct device_node *inv_mpu_get_aux_i2c_ofnode(struct device_node *parent)
+> +{
+> +	struct device_node *child;
+> +	int result;
+> +	u32 reg;
+> +
+> +	if (!parent)
+> +		return NULL;
+> +	for_each_child_of_node(parent, child) {
+> +		result = of_property_read_u32(child, "reg", &reg);
+> +		if (result)
+> +			continue;
+> +		if (reg == 1 && !strcmp(child->name, "i2c"))
+> +			return child;
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +static int inv_mpu_probe_aux_master(struct iio_dev* indio_dev)
+> +{
+> +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(st->map);
+> +	int result;
+> +
+> +	/* First check i2c-aux-master property */
+> +	st->i2c_aux_master_mode = of_property_read_bool(dev->of_node,
+> +							"inv,i2c-aux-master");
+> +	if (!st->i2c_aux_master_mode)
+> +		return 0;
+> +	dev_info(dev, "Configuring aux i2c in master mode\n");
+> +
+> +	result = inv_mpu6050_set_power_itg(st, true);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	/* enable master */
+> +	st->chip_config.user_ctrl |= INV_MPU6050_BIT_I2C_MST_EN;
+> +	result = regmap_write(st->map, st->reg->user_ctrl, st->chip_config.user_ctrl);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	result = regmap_update_bits(st->map, st->reg->int_enable,
+> +				 INV_MPU6050_BIT_MST_INT_EN,
+> +				 INV_MPU6050_BIT_MST_INT_EN);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	result = inv_mpu6050_set_power_itg(st, false);
+> +	if (result < 0)
+> +		return result;
+> +
+> +	init_completion(&st->slv4_done);
+> +	st->aux_master_adapter.owner = THIS_MODULE;
+> +	st->aux_master_adapter.algo = &inv_mpu_i2c_algo;
+> +	st->aux_master_adapter.dev.parent = dev;
+> +	snprintf(st->aux_master_adapter.name, sizeof(st->aux_master_adapter.name),
+> +			"aux-master-%s", indio_dev->name);
+> +	st->aux_master_adapter.dev.of_node = inv_mpu_get_aux_i2c_ofnode(dev->of_node);
+> +	i2c_set_adapdata(&st->aux_master_adapter, st);
+> +	/* This will also probe aux devices so transfers must work now */
+> +	result = i2c_add_adapter(&st->aux_master_adapter);
+> +	if (result < 0) {
+> +		dev_err(dev, "i2x aux master register fail %d\n", result);
+> +		return result;
 > +	}
 > +
 > +	return 0;
-> +
-> +err_remove_adc:
-> +	mfd_remove_devices(&pdev->dev);
-> +err_clk:
-> +	clk_disable_unprepare(lradc->clk);
-> +	return ret;
 > +}
+> +#endif
 > +
-> +static int mxs_lradc_remove(struct platform_device *pdev)
-> +{
-> +	struct mxs_lradc *lradc = platform_get_drvdata(pdev);
+>  int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  		int (*inv_mpu_bus_setup)(struct iio_dev *), int chip_type)
+>  {
+> @@ -931,16 +1141,39 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  		goto out_unreg_ring;
+>  	}
+>  
+> +	/* Request interrupt for trigger and i2c master adapter */
+> +	result = devm_request_threaded_irq(&indio_dev->dev, st->irq,
+> +					   &inv_mpu_irq_handler,
+> +					   &inv_mpu_irq_thread_handler,
+> +					   IRQF_TRIGGER_RISING, "inv_mpu",
+> +					   st);
+> +	if (result) {
+> +		dev_err(dev, "request irq fail %d\n", result);
+> +		goto out_remove_trigger;
+> +	}
 > +
-> +	mfd_remove_devices(&pdev->dev)
-> +	clk_disable_unprepare(lradc->clk);
-blank line here ideally...
-> +	return 0;
-> +}
+> +#ifdef CONFIG_I2C
+> +	result = inv_mpu_probe_aux_master(indio_dev);
+> +	if (result < 0) {
+> +		dev_err(dev, "i2c aux master probe fail %d\n", result);
+> +		goto out_remove_trigger;
+> +	}
+> +#endif
 > +
-> +static struct platform_driver mxs_lradc_driver = {
-> +	.driver = {
-> +		.name = "mxs-lradc",
-> +		.of_match_table = mxs_lradc_dt_ids,
-> +	},
-> +	.probe = mxs_lradc_probe,
-> +	.remove = mxs_lradc_remove,
-> +};
+>  	INIT_KFIFO(st->timestamps);
+>  	spin_lock_init(&st->time_stamp_lock);
+>  	result = iio_device_register(indio_dev);
+>  	if (result) {
+>  		dev_err(dev, "IIO register fail %d\n", result);
+> -		goto out_remove_trigger;
+> +		goto out_del_adapter;
+>  	}
+>  
+>  	return 0;
+>  
+> +out_del_adapter:
+> +#ifdef CONFIG_I2C
+> +	i2c_del_adapter(&st->aux_master_adapter);
+> +#endif
+>  out_remove_trigger:
+>  	inv_mpu6050_remove_trigger(st);
+>  out_unreg_ring:
+> @@ -952,10 +1185,14 @@ EXPORT_SYMBOL_GPL(inv_mpu_core_probe);
+>  int inv_mpu_core_remove(struct device  *dev)
+>  {
+>  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+>  
+>  	iio_device_unregister(indio_dev);
+>  	inv_mpu6050_remove_trigger(iio_priv(indio_dev));
+>  	iio_triggered_buffer_cleanup(indio_dev);
+> +#ifdef CONFIG_I2C
+> +	i2c_del_adapter(&st->aux_master_adapter);
+> +#endif
+>  
+>  	return 0;
+>  }
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index bd2c0fd..9d15633 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -42,6 +42,13 @@
+>   *  @int_pin_cfg;	Controls interrupt pin configuration.
+>   *  @accl_offset:	Controls the accelerometer calibration offset.
+>   *  @gyro_offset:	Controls the gyroscope calibration offset.
+> + *  @mst_status:	secondary I2C master interrupt source status
+> + *  @slv4_addr:		I2C slave address for slave 4 transaction
+> + *  @slv4_reg:		I2C register used with slave 4 transaction
+> + *  @slv4_di:		I2C data in register for slave 4 transaction
+> + *  @slv4_ctrl:		I2C slave 4 control register
+> + *  @slv4_do:		I2C data out register for slave 4 transaction
 > +
-> +module_platform_driver(mxs_lradc_driver);
+>   */
+>  struct inv_mpu6050_reg_map {
+>  	u8 sample_rate_div;
+> @@ -61,6 +68,15 @@ struct inv_mpu6050_reg_map {
+>  	u8 int_pin_cfg;
+>  	u8 accl_offset;
+>  	u8 gyro_offset;
+> +	u8 mst_status;
 > +
-> +MODULE_DESCRIPTION("Freescale i.MX23/i.MX28 LRADC driver");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_ALIAS("platform:mxs-lradc");
-> diff --git a/include/linux/mfd/mxs-lradc.h b/include/linux/mfd/mxs-lradc.h
-> new file mode 100644
-> index 0000000..c062969
-> --- /dev/null
-> +++ b/include/linux/mfd/mxs-lradc.h
-> @@ -0,0 +1,210 @@
-> +/*
-> + * Freescale MXS LRADC driver
-> + *
-> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
-> + * Marek Vasut <marex@denx.de>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> + * GNU General Public License for more details.
-> + */
+> +	/* slave 4 registers */
+> +	u8 slv4_addr;
+> +	u8 slv4_reg;
+> +	u8 slv4_di; /* data in */
+> +	u8 slv4_ctrl;
+> +	u8 slv4_do; /* data out */
 > +
-> +#ifndef __MXS_LRADC_H
-> +#define __MXS_LRADC_H
+>  };
+>  
+>  /*device enum */
+> @@ -139,6 +155,15 @@ struct inv_mpu6050_state {
+>  	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
+>  	struct regmap *map;
+>  	int irq;
 > +
-> +#include <linux/bitops.h>
-> +#include <linux/clk.h>
-> +#include <linux/completion.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/input.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +#include <linux/stmp_device.h>
-> +#include <linux/sysfs.h>
+> +	/* if the MPU connects to aux devices as a master */
+> +	bool i2c_aux_master_mode;
 > +
-> +#define DRIVER_NAME_ADC "mxs-lradc-adc"
-> +#define DRIVER_NAME_TS "mxs-lradc-ts"
+> +#ifdef CONFIG_I2C
+> +	/* I2C adapter for talking to aux sensors in "master" mode */
+> +	struct i2c_adapter aux_master_adapter;
+> +	struct completion slv4_done;
+> +#endif
+>  };
+>  
+>  /*register and associated bit definition*/
+> @@ -154,9 +179,30 @@ struct inv_mpu6050_state {
+>  #define INV_MPU6050_BIT_ACCEL_OUT           0x08
+>  #define INV_MPU6050_BITS_GYRO_OUT           0x70
+>  
+> +#define INV_MPU6050_REG_I2C_SLV4_ADDR       0x31
+> +#define INV_MPU6050_BIT_I2C_SLV4_R          0x80
+> +#define INV_MPU6050_BIT_I2C_SLV4_W          0x00
 > +
-> +#define LRADC_MAX_DELAY_CHANS	4
-> +#define LRADC_MAX_MAPPED_CHANS	8
-> +#define LRADC_MAX_TOTAL_CHANS	16
+> +#define INV_MPU6050_REG_I2C_SLV4_REG        0x32
+> +#define INV_MPU6050_REG_I2C_SLV4_DO         0x33
+> +#define INV_MPU6050_REG_I2C_SLV4_CTRL       0x34
 > +
-> +#define LRADC_DELAY_TIMER_HZ	2000
+> +#define INV_MPU6050_BIT_SLV4_EN             0x80
+> +#define INV_MPU6050_BIT_SLV4_INT_EN         0x40
+> +#define INV_MPU6050_BIT_SLV4_DIS            0x20
 > +
-> +#define LRADC_CTRL0				0x00
-> +# define LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE	BIT(23)
-> +# define LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE	BIT(22)
-> +# define LRADC_CTRL0_MX28_YNNSW /* YM */	BIT(21)
-> +# define LRADC_CTRL0_MX28_YPNSW /* YP */	BIT(20)
-> +# define LRADC_CTRL0_MX28_YPPSW /* YP */	BIT(19)
-> +# define LRADC_CTRL0_MX28_XNNSW /* XM */	BIT(18)
-> +# define LRADC_CTRL0_MX28_XNPSW /* XM */	BIT(17)
-> +# define LRADC_CTRL0_MX28_XPPSW /* XP */	BIT(16)
+> +#define INV_MPU6050_REG_I2C_SLV4_DI         0x35
 > +
-> +# define LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE	BIT(20)
-> +# define LRADC_CTRL0_MX23_YM			BIT(19)
-> +# define LRADC_CTRL0_MX23_XM			BIT(18)
-> +# define LRADC_CTRL0_MX23_YP			BIT(17)
-> +# define LRADC_CTRL0_MX23_XP			BIT(16)
+> +#define INV_MPU6050_REG_I2C_MST_STATUS      0x36
+> +#define INV_MPU6050_BIT_I2C_SLV4_DONE       0x40
 > +
-> +# define LRADC_CTRL0_MX28_PLATE_MASK \
-> +		(LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE | \
-> +		LRADC_CTRL0_MX28_YNNSW | LRADC_CTRL0_MX28_YPNSW | \
-> +		LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW | \
-> +		LRADC_CTRL0_MX28_XNPSW | LRADC_CTRL0_MX28_XPPSW)
+>  #define INV_MPU6050_REG_INT_ENABLE          0x38
+>  #define INV_MPU6050_BIT_DATA_RDY_EN         0x01
+>  #define INV_MPU6050_BIT_DMP_INT_EN          0x02
+> +#define INV_MPU6050_BIT_MST_INT_EN          0x08
 > +
-> +# define LRADC_CTRL0_MX23_PLATE_MASK \
-> +		(LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE | \
-> +		LRADC_CTRL0_MX23_YM | LRADC_CTRL0_MX23_XM | \
-> +		LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XP)
-> +
-> +#define LRADC_CTRL1				0x10
-> +#define LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		BIT(24)
-> +#define LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
-> +#define LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
-> +#define LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
-> +#define LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
-> +#define LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
-> +#define LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
-> +#define LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
-> +#define LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
-> +#define LRADC_CTRL1_LRADC_IRQ_OFFSET		0
-> +
-> +#define LRADC_CTRL2				0x20
-> +#define LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
-> +#define LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
-> +
-> +#define LRADC_STATUS				0x40
-> +#define LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
-> +
-> +#define LRADC_CH(n)				(0x50 + (0x10 * (n)))
-> +#define LRADC_CH_ACCUMULATE			BIT(29)
-> +#define LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
-> +#define LRADC_CH_NUM_SAMPLES_OFFSET		24
-> +#define LRADC_CH_NUM_SAMPLES(x) \
-> +				((x) << LRADC_CH_NUM_SAMPLES_OFFSET)
-> +#define LRADC_CH_VALUE_MASK			0x3ffff
-> +#define LRADC_CH_VALUE_OFFSET			0
-> +
-> +#define LRADC_DELAY(n)				(0xd0 + (0x10 * (n)))
-> +#define LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xffUL << 24)
-> +#define LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
-> +#define LRADC_DELAY_TRIGGER(x) \
-> +				(((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
-> +				LRADC_DELAY_TRIGGER_LRADCS_MASK)
-> +#define LRADC_DELAY_KICK			BIT(20)
-> +#define LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
-> +#define LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
-> +#define LRADC_DELAY_TRIGGER_DELAYS(x) \
-> +				(((x) << LRADC_DELAY_TRIGGER_DELAYS_OFFSET) & \
-> +				LRADC_DELAY_TRIGGER_DELAYS_MASK)
-> +#define LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
-> +#define LRADC_DELAY_LOOP_COUNT_OFFSET		11
-> +#define LRADC_DELAY_LOOP(x) \
-> +				(((x) << LRADC_DELAY_LOOP_COUNT_OFFSET) & \
-> +				LRADC_DELAY_LOOP_COUNT_MASK)
-> +#define LRADC_DELAY_DELAY_MASK			0x7ff
-> +#define LRADC_DELAY_DELAY_OFFSET		0
-> +#define LRADC_DELAY_DELAY(x) \
-> +				(((x) << LRADC_DELAY_DELAY_OFFSET) & \
-> +				LRADC_DELAY_DELAY_MASK)
-> +
-> +#define LRADC_CTRL4				0x140
-> +#define LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
-> +#define LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
-> +#define LRADC_CTRL4_LRADCSELECT(n, x) \
-> +				(((x) << LRADC_CTRL4_LRADCSELECT_OFFSET(n)) & \
-> +				LRADC_CTRL4_LRADCSELECT_MASK(n))
-> +
-> +#define LRADC_RESOLUTION			12
-> +#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
-> +
-> +enum mxs_lradc_id {
-> +	IMX23_LRADC,
-> +	IMX28_LRADC,
-> +};
-> +
-> +enum mxs_lradc_ts_wires {
-> +	MXS_LRADC_TOUCHSCREEN_NONE = 0,
-> +	MXS_LRADC_TOUCHSCREEN_4WIRE,
-> +	MXS_LRADC_TOUCHSCREEN_5WIRE,
-> +};
-> +
-> +struct mxs_lradc {
-> +	enum mxs_lradc_id	soc;
-> +
-> +	void __iomem		*base;
-> +	struct clk		*clk;
-> +
-> +	int			irq[13];
-> +	const char * const	*irq_name;
-> +	int			irq_count;
-> +
-> +#define BUFFER_VCHANS_LIMITED		0x3f
-> +#define BUFFER_VCHANS_ALL		0xff
-> +	u8			buffer_vchans;
-> +
-> +	/*
-> +	 * Certain LRADC channels are shared between touchscreen
-> +	 * and/or touch-buttons and generic LRADC block. Therefore when using
-> +	 * either of these, these channels are not available for the regular
-> +	 * sampling. The shared channels are as follows:
-> +	 *
-> +	 * CH0 -- Touch button #0
-> +	 * CH1 -- Touch button #1
-> +	 * CH2 -- Touch screen XPUL
-> +	 * CH3 -- Touch screen YPLL
-> +	 * CH4 -- Touch screen XNUL
-> +	 * CH5 -- Touch screen YNLR
-> +	 * CH6 -- Touch screen WIPER (5-wire only)
-> +	 *
-> +	 * The bit fields below represents which parts of the LRADC block are
-> +	 * switched into special mode of operation. These channels can not
-> +	 * be sampled as regular LRADC channels. The driver will refuse any
-> +	 * attempt to sample these channels.
-> +	 */
-> +#define CHAN_MASK_TOUCHBUTTON		(BIT(1) | BIT(0))
-> +#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
-> +#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
-> +	enum mxs_lradc_ts_wires	use_touchscreen;
-> +	bool			use_touchbutton;
-> +};
-> +
-> +static inline void mxs_lradc_reg_set(struct mxs_lradc *lradc, u32 val, u32 reg)
-> +{
-> +	writel(val, lradc->base + reg + STMP_OFFSET_REG_SET);
-> +}
-> +
-> +static inline void mxs_lradc_reg_clear(struct mxs_lradc *lradc, u32 val,
-> +				       u32 reg)
-> +{
-> +	writel(val, lradc->base + reg + STMP_OFFSET_REG_CLR);
-> +}
-> +
-> +static inline void mxs_lradc_reg_wrt(struct mxs_lradc *lradc, u32 val, u32 reg)
-> +{
-> +	writel(val, lradc->base + reg);
-> +}
-> +
-> +static inline u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
-> +{
-As we are changing the driver here I would ever so slightly prefer
-this to be a switch statement rather than an if. Takes a couple of lines more
-but makes adding new parts in the future easier!
-
-> +	if (lradc->soc == IMX23_LRADC)
-> +		return LRADC_CTRL1_MX23_LRADC_IRQ_MASK;
-> +	return LRADC_CTRL1_MX28_LRADC_IRQ_MASK;
-> +}
-> +
-> +#endif /* __MXS_LRADC_H */
+> +#define INV_MPU6050_REG_INT_STATUS          0x3A
+> +#define INV_MPU6050_BIT_MST_INT             0x08
+>  
+>  #define INV_MPU6050_REG_RAW_ACCEL           0x3B
+>  #define INV_MPU6050_REG_TEMPERATURE         0x41
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> index fc55923..a334ed9 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> @@ -126,14 +126,6 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
+>  	if (!st->trig)
+>  		return -ENOMEM;
+>  
+> -	ret = devm_request_irq(&indio_dev->dev, st->irq,
+> -			       &iio_trigger_generic_data_rdy_poll,
+> -			       IRQF_TRIGGER_RISING,
+> -			       "inv_mpu",
+> -			       st->trig);
+> -	if (ret)
+> -		return ret;
+> -
+>  	st->trig->dev.parent = regmap_get_device(st->map);
+>  	st->trig->ops = &inv_mpu_trigger_ops;
+>  	iio_trigger_set_drvdata(st->trig, indio_dev);
 > 
 
