@@ -1,37 +1,178 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f53.google.com ([74.125.82.53]:35004 "EHLO
-	mail-wm0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932543AbcECQW1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 May 2016 12:22:27 -0400
-Received: by mail-wm0-f53.google.com with SMTP id e201so153843758wme.0
-        for <linux-iio@vger.kernel.org>; Tue, 03 May 2016 09:22:27 -0700 (PDT)
-MIME-Version: 1.0
-From: Gwendal Grignou <gwendal@chromium.org>
-Date: Tue, 3 May 2016 09:22:06 -0700
-Message-ID: <CAMHSBOWLL=O=gRwUhepuKzyGwMeiVfDw2N2A7FwQBwS-_yk+fQ@mail.gmail.com>
-Subject: trigger->ops structure optional?
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>, pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, Dmitry Torokhov <dtor@google.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-yw0-f169.google.com ([209.85.161.169]:36190 "EHLO
+	mail-yw0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752293AbcEAWnm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 18:43:42 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v2 03/10] Documentation: Add ISA bus driver documentation
+Date: Sun,  1 May 2016 18:43:35 -0400
+Message-Id: <f5758dba59e1f9a610ba8deb45fe7ec3404bda12.1462141338.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1462141338.git.vilhelm.gray@gmail.com>
+References: <cover.1462141338.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-When I decided to compile a driver with a trigger as a module, I
-realized that I needed to add a trigger ops structure with the .owner
-field set to THIS_MODULE.
-The reason is iio_trigger_put() calls module_put(trig->ops->owner),
-which is a noop if the driver is compiled within the kernel.
-Otherwise, trigger->ops is considered optional.
+This is a verbatim copy of the original commit message of the initial
+commit of the ISA bus driver authored by Rene Herman. Descriptions of
+the module_isa_driver macro and max_num_isa_dev macro are provided at
+the end.
 
-We could add a test there to not call module_put() if ops is NULL, but
-we wouldn't have the module refcount protection anymore; the trigger
-could be removed while still in use given iio_trigger_unregister()
-does not check if the trigger is still in use.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ Documentation/isa.txt | 121 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ MAINTAINERS           |   7 +++
+ 2 files changed, 128 insertions(+)
+ create mode 100644 Documentation/isa.txt
 
-To address that issue, should we make trigger->ops mandatory - its
-function members could still be optional?
-If we go this way, shall we go even further and fold the ops structure
-within iio_trigger?
+diff --git a/Documentation/isa.txt b/Documentation/isa.txt
+new file mode 100644
+index 0000000..f232c26
+--- /dev/null
++++ b/Documentation/isa.txt
+@@ -0,0 +1,121 @@
++ISA Drivers
++-----------
++
++The following text is adapted from the commit message of the initial
++commit of the ISA bus driver authored by Rene Herman.
++
++During the recent "isa drivers using platform devices" discussion it was
++pointed out that (ALSA) ISA drivers ran into the problem of not having
++the option to fail driver load (device registration rather) upon not
++finding their hardware due to a probe() error not being passed up
++through the driver model. In the course of that, I suggested a separate
++ISA bus might be best; Russell King agreed and suggested this bus could
++use the .match() method for the actual device discovery.
++
++The attached does this. For this old non (generically) discoverable ISA
++hardware only the driver itself can do discovery so as a difference with
++the platform_bus, this isa_bus also distributes match() up to the
++driver.
++
++As another difference: these devices only exist in the driver model due
++to the driver creating them because it might want to drive them, meaning
++that all device creation has been made internal as well.
++
++The usage model this provides is nice, and has been acked from the ALSA
++side by Takashi Iwai and Jaroslav Kysela. The ALSA driver module_init's
++now (for oldisa-only drivers) become:
++
++static int __init alsa_card_foo_init(void)
++{
++	return isa_register_driver(&snd_foo_isa_driver, SNDRV_CARDS);
++}
++
++static void __exit alsa_card_foo_exit(void)
++{
++	isa_unregister_driver(&snd_foo_isa_driver);
++}
++
++Quite like the other bus models therefore. This removes a lot of
++duplicated init code from the ALSA ISA drivers.
++
++The passed in isa_driver struct is the regular driver struct embedding a
++struct device_driver, the normal probe/remove/shutdown/suspend/resume
++callbacks, and as indicated that .match callback.
++
++The "SNDRV_CARDS" you see being passed in is a "unsigned int ndev"
++parameter, indicating how many devices to create and call our methods
++with.
++
++The platform_driver callbacks are called with a platform_device param;
++the isa_driver callbacks are being called with a "struct device *dev,
++unsigned int id" pair directly -- with the device creation completely
++internal to the bus it's much cleaner to not leak isa_dev's by passing
++them in at all. The id is the only thing we ever want other then the
++struct device * anyways, and it makes for nicer code in the callbacks as
++well.
++
++With this additional .match() callback ISA drivers have all options. If
++ALSA would want to keep the old non-load behaviour, it could stick all
++of the old .probe in .match, which would only keep them registered after
++everything was found to be present and accounted for. If it wanted the
++behaviour of always loading as it inadvertently did for a bit after the
++changeover to platform devices, it could just not provide a .match() and
++do everything in .probe() as before.
++
++If it, as Takashi Iwai already suggested earlier as a way of following
++the model from saner buses more closely, wants to load when a later bind
++could conceivably succeed, it could use .match() for the prerequisites
++(such as checking the user wants the card enabled and that port/irq/dma
++values have been passed in) and .probe() for everything else. This is
++the nicest model.
++
++To the code...
++
++This exports only two functions; isa_{,un}register_driver().
++
++isa_register_driver() register's the struct device_driver, and then
++loops over the passed in ndev creating devices and registering them.
++This causes the bus match method to be called for them, which is:
++
++int isa_bus_match(struct device *dev, struct device_driver *driver)
++{
++          struct isa_driver *isa_driver = to_isa_driver(driver);
++
++          if (dev->platform_data == isa_driver) {
++                  if (!isa_driver->match ||
++                          isa_driver->match(dev, to_isa_dev(dev)->id))
++                          return 1;
++                  dev->platform_data = NULL;
++          }
++          return 0;
++}
++
++The first thing this does is check if this device is in fact one of this
++driver's devices by seeing if the device's platform_data pointer is set
++to this driver. Platform devices compare strings, but we don't need to
++do that with everything being internal, so isa_register_driver() abuses
++dev->platform_data as a isa_driver pointer which we can then check here.
++I believe platform_data is available for this, but if rather not, moving
++the isa_driver pointer to the private struct isa_dev is ofcourse fine as
++well.
++
++Then, if the the driver did not provide a .match, it matches. If it did,
++the driver match() method is called to determine a match.
++
++If it did _not_ match, dev->platform_data is reset to indicate this to
++isa_register_driver which can then unregister the device again.
++
++If during all this, there's any error, or no devices matched at all
++everything is backed out again and the error, or -ENODEV, is returned.
++
++isa_unregister_driver() just unregisters the matched devices and the
++driver itself.
++
++module_isa_driver is a helper macro for ISA drivers which do not do
++anything special in module init/exit. This eliminates a lot of
++boilerplate code. Each module may only use this macro once, and calling
++it replaces module_init and module_exit.
++
++max_num_isa_dev is a macro to determine the maximum possible number of
++ISA devices which may be registered in the I/O port address space given
++the address extent of the ISA devices.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1d5b4be..92a1906 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5995,6 +5995,13 @@ F:	include/linux/irqdomain.h
+ F:	kernel/irq/irqdomain.c
+ F:	kernel/irq/msi.c
+ 
++ISA
++M:	William Breathitt Gray <vilhelm.gray@gmail.com>
++S:	Maintained
++F:	Documentation/isa.txt
++F:	drivers/base/isa.c
++F:	include/linux/isa.h
++
+ ISAPNP
+ M:	Jaroslav Kysela <perex@perex.cz>
+ S:	Maintained
+-- 
+2.7.3
 
-Gwendal.
