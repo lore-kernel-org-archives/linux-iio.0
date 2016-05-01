@@ -1,95 +1,149 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.135]:62329 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752126AbcEBM3v (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2016 08:29:51 -0400
-Subject: Re: [PATCH 0/3] mxs-lradc: Add support for current sources
-To: Jonathan Cameron <jic23@kernel.org>,
-	Harald Geyer <harald@ccbib.org>
-References: <1461333147-11873-1-git-send-email-harald@ccbib.org>
- <572379F5.8000501@i2se.com> <aadb3f41413d093312c0af3e4c207a8a@ccbib.org>
- <ac57f3e9-f8f2-a6ef-52fa-0a13d7df5d4f@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	Marek Vasut <marex@denx.de>,
-	linux-arm-kernel@lists.infradead.org
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Message-ID: <57274814.3090208@i2se.com>
-Date: Mon, 2 May 2016 14:29:08 +0200
-MIME-Version: 1.0
-In-Reply-To: <ac57f3e9-f8f2-a6ef-52fa-0a13d7df5d4f@kernel.org>
-Content-Type: text/plain; charset=utf-8
+Received: from mail-yw0-f175.google.com ([209.85.161.175]:36516 "EHLO
+	mail-yw0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752367AbcEAWod (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 18:44:33 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>,
+	Wim Van Sebroeck <wim@iguana.be>
+Subject: [PATCH v2 06/10] watchdog: ebc-c384_wdt: Utilize the ISA bus driver
+Date: Sun,  1 May 2016 18:44:26 -0400
+Message-Id: <3a5ce818956330cdfe297722ac2d4ce6d3ad5f48.1462141338.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1462141338.git.vilhelm.gray@gmail.com>
+References: <cover.1462141338.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Harald,
+The WinSystems EBC-C384 watchdog timer is controlled via ISA bus
+communication. As such, the ISA bus driver is more appropriate than the
+platform driver for the WinSystems EBC-C384 watchdog timer driver.
 
-Am 01.05.2016 um 20:02 schrieb Jonathan Cameron:
-> On 29/04/16 18:45, Harald Geyer wrote:
->> Hi Stefan!
->>
->> On 29.04.2016 17:12, Stefan Wahren wrote:
->>> Hi Harald,
->>>
->>> Am 22.04.2016 um 15:52 schrieb Harald Geyer:
->>>> Patch 1/3 changes the driver and updates the binding documentation
->>>> (I guess it is still in staging.)
->>>>
->>>> Patches 2/3 and 3/3 add the devicetree nodes to imx23 and imx28 boards.
->>>> I'd like to get input whether this is actually desired. On boards where
->>>> these regulators would never be enabled this costs a few extra bytes of
->>>> RAM for allocation of the device data, because the nodes can't be easily
->>>> removed in .dts files which are including the .dtsi files. The alternative
->>>> is to add the new nodes to many .dts files, which would be a lot code
->>>> duplication.
->>> if i get it right the real intention of this patch series is to make the
->>> mxs-lradc provide resistance values instead of voltages.
->> ... or even temperature values if a thermistor is connected.
->>
->>> So how about
->>> dropping the whole regulator stuff and provide the values as
->>> IIO_RESISTANCE via iio interface?
->> Can you elaborate on this?
->>
->> My thinking is that there should be a thermistor (or whatever else) driver,
->> that is a consumer of the regulator and a consumer of the IIO_VOLTAGE
->> iio channel and provides a new device with an IIO_RESISTANCE or IIO_TEMP
->> channel. Maybe there is a simpler solution, that I'm missing?
-> I agree with that approach - need a way to describe the upstream hardware - so
-> will need a thermistor driver
+Cc: Wim Van Sebroeck <wim@iguana.be>
+Acked-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/watchdog/Kconfig        |  2 +-
+ drivers/watchdog/ebc-c384_wdt.c | 43 ++++++++++-------------------------------
+ 2 files changed, 11 insertions(+), 34 deletions(-)
 
-okay, this makes more sense to me. In this case it would be good to have
-this new driver in this patch series. So it's possible to verify the
-matching binding.
-
->> Actually I'm not 100% happy with the above solution myself, because if we
->> start supporting devices that act as an iio-multiplexer (some device that
->> is an iio consumer and provides many new iio channels and can control
->> via gpios which of it child channels is actually routed to the upstream
->> device) I don't know how to properly manage the regulator device.
-> Hmm. Are you talking about muxing the regulator as well?  That will get
-> complex indeed.  Might be possible to cheat and imply the regulators are
-> always connected to all inputs...  or do you want to dynamically change
-> the regulator output?  That gets messy fast - though in theory might be
-> possible...
->> However since this is only hypothetical ATM, I think we don't have to
->> worry about this too much.
->>
->>> Btw this feature should be only added to dts files where is actually used.
->> Ok, so how do we figure out which boards these are?
->> I use this on the olinuxino and I guess all evaluation boards support the
->> use case too. The others I don't know enough about to be sure and I guess
->> it's not a good idea to just wait until somebody speaks up and complains
->> that the feature is missing on board X ...
-
-The imx23 dtsi file specifies features on SoC level and i think this
-should be kept. We shouldn't implement features for ADC pins without
-deeper knowledge about these boards.
-
-Maybe we could introduce a new dtsi file in order to reduce copy &
-paste. But at first the OlinuXino should be a good starting point ...
-
-Regards
-Stefan
+diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+index fb94765..0aefe25 100644
+--- a/drivers/watchdog/Kconfig
++++ b/drivers/watchdog/Kconfig
+@@ -738,7 +738,7 @@ config ALIM7101_WDT
+ 
+ config EBC_C384_WDT
+ 	tristate "WinSystems EBC-C384 Watchdog Timer"
+-	depends on X86
++	depends on X86 && ISA
+ 	select WATCHDOG_CORE
+ 	help
+ 	  Enables watchdog timer support for the watchdog timer on the
+diff --git a/drivers/watchdog/ebc-c384_wdt.c b/drivers/watchdog/ebc-c384_wdt.c
+index 77fda0b..4b849b8 100644
+--- a/drivers/watchdog/ebc-c384_wdt.c
++++ b/drivers/watchdog/ebc-c384_wdt.c
+@@ -16,10 +16,10 @@
+ #include <linux/errno.h>
+ #include <linux/io.h>
+ #include <linux/ioport.h>
++#include <linux/isa.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+-#include <linux/platform_device.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ 
+@@ -95,9 +95,8 @@ static const struct watchdog_info ebc_c384_wdt_info = {
+ 	.identity = MODULE_NAME
+ };
+ 
+-static int __init ebc_c384_wdt_probe(struct platform_device *pdev)
++static int ebc_c384_wdt_probe(struct device *dev, unsigned int id)
+ {
+-	struct device *dev = &pdev->dev;
+ 	struct watchdog_device *wdd;
+ 
+ 	if (!devm_request_region(dev, BASE_ADDR, ADDR_EXTENT, dev_name(dev))) {
+@@ -122,61 +121,39 @@ static int __init ebc_c384_wdt_probe(struct platform_device *pdev)
+ 		dev_warn(dev, "Invalid timeout (%u seconds), using default (%u seconds)\n",
+ 			timeout, WATCHDOG_TIMEOUT);
+ 
+-	platform_set_drvdata(pdev, wdd);
++	dev_set_drvdata(dev, wdd);
+ 
+ 	return watchdog_register_device(wdd);
+ }
+ 
+-static int ebc_c384_wdt_remove(struct platform_device *pdev)
++static int ebc_c384_wdt_remove(struct device *dev, unsigned int id)
+ {
+-	struct watchdog_device *wdd = platform_get_drvdata(pdev);
++	struct watchdog_device *wdd = dev_get_drvdata(dev);
+ 
+ 	watchdog_unregister_device(wdd);
+ 
+ 	return 0;
+ }
+ 
+-static struct platform_driver ebc_c384_wdt_driver = {
++static struct isa_driver ebc_c384_wdt_driver = {
++	.probe = ebc_c384_wdt_probe,
+ 	.driver = {
+ 		.name = MODULE_NAME
+ 	},
+ 	.remove = ebc_c384_wdt_remove
+ };
+ 
+-static struct platform_device *ebc_c384_wdt_device;
+-
+ static int __init ebc_c384_wdt_init(void)
+ {
+-	int err;
+-
+ 	if (!dmi_match(DMI_BOARD_NAME, "EBC-C384 SBC"))
+ 		return -ENODEV;
+ 
+-	ebc_c384_wdt_device = platform_device_alloc(MODULE_NAME, -1);
+-	if (!ebc_c384_wdt_device)
+-		return -ENOMEM;
+-
+-	err = platform_device_add(ebc_c384_wdt_device);
+-	if (err)
+-		goto err_platform_device;
+-
+-	err = platform_driver_probe(&ebc_c384_wdt_driver, ebc_c384_wdt_probe);
+-	if (err)
+-		goto err_platform_driver;
+-
+-	return 0;
+-
+-err_platform_driver:
+-	platform_device_del(ebc_c384_wdt_device);
+-err_platform_device:
+-	platform_device_put(ebc_c384_wdt_device);
+-	return err;
++	return isa_register_driver(&ebc_c384_wdt_driver, 1);
+ }
+ 
+ static void __exit ebc_c384_wdt_exit(void)
+ {
+-	platform_device_unregister(ebc_c384_wdt_device);
+-	platform_driver_unregister(&ebc_c384_wdt_driver);
++	isa_unregister_driver(&ebc_c384_wdt_driver);
+ }
+ 
+ module_init(ebc_c384_wdt_init);
+@@ -185,4 +162,4 @@ module_exit(ebc_c384_wdt_exit);
+ MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
+ MODULE_DESCRIPTION("WinSystems EBC-C384 watchdog timer driver");
+ MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS("platform:" MODULE_NAME);
++MODULE_ALIAS("isa:" MODULE_NAME);
+-- 
+2.7.3
 
