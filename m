@@ -1,88 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48837 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48821 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752764AbcEAV0Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:26:25 -0400
-Subject: Re: [RFC] iio: Release irq if set_trigger_state fails
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <28d5b780aa8bd065492e0be1aa2f5c59a0cc0e16.1461861330.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
+	with ESMTP id S1752797AbcEAV0T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:26:19 -0400
+Subject: Re: [PATCH 1/3] iio: bmi160: Fix output data rate for accel
+To: Daniel Baluta <daniel.baluta@intel.com>
+References: <1461930155-13871-1-git-send-email-daniel.baluta@intel.com>
+ <1461930155-13871-2-git-send-email-daniel.baluta@intel.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <202d0c23-c592-c891-a1aa-61b4a264c829@kernel.org>
-Date: Sun, 1 May 2016 20:11:02 +0100
+Message-ID: <ce5eceb0-9502-2a0d-7686-d94f5963e329@kernel.org>
+Date: Sun, 1 May 2016 20:00:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <28d5b780aa8bd065492e0be1aa2f5c59a0cc0e16.1461861330.git.leonard.crestez@intel.com>
+In-Reply-To: <1461930155-13871-2-git-send-email-daniel.baluta@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/04/16 17:40, Crestez Dan Leonard wrote:
-> When attaching a pollfunc iio_trigger_attach_poll_func will allocate a
-> virtual irq and call the driver's set_trigger_state function. Fix error
-> handling to release the irq if set_trigger_state fails.
+On 29/04/16 12:42, Daniel Baluta wrote:
+> Format is INT_PLUS_MICRO and micro odr part of ODR should
+> be parts of a micro.
 > 
-> Otherwise when using triggered buffers and the driver's
-> set_trigger_state fails once then the buffer becomes unusable.
+> Also s/8000/800 this is obviously a typo.
 > 
-> It is not possible to handle this sort of error by calling
-> iio_trigger_detach_poll_func externally somehow. That function should
-> only be called if attach is successful.
-> 
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-I'm embarrassed :(  good find! Not sure why you made such an obvious
-bug fix an RFC though! 
+> Fixes: 77c4ad2d6a9 ("iio: imu: Add initial support for Bosch BMI160")
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+I can't set up a suitable fixes branch for this as I'm without internet to grab an
+updated staging-next tree right now.  Will mark it to be sorted out when I get some time
+back on a sensible internet connection (France is always a lot bigger than I expect it
+to be for some reason...)
 
-Slight issue in the new error handling though I think..
+Anyhow, poke me if you don't hear anything before the end of the week.
+
+Note this will probably have to go in post merge window now as I doubt I'll be doing
+another pull before that opens.
 
 Jonathan
 > ---
+>  drivers/iio/imu/bmi160/bmi160_core.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 > 
-> I ran into this while adding some validation in driver's set_trigger_state
-> function. It's much better to use buffer_ops->predisable for that kind of stuff
-> but the iio core should still handle set_trigger_state errors correctly.
-> 
->  drivers/iio/industrialio-trigger.c | 15 ++++++++++-----
->  1 file changed, 10 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index ae2806a..cf2be3e 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -214,18 +214,23 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
->  	ret = request_threaded_irq(pf->irq, pf->h, pf->thread,
->  				   pf->type, pf->name,
->  				   pf);
-> -	if (ret < 0) {
-> -		module_put(pf->indio_dev->info->driver_module);
-> -		return ret;
-> -	}
-> +	if (ret < 0)
-> +		goto out_put_module;
+> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+> index 0bf92b0..cd9b75e 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+> @@ -209,11 +209,11 @@ static const struct  bmi160_scale_item bmi160_scale_table[] = {
+>  };
 >  
->  	if (trig->ops && trig->ops->set_trigger_state && notinuse) {
->  		ret = trig->ops->set_trigger_state(trig, true);
->  		if (ret < 0)
-> -			module_put(pf->indio_dev->info->driver_module);
-> +			goto out_put_irq;
->  	}
->  
->  	return ret;
-> +
-> +out_put_irq:
-> +	iio_trigger_put_irq(trig, pf->irq);
-> +	free_irq(pf->irq, pf);
-> +out_put_module:
-I think the iio_trigger_put_irq should be here as it will have been gotten before the 
-request_threaded_irq call and hence should always be unwound on error not just in the
-case above.
-> +	module_put(pf->indio_dev->info->driver_module);
-> +	return ret;
->  }
->  
->  static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+>  static const struct bmi160_odr bmi160_accel_odr[] = {
+> -	{0x01, 0, 78125},
+> -	{0x02, 1, 5625},
+> -	{0x03, 3, 125},
+> -	{0x04, 6, 25},
+> -	{0x05, 12, 5},
+> +	{0x01, 0, 781250},
+> +	{0x02, 1, 562500},
+> +	{0x03, 3, 125000},
+> +	{0x04, 6, 250000},
+> +	{0x05, 12, 500000},
+>  	{0x06, 25, 0},
+>  	{0x07, 50, 0},
+>  	{0x08, 100, 0},
+> @@ -229,7 +229,7 @@ static const struct bmi160_odr bmi160_gyro_odr[] = {
+>  	{0x08, 100, 0},
+>  	{0x09, 200, 0},
+>  	{0x0A, 400, 0},
+> -	{0x0B, 8000, 0},
+> +	{0x0B, 800, 0},
+>  	{0x0C, 1600, 0},
+>  	{0x0D, 3200, 0},
+>  };
 > 
 
