@@ -1,75 +1,137 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48821 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48750 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752797AbcEAV0T (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:26:19 -0400
-Subject: Re: [PATCH 1/3] iio: bmi160: Fix output data rate for accel
-To: Daniel Baluta <daniel.baluta@intel.com>
-References: <1461930155-13871-1-git-send-email-daniel.baluta@intel.com>
- <1461930155-13871-2-git-send-email-daniel.baluta@intel.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1752570AbcEAVZ4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:25:56 -0400
+Subject: Re: [PATCH 2/7] iio: inv_mpu6050: Initial regcache support
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1461953982.git.leonard.crestez@intel.com>
+ <f2950ebbb5468c8b7fbcfb8213ba9ebfd2133b8a.1461953982.git.leonard.crestez@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Ge Gao <GGao@invensense.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <ce5eceb0-9502-2a0d-7686-d94f5963e329@kernel.org>
-Date: Sun, 1 May 2016 20:00:22 +0100
+Message-ID: <f693ed38-a214-554a-7bf1-40793475a5dd@kernel.org>
+Date: Sun, 1 May 2016 18:12:35 +0100
 MIME-Version: 1.0
-In-Reply-To: <1461930155-13871-2-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <f2950ebbb5468c8b7fbcfb8213ba9ebfd2133b8a.1461953982.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/04/16 12:42, Daniel Baluta wrote:
-> Format is INT_PLUS_MICRO and micro odr part of ODR should
-> be parts of a micro.
-> 
-> Also s/8000/800 this is obviously a typo.
-> 
-> Fixes: 77c4ad2d6a9 ("iio: imu: Add initial support for Bosch BMI160")
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-I can't set up a suitable fixes branch for this as I'm without internet to grab an
-updated staging-next tree right now.  Will mark it to be sorted out when I get some time
-back on a sensible internet connection (France is always a lot bigger than I expect it
-to be for some reason...)
-
-Anyhow, poke me if you don't hear anything before the end of the week.
-
-Note this will probably have to go in post merge window now as I doubt I'll be doing
-another pull before that opens.
+On 29/04/16 20:02, Crestez Dan Leonard wrote:
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+Looks fine to me.
 
 Jonathan
 > ---
->  drivers/iio/imu/bmi160/bmi160_core.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 47 ++++++++++++++++++++++++++++++
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  5 ----
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  1 +
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  |  5 ----
+>  4 files changed, 48 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> index 0bf92b0..cd9b75e 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -209,11 +209,11 @@ static const struct  bmi160_scale_item bmi160_scale_table[] = {
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index b269b37..5918c23 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -116,6 +116,53 @@ static const struct inv_mpu6050_hw hw_info[] = {
+>  	},
 >  };
 >  
->  static const struct bmi160_odr bmi160_accel_odr[] = {
-> -	{0x01, 0, 78125},
-> -	{0x02, 1, 5625},
-> -	{0x03, 3, 125},
-> -	{0x04, 6, 25},
-> -	{0x05, 12, 5},
-> +	{0x01, 0, 781250},
-> +	{0x02, 1, 562500},
-> +	{0x03, 3, 125000},
-> +	{0x04, 6, 250000},
-> +	{0x05, 12, 500000},
->  	{0x06, 25, 0},
->  	{0x07, 50, 0},
->  	{0x08, 100, 0},
-> @@ -229,7 +229,7 @@ static const struct bmi160_odr bmi160_gyro_odr[] = {
->  	{0x08, 100, 0},
->  	{0x09, 200, 0},
->  	{0x0A, 400, 0},
-> -	{0x0B, 8000, 0},
-> +	{0x0B, 800, 0},
->  	{0x0C, 1600, 0},
->  	{0x0D, 3200, 0},
->  };
+> +static bool inv_mpu6050_volatile_reg(struct device *dev, unsigned int reg)
+> +{
+> +	if (reg >= INV_MPU6050_REG_RAW_ACCEL && reg < INV_MPU6050_REG_RAW_ACCEL + 6)
+> +		return true;
+> +	if (reg >= INV_MPU6050_REG_RAW_GYRO && reg < INV_MPU6050_REG_RAW_GYRO + 6)
+> +		return true;
+> +	switch (reg) {
+> +	case INV_MPU6050_REG_TEMPERATURE:
+> +	case INV_MPU6050_REG_TEMPERATURE + 1:
+> +	case INV_MPU6050_REG_USER_CTRL:
+> +	case INV_MPU6050_REG_PWR_MGMT_1:
+> +	case INV_MPU6050_REG_FIFO_COUNT_H:
+> +	case INV_MPU6050_REG_FIFO_COUNT_H + 1:
+> +	case INV_MPU6050_REG_FIFO_R_W:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static bool inv_mpu6050_precious_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case INV_MPU6050_REG_FIFO_R_W:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +/*
+> + * Common regmap config for inv_mpu devices
+> + *
+> + * The current volatile/precious registers are common among supported devices.
+> + * When that changes the volatile/precious callbacks should go through the
+> + * inv_mpu6050_reg_map structs.
+> + */
+> +const struct regmap_config inv_mpu_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +
+> +	.cache_type = REGCACHE_RBTREE,
+> +	.volatile_reg = inv_mpu6050_volatile_reg,
+> +	.precious_reg = inv_mpu6050_precious_reg,
+> +};
+> +EXPORT_SYMBOL_GPL(inv_mpu_regmap_config);
+> +
+>  int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+>  {
+>  	unsigned int d, mgmt_1;
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> index 1a424a6..1a8d1a5 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> @@ -20,11 +20,6 @@
+>  #include <linux/module.h>
+>  #include "inv_mpu_iio.h"
+>  
+> -static const struct regmap_config inv_mpu_regmap_config = {
+> -	.reg_bits = 8,
+> -	.val_bits = 8,
+> -};
+> -
+>  /*
+>   * The i2c read/write needs to happen in unlocked mode. As the parent
+>   * adapter is common. If we use locked versions, it will fail as
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index 47ca25b..297b0ef 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -291,3 +291,4 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  int inv_mpu_core_remove(struct device *dev);
+>  int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on);
+>  extern const struct dev_pm_ops inv_mpu_pmops;
+> +extern const struct regmap_config inv_mpu_regmap_config;
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> index 190a4a5..b3bd977 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> @@ -17,11 +17,6 @@
+>  #include <linux/iio/iio.h>
+>  #include "inv_mpu_iio.h"
+>  
+> -static const struct regmap_config inv_mpu_regmap_config = {
+> -	.reg_bits = 8,
+> -	.val_bits = 8,
+> -};
+> -
+>  static int inv_mpu_i2c_disable(struct iio_dev *indio_dev)
+>  {
+>  	struct inv_mpu6050_state *st = iio_priv(indio_dev);
 > 
 
