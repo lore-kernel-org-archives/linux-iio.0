@@ -1,94 +1,79 @@
-Return-Path: <daniel.baluta@gmail.com>
-MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <56562B39-B495-48AE-9B2E-8903C9760BE4@jic23.retrosnub.co.uk>
-References: <1461932343-14967-1-git-send-email-constantin.musca@intel.com>
-	<21eeb9cd-5d48-043f-716a-7b7b4f5305b9@kernel.org>
-	<CAEnQRZA05=_fShP9W6QXu7cYGwn_ApPr1V7JGHwbB33jKzyMMw@mail.gmail.com>
-	<56562B39-B495-48AE-9B2E-8903C9760BE4@jic23.retrosnub.co.uk>
-Date: Tue, 3 May 2016 13:55:40 +0300
-Message-ID: <CAEnQRZAvp4qb1asPKwGDV-HAkDjU+ca-4kQR-QSFp=83SbO7gw@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: accel: Add support for Freescale MMA7660FC
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Daniel Baluta <daniel.baluta@intel.com>, Jonathan Cameron <jic23@kernel.org>,
-	Constantin Musca <constantin.musca@intel.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <vilhelm.gray@gmail.com>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org,
+	linux-watchdog@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v2 05/10] iio: stx104: Utilize the module_isa_driver and max_num_isa_dev macros
+Date: Sun,  1 May 2016 18:44:11 -0400
+Message-Id: <fbf47c2fecb0dbaee717fc7f863cee1a903c8ae0.1462141338.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1462141338.git.vilhelm.gray@gmail.com>
+References: <cover.1462141338.git.vilhelm.gray@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, May 3, 2016 at 1:43 PM, Jonathan Cameron
-<jic23@jic23.retrosnub.co.uk> wrote:
->
->
-> On 3 May 2016 09:29:26 CEST, Daniel Baluta <daniel.baluta@intel.com> wrote:
->>On Sun, May 1, 2016 at 9:56 PM, Jonathan Cameron <jic23@kernel.org>
->>wrote:
->>> On 29/04/16 13:19, Constantin Musca wrote:
->>>> Minimal implementation of an IIO driver for the Freescale
->>>> MMA7660FC 3-axis accelerometer. Datasheet:
->>>>
->>http://www.freescale.com.cn/files/sensors/doc/data_sheet/MMA7660FC.pdf
->>>>
->>>> Includes:
->>>> - ACPI support;
->>>> - read_raw for x,y,z axes;
->>>> - reading and setting the scale (range) parameter.
->>>> - power management
->>>>
->>>> Signed-off-by: Constantin Musca <constantin.musca@intel.com>
->>> Couple of trivial bits inline as well as that request to update the
->>link above
->>> if possible...
->>>
->>> Why the retries? (I'm on a train without internet access for quite a
->>few
->>> hours yet hence I can't dig into the datasheet!)
->>
->>I suggested the retries because it's quite unsafe to infinitely loop
->>in the kernel
->>on a hardware condition. We can lockup the kernel if there is some sort
->>of
->>hardware problem.
-> Agreed but why try more than once? Needs a comment...
->>
->>
->>>
->>> Anyhow, even if it's obvious from the datasheet, that sort of 'magic'
->>needs
->>> an explanation comment...
+The Apex Embedded Systems STX104 DAC drivers does not do anything
+special in module init/exit. This patch eliminates the module init/exit
+boilerplate code by utilizing the module_isa_driver macro.
 
-Agree we need a comment on that. As for the number of retries I can see
-drivers doing from 5 to 100 (re)tries:
+Additionally, the max_num_isa_dev macro is utilized to simplify the
+determination of maximum possible STX104 devices in the system.
 
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/iio/dac/stx104.c | 24 +++---------------------
+ 1 file changed, 3 insertions(+), 21 deletions(-)
 
-humidity/si7005.c
-44:     int tries = 50;
-55:     while (tries-- > 0) {
-
-temperature/tmp006.c
-55:     int tries = 50;
-57:     while (tries-- > 0) {
-
-dac/mcp4725.c
-76:     int tries = 20;
-99:     while (tries--) {
-111:    if (tries < 0) {
-
-pressure/mpl3115.c
-49:     int ret, tries = 15;
-57:     while (tries-- > 0) {
-
-ight/ltr501.c
-329:    int tries = 100;
-332:    while (tries--) {
-
-proximity/pulsedlight-lidar-lite-v2.c
-160:    int tries = 10;
-
-accel/mma9551_core.c
-75:#define MMA9551_I2C_READ_RETRIES     5
-
-Daniel.
+diff --git a/drivers/iio/dac/stx104.c b/drivers/iio/dac/stx104.c
+index 174f4b7..2794122 100644
+--- a/drivers/iio/dac/stx104.c
++++ b/drivers/iio/dac/stx104.c
+@@ -33,16 +33,9 @@
+ }
+ 
+ #define STX104_EXTENT 16
+-/**
+- * The highest base address possible for an ISA device is 0x3FF; this results in
+- * 1024 possible base addresses. Dividing the number of possible base addresses
+- * by the address extent taken by each device results in the maximum number of
+- * devices on a system.
+- */
+-#define MAX_NUM_STX104 (1024 / STX104_EXTENT)
+ 
+-static unsigned base[MAX_NUM_STX104];
+-static unsigned num_stx104;
++static unsigned int base[max_num_isa_dev(STX104_EXTENT)];
++static unsigned int num_stx104;
+ module_param_array(base, uint, &num_stx104, 0);
+ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
+ 
+@@ -134,18 +127,7 @@ static struct isa_driver stx104_driver = {
+ 	}
+ };
+ 
+-static void __exit stx104_exit(void)
+-{
+-	isa_unregister_driver(&stx104_driver);
+-}
+-
+-static int __init stx104_init(void)
+-{
+-	return isa_register_driver(&stx104_driver, num_stx104);
+-}
+-
+-module_init(stx104_init);
+-module_exit(stx104_exit);
++module_isa_driver(stx104_driver, num_stx104);
+ 
+ MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
+ MODULE_DESCRIPTION("Apex Embedded Systems STX104 DAC driver");
+-- 
+2.7.3
