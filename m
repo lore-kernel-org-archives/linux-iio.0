@@ -1,79 +1,145 @@
-Return-Path: <vilhelm.gray@gmail.com>
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: gregkh@linuxfoundation.org
-Cc: linux-iio@vger.kernel.org,
-	linux-watchdog@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	William Breathitt Gray <vilhelm.gray@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v2 05/10] iio: stx104: Utilize the module_isa_driver and max_num_isa_dev macros
-Date: Sun,  1 May 2016 18:44:11 -0400
-Message-Id: <fbf47c2fecb0dbaee717fc7f863cee1a903c8ae0.1462141338.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1462141338.git.vilhelm.gray@gmail.com>
-References: <cover.1462141338.git.vilhelm.gray@gmail.com>
+Return-Path: <peda@axentia.se>
+Subject: Re: [RFC 5/7] iio: inv_mpu6050: Add support for auxiliary I2C master
+To: Crestez Dan Leonard <leonard.crestez@intel.com>, Jonathan Cameron
+	<jic23@kernel.org>, <linux-iio@vger.kernel.org>
+References: <cover.1461953982.git.leonard.crestez@intel.com>
+ <4aeaced7c1c8e222996df4c1b4b71e505ab256f7.1461953982.git.leonard.crestez@intel.com>
+CC: <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, Daniel Baluta <daniel.baluta@intel.com>, Ge Gao
+	<GGao@invensense.com>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <de59c1ec-c757-2118-04cc-616c809e666f@axentia.se>
+Date: Mon, 2 May 2016 17:31:45 +0200
+MIME-Version: 1.0
+In-Reply-To: <4aeaced7c1c8e222996df4c1b4b71e505ab256f7.1461953982.git.leonard.crestez@intel.com>
+Content-Type: text/plain; charset="windows-1252"
 List-ID: <linux-iio@vger.kernel.org>
 
-The Apex Embedded Systems STX104 DAC drivers does not do anything
-special in module init/exit. This patch eliminates the module init/exit
-boilerplate code by utilizing the module_isa_driver macro.
+On 2016-04-29 21:02, Crestez Dan Leonard wrote:
+> The MPU has an auxiliary I2C bus for connecting external
+> sensors. This bus has two operating modes:
+> * pass-through, which connects the primary and auxiliary busses
+> together. This is already supported via an i2c mux.
+> * I2C master mode, where the mpu60x0 acts as a master to any external
+> connected sensors. This is implemented by this patch.
+> 
+> This I2C master mode also works when the MPU itself is connected via
+> SPI.
+> 
+> I2C master supports up to 5 slaves. Slaves 0-3 have a common operating
+> mode while slave 4 is different. This patch implements an i2c adapter
+> using slave 4 because it has a cleaner interface and it has an
+> interrupt that signals when data from slave to master arrived.
+> 
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+> ---
+>  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    |  61 +++++-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         | 239 ++++++++++++++++++++-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  46 ++++
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c      |   8 -
+>  4 files changed, 341 insertions(+), 13 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+> index a9fc11e..aaf12b4 100644
+> --- a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+> +++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+> @@ -1,16 +1,27 @@
+>  InvenSense MPU-6050 Six-Axis (Gyro + Accelerometer) MEMS MotionTracking Device
+>  
+> -http://www.invensense.com/mems/gyro/mpu6050.html
+> -
+>  Required properties:
+> - - compatible : should be "invensense,mpu6050"
+> - - reg : the I2C address of the sensor
+> + - compatible : should be "invensense,mpuXXXX"
+> + - reg : the I2C or SPI address of the sensor
+>   - interrupt-parent : should be the phandle for the interrupt controller
+>   - interrupts : interrupt mapping for GPIO IRQ
+>  
+>  Optional properties:
+>   - mount-matrix: an optional 3x3 mounting rotation matrix
+> + - inv,i2c-aux-master: operate aux i2c in "master mode" (default is mux).
 
-Additionally, the max_num_isa_dev macro is utilized to simplify the
-determination of maximum possible STX104 devices in the system.
+I've looked a bit more into this, and I don't think you need
+this property...
 
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- drivers/iio/dac/stx104.c | 24 +++---------------------
- 1 file changed, 3 insertions(+), 21 deletions(-)
+> +
+> +Valid compatible strings:
+> + - mpu6000
+> + - mpu6050
+> + - mpu6500
+> + - mpu9150
+> +
+> +It is possible to attach auxiliary sensors to the MPU and have them be handled
+> +by linux. Those auxiliary sensors are described as an i2c bus.
+> +
+> +Devices connected in "bypass" mode must be listed behind i2c@0 with the address 0
+>  
+> +Devices connected in "master" mode must be listed behind i2c@1 with the address 1
 
-diff --git a/drivers/iio/dac/stx104.c b/drivers/iio/dac/stx104.c
-index 174f4b7..2794122 100644
---- a/drivers/iio/dac/stx104.c
-+++ b/drivers/iio/dac/stx104.c
-@@ -33,16 +33,9 @@
- }
- 
- #define STX104_EXTENT 16
--/**
-- * The highest base address possible for an ISA device is 0x3FF; this results in
-- * 1024 possible base addresses. Dividing the number of possible base addresses
-- * by the address extent taken by each device results in the maximum number of
-- * devices on a system.
-- */
--#define MAX_NUM_STX104 (1024 / STX104_EXTENT)
- 
--static unsigned base[MAX_NUM_STX104];
--static unsigned num_stx104;
-+static unsigned int base[max_num_isa_dev(STX104_EXTENT)];
-+static unsigned int num_stx104;
- module_param_array(base, uint, &num_stx104, 0);
- MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
- 
-@@ -134,18 +127,7 @@ static struct isa_driver stx104_driver = {
- 	}
- };
- 
--static void __exit stx104_exit(void)
--{
--	isa_unregister_driver(&stx104_driver);
--}
--
--static int __init stx104_init(void)
--{
--	return isa_register_driver(&stx104_driver, num_stx104);
--}
--
--module_init(stx104_init);
--module_exit(stx104_exit);
-+module_isa_driver(stx104_driver, num_stx104);
- 
- MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
- MODULE_DESCRIPTION("Apex Embedded Systems STX104 DAC driver");
--- 
-2.7.3
+...and just condition the new stuff on the name i2c-master
+instead. If there is no i2c-master child, then fall back
+to the mux code. Does that work?
+
+>  Example:
+>  	mpu6050@68 {
+> @@ -28,3 +39,45 @@ Example:
+>  		               "0",                   /* y2 */
+>  		               "0.984807753012208";   /* z2 */
+>  	};
+> +
+> +Example describing mpu9150 (which includes an ak9875 on chip):
+> +	mpu9150@68 {
+> +		compatible = "invensense,mpu9150";
+> +		reg = <0x68>;
+> +		interrupt-parent = <&gpio1>;
+> +		interrupts = <18 1>;
+> +
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		i2c@0 {
+> +			reg = <0>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			ak8975@0c {
+> +				compatible = "ak,ak8975";
+> +				reg = <0x0c>;
+> +			};
+> +		};
+> +	};
+> +
+> +Example describing a mpu6500 via SPI with an hmc5883l on auxiliary i2c:
+> +	mpu6500@0 {
+> +		compatible = "inv,mpu6500";
+> +		reg = <0x0>;
+> +		spi-max-frequency = <1000000>;
+> +		interrupt-parent = <&gpio1>;
+> +		interrupts = <31 1>;
+> +
+> +		inv,i2c-aux-master
+
+If you keep the below as i2c@1, including the @, I think you also need
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+As always, I'm not a device tree expert, but I'd be glad to lose
+these extra lines and change i2c@1 into i2c-master.
+
+> +		i2c@1 {
+> +			reg = <1>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			hmc5883l@1e {
+> +				compatible = "honeywell,hmc5883l";
+> +				reg = <0x1e>;
+> +			};
+> +		};
+> +	};
+
+*snip*
+
+Cheers,
+Peter
