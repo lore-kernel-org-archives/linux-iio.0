@@ -1,77 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48796 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752690AbcEAV0I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 17:26:08 -0400
-Subject: Re: [PATCH 2/2] iio: accel: Add triggered buffer support for BMA220
-To: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1461928076-22076-1-git-send-email-tiberiu.a.breana@intel.com>
- <1461928076-22076-3-git-send-email-tiberiu.a.breana@intel.com>
- <alpine.DEB.2.02.1604291320170.23132@pmeerw.net>
- <4586F61A4A291F4DA44D32824E7C0F402358932C@IRSMSX109.ger.corp.intel.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1266e70f-66d6-67f4-024a-a94fa5535a1f@kernel.org>
-Date: Sun, 1 May 2016 19:07:51 +0100
+Received: from mout.kundenserver.de ([212.227.126.135]:62329 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752126AbcEBM3v (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2016 08:29:51 -0400
+Subject: Re: [PATCH 0/3] mxs-lradc: Add support for current sources
+To: Jonathan Cameron <jic23@kernel.org>,
+	Harald Geyer <harald@ccbib.org>
+References: <1461333147-11873-1-git-send-email-harald@ccbib.org>
+ <572379F5.8000501@i2se.com> <aadb3f41413d093312c0af3e4c207a8a@ccbib.org>
+ <ac57f3e9-f8f2-a6ef-52fa-0a13d7df5d4f@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	Marek Vasut <marex@denx.de>,
+	linux-arm-kernel@lists.infradead.org
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Message-ID: <57274814.3090208@i2se.com>
+Date: Mon, 2 May 2016 14:29:08 +0200
 MIME-Version: 1.0
-In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F402358932C@IRSMSX109.ger.corp.intel.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <ac57f3e9-f8f2-a6ef-52fa-0a13d7df5d4f@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/04/16 13:41, Breana, Tiberiu A wrote:
->> -----Original Message-----
->> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
->> owner@vger.kernel.org] On Behalf Of Peter Meerwald-Stadler
->> Sent: Friday, April 29, 2016 2:25 PM
->> To: Breana, Tiberiu A <tiberiu.a.breana@intel.com>
->> Cc: linux-iio@vger.kernel.org; Jonathan Cameron <jic23@kernel.org>
->> Subject: Re: [PATCH 2/2] iio: accel: Add triggered buffer support for BMA220
->>
->>
->>> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
->>
->> comments below
->>
->>> ---
->>>  drivers/iio/accel/bma220_spi.c | 67
->>> ++++++++++++++++++++++++++++++++++++++++--
->>>  1 file changed, 65 insertions(+), 2 deletions(-)
->>>
-> 
-> <snip>
-> 
->>> -70,6 +84,42 @@ static inline int bma220_read_reg(struct spi_device *spi,
->> u8 reg)
->>>  	return spi_w8r8(spi, reg | BMA220_READ_MASK);  }
->>>
->>> +static irqreturn_t bma220_trigger_handler(int irq, void *p) {
->>> +	int i;
->>> +	int ret;
->>> +	int bit;
->>> +	struct iio_poll_func *pf = p;
->>> +	struct iio_dev *indio_dev = pf->indio_dev;
->>> +	struct bma220_data *data = iio_priv(indio_dev);
->>> +	struct spi_device *spi = data->spi_device;
->>> +	u8 tx_buf = BMA220_REG_ACCEL_X | BMA220_READ_MASK;
->>> +	u8 rx_buf[3];
->>
->> alignment requirements for SPI?
-> 
-> I'm not sure what you mean by this. The chip seems to respond correctly
-> to the testing I've done so far.
-> 
-If an spi master is doing DMA (which you obviously can't control in a generic
-driver) then there is no explicit protection of the cacheline.  Thus it is possible
-for the dma engine to spat garbage over the top of whatever else is in the cacheline
-(usually a case of putting back an older version that is now wrong).
+Hi Harald,
 
-Thus buffers for DMA should existing in their own cacheline.  There are two easy
-ways to do this - kmalloc the buffer as ever separate allocation will end up in it's
-own cacheline.  Or put the buffer in your bma220_data (at the end) and use the
-magic of ____cacheline_aligned markings for tx (with rx after it).  We very carefully
-ensure the whole priv data is cacheline aligned to allow this to work in drivers.
-> Tiberiu
-> 
+Am 01.05.2016 um 20:02 schrieb Jonathan Cameron:
+> On 29/04/16 18:45, Harald Geyer wrote:
+>> Hi Stefan!
+>>
+>> On 29.04.2016 17:12, Stefan Wahren wrote:
+>>> Hi Harald,
+>>>
+>>> Am 22.04.2016 um 15:52 schrieb Harald Geyer:
+>>>> Patch 1/3 changes the driver and updates the binding documentation
+>>>> (I guess it is still in staging.)
+>>>>
+>>>> Patches 2/3 and 3/3 add the devicetree nodes to imx23 and imx28 boards.
+>>>> I'd like to get input whether this is actually desired. On boards where
+>>>> these regulators would never be enabled this costs a few extra bytes of
+>>>> RAM for allocation of the device data, because the nodes can't be easily
+>>>> removed in .dts files which are including the .dtsi files. The alternative
+>>>> is to add the new nodes to many .dts files, which would be a lot code
+>>>> duplication.
+>>> if i get it right the real intention of this patch series is to make the
+>>> mxs-lradc provide resistance values instead of voltages.
+>> ... or even temperature values if a thermistor is connected.
+>>
+>>> So how about
+>>> dropping the whole regulator stuff and provide the values as
+>>> IIO_RESISTANCE via iio interface?
+>> Can you elaborate on this?
+>>
+>> My thinking is that there should be a thermistor (or whatever else) driver,
+>> that is a consumer of the regulator and a consumer of the IIO_VOLTAGE
+>> iio channel and provides a new device with an IIO_RESISTANCE or IIO_TEMP
+>> channel. Maybe there is a simpler solution, that I'm missing?
+> I agree with that approach - need a way to describe the upstream hardware - so
+> will need a thermistor driver
+
+okay, this makes more sense to me. In this case it would be good to have
+this new driver in this patch series. So it's possible to verify the
+matching binding.
+
+>> Actually I'm not 100% happy with the above solution myself, because if we
+>> start supporting devices that act as an iio-multiplexer (some device that
+>> is an iio consumer and provides many new iio channels and can control
+>> via gpios which of it child channels is actually routed to the upstream
+>> device) I don't know how to properly manage the regulator device.
+> Hmm. Are you talking about muxing the regulator as well?  That will get
+> complex indeed.  Might be possible to cheat and imply the regulators are
+> always connected to all inputs...  or do you want to dynamically change
+> the regulator output?  That gets messy fast - though in theory might be
+> possible...
+>> However since this is only hypothetical ATM, I think we don't have to
+>> worry about this too much.
+>>
+>>> Btw this feature should be only added to dts files where is actually used.
+>> Ok, so how do we figure out which boards these are?
+>> I use this on the olinuxino and I guess all evaluation boards support the
+>> use case too. The others I don't know enough about to be sure and I guess
+>> it's not a good idea to just wait until somebody speaks up and complains
+>> that the feature is missing on board X ...
+
+The imx23 dtsi file specifies features on SoC level and i think this
+should be kept. We shouldn't implement features for ADC pins without
+deeper knowledge about these boards.
+
+Maybe we could introduce a new dtsi file in order to reduce copy &
+paste. But at first the OlinuXino should be a good starting point ...
+
+Regards
+Stefan
 
