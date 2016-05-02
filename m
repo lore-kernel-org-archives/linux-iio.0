@@ -1,149 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f175.google.com ([209.85.161.175]:36516 "EHLO
-	mail-yw0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752367AbcEAWod (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 18:44:33 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: gregkh@linuxfoundation.org
-Cc: linux-iio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	William Breathitt Gray <vilhelm.gray@gmail.com>,
-	Wim Van Sebroeck <wim@iguana.be>
-Subject: [PATCH v2 06/10] watchdog: ebc-c384_wdt: Utilize the ISA bus driver
-Date: Sun,  1 May 2016 18:44:26 -0400
-Message-Id: <3a5ce818956330cdfe297722ac2d4ce6d3ad5f48.1462141338.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1462141338.git.vilhelm.gray@gmail.com>
-References: <cover.1462141338.git.vilhelm.gray@gmail.com>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:34567 "EHLO
+	mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751623AbcEBGHA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2016 02:07:00 -0400
+MIME-Version: 1.0
+In-Reply-To: <500c5874-4ef8-b37b-e12f-80fd5205c172@kernel.org>
+References: <1461441479-23218-1-git-send-email-stefan.wahren@i2se.com>
+	<500c5874-4ef8-b37b-e12f-80fd5205c172@kernel.org>
+Date: Mon, 2 May 2016 08:06:58 +0200
+Message-ID: <CAL7P5jJF9EL4Zk-AC9csyadfrmUp4R+6ceVAN_kNm7dKgo+ZgQ@mail.gmail.com>
+Subject: Re: [PATCH V3 0/3] iio: mxs-lradc: simplify TS handling
+From: =?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Marek Vasut <marex@denx.de>,
+	Fabio Estevam <fabio.estevam@nxp.com>,
+	Juergen Borleis <jbe@pengutronix.de>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The WinSystems EBC-C384 watchdog timer is controlled via ISA bus
-communication. As such, the ISA bus driver is more appropriate than the
-platform driver for the WinSystems EBC-C384 watchdog timer driver.
+Hi Jonathan,
 
-Cc: Wim Van Sebroeck <wim@iguana.be>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- drivers/watchdog/Kconfig        |  2 +-
- drivers/watchdog/ebc-c384_wdt.c | 43 ++++++++++-------------------------------
- 2 files changed, 11 insertions(+), 34 deletions(-)
+On Sun, May 1, 2016 at 10:08 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> Ksenija,
+>
+> How would you prefer we handle this interaction of this set and your series.
+> Options are:
+>
+> 1. I apply these now and you rebase on top of the result.
+> 2. You pull these into your series, probably after the driver split making sure these
+>    improvements end up in the new drivers.
+> 3. We ask Stephan to re roll them at a later date (least preferred option as that adds
+> another person we need to chase down to get to the end of this process!)
+>
+> No immediate rush on any of the above as we've probably missed this cycle now anyway.
+> I've been cut off today so not sure what Linus has said today.
 
-diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-index fb94765..0aefe25 100644
---- a/drivers/watchdog/Kconfig
-+++ b/drivers/watchdog/Kconfig
-@@ -738,7 +738,7 @@ config ALIM7101_WDT
- 
- config EBC_C384_WDT
- 	tristate "WinSystems EBC-C384 Watchdog Timer"
--	depends on X86
-+	depends on X86 && ISA
- 	select WATCHDOG_CORE
- 	help
- 	  Enables watchdog timer support for the watchdog timer on the
-diff --git a/drivers/watchdog/ebc-c384_wdt.c b/drivers/watchdog/ebc-c384_wdt.c
-index 77fda0b..4b849b8 100644
---- a/drivers/watchdog/ebc-c384_wdt.c
-+++ b/drivers/watchdog/ebc-c384_wdt.c
-@@ -16,10 +16,10 @@
- #include <linux/errno.h>
- #include <linux/io.h>
- #include <linux/ioport.h>
-+#include <linux/isa.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/moduleparam.h>
--#include <linux/platform_device.h>
- #include <linux/types.h>
- #include <linux/watchdog.h>
- 
-@@ -95,9 +95,8 @@ static const struct watchdog_info ebc_c384_wdt_info = {
- 	.identity = MODULE_NAME
- };
- 
--static int __init ebc_c384_wdt_probe(struct platform_device *pdev)
-+static int ebc_c384_wdt_probe(struct device *dev, unsigned int id)
- {
--	struct device *dev = &pdev->dev;
- 	struct watchdog_device *wdd;
- 
- 	if (!devm_request_region(dev, BASE_ADDR, ADDR_EXTENT, dev_name(dev))) {
-@@ -122,61 +121,39 @@ static int __init ebc_c384_wdt_probe(struct platform_device *pdev)
- 		dev_warn(dev, "Invalid timeout (%u seconds), using default (%u seconds)\n",
- 			timeout, WATCHDOG_TIMEOUT);
- 
--	platform_set_drvdata(pdev, wdd);
-+	dev_set_drvdata(dev, wdd);
- 
- 	return watchdog_register_device(wdd);
- }
- 
--static int ebc_c384_wdt_remove(struct platform_device *pdev)
-+static int ebc_c384_wdt_remove(struct device *dev, unsigned int id)
- {
--	struct watchdog_device *wdd = platform_get_drvdata(pdev);
-+	struct watchdog_device *wdd = dev_get_drvdata(dev);
- 
- 	watchdog_unregister_device(wdd);
- 
- 	return 0;
- }
- 
--static struct platform_driver ebc_c384_wdt_driver = {
-+static struct isa_driver ebc_c384_wdt_driver = {
-+	.probe = ebc_c384_wdt_probe,
- 	.driver = {
- 		.name = MODULE_NAME
- 	},
- 	.remove = ebc_c384_wdt_remove
- };
- 
--static struct platform_device *ebc_c384_wdt_device;
--
- static int __init ebc_c384_wdt_init(void)
- {
--	int err;
--
- 	if (!dmi_match(DMI_BOARD_NAME, "EBC-C384 SBC"))
- 		return -ENODEV;
- 
--	ebc_c384_wdt_device = platform_device_alloc(MODULE_NAME, -1);
--	if (!ebc_c384_wdt_device)
--		return -ENOMEM;
--
--	err = platform_device_add(ebc_c384_wdt_device);
--	if (err)
--		goto err_platform_device;
--
--	err = platform_driver_probe(&ebc_c384_wdt_driver, ebc_c384_wdt_probe);
--	if (err)
--		goto err_platform_driver;
--
--	return 0;
--
--err_platform_driver:
--	platform_device_del(ebc_c384_wdt_device);
--err_platform_device:
--	platform_device_put(ebc_c384_wdt_device);
--	return err;
-+	return isa_register_driver(&ebc_c384_wdt_driver, 1);
- }
- 
- static void __exit ebc_c384_wdt_exit(void)
- {
--	platform_device_unregister(ebc_c384_wdt_device);
--	platform_driver_unregister(&ebc_c384_wdt_driver);
-+	isa_unregister_driver(&ebc_c384_wdt_driver);
- }
- 
- module_init(ebc_c384_wdt_init);
-@@ -185,4 +162,4 @@ module_exit(ebc_c384_wdt_exit);
- MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
- MODULE_DESCRIPTION("WinSystems EBC-C384 watchdog timer driver");
- MODULE_LICENSE("GPL v2");
--MODULE_ALIAS("platform:" MODULE_NAME);
-+MODULE_ALIAS("isa:" MODULE_NAME);
--- 
-2.7.3
+My understanding was that you will take this patch series so I already included
+changes made by this patch set in touchscreen part, I will check if I missed
+something.
+I think the best is to apply these now.
 
+Thanks,
+Ksenija
+
+> Jonathan
+> On 23/04/16 20:57, Stefan Wahren wrote:
+>> This patch series simplifies TS handling of mxs-lradc.
+>>
+>> These patches has been tested with i.MX23 and i.MX28 but without
+>> a touchscreen. I added only a bogus touchscreen in devicetree.
+>>
+>> It would be nice if someone with a real touchscreen could test it.
+>>
+>> Changes in V3:
+>> - remove dev.parent assignment as suggested by Dimitry
+>> - add new patch to remove mxs_lradc_ts_unregister
+>> - remove PM implementation from series in order to wait until
+>>   Ksenija has split the driver
+>>
+>> Changes in V2:
+>> - rebase on iio/testing since patch 2 and 3 from V1 has been applied
+>> - also remove input_unregister_device in patch 1
+>> - use mask of virtual channels for IRQ disabling in patch 2
+>>
+>> Stefan Wahren (3):
+>>   iio: mxs-lradc: simplify TS registration
+>>   iio: mxs-lradc: remove mxs_lradc_ts_unregister
+>>   iio: mxs-lradc: disable only masked channels in
+>>     mxs_lradc_hw_stop
+>>
+>>  drivers/iio/adc/mxs-lradc.c |   34 ++++++----------------------------
+>>  1 file changed, 6 insertions(+), 28 deletions(-)
+>>
+>
