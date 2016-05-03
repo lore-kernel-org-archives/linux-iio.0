@@ -1,66 +1,70 @@
-Return-Path: <broonie@sirena.org.uk>
-Date: Tue, 3 May 2016 12:32:00 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Ge Gao <GGao@invensense.com>, Peter Rosin <peda@axentia.se>
-Message-ID: <20160503113200.GN6292@sirena.org.uk>
-References: <cover.1461953982.git.leonard.crestez@intel.com>
- <f22534df-13b5-0889-66d7-e4fb7f480f00@kernel.org>
- <20160502152328.GG6292@sirena.org.uk>
- <572889C4.40806@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:36570 "EHLO
+	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933291AbcECSyF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 May 2016 14:54:05 -0400
+Subject: Re: Regression in inv_mpu6050: 4.6.0-rc5
+To: Jonathan Cameron <jic23@kernel.org>,
+	One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>,
+	Michael Welling <mwelling@ieee.org>, mranostay@gmail.com
+References: <20160426232651.099a18d7@lxorguk.ukuu.org.uk>
+ <20160426230755.GA6235@deathstar>
+ <20160427165613.4d464792@lxorguk.ukuu.org.uk>
+ <e65623b5-44bc-b329-b718-c00aaa0b4805@kernel.org>
+Cc: linux-kernel@vger.kernel.org, daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org
+From: Crestez Dan Leonard <cdleonard@gmail.com>
+Message-ID: <5728F3CD.3000801@gmail.com>
+Date: Tue, 3 May 2016 21:54:05 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="YuJye9aIuN0w6xGV"
-In-Reply-To: <572889C4.40806@intel.com>
-Subject: Re: [RFC 0/7] iio: inv_mpu6050: Support i2c master and external
- readings
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <e65623b5-44bc-b329-b718-c00aaa0b4805@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 05/01/2016 10:58 PM, Jonathan Cameron wrote:
+> On 27/04/16 16:56, One Thousand Gnomes wrote:
+>> On Tue, 26 Apr 2016 18:07:55 -0500
+>> Michael Welling <mwelling@ieee.org> wrote:
+>>
+>>> On Tue, Apr 26, 2016 at 11:26:51PM +0100, One Thousand Gnomes wrote:
+>>>>
+>>>> This now causes us to crash and burn on the ASUS T100TA Baytrail/T
+>>>> platforms
+>>>>  
+>>>
+>>> I believe this regression has already been patched.
+>>>
+>>> Check the latest commits in linux-next.
+>>>
+>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/log/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+>>>
+>>> See if the latest patches fix your issue.
+>>
+>> It does - as this is a regression can we please get those fixes into the
+>> next -rc ?
+>>
+> I'm afraid I'm lost in this one - which patch caused the regression and
+> which one fixed it?  The only patches I can immediately see in next
+> both introduce and then squish a similar bug, but neither of them
+> has hit Linus' tree yet.
+> 
+> Or are we dealing with what was fixed in:
+> c816d9e7 iio: imu: mpu6050: fix possible NULL dereferences
+> I had understood that one as more hypothetical than real...
+> 
+> Unfortunately I'm travelling and I suspect that means this will only get
+> in just after the release (so for 4.6.1) once I've confirmed which fixes
+> we actually need to backport.
+> 
+Commit
+    c816d9e7: iio: imu: mpu6050: fix possible NULL dereferences
+Fixes:
+    33da559f: iio: imu: mpu6050: add mpu6500 register settings
 
---YuJye9aIuN0w6xGV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+As far as I can tell this crash will always happen when the device is
+probed via ACPI.
 
-On Tue, May 03, 2016 at 02:21:40PM +0300, Crestez Dan Leonard wrote:
-
-> I have a device which has several registers with bits that are a mix of
-> "cacheable" and "volatile". For example for register SLV4_CTRL:
-
-> - Bit 7 (I2C_SLV4_EN) triggers a transaction with slave 4 when a "1" is
-> written. The bit is cleared when the transaction is done.
-> - Bits 0-4 (I2C_MST_DLY) configures the reduced access rate of I2C
-> slaves relative to the device sample rate. This applies to slaves 0-3 as
-> well.
-
-> If I2C_MST_DLY was a separate register it could be easily cached by
-> regmap. Because it's part of a volatile register I have to add a
-> private_data field caching the value and always write it when triggering
-> a SLV4 transfer.
-
-> Jonathan was wondering if regmap can still be used somehow instead of
-> custom caching.
-
-If you want to cache in regmap just write a 0 back to the enable bit
-after you've set it.
-
---YuJye9aIuN0w6xGV
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJXKIwvAAoJECTWi3JdVIfQ4jYH+gPdHHhwr8Z9oMSAwvGg9u4B
-2HkhyrcABJQxFwoowrHADUQC/NZ4WMOpO1hVAnz9XXA2+LU71WXk3n5s/aaRaIPl
-EHa4C91kitZvHK4+++4l2n9rihFQ0jiND1/2Z7ufHnDXROHm7/wAGfXUbUWQJekZ
-NtVwsjn99TruSGtIB7IH9bv1zmIJu2tCCN1Zb9Z6SHbSsLlT7DojK5vnBnvCEyaj
-DaCH9qyj0eDcq58CR9WVQJ9synFKm1/dHJvboWtIrjCF/nLYk/2GHEDimjZJRCJU
-xAR6jBfFTTw+IhC9SJ9Aee29WpeJRiHY6gcPU8wn4cHeyteSJ6h+AeHpCFwdc9w=
-=/q4l
------END PGP SIGNATURE-----
-
---YuJye9aIuN0w6xGV--
+-- 
+Regards,
+Leonard
