@@ -1,66 +1,77 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57233 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932603AbcECKnO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 May 2016 06:43:14 -0400
-In-Reply-To: <CAEnQRZA05=_fShP9W6QXu7cYGwn_ApPr1V7JGHwbB33jKzyMMw@mail.gmail.com>
-References: <1461932343-14967-1-git-send-email-constantin.musca@intel.com> <21eeb9cd-5d48-043f-716a-7b7b4f5305b9@kernel.org> <CAEnQRZA05=_fShP9W6QXu7cYGwn_ApPr1V7JGHwbB33jKzyMMw@mail.gmail.com>
+Return-Path: <leonard.crestez@intel.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [RFC] iio: Add support for describing scan offsets in buffer ops
+Cc: Daniel Baluta <daniel.baluta@intel.com>
+Message-ID: <5728A9B5.6080902@intel.com>
+Date: Tue, 3 May 2016 16:37:57 +0300
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v3] iio: accel: Add support for Freescale MMA7660FC
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Tue, 03 May 2016 12:43:00 +0200
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: Constantin Musca <constantin.musca@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Message-ID: <56562B39-B495-48AE-9B2E-8903C9760BE4@jic23.retrosnub.co.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
+Hello,
 
+This is a tentative proposal with no code attached. This issue came up
+while hacking on the mpu6050 driver but it applies to other complex
+devices and a solution belongs in the IIO core.
 
-On 3 May 2016 09:29:26 CEST, Daniel Baluta <daniel.baluta@intel.com> wrote:
->On Sun, May 1, 2016 at 9:56 PM, Jonathan Cameron <jic23@kernel.org>
->wrote:
->> On 29/04/16 13:19, Constantin Musca wrote:
->>> Minimal implementation of an IIO driver for the Freescale
->>> MMA7660FC 3-axis accelerometer. Datasheet:
->>>
->http://www.freescale.com.cn/files/sensors/doc/data_sheet/MMA7660FC.pdf
->>>
->>> Includes:
->>> - ACPI support;
->>> - read_raw for x,y,z axes;
->>> - reading and setting the scale (range) parameter.
->>> - power management
->>>
->>> Signed-off-by: Constantin Musca <constantin.musca@intel.com>
->> Couple of trivial bits inline as well as that request to update the
->link above
->> if possible...
->>
->> Why the retries? (I'm on a train without internet access for quite a
->few
->> hours yet hence I can't dig into the datasheet!)
->
->I suggested the retries because it's quite unsafe to infinitely loop
->in the kernel
->on a hardware condition. We can lockup the kernel if there is some sort
->of
->hardware problem.
-Agreed but why try more than once? Needs a comment...
->
->
->>
->> Anyhow, even if it's obvious from the datasheet, that sort of 'magic'
->needs
->> an explanation comment...
+One IIO limitation is that while samples can be described through a
+relatively generic scan_type they must be placed in the output buffer
+according to an specific iio alignment algorithm. For example if the
+device has one 16bit channel and one 32bit channel the output needs to
+have 16bits of padding between them. When this does not match the
+hardware format the solution is for the driver to unpack the hardware
+samples and repack them in the iio format.
+
+I propose that we add a new function in iio_buffer_setup_ops which looks
+like this:
+
+int (*get_scan_offsets)(struct iio_dev *indio_dev,
+                        off_t *scan_offsets,
+			size_t *sample_bytes);
+
+This would be called when enabling a buffer to fetch the offset in the
+sample for each channel (by scan_index) based on the currently
+configured scan mask. Then the iio core would then handle rearranging
+sample bytes as expected by the buffer consumer. Driver implementations
+could look something like this:
+
+off_t pos = 0;
+if (scan_mask & (1 << SCAN_INDEX_TEMP))) {
+    scan_offsets[SCAN_INDEX_TEMP] = pos++;
+}
+/* No 2-bytes alignment here! */
+if (scan_mask & SCAN_MASK_ACCEL_ANY) {
+    scan_offsets[SCAN_INDEX_ACCEL_X] = pos + 0;
+    scan_offsets[SCAN_INDEX_ACCEL_Y] = pos + 2;
+    scan_offsets[SCAN_INDEX_ACCEL_Z] = pos + 4;
+    pos += 6;
+}
+*sample_bytes = pos;
+
+This could be implemented as an extension to the current buffer demuxing
+support which currently only deals with differences in scan_masks. This
+mechanism would very nicely deal with devices where it is not possible
+to select X/Y/Z individually because the iio core would just ignore the
+gap in offsets.
+
+This can even be exposed to userspace in a compatible manner. User would
+do something like:
+
+    ioctl(iio_fd, IIO_USER_HANDLES_SCAN_OFFSETS, 1);
+    ioctl(iio_fd, IIO_GET_SCAN_OFFSETS, &scan_offsets, &sample_bytes);
+
+When the consumer is marked as aware of scan offsets this way the iio
+core can skip demuxing for increased performance. The IIO core can
+implement IIO_GET_SCAN_OFFSETS itself when the driver has no custom
+implementation. An application could rely on IIO_GET_SCAN_OFFSETS for
+all devices as long as it's acceptable to ignore old kernels.
+
+This would be particularly useful if IIO sample buffers are
+memory-mapped eventually. I think that this extension would be
+incrementally useful to that effort.
 
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+Regards,
+Leonard
