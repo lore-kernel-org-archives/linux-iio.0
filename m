@@ -1,9 +1,5 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:40771 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756527AbcECVjZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 3 May 2016 17:39:25 -0400
-Date: Tue, 3 May 2016 23:39:08 +0200
+Return-Path: <wsa@the-dreams.de>
+Date: Tue, 3 May 2016 23:38:45 +0200
 From: Wolfram Sang <wsa@the-dreams.de>
 To: Peter Rosin <peda@axentia.se>
 Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
@@ -12,8 +8,7 @@ Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antti Palosaari <crope@iki.fi>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>,
 	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
 	Rob Herring <robh+dt@kernel.org>,
 	Frank Rowand <frowand.list@gmail.com>,
@@ -21,8 +16,7 @@ Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Kalle Valo <kvalo@codeaurora.org>,
-	Jiri Slaby <jslaby@suse.com>,
+	Kalle Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Lucas De Marchi <lucas.demarchi@intel.com>,
 	Adriana Reus <adriana.reus@intel.com>,
@@ -35,28 +29,58 @@ Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
 	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
 	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: Re: [PATCH v7 16/24] i2c: allow adapter drivers to override the
- adapter locking
-Message-ID: <20160503213908.GC2018@tetsubishi>
+Subject: Re: [PATCH v7 18/24] i2c-mux: relax locking of the top i2c adapter
+ during mux-locked muxing
+Message-ID: <20160503213844.GB2018@tetsubishi>
 References: <1461165484-2314-1-git-send-email-peda@axentia.se>
- <1461165484-2314-17-git-send-email-peda@axentia.se>
- <20160428205018.GA3553@katana>
- <470abe38-ab5f-2d0a-305b-e1a3253ce5a9@axentia.se>
- <20160429071604.GB1870@katana>
- <357e6fda-73b3-fb7f-c341-97f09af1943f@axentia.se>
+ <1461165484-2314-19-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <357e6fda-73b3-fb7f-c341-97f09af1943f@axentia.se>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1461165484-2314-19-git-send-email-peda@axentia.se>
+List-ID: <linux-iio@vger.kernel.org>
 
-> Yes, they look like reasonable complaints.
+> +static int i2c_mux_trylock_bus(struct i2c_adapter *adapter, int flags)
+> +{
+> +	struct i2c_mux_priv *priv = adapter->algo_data;
+> +	struct i2c_adapter *parent = priv->muxc->parent;
+> +
+> +	if (!rt_mutex_trylock(&parent->mux_lock))
+> +		return 0;
+> +	if (!(flags & I2C_LOCK_ADAPTER))
+> +		return 1;
+> +	if (parent->trylock_bus(parent, flags))
+> +		return 1;
+> +	rt_mutex_unlock(&parent->mux_lock);
+> +	return 0;
+> +}
 
-Thanks for fixing them. I just sent out my latest comments and when you
-fix those and send V8, I'll apply that right away. I think we are safe
-to fix the rest incrementally if needed. Note that I didn't review the
-IIO and media patches, I trust the reviewers on those.
+This function needs a few short comments why we can leave in this or
+that state. Not everyone knows the exit values of trylock by heart and
+then it can look a little confusing.
 
-Thanks for your work on this! I need a break now, this is
-mind-boggling...
+>  static int i2c_parent_trylock_bus(struct i2c_adapter *adapter, int flags)
+> @@ -111,7 +189,12 @@ static int i2c_parent_trylock_bus(struct i2c_adapter *adapter, int flags)
+>  	struct i2c_mux_priv *priv = adapter->algo_data;
+>  	struct i2c_adapter *parent = priv->muxc->parent;
+>  
+> -	return parent->trylock_bus(parent, flags);
+> +	if (!rt_mutex_trylock(&parent->mux_lock))
+> +		return 0;
+> +	if (parent->trylock_bus(parent, flags))
+> +		return 1;
+> +	rt_mutex_unlock(&parent->mux_lock);
+> +	return 0;
+>  }
 
+Same comment as i2c_mux_trylock_bus.
+
+>  struct i2c_mux_core *i2c_mux_alloc(struct i2c_adapter *parent,
+>  				   struct device *dev, int max_adapters,
+> @@ -140,6 +250,8 @@ struct i2c_mux_core *i2c_mux_alloc(struct i2c_adapter *parent,
+>  
+>  	muxc->parent = parent;
+>  	muxc->dev = dev;
+> +	if (flags & I2C_MUX_LOCKED)
+> +		muxc->mux_locked = 1;
+
+s/1/true/;
