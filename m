@@ -1,77 +1,158 @@
-Return-Path: <leonard.crestez@intel.com>
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [RFC] iio: Add support for describing scan offsets in buffer ops
-Cc: Daniel Baluta <daniel.baluta@intel.com>
-Message-ID: <5728A9B5.6080902@intel.com>
-Date: Tue, 3 May 2016 16:37:57 +0300
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from h1.radempa.de ([176.9.142.194]:35585 "EHLO mail.cosmopool.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755546AbcECLW6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 3 May 2016 07:22:58 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Date: Tue, 03 May 2016 13:22:55 +0200
+From: Harald Geyer <harald@ccbib.org>
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	Marek Vasut <marex@denx.de>,
+	<linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH 1/3] iio: mxs-lradc: Add regulators for current sources
+In-Reply-To: <57288674.9050601@i2se.com>
+References: <1461333147-11873-1-git-send-email-harald@ccbib.org>
+ <1461333147-11873-2-git-send-email-harald@ccbib.org>
+ <57288674.9050601@i2se.com>
+Message-ID: <6cdd4f858dacf72e192a292f29c12feb@ccbib.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello,
+Hi Stefan!
 
-This is a tentative proposal with no code attached. This issue came up
-while hacking on the mpu6050 driver but it applies to other complex
-devices and a solution belongs in the IIO core.
+On 03.05.2016 13:07, Stefan Wahren wrote:
+> Am 22.04.2016 um 15:52 schrieb Harald Geyer:
+>> The hardware has two current sources ISRC0 and ISRC1 to allow 
+>> measuring
+>> resistors without additional circuitry. This commit makes them 
+>> available
+>> as regulators.
+>>
+>> Tested on an imx233-olinuxino board.
+>>
+>> Signed-off-by: Harald Geyer <harald@ccbib.org>
+>> ---
+>> The current regulator API doesn't fit this type of device very well: 
+>> Typically
+>> consumers will want to set a defined current, ie. min_uA == max_uA, 
+>> but they
+>> can't without help from configuration data, because the valid values 
+>> aren't
+>> reported by the API for current regulators. I have been thinking 
+>> about
+>> extending the API, but currently AFAIK no such consumers exist and 
+>> most
+>> users, like myself, will force the regulator to a defined value in
+>> devicetree anyway.
+>>
+>>  .../bindings/staging/iio/adc/mxs-lradc.txt         |  29 ++++
+>>  drivers/iio/adc/Kconfig                            |   1 +
+>>  drivers/iio/adc/mxs-lradc.c                        | 152 
+>> +++++++++++++++++++++
+>>  3 files changed, 182 insertions(+)
+>>
+>> diff --git 
+>> a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt 
+>> b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+>> index 555fb11..983952c 100644
+>> --- 
+>> a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+>> +++ 
+>> b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+>> @@ -19,6 +19,15 @@ Optional properties:
+>>  - fsl,settling: delay between plate switch to next sample. Allowed 
+>> value is
+>>                  1 ... 2047. It counts at 2 kHz and its default is
+>>                  10 (= 5 ms)
+>> +- ISRC0: A node describing the regulator of internal current source 
+>> 0
+>> +- ISRC1: A node describing the regulator of internal current source 
+>> 1
+>> +
+>> +Required properties for the ISRCx sub-nodes:
+>> +- regulator-max-microamp: See standard regulator binding 
+>> documentation.
+>> +                          Valid values are from 0 to 300 in steps 
+>> of 20.
+>> +
+>> +Optional properties for the ISRCx sub-nodes:
+>> +Any standard regulator properties that apply to current regulators.
+>>
+>>  Example for i.MX23 SoC:
+>>
+>> @@ -31,6 +40,16 @@ Example for i.MX23 SoC:
+>>  		fsl,ave-ctrl = <4>;
+>>  		fsl,ave-delay = <2>;
+>>  		fsl,settling = <10>;
+>> +
+>> +		isrc_lradc0: ISRC0 {
+>> +			regulator-max-microamp = <300>;
+>> +		};
+>> +
+>> +		isrc_lradc1: ISRC1 {
+>> +			regulator-max-microamp = <120>;
+>> +			regulator-min-microamp = <120>;
+>> +			regulator-always-on;
+>> +		};
+>
+> IMHO the binding should represent the direct connection between the
+> current source and the physical channel. I think a node label isn't
+> enough. Unfortunately i don't have an idea to do it the "right way".
 
-One IIO limitation is that while samples can be described through a
-relatively generic scan_type they must be placed in the output buffer
-according to an specific iio alignment algorithm. For example if the
-device has one 16bit channel and one 32bit channel the output needs to
-have 16bits of padding between them. When this does not match the
-hardware format the solution is for the driver to unpack the hardware
-samples and repack them in the iio format.
+I strictly followed the names of the data sheet here: imx23 and imx28
+reference manuals both call the current sources ISRC0 and ISRC1 even
+if they are attached to different channels of the ADC. I think
+inventing some ISRC6 for imx28 would do more harm then good.
 
-I propose that we add a new function in iio_buffer_setup_ops which looks
-like this:
+>>  	};
+>>
+>>  Example for i.MX28 SoC:
+>> @@ -44,4 +63,14 @@ Example for i.MX28 SoC:
+>>  		fsl,ave-ctrl = <4>;
+>>  		fsl,ave-delay = <2>;
+>>  		fsl,settling = <10>;
+>> +
+>> +		isrc_lradc0: ISRC0 {
+>> +			regulator-max-microamp = <300>;
+>> +		};
+>> +
+>> +		isrc_lradc6: ISRC1 {
+>> +			regulator-max-microamp = <120>;
+>> +			regulator-min-microamp = <120>;
+>> +			regulator-always-on;
+>> +		};
+>>  	};
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 5937030..1968d1c 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -319,6 +319,7 @@ config MXS_LRADC
+>>          tristate "Freescale i.MX23/i.MX28 LRADC"
+>>          depends on (ARCH_MXS || COMPILE_TEST) && HAS_IOMEM
+>>          depends on INPUT
+>> +        depends on REGULATOR
+>
+> Any chance to avoid this dependency for an optional feature?
 
-int (*get_scan_offsets)(struct iio_dev *indio_dev,
-                        off_t *scan_offsets,
-			size_t *sample_bytes);
+I haven't looked into it yet, but I expect that that the mfd
+conversion will avoid this neatly.
 
-This would be called when enabling a buffer to fetch the offset in the
-sample for each channel (by scan_index) based on the currently
-configured scan mask. Then the iio core would then handle rearranging
-sample bytes as expected by the buffer consumer. Driver implementations
-could look something like this:
+Thanks,
+Harald
 
-off_t pos = 0;
-if (scan_mask & (1 << SCAN_INDEX_TEMP))) {
-    scan_offsets[SCAN_INDEX_TEMP] = pos++;
-}
-/* No 2-bytes alignment here! */
-if (scan_mask & SCAN_MASK_ACCEL_ANY) {
-    scan_offsets[SCAN_INDEX_ACCEL_X] = pos + 0;
-    scan_offsets[SCAN_INDEX_ACCEL_Y] = pos + 2;
-    scan_offsets[SCAN_INDEX_ACCEL_Z] = pos + 4;
-    pos += 6;
-}
-*sample_bytes = pos;
-
-This could be implemented as an extension to the current buffer demuxing
-support which currently only deals with differences in scan_masks. This
-mechanism would very nicely deal with devices where it is not possible
-to select X/Y/Z individually because the iio core would just ignore the
-gap in offsets.
-
-This can even be exposed to userspace in a compatible manner. User would
-do something like:
-
-    ioctl(iio_fd, IIO_USER_HANDLES_SCAN_OFFSETS, 1);
-    ioctl(iio_fd, IIO_GET_SCAN_OFFSETS, &scan_offsets, &sample_bytes);
-
-When the consumer is marked as aware of scan offsets this way the iio
-core can skip demuxing for increased performance. The IIO core can
-implement IIO_GET_SCAN_OFFSETS itself when the driver has no custom
-implementation. An application could rely on IIO_GET_SCAN_OFFSETS for
-all devices as long as it's acceptable to ignore old kernels.
-
-This would be particularly useful if IIO sample buffers are
-memory-mapped eventually. I think that this extension would be
-incrementally useful to that effort.
+> Stefan
+>
+>>          select STMP_DEVICE
+>>          select IIO_BUFFER
+>>          select IIO_TRIGGERED_BUFFER
 
 -- 
-Regards,
-Leonard
+If you want to support my work:
+see http://friends.ccbib.org/harald/supporting/
+or donate via peercoin to P98LRdhit3gZbHDBe7ta5jtXrMJUms4p7w
+or bitcoin 1FUtd8T9jRN1rFz63vZz7s2fDtB6d6A7aS
