@@ -1,178 +1,234 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f169.google.com ([209.85.161.169]:36190 "EHLO
-	mail-yw0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752293AbcEAWnm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2016 18:43:42 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: gregkh@linuxfoundation.org
-Cc: linux-iio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v2 03/10] Documentation: Add ISA bus driver documentation
-Date: Sun,  1 May 2016 18:43:35 -0400
-Message-Id: <f5758dba59e1f9a610ba8deb45fe7ec3404bda12.1462141338.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1462141338.git.vilhelm.gray@gmail.com>
-References: <cover.1462141338.git.vilhelm.gray@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <harald@ccbib.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Date: Wed, 04 May 2016 13:38:25 +0200
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>, <devicetree@vger.kernel.org>,
+ <linux-iio@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer
+ <kernel@pengutronix.de>, Marek Vasut <marex@denx.de>,
+ <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH 1/3] iio: mxs-lradc: Add regulators for current sources
+In-Reply-To: <1e7d5f3a-22c1-94d4-9620-7aa112602e39@kernel.org>
+References: <1461333147-11873-1-git-send-email-harald@ccbib.org>
+ <1461333147-11873-2-git-send-email-harald@ccbib.org>
+ <57288674.9050601@i2se.com> <6cdd4f858dacf72e192a292f29c12feb@ccbib.org>
+ <1e7d5f3a-22c1-94d4-9620-7aa112602e39@kernel.org>
+Message-ID: <0e2b0d54b37d5c780b7b81b64b4e9743@ccbib.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-This is a verbatim copy of the original commit message of the initial
-commit of the ISA bus driver authored by Rene Herman. Descriptions of
-the module_isa_driver macro and max_num_isa_dev macro are provided at
-the end.
+On 04.05.2016 09:15, Jonathan Cameron wrote:
+> On 03/05/16 12:22, Harald Geyer wrote:
+>> On 03.05.2016 13:07, Stefan Wahren wrote:
+>>> Am 22.04.2016 um 15:52 schrieb Harald Geyer:
+>>>> The hardware has two current sources ISRC0 and ISRC1 to allow 
+>>>> measuring
+>>>> resistors without additional circuitry. This commit makes them 
+>>>> available
+>>>> as regulators.
+>>>>
+>>>> Tested on an imx233-olinuxino board.
+>>>>
+>>>> Signed-off-by: Harald Geyer <harald@ccbib.org>
+>>>> ---
+>>>> The current regulator API doesn't fit this type of device very 
+>>>> well: Typically
+>>>> consumers will want to set a defined current, ie. min_uA == 
+>>>> max_uA, but they
+>>>> can't without help from configuration data, because the valid 
+>>>> values aren't
+>>>> reported by the API for current regulators. I have been thinking 
+>>>> about
+>>>> extending the API, but currently AFAIK no such consumers exist and 
+>>>> most
+>>>> users, like myself, will force the regulator to a defined value in
+>>>> devicetree anyway.
+>>>>
+>>>>  .../bindings/staging/iio/adc/mxs-lradc.txt         |  29 ++++
+>>>>  drivers/iio/adc/Kconfig                            |   1 +
+>>>>  drivers/iio/adc/mxs-lradc.c                        | 152 
+>>>> +++++++++++++++++++++
+>>>>  3 files changed, 182 insertions(+)
+>>>>
+>>>> diff --git 
+>>>> a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt 
+>>>> b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+>>>> index 555fb11..983952c 100644
+>>>> --- 
+>>>> a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+>>>> +++ 
+>>>> b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+>>>> @@ -19,6 +19,15 @@ Optional properties:
+>>>>  - fsl,settling: delay between plate switch to next sample. 
+>>>> Allowed value is
+>>>>                  1 ... 2047. It counts at 2 kHz and its default is
+>>>>                  10 (= 5 ms)
+>>>> +- ISRC0: A node describing the regulator of internal current 
+>>>> source 0
+>>>> +- ISRC1: A node describing the regulator of internal current 
+>>>> source 1
+>>>> +
+>>>> +Required properties for the ISRCx sub-nodes:
+>>>> +- regulator-max-microamp: See standard regulator binding 
+>>>> documentation.
+>>>> +                          Valid values are from 0 to 300 in steps 
+>>>> of 20.
+>>>> +
+>>>> +Optional properties for the ISRCx sub-nodes:
+>>>> +Any standard regulator properties that apply to current 
+>>>> regulators.
+>>>>
+>>>>  Example for i.MX23 SoC:
+>>>>
+>>>> @@ -31,6 +40,16 @@ Example for i.MX23 SoC:
+>>>>          fsl,ave-ctrl = <4>;
+>>>>          fsl,ave-delay = <2>;
+>>>>          fsl,settling = <10>;
+>>>> +
+>>>> +        isrc_lradc0: ISRC0 {
+>>>> +            regulator-max-microamp = <300>;
+>>>> +        };
+>>>> +
+>>>> +        isrc_lradc1: ISRC1 {
+>>>> +            regulator-max-microamp = <120>;
+>>>> +            regulator-min-microamp = <120>;
+>>>> +            regulator-always-on;
+>>>> +        };
+>>>
+>>> IMHO the binding should represent the direct connection between the
+>>> current source and the physical channel. I think a node label isn't
+>>> enough. Unfortunately i don't have an idea to do it the "right 
+>>> way".
+>>
+>> I strictly followed the names of the data sheet here: imx23 and 
+>> imx28
+>> reference manuals both call the current sources ISRC0 and ISRC1 even
+>> if they are attached to different channels of the ADC. I think
+>> inventing some ISRC6 for imx28 would do more harm then good.
+> So just to check... These two current sources are effectively
+> pushing current out of the ADC input pin?  Assumption being that
+> this causes an appropriate voltage across a component between there
+> and 0V?
 
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- Documentation/isa.txt | 121 ++++++++++++++++++++++++++++++++++++++++++++++++++
- MAINTAINERS           |   7 +++
- 2 files changed, 128 insertions(+)
- create mode 100644 Documentation/isa.txt
+Exactly.
 
-diff --git a/Documentation/isa.txt b/Documentation/isa.txt
-new file mode 100644
-index 0000000..f232c26
---- /dev/null
-+++ b/Documentation/isa.txt
-@@ -0,0 +1,121 @@
-+ISA Drivers
-+-----------
-+
-+The following text is adapted from the commit message of the initial
-+commit of the ISA bus driver authored by Rene Herman.
-+
-+During the recent "isa drivers using platform devices" discussion it was
-+pointed out that (ALSA) ISA drivers ran into the problem of not having
-+the option to fail driver load (device registration rather) upon not
-+finding their hardware due to a probe() error not being passed up
-+through the driver model. In the course of that, I suggested a separate
-+ISA bus might be best; Russell King agreed and suggested this bus could
-+use the .match() method for the actual device discovery.
-+
-+The attached does this. For this old non (generically) discoverable ISA
-+hardware only the driver itself can do discovery so as a difference with
-+the platform_bus, this isa_bus also distributes match() up to the
-+driver.
-+
-+As another difference: these devices only exist in the driver model due
-+to the driver creating them because it might want to drive them, meaning
-+that all device creation has been made internal as well.
-+
-+The usage model this provides is nice, and has been acked from the ALSA
-+side by Takashi Iwai and Jaroslav Kysela. The ALSA driver module_init's
-+now (for oldisa-only drivers) become:
-+
-+static int __init alsa_card_foo_init(void)
-+{
-+	return isa_register_driver(&snd_foo_isa_driver, SNDRV_CARDS);
-+}
-+
-+static void __exit alsa_card_foo_exit(void)
-+{
-+	isa_unregister_driver(&snd_foo_isa_driver);
-+}
-+
-+Quite like the other bus models therefore. This removes a lot of
-+duplicated init code from the ALSA ISA drivers.
-+
-+The passed in isa_driver struct is the regular driver struct embedding a
-+struct device_driver, the normal probe/remove/shutdown/suspend/resume
-+callbacks, and as indicated that .match callback.
-+
-+The "SNDRV_CARDS" you see being passed in is a "unsigned int ndev"
-+parameter, indicating how many devices to create and call our methods
-+with.
-+
-+The platform_driver callbacks are called with a platform_device param;
-+the isa_driver callbacks are being called with a "struct device *dev,
-+unsigned int id" pair directly -- with the device creation completely
-+internal to the bus it's much cleaner to not leak isa_dev's by passing
-+them in at all. The id is the only thing we ever want other then the
-+struct device * anyways, and it makes for nicer code in the callbacks as
-+well.
-+
-+With this additional .match() callback ISA drivers have all options. If
-+ALSA would want to keep the old non-load behaviour, it could stick all
-+of the old .probe in .match, which would only keep them registered after
-+everything was found to be present and accounted for. If it wanted the
-+behaviour of always loading as it inadvertently did for a bit after the
-+changeover to platform devices, it could just not provide a .match() and
-+do everything in .probe() as before.
-+
-+If it, as Takashi Iwai already suggested earlier as a way of following
-+the model from saner buses more closely, wants to load when a later bind
-+could conceivably succeed, it could use .match() for the prerequisites
-+(such as checking the user wants the card enabled and that port/irq/dma
-+values have been passed in) and .probe() for everything else. This is
-+the nicest model.
-+
-+To the code...
-+
-+This exports only two functions; isa_{,un}register_driver().
-+
-+isa_register_driver() register's the struct device_driver, and then
-+loops over the passed in ndev creating devices and registering them.
-+This causes the bus match method to be called for them, which is:
-+
-+int isa_bus_match(struct device *dev, struct device_driver *driver)
-+{
-+          struct isa_driver *isa_driver = to_isa_driver(driver);
-+
-+          if (dev->platform_data == isa_driver) {
-+                  if (!isa_driver->match ||
-+                          isa_driver->match(dev, to_isa_dev(dev)->id))
-+                          return 1;
-+                  dev->platform_data = NULL;
-+          }
-+          return 0;
-+}
-+
-+The first thing this does is check if this device is in fact one of this
-+driver's devices by seeing if the device's platform_data pointer is set
-+to this driver. Platform devices compare strings, but we don't need to
-+do that with everything being internal, so isa_register_driver() abuses
-+dev->platform_data as a isa_driver pointer which we can then check here.
-+I believe platform_data is available for this, but if rather not, moving
-+the isa_driver pointer to the private struct isa_dev is ofcourse fine as
-+well.
-+
-+Then, if the the driver did not provide a .match, it matches. If it did,
-+the driver match() method is called to determine a match.
-+
-+If it did _not_ match, dev->platform_data is reset to indicate this to
-+isa_register_driver which can then unregister the device again.
-+
-+If during all this, there's any error, or no devices matched at all
-+everything is backed out again and the error, or -ENODEV, is returned.
-+
-+isa_unregister_driver() just unregisters the matched devices and the
-+driver itself.
-+
-+module_isa_driver is a helper macro for ISA drivers which do not do
-+anything special in module init/exit. This eliminates a lot of
-+boilerplate code. Each module may only use this macro once, and calling
-+it replaces module_init and module_exit.
-+
-+max_num_isa_dev is a macro to determine the maximum possible number of
-+ISA devices which may be registered in the I/O port address space given
-+the address extent of the ISA devices.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1d5b4be..92a1906 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5995,6 +5995,13 @@ F:	include/linux/irqdomain.h
- F:	kernel/irq/irqdomain.c
- F:	kernel/irq/msi.c
- 
-+ISA
-+M:	William Breathitt Gray <vilhelm.gray@gmail.com>
-+S:	Maintained
-+F:	Documentation/isa.txt
-+F:	drivers/base/isa.c
-+F:	include/linux/isa.h
-+
- ISAPNP
- M:	Jaroslav Kysela <perex@perex.cz>
- S:	Maintained
+> I wonder if we are better off not treating these as regulators at
+> all - whilst you could in theory use them for general purposes, it
+> would be a bit nuts and sometimes the 'it is nuts argument' is
+> enough to mean we don't support something :)
+
+Yeah, it would be some funny 4-bit DAC ...
+
+> I wouldn't have any problem with an additional attribute for the
+> adc channels - maybe something like...
+>
+> in_voltage6_sourcecurrent?  Then the control could be pushed to
+> userspace.
+
+I'm very open to that idea. Not having yet an other subsystem
+involved would simplify some things a lot.
+
+> Or if it only makes sense to do it as a fixed value in DT then
+> define optional child nodes for the individual channels, with
+> the relevant ones have current-source-microamp or
+> something like that as an parameter.
+
+My research in thermistors is still ongoing (so I don't have
+a kernel driver yet) but I think for thermistors with
+exponential temperature dependence dynamic setting of the
+current source will be necessary to get high resolution across
+the whole temperature range.
+
+Of course many applications wont need this. For checks like
+"Is my battery over-heating?" a simple fixed current from DT
+will to well, so I guess we should support both.
+
+> What do you think?
+
+As I already stated in an other subthread, I'm not entirely
+happy with the regulator approach. Having everything inside
+iio would make supporting complex use cases easier in the
+future, I guess.
+
+Also IIO devices are much easier to control from user space
+then regulators, which might be desired for this type of
+device.
+
+OTOH I'm not sure how many other devices out there have a
+similar feature. I'd rather not invent a new API for just
+very few devices. IMO iio already suffers from the
+complexity of the sysfs API. Maybe somebody with a good
+overview of ADCs available on the market can provide some
+input here.
+
+Also of course there are lots of ADCs out there without
+internal current source and those could be used with
+thermistors too but would need a regulator anyway.
+So maybe eventually we would end up with both solutions
+supported, which I'd avoid if at all possible. (I guess
+we could work around the last issue by providing some
+generic driver to pull an iio channel and a regulator
+together - do we like that level of abstraction?)
+
+If we start our own API to control current sources we
+might end up pretty much reimplementing the regulator
+API for the single consumer case.
+
+I'd like to have input from more people on the above
+points before going one way or the other.
+
+Thanks,
+Harald
+
+> Jonathan
+>
+>>
+>>>>      };
+>>>>
+>>>>  Example for i.MX28 SoC:
+>>>> @@ -44,4 +63,14 @@ Example for i.MX28 SoC:
+>>>>          fsl,ave-ctrl = <4>;
+>>>>          fsl,ave-delay = <2>;
+>>>>          fsl,settling = <10>;
+>>>> +
+>>>> +        isrc_lradc0: ISRC0 {
+>>>> +            regulator-max-microamp = <300>;
+>>>> +        };
+>>>> +
+>>>> +        isrc_lradc6: ISRC1 {
+>>>> +            regulator-max-microamp = <120>;
+>>>> +            regulator-min-microamp = <120>;
+>>>> +            regulator-always-on;
+>>>> +        };
+>>>>      };
+>>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>>>> index 5937030..1968d1c 100644
+>>>> --- a/drivers/iio/adc/Kconfig
+>>>> +++ b/drivers/iio/adc/Kconfig
+>>>> @@ -319,6 +319,7 @@ config MXS_LRADC
+>>>>          tristate "Freescale i.MX23/i.MX28 LRADC"
+>>>>          depends on (ARCH_MXS || COMPILE_TEST) && HAS_IOMEM
+>>>>          depends on INPUT
+>>>> +        depends on REGULATOR
+>>>
+>>> Any chance to avoid this dependency for an optional feature?
+>>
+>> I haven't looked into it yet, but I expect that that the mfd
+>> conversion will avoid this neatly.
+>>
+>> Thanks,
+>> Harald
+>>
+>>> Stefan
+>>>
+>>>>          select STMP_DEVICE
+>>>>          select IIO_BUFFER
+>>>>          select IIO_TRIGGERED_BUFFER
+>>
+
 -- 
-2.7.3
-
+If you want to support my work:
+see http://friends.ccbib.org/harald/supporting/
+or donate via peercoin to P98LRdhit3gZbHDBe7ta5jtXrMJUms4p7w
+or bitcoin 1FUtd8T9jRN1rFz63vZz7s2fDtB6d6A7aS
