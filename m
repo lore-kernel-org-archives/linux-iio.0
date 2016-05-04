@@ -1,64 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35849 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35763 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751063AbcEDOjp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:39:45 -0400
-Subject: Re: [PATCH] iio: light: bh1780: return after write
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1461844961-28558-1-git-send-email-linus.walleij@linaro.org>
- <5fed5120-ed2c-60ab-704b-8a832ff91c23@kernel.org>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
+	with ESMTP id S1750780AbcEDOhK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:37:10 -0400
+Subject: Re: [PATCH 6/7] iio: inv_mpu6050: Check channel configuration on
+ preenable
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1461953982.git.leonard.crestez@intel.com>
+ <d1135276814b870a7b0e7e079e47c625b25c4ad9.1461953982.git.leonard.crestez@intel.com>
+ <514843f4-2f6d-e902-9fdb-212fc5c91e7d@kernel.org>
+ <5728A129.9010607@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Ge Gao <GGao@invensense.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <163d1fd5-6842-55c4-c112-c16f68a786d0@kernel.org>
-Date: Wed, 4 May 2016 10:54:38 +0100
+Message-ID: <ff467b62-c88e-eba6-01f3-80456ad63c80@kernel.org>
+Date: Wed, 4 May 2016 10:01:48 +0100
 MIME-Version: 1.0
-In-Reply-To: <5fed5120-ed2c-60ab-704b-8a832ff91c23@kernel.org>
+In-Reply-To: <5728A129.9010607@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/05/16 20:42, Jonathan Cameron wrote:
-> On 28/04/16 13:02, Linus Walleij wrote:
->> When writing a value using direct reg access from debugfs
->> we need to return and not fall through to reading the
->> value, lest we'll dereference a NULL pointer.
+On 03/05/16 14:01, Crestez Dan Leonard wrote:
+> On 05/01/2016 08:34 PM, Jonathan Cameron wrote:
+>> On 29/04/16 20:02, Crestez Dan Leonard wrote:
+>>> Right now it is possible to only enable some of the x/y/z channels, for
+>>> example you can enable accel_z without x or y. If you actually do that
+>>> what you get is actually only the x channel.
+>>>
+>>> In theory the device supports selecting gyro x/y/z channels
+>>> individually. It would also be possible to selectively enable x/y/z
+>>> accel by unpacking the data read from the hardware into a format the iio
+>>> core accepts.
+>>>
+>>> It is easier to simply refuse incorrect configuration.
+>> Or see suggestion inline. This isn't an uncommon problem!
 >>
->> Cc: Dan Carpenter <dan.carpenter@oracle.com>
->> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> This is another one I'll have to pick up when I can create a fixes branch for
-> post the merge window.
+>>> +/* Validate channels are set in a correct configuration */
+>>> +static int inv_mpu_buffer_preenable(struct iio_dev *indio_dev)
+>>> +{
+>> This should not be in the preenable.  It's perfectly possible to know that mode was invalid
+>> earlier than this.  Use the core demux to handle this case by providing
+>> available_scanmasks.  The the core will handle demuxing the data stream if needed to
+>> provide the channels enabled only in the kfifo.
+>>
+> But available_scanmasks is a list! Listing every valid scanmask would
+> work for accel/gyro but the next patch adds support for up to 4 slaves
+> and each slave can be enabled/disabled. This would requires generating
+> 2^6 == 64 possible scanmasks, right?
+Not that bad (a whole 256 bytes ;), but I get your point.
+
 > 
-> Poke me if I forget it.
+> I tried to do this same validation inside .validate_scan_mask but that
+> function is called for each individual scan bit. What I want is to
+> validate the scan mask once it's entirely configured, and preenable
+> seems to be the best choice.
+We want to know earlier that a given set of channels isn't possible.  
 > 
-Applied to the fixes-togreg-post-rc1 branch of iio.git and not
-pushed out for a few days (depending on battery of laptop vs free
-wifi at Gare du Nord later)
+> This could be implemented with an "adjust_scan_mask" driver function
+> which adds bits to a trial scanmask until the configuration is suitable.
+I'd call it scan_mask_available_match or similar but yes, this
+would work for me.  So in iio_scan_mask_set we'd have something like:
+if (indio_dev->available_scan_masks) {
+		mask = iio_scan_mask_match(indio_dev->available_scan_masks,
+					   indio_dev->masklength,
+					   trialmask, false);
+		if (!mask)
+			goto err_invalid_mask;
+} else if (indio_dev->ops->scan_mask_available_match) {
+	mask = indio_dev->ops->scan_mask_available_match(indio_dev->masklength,
+							 trialmask);
+	if (!mask)
+		goto err_invalid_mask;
+}
+
+Bit of complexity needed to avoid any memory issues (probably use a local
+buffer in the driver private struct to point mask at once filled),
+
+Scan mask available could then compute the minimum possible scan mask for the
+device in question given the requirements of trialmask.
+
+An easy change that effectively provides a dynamic equivalent of our constant
+list of available scan masks.  I'd advocate only using it when the
+device complexity make it worthwhile (much like dynamic allocation of channel
+specs currently) - so not many cases.
+
+> 
+> I think a better solution would be to add a .get_buffer_offsets driver
+> function and have the iio core handled demuxing based on offsets rather
+> than just scan_mask.
+Scan mask isn't about just this.   A common case is not that you have
+to enable additional channels to end up with a valid set of readings
+but rather that you can only read a (complex) subset of channels at
+a time in buffered mode.  The simplest being onehot, but there are
+quite a few other cases (two parallel ADCs each of which is muxed to a
+subset of the channels via slow muxes for example).
+
+> 
+> This would also handle alignment for external channels with storagebits
+> != 16. For example if I enable accel and an external u32 channel iio
+> expects the following layout:
+>     <u16 ACCEL_X> <u16 ACCEL_Y> <u16 ACCEL_Z> <u16 PAD> <u32 external>
+> while my device gives the following:
+>     <u16 ACCEL_X> <u16 ACCEL_Y> <u16 ACCEL_Z> <u32 external>
+> I could add memcpy mangling in my driver but handling this belongs in
+> the iio core.
+Matter of opinion.  I'd take this as a driver requirement - much like the
+common case of data that is packed tighter than this or irritatingly
+interleaved.
+
+<u4 ACCEL_X_11_8> <u4 ACCEL_Y_11_8> <u8 ACCEL_X_7_0> <u8 ACCEL_Y_7_0> is
+not uncommon.
+
+Where do we draw the line between what should be in the core and in a
+driver?  I'm not against seeing a proposal for byte based packing unwinding
+in the core, but I'm not convinced the added complexity (see other email
+about the endian mess) is worth it without seeing code.
+
+> 
+> I'd rather avoid depending on new features in the iio core and just do
+> simple validations instead. This is because the feature I'm adding is
+> already complex.
+> 
+I think your earlier suggestion that you dismissed is a trivial extension
+of the core and provides everything you need - so that's the route
+that I'd advocate.
+
+However I'm always open to having my mind changed :)
 
 Jonathan
-> Jonathan
->> ---
->>  drivers/iio/light/bh1780.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/light/bh1780.c b/drivers/iio/light/bh1780.c
->> index 72b364e4aa72..f83595334ff1 100644
->> --- a/drivers/iio/light/bh1780.c
->> +++ b/drivers/iio/light/bh1780.c
->> @@ -84,7 +84,7 @@ static int bh1780_debugfs_reg_access(struct iio_dev *indio_dev,
->>  	int ret;
->>  
->>  	if (!readval)
->> -		bh1780_write(bh1780, (u8)reg, (u8)writeval);
->> +		return bh1780_write(bh1780, (u8)reg, (u8)writeval);
->>  
->>  	ret = bh1780_read(bh1780, (u8)reg);
->>  	if (ret < 0)
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
 
