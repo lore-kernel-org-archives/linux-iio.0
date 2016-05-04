@@ -1,99 +1,238 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Wed, 4 May 2016 10:24:43 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Crestez Dan Leonard <cdleonard@gmail.com>,
-	One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>,
-	Michael Welling <mwelling@ieee.org>, mranostay@gmail.com,
-	linux-kernel@vger.kernel.org, daniel.baluta@intel.com,
-	linux-iio@vger.kernel.org
-Subject: Re: Regression in inv_mpu6050: 4.6.0-rc5
-Message-ID: <20160504172443.GA27422@kroah.com>
-References: <20160426232651.099a18d7@lxorguk.ukuu.org.uk>
- <20160426230755.GA6235@deathstar>
- <20160427165613.4d464792@lxorguk.ukuu.org.uk>
- <e65623b5-44bc-b329-b718-c00aaa0b4805@kernel.org>
- <5728F3CD.3000801@gmail.com>
- <0fd48340-63b7-253e-352c-4f98cf6e19b2@kernel.org>
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Antti Palosaari <crope@iki.fi>, Peter Rosin <peda@axentia.se>, Wolfram
+ Sang <wsa@the-dreams.de>, Jonathan Corbet <corbet@lwn.net>, Peter Korsgaard
+	<peter.korsgaard@barco.com>, Guenter Roeck <linux@roeck-us.net>, Jonathan
+ Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
+ Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Mauro Carvalho
+ Chehab <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>, Frank
+ Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>, "David S. Miller"
+	<davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kalle
+ Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Lucas De Marchi <lucas.demarchi@intel.com>, Matt
+ Ranostay <matt.ranostay@intel.com>, Krzysztof Kozlowski
+	<k.kozlowski@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Terry Heo
+	<terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>, Tommi Rantala
+	<tt.rantala@gmail.com>, Crestez Dan Leonard <leonard.crestez@intel.com>,
+	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
+	<devicetree@vger.kernel.org>
+Subject: [PATCH v9 6/9] [media] si2168: change the i2c gate to be mux-locked
+Date: Wed, 4 May 2016 22:15:32 +0200
+Message-ID: <1462392935-28011-7-git-send-email-peda@axentia.se>
+In-Reply-To: <1462392935-28011-1-git-send-email-peda@axentia.se>
+References: <1462392935-28011-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <0fd48340-63b7-253e-352c-4f98cf6e19b2@kernel.org>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, May 04, 2016 at 08:49:06AM +0100, Jonathan Cameron wrote:
-> On 03/05/16 19:54, Crestez Dan Leonard wrote:
-> > On 05/01/2016 10:58 PM, Jonathan Cameron wrote:
-> >> On 27/04/16 16:56, One Thousand Gnomes wrote:
-> >>> On Tue, 26 Apr 2016 18:07:55 -0500
-> >>> Michael Welling <mwelling@ieee.org> wrote:
-> >>>
-> >>>> On Tue, Apr 26, 2016 at 11:26:51PM +0100, One Thousand Gnomes wrote:
-> >>>>>
-> >>>>> This now causes us to crash and burn on the ASUS T100TA Baytrail/T
-> >>>>> platforms
-> >>>>>  
-> >>>>
-> >>>> I believe this regression has already been patched.
-> >>>>
-> >>>> Check the latest commits in linux-next.
-> >>>>
-> >>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/log/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> >>>>
-> >>>> See if the latest patches fix your issue.
-> >>>
-> >>> It does - as this is a regression can we please get those fixes into the
-> >>> next -rc ?
-> >>>
-> >> I'm afraid I'm lost in this one - which patch caused the regression and
-> >> which one fixed it?  The only patches I can immediately see in next
-> >> both introduce and then squish a similar bug, but neither of them
-> >> has hit Linus' tree yet.
-> >>
-> >> Or are we dealing with what was fixed in:
-> >> c816d9e7 iio: imu: mpu6050: fix possible NULL dereferences
-> >> I had understood that one as more hypothetical than real...
-> >>
-> >> Unfortunately I'm travelling and I suspect that means this will only get
-> >> in just after the release (so for 4.6.1) once I've confirmed which fixes
-> >> we actually need to backport.
-> >>
-> > Commit
-> >     c816d9e7: iio: imu: mpu6050: fix possible NULL dereferences
-> > Fixes:
-> >     33da559f: iio: imu: mpu6050: add mpu6500 register settings
-> > 
-> > As far as I can tell this crash will always happen when the device is
-> > probed via ACPI.
-> 
-> Hi Greg,
-> 
-> A quick heads up.
-> 
-> Unfortunately this regression has come up whilst I'm travelling and
-> don't have appropriate signing keys with me to do a pull request.
-> Should be able to do one tomorrow evening as I'll back home.
-> 
-> Turns out the 'possible' is quite common and causing a mess.
-> Even better the fix actually has a fix as well... 
-> 
-> Fastest option is probably a cherry pick of:
-> 
-> c816d9e7: iio: imu: mpu6050: fix possible NULL dereferences
-> 718ba46e: iio: imu: mpu6050: Fix name/chip_id when using ACPI
+From: Antti Palosaari <crope@iki.fi>
 
->From where?
+The root i2c adapter lock is then no longer held by the i2c mux during
+accesses behind the i2c gate, and such accesses need to take that lock
+just like any other ordinary i2c accesses do.
 
-> 
-> I'll send you a pull request of my 
-> togreg-in-a-hurry branch tomorrow.
-> 
-> Sorry for these being so late in the cycle.
-> 
-> Anyhow, run for train time. 
+So, declare the i2c gate mux-locked, and zap the code that makes the
+i2c accesses unlocked. But add a mutex so that firmware commands are
+still serialized.
 
-You can always just send me patches, no need for it to always be a pull
-request if you can't do that for some reason.
+Signed-off-by: Antti Palosaari <crope@iki.fi>
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ Documentation/i2c/i2c-topology            |  2 +-
+ drivers/media/dvb-frontends/si2168.c      | 83 ++++++++-----------------------
+ drivers/media/dvb-frontends/si2168_priv.h |  1 +
+ 3 files changed, 22 insertions(+), 64 deletions(-)
 
-thanks,
-
-greg k-h
+diff --git a/Documentation/i2c/i2c-topology b/Documentation/i2c/i2c-topology
+index 69b008518454..5e40802f0be2 100644
+--- a/Documentation/i2c/i2c-topology
++++ b/Documentation/i2c/i2c-topology
+@@ -56,7 +56,7 @@ In drivers/media/
+ dvb-frontends/m88ds3103   Parent-locked
+ dvb-frontends/rtl2830     Parent-locked
+ dvb-frontends/rtl2832     Parent-locked
+-dvb-frontends/si2168      Parent-locked
++dvb-frontends/si2168      Mux-locked
+ usb/cx231xx/              Parent-locked
+ 
+ 
+diff --git a/drivers/media/dvb-frontends/si2168.c b/drivers/media/dvb-frontends/si2168.c
+index 5583827c386e..108a069fa1ae 100644
+--- a/drivers/media/dvb-frontends/si2168.c
++++ b/drivers/media/dvb-frontends/si2168.c
+@@ -18,53 +18,23 @@
+ 
+ static const struct dvb_frontend_ops si2168_ops;
+ 
+-/* Own I2C adapter locking is needed because of I2C gate logic. */
+-static int si2168_i2c_master_send_unlocked(const struct i2c_client *client,
+-					   const char *buf, int count)
+-{
+-	int ret;
+-	struct i2c_msg msg = {
+-		.addr = client->addr,
+-		.flags = 0,
+-		.len = count,
+-		.buf = (char *)buf,
+-	};
+-
+-	ret = __i2c_transfer(client->adapter, &msg, 1);
+-	return (ret == 1) ? count : ret;
+-}
+-
+-static int si2168_i2c_master_recv_unlocked(const struct i2c_client *client,
+-					   char *buf, int count)
+-{
+-	int ret;
+-	struct i2c_msg msg = {
+-		.addr = client->addr,
+-		.flags = I2C_M_RD,
+-		.len = count,
+-		.buf = buf,
+-	};
+-
+-	ret = __i2c_transfer(client->adapter, &msg, 1);
+-	return (ret == 1) ? count : ret;
+-}
+-
+ /* execute firmware command */
+-static int si2168_cmd_execute_unlocked(struct i2c_client *client,
+-				       struct si2168_cmd *cmd)
++static int si2168_cmd_execute(struct i2c_client *client, struct si2168_cmd *cmd)
+ {
++	struct si2168_dev *dev = i2c_get_clientdata(client);
+ 	int ret;
+ 	unsigned long timeout;
+ 
++	mutex_lock(&dev->i2c_mutex);
++
+ 	if (cmd->wlen) {
+ 		/* write cmd and args for firmware */
+-		ret = si2168_i2c_master_send_unlocked(client, cmd->args,
+-						      cmd->wlen);
++		ret = i2c_master_send(client, cmd->args, cmd->wlen);
+ 		if (ret < 0) {
+-			goto err;
++			goto err_mutex_unlock;
+ 		} else if (ret != cmd->wlen) {
+ 			ret = -EREMOTEIO;
+-			goto err;
++			goto err_mutex_unlock;
+ 		}
+ 	}
+ 
+@@ -73,13 +43,12 @@ static int si2168_cmd_execute_unlocked(struct i2c_client *client,
+ 		#define TIMEOUT 70
+ 		timeout = jiffies + msecs_to_jiffies(TIMEOUT);
+ 		while (!time_after(jiffies, timeout)) {
+-			ret = si2168_i2c_master_recv_unlocked(client, cmd->args,
+-							      cmd->rlen);
++			ret = i2c_master_recv(client, cmd->args, cmd->rlen);
+ 			if (ret < 0) {
+-				goto err;
++				goto err_mutex_unlock;
+ 			} else if (ret != cmd->rlen) {
+ 				ret = -EREMOTEIO;
+-				goto err;
++				goto err_mutex_unlock;
+ 			}
+ 
+ 			/* firmware ready? */
+@@ -94,32 +63,23 @@ static int si2168_cmd_execute_unlocked(struct i2c_client *client,
+ 		/* error bit set? */
+ 		if ((cmd->args[0] >> 6) & 0x01) {
+ 			ret = -EREMOTEIO;
+-			goto err;
++			goto err_mutex_unlock;
+ 		}
+ 
+ 		if (!((cmd->args[0] >> 7) & 0x01)) {
+ 			ret = -ETIMEDOUT;
+-			goto err;
++			goto err_mutex_unlock;
+ 		}
+ 	}
+ 
++	mutex_unlock(&dev->i2c_mutex);
+ 	return 0;
+-err:
++err_mutex_unlock:
++	mutex_unlock(&dev->i2c_mutex);
+ 	dev_dbg(&client->dev, "failed=%d\n", ret);
+ 	return ret;
+ }
+ 
+-static int si2168_cmd_execute(struct i2c_client *client, struct si2168_cmd *cmd)
+-{
+-	int ret;
+-
+-	i2c_lock_adapter(client->adapter);
+-	ret = si2168_cmd_execute_unlocked(client, cmd);
+-	i2c_unlock_adapter(client->adapter);
+-
+-	return ret;
+-}
+-
+ static int si2168_read_status(struct dvb_frontend *fe, enum fe_status *status)
+ {
+ 	struct i2c_client *client = fe->demodulator_priv;
+@@ -610,11 +570,6 @@ static int si2168_get_tune_settings(struct dvb_frontend *fe,
+ 	return 0;
+ }
+ 
+-/*
+- * I2C gate logic
+- * We must use unlocked I2C I/O because I2C adapter lock is already taken
+- * by the caller (usually tuner driver).
+- */
+ static int si2168_select(struct i2c_mux_core *muxc, u32 chan)
+ {
+ 	struct i2c_client *client = i2c_mux_priv(muxc);
+@@ -625,7 +580,7 @@ static int si2168_select(struct i2c_mux_core *muxc, u32 chan)
+ 	memcpy(cmd.args, "\xc0\x0d\x01", 3);
+ 	cmd.wlen = 3;
+ 	cmd.rlen = 0;
+-	ret = si2168_cmd_execute_unlocked(client, &cmd);
++	ret = si2168_cmd_execute(client, &cmd);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -645,7 +600,7 @@ static int si2168_deselect(struct i2c_mux_core *muxc, u32 chan)
+ 	memcpy(cmd.args, "\xc0\x0d\x00", 3);
+ 	cmd.wlen = 3;
+ 	cmd.rlen = 0;
+-	ret = si2168_cmd_execute_unlocked(client, &cmd);
++	ret = si2168_cmd_execute(client, &cmd);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -708,9 +663,11 @@ static int si2168_probe(struct i2c_client *client,
+ 		goto err;
+ 	}
+ 
++	mutex_init(&dev->i2c_mutex);
++
+ 	/* create mux i2c adapter for tuner */
+ 	dev->muxc = i2c_mux_alloc(client->adapter, &client->dev,
+-				  1, 0, 0,
++				  1, 0, I2C_MUX_LOCKED,
+ 				  si2168_select, si2168_deselect);
+ 	if (!dev->muxc) {
+ 		ret = -ENOMEM;
+diff --git a/drivers/media/dvb-frontends/si2168_priv.h b/drivers/media/dvb-frontends/si2168_priv.h
+index 165bf1412063..8a1f36d2014d 100644
+--- a/drivers/media/dvb-frontends/si2168_priv.h
++++ b/drivers/media/dvb-frontends/si2168_priv.h
+@@ -29,6 +29,7 @@
+ 
+ /* state struct */
+ struct si2168_dev {
++	struct mutex i2c_mutex;
+ 	struct i2c_mux_core *muxc;
+ 	struct dvb_frontend fe;
+ 	enum fe_delivery_system delivery_system;
+-- 
+2.1.4
