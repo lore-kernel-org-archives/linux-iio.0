@@ -19,118 +19,231 @@ CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
 	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
 	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
 	<devicetree@vger.kernel.org>
-Subject: [PATCH v9 2/9] i2c: muxes always lock the parent adapter
-Date: Wed, 4 May 2016 22:15:28 +0200
-Message-ID: <1462392935-28011-3-git-send-email-peda@axentia.se>
+Subject: [PATCH v9 1/9] i2c: allow adapter drivers to override the adapter locking
+Date: Wed, 4 May 2016 22:15:27 +0200
+Message-ID: <1462392935-28011-2-git-send-email-peda@axentia.se>
 In-Reply-To: <1462392935-28011-1-git-send-email-peda@axentia.se>
 References: <1462392935-28011-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Instead of checking for i2c parent adapters for every lock/unlock, simply
-override the locking for muxes to always lock/unlock the parent adapter
-directly.
+Add i2c_lock_bus() and i2c_unlock_bus(), which call the new lock_bus and
+unlock_bus ops in the adapter. These funcs/ops take an additional flags
+argument that indicates for what purpose the adapter is locked.
+
+There are two flags, I2C_LOCK_ROOT_ADAPTER and I2C_LOCK_SEGMENT, but they
+are both implemented the same. For now. Locking the root adapter means
+that the whole bus is locked, locking the segment means that only the
+current bus segment is locked (i.e. i2c traffic on the parent side of
+a mux is still allowed even if the child side of the mux is locked).
+
+Also support a trylock_bus op (but no function to call it, as it is not
+expected to be needed outside of the i2c core).
+
+Implement i2c_lock_adapter/i2c_unlock_adapter in terms of the new locking
+scheme (i.e. lock with the I2C_LOCK_ROOT_ADAPTER flag).
+
+Locking the root adapter and locking the segment is the same thing for
+all root adapters (e.g. in the normal case of a simple topology with no
+i2c muxes). The two locking variants are also the same for traditional
+muxes (aka parent-locked muxes). These muxes traverse the tree, locking
+each level as they go until they reach the root. This patch is preparatory
+for a later patch in the series introducing mux-locked muxes, which behave
+differently depending on the requested locking. Since all current users
+are using i2c_lock_adapter, which is a wrapper for I2C_LOCK_ROOT_ADAPTER,
+we only need to annotate the calls that will not need to lock the root
+adapter for mux-locked muxes. I.e. the instances that needs to use
+I2C_LOCK_SEGMENT instead of i2c_lock_adapter/I2C_LOCK_ROOT_ADAPTER. Those
+instances are in the i2c_transfer and i2c_smbus_xfer functions, so that
+mux-locked muxes can single out normal i2c accesses to its slave side
+and adjust the locking for those accesses.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/i2c-core.c | 21 +++------------------
- drivers/i2c/i2c-mux.c  | 30 ++++++++++++++++++++++++++++++
- 2 files changed, 33 insertions(+), 18 deletions(-)
+ drivers/i2c/i2c-core.c | 41 +++++++++++++++++++++++++++--------------
+ include/linux/i2c.h    | 44 ++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 69 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
-index 7ef5bd085476..afdee66002db 100644
+index 4979728f7fb2..7ef5bd085476 100644
 --- a/drivers/i2c/i2c-core.c
 +++ b/drivers/i2c/i2c-core.c
-@@ -962,12 +962,7 @@ static int i2c_check_addr_busy(struct i2c_adapter *adapter, int addr)
- static void i2c_adapter_lock_bus(struct i2c_adapter *adapter,
- 				 unsigned int flags)
- {
--	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
--
--	if (parent)
--		i2c_lock_adapter(parent);
--	else
--		rt_mutex_lock(&adapter->bus_lock);
-+	rt_mutex_lock(&adapter->bus_lock);
+@@ -954,10 +954,13 @@ static int i2c_check_addr_busy(struct i2c_adapter *adapter, int addr)
  }
  
  /**
-@@ -979,12 +974,7 @@ static void i2c_adapter_lock_bus(struct i2c_adapter *adapter,
- static int i2c_adapter_trylock_bus(struct i2c_adapter *adapter,
- 				   unsigned int flags)
+- * i2c_lock_adapter - Get exclusive access to an I2C bus segment
++ * i2c_adapter_lock_bus - Get exclusive access to an I2C bus segment
+  * @adapter: Target I2C bus segment
++ * @flags: I2C_LOCK_ROOT_ADAPTER locks the root i2c adapter, I2C_LOCK_SEGMENT
++ *	locks only this branch in the adapter tree
+  */
+-void i2c_lock_adapter(struct i2c_adapter *adapter)
++static void i2c_adapter_lock_bus(struct i2c_adapter *adapter,
++				 unsigned int flags)
  {
--	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
--
--	if (parent)
--		return parent->trylock_bus(parent, flags);
--	else
--		return rt_mutex_trylock(&adapter->bus_lock);
-+	return rt_mutex_trylock(&adapter->bus_lock);
+ 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
+ 
+@@ -966,27 +969,32 @@ void i2c_lock_adapter(struct i2c_adapter *adapter)
+ 	else
+ 		rt_mutex_lock(&adapter->bus_lock);
+ }
+-EXPORT_SYMBOL_GPL(i2c_lock_adapter);
+ 
+ /**
+- * i2c_trylock_adapter - Try to get exclusive access to an I2C bus segment
++ * i2c_adapter_trylock_bus - Try to get exclusive access to an I2C bus segment
+  * @adapter: Target I2C bus segment
++ * @flags: I2C_LOCK_ROOT_ADAPTER trylocks the root i2c adapter, I2C_LOCK_SEGMENT
++ *	trylocks only this branch in the adapter tree
+  */
+-static int i2c_trylock_adapter(struct i2c_adapter *adapter)
++static int i2c_adapter_trylock_bus(struct i2c_adapter *adapter,
++				   unsigned int flags)
+ {
+ 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
+ 
+ 	if (parent)
+-		return i2c_trylock_adapter(parent);
++		return parent->trylock_bus(parent, flags);
+ 	else
+ 		return rt_mutex_trylock(&adapter->bus_lock);
  }
  
  /**
-@@ -996,12 +986,7 @@ static int i2c_adapter_trylock_bus(struct i2c_adapter *adapter,
- static void i2c_adapter_unlock_bus(struct i2c_adapter *adapter,
- 				   unsigned int flags)
+- * i2c_unlock_adapter - Release exclusive access to an I2C bus segment
++ * i2c_adapter_unlock_bus - Release exclusive access to an I2C bus segment
+  * @adapter: Target I2C bus segment
++ * @flags: I2C_LOCK_ROOT_ADAPTER unlocks the root i2c adapter, I2C_LOCK_SEGMENT
++ *	unlocks only this branch in the adapter tree
+  */
+-void i2c_unlock_adapter(struct i2c_adapter *adapter)
++static void i2c_adapter_unlock_bus(struct i2c_adapter *adapter,
++				   unsigned int flags)
  {
--	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
--
--	if (parent)
--		i2c_unlock_adapter(parent);
--	else
--		rt_mutex_unlock(&adapter->bus_lock);
-+	rt_mutex_unlock(&adapter->bus_lock);
+ 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
+ 
+@@ -995,7 +1003,6 @@ void i2c_unlock_adapter(struct i2c_adapter *adapter)
+ 	else
+ 		rt_mutex_unlock(&adapter->bus_lock);
  }
+-EXPORT_SYMBOL_GPL(i2c_unlock_adapter);
  
  static void i2c_dev_set_name(struct i2c_adapter *adap,
-diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
-index 25e9336b0e6e..5fa8af715e24 100644
---- a/drivers/i2c/i2c-mux.c
-+++ b/drivers/i2c/i2c-mux.c
-@@ -98,6 +98,33 @@ static unsigned int i2c_mux_parent_classes(struct i2c_adapter *parent)
- 	return class;
- }
+ 			     struct i2c_client *client)
+@@ -1541,6 +1548,12 @@ static int i2c_register_adapter(struct i2c_adapter *adap)
+ 		return -EINVAL;
+ 	}
  
-+static void i2c_parent_lock_bus(struct i2c_adapter *adapter,
-+				unsigned int flags)
-+{
-+	struct i2c_mux_priv *priv = adapter->algo_data;
-+	struct i2c_adapter *parent = priv->muxc->parent;
++	if (!adap->lock_bus) {
++		adap->lock_bus = i2c_adapter_lock_bus;
++		adap->trylock_bus = i2c_adapter_trylock_bus;
++		adap->unlock_bus = i2c_adapter_unlock_bus;
++	}
 +
-+	parent->lock_bus(parent, flags);
-+}
-+
-+static int i2c_parent_trylock_bus(struct i2c_adapter *adapter,
-+				  unsigned int flags)
-+{
-+	struct i2c_mux_priv *priv = adapter->algo_data;
-+	struct i2c_adapter *parent = priv->muxc->parent;
-+
-+	return parent->trylock_bus(parent, flags);
-+}
-+
-+static void i2c_parent_unlock_bus(struct i2c_adapter *adapter,
-+				  unsigned int flags)
-+{
-+	struct i2c_mux_priv *priv = adapter->algo_data;
-+	struct i2c_adapter *parent = priv->muxc->parent;
-+
-+	parent->unlock_bus(parent, flags);
-+}
-+
- struct i2c_mux_core *i2c_mux_alloc(struct i2c_adapter *parent,
- 				   struct device *dev, int max_adapters,
- 				   int sizeof_priv, u32 flags,
-@@ -165,6 +192,9 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
- 	priv->adap.retries = parent->retries;
- 	priv->adap.timeout = parent->timeout;
- 	priv->adap.quirks = parent->quirks;
-+	priv->adap.lock_bus = i2c_parent_lock_bus;
-+	priv->adap.trylock_bus = i2c_parent_trylock_bus;
-+	priv->adap.unlock_bus = i2c_parent_unlock_bus;
+ 	rt_mutex_init(&adap->bus_lock);
+ 	mutex_init(&adap->userspace_clients_lock);
+ 	INIT_LIST_HEAD(&adap->userspace_clients);
+@@ -2310,16 +2323,16 @@ int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
+ #endif
  
- 	/* Sanity check on class */
- 	if (i2c_mux_parent_classes(parent) & class)
+ 		if (in_atomic() || irqs_disabled()) {
+-			ret = i2c_trylock_adapter(adap);
++			ret = adap->trylock_bus(adap, I2C_LOCK_SEGMENT);
+ 			if (!ret)
+ 				/* I2C activity is ongoing. */
+ 				return -EAGAIN;
+ 		} else {
+-			i2c_lock_adapter(adap);
++			i2c_lock_bus(adap, I2C_LOCK_SEGMENT);
+ 		}
+ 
+ 		ret = __i2c_transfer(adap, msgs, num);
+-		i2c_unlock_adapter(adap);
++		i2c_unlock_bus(adap, I2C_LOCK_SEGMENT);
+ 
+ 		return ret;
+ 	} else {
+@@ -3094,7 +3107,7 @@ s32 i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short flags,
+ 	flags &= I2C_M_TEN | I2C_CLIENT_PEC | I2C_CLIENT_SCCB;
+ 
+ 	if (adapter->algo->smbus_xfer) {
+-		i2c_lock_adapter(adapter);
++		i2c_lock_bus(adapter, I2C_LOCK_SEGMENT);
+ 
+ 		/* Retry automatically on arbitration loss */
+ 		orig_jiffies = jiffies;
+@@ -3108,7 +3121,7 @@ s32 i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short flags,
+ 				       orig_jiffies + adapter->timeout))
+ 				break;
+ 		}
+-		i2c_unlock_adapter(adapter);
++		i2c_unlock_bus(adapter, I2C_LOCK_SEGMENT);
+ 
+ 		if (res != -EOPNOTSUPP || !adapter->algo->master_xfer)
+ 			goto trace;
+diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+index c30833b7b073..50934d6e1050 100644
+--- a/include/linux/i2c.h
++++ b/include/linux/i2c.h
+@@ -538,6 +538,10 @@ struct i2c_adapter {
+ 
+ 	struct i2c_bus_recovery_info *bus_recovery_info;
+ 	const struct i2c_adapter_quirks *quirks;
++
++	void (*lock_bus)(struct i2c_adapter *, unsigned int flags);
++	int (*trylock_bus)(struct i2c_adapter *, unsigned int flags);
++	void (*unlock_bus)(struct i2c_adapter *, unsigned int flags);
+ };
+ #define to_i2c_adapter(d) container_of(d, struct i2c_adapter, dev)
+ 
+@@ -567,8 +571,44 @@ i2c_parent_is_i2c_adapter(const struct i2c_adapter *adapter)
+ int i2c_for_each_dev(void *data, int (*fn)(struct device *, void *));
+ 
+ /* Adapter locking functions, exported for shared pin cases */
+-void i2c_lock_adapter(struct i2c_adapter *);
+-void i2c_unlock_adapter(struct i2c_adapter *);
++#define I2C_LOCK_ROOT_ADAPTER BIT(0)
++#define I2C_LOCK_SEGMENT      BIT(1)
++
++/**
++ * i2c_lock_bus - Get exclusive access to an I2C bus segment
++ * @adapter: Target I2C bus segment
++ * @flags: I2C_LOCK_ROOT_ADAPTER locks the root i2c adapter, I2C_LOCK_SEGMENT
++ *	locks only this branch in the adapter tree
++ */
++static inline void
++i2c_lock_bus(struct i2c_adapter *adapter, unsigned int flags)
++{
++	adapter->lock_bus(adapter, flags);
++}
++
++/**
++ * i2c_unlock_bus - Release exclusive access to an I2C bus segment
++ * @adapter: Target I2C bus segment
++ * @flags: I2C_LOCK_ROOT_ADAPTER unlocks the root i2c adapter, I2C_LOCK_SEGMENT
++ *	unlocks only this branch in the adapter tree
++ */
++static inline void
++i2c_unlock_bus(struct i2c_adapter *adapter, unsigned int flags)
++{
++	adapter->unlock_bus(adapter, flags);
++}
++
++static inline void
++i2c_lock_adapter(struct i2c_adapter *adapter)
++{
++	i2c_lock_bus(adapter, I2C_LOCK_ROOT_ADAPTER);
++}
++
++static inline void
++i2c_unlock_adapter(struct i2c_adapter *adapter)
++{
++	i2c_unlock_bus(adapter, I2C_LOCK_ROOT_ADAPTER);
++}
+ 
+ /*flags for the client struct: */
+ #define I2C_CLIENT_PEC		0x04	/* Use Packet Error Checking */
 -- 
 2.1.4
