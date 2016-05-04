@@ -1,93 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35867 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751063AbcEDOjw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:39:52 -0400
-Subject: Re: [PATCH 02/13] iio: health/afe440x: Remove of_match_ptr and ifdefs
-To: "Andrew F. Davis" <afd@ti.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-References: <1462135023-14445-1-git-send-email-afd@ti.com>
- <1462135023-14445-3-git-send-email-afd@ti.com>
-Cc: linux-iio@vger.kernel.org, linux-api@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d7e855d9-001d-b963-d07f-4c044b067ad2@kernel.org>
-Date: Wed, 4 May 2016 10:59:21 +0100
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:36576 "EHLO
+	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755160AbcEDSON (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 14:14:13 -0400
+Received: by mail-pf0-f193.google.com with SMTP id p185so6629609pfb.3
+        for <linux-iio@vger.kernel.org>; Wed, 04 May 2016 11:14:12 -0700 (PDT)
+Subject: Re: [PATCH 3/4] iio: st_sensors: verify interrupt event to status
+To: Linus Walleij <linus.walleij@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>
+References: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
+ <1458825486-17188-3-git-send-email-linus.walleij@linaro.org>
+ <5728E6C2.1050901@gmail.com>
+ <CACRpkdaLc8frud64VZEuQ=dXGpgk+kBj94otoCCC=-Pvoe09tw@mail.gmail.com>
+ <4e983a0c-88f9-b5bf-3439-15f006736a7d@kernel.org>
+ <CACRpkdas0XhPJWXd-HnYEOM4KALk23v_XnkZhkcsdzBjvHewsw@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+From: Crestez Dan Leonard <cdleonard@gmail.com>
+Message-ID: <5d31460f-8377-50b9-3960-d2204d4a4347@gmail.com>
+Date: Wed, 4 May 2016 21:14:15 +0300
 MIME-Version: 1.0
-In-Reply-To: <1462135023-14445-3-git-send-email-afd@ti.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CACRpkdas0XhPJWXd-HnYEOM4KALk23v_XnkZhkcsdzBjvHewsw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/05/16 21:36, Andrew F. Davis wrote:
-> The drivers DT tables are not built-in when OF is not enabled, this does
-> not save us enough to justify ugly ifdefs. Clean this up.
+On 05/04/2016 05:34 PM, Linus Walleij wrote:
+> On Wed, May 4, 2016 at 9:35 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 03/05/16 21:10, Linus Walleij wrote:
 > 
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
-Can't argue with that.
+>>>> Even with hardware triggers: are you sure this is correct? Shouldn't
+>>>> iio_trigger_notify_done still get called even when there is nothing to do?
+>>>
+>>> No then the (hardware) IRQ can have come in from some other
+>>> device sharing the line with the peripheral and we need to return
+>>> IRQ_NONE. It's not our interrupt.
+>>
+>> Gah, I fouled up reviewing this.  We really need to know if it is our
+>> trigger 'before' we fire off the trigger logic - any number of other
+>> devices can in theory be hanging off a given trigger - none of them will
+>> be able to know if it was a real trigger or not.
+> 
+> Ooops sorry, but the good thing is: we get to properly fix it.
+> 
+I've been testing with some st_sensors devices I have around and it
+seems to me that triggered buffers with hardware interrupts don't
+actually work properly at high sampling frequencies. It is possible for
+another sample to come in before the buffer handler completes and
+further interrupts will be lost.
 
-Applied.
+This happens on at least LIS3DH.
 
-Jonathan
-> ---
->  drivers/iio/health/afe4403.c | 4 +---
->  drivers/iio/health/afe4404.c | 4 +---
->  2 files changed, 2 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
-> index 2094113..e3700cf 100644
-> --- a/drivers/iio/health/afe4403.c
-> +++ b/drivers/iio/health/afe4403.c
-> @@ -498,13 +498,11 @@ static const struct regmap_config afe4403_regmap_config = {
->  	.volatile_table = &afe4403_volatile_table,
->  };
->  
-> -#ifdef CONFIG_OF
->  static const struct of_device_id afe4403_of_match[] = {
->  	{ .compatible = "ti,afe4403", },
->  	{ /* sentinel */ }
->  };
->  MODULE_DEVICE_TABLE(of, afe4403_of_match);
-> -#endif
->  
->  static int __maybe_unused afe4403_suspend(struct device *dev)
->  {
-> @@ -694,7 +692,7 @@ MODULE_DEVICE_TABLE(spi, afe4403_ids);
->  static struct spi_driver afe4403_spi_driver = {
->  	.driver = {
->  		.name = AFE4403_DRIVER_NAME,
-> -		.of_match_table = of_match_ptr(afe4403_of_match),
-> +		.of_match_table = afe4403_of_match,
->  		.pm = &afe4403_pm_ops,
->  	},
->  	.probe = afe4403_probe,
-> diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
-> index 7127d03..783b9b4 100644
-> --- a/drivers/iio/health/afe4404.c
-> +++ b/drivers/iio/health/afe4404.c
-> @@ -469,13 +469,11 @@ static const struct regmap_config afe4404_regmap_config = {
->  	.volatile_table = &afe4404_volatile_table,
->  };
->  
-> -#ifdef CONFIG_OF
->  static const struct of_device_id afe4404_of_match[] = {
->  	{ .compatible = "ti,afe4404", },
->  	{ /* sentinel */ }
->  };
->  MODULE_DEVICE_TABLE(of, afe4404_of_match);
-> -#endif
->  
->  static int __maybe_unused afe4404_suspend(struct device *dev)
->  {
-> @@ -665,7 +663,7 @@ MODULE_DEVICE_TABLE(i2c, afe4404_ids);
->  static struct i2c_driver afe4404_i2c_driver = {
->  	.driver = {
->  		.name = AFE4404_DRIVER_NAME,
-> -		.of_match_table = of_match_ptr(afe4404_of_match),
-> +		.of_match_table = afe4404_of_match,
->  		.pm = &afe4404_pm_ops,
->  	},
->  	.probe = afe4404_probe,
-> 
+It's not obvious how to handle this. Presumably the fix would be to
+check STATUS_REG after reading one sample and if new values are
+available schedule a new read?
+
+This is easy to reproduce for me because I use an usb-to-i2c adapter
+with high latencies. It helps if you increase the sampling_frequency but
+it might still be very hard to reproduce on a direct i2c bus.
+
+-- 
+Regards,
+Leonard
 
