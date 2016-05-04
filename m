@@ -1,273 +1,293 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35898 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35939 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753231AbcEDOkL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:40:11 -0400
-Subject: Re: [PATCH 08/13] iio: health/afe440x: Remove channel names
-To: "Andrew F. Davis" <afd@ti.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-References: <1462135023-14445-1-git-send-email-afd@ti.com>
- <1462135023-14445-9-git-send-email-afd@ti.com>
-Cc: linux-iio@vger.kernel.org, linux-api@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+	with ESMTP id S1754317AbcEDOkk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:40:40 -0400
+Subject: Re: [PATCH 1/2] iio: chemical: atlas-ph-sensor: reorg driver to allow
+ multiple chips
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1461530596-2142-1-git-send-email-mranostay@gmail.com>
+ <1461530596-2142-2-git-send-email-mranostay@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <f0679a4f-c8f0-1712-e7fc-a61350734a03@kernel.org>
-Date: Wed, 4 May 2016 11:08:01 +0100
+Message-ID: <def461c9-6796-05b5-9982-d44db6f397e6@kernel.org>
+Date: Wed, 4 May 2016 11:31:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <1462135023-14445-9-git-send-email-afd@ti.com>
+In-Reply-To: <1461530596-2142-2-git-send-email-mranostay@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/05/16 21:36, Andrew F. Davis wrote:
-> These AFEs have 4 ADC mesuring stages (called LED2, ALED2, LED1, and
-> ALED1 in the datasheet), we map these as channels, these stages can serve
-> different purposes depending on the application. For instance the AFE4404
-> has an additional LED (LED3), this LED can be timed to be active during
-> stage 2 (or anystage, but the datasheet describes this case and the name
-> of the stage reflects this use). This ability is used further in upcoming
-> parts that tie the front-end gain and the LED timings together. For these
-> reasons we remove explicit naming the channels.
-> 
-> Without channel names it is best that the index numbers are in order to
-> match the stage number, reorder the channel numbers.
-> 
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
-Youch - this is rather major surgery.
+On 24/04/16 21:43, Matt Ranostay wrote:
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+I was half way through reviewing this when by battery ran out on Sunday so
+fingers crossed this time! (it claims I have an hour left and 2 more hours
+on this train)
 
-Hmm. Given how non standard an ABI we ended up with in the first place
-again, let us cross our fingers that all the userspace for this is
-effectively under your control currently.
+Anyhow did make it through - straight forward refactor.
 
-Getting a little more nervous about this - but worth the risk I think
-for the simpler result.
-
-Applied
+Will apply if no issues in next patch.
 
 Jonathan
+
+
 > ---
->  .../ABI/testing/sysfs-bus-iio-health-afe440x       | 39 ++++++++++------------
->  drivers/iio/health/afe4403.c                       | 28 ++++++++--------
->  drivers/iio/health/afe4404.c                       | 30 ++++++++---------
->  drivers/iio/health/afe440x.h                       |  8 ++---
->  4 files changed, 51 insertions(+), 54 deletions(-)
+>  drivers/iio/chemical/atlas-ph-sensor.c | 131 +++++++++++++++++++++------------
+>  1 file changed, 83 insertions(+), 48 deletions(-)
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
-> index b19053a..a067073 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
-> @@ -8,38 +8,35 @@ Description:
->  		Transimpedance Amplifier. Y is 1 for Rf1 and Cf1, Y is 2 for
->  		Rf2 and Cf2 values.
+> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+> index 62b37cd..c57f9c2 100644
+> --- a/drivers/iio/chemical/atlas-ph-sensor.c
+> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+> @@ -24,6 +24,7 @@
+>  #include <linux/irq_work.h>
+>  #include <linux/gpio.h>
+>  #include <linux/i2c.h>
+> +#include <linux/of_device.h>
+>  #include <linux/regmap.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/buffer.h>
+> @@ -43,20 +44,25 @@
 >  
-> -What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_ledY_raw
-> -		/sys/bus/iio/devices/iio:deviceX/in_intensity_ledY_ambient_raw
-> -Date:		December 2015
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_raw
-> +Date:		May 2016
->  KernelVersion:
->  Contact:	Andrew F. Davis <afd@ti.com>
->  Description:
->  		Get measured values from the ADC for these stages. Y is the
-> -		specific LED number. The values are expressed in 24-bit twos
-> -		complement.
+>  #define ATLAS_REG_PWR_CONTROL		0x06
+>  
+> -#define ATLAS_REG_CALIB_STATUS		0x0d
+> -#define ATLAS_REG_CALIB_STATUS_MASK	0x07
+> -#define ATLAS_REG_CALIB_STATUS_LOW	BIT(0)
+> -#define ATLAS_REG_CALIB_STATUS_MID	BIT(1)
+> -#define ATLAS_REG_CALIB_STATUS_HIGH	BIT(2)
+> +#define ATLAS_REG_PH_CALIB_STATUS	0x0d
+> +#define ATLAS_REG_PH_CALIB_STATUS_MASK	0x07
+> +#define ATLAS_REG_PH_CALIB_STATUS_LOW	BIT(0)
+> +#define ATLAS_REG_PH_CALIB_STATUS_MID	BIT(1)
+> +#define ATLAS_REG_PH_CALIB_STATUS_HIGH	BIT(2)
+>  
+> -#define ATLAS_REG_TEMP_DATA		0x0e
+> +#define ATLAS_REG_PH_TEMP_DATA		0x0e
+>  #define ATLAS_REG_PH_DATA		0x16
+>  
+>  #define ATLAS_PH_INT_TIME_IN_US		450000
+>  
+> +enum {
+> +	ATLAS_PH_SM,
+> +};
+> +
+>  struct atlas_data {
+>  	struct i2c_client *client;
+>  	struct iio_trigger *trig;
+> +	struct atlas_device *chip;
+>  	struct regmap *regmap;
+>  	struct irq_work work;
+>  
+> @@ -84,9 +90,10 @@ static const struct regmap_config atlas_regmap_config = {
+>  	.cache_type = REGCACHE_RBTREE,
+>  };
+>  
+> -static const struct iio_chan_spec atlas_channels[] = {
+> +static const struct iio_chan_spec atlas_ph_channels[] = {
+>  	{
+>  		.type = IIO_PH,
+> +		.address = ATLAS_REG_PH_DATA,
+>  		.info_mask_separate =
+>  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>  		.scan_index = 0,
+> @@ -100,7 +107,7 @@ static const struct iio_chan_spec atlas_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(1),
+>  	{
+>  		.type = IIO_TEMP,
+> -		.address = ATLAS_REG_TEMP_DATA,
+> +		.address = ATLAS_REG_PH_TEMP_DATA,
+>  		.info_mask_separate =
+>  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>  		.output = 1,
+> @@ -108,6 +115,52 @@ static const struct iio_chan_spec atlas_channels[] = {
+>  	},
+>  };
+>  
+> +static int atlas_check_ph_calibration(struct atlas_data *data)
+> +{
+> +	struct device *dev = &data->client->dev;
+> +	int ret;
+> +	unsigned int val;
+> +
+> +	ret = regmap_read(data->regmap, ATLAS_REG_PH_CALIB_STATUS, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!(val & ATLAS_REG_PH_CALIB_STATUS_MASK)) {
+> +		dev_warn(dev, "device has not been calibrated\n");
+> +		return 0;
+> +	}
+> +
+> +	if (!(val & ATLAS_REG_PH_CALIB_STATUS_LOW))
+> +		dev_warn(dev, "device missing low point calibration\n");
+> +
+> +	if (!(val & ATLAS_REG_PH_CALIB_STATUS_MID))
+> +		dev_warn(dev, "device missing mid point calibration\n");
+> +
+> +	if (!(val & ATLAS_REG_PH_CALIB_STATUS_HIGH))
+> +		dev_warn(dev, "device missing high point calibration\n");
+> +
+> +	return 0;
+> +}
+> +
+> +struct atlas_device {
+> +	const struct iio_chan_spec *channels;
+> +	int num_channels;
+> +	int data_reg;
+> +
+> +	int (*calibration)(struct atlas_data *data);
+> +	int delay;
+> +};
+> +
+> +static struct atlas_device atlas_devices[] = {
+> +	[ATLAS_PH_SM] = {
+> +				.channels = atlas_ph_channels,
+> +				.num_channels = 3,
+> +				.data_reg = ATLAS_REG_PH_DATA,
+> +				.calibration = &atlas_check_ph_calibration,
+> +				.delay = ATLAS_PH_INT_TIME_IN_US,
+> +	},
+> +};
+> +
+>  static int atlas_set_powermode(struct atlas_data *data, int on)
+>  {
+>  	return regmap_write(data->regmap, ATLAS_REG_PWR_CONTROL, on);
+> @@ -178,8 +231,9 @@ static irqreturn_t atlas_trigger_handler(int irq, void *private)
+>  	struct atlas_data *data = iio_priv(indio_dev);
+>  	int ret;
+>  
+> -	ret = regmap_bulk_read(data->regmap, ATLAS_REG_PH_DATA,
+> -			      (u8 *) &data->buffer, sizeof(data->buffer[0]));
+> +	ret = regmap_bulk_read(data->regmap, data->chip->data_reg,
+> +			      (u8 *) &data->buffer,
+> +			      sizeof(__be32) * (data->chip->num_channels - 2));
+>  
+>  	if (!ret)
+>  		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> @@ -200,7 +254,7 @@ static irqreturn_t atlas_interrupt_handler(int irq, void *private)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -static int atlas_read_ph_measurement(struct atlas_data *data, __be32 *val)
+> +static int atlas_read_measurement(struct atlas_data *data, int reg, __be32 *val)
+>  {
+>  	struct device *dev = &data->client->dev;
+>  	int suspended = pm_runtime_suspended(dev);
+> @@ -213,11 +267,9 @@ static int atlas_read_ph_measurement(struct atlas_data *data, __be32 *val)
+>  	}
+>  
+>  	if (suspended)
+> -		usleep_range(ATLAS_PH_INT_TIME_IN_US,
+> -			     ATLAS_PH_INT_TIME_IN_US + 100000);
+> +		usleep_range(data->chip->delay, data->chip->delay + 100000);
+>  
+> -	ret = regmap_bulk_read(data->regmap, ATLAS_REG_PH_DATA,
+> -			      (u8 *) val, sizeof(*val));
+> +	ret = regmap_bulk_read(data->regmap, reg, (u8 *) val, sizeof(*val));
+>  
+>  	pm_runtime_mark_last_busy(dev);
+>  	pm_runtime_put_autosuspend(dev);
+> @@ -247,7 +299,8 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
+>  			if (iio_buffer_enabled(indio_dev))
+>  				ret = -EBUSY;
+>  			else
+> -				ret = atlas_read_ph_measurement(data, &reg);
+> +				ret = atlas_read_measurement(data,
+> +							chan->address, &reg);
+>  
+>  			mutex_unlock(&indio_dev->mlock);
+>  			break;
+> @@ -303,37 +356,12 @@ static const struct iio_info atlas_info = {
+>  	.write_raw = atlas_write_raw,
+>  };
+>  
+> -static int atlas_check_calibration(struct atlas_data *data)
+> -{
+> -	struct device *dev = &data->client->dev;
+> -	int ret;
+> -	unsigned int val;
 > -
-> -What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_ledY-ledY_ambient_raw
-> -Date:		December 2015
-> -KernelVersion:
-> -Contact:	Andrew F. Davis <afd@ti.com>
-> -Description:
-> -		Get differential values from the ADC for these stages. Y is the
-> -		specific LED number. The values are expressed in 24-bit twos
-> -		complement for the specified LEDs.
-> +		specific stage number corresponding to datasheet stage names
-> +		as follows:
-> +		1 -> LED2
-> +		2 -> ALED2/LED3
-> +		3 -> LED1
-> +		4 -> ALED1/LED4
-> +		Note that channels 5 and 6 represent LED2-ALED2 and LED1-ALED1
-> +		respectively which simply helper channels containing the
-> +		calculated difference in the value of stage 1 - 2 and 3 - 4.
-> +		The values are expressed in 24-bit twos complement.
+> -	ret = regmap_read(data->regmap, ATLAS_REG_CALIB_STATUS, &val);
+> -	if (ret)
+> -		return ret;
+> -
+> -	if (!(val & ATLAS_REG_CALIB_STATUS_MASK)) {
+> -		dev_warn(dev, "device has not been calibrated\n");
+> -		return 0;
+> -	}
+> -
+> -	if (!(val & ATLAS_REG_CALIB_STATUS_LOW))
+> -		dev_warn(dev, "device missing low point calibration\n");
+> -
+> -	if (!(val & ATLAS_REG_CALIB_STATUS_MID))
+> -		dev_warn(dev, "device missing mid point calibration\n");
+> -
+> -	if (!(val & ATLAS_REG_CALIB_STATUS_HIGH))
+> -		dev_warn(dev, "device missing high point calibration\n");
+> -
+> -	return 0;
+> -};
+> -
+>  static int atlas_probe(struct i2c_client *client,
+>  		       const struct i2c_device_id *id)
+>  {
+>  	struct atlas_data *data;
+> +	struct atlas_device *chip;
+> +	const struct of_device_id *of_id;
+>  	struct iio_trigger *trig;
+>  	struct iio_dev *indio_dev;
+>  	int ret;
+> @@ -342,10 +370,16 @@ static int atlas_probe(struct i2c_client *client,
+>  	if (!indio_dev)
+>  		return -ENOMEM;
 >  
-> -What:		/sys/bus/iio/devices/iio:deviceX/out_current_ledY_offset
-> -		/sys/bus/iio/devices/iio:deviceX/out_current_ledY_ambient_offset
-> -Date:		December 2015
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_offset
-> +Date:		May 2016
->  KernelVersion:
->  Contact:	Andrew F. Davis <afd@ti.com>
->  Description:
->  		Get and set the offset cancellation DAC setting for these
->  		stages. The values are expressed in 5-bit sign-magnitude.
+> +	of_id = of_match_device(atlas_dt_ids, &client->dev);
+> +	if (!of_id)
+> +		chip = &atlas_devices[id->driver_data];
+> +	else
+> +		chip = &atlas_devices[(unsigned long)of_id->data];
+> +
+>  	indio_dev->info = &atlas_info;
+>  	indio_dev->name = ATLAS_DRV_NAME;
+> -	indio_dev->channels = atlas_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(atlas_channels);
+> +	indio_dev->channels = chip->channels;
+> +	indio_dev->num_channels = chip->num_channels;
+>  	indio_dev->modes = INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE;
+>  	indio_dev->dev.parent = &client->dev;
 >  
-> -What:		/sys/bus/iio/devices/iio:deviceX/out_current_ledY_raw
-> -Date:		December 2015
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_raw
-> +Date:		May 2016
->  KernelVersion:
->  Contact:	Andrew F. Davis <afd@ti.com>
->  Description:
-> -		Get and set the LED current for the specified LED. Y is the
-> -		specific LED number.
-> +		Get and set the LED current for the specified LED active during
-> +		this stage. Y is the specific stage number.
-> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
-> index cac6090..4a58064 100644
-> --- a/drivers/iio/health/afe4403.c
-> +++ b/drivers/iio/health/afe4403.c
-> @@ -121,38 +121,38 @@ struct afe4403_data {
->  };
->  
->  enum afe4403_chan_id {
-> +	LED2 = 1,
-> +	ALED2,
->  	LED1,
->  	ALED1,
-> -	LED2,
-> -	ALED2,
-> -	LED1_ALED1,
->  	LED2_ALED2,
-> +	LED1_ALED1,
->  	ILED1,
->  	ILED2,
->  };
->  
->  static const struct afe440x_reg_info afe4403_reg_info[] = {
-> -	[LED1] = AFE440X_REG_INFO(AFE440X_LED1VAL, 0, NULL),
-> -	[ALED1] = AFE440X_REG_INFO(AFE440X_ALED1VAL, 0, NULL),
->  	[LED2] = AFE440X_REG_INFO(AFE440X_LED2VAL, 0, NULL),
->  	[ALED2] = AFE440X_REG_INFO(AFE440X_ALED2VAL, 0, NULL),
-> -	[LED1_ALED1] = AFE440X_REG_INFO(AFE440X_LED1_ALED1VAL, 0, NULL),
-> +	[LED1] = AFE440X_REG_INFO(AFE440X_LED1VAL, 0, NULL),
-> +	[ALED1] = AFE440X_REG_INFO(AFE440X_ALED1VAL, 0, NULL),
->  	[LED2_ALED2] = AFE440X_REG_INFO(AFE440X_LED2_ALED2VAL, 0, NULL),
-> +	[LED1_ALED1] = AFE440X_REG_INFO(AFE440X_LED1_ALED1VAL, 0, NULL),
->  	[ILED1] = AFE440X_REG_INFO(AFE440X_LEDCNTRL, 0, AFE440X_LEDCNTRL_LED1),
->  	[ILED2] = AFE440X_REG_INFO(AFE440X_LEDCNTRL, 0, AFE440X_LEDCNTRL_LED2),
->  };
->  
->  static const struct iio_chan_spec afe4403_channels[] = {
->  	/* ADC values */
-> -	AFE440X_INTENSITY_CHAN(LED1, "led1", 0),
-> -	AFE440X_INTENSITY_CHAN(ALED1, "led1_ambient", 0),
-> -	AFE440X_INTENSITY_CHAN(LED2, "led2", 0),
-> -	AFE440X_INTENSITY_CHAN(ALED2, "led2_ambient", 0),
-> -	AFE440X_INTENSITY_CHAN(LED1_ALED1, "led1-led1_ambient", 0),
-> -	AFE440X_INTENSITY_CHAN(LED2_ALED2, "led2-led2_ambient", 0),
-> +	AFE440X_INTENSITY_CHAN(LED2, 0),
-> +	AFE440X_INTENSITY_CHAN(ALED2, 0),
-> +	AFE440X_INTENSITY_CHAN(LED1, 0),
-> +	AFE440X_INTENSITY_CHAN(ALED1, 0),
-> +	AFE440X_INTENSITY_CHAN(LED2_ALED2, 0),
-> +	AFE440X_INTENSITY_CHAN(LED1_ALED1, 0),
->  	/* LED current */
-> -	AFE440X_CURRENT_CHAN(ILED1, "led1"),
-> -	AFE440X_CURRENT_CHAN(ILED2, "led2"),
-> +	AFE440X_CURRENT_CHAN(ILED1),
-> +	AFE440X_CURRENT_CHAN(ILED2),
->  };
->  
->  static const struct afe440x_val_table afe4403_res_table[] = {
-> diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
-> index 2edb7d7..7806a45 100644
-> --- a/drivers/iio/health/afe4404.c
-> +++ b/drivers/iio/health/afe4404.c
-> @@ -122,24 +122,24 @@ struct afe4404_data {
->  };
->  
->  enum afe4404_chan_id {
-> +	LED2 = 1,
-> +	ALED2,
->  	LED1,
->  	ALED1,
-> -	LED2,
-> -	ALED2,
-> -	LED1_ALED1,
->  	LED2_ALED2,
-> +	LED1_ALED1,
->  	ILED1,
->  	ILED2,
->  	ILED3,
->  };
->  
->  static const struct afe440x_reg_info afe4404_reg_info[] = {
-> -	[LED1] = AFE440X_REG_INFO(AFE440X_LED1VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_LED1),
-> -	[ALED1] = AFE440X_REG_INFO(AFE440X_ALED1VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_ALED1),
->  	[LED2] = AFE440X_REG_INFO(AFE440X_LED2VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_LED2),
->  	[ALED2] = AFE440X_REG_INFO(AFE440X_ALED2VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_ALED2),
-> -	[LED1_ALED1] = AFE440X_REG_INFO(AFE440X_LED1_ALED1VAL, 0, NULL),
-> +	[LED1] = AFE440X_REG_INFO(AFE440X_LED1VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_LED1),
-> +	[ALED1] = AFE440X_REG_INFO(AFE440X_ALED1VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_ALED1),
->  	[LED2_ALED2] = AFE440X_REG_INFO(AFE440X_LED2_ALED2VAL, 0, NULL),
-> +	[LED1_ALED1] = AFE440X_REG_INFO(AFE440X_LED1_ALED1VAL, 0, NULL),
->  	[ILED1] = AFE440X_REG_INFO(AFE440X_LEDCNTRL, 0, AFE4404_LEDCNTRL_ILED1),
->  	[ILED2] = AFE440X_REG_INFO(AFE440X_LEDCNTRL, 0, AFE4404_LEDCNTRL_ILED2),
->  	[ILED3] = AFE440X_REG_INFO(AFE440X_LEDCNTRL, 0, AFE4404_LEDCNTRL_ILED3),
-> @@ -147,16 +147,16 @@ static const struct afe440x_reg_info afe4404_reg_info[] = {
->  
->  static const struct iio_chan_spec afe4404_channels[] = {
->  	/* ADC values */
-> -	AFE440X_INTENSITY_CHAN(LED1, "led1", BIT(IIO_CHAN_INFO_OFFSET)),
-> -	AFE440X_INTENSITY_CHAN(ALED1, "led1_ambient", BIT(IIO_CHAN_INFO_OFFSET)),
-> -	AFE440X_INTENSITY_CHAN(LED2, "led2", BIT(IIO_CHAN_INFO_OFFSET)),
-> -	AFE440X_INTENSITY_CHAN(ALED2, "led2_ambient", BIT(IIO_CHAN_INFO_OFFSET)),
-> -	AFE440X_INTENSITY_CHAN(LED1_ALED1, "led1-led1_ambient", 0),
-> -	AFE440X_INTENSITY_CHAN(LED2_ALED2, "led2-led2_ambient", 0),
-> +	AFE440X_INTENSITY_CHAN(LED2, BIT(IIO_CHAN_INFO_OFFSET)),
-> +	AFE440X_INTENSITY_CHAN(ALED2, BIT(IIO_CHAN_INFO_OFFSET)),
-> +	AFE440X_INTENSITY_CHAN(LED1, BIT(IIO_CHAN_INFO_OFFSET)),
-> +	AFE440X_INTENSITY_CHAN(ALED1, BIT(IIO_CHAN_INFO_OFFSET)),
-> +	AFE440X_INTENSITY_CHAN(LED2_ALED2, 0),
-> +	AFE440X_INTENSITY_CHAN(LED1_ALED1, 0),
->  	/* LED current */
-> -	AFE440X_CURRENT_CHAN(ILED1, "led1"),
-> -	AFE440X_CURRENT_CHAN(ILED2, "led2"),
-> -	AFE440X_CURRENT_CHAN(ILED3, "led3"),
-> +	AFE440X_CURRENT_CHAN(ILED1),
-> +	AFE440X_CURRENT_CHAN(ILED2),
-> +	AFE440X_CURRENT_CHAN(ILED3),
->  };
->  
->  static const struct afe440x_val_table afe4404_res_table[] = {
-> diff --git a/drivers/iio/health/afe440x.h b/drivers/iio/health/afe440x.h
-> index 583d071..713972f 100644
-> --- a/drivers/iio/health/afe440x.h
-> +++ b/drivers/iio/health/afe440x.h
-> @@ -103,7 +103,7 @@ struct afe440x_reg_info {
->  		.mask = _sm ## _MASK,				\
+> @@ -358,6 +392,7 @@ static int atlas_probe(struct i2c_client *client,
+>  	data = iio_priv(indio_dev);
+>  	data->client = client;
+>  	data->trig = trig;
+> +	data->chip = chip;
+>  	trig->dev.parent = indio_dev->dev.parent;
+>  	trig->ops = &atlas_interrupt_trigger_ops;
+>  	iio_trigger_set_drvdata(trig, indio_dev);
+> @@ -379,7 +414,7 @@ static int atlas_probe(struct i2c_client *client,
+>  		return -EINVAL;
 >  	}
 >  
-> -#define AFE440X_INTENSITY_CHAN(_index, _name, _mask)		\
-> +#define AFE440X_INTENSITY_CHAN(_index, _mask)			\
->  	{							\
->  		.type = IIO_INTENSITY,				\
->  		.channel = _index,				\
-> @@ -115,20 +115,20 @@ struct afe440x_reg_info {
->  				.storagebits = 32,		\
->  				.endianness = IIO_CPU,		\
->  		},						\
-> -		.extend_name = _name,				\
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
->  			_mask,					\
-> +		.indexed = true,				\
->  	}
+> -	ret = atlas_check_calibration(data);
+> +	ret = chip->calibration(data);
+>  	if (ret)
+>  		return ret;
 >  
-> -#define AFE440X_CURRENT_CHAN(_index, _name)			\
-> +#define AFE440X_CURRENT_CHAN(_index)				\
->  	{							\
->  		.type = IIO_CURRENT,				\
->  		.channel = _index,				\
->  		.address = _index,				\
->  		.scan_index = -1,				\
-> -		.extend_name = _name,				\
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
->  			BIT(IIO_CHAN_INFO_SCALE),		\
-> +		.indexed = true,				\
->  		.output = true,					\
->  	}
+> @@ -481,13 +516,13 @@ static const struct dev_pm_ops atlas_pm_ops = {
+>  };
 >  
+>  static const struct i2c_device_id atlas_id[] = {
+> -	{ "atlas-ph-sm", 0 },
+> +	{ "atlas-ph-sm", ATLAS_PH_SM},
+>  	{}
+>  };
+>  MODULE_DEVICE_TABLE(i2c, atlas_id);
+>  
+>  static const struct of_device_id atlas_dt_ids[] = {
+> -	{ .compatible = "atlas,ph-sm" },
+> +	{ .compatible = "atlas,ph-sm", .data = (void *)ATLAS_PH_SM, },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, atlas_dt_ids);
 > 
 
