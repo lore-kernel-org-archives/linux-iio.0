@@ -1,64 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35893 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35887 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751132AbcEDOkH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:40:07 -0400
-Subject: Re: [PATCH 07/13] iio: health/afe4404: Remove LED3 input channel
+	with ESMTP id S1752201AbcEDOkF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:40:05 -0400
+Subject: Re: [PATCH 06/13] iio: health/afe440x: Remove unneeded offset
+ handling
 To: "Andrew F. Davis" <afd@ti.com>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
 References: <1462135023-14445-1-git-send-email-afd@ti.com>
- <1462135023-14445-8-git-send-email-afd@ti.com>
+ <1462135023-14445-7-git-send-email-afd@ti.com>
 Cc: linux-iio@vger.kernel.org, linux-api@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <67d4be1c-29a4-16a4-5425-7a200694ab8f@kernel.org>
-Date: Wed, 4 May 2016 11:04:52 +0100
+Message-ID: <4b396740-4b63-a8ac-b1b5-fe6980272552@kernel.org>
+Date: Wed, 4 May 2016 11:04:02 +0100
 MIME-Version: 1.0
-In-Reply-To: <1462135023-14445-8-git-send-email-afd@ti.com>
+In-Reply-To: <1462135023-14445-7-git-send-email-afd@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 01/05/16 21:36, Andrew F. Davis wrote:
-> Input channel LED3 is only an alias for stage ALED2, this virtual channel
-> does nothing for us, remove this channel.
+> No channel in the afe4403 driver has IIO_CHAN_INFO_OFFSET set so
+> remove the handlers for this.
 > 
 > Signed-off-by: Andrew F. Davis <afd@ti.com>
-Again, abi change, but I doubt anyone will notice *fingers crossed* ;)
+Oops :)
 
-Jonathan
+Applied.
 > ---
->  drivers/iio/health/afe4404.c | 3 ---
->  1 file changed, 3 deletions(-)
+>  drivers/iio/health/afe4403.c | 17 -----------------
+>  1 file changed, 17 deletions(-)
 > 
-> diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
-> index b9c1666..2edb7d7 100644
-> --- a/drivers/iio/health/afe4404.c
-> +++ b/drivers/iio/health/afe4404.c
-> @@ -126,7 +126,6 @@ enum afe4404_chan_id {
->  	ALED1,
->  	LED2,
->  	ALED2,
-> -	LED3,
->  	LED1_ALED1,
->  	LED2_ALED2,
->  	ILED1,
-> @@ -139,7 +138,6 @@ static const struct afe440x_reg_info afe4404_reg_info[] = {
->  	[ALED1] = AFE440X_REG_INFO(AFE440X_ALED1VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_ALED1),
->  	[LED2] = AFE440X_REG_INFO(AFE440X_LED2VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_LED2),
->  	[ALED2] = AFE440X_REG_INFO(AFE440X_ALED2VAL, AFE4404_OFFDAC, AFE4404_OFFDAC_CURR_ALED2),
-> -	[LED3] = AFE440X_REG_INFO(AFE440X_ALED2VAL, 0, NULL),
->  	[LED1_ALED1] = AFE440X_REG_INFO(AFE440X_LED1_ALED1VAL, 0, NULL),
->  	[LED2_ALED2] = AFE440X_REG_INFO(AFE440X_LED2_ALED2VAL, 0, NULL),
->  	[ILED1] = AFE440X_REG_INFO(AFE440X_LEDCNTRL, 0, AFE4404_LEDCNTRL_ILED1),
-> @@ -153,7 +151,6 @@ static const struct iio_chan_spec afe4404_channels[] = {
->  	AFE440X_INTENSITY_CHAN(ALED1, "led1_ambient", BIT(IIO_CHAN_INFO_OFFSET)),
->  	AFE440X_INTENSITY_CHAN(LED2, "led2", BIT(IIO_CHAN_INFO_OFFSET)),
->  	AFE440X_INTENSITY_CHAN(ALED2, "led2_ambient", BIT(IIO_CHAN_INFO_OFFSET)),
-> -	AFE440X_INTENSITY_CHAN(LED3, "led3", BIT(IIO_CHAN_INFO_OFFSET)),
->  	AFE440X_INTENSITY_CHAN(LED1_ALED1, "led1-led1_ambient", 0),
->  	AFE440X_INTENSITY_CHAN(LED2_ALED2, "led2-led2_ambient", 0),
->  	/* LED current */
+> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
+> index bcff528..cac6090 100644
+> --- a/drivers/iio/health/afe4403.c
+> +++ b/drivers/iio/health/afe4403.c
+> @@ -293,14 +293,6 @@ static int afe4403_read_raw(struct iio_dev *indio_dev,
+>  			if (ret)
+>  				return ret;
+>  			return IIO_VAL_INT;
+> -		case IIO_CHAN_INFO_OFFSET:
+> -			ret = regmap_read(afe->regmap, reg_info.offreg,
+> -					  val);
+> -			if (ret)
+> -				return ret;
+> -			*val &= reg_info.mask;
+> -			*val >>= reg_info.shift;
+> -			return IIO_VAL_INT;
+>  		}
+>  		break;
+>  	case IIO_CURRENT:
+> @@ -333,15 +325,6 @@ static int afe4403_write_raw(struct iio_dev *indio_dev,
+>  	const struct afe440x_reg_info reg_info = afe4403_reg_info[chan->address];
+>  
+>  	switch (chan->type) {
+> -	case IIO_INTENSITY:
+> -		switch (mask) {
+> -		case IIO_CHAN_INFO_OFFSET:
+> -			return regmap_update_bits(afe->regmap,
+> -				reg_info.offreg,
+> -				reg_info.mask,
+> -				(val << reg_info.shift));
+> -		}
+> -		break;
+>  	case IIO_CURRENT:
+>  		switch (mask) {
+>  		case IIO_CHAN_INFO_RAW:
 > 
 
