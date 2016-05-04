@@ -1,92 +1,99 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Wed, 4 May 2016 18:38:25 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Peter Rosin <peda@axentia.se>
-Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-	Peter Korsgaard <peter.korsgaard@barco.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Kalle Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Adriana Reus <adriana.reus@intel.com>,
-	Matt Ranostay <matt.ranostay@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Terry Heo <terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>,
-	Tommi Rantala <tt.rantala@gmail.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
-Subject: Re: [PATCH v7 16/24] i2c: allow adapter drivers to override the
- adapter locking
-Message-ID: <20160504163825.GA1516@katana>
-References: <1461165484-2314-1-git-send-email-peda@axentia.se>
- <1461165484-2314-17-git-send-email-peda@axentia.se>
- <20160428205018.GA3553@katana>
- <470abe38-ab5f-2d0a-305b-e1a3253ce5a9@axentia.se>
- <20160429071604.GB1870@katana>
- <357e6fda-73b3-fb7f-c341-97f09af1943f@axentia.se>
- <20160503213908.GC2018@tetsubishi>
- <87de4033-3b58-3ef6-d22b-b90901885b39@axentia.se>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Wed, 4 May 2016 10:24:43 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Crestez Dan Leonard <cdleonard@gmail.com>,
+	One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>,
+	Michael Welling <mwelling@ieee.org>, mranostay@gmail.com,
+	linux-kernel@vger.kernel.org, daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org
+Subject: Re: Regression in inv_mpu6050: 4.6.0-rc5
+Message-ID: <20160504172443.GA27422@kroah.com>
+References: <20160426232651.099a18d7@lxorguk.ukuu.org.uk>
+ <20160426230755.GA6235@deathstar>
+ <20160427165613.4d464792@lxorguk.ukuu.org.uk>
+ <e65623b5-44bc-b329-b718-c00aaa0b4805@kernel.org>
+ <5728F3CD.3000801@gmail.com>
+ <0fd48340-63b7-253e-352c-4f98cf6e19b2@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="7AUc2qLy4jB3hD7Z"
-In-Reply-To: <87de4033-3b58-3ef6-d22b-b90901885b39@axentia.se>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <0fd48340-63b7-253e-352c-4f98cf6e19b2@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
+On Wed, May 04, 2016 at 08:49:06AM +0100, Jonathan Cameron wrote:
+> On 03/05/16 19:54, Crestez Dan Leonard wrote:
+> > On 05/01/2016 10:58 PM, Jonathan Cameron wrote:
+> >> On 27/04/16 16:56, One Thousand Gnomes wrote:
+> >>> On Tue, 26 Apr 2016 18:07:55 -0500
+> >>> Michael Welling <mwelling@ieee.org> wrote:
+> >>>
+> >>>> On Tue, Apr 26, 2016 at 11:26:51PM +0100, One Thousand Gnomes wrote:
+> >>>>>
+> >>>>> This now causes us to crash and burn on the ASUS T100TA Baytrail/T
+> >>>>> platforms
+> >>>>>  
+> >>>>
+> >>>> I believe this regression has already been patched.
+> >>>>
+> >>>> Check the latest commits in linux-next.
+> >>>>
+> >>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/log/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> >>>>
+> >>>> See if the latest patches fix your issue.
+> >>>
+> >>> It does - as this is a regression can we please get those fixes into the
+> >>> next -rc ?
+> >>>
+> >> I'm afraid I'm lost in this one - which patch caused the regression and
+> >> which one fixed it?  The only patches I can immediately see in next
+> >> both introduce and then squish a similar bug, but neither of them
+> >> has hit Linus' tree yet.
+> >>
+> >> Or are we dealing with what was fixed in:
+> >> c816d9e7 iio: imu: mpu6050: fix possible NULL dereferences
+> >> I had understood that one as more hypothetical than real...
+> >>
+> >> Unfortunately I'm travelling and I suspect that means this will only get
+> >> in just after the release (so for 4.6.1) once I've confirmed which fixes
+> >> we actually need to backport.
+> >>
+> > Commit
+> >     c816d9e7: iio: imu: mpu6050: fix possible NULL dereferences
+> > Fixes:
+> >     33da559f: iio: imu: mpu6050: add mpu6500 register settings
+> > 
+> > As far as I can tell this crash will always happen when the device is
+> > probed via ACPI.
+> 
+> Hi Greg,
+> 
+> A quick heads up.
+> 
+> Unfortunately this regression has come up whilst I'm travelling and
+> don't have appropriate signing keys with me to do a pull request.
+> Should be able to do one tomorrow evening as I'll back home.
+> 
+> Turns out the 'possible' is quite common and causing a mess.
+> Even better the fix actually has a fix as well... 
+> 
+> Fastest option is probably a cherry pick of:
+> 
+> c816d9e7: iio: imu: mpu6050: fix possible NULL dereferences
+> 718ba46e: iio: imu: mpu6050: Fix name/chip_id when using ACPI
 
---7AUc2qLy4jB3hD7Z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>From where?
 
+> 
+> I'll send you a pull request of my 
+> togreg-in-a-hurry branch tomorrow.
+> 
+> Sorry for these being so late in the cycle.
+> 
+> Anyhow, run for train time. 
 
-> A question on best practices here... I already did a v8 (but only as
-> a branch) so I think this will be v9, bit that's a minor detail. The
-> real question is what I should do about patches 1-15 that are already
-> in next? Send them too? If not, should I send 16-24 with the same old
-> patch numbers or should they be numbered 1-9 now? And should such a
-> shortened series be rebased on 1-15 in next?
->=20
-> Or does it not really matter?
+You can always just send me patches, no need for it to always be a pull
+request if you can't do that for some reason.
 
-Easiest for me is:
+thanks,
 
-Send as v9, only the patches not yet applied, numbered from 1-9, based
-on my for-next.
-
-
---7AUc2qLy4jB3hD7Z
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXKiWBAAoJEBQN5MwUoCm2JRwP/3pJfeAOonaG99Z+aFHFcxKb
-nV2lgIKSHRzgLxEFInIhnvW1m6gvm9AqJL0IO3ZYOJkmly7bf896FGGMVWSG3wHg
-5EepSrn8HuDPIlCf23EDgzTqSvp+J2GChbC/0x7AtQ7PnGw3CmKqGJPz2ecxRUMg
-iMGVVo3eNoBaboYB0lAmawHgS3Ui2zyn5t9GHPeZNmD8uFG8CrGK1wPD1KkK298X
-2KSKDX3K8G1us81/iVs4Z67E21O+9ls5zZCpBmZi1YSDWA5vzf3Rh8BIYPUj3BaT
-K6Dq/RnBt5aVOzG5wWdaonLZca6ozQgF1kgrPcNj+6mPWyv8+nzNSMDDqaqYDXt1
-IL6crz1aGIMhz6chlRFQm6HhMVnGp83CCwIjeaUNEnzG6VeFux0UJPMVyWVDc4pQ
-qDVs8izEnVbAw46JwbJxCxpqSgRDqDyAnsMdh1/x8XT/SbuPaNHWVFGz7/8G+1FG
-7QzlNcX0WGdapK7ZR3dZ4ob2z4tkL3EKiVbiN7jePpqk0C6Uppa61xNj9LdFKAJe
-WXSArGjwUzWisLzPZ37w0ko0a+uMVGrQxv2YQGAUixaXpqtaXx75Boj7lIiozflS
-ryO/VniaGcVTsHJiAHZo5fpt7XOqPwmfq4cs4qEn38PXkhScKwlfyRwraYcrjtJx
-K6HVk05ZVfaPU8CRrIvE
-=XLBz
------END PGP SIGNATURE-----
-
---7AUc2qLy4jB3hD7Z--
+greg k-h
