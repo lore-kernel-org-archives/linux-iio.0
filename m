@@ -1,102 +1,332 @@
-Return-Path: <peda@axentia.se>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
- Corbet <corbet@lwn.net>, Peter Korsgaard <peter.korsgaard@barco.com>, Guenter
- Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>, Hartmut
- Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, Mauro Carvalho
- Chehab <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>, Frank
- Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>, "David S. Miller"
-	<davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kalle
- Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>, Daniel Baluta
-	<daniel.baluta@intel.com>, Lucas De Marchi <lucas.demarchi@intel.com>, Matt
- Ranostay <matt.ranostay@intel.com>, Krzysztof Kozlowski
-	<k.kozlowski@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Terry Heo
-	<terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>, Tommi Rantala
-	<tt.rantala@gmail.com>, Crestez Dan Leonard <leonard.crestez@intel.com>,
-	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
-	<devicetree@vger.kernel.org>
-Subject: [PATCH v9 9/9] [media] rtl2832: regmap is aware of lockdep, drop local locking hack
-Date: Wed, 4 May 2016 22:15:35 +0200
-Message-ID: <1462392935-28011-10-git-send-email-peda@axentia.se>
-In-Reply-To: <1462392935-28011-1-git-send-email-peda@axentia.se>
-References: <1462392935-28011-1-git-send-email-peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35877 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751132AbcEDOkA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:40:00 -0400
+Subject: Re: [PATCH 04/13] iio: health/afe440x: Always use separate gain
+ values
+To: "Andrew F. Davis" <afd@ti.com>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+References: <1462135023-14445-1-git-send-email-afd@ti.com>
+ <1462135023-14445-5-git-send-email-afd@ti.com>
+Cc: linux-iio@vger.kernel.org, linux-api@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <c875266c-f675-bba3-4e05-bf34ea02df2c@kernel.org>
+Date: Wed, 4 May 2016 11:02:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1462135023-14445-5-git-send-email-afd@ti.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Tested-by: Antti Palosaari <crope@iki.fi>
-Reviewed-by: Antti Palosaari <crope@iki.fi>
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- drivers/media/dvb-frontends/rtl2832.c      | 30 ------------------------------
- drivers/media/dvb-frontends/rtl2832_priv.h |  1 -
- 2 files changed, 31 deletions(-)
+On 01/05/16 21:36, Andrew F. Davis wrote:
+> Locking the two gain stages to the same setting adds no value for us,
+> so initialize them as unlocked and remove the sysfs for unlocking them.
+> This also allows us to greatly simplify showing and setting the gain
+> registers.
+> 
+> Signed-off-by: Andrew F. Davis <afd@ti.com>
+Hmm. ABI change but as you said it's an improvement.
 
-diff --git a/drivers/media/dvb-frontends/rtl2832.c b/drivers/media/dvb-frontends/rtl2832.c
-index 957523f07f61..bfb6beedd40b 100644
---- a/drivers/media/dvb-frontends/rtl2832.c
-+++ b/drivers/media/dvb-frontends/rtl2832.c
-@@ -890,32 +890,6 @@ static bool rtl2832_volatile_reg(struct device *dev, unsigned int reg)
- 	return false;
- }
- 
--/*
-- * FIXME: Hack. Implement own regmap locking in order to silence lockdep
-- * recursive lock warning. That happens when regmap I2C client calls I2C mux
-- * adapter, which leads demod I2C repeater enable via demod regmap. Operation
-- * takes two regmap locks recursively - but those are different regmap instances
-- * in a two different I2C drivers, so it is not deadlock. Proper fix is to make
-- * regmap aware of lockdep.
-- */
--static void rtl2832_regmap_lock(void *__dev)
--{
--	struct rtl2832_dev *dev = __dev;
--	struct i2c_client *client = dev->client;
--
--	dev_dbg(&client->dev, "\n");
--	mutex_lock(&dev->regmap_mutex);
--}
--
--static void rtl2832_regmap_unlock(void *__dev)
--{
--	struct rtl2832_dev *dev = __dev;
--	struct i2c_client *client = dev->client;
--
--	dev_dbg(&client->dev, "\n");
--	mutex_unlock(&dev->regmap_mutex);
--}
--
- static struct dvb_frontend *rtl2832_get_dvb_frontend(struct i2c_client *client)
- {
- 	struct rtl2832_dev *dev = i2c_get_clientdata(client);
-@@ -1082,12 +1056,8 @@ static int rtl2832_probe(struct i2c_client *client,
- 	dev->sleeping = true;
- 	INIT_DELAYED_WORK(&dev->i2c_gate_work, rtl2832_i2c_gate_work);
- 	/* create regmap */
--	mutex_init(&dev->regmap_mutex);
- 	dev->regmap_config.reg_bits =  8,
- 	dev->regmap_config.val_bits =  8,
--	dev->regmap_config.lock = rtl2832_regmap_lock,
--	dev->regmap_config.unlock = rtl2832_regmap_unlock,
--	dev->regmap_config.lock_arg = dev,
- 	dev->regmap_config.volatile_reg = rtl2832_volatile_reg,
- 	dev->regmap_config.max_register = 5 * 0x100,
- 	dev->regmap_config.ranges = regmap_range_cfg,
-diff --git a/drivers/media/dvb-frontends/rtl2832_priv.h b/drivers/media/dvb-frontends/rtl2832_priv.h
-index d8f97d14f6fd..c1a8a69e9015 100644
---- a/drivers/media/dvb-frontends/rtl2832_priv.h
-+++ b/drivers/media/dvb-frontends/rtl2832_priv.h
-@@ -33,7 +33,6 @@
- struct rtl2832_dev {
- 	struct rtl2832_platform_data *pdata;
- 	struct i2c_client *client;
--	struct mutex regmap_mutex;
- 	struct regmap_config regmap_config;
- 	struct regmap *regmap;
- 	struct i2c_mux_core *muxc;
--- 
-2.1.4
+Honestly I doubt anyone is using this device without also using userspace that
+you are providing so lets apply this an cross our fingers that no one minds.
+
+Applied.
+> ---
+>  .../ABI/testing/sysfs-bus-iio-health-afe440x       |  9 ----
+>  drivers/iio/health/afe4403.c                       | 60 ++++++----------------
+>  drivers/iio/health/afe4404.c                       | 60 ++++++----------------
+>  drivers/iio/health/afe440x.h                       | 15 ++----
+>  4 files changed, 37 insertions(+), 107 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
+> index 3740f25..b19053a 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
+> @@ -8,15 +8,6 @@ Description:
+>  		Transimpedance Amplifier. Y is 1 for Rf1 and Cf1, Y is 2 for
+>  		Rf2 and Cf2 values.
+>  
+> -What:		/sys/bus/iio/devices/iio:deviceX/tia_separate_en
+> -Date:		December 2015
+> -KernelVersion:
+> -Contact:	Andrew F. Davis <afd@ti.com>
+> -Description:
+> -		Enable or disable separate settings for the TransImpedance
+> -		Amplifier above, when disabled both values are set by the
+> -		first channel.
+> -
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_ledY_raw
+>  		/sys/bus/iio/devices/iio:deviceX/in_intensity_ledY_ambient_raw
+>  Date:		December 2015
+> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
+> index 5484785..bcff528 100644
+> --- a/drivers/iio/health/afe4403.c
+> +++ b/drivers/iio/health/afe4403.c
+> @@ -180,9 +180,9 @@ static ssize_t afe440x_show_register(struct device *dev,
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct afe4403_data *afe = iio_priv(indio_dev);
+>  	struct afe440x_attr *afe440x_attr = to_afe440x_attr(attr);
+> -	unsigned int reg_val, type;
+> +	unsigned int reg_val;
+>  	int vals[2];
+> -	int ret, val_len;
+> +	int ret;
+>  
+>  	ret = regmap_read(afe->regmap, afe440x_attr->reg, &reg_val);
+>  	if (ret)
+> @@ -191,27 +191,13 @@ static ssize_t afe440x_show_register(struct device *dev,
+>  	reg_val &= afe440x_attr->mask;
+>  	reg_val >>= afe440x_attr->shift;
+>  
+> -	switch (afe440x_attr->type) {
+> -	case SIMPLE:
+> -		type = IIO_VAL_INT;
+> -		val_len = 1;
+> -		vals[0] = reg_val;
+> -		break;
+> -	case RESISTANCE:
+> -	case CAPACITANCE:
+> -		type = IIO_VAL_INT_PLUS_MICRO;
+> -		val_len = 2;
+> -		if (reg_val < afe440x_attr->table_size) {
+> -			vals[0] = afe440x_attr->val_table[reg_val].integer;
+> -			vals[1] = afe440x_attr->val_table[reg_val].fract;
+> -			break;
+> -		}
+> +	if (reg_val >= afe440x_attr->table_size)
+>  		return -EINVAL;
+> -	default:
+> -		return -EINVAL;
+> -	}
+>  
+> -	return iio_format_value(buf, type, val_len, vals);
+> +	vals[0] = afe440x_attr->val_table[reg_val].integer;
+> +	vals[1] = afe440x_attr->val_table[reg_val].fract;
+> +
+> +	return iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, 2, vals);
+>  }
+>  
+>  static ssize_t afe440x_store_register(struct device *dev,
+> @@ -227,22 +213,12 @@ static ssize_t afe440x_store_register(struct device *dev,
+>  	if (ret)
+>  		return ret;
+>  
+> -	switch (afe440x_attr->type) {
+> -	case SIMPLE:
+> -		val = integer;
+> -		break;
+> -	case RESISTANCE:
+> -	case CAPACITANCE:
+> -		for (val = 0; val < afe440x_attr->table_size; val++)
+> -			if (afe440x_attr->val_table[val].integer == integer &&
+> -			    afe440x_attr->val_table[val].fract == fract)
+> -				break;
+> -		if (val == afe440x_attr->table_size)
+> -			return -EINVAL;
+> -		break;
+> -	default:
+> +	for (val = 0; val < afe440x_attr->table_size; val++)
+> +		if (afe440x_attr->val_table[val].integer == integer &&
+> +		    afe440x_attr->val_table[val].fract == fract)
+> +			break;
+> +	if (val == afe440x_attr->table_size)
+>  		return -EINVAL;
+> -	}
+>  
+>  	ret = regmap_update_bits(afe->regmap, afe440x_attr->reg,
+>  				 afe440x_attr->mask,
+> @@ -253,16 +229,13 @@ static ssize_t afe440x_store_register(struct device *dev,
+>  	return count;
+>  }
+>  
+> -static AFE440X_ATTR(tia_separate_en, AFE4403_TIAGAIN, AFE440X_TIAGAIN_ENSEPGAIN, SIMPLE, NULL, 0);
+> -
+> -static AFE440X_ATTR(tia_resistance1, AFE4403_TIAGAIN, AFE4403_TIAGAIN_RES, RESISTANCE, afe4403_res_table, ARRAY_SIZE(afe4403_res_table));
+> -static AFE440X_ATTR(tia_capacitance1, AFE4403_TIAGAIN, AFE4403_TIAGAIN_CAP, CAPACITANCE, afe4403_cap_table, ARRAY_SIZE(afe4403_cap_table));
+> +static AFE440X_ATTR(tia_resistance1, AFE4403_TIAGAIN, AFE4403_TIAGAIN_RES, afe4403_res_table);
+> +static AFE440X_ATTR(tia_capacitance1, AFE4403_TIAGAIN, AFE4403_TIAGAIN_CAP, afe4403_cap_table);
+>  
+> -static AFE440X_ATTR(tia_resistance2, AFE4403_TIA_AMB_GAIN, AFE4403_TIAGAIN_RES, RESISTANCE, afe4403_res_table, ARRAY_SIZE(afe4403_res_table));
+> -static AFE440X_ATTR(tia_capacitance2, AFE4403_TIA_AMB_GAIN, AFE4403_TIAGAIN_RES, CAPACITANCE, afe4403_cap_table, ARRAY_SIZE(afe4403_cap_table));
+> +static AFE440X_ATTR(tia_resistance2, AFE4403_TIA_AMB_GAIN, AFE4403_TIAGAIN_RES, afe4403_res_table);
+> +static AFE440X_ATTR(tia_capacitance2, AFE4403_TIA_AMB_GAIN, AFE4403_TIAGAIN_RES, afe4403_cap_table);
+>  
+>  static struct attribute *afe440x_attributes[] = {
+> -	&afe440x_attr_tia_separate_en.dev_attr.attr,
+>  	&afe440x_attr_tia_resistance1.dev_attr.attr,
+>  	&afe440x_attr_tia_capacitance1.dev_attr.attr,
+>  	&afe440x_attr_tia_resistance2.dev_attr.attr,
+> @@ -473,6 +446,7 @@ static const struct iio_trigger_ops afe4403_trigger_ops = {
+>  static const struct reg_sequence afe4403_reg_sequences[] = {
+>  	AFE4403_TIMING_PAIRS,
+>  	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
+> +	{ AFE4403_TIAGAIN, AFE440X_TIAGAIN_ENSEPGAIN },
+>  };
+>  
+>  static const struct regmap_range afe4403_yes_ranges[] = {
+> diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
+> index 2d4c522..b9c1666 100644
+> --- a/drivers/iio/health/afe4404.c
+> +++ b/drivers/iio/health/afe4404.c
+> @@ -193,9 +193,9 @@ static ssize_t afe440x_show_register(struct device *dev,
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct afe4404_data *afe = iio_priv(indio_dev);
+>  	struct afe440x_attr *afe440x_attr = to_afe440x_attr(attr);
+> -	unsigned int reg_val, type;
+> +	unsigned int reg_val;
+>  	int vals[2];
+> -	int ret, val_len;
+> +	int ret;
+>  
+>  	ret = regmap_read(afe->regmap, afe440x_attr->reg, &reg_val);
+>  	if (ret)
+> @@ -204,27 +204,13 @@ static ssize_t afe440x_show_register(struct device *dev,
+>  	reg_val &= afe440x_attr->mask;
+>  	reg_val >>= afe440x_attr->shift;
+>  
+> -	switch (afe440x_attr->type) {
+> -	case SIMPLE:
+> -		type = IIO_VAL_INT;
+> -		val_len = 1;
+> -		vals[0] = reg_val;
+> -		break;
+> -	case RESISTANCE:
+> -	case CAPACITANCE:
+> -		type = IIO_VAL_INT_PLUS_MICRO;
+> -		val_len = 2;
+> -		if (reg_val < afe440x_attr->table_size) {
+> -			vals[0] = afe440x_attr->val_table[reg_val].integer;
+> -			vals[1] = afe440x_attr->val_table[reg_val].fract;
+> -			break;
+> -		}
+> +	if (reg_val >= afe440x_attr->table_size)
+>  		return -EINVAL;
+> -	default:
+> -		return -EINVAL;
+> -	}
+>  
+> -	return iio_format_value(buf, type, val_len, vals);
+> +	vals[0] = afe440x_attr->val_table[reg_val].integer;
+> +	vals[1] = afe440x_attr->val_table[reg_val].fract;
+> +
+> +	return iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, 2, vals);
+>  }
+>  
+>  static ssize_t afe440x_store_register(struct device *dev,
+> @@ -240,22 +226,12 @@ static ssize_t afe440x_store_register(struct device *dev,
+>  	if (ret)
+>  		return ret;
+>  
+> -	switch (afe440x_attr->type) {
+> -	case SIMPLE:
+> -		val = integer;
+> -		break;
+> -	case RESISTANCE:
+> -	case CAPACITANCE:
+> -		for (val = 0; val < afe440x_attr->table_size; val++)
+> -			if (afe440x_attr->val_table[val].integer == integer &&
+> -			    afe440x_attr->val_table[val].fract == fract)
+> -				break;
+> -		if (val == afe440x_attr->table_size)
+> -			return -EINVAL;
+> -		break;
+> -	default:
+> +	for (val = 0; val < afe440x_attr->table_size; val++)
+> +		if (afe440x_attr->val_table[val].integer == integer &&
+> +		    afe440x_attr->val_table[val].fract == fract)
+> +			break;
+> +	if (val == afe440x_attr->table_size)
+>  		return -EINVAL;
+> -	}
+>  
+>  	ret = regmap_update_bits(afe->regmap, afe440x_attr->reg,
+>  				 afe440x_attr->mask,
+> @@ -266,16 +242,13 @@ static ssize_t afe440x_store_register(struct device *dev,
+>  	return count;
+>  }
+>  
+> -static AFE440X_ATTR(tia_separate_en, AFE4404_TIA_GAIN_SEP, AFE440X_TIAGAIN_ENSEPGAIN, SIMPLE, NULL, 0);
+> -
+> -static AFE440X_ATTR(tia_resistance1, AFE4404_TIA_GAIN, AFE4404_TIA_GAIN_RES, RESISTANCE, afe4404_res_table, ARRAY_SIZE(afe4404_res_table));
+> -static AFE440X_ATTR(tia_capacitance1, AFE4404_TIA_GAIN, AFE4404_TIA_GAIN_CAP, CAPACITANCE, afe4404_cap_table, ARRAY_SIZE(afe4404_cap_table));
+> +static AFE440X_ATTR(tia_resistance1, AFE4404_TIA_GAIN, AFE4404_TIA_GAIN_RES, afe4404_res_table);
+> +static AFE440X_ATTR(tia_capacitance1, AFE4404_TIA_GAIN, AFE4404_TIA_GAIN_CAP, afe4404_cap_table);
+>  
+> -static AFE440X_ATTR(tia_resistance2, AFE4404_TIA_GAIN_SEP, AFE4404_TIA_GAIN_RES, RESISTANCE, afe4404_res_table, ARRAY_SIZE(afe4404_res_table));
+> -static AFE440X_ATTR(tia_capacitance2, AFE4404_TIA_GAIN_SEP, AFE4404_TIA_GAIN_CAP, CAPACITANCE, afe4404_cap_table, ARRAY_SIZE(afe4404_cap_table));
+> +static AFE440X_ATTR(tia_resistance2, AFE4404_TIA_GAIN_SEP, AFE4404_TIA_GAIN_RES, afe4404_res_table);
+> +static AFE440X_ATTR(tia_capacitance2, AFE4404_TIA_GAIN_SEP, AFE4404_TIA_GAIN_CAP, afe4404_cap_table);
+>  
+>  static struct attribute *afe440x_attributes[] = {
+> -	&afe440x_attr_tia_separate_en.dev_attr.attr,
+>  	&afe440x_attr_tia_resistance1.dev_attr.attr,
+>  	&afe440x_attr_tia_capacitance1.dev_attr.attr,
+>  	&afe440x_attr_tia_resistance2.dev_attr.attr,
+> @@ -443,6 +416,7 @@ static const struct iio_trigger_ops afe4404_trigger_ops = {
+>  static const struct reg_sequence afe4404_reg_sequences[] = {
+>  	AFE4404_TIMING_PAIRS,
+>  	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
+> +	{ AFE4404_TIA_GAIN_SEP, AFE440X_TIAGAIN_ENSEPGAIN },
+>  	{ AFE440X_CONTROL2, AFE440X_CONTROL3_OSC_ENABLE	},
+>  };
+>  
+> diff --git a/drivers/iio/health/afe440x.h b/drivers/iio/health/afe440x.h
+> index c671ab7..544bbab 100644
+> --- a/drivers/iio/health/afe440x.h
+> +++ b/drivers/iio/health/afe440x.h
+> @@ -71,8 +71,7 @@
+>  #define AFE440X_CONTROL1_TIMEREN	BIT(8)
+>  
+>  /* TIAGAIN register fields */
+> -#define AFE440X_TIAGAIN_ENSEPGAIN_MASK	BIT(15)
+> -#define AFE440X_TIAGAIN_ENSEPGAIN_SHIFT	15
+> +#define AFE440X_TIAGAIN_ENSEPGAIN	BIT(15)
+>  
+>  /* CONTROL2 register fields */
+>  #define AFE440X_CONTROL2_PDN_AFE	BIT(0)
+> @@ -133,12 +132,6 @@ struct afe440x_reg_info {
+>  		.output = true,					\
+>  	}
+>  
+> -enum afe440x_reg_type {
+> -	SIMPLE,
+> -	RESISTANCE,
+> -	CAPACITANCE,
+> -};
+> -
+>  struct afe440x_val_table {
+>  	int integer;
+>  	int fract;
+> @@ -167,7 +160,6 @@ struct afe440x_attr {
+>  	unsigned int reg;
+>  	unsigned int shift;
+>  	unsigned int mask;
+> -	enum afe440x_reg_type type;
+>  	const struct afe440x_val_table *val_table;
+>  	unsigned int table_size;
+>  };
+> @@ -175,7 +167,7 @@ struct afe440x_attr {
+>  #define to_afe440x_attr(_dev_attr)				\
+>  	container_of(_dev_attr, struct afe440x_attr, dev_attr)
+>  
+> -#define AFE440X_ATTR(_name, _reg, _field, _type, _table, _size)	\
+> +#define AFE440X_ATTR(_name, _reg, _field, _table)		\
+>  	struct afe440x_attr afe440x_attr_##_name = {		\
+>  		.dev_attr = __ATTR(_name, (S_IRUGO | S_IWUSR),	\
+>  				   afe440x_show_register,	\
+> @@ -183,9 +175,8 @@ struct afe440x_attr {
+>  		.reg = _reg,					\
+>  		.shift = _field ## _SHIFT,			\
+>  		.mask = _field ## _MASK,			\
+> -		.type = _type,					\
+>  		.val_table = _table,				\
+> -		.table_size = _size,				\
+> +		.table_size = ARRAY_SIZE(_table),		\
+>  	}
+>  
+>  #endif /* _AFE440X_H */
+> 
+
