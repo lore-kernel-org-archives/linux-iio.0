@@ -1,143 +1,92 @@
-Return-Path: <leonard.crestez@intel.com>
-Subject: Re: [PATCH 6/7] iio: inv_mpu6050: Check channel configuration on
- preenable
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <cover.1461953982.git.leonard.crestez@intel.com>
- <d1135276814b870a7b0e7e079e47c625b25c4ad9.1461953982.git.leonard.crestez@intel.com>
- <514843f4-2f6d-e902-9fdb-212fc5c91e7d@kernel.org>
- <5728A129.9010607@intel.com>
- <ff467b62-c88e-eba6-01f3-80456ad63c80@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Daniel Baluta <daniel.baluta@intel.com>, Ge Gao <GGao@invensense.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <29729aa1-6c66-6a7a-017f-784beb724089@intel.com>
-Date: Wed, 4 May 2016 18:34:46 +0300
+Return-Path: <wsa@the-dreams.de>
+Date: Wed, 4 May 2016 18:38:25 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Peter Rosin <peda@axentia.se>
+Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Kalle Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Terry Heo <terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>,
+	Tommi Rantala <tt.rantala@gmail.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	devicetree@vger.kernel.org, Peter Rosin <peda@lysator.liu.se>
+Subject: Re: [PATCH v7 16/24] i2c: allow adapter drivers to override the
+ adapter locking
+Message-ID: <20160504163825.GA1516@katana>
+References: <1461165484-2314-1-git-send-email-peda@axentia.se>
+ <1461165484-2314-17-git-send-email-peda@axentia.se>
+ <20160428205018.GA3553@katana>
+ <470abe38-ab5f-2d0a-305b-e1a3253ce5a9@axentia.se>
+ <20160429071604.GB1870@katana>
+ <357e6fda-73b3-fb7f-c341-97f09af1943f@axentia.se>
+ <20160503213908.GC2018@tetsubishi>
+ <87de4033-3b58-3ef6-d22b-b90901885b39@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <ff467b62-c88e-eba6-01f3-80456ad63c80@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="7AUc2qLy4jB3hD7Z"
+In-Reply-To: <87de4033-3b58-3ef6-d22b-b90901885b39@axentia.se>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/04/2016 12:01 PM, Jonathan Cameron wrote:
-> On 03/05/16 14:01, Crestez Dan Leonard wrote:
->> On 05/01/2016 08:34 PM, Jonathan Cameron wrote:
->>> On 29/04/16 20:02, Crestez Dan Leonard wrote:
->>>> Right now it is possible to only enable some of the x/y/z channels, for
->>>> example you can enable accel_z without x or y. If you actually do that
->>>> what you get is actually only the x channel.
->>>>
->>>> In theory the device supports selecting gyro x/y/z channels
->>>> individually. It would also be possible to selectively enable x/y/z
->>>> accel by unpacking the data read from the hardware into a format the iio
->>>> core accepts.
->>>>
->>>> It is easier to simply refuse incorrect configuration.
->>> Or see suggestion inline. This isn't an uncommon problem!
->>>
->>>> +/* Validate channels are set in a correct configuration */
->>>> +static int inv_mpu_buffer_preenable(struct iio_dev *indio_dev)
->>>> +{
->>> This should not be in the preenable.  It's perfectly possible to know that mode was invalid
->>> earlier than this.  Use the core demux to handle this case by providing
->>> available_scanmasks.  The the core will handle demuxing the data stream if needed to
->>> provide the channels enabled only in the kfifo.
->>>
->> But available_scanmasks is a list! Listing every valid scanmask would
->> work for accel/gyro but the next patch adds support for up to 4 slaves
->> and each slave can be enabled/disabled. This would requires generating
->> 2^6 == 64 possible scanmasks, right?
-> Not that bad (a whole 256 bytes ;), but I get your point.
-> 
->>
->> I tried to do this same validation inside .validate_scan_mask but that
->> function is called for each individual scan bit. What I want is to
->> validate the scan mask once it's entirely configured, and preenable
->> seems to be the best choice.
-> We want to know earlier that a given set of channels isn't possible.  
->>
->> This could be implemented with an "adjust_scan_mask" driver function
->> which adds bits to a trial scanmask until the configuration is suitable.
-> I'd call it scan_mask_available_match or similar but yes, this
-> would work for me.  So in iio_scan_mask_set we'd have something like:
-> if (indio_dev->available_scan_masks) {
-> 		mask = iio_scan_mask_match(indio_dev->available_scan_masks,
-> 					   indio_dev->masklength,
-> 					   trialmask, false);
-> 		if (!mask)
-> 			goto err_invalid_mask;
-> } else if (indio_dev->ops->scan_mask_available_match) {
-> 	mask = indio_dev->ops->scan_mask_available_match(indio_dev->masklength,
-> 							 trialmask);
-> 	if (!mask)
-> 		goto err_invalid_mask;
-> }
-> 
-> Bit of complexity needed to avoid any memory issues (probably use a local
-> buffer in the driver private struct to point mask at once filled),
-> 
-> Scan mask available could then compute the minimum possible scan mask for the
-> device in question given the requirements of trialmask.
-> 
-> An easy change that effectively provides a dynamic equivalent of our constant
-> list of available scan masks.  I'd advocate only using it when the
-> device complexity make it worthwhile (much like dynamic allocation of channel
-> specs currently) - so not many cases.
-> 
->>
->> I think a better solution would be to add a .get_buffer_offsets driver
->> function and have the iio core handled demuxing based on offsets rather
->> than just scan_mask.
-> Scan mask isn't about just this.   A common case is not that you have
-> to enable additional channels to end up with a valid set of readings
-> but rather that you can only read a (complex) subset of channels at
-> a time in buffered mode.  The simplest being onehot, but there are
-> quite a few other cases (two parallel ADCs each of which is muxed to a
-> subset of the channels via slow muxes for example).
-> 
->>
->> This would also handle alignment for external channels with storagebits
->> != 16. For example if I enable accel and an external u32 channel iio
->> expects the following layout:
->>     <u16 ACCEL_X> <u16 ACCEL_Y> <u16 ACCEL_Z> <u16 PAD> <u32 external>
->> while my device gives the following:
->>     <u16 ACCEL_X> <u16 ACCEL_Y> <u16 ACCEL_Z> <u32 external>
->> I could add memcpy mangling in my driver but handling this belongs in
->> the iio core.
-> Matter of opinion.  I'd take this as a driver requirement - much like the
-> common case of data that is packed tighter than this or irritatingly
-> interleaved.
-> 
-> <u4 ACCEL_X_11_8> <u4 ACCEL_Y_11_8> <u8 ACCEL_X_7_0> <u8 ACCEL_Y_7_0> is
-> not uncommon.
-> 
-> Where do we draw the line between what should be in the core and in a
-> driver?  I'm not against seeing a proposal for byte based packing unwinding
-> in the core, but I'm not convinced the added complexity (see other email
-> about the endian mess) is worth it without seeing code.
-> 
->>
->> I'd rather avoid depending on new features in the iio core and just do
->> simple validations instead. This is because the feature I'm adding is
->> already complex.
->>
-> I think your earlier suggestion that you dismissed is a trivial extension
-> of the core and provides everything you need - so that's the route
-> that I'd advocate.
-> 
-Implementing some sort of "scan_mask_available_match" won't deal with
-alignment issues for external channels so it only partially fixes my
-current problem. Maybe for some other driver?
 
-If you object to validations inside preenable it would be best to just
-implement manual byte mangling inside the driver. I'd split it in two:
-    inv_mpu_get_scan_offsets();
-    iio_format_aligned_sample(&scan_offsets);
+--7AUc2qLy4jB3hD7Z
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The second part would be sortof generic but implemented statically
-inside the driver. Since this would implicitly skip unneeded values from
-hardware it will support arbitrary scan masks.
 
--- 
-Regards,
-Leonard
+> A question on best practices here... I already did a v8 (but only as
+> a branch) so I think this will be v9, bit that's a minor detail. The
+> real question is what I should do about patches 1-15 that are already
+> in next? Send them too? If not, should I send 16-24 with the same old
+> patch numbers or should they be numbered 1-9 now? And should such a
+> shortened series be rebased on 1-15 in next?
+>=20
+> Or does it not really matter?
+
+Easiest for me is:
+
+Send as v9, only the patches not yet applied, numbered from 1-9, based
+on my for-next.
+
+
+--7AUc2qLy4jB3hD7Z
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJXKiWBAAoJEBQN5MwUoCm2JRwP/3pJfeAOonaG99Z+aFHFcxKb
+nV2lgIKSHRzgLxEFInIhnvW1m6gvm9AqJL0IO3ZYOJkmly7bf896FGGMVWSG3wHg
+5EepSrn8HuDPIlCf23EDgzTqSvp+J2GChbC/0x7AtQ7PnGw3CmKqGJPz2ecxRUMg
+iMGVVo3eNoBaboYB0lAmawHgS3Ui2zyn5t9GHPeZNmD8uFG8CrGK1wPD1KkK298X
+2KSKDX3K8G1us81/iVs4Z67E21O+9ls5zZCpBmZi1YSDWA5vzf3Rh8BIYPUj3BaT
+K6Dq/RnBt5aVOzG5wWdaonLZca6ozQgF1kgrPcNj+6mPWyv8+nzNSMDDqaqYDXt1
+IL6crz1aGIMhz6chlRFQm6HhMVnGp83CCwIjeaUNEnzG6VeFux0UJPMVyWVDc4pQ
+qDVs8izEnVbAw46JwbJxCxpqSgRDqDyAnsMdh1/x8XT/SbuPaNHWVFGz7/8G+1FG
+7QzlNcX0WGdapK7ZR3dZ4ob2z4tkL3EKiVbiN7jePpqk0C6Uppa61xNj9LdFKAJe
+WXSArGjwUzWisLzPZ37w0ko0a+uMVGrQxv2YQGAUixaXpqtaXx75Boj7lIiozflS
+ryO/VniaGcVTsHJiAHZo5fpt7XOqPwmfq4cs4qEn38PXkhScKwlfyRwraYcrjtJx
+K6HVk05ZVfaPU8CRrIvE
+=XLBz
+-----END PGP SIGNATURE-----
+
+--7AUc2qLy4jB3hD7Z--
