@@ -1,111 +1,163 @@
-Return-Path: <gregor.boirie@parrot.com>
-Message-ID: <572872B8.8060000@parrot.com>
-Date: Tue, 3 May 2016 11:43:20 +0200
-From: Gregor Boirie <gregor.boirie@parrot.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33745 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752275AbcEDHPf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 03:15:35 -0400
+Subject: Re: [PATCH 1/3] iio: mxs-lradc: Add regulators for current sources
+To: Harald Geyer <harald@ccbib.org>,
+	Stefan Wahren <stefan.wahren@i2se.com>
+References: <1461333147-11873-1-git-send-email-harald@ccbib.org>
+ <1461333147-11873-2-git-send-email-harald@ccbib.org>
+ <57288674.9050601@i2se.com> <6cdd4f858dacf72e192a292f29c12feb@ccbib.org>
+Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	Marek Vasut <marex@denx.de>,
+	linux-arm-kernel@lists.infradead.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <1e7d5f3a-22c1-94d4-9620-7aa112602e39@kernel.org>
+Date: Wed, 4 May 2016 08:15:30 +0100
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, One Thousand Gnomes
-	<gnomes@lxorguk.ukuu.org.uk>
-CC: Crestez Dan Leonard <leonard.crestez@intel.com>, Daniel Baluta
-	<daniel.baluta@gmail.com>, Yong Li <sdliyong@gmail.com>, Hartmut Knaack
-	<knaack.h@gmx.de>, Matt Ranostaj <mranostay@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [was iio: tmp006: Set correct iio name] how to support multiple instances
- of same device type
-References: <1461296584-11918-1-git-send-email-sdliyong@gmail.com> <43150fbd-37ac-2d51-dd87-f41670417b96@kernel.org> <571E854A.90404@gmail.com> <7621197a-95ed-239e-8baa-83014bc27a26@kernel.org> <571F49B0.4060407@metafoo.de> <CADO9-peu32UCxaep8yZUD6XW=ABLGiTYuQJewn-C3Gedc2JewA@mail.gmail.com> <571F588D.3010800@metafoo.de> <CADO9-peqytsYKxVCsEbYt_fLKH3CaiAeQzfgvA+4CsP6u2yJOQ@mail.gmail.com> <CAEnQRZCkcwDUPZHpEOTzcHxQ23xgq429fJQg63s5TUi0w69iWw@mail.gmail.com> <5720EFAA.3040407@intel.com> <5721C904.3010505@metafoo.de> <20160428142458.09e498e2@lxorguk.ukuu.org.uk> <alpine.DEB.2.02.1604281527010.10610@pmeerw.net> <57221BF5.6000001@metafoo.de> <31d08cee-7ab8-d1e7-b15e-001cb6ea1c7c@kernel.org>
-In-Reply-To: <31d08cee-7ab8-d1e7-b15e-001cb6ea1c7c@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <6cdd4f858dacf72e192a292f29c12feb@ccbib.org>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Just to let you know that I'm facing a problem to support multiple 
-instances of
-the ms5607 barometer onto the same board.
-
-Referencing (i2c) id->name from indio_dev->name is not suitable in this 
-case as
-libiio and kernel iio tools such as generic_buffer all rely upon a 
-unique iio
-name to distinguish devices. Here is why.
-
-generic_buffer expects a device name passed as argument to -n option
-to get a reference to a device. In this case, it is not possible to
-distinguish between devices holding the same name.
-
-When libiio based apps use iio_context_find_device() to get a reference
-to a device (by name), names should be unique across devices as above.
-When retrieving a device reference by index through iio_context_get_device()
-it is not possible to uniquely identify devices in a consistent way either.
-Indeed, as indices assignment is automatically done at boot time, it is 
-highly
-dependent on module / driver loading ordering, devices / daughter board 
-presence,
-etc...
-As a result, apps cannot assume indices are persistent across reboots.
-
-Hence, using dev_name(&client->dev) to name a device is most certainly 
-an acceptable
-option despites inconsistencies it introduces with i2c name space.
-
-I re-use device tree names to do the job. However, it will not work if 
-not compiled
-in (and needs patching). What would be a robust and generic naming 
-solution then ?
-
-On 05/01/2016 09:34 PM, Jonathan Cameron wrote:
-> On 28/04/16 15:19, Lars-Peter Clausen wrote:
->> On 04/28/2016 03:30 PM, Peter Meerwald-Stadler wrote:
->>>>> It's clearly wrong. But the problem is there might be an application that
->>>>> depends on the wrong behavior, the driver has been around for 2.5 years. So
->>>>> it's difficult to fix. We might just go ahead in this case and take the
->>>>> chance that nobody will complain. But if somebody complains this will bring
->>>>> us the wrath of the Linus.
->>>> Not if you put it into next, test it, then into a new release as early as
->>>> possible (for -rc1), clearly document that it's got a user visible change
->>>> that should not matter with instructions if anyone hits this as a
->>>> bisection for their app failing to email so you know and can revert it.
->>> is this the only driver doing it wrong?
+On 03/05/16 12:22, Harald Geyer wrote:
+> Hi Stefan!
+> 
+> On 03.05.2016 13:07, Stefan Wahren wrote:
+>> Am 22.04.2016 um 15:52 schrieb Harald Geyer:
+>>> The hardware has two current sources ISRC0 and ISRC1 to allow measuring
+>>> resistors without additional circuitry. This commit makes them available
+>>> as regulators.
 >>>
->>> pmeerw@pmeerw:/var/git/linux/drivers/iio$ rgrep "indio_dev->name = dev_name" .
->>> ./imu/inv_mpu6050/inv_mpu_core.c:		indio_dev->name = dev_name(dev);
->>> ./light/lm3533-als.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./dac/vf610_dac.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./dac/stx104.c:	indio_dev->name = dev_name(dev);
->>> ./dac/lpc18xx_dac.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./adc/mcp3422.c:	indio_dev->name = dev_name(&client->dev);
->>> ./adc/at91-sama5d2_adc.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./adc/vf610_adc.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./adc/ti_am335x_adc.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./adc/nau7802.c:	indio_dev->name = dev_name(&client->dev);
->>> ./adc/da9150-gpadc.c:	indio_dev->name = dev_name(dev);
->>> ./adc/lpc18xx_adc.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./adc/rockchip_saradc.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./adc/imx7d_adc.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./adc/cc10001_adc.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./adc/berlin2-adc.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./adc/exynos_adc.c:	indio_dev->name = dev_name(&pdev->dev);
->>> ./temperature/tmp006.c:	indio_dev->name = dev_name(&client->dev);
->>> ./chemical/ams-iaq-core.c:	indio_dev->name = dev_name(&client->dev);
->>> ./chemical/vz89x.c:	indio_dev->name = dev_name(&client->dev);
->>> ./humidity/si7005.c:	indio_dev->name = dev_name(&client->dev);
->>> ./humidity/hdc100x.c:	indio_dev->name = dev_name(&client->dev);
->>> ./humidity/si7020.c:	indio_dev->name = dev_name(&client->dev);
->> Yes, they are all wrong. Mostly of it is just copy'n'paste. We need to be
->> more careful to catch these in the future.
+>>> Tested on an imx233-olinuxino board.
+>>>
+>>> Signed-off-by: Harald Geyer <harald@ccbib.org>
+>>> ---
+>>> The current regulator API doesn't fit this type of device very well: Typically
+>>> consumers will want to set a defined current, ie. min_uA == max_uA, but they
+>>> can't without help from configuration data, because the valid values aren't
+>>> reported by the API for current regulators. I have been thinking about
+>>> extending the API, but currently AFAIK no such consumers exist and most
+>>> users, like myself, will force the regulator to a defined value in
+>>> devicetree anyway.
+>>>
+>>>  .../bindings/staging/iio/adc/mxs-lradc.txt         |  29 ++++
+>>>  drivers/iio/adc/Kconfig                            |   1 +
+>>>  drivers/iio/adc/mxs-lradc.c                        | 152 +++++++++++++++++++++
+>>>  3 files changed, 182 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+>>> index 555fb11..983952c 100644
+>>> --- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+>>> +++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+>>> @@ -19,6 +19,15 @@ Optional properties:
+>>>  - fsl,settling: delay between plate switch to next sample. Allowed value is
+>>>                  1 ... 2047. It counts at 2 kHz and its default is
+>>>                  10 (= 5 ms)
+>>> +- ISRC0: A node describing the regulator of internal current source 0
+>>> +- ISRC1: A node describing the regulator of internal current source 1
+>>> +
+>>> +Required properties for the ISRCx sub-nodes:
+>>> +- regulator-max-microamp: See standard regulator binding documentation.
+>>> +                          Valid values are from 0 to 300 in steps of 20.
+>>> +
+>>> +Optional properties for the ISRCx sub-nodes:
+>>> +Any standard regulator properties that apply to current regulators.
+>>>
+>>>  Example for i.MX23 SoC:
+>>>
+>>> @@ -31,6 +40,16 @@ Example for i.MX23 SoC:
+>>>          fsl,ave-ctrl = <4>;
+>>>          fsl,ave-delay = <2>;
+>>>          fsl,settling = <10>;
+>>> +
+>>> +        isrc_lradc0: ISRC0 {
+>>> +            regulator-max-microamp = <300>;
+>>> +        };
+>>> +
+>>> +        isrc_lradc1: ISRC1 {
+>>> +            regulator-max-microamp = <120>;
+>>> +            regulator-min-microamp = <120>;
+>>> +            regulator-always-on;
+>>> +        };
 >>
-> <expletive deleted>  Lars is unfortunately right, I don't think
-> we can unwind this mess now.  If it had been just one driver I'd
-> have crossed my fingers and taken it - unfortunately this is way
-> too many.
->
-> Only way we could clean this up would be define new ABI with the
-> intended value and deprecate the old one over a very very long time.
-> Do we want to do this?
->
->
->
->
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> IMHO the binding should represent the direct connection between the
+>> current source and the physical channel. I think a node label isn't
+>> enough. Unfortunately i don't have an idea to do it the "right way".
+> 
+> I strictly followed the names of the data sheet here: imx23 and imx28
+> reference manuals both call the current sources ISRC0 and ISRC1 even
+> if they are attached to different channels of the ADC. I think
+> inventing some ISRC6 for imx28 would do more harm then good.
+So just to check... These two current sources are effectively
+pushing current out of the ADC input pin?  Assumption being that
+this causes an appropriate voltage across a component between there
+and 0V?
+
+I wonder if we are better off not treating these as regulators at
+all - whilst you could in theory use them for general purposes, it
+would be a bit nuts and sometimes the 'it is nuts argument' is
+enough to mean we don't support something :)
+
+I wouldn't have any problem with an additional attribute for the
+adc channels - maybe something like...
+
+in_voltage6_sourcecurrent?  Then the control could be pushed to
+userspace. 
+
+Or if it only makes sense to do it as a fixed value in DT then
+define optional child nodes for the individual channels, with
+the relevant ones have current-source-microamp or
+something like that as an parameter.
+
+What do you think?
+
+Jonathan
+
+> 
+>>>      };
+>>>
+>>>  Example for i.MX28 SoC:
+>>> @@ -44,4 +63,14 @@ Example for i.MX28 SoC:
+>>>          fsl,ave-ctrl = <4>;
+>>>          fsl,ave-delay = <2>;
+>>>          fsl,settling = <10>;
+>>> +
+>>> +        isrc_lradc0: ISRC0 {
+>>> +            regulator-max-microamp = <300>;
+>>> +        };
+>>> +
+>>> +        isrc_lradc6: ISRC1 {
+>>> +            regulator-max-microamp = <120>;
+>>> +            regulator-min-microamp = <120>;
+>>> +            regulator-always-on;
+>>> +        };
+>>>      };
+>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>>> index 5937030..1968d1c 100644
+>>> --- a/drivers/iio/adc/Kconfig
+>>> +++ b/drivers/iio/adc/Kconfig
+>>> @@ -319,6 +319,7 @@ config MXS_LRADC
+>>>          tristate "Freescale i.MX23/i.MX28 LRADC"
+>>>          depends on (ARCH_MXS || COMPILE_TEST) && HAS_IOMEM
+>>>          depends on INPUT
+>>> +        depends on REGULATOR
+>>
+>> Any chance to avoid this dependency for an optional feature?
+> 
+> I haven't looked into it yet, but I expect that that the mfd
+> conversion will avoid this neatly.
+> 
+> Thanks,
+> Harald
+> 
+>> Stefan
+>>
+>>>          select STMP_DEVICE
+>>>          select IIO_BUFFER
+>>>          select IIO_TRIGGERED_BUFFER
+> 
+
