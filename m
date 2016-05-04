@@ -1,297 +1,531 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35941 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751388AbcEDOkr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:40:47 -0400
-Subject: Re: [PATCH 2/2] iio: chemical: atlas-ph-sensor: add EC feature
-To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
-References: <1461530596-2142-1-git-send-email-mranostay@gmail.com>
- <1461530596-2142-3-git-send-email-mranostay@gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <bfd2fd1b-01b9-a5cc-c693-a9ec5e604679@kernel.org>
-Date: Wed, 4 May 2016 11:39:22 +0100
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
+ Corbet <corbet@lwn.net>, Peter Korsgaard <peter.korsgaard@barco.com>, Guenter
+ Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>, Hartmut
+ Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
+ Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, Mauro Carvalho
+ Chehab <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>, Frank
+ Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>, "David S. Miller"
+	<davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kalle
+ Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Lucas De Marchi <lucas.demarchi@intel.com>, Matt
+ Ranostay <matt.ranostay@intel.com>, Krzysztof Kozlowski
+	<k.kozlowski@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Terry Heo
+	<terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>, Tommi Rantala
+	<tt.rantala@gmail.com>, Crestez Dan Leonard <leonard.crestez@intel.com>,
+	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
+	<devicetree@vger.kernel.org>
+Subject: [PATCH v9 7/9] [media] rtl2832: change the i2c gate to be mux-locked
+Date: Wed, 4 May 2016 22:15:33 +0200
+Message-ID: <1462392935-28011-8-git-send-email-peda@axentia.se>
+In-Reply-To: <1462392935-28011-1-git-send-email-peda@axentia.se>
+References: <1462392935-28011-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <1461530596-2142-3-git-send-email-mranostay@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 24/04/16 21:43, Matt Ranostay wrote:
-Give us a bit more description - what is it, what is it for, what interface is
-supplied. Err what does EC standard for?
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-I know next to nothing about these sensors and don't have the datasheet to hand.
+The root i2c adapter lock is then no longer held by the i2c mux during
+accesses behind the i2c gate, and such accesses need to take that lock
+just like any other ordinary i2c accesses do.
 
-This is measuring 3 different types of concentration (I think) and reporting them
-simple as channels 0-2.  What are they are should we not be distinguishing between
-them in some more informative fashion?
+So, declare the i2c gate mux-locked, and zap the regmap overrides
+that makes the i2c accesses unlocked and use plain old regmap
+accesses. This also removes the need for the regmap wrappers used by
+rtl2832_sdr, so deconvolute the code further and provide the regmap
+handle directly instead of the wrapper functions.
 
-Code itself is mostly fine...
+Tested-by: Antti Palosaari <crope@iki.fi>
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ Documentation/i2c/i2c-topology            |   2 +-
+ drivers/media/dvb-frontends/rtl2832.c     | 190 ++++--------------------------
+ drivers/media/dvb-frontends/rtl2832.h     |   4 +-
+ drivers/media/dvb-frontends/rtl2832_sdr.c |  13 +-
+ drivers/media/dvb-frontends/rtl2832_sdr.h |   5 +-
+ drivers/media/usb/dvb-usb-v2/rtl28xxu.c   |   5 +-
+ 6 files changed, 37 insertions(+), 182 deletions(-)
 
-Jonathan
-> ---
->  .../bindings/iio/chemical/atlas,ec-sm.txt          |  22 ++++
->  drivers/iio/chemical/Kconfig                       |   8 +-
->  drivers/iio/chemical/atlas-ph-sensor.c             | 113 ++++++++++++++++++++-
->  3 files changed, 138 insertions(+), 5 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
-> new file mode 100644
-> index 0000000..2962bd9
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
-> @@ -0,0 +1,22 @@
-> +* Atlas Scientific EC-SM OEM sensor
-> +
-> +http://www.atlas-scientific.com/_files/_datasheets/_oem/EC_oem_datasheet.pdf
-> +
-> +Required properties:
-> +
-> +  - compatible: must be "atlas,ec-sm"
-> +  - reg: the I2C address of the sensor
-> +  - interrupt-parent: should be the phandle for the interrupt controller
-> +  - interrupts: the sole interrupt generated by the device
-> +
-> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
-> +  node bindings.
-> +
-> +Example:
-> +
-> +atlas@64 {
-> +	compatible = "atlas,ec-sm";
-> +	reg = <0x64>;
-> +	interrupt-parent = <&gpio1>;
-> +	interrupts = <16 2>;
-> +};
-> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-> index f73290f..4bcc025 100644
-> --- a/drivers/iio/chemical/Kconfig
-> +++ b/drivers/iio/chemical/Kconfig
-> @@ -5,15 +5,17 @@
->  menu "Chemical Sensors"
->  
->  config ATLAS_PH_SENSOR
-> -	tristate "Atlas Scientific OEM pH-SM sensor"
-> +	tristate "Atlas Scientific OEM SM sensors"
->  	depends on I2C
->  	select REGMAP_I2C
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
->  	select IRQ_WORK
->  	help
-> -	 Say Y here to build I2C interface support for the Atlas
-> -	 Scientific OEM pH-SM sensor.
-> +	 Say Y here to build I2C interface support for the following
-> +	 Atlas Scientific OEM SM sensors:
-> +	    * pH SM sensor
-> +	    * EC SM sensor
->  
->  	 To compile this driver as module, choose M here: the
->  	 module will be called atlas-ph-sensor.
-> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-> index c57f9c2..6dddd75 100644
-> --- a/drivers/iio/chemical/atlas-ph-sensor.c
-> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
-> @@ -50,13 +50,28 @@
->  #define ATLAS_REG_PH_CALIB_STATUS_MID	BIT(1)
->  #define ATLAS_REG_PH_CALIB_STATUS_HIGH	BIT(2)
->  
-> +#define ATLAS_REG_EC_CALIB_STATUS		0x0f
-> +#define ATLAS_REG_EC_CALIB_STATUS_MASK		0x0f
-> +#define ATLAS_REG_EC_CALIB_STATUS_DRY		BIT(0)
-> +#define ATLAS_REG_EC_CALIB_STATUS_SINGLE	BIT(1)
-> +#define ATLAS_REG_EC_CALIB_STATUS_LOW		BIT(2)
-> +#define ATLAS_REG_EC_CALIB_STATUS_HIGH		BIT(3)
-> +
->  #define ATLAS_REG_PH_TEMP_DATA		0x0e
->  #define ATLAS_REG_PH_DATA		0x16
->  
-> +#define ATLAS_REG_EC_PROBE		0x08
-> +#define ATLAS_REG_EC_TEMP_DATA		0x10
-> +#define ATLAS_REG_EC_DATA		0x18
-> +#define ATLAS_REG_TDS_DATA		0x1c
-> +#define ATLAS_REG_PSS_DATA		0x20
-> +
->  #define ATLAS_PH_INT_TIME_IN_US		450000
-> +#define ATLAS_EC_INT_TIME_IN_US		650000
->  
->  enum {
->  	ATLAS_PH_SM,
-> +	ATLAS_EC_SM,
->  };
->  
->  struct atlas_data {
-> @@ -66,12 +81,13 @@ struct atlas_data {
->  	struct regmap *regmap;
->  	struct irq_work work;
->  
-> -	__be32 buffer[4]; /* 32-bit pH data + 32-bit pad + 64-bit timestamp */
-> +	__be32 buffer[6]; /* 96-bit data + 32-bit pad + 64-bit timestamp */
->  };
->  
->  static const struct regmap_range atlas_volatile_ranges[] = {
->  	regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
->  	regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
-> +	regmap_reg_range(ATLAS_REG_EC_DATA, ATLAS_REG_PSS_DATA + 4),
->  };
->  
->  static const struct regmap_access_table atlas_volatile_table = {
-> @@ -86,7 +102,7 @@ static const struct regmap_config atlas_regmap_config = {
->  	.val_bits = 8,
->  
->  	.volatile_table = &atlas_volatile_table,
-> -	.max_register = ATLAS_REG_PH_DATA + 4,
-> +	.max_register = ATLAS_REG_PSS_DATA + 4,
->  	.cache_type = REGCACHE_RBTREE,
->  };
->  
-> @@ -115,6 +131,38 @@ static const struct iio_chan_spec atlas_ph_channels[] = {
->  	},
->  };
->  
-> +#define ATLAS_EC_CHANNEL(idx, addr) \
-> +	{\
-> +		.type = IIO_CONCENTRATION, \
-> +		.indexed = 1, \
-> +		.channel = idx, \
-> +		.address = addr, \
-> +		.info_mask_separate = \
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE), \
-> +		.scan_index = idx, \
-> +		.scan_type = { \
-> +			.sign = 'u', \
-> +			.realbits = 32, \
-> +			.storagebits = 32, \
-> +			.endianness = IIO_BE, \
-> +		}, \
-> +	}
-> +
-> +static const struct iio_chan_spec atlas_ec_channels[] = {
-> +	ATLAS_EC_CHANNEL(0, ATLAS_REG_EC_DATA),
-> +	ATLAS_EC_CHANNEL(1, ATLAS_REG_TDS_DATA),
-> +	ATLAS_EC_CHANNEL(2, ATLAS_REG_PSS_DATA),
-This needs some explanation.  3 concentration channels of different types?
-What are they...
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> +	{
-> +		.type = IIO_TEMP,
-> +		.address = ATLAS_REG_EC_TEMP_DATA,
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +		.output = 1,
-> +		.scan_index = -1
-> +	},
-> +};
-> +
->  static int atlas_check_ph_calibration(struct atlas_data *data)
->  {
->  	struct device *dev = &data->client->dev;
-> @@ -142,6 +190,44 @@ static int atlas_check_ph_calibration(struct atlas_data *data)
->  	return 0;
->  }
->  
-> +static int atlas_check_ec_calibration(struct atlas_data *data)
-> +{
-> +	struct device *dev = &data->client->dev;
-> +	int ret;
-> +	unsigned int val;
-> +
-> +	ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &val, 2);
-> +	if (ret)
-> +		return ret;
-> +
-> +	dev_info(dev, "probe set to K = %d.%.2d", be16_to_cpu(val) / 100,
-> +						 be16_to_cpu(val) % 100);
-> +
-> +	ret = regmap_read(data->regmap, ATLAS_REG_EC_CALIB_STATUS, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!(val & ATLAS_REG_EC_CALIB_STATUS_MASK)) {
-> +		dev_warn(dev, "device has not been calibrated\n");
-> +		return 0;
-> +	}
-> +
-> +	if (!(val & ATLAS_REG_EC_CALIB_STATUS_DRY))
-> +		dev_warn(dev, "device missing dry point calibration\n");
-> +
-> +	if (val & ATLAS_REG_EC_CALIB_STATUS_SINGLE) {
-> +		dev_warn(dev, "device using single point calibration\n");
-> +	} else {
-> +		if (!(val & ATLAS_REG_EC_CALIB_STATUS_LOW))
-> +			dev_warn(dev, "device missing low point calibration\n");
-> +
-> +		if (!(val & ATLAS_REG_EC_CALIB_STATUS_HIGH))
-> +			dev_warn(dev, "device missing high point calibration\n");
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  struct atlas_device {
->  	const struct iio_chan_spec *channels;
->  	int num_channels;
-> @@ -159,6 +245,14 @@ static struct atlas_device atlas_devices[] = {
->  				.calibration = &atlas_check_ph_calibration,
->  				.delay = ATLAS_PH_INT_TIME_IN_US,
->  	},
-> +	[ATLAS_EC_SM] = {
-> +				.channels = atlas_ec_channels,
-> +				.num_channels = 5,
-Use array_size - obviously correct that way so I don't have to go count...
-> +				.data_reg = ATLAS_REG_EC_DATA,
-> +				.calibration = &atlas_check_ec_calibration,
-> +				.delay = ATLAS_EC_INT_TIME_IN_US,
-> +	},
-> +
->  };
->  
->  static int atlas_set_powermode(struct atlas_data *data, int on)
-> @@ -294,6 +388,7 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
->  					      (u8 *) &reg, sizeof(reg));
-I guess it's not complex enough to justify splitting read_raw for the two
-devices.  Close though so you may want to if you support a third type in here.
-
->  			break;
->  		case IIO_PH:
-> +		case IIO_CONCENTRATION:
->  			mutex_lock(&indio_dev->mlock);
->  
->  			if (iio_buffer_enabled(indio_dev))
-> @@ -324,6 +419,18 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
->  			*val = 1; /* 0.001 */
->  			*val2 = 1000;
->  			break;
-> +		case IIO_CONCENTRATION:
-> +			switch (chan->address) {
-> +			case ATLAS_REG_EC_DATA:
-> +				*val = 0; /* 0.00000000064 */
-> +				*val2 = 640;
-> +				return IIO_VAL_INT_PLUS_NANO;
-> +			default:
-> +				*val = 0; /* 0.000000001 */
-> +				*val2 = 1000;
-> +				return IIO_VAL_INT_PLUS_NANO;
-> +			}
-> +			break;
->  		default:
->  			return -EINVAL;
->  		}
-> @@ -517,12 +624,14 @@ static const struct dev_pm_ops atlas_pm_ops = {
->  
->  static const struct i2c_device_id atlas_id[] = {
->  	{ "atlas-ph-sm", ATLAS_PH_SM},
-> +	{ "atlas-ec-sm", ATLAS_EC_SM},
->  	{}
->  };
->  MODULE_DEVICE_TABLE(i2c, atlas_id);
->  
->  static const struct of_device_id atlas_dt_ids[] = {
->  	{ .compatible = "atlas,ph-sm", .data = (void *)ATLAS_PH_SM, },
-> +	{ .compatible = "atlas,ec-sm", .data = (void *)ATLAS_EC_SM, },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, atlas_dt_ids);
-> 
-
+diff --git a/Documentation/i2c/i2c-topology b/Documentation/i2c/i2c-topology
+index 5e40802f0be2..e0aefeece551 100644
+--- a/Documentation/i2c/i2c-topology
++++ b/Documentation/i2c/i2c-topology
+@@ -55,7 +55,7 @@ imu/inv_mpu6050/          Mux-locked
+ In drivers/media/
+ dvb-frontends/m88ds3103   Parent-locked
+ dvb-frontends/rtl2830     Parent-locked
+-dvb-frontends/rtl2832     Parent-locked
++dvb-frontends/rtl2832     Mux-locked
+ dvb-frontends/si2168      Mux-locked
+ usb/cx231xx/              Parent-locked
+ 
+diff --git a/drivers/media/dvb-frontends/rtl2832.c b/drivers/media/dvb-frontends/rtl2832.c
+index 1b23788797b5..957523f07f61 100644
+--- a/drivers/media/dvb-frontends/rtl2832.c
++++ b/drivers/media/dvb-frontends/rtl2832.c
+@@ -153,43 +153,6 @@ static const struct rtl2832_reg_entry registers[] = {
+ 	[DVBT_REG_4MSEL]	= {0x013,  0, 0},
+ };
+ 
+-/* Our regmap is bypassing I2C adapter lock, thus we do it! */
+-static int rtl2832_bulk_write(struct i2c_client *client, unsigned int reg,
+-			      const void *val, size_t val_count)
+-{
+-	struct rtl2832_dev *dev = i2c_get_clientdata(client);
+-	int ret;
+-
+-	i2c_lock_adapter(client->adapter);
+-	ret = regmap_bulk_write(dev->regmap, reg, val, val_count);
+-	i2c_unlock_adapter(client->adapter);
+-	return ret;
+-}
+-
+-static int rtl2832_update_bits(struct i2c_client *client, unsigned int reg,
+-			       unsigned int mask, unsigned int val)
+-{
+-	struct rtl2832_dev *dev = i2c_get_clientdata(client);
+-	int ret;
+-
+-	i2c_lock_adapter(client->adapter);
+-	ret = regmap_update_bits(dev->regmap, reg, mask, val);
+-	i2c_unlock_adapter(client->adapter);
+-	return ret;
+-}
+-
+-static int rtl2832_bulk_read(struct i2c_client *client, unsigned int reg,
+-			     void *val, size_t val_count)
+-{
+-	struct rtl2832_dev *dev = i2c_get_clientdata(client);
+-	int ret;
+-
+-	i2c_lock_adapter(client->adapter);
+-	ret = regmap_bulk_read(dev->regmap, reg, val, val_count);
+-	i2c_unlock_adapter(client->adapter);
+-	return ret;
+-}
+-
+ static int rtl2832_rd_demod_reg(struct rtl2832_dev *dev, int reg, u32 *val)
+ {
+ 	struct i2c_client *client = dev->client;
+@@ -204,7 +167,7 @@ static int rtl2832_rd_demod_reg(struct rtl2832_dev *dev, int reg, u32 *val)
+ 	len = (msb >> 3) + 1;
+ 	mask = REG_MASK(msb - lsb);
+ 
+-	ret = rtl2832_bulk_read(client, reg_start_addr, reading, len);
++	ret = regmap_bulk_read(dev->regmap, reg_start_addr, reading, len);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -234,7 +197,7 @@ static int rtl2832_wr_demod_reg(struct rtl2832_dev *dev, int reg, u32 val)
+ 	len = (msb >> 3) + 1;
+ 	mask = REG_MASK(msb - lsb);
+ 
+-	ret = rtl2832_bulk_read(client, reg_start_addr, reading, len);
++	ret = regmap_bulk_read(dev->regmap, reg_start_addr, reading, len);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -248,7 +211,7 @@ static int rtl2832_wr_demod_reg(struct rtl2832_dev *dev, int reg, u32 val)
+ 	for (i = 0; i < len; i++)
+ 		writing[i] = (writing_tmp >> ((len - 1 - i) * 8)) & 0xff;
+ 
+-	ret = rtl2832_bulk_write(client, reg_start_addr, writing, len);
++	ret = regmap_bulk_write(dev->regmap, reg_start_addr, writing, len);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -525,7 +488,8 @@ static int rtl2832_set_frontend(struct dvb_frontend *fe)
+ 	}
+ 
+ 	for (j = 0; j < sizeof(bw_params[0]); j++) {
+-		ret = rtl2832_bulk_write(client, 0x11c + j, &bw_params[i][j], 1);
++		ret = regmap_bulk_write(dev->regmap,
++					0x11c + j, &bw_params[i][j], 1);
+ 		if (ret)
+ 			goto err;
+ 	}
+@@ -581,11 +545,11 @@ static int rtl2832_get_frontend(struct dvb_frontend *fe,
+ 	if (dev->sleeping)
+ 		return 0;
+ 
+-	ret = rtl2832_bulk_read(client, 0x33c, buf, 2);
++	ret = regmap_bulk_read(dev->regmap, 0x33c, buf, 2);
+ 	if (ret)
+ 		goto err;
+ 
+-	ret = rtl2832_bulk_read(client, 0x351, &buf[2], 1);
++	ret = regmap_bulk_read(dev->regmap, 0x351, &buf[2], 1);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -716,7 +680,7 @@ static int rtl2832_read_status(struct dvb_frontend *fe, enum fe_status *status)
+ 	/* signal strength */
+ 	if (dev->fe_status & FE_HAS_SIGNAL) {
+ 		/* read digital AGC */
+-		ret = rtl2832_bulk_read(client, 0x305, &u8tmp, 1);
++		ret = regmap_bulk_read(dev->regmap, 0x305, &u8tmp, 1);
+ 		if (ret)
+ 			goto err;
+ 
+@@ -742,7 +706,7 @@ static int rtl2832_read_status(struct dvb_frontend *fe, enum fe_status *status)
+ 			{87659938, 87659938, 87885178, 88241743},
+ 		};
+ 
+-		ret = rtl2832_bulk_read(client, 0x33c, &u8tmp, 1);
++		ret = regmap_bulk_read(dev->regmap, 0x33c, &u8tmp, 1);
+ 		if (ret)
+ 			goto err;
+ 
+@@ -754,7 +718,7 @@ static int rtl2832_read_status(struct dvb_frontend *fe, enum fe_status *status)
+ 		if (hierarchy > HIERARCHY_NUM - 1)
+ 			goto err;
+ 
+-		ret = rtl2832_bulk_read(client, 0x40c, buf, 2);
++		ret = regmap_bulk_read(dev->regmap, 0x40c, buf, 2);
+ 		if (ret)
+ 			goto err;
+ 
+@@ -775,7 +739,7 @@ static int rtl2832_read_status(struct dvb_frontend *fe, enum fe_status *status)
+ 
+ 	/* BER */
+ 	if (dev->fe_status & FE_HAS_LOCK) {
+-		ret = rtl2832_bulk_read(client, 0x34e, buf, 2);
++		ret = regmap_bulk_read(dev->regmap, 0x34e, buf, 2);
+ 		if (ret)
+ 			goto err;
+ 
+@@ -825,8 +789,6 @@ static int rtl2832_read_ber(struct dvb_frontend *fe, u32 *ber)
+ 
+ /*
+  * I2C gate/mux/repeater logic
+- * We must use unlocked __i2c_transfer() here (through regmap) because of I2C
+- * adapter lock is already taken by tuner driver.
+  * There is delay mechanism to avoid unneeded I2C gate open / close. Gate close
+  * is delayed here a little bit in order to see if there is sequence of I2C
+  * messages sent to same I2C bus.
+@@ -838,7 +800,7 @@ static void rtl2832_i2c_gate_work(struct work_struct *work)
+ 	int ret;
+ 
+ 	/* close gate */
+-	ret = rtl2832_update_bits(dev->client, 0x101, 0x08, 0x00);
++	ret = regmap_update_bits(dev->regmap, 0x101, 0x08, 0x00);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -856,10 +818,7 @@ static int rtl2832_select(struct i2c_mux_core *muxc, u32 chan_id)
+ 	/* terminate possible gate closing */
+ 	cancel_delayed_work(&dev->i2c_gate_work);
+ 
+-	/*
+-	 * I2C adapter lock is already taken and due to that we will use
+-	 * regmap_update_bits() which does not lock again I2C adapter.
+-	 */
++	/* open gate */
+ 	ret = regmap_update_bits(dev->regmap, 0x101, 0x08, 0x08);
+ 	if (ret)
+ 		goto err;
+@@ -932,94 +891,6 @@ static bool rtl2832_volatile_reg(struct device *dev, unsigned int reg)
+ }
+ 
+ /*
+- * We implement own I2C access routines for regmap in order to get manual access
+- * to I2C adapter lock, which is needed for I2C mux adapter.
+- */
+-static int rtl2832_regmap_read(void *context, const void *reg_buf,
+-			       size_t reg_size, void *val_buf, size_t val_size)
+-{
+-	struct i2c_client *client = context;
+-	int ret;
+-	struct i2c_msg msg[2] = {
+-		{
+-			.addr = client->addr,
+-			.flags = 0,
+-			.len = reg_size,
+-			.buf = (u8 *)reg_buf,
+-		}, {
+-			.addr = client->addr,
+-			.flags = I2C_M_RD,
+-			.len = val_size,
+-			.buf = val_buf,
+-		}
+-	};
+-
+-	ret = __i2c_transfer(client->adapter, msg, 2);
+-	if (ret != 2) {
+-		dev_warn(&client->dev, "i2c reg read failed %d reg %02x\n",
+-			 ret, *(u8 *)reg_buf);
+-		if (ret >= 0)
+-			ret = -EREMOTEIO;
+-		return ret;
+-	}
+-	return 0;
+-}
+-
+-static int rtl2832_regmap_write(void *context, const void *data, size_t count)
+-{
+-	struct i2c_client *client = context;
+-	int ret;
+-	struct i2c_msg msg[1] = {
+-		{
+-			.addr = client->addr,
+-			.flags = 0,
+-			.len = count,
+-			.buf = (u8 *)data,
+-		}
+-	};
+-
+-	ret = __i2c_transfer(client->adapter, msg, 1);
+-	if (ret != 1) {
+-		dev_warn(&client->dev, "i2c reg write failed %d reg %02x\n",
+-			 ret, *(u8 *)data);
+-		if (ret >= 0)
+-			ret = -EREMOTEIO;
+-		return ret;
+-	}
+-	return 0;
+-}
+-
+-static int rtl2832_regmap_gather_write(void *context, const void *reg,
+-				       size_t reg_len, const void *val,
+-				       size_t val_len)
+-{
+-	struct i2c_client *client = context;
+-	int ret;
+-	u8 buf[256];
+-	struct i2c_msg msg[1] = {
+-		{
+-			.addr = client->addr,
+-			.flags = 0,
+-			.len = 1 + val_len,
+-			.buf = buf,
+-		}
+-	};
+-
+-	buf[0] = *(u8 const *)reg;
+-	memcpy(&buf[1], val, val_len);
+-
+-	ret = __i2c_transfer(client->adapter, msg, 1);
+-	if (ret != 1) {
+-		dev_warn(&client->dev, "i2c reg write failed %d reg %02x\n",
+-			 ret, *(u8 const *)reg);
+-		if (ret >= 0)
+-			ret = -EREMOTEIO;
+-		return ret;
+-	}
+-	return 0;
+-}
+-
+-/*
+  * FIXME: Hack. Implement own regmap locking in order to silence lockdep
+  * recursive lock warning. That happens when regmap I2C client calls I2C mux
+  * adapter, which leads demod I2C repeater enable via demod regmap. Operation
+@@ -1072,29 +943,29 @@ static int rtl2832_slave_ts_ctrl(struct i2c_client *client, bool enable)
+ 		ret = rtl2832_wr_demod_reg(dev, DVBT_SOFT_RST, 0x0);
+ 		if (ret)
+ 			goto err;
+-		ret = rtl2832_bulk_write(client, 0x10c, "\x5f\xff", 2);
++		ret = regmap_bulk_write(dev->regmap, 0x10c, "\x5f\xff", 2);
+ 		if (ret)
+ 			goto err;
+ 		ret = rtl2832_wr_demod_reg(dev, DVBT_PIP_ON, 0x1);
+ 		if (ret)
+ 			goto err;
+-		ret = rtl2832_bulk_write(client, 0x0bc, "\x18", 1);
++		ret = regmap_bulk_write(dev->regmap, 0x0bc, "\x18", 1);
+ 		if (ret)
+ 			goto err;
+-		ret = rtl2832_bulk_write(client, 0x192, "\x7f\xf7\xff", 3);
++		ret = regmap_bulk_write(dev->regmap, 0x192, "\x7f\xf7\xff", 3);
+ 		if (ret)
+ 			goto err;
+ 	} else {
+-		ret = rtl2832_bulk_write(client, 0x192, "\x00\x0f\xff", 3);
++		ret = regmap_bulk_write(dev->regmap, 0x192, "\x00\x0f\xff", 3);
+ 		if (ret)
+ 			goto err;
+-		ret = rtl2832_bulk_write(client, 0x0bc, "\x08", 1);
++		ret = regmap_bulk_write(dev->regmap, 0x0bc, "\x08", 1);
+ 		if (ret)
+ 			goto err;
+ 		ret = rtl2832_wr_demod_reg(dev, DVBT_PIP_ON, 0x0);
+ 		if (ret)
+ 			goto err;
+-		ret = rtl2832_bulk_write(client, 0x10c, "\x00\x00", 2);
++		ret = regmap_bulk_write(dev->regmap, 0x10c, "\x00\x00", 2);
+ 		if (ret)
+ 			goto err;
+ 		ret = rtl2832_wr_demod_reg(dev, DVBT_SOFT_RST, 0x1);
+@@ -1123,7 +994,7 @@ static int rtl2832_pid_filter_ctrl(struct dvb_frontend *fe, int onoff)
+ 	else
+ 		u8tmp = 0x00;
+ 
+-	ret = rtl2832_update_bits(client, 0x061, 0xc0, u8tmp);
++	ret = regmap_update_bits(dev->regmap, 0x061, 0xc0, u8tmp);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -1158,14 +1029,14 @@ static int rtl2832_pid_filter(struct dvb_frontend *fe, u8 index, u16 pid,
+ 	buf[1] = (dev->filters >>  8) & 0xff;
+ 	buf[2] = (dev->filters >> 16) & 0xff;
+ 	buf[3] = (dev->filters >> 24) & 0xff;
+-	ret = rtl2832_bulk_write(client, 0x062, buf, 4);
++	ret = regmap_bulk_write(dev->regmap, 0x062, buf, 4);
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* add PID */
+ 	buf[0] = (pid >> 8) & 0xff;
+ 	buf[1] = (pid >> 0) & 0xff;
+-	ret = rtl2832_bulk_write(client, 0x066 + 2 * index, buf, 2);
++	ret = regmap_bulk_write(dev->regmap, 0x066 + 2 * index, buf, 2);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -1183,12 +1054,6 @@ static int rtl2832_probe(struct i2c_client *client,
+ 	struct rtl2832_dev *dev;
+ 	int ret;
+ 	u8 tmp;
+-	static const struct regmap_bus regmap_bus = {
+-		.read = rtl2832_regmap_read,
+-		.write = rtl2832_regmap_write,
+-		.gather_write = rtl2832_regmap_gather_write,
+-		.val_format_endian_default = REGMAP_ENDIAN_NATIVE,
+-	};
+ 	static const struct regmap_range_cfg regmap_range_cfg[] = {
+ 		{
+ 			.selector_reg     = 0x00,
+@@ -1228,20 +1093,19 @@ static int rtl2832_probe(struct i2c_client *client,
+ 	dev->regmap_config.ranges = regmap_range_cfg,
+ 	dev->regmap_config.num_ranges = ARRAY_SIZE(regmap_range_cfg),
+ 	dev->regmap_config.cache_type = REGCACHE_NONE,
+-	dev->regmap = regmap_init(&client->dev, &regmap_bus, client,
+-				  &dev->regmap_config);
++	dev->regmap = regmap_init_i2c(client, &dev->regmap_config);
+ 	if (IS_ERR(dev->regmap)) {
+ 		ret = PTR_ERR(dev->regmap);
+ 		goto err_kfree;
+ 	}
+ 
+ 	/* check if the demod is there */
+-	ret = rtl2832_bulk_read(client, 0x000, &tmp, 1);
++	ret = regmap_bulk_read(dev->regmap, 0x000, &tmp, 1);
+ 	if (ret)
+ 		goto err_regmap_exit;
+ 
+ 	/* create muxed i2c adapter for demod tuner bus */
+-	dev->muxc = i2c_mux_alloc(i2c, &i2c->dev, 1, 0, 0,
++	dev->muxc = i2c_mux_alloc(i2c, &i2c->dev, 1, 0, I2C_MUX_LOCKED,
+ 				  rtl2832_select, rtl2832_deselect);
+ 	if (!dev->muxc) {
+ 		ret = -ENOMEM;
+@@ -1262,9 +1126,7 @@ static int rtl2832_probe(struct i2c_client *client,
+ 	pdata->slave_ts_ctrl = rtl2832_slave_ts_ctrl;
+ 	pdata->pid_filter = rtl2832_pid_filter;
+ 	pdata->pid_filter_ctrl = rtl2832_pid_filter_ctrl;
+-	pdata->bulk_read = rtl2832_bulk_read;
+-	pdata->bulk_write = rtl2832_bulk_write;
+-	pdata->update_bits = rtl2832_update_bits;
++	pdata->regmap = dev->regmap;
+ 
+ 	dev_info(&client->dev, "Realtek RTL2832 successfully attached\n");
+ 	return 0;
+diff --git a/drivers/media/dvb-frontends/rtl2832.h b/drivers/media/dvb-frontends/rtl2832.h
+index 6390af64cf45..03c0de039fa9 100644
+--- a/drivers/media/dvb-frontends/rtl2832.h
++++ b/drivers/media/dvb-frontends/rtl2832.h
+@@ -57,9 +57,7 @@ struct rtl2832_platform_data {
+ 	int (*pid_filter)(struct dvb_frontend *, u8, u16, int);
+ 	int (*pid_filter_ctrl)(struct dvb_frontend *, int);
+ /* private: Register access for SDR module use only */
+-	int (*bulk_read)(struct i2c_client *, unsigned int, void *, size_t);
+-	int (*bulk_write)(struct i2c_client *, unsigned int, const void *, size_t);
+-	int (*update_bits)(struct i2c_client *, unsigned int, unsigned int, unsigned int);
++	struct regmap *regmap;
+ };
+ 
+ #endif /* RTL2832_H */
+diff --git a/drivers/media/dvb-frontends/rtl2832_sdr.c b/drivers/media/dvb-frontends/rtl2832_sdr.c
+index b860f02a4e55..6a6b1debe277 100644
+--- a/drivers/media/dvb-frontends/rtl2832_sdr.c
++++ b/drivers/media/dvb-frontends/rtl2832_sdr.c
+@@ -35,6 +35,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/jiffies.h>
+ #include <linux/math64.h>
++#include <linux/regmap.h>
+ 
+ static bool rtl2832_sdr_emulated_fmt;
+ module_param_named(emulated_formats, rtl2832_sdr_emulated_fmt, bool, 0644);
+@@ -169,9 +170,9 @@ static int rtl2832_sdr_wr_regs(struct rtl2832_sdr_dev *dev, u16 reg,
+ {
+ 	struct platform_device *pdev = dev->pdev;
+ 	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
+-	struct i2c_client *client = pdata->i2c_client;
++	struct regmap *regmap = pdata->regmap;
+ 
+-	return pdata->bulk_write(client, reg, val, len);
++	return regmap_bulk_write(regmap, reg, val, len);
+ }
+ 
+ #if 0
+@@ -181,9 +182,9 @@ static int rtl2832_sdr_rd_regs(struct rtl2832_sdr_dev *dev, u16 reg, u8 *val,
+ {
+ 	struct platform_device *pdev = dev->pdev;
+ 	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
+-	struct i2c_client *client = pdata->i2c_client;
++	struct regmap *regmap = pdata->regmap;
+ 
+-	return pdata->bulk_read(client, reg, val, len);
++	return regmap_bulk_read(regmap, reg, val, len);
+ }
+ #endif
+ 
+@@ -199,9 +200,9 @@ static int rtl2832_sdr_wr_reg_mask(struct rtl2832_sdr_dev *dev, u16 reg,
+ {
+ 	struct platform_device *pdev = dev->pdev;
+ 	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
+-	struct i2c_client *client = pdata->i2c_client;
++	struct regmap *regmap = pdata->regmap;
+ 
+-	return pdata->update_bits(client, reg, mask, val);
++	return regmap_update_bits(regmap, reg, mask, val);
+ }
+ 
+ /* Private functions */
+diff --git a/drivers/media/dvb-frontends/rtl2832_sdr.h b/drivers/media/dvb-frontends/rtl2832_sdr.h
+index 342ea84860df..d8fc7e7212e3 100644
+--- a/drivers/media/dvb-frontends/rtl2832_sdr.h
++++ b/drivers/media/dvb-frontends/rtl2832_sdr.h
+@@ -56,10 +56,7 @@ struct rtl2832_sdr_platform_data {
+ #define RTL2832_SDR_TUNER_R828D     0x2b
+ 	u8 tuner;
+ 
+-	struct i2c_client *i2c_client;
+-	int (*bulk_read)(struct i2c_client *, unsigned int, void *, size_t);
+-	int (*bulk_write)(struct i2c_client *, unsigned int, const void *, size_t);
+-	int (*update_bits)(struct i2c_client *, unsigned int, unsigned int, unsigned int);
++	struct regmap *regmap;
+ 	struct dvb_frontend *dvb_frontend;
+ 	struct v4l2_subdev *v4l2_subdev;
+ 	struct dvb_usb_device *dvb_usb_device;
+diff --git a/drivers/media/usb/dvb-usb-v2/rtl28xxu.c b/drivers/media/usb/dvb-usb-v2/rtl28xxu.c
+index fa72642d41f3..eb7af8cb8aca 100644
+--- a/drivers/media/usb/dvb-usb-v2/rtl28xxu.c
++++ b/drivers/media/usb/dvb-usb-v2/rtl28xxu.c
+@@ -1333,10 +1333,7 @@ static int rtl2832u_tuner_attach(struct dvb_usb_adapter *adap)
+ 	case TUNER_RTL2832_R828D:
+ 		pdata.clk = dev->rtl2832_platform_data.clk;
+ 		pdata.tuner = dev->tuner;
+-		pdata.i2c_client = dev->i2c_client_demod;
+-		pdata.bulk_read = dev->rtl2832_platform_data.bulk_read;
+-		pdata.bulk_write = dev->rtl2832_platform_data.bulk_write;
+-		pdata.update_bits = dev->rtl2832_platform_data.update_bits;
++		pdata.regmap = dev->rtl2832_platform_data.regmap;
+ 		pdata.dvb_frontend = adap->fe[0];
+ 		pdata.dvb_usb_device = d;
+ 		pdata.v4l2_subdev = subdev;
+-- 
+2.1.4
