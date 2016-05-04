@@ -1,58 +1,97 @@
-Return-Path: <harald@ccbib.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35781 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753147AbcEDOhq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:37:46 -0400
+Subject: Re: [PATCH V3 1/3] iio: mxs-lradc: simplify TS registration
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Stefan Wahren <stefan.wahren@i2se.com>
+References: <1461441479-23218-1-git-send-email-stefan.wahren@i2se.com>
+ <1461441479-23218-2-git-send-email-stefan.wahren@i2se.com>
+ <20160425210006.GA26059@dtor-ws>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Marek Vasut <marex@denx.de>,
+	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	Fabio Estevam <fabio.estevam@nxp.com>,
+	Juergen Borleis <jbe@pengutronix.de>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <7cb1766c-a3c2-891a-9bb8-df8f7b7c3407@kernel.org>
+Date: Wed, 4 May 2016 10:38:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Date: Mon, 02 May 2016 14:25:00 +0200
-From: Harald Geyer <harald@ccbib.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Stefan Wahren <stefan.wahren@i2se.com>, <devicetree@vger.kernel.org>,
- <linux-iio@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer
- <kernel@pengutronix.de>, Marek Vasut <marex@denx.de>,
- <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 0/3] mxs-lradc: Add support for current sources
-In-Reply-To: <ac57f3e9-f8f2-a6ef-52fa-0a13d7df5d4f@kernel.org>
-References: <1461333147-11873-1-git-send-email-harald@ccbib.org>
- <572379F5.8000501@i2se.com> <aadb3f41413d093312c0af3e4c207a8a@ccbib.org>
- <ac57f3e9-f8f2-a6ef-52fa-0a13d7df5d4f@kernel.org>
-Message-ID: <a0d59747ffca9d900feecece4cfcae82@ccbib.org>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160425210006.GA26059@dtor-ws>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01.05.2016 20:02, Jonathan Cameron wrote:
-> On 29/04/16 18:45, Harald Geyer wrote:
->> My thinking is that there should be a thermistor (or whatever else) 
->> driver,
->> that is a consumer of the regulator and a consumer of the 
->> IIO_VOLTAGE
->> iio channel and provides a new device with an IIO_RESISTANCE or 
->> IIO_TEMP
->> channel. Maybe there is a simpler solution, that I'm missing?
-> I agree with that approach - need a way to describe the upstream
-> hardware - so
-> will need a thermistor driver
+On 25/04/16 22:00, Dmitry Torokhov wrote:
+> On Sat, Apr 23, 2016 at 07:57:57PM +0000, Stefan Wahren wrote:
+>> This patch simplifies the TS registration of mxs-lradc by
+>> using devm_input_allocate_device.
 >>
->> Actually I'm not 100% happy with the above solution myself, because 
->> if we
->> start supporting devices that act as an iio-multiplexer (some device 
->> that
->> is an iio consumer and provides many new iio channels and can 
->> control
->> via gpios which of it child channels is actually routed to the 
->> upstream
->> device) I don't know how to properly manage the regulator device.
-> Hmm. Are you talking about muxing the regulator as well?  That will 
-> get
-> complex indeed.  Might be possible to cheat and imply the regulators 
-> are
-> always connected to all inputs...  or do you want to dynamically 
-> change
-> the regulator output?  That gets messy fast - though in theory might 
-> be
-> possible...
+>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+>> Reviewed-by: Marek Vasut <marex@denx.de>
+> 
+> Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Applied to the togreg branch of iio.git - initially going
+to be pushed out as testing though may not be until the weekend.
 
-Yes, that's a good summary of what I'm thinking. As there is no
-iio-multiplexer yet, this is sort of an academic question. But it's
-kind of an obvious thing to want, so we shouldn't be surprised when
-somebody actually starts working on that.
+Jonathan
+> 
+>> ---
+>>  drivers/iio/adc/mxs-lradc.c |   10 ++--------
+>>  1 file changed, 2 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+>> index ad26da1..3d1d370 100644
+>> --- a/drivers/iio/adc/mxs-lradc.c
+>> +++ b/drivers/iio/adc/mxs-lradc.c
+>> @@ -1120,18 +1120,16 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+>>  {
+>>  	struct input_dev *input;
+>>  	struct device *dev = lradc->dev;
+>> -	int ret;
+>>  
+>>  	if (!lradc->use_touchscreen)
+>>  		return 0;
+>>  
+>> -	input = input_allocate_device();
+>> +	input = devm_input_allocate_device(dev);
+>>  	if (!input)
+>>  		return -ENOMEM;
+>>  
+>>  	input->name = DRIVER_NAME;
+>>  	input->id.bustype = BUS_HOST;
+>> -	input->dev.parent = dev;
+>>  	input->open = mxs_lradc_ts_open;
+>>  	input->close = mxs_lradc_ts_close;
+>>  
+>> @@ -1146,11 +1144,8 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+>>  
+>>  	lradc->ts_input = input;
+>>  	input_set_drvdata(input, lradc);
+>> -	ret = input_register_device(input);
+>> -	if (ret)
+>> -		input_free_device(lradc->ts_input);
+>>  
+>> -	return ret;
+>> +	return input_register_device(input);
+>>  }
+>>  
+>>  static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
+>> @@ -1159,7 +1154,6 @@ static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
+>>  		return;
+>>  
+>>  	mxs_lradc_disable_ts(lradc);
+>> -	input_unregister_device(lradc->ts_input);
+>>  }
+>>  
+>>  /*
+>> -- 
+>> 1.7.9.5
+>>
+> 
 
-Thanks,
-Harald
