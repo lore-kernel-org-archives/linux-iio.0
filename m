@@ -1,150 +1,472 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:19964 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752937AbcEEPsO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 5 May 2016 11:48:14 -0400
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH v4 2/2] iio: accel: Add triggered buffer support for BMA220
-Date: Thu,  5 May 2016 18:48:56 +0300
-Message-Id: <1462463336-16108-3-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1462463336-16108-1-git-send-email-tiberiu.a.breana@intel.com>
-References: <1462463336-16108-1-git-send-email-tiberiu.a.breana@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
+ Corbet <corbet@lwn.net>, Peter Korsgaard <peter.korsgaard@barco.com>, Guenter
+ Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>, Hartmut
+ Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
+ Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, Mauro Carvalho
+ Chehab <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>, Frank
+ Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>, "David S. Miller"
+	<davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kalle
+ Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Lucas De Marchi <lucas.demarchi@intel.com>, Matt
+ Ranostay <matt.ranostay@intel.com>, Krzysztof Kozlowski
+	<k.kozlowski@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Terry Heo
+	<terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>, Tommi Rantala
+	<tt.rantala@gmail.com>, Crestez Dan Leonard <leonard.crestez@intel.com>,
+	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
+	<devicetree@vger.kernel.org>
+Subject: [PATCH v9 8/9] [media] rtl2832_sdr: get rid of empty regmap wrappers
+Date: Wed, 4 May 2016 22:15:34 +0200
+Message-ID: <1462392935-28011-9-git-send-email-peda@axentia.se>
+In-Reply-To: <1462392935-28011-1-git-send-email-peda@axentia.se>
+References: <1462392935-28011-1-git-send-email-peda@axentia.se>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Tested-by: Antti Palosaari <crope@iki.fi>
+Reviewed-by: Antti Palosaari <crope@iki.fi>
+Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/accel/bma220_spi.c | 64 ++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 62 insertions(+), 2 deletions(-)
+ drivers/media/dvb-frontends/rtl2832_sdr.c | 302 +++++++++++++-----------------
+ 1 file changed, 132 insertions(+), 170 deletions(-)
 
-diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
-index 7343575..6c0bbd8 100644
---- a/drivers/iio/accel/bma220_spi.c
-+++ b/drivers/iio/accel/bma220_spi.c
-@@ -11,9 +11,12 @@
- #include <linux/acpi.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/spi/spi.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
+diff --git a/drivers/media/dvb-frontends/rtl2832_sdr.c b/drivers/media/dvb-frontends/rtl2832_sdr.c
+index 6a6b1debe277..47a480a7d46c 100644
+--- a/drivers/media/dvb-frontends/rtl2832_sdr.c
++++ b/drivers/media/dvb-frontends/rtl2832_sdr.c
+@@ -120,6 +120,7 @@ struct rtl2832_sdr_dev {
+ 	unsigned long flags;
  
- #define BMA220_REG_ID				0x00
- #define BMA220_REG_ACCEL_X			0x02
-@@ -39,6 +42,14 @@
- 	.channel2 = IIO_MOD_##axis,					\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.scan_index = index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 6,						\
-+		.storagebits = 8,					\
-+		.shift = BMA220_DATA_SHIFT,				\
-+		.endianness = IIO_CPU,					\
-+	},								\
- }
+ 	struct platform_device *pdev;
++	struct regmap *regmap;
  
- static IIO_CONST_ATTR(in_accel_scale_available, BMA220_SCALE_AVAILABLE);
-@@ -59,13 +70,16 @@ static const int bma220_scale_table[][4] = {
- struct bma220_data {
- 	struct spi_device *spi_device;
- 	struct mutex lock;
-+	s8 buffer[16]; /* 3x8-bit channels + 5x8 padding + 8x8 timestamp */
- 	u8 tx_buf[2] ____cacheline_aligned;
-+	u8 rx_buf[3];
+ 	struct video_device vdev;
+ 	struct v4l2_device v4l2_dev;
+@@ -164,47 +165,6 @@ struct rtl2832_sdr_dev {
+ 	unsigned long jiffies_next;
  };
  
- static const struct iio_chan_spec bma220_channels[] = {
- 	BMA220_ACCEL_CHANNEL(0, BMA220_REG_ACCEL_X, X),
- 	BMA220_ACCEL_CHANNEL(1, BMA220_REG_ACCEL_Y, Y),
- 	BMA220_ACCEL_CHANNEL(2, BMA220_REG_ACCEL_Z, Z),
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
+-/* write multiple registers */
+-static int rtl2832_sdr_wr_regs(struct rtl2832_sdr_dev *dev, u16 reg,
+-		const u8 *val, int len)
+-{
+-	struct platform_device *pdev = dev->pdev;
+-	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
+-	struct regmap *regmap = pdata->regmap;
+-
+-	return regmap_bulk_write(regmap, reg, val, len);
+-}
+-
+-#if 0
+-/* read multiple registers */
+-static int rtl2832_sdr_rd_regs(struct rtl2832_sdr_dev *dev, u16 reg, u8 *val,
+-		int len)
+-{
+-	struct platform_device *pdev = dev->pdev;
+-	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
+-	struct regmap *regmap = pdata->regmap;
+-
+-	return regmap_bulk_read(regmap, reg, val, len);
+-}
+-#endif
+-
+-/* write single register */
+-static int rtl2832_sdr_wr_reg(struct rtl2832_sdr_dev *dev, u16 reg, u8 val)
+-{
+-	return rtl2832_sdr_wr_regs(dev, reg, &val, 1);
+-}
+-
+-/* write single register with mask */
+-static int rtl2832_sdr_wr_reg_mask(struct rtl2832_sdr_dev *dev, u16 reg,
+-		u8 val, u8 mask)
+-{
+-	struct platform_device *pdev = dev->pdev;
+-	struct rtl2832_sdr_platform_data *pdata = pdev->dev.platform_data;
+-	struct regmap *regmap = pdata->regmap;
+-
+-	return regmap_update_bits(regmap, reg, mask, val);
+-}
+-
+ /* Private functions */
+ static struct rtl2832_sdr_frame_buf *rtl2832_sdr_get_next_fill_buf(
+ 		struct rtl2832_sdr_dev *dev)
+@@ -559,11 +519,11 @@ static int rtl2832_sdr_set_adc(struct rtl2832_sdr_dev *dev)
  
- static inline int bma220_read_reg(struct spi_device *spi, u8 reg)
-@@ -73,6 +87,40 @@ static inline int bma220_read_reg(struct spi_device *spi, u8 reg)
- 	return spi_w8r8(spi, reg | BMA220_READ_MASK);
- }
+ 	f_sr = dev->f_adc;
  
-+static irqreturn_t bma220_trigger_handler(int irq, void *p)
-+{
-+	int i;
-+	int ret;
-+	int bit;
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct bma220_data *data = iio_priv(indio_dev);
-+	struct spi_device *spi = data->spi_device;
-+
-+	/* Do a bulk read, then pick out what we need. */
-+	mutex_lock(&data->lock);
-+	data->tx_buf[0] = BMA220_REG_ACCEL_X | BMA220_READ_MASK;
-+	ret = spi_write_then_read(spi, data->tx_buf, 1,
-+				  data->rx_buf, sizeof(data->rx_buf));
-+	if (ret < 0)
-+		goto err;
-+
-+	i = 0;
-+	for_each_set_bit(bit, indio_dev->active_scan_mask,
-+			      indio_dev->masklength) {
-+		data->buffer[i] = data->rx_buf[bit];
-+		i++;
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+					   pf->timestamp);
-+err:
-+	mutex_unlock(&data->lock);
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static int bma220_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
-@@ -204,13 +252,24 @@ static int bma220_probe(struct spi_device *spi)
- 	if (ret < 0)
- 		return ret;
+-	ret = rtl2832_sdr_wr_regs(dev, 0x13e, "\x00\x00", 2);
++	ret = regmap_bulk_write(dev->regmap, 0x13e, "\x00\x00", 2);
+ 	if (ret)
+ 		goto err;
  
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 bma220_trigger_handler, NULL);
-+	if (ret < 0) {
-+		dev_err(&spi->dev, "iio triggered buffer setup failed\n");
-+		goto err_suspend;
-+	}
-+
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0) {
- 		dev_err(&spi->dev, "iio_device_register failed\n");
--		return bma220_deinit(spi);
-+		iio_triggered_buffer_cleanup(indio_dev);
-+		goto err_suspend;
+-	ret = rtl2832_sdr_wr_regs(dev, 0x115, "\x00\x00\x00\x00", 4);
++	ret = regmap_bulk_write(dev->regmap, 0x115, "\x00\x00\x00\x00", 4);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -589,7 +549,7 @@ static int rtl2832_sdr_set_adc(struct rtl2832_sdr_dev *dev)
+ 	buf[1] = (u32tmp >>  8) & 0xff;
+ 	buf[2] = (u32tmp >>  0) & 0xff;
+ 
+-	ret = rtl2832_sdr_wr_regs(dev, 0x119, buf, 3);
++	ret = regmap_bulk_write(dev->regmap, 0x119, buf, 3);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -603,15 +563,15 @@ static int rtl2832_sdr_set_adc(struct rtl2832_sdr_dev *dev)
+ 		u8tmp2 = 0xcd; /* enable ADC I, ADC Q */
  	}
  
--	return ret;
-+	return 0;
-+
-+err_suspend:
-+	return bma220_deinit(spi);
- }
+-	ret = rtl2832_sdr_wr_reg(dev, 0x1b1, u8tmp1);
++	ret = regmap_write(dev->regmap, 0x1b1, u8tmp1);
+ 	if (ret)
+ 		goto err;
  
- static int bma220_remove(struct spi_device *spi)
-@@ -218,6 +277,7 @@ static int bma220_remove(struct spi_device *spi)
- 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-	ret = rtl2832_sdr_wr_reg(dev, 0x008, u8tmp2);
++	ret = regmap_write(dev->regmap, 0x008, u8tmp2);
+ 	if (ret)
+ 		goto err;
  
- 	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
+-	ret = rtl2832_sdr_wr_reg(dev, 0x006, 0x80);
++	ret = regmap_write(dev->regmap, 0x006, 0x80);
+ 	if (ret)
+ 		goto err;
  
- 	return bma220_deinit(spi);
- }
+@@ -622,168 +582,169 @@ static int rtl2832_sdr_set_adc(struct rtl2832_sdr_dev *dev)
+ 	buf[1] = (u32tmp >> 16) & 0xff;
+ 	buf[2] = (u32tmp >>  8) & 0xff;
+ 	buf[3] = (u32tmp >>  0) & 0xff;
+-	ret = rtl2832_sdr_wr_regs(dev, 0x19f, buf, 4);
++	ret = regmap_bulk_write(dev->regmap, 0x19f, buf, 4);
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* low-pass filter */
+-	ret = rtl2832_sdr_wr_regs(dev, 0x11c,
+-			"\xca\xdc\xd7\xd8\xe0\xf2\x0e\x35\x06\x50\x9c\x0d\x71\x11\x14\x71\x74\x19\x41\xa5",
+-			20);
++	ret = regmap_bulk_write(dev->regmap, 0x11c,
++				"\xca\xdc\xd7\xd8\xe0\xf2\x0e\x35\x06\x50\x9c\x0d\x71\x11\x14\x71\x74\x19\x41\xa5",
++				20);
+ 	if (ret)
+ 		goto err;
+ 
+-	ret = rtl2832_sdr_wr_regs(dev, 0x017, "\x11\x10", 2);
++	ret = regmap_bulk_write(dev->regmap, 0x017, "\x11\x10", 2);
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* mode */
+-	ret = rtl2832_sdr_wr_regs(dev, 0x019, "\x05", 1);
++	ret = regmap_write(dev->regmap, 0x019, 0x05);
+ 	if (ret)
+ 		goto err;
+ 
+-	ret = rtl2832_sdr_wr_regs(dev, 0x01a, "\x1b\x16\x0d\x06\x01\xff", 6);
++	ret = regmap_bulk_write(dev->regmap, 0x01a,
++				"\x1b\x16\x0d\x06\x01\xff", 6);
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* FSM */
+-	ret = rtl2832_sdr_wr_regs(dev, 0x192, "\x00\xf0\x0f", 3);
++	ret = regmap_bulk_write(dev->regmap, 0x192, "\x00\xf0\x0f", 3);
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* PID filter */
+-	ret = rtl2832_sdr_wr_regs(dev, 0x061, "\x60", 1);
++	ret = regmap_write(dev->regmap, 0x061, 0x60);
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* used RF tuner based settings */
+ 	switch (pdata->tuner) {
+ 	case RTL2832_SDR_TUNER_E4000:
+-		ret = rtl2832_sdr_wr_regs(dev, 0x112, "\x5a", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x102, "\x40", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x103, "\x5a", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c7, "\x30", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x104, "\xd0", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x105, "\xbe", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c8, "\x18", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x106, "\x35", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c9, "\x21", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1ca, "\x21", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1cb, "\x00", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x107, "\x40", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1cd, "\x10", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1ce, "\x10", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x108, "\x80", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x109, "\x7f", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x10a, "\x80", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x10b, "\x7f", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x011, "\xd4", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1e5, "\xf0", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1d9, "\x00", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1db, "\x00", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1dd, "\x14", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1de, "\xec", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1d8, "\x0c", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1e6, "\x02", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1d7, "\x09", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00d, "\x83", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x010, "\x49", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00d, "\x87", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00d, "\x85", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x013, "\x02", 1);
++		ret = regmap_write(dev->regmap, 0x112, 0x5a);
++		ret = regmap_write(dev->regmap, 0x102, 0x40);
++		ret = regmap_write(dev->regmap, 0x103, 0x5a);
++		ret = regmap_write(dev->regmap, 0x1c7, 0x30);
++		ret = regmap_write(dev->regmap, 0x104, 0xd0);
++		ret = regmap_write(dev->regmap, 0x105, 0xbe);
++		ret = regmap_write(dev->regmap, 0x1c8, 0x18);
++		ret = regmap_write(dev->regmap, 0x106, 0x35);
++		ret = regmap_write(dev->regmap, 0x1c9, 0x21);
++		ret = regmap_write(dev->regmap, 0x1ca, 0x21);
++		ret = regmap_write(dev->regmap, 0x1cb, 0x00);
++		ret = regmap_write(dev->regmap, 0x107, 0x40);
++		ret = regmap_write(dev->regmap, 0x1cd, 0x10);
++		ret = regmap_write(dev->regmap, 0x1ce, 0x10);
++		ret = regmap_write(dev->regmap, 0x108, 0x80);
++		ret = regmap_write(dev->regmap, 0x109, 0x7f);
++		ret = regmap_write(dev->regmap, 0x10a, 0x80);
++		ret = regmap_write(dev->regmap, 0x10b, 0x7f);
++		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
++		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
++		ret = regmap_write(dev->regmap, 0x011, 0xd4);
++		ret = regmap_write(dev->regmap, 0x1e5, 0xf0);
++		ret = regmap_write(dev->regmap, 0x1d9, 0x00);
++		ret = regmap_write(dev->regmap, 0x1db, 0x00);
++		ret = regmap_write(dev->regmap, 0x1dd, 0x14);
++		ret = regmap_write(dev->regmap, 0x1de, 0xec);
++		ret = regmap_write(dev->regmap, 0x1d8, 0x0c);
++		ret = regmap_write(dev->regmap, 0x1e6, 0x02);
++		ret = regmap_write(dev->regmap, 0x1d7, 0x09);
++		ret = regmap_write(dev->regmap, 0x00d, 0x83);
++		ret = regmap_write(dev->regmap, 0x010, 0x49);
++		ret = regmap_write(dev->regmap, 0x00d, 0x87);
++		ret = regmap_write(dev->regmap, 0x00d, 0x85);
++		ret = regmap_write(dev->regmap, 0x013, 0x02);
+ 		break;
+ 	case RTL2832_SDR_TUNER_FC0012:
+ 	case RTL2832_SDR_TUNER_FC0013:
+-		ret = rtl2832_sdr_wr_regs(dev, 0x112, "\x5a", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x102, "\x40", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x103, "\x5a", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c7, "\x2c", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x104, "\xcc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x105, "\xbe", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c8, "\x16", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x106, "\x35", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c9, "\x21", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1ca, "\x21", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1cb, "\x00", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x107, "\x40", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1cd, "\x10", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1ce, "\x10", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x108, "\x80", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x109, "\x7f", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x10a, "\x80", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x10b, "\x7f", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x011, "\xe9\xbf", 2);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1e5, "\xf0", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1d9, "\x00", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1db, "\x00", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1dd, "\x11", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1de, "\xef", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1d8, "\x0c", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1e6, "\x02", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1d7, "\x09", 1);
++		ret = regmap_write(dev->regmap, 0x112, 0x5a);
++		ret = regmap_write(dev->regmap, 0x102, 0x40);
++		ret = regmap_write(dev->regmap, 0x103, 0x5a);
++		ret = regmap_write(dev->regmap, 0x1c7, 0x2c);
++		ret = regmap_write(dev->regmap, 0x104, 0xcc);
++		ret = regmap_write(dev->regmap, 0x105, 0xbe);
++		ret = regmap_write(dev->regmap, 0x1c8, 0x16);
++		ret = regmap_write(dev->regmap, 0x106, 0x35);
++		ret = regmap_write(dev->regmap, 0x1c9, 0x21);
++		ret = regmap_write(dev->regmap, 0x1ca, 0x21);
++		ret = regmap_write(dev->regmap, 0x1cb, 0x00);
++		ret = regmap_write(dev->regmap, 0x107, 0x40);
++		ret = regmap_write(dev->regmap, 0x1cd, 0x10);
++		ret = regmap_write(dev->regmap, 0x1ce, 0x10);
++		ret = regmap_write(dev->regmap, 0x108, 0x80);
++		ret = regmap_write(dev->regmap, 0x109, 0x7f);
++		ret = regmap_write(dev->regmap, 0x10a, 0x80);
++		ret = regmap_write(dev->regmap, 0x10b, 0x7f);
++		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
++		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
++		ret = regmap_bulk_write(dev->regmap, 0x011, "\xe9\xbf", 2);
++		ret = regmap_write(dev->regmap, 0x1e5, 0xf0);
++		ret = regmap_write(dev->regmap, 0x1d9, 0x00);
++		ret = regmap_write(dev->regmap, 0x1db, 0x00);
++		ret = regmap_write(dev->regmap, 0x1dd, 0x11);
++		ret = regmap_write(dev->regmap, 0x1de, 0xef);
++		ret = regmap_write(dev->regmap, 0x1d8, 0x0c);
++		ret = regmap_write(dev->regmap, 0x1e6, 0x02);
++		ret = regmap_write(dev->regmap, 0x1d7, 0x09);
+ 		break;
+ 	case RTL2832_SDR_TUNER_R820T:
+ 	case RTL2832_SDR_TUNER_R828D:
+-		ret = rtl2832_sdr_wr_regs(dev, 0x112, "\x5a", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x102, "\x40", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x115, "\x01", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x103, "\x80", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c7, "\x24", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x104, "\xcc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x105, "\xbe", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c8, "\x14", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x106, "\x35", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c9, "\x21", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1ca, "\x21", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1cb, "\x00", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x107, "\x40", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1cd, "\x10", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1ce, "\x10", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x108, "\x80", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x109, "\x7f", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x10a, "\x80", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x10b, "\x7f", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x011, "\xf4", 1);
++		ret = regmap_write(dev->regmap, 0x112, 0x5a);
++		ret = regmap_write(dev->regmap, 0x102, 0x40);
++		ret = regmap_write(dev->regmap, 0x115, 0x01);
++		ret = regmap_write(dev->regmap, 0x103, 0x80);
++		ret = regmap_write(dev->regmap, 0x1c7, 0x24);
++		ret = regmap_write(dev->regmap, 0x104, 0xcc);
++		ret = regmap_write(dev->regmap, 0x105, 0xbe);
++		ret = regmap_write(dev->regmap, 0x1c8, 0x14);
++		ret = regmap_write(dev->regmap, 0x106, 0x35);
++		ret = regmap_write(dev->regmap, 0x1c9, 0x21);
++		ret = regmap_write(dev->regmap, 0x1ca, 0x21);
++		ret = regmap_write(dev->regmap, 0x1cb, 0x00);
++		ret = regmap_write(dev->regmap, 0x107, 0x40);
++		ret = regmap_write(dev->regmap, 0x1cd, 0x10);
++		ret = regmap_write(dev->regmap, 0x1ce, 0x10);
++		ret = regmap_write(dev->regmap, 0x108, 0x80);
++		ret = regmap_write(dev->regmap, 0x109, 0x7f);
++		ret = regmap_write(dev->regmap, 0x10a, 0x80);
++		ret = regmap_write(dev->regmap, 0x10b, 0x7f);
++		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
++		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
++		ret = regmap_write(dev->regmap, 0x011, 0xf4);
+ 		break;
+ 	case RTL2832_SDR_TUNER_FC2580:
+-		ret = rtl2832_sdr_wr_regs(dev, 0x112, "\x39", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x102, "\x40", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x103, "\x5a", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c7, "\x2c", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x104, "\xcc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x105, "\xbe", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c8, "\x16", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x106, "\x35", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1c9, "\x21", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1ca, "\x21", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1cb, "\x00", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x107, "\x40", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1cd, "\x10", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x1ce, "\x10", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x108, "\x80", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x109, "\x7f", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x10a, "\x9c", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x10b, "\x7f", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x00e, "\xfc", 1);
+-		ret = rtl2832_sdr_wr_regs(dev, 0x011, "\xe9\xf4", 2);
++		ret = regmap_write(dev->regmap, 0x112, 0x39);
++		ret = regmap_write(dev->regmap, 0x102, 0x40);
++		ret = regmap_write(dev->regmap, 0x103, 0x5a);
++		ret = regmap_write(dev->regmap, 0x1c7, 0x2c);
++		ret = regmap_write(dev->regmap, 0x104, 0xcc);
++		ret = regmap_write(dev->regmap, 0x105, 0xbe);
++		ret = regmap_write(dev->regmap, 0x1c8, 0x16);
++		ret = regmap_write(dev->regmap, 0x106, 0x35);
++		ret = regmap_write(dev->regmap, 0x1c9, 0x21);
++		ret = regmap_write(dev->regmap, 0x1ca, 0x21);
++		ret = regmap_write(dev->regmap, 0x1cb, 0x00);
++		ret = regmap_write(dev->regmap, 0x107, 0x40);
++		ret = regmap_write(dev->regmap, 0x1cd, 0x10);
++		ret = regmap_write(dev->regmap, 0x1ce, 0x10);
++		ret = regmap_write(dev->regmap, 0x108, 0x80);
++		ret = regmap_write(dev->regmap, 0x109, 0x7f);
++		ret = regmap_write(dev->regmap, 0x10a, 0x9c);
++		ret = regmap_write(dev->regmap, 0x10b, 0x7f);
++		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
++		ret = regmap_write(dev->regmap, 0x00e, 0xfc);
++		ret = regmap_bulk_write(dev->regmap, 0x011, "\xe9\xf4", 2);
+ 		break;
+ 	default:
+ 		dev_notice(&pdev->dev, "Unsupported tuner\n");
+ 	}
+ 
+ 	/* software reset */
+-	ret = rtl2832_sdr_wr_reg_mask(dev, 0x101, 0x04, 0x04);
++	ret = regmap_update_bits(dev->regmap, 0x101, 0x04, 0x04);
+ 	if (ret)
+ 		goto err;
+ 
+-	ret = rtl2832_sdr_wr_reg_mask(dev, 0x101, 0x00, 0x04);
++	ret = regmap_update_bits(dev->regmap, 0x101, 0x04, 0x00);
+ 	if (ret)
+ 		goto err;
+ err:
+@@ -798,29 +759,29 @@ static void rtl2832_sdr_unset_adc(struct rtl2832_sdr_dev *dev)
+ 	dev_dbg(&pdev->dev, "\n");
+ 
+ 	/* PID filter */
+-	ret = rtl2832_sdr_wr_regs(dev, 0x061, "\xe0", 1);
++	ret = regmap_write(dev->regmap, 0x061, 0xe0);
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* mode */
+-	ret = rtl2832_sdr_wr_regs(dev, 0x019, "\x20", 1);
++	ret = regmap_write(dev->regmap, 0x019, 0x20);
+ 	if (ret)
+ 		goto err;
+ 
+-	ret = rtl2832_sdr_wr_regs(dev, 0x017, "\x11\x10", 2);
++	ret = regmap_bulk_write(dev->regmap, 0x017, "\x11\x10", 2);
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* FSM */
+-	ret = rtl2832_sdr_wr_regs(dev, 0x192, "\x00\x0f\xff", 3);
++	ret = regmap_bulk_write(dev->regmap, 0x192, "\x00\x0f\xff", 3);
+ 	if (ret)
+ 		goto err;
+ 
+-	ret = rtl2832_sdr_wr_regs(dev, 0x13e, "\x40\x00", 2);
++	ret = regmap_bulk_write(dev->regmap, 0x13e, "\x40\x00", 2);
+ 	if (ret)
+ 		goto err;
+ 
+-	ret = rtl2832_sdr_wr_regs(dev, 0x115, "\x06\x3f\xce\xcc", 4);
++	ret = regmap_bulk_write(dev->regmap, 0x115, "\x06\x3f\xce\xcc", 4);
+ 	if (ret)
+ 		goto err;
+ err:
+@@ -1400,6 +1361,7 @@ static int rtl2832_sdr_probe(struct platform_device *pdev)
+ 	subdev = pdata->v4l2_subdev;
+ 	dev->v4l2_subdev = pdata->v4l2_subdev;
+ 	dev->pdev = pdev;
++	dev->regmap = pdata->regmap;
+ 	dev->udev = pdata->dvb_usb_device->udev;
+ 	dev->f_adc = bands_adc[0].rangelow;
+ 	dev->f_tuner = bands_fm[0].rangelow;
 -- 
-1.9.1
-
+2.1.4
