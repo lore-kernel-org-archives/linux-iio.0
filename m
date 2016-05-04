@@ -1,87 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35827 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35872 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752956AbcEDOjU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:39:20 -0400
-Subject: Re: [PATCH 1/3] iio: bmi160: Fix output data rate for accel
-To: Daniel Baluta <daniel.baluta@intel.com>
-References: <1461930155-13871-1-git-send-email-daniel.baluta@intel.com>
- <1461930155-13871-2-git-send-email-daniel.baluta@intel.com>
- <ce5eceb0-9502-2a0d-7686-d94f5963e329@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1753691AbcEDOjz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:39:55 -0400
+Subject: Re: [PATCH 03/13] iio: health/afe440x: Remove unneeded initializers
+To: "Andrew F. Davis" <afd@ti.com>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+References: <1462135023-14445-1-git-send-email-afd@ti.com>
+ <1462135023-14445-4-git-send-email-afd@ti.com>
+Cc: linux-iio@vger.kernel.org, linux-api@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <9276afcc-bd1d-4516-b0d5-b6e717bd5c4f@kernel.org>
-Date: Wed, 4 May 2016 10:50:01 +0100
+Message-ID: <8cfe5a59-b3fd-aa25-d751-defa75aca42e@kernel.org>
+Date: Wed, 4 May 2016 10:59:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <ce5eceb0-9502-2a0d-7686-d94f5963e329@kernel.org>
+In-Reply-To: <1462135023-14445-4-git-send-email-afd@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/05/16 20:00, Jonathan Cameron wrote:
-> On 29/04/16 12:42, Daniel Baluta wrote:
->> Format is INT_PLUS_MICRO and micro odr part of ODR should
->> be parts of a micro.
->>
->> Also s/8000/800 this is obviously a typo.
->>
->> Fixes: 77c4ad2d6a9 ("iio: imu: Add initial support for Bosch BMI160")
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> I can't set up a suitable fixes branch for this as I'm without internet to grab an
-> updated staging-next tree right now.  Will mark it to be sorted out when I get some time
-> back on a sensible internet connection (France is always a lot bigger than I expect it
-> to be for some reason...)
+On 01/05/16 21:36, Andrew F. Davis wrote:
+> The drivers set some register values during initialization that can be
+> set at runtime, these defaults were used in testing but are not
+> necessary, remove these.
 > 
-> Anyhow, poke me if you don't hear anything before the end of the week.
+> Signed-off-by: Andrew F. Davis <afd@ti.com>
+Fair enough - applied.
+> ---
+>  drivers/iio/health/afe4403.c | 7 +------
+>  drivers/iio/health/afe4404.c | 4 ----
+>  2 files changed, 1 insertion(+), 10 deletions(-)
 > 
-> Note this will probably have to go in post merge window now as I doubt I'll be doing
-> another pull before that opens.
-> 
-> Jonathan
-Applied to the fixes-togreg-post-rc1 branch which will get pushed out when
-I get home.  France is awfully big sometimes.
-
-Jonathan
->> ---
->>  drivers/iio/imu/bmi160/bmi160_core.c | 12 ++++++------
->>  1 file changed, 6 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
->> index 0bf92b0..cd9b75e 100644
->> --- a/drivers/iio/imu/bmi160/bmi160_core.c
->> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
->> @@ -209,11 +209,11 @@ static const struct  bmi160_scale_item bmi160_scale_table[] = {
->>  };
->>  
->>  static const struct bmi160_odr bmi160_accel_odr[] = {
->> -	{0x01, 0, 78125},
->> -	{0x02, 1, 5625},
->> -	{0x03, 3, 125},
->> -	{0x04, 6, 25},
->> -	{0x05, 12, 5},
->> +	{0x01, 0, 781250},
->> +	{0x02, 1, 562500},
->> +	{0x03, 3, 125000},
->> +	{0x04, 6, 250000},
->> +	{0x05, 12, 500000},
->>  	{0x06, 25, 0},
->>  	{0x07, 50, 0},
->>  	{0x08, 100, 0},
->> @@ -229,7 +229,7 @@ static const struct bmi160_odr bmi160_gyro_odr[] = {
->>  	{0x08, 100, 0},
->>  	{0x09, 200, 0},
->>  	{0x0A, 400, 0},
->> -	{0x0B, 8000, 0},
->> +	{0x0B, 800, 0},
->>  	{0x0C, 1600, 0},
->>  	{0x0D, 3200, 0},
->>  };
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
+> index e3700cf..5484785 100644
+> --- a/drivers/iio/health/afe4403.c
+> +++ b/drivers/iio/health/afe4403.c
+> @@ -472,12 +472,7 @@ static const struct iio_trigger_ops afe4403_trigger_ops = {
+>  
+>  static const struct reg_sequence afe4403_reg_sequences[] = {
+>  	AFE4403_TIMING_PAIRS,
+> -	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN | 0x000007},
+> -	{ AFE4403_TIA_AMB_GAIN, AFE4403_TIAGAIN_RES_1_M },
+> -	{ AFE440X_LEDCNTRL, (0x14 << AFE440X_LEDCNTRL_LED1_SHIFT) |
+> -			    (0x14 << AFE440X_LEDCNTRL_LED2_SHIFT) },
+> -	{ AFE440X_CONTROL2, AFE440X_CONTROL2_TX_REF_050 <<
+> -			    AFE440X_CONTROL2_TX_REF_SHIFT },
+> +	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
+>  };
+>  
+>  static const struct regmap_range afe4403_yes_ranges[] = {
+> diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
+> index 783b9b4..2d4c522 100644
+> --- a/drivers/iio/health/afe4404.c
+> +++ b/drivers/iio/health/afe4404.c
+> @@ -443,10 +443,6 @@ static const struct iio_trigger_ops afe4404_trigger_ops = {
+>  static const struct reg_sequence afe4404_reg_sequences[] = {
+>  	AFE4404_TIMING_PAIRS,
+>  	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
+> -	{ AFE4404_TIA_GAIN, AFE4404_TIA_GAIN_RES_50_K },
+> -	{ AFE440X_LEDCNTRL, (0xf << AFE4404_LEDCNTRL_ILED1_SHIFT) |
+> -			    (0x3 << AFE4404_LEDCNTRL_ILED2_SHIFT) |
+> -			    (0x3 << AFE4404_LEDCNTRL_ILED3_SHIFT) },
+>  	{ AFE440X_CONTROL2, AFE440X_CONTROL3_OSC_ENABLE	},
+>  };
+>  
 > 
 
