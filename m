@@ -1,293 +1,120 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35939 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35862 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754317AbcEDOkk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:40:40 -0400
-Subject: Re: [PATCH 1/2] iio: chemical: atlas-ph-sensor: reorg driver to allow
- multiple chips
-To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
-References: <1461530596-2142-1-git-send-email-mranostay@gmail.com>
- <1461530596-2142-2-git-send-email-mranostay@gmail.com>
+	with ESMTP id S1751202AbcEDOju (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 10:39:50 -0400
+Subject: Re: [PATCH 01/13] iio: health/afe440x: Fix kernel-doc format
+To: "Andrew F. Davis" <afd@ti.com>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+References: <1462135023-14445-1-git-send-email-afd@ti.com>
+ <1462135023-14445-2-git-send-email-afd@ti.com>
+Cc: linux-iio@vger.kernel.org, linux-api@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <def461c9-6796-05b5-9982-d44db6f397e6@kernel.org>
-Date: Wed, 4 May 2016 11:31:01 +0100
+Message-ID: <3597f852-8c82-3ae1-d6a1-d82ac0dceae2@kernel.org>
+Date: Wed, 4 May 2016 10:58:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <1461530596-2142-2-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1462135023-14445-2-git-send-email-afd@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/04/16 21:43, Matt Ranostay wrote:
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-I was half way through reviewing this when by battery ran out on Sunday so
-fingers crossed this time! (it claims I have an hour left and 2 more hours
-on this train)
+On 01/05/16 21:36, Andrew F. Davis wrote:
+> Fix kernel-doc formatting for structs, and while we are making little
+> fixes, clarify the module description and update the copywrite.
+> 
+> Signed-off-by: Andrew F. Davis <afd@ti.com>
+Applied to the togreg branch of iio.git - to be pushed out in a day or two
+as testing.
 
-Anyhow did make it through - straight forward refactor.
-
-Will apply if no issues in next patch.
+Thanks,
 
 Jonathan
-
-
 > ---
->  drivers/iio/chemical/atlas-ph-sensor.c | 131 +++++++++++++++++++++------------
->  1 file changed, 83 insertions(+), 48 deletions(-)
+>  drivers/iio/health/afe4403.c | 18 +++++++++---------
+>  drivers/iio/health/afe4404.c | 16 ++++++++--------
+>  2 files changed, 17 insertions(+), 17 deletions(-)
 > 
-> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-> index 62b37cd..c57f9c2 100644
-> --- a/drivers/iio/chemical/atlas-ph-sensor.c
-> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
-> @@ -24,6 +24,7 @@
->  #include <linux/irq_work.h>
->  #include <linux/gpio.h>
->  #include <linux/i2c.h>
-> +#include <linux/of_device.h>
->  #include <linux/regmap.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/buffer.h>
-> @@ -43,20 +44,25 @@
+> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
+> index 88e43f8..2094113 100644
+> --- a/drivers/iio/health/afe4403.c
+> +++ b/drivers/iio/health/afe4403.c
+> @@ -1,7 +1,7 @@
+>  /*
+>   * AFE4403 Heart Rate Monitors and Low-Cost Pulse Oximeters
+>   *
+> - * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+> + * Copyright (C) 2015-2016 Texas Instruments Incorporated - http://www.ti.com/
+>   *	Andrew F. Davis <afd@ti.com>
+>   *
+>   * This program is free software; you can redistribute it and/or modify
+> @@ -103,13 +103,13 @@
+>  #define AFE4403_TIAGAIN_RES_NONE	0x7
 >  
->  #define ATLAS_REG_PWR_CONTROL		0x06
+>  /**
+> - * struct afe4403_data
+> - * @dev - Device structure
+> - * @spi - SPI device handle
+> - * @regmap - Register map of the device
+> - * @regulator - Pointer to the regulator for the IC
+> - * @trig - IIO trigger for this device
+> - * @irq - ADC_RDY line interrupt number
+> + * struct afe4403_data - AFE4403 device instance data
+> + * @dev: Device structure
+> + * @spi: SPI device handle
+> + * @regmap: Register map of the device
+> + * @regulator: Pointer to the regulator for the IC
+> + * @trig: IIO trigger for this device
+> + * @irq: ADC_RDY line interrupt number
+>   */
+>  struct afe4403_data {
+>  	struct device *dev;
+> @@ -704,5 +704,5 @@ static struct spi_driver afe4403_spi_driver = {
+>  module_spi_driver(afe4403_spi_driver);
 >  
-> -#define ATLAS_REG_CALIB_STATUS		0x0d
-> -#define ATLAS_REG_CALIB_STATUS_MASK	0x07
-> -#define ATLAS_REG_CALIB_STATUS_LOW	BIT(0)
-> -#define ATLAS_REG_CALIB_STATUS_MID	BIT(1)
-> -#define ATLAS_REG_CALIB_STATUS_HIGH	BIT(2)
-> +#define ATLAS_REG_PH_CALIB_STATUS	0x0d
-> +#define ATLAS_REG_PH_CALIB_STATUS_MASK	0x07
-> +#define ATLAS_REG_PH_CALIB_STATUS_LOW	BIT(0)
-> +#define ATLAS_REG_PH_CALIB_STATUS_MID	BIT(1)
-> +#define ATLAS_REG_PH_CALIB_STATUS_HIGH	BIT(2)
+>  MODULE_AUTHOR("Andrew F. Davis <afd@ti.com>");
+> -MODULE_DESCRIPTION("TI AFE4403 Heart Rate and Pulse Oximeter");
+> +MODULE_DESCRIPTION("TI AFE4403 Heart Rate Monitor and Pulse Oximeter AFE");
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
+> index 5096a46..7127d03 100644
+> --- a/drivers/iio/health/afe4404.c
+> +++ b/drivers/iio/health/afe4404.c
+> @@ -1,7 +1,7 @@
+>  /*
+>   * AFE4404 Heart Rate Monitors and Low-Cost Pulse Oximeters
+>   *
+> - * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+> + * Copyright (C) 2015-2016 Texas Instruments Incorporated - http://www.ti.com/
+>   *	Andrew F. Davis <afd@ti.com>
+>   *
+>   * This program is free software; you can redistribute it and/or modify
+> @@ -106,12 +106,12 @@
+>  #define AFE4404_TIA_GAIN_RES_2_M	0x7
 >  
-> -#define ATLAS_REG_TEMP_DATA		0x0e
-> +#define ATLAS_REG_PH_TEMP_DATA		0x0e
->  #define ATLAS_REG_PH_DATA		0x16
+>  /**
+> - * struct afe4404_data
+> - * @dev - Device structure
+> - * @regmap - Register map of the device
+> - * @regulator - Pointer to the regulator for the IC
+> - * @trig - IIO trigger for this device
+> - * @irq - ADC_RDY line interrupt number
+> + * struct afe4404_data - AFE4404 device instance data
+> + * @dev: Device structure
+> + * @regmap: Register map of the device
+> + * @regulator: Pointer to the regulator for the IC
+> + * @trig: IIO trigger for this device
+> + * @irq: ADC_RDY line interrupt number
+>   */
+>  struct afe4404_data {
+>  	struct device *dev;
+> @@ -675,5 +675,5 @@ static struct i2c_driver afe4404_i2c_driver = {
+>  module_i2c_driver(afe4404_i2c_driver);
 >  
->  #define ATLAS_PH_INT_TIME_IN_US		450000
->  
-> +enum {
-> +	ATLAS_PH_SM,
-> +};
-> +
->  struct atlas_data {
->  	struct i2c_client *client;
->  	struct iio_trigger *trig;
-> +	struct atlas_device *chip;
->  	struct regmap *regmap;
->  	struct irq_work work;
->  
-> @@ -84,9 +90,10 @@ static const struct regmap_config atlas_regmap_config = {
->  	.cache_type = REGCACHE_RBTREE,
->  };
->  
-> -static const struct iio_chan_spec atlas_channels[] = {
-> +static const struct iio_chan_spec atlas_ph_channels[] = {
->  	{
->  		.type = IIO_PH,
-> +		.address = ATLAS_REG_PH_DATA,
->  		.info_mask_separate =
->  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->  		.scan_index = 0,
-> @@ -100,7 +107,7 @@ static const struct iio_chan_spec atlas_channels[] = {
->  	IIO_CHAN_SOFT_TIMESTAMP(1),
->  	{
->  		.type = IIO_TEMP,
-> -		.address = ATLAS_REG_TEMP_DATA,
-> +		.address = ATLAS_REG_PH_TEMP_DATA,
->  		.info_mask_separate =
->  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->  		.output = 1,
-> @@ -108,6 +115,52 @@ static const struct iio_chan_spec atlas_channels[] = {
->  	},
->  };
->  
-> +static int atlas_check_ph_calibration(struct atlas_data *data)
-> +{
-> +	struct device *dev = &data->client->dev;
-> +	int ret;
-> +	unsigned int val;
-> +
-> +	ret = regmap_read(data->regmap, ATLAS_REG_PH_CALIB_STATUS, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!(val & ATLAS_REG_PH_CALIB_STATUS_MASK)) {
-> +		dev_warn(dev, "device has not been calibrated\n");
-> +		return 0;
-> +	}
-> +
-> +	if (!(val & ATLAS_REG_PH_CALIB_STATUS_LOW))
-> +		dev_warn(dev, "device missing low point calibration\n");
-> +
-> +	if (!(val & ATLAS_REG_PH_CALIB_STATUS_MID))
-> +		dev_warn(dev, "device missing mid point calibration\n");
-> +
-> +	if (!(val & ATLAS_REG_PH_CALIB_STATUS_HIGH))
-> +		dev_warn(dev, "device missing high point calibration\n");
-> +
-> +	return 0;
-> +}
-> +
-> +struct atlas_device {
-> +	const struct iio_chan_spec *channels;
-> +	int num_channels;
-> +	int data_reg;
-> +
-> +	int (*calibration)(struct atlas_data *data);
-> +	int delay;
-> +};
-> +
-> +static struct atlas_device atlas_devices[] = {
-> +	[ATLAS_PH_SM] = {
-> +				.channels = atlas_ph_channels,
-> +				.num_channels = 3,
-> +				.data_reg = ATLAS_REG_PH_DATA,
-> +				.calibration = &atlas_check_ph_calibration,
-> +				.delay = ATLAS_PH_INT_TIME_IN_US,
-> +	},
-> +};
-> +
->  static int atlas_set_powermode(struct atlas_data *data, int on)
->  {
->  	return regmap_write(data->regmap, ATLAS_REG_PWR_CONTROL, on);
-> @@ -178,8 +231,9 @@ static irqreturn_t atlas_trigger_handler(int irq, void *private)
->  	struct atlas_data *data = iio_priv(indio_dev);
->  	int ret;
->  
-> -	ret = regmap_bulk_read(data->regmap, ATLAS_REG_PH_DATA,
-> -			      (u8 *) &data->buffer, sizeof(data->buffer[0]));
-> +	ret = regmap_bulk_read(data->regmap, data->chip->data_reg,
-> +			      (u8 *) &data->buffer,
-> +			      sizeof(__be32) * (data->chip->num_channels - 2));
->  
->  	if (!ret)
->  		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-> @@ -200,7 +254,7 @@ static irqreturn_t atlas_interrupt_handler(int irq, void *private)
->  	return IRQ_HANDLED;
->  }
->  
-> -static int atlas_read_ph_measurement(struct atlas_data *data, __be32 *val)
-> +static int atlas_read_measurement(struct atlas_data *data, int reg, __be32 *val)
->  {
->  	struct device *dev = &data->client->dev;
->  	int suspended = pm_runtime_suspended(dev);
-> @@ -213,11 +267,9 @@ static int atlas_read_ph_measurement(struct atlas_data *data, __be32 *val)
->  	}
->  
->  	if (suspended)
-> -		usleep_range(ATLAS_PH_INT_TIME_IN_US,
-> -			     ATLAS_PH_INT_TIME_IN_US + 100000);
-> +		usleep_range(data->chip->delay, data->chip->delay + 100000);
->  
-> -	ret = regmap_bulk_read(data->regmap, ATLAS_REG_PH_DATA,
-> -			      (u8 *) val, sizeof(*val));
-> +	ret = regmap_bulk_read(data->regmap, reg, (u8 *) val, sizeof(*val));
->  
->  	pm_runtime_mark_last_busy(dev);
->  	pm_runtime_put_autosuspend(dev);
-> @@ -247,7 +299,8 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
->  			if (iio_buffer_enabled(indio_dev))
->  				ret = -EBUSY;
->  			else
-> -				ret = atlas_read_ph_measurement(data, &reg);
-> +				ret = atlas_read_measurement(data,
-> +							chan->address, &reg);
->  
->  			mutex_unlock(&indio_dev->mlock);
->  			break;
-> @@ -303,37 +356,12 @@ static const struct iio_info atlas_info = {
->  	.write_raw = atlas_write_raw,
->  };
->  
-> -static int atlas_check_calibration(struct atlas_data *data)
-> -{
-> -	struct device *dev = &data->client->dev;
-> -	int ret;
-> -	unsigned int val;
-> -
-> -	ret = regmap_read(data->regmap, ATLAS_REG_CALIB_STATUS, &val);
-> -	if (ret)
-> -		return ret;
-> -
-> -	if (!(val & ATLAS_REG_CALIB_STATUS_MASK)) {
-> -		dev_warn(dev, "device has not been calibrated\n");
-> -		return 0;
-> -	}
-> -
-> -	if (!(val & ATLAS_REG_CALIB_STATUS_LOW))
-> -		dev_warn(dev, "device missing low point calibration\n");
-> -
-> -	if (!(val & ATLAS_REG_CALIB_STATUS_MID))
-> -		dev_warn(dev, "device missing mid point calibration\n");
-> -
-> -	if (!(val & ATLAS_REG_CALIB_STATUS_HIGH))
-> -		dev_warn(dev, "device missing high point calibration\n");
-> -
-> -	return 0;
-> -};
-> -
->  static int atlas_probe(struct i2c_client *client,
->  		       const struct i2c_device_id *id)
->  {
->  	struct atlas_data *data;
-> +	struct atlas_device *chip;
-> +	const struct of_device_id *of_id;
->  	struct iio_trigger *trig;
->  	struct iio_dev *indio_dev;
->  	int ret;
-> @@ -342,10 +370,16 @@ static int atlas_probe(struct i2c_client *client,
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
-> +	of_id = of_match_device(atlas_dt_ids, &client->dev);
-> +	if (!of_id)
-> +		chip = &atlas_devices[id->driver_data];
-> +	else
-> +		chip = &atlas_devices[(unsigned long)of_id->data];
-> +
->  	indio_dev->info = &atlas_info;
->  	indio_dev->name = ATLAS_DRV_NAME;
-> -	indio_dev->channels = atlas_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(atlas_channels);
-> +	indio_dev->channels = chip->channels;
-> +	indio_dev->num_channels = chip->num_channels;
->  	indio_dev->modes = INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE;
->  	indio_dev->dev.parent = &client->dev;
->  
-> @@ -358,6 +392,7 @@ static int atlas_probe(struct i2c_client *client,
->  	data = iio_priv(indio_dev);
->  	data->client = client;
->  	data->trig = trig;
-> +	data->chip = chip;
->  	trig->dev.parent = indio_dev->dev.parent;
->  	trig->ops = &atlas_interrupt_trigger_ops;
->  	iio_trigger_set_drvdata(trig, indio_dev);
-> @@ -379,7 +414,7 @@ static int atlas_probe(struct i2c_client *client,
->  		return -EINVAL;
->  	}
->  
-> -	ret = atlas_check_calibration(data);
-> +	ret = chip->calibration(data);
->  	if (ret)
->  		return ret;
->  
-> @@ -481,13 +516,13 @@ static const struct dev_pm_ops atlas_pm_ops = {
->  };
->  
->  static const struct i2c_device_id atlas_id[] = {
-> -	{ "atlas-ph-sm", 0 },
-> +	{ "atlas-ph-sm", ATLAS_PH_SM},
->  	{}
->  };
->  MODULE_DEVICE_TABLE(i2c, atlas_id);
->  
->  static const struct of_device_id atlas_dt_ids[] = {
-> -	{ .compatible = "atlas,ph-sm" },
-> +	{ .compatible = "atlas,ph-sm", .data = (void *)ATLAS_PH_SM, },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, atlas_dt_ids);
+>  MODULE_AUTHOR("Andrew F. Davis <afd@ti.com>");
+> -MODULE_DESCRIPTION("TI AFE4404 Heart Rate and Pulse Oximeter");
+> +MODULE_DESCRIPTION("TI AFE4404 Heart Rate Monitor and Pulse Oximeter AFE");
+>  MODULE_LICENSE("GPL v2");
 > 
 
