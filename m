@@ -1,418 +1,197 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37091 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752292AbcEDSdl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2016 14:33:41 -0400
-In-Reply-To: <572A1199.6000800@ti.com>
-References: <1462135023-14445-1-git-send-email-afd@ti.com> <1462135023-14445-5-git-send-email-afd@ti.com> <c875266c-f675-bba3-4e05-bf34ea02df2c@kernel.org> <572A1199.6000800@ti.com>
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Jonathan
+ Corbet" <corbet@lwn.net>, Peter Korsgaard <peter.korsgaard@barco.com>,
+	"Guenter Roeck" <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>,
+	"Hartmut Knaack" <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	"Peter Meerwald" <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, "Mauro
+ Carvalho Chehab" <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>,
+	"Frank Rowand" <frowand.list@gmail.com>, Grant Likely
+	<grant.likely@linaro.org>, Andrew Morton <akpm@linux-foundation.org>, "David
+ S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, "Kalle Valo" <kvalo@codeaurora.org>, Jiri Slaby
+	<jslaby@suse.com>, Daniel Baluta <daniel.baluta@intel.com>, Lucas De Marchi
+	<lucas.demarchi@intel.com>, "Matt Ranostay" <matt.ranostay@intel.com>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>, Hans Verkuil
+	<hans.verkuil@cisco.com>, Terry Heo <terryheo@google.com>, Arnd Bergmann
+	<arnd@arndb.de>, Tommi Rantala <tt.rantala@gmail.com>, Crestez Dan Leonard
+	<leonard.crestez@intel.com>, <linux-i2c@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v9 5/9] iio: imu: inv_mpu6050: change the i2c gate to be mux-locked
+Date: Wed, 4 May 2016 22:15:31 +0200
+Message-ID: <1462392935-28011-6-git-send-email-peda@axentia.se>
+In-Reply-To: <1462392935-28011-1-git-send-email-peda@axentia.se>
+References: <1462392935-28011-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 04/13] iio: health/afe440x: Always use separate gain values
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Wed, 04 May 2016 19:33:19 +0100
-To: "Andrew F. Davis" <afd@ti.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, linux-api@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Message-ID: <709A4670-9AD8-43A1-85A6-0D99559533E4@jic23.retrosnub.co.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
+The root i2c adapter lock is then no longer held by the i2c mux during
+accesses behind the i2c gate, and such accesses need to take that lock
+just like any other ordinary i2c accesses do.
 
+So, declare the i2c gate mux-locked, and zap the code that makes the
+unlocked i2c accesses and just use ordinary regmap_write accesses.
 
-On 4 May 2016 16:13:29 BST, "Andrew F. Davis" <afd@ti.com> wrote:
->On 05/04/2016 05:02 AM, Jonathan Cameron wrote:
->> On 01/05/16 21:36, Andrew F. Davis wrote:
->>> Locking the two gain stages to the same setting adds no value for
->us,
->>> so initialize them as unlocked and remove the sysfs for unlocking
->them.
->>> This also allows us to greatly simplify showing and setting the gain
->>> registers.
->>>
->>> Signed-off-by: Andrew F. Davis <afd@ti.com>
->> Hmm. ABI change but as you said it's an improvement.
->> 
->> Honestly I doubt anyone is using this device without also using
->userspace that
->> you are providing so lets apply this an cross our fingers that no one
->minds.
->> 
->
->Actually we don't even provide a Linux userspace for these yet,
->starting
->to work on that is what prompted these changes. These parts have
->traditionally been paired with a microcontroller to perform the work in
->dedicated devices. This was put on my desk as they are hoping to start
->enabling these to be integrated into smart devices running Linux
->(Android). I'm not an expert in pulse metering, so my initial attempt
->at
->an ABI was a bit off compared to what I now believe to be the "correct"
->way to expose these parts.
-*laughs*  sometimes the only way to find out is developing real products.
->
->Thanks again for tolerating all this madness :),
+This also happens to fix the deadlock described in
+http://patchwork.ozlabs.org/patch/584776/ authored by
+Adriana Reus <adriana.reus@intel.com> and submitted by
+Daniel Baluta <daniel.baluta@intel.com>
 
-It's cool. I worked with some medics who loved pulse oximeters a few years back. 
-Not sure what kit they were using though.
+----------8<----------
+iio: imu: inv_mpu6050: Fix deadlock between i2c adapter lock and mpu lock
 
-We were doing breathing measurement with structure light. Turns out you can get
- pulse from that (sort of). Plus all sorts of weird plots that medics love which make
- no sense at all from an engineering POV.
+This deadlock occurs if the accel/gyro and the sensor on the auxiliary
+I2C (in my setup it's an ak8975) are working at the same time.
 
-I like weird devices even if they can cause headaches :) Weird comes in many forms!
+Scenario:
 
-Jonathan
+      T1					T2
+     ====				       ====
+inv_mpu6050_read_fifo                  aux sensor op (eg. ak8975_read_raw)
+        |                                     |
+mutex_lock(&indio_dev->mlock)           i2c_transfer
+        |                                     |
+i2c transaction                         i2c adapter lock
+        |                                     |
+i2c adapter lock                        i2c_mux_master_xfer
+                                              |
+                                        inv_mpu6050_select_bypass
+                                              |
+                                        mutex_lock(&indio_dev->mlock)
 
->Andrew
->
->> Applied.
->>> ---
->>>  .../ABI/testing/sysfs-bus-iio-health-afe440x       |  9 ----
->>>  drivers/iio/health/afe4403.c                       | 60
->++++++----------------
->>>  drivers/iio/health/afe4404.c                       | 60
->++++++----------------
->>>  drivers/iio/health/afe440x.h                       | 15 ++----
->>>  4 files changed, 37 insertions(+), 107 deletions(-)
->>>
->>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
->b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
->>> index 3740f25..b19053a 100644
->>> --- a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
->>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
->>> @@ -8,15 +8,6 @@ Description:
->>>  		Transimpedance Amplifier. Y is 1 for Rf1 and Cf1, Y is 2 for
->>>  		Rf2 and Cf2 values.
->>>  
->>> -What:		/sys/bus/iio/devices/iio:deviceX/tia_separate_en
->>> -Date:		December 2015
->>> -KernelVersion:
->>> -Contact:	Andrew F. Davis <afd@ti.com>
->>> -Description:
->>> -		Enable or disable separate settings for the TransImpedance
->>> -		Amplifier above, when disabled both values are set by the
->>> -		first channel.
->>> -
->>>  What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_ledY_raw
->>>  		/sys/bus/iio/devices/iio:deviceX/in_intensity_ledY_ambient_raw
->>>  Date:		December 2015
->>> diff --git a/drivers/iio/health/afe4403.c
->b/drivers/iio/health/afe4403.c
->>> index 5484785..bcff528 100644
->>> --- a/drivers/iio/health/afe4403.c
->>> +++ b/drivers/iio/health/afe4403.c
->>> @@ -180,9 +180,9 @@ static ssize_t afe440x_show_register(struct
->device *dev,
->>>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>  	struct afe4403_data *afe = iio_priv(indio_dev);
->>>  	struct afe440x_attr *afe440x_attr = to_afe440x_attr(attr);
->>> -	unsigned int reg_val, type;
->>> +	unsigned int reg_val;
->>>  	int vals[2];
->>> -	int ret, val_len;
->>> +	int ret;
->>>  
->>>  	ret = regmap_read(afe->regmap, afe440x_attr->reg, &reg_val);
->>>  	if (ret)
->>> @@ -191,27 +191,13 @@ static ssize_t afe440x_show_register(struct
->device *dev,
->>>  	reg_val &= afe440x_attr->mask;
->>>  	reg_val >>= afe440x_attr->shift;
->>>  
->>> -	switch (afe440x_attr->type) {
->>> -	case SIMPLE:
->>> -		type = IIO_VAL_INT;
->>> -		val_len = 1;
->>> -		vals[0] = reg_val;
->>> -		break;
->>> -	case RESISTANCE:
->>> -	case CAPACITANCE:
->>> -		type = IIO_VAL_INT_PLUS_MICRO;
->>> -		val_len = 2;
->>> -		if (reg_val < afe440x_attr->table_size) {
->>> -			vals[0] = afe440x_attr->val_table[reg_val].integer;
->>> -			vals[1] = afe440x_attr->val_table[reg_val].fract;
->>> -			break;
->>> -		}
->>> +	if (reg_val >= afe440x_attr->table_size)
->>>  		return -EINVAL;
->>> -	default:
->>> -		return -EINVAL;
->>> -	}
->>>  
->>> -	return iio_format_value(buf, type, val_len, vals);
->>> +	vals[0] = afe440x_attr->val_table[reg_val].integer;
->>> +	vals[1] = afe440x_attr->val_table[reg_val].fract;
->>> +
->>> +	return iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, 2, vals);
->>>  }
->>>  
->>>  static ssize_t afe440x_store_register(struct device *dev,
->>> @@ -227,22 +213,12 @@ static ssize_t afe440x_store_register(struct
->device *dev,
->>>  	if (ret)
->>>  		return ret;
->>>  
->>> -	switch (afe440x_attr->type) {
->>> -	case SIMPLE:
->>> -		val = integer;
->>> -		break;
->>> -	case RESISTANCE:
->>> -	case CAPACITANCE:
->>> -		for (val = 0; val < afe440x_attr->table_size; val++)
->>> -			if (afe440x_attr->val_table[val].integer == integer &&
->>> -			    afe440x_attr->val_table[val].fract == fract)
->>> -				break;
->>> -		if (val == afe440x_attr->table_size)
->>> -			return -EINVAL;
->>> -		break;
->>> -	default:
->>> +	for (val = 0; val < afe440x_attr->table_size; val++)
->>> +		if (afe440x_attr->val_table[val].integer == integer &&
->>> +		    afe440x_attr->val_table[val].fract == fract)
->>> +			break;
->>> +	if (val == afe440x_attr->table_size)
->>>  		return -EINVAL;
->>> -	}
->>>  
->>>  	ret = regmap_update_bits(afe->regmap, afe440x_attr->reg,
->>>  				 afe440x_attr->mask,
->>> @@ -253,16 +229,13 @@ static ssize_t afe440x_store_register(struct
->device *dev,
->>>  	return count;
->>>  }
->>>  
->>> -static AFE440X_ATTR(tia_separate_en, AFE4403_TIAGAIN,
->AFE440X_TIAGAIN_ENSEPGAIN, SIMPLE, NULL, 0);
->>> -
->>> -static AFE440X_ATTR(tia_resistance1, AFE4403_TIAGAIN,
->AFE4403_TIAGAIN_RES, RESISTANCE, afe4403_res_table,
->ARRAY_SIZE(afe4403_res_table));
->>> -static AFE440X_ATTR(tia_capacitance1, AFE4403_TIAGAIN,
->AFE4403_TIAGAIN_CAP, CAPACITANCE, afe4403_cap_table,
->ARRAY_SIZE(afe4403_cap_table));
->>> +static AFE440X_ATTR(tia_resistance1, AFE4403_TIAGAIN,
->AFE4403_TIAGAIN_RES, afe4403_res_table);
->>> +static AFE440X_ATTR(tia_capacitance1, AFE4403_TIAGAIN,
->AFE4403_TIAGAIN_CAP, afe4403_cap_table);
->>>  
->>> -static AFE440X_ATTR(tia_resistance2, AFE4403_TIA_AMB_GAIN,
->AFE4403_TIAGAIN_RES, RESISTANCE, afe4403_res_table,
->ARRAY_SIZE(afe4403_res_table));
->>> -static AFE440X_ATTR(tia_capacitance2, AFE4403_TIA_AMB_GAIN,
->AFE4403_TIAGAIN_RES, CAPACITANCE, afe4403_cap_table,
->ARRAY_SIZE(afe4403_cap_table));
->>> +static AFE440X_ATTR(tia_resistance2, AFE4403_TIA_AMB_GAIN,
->AFE4403_TIAGAIN_RES, afe4403_res_table);
->>> +static AFE440X_ATTR(tia_capacitance2, AFE4403_TIA_AMB_GAIN,
->AFE4403_TIAGAIN_RES, afe4403_cap_table);
->>>  
->>>  static struct attribute *afe440x_attributes[] = {
->>> -	&afe440x_attr_tia_separate_en.dev_attr.attr,
->>>  	&afe440x_attr_tia_resistance1.dev_attr.attr,
->>>  	&afe440x_attr_tia_capacitance1.dev_attr.attr,
->>>  	&afe440x_attr_tia_resistance2.dev_attr.attr,
->>> @@ -473,6 +446,7 @@ static const struct iio_trigger_ops
->afe4403_trigger_ops = {
->>>  static const struct reg_sequence afe4403_reg_sequences[] = {
->>>  	AFE4403_TIMING_PAIRS,
->>>  	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
->>> +	{ AFE4403_TIAGAIN, AFE440X_TIAGAIN_ENSEPGAIN },
->>>  };
->>>  
->>>  static const struct regmap_range afe4403_yes_ranges[] = {
->>> diff --git a/drivers/iio/health/afe4404.c
->b/drivers/iio/health/afe4404.c
->>> index 2d4c522..b9c1666 100644
->>> --- a/drivers/iio/health/afe4404.c
->>> +++ b/drivers/iio/health/afe4404.c
->>> @@ -193,9 +193,9 @@ static ssize_t afe440x_show_register(struct
->device *dev,
->>>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>  	struct afe4404_data *afe = iio_priv(indio_dev);
->>>  	struct afe440x_attr *afe440x_attr = to_afe440x_attr(attr);
->>> -	unsigned int reg_val, type;
->>> +	unsigned int reg_val;
->>>  	int vals[2];
->>> -	int ret, val_len;
->>> +	int ret;
->>>  
->>>  	ret = regmap_read(afe->regmap, afe440x_attr->reg, &reg_val);
->>>  	if (ret)
->>> @@ -204,27 +204,13 @@ static ssize_t afe440x_show_register(struct
->device *dev,
->>>  	reg_val &= afe440x_attr->mask;
->>>  	reg_val >>= afe440x_attr->shift;
->>>  
->>> -	switch (afe440x_attr->type) {
->>> -	case SIMPLE:
->>> -		type = IIO_VAL_INT;
->>> -		val_len = 1;
->>> -		vals[0] = reg_val;
->>> -		break;
->>> -	case RESISTANCE:
->>> -	case CAPACITANCE:
->>> -		type = IIO_VAL_INT_PLUS_MICRO;
->>> -		val_len = 2;
->>> -		if (reg_val < afe440x_attr->table_size) {
->>> -			vals[0] = afe440x_attr->val_table[reg_val].integer;
->>> -			vals[1] = afe440x_attr->val_table[reg_val].fract;
->>> -			break;
->>> -		}
->>> +	if (reg_val >= afe440x_attr->table_size)
->>>  		return -EINVAL;
->>> -	default:
->>> -		return -EINVAL;
->>> -	}
->>>  
->>> -	return iio_format_value(buf, type, val_len, vals);
->>> +	vals[0] = afe440x_attr->val_table[reg_val].integer;
->>> +	vals[1] = afe440x_attr->val_table[reg_val].fract;
->>> +
->>> +	return iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, 2, vals);
->>>  }
->>>  
->>>  static ssize_t afe440x_store_register(struct device *dev,
->>> @@ -240,22 +226,12 @@ static ssize_t afe440x_store_register(struct
->device *dev,
->>>  	if (ret)
->>>  		return ret;
->>>  
->>> -	switch (afe440x_attr->type) {
->>> -	case SIMPLE:
->>> -		val = integer;
->>> -		break;
->>> -	case RESISTANCE:
->>> -	case CAPACITANCE:
->>> -		for (val = 0; val < afe440x_attr->table_size; val++)
->>> -			if (afe440x_attr->val_table[val].integer == integer &&
->>> -			    afe440x_attr->val_table[val].fract == fract)
->>> -				break;
->>> -		if (val == afe440x_attr->table_size)
->>> -			return -EINVAL;
->>> -		break;
->>> -	default:
->>> +	for (val = 0; val < afe440x_attr->table_size; val++)
->>> +		if (afe440x_attr->val_table[val].integer == integer &&
->>> +		    afe440x_attr->val_table[val].fract == fract)
->>> +			break;
->>> +	if (val == afe440x_attr->table_size)
->>>  		return -EINVAL;
->>> -	}
->>>  
->>>  	ret = regmap_update_bits(afe->regmap, afe440x_attr->reg,
->>>  				 afe440x_attr->mask,
->>> @@ -266,16 +242,13 @@ static ssize_t afe440x_store_register(struct
->device *dev,
->>>  	return count;
->>>  }
->>>  
->>> -static AFE440X_ATTR(tia_separate_en, AFE4404_TIA_GAIN_SEP,
->AFE440X_TIAGAIN_ENSEPGAIN, SIMPLE, NULL, 0);
->>> -
->>> -static AFE440X_ATTR(tia_resistance1, AFE4404_TIA_GAIN,
->AFE4404_TIA_GAIN_RES, RESISTANCE, afe4404_res_table,
->ARRAY_SIZE(afe4404_res_table));
->>> -static AFE440X_ATTR(tia_capacitance1, AFE4404_TIA_GAIN,
->AFE4404_TIA_GAIN_CAP, CAPACITANCE, afe4404_cap_table,
->ARRAY_SIZE(afe4404_cap_table));
->>> +static AFE440X_ATTR(tia_resistance1, AFE4404_TIA_GAIN,
->AFE4404_TIA_GAIN_RES, afe4404_res_table);
->>> +static AFE440X_ATTR(tia_capacitance1, AFE4404_TIA_GAIN,
->AFE4404_TIA_GAIN_CAP, afe4404_cap_table);
->>>  
->>> -static AFE440X_ATTR(tia_resistance2, AFE4404_TIA_GAIN_SEP,
->AFE4404_TIA_GAIN_RES, RESISTANCE, afe4404_res_table,
->ARRAY_SIZE(afe4404_res_table));
->>> -static AFE440X_ATTR(tia_capacitance2, AFE4404_TIA_GAIN_SEP,
->AFE4404_TIA_GAIN_CAP, CAPACITANCE, afe4404_cap_table,
->ARRAY_SIZE(afe4404_cap_table));
->>> +static AFE440X_ATTR(tia_resistance2, AFE4404_TIA_GAIN_SEP,
->AFE4404_TIA_GAIN_RES, afe4404_res_table);
->>> +static AFE440X_ATTR(tia_capacitance2, AFE4404_TIA_GAIN_SEP,
->AFE4404_TIA_GAIN_CAP, afe4404_cap_table);
->>>  
->>>  static struct attribute *afe440x_attributes[] = {
->>> -	&afe440x_attr_tia_separate_en.dev_attr.attr,
->>>  	&afe440x_attr_tia_resistance1.dev_attr.attr,
->>>  	&afe440x_attr_tia_capacitance1.dev_attr.attr,
->>>  	&afe440x_attr_tia_resistance2.dev_attr.attr,
->>> @@ -443,6 +416,7 @@ static const struct iio_trigger_ops
->afe4404_trigger_ops = {
->>>  static const struct reg_sequence afe4404_reg_sequences[] = {
->>>  	AFE4404_TIMING_PAIRS,
->>>  	{ AFE440X_CONTROL1, AFE440X_CONTROL1_TIMEREN },
->>> +	{ AFE4404_TIA_GAIN_SEP, AFE440X_TIAGAIN_ENSEPGAIN },
->>>  	{ AFE440X_CONTROL2, AFE440X_CONTROL3_OSC_ENABLE	},
->>>  };
->>>  
->>> diff --git a/drivers/iio/health/afe440x.h
->b/drivers/iio/health/afe440x.h
->>> index c671ab7..544bbab 100644
->>> --- a/drivers/iio/health/afe440x.h
->>> +++ b/drivers/iio/health/afe440x.h
->>> @@ -71,8 +71,7 @@
->>>  #define AFE440X_CONTROL1_TIMEREN	BIT(8)
->>>  
->>>  /* TIAGAIN register fields */
->>> -#define AFE440X_TIAGAIN_ENSEPGAIN_MASK	BIT(15)
->>> -#define AFE440X_TIAGAIN_ENSEPGAIN_SHIFT	15
->>> +#define AFE440X_TIAGAIN_ENSEPGAIN	BIT(15)
->>>  
->>>  /* CONTROL2 register fields */
->>>  #define AFE440X_CONTROL2_PDN_AFE	BIT(0)
->>> @@ -133,12 +132,6 @@ struct afe440x_reg_info {
->>>  		.output = true,					\
->>>  	}
->>>  
->>> -enum afe440x_reg_type {
->>> -	SIMPLE,
->>> -	RESISTANCE,
->>> -	CAPACITANCE,
->>> -};
->>> -
->>>  struct afe440x_val_table {
->>>  	int integer;
->>>  	int fract;
->>> @@ -167,7 +160,6 @@ struct afe440x_attr {
->>>  	unsigned int reg;
->>>  	unsigned int shift;
->>>  	unsigned int mask;
->>> -	enum afe440x_reg_type type;
->>>  	const struct afe440x_val_table *val_table;
->>>  	unsigned int table_size;
->>>  };
->>> @@ -175,7 +167,7 @@ struct afe440x_attr {
->>>  #define to_afe440x_attr(_dev_attr)				\
->>>  	container_of(_dev_attr, struct afe440x_attr, dev_attr)
->>>  
->>> -#define AFE440X_ATTR(_name, _reg, _field, _type, _table, _size)	\
->>> +#define AFE440X_ATTR(_name, _reg, _field, _table)		\
->>>  	struct afe440x_attr afe440x_attr_##_name = {		\
->>>  		.dev_attr = __ATTR(_name, (S_IRUGO | S_IWUSR),	\
->>>  				   afe440x_show_register,	\
->>> @@ -183,9 +175,8 @@ struct afe440x_attr {
->>>  		.reg = _reg,					\
->>>  		.shift = _field ## _SHIFT,			\
->>>  		.mask = _field ## _MASK,			\
->>> -		.type = _type,					\
->>>  		.val_table = _table,				\
->>> -		.table_size = _size,				\
->>> +		.table_size = ARRAY_SIZE(_table),		\
->>>  	}
->>>  
->>>  #endif /* _AFE440X_H */
->>>
->> 
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+When we operate on an mpu sensor the order of locking is mpu lock
+followed by the i2c adapter lock. However, when we operate the auxiliary
+sensor the order of locking is the other way around.
 
+...
+----------8<----------
+
+The reason this patch fixes the deadlock is that T2 does not grab the
+i2c adapter lock until the very end (and grabs the newfangled i2c mux
+lock where it previously grabbed the i2c adapter lock).
+
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Tested-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ Documentation/i2c/i2c-topology            |  2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 52 ++++++-------------------------
+ 2 files changed, 11 insertions(+), 43 deletions(-)
+
+diff --git a/Documentation/i2c/i2c-topology b/Documentation/i2c/i2c-topology
+index 27bfd682808d..69b008518454 100644
+--- a/Documentation/i2c/i2c-topology
++++ b/Documentation/i2c/i2c-topology
+@@ -50,7 +50,7 @@ i2c-mux-pinctrl           Normally parent-locked, mux-locked iff
+ i2c-mux-reg               Parent-locked
+ 
+ In drivers/iio/
+-imu/inv_mpu6050/          Parent-locked
++imu/inv_mpu6050/          Mux-locked
+ 
+ In drivers/media/
+ dvb-frontends/m88ds3103   Parent-locked
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index 3a078df84224..e25f7ef7f0ea 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -24,45 +24,16 @@ static const struct regmap_config inv_mpu_regmap_config = {
+ 	.val_bits = 8,
+ };
+ 
+-/*
+- * The i2c read/write needs to happen in unlocked mode. As the parent
+- * adapter is common. If we use locked versions, it will fail as
+- * the mux adapter will lock the parent i2c adapter, while calling
+- * select/deselect functions.
+- */
+-static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
+-					  u8 reg, u8 d)
+-{
+-	int ret;
+-	u8 buf[2] = {reg, d};
+-	struct i2c_msg msg[1] = {
+-		{
+-			.addr = client->addr,
+-			.flags = 0,
+-			.len = sizeof(buf),
+-			.buf = buf,
+-		}
+-	};
+-
+-	ret = __i2c_transfer(client->adapter, msg, 1);
+-	if (ret != 1)
+-		return ret;
+-
+-	return 0;
+-}
+-
+ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct i2c_client *client = i2c_mux_priv(muxc);
+-	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
++	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 	int ret = 0;
+ 
+ 	/* Use the same mutex which was used everywhere to protect power-op */
+ 	mutex_lock(&indio_dev->mlock);
+ 	if (!st->powerup_count) {
+-		ret = inv_mpu6050_write_reg_unlocked(client,
+-						     st->reg->pwr_mgmt_1, 0);
++		ret = regmap_write(st->map, st->reg->pwr_mgmt_1, 0);
+ 		if (ret)
+ 			goto write_error;
+ 
+@@ -71,10 +42,9 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ 	}
+ 	if (!ret) {
+ 		st->powerup_count++;
+-		ret = inv_mpu6050_write_reg_unlocked(client,
+-						     st->reg->int_pin_cfg,
+-						     INV_MPU6050_INT_PIN_CFG |
+-						     INV_MPU6050_BIT_BYPASS_EN);
++		ret = regmap_write(st->map, st->reg->int_pin_cfg,
++				   INV_MPU6050_INT_PIN_CFG |
++				   INV_MPU6050_BIT_BYPASS_EN);
+ 	}
+ write_error:
+ 	mutex_unlock(&indio_dev->mlock);
+@@ -84,18 +54,16 @@ write_error:
+ 
+ static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
+ {
+-	struct i2c_client *client = i2c_mux_priv(muxc);
+-	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
++	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+ 
+ 	mutex_lock(&indio_dev->mlock);
+ 	/* It doesn't really mattter, if any of the calls fails */
+-	inv_mpu6050_write_reg_unlocked(client, st->reg->int_pin_cfg,
+-				       INV_MPU6050_INT_PIN_CFG);
++	regmap_write(st->map, st->reg->int_pin_cfg, INV_MPU6050_INT_PIN_CFG);
+ 	st->powerup_count--;
+ 	if (!st->powerup_count)
+-		inv_mpu6050_write_reg_unlocked(client, st->reg->pwr_mgmt_1,
+-					       INV_MPU6050_BIT_SLEEP);
++		regmap_write(st->map, st->reg->pwr_mgmt_1,
++			     INV_MPU6050_BIT_SLEEP);
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+ 	return 0;
+@@ -134,7 +102,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 
+ 	st = iio_priv(dev_get_drvdata(&client->dev));
+ 	st->muxc = i2c_mux_alloc(client->adapter, &client->dev,
+-				 1, 0, 0,
++				 1, 0, I2C_MUX_LOCKED,
+ 				 inv_mpu6050_select_bypass,
+ 				 inv_mpu6050_deselect_bypass);
+ 	if (!st->muxc) {
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+2.1.4
