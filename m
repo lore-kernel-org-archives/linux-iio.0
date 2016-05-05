@@ -1,249 +1,394 @@
-Return-Path: <peda@axentia.se>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Jonathan
- Corbet <corbet@lwn.net>, Peter Korsgaard <peter.korsgaard@barco.com>, Guenter
- Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>, Hartmut
- Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, Mauro Carvalho
- Chehab <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>, Frank
- Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>, "David S. Miller"
-	<davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kalle
- Valo <kvalo@codeaurora.org>, Jiri Slaby <jslaby@suse.com>, Daniel Baluta
-	<daniel.baluta@intel.com>, Lucas De Marchi <lucas.demarchi@intel.com>, Matt
- Ranostay <matt.ranostay@intel.com>, Krzysztof Kozlowski
-	<k.kozlowski@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Terry Heo
-	<terryheo@google.com>, Arnd Bergmann <arnd@arndb.de>, Tommi Rantala
-	<tt.rantala@gmail.com>, Crestez Dan Leonard <leonard.crestez@intel.com>,
-	<linux-i2c@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
-	<devicetree@vger.kernel.org>
-Subject: [PATCH v9 1/9] i2c: allow adapter drivers to override the adapter locking
-Date: Wed, 4 May 2016 22:15:27 +0200
-Message-ID: <1462392935-28011-2-git-send-email-peda@axentia.se>
-In-Reply-To: <1462392935-28011-1-git-send-email-peda@axentia.se>
-References: <1462392935-28011-1-git-send-email-peda@axentia.se>
-MIME-Version: 1.0
-Content-Type: text/plain
+Return-Path: <matt.ranostay@intel.com>
+From: Matt Ranostay <matt.ranostay@intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Matt Ranostay <matt.ranostay@intel.com>
+Subject: [PATCH v2] iio: pressure: bmp280: add humidity support
+Date: Wed,  4 May 2016 22:57:30 -0700
+Message-Id: <1462427850-19749-1-git-send-email-matt.ranostay@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add i2c_lock_bus() and i2c_unlock_bus(), which call the new lock_bus and
-unlock_bus ops in the adapter. These funcs/ops take an additional flags
-argument that indicates for what purpose the adapter is locked.
+Enable humidity support for the BME280 part
 
-There are two flags, I2C_LOCK_ROOT_ADAPTER and I2C_LOCK_SEGMENT, but they
-are both implemented the same. For now. Locking the root adapter means
-that the whole bus is locked, locking the segment means that only the
-current bus segment is locked (i.e. i2c traffic on the parent side of
-a mux is still allowed even if the child side of the mux is locked).
-
-Also support a trylock_bus op (but no function to call it, as it is not
-expected to be needed outside of the i2c core).
-
-Implement i2c_lock_adapter/i2c_unlock_adapter in terms of the new locking
-scheme (i.e. lock with the I2C_LOCK_ROOT_ADAPTER flag).
-
-Locking the root adapter and locking the segment is the same thing for
-all root adapters (e.g. in the normal case of a simple topology with no
-i2c muxes). The two locking variants are also the same for traditional
-muxes (aka parent-locked muxes). These muxes traverse the tree, locking
-each level as they go until they reach the root. This patch is preparatory
-for a later patch in the series introducing mux-locked muxes, which behave
-differently depending on the requested locking. Since all current users
-are using i2c_lock_adapter, which is a wrapper for I2C_LOCK_ROOT_ADAPTER,
-we only need to annotate the calls that will not need to lock the root
-adapter for mux-locked muxes. I.e. the instances that needs to use
-I2C_LOCK_SEGMENT instead of i2c_lock_adapter/I2C_LOCK_ROOT_ADAPTER. Those
-instances are in the i2c_transfer and i2c_smbus_xfer functions, so that
-mux-locked muxes can single out normal i2c accesses to its slave side
-and adjust the locking for those accesses.
-
-Signed-off-by: Peter Rosin <peda@axentia.se>
+Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
 ---
- drivers/i2c/i2c-core.c | 41 +++++++++++++++++++++++++++--------------
- include/linux/i2c.h    | 44 ++++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 69 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
-index 4979728f7fb2..7ef5bd085476 100644
---- a/drivers/i2c/i2c-core.c
-+++ b/drivers/i2c/i2c-core.c
-@@ -954,10 +954,13 @@ static int i2c_check_addr_busy(struct i2c_adapter *adapter, int addr)
- }
- 
- /**
-- * i2c_lock_adapter - Get exclusive access to an I2C bus segment
-+ * i2c_adapter_lock_bus - Get exclusive access to an I2C bus segment
-  * @adapter: Target I2C bus segment
-+ * @flags: I2C_LOCK_ROOT_ADAPTER locks the root i2c adapter, I2C_LOCK_SEGMENT
-+ *	locks only this branch in the adapter tree
+changes from v1:
+ * rework to use new multiple chip selection method
+ * fix issue with humidity coefficients being off by one
+ * fixed incorrect shifted coefficients
+ * added oversampling configuration for humidity
+
+ drivers/iio/pressure/bmp280.c | 200 +++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 198 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index 2f1498e..1876b50 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -10,6 +10,7 @@
+  * Datasheet:
+  * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP180-DS000-121.pdf
+  * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-DS001-12.pdf
++ * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280_DS001-11.pdf
   */
--void i2c_lock_adapter(struct i2c_adapter *adapter)
-+static void i2c_adapter_lock_bus(struct i2c_adapter *adapter,
-+				 unsigned int flags)
+ 
+ #define pr_fmt(fmt) "bmp280: " fmt
+@@ -23,6 +24,8 @@
+ #include <linux/iio/sysfs.h>
+ 
+ /* BMP280 specific registers */
++#define BMP280_REG_HUMIDITY_LSB		0xFE
++#define BMP280_REG_HUMIDITY_MSB		0xFD
+ #define BMP280_REG_TEMP_XLSB		0xFC
+ #define BMP280_REG_TEMP_LSB		0xFB
+ #define BMP280_REG_TEMP_MSB		0xFA
+@@ -31,7 +34,17 @@
+ #define BMP280_REG_PRESS_MSB		0xF7
+ 
+ #define BMP280_REG_CONFIG		0xF5
++#define BMP280_REG_CTRL_MEAS		0xF4
+ #define BMP280_REG_STATUS		0xF3
++#define BMP280_REG_CTRL_HUMIDITY	0xF2
++
++/* Due to non linear mapping, and data sizes we can't do a bulk read */
++#define BMP280_REG_COMP_H1		0xA1
++#define BMP280_REG_COMP_H2		0xE1
++#define BMP280_REG_COMP_H3		0xE3
++#define BMP280_REG_COMP_H4		0xE4
++#define BMP280_REG_COMP_H5		0xE5
++#define BMP280_REG_COMP_H6		0xE7
+ 
+ #define BMP280_REG_COMP_TEMP_START	0x88
+ #define BMP280_COMP_TEMP_REG_COUNT	6
+@@ -46,6 +59,15 @@
+ #define BMP280_FILTER_8X		(BIT(3) | BIT(2))
+ #define BMP280_FILTER_16X		BIT(4)
+ 
++#define BMP280_OSRS_HUMIDITY_MASK	(BIT(2) | BIT(1) | BIT(0))
++#define BMP280_OSRS_HUMIDITIY_X(osrs_h)	((osrs_h) << 0)
++#define BMP280_OSRS_HUMIDITY_SKIP	0
++#define BMP280_OSRS_HUMIDITY_1X		BMP280_OSRS_HUMIDITIY_X(1)
++#define BMP280_OSRS_HUMIDITY_2X		BMP280_OSRS_HUMIDITIY_X(2)
++#define BMP280_OSRS_HUMIDITY_4X		BMP280_OSRS_HUMIDITIY_X(3)
++#define BMP280_OSRS_HUMIDITY_8X		BMP280_OSRS_HUMIDITIY_X(4)
++#define BMP280_OSRS_HUMIDITY_16X	BMP280_OSRS_HUMIDITIY_X(5)
++
+ #define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
+ #define BMP280_OSRS_TEMP_SKIP		0
+ #define BMP280_OSRS_TEMP_X(osrs_t)	((osrs_t) << 5)
+@@ -92,6 +114,7 @@
+ 
+ #define BMP180_CHIP_ID			0x55
+ #define BMP280_CHIP_ID			0x58
++#define BME280_CHIP_ID			0x60
+ #define BMP280_SOFT_RESET_VAL		0xB6
+ 
+ struct bmp280_data {
+@@ -103,6 +126,7 @@ struct bmp280_data {
+ 	/* log of base 2 of oversampling rate */
+ 	u8 oversampling_press;
+ 	u8 oversampling_temp;
++	u8 oversampling_humid;
+ 
+ 	/*
+ 	 * Carryover value from temperature conversion, used in pressure
+@@ -120,9 +144,13 @@ struct bmp280_chip_info {
+ 	const int *oversampling_press_avail;
+ 	int num_oversampling_press_avail;
+ 
++	const int *oversampling_humid_avail;
++	int num_oversampling_humid_avail;
++
+ 	int (*chip_config)(struct bmp280_data *);
+ 	int (*read_temp)(struct bmp280_data *, int *);
+ 	int (*read_press)(struct bmp280_data *, int *, int *);
++	int (*read_humid)(struct bmp280_data *, int *, int *);
+ };
+ 
+ /*
+@@ -143,12 +171,18 @@ static const struct iio_chan_spec bmp280_channels[] = {
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+ 				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+ 	},
++	{
++		.type = IIO_HUMIDITYRELATIVE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
++				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
++	},
+ };
+ 
+ static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
  {
- 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
- 
-@@ -966,27 +969,32 @@ void i2c_lock_adapter(struct i2c_adapter *adapter)
- 	else
- 		rt_mutex_lock(&adapter->bus_lock);
- }
--EXPORT_SYMBOL_GPL(i2c_lock_adapter);
- 
- /**
-- * i2c_trylock_adapter - Try to get exclusive access to an I2C bus segment
-+ * i2c_adapter_trylock_bus - Try to get exclusive access to an I2C bus segment
-  * @adapter: Target I2C bus segment
-+ * @flags: I2C_LOCK_ROOT_ADAPTER trylocks the root i2c adapter, I2C_LOCK_SEGMENT
-+ *	trylocks only this branch in the adapter tree
-  */
--static int i2c_trylock_adapter(struct i2c_adapter *adapter)
-+static int i2c_adapter_trylock_bus(struct i2c_adapter *adapter,
-+				   unsigned int flags)
+ 	switch (reg) {
+ 	case BMP280_REG_CONFIG:
++	case BMP280_REG_CTRL_HUMIDITY:
+ 	case BMP280_REG_CTRL_MEAS:
+ 	case BMP280_REG_RESET:
+ 		return true;
+@@ -160,6 +194,8 @@ static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
+ static bool bmp280_is_volatile_reg(struct device *dev, unsigned int reg)
  {
- 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
+ 	switch (reg) {
++	case BMP280_REG_HUMIDITY_LSB:
++	case BMP280_REG_HUMIDITY_MSB:
+ 	case BMP280_REG_TEMP_XLSB:
+ 	case BMP280_REG_TEMP_LSB:
+ 	case BMP280_REG_TEMP_MSB:
+@@ -177,7 +213,7 @@ static const struct regmap_config bmp280_regmap_config = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
  
- 	if (parent)
--		return i2c_trylock_adapter(parent);
-+		return parent->trylock_bus(parent, flags);
- 	else
- 		return rt_mutex_trylock(&adapter->bus_lock);
- }
+-	.max_register = BMP280_REG_TEMP_XLSB,
++	.max_register = BMP280_REG_HUMIDITY_LSB,
+ 	.cache_type = REGCACHE_RBTREE,
  
- /**
-- * i2c_unlock_adapter - Release exclusive access to an I2C bus segment
-+ * i2c_adapter_unlock_bus - Release exclusive access to an I2C bus segment
-  * @adapter: Target I2C bus segment
-+ * @flags: I2C_LOCK_ROOT_ADAPTER unlocks the root i2c adapter, I2C_LOCK_SEGMENT
-+ *	unlocks only this branch in the adapter tree
-  */
--void i2c_unlock_adapter(struct i2c_adapter *adapter)
-+static void i2c_adapter_unlock_bus(struct i2c_adapter *adapter,
-+				   unsigned int flags)
- {
- 	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
+ 	.writeable_reg = bmp280_is_writeable_reg,
+@@ -185,6 +221,70 @@ static const struct regmap_config bmp280_regmap_config = {
+ };
  
-@@ -995,7 +1003,6 @@ void i2c_unlock_adapter(struct i2c_adapter *adapter)
- 	else
- 		rt_mutex_unlock(&adapter->bus_lock);
- }
--EXPORT_SYMBOL_GPL(i2c_unlock_adapter);
- 
- static void i2c_dev_set_name(struct i2c_adapter *adap,
- 			     struct i2c_client *client)
-@@ -1541,6 +1548,12 @@ static int i2c_register_adapter(struct i2c_adapter *adap)
- 		return -EINVAL;
- 	}
- 
-+	if (!adap->lock_bus) {
-+		adap->lock_bus = i2c_adapter_lock_bus;
-+		adap->trylock_bus = i2c_adapter_trylock_bus;
-+		adap->unlock_bus = i2c_adapter_unlock_bus;
+ /*
++ * Returns humidity in percent, resolution is 0.01 percent. Output value of
++ * "47445" represents 47445/1024 = 46.333 %RH.
++ *
++ * Taken from BME280 datasheet, Section 4.2.3, "Compensation formula".
++ */
++
++static u32 bmp280_compensate_humidity(struct bmp280_data *data,
++				      s32 adc_humidity)
++{
++	struct device *dev = &data->client->dev;
++	unsigned int H1, H3, tmp;
++	int H2, H4, H5, H6, ret, var;
++
++	ret = regmap_read(data->regmap, BMP280_REG_COMP_H1, &H1);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H1 comp value\n");
++		return ret;
 +	}
 +
- 	rt_mutex_init(&adap->bus_lock);
- 	mutex_init(&adap->userspace_clients_lock);
- 	INIT_LIST_HEAD(&adap->userspace_clients);
-@@ -2310,16 +2323,16 @@ int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
- #endif
- 
- 		if (in_atomic() || irqs_disabled()) {
--			ret = i2c_trylock_adapter(adap);
-+			ret = adap->trylock_bus(adap, I2C_LOCK_SEGMENT);
- 			if (!ret)
- 				/* I2C activity is ongoing. */
- 				return -EAGAIN;
- 		} else {
--			i2c_lock_adapter(adap);
-+			i2c_lock_bus(adap, I2C_LOCK_SEGMENT);
- 		}
- 
- 		ret = __i2c_transfer(adap, msgs, num);
--		i2c_unlock_adapter(adap);
-+		i2c_unlock_bus(adap, I2C_LOCK_SEGMENT);
- 
- 		return ret;
- 	} else {
-@@ -3094,7 +3107,7 @@ s32 i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short flags,
- 	flags &= I2C_M_TEN | I2C_CLIENT_PEC | I2C_CLIENT_SCCB;
- 
- 	if (adapter->algo->smbus_xfer) {
--		i2c_lock_adapter(adapter);
-+		i2c_lock_bus(adapter, I2C_LOCK_SEGMENT);
- 
- 		/* Retry automatically on arbitration loss */
- 		orig_jiffies = jiffies;
-@@ -3108,7 +3121,7 @@ s32 i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short flags,
- 				       orig_jiffies + adapter->timeout))
- 				break;
- 		}
--		i2c_unlock_adapter(adapter);
-+		i2c_unlock_bus(adapter, I2C_LOCK_SEGMENT);
- 
- 		if (res != -EOPNOTSUPP || !adapter->algo->master_xfer)
- 			goto trace;
-diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-index c30833b7b073..50934d6e1050 100644
---- a/include/linux/i2c.h
-+++ b/include/linux/i2c.h
-@@ -538,6 +538,10 @@ struct i2c_adapter {
- 
- 	struct i2c_bus_recovery_info *bus_recovery_info;
- 	const struct i2c_adapter_quirks *quirks;
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H2, &tmp, 2);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H2 comp value\n");
++		return ret;
++	}
++	H2 = sign_extend32(le16_to_cpu(tmp), 15);
 +
-+	void (*lock_bus)(struct i2c_adapter *, unsigned int flags);
-+	int (*trylock_bus)(struct i2c_adapter *, unsigned int flags);
-+	void (*unlock_bus)(struct i2c_adapter *, unsigned int flags);
++	ret = regmap_read(data->regmap, BMP280_REG_COMP_H3, &H3);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H3 comp value\n");
++		return ret;
++	}
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H4, &tmp, 2);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H4 comp value\n");
++		return ret;
++	}
++	H4 = sign_extend32(((be16_to_cpu(tmp) >> 4) & 0xff0) |
++			  (be16_to_cpu(tmp) & 0xf), 11);
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H5, &tmp, 2);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H5 comp value\n");
++		return ret;
++	}
++	H5 = sign_extend32(((le16_to_cpu(tmp) >> 4) & 0xfff), 11);
++
++	ret = regmap_read(data->regmap, BMP280_REG_COMP_H6, &tmp);
++	if (ret < 0) {
++		dev_err(dev, "failed to read H6 comp value\n");
++		return ret;
++	}
++	H6 = sign_extend32(tmp, 7);
++
++	var = ((s32)data->t_fine) - 76800;
++	var = ((((adc_humidity << 14) - (H4 << 20) - (H5 * var)) + 16384) >> 15)
++		* (((((((var * H6) >> 10) * (((var * H3) >> 11) + 32768)) >> 10)
++		+ 2097152) * H2 + 8192) >> 14);
++	var -= ((((var >> 15) * (var >> 15)) >> 7) * H1) >> 4;
++
++	return var >> 12;
++};
++
++/*
+  * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
+  * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
+  * value.
+@@ -324,6 +424,34 @@ static int bmp280_read_press(struct bmp280_data *data,
+ 	return IIO_VAL_FRACTIONAL;
+ }
+ 
++static int bmp280_read_humid(struct bmp280_data *data, int *val, int *val2)
++{
++	int ret;
++	__be16 tmp = 0;
++	s32 adc_humidity;
++	u32 comp_humidity;
++
++	/* Read and compensate temperature so we get a reading of t_fine. */
++	ret = bmp280_read_temp(data, NULL);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_HUMIDITY_MSB,
++			       (u8 *) &tmp, 2);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "failed to read humidity\n");
++		return ret;
++	}
++
++	adc_humidity = be16_to_cpu(tmp);
++	comp_humidity = bmp280_compensate_humidity(data, adc_humidity);
++
++	*val = comp_humidity;
++	*val2 = 1024;
++
++	return IIO_VAL_FRACTIONAL;
++}
++
+ static int bmp280_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+@@ -336,6 +464,9 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		switch (chan->type) {
++		case IIO_HUMIDITYRELATIVE:
++			ret = data->chip_info->read_humid(data, val, val2);
++			break;
+ 		case IIO_PRESSURE:
+ 			ret = data->chip_info->read_press(data, val, val2);
+ 			break;
+@@ -349,6 +480,10 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+ 		break;
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+ 		switch (chan->type) {
++		case IIO_HUMIDITYRELATIVE:
++			*val = 1 << data->oversampling_humid;
++			ret = IIO_VAL_INT;
++			break;
+ 		case IIO_PRESSURE:
+ 			*val = 1 << data->oversampling_press;
+ 			ret = IIO_VAL_INT;
+@@ -372,6 +507,23 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static int bmp280_write_oversampling_ratio_humid(struct bmp280_data *data,
++					       int val)
++{
++	int i;
++	const int *avail = data->chip_info->oversampling_humid_avail;
++	const int n = data->chip_info->num_oversampling_humid_avail;
++
++	for (i = 0; i < n; i++) {
++		if (avail[i] == val) {
++			data->oversampling_humid = ilog2(val);
++
++			return data->chip_info->chip_config(data);
++		}
++	}
++	return -EINVAL;
++}
++
+ static int bmp280_write_oversampling_ratio_temp(struct bmp280_data *data,
+ 					       int val)
+ {
+@@ -417,6 +569,9 @@ static int bmp280_write_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+ 		mutex_lock(&data->lock);
+ 		switch (chan->type) {
++		case IIO_HUMIDITYRELATIVE:
++			ret = bmp280_write_oversampling_ratio_humid(data, val);
++			break;
+ 		case IIO_PRESSURE:
+ 			ret = bmp280_write_oversampling_ratio_press(data, val);
+ 			break;
+@@ -535,6 +690,37 @@ static const struct bmp280_chip_info bmp280_chip_info = {
+ 	.read_press = bmp280_read_press,
  };
- #define to_i2c_adapter(d) container_of(d, struct i2c_adapter, dev)
  
-@@ -567,8 +571,44 @@ i2c_parent_is_i2c_adapter(const struct i2c_adapter *adapter)
- int i2c_for_each_dev(void *data, int (*fn)(struct device *, void *));
++static int bme280_chip_config(struct bmp280_data *data)
++{
++	int ret = bmp280_chip_config(data);
++	u8 osrs = BMP280_OSRS_HUMIDITIY_X(data->oversampling_humid + 1);
++
++	if (ret < 0)
++		return ret;
++
++	return regmap_update_bits(data->regmap, BMP280_REG_CTRL_HUMIDITY,
++				  BMP280_OSRS_HUMIDITY_MASK, osrs);
++}
++
++static const struct bmp280_chip_info bme280_chip_info = {
++	.regmap_config = &bmp280_regmap_config,
++
++	.oversampling_temp_avail = bmp280_oversampling_avail,
++	.num_oversampling_temp_avail = ARRAY_SIZE(bmp280_oversampling_avail),
++
++	.oversampling_press_avail = bmp280_oversampling_avail,
++	.num_oversampling_press_avail = ARRAY_SIZE(bmp280_oversampling_avail),
++
++	.oversampling_humid_avail = bmp280_oversampling_avail,
++	.num_oversampling_humid_avail = ARRAY_SIZE(bmp280_oversampling_avail),
++
++	.chip_config = bme280_chip_config,
++	.read_temp = bmp280_read_temp,
++	.read_press = bmp280_read_press,
++	.read_humid = bmp280_read_humid,
++};
++
++
+ static bool bmp180_is_writeable_reg(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg) {
+@@ -849,21 +1035,29 @@ static int bmp280_probe(struct i2c_client *client,
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->name = id->name;
+ 	indio_dev->channels = bmp280_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(bmp280_channels);
+ 	indio_dev->info = &bmp280_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
  
- /* Adapter locking functions, exported for shared pin cases */
--void i2c_lock_adapter(struct i2c_adapter *);
--void i2c_unlock_adapter(struct i2c_adapter *);
-+#define I2C_LOCK_ROOT_ADAPTER BIT(0)
-+#define I2C_LOCK_SEGMENT      BIT(1)
-+
-+/**
-+ * i2c_lock_bus - Get exclusive access to an I2C bus segment
-+ * @adapter: Target I2C bus segment
-+ * @flags: I2C_LOCK_ROOT_ADAPTER locks the root i2c adapter, I2C_LOCK_SEGMENT
-+ *	locks only this branch in the adapter tree
-+ */
-+static inline void
-+i2c_lock_bus(struct i2c_adapter *adapter, unsigned int flags)
-+{
-+	adapter->lock_bus(adapter, flags);
-+}
-+
-+/**
-+ * i2c_unlock_bus - Release exclusive access to an I2C bus segment
-+ * @adapter: Target I2C bus segment
-+ * @flags: I2C_LOCK_ROOT_ADAPTER unlocks the root i2c adapter, I2C_LOCK_SEGMENT
-+ *	unlocks only this branch in the adapter tree
-+ */
-+static inline void
-+i2c_unlock_bus(struct i2c_adapter *adapter, unsigned int flags)
-+{
-+	adapter->unlock_bus(adapter, flags);
-+}
-+
-+static inline void
-+i2c_lock_adapter(struct i2c_adapter *adapter)
-+{
-+	i2c_lock_bus(adapter, I2C_LOCK_ROOT_ADAPTER);
-+}
-+
-+static inline void
-+i2c_unlock_adapter(struct i2c_adapter *adapter)
-+{
-+	i2c_unlock_bus(adapter, I2C_LOCK_ROOT_ADAPTER);
-+}
- 
- /*flags for the client struct: */
- #define I2C_CLIENT_PEC		0x04	/* Use Packet Error Checking */
+ 	switch (id->driver_data) {
+ 	case BMP180_CHIP_ID:
++		indio_dev->num_channels = 2;
+ 		data->chip_info = &bmp180_chip_info;
+ 		data->oversampling_press = ilog2(8);
+ 		data->oversampling_temp = ilog2(1);
+ 		break;
+ 	case BMP280_CHIP_ID:
++		indio_dev->num_channels = 2;
+ 		data->chip_info = &bmp280_chip_info;
+ 		data->oversampling_press = ilog2(16);
+ 		data->oversampling_temp = ilog2(2);
+ 		break;
++	case BME280_CHIP_ID:
++		indio_dev->num_channels = 3;
++		data->chip_info = &bme280_chip_info;
++		data->oversampling_press = ilog2(16);
++		data->oversampling_humid = ilog2(16);
++		data->oversampling_temp = ilog2(2);
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -895,6 +1089,7 @@ static const struct acpi_device_id bmp280_acpi_match[] = {
+ 	{"BMP0280", BMP280_CHIP_ID },
+ 	{"BMP0180", BMP180_CHIP_ID },
+ 	{"BMP0085", BMP180_CHIP_ID },
++	{"BME0280", BME280_CHIP_ID },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
+@@ -903,6 +1098,7 @@ static const struct i2c_device_id bmp280_id[] = {
+ 	{"bmp280", BMP280_CHIP_ID },
+ 	{"bmp180", BMP180_CHIP_ID },
+ 	{"bmp085", BMP180_CHIP_ID },
++	{"bme280", BME280_CHIP_ID },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(i2c, bmp280_id);
 -- 
-2.1.4
+2.7.4
