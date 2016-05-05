@@ -1,197 +1,59 @@
-Return-Path: <peda@axentia.se>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Jonathan
- Corbet" <corbet@lwn.net>, Peter Korsgaard <peter.korsgaard@barco.com>,
-	"Guenter Roeck" <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>,
-	"Hartmut Knaack" <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald" <pmeerw@pmeerw.net>, Antti Palosaari <crope@iki.fi>, "Mauro
- Carvalho Chehab" <mchehab@osg.samsung.com>, Rob Herring <robh+dt@kernel.org>,
-	"Frank Rowand" <frowand.list@gmail.com>, Grant Likely
-	<grant.likely@linaro.org>, Andrew Morton <akpm@linux-foundation.org>, "David
- S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, "Kalle Valo" <kvalo@codeaurora.org>, Jiri Slaby
-	<jslaby@suse.com>, Daniel Baluta <daniel.baluta@intel.com>, Lucas De Marchi
-	<lucas.demarchi@intel.com>, "Matt Ranostay" <matt.ranostay@intel.com>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>, Hans Verkuil
-	<hans.verkuil@cisco.com>, Terry Heo <terryheo@google.com>, Arnd Bergmann
-	<arnd@arndb.de>, Tommi Rantala <tt.rantala@gmail.com>, Crestez Dan Leonard
-	<leonard.crestez@intel.com>, <linux-i2c@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v9 5/9] iio: imu: inv_mpu6050: change the i2c gate to be mux-locked
-Date: Wed, 4 May 2016 22:15:31 +0200
-Message-ID: <1462392935-28011-6-git-send-email-peda@axentia.se>
-In-Reply-To: <1462392935-28011-1-git-send-email-peda@axentia.se>
-References: <1462392935-28011-1-git-send-email-peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga03.intel.com ([134.134.136.65]:44054 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751270AbcEELvz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 5 May 2016 07:51:55 -0400
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: IIO trigger names are not actually unique
+Message-ID: <55b99ca2-21c2-cfc6-b42d-904edb6b217d@intel.com>
+Date: Thu, 5 May 2016 14:52:00 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The root i2c adapter lock is then no longer held by the i2c mux during
-accesses behind the i2c gate, and such accesses need to take that lock
-just like any other ordinary i2c accesses do.
+Hello,
 
-So, declare the i2c gate mux-locked, and zap the code that makes the
-unlocked i2c accesses and just use ordinary regmap_write accesses.
+I've been looking at trigger code and it seems to me that trigger->name
+is not guaranteed to be unique. This is despite the fact that it's
+documented as "@name: [DRIVER] unique name" on top of struct
+iio_trigger. Just like indio_dev->name it seems to be a mostly cosmetic
+label.
 
-This also happens to fix the deadlock described in
-http://patchwork.ozlabs.org/patch/584776/ authored by
-Adriana Reus <adriana.reus@intel.com> and submitted by
-Daniel Baluta <daniel.baluta@intel.com>
+You can easily create a software trigger with a duplicate name if you
+enable CONFIG_IIO_HRTIMER_TRIGGER:
 
-----------8<----------
-iio: imu: inv_mpu6050: Fix deadlock between i2c adapter lock and mpu lock
+mkdir /sys/kernel/config/iio/triggers/hrtimer/`cat
+/sys/bus/iio/devices/trigger0/name`
 
-This deadlock occurs if the accel/gyro and the sensor on the auxiliary
-I2C (in my setup it's an ak8975) are working at the same time.
+It seems that trigger names are set at allocation time, mostly through
+some variant of:
 
-Scenario:
+    iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
 
-      T1					T2
-     ====				       ====
-inv_mpu6050_read_fifo                  aux sensor op (eg. ak8975_read_raw)
-        |                                     |
-mutex_lock(&indio_dev->mlock)           i2c_transfer
-        |                                     |
-i2c transaction                         i2c adapter lock
-        |                                     |
-i2c adapter lock                        i2c_mux_master_xfer
-                                              |
-                                        inv_mpu6050_select_bypass
-                                              |
-                                        mutex_lock(&indio_dev->mlock)
+indio_dev->name is not guaranteed to be unique but indio_dev->id is. The
+are some exceptions, including st_sensors which does:
 
-When we operate on an mpu sensor the order of locking is mpu lock
-followed by the i2c adapter lock. However, when we operate the auxiliary
-sensor the order of locking is the other way around.
+    iio_trigger_alloc("%s-trigger", indio_dev->name);
 
-...
-----------8<----------
+Since indio_dev->name is just the model name it seems that attaching two
+identical st_sensors devices will create two triggers with the same name.
 
-The reason this patch fixes the deadlock is that T2 does not grab the
-i2c adapter lock until the very end (and grabs the newfangled i2c mux
-lock where it previously grabbed the i2c adapter lock).
+The "current_trigger" for an iio_device is identified by name. If you
+have two triggers with the same name then the "first one" will be picked
+up, probably in registration order.
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
-Tested-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- Documentation/i2c/i2c-topology            |  2 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 52 ++++++-------------------------
- 2 files changed, 11 insertions(+), 43 deletions(-)
+One solution would be to refuse to register triggers with duplicate
+names but that might cause probe errors in some cases.
 
-diff --git a/Documentation/i2c/i2c-topology b/Documentation/i2c/i2c-topology
-index 27bfd682808d..69b008518454 100644
---- a/Documentation/i2c/i2c-topology
-+++ b/Documentation/i2c/i2c-topology
-@@ -50,7 +50,7 @@ i2c-mux-pinctrl           Normally parent-locked, mux-locked iff
- i2c-mux-reg               Parent-locked
- 
- In drivers/iio/
--imu/inv_mpu6050/          Parent-locked
-+imu/inv_mpu6050/          Mux-locked
- 
- In drivers/media/
- dvb-frontends/m88ds3103   Parent-locked
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-index 3a078df84224..e25f7ef7f0ea 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-@@ -24,45 +24,16 @@ static const struct regmap_config inv_mpu_regmap_config = {
- 	.val_bits = 8,
- };
- 
--/*
-- * The i2c read/write needs to happen in unlocked mode. As the parent
-- * adapter is common. If we use locked versions, it will fail as
-- * the mux adapter will lock the parent i2c adapter, while calling
-- * select/deselect functions.
-- */
--static int inv_mpu6050_write_reg_unlocked(struct i2c_client *client,
--					  u8 reg, u8 d)
--{
--	int ret;
--	u8 buf[2] = {reg, d};
--	struct i2c_msg msg[1] = {
--		{
--			.addr = client->addr,
--			.flags = 0,
--			.len = sizeof(buf),
--			.buf = buf,
--		}
--	};
--
--	ret = __i2c_transfer(client->adapter, msg, 1);
--	if (ret != 1)
--		return ret;
--
--	return 0;
--}
--
- static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
- {
--	struct i2c_client *client = i2c_mux_priv(muxc);
--	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
-+	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 	int ret = 0;
- 
- 	/* Use the same mutex which was used everywhere to protect power-op */
- 	mutex_lock(&indio_dev->mlock);
- 	if (!st->powerup_count) {
--		ret = inv_mpu6050_write_reg_unlocked(client,
--						     st->reg->pwr_mgmt_1, 0);
-+		ret = regmap_write(st->map, st->reg->pwr_mgmt_1, 0);
- 		if (ret)
- 			goto write_error;
- 
-@@ -71,10 +42,9 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_core *muxc, u32 chan_id)
- 	}
- 	if (!ret) {
- 		st->powerup_count++;
--		ret = inv_mpu6050_write_reg_unlocked(client,
--						     st->reg->int_pin_cfg,
--						     INV_MPU6050_INT_PIN_CFG |
--						     INV_MPU6050_BIT_BYPASS_EN);
-+		ret = regmap_write(st->map, st->reg->int_pin_cfg,
-+				   INV_MPU6050_INT_PIN_CFG |
-+				   INV_MPU6050_BIT_BYPASS_EN);
- 	}
- write_error:
- 	mutex_unlock(&indio_dev->mlock);
-@@ -84,18 +54,16 @@ write_error:
- 
- static int inv_mpu6050_deselect_bypass(struct i2c_mux_core *muxc, u32 chan_id)
- {
--	struct i2c_client *client = i2c_mux_priv(muxc);
--	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
-+	struct iio_dev *indio_dev = i2c_mux_priv(muxc);
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 
- 	mutex_lock(&indio_dev->mlock);
- 	/* It doesn't really mattter, if any of the calls fails */
--	inv_mpu6050_write_reg_unlocked(client, st->reg->int_pin_cfg,
--				       INV_MPU6050_INT_PIN_CFG);
-+	regmap_write(st->map, st->reg->int_pin_cfg, INV_MPU6050_INT_PIN_CFG);
- 	st->powerup_count--;
- 	if (!st->powerup_count)
--		inv_mpu6050_write_reg_unlocked(client, st->reg->pwr_mgmt_1,
--					       INV_MPU6050_BIT_SLEEP);
-+		regmap_write(st->map, st->reg->pwr_mgmt_1,
-+			     INV_MPU6050_BIT_SLEEP);
- 	mutex_unlock(&indio_dev->mlock);
- 
- 	return 0;
-@@ -134,7 +102,7 @@ static int inv_mpu_probe(struct i2c_client *client,
- 
- 	st = iio_priv(dev_get_drvdata(&client->dev));
- 	st->muxc = i2c_mux_alloc(client->adapter, &client->dev,
--				 1, 0, 0,
-+				 1, 0, I2C_MUX_LOCKED,
- 				 inv_mpu6050_select_bypass,
- 				 inv_mpu6050_deselect_bypass);
- 	if (!st->muxc) {
+Another option would be to just warn on duplicate names and provide a
+separate current_trigger_id which identifies the current trigger by
+numeric ID. In general it seems to me that it's better to identify
+entities by numbers rather than strings.
+
 -- 
-2.1.4
+Regards,
+Leonard
