@@ -1,177 +1,94 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <1462616744-9671-2-git-send-email-linus.walleij@linaro.org>
-References: <1462616744-9671-1-git-send-email-linus.walleij@linaro.org> <1462616744-9671-2-git-send-email-linus.walleij@linaro.org>
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 2/2 v4] iio: st_sensors: read surplus samples in trigger
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Sat, 07 May 2016 12:15:16 +0100
-To: Linus Walleij <linus.walleij@linaro.org>,Jonathan Cameron <jic23@kernel.org>,linux-iio@vger.kernel.org
-CC: Giuseppe Barba <giuseppe.barba@st.com>,Denis Ciocca <denis.ciocca@st.com>,Crestez Dan Leonard <cdleonard@gmail.com>
-Message-ID: <17FC1367-F51B-4B0C-94C7-9984C838ECEC@jic23.retrosnub.co.uk>
+In-Reply-To: <5d31460f-8377-50b9-3960-d2204d4a4347@gmail.com>
+References: <1458825486-17188-1-git-send-email-linus.walleij@linaro.org>
+	<1458825486-17188-3-git-send-email-linus.walleij@linaro.org>
+	<5728E6C2.1050901@gmail.com>
+	<CACRpkdaLc8frud64VZEuQ=dXGpgk+kBj94otoCCC=-Pvoe09tw@mail.gmail.com>
+	<4e983a0c-88f9-b5bf-3439-15f006736a7d@kernel.org>
+	<CACRpkdas0XhPJWXd-HnYEOM4KALk23v_XnkZhkcsdzBjvHewsw@mail.gmail.com>
+	<5d31460f-8377-50b9-3960-d2204d4a4347@gmail.com>
+Date: Fri, 6 May 2016 11:14:28 +0200
+Message-ID: <CACRpkdYr+pEd58tTfS5J9jC+vr_-S3tYJeKnG8CTt-AaZuShHw@mail.gmail.com>
+Subject: Re: [PATCH 3/4] iio: st_sensors: verify interrupt event to status
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Crestez Dan Leonard <cdleonard@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
+On Wed, May 4, 2016 at 8:14 PM, Crestez Dan Leonard <cdleonard@gmail.com> wrote:
+> On 05/04/2016 05:34 PM, Linus Walleij wrote:
+>> On Wed, May 4, 2016 at 9:35 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>> On 03/05/16 21:10, Linus Walleij wrote:
+>>
+>>>>> Even with hardware triggers: are you sure this is correct? Shouldn't
+>>>>> iio_trigger_notify_done still get called even when there is nothing to do?
+>>>>
+>>>> No then the (hardware) IRQ can have come in from some other
+>>>> device sharing the line with the peripheral and we need to return
+>>>> IRQ_NONE. It's not our interrupt.
+>>>
+>>> Gah, I fouled up reviewing this.  We really need to know if it is our
+>>> trigger 'before' we fire off the trigger logic - any number of other
+>>> devices can in theory be hanging off a given trigger - none of them will
+>>> be able to know if it was a real trigger or not.
+>>
+>> Ooops sorry, but the good thing is: we get to properly fix it.
 
+I have sent out a fix (first v1 then v2... because I missed the timestamps)
+for this: turns out it was simpler than I thought as there was already a
+properly threaded accelerometer driver in the kernel, I just didn't see
+it before.
 
-On 7 May 2016 11:25:44 BST, Linus Walleij <linus.walleij@linaro.org> wrote:
->Leonard Crestez observed the following phenomenon: when using
->hard interrupt triggers (the DRDY line coming out of an ST
->sensor) sometimes a new value would arrive while reading the
->previous value, due to latencies in the system.
->
->As the interrupts from the ST sensors are a pulse, intended
->to be read by an edge-triggered interrupt line (such as a
->GPIO) one edge (transition from low-to-high or high-to-low)
->will be missed while processing the current values.
->
->If this happens, the state machine that triggers interrupts on
->the DRDY line will lock waiting for the current value to be
->read out and not fire any more interrupts. That means that
->when we exit the interrupt handler, even though new values are
->available from the sensor, no new interrupt will be triggered.
->
->To counter this, introduce a loop that polls the data ready
->registers repeatedly until no new samples are available,
->then exits the interrupt handler. This way we know no new
->values are available when the interrupt handler exits and new
->interrupts will be triggered when data arrives.
->
->Take some extra care to update the timestamp for the poll
->function if this happens. The timestamp will not be 100%
->perfect, but it will at least be closer to the actual events.
->
->Tested successfully on the LIS331DL by setting sampling
->frequency to 400Hz and stressing the system: extra reads in
->the threaded interrupt handler occurs.
->
->Cc: Giuseppe Barba <giuseppe.barba@st.com>
->Cc: Denis Ciocca <denis.ciocca@st.com>
->Cc: Crestez Dan Leonard <cdleonard@gmail.com>
->Reported-by: Crestez Dan Leonard <cdleonard@gmail.com>
->Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Shortens the race but doesn't prevent it that I can see..
+> I've been testing with some st_sensors devices I have around and it
+> seems to me that triggered buffers with hardware interrupts don't
+> actually work properly at high sampling frequencies. It is possible for
+> another sample to come in before the buffer handler completes and
+> further interrupts will be lost.
 
+Yes the threaded interrupt handler (if specifying IRQF_ONESHOT)
+will mask the DRDY interrupt line while the sensor is being polled for
+values.
 
-In the old lis3l02dq driver in staging we ended up having to use gpio reads on
-the interrupt line to clear this exact stall.
+As these interrupts are usually edge triggered, the transient interrupt
+will be lost :(
 
-That can be done after we unmask the interrupt. Thus doesn't suffer the race.
-Ugly though!
-
-Also I think we broke the logic at somepoint  It calls trigger poll 
-from threaded context.
-
-Needs a rethink..
->---
->ChangeLog v3->v4:
->- Include this patch with the threaded interrupt fix patch.
->  Adapte the same patch numbering system.
+> This happens on at least LIS3DH.
 >
->If this works I suggest it be applied to mainline as a fix on
->top of the threading patch version 3, so we handle this annoying
->lockup bug.
->---
->drivers/iio/common/st_sensors/st_sensors_trigger.c | 65
->++++++++++++++++------
-> 1 file changed, 47 insertions(+), 18 deletions(-)
->
->diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c
->b/drivers/iio/common/st_sensors/st_sensors_trigger.c
->index c18e8221b6fa..68d65f60fd25 100644
->--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
->+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
->@@ -18,6 +18,42 @@
-> #include "st_sensors_core.h"
-> 
-> /**
->+ * st_sensors_new_samples_available() - check if more samples came in
->+ * returns:
->+ * 0 - no new samples available
->+ * 1 - new samples available
->+ * negative - error
->+ */
->+static int st_sensors_new_samples_available(struct iio_dev *indio_dev,
->+					    struct st_sensor_data *sdata)
->+{
->+	u8 status;
->+	int ret;
->+
->+	/* How would I know if I can't check it? */
->+	if (!sdata->sensor_settings->drdy_irq.addr_stat_drdy)
->+		return -EINVAL;
->+
->+	/* No scan mask, no interrupt */
->+	if (!indio_dev->active_scan_mask)
->+		return 0;
->+
->+	ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
->+			sdata->sensor_settings->drdy_irq.addr_stat_drdy,
->+			&status);
->+	if (ret < 0) {
->+		dev_err(sdata->dev,
->+			"error checking samples available\n");
->+		return ret;
->+	}
->+
->+	if (status & (u8)indio_dev->active_scan_mask[0])
->+		return 1;
->+
->+	return 0;
->+}
->+
->+/**
->  * st_sensors_irq_handler() - top half of the IRQ-based triggers
->  * @irq: irq number
->  * @p: private handler data
->@@ -43,36 +79,29 @@ irqreturn_t st_sensors_irq_thread(int irq, void *p)
-> 	struct iio_trigger *trig = p;
-> 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> 	struct st_sensor_data *sdata = iio_priv(indio_dev);
->-	int ret;
-> 
-> 	/*
-> 	 * If this trigger is backed by a hardware interrupt and we have a
-> 	 * status register, check if this IRQ came from us
-> 	 */
->-	if (sdata->sensor_settings->drdy_irq.addr_stat_drdy) {
->-		u8 status;
->-
->-		ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
->-			   sdata->sensor_settings->drdy_irq.addr_stat_drdy,
->-			   &status);
->-		if (ret < 0) {
->-			dev_err(sdata->dev, "could not read channel status\n");
->-			goto out_poll;
->-		}
->-
->+	if (!st_sensors_new_samples_available(indio_dev, sdata))
-> 		/*
-> 		 * If this was not caused by any channels on this sensor,
-> 		 * return IRQ_NONE
-> 		 */
->-		if (!indio_dev->active_scan_mask)
->-			return IRQ_NONE;
->-		if (!(status & (u8)indio_dev->active_scan_mask[0]))
->-			return IRQ_NONE;
->-	}
->+		return IRQ_NONE;
-> 
->-out_poll:
-> 	/* It's our IRQ: proceed to handle the register polling */
-> 	iio_trigger_poll_chained(p);
->+
->+	/* If new samples arrived while processing the IRQ, poll again */
->+	while (st_sensors_new_samples_available(indio_dev, sdata) > 0) {
->+		/* Timestamp and poll again */
->+		sdata->hw_timestamp = iio_get_time_ns();
->+		dev_dbg(sdata->dev, "more samples came in during polling\n");
->+		iio_trigger_poll_chained(p);
->+	}
->+
-> 	return IRQ_HANDLED;
-> }
-> 
+> It's not obvious how to handle this. Presumably the fix would be to
+> check STATUS_REG after reading one sample and if new values are
+> available schedule a new read?
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+I actually have a patch similar to that sitting around: I was using it
+to detect residues in the sensor when I was debugging LIS331DL.
+Let me look it over and see if I can post something on top of the
+just sent threading patch.
+
+Still I would consider it something of a hack: if the overall sample
+speed goes above the latencies that the hardware and software can
+really handle, the the system as a whole is underdimensioned,
+and polling from a HRTimer may be more reliable as they at least
+don't loose interrupts.
+
+I might be able to get rid of the lock-ups, but that doesn't mean
+the timestamps on the readings won't be tilted: they will.
+
+> This is easy to reproduce for me because I use an usb-to-i2c adapter
+> with high latencies. It helps if you increase the sampling_frequency but
+> it might still be very hard to reproduce on a direct i2c bus.
+
+Yeah you see where the latencies come from.
+
+And I actually could reproduce this with just I2C on the ux500
+by setting the sampling frequency on the LIS331DL to 400Hz.
+
+An I2C bus is usually 100kHz or 400kHz if you're lucky. So 1/100k s
+per bit transferred. This still would be way quicker than the ST sensors
+I've seen (though I hear that things like the Oculus Rift need complete
+sensor data at speeds close to the I2C bus bitrate!)
+
+Yours,
+Linus Walleij
