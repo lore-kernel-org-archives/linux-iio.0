@@ -1,84 +1,177 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f182.google.com ([209.85.214.182]:33797 "EHLO
-	mail-ob0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758126AbcEFMLT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 6 May 2016 08:11:19 -0400
-Received: by mail-ob0-f182.google.com with SMTP id dm5so50673122obc.1
-        for <linux-iio@vger.kernel.org>; Fri, 06 May 2016 05:11:19 -0700 (PDT)
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <1462616744-9671-2-git-send-email-linus.walleij@linaro.org>
+References: <1462616744-9671-1-git-send-email-linus.walleij@linaro.org> <1462616744-9671-2-git-send-email-linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <8cfaa99f-f46e-722a-a96f-9e465f6d9558@intel.com>
-References: <1462524763-24566-1-git-send-email-linus.walleij@linaro.org>
-	<8cfaa99f-f46e-722a-a96f-9e465f6d9558@intel.com>
-Date: Fri, 6 May 2016 14:11:18 +0200
-Message-ID: <CACRpkdZ=P6G_6yrP7BnPL=Wep7RoGpoVWvL6E=af0e5Fkt00=w@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: st_sensors: switch to a threaded interrupt
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 2/2 v4] iio: st_sensors: read surplus samples in trigger
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Sat, 07 May 2016 12:15:16 +0100
+To: Linus Walleij <linus.walleij@linaro.org>,Jonathan Cameron <jic23@kernel.org>,linux-iio@vger.kernel.org
+CC: Giuseppe Barba <giuseppe.barba@st.com>,Denis Ciocca <denis.ciocca@st.com>,Crestez Dan Leonard <cdleonard@gmail.com>
+Message-ID: <17FC1367-F51B-4B0C-94C7-9984C838ECEC@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, May 6, 2016 at 1:32 PM, Crestez Dan Leonard
-<leonard.crestez@intel.com> wrote:
-> On 05/06/2016 11:52 AM, Linus Walleij wrote:
->> commit 98ad8b41f58dff6b30713d7f09ae3834b8df7ded
->> ("iio: st_sensors: verify interrupt event to status") caused
->> a regression when reading ST sensors from a HRTimer trigger
->> rather than the intrinsic interrupts: the HRTimer may
->> trigger faster than the sensor provides new values, and
->> as the check against new values available as a cause of
->> the interrupt trigger was done in the poll function,
->> this would bail out of the HRTimer interrupt with
->> IRQ_NONE.
->>
->> So clearly we need to only check the new values available
->> from the proper interrupt handler and not from the poll
->> function, which should rather just read the raw values
->> from the registers, put them into the buffer and be happy.
->>
->> ---
->> ChangeLog v1->v2:
->> - v1 was missing timestamps since nothing ever stamped them.
->>   Restore the timestamps by simply using
->>   iio_trigger_generic_data_rdy_poll()
->>   as the top half of the threaded interrupt handler.
+
+
+On 7 May 2016 11:25:44 BST, Linus Walleij <linus.walleij@linaro.org> wrote:
+>Leonard Crestez observed the following phenomenon: when using
+>hard interrupt triggers (the DRDY line coming out of an ST
+>sensor) sometimes a new value would arrive while reading the
+>previous value, due to latencies in the system.
 >
-> iio_trigger_generic_data_rdy_poll always returns IRQ_HANDLED. This means
-> that the threaded handler is never called.
+>As the interrupts from the ST sensors are a pulse, intended
+>to be read by an edge-triggered interrupt line (such as a
+>GPIO) one edge (transition from low-to-high or high-to-low)
+>will be missed while processing the current values.
 >
-> I think the correct solution would be to call the buffer's hardirq
-> handler from the trigger's hardirq and the buffer's threaded handler
-> from the trigger's threaded handler, right? I don't know how to do this
-> properly with iio. Having "iio_poll_func" create an irq is very strange.
-
-Yeah checkout my v3 of the patch, hope it clears up.
-
->>               /*
->>                * If this was not caused by any channels on this sensor,
->>                * return IRQ_NONE
->>                */
->> +             if (!indio_dev->active_scan_mask)
->> +                     return IRQ_NONE;
+>If this happens, the state machine that triggers interrupts on
+>the DRDY line will lock waiting for the current value to be
+>read out and not fire any more interrupts. That means that
+>when we exit the interrupt handler, even though new values are
+>available from the sensor, no new interrupt will be triggered.
 >
-> This seems odd. I'm not sure it's even possible for active_scan_mask to
-> be NULL, maybe you wanted to check if the mask is all-zero instead? Can
-> this really happen?
+>To counter this, introduce a loop that polls the data ready
+>registers repeatedly until no new samples are available,
+>then exits the interrupt handler. This way we know no new
+>values are available when the interrupt handler exits and new
+>interrupts will be triggered when data arrives.
+>
+>Take some extra care to update the timestamp for the poll
+>function if this happens. The timestamp will not be 100%
+>perfect, but it will at least be closer to the actual events.
+>
+>Tested successfully on the LIS331DL by setting sampling
+>frequency to 400Hz and stressing the system: extra reads in
+>the threaded interrupt handler occurs.
+>
+>Cc: Giuseppe Barba <giuseppe.barba@st.com>
+>Cc: Denis Ciocca <denis.ciocca@st.com>
+>Cc: Crestez Dan Leonard <cdleonard@gmail.com>
+>Reported-by: Crestez Dan Leonard <cdleonard@gmail.com>
+>Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Shortens the race but doesn't prevent it that I can see..
 
-Yes it happened to me, in the short time between installing the interrupt
-handler and registering the sensor there can be a spurious interrupt
-(because of static on the line or whatever).
 
-> And if you're going to do such a check you should do it before reading
-> the status anyway to avoid the pointless read. It's worth minimizing bus
-> operations.
+In the old lis3l02dq driver in staging we ended up having to use gpio reads on
+the interrupt line to clear this exact stall.
 
-It's fixed in the add-on patch that looks for extra incoming samples,
-check out the combo of the two patches I sent, I think together they
-make for a pretty elegant solution.
+That can be done after we unmask the interrupt. Thus doesn't suffer the race.
+Ugly though!
 
-Yours,
-Linus Walleij
+Also I think we broke the logic at somepoint  It calls trigger poll 
+from threaded context.
+
+Needs a rethink..
+>---
+>ChangeLog v3->v4:
+>- Include this patch with the threaded interrupt fix patch.
+>  Adapte the same patch numbering system.
+>
+>If this works I suggest it be applied to mainline as a fix on
+>top of the threading patch version 3, so we handle this annoying
+>lockup bug.
+>---
+>drivers/iio/common/st_sensors/st_sensors_trigger.c | 65
+>++++++++++++++++------
+> 1 file changed, 47 insertions(+), 18 deletions(-)
+>
+>diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c
+>b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+>index c18e8221b6fa..68d65f60fd25 100644
+>--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
+>+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+>@@ -18,6 +18,42 @@
+> #include "st_sensors_core.h"
+> 
+> /**
+>+ * st_sensors_new_samples_available() - check if more samples came in
+>+ * returns:
+>+ * 0 - no new samples available
+>+ * 1 - new samples available
+>+ * negative - error
+>+ */
+>+static int st_sensors_new_samples_available(struct iio_dev *indio_dev,
+>+					    struct st_sensor_data *sdata)
+>+{
+>+	u8 status;
+>+	int ret;
+>+
+>+	/* How would I know if I can't check it? */
+>+	if (!sdata->sensor_settings->drdy_irq.addr_stat_drdy)
+>+		return -EINVAL;
+>+
+>+	/* No scan mask, no interrupt */
+>+	if (!indio_dev->active_scan_mask)
+>+		return 0;
+>+
+>+	ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
+>+			sdata->sensor_settings->drdy_irq.addr_stat_drdy,
+>+			&status);
+>+	if (ret < 0) {
+>+		dev_err(sdata->dev,
+>+			"error checking samples available\n");
+>+		return ret;
+>+	}
+>+
+>+	if (status & (u8)indio_dev->active_scan_mask[0])
+>+		return 1;
+>+
+>+	return 0;
+>+}
+>+
+>+/**
+>  * st_sensors_irq_handler() - top half of the IRQ-based triggers
+>  * @irq: irq number
+>  * @p: private handler data
+>@@ -43,36 +79,29 @@ irqreturn_t st_sensors_irq_thread(int irq, void *p)
+> 	struct iio_trigger *trig = p;
+> 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+>-	int ret;
+> 
+> 	/*
+> 	 * If this trigger is backed by a hardware interrupt and we have a
+> 	 * status register, check if this IRQ came from us
+> 	 */
+>-	if (sdata->sensor_settings->drdy_irq.addr_stat_drdy) {
+>-		u8 status;
+>-
+>-		ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
+>-			   sdata->sensor_settings->drdy_irq.addr_stat_drdy,
+>-			   &status);
+>-		if (ret < 0) {
+>-			dev_err(sdata->dev, "could not read channel status\n");
+>-			goto out_poll;
+>-		}
+>-
+>+	if (!st_sensors_new_samples_available(indio_dev, sdata))
+> 		/*
+> 		 * If this was not caused by any channels on this sensor,
+> 		 * return IRQ_NONE
+> 		 */
+>-		if (!indio_dev->active_scan_mask)
+>-			return IRQ_NONE;
+>-		if (!(status & (u8)indio_dev->active_scan_mask[0]))
+>-			return IRQ_NONE;
+>-	}
+>+		return IRQ_NONE;
+> 
+>-out_poll:
+> 	/* It's our IRQ: proceed to handle the register polling */
+> 	iio_trigger_poll_chained(p);
+>+
+>+	/* If new samples arrived while processing the IRQ, poll again */
+>+	while (st_sensors_new_samples_available(indio_dev, sdata) > 0) {
+>+		/* Timestamp and poll again */
+>+		sdata->hw_timestamp = iio_get_time_ns();
+>+		dev_dbg(sdata->dev, "more samples came in during polling\n");
+>+		iio_trigger_poll_chained(p);
+>+	}
+>+
+> 	return IRQ_HANDLED;
+> }
+> 
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
