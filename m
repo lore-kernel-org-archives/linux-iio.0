@@ -1,159 +1,338 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Crestez Dan Leonard <cdleonard@gmail.com>
-Subject: [PATCH 2/2 v4] iio: st_sensors: read surplus samples in trigger
-Date: Sat,  7 May 2016 12:25:44 +0200
-Message-Id: <1462616744-9671-2-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1462616744-9671-1-git-send-email-linus.walleij@linaro.org>
-References: <1462616744-9671-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59581 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750863AbcEHTaD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2016 15:30:03 -0400
+Subject: Re: [PATCH 2/2] iio: chemical: atlas-ph-sensor: add EC feature
+To: Matt Ranostay <mranostay@gmail.com>
+References: <1461530596-2142-1-git-send-email-mranostay@gmail.com>
+ <1461530596-2142-3-git-send-email-mranostay@gmail.com>
+ <bfd2fd1b-01b9-a5cc-c693-a9ec5e604679@kernel.org>
+ <CAKzfze8pyiViUjVpQG7j1km1jKTnMB=8e6EVgCMeemUTCSa0hA@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <04968587-7a9a-4654-6a92-ce420f9742b3@kernel.org>
+Date: Sun, 8 May 2016 20:29:59 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAKzfze8pyiViUjVpQG7j1km1jKTnMB=8e6EVgCMeemUTCSa0hA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Leonard Crestez observed the following phenomenon: when using
-hard interrupt triggers (the DRDY line coming out of an ST
-sensor) sometimes a new value would arrive while reading the
-previous value, due to latencies in the system.
+On 05/05/16 09:17, Matt Ranostay wrote:
+> On Wed, May 4, 2016 at 3:39 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 24/04/16 21:43, Matt Ranostay wrote:
+>> Give us a bit more description - what is it, what is it for, what interface is
+>> supplied. Err what does EC standard for?
+>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>> I know next to nothing about these sensors and don't have the datasheet to hand.
+>>
+>> This is measuring 3 different types of concentration (I think) and reporting them
+>> simple as channels 0-2.  What are they are should we not be distinguishing between
+>> them in some more informative fashion?
+> 
+> Should I add some .extend_name for each channel?
+probably not.  What are these 3 channels actually measuring?
+As I understand it from search the datasheet for tds...
+We have
 
-As the interrupts from the ST sensors are a pulse, intended
-to be read by an edge-triggered interrupt line (such as a
-GPIO) one edge (transition from low-to-high or high-to-low)
-will be missed while processing the current values.
+electric conductivity (that's not a concentration channel to my mind)...
+Perhaps have it as a new channel type in of itself...
 
-If this happens, the state machine that triggers interrupts on
-the DRDY line will lock waiting for the current value to be
-read out and not fire any more interrupts. That means that
-when we exit the interrupt handler, even though new values are
-available from the sensor, no new interrupt will be triggered.
+total dissolved solids (TDS) which kind of sounds concentration like to me...
+However, we might want to consider an appropriate modifier to say 'of what?'.
 
-To counter this, introduce a loop that polls the data ready
-registers repeatedly until no new samples are available,
-then exits the interrupt handler. This way we know no new
-values are available when the interrupt handler exits and new
-interrupts will be triggered when data arrives.
+PSS is salinity? Looks like this is a temperature adjusted concentration scale?
+(I'm reading wikipedia and not really following it...
 
-Take some extra care to update the timestamp for the poll
-function if this happens. The timestamp will not be 100%
-perfect, but it will at least be closer to the actual events.
+It might make sense to define a whole new channel type for this... I'm not keen. on having modifiers effect the units so channel type may be the only way to do it
+coherently..
 
-Tested successfully on the LIS331DL by setting sampling
-frequency to 400Hz and stressing the system: extra reads in
-the threaded interrupt handler occurs.
+I have this nasty feeling chemical measurements are going to introduce all sorts
+of weird ways of measuring 'concentrations' according to what actually happens
+to work for a given chemical.. 
 
-Cc: Giuseppe Barba <giuseppe.barba@st.com>
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Cc: Crestez Dan Leonard <cdleonard@gmail.com>
-Reported-by: Crestez Dan Leonard <cdleonard@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v3->v4:
-- Include this patch with the threaded interrupt fix patch.
-  Adapte the same patch numbering system.
+Ah well. 27 channel types so far - bit of room left before we discover allowing
+256 in the event descriptors wasn't thinking forwards enough...
 
-If this works I suggest it be applied to mainline as a fix on
-top of the threading patch version 3, so we handle this annoying
-lockup bug.
----
- drivers/iio/common/st_sensors/st_sensors_trigger.c | 65 ++++++++++++++++------
- 1 file changed, 47 insertions(+), 18 deletions(-)
+> Horribly I have to admit my pH sensor based board doesn't give valid
+> values for this sensor till I resign the ground plane under the IC :/.
+> But I can confirm it does report some "values"...
+:)
+> 
+>>
+>> Code itself is mostly fine...
+>>
+>> Jonathan
+>>> ---
+>>>  .../bindings/iio/chemical/atlas,ec-sm.txt          |  22 ++++
+>>>  drivers/iio/chemical/Kconfig                       |   8 +-
+>>>  drivers/iio/chemical/atlas-ph-sensor.c             | 113 ++++++++++++++++++++-
+>>>  3 files changed, 138 insertions(+), 5 deletions(-)
+>>>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
+>>> new file mode 100644
+>>> index 0000000..2962bd9
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
+>>> @@ -0,0 +1,22 @@
+>>> +* Atlas Scientific EC-SM OEM sensor
+>>> +
+>>> +http://www.atlas-scientific.com/_files/_datasheets/_oem/EC_oem_datasheet.pdf
+>>> +
+>>> +Required properties:
+>>> +
+>>> +  - compatible: must be "atlas,ec-sm"
+>>> +  - reg: the I2C address of the sensor
+>>> +  - interrupt-parent: should be the phandle for the interrupt controller
+>>> +  - interrupts: the sole interrupt generated by the device
+>>> +
+>>> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+>>> +  node bindings.
+>>> +
+>>> +Example:
+>>> +
+>>> +atlas@64 {
+>>> +     compatible = "atlas,ec-sm";
+>>> +     reg = <0x64>;
+>>> +     interrupt-parent = <&gpio1>;
+>>> +     interrupts = <16 2>;
+>>> +};
+>>> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+>>> index f73290f..4bcc025 100644
+>>> --- a/drivers/iio/chemical/Kconfig
+>>> +++ b/drivers/iio/chemical/Kconfig
+>>> @@ -5,15 +5,17 @@
+>>>  menu "Chemical Sensors"
+>>>
+>>>  config ATLAS_PH_SENSOR
+>>> -     tristate "Atlas Scientific OEM pH-SM sensor"
+>>> +     tristate "Atlas Scientific OEM SM sensors"
+>>>       depends on I2C
+>>>       select REGMAP_I2C
+>>>       select IIO_BUFFER
+>>>       select IIO_TRIGGERED_BUFFER
+>>>       select IRQ_WORK
+>>>       help
+>>> -      Say Y here to build I2C interface support for the Atlas
+>>> -      Scientific OEM pH-SM sensor.
+>>> +      Say Y here to build I2C interface support for the following
+>>> +      Atlas Scientific OEM SM sensors:
+>>> +         * pH SM sensor
+>>> +         * EC SM sensor
+>>>
+>>>        To compile this driver as module, choose M here: the
+>>>        module will be called atlas-ph-sensor.
+>>> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+>>> index c57f9c2..6dddd75 100644
+>>> --- a/drivers/iio/chemical/atlas-ph-sensor.c
+>>> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+>>> @@ -50,13 +50,28 @@
+>>>  #define ATLAS_REG_PH_CALIB_STATUS_MID        BIT(1)
+>>>  #define ATLAS_REG_PH_CALIB_STATUS_HIGH       BIT(2)
+>>>
+>>> +#define ATLAS_REG_EC_CALIB_STATUS            0x0f
+>>> +#define ATLAS_REG_EC_CALIB_STATUS_MASK               0x0f
+>>> +#define ATLAS_REG_EC_CALIB_STATUS_DRY                BIT(0)
+>>> +#define ATLAS_REG_EC_CALIB_STATUS_SINGLE     BIT(1)
+>>> +#define ATLAS_REG_EC_CALIB_STATUS_LOW                BIT(2)
+>>> +#define ATLAS_REG_EC_CALIB_STATUS_HIGH               BIT(3)
+>>> +
+>>>  #define ATLAS_REG_PH_TEMP_DATA               0x0e
+>>>  #define ATLAS_REG_PH_DATA            0x16
+>>>
+>>> +#define ATLAS_REG_EC_PROBE           0x08
+>>> +#define ATLAS_REG_EC_TEMP_DATA               0x10
+>>> +#define ATLAS_REG_EC_DATA            0x18
+>>> +#define ATLAS_REG_TDS_DATA           0x1c
+>>> +#define ATLAS_REG_PSS_DATA           0x20
+>>> +
+>>>  #define ATLAS_PH_INT_TIME_IN_US              450000
+>>> +#define ATLAS_EC_INT_TIME_IN_US              650000
+>>>
+>>>  enum {
+>>>       ATLAS_PH_SM,
+>>> +     ATLAS_EC_SM,
+>>>  };
+>>>
+>>>  struct atlas_data {
+>>> @@ -66,12 +81,13 @@ struct atlas_data {
+>>>       struct regmap *regmap;
+>>>       struct irq_work work;
+>>>
+>>> -     __be32 buffer[4]; /* 32-bit pH data + 32-bit pad + 64-bit timestamp */
+>>> +     __be32 buffer[6]; /* 96-bit data + 32-bit pad + 64-bit timestamp */
+>>>  };
+>>>
+>>>  static const struct regmap_range atlas_volatile_ranges[] = {
+>>>       regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
+>>>       regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
+>>> +     regmap_reg_range(ATLAS_REG_EC_DATA, ATLAS_REG_PSS_DATA + 4),
+>>>  };
+>>>
+>>>  static const struct regmap_access_table atlas_volatile_table = {
+>>> @@ -86,7 +102,7 @@ static const struct regmap_config atlas_regmap_config = {
+>>>       .val_bits = 8,
+>>>
+>>>       .volatile_table = &atlas_volatile_table,
+>>> -     .max_register = ATLAS_REG_PH_DATA + 4,
+>>> +     .max_register = ATLAS_REG_PSS_DATA + 4,
+>>>       .cache_type = REGCACHE_RBTREE,
+>>>  };
+>>>
+>>> @@ -115,6 +131,38 @@ static const struct iio_chan_spec atlas_ph_channels[] = {
+>>>       },
+>>>  };
+>>>
+>>> +#define ATLAS_EC_CHANNEL(idx, addr) \
+>>> +     {\
+>>> +             .type = IIO_CONCENTRATION, \
+>>> +             .indexed = 1, \
+>>> +             .channel = idx, \
+>>> +             .address = addr, \
+>>> +             .info_mask_separate = \
+>>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE), \
+>>> +             .scan_index = idx, \
+>>> +             .scan_type = { \
+>>> +                     .sign = 'u', \
+>>> +                     .realbits = 32, \
+>>> +                     .storagebits = 32, \
+>>> +                     .endianness = IIO_BE, \
+>>> +             }, \
+>>> +     }
+>>> +
+>>> +static const struct iio_chan_spec atlas_ec_channels[] = {
+>>> +     ATLAS_EC_CHANNEL(0, ATLAS_REG_EC_DATA),
+>>> +     ATLAS_EC_CHANNEL(1, ATLAS_REG_TDS_DATA),
+>>> +     ATLAS_EC_CHANNEL(2, ATLAS_REG_PSS_DATA),
+>> This needs some explanation.  3 concentration channels of different types?
+>> What are they...
+>>> +     IIO_CHAN_SOFT_TIMESTAMP(3),
+>>> +     {
+>>> +             .type = IIO_TEMP,
+>>> +             .address = ATLAS_REG_EC_TEMP_DATA,
+>>> +             .info_mask_separate =
+>>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>>> +             .output = 1,
+>>> +             .scan_index = -1
+>>> +     },
+>>> +};
+>>> +
+>>>  static int atlas_check_ph_calibration(struct atlas_data *data)
+>>>  {
+>>>       struct device *dev = &data->client->dev;
+>>> @@ -142,6 +190,44 @@ static int atlas_check_ph_calibration(struct atlas_data *data)
+>>>       return 0;
+>>>  }
+>>>
+>>> +static int atlas_check_ec_calibration(struct atlas_data *data)
+>>> +{
+>>> +     struct device *dev = &data->client->dev;
+>>> +     int ret;
+>>> +     unsigned int val;
+>>> +
+>>> +     ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &val, 2);
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     dev_info(dev, "probe set to K = %d.%.2d", be16_to_cpu(val) / 100,
+>>> +                                              be16_to_cpu(val) % 100);
+>>> +
+>>> +     ret = regmap_read(data->regmap, ATLAS_REG_EC_CALIB_STATUS, &val);
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     if (!(val & ATLAS_REG_EC_CALIB_STATUS_MASK)) {
+>>> +             dev_warn(dev, "device has not been calibrated\n");
+>>> +             return 0;
+>>> +     }
+>>> +
+>>> +     if (!(val & ATLAS_REG_EC_CALIB_STATUS_DRY))
+>>> +             dev_warn(dev, "device missing dry point calibration\n");
+>>> +
+>>> +     if (val & ATLAS_REG_EC_CALIB_STATUS_SINGLE) {
+>>> +             dev_warn(dev, "device using single point calibration\n");
+>>> +     } else {
+>>> +             if (!(val & ATLAS_REG_EC_CALIB_STATUS_LOW))
+>>> +                     dev_warn(dev, "device missing low point calibration\n");
+>>> +
+>>> +             if (!(val & ATLAS_REG_EC_CALIB_STATUS_HIGH))
+>>> +                     dev_warn(dev, "device missing high point calibration\n");
+>>> +     }
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>>  struct atlas_device {
+>>>       const struct iio_chan_spec *channels;
+>>>       int num_channels;
+>>> @@ -159,6 +245,14 @@ static struct atlas_device atlas_devices[] = {
+>>>                               .calibration = &atlas_check_ph_calibration,
+>>>                               .delay = ATLAS_PH_INT_TIME_IN_US,
+>>>       },
+>>> +     [ATLAS_EC_SM] = {
+>>> +                             .channels = atlas_ec_channels,
+>>> +                             .num_channels = 5,
+>> Use array_size - obviously correct that way so I don't have to go count...
+>>> +                             .data_reg = ATLAS_REG_EC_DATA,
+>>> +                             .calibration = &atlas_check_ec_calibration,
+>>> +                             .delay = ATLAS_EC_INT_TIME_IN_US,
+>>> +     },
+>>> +
+>>>  };
+>>>
+>>>  static int atlas_set_powermode(struct atlas_data *data, int on)
+>>> @@ -294,6 +388,7 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
+>>>                                             (u8 *) &reg, sizeof(reg));
+>> I guess it's not complex enough to justify splitting read_raw for the two
+>> devices.  Close though so you may want to if you support a third type in here.
+>>
+>>>                       break;
+>>>               case IIO_PH:
+>>> +             case IIO_CONCENTRATION:
+>>>                       mutex_lock(&indio_dev->mlock);
+>>>
+>>>                       if (iio_buffer_enabled(indio_dev))
+>>> @@ -324,6 +419,18 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
+>>>                       *val = 1; /* 0.001 */
+>>>                       *val2 = 1000;
+>>>                       break;
+>>> +             case IIO_CONCENTRATION:
+>>> +                     switch (chan->address) {
+>>> +                     case ATLAS_REG_EC_DATA:
+>>> +                             *val = 0; /* 0.00000000064 */
+>>> +                             *val2 = 640;
+>>> +                             return IIO_VAL_INT_PLUS_NANO;
+>>> +                     default:
+>>> +                             *val = 0; /* 0.000000001 */
+>>> +                             *val2 = 1000;
+>>> +                             return IIO_VAL_INT_PLUS_NANO;
+>>> +                     }
+>>> +                     break;
+>>>               default:
+>>>                       return -EINVAL;
+>>>               }
+>>> @@ -517,12 +624,14 @@ static const struct dev_pm_ops atlas_pm_ops = {
+>>>
+>>>  static const struct i2c_device_id atlas_id[] = {
+>>>       { "atlas-ph-sm", ATLAS_PH_SM},
+>>> +     { "atlas-ec-sm", ATLAS_EC_SM},
+>>>       {}
+>>>  };
+>>>  MODULE_DEVICE_TABLE(i2c, atlas_id);
+>>>
+>>>  static const struct of_device_id atlas_dt_ids[] = {
+>>>       { .compatible = "atlas,ph-sm", .data = (void *)ATLAS_PH_SM, },
+>>> +     { .compatible = "atlas,ec-sm", .data = (void *)ATLAS_EC_SM, },
+>>>       { }
+>>>  };
+>>>  MODULE_DEVICE_TABLE(of, atlas_dt_ids);
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-index c18e8221b6fa..68d65f60fd25 100644
---- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-@@ -18,6 +18,42 @@
- #include "st_sensors_core.h"
- 
- /**
-+ * st_sensors_new_samples_available() - check if more samples came in
-+ * returns:
-+ * 0 - no new samples available
-+ * 1 - new samples available
-+ * negative - error
-+ */
-+static int st_sensors_new_samples_available(struct iio_dev *indio_dev,
-+					    struct st_sensor_data *sdata)
-+{
-+	u8 status;
-+	int ret;
-+
-+	/* How would I know if I can't check it? */
-+	if (!sdata->sensor_settings->drdy_irq.addr_stat_drdy)
-+		return -EINVAL;
-+
-+	/* No scan mask, no interrupt */
-+	if (!indio_dev->active_scan_mask)
-+		return 0;
-+
-+	ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
-+			sdata->sensor_settings->drdy_irq.addr_stat_drdy,
-+			&status);
-+	if (ret < 0) {
-+		dev_err(sdata->dev,
-+			"error checking samples available\n");
-+		return ret;
-+	}
-+
-+	if (status & (u8)indio_dev->active_scan_mask[0])
-+		return 1;
-+
-+	return 0;
-+}
-+
-+/**
-  * st_sensors_irq_handler() - top half of the IRQ-based triggers
-  * @irq: irq number
-  * @p: private handler data
-@@ -43,36 +79,29 @@ irqreturn_t st_sensors_irq_thread(int irq, void *p)
- 	struct iio_trigger *trig = p;
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
--	int ret;
- 
- 	/*
- 	 * If this trigger is backed by a hardware interrupt and we have a
- 	 * status register, check if this IRQ came from us
- 	 */
--	if (sdata->sensor_settings->drdy_irq.addr_stat_drdy) {
--		u8 status;
--
--		ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
--			   sdata->sensor_settings->drdy_irq.addr_stat_drdy,
--			   &status);
--		if (ret < 0) {
--			dev_err(sdata->dev, "could not read channel status\n");
--			goto out_poll;
--		}
--
-+	if (!st_sensors_new_samples_available(indio_dev, sdata))
- 		/*
- 		 * If this was not caused by any channels on this sensor,
- 		 * return IRQ_NONE
- 		 */
--		if (!indio_dev->active_scan_mask)
--			return IRQ_NONE;
--		if (!(status & (u8)indio_dev->active_scan_mask[0]))
--			return IRQ_NONE;
--	}
-+		return IRQ_NONE;
- 
--out_poll:
- 	/* It's our IRQ: proceed to handle the register polling */
- 	iio_trigger_poll_chained(p);
-+
-+	/* If new samples arrived while processing the IRQ, poll again */
-+	while (st_sensors_new_samples_available(indio_dev, sdata) > 0) {
-+		/* Timestamp and poll again */
-+		sdata->hw_timestamp = iio_get_time_ns();
-+		dev_dbg(sdata->dev, "more samples came in during polling\n");
-+		iio_trigger_poll_chained(p);
-+	}
-+
- 	return IRQ_HANDLED;
- }
- 
--- 
-2.4.11
