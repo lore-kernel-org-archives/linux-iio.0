@@ -1,104 +1,159 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37362 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751441AbcEIV06 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 May 2016 17:26:58 -0400
-In-Reply-To: <d76ecc9c-a6a9-59c9-afd9-8f0ae9eb0dff@intel.com>
-References: <1462805775-7723-1-git-send-email-linus.walleij@linaro.org> <1462805775-7723-2-git-send-email-linus.walleij@linaro.org> <d76ecc9c-a6a9-59c9-afd9-8f0ae9eb0dff@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 2/2] iio: st_sensors: read surplus samples in trigger
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Mon, 09 May 2016 22:26:51 +0100
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
-Message-ID: <3CDC61F5-716E-4400-82FF-CC9E89358088@jic23.retrosnub.co.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <matt.ranostay@intel.com>
+From: Matt Ranostay <matt.ranostay@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Matt Ranostay <matt.ranostay@intel.com>,
+	daniel.baluta@intel.com
+Subject: [PATCH] iio: adc: ti-ads1015: add support for ADS1115 part
+Date: Mon,  9 May 2016 16:42:04 -0700
+Message-Id: <1462837324-5670-1-git-send-email-matt.ranostay@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+TI ADS1115 is a 16-bit resolution ADC that is register map
+compatible with the ADS1015 device.
 
+Cc: daniel.baluta@intel.com
+Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
+---
+ drivers/iio/adc/ti-ads1015.c | 77 ++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 71 insertions(+), 6 deletions(-)
 
-On 9 May 2016 19:36:23 BST, Crestez Dan Leonard <leonard.crestez@intel.com> wrote:
->On 05/09/2016 05:56 PM, Linus Walleij wrote:
->> Leonard Crestez observed the following phenomenon: when using
->> hard interrupt triggers (the DRDY line coming out of an ST
->> sensor) sometimes a new value would arrive while reading the
->> previous value, due to latencies in the system.
->> 
->> As the interrupts from the ST sensors are a pulse, intended
->> to be read by an edge-triggered interrupt line (such as a
->> GPIO) one edge (transition from low-to-high or high-to-low)
->> will be missed while processing the current values.
->> 
->> If this happens, the state machine that triggers interrupts on
->> the DRDY line will lock waiting for the current value to be
->> read out and not fire any more interrupts. That means that
->> when we exit the interrupt handler, even though new values are
->> available from the sensor, no new interrupt will be triggered.
->> 
->> To counter this, do two things:
->> 
->> - Remove IRQF_ONESHOT so that the interrupt line is not
->>   masked while running the thread part of the interrupt.
->>   This way we will never miss an interrupt.
->> 
->> - Introduce a loop that polls the data ready
->>   registers repeatedly until no new samples are available,
->>   then exits the interrupt handler. This way we know no new
->>   values are available when the interrupt handler exits and
->>   new interrupts will be triggered when data arrives.
->>   Take some extra care to update the timestamp for the poll
->>   function if this happens. The timestamp will not be 100%
->>   perfect, but it will at least be closer to the actual
->>   events.
->> 
->> Usually the extra poll loop will handle the new samples,
->> but once in a blue moon, we get a new IRQ while exiting
->> the loop, before returning from the thread IRQ bottom half
->> with IRQ_HANDLED. On these rare occasions, the removal of
->> IRQF_ONESHOT means the interrupt will immediately fire
->> again.
->
->I also tested this and it no longer stops printing samples. Your
->explanation also looks good to me.
->
->An infinite loop in the threaded interrupt handler looks odd. Are you
->sure this is allowed? I do my tests in qemu with an usb adapter and if
->I
->run with -smp 1 it seems to be impossible to stop the irq thread.
-
-Definitely not allowed....
-
-Long term we need a way to throttle or fault out after first few loops.
-
-Right now this improves situation even if we just let it happen say 10 times to ride
-our slight delays...
-
-I ideally want to fire up my board and hammer this as well, plus read it very 
-carefully to see if this really closes all potential races...
-
-
-J
->
->More specifically stopping the irq thread means something like:
->	echo 0 > /sys/bus/iio/devices/iio:device0/buffer/enable
->or
->	echo 10 > /sys/bus/iio/devices/iio:device0/sampling_frequency
->This seems to lockup waiting for the i2c adapter lock (but only with a
->single CPU). Perhaps because the trigger thread only sleeps while
->waiting for the i2c bus, which happens to be done while holding the i2c
->adapter lock?
->
->The simplest way to reproduce is to configure high frequency and run
->generic_buffer with a -c 100 argument. After printing 100 samples it
->will attempt to disable the buffer (by writing 0 to buffer/enable) but
->hang inside i2c.
->
->This issue might be specific to my test setup so not very interesting.
-
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 73cbf0b54e54..317325692cb3 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -55,6 +55,11 @@
+ #define ADS1015_DEFAULT_DATA_RATE	4
+ #define ADS1015_DEFAULT_CHAN		0
+ 
++enum {
++	ADS1015,
++	ADS1115,
++};
++
+ enum ads1015_channels {
+ 	ADS1015_AIN0_AIN1 = 0,
+ 	ADS1015_AIN0_AIN3,
+@@ -123,6 +128,42 @@ static const struct {
+ 	},							\
+ }
+ 
++#define ADS1115_V_CHAN(_chan, _addr) {				\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.address = _addr,					\
++	.channel = _chan,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++				BIT(IIO_CHAN_INFO_SCALE) |	\
++				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++	.scan_index = _addr,					\
++	.scan_type = {						\
++		.sign = 's',					\
++		.realbits = 16,					\
++		.storagebits = 16,				\
++		.endianness = IIO_CPU,				\
++	},							\
++}
++
++#define ADS1115_V_DIFF_CHAN(_chan, _chan2, _addr) {		\
++	.type = IIO_VOLTAGE,					\
++	.differential = 1,					\
++	.indexed = 1,						\
++	.address = _addr,					\
++	.channel = _chan,					\
++	.channel2 = _chan2,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++				BIT(IIO_CHAN_INFO_SCALE) |	\
++				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++	.scan_index = _addr,					\
++	.scan_type = {						\
++		.sign = 's',					\
++		.realbits = 16,					\
++		.storagebits = 16,				\
++		.endianness = IIO_CPU,				\
++	},							\
++}
++
+ struct ads1015_data {
+ 	struct regmap *regmap;
+ 	/*
+@@ -157,6 +198,19 @@ static const struct iio_chan_spec ads1015_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
+ };
+ 
++static const struct iio_chan_spec ads1115_channels[] = {
++	ADS1115_V_DIFF_CHAN(0, 1, ADS1015_AIN0_AIN1),
++	ADS1115_V_DIFF_CHAN(0, 3, ADS1015_AIN0_AIN3),
++	ADS1115_V_DIFF_CHAN(1, 3, ADS1015_AIN1_AIN3),
++	ADS1115_V_DIFF_CHAN(2, 3, ADS1015_AIN2_AIN3),
++	ADS1115_V_CHAN(0, ADS1015_AIN0),
++	ADS1115_V_CHAN(1, ADS1015_AIN1),
++	ADS1115_V_CHAN(2, ADS1015_AIN2),
++	ADS1115_V_CHAN(3, ADS1015_AIN3),
++	IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
++};
++
++
+ static int ads1015_set_power_state(struct ads1015_data *data, bool on)
+ {
+ 	int ret;
+@@ -291,7 +345,9 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+ 	mutex_lock(&indio_dev->mlock);
+ 	mutex_lock(&data->lock);
+ 	switch (mask) {
+-	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_RAW: {
++		int shift = chan->scan_type.shift;
++
+ 		if (iio_buffer_enabled(indio_dev)) {
+ 			ret = -EBUSY;
+ 			break;
+@@ -307,8 +363,7 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+ 			break;
+ 		}
+ 
+-		/* 12 bit res, D0 is bit 4 in conversion register */
+-		*val = sign_extend32(*val >> 4, 11);
++		*val = sign_extend32(*val >> shift, 15 - shift);
+ 
+ 		ret = ads1015_set_power_state(data, false);
+ 		if (ret < 0)
+@@ -316,6 +371,7 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+ 
+ 		ret = IIO_VAL_INT;
+ 		break;
++	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		idx = data->channel_data[chan->address].pga;
+ 		*val = ads1015_scale[idx].scale;
+@@ -502,8 +558,16 @@ static int ads1015_probe(struct i2c_client *client,
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->info = &ads1015_info;
+ 	indio_dev->name = ADS1015_DRV_NAME;
+-	indio_dev->channels = ads1015_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(ads1015_channels);
++
++	switch (id->driver_data) {
++	case ADS1015:
++		indio_dev->channels = ads1015_channels;
++		break;
++	case ADS1115:
++		indio_dev->channels = ads1115_channels;
++		break;
++	}
++	indio_dev->num_channels = 9;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	/* we need to keep this ABI the same as used by hwmon ADS1015 driver */
+@@ -590,7 +654,8 @@ static const struct dev_pm_ops ads1015_pm_ops = {
+ };
+ 
+ static const struct i2c_device_id ads1015_id[] = {
+-	{"ads1015", 0},
++	{"ads1015", ADS1015},
++	{"ads1115", ADS1115},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, ads1015_id);
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+1.9.1
