@@ -1,338 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59581 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750863AbcEHTaD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2016 15:30:03 -0400
-Subject: Re: [PATCH 2/2] iio: chemical: atlas-ph-sensor: add EC feature
-To: Matt Ranostay <mranostay@gmail.com>
-References: <1461530596-2142-1-git-send-email-mranostay@gmail.com>
- <1461530596-2142-3-git-send-email-mranostay@gmail.com>
- <bfd2fd1b-01b9-a5cc-c693-a9ec5e604679@kernel.org>
- <CAKzfze8pyiViUjVpQG7j1km1jKTnMB=8e6EVgCMeemUTCSa0hA@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <04968587-7a9a-4654-6a92-ce420f9742b3@kernel.org>
-Date: Sun, 8 May 2016 20:29:59 +0100
+Received: from www381.your-server.de ([78.46.137.84]:50364 "EHLO
+	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750948AbcEIJFh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 May 2016 05:05:37 -0400
+Subject: Re: IIO trigger names are not actually unique
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+References: <55b99ca2-21c2-cfc6-b42d-904edb6b217d@intel.com>
+Cc: Daniel Baluta <daniel.baluta@intel.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <573052BB.9050504@metafoo.de>
+Date: Mon, 9 May 2016 11:04:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze8pyiViUjVpQG7j1km1jKTnMB=8e6EVgCMeemUTCSa0hA@mail.gmail.com>
+In-Reply-To: <55b99ca2-21c2-cfc6-b42d-904edb6b217d@intel.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/05/16 09:17, Matt Ranostay wrote:
-> On Wed, May 4, 2016 at 3:39 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 24/04/16 21:43, Matt Ranostay wrote:
->> Give us a bit more description - what is it, what is it for, what interface is
->> supplied. Err what does EC standard for?
->>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->> I know next to nothing about these sensors and don't have the datasheet to hand.
->>
->> This is measuring 3 different types of concentration (I think) and reporting them
->> simple as channels 0-2.  What are they are should we not be distinguishing between
->> them in some more informative fashion?
+On 05/05/2016 01:52 PM, Crestez Dan Leonard wrote:
+> Hello,
 > 
-> Should I add some .extend_name for each channel?
-probably not.  What are these 3 channels actually measuring?
-As I understand it from search the datasheet for tds...
-We have
-
-electric conductivity (that's not a concentration channel to my mind)...
-Perhaps have it as a new channel type in of itself...
-
-total dissolved solids (TDS) which kind of sounds concentration like to me...
-However, we might want to consider an appropriate modifier to say 'of what?'.
-
-PSS is salinity? Looks like this is a temperature adjusted concentration scale?
-(I'm reading wikipedia and not really following it...
-
-It might make sense to define a whole new channel type for this... I'm not keen. on having modifiers effect the units so channel type may be the only way to do it
-coherently..
-
-I have this nasty feeling chemical measurements are going to introduce all sorts
-of weird ways of measuring 'concentrations' according to what actually happens
-to work for a given chemical.. 
-
-Ah well. 27 channel types so far - bit of room left before we discover allowing
-256 in the event descriptors wasn't thinking forwards enough...
-
-> Horribly I have to admit my pH sensor based board doesn't give valid
-> values for this sensor till I resign the ground plane under the IC :/.
-> But I can confirm it does report some "values"...
-:)
+> I've been looking at trigger code and it seems to me that trigger->name
+> is not guaranteed to be unique. This is despite the fact that it's
+> documented as "@name: [DRIVER] unique name" on top of struct
+> iio_trigger. Just like indio_dev->name it seems to be a mostly cosmetic
+> label.
 > 
->>
->> Code itself is mostly fine...
->>
->> Jonathan
->>> ---
->>>  .../bindings/iio/chemical/atlas,ec-sm.txt          |  22 ++++
->>>  drivers/iio/chemical/Kconfig                       |   8 +-
->>>  drivers/iio/chemical/atlas-ph-sensor.c             | 113 ++++++++++++++++++++-
->>>  3 files changed, 138 insertions(+), 5 deletions(-)
->>>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
->>> new file mode 100644
->>> index 0000000..2962bd9
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
->>> @@ -0,0 +1,22 @@
->>> +* Atlas Scientific EC-SM OEM sensor
->>> +
->>> +http://www.atlas-scientific.com/_files/_datasheets/_oem/EC_oem_datasheet.pdf
->>> +
->>> +Required properties:
->>> +
->>> +  - compatible: must be "atlas,ec-sm"
->>> +  - reg: the I2C address of the sensor
->>> +  - interrupt-parent: should be the phandle for the interrupt controller
->>> +  - interrupts: the sole interrupt generated by the device
->>> +
->>> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
->>> +  node bindings.
->>> +
->>> +Example:
->>> +
->>> +atlas@64 {
->>> +     compatible = "atlas,ec-sm";
->>> +     reg = <0x64>;
->>> +     interrupt-parent = <&gpio1>;
->>> +     interrupts = <16 2>;
->>> +};
->>> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
->>> index f73290f..4bcc025 100644
->>> --- a/drivers/iio/chemical/Kconfig
->>> +++ b/drivers/iio/chemical/Kconfig
->>> @@ -5,15 +5,17 @@
->>>  menu "Chemical Sensors"
->>>
->>>  config ATLAS_PH_SENSOR
->>> -     tristate "Atlas Scientific OEM pH-SM sensor"
->>> +     tristate "Atlas Scientific OEM SM sensors"
->>>       depends on I2C
->>>       select REGMAP_I2C
->>>       select IIO_BUFFER
->>>       select IIO_TRIGGERED_BUFFER
->>>       select IRQ_WORK
->>>       help
->>> -      Say Y here to build I2C interface support for the Atlas
->>> -      Scientific OEM pH-SM sensor.
->>> +      Say Y here to build I2C interface support for the following
->>> +      Atlas Scientific OEM SM sensors:
->>> +         * pH SM sensor
->>> +         * EC SM sensor
->>>
->>>        To compile this driver as module, choose M here: the
->>>        module will be called atlas-ph-sensor.
->>> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
->>> index c57f9c2..6dddd75 100644
->>> --- a/drivers/iio/chemical/atlas-ph-sensor.c
->>> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
->>> @@ -50,13 +50,28 @@
->>>  #define ATLAS_REG_PH_CALIB_STATUS_MID        BIT(1)
->>>  #define ATLAS_REG_PH_CALIB_STATUS_HIGH       BIT(2)
->>>
->>> +#define ATLAS_REG_EC_CALIB_STATUS            0x0f
->>> +#define ATLAS_REG_EC_CALIB_STATUS_MASK               0x0f
->>> +#define ATLAS_REG_EC_CALIB_STATUS_DRY                BIT(0)
->>> +#define ATLAS_REG_EC_CALIB_STATUS_SINGLE     BIT(1)
->>> +#define ATLAS_REG_EC_CALIB_STATUS_LOW                BIT(2)
->>> +#define ATLAS_REG_EC_CALIB_STATUS_HIGH               BIT(3)
->>> +
->>>  #define ATLAS_REG_PH_TEMP_DATA               0x0e
->>>  #define ATLAS_REG_PH_DATA            0x16
->>>
->>> +#define ATLAS_REG_EC_PROBE           0x08
->>> +#define ATLAS_REG_EC_TEMP_DATA               0x10
->>> +#define ATLAS_REG_EC_DATA            0x18
->>> +#define ATLAS_REG_TDS_DATA           0x1c
->>> +#define ATLAS_REG_PSS_DATA           0x20
->>> +
->>>  #define ATLAS_PH_INT_TIME_IN_US              450000
->>> +#define ATLAS_EC_INT_TIME_IN_US              650000
->>>
->>>  enum {
->>>       ATLAS_PH_SM,
->>> +     ATLAS_EC_SM,
->>>  };
->>>
->>>  struct atlas_data {
->>> @@ -66,12 +81,13 @@ struct atlas_data {
->>>       struct regmap *regmap;
->>>       struct irq_work work;
->>>
->>> -     __be32 buffer[4]; /* 32-bit pH data + 32-bit pad + 64-bit timestamp */
->>> +     __be32 buffer[6]; /* 96-bit data + 32-bit pad + 64-bit timestamp */
->>>  };
->>>
->>>  static const struct regmap_range atlas_volatile_ranges[] = {
->>>       regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
->>>       regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
->>> +     regmap_reg_range(ATLAS_REG_EC_DATA, ATLAS_REG_PSS_DATA + 4),
->>>  };
->>>
->>>  static const struct regmap_access_table atlas_volatile_table = {
->>> @@ -86,7 +102,7 @@ static const struct regmap_config atlas_regmap_config = {
->>>       .val_bits = 8,
->>>
->>>       .volatile_table = &atlas_volatile_table,
->>> -     .max_register = ATLAS_REG_PH_DATA + 4,
->>> +     .max_register = ATLAS_REG_PSS_DATA + 4,
->>>       .cache_type = REGCACHE_RBTREE,
->>>  };
->>>
->>> @@ -115,6 +131,38 @@ static const struct iio_chan_spec atlas_ph_channels[] = {
->>>       },
->>>  };
->>>
->>> +#define ATLAS_EC_CHANNEL(idx, addr) \
->>> +     {\
->>> +             .type = IIO_CONCENTRATION, \
->>> +             .indexed = 1, \
->>> +             .channel = idx, \
->>> +             .address = addr, \
->>> +             .info_mask_separate = \
->>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE), \
->>> +             .scan_index = idx, \
->>> +             .scan_type = { \
->>> +                     .sign = 'u', \
->>> +                     .realbits = 32, \
->>> +                     .storagebits = 32, \
->>> +                     .endianness = IIO_BE, \
->>> +             }, \
->>> +     }
->>> +
->>> +static const struct iio_chan_spec atlas_ec_channels[] = {
->>> +     ATLAS_EC_CHANNEL(0, ATLAS_REG_EC_DATA),
->>> +     ATLAS_EC_CHANNEL(1, ATLAS_REG_TDS_DATA),
->>> +     ATLAS_EC_CHANNEL(2, ATLAS_REG_PSS_DATA),
->> This needs some explanation.  3 concentration channels of different types?
->> What are they...
->>> +     IIO_CHAN_SOFT_TIMESTAMP(3),
->>> +     {
->>> +             .type = IIO_TEMP,
->>> +             .address = ATLAS_REG_EC_TEMP_DATA,
->>> +             .info_mask_separate =
->>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->>> +             .output = 1,
->>> +             .scan_index = -1
->>> +     },
->>> +};
->>> +
->>>  static int atlas_check_ph_calibration(struct atlas_data *data)
->>>  {
->>>       struct device *dev = &data->client->dev;
->>> @@ -142,6 +190,44 @@ static int atlas_check_ph_calibration(struct atlas_data *data)
->>>       return 0;
->>>  }
->>>
->>> +static int atlas_check_ec_calibration(struct atlas_data *data)
->>> +{
->>> +     struct device *dev = &data->client->dev;
->>> +     int ret;
->>> +     unsigned int val;
->>> +
->>> +     ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &val, 2);
->>> +     if (ret)
->>> +             return ret;
->>> +
->>> +     dev_info(dev, "probe set to K = %d.%.2d", be16_to_cpu(val) / 100,
->>> +                                              be16_to_cpu(val) % 100);
->>> +
->>> +     ret = regmap_read(data->regmap, ATLAS_REG_EC_CALIB_STATUS, &val);
->>> +     if (ret)
->>> +             return ret;
->>> +
->>> +     if (!(val & ATLAS_REG_EC_CALIB_STATUS_MASK)) {
->>> +             dev_warn(dev, "device has not been calibrated\n");
->>> +             return 0;
->>> +     }
->>> +
->>> +     if (!(val & ATLAS_REG_EC_CALIB_STATUS_DRY))
->>> +             dev_warn(dev, "device missing dry point calibration\n");
->>> +
->>> +     if (val & ATLAS_REG_EC_CALIB_STATUS_SINGLE) {
->>> +             dev_warn(dev, "device using single point calibration\n");
->>> +     } else {
->>> +             if (!(val & ATLAS_REG_EC_CALIB_STATUS_LOW))
->>> +                     dev_warn(dev, "device missing low point calibration\n");
->>> +
->>> +             if (!(val & ATLAS_REG_EC_CALIB_STATUS_HIGH))
->>> +                     dev_warn(dev, "device missing high point calibration\n");
->>> +     }
->>> +
->>> +     return 0;
->>> +}
->>> +
->>>  struct atlas_device {
->>>       const struct iio_chan_spec *channels;
->>>       int num_channels;
->>> @@ -159,6 +245,14 @@ static struct atlas_device atlas_devices[] = {
->>>                               .calibration = &atlas_check_ph_calibration,
->>>                               .delay = ATLAS_PH_INT_TIME_IN_US,
->>>       },
->>> +     [ATLAS_EC_SM] = {
->>> +                             .channels = atlas_ec_channels,
->>> +                             .num_channels = 5,
->> Use array_size - obviously correct that way so I don't have to go count...
->>> +                             .data_reg = ATLAS_REG_EC_DATA,
->>> +                             .calibration = &atlas_check_ec_calibration,
->>> +                             .delay = ATLAS_EC_INT_TIME_IN_US,
->>> +     },
->>> +
->>>  };
->>>
->>>  static int atlas_set_powermode(struct atlas_data *data, int on)
->>> @@ -294,6 +388,7 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
->>>                                             (u8 *) &reg, sizeof(reg));
->> I guess it's not complex enough to justify splitting read_raw for the two
->> devices.  Close though so you may want to if you support a third type in here.
->>
->>>                       break;
->>>               case IIO_PH:
->>> +             case IIO_CONCENTRATION:
->>>                       mutex_lock(&indio_dev->mlock);
->>>
->>>                       if (iio_buffer_enabled(indio_dev))
->>> @@ -324,6 +419,18 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
->>>                       *val = 1; /* 0.001 */
->>>                       *val2 = 1000;
->>>                       break;
->>> +             case IIO_CONCENTRATION:
->>> +                     switch (chan->address) {
->>> +                     case ATLAS_REG_EC_DATA:
->>> +                             *val = 0; /* 0.00000000064 */
->>> +                             *val2 = 640;
->>> +                             return IIO_VAL_INT_PLUS_NANO;
->>> +                     default:
->>> +                             *val = 0; /* 0.000000001 */
->>> +                             *val2 = 1000;
->>> +                             return IIO_VAL_INT_PLUS_NANO;
->>> +                     }
->>> +                     break;
->>>               default:
->>>                       return -EINVAL;
->>>               }
->>> @@ -517,12 +624,14 @@ static const struct dev_pm_ops atlas_pm_ops = {
->>>
->>>  static const struct i2c_device_id atlas_id[] = {
->>>       { "atlas-ph-sm", ATLAS_PH_SM},
->>> +     { "atlas-ec-sm", ATLAS_EC_SM},
->>>       {}
->>>  };
->>>  MODULE_DEVICE_TABLE(i2c, atlas_id);
->>>
->>>  static const struct of_device_id atlas_dt_ids[] = {
->>>       { .compatible = "atlas,ph-sm", .data = (void *)ATLAS_PH_SM, },
->>> +     { .compatible = "atlas,ec-sm", .data = (void *)ATLAS_EC_SM, },
->>>       { }
->>>  };
->>>  MODULE_DEVICE_TABLE(of, atlas_dt_ids);
->>>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> You can easily create a software trigger with a duplicate name if you
+> enable CONFIG_IIO_HRTIMER_TRIGGER:
 > 
+> mkdir /sys/kernel/config/iio/triggers/hrtimer/`cat
+> /sys/bus/iio/devices/trigger0/name`
+> 
+> It seems that trigger names are set at allocation time, mostly through
+> some variant of:
+> 
+>     iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
+> 
+> indio_dev->name is not guaranteed to be unique but indio_dev->id is. The
+> are some exceptions, including st_sensors which does:
+> 
+>     iio_trigger_alloc("%s-trigger", indio_dev->name);
+> 
+> Since indio_dev->name is just the model name it seems that attaching two
+> identical st_sensors devices will create two triggers with the same name.
+> 
+
+Yeah, this is certainly broken.
+
+> The "current_trigger" for an iio_device is identified by name. If you
+> have two triggers with the same name then the "first one" will be picked
+> up, probably in registration order.
+> 
+> One solution would be to refuse to register triggers with duplicate
+> names but that might cause probe errors in some cases.
+> 
+
+Well, it is broken anyway and wont work as expected, which means nobody
+probably ever ran such a configuration, so we might return an error to
+prevent unexpected behavior.
+
+> Another option would be to just warn on duplicate names and provide a
+> separate current_trigger_id which identifies the current trigger by
+> numeric ID. In general it seems to me that it's better to identify
+> entities by numbers rather than strings.
+
+We could support writing triggerX to current_name as an alternative to the
+name to get a unique identifier.
 
