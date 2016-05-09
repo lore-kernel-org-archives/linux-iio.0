@@ -1,138 +1,43 @@
-Return-Path: <leonard.crestez@intel.com>
-Subject: Re: [PATCH 1/2] iio: st_sensors: switch to a threaded interrupt
-To: Linus Walleij <linus.walleij@linaro.org>,
- Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <1462805775-7723-1-git-send-email-linus.walleij@linaro.org>
-Cc: Giuseppe Barba <giuseppe.barba@st.com>, Denis Ciocca <denis.ciocca@st.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <c747fbdf-5fcb-d8e3-e0d7-a815af1d291d@intel.com>
-Date: Mon, 9 May 2016 20:44:38 +0300
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <1462805775-7723-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CACRpkdbEnTYFe=xd-u0JcyOGRrHydRSVBvYHsWvc1T8CsmJSQA@mail.gmail.com>
+References: <1462616744-9671-1-git-send-email-linus.walleij@linaro.org>
+	<1462616744-9671-2-git-send-email-linus.walleij@linaro.org>
+	<17FC1367-F51B-4B0C-94C7-9984C838ECEC@jic23.retrosnub.co.uk>
+	<CACRpkdbEnTYFe=xd-u0JcyOGRrHydRSVBvYHsWvc1T8CsmJSQA@mail.gmail.com>
+Date: Mon, 9 May 2016 16:47:28 +0200
+Message-ID: <CACRpkdZ0HM3C+6uAKVTLg7SphV7yHsPH19cjy5To+1-6OF4mCg@mail.gmail.com>
+Subject: Re: [PATCH 2/2 v4] iio: st_sensors: read surplus samples in trigger
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>, Crestez Dan Leonard <cdleonard@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/09/2016 05:56 PM, Linus Walleij wrote:
-> commit 98ad8b41f58dff6b30713d7f09ae3834b8df7ded
-> ("iio: st_sensors: verify interrupt event to status") caused
-> a regression when reading ST sensors from a HRTimer trigger
-> rather than the intrinsic interrupts: the HRTimer may
-> trigger faster than the sensor provides new values, and
-> as the check against new values available as a cause of
-> the interrupt trigger was done in the poll function,
-> this would bail out of the HRTimer interrupt with
-> IRQ_NONE.
-> 
-> So clearly we need to only check the new values available
-> from the proper interrupt handler and not from the poll
-> function, which should rather just read the raw values
-> from the registers, put them into the buffer and be happy.
-> 
-> To achieve this: switch the ST Sensors over to using a true
-> threaded interrupt handler.
-> 
-> In the interrupt thread, check if new values are available,
-> else yield to the (potential) next device on the same
-> interrupt line to check the registers. If the interrupt
-> was ours, proceed to poll the values.
-> 
-> Instead of relying on iio_trigger_generic_data_rdy_poll() as
-> a top half to wake up the thread that polls the sensor for
-> new data, have the thread call iio_trigger_poll_chained()
-> after determining that is is the proper source of the
-> interrupt. This is modelled on drivers/iio/accel/mma8452.c
-> which is already using a properly threaded interrupt handler.
-> 
-> In order to get the same precision in timestamps as
-> previously, where samples would be timestamped in the
-> poll function pf->timestamp when calling
-> iio_trigger_generic_data_rdy_poll() we introduce a
-> local timestamp in the sensor data, set it in the top half
-> (fastpath) of the interrupt handler and provide that to the
-> core when calling iio_push_to_buffers_with_timestamp().
-> 
-> Additionally: if the active scanmask is not set for the
-> sensor no IRQs should be enabled and we need to bail out
-> with IRQ_NONE. This can happen if spurious IRQs fire when
-> installing the threaded interrupt handler.
-> 
-> Tested with hard interrupt triggers on LIS331DL, then also
-> tested with hrtimers on the same sensor by creating a 75Hz
-> HRTimer and using it to poll the sensor.
-> 
-> Cc: Giuseppe Barba <giuseppe.barba@st.com>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Cc: Crestez Dan Leonard <cdleonard@gmail.com>
-> Reported-by: Crestez Dan Leonard <cdleonard@gmail.com>
-> Fixes: 97865fe41322 ("iio: st_sensors: verify interrupt event to status")
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v4->v5:
-> - Move the setting of hw_irq_enabled to before the register
->   write to enable interrupts so we avoid a race where this
->   variable could be read in its previous state.
-> - NOTE: this patch is a regression fix and can be applied
->   without 2/2.
-> - Leonard can you verify that this patch fixes your issue
->   with HRTimer-triggered reads and provide your Tested-by?
+On Sun, May 8, 2016 at 10:55 AM, Linus Walleij <linus.walleij@linaro.org> wrote:
 
-Tested-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+> I thought about it tonight, and I need to add one more thing
+> to make the solution perfect: avoid registering the interrupt
+> with IRQF_ONESHOT.
 
-> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> +	/* If we do timetamping here, do it before reading the values */
-> +	if (sdata->hw_irq_trigger)
-> +		timestamp = sdata->hw_timestamp;
-> +	else
-> +		timestamp = iio_get_time_ns();
+After a bunch of tests it appears that this is actually all
+that is needed.
 
-This ignores pf->timestamp so passing iio_pollfunc_store_time no longer
-has any effect, right? I think this is actually a good thing. When using
-software triggers it is best to get the timestamp as close to the actual
-read as possible. Relying on iio_pollfunc_store_time would just add the
-noisy delay between hrtimer interrupts and process context to iio
-timestamps.
+The interrupt core will re-wake the thread if a second
+IRQ came in to the hardirq (top half) during the processing
+of the thread.
 
-But it would now make sense to pass NULL instead of
-iio_pollfunc_store_time to all the iio_triggered_buffer_setup calls in
-st_sensors, right?
+As we're checking status and dealing with shared
+interrupts this makes sure we never miss events.
 
-It's also a bit strange that the buffer irq_handler is no longer called.
-Maybe this needs validate_device in trigger_ops?
+> Then we need the top half to tell the bottom half that a new
+> IRQ has arrived.
 
-> --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> +	/*
-> +	 * If this trigger is backed by a hardware interrupt and we have a
-> +	 * status register, check if this IRQ came from us
-> +	 */
-> +	if (sdata->sensor_settings->drdy_irq.addr_stat_drdy) {
-> +		u8 status;
-> +
-> +		ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
-> +			   sdata->sensor_settings->drdy_irq.addr_stat_drdy,
-> +			   &status);
-> +		if (ret < 0) {
-> +			dev_err(sdata->dev, "could not read channel status\n");
-> +			goto out_poll;
-> +		}
-> +
-> +		/*
-> +		 * If this was not caused by any channels on this sensor,
-> +		 * return IRQ_NONE
-> +		 */
-> +		if (!indio_dev->active_scan_mask)
-> +			return IRQ_NONE;
-> +		if (!(status & (u8)indio_dev->active_scan_mask[0]))
-> +			return IRQ_NONE;
+So this is not needed.
 
-It's not clear that this belongs here. The check is not related to
-sdata->sensor_settings->drdy_irq.addr_stat_drdy. It could be done before
-checking the status register or even in the hardirq handler.
+Sending a v5.
 
-It seems to me that placing this check here would result in a bunch of
-useless bus transactions.
-
--- 
-Regards,
-Leonard
+Yours,
+Linus Walleij
