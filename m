@@ -1,28 +1,26 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f48.google.com ([209.85.215.48]:35185 "EHLO
-	mail-lf0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751145AbcEJIFp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 May 2016 04:05:45 -0400
-Received: by mail-lf0-f48.google.com with SMTP id j8so5743924lfd.2
-        for <linux-iio@vger.kernel.org>; Tue, 10 May 2016 01:05:44 -0700 (PDT)
+Received: from mail-lf0-f46.google.com ([209.85.215.46]:35052 "EHLO
+	mail-lf0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751096AbcEJHfD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 May 2016 03:35:03 -0400
+Received: by mail-lf0-f46.google.com with SMTP id j8so4964173lfd.2
+        for <linux-iio@vger.kernel.org>; Tue, 10 May 2016 00:35:02 -0700 (PDT)
 MIME-Version: 1.0
 In-Reply-To: <1462837324-5670-1-git-send-email-matt.ranostay@intel.com>
 References: <1462837324-5670-1-git-send-email-matt.ranostay@intel.com>
-From: Crt Mori <cmo@melexis.com>
-Date: Tue, 10 May 2016 10:05:03 +0200
-Message-ID: <CAKv63usop6DtHFiU+TV2RSstUenfvhT1V6tL++-CQUPh38BO3A@mail.gmail.com>
+Date: Tue, 10 May 2016 10:35:01 +0300
+Message-ID: <CAEnQRZAskVKgusS8iYYtQFMLUoD1X7GLOLTYzd8thbaqCbbFdA@mail.gmail.com>
 Subject: Re: [PATCH] iio: adc: ti-ads1015: add support for ADS1115 part
+From: Daniel Baluta <daniel.baluta@intel.com>
 To: Matt Ranostay <matt.ranostay@intel.com>
-Cc: linux-iio@vger.kernel.org,
-	Johnathan Iain Cameron <jic23@kernel.org>,
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Daniel Baluta <daniel.baluta@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-One suggestion how I would fix the number of channels...
-
-On 10 May 2016 at 01:42, Matt Ranostay <matt.ranostay@intel.com> wrote:
+On Tue, May 10, 2016 at 2:42 AM, Matt Ranostay <matt.ranostay@intel.com> wrote:
 > TI ADS1115 is a 16-bit resolution ADC that is register map
 > compatible with the ADS1015 device.
 >
@@ -150,32 +148,10 @@ On 10 May 2016 at 01:42, Matt Ranostay <matt.ranostay@intel.com> wrote:
 > +       switch (id->driver_data) {
 > +       case ADS1015:
 > +               indio_dev->channels = ads1015_channels;
-indio_dev->num_channels = ARRAY_SIZE(ads1015_channels);
 > +               break;
 > +       case ADS1115:
 > +               indio_dev->channels = ads1115_channels;
-indio_dev->num_channels = ARRAY_SIZE(ads1115_channels);
 > +               break;
 > +       }
 > +       indio_dev->num_channels = 9;
-remove this above line
->         indio_dev->modes = INDIO_DIRECT_MODE;
->
->         /* we need to keep this ABI the same as used by hwmon ADS1015 driver */
-> @@ -590,7 +654,8 @@ static const struct dev_pm_ops ads1015_pm_ops = {
->  };
->
->  static const struct i2c_device_id ads1015_id[] = {
-> -       {"ads1015", 0},
-> +       {"ads1015", ADS1015},
-> +       {"ads1115", ADS1115},
->         {}
->  };
->  MODULE_DEVICE_TABLE(i2c, ads1015_id);
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I'm not comfortable with this magic number here.
