@@ -1,423 +1,226 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f52.google.com ([209.85.215.52]:34666 "EHLO
+	mail-lf0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751123AbcEJJA3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 May 2016 05:00:29 -0400
+Received: by mail-lf0-f52.google.com with SMTP id m64so7200287lfd.1
+        for <linux-iio@vger.kernel.org>; Tue, 10 May 2016 02:00:28 -0700 (PDT)
 From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	Crestez Dan Leonard <leonard.crestez@intel.com>
 Cc: Linus Walleij <linus.walleij@linaro.org>,
 	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 1/2 v6] iio: st_sensors: switch to a threaded interrupt
-Date: Tue, 10 May 2016 11:00:12 +0200
-Message-Id: <1462870813-24700-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+	Denis Ciocca <denis.ciocca@st.com>,
+	Crestez Dan Leonard <cdleonard@gmail.com>
+Subject: [PATCH 2/2 v6] iio: st_sensors: read surplus samples in trigger
+Date: Tue, 10 May 2016 11:00:13 +0200
+Message-Id: <1462870813-24700-2-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1462870813-24700-1-git-send-email-linus.walleij@linaro.org>
+References: <1462870813-24700-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-commit 98ad8b41f58dff6b30713d7f09ae3834b8df7ded
-("iio: st_sensors: verify interrupt event to status") caused
-a regression when reading ST sensors from a HRTimer trigger
-rather than the intrinsic interrupts: the HRTimer may
-trigger faster than the sensor provides new values, and
-as the check against new values available as a cause of
-the interrupt trigger was done in the poll function,
-this would bail out of the HRTimer interrupt with
-IRQ_NONE.
+Leonard Crestez observed the following phenomenon: when using
+hard interrupt triggers (the DRDY line coming out of an ST
+sensor) sometimes a new value would arrive while reading the
+previous value, due to latencies in the system.
 
-So clearly we need to only check the new values available
-from the proper interrupt handler and not from the poll
-function, which should rather just read the raw values
-from the registers, put them into the buffer and be happy.
+As the interrupts from the ST sensors are a pulse, intended
+to be read by an edge-triggered interrupt line (such as a
+GPIO) one edge (transition from low-to-high or high-to-low)
+will be missed while processing the current values.
 
-To achieve this: switch the ST Sensors over to using a true
-threaded interrupt handler.
+If this happens, the state machine that triggers interrupts on
+the DRDY line will lock waiting for the current value to be
+read out and not fire any more interrupts. That means that
+when we exit the interrupt handler, even though new values are
+available from the sensor, no new interrupt will be triggered.
 
-In the interrupt thread, check if new values are available,
-else yield to the (potential) next device on the same
-interrupt line to check the registers. If the interrupt
-was ours, proceed to poll the values.
+To counter this, do two things:
 
-Instead of relying on iio_trigger_generic_data_rdy_poll() as
-a top half to wake up the thread that polls the sensor for
-new data, have the thread call iio_trigger_poll_chained()
-after determining that is is the proper source of the
-interrupt. This is modelled on drivers/iio/accel/mma8452.c
-which is already using a properly threaded interrupt handler.
+- Remove IRQF_ONESHOT so that the interrupt line is not
+  masked while running the thread part of the interrupt.
+  This way we will never miss an interrupt.
 
-In order to get the same precision in timestamps as
-previously, where samples would be timestamped in the
-poll function pf->timestamp when calling
-iio_trigger_generic_data_rdy_poll() we introduce a
-local timestamp in the sensor data, set it in the top half
-(fastpath) of the interrupt handler and provide that to the
-core when calling iio_push_to_buffers_with_timestamp().
+- Introduce a loop that polls the data ready
+  registers repeatedly until no new samples are available,
+  then exits the interrupt handler. This way we know no new
+  values are available when the interrupt handler exits and
+  new interrupts will be triggered when data arrives.
+  Take some extra care to update the timestamp for the poll
+  function if this happens. The timestamp will not be 100%
+  perfect, but it will at least be closer to the actual
+  events.
 
-Additionally: if the active scanmask is not set for the
-sensor no IRQs should be enabled and we need to bail out
-with IRQ_NONE. This can happen if spurious IRQs fire when
-installing the threaded interrupt handler.
+Usually the extra poll loop will handle the new samples,
+but once in a blue moon, we get a new IRQ while exiting
+the loop, before returning from the thread IRQ bottom half
+with IRQ_HANDLED. On these rare occasions, the removal of
+IRQF_ONESHOT means the interrupt will immediately fire
+again.
 
-Tested with hard interrupt triggers on LIS331DL, then also
-tested with hrtimers on the same sensor by creating a 75Hz
-HRTimer and using it to poll the sensor.
+Tested successfully on the LIS331DL by setting sampling
+frequency to 400Hz and stressing the system: extra reads in
+the threaded interrupt handler occurs.
 
 Cc: Giuseppe Barba <giuseppe.barba@st.com>
 Cc: Denis Ciocca <denis.ciocca@st.com>
+Cc: Crestez Dan Leonard <cdleonard@gmail.com>
 Reported-by: Crestez Dan Leonard <cdleonard@gmail.com>
-Tested-by: Crestez Dan Leonard <cdleonard@gmail.com>
-Fixes: 97865fe41322 ("iio: st_sensors: verify interrupt event to status")
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v5->v6:
-- Set the triggered buffer top half IRQ handler to NULL in all
-  subdrivers (accelerometer, gyro, magnetometer, pressure) as
-  we now use the iio_trigger_poll_chained() call.
-- Add st_sensors_validate_device() to the intrinsic triggers
-  and set as .validate_deice() for all subdrivers. Its purpose
-  is to check that the trigger is indeed provided by this
-  device before we use it.
-- NOTE: this patch is a regression fix and can be applied
-  without 2/2.
+- Add a loop counter to the threaded value poll function: let's
+  just loop here for at maximum 10 loops before we exit and
+  let the thread re-trigger if more interrupts arrived.
 ChangeLog v4->v5:
-- Move the setting of hw_irq_enabled to before the register
-  write to enable interrupts so we avoid a race where this
-  variable could be read in its previous state.
+- Remove the IRQF_ONESHOT flag from the interrupt: this makes
+  it possible to trigger the top half of the interrupt even
+  though the bottom half is processing an earlier interrupt.
+  This makes it possible to gracefully handle interrupts that
+  come in during sensor reading.
+- Add better descriptive comments.
 ChangeLog v3->v4:
-- v3 would not timestamp properly when using a HRTimer to read
-  values from the sensors. This is now fixed.
-- Add a flag to the sensor data indicating whether the hardware
-  interrupt trigger is in use. If this is the case, we use that
-  timestamp. If the hardware trigger is not in use, we just let
-  the poll function read the current time before proceeding to
-  grab the values from the sensor.
-- Move interrupt top/bottom halves to st_sensors_trigger.c so the
-  interrupt code is kept together and easier to understand in
-  context.
-ChangeLog v2->v3:
-- v2 was a total disaster, as iio_trigger_generic_data_rdy_poll()
-  would just call the old bottom half and return IRQ_HANDLED.
-  handle the timestamp locally in the sensor data and restore
-  the usage of the local interrupt thread.
-- I think it works now.
-ChangeLog v1->v2:
-- v1 was missing timestamps since nothing ever stamped them.
-  Restore the timestamps by simply using
-  iio_trigger_generic_data_rdy_poll()
-  as the top half of the threaded interrupt handler.
----
- drivers/iio/accel/st_accel_buffer.c                |  2 +-
- drivers/iio/accel/st_accel_core.c                  |  1 +
- drivers/iio/common/st_sensors/st_sensors_buffer.c  | 25 ++-----
- drivers/iio/common/st_sensors/st_sensors_core.c    |  3 +
- drivers/iio/common/st_sensors/st_sensors_trigger.c | 80 +++++++++++++++++++++-
- drivers/iio/gyro/st_gyro_buffer.c                  |  2 +-
- drivers/iio/gyro/st_gyro_core.c                    |  1 +
- drivers/iio/magnetometer/st_magn_buffer.c          |  2 +-
- drivers/iio/magnetometer/st_magn_core.c            |  1 +
- drivers/iio/pressure/st_pressure_buffer.c          |  2 +-
- drivers/iio/pressure/st_pressure_core.c            |  1 +
- include/linux/iio/common/st_sensors.h              |  9 ++-
- 12 files changed, 103 insertions(+), 26 deletions(-)
+- Include this patch with the threaded interrupt fix patch.
+  Adapte the same patch numbering system.
 
-diff --git a/drivers/iio/accel/st_accel_buffer.c b/drivers/iio/accel/st_accel_buffer.c
-index a1e642ee13d6..7fddc137e91e 100644
---- a/drivers/iio/accel/st_accel_buffer.c
-+++ b/drivers/iio/accel/st_accel_buffer.c
-@@ -91,7 +91,7 @@ static const struct iio_buffer_setup_ops st_accel_buffer_setup_ops = {
- 
- int st_accel_allocate_ring(struct iio_dev *indio_dev)
- {
--	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+	return iio_triggered_buffer_setup(indio_dev, NULL,
- 		&st_sensors_trigger_handler, &st_accel_buffer_setup_ops);
- }
- 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index f06f4329db5b..1d9291116556 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -649,6 +649,7 @@ static const struct iio_info accel_info = {
- static const struct iio_trigger_ops st_accel_trigger_ops = {
- 	.owner = THIS_MODULE,
- 	.set_trigger_state = ST_ACCEL_TRIGGER_SET_STATE,
-+	.validate_device = st_sensors_validate_device,
- };
- #define ST_ACCEL_TRIGGER_OPS (&st_accel_trigger_ops)
- #else
+If this works I suggest it be applied to mainline as a fix on
+top of the threading patch version 3, so we handle this annoying
+lockup bug.
+---
+ drivers/iio/common/st_sensors/st_sensors_buffer.c  |  7 +-
+ drivers/iio/common/st_sensors/st_sensors_trigger.c | 79 +++++++++++++++-------
+ 2 files changed, 59 insertions(+), 27 deletions(-)
+
 diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-index c55898543a47..f1693dbebb8a 100644
+index f1693dbebb8a..f6873919f188 100644
 --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
 +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-@@ -57,31 +57,20 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
+@@ -59,7 +59,12 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
  	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+	s64 timestamp;
+ 	s64 timestamp;
  
--	/* If we have a status register, check if this IRQ came from us */
+-	/* If we do timetamping here, do it before reading the values */
++	/*
++	 * If we do timetamping here, do it before reading the values, because
++	 * once we've read the values, new interrupts can occur (when using
++	 * the hardware trigger) and the hw_timestamp may get updated.
++	 * By storing it in a local variable first, we are safe.
++	 */
+ 	if (sdata->hw_irq_trigger)
+ 		timestamp = sdata->hw_timestamp;
+ 	else
+diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+index 98bd5b3b868f..3e260d6ecda8 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
++++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+@@ -18,6 +18,42 @@
+ #include "st_sensors_core.h"
+ 
+ /**
++ * st_sensors_new_samples_available() - check if more samples came in
++ * returns:
++ * 0 - no new samples available
++ * 1 - new samples available
++ * negative - error or unknown
++ */
++static int st_sensors_new_samples_available(struct iio_dev *indio_dev,
++					    struct st_sensor_data *sdata)
++{
++	u8 status;
++	int ret;
++
++	/* How would I know if I can't check it? */
++	if (!sdata->sensor_settings->drdy_irq.addr_stat_drdy)
++		return -EINVAL;
++
++	/* No scan mask, no interrupt */
++	if (!indio_dev->active_scan_mask)
++		return 0;
++
++	ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
++			sdata->sensor_settings->drdy_irq.addr_stat_drdy,
++			&status);
++	if (ret < 0) {
++		dev_err(sdata->dev,
++			"error checking samples available\n");
++		return ret;
++	}
++
++	if (status & (u8)indio_dev->active_scan_mask[0])
++		return 1;
++
++	return 0;
++}
++
++/**
+  * st_sensors_irq_handler() - top half of the IRQ-based triggers
+  * @irq: irq number
+  * @p: private handler data
+@@ -43,36 +79,30 @@ irqreturn_t st_sensors_irq_thread(int irq, void *p)
+ 	struct iio_trigger *trig = p;
+ 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+-	int ret;
++	/* Loop for new values maximum 10 times */
++	int loops = 10;
+ 
+ 	/*
+ 	 * If this trigger is backed by a hardware interrupt and we have a
+-	 * status register, check if this IRQ came from us
++	 * status register, check if this IRQ came from us. Notice that
++	 * we will process also if st_sensors_new_samples_available()
++	 * returns negative: if we can't check status, then poll
++	 * unconditionally.
+ 	 */
 -	if (sdata->sensor_settings->drdy_irq.addr_stat_drdy) {
 -		u8 status;
 -
--		len = sdata->tf->read_byte(&sdata->tb, sdata->dev,
+-		ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
 -			   sdata->sensor_settings->drdy_irq.addr_stat_drdy,
 -			   &status);
--		if (len < 0)
+-		if (ret < 0) {
 -			dev_err(sdata->dev, "could not read channel status\n");
--
+-			goto out_poll;
+-		}
++	if (st_sensors_new_samples_available(indio_dev, sdata)) {
++		iio_trigger_poll_chained(p);
++	} else {
++		dev_dbg(sdata->dev, "spurious IRQ\n");
++		return IRQ_NONE;
++	}
+ 
 -		/*
 -		 * If this was not caused by any channels on this sensor,
 -		 * return IRQ_NONE
 -		 */
+-		if (!indio_dev->active_scan_mask)
+-			return IRQ_NONE;
 -		if (!(status & (u8)indio_dev->active_scan_mask[0]))
 -			return IRQ_NONE;
--	}
-+	/* If we do timetamping here, do it before reading the values */
-+	if (sdata->hw_irq_trigger)
-+		timestamp = sdata->hw_timestamp;
-+	else
-+		timestamp = iio_get_time_ns();
++	/* If new samples arrived while processing the IRQ, poll again. */
++	while (loops-- && st_sensors_new_samples_available(indio_dev, sdata)) {
++		dev_dbg(sdata->dev, "more samples came in during polling\n");
++		sdata->hw_timestamp = iio_get_time_ns();
++		iio_trigger_poll_chained(p);
+ 	}
  
- 	len = st_sensors_get_buffer_element(indio_dev, sdata->buffer_data);
- 	if (len < 0)
- 		goto st_sensors_get_buffer_element_error;
+-out_poll:
+-	/* It's our IRQ: proceed to handle the register polling */
+-	iio_trigger_poll_chained(p);
+ 	return IRQ_HANDLED;
+ }
  
- 	iio_push_to_buffers_with_timestamp(indio_dev, sdata->buffer_data,
--		pf->timestamp);
-+					   timestamp);
- 
- st_sensors_get_buffer_element_error:
- 	iio_trigger_notify_done(indio_dev->trig);
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index dffe00692169..928ee68fcc5f 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -424,6 +424,9 @@ int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable)
- 	else
- 		drdy_mask = sdata->sensor_settings->drdy_irq.mask_int2;
- 
-+	/* Flag to the poll function that the hardware trigger is in use */
-+	sdata->hw_irq_trigger = enable;
-+
- 	/* Enable/Disable the interrupt generator for data ready. */
- 	err = st_sensors_write_data_with_mask(indio_dev,
- 					sdata->sensor_settings->drdy_irq.addr,
-diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-index da72279fcf99..98bd5b3b868f 100644
---- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-@@ -17,6 +17,65 @@
- #include <linux/iio/common/st_sensors.h>
- #include "st_sensors_core.h"
- 
-+/**
-+ * st_sensors_irq_handler() - top half of the IRQ-based triggers
-+ * @irq: irq number
-+ * @p: private handler data
-+ */
-+irqreturn_t st_sensors_irq_handler(int irq, void *p)
-+{
-+	struct iio_trigger *trig = p;
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	/* Get the time stamp as close in time as possible */
-+	sdata->hw_timestamp = iio_get_time_ns();
-+	return IRQ_WAKE_THREAD;
-+}
-+
-+/**
-+ * st_sensors_irq_thread() - bottom half of the IRQ-based triggers
-+ * @irq: irq number
-+ * @p: private handler data
-+ */
-+irqreturn_t st_sensors_irq_thread(int irq, void *p)
-+{
-+	struct iio_trigger *trig = p;
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+	int ret;
-+
-+	/*
-+	 * If this trigger is backed by a hardware interrupt and we have a
-+	 * status register, check if this IRQ came from us
-+	 */
-+	if (sdata->sensor_settings->drdy_irq.addr_stat_drdy) {
-+		u8 status;
-+
-+		ret = sdata->tf->read_byte(&sdata->tb, sdata->dev,
-+			   sdata->sensor_settings->drdy_irq.addr_stat_drdy,
-+			   &status);
-+		if (ret < 0) {
-+			dev_err(sdata->dev, "could not read channel status\n");
-+			goto out_poll;
-+		}
-+
-+		/*
-+		 * If this was not caused by any channels on this sensor,
-+		 * return IRQ_NONE
-+		 */
-+		if (!indio_dev->active_scan_mask)
-+			return IRQ_NONE;
-+		if (!(status & (u8)indio_dev->active_scan_mask[0]))
-+			return IRQ_NONE;
-+	}
-+
-+out_poll:
-+	/* It's our IRQ: proceed to handle the register polling */
-+	iio_trigger_poll_chained(p);
-+	return IRQ_HANDLED;
-+}
-+
- int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
- 				const struct iio_trigger_ops *trigger_ops)
- {
-@@ -77,9 +136,12 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+@@ -136,9 +166,6 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
  	    sdata->sensor_settings->drdy_irq.addr_stat_drdy)
  		irq_trig |= IRQF_SHARED;
  
--	err = request_threaded_irq(irq,
--			iio_trigger_generic_data_rdy_poll,
--			NULL,
-+	/* Let's create an interrupt thread masking the hard IRQ here */
-+	irq_trig |= IRQF_ONESHOT;
-+
-+	err = request_threaded_irq(sdata->get_irq_data_ready(indio_dev),
-+			st_sensors_irq_handler,
-+			st_sensors_irq_thread,
- 			irq_trig,
- 			sdata->trig->name,
- 			sdata->trig);
-@@ -119,6 +181,18 @@ void st_sensors_deallocate_trigger(struct iio_dev *indio_dev)
- }
- EXPORT_SYMBOL(st_sensors_deallocate_trigger);
- 
-+int st_sensors_validate_device(struct iio_trigger *trig,
-+			       struct iio_dev *indio_dev)
-+{
-+	struct iio_dev *indio = iio_trigger_get_drvdata(trig);
-+
-+	if (indio != indio_dev)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(st_sensors_validate_device);
-+
- MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
- MODULE_DESCRIPTION("STMicroelectronics ST-sensors trigger");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_buffer.c b/drivers/iio/gyro/st_gyro_buffer.c
-index d67b17b6a7aa..a5377044e42f 100644
---- a/drivers/iio/gyro/st_gyro_buffer.c
-+++ b/drivers/iio/gyro/st_gyro_buffer.c
-@@ -91,7 +91,7 @@ static const struct iio_buffer_setup_ops st_gyro_buffer_setup_ops = {
- 
- int st_gyro_allocate_ring(struct iio_dev *indio_dev)
- {
--	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+	return iio_triggered_buffer_setup(indio_dev, NULL,
- 		&st_sensors_trigger_handler, &st_gyro_buffer_setup_ops);
- }
- 
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index be9057e89dc3..242a3e3c88e4 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -408,6 +408,7 @@ static const struct iio_info gyro_info = {
- static const struct iio_trigger_ops st_gyro_trigger_ops = {
- 	.owner = THIS_MODULE,
- 	.set_trigger_state = ST_GYRO_TRIGGER_SET_STATE,
-+	.validate_device = st_sensors_validate_device,
- };
- #define ST_GYRO_TRIGGER_OPS (&st_gyro_trigger_ops)
- #else
-diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
-index ecd3bd0a9769..0a9e8fadfa9d 100644
---- a/drivers/iio/magnetometer/st_magn_buffer.c
-+++ b/drivers/iio/magnetometer/st_magn_buffer.c
-@@ -82,7 +82,7 @@ static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
- 
- int st_magn_allocate_ring(struct iio_dev *indio_dev)
- {
--	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+	return iio_triggered_buffer_setup(indio_dev, NULL,
- 		&st_sensors_trigger_handler, &st_magn_buffer_setup_ops);
- }
- 
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 62036d2a9956..8250fc322c56 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -572,6 +572,7 @@ static const struct iio_info magn_info = {
- static const struct iio_trigger_ops st_magn_trigger_ops = {
- 	.owner = THIS_MODULE,
- 	.set_trigger_state = ST_MAGN_TRIGGER_SET_STATE,
-+	.validate_device = st_sensors_validate_device,
- };
- #define ST_MAGN_TRIGGER_OPS (&st_magn_trigger_ops)
- #else
-diff --git a/drivers/iio/pressure/st_pressure_buffer.c b/drivers/iio/pressure/st_pressure_buffer.c
-index 2ff53f222352..99468d0a64e7 100644
---- a/drivers/iio/pressure/st_pressure_buffer.c
-+++ b/drivers/iio/pressure/st_pressure_buffer.c
-@@ -82,7 +82,7 @@ static const struct iio_buffer_setup_ops st_press_buffer_setup_ops = {
- 
- int st_press_allocate_ring(struct iio_dev *indio_dev)
- {
--	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+	return iio_triggered_buffer_setup(indio_dev, NULL,
- 		&st_sensors_trigger_handler, &st_press_buffer_setup_ops);
- }
- 
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index 9e9b72a8f18f..b48285739246 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -425,6 +425,7 @@ static const struct iio_info press_info = {
- static const struct iio_trigger_ops st_press_trigger_ops = {
- 	.owner = THIS_MODULE,
- 	.set_trigger_state = ST_PRESS_TRIGGER_SET_STATE,
-+	.validate_device = st_sensors_validate_device,
- };
- #define ST_PRESS_TRIGGER_OPS (&st_press_trigger_ops)
- #else
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index d029ffac0d69..99403b19092f 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -223,6 +223,8 @@ struct st_sensor_settings {
-  * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
-  * @tf: Transfer function structure used by I/O operations.
-  * @tb: Transfer buffers and mutex used by I/O operations.
-+ * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
-+ * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
-  */
- struct st_sensor_data {
- 	struct device *dev;
-@@ -247,6 +249,9 @@ struct st_sensor_data {
- 
- 	const struct st_sensor_transfer_function *tf;
- 	struct st_sensor_transfer_buffer tb;
-+
-+	bool hw_irq_trigger;
-+	s64 hw_timestamp;
- };
- 
- #ifdef CONFIG_IIO_BUFFER
-@@ -260,7 +265,8 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
- 				const struct iio_trigger_ops *trigger_ops);
- 
- void st_sensors_deallocate_trigger(struct iio_dev *indio_dev);
+-	/* Let's create an interrupt thread masking the hard IRQ here */
+-	irq_trig |= IRQF_ONESHOT;
 -
-+int st_sensors_validate_device(struct iio_trigger *trig,
-+			       struct iio_dev *indio_dev);
- #else
- static inline int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
- 				const struct iio_trigger_ops *trigger_ops)
-@@ -271,6 +277,7 @@ static inline void st_sensors_deallocate_trigger(struct iio_dev *indio_dev)
- {
- 	return;
- }
-+#define st_sensors_validate_device NULL
- #endif
- 
- int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 	err = request_threaded_irq(sdata->get_irq_data_ready(indio_dev),
+ 			st_sensors_irq_handler,
+ 			st_sensors_irq_thread,
 -- 
 2.4.11
+
