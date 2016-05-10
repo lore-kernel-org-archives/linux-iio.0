@@ -1,43 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f170.google.com ([209.85.214.170]:36525 "EHLO
-	mail-ob0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751004AbcEJIRW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 May 2016 04:17:22 -0400
-Received: by mail-ob0-f170.google.com with SMTP id aq1so2547233obc.3
-        for <linux-iio@vger.kernel.org>; Tue, 10 May 2016 01:17:21 -0700 (PDT)
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <d76ecc9c-a6a9-59c9-afd9-8f0ae9eb0dff@intel.com>
+In-Reply-To: <3CDC61F5-716E-4400-82FF-CC9E89358088@jic23.retrosnub.co.uk>
 References: <1462805775-7723-1-git-send-email-linus.walleij@linaro.org>
 	<1462805775-7723-2-git-send-email-linus.walleij@linaro.org>
 	<d76ecc9c-a6a9-59c9-afd9-8f0ae9eb0dff@intel.com>
-Date: Tue, 10 May 2016 10:17:21 +0200
-Message-ID: <CACRpkdYYyzvkAdiV7kVr58S7dWa64fc28jMTDxhOJtgVK8fQDg@mail.gmail.com>
+	<3CDC61F5-716E-4400-82FF-CC9E89358088@jic23.retrosnub.co.uk>
+Date: Tue, 10 May 2016 10:24:39 +0200
+Message-ID: <CACRpkdbj7wRuiK8TojO0FBA8ZqNxJsUpQmUApNRQ3eqfHO5nFg@mail.gmail.com>
 Subject: Re: [PATCH 2/2] iio: st_sensors: read surplus samples in trigger
 From: Linus Walleij <linus.walleij@linaro.org>
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: Crestez Dan Leonard <leonard.crestez@intel.com>, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Giuseppe Barba <giuseppe.barba@st.com>,
 	Denis Ciocca <denis.ciocca@st.com>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, May 9, 2016 at 8:36 PM, Crestez Dan Leonard
-<leonard.crestez@intel.com> wrote:
-> On 05/09/2016 05:56 PM, Linus Walleij wrote:
+On Mon, May 9, 2016 at 11:26 PM, Jonathan Cameron
+<jic23@jic23.retrosnub.co.uk> wrote:
 
-> I also tested this and it no longer stops printing samples. Your
-> explanation also looks good to me.
+>>An infinite loop in the threaded interrupt handler looks odd. Are you
+>>sure this is allowed? I do my tests in qemu with an usb adapter and if
+>>I
+>>run with -smp 1 it seems to be impossible to stop the irq thread.
+>
+> Definitely not allowed....
+>
+> Long term we need a way to throttle or fault out after first few loops.
+>
+> Right now this improves situation even if we just let it happen say 10 times to ride
+> our slight delays...
 
-OK we are moving in the right direction then!
+OK I'm putting in a hard limit to 10 loops.
 
-> An infinite loop in the threaded interrupt handler looks odd. Are you
-> sure this is allowed? I do my tests in qemu with an usb adapter and if I
-> run with -smp 1 it seems to be impossible to stop the irq thread.
+> I ideally want to fire up my board and hammer this as well, plus read it very
+> carefully to see if this really closes all potential races...
 
-I will put in a limit to 10 as Jonathan recommended, let's see
-if that fixes your problem! It's a sound limitation anyway.
+I'm doing my best, as far as I can tell this is how threaded
+interrupts solve thing, normally.
+
+As long as no hardirqs get masked, it should work. That
+would only happen if a new IRQ happens while we're inside
+the hard IRQ handler, so as long as this is fast enough (which
+I guess is the assumption we make on all top halves) we
+should be safe.
+
+As the driver currently has a limitation and does not allow
+to connect the sensor to an interrupt controller which itself
+is threaded (such as a GPIO expander on an I2C bus) we
+should be safe for the time being.
+
+If we want to support the latter usecase at some point, we
+may have problems: the I2C traffic to the expander itself
+will maybe lead us to miss IRQs. But then it is really the
+latency of the whole system causing things to break, not this
+driver: the components used simply aren't fast enough.
+
+I think in such cases the only safe way to read values is
+to give up due to bad system architecture and to fall back to
+using an HRTimer to poll the sensor.
 
 Yours,
 Linus Walleij
