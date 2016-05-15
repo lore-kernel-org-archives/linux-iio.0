@@ -1,64 +1,88 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40737 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750908AbcEORz2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 May 2016 13:55:28 -0400
-Subject: Re: [RFC] Make the devm_iio_device_alloc call set iio_dev.dev.parent.
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Matt Ranostay <mranostay@gmail.com>
-References: <f71d4bfe-fd29-7f00-d770-f62221118000@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8349aadb-c655-95c5-9399-960331b047ca@kernel.org>
-Date: Sun, 15 May 2016 18:55:23 +0100
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <f71d4bfe-fd29-7f00-d770-f62221118000@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <de2cc75b-4d17-0fb5-e754-8a30f3bdb893@kernel.org>
+References: <1462870813-24700-1-git-send-email-linus.walleij@linaro.org>
+	<de2cc75b-4d17-0fb5-e754-8a30f3bdb893@kernel.org>
+Date: Sun, 15 May 2016 21:10:53 +0200
+Message-ID: <CACRpkda6Szkz__r6E_+qzUO819gX=bncFbBedmDKUFERYrSNJQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2 v6] iio: st_sensors: switch to a threaded interrupt
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>, Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/05/16 11:56, Jonathan Cameron wrote:
-> Hi All,
-> 
-> One thing that I discovered via a recent input device review is that
-> the equivalent of our devm_iio_device_alloc there also sets the
-> dev.parent.
-> 
-> Should we do the same in IIO?
-> 
-> I'm a bit in too minds as it feels like it is only sort of 'part of the
-> allocation'.
-> 
-> Still it drops one line from nearly every IIO driver.
-> Could do the same for dev_iio_trigger_alloc as well I guess for double
-> savings.
-> 
-> Anyhow, a little cleanup that seemed like a moderately good idea to
-> me so I thought I'd see what the general view was.
-> 
-> Jonathan
+On Sat, May 14, 2016 at 6:48 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 10/05/16 10:00, Linus Walleij wrote:
 
-I'm gong ahead with this - just for reference purposes the oddities so far
-are:
-stx104 which never set the parent.
-max30100 which never sets the parent.
-apds9960 which never sets the parent.
-ms5611_i2c never sets the parent.
-pulsed_light lidar never sets the parent.
+>> +             /*
+>> +              * If this was not caused by any channels on this sensor,
+>> +              * return IRQ_NONE
+>> +              */
+>> +             if (!indio_dev->active_scan_mask)
+>> +                     return IRQ_NONE;
+>
+> I'm wondering if this is the right check...   It might be racey with a buffer
+> being disabled.
 
-lm3533 which sets the iio device parent to the mfd device parent, but allocates
-on the devm against the mfd. I'm not certain this is how it should have been done
-but now it is abi so we have to cope with it.
-We can handle this just fine by letting it override the default.
+It needs to be there if we get a spurious interrupt before any channels
+are enabled, as at that point ->active_scan_mask is NULL and
+will cause a segfault also it bit me for real, so not just a theoretical
+point.
 
-Each patch is simple enough I'll probably just do this in one or two mega patches
-rather than one per driver...
+> Take mlock around the check perhaps? + the use of it below.  I haven't
+> thought this through enough to be sure that's sufficient though...
 
-Same trick applies for the devm_iio_trigger_alloc though that is used rather less.
+I don't see how ->mlock would help? The code in e.g.
+iio_enable_buffers() is just optimistically setting ->active_scan_mask
+with no locks held. This NULL check is *only* for the case where an
+IRQ fires after the buffer has been registered but before the buffer is enabled,
+(or after the buffer is disabled, but the IRQ still fires for some reason)
+it seems safe to me?
 
-Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>> +             if (!(status & (u8)indio_dev->active_scan_mask[0]))
+>> +                     return IRQ_NONE;
+>
+> A bitmap comparison might be more elegant.
 
+I guess, but the whole logic of these ST sensors drivers are quite brutally
+just assuming bits 0,1,2 in the active_scan_mask is equal to
+axis x,y,z, c.f.:
+
+st_accel_buffer_postenable():
+err = st_sensors_set_axis_enable(indio_dev,
+                                        (u8)indio_dev->active_scan_mask[0]);
+(...)
+
+Which goes here:
+
+int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable)
+{
+        struct st_sensor_data *sdata = iio_priv(indio_dev);
+
+        return st_sensors_write_data_with_mask(indio_dev,
+                                sdata->sensor_settings->enable_axis.addr,
+                                sdata->sensor_settings->enable_axis.mask,
+                                axis_enable);
+}
+
+I.e. just writing the value of active_scan_mask into the register as you can
+see. (Not elegant, but I did not write this code.)
+
+The status check follows the same 1:1 mapping pattern so as to not
+fuzz things up. If we change that we should make a separate patch
+fixing this design pattern to do bitmap operations everywhere I think.
+
+> Also I would suggest it would
+> be neater to mask status to only have the relevant bits - not technically
+> necessary as those are the only ones that should overlap with the scan_mask
+> but neater none the less.
+
+It relies on the same pattern and any other bits than 0,1,2 of active_scan_mask
+being zero indeed. I can &= 3 the status register first, I'll send a patch with
+that change once we agree on the rest.
+
+Yours,
+Linus Walleij
