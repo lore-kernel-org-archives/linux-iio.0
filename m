@@ -1,139 +1,282 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43995 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753183AbcEPJlM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 May 2016 05:41:12 -0400
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Date: Mon, 16 May 2016 10:41:06 +0100
-From: jic23@jic23.retrosnub.co.uk
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	linux-iio-owner@vger.kernel.org
-Subject: Re: [PATCH 1/2 v6] iio: st_sensors: switch to a threaded interrupt
-In-Reply-To: <CACRpkda6Szkz__r6E_+qzUO819gX=bncFbBedmDKUFERYrSNJQ@mail.gmail.com>
-References: <1462870813-24700-1-git-send-email-linus.walleij@linaro.org>
- <de2cc75b-4d17-0fb5-e754-8a30f3bdb893@kernel.org>
- <CACRpkda6Szkz__r6E_+qzUO819gX=bncFbBedmDKUFERYrSNJQ@mail.gmail.com>
-Message-ID: <4dc3624160d3b6e2cb178738238aaa01@jic23.retrosnub.co.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <1463375926-2146-1-git-send-email-matt.ranostay@intel.com>
+References: <1463375926-2146-1-git-send-email-matt.ranostay@intel.com>
+Date: Mon, 16 May 2016 15:15:23 +0300
+Message-ID: <CAEnQRZB20puqrkcAj6OLNQh6Okt9uwSWkoZqB2KT_yUjEScsLA@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: adc: ti-ads1015: add support for ADS1115 part
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Matt Ranostay <matt.ranostay@intel.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 15.05.2016 20:10, Linus Walleij wrote:
-> On Sat, May 14, 2016 at 6:48 PM, Jonathan Cameron <jic23@kernel.org> 
-> wrote:
->> On 10/05/16 10:00, Linus Walleij wrote:
-> 
->>> +             /*
->>> +              * If this was not caused by any channels on this 
->>> sensor,
->>> +              * return IRQ_NONE
->>> +              */
->>> +             if (!indio_dev->active_scan_mask)
->>> +                     return IRQ_NONE;
->> 
->> I'm wondering if this is the right check...   It might be racey with a 
->> buffer
->> being disabled.
-> 
-> It needs to be there if we get a spurious interrupt before any channels
-> are enabled, as at that point ->active_scan_mask is NULL and
-> will cause a segfault also it bit me for real, so not just a 
-> theoretical
-> point.
-Absolutely need a check - this just feels like a slight abuse of a field
-where we've never carefully controlled the timing...  Whilst it's 
-clearly
-related to whether we are ready for an interrupt it might not be the 
-only
-related field - i.e. we might break it in the future.
+On Mon, May 16, 2016 at 8:18 AM, Matt Ranostay <matt.ranostay@intel.com> wrote:
+> TI ADS1115 is a 16-bit resolution ADC that is register map
+> compatible with the ADS1015 device.
+>
+> Cc: daniel.baluta@intel.com
+> Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
 
-Still I don't have a better idea right now so lets go with this.
-> 
->> Take mlock around the check perhaps? + the use of it below.  I haven't
->> thought this through enough to be sure that's sufficient though...
-> 
-> I don't see how ->mlock would help? The code in e.g.
-> iio_enable_buffers() is just optimistically setting ->active_scan_mask
-> with no locks held. This NULL check is *only* for the case where an
-> IRQ fires after the buffer has been registered but before the buffer is 
-> enabled,
-> (or after the buffer is disabled, but the IRQ still fires for some 
-> reason)
-> it seems safe to me?
-Sorry, I didn't put that clearly at all.  The mlock isn't a replacement
-for the check, it was to avoid a race on removal.
-disable_buffers will reset active_scan_mask to NULL.  The issue arises 
-if
-that happens between your check above and dereferencing active_scan_mask
-below.
+Looks good to me.
 
-update_buffers which is responsible for 'most' calls of the relevant 
-code
-holds mlock so that would prevent this race.  Unfortunately 
-disable_all_buffers
-doesn't which is nasty and should probably be fixed.
-> 
->>> +             if (!(status & (u8)indio_dev->active_scan_mask[0]))
->>> +                     return IRQ_NONE;
->> 
->> A bitmap comparison might be more elegant.
-> 
-> I guess, but the whole logic of these ST sensors drivers are quite 
-> brutally
-> just assuming bits 0,1,2 in the active_scan_mask is equal to
-> axis x,y,z, c.f.:
-> 
-> st_accel_buffer_postenable():
-> err = st_sensors_set_axis_enable(indio_dev,
->                                         
-> (u8)indio_dev->active_scan_mask[0]);
-> (...)
-> 
-> Which goes here:
-> 
-> int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 
-> axis_enable)
-> {
->         struct st_sensor_data *sdata = iio_priv(indio_dev);
-> 
->         return st_sensors_write_data_with_mask(indio_dev,
->                                 
-> sdata->sensor_settings->enable_axis.addr,
->                                 
-> sdata->sensor_settings->enable_axis.mask,
->                                 axis_enable);
-> }
-> 
-> I.e. just writing the value of active_scan_mask into the register as 
-> you can
-> see. (Not elegant, but I did not write this code.)
-> 
-> The status check follows the same 1:1 mapping pattern so as to not
-> fuzz things up. If we change that we should make a separate patch
-> fixing this design pattern to do bitmap operations everywhere I think.
-Fair enough.
-> 
->> Also I would suggest it would
->> be neater to mask status to only have the relevant bits - not 
->> technically
->> necessary as those are the only ones that should overlap with the 
->> scan_mask
->> but neater none the less.
-> 
-> It relies on the same pattern and any other bits than 0,1,2 of 
-> active_scan_mask
-> being zero indeed. I can &= 3 the status register first, I'll send a 
-> patch with
-> that change once we agree on the rest.
-Sure.
-> 
-> Yours,
-> Linus Walleij
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+
+> ---
+>  Changes from v2:
+>  * Add missing ads1115 data rate values
+>  * Allow support defining data rates per chip
+>
+>  drivers/iio/adc/ti-ads1015.c | 124 +++++++++++++++++++++++++++++++++++++------
+>  1 file changed, 109 insertions(+), 15 deletions(-)
+>
+> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+> index 73cbf0b..a835423 100644
+> --- a/drivers/iio/adc/ti-ads1015.c
+> +++ b/drivers/iio/adc/ti-ads1015.c
+> @@ -55,6 +55,11 @@
+>  #define ADS1015_DEFAULT_DATA_RATE      4
+>  #define ADS1015_DEFAULT_CHAN           0
+>
+> +enum {
+> +       ADS1015,
+> +       ADS1115,
+> +};
+> +
+>  enum ads1015_channels {
+>         ADS1015_AIN0_AIN1 = 0,
+>         ADS1015_AIN0_AIN3,
+> @@ -71,6 +76,10 @@ static const unsigned int ads1015_data_rate[] = {
+>         128, 250, 490, 920, 1600, 2400, 3300, 3300
+>  };
+>
+> +static const unsigned int ads1115_data_rate[] = {
+> +       8, 16, 32, 64, 128, 250, 475, 860
+> +};
+> +
+>  static const struct {
+>         int scale;
+>         int uscale;
+> @@ -123,6 +132,42 @@ static const struct {
+>         },                                                      \
+>  }
+>
+> +#define ADS1115_V_CHAN(_chan, _addr) {                         \
+> +       .type = IIO_VOLTAGE,                                    \
+> +       .indexed = 1,                                           \
+> +       .address = _addr,                                       \
+> +       .channel = _chan,                                       \
+> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
+> +                               BIT(IIO_CHAN_INFO_SCALE) |      \
+> +                               BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> +       .scan_index = _addr,                                    \
+> +       .scan_type = {                                          \
+> +               .sign = 's',                                    \
+> +               .realbits = 16,                                 \
+> +               .storagebits = 16,                              \
+> +               .endianness = IIO_CPU,                          \
+> +       },                                                      \
+> +}
+> +
+> +#define ADS1115_V_DIFF_CHAN(_chan, _chan2, _addr) {            \
+> +       .type = IIO_VOLTAGE,                                    \
+> +       .differential = 1,                                      \
+> +       .indexed = 1,                                           \
+> +       .address = _addr,                                       \
+> +       .channel = _chan,                                       \
+> +       .channel2 = _chan2,                                     \
+> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
+> +                               BIT(IIO_CHAN_INFO_SCALE) |      \
+> +                               BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> +       .scan_index = _addr,                                    \
+> +       .scan_type = {                                          \
+> +               .sign = 's',                                    \
+> +               .realbits = 16,                                 \
+> +               .storagebits = 16,                              \
+> +               .endianness = IIO_CPU,                          \
+> +       },                                                      \
+> +}
+> +
+>  struct ads1015_data {
+>         struct regmap *regmap;
+>         /*
+> @@ -131,6 +176,8 @@ struct ads1015_data {
+>          */
+>         struct mutex lock;
+>         struct ads1015_channel_data channel_data[ADS1015_CHANNELS];
+> +
+> +       unsigned int *data_rate;
+>  };
+>
+>  static bool ads1015_is_writeable_reg(struct device *dev, unsigned int reg)
+> @@ -157,6 +204,18 @@ static const struct iio_chan_spec ads1015_channels[] = {
+>         IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
+>  };
+>
+> +static const struct iio_chan_spec ads1115_channels[] = {
+> +       ADS1115_V_DIFF_CHAN(0, 1, ADS1015_AIN0_AIN1),
+> +       ADS1115_V_DIFF_CHAN(0, 3, ADS1015_AIN0_AIN3),
+> +       ADS1115_V_DIFF_CHAN(1, 3, ADS1015_AIN1_AIN3),
+> +       ADS1115_V_DIFF_CHAN(2, 3, ADS1015_AIN2_AIN3),
+> +       ADS1115_V_CHAN(0, ADS1015_AIN0),
+> +       ADS1115_V_CHAN(1, ADS1015_AIN1),
+> +       ADS1115_V_CHAN(2, ADS1015_AIN2),
+> +       ADS1115_V_CHAN(3, ADS1015_AIN3),
+> +       IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
+> +};
+> +
+>  static int ads1015_set_power_state(struct ads1015_data *data, bool on)
+>  {
+>         int ret;
+> @@ -196,7 +255,7 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+>                 return ret;
+>
+>         if (change) {
+> -               conv_time = DIV_ROUND_UP(USEC_PER_SEC, ads1015_data_rate[dr]);
+> +               conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
+>                 usleep_range(conv_time, conv_time + 1);
+>         }
+>
+> @@ -263,7 +322,7 @@ static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
+>         int i, ret, rindex = -1;
+>
+>         for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++)
+> -               if (ads1015_data_rate[i] == rate) {
+> +               if (data->data_rate[i] == rate) {
+>                         rindex = i;
+>                         break;
+>                 }
+> @@ -291,7 +350,9 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+>         mutex_lock(&indio_dev->mlock);
+>         mutex_lock(&data->lock);
+>         switch (mask) {
+> -       case IIO_CHAN_INFO_RAW:
+> +       case IIO_CHAN_INFO_RAW: {
+> +               int shift = chan->scan_type.shift;
+> +
+>                 if (iio_buffer_enabled(indio_dev)) {
+>                         ret = -EBUSY;
+>                         break;
+> @@ -307,8 +368,7 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+>                         break;
+>                 }
+>
+> -               /* 12 bit res, D0 is bit 4 in conversion register */
+> -               *val = sign_extend32(*val >> 4, 11);
+> +               *val = sign_extend32(*val >> shift, 15 - shift);
+>
+>                 ret = ads1015_set_power_state(data, false);
+>                 if (ret < 0)
+> @@ -316,6 +376,7 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+>
+>                 ret = IIO_VAL_INT;
+>                 break;
+> +       }
+>         case IIO_CHAN_INFO_SCALE:
+>                 idx = data->channel_data[chan->address].pga;
+>                 *val = ads1015_scale[idx].scale;
+> @@ -324,7 +385,7 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+>                 break;
+>         case IIO_CHAN_INFO_SAMP_FREQ:
+>                 idx = data->channel_data[chan->address].data_rate;
+> -               *val = ads1015_data_rate[idx];
+> +               *val = data->data_rate[idx];
+>                 ret = IIO_VAL_INT;
+>                 break;
+>         default:
+> @@ -380,12 +441,15 @@ static const struct iio_buffer_setup_ops ads1015_buffer_setup_ops = {
+>  };
+>
+>  static IIO_CONST_ATTR(scale_available, "3 2 1 0.5 0.25 0.125");
+> -static IIO_CONST_ATTR(sampling_frequency_available,
+> -                     "128 250 490 920 1600 2400 3300");
+> +
+> +static IIO_CONST_ATTR_NAMED(ads1015_sampling_frequency_available,
+> +       sampling_frequency_available, "128 250 490 920 1600 2400 3300");
+> +static IIO_CONST_ATTR_NAMED(ads1115_sampling_frequency_available,
+> +       sampling_frequency_available, "8 16 32 64 128 250 475 860");
+>
+>  static struct attribute *ads1015_attributes[] = {
+>         &iio_const_attr_scale_available.dev_attr.attr,
+> -       &iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +       &iio_const_attr_ads1015_sampling_frequency_available.dev_attr.attr,
+>         NULL,
+>  };
+>
+> @@ -393,11 +457,28 @@ static const struct attribute_group ads1015_attribute_group = {
+>         .attrs = ads1015_attributes,
+>  };
+>
+> -static const struct iio_info ads1015_info = {
+> +static struct attribute *ads1115_attributes[] = {
+> +       &iio_const_attr_scale_available.dev_attr.attr,
+> +       &iio_const_attr_ads1115_sampling_frequency_available.dev_attr.attr,
+> +       NULL,
+> +};
+> +
+> +static const struct attribute_group ads1115_attribute_group = {
+> +       .attrs = ads1115_attributes,
+> +};
+> +
+> +static struct iio_info ads1015_info = {
+> +       .driver_module  = THIS_MODULE,
+> +       .read_raw       = ads1015_read_raw,
+> +       .write_raw      = ads1015_write_raw,
+> +       .attrs          = &ads1015_attribute_group,
+> +};
+> +
+> +static struct iio_info ads1115_info = {
+>         .driver_module  = THIS_MODULE,
+>         .read_raw       = ads1015_read_raw,
+>         .write_raw      = ads1015_write_raw,
+> -       .attrs          = &ads1015_attribute_group,
+> +       .attrs          = &ads1115_attribute_group,
+>  };
+>
+>  #ifdef CONFIG_OF
+> @@ -500,12 +581,24 @@ static int ads1015_probe(struct i2c_client *client,
+>         mutex_init(&data->lock);
+>
+>         indio_dev->dev.parent = &client->dev;
+> -       indio_dev->info = &ads1015_info;
+>         indio_dev->name = ADS1015_DRV_NAME;
+> -       indio_dev->channels = ads1015_channels;
+> -       indio_dev->num_channels = ARRAY_SIZE(ads1015_channels);
+>         indio_dev->modes = INDIO_DIRECT_MODE;
+>
+> +       switch (id->driver_data) {
+> +       case ADS1015:
+> +               indio_dev->channels = ads1015_channels;
+> +               indio_dev->num_channels = ARRAY_SIZE(ads1015_channels);
+> +               indio_dev->info = &ads1015_info;
+> +               data->data_rate = (unsigned int *) &ads1015_data_rate;
+> +               break;
+> +       case ADS1115:
+> +               indio_dev->channels = ads1115_channels;
+> +               indio_dev->num_channels = ARRAY_SIZE(ads1115_channels);
+> +               indio_dev->info = &ads1115_info;
+> +               data->data_rate = (unsigned int *) &ads1115_data_rate;
+> +               break;
+> +       }
+> +
+>         /* we need to keep this ABI the same as used by hwmon ADS1015 driver */
+>         ads1015_get_channels_config(client);
+>
+> @@ -590,7 +683,8 @@ static const struct dev_pm_ops ads1015_pm_ops = {
+>  };
+>
+>  static const struct i2c_device_id ads1015_id[] = {
+> -       {"ads1015", 0},
+> +       {"ads1015", ADS1015},
+> +       {"ads1115", ADS1115},
+>         {}
+>  };
+>  MODULE_DEVICE_TABLE(i2c, ads1015_id);
+> --
+> 2.7.4
+>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
