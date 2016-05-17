@@ -1,70 +1,298 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f196.google.com ([209.85.217.196]:35524 "EHLO
-	mail-lb0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750729AbcEPGEx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 May 2016 02:04:53 -0400
-Received: by mail-lb0-f196.google.com with SMTP id mx9so6577780lbb.2
-        for <linux-iio@vger.kernel.org>; Sun, 15 May 2016 23:04:53 -0700 (PDT)
+Received: from mail-lf0-f42.google.com ([209.85.215.42]:34321 "EHLO
+	mail-lf0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750971AbcEQHHu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 May 2016 03:07:50 -0400
+Received: by mail-lf0-f42.google.com with SMTP id m64so2824562lfd.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 May 2016 00:07:49 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <8349aadb-c655-95c5-9399-960331b047ca@kernel.org>
-References: <f71d4bfe-fd29-7f00-d770-f62221118000@kernel.org> <8349aadb-c655-95c5-9399-960331b047ca@kernel.org>
-From: Matt Ranostay <mranostay@gmail.com>
-Date: Sun, 15 May 2016 23:02:33 -0700
-Message-ID: <CAKzfze9iS_et6BkZGa3ZD1-AEiEK9r2wXLL41LNvxjO-acPngQ@mail.gmail.com>
-Subject: Re: [RFC] Make the devm_iio_device_alloc call set iio_dev.dev.parent.
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+In-Reply-To: <CAEnQRZB20puqrkcAj6OLNQh6Okt9uwSWkoZqB2KT_yUjEScsLA@mail.gmail.com>
+References: <1463375926-2146-1-git-send-email-matt.ranostay@intel.com> <CAEnQRZB20puqrkcAj6OLNQh6Okt9uwSWkoZqB2KT_yUjEScsLA@mail.gmail.com>
+From: Crt Mori <cmo@melexis.com>
+Date: Tue, 17 May 2016 09:07:08 +0200
+Message-ID: <CAKv63utmuXjQHXWRj=Ufz5AsYQjSefvDNd27poQvEH7SG=EMdA@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: adc: ti-ads1015: add support for ADS1115 part
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Matt Ranostay <matt.ranostay@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, May 15, 2016 at 10:55 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 04/05/16 11:56, Jonathan Cameron wrote:
->> Hi All,
->>
->> One thing that I discovered via a recent input device review is that
->> the equivalent of our devm_iio_device_alloc there also sets the
->> dev.parent.
->>
->> Should we do the same in IIO?
->>
->> I'm a bit in too minds as it feels like it is only sort of 'part of the
->> allocation'.
->>
->> Still it drops one line from nearly every IIO driver.
->> Could do the same for dev_iio_trigger_alloc as well I guess for double
->> savings.
->>
->> Anyhow, a little cleanup that seemed like a moderately good idea to
->> me so I thought I'd see what the general view was.
->>
->> Jonathan
->
-> I'm gong ahead with this - just for reference purposes the oddities so far
-> are:
-> stx104 which never set the parent.
-> max30100 which never sets the parent.
-> apds9960 which never sets the parent.
-> ms5611_i2c never sets the parent.
-> pulsed_light lidar never sets the parent.
+Acked-by: Crt Mori <cmo@melexis.com>
 
-Yike! I caused 3 odd drivers here :)
-
+On 16 May 2016 at 14:15, Daniel Baluta <daniel.baluta@intel.com> wrote:
 >
-> lm3533 which sets the iio device parent to the mfd device parent, but allocates
-> on the devm against the mfd. I'm not certain this is how it should have been done
-> but now it is abi so we have to cope with it.
-> We can handle this just fine by letting it override the default.
+> On Mon, May 16, 2016 at 8:18 AM, Matt Ranostay <matt.ranostay@intel.com> wrote:
+> > TI ADS1115 is a 16-bit resolution ADC that is register map
+> > compatible with the ADS1015 device.
+> >
+> > Cc: daniel.baluta@intel.com
+> > Signed-off-by: Matt Ranostay <matt.ranostay@intel.com>
 >
-> Each patch is simple enough I'll probably just do this in one or two mega patches
-> rather than one per driver...
+> Looks good to me.
 >
-> Same trick applies for the devm_iio_trigger_alloc though that is used rather less.
+> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
 >
-> Jonathan
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
+> > ---
+> >  Changes from v2:
+> >  * Add missing ads1115 data rate values
+> >  * Allow support defining data rates per chip
+> >
+> >  drivers/iio/adc/ti-ads1015.c | 124 +++++++++++++++++++++++++++++++++++++------
+> >  1 file changed, 109 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+> > index 73cbf0b..a835423 100644
+> > --- a/drivers/iio/adc/ti-ads1015.c
+> > +++ b/drivers/iio/adc/ti-ads1015.c
+> > @@ -55,6 +55,11 @@
+> >  #define ADS1015_DEFAULT_DATA_RATE      4
+> >  #define ADS1015_DEFAULT_CHAN           0
+> >
+> > +enum {
+> > +       ADS1015,
+> > +       ADS1115,
+> > +};
+> > +
+> >  enum ads1015_channels {
+> >         ADS1015_AIN0_AIN1 = 0,
+> >         ADS1015_AIN0_AIN3,
+> > @@ -71,6 +76,10 @@ static const unsigned int ads1015_data_rate[] = {
+> >         128, 250, 490, 920, 1600, 2400, 3300, 3300
+> >  };
+> >
+> > +static const unsigned int ads1115_data_rate[] = {
+> > +       8, 16, 32, 64, 128, 250, 475, 860
+> > +};
+> > +
+> >  static const struct {
+> >         int scale;
+> >         int uscale;
+> > @@ -123,6 +132,42 @@ static const struct {
+> >         },                                                      \
+> >  }
+> >
+> > +#define ADS1115_V_CHAN(_chan, _addr) {                         \
+> > +       .type = IIO_VOLTAGE,                                    \
+> > +       .indexed = 1,                                           \
+> > +       .address = _addr,                                       \
+> > +       .channel = _chan,                                       \
+> > +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
+> > +                               BIT(IIO_CHAN_INFO_SCALE) |      \
+> > +                               BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> > +       .scan_index = _addr,                                    \
+> > +       .scan_type = {                                          \
+> > +               .sign = 's',                                    \
+> > +               .realbits = 16,                                 \
+> > +               .storagebits = 16,                              \
+> > +               .endianness = IIO_CPU,                          \
+> > +       },                                                      \
+> > +}
+> > +
+> > +#define ADS1115_V_DIFF_CHAN(_chan, _chan2, _addr) {            \
+> > +       .type = IIO_VOLTAGE,                                    \
+> > +       .differential = 1,                                      \
+> > +       .indexed = 1,                                           \
+> > +       .address = _addr,                                       \
+> > +       .channel = _chan,                                       \
+> > +       .channel2 = _chan2,                                     \
+> > +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
+> > +                               BIT(IIO_CHAN_INFO_SCALE) |      \
+> > +                               BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> > +       .scan_index = _addr,                                    \
+> > +       .scan_type = {                                          \
+> > +               .sign = 's',                                    \
+> > +               .realbits = 16,                                 \
+> > +               .storagebits = 16,                              \
+> > +               .endianness = IIO_CPU,                          \
+> > +       },                                                      \
+> > +}
+> > +
+> >  struct ads1015_data {
+> >         struct regmap *regmap;
+> >         /*
+> > @@ -131,6 +176,8 @@ struct ads1015_data {
+> >          */
+> >         struct mutex lock;
+> >         struct ads1015_channel_data channel_data[ADS1015_CHANNELS];
+> > +
+> > +       unsigned int *data_rate;
+> >  };
+> >
+> >  static bool ads1015_is_writeable_reg(struct device *dev, unsigned int reg)
+> > @@ -157,6 +204,18 @@ static const struct iio_chan_spec ads1015_channels[] = {
+> >         IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
+> >  };
+> >
+> > +static const struct iio_chan_spec ads1115_channels[] = {
+> > +       ADS1115_V_DIFF_CHAN(0, 1, ADS1015_AIN0_AIN1),
+> > +       ADS1115_V_DIFF_CHAN(0, 3, ADS1015_AIN0_AIN3),
+> > +       ADS1115_V_DIFF_CHAN(1, 3, ADS1015_AIN1_AIN3),
+> > +       ADS1115_V_DIFF_CHAN(2, 3, ADS1015_AIN2_AIN3),
+> > +       ADS1115_V_CHAN(0, ADS1015_AIN0),
+> > +       ADS1115_V_CHAN(1, ADS1015_AIN1),
+> > +       ADS1115_V_CHAN(2, ADS1015_AIN2),
+> > +       ADS1115_V_CHAN(3, ADS1015_AIN3),
+> > +       IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
+> > +};
+> > +
+> >  static int ads1015_set_power_state(struct ads1015_data *data, bool on)
+> >  {
+> >         int ret;
+> > @@ -196,7 +255,7 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+> >                 return ret;
+> >
+> >         if (change) {
+> > -               conv_time = DIV_ROUND_UP(USEC_PER_SEC, ads1015_data_rate[dr]);
+> > +               conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
+> >                 usleep_range(conv_time, conv_time + 1);
+> >         }
+> >
+> > @@ -263,7 +322,7 @@ static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
+> >         int i, ret, rindex = -1;
+> >
+> >         for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++)
+> > -               if (ads1015_data_rate[i] == rate) {
+> > +               if (data->data_rate[i] == rate) {
+> >                         rindex = i;
+> >                         break;
+> >                 }
+> > @@ -291,7 +350,9 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+> >         mutex_lock(&indio_dev->mlock);
+> >         mutex_lock(&data->lock);
+> >         switch (mask) {
+> > -       case IIO_CHAN_INFO_RAW:
+> > +       case IIO_CHAN_INFO_RAW: {
+> > +               int shift = chan->scan_type.shift;
+> > +
+> >                 if (iio_buffer_enabled(indio_dev)) {
+> >                         ret = -EBUSY;
+> >                         break;
+> > @@ -307,8 +368,7 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+> >                         break;
+> >                 }
+> >
+> > -               /* 12 bit res, D0 is bit 4 in conversion register */
+> > -               *val = sign_extend32(*val >> 4, 11);
+> > +               *val = sign_extend32(*val >> shift, 15 - shift);
+> >
+> >                 ret = ads1015_set_power_state(data, false);
+> >                 if (ret < 0)
+> > @@ -316,6 +376,7 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+> >
+> >                 ret = IIO_VAL_INT;
+> >                 break;
+> > +       }
+> >         case IIO_CHAN_INFO_SCALE:
+> >                 idx = data->channel_data[chan->address].pga;
+> >                 *val = ads1015_scale[idx].scale;
+> > @@ -324,7 +385,7 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+> >                 break;
+> >         case IIO_CHAN_INFO_SAMP_FREQ:
+> >                 idx = data->channel_data[chan->address].data_rate;
+> > -               *val = ads1015_data_rate[idx];
+> > +               *val = data->data_rate[idx];
+> >                 ret = IIO_VAL_INT;
+> >                 break;
+> >         default:
+> > @@ -380,12 +441,15 @@ static const struct iio_buffer_setup_ops ads1015_buffer_setup_ops = {
+> >  };
+> >
+> >  static IIO_CONST_ATTR(scale_available, "3 2 1 0.5 0.25 0.125");
+> > -static IIO_CONST_ATTR(sampling_frequency_available,
+> > -                     "128 250 490 920 1600 2400 3300");
+> > +
+> > +static IIO_CONST_ATTR_NAMED(ads1015_sampling_frequency_available,
+> > +       sampling_frequency_available, "128 250 490 920 1600 2400 3300");
+> > +static IIO_CONST_ATTR_NAMED(ads1115_sampling_frequency_available,
+> > +       sampling_frequency_available, "8 16 32 64 128 250 475 860");
+> >
+> >  static struct attribute *ads1015_attributes[] = {
+> >         &iio_const_attr_scale_available.dev_attr.attr,
+> > -       &iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> > +       &iio_const_attr_ads1015_sampling_frequency_available.dev_attr.attr,
+> >         NULL,
+> >  };
+> >
+> > @@ -393,11 +457,28 @@ static const struct attribute_group ads1015_attribute_group = {
+> >         .attrs = ads1015_attributes,
+> >  };
+> >
+> > -static const struct iio_info ads1015_info = {
+> > +static struct attribute *ads1115_attributes[] = {
+> > +       &iio_const_attr_scale_available.dev_attr.attr,
+> > +       &iio_const_attr_ads1115_sampling_frequency_available.dev_attr.attr,
+> > +       NULL,
+> > +};
+> > +
+> > +static const struct attribute_group ads1115_attribute_group = {
+> > +       .attrs = ads1115_attributes,
+> > +};
+> > +
+> > +static struct iio_info ads1015_info = {
+> > +       .driver_module  = THIS_MODULE,
+> > +       .read_raw       = ads1015_read_raw,
+> > +       .write_raw      = ads1015_write_raw,
+> > +       .attrs          = &ads1015_attribute_group,
+> > +};
+> > +
+> > +static struct iio_info ads1115_info = {
+> >         .driver_module  = THIS_MODULE,
+> >         .read_raw       = ads1015_read_raw,
+> >         .write_raw      = ads1015_write_raw,
+> > -       .attrs          = &ads1015_attribute_group,
+> > +       .attrs          = &ads1115_attribute_group,
+> >  };
+> >
+> >  #ifdef CONFIG_OF
+> > @@ -500,12 +581,24 @@ static int ads1015_probe(struct i2c_client *client,
+> >         mutex_init(&data->lock);
+> >
+> >         indio_dev->dev.parent = &client->dev;
+> > -       indio_dev->info = &ads1015_info;
+> >         indio_dev->name = ADS1015_DRV_NAME;
+> > -       indio_dev->channels = ads1015_channels;
+> > -       indio_dev->num_channels = ARRAY_SIZE(ads1015_channels);
+> >         indio_dev->modes = INDIO_DIRECT_MODE;
+> >
+> > +       switch (id->driver_data) {
+> > +       case ADS1015:
+> > +               indio_dev->channels = ads1015_channels;
+> > +               indio_dev->num_channels = ARRAY_SIZE(ads1015_channels);
+> > +               indio_dev->info = &ads1015_info;
+> > +               data->data_rate = (unsigned int *) &ads1015_data_rate;
+> > +               break;
+> > +       case ADS1115:
+> > +               indio_dev->channels = ads1115_channels;
+> > +               indio_dev->num_channels = ARRAY_SIZE(ads1115_channels);
+> > +               indio_dev->info = &ads1115_info;
+> > +               data->data_rate = (unsigned int *) &ads1115_data_rate;
+> > +               break;
+> > +       }
+> > +
+> >         /* we need to keep this ABI the same as used by hwmon ADS1015 driver */
+> >         ads1015_get_channels_config(client);
+> >
+> > @@ -590,7 +683,8 @@ static const struct dev_pm_ops ads1015_pm_ops = {
+> >  };
+> >
+> >  static const struct i2c_device_id ads1015_id[] = {
+> > -       {"ads1015", 0},
+> > +       {"ads1015", ADS1015},
+> > +       {"ads1115", ADS1115},
+> >         {}
+> >  };
+> >  MODULE_DEVICE_TABLE(i2c, ads1015_id);
+> > --
+> > 2.7.4
+> >
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
