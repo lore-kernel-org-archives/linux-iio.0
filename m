@@ -1,107 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:21472 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932508AbcERPBu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 18 May 2016 11:01:50 -0400
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <robh@kernel.org>
+Date: Wed, 18 May 2016 18:49:37 -0500
+From: Rob Herring <robh@kernel.org>
+To: Crestez Dan Leonard <leonard.crestez@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
 	Ge Gao <ggao@invensense.com>, Peter Rosin <peda@axentia.se>,
 	linux-i2c@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
-	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
+	devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>
-Subject: [PATCH v2 4/7] iio: inv_mpu6050: Cache non-volatile bits of user_ctrl
-Date: Wed, 18 May 2016 18:00:51 +0300
-Message-Id: <e39e64f7f39c2f41d2b8daf2dc60b01c44b1f8eb.1463582011.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1463582011.git.leonard.crestez@intel.com>
+Subject: Re: [RFC v2 7/7] iio: inv_mpu6050: Expose channels from slave sensors
+Message-ID: <20160518234937.GA19288@rob-hp-laptop>
 References: <cover.1463582011.git.leonard.crestez@intel.com>
-In-Reply-To: <cover.1463582011.git.leonard.crestez@intel.com>
-References: <cover.1463582011.git.leonard.crestez@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <fcfd42dc5de104d7535b4181171d9f931d820597.1463582011.git.leonard.crestez@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <fcfd42dc5de104d7535b4181171d9f931d820597.1463582011.git.leonard.crestez@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     | 2 ++
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    | 9 ++++++---
- drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 4 +++-
- 3 files changed, 11 insertions(+), 4 deletions(-)
+On Wed, May 18, 2016 at 06:00:54PM +0300, Crestez Dan Leonard wrote:
+> This works by copying the iio_chan_specs from the slave device and
+> republishing them as if they belonged to the MPU itself. All
+> read/write_raw operations are forwarded to the other driver.
+> 
+> The original device is still registered with linux as a normal driver
+> and works normally and you can poke at it to configure stuff like sample
+> rates and scaling factors.
+> 
+> Buffer values are read from the MPU fifo, allowing a much higher
+> sampling rate.
+> 
+> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+> ---
+>  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    |  47 ++-
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index 297b0ef..bd2c0fd 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -80,6 +80,7 @@ enum inv_devices {
-  *  @enable:		master enable state.
-  *  @accl_fifo_enable:	enable accel data output
-  *  @gyro_fifo_enable:	enable gyro data output
-+ *  @user_ctrl:		The non-volatile bits of user_ctrl
-  *  @fifo_rate:		FIFO update rate.
-  */
- struct inv_mpu6050_chip_config {
-@@ -89,6 +90,7 @@ struct inv_mpu6050_chip_config {
- 	unsigned int enable:1;
- 	unsigned int accl_fifo_enable:1;
- 	unsigned int gyro_fifo_enable:1;
-+	u8 user_ctrl;
- 	u16 fifo_rate;
- };
- 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-index 3fc0b71..56ee1e2 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-@@ -53,13 +53,15 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
- 	if (result)
- 		goto reset_fifo_fail;
- 	/* disable fifo reading */
--	result = regmap_write(st->map, st->reg->user_ctrl, 0);
-+	st->chip_config.user_ctrl &= ~INV_MPU6050_BIT_FIFO_EN;
-+	result = regmap_write(st->map, st->reg->user_ctrl,
-+			      st->chip_config.user_ctrl);
- 	if (result)
- 		goto reset_fifo_fail;
- 
- 	/* reset FIFO*/
- 	result = regmap_write(st->map, st->reg->user_ctrl,
--			      INV_MPU6050_BIT_FIFO_RST);
-+			      st->chip_config.user_ctrl | INV_MPU6050_BIT_FIFO_RST);
- 	if (result)
- 		goto reset_fifo_fail;
- 
-@@ -76,8 +78,9 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
- 			return result;
- 	}
- 	/* enable FIFO reading and I2C master interface*/
-+	st->chip_config.user_ctrl |= INV_MPU6050_BIT_FIFO_EN;
- 	result = regmap_write(st->map, st->reg->user_ctrl,
--			      INV_MPU6050_BIT_FIFO_EN);
-+			      st->chip_config.user_ctrl);
- 	if (result)
- 		goto reset_fifo_fail;
- 	/* enable sensor output to FIFO */
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-index 1a6bad3..fc55923 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-@@ -74,7 +74,9 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
- 		if (result)
- 			return result;
- 
--		result = regmap_write(st->map, st->reg->user_ctrl, 0);
-+		st->chip_config.user_ctrl &= ~INV_MPU6050_BIT_FIFO_EN;
-+		result = regmap_write(st->map, st->reg->user_ctrl,
-+				      st->chip_config.user_ctrl);
- 		if (result)
- 			return result;
- 
--- 
-2.5.5
+Please put all the binding changes in 1 separate patch. The h/w is not 
+evolving...
 
+Then I would have had the full picture when replying the to first 
+change.
+
+Rob
