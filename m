@@ -1,52 +1,81 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <alexandre.belloni@free-electrons.com>
+Date: Thu, 19 May 2016 12:01:13 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, maxime.ripard@free-electrons.com,
+	antoine.tenart@free-electrons.com
+Subject: Re: [PATCH] iio: adc: nau7802: Expose possible gains in sysfs
+Message-ID: <20160519100113.GH19408@piout.net>
+References: <1463584578-16772-1-git-send-email-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <2C047EEE-7F16-4B5D-A735-301B4AE788CC@jic23.retrosnub.co.uk>
-References: <CAKzfze_cJQXrb4789WpOjpWeLO3PEotuDnKc+FRd4FiFUOuYJA@mail.gmail.com>
-	<2C047EEE-7F16-4B5D-A735-301B4AE788CC@jic23.retrosnub.co.uk>
-Date: Thu, 19 May 2016 11:25:15 +0300
-Message-ID: <CAEnQRZC0E39C3ucReVqW9SztzmrQxkPL8AEnqGPsg8XWepLe_A@mail.gmail.com>
-Subject: Re: [RFC] dynamic iio consumer channel mapping
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Matt Ranostay <mranostay@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Daniel Baluta <daniel.baluta@intel.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1463584578-16772-1-git-send-email-quentin.schulz@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, May 19, 2016 at 8:58 AM, Jonathan Cameron
-<jic23@jic23.retrosnub.co.uk> wrote:
+On 18/05/2016 at 17:16:18 +0200, Quentin Schulz wrote :
 >
->
-> On 19 May 2016 04:38:09 BST, Matt Ranostay <mranostay@gmail.com> wrote:
->>Jonathan et al,
->>
->>Shortly going to be doing a project that requires an iio_map mapping
->>for using an iio  channel input from an ADC. I've notice all seem to
->>be platform_data or hardcoded due to it being a SoC or statically
->>known MFD mapping.
->>
->>For my application it isn't correct to create an hardcoded iio_map
->>mapping with the ADC driver (ti-ads1015) since nobody else would care
->>about it, and wouldn't help in the case of multiple instances of the
->>same ADC.
->>
->>But I would rather avoid the technical debt and uglyness of using a
->>board file.
->>
->>What would be the best way via ACPI and DT to define channel mappings
->>between name, consumers, and consumer channel names? Thought I request
->>input here before I make any core iio subsystem changes.
->>
->>Thanks,
->>
->>Matt
->
-> Whilst we have gotten a fair bit of grief over the Linux specific nature of the
->  binding, iio-hwmon does have bindings for this sort of case.
->
-> Mid term I have been wondering about taking it as far as having a configfs
->  interface to create such soft hardware mappings at runtime....
+> The Nuvoton NAU7802 ADC is able to adjust its gain but prior knowledge of
+> its possible values was required to adjust it. Users had to guess the
+> possible gain values based on the ADC datasheet or on this driver's code.
+> 
+> This exposes the possible values in the in_voltage_scale_available file of
+> each nau7802 ADC device. The gain is set for the whole ADC and is therefore
+> not configurable by channel. Thus, there exists only one
+> in_voltage_scale_available file for each nau7802 ADC device even if it has
+> two separate channels.
+> 
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-+1 for configfs, would be the most flexible way for users.
+> ---
+> 
+> There exists two files to set the gain: in_voltageX_scale_available and
+> in_voltage-voltage_scale_available. What are the differences between those
+> two? What are the use cases for each? Which one should I have used?
+> 
+>  drivers/iio/adc/nau7802.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
+> index e525aa6..57365c5 100644
+> --- a/drivers/iio/adc/nau7802.c
+> +++ b/drivers/iio/adc/nau7802.c
+> @@ -79,10 +79,29 @@ static const struct iio_chan_spec nau7802_chan_array[] = {
+>  static const u16 nau7802_sample_freq_avail[] = {10, 20, 40, 80,
+>  						10, 10, 10, 320};
+>  
+> +static ssize_t nau7802_show_scales(struct device *dev,
+> +				   struct device_attribute *attr, char *buf)
+> +{
+> +	struct nau7802_state *st = iio_priv(dev_to_iio_dev(dev));
+> +	int i, len = 0;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%09d ",
+> +				 st->scale_avail[i]);
+> +
+> +	buf[len-1] = '\n';
+> +
+> +	return len;
+> +}
+> +
+>  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("10 40 80 320");
+>  
+> +static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO, nau7802_show_scales,
+> +		       NULL, 0);
+> +
+>  static struct attribute *nau7802_attributes[] = {
+>  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+>  	NULL
+>  };
+>  
+> -- 
+> 2.5.0
+> 
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
