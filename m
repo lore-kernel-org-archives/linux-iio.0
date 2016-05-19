@@ -1,363 +1,256 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f68.google.com ([209.85.215.68]:34454 "EHLO
-	mail-lf0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751098AbcESFoI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 19 May 2016 01:44:08 -0400
-Received: by mail-lf0-f68.google.com with SMTP id m101so4549099lfi.1
-        for <linux-iio@vger.kernel.org>; Wed, 18 May 2016 22:44:07 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <ef7b9bf5-364e-8819-75a4-a3f36224a713@kernel.org>
-References: <1461530596-2142-1-git-send-email-mranostay@gmail.com>
- <1461530596-2142-3-git-send-email-mranostay@gmail.com> <bfd2fd1b-01b9-a5cc-c693-a9ec5e604679@kernel.org>
- <CAKzfze8pyiViUjVpQG7j1km1jKTnMB=8e6EVgCMeemUTCSa0hA@mail.gmail.com>
- <04968587-7a9a-4654-6a92-ce420f9742b3@kernel.org> <CAKzfze8jfc0+qoBmEpJ6F2ULqH4tDCswThmsd5cTFRFeNouF=g@mail.gmail.com>
- <ef7b9bf5-364e-8819-75a4-a3f36224a713@kernel.org>
-From: Matt Ranostay <mranostay@gmail.com>
-Date: Wed, 18 May 2016 22:43:26 -0700
-Message-ID: <CAKzfze_w5w+GKERGUDE-QE9pp9rcoqbMNuLL5oOL1LPZYv-a-Q@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: chemical: atlas-ph-sensor: add EC feature
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <cristina.moraru09@gmail.com>
+From: Cristina Moraru <cristina.moraru09@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	sst@poczta.fm,
+	peda@axentia.se,
+	mranostay@gmail.com,
+	manabian@gmail.com,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	daniel.baluta@intel.com,
+	octavian.purdila@intel.com
+Cc: Cristina Moraru <cristina.moraru09@gmail.com>
+Subject: [PATCH v5] iio: max5487: Add support for Maxim digital potentiometers
+Date: Thu, 19 May 2016 08:55:46 +0300
+Message-Id: <1463637346-3098-1-git-send-email-cristina.moraru09@gmail.com>
+In-Reply-To: <1458818485-2770-1-git-send-email-cristina.moraru09@gmail.com>
+References: <1458818485-2770-1-git-send-email-cristina.moraru09@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, May 14, 2016 at 10:02 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 11/05/16 03:35, Matt Ranostay wrote:
->> On Sun, May 8, 2016 at 12:29 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 05/05/16 09:17, Matt Ranostay wrote:
->>>> On Wed, May 4, 2016 at 3:39 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>>> On 24/04/16 21:43, Matt Ranostay wrote:
->>>>> Give us a bit more description - what is it, what is it for, what interface is
->>>>> supplied. Err what does EC standard for?
->>>>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->>>>> I know next to nothing about these sensors and don't have the datasheet to hand.
->>>>>
->>>>> This is measuring 3 different types of concentration (I think) and reporting them
->>>>> simple as channels 0-2.  What are they are should we not be distinguishing between
->>>>> them in some more informative fashion?
->>>>
->>>> Should I add some .extend_name for each channel?
->>> probably not.  What are these 3 channels actually measuring?
->>> As I understand it from search the datasheet for tds...
->>> We have
->>>
->>> electric conductivity (that's not a concentration channel to my mind)...
->>> Perhaps have it as a new channel type in of itself...
->> Ok no problem of doing that. Just that I was using a known conversion
->> value of EC (salts) to ppm.
->> I have no issue with adding yet another weird iio chan type :)
->>
->> Would a IIO_EC make more sense than IIO_US_PER_CM (microseimens per
->> centimeter)? The latter could be used by some meters in the future.
-> Not a clue!  Unless someone else chimes in I'm happy to go with whatever you
-> recommend - the more generic the better.  Though seimens/m would probably
-> be better.  The places we let in non 'base' units were generally to match
-> hwmon - a decision I now regret as it means people have to read the docs
-> rather than 'knowing' what the units will be.
+Add implementation for Maxim MAX5487, MAX5488, MAX5489
+digital potentiometers.
 
-Make one mistake in the ABI and you be supporting it for years. :)
+Datasheet:
+http://datasheets.maximintegrated.com/en/ds/MAX5487-MAX5489.pdf
 
->>
->>>
->>> total dissolved solids (TDS) which kind of sounds concentration like to me...
->>> However, we might want to consider an appropriate modifier to say 'of what?'.
->>>
->>> PSS is salinity? Looks like this is a temperature adjusted concentration scale?
->>> (I'm reading wikipedia and not really following it...
->> Yeah that is correct.. like the pH sensor temperature affects the
->> reading greatly.
->>
->>>
->>> It might make sense to define a whole new channel type for this... I'm not keen. on having modifiers effect the units so channel type may be the only way to do it
->>> coherently..
->>>
->>> I have this nasty feeling chemical measurements are going to introduce all sorts
->>> of weird ways of measuring 'concentrations' according to what actually happens
->>> to work for a given chemical..
->>>
->>> Ah well. 27 channel types so far - bit of room left before we discover allowing
->>> 256 in the event descriptors wasn't thinking forwards enough...
->>>
->>>> Horribly I have to admit my pH sensor based board doesn't give valid
->>>> values for this sensor till I resign the ground plane under the IC :/.
->>>> But I can confirm it does report some "values"...
->>> :)
->>>>
->>>>>
->>>>> Code itself is mostly fine...
->>>>>
->>>>> Jonathan
->>>>>> ---
->>>>>>  .../bindings/iio/chemical/atlas,ec-sm.txt          |  22 ++++
->>>>>>  drivers/iio/chemical/Kconfig                       |   8 +-
->>>>>>  drivers/iio/chemical/atlas-ph-sensor.c             | 113 ++++++++++++++++++++-
->>>>>>  3 files changed, 138 insertions(+), 5 deletions(-)
->>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
->>>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
->>>>>> new file mode 100644
->>>>>> index 0000000..2962bd9
->>>>>> --- /dev/null
->>>>>> +++ b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
->>>>>> @@ -0,0 +1,22 @@
->>>>>> +* Atlas Scientific EC-SM OEM sensor
->>>>>> +
->>>>>> +http://www.atlas-scientific.com/_files/_datasheets/_oem/EC_oem_datasheet.pdf
->>>>>> +
->>>>>> +Required properties:
->>>>>> +
->>>>>> +  - compatible: must be "atlas,ec-sm"
->>>>>> +  - reg: the I2C address of the sensor
->>>>>> +  - interrupt-parent: should be the phandle for the interrupt controller
->>>>>> +  - interrupts: the sole interrupt generated by the device
->>>>>> +
->>>>>> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
->>>>>> +  node bindings.
->>>>>> +
->>>>>> +Example:
->>>>>> +
->>>>>> +atlas@64 {
->>>>>> +     compatible = "atlas,ec-sm";
->>>>>> +     reg = <0x64>;
->>>>>> +     interrupt-parent = <&gpio1>;
->>>>>> +     interrupts = <16 2>;
->>>>>> +};
->>>>>> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
->>>>>> index f73290f..4bcc025 100644
->>>>>> --- a/drivers/iio/chemical/Kconfig
->>>>>> +++ b/drivers/iio/chemical/Kconfig
->>>>>> @@ -5,15 +5,17 @@
->>>>>>  menu "Chemical Sensors"
->>>>>>
->>>>>>  config ATLAS_PH_SENSOR
->>>>>> -     tristate "Atlas Scientific OEM pH-SM sensor"
->>>>>> +     tristate "Atlas Scientific OEM SM sensors"
->>>>>>       depends on I2C
->>>>>>       select REGMAP_I2C
->>>>>>       select IIO_BUFFER
->>>>>>       select IIO_TRIGGERED_BUFFER
->>>>>>       select IRQ_WORK
->>>>>>       help
->>>>>> -      Say Y here to build I2C interface support for the Atlas
->>>>>> -      Scientific OEM pH-SM sensor.
->>>>>> +      Say Y here to build I2C interface support for the following
->>>>>> +      Atlas Scientific OEM SM sensors:
->>>>>> +         * pH SM sensor
->>>>>> +         * EC SM sensor
->>>>>>
->>>>>>        To compile this driver as module, choose M here: the
->>>>>>        module will be called atlas-ph-sensor.
->>>>>> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
->>>>>> index c57f9c2..6dddd75 100644
->>>>>> --- a/drivers/iio/chemical/atlas-ph-sensor.c
->>>>>> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
->>>>>> @@ -50,13 +50,28 @@
->>>>>>  #define ATLAS_REG_PH_CALIB_STATUS_MID        BIT(1)
->>>>>>  #define ATLAS_REG_PH_CALIB_STATUS_HIGH       BIT(2)
->>>>>>
->>>>>> +#define ATLAS_REG_EC_CALIB_STATUS            0x0f
->>>>>> +#define ATLAS_REG_EC_CALIB_STATUS_MASK               0x0f
->>>>>> +#define ATLAS_REG_EC_CALIB_STATUS_DRY                BIT(0)
->>>>>> +#define ATLAS_REG_EC_CALIB_STATUS_SINGLE     BIT(1)
->>>>>> +#define ATLAS_REG_EC_CALIB_STATUS_LOW                BIT(2)
->>>>>> +#define ATLAS_REG_EC_CALIB_STATUS_HIGH               BIT(3)
->>>>>> +
->>>>>>  #define ATLAS_REG_PH_TEMP_DATA               0x0e
->>>>>>  #define ATLAS_REG_PH_DATA            0x16
->>>>>>
->>>>>> +#define ATLAS_REG_EC_PROBE           0x08
->>>>>> +#define ATLAS_REG_EC_TEMP_DATA               0x10
->>>>>> +#define ATLAS_REG_EC_DATA            0x18
->>>>>> +#define ATLAS_REG_TDS_DATA           0x1c
->>>>>> +#define ATLAS_REG_PSS_DATA           0x20
->>>>>> +
->>>>>>  #define ATLAS_PH_INT_TIME_IN_US              450000
->>>>>> +#define ATLAS_EC_INT_TIME_IN_US              650000
->>>>>>
->>>>>>  enum {
->>>>>>       ATLAS_PH_SM,
->>>>>> +     ATLAS_EC_SM,
->>>>>>  };
->>>>>>
->>>>>>  struct atlas_data {
->>>>>> @@ -66,12 +81,13 @@ struct atlas_data {
->>>>>>       struct regmap *regmap;
->>>>>>       struct irq_work work;
->>>>>>
->>>>>> -     __be32 buffer[4]; /* 32-bit pH data + 32-bit pad + 64-bit timestamp */
->>>>>> +     __be32 buffer[6]; /* 96-bit data + 32-bit pad + 64-bit timestamp */
->>>>>>  };
->>>>>>
->>>>>>  static const struct regmap_range atlas_volatile_ranges[] = {
->>>>>>       regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
->>>>>>       regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
->>>>>> +     regmap_reg_range(ATLAS_REG_EC_DATA, ATLAS_REG_PSS_DATA + 4),
->>>>>>  };
->>>>>>
->>>>>>  static const struct regmap_access_table atlas_volatile_table = {
->>>>>> @@ -86,7 +102,7 @@ static const struct regmap_config atlas_regmap_config = {
->>>>>>       .val_bits = 8,
->>>>>>
->>>>>>       .volatile_table = &atlas_volatile_table,
->>>>>> -     .max_register = ATLAS_REG_PH_DATA + 4,
->>>>>> +     .max_register = ATLAS_REG_PSS_DATA + 4,
->>>>>>       .cache_type = REGCACHE_RBTREE,
->>>>>>  };
->>>>>>
->>>>>> @@ -115,6 +131,38 @@ static const struct iio_chan_spec atlas_ph_channels[] = {
->>>>>>       },
->>>>>>  };
->>>>>>
->>>>>> +#define ATLAS_EC_CHANNEL(idx, addr) \
->>>>>> +     {\
->>>>>> +             .type = IIO_CONCENTRATION, \
->>>>>> +             .indexed = 1, \
->>>>>> +             .channel = idx, \
->>>>>> +             .address = addr, \
->>>>>> +             .info_mask_separate = \
->>>>>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE), \
->>>>>> +             .scan_index = idx, \
->>>>>> +             .scan_type = { \
->>>>>> +                     .sign = 'u', \
->>>>>> +                     .realbits = 32, \
->>>>>> +                     .storagebits = 32, \
->>>>>> +                     .endianness = IIO_BE, \
->>>>>> +             }, \
->>>>>> +     }
->>>>>> +
->>>>>> +static const struct iio_chan_spec atlas_ec_channels[] = {
->>>>>> +     ATLAS_EC_CHANNEL(0, ATLAS_REG_EC_DATA),
->>>>>> +     ATLAS_EC_CHANNEL(1, ATLAS_REG_TDS_DATA),
->>>>>> +     ATLAS_EC_CHANNEL(2, ATLAS_REG_PSS_DATA),
->>>>> This needs some explanation.  3 concentration channels of different types?
->>>>> What are they...
->>>>>> +     IIO_CHAN_SOFT_TIMESTAMP(3),
->>>>>> +     {
->>>>>> +             .type = IIO_TEMP,
->>>>>> +             .address = ATLAS_REG_EC_TEMP_DATA,
->>>>>> +             .info_mask_separate =
->>>>>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->>>>>> +             .output = 1,
->>>>>> +             .scan_index = -1
->>>>>> +     },
->>>>>> +};
->>>>>> +
->>>>>>  static int atlas_check_ph_calibration(struct atlas_data *data)
->>>>>>  {
->>>>>>       struct device *dev = &data->client->dev;
->>>>>> @@ -142,6 +190,44 @@ static int atlas_check_ph_calibration(struct atlas_data *data)
->>>>>>       return 0;
->>>>>>  }
->>>>>>
->>>>>> +static int atlas_check_ec_calibration(struct atlas_data *data)
->>>>>> +{
->>>>>> +     struct device *dev = &data->client->dev;
->>>>>> +     int ret;
->>>>>> +     unsigned int val;
->>>>>> +
->>>>>> +     ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &val, 2);
->>>>>> +     if (ret)
->>>>>> +             return ret;
->>>>>> +
->>>>>> +     dev_info(dev, "probe set to K = %d.%.2d", be16_to_cpu(val) / 100,
->>>>>> +                                              be16_to_cpu(val) % 100);
->>>>>> +
->>>>>> +     ret = regmap_read(data->regmap, ATLAS_REG_EC_CALIB_STATUS, &val);
->>>>>> +     if (ret)
->>>>>> +             return ret;
->>>>>> +
->>>>>> +     if (!(val & ATLAS_REG_EC_CALIB_STATUS_MASK)) {
->>>>>> +             dev_warn(dev, "device has not been calibrated\n");
->>>>>> +             return 0;
->>>>>> +     }
->>>>>> +
->>>>>> +     if (!(val & ATLAS_REG_EC_CALIB_STATUS_DRY))
->>>>>> +             dev_warn(dev, "device missing dry point calibration\n");
->>>>>> +
->>>>>> +     if (val & ATLAS_REG_EC_CALIB_STATUS_SINGLE) {
->>>>>> +             dev_warn(dev, "device using single point calibration\n");
->>>>>> +     } else {
->>>>>> +             if (!(val & ATLAS_REG_EC_CALIB_STATUS_LOW))
->>>>>> +                     dev_warn(dev, "device missing low point calibration\n");
->>>>>> +
->>>>>> +             if (!(val & ATLAS_REG_EC_CALIB_STATUS_HIGH))
->>>>>> +                     dev_warn(dev, "device missing high point calibration\n");
->>>>>> +     }
->>>>>> +
->>>>>> +     return 0;
->>>>>> +}
->>>>>> +
->>>>>>  struct atlas_device {
->>>>>>       const struct iio_chan_spec *channels;
->>>>>>       int num_channels;
->>>>>> @@ -159,6 +245,14 @@ static struct atlas_device atlas_devices[] = {
->>>>>>                               .calibration = &atlas_check_ph_calibration,
->>>>>>                               .delay = ATLAS_PH_INT_TIME_IN_US,
->>>>>>       },
->>>>>> +     [ATLAS_EC_SM] = {
->>>>>> +                             .channels = atlas_ec_channels,
->>>>>> +                             .num_channels = 5,
->>>>> Use array_size - obviously correct that way so I don't have to go count...
->>>>>> +                             .data_reg = ATLAS_REG_EC_DATA,
->>>>>> +                             .calibration = &atlas_check_ec_calibration,
->>>>>> +                             .delay = ATLAS_EC_INT_TIME_IN_US,
->>>>>> +     },
->>>>>> +
->>>>>>  };
->>>>>>
->>>>>>  static int atlas_set_powermode(struct atlas_data *data, int on)
->>>>>> @@ -294,6 +388,7 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
->>>>>>                                             (u8 *) &reg, sizeof(reg));
->>>>> I guess it's not complex enough to justify splitting read_raw for the two
->>>>> devices.  Close though so you may want to if you support a third type in here.
->>>>>
->>>>>>                       break;
->>>>>>               case IIO_PH:
->>>>>> +             case IIO_CONCENTRATION:
->>>>>>                       mutex_lock(&indio_dev->mlock);
->>>>>>
->>>>>>                       if (iio_buffer_enabled(indio_dev))
->>>>>> @@ -324,6 +419,18 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
->>>>>>                       *val = 1; /* 0.001 */
->>>>>>                       *val2 = 1000;
->>>>>>                       break;
->>>>>> +             case IIO_CONCENTRATION:
->>>>>> +                     switch (chan->address) {
->>>>>> +                     case ATLAS_REG_EC_DATA:
->>>>>> +                             *val = 0; /* 0.00000000064 */
->>>>>> +                             *val2 = 640;
->>>>>> +                             return IIO_VAL_INT_PLUS_NANO;
->>>>>> +                     default:
->>>>>> +                             *val = 0; /* 0.000000001 */
->>>>>> +                             *val2 = 1000;
->>>>>> +                             return IIO_VAL_INT_PLUS_NANO;
->>>>>> +                     }
->>>>>> +                     break;
->>>>>>               default:
->>>>>>                       return -EINVAL;
->>>>>>               }
->>>>>> @@ -517,12 +624,14 @@ static const struct dev_pm_ops atlas_pm_ops = {
->>>>>>
->>>>>>  static const struct i2c_device_id atlas_id[] = {
->>>>>>       { "atlas-ph-sm", ATLAS_PH_SM},
->>>>>> +     { "atlas-ec-sm", ATLAS_EC_SM},
->>>>>>       {}
->>>>>>  };
->>>>>>  MODULE_DEVICE_TABLE(i2c, atlas_id);
->>>>>>
->>>>>>  static const struct of_device_id atlas_dt_ids[] = {
->>>>>>       { .compatible = "atlas,ph-sm", .data = (void *)ATLAS_PH_SM, },
->>>>>> +     { .compatible = "atlas,ec-sm", .data = (void *)ATLAS_EC_SM, },
->>>>>>       { }
->>>>>>  };
->>>>>>  MODULE_DEVICE_TABLE(of, atlas_dt_ids);
->>>>>>
->>>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>>
->
+Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
+CC: Daniel Baluta <daniel.baluta@intel.com>
+---
+Changes since v4:
+	Add year for copyright
+Changes since v3:
+        Fix size issue in max5487_write_cmd
+        Fix typo
+Changes since v2:
+        Change switch statement in max5487_write_raw
+        to if statement for consistency
+        Add blank line before return statement
+        Eliminate regmap support and use spi_write
+        Use iio_device_register instead of devm_ version
+Changes since v1:
+        Fix spacing
+        Eliminate max5487_cfg struct
+        Add kohms as driver data
+
+ drivers/iio/potentiometer/Kconfig   |  11 +++
+ drivers/iio/potentiometer/Makefile  |   1 +
+ drivers/iio/potentiometer/max5487.c | 161 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 173 insertions(+)
+ create mode 100644 drivers/iio/potentiometer/max5487.c
+
+diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
+index 6acb238..0941c8d4 100644
+--- a/drivers/iio/potentiometer/Kconfig
++++ b/drivers/iio/potentiometer/Kconfig
+@@ -15,6 +15,17 @@ config DS1803
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ds1803.
+ 
++config MAX5487
++        tristate "Maxim MAX5487/MAX5488/MAX5489 Digital Potentiometer driver"
++        depends on SPI
++        help
++          Say yes here to build support for the Maxim
++          MAX5487, MAX5488, MAX5489 digital potentiometer
++          chips.
++
++          To compile this driver as a module, choose M here: the
++          module will be called max5487.
++
+ config MCP4131
+ 	tristate "Microchip MCP413X/414X/415X/416X/423X/424X/425X/426X Digital Potentiometer driver"
+ 	depends on SPI
+diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
+index 6007faa..8adb58f 100644
+--- a/drivers/iio/potentiometer/Makefile
++++ b/drivers/iio/potentiometer/Makefile
+@@ -4,6 +4,7 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_DS1803) += ds1803.o
++obj-$(CONFIG_MAX5487) += max5487.o
+ obj-$(CONFIG_MCP4131) += mcp4131.o
+ obj-$(CONFIG_MCP4531) += mcp4531.o
+ obj-$(CONFIG_TPL0102) += tpl0102.o
+diff --git a/drivers/iio/potentiometer/max5487.c b/drivers/iio/potentiometer/max5487.c
+new file mode 100644
+index 0000000..6c50939
+--- /dev/null
++++ b/drivers/iio/potentiometer/max5487.c
+@@ -0,0 +1,161 @@
++/*
++ * max5487.c - Support for MAX5487, MAX5488, MAX5489 digital potentiometers
++ *
++ * Copyright (C) 2016 Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/acpi.h>
++
++#include <linux/iio/sysfs.h>
++#include <linux/iio/iio.h>
++
++#define MAX5487_WRITE_WIPER_A	(0x01 << 8)
++#define MAX5487_WRITE_WIPER_B	(0x02 << 8)
++
++/* copy both wiper regs to NV regs */
++#define MAX5487_COPY_AB_TO_NV	(0x23 << 8)
++/* copy both NV regs to wiper regs */
++#define MAX5487_COPY_NV_TO_AB	(0x33 << 8)
++
++#define MAX5487_MAX_POS		255
++
++struct max5487_data {
++	struct spi_device *spi;
++	int kohms;
++};
++
++#define MAX5487_CHANNEL(ch, addr) {				\
++	.type = IIO_RESISTANCE,					\
++	.indexed = 1,						\
++	.output = 1,						\
++	.channel = ch,						\
++	.address = addr,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
++
++static const struct iio_chan_spec max5487_channels[] = {
++	MAX5487_CHANNEL(0, MAX5487_WRITE_WIPER_A),
++	MAX5487_CHANNEL(1, MAX5487_WRITE_WIPER_B),
++};
++
++static int max5487_write_cmd(struct spi_device *spi, u16 cmd)
++{
++	return spi_write(spi, (const void *) &cmd, sizeof(u16));
++}
++
++static int max5487_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct max5487_data *data = iio_priv(indio_dev);
++
++	if (mask != IIO_CHAN_INFO_SCALE)
++		return -EINVAL;
++
++	*val = 1000 * data->kohms;
++	*val2 = MAX5487_MAX_POS;
++
++	return IIO_VAL_FRACTIONAL;
++}
++
++static int max5487_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct max5487_data *data = iio_priv(indio_dev);
++
++	if (mask != IIO_CHAN_INFO_RAW)
++		return -EINVAL;
++
++	if (val < 0 || val > MAX5487_MAX_POS)
++		return -EINVAL;
++
++	return max5487_write_cmd(data->spi, chan->address | val);
++}
++
++static const struct iio_info max5487_info = {
++	.read_raw = max5487_read_raw,
++	.write_raw = max5487_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int max5487_spi_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct max5487_data *data;
++	const struct spi_device_id *id = spi_get_device_id(spi);
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	dev_set_drvdata(&spi->dev, indio_dev);
++	data = iio_priv(indio_dev);
++
++	data->spi = spi;
++	data->kohms = id->driver_data;
++
++	indio_dev->info = &max5487_info;
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = max5487_channels;
++	indio_dev->num_channels = ARRAY_SIZE(max5487_channels);
++
++	/* restore both wiper regs from NV regs */
++	ret = max5487_write_cmd(data->spi, MAX5487_COPY_NV_TO_AB);
++	if (ret < 0)
++		return ret;
++
++	return iio_device_register(indio_dev);
++}
++
++static int max5487_spi_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
++
++	iio_device_unregister(indio_dev);
++
++	/* save both wiper regs to NV regs */
++	return max5487_write_cmd(spi, MAX5487_COPY_AB_TO_NV);
++}
++
++static const struct spi_device_id max5487_id[] = {
++	{ "MAX5487", 10 },
++	{ "MAX5488", 50 },
++	{ "MAX5489", 100 },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, max5487_id);
++
++static const struct acpi_device_id max5487_acpi_match[] = {
++	{ "MAX5487", 10 },
++	{ "MAX5488", 50 },
++	{ "MAX5489", 100 },
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, max5487_acpi_match);
++
++static struct spi_driver max5487_driver = {
++	.driver = {
++		.name = "max5487",
++		.owner = THIS_MODULE,
++		.acpi_match_table = ACPI_PTR(max5487_acpi_match),
++	},
++	.id_table = max5487_id,
++	.probe = max5487_spi_probe,
++	.remove = max5487_spi_remove
++};
++module_spi_driver(max5487_driver);
++
++MODULE_AUTHOR("Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>");
++MODULE_DESCRIPTION("max5487 SPI driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
