@@ -1,86 +1,82 @@
-Return-Path: <leonard.crestez@intel.com>
-Subject: Re: [PATCH v2 2/7] iio: inv_mpu6050: Initial regcache support
-To: Peter Rosin <peda@axentia.se>, Matt Ranostay <mranostay@gmail.com>
-References: <cover.1463582011.git.leonard.crestez@intel.com>
- <e29974565e941e37684fcd883330915cfaf2cf47.1463582011.git.leonard.crestez@intel.com>
- <CAKzfze8dDENOvaDf_VH8MRy-HEmCu3q_aGEzD+GYR7B1Ob2rBw@mail.gmail.com>
- <e0cee595-043b-3642-9e40-2a23975e855a@axentia.se>
-Cc: Jonathan Cameron <jic23@kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Daniel Baluta <daniel.baluta@intel.com>, Ge Gao <ggao@invensense.com>,
- linux-i2c@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
- Mark Rutland <mark.rutland@arm.com>,
- Ian Campbell <ijc+devicetree@hellion.org.uk>,
- Kumar Gala <galak@codeaurora.org>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <61c0fb3d-207a-c126-b80c-f1342fda5878@intel.com>
-Date: Fri, 20 May 2016 14:01:55 +0300
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40495 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755916AbcETNxH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 20 May 2016 09:53:07 -0400
 MIME-Version: 1.0
-In-Reply-To: <e0cee595-043b-3642-9e40-2a23975e855a@axentia.se>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Date: Fri, 20 May 2016 14:53:03 +0100
+From: jic23@jic23.retrosnub.co.uk
+To: Lasse Schuirmann <lasse.schuirmann@gmail.com>,
+	linux-iio@vger.kernel.org
+Cc: linux-iio-owner@vger.kernel.org
+Subject: Re: Drivers for Bitland Dual Accelerometer
+In-Reply-To: <3E7E6B30-8926-4C0F-ADA6-2750C2A748B5@jic23.retrosnub.co.uk>
+References: <CADRpq-CwYpwvwST3+ZHyyn6pquxndC5GJWDKZK7zR8cff_Ky-Q@mail.gmail.com>
+ <3E7E6B30-8926-4C0F-ADA6-2750C2A748B5@jic23.retrosnub.co.uk>
+Message-ID: <d6c4ef1cf8ed00ddd930d2e80654e5d7@jic23.retrosnub.co.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 05/20/2016 09:39 AM, Peter Rosin wrote:
-> On 2016-05-20 04:34, Matt Ranostay wrote:
->> On Wed, May 18, 2016 at 8:00 AM, Crestez Dan Leonard
->> <leonard.crestez@intel.com> wrote:
->>> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
->>> ---
->>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 47 ++++++++++++++++++++++++++++++
->>>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  5 ----
->>>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  1 +
->>>  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  |  5 ----
->>>  4 files changed, 48 insertions(+), 10 deletions(-)
->>>
->>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>> index b269b37..5918c23 100644
->>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>> @@ -116,6 +116,53 @@ static const struct inv_mpu6050_hw hw_info[] = {
->>>         },
->>>  };
->>>
->>> +static bool inv_mpu6050_volatile_reg(struct device *dev, unsigned int reg)
->>> +{
->>> +       if (reg >= INV_MPU6050_REG_RAW_ACCEL && reg < INV_MPU6050_REG_RAW_ACCEL + 6)
->>> +               return true;
->>> +       if (reg >= INV_MPU6050_REG_RAW_GYRO && reg < INV_MPU6050_REG_RAW_GYRO + 6)
->>> +               return true;
->>
->> I think you want to put parenthesis around the addition operations...
+On 19.05.2016 22:12, Jonathan Cameron wrote:
+> On 19 May 2016 19:14:52 BST, Lasse Schuirmann
+> <lasse.schuirmann@gmail.com> wrote:
+>> Hi,
+>> 
+>> I'm trying to use Linux on a Lenovo Yoga 300 and can't get the
+>> accelerometer running. It was suggested at
+>> https://github.com/hadess/iio-sensor-proxy/issues/83#issuecomment-220399560
+>> that I contact this mailing list as no driver seems to exist yet.
+>> 
+>> The device in question is an accelerometer from "Bitland Corporation"
+>> with the APCI ID "DUAL250E".
+>> 
+>> Windows drivers seem to be available at
+>> http://driverlibs.com/download/Dual-Accelerometer.
+>> 
+>> I wonder if somebody possibly has the same problem and/or would be
+>> interested in helping getting this to work.
+>> 
+>> Sincerely,
+>> 
+>> Lasse Schuirmann
 > 
-> Maybe.
+> Hmm long shot but any idea if it could be a rebadged bma250e which is a 
+> Bosch
+>  sensortech part? Not sure what the dual bit would be about though.
 > 
->> the condition check probably don't evaluate to what you are expecting.
+> Digging in those windows drivers may give us more info.  They are on 
+> lenovos
+>  website as well.
 > 
-> Looks sane to me since + has highest precedence, then < and >=, and && comes
-> in last...
+> On phone right now but will have a look tomorrow.
 > 
-> ...but even so, I think I would use an ellipsis in the switch statement
-> instead, like so:
-> 
-> static bool inv_mpu6050_volatile_reg(struct device *dev, unsigned int reg)
-> {
-> 	switch (reg) {
-> 	case INV_MPU6050_REG_RAW_ACCEL ... INV_MPU6050_REG_RAW_ACCEL + 5:
-> 	case INV_MPU6050_REG_RAW_GYRO ... INV_MPU6050_REG_RAW_GYRO  + 5:
-> 	case INV_MPU6050_REG_TEMPERATURE:
-> 	case INV_MPU6050_REG_TEMPERATURE + 1:
-> 	case INV_MPU6050_REG_USER_CTRL:
-> 	case INV_MPU6050_REG_PWR_MGMT_1:
-> 	case INV_MPU6050_REG_FIFO_COUNT_H:
-> 	case INV_MPU6050_REG_FIFO_COUNT_H + 1:
-> 	case INV_MPU6050_REG_FIFO_R_W:
-> 		return true;
-> 	default:
-> 		return false;
-> 	}
-> }
 
-Neat, I didn't know about this extension. It does look nicer in this
-function.
+Hmm. The driver in question is based on Microsoft's example 
+accelerometer driver
+for an ADXL345.
+
+https://msdn.microsoft.com/en-us/library/windows/hardware/dn760713(v=vs.85).aspx
+
+Not sure this is going to get us much further though...
+
+No usefully named function names that I can get out of the 
+DualSPDAccelerometer.dll
+Not sure where to go next on reverse engineering this.  Are you willing 
+to
+open things up to take a look at what is on the board?
+
+Few times I've gotten involved with doing this it's always been a case 
+of getting
+some probes on the chip.  There probably are other ways of doing it but
+I've no idea how in windows!
+
+My gut feeling is that Bitland don't make Mems devices so are getting it 
+from
+someone else.  Could be wrong, but it's someway from what their core 
+business
+seems to be (putting generic stuff together to make machines for other 
+people).
+
+Jonathan
