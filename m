@@ -8,129 +8,337 @@ Cc: linux-kernel@vger.kernel.org,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH 2/2] iio: generic_buffer: Add --device-num option
-Date: Fri, 20 May 2016 18:45:31 +0300
-Message-Id: <2ce694cc2161b74e5a0cebc726b7320e4cc8c65e.1463759121.git.leonard.crestez@intel.com>
-In-Reply-To: <082703f268f7b8b868704006d285d605cce5a784.1463759121.git.leonard.crestez@intel.com>
-References: <082703f268f7b8b868704006d285d605cce5a784.1463759121.git.leonard.crestez@intel.com>
-In-Reply-To: <082703f268f7b8b868704006d285d605cce5a784.1463759121.git.leonard.crestez@intel.com>
-References: <082703f268f7b8b868704006d285d605cce5a784.1463759121.git.leonard.crestez@intel.com>
+Subject: [PATCH 1/2] iio: generic_buffer: Cleanup when receiving signals
+Date: Fri, 20 May 2016 18:45:30 +0300
+Message-Id: <082703f268f7b8b868704006d285d605cce5a784.1463759121.git.leonard.crestez@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This makes it possible to distinguish between iio devices with the same
-name.
+This will clean (disable buffer/trigger/channels) when doing something
+like a CTRL-C. Otherwise restarting generic_buffer requires a manual
+echo 0 > buffer/enable
+
+This also drops all the code freeing string buffers at the end of main.
+Memory is freed when the process exits anyway so there's no point in
+cluttering the code with all those gotos.
 
 Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
- tools/iio/generic_buffer.c | 53 ++++++++++++++++++++++++++++++++++------------
- 1 file changed, 40 insertions(+), 13 deletions(-)
+ tools/iio/generic_buffer.c | 162 ++++++++++++++++++++++++---------------------
+ 1 file changed, 88 insertions(+), 74 deletions(-)
 
 diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-index e7bf477..f805ef9 100644
+index 2429c78..e7bf477 100644
 --- a/tools/iio/generic_buffer.c
 +++ b/tools/iio/generic_buffer.c
-@@ -251,7 +251,9 @@ void print_usage(void)
- 		"  -e         Disable wait for event (new data)\n"
- 		"  -g         Use trigger-less mode\n"
- 		"  -l <n>     Set buffer length to n samples\n"
--		"  -n <name>  Set device name (mandatory)\n"
-+		"  --device-name -n <name>\n"
-+		"  --device-num -N <num>\n"
-+		"        Set device by name or number"
- 		"  -t <name>  Set trigger name\n"
+@@ -32,6 +32,8 @@
+ #include <endian.h>
+ #include <getopt.h>
+ #include <inttypes.h>
++#include <stdbool.h>
++#include <signal.h>
+ #include "iio_utils.h"
+ 
+ /**
+@@ -254,6 +256,69 @@ void print_usage(void)
  		"  -w <n>     Set delay between reads in us (event-less mode)\n");
  }
-@@ -319,6 +321,12 @@ void register_cleanup(void)
- 	}
- }
  
-+static const struct option longopts[] = {
-+	{ "device-name",	1, 0, 'n' },
-+	{ "device-num",		1, 0, 'N' },
-+	{ },
-+};
++enum autochan autochannels = AUTOCHANNELS_DISABLED;
++char *dev_dir_name = NULL;
++char *buf_dir_name = NULL;
++bool current_trigger_set = false;
++
++void cleanup(void)
++{
++	int ret;
++
++	fprintf(stderr, "Cleanup\n");
++
++	/* Disable trigger */
++	if (dev_dir_name && current_trigger_set) {
++		/* Disconnect the trigger - just write a dummy name. */
++		ret = write_sysfs_string("trigger/current_trigger",
++					 dev_dir_name, "NULL");
++		if (ret < 0)
++			fprintf(stderr, "Failed to disable trigger: %s\n",
++				strerror(-ret));
++	}
++
++	/* Disable buffer */
++	if (buf_dir_name) {
++		ret = write_sysfs_int("enable", buf_dir_name, 0);
++		if (ret < 0)
++			fprintf(stderr, "Failed to disable buffer: %s\n",
++				strerror(-ret));
++	}
++
++	/* Disable channels if auto-enabled */
++	if (dev_dir_name && autochannels == AUTOCHANNELS_ACTIVE) {
++		ret = enable_disable_all_channels(dev_dir_name, 0);
++		if (ret)
++			fprintf(stderr, "Failed to disable all channels\n");
++	}
++}
++
++void sig_handler(int signum)
++{
++	fprintf(stderr, "Caught signal %d\n", signum);
++	exit(-signum);
++}
++
++void register_cleanup(void)
++{
++	struct sigaction sa = { .sa_handler = sig_handler };
++	const int signums[] = { SIGINT, SIGTERM, SIGABRT };
++	int ret, i;
++
++	ret = atexit(cleanup);
++	if (ret) {
++		perror("Failed to register atexit");
++		exit(-1);
++	}
++	for (i = 0; i < ARRAY_SIZE(signums); ++i) {
++		ret = sigaction(signums[i], &sa, NULL);
++		if (ret) {
++			perror("Failed to register signal handler");
++			exit(-1);
++		}
++	}
++}
 +
  int main(int argc, char **argv)
  {
  	unsigned long num_loops = 2;
-@@ -333,7 +341,7 @@ int main(int argc, char **argv)
+@@ -265,9 +330,7 @@ int main(int argc, char **argv)
  
+ 	int num_channels;
+ 	char *trigger_name = NULL, *device_name = NULL;
+-	char *dev_dir_name, *buf_dir_name;
+ 
+-	int datardytrigger = 1;
  	char *data;
  	ssize_t read_size;
--	int dev_num, trig_num;
-+	int dev_num = -1, trig_num;
- 	char *buffer_access;
+ 	int dev_num, trig_num;
+@@ -275,11 +338,12 @@ int main(int argc, char **argv)
  	int scan_size;
  	int noevents = 0;
-@@ -344,7 +352,7 @@ int main(int argc, char **argv)
+ 	int notrigger = 0;
+-	enum autochan autochannels = AUTOCHANNELS_DISABLED;
+ 	char *dummy;
  
- 	register_cleanup();
+ 	struct iio_channel_info *channels;
  
--	while ((c = getopt(argc, argv, "ac:egl:n:t:w:")) != -1) {
-+	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:w:", longopts, NULL)) != -1) {
++	register_cleanup();
++
+ 	while ((c = getopt(argc, argv, "ac:egl:n:t:w:")) != -1) {
  		switch (c) {
  		case 'a':
- 			autochannels = AUTOCHANNELS_ENABLED;
-@@ -372,6 +380,12 @@ int main(int argc, char **argv)
- 		case 'n':
- 			device_name = optarg;
+@@ -310,7 +374,6 @@ int main(int argc, char **argv)
  			break;
-+		case 'N':
-+			errno = 0;
-+			dev_num = strtoul(optarg, &dummy, 10);
-+			if (errno)
-+				return -errno;
-+			break;
  		case 't':
  			trigger_name = optarg;
+-			datardytrigger = 0;
  			break;
-@@ -387,24 +401,37 @@ int main(int argc, char **argv)
+ 		case 'w':
+ 			errno = 0;
+@@ -352,10 +415,8 @@ int main(int argc, char **argv)
+ 			 */
+ 			ret = asprintf(&trigger_name,
+ 				       "%s-dev%d", device_name, dev_num);
+-			if (ret < 0) {
+-				ret = -ENOMEM;
+-				goto error_free_dev_dir_name;
+-			}
++			if (ret < 0)
++				return -ENOMEM;
+ 		}
+ 
+ 		/* Look for this "-devN" trigger */
+@@ -365,18 +426,15 @@ int main(int argc, char **argv)
+ 			free(trigger_name);
+ 			ret = asprintf(&trigger_name,
+ 				       "%s-trigger", device_name);
+-			if (ret < 0) {
+-				ret = -ENOMEM;
+-				goto error_free_dev_dir_name;
+-			}
++			if (ret < 0)
++				return -ENOMEM;
+ 		}
+ 
+ 		trig_num = find_type_by_name(trigger_name, "trigger");
+ 		if (trig_num < 0) {
+ 			fprintf(stderr, "Failed to find the trigger %s\n",
+ 				trigger_name);
+-			ret = trig_num;
+-			goto error_free_triggername;
++			return trig_num;
+ 		}
+ 
+ 		printf("iio trigger number being used is %d\n", trig_num);
+@@ -392,7 +450,7 @@ int main(int argc, char **argv)
+ 	if (ret) {
+ 		fprintf(stderr, "Problem reading scan element information\n"
+ 			"diag %s\n", dev_dir_name);
+-		goto error_free_triggername;
++		return ret;
+ 	}
+ 	if (num_channels && autochannels == AUTOCHANNELS_ENABLED) {
+ 		fprintf(stderr, "Auto-channels selected but some channels "
+@@ -407,7 +465,7 @@ int main(int argc, char **argv)
+ 		ret = enable_disable_all_channels(dev_dir_name, 1);
+ 		if (ret) {
+ 			fprintf(stderr, "Failed to enable all channels\n");
+-			goto error_free_triggername;
++			return ret;
+ 		}
+ 
+ 		/* This flags that we need to disable the channels again */
+@@ -419,12 +477,12 @@ int main(int argc, char **argv)
+ 			fprintf(stderr, "Problem reading scan element "
+ 				"information\n"
+ 				"diag %s\n", dev_dir_name);
+-			goto error_disable_channels;
++		        return ret;
+ 		}
+ 		if (!num_channels) {
+ 			fprintf(stderr, "Still no channels after "
+ 				"auto-enabling, giving up\n");
+-			goto error_disable_channels;
++		        return ret;
  		}
  	}
  
--	if (!device_name) {
--		fprintf(stderr, "Device name not set\n");
-+	/* Find the device requested */
-+	if (dev_num < 0 && !device_name) {
-+		fprintf(stderr, "Device not set\n");
- 		print_usage();
- 		return -1;
-+	} else if (dev_num >= 0 && device_name) {
-+		fprintf(stderr, "Only one of --device-num or --device-name needs to be set\n");
-+		print_usage();
-+		return -1;
-+	} else if (dev_num < 0) {
-+		dev_num = find_type_by_name(device_name, "iio:device");
-+		if (dev_num < 0) {
-+			fprintf(stderr, "Failed to find the %s\n", device_name);
-+			return dev_num;
-+		}
+@@ -435,8 +493,7 @@ int main(int argc, char **argv)
+ 			FORMAT_SCAN_ELEMENTS_DIR
+ 			"/*_en or pass -a to autoenable channels and "
+ 			"try again.\n", dev_dir_name);
+-		ret = -ENOENT;
+-		goto error_free_triggername;
++		return -ENOENT;
  	}
--
--	/* Find the device requested */
--	dev_num = find_type_by_name(device_name, "iio:device");
--	if (dev_num < 0) {
--		fprintf(stderr, "Failed to find the %s\n", device_name);
--		return dev_num;
--	}
--
- 	printf("iio device number being used is %d\n", dev_num);
  
- 	ret = asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
- 	if (ret < 0)
- 		return -ENOMEM;
-+	if (!device_name) {
-+		device_name = malloc(IIO_MAX_NAME_LENGTH);
-+		if (!device_name)
-+			return -ENOMEM;
-+		ret = read_sysfs_string("name", dev_dir_name, device_name);
-+		if (ret < 0) {
-+			fprintf(stderr, "Failed to read name of device %d\n", dev_num);
-+			return ret;
-+		}
-+	}
+ 	/*
+@@ -446,10 +503,8 @@ int main(int argc, char **argv)
+ 	 */
+ 	ret = asprintf(&buf_dir_name,
+ 		       "%siio:device%d/buffer", iio_dir, dev_num);
+-	if (ret < 0) {
+-		ret = -ENOMEM;
+-		goto error_free_channels;
+-	}
++	if (ret < 0)
++		return -ENOMEM;
  
  	if (!notrigger) {
- 		if (!trigger_name) {
+ 		printf("%s %s\n", dev_dir_name, trigger_name);
+@@ -463,34 +518,35 @@ int main(int argc, char **argv)
+ 		if (ret < 0) {
+ 			fprintf(stderr,
+ 				"Failed to write current_trigger file\n");
+-			goto error_free_buf_dir_name;
++			return ret;
+ 		}
++		current_trigger_set = true;
+ 	}
+ 
+ 	/* Setup ring buffer parameters */
+ 	ret = write_sysfs_int("length", buf_dir_name, buf_len);
+ 	if (ret < 0)
+-		goto error_free_buf_dir_name;
++		return ret;
+ 
+ 	/* Enable the buffer */
+ 	ret = write_sysfs_int("enable", buf_dir_name, 1);
+ 	if (ret < 0) {
+ 		fprintf(stderr,
+ 			"Failed to enable buffer: %s\n", strerror(-ret));
+-		goto error_free_buf_dir_name;
++		return ret;
+ 	}
+ 
+ 	scan_size = size_from_channelarray(channels, num_channels);
+ 	data = malloc(scan_size * buf_len);
+ 	if (!data) {
+ 		ret = -ENOMEM;
+-		goto error_free_buf_dir_name;
++		return ret;
+ 	}
+ 
+ 	ret = asprintf(&buffer_access, "/dev/iio:device%d", dev_num);
+ 	if (ret < 0) {
+ 		ret = -ENOMEM;
+-		goto error_free_data;
++		return ret;
+ 	}
+ 
+ 	/* Attempt to open non blocking the access dev */
+@@ -498,7 +554,7 @@ int main(int argc, char **argv)
+ 	if (fp == -1) { /* TODO: If it isn't there make the node */
+ 		ret = -errno;
+ 		fprintf(stderr, "Failed to open %s\n", buffer_access);
+-		goto error_free_buffer_access;
++		return ret;
+ 	}
+ 
+ 	for (j = 0; j < num_loops; j++) {
+@@ -510,8 +566,7 @@ int main(int argc, char **argv)
+ 
+ 			ret = poll(&pfd, 1, -1);
+ 			if (ret < 0) {
+-				ret = -errno;
+-				goto error_close_buffer_access;
++				return -errno;
+ 			} else if (ret == 0) {
+ 				continue;
+ 			}
+@@ -536,46 +591,5 @@ int main(int argc, char **argv)
+ 				     num_channels);
+ 	}
+ 
+-	/* Stop the buffer */
+-	ret = write_sysfs_int("enable", buf_dir_name, 0);
+-	if (ret < 0)
+-		goto error_close_buffer_access;
+-
+-	if (!notrigger)
+-		/* Disconnect the trigger - just write a dummy name. */
+-		ret = write_sysfs_string("trigger/current_trigger",
+-					 dev_dir_name, "NULL");
+-		if (ret < 0)
+-			fprintf(stderr, "Failed to write to %s\n",
+-				dev_dir_name);
+-
+-error_close_buffer_access:
+-	if (close(fp) == -1)
+-		perror("Failed to close buffer");
+-
+-error_free_buffer_access:
+-	free(buffer_access);
+-error_free_data:
+-	free(data);
+-error_free_buf_dir_name:
+-	free(buf_dir_name);
+-error_free_channels:
+-	for (i = num_channels - 1; i >= 0; i--) {
+-		free(channels[i].name);
+-		free(channels[i].generic_name);
+-	}
+-	free(channels);
+-error_free_triggername:
+-	if (datardytrigger)
+-		free(trigger_name);
+-error_disable_channels:
+-	if (autochannels == AUTOCHANNELS_ACTIVE) {
+-		ret = enable_disable_all_channels(dev_dir_name, 0);
+-		if (ret)
+-			fprintf(stderr, "Failed to disable all channels\n");
+-	}
+-error_free_dev_dir_name:
+-	free(dev_dir_name);
+-
+-	return ret;
++	return 0;
+ }
 -- 
 2.5.5
