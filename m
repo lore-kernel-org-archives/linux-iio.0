@@ -1,101 +1,59 @@
-Return-Path: <robh@kernel.org>
-Date: Wed, 18 May 2016 18:46:47 -0500
-From: Rob Herring <robh@kernel.org>
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Ge Gao <ggao@invensense.com>, Peter Rosin <peda@axentia.se>,
-	linux-i2c@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
-	devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [RFC v2 5/7] iio: inv_mpu6050: Add support for auxiliary I2C
- master
-Message-ID: <20160518234647.GA12939@rob-hp-laptop>
-References: <cover.1463582011.git.leonard.crestez@intel.com>
- <2aa92f6390bdb58362755ce9d61f3260f4d77e64.1463582011.git.leonard.crestez@intel.com>
+Return-Path: <mranostay@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <2aa92f6390bdb58362755ce9d61f3260f4d77e64.1463582011.git.leonard.crestez@intel.com>
+In-Reply-To: <CAEnQRZC0E39C3ucReVqW9SztzmrQxkPL8AEnqGPsg8XWepLe_A@mail.gmail.com>
+References: <CAKzfze_cJQXrb4789WpOjpWeLO3PEotuDnKc+FRd4FiFUOuYJA@mail.gmail.com>
+ <2C047EEE-7F16-4B5D-A735-301B4AE788CC@jic23.retrosnub.co.uk> <CAEnQRZC0E39C3ucReVqW9SztzmrQxkPL8AEnqGPsg8XWepLe_A@mail.gmail.com>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Thu, 19 May 2016 19:09:45 -0700
+Message-ID: <CAKzfze9baGLnnfXo9vdcf8b_aZpv=1YoR6UBvzsfk-4h-guYLg@mail.gmail.com>
+Subject: Re: [RFC] dynamic iio consumer channel mapping
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, May 18, 2016 at 06:00:52PM +0300, Crestez Dan Leonard wrote:
-> The MPU has an auxiliary I2C bus for connecting external
-> sensors. This bus has two operating modes:
-> * bypasss: which connects the primary and auxiliary busses
-> together. This is already supported via an i2c mux.
-> * master: where the MPU acts as a master to any external
-> connected sensors. This is implemented by this patch.
-> 
-> This I2C master mode also works when the MPU itself is connected via
-> SPI.
-> 
-> I2C master supports up to 5 slaves. Slaves 0-3 have a common operating
-> mode while slave 4 is different. This patch implements an i2c adapter
-> using slave 4.
-> 
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-> ---
->  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    |  66 +++++-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         | 258 ++++++++++++++++++++-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  36 +++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c      |   8 -
->  4 files changed, 355 insertions(+), 13 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-> index a9fc11e..778d076 100644
-> --- a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-> +++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-> @@ -1,16 +1,31 @@
->  InvenSense MPU-6050 Six-Axis (Gyro + Accelerometer) MEMS MotionTracking Device
->  
-> -http://www.invensense.com/mems/gyro/mpu6050.html
-> -
->  Required properties:
-> - - compatible : should be "invensense,mpu6050"
-> - - reg : the I2C address of the sensor
-> + - compatible : one of "invensense,mpu6000", "invensense,mpu6050",
-> +	"invensense,mpu6000" or "invensense,mpu9150"
-> + - reg : the I2C or SPI address of the sensor
->   - interrupt-parent : should be the phandle for the interrupt controller
->   - interrupts : interrupt mapping for GPIO IRQ
->  
->  Optional properties:
->   - mount-matrix: an optional 3x3 mounting rotation matrix
-> + - invensense,i2c-aux-master: operate aux i2c in "master" mode (default is bypass).
-> +
-> +The MPU has an auxiliary i2c bus for additional sensors. Devices attached this
-> +way can be described as for a regular linux i2c bus.
-> +
-> +It is possible to interact with aux devices in "bypass" or "master" mode. In
-> +"bypass" mode the auxiliary SDA/SCL lines are connected directly to the main i2c
-> +interface. In "master" mode access to aux devices is done by instructing the
-> +MPU to read or write i2c bytes.
-> +
-> +In "bypass" mode aux devices are listed behind a "i2c@0" node with reg = <0>;
-> +In "master" mode aux devices are listed behind a "i2c@1" node with reg = <1>;
+On Thu, May 19, 2016 at 1:25 AM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+> On Thu, May 19, 2016 at 8:58 AM, Jonathan Cameron
+> <jic23@jic23.retrosnub.co.uk> wrote:
+>>
+>>
+>> On 19 May 2016 04:38:09 BST, Matt Ranostay <mranostay@gmail.com> wrote:
+>>>Jonathan et al,
+>>>
+>>>Shortly going to be doing a project that requires an iio_map mapping
+>>>for using an iio  channel input from an ADC. I've notice all seem to
+>>>be platform_data or hardcoded due to it being a SoC or statically
+>>>known MFD mapping.
+>>>
+>>>For my application it isn't correct to create an hardcoded iio_map
+>>>mapping with the ADC driver (ti-ads1015) since nobody else would care
+>>>about it, and wouldn't help in the case of multiple instances of the
+>>>same ADC.
+>>>
+>>>But I would rather avoid the technical debt and uglyness of using a
+>>>board file.
+>>>
+>>>What would be the best way via ACPI and DT to define channel mappings
+>>>between name, consumers, and consumer channel names? Thought I request
+>>>input here before I make any core iio subsystem changes.
+>>>
+>>>Thanks,
+>>>
+>>>Matt
+>>
+>> Whilst we have gotten a fair bit of grief over the Linux specific nature of the
+>>  binding, iio-hwmon does have bindings for this sort of case.
+>>
+>> Mid term I have been wondering about taking it as far as having a configfs
+>>  interface to create such soft hardware mappings at runtime....
+>
+> +1 for configfs, would be the most flexible way for users.
 
-What is meaning and purpose of 0 and 1? You know which mode based on 
-invensense,i2c-aux-master.
+Then I suppose the consumer driver would need to return -EIO or
+similar until the user has setup the mapping with configfs?
 
-I don't see the reason for this intermediate node. In bypass mode, the 
-driver should register the child nodes with the parent node's bus. In 
-master mode, the mpu driver should register itself as an i2c adapter and 
-then probe its child nodes. Maybe I'm missing something from all the 
-discussion.
-
-> +The master and bypass modes are not supported at the same time. The
-> +"invensense,i2c-aux-master" property must be set to activate master mode.
-> +Bypass mode is generally faster but master mode also works when the MPU is
-> +connected via SPI.
-
-invensense,i2c-aux-master should only apply if the host interface is 
-SPI. Bypass mode is faster, it there any reason to use master mode when 
-the host is I2C? A slave address conflict is the only thing I can think 
-of.
-
-Rob
+Also I suppose we could add configfs setup for the gpio interrupt
+trigger that uses platform data currently. Although not sure it would
+be sane to be touching interrupt-controllers from userspace.
