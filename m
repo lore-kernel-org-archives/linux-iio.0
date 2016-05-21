@@ -1,263 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47167 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47184 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750941AbcEUTOP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 May 2016 15:14:15 -0400
-Subject: Re: [PATCH v5] iio: max5487: Add support for Maxim digital
- potentiometers
-To: Cristina Moraru <cristina.moraru09@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, sst@poczta.fm, peda@axentia.se,
-	mranostay@gmail.com, manabian@gmail.com,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	daniel.baluta@intel.com, octavian.purdila@intel.com
-References: <1458818485-2770-1-git-send-email-cristina.moraru09@gmail.com>
- <1463637346-3098-1-git-send-email-cristina.moraru09@gmail.com>
+	with ESMTP id S1750941AbcEUTRL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 May 2016 15:17:11 -0400
+Subject: Re: [PATCH] iio: adc: nau7802: Expose possible gains in sysfs
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Quentin Schulz <quentin.schulz@free-electrons.com>
+References: <1463584578-16772-1-git-send-email-quentin.schulz@free-electrons.com>
+ <20160519100113.GH19408@piout.net>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, maxime.ripard@free-electrons.com,
+	antoine.tenart@free-electrons.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <f2ee1d53-7adc-fda8-888b-0e4e992d2e48@kernel.org>
-Date: Sat, 21 May 2016 20:14:11 +0100
+Message-ID: <006dfa93-a4ab-7038-02bd-d43872a437d7@kernel.org>
+Date: Sat, 21 May 2016 20:17:09 +0100
 MIME-Version: 1.0
-In-Reply-To: <1463637346-3098-1-git-send-email-cristina.moraru09@gmail.com>
+In-Reply-To: <20160519100113.GH19408@piout.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/05/16 06:55, Cristina Moraru wrote:
-> Add implementation for Maxim MAX5487, MAX5488, MAX5489
-> digital potentiometers.
-> 
-> Datasheet:
-> http://datasheets.maximintegrated.com/en/ds/MAX5487-MAX5489.pdf
-> 
-> Signed-off-by: Cristina Moraru <cristina.moraru09@gmail.com>
-> CC: Daniel Baluta <daniel.baluta@intel.com>
-Applied to the togreg branch of iio.git - initially pushed out as
-testing.  As ever with stuff in testing I can still modify the
-commit if anyone has anything to add (acks etc welcome of course!)
+On 19/05/16 11:01, Alexandre Belloni wrote:
+> On 18/05/2016 at 17:16:18 +0200, Quentin Schulz wrote :
+>>
+>> The Nuvoton NAU7802 ADC is able to adjust its gain but prior knowledge of
+>> its possible values was required to adjust it. Users had to guess the
+>> possible gain values based on the ADC datasheet or on this driver's code.
+>>
+>> This exposes the possible values in the in_voltage_scale_available file of
+>> each nau7802 ADC device. The gain is set for the whole ADC and is therefore
+>> not configurable by channel. Thus, there exists only one
+>> in_voltage_scale_available file for each nau7802 ADC device even if it has
+>> two separate channels.
+>>
+>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
+
+Thanks,
 
 Jonathan
-> ---
-> Changes since v4:
-> 	Add year for copyright
-> Changes since v3:
->         Fix size issue in max5487_write_cmd
->         Fix typo
-> Changes since v2:
->         Change switch statement in max5487_write_raw
->         to if statement for consistency
->         Add blank line before return statement
->         Eliminate regmap support and use spi_write
->         Use iio_device_register instead of devm_ version
-> Changes since v1:
->         Fix spacing
->         Eliminate max5487_cfg struct
->         Add kohms as driver data
 > 
->  drivers/iio/potentiometer/Kconfig   |  11 +++
->  drivers/iio/potentiometer/Makefile  |   1 +
->  drivers/iio/potentiometer/max5487.c | 161 ++++++++++++++++++++++++++++++++++++
->  3 files changed, 173 insertions(+)
->  create mode 100644 drivers/iio/potentiometer/max5487.c
-> 
-> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-> index 6acb238..0941c8d4 100644
-> --- a/drivers/iio/potentiometer/Kconfig
-> +++ b/drivers/iio/potentiometer/Kconfig
-> @@ -15,6 +15,17 @@ config DS1803
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ds1803.
->  
-> +config MAX5487
-> +        tristate "Maxim MAX5487/MAX5488/MAX5489 Digital Potentiometer driver"
-> +        depends on SPI
-> +        help
-> +          Say yes here to build support for the Maxim
-> +          MAX5487, MAX5488, MAX5489 digital potentiometer
-> +          chips.
-> +
-> +          To compile this driver as a module, choose M here: the
-> +          module will be called max5487.
-> +
->  config MCP4131
->  	tristate "Microchip MCP413X/414X/415X/416X/423X/424X/425X/426X Digital Potentiometer driver"
->  	depends on SPI
-> diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
-> index 6007faa..8adb58f 100644
-> --- a/drivers/iio/potentiometer/Makefile
-> +++ b/drivers/iio/potentiometer/Makefile
-> @@ -4,6 +4,7 @@
->  
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_DS1803) += ds1803.o
-> +obj-$(CONFIG_MAX5487) += max5487.o
->  obj-$(CONFIG_MCP4131) += mcp4131.o
->  obj-$(CONFIG_MCP4531) += mcp4531.o
->  obj-$(CONFIG_TPL0102) += tpl0102.o
-> diff --git a/drivers/iio/potentiometer/max5487.c b/drivers/iio/potentiometer/max5487.c
-> new file mode 100644
-> index 0000000..6c50939
-> --- /dev/null
-> +++ b/drivers/iio/potentiometer/max5487.c
-> @@ -0,0 +1,161 @@
-> +/*
-> + * max5487.c - Support for MAX5487, MAX5488, MAX5489 digital potentiometers
-> + *
-> + * Copyright (C) 2016 Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + */
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/acpi.h>
-> +
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/iio.h>
-> +
-> +#define MAX5487_WRITE_WIPER_A	(0x01 << 8)
-> +#define MAX5487_WRITE_WIPER_B	(0x02 << 8)
-> +
-> +/* copy both wiper regs to NV regs */
-> +#define MAX5487_COPY_AB_TO_NV	(0x23 << 8)
-> +/* copy both NV regs to wiper regs */
-> +#define MAX5487_COPY_NV_TO_AB	(0x33 << 8)
-> +
-> +#define MAX5487_MAX_POS		255
-> +
-> +struct max5487_data {
-> +	struct spi_device *spi;
-> +	int kohms;
-> +};
-> +
-> +#define MAX5487_CHANNEL(ch, addr) {				\
-> +	.type = IIO_RESISTANCE,					\
-> +	.indexed = 1,						\
-> +	.output = 1,						\
-> +	.channel = ch,						\
-> +	.address = addr,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec max5487_channels[] = {
-> +	MAX5487_CHANNEL(0, MAX5487_WRITE_WIPER_A),
-> +	MAX5487_CHANNEL(1, MAX5487_WRITE_WIPER_B),
-> +};
-> +
-> +static int max5487_write_cmd(struct spi_device *spi, u16 cmd)
-> +{
-> +	return spi_write(spi, (const void *) &cmd, sizeof(u16));
-> +}
-> +
-> +static int max5487_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	struct max5487_data *data = iio_priv(indio_dev);
-> +
-> +	if (mask != IIO_CHAN_INFO_SCALE)
-> +		return -EINVAL;
-> +
-> +	*val = 1000 * data->kohms;
-> +	*val2 = MAX5487_MAX_POS;
-> +
-> +	return IIO_VAL_FRACTIONAL;
-> +}
-> +
-> +static int max5487_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct max5487_data *data = iio_priv(indio_dev);
-> +
-> +	if (mask != IIO_CHAN_INFO_RAW)
-> +		return -EINVAL;
-> +
-> +	if (val < 0 || val > MAX5487_MAX_POS)
-> +		return -EINVAL;
-> +
-> +	return max5487_write_cmd(data->spi, chan->address | val);
-> +}
-> +
-> +static const struct iio_info max5487_info = {
-> +	.read_raw = max5487_read_raw,
-> +	.write_raw = max5487_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int max5487_spi_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct max5487_data *data;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	dev_set_drvdata(&spi->dev, indio_dev);
-> +	data = iio_priv(indio_dev);
-> +
-> +	data->spi = spi;
-> +	data->kohms = id->driver_data;
-> +
-> +	indio_dev->info = &max5487_info;
-> +	indio_dev->name = id->name;
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = max5487_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(max5487_channels);
-> +
-> +	/* restore both wiper regs from NV regs */
-> +	ret = max5487_write_cmd(data->spi, MAX5487_COPY_NV_TO_AB);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return iio_device_register(indio_dev);
-> +}
-> +
-> +static int max5487_spi_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	/* save both wiper regs to NV regs */
-> +	return max5487_write_cmd(spi, MAX5487_COPY_AB_TO_NV);
-> +}
-> +
-> +static const struct spi_device_id max5487_id[] = {
-> +	{ "MAX5487", 10 },
-> +	{ "MAX5488", 50 },
-> +	{ "MAX5489", 100 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, max5487_id);
-> +
-> +static const struct acpi_device_id max5487_acpi_match[] = {
-> +	{ "MAX5487", 10 },
-> +	{ "MAX5488", 50 },
-> +	{ "MAX5489", 100 },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(acpi, max5487_acpi_match);
-> +
-> +static struct spi_driver max5487_driver = {
-> +	.driver = {
-> +		.name = "max5487",
-> +		.owner = THIS_MODULE,
-> +		.acpi_match_table = ACPI_PTR(max5487_acpi_match),
-> +	},
-> +	.id_table = max5487_id,
-> +	.probe = max5487_spi_probe,
-> +	.remove = max5487_spi_remove
-> +};
-> +module_spi_driver(max5487_driver);
-> +
-> +MODULE_AUTHOR("Cristina-Gabriela Moraru <cristina.moraru09@gmail.com>");
-> +MODULE_DESCRIPTION("max5487 SPI driver");
-> +MODULE_LICENSE("GPL v2");
+>> ---
+>>
+>> There exists two files to set the gain: in_voltageX_scale_available and
+>> in_voltage-voltage_scale_available. What are the differences between those
+>> two? What are the use cases for each? Which one should I have used?
+>>
+>>  drivers/iio/adc/nau7802.c | 19 +++++++++++++++++++
+>>  1 file changed, 19 insertions(+)
+>>
+>> diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
+>> index e525aa6..57365c5 100644
+>> --- a/drivers/iio/adc/nau7802.c
+>> +++ b/drivers/iio/adc/nau7802.c
+>> @@ -79,10 +79,29 @@ static const struct iio_chan_spec nau7802_chan_array[] = {
+>>  static const u16 nau7802_sample_freq_avail[] = {10, 20, 40, 80,
+>>  						10, 10, 10, 320};
+>>  
+>> +static ssize_t nau7802_show_scales(struct device *dev,
+>> +				   struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct nau7802_state *st = iio_priv(dev_to_iio_dev(dev));
+>> +	int i, len = 0;
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
+>> +		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%09d ",
+>> +				 st->scale_avail[i]);
+>> +
+>> +	buf[len-1] = '\n';
+>> +
+>> +	return len;
+>> +}
+>> +
+>>  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("10 40 80 320");
+>>  
+>> +static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO, nau7802_show_scales,
+>> +		       NULL, 0);
+>> +
+>>  static struct attribute *nau7802_attributes[] = {
+>>  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>> +	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+>>  	NULL
+>>  };
+>>  
+>> -- 
+>> 2.5.0
+>>
 > 
 
