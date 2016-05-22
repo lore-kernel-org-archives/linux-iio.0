@@ -1,73 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52401 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52430 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752491AbcEVTsA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 May 2016 15:48:00 -0400
-Subject: Re: [PATCH v2 2/3] iio: electricalconductivity: add
- IIO_ELECTRICALCONDUCTIVITY type
+	with ESMTP id S1752491AbcEVTyy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 May 2016 15:54:54 -0400
+Subject: Re: [PATCH 1/3] iio: proximity: as3935: correct IIO_CHAN_INFO_RAW
+ output
 To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
-References: <1463709181-17528-1-git-send-email-mranostay@gmail.com>
- <1463709181-17528-3-git-send-email-mranostay@gmail.com>
+References: <1463886063-20004-1-git-send-email-mranostay@gmail.com>
+ <1463886063-20004-2-git-send-email-mranostay@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6ad02a26-6649-7987-df7c-80d5244d5a0d@kernel.org>
-Date: Sun, 22 May 2016 20:47:57 +0100
+Message-ID: <0819a087-c7e5-9133-6c46-db6ec9f3d0c8@kernel.org>
+Date: Sun, 22 May 2016 20:54:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <1463709181-17528-3-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1463886063-20004-2-git-send-email-mranostay@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/05/16 02:53, Matt Ranostay wrote:
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
->  drivers/iio/industrialio-core.c         | 1 +
->  include/uapi/linux/iio/types.h          | 1 +
->  3 files changed, 9 insertions(+)
+On 22/05/16 04:01, Matt Ranostay wrote:
+> IIO_CHAN_INFO_RAW was returning processed data which was incorrect.
+> This also adds the IIO_CHAN_INFO_SCALE value to convert to a processed value.
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index df44998..adfdf95 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -1565,3 +1565,10 @@ Description:
->  		* X is in the plane of the propellers, perpendicular to Y axis,
->  		  and positive towards the starboard side of the UAV ;
->  		* Z is perpendicular to propellers plane and positive upwards.
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+Applied to the fixes-togreg-post-rc1 branch of iio.git and marked for stable.
+
+Thanks,
+Jonathan
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935 |  2 +-
+>  drivers/iio/proximity/as3935.c                           | 10 ++++++++--
+>  2 files changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935 b/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
+> index 6708c5e..33e96f7 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
+> @@ -1,4 +1,4 @@
+> -What		/sys/bus/iio/devices/iio:deviceX/in_proximity_raw
+> +What		/sys/bus/iio/devices/iio:deviceX/in_proximity_input
+>  Date:		March 2014
+>  KernelVersion:	3.15
+>  Contact:	Matt Ranostay <mranostay@gmail.com>
+> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+> index f4d29d5..f0a0def 100644
+> --- a/drivers/iio/proximity/as3935.c
+> +++ b/drivers/iio/proximity/as3935.c
+> @@ -72,7 +72,8 @@ static const struct iio_chan_spec as3935_channels[] = {
+>  		.type           = IIO_PROXIMITY,
+>  		.info_mask_separate =
+>  			BIT(IIO_CHAN_INFO_RAW) |
+> -			BIT(IIO_CHAN_INFO_PROCESSED),
+> +			BIT(IIO_CHAN_INFO_PROCESSED) |
+> +			BIT(IIO_CHAN_INFO_SCALE),
+>  		.scan_index     = 0,
+>  		.scan_type = {
+>  			.sign           = 'u',
+> @@ -181,7 +182,12 @@ static int as3935_read_raw(struct iio_dev *indio_dev,
+>  		/* storm out of range */
+>  		if (*val == AS3935_DATA_MASK)
+>  			return -EINVAL;
+> -		*val *= 1000;
 > +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_electricalconductivity_raw
-> +KernelVersion:	4.8
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Raw (unscaled no offset etc.) electric conductivity reading that
-> +		maps to microsiemens per centimeter.
-Rather than seimens per m?  Seems like the units are a mess when measuring this and
-we do in theory aim for the basic SI units where possible...
-
-Otherwise, this looks fine to me.
-
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index e6319a9..2a85bd8 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -80,6 +80,7 @@ static const char * const iio_chan_type_name_spec[] = {
->  	[IIO_RESISTANCE] = "resistance",
->  	[IIO_PH] = "ph",
->  	[IIO_UVINDEX] = "uvindex",
-> +	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
->  };
->  
->  static const char * const iio_modifier_names[] = {
-> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-> index b0916fc..22e5e58 100644
-> --- a/include/uapi/linux/iio/types.h
-> +++ b/include/uapi/linux/iio/types.h
-> @@ -39,6 +39,7 @@ enum iio_chan_type {
->  	IIO_RESISTANCE,
->  	IIO_PH,
->  	IIO_UVINDEX,
-> +	IIO_ELECTRICALCONDUCTIVITY,
->  };
->  
->  enum iio_modifier {
+> +		if (m == IIO_CHAN_INFO_PROCESSED)
+> +			*val *= 1000;
+> +		break;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 1000;
+>  		break;
+>  	default:
+>  		return -EINVAL;
 > 
 
