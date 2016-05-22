@@ -1,52 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52379 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52401 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752493AbcEVTmK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 May 2016 15:42:10 -0400
-Subject: Re: [PATCH 45/54] MAINTAINERS: Add file patterns for staging iio
- device tree bindings
-To: Geert Uytterhoeven <geert@linux-m68k.org>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1463907991-7916-1-git-send-email-geert@linux-m68k.org>
- <1463907991-7916-46-git-send-email-geert@linux-m68k.org>
-Cc: linux-iio@vger.kernel.org
+	with ESMTP id S1752491AbcEVTsA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 May 2016 15:48:00 -0400
+Subject: Re: [PATCH v2 2/3] iio: electricalconductivity: add
+ IIO_ELECTRICALCONDUCTIVITY type
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1463709181-17528-1-git-send-email-mranostay@gmail.com>
+ <1463709181-17528-3-git-send-email-mranostay@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <9b7f6db5-2acb-5093-d30f-2eebee796abc@kernel.org>
-Date: Sun, 22 May 2016 20:42:08 +0100
+Message-ID: <6ad02a26-6649-7987-df7c-80d5244d5a0d@kernel.org>
+Date: Sun, 22 May 2016 20:47:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <1463907991-7916-46-git-send-email-geert@linux-m68k.org>
+In-Reply-To: <1463709181-17528-3-git-send-email-mranostay@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/05/16 10:06, Geert Uytterhoeven wrote:
-> Submitters of device tree binding documentation may forget to CC
-> the subsystem maintainer if this is missing.
+On 20/05/16 02:53, Matt Ranostay wrote:
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+>  drivers/iio/industrialio-core.c         | 1 +
+>  include/uapi/linux/iio/types.h          | 1 +
+>  3 files changed, 9 insertions(+)
 > 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: linux-iio@vger.kernel.org
-Applied - thanks.
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index df44998..adfdf95 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1565,3 +1565,10 @@ Description:
+>  		* X is in the plane of the propellers, perpendicular to Y axis,
+>  		  and positive towards the starboard side of the UAV ;
+>  		* Z is perpendicular to propellers plane and positive upwards.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_electricalconductivity_raw
+> +KernelVersion:	4.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Raw (unscaled no offset etc.) electric conductivity reading that
+> +		maps to microsiemens per centimeter.
+Rather than seimens per m?  Seems like the units are a mess when measuring this and
+we do in theory aim for the basic SI units where possible...
 
-Jonathan
-> ---
-> Please apply this patch directly if you want to be involved in device
-> tree binding documentation for your subsystem.
-> ---
->  MAINTAINERS | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index f11355314880838b..5c96827ea93d5d7c 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -10867,6 +10867,7 @@ STAGING - INDUSTRIAL IO
->  M:	Jonathan Cameron <jic23@kernel.org>
->  L:	linux-iio@vger.kernel.org
->  S:	Odd Fixes
-> +F:	Documentation/devicetree/bindings/staging/iio/
->  F:	drivers/staging/iio/
+Otherwise, this looks fine to me.
+
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index e6319a9..2a85bd8 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -80,6 +80,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>  	[IIO_RESISTANCE] = "resistance",
+>  	[IIO_PH] = "ph",
+>  	[IIO_UVINDEX] = "uvindex",
+> +	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
+>  };
 >  
->  STAGING - LIRC (LINUX INFRARED REMOTE CONTROL) DRIVERS
+>  static const char * const iio_modifier_names[] = {
+> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+> index b0916fc..22e5e58 100644
+> --- a/include/uapi/linux/iio/types.h
+> +++ b/include/uapi/linux/iio/types.h
+> @@ -39,6 +39,7 @@ enum iio_chan_type {
+>  	IIO_RESISTANCE,
+>  	IIO_PH,
+>  	IIO_UVINDEX,
+> +	IIO_ELECTRICALCONDUCTIVITY,
+>  };
+>  
+>  enum iio_modifier {
 > 
 
