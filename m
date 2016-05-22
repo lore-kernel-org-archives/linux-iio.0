@@ -1,45 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from baptiste.telenet-ops.be ([195.130.132.51]:60495 "EHLO
-	baptiste.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752169AbcEVJGr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 May 2016 05:06:47 -0400
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-To: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH 45/54] MAINTAINERS: Add file patterns for staging iio device tree bindings
-Date: Sun, 22 May 2016 11:06:22 +0200
-Message-Id: <1463907991-7916-46-git-send-email-geert@linux-m68k.org>
-In-Reply-To: <1463907991-7916-1-git-send-email-geert@linux-m68k.org>
-References: <1463907991-7916-1-git-send-email-geert@linux-m68k.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <alexandre.belloni@free-electrons.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH] iio: Documentation: fix in_*_scale  kernel version
+Date: Sun, 22 May 2016 15:30:48 +0200
+Message-Id: <1463923848-13157-1-git-send-email-alexandre.belloni@free-electrons.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Submitters of device tree binding documentation may forget to CC
-the subsystem maintainer if this is missing.
+v3.21 doesn't exist, the first apparition of a in_.*_scale file was in v3.2
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
-Please apply this patch directly if you want to be involved in device
-tree binding documentation for your subsystem.
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f11355314880838b..5c96827ea93d5d7c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10867,6 +10867,7 @@ STAGING - INDUSTRIAL IO
- M:	Jonathan Cameron <jic23@kernel.org>
- L:	linux-iio@vger.kernel.org
- S:	Odd Fixes
-+F:	Documentation/devicetree/bindings/staging/iio/
- F:	drivers/staging/iio/
- 
- STAGING - LIRC (LINUX INFRARED REMOTE CONTROL) DRIVERS
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 3c6624881375..ca2d1a6135f1 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -724,7 +724,7 @@ What:		/sys/.../events/in_voltage_supply_scale
+ What:		/sys/.../events/in_temp_scale
+ What:		/sys/.../events/in_illuminance_scale
+ What:		/sys/.../events/in_proximity_scale
+-KernelVersion:	3.21
++KernelVersion:	3.2
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+                 Specifies the conversion factor from the standard units
 -- 
-1.9.1
-
+2.8.1
