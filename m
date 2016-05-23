@@ -1,157 +1,44 @@
 Return-Path: <leonard.crestez@intel.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: Re: [PATCH 1/2] iio: generic_buffer: Cleanup when receiving signals
 To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH v2 2/2] iio: generic_buffer: Add --device-num option
-Date: Mon, 23 May 2016 19:07:54 +0300
-Message-Id: <76604f31ab9355de7bd8c69537597feb7216e1f3.1464019664.git.leonard.crestez@intel.com>
-In-Reply-To: <3eaa280e2467ffc970277c48ab617a4b5bd23d4f.1464019664.git.leonard.crestez@intel.com>
-References: <3eaa280e2467ffc970277c48ab617a4b5bd23d4f.1464019664.git.leonard.crestez@intel.com>
-In-Reply-To: <3eaa280e2467ffc970277c48ab617a4b5bd23d4f.1464019664.git.leonard.crestez@intel.com>
-References: <3eaa280e2467ffc970277c48ab617a4b5bd23d4f.1464019664.git.leonard.crestez@intel.com>
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <082703f268f7b8b868704006d285d605cce5a784.1463759121.git.leonard.crestez@intel.com>
+ <alpine.DEB.2.02.1605201752050.13052@pmeerw.net>
+ <c7be250e-cc01-98ba-c211-36bbd154366e@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Daniel Baluta <daniel.baluta@intel.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Message-ID: <9de98860-1670-dbc2-b419-8e623deda6ea@intel.com>
+Date: Mon, 23 May 2016 19:10:52 +0300
+MIME-Version: 1.0
+In-Reply-To: <c7be250e-cc01-98ba-c211-36bbd154366e@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-This makes it possible to distinguish between iio devices with the same
-name.
+On 05/21/2016 07:28 PM, Jonathan Cameron wrote:
+> On 20/05/16 16:55, Peter Meerwald-Stadler wrote:
+>>
+>>> This also drops all the code freeing string buffers at the end of main.
+>>> Memory is freed when the process exits anyway so there's no point in
+>>> cluttering the code with all those gotos.
+>>
+>> well, it helps to see that all memory has been released when looking for 
+>> leaks :)
+>> e.g. valgrind becomes much less useful when the program exits with tons of 
+>> memory still allocated
+> Beyond that we are looking at code here that will get cut and paste into other
+> peoples applications - they might not pick up that it doesn't clean up properly
+> after itself.
+> 
+> I'd much prefer to keep these explicit frees in place.
 
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- tools/iio/generic_buffer.c | 69 ++++++++++++++++++++++++++++++++++------------
- 1 file changed, 51 insertions(+), 18 deletions(-)
+I think this would make more sense for a library (like libiio). But
+isn't the code in tools/iio merely an a test tool?
 
-diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-index 53fd28b..a93b771 100644
---- a/tools/iio/generic_buffer.c
-+++ b/tools/iio/generic_buffer.c
-@@ -251,7 +251,9 @@ void print_usage(void)
- 		"  -e         Disable wait for event (new data)\n"
- 		"  -g         Use trigger-less mode\n"
- 		"  -l <n>     Set buffer length to n samples\n"
--		"  -n <name>  Set device name (mandatory)\n"
-+		"  --device-name -n <name>\n"
-+		"  --device-num -N <num>\n"
-+		"        Set device by name or number"
- 		"  -t <name>  Set trigger name\n"
- 		"  -w <n>     Set delay between reads in us (event-less mode)\n");
- }
-@@ -315,6 +317,12 @@ void register_cleanup(void)
- 	}
- }
- 
-+static const struct option longopts[] = {
-+	{ "device-name",	1, 0, 'n' },
-+	{ "device-num",		1, 0, 'N' },
-+	{ },
-+};
-+
- int main(int argc, char **argv)
- {
- 	unsigned long num_loops = 2;
-@@ -329,7 +337,7 @@ int main(int argc, char **argv)
- 
- 	char *data;
- 	ssize_t read_size;
--	int dev_num, trig_num;
-+	int dev_num = -1, trig_num;
- 	char *buffer_access = NULL;
- 	int scan_size;
- 	int noevents = 0;
-@@ -340,7 +348,7 @@ int main(int argc, char **argv)
- 
- 	register_cleanup();
- 
--	while ((c = getopt(argc, argv, "ac:egl:n:t:w:")) != -1) {
-+	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:w:", longopts, NULL)) != -1) {
- 		switch (c) {
- 		case 'a':
- 			autochannels = AUTOCHANNELS_ENABLED;
-@@ -370,7 +378,15 @@ int main(int argc, char **argv)
- 
- 			break;
- 		case 'n':
--			device_name = optarg;
-+			device_name = strdup(optarg);
-+			break;
-+		case 'N':
-+			errno = 0;
-+			dev_num = strtoul(optarg, &dummy, 10);
-+			if (errno) {
-+				ret = -errno;
-+				goto error;
-+			}
- 			break;
- 		case 't':
- 			trigger_name = strdup(optarg);
-@@ -390,26 +406,42 @@ int main(int argc, char **argv)
- 		}
- 	}
- 
--	if (!device_name) {
--		fprintf(stderr, "Device name not set\n");
--		print_usage();
--		return -1;
--	}
--
- 	/* Find the device requested */
--	dev_num = find_type_by_name(device_name, "iio:device");
--	if (dev_num < 0) {
--		fprintf(stderr, "Failed to find the %s\n", device_name);
--		ret = dev_num;
-+	if (dev_num < 0 && !device_name) {
-+		fprintf(stderr, "Device not set\n");
-+		print_usage();
-+		ret = -1;
-+		goto error;
-+	} else if (dev_num >= 0 && device_name) {
-+		fprintf(stderr, "Only one of --device-num or --device-name needs to be set\n");
-+		print_usage();
-+		ret = -1;
- 		goto error;
-+	} else if (dev_num < 0) {
-+		dev_num = find_type_by_name(device_name, "iio:device");
-+		if (dev_num < 0) {
-+			fprintf(stderr, "Failed to find the %s\n", device_name);
-+			ret = dev_num;
-+			goto error;
-+		}
- 	}
--
- 	printf("iio device number being used is %d\n", dev_num);
- 
- 	ret = asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
--	if (ret < 0) {
--		ret = -ENOMEM;
--		goto error;
-+	if (ret < 0)
-+		return -ENOMEM;
-+	/* Fetch device_name if specified by number */
-+	if (!device_name) {
-+		device_name = malloc(IIO_MAX_NAME_LENGTH);
-+		if (!device_name) {
-+			ret = -ENOMEM;
-+			goto error;
-+		}
-+		ret = read_sysfs_string("name", dev_dir_name, device_name);
-+		if (ret < 0) {
-+			fprintf(stderr, "Failed to read name of device %d\n", dev_num);
-+			goto error;
-+		}
- 	}
- 
- 	if (!notrigger) {
-@@ -619,6 +651,7 @@ error:
- 	}
- 	free(channels);
- 	free(trigger_name);
-+	free(device_name);
- 	free(dev_dir_name);
- 
- 	return ret;
+I submitted v2 which keeps the frees. It still simplifies them by
+relying on stuff like free(NULL) being allowed.
+
 -- 
-2.5.5
+Regards,
+Leonard
