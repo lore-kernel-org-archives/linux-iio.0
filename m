@@ -1,103 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:54520 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751524AbcEWRVb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 13:21:31 -0400
-Date: Mon, 23 May 2016 10:21:25 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-	x86@kernel.org, linux-next@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH 1/4] isa: Allow ISA-style drivers on modern systems
-Message-ID: <20160523172125.GA8264@roeck-us.net>
-References: <cover.1464014576.git.vilhelm.gray@gmail.com>
- <484d20f0a177f48a6d9a93520933b830d4412cca.1464014576.git.vilhelm.gray@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <484d20f0a177f48a6d9a93520933b830d4412cca.1464014576.git.vilhelm.gray@gmail.com>
+Received: from mga01.intel.com ([192.55.52.88]:27425 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753706AbcEWSkV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 23 May 2016 14:40:21 -0400
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [RFC 0/7] Deal with iio trigger names
+Date: Mon, 23 May 2016 21:39:55 +0300
+Message-Id: <cover.1464027859.git.leonard.crestez@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, May 23, 2016 at 10:58:41AM -0400, William Breathitt Gray wrote:
-> Several modern devices, such as PC/104 cards, are expected to run on
-> modern systems via an ISA bus interface. Since ISA is a legacy interface
-> for most modern architectures, ISA support should remain disabled in
-> general. Support for ISA-style drivers should be enabled on a per driver
-> basis.
-> 
-> To allow ISA-style drivers on modern systems, this patch introduces the
-> ISA_BUS_API and ISA_BUS Kconfig options. The X86 ISA bus driver will now
-> build conditionally on the ISA_BUS_API Kconfig option, which defaults to
-> the legacy ISA Kconfig option. The ISA_BUS Kconfig option allows the
-> ISA_BUS_API Kconfig option to be selected on architectures which do not
-> enable ISA (e.g. X86_64).
-> 
-> For now, the ISA_BUS Kconfig option is only be available on X86
-> architectures. Support for other architectures may be added as required.
-> 
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> ---
->  arch/x86/Kconfig      | 13 +++++++++++++
->  drivers/base/Makefile |  2 +-
->  2 files changed, 14 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 0a7b885..a41c0b8 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -2439,6 +2439,19 @@ config PCI_CNB20LE_QUIRK
->  
->  source "drivers/pci/Kconfig"
->  
-> +config ISA_BUS_API
-> +	def_bool ISA
-> +
-> +config ISA_BUS
-> +	bool "ISA-style bus support on modern systems" if (X86 && EXPERT)
-> +	default y
+IIO documents that trigger names are unique but does not actually guarantee
+this. You can easily create a software trigger with a duplicate name if you
+enable CONFIG_IIO_HRTIMER_TRIGGER:
 
-Sure you want it enabled by default ?
+	mkdir /sys/kernel/config/iio/triggers/hrtimer/\
+		`cat /sys/bus/iio/devices/trigger0/name`
 
-> +	select ISA_BUS_API
-> +	help
-> +	  Enables ISA-style drivers on modern systems. This is necessary to
-> +	  support PC/104 devices on X86_64 platforms.
-> +
-> +	  If unsure, say Y.
-> +
->  # x86_64 have no ISA slots, but can have ISA-style DMA.
->  config ISA_DMA_API
->  	bool "ISA-style DMA support" if (X86_64 && EXPERT)
-> diff --git a/drivers/base/Makefile b/drivers/base/Makefile
-> index 6b2a84e..2609ba2 100644
-> --- a/drivers/base/Makefile
-> +++ b/drivers/base/Makefile
-> @@ -10,7 +10,7 @@ obj-$(CONFIG_DMA_CMA) += dma-contiguous.o
->  obj-y			+= power/
->  obj-$(CONFIG_HAS_DMA)	+= dma-mapping.o
->  obj-$(CONFIG_HAVE_GENERIC_DMA_COHERENT) += dma-coherent.o
-> -obj-$(CONFIG_ISA)	+= isa.o
-> +obj-$(CONFIG_ISA_BUS_API)	+= isa.o
+You can also get in this situation if you connect two identical st_sensors.
 
-Unless I am missing something, this is insufficient, and I am a bit surprised
-that it actually works. include/linux/isa.h declares isa_register_driver()
-and isa_unregister_driver() as dummies if CONFIG_ISA is not enabled.
-Doesn't this cause a compile error ? Confused.
+My attempt to fix this is by adding a new 'current_trigger_id' ABI which is a
+numeric ID (X from triggerX) rather than a non-unique string. I tested that
+this works as expected when connecting two LIS3DH to the same system. This is
+in patches 4,5.
 
-Thanks,
-Guenter
+In theory the current_trigger ABI could be overloaded to looks for something
+matching "trigger[0-9]+" but this would be nastier. There would be a need to
+prevent registering triggers that match that expression in order to prevent
+stuff like:
 
->  obj-$(CONFIG_FW_LOADER)	+= firmware_class.o
->  obj-$(CONFIG_NUMA)	+= node.o
->  obj-$(CONFIG_MEMORY_HOTPLUG_SPARSE) += memory.o
-> -- 
-> 2.7.3
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	mkdir /sys/kernel/config/iio/triggers/hrtimer/trigger1
+
+Such an overload wouldn't work on read and make it impossible to unambigiously
+determine the currently selected trigger.
+
+
+Patch 6 disallows registering duplicate trigger names. This makes drivers
+which currently do that break at probe time.
+
+Patch 7 attempts to ensure that all drivers include indio_dev->id when calling
+iio_trigger_alloc. This obviously changes trigger names.
+
+
+Either 4,5 or 6,7 fix this issue, but 4,5 causes fewer compat issues.
+
+
+Patches 1,2,3 are just minor features in tools/generic_buffer. They supersede
+the v2 I posted earlier:
+
+	https://www.spinics.net/lists/linux-iio/msg24867.html
+
+Crestez Dan Leonard (7):
+  iio: generic_buffer: Cleanup when receiving signals
+  iio: generic_buffer: Add --device-num option
+  iio: generic_buffer: Add --trigger-num option
+  iio: Add current_trigger_id alternative
+  iio: generic_buffer: Use current_trigger_id
+  iio: Refuse to register triggers with duplicate names
+  iio: Make trigger names unique
+
+ Documentation/ABI/testing/sysfs-bus-iio            |   9 +
+ Documentation/DocBook/iio.tmpl                     |   4 +-
+ drivers/iio/adc/max1027.c                          |   4 +-
+ drivers/iio/common/st_sensors/st_sensors_trigger.c |   2 +-
+ drivers/iio/industrialio-trigger.c                 | 136 ++++++++---
+ drivers/iio/light/gp2ap020a00f.c                   |   4 +-
+ tools/iio/generic_buffer.c                         | 269 ++++++++++++++-------
+ 7 files changed, 309 insertions(+), 119 deletions(-)
+
+-- 
+2.5.5
+
