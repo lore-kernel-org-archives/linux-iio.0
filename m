@@ -8,67 +8,75 @@ Cc: linux-kernel@vger.kernel.org,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [RFC 7/7] iio: Make trigger names unique
-Date: Mon, 23 May 2016 21:40:02 +0300
-Message-Id: <72a676266aee1d40f14e5cf3b62c7ada4eb0c614.1464027859.git.leonard.crestez@intel.com>
+Subject: [RFC 6/7] iio: Refuse to register triggers with duplicate names
+Date: Mon, 23 May 2016 21:40:01 +0300
+Message-Id: <643ac0601a74fadc842ccb83c8f3741293ef7299.1464027859.git.leonard.crestez@intel.com>
 In-Reply-To: <cover.1464027859.git.leonard.crestez@intel.com>
 References: <cover.1464027859.git.leonard.crestez@intel.com>
 In-Reply-To: <cover.1464027859.git.leonard.crestez@intel.com>
 References: <cover.1464027859.git.leonard.crestez@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This changes the format of trigger names for some drivers so that the
-result always includes indio_dev->id and is thus unique.
+The trigger name is documented as unique but drivers are currently
+allowed to register triggers with duplicate names. This should be
+considered a bug since it makes the 'current_trigger' interface
+unusable.
 
 Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
- drivers/iio/adc/max1027.c                          | 4 ++--
- drivers/iio/common/st_sensors/st_sensors_trigger.c | 2 +-
- drivers/iio/light/gp2ap020a00f.c                   | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/iio/industrialio-trigger.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 41d495c..4020257 100644
---- a/drivers/iio/adc/max1027.c
-+++ b/drivers/iio/adc/max1027.c
-@@ -447,8 +447,8 @@ static int max1027_probe(struct spi_device *spi)
- 		return ret;
- 	}
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index e79c64c..e77503c 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -64,6 +64,8 @@ static struct attribute *iio_trig_dev_attrs[] = {
+ };
+ ATTRIBUTE_GROUPS(iio_trig_dev);
  
--	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
--							indio_dev->name);
-+	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
-+					  indio_dev->name, indio_dev->iod);
- 	if (st->trig == NULL) {
- 		ret = -ENOMEM;
- 		dev_err(&indio_dev->dev, "Failed to allocate iio trigger\n");
-diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-index da72279..9d3e9ab 100644
---- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-@@ -24,7 +24,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 	unsigned long irq_trig;
++static struct iio_trigger *__iio_trigger_find_by_name(const char *name);
++
+ int iio_trigger_register(struct iio_trigger *trig_info)
+ {
+ 	int ret;
+@@ -82,11 +84,18 @@ int iio_trigger_register(struct iio_trigger *trig_info)
  
--	sdata->trig = iio_trigger_alloc("%s-trigger", indio_dev->name);
-+	sdata->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
- 	if (sdata->trig == NULL) {
- 		dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n");
- 		return -ENOMEM;
-diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index 6d41086..e2efaeb 100644
---- a/drivers/iio/light/gp2ap020a00f.c
-+++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -1553,8 +1553,8 @@ static int gp2ap020a00f_probe(struct i2c_client *client,
- 		goto error_regulator_disable;
+ 	/* Add to list of available triggers held by the IIO core */
+ 	mutex_lock(&iio_trigger_list_lock);
++	if (__iio_trigger_find_by_name(trig_info->name)) {
++		pr_err("Duplicate trigger name '%s'\n", trig_info->name);
++		ret = -EEXIST;
++		goto error_device_del;
++	}
+ 	list_add_tail(&trig_info->list, &iio_trigger_list);
+ 	mutex_unlock(&iio_trigger_list_lock);
  
- 	/* Allocate trigger */
--	data->trig = devm_iio_trigger_alloc(&client->dev, "%s-trigger",
--							indio_dev->name);
-+	data->trig = devm_iio_trigger_alloc(&client->dev, "%s-dev%d",
-+					    indio_dev->name, indio_dev->id);
- 	if (data->trig == NULL) {
- 		err = -ENOMEM;
- 		dev_err(&indio_dev->dev, "Failed to allocate iio trigger.\n");
+ 	return 0;
+ 
++error_device_del:
++	device_del(&trig_info->dev);
+ error_unregister_id:
+ 	ida_simple_remove(&iio_trigger_ida, trig_info->id);
+ 	return ret;
+@@ -105,6 +114,18 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
+ }
+ EXPORT_SYMBOL(iio_trigger_unregister);
+ 
++/* Search for trigger by name, assuming iio_trigger_list_lock held */
++static struct iio_trigger *__iio_trigger_find_by_name(const char *name)
++{
++	struct iio_trigger *iter;
++
++	list_for_each_entry(iter, &iio_trigger_list, list)
++		if (!strcmp(iter->name, name))
++			return iter;
++
++	return NULL;
++}
++
+ static struct iio_trigger *iio_trigger_find_by_name(const char *name,
+ 						    size_t len)
+ {
 -- 
 2.5.5
