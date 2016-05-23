@@ -1,67 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f51.google.com ([209.85.214.51]:37090 "EHLO
-	mail-it0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751877AbcEWTED (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 15:04:03 -0400
+Received: from mail-oi0-f53.google.com ([209.85.218.53]:35360 "EHLO
+	mail-oi0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753028AbcEWHnX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 03:43:23 -0400
+Received: by mail-oi0-f53.google.com with SMTP id x19so265095312oix.2
+        for <linux-iio@vger.kernel.org>; Mon, 23 May 2016 00:43:23 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <484d20f0a177f48a6d9a93520933b830d4412cca.1464014576.git.vilhelm.gray@gmail.com>
-References: <cover.1464014576.git.vilhelm.gray@gmail.com>
-	<484d20f0a177f48a6d9a93520933b830d4412cca.1464014576.git.vilhelm.gray@gmail.com>
-Date: Mon, 23 May 2016 11:03:14 -0700
-Message-ID: <CA+55aFxQqxPUP1ppvsR4XOg9x7P-uTUXt6gjHd0actsJKdY1-w@mail.gmail.com>
-Subject: Re: [PATCH 1/4] isa: Allow ISA-style drivers on modern systems
-From: Linus Torvalds <torvalds@linux-foundation.org>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"the arch/x86 maintainers" <x86@kernel.org>,
-	linux-next <linux-next@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>
+In-Reply-To: <1463945969-18866-1-git-send-email-jic23@kernel.org>
+References: <1463945969-18866-1-git-send-email-jic23@kernel.org>
+Date: Mon, 23 May 2016 09:43:22 +0200
+Message-ID: <CACRpkdYBueNxSa60EfTWsX7Surmvee8V0Qbgn+CrsA_joMmxQg@mail.gmail.com>
+Subject: Re: [RFC] iio: accel: st_accel: Add lis3l02dq support
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Denis CIOCCA <denis.ciocca@st.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, May 23, 2016 at 7:58 AM, William Breathitt Gray
-<vilhelm.gray@gmail.com> wrote:
+On Sun, May 22, 2016 at 9:39 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+
+> Time to finally kill off the venerable (it was one of my first drivers)
+> lis3l02dq driver in favour of adding support in the st sensors framework.
 >
-> For now, the ISA_BUS Kconfig option is only be available on X86
-> architectures. Support for other architectures may be added as required.
+> This does loose us the event support that driver always had, but I think
+> that will reappear at some point and in the meantime the maintenance
+> advantages of dropping the 'special' driver for this one part outweigh
+> the issues.
 
-So I'd prefer to see that
+Which events? Free-fall?
 
-> +config ISA_BUS_API
-> +       def_bool ISA
+> It's worth noting this part is ancient and I may well be the only person
+> who still has any on hardware running recent kernels.
 
-part in arch/Kconfig.
+What I learnt from my years in the kernel is that there is always
+a bunch of silent users, also it has this nice feeling of completing
+the ST sensor suite.
 
-Why?
+> It has a few 'quirks'.
+>  - No WAI register so that just became optional.
 
-Because other architectures _already_ define that ISA symbol, and we
-want the "ISA_BUS_API" to be a complete superset of ISA.
+Makes sense.
 
-So whenever ISA is enabled, ISA_BUS_API should be enabled.
+>  - It's too quick.  Even at slowest rate (280Hz) I can't read out fast
+>    enough on my board (stargate 2) to beat new data coming in. Linus'
+>    repeat read patch doesn't help in this case. It just means I get 10
+>    readings before dying... So in reality this will get used with
+>    software triggers only unless someone has this long out of production
+>    device on a quick board.
 
-And the way you did that, that's not true. Now, if you were to enable
-ISA on ARM, you'd not get ISA_BUS_API. And that sounds insane to me.
-It also sounds *wrong* because it effectively changes the meaning of
-this:
+What is the speed of the I2C bus on this system?
+If it's running on the lowest speed 100kHz that may very
+well be the cause of the problem, so check if it supports
+high speed (400kHz) I2C.
 
-  --- a/drivers/base/Makefile
-  +++ b/drivers/base/Makefile
-  @@ -10,7 +10,7 @@ obj-$(CONFIG_DMA_CMA) += dma-contiguous.o
-  -obj-$(CONFIG_ISA)      += isa.o
-  +obj-$(CONFIG_ISA_BUS_API)      += isa.o
+The patch as such looks good.
 
-where now that "isa.c" file gets built only on x86, whereas it *used*
-to get built whenever ISA was enabled.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-So the reason I suggested a separate ISA_BUS_API config option (that
-then a particular architecture can choose to enable, in this case the
-x86 choice of selecting ISA_BUS) was _exactly_ this issue. The plain
-"ISA" config variable is not limited to x86, and the new subset of it
-(the ISA_BUS_API) thus also must not be limited to just x86.
-
-               Linus
+Yours,
+Linus Walleij
