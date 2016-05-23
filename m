@@ -1,67 +1,402 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f194.google.com ([209.85.161.194]:33684 "EHLO
-	mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753125AbcEWO6h (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 10:58:37 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: gregkh@linuxfoundation.org, akpm@linux-foundation.org
-Cc: x86@kernel.org, linux-next@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH 0/4] Allow ISA-style drivers on modern systems
-Date: Mon, 23 May 2016 10:58:17 -0400
-Message-Id: <cover.1464014576.git.vilhelm.gray@gmail.com>
+Received: from mga03.intel.com ([134.134.136.65]:60828 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752148AbcEWQIO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 23 May 2016 12:08:14 -0400
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH v2 1/2] iio: generic_buffer: Cleanup when receiving signals
+Date: Mon, 23 May 2016 19:07:53 +0300
+Message-Id: <3eaa280e2467ffc970277c48ab617a4b5bd23d4f.1464019664.git.leonard.crestez@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Several modern devices, such as PC/104 cards, are expected to run on
-modern systems via an ISA bus interface. Since ISA is a legacy interface
-for most modern architectures, ISA support should remain disabled in
-general. Support for ISA-style drivers should be enabled on a per driver
-basis.
+This will clean (disable buffer/trigger/channels) when doing
+something like a CTRL-C. Otherwise restarting generic_buffer requires a
+manual echo 0 > buffer/enable
 
-To allow ISA-style drivers on modern systems, this patchset introduces
-the ISA_BUS_API and ISA_BUS Kconfig options. The X86 ISA bus driver will
-now build conditionally on the ISA_BUS_API Kconfig option, which
-defaults to the legacy ISA Kconfig option. The ISA_BUS Kconfig option
-allows the ISA_BUS_API Kconfig option to be selected on architectures
-which do not enable ISA (e.g. X86_64).
+This also cleanup up all the code freeing string buffers at
+the end of main. We initialize all pointers to NULL so that cleanup can
+all be done under a single error label.
 
-For now, the ISA_BUS Kconfig option is only be available on X86
-architectures. Support for other architectures may be added as required.
+Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+---
+ tools/iio/generic_buffer.c | 170 ++++++++++++++++++++++++++++-----------------
+ 1 file changed, 107 insertions(+), 63 deletions(-)
 
-An earlier attempt to allow the ISA bus driver to build for X86_64 took
-an inappropriate approach resulting in legacy ISA drivers becoming
-enabled unconditionally on untested and unsupported architectures.
-Commit 51e68d055cba ("x86 isa: add back X86_32 dependency on
-CONFIG_ISA"), added to restrict the ISA bus driver to only X86_32,
-causes several drivers intended for X86_64 to be restricted to X86_32 as
-well.
-
-This patchset replaces the ISA Kconfig option dependency of several
-drivers to ISA_BUS_API, so that they may build for X86_64 as intended.
-The respective drivers are as follows:
-    * ACCES 104-IDIO-16 GPIO driver
-    * ACCES 104-IDI-48 GPIO driver
-    * ACCES 104-DIO-48E GPIO driver
-    * Apex Embedded Systems STX104 DAC driver
-    * WinSystems EBC-C384 watchdog timer driver
-    * WinSystems WS16C48 GPIO driver
-
-William Breathitt Gray (4):
-  isa: Allow ISA-style drivers on modern systems
-  gpio: Allow PC/104 devices on X86_64
-  iio: stx104: Allow build for X86_64
-  watchdog: ebc-c384_wdt: Allow build for X86_64
-
- arch/x86/Kconfig         | 13 +++++++++++++
- drivers/base/Makefile    |  2 +-
- drivers/gpio/Kconfig     |  8 ++++----
- drivers/iio/dac/Kconfig  |  2 +-
- drivers/watchdog/Kconfig |  2 +-
- 5 files changed, 20 insertions(+), 7 deletions(-)
-
+diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+index 2429c78..53fd28b 100644
+--- a/tools/iio/generic_buffer.c
++++ b/tools/iio/generic_buffer.c
+@@ -32,6 +32,8 @@
+ #include <endian.h>
+ #include <getopt.h>
+ #include <inttypes.h>
++#include <stdbool.h>
++#include <signal.h>
+ #include "iio_utils.h"
+ 
+ /**
+@@ -254,6 +256,65 @@ void print_usage(void)
+ 		"  -w <n>     Set delay between reads in us (event-less mode)\n");
+ }
+ 
++enum autochan autochannels = AUTOCHANNELS_DISABLED;
++char *dev_dir_name = NULL;
++char *buf_dir_name = NULL;
++bool current_trigger_set = false;
++
++void cleanup(void)
++{
++	int ret;
++
++	/* Disable trigger */
++	if (dev_dir_name && current_trigger_set) {
++		/* Disconnect the trigger - just write a dummy name. */
++		ret = write_sysfs_string("trigger/current_trigger",
++					 dev_dir_name, "NULL");
++		if (ret < 0)
++			fprintf(stderr, "Failed to disable trigger: %s\n",
++				strerror(-ret));
++		current_trigger_set = false;
++	}
++
++	/* Disable buffer */
++	if (buf_dir_name) {
++		ret = write_sysfs_int("enable", buf_dir_name, 0);
++		if (ret < 0)
++			fprintf(stderr, "Failed to disable buffer: %s\n",
++				strerror(-ret));
++	}
++
++	/* Disable channels if auto-enabled */
++	if (dev_dir_name && autochannels == AUTOCHANNELS_ACTIVE) {
++		ret = enable_disable_all_channels(dev_dir_name, 0);
++		if (ret)
++			fprintf(stderr, "Failed to disable all channels\n");
++		autochannels = AUTOCHANNELS_DISABLED;
++	}
++}
++
++void sig_handler(int signum)
++{
++	fprintf(stderr, "Caught signal %d\n", signum);
++	cleanup();
++	exit(-signum);
++}
++
++void register_cleanup(void)
++{
++	struct sigaction sa = { .sa_handler = sig_handler };
++	const int signums[] = { SIGINT, SIGTERM, SIGABRT };
++	int ret, i;
++
++	for (i = 0; i < ARRAY_SIZE(signums); ++i) {
++		ret = sigaction(signums[i], &sa, NULL);
++		if (ret) {
++			perror("Failed to register signal handler");
++			exit(-1);
++		}
++	}
++}
++
+ int main(int argc, char **argv)
+ {
+ 	unsigned long num_loops = 2;
+@@ -261,25 +322,24 @@ int main(int argc, char **argv)
+ 	unsigned long buf_len = 128;
+ 
+ 	int ret, c, i, j, toread;
+-	int fp;
++	int fp = -1;
+ 
+-	int num_channels;
++	int num_channels = 0;
+ 	char *trigger_name = NULL, *device_name = NULL;
+-	char *dev_dir_name, *buf_dir_name;
+ 
+-	int datardytrigger = 1;
+ 	char *data;
+ 	ssize_t read_size;
+ 	int dev_num, trig_num;
+-	char *buffer_access;
++	char *buffer_access = NULL;
+ 	int scan_size;
+ 	int noevents = 0;
+ 	int notrigger = 0;
+-	enum autochan autochannels = AUTOCHANNELS_DISABLED;
+ 	char *dummy;
+ 
+ 	struct iio_channel_info *channels;
+ 
++	register_cleanup();
++
+ 	while ((c = getopt(argc, argv, "ac:egl:n:t:w:")) != -1) {
+ 		switch (c) {
+ 		case 'a':
+@@ -288,8 +348,10 @@ int main(int argc, char **argv)
+ 		case 'c':
+ 			errno = 0;
+ 			num_loops = strtoul(optarg, &dummy, 10);
+-			if (errno)
+-				return -errno;
++			if (errno) {
++				ret = -errno;
++				goto error;
++			}
+ 
+ 			break;
+ 		case 'e':
+@@ -301,26 +363,30 @@ int main(int argc, char **argv)
+ 		case 'l':
+ 			errno = 0;
+ 			buf_len = strtoul(optarg, &dummy, 10);
+-			if (errno)
+-				return -errno;
++			if (errno) {
++				ret = -errno;
++				goto error;
++			}
+ 
+ 			break;
+ 		case 'n':
+ 			device_name = optarg;
+ 			break;
+ 		case 't':
+-			trigger_name = optarg;
+-			datardytrigger = 0;
++			trigger_name = strdup(optarg);
+ 			break;
+ 		case 'w':
+ 			errno = 0;
+ 			timedelay = strtoul(optarg, &dummy, 10);
+-			if (errno)
+-				return -errno;
++			if (errno) {
++				ret = -errno;
++				goto error;
++			}
+ 			break;
+ 		case '?':
+ 			print_usage();
+-			return -1;
++			ret = -1;
++			goto error;
+ 		}
+ 	}
+ 
+@@ -334,14 +400,17 @@ int main(int argc, char **argv)
+ 	dev_num = find_type_by_name(device_name, "iio:device");
+ 	if (dev_num < 0) {
+ 		fprintf(stderr, "Failed to find the %s\n", device_name);
+-		return dev_num;
++		ret = dev_num;
++		goto error;
+ 	}
+ 
+ 	printf("iio device number being used is %d\n", dev_num);
+ 
+ 	ret = asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
+-	if (ret < 0)
+-		return -ENOMEM;
++	if (ret < 0) {
++		ret = -ENOMEM;
++		goto error;
++	}
+ 
+ 	if (!notrigger) {
+ 		if (!trigger_name) {
+@@ -354,7 +423,7 @@ int main(int argc, char **argv)
+ 				       "%s-dev%d", device_name, dev_num);
+ 			if (ret < 0) {
+ 				ret = -ENOMEM;
+-				goto error_free_dev_dir_name;
++				goto error;
+ 			}
+ 		}
+ 
+@@ -367,7 +436,7 @@ int main(int argc, char **argv)
+ 				       "%s-trigger", device_name);
+ 			if (ret < 0) {
+ 				ret = -ENOMEM;
+-				goto error_free_dev_dir_name;
++				goto error;
+ 			}
+ 		}
+ 
+@@ -376,7 +445,7 @@ int main(int argc, char **argv)
+ 			fprintf(stderr, "Failed to find the trigger %s\n",
+ 				trigger_name);
+ 			ret = trig_num;
+-			goto error_free_triggername;
++			goto error;
+ 		}
+ 
+ 		printf("iio trigger number being used is %d\n", trig_num);
+@@ -392,7 +461,7 @@ int main(int argc, char **argv)
+ 	if (ret) {
+ 		fprintf(stderr, "Problem reading scan element information\n"
+ 			"diag %s\n", dev_dir_name);
+-		goto error_free_triggername;
++		goto error;
+ 	}
+ 	if (num_channels && autochannels == AUTOCHANNELS_ENABLED) {
+ 		fprintf(stderr, "Auto-channels selected but some channels "
+@@ -407,7 +476,7 @@ int main(int argc, char **argv)
+ 		ret = enable_disable_all_channels(dev_dir_name, 1);
+ 		if (ret) {
+ 			fprintf(stderr, "Failed to enable all channels\n");
+-			goto error_free_triggername;
++			goto error;
+ 		}
+ 
+ 		/* This flags that we need to disable the channels again */
+@@ -419,12 +488,12 @@ int main(int argc, char **argv)
+ 			fprintf(stderr, "Problem reading scan element "
+ 				"information\n"
+ 				"diag %s\n", dev_dir_name);
+-			goto error_disable_channels;
++			goto error;
+ 		}
+ 		if (!num_channels) {
+ 			fprintf(stderr, "Still no channels after "
+ 				"auto-enabling, giving up\n");
+-			goto error_disable_channels;
++			goto error;
+ 		}
+ 	}
+ 
+@@ -436,7 +505,7 @@ int main(int argc, char **argv)
+ 			"/*_en or pass -a to autoenable channels and "
+ 			"try again.\n", dev_dir_name);
+ 		ret = -ENOENT;
+-		goto error_free_triggername;
++		goto error;
+ 	}
+ 
+ 	/*
+@@ -448,7 +517,7 @@ int main(int argc, char **argv)
+ 		       "%siio:device%d/buffer", iio_dir, dev_num);
+ 	if (ret < 0) {
+ 		ret = -ENOMEM;
+-		goto error_free_channels;
++		goto error;
+ 	}
+ 
+ 	if (!notrigger) {
+@@ -463,34 +532,34 @@ int main(int argc, char **argv)
+ 		if (ret < 0) {
+ 			fprintf(stderr,
+ 				"Failed to write current_trigger file\n");
+-			goto error_free_buf_dir_name;
++			goto error;
+ 		}
+ 	}
+ 
+ 	/* Setup ring buffer parameters */
+ 	ret = write_sysfs_int("length", buf_dir_name, buf_len);
+ 	if (ret < 0)
+-		goto error_free_buf_dir_name;
++		goto error;
+ 
+ 	/* Enable the buffer */
+ 	ret = write_sysfs_int("enable", buf_dir_name, 1);
+ 	if (ret < 0) {
+ 		fprintf(stderr,
+ 			"Failed to enable buffer: %s\n", strerror(-ret));
+-		goto error_free_buf_dir_name;
++		goto error;
+ 	}
+ 
+ 	scan_size = size_from_channelarray(channels, num_channels);
+ 	data = malloc(scan_size * buf_len);
+ 	if (!data) {
+ 		ret = -ENOMEM;
+-		goto error_free_buf_dir_name;
++		goto error;
+ 	}
+ 
+ 	ret = asprintf(&buffer_access, "/dev/iio:device%d", dev_num);
+ 	if (ret < 0) {
+ 		ret = -ENOMEM;
+-		goto error_free_data;
++		goto error;
+ 	}
+ 
+ 	/* Attempt to open non blocking the access dev */
+@@ -498,7 +567,7 @@ int main(int argc, char **argv)
+ 	if (fp == -1) { /* TODO: If it isn't there make the node */
+ 		ret = -errno;
+ 		fprintf(stderr, "Failed to open %s\n", buffer_access);
+-		goto error_free_buffer_access;
++		goto error;
+ 	}
+ 
+ 	for (j = 0; j < num_loops; j++) {
+@@ -511,7 +580,7 @@ int main(int argc, char **argv)
+ 			ret = poll(&pfd, 1, -1);
+ 			if (ret < 0) {
+ 				ret = -errno;
+-				goto error_close_buffer_access;
++				goto error;
+ 			} else if (ret == 0) {
+ 				continue;
+ 			}
+@@ -536,45 +605,20 @@ int main(int argc, char **argv)
+ 				     num_channels);
+ 	}
+ 
+-	/* Stop the buffer */
+-	ret = write_sysfs_int("enable", buf_dir_name, 0);
+-	if (ret < 0)
+-		goto error_close_buffer_access;
+-
+-	if (!notrigger)
+-		/* Disconnect the trigger - just write a dummy name. */
+-		ret = write_sysfs_string("trigger/current_trigger",
+-					 dev_dir_name, "NULL");
+-		if (ret < 0)
+-			fprintf(stderr, "Failed to write to %s\n",
+-				dev_dir_name);
++error:
++	cleanup();
+ 
+-error_close_buffer_access:
+-	if (close(fp) == -1)
++	if (fp >= 0 && close(fp) == -1)
+ 		perror("Failed to close buffer");
+-
+-error_free_buffer_access:
+ 	free(buffer_access);
+-error_free_data:
+ 	free(data);
+-error_free_buf_dir_name:
+ 	free(buf_dir_name);
+-error_free_channels:
+ 	for (i = num_channels - 1; i >= 0; i--) {
+ 		free(channels[i].name);
+ 		free(channels[i].generic_name);
+ 	}
+ 	free(channels);
+-error_free_triggername:
+-	if (datardytrigger)
+-		free(trigger_name);
+-error_disable_channels:
+-	if (autochannels == AUTOCHANNELS_ACTIVE) {
+-		ret = enable_disable_all_channels(dev_dir_name, 0);
+-		if (ret)
+-			fprintf(stderr, "Failed to disable all channels\n");
+-	}
+-error_free_dev_dir_name:
++	free(trigger_name);
+ 	free(dev_dir_name);
+ 
+ 	return ret;
 -- 
-2.7.3
+2.5.5
 
