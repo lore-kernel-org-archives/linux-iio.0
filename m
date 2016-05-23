@@ -8,99 +8,67 @@ Cc: linux-kernel@vger.kernel.org,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCHv3 3/7] iio: generic_buffer: Add --trigger-num option
-Date: Mon, 23 May 2016 21:39:58 +0300
-Message-Id: <2c51dcad4cbc011247ea3a5f8360f56594bdd40a.1464027859.git.leonard.crestez@intel.com>
+Subject: [RFC 7/7] iio: Make trigger names unique
+Date: Mon, 23 May 2016 21:40:02 +0300
+Message-Id: <72a676266aee1d40f14e5cf3b62c7ada4eb0c614.1464027859.git.leonard.crestez@intel.com>
 In-Reply-To: <cover.1464027859.git.leonard.crestez@intel.com>
 References: <cover.1464027859.git.leonard.crestez@intel.com>
 In-Reply-To: <cover.1464027859.git.leonard.crestez@intel.com>
 References: <cover.1464027859.git.leonard.crestez@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+This changes the format of trigger names for some drivers so that the
+result always includes indio_dev->id and is thus unique.
+
 Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
- tools/iio/generic_buffer.c | 34 +++++++++++++++++++++++++++++-----
- 1 file changed, 29 insertions(+), 5 deletions(-)
+ drivers/iio/adc/max1027.c                          | 4 ++--
+ drivers/iio/common/st_sensors/st_sensors_trigger.c | 2 +-
+ drivers/iio/light/gp2ap020a00f.c                   | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-index 3f16e9f..e8c3052 100644
---- a/tools/iio/generic_buffer.c
-+++ b/tools/iio/generic_buffer.c
-@@ -254,7 +254,9 @@ void print_usage(void)
- 		"  --device-name -n <name>\n"
- 		"  --device-num -N <num>\n"
- 		"        Set device by name or number (mandatory)\n"
--		"  -t <name>  Set trigger name\n"
-+		"  --trigger-name -t <name>\n"
-+		"  --trigger-num -T <num>\n"
-+		"        Set trigger by name or number\n"
- 		"  -w <n>     Set delay between reads in us (event-less mode)\n");
- }
- 
-@@ -320,6 +322,8 @@ void register_cleanup(void)
- static const struct option longopts[] = {
- 	{ "device-name",	1, 0, 'n' },
- 	{ "device-num",		1, 0, 'N' },
-+	{ "trigger-name",	1, 0, 't' },
-+	{ "trigger-num",	1, 0, 'T' },
- 	{ },
- };
- 
-@@ -348,7 +352,7 @@ int main(int argc, char **argv)
- 
- 	register_cleanup();
- 
--	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:w:", longopts, NULL)) != -1) {
-+	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:T:w:", longopts, NULL)) != -1) {
- 		switch (c) {
- 		case 'a':
- 			autochannels = AUTOCHANNELS_ENABLED;
-@@ -391,6 +395,12 @@ int main(int argc, char **argv)
- 		case 't':
- 			trigger_name = strdup(optarg);
- 			break;
-+		case 'T':
-+			errno = 0;
-+			trig_num = strtoul(optarg, &dummy, 10);
-+			if (errno)
-+				return -errno;
-+			break;
- 		case 'w':
- 			errno = 0;
- 			timedelay = strtoul(optarg, &dummy, 10);
-@@ -444,7 +454,23 @@ int main(int argc, char **argv)
- 		}
+diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+index 41d495c..4020257 100644
+--- a/drivers/iio/adc/max1027.c
++++ b/drivers/iio/adc/max1027.c
+@@ -447,8 +447,8 @@ static int max1027_probe(struct spi_device *spi)
+ 		return ret;
  	}
  
--	if (!notrigger) {
-+	if (notrigger) {
-+		printf("trigger-less mode selected\n");
-+	} if (trig_num > 0) {
-+		char *trig_dev_name;
-+		ret = asprintf(&trig_dev_name, "%strigger%d", iio_dir, trig_num);
-+		if (ret < 0) {
-+			return -ENOMEM;
-+		}
-+		trigger_name = malloc(IIO_MAX_NAME_LENGTH);
-+		ret = read_sysfs_string("name", trig_dev_name, trigger_name);
-+		free(trig_dev_name);
-+		if (ret < 0) {
-+			fprintf(stderr, "Failed to read trigger%d name from\n", trig_num);
-+			return ret;
-+		}
-+		printf("iio trigger number being used is %d\n", trig_num);
-+	} else {
- 		if (!trigger_name) {
- 			/*
- 			 * Build the trigger name. If it is device associated
-@@ -481,8 +507,6 @@ int main(int argc, char **argv)
- 		}
+-	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
+-							indio_dev->name);
++	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
++					  indio_dev->name, indio_dev->iod);
+ 	if (st->trig == NULL) {
+ 		ret = -ENOMEM;
+ 		dev_err(&indio_dev->dev, "Failed to allocate iio trigger\n");
+diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+index da72279..9d3e9ab 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
++++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+@@ -24,7 +24,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+ 	unsigned long irq_trig;
  
- 		printf("iio trigger number being used is %d\n", trig_num);
--	} else {
--		printf("trigger-less mode selected\n");
- 	}
+-	sdata->trig = iio_trigger_alloc("%s-trigger", indio_dev->name);
++	sdata->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
+ 	if (sdata->trig == NULL) {
+ 		dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n");
+ 		return -ENOMEM;
+diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+index 6d41086..e2efaeb 100644
+--- a/drivers/iio/light/gp2ap020a00f.c
++++ b/drivers/iio/light/gp2ap020a00f.c
+@@ -1553,8 +1553,8 @@ static int gp2ap020a00f_probe(struct i2c_client *client,
+ 		goto error_regulator_disable;
  
- 	/*
+ 	/* Allocate trigger */
+-	data->trig = devm_iio_trigger_alloc(&client->dev, "%s-trigger",
+-							indio_dev->name);
++	data->trig = devm_iio_trigger_alloc(&client->dev, "%s-dev%d",
++					    indio_dev->name, indio_dev->id);
+ 	if (data->trig == NULL) {
+ 		err = -ENOMEM;
+ 		dev_err(&indio_dev->dev, "Failed to allocate iio trigger.\n");
 -- 
 2.5.5
