@@ -1,83 +1,134 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f196.google.com ([209.85.161.196]:33752 "EHLO
-	mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755657AbcEWO6t (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 10:58:49 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: gregkh@linuxfoundation.org, akpm@linux-foundation.org
-Cc: x86@kernel.org, linux-next@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	William Breathitt Gray <vilhelm.gray@gmail.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 1/4] isa: Allow ISA-style drivers on modern systems
-Date: Mon, 23 May 2016 10:58:41 -0400
-Message-Id: <484d20f0a177f48a6d9a93520933b830d4412cca.1464014576.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1464014576.git.vilhelm.gray@gmail.com>
-References: <cover.1464014576.git.vilhelm.gray@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <5c264bf8b6206f0ce4f581607336d6de@jic23.retrosnub.co.uk>
+References: <1463945969-18866-1-git-send-email-jic23@kernel.org> <CACRpkdYBueNxSa60EfTWsX7Surmvee8V0Qbgn+CrsA_joMmxQg@mail.gmail.com> <5c264bf8b6206f0ce4f581607336d6de@jic23.retrosnub.co.uk>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [RFC] iio: accel: st_accel: Add lis3l02dq support
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Mon, 23 May 2016 17:29:19 +0100
+To: Linus Walleij <linus.walleij@linaro.org>
+CC: Jonathan Cameron <jic23@kernel.org>,linux-iio@vger.kernel.org,Denis CIOCCA <denis.ciocca@st.com>,Crestez Dan Leonard <leonard.crestez@intel.com>,linux-iio-owner@vger.kernel.org
+Message-ID: <71875CD9-27C6-4DC5-9F78-F9486DF12612@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Several modern devices, such as PC/104 cards, are expected to run on
-modern systems via an ISA bus interface. Since ISA is a legacy interface
-for most modern architectures, ISA support should remain disabled in
-general. Support for ISA-style drivers should be enabled on a per driver
-basis.
 
-To allow ISA-style drivers on modern systems, this patch introduces the
-ISA_BUS_API and ISA_BUS Kconfig options. The X86 ISA bus driver will now
-build conditionally on the ISA_BUS_API Kconfig option, which defaults to
-the legacy ISA Kconfig option. The ISA_BUS Kconfig option allows the
-ISA_BUS_API Kconfig option to be selected on architectures which do not
-enable ISA (e.g. X86_64).
 
-For now, the ISA_BUS Kconfig option is only be available on X86
-architectures. Support for other architectures may be added as required.
+On 23 May 2016 15:13:49 BST, jic23@jic23.retrosnub.co.uk wrote:
+>On 23.05.2016 08:43, Linus Walleij wrote:
+>> On Sun, May 22, 2016 at 9:39 PM, Jonathan Cameron <jic23@kernel.org> 
+>> wrote:
+>> 
+>>> Time to finally kill off the venerable (it was one of my first 
+>>> drivers)
+>>> lis3l02dq driver in favour of adding support in the st sensors 
+>>> framework.
+>>> 
+>>> This does loose us the event support that driver always had, but I 
+>>> think
+>>> that will reappear at some point and in the meantime the maintenance
+>>> advantages of dropping the 'special' driver for this one part
+>outweigh
+>>> the issues.
+>> 
+>> Which events? Free-fall?
+>Both high and low acceleration limits - I never got into the full 
+>complexity
+>it supports in the hardware (and and or boolean logic of the various 
+>signals).
 
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- arch/x86/Kconfig      | 13 +++++++++++++
- drivers/base/Makefile |  2 +-
- 2 files changed, 14 insertions(+), 1 deletion(-)
+I forgot this part also has gain and offset trim registers.  Will add them before
+ applying as that is easy enough and reduces the differences further.
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 0a7b885..a41c0b8 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2439,6 +2439,19 @@ config PCI_CNB20LE_QUIRK
- 
- source "drivers/pci/Kconfig"
- 
-+config ISA_BUS_API
-+	def_bool ISA
-+
-+config ISA_BUS
-+	bool "ISA-style bus support on modern systems" if (X86 && EXPERT)
-+	default y
-+	select ISA_BUS_API
-+	help
-+	  Enables ISA-style drivers on modern systems. This is necessary to
-+	  support PC/104 devices on X86_64 platforms.
-+
-+	  If unsure, say Y.
-+
- # x86_64 have no ISA slots, but can have ISA-style DMA.
- config ISA_DMA_API
- 	bool "ISA-style DMA support" if (X86_64 && EXPERT)
-diff --git a/drivers/base/Makefile b/drivers/base/Makefile
-index 6b2a84e..2609ba2 100644
---- a/drivers/base/Makefile
-+++ b/drivers/base/Makefile
-@@ -10,7 +10,7 @@ obj-$(CONFIG_DMA_CMA) += dma-contiguous.o
- obj-y			+= power/
- obj-$(CONFIG_HAS_DMA)	+= dma-mapping.o
- obj-$(CONFIG_HAVE_GENERIC_DMA_COHERENT) += dma-coherent.o
--obj-$(CONFIG_ISA)	+= isa.o
-+obj-$(CONFIG_ISA_BUS_API)	+= isa.o
- obj-$(CONFIG_FW_LOADER)	+= firmware_class.o
- obj-$(CONFIG_NUMA)	+= node.o
- obj-$(CONFIG_MEMORY_HOTPLUG_SPARSE) += memory.o
+These exist on some other parts but we can add them any time.
+
+Jonathan
+>> 
+>>> It's worth noting this part is ancient and I may well be the only 
+>>> person
+>>> who still has any on hardware running recent kernels.
+>> 
+>> What I learnt from my years in the kernel is that there is always
+>> a bunch of silent users, also it has this nice feeling of completing
+>> the ST sensor suite.
+>It's possible but I've never seen any users who didn't have imote 2 or
+>stargate 2 boards.  The parts were generally available - however the 
+>driver
+>was borked for at least a few kernel cycles with no complaints...
+>
+>Fairly safe on the stargate 2's as whilst (rumour had it) the design
+>was given away to a university group when the relevant bit of Intel
+>research ceased to be no one ever to my knowledge made any more.
+>A few went out to various univeristies (which is where the few I
+>have on loan come from).
+>
+>Imote2s were a bit easier to get hold of as they sold that design to 
+>Crossbow
+>who distributed them with tinyos for a while before killing them off as
+>
+>well.
+>They were reasonably popular back in the days when your only small 
+>platforms
+>were them or Gumstix (also pxa270 based at the time).
+>
+>They were great boards for their time - in someways under credited with
+>starting the whole idea of small headless linux boards for wireless 
+>sensing.
+>(they predate the gumstix) though there was a stargate 1 and I think an
+>original imote before them.
+>
+>Btw I think there are a few new parts from ST we aren't supporting yet 
+>;)
+>> 
+>>> It has a few 'quirks'.
+>>>  - No WAI register so that just became optional.
+>> 
+>> Makes sense.
+>> 
+>>>  - It's too quick.  Even at slowest rate (280Hz) I can't read out
+>fast
+>>>    enough on my board (stargate 2) to beat new data coming in.
+>Linus'
+>>>    repeat read patch doesn't help in this case. It just means I get
+>10
+>>>    readings before dying... So in reality this will get used with
+>>>    software triggers only unless someone has this long out of 
+>>> production
+>>>    device on a quick board.
+>> 
+>> What is the speed of the I2C bus on this system?
+>> If it's running on the lowest speed 100kHz that may very
+>> well be the cause of the problem, so check if it supports
+>> high speed (400kHz) I2C.
+>
+>Running on SPI at full rated speed of the chip.  Never done much work
+>to
+>look at timing on these (not had a scope on them since the original 
+>driver
+>writing a long time back).
+>
+>Getting that board to handle more than 100Hz of anything was
+>interesting
+>IIRC.
+>> 
+>> The patch as such looks good.
+>> 
+>> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+>Thanks,
+>
+>Jonathan
+>> 
+>> Yours,
+>> Linus Walleij
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
+>in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
 -- 
-2.7.3
-
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
