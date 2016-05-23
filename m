@@ -1,104 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:37169 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751383AbcEWKm3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 06:42:29 -0400
-Subject: Re: Possible deadlock in mpu6050 on buffer disable?
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <a4502f91-d01f-5a65-efb9-5f26d065e851@intel.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <5742DE92.5010400@metafoo.de>
-Date: Mon, 23 May 2016 12:42:26 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56346 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750710AbcEWONw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 10:13:52 -0400
 MIME-Version: 1.0
-In-Reply-To: <a4502f91-d01f-5a65-efb9-5f26d065e851@intel.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Date: Mon, 23 May 2016 15:13:49 +0100
+From: jic23@jic23.retrosnub.co.uk
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Denis CIOCCA <denis.ciocca@st.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio-owner@vger.kernel.org
+Subject: Re: [RFC] iio: accel: st_accel: Add lis3l02dq support
+In-Reply-To: <CACRpkdYBueNxSa60EfTWsX7Surmvee8V0Qbgn+CrsA_joMmxQg@mail.gmail.com>
+References: <1463945969-18866-1-git-send-email-jic23@kernel.org>
+ <CACRpkdYBueNxSa60EfTWsX7Surmvee8V0Qbgn+CrsA_joMmxQg@mail.gmail.com>
+Message-ID: <5c264bf8b6206f0ce4f581607336d6de@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/23/2016 12:33 PM, Crestez Dan Leonard wrote:
-> Hello,
+On 23.05.2016 08:43, Linus Walleij wrote:
+> On Sun, May 22, 2016 at 9:39 PM, Jonathan Cameron <jic23@kernel.org> 
+> wrote:
 > 
-> I've been poking at this driver and I get some occasional deadlocks when
-> disabling buffering. Here is a snippet from the kernel task dump (via
-> echo t > /proc/sysrq-trigger):
+>> Time to finally kill off the venerable (it was one of my first 
+>> drivers)
+>> lis3l02dq driver in favour of adding support in the st sensors 
+>> framework.
+>> 
+>> This does loose us the event support that driver always had, but I 
+>> think
+>> that will reappear at some point and in the meantime the maintenance
+>> advantages of dropping the 'special' driver for this one part outweigh
+>> the issues.
 > 
-> [   57.562487] irq/56-mpu6500_ D ffff88003d7fbd08 13632   771      2
-> 0x00000000
-> [   57.563081]  ffff88003d7fbd08 ffff88003da4a1c0 ffffffff81988ae0
-> ffff880000000026
-> [   57.563614]  ffff88003d7fc000 ffff88003da4a1c0 ffff88003d4aa304
-> 00000000ffffffff
-> [   57.564221]  ffff88003d4aa308 ffff88003d7fbd20 ffffffff8147f280
-> ffff88003d4aa300
-> [   57.565242] Call Trace:
-> [   57.565462]  [<ffffffff8147f280>] schedule+0x30/0x80
-> [   57.565789]  [<ffffffff8147f4f9>] schedule_preempt_disabled+0x9/0x10
-> [   57.566303]  [<ffffffff81480c8a>] __mutex_lock_slowpath+0x8a/0x100
-> [   57.566704]  [<ffffffff810875a0>] ? irq_forced_thread_fn+0x60/0x60
-> [   57.567202]  [<ffffffff81480d1a>] mutex_lock+0x1a/0x30
-> [   57.567541]  [<ffffffff813bc31e>] inv_mpu6050_read_fifo+0x6e/0x230
-> [   57.567934]  [<ffffffff810737d6>] ? put_prev_task_rt+0x16/0xa0
-> [   57.568428]  [<ffffffff8147ed1c>] ? __schedule+0x32c/0x860
-> [   57.568789]  [<ffffffff810875a0>] ? irq_forced_thread_fn+0x60/0x60
-> [   57.569289]  [<ffffffff810875bb>] irq_thread_fn+0x1b/0x50
-> [   57.569646]  [<ffffffff81087851>] irq_thread+0x111/0x190
-> [   57.569997]  [<ffffffff81087690>] ? wake_threads_waitq+0x30/0x30
-> [   57.570505]  [<ffffffff81087740>] ? irq_thread_dtor+0xb0/0xb0
-> [   57.570875]  [<ffffffff8105eae4>] kthread+0xc4/0xe0
-> [   57.571308]  [<ffffffff81482a92>] ret_from_fork+0x22/0x40
-> [   57.571663]  [<ffffffff8105ea20>] ? kthread_worker_fn+0x160/0x160
+> Which events? Free-fall?
+Both high and low acceleration limits - I never got into the full 
+complexity
+it supports in the hardware (and and or boolean logic of the various 
+signals).
 > 
-> VERSUS:
+>> It's worth noting this part is ancient and I may well be the only 
+>> person
+>> who still has any on hardware running recent kernels.
 > 
-> [   57.587592] test-iio-buffer D ffff88003d1a3c08 13808   798    791
-> 0x00000004
-> [   57.588193]  ffff88003d1a3c08 ffff88003db02d00 ffff88003d1a3be8
-> ffffffff81106abc
-> [   57.588772]  ffff88003d1a4000 ffff88003d5b72d0 0000000000000038
-> ffff88003d5b729c
-> [   57.589388]  ffff88003d5b7200 ffff88003d1a3c20 ffffffff8147f280
-> ffff88003d5b7200
-> [   57.589963] Call Trace:
-> [   57.590211]  [<ffffffff81106abc>] ? kfree+0xec/0xf0
-> [   57.590537]  [<ffffffff8147f280>] schedule+0x30/0x80
-> [   57.590904]  [<ffffffff81086d14>] synchronize_irq+0x54/0x90
-> [   57.591600]  [<ffffffff810772c0>] ? wake_atomic_t_function+0x60/0x60
-> [   57.592073]  [<ffffffff81087ba6>] __free_irq+0x136/0x270
-> [   57.592430]  [<ffffffff81087d54>] free_irq+0x34/0x80
-> [   57.592760]  [<ffffffff813b93b5>] iio_trigger_detach_poll_func+0x75/0xa0
-> [   57.593267]  [<ffffffff813b93f7>]
-> iio_triggered_buffer_predisable+0x17/0x20
-> [   57.593711]  [<ffffffff813b73ca>] iio_disable_buffers+0x3a/0xf0
-> [   57.594164]  [<ffffffff813b8202>] __iio_update_buffers+0x222/0x4e0
-> [   57.594559]  [<ffffffff813b865b>] iio_buffer_store_enable+0xab/0xc0
-> [   57.594973]  [<ffffffff81308a23>] dev_attr_store+0x13/0x20
-> [   57.595388]  [<ffffffff8116ff72>] sysfs_kf_write+0x32/0x40
-> [   57.595734]  [<ffffffff8116f565>] kernfs_fop_write+0x115/0x170
-> [   57.596170]  [<ffffffff8110b093>] __vfs_write+0x23/0xe0
-> [   57.596526]  [<ffffffff8112755f>] ? __fd_install+0x1f/0xc0
-> [   57.596871]  [<ffffffff811273da>] ? __alloc_fd+0x3a/0x170
-> [   57.597308]  [<ffffffff81078b3d>] ? percpu_down_read+0xd/0x50
-> [   57.597667]  [<ffffffff8110bf74>] vfs_write+0xa4/0x1a0
-> [   57.598023]  [<ffffffff81109241>] ? filp_close+0x51/0x70
-> [   57.598396]  [<ffffffff8110d251>] SyS_write+0x41/0xa0
-> [   57.598717]  [<ffffffff8148289b>] entry_SYSCALL_64_fastpath+0x13/0x8f
-> 
-> The problem seems to be that inv_mpu6050_read_fifo takes
-> indio_dev->mlock, the same lock taken by the IIO core when disabling the
-> interrupt.
-> 
-> Does anyone have any clever ideas for fixing this? One way to do it
-> would be to skip taking mlock in inv_mpu6050_read_fifo because most of
-> the code does not touch shared fields. Only when an error happens does
-> it call inv_reset_fifo. I think that call should simply be removed.
+> What I learnt from my years in the kernel is that there is always
+> a bunch of silent users, also it has this nice feeling of completing
+> the ST sensor suite.
+It's possible but I've never seen any users who didn't have imote 2 or
+stargate 2 boards.  The parts were generally available - however the 
+driver
+was borked for at least a few kernel cycles with no complaints...
 
-Yes, that's probably the way to go.
+Fairly safe on the stargate 2's as whilst (rumour had it) the design
+was given away to a university group when the relevant bit of Intel
+research ceased to be no one ever to my knowledge made any more.
+A few went out to various univeristies (which is where the few I
+have on loan come from).
 
-> As a more general principle isn't it a bad idea to take mlock in driver
-> code? It seems much saner for drivers to use their own locks for their
-> private data.
+Imote2s were a bit easier to get hold of as they sold that design to 
+Crossbow
+who distributed them with tinyos for a while before killing them off as 
+well.
+They were reasonably popular back in the days when your only small 
+platforms
+were them or Gumstix (also pxa270 based at the time).
 
-There are a few places where it is safe to use the mlock, like the driver
-{read,write}_raw() callbacks, but that's pretty mich it.
+They were great boards for their time - in someways under credited with
+starting the whole idea of small headless linux boards for wireless 
+sensing.
+(they predate the gumstix) though there was a stargate 1 and I think an
+original imote before them.
 
+Btw I think there are a few new parts from ST we aren't supporting yet 
+;)
+> 
+>> It has a few 'quirks'.
+>>  - No WAI register so that just became optional.
+> 
+> Makes sense.
+> 
+>>  - It's too quick.  Even at slowest rate (280Hz) I can't read out fast
+>>    enough on my board (stargate 2) to beat new data coming in. Linus'
+>>    repeat read patch doesn't help in this case. It just means I get 10
+>>    readings before dying... So in reality this will get used with
+>>    software triggers only unless someone has this long out of 
+>> production
+>>    device on a quick board.
+> 
+> What is the speed of the I2C bus on this system?
+> If it's running on the lowest speed 100kHz that may very
+> well be the cause of the problem, so check if it supports
+> high speed (400kHz) I2C.
+
+Running on SPI at full rated speed of the chip.  Never done much work to
+look at timing on these (not had a scope on them since the original 
+driver
+writing a long time back).
+
+Getting that board to handle more than 100Hz of anything was interesting
+IIRC.
+> 
+> The patch as such looks good.
+> 
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Thanks,
+
+Jonathan
+> 
+> Yours,
+> Linus Walleij
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
