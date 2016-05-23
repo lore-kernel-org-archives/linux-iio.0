@@ -1,44 +1,45 @@
-Return-Path: <leonard.crestez@intel.com>
-Subject: Re: [PATCH 1/2] iio: generic_buffer: Cleanup when receiving signals
-To: Jonathan Cameron <jic23@kernel.org>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <082703f268f7b8b868704006d285d605cce5a784.1463759121.git.leonard.crestez@intel.com>
- <alpine.DEB.2.02.1605201752050.13052@pmeerw.net>
- <c7be250e-cc01-98ba-c211-36bbd154366e@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Daniel Baluta <daniel.baluta@intel.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <9de98860-1670-dbc2-b419-8e623deda6ea@intel.com>
-Date: Mon, 23 May 2016 19:10:52 +0300
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ozlabs.org ([103.22.144.67]:51421 "EHLO ozlabs.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750992AbcEWW3P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 23 May 2016 18:29:15 -0400
+Date: Tue, 24 May 2016 08:29:12 +1000
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+To: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: gregkh@linuxfoundation.org, akpm@linux-foundation.org,
+	x86@kernel.org, linux-next@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+	Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v2 1/4] isa: Allow ISA-style drivers on modern systems
+Message-ID: <20160524082912.258a5405@canb.auug.org.au>
+In-Reply-To: <69b27a61a2dbaabdef53efccbabf5dda5687bf4c.1464029828.git.vilhelm.gray@gmail.com>
+References: <cover.1464029828.git.vilhelm.gray@gmail.com>
+	<69b27a61a2dbaabdef53efccbabf5dda5687bf4c.1464029828.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <c7be250e-cc01-98ba-c211-36bbd154366e@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 05/21/2016 07:28 PM, Jonathan Cameron wrote:
-> On 20/05/16 16:55, Peter Meerwald-Stadler wrote:
->>
->>> This also drops all the code freeing string buffers at the end of main.
->>> Memory is freed when the process exits anyway so there's no point in
->>> cluttering the code with all those gotos.
->>
->> well, it helps to see that all memory has been released when looking for 
->> leaks :)
->> e.g. valgrind becomes much less useful when the program exits with tons of 
->> memory still allocated
-> Beyond that we are looking at code here that will get cut and paste into other
-> peoples applications - they might not pick up that it doesn't clean up properly
-> after itself.
-> 
-> I'd much prefer to keep these explicit frees in place.
+Hi William,
 
-I think this would make more sense for a library (like libiio). But
-isn't the code in tools/iio merely an a test tool?
+Just a small question ...
 
-I submitted v2 which keeps the frees. It still simplifies them by
-relying on stuff like free(NULL) being allowed.
+On Mon, 23 May 2016 17:20:01 -0400 William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
+>
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 0a7b885..6601912 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -2439,6 +2439,16 @@ config PCI_CNB20LE_QUIRK
+>  
+>  source "drivers/pci/Kconfig"
+>  
+> +config ISA_BUS
+> +	bool "ISA-style bus support on modern systems" if (X86 && EXPERT)
+                                                           ^^^
+Is CONFIG_X86 not always true when processing this file?
 
 -- 
-Regards,
-Leonard
+Cheers,
+Stephen Rothwell
