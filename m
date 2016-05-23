@@ -1,87 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f53.google.com ([74.125.82.53]:35352 "EHLO
-	mail-wm0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752108AbcEWQsy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 12:48:54 -0400
+Received: from bh-25.webhostbox.net ([208.91.199.152]:54520 "EHLO
+	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751524AbcEWRVb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 13:21:31 -0400
+Date: Mon, 23 May 2016 10:21:25 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: gregkh@linuxfoundation.org, akpm@linux-foundation.org,
+	x86@kernel.org, linux-next@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+	Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH 1/4] isa: Allow ISA-style drivers on modern systems
+Message-ID: <20160523172125.GA8264@roeck-us.net>
+References: <cover.1464014576.git.vilhelm.gray@gmail.com>
+ <484d20f0a177f48a6d9a93520933b830d4412cca.1464014576.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <c9cb3085-1dcc-bc0a-0fbe-e13d6e837c84@kernel.org>
-References: <CADRpq-CwYpwvwST3+ZHyyn6pquxndC5GJWDKZK7zR8cff_Ky-Q@mail.gmail.com>
-	<3E7E6B30-8926-4C0F-ADA6-2750C2A748B5@jic23.retrosnub.co.uk>
-	<d6c4ef1cf8ed00ddd930d2e80654e5d7@jic23.retrosnub.co.uk>
-	<CADRpq-AKo1dyRizc6+tB4rr3NBwYiQhnNzOeCf56TWR+9TXf0w@mail.gmail.com>
-	<c9cb3085-1dcc-bc0a-0fbe-e13d6e837c84@kernel.org>
-Date: Mon, 23 May 2016 18:48:52 +0200
-Message-ID: <CADRpq-Adz-gJGKfMjXWyB1uQqrP1N7O_CODZZjb6XF07C=a5TQ@mail.gmail.com>
-Subject: Re: Drivers for Bitland Dual Accelerometer
-From: Lasse Schuirmann <lasse.schuirmann@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: jic23@jic23.retrosnub.co.uk, linux-iio@vger.kernel.org,
-	linux-iio-owner@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <484d20f0a177f48a6d9a93520933b830d4412cca.1464014576.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21 May 2016 at 19:46, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 20/05/16 14:56, Lasse Schuirmann wrote:
->> On 20 May 2016 at 15:53,  <jic23@jic23.retrosnub.co.uk> wrote:
->>> On 19.05.2016 22:12, Jonathan Cameron wrote:
->>>>
->>>> On 19 May 2016 19:14:52 BST, Lasse Schuirmann
->>>> <lasse.schuirmann@gmail.com> wrote:
->>>>>
->>>>> Hi,
->>>>>
->>>>> I'm trying to use Linux on a Lenovo Yoga 300 and can't get the
->>>>> accelerometer running. It was suggested at
->>>>>
->>>>> https://github.com/hadess/iio-sensor-proxy/issues/83#issuecomment-220399560
->>>>> that I contact this mailing list as no driver seems to exist yet.
->>>>>
->>>>> The device in question is an accelerometer from "Bitland Corporation"
->>>>> with the APCI ID "DUAL250E".
->>>>>
->>>>> Windows drivers seem to be available at
->>>>> http://driverlibs.com/download/Dual-Accelerometer.
->>>>>
->>>>> I wonder if somebody possibly has the same problem and/or would be
->>>>> interested in helping getting this to work.
->>>>>
->>>>> Sincerely,
->>>>>
->>>>> Lasse Schuirmann
->>>>
->>>>
->>>> Hmm long shot but any idea if it could be a rebadged bma250e which is a
->>>> Bosch
->>>>  sensortech part? Not sure what the dual bit would be about though.
->>>>
->>>> Digging in those windows drivers may give us more info.  They are on
->>>> lenovos
->>>>  website as well.
->>>>
->>>> On phone right now but will have a look tomorrow.
->>>>
->>>
->>> Hmm. The driver in question is based on Microsoft's example accelerometer
->>> driver
->>> for an ADXL345.
->>>
->>> https://msdn.microsoft.com/en-us/library/windows/hardware/dn760713(v=vs.85).aspx
->>>
->>> Not sure this is going to get us much further though...
->>>
->>> No usefully named function names that I can get out of the
->>> DualSPDAccelerometer.dll
->>> Not sure where to go next on reverse engineering this.  Are you willing to
->>> open things up to take a look at what is on the board?
->>
->> This is not my device so I can't say definitely but I may well be able
->> to open it up once if you tell me what you're looking for as I'm not
->> much of a hardware person.
-> Pretty much playing guess which chip is the accelerometer - tend to be perhaps
-> 3x3mm and see if it has a logo on the top or a more detailed part number.
->
-> Otherwise, I'm guessing the laptop no longer has windows on it, so
-> trying to snoop on bus transfers is going to be 'tricky'.
+On Mon, May 23, 2016 at 10:58:41AM -0400, William Breathitt Gray wrote:
+> Several modern devices, such as PC/104 cards, are expected to run on
+> modern systems via an ISA bus interface. Since ISA is a legacy interface
+> for most modern architectures, ISA support should remain disabled in
+> general. Support for ISA-style drivers should be enabled on a per driver
+> basis.
+> 
+> To allow ISA-style drivers on modern systems, this patch introduces the
+> ISA_BUS_API and ISA_BUS Kconfig options. The X86 ISA bus driver will now
+> build conditionally on the ISA_BUS_API Kconfig option, which defaults to
+> the legacy ISA Kconfig option. The ISA_BUS Kconfig option allows the
+> ISA_BUS_API Kconfig option to be selected on architectures which do not
+> enable ISA (e.g. X86_64).
+> 
+> For now, the ISA_BUS Kconfig option is only be available on X86
+> architectures. Support for other architectures may be added as required.
+> 
+> Cc: Linus Torvalds <torvalds@linux-foundation.org>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> ---
+>  arch/x86/Kconfig      | 13 +++++++++++++
+>  drivers/base/Makefile |  2 +-
+>  2 files changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 0a7b885..a41c0b8 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -2439,6 +2439,19 @@ config PCI_CNB20LE_QUIRK
+>  
+>  source "drivers/pci/Kconfig"
+>  
+> +config ISA_BUS_API
+> +	def_bool ISA
+> +
+> +config ISA_BUS
+> +	bool "ISA-style bus support on modern systems" if (X86 && EXPERT)
+> +	default y
 
-windows is still present.
+Sure you want it enabled by default ?
+
+> +	select ISA_BUS_API
+> +	help
+> +	  Enables ISA-style drivers on modern systems. This is necessary to
+> +	  support PC/104 devices on X86_64 platforms.
+> +
+> +	  If unsure, say Y.
+> +
+>  # x86_64 have no ISA slots, but can have ISA-style DMA.
+>  config ISA_DMA_API
+>  	bool "ISA-style DMA support" if (X86_64 && EXPERT)
+> diff --git a/drivers/base/Makefile b/drivers/base/Makefile
+> index 6b2a84e..2609ba2 100644
+> --- a/drivers/base/Makefile
+> +++ b/drivers/base/Makefile
+> @@ -10,7 +10,7 @@ obj-$(CONFIG_DMA_CMA) += dma-contiguous.o
+>  obj-y			+= power/
+>  obj-$(CONFIG_HAS_DMA)	+= dma-mapping.o
+>  obj-$(CONFIG_HAVE_GENERIC_DMA_COHERENT) += dma-coherent.o
+> -obj-$(CONFIG_ISA)	+= isa.o
+> +obj-$(CONFIG_ISA_BUS_API)	+= isa.o
+
+Unless I am missing something, this is insufficient, and I am a bit surprised
+that it actually works. include/linux/isa.h declares isa_register_driver()
+and isa_unregister_driver() as dummies if CONFIG_ISA is not enabled.
+Doesn't this cause a compile error ? Confused.
+
+Thanks,
+Guenter
+
+>  obj-$(CONFIG_FW_LOADER)	+= firmware_class.o
+>  obj-$(CONFIG_NUMA)	+= node.o
+>  obj-$(CONFIG_MEMORY_HOTPLUG_SPARSE) += memory.o
+> -- 
+> 2.7.3
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-watchdog" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
