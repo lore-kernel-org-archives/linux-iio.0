@@ -1,90 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f196.google.com ([209.85.161.196]:33573 "EHLO
-	mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751395AbcEXAaZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 20:30:25 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: gregkh@linuxfoundation.org, akpm@linux-foundation.org
-Cc: x86@kernel.org, linux-next@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	sfr@canb.auug.org.au, linux@roeck-us.net,
-	William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v4 0/4] Allow ISA-style drivers on modern systems
-Date: Mon, 23 May 2016 20:30:17 -0400
-Message-Id: <cover.1464049539.git.vilhelm.gray@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60562 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752666AbcEXI5w (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 May 2016 04:57:52 -0400
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Date: Tue, 24 May 2016 09:57:46 +0100
+From: jic23@jic23.retrosnub.co.uk
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Denis CIOCCA <denis.ciocca@st.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio-owner@vger.kernel.org
+Subject: Re: [RFC] iio: accel: st_accel: Add lis3l02dq support
+In-Reply-To: <CACRpkdZsqKcrQKUhY7U-VkZodUbNo8BoaesFMHvLcYTAGGDLcw@mail.gmail.com>
+References: <1463945969-18866-1-git-send-email-jic23@kernel.org>
+ <CACRpkdYBueNxSa60EfTWsX7Surmvee8V0Qbgn+CrsA_joMmxQg@mail.gmail.com>
+ <5c264bf8b6206f0ce4f581607336d6de@jic23.retrosnub.co.uk>
+ <71875CD9-27C6-4DC5-9F78-F9486DF12612@jic23.retrosnub.co.uk>
+ <CACRpkdZsqKcrQKUhY7U-VkZodUbNo8BoaesFMHvLcYTAGGDLcw@mail.gmail.com>
+Message-ID: <e87f23b2a743dd174bf19f62255b929f@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes in v4:
-  - Remove unnecessary explicit "default n" from the X86 ISA_BUS Kconfig
-    option since Kconfig options are disabled by default
+On 24.05.2016 09:45, Linus Walleij wrote:
+> On Mon, May 23, 2016 at 6:29 PM, Jonathan Cameron
+> <jic23@jic23.retrosnub.co.uk> wrote:
+> 
+>> I forgot this part also has gain and offset trim registers.  Will add 
+>> them before
+>>  applying as that is easy enough and reduces the differences further.
+>> 
+>> These exist on some other parts but we can add them any time.
+> 
+> LIS3LV02DL also has x,y,z offset and gain trim registers, but when
+> I read up on it, I understood that these are just factory-programmed
+> registers. I.e. they are undocumented in the register list, but a table
+> states them as "calibration" and "loaded at boot".
+> 
+> So I always understood them as something the sensor loads at
+> boot to calibrate itself, so you can ignore the contents, and they
+> probably exist on the other sensors too, albeit undocumented as
+> they have no use.
+> 
+> I toyed with the idea of reading them and pusing the values to the
+> entropy pool with add_device_randomness() as they are device-unique
+> data.
+> 
+> But if you have proper docs on them I guess maybe they are used
+> differently on your sensor...
+> 
+> Yours,
+> Linus Walleij
+As I understand it you can actually apply corrections to them (was 
+certainly
+how I read that years ago).  Take into account that these early sensors 
+were
+incredibly noisy and perhaps more prone to shock damage than newer ones.
+(my test sensor will vary by 10% or more whilst sat on a steady concrete
+floor - even with huge levels of oversampling...)
 
-Changes in v3:
-  - Remove redundant X86 dependency from the X86 ISA_BUS Kconfig option
+Back then we were using some sensors where if you dropped them on the 
+floor
+you had to send them back to the manufacturer for recalibration before 
+they
+were remotely useful again.
 
-Changes in v2:
-  - Adjusted preprocessor compilation conditional in include/linux/isa.h
-    to use CONFIG_ISA_BUS_API in order to link the correct ISA bus
-    driver function definitions when available
-  - Move ISA_BUS_API Kconfig option to arch/Kconfig, thus making it
-    available to all architectures instead of just X86
-  - X86 ISA_BUS Kconfig option should be disabled by default; ISA
-    devices typically do not have a way to be probed, so users should
-    be required to explicitly enable ISA bus driver support, lest a
-    selected driver be loaded with the misguided expectation of a safe
-    hardware probe
+Funnily enough, given we had them attached to people that happened all 
+the
+time :(
 
-Several modern devices, such as PC/104 cards, are expected to run on
-modern systems via an ISA bus interface. Since ISA is a legacy interface
-for most modern architectures, ISA support should remain disabled in
-general. Support for ISA-style drivers should be enabled on a per driver
-basis.
+ST certainly aren't believers in 'detailed' documentation. Always feels
+like somewhat of a guessing game when implementing drivers for their
+parts.
 
-To allow ISA-style drivers on modern systems, this patchset introduces
-the ISA_BUS_API and ISA_BUS Kconfig options. The ISA bus driver will now
-build conditionally on the ISA_BUS_API Kconfig option, which defaults to
-the legacy ISA Kconfig option. The ISA_BUS Kconfig option allows the
-ISA_BUS_API Kconfig option to be selected on architectures which do not
-enable ISA (e.g. X86_64).
-
-The ISA_BUS Kconfig option is currently only implemented for X86
-architectures. Other architectures may have their own ISA_BUS Kconfig
-option added as required.
-
-An earlier attempt to allow the ISA bus driver to build for X86_64 took
-an inappropriate approach resulting in legacy ISA drivers becoming
-enabled unconditionally on untested and unsupported architectures.
-Commit 51e68d055cba ("x86 isa: add back X86_32 dependency on
-CONFIG_ISA"), added to restrict the ISA bus driver to only X86_32,
-causes several drivers intended for X86_64 to be restricted to X86_32 as
-well.
-
-This patchset replaces the ISA Kconfig option dependency of several
-drivers to ISA_BUS_API, so that they may build for X86_64 as intended.
-The respective drivers are as follows:
-    * ACCES 104-IDIO-16 GPIO driver
-    * ACCES 104-IDI-48 GPIO driver
-    * ACCES 104-DIO-48E GPIO driver
-    * Apex Embedded Systems STX104 DAC driver
-    * WinSystems EBC-C384 watchdog timer driver
-    * WinSystems WS16C48 GPIO driver
-
-William Breathitt Gray (4):
-  isa: Allow ISA-style drivers on modern systems
-  gpio: Allow PC/104 devices on X86_64
-  iio: stx104: Allow build for X86_64
-  watchdog: ebc-c384_wdt: Allow build for X86_64
-
- arch/Kconfig             | 3 +++
- arch/x86/Kconfig         | 9 +++++++++
- drivers/base/Makefile    | 2 +-
- drivers/gpio/Kconfig     | 8 ++++----
- drivers/iio/dac/Kconfig  | 2 +-
- drivers/watchdog/Kconfig | 2 +-
- include/linux/isa.h      | 2 +-
- 7 files changed, 20 insertions(+), 8 deletions(-)
-
--- 
-2.7.3
-
+J
