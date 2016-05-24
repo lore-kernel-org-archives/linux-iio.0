@@ -1,45 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ozlabs.org ([103.22.144.67]:51421 "EHLO ozlabs.org"
+Received: from mga04.intel.com ([192.55.52.120]:49624 "EHLO mga04.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750992AbcEWW3P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 23 May 2016 18:29:15 -0400
-Date: Tue, 24 May 2016 08:29:12 +1000
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-	x86@kernel.org, linux-next@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v2 1/4] isa: Allow ISA-style drivers on modern systems
-Message-ID: <20160524082912.258a5405@canb.auug.org.au>
-In-Reply-To: <69b27a61a2dbaabdef53efccbabf5dda5687bf4c.1464029828.git.vilhelm.gray@gmail.com>
-References: <cover.1464029828.git.vilhelm.gray@gmail.com>
-	<69b27a61a2dbaabdef53efccbabf5dda5687bf4c.1464029828.git.vilhelm.gray@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+	id S1753198AbcEXMnD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 24 May 2016 08:43:03 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	daniel.baluta@intel.com
+Subject: [PATCH] iio: magnetometer: bmc150: Document Bosch supported chips
+Date: Tue, 24 May 2016 15:42:28 +0300
+Message-Id: <1464093748-4798-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi William,
+bmc150 driver supports also BMC156 and BMM150 chips.
 
-Just a small question ...
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/magnetometer/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On Mon, 23 May 2016 17:20:01 -0400 William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
->
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 0a7b885..6601912 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -2439,6 +2439,16 @@ config PCI_CNB20LE_QUIRK
->  
->  source "drivers/pci/Kconfig"
->  
-> +config ISA_BUS
-> +	bool "ISA-style bus support on modern systems" if (X86 && EXPERT)
-                                                           ^^^
-Is CONFIG_X86 not always true when processing this file?
-
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index 84e6559..1f842ab 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -44,6 +44,7 @@ config BMC150_MAGN_I2C
+ 	  This driver is only implementing magnetometer part, which has
+ 	  its own address and register map.
+ 
++	  This driver also supports I2C Bosch BMC156 and BMM150 chips.
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called bmc150_magn_i2c.
+ 
+@@ -60,6 +61,7 @@ config BMC150_MAGN_SPI
+ 	  This driver is only implementing magnetometer part, which has
+ 	  its own address and register map.
+ 
++	  This driver also supports SPI Bosch BMC156 and BMM150 chips.
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called bmc150_magn_spi.
+ 
 -- 
-Cheers,
-Stephen Rothwell
+2.5.0
+
