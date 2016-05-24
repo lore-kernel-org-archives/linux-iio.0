@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f195.google.com ([209.85.161.195]:35776 "EHLO
+Received: from mail-yw0-f195.google.com ([209.85.161.195]:36563 "EHLO
 	mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753110AbcEXAbE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 20:31:04 -0400
+	with ESMTP id S1751947AbcEXAb1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 May 2016 20:31:27 -0400
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
 To: gregkh@linuxfoundation.org, akpm@linux-foundation.org
 Cc: x86@kernel.org, linux-next@vger.kernel.org,
@@ -10,10 +10,10 @@ Cc: x86@kernel.org, linux-next@vger.kernel.org,
 	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
 	sfr@canb.auug.org.au, linux@roeck-us.net,
 	William Breathitt Gray <vilhelm.gray@gmail.com>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v4 2/4] gpio: Allow PC/104 devices on X86_64
-Date: Mon, 23 May 2016 20:30:55 -0400
-Message-Id: <3cafd2a47f785ea9d0c96365b64366289a1b0807.1464049539.git.vilhelm.gray@gmail.com>
+	Wim Van Sebroeck <wim@iguana.be>
+Subject: [PATCH v4 4/4] watchdog: ebc-c384_wdt: Allow build for X86_64
+Date: Mon, 23 May 2016 20:31:19 -0400
+Message-Id: <5f866ba9a06692b5a1360b116e2651c3b1596a79.1464049539.git.vilhelm.gray@gmail.com>
 In-Reply-To: <cover.1464049539.git.vilhelm.gray@gmail.com>
 References: <cover.1464049539.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -21,56 +21,30 @@ List-Id: linux-iio@vger.kernel.org
 
 With the introduction of the ISA_BUS_API Kconfig option, ISA-style
 drivers may be built for X86_64 architectures. This patch changes the
-ISA Kconfig option dependency of the PC/104 drivers to ISA_BUS_API, thus
-allowing them to build for X86_64 as they are expected to.
+ISA Kconfig option dependency of the WinSystems EBC-C384 watchdog timer
+driver to ISA_BUS_API, thus allowing it to build for X86_64 as it is
+expected to.
 
 Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Wim Van Sebroeck <wim@iguana.be>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/gpio/Kconfig | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/watchdog/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 48da857..dc6da77 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -530,7 +530,7 @@ menu "Port-mapped I/O GPIO drivers"
+diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+index b54f26c..3938e2d 100644
+--- a/drivers/watchdog/Kconfig
++++ b/drivers/watchdog/Kconfig
+@@ -746,7 +746,7 @@ config ALIM7101_WDT
  
- config GPIO_104_DIO_48E
- 	tristate "ACCES 104-DIO-48E GPIO support"
--	depends on ISA
+ config EBC_C384_WDT
+ 	tristate "WinSystems EBC-C384 Watchdog Timer"
+-	depends on X86 && ISA
 +	depends on ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
+ 	select WATCHDOG_CORE
  	help
- 	  Enables GPIO support for the ACCES 104-DIO-48E series (104-DIO-48E,
-@@ -540,7 +540,7 @@ config GPIO_104_DIO_48E
- 
- config GPIO_104_IDIO_16
- 	tristate "ACCES 104-IDIO-16 GPIO support"
--	depends on ISA
-+	depends on ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the ACCES 104-IDIO-16 family (104-IDIO-16,
-@@ -551,7 +551,7 @@ config GPIO_104_IDIO_16
- 
- config GPIO_104_IDI_48
- 	tristate "ACCES 104-IDI-48 GPIO support"
--	depends on ISA
-+	depends on ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the ACCES 104-IDI-48 family (104-IDI-48A,
-@@ -627,7 +627,7 @@ config GPIO_TS5500
- 
- config GPIO_WS16C48
- 	tristate "WinSystems WS16C48 GPIO support"
--	depends on ISA
-+	depends on ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the WinSystems WS16C48. The base port
+ 	  Enables watchdog timer support for the watchdog timer on the
 -- 
 2.7.3
 
