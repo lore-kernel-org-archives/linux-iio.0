@@ -1,66 +1,51 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <6c5cc47895ca35fce84b6b01a3ecf7df928aa197.1463164919.git.leonard.crestez@intel.com>
+Return-Path: <leonard.crestez@intel.com>
+Subject: Re: [PATCH 1/3] iio: st_sensors: Init trigger before irq request
+To: Linus Walleij <linus.walleij@linaro.org>
 References: <3d90f889782a9c8380c3694e55a135ddd6de9bc4.1463164919.git.leonard.crestez@intel.com>
-	<6c5cc47895ca35fce84b6b01a3ecf7df928aa197.1463164919.git.leonard.crestez@intel.com>
-Date: Tue, 24 May 2016 13:40:52 +0200
-Message-ID: <CACRpkdbch1dhUTdCMxLqLHY_cfmgtFvxKoBaCwf7w=RjV0vh7A@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: st_sensors: Use level interrupts
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
+ <CACRpkdYV3nBbOh++bca7+5uhKt5Ct7ev5M8ZuvQ8OrPP+JPrdQ@mail.gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>, Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
-Content-Type: text/plain; charset=UTF-8
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+ Daniel Baluta <daniel.baluta@intel.com>,
+ Giuseppe Barba <giuseppe.barba@st.com>, Denis Ciocca <denis.ciocca@st.com>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Message-ID: <d45245cd-5950-ce98-eebe-49f0d5fa95bb@intel.com>
+Date: Tue, 24 May 2016 15:33:45 +0300
+MIME-Version: 1.0
+In-Reply-To: <CACRpkdYV3nBbOh++bca7+5uhKt5Ct7ev5M8ZuvQ8OrPP+JPrdQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, May 13, 2016 at 8:43 PM, Crestez Dan Leonard
-<leonard.crestez@intel.com> wrote:
+On 05/24/2016 02:27 PM, Linus Walleij wrote:
+> On Fri, May 13, 2016 at 8:43 PM, Crestez Dan Leonard
+> <leonard.crestez@intel.com> wrote:
+> 
+>> This fixes a possible race where an interrupt arrives before complete
+>> initialization and crashes because iio_trigger_get_drvdata returns NULL.
+>>
+>> Cc: Linus Walleij <linus.walleij@linaro.org>
+>> Cc: Giuseppe Barba <giuseppe.barba@st.com>
+>> Cc: Denis Ciocca <denis.ciocca@st.com>
+>> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+>> ---
+>> I ran into this while breaking the driver. But since the interrupt line can be
+>> shared the handler should always be able to accept and ignore a call.
+> 
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> 
+> However I think my patch fixing the thread issue will collide
+> by being close in context to this so it'd be great if you
+> could resend it on top of
+> "iio: st_sensors: switch to a threaded interrupt"?
 
-> As far as I can tell DRDY for ST sensors behaves as a level rather than
-> edge interrupt. Registering for IRQF_TRIGGER_RISING instead of
-> IRQF_TRIGGER_HIGH mostly works except when the sampling frequency is
-> high enough that new samples come before the new ones are read
-> completely. In that case the interrupt line remains high, no more rising
-> edges occur and the iio buffer stalls.
->
-> Configuring the interrupt as IRQF_TRIGGER_HIGH makes it work as
-> expected. This patch makes it so that st_sensors_trigger interrupt
-> request code doesn't mangle the request flags into IRQF_TRIGGER_RISING.
->
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Giuseppe Barba <giuseppe.barba@st.com>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+I checked my local git tree and this was already on top of v6 of that
+patch. I think this issue is much less likely to cause problems without
+it. Perhaps it should be incorporated into your patch?
 
-The analysis is probably correct: the sensors will hold the line low
-until the values have been read and no data is ready in the pipe.
+I'll resend if it causes conflicts for Jonathan.
 
-This is delicate when the sensors are used with GPIO controllers
-as interrupt line handlers, because some of them (like mine
-on Ux500) do not support level interrupts :(
-
-That means that requesting the interrupt will fail.
-
-What we need to do is try to request a level IRQ, and if that
-fails, try to request an edge IRQ or we will regress existing platforms.
-
-And then, as Jonathan says, use the approach in the other
-approach for those systems that only do edge IRQs.
-
-For the level IRQ, IRQF_ONESHOT must be used, or the
-irq handler will lock up I suspect.
-
-Keeping my loop in the irq thread from the other patch will likely
-also get the events closer in time I suspect? But for a level IRQ
-it is not strictly needed.
-
-If we can agree on a version of this patch that tries first
-level, then edge IRQ, I can rebase my patch on top of it
-and test.
-
-Yours,
-Linus Walleij
+-- 
+Regards,
+Leonard
