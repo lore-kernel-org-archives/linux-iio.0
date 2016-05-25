@@ -1,44 +1,41 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <d45245cd-5950-ce98-eebe-49f0d5fa95bb@intel.com>
-References: <3d90f889782a9c8380c3694e55a135ddd6de9bc4.1463164919.git.leonard.crestez@intel.com>
-	<CACRpkdYV3nBbOh++bca7+5uhKt5Ct7ev5M8ZuvQ8OrPP+JPrdQ@mail.gmail.com>
-	<d45245cd-5950-ce98-eebe-49f0d5fa95bb@intel.com>
-Date: Tue, 24 May 2016 23:54:43 +0200
-Message-ID: <CACRpkdZ4f9XPZ6kF2QV4TNaX4KPmzDBYBGo+pXgKw06EzbEtkA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] iio: st_sensors: Init trigger before irq request
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>, Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:36436 "EHLO
+	mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750936AbcEYE30 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 May 2016 00:29:26 -0400
+Received: by mail-pf0-f195.google.com with SMTP id g132so4110762pfb.3
+        for <linux-iio@vger.kernel.org>; Tue, 24 May 2016 21:29:26 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v3 0/3] atlas-ph-sensor: add conductivity sensor support
+Date: Tue, 24 May 2016 21:29:17 -0700
+Message-Id: <1464150560-1186-1-git-send-email-mranostay@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, May 24, 2016 at 2:33 PM, Crestez Dan Leonard
-<leonard.crestez@intel.com> wrote:
-> [Me]
->> However I think my patch fixing the thread issue will collide
->> by being close in context to this so it'd be great if you
->> could resend it on top of
->> "iio: st_sensors: switch to a threaded interrupt"?
->
-> I checked my local git tree and this was already on top of v6 of that
-> patch.
+Changes from v1:
+ * Add IIO_ELECTRICALCONDUCTIVITY type rather than do doing weird conversion to ppm
+ * move device tree mapping table above probe for of_match_device
 
-OK no problem then.
+Changes from v2:
+ * IIO_ELECTRICALCONDUCTIVITY defined as siemens per meter
+ * Add IIO_CHAN_INFO_SCALE for IIO_ELECTRICALCONDUCTIVITY channel
 
-> I think this issue is much less likely to cause problems without
-> it.
+Matt Ranostay (3):
+  iio: chemical: atlas-ph-sensor: reorg driver to allow multiple chips
+  iio: electricalconductivity: add IIO_ELECTRICALCONDUCTIVITY type
+  iio: chemical: atlas-ph-sensor: add EC feature
 
-Yeah.
+ Documentation/ABI/testing/sysfs-bus-iio            |   7 +
+ .../bindings/iio/chemical/atlas,ec-sm.txt          |  22 ++
+ drivers/iio/chemical/Kconfig                       |   8 +-
+ drivers/iio/chemical/atlas-ph-sensor.c             | 267 ++++++++++++++++-----
+ drivers/iio/industrialio-core.c                    |   1 +
+ include/uapi/linux/iio/types.h                     |   1 +
+ 6 files changed, 246 insertions(+), 60 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
 
-> Perhaps it should be incorporated into your patch?
+-- 
+2.7.4
 
-No better keep them separate.
-
-Yours,
-Linus Walleij
