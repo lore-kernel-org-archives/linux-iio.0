@@ -1,60 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f194.google.com ([209.85.217.194]:34420 "EHLO
-	mail-lb0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750962AbcEYKdb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 May 2016 06:33:31 -0400
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <c023a9f4a7d9015a225f1ebedd998687da770e9b.1464115008.git.amsfield22@gmail.com>
+In-Reply-To: <b115a245427767bd4c2fd4242b7ee04a243008b3.1464115008.git.amsfield22@gmail.com>
 References: <cover.1464115008.git.amsfield22@gmail.com>
-	<c023a9f4a7d9015a225f1ebedd998687da770e9b.1464115008.git.amsfield22@gmail.com>
-Date: Wed, 25 May 2016 13:33:28 +0300
-Message-ID: <CAEnQRZBY94SXut69-o0wvXtiAw3qTxfEnaYbk_uG8qRkeUCbgQ@mail.gmail.com>
-Subject: Re: [PATCH 1/7] iio: adc: ad7266: claim direct mode during sensor read
+	<b115a245427767bd4c2fd4242b7ee04a243008b3.1464115008.git.amsfield22@gmail.com>
+Date: Wed, 25 May 2016 13:34:57 +0300
+Message-ID: <CAEnQRZAdj1fn8ibNx1pCA44=DwDGP8yfMPwGfNCeiW24g97kJg@mail.gmail.com>
+Subject: Re: [PATCH 2/7] iio: adc: ad7791: claim direct mode when writing frequency
 From: Daniel Baluta <daniel.baluta@gmail.com>
 To: Alison Schofield <amsfield22@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>, Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 On Tue, May 24, 2016 at 10:16 PM, Alison Schofield <amsfield22@gmail.com> wrote:
-> Driver was checking for direct mode but not locking it down.
-> Use iio_device_claim_direct_mode() to guarantee device stays
-> in direct mode.
+> Driver was checking for direct mode and trying to lock it, but
+> left a gap where mode could change before the desired operation.
+> Use iio_device_claim_direct_mode() to guarantee device stays in
+> direct mode.
 >
 > Signed-off-by: Alison Schofield <amsfield22@gmail.com>
 > Cc: Daniel Baluta <daniel.baluta@gmail.com>
 
+Looks good to me. We could use an Acked-by from Lars here.
+
 Acked-by: Daniel Baluta <daniel.baluta@gmail.com>
 
 > ---
->  drivers/iio/adc/ad7266.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
+>  drivers/iio/adc/ad7791.c | 15 ++++-----------
+>  1 file changed, 4 insertions(+), 11 deletions(-)
 >
-> diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-> index 21e19b6..01240ae 100644
-> --- a/drivers/iio/adc/ad7266.c
-> +++ b/drivers/iio/adc/ad7266.c
-> @@ -154,12 +154,11 @@ static int ad7266_read_raw(struct iio_dev *indio_dev,
+> diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
+> index cf172d58..f7edacc 100644
+> --- a/drivers/iio/adc/ad7791.c
+> +++ b/drivers/iio/adc/ad7791.c
+> @@ -272,24 +272,17 @@ static ssize_t ad7791_write_frequency(struct device *dev,
+>         struct ad7791_state *st = iio_priv(indio_dev);
+>         int i, ret;
 >
->         switch (m) {
->         case IIO_CHAN_INFO_RAW:
-> -               if (iio_buffer_enabled(indio_dev))
-> -                       return -EBUSY;
+> -       mutex_lock(&indio_dev->mlock);
+> -       if (iio_buffer_enabled(indio_dev)) {
+> -               mutex_unlock(&indio_dev->mlock);
+> -               return -EBUSY;
+> -       }
+> -       mutex_unlock(&indio_dev->mlock);
 > -
-> -               ret = ad7266_read_single(st, val, chan->address);
-> +               ret = iio_device_claim_direct_mode(indio_dev);
->                 if (ret)
->                         return ret;
-> +               ret = ad7266_read_single(st, val, chan->address);
-> +               iio_device_release_direct_mode(indio_dev);
+> -       ret = -EINVAL;
+> -
+>         for (i = 0; i < ARRAY_SIZE(ad7791_sample_freq_avail); i++) {
+>                 if (sysfs_streq(ad7791_sample_freq_avail[i], buf)) {
 >
->                 *val = (*val >> 2) & 0xfff;
->                 if (chan->scan_type.sign == 's')
+> -                       mutex_lock(&indio_dev->mlock);
+> +                       ret = iio_device_claim_direct_mode(indio_dev);
+> +                       if (ret)
+> +                               return ret;
+>                         st->filter &= ~AD7791_FILTER_RATE_MASK;
+>                         st->filter |= i;
+>                         ad_sd_write_reg(&st->sd, AD7791_REG_FILTER,
+>                                          sizeof(st->filter), st->filter);
+> -                       mutex_unlock(&indio_dev->mlock);
+> +                       iio_device_release_direct_mode(indio_dev);
+>                         ret = 0;
+>                         break;
+>                 }
 > --
+> 2.1.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
