@@ -1,90 +1,420 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f68.google.com ([209.85.215.68]:35945 "EHLO
-	mail-lf0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753987AbcEYKmb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 May 2016 06:42:31 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:36069 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755663AbcE0B6f (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 May 2016 21:58:35 -0400
+Message-ID: <5747A9CB.3080302@denx.de>
+Date: Fri, 27 May 2016 03:58:35 +0200
+From: Marek Vasut <marex@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <2df3d20cdbc9c3294ef91b515dcdfe0ad151bd01.1464115008.git.amsfield22@gmail.com>
-References: <cover.1464115008.git.amsfield22@gmail.com>
-	<2df3d20cdbc9c3294ef91b515dcdfe0ad151bd01.1464115008.git.amsfield22@gmail.com>
-Date: Wed, 25 May 2016 13:42:24 +0300
-Message-ID: <CAEnQRZBAqO4RSZ=NtVOnVvAd08yBQzQ=mXFUxoN7eHM+xBdNjA@mail.gmail.com>
-Subject: Re: [PATCH 7/7] iio: adc: ad799x: use iio helper function to
- guarantee direct mode
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Alison Schofield <amsfield22@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: Matt Ranostay <mranostay@gmail.com>, jic23@kernel.org
+CC: linux-iio@vger.kernel.org, Matt Porter <mporter@konsulko.com>
+Subject: Re: [PATCH] iio: temperature: add support for Maxim thermocouple
+ chips
+References: <1464312684-14050-1-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1464312684-14050-1-git-send-email-mranostay@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, May 24, 2016 at 10:20 PM, Alison Schofield <amsfield22@gmail.com> wrote:
-> Replace the code that guarantees the device stays in direct mode
-> with iio_device_claim_direct_mode() which does same.
->
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-
-Acked-by: Daniel Baluta <daniel.baluta@gmail.com>
-
-
+On 05/27/2016 03:31 AM, Matt Ranostay wrote:
+> Add initial driver support for MAX6675, and MAX31885 thermocouple chips.
+> 
+> Cc: Marek Vasut <marex@denx.de>
+> Cc: Matt Porter <mporter@konsulko.com>
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 > ---
->  drivers/iio/adc/ad799x.c | 24 +++++++++---------------
->  1 file changed, 9 insertions(+), 15 deletions(-)
->
-> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-> index a3f5254..ec0200d 100644
-> --- a/drivers/iio/adc/ad799x.c
-> +++ b/drivers/iio/adc/ad799x.c
-> @@ -282,12 +282,11 @@ static int ad799x_read_raw(struct iio_dev *indio_dev,
->
->         switch (m) {
->         case IIO_CHAN_INFO_RAW:
-> -               mutex_lock(&indio_dev->mlock);
-> -               if (iio_buffer_enabled(indio_dev))
-> -                       ret = -EBUSY;
-> -               else
-> -                       ret = ad799x_scan_direct(st, chan->scan_index);
-> -               mutex_unlock(&indio_dev->mlock);
-> +               ret = iio_device_claim_direct_mode(indio_dev);
-> +               if (ret)
-> +                       return ret;
-> +               ret = ad799x_scan_direct(st, chan->scan_index);
-> +               iio_device_release_direct_mode(indio_dev);
->
->                 if (ret < 0)
->                         return ret;
-> @@ -395,11 +394,9 @@ static int ad799x_write_event_config(struct iio_dev *indio_dev,
->         struct ad799x_state *st = iio_priv(indio_dev);
->         int ret;
->
-> -       mutex_lock(&indio_dev->mlock);
-> -       if (iio_buffer_enabled(indio_dev)) {
-> -               ret = -EBUSY;
-> -               goto done;
-> -       }
-> +       ret = iio_device_claim_direct_mode(indio_dev);
-> +       if (ret)
-> +               return ret;
->
->         if (state)
->                 st->config |= BIT(chan->scan_index) << AD799X_CHANNEL_SHIFT;
-> @@ -412,10 +409,7 @@ static int ad799x_write_event_config(struct iio_dev *indio_dev,
->                 st->config &= ~AD7998_ALERT_EN;
->
->         ret = ad799x_write_config(st, st->config);
-> -
-> -done:
-> -       mutex_unlock(&indio_dev->mlock);
-> -
-> +       iio_device_release_direct_mode(indio_dev);
->         return ret;
->  }
->
-> --
+>  .../iio/temperature/maxim_thermocouple.txt         |  21 ++
+>  drivers/iio/temperature/Kconfig                    |  14 ++
+>  drivers/iio/temperature/Makefile                   |   1 +
+>  drivers/iio/temperature/maxim_thermocouple.c       | 278 +++++++++++++++++++++
+>  4 files changed, 314 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
+>  create mode 100644 drivers/iio/temperature/maxim_thermocouple.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
+> new file mode 100644
+> index 0000000..7ab4aa1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
+> @@ -0,0 +1,21 @@
+> +Maxim thermocouple support
+> +
+> +* https://datasheets.maximintegrated.com/en/ds/MAX6675.pdf
+> +* https://datasheets.maximintegrated.com/en/ds/MAX31855.pdf
+> +
+> +Required properties:
+> +
+> +	- compatible: must be "maxim,max31885" or "maxim,max6675"
+> +	- reg: SPI chip select number for the device
+> +	- spi-max-frequency: must be 4300000
+> +	- spi-cpha: must be defined for max6675 to enable SPI mode 1
+> +
+> +	Refer to spi/spi-bus.txt for generic SPI slave bindings
+
+Fullstop is missing here at the end of the sentence ;-)
+
+> +
+> +Example:
+> +
+> +	max31885@0 {
+> +		compatible = "maxim,max31885";
+> +		reg = <0>;
+> +		spi-max-frequency = <4300000>;
+> +	};
+> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+> index c4664e5..c9f5342 100644
+> --- a/drivers/iio/temperature/Kconfig
+> +++ b/drivers/iio/temperature/Kconfig
+> @@ -3,6 +3,20 @@
+>  #
+>  menu "Temperature sensors"
+>  
+> +config MAXIM_THERMOCOUPLE
+> +	tristate "Maxim thermocouple sensors"
+> +	depends on SPI
+> +	help
+> +	  If you say yes here you get support for the Maxim series of
+> +	  thermocouple sensors connected via SPI.
+> +
+> +	  Supported sensors:
+> +	   * MAX6675
+> +	   * MAX31885
+> +
+> +	  This driver can also be built as a module. If so, the module will
+> +	  be called maxim_thermocouple.
+> +
+>  config MLX90614
+>  	tristate "MLX90614 contact-less infrared sensor"
+>  	depends on I2C
+> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+> index 02bc79d..78c3de0 100644
+> --- a/drivers/iio/temperature/Makefile
+> +++ b/drivers/iio/temperature/Makefile
+> @@ -2,6 +2,7 @@
+>  # Makefile for industrial I/O temperature drivers
+>  #
+>  
+> +obj-$(CONFIG_MAXIM_THERMOCOUPLE) += maxim_thermocouple.o
+>  obj-$(CONFIG_MLX90614) += mlx90614.o
+>  obj-$(CONFIG_TMP006) += tmp006.o
+>  obj-$(CONFIG_TSYS01) += tsys01.o
+> diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
+> new file mode 100644
+> index 0000000..c9c9be9
+> --- /dev/null
+> +++ b/drivers/iio/temperature/maxim_thermocouple.c
+> @@ -0,0 +1,278 @@
+> +/*
+> + * maxim_thermocouple.c  - Support for Maxim thermocouple chips
+> + *
+> + * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/mutex.h>
+> +#include <linux/err.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +
+> +#define MAXIM_THERMOCOUPLE_DRV_NAME	"maxim_thermocouple"
+> +
+> +enum {
+> +	MAX6675,
+> +	MAX31885,
+> +};
+> +
+> +struct iio_chan_spec max6675_channels[] = {
+
+static const ?
+
+> +	{	/* thermocouple temperature */
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 's',
+> +			.realbits = 13,
+> +			.storagebits = 16,
+> +			.shift = 3,
+> +			.endianness = IIO_BE,
+> +		},
+> +	},
+> +	IIO_CHAN_SOFT_TIMESTAMP(1),
+> +};
+> +
+> +struct iio_chan_spec max31885_channels[] = {
+
+Also static const ?
+
+> +	{	/* thermocouple temperature */
+> +		.type = IIO_TEMP,
+> +		.address = 2,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 's',
+> +			.realbits = 14,
+> +			.storagebits = 16,
+> +			.shift = 2,
+> +			.endianness = IIO_BE,
+> +		},
+> +	},
+> +	{	/* cold junction temperature */
+> +		.type = IIO_TEMP,
+> +		.channel2 = IIO_MOD_TEMP_AMBIENT,
+> +		.modified = 1,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 1,
+> +		.scan_type = {
+> +			.sign = 's',
+> +			.realbits = 12,
+> +			.storagebits = 16,
+> +			.shift = 4,
+> +			.endianness = IIO_BE,
+> +		},
+> +	},
+> +	IIO_CHAN_SOFT_TIMESTAMP(2),
+> +};
+> +
+> +struct maxim_thermocouple_chip {
+> +	const struct iio_chan_spec *channels;
+> +	int num_channels;
+> +	int read_size;
+> +
+> +	/* bit-check for valid input */
+> +	int status_bit;
+
+I believe all of the members can be const and the structure below can
+also be static const.
+
+> +};
+> +
+> +struct maxim_thermocouple_chip maxim_thermocouple_chips[] = {
+> +	[MAX6675] = {
+> +			.channels = max6675_channels,
+> +			.num_channels = ARRAY_SIZE(max6675_channels),
+> +			.read_size = 2,
+> +			.status_bit = BIT(2),
+> +		},
+> +	[MAX31885] = {
+> +			.channels = max31885_channels,
+> +			.num_channels = ARRAY_SIZE(max31885_channels),
+> +			.read_size = 4,
+> +			.status_bit = BIT(16),
+> +		},
+> +};
+> +
+> +struct maxim_thermocouple_data {
+> +	struct spi_device *spi;
+> +	struct maxim_thermocouple_chip *chip;
+> +
+> +	u8 buffer[16]; /* 4 byte data + 4 byte padding + 8 byte timestamp */
+> +};
+> +
+> +static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
+> +				   struct iio_chan_spec const *chan, int *val)
+> +{
+> +	unsigned int storage_bytes = data->chip->read_size;
+> +	unsigned int shift = chan->scan_type.shift + (chan->address * 8);
+> +	unsigned int buf;
+> +	int ret;
+> +
+> +	ret = spi_read(data->spi, (void *) &buf, storage_bytes);
+> +	if (ret)
+> +		return ret;
+> +
+> +	switch (storage_bytes) {
+> +	case 2:
+> +		*val = be16_to_cpu(buf);
+> +		break;
+> +	case 4:
+> +		*val = be32_to_cpu(buf);
+> +		break;
+
+if (storage_bytes == 2)
+ *val ...
+else if (storage_bytes == 4)
+ *val ...
+
+is half the length of the code :-)
+
+> +	}
+> +
+> +	/* check to be sure this is a valid reading */
+> +	if (*val & data->chip->status_bit)
+> +		return -EINVAL;
+> +
+> +	*val = sign_extend32(*val >> shift, chan->scan_type.realbits - 1);
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t maxim_thermocouple_trigger_handler(int irq, void *private)
+> +{
+> +	struct iio_poll_func *pf = private;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct maxim_thermocouple_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	/* userspace HAL must do validation of data pushed to buffers */
+> +	ret = spi_read(data->spi, (void *) &data->buffer, data->chip->read_size);
+
+I suspect you this should be
+
+ret = spi_read(data->spi, data->buffer, data->chip->read_size);
+
+since data->buffer is already (u8 *). The compiler didn't generate an
+error because you typecast the second argument.
+
+> +	if (!ret)
+> +		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> +						   iio_get_time_ns());
+> +
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int maxim_thermocouple_read_raw(struct iio_dev *indio_dev,
+> +				       struct iio_chan_spec const *chan,
+> +				       int *val, int *val2, long mask)
+> +{
+> +	struct maxim_thermocouple_data *data = iio_priv(indio_dev);
+> +	int ret = -EINVAL;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	if (iio_buffer_enabled(indio_dev) && mask == IIO_CHAN_INFO_RAW) {
+> +		ret = -EBUSY;
+> +		goto error_busy;
+> +	}
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = maxim_thermocouple_read(data, chan, val);
+> +		if (!ret)
+> +			ret = IIO_VAL_INT;
+> +		break;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->channel2) {
+> +		case IIO_MOD_TEMP_AMBIENT:
+> +			*val = 62;
+> +			*val2 = 500000; /* 1000 * 0.0625 */
+> +			ret = IIO_VAL_INT_PLUS_MICRO;
+> +			break;
+> +		default:
+> +			*val = 250; /* 1000 * 0.25 */
+> +			ret = IIO_VAL_INT;
+> +		};
+> +		break;
+> +	}
+> +
+> +error_busy:
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct iio_info maxim_thermocouple_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = maxim_thermocouple_read_raw,
+> +};
+> +
+> +static int maxim_thermocouple_probe(struct spi_device *spi)
+> +{
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +	struct iio_dev *indio_dev;
+> +	struct maxim_thermocouple_data *data;
+> +	struct maxim_thermocouple_chip *chip =
+> +				&maxim_thermocouple_chips[id->driver_data];
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	indio_dev->info = &maxim_thermocouple_info;
+> +	indio_dev->name = MAXIM_THERMOCOUPLE_DRV_NAME;
+> +	indio_dev->channels = chip->channels;
+> +	indio_dev->num_channels = chip->num_channels;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->spi = spi;
+> +	data->chip = chip;
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +				maxim_thermocouple_trigger_handler, NULL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = iio_device_register(indio_dev);
+
+devm_iio_device_register() ?
+
+> +	if (ret)
+> +		goto error_unreg_buffer;
+> +
+> +	return 0;
+> +
+> +error_unreg_buffer:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int maxim_thermocouple_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id maxim_thermocouple_id[] = {
+> +	{"max6675", MAX6675},
+> +	{"max31885", MAX31885},
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(spi, maxim_thermocouple_id);
+> +
+> +static struct spi_driver maxim_thermocouple_driver = {
+> +	.driver = {
+> +		.name	= MAXIM_THERMOCOUPLE_DRV_NAME,
+> +	},
+> +	.probe		= maxim_thermocouple_probe,
+> +	.remove		= maxim_thermocouple_remove,
+> +	.id_table	= maxim_thermocouple_id,
+> +};
+> +module_spi_driver(maxim_thermocouple_driver);
+> +
+> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+> +MODULE_DESCRIPTION("Maxim thermocouple sensors");
+> +MODULE_LICENSE("GPL");
+> 
+
+
+-- 
+Best regards,
+Marek Vasut
