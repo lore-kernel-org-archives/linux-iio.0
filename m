@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f194.google.com ([209.85.161.194]:36399 "EHLO
+Received: from mail-yw0-f194.google.com ([209.85.161.194]:34223 "EHLO
 	mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753979AbcE0WIg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 May 2016 18:08:36 -0400
+	with ESMTP id S1753979AbcE0WJQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 May 2016 18:09:16 -0400
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
 To: gregkh@linuxfoundation.org, akpm@linux-foundation.org
 Cc: x86@kernel.org, linux-next@vger.kernel.org,
@@ -10,102 +10,47 @@ Cc: x86@kernel.org, linux-next@vger.kernel.org,
 	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
 	sfr@canb.auug.org.au, linux@roeck-us.net,
 	William Breathitt Gray <vilhelm.gray@gmail.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH v5 1/4] isa: Allow ISA-style drivers on modern systems
-Date: Fri, 27 May 2016 18:08:27 -0400
-Message-Id: <eb31f2d10c9cc199d69eca2fe16cf31b9417c5ef.1464380034.git.vilhelm.gray@gmail.com>
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v5 3/4] iio: stx104: Allow build for X86_64
+Date: Fri, 27 May 2016 18:09:08 -0400
+Message-Id: <26bbe8f7c46b2504068f11c1f6219e1df6879822.1464380034.git.vilhelm.gray@gmail.com>
 In-Reply-To: <cover.1464380034.git.vilhelm.gray@gmail.com>
 References: <cover.1464380034.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Several modern devices, such as PC/104 cards, are expected to run on
-modern systems via an ISA bus interface. Since ISA is a legacy interface
-for most modern architectures, ISA support should remain disabled in
-general. Support for ISA-style drivers should be enabled on a per driver
-basis.
+With the introduction of the ISA_BUS_API Kconfig option, ISA-style
+drivers may be built for X86_64 architectures. This patch changes the
+ISA Kconfig option dependency of the Apex Embedded Systems STX104 DAC
+driver to ISA_BUS_API, thus allowing it to build for X86_64 as it is
+expected to.
 
-To allow ISA-style drivers on modern systems, this patch introduces the
-ISA_BUS_API and ISA_BUS Kconfig options. The ISA bus driver will now
-build conditionally on the ISA_BUS_API Kconfig option, which defaults to
-the legacy ISA Kconfig option. The ISA_BUS Kconfig option allows the
-ISA_BUS_API Kconfig option to be selected on architectures which do not
-enable ISA (e.g. X86_64).
-
-The ISA_BUS Kconfig option is currently only implemented for X86
-architectures. Other architectures may have their own ISA_BUS Kconfig
-options added as required.
-
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Jonathan Cameron <jic23@kernel.org>
 Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- arch/Kconfig          | 3 +++
- arch/x86/Kconfig      | 9 +++++++++
- drivers/base/Makefile | 2 +-
- include/linux/isa.h   | 2 +-
- 4 files changed, 14 insertions(+), 2 deletions(-)
+ drivers/iio/dac/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index b16e74e..9d9942f 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -598,6 +598,9 @@ config HAVE_STACK_VALIDATION
- 	  Architecture supports the 'objtool check' host tool command, which
- 	  performs compile-time stack metadata validation.
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index e63b957..f7c71da 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -247,7 +247,7 @@ config MCP4922
  
-+config ISA_BUS_API
-+	def_bool ISA
-+
- #
- # ABI hall of shame
- #
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 0a7b885..d9a94da 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2439,6 +2439,15 @@ config PCI_CNB20LE_QUIRK
- 
- source "drivers/pci/Kconfig"
- 
-+config ISA_BUS
-+	bool "ISA-style bus support on modern systems" if EXPERT
-+	select ISA_BUS_API
-+	help
-+	  Enables ISA-style drivers on modern systems. This is necessary to
-+	  support PC/104 devices on X86_64 platforms.
-+
-+	  If unsure, say N.
-+
- # x86_64 have no ISA slots, but can have ISA-style DMA.
- config ISA_DMA_API
- 	bool "ISA-style DMA support" if (X86_64 && EXPERT)
-diff --git a/drivers/base/Makefile b/drivers/base/Makefile
-index 6b2a84e..2609ba2 100644
---- a/drivers/base/Makefile
-+++ b/drivers/base/Makefile
-@@ -10,7 +10,7 @@ obj-$(CONFIG_DMA_CMA) += dma-contiguous.o
- obj-y			+= power/
- obj-$(CONFIG_HAS_DMA)	+= dma-mapping.o
- obj-$(CONFIG_HAVE_GENERIC_DMA_COHERENT) += dma-coherent.o
--obj-$(CONFIG_ISA)	+= isa.o
-+obj-$(CONFIG_ISA_BUS_API)	+= isa.o
- obj-$(CONFIG_FW_LOADER)	+= firmware_class.o
- obj-$(CONFIG_NUMA)	+= node.o
- obj-$(CONFIG_MEMORY_HOTPLUG_SPARSE) += memory.o
-diff --git a/include/linux/isa.h b/include/linux/isa.h
-index 5ab8528..384ab9b 100644
---- a/include/linux/isa.h
-+++ b/include/linux/isa.h
-@@ -22,7 +22,7 @@ struct isa_driver {
- 
- #define to_isa_driver(x) container_of((x), struct isa_driver, driver)
- 
--#ifdef CONFIG_ISA
-+#ifdef CONFIG_ISA_BUS_API
- int isa_register_driver(struct isa_driver *, unsigned int);
- void isa_unregister_driver(struct isa_driver *);
- #else
+ config STX104
+ 	tristate "Apex Embedded Systems STX104 DAC driver"
+-	depends on X86 && ISA
++	depends on X86 && ISA_BUS_API
+ 	help
+ 	  Say yes here to build support for the 2-channel DAC on the Apex
+ 	  Embedded Systems STX104 integrated analog PC/104 card. The base port
 -- 
 2.7.3
 
