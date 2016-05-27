@@ -1,70 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:33141 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750927AbcE0UxD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 May 2016 16:53:03 -0400
-Date: Fri, 27 May 2016 13:52:55 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-	x86@kernel.org, linux-next@vger.kernel.org,
+Received: from mail-yw0-f193.google.com ([209.85.161.193]:33786 "EHLO
+	mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753979AbcE0WIZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 May 2016 18:08:25 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: gregkh@linuxfoundation.org, akpm@linux-foundation.org
+Cc: x86@kernel.org, linux-next@vger.kernel.org,
 	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	sfr@canb.auug.org.au, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v4 3/4] iio: stx104: Allow build for X86_64
-Message-ID: <20160527205255.GA27341@roeck-us.net>
-References: <cover.1464049539.git.vilhelm.gray@gmail.com>
- <e2165535dff3cfc30e82b5e3b4b4ccf9860ebf9f.1464049539.git.vilhelm.gray@gmail.com>
- <20160527182057.GC19472@roeck-us.net>
- <20160527195400.GA12494@sophia>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20160527195400.GA12494@sophia>
+	sfr@canb.auug.org.au, linux@roeck-us.net,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v5 0/4] Allow ISA-style drivers on modern systems
+Date: Fri, 27 May 2016 18:08:15 -0400
+Message-Id: <cover.1464380034.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, May 27, 2016 at 03:54:00PM -0400, William Breathitt Gray wrote:
-> On Fri, May 27, 2016 at 11:20:57AM -0700, Guenter Roeck wrote:
-> >On Mon, May 23, 2016 at 08:31:07PM -0400, William Breathitt Gray wrote:
-> >> With the introduction of the ISA_BUS_API Kconfig option, ISA-style
-> >> drivers may be built for X86_64 architectures. This patch changes the
-> >> ISA Kconfig option dependency of the Apex Embedded Systems STX104 DAC
-> >> driver to ISA_BUS_API, thus allowing it to build for X86_64 as it is
-> >> expected to.
-> >> 
-> >> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> >> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> >> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> >> Cc: Jonathan Cameron <jic23@kernel.org>
-> >> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> >> ---
-> >>  drivers/iio/dac/Kconfig | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >> 
-> >> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> >> index e63b957..315442f 100644
-> >> --- a/drivers/iio/dac/Kconfig
-> >> +++ b/drivers/iio/dac/Kconfig
-> >> @@ -247,7 +247,7 @@ config MCP4922
-> >>  
-> >>  config STX104
-> >>  	tristate "Apex Embedded Systems STX104 DAC driver"
-> >> -	depends on X86 && ISA
-> >> +	depends on ISA_BUS_API
-> >
-> >Assuming the dropped dependency on X86 is intentional:
-> >
-> >Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-> 
-> Thanks for the review Guenter: losing the X86 dependency was not
-> intentional; it looks like I forgot to adjust this when I made
-> ISA_BUS_API available to all architectures. I'll submit version 5 with
-> the explicit X86 dependency back in place for CONFIG_STX104 and
-> CONFIG_EBC_C384_WDT.
-> 
-Ok. Feel free to keep my Reviewed-by: tag unless you make further changes.
+Changes in v5:
+  - Add explicit X86 dependency to CONFIG_STX104 and CONFIG_EBC_C384_WDT
+    since these drivers were developed with X86 architectures in mind
 
-Guenter
+Changes in v4:
+  - Remove unnecessary explicit "default n" from the X86 ISA_BUS Kconfig
+    option since Kconfig options are disabled by default
+
+Changes in v3:
+  - Remove redundant X86 dependency from the X86 ISA_BUS Kconfig option
+
+Changes in v2:
+  - Adjusted preprocessor compilation conditional in include/linux/isa.h
+    to use CONFIG_ISA_BUS_API in order to link the correct ISA bus
+    driver function definitions when available
+  - Move ISA_BUS_API Kconfig option to arch/Kconfig, thus making it
+    available to all architectures instead of just X86
+  - X86 ISA_BUS Kconfig option should be disabled by default; ISA
+    devices typically do not have a way to be probed, so users should
+    be required to explicitly enable ISA bus driver support, lest a
+    selected driver be loaded with the misguided expectation of a safe
+    hardware probe
+
+Several modern devices, such as PC/104 cards, are expected to run on
+modern systems via an ISA bus interface. Since ISA is a legacy interface
+for most modern architectures, ISA support should remain disabled in
+general. Support for ISA-style drivers should be enabled on a per driver
+basis.
+
+To allow ISA-style drivers on modern systems, this patchset introduces
+the ISA_BUS_API and ISA_BUS Kconfig options. The ISA bus driver will now
+build conditionally on the ISA_BUS_API Kconfig option, which defaults to
+the legacy ISA Kconfig option. The ISA_BUS Kconfig option allows the
+ISA_BUS_API Kconfig option to be selected on architectures which do not
+enable ISA (e.g. X86_64).
+
+The ISA_BUS Kconfig option is currently only implemented for X86
+architectures. Other architectures may have their own ISA_BUS Kconfig
+option added as required.
+
+An earlier attempt to allow the ISA bus driver to build for X86_64 took
+an inappropriate approach resulting in legacy ISA drivers becoming
+enabled unconditionally on untested and unsupported architectures.
+Commit 51e68d055cba ("x86 isa: add back X86_32 dependency on
+CONFIG_ISA"), added to restrict the ISA bus driver to only X86_32,
+causes several drivers intended for X86_64 to be restricted to X86_32 as
+well.
+
+This patchset replaces the ISA Kconfig option dependency of several
+drivers to ISA_BUS_API, so that they may build for X86_64 as intended.
+The respective drivers are as follows:
+    * ACCES 104-IDIO-16 GPIO driver
+    * ACCES 104-IDI-48 GPIO driver
+    * ACCES 104-DIO-48E GPIO driver
+    * Apex Embedded Systems STX104 DAC driver
+    * WinSystems EBC-C384 watchdog timer driver
+    * WinSystems WS16C48 GPIO driver
+
+William Breathitt Gray (4):
+  isa: Allow ISA-style drivers on modern systems
+  gpio: Allow PC/104 devices on X86_64
+  iio: stx104: Allow build for X86_64
+  watchdog: ebc-c384_wdt: Allow build for X86_64
+
+ arch/Kconfig             | 3 +++
+ arch/x86/Kconfig         | 9 +++++++++
+ drivers/base/Makefile    | 2 +-
+ drivers/gpio/Kconfig     | 8 ++++----
+ drivers/iio/dac/Kconfig  | 2 +-
+ drivers/watchdog/Kconfig | 2 +-
+ include/linux/isa.h      | 2 +-
+ 7 files changed, 20 insertions(+), 8 deletions(-)
+
+-- 
+2.7.3
+
