@@ -1,78 +1,91 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f193.google.com ([209.85.161.193]:36534 "EHLO
-	mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753979AbcE0WJD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 May 2016 18:09:03 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: gregkh@linuxfoundation.org, akpm@linux-foundation.org
-Cc: x86@kernel.org, linux-next@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	sfr@canb.auug.org.au, linux@roeck-us.net,
-	William Breathitt Gray <vilhelm.gray@gmail.com>,
-	Alexandre Courbot <gnurou@gmail.com>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v5 2/4] gpio: Allow PC/104 devices on X86_64
-Date: Fri, 27 May 2016 18:08:56 -0400
-Message-Id: <61880bededb77bbc3ea3422e48ce717d2a2ff489.1464380034.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1464380034.git.vilhelm.gray@gmail.com>
-References: <cover.1464380034.git.vilhelm.gray@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <gucea.doru@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <7b5bc17a-04eb-ce3b-81eb-a7378d0921e5@intel.com>
+References: <1464265414-8395-1-git-send-email-doru.gucea@intel.com>
+	<7b5bc17a-04eb-ce3b-81eb-a7378d0921e5@intel.com>
+Date: Sat, 28 May 2016 11:32:02 +0300
+Message-ID: <CANfLQrbpRaHaf-pWSgztvSbXFRF1izZhuJZH3fcDe1t9o01X9g@mail.gmail.com>
+Subject: Re: [PATCH] iio: imu: inv_mpu6050: Support software triggers
+From: Gucea Doru <gucea.doru@gmail.com>
+To: Crestez Dan Leonard <leonard.crestez@intel.com>
+Cc: Doru Gucea <doru.gucea@intel.com>, jic23@kernel.org, daniel.baluta@intel.com,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, lucas.demarchi@intel.com,
+	cmo@melexis.com, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-With the introduction of the ISA_BUS_API Kconfig option, ISA-style
-drivers may be built for X86_64 architectures. This patch changes the
-ISA Kconfig option dependency of the PC/104 drivers to ISA_BUS_API, thus
-allowing them to build for X86_64 as they are expected to.
+On Fri, May 27, 2016 at 6:15 PM, Crestez Dan Leonard
+<leonard.crestez@intel.com> wrote:
+> On 05/26/2016 03:23 PM, Doru Gucea wrote:
+>> In order to support software triggers (e.g.: hr-based trigger) the
+>> operations from trigger enable/disable are moved to buffer enable/
+>> disable.
+>>
+>> This also allows us to remove the mutex from inv_mpu6050_read_fifo:
+>> inv_reset_fifo can't access in parallel shared fields because the
+>> buffers must be enabled prior to reading data.
+>>
+>> A benefit of removing the mutex is that we avoid a deadlock at
+>> buffer wqdisable time. The scenario was the following:
+>> (1) at buffer disable time the indio_dev->mlock is acquired
+>> (2) free_irq is called and waits for IRQs completion
+>> (3) inv_mpu6050_read_fifo tries to acquire the indio_dev->mlock
+>
+> I'm not sure this is safe, it seems to me that inv_reset_fifo assumes
+> mlock is taken and this needs to be assured. I think properly removing
+> the irq disabling deadlock require either using something other than
+> mlock or not calling inv_reset_fifo from the interrupt at all. The
+> latter seems preferable to me. But this issue should be handled
+> separately from software trigger support.
+>
 
-Cc: Alexandre Courbot <gnurou@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- drivers/gpio/Kconfig | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+inv_reset_fifo still needs to be called: it might happen that we miss a
+DATA_RDY interrupt in which case we'll have a mismatch between
+time-stamps and bytes from the FIFO queues. The only way to recover
+from such a situation is to flush the FIFO's and restart the interrupt.
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 48da857..dc6da77 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -530,7 +530,7 @@ menu "Port-mapped I/O GPIO drivers"
- 
- config GPIO_104_DIO_48E
- 	tristate "ACCES 104-DIO-48E GPIO support"
--	depends on ISA
-+	depends on ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the ACCES 104-DIO-48E series (104-DIO-48E,
-@@ -540,7 +540,7 @@ config GPIO_104_DIO_48E
- 
- config GPIO_104_IDIO_16
- 	tristate "ACCES 104-IDIO-16 GPIO support"
--	depends on ISA
-+	depends on ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the ACCES 104-IDIO-16 family (104-IDIO-16,
-@@ -551,7 +551,7 @@ config GPIO_104_IDIO_16
- 
- config GPIO_104_IDI_48
- 	tristate "ACCES 104-IDI-48 GPIO support"
--	depends on ISA
-+	depends on ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the ACCES 104-IDI-48 family (104-IDI-48A,
-@@ -627,7 +627,7 @@ config GPIO_TS5500
- 
- config GPIO_WS16C48
- 	tristate "WinSystems WS16C48 GPIO support"
--	depends on ISA
-+	depends on ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the WinSystems WS16C48. The base port
--- 
-2.7.3
+Regarding the locking, before my patch, inv_reset_fifo could flush the
+FIFO's (see inv_mpu_data_rdy_trigger_set_state) while
+inv_mpu6050_read_fifo was reading data and the role of the mlock was
+to avoid this situation. This situation is not possible anymore because
+the operations from trigger enable/disable were moved to buffer
+enable/disable: trigger state can't be changed while buffers are enabled.
+Do you see another scenario?
 
+I'll split the software trigger support and deadlock solution in two patches.
+
+> Another issue is that the fifo is filled at the sampling frequency
+> configured in device registers and this can be different from the
+> sampling frequency configured on the software trigger. It seems to me
+> that the user needs to manually ensure that they are identical.
+>
+
+A solution would be to hook the iio_hrtimer_info_store_sampling_frequency
+method of the hrtimer for setting the sampling frequency together with
+the timer frequency. I think this will require changes to the hrtimer for
+exposing the above function to drivers. Daniel, what would be the right
+approach?
+
+> Even if they are identical the timer ticks might not match perfectly.
+> When reading from the fifo all available samples are handled.
+>
+> If device frequency is set too high you will push multiple samples to
+> userspace, all but one of them with bad timestamps. It's also possible
+> to find zero samples if device frequency is set higher than timer frequency.
+>
+
+In case of timer ticks mismatch there will also be a mismatch between
+time-stamps and bytes from the FIFO queues. I wonder if a clean recovery
+from such a situation would be to call inv_reset_fifo together with resetting
+the hrtimer.
+
+> --
+> Regards,
+> Leonard
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+Regards,
+Doru
