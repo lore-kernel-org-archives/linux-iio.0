@@ -1,859 +1,1110 @@
-Return-Path: <ksenija.stanojevic@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <20160429233616.GA13361@dtor-ws>
-References: <cover.1461930102.git.ksenija.stanojevic@gmail.com>
-	<61fe1da2e8d82921f3222ec939047b6823f695e1.1461930102.git.ksenija.stanojevic@gmail.com>
-	<20160429233616.GA13361@dtor-ws>
-Date: Sat, 28 May 2016 19:46:07 +0200
-Message-ID: <CAL7P5j+WhTGyn2gZRX9pvyrPss_PfwrvXHRMKmhR+=De2gSsRA@mail.gmail.com>
-Subject: Re: [PATCH 3/3] input: touchscreen: mxs-lradc: Add support for touchscreen
-From: =?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-	linux-input@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, =?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>,
-	linux-iio@vger.kernel.org, Harald Geyer <harald@ccbib.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from resqmta-po-07v.sys.comcast.net ([96.114.154.166]:58352 "EHLO
+	resqmta-po-07v.sys.comcast.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750936AbcE2Auf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 May 2016 20:50:35 -0400
+From: Kevin Tsai <capellamicro@gmail.com>
+To: Kevin Tsai <capellamicro@gmail.com>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Kalle Valo <kvalo@codeaurora.org>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jiri Slaby <jslaby@suse.cz>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Andreas Dannenberg <dannenberg@ti.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>,
+	Linus Walleij <linus.walleij@linaro.org>
+Cc: linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH 1/1] iio: light: Added CM36672 Proximity Sensor Driver.
+Date: Sat, 28 May 2016 17:42:06 -0700
+Message-Id: <1464482526-862-1-git-send-email-capellamicro@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Apr 30, 2016 at 1:36 AM, Dmitry Torokhov
-<dmitry.torokhov@gmail.com> wrote:
-> Hi Ksenija,
->
-> On Fri, Apr 29, 2016 at 01:49:11PM +0200, Ksenija Stanojevic wrote:
->> Add mxs-lradc touchscreen driver.
->>
->> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
->> ---
->>  drivers/input/touchscreen/Kconfig        |  14 +-
->>  drivers/input/touchscreen/Makefile       |   1 +
->>  drivers/input/touchscreen/mxs-lradc-ts.c | 729 +++++++++++++++++++++++++++++++
->>  3 files changed, 742 insertions(+), 2 deletions(-)
->>  create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
->>
->> diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
->> index 8ecdc38..d614d248 100644
->> --- a/drivers/input/touchscreen/Kconfig
->> +++ b/drivers/input/touchscreen/Kconfig
->> @@ -566,7 +566,7 @@ config TOUCHSCREEN_HP600
->>       depends on SH_HP6XX && SH_ADC
->>       help
->>         Say Y here if you have a HP Jornada 620/660/680/690 and want to
->> -          support the built-in touchscreen.
->> +       support the built-in touchscreen.
->>
->>         To compile this driver as a module, choose M here: the
->>         module will be called hp680_ts_input.
->> @@ -685,7 +685,7 @@ config TOUCHSCREEN_UCB1400
->>         This enables support for the Philips UCB1400 touchscreen interface.
->>         The UCB1400 is an AC97 audio codec.  The touchscreen interface
->>         will be initialized only after the ALSA subsystem has been
->> -       brought up and the UCB1400 detected.  You therefore have to
->> +       brought up and the UCB1400 detected.  You therefore have to
->
-> Why do we have the tab in the middle of the text?
->
->>         configure ALSA support as well (either built-in or modular,
->>         independently of whether this driver is itself built-in or
->>         modular) for this driver to work.
->> @@ -842,6 +842,16 @@ config TOUCHSCREEN_MX25
->>         To compile this driver as a module, choose M here: the
->>         module will be called fsl-imx25-tcq.
->>
->> +config TOUCHSCREEN_MXS_LRADC
->> +     tristate "Freescale i.MX23/i.MX28 LRADC touchscreen"
->> +     depends on MFD_MXS_LRADC
->> +     help
->> +       Say Y here if you have a touchscreen connected to the low-resolution
->> +       analog-to-digital converter (LRADC) on an i.MX23 or i.MX28 processor.
->> +
->> +       To compile this driver as a module, choose M here: the module will be
->> +       called mxs-lradc-ts.
->> +
->>  config TOUCHSCREEN_MC13783
->>       tristate "Freescale MC13783 touchscreen input driver"
->>       depends on MFD_MC13XXX
->> diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
->> index f42975e..513a6ff 100644
->> --- a/drivers/input/touchscreen/Makefile
->> +++ b/drivers/input/touchscreen/Makefile
->> @@ -54,6 +54,7 @@ obj-$(CONFIG_TOUCHSCREEN_MIGOR)             += migor_ts.o
->>  obj-$(CONFIG_TOUCHSCREEN_MMS114)     += mms114.o
->>  obj-$(CONFIG_TOUCHSCREEN_MTOUCH)     += mtouch.o
->>  obj-$(CONFIG_TOUCHSCREEN_MK712)              += mk712.o
->> +obj-$(CONFIG_TOUCHSCREEN_MXS_LRADC)  += mxs-lradc-ts.o
->>  obj-$(CONFIG_TOUCHSCREEN_HP600)              += hp680_ts_input.o
->>  obj-$(CONFIG_TOUCHSCREEN_HP7XX)              += jornada720_ts.o
->>  obj-$(CONFIG_TOUCHSCREEN_IPAQ_MICRO) += ipaq-micro-ts.o
->> diff --git a/drivers/input/touchscreen/mxs-lradc-ts.c b/drivers/input/touchscreen/mxs-lradc-ts.c
->> new file mode 100644
->> index 0000000..27abb8e
->> --- /dev/null
->> +++ b/drivers/input/touchscreen/mxs-lradc-ts.c
->> @@ -0,0 +1,729 @@
->> +/*
->> + * Freescale MXS LRADC driver
->> + *
->> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
->> + * Marek Vasut <marex@denx.de>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->> + * GNU General Public License for more details.
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/mfd/mxs-lradc.h>
->> +#include <linux/platform_device.h>
->> +
->> +/*
->> + * Touchscreen handling
->> + */
->> +enum mxs_lradc_ts_plate {
->> +     LRADC_TOUCH = 0,
->> +     LRADC_SAMPLE_X,
->> +     LRADC_SAMPLE_Y,
->> +     LRADC_SAMPLE_PRESSURE,
->> +     LRADC_SAMPLE_VALID,
->> +};
->> +
->> +struct mxs_lradc_ts {
->> +     struct mxs_lradc        *lradc;
->> +     struct device           *dev;
->> +     /*
->> +      * When the touchscreen is enabled, we give it two private virtual
->> +      * channels: #6 and #7. This means that only 6 virtual channels (instead
->> +      * of 8) will be available for buffered capture.
->> +      */
->> +#define TOUCHSCREEN_VCHANNEL1                7
->> +#define TOUCHSCREEN_VCHANNEL2                6
->> +
->> +     struct input_dev        *ts_input;
->> +
->> +     enum mxs_lradc_ts_plate cur_plate; /* state machine */
->> +     bool                    ts_valid;
->> +     unsigned                ts_x_pos;
->> +     unsigned                ts_y_pos;
->> +     unsigned                ts_pressure;
->> +
->> +     /* handle touchscreen's physical behaviour */
->> +     /* samples per coordinate */
->> +     unsigned                over_sample_cnt;
->> +     /* time clocks between samples */
->> +     unsigned                over_sample_delay;
->> +     /* time in clocks to wait after the plates where switched */
->> +     unsigned                settling_delay;
->> +};
->> +
->> +static u32 mxs_lradc_plate_mask(struct mxs_lradc *lradc)
->> +{
->> +     if (lradc->soc == IMX23_LRADC)
->> +             return LRADC_CTRL0_MX23_PLATE_MASK;
->> +     return LRADC_CTRL0_MX28_PLATE_MASK;
->> +}
->> +
->> +static u32 mxs_lradc_touch_detect_bit(struct mxs_lradc *lradc)
->> +{
->> +     if (lradc->soc == IMX23_LRADC)
->> +             return LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE;
->> +     return LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE;
->> +}
->> +
->> +static u32 mxs_lradc_drive_x_plate(struct mxs_lradc *lradc)
->> +{
->> +     if (lradc->soc == IMX23_LRADC)
->> +             return LRADC_CTRL0_MX23_XP | LRADC_CTRL0_MX23_XM;
->> +     return LRADC_CTRL0_MX28_XPPSW | LRADC_CTRL0_MX28_XNNSW;
->> +}
->> +
->> +static u32 mxs_lradc_drive_y_plate(struct mxs_lradc *lradc)
->> +{
->> +     if (lradc->soc == IMX23_LRADC)
->> +             return LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_YM;
->> +     return LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_YNNSW;
->> +}
->> +
->> +static u32 mxs_lradc_drive_pressure(struct mxs_lradc *lradc)
->> +{
->> +     if (lradc->soc == IMX23_LRADC)
->> +             return LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XM;
->> +     return LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW;
->> +}
->> +
->> +static bool mxs_lradc_check_touch_event(struct mxs_lradc *lradc)
->> +{
->> +     return !!(readl(lradc->base + LRADC_STATUS) &
->> +                                     LRADC_STATUS_TOUCH_DETECT_RAW);
->> +}
->> +
->> +static void mxs_lradc_map_ts_channel(struct mxs_lradc *lradc, unsigned vch,
->> +                                  unsigned ch)
->> +{
->> +     mxs_lradc_reg_clear(lradc, LRADC_CTRL4_LRADCSELECT_MASK(vch),
->> +                         LRADC_CTRL4);
->> +     mxs_lradc_reg_set(lradc, LRADC_CTRL4_LRADCSELECT(vch, ch), LRADC_CTRL4);
->> +}
->> +
->> +static void mxs_lradc_setup_ts_channel(struct mxs_lradc_ts *ts, unsigned ch)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     /*
->> +      * prepare for oversampling conversion
->> +      *
->> +      * from the datasheet:
->> +      * "The ACCUMULATE bit in the appropriate channel register
->> +      * HW_LRADC_CHn must be set to 1 if NUM_SAMPLES is greater then 0;
->> +      * otherwise, the IRQs will not fire."
->> +      */
->> +     mxs_lradc_reg_wrt(lradc, LRADC_CH_ACCUMULATE |
->> +                       LRADC_CH_NUM_SAMPLES(ts->over_sample_cnt - 1),
->> +                       LRADC_CH(ch));
->> +
->> +     /* from the datasheet:
->> +      * "Software must clear this register in preparation for a
->> +      * multi-cycle accumulation.
->> +      */
->> +     mxs_lradc_reg_clear(lradc, LRADC_CH_VALUE_MASK, LRADC_CH(ch));
->> +
->> +     /*
->> +      * prepare the delay/loop unit according to the oversampling count
->> +      *
->> +      * from the datasheet:
->> +      * "The DELAY fields in HW_LRADC_DELAY0, HW_LRADC_DELAY1,
->> +      * HW_LRADC_DELAY2, and HW_LRADC_DELAY3 must be non-zero; otherwise,
->> +      * the LRADC will not trigger the delay group."
->> +      */
->> +     mxs_lradc_reg_wrt(lradc, LRADC_DELAY_TRIGGER(1 << ch) |
->> +                       LRADC_DELAY_TRIGGER_DELAYS(0) |
->> +                       LRADC_DELAY_LOOP(ts->over_sample_cnt - 1) |
->> +                       LRADC_DELAY_DELAY(ts->over_sample_delay - 1),
->> +                       LRADC_DELAY(3));
->> +
->> +     mxs_lradc_reg_clear(lradc, LRADC_CTRL1_LRADC_IRQ(ch), LRADC_CTRL1);
->> +
->> +     /*
->> +      * after changing the touchscreen plates setting
->> +      * the signals need some initial time to settle. Start the
->> +      * SoC's delay unit and start the conversion later
->> +      * and automatically.
->> +      */
->> +     mxs_lradc_reg_wrt(
->> +             lradc,
->> +             LRADC_DELAY_TRIGGER(0) | /* don't trigger ADC */
->> +             LRADC_DELAY_TRIGGER_DELAYS(BIT(3)) | /* trigger DELAY unit#3 */
->> +             LRADC_DELAY_KICK |
->> +             LRADC_DELAY_DELAY(ts->settling_delay),
->> +             LRADC_DELAY(2));
->> +}
->> +
->> +/*
->> + * Pressure detection is special:
->> + * We want to do both required measurements for the pressure detection in
->> + * one turn. Use the hardware features to chain both conversions and let the
->> + * hardware report one interrupt if both conversions are done
->> + */
->> +static void mxs_lradc_setup_ts_pressure(struct mxs_lradc_ts *ts, unsigned ch1,
->> +                                     unsigned ch2)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +     u32 reg;
->> +
->> +     /*
->> +      * prepare for oversampling conversion
->> +      *
->> +      * from the datasheet:
->> +      * "The ACCUMULATE bit in the appropriate channel register
->> +      * HW_LRADC_CHn must be set to 1 if NUM_SAMPLES is greater then 0;
->> +      * otherwise, the IRQs will not fire."
->> +      */
->> +     reg = LRADC_CH_ACCUMULATE |
->> +             LRADC_CH_NUM_SAMPLES(ts->over_sample_cnt - 1);
->> +     mxs_lradc_reg_wrt(lradc, reg, LRADC_CH(ch1));
->> +     mxs_lradc_reg_wrt(lradc, reg, LRADC_CH(ch2));
->> +
->> +     /* from the datasheet:
->> +      * "Software must clear this register in preparation for a
->> +      * multi-cycle accumulation.
->> +      */
->> +     mxs_lradc_reg_clear(lradc, LRADC_CH_VALUE_MASK, LRADC_CH(ch1));
->> +     mxs_lradc_reg_clear(lradc, LRADC_CH_VALUE_MASK, LRADC_CH(ch2));
->> +
->> +     /* prepare the delay/loop unit according to the oversampling count */
->> +     mxs_lradc_reg_wrt(
->> +                 lradc,
->> +                 LRADC_DELAY_TRIGGER(1 << ch1) |
->> +                 LRADC_DELAY_TRIGGER(1 << ch2) | /* start both channels */
->> +                 LRADC_DELAY_TRIGGER_DELAYS(0) |
->> +                 LRADC_DELAY_LOOP(ts->over_sample_cnt - 1) |
->> +                 LRADC_DELAY_DELAY(ts->over_sample_delay - 1),
->> +                 LRADC_DELAY(3));
->> +
->> +     mxs_lradc_reg_clear(lradc, LRADC_CTRL1_LRADC_IRQ(ch2), LRADC_CTRL1);
->> +
->> +     /*
->> +      * after changing the touchscreen plates setting
->> +      * the signals need some initial time to settle. Start the
->> +      * SoC's delay unit and start the conversion later
->> +      * and automatically.
->> +      */
->> +     mxs_lradc_reg_wrt(
->> +             lradc,
->> +             LRADC_DELAY_TRIGGER(0) | /* don't trigger ADC */
->> +             LRADC_DELAY_TRIGGER_DELAYS(BIT(3)) | /* trigger DELAY unit#3 */
->> +             LRADC_DELAY_KICK |
->> +             LRADC_DELAY_DELAY(ts->settling_delay), LRADC_DELAY(2));
->> +}
->> +
->> +static unsigned mxs_lradc_ts_read_raw_channel(struct mxs_lradc_ts *ts,
->> +                                           unsigned channel)
->> +{
->> +     u32 reg;
->> +     unsigned num_samples, val;
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     reg = readl(lradc->base + LRADC_CH(channel));
->> +     if (reg & LRADC_CH_ACCUMULATE)
->> +             num_samples = ts->over_sample_cnt;
->> +     else
->> +             num_samples = 1;
->> +
->> +     val = (reg & LRADC_CH_VALUE_MASK) >> LRADC_CH_VALUE_OFFSET;
->> +     return val / num_samples;
->> +}
->> +
->> +static unsigned mxs_lradc_read_ts_pressure(struct mxs_lradc_ts *ts,
->> +                                        unsigned ch1, unsigned ch2)
->> +{
->> +     u32 reg, mask;
->> +     unsigned pressure, m1, m2;
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     mask = LRADC_CTRL1_LRADC_IRQ(ch1) | LRADC_CTRL1_LRADC_IRQ(ch2);
->> +     reg = readl(lradc->base + LRADC_CTRL1) & mask;
->> +
->> +     while (reg != mask) {
->> +             reg = readl(lradc->base + LRADC_CTRL1) & mask;
->> +             dev_dbg(ts->dev, "One channel is still busy: %X\n", reg);
->> +     }
->> +
->> +     m1 = mxs_lradc_ts_read_raw_channel(ts, ch1);
->> +     m2 = mxs_lradc_ts_read_raw_channel(ts, ch2);
->> +
->> +     if (m2 == 0) {
->> +             dev_warn(ts->dev, "Cannot calculate pressure\n");
->> +             return 1 << (LRADC_RESOLUTION - 1);
->> +     }
->> +
->> +     /* simply scale the value from 0 ... max ADC resolution */
->> +     pressure = m1;
->> +     pressure *= (1 << LRADC_RESOLUTION);
->> +     pressure /= m2;
->> +
->> +     dev_dbg(ts->dev, "Pressure = %u\n", pressure);
->> +     return pressure;
->> +}
->> +
->> +#define TS_CH_XP 2
->> +#define TS_CH_YP 3
->> +#define TS_CH_XM 4
->> +#define TS_CH_YM 5
->> +
->> +/*
->> + * YP(open)--+-------------+
->> + *        |             |--+
->> + *        |             |  |
->> + *    YM(-)--+-------------+  |
->> + *          +--------------+
->> + *          |              |
->> + *      XP(weak+)        XM(open)
->> + *
->> + * "weak+" means 200k Ohm VDDIO
->> + * (-) means GND
->> + */
->> +static void mxs_lradc_setup_touch_detection(struct mxs_lradc_ts *ts)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     /*
->> +      * In order to detect a touch event the 'touch detect enable' bit
->> +      * enables:
->> +      *  - a weak pullup to the X+ connector
->> +      *  - a strong ground at the Y- connector
->> +      */
->> +     mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
->> +     mxs_lradc_reg_set(lradc, mxs_lradc_touch_detect_bit(lradc),
->> +                       LRADC_CTRL0);
->> +}
->> +
->> +/*
->> + * YP(meas)--+-------------+
->> + *        |             |--+
->> + *        |             |  |
->> + * YM(open)--+-------------+  |
->> + *          +--------------+
->> + *          |              |
->> + *        XP(+)          XM(-)
->> + *
->> + * (+) means here 1.85 V
->> + * (-) means here GND
->> + */
->> +static void mxs_lradc_prepare_x_pos(struct mxs_lradc_ts *ts)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
->> +     mxs_lradc_reg_set(lradc, mxs_lradc_drive_x_plate(lradc), LRADC_CTRL0);
->> +
->> +     ts->cur_plate = LRADC_SAMPLE_X;
->> +     mxs_lradc_map_ts_channel(lradc, TOUCHSCREEN_VCHANNEL1, TS_CH_YP);
->> +     mxs_lradc_setup_ts_channel(ts, TOUCHSCREEN_VCHANNEL1);
->> +}
->> +
->> +/*
->> + *   YP(+)--+-------------+
->> + *       |             |--+
->> + *       |             |  |
->> + *   YM(-)--+-------------+  |
->> + *         +--------------+
->> + *         |              |
->> + *      XP(open)        XM(meas)
->> + *
->> + * (+) means here 1.85 V
->> + * (-) means here GND
->> + */
->> +static void mxs_lradc_prepare_y_pos(struct mxs_lradc_ts *ts)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
->> +     mxs_lradc_reg_set(lradc, mxs_lradc_drive_y_plate(lradc), LRADC_CTRL0);
->> +
->> +     ts->cur_plate = LRADC_SAMPLE_Y;
->> +     mxs_lradc_map_ts_channel(lradc, TOUCHSCREEN_VCHANNEL1, TS_CH_XM);
->> +     mxs_lradc_setup_ts_channel(ts, TOUCHSCREEN_VCHANNEL1);
->> +}
->> +
->> +/*
->> + *    YP(+)--+-------------+
->> + *        |             |--+
->> + *        |             |  |
->> + * YM(meas)--+-------------+  |
->> + *          +--------------+
->> + *          |              |
->> + *       XP(meas)        XM(-)
->> + *
->> + * (+) means here 1.85 V
->> + * (-) means here GND
->> + */
->> +static void mxs_lradc_prepare_pressure(struct mxs_lradc_ts *ts)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
->> +     mxs_lradc_reg_set(lradc, mxs_lradc_drive_pressure(lradc), LRADC_CTRL0);
->> +
->> +     ts->cur_plate = LRADC_SAMPLE_PRESSURE;
->> +     mxs_lradc_map_ts_channel(lradc, TOUCHSCREEN_VCHANNEL1, TS_CH_YM);
->> +     mxs_lradc_map_ts_channel(lradc, TOUCHSCREEN_VCHANNEL2, TS_CH_XP);
->> +     mxs_lradc_setup_ts_pressure(ts, TOUCHSCREEN_VCHANNEL2,
->> +                                 TOUCHSCREEN_VCHANNEL1);
->> +}
->> +
->> +static void mxs_lradc_enable_touch_detection(struct mxs_lradc_ts *ts)
->> +{
->> +     mxs_lradc_setup_touch_detection(ts);
->> +
->> +     ts->cur_plate = LRADC_TOUCH;
->> +     mxs_lradc_reg_clear(ts->lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ |
->> +                         LRADC_CTRL1_TOUCH_DETECT_IRQ_EN, LRADC_CTRL1);
->> +     mxs_lradc_reg_set(ts->lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
->> +                       LRADC_CTRL1);
->> +}
->> +
->> +static void mxs_lradc_start_touch_event(struct mxs_lradc_ts *ts)
->> +{
->> +     mxs_lradc_reg_clear(ts->lradc,
->> +                         LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
->> +                         LRADC_CTRL1);
->> +     mxs_lradc_reg_set(ts->lradc,
->> +                       LRADC_CTRL1_LRADC_IRQ_EN(TOUCHSCREEN_VCHANNEL1),
->> +                       LRADC_CTRL1);
->> +     /*
->> +      * start with the Y-pos, because it uses nearly the same plate
->> +      * settings like the touch detection
->> +      */
->> +     mxs_lradc_prepare_y_pos(ts);
->> +}
->> +
->> +static void mxs_lradc_report_ts_event(struct mxs_lradc_ts *ts)
->> +{
->> +     input_report_abs(ts->ts_input, ABS_X, ts->ts_x_pos);
->> +     input_report_abs(ts->ts_input, ABS_Y, ts->ts_y_pos);
->> +     input_report_abs(ts->ts_input, ABS_PRESSURE, ts->ts_pressure);
->> +     input_report_key(ts->ts_input, BTN_TOUCH, 1);
->> +     input_sync(ts->ts_input);
->> +}
->> +
->> +static void mxs_lradc_complete_touch_event(struct mxs_lradc_ts *ts)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     mxs_lradc_setup_touch_detection(ts);
->> +     ts->cur_plate = LRADC_SAMPLE_VALID;
->> +     /*
->> +      * start a dummy conversion to burn time to settle the signals
->> +      * note: we are not interested in the conversion's value
->> +      */
->> +     mxs_lradc_reg_wrt(lradc, 0, LRADC_CH(TOUCHSCREEN_VCHANNEL1));
->> +     mxs_lradc_reg_clear(lradc,
->> +                         LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL1) |
->> +                         LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL2),
->> +                         LRADC_CTRL1);
->> +     mxs_lradc_reg_wrt(
->> +                 lradc,
->> +                 LRADC_DELAY_TRIGGER(1 << TOUCHSCREEN_VCHANNEL1) |
->> +                 LRADC_DELAY_KICK | LRADC_DELAY_DELAY(10), /* waste 5 ms */
->> +                 LRADC_DELAY(2));
->> +}
->> +
->> +/*
->> + * in order to avoid false measurements, report only samples where
->> + * the surface is still touched after the position measurement
->> + */
->> +static void mxs_lradc_finish_touch_event(struct mxs_lradc_ts *ts, bool valid)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     /* if it is still touched, report the sample */
->> +     if (valid && mxs_lradc_check_touch_event(lradc)) {
->> +             ts->ts_valid = true;
->> +             mxs_lradc_report_ts_event(ts);
->> +     }
->> +
->> +     /* if it is even still touched, continue with the next measurement */
->> +     if (mxs_lradc_check_touch_event(lradc)) {
->> +             mxs_lradc_prepare_y_pos(ts);
->> +             return;
->> +     }
->> +
->> +     if (ts->ts_valid) {
->> +             /* signal the release */
->> +             ts->ts_valid = false;
->> +             input_report_key(ts->ts_input, BTN_TOUCH, 0);
->> +             input_sync(ts->ts_input);
->> +     }
->> +
->> +     /* if it is released, wait for the next touch via IRQ */
->> +     ts->cur_plate = LRADC_TOUCH;
->> +     mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(2));
->> +     mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(3));
->> +     mxs_lradc_reg_clear(lradc,
->> +                         LRADC_CTRL1_TOUCH_DETECT_IRQ |
->> +                         LRADC_CTRL1_LRADC_IRQ_EN(TOUCHSCREEN_VCHANNEL1) |
->> +                         LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL1),
->> +                         LRADC_CTRL1);
->> +     mxs_lradc_reg_set(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ_EN, LRADC_CTRL1);
->> +}
->> +
->> +/* touchscreen's state machine */
->> +static void mxs_lradc_handle_touch(struct mxs_lradc_ts *ts)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     switch (ts->cur_plate) {
->> +     case LRADC_TOUCH:
->> +             if (mxs_lradc_check_touch_event(lradc))
->> +                     mxs_lradc_start_touch_event(ts);
->> +             mxs_lradc_reg_clear(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ,
->> +                                 LRADC_CTRL1);
->> +             return;
->> +
->> +     case LRADC_SAMPLE_Y:
->> +             ts->ts_y_pos =
->> +                 mxs_lradc_ts_read_raw_channel(ts, TOUCHSCREEN_VCHANNEL1);
->> +             mxs_lradc_prepare_x_pos(ts);
->> +             return;
->> +
->> +     case LRADC_SAMPLE_X:
->> +             ts->ts_x_pos =
->> +                 mxs_lradc_ts_read_raw_channel(ts, TOUCHSCREEN_VCHANNEL1);
->> +             mxs_lradc_prepare_pressure(ts);
->> +             return;
->> +
->> +     case LRADC_SAMPLE_PRESSURE:
->> +             ts->ts_pressure =
->> +                 mxs_lradc_read_ts_pressure(ts,
->> +                                            TOUCHSCREEN_VCHANNEL2,
->> +                                            TOUCHSCREEN_VCHANNEL1);
->> +             mxs_lradc_complete_touch_event(ts);
->> +             return;
->> +
->> +     case LRADC_SAMPLE_VALID:
->> +             mxs_lradc_finish_touch_event(ts, 1);
->> +             break;
->> +     }
->> +}
->> +
->> +/*
->> + * IRQ Handling
->> + */
->> +static irqreturn_t mxs_lradc_ts_handle_irq(int irq, void *data)
->> +{
->> +     struct mxs_lradc_ts *ts = data;
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +     unsigned long reg = readl(lradc->base + LRADC_CTRL1);
->> +     u32 clr_irq = mxs_lradc_irq_mask(lradc);
->> +     const u32 ts_irq_mask =
->> +             LRADC_CTRL1_TOUCH_DETECT_IRQ |
->> +             LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL1) |
->> +             LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL2);
->> +
->> +     if (!(reg & mxs_lradc_irq_mask(lradc)))
->> +             return IRQ_NONE;
->> +
->> +     if (lradc->use_touchscreen && (reg & ts_irq_mask)) {
->
-> Why do we have this flag instead of not creating the platform device by
-> MFD parent when touchscreen is not in use?
->
->> +             mxs_lradc_handle_touch(ts);
->> +
->> +             /* Make sure we don't clear the next conversion's interrupt. */
->> +             clr_irq &= ~(LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL1) |
->> +                             LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL2));
->> +             mxs_lradc_reg_clear(lradc, reg & clr_irq, LRADC_CTRL1);
->> +     }
->> +
->> +     return IRQ_HANDLED;
->> +}
->> +
->> +static int mxs_lradc_ts_open(struct input_dev *dev)
->> +{
->> +     struct mxs_lradc_ts *ts = input_get_drvdata(dev);
->> +
->> +     /* Enable the touch-detect circuitry. */
->> +     mxs_lradc_enable_touch_detection(ts);
->> +
->> +     return 0;
->> +}
->> +
->> +static void mxs_lradc_disable_ts(struct mxs_lradc_ts *ts)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     /* stop all interrupts from firing */
->> +     mxs_lradc_reg_clear(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ_EN |
->> +             LRADC_CTRL1_LRADC_IRQ_EN(TOUCHSCREEN_VCHANNEL1) |
->> +             LRADC_CTRL1_LRADC_IRQ_EN(TOUCHSCREEN_VCHANNEL2), LRADC_CTRL1);
->> +
->> +     /* Power-down touchscreen touch-detect circuitry. */
->> +     mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
->> +}
->> +
->> +static void mxs_lradc_ts_close(struct input_dev *dev)
->> +{
->> +     struct mxs_lradc_ts *ts = input_get_drvdata(dev);
->> +
->> +     mxs_lradc_disable_ts(ts);
->> +}
->> +
->> +static void mxs_lradc_ts_hw_init(struct mxs_lradc_ts *ts)
->> +{
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     /* Configure the touchscreen type */
->> +     if (lradc->soc == IMX28_LRADC) {
->> +             mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
->> +                                 LRADC_CTRL0);
->> +
->> +             if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
->> +                     mxs_lradc_reg_set(lradc,
->> +                                       LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
->> +                                       LRADC_CTRL0);
->> +     }
->> +}
->> +
->> +static void mxs_lradc_ts_hw_stop(struct mxs_lradc_ts *ts)
->> +{
->> +     int i;
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     mxs_lradc_reg_clear(lradc,
->> +                     lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
->> +                     LRADC_CTRL1);
->> +
->> +     for (i = 1; i < LRADC_MAX_DELAY_CHANS; i++)
->> +             mxs_lradc_reg_wrt(ts->lradc, 0, LRADC_DELAY(i));
->> +}
->> +
->> +static int mxs_lradc_ts_register(struct mxs_lradc_ts *ts)
->> +{
->> +     struct input_dev *input = ts->ts_input;
->> +     struct device *dev = ts->dev;
->> +     struct mxs_lradc *lradc = ts->lradc;
->> +
->> +     if (!lradc->use_touchscreen)
->> +             return 0;
->> +
->> +     input->name = DRIVER_NAME_TS;
->> +     input->id.bustype = BUS_HOST;
->> +     input->dev.parent = dev;
->
-> Not needed for devm-managed input devices.
->
->> +     input->open = mxs_lradc_ts_open;
->> +     input->close = mxs_lradc_ts_close;
->> +
->> +     __set_bit(EV_ABS, input->evbit);
->> +     __set_bit(EV_KEY, input->evbit);
->> +     __set_bit(BTN_TOUCH, input->keybit);
->> +     __set_bit(INPUT_PROP_DIRECT, input->propbit);
->> +     input_set_abs_params(input, ABS_X, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
->> +     input_set_abs_params(input, ABS_Y, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
->> +     input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_SINGLE_SAMPLE_MASK,
->> +                          0, 0);
->> +
->> +     ts->ts_input = input;
->> +     input_set_drvdata(input, ts);
->> +
->> +     return input_register_device(input);
->> +}
->> +
->> +static int mxs_lradc_ts_probe(struct platform_device *pdev)
->> +{
->> +     struct device *dev = &pdev->dev;
->> +     struct device_node *node = dev->parent->of_node;
->> +     struct mxs_lradc *lradc = dev_get_platdata(dev);
->> +     struct mxs_lradc_ts *ts;
->> +     struct input_dev *input;
->> +     int touch_ret, ret, i;
->> +     u32 ts_wires = 0, adapt;
->> +
->> +     ts = devm_kzalloc(dev, sizeof(*ts), GFP_KERNEL);
->> +     input = devm_input_allocate_device(dev);
->
-> I'd expect input allocation be done in mxs_lradc_ts_register().
->
->> +     if (!ts || !input)
->> +             return -ENOMEM;
->> +
->> +     ts->lradc = lradc;
->> +     ts->dev = dev;
->> +     ts->ts_input = input;
->> +     platform_set_drvdata(pdev, ts);
->> +     input_set_drvdata(input, ts);
->> +
->> +     touch_ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
->> +                                      &ts_wires);
->> +
->> +     if (of_property_read_u32(node, "fsl,ave-ctrl", &adapt)) {
->> +             ts->over_sample_cnt = 4;
->> +     } else {
->> +             if (adapt < 1 || adapt > 32) {
->> +                     dev_err(ts->dev, "Invalid sample count (%u)\n",
->> +                             adapt);
->> +                     touch_ret = -EINVAL;
->> +             } else {
->> +                     ts->over_sample_cnt = adapt;
->> +             }
->> +     }
->> +
->> +     if (of_property_read_u32(node, "fsl,ave-delay", &adapt)) {
->> +             ts->over_sample_delay = 2;
->> +     } else {
->> +             if (adapt < 2 || adapt > LRADC_DELAY_DELAY_MASK + 1) {
->> +                     dev_err(ts->dev, "Invalid sample delay (%u)\n",
->> +                             adapt);
->> +                     touch_ret = -EINVAL;
->> +             } else {
->> +                     ts->over_sample_delay = adapt;
->> +             }
->> +     }
->> +
->> +     if (of_property_read_u32(node, "fsl,settling", &adapt)) {
->> +             ts->settling_delay = 10;
->> +     } else {
->> +             if (adapt < 1 || adapt > LRADC_DELAY_DELAY_MASK) {
->> +                     dev_err(ts->dev, "Invalid settling delay (%u)\n",
->> +                             adapt);
->> +                     touch_ret = -EINVAL;
->
-> Why are we not aborting here?
->
->> +             } else {
->> +                     ts->settling_delay = adapt;
->> +             }
->> +     }
->> +
->> +     mxs_lradc_ts_hw_init(ts);
->> +     for (i = 0; i < lradc->irq_count; i++) {
->> +             ret = devm_request_irq(dev, lradc->irq[i],
->> +                                    mxs_lradc_ts_handle_irq,
->
-> Hmm, if you have several interrupts handled by the same interrupt
-> handler you'd need some locking there.
+Added Vishay Capella CM36672 Proximity Sensor IIO driver.  Support both
+ACPI and Device Tree.
 
-same interrupt handler can run concurrently only on multi cores, so
-why do we need locking?
+Signed-off-by: Kevin Tsai <capellamicro@gmail.com>
+---
+ .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+ .../devicetree/bindings/iio/light/cm36672.txt      |  54 ++
+ MAINTAINERS                                        |   3 +-
+ drivers/iio/light/Kconfig                          |  11 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/cm36672.c                        | 925 +++++++++++++++++++++
+ 6 files changed, 994 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/cm36672.txt
+ create mode 100644 drivers/iio/light/cm36672.c
 
->
->> +                                    IRQF_SHARED, lradc->irq_name[i], ts);
->> +             if (ret)
->> +                     return ret;
->> +     }
->> +
->> +     if (!touch_ret) {
->> +             ret = mxs_lradc_ts_register(ts);
->> +             if (!ret)
->> +                     goto err_ts_register;
->> +     }
->> +
->> +     return 0;
->> +
->> +err_ts_register:
->> +     mxs_lradc_ts_hw_stop(ts);
->> +     return ret;
->
-> Would prefer calling this variable "error".
->
->> +}
->> +
->> +static int mxs_lradc_ts_remove(struct platform_device *pdev)
->> +{
->> +     struct mxs_lradc_ts *ts = platform_get_drvdata(pdev);
->> +
->> +     mxs_lradc_ts_hw_stop(ts);
->
-> I wonder if mxs_lradc_ts_hw_stop() can be combined with
-> mxs_lradc_disable_ts() which is called automatically if input device is
-> opened? This way we'd be able to get rid of mxs_lradc_ts_remove().
->
->> +
->> +     return 0;
->> +}
->> +
->> +static struct platform_driver mxs_lradc_ts_driver = {
->> +     .driver = {
->> +             .name = DRIVER_NAME_TS,
->> +     },
->> +     .probe  = mxs_lradc_ts_probe,
->> +     .remove = mxs_lradc_ts_remove,
->> +};
->> +module_platform_driver(mxs_lradc_ts_driver);
->> +
->> +MODULE_LICENSE("GPL v2");
->
-> "GPL" since you are not limiting to v2 only.
->
-> Thanks.
->
-> --
-> Dmitry
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+index 53987449..a66f052 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -25,6 +25,7 @@ at,24c08		i2c serial eeprom  (24cxx)
+ atmel,at97sc3204t	i2c trusted platform module (TPM)
+ capella,cm32181		CM32181: Ambient Light Sensor
+ capella,cm3232		CM3232: Ambient Light Sensor
++capella,cm36672		CM36672: Proximity Sensor
+ cirrus,cs42l51		Cirrus Logic CS42L51 audio codec
+ dallas,ds1307		64 x 8, Serial, I2C Real-Time Clock
+ dallas,ds1338		I2C RTC with 56-Byte NV RAM
+diff --git a/Documentation/devicetree/bindings/iio/light/cm36672.txt b/Documentation/devicetree/bindings/iio/light/cm36672.txt
+new file mode 100644
+index 0000000..2c29f9f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/cm36672.txt
+@@ -0,0 +1,54 @@
++* Vishay Capella CM36672 Proximity Sensor
++
++Required properties:
++- compatible: must be "capella,cm36672"
++- reg: the I2C address of the device
++- interrupts: interrupt-specifier for the sole interrupt generated by the device
++
++Optionoal properties:
++- capella,reg_prx_conf: PS_CONF1 and PS_CONF2 registers
++- capella,reg_prx_conf3: PS_CONF3 and PS_MS registers
++- capella,reg_prx_canc: PS cancellation level setting
++- capella,reg_prx_thdl: PS low interrupt threshold setting
++- capella,reg_prx_thdh: PS high interrupt threshold setting
++- capella,name_prx_int_rising: enable/disable rising interrupt
++- capella,name_prx_int_falling: enable/disable falling interrupt
++- capella,name_prx_duty: PS duty ratio setting
++- capella,name_prx_pers: persistence setting
++- capella,name_prx_it: integration time setting
++- capella,name_prx_led_current: LED current selection
++- capella,name_prx_threshold_falling: interrupt falling threshold
++- capella,name_prx_threshold_rising: interrupt rising threshold
++
++Example:
++
++	i2c_cm36672: i2c-gpio {
++		/* ... */
++
++		cm36672@60 {
++			compatible = "capella,cm36672";
++			reg = <0x60>;
++			interrupt-parent = <&gpio0>;
++			interrupts = <30 0>;
++
++			/* Initialized by register */
++			capella,reg_prx_conf = <0x0322>;
++			capella,reg_prx_conf3 = <0x0000>;
++			capella,reg_prx_canc = <0x0000>;
++			capella,reg_prx_thdl = <0x0007>;
++			capella,reg_prx_thdh = <0x000A>;
++
++			/* Or, initialized by name */
++			capella,name_prx_int_rising = <1>;
++			capella,name_prx_int_falling = <1>;
++			capella,name_prx_duty = <0>;
++			capella,name_prx_pers = <2>;
++			capella,name_prx_it = <1>;
++			capella,name_prx_led_current = <0>;
++			capella,name_prx_threshold_falling = <7>;
++			capella,name_prx_threshold_rising = <10>;
++		};
++
++		/* ... */
++	};
++
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ed1229e..e9962a1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2805,10 +2805,11 @@ F:	security/commoncap.c
+ F:	kernel/capability.c
+ 
+ CAPELLA MICROSYSTEMS LIGHT SENSOR DRIVER
+-M:	Kevin Tsai <ktsai@capellamicro.com>
++M:	Kevin Tsai <capellamicro@gmail.com>
+ S:	Maintained
+ F:	drivers/iio/light/cm*
+ F:	Documentation/devicetree/bindings/i2c/trivial-devices.txt
++F:	Documentation/devicetree/bindings/iio/light/cm*.txt
+ 
+ CAVIUM LIQUIDIO NETWORK DRIVER
+ M:     Derek Chickles <derek.chickles@caviumnetworks.com>
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index 7c566f5..1fa91ae 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -127,6 +127,17 @@ config CM36651
+ 	 To compile this driver as a module, choose M here:
+ 	 the module will be called cm36651.
+ 
++config CM36672
++	depends on I2C
++	tristate "CM36672 proximity sensor"
++	 help
++	 Say Y here if you use cm36672.
++	 This option enables proximity sensor using Vishay
++	 Capella cm36672 device driver.
++
++	 To compile this driver as a module, choose M here:
++	 the module will be called cm36672.
++
+ config GP2AP020A00F
+ 	tristate "Sharp GP2AP020A00F Proximity/ALS sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 6f2a3c6..b155425 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -14,6 +14,7 @@ obj-$(CONFIG_CM32181)		+= cm32181.o
+ obj-$(CONFIG_CM3232)		+= cm3232.o
+ obj-$(CONFIG_CM3323)		+= cm3323.o
+ obj-$(CONFIG_CM36651)		+= cm36651.o
++obj-$(CONFIG_CM36672)		+= cm36672.o
+ obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+ obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+ obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
+diff --git a/drivers/iio/light/cm36672.c b/drivers/iio/light/cm36672.c
+new file mode 100644
+index 0000000..6dc2633
+--- /dev/null
++++ b/drivers/iio/light/cm36672.c
+@@ -0,0 +1,925 @@
++/*
++ * CM36672 Proximity Sensor
++ *
++ * Copyright (C) 2014-2016 Vishay Capella
++ * Author: Kevin Tsai <capellamicro@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2, as published
++ * by the Free Software Foundation.
++ *
++ * IIO driver for CM36672 (7-bit I2C slave address 0x60).
++ */
++#include <linux/kernel.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/interrupt.h>
++#include <linux/gpio.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/events.h>
++
++#ifdef CONFIG_ACPI
++#include <linux/acpi.h>
++#endif
++
++/* Sensor registers */
++#define CM36672_ADDR_RESERVED00		0x00
++#define CM36672_ADDR_RESERVED01		0x01
++#define CM36672_ADDR_RESERVED02		0x02
++#define CM36672_ADDR_PRX_CONF		0x03
++#define CM36672_ADDR_PRX_CONF3		0x04
++#define CM36672_ADDR_PRX_CANC		0x05
++#define CM36672_ADDR_PRX_THDL		0x06
++#define CM36672_ADDR_PRX_THDH		0x07
++#define CM36672_REGS_NUM		0x08
++/* Read only registers */
++#define CM36672_ADDR_PRX		0x08
++#define CM36672_ADDR_STATUS		0x0B
++
++/* RESERVED00 */
++#define CM36672_RESERVED00_DEFAULT	0x0001
++
++/* RESERVED01 */
++#define CM36672_RESERVED01_DEFAULT	0x0000
++
++/* RESERVED02 */
++#define CM36672_RESERVED02_DEFAULT	0x0000
++
++/* PRX_CONF */
++#define CM36672_PRX_DISABLE		0x0001
++#define CM36672_PRX_INT_RISING		BIT(8)
++#define CM36672_PRX_INT_FALLING		BIT(9)
++#define CM36672_PRX_INT_MASK		(CM36672_PRX_INT_RISING |	\
++					CM36672_PRX_INT_FALLING)
++
++/* PRX_CONF: duty ratio */
++#define CM36672_PRX_DR_MASK		(BIT(6) | BIT(7))
++#define CM36672_PRX_DR_SHIFT		6
++#define CM36672_PRX_DR1			0x0000 /* Duty ratio 1/40 */
++#define CM36672_PRX_DR2			0x0040 /* Duty ratio 1/80 */
++#define CM36672_PRX_DR3			0x0080 /* Duty ratio 1/160 */
++#define CM36672_PRX_DR4			0x00C0 /* Duty ratio 1/320 */
++
++/* PRX_CONF: persistence */
++#define CM36672_PRX_PERS_MASK		(BIT(4) | BIT(5))
++#define CM36672_PRX_PERS_SHIFT		4
++#define CM36672_PRX_PERS2		0x0010
++#define CM36672_PRX_PERS3		0x0020
++#define CM36672_PRX_PERS4		0x0030
++
++/* PRX_CONF: integration time */
++#define CM36672_PRX_IT_MASK		(BIT(1) | BIT(2) | BIT(3))
++#define CM36672_PRX_IT_SHIFT		1
++#define CM36672_PRX_IT0			0x0000 /* 1T */
++#define CM36672_PRX_IT1			0x0002 /* 1.5T */
++#define CM36672_PRX_IT2			0x0004 /* 2T */
++#define CM36672_PRX_IT3			0x0006 /* 2.5T */
++#define CM36672_PRX_IT4			0x0008 /* 3T */
++#define CM36672_PRX_IT5			0x000A /* 3.5T */
++#define CM36672_PRX_IT6			0x000C /* 4T */
++#define CM36672_PRX_IT7			0x000E /* 8T */
++
++#define CM36672_PRX_CONF_DEFAULT	(CM36672_PRX_IT2 |		\
++					CM36672_PRX_PERS3)
++
++/* PRX_CONF3 */
++#define CM36672_PRX_LED_I_MASK		(BIT(8) | BIT(9) | BIT(10))
++#define CM36672_PRX_LED_I_SHIFT		8
++#define CM36672_PRX_LED_I0		0x0000 /* 50mA */
++#define CM36672_PRX_LED_I1		0x0100 /* 75mA */
++#define CM36672_PRX_LED_I2		0x0200 /* 100mA */
++#define CM36672_PRX_LED_I3		0x0300 /* 120mA */
++#define CM36672_PRX_LED_I4		0x0400 /* 140mA */
++#define CM36672_PRX_LED_I5		0x0500 /* 160mA */
++#define CM36672_PRX_LED_I6		0x0600 /* 180mA */
++#define CM36672_PRX_LED_I7		0x0700 /* 200mA */
++
++#define CM36672_PRX_CONF3_DEFAULT	CM36672_PRX_LED_I0
++
++/* PRX_CANC */
++#define CM36672_PRX_CANC_DEFAULT	0x0000
++
++/* PRX_THDL */
++#define CM36672_PRX_THDL_DEFAULT	0x0005
++
++/* PRX_THDH */
++#define CM36672_PRX_THDH_DEFAULT	0x000A
++
++/* INT_FLAG */
++#define CM36672_INT_PRX_CLOSE		BIT(9)
++#define CM36672_INT_PRX_AWAY		BIT(8)
++
++struct cm36672_it_scale {
++	u8 it;
++	int val;
++	int val2;
++};
++
++static const struct cm36672_it_scale cm36672_prx_it_scales[] = {
++	{0, 0, 100},	/* 0.00010 */
++	{1, 0, 150},	/* 0.00015 */
++	{2, 0, 200},	/* 0.00020 */
++	{3, 0, 250},	/* 0.00025 */
++	{4, 0, 300},	/* 0.00030 */
++	{5, 0, 350},	/* 0.00035 */
++	{6, 0, 400},	/* 0.00040 */
++	{7, 0, 800},	/* 0.00080 */
++};
++
++#define CM36672_PRX_INT_TIME_AVAIL			\
++	"0.000100 0.000150 0.000200 0.000250 "		\
++	"0.000300 0.000350 0.000400 0.000800"
++
++static const u16 cm36672_regs_default[] = {
++	CM36672_RESERVED00_DEFAULT,
++	CM36672_RESERVED01_DEFAULT,
++	CM36672_RESERVED02_DEFAULT,
++	CM36672_PRX_CONF_DEFAULT,
++	CM36672_PRX_CONF3_DEFAULT,
++	CM36672_PRX_CANC_DEFAULT,
++	CM36672_PRX_THDL_DEFAULT,
++	CM36672_PRX_THDH_DEFAULT,
++};
++
++struct cm36672_chip {
++	const struct cm36672_platform_data *pdata;
++	struct i2c_client *client;
++	struct mutex lock;
++	u16 regs[CM36672_REGS_NUM];
++};
++
++#define CM36672_DRIVER_NAME	"cm36672"
++
++#ifdef CONFIG_OF
++void cm36672_mod_u16(u16 *reg, u16 mask, u8 shift, u16 val)
++{
++	*reg &= ~mask;
++	*reg |= (u16)(val << shift);
++}
++
++void cm36672_parse_dt(struct cm36672_chip *chip)
++{
++	struct device_node *dn = chip->client->dev.of_node;
++	u32 temp_val;
++
++	/* parse by registers */
++	if (!of_property_read_u32(dn, "capella,reg_prx_conf", &temp_val))
++		chip->regs[CM36672_ADDR_PRX_CONF] = (u16)temp_val;
++	if (!of_property_read_u32(dn, "capella,reg_prx_conf3", &temp_val))
++		chip->regs[CM36672_ADDR_PRX_CONF3] = (u16)temp_val;
++	if (!of_property_read_u32(dn, "capella,reg_prx_canc", &temp_val))
++		chip->regs[CM36672_ADDR_PRX_CANC] = (u16)temp_val;
++	if (!of_property_read_u32(dn, "capella,reg_prx_thdl", &temp_val))
++		chip->regs[CM36672_ADDR_PRX_THDL] = (u16)temp_val;
++	if (!of_property_read_u32(dn, "capella,reg_prx_thdh", &temp_val))
++		chip->regs[CM36672_ADDR_PRX_THDH] = (u16)temp_val;
++
++	/* parse by name */
++	if (!of_property_read_u32(dn, "capella,name_prx_int_rising", &temp_val))
++		cm36672_mod_u16(&chip->regs[CM36672_ADDR_PRX_CONF],
++				CM36672_PRX_INT_RISING, 0,
++				temp_val ? CM36672_PRX_INT_RISING : 0);
++	if (!of_property_read_u32(dn, "capella,name_prx_int_falling",
++				&temp_val))
++		cm36672_mod_u16(&chip->regs[CM36672_ADDR_PRX_CONF],
++				CM36672_PRX_INT_FALLING, 0,
++				temp_val ? CM36672_PRX_INT_FALLING : 0);
++	if (!of_property_read_u32(dn, "capella,name_prx_duty", &temp_val))
++		cm36672_mod_u16(&chip->regs[CM36672_ADDR_PRX_CONF],
++				CM36672_PRX_DR_MASK,
++				CM36672_PRX_DR_SHIFT,
++				(u16)temp_val);
++	if (!of_property_read_u32(dn, "capella,name_prx_pers", &temp_val))
++		cm36672_mod_u16(&chip->regs[CM36672_ADDR_PRX_CONF],
++				CM36672_PRX_PERS_MASK,
++				CM36672_PRX_PERS_SHIFT,
++				(u16)temp_val);
++	if (!of_property_read_u32(dn, "capella,name_prx_it", &temp_val))
++		cm36672_mod_u16(&chip->regs[CM36672_ADDR_PRX_CONF],
++				CM36672_PRX_IT_MASK,
++				CM36672_PRX_IT_SHIFT,
++				(u16)temp_val);
++	if (!of_property_read_u32(dn, "capella,name_prx_led_current",
++				&temp_val))
++		cm36672_mod_u16(&chip->regs[CM36672_ADDR_PRX_CONF3],
++				CM36672_PRX_LED_I_MASK,
++				CM36672_PRX_LED_I_SHIFT,
++				(u16)temp_val);
++	if (!of_property_read_u32(dn, "capella,name_prx_threshold_rising",
++				&temp_val))
++		chip->regs[CM36672_ADDR_PRX_THDH] = (u16)temp_val;
++	if (!of_property_read_u32(dn, "capella,name_prx_threshold_falling",
++				&temp_val))
++		chip->regs[CM36672_ADDR_PRX_THDL] = (u16)temp_val;
++}
++#endif
++
++#ifdef CONFIG_ACPI
++/**
++ * cm36672_acpi_get_cpm_info() - Get CPM object from ACPI
++ * @client:	pointer of struct i2c_client.
++ * @obj_name:	pointer of ACPI object name.
++ * @count:	maximum size of return array.
++ * @vals:	pointer of array for return elements.
++ *
++ * Convert ACPI CPM table to array. Special thanks Srinivas Pandruvada's
++ * help to implement this routine.
++ *
++ * Return: -ENODEV for fail. Otherwise is number of elements.
++ */
++static int cm36672_acpi_get_cpm_info(struct i2c_client *client, char *obj_name,
++							int count, u64 *vals)
++{
++	acpi_handle handle;
++	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
++	int i;
++	acpi_status status;
++	union acpi_object *cpm;
++
++	handle = ACPI_HANDLE(&client->dev);
++	if (!handle)
++		return -ENODEV;
++
++	status = acpi_evaluate_object(handle, obj_name, NULL, &buffer);
++	if (ACPI_FAILURE(status)) {
++		dev_err(&client->dev, "object %s not found\n", obj_name);
++		return -ENODEV;
++	}
++
++	cpm = buffer.pointer;
++	for (i = 0; i < cpm->package.count && i < count; ++i) {
++		union acpi_object *elem;
++
++		elem = &(cpm->package.elements[i]);
++		vals[i] = elem->integer.value;
++	}
++
++	kfree(buffer.pointer);
++
++	return i;
++}
++
++void cm36672_parse_acpi(struct cm36672_chip *chip)
++{
++	struct i2c_client *client = chip->client;
++	int cpm_elem_count, i;
++	u64 cpm_elems[20];
++
++	cpm_elem_count = cm36672_acpi_get_cpm_info(client, "CPM0",
++						ARRAY_SIZE(cpm_elems),
++						cpm_elems);
++
++	if (cpm_elem_count > 0) {
++		int header_num = 3;
++		int regs_bmp = cpm_elems[2];
++		int reg_num = cpm_elem_count - header_num;
++
++		if (reg_num > CM36672_REGS_NUM)
++			reg_num = CM36672_REGS_NUM;
++		for (i = 0; i < reg_num; i++)
++			if (regs_bmp & (1 << i))
++				chip->regs[i] =
++					cpm_elems[header_num + i];
++	}
++
++}
++
++#endif
++
++/**
++ * cm36672_setup_reg() - Initialize sensor to default values.
++ * @chip:	pointer of struct cm36672_chip
++ *
++ * Return: 0 for success; otherwise for error code.
++ */
++static int cm36672_setup_reg(struct cm36672_chip *chip)
++{
++	int i, ret;
++	u16 prx_conf;
++
++	memcpy((char *)&chip->regs, (char *)&cm36672_regs_default,
++		sizeof(cm36672_regs_default));
++
++#ifdef CONFIG_OF
++	if (chip->client->dev.of_node)
++		cm36672_parse_dt(chip);
++#endif
++
++#ifdef CONFIG_ACPI
++	if (ACPI_HANDLE(&chip->client->dev))
++		cm36672_parse_acpi(chip);
++#endif
++
++
++	/* Store regs[CM36672_ADDR_PRX_CONF] */
++	prx_conf = chip->regs[CM36672_ADDR_PRX_CONF];
++
++	/* Disable INT when initialize registers */
++	chip->regs[CM36672_ADDR_PRX_CONF] &= ~CM36672_PRX_INT_RISING;
++	chip->regs[CM36672_ADDR_PRX_CONF] &= ~CM36672_PRX_INT_FALLING;
++
++	for (i = 0; i < CM36672_REGS_NUM; i++) {
++		ret = i2c_smbus_write_word_data(chip->client, i,
++						chip->regs[i]);
++		if (ret < 0)
++			return ret;
++	}
++
++	/* Restore regs[CM36672_ADDR_PRX_CONF] */
++	chip->regs[CM36672_ADDR_PRX_CONF] = prx_conf;
++
++	/* Force to clear flags */
++	ret = i2c_smbus_read_word_data(chip->client, CM36672_ADDR_STATUS);
++	if (ret < 0) {
++		dev_err(&chip->client->dev,
++			"%s: Failed to read Status register, err= %d\n",
++			__func__, ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++/**
++ * cm36672_irq_handler() - Interrupt handling routine.
++ * @irq:	irq number
++ * @private:	pointer of void
++ *
++ * Return: 0 for success; otherwise for error code.
++ */
++static irqreturn_t cm36672_irq_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct cm36672_chip *chip = iio_priv(indio_dev);
++	struct i2c_client *client = chip->client;
++	int ev_dir, ret;
++	u64 ev_code;
++
++	ret = i2c_smbus_read_word_data(chip->client, CM36672_ADDR_STATUS);
++	if (ret < 0) {
++		dev_err(&client->dev,
++			"%s: Data read failed: %d\n", __func__, ret);
++		return IRQ_HANDLED;
++	}
++	ev_dir = 0;
++	if (ret & CM36672_INT_PRX_CLOSE)
++		ev_dir |= IIO_EV_DIR_RISING;
++	if (ret & CM36672_INT_PRX_AWAY)
++		ev_dir |= IIO_EV_DIR_FALLING;
++
++	ev_code = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
++				IIO_EV_TYPE_THRESH, ev_dir);
++
++	iio_push_event(indio_dev, ev_code, iio_get_time_ns());
++
++	return IRQ_HANDLED;
++}
++
++/**
++ * cm36672_read_prx_it() - Get the current proximity integration time.
++ * @chip:	point of struct cm36672_chip
++ * @val:	point of the integer part of integration time
++ * @val2:	point of the micro part of integration time
++ *
++ * Return: IIO_VAL_INT_PLUS_MICRO for success; otherwise for error code.
++ */
++static int cm36672_read_prx_it(struct cm36672_chip *chip, int *val, int *val2)
++{
++	u16 prx_it;
++	int i;
++
++	prx_it = chip->regs[CM36672_ADDR_PRX_CONF];
++	prx_it &= CM36672_PRX_IT_MASK;
++	prx_it >>= CM36672_PRX_IT_SHIFT;
++	for (i = 0; i < ARRAY_SIZE(cm36672_prx_it_scales); i++) {
++		if (prx_it == cm36672_prx_it_scales[i].it) {
++			*val = cm36672_prx_it_scales[i].val;
++			*val2 = cm36672_prx_it_scales[i].val2;
++			return IIO_VAL_INT_PLUS_MICRO;
++		}
++	}
++
++	return -EINVAL;
++}
++
++/**
++ * cm36672_write_prx_it() - Set the proximity integration time.
++ * @chip:	point of struct cm36672_chip
++ * @val:	the integer part of integration time
++ * @val2:	the micro part of integration time
++ *
++ * Return: 0 for success; otherwise for error code.
++ */
++static int cm36672_write_prx_it(struct cm36672_chip *chip, int val, int val2)
++{
++	struct i2c_client *client = chip->client;
++	u16 prx_it, cmd;
++	int i;
++	s32 ret;
++
++	for (i = 0; i < ARRAY_SIZE(cm36672_prx_it_scales); i++) {
++		if (val == cm36672_prx_it_scales[i].val &&
++			val2 == cm36672_prx_it_scales[i].val2) {
++
++			prx_it = cm36672_prx_it_scales[i].it;
++			prx_it <<= CM36672_PRX_IT_SHIFT;
++
++			cmd = chip->regs[CM36672_ADDR_PRX_CONF];
++			cmd &= ~CM36672_PRX_IT_MASK;
++			cmd |= prx_it;
++			ret = i2c_smbus_write_byte_data(client,
++				CM36672_ADDR_PRX_CONF,
++				cmd);
++			if (ret < 0)
++				return ret;
++			chip->regs[CM36672_ADDR_PRX_CONF] = cmd;
++			return 0;
++		}
++	}
++	return -ERANGE;
++}
++
++/**
++ * cm36672_prx_read() - Read from proximity sensor.
++ * @indio_dev:	point of struct iio_dev
++ * @chan:	point of struct iio_chan_spec
++ * @val:	point of integer
++ * @val2:	point of integer
++ * @mask:	iio_chan_info_enum
++ *
++ * Return: IIO_VAL type for success; otherwise for error code.
++ */
++static int cm36672_prx_read(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val, int *val2, long mask)
++{
++	struct cm36672_chip *chip = iio_priv(indio_dev);
++	int ret;
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		*val = 0;
++		ret = cm36672_read_prx_it(chip, val, val2);
++		break;
++	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_OFFSET:
++		ret = i2c_smbus_read_word_data(
++			chip->client,
++			mask == IIO_CHAN_INFO_RAW ?
++			CM36672_ADDR_PRX : CM36672_ADDR_PRX_CANC);
++		if (ret >= 0) {
++			*val = ret;
++			ret = IIO_VAL_INT;
++		}
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++/**
++ * cm36672_prx_write() - Write to proximity sensor.
++ * @indio_dev:	point of struct iio_dev
++ * @chan:	point of struct iio_chan_spec
++ * @val:	point of integer for integer part
++ * @val2:	point of integer for micro part
++ * @mask:	point of iio_chan_info_enum
++ *
++ * Return: Equal or great than 0 for success; otherwise for error code.
++ */
++static int cm36672_prx_write(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int val, int val2, long mask)
++{
++	struct cm36672_chip *chip = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		return cm36672_write_prx_it(chip, val, val2);
++	case IIO_CHAN_INFO_OFFSET:
++		chip->regs[CM36672_ADDR_PRX_CANC] = val;
++		return i2c_smbus_write_word_data(
++				chip->client,
++				CM36672_ADDR_PRX_CANC,
++				chip->regs[CM36672_ADDR_PRX_CANC]);
++	}
++
++	return -EINVAL;
++}
++
++enum cm36672_prx_attribute_type {
++	CM36672_ATTR_TYPE_THRESH_FALLING_EN,
++	CM36672_ATTR_TYPE_THRESH_FALLING,
++	CM36672_ATTR_TYPE_THRESH_RISING_EN,
++	CM36672_ATTR_TYPE_THRESH_RISING,
++};
++
++struct cm36672_prx_attribute {
++	struct device_attribute dev_attr;
++	enum cm36672_prx_attribute_type type;
++};
++
++static inline struct cm36672_prx_attribute *
++to_cm36672_prx_attr(struct device_attribute *attr)
++{
++	return container_of(attr, struct cm36672_prx_attribute, dev_attr);
++}
++
++/**
++ * show_prx_attr() - Show event attribute.
++ * @dev:	point of struct device
++ * @attr:	point of struct device_attribute
++ * @buf:	point of buffer
++ *
++ * Return: length of buffer; Otherwise for error code.
++ */
++static ssize_t show_prx_attr(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct cm36672_chip *chip = iio_priv(indio_dev);
++	struct cm36672_prx_attribute *prx_attr = to_cm36672_prx_attr(attr);
++	u16 val;
++
++	switch (prx_attr->type) {
++	case CM36672_ATTR_TYPE_THRESH_FALLING_EN:
++		val = (chip->regs[CM36672_ADDR_PRX_CONF] &
++			CM36672_PRX_INT_FALLING) ? 1 : 0;
++		break;
++	case CM36672_ATTR_TYPE_THRESH_RISING_EN:
++		val = (chip->regs[CM36672_ADDR_PRX_CONF] &
++			CM36672_PRX_INT_RISING) ? 1 : 0;
++		break;
++	case CM36672_ATTR_TYPE_THRESH_FALLING:
++		val = chip->regs[CM36672_ADDR_PRX_THDL];
++		break;
++	case CM36672_ATTR_TYPE_THRESH_RISING:
++		val = chip->regs[CM36672_ADDR_PRX_THDH];
++		break;
++	default:
++		return -ENXIO;
++	}
++
++	return scnprintf(buf, PAGE_SIZE, "%u\n", val);
++}
++
++/**
++ * store_prx_attr() - Store to event attribute.
++ * @dev:	point of struct device
++ * @attr:	point of struct device_attribute
++ * @buf:	point of buffer
++ * @len:	length of buffer
++ *
++ * Return: length of buffer; otherwise for error code.
++ */
++static ssize_t store_prx_attr(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct cm36672_chip *chip = iio_priv(indio_dev);
++	struct cm36672_prx_attribute *prx_attr = to_cm36672_prx_attr(attr);
++	u16 val, cmd;
++	int ret;
++
++	if (kstrtou16(buf, 0, &val))
++		return -EINVAL;
++
++	mutex_lock(&chip->lock);
++	switch (prx_attr->type) {
++	case CM36672_ATTR_TYPE_THRESH_FALLING_EN:
++		cmd = chip->regs[CM36672_ADDR_PRX_CONF];
++		if (!val)
++			cmd &= ~CM36672_PRX_INT_FALLING;
++		else
++			cmd |= CM36672_PRX_INT_FALLING;
++		ret = i2c_smbus_write_word_data(chip->client,
++				CM36672_ADDR_PRX_CONF,
++				cmd);
++		if (!ret)
++			chip->regs[CM36672_ADDR_PRX_CONF] = cmd;
++		break;
++	case CM36672_ATTR_TYPE_THRESH_RISING_EN:
++		cmd = chip->regs[CM36672_ADDR_PRX_CONF];
++		if (!val)
++			cmd &= ~CM36672_PRX_INT_RISING;
++		else
++			cmd |= CM36672_PRX_INT_RISING;
++		ret = i2c_smbus_write_word_data(chip->client,
++				CM36672_ADDR_PRX_CONF,
++				cmd);
++		if (!ret)
++			chip->regs[CM36672_ADDR_PRX_CONF] = cmd;
++		break;
++	case CM36672_ATTR_TYPE_THRESH_FALLING:
++		if (val > chip->regs[CM36672_ADDR_PRX_THDH]) {
++			ret = -ERANGE;
++			break;
++		}
++		ret = i2c_smbus_write_word_data(chip->client,
++				CM36672_ADDR_PRX_THDL,
++				val);
++		if (!ret)
++			chip->regs[CM36672_ADDR_PRX_THDL] = val;
++		break;
++	case CM36672_ATTR_TYPE_THRESH_RISING:
++		if (val < chip->regs[CM36672_ADDR_PRX_THDL]) {
++			ret = -ERANGE;
++			break;
++		}
++		ret = i2c_smbus_write_word_data(chip->client,
++				CM36672_ADDR_PRX_THDH,
++				val);
++		if (!ret)
++			chip->regs[CM36672_ADDR_PRX_THDH] = val;
++		break;
++	default:
++		ret = -ENXIO;
++	}
++	mutex_unlock(&chip->lock);
++	if (ret < 0)
++		return ret;
++
++	return len;
++}
++
++#define PRX_ATTR(_name, _mode, _show, _store, _type)			\
++	{	.dev_attr	= __ATTR(_name, _mode, _show, _store),	\
++		.type		= _type }
++
++#define CM36672_PRX_ATTR(_name, _mode, _show, _store, _type)		\
++	struct cm36672_prx_attribute cm36672_prx_attr_##_name =		\
++		PRX_ATTR(_name, _mode, _show, _store, _type)
++
++static CM36672_PRX_ATTR(in_proximity_thresh_falling_en,
++			S_IRUGO | S_IWUSR,
++			show_prx_attr,
++			store_prx_attr,
++			CM36672_ATTR_TYPE_THRESH_FALLING_EN);
++
++static CM36672_PRX_ATTR(in_proximity_thresh_rising_en,
++			S_IRUGO | S_IWUSR,
++			show_prx_attr,
++			store_prx_attr,
++			CM36672_ATTR_TYPE_THRESH_RISING_EN);
++
++static CM36672_PRX_ATTR(in_proximity_thresh_falling_value,
++			S_IRUGO | S_IWUSR,
++			show_prx_attr,
++			store_prx_attr,
++			CM36672_ATTR_TYPE_THRESH_FALLING);
++
++static CM36672_PRX_ATTR(in_proximity_thresh_rising_value,
++			S_IRUGO | S_IWUSR,
++			show_prx_attr,
++			store_prx_attr,
++			CM36672_ATTR_TYPE_THRESH_RISING);
++
++static struct attribute *cm36672_prx_event_attributes[] = {
++	&cm36672_prx_attr_in_proximity_thresh_falling_en.dev_attr.attr,
++	&cm36672_prx_attr_in_proximity_thresh_rising_en.dev_attr.attr,
++	&cm36672_prx_attr_in_proximity_thresh_falling_value.dev_attr.attr,
++	&cm36672_prx_attr_in_proximity_thresh_rising_value.dev_attr.attr,
++	NULL,
++};
++
++static struct attribute_group cm36672_prx_event_attribute_group = {
++	.attrs = cm36672_prx_event_attributes
++};
++
++static const struct iio_event_spec cm36672_event_spec[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	}
++};
++
++static const struct iio_chan_spec cm36672_channels[] = {
++	{
++		.type = IIO_PROXIMITY,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW),
++			BIT(IIO_CHAN_INFO_INT_TIME),
++			BIT(IIO_CHAN_INFO_OFFSET),
++	},
++};
++
++static const struct iio_chan_spec cm36672_channels_no_irq[] = {
++	{
++		.type = IIO_PROXIMITY,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_INT_TIME),
++			BIT(IIO_CHAN_INFO_RAW),
++			BIT(IIO_CHAN_INFO_OFFSET),
++	},
++};
++
++static IIO_CONST_ATTR(in_proximity_integration_time_available,
++		CM36672_PRX_INT_TIME_AVAIL);
++
++static struct attribute *cm36672_attributes[] = {
++	&iio_const_attr_in_proximity_integration_time_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group cm36672_attribute_group = {
++	.attrs = cm36672_attributes
++};
++
++static const struct iio_info cm36672_info = {
++	.driver_module		= THIS_MODULE,
++	.read_raw		= &cm36672_prx_read,
++	.write_raw		= &cm36672_prx_write,
++	.attrs			= &cm36672_attribute_group,
++	.event_attrs		= &cm36672_prx_event_attribute_group,
++};
++
++static const struct iio_info cm36672_info_no_irq = {
++	.driver_module		= THIS_MODULE,
++	.read_raw		= &cm36672_prx_read,
++	.write_raw		= &cm36672_prx_write,
++	.attrs			= &cm36672_attribute_group,
++};
++
++int irq;
++module_param(irq, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
++MODULE_PARM_DESC(irq, "irq");
++
++static int cm36672_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct cm36672_chip *chip;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	chip = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	chip->client = client;
++
++	mutex_init(&chip->lock);
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->channels = cm36672_channels;
++	indio_dev->num_channels = ARRAY_SIZE(cm36672_channels);
++	indio_dev->name = CM36672_DRIVER_NAME;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = cm36672_setup_reg(chip);
++	if (ret) {
++		dev_err(&client->dev, "%s: register setup failed\n", __func__);
++		return ret;
++	}
++
++	if (irq)
++		client->irq = irq;
++	indio_dev->info = (client->irq) ?
++		&cm36672_info : &cm36672_info_no_irq;
++
++	if (client->irq) {
++		ret = request_threaded_irq(client->irq, NULL,
++					cm36672_irq_handler,
++					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++					"cm36672", indio_dev);
++		if (ret) {
++			dev_err(&client->dev,
++				"%s: request irq failed\n",
++				__func__);
++			return ret;
++		}
++
++		/* Enable interrupt if default request*/
++		if (chip->regs[CM36672_ADDR_PRX_CONF] & CM36672_PRX_INT_MASK) {
++			ret = i2c_smbus_write_word_data(chip->client,
++					CM36672_ADDR_PRX_CONF,
++					chip->regs[CM36672_ADDR_PRX_CONF]);
++			if (ret) {
++				dev_err(&client->dev,
++					"%s: enable interrupt failed\n",
++					__func__);
++				return ret;
++			}
++		}
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&client->dev,
++			"%s: regist device failed\n",
++			__func__);
++		if (client->irq)
++			free_irq(client->irq, indio_dev);
++	}
++
++	return 0;
++}
++
++static int cm36672_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct cm36672_chip *chip = iio_priv(indio_dev);
++
++	i2c_smbus_write_word_data(
++			chip->client,
++			CM36672_ADDR_PRX_CONF,
++			CM36672_PRX_DISABLE);
++	if (client->irq)
++		free_irq(client->irq, indio_dev);
++	iio_device_unregister(indio_dev);
++	return 0;
++}
++
++static const struct i2c_device_id cm36672_id[] = {
++	{ "cm36672", 0 },
++	{ }
++};
++
++MODULE_DEVICE_TABLE(i2c, cm36672_id);
++
++static const struct of_device_id cm36672_of_match[] = {
++	{ .compatible = "capella,cm36672" },
++	{ }
++};
++
++#ifdef CONFIG_ACPI
++static const struct acpi_device_id cm36672_acpi_match[] = {
++	{ "CPLM6672", 0},
++	{},
++};
++
++MODULE_DEVICE_TABLE(acpi, cm36672_acpi_match);
++#endif
++
++#ifdef CONFIG_PM_SLEEP
++static int cm36672_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct cm36672_chip *chip = iio_priv(indio_dev);
++	int ret;
++
++	chip->regs[CM36672_ADDR_PRX_CONF] |= CM36672_PRX_DISABLE;
++	ret = i2c_smbus_write_byte_data(
++			chip->client,
++			CM36672_ADDR_PRX_CONF,
++			chip->regs[CM36672_ADDR_PRX_CONF]);
++	return ret;
++}
++
++static int cm36672_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct cm36672_chip *chip = iio_priv(indio_dev);
++	int i, ret;
++
++	chip->regs[CM36672_ADDR_PRX_CONF] &= ~CM36672_PRX_DISABLE;
++
++	/* Initialize registers*/
++	for (i = 0; i < CM36672_REGS_NUM; i++) {
++		ret = i2c_smbus_write_word_data(
++				chip->client,
++				i,
++				chip->regs[i]);
++		if (ret < 0)
++			return ret;
++	}
++
++	return ret;
++}
++
++static const struct dev_pm_ops cm36672_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(cm36672_suspend, cm36672_resume)};
++#endif
++
++static struct i2c_driver cm36672_driver = {
++	.driver = {
++		.name	= CM36672_DRIVER_NAME,
++		.of_match_table = cm36672_of_match,
++#ifdef CONFIG_ACPI
++		.acpi_match_table = ACPI_PTR(cm36672_acpi_match),
++#endif
++		.owner	= THIS_MODULE,
++#ifdef CONFIG_PM_SLEEP
++		.pm	= &cm36672_pm_ops,
++#endif
++	},
++	.id_table	= cm36672_id,
++	.probe		= cm36672_probe,
++	.remove		= cm36672_remove,
++};
++
++module_i2c_driver(cm36672_driver);
++
++MODULE_AUTHOR("Kevin Tsai <capellamicro@gmail.com>");
++MODULE_DESCRIPTION("CM36672 proximity sensor driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.8.3.1
+
