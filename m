@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34004 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33650 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752838AbcE2SfX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 14:35:23 -0400
-Subject: Re: [PATCH 4/7] iio: adc: ad7476: use iio helper function to
- guarantee direct mode
+	with ESMTP id S932246AbcE2RCc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 13:02:32 -0400
+Subject: Re: [PATCH 1/7] iio: adc: ad7266: claim direct mode during sensor
+ read
 To: Daniel Baluta <daniel.baluta@gmail.com>,
 	Alison Schofield <amsfield22@gmail.com>
 References: <cover.1464115008.git.amsfield22@gmail.com>
- <3a73839d868c7dee6b19440ea1015fda3457616e.1464115008.git.amsfield22@gmail.com>
- <CAEnQRZBcs7fFZt28Sw2uoFXC2wnsdTKV4jEmsK3fJ7L3qzrBHA@mail.gmail.com>
+ <c023a9f4a7d9015a225f1ebedd998687da770e9b.1464115008.git.amsfield22@gmail.com>
+ <CAEnQRZBY94SXut69-o0wvXtiAw3qTxfEnaYbk_uG8qRkeUCbgQ@mail.gmail.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -17,58 +17,61 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <4baa9b5a-e223-7a1a-f526-171000a50674@kernel.org>
-Date: Sun, 29 May 2016 19:35:21 +0100
+Message-ID: <b78bb5c6-60c0-cbcc-7ef8-90f528221c72@kernel.org>
+Date: Sun, 29 May 2016 18:02:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZBcs7fFZt28Sw2uoFXC2wnsdTKV4jEmsK3fJ7L3qzrBHA@mail.gmail.com>
+In-Reply-To: <CAEnQRZBY94SXut69-o0wvXtiAw3qTxfEnaYbk_uG8qRkeUCbgQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/05/16 11:37, Daniel Baluta wrote:
-> On Tue, May 24, 2016 at 10:18 PM, Alison Schofield <amsfield22@gmail.com> wrote:
->> Replace the code that guarantees the device stays in direct mode
->> with iio_device_claim_direct_mode() which does same.
+On 25/05/16 11:33, Daniel Baluta wrote:
+> On Tue, May 24, 2016 at 10:16 PM, Alison Schofield <amsfield22@gmail.com> wrote:
+>> Driver was checking for direct mode but not locking it down.
+>> Use iio_device_claim_direct_mode() to guarantee device stays
+>> in direct mode.
 >>
 >> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
 >> Cc: Daniel Baluta <daniel.baluta@gmail.com>
 > 
 > Acked-by: Daniel Baluta <daniel.baluta@gmail.com>
-Straight forward one. Applied.
+Looks good.
+
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
 Thanks,
+
+Jonathan
 > 
 >> ---
->>  drivers/iio/adc/ad7476.c | 11 +++++------
->>  1 file changed, 5 insertions(+), 6 deletions(-)
+>>  drivers/iio/adc/ad7266.c | 7 +++----
+>>  1 file changed, 3 insertions(+), 4 deletions(-)
 >>
->> diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
->> index be85c2a..810c9a9 100644
->> --- a/drivers/iio/adc/ad7476.c
->> +++ b/drivers/iio/adc/ad7476.c
->> @@ -106,12 +106,11 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>> diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
+>> index 21e19b6..01240ae 100644
+>> --- a/drivers/iio/adc/ad7266.c
+>> +++ b/drivers/iio/adc/ad7266.c
+>> @@ -154,12 +154,11 @@ static int ad7266_read_raw(struct iio_dev *indio_dev,
 >>
 >>         switch (m) {
 >>         case IIO_CHAN_INFO_RAW:
->> -               mutex_lock(&indio_dev->mlock);
 >> -               if (iio_buffer_enabled(indio_dev))
->> -                       ret = -EBUSY;
->> -               else
->> -                       ret = ad7476_scan_direct(st);
->> -               mutex_unlock(&indio_dev->mlock);
+>> -                       return -EBUSY;
+>> -
+>> -               ret = ad7266_read_single(st, val, chan->address);
 >> +               ret = iio_device_claim_direct_mode(indio_dev);
->> +               if (ret)
->> +                       return ret;
->> +               ret = ad7476_scan_direct(st);
+>>                 if (ret)
+>>                         return ret;
+>> +               ret = ad7266_read_single(st, val, chan->address);
 >> +               iio_device_release_direct_mode(indio_dev);
 >>
->>                 if (ret < 0)
->>                         return ret;
+>>                 *val = (*val >> 2) & 0xfff;
+>>                 if (chan->scan_type.sign == 's')
 >> --
->> 2.1.4
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
