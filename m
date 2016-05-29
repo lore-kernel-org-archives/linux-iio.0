@@ -1,157 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34529 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34488 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932334AbcE2TxF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 15:53:05 -0400
-Subject: Re: [PATCH 3/3] input: touchscreen: mxs-lradc: Add support for
- touchscreen
-To: =?UTF-8?Q?Ksenija_Stanojevi=c4=87?= <ksenija.stanojevic@gmail.com>
-References: <cover.1461930102.git.ksenija.stanojevic@gmail.com>
- <61fe1da2e8d82921f3222ec939047b6823f695e1.1461930102.git.ksenija.stanojevic@gmail.com>
- <bad220c7-7f72-55e8-fe41-e3a6ae7d7d2f@kernel.org>
- <CAL7P5jKukmxbK92oei+hOtsqcHjiBjKs2g7d7B7JsjgUxKRYAA@mail.gmail.com>
- <e2e0aa2d-dc26-cd23-1d45-837456104286@kernel.org>
- <CAL7P5jJYptf4OQE+d1AFLy92uajDTUD-B5Qsk-noBx36k3rGsg@mail.gmail.com>
-Cc: linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	linux-input@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S932323AbcE2To3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 15:44:29 -0400
+Subject: Re: [RFC 0/7] Deal with iio trigger names
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	linux-iio@vger.kernel.org
+References: <cover.1464027859.git.leonard.crestez@intel.com>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	=?UTF-8?Q?Marek_Va=c5=a1ut?= <marex@denx.de>,
-	linux-iio@vger.kernel.org, Harald Geyer <harald@ccbib.org>
+	Daniel Baluta <daniel.baluta@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <509a10d9-fe46-b159-86be-12de0ccf5a5a@kernel.org>
-Date: Sun, 29 May 2016 20:53:01 +0100
+Message-ID: <58325d90-7718-391c-fc7c-b75460cad371@kernel.org>
+Date: Sun, 29 May 2016 20:44:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAL7P5jJYptf4OQE+d1AFLy92uajDTUD-B5Qsk-noBx36k3rGsg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <cover.1464027859.git.leonard.crestez@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-<snip>
->>>>> +     if (of_property_read_u32(node, "fsl,settling", &adapt)) {
->>>>> +             ts->settling_delay = 10;
->>>>> +     } else {
->>>>> +             if (adapt < 1 || adapt > LRADC_DELAY_DELAY_MASK) {
->>>>> +                     dev_err(ts->dev, "Invalid settling delay (%u)\n",
->>>>> +                             adapt);
->>>>> +                     touch_ret = -EINVAL;
->>>>> +             } else {
->>>>> +                     ts->settling_delay = adapt;
->>>>> +             }
->>>>> +     }
->>>>> +
->>>>> +     mxs_lradc_ts_hw_init(ts);
->>>>> +     for (i = 0; i < lradc->irq_count; i++) {
->>>>> +             ret = devm_request_irq(dev, lradc->irq[i],
->>>>> +                                    mxs_lradc_ts_handle_irq,
->>>>> +                                    IRQF_SHARED, lradc->irq_name[i], ts);
->>>> As with the adc driver, are we actually using all of these?  I'd prefer we
->>>> only grab the ones that are actually relevant.
->>>
->>> Only irq lines relevant for touchscreen are:
->>> mxs-lradc-touchscreen, mxs-lradc-channel6 and mxs-lradc-channel7
->>> But not all interrupts are beiing used even when I enabled all remaining
->>> channels (not used by touchscreen) for bufferd capture via
->>> echo 1 >/sys/bus/iio/devices/iio\:device0/scan_elements/in_voltagexx_en
->>>
->>> So I don't know if it's supposed to work like this...
->>> (It works the same on the original code)
->> Certainly should only grab the relevant ones to touch screen use in here..
->> Original code probably being overly enthusiastic and we never noticed ;)
+On 23/05/16 19:39, Crestez Dan Leonard wrote:
+> IIO documents that trigger names are unique but does not actually guarantee
+> this. You can easily create a software trigger with a duplicate name if you
+> enable CONFIG_IIO_HRTIMER_TRIGGER:
 > 
-> Sorry for being unclear...
-> The point I was trying to make was that even though touchscreen and
-> adc don't share irq lines, irqs mxs-lradc-channel(2,3,4,5,6) are never
-> being used.
-> So touchscreen is only use 2 out of 3 irqs assigned to it:
-> mxs-lradc-touchscreen and mxs-lradc-channel7  . And adc
-> is only using 2 irq lines mxs-lradc-channel(0,1) during buffered
-> capture, even when all virtal channels are enabled.
-> I found that odd...
-odd indeed. It's odd hardware ;)
-
->From what I recall this hardware is capable of scheduling things in really
-complex ways, but the driver elects not to use that, basically because it became
-unmanageably complex and KISS was applied....
-
-If there is an application needing that complexity we can revisit.
-
-Of course there may be a better explanation ;)
+> 	mkdir /sys/kernel/config/iio/triggers/hrtimer/\
+> 		`cat /sys/bus/iio/devices/trigger0/name`
+> 
+> You can also get in this situation if you connect two identical st_sensors.
+> 
+> My attempt to fix this is by adding a new 'current_trigger_id' ABI which is a
+> numeric ID (X from triggerX) rather than a non-unique string. I tested that
+> this works as expected when connecting two LIS3DH to the same system. This is
+> in patches 4,5.
+> 
+> In theory the current_trigger ABI could be overloaded to looks for something
+> matching "trigger[0-9]+" but this would be nastier. There would be a need to
+> prevent registering triggers that match that expression in order to prevent
+> stuff like:
+> 
+> 	mkdir /sys/kernel/config/iio/triggers/hrtimer/trigger1
+> 
+> Such an overload wouldn't work on read and make it impossible to unambigiously
+> determine the currently selected trigger.
+> 
+> 
+> Patch 6 disallows registering duplicate trigger names. This makes drivers
+> which currently do that break at probe time.
+> 
+> Patch 7 attempts to ensure that all drivers include indio_dev->id when calling
+> iio_trigger_alloc. This obviously changes trigger names.
+> 
+> 
+> Either 4,5 or 6,7 fix this issue, but 4,5 causes fewer compat issues.
+> 
+> 
+> Patches 1,2,3 are just minor features in tools/generic_buffer. They supersede
+> the v2 I posted earlier:
+Please don't do this in future.  When reviewing lots of series, one tends
+to relying on sorting by name to make sure you find the latest version of
+a series.  Do this and people don't know there is a new version embedded in
+a different series (in this case I picked up V2 when you had found an issue
+in it).
 
 Jonathan
 > 
->>> root@cfa100xx:~# cat /proc/interrupts
->>>            CPU0
->>>  16:      13108         -  48 Edge      MXS Timer Tick
->>>  17:       4240         -  82 Edge      mxs-dma
->>>  25:          6         -  96 Edge      80010000.ssp
->>> 196:          0         -  68 Edge      mxs-dma
->>> 210:         13         -  10 Edge      mxs-lradc-touchscreen
->>> 211:          0         -  14 Edge      mxs-lradc-thresh0
->>> 212:          0         -  15 Edge      mxs-lradc-thresh1
->>> 213:         10         -  16 Edge      mxs-lradc-channel0
->>> 214:         10         -  17 Edge      mxs-lradc-channel1
->>> 215:          0         -  18 Edge      mxs-lradc-channel2
->>> 216:          0         -  19 Edge      mxs-lradc-channel3
->>> 217:          0         -  20 Edge      mxs-lradc-channel4
->>> 218:          0         -  21 Edge      mxs-lradc-channel5
->>> 219:          0         -  22 Edge      mxs-lradc-channel6
->>> 220:        412         -  23 Edge      mxs-lradc-channel7
->>> 221:          0         -  24 Edge      mxs-lradc-button0
->>> 222:          0         -  25 Edge      mxs-lradc-button1
->>> 223:          0         -  29 Edge      RTC alarm
->>> 224:          0         - 111 Edge      80058000.i2c
->>> 228:        174         -  47 Edge      uart-pl011
->>> 229:        439         -  93 Edge      80080000.usb
->>> 230:          0         -  92 Edge      80090000.usb
->>> 231:       3610         - 101 Edge      800f0000.ethernet
->>> 232:         10  80050000.lradc-dev0 Edge
->>> Err:          0
->>>
->>>>> +             if (ret)
->>>>> +                     return ret;
->>>>> +     }
->>>>> +
->>>>> +     if (!touch_ret) {
->>>>> +             ret = mxs_lradc_ts_register(ts);
->>>>> +             if (!ret)
->>>>> +                     goto err_ts_register;
->>>>> +     }
->>>>> +
->>>>> +     return 0;
->>>>> +
->>>>> +err_ts_register:
->>>>> +     mxs_lradc_ts_hw_stop(ts);
->>>>> +     return ret;
->>>>> +}
->>>>> +
->>>>> +static int mxs_lradc_ts_remove(struct platform_device *pdev)
->>>>> +{
->>>>> +     struct mxs_lradc_ts *ts = platform_get_drvdata(pdev);
->>>>> +
->>>>> +     mxs_lradc_ts_hw_stop(ts);
->>>>> +
->>>>> +     return 0;
->>>>> +}
->>>>> +
->>>>> +static struct platform_driver mxs_lradc_ts_driver = {
->>>>> +     .driver = {
->>>>> +             .name = DRIVER_NAME_TS,
->>>>> +     },
->>>>> +     .probe  = mxs_lradc_ts_probe,
->>>>> +     .remove = mxs_lradc_ts_remove,
->>>>> +};
->>>>> +module_platform_driver(mxs_lradc_ts_driver);
->>>>> +
->>>>> +MODULE_LICENSE("GPL v2");
->>>>>
->>>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->>
+> 	https://www.spinics.net/lists/linux-iio/msg24867.html
+> 
+> Crestez Dan Leonard (7):
+>   iio: generic_buffer: Cleanup when receiving signals
+>   iio: generic_buffer: Add --device-num option
+>   iio: generic_buffer: Add --trigger-num option
+>   iio: Add current_trigger_id alternative
+>   iio: generic_buffer: Use current_trigger_id
+>   iio: Refuse to register triggers with duplicate names
+>   iio: Make trigger names unique
+> 
+>  Documentation/ABI/testing/sysfs-bus-iio            |   9 +
+>  Documentation/DocBook/iio.tmpl                     |   4 +-
+>  drivers/iio/adc/max1027.c                          |   4 +-
+>  drivers/iio/common/st_sensors/st_sensors_trigger.c |   2 +-
+>  drivers/iio/industrialio-trigger.c                 | 136 ++++++++---
+>  drivers/iio/light/gp2ap020a00f.c                   |   4 +-
+>  tools/iio/generic_buffer.c                         | 269 ++++++++++++++-------
+>  7 files changed, 309 insertions(+), 119 deletions(-)
 > 
 
