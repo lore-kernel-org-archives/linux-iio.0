@@ -1,170 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34278 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34174 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752858AbcE2TRL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 15:17:11 -0400
-Subject: Re: [PATCH v2 2/2] iio: generic_buffer: Add --device-num option
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <3eaa280e2467ffc970277c48ab617a4b5bd23d4f.1464019664.git.leonard.crestez@intel.com>
- <76604f31ab9355de7bd8c69537597feb7216e1f3.1464019664.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
+	with ESMTP id S1752837AbcE2TEN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 15:04:13 -0400
+Subject: Re: [PATCH v3 2/3] iio: electricalconductivity: add
+ IIO_ELECTRICALCONDUCTIVITY type
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1464150560-1186-1-git-send-email-mranostay@gmail.com>
+ <1464150560-1186-3-git-send-email-mranostay@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <ed950783-8b25-b6e7-eb86-3bed6ed040a7@kernel.org>
-Date: Sun, 29 May 2016 20:17:09 +0100
+Message-ID: <7d8e14fc-f33c-a61e-0552-ddcfc49ecf52@kernel.org>
+Date: Sun, 29 May 2016 20:04:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <76604f31ab9355de7bd8c69537597feb7216e1f3.1464019664.git.leonard.crestez@intel.com>
+In-Reply-To: <1464150560-1186-3-git-send-email-mranostay@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/05/16 17:07, Crestez Dan Leonard wrote:
-> This makes it possible to distinguish between iio devices with the same
-> name.
-> 
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-I'm a cheapskate and never had more than one of a given part ;)
-Hence clearly never thought this through properly.
-
-Applied to the togreg branch of iio.git - usual route via testing etc...
+On 25/05/16 05:29, Matt Ranostay wrote:
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing for
+the autobuilders to ignore it.
 
 Thanks,
 
 Jonathan
 > ---
->  tools/iio/generic_buffer.c | 69 ++++++++++++++++++++++++++++++++++------------
->  1 file changed, 51 insertions(+), 18 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+>  drivers/iio/industrialio-core.c         | 1 +
+>  include/uapi/linux/iio/types.h          | 1 +
+>  3 files changed, 9 insertions(+)
 > 
-> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-> index 53fd28b..a93b771 100644
-> --- a/tools/iio/generic_buffer.c
-> +++ b/tools/iio/generic_buffer.c
-> @@ -251,7 +251,9 @@ void print_usage(void)
->  		"  -e         Disable wait for event (new data)\n"
->  		"  -g         Use trigger-less mode\n"
->  		"  -l <n>     Set buffer length to n samples\n"
-> -		"  -n <name>  Set device name (mandatory)\n"
-> +		"  --device-name -n <name>\n"
-> +		"  --device-num -N <num>\n"
-> +		"        Set device by name or number"
->  		"  -t <name>  Set trigger name\n"
->  		"  -w <n>     Set delay between reads in us (event-less mode)\n");
->  }
-> @@ -315,6 +317,12 @@ void register_cleanup(void)
->  	}
->  }
->  
-> +static const struct option longopts[] = {
-> +	{ "device-name",	1, 0, 'n' },
-> +	{ "device-num",		1, 0, 'N' },
-> +	{ },
-> +};
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index df44998..e7f590c 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1565,3 +1565,10 @@ Description:
+>  		* X is in the plane of the propellers, perpendicular to Y axis,
+>  		  and positive towards the starboard side of the UAV ;
+>  		* Z is perpendicular to propellers plane and positive upwards.
 > +
->  int main(int argc, char **argv)
->  {
->  	unsigned long num_loops = 2;
-> @@ -329,7 +337,7 @@ int main(int argc, char **argv)
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_electricalconductivity_raw
+> +KernelVersion:	4.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Raw (unscaled no offset etc.) electric conductivity reading that
+> +		can be processed to siemens per meter.
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index e6319a9..2a85bd8 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -80,6 +80,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>  	[IIO_RESISTANCE] = "resistance",
+>  	[IIO_PH] = "ph",
+>  	[IIO_UVINDEX] = "uvindex",
+> +	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
+>  };
 >  
->  	char *data;
->  	ssize_t read_size;
-> -	int dev_num, trig_num;
-> +	int dev_num = -1, trig_num;
->  	char *buffer_access = NULL;
->  	int scan_size;
->  	int noevents = 0;
-> @@ -340,7 +348,7 @@ int main(int argc, char **argv)
+>  static const char * const iio_modifier_names[] = {
+> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+> index b0916fc..22e5e58 100644
+> --- a/include/uapi/linux/iio/types.h
+> +++ b/include/uapi/linux/iio/types.h
+> @@ -39,6 +39,7 @@ enum iio_chan_type {
+>  	IIO_RESISTANCE,
+>  	IIO_PH,
+>  	IIO_UVINDEX,
+> +	IIO_ELECTRICALCONDUCTIVITY,
+>  };
 >  
->  	register_cleanup();
->  
-> -	while ((c = getopt(argc, argv, "ac:egl:n:t:w:")) != -1) {
-> +	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:w:", longopts, NULL)) != -1) {
->  		switch (c) {
->  		case 'a':
->  			autochannels = AUTOCHANNELS_ENABLED;
-> @@ -370,7 +378,15 @@ int main(int argc, char **argv)
->  
->  			break;
->  		case 'n':
-> -			device_name = optarg;
-> +			device_name = strdup(optarg);
-> +			break;
-> +		case 'N':
-> +			errno = 0;
-> +			dev_num = strtoul(optarg, &dummy, 10);
-> +			if (errno) {
-> +				ret = -errno;
-> +				goto error;
-> +			}
->  			break;
->  		case 't':
->  			trigger_name = strdup(optarg);
-> @@ -390,26 +406,42 @@ int main(int argc, char **argv)
->  		}
->  	}
->  
-> -	if (!device_name) {
-> -		fprintf(stderr, "Device name not set\n");
-> -		print_usage();
-> -		return -1;
-> -	}
-> -
->  	/* Find the device requested */
-> -	dev_num = find_type_by_name(device_name, "iio:device");
-> -	if (dev_num < 0) {
-> -		fprintf(stderr, "Failed to find the %s\n", device_name);
-> -		ret = dev_num;
-> +	if (dev_num < 0 && !device_name) {
-> +		fprintf(stderr, "Device not set\n");
-> +		print_usage();
-> +		ret = -1;
-> +		goto error;
-> +	} else if (dev_num >= 0 && device_name) {
-> +		fprintf(stderr, "Only one of --device-num or --device-name needs to be set\n");
-> +		print_usage();
-> +		ret = -1;
->  		goto error;
-> +	} else if (dev_num < 0) {
-> +		dev_num = find_type_by_name(device_name, "iio:device");
-> +		if (dev_num < 0) {
-> +			fprintf(stderr, "Failed to find the %s\n", device_name);
-> +			ret = dev_num;
-> +			goto error;
-> +		}
->  	}
-> -
->  	printf("iio device number being used is %d\n", dev_num);
->  
->  	ret = asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
-> -	if (ret < 0) {
-> -		ret = -ENOMEM;
-> -		goto error;
-> +	if (ret < 0)
-> +		return -ENOMEM;
-> +	/* Fetch device_name if specified by number */
-> +	if (!device_name) {
-> +		device_name = malloc(IIO_MAX_NAME_LENGTH);
-> +		if (!device_name) {
-> +			ret = -ENOMEM;
-> +			goto error;
-> +		}
-> +		ret = read_sysfs_string("name", dev_dir_name, device_name);
-> +		if (ret < 0) {
-> +			fprintf(stderr, "Failed to read name of device %d\n", dev_num);
-> +			goto error;
-> +		}
->  	}
->  
->  	if (!notrigger) {
-> @@ -619,6 +651,7 @@ error:
->  	}
->  	free(channels);
->  	free(trigger_name);
-> +	free(device_name);
->  	free(dev_dir_name);
->  
->  	return ret;
+>  enum iio_modifier {
 > 
 
