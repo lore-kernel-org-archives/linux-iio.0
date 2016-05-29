@@ -1,427 +1,92 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34257 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753003AbcE2TPZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 15:15:25 -0400
-Subject: Re: [PATCH v2 1/2] iio: generic_buffer: Cleanup when receiving
- signals
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <3eaa280e2467ffc970277c48ab617a4b5bd23d4f.1464019664.git.leonard.crestez@intel.com>
- <5d15d48f-e37c-986d-6da4-24c3000262e5@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
+Return-Path: <jic23@kernel.org>
+Subject: Re: Drivers for Bitland Dual Accelerometer
+To: Lasse Schuirmann <lasse.schuirmann@gmail.com>
+References: <CADRpq-CwYpwvwST3+ZHyyn6pquxndC5GJWDKZK7zR8cff_Ky-Q@mail.gmail.com>
+ <3E7E6B30-8926-4C0F-ADA6-2750C2A748B5@jic23.retrosnub.co.uk>
+ <d6c4ef1cf8ed00ddd930d2e80654e5d7@jic23.retrosnub.co.uk>
+ <CADRpq-AKo1dyRizc6+tB4rr3NBwYiQhnNzOeCf56TWR+9TXf0w@mail.gmail.com>
+ <c9cb3085-1dcc-bc0a-0fbe-e13d6e837c84@kernel.org>
+ <CADRpq-Adz-gJGKfMjXWyB1uQqrP1N7O_CODZZjb6XF07C=a5TQ@mail.gmail.com>
+Cc: jic23@jic23.retrosnub.co.uk, linux-iio@vger.kernel.org,
+ linux-iio-owner@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8c41dfd4-d237-66b5-8674-c76688ff3b95@kernel.org>
-Date: Sun, 29 May 2016 20:15:23 +0100
+Message-ID: <685fd984-33ff-006f-10f3-510b552967a4@kernel.org>
+Date: Sun, 29 May 2016 20:10:40 +0100
 MIME-Version: 1.0
-In-Reply-To: <5d15d48f-e37c-986d-6da4-24c3000262e5@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <CADRpq-Adz-gJGKfMjXWyB1uQqrP1N7O_CODZZjb6XF07C=a5TQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 29/05/16 20:14, Jonathan Cameron wrote:
-> On 23/05/16 17:07, Crestez Dan Leonard wrote:
->> This will clean (disable buffer/trigger/channels) when doing
->> something like a CTRL-C. Otherwise restarting generic_buffer requires a
->> manual echo 0 > buffer/enable
+On 23/05/16 17:48, Lasse Schuirmann wrote:
+> On 21 May 2016 at 19:46, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 20/05/16 14:56, Lasse Schuirmann wrote:
+>>> On 20 May 2016 at 15:53,  <jic23@jic23.retrosnub.co.uk> wrote:
+>>>> On 19.05.2016 22:12, Jonathan Cameron wrote:
+>>>>>
+>>>>> On 19 May 2016 19:14:52 BST, Lasse Schuirmann
+>>>>> <lasse.schuirmann@gmail.com> wrote:
+>>>>>>
+>>>>>> Hi,
+>>>>>>
+>>>>>> I'm trying to use Linux on a Lenovo Yoga 300 and can't get the
+>>>>>> accelerometer running. It was suggested at
+>>>>>>
+>>>>>> https://github.com/hadess/iio-sensor-proxy/issues/83#issuecomment-220399560
+>>>>>> that I contact this mailing list as no driver seems to exist yet.
+>>>>>>
+>>>>>> The device in question is an accelerometer from "Bitland Corporation"
+>>>>>> with the APCI ID "DUAL250E".
+>>>>>>
+>>>>>> Windows drivers seem to be available at
+>>>>>> http://driverlibs.com/download/Dual-Accelerometer.
+>>>>>>
+>>>>>> I wonder if somebody possibly has the same problem and/or would be
+>>>>>> interested in helping getting this to work.
+>>>>>>
+>>>>>> Sincerely,
+>>>>>>
+>>>>>> Lasse Schuirmann
+>>>>>
+>>>>>
+>>>>> Hmm long shot but any idea if it could be a rebadged bma250e which is a
+>>>>> Bosch
+>>>>>  sensortech part? Not sure what the dual bit would be about though.
+>>>>>
+>>>>> Digging in those windows drivers may give us more info.  They are on
+>>>>> lenovos
+>>>>>  website as well.
+>>>>>
+>>>>> On phone right now but will have a look tomorrow.
+>>>>>
+>>>>
+>>>> Hmm. The driver in question is based on Microsoft's example accelerometer
+>>>> driver
+>>>> for an ADXL345.
+>>>>
+>>>> https://msdn.microsoft.com/en-us/library/windows/hardware/dn760713(v=vs.85).aspx
+>>>>
+>>>> Not sure this is going to get us much further though...
+>>>>
+>>>> No usefully named function names that I can get out of the
+>>>> DualSPDAccelerometer.dll
+>>>> Not sure where to go next on reverse engineering this.  Are you willing to
+>>>> open things up to take a look at what is on the board?
+>>>
+>>> This is not my device so I can't say definitely but I may well be able
+>>> to open it up once if you tell me what you're looking for as I'm not
+>>> much of a hardware person.
+>> Pretty much playing guess which chip is the accelerometer - tend to be perhaps
+>> 3x3mm and see if it has a logo on the top or a more detailed part number.
 >>
->> This also cleanup up all the code freeing string buffers at
->> the end of main. We initialize all pointers to NULL so that cleanup can
->> all be done under a single error label.
->>
->> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-> From a testing point of view, this is really nice to have.
+>> Otherwise, I'm guessing the laptop no longer has windows on it, so
+>> trying to snoop on bus transfers is going to be 'tricky'.
 > 
-> Thanks Leonard!
-Oh yeah - applied with a bit of frigging to follow the name change
-that crossed with me getting around to looking at this. Should be in
-togreg  pushed as testing etc etc.
+> windows is still present.
+Hmm.  Anyone know how / if to snoop on ACPI calls in windows?
 
-
-Thanks,
 Jonathan
-> 
-> Jonathan
->> ---
->>  tools/iio/generic_buffer.c | 170 ++++++++++++++++++++++++++++-----------------
->>  1 file changed, 107 insertions(+), 63 deletions(-)
->>
->> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
->> index 2429c78..53fd28b 100644
->> --- a/tools/iio/generic_buffer.c
->> +++ b/tools/iio/generic_buffer.c
->> @@ -32,6 +32,8 @@
->>  #include <endian.h>
->>  #include <getopt.h>
->>  #include <inttypes.h>
->> +#include <stdbool.h>
->> +#include <signal.h>
->>  #include "iio_utils.h"
->>  
->>  /**
->> @@ -254,6 +256,65 @@ void print_usage(void)
->>  		"  -w <n>     Set delay between reads in us (event-less mode)\n");
->>  }
->>  
->> +enum autochan autochannels = AUTOCHANNELS_DISABLED;
->> +char *dev_dir_name = NULL;
->> +char *buf_dir_name = NULL;
->> +bool current_trigger_set = false;
->> +
->> +void cleanup(void)
->> +{
->> +	int ret;
->> +
->> +	/* Disable trigger */
->> +	if (dev_dir_name && current_trigger_set) {
->> +		/* Disconnect the trigger - just write a dummy name. */
->> +		ret = write_sysfs_string("trigger/current_trigger",
->> +					 dev_dir_name, "NULL");
->> +		if (ret < 0)
->> +			fprintf(stderr, "Failed to disable trigger: %s\n",
->> +				strerror(-ret));
->> +		current_trigger_set = false;
->> +	}
->> +
->> +	/* Disable buffer */
->> +	if (buf_dir_name) {
->> +		ret = write_sysfs_int("enable", buf_dir_name, 0);
->> +		if (ret < 0)
->> +			fprintf(stderr, "Failed to disable buffer: %s\n",
->> +				strerror(-ret));
->> +	}
->> +
->> +	/* Disable channels if auto-enabled */
->> +	if (dev_dir_name && autochannels == AUTOCHANNELS_ACTIVE) {
->> +		ret = enable_disable_all_channels(dev_dir_name, 0);
->> +		if (ret)
->> +			fprintf(stderr, "Failed to disable all channels\n");
->> +		autochannels = AUTOCHANNELS_DISABLED;
->> +	}
->> +}
->> +
->> +void sig_handler(int signum)
->> +{
->> +	fprintf(stderr, "Caught signal %d\n", signum);
->> +	cleanup();
->> +	exit(-signum);
->> +}
->> +
->> +void register_cleanup(void)
->> +{
->> +	struct sigaction sa = { .sa_handler = sig_handler };
->> +	const int signums[] = { SIGINT, SIGTERM, SIGABRT };
->> +	int ret, i;
->> +
->> +	for (i = 0; i < ARRAY_SIZE(signums); ++i) {
->> +		ret = sigaction(signums[i], &sa, NULL);
->> +		if (ret) {
->> +			perror("Failed to register signal handler");
->> +			exit(-1);
->> +		}
->> +	}
->> +}
->> +
->>  int main(int argc, char **argv)
->>  {
->>  	unsigned long num_loops = 2;
->> @@ -261,25 +322,24 @@ int main(int argc, char **argv)
->>  	unsigned long buf_len = 128;
->>  
->>  	int ret, c, i, j, toread;
->> -	int fp;
->> +	int fp = -1;
->>  
->> -	int num_channels;
->> +	int num_channels = 0;
->>  	char *trigger_name = NULL, *device_name = NULL;
->> -	char *dev_dir_name, *buf_dir_name;
->>  
->> -	int datardytrigger = 1;
->>  	char *data;
->>  	ssize_t read_size;
->>  	int dev_num, trig_num;
->> -	char *buffer_access;
->> +	char *buffer_access = NULL;
->>  	int scan_size;
->>  	int noevents = 0;
->>  	int notrigger = 0;
->> -	enum autochan autochannels = AUTOCHANNELS_DISABLED;
->>  	char *dummy;
->>  
->>  	struct iio_channel_info *channels;
->>  
->> +	register_cleanup();
->> +
->>  	while ((c = getopt(argc, argv, "ac:egl:n:t:w:")) != -1) {
->>  		switch (c) {
->>  		case 'a':
->> @@ -288,8 +348,10 @@ int main(int argc, char **argv)
->>  		case 'c':
->>  			errno = 0;
->>  			num_loops = strtoul(optarg, &dummy, 10);
->> -			if (errno)
->> -				return -errno;
->> +			if (errno) {
->> +				ret = -errno;
->> +				goto error;
->> +			}
->>  
->>  			break;
->>  		case 'e':
->> @@ -301,26 +363,30 @@ int main(int argc, char **argv)
->>  		case 'l':
->>  			errno = 0;
->>  			buf_len = strtoul(optarg, &dummy, 10);
->> -			if (errno)
->> -				return -errno;
->> +			if (errno) {
->> +				ret = -errno;
->> +				goto error;
->> +			}
->>  
->>  			break;
->>  		case 'n':
->>  			device_name = optarg;
->>  			break;
->>  		case 't':
->> -			trigger_name = optarg;
->> -			datardytrigger = 0;
->> +			trigger_name = strdup(optarg);
->>  			break;
->>  		case 'w':
->>  			errno = 0;
->>  			timedelay = strtoul(optarg, &dummy, 10);
->> -			if (errno)
->> -				return -errno;
->> +			if (errno) {
->> +				ret = -errno;
->> +				goto error;
->> +			}
->>  			break;
->>  		case '?':
->>  			print_usage();
->> -			return -1;
->> +			ret = -1;
->> +			goto error;
->>  		}
->>  	}
->>  
->> @@ -334,14 +400,17 @@ int main(int argc, char **argv)
->>  	dev_num = find_type_by_name(device_name, "iio:device");
->>  	if (dev_num < 0) {
->>  		fprintf(stderr, "Failed to find the %s\n", device_name);
->> -		return dev_num;
->> +		ret = dev_num;
->> +		goto error;
->>  	}
->>  
->>  	printf("iio device number being used is %d\n", dev_num);
->>  
->>  	ret = asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
->> -	if (ret < 0)
->> -		return -ENOMEM;
->> +	if (ret < 0) {
->> +		ret = -ENOMEM;
->> +		goto error;
->> +	}
->>  
->>  	if (!notrigger) {
->>  		if (!trigger_name) {
->> @@ -354,7 +423,7 @@ int main(int argc, char **argv)
->>  				       "%s-dev%d", device_name, dev_num);
->>  			if (ret < 0) {
->>  				ret = -ENOMEM;
->> -				goto error_free_dev_dir_name;
->> +				goto error;
->>  			}
->>  		}
->>  
->> @@ -367,7 +436,7 @@ int main(int argc, char **argv)
->>  				       "%s-trigger", device_name);
->>  			if (ret < 0) {
->>  				ret = -ENOMEM;
->> -				goto error_free_dev_dir_name;
->> +				goto error;
->>  			}
->>  		}
->>  
->> @@ -376,7 +445,7 @@ int main(int argc, char **argv)
->>  			fprintf(stderr, "Failed to find the trigger %s\n",
->>  				trigger_name);
->>  			ret = trig_num;
->> -			goto error_free_triggername;
->> +			goto error;
->>  		}
->>  
->>  		printf("iio trigger number being used is %d\n", trig_num);
->> @@ -392,7 +461,7 @@ int main(int argc, char **argv)
->>  	if (ret) {
->>  		fprintf(stderr, "Problem reading scan element information\n"
->>  			"diag %s\n", dev_dir_name);
->> -		goto error_free_triggername;
->> +		goto error;
->>  	}
->>  	if (num_channels && autochannels == AUTOCHANNELS_ENABLED) {
->>  		fprintf(stderr, "Auto-channels selected but some channels "
->> @@ -407,7 +476,7 @@ int main(int argc, char **argv)
->>  		ret = enable_disable_all_channels(dev_dir_name, 1);
->>  		if (ret) {
->>  			fprintf(stderr, "Failed to enable all channels\n");
->> -			goto error_free_triggername;
->> +			goto error;
->>  		}
->>  
->>  		/* This flags that we need to disable the channels again */
->> @@ -419,12 +488,12 @@ int main(int argc, char **argv)
->>  			fprintf(stderr, "Problem reading scan element "
->>  				"information\n"
->>  				"diag %s\n", dev_dir_name);
->> -			goto error_disable_channels;
->> +			goto error;
->>  		}
->>  		if (!num_channels) {
->>  			fprintf(stderr, "Still no channels after "
->>  				"auto-enabling, giving up\n");
->> -			goto error_disable_channels;
->> +			goto error;
->>  		}
->>  	}
->>  
->> @@ -436,7 +505,7 @@ int main(int argc, char **argv)
->>  			"/*_en or pass -a to autoenable channels and "
->>  			"try again.\n", dev_dir_name);
->>  		ret = -ENOENT;
->> -		goto error_free_triggername;
->> +		goto error;
->>  	}
->>  
->>  	/*
->> @@ -448,7 +517,7 @@ int main(int argc, char **argv)
->>  		       "%siio:device%d/buffer", iio_dir, dev_num);
->>  	if (ret < 0) {
->>  		ret = -ENOMEM;
->> -		goto error_free_channels;
->> +		goto error;
->>  	}
->>  
->>  	if (!notrigger) {
->> @@ -463,34 +532,34 @@ int main(int argc, char **argv)
->>  		if (ret < 0) {
->>  			fprintf(stderr,
->>  				"Failed to write current_trigger file\n");
->> -			goto error_free_buf_dir_name;
->> +			goto error;
->>  		}
->>  	}
->>  
->>  	/* Setup ring buffer parameters */
->>  	ret = write_sysfs_int("length", buf_dir_name, buf_len);
->>  	if (ret < 0)
->> -		goto error_free_buf_dir_name;
->> +		goto error;
->>  
->>  	/* Enable the buffer */
->>  	ret = write_sysfs_int("enable", buf_dir_name, 1);
->>  	if (ret < 0) {
->>  		fprintf(stderr,
->>  			"Failed to enable buffer: %s\n", strerror(-ret));
->> -		goto error_free_buf_dir_name;
->> +		goto error;
->>  	}
->>  
->>  	scan_size = size_from_channelarray(channels, num_channels);
->>  	data = malloc(scan_size * buf_len);
->>  	if (!data) {
->>  		ret = -ENOMEM;
->> -		goto error_free_buf_dir_name;
->> +		goto error;
->>  	}
->>  
->>  	ret = asprintf(&buffer_access, "/dev/iio:device%d", dev_num);
->>  	if (ret < 0) {
->>  		ret = -ENOMEM;
->> -		goto error_free_data;
->> +		goto error;
->>  	}
->>  
->>  	/* Attempt to open non blocking the access dev */
->> @@ -498,7 +567,7 @@ int main(int argc, char **argv)
->>  	if (fp == -1) { /* TODO: If it isn't there make the node */
->>  		ret = -errno;
->>  		fprintf(stderr, "Failed to open %s\n", buffer_access);
->> -		goto error_free_buffer_access;
->> +		goto error;
->>  	}
->>  
->>  	for (j = 0; j < num_loops; j++) {
->> @@ -511,7 +580,7 @@ int main(int argc, char **argv)
->>  			ret = poll(&pfd, 1, -1);
->>  			if (ret < 0) {
->>  				ret = -errno;
->> -				goto error_close_buffer_access;
->> +				goto error;
->>  			} else if (ret == 0) {
->>  				continue;
->>  			}
->> @@ -536,45 +605,20 @@ int main(int argc, char **argv)
->>  				     num_channels);
->>  	}
->>  
->> -	/* Stop the buffer */
->> -	ret = write_sysfs_int("enable", buf_dir_name, 0);
->> -	if (ret < 0)
->> -		goto error_close_buffer_access;
->> -
->> -	if (!notrigger)
->> -		/* Disconnect the trigger - just write a dummy name. */
->> -		ret = write_sysfs_string("trigger/current_trigger",
->> -					 dev_dir_name, "NULL");
->> -		if (ret < 0)
->> -			fprintf(stderr, "Failed to write to %s\n",
->> -				dev_dir_name);
->> +error:
->> +	cleanup();
->>  
->> -error_close_buffer_access:
->> -	if (close(fp) == -1)
->> +	if (fp >= 0 && close(fp) == -1)
->>  		perror("Failed to close buffer");
->> -
->> -error_free_buffer_access:
->>  	free(buffer_access);
->> -error_free_data:
->>  	free(data);
->> -error_free_buf_dir_name:
->>  	free(buf_dir_name);
->> -error_free_channels:
->>  	for (i = num_channels - 1; i >= 0; i--) {
->>  		free(channels[i].name);
->>  		free(channels[i].generic_name);
->>  	}
->>  	free(channels);
->> -error_free_triggername:
->> -	if (datardytrigger)
->> -		free(trigger_name);
->> -error_disable_channels:
->> -	if (autochannels == AUTOCHANNELS_ACTIVE) {
->> -		ret = enable_disable_all_channels(dev_dir_name, 0);
->> -		if (ret)
->> -			fprintf(stderr, "Failed to disable all channels\n");
->> -	}
->> -error_free_dev_dir_name:
->> +	free(trigger_name);
->>  	free(dev_dir_name);
->>  
->>  	return ret;
->>
-> 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-
