@@ -1,416 +1,297 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34156 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34185 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752837AbcE2TA3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 15:00:29 -0400
-Subject: Re: [PATCH v2] iio: temperature: add support for Maxim thermocouple
- chips
-To: Matt Ranostay <mranostay@gmail.com>
-References: <1464486059-21289-1-git-send-email-mranostay@gmail.com>
- <alpine.DEB.2.02.1605291014170.25960@pmeerw.net>
- <55862ca5-5b02-6ece-d8ba-454f96864656@kernel.org>
- <CAKzfze-dL9D708joQoiCMxVQsFUdXY=ZMF4DL75QLtEXqMXiOw@mail.gmail.com>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Marek Vasut <marex@denx.de>, Matt Porter <mporter@konsulko.com>
+	with ESMTP id S1752838AbcE2TFg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 15:05:36 -0400
+Subject: Re: [PATCH v3 3/3] iio: chemical: atlas-ph-sensor: add EC feature
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1464150560-1186-1-git-send-email-mranostay@gmail.com>
+ <1464150560-1186-4-git-send-email-mranostay@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8c03d93a-57d7-0fc2-856a-8ed7c5f3a3e6@kernel.org>
-Date: Sun, 29 May 2016 20:00:27 +0100
+Message-ID: <bebf39ac-4f10-353e-fb6b-e238276aa868@kernel.org>
+Date: Sun, 29 May 2016 20:05:34 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze-dL9D708joQoiCMxVQsFUdXY=ZMF4DL75QLtEXqMXiOw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1464150560-1186-4-git-send-email-mranostay@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/05/16 19:47, Matt Ranostay wrote:
-> On Sun, May 29, 2016 at 11:44 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 29/05/16 09:16, Peter Meerwald-Stadler wrote:
->>>
->>>> Add initial driver support for MAX6675, and MAX31885 thermocouple chips.
->>>
->>> comments below
->> Not much to add other than a question inline...
->>
->> Jonathan
->>>
->>>> Cc: Marek Vasut <marex@denx.de>
->>>> Cc: Matt Porter <mporter@konsulko.com>
->>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->>>> ---
->>>> Changes from v1:
->>>> * switch to iio_device_*_direct_mode wrappers
->>>> * add const to structs
->>>> * removed useless cast
->>>>
->>>> .../iio/temperature/maxim_thermocouple.txt         |  21 ++
->>>>  drivers/iio/temperature/Kconfig                    |  14 ++
->>>>  drivers/iio/temperature/Makefile                   |   1 +
->>>>  drivers/iio/temperature/maxim_thermocouple.c       | 273 +++++++++++++++++++++
->>>>  4 files changed, 309 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
->>>>  create mode 100644 drivers/iio/temperature/maxim_thermocouple.c
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
->>>> new file mode 100644
->>>> index 0000000..44fb029
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
->>>> @@ -0,0 +1,21 @@
->>>> +Maxim thermocouple support
->>>> +
->>>> +* https://datasheets.maximintegrated.com/en/ds/MAX6675.pdf
->>>> +* https://datasheets.maximintegrated.com/en/ds/MAX31855.pdf
->>>> +
->>>> +Required properties:
->>>> +
->>>> +    - compatible: must be "maxim,max31885" or "maxim,max6675"
->>>> +    - reg: SPI chip select number for the device
->>>> +    - spi-max-frequency: must be 4300000
->>>> +    - spi-cpha: must be defined for max6675 to enable SPI mode 1
->>>> +
->>>> +    Refer to spi/spi-bus.txt for generic SPI slave bindings.
->>>> +
->>>> +Example:
->>>> +
->>>> +    max31885@0 {
->>>> +            compatible = "maxim,max31885";
->>>> +            reg = <0>;
->>>> +            spi-max-frequency = <4300000>;
->>>> +    };
->>>> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
->>>> index c4664e5..c9f5342 100644
->>>> --- a/drivers/iio/temperature/Kconfig
->>>> +++ b/drivers/iio/temperature/Kconfig
->>>> @@ -3,6 +3,20 @@
->>>>  #
->>>>  menu "Temperature sensors"
->>>>
->>>> +config MAXIM_THERMOCOUPLE
->>>> +    tristate "Maxim thermocouple sensors"
->>>> +    depends on SPI
->>>> +    help
->>>> +      If you say yes here you get support for the Maxim series of
->>>> +      thermocouple sensors connected via SPI.
->>>> +
->>>> +      Supported sensors:
->>>> +       * MAX6675
->>>> +       * MAX31885
->>>> +
->>>> +      This driver can also be built as a module. If so, the module will
->>>> +      be called maxim_thermocouple.
->>>> +
->>>>  config MLX90614
->>>>      tristate "MLX90614 contact-less infrared sensor"
->>>>      depends on I2C
->>>> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
->>>> index 02bc79d..78c3de0 100644
->>>> --- a/drivers/iio/temperature/Makefile
->>>> +++ b/drivers/iio/temperature/Makefile
->>>> @@ -2,6 +2,7 @@
->>>>  # Makefile for industrial I/O temperature drivers
->>>>  #
->>>>
->>>> +obj-$(CONFIG_MAXIM_THERMOCOUPLE) += maxim_thermocouple.o
->>>>  obj-$(CONFIG_MLX90614) += mlx90614.o
->>>>  obj-$(CONFIG_TMP006) += tmp006.o
->>>>  obj-$(CONFIG_TSYS01) += tsys01.o
->>>> diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
->>>> new file mode 100644
->>>> index 0000000..dffe3c2
->>>> --- /dev/null
->>>> +++ b/drivers/iio/temperature/maxim_thermocouple.c
->>>> @@ -0,0 +1,273 @@
->>>> +/*
->>>> + * maxim_thermocouple.c  - Support for Maxim thermocouple chips
->>>> + *
->>>> + * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
->>>> + *
->>>> + * This program is free software; you can redistribute it and/or modify
->>>> + * it under the terms of the GNU General Public License as published by
->>>> + * the Free Software Foundation; either version 2 of the License, or
->>>> + * (at your option) any later version.
->>>> + *
->>>> + * This program is distributed in the hope that it will be useful,
->>>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->>>> + * GNU General Public License for more details.
->>>> + */
->>>> +
->>>> +#include <linux/module.h>
->>>> +#include <linux/init.h>
->>>> +#include <linux/mutex.h>
->>>> +#include <linux/err.h>
->>>> +#include <linux/spi/spi.h>
->>>> +#include <linux/iio/iio.h>
->>>> +#include <linux/iio/trigger.h>
->>>> +#include <linux/iio/buffer.h>
->>>> +#include <linux/iio/triggered_buffer.h>
->>>> +#include <linux/iio/trigger_consumer.h>
->>>> +
->>>> +#define MAXIM_THERMOCOUPLE_DRV_NAME "maxim_thermocouple"
->>>> +
->>>> +enum {
->>>> +    MAX6675,
->>>> +    MAX31885,
->>>> +};
->>>> +
->>>> +const struct iio_chan_spec max6675_channels[] = {
->>>> +    {       /* thermocouple temperature */
->>>> +            .type = IIO_TEMP,
->>>
->>> .address seems to be used; maybe make it explicit by setting it 0
->>>
->>>> +            .info_mask_separate =
->>>> +                    BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->>>> +            .scan_index = 0,
->>>> +            .scan_type = {
->>>> +                    .sign = 's',
->>>> +                    .realbits = 13,
->>>> +                    .storagebits = 16,
->>>> +                    .shift = 3,
->>>> +                    .endianness = IIO_BE,
->>>> +            },
->>>> +    },
->>>> +    IIO_CHAN_SOFT_TIMESTAMP(1),
->>>> +};
->>>> +
->>>> +const struct iio_chan_spec max31885_channels[] = {
->>>> +    {       /* thermocouple temperature */
->>>> +            .type = IIO_TEMP,
->>>> +            .address = 2,
->>>> +            .info_mask_separate =
->>>> +                    BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->>>> +            .scan_index = 0,
->>>> +            .scan_type = {
->>>> +                    .sign = 's',
->>>> +                    .realbits = 14,
->>>> +                    .storagebits = 16,
->>>> +                    .shift = 2,
->>>> +                    .endianness = IIO_BE,
->>>> +            },
->>>> +    },
->>>> +    {       /* cold junction temperature */
->>>> +            .type = IIO_TEMP,
->>>> +            .channel2 = IIO_MOD_TEMP_AMBIENT,
->>>> +            .modified = 1,
->>>> +            .info_mask_separate =
->>>> +                    BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->>>> +            .scan_index = 1,
->>>> +            .scan_type = {
->>>> +                    .sign = 's',
->>>> +                    .realbits = 12,
->>>> +                    .storagebits = 16,
->>>> +                    .shift = 4,
->>>> +                    .endianness = IIO_BE,
->>>> +            },
->>>> +    },
->>>> +    IIO_CHAN_SOFT_TIMESTAMP(2),
->>>> +};
->>>> +
->>>> +struct maxim_thermocouple_chip {
->>>> +    const struct iio_chan_spec *channels;
->>>> +    int num_channels;
->>>> +    int read_size;
->>>> +
->>>> +    /* bit-check for valid input */
->>>> +    int status_bit;
->>>> +};
->>>> +
->>>> +const struct maxim_thermocouple_chip maxim_thermocouple_chips[] = {
->>>> +    [MAX6675] = {
->>>> +                    .channels = max6675_channels,
->>>> +                    .num_channels = ARRAY_SIZE(max6675_channels),
->>>> +                    .read_size = 2,
->>>> +                    .status_bit = BIT(2),
->>>> +            },
->>>> +    [MAX31885] = {
->>>> +                    .channels = max31885_channels,
->>>> +                    .num_channels = ARRAY_SIZE(max31885_channels),
->>>> +                    .read_size = 4,
->>>> +                    .status_bit = BIT(16),
->>>> +            },
->>>> +};
->>>> +
->>>> +struct maxim_thermocouple_data {
->>>> +    struct spi_device *spi;
->>>> +    const struct maxim_thermocouple_chip *chip;
->>>> +
->>>> +    u8 buffer[16]; /* 4 byte data + 4 byte padding + 8 byte timestamp */
->>>> +};
->>>> +
->>>> +static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
->>>> +                               struct iio_chan_spec const *chan, int *val)
->>>> +{
->>>> +    unsigned int storage_bytes = data->chip->read_size;
->>>> +    unsigned int shift = chan->scan_type.shift + (chan->address * 8);
->>>> +    unsigned int buf;
->>>> +    int ret;
->>>> +
->>>> +    ret = spi_read(data->spi, (void *) &buf, storage_bytes);
->>>> +    if (ret)
->>>> +            return ret;
->>>> +
->>>> +    switch (storage_bytes) {
->>>> +    case 2:
->>>> +            *val = be16_to_cpu(buf);
->>>> +            break;
->>>> +    case 4:
->>>> +            *val = be32_to_cpu(buf);
->>>> +            break;
->>>> +    }
->>>> +
->>>> +    /* check to be sure this is a valid reading */
->>>> +    if (*val & data->chip->status_bit)
->>>> +            return -EINVAL;
->>>> +
->>>> +    *val = sign_extend32(*val >> shift, chan->scan_type.realbits - 1);
->>>> +
->>>> +    return 0;
->>>> +}
->>>> +
->>>> +static irqreturn_t maxim_thermocouple_trigger_handler(int irq, void *private)
->>>> +{
->>>> +    struct iio_poll_func *pf = private;
->>>> +    struct iio_dev *indio_dev = pf->indio_dev;
->>>> +    struct maxim_thermocouple_data *data = iio_priv(indio_dev);
->>>> +    int ret;
->>>> +
->>>> +    /* userspace HAL must do validation of data pushed to buffers */
->> Silly question, but what do you mean by this comment?
-> 
-> Mainly that userspace will have to check the status bit itself to be
-> sure a readings is valid.
-That's ugly.  hmm. Might be worth scrubbing the whole result in the buffer
-to make that clear?  Not filling the buffer at all will lead to issues so
-not sure how best to handle this.  
+On 25/05/16 05:29, Matt Ranostay wrote:
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+Trivial binding so I doubt anyone cares - though technically it should have gone
+to the devicetree list...
 
-Long ago we used to put -1 in timestamp fields when we had no way of knowing when
-the sample occurred - perhaps something similar here...
+Applied to the togreg branch of iio.git - initially pushed out as testing.
+
+Thanks,
+
+Jonathan
+> ---
+>  .../bindings/iio/chemical/atlas,ec-sm.txt          |  22 ++++
+>  drivers/iio/chemical/Kconfig                       |   8 +-
+>  drivers/iio/chemical/atlas-ph-sensor.c             | 122 ++++++++++++++++++++-
+>  3 files changed, 147 insertions(+), 5 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
 > 
->>>> +    ret = spi_read(data->spi, &data->buffer, data->chip->read_size);
->>>
->>> read_size can be 4 (bytes) but storagebits can be 16?!
->>>
->>>> +    if (!ret)
->>>> +            iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->>>> +                                               iio_get_time_ns());
->>>> +
->>>> +    iio_trigger_notify_done(indio_dev->trig);
->>>> +
->>>> +    return IRQ_HANDLED;
->>>> +}
->>>> +
->>>> +static int maxim_thermocouple_read_raw(struct iio_dev *indio_dev,
->>>> +                                   struct iio_chan_spec const *chan,
->>>> +                                   int *val, int *val2, long mask)
->>>> +{
->>>> +    struct maxim_thermocouple_data *data = iio_priv(indio_dev);
->>>> +    int ret = -EINVAL;
->>>> +
->>>> +    switch (mask) {
->>>> +    case IIO_CHAN_INFO_RAW:
->>>> +            if (iio_device_claim_direct_mode(indio_dev))
->>>> +                    return -EBUSY;
->>>> +
->>>> +            ret = maxim_thermocouple_read(data, chan, val);
->>>> +            if (!ret)
->>>> +                    ret = IIO_VAL_INT;
->>>> +
->>>> +            iio_device_release_direct_mode(indio_dev);
->>>> +            break;
->>>> +    case IIO_CHAN_INFO_SCALE:
->>>> +            switch (chan->channel2) {
->>>> +            case IIO_MOD_TEMP_AMBIENT:
->>>> +                    *val = 62;
->>>> +                    *val2 = 500000; /* 1000 * 0.0625 */
->>>> +                    ret = IIO_VAL_INT_PLUS_MICRO;
->>>> +                    break;
->>>> +            default:
->>>> +                    *val = 250; /* 1000 * 0.25 */
->>>> +                    ret = IIO_VAL_INT;
->>>> +            };
->>>> +            break;
->>>> +    }
->>>> +
->>>> +    return ret;
->>>> +}
->>>> +
->>>> +static const struct iio_info maxim_thermocouple_info = {
->>>> +    .driver_module = THIS_MODULE,
->>>> +    .read_raw = maxim_thermocouple_read_raw,
->>>> +};
->>>> +
->>>> +static int maxim_thermocouple_probe(struct spi_device *spi)
->>>> +{
->>>> +    const struct spi_device_id *id = spi_get_device_id(spi);
->>>> +    struct iio_dev *indio_dev;
->>>> +    struct maxim_thermocouple_data *data;
->>>> +    const struct maxim_thermocouple_chip *chip =
->>>> +                    &maxim_thermocouple_chips[id->driver_data];
->>>> +    int ret;
->>>> +
->>>> +    indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
->>>> +    if (!indio_dev)
->>>> +            return -ENOMEM;
->>>> +
->>>> +    indio_dev->info = &maxim_thermocouple_info;
->>>> +    indio_dev->name = MAXIM_THERMOCOUPLE_DRV_NAME;
->>>> +    indio_dev->channels = chip->channels;
->>>> +    indio_dev->num_channels = chip->num_channels;
->>>> +    indio_dev->modes = INDIO_DIRECT_MODE;
->>>> +
->>>> +    data = iio_priv(indio_dev);
->>>> +    data->spi = spi;
->>>> +    data->chip = chip;
->>>> +
->>>> +    ret = iio_triggered_buffer_setup(indio_dev, NULL,
->>>> +                            maxim_thermocouple_trigger_handler, NULL);
->>>> +    if (ret)
->>>> +            return ret;
->>>> +
->>>> +    ret = iio_device_register(indio_dev);
->>>> +    if (ret)
->>>> +            goto error_unreg_buffer;
->>>> +
->>>> +    return 0;
->>>> +
->>>> +error_unreg_buffer:
->>>> +    iio_triggered_buffer_cleanup(indio_dev);
->>>> +
->>>> +    return ret;
->>>> +}
->>>> +
->>>> +static int maxim_thermocouple_remove(struct spi_device *spi)
->>>> +{
->>>> +    struct iio_dev *indio_dev = spi_get_drvdata(spi);
->>>> +
->>>> +    iio_device_unregister(indio_dev);
->>>> +    iio_triggered_buffer_cleanup(indio_dev);
->>>> +
->>>> +    return 0;
->>>> +}
->>>> +
->>>> +static const struct spi_device_id maxim_thermocouple_id[] = {
->>>> +    {"max6675", MAX6675},
->>>> +    {"max31885", MAX31885},
->>>> +    {},
->>>> +};
->>>> +MODULE_DEVICE_TABLE(spi, maxim_thermocouple_id);
->>>> +
->>>> +static struct spi_driver maxim_thermocouple_driver = {
->>>> +    .driver = {
->>>> +            .name   = MAXIM_THERMOCOUPLE_DRV_NAME,
->>>> +    },
->>>> +    .probe          = maxim_thermocouple_probe,
->>>> +    .remove         = maxim_thermocouple_remove,
->>>> +    .id_table       = maxim_thermocouple_id,
->>>> +};
->>>> +module_spi_driver(maxim_thermocouple_driver);
->>>> +
->>>> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
->>>> +MODULE_DESCRIPTION("Maxim thermocouple sensors");
->>>> +MODULE_LICENSE("GPL");
->>>>
->>>
->>
+> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
+> new file mode 100644
+> index 0000000..2962bd9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
+> @@ -0,0 +1,22 @@
+> +* Atlas Scientific EC-SM OEM sensor
+> +
+> +http://www.atlas-scientific.com/_files/_datasheets/_oem/EC_oem_datasheet.pdf
+> +
+> +Required properties:
+> +
+> +  - compatible: must be "atlas,ec-sm"
+> +  - reg: the I2C address of the sensor
+> +  - interrupt-parent: should be the phandle for the interrupt controller
+> +  - interrupts: the sole interrupt generated by the device
+> +
+> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+> +  node bindings.
+> +
+> +Example:
+> +
+> +atlas@64 {
+> +	compatible = "atlas,ec-sm";
+> +	reg = <0x64>;
+> +	interrupt-parent = <&gpio1>;
+> +	interrupts = <16 2>;
+> +};
+> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+> index f73290f..4bcc025 100644
+> --- a/drivers/iio/chemical/Kconfig
+> +++ b/drivers/iio/chemical/Kconfig
+> @@ -5,15 +5,17 @@
+>  menu "Chemical Sensors"
+>  
+>  config ATLAS_PH_SENSOR
+> -	tristate "Atlas Scientific OEM pH-SM sensor"
+> +	tristate "Atlas Scientific OEM SM sensors"
+>  	depends on I2C
+>  	select REGMAP_I2C
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	select IRQ_WORK
+>  	help
+> -	 Say Y here to build I2C interface support for the Atlas
+> -	 Scientific OEM pH-SM sensor.
+> +	 Say Y here to build I2C interface support for the following
+> +	 Atlas Scientific OEM SM sensors:
+> +	    * pH SM sensor
+> +	    * EC SM sensor
+>  
+>  	 To compile this driver as module, choose M here: the
+>  	 module will be called atlas-ph-sensor.
+> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+> index e85477c..02e85db 100644
+> --- a/drivers/iio/chemical/atlas-ph-sensor.c
+> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+> @@ -50,13 +50,28 @@
+>  #define ATLAS_REG_PH_CALIB_STATUS_MID	BIT(1)
+>  #define ATLAS_REG_PH_CALIB_STATUS_HIGH	BIT(2)
+>  
+> +#define ATLAS_REG_EC_CALIB_STATUS		0x0f
+> +#define ATLAS_REG_EC_CALIB_STATUS_MASK		0x0f
+> +#define ATLAS_REG_EC_CALIB_STATUS_DRY		BIT(0)
+> +#define ATLAS_REG_EC_CALIB_STATUS_SINGLE	BIT(1)
+> +#define ATLAS_REG_EC_CALIB_STATUS_LOW		BIT(2)
+> +#define ATLAS_REG_EC_CALIB_STATUS_HIGH		BIT(3)
+> +
+>  #define ATLAS_REG_PH_TEMP_DATA		0x0e
+>  #define ATLAS_REG_PH_DATA		0x16
+>  
+> +#define ATLAS_REG_EC_PROBE		0x08
+> +#define ATLAS_REG_EC_TEMP_DATA		0x10
+> +#define ATLAS_REG_EC_DATA		0x18
+> +#define ATLAS_REG_TDS_DATA		0x1c
+> +#define ATLAS_REG_PSS_DATA		0x20
+> +
+>  #define ATLAS_PH_INT_TIME_IN_US		450000
+> +#define ATLAS_EC_INT_TIME_IN_US		650000
+>  
+>  enum {
+>  	ATLAS_PH_SM,
+> +	ATLAS_EC_SM,
+>  };
+>  
+>  struct atlas_data {
+> @@ -66,12 +81,13 @@ struct atlas_data {
+>  	struct regmap *regmap;
+>  	struct irq_work work;
+>  
+> -	__be32 buffer[4]; /* 32-bit pH data + 32-bit pad + 64-bit timestamp */
+> +	__be32 buffer[6]; /* 96-bit data + 32-bit pad + 64-bit timestamp */
+>  };
+>  
+>  static const struct regmap_range atlas_volatile_ranges[] = {
+>  	regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
+>  	regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
+> +	regmap_reg_range(ATLAS_REG_EC_DATA, ATLAS_REG_PSS_DATA + 4),
+>  };
+>  
+>  static const struct regmap_access_table atlas_volatile_table = {
+> @@ -86,7 +102,7 @@ static const struct regmap_config atlas_regmap_config = {
+>  	.val_bits = 8,
+>  
+>  	.volatile_table = &atlas_volatile_table,
+> -	.max_register = ATLAS_REG_PH_DATA + 4,
+> +	.max_register = ATLAS_REG_PSS_DATA + 4,
+>  	.cache_type = REGCACHE_RBTREE,
+>  };
+>  
+> @@ -115,6 +131,50 @@ static const struct iio_chan_spec atlas_ph_channels[] = {
+>  	},
+>  };
+>  
+> +#define ATLAS_EC_CHANNEL(_idx, _addr) \
+> +	{\
+> +		.type = IIO_CONCENTRATION, \
+> +		.indexed = 1, \
+> +		.channel = _idx, \
+> +		.address = _addr, \
+> +		.info_mask_separate = \
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE), \
+> +		.scan_index = _idx + 1, \
+> +		.scan_type = { \
+> +			.sign = 'u', \
+> +			.realbits = 32, \
+> +			.storagebits = 32, \
+> +			.endianness = IIO_BE, \
+> +		}, \
+> +	}
+> +
+> +static const struct iio_chan_spec atlas_ec_channels[] = {
+> +	{
+> +		.type = IIO_ELECTRICALCONDUCTIVITY,
+> +		.address = ATLAS_REG_EC_DATA,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 32,
+> +			.storagebits = 32,
+> +			.endianness = IIO_BE,
+> +		},
+> +	},
+> +	ATLAS_EC_CHANNEL(0, ATLAS_REG_TDS_DATA),
+> +	ATLAS_EC_CHANNEL(1, ATLAS_REG_PSS_DATA),
+> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+> +	{
+> +		.type = IIO_TEMP,
+> +		.address = ATLAS_REG_EC_TEMP_DATA,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +		.output = 1,
+> +		.scan_index = -1
+> +	},
+> +};
+> +
+>  static int atlas_check_ph_calibration(struct atlas_data *data)
+>  {
+>  	struct device *dev = &data->client->dev;
+> @@ -142,6 +202,44 @@ static int atlas_check_ph_calibration(struct atlas_data *data)
+>  	return 0;
+>  }
+>  
+> +static int atlas_check_ec_calibration(struct atlas_data *data)
+> +{
+> +	struct device *dev = &data->client->dev;
+> +	int ret;
+> +	unsigned int val;
+> +
+> +	ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &val, 2);
+> +	if (ret)
+> +		return ret;
+> +
+> +	dev_info(dev, "probe set to K = %d.%.2d", be16_to_cpu(val) / 100,
+> +						 be16_to_cpu(val) % 100);
+> +
+> +	ret = regmap_read(data->regmap, ATLAS_REG_EC_CALIB_STATUS, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!(val & ATLAS_REG_EC_CALIB_STATUS_MASK)) {
+> +		dev_warn(dev, "device has not been calibrated\n");
+> +		return 0;
+> +	}
+> +
+> +	if (!(val & ATLAS_REG_EC_CALIB_STATUS_DRY))
+> +		dev_warn(dev, "device missing dry point calibration\n");
+> +
+> +	if (val & ATLAS_REG_EC_CALIB_STATUS_SINGLE) {
+> +		dev_warn(dev, "device using single point calibration\n");
+> +	} else {
+> +		if (!(val & ATLAS_REG_EC_CALIB_STATUS_LOW))
+> +			dev_warn(dev, "device missing low point calibration\n");
+> +
+> +		if (!(val & ATLAS_REG_EC_CALIB_STATUS_HIGH))
+> +			dev_warn(dev, "device missing high point calibration\n");
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  struct atlas_device {
+>  	const struct iio_chan_spec *channels;
+>  	int num_channels;
+> @@ -159,6 +257,14 @@ static struct atlas_device atlas_devices[] = {
+>  				.calibration = &atlas_check_ph_calibration,
+>  				.delay = ATLAS_PH_INT_TIME_IN_US,
+>  	},
+> +	[ATLAS_EC_SM] = {
+> +				.channels = atlas_ec_channels,
+> +				.num_channels = 5,
+> +				.data_reg = ATLAS_REG_EC_DATA,
+> +				.calibration = &atlas_check_ec_calibration,
+> +				.delay = ATLAS_EC_INT_TIME_IN_US,
+> +	},
+> +
+>  };
+>  
+>  static int atlas_set_powermode(struct atlas_data *data, int on)
+> @@ -294,6 +400,8 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
+>  					      (u8 *) &reg, sizeof(reg));
+>  			break;
+>  		case IIO_PH:
+> +		case IIO_CONCENTRATION:
+> +		case IIO_ELECTRICALCONDUCTIVITY:
+>  			mutex_lock(&indio_dev->mlock);
+>  
+>  			if (iio_buffer_enabled(indio_dev))
+> @@ -324,6 +432,14 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
+>  			*val = 1; /* 0.001 */
+>  			*val2 = 1000;
+>  			break;
+> +		case IIO_ELECTRICALCONDUCTIVITY:
+> +			*val = 1; /* 0.00001 */
+> +			*val = 100000;
+> +			break;
+> +		case IIO_CONCENTRATION:
+> +			*val = 0; /* 0.000000001 */
+> +			*val2 = 1000;
+> +			return IIO_VAL_INT_PLUS_NANO;
+>  		default:
+>  			return -EINVAL;
+>  		}
+> @@ -358,12 +474,14 @@ static const struct iio_info atlas_info = {
+>  
+>  static const struct i2c_device_id atlas_id[] = {
+>  	{ "atlas-ph-sm", ATLAS_PH_SM},
+> +	{ "atlas-ec-sm", ATLAS_EC_SM},
+>  	{}
+>  };
+>  MODULE_DEVICE_TABLE(i2c, atlas_id);
+>  
+>  static const struct of_device_id atlas_dt_ids[] = {
+>  	{ .compatible = "atlas,ph-sm", .data = (void *)ATLAS_PH_SM, },
+> +	{ .compatible = "atlas,ec-sm", .data = (void *)ATLAS_EC_SM, },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, atlas_dt_ids);
+> 
 
