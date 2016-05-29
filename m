@@ -1,12 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33013 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33076 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932195AbcE2OxR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 10:53:17 -0400
-Subject: Re: [RFC PATCH v1 3/9] iio:st_pressure: lps22hb temperature support
+	with ESMTP id S932265AbcE2PGg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 11:06:36 -0400
+Subject: Re: [RFC PATCH v1 8/9] iio:st_sensors: emulate SMBus block read if
+ needed
 To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
 References: <cover.1461056711.git.gregor.boirie@parrot.com>
- <b8fc5b8818494fb3dd4950ba32dd515dd04c8b8c.1461056711.git.gregor.boirie@parrot.com>
+ <fa302cda642b6fe11163bfa497e4ba7fd451f255.1461056711.git.gregor.boirie@parrot.com>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -14,86 +15,47 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Linus Walleij <linus.walleij@linaro.org>,
 	Giuseppe Barba <giuseppe.barba@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <feb7e6e5-58f6-4fab-b3fb-46ca110ec714@kernel.org>
-Date: Sun, 29 May 2016 15:53:13 +0100
+Message-ID: <6ad7d1cf-d923-b788-608d-8aa8ffe7e9ac@kernel.org>
+Date: Sun, 29 May 2016 16:06:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <b8fc5b8818494fb3dd4950ba32dd515dd04c8b8c.1461056711.git.gregor.boirie@parrot.com>
+In-Reply-To: <fa302cda642b6fe11163bfa497e4ba7fd451f255.1461056711.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 19/04/16 10:18, Gregor Boirie wrote:
-> Implement lps22hb temperature sampling channel.
+> Use SMBus "block read" protocol only when supported by adapter.
 > 
 > Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-Unfortunately we now have a dependency of this working it's way in as a fix so this
-will have to wait now for that to make it's way into the our upstream tree.
+Applied to the togreg branch of iio.git.
 
-At that time a rebased version would be great. If you don't have time just
-poke me when it looks like everything is in place and I'll do the patch
-mangling necessary.
+We will need to be a little careful with this if we start reading fifo
+buffers in these drivers as suddenly emulation is going to read different
+things.
+
+Right now I don't believe we are using that hardware but worth keeping in mind.
 
 Thanks,
 
 Jonathan
 > ---
->  drivers/iio/pressure/st_pressure_core.c | 26 ++++++++++++++++++++++++--
->  1 file changed, 24 insertions(+), 2 deletions(-)
+>  drivers/iio/common/st_sensors/st_sensors_i2c.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index b8087b9..24754eed 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -135,6 +135,10 @@
->   * See LPS22HB datasheet:
->   * http://www2.st.com/resource/en/datasheet/lps22hb.pdf
->   */
-> +
-> +/* LPS22HB temperature sensitivity */
-> +#define ST_PRESS_LPS22HB_LSB_PER_CELSIUS	100UL
-> +
->  #define ST_PRESS_LPS22HB_WAI_EXP		0xb1
->  #define ST_PRESS_LPS22HB_ODR_ADDR		0x10
->  #define ST_PRESS_LPS22HB_ODR_MASK		0x70
-> @@ -244,6 +248,23 @@ static const struct iio_chan_spec st_press_lps22hb_channels[] = {
->  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.modified = 0,
->  	},
-> +	{
-> +		.type = IIO_TEMP,
-> +		.channel2 = IIO_NO_MOD,
-> +		.address = ST_TEMP_1_OUT_L_ADDR,
-> +		.scan_index = -1,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +			.endianness = IIO_LE,
-> +		},
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +		.modified = 0,
-> +	},
->  	IIO_CHAN_SOFT_TIMESTAMP(1)
->  };
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+> index 98cfee29..b43aa36 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+> @@ -48,8 +48,8 @@ static int st_sensors_i2c_read_multiple_byte(
+>  	if (multiread_bit)
+>  		reg_addr |= ST_SENSORS_I2C_MULTIREAD;
 >  
-> @@ -431,12 +452,13 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
->  		.fs = {
->  			.fs_avl = {
->  				/*
-> -				 * Sensitivity values as defined in table 3 of
-> -				 * LPS22HB datasheet.
-> +				 * Pressure and temperature sensitivity values
-> +				 * as defined in table 3 of LPS22HB datasheet.
->  				 */
->  				[0] = {
->  					.num = ST_PRESS_FS_AVL_1260MB,
->  					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
-> +					.gain2 = ST_PRESS_LPS22HB_LSB_PER_CELSIUS,
->  				},
->  			},
->  		},
+> -	return i2c_smbus_read_i2c_block_data(to_i2c_client(dev),
+> -							reg_addr, len, data);
+> +	return i2c_smbus_read_i2c_block_data_or_emulated(to_i2c_client(dev),
+> +							 reg_addr, len, data);
+>  }
+>  
+>  static int st_sensors_i2c_write_byte(struct st_sensor_transfer_buffer *tb,
 > 
 
