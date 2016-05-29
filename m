@@ -1,81 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33048 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33191 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932195AbcE2O7n (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 10:59:43 -0400
-Subject: Re: [RFC PATCH v1 7/9] iio:st_sensors: unexport
- st_sensors_get_buffer_element
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1461056711.git.gregor.boirie@parrot.com>
- <467cc5525789973e7dced2d12e1e57abdee8767f.1461056711.git.gregor.boirie@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1752694AbcE2P1V (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 11:27:21 -0400
+Subject: Re: [PATCH v2 2/7] iio: inv_mpu6050: Initial regcache support
+To: Crestez Dan Leonard <leonard.crestez@intel.com>,
+	Peter Rosin <peda@axentia.se>,
+	Matt Ranostay <mranostay@gmail.com>
+References: <cover.1463582011.git.leonard.crestez@intel.com>
+ <e29974565e941e37684fcd883330915cfaf2cf47.1463582011.git.leonard.crestez@intel.com>
+ <CAKzfze8dDENOvaDf_VH8MRy-HEmCu3q_aGEzD+GYR7B1Ob2rBw@mail.gmail.com>
+ <e0cee595-043b-3642-9e40-2a23975e855a@axentia.se>
+ <61c0fb3d-207a-c126-b80c-f1342fda5878@intel.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Giuseppe Barba <giuseppe.barba@st.com>
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Ge Gao <ggao@invensense.com>, linux-i2c@vger.kernel.org,
+	Wolfram Sang <wsa@the-dreams.de>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5cb872db-a023-b161-abd3-2333d3b3cf26@kernel.org>
-Date: Sun, 29 May 2016 15:59:41 +0100
+Message-ID: <92d40b29-5c44-7307-0f25-93ee66c055ae@kernel.org>
+Date: Sun, 29 May 2016 16:27:15 +0100
 MIME-Version: 1.0
-In-Reply-To: <467cc5525789973e7dced2d12e1e57abdee8767f.1461056711.git.gregor.boirie@parrot.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <61c0fb3d-207a-c126-b80c-f1342fda5878@intel.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/04/16 10:18, Gregor Boirie wrote:
-> Remove st_sensors_get_buffer_element symbol export since not explicitly
-> used outside of st_sensors driver.
+On 20/05/16 12:01, Crestez Dan Leonard wrote:
+> On 05/20/2016 09:39 AM, Peter Rosin wrote:
+>> On 2016-05-20 04:34, Matt Ranostay wrote:
+>>> On Wed, May 18, 2016 at 8:00 AM, Crestez Dan Leonard
+>>> <leonard.crestez@intel.com> wrote:
+>>>> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+>>>> ---
+>>>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 47 ++++++++++++++++++++++++++++++
+>>>>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |  5 ----
+>>>>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  1 +
+>>>>  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  |  5 ----
+>>>>  4 files changed, 48 insertions(+), 10 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>>> index b269b37..5918c23 100644
+>>>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>>> @@ -116,6 +116,53 @@ static const struct inv_mpu6050_hw hw_info[] = {
+>>>>         },
+>>>>  };
+>>>>
+>>>> +static bool inv_mpu6050_volatile_reg(struct device *dev, unsigned int reg)
+>>>> +{
+>>>> +       if (reg >= INV_MPU6050_REG_RAW_ACCEL && reg < INV_MPU6050_REG_RAW_ACCEL + 6)
+>>>> +               return true;
+>>>> +       if (reg >= INV_MPU6050_REG_RAW_GYRO && reg < INV_MPU6050_REG_RAW_GYRO + 6)
+>>>> +               return true;
+>>>
+>>> I think you want to put parenthesis around the addition operations...
+>>
+>> Maybe.
+>>
+>>> the condition check probably don't evaluate to what you are expecting.
+>>
+>> Looks sane to me since + has highest precedence, then < and >=, and && comes
+>> in last...
+>>
+>> ...but even so, I think I would use an ellipsis in the switch statement
+>> instead, like so:
+>>
+>> static bool inv_mpu6050_volatile_reg(struct device *dev, unsigned int reg)
+>> {
+>> 	switch (reg) {
+>> 	case INV_MPU6050_REG_RAW_ACCEL ... INV_MPU6050_REG_RAW_ACCEL + 5:
+>> 	case INV_MPU6050_REG_RAW_GYRO ... INV_MPU6050_REG_RAW_GYRO  + 5:
+>> 	case INV_MPU6050_REG_TEMPERATURE:
+>> 	case INV_MPU6050_REG_TEMPERATURE + 1:
+>> 	case INV_MPU6050_REG_USER_CTRL:
+>> 	case INV_MPU6050_REG_PWR_MGMT_1:
+>> 	case INV_MPU6050_REG_FIFO_COUNT_H:
+>> 	case INV_MPU6050_REG_FIFO_COUNT_H + 1:
+>> 	case INV_MPU6050_REG_FIFO_R_W:
+>> 		return true;
+>> 	default:
+>> 		return false;
+>> 	}
+>> }
 > 
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-Good spot. It applied with a little fuzz to the togreg branch of iio.git.
-Lets at least cut down on how many patches we have queued up for this driver 
-by taking the simple ones ;)
+> Neat, I didn't know about this extension. It does look nicer in this
+> function.
+Be careful to use this sparingly as it does make review harder in some
+cases as we have to care which registers happen to numerically fall in the
+range.
 
-Applied to the togreg branch of iio.git
+It's good for some cases though such as multiple bytes of the same 'real
+register'.
 
-Thanks,
-
-Jonathan.
-
-> ---
->  drivers/iio/common/st_sensors/st_sensors_buffer.c | 3 +--
->  include/linux/iio/common/st_sensors.h             | 2 --
->  2 files changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> index a7f1ced..9343d74 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> @@ -21,7 +21,7 @@
->  
->  #include <linux/iio/common/st_sensors.h>
->  
-> -int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
-> +static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->  {
->  	unsigned int cid;
->  	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> @@ -45,7 +45,6 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->  
->  	return 0;
->  }
-> -EXPORT_SYMBOL(st_sensors_get_buffer_element);
->  
->  irqreturn_t st_sensors_trigger_handler(int irq, void *p)
->  {
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index d029ffa..78a1934 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -251,8 +251,6 @@ struct st_sensor_data {
->  
->  #ifdef CONFIG_IIO_BUFFER
->  irqreturn_t st_sensors_trigger_handler(int irq, void *p);
-> -
-> -int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf);
->  #endif
->  
->  #ifdef CONFIG_IIO_TRIGGER
+Jonathan
 > 
 
