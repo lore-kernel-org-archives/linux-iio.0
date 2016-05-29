@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33389 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33221 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932244AbcE2QFs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 12:05:48 -0400
-Subject: Re: [PATCH v2 1/7] iio: inv_mpu6050: Do burst reads using spi/i2c
- directly
+	with ESMTP id S1752694AbcE2PaL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 11:30:11 -0400
+Subject: Re: [PATCH v2 4/7] iio: inv_mpu6050: Cache non-volatile bits of
+ user_ctrl
 To: Crestez Dan Leonard <leonard.crestez@intel.com>,
 	linux-iio@vger.kernel.org
 References: <cover.1463582011.git.leonard.crestez@intel.com>
- <b4ba111a1e33f60ed4d3d21421c3250243d40fba.1463582011.git.leonard.crestez@intel.com>
+ <e39e64f7f39c2f41d2b8daf2dc60b01c44b1f8eb.1463582011.git.leonard.crestez@intel.com>
 Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -21,96 +21,92 @@ Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <cb6859f3-f3ac-68c8-2172-844a4b4b2f40@kernel.org>
-Date: Sun, 29 May 2016 17:05:44 +0100
+Message-ID: <1e1ba4e4-8f0c-1957-1c05-5091a6d7721d@kernel.org>
+Date: Sun, 29 May 2016 16:30:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <b4ba111a1e33f60ed4d3d21421c3250243d40fba.1463582011.git.leonard.crestez@intel.com>
+In-Reply-To: <e39e64f7f39c2f41d2b8daf2dc60b01c44b1f8eb.1463582011.git.leonard.crestez@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 18/05/16 16:00, Crestez Dan Leonard wrote:
-> Using regmap_read_bulk is wrong because it assumes that a range of
-> registers is being read. In our case reading from the fifo register will
-> return multiple values but this is *not* auto-increment.
-> 
-> This currently works by accident.
-> 
 > Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-I'd really prefer to see this in the regmap core.  It really doesn't look like
-it will be hard to do.  Basically it's just an cut and paste job from
-regmap_bulk_read.
+Kind of a pity we have to do this, but fair enough!
 
-1. Check the register in question is volatile - anything else would be bonkers.
-2. The emulation of bulk reads relies on volatile or no caching anyway.
-
-
-However, that will probably take a while, so I suppose we might want to take this
-in the meantime as a fix - be it not a terribly urgent one as you observe it
-works by accident at the moment.
-
-Clearly it will be needed for your regcache support though.
+Jonathan
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 33 ++++++++++++++++++++++++++----
->  1 file changed, 29 insertions(+), 4 deletions(-)
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     | 2 ++
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    | 9 ++++++---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 4 +++-
+>  3 files changed, 11 insertions(+), 4 deletions(-)
 > 
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index 297b0ef..bd2c0fd 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -80,6 +80,7 @@ enum inv_devices {
+>   *  @enable:		master enable state.
+>   *  @accl_fifo_enable:	enable accel data output
+>   *  @gyro_fifo_enable:	enable gyro data output
+> + *  @user_ctrl:		The non-volatile bits of user_ctrl
+>   *  @fifo_rate:		FIFO update rate.
+>   */
+>  struct inv_mpu6050_chip_config {
+> @@ -89,6 +90,7 @@ struct inv_mpu6050_chip_config {
+>  	unsigned int enable:1;
+>  	unsigned int accl_fifo_enable:1;
+>  	unsigned int gyro_fifo_enable:1;
+> +	u8 user_ctrl;
+>  	u16 fifo_rate;
+>  };
+>  
 > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> index d070062..8455af0 100644
+> index 3fc0b71..56ee1e2 100644
 > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
 > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> @@ -21,6 +21,7 @@
->  #include <linux/interrupt.h>
->  #include <linux/kfifo.h>
->  #include <linux/poll.h>
-> +#include <linux/spi/spi.h>
->  #include "inv_mpu_iio.h"
+> @@ -53,13 +53,15 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  	if (result)
+>  		goto reset_fifo_fail;
+>  	/* disable fifo reading */
+> -	result = regmap_write(st->map, st->reg->user_ctrl, 0);
+> +	st->chip_config.user_ctrl &= ~INV_MPU6050_BIT_FIFO_EN;
+> +	result = regmap_write(st->map, st->reg->user_ctrl,
+> +			      st->chip_config.user_ctrl);
+>  	if (result)
+>  		goto reset_fifo_fail;
 >  
->  static void inv_clear_kfifo(struct inv_mpu6050_state *st)
-> @@ -128,6 +129,13 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->  	u16 fifo_count;
->  	s64 timestamp;
+>  	/* reset FIFO*/
+>  	result = regmap_write(st->map, st->reg->user_ctrl,
+> -			      INV_MPU6050_BIT_FIFO_RST);
+> +			      st->chip_config.user_ctrl | INV_MPU6050_BIT_FIFO_RST);
+>  	if (result)
+>  		goto reset_fifo_fail;
 >  
-> +	struct device *regmap_dev = regmap_get_device(st->map);
-> +	struct i2c_client *i2c;
-> +	struct spi_device *spi = NULL;
-> +
-> +	i2c = i2c_verify_client(regmap_dev);
-> +	spi = i2c ? NULL: to_spi_device(regmap_dev);
-> +
->  	mutex_lock(&indio_dev->mlock);
->  	if (!(st->chip_config.accl_fifo_enable |
->  		st->chip_config.gyro_fifo_enable))
-> @@ -160,10 +168,27 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->  	    fifo_count / bytes_per_datum + INV_MPU6050_TIME_STAMP_TOR)
->  		goto flush_fifo;
->  	while (fifo_count >= bytes_per_datum) {
-> -		result = regmap_bulk_read(st->map, st->reg->fifo_r_w,
-> -					  data, bytes_per_datum);
-> -		if (result)
-> -			goto flush_fifo;
-> +		/*
-> +		 * We need to do a large burst read from a single register.
-> +		 *
-> +		 * regmap_read_bulk assumes that multiple registers are
-> +		 * involved but in our case st->reg->fifo_r_w + 1 is something
-> +		 * completely unrelated.
-> +		 */
-> +		if (spi) {
-> +			u8 cmd = st->reg->fifo_r_w | 0x80;
-> +			result = spi_write_then_read(spi,
-> +					&cmd, 1,
-> +					data, bytes_per_datum);
-> +			if (result)
-> +				goto flush_fifo;
-> +		} else {
-> +			result = i2c_smbus_read_i2c_block_data(i2c,
-> +					st->reg->fifo_r_w,
-> +					bytes_per_datum, data);
-> +			if (result != bytes_per_datum)
-> +				goto flush_fifo;
-> +		}
+> @@ -76,8 +78,9 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  			return result;
+>  	}
+>  	/* enable FIFO reading and I2C master interface*/
+> +	st->chip_config.user_ctrl |= INV_MPU6050_BIT_FIFO_EN;
+>  	result = regmap_write(st->map, st->reg->user_ctrl,
+> -			      INV_MPU6050_BIT_FIFO_EN);
+> +			      st->chip_config.user_ctrl);
+>  	if (result)
+>  		goto reset_fifo_fail;
+>  	/* enable sensor output to FIFO */
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> index 1a6bad3..fc55923 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> @@ -74,7 +74,9 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
+>  		if (result)
+>  			return result;
 >  
->  		result = kfifo_out(&st->timestamps, &timestamp, 1);
->  		/* when there is no timestamp, put timestamp as 0 */
+> -		result = regmap_write(st->map, st->reg->user_ctrl, 0);
+> +		st->chip_config.user_ctrl &= ~INV_MPU6050_BIT_FIFO_EN;
+> +		result = regmap_write(st->map, st->reg->user_ctrl,
+> +				      st->chip_config.user_ctrl);
+>  		if (result)
+>  			return result;
+>  
 > 
 
