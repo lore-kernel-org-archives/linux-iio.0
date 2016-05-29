@@ -1,91 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32822 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932187AbcE2OA7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 10:00:59 -0400
-Subject: Re: [PATCH] iio: triggers: Make trigger ops structure explicitly non
- optional.
-To: linux-iio@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>
-References: <1463247728-31491-1-git-send-email-jic23@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <4231f8d4-61c4-eb1c-67cf-ca8dbe17fc72@kernel.org>
-Date: Sun, 29 May 2016 15:00:57 +0100
+Return-Path: <lars@metafoo.de>
+Subject: Re: [PATCH v5 2/2] iio: ad5755: Add DT binding documentation
+To: Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Sean_Nyekj=c3=a6r?= <sean.nyekjaer@prevas.dk>,
+ linux-iio@vger.kernel.org
+References: <1457705561-12253-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <1457705561-12253-2-git-send-email-sean.nyekjaer@prevas.dk>
+ <56E3E121.9030400@kernel.org> <56F94A21.6070804@kernel.org>
+ <8a7b1dcb-205a-8801-737f-6aa1c39f6605@prevas.dk>
+ <8e62350f-ec4c-cba4-fa46-95549a89e720@kernel.org>
+Cc: devicetree@vger.kernel.org, Pawel Moll <Pawel.Moll@arm.com>,
+ Rob Herring <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>,
+ Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Kumar Gala <galak@codeaurora.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <574AF8EB.9060609@metafoo.de>
+Date: Sun, 29 May 2016 16:12:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <1463247728-31491-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <8e62350f-ec4c-cba4-fa46-95549a89e720@kernel.org>
 Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 14/05/16 18:42, Jonathan Cameron wrote:
-> This structure has not been optional for a long time (if ever) but the
-> code implies that it is.  As we then use it later in a fashion that would
-> crash if it was infact NULL, gcc may well have optimized all these tests
-> out anyway.  However, it's inconsistent so fix it up by removing unnecessary
-> checkes.
+On 05/29/2016 03:57 PM, Jonathan Cameron wrote:
+> On 09/05/16 09:16, Sean Nyekjær wrote:
+>>
+>>
+>> On 2016-03-28 17:13, Jonathan Cameron wrote:
+>>> On 12/03/16 09:28, Jonathan Cameron wrote:
+>>>> On 11/03/16 14:12, Sean Nyekjaer wrote:
+>>>>> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+>>>> Looks much better to me.
+>>>>
+>>>> Looking for Acks from Lars and a device tree binding maintainer
+>>>> on this one though.
+>>>> (added CCs)
+>>> Lars?
+>> No response...
+>> Is there anything wrong with this?
+> Given we are early in cycle there is no real rush for this...
 > 
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-As this is trivial, an no one seems to care - applied to the togreg branch
-of iio.git with some of the terrible spelling above corrected and the
-reference to gcc optimizing the tests out removed (as it is specifically
-prevented from doing so).
+> Lars, let me know if you are going to a while getting to this / any other
+> patches I want responses on from you.
 
-Jonathan
-> ---
->  drivers/iio/industrialio-trigger.c | 13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index ae2806aafb72..672911293987 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -68,6 +68,10 @@ int iio_trigger_register(struct iio_trigger *trig_info)
->  {
->  	int ret;
->  
-> +	/* trig_info->ops is required for the module member */
-> +	if (!trig_info->ops)
-> +		return -EINVAL;
-> +
->  	trig_info->id = ida_simple_get(&iio_trigger_ida, 0, 0, GFP_KERNEL);
->  	if (trig_info->id < 0)
->  		return trig_info->id;
-> @@ -164,8 +168,7 @@ EXPORT_SYMBOL(iio_trigger_poll_chained);
->  
->  void iio_trigger_notify_done(struct iio_trigger *trig)
->  {
-> -	if (atomic_dec_and_test(&trig->use_count) && trig->ops &&
-> -		trig->ops->try_reenable)
-> +	if (atomic_dec_and_test(&trig->use_count) && trig->ops->try_reenable)
->  		if (trig->ops->try_reenable(trig))
->  			/* Missed an interrupt so launch new poll now */
->  			iio_trigger_poll(trig);
-> @@ -219,7 +222,7 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
->  		return ret;
->  	}
->  
-> -	if (trig->ops && trig->ops->set_trigger_state && notinuse) {
-> +	if (trig->ops->set_trigger_state && notinuse) {
->  		ret = trig->ops->set_trigger_state(trig, true);
->  		if (ret < 0)
->  			module_put(pf->indio_dev->info->driver_module);
-> @@ -236,7 +239,7 @@ static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
->  		= (bitmap_weight(trig->pool,
->  				 CONFIG_IIO_CONSUMERS_PER_TRIGGER)
->  		   == 1);
-> -	if (trig->ops && trig->ops->set_trigger_state && no_other_users) {
-> +	if (trig->ops->set_trigger_state && no_other_users) {
->  		ret = trig->ops->set_trigger_state(trig, false);
->  		if (ret)
->  			return ret;
-> @@ -358,7 +361,7 @@ static ssize_t iio_trigger_write_current(struct device *dev,
->  			return ret;
->  	}
->  
-> -	if (trig && trig->ops && trig->ops->validate_device) {
-> +	if (trig && trig->ops->validate_device) {
->  		ret = trig->ops->validate_device(trig, indio_dev);
->  		if (ret)
->  			return ret;
-> 
-
+I don't think this solution is the correct approach, but since I'm not able
+to provide an alternative and everybody else is OK with it, I'm not going to
+block it either. So go ahead and apply it.
