@@ -1,89 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34488 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932323AbcE2To3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 15:44:29 -0400
-Subject: Re: [RFC 0/7] Deal with iio trigger names
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <cover.1464027859.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <58325d90-7718-391c-fc7c-b75460cad371@kernel.org>
-Date: Sun, 29 May 2016 20:44:27 +0100
+Received: from mail-pa0-f65.google.com ([209.85.220.65]:36796 "EHLO
+	mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753218AbcE2Udk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2016 16:33:40 -0400
+Received: by mail-pa0-f65.google.com with SMTP id fg1so19186019pad.3
+        for <linux-iio@vger.kernel.org>; Sun, 29 May 2016 13:33:40 -0700 (PDT)
+Date: Sun, 29 May 2016 13:33:37 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: Matt Ranostay <mranostay@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: humidity: hdc100x: fix IIO_TEMP channel reporting
+Message-ID: <20160529203336.GA2409@d830.WORKGROUP>
+References: <1464317706-25569-1-git-send-email-mranostay@gmail.com>
+ <6902c38d-0b3a-9d8c-02cf-29806c195dda@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <cover.1464027859.git.leonard.crestez@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <6902c38d-0b3a-9d8c-02cf-29806c195dda@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/05/16 19:39, Crestez Dan Leonard wrote:
-> IIO documents that trigger names are unique but does not actually guarantee
-> this. You can easily create a software trigger with a duplicate name if you
-> enable CONFIG_IIO_HRTIMER_TRIGGER:
+On Sun, May 29, 2016 at 07:46:47PM +0100, Jonathan Cameron wrote:
+> On 27/05/16 03:55, Matt Ranostay wrote:
+> > IIO_TEMP channel was being incorrectly reported back as Celsius when it
+> > should have been milliCelsius.
+> > 
+> > Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> Applied to fixes-togreg-post-rc1 and marked for stable.
 > 
-> 	mkdir /sys/kernel/config/iio/triggers/hrtimer/\
-> 		`cat /sys/bus/iio/devices/trigger0/name`
+> Thanks,
 > 
-> You can also get in this situation if you connect two identical st_sensors.
-> 
-> My attempt to fix this is by adding a new 'current_trigger_id' ABI which is a
-> numeric ID (X from triggerX) rather than a non-unique string. I tested that
-> this works as expected when connecting two LIS3DH to the same system. This is
-> in patches 4,5.
-> 
-> In theory the current_trigger ABI could be overloaded to looks for something
-> matching "trigger[0-9]+" but this would be nastier. There would be a need to
-> prevent registering triggers that match that expression in order to prevent
-> stuff like:
-> 
-> 	mkdir /sys/kernel/config/iio/triggers/hrtimer/trigger1
-> 
-> Such an overload wouldn't work on read and make it impossible to unambigiously
-> determine the currently selected trigger.
-> 
-> 
-> Patch 6 disallows registering duplicate trigger names. This makes drivers
-> which currently do that break at probe time.
-> 
-> Patch 7 attempts to ensure that all drivers include indio_dev->id when calling
-> iio_trigger_alloc. This obviously changes trigger names.
-> 
-> 
-> Either 4,5 or 6,7 fix this issue, but 4,5 causes fewer compat issues.
-> 
-> 
-> Patches 1,2,3 are just minor features in tools/generic_buffer. They supersede
-> the v2 I posted earlier:
-Please don't do this in future.  When reviewing lots of series, one tends
-to relying on sorting by name to make sure you find the latest version of
-a series.  Do this and people don't know there is a new version embedded in
-a different series (in this case I picked up V2 when you had found an issue
-in it).
+> Jonathan
 
-Jonathan
-> 
-> 	https://www.spinics.net/lists/linux-iio/msg24867.html
-> 
-> Crestez Dan Leonard (7):
->   iio: generic_buffer: Cleanup when receiving signals
->   iio: generic_buffer: Add --device-num option
->   iio: generic_buffer: Add --trigger-num option
->   iio: Add current_trigger_id alternative
->   iio: generic_buffer: Use current_trigger_id
->   iio: Refuse to register triggers with duplicate names
->   iio: Make trigger names unique
-> 
->  Documentation/ABI/testing/sysfs-bus-iio            |   9 +
->  Documentation/DocBook/iio.tmpl                     |   4 +-
->  drivers/iio/adc/max1027.c                          |   4 +-
->  drivers/iio/common/st_sensors/st_sensors_trigger.c |   2 +-
->  drivers/iio/industrialio-trigger.c                 | 136 ++++++++---
->  drivers/iio/light/gp2ap020a00f.c                   |   4 +-
->  tools/iio/generic_buffer.c                         | 269 ++++++++++++++-------
->  7 files changed, 309 insertions(+), 119 deletions(-)
-> 
 
+Hi Matt, I tried testing this one out and it looks good, but led me
+to more questions ;)
+
+(fyi: this is one of the first hw sensors I got, and as you can guess
+by the other work, we didn't realize it already had a driver, hence,
+using it as a learning experience.) 
+
+Summary of this long msg is:
+- this fix correcting the temp scale works fine 
+- questioning what driver is providing as "raw" data for both temp & humid
+- humidity calc seems off
+
+Here's my path: I read the raw temp, look at the data sheet calculation,
+and expect to be able to plug the raw reading sysfs provides into that
+equation and come up with the actual temp.  I can't do that because the 
+raw data the driver is provided is not so 'raw'.  The driver is stripping
+away the extraneous bits and providing 14bits of actual temp data from the
+16bit temp register as 'raw'. I get that and can see how that might be the
+right thing to do, but not so sure, since I just got bit by it.  Should the
+driver be providing the real raw register data and doing all the munging via
+scale and offset. Do some users want to get that raw number, look at the
+datasheet, and do the work themselves? 
+
+The temp calcs seem close enough:
+16 bit raw: 24929, 14 bit raw: 6232
+
+$ cat in_temp_raw in_temp_offset in_temp_scale
+6232
+-3971.879096
+10.070800781
+
+Grabbed both - 16 bit raw: 24929, 14 bit raw: 6232
+
+14Bit way using scale & offset:
+(6232 - 3971.879096) * 10.070800781 / 1000 = 22.761227365
+
+16Bit way using datasheet equation:
+(24929/65536 * 165) -40 = 22.763748163
+
+
+Now, onto the humidity - not close, am I doing this right?
+Since my trusty Bionaire humidity sensor says 32% I'm
+thinking the datasheet calc is correct.
+
+$ cat in_humidityrelative_raw in_humidityrelative_scale
+5075
+0.010000
+
+Again, grabbed both - 16 bit raw: 20303, 14 bit raw: 5075
+
+14Bit way using scale:
+5075 * 0.01 = 50.75
+
+16Bit way using datasheet equation:
+20303/65536 * 100% = 30.98
+
+That's all I have.  Let me know if I can do anything more with it.
+Thanks,
+alisons
+
+> > ---
+> >  drivers/iio/humidity/hdc100x.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+> > index fa47676..7e73c56 100644
+> > --- a/drivers/iio/humidity/hdc100x.c
+> > +++ b/drivers/iio/humidity/hdc100x.c
+> > @@ -211,7 +211,7 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
+> >  		return IIO_VAL_INT_PLUS_MICRO;
+> >  	case IIO_CHAN_INFO_SCALE:
+> >  		if (chan->type == IIO_TEMP) {
+> > -			*val = 165;
+> > +			*val = 165000;
+> >  			*val2 = 65536 >> 2;
+> >  			return IIO_VAL_FRACTIONAL;
+> >  		} else {
+> > 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
