@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga09.intel.com ([134.134.136.24]:26008 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1161516AbcE3PTz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 30 May 2016 11:19:55 -0400
+	id S933000AbcE3PTx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 30 May 2016 11:19:53 -0400
 From: Crestez Dan Leonard <leonard.crestez@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
@@ -10,9 +10,9 @@ Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH v4 3/3] iio: generic_buffer: Add --trigger-num option
-Date: Mon, 30 May 2016 18:19:28 +0300
-Message-Id: <23d930be335cd757bb67a37db81d0e57f65f0976.1464610998.git.leonard.crestez@intel.com>
+Subject: [PATCH v4 2/3] iio: generic_buffer: Add --device-num option
+Date: Mon, 30 May 2016 18:19:27 +0300
+Message-Id: <ed7f73c33fe01995ea2c992f753c75d9bd449cc3.1464610998.git.leonard.crestez@intel.com>
 In-Reply-To: <cover.1464610998.git.leonard.crestez@intel.com>
 References: <cover.1464610998.git.leonard.crestez@intel.com>
 In-Reply-To: <cover.1464610998.git.leonard.crestez@intel.com>
@@ -20,100 +20,142 @@ References: <cover.1464610998.git.leonard.crestez@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This makes it possible to distinguish between iio devices with the same
+name.
+
 Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
- tools/iio/iio_generic_buffer.c | 36 ++++++++++++++++++++++++++++++------
- 1 file changed, 30 insertions(+), 6 deletions(-)
+ tools/iio/iio_generic_buffer.c | 69 +++++++++++++++++++++++++++++++-----------
+ 1 file changed, 51 insertions(+), 18 deletions(-)
 
 diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-index 3f16e9f..0e8a1f7 100644
+index 972f400..3f16e9f 100644
 --- a/tools/iio/iio_generic_buffer.c
 +++ b/tools/iio/iio_generic_buffer.c
-@@ -254,7 +254,9 @@ void print_usage(void)
- 		"  --device-name -n <name>\n"
- 		"  --device-num -N <num>\n"
- 		"        Set device by name or number (mandatory)\n"
--		"  -t <name>  Set trigger name\n"
-+		"  --trigger-name -t <name>\n"
-+		"  --trigger-num -T <num>\n"
-+		"        Set trigger by name or number\n"
+@@ -251,7 +251,9 @@ void print_usage(void)
+ 		"  -e         Disable wait for event (new data)\n"
+ 		"  -g         Use trigger-less mode\n"
+ 		"  -l <n>     Set buffer length to n samples\n"
+-		"  -n <name>  Set device name (mandatory)\n"
++		"  --device-name -n <name>\n"
++		"  --device-num -N <num>\n"
++		"        Set device by name or number (mandatory)\n"
+ 		"  -t <name>  Set trigger name\n"
  		"  -w <n>     Set delay between reads in us (event-less mode)\n");
  }
+@@ -315,6 +317,12 @@ void register_cleanup(void)
+ 	}
+ }
  
-@@ -320,6 +322,8 @@ void register_cleanup(void)
- static const struct option longopts[] = {
- 	{ "device-name",	1, 0, 'n' },
- 	{ "device-num",		1, 0, 'N' },
-+	{ "trigger-name",	1, 0, 't' },
-+	{ "trigger-num",	1, 0, 'T' },
- 	{ },
- };
- 
-@@ -337,7 +341,7 @@ int main(int argc, char **argv)
++static const struct option longopts[] = {
++	{ "device-name",	1, 0, 'n' },
++	{ "device-num",		1, 0, 'N' },
++	{ },
++};
++
+ int main(int argc, char **argv)
+ {
+ 	unsigned long num_loops = 2;
+@@ -329,7 +337,7 @@ int main(int argc, char **argv)
  
  	char *data = NULL;
  	ssize_t read_size;
--	int dev_num = -1, trig_num;
-+	int dev_num = -1, trig_num = -1;
+-	int dev_num, trig_num;
++	int dev_num = -1, trig_num;
  	char *buffer_access = NULL;
  	int scan_size;
  	int noevents = 0;
-@@ -348,7 +352,7 @@ int main(int argc, char **argv)
+@@ -340,7 +348,7 @@ int main(int argc, char **argv)
  
  	register_cleanup();
  
--	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:w:", longopts, NULL)) != -1) {
-+	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:T:w:", longopts, NULL)) != -1) {
+-	while ((c = getopt(argc, argv, "ac:egl:n:t:w:")) != -1) {
++	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:w:", longopts, NULL)) != -1) {
  		switch (c) {
  		case 'a':
  			autochannels = AUTOCHANNELS_ENABLED;
-@@ -391,6 +395,12 @@ int main(int argc, char **argv)
+@@ -370,7 +378,15 @@ int main(int argc, char **argv)
+ 
+ 			break;
+ 		case 'n':
+-			device_name = optarg;
++			device_name = strdup(optarg);
++			break;
++		case 'N':
++			errno = 0;
++			dev_num = strtoul(optarg, &dummy, 10);
++			if (errno) {
++				ret = -errno;
++				goto error;
++			}
+ 			break;
  		case 't':
  			trigger_name = strdup(optarg);
- 			break;
-+		case 'T':
-+			errno = 0;
-+			trig_num = strtoul(optarg, &dummy, 10);
-+			if (errno)
-+				return -errno;
-+			break;
- 		case 'w':
- 			errno = 0;
- 			timedelay = strtoul(optarg, &dummy, 10);
-@@ -444,7 +454,23 @@ int main(int argc, char **argv)
+@@ -390,26 +406,42 @@ int main(int argc, char **argv)
  		}
  	}
  
--	if (!notrigger) {
-+	if (notrigger) {
-+		printf("trigger-less mode selected\n");
-+	} if (trig_num >= 0) {
-+		char *trig_dev_name;
-+		ret = asprintf(&trig_dev_name, "%strigger%d", iio_dir, trig_num);
-+		if (ret < 0) {
-+			return -ENOMEM;
+-	if (!device_name) {
+-		fprintf(stderr, "Device name not set\n");
+-		print_usage();
+-		return -1;
+-	}
+-
+ 	/* Find the device requested */
+-	dev_num = find_type_by_name(device_name, "iio:device");
+-	if (dev_num < 0) {
+-		fprintf(stderr, "Failed to find the %s\n", device_name);
+-		ret = dev_num;
++	if (dev_num < 0 && !device_name) {
++		fprintf(stderr, "Device not set\n");
++		print_usage();
++		ret = -1;
++		goto error;
++	} else if (dev_num >= 0 && device_name) {
++		fprintf(stderr, "Only one of --device-num or --device-name needs to be set\n");
++		print_usage();
++		ret = -1;
+ 		goto error;
++	} else if (dev_num < 0) {
++		dev_num = find_type_by_name(device_name, "iio:device");
++		if (dev_num < 0) {
++			fprintf(stderr, "Failed to find the %s\n", device_name);
++			ret = dev_num;
++			goto error;
 +		}
-+		trigger_name = malloc(IIO_MAX_NAME_LENGTH);
-+		ret = read_sysfs_string("name", trig_dev_name, trigger_name);
-+		free(trig_dev_name);
-+		if (ret < 0) {
-+			fprintf(stderr, "Failed to read trigger%d name from\n", trig_num);
-+			return ret;
-+		}
-+		printf("iio trigger number being used is %d\n", trig_num);
-+	} else {
- 		if (!trigger_name) {
- 			/*
- 			 * Build the trigger name. If it is device associated
-@@ -481,8 +507,6 @@ int main(int argc, char **argv)
- 		}
+ 	}
+-
+ 	printf("iio device number being used is %d\n", dev_num);
  
- 		printf("iio trigger number being used is %d\n", trig_num);
--	} else {
--		printf("trigger-less mode selected\n");
+ 	ret = asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
+-	if (ret < 0) {
+-		ret = -ENOMEM;
+-		goto error;
++	if (ret < 0)
++		return -ENOMEM;
++	/* Fetch device_name if specified by number */
++	if (!device_name) {
++		device_name = malloc(IIO_MAX_NAME_LENGTH);
++		if (!device_name) {
++			ret = -ENOMEM;
++			goto error;
++		}
++		ret = read_sysfs_string("name", dev_dir_name, device_name);
++		if (ret < 0) {
++			fprintf(stderr, "Failed to read name of device %d\n", dev_num);
++			goto error;
++		}
  	}
  
- 	/*
+ 	if (!notrigger) {
+@@ -619,6 +651,7 @@ error:
+ 	}
+ 	free(channels);
+ 	free(trigger_name);
++	free(device_name);
+ 	free(dev_dir_name);
+ 
+ 	return ret;
 -- 
 2.5.5
 
