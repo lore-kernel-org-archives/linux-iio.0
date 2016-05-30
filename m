@@ -1,76 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.135]:52288 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754869AbcE3OwU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 May 2016 10:52:20 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mga09.intel.com ([134.134.136.24]:26008 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1161259AbcE3PTt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 30 May 2016 11:19:49 -0400
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Mark Brown <broonie@kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>,
-	Javier Martinez Canillas <javier@osg.samsung.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: as3935: improve error reporting in as3935_event_work
-Date: Mon, 30 May 2016 16:52:04 +0200
-Message-Id: <1464619938-988956-1-git-send-email-arnd@arndb.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH v4 0/3] iio: generic_buffer: Select device/trigger by number
+Date: Mon, 30 May 2016 18:19:25 +0300
+Message-Id: <cover.1464610998.git.leonard.crestez@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-gcc warns about a potentially uninitialized variable use
-in as3935_event_work:
+This patch series adds support for selecting iio devices/triggers by numeric id
+rather than just name. This is useful because the names are not actually
+guaranteed to be unique.
 
-drivers/iio/proximity/as3935.c: In function ‘as3935_event_work’:
-drivers/iio/proximity/as3935.c:231:6: error: ‘val’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+Changes since v3:
+* Rebase on top of latest jic23/testing
+* Fix handling of --trigger-num 0. Initialize trig_num to -1 and check if >= 0
+for valid id.
 
-This case specifically happens when spi_w8r8() fails with a
-negative return code. We check all other users of this function
-except this one.
+Jonathan: you replied to v3 saying that they were applied but I don't see those
+patches on any branch from your repo:
+    https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
 
-As the error is rather unlikely to happen after the device
-has already been initialized, this just adds a dev_warn().
-Another warning already existst in the same function, but is
-missing a trailing '\n' character, so I'm fixing that too.
+Crestez Dan Leonard (3):
+  iio: generic_buffer: Cleanup when receiving signals
+  iio: generic_buffer: Add --device-num option
+  iio: generic_buffer: Add --trigger-num option
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/iio/proximity/as3935.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ tools/iio/iio_generic_buffer.c | 261 ++++++++++++++++++++++++++++-------------
+ 1 file changed, 181 insertions(+), 80 deletions(-)
 
-diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
-index f4d29d5dbd5f..b49e3ab5730a 100644
---- a/drivers/iio/proximity/as3935.c
-+++ b/drivers/iio/proximity/as3935.c
-@@ -224,10 +224,16 @@ static void as3935_event_work(struct work_struct *work)
- {
- 	struct as3935_state *st;
- 	int val;
-+	int ret;
- 
- 	st = container_of(work, struct as3935_state, work.work);
- 
--	as3935_read(st, AS3935_INT, &val);
-+	ret = as3935_read(st, AS3935_INT, &val);
-+	if (ret) {
-+		dev_warn(&st->spi->dev, "read error\n");
-+		return;
-+	}
-+
- 	val &= AS3935_INT_MASK;
- 
- 	switch (val) {
-@@ -235,7 +241,7 @@ static void as3935_event_work(struct work_struct *work)
- 		iio_trigger_poll(st->trig);
- 		break;
- 	case AS3935_NOISE_INT:
--		dev_warn(&st->spi->dev, "noise level is too high");
-+		dev_warn(&st->spi->dev, "noise level is too high\n");
- 		break;
- 	}
- }
 -- 
-2.7.0
+2.5.5
 
