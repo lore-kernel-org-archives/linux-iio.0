@@ -1,109 +1,66 @@
-Return-Path: <mranostay@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <20160531174521.GA2841@d830.WORKGROUP>
-References: <1464576722-6902-1-git-send-email-mranostay@gmail.com>
- <CAKzfze9usfXfL=MpbFJOCcfgGXYbkN6bvykC1jXs3ebEsaioqA@mail.gmail.com> <20160531174521.GA2841@d830.WORKGROUP>
-From: Matt Ranostay <mranostay@gmail.com>
-Date: Tue, 31 May 2016 11:57:26 -0700
-Message-ID: <CAKzfze9GaZDt8_ZPpXBhYwMHt4h2vQqNoT7hduhGp+znZg11Gw@mail.gmail.com>
-Subject: Re: [PATCH] iio: hudmidity: hdc100x: fix incorrect shifting and scaling
-To: Alison Schofield <amsfield22@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from lists.s-osg.org ([54.187.51.154]:52730 "EHLO lists.s-osg.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750779AbcEaTsE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 31 May 2016 15:48:04 -0400
+From: Luis de Bethencourt <luisbg@osg.samsung.com>
+To: linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, knaack.h@gmx.de, lars@metafoo.de,
+	jic23@kernel.org, ciorneiioana@gmail.com,
+	janani.rvchndrn@gmail.com, afd@ti.com, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	Luis de Bethencourt <luisbg@osg.samsung.com>
+Subject: [PATCH] staging: iio: accel: remove impossible condition
+Date: Tue, 31 May 2016 20:47:50 +0100
+Message-Id: <1464724070-20123-1-git-send-email-luisbg@osg.samsung.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, May 31, 2016 at 10:45 AM, Alison Schofield <amsfield22@gmail.com> wrote:
-> On Sun, May 29, 2016 at 07:53:08PM -0700, Matt Ranostay wrote:
->> Alison,
->>
->> Can you give a Tested-by:  since I don't own this sensor anymore.
->>
->> Thanks,
->>
->> Matt
->
-> Tested it.  Verified temp & humidty calcs.  Looks great!
->
-> And, (seeing a pattern here ;)) this comes with another question,
-> probably directed a Jonathan...
->
-> with regards to temperature calculations:
->
-> Datasheets give numbers for this method:
->         temp = ((raw * scale) + offset)
-> IIO drivers report numbers for this method:
->         temp = ((raw + offset) * scale)
->
-We do it this way in iio.. hence why the offset needs the scaling
-value applied to it.
+val is set to the value of ret right after ret is checked. If ret is not
+zero it goes to error_ret. So only value ret can have is zero, which makes
+the switch (val & 0x03) only match the case 0x00. Removing the switch and
+since val is only used for this, removing val as well.
 
-> I've figured out the math for translating between them and creating
-> the offset for the driver to report in sysfs, but don't know why we
-> are doing that. 'Our' way seems kind of ugly. For example, for HDC1008
-> the offset is -40. It's the minimum expected temp value. But, we munge
-> it to be -15887.515151 so we can apply it before scaling.
->
-> Why do we do it this way in IIO?
->
-> alisons
->
->>
->> On Sun, May 29, 2016 at 7:52 PM, Matt Ranostay <mranostay@gmail.com> wrote:
->> > Shifting sensor data to the right 2 bits was incorrect and caused the
->> > scaling values + offsets to be invalid.
->> >
->> > Reported-by: Alison Schofield <amsfield22@gmail.com>
->> > Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->> > ---
->> >  drivers/iio/humidity/hdc100x.c | 16 ++++++++--------
->> >  1 file changed, 8 insertions(+), 8 deletions(-)
->> >
->> > diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
->> > index 3070983..a03832a 100644
->> > --- a/drivers/iio/humidity/hdc100x.c
->> > +++ b/drivers/iio/humidity/hdc100x.c
->> > @@ -164,14 +164,14 @@ static int hdc100x_get_measurement(struct hdc100x_data *data,
->> >                 dev_err(&client->dev, "cannot read high byte measurement");
->> >                 return ret;
->> >         }
->> > -       val = ret << 6;
->> > +       val = ret << 8;
->> >
->> >         ret = i2c_smbus_read_byte(client);
->> >         if (ret < 0) {
->> >                 dev_err(&client->dev, "cannot read low byte measurement");
->> >                 return ret;
->> >         }
->> > -       val |= ret >> 2;
->> > +       val |= ret;
->> >
->> >         return val;
->> >  }
->> > @@ -212,17 +212,17 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
->> >         case IIO_CHAN_INFO_SCALE:
->> >                 if (chan->type == IIO_TEMP) {
->> >                         *val = 165000;
->> > -                       *val2 = 65536 >> 2;
->> > +                       *val2 = 65536;
->> >                         return IIO_VAL_FRACTIONAL;
->> >                 } else {
->> > -                       *val = 0;
->> > -                       *val2 = 10000;
->> > -                       return IIO_VAL_INT_PLUS_MICRO;
->> > +                       *val = 100;
->> > +                       *val2 = 65536;
->> > +                       return IIO_VAL_FRACTIONAL;
->> >                 }
->> >                 break;
->> >         case IIO_CHAN_INFO_OFFSET:
->> > -               *val = -3971;
->> > -               *val2 = 879096;
->> > +               *val = -15887;
->> > +               *val2 = 515151;
->> >                 return IIO_VAL_INT_PLUS_MICRO;
->> >         default:
->> >                 return -EINVAL;
->> > --
->> > 2.7.4
->> >
+Signed-off-by: Luis de Bethencourt <luisbg@osg.samsung.com>
+---
+ drivers/staging/iio/accel/sca3000_core.c | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index a8f533a..94656f6 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -586,7 +586,7 @@ static ssize_t sca3000_read_frequency(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct sca3000_state *st = iio_priv(indio_dev);
+-	int ret, len = 0, base_freq = 0, val;
++	int ret, len = 0, base_freq = 0;
+ 
+ 	mutex_lock(&st->lock);
+ 	ret = __sca3000_get_base_freq(st, st->info, &base_freq);
+@@ -596,20 +596,8 @@ static ssize_t sca3000_read_frequency(struct device *dev,
+ 	mutex_unlock(&st->lock);
+ 	if (ret)
+ 		goto error_ret;
+-	val = ret;
+ 	if (base_freq > 0)
+-		switch (val & 0x03) {
+-		case 0x00:
+-		case 0x03:
+-			len = sprintf(buf, "%d\n", base_freq);
+-			break;
+-		case 0x01:
+-			len = sprintf(buf, "%d\n", base_freq / 2);
+-			break;
+-		case 0x02:
+-			len = sprintf(buf, "%d\n", base_freq / 4);
+-			break;
+-	}
++		len = sprintf(buf, "%d\n", base_freq);
+ 
+ 	return len;
+ error_ret_mut:
+-- 
+2.5.1
+
