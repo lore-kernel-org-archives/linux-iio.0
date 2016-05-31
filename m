@@ -1,42 +1,60 @@
-Return-Path: <William.Markezana@te.com>
-From: "Markezana, William" <William.Markezana@te.com>
-To: Jonathan Cameron <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PATCH] iio: (ms5637) Add Measurement Specialties explicit MS5805 and
-  MS5837 support
-Date: Tue, 31 May 2016 13:01:09 +0000
-Message-ID: <A02AF0B2-1B1A-477E-952B-AA332C6650FE@te.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f68.google.com ([209.85.215.68]:34919 "EHLO
+	mail-lf0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753686AbcEaOn5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2016 10:43:57 -0400
+Received: by mail-lf0-f68.google.com with SMTP id q63so7686157lfi.2
+        for <linux-iio@vger.kernel.org>; Tue, 31 May 2016 07:43:56 -0700 (PDT)
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1457294576-10121-1-git-send-email-jic23@kernel.org>
+References: <1457294576-10121-1-git-send-email-jic23@kernel.org>
+Date: Tue, 31 May 2016 17:43:54 +0300
+Message-ID: <CAEnQRZCQsoXB-D+sJpcN0W1naXzMLq5gp+WYZ51vut7OhM3NCw@mail.gmail.com>
+Subject: Re: [RFC PATCH V2] iio:trigger: Experimental kthread tight loop
+ trigger (thread only)
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-U2lnbmVkLW9mZi1ieTogV2lsbGlhbSBNYXJrZXphbmEgPHdpbGxpYW0ubWFya2V6YW5hQG1lYXMt
-c3BlYy5jb20+DQotLS0NCiBkcml2ZXJzL2lpby9wcmVzc3VyZS9tczU2MzcuYyB8IDIwICsrKysr
-KysrKysrKysrKysrLS0tDQogMSBmaWxlIGNoYW5nZWQsIDE3IGluc2VydGlvbnMoKyksIDMgZGVs
-ZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9wcmVzc3VyZS9tczU2MzcuYyBi
-L2RyaXZlcnMvaWlvL3ByZXNzdXJlL21zNTYzNy5jDQppbmRleCBlOGQwZTBkLi42ZWNjNjg2IDEw
-MDY0NA0KLS0tIGEvZHJpdmVycy9paW8vcHJlc3N1cmUvbXM1NjM3LmMNCisrKyBiL2RyaXZlcnMv
-aWlvL3ByZXNzdXJlL21zNTYzNy5jDQpAQCAtMSw1ICsxLDYgQEANCiAvKg0KLSAqIG1zNTYzNy5j
-IC0gU3VwcG9ydCBmb3IgTWVhc3VyZW1lbnQtU3BlY2lhbHRpZXMgbXM1NjM3IGFuZCBtczg2MDcN
-CisgKiBtczU2MzcuYyAtIFN1cHBvcnQgZm9yIE1lYXN1cmVtZW50LVNwZWNpYWx0aWVzIG1zNTYz
-NywgbXM4NjA3LA0KKyAgICAgICAgICAgICAgbXM1ODA1IGFuZCBtczU4MzcNCiAgKiAgICAgICAg
-ICAgIHByZXNzdXJlICYgdGVtcGVyYXR1cmUgc2Vuc29yDQogICoNCiAgKiBDb3B5cmlnaHQgKGMp
-IDIwMTUgTWVhc3VyZW1lbnQtU3BlY2lhbHRpZXMNCkBAIC0xMiw2ICsxMywxMCBAQA0KICAqICBo
-dHRwOi8vd3d3Lm1lYXMtc3BlYy5jb20vZG93bmxvYWRzL01TNTYzNy0wMkJBMDMucGRmDQogICog
-RGF0YXNoZWV0Og0KICAqICBodHRwOi8vd3d3Lm1lYXMtc3BlYy5jb20vZG93bmxvYWRzL01TODYw
-Ny0wMkJBMDEucGRmDQorICogRGF0YXNoZWV0Og0KKyAqICBodHRwOi8vd3d3Lm1lYXMtc3BlYy5j
-b20vZG93bmxvYWRzL01TNTgwNS0wMkJBMDEucGRmDQorICogRGF0YXNoZWV0Og0KKyAqICBodHRw
-Oi8vbWVhcy1zcGVjLmNvbS9kb3dubG9hZHMvTVM1ODM3LTMwQkEucGRmDQogICovDQogDQogI2lu
-Y2x1ZGUgPGxpbnV4L2luaXQuaD4NCkBAIC0yNiw2ICszMSwxMyBAQA0KIA0KICNpbmNsdWRlICIu
-Li9jb21tb24vbXNfc2Vuc29ycy9tc19zZW5zb3JzX2kyYy5oIg0KIA0KK2VudW0gew0KKwlNUzU2
-MzcsDQorCU1TODYwNywNCisJTVM1ODA1LA0KKwlNUzU4MzcNCit9Ow0KKw0KIHN0YXRpYyBjb25z
-dCBpbnQgbXM1NjM3X3NhbXBfZnJlcVs2XSA9IHsgOTYwLCA0ODAsIDI0MCwgMTIwLCA2MCwgMzAg
-fTsNCiAvKiBTdHJpbmcgY29weSBvZiB0aGUgYWJvdmUgY29uc3QgZm9yIHJlYWRhYmlsaXR5IHB1
-cnBvc2UgKi8NCiBzdGF0aWMgY29uc3QgY2hhciBtczU2Mzdfc2hvd19zYW1wX2ZyZXFbXSA9ICI5
-NjAgNDgwIDI0MCAxMjAgNjAgMzAiOw0KQEAgLTE2OSw4ICsxODEsMTAgQEAgc3RhdGljIGludCBt
-czU2MzdfcHJvYmUoc3RydWN0IGkyY19jbGllbnQgKmNsaWVudCwNCiB9DQogDQogc3RhdGljIGNv
-bnN0IHN0cnVjdCBpMmNfZGV2aWNlX2lkIG1zNTYzN19pZFtdID0gew0KLQl7Im1zNTYzNyIsIDB9
-LA0KLQl7Im1zODYwNy10ZW1wcHJlc3N1cmUiLCAxfSwNCisJeyJtczU2MzciLCBNUzU2Mzd9LA0K
-Kwl7Im1zODYwNy10ZW1wcHJlc3N1cmUiLCBNUzg2MDd9LA0KKwl7Im1zNTgwNSIsIE1TNTgwNX0s
-DQorCXsibXM1ODM3IiwgTVM1ODM3fSwNCiAJe30NCiB9Ow0KIA0KLS0gDQoyLjEuNA0KDQoNCg==
+On Sun, Mar 6, 2016 at 10:02 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> This patch is in response to that of
+> Gregor Boirie <gregor.boirie@parrot.com>
+> who proposed using a tight kthread within a device driver (be it with the
+> support factored out into a helper library) in order to basically spin as
+> fast as possible.
+>
+> It is meant as a talking point rather than a formal proposal of the code
+> (though we are heading towards that I think).
+> Also gives people some working code to mess around with.
+>
+> I proposed that this could be done with a trigger with a few constraints
+> and this is the proof (be it ugly) of that.
+>
+> There are some constraints though, some of which we would want to relax
+> if this were to move forward.
+>
+> * Will only run the thread part of the registered pollfunc.  This is to
+>   avoid the overhead of jumping in and out of interrupt context.  Is the
+>   overhead significant?  Not certain but feels like it should be!
+>
+> * This limitation precludes any device that 'must' do some work in
+>   interrupt context.  However, that is true of few if any drivers and
+>   I suspect that any that do will be restricted to using triggers they
+>   provide themselves.  Usually we have a top half mainly to grab a
+>   timestamp as soon after the dataready type signal as possible.
+>
+
+Configfs part looks good to me.
+
+What happens with iio_loop_thread when changing the current trigger?
+I'm not sure how it will be stopped.
+
+thanks,
+Daniel.
