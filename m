@@ -1,60 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f68.google.com ([209.85.215.68]:34919 "EHLO
-	mail-lf0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753686AbcEaOn5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2016 10:43:57 -0400
-Received: by mail-lf0-f68.google.com with SMTP id q63so7686157lfi.2
-        for <linux-iio@vger.kernel.org>; Tue, 31 May 2016 07:43:56 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1457294576-10121-1-git-send-email-jic23@kernel.org>
-References: <1457294576-10121-1-git-send-email-jic23@kernel.org>
-Date: Tue, 31 May 2016 17:43:54 +0300
-Message-ID: <CAEnQRZCQsoXB-D+sJpcN0W1naXzMLq5gp+WYZ51vut7OhM3NCw@mail.gmail.com>
-Subject: Re: [RFC PATCH V2] iio:trigger: Experimental kthread tight loop
- trigger (thread only)
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Gregor Boirie <gregor.boirie@parrot.com>,
+Received: from bear.ext.ti.com ([198.47.19.11]:60596 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754643AbcEaOy0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 31 May 2016 10:54:26 -0400
+Subject: Re: [PATCH] iio: as3935: improve error reporting in as3935_event_work
+To: Arnd Bergmann <arnd@arndb.de>, Jonathan Cameron <jic23@kernel.org>
+References: <1464619938-988956-1-git-send-email-arnd@arndb.de>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Content-Type: text/plain; charset=UTF-8
+	Mark Brown <broonie@kernel.org>,
+	Javier Martinez Canillas <javier@osg.samsung.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+From: "Andrew F. Davis" <afd@ti.com>
+Message-ID: <574DA582.50408@ti.com>
+Date: Tue, 31 May 2016 09:53:54 -0500
+MIME-Version: 1.0
+In-Reply-To: <1464619938-988956-1-git-send-email-arnd@arndb.de>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Mar 6, 2016 at 10:02 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> This patch is in response to that of
-> Gregor Boirie <gregor.boirie@parrot.com>
-> who proposed using a tight kthread within a device driver (be it with the
-> support factored out into a helper library) in order to basically spin as
-> fast as possible.
->
-> It is meant as a talking point rather than a formal proposal of the code
-> (though we are heading towards that I think).
-> Also gives people some working code to mess around with.
->
-> I proposed that this could be done with a trigger with a few constraints
-> and this is the proof (be it ugly) of that.
->
-> There are some constraints though, some of which we would want to relax
-> if this were to move forward.
->
-> * Will only run the thread part of the registered pollfunc.  This is to
->   avoid the overhead of jumping in and out of interrupt context.  Is the
->   overhead significant?  Not certain but feels like it should be!
->
-> * This limitation precludes any device that 'must' do some work in
->   interrupt context.  However, that is true of few if any drivers and
->   I suspect that any that do will be restricted to using triggers they
->   provide themselves.  Usually we have a top half mainly to grab a
->   timestamp as soon after the dataready type signal as possible.
->
+On 05/30/2016 09:52 AM, Arnd Bergmann wrote:
+> gcc warns about a potentially uninitialized variable use
+> in as3935_event_work:
+> 
+> drivers/iio/proximity/as3935.c: In function ‘as3935_event_work’:
+> drivers/iio/proximity/as3935.c:231:6: error: ‘val’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+> 
+> This case specifically happens when spi_w8r8() fails with a
+> negative return code. We check all other users of this function
+> except this one.
+> 
+> As the error is rather unlikely to happen after the device
+> has already been initialized, this just adds a dev_warn().
+> Another warning already existst in the same function, but is
 
-Configfs part looks good to me.
+                            ^^ typo
 
-What happens with iio_loop_thread when changing the current trigger?
-I'm not sure how it will be stopped.
+> missing a trailing '\n' character, so I'm fixing that too.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/iio/proximity/as3935.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+> index f4d29d5dbd5f..b49e3ab5730a 100644
+> --- a/drivers/iio/proximity/as3935.c
+> +++ b/drivers/iio/proximity/as3935.c
+> @@ -224,10 +224,16 @@ static void as3935_event_work(struct work_struct *work)
+>  {
+>  	struct as3935_state *st;
+>  	int val;
+> +	int ret;
+>  
+>  	st = container_of(work, struct as3935_state, work.work);
+>  
+> -	as3935_read(st, AS3935_INT, &val);
+> +	ret = as3935_read(st, AS3935_INT, &val);
+> +	if (ret) {
+> +		dev_warn(&st->spi->dev, "read error\n");
 
-thanks,
-Daniel.
+Maybe I'm misunderstanding the commit message, why does this error not
+use dev_err()? A read error here would be rather serious, it might even
+be worth it to return a code and fail through the caller too.
+
+> +		return;
+> +	}
+> +
+>  	val &= AS3935_INT_MASK;
+>  
+>  	switch (val) {
+> @@ -235,7 +241,7 @@ static void as3935_event_work(struct work_struct *work)
+>  		iio_trigger_poll(st->trig);
+>  		break;
+>  	case AS3935_NOISE_INT:
+> -		dev_warn(&st->spi->dev, "noise level is too high");
+> +		dev_warn(&st->spi->dev, "noise level is too high\n");
+>  		break;
+>  	}
+>  }
+> 
