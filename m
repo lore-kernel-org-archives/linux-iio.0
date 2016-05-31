@@ -1,413 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:33003 "EHLO mga01.intel.com"
+Received: from mga04.intel.com ([192.55.52.120]:40908 "EHLO mga04.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750883AbcEaE2w (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 31 May 2016 00:28:52 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jikos@kernel.org, benjamin.tissoires@redhat.com, jic23@kernel.org
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, chaya.golan@intel.com,
-	daniel.drubin@intel.com,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [RFC 1/4] Documentation: hid: Intel ISH HID document
-Date: Mon, 30 May 2016 21:27:55 -0700
-Message-Id: <1464668878-17113-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	id S1162134AbcEaI5M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 31 May 2016 04:57:12 -0400
+Subject: Re: [PATCH v2 6/7] iio: inv_mpu6050: Reformat sample for active scan
+ mask
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+References: <cover.1463582011.git.leonard.crestez@intel.com>
+ <7df4b331d35e3e6a19d13ccbcb5d12f0347b660c.1463582011.git.leonard.crestez@intel.com>
+ <14d4a757-f60a-40c0-03b4-c36d1b22d30e@kernel.org>
+ <49c4a235-29fd-aa55-d9d2-8ead5cefd737@intel.com>
+ <4EB54DBB-A77A-4BC5-8960-5CE9EB1B5DF2@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Ge Gao <ggao@invensense.com>, Peter Rosin <peda@axentia.se>,
+	linux-i2c@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+From: Crestez Dan Leonard <leonard.crestez@intel.com>
+Message-ID: <3169df0b-78d8-a35c-bd31-f2d4e7e17bde@intel.com>
+Date: Tue, 31 May 2016 11:56:51 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <4EB54DBB-A77A-4BC5-8960-5CE9EB1B5DF2@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Document explaining ISH HID operation and implementation.
+On 05/31/2016 12:42 AM, Jonathan Cameron wrote:
+> On 30 May 2016 14:44:41 BST, Crestez Dan Leonard <leonard.crestez@intel.com> wrote:
+>> On 05/29/2016 06:47 PM, Jonathan Cameron wrote:
+>>> On 18/05/16 16:00, Crestez Dan Leonard wrote:
+>>>> Right now it is possible to only enable some of the x/y/z channels,
+>> for
+>>>> example you can enable accel_z without x or y but if you actually do
+>>>> that what you get is actually only the x channel.
+>>>>
+>>>> Fix this by reformatting the hardware sample to only include the
+>>>> requested channels.
+>>> As it stands here there is no benefit in doing this over using the
+>> core
+>>> demux. In fact it's considerably less efficient (fair enough that you
+>>> are keeping it simple in the first instance).
+>>> The patch description should make that clear.
+>>
+>> Why is it less efficient? All it really does is a bunch of memcpy.
+> 
+> Not doing agglomeration of neighbouring copies (iirc) not git either set of code to
+> hand!
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- Documentation/hid/intel-ish-hid.txt | 375 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 375 insertions(+)
- create mode 100644 Documentation/hid/intel-ish-hid.txt
+You're right about that. But the total data rate is still very low.
 
-diff --git a/Documentation/hid/intel-ish-hid.txt b/Documentation/hid/intel-ish-hid.txt
-new file mode 100644
-index 0000000..83a636e
---- /dev/null
-+++ b/Documentation/hid/intel-ish-hid.txt
-@@ -0,0 +1,375 @@
-+Intel Integrated Sensor Hub (ISH)
-+===============================
-+
-+A sensor hub enables the ability to offload sensor polling and algorithm
-+processing to a dedicated low power co-processor. This allows the core
-+processor to go into low power modes more often, resulting in the increased
-+battery life.
-+There are many vendors providing external sensor hubs confirming to HID
-+Sensor usage tables, and used in several tablets, 2 in 1 convertible laptops
-+and embedded products. Linux had this support since Linux 3.9.
-+
-+Intel® introduced integrated sensor hubs as a part of the SoC starting from
-+Cherry Trail and now supported on multiple generations of CPU packages. There
-+are many commercial devices already shipped with Integrated Sensor Hubs (ISH).
-+These ISH also comply to HID sensor specification, but the  difference is the
-+transport protocol used for communication. The current external sensor hubs
-+mainly use HID over i2C or USB. But ISH doesn't use either i2c or USB.
-+
-+This document provides an overview of transport protocol and how it is
-+implemented.
-+
-+
-+ISH Implementation: Block Diagram
-+----------------------------------------
-+	 ---------------------------
-+	|  User Space Applications  |
-+	 ---------------------------
-+
-+----------------IIO ABI----------------
-+	 --------------------------
-+	|  IIO Sensor Drivers 	  |
-+	 --------------------------
-+	 --------------------------
-+	|   	 IIO core 	  |
-+	 --------------------------
-+	 --------------------------
-+	|   HID Sensor Hub MFD 	  |
-+	 --------------------------
-+	 --------------------------
-+	|       HID Core 	  |
-+	 --------------------------
-+ 	 --------------------------
-+	|   HID over ISH Client   |
-+	 --------------------------
-+	 --------------------------
-+	|   ISH Client over ISHTP |
-+	 --------------------------
-+	 --------------------------
-+	|   ISH Transport (ISHTP) |
-+	 --------------------------
-+	 --------------------------
-+	|      IPC Drivers  	  |
-+	 --------------------------
-+OS
-+----------------   PCI -----------------
-+Hardware + Firmware
-+	 ----------------------------
-+	| ISH Hardware/Firmware(FW) |
-+	 ----------------------------
-+
-+------------------------------------------
-+
-+High level processing in above blocks:
-+
-+---
-+Hardware Interface
-+The ISH is exposed as "Non-VGA unclassified PCI device" to the host. The PCI
-+product and vendor IDs are changed from different generations of processors. So
-+the source code which enumerate drivers needs to update from generation to
-+generation.
-+
-+---
-+Inter Processor Communication (IPC) driver:
-+Location: drivers/hid/intel-ish-hid/ipc
-+
-+The IPC message used memory mapped I/O. The registers are defined in
-+hw-ish-regs.h.
-+
-+IPC/FW message types
-+There are two types of messages, one for management of link and other messages
-+are to and from transport layers.
-+
-+TX and RX of Transport messages:
-+A set of memory mapped register offers support of multi byte messages TX and
-+RX (E.g.IPC_REG_ISH2HOST_MSG, IPC_REG_HOST2ISH_MSG). The messaging uses
-+doorbell register to trigger processing on client and server side.
-+The IPC layer maintains internal queues to sequence messages and send them in
-+order to the FW. Optionally the caller can register handler to get notification
-+of completion.
-+
-+Transport layer interface
-+To abstract HW level IPC communication a set of callbacks are registered.
-+The transport layer uses them to send and receive messages.
-+Refer to  struct ishtp_hw_ops for callbacks.
-+
-+---
-+ISH Transport layer
-+Location: drivers/hid/intel-ish-hid/ishtp/
-+
-+A Generic Transport Layer
-+The transport layer is a bi-directional protocol, which defines:
-+- Set of commands to start, stop, connect, disconnect and flow control
-+(ishtp/hbm.h) for details
-+- A flow control mechanism to avoid buffer overflows
-+
-+This protocol resembles bus messages described in the following document:
-+http://www.intel.com/content/dam/www/public/us/en/documents/technical-\
-+specifications/dcmi-hi-1-0-spec.pdf
-+Chater 7: Bus Message Layer
-+
-+DMA
-+The transport layer allocate 1 MB TX and 1 MB RX buffer. This buffer is divided
-+into slots of 4K buffer. This buffer is shared among all connected clients.
-+So when a message is to be sent or received by a client, it finds an empty
-+slot and either fill for TX or send DMA address to FW for RX.
-+By default all RX messages uses DMA as there is more upstream data for sensors
-+than downstream. For TX client send interface has flag to send via DMA, which
-+is not set by default as there is less TX data other setting some feature
-+reports by HID sensor hub driver.
-+
-+Ring Buffers
-+When a client initiate a connection, a ring or RX and TX buffers are allocated.
-+The size of ring can be specified by the client. HID client set 16 and 32 for
-+TX and RX buffers respectively. On send request from client, the data to be
-+sent is copied to one of the send ring buffer and scheduled to be sent using
-+bus message protocol. These buffers are required because the FW may have not
-+processed last message and may not have enough flow control credits to send.
-+Same thing holds true on receive side and flow control is required.
-+
-+Host Enumeration
-+The host enumeration bus command allow discovery of clients present in
-+the FW. There can be multiple sensor clients and clients for calibration
-+function.
-+To ease in implantation and allow independent driver handle each client
-+this transport layer takes advantage of Linux Bus driver model. Each
-+client is registered as device on the the transport bus (ishtp bus).
-+
-+ISH Client over generic transport layer
-+The ISH client defines interface to send and receive HID style command
-+and responses. Refer to ishtp-hid.h.
-+These commands are for"
-+- Get HID descriptor
-+- Get report descriptor
-+- Get/Set feature report
-+- Get input reports
-+
-+---
-+HID over ISH Client
-+Location: drivers/hid/intel-ish-hid
-+
-+This implanted as ISHTP client driver, which
-+- enumerate HID devices under FW ISH client
-+- Get Report descriptor
-+- Register with HID core as a LL driver
-+- Process Get/Set feature request
-+- Get input reports
-+
-+----
-+HID Sensor Hub MFD and IIO sensor drivers
-+
-+The functionality in these drivers is the same as an external sensor hub.
-+These drivers don't require changes to handle ISH other than some
-+optimizations.
-+----
-+
-+========================================================================================
-+End to End Startup HID transport Sequence Diagram
-+
-+HID-ISH-CLN			ISHTP			IPC				HW
-+	|			|			|				|
-+	|	   		|			|-----WAKE UP------------------>|
-+	|			|			|				|
-+	|	   		|			|-----HOST READY--------------->|
-+	|			|			|				|
-+	|	   		|			|<----MNG_RESET_NOTIFY_ACK----- |
-+	|			|			|				|
-+	|			|<----ISHTP_START------ |				|
-+	|			|			|				|
-+	|			|<-----------------HOST_START_RES_CMD-------------------|
-+	|			|			|				|
-+	|			|------------------QUERY_SUBSCRIBER-------------------->|
-+	|			|			|				|
-+	|			|------------------HOST_ENUM_REQ_CMD------------------->|
-+	|			|			|				|
-+	|			|<-----------------HOST_ENUM_RES_CMD--------------------|
-+	|			|			|				|
-+	|			|------------------HOST_CLIENT_PROPERTIES_REQ_CMD------>|
-+	|			|			|				|
-+	|			|<-----------------HOST_CLIENT_PROPERTIES_RES_CMD-------|
-+	|	Create new device on in ishtp bus	|				|
-+	|			|			|				|
-+	|			|------------------HOST_CLIENT_PROPERTIES_REQ_CMD------>|
-+	|			|			|				|
-+	|			|<-----------------HOST_CLIENT_PROPERTIES_RES_CMD-------|
-+	|	Create new device on in ishtp bus	|				|
-+	|			|			|				|
-+	|			|--Repeat HOST_CLIENT_PROPERTIES_REQ_CMD-till last one--|
-+	|			|			|				|
-+     probed()
-+	|----ishtp_cl_connect-->|----------------- CLIENT_CONNECT_REQ_CMD-------------->|
-+	|			|			|				|
-+	|			|<----------------CLIENT_CONNECT_RES_CMD----------------|
-+	|			|			|				|
-+	|register event callback|			|				|
-+	|			|			|				|
-+	|ishtp_cl_send(
-+	HOSTIF_DM_ENUM_DEVICES) |----------fill ishtp_msg_hdr struct write to HW-----  >|
-+	|			|			|				|
-+	|			|			|<-----IRQ(IPC_PROTOCOL_ISHTP---|
-+	|			|			|				|
-+	|			|<------------ DMA_XFER---------------------------------|
-+	|<--ENUM_DEVICE RSP-----|			|				|
-+	|			|------------ DMA_XFER_ACK----------------------------->|
-+	|			|			|				|
-+for each enumerated device
-+	|ishtp_cl_send(
-+	HOSTIF_GET_HID_DESCRIPTOR |----------fill ishtp_msg_hdr struct write to HW---  >|
-+	|			|			|				|
-+	...Response
-+	|			|			|				|
-+for each enumerated device
-+	|ishtp_cl_send(
-+	HOSTIF_GET_REPORT_DESCRIPTOR |----------fill ishtp_msg_hdr struct write to HW- >|
-+	|			|			|				|
-+	|			|			|				|
-+ hid_allocate_device
-+	|			|			|				|
-+ hid_add_device			|			|				|
-+	|			|			|				|
-+
-+
-+========================================================================================
-+ISH Debugging
-+
-+To debug ISH, event tracing mechanism is used. To enable debug logs
-+echo 1 > /sys/kernel/debug/tracing/events/intel_ish/enable
-+cat sys/kernel/debug/tracing/trace
-+
-+========================================================================================
-+ISH IIO sysfs Example on Lenovo thinkpad Yoga 260
-+
-+root@otcpl-ThinkPad-Yoga-260:~# tree -l /sys/bus/iio/devices/
-+/sys/bus/iio/devices/
-+├── iio:device0 -> ../../../devices/0044:8086:22D8.0001/HID-SENSOR-200073.9.auto/iio:device0
-+│   ├── buffer
-+│   │   ├── enable
-+│   │   ├── length
-+│   │   └── watermark
-+...
-+│   ├── in_accel_hysteresis
-+│   ├── in_accel_offset
-+│   ├── in_accel_sampling_frequency
-+│   ├── in_accel_scale
-+│   ├── in_accel_x_raw
-+│   ├── in_accel_y_raw
-+│   ├── in_accel_z_raw
-+│   ├── name
-+│   ├── scan_elements
-+│   │   ├── in_accel_x_en
-+│   │   ├── in_accel_x_index
-+│   │   ├── in_accel_x_type
-+│   │   ├── in_accel_y_en
-+│   │   ├── in_accel_y_index
-+│   │   ├── in_accel_y_type
-+│   │   ├── in_accel_z_en
-+│   │   ├── in_accel_z_index
-+│   │   └── in_accel_z_type
-+...
-+│   │   ├── devices
-+│   │   │   │   ├── buffer
-+│   │   │   │   │   ├── enable
-+│   │   │   │   │   ├── length
-+│   │   │   │   │   └── watermark
-+│   │   │   │   ├── dev
-+│   │   │   │   ├── in_intensity_both_raw
-+│   │   │   │   ├── in_intensity_hysteresis
-+│   │   │   │   ├── in_intensity_offset
-+│   │   │   │   ├── in_intensity_sampling_frequency
-+│   │   │   │   ├── in_intensity_scale
-+│   │   │   │   ├── name
-+│   │   │   │   ├── scan_elements
-+│   │   │   │   │   ├── in_intensity_both_en
-+│   │   │   │   │   ├── in_intensity_both_index
-+│   │   │   │   │   └── in_intensity_both_type
-+│   │   │   │   ├── trigger
-+│   │   │   │   │   └── current_trigger
-+...
-+│   │   │   │   ├── buffer
-+│   │   │   │   │   ├── enable
-+│   │   │   │   │   ├── length
-+│   │   │   │   │   └── watermark
-+│   │   │   │   ├── dev
-+│   │   │   │   ├── in_magn_hysteresis
-+│   │   │   │   ├── in_magn_offset
-+│   │   │   │   ├── in_magn_sampling_frequency
-+│   │   │   │   ├── in_magn_scale
-+│   │   │   │   ├── in_magn_x_raw
-+│   │   │   │   ├── in_magn_y_raw
-+│   │   │   │   ├── in_magn_z_raw
-+│   │   │   │   ├── in_rot_from_north_magnetic_tilt_comp_raw
-+│   │   │   │   ├── in_rot_hysteresis
-+│   │   │   │   ├── in_rot_offset
-+│   │   │   │   ├── in_rot_sampling_frequency
-+│   │   │   │   ├── in_rot_scale
-+│   │   │   │   ├── name
-+...
-+│   │   │   │   ├── scan_elements
-+│   │   │   │   │   ├── in_magn_x_en
-+│   │   │   │   │   ├── in_magn_x_index
-+│   │   │   │   │   ├── in_magn_x_type
-+│   │   │   │   │   ├── in_magn_y_en
-+│   │   │   │   │   ├── in_magn_y_index
-+│   │   │   │   │   ├── in_magn_y_type
-+│   │   │   │   │   ├── in_magn_z_en
-+│   │   │   │   │   ├── in_magn_z_index
-+│   │   │   │   │   ├── in_magn_z_type
-+│   │   │   │   │   ├── in_rot_from_north_magnetic_tilt_comp_en
-+│   │   │   │   │   ├── in_rot_from_north_magnetic_tilt_comp_index
-+│   │   │   │   │   └── in_rot_from_north_magnetic_tilt_comp_type
-+│   │   │   │   ├── trigger
-+│   │   │   │   │   └── current_trigger
-+...
-+│   │   │   │   ├── buffer
-+│   │   │   │   │   ├── enable
-+│   │   │   │   │   ├── length
-+│   │   │   │   │   └── watermark
-+│   │   │   │   ├── dev
-+│   │   │   │   ├── in_anglvel_hysteresis
-+│   │   │   │   ├── in_anglvel_offset
-+│   │   │   │   ├── in_anglvel_sampling_frequency
-+│   │   │   │   ├── in_anglvel_scale
-+│   │   │   │   ├── in_anglvel_x_raw
-+│   │   │   │   ├── in_anglvel_y_raw
-+│   │   │   │   ├── in_anglvel_z_raw
-+│   │   │   │   ├── name
-+│   │   │   │   ├── scan_elements
-+│   │   │   │   │   ├── in_anglvel_x_en
-+│   │   │   │   │   ├── in_anglvel_x_index
-+│   │   │   │   │   ├── in_anglvel_x_type
-+│   │   │   │   │   ├── in_anglvel_y_en
-+│   │   │   │   │   ├── in_anglvel_y_index
-+│   │   │   │   │   ├── in_anglvel_y_type
-+│   │   │   │   │   ├── in_anglvel_z_en
-+│   │   │   │   │   ├── in_anglvel_z_index
-+│   │   │   │   │   └── in_anglvel_z_type
-+│   │   │   │   ├── trigger
-+│   │   │   │   │   └── current_trigger
-+...
-+│   │   │   │   ├── buffer
-+│   │   │   │   │   ├── enable
-+│   │   │   │   │   ├── length
-+│   │   │   │   │   └── watermark
-+│   │   │   │   ├── dev
-+│   │   │   │   ├── in_anglvel_hysteresis
-+│   │   │   │   ├── in_anglvel_offset
-+│   │   │   │   ├── in_anglvel_sampling_frequency
-+│   │   │   │   ├── in_anglvel_scale
-+│   │   │   │   ├── in_anglvel_x_raw
-+│   │   │   │   ├── in_anglvel_y_raw
-+│   │   │   │   ├── in_anglvel_z_raw
-+│   │   │   │   ├── name
-+│   │   │   │   ├── scan_elements
-+│   │   │   │   │   ├── in_anglvel_x_en
-+│   │   │   │   │   ├── in_anglvel_x_index
-+│   │   │   │   │   ├── in_anglvel_x_type
-+│   │   │   │   │   ├── in_anglvel_y_en
-+│   │   │   │   │   ├── in_anglvel_y_index
-+│   │   │   │   │   ├── in_anglvel_y_type
-+│   │   │   │   │   ├── in_anglvel_z_en
-+│   │   │   │   │   ├── in_anglvel_z_index
-+│   │   │   │   │   └── in_anglvel_z_type
-+│   │   │   │   ├── trigger
-+│   │   │   │   │   └── current_trigger
-+...
-+
+>>> I'd definitely like to see simple extension of that option to handle
+>>> a callback to get the nearest scanmask that is possible (as an
+>> alternative
+>>> to the static scan_masks_available list.)
+>>>
+>>> This only gets interesting if we are dealing with the unaligned case
+>> and for
+>>> these parts that only kicks in I think if the slave devices have say
+>> 3 bytes in
+>>> their data type.  
+>>
+>> But I want to deal with the unaligned case because it's better than
+>> introducing odd validations on slave channels. If I added an extension
+>> to get the nearest scanmask I would have to remove it in PATCH 7.
+> Hmm I must have misread that. Though you were only supporting 16 bit channels
+>  for aux sensors.
+
+That was in a previous version, I dropped that limitation now.
+
+> Then for now can we give this a slightly less generic name. I am not happy
+>  enough that we want this in the core 'yet'. 
+> Easy to rename later if it makes sense.
+
+Ok, I will rename these functions to start with inv_mpu_* instead of iio_*.
+
+In theory it would be interesting to refactor the iio demuxing code to
+support this but then this patch serios would grow even more complicated.
+
 -- 
-1.9.1
-
+Regards,
+Leonard
