@@ -1,35 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:41579 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752505AbcEaOLQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2016 10:11:16 -0400
-Subject: Re: [RFC 4/7] iio: Add current_trigger_id alternative
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <cover.1464027859.git.leonard.crestez@intel.com>
- <0f8ba32f5714db12b798621cb805636d29a1aa02.1464027859.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <574D9B7D.3020101@metafoo.de>
-Date: Tue, 31 May 2016 16:11:09 +0200
+Return-Path: <William.Markezana@te.com>
+From: "Markezana, William" <William.Markezana@te.com>
+To: Jonathan Cameron <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PATCH] iio: (ms5637) Add Measurement Specialties explicit MS5805 and
+  MS5837 support
+Date: Tue, 31 May 2016 13:01:09 +0000
+Message-ID: <A02AF0B2-1B1A-477E-952B-AA332C6650FE@te.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <0f8ba32f5714db12b798621cb805636d29a1aa02.1464027859.git.leonard.crestez@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/23/2016 08:39 PM, Crestez Dan Leonard wrote:
-> This allows controlling the current trigger by numeric ID rather than
-> name.
-
-This is most certainly the far better interface, but so far we've tried to
-have only one way to do a certain task with the IIO userspace ABI and try to
-live with our mistakes of the past.
-
-And while this is the better interface I don't think it is that much better
-that it justifies the ambiguity that is introduced by it.
-
-Adding a new interface makes only sense in my opinion if there is a
-significant improvement in either usability or performance.
+U2lnbmVkLW9mZi1ieTogV2lsbGlhbSBNYXJrZXphbmEgPHdpbGxpYW0ubWFya2V6YW5hQG1lYXMt
+c3BlYy5jb20+DQotLS0NCiBkcml2ZXJzL2lpby9wcmVzc3VyZS9tczU2MzcuYyB8IDIwICsrKysr
+KysrKysrKysrKysrLS0tDQogMSBmaWxlIGNoYW5nZWQsIDE3IGluc2VydGlvbnMoKyksIDMgZGVs
+ZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9wcmVzc3VyZS9tczU2MzcuYyBi
+L2RyaXZlcnMvaWlvL3ByZXNzdXJlL21zNTYzNy5jDQppbmRleCBlOGQwZTBkLi42ZWNjNjg2IDEw
+MDY0NA0KLS0tIGEvZHJpdmVycy9paW8vcHJlc3N1cmUvbXM1NjM3LmMNCisrKyBiL2RyaXZlcnMv
+aWlvL3ByZXNzdXJlL21zNTYzNy5jDQpAQCAtMSw1ICsxLDYgQEANCiAvKg0KLSAqIG1zNTYzNy5j
+IC0gU3VwcG9ydCBmb3IgTWVhc3VyZW1lbnQtU3BlY2lhbHRpZXMgbXM1NjM3IGFuZCBtczg2MDcN
+CisgKiBtczU2MzcuYyAtIFN1cHBvcnQgZm9yIE1lYXN1cmVtZW50LVNwZWNpYWx0aWVzIG1zNTYz
+NywgbXM4NjA3LA0KKyAgICAgICAgICAgICAgbXM1ODA1IGFuZCBtczU4MzcNCiAgKiAgICAgICAg
+ICAgIHByZXNzdXJlICYgdGVtcGVyYXR1cmUgc2Vuc29yDQogICoNCiAgKiBDb3B5cmlnaHQgKGMp
+IDIwMTUgTWVhc3VyZW1lbnQtU3BlY2lhbHRpZXMNCkBAIC0xMiw2ICsxMywxMCBAQA0KICAqICBo
+dHRwOi8vd3d3Lm1lYXMtc3BlYy5jb20vZG93bmxvYWRzL01TNTYzNy0wMkJBMDMucGRmDQogICog
+RGF0YXNoZWV0Og0KICAqICBodHRwOi8vd3d3Lm1lYXMtc3BlYy5jb20vZG93bmxvYWRzL01TODYw
+Ny0wMkJBMDEucGRmDQorICogRGF0YXNoZWV0Og0KKyAqICBodHRwOi8vd3d3Lm1lYXMtc3BlYy5j
+b20vZG93bmxvYWRzL01TNTgwNS0wMkJBMDEucGRmDQorICogRGF0YXNoZWV0Og0KKyAqICBodHRw
+Oi8vbWVhcy1zcGVjLmNvbS9kb3dubG9hZHMvTVM1ODM3LTMwQkEucGRmDQogICovDQogDQogI2lu
+Y2x1ZGUgPGxpbnV4L2luaXQuaD4NCkBAIC0yNiw2ICszMSwxMyBAQA0KIA0KICNpbmNsdWRlICIu
+Li9jb21tb24vbXNfc2Vuc29ycy9tc19zZW5zb3JzX2kyYy5oIg0KIA0KK2VudW0gew0KKwlNUzU2
+MzcsDQorCU1TODYwNywNCisJTVM1ODA1LA0KKwlNUzU4MzcNCit9Ow0KKw0KIHN0YXRpYyBjb25z
+dCBpbnQgbXM1NjM3X3NhbXBfZnJlcVs2XSA9IHsgOTYwLCA0ODAsIDI0MCwgMTIwLCA2MCwgMzAg
+fTsNCiAvKiBTdHJpbmcgY29weSBvZiB0aGUgYWJvdmUgY29uc3QgZm9yIHJlYWRhYmlsaXR5IHB1
+cnBvc2UgKi8NCiBzdGF0aWMgY29uc3QgY2hhciBtczU2Mzdfc2hvd19zYW1wX2ZyZXFbXSA9ICI5
+NjAgNDgwIDI0MCAxMjAgNjAgMzAiOw0KQEAgLTE2OSw4ICsxODEsMTAgQEAgc3RhdGljIGludCBt
+czU2MzdfcHJvYmUoc3RydWN0IGkyY19jbGllbnQgKmNsaWVudCwNCiB9DQogDQogc3RhdGljIGNv
+bnN0IHN0cnVjdCBpMmNfZGV2aWNlX2lkIG1zNTYzN19pZFtdID0gew0KLQl7Im1zNTYzNyIsIDB9
+LA0KLQl7Im1zODYwNy10ZW1wcHJlc3N1cmUiLCAxfSwNCisJeyJtczU2MzciLCBNUzU2Mzd9LA0K
+Kwl7Im1zODYwNy10ZW1wcHJlc3N1cmUiLCBNUzg2MDd9LA0KKwl7Im1zNTgwNSIsIE1TNTgwNX0s
+DQorCXsibXM1ODM3IiwgTVM1ODM3fSwNCiAJe30NCiB9Ow0KIA0KLS0gDQoyLjEuNA0KDQoNCg==
