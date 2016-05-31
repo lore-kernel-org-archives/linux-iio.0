@@ -1,50 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:50652 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751505AbcEaNUa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2016 09:20:30 -0400
-Subject: Re: [PATCH 2/7] iio: adc: ad7791: claim direct mode when writing
- frequency
-To: Jonathan Cameron <jic23@kernel.org>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
-	Alison Schofield <amsfield22@gmail.com>
-References: <cover.1464115008.git.amsfield22@gmail.com>
- <b115a245427767bd4c2fd4242b7ee04a243008b3.1464115008.git.amsfield22@gmail.com>
- <CAEnQRZAdj1fn8ibNx1pCA44=DwDGP8yfMPwGfNCeiW24g97kJg@mail.gmail.com>
- <ba579602-3808-f193-f8c0-1edb40f911a7@kernel.org>
-Cc: "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <574D8F92.4040405@metafoo.de>
-Date: Tue, 31 May 2016 15:20:18 +0200
+Return-Path: <William.Markezana@te.com>
+From: "Markezana, William" <William.Markezana@te.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: (ms5637) Add Measurement Specialties explicit MS5805
+ and MS5837 support
+Date: Tue, 31 May 2016 13:21:02 +0000
+Message-ID: <11BF2C67-A234-48F6-8457-86CFDDB0629F@te.com>
+References: <A02AF0B2-1B1A-477E-952B-AA332C6650FE@te.com>
+ <574D8DFC.3090701@metafoo.de>
+In-Reply-To: <574D8DFC.3090701@metafoo.de>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <ba579602-3808-f193-f8c0-1edb40f911a7@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/29/2016 07:06 PM, Jonathan Cameron wrote:
-> On 25/05/16 11:34, Daniel Baluta wrote:
->> On Tue, May 24, 2016 at 10:16 PM, Alison Schofield <amsfield22@gmail.com> wrote:
->>> Driver was checking for direct mode and trying to lock it, but
->>> left a gap where mode could change before the desired operation.
->>> Use iio_device_claim_direct_mode() to guarantee device stays in
->>> direct mode.
->>>
->>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
->>> Cc: Daniel Baluta <daniel.baluta@gmail.com>
->>
->> Looks good to me. We could use an Acked-by from Lars here.
->>
->> Acked-by: Daniel Baluta <daniel.baluta@gmail.com>
-> This one is a little more interesting.  I wonder if we wouldn't be better
-> off taking the lock for the whole function rather than dropping it for
-> short periods.
-
-It will only be locked once. sysfs_streq() will only match for a single
-item. But you are right the code could be refactored to make that more
-clearer. First run the lookup look and then apply afterwards.
-
+aWlvOiAobXM1NjM3KSBBZGQgTWVhc3VyZW1lbnQgU3BlY2lhbHRpZXMgZXhwbGljaXQgTVM1ODA1
+IGFuZCBNUzU4Mzcgc3VwcG9ydA0KDQpTaWduZWQtb2ZmLWJ5OiBXaWxsaWFtIE1hcmtlemFuYSA8
+d2lsbGlhbS5tYXJrZXphbmFAbWVhcy1zcGVjLmNvbT4NCi0tLQ0KIGRyaXZlcnMvaWlvL3ByZXNz
+dXJlL21zNTYzNy5jIHwgMjAgKysrKysrKysrKysrKysrKystLS0NCiAxIGZpbGUgY2hhbmdlZCwg
+MTcgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+aWlvL3ByZXNzdXJlL21zNTYzNy5jIGIvZHJpdmVycy9paW8vcHJlc3N1cmUvbXM1NjM3LmMNCmlu
+ZGV4IGU4ZDBlMGQuLjZlY2M2ODYgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL2lpby9wcmVzc3VyZS9t
+czU2MzcuYw0KKysrIGIvZHJpdmVycy9paW8vcHJlc3N1cmUvbXM1NjM3LmMNCkBAIC0xLDUgKzEs
+NiBAQA0KIC8qDQotICogbXM1NjM3LmMgLSBTdXBwb3J0IGZvciBNZWFzdXJlbWVudC1TcGVjaWFs
+dGllcyBtczU2MzcgYW5kIG1zODYwNw0KKyAqIG1zNTYzNy5jIC0gU3VwcG9ydCBmb3IgTWVhc3Vy
+ZW1lbnQtU3BlY2lhbHRpZXMgbXM1NjM3LCBtczg2MDcsDQorICAgICAgICAgICAgICBtczU4MDUg
+YW5kIG1zNTgzNw0KICAqICAgICAgICAgICAgcHJlc3N1cmUgJiB0ZW1wZXJhdHVyZSBzZW5zb3IN
+CiAgKg0KICAqIENvcHlyaWdodCAoYykgMjAxNSBNZWFzdXJlbWVudC1TcGVjaWFsdGllcw0KQEAg
+LTEyLDYgKzEzLDEwIEBADQogICogIGh0dHA6Ly93d3cubWVhcy1zcGVjLmNvbS9kb3dubG9hZHMv
+TVM1NjM3LTAyQkEwMy5wZGYNCiAgKiBEYXRhc2hlZXQ6DQogICogIGh0dHA6Ly93d3cubWVhcy1z
+cGVjLmNvbS9kb3dubG9hZHMvTVM4NjA3LTAyQkEwMS5wZGYNCisgKiBEYXRhc2hlZXQ6DQorICog
+IGh0dHA6Ly93d3cubWVhcy1zcGVjLmNvbS9kb3dubG9hZHMvTVM1ODA1LTAyQkEwMS5wZGYNCisg
+KiBEYXRhc2hlZXQ6DQorICogIGh0dHA6Ly9tZWFzLXNwZWMuY29tL2Rvd25sb2Fkcy9NUzU4Mzct
+MzBCQS5wZGYNCiAgKi8NCiANCiAjaW5jbHVkZSA8bGludXgvaW5pdC5oPg0KQEAgLTI2LDYgKzMx
+LDEzIEBADQogDQogI2luY2x1ZGUgIi4uL2NvbW1vbi9tc19zZW5zb3JzL21zX3NlbnNvcnNfaTJj
+LmgiDQogDQorZW51bSB7DQorCU1TNTYzNywNCisJTVM4NjA3LA0KKwlNUzU4MDUsDQorCU1TNTgz
+Nw0KK307DQorDQogc3RhdGljIGNvbnN0IGludCBtczU2Mzdfc2FtcF9mcmVxWzZdID0geyA5NjAs
+IDQ4MCwgMjQwLCAxMjAsIDYwLCAzMCB9Ow0KIC8qIFN0cmluZyBjb3B5IG9mIHRoZSBhYm92ZSBj
+b25zdCBmb3IgcmVhZGFiaWxpdHkgcHVycG9zZSAqLw0KIHN0YXRpYyBjb25zdCBjaGFyIG1zNTYz
+N19zaG93X3NhbXBfZnJlcVtdID0gIjk2MCA0ODAgMjQwIDEyMCA2MCAzMCI7DQpAQCAtMTY5LDgg
+KzE4MSwxMCBAQCBzdGF0aWMgaW50IG1zNTYzN19wcm9iZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xp
+ZW50LA0KIH0NCiANCiBzdGF0aWMgY29uc3Qgc3RydWN0IGkyY19kZXZpY2VfaWQgbXM1NjM3X2lk
+W10gPSB7DQotCXsibXM1NjM3IiwgMH0sDQotCXsibXM4NjA3LXRlbXBwcmVzc3VyZSIsIDF9LA0K
+Kwl7Im1zNTYzNyIsIE1TNTYzN30sDQorCXsibXM4NjA3LXRlbXBwcmVzc3VyZSIsIE1TODYwN30s
+DQorCXsibXM1ODA1IiwgTVM1ODA1fSwNCisJeyJtczU4MzciLCBNUzU4Mzd9LA0KIAl7fQ0KIH07
+DQogDQotLSANCjIuMS40DQoNCg0K
