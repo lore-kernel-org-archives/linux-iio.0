@@ -1,65 +1,27 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f195.google.com ([209.85.161.195]:34290 "EHLO
-	mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750865AbcEaLXP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2016 07:23:15 -0400
-Date: Tue, 31 May 2016 07:23:06 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Greg KH <gregkh@linuxfoundation.org>,
-	Linus Walleij <linus.walleij@linaro.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, x86@kernel.org,
-	"linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-watchdog@vger.kernel.org,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Alexandre Courbot <gnurou@gmail.com>
-Subject: Re: [PATCH v5 2/4] gpio: Allow PC/104 devices on X86_64
-Message-ID: <20160531112251.GA5674@sophia>
-References: <cover.1464380034.git.vilhelm.gray@gmail.com>
- <61880bededb77bbc3ea3422e48ce717d2a2ff489.1464380034.git.vilhelm.gray@gmail.com>
- <CACRpkdaOzZ1DvEUKtomBU=GH1kYfjKJjUfM-=45PhdzZA=dPgg@mail.gmail.com>
+Received: from www381.your-server.de ([78.46.137.84]:38916 "EHLO
+	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753436AbcEaNNk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2016 09:13:40 -0400
+Subject: Re: [PATCH] iio: (ms5637) Add Measurement Specialties explicit MS5805
+ and MS5837 support
+To: "Markezana, William" <William.Markezana@te.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <A02AF0B2-1B1A-477E-952B-AA332C6650FE@te.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <574D8DFC.3090701@metafoo.de>
+Date: Tue, 31 May 2016 15:13:32 +0200
 MIME-Version: 1.0
+In-Reply-To: <A02AF0B2-1B1A-477E-952B-AA332C6650FE@te.com>
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CACRpkdaOzZ1DvEUKtomBU=GH1kYfjKJjUfM-=45PhdzZA=dPgg@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, May 31, 2016 at 10:41:49AM +0200, Linus Walleij wrote:
->On Sat, May 28, 2016 at 12:08 AM, William Breathitt Gray
-><vilhelm.gray@gmail.com> wrote:
->
->> With the introduction of the ISA_BUS_API Kconfig option, ISA-style
->> drivers may be built for X86_64 architectures. This patch changes the
->> ISA Kconfig option dependency of the PC/104 drivers to ISA_BUS_API, thus
->> allowing them to build for X86_64 as they are expected to.
->>
->> Cc: Alexandre Courbot <gnurou@gmail.com>
->> Cc: Linus Walleij <linus.walleij@linaro.org>
->> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
->> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
->
->Acked-by: Linus Walleij <linus.walleij@linaro.org>
->
->Or should I apply this directly to the GPIO tree?
->
->Yours,
->Linus Walleij
 
-Greg K-H,
+On 05/31/2016 03:01 PM, Markezana, William wrote:
+> Signed-off-by: William Markezana <william.markezana@meas-spec.com>
 
-Would you be able to pick up this entire patchset via driver-core; I
-figure that tree is the most appropriate to receive any core ISA bus
-driver changes (unless you see a more fitting path to take).
-
-If possible, I'd like this patchset to find its way into one of the
-coming release candidates in order to resolve the regression mentioned
-in the cover letter: as of 4.7-rc1, the drivers which switched to
-utilize the ISA bus driver are now restricted to X86_32 despite being
-allowed in X86_64 in the 4.6 release.
-
-Thanks,
-
-William Breathitt Gray
+This needs a commit message.
