@@ -1,195 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:60089 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755430AbcEaRAg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 31 May 2016 13:00:36 -0400
-From: "Andrew F. Davis" <afd@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Dave Gerlach <d-gerlach@ti.com>
-CC: <linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, "Andrew F . Davis" <afd@ti.com>
-Subject: [PATCH 5/8] mfd: ti_am335x_tscadc: Rename regmap_tscadc to regmap
-Date: Tue, 31 May 2016 12:00:10 -0500
-Message-ID: <20160531170013.2649-6-afd@ti.com>
-In-Reply-To: <20160531170013.2649-1-afd@ti.com>
-References: <20160531170013.2649-1-afd@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44974 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751133AbcEaRpB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2016 13:45:01 -0400
+In-Reply-To: <CAEnQRZCQsoXB-D+sJpcN0W1naXzMLq5gp+WYZ51vut7OhM3NCw@mail.gmail.com>
+References: <1457294576-10121-1-git-send-email-jic23@kernel.org> <CAEnQRZCQsoXB-D+sJpcN0W1naXzMLq5gp+WYZ51vut7OhM3NCw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [RFC PATCH V2] iio:trigger: Experimental kthread tight loop trigger (thread only)
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Tue, 31 May 2016 18:44:54 +0100
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Message-ID: <1ED0DBE1-293B-4CD5-B429-4FA72E51E9F4@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The regmap structuer pointer is named regmap_tscadc, this is not
-consistent with other drivers and is redundant, it also contributes
-to several checkpatch warnings involving long lines. Rename this.
 
-Signed-off-by: Andrew F. Davis <afd@ti.com>
----
- drivers/mfd/ti_am335x_tscadc.c       | 36 ++++++++++++++++++------------------
- include/linux/mfd/ti_am335x_tscadc.h |  2 +-
- 2 files changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index 9b293b1..d30bea5 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -43,7 +43,7 @@ void am335x_tsc_se_set_cache(struct ti_tscadc_dev *tscadc, u32 val)
- 	if (tscadc->adc_waiting)
- 		wake_up(&tscadc->reg_se_wait);
- 	else if (!tscadc->adc_in_use)
--		regmap_write(tscadc->regmap_tscadc, REG_SE, tscadc->reg_se_cache);
-+		regmap_write(tscadc->regmap, REG_SE, tscadc->reg_se_cache);
- 
- 	spin_unlock_irqrestore(&tscadc->reg_lock, flags);
- }
-@@ -54,7 +54,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tscadc)
- 	DEFINE_WAIT(wait);
- 	u32 reg;
- 
--	regmap_read(tscadc->regmap_tscadc, REG_ADCFSM, &reg);
-+	regmap_read(tscadc->regmap, REG_ADCFSM, &reg);
- 	if (reg & SEQ_STATUS) {
- 		tscadc->adc_waiting = true;
- 		prepare_to_wait(&tscadc->reg_se_wait, &wait,
-@@ -70,7 +70,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tscadc)
- 		 * Sequencer should either be idle or
- 		 * busy applying the charge step.
- 		 */
--		regmap_read(tscadc->regmap_tscadc, REG_ADCFSM, &reg);
-+		regmap_read(tscadc->regmap, REG_ADCFSM, &reg);
- 		WARN_ON((reg & SEQ_STATUS) && !(reg & CHARGE_STEP));
- 		tscadc->adc_waiting = false;
- 	}
-@@ -82,7 +82,7 @@ void am335x_tsc_se_set_once(struct ti_tscadc_dev *tscadc, u32 val)
- 	spin_lock_irq(&tscadc->reg_lock);
- 	am335x_tscadc_need_adc(tscadc);
- 
--	regmap_write(tscadc->regmap_tscadc, REG_SE, val);
-+	regmap_write(tscadc->regmap, REG_SE, val);
- 	spin_unlock_irq(&tscadc->reg_lock);
- }
- EXPORT_SYMBOL_GPL(am335x_tsc_se_set_once);
-@@ -93,7 +93,7 @@ void am335x_tsc_se_adc_done(struct ti_tscadc_dev *tscadc)
- 
- 	spin_lock_irqsave(&tscadc->reg_lock, flags);
- 	tscadc->adc_in_use = false;
--	regmap_write(tscadc->regmap_tscadc, REG_SE, tscadc->reg_se_cache);
-+	regmap_write(tscadc->regmap, REG_SE, tscadc->reg_se_cache);
- 	spin_unlock_irqrestore(&tscadc->reg_lock, flags);
- }
- EXPORT_SYMBOL_GPL(am335x_tsc_se_adc_done);
-@@ -104,7 +104,7 @@ void am335x_tsc_se_clr(struct ti_tscadc_dev *tscadc, u32 val)
- 
- 	spin_lock_irqsave(&tscadc->reg_lock, flags);
- 	tscadc->reg_se_cache &= ~val;
--	regmap_write(tscadc->regmap_tscadc, REG_SE, tscadc->reg_se_cache);
-+	regmap_write(tscadc->regmap, REG_SE, tscadc->reg_se_cache);
- 	spin_unlock_irqrestore(&tscadc->reg_lock, flags);
- }
- EXPORT_SYMBOL_GPL(am335x_tsc_se_clr);
-@@ -116,7 +116,7 @@ static void tscadc_idle_config(struct ti_tscadc_dev *tscadc)
- 	idleconfig = STEPCONFIG_YNN | STEPCONFIG_INM_ADCREFM |
- 			STEPCONFIG_INP_ADCREFM | STEPCONFIG_YPN;
- 
--	regmap_write(tscadc->regmap_tscadc, REG_IDLECONFIG, idleconfig);
-+	regmap_write(tscadc->regmap, REG_IDLECONFIG, idleconfig);
- }
- 
- static	int ti_tscadc_probe(struct platform_device *pdev)
-@@ -188,11 +188,11 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 	if (IS_ERR(tscadc->tscadc_base))
- 		return PTR_ERR(tscadc->tscadc_base);
- 
--	tscadc->regmap_tscadc = devm_regmap_init_mmio(&pdev->dev,
-+	tscadc->regmap = devm_regmap_init_mmio(&pdev->dev,
- 			tscadc->tscadc_base, &tscadc_regmap_config);
--	if (IS_ERR(tscadc->regmap_tscadc)) {
-+	if (IS_ERR(tscadc->regmap)) {
- 		dev_err(&pdev->dev, "regmap init failed\n");
--		err = PTR_ERR(tscadc->regmap_tscadc);
-+		err = PTR_ERR(tscadc->regmap);
- 		goto ret;
- 	}
- 
-@@ -222,11 +222,11 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 
- 	/* TSCADC_CLKDIV needs to be configured to the value minus 1 */
- 	tscadc->clk_div--;
--	regmap_write(tscadc->regmap_tscadc, REG_CLKDIV, tscadc->clk_div);
-+	regmap_write(tscadc->regmap, REG_CLKDIV, tscadc->clk_div);
- 
- 	/* Set the control register bits */
- 	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
--	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
-+	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
- 
- 	/* Set register bits for Idle Config Mode */
- 	if (tsc_wires > 0) {
-@@ -240,7 +240,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 
- 	/* Enable the TSC module enable bit */
- 	ctrl |= CNTRLREG_TSCSSENB;
--	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
-+	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
- 
- 	tscadc->used_cells = 0;
- 	tscadc->tsc_cell = -1;
-@@ -286,7 +286,7 @@ static int ti_tscadc_remove(struct platform_device *pdev)
- {
- 	struct ti_tscadc_dev	*tscadc = platform_get_drvdata(pdev);
- 
--	regmap_write(tscadc->regmap_tscadc, REG_SE, 0x00);
-+	regmap_write(tscadc->regmap, REG_SE, 0x00);
- 
- 	pm_runtime_put_sync(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
-@@ -300,7 +300,7 @@ static int __maybe_unused tscadc_suspend(struct device *dev)
- {
- 	struct ti_tscadc_dev	*tscadc = dev_get_drvdata(dev);
- 
--	regmap_write(tscadc->regmap_tscadc, REG_SE, 0x00);
-+	regmap_write(tscadc->regmap, REG_SE, 0x00);
- 	pm_runtime_put_sync(dev);
- 
- 	return 0;
-@@ -315,7 +315,7 @@ static int __maybe_unused tscadc_resume(struct device *dev)
- 
- 	/* context restore */
- 	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
--	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
-+	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
- 
- 	if (tscadc->tsc_cell != -1) {
- 		if (tscadc->tsc_wires == 5)
-@@ -325,9 +325,9 @@ static int __maybe_unused tscadc_resume(struct device *dev)
- 		tscadc_idle_config(tscadc);
- 	}
- 	ctrl |= CNTRLREG_TSCSSENB;
--	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
-+	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
- 
--	regmap_write(tscadc->regmap_tscadc, REG_CLKDIV, tscadc->clk_div);
-+	regmap_write(tscadc->regmap, REG_CLKDIV, tscadc->clk_div);
- 
- 	return 0;
- }
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index 1fd50dc..2567a87 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -153,7 +153,7 @@
- 
- struct ti_tscadc_dev {
- 	struct device *dev;
--	struct regmap *regmap_tscadc;
-+	struct regmap *regmap;
- 	void __iomem *tscadc_base;
- 	int irq;
- 	int used_cells;	/* 1-2 */
+On 31 May 2016 15:43:54 BST, Daniel Baluta <daniel.baluta@intel.com> wrote:
+>On Sun, Mar 6, 2016 at 10:02 PM, Jonathan Cameron <jic23@kernel.org>
+>wrote:
+>> This patch is in response to that of
+>> Gregor Boirie <gregor.boirie@parrot.com>
+>> who proposed using a tight kthread within a device driver (be it with
+>the
+>> support factored out into a helper library) in order to basically
+>spin as
+>> fast as possible.
+>>
+>> It is meant as a talking point rather than a formal proposal of the
+>code
+>> (though we are heading towards that I think).
+>> Also gives people some working code to mess around with.
+>>
+>> I proposed that this could be done with a trigger with a few
+>constraints
+>> and this is the proof (be it ugly) of that.
+>>
+>> There are some constraints though, some of which we would want to
+>relax
+>> if this were to move forward.
+>>
+>> * Will only run the thread part of the registered pollfunc.  This is
+>to
+>>   avoid the overhead of jumping in and out of interrupt context.  Is
+>the
+>>   overhead significant?  Not certain but feels like it should be!
+>>
+>> * This limitation precludes any device that 'must' do some work in
+>>   interrupt context.  However, that is true of few if any drivers and
+>>   I suspect that any that do will be restricted to using triggers
+>they
+>>   provide themselves.  Usually we have a top half mainly to grab a
+>>   timestamp as soon after the dataready type signal as possible.
+>>
+>
+>Configfs part looks good to me.
+>
+>What happens with iio_loop_thread when changing the current trigger?
+>I'm not sure how it will be stopped.
+
+To change trigger the buffer will be disabled ultimately calling the state
+ function with false. That calls kthread_stop and the loop should drop
+ out with the tread exiting.
+
+Jonathan
+>
+>thanks,
+>Daniel.
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
 -- 
-2.8.3
-
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
