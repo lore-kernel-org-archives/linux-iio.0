@@ -1,105 +1,215 @@
-Return-Path: <amsfield22@gmail.com>
-Date: Tue, 31 May 2016 10:45:22 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: Matt Ranostay <mranostay@gmail.com>, jic23@kernel.org
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: hudmidity: hdc100x: fix incorrect shifting and
- scaling
-Message-ID: <20160531174521.GA2841@d830.WORKGROUP>
-References: <1464576722-6902-1-git-send-email-mranostay@gmail.com>
- <CAKzfze9usfXfL=MpbFJOCcfgGXYbkN6bvykC1jXs3ebEsaioqA@mail.gmail.com>
+Return-Path: <d-gerlach@ti.com>
+Subject: Re: [PATCH 4/8] mfd: ti_am335x_tscadc: Unify variable naming when
+ refrencing ti_tscadc_dev
+To: "Andrew F. Davis" <afd@ti.com>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter
+ Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Dmitry Torokhov
+	<dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>
+References: <20160531170013.2649-1-afd@ti.com>
+ <20160531170013.2649-5-afd@ti.com>
+CC: <linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+From: Dave Gerlach <d-gerlach@ti.com>
+Message-ID: <574DCFB6.6040303@ti.com>
+Date: Tue, 31 May 2016 12:53:58 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAKzfze9usfXfL=MpbFJOCcfgGXYbkN6bvykC1jXs3ebEsaioqA@mail.gmail.com>
+In-Reply-To: <20160531170013.2649-5-afd@ti.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, May 29, 2016 at 07:53:08PM -0700, Matt Ranostay wrote:
-> Alison,
-> 
-> Can you give a Tested-by:  since I don't own this sensor anymore.
-> 
-> Thanks,
-> 
-> Matt
+Hi,
+On 05/31/2016 12:00 PM, Andrew F. Davis wrote:
+> All functions in this driver reference the same ti_tscadc_dev per device
+> but use several different names for this structure pointer, this can
+> be confusing when following the code. Use the name 'tscadc' everywhere.
+>
 
-Tested it.  Verified temp & humidty calcs.  Looks great!
+$subject typo: "refrencing" should be "referencing"
 
-And, (seeing a pattern here ;)) this comes with another question,
-probably directed a Jonathan...
+Regards,
+Dave
 
-with regards to temperature calculations:
-
-Datasheets give numbers for this method:
-	temp = ((raw * scale) + offset)
-IIO drivers report numbers for this method:
-	temp = ((raw + offset) * scale)
-
-I've figured out the math for translating between them and creating
-the offset for the driver to report in sysfs, but don't know why we
-are doing that. 'Our' way seems kind of ugly. For example, for HDC1008
-the offset is -40. It's the minimum expected temp value. But, we munge
-it to be -15887.515151 so we can apply it before scaling.
-		 
-Why do we do it this way in IIO?
-
-alisons
-
-> 
-> On Sun, May 29, 2016 at 7:52 PM, Matt Ranostay <mranostay@gmail.com> wrote:
-> > Shifting sensor data to the right 2 bits was incorrect and caused the
-> > scaling values + offsets to be invalid.
-> >
-> > Reported-by: Alison Schofield <amsfield22@gmail.com>
-> > Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-> > ---
-> >  drivers/iio/humidity/hdc100x.c | 16 ++++++++--------
-> >  1 file changed, 8 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-> > index 3070983..a03832a 100644
-> > --- a/drivers/iio/humidity/hdc100x.c
-> > +++ b/drivers/iio/humidity/hdc100x.c
-> > @@ -164,14 +164,14 @@ static int hdc100x_get_measurement(struct hdc100x_data *data,
-> >                 dev_err(&client->dev, "cannot read high byte measurement");
-> >                 return ret;
-> >         }
-> > -       val = ret << 6;
-> > +       val = ret << 8;
-> >
-> >         ret = i2c_smbus_read_byte(client);
-> >         if (ret < 0) {
-> >                 dev_err(&client->dev, "cannot read low byte measurement");
-> >                 return ret;
-> >         }
-> > -       val |= ret >> 2;
-> > +       val |= ret;
-> >
-> >         return val;
-> >  }
-> > @@ -212,17 +212,17 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
-> >         case IIO_CHAN_INFO_SCALE:
-> >                 if (chan->type == IIO_TEMP) {
-> >                         *val = 165000;
-> > -                       *val2 = 65536 >> 2;
-> > +                       *val2 = 65536;
-> >                         return IIO_VAL_FRACTIONAL;
-> >                 } else {
-> > -                       *val = 0;
-> > -                       *val2 = 10000;
-> > -                       return IIO_VAL_INT_PLUS_MICRO;
-> > +                       *val = 100;
-> > +                       *val2 = 65536;
-> > +                       return IIO_VAL_FRACTIONAL;
-> >                 }
-> >                 break;
-> >         case IIO_CHAN_INFO_OFFSET:
-> > -               *val = -3971;
-> > -               *val2 = 879096;
-> > +               *val = -15887;
-> > +               *val2 = 515151;
-> >                 return IIO_VAL_INT_PLUS_MICRO;
-> >         default:
-> >                 return -EINVAL;
-> > --
-> > 2.7.4
-> >
+> Signed-off-by: Andrew F. Davis <afd@ti.com>
+> ---
+>   drivers/mfd/ti_am335x_tscadc.c | 88 +++++++++++++++++++++---------------------
+>   1 file changed, 44 insertions(+), 44 deletions(-)
+>
+> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+> index 613f15d..9b293b1 100644
+> --- a/drivers/mfd/ti_am335x_tscadc.c
+> +++ b/drivers/mfd/ti_am335x_tscadc.c
+> @@ -34,89 +34,89 @@ static const struct regmap_config tscadc_regmap_config = {
+>   	.val_bits = 32,
+>   };
+>
+> -void am335x_tsc_se_set_cache(struct ti_tscadc_dev *tsadc, u32 val)
+> +void am335x_tsc_se_set_cache(struct ti_tscadc_dev *tscadc, u32 val)
+>   {
+>   	unsigned long flags;
+>
+> -	spin_lock_irqsave(&tsadc->reg_lock, flags);
+> -	tsadc->reg_se_cache |= val;
+> -	if (tsadc->adc_waiting)
+> -		wake_up(&tsadc->reg_se_wait);
+> -	else if (!tsadc->adc_in_use)
+> -		regmap_write(tsadc->regmap_tscadc, REG_SE, tsadc->reg_se_cache);
+> +	spin_lock_irqsave(&tscadc->reg_lock, flags);
+> +	tscadc->reg_se_cache |= val;
+> +	if (tscadc->adc_waiting)
+> +		wake_up(&tscadc->reg_se_wait);
+> +	else if (!tscadc->adc_in_use)
+> +		regmap_write(tscadc->regmap_tscadc, REG_SE, tscadc->reg_se_cache);
+>
+> -	spin_unlock_irqrestore(&tsadc->reg_lock, flags);
+> +	spin_unlock_irqrestore(&tscadc->reg_lock, flags);
+>   }
+>   EXPORT_SYMBOL_GPL(am335x_tsc_se_set_cache);
+>
+> -static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
+> +static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tscadc)
+>   {
+>   	DEFINE_WAIT(wait);
+>   	u32 reg;
+>
+> -	regmap_read(tsadc->regmap_tscadc, REG_ADCFSM, &reg);
+> +	regmap_read(tscadc->regmap_tscadc, REG_ADCFSM, &reg);
+>   	if (reg & SEQ_STATUS) {
+> -		tsadc->adc_waiting = true;
+> -		prepare_to_wait(&tsadc->reg_se_wait, &wait,
+> +		tscadc->adc_waiting = true;
+> +		prepare_to_wait(&tscadc->reg_se_wait, &wait,
+>   				TASK_UNINTERRUPTIBLE);
+> -		spin_unlock_irq(&tsadc->reg_lock);
+> +		spin_unlock_irq(&tscadc->reg_lock);
+>
+>   		schedule();
+>
+> -		spin_lock_irq(&tsadc->reg_lock);
+> -		finish_wait(&tsadc->reg_se_wait, &wait);
+> +		spin_lock_irq(&tscadc->reg_lock);
+> +		finish_wait(&tscadc->reg_se_wait, &wait);
+>
+>   		/*
+>   		 * Sequencer should either be idle or
+>   		 * busy applying the charge step.
+>   		 */
+> -		regmap_read(tsadc->regmap_tscadc, REG_ADCFSM, &reg);
+> +		regmap_read(tscadc->regmap_tscadc, REG_ADCFSM, &reg);
+>   		WARN_ON((reg & SEQ_STATUS) && !(reg & CHARGE_STEP));
+> -		tsadc->adc_waiting = false;
+> +		tscadc->adc_waiting = false;
+>   	}
+> -	tsadc->adc_in_use = true;
+> +	tscadc->adc_in_use = true;
+>   }
+>
+> -void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
+> +void am335x_tsc_se_set_once(struct ti_tscadc_dev *tscadc, u32 val)
+>   {
+> -	spin_lock_irq(&tsadc->reg_lock);
+> -	am335x_tscadc_need_adc(tsadc);
+> +	spin_lock_irq(&tscadc->reg_lock);
+> +	am335x_tscadc_need_adc(tscadc);
+>
+> -	regmap_write(tsadc->regmap_tscadc, REG_SE, val);
+> -	spin_unlock_irq(&tsadc->reg_lock);
+> +	regmap_write(tscadc->regmap_tscadc, REG_SE, val);
+> +	spin_unlock_irq(&tscadc->reg_lock);
+>   }
+>   EXPORT_SYMBOL_GPL(am335x_tsc_se_set_once);
+>
+> -void am335x_tsc_se_adc_done(struct ti_tscadc_dev *tsadc)
+> +void am335x_tsc_se_adc_done(struct ti_tscadc_dev *tscadc)
+>   {
+>   	unsigned long flags;
+>
+> -	spin_lock_irqsave(&tsadc->reg_lock, flags);
+> -	tsadc->adc_in_use = false;
+> -	regmap_write(tsadc->regmap_tscadc, REG_SE, tsadc->reg_se_cache);
+> -	spin_unlock_irqrestore(&tsadc->reg_lock, flags);
+> +	spin_lock_irqsave(&tscadc->reg_lock, flags);
+> +	tscadc->adc_in_use = false;
+> +	regmap_write(tscadc->regmap_tscadc, REG_SE, tscadc->reg_se_cache);
+> +	spin_unlock_irqrestore(&tscadc->reg_lock, flags);
+>   }
+>   EXPORT_SYMBOL_GPL(am335x_tsc_se_adc_done);
+>
+> -void am335x_tsc_se_clr(struct ti_tscadc_dev *tsadc, u32 val)
+> +void am335x_tsc_se_clr(struct ti_tscadc_dev *tscadc, u32 val)
+>   {
+>   	unsigned long flags;
+>
+> -	spin_lock_irqsave(&tsadc->reg_lock, flags);
+> -	tsadc->reg_se_cache &= ~val;
+> -	regmap_write(tsadc->regmap_tscadc, REG_SE, tsadc->reg_se_cache);
+> -	spin_unlock_irqrestore(&tsadc->reg_lock, flags);
+> +	spin_lock_irqsave(&tscadc->reg_lock, flags);
+> +	tscadc->reg_se_cache &= ~val;
+> +	regmap_write(tscadc->regmap_tscadc, REG_SE, tscadc->reg_se_cache);
+> +	spin_unlock_irqrestore(&tscadc->reg_lock, flags);
+>   }
+>   EXPORT_SYMBOL_GPL(am335x_tsc_se_clr);
+>
+> -static void tscadc_idle_config(struct ti_tscadc_dev *config)
+> +static void tscadc_idle_config(struct ti_tscadc_dev *tscadc)
+>   {
+>   	unsigned int idleconfig;
+>
+>   	idleconfig = STEPCONFIG_YNN | STEPCONFIG_INM_ADCREFM |
+>   			STEPCONFIG_INP_ADCREFM | STEPCONFIG_YPN;
+>
+> -	regmap_write(config->regmap_tscadc, REG_IDLECONFIG, idleconfig);
+> +	regmap_write(tscadc->regmap_tscadc, REG_IDLECONFIG, idleconfig);
+>   }
+>
+>   static	int ti_tscadc_probe(struct platform_device *pdev)
+> @@ -298,9 +298,9 @@ static int ti_tscadc_remove(struct platform_device *pdev)
+>
+>   static int __maybe_unused tscadc_suspend(struct device *dev)
+>   {
+> -	struct ti_tscadc_dev	*tscadc_dev = dev_get_drvdata(dev);
+> +	struct ti_tscadc_dev	*tscadc = dev_get_drvdata(dev);
+>
+> -	regmap_write(tscadc_dev->regmap_tscadc, REG_SE, 0x00);
+> +	regmap_write(tscadc->regmap_tscadc, REG_SE, 0x00);
+>   	pm_runtime_put_sync(dev);
+>
+>   	return 0;
+> @@ -308,26 +308,26 @@ static int __maybe_unused tscadc_suspend(struct device *dev)
+>
+>   static int __maybe_unused tscadc_resume(struct device *dev)
+>   {
+> -	struct ti_tscadc_dev	*tscadc_dev = dev_get_drvdata(dev);
+> +	struct ti_tscadc_dev	*tscadc = dev_get_drvdata(dev);
+>   	u32 ctrl;
+>
+>   	pm_runtime_get_sync(dev);
+>
+>   	/* context restore */
+>   	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
+> -	regmap_write(tscadc_dev->regmap_tscadc, REG_CTRL, ctrl);
+> +	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
+>
+> -	if (tscadc_dev->tsc_cell != -1) {
+> -		if (tscadc_dev->tsc_wires == 5)
+> +	if (tscadc->tsc_cell != -1) {
+> +		if (tscadc->tsc_wires == 5)
+>   			ctrl |= CNTRLREG_5WIRE | CNTRLREG_TSCENB;
+>   		else
+>   			ctrl |= CNTRLREG_4WIRE | CNTRLREG_TSCENB;
+> -		tscadc_idle_config(tscadc_dev);
+> +		tscadc_idle_config(tscadc);
+>   	}
+>   	ctrl |= CNTRLREG_TSCSSENB;
+> -	regmap_write(tscadc_dev->regmap_tscadc, REG_CTRL, ctrl);
+> +	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
+>
+> -	regmap_write(tscadc_dev->regmap_tscadc, REG_CLKDIV, tscadc_dev->clk_div);
+> +	regmap_write(tscadc->regmap_tscadc, REG_CLKDIV, tscadc->clk_div);
+>
+>   	return 0;
+>   }
+>
