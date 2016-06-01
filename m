@@ -1,17 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:18333 "EHLO
-	hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750842AbcFAMrD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jun 2016 08:47:03 -0400
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:10319 "EHLO
+	hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750822AbcFAMrN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jun 2016 08:47:13 -0400
 From: Laxman Dewangan <ldewangan@nvidia.com>
 To: <robh+dt@kernel.org>, <jic23@kernel.org>, <corbet@lwn.net>,
 	<lars@metafoo.de>
 CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-doc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH 1/3] iio: adc: ina3221: Add DT binding details
-Date: Wed, 1 Jun 2016 18:04:12 +0530
-Message-ID: <1464784454-7988-1-git-send-email-ldewangan@nvidia.com>
+Subject: [PATCH 3/3] iio: adc: ina3221: Add sysfs details for TI INA3221
+Date: Wed, 1 Jun 2016 18:04:14 +0530
+Message-ID: <1464784454-7988-3-git-send-email-ldewangan@nvidia.com>
+In-Reply-To: <1464784454-7988-1-git-send-email-ldewangan@nvidia.com>
+References: <1464784454-7988-1-git-send-email-ldewangan@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
@@ -24,23 +26,21 @@ programmable conversion times and averaging modes for these signals.
 The INA3221 offers both critical and warning alerts to detect multiple
 programmable out-of-range conditions for each channel.
 
-Add DT binding details for INA3221 device for configuring device in
-different modes and enable multiple functionalities from device.
+The device export the SW interface  with IIO framework. Detail out the
+all sysfs exposed by device for reference.
 
 Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
 ---
- .../devicetree/bindings/iio/adc/ina3221.txt        | 107 +++++++++++++++++++++
- 1 file changed, 107 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ina3221.txt
+ Documentation/iio/adc/ina3221.txt | 81 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 81 insertions(+)
+ create mode 100644 Documentation/iio/adc/ina3221.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ina3221.txt b/Documentation/devicetree/bindings/iio/adc/ina3221.txt
+diff --git a/Documentation/iio/adc/ina3221.txt b/Documentation/iio/adc/ina3221.txt
 new file mode 100644
-index 0000000..9f0908d
+index 0000000..30cbd6d
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ina3221.txt
-@@ -0,0 +1,107 @@
-+TI INA3221 DT binding
-+
++++ b/Documentation/iio/adc/ina3221.txt
+@@ -0,0 +1,81 @@
 +The INA3221 is a three-channel, high-side current and bus voltage monitor
 +with an I2C interface from Texas Instruments. The INA3221 monitors both
 +shunt voltage drops and bus supply voltages in addition to having
@@ -48,103 +48,80 @@ index 0000000..9f0908d
 +The INA3221 offers both critical and warning alerts to detect multiple
 +programmable out-of-range conditions for each channel.
 +
-+Required properties:
-+-------------------
-+- compatible:		Must be "ti,ina3221".
-+- reg:			I2C slave device address.
-+- #io-channel-cells:	Should be set to 1. The value from the client node
-+			represent the channel number.
++Driver exposes multiple sysfs whose details are as follows:
 +
-+Optional properties:
-+------------------
-+one-shot-average-sample:	Integer, Number of sample to average before
-+				putting in the registers in oneshot mode.
++/sys/bus/iio/devices/iio:device0/operating_mode:
++	Operating mode of device whether it is in oneshot mode or
++	continuous conversion mode.
++	To change mode to continuous mode say:
++		echo "c" > operating_mode
++	 or
++		echo "C" > operating_mode
 +
-+one-shot-vbus-conv-time-us:	Integer in microseconds, ADC conversion time for
-+				bus voltage reading in oneshot mode.
++	To change mode to one shot mode, say
++		echo "o" > operating_mode
++	or
++		echo "O" > operating_mode
 +
-+one-shot-shunt-conv-time-us:	Integer in microseconds, ADC conversion time for
-+				shunt voltage reading in oneshot mode.
++/sys/bus/iio/devices/iio:device0/continuous_oversampling_ratio:
++	Oversampling ratio (number of sample used for average) when device
++	is in continuous mode.
++	The possible values for number of average samples are:
++		1, 4, 16, 64, 128, 256, 512, 1024
 +
-+continuous-average-sample:	Integer, Number of sample to average before
-+				putting in the registers in continuous mode.
++/sys/bus/iio/devices/iio:device0/continuous_vbus_conv_time:
++	ADC conversion time for voltage bus in continuous mode.
++	This is in microseconds.
++	The possible value for conversion times are:
++		140, 204, 332, 588, 1100, 2116, 4156, 8244
 +
-+continuous-vbus-conv-time-us:	Integer in microseconds, ADC conversion time for
-+				bus voltage reading in continuous mode.
++/sys/bus/iio/devices/iio:device0/continuous_vshunt_conv_time:
++	ADC conversion time for shunt voltage in continuous mode.
++	This is in microseconds.
++	The possible value for conversion times are:
++		140, 204, 332, 588, 1100, 2116, 4156, 8244
 +
-+continuous-shunt-conv-time-us:	Integer in microseconds, ADC conversion time for
-+				shunt voltage reading in continuous mode.
++/sys/bus/iio/devices/iio:device0/oneshot_oversampling_ratio:
++	Oversampling ratio (number of sample used for average) when device
++	is in one-shot mode.
++	The possible values for number of average samples are:
++		1, 4, 16, 64, 128, 256, 512, 1024
 +
-+enable-power-monitor:		Boolean, Enable power monitoring of the device.
++/sys/bus/iio/devices/iio:device0/oneshot_vbus_conv_time:
++	ADC conversion time for voltage bus in one-shot mode.
++	This is in microseconds.
++	The possible value for conversion times are:
++		140, 204, 332, 588, 1100, 2116, 4156, 8244
 +
-+enable-continuous-mode:		Boolean. Device support oneshot and continuous
-+				mode for the channel data conversion. Presence
-+				of this property will enable the continuous
-+				mode from boot.
++/sys/bus/iio/devices/iio:device0/oneshot_vshunt_conv_time
++	ADC conversion time for shunt voltage in one-shot mode.
++	This is in microseconds.
++	The possible value for conversion times are:
++		140, 204, 332, 588, 1100, 2116, 4156, 8244
 +
-+enable-warning-alert:		Boolean, Enable the alert signal when shunt
-+				current cross the warning threshold on any of
-+				the channel. Absence of this property will not
-+				enable the warning alert.
++/sys/bus/iio/devices/iio:device0/rail_name_<x>
++	The rail name of each channels.
 +
-+enable-critical-alert:		Boolean, Enable the alert signal when shunt
-+				current cross the critical threshold on any
-+				of the channel. Absence of this property will
-+				not enable the critical alert.
++/sys/bus/iio/devices/iio:device0/in_voltage<x>_input:
++	The voltage bus voltage measured by device. This is processed
++	data in microvolts.
 +
-+Optional Subnode properties:
-+---------------------------
-+The channel specific properties are provided as child node of device.
-+The fixed child node names of device node used for channel identification.
++/sys/bus/iio/devices/iio:device0/in_current<x>_input:
++	The current flow in the bus in microamps.
 +
-+Child node's name are "channel0" for channel 0, "channel1" for channel 1 and
-+"channel2" for channel 2.
++/sys/bus/iio/devices/iio:device0/in_power<x>_input:
++	The input power in the bus for each channel in micro-watt.
 +
-+Channel specific properties are provided under these child node. Following
-+are the properties:
++/sys/bus/iio/devices/iio:device0/in_current<x>_critical_input:
++	The critical current threshold on bus to generate critical
++	alert signal for each channel. This is provide in micro-amps.
++	The value can be override from sysfs for new critical current.
 +
-+label:					String, the name of the bus.
-+shunt-resistor-mohm:			Integer, The shunt resistance on bus
-+					in milli-ohm.
-+warning-current-limit-microamp:		Integer in microamp, warning current threshold
-+					for the channel	to generate warning alert.
-+critical-current-limit-microamp:	Integer in microamp, critical current threshold
-+					for the channel to generate warning alert.
++/sys/bus/iio/devices/iio:device0/in_current<x>_warning_input:
++	The warning current threshold on bus to generate warning
++	alert signal for each channel. This is provide in micro-amps.
++	The value can be override from sysfs for new warning threshold.
 +
-+Example:
-+
-+i2c@7000c400 {
-+	ina3221x@42 {
-+		compatible = "ti,ina3221";
-+		reg = <0x42>;
-+		one-shot-average-sample = <1>;
-+		one-shot-vbus-conv-time-us = <140>;
-+		one-shot-shunt-conv-time-us = <140>;
-+		continuous-average-sample = <64>;
-+		continuous-vbus-conv-time-us = <140>;
-+		continuous-shunt-conv-time-us = <140>;
-+		enable-power-monitor;
-+
-+		#io-channel-cells = <1>;
-+
-+		channel0 {
-+			label = "VDD_MUX";
-+			shunt-resistor-mohm = <20>;
-+		};
-+
-+		channel1 {
-+			label = "VDD_5V_IO_SYS";
-+			shunt-resistor-mohm = <5>;
-+			warning-current-limit-microamp = <8190000>;
-+			critical-current-limit-microamp = <1000000>;
-+		};
-+
-+		channel2 {
-+			label = "VDD_3V3_SYS";
-+			shunt-resistor-mohm = <10>;
-+		};
-+	};
-+};
 -- 
 2.1.4
 
