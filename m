@@ -1,85 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lists.s-osg.org ([54.187.51.154]:32987 "EHLO lists.s-osg.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932454AbcFASPb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 1 Jun 2016 14:15:31 -0400
-Message-ID: <574F263C.2010909@osg.samsung.com>
-Date: Wed, 01 Jun 2016 19:15:24 +0100
-From: Luis de Bethencourt <luisbg@osg.samsung.com>
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:36061 "EHLO
+	mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750720AbcFAS3y (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jun 2016 14:29:54 -0400
+Date: Wed, 1 Jun 2016 11:29:49 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Ksenija =?utf-8?Q?Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+	linux-input@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Marek =?utf-8?B?VmHFoXV0?= <marex@denx.de>,
+	linux-iio@vger.kernel.org, Harald Geyer <harald@ccbib.org>
+Subject: Re: [PATCH 3/3] input: touchscreen: mxs-lradc: Add support for
+ touchscreen
+Message-ID: <20160601182949.GE4114@dtor-ws>
+References: <cover.1461930102.git.ksenija.stanojevic@gmail.com>
+ <61fe1da2e8d82921f3222ec939047b6823f695e1.1461930102.git.ksenija.stanojevic@gmail.com>
+ <20160429233616.GA13361@dtor-ws>
+ <CAL7P5j+WhTGyn2gZRX9pvyrPss_PfwrvXHRMKmhR+=De2gSsRA@mail.gmail.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org
-CC: gregkh@linuxfoundation.org, Michael.Hennerich@analog.com,
-	jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCH] staging: iio: ad5933: fix handling of settling time cycles
-References: <1464796525-9030-1-git-send-email-luisbg@osg.samsung.com> <574F0BB5.7080105@metafoo.de>
-In-Reply-To: <574F0BB5.7080105@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAL7P5j+WhTGyn2gZRX9pvyrPss_PfwrvXHRMKmhR+=De2gSsRA@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/06/16 17:22, Lars-Peter Clausen wrote:
-> On 06/01/2016 05:55 PM, Luis de Bethencourt wrote:
->> Correctly handle the settling time cycles value. The else branch was an
->> impossible condition (> 1022 in the else branch of > 511) and the handling
->> of the values was dividing by 2 and 4, with a left shift, instead of
->> multiplying.
->>
->> Based on the Table 13 at the bottom of Page 25 of the Data Sheet:
->> http://www.analog.com/media/en/technical-documentation/data-sheets/AD5933.pdf
->>
->> Signed-off-by: Luis de Bethencourt <luisbg@osg.samsung.com>
->> ---
->>
->> Hi,
->>
->> I decided to use the hexadecimal values instead of (1 << 10) and (1 << 9), for
->> briefness, I could resend using those instead if it is prefered.
->>
->> I also decided to use multiplications instead of right-shifts for readability.
->> I could use change that as well.
->>
->> Thanks,
->> Luis
->>
->>  drivers/staging/iio/impedance-analyzer/ad5933.c | 11 +++++++----
->>  1 file changed, 7 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
->> index 9f43976..3a2cf8f3 100644
->> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
->> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
->> @@ -444,10 +444,13 @@ static ssize_t ad5933_store(struct device *dev,
->>  		st->settling_cycles = val;
->>  
->>  		/* 2x, 4x handling, see datasheet */
->> -		if (val > 511)
->> -			val = (val >> 1) | (1 << 9);
->> -		else if (val > 1022)
->> -			val = (val >> 2) | (3 << 9);
->> +		if (val & 0x400 && val & 0x200) {
->> +			val &= 0x1ff;
->> +			val *= 4;
->> +		} else if (val & 0x200) {
->> +			val &= 0x1ff;
->> +			val *= 2;
->> +		}
+On Sat, May 28, 2016 at 07:46:07PM +0200, Ksenija Stanojević wrote:
+> On Sat, Apr 30, 2016 at 1:36 AM, Dmitry Torokhov
+> <dmitry.torokhov@gmail.com> wrote:
+> > Hi Ksenija,
+> >
+> > On Fri, Apr 29, 2016 at 01:49:11PM +0200, Ksenija Stanojevic wrote:
+> >> +
+> >> +     mxs_lradc_ts_hw_init(ts);
+> >> +     for (i = 0; i < lradc->irq_count; i++) {
+> >> +             ret = devm_request_irq(dev, lradc->irq[i],
+> >> +                                    mxs_lradc_ts_handle_irq,
+> >
+> > Hmm, if you have several interrupts handled by the same interrupt
+> > handler you'd need some locking there.
 > 
-> This does not look correct. D10 and D9 select an additional multiplier of
-> either 1, 2 or 4. So dividing the value before writing it to the register is
-> the right approach in that case. Just flipping the order in which the
-> conditions are evaluated should be sufficient.
-> 
->>  
->>  		dat = cpu_to_be16(val);
->>  		ret = ad5933_i2c_write(st->client,
->>
-> 
+> same interrupt handler can run concurrently only on multi cores, so
+> why do we need locking?
 
-I misunderstood the register being read instead of being written. Looking at it
-now, I have no idea why. Sorry.
+We do not necessarily need it on single core (unless someone will turn
+it int threaded IRQ down the road), but adding it costs almost nothing
+and will ensure that the driver will continue working even if block is
+moved to multi-core SOC in the future...
 
-Will resend a patch flipping the order of conditions.
+Thanks.
 
-Thanks for the review,
-Luis
+-- 
+Dmitry
