@@ -1,55 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f195.google.com ([209.85.192.195]:36061 "EHLO
-	mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750720AbcFAS3y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jun 2016 14:29:54 -0400
-Date: Wed, 1 Jun 2016 11:29:49 -0700
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:36066 "EHLO
+	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750740AbcFASfX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jun 2016 14:35:23 -0400
+Date: Wed, 1 Jun 2016 11:35:19 -0700
 From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Ksenija =?utf-8?Q?Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-	linux-input@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+To: "Andrew F. Davis" <afd@ti.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Marek =?utf-8?B?VmHFoXV0?= <marex@denx.de>,
-	linux-iio@vger.kernel.org, Harald Geyer <harald@ccbib.org>
-Subject: Re: [PATCH 3/3] input: touchscreen: mxs-lradc: Add support for
- touchscreen
-Message-ID: <20160601182949.GE4114@dtor-ws>
-References: <cover.1461930102.git.ksenija.stanojevic@gmail.com>
- <61fe1da2e8d82921f3222ec939047b6823f695e1.1461930102.git.ksenija.stanojevic@gmail.com>
- <20160429233616.GA13361@dtor-ws>
- <CAL7P5j+WhTGyn2gZRX9pvyrPss_PfwrvXHRMKmhR+=De2gSsRA@mail.gmail.com>
+	Lee Jones <lee.jones@linaro.org>,
+	Dave Gerlach <d-gerlach@ti.com>, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 8/8] Input: ti_am335x_tsc - use variable name for
+ sizeof() operator
+Message-ID: <20160601183519.GG4114@dtor-ws>
+References: <20160531170013.2649-1-afd@ti.com>
+ <20160531170013.2649-9-afd@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CAL7P5j+WhTGyn2gZRX9pvyrPss_PfwrvXHRMKmhR+=De2gSsRA@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20160531170013.2649-9-afd@ti.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, May 28, 2016 at 07:46:07PM +0200, Ksenija Stanojević wrote:
-> On Sat, Apr 30, 2016 at 1:36 AM, Dmitry Torokhov
-> <dmitry.torokhov@gmail.com> wrote:
-> > Hi Ksenija,
-> >
-> > On Fri, Apr 29, 2016 at 01:49:11PM +0200, Ksenija Stanojevic wrote:
-> >> +
-> >> +     mxs_lradc_ts_hw_init(ts);
-> >> +     for (i = 0; i < lradc->irq_count; i++) {
-> >> +             ret = devm_request_irq(dev, lradc->irq[i],
-> >> +                                    mxs_lradc_ts_handle_irq,
-> >
-> > Hmm, if you have several interrupts handled by the same interrupt
-> > handler you'd need some locking there.
+On Tue, May 31, 2016 at 12:00:13PM -0500, Andrew F. Davis wrote:
+> Fix the code formatting to use the kernel preferred style
+> of using the actual variables to determize the size using
+> the sizeof() operator.
 > 
-> same interrupt handler can run concurrently only on multi cores, so
-> why do we need locking?
+> Signed-off-by: Andrew F. Davis <afd@ti.com>
 
-We do not necessarily need it on single core (unless someone will turn
-it int threaded IRQ down the road), but adding it costs almost nothing
-and will ensure that the driver will continue working even if block is
-moved to multi-core SOC in the future...
+Applied, thank you.
 
-Thanks.
+> ---
+>  drivers/input/touchscreen/ti_am335x_tsc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+> index 8b3f15c..7953381 100644
+> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
+> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+> @@ -406,7 +406,7 @@ static int titsc_probe(struct platform_device *pdev)
+>  	int err;
+>  
+>  	/* Allocate memory for device */
+> -	ts_dev = kzalloc(sizeof(struct titsc), GFP_KERNEL);
+> +	ts_dev = kzalloc(sizeof(*ts_dev), GFP_KERNEL);
+>  	input_dev = input_allocate_device();
+>  	if (!ts_dev || !input_dev) {
+>  		dev_err(&pdev->dev, "failed to allocate memory.\n");
+> -- 
+> 2.8.3
+> 
 
 -- 
 Dmitry
