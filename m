@@ -1,111 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:51446 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750697AbcFANuG convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jun 2016 09:50:06 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <glki-linux-iio@m.gmane.org>)
-	id 1b86X7-0004fm-1P
-	for linux-iio@vger.kernel.org; Wed, 01 Jun 2016 15:50:05 +0200
-Received: from 91.178.106.13 ([91.178.106.13])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Wed, 01 Jun 2016 15:50:05 +0200
-Received: from badshah400 by 91.178.106.13 with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Wed, 01 Jun 2016 15:50:05 +0200
-To: linux-iio@vger.kernel.org
-From: Atri Bhattacharya <badshah400@aim.com>
-Subject: Re: [RFC 0/4] Intel Integrated Sensor Hub Support (ISH)
-Date: Wed, 01 Jun 2016 15:36:44 +0200
-Message-ID: <1464788204.3917.9.camel@aim.com>
-References: <1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-In-Reply-To: <1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <1ED0DBE1-293B-4CD5-B429-4FA72E51E9F4@kernel.org>
+References: <1457294576-10121-1-git-send-email-jic23@kernel.org>
+	<CAEnQRZCQsoXB-D+sJpcN0W1naXzMLq5gp+WYZ51vut7OhM3NCw@mail.gmail.com>
+	<1ED0DBE1-293B-4CD5-B429-4FA72E51E9F4@kernel.org>
+Date: Wed, 1 Jun 2016 17:59:44 +0300
+Message-ID: <CAEnQRZAgP+=dsXyc8e=ia7gJZ7P_em+ovdwW5U260yfHan+zSg@mail.gmail.com>
+Subject: Re: [RFC PATCH V2] iio:trigger: Experimental kthread tight loop
+ trigger (thread only)
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Gregor Boirie <gregor.boirie@parrot.com>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi!
+On Tue, May 31, 2016 at 8:44 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+>
+> On 31 May 2016 15:43:54 BST, Daniel Baluta <daniel.baluta@intel.com> wrote:
+>>On Sun, Mar 6, 2016 at 10:02 PM, Jonathan Cameron <jic23@kernel.org>
+>>wrote:
+>>> This patch is in response to that of
+>>> Gregor Boirie <gregor.boirie@parrot.com>
+>>> who proposed using a tight kthread within a device driver (be it with
+>>the
+>>> support factored out into a helper library) in order to basically
+>>spin as
+>>> fast as possible.
+>>>
+>>> It is meant as a talking point rather than a formal proposal of the
+>>code
+>>> (though we are heading towards that I think).
+>>> Also gives people some working code to mess around with.
+>>>
+>>> I proposed that this could be done with a trigger with a few
+>>constraints
+>>> and this is the proof (be it ugly) of that.
+>>>
+>>> There are some constraints though, some of which we would want to
+>>relax
+>>> if this were to move forward.
+>>>
+>>> * Will only run the thread part of the registered pollfunc.  This is
+>>to
+>>>   avoid the overhead of jumping in and out of interrupt context.  Is
+>>the
+>>>   overhead significant?  Not certain but feels like it should be!
+>>>
+>>> * This limitation precludes any device that 'must' do some work in
+>>>   interrupt context.  However, that is true of few if any drivers and
+>>>   I suspect that any that do will be restricted to using triggers
+>>they
+>>>   provide themselves.  Usually we have a top half mainly to grab a
+>>>   timestamp as soon after the dataready type signal as possible.
+>>>
+>>
+>>Configfs part looks good to me.
+>>
+>>What happens with iio_loop_thread when changing the current trigger?
+>>I'm not sure how it will be stopped.
+>
+> To change trigger the buffer will be disabled ultimately calling the state
+>  function with false. That calls kthread_stop and the loop should drop
+>  out with the tread exiting.
 
-On Mon, 2016-05-30 at 21:27 -0700, Srinivas Pandruvada wrote:
-> Starting from Cherrytrail, multiple generation of Intel processors
-> offers
-> on package sensor hub. Several recent tablets, 2-in-1 convertible
-> laptops
-> are using ISH instead of external sensor hubs. This resulted in lack
-> of
-> support of sensor function like device rotation and auto backlight
-> adjustment. In addition, depending on the OEM implementation, support
-> of ISH
-> is required to support low power sleep states.
-> 
-> The support of ISH on Linux platforms is not new. Android platforms
-> with
-> Intel SoCs had this support for a while submitted by Daniel Drubin. 
-> This patcheset is reusing most of those changes with  clean up and
-> removing Android platform specific changes.
-> 
-> This series is tested on:
-> - Lenovo Yoga 260 with Skylake processor
-> - HP Pavilion x2 detachable with Cherrytrail 
-> 
-> The user mode ABI is still same as external sensor hubs using Linux
-> IIO. So existing user mode software should still work without change.
-> This series primarily brings in new HID transport used in ISH.
-> 
-> This series submitted as a RFC to try on several devices. We have 
-> received request from Linux users who wanted this support. So I hope
-> all
-> those users try and give feedback.
-> 
+This makes sense. I missed the disable buffer thing.
 
-Thanks a lot for adding support for this. I have a Lenovo Thinkpad Yoga
-260, so I decided to give it a try. I used your patches on kernel 4.6.0
-and installed the patched kernel. Now, I see that the device is
-recognised immediately. I use the iio-sensor-proxy application from
-[1], and it now recognises the sensors. But changing orientation
-doesn't seem to do anything, and moreover upon a wakeup from suspend I
-see the following messages on the journal:
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
 
-Jun 01 15:15:09 tp-yoga260 kernel: [drm] RC6 on
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0001:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0001:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0001:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0001:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0001:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0001:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0001:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0001:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0002:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0002:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0002:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub 0044:8086:22D8.0002:
-timeout waiting for response from ISHTP device
-Jun 01 15:15:09 tp-yoga260 kernel: PM: resume of devices complete after
-37095.288 msecs
+We shouldn't forget about updating Documentation:
+http://lxr.free-electrons.com/source/Documentation/iio/iio_configfs.txt#L75
 
-Also suspend and wakeup seems to be really slow now. Please let me know
-if there is any other info I can provide.
+I should do the same for software IIO devices.
 
-Thanks and best wishes.
-
-[1] https://github.com/hadess/iio-sensor-proxy
-
--- 
-Atri Bhattacharya
-Wed  1 Jun 15:22:32 CEST 2016
-
-Sent from openSUSE Tumbleweed (20160529) (x86_64) on my laptop.
-
+Daniel.
