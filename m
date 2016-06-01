@@ -1,79 +1,68 @@
-Return-Path: <daniel.baluta@gmail.com>
-MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <1ED0DBE1-293B-4CD5-B429-4FA72E51E9F4@kernel.org>
-References: <1457294576-10121-1-git-send-email-jic23@kernel.org>
-	<CAEnQRZCQsoXB-D+sJpcN0W1naXzMLq5gp+WYZ51vut7OhM3NCw@mail.gmail.com>
-	<1ED0DBE1-293B-4CD5-B429-4FA72E51E9F4@kernel.org>
-Date: Wed, 1 Jun 2016 17:59:44 +0300
-Message-ID: <CAEnQRZAgP+=dsXyc8e=ia7gJZ7P_em+ovdwW5U260yfHan+zSg@mail.gmail.com>
-Subject: Re: [RFC PATCH V2] iio:trigger: Experimental kthread tight loop
- trigger (thread only)
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Gregor Boirie <gregor.boirie@parrot.com>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from lists.s-osg.org ([54.187.51.154]:60208 "EHLO lists.s-osg.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932485AbcFAPzd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 1 Jun 2016 11:55:33 -0400
+From: Luis de Bethencourt <luisbg@osg.samsung.com>
+To: linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	Luis de Bethencourt <luisbg@osg.samsung.com>
+Subject: [PATCH] staging: iio: ad5933: fix handling of settling time cycles
+Date: Wed,  1 Jun 2016 16:55:25 +0100
+Message-Id: <1464796525-9030-1-git-send-email-luisbg@osg.samsung.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, May 31, 2016 at 8:44 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->
->
-> On 31 May 2016 15:43:54 BST, Daniel Baluta <daniel.baluta@intel.com> wrote:
->>On Sun, Mar 6, 2016 at 10:02 PM, Jonathan Cameron <jic23@kernel.org>
->>wrote:
->>> This patch is in response to that of
->>> Gregor Boirie <gregor.boirie@parrot.com>
->>> who proposed using a tight kthread within a device driver (be it with
->>the
->>> support factored out into a helper library) in order to basically
->>spin as
->>> fast as possible.
->>>
->>> It is meant as a talking point rather than a formal proposal of the
->>code
->>> (though we are heading towards that I think).
->>> Also gives people some working code to mess around with.
->>>
->>> I proposed that this could be done with a trigger with a few
->>constraints
->>> and this is the proof (be it ugly) of that.
->>>
->>> There are some constraints though, some of which we would want to
->>relax
->>> if this were to move forward.
->>>
->>> * Will only run the thread part of the registered pollfunc.  This is
->>to
->>>   avoid the overhead of jumping in and out of interrupt context.  Is
->>the
->>>   overhead significant?  Not certain but feels like it should be!
->>>
->>> * This limitation precludes any device that 'must' do some work in
->>>   interrupt context.  However, that is true of few if any drivers and
->>>   I suspect that any that do will be restricted to using triggers
->>they
->>>   provide themselves.  Usually we have a top half mainly to grab a
->>>   timestamp as soon after the dataready type signal as possible.
->>>
->>
->>Configfs part looks good to me.
->>
->>What happens with iio_loop_thread when changing the current trigger?
->>I'm not sure how it will be stopped.
->
-> To change trigger the buffer will be disabled ultimately calling the state
->  function with false. That calls kthread_stop and the loop should drop
->  out with the tread exiting.
+Correctly handle the settling time cycles value. The else branch was an
+impossible condition (> 1022 in the else branch of > 511) and the handling
+of the values was dividing by 2 and 4, with a left shift, instead of
+multiplying.
 
-This makes sense. I missed the disable buffer thing.
+Based on the Table 13 at the bottom of Page 25 of the Data Sheet:
+http://www.analog.com/media/en/technical-documentation/data-sheets/AD5933.pdf
 
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Luis de Bethencourt <luisbg@osg.samsung.com>
+---
 
-We shouldn't forget about updating Documentation:
-http://lxr.free-electrons.com/source/Documentation/iio/iio_configfs.txt#L75
+Hi,
 
-I should do the same for software IIO devices.
+I decided to use the hexadecimal values instead of (1 << 10) and (1 << 9), for
+briefness, I could resend using those instead if it is prefered.
 
-Daniel.
+I also decided to use multiplications instead of right-shifts for readability.
+I could use change that as well.
+
+Thanks,
+Luis
+
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 9f43976..3a2cf8f3 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -444,10 +444,13 @@ static ssize_t ad5933_store(struct device *dev,
+ 		st->settling_cycles = val;
+ 
+ 		/* 2x, 4x handling, see datasheet */
+-		if (val > 511)
+-			val = (val >> 1) | (1 << 9);
+-		else if (val > 1022)
+-			val = (val >> 2) | (3 << 9);
++		if (val & 0x400 && val & 0x200) {
++			val &= 0x1ff;
++			val *= 4;
++		} else if (val & 0x200) {
++			val &= 0x1ff;
++			val *= 2;
++		}
+ 
+ 		dat = cpu_to_be16(val);
+ 		ret = ad5933_i2c_write(st->client,
+-- 
+2.5.1
+
