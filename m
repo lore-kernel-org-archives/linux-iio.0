@@ -1,103 +1,150 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-by2on0110.outbound.protection.outlook.com ([207.46.100.110]:65024
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750697AbcFAHlp convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jun 2016 03:41:45 -0400
-From: "Markezana, William" <William.Markezana@te.com>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	"knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: [PATCH] iio: (ms5637) Add Measurement Specialties explicit MS5805
- and  MS5837 support
-Date: Wed, 1 Jun 2016 07:27:20 +0000
-Message-ID: <CY1PR01MB1947A8160E9C24A9398543EA95470@CY1PR01MB1947.prod.exchangelabs.com>
-References: <A02AF0B2-1B1A-477E-952B-AA332C6650FE@te.com>
- <alpine.DEB.2.02.1605312318400.9332@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1605312318400.9332@pmeerw.net>
-Content-Type: text/plain; charset="us-ascii"
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:18333 "EHLO
+	hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750842AbcFAMrD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jun 2016 08:47:03 -0400
+From: Laxman Dewangan <ldewangan@nvidia.com>
+To: <robh+dt@kernel.org>, <jic23@kernel.org>, <corbet@lwn.net>,
+	<lars@metafoo.de>
+CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	Laxman Dewangan <ldewangan@nvidia.com>
+Subject: [PATCH 1/3] iio: adc: ina3221: Add DT binding details
+Date: Wed, 1 Jun 2016 18:04:12 +0530
+Message-ID: <1464784454-7988-1-git-send-email-ldewangan@nvidia.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 31 May 2016, Markezana, William wrote:
+The INA3221 is a three-channel, high-side current and bus voltage monitor
+with an I2C interface from Texas Instruments. The INA3221 monitors both
+shunt voltage drops and bus supply voltages in addition to having
+programmable conversion times and averaging modes for these signals.
+The INA3221 offers both critical and warning alerts to detect multiple
+programmable out-of-range conditions for each channel.
 
-> Signed-off-by: William Markezana <william.markezana@meas-spec.com>
-> ---
->  drivers/iio/pressure/ms5637.c | 20 +++++++++++++++++---
->  1 file changed, 17 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/pressure/ms5637.c 
-> b/drivers/iio/pressure/ms5637.c index e8d0e0d..6ecc686 100644
-> --- a/drivers/iio/pressure/ms5637.c
-> +++ b/drivers/iio/pressure/ms5637.c
-> @@ -1,5 +1,6 @@
->  /*
-> - * ms5637.c - Support for Measurement-Specialties ms5637 and ms8607
-> + * ms5637.c - Support for Measurement-Specialties ms5637, ms8607,
-> +              ms5805 and ms5837
+Add DT binding details for INA3221 device for configuring device in
+different modes and enable multiple functionalities from device.
 
-I guess we expect it to look like
- *             ms5805 and ms5837 pressure & temperature sensors
+Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+---
+ .../devicetree/bindings/iio/adc/ina3221.txt        | 107 +++++++++++++++++++++
+ 1 file changed, 107 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ina3221.txt
 
-and I suggest to list the chips in lexicographic order (here and all other
-lists)
-
--I will update the patch according to you suggestion.
-
-it seems there is no functional difference?
-
--All sensors are different and have various measurement range. 
-This patch is about making people aware that this driver is compatible 
-with other sensors without duplicating code. 
-Is there a better way to do that ?
-
->   *            pressure & temperature sensor
->   *
->   * Copyright (c) 2015 Measurement-Specialties @@ -12,6 +13,10 @@
->   *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
->   * Datasheet:
->   *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
-> + * Datasheet:
-> + *  http://www.meas-spec.com/downloads/MS5805-02BA01.pdf
-> + * Datasheet:
-> + *  http://meas-spec.com/downloads/MS5837-30BA.pdf
->   */
->  
->  #include <linux/init.h>
-> @@ -26,6 +31,13 @@
->  
->  #include "../common/ms_sensors/ms_sensors_i2c.h"
->  
-> +enum {
-> +	MS5637,
-> +	MS8607,
-> +	MS5805,
-> +	MS5837
-> +};
-> +
->  static const int ms5637_samp_freq[6] = { 960, 480, 240, 120, 60, 30 
-> };
->  /* String copy of the above const for readability purpose */  static 
-> const char ms5637_show_samp_freq[] = "960 480 240 120 60 30"; @@ 
-> -169,8 +181,10 @@ static int ms5637_probe(struct i2c_client *client,  
-> }
->  
->  static const struct i2c_device_id ms5637_id[] = {
-> -	{"ms5637", 0},
-> -	{"ms8607-temppressure", 1},
-> +	{"ms5637", MS5637},
-> +	{"ms8607-temppressure", MS8607},
-> +	{"ms5805", MS5805},
-> +	{"ms5837", MS5837},
->  	{}
->  };
->  
-> 
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/ina3221.txt b/Documentation/devicetree/bindings/iio/adc/ina3221.txt
+new file mode 100644
+index 0000000..9f0908d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ina3221.txt
+@@ -0,0 +1,107 @@
++TI INA3221 DT binding
++
++The INA3221 is a three-channel, high-side current and bus voltage monitor
++with an I2C interface from Texas Instruments. The INA3221 monitors both
++shunt voltage drops and bus supply voltages in addition to having
++programmable conversion times and averaging modes for these signals.
++The INA3221 offers both critical and warning alerts to detect multiple
++programmable out-of-range conditions for each channel.
++
++Required properties:
++-------------------
++- compatible:		Must be "ti,ina3221".
++- reg:			I2C slave device address.
++- #io-channel-cells:	Should be set to 1. The value from the client node
++			represent the channel number.
++
++Optional properties:
++------------------
++one-shot-average-sample:	Integer, Number of sample to average before
++				putting in the registers in oneshot mode.
++
++one-shot-vbus-conv-time-us:	Integer in microseconds, ADC conversion time for
++				bus voltage reading in oneshot mode.
++
++one-shot-shunt-conv-time-us:	Integer in microseconds, ADC conversion time for
++				shunt voltage reading in oneshot mode.
++
++continuous-average-sample:	Integer, Number of sample to average before
++				putting in the registers in continuous mode.
++
++continuous-vbus-conv-time-us:	Integer in microseconds, ADC conversion time for
++				bus voltage reading in continuous mode.
++
++continuous-shunt-conv-time-us:	Integer in microseconds, ADC conversion time for
++				shunt voltage reading in continuous mode.
++
++enable-power-monitor:		Boolean, Enable power monitoring of the device.
++
++enable-continuous-mode:		Boolean. Device support oneshot and continuous
++				mode for the channel data conversion. Presence
++				of this property will enable the continuous
++				mode from boot.
++
++enable-warning-alert:		Boolean, Enable the alert signal when shunt
++				current cross the warning threshold on any of
++				the channel. Absence of this property will not
++				enable the warning alert.
++
++enable-critical-alert:		Boolean, Enable the alert signal when shunt
++				current cross the critical threshold on any
++				of the channel. Absence of this property will
++				not enable the critical alert.
++
++Optional Subnode properties:
++---------------------------
++The channel specific properties are provided as child node of device.
++The fixed child node names of device node used for channel identification.
++
++Child node's name are "channel0" for channel 0, "channel1" for channel 1 and
++"channel2" for channel 2.
++
++Channel specific properties are provided under these child node. Following
++are the properties:
++
++label:					String, the name of the bus.
++shunt-resistor-mohm:			Integer, The shunt resistance on bus
++					in milli-ohm.
++warning-current-limit-microamp:		Integer in microamp, warning current threshold
++					for the channel	to generate warning alert.
++critical-current-limit-microamp:	Integer in microamp, critical current threshold
++					for the channel to generate warning alert.
++
++Example:
++
++i2c@7000c400 {
++	ina3221x@42 {
++		compatible = "ti,ina3221";
++		reg = <0x42>;
++		one-shot-average-sample = <1>;
++		one-shot-vbus-conv-time-us = <140>;
++		one-shot-shunt-conv-time-us = <140>;
++		continuous-average-sample = <64>;
++		continuous-vbus-conv-time-us = <140>;
++		continuous-shunt-conv-time-us = <140>;
++		enable-power-monitor;
++
++		#io-channel-cells = <1>;
++
++		channel0 {
++			label = "VDD_MUX";
++			shunt-resistor-mohm = <20>;
++		};
++
++		channel1 {
++			label = "VDD_5V_IO_SYS";
++			shunt-resistor-mohm = <5>;
++			warning-current-limit-microamp = <8190000>;
++			critical-current-limit-microamp = <1000000>;
++		};
++
++		channel2 {
++			label = "VDD_3V3_SYS";
++			shunt-resistor-mohm = <10>;
++		};
++	};
++};
 -- 
+2.1.4
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
