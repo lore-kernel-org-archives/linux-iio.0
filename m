@@ -1,51 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lists.s-osg.org ([54.187.51.154]:33517 "EHLO lists.s-osg.org"
+Received: from plane.gmane.org ([80.91.229.3]:46663 "EHLO plane.gmane.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750744AbcFAT0D (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 1 Jun 2016 15:26:03 -0400
-From: Luis de Bethencourt <luisbg@osg.samsung.com>
-To: linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	Luis de Bethencourt <luisbg@osg.samsung.com>
-Subject: [PATCH v2] staging: iio: ad5933: fix order of cycle conditions
-Date: Wed,  1 Jun 2016 20:25:54 +0100
-Message-Id: <1464809154-14868-1-git-send-email-luisbg@osg.samsung.com>
+	id S1752250AbcFBDaH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 1 Jun 2016 23:30:07 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1b8JKe-0008Er-Kc
+	for linux-iio@vger.kernel.org; Thu, 02 Jun 2016 05:30:05 +0200
+Received: from 134.134.139.77 ([134.134.139.77])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Thu, 02 Jun 2016 05:30:04 +0200
+Received: from srinivas.pandruvada by 134.134.139.77 with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Thu, 02 Jun 2016 05:30:04 +0200
+To: linux-iio@vger.kernel.org
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: Re: [RFC 0/4] Intel Integrated Sensor Hub Support (ISH)
+Date: Thu, 2 Jun 2016 03:27:18 +0000 (UTC)
+Message-ID: <loom.20160602T052411-711@post.gmane.org>
+References: <1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1464788204.3917.9.camel@aim.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Correctly handle the settling time cycles value. The else branch is an
-impossible condition, > 1022 in the else branch of > 511. Flipping the order.
-
-Based on the Table 13 at the bottom of Page 25 of the Data Sheet:
-http://www.analog.com/media/en/technical-documentation/data-sheets/AD5933.pdf
-
-Signed-off-by: Luis de Bethencourt <luisbg@osg.samsung.com>
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/impedance-analyzer/ad5933.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 9f43976..170ac98 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -444,10 +444,10 @@ static ssize_t ad5933_store(struct device *dev,
- 		st->settling_cycles = val;
- 
- 		/* 2x, 4x handling, see datasheet */
--		if (val > 511)
--			val = (val >> 1) | (1 << 9);
--		else if (val > 1022)
-+		if (val > 1022)
- 			val = (val >> 2) | (3 << 9);
-+		else if (val > 511)
-+			val = (val >> 1) | (1 << 9);
- 
- 		dat = cpu_to_be16(val);
- 		ret = ad5933_i2c_write(st->client,
--- 
-2.5.1
+QXRyaSBCaGF0dGFjaGFyeWEgPGJhZHNoYWg0MDBALi4uPiB3cml0ZXM6Cgo+IAo+IEhpIQo+IAo+IE9uIE1vbiwgMjAxNi0wNS0zMCBhdCAyMToyNyAtMDcwMCwgU3Jpbml2YXMgUGFuZHJ1dmFkYSB3cm90ZToKPiA+IFN0YXJ0aW5nIGZyb20gQ2hlcnJ5dHJhaWwsIG11bHRpcGxlIGdlbmVyYXRpb24gb2YgSW50ZWwgcHJvY2Vzc29ycwo+ID4gb2ZmZXJzCj4gPiBvbiBwYWNrYWdlIHNlbnNvciBodWIuIFNldmVyYWwgcmVjZW50IHRhYmxldHMsIDItaW4tMSBjb252ZXJ0aWJsZQo+ID4gbGFwdG9wcwo+ID4gYXJlIHVzaW5nIElTSCBpbnN0ZWFkIG9mIGV4dGVybmFsIHNlbnNvciBodWJzLiBUaGlzIHJlc3VsdGVkIGluIGxhY2sKPiA+IG9mCj4gPiBzdXBwb3J0IG9mIHNlbnNvciBmdW5jdGlvbiBsaWtlIGRldmljZSByb3RhdGlvbiBhbmQgYXV0byBiYWNrbGlnaHQKPiA+IGFkanVzdG1lbnQuIEluIGFkZGl0aW9uLCBkZXBlbmRpbmcgb24gdGhlIE9FTSBpbXBsZW1lbnRhdGlvbiwgc3VwcG9ydAo+ID4gb2YgSVNICj4gPiBpcyByZXF1aXJlZCB0byBzdXBwb3J0IGxvdyBwb3dlciBzbGVlcCBzdGF0ZXMuCj4gPiAKPiA+IFRoZSBzdXBwb3J0IG9mIElTSCBvbiBMaW51eCBwbGF0Zm9ybXMgaXMgbm90IG5ldy4gQW5kcm9pZCBwbGF0Zm9ybXMKPiA+IHdpdGgKPiA+IEludGVsIFNvQ3MgaGFkIHRoaXMgc3VwcG9ydCBmb3IgYSB3aGlsZSBzdWJtaXR0ZWQgYnkgRGFuaWVsIERydWJpbi7CoAo+ID4gVGhpcyBwYXRjaGVzZX
+ QgaXMgcmV1c2luZyBtb3N0IG9mIHRob3NlIGNoYW5nZXMgd2l0aMKgwqBjbGVhbiB1cCBhbmQKPiA+IHJlbW92aW5nIEFuZHJvaWQgcGxhdGZvcm0gc3BlY2lmaWMgY2hhbmdlcy4KPiA+IAo+ID4gVGhpcyBzZXJpZXMgaXMgdGVzdGVkIG9uOgo+ID4gLSBMZW5vdm8gWW9nYSAyNjAgd2l0aCBTa3lsYWtlIHByb2Nlc3Nvcgo+ID4gLSBIUCBQYXZpbGlvbiB4MiBkZXRhY2hhYmxlIHdpdGggQ2hlcnJ5dHJhaWzCoAo+ID4gCj4gPiBUaGUgdXNlciBtb2RlIEFCSSBpcyBzdGlsbCBzYW1lIGFzIGV4dGVybmFsIHNlbnNvciBodWJzIHVzaW5nIExpbnV4Cj4gPiBJSU8uIFNvIGV4aXN0aW5nIHVzZXIgbW9kZSBzb2Z0d2FyZSBzaG91bGQgc3RpbGwgd29yayB3aXRob3V0IGNoYW5nZS4KPiA+IFRoaXMgc2VyaWVzIHByaW1hcmlseSBicmluZ3MgaW4gbmV3IEhJRCB0cmFuc3BvcnQgdXNlZCBpbiBJU0guCj4gPiAKPiA+IFRoaXMgc2VyaWVzIHN1Ym1pdHRlZCBhcyBhIFJGQyB0byB0cnkgb24gc2V2ZXJhbCBkZXZpY2VzLiBXZSBoYXZlwqAKPiA+IHJlY2VpdmVkIHJlcXVlc3QgZnJvbSBMaW51eCB1c2VycyB3aG8gd2FudGVkIHRoaXMgc3VwcG9ydC4gU28gSSBob3BlCj4gPiBhbGwKPiA+IHRob3NlIHVzZXJzIHRyeSBhbmQgZ2l2ZSBmZWVkYmFjay4KPiA+IAo+IAo+IFRoYW5rcyBhIGxvdCBmb3IgYWRkaW5nIHN1cHBvcnQgZm9yIHRoaXMuIEkgaGF2ZSBhIExlbm92byBUaGlua3BhZCBZb2dhCj4gMjYwLCBzbyBJIGRlY2l
+ kZWQgdG8gZ2l2ZSBpdCBhIHRyeS4gSSB1c2VkIHlvdXIgcGF0Y2hlcyBvbiBrZXJuZWwgNC42LjAKPiBhbmQgaW5zdGFsbGVkIHRoZSBwYXRjaGVkIGtlcm5lbC4gTm93LCBJIHNlZSB0aGF0IHRoZSBkZXZpY2UgaXMKPiByZWNvZ25pc2VkIGltbWVkaWF0ZWx5LiBJIHVzZSB0aGUgaWlvLXNlbnNvci1wcm94eSBhcHBsaWNhdGlvbiBmcm9tCj4gWzFdLCBhbmQgaXQgbm93IHJlY29nbmlzZXMgdGhlIHNlbnNvcnMuIEJ1dCBjaGFuZ2luZyBvcmllbnRhdGlvbgo+IGRvZXNuJ3Qgc2VlbSB0byBkbyBhbnl0aGluZywgYW5kIG1vcmVvdmVyIHVwb24gYSB3YWtldXAgZnJvbSBzdXNwZW5kIEkKPiBzZWUgdGhlIGZvbGxvd2luZyBtZXNzYWdlcyBvbiB0aGUgam91cm5hbDoKPiAKPiBKdW4gMDEgMTU6MTU6MDkgdHAteW9nYTI2MCBrZXJuZWw6IFtkcm1dIFJDNiBvbgo+IEp1biAwMSAxNToxNTowOSB0cC15b2dhMjYwIGtlcm5lbDogaGlkLXNlbnNvci1odWIgMDA0NDo4MDg2OjIyRDguMDAwMToKPiB0aW1lb3V0IHdhaXRpbmcgZm9yIHJlc3BvbnNlIGZyb20gSVNIVFAgZGV2aWNlCj4gSnVuIDAxIDE1OjE1OjA5IHRwLXlvZ2EyNjAga2VybmVsOiBoaWQtc2Vuc29yLWh1YiAwMDQ0OjgwODY6MjJEOC4wMDAxOgo+IHRpbWVvdXQgd2FpdGluZyBmb3IgcmVzcG9uc2UgZnJvbSBJU0hUUCBkZXZpY2UKPiBKdW4gMDEgMTU6MTU6MDkgdHAteW9nYTI2MCBrZXJuZWw6IGhpZC1zZW5zb3ItaHViIDAwNDQ6ODA4NjoyMkQ4LjAwMDE6
+ Cj4gdGltZW91dCB3YWl0aW5nIGZvciByZXNwb25zZSBmcm9tIElTSFRQIGRldmljZQo+IEp1biAwMSAxNToxNTowOSB0cC15b2dhMjYwIGtlcm5lbDogaGlkLXNlbnNvci1odWIgMDA0NDo4MDg2OjIyRDguMDAwMToKPiB0aW1lb3V0IHdhaXRpbmcgZm9yIHJlc3BvbnNlIGZyb20gSVNIVFAgZGV2aWNlCj4gSnVuIDAxIDE1OjE1OjA5IHRwLXlvZ2EyNjAga2VybmVsOiBoaWQtc2Vuc29yLWh1YiAwMDQ0OjgwODY6MjJEOC4wMDAxOgo+IHRpbWVvdXQgd2FpdGluZyBmb3IgcmVzcG9uc2UgZnJvbSBJU0hUUCBkZXZpY2UKPiBKdW4gMDEgMTU6MTU6MDkgdHAteW9nYTI2MCBrZXJuZWw6IGhpZC1zZW5zb3ItaHViIDAwNDQ6ODA4NjoyMkQ4LjAwMDE6Cj4gdGltZW91dCB3YWl0aW5nIGZvciByZXNwb25zZSBmcm9tIElTSFRQIGRldmljZQo+IEp1biAwMSAxNToxNTowOSB0cC15b2dhMjYwIGtlcm5lbDogaGlkLXNlbnNvci1odWIgMDA0NDo4MDg2OjIyRDguMDAwMToKPiB0aW1lb3V0IHdhaXRpbmcgZm9yIHJlc3BvbnNlIGZyb20gSVNIVFAgZGV2aWNlCj4gSnVuIDAxIDE1OjE1OjA5IHRwLXlvZ2EyNjAga2VybmVsOiBoaWQtc2Vuc29yLWh1YiAwMDQ0OjgwODY6MjJEOC4wMDAxOgo+IHRpbWVvdXQgd2FpdGluZyBmb3IgcmVzcG9uc2UgZnJvbSBJU0hUUCBkZXZpY2UKPiBKdW4gMDEgMTU6MTU6MDkgdHAteW9nYTI2MCBrZXJuZWw6IGhpZC1zZW5zb3ItaHViIDAwNDQ6ODA4NjoyMkQ4LjAwMDI6Cj4gdGltZW91dCB3YWl0a
+ W5nIGZvciByZXNwb25zZSBmcm9tIElTSFRQIGRldmljZQo+IEp1biAwMSAxNToxNTowOSB0cC15b2dhMjYwIGtlcm5lbDogaGlkLXNlbnNvci1odWIgMDA0NDo4MDg2OjIyRDguMDAwMjoKPiB0aW1lb3V0IHdhaXRpbmcgZm9yIHJlc3BvbnNlIGZyb20gSVNIVFAgZGV2aWNlCj4gSnVuIDAxIDE1OjE1OjA5IHRwLXlvZ2EyNjAga2VybmVsOiBoaWQtc2Vuc29yLWh1YiAwMDQ0OjgwODY6MjJEOC4wMDAyOgo+IHRpbWVvdXQgd2FpdGluZyBmb3IgcmVzcG9uc2UgZnJvbSBJU0hUUCBkZXZpY2UKPiBKdW4gMDEgMTU6MTU6MDkgdHAteW9nYTI2MCBrZXJuZWw6IGhpZC1zZW5zb3ItaHViIDAwNDQ6ODA4NjoyMkQ4LjAwMDI6Cj4gdGltZW91dCB3YWl0aW5nIGZvciByZXNwb25zZSBmcm9tIElTSFRQIGRldmljZQo+IEp1biAwMSAxNToxNTowOSB0cC15b2dhMjYwIGtlcm5lbDogUE06IHJlc3VtZSBvZiBkZXZpY2VzIGNvbXBsZXRlIGFmdGVyCj4gMzcwOTUuMjg4IG1zZWNzCj4gCj4gQWxzbyBzdXNwZW5kIGFuZCB3YWtldXAgc2VlbXMgdG8gYmUgcmVhbGx5IHNsb3cgbm93LiBQbGVhc2UgbGV0IG1lIGtub3cKPiBpZiB0aGVyZSBpcyBhbnkgb3RoZXIgaW5mbyBJIGNhbiBwcm92aWRlLgo+IAo+IFRoYW5rcyBhbmQgYmVzdCB3aXNoZXMuCj4gCj4gWzFdwqBodHRwczovL2dpdGh1Yi5jb20vaGFkZXNzL2lpby1zZW5zb3ItcHJveHkKPiAKCkNhbiB5b3UgcmVwbHkgdG8gYWxsLCBzbyB0aGF0IEkgZ2V0IGVtYWlsIGluIG15IG
+ luYm94PwpZb3Ugd2lsbCBuZWVkIHRoaXMgYXMgeW91IGhhdmUgb2xkZXIgRlc/CgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9oaWQvaGlkLXNlbnNvci1odWIuYyBiL2RyaXZlcnMvaGlkL2hpZC1zZW5zb3ItaHViLmMKaW5kZXggM2Q1YmE1Yi4uNjU4YTYwNyAxMDA2NDQKLS0tIGEvZHJpdmVycy9oaWQvaGlkLXNlbnNvci1odWIuYworKysgYi9kcml2ZXJzL2hpZC9oaWQtc2Vuc29yLWh1Yi5jCkBAIC0xNiw2ICsxNiw3IEBACiAgKiA1MSBGcmFua2xpbiBTdCAtIEZpZnRoIEZsb29yLCBCb3N0b24sIE1BIDAyMTEwLTEzMDEgVVNBLgogICoKICAqLworCiAjaW5jbHVkZSA8bGludXgvZGV2aWNlLmg+CiAjaW5jbHVkZSA8bGludXgvaGlkLmg+CiAjaW5jbHVkZSA8bGludXgvbW9kdWxlLmg+CkBAIC03OTgsNiArNzk5LDkgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBoaWRfZGV2aWNlX2lkIHNlbnNvcl9odWJfZGV2aWNlc1tdID0gCnsKICAgICAgICB7IEhJRF9ERVZJQ0UoSElEX0JVU19BTlksIEhJRF9HUk9VUF9TRU5TT1JfSFVCLCBVU0JfVkVORE9SX0lEX0lURSwKICAgICAgICAgICAgICAgICAgICAgICAgVVNCX0RFVklDRV9JRF9JVEVfTEVOT1ZPX1lPR0E5MDApLAogICAgICAgICAgICAgICAgICAgICAgICAuZHJpdmVyX2RhdGEgPSBISURfU0VOU09SX0hVQl9FTlVNX1FVSVJLfSwKKyAgICAgICB7IEhJRF9ERVZJQ0UoSElEX0JVU19BTlksIEhJRF9HUk9VUF9TRU5TT1JfSFVCLCAKVVNCX1ZFTkRPUl9JRF9JTlRFTF8
+ wLAorICAgICAgICAgICAgICAgICAgICAgICAweDIyRDgpLAorICAgICAgICAgICAgICAgICAgICAgICAuZHJpdmVyX2RhdGEgPSBISURfU0VOU09SX0hVQl9FTlVNX1FVSVJLfSwKICAgICAgICB7IEhJRF9ERVZJQ0UoSElEX0JVU19BTlksIEhJRF9HUk9VUF9TRU5TT1JfSFVCLCBISURfQU5ZX0lELAogICAgICAgICAgICAgICAgICAgICBISURfQU5ZX0lEKSB9LAogICAgICAgIHsgfQoKCgoK
 
