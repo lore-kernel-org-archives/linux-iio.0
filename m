@@ -1,91 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:35804 "EHLO
-	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750747AbcFBE2Q (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 2 Jun 2016 00:28:16 -0400
-Date: Wed, 1 Jun 2016 21:28:14 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/7] iio: adc: ad7793: claim direct mode when writing
- frequency
-Message-ID: <20160602042802.GA2910@d830.WORKGROUP>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from omr-m016e.mx.aol.com ([204.29.186.16]:39375 "EHLO
+	omr-m016e.mx.aol.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752020AbcFBHyi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 2 Jun 2016 03:54:38 -0400
+Message-ID: <1464853729.2640.8.camel@aim.com>
+Subject: Re: [RFC 0/4] Intel Integrated Sensor Hub Support (ISH)
+From: Atri Bhattacharya <badshah400@aim.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: linux-iio@vger.kernel.org
+Date: Thu, 02 Jun 2016 09:48:49 +0200
+In-Reply-To: <loom.20160602T052411-711@post.gmane.org>
+References: <1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <1464788204.3917.9.camel@aim.com> <loom.20160602T052411-711@post.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Driver was checking for direct mode and trying to lock it, but
-left a gap where mode could change before the desired operation.
-Use iio_device_claim_direct_mode() to guarantee device stays in
-direct mode.
+On Thu, 2016-06-02 at 03:27 +0000, Srinivas Pandruvada wrote:
+> Atri Bhattacharya <badshah400@...> writes:
+> 
+> > 
+> > Thanks a lot for adding support for this. I have a Lenovo Thinkpad
+> > Yoga
+> > 260, so I decided to give it a try. I used your patches on kernel
+> > 4.6.0
+> > and installed the patched kernel. Now, I see that the device is
+> > recognised immediately. I use the iio-sensor-proxy application from
+> > [1], and it now recognises the sensors. But changing orientation
+> > doesn't seem to do anything, and moreover upon a wakeup from
+> > suspend I
+> > see the following messages on the journal:
+> > 
+> > Jun 01 15:15:09 tp-yoga260 kernel: [drm] RC6 on
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0001:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0001:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0001:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0001:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0001:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0001:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0001:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0001:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0002:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0002:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0002:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: hid-sensor-hub
+> > 0044:8086:22D8.0002:
+> > timeout waiting for response from ISHTP device
+> > Jun 01 15:15:09 tp-yoga260 kernel: PM: resume of devices complete
+> > after
+> > 37095.288 msecs
+> > 
+> > Also suspend and wakeup seems to be really slow now. Please let me
+> > know
+> > if there is any other info I can provide.
+> > 
+> > Thanks and best wishes.
+> > 
+> > [1] https://github.com/hadess/iio-sensor-proxy
+> > 
+> 
+> Can you reply to all, so that I get email in my inbox?
+> You will need this as you have older FW?
+> 
+> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
+> hub.c
+> index 3d5ba5b..658a607 100644
+> --- a/drivers/hid/hid-sensor-hub.c
+> +++ b/drivers/hid/hid-sensor-hub.c
+> @@ -16,6 +16,7 @@
+>   * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
+>   *
+>   */
+> +
+>  #include <linux/device.h>
+>  #include <linux/hid.h>
+>  #include <linux/module.h>
+> @@ -798,6 +799,9 @@ static const struct hid_device_id
+> sensor_hub_devices[] = 
+> {
+>         { HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> USB_VENDOR_ID_ITE,
+>                         USB_DEVICE_ID_ITE_LENOVO_YOGA900),
+>                         .driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+> +       { HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, 
+> USB_VENDOR_ID_INTEL_0,
+> +                       0x22D8),
+> +                       .driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+>         { HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, HID_ANY_ID,
+>                      HID_ANY_ID) },
+>         { }
+> 
+> 
 
-Refactor function to clarify look-up followed by lock sequence.
+Thanks for your response, but this patch didn't help with the slow
+suspend/wakeup problem or with making the device actually respond to
+rotation or brightness changes. At this stage the sensor-hub seems to
+be recognised just fine, but not to be working. Same messages as above
+continue to show up in the journal.
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Cc: Daniel Baluta <daniel.baluta@gmail.com>
----
-Changes in v2
-Refactored function per reviewers comments
-Updated changelog
+Best wishes
+-- 
+Atri Bhattacharya
+Thu  2 Jun 09:42:21 CEST 2016
 
- drivers/iio/adc/ad7793.c | 32 +++++++++++++-------------------
- 1 file changed, 13 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
-index 7b07bb6..a43722f 100644
---- a/drivers/iio/adc/ad7793.c
-+++ b/drivers/iio/adc/ad7793.c
-@@ -369,13 +369,6 @@ static ssize_t ad7793_write_frequency(struct device *dev,
- 	long lval;
- 	int i, ret;
- 
--	mutex_lock(&indio_dev->mlock);
--	if (iio_buffer_enabled(indio_dev)) {
--		mutex_unlock(&indio_dev->mlock);
--		return -EBUSY;
--	}
--	mutex_unlock(&indio_dev->mlock);
--
- 	ret = kstrtol(buf, 10, &lval);
- 	if (ret)
- 		return ret;
-@@ -383,20 +376,21 @@ static ssize_t ad7793_write_frequency(struct device *dev,
- 	if (lval == 0)
- 		return -EINVAL;
- 
--	ret = -EINVAL;
--
- 	for (i = 0; i < 16; i++)
--		if (lval == st->chip_info->sample_freq_avail[i]) {
--			mutex_lock(&indio_dev->mlock);
--			st->mode &= ~AD7793_MODE_RATE(-1);
--			st->mode |= AD7793_MODE_RATE(i);
--			ad_sd_write_reg(&st->sd, AD7793_REG_MODE,
--					 sizeof(st->mode), st->mode);
--			mutex_unlock(&indio_dev->mlock);
--			ret = 0;
--		}
-+		if (lval == st->chip_info->sample_freq_avail[i])
-+			break;
-+	if (i == 16)
-+		return -EINVAL;
- 
--	return ret ? ret : len;
-+	ret = iio_device_claim_direct_mode(indio_dev);
-+	if (ret)
-+		return ret;
-+	st->mode &= ~AD7793_MODE_RATE(-1);
-+	st->mode |= AD7793_MODE_RATE(i);
-+	ad_sd_write_reg(&st->sd, AD7793_REG_MODE, sizeof(st->mode), st->mode);
-+	iio_device_release_direct_mode(indio_dev);
-+
-+	return len;
- }
- 
- static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
--- 
-2.1.4
-
+Sent from openSUSE Tumbleweed (20160530) (x86_64) on my laptop.
