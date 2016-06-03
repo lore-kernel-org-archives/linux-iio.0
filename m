@@ -1,53 +1,225 @@
-Return-Path: <linux@roeck-us.net>
-Subject: Re: [PATCH 2/3] iio: adc: ina3221: Add support for IIO ADC driver for
- TI INA3221
-To: Jonathan Cameron <jic23@kernel.org>,
- Laxman Dewangan <ldewangan@nvidia.com>, robh+dt@kernel.org, corbet@lwn.net,
- lars@metafoo.de
-References: <1464784454-7988-1-git-send-email-ldewangan@nvidia.com>
- <1464784454-7988-2-git-send-email-ldewangan@nvidia.com>
- <44e28639-67b6-7586-5e6d-c0180ccded79@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-hwmon@vger.kernel.org, Jean Delvare <khali@linux-fr.org>
-From: Guenter Roeck <linux@roeck-us.net>
-Message-ID: <5751863E.907@roeck-us.net>
-Date: Fri, 3 Jun 2016 06:29:34 -0700
-MIME-Version: 1.0
-In-Reply-To: <44e28639-67b6-7586-5e6d-c0180ccded79@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yw0-f194.google.com ([209.85.161.194]:36486 "EHLO
+	mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751312AbcFCPOJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2016 11:14:09 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH] iio: stx104: Add GPIO support for the Apex Embedded Systems STX104
+Date: Fri,  3 Jun 2016 11:13:48 -0400
+Message-Id: <1464966828-20264-1-git-send-email-vilhelm.gray@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/03/2016 03:06 AM, Jonathan Cameron wrote:
-> On 01/06/16 13:34, Laxman Dewangan wrote:
->> The INA3221 is a three-channel, high-side current and bus voltage monitor
->> with an I2C interface from Texas Instruments. The INA3221 monitors both
->> shunt voltage drops and bus supply voltages in addition to having
->> programmable conversion times and averaging modes for these signals.
->> The INA3221 offers both critical and warning alerts to detect multiple
->> programmable out-of-range conditions for each channel.
->>
->> Add support for INA3221 SW driver via IIO ADC interface. The device is
->> register as iio-device and provides interface for voltage/current and power
->> monitor. Also provide interface for setting oneshot/continuous mode and
->> critical/warning threshold for the shunt voltage drop.
->>
->> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
-> Hi Laxman,
->
-> As ever with any driver lying on the border of IIO and hwmon, please include
-> a short justification of why you need an IIO driver and also cc the
-> hwmon list + maintainers. (cc'd on this reply).
->
-> I simply won't take a driver where the hwmon maintainers aren't happy.
-> As it stands I'm not seeing obvious reasons in the code for why this
-> should be an IIO device.
->
+The Apex Embedded Systems STX104 device features eight lines of digital
+I/O (four digital inputs and four digital outputs). This patch adds GPIO
+support for these eight lines of digital I/O via GPIOLIB.
 
-Me not either.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/iio/dac/Kconfig  |  11 +++--
+ drivers/iio/dac/stx104.c | 118 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 122 insertions(+), 7 deletions(-)
 
-I have a hwmon driver for the same chip pending from Andrew Davis (TI)
-which I am just about to accept. We had directed Andrew back in April
-to write a hwmon driver for the chip, which he did.
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 61d5008..b3feb0bf 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -246,13 +246,14 @@ config MCP4922
+ 	  will be called mcp4922.
+ 
+ config STX104
+-	tristate "Apex Embedded Systems STX104 DAC driver"
++	tristate "Apex Embedded Systems STX104 driver"
+ 	depends on ISA
++	select GPIOLIB
+ 	help
+-	  Say yes here to build support for the 2-channel DAC on the Apex
+-	  Embedded Systems STX104 integrated analog PC/104 card. The base port
+-	  addresses for the devices may be configured via the "base" module
+-	  parameter array.
++	  Say yes here to build support for the 2-channel DAC and GPIO on the
++	  Apex Embedded Systems STX104 integrated analog PC/104 card. The base
++	  port addresses for the devices may be configured via the base array
++	  module parameter.
+ 
+ config VF610_DAC
+ 	tristate "Vybrid vf610 DAC driver"
+diff --git a/drivers/iio/dac/stx104.c b/drivers/iio/dac/stx104.c
+index 174f4b7..dc445cf 100644
+--- a/drivers/iio/dac/stx104.c
++++ b/drivers/iio/dac/stx104.c
+@@ -14,6 +14,7 @@
+ #include <linux/bitops.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
++#include <linux/gpio/driver.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/types.h>
+ #include <linux/io.h>
+@@ -21,6 +22,7 @@
+ #include <linux/isa.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
++#include <linux/spinlock.h>
+ 
+ #define STX104_NUM_CHAN 2
+ 
+@@ -56,6 +58,20 @@ struct stx104_iio {
+ 	unsigned base;
+ };
+ 
++/**
++ * struct stx104_gpio - GPIO device private data structure
++ * @chip:	instance of the gpio_chip
++ * @lock:	synchronization lock to prevent I/O race conditions
++ * @base:	base port address of the GPIO device
++ * @out_state:	output bits state
++ */
++struct stx104_gpio {
++	struct gpio_chip chip;
++	spinlock_t lock;
++	unsigned int base;
++	unsigned int out_state;
++};
++
+ static int stx104_read_raw(struct iio_dev *indio_dev,
+ 	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+ {
+@@ -95,15 +111,74 @@ static const struct iio_chan_spec stx104_channels[STX104_NUM_CHAN] = {
+ 	STX104_CHAN(1)
+ };
+ 
++static int stx104_gpio_get_direction(struct gpio_chip *chip,
++	unsigned int offset)
++{
++	if (offset < 4)
++		return 1;
++
++	return 0;
++}
++
++static int stx104_gpio_direction_input(struct gpio_chip *chip,
++	unsigned int offset)
++{
++	return 0;
++}
++
++static int stx104_gpio_direction_output(struct gpio_chip *chip,
++	unsigned int offset, int value)
++{
++	return 0;
++}
++
++static int stx104_gpio_get(struct gpio_chip *chip, unsigned int offset)
++{
++	struct stx104_gpio *const stx104gpio = gpiochip_get_data(chip);
++
++	if (offset >= 4)
++		return -EINVAL;
++
++	return !!(inb(stx104gpio->base) & BIT(offset));
++}
++
++static void stx104_gpio_set(struct gpio_chip *chip, unsigned int offset,
++	int value)
++{
++	struct stx104_gpio *const stx104gpio = gpiochip_get_data(chip);
++	const unsigned int mask = BIT(offset) >> 4;
++	unsigned long flags;
++
++	if (offset < 4)
++		return;
++
++	spin_lock_irqsave(&stx104gpio->lock, flags);
++
++	if (value)
++		stx104gpio->out_state |= mask;
++	else
++		stx104gpio->out_state &= ~mask;
++
++	outb(stx104gpio->out_state, stx104gpio->base);
++
++	spin_unlock_irqrestore(&stx104gpio->lock, flags);
++}
++
+ static int stx104_probe(struct device *dev, unsigned int id)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct stx104_iio *priv;
++	struct stx104_gpio *stx104gpio;
++	int err;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
++	stx104gpio = devm_kzalloc(dev, sizeof(*stx104gpio), GFP_KERNEL);
++	if (!stx104gpio)
++		return -ENOMEM;
++
+ 	if (!devm_request_region(dev, base[id], STX104_EXTENT,
+ 		dev_name(dev))) {
+ 		dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n",
+@@ -124,14 +199,53 @@ static int stx104_probe(struct device *dev, unsigned int id)
+ 	outw(0, base[id] + 4);
+ 	outw(0, base[id] + 6);
+ 
+-	return devm_iio_device_register(dev, indio_dev);
++	err = devm_iio_device_register(dev, indio_dev);
++	if (err) {
++		dev_err(dev, "IIO device registering failed (%d)\n", err);
++		return err;
++	}
++
++	stx104gpio->chip.label = dev_name(dev);
++	stx104gpio->chip.parent = dev;
++	stx104gpio->chip.owner = THIS_MODULE;
++	stx104gpio->chip.base = -1;
++	stx104gpio->chip.ngpio = 8;
++	stx104gpio->chip.get_direction = stx104_gpio_get_direction;
++	stx104gpio->chip.direction_input = stx104_gpio_direction_input;
++	stx104gpio->chip.direction_output = stx104_gpio_direction_output;
++	stx104gpio->chip.get = stx104_gpio_get;
++	stx104gpio->chip.set = stx104_gpio_set;
++	stx104gpio->base = base[id] + 3;
++	stx104gpio->out_state = 0x0;
++
++	spin_lock_init(&stx104gpio->lock);
++
++	dev_set_drvdata(dev, stx104gpio);
++
++	err = gpiochip_add_data(&stx104gpio->chip, stx104gpio);
++	if (err) {
++		dev_err(dev, "GPIO registering failed (%d)\n", err);
++		return err;
++	}
++
++	return 0;
++}
++
++static int stx104_remove(struct device *dev, unsigned int id)
++{
++	struct stx104_gpio *const stx104gpio = dev_get_drvdata(dev);
++
++	gpiochip_remove(&stx104gpio->chip);
++
++	return 0;
+ }
+ 
+ static struct isa_driver stx104_driver = {
+ 	.probe = stx104_probe,
+ 	.driver = {
+ 		.name = "stx104"
+-	}
++	},
++	.remove = stx104_remove
+ };
+ 
+ static void __exit stx104_exit(void)
+-- 
+2.7.3
 
-Guenter
