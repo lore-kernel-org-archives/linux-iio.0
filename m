@@ -1,47 +1,59 @@
-Return-Path: <leonard.crestez@intel.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Subject: [PATCH] iio: generic_buffer: Fix --trigger-num option
-Date: Fri,  3 Jun 2016 21:56:29 +0300
-Message-Id: <d3181955589a6b6745cb008edbc24d2a1b8b0892.1464980098.git.leonard.crestez@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:55794 "EHLO
+	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751919AbcFCU5I (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2016 16:57:08 -0400
+Date: Fri, 3 Jun 2016 22:57:03 +0200
+From: Pavel Machek <pavel@ucw.cz>
+To: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: gregkh@linuxfoundation.org, akpm@linux-foundation.org,
+	x86@kernel.org, linux-next@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+	Guenter Roeck <linux@roeck-us.net>,
+	Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2 2/4] gpio: Allow PC/104 devices on X86_64
+Message-ID: <20160603205703.GC11253@amd>
+References: <cover.1464029828.git.vilhelm.gray@gmail.com>
+ <d7320150373a0a04ba44b12c5c56d92370853316.1464029828.git.vilhelm.gray@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <d7320150373a0a04ba44b12c5c56d92370853316.1464029828.git.vilhelm.gray@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Initialize trig_num to -1 and handle trig_num=0 as a valid id.
+Hi!
 
-Fixes: 7c7e9dad (iio: iio_generic_buffer: Add --trigger-num option)
-Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
----
- tools/iio/iio_generic_buffer.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> With the introduction of the ISA_BUS_API Kconfig option, ISA-style
+> drivers may be built for X86_64 architectures. This patch changes the
+> ISA Kconfig option dependency of the PC/104 drivers to ISA_BUS_API, thus
+> allowing them to build for X86_64 as they are expected to.
+> 
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> ---
+>  drivers/gpio/Kconfig | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+> index 48da857..dc6da77 100644
+> --- a/drivers/gpio/Kconfig
+> +++ b/drivers/gpio/Kconfig
+> @@ -530,7 +530,7 @@ menu "Port-mapped I/O GPIO drivers"
+>  
+>  config GPIO_104_DIO_48E
+>  	tristate "ACCES 104-DIO-48E GPIO support"
+> -	depends on ISA
+> +	depends on ISA_BUS_API
+>  	select GPIOLIB_IRQCHIP
+>  	help
+>  	  Enables GPIO support for the ACCES 104-DIO-48E series
 
-diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-index e8c3052..0e8a1f7 100644
---- a/tools/iio/iio_generic_buffer.c
-+++ b/tools/iio/iio_generic_buffer.c
-@@ -341,7 +341,7 @@ int main(int argc, char **argv)
- 
- 	char *data = NULL;
- 	ssize_t read_size;
--	int dev_num = -1, trig_num;
-+	int dev_num = -1, trig_num = -1;
- 	char *buffer_access = NULL;
- 	int scan_size;
- 	int noevents = 0;
-@@ -456,7 +456,7 @@ int main(int argc, char **argv)
- 
- 	if (notrigger) {
- 		printf("trigger-less mode selected\n");
--	} if (trig_num > 0) {
-+	} if (trig_num >= 0) {
- 		char *trig_dev_name;
- 		ret = asprintf(&trig_dev_name, "%strigger%d", iio_dir, trig_num);
- 		if (ret < 0) {
+Should we do "depends on PC104" here, because that is what it really
+means, and have PC104 enabled when ISA_BUS_API is enabled or something
+like that?
+
 -- 
-2.5.5
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
