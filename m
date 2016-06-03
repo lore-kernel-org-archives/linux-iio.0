@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f194.google.com ([209.85.161.194]:36486 "EHLO
-	mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751312AbcFCPOJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2016 11:14:09 -0400
+Received: from mail-yw0-f196.google.com ([209.85.161.196]:36699 "EHLO
+	mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932448AbcFCRm5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2016 13:42:57 -0400
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
 To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
 	pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH] iio: stx104: Add GPIO support for the Apex Embedded Systems STX104
-Date: Fri,  3 Jun 2016 11:13:48 -0400
-Message-Id: <1464966828-20264-1-git-send-email-vilhelm.gray@gmail.com>
+Subject: [PATCH v2] iio: stx104: Add GPIO support for the Apex Embedded Systems STX104
+Date: Fri,  3 Jun 2016 13:42:42 -0400
+Message-Id: <1464975762-24052-1-git-send-email-vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -20,12 +20,16 @@ support for these eight lines of digital I/O via GPIOLIB.
 
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
+Changes in v2:
+  - Change GPIOLIB Kconfig selection to a dependency for the STX104 Kconfig
+    option; STX104 should only be available to systems configured for GPIOLIB
+
  drivers/iio/dac/Kconfig  |  11 +++--
  drivers/iio/dac/stx104.c | 118 ++++++++++++++++++++++++++++++++++++++++++++++-
  2 files changed, 122 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 61d5008..b3feb0bf 100644
+index 61d5008..35a3d49 100644
 --- a/drivers/iio/dac/Kconfig
 +++ b/drivers/iio/dac/Kconfig
 @@ -246,13 +246,14 @@ config MCP4922
@@ -35,7 +39,7 @@ index 61d5008..b3feb0bf 100644
 -	tristate "Apex Embedded Systems STX104 DAC driver"
 +	tristate "Apex Embedded Systems STX104 driver"
  	depends on ISA
-+	select GPIOLIB
++	depends on GPIOLIB
  	help
 -	  Say yes here to build support for the 2-channel DAC on the Apex
 -	  Embedded Systems STX104 integrated analog PC/104 card. The base port
