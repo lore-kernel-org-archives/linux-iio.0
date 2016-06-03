@@ -1,57 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:33376 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932278AbcFCSaw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 3 Jun 2016 14:30:52 -0400
+Return-Path: <leonard.crestez@intel.com>
 From: Crestez Dan Leonard <leonard.crestez@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] iio: inv_mpu6050: Fix use-after-free in ACPI code
-Date: Fri,  3 Jun 2016 21:30:24 +0300
-Message-Id: <ee0d9476d1312d63f37e73cb65c38fa7dcd3d265.1464978605.git.leonard.crestez@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH] iio: generic_buffer: Fix --trigger-num option
+Date: Fri,  3 Jun 2016 21:56:29 +0300
+Message-Id: <d3181955589a6b6745cb008edbc24d2a1b8b0892.1464980098.git.leonard.crestez@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-In some cases this can result in incorrectly returning a negative value
-from asus_acpi_get_sensor_info and the AK8963 magnetometer failing to
-show up.
+Initialize trig_num to -1 and handle trig_num=0 as a valid id.
 
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Fixes: 7c7e9dad (iio: iio_generic_buffer: Add --trigger-num option)
 Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tools/iio/iio_generic_buffer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-index 2771106..f770472 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-@@ -56,6 +56,7 @@ static int asus_acpi_get_sensor_info(struct acpi_device *adev,
- 	int i;
- 	acpi_status status;
- 	union acpi_object *cpm;
-+	int ret;
+diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+index e8c3052..0e8a1f7 100644
+--- a/tools/iio/iio_generic_buffer.c
++++ b/tools/iio/iio_generic_buffer.c
+@@ -341,7 +341,7 @@ int main(int argc, char **argv)
  
- 	status = acpi_evaluate_object(adev->handle, "CNF0", NULL, &buffer);
- 	if (ACPI_FAILURE(status))
-@@ -82,10 +83,10 @@ static int asus_acpi_get_sensor_info(struct acpi_device *adev,
- 			}
- 		}
- 	}
--
-+	ret = cpm->package.count;
- 	kfree(buffer.pointer);
+ 	char *data = NULL;
+ 	ssize_t read_size;
+-	int dev_num = -1, trig_num;
++	int dev_num = -1, trig_num = -1;
+ 	char *buffer_access = NULL;
+ 	int scan_size;
+ 	int noevents = 0;
+@@ -456,7 +456,7 @@ int main(int argc, char **argv)
  
--	return cpm->package.count;
-+	return ret;
- }
- 
- static int acpi_i2c_check_resource(struct acpi_resource *ares, void *data)
+ 	if (notrigger) {
+ 		printf("trigger-less mode selected\n");
+-	} if (trig_num > 0) {
++	} if (trig_num >= 0) {
+ 		char *trig_dev_name;
+ 		ret = asprintf(&trig_dev_name, "%strigger%d", iio_dir, trig_num);
+ 		if (ret < 0) {
 -- 
 2.5.5
-
