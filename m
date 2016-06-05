@@ -1,70 +1,80 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f193.google.com ([209.85.161.193]:36638 "EHLO
-	mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751211AbcFEUDl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jun 2016 16:03:41 -0400
-Date: Sun, 5 Jun 2016 16:03:32 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Pavel Machek <pavel@ucw.cz>
-Cc: gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-	x86@kernel.org, linux-next@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	Guenter Roeck <linux@roeck-us.net>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2 2/4] gpio: Allow PC/104 devices on X86_64
-Message-ID: <20160605200310.GA24295@sophia>
-References: <cover.1464029828.git.vilhelm.gray@gmail.com>
- <d7320150373a0a04ba44b12c5c56d92370853316.1464029828.git.vilhelm.gray@gmail.com>
- <20160603205703.GC11253@amd>
- <20160603211244.GA6831@sophia>
- <20160604071408.GA22045@amd>
- <20160604111204.GA19180@sophia>
- <20160605192424.GB20086@amd>
+Return-Path: <mranostay@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20160605192424.GB20086@amd>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1464958312-2720-3-git-send-email-martink@posteo.de>
+References: <1464958312-2720-1-git-send-email-martink@posteo.de> <1464958312-2720-3-git-send-email-martink@posteo.de>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Sun, 5 Jun 2016 14:22:36 -0700
+Message-ID: <CAKzfze9hV+wNY_ryc3h3q3DfVXC8K2EE2d8qqWU-15HKu9znyQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] iio: mma8452: update Freescale company information
+To: Martin Kepplinger <martink@posteo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Jun 05, 2016 at 09:24:24PM +0200, Pavel Machek wrote:
->On Sat 2016-06-04 07:12:21, William Breathitt Gray wrote:
->> I think I see the merit of a prompt for PC104 devices. I've encountered
->> a use case recently which I'm curious about in this scenario. Given the
->> compatibility with ISA, manufacturers may occasionally develop variants
->> of existing ISA devices by duplicating the firmware on a PC/104 form
->> factor.
->> 
->> I'm working on an IIO DAC driver for the Measurement Computing CIO-DAC
->> family (CIO-DAC08, CIO-DAC16, and PC104-DAC06); while not a GPIO driver,
->> I believe it can serve as a decent example. Interestingly, while the
->> CIO-DAC08 and CIO-DAC16 are true ISA devices, the PC104-DAC06 is a
->> PC/104 variant compatible with the others in the family. The IIO DAC
->> driver works just as well with the PC104-DAC06, as it does with the true
->> ISA devices in the family.
->> 
->> What would the Kconfig depends line look in this scenario? I imagine
->> simply "depends on PC104" would be inappropriate since there are a
->> number of true ISA devices supported by the driver, but "depends on
->> ISA_BUS_API || PC104" seems somewhat redundant when the PC104 Kconfig
->> option implies ISA_BUS_API. This situation isn't that much of an issue
->> overall, but I anticipate encountering it occassionally as I develop
->> future PC/104 drivers.
+At this rate of acquisitions we may need a .mailmap for companies :)
+
+On Fri, Jun 3, 2016 at 5:51 AM, Martin Kepplinger <martink@posteo.de> wrote:
+> NXP took over Freescale, so add NXP to the driver descriptions
 >
->ISA_BUS_API || PC104 sounds fine to me. But it seems probable to me
->that such devices will be connectable by PC104 and something else that
->is logically ISA but physically something else...?
+> Signed-off-by: Martin Kepplinger <martink@posteo.de>
+> ---
+>  drivers/iio/accel/Kconfig   | 4 ++--
+>  drivers/iio/accel/mma8452.c | 6 +++---
+>  2 files changed, 5 insertions(+), 5 deletions(-)
 >
->So in such case it would be logical to have driver depend on PC104 ||
->SOMETHING_ELSE. Of course, if some hardware is so common it is on many
->such buses, we can use ISA_BUS_API...
-
-It does sound like it would be good to have a filter for drivers which
-support only PC/104 device: a user would be able to conveniently filter
-out PC/104 drivers, since most consumer systems do not feature a PC/104
-bus even if they do possess an ISA bus. For drivers which support both
-ISA and PC/104 devices, we could simply do as you suggest; but it's
-likely that we will see fewer and fewer of these true ISA devices in the
-future, which leaves the PC104 Kconfig option quite useful to implement.
-
-William Breathitt Gray
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index 3132587..89d7820 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -157,12 +157,12 @@ config MMA7660
+>           will be called mma7660.
+>
+>  config MMA8452
+> -       tristate "Freescale MMA8452Q and similar Accelerometers Driver"
+> +       tristate "Freescale / NXP MMA8452Q and similar Accelerometers Driver"
+>         depends on I2C
+>         select IIO_BUFFER
+>         select IIO_TRIGGERED_BUFFER
+>         help
+> -         Say yes here to build support for the following Freescale 3-axis
+> +         Say yes here to build support for the following Freescale / NXP 3-axis
+>           accelerometers: MMA8451Q, MMA8452Q, MMA8453Q, MMA8652FC, MMA8653FC,
+>           FXLS8471Q.
+>
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 4be2a18..799fe64 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -1,5 +1,5 @@
+>  /*
+> - * mma8452.c - Support for following Freescale 3-axis accelerometers:
+> + * mma8452.c - Support for following Freescale / NXP 3-axis accelerometers:
+>   *
+>   * device name digital output  7-bit I2C slave address (pin selectable)
+>   * ---------------------------------------------------------------------
+> @@ -108,7 +108,7 @@ struct mma8452_data {
+>  };
+>
+>  /**
+> - * struct mma_chip_info - chip specific data for Freescale's accelerometers
+> + * struct mma_chip_info - chip specific data
+>   * @chip_id:                   WHO_AM_I register's value
+>   * @channels:                  struct iio_chan_spec matching the device's
+>   *                             capabilities
+> @@ -1693,5 +1693,5 @@ static struct i2c_driver mma8452_driver = {
+>  module_i2c_driver(mma8452_driver);
+>
+>  MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+> -MODULE_DESCRIPTION("Freescale MMA8452 accelerometer driver");
+> +MODULE_DESCRIPTION("Freescale / NXP MMA8452 accelerometer driver");
+>  MODULE_LICENSE("GPL");
+> --
+> 2.1.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
