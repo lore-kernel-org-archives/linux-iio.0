@@ -1,56 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:31765 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751081AbcFFGta (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 6 Jun 2016 02:49:30 -0400
-Message-ID: <1465195637.16143.1.camel@linux.intel.com>
-Subject: Re: [RFC 0/4] Intel Integrated Sensor Hub Support (ISH)
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Atri Bhattacharya <badshah400@aim.com>,
-	linux-iio <linux-iio@vger.kernel.org>
-Date: Sun, 05 Jun 2016 23:47:17 -0700
-In-Reply-To: <1464923314.3200.3.camel@aim.com>
-References: <1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <1464788204.3917.9.camel@aim.com> <loom.20160602T052411-711@post.gmane.org>
-	 <1464853729.2640.8.camel@aim.com>
-	 <1464886187.3970.55.camel@linux.intel.com>
-	 <1464896535.3470.4.camel@aim.com>
-	 <1464897626.3970.60.camel@linux.intel.com>
-	 <1464923314.3200.3.camel@aim.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <William.Markezana@te.com>
+From: "Markezana, William" <William.Markezana@te.com>
+To: Jonathan Cameron <jic23@kernel.org>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>
+CC: "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: RE: [PATCH] iio: (ms5637) Add Measurement Specialties explicit MS5805
+ and MS5837 support
+Date: Mon, 6 Jun 2016 08:12:11 +0000
+Message-ID: <CY1PR01MB1947F70E574A7D6F4FEB281A955C0@CY1PR01MB1947.prod.exchangelabs.com>
+References: <A02AF0B2-1B1A-477E-952B-AA332C6650FE@te.com>
+ <alpine.DEB.2.02.1605312318400.9332@pmeerw.net>
+ <CY1PR01MB1947A8160E9C24A9398543EA95470@CY1PR01MB1947.prod.exchangelabs.com>
+ <07bdfb5d-5113-2174-a1dd-dec7af0bcf9b@kernel.org>
+In-Reply-To: <07bdfb5d-5113-2174-a1dd-dec7af0bcf9b@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
-On Fri, 2016-06-03 at 05:08 +0200, Atri Bhattacharya wrote:
-> On Thu, 2016-06-02 at 13:00 -0700, Srinivas Pandruvada wrote:
-> >  
-> > I see. Can you add the following change and try?
-> > diff --git a/drivers/hid/intel-ish-hid/ipc/pci-ish.c
-> > b/drivers/hid/intel-ish-hid/ipc/pci-ish.c
-> > index e4d00d2..f241e1f 100644
-> > --- a/drivers/hid/intel-ish-hid/ipc/pci-ish.c
-> > +++ b/drivers/hid/intel-ish-hid/ipc/pci-ish.c
-> > @@ -199,6 +199,7 @@ static int ish_resume(struct device *device)
-> >         struct ishtp_device *dev = pci_get_drvdata(pdev);
-> >  
-> >         disable_irq_wake(pdev->irq);
-> > +       ish_hw_start(dev);
-> >         ishtp_send_resume(dev);
-> >         dev->suspend_flag = 0;
-> > 
-> > 
-> > 
-> 
-I have sent a full series of patches to address the issues you raised.
-Can you give try, before I repost my RFC series?
+iio: (ms5637) Add Measurement Specialties explicit MS5805 and MS5837 suppor=
+t
 
-Thanks,
-Srinivas
+Signed-off-by: William Markezana <william.markezana@meas-spec.com>
+---
+ drivers/iio/pressure/ms5637.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-> -- 
-> Atri Bhattacharya
-> Fri  3 Jun 05:01:36 CEST 2016
-> 
-> Sent from openSUSE Tumbleweed (20160531) (x86_64) on my laptop.
+diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
+index e8d0e0d..66f1a4c 100644
+--- a/drivers/iio/pressure/ms5637.c
++++ b/drivers/iio/pressure/ms5637.c
+@@ -1,6 +1,6 @@
+ /*
+- * ms5637.c - Support for Measurement-Specialties ms5637 and ms8607
+- *            pressure & temperature sensor
++ * ms5637.c - Support for Measurement-Specialties MS5637, MS5805
++ *            MS5837 and MS8607 pressure & temperature sensor
+  *
+  * Copyright (c) 2015 Measurement-Specialties
+  *
+@@ -11,6 +11,10 @@
+  * Datasheet:
+  *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
+  * Datasheet:
++ *  http://www.meas-spec.com/downloads/MS5805-02BA01.pdf
++ * Datasheet:
++ *  http://www.meas-spec.com/downloads/MS5837-30BA.pdf
++ * Datasheet:
+  *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
+  */
+=20
+@@ -170,7 +174,9 @@ static int ms5637_probe(struct i2c_client *client,
+=20
+ static const struct i2c_device_id ms5637_id[] =3D {
+ 	{"ms5637", 0},
+-	{"ms8607-temppressure", 1},
++	{"ms5805", 0},
++	{"ms5837", 0},
++	{"ms8607-temppressure", 0},
+ 	{}
+ };
+=20
+--=20
+2.1.4
