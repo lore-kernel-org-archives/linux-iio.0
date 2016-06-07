@@ -1,24 +1,26 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:33616 "EHLO
-	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751884AbcFGFng (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2016 01:43:36 -0400
-Received: by mail-wm0-f66.google.com with SMTP id r5so2992667wmr.0
-        for <linux-iio@vger.kernel.org>; Mon, 06 Jun 2016 22:43:35 -0700 (PDT)
+Received: from mail-lf0-f53.google.com ([209.85.215.53]:33773 "EHLO
+	mail-lf0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753846AbcFGLpg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2016 07:45:36 -0400
+Received: by mail-lf0-f53.google.com with SMTP id s64so113315810lfe.0
+        for <linux-iio@vger.kernel.org>; Tue, 07 Jun 2016 04:45:35 -0700 (PDT)
 MIME-Version: 1.0
 In-Reply-To: <1465238418-26095-1-git-send-email-johannes@johannesthoma.com>
 References: <1465238418-26095-1-git-send-email-johannes@johannesthoma.com>
-From: Matt Ranostay <mranostay@gmail.com>
-Date: Mon, 6 Jun 2016 22:42:54 -0700
-Message-ID: <CAKzfze8JKU7C2k0AgkbBv38smdzb_vLiD8rMC5nswwH=c9FBcQ@mail.gmail.com>
+From: Crt Mori <cmo@melexis.com>
+Date: Tue, 7 Jun 2016 13:44:54 +0200
+Message-ID: <CAKv63usB4SZXeJv9u2zO1OzFsF+_XZu0ofUffycjQqGnFkVSZw@mail.gmail.com>
 Subject: Re: [PATCH] HC-SR04 ultrasonic ranger IIO driver
 To: johannes@johannesthoma.com
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Cc: linux-iio@vger.kernel.org
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jun 6, 2016 at 11:40 AM,  <johannes@johannesthoma.com> wrote:
+Minor picks inside after first read.
+
+On 6 June 2016 at 20:40,  <johannes@johannesthoma.com> wrote:
 > From: Johannes Thoma <johannes@johannesthoma.com>
 >
 > The HC-SR04 is an ultrasonic distance sensor attached to two GPIO
@@ -57,6 +59,9 @@ On Mon, Jun 6, 2016 at 11:40 AM,  <johannes@johannesthoma.com> wrote:
 > +F:     drivers/iio/ultrasonic-distance/hc-sr04.c
 > +
 > +
+
+drop adding this last line and the top one as well
+
 >  HDPVR USB VIDEO ENCODER DRIVER
 >  M:     Hans Verkuil <hverkuil@xs4all.nl>
 >  L:     linux-media@vger.kernel.org
@@ -69,10 +74,6 @@ On Mon, Jun 6, 2016 at 11:40 AM,  <johannes@johannesthoma.com> wrote:
 >  source "drivers/iio/proximity/Kconfig"
 >  source "drivers/iio/temperature/Kconfig"
 > +source "drivers/iio/ultrasonic-distance/Kconfig"
-
-No reason to start another path for this driver. Please use
-drivers/iio/proximity
-
 >
 >  endif # IIO
 > diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
@@ -115,6 +116,13 @@ drivers/iio/proximity
 > @@ -0,0 +1,6 @@
 > +#
 > +# Makefile for IIO proximity sensors
+
+While my first thought would be to put driver into proximity, if you
+do not intend to then at least modify everything. At this point I
+would rather have distance than ultrasonic-distance, as that way we
+can put more drivers (lidar, radar etc.)? Lidar is otherwise in
+proximity and that is where I would put this on as well.
+
 > +#
 > +
 > +# When adding new entries keep the list in alphabetical order
@@ -176,6 +184,10 @@ drivers/iio/proximity
 > + *
 > + * DO NOT attach your HC-SR04's echo pin directly to the raspberry, since
 > + * it runs with 5V while raspberry expects 3V on the GPIO inputs.
+
+While it is nice that we put a specifics in comments this can be a bit
+more general
+
 > + */
 > +
 > +#include <linux/kernel.h>
