@@ -1,65 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f195.google.com ([209.85.192.195]:34042 "EHLO
-	mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751499AbcFHATH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2016 20:19:07 -0400
-Date: Tue, 7 Jun 2016 17:19:05 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: j.anaszewski@samsung.com, pmeerw@pmeerw.net, knaack.h@gmx.de,
-	lars@metafoo.de, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: light: gp2ap020a00f: use iio helper function to lock
- direct mode
-Message-ID: <20160608001856.GA15114@d830.WORKGROUP>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from mail-pa0-f67.google.com ([209.85.220.67]:35878 "EHLO
+	mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751194AbcFHESg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jun 2016 00:18:36 -0400
+Received: by mail-pa0-f67.google.com with SMTP id fg1so15551871pad.3
+        for <linux-iio@vger.kernel.org>; Tue, 07 Jun 2016 21:18:36 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH] iio: proximity: lidar: switch to iio_device_claim_*_mode helpers
+Date: Tue,  7 Jun 2016 21:18:04 -0700
+Message-Id: <1465359484-26568-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Replace the code that guarantees the device stays in direct mode
-with iio_device_claim_direct_mode() which does same.  Includes a
-tiny bit of refactoring (single case -> if) and simplified return
-flow.
+Switch from using indio_dev->mlock to the iio_device_claim_*_mode
+helper functions.
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Cc: Daniel Baluta <daniel.baluta@gmail.com>
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
- drivers/iio/light/gp2ap020a00f.c | 18 +++++-------------
- 1 file changed, 5 insertions(+), 13 deletions(-)
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index 6d41086..af73af3 100644
---- a/drivers/iio/light/gp2ap020a00f.c
-+++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -1287,22 +1287,14 @@ static int gp2ap020a00f_read_raw(struct iio_dev *indio_dev,
- 	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
- 	int err = -EINVAL;
+diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+index 4f502386..c0b0e82 100644
+--- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
++++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+@@ -203,22 +203,19 @@ static int lidar_read_raw(struct iio_dev *indio_dev,
+ 	struct lidar_data *data = iio_priv(indio_dev);
+ 	int ret = -EINVAL;
  
--	mutex_lock(&data->lock);
+-	mutex_lock(&indio_dev->mlock);
 -
--	switch (mask) {
--	case IIO_CHAN_INFO_RAW:
--		if (iio_buffer_enabled(indio_dev)) {
--			err = -EBUSY;
--			goto error_unlock;
--		}
-+	if (mask == IIO_CHAN_INFO_RAW) {
-+		err = iio_device_claim_direct_mode(indio_dev);
-+		if (err)
-+			return err;
+-	if (iio_buffer_enabled(indio_dev) && mask == IIO_CHAN_INFO_RAW) {
+-		ret = -EBUSY;
+-		goto error_busy;
+-	}
+-
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW: {
+ 		u16 reg;
  
- 		err = gp2ap020a00f_read_channel(data, chan, val);
--		break;
++		if (iio_device_claim_direct_mode(indio_dev))
++			return -EBUSY;
++
+ 		ret = lidar_get_measurement(data, &reg);
+ 		if (!ret) {
+ 			*val = reg;
+ 			ret = IIO_VAL_INT;
+ 		}
 +		iio_device_release_direct_mode(indio_dev);
+ 		break;
  	}
+ 	case IIO_CHAN_INFO_SCALE:
+@@ -228,9 +225,6 @@ static int lidar_read_raw(struct iio_dev *indio_dev,
+ 		break;
+ 	}
+ 
+-error_busy:
+-	mutex_unlock(&indio_dev->mlock);
 -
--error_unlock:
--	mutex_unlock(&data->lock);
--
- 	return err < 0 ? err : IIO_VAL_INT;
+ 	return ret;
  }
  
 -- 
-2.1.4
+2.7.4
 
