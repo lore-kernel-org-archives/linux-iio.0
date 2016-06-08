@@ -1,68 +1,25 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f67.google.com ([209.85.220.67]:35878 "EHLO
-	mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751194AbcFHESg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jun 2016 00:18:36 -0400
-Received: by mail-pa0-f67.google.com with SMTP id fg1so15551871pad.3
-        for <linux-iio@vger.kernel.org>; Tue, 07 Jun 2016 21:18:36 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH] iio: proximity: lidar: switch to iio_device_claim_*_mode helpers
-Date: Tue,  7 Jun 2016 21:18:04 -0700
-Message-Id: <1465359484-26568-1-git-send-email-mranostay@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Tue, 7 Jun 2016 22:34:26 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] First set of IIO fixes for the 4.7 cycle
+Message-ID: <20160608053426.GA30225@kroah.com>
+References: <2db2405d-3a99-1d1c-d98b-fa51fe2fe587@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <2db2405d-3a99-1d1c-d98b-fa51fe2fe587@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Switch from using indio_dev->mlock to the iio_device_claim_*_mode
-helper functions.
+On Tue, Jun 07, 2016 at 07:35:42PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 5c69585837686e127762bd20658b18c14dfaf57c:
+> 
+>   staging: comedi: mite: tidy up module init/exit (2016-05-03 14:11:15 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.7a
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
- drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+Now pulled and pushed out, thanks.
 
-diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-index 4f502386..c0b0e82 100644
---- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-+++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-@@ -203,22 +203,19 @@ static int lidar_read_raw(struct iio_dev *indio_dev,
- 	struct lidar_data *data = iio_priv(indio_dev);
- 	int ret = -EINVAL;
- 
--	mutex_lock(&indio_dev->mlock);
--
--	if (iio_buffer_enabled(indio_dev) && mask == IIO_CHAN_INFO_RAW) {
--		ret = -EBUSY;
--		goto error_busy;
--	}
--
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW: {
- 		u16 reg;
- 
-+		if (iio_device_claim_direct_mode(indio_dev))
-+			return -EBUSY;
-+
- 		ret = lidar_get_measurement(data, &reg);
- 		if (!ret) {
- 			*val = reg;
- 			ret = IIO_VAL_INT;
- 		}
-+		iio_device_release_direct_mode(indio_dev);
- 		break;
- 	}
- 	case IIO_CHAN_INFO_SCALE:
-@@ -228,9 +225,6 @@ static int lidar_read_raw(struct iio_dev *indio_dev,
- 		break;
- 	}
- 
--error_busy:
--	mutex_unlock(&indio_dev->mlock);
--
- 	return ret;
- }
- 
--- 
-2.7.4
-
+greg k-h
