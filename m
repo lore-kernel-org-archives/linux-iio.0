@@ -1,11 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f48.google.com ([74.125.82.48]:38283 "EHLO
-	mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752985AbcFHPei (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jun 2016 11:34:38 -0400
-Received: by mail-wm0-f48.google.com with SMTP id m124so22590169wme.1
-        for <linux-iio@vger.kernel.org>; Wed, 08 Jun 2016 08:34:38 -0700 (PDT)
-Date: Wed, 8 Jun 2016 16:35:08 +0100
+Received: from mail-wm0-f51.google.com ([74.125.82.51]:37706 "EHLO
+	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1161982AbcFHPgS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jun 2016 11:36:18 -0400
+Received: by mail-wm0-f51.google.com with SMTP id k204so22682893wmk.0
+        for <linux-iio@vger.kernel.org>; Wed, 08 Jun 2016 08:36:17 -0700 (PDT)
+Date: Wed, 8 Jun 2016 16:36:42 +0100
 From: Lee Jones <lee.jones@linaro.org>
 To: "Andrew F. Davis" <afd@ti.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -15,182 +15,44 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Dave Gerlach <d-gerlach@ti.com>, linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/8] mfd: ti_am335x_tscadc: Remove use of single line
- functions
-Message-ID: <20160608153508.GT14888@dell>
+Subject: Re: [PATCH 0/8] TI AM335x TSC/ADC cleanup
+Message-ID: <20160608153642.GW14888@dell>
 References: <20160531170013.2649-1-afd@ti.com>
- <20160531170013.2649-4-afd@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20160531170013.2649-4-afd@ti.com>
+In-Reply-To: <20160531170013.2649-1-afd@ti.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On Tue, 31 May 2016, Andrew F. Davis wrote:
 
-> tscadc_readl and tscadc_writel are single line functions and do not save
-> use anything, remove these.
-
-Right.  I usually push back on these type of abstraction when they are
-submitted.
-
-Acked-by: Lee Jones <lee.jones@linaro.org>
-
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> ---
->  drivers/mfd/ti_am335x_tscadc.c | 44 ++++++++++++++----------------------------
->  1 file changed, 15 insertions(+), 29 deletions(-)
+> Hello all,
 > 
-> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> index 644128b..613f15d 100644
-> --- a/drivers/mfd/ti_am335x_tscadc.c
-> +++ b/drivers/mfd/ti_am335x_tscadc.c
-> @@ -27,20 +27,6 @@
->  
->  #include <linux/mfd/ti_am335x_tscadc.h>
->  
-> -static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
-> -{
-> -	unsigned int val;
-> -
-> -	regmap_read(tsadc->regmap_tscadc, reg, &val);
-> -	return val;
-> -}
-> -
-> -static void tscadc_writel(struct ti_tscadc_dev *tsadc, unsigned int reg,
-> -					unsigned int val)
-> -{
-> -	regmap_write(tsadc->regmap_tscadc, reg, val);
-> -}
-> -
->  static const struct regmap_config tscadc_regmap_config = {
->  	.name = "ti_tscadc",
->  	.reg_bits = 32,
-> @@ -57,7 +43,7 @@ void am335x_tsc_se_set_cache(struct ti_tscadc_dev *tsadc, u32 val)
->  	if (tsadc->adc_waiting)
->  		wake_up(&tsadc->reg_se_wait);
->  	else if (!tsadc->adc_in_use)
-> -		tscadc_writel(tsadc, REG_SE, tsadc->reg_se_cache);
-> +		regmap_write(tsadc->regmap_tscadc, REG_SE, tsadc->reg_se_cache);
->  
->  	spin_unlock_irqrestore(&tsadc->reg_lock, flags);
->  }
-> @@ -68,7 +54,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->  	DEFINE_WAIT(wait);
->  	u32 reg;
->  
-> -	reg = tscadc_readl(tsadc, REG_ADCFSM);
-> +	regmap_read(tsadc->regmap_tscadc, REG_ADCFSM, &reg);
->  	if (reg & SEQ_STATUS) {
->  		tsadc->adc_waiting = true;
->  		prepare_to_wait(&tsadc->reg_se_wait, &wait,
-> @@ -84,7 +70,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->  		 * Sequencer should either be idle or
->  		 * busy applying the charge step.
->  		 */
-> -		reg = tscadc_readl(tsadc, REG_ADCFSM);
-> +		regmap_read(tsadc->regmap_tscadc, REG_ADCFSM, &reg);
->  		WARN_ON((reg & SEQ_STATUS) && !(reg & CHARGE_STEP));
->  		tsadc->adc_waiting = false;
->  	}
-> @@ -96,7 +82,7 @@ void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
->  	spin_lock_irq(&tsadc->reg_lock);
->  	am335x_tscadc_need_adc(tsadc);
->  
-> -	tscadc_writel(tsadc, REG_SE, val);
-> +	regmap_write(tsadc->regmap_tscadc, REG_SE, val);
->  	spin_unlock_irq(&tsadc->reg_lock);
->  }
->  EXPORT_SYMBOL_GPL(am335x_tsc_se_set_once);
-> @@ -107,7 +93,7 @@ void am335x_tsc_se_adc_done(struct ti_tscadc_dev *tsadc)
->  
->  	spin_lock_irqsave(&tsadc->reg_lock, flags);
->  	tsadc->adc_in_use = false;
-> -	tscadc_writel(tsadc, REG_SE, tsadc->reg_se_cache);
-> +	regmap_write(tsadc->regmap_tscadc, REG_SE, tsadc->reg_se_cache);
->  	spin_unlock_irqrestore(&tsadc->reg_lock, flags);
->  }
->  EXPORT_SYMBOL_GPL(am335x_tsc_se_adc_done);
-> @@ -118,7 +104,7 @@ void am335x_tsc_se_clr(struct ti_tscadc_dev *tsadc, u32 val)
->  
->  	spin_lock_irqsave(&tsadc->reg_lock, flags);
->  	tsadc->reg_se_cache &= ~val;
-> -	tscadc_writel(tsadc, REG_SE, tsadc->reg_se_cache);
-> +	regmap_write(tsadc->regmap_tscadc, REG_SE, tsadc->reg_se_cache);
->  	spin_unlock_irqrestore(&tsadc->reg_lock, flags);
->  }
->  EXPORT_SYMBOL_GPL(am335x_tsc_se_clr);
-> @@ -130,7 +116,7 @@ static void tscadc_idle_config(struct ti_tscadc_dev *config)
->  	idleconfig = STEPCONFIG_YNN | STEPCONFIG_INM_ADCREFM |
->  			STEPCONFIG_INP_ADCREFM | STEPCONFIG_YPN;
->  
-> -	tscadc_writel(config, REG_IDLECONFIG, idleconfig);
-> +	regmap_write(config->regmap_tscadc, REG_IDLECONFIG, idleconfig);
->  }
->  
->  static	int ti_tscadc_probe(struct platform_device *pdev)
-> @@ -236,11 +222,11 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
->  
->  	/* TSCADC_CLKDIV needs to be configured to the value minus 1 */
->  	tscadc->clk_div--;
-> -	tscadc_writel(tscadc, REG_CLKDIV, tscadc->clk_div);
-> +	regmap_write(tscadc->regmap_tscadc, REG_CLKDIV, tscadc->clk_div);
->  
->  	/* Set the control register bits */
->  	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
-> -	tscadc_writel(tscadc, REG_CTRL, ctrl);
-> +	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
->  
->  	/* Set register bits for Idle Config Mode */
->  	if (tsc_wires > 0) {
-> @@ -254,7 +240,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
->  
->  	/* Enable the TSC module enable bit */
->  	ctrl |= CNTRLREG_TSCSSENB;
-> -	tscadc_writel(tscadc, REG_CTRL, ctrl);
-> +	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
->  
->  	tscadc->used_cells = 0;
->  	tscadc->tsc_cell = -1;
-> @@ -300,7 +286,7 @@ static int ti_tscadc_remove(struct platform_device *pdev)
->  {
->  	struct ti_tscadc_dev	*tscadc = platform_get_drvdata(pdev);
->  
-> -	tscadc_writel(tscadc, REG_SE, 0x00);
-> +	regmap_write(tscadc->regmap_tscadc, REG_SE, 0x00);
->  
->  	pm_runtime_put_sync(&pdev->dev);
->  	pm_runtime_disable(&pdev->dev);
-> @@ -314,7 +300,7 @@ static int __maybe_unused tscadc_suspend(struct device *dev)
->  {
->  	struct ti_tscadc_dev	*tscadc_dev = dev_get_drvdata(dev);
->  
-> -	tscadc_writel(tscadc_dev, REG_SE, 0x00);
-> +	regmap_write(tscadc_dev->regmap_tscadc, REG_SE, 0x00);
->  	pm_runtime_put_sync(dev);
->  
->  	return 0;
-> @@ -329,7 +315,7 @@ static int __maybe_unused tscadc_resume(struct device *dev)
->  
->  	/* context restore */
->  	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
-> -	tscadc_writel(tscadc_dev, REG_CTRL, ctrl);
-> +	regmap_write(tscadc_dev->regmap_tscadc, REG_CTRL, ctrl);
->  
->  	if (tscadc_dev->tsc_cell != -1) {
->  		if (tscadc_dev->tsc_wires == 5)
-> @@ -339,9 +325,9 @@ static int __maybe_unused tscadc_resume(struct device *dev)
->  		tscadc_idle_config(tscadc_dev);
->  	}
->  	ctrl |= CNTRLREG_TSCSSENB;
-> -	tscadc_writel(tscadc_dev, REG_CTRL, ctrl);
-> +	regmap_write(tscadc_dev->regmap_tscadc, REG_CTRL, ctrl);
->  
-> -	tscadc_writel(tscadc_dev, REG_CLKDIV, tscadc_dev->clk_div);
-> +	regmap_write(tscadc_dev->regmap_tscadc, REG_CLKDIV, tscadc_dev->clk_div);
->  
->  	return 0;
->  }
+> This series is a group of non-functional changes I would
+> like to get in this cycle to prepare some regmap based
+> changes I would like to make next cycle. Hopefully the
+> churn can be seen as more useful in that case.
+
+Once you've finished spell checking all of your commits, please submit
+with the Acks you have collected.
+
+> Andrew F. Davis (8):
+>   mfd: ti_am335x_tscadc: Use SIMPLE_DEV_PM_OPS helper macro
+>   iio: adc: ti_am335x_adc: use SIMPLE_DEV_PM_OPS helper macro
+>   mfd: ti_am335x_tscadc: Remove use of single line functions
+>   mfd: ti_am335x_tscadc: Unify variable naming when refrencing
+>     ti_tscadc_dev
+>   mfd: ti_am335x_tscadc: Rename regmap_tscadc to regmap
+>   mfd: ti_am335x_tscadc: use variable name for sizeof() operator
+>   iio: adc: ti_am335x_adc: use variable names for sizeof() operator
+>   Input: ti_am335x_tsc - use variable name for sizeof() operator
+> 
+>  drivers/iio/adc/ti_am335x_adc.c           |  22 ++---
+>  drivers/input/touchscreen/ti_am335x_tsc.c |   2 +-
+>  drivers/mfd/ti_am335x_tscadc.c            | 135 +++++++++++++-----------------
+>  include/linux/mfd/ti_am335x_tscadc.h      |   2 +-
+>  4 files changed, 64 insertions(+), 97 deletions(-)
+> 
 
 -- 
 Lee Jones
