@@ -1,76 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:56033 "EHLO
-	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1161358AbcFHHRw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jun 2016 03:17:52 -0400
-Message-id: <5757C69B.6060502@samsung.com>
-Date: Wed, 08 Jun 2016 09:17:47 +0200
-From: Jacek Anaszewski <j.anaszewski@samsung.com>
-MIME-version: 1.0
-To: Alison Schofield <amsfield22@gmail.com>
-Cc: jic23@kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
-	lars@metafoo.de, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: gp2ap020a00f: use iio helper function to lock
- direct mode
-References: <20160608001856.GA15114@d830.WORKGROUP>
-In-reply-to: <20160608001856.GA15114@d830.WORKGROUP>
-Content-type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:33428 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1161912AbcFHOoI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jun 2016 10:44:08 -0400
+From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+	linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+	linux-iio@vger.kernel.org, harald@ccbib.org,
+	stefan.wahren@i2se.com, fabio.estevam@freescale.com,
+	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Subject: [PATCH v2 0/4] mxs-lradc: Split driver into MFD
+Date: Wed,  8 Jun 2016 16:43:57 +0200
+Message-Id: <cover.1465396835.git.ksenija.stanojevic@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Alison,
+Split existing driver mxs-lradc into MFD with touchscreen and
+IIO part.
 
-On 06/08/2016 02:19 AM, Alison Schofield wrote:
-> Replace the code that guarantees the device stays in direct mode
-> with iio_device_claim_direct_mode() which does same.  Includes a
-> tiny bit of refactoring (single case -> if) and simplified return
-> flow.
->
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> ---
->   drivers/iio/light/gp2ap020a00f.c | 18 +++++-------------
->   1 file changed, 5 insertions(+), 13 deletions(-)
->
-> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-> index 6d41086..af73af3 100644
-> --- a/drivers/iio/light/gp2ap020a00f.c
-> +++ b/drivers/iio/light/gp2ap020a00f.c
-> @@ -1287,22 +1287,14 @@ static int gp2ap020a00f_read_raw(struct iio_dev *indio_dev,
->   	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
->   	int err = -EINVAL;
->
-> -	mutex_lock(&data->lock);
-> -
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_RAW:
-> -		if (iio_buffer_enabled(indio_dev)) {
-> -			err = -EBUSY;
-> -			goto error_unlock;
-> -		}
-> +	if (mask == IIO_CHAN_INFO_RAW) {
-> +		err = iio_device_claim_direct_mode(indio_dev);
-> +		if (err)
-> +			return err;
->
->   		err = gp2ap020a00f_read_channel(data, chan, val);
-> -		break;
-> +		iio_device_release_direct_mode(indio_dev);
->   	}
-> -
-> -error_unlock:
-> -	mutex_unlock(&data->lock);
-> -
->   	return err < 0 ? err : IIO_VAL_INT;
->   }
->
->
+Tested on i.MX28.
 
-Nice patch.
+Ksenija Stanojevic (4):
+  mfd: mxs-lradc: Add support for mxs-lradc MFD
+  iio: adc: mxs-lradc: Add support for adc driver
+  input: touchscreen: mxs-lradc: Add support for touchscreen
+  iio: adc: mxs-lradc: Remove driver
 
-Acked-by: Jacek Anaszewski <j.anaszewski@samsung.com>
+ drivers/iio/adc/Kconfig                  |   27 +-
+ drivers/iio/adc/Makefile                 |    2 +-
+ drivers/iio/adc/mxs-lradc-adc.c          |  813 ++++++++++++++
+ drivers/iio/adc/mxs-lradc.c              | 1775 ------------------------------
+ drivers/input/touchscreen/Kconfig        |   10 +
+ drivers/input/touchscreen/Makefile       |    1 +
+ drivers/input/touchscreen/mxs-lradc-ts.c |  726 ++++++++++++
+ drivers/mfd/Kconfig                      |   17 +
+ drivers/mfd/Makefile                     |    1 +
+ drivers/mfd/mxs-lradc.c                  |  215 ++++
+ include/linux/mfd/mxs-lradc.h            |  204 ++++
+ 11 files changed, 2001 insertions(+), 1790 deletions(-)
+ create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
+ delete mode 100644 drivers/iio/adc/mxs-lradc.c
+ create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
+ create mode 100644 drivers/mfd/mxs-lradc.c
+ create mode 100644 include/linux/mfd/mxs-lradc.h
 
 -- 
-Best regards,
-Jacek Anaszewski
+1.9.1
+
