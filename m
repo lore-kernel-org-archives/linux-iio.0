@@ -1,25 +1,76 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Tue, 7 Jun 2016 22:34:26 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] First set of IIO fixes for the 4.7 cycle
-Message-ID: <20160608053426.GA30225@kroah.com>
-References: <2db2405d-3a99-1d1c-d98b-fa51fe2fe587@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <2db2405d-3a99-1d1c-d98b-fa51fe2fe587@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:56033 "EHLO
+	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1161358AbcFHHRw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jun 2016 03:17:52 -0400
+Message-id: <5757C69B.6060502@samsung.com>
+Date: Wed, 08 Jun 2016 09:17:47 +0200
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+MIME-version: 1.0
+To: Alison Schofield <amsfield22@gmail.com>
+Cc: jic23@kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
+	lars@metafoo.de, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: gp2ap020a00f: use iio helper function to lock
+ direct mode
+References: <20160608001856.GA15114@d830.WORKGROUP>
+In-reply-to: <20160608001856.GA15114@d830.WORKGROUP>
+Content-type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jun 07, 2016 at 07:35:42PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 5c69585837686e127762bd20658b18c14dfaf57c:
-> 
->   staging: comedi: mite: tidy up module init/exit (2016-05-03 14:11:15 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.7a
+Hi Alison,
 
-Now pulled and pushed out, thanks.
+On 06/08/2016 02:19 AM, Alison Schofield wrote:
+> Replace the code that guarantees the device stays in direct mode
+> with iio_device_claim_direct_mode() which does same.  Includes a
+> tiny bit of refactoring (single case -> if) and simplified return
+> flow.
+>
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+> Cc: Daniel Baluta <daniel.baluta@gmail.com>
+> ---
+>   drivers/iio/light/gp2ap020a00f.c | 18 +++++-------------
+>   1 file changed, 5 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+> index 6d41086..af73af3 100644
+> --- a/drivers/iio/light/gp2ap020a00f.c
+> +++ b/drivers/iio/light/gp2ap020a00f.c
+> @@ -1287,22 +1287,14 @@ static int gp2ap020a00f_read_raw(struct iio_dev *indio_dev,
+>   	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
+>   	int err = -EINVAL;
+>
+> -	mutex_lock(&data->lock);
+> -
+> -	switch (mask) {
+> -	case IIO_CHAN_INFO_RAW:
+> -		if (iio_buffer_enabled(indio_dev)) {
+> -			err = -EBUSY;
+> -			goto error_unlock;
+> -		}
+> +	if (mask == IIO_CHAN_INFO_RAW) {
+> +		err = iio_device_claim_direct_mode(indio_dev);
+> +		if (err)
+> +			return err;
+>
+>   		err = gp2ap020a00f_read_channel(data, chan, val);
+> -		break;
+> +		iio_device_release_direct_mode(indio_dev);
+>   	}
+> -
+> -error_unlock:
+> -	mutex_unlock(&data->lock);
+> -
+>   	return err < 0 ? err : IIO_VAL_INT;
+>   }
+>
+>
 
-greg k-h
+Nice patch.
+
+Acked-by: Jacek Anaszewski <j.anaszewski@samsung.com>
+
+-- 
+Best regards,
+Jacek Anaszewski
