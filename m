@@ -1,120 +1,200 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:58149 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757375AbcFHPFn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jun 2016 11:05:43 -0400
-Subject: Re: [PATCH 2/3] iio: adc: ina3221: Add support for IIO ADC driver for
- TI INA3221
-To: Guenter Roeck <linux@roeck-us.net>
-References: <1464784454-7988-1-git-send-email-ldewangan@nvidia.com>
- <1464784454-7988-2-git-send-email-ldewangan@nvidia.com>
- <44e28639-67b6-7586-5e6d-c0180ccded79@kernel.org> <5751863E.907@roeck-us.net>
- <575190A9.2090906@nvidia.com> <57519FA3.9010208@ti.com>
- <20160607223058.GA20120@roeck-us.net>
-CC: Laxman Dewangan <ldewangan@nvidia.com>,
-	Jonathan Cameron <jic23@kernel.org>, <robh+dt@kernel.org>,
-	<corbet@lwn.net>, <lars@metafoo.de>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-hwmon@vger.kernel.org>,
-	Jean Delvare <khali@linux-fr.org>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <575833EE.60009@ti.com>
-Date: Wed, 8 Jun 2016 10:04:14 -0500
+Return-Path: <lee.jones@linaro.org>
+Date: Wed, 8 Jun 2016 16:33:53 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: "Andrew F. Davis" <afd@ti.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dave Gerlach <d-gerlach@ti.com>, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/8] mfd: ti_am335x_tscadc: Rename regmap_tscadc to regmap
+Message-ID: <20160608153353.GR14888@dell>
+References: <20160531170013.2649-1-afd@ti.com>
+ <20160531170013.2649-6-afd@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <20160607223058.GA20120@roeck-us.net>
-Content-Type: text/plain; charset="windows-1252"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20160531170013.2649-6-afd@ti.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/07/2016 05:30 PM, Guenter Roeck wrote:
-> On Fri, Jun 03, 2016 at 10:17:55AM -0500, Andrew F. Davis wrote:
->> On 06/03/2016 09:14 AM, Laxman Dewangan wrote:
->>>
->>> On Friday 03 June 2016 06:59 PM, Guenter Roeck wrote:
->>>> On 06/03/2016 03:06 AM, Jonathan Cameron wrote:
->>>>> On 01/06/16 13:34, Laxman Dewangan wrote:
->>>>>> The INA3221 is a three-channel, high-side current and bus voltage
->>>>>> monitor
->>>>>> with an I2C interface from Texas Instruments. The INA3221 monitors both
->>>>>> shunt voltage drops and bus supply voltages in addition to having
->>>>>> programmable conversion times and averaging modes for these signals.
->>>>>> The INA3221 offers both critical and warning alerts to detect multiple
->>>>>> programmable out-of-range conditions for each channel.
->>>>>>
->>>>>> Add support for INA3221 SW driver via IIO ADC interface. The device is
->>>>>> register as iio-device and provides interface for voltage/current
->>>>>> and power
->>>>>> monitor. Also provide interface for setting oneshot/continuous mode and
->>>>>> critical/warning threshold for the shunt voltage drop.
->>>>>>
->>>>>> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
->>>>> Hi Laxman,
->>>>>
->>>>> As ever with any driver lying on the border of IIO and hwmon, please
->>>>> include
->>>>> a short justification of why you need an IIO driver and also cc the
->>>>> hwmon list + maintainers. (cc'd on this reply).
->>>>>
->>>>> I simply won't take a driver where the hwmon maintainers aren't happy.
->>>>> As it stands I'm not seeing obvious reasons in the code for why this
->>>>> should be an IIO device.
->>>>>
->>>>
->>>> Me not either.
->>>>
->>>> I have a hwmon driver for the same chip pending from Andrew Davis (TI)
->>>> which I am just about to accept. We had directed Andrew back in April
->>>> to write a hwmon driver for the chip, which he did.
->>>>
->>>
->>> Thanks Guenter,  I found the series
->>>
->>> [PATCH v2 0/2] Add support for INA3221 Triple Current/Voltage Monitors
->>> Looks fine to me. I can use the hwmon.
->>>
->>
->> If you search even further back you can see I originally went with an
->> IIO driver as well, comparing the IIO and hwmon version for the simple
->> use cases I needed the hwmod version turned out much simpler, so it was
->> probably the right framework for now.
->>
->>>
->>> However, some of the stuff from my patch are not there which I will add
->>> later once original patch applied:
->>> - Dynamic mode changes for continuous and one-shot from sysfs.
->>> - In one shot, when try to read voltage data, do conversion and then read.
->>>
->>
->> My attempt is rather minimal, to be honest I like your stab at this
->> driver better in some ways, especially relating to DT putting each
->> channel in its own node with labels, I think this is a bit more clean
->> and will be more extendable if/when new multi-channel monitor chips are
->> made.
->>
->>> Not sure whether exporting the following will help or not. Can you
->>> please confirm?
->>> - Oversampling time i.e. average sample
->>> - conversion time for bus voltage and shunt voltage if default is not
->>> suited for system.
->>>
->>>
->>
->> These can always be added as needed, but the DT changes are not as easy.
->> I would like it if this got in this cycle but if you think something
->> will be needed to help your improvements, that can not be added
->> incrementally, it would probably be best to get them into the initial DT
->> binding doc now.
->>
-> Andrew,
-> 
-> with this, the hwmon driver is pretty much on hold. What do you want me to do ?
-> Should I wait for DT updates ?
-> 
+On Tue, 31 May 2016, Andrew F. Davis wrote:
 
-If Laxman would like to commit to making these changes I do not problem
-waiting a bit to get this right the first time.
+> The regmap structuer pointer is named regmap_tscadc, this is not
+> consistent with other drivers and is redundant, it also contributes
+> to several checkpatch warnings involving long lines. Rename this.
 
-If we don't hear back soon then I'd just take it as is and anything
-needing to be fixed can be later.
+Please spell check all of your subject lines and commit logs *before*
+sending.
 
-Andrew
+> Signed-off-by: Andrew F. Davis <afd@ti.com>
+> ---
+>  drivers/mfd/ti_am335x_tscadc.c       | 36 ++++++++++++++++++------------------
+>  include/linux/mfd/ti_am335x_tscadc.h |  2 +-
+>  2 files changed, 19 insertions(+), 19 deletions(-)
+
+For the patch:
+  Acked-by: Lee Jones <lee.jones@linaro.org>
+  
+> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+> index 9b293b1..d30bea5 100644
+> --- a/drivers/mfd/ti_am335x_tscadc.c
+> +++ b/drivers/mfd/ti_am335x_tscadc.c
+> @@ -43,7 +43,7 @@ void am335x_tsc_se_set_cache(struct ti_tscadc_dev *tscadc, u32 val)
+>  	if (tscadc->adc_waiting)
+>  		wake_up(&tscadc->reg_se_wait);
+>  	else if (!tscadc->adc_in_use)
+> -		regmap_write(tscadc->regmap_tscadc, REG_SE, tscadc->reg_se_cache);
+> +		regmap_write(tscadc->regmap, REG_SE, tscadc->reg_se_cache);
+>  
+>  	spin_unlock_irqrestore(&tscadc->reg_lock, flags);
+>  }
+> @@ -54,7 +54,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tscadc)
+>  	DEFINE_WAIT(wait);
+>  	u32 reg;
+>  
+> -	regmap_read(tscadc->regmap_tscadc, REG_ADCFSM, &reg);
+> +	regmap_read(tscadc->regmap, REG_ADCFSM, &reg);
+>  	if (reg & SEQ_STATUS) {
+>  		tscadc->adc_waiting = true;
+>  		prepare_to_wait(&tscadc->reg_se_wait, &wait,
+> @@ -70,7 +70,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tscadc)
+>  		 * Sequencer should either be idle or
+>  		 * busy applying the charge step.
+>  		 */
+> -		regmap_read(tscadc->regmap_tscadc, REG_ADCFSM, &reg);
+> +		regmap_read(tscadc->regmap, REG_ADCFSM, &reg);
+>  		WARN_ON((reg & SEQ_STATUS) && !(reg & CHARGE_STEP));
+>  		tscadc->adc_waiting = false;
+>  	}
+> @@ -82,7 +82,7 @@ void am335x_tsc_se_set_once(struct ti_tscadc_dev *tscadc, u32 val)
+>  	spin_lock_irq(&tscadc->reg_lock);
+>  	am335x_tscadc_need_adc(tscadc);
+>  
+> -	regmap_write(tscadc->regmap_tscadc, REG_SE, val);
+> +	regmap_write(tscadc->regmap, REG_SE, val);
+>  	spin_unlock_irq(&tscadc->reg_lock);
+>  }
+>  EXPORT_SYMBOL_GPL(am335x_tsc_se_set_once);
+> @@ -93,7 +93,7 @@ void am335x_tsc_se_adc_done(struct ti_tscadc_dev *tscadc)
+>  
+>  	spin_lock_irqsave(&tscadc->reg_lock, flags);
+>  	tscadc->adc_in_use = false;
+> -	regmap_write(tscadc->regmap_tscadc, REG_SE, tscadc->reg_se_cache);
+> +	regmap_write(tscadc->regmap, REG_SE, tscadc->reg_se_cache);
+>  	spin_unlock_irqrestore(&tscadc->reg_lock, flags);
+>  }
+>  EXPORT_SYMBOL_GPL(am335x_tsc_se_adc_done);
+> @@ -104,7 +104,7 @@ void am335x_tsc_se_clr(struct ti_tscadc_dev *tscadc, u32 val)
+>  
+>  	spin_lock_irqsave(&tscadc->reg_lock, flags);
+>  	tscadc->reg_se_cache &= ~val;
+> -	regmap_write(tscadc->regmap_tscadc, REG_SE, tscadc->reg_se_cache);
+> +	regmap_write(tscadc->regmap, REG_SE, tscadc->reg_se_cache);
+>  	spin_unlock_irqrestore(&tscadc->reg_lock, flags);
+>  }
+>  EXPORT_SYMBOL_GPL(am335x_tsc_se_clr);
+> @@ -116,7 +116,7 @@ static void tscadc_idle_config(struct ti_tscadc_dev *tscadc)
+>  	idleconfig = STEPCONFIG_YNN | STEPCONFIG_INM_ADCREFM |
+>  			STEPCONFIG_INP_ADCREFM | STEPCONFIG_YPN;
+>  
+> -	regmap_write(tscadc->regmap_tscadc, REG_IDLECONFIG, idleconfig);
+> +	regmap_write(tscadc->regmap, REG_IDLECONFIG, idleconfig);
+>  }
+>  
+>  static	int ti_tscadc_probe(struct platform_device *pdev)
+> @@ -188,11 +188,11 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+>  	if (IS_ERR(tscadc->tscadc_base))
+>  		return PTR_ERR(tscadc->tscadc_base);
+>  
+> -	tscadc->regmap_tscadc = devm_regmap_init_mmio(&pdev->dev,
+> +	tscadc->regmap = devm_regmap_init_mmio(&pdev->dev,
+>  			tscadc->tscadc_base, &tscadc_regmap_config);
+> -	if (IS_ERR(tscadc->regmap_tscadc)) {
+> +	if (IS_ERR(tscadc->regmap)) {
+>  		dev_err(&pdev->dev, "regmap init failed\n");
+> -		err = PTR_ERR(tscadc->regmap_tscadc);
+> +		err = PTR_ERR(tscadc->regmap);
+>  		goto ret;
+>  	}
+>  
+> @@ -222,11 +222,11 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+>  
+>  	/* TSCADC_CLKDIV needs to be configured to the value minus 1 */
+>  	tscadc->clk_div--;
+> -	regmap_write(tscadc->regmap_tscadc, REG_CLKDIV, tscadc->clk_div);
+> +	regmap_write(tscadc->regmap, REG_CLKDIV, tscadc->clk_div);
+>  
+>  	/* Set the control register bits */
+>  	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
+> -	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
+> +	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
+>  
+>  	/* Set register bits for Idle Config Mode */
+>  	if (tsc_wires > 0) {
+> @@ -240,7 +240,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+>  
+>  	/* Enable the TSC module enable bit */
+>  	ctrl |= CNTRLREG_TSCSSENB;
+> -	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
+> +	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
+>  
+>  	tscadc->used_cells = 0;
+>  	tscadc->tsc_cell = -1;
+> @@ -286,7 +286,7 @@ static int ti_tscadc_remove(struct platform_device *pdev)
+>  {
+>  	struct ti_tscadc_dev	*tscadc = platform_get_drvdata(pdev);
+>  
+> -	regmap_write(tscadc->regmap_tscadc, REG_SE, 0x00);
+> +	regmap_write(tscadc->regmap, REG_SE, 0x00);
+>  
+>  	pm_runtime_put_sync(&pdev->dev);
+>  	pm_runtime_disable(&pdev->dev);
+> @@ -300,7 +300,7 @@ static int __maybe_unused tscadc_suspend(struct device *dev)
+>  {
+>  	struct ti_tscadc_dev	*tscadc = dev_get_drvdata(dev);
+>  
+> -	regmap_write(tscadc->regmap_tscadc, REG_SE, 0x00);
+> +	regmap_write(tscadc->regmap, REG_SE, 0x00);
+>  	pm_runtime_put_sync(dev);
+>  
+>  	return 0;
+> @@ -315,7 +315,7 @@ static int __maybe_unused tscadc_resume(struct device *dev)
+>  
+>  	/* context restore */
+>  	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
+> -	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
+> +	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
+>  
+>  	if (tscadc->tsc_cell != -1) {
+>  		if (tscadc->tsc_wires == 5)
+> @@ -325,9 +325,9 @@ static int __maybe_unused tscadc_resume(struct device *dev)
+>  		tscadc_idle_config(tscadc);
+>  	}
+>  	ctrl |= CNTRLREG_TSCSSENB;
+> -	regmap_write(tscadc->regmap_tscadc, REG_CTRL, ctrl);
+> +	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
+>  
+> -	regmap_write(tscadc->regmap_tscadc, REG_CLKDIV, tscadc->clk_div);
+> +	regmap_write(tscadc->regmap, REG_CLKDIV, tscadc->clk_div);
+>  
+>  	return 0;
+>  }
+> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> index 1fd50dc..2567a87 100644
+> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> @@ -153,7 +153,7 @@
+>  
+>  struct ti_tscadc_dev {
+>  	struct device *dev;
+> -	struct regmap *regmap_tscadc;
+> +	struct regmap *regmap;
+>  	void __iomem *tscadc_base;
+>  	int irq;
+>  	int used_cells;	/* 1-2 */
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
