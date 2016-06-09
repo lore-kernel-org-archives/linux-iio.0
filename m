@@ -1,33 +1,130 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:52231 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752590AbcFIQS2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Jun 2016 12:18:28 -0400
-Date: Thu, 9 Jun 2016 09:18:27 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL V2] First round of IIO new device support, features and
- cleanups for the 4.8 cycle.
-Message-ID: <20160609161827.GA29816@kroah.com>
-References: <bf4fc257-ea64-8ca0-c3b3-111c0e1d1aed@kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:33631 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752025AbcFIVpe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Jun 2016 17:45:34 -0400
+Received: by mail-wm0-f67.google.com with SMTP id r5so13758785wmr.0
+        for <linux-iio@vger.kernel.org>; Thu, 09 Jun 2016 14:45:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <bf4fc257-ea64-8ca0-c3b3-111c0e1d1aed@kernel.org>
+In-Reply-To: <1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+From: Grant Likely <grant.likely@secretlab.ca>
+Date: Thu, 9 Jun 2016 22:45:13 +0100
+Message-ID: <CACxGe6udQ9H5_OBg+h8BB4Bru5Air0LYxtGQkUvr91ebtUE+SA@mail.gmail.com>
+Subject: Re: [RFC 0/4] Intel Integrated Sensor Hub Support (ISH)
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Jiri Kosina <jikos@kernel.org>, benjamin.tissoires@redhat.com,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	linux-iio@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	chaya.golan@intel.com, daniel.drubin@intel.com,
+	Darren Hart <darren@dvhart.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Jun 08, 2016 at 07:02:52PM +0100, Jonathan Cameron wrote:
-> The following changes since commit fbced0e9465152d628ece5fd0d11de4e7a1f5ce5:
-> 
->   iio: inv_mpu6050: Add explicit support for MPU9150 (2016-04-25 20:19:38 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.8a
+On Tue, May 31, 2016 at 5:27 AM, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+> Starting from Cherrytrail, multiple generation of Intel processors offers
+> on package sensor hub. Several recent tablets, 2-in-1 convertible laptops
+> are using ISH instead of external sensor hubs. This resulted in lack of
+> support of sensor function like device rotation and auto backlight
+> adjustment. In addition, depending on the OEM implementation, support of ISH
+> is required to support low power sleep states.
+>
+> The support of ISH on Linux platforms is not new. Android platforms with
+> Intel SoCs had this support for a while submitted by Daniel Drubin.
+> This patcheset is reusing most of those changes with  clean up and
+> removing Android platform specific changes.
 
-Much better, thanks.
+Hi Srinivas,
 
-Pulled and pushed out now.
+Thanks for this patch series. I've got an HP Spectre x360 G2
+(skylake), and I've built a 4.6.0 kernel with this driver patched in.
+It detects the sensors hub, and creates IIO devices under
+/sys/bus/iio/devices:
 
-greg k-h
+$ ls /sys/bus/iio/devices/
+iio:device0  iio:device1  iio:device2  iio:device3  iio:device4
+iio:device5  iio:device6  iio:device7  iio:device8  iio:device9
+trigger0  trigger1  trigger2  trigger3  trigger4  trigger5  trigger6
+trigger7  trigger8  trigger9
+
+However, I haven't figured out how to test it yet. (This is the first
+time I'm working with IIO). Do you have any test code or test
+procedures to show if it is working?
+
+Thanks,
+g.
+
+>
+> This series is tested on:
+> - Lenovo Yoga 260 with Skylake processor
+> - HP Pavilion x2 detachable with Cherrytrail
+>
+> The user mode ABI is still same as external sensor hubs using Linux
+> IIO. So existing user mode software should still work without change.
+> This series primarily brings in new HID transport used in ISH.
+>
+> This series submitted as a RFC to try on several devices. We have
+> received request from Linux users who wanted this support. So I hope all
+> those users try and give feedback.
+>
+> Daniel Drubin (3):
+>   hid: intel_ish-hid: ISH Transport layer
+>   hid: intel-ish-hid: ipc layer
+>   hid: intel-ish-hid: ISH HID client driver
+>
+> Srinivas Pandruvada (1):
+>   Documentation: hid: Intel ISH HID document
+>
+>  Documentation/hid/intel-ish-hid.txt          |  375 +++++++++
+>  drivers/hid/Kconfig                          |    2 +
+>  drivers/hid/Makefile                         |    2 +
+>  drivers/hid/intel-ish-hid/Kconfig            |   27 +
+>  drivers/hid/intel-ish-hid/Makefile           |   20 +
+>  drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h  |  220 +++++
+>  drivers/hid/intel-ish-hid/ipc/hw-ish.h       |   71 ++
+>  drivers/hid/intel-ish-hid/ipc/ipc.c          |  710 ++++++++++++++++
+>  drivers/hid/intel-ish-hid/ipc/pci-ish.c      |  238 ++++++
+>  drivers/hid/intel-ish-hid/ipc/utils.h        |   65 ++
+>  drivers/hid/intel-ish-hid/ishtp-hid-client.c |  672 +++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp-hid.c        |  201 +++++
+>  drivers/hid/intel-ish-hid/ishtp-hid.h        |  157 ++++
+>  drivers/hid/intel-ish-hid/ishtp/bus.c        |  670 +++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/bus.h        |   99 +++
+>  drivers/hid/intel-ish-hid/ishtp/client.c     | 1131 ++++++++++++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/client.h     |  196 +++++
+>  drivers/hid/intel-ish-hid/ishtp/dma-if.c     |  175 ++++
+>  drivers/hid/intel-ish-hid/ishtp/hbm.c        |  911 +++++++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/hbm.h        |  319 ++++++++
+>  drivers/hid/intel-ish-hid/ishtp/init.c       |   94 +++
+>  drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h  |  276 +++++++
+>  include/trace/events/intel_ish.h             |   30 +
+>  23 files changed, 6661 insertions(+)
+>  create mode 100644 Documentation/hid/intel-ish-hid.txt
+>  create mode 100644 drivers/hid/intel-ish-hid/Kconfig
+>  create mode 100644 drivers/hid/intel-ish-hid/Makefile
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/ipc.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/pci-ish.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/utils.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid-client.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/dma-if.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/init.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h
+>  create mode 100644 include/trace/events/intel_ish.h
+>
+> --
+> 1.9.1
+>
