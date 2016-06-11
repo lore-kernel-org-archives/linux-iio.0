@@ -1,62 +1,242 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52340 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52365 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752236AbcFKQie (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jun 2016 12:38:34 -0400
-Subject: Re: [PATCH] iio: generic_buffer: Fix --trigger-num option
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <d3181955589a6b6745cb008edbc24d2a1b8b0892.1464980098.git.leonard.crestez@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
+	with ESMTP id S1751180AbcFKQnh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jun 2016 12:43:37 -0400
+Subject: Re: [PATCH v2] iio: stx104: Add GPIO support for the Apex Embedded
+ Systems STX104
+To: William Breathitt Gray <vilhelm.gray@gmail.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net
+References: <1464975762-24052-1-git-send-email-vilhelm.gray@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Alexandre Courbot <gnurou@gmail.com>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <aca4a66a-e317-c727-5980-df75671bdd90@kernel.org>
-Date: Sat, 11 Jun 2016 17:38:32 +0100
+Message-ID: <ce949c16-e16f-c221-9ef2-e97f1d701bc1@kernel.org>
+Date: Sat, 11 Jun 2016 17:43:34 +0100
 MIME-Version: 1.0
-In-Reply-To: <d3181955589a6b6745cb008edbc24d2a1b8b0892.1464980098.git.leonard.crestez@intel.com>
+In-Reply-To: <1464975762-24052-1-git-send-email-vilhelm.gray@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/06/16 19:56, Crestez Dan Leonard wrote:
-> Initialize trig_num to -1 and handle trig_num=0 as a valid id.
-Good spot.
-
-Applied to the togreg branch of iio.git.
-
-Thanks,
-
-Jonathan
+On 03/06/16 18:42, William Breathitt Gray wrote:
+> The Apex Embedded Systems STX104 device features eight lines of digital
+> I/O (four digital inputs and four digital outputs). This patch adds GPIO
+> support for these eight lines of digital I/O via GPIOLIB.
 > 
-> Fixes: 7c7e9dad (iio: iio_generic_buffer: Add --trigger-num option)
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+This is a gpio chip support patch.  Even though the driver is in IIO we
+need to get it reviewed by appropriate maintainer.
+
+Cc'd Linus, Alexandre and the list.
+
 > ---
->  tools/iio/iio_generic_buffer.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Changes in v2:
+>   - Change GPIOLIB Kconfig selection to a dependency for the STX104 Kconfig
+>     option; STX104 should only be available to systems configured for GPIOLIB
 > 
-> diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-> index e8c3052..0e8a1f7 100644
-> --- a/tools/iio/iio_generic_buffer.c
-> +++ b/tools/iio/iio_generic_buffer.c
-> @@ -341,7 +341,7 @@ int main(int argc, char **argv)
+>  drivers/iio/dac/Kconfig  |  11 +++--
+>  drivers/iio/dac/stx104.c | 118 ++++++++++++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 122 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 61d5008..35a3d49 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -246,13 +246,14 @@ config MCP4922
+>  	  will be called mcp4922.
 >  
->  	char *data = NULL;
->  	ssize_t read_size;
-> -	int dev_num = -1, trig_num;
-> +	int dev_num = -1, trig_num = -1;
->  	char *buffer_access = NULL;
->  	int scan_size;
->  	int noevents = 0;
-> @@ -456,7 +456,7 @@ int main(int argc, char **argv)
+>  config STX104
+> -	tristate "Apex Embedded Systems STX104 DAC driver"
+> +	tristate "Apex Embedded Systems STX104 driver"
+>  	depends on ISA
+> +	depends on GPIOLIB
+>  	help
+> -	  Say yes here to build support for the 2-channel DAC on the Apex
+> -	  Embedded Systems STX104 integrated analog PC/104 card. The base port
+> -	  addresses for the devices may be configured via the "base" module
+> -	  parameter array.
+> +	  Say yes here to build support for the 2-channel DAC and GPIO on the
+> +	  Apex Embedded Systems STX104 integrated analog PC/104 card. The base
+> +	  port addresses for the devices may be configured via the base array
+> +	  module parameter.
 >  
->  	if (notrigger) {
->  		printf("trigger-less mode selected\n");
-> -	} if (trig_num > 0) {
-> +	} if (trig_num >= 0) {
->  		char *trig_dev_name;
->  		ret = asprintf(&trig_dev_name, "%strigger%d", iio_dir, trig_num);
->  		if (ret < 0) {
+>  config VF610_DAC
+>  	tristate "Vybrid vf610 DAC driver"
+> diff --git a/drivers/iio/dac/stx104.c b/drivers/iio/dac/stx104.c
+> index 174f4b7..dc445cf 100644
+> --- a/drivers/iio/dac/stx104.c
+> +++ b/drivers/iio/dac/stx104.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/bitops.h>
+>  #include <linux/device.h>
+>  #include <linux/errno.h>
+> +#include <linux/gpio/driver.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/types.h>
+>  #include <linux/io.h>
+> @@ -21,6 +22,7 @@
+>  #include <linux/isa.h>
+>  #include <linux/module.h>
+>  #include <linux/moduleparam.h>
+> +#include <linux/spinlock.h>
+>  
+>  #define STX104_NUM_CHAN 2
+>  
+> @@ -56,6 +58,20 @@ struct stx104_iio {
+>  	unsigned base;
+>  };
+>  
+> +/**
+> + * struct stx104_gpio - GPIO device private data structure
+> + * @chip:	instance of the gpio_chip
+> + * @lock:	synchronization lock to prevent I/O race conditions
+> + * @base:	base port address of the GPIO device
+> + * @out_state:	output bits state
+> + */
+> +struct stx104_gpio {
+> +	struct gpio_chip chip;
+> +	spinlock_t lock;
+> +	unsigned int base;
+> +	unsigned int out_state;
+> +};
+> +
+>  static int stx104_read_raw(struct iio_dev *indio_dev,
+>  	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+>  {
+> @@ -95,15 +111,74 @@ static const struct iio_chan_spec stx104_channels[STX104_NUM_CHAN] = {
+>  	STX104_CHAN(1)
+>  };
+>  
+> +static int stx104_gpio_get_direction(struct gpio_chip *chip,
+> +	unsigned int offset)
+> +{
+> +	if (offset < 4)
+> +		return 1;
+> +
+> +	return 0;
+> +}
+> +
+> +static int stx104_gpio_direction_input(struct gpio_chip *chip,
+> +	unsigned int offset)
+> +{
+> +	return 0;
+> +}
+> +
+> +static int stx104_gpio_direction_output(struct gpio_chip *chip,
+> +	unsigned int offset, int value)
+> +{
+> +	return 0;
+Not return an error if the relevant pin can't be an output?
+> +}
+> +
+> +static int stx104_gpio_get(struct gpio_chip *chip, unsigned int offset)
+> +{
+> +	struct stx104_gpio *const stx104gpio = gpiochip_get_data(chip);
+> +
+> +	if (offset >= 4)
+> +		return -EINVAL;
+> +
+> +	return !!(inb(stx104gpio->base) & BIT(offset));
+> +}
+> +
+> +static void stx104_gpio_set(struct gpio_chip *chip, unsigned int offset,
+> +	int value)
+> +{
+> +	struct stx104_gpio *const stx104gpio = gpiochip_get_data(chip);
+> +	const unsigned int mask = BIT(offset) >> 4;
+> +	unsigned long flags;
+> +
+> +	if (offset < 4)
+> +		return;
+> +
+> +	spin_lock_irqsave(&stx104gpio->lock, flags);
+> +
+> +	if (value)
+> +		stx104gpio->out_state |= mask;
+> +	else
+> +		stx104gpio->out_state &= ~mask;
+> +
+> +	outb(stx104gpio->out_state, stx104gpio->base);
+> +
+> +	spin_unlock_irqrestore(&stx104gpio->lock, flags);
+> +}
+> +
+>  static int stx104_probe(struct device *dev, unsigned int id)
+>  {
+>  	struct iio_dev *indio_dev;
+>  	struct stx104_iio *priv;
+> +	struct stx104_gpio *stx104gpio;
+> +	int err;
+>  
+>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+>  
+> +	stx104gpio = devm_kzalloc(dev, sizeof(*stx104gpio), GFP_KERNEL);
+> +	if (!stx104gpio)
+> +		return -ENOMEM;
+> +
+>  	if (!devm_request_region(dev, base[id], STX104_EXTENT,
+>  		dev_name(dev))) {
+>  		dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n",
+> @@ -124,14 +199,53 @@ static int stx104_probe(struct device *dev, unsigned int id)
+>  	outw(0, base[id] + 4);
+>  	outw(0, base[id] + 6);
+>  
+> -	return devm_iio_device_register(dev, indio_dev);
+> +	err = devm_iio_device_register(dev, indio_dev);
+> +	if (err) {
+> +		dev_err(dev, "IIO device registering failed (%d)\n", err);
+> +		return err;
+> +	}
+> +
+> +	stx104gpio->chip.label = dev_name(dev);
+> +	stx104gpio->chip.parent = dev;
+> +	stx104gpio->chip.owner = THIS_MODULE;
+> +	stx104gpio->chip.base = -1;
+> +	stx104gpio->chip.ngpio = 8;
+> +	stx104gpio->chip.get_direction = stx104_gpio_get_direction;
+> +	stx104gpio->chip.direction_input = stx104_gpio_direction_input;
+> +	stx104gpio->chip.direction_output = stx104_gpio_direction_output;
+> +	stx104gpio->chip.get = stx104_gpio_get;
+> +	stx104gpio->chip.set = stx104_gpio_set;
+> +	stx104gpio->base = base[id] + 3;
+> +	stx104gpio->out_state = 0x0;
+> +
+> +	spin_lock_init(&stx104gpio->lock);
+> +
+> +	dev_set_drvdata(dev, stx104gpio);
+> +
+> +	err = gpiochip_add_data(&stx104gpio->chip, stx104gpio);
+> +	if (err) {
+> +		dev_err(dev, "GPIO registering failed (%d)\n", err);
+> +		return err;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int stx104_remove(struct device *dev, unsigned int id)
+> +{
+> +	struct stx104_gpio *const stx104gpio = dev_get_drvdata(dev);
+> +
+> +	gpiochip_remove(&stx104gpio->chip);
+> +
+> +	return 0;
+>  }
+>  
+>  static struct isa_driver stx104_driver = {
+>  	.probe = stx104_probe,
+>  	.driver = {
+>  		.name = "stx104"
+> -	}
+> +	},
+> +	.remove = stx104_remove
+>  };
+>  
+>  static void __exit stx104_exit(void)
 > 
 
