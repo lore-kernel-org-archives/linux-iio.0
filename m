@@ -1,96 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52590 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751180AbcFKRUP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jun 2016 13:20:15 -0400
-Subject: Re: [PATCH] iio: adc: ti-adc081c: add ACPI device ID matching
-To: Dan O'Donovan <dan@emutex.com>
-References: <1464370650-6257-1-git-send-email-dan@emutex.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <2095e67c-a84a-b1fc-d2f3-da414da823b0@kernel.org>
-Date: Sat, 11 Jun 2016 18:20:12 +0100
+Received: from www381.your-server.de ([78.46.137.84]:35134 "EHLO
+	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751180AbcFKRZ0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jun 2016 13:25:26 -0400
+Subject: Re: [PATCH v2] staging: iio: ad5933: fix order of cycle conditions
+To: Jonathan Cameron <jic23@kernel.org>,
+	Luis de Bethencourt <luisbg@osg.samsung.com>,
+	linux-kernel@vger.kernel.org
+References: <1464809154-14868-1-git-send-email-luisbg@osg.samsung.com>
+ <d4277886-41b4-e1ea-e015-6e62ac0212de@kernel.org>
+Cc: gregkh@linuxfoundation.org, Michael.Hennerich@analog.com,
+	knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <575C497F.2080507@metafoo.de>
+Date: Sat, 11 Jun 2016 19:25:19 +0200
 MIME-Version: 1.0
-In-Reply-To: <1464370650-6257-1-git-send-email-dan@emutex.com>
+In-Reply-To: <d4277886-41b4-e1ea-e015-6e62ac0212de@kernel.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/05/16 18:37, Dan O'Donovan wrote:
-> Add ACPI device ID matching for TI ADC081C/ADC101C/ADC121C ADCs.
+On 06/11/2016 06:50 PM, Jonathan Cameron wrote:
+> On 01/06/16 20:25, Luis de Bethencourt wrote:
+>> Correctly handle the settling time cycles value. The else branch is an
+>> impossible condition, > 1022 in the else branch of > 511. Flipping the order.
+>>
+>> Based on the Table 13 at the bottom of Page 25 of the Data Sheet:
+>> http://www.analog.com/media/en/technical-documentation/data-sheets/AD5933.pdf
+>>
+>> Signed-off-by: Luis de Bethencourt <luisbg@osg.samsung.com>
+>> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+> While Lars did review, it I'm not seeing an email where he
+> gave this tag (my inbox may well have eaten it).
 > 
-> Signed-off-by: Dan O'Donovan <dan@emutex.com>
-Applied to the togreg branch of iio.git.
-Will be initially pushed out as testing for the autobuilders to
-play with it.
-
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/adc/ti-adc081c.c | 26 +++++++++++++++++++++++++-
->  1 file changed, 25 insertions(+), 1 deletion(-)
+> Lars, could you confirm that you are happy with the
+> patch as it now stands.
 > 
-> diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
-> index 9fd032d..f8807ad 100644
-> --- a/drivers/iio/adc/ti-adc081c.c
-> +++ b/drivers/iio/adc/ti-adc081c.c
-> @@ -22,6 +22,7 @@
->  #include <linux/i2c.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
-> +#include <linux/acpi.h>
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/buffer.h>
-> @@ -149,12 +150,24 @@ static int adc081c_probe(struct i2c_client *client,
->  {
->  	struct iio_dev *iio;
->  	struct adc081c *adc;
-> -	struct adcxx1c_model *model = &adcxx1c_models[id->driver_data];
-> +	struct adcxx1c_model *model;
->  	int err;
->  
->  	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
->  		return -EOPNOTSUPP;
->  
-> +	if (ACPI_COMPANION(&client->dev)) {
-> +		const struct acpi_device_id *ad_id;
-> +
-> +		ad_id = acpi_match_device(client->dev.driver->acpi_match_table,
-> +					  &client->dev);
-> +		if (!ad_id)
-> +			return -ENODEV;
-> +		model = &adcxx1c_models[ad_id->driver_data];
-> +	} else {
-> +		model = &adcxx1c_models[id->driver_data];
-> +	}
-> +
->  	iio = devm_iio_device_alloc(&client->dev, sizeof(*adc));
->  	if (!iio)
->  		return -ENOMEM;
-> @@ -231,10 +244,21 @@ static const struct of_device_id adc081c_of_match[] = {
->  MODULE_DEVICE_TABLE(of, adc081c_of_match);
->  #endif
->  
-> +#ifdef CONFIG_ACPI
-> +static const struct acpi_device_id adc081c_acpi_match[] = {
-> +	{ "ADC081C", ADC081C },
-> +	{ "ADC101C", ADC101C },
-> +	{ "ADC121C", ADC121C },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(acpi, adc081c_acpi_match);
-> +#endif
-> +
->  static struct i2c_driver adc081c_driver = {
->  	.driver = {
->  		.name = "adc081c",
->  		.of_match_table = of_match_ptr(adc081c_of_match),
-> +		.acpi_match_table = ACPI_PTR(adc081c_acpi_match),
->  	},
->  	.probe = adc081c_probe,
->  	.remove = adc081c_remove,
+
+All good, thanks.
+
+> Certainly looks right to me!
+> 
+> Thanks, 
+> Jonathan
+>> ---
+>>  drivers/staging/iio/impedance-analyzer/ad5933.c | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+>> index 9f43976..170ac98 100644
+>> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+>> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+>> @@ -444,10 +444,10 @@ static ssize_t ad5933_store(struct device *dev,
+>>  		st->settling_cycles = val;
+>>  
+>>  		/* 2x, 4x handling, see datasheet */
+>> -		if (val > 511)
+>> -			val = (val >> 1) | (1 << 9);
+>> -		else if (val > 1022)
+>> +		if (val > 1022)
+>>  			val = (val >> 2) | (3 << 9);
+>> +		else if (val > 511)
+>> +			val = (val >> 1) | (1 << 9);
+>>  
+>>  		dat = cpu_to_be16(val);
+>>  		ret = ad5933_i2c_write(st->client,
+>>
 > 
 
