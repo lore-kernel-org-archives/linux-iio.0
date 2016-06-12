@@ -2,26 +2,34 @@ Return-Path: <mranostay@gmail.com>
 From: Matt Ranostay <mranostay@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
-	Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH 0/2] iio: humidity: sht31: add Sensirion SHT31 support
-Date: Sat, 11 Jun 2016 22:13:15 -0700
-Message-Id: <1465708397-19649-1-git-send-email-mranostay@gmail.com>
+	Matt Ranostay <mranostay@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	devicetree@vger.kernel.org
+Subject: [PATCH 1/2] devicetree: add Sensirion AG vendor id
+Date: Sat, 11 Jun 2016 22:13:16 -0700
+Message-Id: <1465708397-19649-2-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1465708397-19649-1-git-send-email-mranostay@gmail.com>
+References: <1465708397-19649-1-git-send-email-mranostay@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add support for the humidity and temperature functionally for the SHT31
-chipset. In addition add support for using using software triggers.
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-Matt Ranostay (2):
-  devicetree: add Sensirion AG vendor id
-  iio: humidity: sht31: add Sensirion SHT31 support
-
- .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/humidity/Kconfig                       |  11 +
- drivers/iio/humidity/Makefile                      |   1 +
- drivers/iio/humidity/sht31.c                       | 416 +++++++++++++++++++++
- 5 files changed, 430 insertions(+)
- create mode 100644 drivers/iio/humidity/sht31.c
-
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index a7440bcd67ff..70ee5f5c5291 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -225,6 +225,7 @@ sbs	Smart Battery System
+ schindler	Schindler
+ seagate	Seagate Technology PLC
+ semtech	Semtech Corporation
++sensirion	Sensirion AG Switzerland
+ sgx	SGX Sensortech
+ sharp	Sharp Corporation
+ si-en	Si-En Technology Ltd.
 -- 
 2.7.4
