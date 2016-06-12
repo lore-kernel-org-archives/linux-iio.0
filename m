@@ -1,142 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:51844 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752581AbcFLG3p (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 12 Jun 2016 02:29:45 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <glki-linux-iio@m.gmane.org>)
-	id 1bBytv-0000na-O0
-	for linux-iio@vger.kernel.org; Sun, 12 Jun 2016 08:29:39 +0200
-Received: from 91.178.106.13 ([91.178.106.13])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Sun, 12 Jun 2016 08:29:39 +0200
-Received: from badshah400 by 91.178.106.13 with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Sun, 12 Jun 2016 08:29:39 +0200
-To: linux-iio@vger.kernel.org
-From: Atri Bhattacharya <badshah400@aim.com>
-Subject: Re: [PATCH 0/6] Intel Integrated Sensor Hub Support (ISH)
-Date: Sun, 12 Jun 2016 08:28:55 +0200
-Message-ID: <1465712935.15916.2.camel@aim.com>
-References: <1465647219-7798-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-In-Reply-To: <1465647219-7798-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from mail-pa0-f65.google.com ([209.85.220.65]:34009 "EHLO
+	mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752050AbcFLGzI convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 12 Jun 2016 02:55:08 -0400
+Content-Type: text/plain;
+	charset=utf-8
+Mime-Version: 1.0 (1.0)
+Subject: Re: [PATCH] iio: as3935: improve error reporting in as3935_event_work
+From: Matt Ranostay <mranostay@gmail.com>
+In-Reply-To: <75c2c65a-f1ac-8ad4-7f04-319939a1866a@kernel.org>
+Date: Sat, 11 Jun 2016 23:55:04 -0700
+Cc: "Andrew F. Davis" <afd@ti.com>, Arnd Bergmann <arnd@arndb.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Mark Brown <broonie@kernel.org>,
+	Javier Martinez Canillas <javier@osg.samsung.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <21E73984-CC08-43B4-8CCD-89DDC2718B65@gmail.com>
+References: <1464619938-988956-1-git-send-email-arnd@arndb.de> <574DA582.50408@ti.com> <75c2c65a-f1ac-8ad4-7f04-319939a1866a@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gU2F0LCAyMDE2LTA2LTExIGF0IDA1OjEzIC0wNzAwLCBTcmluaXZhcyBQYW5kcnV2YWRhIHdy
-b3RlOgo+IFN0YXJ0aW5nIGZyb20gQ2hlcnJ5dHJhaWwsIG11bHRpcGxlIGdlbmVyYXRpb24gb2Yg
-SW50ZWwgcHJvY2Vzc29ycwo+IG9mZmVycwo+IG9uIHBhY2thZ2Ugc2Vuc29yIGh1Yi4gU2V2ZXJh
-bCByZWNlbnQgdGFibGV0cywgMi1pbi0xIGNvbnZlcnRpYmxlCj4gbGFwdG9wcwo+IGFyZSB1c2lu
-ZyBJU0ggaW5zdGVhZCBvZiBleHRlcm5hbCBzZW5zb3IgaHVicy4gVGhpcyByZXN1bHRlZCBpbiBs
-YWNrCj4gb2YKPiBzdXBwb3J0IG9mIHNlbnNvciBmdW5jdGlvbiBsaWtlIGRldmljZSByb3RhdGlv
-biBhbmQgYXV0byBiYWNrbGlnaHQKPiBhZGp1c3RtZW50Lgo+IEluIGFkZGl0aW9uLCBkZXBlbmRp
-bmcgb24gdGhlIE9FTSBpbXBsZW1lbnRhdGlvbiwgc3VwcG9ydCBvZiBJU0ggaXMKPiByZXF1aXJl
-ZAo+IHRvIHN1cHBvcnQgbG93IHBvd2VyIHNsZWVwIHN0YXRlcy4KPiAKPiBUaGUgc3VwcG9ydCBv
-ZiBJU0ggb24gTGludXggcGxhdGZvcm1zIGlzIG5vdCBuZXcuIEFuZHJvaWQgcGxhdGZvcm1zCj4g
-d2l0aAo+IEludGVsIFNvQ3MgaGFkIHRoaXMgc3VwcG9ydCBmb3IgYSB3aGlsZSBzdWJtaXR0ZWQg
-YnkgRGFuaWVsIERydWJpbi7CoAo+IFRoaXMgcGF0Y2hlc2V0IGlzIHJldXNpbmcgbW9zdCBvZiB0
-aG9zZSBjaGFuZ2VzIHdpdGjCoMKgY2xlYW4gdXAgYW5kCj4gcmVtb3ZpbmcgQW5kcm9pZCBwbGF0
-Zm9ybSBzcGVjaWZpYyBjaGFuZ2VzLgo+IAo+IFRoZSB1c2VyIG1vZGUgQUJJIGlzIHN0aWxsIHNh
-bWUgYXMgZXh0ZXJuYWwgc2Vuc29yIGh1YnMgdXNpbmcgTGludXgKPiBJSU8uIFNvIGV4aXN0aW5n
-IHVzZXIgbW9kZSBzb2Z0d2FyZSBzaG91bGQgc3RpbGwgd29yay4KPiBUaGlzIHNlcmllcyBwcmlt
-YXJpbHkgYnJpbmdzIGluIG5ldyBISUQgdHJhbnNwb3J0IHVzZWQgaW4gSVNILgo+IAo+IFRoYW5r
-cyB0byB0aGUgY29tbXVuaXR5IG1lbWJlcnMgd2hvIHRlc3RlZCBSRkMgcGF0Y2hlcyBhbmQgcHJv
-dmlkZWQKPiBmZWVkYmFjay4KPiAKPiBGb3IgdXNlcnMgdGVzdGluZyBvbiBMaW51eCBkaXN0cmli
-dXRpb25zIHVzaW5nIElJTyBzZW5zb3IgcHJveHksCj4gYSBzaG9ydCB0ZXJtIHdvcmsgYXJvdW5k
-IGlzIHJlcXVpcmVkIHRpbGwgd2UgaGF2ZSBkZWJ1Z2dlZCB0aGlzCj4gaXNzdWUuCj4gSW4gc3lz
-dGVtZCB1bml0IGZpbGUgaWlvLXNlbnNvci1wcm94eS5zZXJ2aWNlCj4gSW4gdGhlIHNlY3Rpb24g
-IltVbml0XSIgYWRkCj4gQWZ0ZXI9bXVsdGktdXNlci50YXJnZXQKPiAKCk15IHByZXZpb3VzIG1l
-c3NhZ2UgZGlkbid0IGdldCB0aHJvdWdoIHRvIC1paW8gYW5kIG1haW4gbWFpbGluZyBsaXN0Cihi
-dXQgaXQgd2VudCB0aHJvdWdoIHRvIC1pbnB1dCBzdXJwcmlzaW5nbHkpLCBzbyBsZXQgbWUgdHJ5
-IGFnYWluLgoKVGhhbmsgeW91IHNvIG11Y2ggZm9yIHRoZSB1cGRhdGVkIHBhdGNoc2V0LiBJdCB3
-b3JrcyEgQXV0bwpyb3RhdGlvbiBhbmQgYnJpZ2h0bmVzcyB3b3JrIG91dCBvZiBhIGNvbGQgYm9v
-dCBhbmQgYWxzbyBhZnRlciB3YWtpbmcKdXAgZnJvbSBzdXNwZW5kLiBTdXNwZW5kL1dha2V1cCBp
-cyBhbHNvIGJhY2sgdG8gdXN1YWwgc3BlZWQuCgpPbmUgbWlub3IgZ3JpcGUgSSBoYXZlIGlzIHRo
-YXQgdGhlIGJyaWdodG5lc3Mgc2VlbXMgdG8gYmUgc2V0IHRvIDEwMCUKZXZlcnkgdGltZSB1cG9u
-IHJlYm9vdC4gU28gaWYgSSBzZXQgYnJpZ2h0bmVzcyB0byA1MCUgZS5nLiwgYW5kIHJlYm9vdCwK
-dGhlIGJyaWdodG5lc3MgaXMgcmVzZXQgdG8gMTAwJSBhZ2FpbiAobm90IGluaXRpYWxseSBidXQg
-cmlnaHQgYWZ0ZXIKaWlvLXNlbnNvci1tb25pdG9yIGxvYWRzKS4gT2YgY291cnNlLCB0aGlzIG1p
-Z2h0IG5vdCBoYXZlIGFueXRoaW5nIHRvCmRvIHdpdGggdGhlIGRyaXZlciwgYnV0IEkganVzdCB0
-aG91Z2h0IEkgc2hvdWxkIG1lbnRpb24gaXQgaGVyZSBhcyBsb25nCmFzIEkgYW0gbm90IHN1cmUg
-YWJvdXQgdGhlIGNhdXNlLgoKSSBoYXZlIG5vdyB0ZXN0ZWQgdGhlIHBhdGNoZXMgYm90aCBhZ2Fp
-bnN0IGtlcm5lbCA0LjdyYzIgYW5kIDQuNi4yLCBhbmQKaXQgd29ya3MganVzdCBmaW5lIGluIGJv
-dGggY2FzZXMuIE15IHRlc3QgZGV2aWNlIGlzIGEgTGVub3ZvIFRoaW5rcGFkCllvZ2EgMjYwLgoK
-VGhhbmtzIGFuZCBiZXN0IHdpc2hlcy4KCj4gRGFuaWVsIERydWJpbiAoMyk6Cj4gwqAgaGlkOiBp
-bnRlbF9pc2gtaGlkOiBJU0ggVHJhbnNwb3J0IGxheWVyCj4gwqAgaGlkOiBpbnRlbC1pc2gtaGlk
-OiBpcGMgbGF5ZXIKPiDCoCBoaWQ6IGludGVsLWlzaC1oaWQ6IElTSCBISUQgY2xpZW50IGRyaXZl
-cgo+IAo+IFNyaW5pdmFzIFBhbmRydXZhZGEgKDMpOgo+IMKgIERvY3VtZW50YXRpb246IGhpZDog
-SW50ZWwgSVNIIEhJRCBkb2N1bWVudAo+IMKgIGlpbzogaGlkLXNlbnNvcnM6IHVzZSBhc3luY2hy
-b25vdXMgcmVzdW1lCj4gwqAgaGlkOiBoaWQtc2Vuc29yLWh1YjogQWRkIElTSCBxdWlyawo+IAo+
-IMKgRG9jdW1lbnRhdGlvbi9oaWQvaW50ZWwtaXNoLWhpZC50eHTCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoHzCoMKgNDE3ICsrKysrKysrCj4gwqBkcml2ZXJzL2hpZC9LY29uZmlnwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoHzCoMKgwqDCoDIgKwo+IMKgZHJpdmVycy9oaWQvTWFrZWZpbGXCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHzCoMKgwqDCoDIg
-Kwo+IMKgZHJpdmVycy9oaWQvaGlkLXNlbnNvci1odWIuY8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB8wqDCoMKgwqA0ICsKPiDCoGRyaXZlcnMvaGlkL2ludGVs
-LWlzaC1oaWQvS2NvbmZpZ8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHzCoMKg
-wqAyNyArCj4gwqBkcml2ZXJzL2hpZC9pbnRlbC1pc2gtaGlkL01ha2VmaWxlwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoHzCoMKgwqAyMCArCj4gwqBkcml2ZXJzL2hpZC9pbnRlbC1p
-c2gtaGlkL2lwYy9ody1pc2gtcmVncy5owqDCoMKgwqDCoMKgwqDCoHzCoMKgMjIwICsrKysKPiDC
-oGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXBjL2h3LWlzaC5owqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqB8wqDCoMKgNzAgKysKPiDCoGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXBjL2lw
-Yy5jwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB8wqDCoDcyMAo+ICsrKysrKysrKysr
-KysKPiDCoGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXBjL3BjaS1pc2guY8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoHzCoMKgMzA1ICsrKysrKwo+IMKgZHJpdmVycy9oaWQvaW50ZWwtaXNoLWhp
-ZC9pcGMvdXRpbHMuaMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB8wqDCoMKgNjQgKysKPiDC
-oGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXNodHAtaGlkLWNsaWVudC5jwqDCoMKgwqDCoMKg
-wqB8wqDCoDkyMgo+ICsrKysrKysrKysrKysrKysKPiDCoGRyaXZlcnMvaGlkL2ludGVsLWlzaC1o
-aWQvaXNodHAtaGlkLmPCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfMKgwqAyMzEgKysrKwo+
-IMKgZHJpdmVycy9oaWQvaW50ZWwtaXNoLWhpZC9pc2h0cC1oaWQuaMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqB8wqDCoDE4MiArKysrCj4gwqBkcml2ZXJzL2hpZC9pbnRlbC1pc2gtaGlkL2lz
-aHRwL2J1cy5jwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHzCoMKgNzc0Cj4gKysrKysrKysr
-KysrKysKPiDCoGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXNodHAvYnVzLmjCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgfMKgwqAxMDUgKysKPiDCoGRyaXZlcnMvaGlkL2ludGVsLWlzaC1o
-aWQvaXNodHAvY2xpZW50LmPCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfCAxMTI5Cj4gKysrKysrKysr
-KysrKysrKysrKysKPiDCoGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXNodHAvY2xpZW50LmjC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgfMKgwqAxOTQgKysrKwo+IMKgZHJpdmVycy9oaWQvaW50ZWwt
-aXNoLWhpZC9pc2h0cC9kbWEtaWYuY8KgwqDCoMKgwqDCoMKgwqDCoMKgwqB8wqDCoDE3OCArKysK
-PiDCoGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXNodHAvaGJtLmPCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgfMKgwqA5MTEKPiArKysrKysrKysrKysrKysrCj4gwqBkcml2ZXJzL2hpZC9p
-bnRlbC1pc2gtaGlkL2lzaHRwL2hibS5owqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHzCoMKg
-MzE5ICsrKysrKwo+IMKgZHJpdmVycy9oaWQvaW50ZWwtaXNoLWhpZC9pc2h0cC9pbml0LmPCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoHzCoMKgwqA5NCArKwo+IMKgZHJpdmVycy9oaWQvaW50ZWwt
-aXNoLWhpZC9pc2h0cC9pc2h0cC1kZXYuaMKgwqDCoMKgwqDCoMKgwqB8wqDCoDI4MCArKysrKwo+
-IMKgLi4uL2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci10cmlnZ2VyLmPCoMKgwqDC
-oHzCoMKgwqAyMSArLQo+IMKgaW5jbHVkZS9saW51eC9oaWQtc2Vuc29yLWh1Yi5owqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfMKgwqDCoMKgMSArCj4gwqBpbmNsdWRl
-L3RyYWNlL2V2ZW50cy9pbnRlbF9pc2guaMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgfMKgwqDCoDMwICsKPiDCoGluY2x1ZGUvdWFwaS9saW51eC9pbnB1dC5owqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB8wqDCoMKgwqAxICsKPiDC
-oDI3IGZpbGVzIGNoYW5nZWQsIDcyMjIgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQo+IMKg
-Y3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vaGlkL2ludGVsLWlzaC1oaWQudHh0Cj4g
-wqBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9oaWQvaW50ZWwtaXNoLWhpZC9LY29uZmlnCj4g
-wqBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9oaWQvaW50ZWwtaXNoLWhpZC9NYWtlZmlsZQo+
-IMKgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXBjL2h3LWlz
-aC1yZWdzLmgKPiDCoGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2hpZC9pbnRlbC1pc2gtaGlk
-L2lwYy9ody1pc2guaAo+IMKgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaGlkL2ludGVsLWlz
-aC1oaWQvaXBjL2lwYy5jCj4gwqBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9oaWQvaW50ZWwt
-aXNoLWhpZC9pcGMvcGNpLWlzaC5jCj4gwqBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9oaWQv
-aW50ZWwtaXNoLWhpZC9pcGMvdXRpbHMuaAo+IMKgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMv
-aGlkL2ludGVsLWlzaC1oaWQvaXNodHAtaGlkLWNsaWVudC5jCj4gwqBjcmVhdGUgbW9kZSAxMDA2
-NDQgZHJpdmVycy9oaWQvaW50ZWwtaXNoLWhpZC9pc2h0cC1oaWQuYwo+IMKgY3JlYXRlIG1vZGUg
-MTAwNjQ0IGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXNodHAtaGlkLmgKPiDCoGNyZWF0ZSBt
-b2RlIDEwMDY0NCBkcml2ZXJzL2hpZC9pbnRlbC1pc2gtaGlkL2lzaHRwL2J1cy5jCj4gwqBjcmVh
-dGUgbW9kZSAxMDA2NDQgZHJpdmVycy9oaWQvaW50ZWwtaXNoLWhpZC9pc2h0cC9idXMuaAo+IMKg
-Y3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXNodHAvY2xpZW50
-LmMKPiDCoGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2hpZC9pbnRlbC1pc2gtaGlkL2lzaHRw
-L2NsaWVudC5oCj4gwqBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9oaWQvaW50ZWwtaXNoLWhp
-ZC9pc2h0cC9kbWEtaWYuYwo+IMKgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaGlkL2ludGVs
-LWlzaC1oaWQvaXNodHAvaGJtLmMKPiDCoGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2hpZC9p
-bnRlbC1pc2gtaGlkL2lzaHRwL2hibS5oCj4gwqBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9o
-aWQvaW50ZWwtaXNoLWhpZC9pc2h0cC9pbml0LmMKPiDCoGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2
-ZXJzL2hpZC9pbnRlbC1pc2gtaGlkL2lzaHRwL2lzaHRwLWRldi5oCj4gwqBjcmVhdGUgbW9kZSAx
-MDA2NDQgaW5jbHVkZS90cmFjZS9ldmVudHMvaW50ZWxfaXNoLmgKPiAKLS0gCkF0cmkgQmhhdHRh
-Y2hhcnlhClN1biAxMiBKdW4gMDg6MjY6MjcgQ0VTVCAyMDE2CgpTZW50IGZyb20gb3BlblNVU0Ug
-VHVtYmxld2VlZCAoMjAxNjA2MDkpICh4ODZfNjQpIG9uIG15IGxhcHRvcC4=
 
+Also important to note these warnings are environment related (e.g. room with lot of EMI noise) and unlikely a chip misconfiguration. Unless the tuning capacitor setting is wrong of course
 
-
+> On Jun 11, 2016, at 09:32, Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+>> On 31/05/16 15:53, Andrew F. Davis wrote:
+>>> On 05/30/2016 09:52 AM, Arnd Bergmann wrote:
+>>> gcc warns about a potentially uninitialized variable use
+>>> in as3935_event_work:
+>>> 
+>>> drivers/iio/proximity/as3935.c: In function ‘as3935_event_work’:
+>>> drivers/iio/proximity/as3935.c:231:6: error: ‘val’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+>>> 
+>>> This case specifically happens when spi_w8r8() fails with a
+>>> negative return code. We check all other users of this function
+>>> except this one.
+>>> 
+>>> As the error is rather unlikely to happen after the device
+>>> has already been initialized, this just adds a dev_warn().
+>>> Another warning already existst in the same function, but is
+>> 
+>>                            ^^ typo
+>> 
+>>> missing a trailing '\n' character, so I'm fixing that too.
+>>> 
+>>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>>> ---
+>>> drivers/iio/proximity/as3935.c | 10 ++++++++--
+>>> 1 file changed, 8 insertions(+), 2 deletions(-)
+>>> 
+>>> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+>>> index f4d29d5dbd5f..b49e3ab5730a 100644
+>>> --- a/drivers/iio/proximity/as3935.c
+>>> +++ b/drivers/iio/proximity/as3935.c
+>>> @@ -224,10 +224,16 @@ static void as3935_event_work(struct work_struct *work)
+>>> {
+>>>    struct as3935_state *st;
+>>>    int val;
+>>> +    int ret;
+>>> 
+>>>    st = container_of(work, struct as3935_state, work.work);
+>>> 
+>>> -    as3935_read(st, AS3935_INT, &val);
+>>> +    ret = as3935_read(st, AS3935_INT, &val);
+>>> +    if (ret) {
+>>> +        dev_warn(&st->spi->dev, "read error\n");
+>> 
+>> Maybe I'm misunderstanding the commit message, why does this error not
+>> use dev_err()? A read error here would be rather serious, it might even
+>> be worth it to return a code and fail through the caller too.
+> They are unusual and typically result in momentary corruption.  Hmm.
+> As this is in a work function, there is no easy way of actually
+> passing the error upstream..  dev_err is a little brutal so perhaps
+> this is the best option...
+>> 
+>>> +        return;
+>>> +    }
+>>> +
+>>>    val &= AS3935_INT_MASK;
+>>> 
+>>>    switch (val) {
+>>> @@ -235,7 +241,7 @@ static void as3935_event_work(struct work_struct *work)
+>>>        iio_trigger_poll(st->trig);
+>>>        break;
+>>>    case AS3935_NOISE_INT:
+>>> -        dev_warn(&st->spi->dev, "noise level is too high");
+>>> +        dev_warn(&st->spi->dev, "noise level is too high\n");
+>>>        break;
+>>>    }
+>>> }
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
