@@ -1,45 +1,248 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-by2on0110.outbound.protection.outlook.com ([207.46.100.110]:44096
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750973AbcFLIGU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 12 Jun 2016 04:06:20 -0400
-From: "Markezana, William" <William.Markezana@te.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PATCH V2] iio: (ms5637) Add Measurement Specialties explicit MS5805
- and MS5837 support
-Date: Sun, 12 Jun 2016 08:06:16 +0000
-Message-ID: <53A6D8FB-3F95-4A9E-BB5F-D317B61CCFBC@te.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from mail-yw0-f196.google.com ([209.85.161.196]:34859 "EHLO
+	mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1423057AbcFMNHB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2016 09:07:01 -0400
+Date: Mon, 13 Jun 2016 09:06:48 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linus.walleij@linaro.org
+Cc: gnurou@gmail.com, linux-gpio@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] iio: stx104: Add GPIO support for the Apex Embedded
+ Systems STX104
+Message-ID: <20160613130628.GA28944@sophia>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-aWlvOiAobXM1NjM3KSBBZGQgTWVhc3VyZW1lbnQgU3BlY2lhbHRpZXMgZXhwbGljaXQgTVM1ODA1
-IGFuZCBNUzU4Mzcgc3VwcG9ydA0KDQpTaWduZWQtb2ZmLWJ5OiBXaWxsaWFtIE1hcmtlemFuYSA8
-d2lsbGlhbS5tYXJrZXphbmFAbWVhcy1zcGVjLmNvbT4NCi0tLQ0KZHJpdmVycy9paW8vcHJlc3N1
-cmUvbXM1NjM3LmMgfCAxMiArKysrKysrKystLS0NCjEgZmlsZSBjaGFuZ2VkLCA5IGluc2VydGlv
-bnMoKyksIDMgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9wcmVzc3Vy
-ZS9tczU2MzcuYyBiL2RyaXZlcnMvaWlvL3ByZXNzdXJlL21zNTYzNy5jDQppbmRleCBlOGQwZTBk
-Li42NmYxYTRjIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9paW8vcHJlc3N1cmUvbXM1NjM3LmMNCisr
-KyBiL2RyaXZlcnMvaWlvL3ByZXNzdXJlL21zNTYzNy5jDQpAQCAtMSw2ICsxLDYgQEANCi8qDQot
-ICogbXM1NjM3LmMgLSBTdXBwb3J0IGZvciBNZWFzdXJlbWVudC1TcGVjaWFsdGllcyBtczU2Mzcg
-YW5kIG1zODYwNw0KLSAqICAgICAgICAgICAgcHJlc3N1cmUgJiB0ZW1wZXJhdHVyZSBzZW5zb3IN
-CisgKiBtczU2MzcuYyAtIFN1cHBvcnQgZm9yIE1lYXN1cmVtZW50LVNwZWNpYWx0aWVzIE1TNTYz
-NywgTVM1ODA1DQorICogICAgICAgICAgICBNUzU4MzcgYW5kIE1TODYwNyBwcmVzc3VyZSAmIHRl
-bXBlcmF0dXJlIHNlbnNvcg0KICAqDQogICogQ29weXJpZ2h0IChjKSAyMDE1IE1lYXN1cmVtZW50
-LVNwZWNpYWx0aWVzDQogICoNCkBAIC0xMSw2ICsxMSwxMCBAQA0KICAqIERhdGFzaGVldDoNCiAg
-KiAgaHR0cDovL3d3dy5tZWFzLXNwZWMuY29tL2Rvd25sb2Fkcy9NUzU2MzctMDJCQTAzLnBkZg0K
-ICAqIERhdGFzaGVldDoNCisgKiAgaHR0cDovL3d3dy5tZWFzLXNwZWMuY29tL2Rvd25sb2Fkcy9N
-UzU4MDUtMDJCQTAxLnBkZg0KKyAqIERhdGFzaGVldDoNCisgKiAgaHR0cDovL3d3dy5tZWFzLXNw
-ZWMuY29tL2Rvd25sb2Fkcy9NUzU4MzctMzBCQS5wZGYNCisgKiBEYXRhc2hlZXQ6DQogICogIGh0
-dHA6Ly93d3cubWVhcy1zcGVjLmNvbS9kb3dubG9hZHMvTVM4NjA3LTAyQkEwMS5wZGYNCiAgKi8N
-CkBAIC0xNzAsNyArMTc0LDkgQEAgc3RhdGljIGludCBtczU2MzdfcHJvYmUoc3RydWN0IGkyY19j
-bGllbnQgKmNsaWVudCwNCnN0YXRpYyBjb25zdCBzdHJ1Y3QgaTJjX2RldmljZV9pZCBtczU2Mzdf
-aWRbXSA9IHsNCiAgeyJtczU2MzciLCAwfSwNCi0geyJtczg2MDctdGVtcHByZXNzdXJlIiwgMX0s
-DQorIHsibXM1ODA1IiwgMH0sDQorIHsibXM1ODM3IiwgMH0sDQorIHsibXM4NjA3LXRlbXBwcmVz
-c3VyZSIsIDB9LA0KICB7fQ0KfTsNCi0tDQoyLjEuNA0KDQoNCg==
+The Apex Embedded Systems STX104 device features eight lines of digital
+I/O (four digital inputs and four digital outputs). This patch adds GPIO
+support for these eight lines of digital I/O via GPIOLIB.
+
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+Changes in v3:
+  - Revert v2 change; any arch should be able to select GPIOLIB
+  - Return -EINVAL when attempting to set a GPIO to a direction it
+    cannot be
+  - Call stx104_gpio_set to have an initial value when setting a GPIO to
+    output direction
+Changes in v2:
+  - Change GPIOLIB Kconfig selection to a dependency for the STX104
+    Kconfig option; STX104 should only be available to systems
+    configured for GPIOLIB
+
+ drivers/iio/dac/Kconfig  |  11 +++--
+ drivers/iio/dac/stx104.c | 125 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 129 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 61d5008..b3feb0bf 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -246,13 +246,14 @@ config MCP4922
+ 	  will be called mcp4922.
+ 
+ config STX104
+-	tristate "Apex Embedded Systems STX104 DAC driver"
++	tristate "Apex Embedded Systems STX104 driver"
+ 	depends on ISA
++	select GPIOLIB
+ 	help
+-	  Say yes here to build support for the 2-channel DAC on the Apex
+-	  Embedded Systems STX104 integrated analog PC/104 card. The base port
+-	  addresses for the devices may be configured via the "base" module
+-	  parameter array.
++	  Say yes here to build support for the 2-channel DAC and GPIO on the
++	  Apex Embedded Systems STX104 integrated analog PC/104 card. The base
++	  port addresses for the devices may be configured via the base array
++	  module parameter.
+ 
+ config VF610_DAC
+ 	tristate "Vybrid vf610 DAC driver"
+diff --git a/drivers/iio/dac/stx104.c b/drivers/iio/dac/stx104.c
+index 174f4b7..e0f31a1 100644
+--- a/drivers/iio/dac/stx104.c
++++ b/drivers/iio/dac/stx104.c
+@@ -14,6 +14,7 @@
+ #include <linux/bitops.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
++#include <linux/gpio/driver.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/types.h>
+ #include <linux/io.h>
+@@ -21,6 +22,7 @@
+ #include <linux/isa.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
++#include <linux/spinlock.h>
+ 
+ #define STX104_NUM_CHAN 2
+ 
+@@ -56,6 +58,20 @@ struct stx104_iio {
+ 	unsigned base;
+ };
+ 
++/**
++ * struct stx104_gpio - GPIO device private data structure
++ * @chip:	instance of the gpio_chip
++ * @lock:	synchronization lock to prevent I/O race conditions
++ * @base:	base port address of the GPIO device
++ * @out_state:	output bits state
++ */
++struct stx104_gpio {
++	struct gpio_chip chip;
++	spinlock_t lock;
++	unsigned int base;
++	unsigned int out_state;
++};
++
+ static int stx104_read_raw(struct iio_dev *indio_dev,
+ 	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+ {
+@@ -95,15 +111,81 @@ static const struct iio_chan_spec stx104_channels[STX104_NUM_CHAN] = {
+ 	STX104_CHAN(1)
+ };
+ 
++static int stx104_gpio_get_direction(struct gpio_chip *chip,
++	unsigned int offset)
++{
++	if (offset < 4)
++		return 1;
++
++	return 0;
++}
++
++static int stx104_gpio_direction_input(struct gpio_chip *chip,
++	unsigned int offset)
++{
++	if (offset >= 4)
++		return -EINVAL;
++
++	return 0;
++}
++
++static int stx104_gpio_direction_output(struct gpio_chip *chip,
++	unsigned int offset, int value)
++{
++	if (offset < 4)
++		return -EINVAL;
++
++	chip->set(chip, offset, value);
++	return 0;
++}
++
++static int stx104_gpio_get(struct gpio_chip *chip, unsigned int offset)
++{
++	struct stx104_gpio *const stx104gpio = gpiochip_get_data(chip);
++
++	if (offset >= 4)
++		return -EINVAL;
++
++	return !!(inb(stx104gpio->base) & BIT(offset));
++}
++
++static void stx104_gpio_set(struct gpio_chip *chip, unsigned int offset,
++	int value)
++{
++	struct stx104_gpio *const stx104gpio = gpiochip_get_data(chip);
++	const unsigned int mask = BIT(offset) >> 4;
++	unsigned long flags;
++
++	if (offset < 4)
++		return;
++
++	spin_lock_irqsave(&stx104gpio->lock, flags);
++
++	if (value)
++		stx104gpio->out_state |= mask;
++	else
++		stx104gpio->out_state &= ~mask;
++
++	outb(stx104gpio->out_state, stx104gpio->base);
++
++	spin_unlock_irqrestore(&stx104gpio->lock, flags);
++}
++
+ static int stx104_probe(struct device *dev, unsigned int id)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct stx104_iio *priv;
++	struct stx104_gpio *stx104gpio;
++	int err;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
++	stx104gpio = devm_kzalloc(dev, sizeof(*stx104gpio), GFP_KERNEL);
++	if (!stx104gpio)
++		return -ENOMEM;
++
+ 	if (!devm_request_region(dev, base[id], STX104_EXTENT,
+ 		dev_name(dev))) {
+ 		dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n",
+@@ -124,14 +206,53 @@ static int stx104_probe(struct device *dev, unsigned int id)
+ 	outw(0, base[id] + 4);
+ 	outw(0, base[id] + 6);
+ 
+-	return devm_iio_device_register(dev, indio_dev);
++	err = devm_iio_device_register(dev, indio_dev);
++	if (err) {
++		dev_err(dev, "IIO device registering failed (%d)\n", err);
++		return err;
++	}
++
++	stx104gpio->chip.label = dev_name(dev);
++	stx104gpio->chip.parent = dev;
++	stx104gpio->chip.owner = THIS_MODULE;
++	stx104gpio->chip.base = -1;
++	stx104gpio->chip.ngpio = 8;
++	stx104gpio->chip.get_direction = stx104_gpio_get_direction;
++	stx104gpio->chip.direction_input = stx104_gpio_direction_input;
++	stx104gpio->chip.direction_output = stx104_gpio_direction_output;
++	stx104gpio->chip.get = stx104_gpio_get;
++	stx104gpio->chip.set = stx104_gpio_set;
++	stx104gpio->base = base[id] + 3;
++	stx104gpio->out_state = 0x0;
++
++	spin_lock_init(&stx104gpio->lock);
++
++	dev_set_drvdata(dev, stx104gpio);
++
++	err = gpiochip_add_data(&stx104gpio->chip, stx104gpio);
++	if (err) {
++		dev_err(dev, "GPIO registering failed (%d)\n", err);
++		return err;
++	}
++
++	return 0;
++}
++
++static int stx104_remove(struct device *dev, unsigned int id)
++{
++	struct stx104_gpio *const stx104gpio = dev_get_drvdata(dev);
++
++	gpiochip_remove(&stx104gpio->chip);
++
++	return 0;
+ }
+ 
+ static struct isa_driver stx104_driver = {
+ 	.probe = stx104_probe,
+ 	.driver = {
+ 		.name = "stx104"
+-	}
++	},
++	.remove = stx104_remove
+ };
+ 
+ static void __exit stx104_exit(void)
+-- 
+2.7.3
+
