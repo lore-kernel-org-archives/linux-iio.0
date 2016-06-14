@@ -1,106 +1,157 @@
-Return-Path: <hadess@hadess.net>
-Message-ID: <1465923665.606.19.camel@hadess.net>
-Subject: Re: [RFC 0/4] Intel Integrated Sensor Hub Support (ISH)
-From: Bastien Nocera <hadess@hadess.net>
-To: Grant Likely <grant.likely@secretlab.ca>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Jiri Kosina
- <jikos@kernel.org>, benjamin.tissoires@redhat.com, Jonathan Cameron
- <jic23@kernel.org>, "linux-input@vger.kernel.org"
- <linux-input@vger.kernel.org>,  linux-iio@vger.kernel.org, Linux Kernel
- Mailing List <linux-kernel@vger.kernel.org>, chaya.golan@intel.com,
- daniel.drubin@intel.com,  Darren Hart <darren@dvhart.com>
-Date: Tue, 14 Jun 2016 19:01:05 +0200
-In-Reply-To: <CACxGe6siZMA3GX=M8=07GbHsnzRzq0=dKQ8aeC_VN=9iPcc=Ew@mail.gmail.com>
-References: 
-	<1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>	
- <CACxGe6udQ9H5_OBg+h8BB4Bru5Air0LYxtGQkUvr91ebtUE+SA@mail.gmail.com>	
- <1465509287.24319.3.camel@linux.intel.com>
-	 <CACxGe6vq-FDpjG8WtrraveQo+ZT3MHMDFzrA5-qqNLEwcbmNhw@mail.gmail.com>	
- <1465566904.10525.11.camel@linux.intel.com>
-	 <1465568791.7409.38.camel@hadess.net>	
- <1465569941.10525.17.camel@linux.intel.com>
-	 <1465571076.7409.39.camel@hadess.net>	
- <1465572227.24319.7.camel@linux.intel.com>
-	 <1465572452.7409.41.camel@hadess.net>	
- <CACxGe6sjFHS9VaeWUY1PsJXhTW1Nvkuoqutty9oSX2Ywj+yV9g@mail.gmail.com>
-	 <1465917123.606.11.camel@hadess.net>
-	 <CACxGe6siZMA3GX=M8=07GbHsnzRzq0=dKQ8aeC_VN=9iPcc=Ew@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from plane.gmane.org ([80.91.229.3]:38969 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751884AbcFNRZH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 14 Jun 2016 13:25:07 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1bCs5I-00023c-Tv
+	for linux-iio@vger.kernel.org; Tue, 14 Jun 2016 19:25:05 +0200
+Received: from cpe-173-174-74-64.austin.res.rr.com ([173.174.74.64])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jun 2016 19:25:04 +0200
+Received: from me by cpe-173-174-74-64.austin.res.rr.com with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jun 2016 19:25:04 +0200
+To: linux-iio@vger.kernel.org
+From: Daniel Turton <me@danielturton.net>
+Subject: Re: [PATCH 0/6] Intel Integrated Sensor Hub Support (ISH)
+Date: Tue, 14 Jun 2016 17:16:22 +0000 (UTC)
+Message-ID: <loom.20160614T185808-391@post.gmane.org>
+References: <1465647219-7798-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, 2016-06-14 at 17:08 +0100, Grant Likely wrote:
-> On Tue, Jun 14, 2016 at 4:12 PM, Bastien Nocera <hadess@hadess.net>
-> wrote:
-> > On Tue, 2016-06-14 at 14:44 +0100, Grant Likely wrote:
-> > > On Fri, Jun 10, 2016 at 4:27 PM, Bastien Nocera <hadess@hadess.ne
-> > > t>
-> > > wrote:
-> > > > On Fri, 2016-06-10 at 08:23 -0700, Srinivas Pandruvada wrote:
-> > > > > On Fri, 2016-06-10 at 17:04 +0200, Bastien Nocera wrote:
-> > > > > > > 
-> > > > > 
-> > > > > [...]
-> > > > > 
-> > > > > > Are there any errors when setting the triggers?
-> > > > > > 
-> > > > > Is there any debug option in this service to give more
-> > > > > verbose
-> > > > > output?
-> > > > 
-> > > > Add:
-> > > > Environment="G_MESSAGES_DEBUG=all"
-> > > > 
-> > > > To the service file. You should see the debug in systemctl:
-> > > > systemctl status iio-sensor-proxy.service
-> > > > 
-> > > > Or in journalctl if there's too much data:
-> > > > journalctl --reverse -u iio-sensor-proxy.service
-> > > 
-> > > Still no joy on the sensors. The proxy starts up and detects the
-> > > sensors, but I don't see any sensor events occurring:
-> > 
-> > Could you try again with the current master of iio-sensor-proxy?
-> > Make
-> > sure to install the file in the same location as in your distro
-> > provided package.
-> > 
-> > I've added more debug/warnings to a few cases where it would have
-> > silently failed in the past.
-> > 
-> > In particular, I don't see any messages that would be coming out
-> > of:
-> > https://github.com/hadess/iio-sensor-proxy/blob/master/src/iio-buff
-> > er-utils.c#L512
-> > 
-> > Could it be that the sub-directory is populated after the device is
-> > created in the kernel, causing a race?
-> > 
-> > Either that, or the contents of the scan_elements/ directory is not
-> > the
-> > one expected by this code.
-> > 
-> > The output of this command should us that:
-> > ls /sys/devices/pci0000:00/0000:00:13.0/{33AECD58-B679-4E54-9BD9-
-> > A04D34F0C226}/001E:8086:22D8.0001/HID-SENSOR-
-> > 200073.8.auto/iio:device1/scan_elements
+Srinivas Pandruvada <srinivas.pandruvada@...> writes:
+
 > 
-> Hmmm, this is interesting. I fetched, built and ran the latest
-> iio-sensor-proxy. It quit with the following error. However,
-> immediately afterwards, I ran the Debian packaged version (1.1-1),
-> and
-> the sensors started to work. Something in the latest master activates
-> the sensors enough for the older version to work.
+> Starting from Cherrytrail, multiple generation of Intel processors offers
+> on package sensor hub. Several recent tablets, 2-in-1 convertible laptops
+> are using ISH instead of external sensor hubs. This resulted in lack of
+> support of sensor function like device rotation and auto backlight
+> adjustment.
 
-There's no changes in that code other than me introducing a bug that'd
-make it throw a warning when the sensor was already enabled. Fixed now.
+> In addition, depending on the OEM implementation, support of ISH is required
+> to support low power sleep states.
+> 
+> The support of ISH on Linux platforms is not new. Android platforms with
+> Intel SoCs had this support for a while submitted by Daniel Drubin. 
+> This patcheset is reusing most of those changes with  clean up and
+> removing Android platform specific changes.
+> 
+> The user mode ABI is still same as external sensor hubs using Linux
+> IIO. So existing user mode software should still work.
+> This series primarily brings in new HID transport used in ISH.
+> 
+> Thanks to the community members who tested RFC patches and provided
+> feedback.
+> 
+> For users testing on Linux distributions using IIO sensor proxy,
+> a short term work around is required till we have debugged this issue.
+> In systemd unit file iio-sensor-proxy.service
+> In the section "[Unit]" add
+> After=multi-user.target
+> 
+> Daniel Drubin (3):
+>   hid: intel_ish-hid: ISH Transport layer
+>   hid: intel-ish-hid: ipc layer
+>   hid: intel-ish-hid: ISH HID client driver
+> 
+> Srinivas Pandruvada (3):
+>   Documentation: hid: Intel ISH HID document
+>   iio: hid-sensors: use asynchronous resume
+>   hid: hid-sensor-hub: Add ISH quirk
+> 
+>  Documentation/hid/intel-ish-hid.txt                |  417 ++++++++
+>  drivers/hid/Kconfig                                |    2 +
+>  drivers/hid/Makefile                               |    2 +
+>  drivers/hid/hid-sensor-hub.c                       |    4 +
+>  drivers/hid/intel-ish-hid/Kconfig                  |   27 +
+>  drivers/hid/intel-ish-hid/Makefile                 |   20 +
+>  drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h        |  220 ++++
+>  drivers/hid/intel-ish-hid/ipc/hw-ish.h             |   70 ++
+>  drivers/hid/intel-ish-hid/ipc/ipc.c                |  720 +++++++++++++
+>  drivers/hid/intel-ish-hid/ipc/pci-ish.c            |  305 ++++++
+>  drivers/hid/intel-ish-hid/ipc/utils.h              |   64 ++
+>  drivers/hid/intel-ish-hid/ishtp-hid-client.c       |  922 ++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp-hid.c              |  231 ++++
+>  drivers/hid/intel-ish-hid/ishtp-hid.h              |  182 ++++
+>  drivers/hid/intel-ish-hid/ishtp/bus.c              |  774 ++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/bus.h              |  105 ++
+>  drivers/hid/intel-ish-hid/ishtp/client.c           | 1129
+++++++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/client.h           |  194 ++++
+>  drivers/hid/intel-ish-hid/ishtp/dma-if.c           |  178 +++
+>  drivers/hid/intel-ish-hid/ishtp/hbm.c              |  911 ++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/hbm.h              |  319 ++++++
+>  drivers/hid/intel-ish-hid/ishtp/init.c             |   94 ++
+>  drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h        |  280 +++++
+>  .../iio/common/hid-sensors/hid-sensor-trigger.c    |   21 +-
+>  include/linux/hid-sensor-hub.h                     |    1 +
+>  include/trace/events/intel_ish.h                   |   30 +
+>  include/uapi/linux/input.h                         |    1 +
+>  27 files changed, 7222 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/hid/intel-ish-hid.txt
+>  create mode 100644 drivers/hid/intel-ish-hid/Kconfig
+>  create mode 100644 drivers/hid/intel-ish-hid/Makefile
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/ipc.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/pci-ish.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/utils.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid-client.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/dma-if.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/init.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h
+>  create mode 100644 include/trace/events/intel_ish.h
+> 
 
-Could you try again, but make sure to replace the existing iio-sensor-
-proxy so it's started on boot, when the device appears. If you see the
-warning again, please attach the output out from "ls" as requested in
-the earlier mail.
+Hello Srinivas,
 
-If it doesn't warn on startup, and it fails to work, then we're
-probably looking at a bug in the kernel...
+Thanks again for releasing this set of patches to get this chipset working.
+Unfortunately, I'm still encountering a bit of trouble getting the chipset
+to respond on my Lenovo Yoga 460/ Yoga 14. I've applied the newest patches
+to Kernel 4.6.0 sources (commit #2dcd0af5, with Ubuntu patches applied), no
+errors during compilation, but the system does not yet recognize the chipset.
 
-Cheers
+There were no errors observed during kernel compilation, yet the
+"modules.builtin" file that was created made no mention of the driver.
+Please let me know if that's something that I can ignore in this case.
+
+There were no mentions of the driver during boot, and only the minimal
+mention of device "9d35" during the PCI bus scan at boot. There is also no
+mention of at /sys/bus/iio directory after boot. Spoofing different OSes via
+the acpi_osi boot option (used "Windows 2015". "Windows 2012", "Linux") made
+no change in behavior.
+
+
+Here's a copy of the current output from lspci:
+
+00:13.0 Non-VGA unclassified device: Intel Corporation Device 9d35 (rev 21)
+	Subsystem: Lenovo Device 504c
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr-
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+<MAbort- >SERR- <PERR- INTx-
+	Interrupt: pin A routed to IRQ 255
+	Region 0: Memory at d564b000 (64-bit, non-prefetchable) [disabled] [size=4K]
+	Capabilities: [80] Power Management version 3
+		Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA PME(D0-,D1-,D2-,D3hot-,D3cold-)
+		Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+
+Let me know if there's any other information that I can provide, and I'll be
+happy to do so. Thanks for your time!
+
+Daniel Turton
+
