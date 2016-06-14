@@ -1,50 +1,75 @@
-Return-Path: <linux@roeck-us.net>
-Subject: Re: MCP9808 iio or hwmon
-To: Daniel Baluta <daniel.baluta@intel.com>,
- Alison Schofield <amsfield22@gmail.com>
-References: <20160613220843.GA4235@d830.WORKGROUP>
- <CAEnQRZBZcQZRYGbk-6Eh5sN7_D90HTZPPo=uOSSZF2obB5VD+w@mail.gmail.com>
- <CAEnQRZC9ES6dGyUdycW=nRuA=6yRa=i01BWBLt7uFsieE-74OQ@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- linux-hwmon@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Guenter Roeck <linux@roeck-us.net>
-Message-ID: <57600656.7030902@roeck-us.net>
-Date: Tue, 14 Jun 2016 06:27:50 -0700
-MIME-Version: 1.0
-In-Reply-To: <CAEnQRZC9ES6dGyUdycW=nRuA=6yRa=i01BWBLt7uFsieE-74OQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Return-Path: <hadess@hadess.net>
+Message-ID: <1465917123.606.11.camel@hadess.net>
+Subject: Re: [RFC 0/4] Intel Integrated Sensor Hub Support (ISH)
+From: Bastien Nocera <hadess@hadess.net>
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Jiri Kosina
+ <jikos@kernel.org>, benjamin.tissoires@redhat.com, Jonathan Cameron
+ <jic23@kernel.org>, "linux-input@vger.kernel.org"
+ <linux-input@vger.kernel.org>,  linux-iio@vger.kernel.org, Linux Kernel
+ Mailing List <linux-kernel@vger.kernel.org>, chaya.golan@intel.com,
+ daniel.drubin@intel.com,  Darren Hart <darren@dvhart.com>
+Date: Tue, 14 Jun 2016 17:12:03 +0200
+In-Reply-To: <CACxGe6sjFHS9VaeWUY1PsJXhTW1Nvkuoqutty9oSX2Ywj+yV9g@mail.gmail.com>
+References: 
+	<1464668878-17113-1-git-send-email-srinivas.pandruvada@linux.intel.com>	
+ <CACxGe6udQ9H5_OBg+h8BB4Bru5Air0LYxtGQkUvr91ebtUE+SA@mail.gmail.com>	
+ <1465509287.24319.3.camel@linux.intel.com>
+	 <CACxGe6vq-FDpjG8WtrraveQo+ZT3MHMDFzrA5-qqNLEwcbmNhw@mail.gmail.com>	
+ <1465566904.10525.11.camel@linux.intel.com>
+	 <1465568791.7409.38.camel@hadess.net>	
+ <1465569941.10525.17.camel@linux.intel.com>
+	 <1465571076.7409.39.camel@hadess.net>	
+ <1465572227.24319.7.camel@linux.intel.com>
+	 <1465572452.7409.41.camel@hadess.net>
+	 <CACxGe6sjFHS9VaeWUY1PsJXhTW1Nvkuoqutty9oSX2Ywj+yV9g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/14/2016 01:22 AM, Daniel Baluta wrote:
-> [fixing IIO, hwmon lists emails]
->
-> On Tue, Jun 14, 2016 at 11:20 AM, Daniel Baluta <daniel.baluta@gmail.com> wrote:
->> On Tue, Jun 14, 2016 at 1:08 AM, Alison Schofield <amsfield22@gmail.com> wrote:
->>>
->>> I was working on an iio driver for MCP9808 when Jonathan took notice
->>> and suggested we have the iio or hwmon discussion.
->>>
->>> So, where should this sensor driver reside?
->>>
->>> http://ww1.microchip.com/downloads/en/DeviceDoc/25095A.pdf
->>>
->>> It's a digital temp sensor with user programmable registers for
->>> sensing applications.  Supports shutdown, low power modes,
->>> specifying of event & critical output boundaries.  Can support
->>> 8 sensors on a single serial bus. Touted as 'ideal for sophisticated
->>> multi-zone temperature-monitoring applications.'
->>
->> This is debatable, looking to the datasheet this driver could reside
->> in both places.
->>
->> Because this sensor has Industrial utility (e.g freezers, refrigerators) I
->> am inclined to say we should support it in IIO.
->>
+On Tue, 2016-06-14 at 14:44 +0100, Grant Likely wrote:
+> On Fri, Jun 10, 2016 at 4:27 PM, Bastien Nocera <hadess@hadess.net>
+> wrote:
+> > On Fri, 2016-06-10 at 08:23 -0700, Srinivas Pandruvada wrote:
+> > > On Fri, 2016-06-10 at 17:04 +0200, Bastien Nocera wrote:
+> > > > > 
+> > > 
+> > > [...]
+> > > 
+> > > > Are there any errors when setting the triggers?
+> > > > 
+> > > Is there any debug option in this service to give more verbose
+> > > output?
+> > 
+> > Add:
+> > Environment="G_MESSAGES_DEBUG=all"
+> > 
+> > To the service file. You should see the debug in systemctl:
+> > systemctl status iio-sensor-proxy.service
+> > 
+> > Or in journalctl if there's too much data:
+> > journalctl --reverse -u iio-sensor-proxy.service
+> 
+> Still no joy on the sensors. The proxy starts up and detects the
+> sensors, but I don't see any sensor events occurring:
 
-Literally every sensor has that utility.
+Could you try again with the current master of iio-sensor-proxy? Make
+sure to install the file in the same location as in your distro
+provided package.
 
-Alternatively, you might consider adding its device ID to the jc42 driver.
-If you want to be fancy, you could add optional support for resolution
-selection to the driver.
+I've added more debug/warnings to a few cases where it would have
+silently failed in the past.
 
-Guenter
+In particular, I don't see any messages that would be coming out of:
+https://github.com/hadess/iio-sensor-proxy/blob/master/src/iio-buffer-utils.c#L512
+
+Could it be that the sub-directory is populated after the device is
+created in the kernel, causing a race?
+
+Either that, or the contents of the scan_elements/ directory is not the
+one expected by this code.
+
+The output of this command should us that:
+ls /sys/devices/pci0000:00/0000:00:13.0/{33AECD58-B679-4E54-9BD9-A04D34F0C226}/001E:8086:22D8.0001/HID-SENSOR-200073.8.auto/iio:device1/scan_elements
+
+Cheers
