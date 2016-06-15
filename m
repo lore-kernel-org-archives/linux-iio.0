@@ -1,100 +1,88 @@
-Return-Path: <gregor.boirie@parrot.com>
-Message-ID: <576134EF.7060803@parrot.com>
-Date: Wed, 15 Jun 2016 12:58:55 +0200
-From: Gregor Boirie <gregor.boirie@parrot.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bh-25.webhostbox.net ([208.91.199.152]:38390 "EHLO
+	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752819AbcFOSs6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jun 2016 14:48:58 -0400
+Date: Wed, 15 Jun 2016 11:48:55 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: Matt Ranostay <mranostay@gmail.com>, linux-hwmon@vger.kernel.org,
+	david.frey@sensirion.com, Alison Schofield <amsfield22@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH 0/2] iio: humidity: sht31: add Sensirion SHT31 support
+Message-ID: <20160615184855.GA18198@roeck-us.net>
+References: <1465708397-19649-1-git-send-email-mranostay@gmail.com>
+ <20160613222502.GA4376@d830.WORKGROUP>
+ <CAKzfze_=URjXxePW4+P_Y8OUrgoMiC90Nzr=3ey+G=ZHKsRxCA@mail.gmail.com>
+ <f26e218318cd07bdb857f67b1357f36e@jic23.retrosnub.co.uk>
+ <CAKzfze_LfWnorv-SagS8+0HbUiTprDFfXdAWCcTzC61TeFriYw@mail.gmail.com>
+ <5760D6FD.7050604@roeck-us.net>
+ <EC8BB308-9B34-4F50-9FD5-923229BE81D8@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Denis Ciocca
-	<denis.ciocca@st.com>, Linus Walleij <linus.walleij@linaro.org>, "Giuseppe
- Barba" <giuseppe.barba@st.com>
-Subject: Re: [RFC PATCH v1 0/9] iio:st_sensors: fixes and lps22hb pressure
- sensor
-References: <cover.1461056711.git.gregor.boirie@parrot.com> <d1252690-0d4f-df04-5e7a-128ce7ecdc97@kernel.org>
-In-Reply-To: <d1252690-0d4f-df04-5e7a-128ce7ecdc97@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <EC8BB308-9B34-4F50-9FD5-923229BE81D8@jic23.retrosnub.co.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/11/2016 07:36 PM, Jonathan Cameron wrote:
-> On 19/04/16 10:18, Gregor Boirie wrote:
->> This preliminary patch series adds support for a new ST LPS22HB pressure sensor
->> and introduce a few fixes related to st_pressure core and st_sensors triggered
->> buffering.
->> It is not meant to be reviewed for definitive inclusion as it touches too many
->> drivers / devices I cannot test with.
->> Note that as a few minor and more controversial patches (7, 8 and 9) might also
->> be candidate for a seperate series.
->>
->> Patch 2 makes st_pressure sensors compliant with ABI and fixes a few missing
->> sampling gains. Scale / offset computation is modified to address all gains
->> currently possible. It impacts LPS331AP, LPS001WP and LPS25H sensors.
->> Please please please ! If anyone owning one of these could run some tests, I'd
->> be glad to get some feedback since I have none of them.
->>
->> Patch 4 is a rework of the way st_sensors samples are stored in memory to comply
->> with IIO expected alignment contraints (some st_pressure samples are 24 bits
->> long). It is heavily based upon Linux Walleij' approach where each channel is
->> captured individually. See http://www.spinics.net/lists/linux-iio/msg24028.html
->> and http://www.spinics.net/lists/linux-iio/msg23598.html threads for more infos.
->> This patch impacts all st_sensors.
->> Please please please ! If anyone owning one of these could run some tests...
->>
->> Patch 5 enforces 32 bits storage alignment for 24 bits long st_pressure
->> sampling channels.
->> Patch 6 enables triggered buffering for st_pressure temperature channels. We
->> need temperature samples to control on-board device temperature (noise and
->> drift removal).
->> Both patches impact st_pressure sensors mentionned above. Please please please !
->> If anyone owning one of these could run some tests...
->>
->> Regards,
->> gregor.
->>
-> Hi Gregor,
-Hi everybody,
+On Wed, Jun 15, 2016 at 05:31:10PM +0100, Jonathan Cameron wrote:
+> 
+> 
+> On 15 June 2016 05:18:05 BST, Guenter Roeck <linux@roeck-us.net> wrote:
+> >On 06/14/2016 12:01 PM, Matt Ranostay wrote:
+> >> Hello Guenter et al,
+> >>
+> >> So seems I wrote an iio driver for the SHT31 chipset about the same
+> >> David Frey had his merged into hwmon tree. So was wondering per
+> >> Jonathan's comments what your input on this would be.
+> >>
+> >>>From what I can see the additional functionality of the hrtimer
+> >> trigger + rather fast update/integration time that a case could be
+> >> made because of the triggered buffer.
+> >>
+> >> Now there is some functionality missing from my iio driver than
+> >exists
+> >> in the hwmon.. like the thermal and humidity trip points (but that
+> >can
+> >> be handled in a userspace HAL anyway), and the non-clock skewing
+> >> read/write functionality (this can be easily added).
+> >>
+> >
+> >I am quite sure that we had this discussion about this very driver
+> >before.
+> >One of the key reasons for going with hwmon was limit register support.
+> >
+> >Guess you claim that is no longer relevant since it can be handled in
+> >user space ?
+> >If so, I would disagree; it seems to be difficult to generate an alert
+> >signal
+> >from user space.
+> Agreed
+> >
+> >I don't mind if you folks want drivers for chips like like this (ie
+> >chips supporting
+> >limits, or in other words typical hardware monitoring chips) in iio,
+> >but I would
+> >kindly ask to enhance the iio subsystem to support limits.
+> 
+> It has done since day one via event chardev. Limitations are :
+> * One per channel per type per direction. (Didn't seem necessary at the time)
+> This obviously matters for hwmon chips.
+> * No in kernel interface yet so not pushed on to iio-hwmon bridge.
+> * Intended for interrupt type limits which do not always correspond to how all 
+> devices do it... there are ways around it but only indirectly.
+> 
+> All fixable and not actually directly relevant for this part (possibly the inkern
+>  interface is...)
 
-getting back to life...
-> This series has now drifted out of my active list. Hope you get time
-> to respond to the various minor issues as would be great to get the
-> remainder of these in place!
->
-> Not to worry if it will be a while.
-I'll have some time to rebase the whole stuff and take your comments 
-into account next week.
-Anyway, the good point is that the delay prevented me from conflicting 
-with Linus' upstreaming work on
-triggered buffering machinery :)
-Stay tuned.
+Sure, all is fixable. Not that it will help here.
 
-Regards,
-Grégor
->
-> Thanks,
->
-> Jonathan
->> Gregor Boirie (9):
->>    iio:st_pressure:initial lps22hb sensor support
->>    iio:st_pressure: fix sampling gains
->>    iio:st_pressure: lps22hb temperature support
->>    iio:st_sensors: align on storagebits boundaries
->>    iio:st_pressure: align storagebits on power of 2
->>    iio:st_pressure: temperature triggered buffering
->>    iio:st_sensors: unexport st_sensors_get_buffer_element
->>    iio:st_sensors: emulate SMBus block read if needed
->>    iio:st_sensors: fix power regulator usage
->>
->>   .../devicetree/bindings/iio/st-sensors.txt         |   1 +
->>   drivers/iio/accel/st_accel_core.c                  |  12 +-
->>   drivers/iio/common/st_sensors/st_sensors_buffer.c  |  41 ++--
->>   drivers/iio/common/st_sensors/st_sensors_core.c    |  31 ++-
->>   drivers/iio/common/st_sensors/st_sensors_i2c.c     |   4 +-
->>   drivers/iio/gyro/st_gyro_core.c                    |  12 +-
->>   drivers/iio/magnetometer/st_magn_core.c            |  12 +-
->>   drivers/iio/pressure/Kconfig                       |   2 +-
->>   drivers/iio/pressure/st_pressure.h                 |   1 +
->>   drivers/iio/pressure/st_pressure_core.c            | 250 ++++++++++++++++-----
->>   drivers/iio/pressure/st_pressure_i2c.c             |   4 +
->>   drivers/iio/pressure/st_pressure_spi.c             |   1 +
->>   include/linux/iio/common/st_sensors.h              |   4 +-
->>   13 files changed, 278 insertions(+), 97 deletions(-)
->>
+If you plan to accept this driver, please let me and David know, and I'll drop
+the hwmon driver. It means we'll both have wasted our time, but it does not make
+sense to keep two drivers for this chip around.
+
+On another side note, I don't really believe that it makes much sense to add all
+this functionality to iio to start with. I'd rather fix the hwmon registration
+API and create a hwmon->iio bridge.
+
+Guenter
