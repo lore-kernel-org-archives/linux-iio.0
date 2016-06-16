@@ -1,73 +1,89 @@
-Return-Path: <daniel.baluta@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <56F90127.4000807@kernel.org>
-References: <1458810585-24555-1-git-send-email-irina.tirdea@intel.com>
- <56F3B217.8040206@metafoo.de> <56F90127.4000807@kernel.org>
-From: Daniel Baluta <daniel.baluta@gmail.com>
-Date: Thu, 16 Jun 2016 14:56:11 +0300
-Message-ID: <CAEnQRZDhotQ2itD4wyhVd4Jf3XoZ8xpMpwV1owaFzNnPUFSSow@mail.gmail.com>
-Subject: Re: [PATCH 1/1] iio: fix config watermark initial value
-To: Jonathan Cameron <jic23@kernel.org>, laurentiu.palcu@intel.com
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Irina Tirdea <irina.tirdea@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, Octavian Purdila <octavian.purdila@intel.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f42.google.com ([209.85.215.42]:35490 "EHLO
+	mail-lf0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753779AbcFPPf5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jun 2016 11:35:57 -0400
+Received: by mail-lf0-f42.google.com with SMTP id l188so40670188lfe.2
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jun 2016 08:35:57 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	Richard Leitner <dev@g0hl1n.net>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: [PATCH] iio: ak8975: add Vid regulator, use optional API
+Date: Thu, 16 Jun 2016 17:35:49 +0200
+Message-Id: <1466091349-10307-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Mar 28, 2016 at 1:02 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 24/03/16 09:23, Lars-Peter Clausen wrote:
->> On 03/24/2016 10:09 AM, Irina Tirdea wrote:
->>> config structure is set to 0 when updating the buffers, so by
->>> default config->watermark will be 0. When computing the minimum
->>> between config->watermark and the buffer->watermark or
->>> insert_buffer-watermark, this will always be 0 regardless of the
->>> value set by the user for the buffer.
->>>
->>> Set as initial value for config->watermark the maximum allowed
->>> value so that the minimum value will always be set from one of the
->>> buffers.
->>>
->>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
->>
->> Looks good. This bug was my fault, sorry.
->>
->> Fixes: f0566c0c405d ("iio: Set device watermark based on watermark of all
->> attached buffers")
-> Applied to the fixes-togreg-post-rc1 branch of iio.git and marked for stable.
->
-> Thanks,
->
-> Jonathan
->>
->>> ---
->>>  drivers/iio/industrialio-buffer.c | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->>> index b976332..90462fc 100644
->>> --- a/drivers/iio/industrialio-buffer.c
->>> +++ b/drivers/iio/industrialio-buffer.c
->>> @@ -653,6 +653,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
->>>      unsigned int modes;
->>>
->>>      memset(config, 0, sizeof(*config));
->>> +    config->watermark = ~0;
->>>
->>>      /*
->>>       * If there is just one buffer and we are removing it there is nothing
->>>
->>
->
-> --
+The AK8975 has two power sources: Vdd (analog voltage supply)
+and Vid (digital voltage supply). Optionally also obtain the Vid
+supply regulator and enable it.
 
+This also switches the AK8975 regulator to use the optional
+regulator API instead of using the much-disliked IS_ERR_OR_NULL()
+macro.
 
-Hi Jonathan,
+If an error occurs when enabling one of the regulators: bail out.
 
-After a discussion with Laurentiu (Cc'ed), we noticed that this patch
-is not in the latest IIO (testing, togreg) tree.
+Cc: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: Richard Leitner <dev@g0hl1n.net>
+Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/magnetometer/ak8975.c | 28 ++++++++++++++++++----------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
 
-What is the path of an IIO fixes patch?
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 609a2c401b5d..cb8e79532854 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -379,6 +379,7 @@ struct ak8975_data {
+ 	u8			cntl_cache;
+ 	struct iio_mount_matrix orientation;
+ 	struct regulator	*vdd;
++	struct regulator	*vid;
+ };
+ 
+ /* Enable attached power regulator if any. */
+@@ -388,18 +389,25 @@ static int ak8975_power_on(struct i2c_client *client)
+ 	struct ak8975_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	data->vdd = devm_regulator_get(&client->dev, "vdd");
+-	if (IS_ERR_OR_NULL(data->vdd)) {
+-		ret = PTR_ERR(data->vdd);
+-		if (ret == -ENODEV)
+-			ret = 0;
+-	} else {
++	data->vdd = devm_regulator_get_optional(&client->dev, "vdd");
++	if (!IS_ERR(data->vdd)) {
+ 		ret = regulator_enable(data->vdd);
++		if (ret) {
++			dev_warn(&client->dev,
++				 "Failed to enable specified Vdd supply\n");
++			return ret;
++		}
+ 	}
+-
+-	if (ret)
+-		dev_err(&client->dev, "failed to enable Vdd supply: %d\n", ret);
+-	return ret;
++	data->vid = devm_regulator_get_optional(&client->dev, "vid");
++	if (!IS_ERR(data->vid)) {
++		ret = regulator_enable(data->vid);
++		if (ret) {
++			dev_warn(&client->dev,
++				 "Failed to enable specified Vid supply\n");
++			return ret;
++		}
++	}
++	return 0;
+ }
+ 
+ /* Disable attached power regulator if any. */
+-- 
+2.4.11
 
-thanks,
-Daniel.
