@@ -1,93 +1,117 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH 1/1] iio: fix config watermark initial value
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- Daniel Baluta <daniel.baluta@gmail.com>, Jonathan Cameron
- <jic23@kernel.org>, laurentiu.palcu@intel.com
-References: <1458810585-24555-1-git-send-email-irina.tirdea@intel.com>
- <56F3B217.8040206@metafoo.de> <56F90127.4000807@kernel.org>
- <CAEnQRZDhotQ2itD4wyhVd4Jf3XoZ8xpMpwV1owaFzNnPUFSSow@mail.gmail.com>
- <825785FF-441B-45D3-A4E5-469F85ABBB19@jic23.retrosnub.co.uk>
-Cc: Irina Tirdea <irina.tirdea@intel.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- Octavian Purdila <octavian.purdila@intel.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <5762D174.4050401@metafoo.de>
-Date: Thu, 16 Jun 2016 18:19:00 +0200
+Return-Path: <glikely@secretlab.ca>
 MIME-Version: 1.0
-In-Reply-To: <825785FF-441B-45D3-A4E5-469F85ABBB19@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8
+Sender: glikely@secretlab.ca
+In-Reply-To: <1465647219-7798-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1465647219-7798-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+From: Grant Likely <grant.likely@secretlab.ca>
+Date: Thu, 16 Jun 2016 20:14:25 +0100
+Message-ID: <CACxGe6vBwiRLgp=Tad8OtxOast2WGNOkEyN9Wq2bBRj_NhBWvA@mail.gmail.com>
+Subject: Re: [PATCH 0/6] Intel Integrated Sensor Hub Support (ISH)
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, benjamin.tissoires@redhat.com,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, linux-iio@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, chaya.golan@intel.com,
+	daniel.drubin@intel.com, A.Bhattacharya@ulg.ac.be
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/16/2016 06:16 PM, Jonathan Cameron wrote:
-> 
-> 
-> On 16 June 2016 12:56:11 BST, Daniel Baluta <daniel.baluta@gmail.com> wrote:
->> On Mon, Mar 28, 2016 at 1:02 PM, Jonathan Cameron <jic23@kernel.org>
->> wrote:
->>> On 24/03/16 09:23, Lars-Peter Clausen wrote:
->>>> On 03/24/2016 10:09 AM, Irina Tirdea wrote:
->>>>> config structure is set to 0 when updating the buffers, so by
->>>>> default config->watermark will be 0. When computing the minimum
->>>>> between config->watermark and the buffer->watermark or
->>>>> insert_buffer-watermark, this will always be 0 regardless of the
->>>>> value set by the user for the buffer.
->>>>>
->>>>> Set as initial value for config->watermark the maximum allowed
->>>>> value so that the minimum value will always be set from one of the
->>>>> buffers.
->>>>>
->>>>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
->>>>
->>>> Looks good. This bug was my fault, sorry.
->>>>
->>>> Fixes: f0566c0c405d ("iio: Set device watermark based on watermark
->> of all
->>>> attached buffers")
->>> Applied to the fixes-togreg-post-rc1 branch of iio.git and marked for
->> stable.
->>>
->>> Thanks,
->>>
->>> Jonathan
->>>>
->>>>> ---
->>>>>  drivers/iio/industrialio-buffer.c | 1 +
->>>>>  1 file changed, 1 insertion(+)
->>>>>
->>>>> diff --git a/drivers/iio/industrialio-buffer.c
->> b/drivers/iio/industrialio-buffer.c
->>>>> index b976332..90462fc 100644
->>>>> --- a/drivers/iio/industrialio-buffer.c
->>>>> +++ b/drivers/iio/industrialio-buffer.c
->>>>> @@ -653,6 +653,7 @@ static int iio_verify_update(struct iio_dev
->> *indio_dev,
->>>>>      unsigned int modes;
->>>>>
->>>>>      memset(config, 0, sizeof(*config));
->>>>> +    config->watermark = ~0;
->>>>>
->>>>>      /*
->>>>>       * If there is just one buffer and we are removing it there is
->> nothing
->>>>>
->>>>
->>>
->>> --
->>
->>
->> Hi Jonathan,
->>
->> After a discussion with Laurentiu (Cc'ed), we noticed that this patch
->> is not in the latest IIO (testing, togreg) tree.
->>
->> What is the path of an IIO fixes patch?
->>
->> thanks,
->> Daniel.
-> Should be fixes-togreg then staging-linus then mainline.
+On Sat, Jun 11, 2016 at 1:13 PM, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+> Starting from Cherrytrail, multiple generation of Intel processors offers
+> on package sensor hub. Several recent tablets, 2-in-1 convertible laptops
+> are using ISH instead of external sensor hubs. This resulted in lack of
+> support of sensor function like device rotation and auto backlight
+> adjustment.
+> In addition, depending on the OEM implementation, support of ISH is required
+> to support low power sleep states.
+>
+> The support of ISH on Linux platforms is not new. Android platforms with
+> Intel SoCs had this support for a while submitted by Daniel Drubin.
+> This patcheset is reusing most of those changes with  clean up and
+> removing Android platform specific changes.
+>
+> The user mode ABI is still same as external sensor hubs using Linux
+> IIO. So existing user mode software should still work.
+> This series primarily brings in new HID transport used in ISH.
+>
+> Thanks to the community members who tested RFC patches and provided
+> feedback.
+>
+> For users testing on Linux distributions using IIO sensor proxy,
+> a short term work around is required till we have debugged this issue.
+> In systemd unit file iio-sensor-proxy.service
+> In the section "[Unit]" add
+> After=multi-user.target
 
-To add to that once it is in mainline it will trickle down again through
-staging/next to iio/togreg. So there might be a fair amount of pipeline
-delay until it arrives in iio/{togreg,testing}.
+Tested-by: Grant Likely <grant.likely@hpe.com>
+
+There is still a fiddly problem on my laptop where the sensor data
+doesn't always start streaming, but otherwise this version works for
+me.
+
+g.
+
+>
+> Daniel Drubin (3):
+>   hid: intel_ish-hid: ISH Transport layer
+>   hid: intel-ish-hid: ipc layer
+>   hid: intel-ish-hid: ISH HID client driver
+>
+> Srinivas Pandruvada (3):
+>   Documentation: hid: Intel ISH HID document
+>   iio: hid-sensors: use asynchronous resume
+>   hid: hid-sensor-hub: Add ISH quirk
+>
+>  Documentation/hid/intel-ish-hid.txt                |  417 ++++++++
+>  drivers/hid/Kconfig                                |    2 +
+>  drivers/hid/Makefile                               |    2 +
+>  drivers/hid/hid-sensor-hub.c                       |    4 +
+>  drivers/hid/intel-ish-hid/Kconfig                  |   27 +
+>  drivers/hid/intel-ish-hid/Makefile                 |   20 +
+>  drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h        |  220 ++++
+>  drivers/hid/intel-ish-hid/ipc/hw-ish.h             |   70 ++
+>  drivers/hid/intel-ish-hid/ipc/ipc.c                |  720 +++++++++++++
+>  drivers/hid/intel-ish-hid/ipc/pci-ish.c            |  305 ++++++
+>  drivers/hid/intel-ish-hid/ipc/utils.h              |   64 ++
+>  drivers/hid/intel-ish-hid/ishtp-hid-client.c       |  922 ++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp-hid.c              |  231 ++++
+>  drivers/hid/intel-ish-hid/ishtp-hid.h              |  182 ++++
+>  drivers/hid/intel-ish-hid/ishtp/bus.c              |  774 ++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/bus.h              |  105 ++
+>  drivers/hid/intel-ish-hid/ishtp/client.c           | 1129 ++++++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/client.h           |  194 ++++
+>  drivers/hid/intel-ish-hid/ishtp/dma-if.c           |  178 +++
+>  drivers/hid/intel-ish-hid/ishtp/hbm.c              |  911 ++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/hbm.h              |  319 ++++++
+>  drivers/hid/intel-ish-hid/ishtp/init.c             |   94 ++
+>  drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h        |  280 +++++
+>  .../iio/common/hid-sensors/hid-sensor-trigger.c    |   21 +-
+>  include/linux/hid-sensor-hub.h                     |    1 +
+>  include/trace/events/intel_ish.h                   |   30 +
+>  include/uapi/linux/input.h                         |    1 +
+>  27 files changed, 7222 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/hid/intel-ish-hid.txt
+>  create mode 100644 drivers/hid/intel-ish-hid/Kconfig
+>  create mode 100644 drivers/hid/intel-ish-hid/Makefile
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/ipc.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/pci-ish.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/utils.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid-client.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/dma-if.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/init.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h
+>  create mode 100644 include/trace/events/intel_ish.h
+>
+> --
+> 2.5.5
+>
