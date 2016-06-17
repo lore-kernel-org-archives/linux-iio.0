@@ -1,65 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f50.google.com ([209.85.215.50]:33403 "EHLO
-	mail-lf0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933614AbcFQPMf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jun 2016 11:12:35 -0400
-Received: by mail-lf0-f50.google.com with SMTP id f6so620547lfg.0
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jun 2016 08:12:34 -0700 (PDT)
+Return-Path: <linus.walleij@linaro.org>
 From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
 	Akinobu Mita <akinobu.mita@gmail.com>,
 	Irina Tirdea <irina.tirdea@intel.com>,
 	Hartmut Knaack <knaack.h@gmx.de>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	devicetree@vger.kernel.org
-Subject: [PATCH 1/4] iio: pressure: bmp280: augment DT bindings
-Date: Fri, 17 Jun 2016 17:12:18 +0200
-Message-Id: <1466176341-17442-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 2/4] iio: pressure: bmp280: support device tree initialization
+Date: Fri, 17 Jun 2016 17:12:19 +0200
+Message-Id: <1466176341-17442-2-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1466176341-17442-1-git-send-email-linus.walleij@linaro.org>
+References: <1466176341-17442-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-This adds standard device tree bindings for a reset GPIO line, and
-the VDDD and VDDA power regulators.
+This adds device tree support to the BMP058, BMP180 and BMP280
+pressure sensors. Tested on the Qualcomm APQ8060 Dragonboard:
 
-Cc: devicetree@vger.kernel.org
+iio:device1$ cat in_temp_input
+26700
+iio:device1$ cat in_pressure_input
+99.185000000
+
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- Documentation/devicetree/bindings/iio/pressure/bmp085.txt | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/iio/pressure/bmp280.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
-index d7a6deb6b21e..06ad5feaea28 100644
---- a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
-+++ b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
-@@ -1,7 +1,7 @@
--BMP085/BMP18x digital pressure sensors
-+BMP085/BMP18x/BMP28x digital pressure sensors
- 
- Required properties:
--- compatible: bosch,bmp085
-+- compatible: "bosch,bmp085" or "bosch,bmp180" or "bosch,bmp280"
- 
- Optional properties:
- - chip-id: configurable chip id for non-default chip revisions
-@@ -10,6 +10,10 @@ Optional properties:
-   value range is 0-3 with rising sensitivity.
- - interrupt-parent: should be the phandle for the interrupt controller
- - interrupts: interrupt mapping for IRQ
-+- reset-gpios: a GPIO line handling reset of the sensor: as the line is
-+  active low, it should be marked GPIO_ACTIVE_LOW (see gpio/gpio.txt)
-+- vddd-supply: digital voltage regulator (see regulator/regulator.txt)
-+- vdda-supply: analog voltage regulator (see regulator/regulator.txt)
- 
- Example:
- 
-@@ -21,4 +25,7 @@ pressure@77 {
- 	default-oversampling = <2>;
- 	interrupt-parent = <&gpio0>;
- 	interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+	reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
-+	vddd-supply = <&foo>;
-+	vdda-supply = <&bar>;
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index 2f1498e12bb2..86dd11edd3c2 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -17,6 +17,7 @@
+ #include <linux/module.h>
+ #include <linux/i2c.h>
+ #include <linux/acpi.h>
++#include <linux/of.h>
+ #include <linux/regmap.h>
+ #include <linux/delay.h>
+ #include <linux/iio/iio.h>
+@@ -899,6 +900,17 @@ static const struct acpi_device_id bmp280_acpi_match[] = {
  };
+ MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id bmp280_of_match[] = {
++	{ .compatible = "bosch,bmp280", .data = (void *)BMP280_CHIP_ID },
++	{ .compatible = "bosch,bmp180", .data = (void *)BMP180_CHIP_ID },
++	{ .compatible = "bosch,bmp058", .data = (void *)BMP180_CHIP_ID },
++};
++MODULE_DEVICE_TABLE(of, bmp280_of_match);
++#else
++#define bmp280_of_match NULL
++#endif
++
+ static const struct i2c_device_id bmp280_id[] = {
+ 	{"bmp280", BMP280_CHIP_ID },
+ 	{"bmp180", BMP180_CHIP_ID },
+@@ -911,6 +923,7 @@ static struct i2c_driver bmp280_driver = {
+ 	.driver = {
+ 		.name	= "bmp280",
+ 		.acpi_match_table = ACPI_PTR(bmp280_acpi_match),
++		.of_match_table = of_match_ptr(bmp280_of_match),
+ 	},
+ 	.probe		= bmp280_probe,
+ 	.id_table	= bmp280_id,
 -- 
 2.4.11
-
