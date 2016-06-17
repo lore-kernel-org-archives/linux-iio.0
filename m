@@ -1,117 +1,55 @@
-Return-Path: <glikely@secretlab.ca>
-MIME-Version: 1.0
-Sender: glikely@secretlab.ca
-In-Reply-To: <1465647219-7798-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1465647219-7798-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-From: Grant Likely <grant.likely@secretlab.ca>
-Date: Thu, 16 Jun 2016 20:14:25 +0100
-Message-ID: <CACxGe6vBwiRLgp=Tad8OtxOast2WGNOkEyN9Wq2bBRj_NhBWvA@mail.gmail.com>
-Subject: Re: [PATCH 0/6] Intel Integrated Sensor Hub Support (ISH)
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, benjamin.tissoires@redhat.com,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, chaya.golan@intel.com,
-	daniel.drubin@intel.com, A.Bhattacharya@ulg.ac.be
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f45.google.com ([209.85.215.45]:36512 "EHLO
+	mail-lf0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753559AbcFQNWe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jun 2016 09:22:34 -0400
+Received: by mail-lf0-f45.google.com with SMTP id q132so60238629lfe.3
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jun 2016 06:22:33 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] iio: accel: kxsd9: fix the usage of spi_w8r8()
+Date: Fri, 17 Jun 2016 15:22:24 +0200
+Message-Id: <1466169744-23214-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jun 11, 2016 at 1:13 PM, Srinivas Pandruvada
-<srinivas.pandruvada@linux.intel.com> wrote:
-> Starting from Cherrytrail, multiple generation of Intel processors offers
-> on package sensor hub. Several recent tablets, 2-in-1 convertible laptops
-> are using ISH instead of external sensor hubs. This resulted in lack of
-> support of sensor function like device rotation and auto backlight
-> adjustment.
-> In addition, depending on the OEM implementation, support of ISH is required
-> to support low power sleep states.
->
-> The support of ISH on Linux platforms is not new. Android platforms with
-> Intel SoCs had this support for a while submitted by Daniel Drubin.
-> This patcheset is reusing most of those changes with  clean up and
-> removing Android platform specific changes.
->
-> The user mode ABI is still same as external sensor hubs using Linux
-> IIO. So existing user mode software should still work.
-> This series primarily brings in new HID transport used in ISH.
->
-> Thanks to the community members who tested RFC patches and provided
-> feedback.
->
-> For users testing on Linux distributions using IIO sensor proxy,
-> a short term work around is required till we have debugged this issue.
-> In systemd unit file iio-sensor-proxy.service
-> In the section "[Unit]" add
-> After=multi-user.target
+These two spi_w8r8() calls return a value with is used by the code
+following the error check. The dubious use was caused by a cleanup
+patch.
 
-Tested-by: Grant Likely <grant.likely@hpe.com>
+Fixes: d34dbee8ac8e ("staging:iio:accel:kxsd9 cleanup and conversion to iio_chan_spec.")
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+Jonathan: I suspect the driver was never tested after the cleanup?
+I'm trying to use the driver to bolt on I2C support, but I'm a bit
+suspicious that it's not really working for SPI even.
+---
+ drivers/iio/accel/kxsd9.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-There is still a fiddly problem on my laptop where the sensor data
-doesn't always start streaming, but otherwise this version works for
-me.
+diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+index 923f56598d4b..3a9f106787d2 100644
+--- a/drivers/iio/accel/kxsd9.c
++++ b/drivers/iio/accel/kxsd9.c
+@@ -81,7 +81,7 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
+ 
+ 	mutex_lock(&st->buf_lock);
+ 	ret = spi_w8r8(st->us, KXSD9_READ(KXSD9_REG_CTRL_C));
+-	if (ret)
++	if (ret < 0)
+ 		goto error_ret;
+ 	st->tx[0] = KXSD9_WRITE(KXSD9_REG_CTRL_C);
+ 	st->tx[1] = (ret & ~KXSD9_FS_MASK) | i;
+@@ -163,7 +163,7 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
+ 		break;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		ret = spi_w8r8(st->us, KXSD9_READ(KXSD9_REG_CTRL_C));
+-		if (ret)
++		if (ret < 0)
+ 			goto error_ret;
+ 		*val2 = kxsd9_micro_scales[ret & KXSD9_FS_MASK];
+ 		ret = IIO_VAL_INT_PLUS_MICRO;
+-- 
+2.4.11
 
-g.
-
->
-> Daniel Drubin (3):
->   hid: intel_ish-hid: ISH Transport layer
->   hid: intel-ish-hid: ipc layer
->   hid: intel-ish-hid: ISH HID client driver
->
-> Srinivas Pandruvada (3):
->   Documentation: hid: Intel ISH HID document
->   iio: hid-sensors: use asynchronous resume
->   hid: hid-sensor-hub: Add ISH quirk
->
->  Documentation/hid/intel-ish-hid.txt                |  417 ++++++++
->  drivers/hid/Kconfig                                |    2 +
->  drivers/hid/Makefile                               |    2 +
->  drivers/hid/hid-sensor-hub.c                       |    4 +
->  drivers/hid/intel-ish-hid/Kconfig                  |   27 +
->  drivers/hid/intel-ish-hid/Makefile                 |   20 +
->  drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h        |  220 ++++
->  drivers/hid/intel-ish-hid/ipc/hw-ish.h             |   70 ++
->  drivers/hid/intel-ish-hid/ipc/ipc.c                |  720 +++++++++++++
->  drivers/hid/intel-ish-hid/ipc/pci-ish.c            |  305 ++++++
->  drivers/hid/intel-ish-hid/ipc/utils.h              |   64 ++
->  drivers/hid/intel-ish-hid/ishtp-hid-client.c       |  922 ++++++++++++++++
->  drivers/hid/intel-ish-hid/ishtp-hid.c              |  231 ++++
->  drivers/hid/intel-ish-hid/ishtp-hid.h              |  182 ++++
->  drivers/hid/intel-ish-hid/ishtp/bus.c              |  774 ++++++++++++++
->  drivers/hid/intel-ish-hid/ishtp/bus.h              |  105 ++
->  drivers/hid/intel-ish-hid/ishtp/client.c           | 1129 ++++++++++++++++++++
->  drivers/hid/intel-ish-hid/ishtp/client.h           |  194 ++++
->  drivers/hid/intel-ish-hid/ishtp/dma-if.c           |  178 +++
->  drivers/hid/intel-ish-hid/ishtp/hbm.c              |  911 ++++++++++++++++
->  drivers/hid/intel-ish-hid/ishtp/hbm.h              |  319 ++++++
->  drivers/hid/intel-ish-hid/ishtp/init.c             |   94 ++
->  drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h        |  280 +++++
->  .../iio/common/hid-sensors/hid-sensor-trigger.c    |   21 +-
->  include/linux/hid-sensor-hub.h                     |    1 +
->  include/trace/events/intel_ish.h                   |   30 +
->  include/uapi/linux/input.h                         |    1 +
->  27 files changed, 7222 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/hid/intel-ish-hid.txt
->  create mode 100644 drivers/hid/intel-ish-hid/Kconfig
->  create mode 100644 drivers/hid/intel-ish-hid/Makefile
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish.h
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/ipc.c
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/pci-ish.c
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/utils.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid-client.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/dma-if.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/init.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h
->  create mode 100644 include/trace/events/intel_ish.h
->
-> --
-> 2.5.5
->
