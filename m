@@ -1,75 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57163 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753487AbcFQQWk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jun 2016 12:22:40 -0400
-In-Reply-To: <1466169744-23214-1-git-send-email-linus.walleij@linaro.org>
-References: <1466169744-23214-1-git-send-email-linus.walleij@linaro.org>
+Received: from mx2.suse.de ([195.135.220.15]:48948 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750725AbcFQUnr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 17 Jun 2016 16:43:47 -0400
+Date: Fri, 17 Jun 2016 22:43:43 +0200 (CEST)
+From: Jiri Kosina <jikos@kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+cc: jic23@kernel.org, benjamin.tissoires@redhat.com,
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, chaya.golan@intel.com,
+	daniel.drubin@intel.com, A.Bhattacharya@ulg.ac.be
+Subject: Re: [PATCH 1/6] Documentation: hid: Intel ISH HID document
+In-Reply-To: <1465647219-7798-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Message-ID: <alpine.LNX.2.00.1606172241480.6874@cbobk.fhfr.pm>
+References: <1465647219-7798-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1465647219-7798-2-git-send-email-srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] iio: accel: kxsd9: fix the usage of spi_w8r8()
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Fri, 17 Jun 2016 17:22:22 +0100
-To: Linus Walleij <linus.walleij@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Message-ID: <B676781F-1D3F-4C2D-A11E-EEC33F5BB34C@jic23.retrosnub.co.uk>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Sat, 11 Jun 2016, Srinivas Pandruvada wrote:
 
-
-On 17 June 2016 14:22:24 BST, Linus Walleij <linus.walleij@linaro.org> wrote:
->These two spi_w8r8() calls return a value with is used by the code
->following the error check. The dubious use was caused by a cleanup
->patch.
->
->Fixes: d34dbee8ac8e ("staging:iio:accel:kxsd9 cleanup and conversion to
->iio_chan_spec.")
->Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->---
->Jonathan: I suspect the driver was never tested after the cleanup?
->I'm trying to use the driver to bolt on I2C support, but I'm a bit
->suspicious that it's not really working for SPI even.
-
-Sadly it is more than possible. My test bodge rig for this one was down for a long time. (Hides guilty expression)
-Most of it is back running now as I was looking at the sca3000 driver recently
- which used the same mashup (with another adapter cable).
-
-Pretty simple device iirc so shouldn't be too hard to fix. Original driver got written
- in about a day long ago...
-
-Where did you find one of these. I thought they were long obsoleted?
-
-J
->---
-> drivers/iio/accel/kxsd9.c | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
->index 923f56598d4b..3a9f106787d2 100644
->--- a/drivers/iio/accel/kxsd9.c
->+++ b/drivers/iio/accel/kxsd9.c
->@@ -81,7 +81,7 @@ static int kxsd9_write_scale(struct iio_dev
->*indio_dev, int micro)
+> Document explaining ISH HID operation and implementation.
 > 
-> 	mutex_lock(&st->buf_lock);
-> 	ret = spi_w8r8(st->us, KXSD9_READ(KXSD9_REG_CTRL_C));
->-	if (ret)
->+	if (ret < 0)
-> 		goto error_ret;
-> 	st->tx[0] = KXSD9_WRITE(KXSD9_REG_CTRL_C);
-> 	st->tx[1] = (ret & ~KXSD9_FS_MASK) | i;
->@@ -163,7 +163,7 @@ static int kxsd9_read_raw(struct iio_dev
->*indio_dev,
-> 		break;
-> 	case IIO_CHAN_INFO_SCALE:
-> 		ret = spi_w8r8(st->us, KXSD9_READ(KXSD9_REG_CTRL_C));
->-		if (ret)
->+		if (ret < 0)
-> 			goto error_ret;
-> 		*val2 = kxsd9_micro_scales[ret & KXSD9_FS_MASK];
-> 		ret = IIO_VAL_INT_PLUS_MICRO;
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+>  Documentation/hid/intel-ish-hid.txt | 417 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 417 insertions(+)
+>  create mode 100644 Documentation/hid/intel-ish-hid.txt
+> 
+> diff --git a/Documentation/hid/intel-ish-hid.txt b/Documentation/hid/intel-ish-hid.txt
+> new file mode 100644
+> index 0000000..2de0ab5
+> --- /dev/null
+> +++ b/Documentation/hid/intel-ish-hid.txt
+> @@ -0,0 +1,417 @@
+> +Intel Integrated Sensor Hub (ISH)
+> +===============================
+> +
+> +A sensor hub enables the ability to offload sensor polling and algorithm
+> +processing to a dedicated low power co-processor. This allows the core
+> +processor to go into low power modes more often, resulting in the increased
+> +battery life.
+[ ... snip ... ]
+
+What I would like to see added here is a bit more of a higher-level 
+overview of the implementation.
+
+It's a *lot* of new code. I am still trying to make my way through it. One 
+thing that I am currently trying to figure out, and which, if documented, 
+would be much easier to review, would be: my current understanding is that 
+this is both transport (ll) driver and a kind-of a bus at the same time.
+
+Could yo please put some more comprehensive overview of the overall 
+architecture into the documentation?
+
+Thanks,
 
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+Jiri Kosina
+SUSE Labs
+
