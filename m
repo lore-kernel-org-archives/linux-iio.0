@@ -1,47 +1,47 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <B676781F-1D3F-4C2D-A11E-EEC33F5BB34C@jic23.retrosnub.co.uk>
-References: <1466169744-23214-1-git-send-email-linus.walleij@linaro.org> <B676781F-1D3F-4C2D-A11E-EEC33F5BB34C@jic23.retrosnub.co.uk>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 17 Jun 2016 19:16:22 +0200
-Message-ID: <CACRpkdbKd8+uOxiJGuxD-irrKb+z14cb=5upREcand3+ucpn3Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: accel: kxsd9: fix the usage of spi_w8r8()
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:35906 "EHLO
+	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751671AbcFSKD4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2016 06:03:56 -0400
+Subject: Re: [PATCH 1/1] staging: iio: initialize data pointer before using it
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+References: <20160618211224.23183-1-nicolas.iooss_linux@m4x.org>
+ <576668B7.8080609@metafoo.de>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Nicolas Iooss <nicolas.iooss_linux@m4x.org>
+Message-ID: <19e60ec0-87cc-e79e-89a2-39857119640a@m4x.org>
+Date: Sun, 19 Jun 2016 12:03:53 +0200
+MIME-Version: 1.0
+In-Reply-To: <576668B7.8080609@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jun 17, 2016 at 6:22 PM, Jonathan Cameron
-<jic23@jic23.retrosnub.co.uk> wrote:
+On 06/19/2016 11:41 AM, Lars-Peter Clausen wrote:
+> On 06/18/2016 11:12 PM, Nicolas Iooss wrote:
+>> ad7606_spi_read_block() reads SPI big-endian data into a buffer which is
+>> then converted to CPU byte-order with a second variable.  This variable,
+>> data, has been left unitialized after commit 87787e5ef727 ("Staging:
+>> iio: Fix sparse endian warning").
+> 
+> Hi,
+> 
+> Thanks for the patch. A similar patch was already merged last week.
 
-> Where did you find one of these. I thought they were long obsoleted?
+Nice :) Actually I sent this patch because the bug is still present in
+linux-next tree [1] and I failed to see a reference to a dedicated
+development tree in MAINTAINERS.
 
-The original Qualcomm APQ8060 Dragonboard. I'm mainlining it as a test
-target right now, mostly for GPIO work:
-http://dflund.se/~triad/krad/dragonboard/dragonboard.jpg
+Thanks for your quick reply!
 
-It has the following on I2C on a special sensor board (totally undocumented
-and no real mention in even the source code in the BSP for the board for
-some of them, I guess they never got around to enable some of them):
+-- Nicolas
 
-- Kiorin KXSD9 accelerometer - this culprit
+[1]
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/tree/drivers/staging/iio/adc/ad7606_spi.c
 
-- Bosch BM085 pressure sensor/altimeter - works flawlessly with upstream
-driver and a few patches (just sent).
-
-- Capella CM3605 proximity and ambient light sensor (same as used on the
-original Nexus One, yay) this require you to turn on a special IR LED for
-the proximity sensor to work (!)
-
-- AK8975 Compass/Magnetometer - just works nicely with the upstream
-driver and a minor patch for an extra regulator
-
-- Invensense MPU3050 Gyroscope
-drivers/input/misc/mpu3050.c
-Thinking about just moving this driver across if it's working as a starting
-point, like I did with the BH1780 driver. Is this one of those who would need
-a IIO <-> input bridge if we migrate it?
-
-Yours,
-Linus Walleij
