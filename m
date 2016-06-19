@@ -1,42 +1,72 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <2730751a-3ab8-a083-6f2f-6b5b9d0acf62@kernel.org>
-References: <1464162027-24612-1-git-send-email-linus.walleij@linaro.org>
- <1464162027-24612-2-git-send-email-linus.walleij@linaro.org>
- <3c1a7937-3c90-9f26-c9fe-e2ffad140e06@kernel.org> <2730751a-3ab8-a083-6f2f-6b5b9d0acf62@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f45.google.com ([209.85.215.45]:35005 "EHLO
+	mail-lf0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751269AbcFSSgE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2016 14:36:04 -0400
+Received: by mail-lf0-f45.google.com with SMTP id l188so25437671lfe.2
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2016 11:34:20 -0700 (PDT)
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Sun, 19 Jun 2016 20:04:42 +0200
-Message-ID: <CACRpkdYTuJ65aTTyY7427ndYF6edJOVedGHXM_2iMjTQPf5X7g@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: light: bh1780: assign a static name
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, Daniel Baluta <daniel.baluta@intel.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+	Christoph Mair <christoph.mair@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Marek Belisko <marek@goldelico.com>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>,
+	Eric Andersson <eric.andersson@unixphere.com>,
+	Neil Brown <neilb@suse.de>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	devicetree@vger.kernel.org
+Subject: [PATCH 1/9] iio: pressure: bmp280: augment DT bindings
+Date: Sun, 19 Jun 2016 20:33:54 +0200
+Message-Id: <1466361242-2994-2-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
+References: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jun 19, 2016 at 1:25 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+This adds standard device tree bindings for a reset GPIO line, and
+the VDDD and VDDA power regulators.
 
->>> Using the struct i2c_device->id field for naming the light sensor
->>> is a bad idea: when booting from the pure device tree this is NULL
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ Documentation/devicetree/bindings/iio/pressure/bmp085.txt | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-> Hmm. Just revisiting this whilst reviewing another driver.  What the heck
-> is the 'right' way of getting hold of the registered name in this case?
-> I guess getting it from an of lookup if one has been used?
-> So of_device_match and then the name field?
+diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
+index d7a6deb6b21e..06ad5feaea28 100644
+--- a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
++++ b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
+@@ -1,7 +1,7 @@
+-BMP085/BMP18x digital pressure sensors
++BMP085/BMP18x/BMP28x digital pressure sensors
+ 
+ Required properties:
+-- compatible: bosch,bmp085
++- compatible: "bosch,bmp085" or "bosch,bmp180" or "bosch,bmp280"
+ 
+ Optional properties:
+ - chip-id: configurable chip id for non-default chip revisions
+@@ -10,6 +10,10 @@ Optional properties:
+   value range is 0-3 with rising sensitivity.
+ - interrupt-parent: should be the phandle for the interrupt controller
+ - interrupts: interrupt mapping for IRQ
++- reset-gpios: a GPIO line handling reset of the sensor: as the line is
++  active low, it should be marked GPIO_ACTIVE_LOW (see gpio/gpio.txt)
++- vddd-supply: digital voltage regulator (see regulator/regulator.txt)
++- vdda-supply: analog voltage regulator (see regulator/regulator.txt)
+ 
+ Example:
+ 
+@@ -21,4 +25,7 @@ pressure@77 {
+ 	default-oversampling = <2>;
+ 	interrupt-parent = <&gpio0>;
+ 	interrupts = <25 IRQ_TYPE_EDGE_RISING>;
++	reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
++	vddd-supply = <&foo>;
++	vdda-supply = <&bar>;
+ };
+-- 
+2.4.11
 
-Good question.
-
-Some code like drivers/iio/magnetometer/ak8975.c uses this:
-dev_name(&client->dev)
-
-Which will give a silly bus name like this (from /proc/interrupts):
-
-234:          0          0    pm8xxx 224 Edge      0-000c
-
-"0-000c" (device 0x0c on i2c bus 0)
-
-It will be unique but not very human readable.
-
-Yours,
-Linus Walleij
