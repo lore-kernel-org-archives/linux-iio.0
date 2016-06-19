@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f45.google.com ([209.85.215.45]:35005 "EHLO
-	mail-lf0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751269AbcFSSgE (ORCPT
+Received: from mail-lf0-f49.google.com ([209.85.215.49]:35021 "EHLO
+	mail-lf0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751287AbcFSSgE (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2016 14:36:04 -0400
-Received: by mail-lf0-f45.google.com with SMTP id l188so25437671lfe.2
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2016 11:34:20 -0700 (PDT)
+Received: by mail-lf0-f49.google.com with SMTP id l188so25438537lfe.2
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2016 11:34:27 -0700 (PDT)
 From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc: Akinobu Mita <akinobu.mita@gmail.com>,
@@ -15,58 +15,60 @@ Cc: Akinobu Mita <akinobu.mita@gmail.com>,
 	"H. Nikolaus Schaller" <hns@goldelico.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	devicetree@vger.kernel.org
-Subject: [PATCH 1/9] iio: pressure: bmp280: augment DT bindings
-Date: Sun, 19 Jun 2016 20:33:54 +0200
-Message-Id: <1466361242-2994-2-git-send-email-linus.walleij@linaro.org>
+	Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 3/9] iio: pressure: bmp280: add reset GPIO line handling
+Date: Sun, 19 Jun 2016 20:33:56 +0200
+Message-Id: <1466361242-2994-4-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
 References: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds standard device tree bindings for a reset GPIO line, and
-the VDDD and VDDA power regulators.
+On the APQ8060 Dragonboard the reset line to the BMP058 pressure
+sensor is not deasserted on boot, so the driver needs to handle
+this. For a simple GPIO line supplied as a descriptor (from a board
+file, device tree or ACPI) this does the trick.
 
-Cc: devicetree@vger.kernel.org
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- Documentation/devicetree/bindings/iio/pressure/bmp085.txt | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/iio/pressure/bmp280.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
-index d7a6deb6b21e..06ad5feaea28 100644
---- a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
-+++ b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
-@@ -1,7 +1,7 @@
--BMP085/BMP18x digital pressure sensors
-+BMP085/BMP18x/BMP28x digital pressure sensors
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index 6b0482cd376f..bde21c532fc7 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -22,6 +22,7 @@
+ #include <linux/delay.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/gpio/consumer.h>
  
- Required properties:
--- compatible: bosch,bmp085
-+- compatible: "bosch,bmp085" or "bosch,bmp180" or "bosch,bmp280"
+ /* BMP280 specific registers */
+ #define BMP280_REG_TEMP_XLSB		0xFC
+@@ -838,6 +839,7 @@ static int bmp280_probe(struct i2c_client *client,
+ 	struct iio_dev *indio_dev;
+ 	struct bmp280_data *data;
+ 	unsigned int chip_id;
++	struct gpio_desc *gpiod;
  
- Optional properties:
- - chip-id: configurable chip id for non-default chip revisions
-@@ -10,6 +10,10 @@ Optional properties:
-   value range is 0-3 with rising sensitivity.
- - interrupt-parent: should be the phandle for the interrupt controller
- - interrupts: interrupt mapping for IRQ
-+- reset-gpios: a GPIO line handling reset of the sensor: as the line is
-+  active low, it should be marked GPIO_ACTIVE_LOW (see gpio/gpio.txt)
-+- vddd-supply: digital voltage regulator (see regulator/regulator.txt)
-+- vdda-supply: analog voltage regulator (see regulator/regulator.txt)
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -869,6 +871,14 @@ static int bmp280_probe(struct i2c_client *client,
+ 		return -EINVAL;
+ 	}
  
- Example:
- 
-@@ -21,4 +25,7 @@ pressure@77 {
- 	default-oversampling = <2>;
- 	interrupt-parent = <&gpio0>;
- 	interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+	reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
-+	vddd-supply = <&foo>;
-+	vdda-supply = <&bar>;
- };
++	/* Bring chip out of reset if there is an assigned GPIO line */
++	gpiod = devm_gpiod_get(&client->dev, "reset", GPIOD_OUT_HIGH);
++	/* Deassert the signal */
++	if (!IS_ERR(gpiod)) {
++		dev_info(&client->dev, "release reset\n");
++		gpiod_set_value(gpiod, 0);
++	}
++
+ 	data->regmap = devm_regmap_init_i2c(client,
+ 					data->chip_info->regmap_config);
+ 	if (IS_ERR(data->regmap)) {
 -- 
 2.4.11
 
