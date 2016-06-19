@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f41.google.com ([209.85.215.41]:35014 "EHLO
-	mail-lf0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751283AbcFSSgE (ORCPT
+Received: from mail-lf0-f45.google.com ([209.85.215.45]:34325 "EHLO
+	mail-lf0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751333AbcFSSgE (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2016 14:36:04 -0400
-Received: by mail-lf0-f41.google.com with SMTP id l188so25438160lfe.2
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2016 11:34:23 -0700 (PDT)
+Received: by mail-lf0-f45.google.com with SMTP id h129so24636575lfh.1
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2016 11:34:37 -0700 (PDT)
 From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc: Akinobu Mita <akinobu.mita@gmail.com>,
@@ -16,68 +16,74 @@ Cc: Akinobu Mita <akinobu.mita@gmail.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>,
 	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 2/9] iio: pressure: bmp280: support device tree initialization
-Date: Sun, 19 Jun 2016 20:33:55 +0200
-Message-Id: <1466361242-2994-3-git-send-email-linus.walleij@linaro.org>
+Subject: [PATCH 6/9] iio: pressure: bmp280: split off an I2C Kconfig entry
+Date: Sun, 19 Jun 2016 20:33:59 +0200
+Message-Id: <1466361242-2994-7-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
 References: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds device tree support to the BMP085, BMP180 and BMP280
-pressure sensors. Tested on the Qualcomm APQ8060 Dragonboard:
-
-iio:device1$ cat in_temp_input
-26700
-iio:device1$ cat in_pressure_input
-99.185000000
+This creates a separate BMP280_I2C Kconfig entry that gets selected
+by BMP280 for I2C transport. As we currently only support I2C
+transport there is not much practical change other than getting
+a separate object file (or module) for the I2C driver part. The
+old Kconfig symbol BMP280 will still select the stuff we need so
+that oldconfig and old defconfigs works fine.
 
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
-ChangeLog v1->v2:
-- Fix some BMP085 misspelled as BMP058 errors.
----
- drivers/iio/pressure/bmp280.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/iio/pressure/Kconfig  | 18 ++++++++++++------
+ drivers/iio/pressure/Makefile |  3 ++-
+ 2 files changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index 2f1498e12bb2..6b0482cd376f 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -17,6 +17,7 @@
- #include <linux/module.h>
- #include <linux/i2c.h>
- #include <linux/acpi.h>
-+#include <linux/of.h>
- #include <linux/regmap.h>
- #include <linux/delay.h>
- #include <linux/iio/iio.h>
-@@ -899,6 +900,17 @@ static const struct acpi_device_id bmp280_acpi_match[] = {
- };
- MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index cda9f128f3a4..40aaf4295d30 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -6,16 +6,22 @@
+ menu "Pressure sensors"
  
-+#ifdef CONFIG_OF
-+static const struct of_device_id bmp280_of_match[] = {
-+	{ .compatible = "bosch,bmp280", .data = (void *)BMP280_CHIP_ID },
-+	{ .compatible = "bosch,bmp180", .data = (void *)BMP180_CHIP_ID },
-+	{ .compatible = "bosch,bmp085", .data = (void *)BMP180_CHIP_ID },
-+};
-+MODULE_DEVICE_TABLE(of, bmp280_of_match);
-+#else
-+#define bmp280_of_match NULL
-+#endif
+ config BMP280
+-	tristate "Bosch Sensortec BMP180 and BMP280 pressure sensor driver"
++	tristate "Bosch Sensortec BMP180/BMP280 pressure sensor I2C driver"
+ 	depends on I2C
+-	depends on !(BMP085_I2C=y || BMP085_I2C=m)
+-	select REGMAP_I2C
++	select BMP280_I2C if (I2C)
+ 	help
+ 	  Say yes here to build support for Bosch Sensortec BMP180 and BMP280
+-	  pressure and temperature sensors.
++	  pressure and temperature sensors mounted on the I2C bus.
+ 
+-	  To compile this driver as a module, choose M here: the module
+-	  will be called bmp280.
++	  To compile this driver as a module, choose M here: the modules
++	  will be called bmp280-i2c and bmp280.
 +
- static const struct i2c_device_id bmp280_id[] = {
- 	{"bmp280", BMP280_CHIP_ID },
- 	{"bmp180", BMP180_CHIP_ID },
-@@ -911,6 +923,7 @@ static struct i2c_driver bmp280_driver = {
- 	.driver = {
- 		.name	= "bmp280",
- 		.acpi_match_table = ACPI_PTR(bmp280_acpi_match),
-+		.of_match_table = of_match_ptr(bmp280_of_match),
- 	},
- 	.probe		= bmp280_probe,
- 	.id_table	= bmp280_id,
++config BMP280_I2C
++	tristate
++	depends on BMP280
++	depends on I2C
++	depends on !(BMP085_I2C=y || BMP085_I2C=m)
++	select REGMAP_I2C
+ 
+ config HID_SENSOR_PRESS
+ 	depends on HID_SENSOR_HUB
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index 2d98a7ff77a8..736f4305fe46 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -4,7 +4,8 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_BMP280) += bmp280.o
+-bmp280-objs := bmp280-core.o bmp280-regmap.o bmp280-i2c.o
++bmp280-objs := bmp280-core.o bmp280-regmap.o
++obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
+ obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+ obj-$(CONFIG_HP03) += hp03.o
+ obj-$(CONFIG_MPL115) += mpl115.o
 -- 
 2.4.11
 
