@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f49.google.com ([209.85.215.49]:35021 "EHLO
+Received: from mail-lf0-f49.google.com ([209.85.215.49]:34276 "EHLO
 	mail-lf0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751287AbcFSSgE (ORCPT
+	with ESMTP id S1751191AbcFSSgE (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2016 14:36:04 -0400
-Received: by mail-lf0-f49.google.com with SMTP id l188so25438537lfe.2
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2016 11:34:27 -0700 (PDT)
+Received: by mail-lf0-f49.google.com with SMTP id h129so24633906lfh.1
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2016 11:34:15 -0700 (PDT)
 From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc: Akinobu Mita <akinobu.mita@gmail.com>,
@@ -16,59 +16,70 @@ Cc: Akinobu Mita <akinobu.mita@gmail.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>,
 	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 3/9] iio: pressure: bmp280: add reset GPIO line handling
-Date: Sun, 19 Jun 2016 20:33:56 +0200
-Message-Id: <1466361242-2994-4-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
-References: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
+Subject: [PATCH 0/9] iio: bmp280: improve driver
+Date: Sun, 19 Jun 2016 20:33:53 +0200
+Message-Id: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On the APQ8060 Dragonboard the reset line to the BMP058 pressure
-sensor is not deasserted on boot, so the driver needs to handle
-this. For a simple GPIO line supplied as a descriptor (from a board
-file, device tree or ACPI) this does the trick.
+The goal of the original exercise to enable the driver for my
+Dragonboard expanded when I found the *second* driver for this
+sensor in drivers/misc/bmp085.
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/pressure/bmp280.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+So I wrote a patch series to bring the features of the IIO driver
+on par with the misc driver, and beyond it:
 
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index 6b0482cd376f..bde21c532fc7 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -22,6 +22,7 @@
- #include <linux/delay.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/gpio/consumer.h>
- 
- /* BMP280 specific registers */
- #define BMP280_REG_TEMP_XLSB		0xFC
-@@ -838,6 +839,7 @@ static int bmp280_probe(struct i2c_client *client,
- 	struct iio_dev *indio_dev;
- 	struct bmp280_data *data;
- 	unsigned int chip_id;
-+	struct gpio_desc *gpiod;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -869,6 +871,14 @@ static int bmp280_probe(struct i2c_client *client,
- 		return -EINVAL;
- 	}
- 
-+	/* Bring chip out of reset if there is an assigned GPIO line */
-+	gpiod = devm_gpiod_get(&client->dev, "reset", GPIOD_OUT_HIGH);
-+	/* Deassert the signal */
-+	if (!IS_ERR(gpiod)) {
-+		dev_info(&client->dev, "release reset\n");
-+		gpiod_set_value(gpiod, 0);
-+	}
-+
- 	data->regmap = devm_regmap_init_i2c(client,
- 					data->chip_info->regmap_config);
- 	if (IS_ERR(data->regmap)) {
+- The first patch set stuff augmenting DT bindings and adding
+  regulators and a reset GPIO.
+
+- Split transport from core driver (separate I2C module)
+
+- Added SPI support (which I cannot test, grateful for any help,
+  but pretty sure it works).
+
+- Support for the BMP085 EOC interrupt mechanism rather than
+  waiting for the conversion to happen.
+
+- Do not re-read calibration data all the time, also toss the
+  calibration into the entropy pool.
+
+After this I think the misc driver can be replaced with this
+driver, but I'd love to hear from the maintainers of that driver
+if I've missed something. One of the patches adds all the authors
+of the misc driver listed there as I can clearly see code was
+copied into this driver at several points.
+
+The only thing missing from the misc driver is the sysfs
+interface. If there is real userspace out there using it, we
+can implement a compatibility sysfs ABI. But then I'd like
+to know what userspace it is, so I can test it.
+
+Linus Walleij (9):
+  iio: pressure: bmp280: augment DT bindings
+  iio: pressure: bmp280: support device tree initialization
+  iio: pressure: bmp280: add reset GPIO line handling
+  iio: pressure: bmp280: support optional supply regulators
+  iio: pressure: bmp280: split driver in logical parts
+  iio: pressure: bmp280: split off an I2C Kconfig entry
+  iio: pressure: bmp280: add SPI interface driver
+  iio: pressure: bmp280: add support for the BMP058 EOC interrupt
+  iio: pressure: bmp280: read calibration data once
+
+ .../devicetree/bindings/iio/pressure/bmp085.txt    |  11 +-
+ drivers/iio/pressure/Kconfig                       |  27 +-
+ drivers/iio/pressure/Makefile                      |   3 +
+ drivers/iio/pressure/{bmp280.c => bmp280-core.c}   | 428 ++++++++-------------
+ drivers/iio/pressure/bmp280-i2c.c                  |  79 ++++
+ drivers/iio/pressure/bmp280-regmap.c               |  78 ++++
+ drivers/iio/pressure/bmp280-spi.c                  |  79 ++++
+ drivers/iio/pressure/bmp280.h                      |  86 +++++
+ 8 files changed, 526 insertions(+), 265 deletions(-)
+ rename drivers/iio/pressure/{bmp280.c => bmp280-core.c} (70%)
+ create mode 100644 drivers/iio/pressure/bmp280-i2c.c
+ create mode 100644 drivers/iio/pressure/bmp280-regmap.c
+ create mode 100644 drivers/iio/pressure/bmp280-spi.c
+ create mode 100644 drivers/iio/pressure/bmp280.h
+
 -- 
 2.4.11
 
