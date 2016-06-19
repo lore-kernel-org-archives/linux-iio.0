@@ -1,58 +1,111 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39696 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39738 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751286AbcFSTiH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2016 15:38:07 -0400
-Subject: Re: [PATCH 2/2] iio: light: bh1780: assign a static name
-To: Linus Walleij <linus.walleij@linaro.org>
-References: <1464162027-24612-1-git-send-email-linus.walleij@linaro.org>
- <1464162027-24612-2-git-send-email-linus.walleij@linaro.org>
- <3c1a7937-3c90-9f26-c9fe-e2ffad140e06@kernel.org>
- <2730751a-3ab8-a083-6f2f-6b5b9d0acf62@kernel.org>
- <CACRpkdYTuJ65aTTyY7427ndYF6edJOVedGHXM_2iMjTQPf5X7g@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+	with ESMTP id S1751283AbcFSTqZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2016 15:46:25 -0400
+Subject: Re: [PATCH 1/1] iio: fix config watermark initial value
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Daniel Baluta <daniel.baluta@gmail.com>,
+	laurentiu.palcu@intel.com
+References: <1458810585-24555-1-git-send-email-irina.tirdea@intel.com>
+ <56F3B217.8040206@metafoo.de> <56F90127.4000807@kernel.org>
+ <CAEnQRZDhotQ2itD4wyhVd4Jf3XoZ8xpMpwV1owaFzNnPUFSSow@mail.gmail.com>
+ <825785FF-441B-45D3-A4E5-469F85ABBB19@jic23.retrosnub.co.uk>
+ <5762D174.4050401@metafoo.de>
+Cc: Irina Tirdea <irina.tirdea@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
+	Octavian Purdila <octavian.purdila@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <9b36d76c-70d8-6f9c-2571-0b56351e28c6@kernel.org>
-Date: Sun, 19 Jun 2016 20:38:05 +0100
+Message-ID: <a412e97b-ee76-2370-7bb2-5290c2007897@kernel.org>
+Date: Sun, 19 Jun 2016 20:46:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdYTuJ65aTTyY7427ndYF6edJOVedGHXM_2iMjTQPf5X7g@mail.gmail.com>
+In-Reply-To: <5762D174.4050401@metafoo.de>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/06/16 19:04, Linus Walleij wrote:
-> On Sun, Jun 19, 2016 at 1:25 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+On 16/06/16 17:19, Lars-Peter Clausen wrote:
+> On 06/16/2016 06:16 PM, Jonathan Cameron wrote:
+>>
+>>
+>> On 16 June 2016 12:56:11 BST, Daniel Baluta <daniel.baluta@gmail.com> wrote:
+>>> On Mon, Mar 28, 2016 at 1:02 PM, Jonathan Cameron <jic23@kernel.org>
+>>> wrote:
+>>>> On 24/03/16 09:23, Lars-Peter Clausen wrote:
+>>>>> On 03/24/2016 10:09 AM, Irina Tirdea wrote:
+>>>>>> config structure is set to 0 when updating the buffers, so by
+>>>>>> default config->watermark will be 0. When computing the minimum
+>>>>>> between config->watermark and the buffer->watermark or
+>>>>>> insert_buffer-watermark, this will always be 0 regardless of the
+>>>>>> value set by the user for the buffer.
+>>>>>>
+>>>>>> Set as initial value for config->watermark the maximum allowed
+>>>>>> value so that the minimum value will always be set from one of the
+>>>>>> buffers.
+>>>>>>
+>>>>>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+>>>>>
+>>>>> Looks good. This bug was my fault, sorry.
+>>>>>
+>>>>> Fixes: f0566c0c405d ("iio: Set device watermark based on watermark
+>>> of all
+>>>>> attached buffers")
+>>>> Applied to the fixes-togreg-post-rc1 branch of iio.git and marked for
+>>> stable.
+>>>>
+>>>> Thanks,
+>>>>
+>>>> Jonathan
+>>>>>
+>>>>>> ---
+>>>>>>  drivers/iio/industrialio-buffer.c | 1 +
+>>>>>>  1 file changed, 1 insertion(+)
+>>>>>>
+>>>>>> diff --git a/drivers/iio/industrialio-buffer.c
+>>> b/drivers/iio/industrialio-buffer.c
+>>>>>> index b976332..90462fc 100644
+>>>>>> --- a/drivers/iio/industrialio-buffer.c
+>>>>>> +++ b/drivers/iio/industrialio-buffer.c
+>>>>>> @@ -653,6 +653,7 @@ static int iio_verify_update(struct iio_dev
+>>> *indio_dev,
+>>>>>>      unsigned int modes;
+>>>>>>
+>>>>>>      memset(config, 0, sizeof(*config));
+>>>>>> +    config->watermark = ~0;
+>>>>>>
+>>>>>>      /*
+>>>>>>       * If there is just one buffer and we are removing it there is
+>>> nothing
+>>>>>>
+>>>>>
+>>>>
+>>>> --
+>>>
+>>>
+>>> Hi Jonathan,
+>>>
+>>> After a discussion with Laurentiu (Cc'ed), we noticed that this patch
+>>> is not in the latest IIO (testing, togreg) tree.
+>>>
+>>> What is the path of an IIO fixes patch?
+>>>
+>>> thanks,
+>>> Daniel.
+>> Should be fixes-togreg then staging-linus then mainline.
 > 
->>>> Using the struct i2c_device->id field for naming the light sensor
->>>> is a bad idea: when booting from the pure device tree this is NULL
+> To add to that once it is in mainline it will trickle down again through
+> staging/next to iio/togreg. So there might be a fair amount of pipeline
+> delay until it arrives in iio/{togreg,testing}.
 > 
->> Hmm. Just revisiting this whilst reviewing another driver.  What the heck
->> is the 'right' way of getting hold of the registered name in this case?
->> I guess getting it from an of lookup if one has been used?
->> So of_device_match and then the name field?
-> 
-> Good question.
-> 
-> Some code like drivers/iio/magnetometer/ak8975.c uses this:
-> dev_name(&client->dev)
-> 
-> Which will give a silly bus name like this (from /proc/interrupts):
-> 
-> 234:          0          0    pm8xxx 224 Edge      0-000c
-> 
-> "0-000c" (device 0x0c on i2c bus 0)
-> 
-> It will be unique but not very human readable.
-The name field was always really intended to just be the part number.
-There are lots of other ways of finding out 'where' it is.
+It's now in staging-next which is the upstream for togreg.
+I've been a bit snowed under this week so it might be a little while yet
+before I get my next pull request out to Greg and then do a fast
+forward merge which will pull that change in.
+
+Thanks,
 
 Jonathan
-> 
-> Yours,
-> Linus Walleij
-> 
-
