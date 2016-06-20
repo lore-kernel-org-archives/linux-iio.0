@@ -1,292 +1,226 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f196.google.com ([209.85.214.196]:34029 "EHLO
-	mail-ob0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751319AbcFSXaA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2016 19:30:00 -0400
-MIME-Version: 1.0
-In-Reply-To: <d9b7c548-44df-e3b4-2912-95f83b712b1e@kernel.org>
-References: <20160611185710.14234-1-coproscefalo@gmail.com> <d9b7c548-44df-e3b4-2912-95f83b712b1e@kernel.org>
-From: Azael Avalos <coproscefalo@gmail.com>
-Date: Sun, 19 Jun 2016 17:29:59 -0600
-Message-ID: <CAGdLNWH_xOtT=R-sV1dHKQE9HJPdeaAOnxWns_hXE8wR+ZX9sQ@mail.gmail.com>
-Subject: Re: [PATCH 1/3] toshiba_acpi: Add IIO interface for accelerometer
- axis data
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Darren Hart <dvhart@infradead.org>,
-	"platform-driver-x86@vger.kernel.org"
-	<platform-driver-x86@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.218]:24905 "EHLO
+	mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751900AbcFTE63 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jun 2016 00:58:29 -0400
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH 8/9] iio: pressure: bmp280: add support for the BMP058 EOC interrupt
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <1466361242-2994-9-git-send-email-linus.walleij@linaro.org>
+Date: Mon, 20 Jun 2016 06:58:09 +0200
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Christoph Mair <christoph.mair@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Eric Andersson <eric.andersson@unixphere.com>,
+	Neil Brown <neilb@suse.de>
+Message-Id: <ADAACE8A-A2C2-47D4-9567-0DAF3A6E4751@goldelico.com>
+References: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org> <1466361242-2994-9-git-send-email-linus.walleij@linaro.org>
+To: Linus Walleij <linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
 
-Thanks for the feedback, I just did a respin of the series with the
-changes you mentioned.
+> Am 19.06.2016 um 20:34 schrieb Linus Walleij <linus.walleij@linaro.org>:
+> 
+> The first version of this sensor, BMP058, supports sending an
 
+s/058/085/
 
-Cheers
-Azael
+and in subject line and commit messages in some other patches.
 
-2016-06-19 14:16 GMT-06:00 Jonathan Cameron <jic23@kernel.org>:
-> On 11/06/16 19:57, Azael Avalos wrote:
->> This patch adds the accelerometer axis data to the IIO subsystem.
->>
->> Currently reporting the X, Y and Z values, as no other data can be
->> queried given the fact that the accelerometer chip itself is hidden
->> behind the Toshiba proprietary interface.
->>
->> Signed-off-by: Azael Avalos <coproscefalo@gmail.com>
-> Looks pretty good and simple to me.  A few bits and bobs inline.
->
-> Jonathan
->> ---
->> All:
->>  This is my first attempt with the IIO subsysem, I'll be looking
->>  forward for your valuable input on this.
->>
->> Darren:
->>  There's a warning about more than 80 columns on this patch, once
->>  I get feedback from the IIO guys I'll respin this with that issue
->>  corrected.
->>
->>  drivers/platform/x86/toshiba_acpi.c | 130 ++++++++++++++++++++++++++++++++++--
->>  1 file changed, 126 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/platform/x86/toshiba_acpi.c b/drivers/platform/x86/toshiba_acpi.c
->> index 01e12d2..85014a3 100644
->> --- a/drivers/platform/x86/toshiba_acpi.c
->> +++ b/drivers/platform/x86/toshiba_acpi.c
->> @@ -53,6 +53,7 @@
->>  #include <linux/uaccess.h>
->>  #include <linux/miscdevice.h>
->>  #include <linux/rfkill.h>
->> +#include <linux/iio/iio.h>
->>  #include <linux/toshiba.h>
->>  #include <acpi/video.h>
->>
->> @@ -134,6 +135,7 @@ MODULE_LICENSE("GPL");
->>
->>  /* Field definitions */
->>  #define HCI_ACCEL_MASK                       0x7fff
->> +#define HCI_ACCEL_DIRECTION_MASK     0x8000
->>  #define HCI_HOTKEY_DISABLE           0x0b
->>  #define HCI_HOTKEY_ENABLE            0x09
->>  #define HCI_HOTKEY_SPECIAL_FUNCTIONS 0x10
->> @@ -178,6 +180,7 @@ struct toshiba_acpi_dev {
->>       struct led_classdev eco_led;
->>       struct miscdevice miscdev;
->>       struct rfkill *wwan_rfk;
->> +     struct iio_dev *indio_dev;
->>
->>       int force_fan;
->>       int last_key_event;
->> @@ -1962,8 +1965,8 @@ static ssize_t position_show(struct device *dev,
->>                            struct device_attribute *attr, char *buf)
->>  {
->>       struct toshiba_acpi_dev *toshiba = dev_get_drvdata(dev);
->> -     u32 xyval, zval, tmp;
->> -     u16 x, y, z;
->> +     u32 xyval, zval;
->> +     int x, y, z;
->>       int ret;
->>
->>       xyval = zval = 0;
->> @@ -1971,10 +1974,14 @@ static ssize_t position_show(struct device *dev,
->>       if (ret < 0)
->>               return ret;
->>
->> +     /* Accelerometer values */
->>       x = xyval & HCI_ACCEL_MASK;
->> -     tmp = xyval >> HCI_MISC_SHIFT;
->> -     y = tmp & HCI_ACCEL_MASK;
->> +     y = (xyval >> HCI_MISC_SHIFT) & HCI_ACCEL_MASK;
->>       z = zval & HCI_ACCEL_MASK;
->> +     /* Movement direction */
->> +     x *= xyval & HCI_ACCEL_DIRECTION_MASK ? -1 : 1;
->> +     y *= (xyval >> HCI_MISC_SHIFT) & HCI_ACCEL_DIRECTION_MASK ? -1 : 1;
->> +     z *= zval & HCI_ACCEL_DIRECTION_MASK ? -1 : 1;
-> This lot is really an unrelated change - do it as a separate precursor patch
-> to the IIO support.
->>
->>       return sprintf(buf, "%d %d %d\n", x, y, z);
->>  }
->> @@ -2420,6 +2427,94 @@ static void toshiba_acpi_kbd_bl_work(struct work_struct *work)
->>  }
->>
->>  /*
->> + * IIO device
->> + */
->> +
->> +enum toshiba_accel_chan {
->> +     AXIS_X,
->> +     AXIS_Y,
->> +     AXIS_Z
->> +};
->> +
->> +static int toshiba_accel_get_axis(enum toshiba_accel_chan chan)
->> +{
->> +     u32 xyval, zval;
->> +     int x, y, z;
->> +     int ret;
->> +
->> +     xyval = zval = 0;
->> +     ret = toshiba_accelerometer_get(toshiba_acpi, &xyval, &zval);
->> +     if (ret < 0)
->> +             return ret;
->> +
->> +     /* Accelerometer values */
->> +     x = xyval & HCI_ACCEL_MASK;
->> +     y = (xyval >> HCI_MISC_SHIFT) & HCI_ACCEL_MASK;
->> +     z = zval & HCI_ACCEL_MASK;
->> +     /* Movement direction */
->> +     x *= xyval & HCI_ACCEL_DIRECTION_MASK ? -1 : 1;
->> +     y *= (xyval >> HCI_MISC_SHIFT) & HCI_ACCEL_DIRECTION_MASK ? -1 : 1;
->> +     z *= zval & HCI_ACCEL_DIRECTION_MASK ? -1 : 1;
-> Wow, that's hideous ;)
->> +
->> +     switch (chan) {
->> +     case AXIS_X:
->> +             ret = x;
->> +             break;
->> +     case AXIS_Y:
->> +             ret = y;
->> +             break;
->> +     case AXIS_Z:
->> +             ret = z;
->> +             break;
-> Just compute the one you are returning perhaps?
-> case AXIS_X:
->      return xyval & HCI_ACCEL_DIRECTION_MASK ?
->             -(xyval & HCI_ACCEL_MASK) :
->             xyval & HCI_ACCEL_MASK;
-> etc?
-> Brings all the 'mess' into one location.
-> Or break it out into steps which is fine, but only compute the one
-> we care about.
->
->> +     }
->> +
->> +     return ret;
->> +}
->> +
->> +static int toshiba_accel_read_raw(struct iio_dev *indio_dev,
->> +                               struct iio_chan_spec const *chan,
->> +                               int *val, int *val2, long mask)
->> +{
->> +     int ret;
->> +
->> +     switch (mask) {
->> +     case IIO_CHAN_INFO_RAW:
->> +             if (iio_buffer_enabled(indio_dev))
->> +                     return -EBUSY;
-> Couple of things here.
-> * you aren't supporting buffered reads (pushed data flows) so
-> very unlikely the buffer would be enabled.
-> * if you were you'd need to be holding indio_dev->mlock to
-> avoid races around entering buffered mode mid way through this
-> function.  Note we have the claim_direct functions to handle this
-> case cleanly if you ever do need them!
->
-> Right now just drop this check.
->
->> +
->> +             ret = toshiba_accel_get_axis(chan->scan_index);
-> For this use chan->address as it's not the 'scan_index' as such.
->
->> +             if (ret == -EIO || ret == -ENODEV)
->> +                     return ret;
->> +
->> +             *val = ret;
->> +
->> +             return IIO_VAL_INT;
->> +     }
->> +
->> +     return -EINVAL;
->> +}
->> +
->> +#define TOSHIBA_ACCEL_CHANNEL(axis, chan) { \
->> +     .type = IIO_ACCEL, \
->> +     .modified = 1, \
->> +     .channel2 = IIO_MOD_##axis, \
->> +     .output = 1, \
->> +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
->> +     .scan_index = chan, \
-> You don't need scan index unless you are supporting pushed data
-> flow (rather than polled ones that you have here).
->> +}
->> +
->> +static const struct iio_chan_spec toshiba_accel_channels[] = {
->> +     TOSHIBA_ACCEL_CHANNEL(X, AXIS_X),
->> +     TOSHIBA_ACCEL_CHANNEL(Y, AXIS_Y),
->> +     TOSHIBA_ACCEL_CHANNEL(Z, AXIS_Z),
->> +};
->> +
->> +static const struct iio_info toshiba_accel_info = {
->> +     .driver_module = THIS_MODULE,
->> +     .read_raw = &toshiba_accel_read_raw,
->> +};
->> +
->> +/*
->>   * Misc device
->>   */
->>  static int toshiba_acpi_smm_bridge(SMMRegisters *regs)
->> @@ -2903,6 +2998,11 @@ static int toshiba_acpi_remove(struct acpi_device *acpi_dev)
->>       misc_deregister(&dev->miscdev);
->>
->>       remove_toshiba_proc_entries(dev);
->> +
->> +     if (dev->accelerometer_supported) {
->> +             iio_device_unregister(dev->indio_dev);
->> +             iio_device_free(dev->indio_dev);
->> +     }
->>
->>       if (dev->sysfs_created)
->>               sysfs_remove_group(&dev->acpi_dev->dev.kobj,
->> @@ -3051,6 +3151,28 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
->>       dev->touchpad_supported = !ret;
->>
->>       toshiba_accelerometer_available(dev);
->> +     if (dev->accelerometer_supported) {
->> +             dev->indio_dev = iio_device_alloc(sizeof(*dev));
->> +             if (!dev->indio_dev)
->> +                     return -ENOMEM;
->> +
->> +             pr_info("Registering Toshiba accelerometer iio device\n");
->> +
->> +             dev->indio_dev->info = &toshiba_accel_info;
->> +             dev->indio_dev->name = "Toshiba accelerometer";
->> +             dev->indio_dev->dev.parent = &acpi_dev->dev;
->> +             dev->indio_dev->modes = INDIO_DIRECT_MODE;
->> +             dev->indio_dev->channels = toshiba_accel_channels;
->> +             dev->indio_dev->num_channels = ARRAY_SIZE(toshiba_accel_channels);
->> +
->> +             ret = iio_device_register(dev->indio_dev);
->> +             if (ret < 0) {
->> +                     pr_err("Unable to register iio device\n");
->> +                     iio_device_free(dev->indio_dev);
-> I'm wondering if we want to be a little 'ruder' if this occurs and drop out
-> hard as it indicates something very nasty happened... Here we are papering
-> over any failures and users may never notice.  I guess it depends on what
-> is happening in other similar locations in this driver.
->
-> You already drop out if you get a memory allocation failure, so best
-> to be consistent I think.
->> +             }
->> +
->> +             iio_device_set_drvdata(dev->indio_dev, dev);
-> There should be no real advantage in setting this as you can always get
-> to dev via iio_priv(indio_dev)
->> +     }
->>
->>       toshiba_usb_sleep_charge_available(dev);
->>
->>
->
+> End-of-Conversion (EOC) interrupt. Add code to support this using
+> a completion, in a similar vein as drivers/misc/bmp058.c does.
 
+s/058.c/085.c/
 
+> Make sure to check that we are given a rising edge, because the
+> EOC line goes from low-to-high when the conversion is ready.
+> 
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> drivers/iio/pressure/bmp280-core.c | 83 ++++++++++++++++++++++++++++++++++----
+> drivers/iio/pressure/bmp280-i2c.c  |  3 +-
+> drivers/iio/pressure/bmp280-spi.c  |  3 +-
+> drivers/iio/pressure/bmp280.h      |  3 +-
+> 4 files changed, 81 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+> index af422d224db4..ca9ed843efcc 100644
+> --- a/drivers/iio/pressure/bmp280-core.c
+> +++ b/drivers/iio/pressure/bmp280-core.c
+> @@ -25,6 +25,9 @@
+> #include <linux/iio/sysfs.h>
+> #include <linux/gpio/consumer.h>
+> #include <linux/regulator/consumer.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h> /* For irq_get_irq_data() */
+> +#include <linux/completion.h>
+> 
+> #include "bmp280.h"
+> 
+> @@ -32,6 +35,8 @@ struct bmp280_data {
+> 	struct device *dev;
+> 	struct mutex lock;
+> 	struct regmap *regmap;
+> +	struct completion done;
+> +	bool use_eoc;
+> 	const struct bmp280_chip_info *chip_info;
+> 	struct regulator *vddd;
+> 	struct regulator *vdda;
+> @@ -435,16 +440,32 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
+> 	unsigned int delay_us;
+> 	unsigned int ctrl;
+> 
+> +	if (data->use_eoc)
+> +		init_completion(&data->done);
+> +
+> 	ret = regmap_write(data->regmap, BMP280_REG_CTRL_MEAS, ctrl_meas);
+> 	if (ret)
+> 		return ret;
+> 
+> -	if (ctrl_meas == BMP180_MEAS_TEMP)
+> -		delay_us = 4500;
+> -	else
+> -		delay_us = conversion_time_max[data->oversampling_press];
+> -
+> -	usleep_range(delay_us, delay_us + 1000);
+> +	if (data->use_eoc) {
+> +		/*
+> +		 * If we have a completion interrupt, use it, wait up to
+> +		 * 100ms. The longest conversion time listed is 76.5 ms for
+> +		 * advanced resolution mode.
+> +		 */
+> +		ret = wait_for_completion_timeout(&data->done,
+> +						  1 + msecs_to_jiffies(100));
+> +		if (!ret)
+> +			dev_err(data->dev, "timeout waiting for completion\n");
+> +	} else {
+> +		if (ctrl_meas == BMP180_MEAS_TEMP)
+> +			delay_us = 4500;
+> +		else
+> +			delay_us =
+> +				conversion_time_max[data->oversampling_press];
+> +
+> +		usleep_range(delay_us, delay_us + 1000);
+> +	}
+> 
+> 	ret = regmap_read(data->regmap, BMP280_REG_CTRL_MEAS, &ctrl);
+> 	if (ret)
+> @@ -686,16 +707,28 @@ static const struct bmp280_chip_info bmp180_chip_info = {
+> 	.read_press = bmp180_read_press,
+> };
+> 
+> +static irqreturn_t bmp058_eoc_irq(int irq, void *d)
+> +{
+> +	struct bmp280_data *data = d;
+> +
+> +	complete(&data->done);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +
+> int bmp280_common_probe(struct device *dev,
+> 			struct regmap *regmap,
+> 			unsigned int chip,
+> -			const char *name)
+> +			const char *name,
+> +			int irq)
+> {
+> 	int ret;
+> 	struct iio_dev *indio_dev;
+> 	struct bmp280_data *data;
+> 	unsigned int chip_id;
+> 	struct gpio_desc *gpiod;
+> +	unsigned long irq_trig;
+> 
+> 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> 	if (!indio_dev)
+> @@ -763,5 +796,39 @@ int bmp280_common_probe(struct device *dev,
+> 	if (ret < 0)
+> 		return ret;
+> 
+> -	return devm_iio_device_register(dev, indio_dev);
+> +	ret = devm_iio_device_register(dev, indio_dev);
+> +	if (ret) {
+> +		dev_err(dev, "unable to register IIO device\n");
+> +		return ret;
+> +	}
+> +
+> +	/*
+> +	 * Attempt to grab an optional EOC IRQ - only the BMP058 has this
+> +	 * however as it happens, the BMP058 shares the chip ID of BMP180
+> +	 * so we look for an IRQ if we have that.
+> +	 */
+> +	if (irq <= 0 || (chip_id  != BMP180_CHIP_ID))
+> +		return 0;
+> +
+> +	irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
+> +	if (irq_trig != IRQF_TRIGGER_RISING) {
+> +		dev_err(dev, "non-rising trigger given for EOC interrupt, "
+> +			"trying to enforce it\n");
+> +		irq_trig = IRQF_TRIGGER_RISING;
+> +	}
+> +	ret = devm_request_threaded_irq(dev,
+> +			irq,
+> +			bmp058_eoc_irq,
+> +			NULL,
+> +			irq_trig,
+> +			name,
+> +			data);
+> +	if (ret) {
+> +		/* Bail out without IRQ but keep the driver in place */
+> +		dev_err(dev, "unable to request DRDY IRQ\n");
+> +		return 0;
+> +	}
+> +
+> +	data->use_eoc = true;
+> +	return 0;
+> }
+> diff --git a/drivers/iio/pressure/bmp280-i2c.c b/drivers/iio/pressure/bmp280-i2c.c
+> index b422600f34e0..eb2b727109b8 100644
+> --- a/drivers/iio/pressure/bmp280-i2c.c
+> +++ b/drivers/iio/pressure/bmp280-i2c.c
+> @@ -32,7 +32,8 @@ static int bmp280_i2c_probe(struct i2c_client *client,
+> 	return bmp280_common_probe(&client->dev,
+> 				   regmap,
+> 				   id->driver_data,
+> -				   id->name);
+> +				   id->name,
+> +				   client->irq);
+> }
+> 
+> static const struct acpi_device_id bmp280_acpi_i2c_match[] = {
+> diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
+> index a24ea5f62c5e..cfb6248ceb1f 100644
+> --- a/drivers/iio/pressure/bmp280-spi.c
+> +++ b/drivers/iio/pressure/bmp280-spi.c
+> @@ -44,7 +44,8 @@ static int bmp280_spi_probe(struct spi_device *spi)
+> 	return bmp280_common_probe(&spi->dev,
+> 				   regmap,
+> 				   id->driver_data,
+> -				   id->name);
+> +				   id->name,
+> +				   spi->irq);
+> }
+> 
+> static const struct of_device_id bmp280_of_spi_match[] = {
+> diff --git a/drivers/iio/pressure/bmp280.h b/drivers/iio/pressure/bmp280.h
+> index 9249956bc8bf..ad0e5778c6b5 100644
+> --- a/drivers/iio/pressure/bmp280.h
+> +++ b/drivers/iio/pressure/bmp280.h
+> @@ -82,4 +82,5 @@ extern const struct regmap_config bmp280_regmap_config;
+> int bmp280_common_probe(struct device *dev,
+> 			struct regmap *regmap,
+> 			unsigned int chip,
+> -			const char *name);
+> +			const char *name,
+> +			int irq);
+> -- 
+> 2.4.11
+> 
 
--- 
--- El mundo apesta y vosotros apestais tambien --
