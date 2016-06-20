@@ -1,57 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f180.google.com ([209.85.214.180]:33743 "EHLO
-	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753176AbcFTNuY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jun 2016 09:50:24 -0400
-Received: by mail-ob0-f180.google.com with SMTP id wj2so1136286obc.0
-        for <linux-iio@vger.kernel.org>; Mon, 20 Jun 2016 06:50:17 -0700 (PDT)
+Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:57964 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755071AbcFTOUn convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jun 2016 10:20:43 -0400
+Date: Mon, 20 Jun 2016 15:19:54 +0100
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+To: Jiri Kosina <jikos@kernel.org>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	jic23@kernel.org, benjamin.tissoires@redhat.com,
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, chaya.golan@intel.com,
+	daniel.drubin@intel.com, A.Bhattacharya@ulg.ac.be
+Subject: Re: [PATCH 2/6] hid: intel_ish-hid: ISH Transport layer
+Message-ID: <20160620151954.0c9094db@lxorguk.ukuu.org.uk>
+In-Reply-To: <alpine.LNX.2.00.1606201129060.6874@cbobk.fhfr.pm>
+References: <1465647219-7798-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	<1465647219-7798-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+	<alpine.LNX.2.00.1606172236520.6874@cbobk.fhfr.pm>
+	<1466197963.24319.110.camel@linux.intel.com>
+	<alpine.LNX.2.00.1606201129060.6874@cbobk.fhfr.pm>
 MIME-Version: 1.0
-In-Reply-To: <6c5cc47895ca35fce84b6b01a3ecf7df928aa197.1463164919.git.leonard.crestez@intel.com>
-References: <3d90f889782a9c8380c3694e55a135ddd6de9bc4.1463164919.git.leonard.crestez@intel.com>
- <6c5cc47895ca35fce84b6b01a3ecf7df928aa197.1463164919.git.leonard.crestez@intel.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 20 Jun 2016 15:26:47 +0200
-Message-ID: <CACRpkda-WWO3qcyOWUNkjnheGnJA=Op4SsmorDjJmvF3=9CLcg@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: st_sensors: Use level interrupts
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, May 13, 2016 at 8:43 PM, Crestez Dan Leonard
-<leonard.crestez@intel.com> wrote:
+On Mon, 20 Jun 2016 11:29:28 +0200 (CEST)
+Jiri Kosina <jikos@kernel.org> wrote:
 
-> As far as I can tell DRDY for ST sensors behaves as a level rather than
-> edge interrupt. Registering for IRQF_TRIGGER_RISING instead of
-> IRQF_TRIGGER_HIGH mostly works except when the sampling frequency is
-> high enough that new samples come before the new ones are read
-> completely. In that case the interrupt line remains high, no more rising
-> edges occur and the iio buffer stalls.
->
-> Configuring the interrupt as IRQF_TRIGGER_HIGH makes it work as
-> expected. This patch makes it so that st_sensors_trigger interrupt
-> request code doesn't mangle the request flags into IRQF_TRIGGER_RISING.
->
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Giuseppe Barba <giuseppe.barba@st.com>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
-> ---
-> This is an alternative fix to this patch:
->         https://www.spinics.net/lists/linux-iio/msg24722.html
-> [PATCH 2/2 v6] iio: st_sensors: read surplus samples in trigger.
+> On Fri, 17 Jun 2016, Srinivas Pandruvada wrote:
+> 
+> > > > +config INTEL_ISH_HID_TRANSPORT
+> > > > +     bool
+> > > > +     default n
+> > > > +
+> > > > +config INTEL_ISH_HID
+> > > > +     bool "Intel Integrated Sensor Hub"  
+> > > 
+> > > Why can't the transport driver be built as a module?  
+> > In current use case for PM, we don't want anyone to unload and
+> > complain.  
+> 
+> Sorry, I don't understand this explanation, could you please elaborate?
 
-I have incorporated this approach into my patch now: please give
-it a spin!
+If the driver isn't loaded your machine doesn't do power management.
+There are a small set of drivers that need to be loaded to get pm even if
+not using that device. ISH is one of them, and unlike the others not
+sucked into a standard configuration.
 
-Yours,
-Linus Walleij
+If it's going to get loaded due to the presence of the PCI identifiers on
+any normal distribution then it's in the same category as graphics and
+ADSP based audio, both of which can be modules and the only real world
+impact is they get loaded a second or two later during boot.
+
+Alan
