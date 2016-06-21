@@ -14,93 +14,117 @@ Cc: Rob Herring <robh+dt@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Florian Vaussard <florian.vaussard@heig-vd.ch>
-Subject: [PATCH 2/3] iio: adc: max1363: Add device tree binding documentation
-Date: Tue, 21 Jun 2016 09:09:28 +0200
-Message-Id: <1466492969-2185-3-git-send-email-florian.vaussard@heig-vd.ch>
+Subject: [PATCH 3/3] iio: adc: max1363: Add device tree binding
+Date: Tue, 21 Jun 2016 09:09:29 +0200
+Message-Id: <1466492969-2185-4-git-send-email-florian.vaussard@heig-vd.ch>
 In-Reply-To: <1466492969-2185-1-git-send-email-florian.vaussard@heig-vd.ch>
 References: <1466492969-2185-1-git-send-email-florian.vaussard@heig-vd.ch>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add the device tree documentation for all the supported parts. Mandatory
-binding is the compatible string and the slave I2C address.
-
-Optional properties can be used to specify the Vcc / Vref regulators, as
-well as the IRQ line if available.
+This patch adds the necessary device tree binding to allow DT probing of
+currently supported parts.
 
 Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
 ---
- .../devicetree/bindings/iio/adc/max1363.txt        | 63 ++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/max1363.txt
+ drivers/iio/adc/max1363.c | 58 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 57 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/max1363.txt b/Documentation/devicetree/bindings/iio/adc/max1363.txt
-new file mode 100644
-index 0000000..94a9011
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/max1363.txt
-@@ -0,0 +1,63 @@
-+* Maxim 1x3x/136x/116xx Analog to Digital Converter (ADC)
-+
-+The node for this driver must be a child node of a I2C controller, hence
-+all mandatory properties for your controller must be specified. See directory:
-+
-+        Documentation/devicetree/bindings/i2c
-+
-+for more details.
-+
-+Required properties:
-+  - compatible: Should be one of
-+		"maxim,max1361"
-+		"maxim,max1362"
-+		"maxim,max1363"
-+		"maxim,max1364"
-+		"maxim,max1036"
-+		"maxim,max1037"
-+		"maxim,max1038"
-+		"maxim,max1039"
-+		"maxim,max1136"
-+		"maxim,max1137"
-+		"maxim,max1138"
-+		"maxim,max1139"
-+		"maxim,max1236"
-+		"maxim,max1237"
-+		"maxim,max1238"
-+		"maxim,max1239"
-+		"maxim,max11600"
-+		"maxim,max11601"
-+		"maxim,max11602"
-+		"maxim,max11603"
-+		"maxim,max11604"
-+		"maxim,max11605"
-+		"maxim,max11606"
-+		"maxim,max11607"
-+		"maxim,max11608"
-+		"maxim,max11609"
-+		"maxim,max11610"
-+		"maxim,max11611"
-+		"maxim,max11612"
-+		"maxim,max11613"
-+		"maxim,max11614"
-+		"maxim,max11615"
-+		"maxim,max11616"
-+		"maxim,max11617"
-+		"maxim,max11644"
-+		"maxim,max11645"
-+		"maxim,max11646"
-+		"maxim,max11647"
-+  - reg: Should contain the ADC I2C address
-+
-+Optional properties:
-+  - vcc-supply: phandle to the regulator that provides power to the ADC.
-+  - vref-supply: phandle to the regulator for ADC reference voltage.
-+  - interrupts: IRQ line for the ADC. If not used the driver will use
-+    polling.
-+
-+Example:
-+adc: max11644@36 {
-+	compatible = "maxim,max11644";
-+	reg = <0x36>;
-+	vref-supply = <&adc_vref>;
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index b5d28c0..5403ec2 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -25,6 +25,8 @@
+ #include <linux/slab.h>
+ #include <linux/err.h>
+ #include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -1516,6 +1518,50 @@ done:
+ 	return IRQ_HANDLED;
+ }
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id max1363_of_match[] = {
++	{ .compatible = "maxim,max1361", .data = (void *)max1361 },
++	{ .compatible = "maxim,max1362", .data = (void *)max1362 },
++	{ .compatible = "maxim,max1363", .data = (void *)max1363 },
++	{ .compatible = "maxim,max1364", .data = (void *)max1364 },
++	{ .compatible = "maxim,max1036", .data = (void *)max1036 },
++	{ .compatible = "maxim,max1037", .data = (void *)max1037 },
++	{ .compatible = "maxim,max1038", .data = (void *)max1038 },
++	{ .compatible = "maxim,max1039", .data = (void *)max1039 },
++	{ .compatible = "maxim,max1136", .data = (void *)max1136 },
++	{ .compatible = "maxim,max1137", .data = (void *)max1137 },
++	{ .compatible = "maxim,max1138", .data = (void *)max1138 },
++	{ .compatible = "maxim,max1139", .data = (void *)max1139 },
++	{ .compatible = "maxim,max1236", .data = (void *)max1236 },
++	{ .compatible = "maxim,max1237", .data = (void *)max1237 },
++	{ .compatible = "maxim,max1238", .data = (void *)max1238 },
++	{ .compatible = "maxim,max1239", .data = (void *)max1239 },
++	{ .compatible = "maxim,max11600", .data = (void *)max11600 },
++	{ .compatible = "maxim,max11601", .data = (void *)max11601 },
++	{ .compatible = "maxim,max11602", .data = (void *)max11602 },
++	{ .compatible = "maxim,max11603", .data = (void *)max11603 },
++	{ .compatible = "maxim,max11604", .data = (void *)max11604 },
++	{ .compatible = "maxim,max11605", .data = (void *)max11605 },
++	{ .compatible = "maxim,max11606", .data = (void *)max11606 },
++	{ .compatible = "maxim,max11607", .data = (void *)max11607 },
++	{ .compatible = "maxim,max11608", .data = (void *)max11608 },
++	{ .compatible = "maxim,max11609", .data = (void *)max11609 },
++	{ .compatible = "maxim,max11610", .data = (void *)max11610 },
++	{ .compatible = "maxim,max11611", .data = (void *)max11611 },
++	{ .compatible = "maxim,max11612", .data = (void *)max11612 },
++	{ .compatible = "maxim,max11613", .data = (void *)max11613 },
++	{ .compatible = "maxim,max11614", .data = (void *)max11614 },
++	{ .compatible = "maxim,max11615", .data = (void *)max11615 },
++	{ .compatible = "maxim,max11616", .data = (void *)max11616 },
++	{ .compatible = "maxim,max11617", .data = (void *)max11617 },
++	{ .compatible = "maxim,max11644", .data = (void *)max11644 },
++	{ .compatible = "maxim,max11645", .data = (void *)max11645 },
++	{ .compatible = "maxim,max11646", .data = (void *)max11646 },
++	{ .compatible = "maxim,max11647", .data = (void *)max11647 },
++	{ /* sentinel */ }
 +};
++#endif
++
+ static int max1363_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+@@ -1523,6 +1569,15 @@ static int max1363_probe(struct i2c_client *client,
+ 	struct max1363_state *st;
+ 	struct iio_dev *indio_dev;
+ 	struct regulator *vref;
++	unsigned long devid;
++	const struct of_device_id *match;
++
++	match = of_match_device(of_match_ptr(max1363_of_match),
++				&client->dev);
++	if (match)
++		devid = (int)of_device_get_match_data(&client->dev);
++	else
++		devid = id->driver_data;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev,
+ 					  sizeof(struct max1363_state));
+@@ -1549,7 +1604,7 @@ static int max1363_probe(struct i2c_client *client,
+ 	/* this is only used for device removal purposes */
+ 	i2c_set_clientdata(client, indio_dev);
+ 
+-	st->chip_info = &max1363_chip_info_tbl[id->driver_data];
++	st->chip_info = &max1363_chip_info_tbl[devid];
+ 	st->client = client;
+ 
+ 	st->vref_uv = st->chip_info->int_vref_mv * 1000;
+@@ -1692,6 +1747,7 @@ MODULE_DEVICE_TABLE(i2c, max1363_id);
+ static struct i2c_driver max1363_driver = {
+ 	.driver = {
+ 		.name = "max1363",
++		.of_match_table = of_match_ptr(max1363_of_match),
+ 	},
+ 	.probe = max1363_probe,
+ 	.remove = max1363_remove,
 -- 
 2.5.0
