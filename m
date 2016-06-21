@@ -1,99 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailcl2.heig-vd.ch ([193.134.216.183]:37714 "EHLO heig-vd.ch"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S933006AbcFUHtj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 21 Jun 2016 03:49:39 -0400
-Subject: Re: [PATCH 2/3] iio: potentiometer: mcp4531: Add device tree binding
- documentation
-To: Peter Rosin <peda@axentia.se>
-References: <1466492137-32683-1-git-send-email-florian.vaussard@heig-vd.ch>
- <1466492137-32683-3-git-send-email-florian.vaussard@heig-vd.ch>
- <f763a2ea-6a82-a8f6-4afb-d09dba240927@axentia.se>
-CC: Florian Vaussard <florian.vaussard@gmail.com>,
-	<devicetree@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+Received: from mail-yw0-f176.google.com ([209.85.161.176]:34316 "EHLO
+	mail-yw0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751630AbcFUKGo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jun 2016 06:06:44 -0400
+Received: by mail-yw0-f176.google.com with SMTP id i12so9195476ywa.1
+        for <linux-iio@vger.kernel.org>; Tue, 21 Jun 2016 03:05:50 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <20160620180458.GA10171@rob-hp-laptop>
+References: <1466330790-2820-1-git-send-email-raveendra.padasalagi@broadcom.com>
+	<1466330790-2820-2-git-send-email-raveendra.padasalagi@broadcom.com>
+	<20160620180458.GA10171@rob-hp-laptop>
+Date: Tue, 21 Jun 2016 15:30:17 +0530
+Message-ID: <CAAFb_voGMfQvvW5yknv0n73KTEh7e_vy_UuKf4FL2+iUz8t6rA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] Documentation: DT: Add iproc-static-adc binding
+From: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>,
+	Russell King <linux@arm.linux.org.uk>,
+	Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
-	Slawomir Stepien <sst@poczta.fm>,
-	Joachim Eastwood <manabian@gmail.com>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-From: Florian Vaussard <florian.vaussard@heig-vd.ch>
-Message-ID: <5768F180.4080601@heig-vd.ch>
-Date: Tue, 21 Jun 2016 09:49:20 +0200
-MIME-Version: 1.0
-In-Reply-To: <f763a2ea-6a82-a8f6-4afb-d09dba240927@axentia.se>
-Content-Type: text/plain; charset="windows-1252"
+	Jonathan Richardson <jonathar@broadcom.com>,
+	Jon Mason <jonmason@broadcom.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Anup Patel <anup.patel@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Pramod Kumar <pramod.kumar@broadcom.com>,
+	linux-kernel@vger.kernel.org,
+	bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+Hi Rob,
 
-On 06/21/2016 09:38 AM, Peter Rosin wrote:
-> On 2016-06-21 08:55, Florian Vaussard wrote:
->> Add the device tree documentation for all the supported parts. Apart the
->> compatible string and standard I2C binding, no other binding is currently
->> needed.
+Please find my reply inline.
+
+Regards,
+Raveendra
+
+On Mon, Jun 20, 2016 at 11:34 PM, Rob Herring <robh@kernel.org> wrote:
+> On Sun, Jun 19, 2016 at 03:36:28PM +0530, Raveendra Padasalagi wrote:
+>> The patch adds devicetree binding document for broadcom's
+>> iproc-static-adc controller driver.
 >>
->> Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
+>> Signed-off-by: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+>> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+>> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
 >> ---
->>  .../bindings/iio/potentiometer/mcp4531.txt         | 84 ++++++++++++++++++++++
->>  1 file changed, 84 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/mcp4531.txt
+>>  .../bindings/iio/adc/brcm,iproc-static-adc.txt     | 43 ++++++++++++++++++++++
+>>  1 file changed, 43 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
 >>
->> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/mcp4531.txt b/Documentation/devicetree/bindings/iio/potentiometer/mcp4531.txt
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt b/Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
 >> new file mode 100644
->> index 0000000..b052299
+>> index 0000000..1de0dfa
 >> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/potentiometer/mcp4531.txt
->> @@ -0,0 +1,84 @@
->> +* Microchip MCP453X/454X/455X/456X/463X/464X/465X/466X Digital Potentiometer
->> +  driver
->> +
->> +The node for this driver must be a child node of a I2C controller, hence
->> +all mandatory properties for your controller must be specified. See directory:
->> +
->> +        Documentation/devicetree/bindings/i2c
->> +
->> +for more details.
+>> +++ b/Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
+>> @@ -0,0 +1,43 @@
+>> +* Broadcom's IPROC Static ADC controller
 >> +
 >> +Required properties:
->> +	- compatible:  	Must be one of the following, depending on the
->> +			model:
->> +			"microchip,mcp4531-502"
->> +			"microchip,mcp4531-103"
->> +			"microchip,mcp4531-503"
-> 
-> *snip*
-> 
-> I'm not directly opposed, but I have used the following and DT booting
-> works like a charm here.
-> 
-> 		mcp4651-104@28 {
-> 			compatible = "mcp4651-104";
-> 			reg = <0x28>;
-> 		};
-> 
+>> +
+>> +- compatible: Must be "brcm,iproc-static-adc"
+>> +
+>
+>> +- #address-cells: Specify the number of u32 entries needed in child nodes.
+>> +  Should set to 1.
+>> +
+>> +- #size-cells: Specify number of u32 entries needed to specify child nodes size
+>> +  in reg property. Should set to 1.
+>
+> Why are these needed? What child nodes can you have?
 
-I was not aware that the i2c subsystem had a facility to match the compatible
-string against i2c_device_id. Good to know.
+Yes, these are not needed. ADC can't have any child nodes.
 
-> But, I suppose some DT documentation is not bad, and my understanding of
-> the device instantiation process and the i2c/dt interactions are not
-> complete, so my DT snippet might be an abomination? I'll leave the
-> decision if this is needed to someone with more experience on how other
-> drivers handle this.
-> 
+I will fix it in the next patch. Thanks.
 
-Your compatible string is missing the vendor ID (microchip). This is the only
-objection that I can see to your proposition. Let's wait to hear from a DT
-maintainer.
-
-Thanks,
-Florian
+>> +
+>> +- adc-syscon: Handler of syscon node defining physical base address of the
+>> +  controller and length of memory mapped region.
+>> +
+>> +- #io-channel-cells = <1>; As ADC has multiple outputs
+>> +  refer to Documentation/devicetree/bindings/iio/iio-bindings.txt for details.
+>> +
+>> +- clocks: Clock used for this block.
+>> +
+>> +- clock-names: Clock name should be given as tsc_clk.
+>> +
+>> +- interrupts: interrupt line number.
+>> +
+>> +For example:
+>> +
+>> +     ts_adc_syscon: ts_adc_syscon@180a6000 {
+>> +             compatible = "brcm,iproc-ts-adc-syscon","syscon";
+>> +             reg = <0x180a6000 0xc30>;
+>> +     };
+>> +
+>> +     adc: adc@180a6000 {
+>> +             compatible = "brcm,iproc-static-adc";
+>> +             #address-cells = <1>;
+>> +             #size-cells = <1>;
+>> +             adc-syscon = <&ts_adc_syscon>;
+>> +             #io-channel-cells = <1>;
+>> +             io-channel-ranges;
+>> +             clocks = <&asiu_clks BCM_CYGNUS_ASIU_ADC_CLK>;
+>> +             clock-names = "tsc_clk";
+>> +             interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>;
+>> +             status = "disabled";
+>> +     };
+>> --
+>> 1.9.1
+>>
