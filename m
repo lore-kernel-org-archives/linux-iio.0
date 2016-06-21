@@ -14,30 +14,35 @@ Cc: Rob Herring <robh+dt@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Florian Vaussard <florian.vaussard@heig-vd.ch>
-Subject: [PATCH 0/3] iio: adc: max1363: Fix missing parts and add device tree
-Date: Tue, 21 Jun 2016 09:09:26 +0200
-Message-Id: <1466492969-2185-1-git-send-email-florian.vaussard@heig-vd.ch>
+Subject: [PATCH 1/3] iio: adc: max1363: Fix missing i2c_device_id for MAX1164x parts
+Date: Tue, 21 Jun 2016 09:09:27 +0200
+Message-Id: <1466492969-2185-2-git-send-email-florian.vaussard@heig-vd.ch>
+In-Reply-To: <1466492969-2185-1-git-send-email-florian.vaussard@heig-vd.ch>
+References: <1466492969-2185-1-git-send-email-florian.vaussard@heig-vd.ch>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello,
+The driver supports MAX11644, MAX11645, MAX11646 and MAX11647 parts. But
+the corresponding i2c_device_id are missing. Add them!
 
-This series first fix missing i2c_device_id for several MAX1164x parts.
-It then introduces the necessary device tree binding to perform DT boot.
+Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
+---
+ drivers/iio/adc/max1363.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Tested with MAX11644 (DT boot).
-
-Best regards,
-Florian
-
-Florian Vaussard (3):
-  iio: adc: max1363: Fix missing i2c_device_id for MAX1164x parts
-  iio: adc: max1363: Add device tree binding documentation
-  iio: adc: max1363: Add device tree binding
-
- .../devicetree/bindings/iio/adc/max1363.txt        | 63 ++++++++++++++++++++++
- drivers/iio/adc/max1363.c                          | 62 ++++++++++++++++++++-
- 2 files changed, 124 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/max1363.txt
-
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index 929508e..b5d28c0 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -1680,6 +1680,10 @@ static const struct i2c_device_id max1363_id[] = {
+ 	{ "max11615", max11615 },
+ 	{ "max11616", max11616 },
+ 	{ "max11617", max11617 },
++	{ "max11644", max11644 },
++	{ "max11645", max11645 },
++	{ "max11646", max11646 },
++	{ "max11647", max11647 },
+ 	{}
+ };
+ 
 -- 
 2.5.0
