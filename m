@@ -1,152 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailcl1.heig-vd.ch ([193.134.216.182]:38947 "EHLO heig-vd.ch"
+Received: from mailcl0.heig-vd.ch ([193.134.216.181]:36039 "EHLO heig-vd.ch"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750761AbcFVGTU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 22 Jun 2016 02:19:20 -0400
-Subject: Re: [PATCH 2/3] iio: potentiometer: mcp4531: Add device tree binding
- documentation
-To: Rob Herring <robh@kernel.org>,
-	Florian Vaussard <florian.vaussard@gmail.com>
-References: <1466492137-32683-1-git-send-email-florian.vaussard@heig-vd.ch>
- <1466492137-32683-3-git-send-email-florian.vaussard@heig-vd.ch>
- <20160621214336.GB4370@rob-hp-laptop>
-CC: <devicetree@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	id S1751198AbcFVGW5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 22 Jun 2016 02:22:57 -0400
+Subject: Re: [PATCH 3/3] iio: potentiometer: mcp4531: Add device tree binding
+To: Peter Rosin <peda@axentia.se>, <devicetree@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Pawel Moll <pawel.moll@arm.com>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1466492137-32683-1-git-send-email-florian.vaussard@heig-vd.ch>
+ <1466492137-32683-4-git-send-email-florian.vaussard@heig-vd.ch>
+ <bf4dbd64-aac8-aba3-ec5c-4cd4d0e848f6@axentia.se>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
-	Peter Rosin <peda@axentia.se>,
 	Slawomir Stepien <sst@poczta.fm>,
 	Joachim Eastwood <manabian@gmail.com>,
 	Matt Ranostay <mranostay@gmail.com>,
 	Cristina Moraru <cristina.moraru09@gmail.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	Vaussard Florian <florian.vaussard@heig-vd.ch>
 From: Florian Vaussard <florian.vaussard@heig-vd.ch>
-Message-ID: <b8fd47d0-f851-9700-e24c-4f33f5cf2342@heig-vd.ch>
-Date: Wed, 22 Jun 2016 08:19:04 +0200
+Message-ID: <829a4507-39d7-e04a-9672-6309def89ee2@heig-vd.ch>
+Date: Wed, 22 Jun 2016 08:22:46 +0200
 MIME-Version: 1.0
-In-Reply-To: <20160621214336.GB4370@rob-hp-laptop>
+In-Reply-To: <bf4dbd64-aac8-aba3-ec5c-4cd4d0e848f6@axentia.se>
 Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Rob,
+Hello Peter,
 
-Le 21. 06. 16 à 23:43, Rob Herring a écrit :
-> On Tue, Jun 21, 2016 at 08:55:36AM +0200, Florian Vaussard wrote:
->> Add the device tree documentation for all the supported parts. Apart the
->> compatible string and standard I2C binding, no other binding is currently
->> needed.
+Le 21. 06. 16 à 09:51, Peter Rosin a écrit :
+> On 2016-06-21 08:55, Florian Vaussard wrote:
+>> This patch adds the necessary device tree binding to allow DT probing of
+>> currently supported parts.
 >>
 >> Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
 >> ---
->>  .../bindings/iio/potentiometer/mcp4531.txt         | 84 ++++++++++++++++++++++
->>  1 file changed, 84 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/mcp4531.txt
+>>  drivers/iio/potentiometer/mcp4531.c | 83 ++++++++++++++++++++++++++++++++++++-
+>>  1 file changed, 82 insertions(+), 1 deletion(-)
 >>
->> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/mcp4531.txt b/Documentation/devicetree/bindings/iio/potentiometer/mcp4531.txt
->> new file mode 100644
->> index 0000000..b052299
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/potentiometer/mcp4531.txt
->> @@ -0,0 +1,84 @@
->> +* Microchip MCP453X/454X/455X/456X/463X/464X/465X/466X Digital Potentiometer
->> +  driver
->> +
->> +The node for this driver must be a child node of a I2C controller, hence
->> +all mandatory properties for your controller must be specified. See directory:
->> +
->> +        Documentation/devicetree/bindings/i2c
->> +
->> +for more details.
->> +
->> +Required properties:
->> +	- compatible:  	Must be one of the following, depending on the
->> +			model:
->> +			"microchip,mcp4531-502"
+>> diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
+>> index 2251173..41a1e46 100644
+>> --- a/drivers/iio/potentiometer/mcp4531.c
+>> +++ b/drivers/iio/potentiometer/mcp4531.c
+>> @@ -31,6 +31,8 @@
+>>  #include <linux/module.h>
+>>  #include <linux/i2c.h>
+>>  #include <linux/err.h>
+>> +#include <linux/of.h>
+>> +#include <linux/of_device.h>
+>>  
+>>  #include <linux/iio/iio.h>
+>>  
+>> @@ -188,12 +190,84 @@ static const struct iio_info mcp4531_info = {
+>>  	.driver_module = THIS_MODULE,
+>>  };
+>>  
+>> +#ifdef CONFIG_OF
+>> +static const struct of_device_id mcp45xx_of_match[] = {
 > 
-> These can go in trivial-devices.txt
+> Should be named mcp4531_of_match, also the casting to void and
+> then back to an integer type is ugly. Would it work to store a
+> pointer directly into the mcp4531_cfg array instead? I.e.
+> 
+> 	{ .compatible = "microchip,mcp4531-502", .data = &mcp4531_cfg[MCP453x_502] },
+> etc
+> 
+> and then adjust accordingly in mcp4531_probe()?
 > 
 
-Yes indeed. I will fix.
+Yes the casting is pretty ugly. And kbuild agrees with you :) I took this from
+another driver (lame excuse). Your suggestion is sensible, I will give it a try.
 
-Thanks for the review.
+> That is, if you need this patch at all, see my reply to 2/3...
+> 
+
+This seems necessary in order to have the vendor ID in the compatible string.
+
+Thanks for your review.
 
 Florian
-
->> +			"microchip,mcp4531-103"
->> +			"microchip,mcp4531-503"
->> +			"microchip,mcp4531-104"
->> +			"microchip,mcp4532-502"
->> +			"microchip,mcp4532-103"
->> +			"microchip,mcp4532-503"
->> +			"microchip,mcp4532-104"
->> +			"microchip,mcp4541-502"
->> +			"microchip,mcp4541-103"
->> +			"microchip,mcp4541-503"
->> +			"microchip,mcp4541-104"
->> +			"microchip,mcp4542-502"
->> +			"microchip,mcp4542-103"
->> +			"microchip,mcp4542-503"
->> +			"microchip,mcp4542-104"
->> +			"microchip,mcp4551-502"
->> +			"microchip,mcp4551-103"
->> +			"microchip,mcp4551-503"
->> +			"microchip,mcp4551-104"
->> +			"microchip,mcp4552-502"
->> +			"microchip,mcp4552-103"
->> +			"microchip,mcp4552-503"
->> +			"microchip,mcp4552-104"
->> +			"microchip,mcp4561-502"
->> +			"microchip,mcp4561-103"
->> +			"microchip,mcp4561-503"
->> +			"microchip,mcp4561-104"
->> +			"microchip,mcp4562-502"
->> +			"microchip,mcp4562-103"
->> +			"microchip,mcp4562-503"
->> +			"microchip,mcp4562-104"
->> +			"microchip,mcp4631-502"
->> +			"microchip,mcp4631-103"
->> +			"microchip,mcp4631-503"
->> +			"microchip,mcp4631-104"
->> +			"microchip,mcp4632-502"
->> +			"microchip,mcp4632-103"
->> +			"microchip,mcp4632-503"
->> +			"microchip,mcp4632-104"
->> +			"microchip,mcp4641-502"
->> +			"microchip,mcp4641-103"
->> +			"microchip,mcp4641-503"
->> +			"microchip,mcp4641-104"
->> +			"microchip,mcp4642-502"
->> +			"microchip,mcp4642-103"
->> +			"microchip,mcp4642-503"
->> +			"microchip,mcp4642-104"
->> +			"microchip,mcp4651-502"
->> +			"microchip,mcp4651-103"
->> +			"microchip,mcp4651-503"
->> +			"microchip,mcp4651-104"
->> +			"microchip,mcp4652-502"
->> +			"microchip,mcp4652-103"
->> +			"microchip,mcp4652-503"
->> +			"microchip,mcp4652-104"
->> +			"microchip,mcp4661-502"
->> +			"microchip,mcp4661-103"
->> +			"microchip,mcp4661-503"
->> +			"microchip,mcp4661-104"
->> +			"microchip,mcp4662-502"
->> +			"microchip,mcp4662-103"
->> +			"microchip,mcp4662-503"
->> +			"microchip,mcp4662-104"
->> +	-reg: Slave I2C address of the potentiometer
->> +
->> +Example:
->> +mcp4561: mcp4561@2e {
->> +	compatible = "microchip,mcp4561-103";
->> +	reg = <0x2e>;
->> +};
->> -- 
->> 2.5.0
->>
