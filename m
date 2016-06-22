@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f48.google.com ([209.85.215.48]:36013 "EHLO
-	mail-lf0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752656AbcFVUy2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jun 2016 16:54:28 -0400
-Received: by mail-lf0-f48.google.com with SMTP id q132so82370565lfe.3
-        for <linux-iio@vger.kernel.org>; Wed, 22 Jun 2016 13:54:27 -0700 (PDT)
+Received: from mail-lf0-f43.google.com ([209.85.215.43]:36023 "EHLO
+	mail-lf0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752656AbcFVUya (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jun 2016 16:54:30 -0400
+Received: by mail-lf0-f43.google.com with SMTP id q132so82371030lfe.3
+        for <linux-iio@vger.kernel.org>; Wed, 22 Jun 2016 13:54:29 -0700 (PDT)
 From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	Akinobu Mita <akinobu.mita@gmail.com>,
@@ -17,230 +17,204 @@ Cc: Christoph Mair <christoph.mair@gmail.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>,
 	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 7/9 v2] iio: pressure: bmp280: add SPI interface driver
-Date: Wed, 22 Jun 2016 22:53:37 +0200
-Message-Id: <1466628819-29784-8-git-send-email-linus.walleij@linaro.org>
+Subject: [PATCH 8/9 v2] iio: pressure: bmp280: add support for BMP085 EOC interrupt
+Date: Wed, 22 Jun 2016 22:53:38 +0200
+Message-Id: <1466628819-29784-9-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
 References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch mimics the SPI functionality found in the misc driver in
-drivers/misc/bh085-spi.c to make it possible to reuse the existing
-BMP280/BMP180/BMP085 driver with all clients of the other driver.
-The adoption is straight-forward since like the other driver, it is
-a simple matter of using regmap.
+The first version of this sensor, BMP085, supports sending an
+End-of-Conversion (EOC) interrupt. Add code to support this using
+a completion, in a similar vein as drivers/misc/bmp085.c does.
 
-This driver is also so obviously inspired/copied from the old misc
-driver in drivers/misc/bmp085.c that I just took the liberty to
-add in the authors of the other drivers + self in the core driver
-file.
+Make sure to check that we are given a rising edge, because the
+EOC line goes from low-to-high when the conversion is ready.
 
-The bus mapping code for SPI was written by Akinobu Mita.
-
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v1->v2:
-- Fix misnamed device table
-- Added Akinobu's bus mapping code for SPI
-- Add IDs and match strings for the new BME280 sensor too
+- Fix spelling mistakes
 ---
- drivers/iio/pressure/Kconfig       |  15 ++++-
- drivers/iio/pressure/Makefile      |   1 +
- drivers/iio/pressure/bmp280-core.c |   4 ++
- drivers/iio/pressure/bmp280-spi.c  | 117 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 134 insertions(+), 3 deletions(-)
- create mode 100644 drivers/iio/pressure/bmp280-spi.c
+ drivers/iio/pressure/bmp280-core.c | 83 ++++++++++++++++++++++++++++++++++----
+ drivers/iio/pressure/bmp280-i2c.c  |  3 +-
+ drivers/iio/pressure/bmp280-spi.c  |  3 +-
+ drivers/iio/pressure/bmp280.h      |  3 +-
+ 4 files changed, 81 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index 94ad8e7ad0ec..8b209d14bac9 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -7,15 +7,17 @@ menu "Pressure sensors"
- 
- config BMP280
- 	tristate "Bosch Sensortec BMP180/BMP280 pressure sensor I2C driver"
--	depends on I2C
-+	depends on (I2C || SPI_MASTER)
- 	select BMP280_I2C if (I2C)
-+	select BMP280_SPI if (SPI_MASTER)
- 	help
- 	  Say yes here to build support for Bosch Sensortec BMP180 and BMP280
- 	  pressure and temperature sensors. Also supports the BE280 with
- 	  an additional humidity sensor channel.
- 
--	  To compile this driver as a module, choose M here: the modules
--	  will be called bmp280-i2c and bmp280.
-+	  To compile this driver as a module, choose M here: the core module
-+	  will be called bmp280 and you will also get bmp280-i2c for I2C
-+	  and/or bmp280-spi for SPI support.
- 
- config BMP280_I2C
- 	tristate
-@@ -24,6 +26,13 @@ config BMP280_I2C
- 	depends on !(BMP085_I2C=y || BMP085_I2C=m)
- 	select REGMAP_I2C
- 
-+config BMP280_SPI
-+	tristate
-+	depends on BMP280
-+	depends on SPI_MASTER
-+	depends on !(BMP085_SPI=y || BMP085_SPI=m)
-+	select REGMAP_SPI
-+
- config HID_SENSOR_PRESS
- 	depends on HID_SENSOR_HUB
- 	select IIO_BUFFER
-diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-index 736f4305fe46..7f395bed5e88 100644
---- a/drivers/iio/pressure/Makefile
-+++ b/drivers/iio/pressure/Makefile
-@@ -6,6 +6,7 @@
- obj-$(CONFIG_BMP280) += bmp280.o
- bmp280-objs := bmp280-core.o bmp280-regmap.o
- obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
-+obj-$(CONFIG_BMP280_SPI) += bmp280-spi.o
- obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
- obj-$(CONFIG_HP03) += hp03.o
- obj-$(CONFIG_MPL115) += mpl115.o
 diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index 77f0fc935c09..733ef3c08102 100644
+index 733ef3c08102..7b2a03d6fd1d 100644
 --- a/drivers/iio/pressure/bmp280-core.c
 +++ b/drivers/iio/pressure/bmp280-core.c
-@@ -1,5 +1,9 @@
- /*
-+ * Copyright (c) 2010 Christoph Mair <christoph.mair@gmail.com>
-+ * Copyright (c) 2012 Bosch Sensortec GmbH
-+ * Copyright (c) 2012 Unixphere AB
-  * Copyright (c) 2014 Intel Corporation
-+ * Copyright (c) 2016 Linus Walleij <linus.walleij@linaro.org>
-  *
-  * Driver for Bosch Sensortec BMP180 and BMP280 digital pressure sensor.
-  *
-diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
-new file mode 100644
-index 000000000000..2b9955f48d58
---- /dev/null
-+++ b/drivers/iio/pressure/bmp280-spi.c
-@@ -0,0 +1,117 @@
-+/*
-+ * SPI interface for the BMP280 driver
-+ *
-+ * Inspired by the older BMP085 driver drivers/misc/bmp085-spi.c
-+ */
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
-+#include <linux/err.h>
-+#include <linux/regmap.h>
+@@ -26,6 +26,9 @@
+ #include <linux/iio/sysfs.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h> /* For irq_get_irq_data() */
++#include <linux/completion.h>
+ 
+ #include "bmp280.h"
+ 
+@@ -33,6 +36,8 @@ struct bmp280_data {
+ 	struct device *dev;
+ 	struct mutex lock;
+ 	struct regmap *regmap;
++	struct completion done;
++	bool use_eoc;
+ 	const struct bmp280_chip_info *chip_info;
+ 	struct regulator *vddd;
+ 	struct regulator *vdda;
+@@ -593,16 +598,32 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
+ 	unsigned int delay_us;
+ 	unsigned int ctrl;
+ 
++	if (data->use_eoc)
++		init_completion(&data->done);
 +
-+#include "bmp280.h"
+ 	ret = regmap_write(data->regmap, BMP280_REG_CTRL_MEAS, ctrl_meas);
+ 	if (ret)
+ 		return ret;
+ 
+-	if (ctrl_meas == BMP180_MEAS_TEMP)
+-		delay_us = 4500;
+-	else
+-		delay_us = conversion_time_max[data->oversampling_press];
+-
+-	usleep_range(delay_us, delay_us + 1000);
++	if (data->use_eoc) {
++		/*
++		 * If we have a completion interrupt, use it, wait up to
++		 * 100ms. The longest conversion time listed is 76.5 ms for
++		 * advanced resolution mode.
++		 */
++		ret = wait_for_completion_timeout(&data->done,
++						  1 + msecs_to_jiffies(100));
++		if (!ret)
++			dev_err(data->dev, "timeout waiting for completion\n");
++	} else {
++		if (ctrl_meas == BMP180_MEAS_TEMP)
++			delay_us = 4500;
++		else
++			delay_us =
++				conversion_time_max[data->oversampling_press];
 +
-+static int bmp280_regmap_spi_write(void *context, const void *data,
-+                                   size_t count)
++		usleep_range(delay_us, delay_us + 1000);
++	}
+ 
+ 	ret = regmap_read(data->regmap, BMP280_REG_CTRL_MEAS, &ctrl);
+ 	if (ret)
+@@ -844,16 +865,28 @@ static const struct bmp280_chip_info bmp180_chip_info = {
+ 	.read_press = bmp180_read_press,
+ };
+ 
++static irqreturn_t bmp058_eoc_irq(int irq, void *d)
 +{
-+	struct device *dev = context;
-+	struct spi_device *spi = to_spi_device(dev);
-+	u8 buf[2];
++	struct bmp280_data *data = d;
 +
-+	memcpy(buf, data, 2);
-+	/*
-+	 * The SPI register address (= full register address without bit 7) and
-+	 * the write command (bit7 = RW = '0')
-+	 */
-+	buf[0] &= ~0x80;
++	complete(&data->done);
 +
-+	return spi_write_then_read(spi, buf, 2, NULL, 0);
++	return IRQ_HANDLED;
 +}
 +
-+static int bmp280_regmap_spi_read(void *context, const void *reg,
-+                                  size_t reg_size, void *val, size_t val_size)
-+{
-+	struct device *dev = context;
-+	struct spi_device *spi = to_spi_device(dev);
 +
-+	return spi_write_then_read(spi, reg, reg_size, val, val_size);
-+}
-+
-+static struct regmap_bus bmp280_regmap_bus = {
-+	.write = bmp280_regmap_spi_write,
-+	.read = bmp280_regmap_spi_read,
-+	.reg_format_endian_default = REGMAP_ENDIAN_BIG,
-+	.val_format_endian_default = REGMAP_ENDIAN_BIG,
-+};
-+
-+static int bmp280_spi_probe(struct spi_device *spi)
-+{
-+	const struct spi_device_id *id = spi_get_device_id(spi);
-+	struct regmap *regmap;
-+	const struct regmap_config *regmap_config;
-+	int ret;
-+
-+	spi->bits_per_word = 8;
-+	ret = spi_setup(spi);
-+	if (ret < 0) {
-+		dev_err(&spi->dev, "spi_setup failed!\n");
+ int bmp280_common_probe(struct device *dev,
+ 			struct regmap *regmap,
+ 			unsigned int chip,
+-			const char *name)
++			const char *name,
++			int irq)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev;
+ 	struct bmp280_data *data;
+ 	unsigned int chip_id;
+ 	struct gpio_desc *gpiod;
++	unsigned long irq_trig;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -937,5 +970,39 @@ int bmp280_common_probe(struct device *dev,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return devm_iio_device_register(dev, indio_dev);
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret) {
++		dev_err(dev, "unable to register IIO device\n");
 +		return ret;
 +	}
 +
-+	switch (id->driver_data) {
-+	case BMP180_CHIP_ID:
-+		regmap_config = &bmp180_regmap_config;
-+		break;
-+	case BMP280_CHIP_ID:
-+	case BME280_CHIP_ID:
-+		regmap_config = &bmp280_regmap_config;
-+		break;
-+	default:
-+		return -EINVAL;
++	/*
++	 * Attempt to grab an optional EOC IRQ - only the BMP058 has this
++	 * however as it happens, the BMP058 shares the chip ID of BMP180
++	 * so we look for an IRQ if we have that.
++	 */
++	if (irq <= 0 || (chip_id  != BMP180_CHIP_ID))
++		return 0;
++
++	irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
++	if (irq_trig != IRQF_TRIGGER_RISING) {
++		dev_err(dev, "non-rising trigger given for EOC interrupt, "
++			"trying to enforce it\n");
++		irq_trig = IRQF_TRIGGER_RISING;
++	}
++	ret = devm_request_threaded_irq(dev,
++			irq,
++			bmp058_eoc_irq,
++			NULL,
++			irq_trig,
++			name,
++			data);
++	if (ret) {
++		/* Bail out without IRQ but keep the driver in place */
++		dev_err(dev, "unable to request DRDY IRQ\n");
++		return 0;
 +	}
 +
-+	regmap = devm_regmap_init(&spi->dev,
-+				  &bmp280_regmap_bus,
-+				  &spi->dev,
-+				  regmap_config);
-+	if (IS_ERR(regmap)) {
-+		dev_err(&spi->dev, "failed to allocate register map\n");
-+		return PTR_ERR(regmap);
-+	}
-+
-+	return bmp280_common_probe(&spi->dev,
-+				   regmap,
-+				   id->driver_data,
-+				   id->name);
-+}
-+
-+static const struct of_device_id bmp280_of_spi_match[] = {
-+	{ .compatible = "bosch,bmp085", },
-+	{ .compatible = "bosch,bmp180", },
-+	{ .compatible = "bosch,bmp181", },
-+	{ .compatible = "bosch,bmp280", },
-+	{ .compatible = "bosch,bme280", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, bmp280_of_spi_match);
-+
-+static const struct spi_device_id bmp280_spi_id[] = {
-+	{ "bmp180", BMP180_CHIP_ID },
-+	{ "bmp181", BMP180_CHIP_ID },
-+	{ "bmp280", BMP280_CHIP_ID },
-+	{ "bme280", BME280_CHIP_ID },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, bmp280_spi_id);
-+
-+static struct spi_driver bmp280_spi_driver = {
-+	.driver = {
-+		.name   = "bmp280",
-+		.of_match_table = bmp280_of_spi_match
-+	},
-+	.id_table       = bmp280_spi_id,
-+	.probe          = bmp280_spi_probe,
-+};
-+module_spi_driver(bmp280_spi_driver);
-+
-+MODULE_DESCRIPTION("BMP085 SPI bus driver");
-+MODULE_LICENSE("GPL");
++	data->use_eoc = true;
++	return 0;
+ }
+diff --git a/drivers/iio/pressure/bmp280-i2c.c b/drivers/iio/pressure/bmp280-i2c.c
+index a981670e5dc0..b9a2562e8a7e 100644
+--- a/drivers/iio/pressure/bmp280-i2c.c
++++ b/drivers/iio/pressure/bmp280-i2c.c
+@@ -33,7 +33,8 @@ static int bmp280_i2c_probe(struct i2c_client *client,
+ 	return bmp280_common_probe(&client->dev,
+ 				   regmap,
+ 				   id->driver_data,
+-				   id->name);
++				   id->name,
++				   client->irq);
+ }
+ 
+ static const struct acpi_device_id bmp280_acpi_i2c_match[] = {
+diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
+index 2b9955f48d58..05ddf2ee7519 100644
+--- a/drivers/iio/pressure/bmp280-spi.c
++++ b/drivers/iio/pressure/bmp280-spi.c
+@@ -81,7 +81,8 @@ static int bmp280_spi_probe(struct spi_device *spi)
+ 	return bmp280_common_probe(&spi->dev,
+ 				   regmap,
+ 				   id->driver_data,
+-				   id->name);
++				   id->name,
++				   spi->irq);
+ }
+ 
+ static const struct of_device_id bmp280_of_spi_match[] = {
+diff --git a/drivers/iio/pressure/bmp280.h b/drivers/iio/pressure/bmp280.h
+index acb40de2f581..9dee048b5a74 100644
+--- a/drivers/iio/pressure/bmp280.h
++++ b/drivers/iio/pressure/bmp280.h
+@@ -104,4 +104,5 @@ extern const struct regmap_config bmp280_regmap_config;
+ int bmp280_common_probe(struct device *dev,
+ 			struct regmap *regmap,
+ 			unsigned int chip,
+-			const char *name);
++			const char *name,
++			int irq);
 -- 
 2.4.11
 
