@@ -1,210 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f181.google.com ([209.85.217.181]:34580 "EHLO
-	mail-lb0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751175AbcFVJ0d (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jun 2016 05:26:33 -0400
-Received: by mail-lb0-f181.google.com with SMTP id oe3so18870571lbb.1
-        for <linux-iio@vger.kernel.org>; Wed, 22 Jun 2016 02:26:17 -0700 (PDT)
+Received: from mail.aswsp.com ([193.34.35.150]:26038 "EHLO mail.aswsp.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751244AbcFVLuM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 22 Jun 2016 07:50:12 -0400
+Message-ID: <576A7C28.70905@parrot.com>
+Date: Wed, 22 Jun 2016 13:53:12 +0200
+From: Gregor Boirie <gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <1466547498-15484-6-git-send-email-linus.walleij@linaro.org>
-References: <1466547498-15484-1-git-send-email-linus.walleij@linaro.org> <1466547498-15484-6-git-send-email-linus.walleij@linaro.org>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Wed, 22 Jun 2016 11:26:15 +0200
-Message-ID: <CAPDyKFoN5Vyut+A0yKnT5awM8T9-ZOLMNfSkx7MFrye8P5MsDQ@mail.gmail.com>
-Subject: Re: [PATCH 5/5] iio: magn: ak8975: deploy runtime PM
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Gregor Boirie <gregor.boirie@parrot.com>,
+To: Linus Walleij <linus.walleij@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	<linux-iio@vger.kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
 	Richard Leitner <dev@g0hl1n.net>,
 	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Gwendal Grignou <gwendal@chromium.org>
-Content-Type: text/plain; charset=UTF-8
+	Gwendal Grignou <gwendal@chromium.org>,
+	Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 1/5] iio: magn: ak8975: fix regulator usage
+References: <1466547498-15484-1-git-send-email-linus.walleij@linaro.org> <1466547498-15484-2-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1466547498-15484-2-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22 June 2016 at 00:18, Linus Walleij <linus.walleij@linaro.org> wrote:
-> This adds runtime PM support to the AK8975 driver. It solves two
-> problems:
+
+
+On 06/22/2016 12:18 AM, Linus Walleij wrote:
+> IS_ERR_OR_NULL() should never be used with regulators because
+> a NULL pointer may be a perfectly valid dummy regulator
 >
-> - After reading the first value the chip was left in MODE_ONCE,
->   meaning (presumably) it may be consuming more power. Now the
->   runtime PM hooks kick in and set it to POWER_DOWN.
+> We should always succeed to fetch and enable a regulator, but
+> it may be a dummy. That is fine, so bail out for any real
+> errors or probe deferrals
 >
-> - Regulators were simply enabled and left on, making it
->   impossible to turn the power consuming regulators off because
->   of the increased refcount. We now disable the regulators at
->   autosuspend.
+> Include the error code in the warning print so we know what
+> kind of problem we're dealing with (for example it is nice to
+> see if it is a probe deferral).
 >
-> Inspired by my work on the BH1780 light sensor driver.
+> As we will bail out of probe if the regulator is erroneous,
+> just issue regulator_disable() on the poweroff path: it will
+> succeed.
 >
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Lars-Peter Clausen Lars-Peter Clausen <lars@metafoo.de>
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 > ---
->  drivers/iio/magnetometer/ak8975.c | 80 ++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 78 insertions(+), 2 deletions(-)
+>   drivers/iio/magnetometer/ak8975.c | 15 +++++++--------
+>   1 file changed, 7 insertions(+), 8 deletions(-)
 >
 > diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index 1c6e4157a91f..71a8e3348b8a 100644
+> index 609a2c401b5d..bc0770205b2d 100644
 > --- a/drivers/iio/magnetometer/ak8975.c
 > +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -33,6 +33,7 @@
->  #include <linux/of_gpio.h>
->  #include <linux/acpi.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/pm_runtime.h>
->
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -691,6 +692,8 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
->         const struct ak_def *def = data->def;
->         int ret;
->
-> +       pm_runtime_get_sync(&data->client->dev);
-> +
->         mutex_lock(&data->lock);
->
->         ret = ak8975_start_read_axis(data, client);
-> @@ -703,6 +706,9 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
->
->         mutex_unlock(&data->lock);
->
-> +       pm_runtime_mark_last_busy(&data->client->dev);
-> +       pm_runtime_put_autosuspend(&data->client->dev);
-> +
->         /* Clamp to valid range. */
->         *val = clamp_t(s16, ret, -def->range, def->range);
->         return IIO_VAL_INT;
-> @@ -970,26 +976,95 @@ static int ak8975_probe(struct i2c_client *client,
->                 goto cleanup_buffer;
->         }
->
-> +       /* Enable runtime PM */
-> +       pm_runtime_get_noresume(&client->dev);
-> +       pm_runtime_set_active(&client->dev);
-> +       pm_runtime_enable(&client->dev);
-> +       /*
-> +        * The device comes online in 500us, so add two orders of magnitude
-> +        * of delay before autosuspending: 50 ms.
-> +        */
-> +       pm_runtime_set_autosuspend_delay(&client->dev, 50);
-> +       pm_runtime_use_autosuspend(&client->dev);
-> +       pm_runtime_put(&client->dev);
-> +
->         return 0;
->
->  cleanup_buffer:
->         iio_triggered_buffer_cleanup(indio_dev);
->  power_off:
-> -       ak8975_power_off(client);
-> +       ak8975_power_off(data);
+> @@ -389,17 +389,17 @@ static int ak8975_power_on(struct i2c_client *client)
+>   	int ret;
+>   
+>   	data->vdd = devm_regulator_get(&client->dev, "vdd");
+> -	if (IS_ERR_OR_NULL(data->vdd)) {
+> +	if (IS_ERR(data->vdd)) {
+>   		ret = PTR_ERR(data->vdd);
+> -		if (ret == -ENODEV)
+> -			ret = 0;
+what if dummy supplies are not allowed and regulator is not declared / 
+found into device tree ?
 
-Is this really related to this change?
+I have no such regulator on some boards, just a main power supply that 
+is not driven by soft.
+How should this be handled in this case ?
+>   	} else {
+>   		ret = regulator_enable(data->vdd);
+>   	}
+> +	if (ret) {
+> +		dev_warn(&client->dev,
+> +			 "Failed to enable specified Vdd supply\n");
+> +		return ret;
+> +	}
+>   
+> -	if (ret)
+> -		dev_err(&client->dev, "failed to enable Vdd supply: %d\n", ret);
+> -	return ret;
+>   }
+>   
+>   /* Disable attached power regulator if any. */
+> @@ -408,8 +408,7 @@ static void ak8975_power_off(const struct i2c_client *client)
+>   	const struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>   	const struct ak8975_data *data = iio_priv(indio_dev);
+>   
+> -	if (!IS_ERR_OR_NULL(data->vdd))
+> -		regulator_disable(data->vdd);
+> +	regulator_disable(data->vdd);
+>   }
+>   
+>   /*
 
->         return err;
->  }
->
->  static int ak8975_remove(struct i2c_client *client)
->  {
->         struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +       struct ak8975_data *data = iio_priv(indio_dev);
->
-> +       pm_runtime_get_sync(&client->dev);
-> +       pm_runtime_put_noidle(&client->dev);
-> +       pm_runtime_disable(&client->dev);
->         iio_device_unregister(indio_dev);
->         iio_triggered_buffer_cleanup(indio_dev);
-> -       ak8975_power_off(client);
-> +       ak8975_set_mode(data, POWER_DOWN);
-> +       ak8975_power_off(data);
-
-I think these two last lines deserves as separate patch.
-
-> +
-> +       return 0;
-> +}
-> +
-> +#ifdef CONFIG_PM
-> +static int ak8975_runtime_suspend(struct device *dev)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +       struct ak8975_data *data = iio_priv(indio_dev);
-> +       int ret;
-> +
-> +       dev_info(&client->dev, "%s\n", __func__);
-
-Perhaps remove this print, seems like a leftover for a debug exercise. :-)
-
-> +       /* Set the device in power down if it wasn't already */
-> +       ret = ak8975_set_mode(data, POWER_DOWN);
-> +       if (ret < 0) {
-> +               dev_err(&client->dev, "Error in setting power-down mode\n");
-> +               return ret;
-> +       }
-> +       /* Next cut the regulators */
-> +       ak8975_power_off(data);
->
->         return 0;
->  }
->
-> +static int ak8975_runtime_resume(struct device *dev)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +       struct ak8975_data *data = iio_priv(indio_dev);
-> +       int ret;
-> +
-> +       dev_info(&client->dev, "%s\n", __func__);
-
-Ditto.
-
-> +       /* Take up the regulators */
-> +       ak8975_power_on(data);
-> +       /*
-> +        * We come up in powered down mode, the reading routines will
-> +        * put us in the mode to read values later.
-> +        */
-> +       ret = ak8975_set_mode(data, POWER_DOWN);
-> +       if (ret < 0) {
-> +               dev_err(&client->dev, "Error in setting power-down mode\n");
-> +               return ret;
-> +       }
-> +
-> +       return 0;
-> +}
-> +#endif /* CONFIG_PM */
-> +
-> +static const struct dev_pm_ops ak8975_dev_pm_ops = {
-> +       SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
-> +                               pm_runtime_force_resume)
-
-The system PM support isn't mentioned in the change log.
-
-I don't mind that you add it within $subject patch, just add some
-words about it in the changelog. Perhaps you can mention that you
-"deploy system PM support via the runtime PM centric approach".
-
-> +       SET_RUNTIME_PM_OPS(ak8975_runtime_suspend,
-> +                          ak8975_runtime_resume, NULL)
-> +};
-> +
->  static const struct i2c_device_id ak8975_id[] = {
->         {"ak8975", AK8975},
->         {"ak8963", AK8963},
-> @@ -1017,6 +1092,7 @@ MODULE_DEVICE_TABLE(of, ak8975_of_match);
->  static struct i2c_driver ak8975_driver = {
->         .driver = {
->                 .name   = "ak8975",
-> +               .pm = &ak8975_dev_pm_ops,
->                 .of_match_table = of_match_ptr(ak8975_of_match),
->                 .acpi_match_table = ACPI_PTR(ak_acpi_match),
->         },
-> --
-> 2.4.11
->
-
-Nice work!
-
-Kind regards
-Uffe
