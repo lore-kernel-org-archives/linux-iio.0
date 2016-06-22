@@ -1,94 +1,69 @@
-Return-Path: <zhiyong.tao@mediatek.com>
-From: <zhiyong.tao@mediatek.com>
-To: <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
-	<lars@metafoo.de>, <pmeerw@pmeerw.net>
-CC: <srv_heupstream@mediatek.com>, <liguo.zhang@mediatek.com>,
-	<yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
-	<erin.lo@mediatek.com>, <dawei.chien@mediatek.com>, <matthias.bgg@gmail.com>,
-	<s.hauer@pengutronix.de>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Subject: [PATCH 0/3] AUXADC: Mediatek auxadc driver 
-Date: Fri, 24 Jun 2016 15:37:07 +0800
-Message-ID: <1466753830-4542-1-git-send-email-zhiyong.tao@mediatek.com>
-MIME-Version: 1.0
-Content-Type: multipart/related;
-	boundary="__=_Part_Boundary_002_105025169.2135743537"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f48.google.com ([209.85.215.48]:35853 "EHLO
+	mail-lf0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751059AbcFVUx4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jun 2016 16:53:56 -0400
+Received: by mail-lf0-f48.google.com with SMTP id q132so82362667lfe.3
+        for <linux-iio@vger.kernel.org>; Wed, 22 Jun 2016 13:53:55 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>,
+	Matt Ranostay <mranostay@gmail.com>
+Cc: Christoph Mair <christoph.mair@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Eric Andersson <eric.andersson@unixphere.com>,
+	Neil Brown <neilb@suse.de>,
+	Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 0/9] Improve BMP280 driver v2
+Date: Wed, 22 Jun 2016 22:53:30 +0200
+Message-Id: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---__=_Part_Boundary_002_105025169.2135743537
-Content-Transfer-Encoding: base64
-Content-Type: multipart/alternative;
-	boundary="__=_Part_Boundary_003_761082451.129796713"
+This is version two of the previous patchset. Changes:
 
---__=_Part_Boundary_003_761082451.129796713
-Content-Type: text/html
-Content-Transfer-Encoding: base64
+- Rebased on top of Matt Ranostays BME280 support patch so everything
+  applies cleanly on top of Jonathans development branch
 
-PHByZT4NClRoaXMgaXMgdGhlIGZpcnN0IHZlcnNpb24gb2YgYXV4YWRjIGRyaXZlciBmb3IgTWVk
-aWF0ZWsgTVQyNzAxDQpJdCBpbmNsdWRlcyB0aHJlZSBwYXRjaGVzOg0KMS5DaGFuZ2UgdGhlIGRl
-dmljZSB0cmVlIGJpbmRpbmcgZG9jdW1lbnRhdGlvbi4NCjIuQWRkIGF1eGFkYyBkcml2ZXIgYmFz
-ZWQgb24gbGludXggaWlvLg0KMy5BZGQgYXV4YWRjIG5vZGVzIGluIHRoZSBtZWRpYXRlayBNVDI3
-MDEgZHRzaSBmaWxlLg0KDQpaaGl5b25nIFRhbyAoMyk6DQogIGR0LWJpbmRpbmdzOiBhdXhhZGM6
-IEFkZCBiaW5kaW5nIGRvY3VtZW50IGZvciBNZWRpYXRlayBhdXhhZGMuDQogIGF1eGFkYzogQWRk
-IE1lZGlhdGVrIGF1eGFkYyBkcml2ZXIgZm9yIG10MjcwMS4NCiAgYXJtOiBkdHM6IGF1eGFkYzog
-QWRkIGF1eGFkYyBub2RlLg0KDQogLi4uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FkYy9tdDY1
-eHhfYXV4YWRjLnR4dCAgfCAgIDI3ICsrDQogLi4uL2RldmljZXRyZWUvYmluZGluZ3Mvc29jL21l
-ZGlhdGVrL2F1eGFkYy50eHQgICAgfCAgIDIxIC0tDQogYXJjaC9hcm0vYm9vdC9kdHMvbXQyNzAx
-LmR0c2kgICAgICAgICAgICAgICAgICAgICAgfCAgICA5ICsNCiBkcml2ZXJzL2lpby9hZGMvS2Nv
-bmZpZyAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMTEgKw0KIGRyaXZlcnMvaWlvL2Fk
-Yy9NYWtlZmlsZSAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgMSArDQogZHJpdmVycy9p
-aW8vYWRjL210NjV4eF9hdXhhZGMuYyAgICAgICAgICAgICAgICAgICAgfCAgMjY5ICsrKysrKysr
-KysrKysrKysrKysrDQogNiBmaWxlcyBjaGFuZ2VkLCAzMTcgaW5zZXJ0aW9ucygrKSwgMjEgZGVs
-ZXRpb25zKC0pDQogY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
-aW5kaW5ncy9paW8vYWRjL210NjV4eF9hdXhhZGMudHh0DQogZGVsZXRlIG1vZGUgMTAwNjQ0IERv
-Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zb2MvbWVkaWF0ZWsvYXV4YWRjLnR4dA0K
-IGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby9hZGMvbXQ2NXh4X2F1eGFkYy5jDQoNCjwv
-cHJlPjwhLS10eXBlOnRleHQtLT48IS0tey0tPjxwcmU+KioqKioqKioqKioqKiBFbWFpbCBDb25m
-aWRlbnRpYWxpdHkgTm90aWNlDQogKioqKioqKioqKioqKioqKioqKioKVGhlIGluZm9ybWF0aW9u
-IGNvbnRhaW5lZCBpbiB0aGlzIGUtbWFpbCBtZXNzYWdlIChpbmNsdWRpbmcgYW55IAphdHRhY2ht
-ZW50cykgbWF5IGJlIGNvbmZpZGVudGlhbCwgcHJvcHJpZXRhcnksIHByaXZpbGVnZWQsIG9yIG90
-aGVyd2lzZQpleGVtcHQgZnJvbSBkaXNjbG9zdXJlIHVuZGVyIGFwcGxpY2FibGUgbGF3cy4gSXQg
-aXMgaW50ZW5kZWQgdG8gYmUgCmNvbnZleWVkIG9ubHkgdG8gdGhlIGRlc2lnbmF0ZWQgcmVjaXBp
-ZW50KHMpLiBBbnkgdXNlLCBkaXNzZW1pbmF0aW9uLCAKZGlzdHJpYnV0aW9uLCBwcmludGluZywg
-cmV0YWluaW5nIG9yIGNvcHlpbmcgb2YgdGhpcyBlLW1haWwgKGluY2x1ZGluZyBpdHMgCmF0dGFj
-aG1lbnRzKSBieSB1bmludGVuZGVkIHJlY2lwaWVudChzKSBpcyBzdHJpY3RseSBwcm9oaWJpdGVk
-IGFuZCBtYXkgCmJlIHVubGF3ZnVsLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGll
-bnQgb2YgdGhpcyBlLW1haWwsIG9yIGJlbGlldmUNCiAKdGhhdCB5b3UgaGF2ZSByZWNlaXZlZCB0
-aGlzIGUtbWFpbCBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIAppbW1lZGlhdGVs
-eSAoYnkgcmVwbHlpbmcgdG8gdGhpcyBlLW1haWwpLCBkZWxldGUgYW55IGFuZCBhbGwgY29waWVz
-IG9mIAp0aGlzIGUtbWFpbCAoaW5jbHVkaW5nIGFueSBhdHRhY2htZW50cykgZnJvbSB5b3VyIHN5
-c3RlbSwgYW5kIGRvIG5vdApkaXNjbG9zZSB0aGUgY29udGVudCBvZiB0aGlzIGUtbWFpbCB0byBh
-bnkgb3RoZXIgcGVyc29uLiBUaGFuaw0KIHlvdSE8L3ByZT48IS0tfS0t
+- Added Akinobu Mitas special SPI bus handling code snippets
 
---__=_Part_Boundary_003_761082451.129796713
-Content-Type: text/plain
+- Made the regulators non-optional: if the chip has supplies, it should
+  have regulators for them
 
-This is the first version of auxadc driver for Mediatek MT2701
-It includes three patches:
-1.Change the device tree binding documentation.
-2.Add auxadc driver based on linux iio.
-3.Add auxadc nodes in the mediatek MT2701 dtsi file.
+- Fixed review comments and build remarks provided by the zeroday
+  build robot
 
-Zhiyong Tao (3):
-  dt-bindings: auxadc: Add binding document for Mediatek auxadc.
-  auxadc: Add Mediatek auxadc driver for mt2701.
-  arm: dts: auxadc: Add auxadc node.
+Linus Walleij (9):
+  iio: pressure: bmp280: augment DT bindings
+  iio: pressure: bmp280: support device tree initialization
+  iio: pressure: bmp280: add reset GPIO line handling
+  iio: pressure: bmp280: support supply regulators
+  iio: pressure: bmp280: split driver in logical parts
+  iio: pressure: bmp280: split off an I2C Kconfig entry
+  iio: pressure: bmp280: add SPI interface driver
+  iio: pressure: bmp280: add support for BMP085 EOC interrupt
+  iio: pressure: bmp280: read calibration data once
 
- .../devicetree/bindings/iio/adc/mt65xx_auxadc.txt  |   27 ++
- .../devicetree/bindings/soc/mediatek/auxadc.txt    |   21 --
- arch/arm/boot/dts/mt2701.dtsi                      |    9 +
- drivers/iio/adc/Kconfig                            |   11 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/mt65xx_auxadc.c                    |  269
- ++++++++++++++++++++
- 6 files changed, 317 insertions(+), 21 deletions(-)
- create mode 100644
- Documentation/devicetree/bindings/iio/adc/mt65xx_auxadc.txt
- delete mode 100644
- Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
- create mode 100644 drivers/iio/adc/mt65xx_auxadc.c
+ .../devicetree/bindings/iio/pressure/bmp085.txt    |   15 +-
+ drivers/iio/pressure/Kconfig                       |   29 +-
+ drivers/iio/pressure/Makefile                      |    3 +
+ drivers/iio/pressure/bmp280-core.c                 | 1009 ++++++++++++++++++
+ drivers/iio/pressure/bmp280-i2c.c                  |   83 ++
+ drivers/iio/pressure/bmp280-regmap.c               |   81 ++
+ drivers/iio/pressure/bmp280-spi.c                  |  118 +++
+ drivers/iio/pressure/bmp280.c                      | 1118 --------------------
+ drivers/iio/pressure/bmp280.h                      |  108 ++
+ 9 files changed, 1437 insertions(+), 1127 deletions(-)
+ create mode 100644 drivers/iio/pressure/bmp280-core.c
+ create mode 100644 drivers/iio/pressure/bmp280-i2c.c
+ create mode 100644 drivers/iio/pressure/bmp280-regmap.c
+ create mode 100644 drivers/iio/pressure/bmp280-spi.c
+ delete mode 100644 drivers/iio/pressure/bmp280.c
+ create mode 100644 drivers/iio/pressure/bmp280.h
 
---__=_Part_Boundary_003_761082451.129796713--
+-- 
+2.4.11
 
---__=_Part_Boundary_002_105025169.2135743537--
