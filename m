@@ -1,89 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailcl0.heig-vd.ch ([193.134.216.181]:39351 "EHLO heig-vd.ch"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751680AbcFWIup (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 23 Jun 2016 04:50:45 -0400
-Subject: Re: [PATCH 3/3] iio: potentiometer: mcp4531: Add device tree binding
-To: Peter Rosin <peda@axentia.se>
-References: <1466492137-32683-1-git-send-email-florian.vaussard@heig-vd.ch>
- <1466492137-32683-4-git-send-email-florian.vaussard@heig-vd.ch>
- <bf4dbd64-aac8-aba3-ec5c-4cd4d0e848f6@axentia.se>
- <829a4507-39d7-e04a-9672-6309def89ee2@heig-vd.ch>
- <dfdbc7dd-8457-c0ef-9f0e-e2c1d96e5b11@axentia.se>
-CC: <devicetree@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Slawomir Stepien <sst@poczta.fm>,
-	Joachim Eastwood <manabian@gmail.com>,
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:33762 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751026AbcFWKCw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 06:02:52 -0400
+Date: Thu, 23 Jun 2016 11:02:43 +0100
+From: Mark Brown <broonie@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>,
 	Matt Ranostay <mranostay@gmail.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	Vaussard Florian <florian.vaussard@heig-vd.ch>
-From: Florian Vaussard <florian.vaussard@heig-vd.ch>
-Message-ID: <576BA2DD.2060501@heig-vd.ch>
-Date: Thu, 23 Jun 2016 10:50:37 +0200
+	Christoph Mair <christoph.mair@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Eric Andersson <eric.andersson@unixphere.com>,
+	Neil Brown <neilb@suse.de>
+Message-ID: <20160623100243.GW28202@sirena.org.uk>
+References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
+ <1466628819-29784-5-git-send-email-linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <dfdbc7dd-8457-c0ef-9f0e-e2c1d96e5b11@axentia.se>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="O7hm+SMpb/lu0d4d"
+In-Reply-To: <1466628819-29784-5-git-send-email-linus.walleij@linaro.org>
+Subject: Re: [PATCH 4/9 v2] iio: pressure: bmp280: support supply regulators
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Peter,
 
-On 06/22/2016 09:06 AM, Peter Rosin wrote:
-> On 2016-06-22 08:22, Florian Vaussard wrote:
->> Hello Peter,
->>
->> Le 21. 06. 16 à 09:51, Peter Rosin a écrit :
->>> That is, if you need this patch at all, see my reply to 2/3...
->>>
->>
->> This seems necessary in order to have the vendor ID in the compatible string.
-> 
-> Hmm, I don't think so. The way I read the response from Rob was that
-> *my* device tree snippet should not assume that the i2c subsystem
-> ignores the vendor. So, I think that even w/o this patch a DT entry
-> like
-> 
-> 		mcp4651-104@28 {
-> 			compatible = "microchip,mcp4651-104";
-> 			reg = <0x28>;
-> 		};
-> 
-> will work, precisely since i2c ignores the microchip, part (and thus
-> allows you to omit/misspell it). I.e. I think that Rob is concerned
-> with how the DT is documented/defined, and not so much about how it
-> is then implemented in Linux.
-> 
+--O7hm+SMpb/lu0d4d
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-The way that I read Rob's reply is reverse: you should not rely on the matching
-done by i2c subsystem and provide a proper of_device_id table instead.
+On Wed, Jun 22, 2016 at 10:53:34PM +0200, Linus Walleij wrote:
 
-I think that ignoring the vendor when matching the compatible, like what is
-currently done by the i2c subsystem, is bad. What happens if you have two chips
-from two companies with the same name (yes it happens)? You may need different
-data to address the small specificities of each chip, or even worse a different
-driver at all. This implies that we should explicitly match the vendor as well,
-otherwise we would be unable to cope with such cases.
+> +	data->vddd = devm_regulator_get(&client->dev, "vddd");
+> +	if (IS_ERR(data->vddd)) {
+> +		dev_err(&client->dev, "failed to get VDDD regulator\n");
+> +		return PTR_ERR(data->vddd);
+> +	}
+> +	ret = regulator_enable(data->vddd);
+> +	if (ret) {
+> +		dev_err(&client->dev, "failed to enable VDDD regulator\n");
+> +		return ret;
+> +	}
 
-Moreover, if we look at the current i2c drivers, a whole bunch of them already
-have a of_device_id table:
+I'm not seeing any matching regulator_disable() calls anywhere...
 
-(on v4.6)
+--O7hm+SMpb/lu0d4d
+Content-Type: application/pgp-signature; name="signature.asc"
 
-$ git grep -l i2c_device_id | wc -l
-636
-$ git grep -l i2c_device_id | xargs grep -l 'of_device_id' | wc -l
-197
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-Currently 30% of all i2c drivers explicitly declare DT compatible strings. And I
-am sure that this number will keep increasing as drivers are converted to DT.
+iQEcBAEBCAAGBQJXa7PBAAoJECTWi3JdVIfQ0AgH/iw6jGb/xMQKCiviaX3nWaQt
+OE3kv9tr7ZPUzmaLloxUZNTn9EBIWrO8MypNYAiC20fDnpixL0mURFt7AE4WIggi
+de3KgPUJq2gnaQjaw+t2Ahmjee7TMPKtmaDEFEWIfKmQCVdQ/nY2HNbuUKQBUwBu
+ZxeeCNQlc5T+GOtzoOhuDQdvBA7w7+gY6Em6Ga9faefk9R03gkJG0rE3wI+g5g/S
+U7xA1SSDpdhRlaDnRJAb/qTuBMSRJomDne96PKeFg4RsSg5AcWD3Id4heYZs2jrK
+oNj0bM4ewIisStWbBUGU55X3vh7k+dmAvn1pTnsBPLorMO4O6J7xp1Td7DlvdmY=
+=wJFs
+-----END PGP SIGNATURE-----
 
-Regards,
-Florian
+--O7hm+SMpb/lu0d4d--
