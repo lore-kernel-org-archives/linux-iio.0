@@ -1,412 +1,2698 @@
-Return-Path: <mranostay@gmail.com>
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	Matt Ranostay <mranostay@gmail.com>,
-	Marek Vasut <marex@denx.de>,
-	Matt Porter <mporter@konsulko.com>
-Subject: [PATCH v4] iio: temperature: add support for Maxim thermocouple chips
-Date: Wed, 22 Jun 2016 17:17:42 -0700
-Message-Id: <1466641062-18127-1-git-send-email-mranostay@gmail.com>
+Return-Path: <hns@goldelico.com>
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH 5/9 v2] iio: pressure: bmp280: split driver in logical parts
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <1466628819-29784-6-git-send-email-linus.walleij@linaro.org>
+Date: Thu, 23 Jun 2016 10:18:32 +0200
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ linux-iio@vger.kernel.org,
+ Akinobu Mita <akinobu.mita@gmail.com>,
+ Matt Ranostay <mranostay@gmail.com>,
+ Christoph Mair <christoph.mair@gmail.com>,
+ Vlad Dogaru <vlad.dogaru@intel.com>,
+ Hartmut Knaack <knaack.h@gmx.de>,
+ Marek Belisko <marek@goldelico.com>,
+ Eric Andersson <eric.andersson@unixphere.com>,
+ Neil Brown <neilb@suse.de>,
+ Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
+ kernel@pyra-handheld.com
+Message-Id: <4374A107-10EC-4E0C-988F-0BF10161DFFD@goldelico.com>
+References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org> <1466628819-29784-6-git-send-email-linus.walleij@linaro.org>
+To: Linus Walleij <linus.walleij@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add initial driver support for MAX6675, and MAX31855 thermocouple chips.
 
-Cc: Marek Vasut <marex@denx.de>
-Cc: Matt Porter <mporter@konsulko.com>
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
+> Am 22.06.2016 um 22:53 schrieb Linus Walleij =
+<linus.walleij@linaro.org>:
+>=20
+> This splits the BMP280 driver in three logical parts: the core driver
+> bmp280-core that only operated on a struct device * and a struct =
+regmap *,
+> the regmap driver bmp280-regmap that can be shared between I2C and =
+other
+> transports and the I2C module driver bmp280-i2c.
+>=20
+> Cleverly bake all functionality into a single object bmp280.o so that
+> we still get the same module binary built for the device in the end,
+> without any fuzz exporting symbols to the left and right.
+>=20
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v1->v2:
+> - Rebased on top of Matt Ranostays BME280 with humidity sensor support
+> ---
+> drivers/iio/pressure/Makefile        |    1 +
+> drivers/iio/pressure/bmp280-core.c   |  937 =
++++++++++++++++++++++++++++
+> drivers/iio/pressure/bmp280-i2c.c    |   82 +++
+> drivers/iio/pressure/bmp280-regmap.c |   81 +++
+> drivers/iio/pressure/bmp280.c        | 1167 =
+----------------------------------
+> drivers/iio/pressure/bmp280.h        |  107 ++++
+> 6 files changed, 1208 insertions(+), 1167 deletions(-)
+> create mode 100644 drivers/iio/pressure/bmp280-core.c
+> create mode 100644 drivers/iio/pressure/bmp280-i2c.c
+> create mode 100644 drivers/iio/pressure/bmp280-regmap.c
+> delete mode 100644 drivers/iio/pressure/bmp280.c
+> create mode 100644 drivers/iio/pressure/bmp280.h
+>=20
+> diff --git a/drivers/iio/pressure/Makefile =
+b/drivers/iio/pressure/Makefile
+> index 17d6e7afa1ff..2d98a7ff77a8 100644
+> --- a/drivers/iio/pressure/Makefile
+> +++ b/drivers/iio/pressure/Makefile
+> @@ -4,6 +4,7 @@
+>=20
+> # When adding new entries keep the list in alphabetical order
+> obj-$(CONFIG_BMP280) +=3D bmp280.o
+> +bmp280-objs :=3D bmp280-core.o bmp280-regmap.o bmp280-i2c.o
 
-Changes from v1:
-* switch to iio_device_*_direct_mode wrappers
-* add const to structs
-* removed useless cast
+With menuconfig setting to 'M'
 
-Changes from v2:
-* mark buffer data invalid on disconnected thermocouple
-* add .address = 0 to be consistent
-* add missing scan_mask for the max31855 part
+CONFIG_BMP280=3Dm
+CONFIG_BMP280_I2C=3Dm
+CONFIG_BMP280_SPI=3Dm
 
-Changes from v3:
-* fixed several typos of max31855 part number
+I get
 
-.../iio/temperature/maxim_thermocouple.txt         |  21 ++
- drivers/iio/temperature/Kconfig                    |  14 +
- drivers/iio/temperature/Makefile                   |   1 +
- drivers/iio/temperature/maxim_thermocouple.c       | 300 +++++++++++++++++++++
- 4 files changed, 336 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
- create mode 100644 drivers/iio/temperature/maxim_thermocouple.c
+ERROR: "bmp280_regmap_config" [drivers/iio/pressure/bmp280-spi.ko] =
+undefined!
+ERROR: "bmp180_regmap_config" [drivers/iio/pressure/bmp280-spi.ko] =
+undefined!
+ERROR: "bmp280_common_probe" [drivers/iio/pressure/bmp280-spi.ko] =
+undefined!
+ERROR: "bmp280_regmap_config" [drivers/iio/pressure/bmp280-i2c.ko] =
+undefined!
+ERROR: "bmp180_regmap_config" [drivers/iio/pressure/bmp280-i2c.ko] =
+undefined!
+ERROR: "bmp280_common_probe" [drivers/iio/pressure/bmp280-i2c.ko] =
+undefined!
 
-diff --git a/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
-new file mode 100644
-index 000000000000..28bc5c4d965b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
-@@ -0,0 +1,21 @@
-+Maxim thermocouple support
-+
-+* https://datasheets.maximintegrated.com/en/ds/MAX6675.pdf
-+* https://datasheets.maximintegrated.com/en/ds/MAX31855.pdf
-+
-+Required properties:
-+
-+	- compatible: must be "maxim,max31855" or "maxim,max6675"
-+	- reg: SPI chip select number for the device
-+	- spi-max-frequency: must be 4300000
-+	- spi-cpha: must be defined for max6675 to enable SPI mode 1
-+
-+	Refer to spi/spi-bus.txt for generic SPI slave bindings.
-+
-+Example:
-+
-+	max31855@0 {
-+		compatible = "maxim,max31855";
-+		reg = <0>;
-+		spi-max-frequency = <4300000>;
-+	};
-diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-index c4664e5de791..1d3da05eca39 100644
---- a/drivers/iio/temperature/Kconfig
-+++ b/drivers/iio/temperature/Kconfig
-@@ -3,6 +3,20 @@
- #
- menu "Temperature sensors"
- 
-+config MAXIM_THERMOCOUPLE
-+	tristate "Maxim thermocouple sensors"
-+	depends on SPI
-+	help
-+	  If you say yes here you get support for the Maxim series of
-+	  thermocouple sensors connected via SPI.
-+
-+	  Supported sensors:
-+	   * MAX6675
-+	   * MAX31855
-+
-+	  This driver can also be built as a module. If so, the module will
-+	  be called maxim_thermocouple.
-+
- config MLX90614
- 	tristate "MLX90614 contact-less infrared sensor"
- 	depends on I2C
-diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-index 02bc79d49b24..78c3de0dc3f0 100644
---- a/drivers/iio/temperature/Makefile
-+++ b/drivers/iio/temperature/Makefile
-@@ -2,6 +2,7 @@
- # Makefile for industrial I/O temperature drivers
- #
- 
-+obj-$(CONFIG_MAXIM_THERMOCOUPLE) += maxim_thermocouple.o
- obj-$(CONFIG_MLX90614) += mlx90614.o
- obj-$(CONFIG_TMP006) += tmp006.o
- obj-$(CONFIG_TSYS01) += tsys01.o
-diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-new file mode 100644
-index 000000000000..f7476683d59d
---- /dev/null
-+++ b/drivers/iio/temperature/maxim_thermocouple.c
-@@ -0,0 +1,300 @@
-+/*
-+ * maxim_thermocouple.c  - Support for Maxim thermocouple chips
-+ *
-+ * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/mutex.h>
-+#include <linux/err.h>
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+
-+#define MAXIM_THERMOCOUPLE_DRV_NAME	"maxim_thermocouple"
-+
-+enum {
-+	MAX6675,
-+	MAX31855,
-+};
-+
-+const struct iio_chan_spec max6675_channels[] = {
-+	{	/* thermocouple temperature */
-+		.type = IIO_TEMP,
-+		.info_mask_separate =
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 13,
-+			.storagebits = 16,
-+			.shift = 3,
-+			.endianness = IIO_BE,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(1),
-+};
-+
-+const struct iio_chan_spec max31855_channels[] = {
-+	{	/* thermocouple temperature */
-+		.type = IIO_TEMP,
-+		.address = 2,
-+		.info_mask_separate =
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 14,
-+			.storagebits = 16,
-+			.shift = 2,
-+			.endianness = IIO_BE,
-+		},
-+	},
-+	{	/* cold junction temperature */
-+		.type = IIO_TEMP,
-+		.address = 0,
-+		.channel2 = IIO_MOD_TEMP_AMBIENT,
-+		.modified = 1,
-+		.info_mask_separate =
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 12,
-+			.storagebits = 16,
-+			.shift = 4,
-+			.endianness = IIO_BE,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(2),
-+};
-+
-+static const unsigned long max31855_scan_masks[] = {0x3, 0};
-+
-+struct maxim_thermocouple_chip {
-+	const struct iio_chan_spec *channels;
-+	const unsigned long *scan_masks;
-+	int num_channels;
-+	int read_size;
-+
-+	/* bit-check for valid input */
-+	int status_bit;
-+};
-+
-+const struct maxim_thermocouple_chip maxim_thermocouple_chips[] = {
-+	[MAX6675] = {
-+			.channels = max6675_channels,
-+			.num_channels = ARRAY_SIZE(max6675_channels),
-+			.read_size = 2,
-+			.status_bit = BIT(2),
-+		},
-+	[MAX31855] = {
-+			.channels = max31855_channels,
-+			.num_channels = ARRAY_SIZE(max31855_channels),
-+			.read_size = 4,
-+			.scan_masks = max31855_scan_masks,
-+			.status_bit = BIT(16),
-+		},
-+};
-+
-+struct maxim_thermocouple_data {
-+	struct spi_device *spi;
-+	const struct maxim_thermocouple_chip *chip;
-+
-+	u8 buffer[16]; /* 4 byte data + 4 byte padding + 8 byte timestamp */
-+};
-+
-+static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
-+				   struct iio_chan_spec const *chan, int *val)
-+{
-+	unsigned int storage_bytes = data->chip->read_size;
-+	unsigned int shift = chan->scan_type.shift + (chan->address * 8);
-+	unsigned int buf;
-+	int ret;
-+
-+	ret = spi_read(data->spi, (void *) &buf, storage_bytes);
-+	if (ret)
-+		return ret;
-+
-+	switch (storage_bytes) {
-+	case 2:
-+		*val = be16_to_cpu(buf);
-+		break;
-+	case 4:
-+		*val = be32_to_cpu(buf);
-+		break;
-+	}
-+
-+	/* check to be sure this is a valid reading */
-+	if (*val & data->chip->status_bit)
-+		return -EINVAL;
-+
-+	*val = sign_extend32(*val >> shift, chan->scan_type.realbits - 1);
-+
-+	return 0;
-+}
-+
-+static void maxim_thermocouple_validate_buffer(struct maxim_thermocouple_data *data)
-+{
-+	unsigned int storage_bytes = data->chip->read_size;
-+	unsigned int *buf = (unsigned int *) data->buffer;
-+	int tmp = 0;
-+
-+	switch (storage_bytes) {
-+	case 2:
-+		tmp = be16_to_cpu(*buf);
-+		break;
-+	case 4:
-+		tmp = be32_to_cpu(*buf);
-+		break;
-+	}
-+
-+	/* check to be sure this is a valid reading, mark result -1 if not */
-+	if (tmp & data->chip->status_bit)
-+		memset(data->buffer, 0xff, storage_bytes);
-+}
-+
-+static irqreturn_t maxim_thermocouple_trigger_handler(int irq, void *private)
-+{
-+	struct iio_poll_func *pf = private;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct maxim_thermocouple_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = spi_read(data->spi, data->buffer, data->chip->read_size);
-+	if (!ret) {
-+		maxim_thermocouple_validate_buffer(data);
-+		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+						   iio_get_time_ns());
-+	}
-+
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int maxim_thermocouple_read_raw(struct iio_dev *indio_dev,
-+				       struct iio_chan_spec const *chan,
-+				       int *val, int *val2, long mask)
-+{
-+	struct maxim_thermocouple_data *data = iio_priv(indio_dev);
-+	int ret = -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (iio_device_claim_direct_mode(indio_dev))
-+			return -EBUSY;
-+
-+		ret = maxim_thermocouple_read(data, chan, val);
-+		if (!ret)
-+			ret = IIO_VAL_INT;
-+
-+		iio_device_release_direct_mode(indio_dev);
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->channel2) {
-+		case IIO_MOD_TEMP_AMBIENT:
-+			*val = 62;
-+			*val2 = 500000; /* 1000 * 0.0625 */
-+			ret = IIO_VAL_INT_PLUS_MICRO;
-+			break;
-+		default:
-+			*val = 250; /* 1000 * 0.25 */
-+			ret = IIO_VAL_INT;
-+		};
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static const struct iio_info maxim_thermocouple_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = maxim_thermocouple_read_raw,
-+};
-+
-+static int maxim_thermocouple_probe(struct spi_device *spi)
-+{
-+	const struct spi_device_id *id = spi_get_device_id(spi);
-+	struct iio_dev *indio_dev;
-+	struct maxim_thermocouple_data *data;
-+	const struct maxim_thermocouple_chip *chip =
-+			&maxim_thermocouple_chips[id->driver_data];
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	indio_dev->info = &maxim_thermocouple_info;
-+	indio_dev->name = MAXIM_THERMOCOUPLE_DRV_NAME;
-+	indio_dev->channels = chip->channels;
-+	indio_dev->available_scan_masks = chip->scan_masks;
-+	indio_dev->num_channels = chip->num_channels;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	data = iio_priv(indio_dev);
-+	data->spi = spi;
-+	data->chip = chip;
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+				maxim_thermocouple_trigger_handler, NULL);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto error_unreg_buffer;
-+
-+	return 0;
-+
-+error_unreg_buffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+	return ret;
-+}
-+
-+static int maxim_thermocouple_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id maxim_thermocouple_id[] = {
-+	{"max6675", MAX6675},
-+	{"max31855", MAX31855},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, maxim_thermocouple_id);
-+
-+static struct spi_driver maxim_thermocouple_driver = {
-+	.driver = {
-+		.name	= MAXIM_THERMOCOUPLE_DRV_NAME,
-+	},
-+	.probe		= maxim_thermocouple_probe,
-+	.remove		= maxim_thermocouple_remove,
-+	.id_table	= maxim_thermocouple_id,
-+};
-+module_spi_driver(maxim_thermocouple_driver);
-+
-+MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-+MODULE_DESCRIPTION("Maxim thermocouple sensors");
-+MODULE_LICENSE("GPL");
--- 
-2.7.4
+CONFIG_BMP280*=3Dy compiles.
+
+> obj-$(CONFIG_HID_SENSOR_PRESS)   +=3D hid-sensor-press.o
+> obj-$(CONFIG_HP03) +=3D hp03.o
+> obj-$(CONFIG_MPL115) +=3D mpl115.o
+> diff --git a/drivers/iio/pressure/bmp280-core.c =
+b/drivers/iio/pressure/bmp280-core.c
+> new file mode 100644
+> index 000000000000..77f0fc935c09
+> --- /dev/null
+> +++ b/drivers/iio/pressure/bmp280-core.c
+> @@ -0,0 +1,937 @@
+> +/*
+> + * Copyright (c) 2014 Intel Corporation
+> + *
+> + * Driver for Bosch Sensortec BMP180 and BMP280 digital pressure =
+sensor.
+> + *
+> + * This program is free software; you can redistribute it and/or =
+modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * Datasheet:
+> + * =
+https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP180-=
+DS000-121.pdf
+> + * =
+https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-=
+DS001-12.pdf
+> + * =
+https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280_=
+DS001-11.pdf
+> + */
+> +
+> +#define pr_fmt(fmt) "bmp280: " fmt
+> +
+> +#include <linux/device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/delay.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/regulator/consumer.h>
+> +
+> +#include "bmp280.h"
+> +
+> +struct bmp280_data {
+> +	struct device *dev;
+> +	struct mutex lock;
+> +	struct regmap *regmap;
+> +	const struct bmp280_chip_info *chip_info;
+> +	struct regulator *vddd;
+> +	struct regulator *vdda;
+> +
+> +	/* log of base 2 of oversampling rate */
+> +	u8 oversampling_press;
+> +	u8 oversampling_temp;
+> +	u8 oversampling_humid;
+> +
+> +	/*
+> +	 * Carryover value from temperature conversion, used in pressure
+> +	 * calculation.
+> +	 */
+> +	s32 t_fine;
+> +};
+> +
+> +struct bmp280_chip_info {
+> +	const int *oversampling_temp_avail;
+> +	int num_oversampling_temp_avail;
+> +
+> +	const int *oversampling_press_avail;
+> +	int num_oversampling_press_avail;
+> +
+> +	const int *oversampling_humid_avail;
+> +	int num_oversampling_humid_avail;
+> +
+> +	int (*chip_config)(struct bmp280_data *);
+> +	int (*read_temp)(struct bmp280_data *, int *);
+> +	int (*read_press)(struct bmp280_data *, int *, int *);
+> +	int (*read_humid)(struct bmp280_data *, int *, int *);
+> +};
+> +
+> +/*
+> + * These enums are used for indexing into the array of compensation
+> + * parameters for BMP280.
+> + */
+> +enum { T1, T2, T3 };
+> +enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
+> +
+> +static const struct iio_chan_spec bmp280_channels[] =3D {
+> +	{
+> +		.type =3D IIO_PRESSURE,
+> +		.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      =
+BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +	},
+> +	{
+> +		.type =3D IIO_TEMP,
+> +		.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      =
+BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +	},
+> +	{
+> +		.type =3D IIO_HUMIDITYRELATIVE,
+> +		.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      =
+BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +	},
+> +};
+> +
+> +/*
+> + * Returns humidity in percent, resolution is 0.01 percent. Output =
+value of
+> + * "47445" represents 47445/1024 =3D 46.333 %RH.
+> + *
+> + * Taken from BME280 datasheet, Section 4.2.3, "Compensation =
+formula".
+> + */
+> +
+> +static u32 bmp280_compensate_humidity(struct bmp280_data *data,
+> +				      s32 adc_humidity)
+> +{
+> +	struct device *dev =3D data->dev;
+> +	unsigned int H1, H3, tmp;
+> +	int H2, H4, H5, H6, ret, var;
+> +
+> +	ret =3D regmap_read(data->regmap, BMP280_REG_COMP_H1, &H1);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read H1 comp value\n");
+> +		return ret;
+> +	}
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_COMP_H2, &tmp, =
+2);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read H2 comp value\n");
+> +		return ret;
+> +	}
+> +	H2 =3D sign_extend32(le16_to_cpu(tmp), 15);
+> +
+> +	ret =3D regmap_read(data->regmap, BMP280_REG_COMP_H3, &H3);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read H3 comp value\n");
+> +		return ret;
+> +	}
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_COMP_H4, &tmp, =
+2);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read H4 comp value\n");
+> +		return ret;
+> +	}
+> +	H4 =3D sign_extend32(((be16_to_cpu(tmp) >> 4) & 0xff0) |
+> +			  (be16_to_cpu(tmp) & 0xf), 11);
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_COMP_H5, &tmp, =
+2);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read H5 comp value\n");
+> +		return ret;
+> +	}
+> +	H5 =3D sign_extend32(((le16_to_cpu(tmp) >> 4) & 0xfff), 11);
+> +
+> +	ret =3D regmap_read(data->regmap, BMP280_REG_COMP_H6, &tmp);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read H6 comp value\n");
+> +		return ret;
+> +	}
+> +	H6 =3D sign_extend32(tmp, 7);
+> +
+> +	var =3D ((s32)data->t_fine) - 76800;
+> +	var =3D ((((adc_humidity << 14) - (H4 << 20) - (H5 * var)) + =
+16384) >> 15)
+> +		* (((((((var * H6) >> 10) * (((var * H3) >> 11) + =
+32768)) >> 10)
+> +		+ 2097152) * H2 + 8192) >> 14);
+> +	var -=3D ((((var >> 15) * (var >> 15)) >> 7) * H1) >> 4;
+> +
+> +	return var >> 12;
+> +};
+> +
+> +/*
+> + * Returns temperature in DegC, resolution is 0.01 DegC.  Output =
+value of
+> + * "5123" equals 51.23 DegC.  t_fine carries fine temperature as =
+global
+> + * value.
+> + *
+> + * Taken from datasheet, Section 3.11.3, "Compensation formula".
+> + */
+> +static s32 bmp280_compensate_temp(struct bmp280_data *data,
+> +				  s32 adc_temp)
+> +{
+> +	int ret;
+> +	s32 var1, var2;
+> +	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, =
+BMP280_REG_COMP_TEMP_START,
+> +			       buf, BMP280_COMP_TEMP_REG_COUNT);
+> +	if (ret < 0) {
+> +		dev_err(data->dev,
+> +			"failed to read temperature calibration =
+parameters\n");
+> +		return ret;
+> +	}
+> +
+> +	/*
+> +	 * The double casts are necessary because le16_to_cpu returns an
+> +	 * unsigned 16-bit value.  Casting that value directly to a
+> +	 * signed 32-bit will not do proper sign extension.
+> +	 *
+> +	 * Conversely, T1 and P1 are unsigned values, so they can be
+> +	 * cast straight to the larger type.
+> +	 */
+> +	var1 =3D (((adc_temp >> 3) - ((s32)le16_to_cpu(buf[T1]) << 1)) *
+> +		((s32)(s16)le16_to_cpu(buf[T2]))) >> 11;
+> +	var2 =3D (((((adc_temp >> 4) - ((s32)le16_to_cpu(buf[T1]))) *
+> +		  ((adc_temp >> 4) - ((s32)le16_to_cpu(buf[T1])))) >> =
+12) *
+> +		((s32)(s16)le16_to_cpu(buf[T3]))) >> 14;
+> +	data->t_fine =3D var1 + var2;
+> +
+> +	return (data->t_fine * 5 + 128) >> 8;
+> +}
+> +
+> +/*
+> + * Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format =
+(24
+> + * integer bits and 8 fractional bits).  Output value of "24674867"
+> + * represents 24674867/256 =3D 96386.2 Pa =3D 963.862 hPa
+> + *
+> + * Taken from datasheet, Section 3.11.3, "Compensation formula".
+> + */
+> +static u32 bmp280_compensate_press(struct bmp280_data *data,
+> +				   s32 adc_press)
+> +{
+> +	int ret;
+> +	s64 var1, var2, p;
+> +	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, =
+BMP280_REG_COMP_PRESS_START,
+> +			       buf, BMP280_COMP_PRESS_REG_COUNT);
+> +	if (ret < 0) {
+> +		dev_err(data->dev,
+> +			"failed to read pressure calibration =
+parameters\n");
+> +		return ret;
+> +	}
+> +
+> +	var1 =3D ((s64)data->t_fine) - 128000;
+> +	var2 =3D var1 * var1 * (s64)(s16)le16_to_cpu(buf[P6]);
+> +	var2 +=3D (var1 * (s64)(s16)le16_to_cpu(buf[P5])) << 17;
+> +	var2 +=3D ((s64)(s16)le16_to_cpu(buf[P4])) << 35;
+> +	var1 =3D ((var1 * var1 * (s64)(s16)le16_to_cpu(buf[P3])) >> 8) +
+> +		((var1 * (s64)(s16)le16_to_cpu(buf[P2])) << 12);
+> +	var1 =3D ((((s64)1) << 47) + var1) * ((s64)le16_to_cpu(buf[P1])) =
+>> 33;
+> +
+> +	if (var1 =3D=3D 0)
+> +		return 0;
+> +
+> +	p =3D ((((s64)1048576 - adc_press) << 31) - var2) * 3125;
+> +	p =3D div64_s64(p, var1);
+> +	var1 =3D (((s64)(s16)le16_to_cpu(buf[P9])) * (p >> 13) * (p >> =
+13)) >> 25;
+> +	var2 =3D (((s64)(s16)le16_to_cpu(buf[P8])) * p) >> 19;
+> +	p =3D ((p + var1 + var2) >> 8) + =
+(((s64)(s16)le16_to_cpu(buf[P7])) << 4);
+> +
+> +	return (u32)p;
+> +}
+> +
+> +static int bmp280_read_temp(struct bmp280_data *data,
+> +			    int *val)
+> +{
+> +	int ret;
+> +	__be32 tmp =3D 0;
+> +	s32 adc_temp, comp_temp;
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
+> +			       (u8 *) &tmp, 3);
+> +	if (ret < 0) {
+> +		dev_err(data->dev, "failed to read temperature\n");
+> +		return ret;
+> +	}
+> +
+> +	adc_temp =3D be32_to_cpu(tmp) >> 12;
+> +	comp_temp =3D bmp280_compensate_temp(data, adc_temp);
+> +
+> +	/*
+> +	 * val might be NULL if we're called by the read_press routine,
+> +	 * who only cares about the carry over t_fine value.
+> +	 */
+> +	if (val) {
+> +		*val =3D comp_temp * 10;
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int bmp280_read_press(struct bmp280_data *data,
+> +			     int *val, int *val2)
+> +{
+> +	int ret;
+> +	__be32 tmp =3D 0;
+> +	s32 adc_press;
+> +	u32 comp_press;
+> +
+> +	/* Read and compensate temperature so we get a reading of =
+t_fine. */
+> +	ret =3D bmp280_read_temp(data, NULL);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
+> +			       (u8 *) &tmp, 3);
+> +	if (ret < 0) {
+> +		dev_err(data->dev, "failed to read pressure\n");
+> +		return ret;
+> +	}
+> +
+> +	adc_press =3D be32_to_cpu(tmp) >> 12;
+> +	comp_press =3D bmp280_compensate_press(data, adc_press);
+> +
+> +	*val =3D comp_press;
+> +	*val2 =3D 256000;
+> +
+> +	return IIO_VAL_FRACTIONAL;
+> +}
+> +
+> +static int bmp280_read_humid(struct bmp280_data *data, int *val, int =
+*val2)
+> +{
+> +	int ret;
+> +	__be16 tmp =3D 0;
+> +	s32 adc_humidity;
+> +	u32 comp_humidity;
+> +
+> +	/* Read and compensate temperature so we get a reading of =
+t_fine. */
+> +	ret =3D bmp280_read_temp(data, NULL);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_HUMIDITY_MSB,
+> +			       (u8 *) &tmp, 2);
+> +	if (ret < 0) {
+> +		dev_err(data->dev, "failed to read humidity\n");
+> +		return ret;
+> +	}
+> +
+> +	adc_humidity =3D be16_to_cpu(tmp);
+> +	comp_humidity =3D bmp280_compensate_humidity(data, =
+adc_humidity);
+> +
+> +	*val =3D comp_humidity;
+> +	*val2 =3D 1024;
+> +
+> +	return IIO_VAL_FRACTIONAL;
+> +}
+> +
+> +static int bmp280_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long mask)
+> +{
+> +	int ret;
+> +	struct bmp280_data *data =3D iio_priv(indio_dev);
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		switch (chan->type) {
+> +		case IIO_HUMIDITYRELATIVE:
+> +			ret =3D data->chip_info->read_humid(data, val, =
+val2);
+> +			break;
+> +		case IIO_PRESSURE:
+> +			ret =3D data->chip_info->read_press(data, val, =
+val2);
+> +			break;
+> +		case IIO_TEMP:
+> +			ret =3D data->chip_info->read_temp(data, val);
+> +			break;
+> +		default:
+> +			ret =3D -EINVAL;
+> +			break;
+> +		}
+> +		break;
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		switch (chan->type) {
+> +		case IIO_HUMIDITYRELATIVE:
+> +			*val =3D 1 << data->oversampling_humid;
+> +			ret =3D IIO_VAL_INT;
+> +			break;
+> +		case IIO_PRESSURE:
+> +			*val =3D 1 << data->oversampling_press;
+> +			ret =3D IIO_VAL_INT;
+> +			break;
+> +		case IIO_TEMP:
+> +			*val =3D 1 << data->oversampling_temp;
+> +			ret =3D IIO_VAL_INT;
+> +			break;
+> +		default:
+> +			ret =3D -EINVAL;
+> +			break;
+> +		}
+> +		break;
+> +	default:
+> +		ret =3D -EINVAL;
+> +		break;
+> +	}
+> +
+> +	mutex_unlock(&data->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int bmp280_write_oversampling_ratio_humid(struct bmp280_data =
+*data,
+> +					       int val)
+> +{
+> +	int i;
+> +	const int *avail =3D data->chip_info->oversampling_humid_avail;
+> +	const int n =3D data->chip_info->num_oversampling_humid_avail;
+> +
+> +	for (i =3D 0; i < n; i++) {
+> +		if (avail[i] =3D=3D val) {
+> +			data->oversampling_humid =3D ilog2(val);
+> +
+> +			return data->chip_info->chip_config(data);
+> +		}
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int bmp280_write_oversampling_ratio_temp(struct bmp280_data =
+*data,
+> +					       int val)
+> +{
+> +	int i;
+> +	const int *avail =3D data->chip_info->oversampling_temp_avail;
+> +	const int n =3D data->chip_info->num_oversampling_temp_avail;
+> +
+> +	for (i =3D 0; i < n; i++) {
+> +		if (avail[i] =3D=3D val) {
+> +			data->oversampling_temp =3D ilog2(val);
+> +
+> +			return data->chip_info->chip_config(data);
+> +		}
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int bmp280_write_oversampling_ratio_press(struct bmp280_data =
+*data,
+> +					       int val)
+> +{
+> +	int i;
+> +	const int *avail =3D data->chip_info->oversampling_press_avail;
+> +	const int n =3D data->chip_info->num_oversampling_press_avail;
+> +
+> +	for (i =3D 0; i < n; i++) {
+> +		if (avail[i] =3D=3D val) {
+> +			data->oversampling_press =3D ilog2(val);
+> +
+> +			return data->chip_info->chip_config(data);
+> +		}
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int bmp280_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	int ret =3D 0;
+> +	struct bmp280_data *data =3D iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		mutex_lock(&data->lock);
+> +		switch (chan->type) {
+> +		case IIO_HUMIDITYRELATIVE:
+> +			ret =3D =
+bmp280_write_oversampling_ratio_humid(data, val);
+> +			break;
+> +		case IIO_PRESSURE:
+> +			ret =3D =
+bmp280_write_oversampling_ratio_press(data, val);
+> +			break;
+> +		case IIO_TEMP:
+> +			ret =3D =
+bmp280_write_oversampling_ratio_temp(data, val);
+> +			break;
+> +		default:
+> +			ret =3D -EINVAL;
+> +			break;
+> +		}
+> +		mutex_unlock(&data->lock);
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static ssize_t bmp280_show_avail(char *buf, const int *vals, const =
+int n)
+> +{
+> +	size_t len =3D 0;
+> +	int i;
+> +
+> +	for (i =3D 0; i < n; i++)
+> +		len +=3D scnprintf(buf + len, PAGE_SIZE - len, "%d ", =
+vals[i]);
+> +
+> +	buf[len - 1] =3D '\n';
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t bmp280_show_temp_oversampling_avail(struct device =
+*dev,
+> +				struct device_attribute *attr, char =
+*buf)
+> +{
+> +	struct bmp280_data *data =3D iio_priv(dev_to_iio_dev(dev));
+> +
+> +	return bmp280_show_avail(buf, =
+data->chip_info->oversampling_temp_avail,
+> +				 =
+data->chip_info->num_oversampling_temp_avail);
+> +}
+> +
+> +static ssize_t bmp280_show_press_oversampling_avail(struct device =
+*dev,
+> +				struct device_attribute *attr, char =
+*buf)
+> +{
+> +	struct bmp280_data *data =3D iio_priv(dev_to_iio_dev(dev));
+> +
+> +	return bmp280_show_avail(buf, =
+data->chip_info->oversampling_press_avail,
+> +				 =
+data->chip_info->num_oversampling_press_avail);
+> +}
+> +
+> +static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available,
+> +	S_IRUGO, bmp280_show_temp_oversampling_avail, NULL, 0);
+> +
+> +static IIO_DEVICE_ATTR(in_pressure_oversampling_ratio_available,
+> +	S_IRUGO, bmp280_show_press_oversampling_avail, NULL, 0);
+> +
+> +static struct attribute *bmp280_attributes[] =3D {
+> +	=
+&iio_dev_attr_in_temp_oversampling_ratio_available.dev_attr.attr,
+> +	=
+&iio_dev_attr_in_pressure_oversampling_ratio_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group bmp280_attrs_group =3D {
+> +	.attrs =3D bmp280_attributes,
+> +};
+> +
+> +static const struct iio_info bmp280_info =3D {
+> +	.driver_module =3D THIS_MODULE,
+> +	.read_raw =3D &bmp280_read_raw,
+> +	.write_raw =3D &bmp280_write_raw,
+> +	.attrs =3D &bmp280_attrs_group,
+> +};
+> +
+> +static int bmp280_chip_config(struct bmp280_data *data)
+> +{
+> +	int ret;
+> +	u8 osrs =3D BMP280_OSRS_TEMP_X(data->oversampling_temp + 1) |
+> +		  BMP280_OSRS_PRESS_X(data->oversampling_press + 1);
+> +
+> +	ret =3D regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
+> +				 BMP280_OSRS_TEMP_MASK |
+> +				 BMP280_OSRS_PRESS_MASK |
+> +				 BMP280_MODE_MASK,
+> +				 osrs | BMP280_MODE_NORMAL);
+> +	if (ret < 0) {
+> +		dev_err(data->dev,
+> +			"failed to write ctrl_meas register\n");
+> +		return ret;
+> +	}
+> +
+> +	ret =3D regmap_update_bits(data->regmap, BMP280_REG_CONFIG,
+> +				 BMP280_FILTER_MASK,
+> +				 BMP280_FILTER_4X);
+> +	if (ret < 0) {
+> +		dev_err(data->dev,
+> +			"failed to write config register\n");
+> +		return ret;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static const int bmp280_oversampling_avail[] =3D { 1, 2, 4, 8, 16 };
+> +
+> +static const struct bmp280_chip_info bmp280_chip_info =3D {
+> +	.oversampling_temp_avail =3D bmp280_oversampling_avail,
+> +	.num_oversampling_temp_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> +
+> +	.oversampling_press_avail =3D bmp280_oversampling_avail,
+> +	.num_oversampling_press_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> +
+> +	.chip_config =3D bmp280_chip_config,
+> +	.read_temp =3D bmp280_read_temp,
+> +	.read_press =3D bmp280_read_press,
+> +};
+> +
+> +static int bme280_chip_config(struct bmp280_data *data)
+> +{
+> +	int ret =3D bmp280_chip_config(data);
+> +	u8 osrs =3D BMP280_OSRS_HUMIDITIY_X(data->oversampling_humid + =
+1);
+> +
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return regmap_update_bits(data->regmap, =
+BMP280_REG_CTRL_HUMIDITY,
+> +				  BMP280_OSRS_HUMIDITY_MASK, osrs);
+> +}
+> +
+> +static const struct bmp280_chip_info bme280_chip_info =3D {
+> +	.oversampling_temp_avail =3D bmp280_oversampling_avail,
+> +	.num_oversampling_temp_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> +
+> +	.oversampling_press_avail =3D bmp280_oversampling_avail,
+> +	.num_oversampling_press_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> +
+> +	.oversampling_humid_avail =3D bmp280_oversampling_avail,
+> +	.num_oversampling_humid_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> +
+> +	.chip_config =3D bme280_chip_config,
+> +	.read_temp =3D bmp280_read_temp,
+> +	.read_press =3D bmp280_read_press,
+> +	.read_humid =3D bmp280_read_humid,
+> +};
+> +
+> +static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
+> +{
+> +	int ret;
+> +	const int conversion_time_max[] =3D { 4500, 7500, 13500, 25500 =
+};
+> +	unsigned int delay_us;
+> +	unsigned int ctrl;
+> +
+> +	ret =3D regmap_write(data->regmap, BMP280_REG_CTRL_MEAS, =
+ctrl_meas);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (ctrl_meas =3D=3D BMP180_MEAS_TEMP)
+> +		delay_us =3D 4500;
+> +	else
+> +		delay_us =3D =
+conversion_time_max[data->oversampling_press];
+> +
+> +	usleep_range(delay_us, delay_us + 1000);
+> +
+> +	ret =3D regmap_read(data->regmap, BMP280_REG_CTRL_MEAS, &ctrl);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* The value of this bit reset to "0" after conversion is =
+complete */
+> +	if (ctrl & BMP180_MEAS_SCO)
+> +		return -EIO;
+> +
+> +	return 0;
+> +}
+> +
+> +static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
+> +{
+> +	int ret;
+> +	__be16 tmp =3D 0;
+> +
+> +	ret =3D bmp180_measure(data, BMP180_MEAS_TEMP);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 =
+*)&tmp, 2);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val =3D be16_to_cpu(tmp);
+> +
+> +	return 0;
+> +}
+> +
+> +/*
+> + * These enums are used for indexing into the array of calibration
+> + * coefficients for BMP180.
+> + */
+> +enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
+> +
+> +struct bmp180_calib {
+> +	s16 AC1;
+> +	s16 AC2;
+> +	s16 AC3;
+> +	u16 AC4;
+> +	u16 AC5;
+> +	u16 AC6;
+> +	s16 B1;
+> +	s16 B2;
+> +	s16 MB;
+> +	s16 MC;
+> +	s16 MD;
+> +};
+> +
+> +static int bmp180_read_calib(struct bmp280_data *data,
+> +			     struct bmp180_calib *calib)
+> +{
+> +	int ret;
+> +	int i;
+> +	__be16 buf[BMP180_REG_CALIB_COUNT / 2];
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, =
+buf,
+> +			       sizeof(buf));
+> +
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* None of the words has the value 0 or 0xFFFF */
+> +	for (i =3D 0; i < ARRAY_SIZE(buf); i++) {
+> +		if (buf[i] =3D=3D cpu_to_be16(0) || buf[i] =3D=3D =
+cpu_to_be16(0xffff))
+> +			return -EIO;
+> +	}
+> +
+> +	calib->AC1 =3D be16_to_cpu(buf[AC1]);
+> +	calib->AC2 =3D be16_to_cpu(buf[AC2]);
+> +	calib->AC3 =3D be16_to_cpu(buf[AC3]);
+> +	calib->AC4 =3D be16_to_cpu(buf[AC4]);
+> +	calib->AC5 =3D be16_to_cpu(buf[AC5]);
+> +	calib->AC6 =3D be16_to_cpu(buf[AC6]);
+> +	calib->B1 =3D be16_to_cpu(buf[B1]);
+> +	calib->B2 =3D be16_to_cpu(buf[B2]);
+> +	calib->MB =3D be16_to_cpu(buf[MB]);
+> +	calib->MC =3D be16_to_cpu(buf[MC]);
+> +	calib->MD =3D be16_to_cpu(buf[MD]);
+> +
+> +	return 0;
+> +}
+> +
+> +/*
+> + * Returns temperature in DegC, resolution is 0.1 DegC.
+> + * t_fine carries fine temperature as global value.
+> + *
+> + * Taken from datasheet, Section 3.5, "Calculating pressure and =
+temperature".
+> + */
+> +static s32 bmp180_compensate_temp(struct bmp280_data *data, s32 =
+adc_temp)
+> +{
+> +	int ret;
+> +	s32 x1, x2;
+> +	struct bmp180_calib calib;
+> +
+> +	ret =3D bmp180_read_calib(data, &calib);
+> +	if (ret < 0) {
+> +		dev_err(data->dev,
+> +			"failed to read calibration coefficients\n");
+> +		return ret;
+> +	}
+> +
+> +	x1 =3D ((adc_temp - calib.AC6) * calib.AC5) >> 15;
+> +	x2 =3D (calib.MC << 11) / (x1 + calib.MD);
+> +	data->t_fine =3D x1 + x2;
+> +
+> +	return (data->t_fine + 8) >> 4;
+> +}
+> +
+> +static int bmp180_read_temp(struct bmp280_data *data, int *val)
+> +{
+> +	int ret;
+> +	s32 adc_temp, comp_temp;
+> +
+> +	ret =3D bmp180_read_adc_temp(data, &adc_temp);
+> +	if (ret)
+> +		return ret;
+> +
+> +	comp_temp =3D bmp180_compensate_temp(data, adc_temp);
+> +
+> +	/*
+> +	 * val might be NULL if we're called by the read_press routine,
+> +	 * who only cares about the carry over t_fine value.
+> +	 */
+> +	if (val) {
+> +		*val =3D comp_temp * 100;
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
+> +{
+> +	int ret;
+> +	__be32 tmp =3D 0;
+> +	u8 oss =3D data->oversampling_press;
+> +
+> +	ret =3D bmp180_measure(data, BMP180_MEAS_PRESS_X(oss));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 =
+*)&tmp, 3);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val =3D (be32_to_cpu(tmp) >> 8) >> (8 - oss);
+> +
+> +	return 0;
+> +}
+> +
+> +/*
+> + * Returns pressure in Pa, resolution is 1 Pa.
+> + *
+> + * Taken from datasheet, Section 3.5, "Calculating pressure and =
+temperature".
+> + */
+> +static u32 bmp180_compensate_press(struct bmp280_data *data, s32 =
+adc_press)
+> +{
+> +	int ret;
+> +	s32 x1, x2, x3, p;
+> +	s32 b3, b6;
+> +	u32 b4, b7;
+> +	s32 oss =3D data->oversampling_press;
+> +	struct bmp180_calib calib;
+> +
+> +	ret =3D bmp180_read_calib(data, &calib);
+> +	if (ret < 0) {
+> +		dev_err(data->dev,
+> +			"failed to read calibration coefficients\n");
+> +		return ret;
+> +	}
+> +
+> +	b6 =3D data->t_fine - 4000;
+> +	x1 =3D (calib.B2 * (b6 * b6 >> 12)) >> 11;
+> +	x2 =3D calib.AC2 * b6 >> 11;
+> +	x3 =3D x1 + x2;
+> +	b3 =3D ((((s32)calib.AC1 * 4 + x3) << oss) + 2) / 4;
+> +	x1 =3D calib.AC3 * b6 >> 13;
+> +	x2 =3D (calib.B1 * ((b6 * b6) >> 12)) >> 16;
+> +	x3 =3D (x1 + x2 + 2) >> 2;
+> +	b4 =3D calib.AC4 * (u32)(x3 + 32768) >> 15;
+> +	b7 =3D ((u32)adc_press - b3) * (50000 >> oss);
+> +	if (b7 < 0x80000000)
+> +		p =3D (b7 * 2) / b4;
+> +	else
+> +		p =3D (b7 / b4) * 2;
+> +
+> +	x1 =3D (p >> 8) * (p >> 8);
+> +	x1 =3D (x1 * 3038) >> 16;
+> +	x2 =3D (-7357 * p) >> 16;
+> +
+> +	return p + ((x1 + x2 + 3791) >> 4);
+> +}
+> +
+> +static int bmp180_read_press(struct bmp280_data *data,
+> +			     int *val, int *val2)
+> +{
+> +	int ret;
+> +	s32 adc_press;
+> +	u32 comp_press;
+> +
+> +	/* Read and compensate temperature so we get a reading of =
+t_fine. */
+> +	ret =3D bmp180_read_temp(data, NULL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D bmp180_read_adc_press(data, &adc_press);
+> +	if (ret)
+> +		return ret;
+> +
+> +	comp_press =3D bmp180_compensate_press(data, adc_press);
+> +
+> +	*val =3D comp_press;
+> +	*val2 =3D 1000;
+> +
+> +	return IIO_VAL_FRACTIONAL;
+> +}
+> +
+> +static int bmp180_chip_config(struct bmp280_data *data)
+> +{
+> +	return 0;
+> +}
+> +
+> +static const int bmp180_oversampling_temp_avail[] =3D { 1 };
+> +static const int bmp180_oversampling_press_avail[] =3D { 1, 2, 4, 8 =
+};
+> +
+> +static const struct bmp280_chip_info bmp180_chip_info =3D {
+> +	.oversampling_temp_avail =3D bmp180_oversampling_temp_avail,
+> +	.num_oversampling_temp_avail =3D
+> +		ARRAY_SIZE(bmp180_oversampling_temp_avail),
+> +
+> +	.oversampling_press_avail =3D bmp180_oversampling_press_avail,
+> +	.num_oversampling_press_avail =3D
+> +		ARRAY_SIZE(bmp180_oversampling_press_avail),
+> +
+> +	.chip_config =3D bmp180_chip_config,
+> +	.read_temp =3D bmp180_read_temp,
+> +	.read_press =3D bmp180_read_press,
+> +};
+> +
+> +int bmp280_common_probe(struct device *dev,
+> +			struct regmap *regmap,
+> +			unsigned int chip,
+> +			const char *name)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev;
+> +	struct bmp280_data *data;
+> +	unsigned int chip_id;
+> +	struct gpio_desc *gpiod;
+> +
+> +	indio_dev =3D devm_iio_device_alloc(dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data =3D iio_priv(indio_dev);
+> +	mutex_init(&data->lock);
+> +	data->dev =3D dev;
+> +
+> +	indio_dev->dev.parent =3D dev;
+> +	indio_dev->name =3D name;
+> +	indio_dev->channels =3D bmp280_channels;
+> +	indio_dev->info =3D &bmp280_info;
+> +	indio_dev->modes =3D INDIO_DIRECT_MODE;
+> +
+> +	switch (chip) {
+> +	case BMP180_CHIP_ID:
+> +		indio_dev->num_channels =3D 2;
+> +		data->chip_info =3D &bmp180_chip_info;
+> +		data->oversampling_press =3D ilog2(8);
+> +		data->oversampling_temp =3D ilog2(1);
+> +		break;
+> +	case BMP280_CHIP_ID:
+> +		indio_dev->num_channels =3D 2;
+> +		data->chip_info =3D &bmp280_chip_info;
+> +		data->oversampling_press =3D ilog2(16);
+> +		data->oversampling_temp =3D ilog2(2);
+> +		break;
+> +	case BME280_CHIP_ID:
+> +		indio_dev->num_channels =3D 3;
+> +		data->chip_info =3D &bme280_chip_info;
+> +		data->oversampling_press =3D ilog2(16);
+> +		data->oversampling_humid =3D ilog2(16);
+> +		data->oversampling_temp =3D ilog2(2);
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Bring up regulators */
+> +	data->vddd =3D devm_regulator_get(dev, "vddd");
+> +	if (IS_ERR(data->vddd)) {
+> +		dev_err(dev, "failed to get VDDD regulator\n");
+> +		return PTR_ERR(data->vddd);
+> +	}
+> +	ret =3D regulator_enable(data->vddd);
+> +	if (ret) {
+> +		dev_err(dev, "failed to enable VDDD regulator\n");
+> +		return ret;
+> +	}
+> +	data->vdda =3D devm_regulator_get(dev, "vdda");
+> +	if (IS_ERR(data->vdda)) {
+> +		dev_err(dev, "failed to get VDDA regulator\n");
+> +		return PTR_ERR(data->vddd);
+> +	}
+> +	ret =3D regulator_enable(data->vdda);
+> +	if (ret) {
+> +		dev_err(dev, "failed to enable VDDA\n");
+> +		return ret;
+> +	}
+> +
+> +	/* Bring chip out of reset if there is an assigned GPIO line */
+> +	gpiod =3D devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
+> +	/* Deassert the signal */
+> +	if (!IS_ERR(gpiod)) {
+> +		dev_info(dev, "release reset\n");
+> +		gpiod_set_value(gpiod, 0);
+> +	}
+> +
+> +	data->regmap =3D regmap;
+> +	ret =3D regmap_read(regmap, BMP280_REG_ID, &chip_id);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (chip_id !=3D chip) {
+> +		dev_err(dev, "bad chip id: expected %x got %x\n",
+> +			chip, chip_id);
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret =3D data->chip_info->chip_config(data);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> diff --git a/drivers/iio/pressure/bmp280-i2c.c =
+b/drivers/iio/pressure/bmp280-i2c.c
+> new file mode 100644
+> index 000000000000..a981670e5dc0
+> --- /dev/null
+> +++ b/drivers/iio/pressure/bmp280-i2c.c
+> @@ -0,0 +1,82 @@
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/acpi.h>
+> +#include <linux/of.h>
+> +#include <linux/regmap.h>
+> +
+> +#include "bmp280.h"
+> +
+> +static int bmp280_i2c_probe(struct i2c_client *client,
+> +			    const struct i2c_device_id *id)
+> +{
+> +	struct regmap *regmap;
+> +	const struct regmap_config *regmap_config;
+> +
+> +	switch (id->driver_data) {
+> +	case BMP180_CHIP_ID:
+> +		regmap_config =3D &bmp180_regmap_config;
+> +		break;
+> +	case BMP280_CHIP_ID:
+> +	case BME280_CHIP_ID:
+> +		regmap_config =3D &bmp280_regmap_config;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	regmap =3D devm_regmap_init_i2c(client, regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&client->dev, "failed to allocate register =
+map\n");
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	return bmp280_common_probe(&client->dev,
+> +				   regmap,
+> +				   id->driver_data,
+> +				   id->name);
+> +}
+> +
+> +static const struct acpi_device_id bmp280_acpi_i2c_match[] =3D {
+> +	{"BMP0280", BMP280_CHIP_ID },
+> +	{"BMP0180", BMP180_CHIP_ID },
+> +	{"BMP0085", BMP180_CHIP_ID },
+> +	{"BME0280", BME280_CHIP_ID },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, bmp280_acpi_i2c_match);
+> +
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id bmp280_of_i2c_match[] =3D {
+> +	{ .compatible =3D "bosch,bme280", .data =3D (void =
+*)BME280_CHIP_ID },
+> +	{ .compatible =3D "bosch,bmp280", .data =3D (void =
+*)BMP280_CHIP_ID },
+> +	{ .compatible =3D "bosch,bmp180", .data =3D (void =
+*)BMP180_CHIP_ID },
+> +	{ .compatible =3D "bosch,bmp085", .data =3D (void =
+*)BMP180_CHIP_ID },
+> +};
+> +MODULE_DEVICE_TABLE(of, bmp280_of_i2c_match);
+> +#else
+> +#define bmp280_of_i2c_match NULL
+> +#endif
+> +
+> +static const struct i2c_device_id bmp280_i2c_id[] =3D {
+> +	{"bmp280", BMP280_CHIP_ID },
+> +	{"bmp180", BMP180_CHIP_ID },
+> +	{"bmp085", BMP180_CHIP_ID },
+> +	{"bme280", BME280_CHIP_ID },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(i2c, bmp280_i2c_id);
+> +
+> +static struct i2c_driver bmp280_i2c_driver =3D {
+> +	.driver =3D {
+> +		.name	=3D "bmp280",
+> +		.acpi_match_table =3D ACPI_PTR(bmp280_acpi_i2c_match),
+> +		.of_match_table =3D of_match_ptr(bmp280_of_i2c_match),
+> +	},
+> +	.probe		=3D bmp280_i2c_probe,
+> +	.id_table	=3D bmp280_i2c_id,
+> +};
+> +module_i2c_driver(bmp280_i2c_driver);
+> +
+> +MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
+> +MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP180/BMP280 pressure =
+and temperature sensor");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/pressure/bmp280-regmap.c =
+b/drivers/iio/pressure/bmp280-regmap.c
+> new file mode 100644
+> index 000000000000..3341189d0975
+> --- /dev/null
+> +++ b/drivers/iio/pressure/bmp280-regmap.c
+> @@ -0,0 +1,81 @@
+> +#include <linux/device.h>
+> +#include <linux/regmap.h>
+> +
+> +#include "bmp280.h"
+> +
+> +static bool bmp180_is_writeable_reg(struct device *dev, unsigned int =
+reg)
+> +{
+> +	switch (reg) {
+> +	case BMP280_REG_CTRL_MEAS:
+> +	case BMP280_REG_RESET:
+> +		return true;
+> +	default:
+> +		return false;
+> +	};
+> +}
+> +
+> +static bool bmp180_is_volatile_reg(struct device *dev, unsigned int =
+reg)
+> +{
+> +	switch (reg) {
+> +	case BMP180_REG_OUT_XLSB:
+> +	case BMP180_REG_OUT_LSB:
+> +	case BMP180_REG_OUT_MSB:
+> +	case BMP280_REG_CTRL_MEAS:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +const struct regmap_config bmp180_regmap_config =3D {
+> +	.reg_bits =3D 8,
+> +	.val_bits =3D 8,
+> +
+> +	.max_register =3D BMP180_REG_OUT_XLSB,
+> +	.cache_type =3D REGCACHE_RBTREE,
+> +
+> +	.writeable_reg =3D bmp180_is_writeable_reg,
+> +	.volatile_reg =3D bmp180_is_volatile_reg,
+> +};
+> +
+> +static bool bmp280_is_writeable_reg(struct device *dev, unsigned int =
+reg)
+> +{
+> +	switch (reg) {
+> +	case BMP280_REG_CONFIG:
+> +	case BMP280_REG_CTRL_HUMIDITY:
+> +	case BMP280_REG_CTRL_MEAS:
+> +	case BMP280_REG_RESET:
+> +		return true;
+> +	default:
+> +		return false;
+> +	};
+> +}
+> +
+> +static bool bmp280_is_volatile_reg(struct device *dev, unsigned int =
+reg)
+> +{
+> +	switch (reg) {
+> +	case BMP280_REG_HUMIDITY_LSB:
+> +	case BMP280_REG_HUMIDITY_MSB:
+> +	case BMP280_REG_TEMP_XLSB:
+> +	case BMP280_REG_TEMP_LSB:
+> +	case BMP280_REG_TEMP_MSB:
+> +	case BMP280_REG_PRESS_XLSB:
+> +	case BMP280_REG_PRESS_LSB:
+> +	case BMP280_REG_PRESS_MSB:
+> +	case BMP280_REG_STATUS:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +const struct regmap_config bmp280_regmap_config =3D {
+> +	.reg_bits =3D 8,
+> +	.val_bits =3D 8,
+> +
+> +	.max_register =3D BMP280_REG_HUMIDITY_LSB,
+> +	.cache_type =3D REGCACHE_RBTREE,
+> +
+> +	.writeable_reg =3D bmp280_is_writeable_reg,
+> +	.volatile_reg =3D bmp280_is_volatile_reg,
+> +};
+> diff --git a/drivers/iio/pressure/bmp280.c =
+b/drivers/iio/pressure/bmp280.c
+> deleted file mode 100644
+> index 3051e7c444d2..000000000000
+> --- a/drivers/iio/pressure/bmp280.c
+> +++ /dev/null
+> @@ -1,1167 +0,0 @@
+> -/*
+> - * Copyright (c) 2014 Intel Corporation
+> - *
+> - * Driver for Bosch Sensortec BMP180 and BMP280 digital pressure =
+sensor.
+> - *
+> - * This program is free software; you can redistribute it and/or =
+modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * Datasheet:
+> - * =
+https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP180-=
+DS000-121.pdf
+> - * =
+https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-=
+DS001-12.pdf
+> - * =
+https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280_=
+DS001-11.pdf
+> - */
+> -
+> -#define pr_fmt(fmt) "bmp280: " fmt
+> -
+> -#include <linux/module.h>
+> -#include <linux/i2c.h>
+> -#include <linux/acpi.h>
+> -#include <linux/of.h>
+> -#include <linux/regmap.h>
+> -#include <linux/delay.h>
+> -#include <linux/iio/iio.h>
+> -#include <linux/iio/sysfs.h>
+> -#include <linux/gpio/consumer.h>
+> -#include <linux/regulator/consumer.h>
+> -
+> -/* BMP280 specific registers */
+> -#define BMP280_REG_HUMIDITY_LSB		0xFE
+> -#define BMP280_REG_HUMIDITY_MSB		0xFD
+> -#define BMP280_REG_TEMP_XLSB		0xFC
+> -#define BMP280_REG_TEMP_LSB		0xFB
+> -#define BMP280_REG_TEMP_MSB		0xFA
+> -#define BMP280_REG_PRESS_XLSB		0xF9
+> -#define BMP280_REG_PRESS_LSB		0xF8
+> -#define BMP280_REG_PRESS_MSB		0xF7
+> -
+> -#define BMP280_REG_CONFIG		0xF5
+> -#define BMP280_REG_CTRL_MEAS		0xF4
+> -#define BMP280_REG_STATUS		0xF3
+> -#define BMP280_REG_CTRL_HUMIDITY	0xF2
+> -
+> -/* Due to non linear mapping, and data sizes we can't do a bulk read =
+*/
+> -#define BMP280_REG_COMP_H1		0xA1
+> -#define BMP280_REG_COMP_H2		0xE1
+> -#define BMP280_REG_COMP_H3		0xE3
+> -#define BMP280_REG_COMP_H4		0xE4
+> -#define BMP280_REG_COMP_H5		0xE5
+> -#define BMP280_REG_COMP_H6		0xE7
+> -
+> -#define BMP280_REG_COMP_TEMP_START	0x88
+> -#define BMP280_COMP_TEMP_REG_COUNT	6
+> -
+> -#define BMP280_REG_COMP_PRESS_START	0x8E
+> -#define BMP280_COMP_PRESS_REG_COUNT	18
+> -
+> -#define BMP280_FILTER_MASK		(BIT(4) | BIT(3) | BIT(2))
+> -#define BMP280_FILTER_OFF		0
+> -#define BMP280_FILTER_2X		BIT(2)
+> -#define BMP280_FILTER_4X		BIT(3)
+> -#define BMP280_FILTER_8X		(BIT(3) | BIT(2))
+> -#define BMP280_FILTER_16X		BIT(4)
+> -
+> -#define BMP280_OSRS_HUMIDITY_MASK	(BIT(2) | BIT(1) | BIT(0))
+> -#define BMP280_OSRS_HUMIDITIY_X(osrs_h)	((osrs_h) << 0)
+> -#define BMP280_OSRS_HUMIDITY_SKIP	0
+> -#define BMP280_OSRS_HUMIDITY_1X		=
+BMP280_OSRS_HUMIDITIY_X(1)
+> -#define BMP280_OSRS_HUMIDITY_2X		=
+BMP280_OSRS_HUMIDITIY_X(2)
+> -#define BMP280_OSRS_HUMIDITY_4X		=
+BMP280_OSRS_HUMIDITIY_X(3)
+> -#define BMP280_OSRS_HUMIDITY_8X		=
+BMP280_OSRS_HUMIDITIY_X(4)
+> -#define BMP280_OSRS_HUMIDITY_16X	BMP280_OSRS_HUMIDITIY_X(5)
+> -
+> -#define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | =
+BIT(5))
+> -#define BMP280_OSRS_TEMP_SKIP		0
+> -#define BMP280_OSRS_TEMP_X(osrs_t)	((osrs_t) << 5)
+> -#define BMP280_OSRS_TEMP_1X		BMP280_OSRS_TEMP_X(1)
+> -#define BMP280_OSRS_TEMP_2X		BMP280_OSRS_TEMP_X(2)
+> -#define BMP280_OSRS_TEMP_4X		BMP280_OSRS_TEMP_X(3)
+> -#define BMP280_OSRS_TEMP_8X		BMP280_OSRS_TEMP_X(4)
+> -#define BMP280_OSRS_TEMP_16X		BMP280_OSRS_TEMP_X(5)
+> -
+> -#define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | =
+BIT(2))
+> -#define BMP280_OSRS_PRESS_SKIP		0
+> -#define BMP280_OSRS_PRESS_X(osrs_p)	((osrs_p) << 2)
+> -#define BMP280_OSRS_PRESS_1X		BMP280_OSRS_PRESS_X(1)
+> -#define BMP280_OSRS_PRESS_2X		BMP280_OSRS_PRESS_X(2)
+> -#define BMP280_OSRS_PRESS_4X		BMP280_OSRS_PRESS_X(3)
+> -#define BMP280_OSRS_PRESS_8X		BMP280_OSRS_PRESS_X(4)
+> -#define BMP280_OSRS_PRESS_16X		BMP280_OSRS_PRESS_X(5)
+> -
+> -#define BMP280_MODE_MASK		(BIT(1) | BIT(0))
+> -#define BMP280_MODE_SLEEP		0
+> -#define BMP280_MODE_FORCED		BIT(0)
+> -#define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
+> -
+> -/* BMP180 specific registers */
+> -#define BMP180_REG_OUT_XLSB		0xF8
+> -#define BMP180_REG_OUT_LSB		0xF7
+> -#define BMP180_REG_OUT_MSB		0xF6
+> -
+> -#define BMP180_REG_CALIB_START		0xAA
+> -#define BMP180_REG_CALIB_COUNT		22
+> -
+> -#define BMP180_MEAS_SCO			BIT(5)
+> -#define BMP180_MEAS_TEMP		(0x0E | BMP180_MEAS_SCO)
+> -#define BMP180_MEAS_PRESS_X(oss)	((oss) << 6 | 0x14 | =
+BMP180_MEAS_SCO)
+> -#define BMP180_MEAS_PRESS_1X		BMP180_MEAS_PRESS_X(0)
+> -#define BMP180_MEAS_PRESS_2X		BMP180_MEAS_PRESS_X(1)
+> -#define BMP180_MEAS_PRESS_4X		BMP180_MEAS_PRESS_X(2)
+> -#define BMP180_MEAS_PRESS_8X		BMP180_MEAS_PRESS_X(3)
+> -
+> -/* BMP180 and BMP280 common registers */
+> -#define BMP280_REG_CTRL_MEAS		0xF4
+> -#define BMP280_REG_RESET		0xE0
+> -#define BMP280_REG_ID			0xD0
+> -
+> -#define BMP180_CHIP_ID			0x55
+> -#define BMP280_CHIP_ID			0x58
+> -#define BME280_CHIP_ID			0x60
+> -#define BMP280_SOFT_RESET_VAL		0xB6
+> -
+> -struct bmp280_data {
+> -	struct i2c_client *client;
+> -	struct mutex lock;
+> -	struct regmap *regmap;
+> -	const struct bmp280_chip_info *chip_info;
+> -	struct regulator *vddd;
+> -	struct regulator *vdda;
+> -
+> -	/* log of base 2 of oversampling rate */
+> -	u8 oversampling_press;
+> -	u8 oversampling_temp;
+> -	u8 oversampling_humid;
+> -
+> -	/*
+> -	 * Carryover value from temperature conversion, used in pressure
+> -	 * calculation.
+> -	 */
+> -	s32 t_fine;
+> -};
+> -
+> -struct bmp280_chip_info {
+> -	const struct regmap_config *regmap_config;
+> -
+> -	const int *oversampling_temp_avail;
+> -	int num_oversampling_temp_avail;
+> -
+> -	const int *oversampling_press_avail;
+> -	int num_oversampling_press_avail;
+> -
+> -	const int *oversampling_humid_avail;
+> -	int num_oversampling_humid_avail;
+> -
+> -	int (*chip_config)(struct bmp280_data *);
+> -	int (*read_temp)(struct bmp280_data *, int *);
+> -	int (*read_press)(struct bmp280_data *, int *, int *);
+> -	int (*read_humid)(struct bmp280_data *, int *, int *);
+> -};
+> -
+> -/*
+> - * These enums are used for indexing into the array of compensation
+> - * parameters for BMP280.
+> - */
+> -enum { T1, T2, T3 };
+> -enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
+> -
+> -static const struct iio_chan_spec bmp280_channels[] =3D {
+> -	{
+> -		.type =3D IIO_PRESSURE,
+> -		.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED) |
+> -				      =
+BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> -	},
+> -	{
+> -		.type =3D IIO_TEMP,
+> -		.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED) |
+> -				      =
+BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> -	},
+> -	{
+> -		.type =3D IIO_HUMIDITYRELATIVE,
+> -		.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED) |
+> -				      =
+BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> -	},
+> -};
+> -
+> -static bool bmp280_is_writeable_reg(struct device *dev, unsigned int =
+reg)
+> -{
+> -	switch (reg) {
+> -	case BMP280_REG_CONFIG:
+> -	case BMP280_REG_CTRL_HUMIDITY:
+> -	case BMP280_REG_CTRL_MEAS:
+> -	case BMP280_REG_RESET:
+> -		return true;
+> -	default:
+> -		return false;
+> -	};
+> -}
+> -
+> -static bool bmp280_is_volatile_reg(struct device *dev, unsigned int =
+reg)
+> -{
+> -	switch (reg) {
+> -	case BMP280_REG_HUMIDITY_LSB:
+> -	case BMP280_REG_HUMIDITY_MSB:
+> -	case BMP280_REG_TEMP_XLSB:
+> -	case BMP280_REG_TEMP_LSB:
+> -	case BMP280_REG_TEMP_MSB:
+> -	case BMP280_REG_PRESS_XLSB:
+> -	case BMP280_REG_PRESS_LSB:
+> -	case BMP280_REG_PRESS_MSB:
+> -	case BMP280_REG_STATUS:
+> -		return true;
+> -	default:
+> -		return false;
+> -	}
+> -}
+> -
+> -static const struct regmap_config bmp280_regmap_config =3D {
+> -	.reg_bits =3D 8,
+> -	.val_bits =3D 8,
+> -
+> -	.max_register =3D BMP280_REG_HUMIDITY_LSB,
+> -	.cache_type =3D REGCACHE_RBTREE,
+> -
+> -	.writeable_reg =3D bmp280_is_writeable_reg,
+> -	.volatile_reg =3D bmp280_is_volatile_reg,
+> -};
+> -
+> -/*
+> - * Returns humidity in percent, resolution is 0.01 percent. Output =
+value of
+> - * "47445" represents 47445/1024 =3D 46.333 %RH.
+> - *
+> - * Taken from BME280 datasheet, Section 4.2.3, "Compensation =
+formula".
+> - */
+> -
+> -static u32 bmp280_compensate_humidity(struct bmp280_data *data,
+> -				      s32 adc_humidity)
+> -{
+> -	struct device *dev =3D &data->client->dev;
+> -	unsigned int H1, H3, tmp;
+> -	int H2, H4, H5, H6, ret, var;
+> -
+> -	ret =3D regmap_read(data->regmap, BMP280_REG_COMP_H1, &H1);
+> -	if (ret < 0) {
+> -		dev_err(dev, "failed to read H1 comp value\n");
+> -		return ret;
+> -	}
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_COMP_H2, &tmp, =
+2);
+> -	if (ret < 0) {
+> -		dev_err(dev, "failed to read H2 comp value\n");
+> -		return ret;
+> -	}
+> -	H2 =3D sign_extend32(le16_to_cpu(tmp), 15);
+> -
+> -	ret =3D regmap_read(data->regmap, BMP280_REG_COMP_H3, &H3);
+> -	if (ret < 0) {
+> -		dev_err(dev, "failed to read H3 comp value\n");
+> -		return ret;
+> -	}
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_COMP_H4, &tmp, =
+2);
+> -	if (ret < 0) {
+> -		dev_err(dev, "failed to read H4 comp value\n");
+> -		return ret;
+> -	}
+> -	H4 =3D sign_extend32(((be16_to_cpu(tmp) >> 4) & 0xff0) |
+> -			  (be16_to_cpu(tmp) & 0xf), 11);
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_COMP_H5, &tmp, =
+2);
+> -	if (ret < 0) {
+> -		dev_err(dev, "failed to read H5 comp value\n");
+> -		return ret;
+> -	}
+> -	H5 =3D sign_extend32(((le16_to_cpu(tmp) >> 4) & 0xfff), 11);
+> -
+> -	ret =3D regmap_read(data->regmap, BMP280_REG_COMP_H6, &tmp);
+> -	if (ret < 0) {
+> -		dev_err(dev, "failed to read H6 comp value\n");
+> -		return ret;
+> -	}
+> -	H6 =3D sign_extend32(tmp, 7);
+> -
+> -	var =3D ((s32)data->t_fine) - 76800;
+> -	var =3D ((((adc_humidity << 14) - (H4 << 20) - (H5 * var)) + =
+16384) >> 15)
+> -		* (((((((var * H6) >> 10) * (((var * H3) >> 11) + =
+32768)) >> 10)
+> -		+ 2097152) * H2 + 8192) >> 14);
+> -	var -=3D ((((var >> 15) * (var >> 15)) >> 7) * H1) >> 4;
+> -
+> -	return var >> 12;
+> -};
+> -
+> -/*
+> - * Returns temperature in DegC, resolution is 0.01 DegC.  Output =
+value of
+> - * "5123" equals 51.23 DegC.  t_fine carries fine temperature as =
+global
+> - * value.
+> - *
+> - * Taken from datasheet, Section 3.11.3, "Compensation formula".
+> - */
+> -static s32 bmp280_compensate_temp(struct bmp280_data *data,
+> -				  s32 adc_temp)
+> -{
+> -	int ret;
+> -	s32 var1, var2;
+> -	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, =
+BMP280_REG_COMP_TEMP_START,
+> -			       buf, BMP280_COMP_TEMP_REG_COUNT);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev,
+> -			"failed to read temperature calibration =
+parameters\n");
+> -		return ret;
+> -	}
+> -
+> -	/*
+> -	 * The double casts are necessary because le16_to_cpu returns an
+> -	 * unsigned 16-bit value.  Casting that value directly to a
+> -	 * signed 32-bit will not do proper sign extension.
+> -	 *
+> -	 * Conversely, T1 and P1 are unsigned values, so they can be
+> -	 * cast straight to the larger type.
+> -	 */
+> -	var1 =3D (((adc_temp >> 3) - ((s32)le16_to_cpu(buf[T1]) << 1)) *
+> -		((s32)(s16)le16_to_cpu(buf[T2]))) >> 11;
+> -	var2 =3D (((((adc_temp >> 4) - ((s32)le16_to_cpu(buf[T1]))) *
+> -		  ((adc_temp >> 4) - ((s32)le16_to_cpu(buf[T1])))) >> =
+12) *
+> -		((s32)(s16)le16_to_cpu(buf[T3]))) >> 14;
+> -	data->t_fine =3D var1 + var2;
+> -
+> -	return (data->t_fine * 5 + 128) >> 8;
+> -}
+> -
+> -/*
+> - * Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format =
+(24
+> - * integer bits and 8 fractional bits).  Output value of "24674867"
+> - * represents 24674867/256 =3D 96386.2 Pa =3D 963.862 hPa
+> - *
+> - * Taken from datasheet, Section 3.11.3, "Compensation formula".
+> - */
+> -static u32 bmp280_compensate_press(struct bmp280_data *data,
+> -				   s32 adc_press)
+> -{
+> -	int ret;
+> -	s64 var1, var2, p;
+> -	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, =
+BMP280_REG_COMP_PRESS_START,
+> -			       buf, BMP280_COMP_PRESS_REG_COUNT);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev,
+> -			"failed to read pressure calibration =
+parameters\n");
+> -		return ret;
+> -	}
+> -
+> -	var1 =3D ((s64)data->t_fine) - 128000;
+> -	var2 =3D var1 * var1 * (s64)(s16)le16_to_cpu(buf[P6]);
+> -	var2 +=3D (var1 * (s64)(s16)le16_to_cpu(buf[P5])) << 17;
+> -	var2 +=3D ((s64)(s16)le16_to_cpu(buf[P4])) << 35;
+> -	var1 =3D ((var1 * var1 * (s64)(s16)le16_to_cpu(buf[P3])) >> 8) +
+> -		((var1 * (s64)(s16)le16_to_cpu(buf[P2])) << 12);
+> -	var1 =3D ((((s64)1) << 47) + var1) * ((s64)le16_to_cpu(buf[P1])) =
+>> 33;
+> -
+> -	if (var1 =3D=3D 0)
+> -		return 0;
+> -
+> -	p =3D ((((s64)1048576 - adc_press) << 31) - var2) * 3125;
+> -	p =3D div64_s64(p, var1);
+> -	var1 =3D (((s64)(s16)le16_to_cpu(buf[P9])) * (p >> 13) * (p >> =
+13)) >> 25;
+> -	var2 =3D (((s64)(s16)le16_to_cpu(buf[P8])) * p) >> 19;
+> -	p =3D ((p + var1 + var2) >> 8) + =
+(((s64)(s16)le16_to_cpu(buf[P7])) << 4);
+> -
+> -	return (u32)p;
+> -}
+> -
+> -static int bmp280_read_temp(struct bmp280_data *data,
+> -			    int *val)
+> -{
+> -	int ret;
+> -	__be32 tmp =3D 0;
+> -	s32 adc_temp, comp_temp;
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
+> -			       (u8 *) &tmp, 3);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev, "failed to read =
+temperature\n");
+> -		return ret;
+> -	}
+> -
+> -	adc_temp =3D be32_to_cpu(tmp) >> 12;
+> -	comp_temp =3D bmp280_compensate_temp(data, adc_temp);
+> -
+> -	/*
+> -	 * val might be NULL if we're called by the read_press routine,
+> -	 * who only cares about the carry over t_fine value.
+> -	 */
+> -	if (val) {
+> -		*val =3D comp_temp * 10;
+> -		return IIO_VAL_INT;
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+> -static int bmp280_read_press(struct bmp280_data *data,
+> -			     int *val, int *val2)
+> -{
+> -	int ret;
+> -	__be32 tmp =3D 0;
+> -	s32 adc_press;
+> -	u32 comp_press;
+> -
+> -	/* Read and compensate temperature so we get a reading of =
+t_fine. */
+> -	ret =3D bmp280_read_temp(data, NULL);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
+> -			       (u8 *) &tmp, 3);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev, "failed to read =
+pressure\n");
+> -		return ret;
+> -	}
+> -
+> -	adc_press =3D be32_to_cpu(tmp) >> 12;
+> -	comp_press =3D bmp280_compensate_press(data, adc_press);
+> -
+> -	*val =3D comp_press;
+> -	*val2 =3D 256000;
+> -
+> -	return IIO_VAL_FRACTIONAL;
+> -}
+> -
+> -static int bmp280_read_humid(struct bmp280_data *data, int *val, int =
+*val2)
+> -{
+> -	int ret;
+> -	__be16 tmp =3D 0;
+> -	s32 adc_humidity;
+> -	u32 comp_humidity;
+> -
+> -	/* Read and compensate temperature so we get a reading of =
+t_fine. */
+> -	ret =3D bmp280_read_temp(data, NULL);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, BMP280_REG_HUMIDITY_MSB,
+> -			       (u8 *) &tmp, 2);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev, "failed to read =
+humidity\n");
+> -		return ret;
+> -	}
+> -
+> -	adc_humidity =3D be16_to_cpu(tmp);
+> -	comp_humidity =3D bmp280_compensate_humidity(data, =
+adc_humidity);
+> -
+> -	*val =3D comp_humidity;
+> -	*val2 =3D 1024;
+> -
+> -	return IIO_VAL_FRACTIONAL;
+> -}
+> -
+> -static int bmp280_read_raw(struct iio_dev *indio_dev,
+> -			   struct iio_chan_spec const *chan,
+> -			   int *val, int *val2, long mask)
+> -{
+> -	int ret;
+> -	struct bmp280_data *data =3D iio_priv(indio_dev);
+> -
+> -	mutex_lock(&data->lock);
+> -
+> -	switch (mask) {
+> -	case IIO_CHAN_INFO_PROCESSED:
+> -		switch (chan->type) {
+> -		case IIO_HUMIDITYRELATIVE:
+> -			ret =3D data->chip_info->read_humid(data, val, =
+val2);
+> -			break;
+> -		case IIO_PRESSURE:
+> -			ret =3D data->chip_info->read_press(data, val, =
+val2);
+> -			break;
+> -		case IIO_TEMP:
+> -			ret =3D data->chip_info->read_temp(data, val);
+> -			break;
+> -		default:
+> -			ret =3D -EINVAL;
+> -			break;
+> -		}
+> -		break;
+> -	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> -		switch (chan->type) {
+> -		case IIO_HUMIDITYRELATIVE:
+> -			*val =3D 1 << data->oversampling_humid;
+> -			ret =3D IIO_VAL_INT;
+> -			break;
+> -		case IIO_PRESSURE:
+> -			*val =3D 1 << data->oversampling_press;
+> -			ret =3D IIO_VAL_INT;
+> -			break;
+> -		case IIO_TEMP:
+> -			*val =3D 1 << data->oversampling_temp;
+> -			ret =3D IIO_VAL_INT;
+> -			break;
+> -		default:
+> -			ret =3D -EINVAL;
+> -			break;
+> -		}
+> -		break;
+> -	default:
+> -		ret =3D -EINVAL;
+> -		break;
+> -	}
+> -
+> -	mutex_unlock(&data->lock);
+> -
+> -	return ret;
+> -}
+> -
+> -static int bmp280_write_oversampling_ratio_humid(struct bmp280_data =
+*data,
+> -					       int val)
+> -{
+> -	int i;
+> -	const int *avail =3D data->chip_info->oversampling_humid_avail;
+> -	const int n =3D data->chip_info->num_oversampling_humid_avail;
+> -
+> -	for (i =3D 0; i < n; i++) {
+> -		if (avail[i] =3D=3D val) {
+> -			data->oversampling_humid =3D ilog2(val);
+> -
+> -			return data->chip_info->chip_config(data);
+> -		}
+> -	}
+> -	return -EINVAL;
+> -}
+> -
+> -static int bmp280_write_oversampling_ratio_temp(struct bmp280_data =
+*data,
+> -					       int val)
+> -{
+> -	int i;
+> -	const int *avail =3D data->chip_info->oversampling_temp_avail;
+> -	const int n =3D data->chip_info->num_oversampling_temp_avail;
+> -
+> -	for (i =3D 0; i < n; i++) {
+> -		if (avail[i] =3D=3D val) {
+> -			data->oversampling_temp =3D ilog2(val);
+> -
+> -			return data->chip_info->chip_config(data);
+> -		}
+> -	}
+> -	return -EINVAL;
+> -}
+> -
+> -static int bmp280_write_oversampling_ratio_press(struct bmp280_data =
+*data,
+> -					       int val)
+> -{
+> -	int i;
+> -	const int *avail =3D data->chip_info->oversampling_press_avail;
+> -	const int n =3D data->chip_info->num_oversampling_press_avail;
+> -
+> -	for (i =3D 0; i < n; i++) {
+> -		if (avail[i] =3D=3D val) {
+> -			data->oversampling_press =3D ilog2(val);
+> -
+> -			return data->chip_info->chip_config(data);
+> -		}
+> -	}
+> -	return -EINVAL;
+> -}
+> -
+> -static int bmp280_write_raw(struct iio_dev *indio_dev,
+> -			    struct iio_chan_spec const *chan,
+> -			    int val, int val2, long mask)
+> -{
+> -	int ret =3D 0;
+> -	struct bmp280_data *data =3D iio_priv(indio_dev);
+> -
+> -	switch (mask) {
+> -	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> -		mutex_lock(&data->lock);
+> -		switch (chan->type) {
+> -		case IIO_HUMIDITYRELATIVE:
+> -			ret =3D =
+bmp280_write_oversampling_ratio_humid(data, val);
+> -			break;
+> -		case IIO_PRESSURE:
+> -			ret =3D =
+bmp280_write_oversampling_ratio_press(data, val);
+> -			break;
+> -		case IIO_TEMP:
+> -			ret =3D =
+bmp280_write_oversampling_ratio_temp(data, val);
+> -			break;
+> -		default:
+> -			ret =3D -EINVAL;
+> -			break;
+> -		}
+> -		mutex_unlock(&data->lock);
+> -		break;
+> -	default:
+> -		return -EINVAL;
+> -	}
+> -
+> -	return ret;
+> -}
+> -
+> -static ssize_t bmp280_show_avail(char *buf, const int *vals, const =
+int n)
+> -{
+> -	size_t len =3D 0;
+> -	int i;
+> -
+> -	for (i =3D 0; i < n; i++)
+> -		len +=3D scnprintf(buf + len, PAGE_SIZE - len, "%d ", =
+vals[i]);
+> -
+> -	buf[len - 1] =3D '\n';
+> -
+> -	return len;
+> -}
+> -
+> -static ssize_t bmp280_show_temp_oversampling_avail(struct device =
+*dev,
+> -				struct device_attribute *attr, char =
+*buf)
+> -{
+> -	struct bmp280_data *data =3D iio_priv(dev_to_iio_dev(dev));
+> -
+> -	return bmp280_show_avail(buf, =
+data->chip_info->oversampling_temp_avail,
+> -				 =
+data->chip_info->num_oversampling_temp_avail);
+> -}
+> -
+> -static ssize_t bmp280_show_press_oversampling_avail(struct device =
+*dev,
+> -				struct device_attribute *attr, char =
+*buf)
+> -{
+> -	struct bmp280_data *data =3D iio_priv(dev_to_iio_dev(dev));
+> -
+> -	return bmp280_show_avail(buf, =
+data->chip_info->oversampling_press_avail,
+> -				 =
+data->chip_info->num_oversampling_press_avail);
+> -}
+> -
+> -static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available,
+> -	S_IRUGO, bmp280_show_temp_oversampling_avail, NULL, 0);
+> -
+> -static IIO_DEVICE_ATTR(in_pressure_oversampling_ratio_available,
+> -	S_IRUGO, bmp280_show_press_oversampling_avail, NULL, 0);
+> -
+> -static struct attribute *bmp280_attributes[] =3D {
+> -	=
+&iio_dev_attr_in_temp_oversampling_ratio_available.dev_attr.attr,
+> -	=
+&iio_dev_attr_in_pressure_oversampling_ratio_available.dev_attr.attr,
+> -	NULL,
+> -};
+> -
+> -static const struct attribute_group bmp280_attrs_group =3D {
+> -	.attrs =3D bmp280_attributes,
+> -};
+> -
+> -static const struct iio_info bmp280_info =3D {
+> -	.driver_module =3D THIS_MODULE,
+> -	.read_raw =3D &bmp280_read_raw,
+> -	.write_raw =3D &bmp280_write_raw,
+> -	.attrs =3D &bmp280_attrs_group,
+> -};
+> -
+> -static int bmp280_chip_config(struct bmp280_data *data)
+> -{
+> -	int ret;
+> -	u8 osrs =3D BMP280_OSRS_TEMP_X(data->oversampling_temp + 1) |
+> -		  BMP280_OSRS_PRESS_X(data->oversampling_press + 1);
+> -
+> -	ret =3D regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
+> -				 BMP280_OSRS_TEMP_MASK |
+> -				 BMP280_OSRS_PRESS_MASK |
+> -				 BMP280_MODE_MASK,
+> -				 osrs | BMP280_MODE_NORMAL);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev,
+> -			"failed to write ctrl_meas register\n");
+> -		return ret;
+> -	}
+> -
+> -	ret =3D regmap_update_bits(data->regmap, BMP280_REG_CONFIG,
+> -				 BMP280_FILTER_MASK,
+> -				 BMP280_FILTER_4X);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev,
+> -			"failed to write config register\n");
+> -		return ret;
+> -	}
+> -
+> -	return ret;
+> -}
+> -
+> -static const int bmp280_oversampling_avail[] =3D { 1, 2, 4, 8, 16 };
+> -
+> -static const struct bmp280_chip_info bmp280_chip_info =3D {
+> -	.regmap_config =3D &bmp280_regmap_config,
+> -
+> -	.oversampling_temp_avail =3D bmp280_oversampling_avail,
+> -	.num_oversampling_temp_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> -
+> -	.oversampling_press_avail =3D bmp280_oversampling_avail,
+> -	.num_oversampling_press_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> -
+> -	.chip_config =3D bmp280_chip_config,
+> -	.read_temp =3D bmp280_read_temp,
+> -	.read_press =3D bmp280_read_press,
+> -};
+> -
+> -static int bme280_chip_config(struct bmp280_data *data)
+> -{
+> -	int ret =3D bmp280_chip_config(data);
+> -	u8 osrs =3D BMP280_OSRS_HUMIDITIY_X(data->oversampling_humid + =
+1);
+> -
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	return regmap_update_bits(data->regmap, =
+BMP280_REG_CTRL_HUMIDITY,
+> -				  BMP280_OSRS_HUMIDITY_MASK, osrs);
+> -}
+> -
+> -static const struct bmp280_chip_info bme280_chip_info =3D {
+> -	.regmap_config =3D &bmp280_regmap_config,
+> -
+> -	.oversampling_temp_avail =3D bmp280_oversampling_avail,
+> -	.num_oversampling_temp_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> -
+> -	.oversampling_press_avail =3D bmp280_oversampling_avail,
+> -	.num_oversampling_press_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> -
+> -	.oversampling_humid_avail =3D bmp280_oversampling_avail,
+> -	.num_oversampling_humid_avail =3D =
+ARRAY_SIZE(bmp280_oversampling_avail),
+> -
+> -	.chip_config =3D bme280_chip_config,
+> -	.read_temp =3D bmp280_read_temp,
+> -	.read_press =3D bmp280_read_press,
+> -	.read_humid =3D bmp280_read_humid,
+> -};
+> -
+> -
+> -static bool bmp180_is_writeable_reg(struct device *dev, unsigned int =
+reg)
+> -{
+> -	switch (reg) {
+> -	case BMP280_REG_CTRL_MEAS:
+> -	case BMP280_REG_RESET:
+> -		return true;
+> -	default:
+> -		return false;
+> -	};
+> -}
+> -
+> -static bool bmp180_is_volatile_reg(struct device *dev, unsigned int =
+reg)
+> -{
+> -	switch (reg) {
+> -	case BMP180_REG_OUT_XLSB:
+> -	case BMP180_REG_OUT_LSB:
+> -	case BMP180_REG_OUT_MSB:
+> -	case BMP280_REG_CTRL_MEAS:
+> -		return true;
+> -	default:
+> -		return false;
+> -	}
+> -}
+> -
+> -static const struct regmap_config bmp180_regmap_config =3D {
+> -	.reg_bits =3D 8,
+> -	.val_bits =3D 8,
+> -
+> -	.max_register =3D BMP180_REG_OUT_XLSB,
+> -	.cache_type =3D REGCACHE_RBTREE,
+> -
+> -	.writeable_reg =3D bmp180_is_writeable_reg,
+> -	.volatile_reg =3D bmp180_is_volatile_reg,
+> -};
+> -
+> -static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
+> -{
+> -	int ret;
+> -	const int conversion_time_max[] =3D { 4500, 7500, 13500, 25500 =
+};
+> -	unsigned int delay_us;
+> -	unsigned int ctrl;
+> -
+> -	ret =3D regmap_write(data->regmap, BMP280_REG_CTRL_MEAS, =
+ctrl_meas);
+> -	if (ret)
+> -		return ret;
+> -
+> -	if (ctrl_meas =3D=3D BMP180_MEAS_TEMP)
+> -		delay_us =3D 4500;
+> -	else
+> -		delay_us =3D =
+conversion_time_max[data->oversampling_press];
+> -
+> -	usleep_range(delay_us, delay_us + 1000);
+> -
+> -	ret =3D regmap_read(data->regmap, BMP280_REG_CTRL_MEAS, &ctrl);
+> -	if (ret)
+> -		return ret;
+> -
+> -	/* The value of this bit reset to "0" after conversion is =
+complete */
+> -	if (ctrl & BMP180_MEAS_SCO)
+> -		return -EIO;
+> -
+> -	return 0;
+> -}
+> -
+> -static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
+> -{
+> -	int ret;
+> -	__be16 tmp =3D 0;
+> -
+> -	ret =3D bmp180_measure(data, BMP180_MEAS_TEMP);
+> -	if (ret)
+> -		return ret;
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 =
+*)&tmp, 2);
+> -	if (ret)
+> -		return ret;
+> -
+> -	*val =3D be16_to_cpu(tmp);
+> -
+> -	return 0;
+> -}
+> -
+> -/*
+> - * These enums are used for indexing into the array of calibration
+> - * coefficients for BMP180.
+> - */
+> -enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
+> -
+> -struct bmp180_calib {
+> -	s16 AC1;
+> -	s16 AC2;
+> -	s16 AC3;
+> -	u16 AC4;
+> -	u16 AC5;
+> -	u16 AC6;
+> -	s16 B1;
+> -	s16 B2;
+> -	s16 MB;
+> -	s16 MC;
+> -	s16 MD;
+> -};
+> -
+> -static int bmp180_read_calib(struct bmp280_data *data,
+> -			     struct bmp180_calib *calib)
+> -{
+> -	int ret;
+> -	int i;
+> -	__be16 buf[BMP180_REG_CALIB_COUNT / 2];
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, =
+buf,
+> -			       sizeof(buf));
+> -
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	/* None of the words has the value 0 or 0xFFFF */
+> -	for (i =3D 0; i < ARRAY_SIZE(buf); i++) {
+> -		if (buf[i] =3D=3D cpu_to_be16(0) || buf[i] =3D=3D =
+cpu_to_be16(0xffff))
+> -			return -EIO;
+> -	}
+> -
+> -	calib->AC1 =3D be16_to_cpu(buf[AC1]);
+> -	calib->AC2 =3D be16_to_cpu(buf[AC2]);
+> -	calib->AC3 =3D be16_to_cpu(buf[AC3]);
+> -	calib->AC4 =3D be16_to_cpu(buf[AC4]);
+> -	calib->AC5 =3D be16_to_cpu(buf[AC5]);
+> -	calib->AC6 =3D be16_to_cpu(buf[AC6]);
+> -	calib->B1 =3D be16_to_cpu(buf[B1]);
+> -	calib->B2 =3D be16_to_cpu(buf[B2]);
+> -	calib->MB =3D be16_to_cpu(buf[MB]);
+> -	calib->MC =3D be16_to_cpu(buf[MC]);
+> -	calib->MD =3D be16_to_cpu(buf[MD]);
+> -
+> -	return 0;
+> -}
+> -
+> -/*
+> - * Returns temperature in DegC, resolution is 0.1 DegC.
+> - * t_fine carries fine temperature as global value.
+> - *
+> - * Taken from datasheet, Section 3.5, "Calculating pressure and =
+temperature".
+> - */
+> -static s32 bmp180_compensate_temp(struct bmp280_data *data, s32 =
+adc_temp)
+> -{
+> -	int ret;
+> -	s32 x1, x2;
+> -	struct bmp180_calib calib;
+> -
+> -	ret =3D bmp180_read_calib(data, &calib);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev,
+> -			"failed to read calibration coefficients\n");
+> -		return ret;
+> -	}
+> -
+> -	x1 =3D ((adc_temp - calib.AC6) * calib.AC5) >> 15;
+> -	x2 =3D (calib.MC << 11) / (x1 + calib.MD);
+> -	data->t_fine =3D x1 + x2;
+> -
+> -	return (data->t_fine + 8) >> 4;
+> -}
+> -
+> -static int bmp180_read_temp(struct bmp280_data *data, int *val)
+> -{
+> -	int ret;
+> -	s32 adc_temp, comp_temp;
+> -
+> -	ret =3D bmp180_read_adc_temp(data, &adc_temp);
+> -	if (ret)
+> -		return ret;
+> -
+> -	comp_temp =3D bmp180_compensate_temp(data, adc_temp);
+> -
+> -	/*
+> -	 * val might be NULL if we're called by the read_press routine,
+> -	 * who only cares about the carry over t_fine value.
+> -	 */
+> -	if (val) {
+> -		*val =3D comp_temp * 100;
+> -		return IIO_VAL_INT;
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+> -static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
+> -{
+> -	int ret;
+> -	__be32 tmp =3D 0;
+> -	u8 oss =3D data->oversampling_press;
+> -
+> -	ret =3D bmp180_measure(data, BMP180_MEAS_PRESS_X(oss));
+> -	if (ret)
+> -		return ret;
+> -
+> -	ret =3D regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 =
+*)&tmp, 3);
+> -	if (ret)
+> -		return ret;
+> -
+> -	*val =3D (be32_to_cpu(tmp) >> 8) >> (8 - oss);
+> -
+> -	return 0;
+> -}
+> -
+> -/*
+> - * Returns pressure in Pa, resolution is 1 Pa.
+> - *
+> - * Taken from datasheet, Section 3.5, "Calculating pressure and =
+temperature".
+> - */
+> -static u32 bmp180_compensate_press(struct bmp280_data *data, s32 =
+adc_press)
+> -{
+> -	int ret;
+> -	s32 x1, x2, x3, p;
+> -	s32 b3, b6;
+> -	u32 b4, b7;
+> -	s32 oss =3D data->oversampling_press;
+> -	struct bmp180_calib calib;
+> -
+> -	ret =3D bmp180_read_calib(data, &calib);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev,
+> -			"failed to read calibration coefficients\n");
+> -		return ret;
+> -	}
+> -
+> -	b6 =3D data->t_fine - 4000;
+> -	x1 =3D (calib.B2 * (b6 * b6 >> 12)) >> 11;
+> -	x2 =3D calib.AC2 * b6 >> 11;
+> -	x3 =3D x1 + x2;
+> -	b3 =3D ((((s32)calib.AC1 * 4 + x3) << oss) + 2) / 4;
+> -	x1 =3D calib.AC3 * b6 >> 13;
+> -	x2 =3D (calib.B1 * ((b6 * b6) >> 12)) >> 16;
+> -	x3 =3D (x1 + x2 + 2) >> 2;
+> -	b4 =3D calib.AC4 * (u32)(x3 + 32768) >> 15;
+> -	b7 =3D ((u32)adc_press - b3) * (50000 >> oss);
+> -	if (b7 < 0x80000000)
+> -		p =3D (b7 * 2) / b4;
+> -	else
+> -		p =3D (b7 / b4) * 2;
+> -
+> -	x1 =3D (p >> 8) * (p >> 8);
+> -	x1 =3D (x1 * 3038) >> 16;
+> -	x2 =3D (-7357 * p) >> 16;
+> -
+> -	return p + ((x1 + x2 + 3791) >> 4);
+> -}
+> -
+> -static int bmp180_read_press(struct bmp280_data *data,
+> -			     int *val, int *val2)
+> -{
+> -	int ret;
+> -	s32 adc_press;
+> -	u32 comp_press;
+> -
+> -	/* Read and compensate temperature so we get a reading of =
+t_fine. */
+> -	ret =3D bmp180_read_temp(data, NULL);
+> -	if (ret)
+> -		return ret;
+> -
+> -	ret =3D bmp180_read_adc_press(data, &adc_press);
+> -	if (ret)
+> -		return ret;
+> -
+> -	comp_press =3D bmp180_compensate_press(data, adc_press);
+> -
+> -	*val =3D comp_press;
+> -	*val2 =3D 1000;
+> -
+> -	return IIO_VAL_FRACTIONAL;
+> -}
+> -
+> -static int bmp180_chip_config(struct bmp280_data *data)
+> -{
+> -	return 0;
+> -}
+> -
+> -static const int bmp180_oversampling_temp_avail[] =3D { 1 };
+> -static const int bmp180_oversampling_press_avail[] =3D { 1, 2, 4, 8 =
+};
+> -
+> -static const struct bmp280_chip_info bmp180_chip_info =3D {
+> -	.regmap_config =3D &bmp180_regmap_config,
+> -
+> -	.oversampling_temp_avail =3D bmp180_oversampling_temp_avail,
+> -	.num_oversampling_temp_avail =3D
+> -		ARRAY_SIZE(bmp180_oversampling_temp_avail),
+> -
+> -	.oversampling_press_avail =3D bmp180_oversampling_press_avail,
+> -	.num_oversampling_press_avail =3D
+> -		ARRAY_SIZE(bmp180_oversampling_press_avail),
+> -
+> -	.chip_config =3D bmp180_chip_config,
+> -	.read_temp =3D bmp180_read_temp,
+> -	.read_press =3D bmp180_read_press,
+> -};
+> -
+> -static int bmp280_probe(struct i2c_client *client,
+> -			const struct i2c_device_id *id)
+> -{
+> -	int ret;
+> -	struct iio_dev *indio_dev;
+> -	struct bmp280_data *data;
+> -	unsigned int chip_id;
+> -	struct gpio_desc *gpiod;
+> -
+> -	indio_dev =3D devm_iio_device_alloc(&client->dev, =
+sizeof(*data));
+> -	if (!indio_dev)
+> -		return -ENOMEM;
+> -
+> -	data =3D iio_priv(indio_dev);
+> -	mutex_init(&data->lock);
+> -	data->client =3D client;
+> -
+> -	indio_dev->dev.parent =3D &client->dev;
+> -	indio_dev->name =3D id->name;
+> -	indio_dev->channels =3D bmp280_channels;
+> -	indio_dev->info =3D &bmp280_info;
+> -	indio_dev->modes =3D INDIO_DIRECT_MODE;
+> -
+> -	switch (id->driver_data) {
+> -	case BMP180_CHIP_ID:
+> -		indio_dev->num_channels =3D 2;
+> -		data->chip_info =3D &bmp180_chip_info;
+> -		data->oversampling_press =3D ilog2(8);
+> -		data->oversampling_temp =3D ilog2(1);
+> -		break;
+> -	case BMP280_CHIP_ID:
+> -		indio_dev->num_channels =3D 2;
+> -		data->chip_info =3D &bmp280_chip_info;
+> -		data->oversampling_press =3D ilog2(16);
+> -		data->oversampling_temp =3D ilog2(2);
+> -		break;
+> -	case BME280_CHIP_ID:
+> -		indio_dev->num_channels =3D 3;
+> -		data->chip_info =3D &bme280_chip_info;
+> -		data->oversampling_press =3D ilog2(16);
+> -		data->oversampling_humid =3D ilog2(16);
+> -		data->oversampling_temp =3D ilog2(2);
+> -		break;
+> -	default:
+> -		return -EINVAL;
+> -	}
+> -
+> -	/* Bring up regulators */
+> -	data->vddd =3D devm_regulator_get(&client->dev, "vddd");
+> -	if (IS_ERR(data->vddd)) {
+> -		dev_err(&client->dev, "failed to get VDDD regulator\n");
+> -		return PTR_ERR(data->vddd);
+> -	}
+> -	ret =3D regulator_enable(data->vddd);
+> -	if (ret) {
+> -		dev_err(&client->dev, "failed to enable VDDD =
+regulator\n");
+> -		return ret;
+> -	}
+> -	data->vdda =3D devm_regulator_get(&client->dev, "vdda");
+> -	if (IS_ERR(data->vdda)) {
+> -		dev_err(&client->dev, "failed to get VDDA regulator\n");
+> -		return PTR_ERR(data->vddd);
+> -	}
+> -	ret =3D regulator_enable(data->vdda);
+> -	if (ret) {
+> -		dev_err(&client->dev, "failed to enable VDDA\n");
+> -		return ret;
+> -	}
+> -
+> -	/* Bring chip out of reset if there is an assigned GPIO line */
+> -	gpiod =3D devm_gpiod_get(&client->dev, "reset", GPIOD_OUT_HIGH);
+> -	/* Deassert the signal */
+> -	if (!IS_ERR(gpiod)) {
+> -		dev_info(&client->dev, "release reset\n");
+> -		gpiod_set_value(gpiod, 0);
+> -	}
+> -
+> -	data->regmap =3D devm_regmap_init_i2c(client,
+> -					data->chip_info->regmap_config);
+> -	if (IS_ERR(data->regmap)) {
+> -		dev_err(&client->dev, "failed to allocate register =
+map\n");
+> -		return PTR_ERR(data->regmap);
+> -	}
+> -
+> -	ret =3D regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
+> -	if (ret < 0)
+> -		return ret;
+> -	if (chip_id !=3D id->driver_data) {
+> -		dev_err(&client->dev, "bad chip id.  expected %lx got =
+%x\n",
+> -			id->driver_data, chip_id);
+> -		return -EINVAL;
+> -	}
+> -
+> -	ret =3D data->chip_info->chip_config(data);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	return devm_iio_device_register(&client->dev, indio_dev);
+> -}
+> -
+> -static const struct acpi_device_id bmp280_acpi_match[] =3D {
+> -	{"BMP0280", BMP280_CHIP_ID },
+> -	{"BMP0180", BMP180_CHIP_ID },
+> -	{"BMP0085", BMP180_CHIP_ID },
+> -	{"BME0280", BME280_CHIP_ID },
+> -	{ },
+> -};
+> -MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
+> -
+> -#ifdef CONFIG_OF
+> -static const struct of_device_id bmp280_of_match[] =3D {
+> -	{ .compatible =3D "bosch,bme280", .data =3D (void =
+*)BME280_CHIP_ID },
+> -	{ .compatible =3D "bosch,bmp280", .data =3D (void =
+*)BMP280_CHIP_ID },
+> -	{ .compatible =3D "bosch,bmp180", .data =3D (void =
+*)BMP180_CHIP_ID },
+> -	{ .compatible =3D "bosch,bmp085", .data =3D (void =
+*)BMP180_CHIP_ID },
+> -};
+> -MODULE_DEVICE_TABLE(of, bmp280_of_match);
+> -#else
+> -#define bmp280_of_match NULL
+> -#endif
+> -
+> -static const struct i2c_device_id bmp280_id[] =3D {
+> -	{"bmp280", BMP280_CHIP_ID },
+> -	{"bmp180", BMP180_CHIP_ID },
+> -	{"bmp085", BMP180_CHIP_ID },
+> -	{"bme280", BME280_CHIP_ID },
+> -	{ },
+> -};
+> -MODULE_DEVICE_TABLE(i2c, bmp280_id);
+> -
+> -static struct i2c_driver bmp280_driver =3D {
+> -	.driver =3D {
+> -		.name	=3D "bmp280",
+> -		.acpi_match_table =3D ACPI_PTR(bmp280_acpi_match),
+> -		.of_match_table =3D of_match_ptr(bmp280_of_match),
+> -	},
+> -	.probe		=3D bmp280_probe,
+> -	.id_table	=3D bmp280_id,
+> -};
+> -module_i2c_driver(bmp280_driver);
+> -
+> -MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
+> -MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP180/BMP280 pressure =
+and temperature sensor");
+> -MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/pressure/bmp280.h =
+b/drivers/iio/pressure/bmp280.h
+> new file mode 100644
+> index 000000000000..acb40de2f581
+> --- /dev/null
+> +++ b/drivers/iio/pressure/bmp280.h
+> @@ -0,0 +1,107 @@
+> +#include <linux/bitops.h>
+> +#include <linux/device.h>
+> +#include <linux/regmap.h>
+> +
+> +/* BMP280 specific registers */
+> +#define BMP280_REG_HUMIDITY_LSB		0xFE
+> +#define BMP280_REG_HUMIDITY_MSB		0xFD
+> +#define BMP280_REG_TEMP_XLSB		0xFC
+> +#define BMP280_REG_TEMP_LSB		0xFB
+> +#define BMP280_REG_TEMP_MSB		0xFA
+> +#define BMP280_REG_PRESS_XLSB		0xF9
+> +#define BMP280_REG_PRESS_LSB		0xF8
+> +#define BMP280_REG_PRESS_MSB		0xF7
+> +
+> +#define BMP280_REG_CONFIG		0xF5
+> +#define BMP280_REG_CTRL_MEAS		0xF4
+> +#define BMP280_REG_STATUS		0xF3
+> +#define BMP280_REG_CTRL_HUMIDITY	0xF2
+> +
+> +/* Due to non linear mapping, and data sizes we can't do a bulk read =
+*/
+> +#define BMP280_REG_COMP_H1		0xA1
+> +#define BMP280_REG_COMP_H2		0xE1
+> +#define BMP280_REG_COMP_H3		0xE3
+> +#define BMP280_REG_COMP_H4		0xE4
+> +#define BMP280_REG_COMP_H5		0xE5
+> +#define BMP280_REG_COMP_H6		0xE7
+> +
+> +#define BMP280_REG_COMP_TEMP_START	0x88
+> +#define BMP280_COMP_TEMP_REG_COUNT	6
+> +
+> +#define BMP280_REG_COMP_PRESS_START	0x8E
+> +#define BMP280_COMP_PRESS_REG_COUNT	18
+> +
+> +#define BMP280_FILTER_MASK		(BIT(4) | BIT(3) | BIT(2))
+> +#define BMP280_FILTER_OFF		0
+> +#define BMP280_FILTER_2X		BIT(2)
+> +#define BMP280_FILTER_4X		BIT(3)
+> +#define BMP280_FILTER_8X		(BIT(3) | BIT(2))
+> +#define BMP280_FILTER_16X		BIT(4)
+> +
+> +#define BMP280_OSRS_HUMIDITY_MASK	(BIT(2) | BIT(1) | BIT(0))
+> +#define BMP280_OSRS_HUMIDITIY_X(osrs_h)	((osrs_h) << 0)
+> +#define BMP280_OSRS_HUMIDITY_SKIP	0
+> +#define BMP280_OSRS_HUMIDITY_1X		=
+BMP280_OSRS_HUMIDITIY_X(1)
+> +#define BMP280_OSRS_HUMIDITY_2X		=
+BMP280_OSRS_HUMIDITIY_X(2)
+> +#define BMP280_OSRS_HUMIDITY_4X		=
+BMP280_OSRS_HUMIDITIY_X(3)
+> +#define BMP280_OSRS_HUMIDITY_8X		=
+BMP280_OSRS_HUMIDITIY_X(4)
+> +#define BMP280_OSRS_HUMIDITY_16X	BMP280_OSRS_HUMIDITIY_X(5)
+> +
+> +#define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | =
+BIT(5))
+> +#define BMP280_OSRS_TEMP_SKIP		0
+> +#define BMP280_OSRS_TEMP_X(osrs_t)	((osrs_t) << 5)
+> +#define BMP280_OSRS_TEMP_1X		BMP280_OSRS_TEMP_X(1)
+> +#define BMP280_OSRS_TEMP_2X		BMP280_OSRS_TEMP_X(2)
+> +#define BMP280_OSRS_TEMP_4X		BMP280_OSRS_TEMP_X(3)
+> +#define BMP280_OSRS_TEMP_8X		BMP280_OSRS_TEMP_X(4)
+> +#define BMP280_OSRS_TEMP_16X		BMP280_OSRS_TEMP_X(5)
+> +
+> +#define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | =
+BIT(2))
+> +#define BMP280_OSRS_PRESS_SKIP		0
+> +#define BMP280_OSRS_PRESS_X(osrs_p)	((osrs_p) << 2)
+> +#define BMP280_OSRS_PRESS_1X		BMP280_OSRS_PRESS_X(1)
+> +#define BMP280_OSRS_PRESS_2X		BMP280_OSRS_PRESS_X(2)
+> +#define BMP280_OSRS_PRESS_4X		BMP280_OSRS_PRESS_X(3)
+> +#define BMP280_OSRS_PRESS_8X		BMP280_OSRS_PRESS_X(4)
+> +#define BMP280_OSRS_PRESS_16X		BMP280_OSRS_PRESS_X(5)
+> +
+> +#define BMP280_MODE_MASK		(BIT(1) | BIT(0))
+> +#define BMP280_MODE_SLEEP		0
+> +#define BMP280_MODE_FORCED		BIT(0)
+> +#define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
+> +
+> +/* BMP180 specific registers */
+> +#define BMP180_REG_OUT_XLSB		0xF8
+> +#define BMP180_REG_OUT_LSB		0xF7
+> +#define BMP180_REG_OUT_MSB		0xF6
+> +
+> +#define BMP180_REG_CALIB_START		0xAA
+> +#define BMP180_REG_CALIB_COUNT		22
+> +
+> +#define BMP180_MEAS_SCO			BIT(5)
+> +#define BMP180_MEAS_TEMP		(0x0E | BMP180_MEAS_SCO)
+> +#define BMP180_MEAS_PRESS_X(oss)	((oss) << 6 | 0x14 | =
+BMP180_MEAS_SCO)
+> +#define BMP180_MEAS_PRESS_1X		BMP180_MEAS_PRESS_X(0)
+> +#define BMP180_MEAS_PRESS_2X		BMP180_MEAS_PRESS_X(1)
+> +#define BMP180_MEAS_PRESS_4X		BMP180_MEAS_PRESS_X(2)
+> +#define BMP180_MEAS_PRESS_8X		BMP180_MEAS_PRESS_X(3)
+> +
+> +/* BMP180 and BMP280 common registers */
+> +#define BMP280_REG_CTRL_MEAS		0xF4
+> +#define BMP280_REG_RESET		0xE0
+> +#define BMP280_REG_ID			0xD0
+> +
+> +#define BMP180_CHIP_ID			0x55
+> +#define BMP280_CHIP_ID			0x58
+> +#define BME280_CHIP_ID			0x60
+> +#define BMP280_SOFT_RESET_VAL		0xB6
+> +
+> +/* Regmap configurations */
+> +extern const struct regmap_config bmp180_regmap_config;
+> +extern const struct regmap_config bmp280_regmap_config;
+> +
+> +/* Probe called from different transports */
+> +int bmp280_common_probe(struct device *dev,
+> +			struct regmap *regmap,
+> +			unsigned int chip,
+> +			const char *name);
+> --=20
+> 2.4.11
+>=20
