@@ -1,65 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mezzanine.sirena.org.uk ([106.187.55.193]:33762 "EHLO
-	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751026AbcFWKCw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 06:02:52 -0400
-Date: Thu, 23 Jun 2016 11:02:43 +0100
+Return-Path: <broonie@sirena.org.uk>
+Date: Thu, 23 Jun 2016 11:48:03 +0100
 From: Mark Brown <broonie@kernel.org>
 To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Akinobu Mita <akinobu.mita@gmail.com>,
-	"H. Nikolaus Schaller" <hns@goldelico.com>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Christoph Mair <christoph.mair@gmail.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Eric Andersson <eric.andersson@unixphere.com>,
-	Neil Brown <neilb@suse.de>
-Message-ID: <20160623100243.GW28202@sirena.org.uk>
-References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
- <1466628819-29784-5-git-send-email-linus.walleij@linaro.org>
+Cc: Gregor Boirie <gregor.boirie@parrot.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Richard Leitner <dev@g0hl1n.net>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Gwendal Grignou <gwendal@chromium.org>
+Message-ID: <20160623104803.GY28202@sirena.org.uk>
+References: <1466547498-15484-1-git-send-email-linus.walleij@linaro.org>
+ <1466547498-15484-2-git-send-email-linus.walleij@linaro.org>
+ <576A7C28.70905@parrot.com>
+ <CACRpkdZT_9gs9vPYGku2XeZnxaXPaE=X3XLWccPkB2iK9_KvcA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="O7hm+SMpb/lu0d4d"
-In-Reply-To: <1466628819-29784-5-git-send-email-linus.walleij@linaro.org>
-Subject: Re: [PATCH 4/9 v2] iio: pressure: bmp280: support supply regulators
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	protocol="application/pgp-signature"; boundary="USQ0BwiCE5W4XvtQ"
+In-Reply-To: <CACRpkdZT_9gs9vPYGku2XeZnxaXPaE=X3XLWccPkB2iK9_KvcA@mail.gmail.com>
+Subject: Re: [PATCH 1/5] iio: magn: ak8975: fix regulator usage
+List-ID: <linux-iio@vger.kernel.org>
 
 
---O7hm+SMpb/lu0d4d
+--USQ0BwiCE5W4XvtQ
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Wed, Jun 22, 2016 at 10:53:34PM +0200, Linus Walleij wrote:
+On Wed, Jun 22, 2016 at 05:41:51PM +0200, Linus Walleij wrote:
 
-> +	data->vddd = devm_regulator_get(&client->dev, "vddd");
-> +	if (IS_ERR(data->vddd)) {
-> +		dev_err(&client->dev, "failed to get VDDD regulator\n");
-> +		return PTR_ERR(data->vddd);
-> +	}
-> +	ret = regulator_enable(data->vddd);
-> +	if (ret) {
-> +		dev_err(&client->dev, "failed to enable VDDD regulator\n");
-> +		return ret;
-> +	}
+> The only way a regulator doesn't resolve to a dummy
+> is with regulator_get_exclusive() which I'm not using or if your board
+> is lacking full constraints. (All DT boards have full constraints.)
 
-I'm not seeing any matching regulator_disable() calls anywhere...
+You mean regulator_get_optional() here I think.
 
---O7hm+SMpb/lu0d4d
+--USQ0BwiCE5W4XvtQ
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJXa7PBAAoJECTWi3JdVIfQ0AgH/iw6jGb/xMQKCiviaX3nWaQt
-OE3kv9tr7ZPUzmaLloxUZNTn9EBIWrO8MypNYAiC20fDnpixL0mURFt7AE4WIggi
-de3KgPUJq2gnaQjaw+t2Ahmjee7TMPKtmaDEFEWIfKmQCVdQ/nY2HNbuUKQBUwBu
-ZxeeCNQlc5T+GOtzoOhuDQdvBA7w7+gY6Em6Ga9faefk9R03gkJG0rE3wI+g5g/S
-U7xA1SSDpdhRlaDnRJAb/qTuBMSRJomDne96PKeFg4RsSg5AcWD3Id4heYZs2jrK
-oNj0bM4ewIisStWbBUGU55X3vh7k+dmAvn1pTnsBPLorMO4O6J7xp1Td7DlvdmY=
-=wJFs
+iQEcBAEBCAAGBQJXa75iAAoJECTWi3JdVIfQ7YIH/0cPsg8biqXZaeOaPqv/s7x2
+5UFjpMoqLa3fpW+OYGjbogTbkj6wU1UQXPQDe5cNmPseUu8daI+hLG1IcaeJ/YGU
+oHL+cwaNGlbyywElG2a70qX7rxrJoiiRWWT4aeeWO9aC5AkPaU9hOgo1W7tNkKyi
+hKBydcSXK4S/CXNq2HfG6VQFkwYuqUMkBs8WJVQjSsefq4A5I3tTzWi9WO+yoDPW
+TbtdM0XwyNwGme23syjKUGJqFl3pMDfITE/7DU5F2d4n2m9w1O7S06VRF0j71qDD
+Qi4mRMiu67GdPk2H65YuJm0PkjSRHcDzRvUpkrhM/kAv4b7rkcMr5RMAT8okm1o=
+=vjPg
 -----END PGP SIGNATURE-----
 
---O7hm+SMpb/lu0d4d--
+--USQ0BwiCE5W4XvtQ--
