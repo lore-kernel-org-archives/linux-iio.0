@@ -1,73 +1,116 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f66.google.com ([209.85.215.66]:35942 "EHLO
-	mail-lf0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750866AbcFWOUz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 10:20:55 -0400
-Received: by mail-lf0-f66.google.com with SMTP id a2so18442682lfe.3
-        for <linux-iio@vger.kernel.org>; Thu, 23 Jun 2016 07:20:54 -0700 (PDT)
+Received: from mail-pa0-f67.google.com ([209.85.220.67]:33348 "EHLO
+	mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750785AbcFWRYG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 13:24:06 -0400
+Date: Thu, 23 Jun 2016 10:24:03 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	linux-kernel@vger.kernel.org, lee.jones@linaro.org,
+	linux-input@vger.kernel.org, pmeerw@pmeerw.net, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, harald@ccbib.org,
+	fabio.estevam@freescale.com, linux-iio@vger.kernel.org,
+	marex@denx.de
+Subject: Re: [PATCH v2 3/4] input: touchscreen: mxs-lradc: Add support for
+ touchscreen
+Message-ID: <20160623172403.GF32561@dtor-ws>
+References: <cover.1465396835.git.ksenija.stanojevic@gmail.com>
+ <d5853a762d67f2036382d3cfa0cf1d294d6aa5f0.1465396835.git.ksenija.stanojevic@gmail.com>
+ <1443695961.58810.3de61248-4cae-4f94-b8a2-ef63c5c3ec1b.open-xchange@email.1und1.de>
 MIME-Version: 1.0
-From: Micka <mickamusset@gmail.com>
-Date: Thu, 23 Jun 2016 16:20:53 +0200
-Message-ID: <CAF+MRt=SEz_q-Gq-6Fbxb4VNQaBWY=8uSwA0F-oWOjbOk7EKng@mail.gmail.com>
-Subject: Kernel 4.4 : mma8452 driver bug
-To: martin.kepplinger@theobroma-systems.com,
-	christoph.muellner@theobroma-systems.com,
-	"jic23@kernel.org" <jic23@kernel.org>, knaack.h@gmx.de,
-	"lars@metafoo.de" <lars@metafoo.de>, pmeerw@pmeerw.net,
-	martink@posteo.de, Robert Nelson <robertcnelson@gmail.com>,
-	javier@osg.samsung.com
-Cc: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1443695961.58810.3de61248-4cae-4f94-b8a2-ef63c5c3ec1b.open-xchange@email.1und1.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On Wed, Jun 15, 2016 at 11:26:18PM +0200, Stefan Wahren wrote:
+> Hi,
+> 
+> unfortunately i still don't have a touchscreen to test this patch.
+> 
+> > Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 8. Juni 2016 um 16:48
+> > geschrieben:
+> > 
+> > 
+> > Add 4-wire/5-wire touchscreen controller.
+> > 
+> > Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> > ---
+> > Changes in v2:
+> >  - do not change spacing in Kconfig
+> >  - remove dev.parent
+> >  - rename err_ts_register to error
+> >  - combine functions hw_stop and disable_ts so that mxs_lradc_ts_remove
+> >    could be deleted.
+> >  - add spinlock in struct mxs_lradc_ts to enable locking in interrupt handler.
+> >  - only grab irqs that are relevant to touchscreen
+> >  - use direct return instead assigning error to touch_ret in probe function.
+> >  - change licence to GPL
+> >  - add copyright
+> > 
+> >  drivers/input/touchscreen/Kconfig        |  10 +
+> >  drivers/input/touchscreen/Makefile       |   1 +
+> >  drivers/input/touchscreen/mxs-lradc-ts.c | 726
+> > +++++++++++++++++++++++++++++++
+> >  3 files changed, 737 insertions(+)
+> >  create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
+> > 
+> > diff --git a/drivers/input/touchscreen/mxs-lradc-ts.c
+> > b/drivers/input/touchscreen/mxs-lradc-ts.c
+> > new file mode 100644
+> > index 0000000..778bb61
+> > --- /dev/null
+> > +++ b/drivers/input/touchscreen/mxs-lradc-ts.c
+> > @@ -0,0 +1,726 @@
+> > +/*
+> > + * Freescale MXS LRADC driver
+> 
+> touchscreen driver
+> 
+> > + *
+> > + * Copyright (c) 2012 DENX Software Engineering, GmbH.
+> > + * Marek Vasut <marex@denx.de>
+> > + * Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify
+> > + * it under the terms of the GNU General Public License as published by
+> > + * the Free Software Foundation; either version 2 of the License, or
+> > + * (at your option) any later version.
+> > + *
+> > + * This program is distributed in the hope that it will be useful,
+> > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> > + * GNU General Public License for more details.
+> > + */
+> > +
+> > ...
+> > +
+> > +static struct platform_driver mxs_lradc_ts_driver = {
+> > +	.driver	= {
+> > +		.name = DRIVER_NAME_TS,
+> > +	},
+> > +	.probe	= mxs_lradc_ts_probe,
+> > +};
+> > +module_platform_driver(mxs_lradc_ts_driver);
+> > +
+> 
+> MODULE_DESCRIPTION ?
+> MODULE_AUTHOR ?
 
-I'm using your driver on the kernel 4.4 and I got this message :
+Once Stefan's comments addressed please add
 
-[   24.145906] irq 94: nobody cared (try booting with the "irqpoll" option)
-[   24.146025] CPU: 0 PID: 219 Comm: irq/94-mma8452 Not tainted 4.4.13-bone11 #9
-[   24.146033] Hardware name: Generic AM33XX (Flattened Device Tree)
-[   24.146085] [<c0013e85>] (unwind_backtrace) from [<c0011eb9>]
-(show_stack+0x11/0x14)
-[   24.146109] [<c0011eb9>] (show_stack) from [<c005f739>]
-(__report_bad_irq+0x25/0x90)
-[   24.146124] [<c005f739>] (__report_bad_irq) from [<c005f9b3>]
-(note_interrupt+0x1c3/0x200)
-[   24.146138] [<c005f9b3>] (note_interrupt) from [<c005e01b>]
-(handle_irq_event_percpu+0xfb/0x154)
-[   24.146151] [<c005e01b>] (handle_irq_event_percpu) from
-[<c005e095>] (handle_irq_event+0x21/0x2c)
-[   24.146164] [<c005e095>] (handle_irq_event) from [<c005fe51>]
-(handle_level_irq+0x5d/0x9c)
-[   24.146177] [<c005fe51>] (handle_level_irq) from [<c005d965>]
-(generic_handle_irq+0x1d/0x28)
-[   24.146198] [<c005d965>] (generic_handle_irq) from [<c039e531>]
-(omap_gpio_irq_handler+0xb9/0xe4)
-[   24.146215] [<c039e531>] (omap_gpio_irq_handler) from [<c005dfab>]
-(handle_irq_event_percpu+0x8b/0x154)
-[   24.146227] [<c005dfab>] (handle_irq_event_percpu) from
-[<c005e095>] (handle_irq_event+0x21/0x2c)
-[   24.146240] [<c005e095>] (handle_irq_event) from [<c005fe51>]
-(handle_level_irq+0x5d/0x9c)
-[   24.146253] [<c005fe51>] (handle_level_irq) from [<c005d965>]
-(generic_handle_irq+0x1d/0x28)
-[   24.146265] [<c005d965>] (generic_handle_irq) from [<c005db07>]
-(__handle_domain_irq+0x3b/0x80)
-[   24.146284] [<c005db07>] (__handle_domain_irq) from [<c066b68d>]
-(__irq_svc+0x4d/0x74)
-[   24.146299] [<c066b68d>] (__irq_svc) from [<c005e982>]
-(irq_thread_fn+0x32/0x38)
-[   24.146312] [<c005e982>] (irq_thread_fn) from [<c005eb9b>]
-(irq_thread+0xdf/0x148)
-[   24.146333] [<c005eb9b>] (irq_thread) from [<c0040643>] (kthread+0xa3/0xb8)
-[   24.146350] [<c0040643>] (kthread) from [<c000ea95>]
-(ret_from_fork+0x11/0x1c)
-[   24.146357] handlers:
-[   24.146405] [<c005e0a1>] irq_default_primary_handler threaded
-[<bf94d101>] mma8452_interrupt [mma8452]
-[   24.146580] Disabling IRQ #94
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-is it a bug from the driver or is it my fault ?
+so that it can be merged through MFD tree.
 
-Micka,
+> 
+> > +MODULE_LICENSE("GPL");
+> > -- 
+> > 1.9.1
+> >
+
+Thanks.
+
+-- 
+Dmitry
