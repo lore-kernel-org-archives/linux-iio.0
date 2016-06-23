@@ -1,96 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.219]:55118 "EHLO
-	mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750954AbcFWIXx convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 04:23:53 -0400
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH 2/9 v2] iio: pressure: bmp280: support device tree initialization
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <1466628819-29784-3-git-send-email-linus.walleij@linaro.org>
-Date: Thu, 23 Jun 2016 10:18:09 +0200
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Akinobu Mita <akinobu.mita@gmail.com>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Christoph Mair <christoph.mair@gmail.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
+Received: from mailcl0.heig-vd.ch ([193.134.216.181]:39351 "EHLO heig-vd.ch"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751680AbcFWIup (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 23 Jun 2016 04:50:45 -0400
+Subject: Re: [PATCH 3/3] iio: potentiometer: mcp4531: Add device tree binding
+To: Peter Rosin <peda@axentia.se>
+References: <1466492137-32683-1-git-send-email-florian.vaussard@heig-vd.ch>
+ <1466492137-32683-4-git-send-email-florian.vaussard@heig-vd.ch>
+ <bf4dbd64-aac8-aba3-ec5c-4cd4d0e848f6@axentia.se>
+ <829a4507-39d7-e04a-9672-6309def89ee2@heig-vd.ch>
+ <dfdbc7dd-8457-c0ef-9f0e-e2c1d96e5b11@axentia.se>
+CC: <devicetree@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Eric Andersson <eric.andersson@unixphere.com>,
-	Neil Brown <neilb@suse.de>,
-	Discussions about the Letux Kernel
-	<letux-kernel@openphoenux.org>, kernel@pyra-handheld.com
-Message-Id: <272E4CB3-460C-4FC2-9164-6304B550E80D@goldelico.com>
-References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org> <1466628819-29784-3-git-send-email-linus.walleij@linaro.org>
-To: Linus Walleij <linus.walleij@linaro.org>
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Slawomir Stepien <sst@poczta.fm>,
+	Joachim Eastwood <manabian@gmail.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	Vaussard Florian <florian.vaussard@heig-vd.ch>
+From: Florian Vaussard <florian.vaussard@heig-vd.ch>
+Message-ID: <576BA2DD.2060501@heig-vd.ch>
+Date: Thu, 23 Jun 2016 10:50:37 +0200
+MIME-Version: 1.0
+In-Reply-To: <dfdbc7dd-8457-c0ef-9f0e-e2c1d96e5b11@axentia.se>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hello Peter,
 
-> Am 22.06.2016 um 22:53 schrieb Linus Walleij <linus.walleij@linaro.org>:
+On 06/22/2016 09:06 AM, Peter Rosin wrote:
+> On 2016-06-22 08:22, Florian Vaussard wrote:
+>> Hello Peter,
+>>
+>> Le 21. 06. 16 à 09:51, Peter Rosin a écrit :
+>>> That is, if you need this patch at all, see my reply to 2/3...
+>>>
+>>
+>> This seems necessary in order to have the vendor ID in the compatible string.
 > 
-> This adds device tree support to the BMP085, BMP180 and BMP280
-> pressure sensors. Tested on the Qualcomm APQ8060 Dragonboard:
+> Hmm, I don't think so. The way I read the response from Rob was that
+> *my* device tree snippet should not assume that the i2c subsystem
+> ignores the vendor. So, I think that even w/o this patch a DT entry
+> like
 > 
-> iio:device1$ cat in_temp_input
-> 26700
-> iio:device1$ cat in_pressure_input
-> 99.185000000
+> 		mcp4651-104@28 {
+> 			compatible = "microchip,mcp4651-104";
+> 			reg = <0x28>;
+> 		};
 > 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v1->v2:
-> - Fix some BMP085 misspelled as BMP058 errors.
-> - Add the new BME280 sensor as well
-> ---
-> drivers/iio/pressure/bmp280.c | 14 ++++++++++++++
-> 1 file changed, 14 insertions(+)
-> 
-> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-> index dbbcd6d83e3b..655e888ef8f9 100644
-> --- a/drivers/iio/pressure/bmp280.c
-> +++ b/drivers/iio/pressure/bmp280.c
-> @@ -18,6 +18,7 @@
-> #include <linux/module.h>
-> #include <linux/i2c.h>
-> #include <linux/acpi.h>
-> +#include <linux/of.h>
-> #include <linux/regmap.h>
-> #include <linux/delay.h>
-> #include <linux/iio/iio.h>
-> @@ -1094,6 +1095,18 @@ static const struct acpi_device_id bmp280_acpi_match[] = {
-> };
-> MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
-> 
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id bmp280_of_match[] = {
-> +	{ .compatible = "bosch,bme280", .data = (void *)BME280_CHIP_ID },
-> +	{ .compatible = "bosch,bmp280", .data = (void *)BMP280_CHIP_ID },
-> +	{ .compatible = "bosch,bmp180", .data = (void *)BMP180_CHIP_ID },
-> +	{ .compatible = "bosch,bmp085", .data = (void *)BMP180_CHIP_ID },
-
-Here I get:
-
-FATAL: drivers/iio/pressure/bmp280-i2c: struct of_device_id is not terminated with a NULL entry!
-
-> +};
-> +MODULE_DEVICE_TABLE(of, bmp280_of_match);
-> +#else
-> +#define bmp280_of_match NULL
-> +#endif
-> +
-> static const struct i2c_device_id bmp280_id[] = {
-> 	{"bmp280", BMP280_CHIP_ID },
-> 	{"bmp180", BMP180_CHIP_ID },
-> @@ -1107,6 +1120,7 @@ static struct i2c_driver bmp280_driver = {
-> 	.driver = {
-> 		.name	= "bmp280",
-> 		.acpi_match_table = ACPI_PTR(bmp280_acpi_match),
-> +		.of_match_table = of_match_ptr(bmp280_of_match),
-> 	},
-> 	.probe		= bmp280_probe,
-> 	.id_table	= bmp280_id,
-> -- 
-> 2.4.11
+> will work, precisely since i2c ignores the microchip, part (and thus
+> allows you to omit/misspell it). I.e. I think that Rob is concerned
+> with how the DT is documented/defined, and not so much about how it
+> is then implemented in Linux.
 > 
 
+The way that I read Rob's reply is reverse: you should not rely on the matching
+done by i2c subsystem and provide a proper of_device_id table instead.
+
+I think that ignoring the vendor when matching the compatible, like what is
+currently done by the i2c subsystem, is bad. What happens if you have two chips
+from two companies with the same name (yes it happens)? You may need different
+data to address the small specificities of each chip, or even worse a different
+driver at all. This implies that we should explicitly match the vendor as well,
+otherwise we would be unable to cope with such cases.
+
+Moreover, if we look at the current i2c drivers, a whole bunch of them already
+have a of_device_id table:
+
+(on v4.6)
+
+$ git grep -l i2c_device_id | wc -l
+636
+$ git grep -l i2c_device_id | xargs grep -l 'of_device_id' | wc -l
+197
+
+Currently 30% of all i2c drivers explicitly declare DT compatible strings. And I
+am sure that this number will keep increasing as drivers are converted to DT.
+
+Regards,
+Florian
