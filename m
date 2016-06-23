@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.163]:14973 "EHLO
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.219]:55118 "EHLO
 	mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750954AbcFWIVI convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 04:21:08 -0400
-Content-Type: text/plain; charset=utf-8
+	with ESMTP id S1750954AbcFWIXx convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 04:23:53 -0400
+Content-Type: text/plain; charset=us-ascii
 Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH 0/9] Improve BMP280 driver v2
+Subject: Re: [PATCH 2/9 v2] iio: pressure: bmp280: support device tree initialization
 From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
-Date: Thu, 23 Jun 2016 10:17:47 +0200
+In-Reply-To: <1466628819-29784-3-git-send-email-linus.walleij@linaro.org>
+Date: Thu, 23 Jun 2016 10:18:09 +0200
 Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	Akinobu Mita <akinobu.mita@gmail.com>,
 	Matt Ranostay <mranostay@gmail.com>,
@@ -18,9 +18,10 @@ Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	Marek Belisko <marek@goldelico.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>,
-	letux-kernel-bounces@openphoenux.org, kernel@pyra-handheld.com
-Message-Id: <2B826474-77DF-4AA8-AC8A-FEDA021668D2@goldelico.com>
-References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
+	Discussions about the Letux Kernel
+	<letux-kernel@openphoenux.org>, kernel@pyra-handheld.com
+Message-Id: <272E4CB3-460C-4FC2-9164-6304B550E80D@goldelico.com>
+References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org> <1466628819-29784-3-git-send-email-linus.walleij@linaro.org>
 To: Linus Walleij <linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
@@ -28,59 +29,68 @@ List-Id: linux-iio@vger.kernel.org
 
 > Am 22.06.2016 um 22:53 schrieb Linus Walleij <linus.walleij@linaro.org>:
 > 
-> This is version two of the previous patchset. Changes:
+> This adds device tree support to the BMP085, BMP180 and BMP280
+> pressure sensors. Tested on the Qualcomm APQ8060 Dragonboard:
 > 
-> - Rebased on top of Matt Ranostays BME280 support patch so everything
->  applies cleanly on top of Jonathans development branch
+> iio:device1$ cat in_temp_input
+> 26700
+> iio:device1$ cat in_pressure_input
+> 99.185000000
 > 
-> - Added Akinobu Mitas special SPI bus handling code snippets
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v1->v2:
+> - Fix some BMP085 misspelled as BMP058 errors.
+> - Add the new BME280 sensor as well
+> ---
+> drivers/iio/pressure/bmp280.c | 14 ++++++++++++++
+> 1 file changed, 14 insertions(+)
 > 
-> - Made the regulators non-optional: if the chip has supplies, it should
->  have regulators for them
+> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+> index dbbcd6d83e3b..655e888ef8f9 100644
+> --- a/drivers/iio/pressure/bmp280.c
+> +++ b/drivers/iio/pressure/bmp280.c
+> @@ -18,6 +18,7 @@
+> #include <linux/module.h>
+> #include <linux/i2c.h>
+> #include <linux/acpi.h>
+> +#include <linux/of.h>
+> #include <linux/regmap.h>
+> #include <linux/delay.h>
+> #include <linux/iio/iio.h>
+> @@ -1094,6 +1095,18 @@ static const struct acpi_device_id bmp280_acpi_match[] = {
+> };
+> MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
 > 
-> - Fixed review comments and build remarks provided by the zeroday
->  build robot
-> 
-> Linus Walleij (9):
->  iio: pressure: bmp280: augment DT bindings
->  iio: pressure: bmp280: support device tree initialization
->  iio: pressure: bmp280: add reset GPIO line handling
->  iio: pressure: bmp280: support supply regulators
->  iio: pressure: bmp280: split driver in logical parts
->  iio: pressure: bmp280: split off an I2C Kconfig entry
->  iio: pressure: bmp280: add SPI interface driver
->  iio: pressure: bmp280: add support for BMP085 EOC interrupt
->  iio: pressure: bmp280: read calibration data once
-> 
-> .../devicetree/bindings/iio/pressure/bmp085.txt    |   15 +-
-> drivers/iio/pressure/Kconfig                       |   29 +-
-> drivers/iio/pressure/Makefile                      |    3 +
-> drivers/iio/pressure/bmp280-core.c                 | 1009 ++++++++++++++++++
-> drivers/iio/pressure/bmp280-i2c.c                  |   83 ++
-> drivers/iio/pressure/bmp280-regmap.c               |   81 ++
-> drivers/iio/pressure/bmp280-spi.c                  |  118 +++
-> drivers/iio/pressure/bmp280.c                      | 1118 --------------------
-> drivers/iio/pressure/bmp280.h                      |  108 ++
-> 9 files changed, 1437 insertions(+), 1127 deletions(-)
-> create mode 100644 drivers/iio/pressure/bmp280-core.c
-> create mode 100644 drivers/iio/pressure/bmp280-i2c.c
-> create mode 100644 drivers/iio/pressure/bmp280-regmap.c
-> create mode 100644 drivers/iio/pressure/bmp280-spi.c
-> delete mode 100644 drivers/iio/pressure/bmp280.c
-> create mode 100644 drivers/iio/pressure/bmp280.h
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id bmp280_of_match[] = {
+> +	{ .compatible = "bosch,bme280", .data = (void *)BME280_CHIP_ID },
+> +	{ .compatible = "bosch,bmp280", .data = (void *)BMP280_CHIP_ID },
+> +	{ .compatible = "bosch,bmp180", .data = (void *)BMP180_CHIP_ID },
+> +	{ .compatible = "bosch,bmp085", .data = (void *)BMP180_CHIP_ID },
 
-Tests on GTA04 (BMP085 with EOC) by reading /sys/bus/iio /.../in_*_input
-- temperature value in m°C is perfect and
-  typical value: 34300 (for 34.3°C)
-- pressure seems to be reasonable (if multiplied by 10 to give mBar)
-  typical value: 95.108000000 (would it be better to report µBar as integer?)
+Here I get:
 
-Tests on Pyra-Handheld (BME280 w/o EOC)
-- temp and pressure seem to agree with GTA04
-- humitidy reports RH = 71.854492187 % which might be correct or not (can't check)
+FATAL: drivers/iio/pressure/bmp280-i2c: struct of_device_id is not terminated with a NULL entry!
 
-Detailed suggestions follow for individual patches.
-
-Thanks,
-Nikolaus
+> +};
+> +MODULE_DEVICE_TABLE(of, bmp280_of_match);
+> +#else
+> +#define bmp280_of_match NULL
+> +#endif
+> +
+> static const struct i2c_device_id bmp280_id[] = {
+> 	{"bmp280", BMP280_CHIP_ID },
+> 	{"bmp180", BMP180_CHIP_ID },
+> @@ -1107,6 +1120,7 @@ static struct i2c_driver bmp280_driver = {
+> 	.driver = {
+> 		.name	= "bmp280",
+> 		.acpi_match_table = ACPI_PTR(bmp280_acpi_match),
+> +		.of_match_table = of_match_ptr(bmp280_of_match),
+> 	},
+> 	.probe		= bmp280_probe,
+> 	.id_table	= bmp280_id,
+> -- 
+> 2.4.11
+> 
 
