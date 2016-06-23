@@ -1,175 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:32634 "EHLO mail.aswsp.com"
+Received: from plane.gmane.org ([80.91.229.3]:45003 "EHLO plane.gmane.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752501AbcFWNrv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 23 Jun 2016 09:47:51 -0400
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v1 4/7] iio:st_pressure: document sampling gains
-Date: Thu, 23 Jun 2016 15:49:46 +0200
-Message-ID: <257d42c966ab3aa9c8620d0262dc007d955676b9.1466687364.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1466687364.git.gregor.boirie@parrot.com>
-References: <cover.1466687364.git.gregor.boirie@parrot.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+	id S1752068AbcFWWBc convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 18:01:32 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1bGCgi-0003Lp-G2
+	for linux-iio@vger.kernel.org; Fri, 24 Jun 2016 00:01:28 +0200
+Received: from 91.178.120.113 ([91.178.120.113])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jun 2016 00:01:28 +0200
+Received: from badshah400 by 91.178.120.113 with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jun 2016 00:01:28 +0200
+To: linux-iio@vger.kernel.org
+From: Atri Bhattacharya <badshah400@aim.com>
+Subject: Re: [PATCH v2 0/6] Intel Integrated Sensor Hub Support (ISH)
+Date: Fri, 24 Jun 2016 00:00:30 +0200
+Message-ID: <1466719230.6978.5.camel@aim.com>
+References: <1466574038-20613-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1466574038-20613-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Details scaling factors and offsets applied to raw temperature and pressure
-samples.
+On Tue, 2016-06-21 at 22:40 -0700, Srinivas Pandruvada wrote:
+> Change log
+> v2:
+> - Overview in documentation show analogy with usbhid implementation
+> - sparse errors for statics. Also pointed by Jiri
+> - Clearly marking exported function header file. Clean up all exports
+> unused inteface functions
+> - Changed to tristate from boolean as pointed by Jiri:
+> this required remove/unload functions
+> - Prevent crash when ISH enabled on non supported platform
+> - Break client.c to smaller part by seprating buffer allocations
+> - move bus register/unregister to ishtp module
+> - There is only one config symbol INTEL_ISH_HID, removed silent
+> config for TRANSPORT and IPC
+> 
 
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- drivers/iio/pressure/st_pressure_core.c | 92 +++++++++++++++++++++++++++++++--
- 1 file changed, 88 insertions(+), 4 deletions(-)
+This updated set of patches seem to be causing failure to wake up from
+suspend (sometimes) again. I hit a kernel panic once and had to hard
+power-off my laptop another time out of 5 odd times that I closed the
+laptop lid. Journal logs don't say much, but if there is some info I
+can provide please let me what would help.
 
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index 31e5e41..737d20a 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -28,6 +28,72 @@
- #include <linux/iio/common/st_sensors.h>
- #include "st_pressure.h"
- 
-+/*
-+ * About determining pressure scaling factors
-+ * ------------------------------------------
-+ *
-+ * Datasheets specify typical pressure sensitivity so that pressure is computed
-+ * according to the following equation :
-+ *     pressure[mBar] = raw / sensitivity
-+ * where :
-+ *     raw          the 24 bits long raw sampled pressure
-+ *     sensitivity  a scaling factor specified by the datasheet in LSB/mBar
-+ *
-+ * IIO ABI expects pressure to be expressed as kPascal, hence pressure should be
-+ * computed according to :
-+ *     pressure[kPascal] = pressure[mBar] / 10
-+ *                       = raw / (sensitivity * 10)                          (1)
-+ *
-+ * Finally, st_press_read_raw() returns pressure scaling factor as an
-+ * IIO_VAL_INT_PLUS_NANO with a zero integral part and "gain" as decimal part.
-+ * Therefore, from (1), "gain" becomes :
-+ *     gain = 10^9 / (sensitivity * 10)
-+ *          = 10^8 / sensitivity
-+ *
-+ * About determining temperature scaling factors and offsets
-+ * ---------------------------------------------------------
-+ *
-+ * Datasheets specify typical temperature sensitivity and offset so that
-+ * temperature is computed according to the following equation :
-+ *     temp[Celsius] = offset[Celsius] + (raw / sensitivity)
-+ * where :
-+ *     raw          the 16 bits long raw sampled temperature
-+ *     offset       a constant specified by the datasheet in degree Celsius
-+ *                  (sometimes zero)
-+ *     sensitivity  a scaling factor specified by the datasheet in LSB/Celsius
-+ *
-+ * IIO ABI expects temperature to be expressed as milli degree Celsius such as
-+ * user space should compute temperature according to :
-+ *     temp[mCelsius] = temp[Celsius] * 10^3
-+ *                    = (offset[Celsius] + (raw / sensitivity)) * 10^3
-+ *                    = ((offset[Celsius] * sensitivity) + raw) *
-+ *                      (10^3 / sensitivity)                                 (2)
-+ *
-+ * IIO ABI expects user space to apply offset and scaling factors to raw samples
-+ * according to :
-+ *     temp[mCelsius] = (OFFSET + raw) * SCALE
-+ * where :
-+ *     OFFSET an arbitrary constant exposed by device
-+ *     SCALE  an arbitrary scaling factor exposed by device
-+ *
-+ * Matching OFFSET and SCALE with members of (2) gives :
-+ *     OFFSET = offset[Celsius] * sensitivity                                (3)
-+ *     SCALE  = 10^3 / sensitivity                                           (4)
-+ *
-+ * st_press_read_raw() returns temperature scaling factor as an
-+ * IIO_VAL_FRACTIONAL with a 10^3 numerator and "gain2" as denominator.
-+ * Therefore, from (3), "gain2" becomes :
-+ *     gain2 = sensitivity
-+ *
-+ * When declared within channel, i.e. for a non zero specified offset,
-+ * st_press_read_raw() will return the latter as an IIO_VAL_FRACTIONAL such as :
-+ *     numerator = OFFSET * 10^3
-+ *     denominator = 10^3
-+ * giving from (4):
-+ *     numerator = offset[Celsius] * 10^3 * sensitivity
-+ *               = offset[mCelsius] * gain2
-+ */
-+
- #define MCELSIUS_PER_CELSIUS			1000
- 
- /* Default pressure sensitivity */
-@@ -48,7 +114,11 @@
- #define ST_PRESS_1_OUT_XL_ADDR			0x28
- #define ST_TEMP_1_OUT_L_ADDR			0x2b
- 
--/* CUSTOM VALUES FOR LPS331AP SENSOR */
-+/*
-+ * CUSTOM VALUES FOR LPS331AP SENSOR
-+ * See LPS331AP datasheet:
-+ * http://www2.st.com/resource/en/datasheet/lps331ap.pdf
-+ */
- #define ST_PRESS_LPS331AP_WAI_EXP		0xbb
- #define ST_PRESS_LPS331AP_ODR_ADDR		0x20
- #define ST_PRESS_LPS331AP_ODR_MASK		0x70
-@@ -71,7 +141,9 @@
- #define ST_PRESS_LPS331AP_OD_IRQ_MASK		0x40
- #define ST_PRESS_LPS331AP_MULTIREAD_BIT		true
- 
--/* CUSTOM VALUES FOR LPS001WP SENSOR */
-+/*
-+ * CUSTOM VALUES FOR THE OBSOLETE LPS001WP SENSOR
-+ */
- 
- /* LPS001WP pressure resolution */
- #define ST_PRESS_LPS001WP_LSB_PER_MBAR		16UL
-@@ -94,7 +166,11 @@
- #define ST_PRESS_LPS001WP_OUT_L_ADDR		0x28
- #define ST_TEMP_LPS001WP_OUT_L_ADDR		0x2a
- 
--/* CUSTOM VALUES FOR LPS25H SENSOR */
-+/*
-+ * CUSTOM VALUES FOR LPS25H SENSOR
-+ * See LPS25H datasheet:
-+ * http://www2.st.com/resource/en/datasheet/lps25h.pdf
-+ */
- #define ST_PRESS_LPS25H_WAI_EXP			0xbd
- #define ST_PRESS_LPS25H_ODR_ADDR		0x20
- #define ST_PRESS_LPS25H_ODR_MASK		0x70
-@@ -117,7 +193,11 @@
- #define ST_PRESS_LPS25H_OUT_XL_ADDR		0x28
- #define ST_TEMP_LPS25H_OUT_L_ADDR		0x2b
- 
--/* CUSTOM VALUES FOR LPS22HB SENSOR */
-+/*
-+ * CUSTOM VALUES FOR LPS22HB SENSOR
-+ * See LPS22HB datasheet:
-+ * http://www2.st.com/resource/en/datasheet/lps22hb.pdf
-+ */
- #define ST_PRESS_LPS22HB_WAI_EXP		0xb1
- #define ST_PRESS_LPS22HB_ODR_ADDR		0x10
- #define ST_PRESS_LPS22HB_ODR_MASK		0x70
-@@ -413,6 +493,10 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
- 		},
- 		.fs = {
- 			.fs_avl = {
-+				/*
-+				 * Sensitivity values as defined in table 3 of
-+				 * LPS22HB datasheet.
-+				 */
- 				[0] = {
- 					.num = ST_PRESS_FS_AVL_1260MB,
- 					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
+Thanks.
 -- 
-2.1.4
+
+Atri Bhattacharya
+Thu 23 Jun 23:57:24 CEST 2016
+
+Sent from openSUSE Tumbleweed (20160621) (x86_64) on my laptop.
 
