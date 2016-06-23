@@ -1,52 +1,58 @@
-Return-Path: <broonie@sirena.org.uk>
-Date: Thu, 23 Jun 2016 11:48:03 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Gregor Boirie <gregor.boirie@parrot.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Richard Leitner <dev@g0hl1n.net>,
-	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	Gwendal Grignou <gwendal@chromium.org>
-Message-ID: <20160623104803.GY28202@sirena.org.uk>
-References: <1466547498-15484-1-git-send-email-linus.walleij@linaro.org>
- <1466547498-15484-2-git-send-email-linus.walleij@linaro.org>
- <576A7C28.70905@parrot.com>
- <CACRpkdZT_9gs9vPYGku2XeZnxaXPaE=X3XLWccPkB2iK9_KvcA@mail.gmail.com>
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, Linus Walleij <linus.walleij@linaro.org>, Denis Ciocca
+	<denis.ciocca@st.com>, Giuseppe Barba <giuseppe.barba@st.com>, Crestez Dan
+ Leonard <leonard.crestez@intel.com>, Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v1 0/7] iio:st_pressure: improvements
+Date: Thu, 23 Jun 2016 15:49:42 +0200
+Message-ID: <cover.1466687364.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="USQ0BwiCE5W4XvtQ"
-In-Reply-To: <CACRpkdZT_9gs9vPYGku2XeZnxaXPaE=X3XLWccPkB2iK9_KvcA@mail.gmail.com>
-Subject: Re: [PATCH 1/5] iio: magn: ak8975: fix regulator usage
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
+This follows up on various comments related to the preliminary patch series
+found at http://www.spinics.net/lists/linux-iio/msg24239.html
 
---USQ0BwiCE5W4XvtQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+What you'll find here :
+* make st_pressure sensors compliant with IIO ABI ;
+* fix the way st_sensors samples are stored in memory to comply with IIO
+  expected alignment constraints ;
+* add support for temperature triggered buffering ;
+* enhance LPS22HB support.
 
-On Wed, Jun 22, 2016 at 05:41:51PM +0200, Linus Walleij wrote:
+Changes since preliminary series :
+* drop patches already applied onto testing branch
+* 1st patch is a rebase of Jonathan's fixes-togreg branch d43a411 commit onto
+  testing branch
+* reorder patches to move fix patches ahead of series
+* document sampling gains and datasheets in a separate patch
+* rebase of other patches on top of testing branch
+* complete LPS22HB support with Linus' open drain mode
 
-> The only way a regulator doesn't resolve to a dummy
-> is with regulator_get_exclusive() which I'm not using or if your board
-> is lacking full constraints. (All DT boards have full constraints.)
+Tested with the following Linus' fixes-togreg branch patches applied :
+9914760 iio: st_sensors: Disable DRDY at init time
+ff05916 iio: st_sensors: Init trigger before irq request
+65925b6 iio: st_sensors: switch to a threaded interrupt
 
-You mean regulator_get_optional() here I think.
+Regards,
+gregor.
 
---USQ0BwiCE5W4XvtQ
-Content-Type: application/pgp-signature; name="signature.asc"
+Gregor Boirie (7):
+  iio:st_pressure: fix sampling gains (bring inline with ABI)
+  iio:st_sensors: align on storagebits boundaries
+  iio:st_pressure: align storagebits on power of 2
+  iio:st_pressure: document sampling gains
+  iio:st_pressure: temperature triggered buffering
+  iio:st_pressure:lps22hb: open drain support
+  iio:st_pressure:lps22hb: temperature support
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+ drivers/iio/common/st_sensors/st_sensors_buffer.c |  37 ++--
+ drivers/iio/common/st_sensors/st_sensors_core.c   |   2 +-
+ drivers/iio/pressure/st_pressure_core.c           | 219 +++++++++++++++++-----
+ 3 files changed, 193 insertions(+), 65 deletions(-)
 
-iQEcBAEBCAAGBQJXa75iAAoJECTWi3JdVIfQ7YIH/0cPsg8biqXZaeOaPqv/s7x2
-5UFjpMoqLa3fpW+OYGjbogTbkj6wU1UQXPQDe5cNmPseUu8daI+hLG1IcaeJ/YGU
-oHL+cwaNGlbyywElG2a70qX7rxrJoiiRWWT4aeeWO9aC5AkPaU9hOgo1W7tNkKyi
-hKBydcSXK4S/CXNq2HfG6VQFkwYuqUMkBs8WJVQjSsefq4A5I3tTzWi9WO+yoDPW
-TbtdM0XwyNwGme23syjKUGJqFl3pMDfITE/7DU5F2d4n2m9w1O7S06VRF0j71qDD
-Qi4mRMiu67GdPk2H65YuJm0PkjSRHcDzRvUpkrhM/kAv4b7rkcMr5RMAT8okm1o=
-=vjPg
------END PGP SIGNATURE-----
-
---USQ0BwiCE5W4XvtQ--
+-- 
+2.1.4
