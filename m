@@ -1,93 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:9500 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751858AbcFUQro (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 21 Jun 2016 12:47:44 -0400
-Subject: Re: [PATCH v7] iio: st_sensors: harden interrupt handling
-To: Linus Walleij <linus.walleij@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <1466429146-11652-1-git-send-email-linus.walleij@linaro.org>
-Cc: Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Crestez Dan Leonard <cdleonard@gmail.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <069994ef-467e-f403-a248-a9fa9a87891e@intel.com>
-Date: Tue, 21 Jun 2016 19:47:26 +0300
+Received: from mail-lf0-f66.google.com ([209.85.215.66]:35942 "EHLO
+	mail-lf0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750866AbcFWOUz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 10:20:55 -0400
+Received: by mail-lf0-f66.google.com with SMTP id a2so18442682lfe.3
+        for <linux-iio@vger.kernel.org>; Thu, 23 Jun 2016 07:20:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1466429146-11652-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
+From: Micka <mickamusset@gmail.com>
+Date: Thu, 23 Jun 2016 16:20:53 +0200
+Message-ID: <CAF+MRt=SEz_q-Gq-6Fbxb4VNQaBWY=8uSwA0F-oWOjbOk7EKng@mail.gmail.com>
+Subject: Kernel 4.4 : mma8452 driver bug
+To: martin.kepplinger@theobroma-systems.com,
+	christoph.muellner@theobroma-systems.com,
+	"jic23@kernel.org" <jic23@kernel.org>, knaack.h@gmx.de,
+	"lars@metafoo.de" <lars@metafoo.de>, pmeerw@pmeerw.net,
+	martink@posteo.de, Robert Nelson <robertcnelson@gmail.com>,
+	javier@osg.samsung.com
+Cc: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/20/2016 04:25 PM, Linus Walleij wrote:
-> Leonard Crestez observed the following phenomenon: when using
-> hard interrupt triggers (the DRDY line coming out of an ST
-> sensor) sometimes a new value would arrive while reading the
-> previous value, due to latencies in the system.
-> 
-> We discovered that the ST hardware as far as can be observed
-> is designed for level interrupts: the DRDY line will be held
-> asserted as long as there are new values coming. The interrupt
-> handler should be re-entered until we're out of values to
-> handle from the sensor.
-> 
-> If interrupts were handled as occurring on the edges (usually
-> low-to-high) new values could appear and the line be held
-> asserted after that, and these values would be missed, the
-> interrupt handler would also lock up as new data was
-> available, but as no new edges occurs on the DRDY signal,
-> nothing happens: the edge detector only detects edges.
-> 
-> To counter this, do the following:
-> 
-> - Accept interrupt lines to be flagged as level interrupts
->   using IRQF_TRIGGER_HIGH and IRQF_TRIGGER_LOW. If the line
->   is marked like this (in the device tree node or ACPI
->   table or similar) it will be utilized as a level IRQ.
->   We mark the line with IRQF_ONESHOT and mask the IRQ
->   while processing a sample, then the top half will be
->   entered again if new values are available.
-> 
-> - If no interrupt type is indicated from the DT/ACPI,
->   choose IRQF_TRIGGER_HIGH so the above goes into action.
-> 
-> - If we are flagged as using edge interrupts with
->   IRQF_TRIGGER_RISING or IRQF_TRIGGER_FALLING: remove
->   IRQF_ONESHOT so that the interrupt line is not
->   masked while running the thread part of the interrupt.
->   This way we will never miss an interrupt, then introduce
->   a loop that polls the data ready registers repeatedly
->   until no new samples are available, then exit the
->   interrupt handler. This way we know no new values are
->   available when the interrupt handler exits and
->   new (edge) interrupts will be triggered when data arrives.
->   Take some extra care to update the timestamp in the poll
->   loop if this happens. The timestamp will not be 100%
->   perfect, but it will at least be closer to the actual
->   events. Usually the extra poll loop will handle the new
->   samples, but once in a blue moon, we get a new IRQ
->   while exiting the loop, before returning from the
->   thread IRQ bottom half with IRQ_HANDLED. On these rare
->   occasions, the removal of IRQF_ONESHOT means the
->   interrupt will immediately fire again.
-> 
-> Tested successfully on the LIS331DL and L3G4200D by setting
-> sampling frequency to 400Hz/800Hz and stressing the system:
-> extra reads in the threaded interrupt handler occurs.
+Hi,
 
-I tested and it seems to work great with level irqs on minnowboard.
+I'm using your driver on the kernel 4.4 and I got this message :
 
-However I still think that looping "up to 10 times" is not really a fix,
-it just hides the problem. If you spin waiting for new data then you
-should spin forever or until buffer is disabled some way. I think it's
-better to add this patch without the loop counter.
+[   24.145906] irq 94: nobody cared (try booting with the "irqpoll" option)
+[   24.146025] CPU: 0 PID: 219 Comm: irq/94-mma8452 Not tainted 4.4.13-bone11 #9
+[   24.146033] Hardware name: Generic AM33XX (Flattened Device Tree)
+[   24.146085] [<c0013e85>] (unwind_backtrace) from [<c0011eb9>]
+(show_stack+0x11/0x14)
+[   24.146109] [<c0011eb9>] (show_stack) from [<c005f739>]
+(__report_bad_irq+0x25/0x90)
+[   24.146124] [<c005f739>] (__report_bad_irq) from [<c005f9b3>]
+(note_interrupt+0x1c3/0x200)
+[   24.146138] [<c005f9b3>] (note_interrupt) from [<c005e01b>]
+(handle_irq_event_percpu+0xfb/0x154)
+[   24.146151] [<c005e01b>] (handle_irq_event_percpu) from
+[<c005e095>] (handle_irq_event+0x21/0x2c)
+[   24.146164] [<c005e095>] (handle_irq_event) from [<c005fe51>]
+(handle_level_irq+0x5d/0x9c)
+[   24.146177] [<c005fe51>] (handle_level_irq) from [<c005d965>]
+(generic_handle_irq+0x1d/0x28)
+[   24.146198] [<c005d965>] (generic_handle_irq) from [<c039e531>]
+(omap_gpio_irq_handler+0xb9/0xe4)
+[   24.146215] [<c039e531>] (omap_gpio_irq_handler) from [<c005dfab>]
+(handle_irq_event_percpu+0x8b/0x154)
+[   24.146227] [<c005dfab>] (handle_irq_event_percpu) from
+[<c005e095>] (handle_irq_event+0x21/0x2c)
+[   24.146240] [<c005e095>] (handle_irq_event) from [<c005fe51>]
+(handle_level_irq+0x5d/0x9c)
+[   24.146253] [<c005fe51>] (handle_level_irq) from [<c005d965>]
+(generic_handle_irq+0x1d/0x28)
+[   24.146265] [<c005d965>] (generic_handle_irq) from [<c005db07>]
+(__handle_domain_irq+0x3b/0x80)
+[   24.146284] [<c005db07>] (__handle_domain_irq) from [<c066b68d>]
+(__irq_svc+0x4d/0x74)
+[   24.146299] [<c066b68d>] (__irq_svc) from [<c005e982>]
+(irq_thread_fn+0x32/0x38)
+[   24.146312] [<c005e982>] (irq_thread_fn) from [<c005eb9b>]
+(irq_thread+0xdf/0x148)
+[   24.146333] [<c005eb9b>] (irq_thread) from [<c0040643>] (kthread+0xa3/0xb8)
+[   24.146350] [<c0040643>] (kthread) from [<c000ea95>]
+(ret_from_fork+0x11/0x1c)
+[   24.146357] handlers:
+[   24.146405] [<c005e0a1>] irq_default_primary_handler threaded
+[<bf94d101>] mma8452_interrupt [mma8452]
+[   24.146580] Disabling IRQ #94
 
-I think the right solution would be to ensure that when the sampling
-frequency is too high the timer-based trigger "transforms" into a
-thread-based busy loop. For example maybe the driver could call some
-sort of iio_trigger_should_stop() function which also does "schedule()"
-as appropriate.
+is it a bug from the driver or is it my fault ?
 
--- 
-Regards,
-Leonard
+Micka,
