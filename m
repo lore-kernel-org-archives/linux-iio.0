@@ -1,50 +1,55 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <4374A107-10EC-4E0C-988F-0BF10161DFFD@goldelico.com>
-References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
- <1466628819-29784-6-git-send-email-linus.walleij@linaro.org> <4374A107-10EC-4E0C-988F-0BF10161DFFD@goldelico.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 24 Jun 2016 12:28:35 +0200
-Message-ID: <CACRpkdYQpf=ZVHfOVUN_OUR-dvO7cW7Zzfk7Sni-kvtwKm4KJA@mail.gmail.com>
-Subject: Re: [PATCH 5/9 v2] iio: pressure: bmp280: split driver in logical parts
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Akinobu Mita <akinobu.mita@gmail.com>,
-	Matt Ranostay <mranostay@gmail.com>, Christoph Mair <christoph.mair@gmail.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Marek Belisko <marek@goldelico.com>, Eric Andersson <eric.andersson@unixphere.com>,
-	Neil Brown <neilb@suse.de>,
-	Discussions about the Letux Kernel <letux-kernel@openphoenux.org>, kernel@pyra-handheld.com
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <vlad.dogaru@intel.com>
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org
+Cc: vlad.dogaru@intel.com,
+	andrey_utkin@fastmail.com
+Subject: [RFC PATCH] iio: imu: add driver for Bosch Sensortec BNO055
+Date: Fri, 24 Jun 2016 14:15:35 +0300
+Message-Id: <1466766936-20561-1-git-send-email-vlad.dogaru@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Jun 23, 2016 at 10:18 AM, H. Nikolaus Schaller
-<hns@goldelico.com> wrote:
->> Am 22.06.2016 um 22:53 schrieb Linus Walleij <linus.walleij@linaro.org>:
+Hi everyone,
 
->> # When adding new entries keep the list in alphabetical order
->> obj-$(CONFIG_BMP280) += bmp280.o
->> +bmp280-objs := bmp280-core.o bmp280-regmap.o bmp280-i2c.o
->
-> With menuconfig setting to 'M'
->
-> CONFIG_BMP280=m
-> CONFIG_BMP280_I2C=m
-> CONFIG_BMP280_SPI=m
->
-> I get
->
-> ERROR: "bmp280_regmap_config" [drivers/iio/pressure/bmp280-spi.ko] undefined!
-> ERROR: "bmp180_regmap_config" [drivers/iio/pressure/bmp280-spi.ko] undefined!
-> ERROR: "bmp280_common_probe" [drivers/iio/pressure/bmp280-spi.ko] undefined!
-> ERROR: "bmp280_regmap_config" [drivers/iio/pressure/bmp280-i2c.ko] undefined!
-> ERROR: "bmp180_regmap_config" [drivers/iio/pressure/bmp280-i2c.ko] undefined!
-> ERROR: "bmp280_common_probe" [drivers/iio/pressure/bmp280-i2c.ko] undefined!
+This is a minimal implementation of a driver for the Bosch Sensortec
+BNO055, a very interesting accel-gyro-magneto combo.  The datasheet is
+available at https://www.bosch-sensortec.com/bst/products/all_products/bno055
 
-Yeah module deps is one of my weak spots :(
-The build robot found it too.
+The driver in its present state works, but this is a RFC for a few
+reasons detailed below:
 
-Fixing in v3. Thanks!
+(1) The device has a few possible operating modes.  The most simple
+ones employ a single sensor and power down the other two; the most
+complex use all 3 for sensor fusion.  Changing the mode at runtime would
+require changing the channels and I'm not sure IIO allows that.  So I've
+opted to choose the mode at probe time, based on a DeviceTree property.
+Hope that's ok.
 
-Yours,
-Linus Walleij
+(2) Fusion modes provide orientation data.  This is either relative to
+the initial position of the sensor, or to magnetic North.  There is a
+modifier, IIO_MOD_NORTH_MAGN, but it occupies the same field as
+IIO_MOD_QUATERNION and IIO_MOD_{X,Y,Z}, so we can't use both.  Therefore
+there is currently no means of telling from user space whether the
+orientation is relative to North or to the initial position;  one could
+look at the DeviceTree description to deduce the operating mode, but
+that's hardly ideal.
+
+(3) In fusion modes, the device also exposes linear and gravitational
+accelerations, but IIO doesn't seem to support this.  I can add these
+channel types if you believe they are useful.
+
+
+Vlad Dogaru (1):
+  iio: imu: add driver for Bosch Sensortec BNO055
+
+ drivers/iio/imu/Kconfig  |  11 +
+ drivers/iio/imu/Makefile |   1 +
+ drivers/iio/imu/bno055.c | 569 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 581 insertions(+)
+ create mode 100644 drivers/iio/imu/bno055.c
+
+-- 
+1.9.1
