@@ -1,54 +1,41 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.126.187]:60746 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751175AbcFXVP7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jun 2016 17:15:59 -0400
+Date: Fri, 24 Jun 2016 23:15:27 +0200 (CEST)
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, linux-input@vger.kernel.org,
+	pmeerw@pmeerw.net, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, dmitry.torokhov@gmail.com, harald@ccbib.org,
+	fabio.estevam@freescale.com, linux-iio@vger.kernel.org,
+	marex@denx.de
+Message-ID: <244763571.48608.693e1aee-e90e-40ad-a903-35b367b5972a.open-xchange@email.1und1.de>
+In-Reply-To: <370a02584386944b465deff5ccc48c8919b23dba.1466769907.git.ksenija.stanojevic@gmail.com>
+References: <cover.1466769907.git.ksenija.stanojevic@gmail.com>
+ <370a02584386944b465deff5ccc48c8919b23dba.1466769907.git.ksenija.stanojevic@gmail.com>
+Subject: Re: [PATCH v3 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
 MIME-Version: 1.0
-In-Reply-To: <20160624171952.GA23588@rob-hp-laptop>
-References: <1466608276-10401-1-git-send-email-linus.walleij@linaro.org> <20160624171952.GA23588@rob-hp-laptop>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 24 Jun 2016 22:48:53 +0200
-Message-ID: <CACRpkdbM9RPU3uLzTFfZWXSjqNk13fsi35nMEOnBoEhikuxOQA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: magn: DT bindings for AK8974
-To: Rob Herring <robh@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Samu Onkalo <samu.p.onkalo@nokia.com>
 Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jun 24, 2016 at 7:19 PM, Rob Herring <robh@kernel.org> wrote:
-> On Wed, Jun 22, 2016 at 05:11:16PM +0200, Linus Walleij wrote:
->> This adds device tree bindings for the AK8974 magnetometer, similar
->> to those for the AK8975.
->
-> Seems like they should be shared, but there don't appear to be any
-> datasheets for 8974 to really tell. Really only matters if the
-> programming models are similar.
+Hi,
 
-I have schematics of the component mounted, so I know what the
-pins are named. Apart from that only the opaque driver from Samu.
-(Found his new mail and mailed him, also requested the datasheet
-from AKM, no response so far.)
+> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 24. Juni 2016 um
+> 14:09 geschrieben:
+> 
+> 
+> Add core files for mxs-lradc MFD driver.
+> 
+> Note:  this patch won't compile in iio/testing without this patch:
+> a8f447be8056 ("mfd: Add resource managed APIs for mfd_add_devices")
+> 
+> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
 
->> +- avdd-supply: regulator supply for the analog voltage
->> +  (see regulator/regulator.txt)
->> +- dvdd-supply: regulator supply for the digital voltage
->> +  (see regulator/regulator.txt)
->
-> This is probably more correct than single vdd-supply for 8975 which in
-> fact has 2 supplies.
+i tested it successfully with a i.MX23 board (without touchscreen).
 
-Yes. But they did change the names. AK8974 is avdd and dvdd
-whereas AK8975 has vdd (same as avdd) and vid (same as dvdd).
-I have no idea why this arbitrary naming is happening :/
-
->> +- interrupts: data ready (DRDY) and interrupt (INT1) lines
->> +  from the chip, the DRDY interrupt must be placed first.
->> +  The interrupts can be triggered on rising or falling
->> +  edges alike.
->
-> The ak8975 probably should be an interrupt instead of gpio, too...
-
-Yes. Or well. "data ready" is usually used as interrupt but to the
-circuit designers it's just a signal which tells when the state machine
-has finished.
-
-Yours,
-Linus Walleij
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
