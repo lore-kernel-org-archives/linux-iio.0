@@ -1,66 +1,51 @@
-Return-Path: <bijosh.t@hotmail.com>
-From: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
-To: "jic23@kernel.org" <jic23@kernel.org>, "knaack.h@gmx.de"
-	<knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net"
-	<pmeerw@pmeerw.net>, "k.kozlowski@samsung.com" <k.kozlowski@samsung.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/1] drivers:iio:light:isl29125: added macros for sensing
- range
-Date: Fri, 24 Jun 2016 11:16:18 +0000
-Message-ID: <KL1PR04MB12053135303C2DFF58F70CB2802E0@KL1PR04MB1205.apcprd04.prod.outlook.com>
-Content-Type: text/plain; charset="iso-8859-1"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:36495 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751063AbcFXMIB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jun 2016 08:08:01 -0400
+From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+	linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+	linux-iio@vger.kernel.org, harald@ccbib.org,
+	stefan.wahren@i2se.com, fabio.estevam@freescale.com,
+	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Subject: [PATCH v3 0/4] mxs-lradc: Split driver into MFD
+Date: Fri, 24 Jun 2016 14:07:55 +0200
+Message-Id: <cover.1466769907.git.ksenija.stanojevic@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Added macros for sensing range as the corresponding magic numbers
-were used at multiple places.
-   - SENSING_RANGE_0 for 375 lux full range
-   - SENSING_RANGE_1 for 10k lux full range
+Split existing driver mxs-lradc into MFD with touchscreen and
+IIO part.
 
-Signed-off-by: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
----
- drivers/iio/light/isl29125.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+Tested on i.MX28.
 
-diff --git a/drivers/iio/light/isl29125.c b/drivers/iio/light/isl29125.c
-index e2945a2..83a5a7a 100644
---- a/drivers/iio/light/isl29125.c
-+++ b/drivers/iio/light/isl29125.c
-@@ -44,6 +44,9 @@
- #define ISL29125_MODE_B 0x3
- #define ISL29125_MODE_RGB 0x5
-=20
-+#define SENSING_RANGE_0 5722   /* 375 lux full range */
-+#define SENSING_RANGE_1 152590 /* 10k lux full range */
-+
- #define ISL29125_MODE_RANGE BIT(3)
-=20
- #define ISL29125_STATUS_CONV BIT(1)
-@@ -140,9 +143,9 @@ static int isl29125_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		*val =3D 0;
- 		if (data->conf1 & ISL29125_MODE_RANGE)
--			*val2 =3D 152590; /* 10k lux full range */
-+			*val2 =3D SENSING_RANGE_1; /* 10k lux full range */
- 		else
--			*val2 =3D 5722; /* 375 lux full range */
-+			*val2 =3D SENSING_RANGE_0; /* 375 lux full range */
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	}
- 	return -EINVAL;
-@@ -158,9 +161,9 @@ static int isl29125_write_raw(struct iio_dev *indio_dev=
-,
- 	case IIO_CHAN_INFO_SCALE:
- 		if (val !=3D 0)
- 			return -EINVAL;
--		if (val2 =3D=3D 152590)
-+		if (val2 =3D=3D SENSING_RANGE_1)
- 			data->conf1 |=3D ISL29125_MODE_RANGE;
--		else if (val2 =3D=3D 5722)
-+		else if (val2 =3D=3D SENSING_RANGE_0)
- 			data->conf1 &=3D ~ISL29125_MODE_RANGE;
- 		else
- 			return -EINVAL;
---=20
-2.1.4
+Ksenija Stanojevic (4):
+  mfd: mxs-lradc: Add support for mxs-lradc MFD
+  iio: adc: mxs-lradc: Add support for adc driver
+  input: touchscreen: mxs-lradc: Add support for touchscreen
+  iio: adc: mxs-lradc: Remove driver
+
+ drivers/iio/adc/Kconfig                  |   27 +-
+ drivers/iio/adc/Makefile                 |    2 +-
+ drivers/iio/adc/mxs-lradc-adc.c          |  811 ++++++++++++++
+ drivers/iio/adc/mxs-lradc.c              | 1775 ------------------------------
+ drivers/input/touchscreen/Kconfig        |   10 +
+ drivers/input/touchscreen/Makefile       |    1 +
+ drivers/input/touchscreen/mxs-lradc-ts.c |  729 ++++++++++++
+ drivers/mfd/Kconfig                      |   17 +
+ drivers/mfd/Makefile                     |    1 +
+ drivers/mfd/mxs-lradc.c                  |  217 ++++
+ include/linux/mfd/mxs-lradc.h            |  204 ++++
+ 11 files changed, 2004 insertions(+), 1790 deletions(-)
+ create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
+ delete mode 100644 drivers/iio/adc/mxs-lradc.c
+ create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
+ create mode 100644 drivers/mfd/mxs-lradc.c
+ create mode 100644 include/linux/mfd/mxs-lradc.h
+
+-- 
+1.9.1
+
