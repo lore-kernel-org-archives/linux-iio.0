@@ -1,77 +1,97 @@
-Return-Path: <leonard.crestez@intel.com>
-Subject: Re: [PATCH v8] iio: st_sensors: harden interrupt handling
-To: Linus Walleij <linus.walleij@linaro.org>,
- Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <1466583905-13199-1-git-send-email-linus.walleij@linaro.org>
-Cc: Giuseppe Barba <giuseppe.barba@st.com>, Denis Ciocca <denis.ciocca@st.com>
-From: Crestez Dan Leonard <leonard.crestez@intel.com>
-Message-ID: <09af936e-bed5-41bd-46d9-c0f05ce7b962@intel.com>
-Date: Fri, 24 Jun 2016 16:05:26 +0300
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-oi0-f65.google.com ([209.85.218.65]:34678 "EHLO
+	mail-oi0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750972AbcFXPnZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jun 2016 11:43:25 -0400
+Date: Fri, 24 Jun 2016 10:43:23 -0500
+From: Rob Herring <robh@kernel.org>
+To: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Russell King <linux@arm.linux.org.uk>,
+	Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Jonathan Richardson <jonathar@broadcom.com>,
+	Jon Mason <jonmason@broadcom.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Anup Patel <anup.patel@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Pramod Kumar <pramod.kumar@broadcom.com>,
+	linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+Subject: Re: [PATCH v3 1/3] Documentation: DT: Add iproc-static-adc binding
+Message-ID: <20160624154323.GA6046@rob-hp-laptop>
+References: <1466575913-5027-1-git-send-email-raveendra.padasalagi@broadcom.com>
+ <1466575913-5027-2-git-send-email-raveendra.padasalagi@broadcom.com>
 MIME-Version: 1.0
-In-Reply-To: <1466583905-13199-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1466575913-5027-2-git-send-email-raveendra.padasalagi@broadcom.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/22/2016 11:25 AM, Linus Walleij wrote:
-> Leonard Crestez observed the following phenomenon: when using
-> hard interrupt triggers (the DRDY line coming out of an ST
-> sensor) sometimes a new value would arrive while reading the
-> previous value, due to latencies in the system.
+On Wed, Jun 22, 2016 at 11:41:51AM +0530, Raveendra Padasalagi wrote:
+> The patch adds devicetree binding document for broadcom's
+> iproc-static-adc controller driver.
 > 
-> We discovered that the ST hardware as far as can be observed
-> is designed for level interrupts: the DRDY line will be held
-> asserted as long as there are new values coming. The interrupt
-> handler should be re-entered until we're out of values to
-> handle from the sensor.
+> Signed-off-by: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+> ---
+>  .../bindings/iio/adc/brcm,iproc-static-adc.txt     | 38 ++++++++++++++++++++++
+>  1 file changed, 38 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
 > 
-> If interrupts were handled as occurring on the edges (usually
-> low-to-high) new values could appear and the line be held
-> asserted after that, and these values would be missed, the
-> interrupt handler would also lock up as new data was
-> available, but as no new edges occurs on the DRDY signal,
-> nothing happens: the edge detector only detects edges.
-> 
-> To counter this, do the following:
-> 
-> - Accept interrupt lines to be flagged as level interrupts
->   using IRQF_TRIGGER_HIGH and IRQF_TRIGGER_LOW. If the line
->   is marked like this (in the device tree node or ACPI
->   table or similar) it will be utilized as a level IRQ.
->   We mark the line with IRQF_ONESHOT and mask the IRQ
->   while processing a sample, then the top half will be
->   entered again if new values are available.
-> 
-> - If no interrupt type is indicated from the DT/ACPI,
->   choose IRQF_TRIGGER_HIGH so the above goes into action.
-> 
-> - If we are flagged as using edge interrupts with
->   IRQF_TRIGGER_RISING or IRQF_TRIGGER_FALLING: remove
->   IRQF_ONESHOT so that the interrupt line is not
->   masked while running the thread part of the interrupt.
->   This way we will never miss an interrupt, then introduce
->   a loop that polls the data ready registers repeatedly
->   until no new samples are available, then exit the
->   interrupt handler. This way we know no new values are
->   available when the interrupt handler exits and
->   new (edge) interrupts will be triggered when data arrives.
->   Take some extra care to update the timestamp in the poll
->   loop if this happens. The timestamp will not be 100%
->   perfect, but it will at least be closer to the actual
->   events. Usually the extra poll loop will handle the new
->   samples, but once in a blue moon, we get a new IRQ
->   while exiting the loop, before returning from the
->   thread IRQ bottom half with IRQ_HANDLED. On these rare
->   occasions, the removal of IRQF_ONESHOT means the
->   interrupt will immediately fire again.
-> 
-> Tested successfully on the LIS331DL and L3G4200D by setting
-> sampling frequency to 400Hz/800Hz and stressing the system:
-> extra reads in the threaded interrupt handler occurs.
-> 
-> Cc: Giuseppe Barba <giuseppe.barba@st.com>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Tested-by: Crestez Dan Leonard <cdleonard@gmail.com>
-> Reported-by: Crestez Dan Leonard <cdleonard@gmail.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> diff --git a/Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt b/Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
+> new file mode 100644
+> index 0000000..a82076e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
+> @@ -0,0 +1,38 @@
+> +* Broadcom's IPROC Static ADC controller
+> +
+> +Broadcom iProc ADC controller has 8 channels 10bit ADC.
+> +Allows user to convert analog input voltage values to digital.
+> +
+> +Required properties:
+> +
+> +- compatible: Must be "brcm,iproc-static-adc"
+> +
+> +- adc-syscon: Handler of syscon node defining physical base address of the
+> +  controller and length of memory mapped region.
+> +
+> +- #io-channel-cells = <1>; As ADC has multiple outputs
+> +  refer to Documentation/devicetree/bindings/iio/iio-bindings.txt for details.
+> +
+> +- clocks: Clock used for this block.
+> +
+> +- clock-names: Clock name should be given as tsc_clk.
+> +
+> +- interrupts: interrupt line number.
+> +
+> +For example:
+> +
+> +	ts_adc_syscon: ts_adc_syscon@180a6000 {
+> +		compatible = "brcm,iproc-ts-adc-syscon","syscon";
+> +		reg = <0x180a6000 0xc30>;
+> +	};
+> +
+> +	adc: adc@180a6000 {
+> +		compatible = "brcm,iproc-static-adc";
+> +		adc-syscon = <&ts_adc_syscon>;
+> +		#io-channel-cells = <1>;
+> +		io-channel-ranges;
 
-I also tested v8 and it looks good.
+Not documented.
+
+> +		clocks = <&asiu_clks BCM_CYGNUS_ASIU_ADC_CLK>;
+> +		clock-names = "tsc_clk";
+> +		interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>;
+> +		status = "disabled";
+> +	};
+> -- 
+> 1.9.1
+> 
