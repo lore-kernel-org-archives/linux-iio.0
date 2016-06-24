@@ -1,116 +1,94 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f67.google.com ([209.85.220.67]:33348 "EHLO
-	mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750785AbcFWRYG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2016 13:24:06 -0400
-Date: Thu, 23 Jun 2016 10:24:03 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	linux-kernel@vger.kernel.org, lee.jones@linaro.org,
-	linux-input@vger.kernel.org, pmeerw@pmeerw.net, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, harald@ccbib.org,
-	fabio.estevam@freescale.com, linux-iio@vger.kernel.org,
-	marex@denx.de
-Subject: Re: [PATCH v2 3/4] input: touchscreen: mxs-lradc: Add support for
- touchscreen
-Message-ID: <20160623172403.GF32561@dtor-ws>
-References: <cover.1465396835.git.ksenija.stanojevic@gmail.com>
- <d5853a762d67f2036382d3cfa0cf1d294d6aa5f0.1465396835.git.ksenija.stanojevic@gmail.com>
- <1443695961.58810.3de61248-4cae-4f94-b8a2-ef63c5c3ec1b.open-xchange@email.1und1.de>
+Return-Path: <zhiyong.tao@mediatek.com>
+From: <zhiyong.tao@mediatek.com>
+To: <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
+	<lars@metafoo.de>, <pmeerw@pmeerw.net>
+CC: <srv_heupstream@mediatek.com>, <liguo.zhang@mediatek.com>,
+	<yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
+	<erin.lo@mediatek.com>, <dawei.chien@mediatek.com>, <matthias.bgg@gmail.com>,
+	<s.hauer@pengutronix.de>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Subject: [PATCH 0/3] AUXADC: Mediatek auxadc driver 
+Date: Fri, 24 Jun 2016 15:37:07 +0800
+Message-ID: <1466753830-4542-1-git-send-email-zhiyong.tao@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1443695961.58810.3de61248-4cae-4f94-b8a2-ef63c5c3ec1b.open-xchange@email.1und1.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/related;
+	boundary="__=_Part_Boundary_002_105025169.2135743537"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Jun 15, 2016 at 11:26:18PM +0200, Stefan Wahren wrote:
-> Hi,
-> 
-> unfortunately i still don't have a touchscreen to test this patch.
-> 
-> > Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 8. Juni 2016 um 16:48
-> > geschrieben:
-> > 
-> > 
-> > Add 4-wire/5-wire touchscreen controller.
-> > 
-> > Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> > ---
-> > Changes in v2:
-> >  - do not change spacing in Kconfig
-> >  - remove dev.parent
-> >  - rename err_ts_register to error
-> >  - combine functions hw_stop and disable_ts so that mxs_lradc_ts_remove
-> >    could be deleted.
-> >  - add spinlock in struct mxs_lradc_ts to enable locking in interrupt handler.
-> >  - only grab irqs that are relevant to touchscreen
-> >  - use direct return instead assigning error to touch_ret in probe function.
-> >  - change licence to GPL
-> >  - add copyright
-> > 
-> >  drivers/input/touchscreen/Kconfig        |  10 +
-> >  drivers/input/touchscreen/Makefile       |   1 +
-> >  drivers/input/touchscreen/mxs-lradc-ts.c | 726
-> > +++++++++++++++++++++++++++++++
-> >  3 files changed, 737 insertions(+)
-> >  create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
-> > 
-> > diff --git a/drivers/input/touchscreen/mxs-lradc-ts.c
-> > b/drivers/input/touchscreen/mxs-lradc-ts.c
-> > new file mode 100644
-> > index 0000000..778bb61
-> > --- /dev/null
-> > +++ b/drivers/input/touchscreen/mxs-lradc-ts.c
-> > @@ -0,0 +1,726 @@
-> > +/*
-> > + * Freescale MXS LRADC driver
-> 
-> touchscreen driver
-> 
-> > + *
-> > + * Copyright (c) 2012 DENX Software Engineering, GmbH.
-> > + * Marek Vasut <marex@denx.de>
-> > + * Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> > + *
-> > + * This program is free software; you can redistribute it and/or modify
-> > + * it under the terms of the GNU General Public License as published by
-> > + * the Free Software Foundation; either version 2 of the License, or
-> > + * (at your option) any later version.
-> > + *
-> > + * This program is distributed in the hope that it will be useful,
-> > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> > + * GNU General Public License for more details.
-> > + */
-> > +
-> > ...
-> > +
-> > +static struct platform_driver mxs_lradc_ts_driver = {
-> > +	.driver	= {
-> > +		.name = DRIVER_NAME_TS,
-> > +	},
-> > +	.probe	= mxs_lradc_ts_probe,
-> > +};
-> > +module_platform_driver(mxs_lradc_ts_driver);
-> > +
-> 
-> MODULE_DESCRIPTION ?
-> MODULE_AUTHOR ?
+--__=_Part_Boundary_002_105025169.2135743537
+Content-Transfer-Encoding: base64
+Content-Type: multipart/alternative;
+	boundary="__=_Part_Boundary_003_761082451.129796713"
 
-Once Stefan's comments addressed please add
+--__=_Part_Boundary_003_761082451.129796713
+Content-Type: text/html
+Content-Transfer-Encoding: base64
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+PHByZT4NClRoaXMgaXMgdGhlIGZpcnN0IHZlcnNpb24gb2YgYXV4YWRjIGRyaXZlciBmb3IgTWVk
+aWF0ZWsgTVQyNzAxDQpJdCBpbmNsdWRlcyB0aHJlZSBwYXRjaGVzOg0KMS5DaGFuZ2UgdGhlIGRl
+dmljZSB0cmVlIGJpbmRpbmcgZG9jdW1lbnRhdGlvbi4NCjIuQWRkIGF1eGFkYyBkcml2ZXIgYmFz
+ZWQgb24gbGludXggaWlvLg0KMy5BZGQgYXV4YWRjIG5vZGVzIGluIHRoZSBtZWRpYXRlayBNVDI3
+MDEgZHRzaSBmaWxlLg0KDQpaaGl5b25nIFRhbyAoMyk6DQogIGR0LWJpbmRpbmdzOiBhdXhhZGM6
+IEFkZCBiaW5kaW5nIGRvY3VtZW50IGZvciBNZWRpYXRlayBhdXhhZGMuDQogIGF1eGFkYzogQWRk
+IE1lZGlhdGVrIGF1eGFkYyBkcml2ZXIgZm9yIG10MjcwMS4NCiAgYXJtOiBkdHM6IGF1eGFkYzog
+QWRkIGF1eGFkYyBub2RlLg0KDQogLi4uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FkYy9tdDY1
+eHhfYXV4YWRjLnR4dCAgfCAgIDI3ICsrDQogLi4uL2RldmljZXRyZWUvYmluZGluZ3Mvc29jL21l
+ZGlhdGVrL2F1eGFkYy50eHQgICAgfCAgIDIxIC0tDQogYXJjaC9hcm0vYm9vdC9kdHMvbXQyNzAx
+LmR0c2kgICAgICAgICAgICAgICAgICAgICAgfCAgICA5ICsNCiBkcml2ZXJzL2lpby9hZGMvS2Nv
+bmZpZyAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMTEgKw0KIGRyaXZlcnMvaWlvL2Fk
+Yy9NYWtlZmlsZSAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgMSArDQogZHJpdmVycy9p
+aW8vYWRjL210NjV4eF9hdXhhZGMuYyAgICAgICAgICAgICAgICAgICAgfCAgMjY5ICsrKysrKysr
+KysrKysrKysrKysrDQogNiBmaWxlcyBjaGFuZ2VkLCAzMTcgaW5zZXJ0aW9ucygrKSwgMjEgZGVs
+ZXRpb25zKC0pDQogY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
+aW5kaW5ncy9paW8vYWRjL210NjV4eF9hdXhhZGMudHh0DQogZGVsZXRlIG1vZGUgMTAwNjQ0IERv
+Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zb2MvbWVkaWF0ZWsvYXV4YWRjLnR4dA0K
+IGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby9hZGMvbXQ2NXh4X2F1eGFkYy5jDQoNCjwv
+cHJlPjwhLS10eXBlOnRleHQtLT48IS0tey0tPjxwcmU+KioqKioqKioqKioqKiBFbWFpbCBDb25m
+aWRlbnRpYWxpdHkgTm90aWNlDQogKioqKioqKioqKioqKioqKioqKioKVGhlIGluZm9ybWF0aW9u
+IGNvbnRhaW5lZCBpbiB0aGlzIGUtbWFpbCBtZXNzYWdlIChpbmNsdWRpbmcgYW55IAphdHRhY2ht
+ZW50cykgbWF5IGJlIGNvbmZpZGVudGlhbCwgcHJvcHJpZXRhcnksIHByaXZpbGVnZWQsIG9yIG90
+aGVyd2lzZQpleGVtcHQgZnJvbSBkaXNjbG9zdXJlIHVuZGVyIGFwcGxpY2FibGUgbGF3cy4gSXQg
+aXMgaW50ZW5kZWQgdG8gYmUgCmNvbnZleWVkIG9ubHkgdG8gdGhlIGRlc2lnbmF0ZWQgcmVjaXBp
+ZW50KHMpLiBBbnkgdXNlLCBkaXNzZW1pbmF0aW9uLCAKZGlzdHJpYnV0aW9uLCBwcmludGluZywg
+cmV0YWluaW5nIG9yIGNvcHlpbmcgb2YgdGhpcyBlLW1haWwgKGluY2x1ZGluZyBpdHMgCmF0dGFj
+aG1lbnRzKSBieSB1bmludGVuZGVkIHJlY2lwaWVudChzKSBpcyBzdHJpY3RseSBwcm9oaWJpdGVk
+IGFuZCBtYXkgCmJlIHVubGF3ZnVsLiBJZiB5b3UgYXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGll
+bnQgb2YgdGhpcyBlLW1haWwsIG9yIGJlbGlldmUNCiAKdGhhdCB5b3UgaGF2ZSByZWNlaXZlZCB0
+aGlzIGUtbWFpbCBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIAppbW1lZGlhdGVs
+eSAoYnkgcmVwbHlpbmcgdG8gdGhpcyBlLW1haWwpLCBkZWxldGUgYW55IGFuZCBhbGwgY29waWVz
+IG9mIAp0aGlzIGUtbWFpbCAoaW5jbHVkaW5nIGFueSBhdHRhY2htZW50cykgZnJvbSB5b3VyIHN5
+c3RlbSwgYW5kIGRvIG5vdApkaXNjbG9zZSB0aGUgY29udGVudCBvZiB0aGlzIGUtbWFpbCB0byBh
+bnkgb3RoZXIgcGVyc29uLiBUaGFuaw0KIHlvdSE8L3ByZT48IS0tfS0t
 
-so that it can be merged through MFD tree.
+--__=_Part_Boundary_003_761082451.129796713
+Content-Type: text/plain
 
-> 
-> > +MODULE_LICENSE("GPL");
-> > -- 
-> > 1.9.1
-> >
+This is the first version of auxadc driver for Mediatek MT2701
+It includes three patches:
+1.Change the device tree binding documentation.
+2.Add auxadc driver based on linux iio.
+3.Add auxadc nodes in the mediatek MT2701 dtsi file.
 
-Thanks.
+Zhiyong Tao (3):
+  dt-bindings: auxadc: Add binding document for Mediatek auxadc.
+  auxadc: Add Mediatek auxadc driver for mt2701.
+  arm: dts: auxadc: Add auxadc node.
 
--- 
-Dmitry
+ .../devicetree/bindings/iio/adc/mt65xx_auxadc.txt  |   27 ++
+ .../devicetree/bindings/soc/mediatek/auxadc.txt    |   21 --
+ arch/arm/boot/dts/mt2701.dtsi                      |    9 +
+ drivers/iio/adc/Kconfig                            |   11 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/mt65xx_auxadc.c                    |  269
+ ++++++++++++++++++++
+ 6 files changed, 317 insertions(+), 21 deletions(-)
+ create mode 100644
+ Documentation/devicetree/bindings/iio/adc/mt65xx_auxadc.txt
+ delete mode 100644
+ Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
+ create mode 100644 drivers/iio/adc/mt65xx_auxadc.c
+
+--__=_Part_Boundary_003_761082451.129796713--
+
+--__=_Part_Boundary_002_105025169.2135743537--
