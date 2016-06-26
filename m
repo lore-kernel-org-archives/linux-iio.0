@@ -1,102 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48120 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751141AbcFZRiy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 13:38:54 -0400
-Subject: Re: [PATCH v1 7/7] iio:st_pressure:lps22hb: temperature support
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1466687364.git.gregor.boirie@parrot.com>
- <b4869f2d40e47f62113559dfd98e0d38cac56cbb.1466687364.git.gregor.boirie@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Giuseppe Barba <giuseppe.barba@st.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a9d3ead7-a106-2a38-50c8-294461dbdad1@kernel.org>
-Date: Sun, 26 Jun 2016 18:38:52 +0100
+Received: from mail01.prevas.se ([62.95.78.3]:20890 "EHLO mail01.prevas.se"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751141AbcFZRk7 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 13:40:59 -0400
+From: =?iso-8859-1?Q?Sean_Nyekj=E6r?= <Sean.Nyekjaer@prevas.dk>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v5 2/2] iio: ad5755: Add DT binding documentation
+Date: Sun, 26 Jun 2016 17:30:06 +0000
+Message-ID: <FCCBC97A-8B1A-4637-A776-3F4D73B7AAE9@prevas.dk>
+References: <1457705561-12253-1-git-send-email-sean.nyekjaer@prevas.dk>
+ <1457705561-12253-2-git-send-email-sean.nyekjaer@prevas.dk>
+ <56E3E121.9030400@kernel.org> <56F94A21.6070804@kernel.org>
+ <8a7b1dcb-205a-8801-737f-6aa1c39f6605@prevas.dk>
+ <8e62350f-ec4c-cba4-fa46-95549a89e720@kernel.org>
+ <574AF8EB.9060609@metafoo.de>
+ <b55cee8b-2966-d14f-3943-4a848876b43f@kernel.org>
+ <851f081c-9a0a-eaa1-4d61-21e4e8d4c692@prevas.dk>,<2e2f572c-4560-fc8d-d92c-edb7ca2f620e@kernel.org>
+In-Reply-To: <2e2f572c-4560-fc8d-d92c-edb7ca2f620e@kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-In-Reply-To: <b4869f2d40e47f62113559dfd98e0d38cac56cbb.1466687364.git.gregor.boirie@parrot.com>
-Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/06/16 14:49, Gregor Boirie wrote:
-> Implement lps22hb temperature sampling channel.
+
+
+> On 26. jun. 2016, at 18.51, Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-one small comment in this.  I'll clear it up if the rest of the
-series is good to go.
-
-Thanks for getting back to this stuff.
-I hope it was a good sort of busy :)
-
-Jonathan
-> ---
->  drivers/iio/pressure/st_pressure_core.c | 28 +++++++++++++++++++++++++---
->  1 file changed, 25 insertions(+), 3 deletions(-)
+>> On 21/06/16 06:04, Sean Nyekjær wrote:
+>> 
+>> 
+>>> On 2016-06-11 19:26, Jonathan Cameron wrote:
+>>>> On 29/05/16 15:12, Lars-Peter Clausen wrote:
+>>>>> On 05/29/2016 03:57 PM, Jonathan Cameron wrote:
+>>>>>> On 09/05/16 09:16, Sean Nyekjær wrote:
+>>>>>> 
+>>>>>>> On 2016-03-28 17:13, Jonathan Cameron wrote:
+>>>>>>>> On 12/03/16 09:28, Jonathan Cameron wrote:
+>>>>>>>>> On 11/03/16 14:12, Sean Nyekjaer wrote:
+>>>>>>>>> Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+>>>>>>>> Looks much better to me.
+>>>>>>>> 
+>>>>>>>> Looking for Acks from Lars and a device tree binding maintainer
+>>>>>>>> on this one though.
+>>>>>>>> (added CCs)
+>>>>>>> Lars?
+>>>>>> No response...
+>>>>>> Is there anything wrong with this?
+>>>>> Given we are early in cycle there is no real rush for this...
+>>>>> 
+>>>>> Lars, let me know if you are going to a while getting to this / any other
+>>>>> patches I want responses on from you.
+>>>> I don't think this solution is the correct approach, but since I'm not able
+>>>> to provide an alternative and everybody else is OK with it, I'm not going to
+>>>> block it either. So go ahead and apply it.
+>>> Hmm. I've applied this now.  Perhaps we will revisit in the future and
+>>> eventually deprecate this binding in favour of something more generic.
+>>> 
+>>> Thanks for your hard work on this Sean. It certainly wasn't a case
+>>> with obvious 'right' answers!
+>>> 
+>>> Jonathan
+>> Hi Jonathan
+>> 
+>> Where is this applied, i can't seen to find it? :-)
+>> If it failed some test, please let me know...
+> Sorry should have said. Applied to the togreg branch of iio.git on
+> kernel.org, but... That gets initially pushed out as testing
+> for the autobuilders to play with it.
 > 
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index fad54c3..fdc228c 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -196,6 +196,10 @@
->   * See LPS22HB datasheet:
->   * http://www2.st.com/resource/en/datasheet/lps22hb.pdf
->   */
-> +
-> +/* LPS22HB temperature sensitivity */
-> +#define ST_PRESS_LPS22HB_LSB_PER_CELSIUS	100UL
-> +
->  #define ST_PRESS_LPS22HB_WAI_EXP		0xb1
->  #define ST_PRESS_LPS22HB_ODR_ADDR		0x10
->  #define ST_PRESS_LPS22HB_ODR_MASK		0x70
-> @@ -307,7 +311,24 @@ static const struct iio_chan_spec st_press_lps22hb_channels[] = {
->  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.modified = 0,
->  	},
-> -	IIO_CHAN_SOFT_TIMESTAMP(1)
-> +	{
-> +		.type = IIO_TEMP,
-> +		.channel2 = IIO_NO_MOD,
-No need to specify this as no mod is the default + if not modified it won't be
-read by anything anyway.
-
-> +		.address = ST_TEMP_1_OUT_L_ADDR,
-> +		.scan_index = 1,
-> +		.scan_type = {
-> +			.sign = 's',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +			.endianness = IIO_LE,
-> +		},
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +		.modified = 0,
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(2)
->  };
->  
->  static const struct st_sensor_settings st_press_sensors_settings[] = {
-> @@ -494,12 +515,13 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
->  		.fs = {
->  			.fs_avl = {
->  				/*
-> -				 * Sensitivity values as defined in table 3 of
-> -				 * LPS22HB datasheet.
-> +				 * Pressure and temperature sensitivity values
-> +				 * as defined in table 3 of LPS22HB datasheet.
->  				 */
->  				[0] = {
->  					.num = ST_PRESS_FS_AVL_1260MB,
->  					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
-> +					.gain2 = ST_PRESS_LPS22HB_LSB_PER_CELSIUS,
->  				},
->  			},
->  		},
+> Basically it gives me a window with it as an 'unofficial' branch
+> so I can fix up an dumb stuff the autobuilders find.  There
+> is rather less of that these days as the autobuilders try patches
+> off the list.
 > 
+> Jonathan
+>> 
+>> /Sean
+> 
+Hi
 
+I see the builder gives some warnings with me not being consistent enough with the #ifdef CONFIG_OF
+I'll submit v6 tomorrow with this corrected
+
+/Sean
