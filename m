@@ -1,110 +1,115 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47426 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47642 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751978AbcFZPSI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 11:18:08 -0400
-Subject: Re: [PATCH v3] iio: Add driver for Silabs si1132, si1141/2/3 and
- si1145/6/7 ambient light, uv index and proximity sensors
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,
-	linux-iio@vger.kernel.org
-References: <cfa05b01fcdcdc7ec5d3e5a7bb937122162d1176.1466161813.git.leonard.crestez@intel.com>
- <1b9f19dc-4d86-9d0d-f630-0395b116738b@kernel.org>
- <916196ba-3ba1-9eac-12d5-0c512916f349@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1751265AbcFZQFv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 12:05:51 -0400
+Subject: Re: [PATCH] iio: as3935: improve error reporting in as3935_event_work
+To: Matt Ranostay <mranostay@gmail.com>
+References: <1464619938-988956-1-git-send-email-arnd@arndb.de>
+ <574DA582.50408@ti.com> <75c2c65a-f1ac-8ad4-7f04-319939a1866a@kernel.org>
+ <21E73984-CC08-43B4-8CCD-89DDC2718B65@gmail.com>
+Cc: "Andrew F. Davis" <afd@ti.com>, Arnd Bergmann <arnd@arndb.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
+	Mark Brown <broonie@kernel.org>,
+	Javier Martinez Canillas <javier@osg.samsung.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5867ca57-d7f4-83e8-f074-0ac6165a1699@kernel.org>
-Date: Sun, 26 Jun 2016 16:18:06 +0100
+Message-ID: <2bf96d78-955a-d995-9a55-04c937b39af5@kernel.org>
+Date: Sun, 26 Jun 2016 17:05:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <916196ba-3ba1-9eac-12d5-0c512916f349@intel.com>
+In-Reply-To: <21E73984-CC08-43B4-8CCD-89DDC2718B65@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/06/16 15:37, Crestez Dan Leonard wrote:
-> On 06/19/2016 02:57 PM, Jonathan Cameron wrote:
->> On 17/06/16 12:10, Crestez Dan Leonard wrote:
->>> From: Peter Meerwald <pmeerw@pmeerw.net>
->>>
->>> The si114x supports x=1,2,3 IR LEDs for proximity sensing together with
->>> visible and IR ambient light sensing (ALS).
->>>
->>> Newer parts (si1132, si1145/6/7) can measure UV light and compute an UV index
->>>
->>> Changes since v2:
->>> * Add myself to copyright
->>> * Remove TODO: power management.
->>> It's fine because by default the device remains sleeping.
->>> * Elaborate comments on si1145_data
->>> * Adjust comment syntax
->>> * Drop special case for reading single words.
->>> * Use manual request_irq to ensure proper init/free ordering
->>>
->>> Changes since Peter's v1:
->>> * Fix set_chlist returning positive value on success
->>> * Do not assume channel addresses are in order of scan index
->>> * Take lock in buffer_preenable
->>> * Print part/rev/seq id at probe time
->>> * Cleanup param query/update
->>> * Poll for response when executing commands
->>> * Allow writes even when buffer enabled
->>> * Add interrupt support
->>> * Rename new to uncompressed_meas_rate for clarity
->>> * Fix handling IIO_CHAN_INFO_SCALE:
->>> Make it so that when changing the scale the processed value remains
->>> identical in identical conditions. The exposed value should be
->>> proportional to 2 ** -ADC_GAIN.
->>> * Initialize UCOEF registers to default values from datasheet
->>> Otherwise by default the coefficients are zero and so are all the
->>> values read back
->>> * Fix reading in_uvindex_raw manually (not in buffer mode)
->>> * Expose in_uvindex_scale=0.01
->>> * Expose ADC offset, making zero values meaningful
->>> This is not very well documented, for example the si1145/6/7 datasheet
->>> lists register 0x1a as 'reserved'. It might make sense to just return a
->>> constant on these models.
->>>
->>> This was tested on si1143 and si1145
->>>
->>> Link to v2: https://www.spinics.net/lists/linux-iio/msg25055.html
->>>
->> Can you explain what the autonomous stuff is about?  Has me confused.
->> Is it an attempt to allow driving the device with a software trigger
->> when no interrupt is provided?  (I think it is but correct me if I'm
->> wrong).  I'm definitely not happy with this approach as a trigger 'in'
->> should always result in data 'out'.  If you are running multiple
->> sensors off one software trigger you'd expect to get the same amount of
->> data from each.
+On 12/06/16 07:55, Matt Ranostay wrote:
 > 
-> That "bool autonomous" is true when the device is in "autonomous
-> measurement" mode rather than the default "on-demand" mode. I guess it
-> might even be possible to replace it with a macro that checks for
-> indio_dev flags?
-> 
-> The driver supports both hardware triggers (from the interrupt) and
-> software triggers. With software triggers the device is instructed to
-> make measurements automatically and the data is read at the frequency of
-> the software trigger.
-> 
-> I guess this would work a bit strange if the device sampling frequency
-> is too different from the software trigger sampling frequency. Since the
-> device has no internal fifo to drain at a specific rate it will not
-> misbehave. It's just that if the sw freq is higher than the hw freq you
-> will see a "square-ish" signal out.
-> 
-> I also don't think this issue is specific to this driver. It would
-> affect most devices with software triggers, right?
-yes.  This is fine if ugly should anyone do it.  The values are the
-best available, nothing more.
+> Also important to note these warnings are environment related (e.g. room with lot of EMI noise) and unlikely a chip misconfiguration. Unless the tuning capacitor setting is wrong of course
+Applied to the togreg branch of iio.git. Initially pushed out as testing
+for the autobuilders to play with it.
 
-Thanks for the clarification!
-
-Just those other little bits from the review to clean up and this one
-should be good to go.
+Thanks,
 
 Jonathan
+> 
+>> On Jun 11, 2016, at 09:32, Jonathan Cameron <jic23@kernel.org> wrote:
+>>
+>>> On 31/05/16 15:53, Andrew F. Davis wrote:
+>>>> On 05/30/2016 09:52 AM, Arnd Bergmann wrote:
+>>>> gcc warns about a potentially uninitialized variable use
+>>>> in as3935_event_work:
+>>>>
+>>>> drivers/iio/proximity/as3935.c: In function ‘as3935_event_work’:
+>>>> drivers/iio/proximity/as3935.c:231:6: error: ‘val’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+>>>>
+>>>> This case specifically happens when spi_w8r8() fails with a
+>>>> negative return code. We check all other users of this function
+>>>> except this one.
+>>>>
+>>>> As the error is rather unlikely to happen after the device
+>>>> has already been initialized, this just adds a dev_warn().
+>>>> Another warning already existst in the same function, but is
+>>>
+>>>                            ^^ typo
+>>>
+>>>> missing a trailing '\n' character, so I'm fixing that too.
+>>>>
+>>>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>>>> ---
+>>>> drivers/iio/proximity/as3935.c | 10 ++++++++--
+>>>> 1 file changed, 8 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+>>>> index f4d29d5dbd5f..b49e3ab5730a 100644
+>>>> --- a/drivers/iio/proximity/as3935.c
+>>>> +++ b/drivers/iio/proximity/as3935.c
+>>>> @@ -224,10 +224,16 @@ static void as3935_event_work(struct work_struct *work)
+>>>> {
+>>>>    struct as3935_state *st;
+>>>>    int val;
+>>>> +    int ret;
+>>>>
+>>>>    st = container_of(work, struct as3935_state, work.work);
+>>>>
+>>>> -    as3935_read(st, AS3935_INT, &val);
+>>>> +    ret = as3935_read(st, AS3935_INT, &val);
+>>>> +    if (ret) {
+>>>> +        dev_warn(&st->spi->dev, "read error\n");
+>>>
+>>> Maybe I'm misunderstanding the commit message, why does this error not
+>>> use dev_err()? A read error here would be rather serious, it might even
+>>> be worth it to return a code and fail through the caller too.
+>> They are unusual and typically result in momentary corruption.  Hmm.
+>> As this is in a work function, there is no easy way of actually
+>> passing the error upstream..  dev_err is a little brutal so perhaps
+>> this is the best option...
+>>>
+>>>> +        return;
+>>>> +    }
+>>>> +
+>>>>    val &= AS3935_INT_MASK;
+>>>>
+>>>>    switch (val) {
+>>>> @@ -235,7 +241,7 @@ static void as3935_event_work(struct work_struct *work)
+>>>>        iio_trigger_poll(st->trig);
+>>>>        break;
+>>>>    case AS3935_NOISE_INT:
+>>>> -        dev_warn(&st->spi->dev, "noise level is too high");
+>>>> +        dev_warn(&st->spi->dev, "noise level is too high\n");
+>>>>        break;
+>>>>    }
+>>>> }
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
