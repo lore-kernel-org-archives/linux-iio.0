@@ -1,75 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47656 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47666 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751265AbcFZQIz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 12:08:55 -0400
-Subject: Re: [PATCH V2] iio: (ms5637) Add Measurement Specialties explicit
- MS5805 and MS5837 support
-To: "Markezana, William" <William.Markezana@te.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <53A6D8FB-3F95-4A9E-BB5F-D317B61CCFBC@te.com>
-Cc: "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+	with ESMTP id S1751265AbcFZQKb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 12:10:31 -0400
+Subject: Re: [PATCH v3] iio: stx104: Add GPIO support for the Apex Embedded
+ Systems STX104
+To: Linus Walleij <linus.walleij@linaro.org>,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+References: <20160613130628.GA28944@sophia>
+ <CACRpkdZ__YaP24hC9y17tnsXC5HybzmQmHdpTCUYSNWciKg5zA@mail.gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Alexandre Courbot <gnurou@gmail.com>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8dd807ab-065b-f310-4cb3-64efde68a715@kernel.org>
-Date: Sun, 26 Jun 2016 17:08:53 +0100
+Message-ID: <ba04432f-f6f5-e7ea-0b68-7a415e9af964@kernel.org>
+Date: Sun, 26 Jun 2016 17:10:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <53A6D8FB-3F95-4A9E-BB5F-D317B61CCFBC@te.com>
+In-Reply-To: <CACRpkdZ__YaP24hC9y17tnsXC5HybzmQmHdpTCUYSNWciKg5zA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/06/16 09:06, Markezana, William wrote:
-> iio: (ms5637) Add Measurement Specialties explicit MS5805 and MS5837 support
+On 14/06/16 07:53, Linus Walleij wrote:
+> On Mon, Jun 13, 2016 at 3:06 PM, William Breathitt Gray
+> <vilhelm.gray@gmail.com> wrote:
 > 
-> Signed-off-by: William Markezana <william.markezana@meas-spec.com>
-I fixed up and applied the previous version... Let me know
-if there is any difference from this (looks superficially the same).
+>> The Apex Embedded Systems STX104 device features eight lines of digital
+>> I/O (four digital inputs and four digital outputs). This patch adds GPIO
+>> support for these eight lines of digital I/O via GPIOLIB.
+>>
+>> Cc: Linus Walleij <linus.walleij@linaro.org>
+>> Cc: Alexandre Courbot <gnurou@gmail.com>
+>> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+>> ---
+>> Changes in v3:
+>>   - Revert v2 change; any arch should be able to select GPIOLIB
+>>   - Return -EINVAL when attempting to set a GPIO to a direction it
+>>     cannot be
+>>   - Call stx104_gpio_set to have an initial value when setting a GPIO to
+>>     output direction
+> 
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
-Sorry for the confusion.
+Thanks,
 
 Jonathan
-> ---
-> drivers/iio/pressure/ms5637.c | 12 +++++++++---
-> 1 file changed, 9 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
-> index e8d0e0d..66f1a4c 100644
-> --- a/drivers/iio/pressure/ms5637.c
-> +++ b/drivers/iio/pressure/ms5637.c
-> @@ -1,6 +1,6 @@
-> /*
-> - * ms5637.c - Support for Measurement-Specialties ms5637 and ms8607
-> - *            pressure & temperature sensor
-> + * ms5637.c - Support for Measurement-Specialties MS5637, MS5805
-> + *            MS5837 and MS8607 pressure & temperature sensor
->   *
->   * Copyright (c) 2015 Measurement-Specialties
->   *
-> @@ -11,6 +11,10 @@
->   * Datasheet:
->   *  http://www.meas-spec.com/downloads/MS5637-02BA03.pdf
->   * Datasheet:
-> + *  http://www.meas-spec.com/downloads/MS5805-02BA01.pdf
-> + * Datasheet:
-> + *  http://www.meas-spec.com/downloads/MS5837-30BA.pdf
-> + * Datasheet:
->   *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
->   */
-> @@ -170,7 +174,9 @@ static int ms5637_probe(struct i2c_client *client,
-> static const struct i2c_device_id ms5637_id[] = {
->   {"ms5637", 0},
-> - {"ms8607-temppressure", 1},
-> + {"ms5805", 0},
-> + {"ms5837", 0},
-> + {"ms8607-temppressure", 0},
->   {}
-> };
+> Yours,
+> Linus Walleij
 > --
-> 2.1.4
-> 
-> 
-> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
