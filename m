@@ -1,60 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f196.google.com ([209.85.220.196]:33886 "EHLO
-	mail-qk0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751185AbcFYK1k convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Jun 2016 06:27:40 -0400
-Received: by mail-qk0-f196.google.com with SMTP id j2so24196590qkf.1
-        for <linux-iio@vger.kernel.org>; Sat, 25 Jun 2016 03:27:40 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <CACRpkdZa94NwVZLPsSohrcQbYFMLPM8ZAuiHCQ=a5L8m3W-92Q@mail.gmail.com>
-References: <1466361242-2994-1-git-send-email-linus.walleij@linaro.org>
- <1466361242-2994-8-git-send-email-linus.walleij@linaro.org>
- <CAC5umyijkFtggSdSLyNzs8YZtk7g4qyFXfcu2W2uVAJ8u-x10g@mail.gmail.com> <CACRpkdZa94NwVZLPsSohrcQbYFMLPM8ZAuiHCQ=a5L8m3W-92Q@mail.gmail.com>
-From: Akinobu Mita <akinobu.mita@gmail.com>
-Date: Sat, 25 Jun 2016 19:27:20 +0900
-Message-ID: <CAC5umyh7+JNO+xJOK0SLSeYS2CVhpTRmGgQuR4g2XBBTo2YW=g@mail.gmail.com>
-Subject: Re: [PATCH 7/9] iio: pressure: bmp280: add SPI interface driver
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Christoph Mair <christoph.mair@gmail.com>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46051 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751753AbcFZJwo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 05:52:44 -0400
+Subject: Re: [PATCH 2/9 v2] iio: pressure: bmp280: support device tree
+ initialization
+To: Linus Walleij <linus.walleij@linaro.org>,
+	linux-iio@vger.kernel.org, Akinobu Mita <akinobu.mita@gmail.com>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>,
+	Matt Ranostay <mranostay@gmail.com>
+References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
+ <1466628819-29784-3-git-send-email-linus.walleij@linaro.org>
+Cc: Christoph Mair <christoph.mair@gmail.com>,
 	Vlad Dogaru <vlad.dogaru@intel.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Marek Belisko <marek@goldelico.com>,
-	"H. Nikolaus Schaller" <hns@goldelico.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>
-Content-Type: text/plain; charset=UTF-8
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <cba4bd61-b615-95fc-de0e-1084fddae6e7@kernel.org>
+Date: Sun, 26 Jun 2016 10:52:40 +0100
+MIME-Version: 1.0
+In-Reply-To: <1466628819-29784-3-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-2016-06-23 4:04 GMT+09:00 Linus Walleij <linus.walleij@linaro.org>:
-> On Mon, Jun 20, 2016 at 1:06 PM, Akinobu Mita <akinobu.mita@gmail.com> wrote:
->
->> I was also trying to support SPI interface for this driver and found
->> that we can't simply use regmap_init_spi().
->>
->> Quote from 5.3 SPI interface in BMP280 datasheet:
->>
->>         In SPI mode, only 7 bits of the register addresses are used; the MSB of
->>         register address is not used and replaced by a read/write bit (RW = ‘0’
->>         for write and RW = ‘1’ for read).  Example: address 0xF7 is accessed by
->>         using SPI register address 0x77. For write access, the byte 0x77 is
->>         transferred, for read access, the byte 0xF7 is transferred.
->>
->> The write operation used by regmap_init_spi() doesn't replace the RW bit.
->> So we need custom regmap_bus like below.
->
-> Aha! OK I added your bus implementation and will add your Signed-off to
-> the patch as well, OK?
+On 22/06/16 21:53, Linus Walleij wrote:
+> This adds device tree support to the BMP085, BMP180 and BMP280
+> pressure sensors. Tested on the Qualcomm APQ8060 Dragonboard:
+> 
+> iio:device1$ cat in_temp_input
+> 26700
+> iio:device1$ cat in_pressure_input
+> 99.185000000
+> 
+Please also confirm the value of 'name' given the mess we have had
+over that recently.
 
-OK
 
-> It would be great if you could also test the result.
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v1->v2:
+> - Fix some BMP085 misspelled as BMP058 errors.
+> - Add the new BME280 sensor as well
+> ---
+>  drivers/iio/pressure/bmp280.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+> index dbbcd6d83e3b..655e888ef8f9 100644
+> --- a/drivers/iio/pressure/bmp280.c
+> +++ b/drivers/iio/pressure/bmp280.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/module.h>
+>  #include <linux/i2c.h>
+>  #include <linux/acpi.h>
+> +#include <linux/of.h>
+>  #include <linux/regmap.h>
+>  #include <linux/delay.h>
+>  #include <linux/iio/iio.h>
+> @@ -1094,6 +1095,18 @@ static const struct acpi_device_id bmp280_acpi_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
+>  
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id bmp280_of_match[] = {
+> +	{ .compatible = "bosch,bme280", .data = (void *)BME280_CHIP_ID },
+> +	{ .compatible = "bosch,bmp280", .data = (void *)BMP280_CHIP_ID },
+> +	{ .compatible = "bosch,bmp180", .data = (void *)BMP180_CHIP_ID },
+> +	{ .compatible = "bosch,bmp085", .data = (void *)BMP180_CHIP_ID },
+> +};
+> +MODULE_DEVICE_TABLE(of, bmp280_of_match);
+> +#else
+> +#define bmp280_of_match NULL
+> +#endif
+> +
+>  static const struct i2c_device_id bmp280_id[] = {
+>  	{"bmp280", BMP280_CHIP_ID },
+>  	{"bmp180", BMP180_CHIP_ID },
+> @@ -1107,6 +1120,7 @@ static struct i2c_driver bmp280_driver = {
+>  	.driver = {
+>  		.name	= "bmp280",
+>  		.acpi_match_table = ACPI_PTR(bmp280_acpi_match),
+> +		.of_match_table = of_match_ptr(bmp280_of_match),
+>  	},
+>  	.probe		= bmp280_probe,
+>  	.id_table	= bmp280_id,
+> 
 
-I've tested v2 patches with fixing undefined symbols error, missing
-NULL entry in of_device_id, and missing MODULE_LICENSE in bmp280.ko.
-
-The SPI interface for BMP280 works fine as well as I2C interface.
-
-Tested-by: Akinobu Mita <akinobu.mita@gmail.com>
