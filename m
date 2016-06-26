@@ -1,121 +1,651 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48236 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48267 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751265AbcFZSDQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 14:03:16 -0400
+	with ESMTP id S1751235AbcFZSJw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 14:09:52 -0400
 Subject: Re: [RFC PATCH] iio: imu: add driver for Bosch Sensortec BNO055
 To: Vlad Dogaru <vlad.dogaru@intel.com>, knaack.h@gmx.de,
 	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
 References: <1466766936-20561-1-git-send-email-vlad.dogaru@intel.com>
- <0fb507e2-e936-9c0c-9148-e4e329ba9dcb@kernel.org>
+ <1466766936-20561-2-git-send-email-vlad.dogaru@intel.com>
 Cc: andrey_utkin@fastmail.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <bc97ba4f-128a-b220-9f42-87e5a4ee90f3@kernel.org>
-Date: Sun, 26 Jun 2016 19:03:14 +0100
+Message-ID: <dc487bf4-a8d4-ca61-6ed2-1a83d3084c09@kernel.org>
+Date: Sun, 26 Jun 2016 19:09:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <0fb507e2-e936-9c0c-9148-e4e329ba9dcb@kernel.org>
+In-Reply-To: <1466766936-20561-2-git-send-email-vlad.dogaru@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/06/16 18:56, Jonathan Cameron wrote:
-> On 24/06/16 12:15, Vlad Dogaru wrote:
->> Hi everyone,
->>
->> This is a minimal implementation of a driver for the Bosch Sensortec
->> BNO055, a very interesting accel-gyro-magneto combo.  The datasheet is
->> available at https://www.bosch-sensortec.com/bst/products/all_products/bno055
-> 'interesting' device indeed.
->>
->> The driver in its present state works, but this is a RFC for a few
->> reasons detailed below:
->>
->> (1) The device has a few possible operating modes.  The most simple
->> ones employ a single sensor and power down the other two; the most
->> complex use all 3 for sensor fusion.  Changing the mode at runtime would
->> require changing the channels and I'm not sure IIO allows that.
-> It allows a much greater set of channels than can run at one time though..
-> Would that work here?  Lots of fun with available_scan_masks and
-> friends, but from your description here sounds fine (will look at
-> the code in a minute).
->>  So I've
->> opted to choose the mode at probe time, based on a DeviceTree property.
->> Hope that's ok.
-> Would rather it was runtime controllable I think...
-Hmm. I can see this is complex because obviously the fusion has to start
-at some point and if we flipped to reading a single axis it would get
-turned off.
+On 24/06/16 12:15, Vlad Dogaru wrote:
+> The BNO055 is a 9-axis absolute orientation sensor that supports
+> multiple operation modes.  The operation mode is currently chosen from
+> DeviceTree, at probe time.
+> 
+> Datasheet: https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST_BNO055_DS000_14.pdf
+> 
+> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+I've had a quick look and nothing nasty stands out.  I think it'll change
+enough as a result of discussions of the cover letter questions that
+it isn't sensible to do a full review now.
 
-Hideous though it is, perhaps an 'enable_fusion_engine' attribute would
-be the way to do it with channels returning EBUSY if they are not available
-in a given mode.
-
-There are some precedents for this as there are parts that cannot
-do both events and raw data reading at the same time. e.g. the Max1363
-(well technically that part can, but it was so nasty to implement I never
-did it an no one has ever cared since).
-
-We could only enable the fusion engine once the buffer is enabled, but
-that seems a bit clunky given the fused data is in someways the most
-useful stuff to get via polled reads.  'What orientation am I at now?'
-
-I'm definitely looking for other opinions on this one!  
+Thanks,
 
 Jonathan
->>
->> (2) Fusion modes provide orientation data.  This is either relative to
->> the initial position of the sensor, or to magnetic North.
-> Something new :)
->>  There is a
->> modifier, IIO_MOD_NORTH_MAGN,
-> I'm trying to remember why we have that...  Ah, just checked docs, it
-> was for devices that offered planar rotation angles from north.
->> but it occupies the same field as
->> IIO_MOD_QUATERNION 
-> With hindsight we should probably have made that a new channel type
-> rather than trying to mash it into the rotation type.  Perhaps doing
-> that now is the way to go and adding the interface to the hid sensor
-> device driver that is the only user (keeping the old option as well
-> for compatibility reasons).
+> ---
+>  drivers/iio/imu/Kconfig  |  11 +
+>  drivers/iio/imu/Makefile |   1 +
+>  drivers/iio/imu/bno055.c | 569 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 581 insertions(+)
+>  create mode 100644 drivers/iio/imu/bno055.c
 > 
->> and IIO_MOD_{X,Y,Z}, so we can't use both.
-> This is kind of related to mounting matrix, be it a 'world mounting matrix'.
-> I wonder if we want to support it in a vaguely similar way...
-> 
->   Therefore
->> there is currently no means of telling from user space whether the
->> orientation is relative to North or to the initial position;  one could
->> look at the DeviceTree description to deduce the operating mode, but
->> that's hardly ideal.
-> Absolutely, this one needs to be exposed in userspace.
-> 
-> Is there a means of resetting the initial position at runtime?
-> Providing an attribute to do that might be the cleanest option if
-> so. Not sure if there are any benefits to picking the initial value
-> against the north one otherwise...
->>
->> (3) In fusion modes, the device also exposes linear and gravitational
->> accelerations, but IIO doesn't seem to support this.  I can add these
->> channel types if you believe they are useful.
-> 
-> They will indeed have to be new channel types as you suggest, though
-> 'linear' is a rather unclear name to my mind.
-> 
->>
->>
->> Vlad Dogaru (1):
->>   iio: imu: add driver for Bosch Sensortec BNO055
->>
->>  drivers/iio/imu/Kconfig  |  11 +
->>  drivers/iio/imu/Makefile |   1 +
->>  drivers/iio/imu/bno055.c | 569 +++++++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 581 insertions(+)
->>  create mode 100644 drivers/iio/imu/bno055.c
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
+> index 1f1ad41..9987e38 100644
+> --- a/drivers/iio/imu/Kconfig
+> +++ b/drivers/iio/imu/Kconfig
+> @@ -27,6 +27,17 @@ config ADIS16480
+>  
+>  source "drivers/iio/imu/bmi160/Kconfig"
+>  
+> +config BNO055
+> +	tristate "Bosch Sensortec BNO055 driver"
+> +	depends on I2C
+> +	select REGMAP_I2C
+> +	help
+> +	  Say yes here to build support for Bosch Sensortec BNO055 intelligent
+> +	  9-axis absolute orientation sensor.
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called bno055.
+> +
+>  config KMX61
+>  	tristate "Kionix KMX61 6-axis accelerometer and magnetometer"
+>  	depends on I2C
+> diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
+> index c71bcd3..4e3ebed 100644
+> --- a/drivers/iio/imu/Makefile
+> +++ b/drivers/iio/imu/Makefile
+> @@ -16,4 +16,5 @@ obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
+>  obj-y += bmi160/
+>  obj-y += inv_mpu6050/
+>  
+> +obj-$(CONFIG_BNO055) += bno055.o
+>  obj-$(CONFIG_KMX61) += kmx61.o
+> diff --git a/drivers/iio/imu/bno055.c b/drivers/iio/imu/bno055.c
+> new file mode 100644
+> index 0000000..b7df82f
+> --- /dev/null
+> +++ b/drivers/iio/imu/bno055.c
+> @@ -0,0 +1,569 @@
+> +/*
+> + * BNO055 - Bosch 9-axis orientation sensor
+> + *
+> + * Copyright (c) 2016, Intel Corporation.
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * TODO:
+> + *  - buffering
+> + *  - interrupt support
+> + *  - linear and gravitational acceleration (not supported in IIO)
+> + */
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/regmap.h>
+> +#include <linux/delay.h>
+> +#include <linux/slab.h>
+> +
+> +#include <linux/iio/iio.h>
+> +
+> +#define BNO055_DRIVER_NAME		"bno055"
+> +
+> +#define BNO055_REG_CHIP_ID		0x00
+> +#define BNO055_REG_PAGE_ID		0x07
+> +
+> +#define BNO055_REG_ACC_DATA_X_LSB	0x08
+> +#define BNO055_REG_MAG_DATA_X_LSB	0x0E
+> +#define BNO055_REG_GYR_DATA_X_LSB	0x14
+> +#define BNO055_REG_EUL_HEADING_LSB	0x1A
+> +#define BNO055_REG_QUA_DATA_W_LSB	0x20
+> +#define BNO055_REG_TEMP			0x34
+> +
+> +#define BNO055_REG_SYS_ERR		0x3A
+> +#define BNO055_REG_UNIT_SEL		0x3B
+> +
+> +#define BNO055_REG_OPR_MODE		0x3D
+> +#define BNO055_REG_AXIS_MAP_SIGN	0x42
+> +
+> +#define BNO055_REG_ACC_OFFSET_X_LSB	0x55
+> +#define BNO055_REG_MAG_OFFSET_X_LSB	0x5B
+> +#define BNO055_REG_GYR_OFFSET_X_LSB	0x61
+> +#define BNO055_REG_MAG_RADIUS_MSB	0x6A
+> +
+> +/*
+> + * The difference in address between the register that contains the
+> + * value and the register that contains the offset.  This applies for
+> + * accel, gyro and magn channels.
+> + */
+> +#define BNO055_REG_OFFSET_ADDR		0x4D
+> +
+> +#define BNO055_OPR_MODE_MASK		GENMASK(3, 0)
+> +
+> +/* Combination of BNO055 and individual chip IDs. */
+> +#define BNO055_CHIP_ID			0x0F32FBA0
+> +
+> +#define BNO055_ANDROID_ORIENTATION	BIT(7)
+> +#define BNO055_TEMP_CELSIUS		0
+> +#define BNO055_EUL_RADIANS		BIT(2)
+> +#define BNO055_GYR_RADIANS		BIT(1)
+> +#define BNO055_ACC_MPSS			0
+> +
+> +/*
+> + * Operation modes.  It is important that these are listed in the order
+> + * they appear in the datasheet, as an index to this table is used to
+> + * write the actual bits in the operation config register.
+> + */
+> +enum bno055_operation_mode {
+> +	BNO055_CONFIG_MODE,
+> +
+> +	/* Non-fusion modes. */
+> +	BNO055_MODE_ACC_ONLY,
+> +	BNO055_MODE_MAG_ONLY,
+> +	BNO055_MODE_GYRO_ONLY,
+> +	BNO055_MODE_ACC_MAG,
+> +	BNO055_MODE_ACC_GYRO,
+> +	BNO055_MODE_MAG_GYRO,
+> +	BNO055_MODE_AMG,
+> +
+> +	/* Fusion modes. */
+> +	BNO055_MODE_IMU,
+> +	BNO055_MODE_COMPASS,
+> +	BNO055_MODE_M4G,
+> +	BNO055_MODE_NDOF_FMC_OFF,
+> +	BNO055_MODE_NDOF,
+> +
+> +	BNO055_MODE_MAX,
+> +};
+> +
+> +/*
+> + * Number of channels for each operation mode.  See Table 3-3 in the
+> + * datasheet for a summary of each operation mode.  Each non-config mode
+> + * also supports a temperature channel.
+> + */
+> +static const int bno055_num_channels[] = {
+> +	0, 4, 4, 4, 7, 7, 7, 10,
+> +	/*
+> +	 * In fusion modes, data from the raw sensors is still
+> +	 * available.  Additionally, the linear and gravitational
+> +	 * components of acceleration are available in all fusion modes,
+> +	 * but there are currently no IIO attributes for these.
+> +	 *
+> +	 * Orientation is exposed both as a quaternion multi-value
+> +	 * (meaning a single channel) and as Euler angles (3 separate
+> +	 * channels).
+> +	 */
+> +	11, 11, 11, 14, 14,
+> +};
+> +
+> +struct bno055_data {
+> +	struct regmap *regmap;
+> +	enum bno055_operation_mode op_mode;
+> +};
+> +
+> +/*
+> + * Note: The BNO055 has two pages of registers.  All the addresses below
+> + * are page 0 addresses.  If the driver ever uses page 1 registers, it
+> + * is expected to manually switch between pages via the PAGE ID register
+> + * and make sure that no other transactions happen.  It also cannot use
+> + * the regmap interface for accessing registers in page 1.
+> + */
+> +static const struct regmap_range bno055_writable_ranges[] = {
+> +	regmap_reg_range(BNO055_REG_ACC_OFFSET_X_LSB, BNO055_REG_MAG_RADIUS_MSB),
+> +	regmap_reg_range(BNO055_REG_OPR_MODE, BNO055_REG_AXIS_MAP_SIGN),
+> +	regmap_reg_range(BNO055_REG_UNIT_SEL, BNO055_REG_UNIT_SEL),
+> +	/* Listed as read-only in the datasheet, but probably an error. */
+> +	regmap_reg_range(BNO055_REG_PAGE_ID, BNO055_REG_PAGE_ID),
+> +};
+> +
+> +static const struct regmap_access_table bno055_writable_regs = {
+> +	.yes_ranges = bno055_writable_ranges,
+> +	.n_yes_ranges = ARRAY_SIZE(bno055_writable_ranges),
+> +};
+> +
+> +/* Only reserved registers are non-readable. */
+> +static const struct regmap_range bno055_non_readable_reg_ranges[] = {
+> +	regmap_reg_range(BNO055_REG_AXIS_MAP_SIGN + 1, BNO055_REG_ACC_OFFSET_X_LSB - 1),
+> +};
+> +
+> +static const struct regmap_access_table bno055_readable_regs = {
+> +	.no_ranges = bno055_non_readable_reg_ranges,
+> +	.n_no_ranges = ARRAY_SIZE(bno055_non_readable_reg_ranges),
+> +};
+> +
+> +static const struct regmap_range bno055_volatile_reg_ranges[] = {
+> +	regmap_reg_range(BNO055_REG_ACC_DATA_X_LSB, BNO055_REG_SYS_ERR),
+> +};
+> +
+> +static const struct regmap_access_table bno055_volatile_regs = {
+> +	.yes_ranges = bno055_volatile_reg_ranges,
+> +	.n_yes_ranges = ARRAY_SIZE(bno055_volatile_reg_ranges),
+> +};
+> +
+> +static const struct regmap_config bno055_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +
+> +	.max_register = BNO055_REG_MAG_RADIUS_MSB + 1,
+> +	.cache_type = REGCACHE_RBTREE,
+> +
+> +	.wr_table = &bno055_writable_regs,
+> +	.rd_table = &bno055_readable_regs,
+> +	.volatile_table = &bno055_volatile_regs,
+> +};
+> +
+> +static int bno055_read_simple_chan(struct iio_dev *indio_dev,
+> +				   struct iio_chan_spec const *chan,
+> +				   int *val, int *val2, long mask)
+> +{
+> +	struct bno055_data *data = iio_priv(indio_dev);
+> +	__le16 raw_val;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = regmap_bulk_read(data->regmap, chan->address,
+> +				       &raw_val, 2);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = (s16)le16_to_cpu(raw_val);
+> +		*val2 = 0;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		ret = regmap_bulk_read(data->regmap,
+> +				       chan->address + BNO055_REG_OFFSET_ADDR,
+> +				       &raw_val, 2);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = (s16)le16_to_cpu(raw_val);
+> +		*val2 = 0;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 1;
+> +		switch (chan->type) {
+> +		case IIO_ACCEL:
+> +			/* Table 3-17: 1 m/s^2 = 100 LSB */
+> +			*val2 = 100;
+> +			break;
+> +		case IIO_MAGN:
+> +			/*
+> +			 * Table 3-19: 1 uT = 16 LSB.  But we need
+> +			 * Gauss: 1G = 0.1 uT.
+> +			 */
+> +			*val2 = 160;
+> +			break;
+> +		case IIO_ANGL_VEL:
+> +			/* Table 3-22: 1 Rps = 900 LSB */
+> +			*val2 = 900;
+> +			break;
+> +		case IIO_ROT:
+> +			/* Table 3-28: 1 degree = 16 LSB */
+> +			*val2 = 16;
+> +			break;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +		return IIO_VAL_FRACTIONAL;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int bno055_read_temp_chan(struct iio_dev *indio_dev, int *val)
+> +{
+> +	struct bno055_data *data = iio_priv(indio_dev);
+> +	unsigned int raw_val;
+> +	int ret;
+> +
+> +	ret = regmap_read(data->regmap, BNO055_REG_TEMP, &raw_val);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/*
+> +	 * Tables 3-36 and 3-37: one byte of data, signed, 1 LSB = 1C.
+> +	 * ABI wants milliC.
+> +	 */
+> +	*val = raw_val * 1000;
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int bno055_read_quaternion(struct iio_dev *indio_dev,
+> +				  struct iio_chan_spec const *chan,
+> +				  int size, int *vals, int *val_len,
+> +				  long mask)
+> +{
+> +	struct bno055_data *data = iio_priv(indio_dev);
+> +	__le16 raw_vals[4];
+> +	int i, ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (size < 4)
+> +			return -EINVAL;
+> +		ret = regmap_bulk_read(data->regmap,
+> +				       BNO055_REG_QUA_DATA_W_LSB,
+> +				       raw_vals, sizeof(raw_vals));
+> +		if (ret < 0)
+> +			return ret;
+> +		for (i = 0; i < 4; i++)
+> +			vals[i] = (s16)le16_to_cpu(raw_vals[i]);
+> +		*val_len = 4;
+> +		return IIO_VAL_INT_MULTIPLE;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* Table 3-31: 1 quaternion = 2^14 LSB */
+> +		if (size < 2)
+> +			return -EINVAL;
+> +		vals[0] = 1;
+> +		vals[1] = 1 << 14;
+> +		return IIO_VAL_FRACTIONAL;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int bno055_read_raw_multi(struct iio_dev *indio_dev,
+> +				 struct iio_chan_spec const *chan,
+> +				 int size, int *vals, int *val_len,
+> +				 long mask)
+> +{
+> +	switch (chan->type) {
+> +	case IIO_ACCEL:
+> +	case IIO_MAGN:
+> +	case IIO_ANGL_VEL:
+> +		if (size < 2)
+> +			return -EINVAL;
+> +		*val_len = 2;
+> +		return bno055_read_simple_chan(indio_dev, chan,
+> +					       &vals[0], &vals[1],
+> +					       mask);
+> +
+> +	case IIO_TEMP:
+> +		*val_len = 1;
+> +		return bno055_read_temp_chan(indio_dev, &vals[0]);
+> +
+> +	case IIO_ROT:
+> +		/*
+> +		 * Rotation is exposed as either a quaternion or three
+> +		 * Euler angles.
+> +		 */
+> +		if (chan->channel2 == IIO_MOD_QUATERNION)
+> +			return bno055_read_quaternion(indio_dev, chan,
+> +						      size, vals,
+> +						      val_len, mask);
+> +		if (size < 2)
+> +			return -EINVAL;
+> +		*val_len = 2;
+> +		return bno055_read_simple_chan(indio_dev, chan,
+> +					       &vals[0], &vals[1],
+> +					       mask);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int bno055_init_chip(struct iio_dev *indio_dev)
+> +{
+> +	struct bno055_data *data = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(data->regmap);
+> +	u8 chip_id_bytes[6];
+> +	u32 chip_id;
+> +	u16 sw_rev;
+> +	int ret;
+> +
+> +	ret = device_property_read_u32(dev, "bosch,operation-mode",
+> +				       &data->op_mode);
+> +	if (ret < 0) {
+> +		dev_info(dev, "failed to read operation mode, falling back to accel+gyro\n");
+> +		data->op_mode = BNO055_MODE_ACC_GYRO;
+> +	}
+> +
+> +	if (data->op_mode >= BNO055_MODE_MAX) {
+> +		dev_err(dev, "bad operation mode %d\n", data->op_mode);
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = regmap_write(data->regmap, BNO055_REG_PAGE_ID, 0);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to switch to register page 0\n");
+> +		return ret;
+> +	}
+> +
+> +	/*
+> +	 * Configure units to what we care about.  Also configure
+> +	 * Android orientation mode.  See datasheet Section 4.3.60.
+> +	 */
+> +	ret = regmap_write(data->regmap, BNO055_REG_UNIT_SEL,
+> +			   BNO055_ANDROID_ORIENTATION | BNO055_TEMP_CELSIUS |
+> +			   BNO055_EUL_RADIANS | BNO055_GYR_RADIANS |
+> +			   BNO055_ACC_MPSS);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to set measurement units\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = regmap_bulk_read(data->regmap, BNO055_REG_CHIP_ID,
+> +			       chip_id_bytes, sizeof(chip_id_bytes));
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read chip id\n");
+> +		return ret;
+> +	}
+> +
+> +	chip_id = le32_to_cpu(*(u32 *)chip_id_bytes);
+> +	sw_rev = le16_to_cpu(*(u16 *)&chip_id_bytes[4]);
+> +
+> +	if (chip_id != BNO055_CHIP_ID) {
+> +		dev_err(dev, "bad chip id; got %08x expected %08x\n",
+> +			chip_id, BNO055_CHIP_ID);
+> +		return -EINVAL;
+> +	}
+> +
+> +	dev_info(dev, "software revision id %04x\n", sw_rev);
+> +
+> +	ret = regmap_update_bits(data->regmap, BNO055_REG_OPR_MODE,
+> +				 BNO055_OPR_MODE_MASK, data->op_mode);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to switch operating mode\n");
+> +		return ret;
+> +	}
+> +
+> +	/*
+> +	 * Table 3-6 says transition from CONFIGMODE to any other mode
+> +	 * takes 7ms.
+> +	 */
+> +	udelay(10);
+> +
+> +	return 0;
+> +}
+> +
+> +static bool bno055_fusion_mode(struct bno055_data *data)
+> +{
+> +	return data->op_mode >= BNO055_MODE_IMU;
+> +}
+> +
+> +static void bno055_init_simple_channels(struct iio_chan_spec *p,
+> +					enum iio_chan_type type,
+> +					u8 address,
+> +					bool has_offset)
+> +{
+> +	int i;
+> +	int mask = BIT(IIO_CHAN_INFO_RAW);
+> +
+> +	/*
+> +	 * Section 3.6.5 of the datasheet explains that in fusion modes,
+> +	 * readout from the output registers is already compensated.  In
+> +	 * non-fusion modes, the output offset is exposed separately.
+> +	 */
+> +	if (has_offset)
+> +		mask |= BIT(IIO_CHAN_INFO_OFFSET);
+> +
+> +	for (i = 0; i < 3; i++) {
+> +		p[i] = (struct iio_chan_spec) {
+> +			.type = type,
+> +			.info_mask_separate = mask,
+> +			.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +			.modified = 1,
+> +			.channel2 = IIO_MOD_X + i,
+> +			/* Each value is stored in two registers. */
+> +			.address = address + 2 * i,
+> +		};
+> +	}
+> +}
+> +
+> +static int bno055_init_channels(struct iio_dev *indio_dev)
+> +{
+> +	struct bno055_data *data = iio_priv(indio_dev);
+> +	struct iio_chan_spec *channels, *p;
+> +	bool has_offset = !bno055_fusion_mode(data);
+> +
+> +	channels = kmalloc(sizeof(*channels) *
+> +			   bno055_num_channels[data->op_mode], GFP_KERNEL);
+> +	if (!channels)
+> +		return -ENOMEM;
+> +
+> +	p = channels;
+> +
+> +	/* Refer to Table 3-3 of the datasheet for operation modes. */
+> +
+> +	if (data->op_mode == BNO055_MODE_ACC_ONLY ||
+> +	    data->op_mode == BNO055_MODE_ACC_MAG ||
+> +	    data->op_mode == BNO055_MODE_ACC_GYRO ||
+> +	    data->op_mode == BNO055_MODE_AMG ||
+> +	    /* All fusion modes use the accelerometer. */
+> +	    data->op_mode >= BNO055_MODE_IMU) {
+> +		bno055_init_simple_channels(p, IIO_ACCEL,
+> +					    BNO055_REG_ACC_DATA_X_LSB,
+> +					    has_offset);
+> +		p += 3;
+> +	}
+> +
+> +	if (data->op_mode == BNO055_MODE_MAG_ONLY ||
+> +	    data->op_mode == BNO055_MODE_ACC_MAG ||
+> +	    data->op_mode == BNO055_MODE_MAG_GYRO ||
+> +	    data->op_mode == BNO055_MODE_AMG ||
+> +	    data->op_mode >= BNO055_MODE_COMPASS) {
+> +		bno055_init_simple_channels(p, IIO_MAGN,
+> +					    BNO055_REG_MAG_DATA_X_LSB,
+> +					    has_offset);
+> +		p += 3;
+> +	}
+> +
+> +	if (data->op_mode == BNO055_MODE_GYRO_ONLY ||
+> +	    data->op_mode == BNO055_MODE_ACC_GYRO ||
+> +	    data->op_mode == BNO055_MODE_MAG_GYRO ||
+> +	    data->op_mode == BNO055_MODE_AMG ||
+> +	    data->op_mode == BNO055_MODE_IMU ||
+> +	    data->op_mode == BNO055_MODE_NDOF_FMC_OFF ||
+> +	    data->op_mode == BNO055_MODE_NDOF) {
+> +		bno055_init_simple_channels(p, IIO_ANGL_VEL,
+> +					    BNO055_REG_GYR_DATA_X_LSB,
+> +					    has_offset);
+> +		p += 3;
+> +	}
+> +
+> +	if (bno055_fusion_mode(data)) {
+> +		/* Euler angles. */
+> +		bno055_init_simple_channels(p, IIO_ROT,
+> +					    BNO055_REG_EUL_HEADING_LSB,
+> +					    false);
+> +		p += 3;
+> +
+> +		/* Add quaternion orientation channel. */
+> +		*p = (struct iio_chan_spec) {
+> +			.type = IIO_ROT,
+> +			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				BIT(IIO_CHAN_INFO_SCALE),
+> +			.modified = 1,
+> +			.channel2 = IIO_MOD_QUATERNION,
+> +		};
+> +		p++;
+> +	}
+> +
+> +	/* Finally, all modes have a temperature channel. */
+> +	*p = (struct iio_chan_spec) {
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +	};
+> +
+> +	indio_dev->channels = channels;
+> +	indio_dev->num_channels = bno055_num_channels[data->op_mode];
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_info bno055_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw_multi = &bno055_read_raw_multi,
+> +};
+> +
+> +static int bno055_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev;
+> +	struct bno055_data *data;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +
+> +	data->regmap = devm_regmap_init_i2c(client, &bno055_regmap_config);
+> +	if (IS_ERR(data->regmap))
+> +		return PTR_ERR(data->regmap);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->name = BNO055_DRIVER_NAME;
+> +
+> +	ret = bno055_init_chip(indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = bno055_init_channels(indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->info = &bno055_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	i2c_set_clientdata(client, indio_dev);
+> +
+> +	ret = devm_iio_device_register(&client->dev, indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "could not register IIO device\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id bno055_id[] = {
+> +	{"bno055", 0},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(i2c, bno055_id);
+> +
+> +static struct i2c_driver bno055_driver = {
+> +	.driver = {
+> +		.name	= BNO055_DRIVER_NAME,
+> +	},
+> +	.probe		= bno055_probe,
+> +	.id_table	= bno055_id,
+> +};
+> +module_i2c_driver(bno055_driver);
+> +
+> +MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
+> +MODULE_DESCRIPTION("Driver for Bosch BNO055 9-axis orientation sensor");
+> +MODULE_LICENSE("GPL v2");
 > 
 
