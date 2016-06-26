@@ -1,651 +1,502 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48267 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48357 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751235AbcFZSJw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 14:09:52 -0400
-Subject: Re: [RFC PATCH] iio: imu: add driver for Bosch Sensortec BNO055
-To: Vlad Dogaru <vlad.dogaru@intel.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-References: <1466766936-20561-1-git-send-email-vlad.dogaru@intel.com>
- <1466766936-20561-2-git-send-email-vlad.dogaru@intel.com>
-Cc: andrey_utkin@fastmail.com
+	with ESMTP id S1751265AbcFZSc7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 14:32:59 -0400
+Subject: Re: [PATCH v2 1/6] Documentation: hid: Intel ISH HID document
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	jikos@kernel.org, benjamin.tissoires@redhat.com
+References: <1466574038-20613-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+ <1466574038-20613-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <dc487bf4-a8d4-ca61-6ed2-1a83d3084c09@kernel.org>
-Date: Sun, 26 Jun 2016 19:09:49 +0100
+Message-ID: <d1426136-4cd1-2df5-0aad-4bb2dd8261ff@kernel.org>
+Date: Sun, 26 Jun 2016 19:32:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <1466766936-20561-2-git-send-email-vlad.dogaru@intel.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <1466574038-20613-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/06/16 12:15, Vlad Dogaru wrote:
-> The BNO055 is a 9-axis absolute orientation sensor that supports
-> multiple operation modes.  The operation mode is currently chosen from
-> DeviceTree, at probe time.
+On 22/06/16 06:40, Srinivas Pandruvada wrote:
+> Document explaining ISH HID operation and implementation.
 > 
-> Datasheet: https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST_BNO055_DS000_14.pdf
-> 
-> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-I've had a quick look and nothing nasty stands out.  I think it'll change
-enough as a result of discussions of the cover letter questions that
-it isn't sensible to do a full review now.
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+A few really trivial point inline.  I unfortunately don't have the time to
+dive into this in sufficient depth to grasp every detail, but the
+description seems pretty comprehensive to me.
 
-Thanks,
+I would however, put a blank line between paragraphs to make it a touch
+easier to read...
+
+Might even be worth taking this into a docbook file instead of straight
+text...
 
 Jonathan
 > ---
->  drivers/iio/imu/Kconfig  |  11 +
->  drivers/iio/imu/Makefile |   1 +
->  drivers/iio/imu/bno055.c | 569 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 581 insertions(+)
->  create mode 100644 drivers/iio/imu/bno055.c
+>  Documentation/hid/intel-ish-hid.txt | 449 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 449 insertions(+)
+>  create mode 100644 Documentation/hid/intel-ish-hid.txt
 > 
-> diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
-> index 1f1ad41..9987e38 100644
-> --- a/drivers/iio/imu/Kconfig
-> +++ b/drivers/iio/imu/Kconfig
-> @@ -27,6 +27,17 @@ config ADIS16480
->  
->  source "drivers/iio/imu/bmi160/Kconfig"
->  
-> +config BNO055
-> +	tristate "Bosch Sensortec BNO055 driver"
-> +	depends on I2C
-> +	select REGMAP_I2C
-> +	help
-> +	  Say yes here to build support for Bosch Sensortec BNO055 intelligent
-> +	  9-axis absolute orientation sensor.
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called bno055.
-> +
->  config KMX61
->  	tristate "Kionix KMX61 6-axis accelerometer and magnetometer"
->  	depends on I2C
-> diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
-> index c71bcd3..4e3ebed 100644
-> --- a/drivers/iio/imu/Makefile
-> +++ b/drivers/iio/imu/Makefile
-> @@ -16,4 +16,5 @@ obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
->  obj-y += bmi160/
->  obj-y += inv_mpu6050/
->  
-> +obj-$(CONFIG_BNO055) += bno055.o
->  obj-$(CONFIG_KMX61) += kmx61.o
-> diff --git a/drivers/iio/imu/bno055.c b/drivers/iio/imu/bno055.c
+> diff --git a/Documentation/hid/intel-ish-hid.txt b/Documentation/hid/intel-ish-hid.txt
 > new file mode 100644
-> index 0000000..b7df82f
+> index 0000000..8557280
 > --- /dev/null
-> +++ b/drivers/iio/imu/bno055.c
-> @@ -0,0 +1,569 @@
-> +/*
-> + * BNO055 - Bosch 9-axis orientation sensor
-> + *
-> + * Copyright (c) 2016, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * TODO:
-> + *  - buffering
-> + *  - interrupt support
-> + *  - linear and gravitational acceleration (not supported in IIO)
-> + */
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/regmap.h>
-> +#include <linux/delay.h>
-> +#include <linux/slab.h>
-> +
-> +#include <linux/iio/iio.h>
-> +
-> +#define BNO055_DRIVER_NAME		"bno055"
-> +
-> +#define BNO055_REG_CHIP_ID		0x00
-> +#define BNO055_REG_PAGE_ID		0x07
-> +
-> +#define BNO055_REG_ACC_DATA_X_LSB	0x08
-> +#define BNO055_REG_MAG_DATA_X_LSB	0x0E
-> +#define BNO055_REG_GYR_DATA_X_LSB	0x14
-> +#define BNO055_REG_EUL_HEADING_LSB	0x1A
-> +#define BNO055_REG_QUA_DATA_W_LSB	0x20
-> +#define BNO055_REG_TEMP			0x34
-> +
-> +#define BNO055_REG_SYS_ERR		0x3A
-> +#define BNO055_REG_UNIT_SEL		0x3B
-> +
-> +#define BNO055_REG_OPR_MODE		0x3D
-> +#define BNO055_REG_AXIS_MAP_SIGN	0x42
-> +
-> +#define BNO055_REG_ACC_OFFSET_X_LSB	0x55
-> +#define BNO055_REG_MAG_OFFSET_X_LSB	0x5B
-> +#define BNO055_REG_GYR_OFFSET_X_LSB	0x61
-> +#define BNO055_REG_MAG_RADIUS_MSB	0x6A
-> +
-> +/*
-> + * The difference in address between the register that contains the
-> + * value and the register that contains the offset.  This applies for
-> + * accel, gyro and magn channels.
-> + */
-> +#define BNO055_REG_OFFSET_ADDR		0x4D
-> +
-> +#define BNO055_OPR_MODE_MASK		GENMASK(3, 0)
-> +
-> +/* Combination of BNO055 and individual chip IDs. */
-> +#define BNO055_CHIP_ID			0x0F32FBA0
-> +
-> +#define BNO055_ANDROID_ORIENTATION	BIT(7)
-> +#define BNO055_TEMP_CELSIUS		0
-> +#define BNO055_EUL_RADIANS		BIT(2)
-> +#define BNO055_GYR_RADIANS		BIT(1)
-> +#define BNO055_ACC_MPSS			0
-> +
-> +/*
-> + * Operation modes.  It is important that these are listed in the order
-> + * they appear in the datasheet, as an index to this table is used to
-> + * write the actual bits in the operation config register.
-> + */
-> +enum bno055_operation_mode {
-> +	BNO055_CONFIG_MODE,
-> +
-> +	/* Non-fusion modes. */
-> +	BNO055_MODE_ACC_ONLY,
-> +	BNO055_MODE_MAG_ONLY,
-> +	BNO055_MODE_GYRO_ONLY,
-> +	BNO055_MODE_ACC_MAG,
-> +	BNO055_MODE_ACC_GYRO,
-> +	BNO055_MODE_MAG_GYRO,
-> +	BNO055_MODE_AMG,
-> +
-> +	/* Fusion modes. */
-> +	BNO055_MODE_IMU,
-> +	BNO055_MODE_COMPASS,
-> +	BNO055_MODE_M4G,
-> +	BNO055_MODE_NDOF_FMC_OFF,
-> +	BNO055_MODE_NDOF,
-> +
-> +	BNO055_MODE_MAX,
-> +};
-> +
-> +/*
-> + * Number of channels for each operation mode.  See Table 3-3 in the
-> + * datasheet for a summary of each operation mode.  Each non-config mode
-> + * also supports a temperature channel.
-> + */
-> +static const int bno055_num_channels[] = {
-> +	0, 4, 4, 4, 7, 7, 7, 10,
-> +	/*
-> +	 * In fusion modes, data from the raw sensors is still
-> +	 * available.  Additionally, the linear and gravitational
-> +	 * components of acceleration are available in all fusion modes,
-> +	 * but there are currently no IIO attributes for these.
-> +	 *
-> +	 * Orientation is exposed both as a quaternion multi-value
-> +	 * (meaning a single channel) and as Euler angles (3 separate
-> +	 * channels).
-> +	 */
-> +	11, 11, 11, 14, 14,
-> +};
-> +
-> +struct bno055_data {
-> +	struct regmap *regmap;
-> +	enum bno055_operation_mode op_mode;
-> +};
-> +
-> +/*
-> + * Note: The BNO055 has two pages of registers.  All the addresses below
-> + * are page 0 addresses.  If the driver ever uses page 1 registers, it
-> + * is expected to manually switch between pages via the PAGE ID register
-> + * and make sure that no other transactions happen.  It also cannot use
-> + * the regmap interface for accessing registers in page 1.
-> + */
-> +static const struct regmap_range bno055_writable_ranges[] = {
-> +	regmap_reg_range(BNO055_REG_ACC_OFFSET_X_LSB, BNO055_REG_MAG_RADIUS_MSB),
-> +	regmap_reg_range(BNO055_REG_OPR_MODE, BNO055_REG_AXIS_MAP_SIGN),
-> +	regmap_reg_range(BNO055_REG_UNIT_SEL, BNO055_REG_UNIT_SEL),
-> +	/* Listed as read-only in the datasheet, but probably an error. */
-> +	regmap_reg_range(BNO055_REG_PAGE_ID, BNO055_REG_PAGE_ID),
-> +};
-> +
-> +static const struct regmap_access_table bno055_writable_regs = {
-> +	.yes_ranges = bno055_writable_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(bno055_writable_ranges),
-> +};
-> +
-> +/* Only reserved registers are non-readable. */
-> +static const struct regmap_range bno055_non_readable_reg_ranges[] = {
-> +	regmap_reg_range(BNO055_REG_AXIS_MAP_SIGN + 1, BNO055_REG_ACC_OFFSET_X_LSB - 1),
-> +};
-> +
-> +static const struct regmap_access_table bno055_readable_regs = {
-> +	.no_ranges = bno055_non_readable_reg_ranges,
-> +	.n_no_ranges = ARRAY_SIZE(bno055_non_readable_reg_ranges),
-> +};
-> +
-> +static const struct regmap_range bno055_volatile_reg_ranges[] = {
-> +	regmap_reg_range(BNO055_REG_ACC_DATA_X_LSB, BNO055_REG_SYS_ERR),
-> +};
-> +
-> +static const struct regmap_access_table bno055_volatile_regs = {
-> +	.yes_ranges = bno055_volatile_reg_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(bno055_volatile_reg_ranges),
-> +};
-> +
-> +static const struct regmap_config bno055_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +
-> +	.max_register = BNO055_REG_MAG_RADIUS_MSB + 1,
-> +	.cache_type = REGCACHE_RBTREE,
-> +
-> +	.wr_table = &bno055_writable_regs,
-> +	.rd_table = &bno055_readable_regs,
-> +	.volatile_table = &bno055_volatile_regs,
-> +};
-> +
-> +static int bno055_read_simple_chan(struct iio_dev *indio_dev,
-> +				   struct iio_chan_spec const *chan,
-> +				   int *val, int *val2, long mask)
-> +{
-> +	struct bno055_data *data = iio_priv(indio_dev);
-> +	__le16 raw_val;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = regmap_bulk_read(data->regmap, chan->address,
-> +				       &raw_val, 2);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = (s16)le16_to_cpu(raw_val);
-> +		*val2 = 0;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		ret = regmap_bulk_read(data->regmap,
-> +				       chan->address + BNO055_REG_OFFSET_ADDR,
-> +				       &raw_val, 2);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = (s16)le16_to_cpu(raw_val);
-> +		*val2 = 0;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 1;
-> +		switch (chan->type) {
-> +		case IIO_ACCEL:
-> +			/* Table 3-17: 1 m/s^2 = 100 LSB */
-> +			*val2 = 100;
-> +			break;
-> +		case IIO_MAGN:
-> +			/*
-> +			 * Table 3-19: 1 uT = 16 LSB.  But we need
-> +			 * Gauss: 1G = 0.1 uT.
-> +			 */
-> +			*val2 = 160;
-> +			break;
-> +		case IIO_ANGL_VEL:
-> +			/* Table 3-22: 1 Rps = 900 LSB */
-> +			*val2 = 900;
-> +			break;
-> +		case IIO_ROT:
-> +			/* Table 3-28: 1 degree = 16 LSB */
-> +			*val2 = 16;
-> +			break;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		return IIO_VAL_FRACTIONAL;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int bno055_read_temp_chan(struct iio_dev *indio_dev, int *val)
-> +{
-> +	struct bno055_data *data = iio_priv(indio_dev);
-> +	unsigned int raw_val;
-> +	int ret;
-> +
-> +	ret = regmap_read(data->regmap, BNO055_REG_TEMP, &raw_val);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/*
-> +	 * Tables 3-36 and 3-37: one byte of data, signed, 1 LSB = 1C.
-> +	 * ABI wants milliC.
-> +	 */
-> +	*val = raw_val * 1000;
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int bno055_read_quaternion(struct iio_dev *indio_dev,
-> +				  struct iio_chan_spec const *chan,
-> +				  int size, int *vals, int *val_len,
-> +				  long mask)
-> +{
-> +	struct bno055_data *data = iio_priv(indio_dev);
-> +	__le16 raw_vals[4];
-> +	int i, ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (size < 4)
-> +			return -EINVAL;
-> +		ret = regmap_bulk_read(data->regmap,
-> +				       BNO055_REG_QUA_DATA_W_LSB,
-> +				       raw_vals, sizeof(raw_vals));
-> +		if (ret < 0)
-> +			return ret;
-> +		for (i = 0; i < 4; i++)
-> +			vals[i] = (s16)le16_to_cpu(raw_vals[i]);
-> +		*val_len = 4;
-> +		return IIO_VAL_INT_MULTIPLE;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* Table 3-31: 1 quaternion = 2^14 LSB */
-> +		if (size < 2)
-> +			return -EINVAL;
-> +		vals[0] = 1;
-> +		vals[1] = 1 << 14;
-> +		return IIO_VAL_FRACTIONAL;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int bno055_read_raw_multi(struct iio_dev *indio_dev,
-> +				 struct iio_chan_spec const *chan,
-> +				 int size, int *vals, int *val_len,
-> +				 long mask)
-> +{
-> +	switch (chan->type) {
-> +	case IIO_ACCEL:
-> +	case IIO_MAGN:
-> +	case IIO_ANGL_VEL:
-> +		if (size < 2)
-> +			return -EINVAL;
-> +		*val_len = 2;
-> +		return bno055_read_simple_chan(indio_dev, chan,
-> +					       &vals[0], &vals[1],
-> +					       mask);
-> +
-> +	case IIO_TEMP:
-> +		*val_len = 1;
-> +		return bno055_read_temp_chan(indio_dev, &vals[0]);
-> +
-> +	case IIO_ROT:
-> +		/*
-> +		 * Rotation is exposed as either a quaternion or three
-> +		 * Euler angles.
-> +		 */
-> +		if (chan->channel2 == IIO_MOD_QUATERNION)
-> +			return bno055_read_quaternion(indio_dev, chan,
-> +						      size, vals,
-> +						      val_len, mask);
-> +		if (size < 2)
-> +			return -EINVAL;
-> +		*val_len = 2;
-> +		return bno055_read_simple_chan(indio_dev, chan,
-> +					       &vals[0], &vals[1],
-> +					       mask);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int bno055_init_chip(struct iio_dev *indio_dev)
-> +{
-> +	struct bno055_data *data = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(data->regmap);
-> +	u8 chip_id_bytes[6];
-> +	u32 chip_id;
-> +	u16 sw_rev;
-> +	int ret;
-> +
-> +	ret = device_property_read_u32(dev, "bosch,operation-mode",
-> +				       &data->op_mode);
-> +	if (ret < 0) {
-> +		dev_info(dev, "failed to read operation mode, falling back to accel+gyro\n");
-> +		data->op_mode = BNO055_MODE_ACC_GYRO;
-> +	}
-> +
-> +	if (data->op_mode >= BNO055_MODE_MAX) {
-> +		dev_err(dev, "bad operation mode %d\n", data->op_mode);
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regmap_write(data->regmap, BNO055_REG_PAGE_ID, 0);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to switch to register page 0\n");
-> +		return ret;
-> +	}
-> +
-> +	/*
-> +	 * Configure units to what we care about.  Also configure
-> +	 * Android orientation mode.  See datasheet Section 4.3.60.
-> +	 */
-> +	ret = regmap_write(data->regmap, BNO055_REG_UNIT_SEL,
-> +			   BNO055_ANDROID_ORIENTATION | BNO055_TEMP_CELSIUS |
-> +			   BNO055_EUL_RADIANS | BNO055_GYR_RADIANS |
-> +			   BNO055_ACC_MPSS);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to set measurement units\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regmap_bulk_read(data->regmap, BNO055_REG_CHIP_ID,
-> +			       chip_id_bytes, sizeof(chip_id_bytes));
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to read chip id\n");
-> +		return ret;
-> +	}
-> +
-> +	chip_id = le32_to_cpu(*(u32 *)chip_id_bytes);
-> +	sw_rev = le16_to_cpu(*(u16 *)&chip_id_bytes[4]);
-> +
-> +	if (chip_id != BNO055_CHIP_ID) {
-> +		dev_err(dev, "bad chip id; got %08x expected %08x\n",
-> +			chip_id, BNO055_CHIP_ID);
-> +		return -EINVAL;
-> +	}
-> +
-> +	dev_info(dev, "software revision id %04x\n", sw_rev);
-> +
-> +	ret = regmap_update_bits(data->regmap, BNO055_REG_OPR_MODE,
-> +				 BNO055_OPR_MODE_MASK, data->op_mode);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to switch operating mode\n");
-> +		return ret;
-> +	}
-> +
-> +	/*
-> +	 * Table 3-6 says transition from CONFIGMODE to any other mode
-> +	 * takes 7ms.
-> +	 */
-> +	udelay(10);
-> +
-> +	return 0;
-> +}
-> +
-> +static bool bno055_fusion_mode(struct bno055_data *data)
-> +{
-> +	return data->op_mode >= BNO055_MODE_IMU;
-> +}
-> +
-> +static void bno055_init_simple_channels(struct iio_chan_spec *p,
-> +					enum iio_chan_type type,
-> +					u8 address,
-> +					bool has_offset)
-> +{
-> +	int i;
-> +	int mask = BIT(IIO_CHAN_INFO_RAW);
-> +
-> +	/*
-> +	 * Section 3.6.5 of the datasheet explains that in fusion modes,
-> +	 * readout from the output registers is already compensated.  In
-> +	 * non-fusion modes, the output offset is exposed separately.
-> +	 */
-> +	if (has_offset)
-> +		mask |= BIT(IIO_CHAN_INFO_OFFSET);
-> +
-> +	for (i = 0; i < 3; i++) {
-> +		p[i] = (struct iio_chan_spec) {
-> +			.type = type,
-> +			.info_mask_separate = mask,
-> +			.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> +			.modified = 1,
-> +			.channel2 = IIO_MOD_X + i,
-> +			/* Each value is stored in two registers. */
-> +			.address = address + 2 * i,
-> +		};
-> +	}
-> +}
-> +
-> +static int bno055_init_channels(struct iio_dev *indio_dev)
-> +{
-> +	struct bno055_data *data = iio_priv(indio_dev);
-> +	struct iio_chan_spec *channels, *p;
-> +	bool has_offset = !bno055_fusion_mode(data);
-> +
-> +	channels = kmalloc(sizeof(*channels) *
-> +			   bno055_num_channels[data->op_mode], GFP_KERNEL);
-> +	if (!channels)
-> +		return -ENOMEM;
-> +
-> +	p = channels;
-> +
-> +	/* Refer to Table 3-3 of the datasheet for operation modes. */
-> +
-> +	if (data->op_mode == BNO055_MODE_ACC_ONLY ||
-> +	    data->op_mode == BNO055_MODE_ACC_MAG ||
-> +	    data->op_mode == BNO055_MODE_ACC_GYRO ||
-> +	    data->op_mode == BNO055_MODE_AMG ||
-> +	    /* All fusion modes use the accelerometer. */
-> +	    data->op_mode >= BNO055_MODE_IMU) {
-> +		bno055_init_simple_channels(p, IIO_ACCEL,
-> +					    BNO055_REG_ACC_DATA_X_LSB,
-> +					    has_offset);
-> +		p += 3;
-> +	}
-> +
-> +	if (data->op_mode == BNO055_MODE_MAG_ONLY ||
-> +	    data->op_mode == BNO055_MODE_ACC_MAG ||
-> +	    data->op_mode == BNO055_MODE_MAG_GYRO ||
-> +	    data->op_mode == BNO055_MODE_AMG ||
-> +	    data->op_mode >= BNO055_MODE_COMPASS) {
-> +		bno055_init_simple_channels(p, IIO_MAGN,
-> +					    BNO055_REG_MAG_DATA_X_LSB,
-> +					    has_offset);
-> +		p += 3;
-> +	}
-> +
-> +	if (data->op_mode == BNO055_MODE_GYRO_ONLY ||
-> +	    data->op_mode == BNO055_MODE_ACC_GYRO ||
-> +	    data->op_mode == BNO055_MODE_MAG_GYRO ||
-> +	    data->op_mode == BNO055_MODE_AMG ||
-> +	    data->op_mode == BNO055_MODE_IMU ||
-> +	    data->op_mode == BNO055_MODE_NDOF_FMC_OFF ||
-> +	    data->op_mode == BNO055_MODE_NDOF) {
-> +		bno055_init_simple_channels(p, IIO_ANGL_VEL,
-> +					    BNO055_REG_GYR_DATA_X_LSB,
-> +					    has_offset);
-> +		p += 3;
-> +	}
-> +
-> +	if (bno055_fusion_mode(data)) {
-> +		/* Euler angles. */
-> +		bno055_init_simple_channels(p, IIO_ROT,
-> +					    BNO055_REG_EUL_HEADING_LSB,
-> +					    false);
-> +		p += 3;
-> +
-> +		/* Add quaternion orientation channel. */
-> +		*p = (struct iio_chan_spec) {
-> +			.type = IIO_ROT,
-> +			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				BIT(IIO_CHAN_INFO_SCALE),
-> +			.modified = 1,
-> +			.channel2 = IIO_MOD_QUATERNION,
-> +		};
-> +		p++;
-> +	}
-> +
-> +	/* Finally, all modes have a temperature channel. */
-> +	*p = (struct iio_chan_spec) {
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +	};
-> +
-> +	indio_dev->channels = channels;
-> +	indio_dev->num_channels = bno055_num_channels[data->op_mode];
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_info bno055_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw_multi = &bno055_read_raw_multi,
-> +};
-> +
-> +static int bno055_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct bno055_data *data;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +
-> +	data->regmap = devm_regmap_init_i2c(client, &bno055_regmap_config);
-> +	if (IS_ERR(data->regmap))
-> +		return PTR_ERR(data->regmap);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->name = BNO055_DRIVER_NAME;
-> +
-> +	ret = bno055_init_chip(indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = bno055_init_channels(indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->info = &bno055_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	ret = devm_iio_device_register(&client->dev, indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "could not register IIO device\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id bno055_id[] = {
-> +	{"bno055", 0},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(i2c, bno055_id);
-> +
-> +static struct i2c_driver bno055_driver = {
-> +	.driver = {
-> +		.name	= BNO055_DRIVER_NAME,
-> +	},
-> +	.probe		= bno055_probe,
-> +	.id_table	= bno055_id,
-> +};
-> +module_i2c_driver(bno055_driver);
-> +
-> +MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
-> +MODULE_DESCRIPTION("Driver for Bosch BNO055 9-axis orientation sensor");
-> +MODULE_LICENSE("GPL v2");
+> +++ b/Documentation/hid/intel-ish-hid.txt
+> @@ -0,0 +1,449 @@
+> +Intel Integrated Sensor Hub (ISH)
+> +===============================
+> +
+> +A sensor hub enables the ability to offload sensor polling and algorithm
+> +processing to a dedicated low power co-processor. This allows the core
+> +processor to go into low power modes more often, resulting in the increased
+> +battery life.
+> +There are many vendors providing external sensor hubs confirming to HID
+> +Sensor usage tables, and used in several tablets, 2 in 1 convertible laptops
+> +and embedded products. Linux had this support since Linux 3.9.
+> +
+> +Intel® introduced integrated sensor hubs as a part of the SoC starting from
+> +Cherry Trail and now supported on multiple generations of CPU packages. There
+> +are many commercial devices already shipped with Integrated Sensor Hubs (ISH).
+> +These ISH also comply to HID sensor specification, but the  difference is the
+> +transport protocol used for communication. The current external sensor hubs
+> +mainly use HID over i2C or USB. But ISH doesn't use either i2c or USB.
+> +
+> +Overview
+> +Using a analogy with a usbhid implementation, the ISH follows a similar model
+> +for a very high speed communication:
+> +
+> +	-----------------		----------------------
+> +	|    USB HID	|	-->	|    ISH HID	     |
+> +	-----------------		----------------------
+> +	-----------------		----------------------
+> +	|  USB protocol	|	-->	|    ISH Transport   |
+> +	-----------------		----------------------
+> +	-----------------		----------------------
+> +	|  EHCI/XHCI	|	-->	|    ISH IPC	     |
+> +	-----------------		----------------------
+> +	      PCI				 PCI
+> +	-----------------		----------------------
+> +        |Host controller|	-->	|    ISH processor   |
+> +	-----------------		----------------------
+> +	     USB Link
+> +	-----------------		----------------------
+> +	| USB End points|	-->	|    ISH Clients     |
+> +	-----------------		----------------------
+> +
+> +Like USB protocol provides a method for device enumeration, link management
+> +and user data encapsulation, the ISH also provides similar services. But it is
+> +very light weight tailored to manage and communicate with ISH client
+> +applications implemented in the firmware.
+> +The ISH allows multiple sensor management applications executing in the
+> +firmware. Like USB endpoints the messaging can be to/from a client. As part of
+> +enumeration process, these clients are identified. These clients can be simple
+> +HID sensor applications, sensor calibration application or senor firmware
+> +update application.
+> +The implementation model is similar, like usb bus, ISH transport is also
+> +implemented as a bus. Each client application executing in the ISH processor
+> +is registered as a device on this bus. The driver, which binds each device
+> +(ISH HID driver) identifies the device type and registers with the hid core.
+> +
+> +ISH Implementation: Block Diagram
+> +----------------------------------------
+> +	 ---------------------------
+> +	|  User Space Applications  |
+> +	 ---------------------------
+> +
+> +----------------IIO ABI----------------
+> +	 --------------------------
+> +	|  IIO Sensor Drivers	  |
+> +	 --------------------------
+> +	 --------------------------
+> +	|	 IIO core	  |
+> +	 --------------------------
+> +	 --------------------------
+> +	|   HID Sensor Hub MFD	  |
+> +	 --------------------------
+> +	 --------------------------
+> +	|       HID Core	  |
+> +	 --------------------------
+> +	 --------------------------
+> +	|   HID over ISH Client   |
+> +	 --------------------------
+> +	 --------------------------
+> +	|   ISH Transport (ISHTP) |
+> +	 --------------------------
+> +	 --------------------------
+> +	|      IPC Drivers	  |
+> +	 --------------------------
+> +OS
+> +----------------   PCI -----------------
+> +Hardware + Firmware
+> +	 ----------------------------
+> +	| ISH Hardware/Firmware(FW) |
+> +	 ----------------------------
+> +
+> +------------------------------------------
+> +
+> +High level processing in above blocks:
+> +
+> +---
+> +Hardware Interface
+> +The ISH is exposed as "Non-VGA unclassified PCI device" to the host. The PCI
+> +product and vendor IDs are changed from different generations of processors. So
+> +the source code which enumerate drivers needs to update from generation to
+> +generation.
+> +
+> +---
+> +Inter Processor Communication (IPC) driver:
+> +Location: drivers/hid/intel-ish-hid/ipc
+> +
+> +The IPC message used memory mapped I/O. The registers are defined in
+> +hw-ish-regs.h.
+> +
+> +IPC/FW message types
+> +There are two types of messages, one for management of link and other messages
+> +are to and from transport layers.
+> +
+> +TX and RX of Transport messages:
+> +A set of memory mapped register offers support of multi byte messages TX and
+> +RX (E.g.IPC_REG_ISH2HOST_MSG, IPC_REG_HOST2ISH_MSG). The IPC layer maintains
+> +internal queues to sequence messages and send them in order to the FW.
+> +Optionally the caller can register handler to get notification of completion.
+> +A door bell mechanism is used in messaging to trigger processing in host and
+> +client firmware side. When ISH interrupt handler is called, the ISH2HOST
+> +doorbell register is used by host drivers to determine that the interrupt
+> +is for ISH.
+> +Each side has 32 32-bit message registers and a 32-bit doorbell. Doorbell
+> +register has the following format:
+> +Bits 0..6: fragment length (7 bits are used)
+> +Bits 10..13: encapsulated protocol
+> +Bits 16..19: management command (for IPC management protocol)
+> +Bit 31: doorbell trigger (signal H/W interrupt to the other side)
+> +Other bits are reserved, should be 0.
+> +
+> +Transport layer interface
+> +To abstract HW level IPC communication, a set of callbacks are registered.
+> +The transport layer uses them to send and receive messages.
+> +Refer to  struct ishtp_hw_ops for callbacks.
+> +
+> +---
+> +ISH Transport layer
+> +Location: drivers/hid/intel-ish-hid/ishtp/
+> +
+> +A Generic Transport Layer
+> +The transport layer is a bi-directional protocol, which defines:
+> +- Set of commands to start, stop, connect, disconnect and flow control
+> +(ishtp/hbm.h) for details
+> +- A flow control mechanism to avoid buffer overflows
+> +
+> +This protocol resembles bus messages described in the following document:
+> +http://www.intel.com/content/dam/www/public/us/en/documents/technical-\
+> +specifications/dcmi-hi-1-0-spec.pdf
+blank line.
+> +Chater 7: Bus Message Layer
+Chapter.
+> +
+> +Connection and Flow Control Mechanism
+> +Each FW client and a protocol is identified by an UUID. In order to communicate
+> +to a FW client, a connection must be established using connect request and
+> +response bus messages. If successful, a pair (host_client_id and fw_client_id)
+> +will identify the connection.
+> +Once connection is established, peers send each other flow control bus messages
+> +independently. Every peer may send a message only if it has received a
+> +flow-control credit before. Once it sent a message, it may not send another one
+> +before receiving the next FC credit.
+> +Either side can send disconnect request bus message to end communication. Also
+> +the link will be dropped if major FW reset occurs.
+> +
+> +Peer to Peer data transfer
+> +The host allocates TX and RX buffers. Each side (host and FW) manages its DMA
+> +transfer memory independently. When an ISHTP client from either host or FW side
+> +wants to send something, it decides whether to send over IPC or over DMA;
+> +for each transfer the decision is independent. The sending side sends DMA_XFER
+> +message when the message is in the respective host buffer (TX when host client
+> +sends, RX when FW client sends). The recipient of DMA message responds with
+> +DMA_XFER_ACK, indicating the sender that the memory region for that message
+> +may be reused.
+> +DMA initialization is started with host sending DMA_ALLOC_NOTIFY bus message
+> +(that includes RX buffer) and FW responds with DMA_ALLOC_NOTIFY_ACK.
+> +Additionally to DMA address communication, this sequence checks capabilities:
+> +if thw host doesn't support DMA, then it won't send DMA allocation, so FW can't
+> +send DMA; if FW doesn't support DMA then it won't respond with
+> +DMA_ALLOC_NOTIFY_ACK, in which case host will not use DMA transfers.
+> +Here ISH acts as busmaster DMA controller. Hence when host sends DMA_XFER,
+> +it's request to do host->ISH DMA transfer; when FW sends DMA_XFER, it means
+> +that it already did DMA and the message resides at host. Thus, DMA_XFER
+> +and DMA_XFER_ACK act as ownership indicators.
+> +At initial state all outgoing memory belongs to the sender (TX to host, RX to
+> +FW), DMA_XFER transfers ownership on the region that contains ISHTP message to
+> +the receiving side, DMA_XFER_ACK returns ownership to the sender. A sender
+> +needs not wait for previous DMA_XFER to be ack'ed, and may send another message
+> +as long as remaining continuous memory in its ownership is enough.
+> +In principle, multiple DMA_XFER and DMA_XFER_ACK messages may be sent at once
+> +(up to IPC MTU), thus allowing for interrupt throttling.
+> +Currently, ISH FW decides to send over DMA if ISHTP message is more than 3 IPC
+> +fragments and via IPC otherwise. Host right now never decides to send over DMA
+> +because at this time there is no streaming case for larger messages.
+> +
+> +Ring Buffers
+> +When a client initiate a connection, a ring or RX and TX buffers are allocated.
+> +The size of ring can be specified by the client. HID client set 16 and 32 for
+> +TX and RX buffers respectively. On send request from client, the data to be
+> +sent is copied to one of the send ring buffer and scheduled to be sent using
+> +bus message protocol. These buffers are required because the FW may have not
+> +processed last message and may not have enough flow control credits to send.
+> +Same thing holds true on receive side and flow control is required.
+> +
+> +Host Enumeration
+> +The host enumeration bus command allow discovery of clients present in
+> +the FW. There can be multiple sensor clients and clients for calibration
+> +function.
+> +To ease in implantation and allow independent driver handle each client
+> +this transport layer takes advantage of Linux Bus driver model. Each
+> +client is registered as device on the the transport bus (ishtp bus).
+> +Enumeration sequence of messages:
+> +- Host sends HOST_START_REQ_CMD, indicating that host ISHTP layer is up.
+> +- FW responds with HOST_START_RES_CMD
+> +- Host sends HOST_ENUM_REQ_CMD (enumerate FW clients)
+> +- FW responds with HOST_ENUM_RES_CMD that includes bitmap of available FW
+> +client IDs
+> +- For each FW ID found in that bitmap host sends
+> +HOST_CLIENT_PROPERTIES_REQ_CMD
+> +- FW responds with HOST_CLIENT_PROPERTIES_RES_CMD. Properties include UUID,
+> +max ISHTP message size, etc.
+> +- Once host received properties for that last discovered client, it considers
+> +ISHTP device fully functional (and allocates DMA buffers)
+> +
+> +---
+> +HID over ISH Client
+> +Location: drivers/hid/intel-ish-hid
+> +
+> +This implanted as ISHTP client driver, which
+implanted is an odd word choice...
+
+> +- enumerate HID devices under FW ISH client
+> +- Get Report descriptor
+> +- Register with HID core as a LL driver
+> +- Process Get/Set feature request
+> +- Get input reports
+> +
+> +----
+> +HID Sensor Hub MFD and IIO sensor drivers
+> +
+> +The functionality in these drivers is the same as an external sensor hub.
+> +Refer to
+> +Documentation/hid/hid-sensor.txt for HID sensor
+> +Documentation/ABI/testing/sysfs-bus-iio for IIO ABIs to user space
+> +
+> +----
+> +
+> +========================================================================================
+> +End to End HID transport Sequence Diagram
+> +
+> +HID-ISH-CLN			ISHTP			IPC				HW
+> +	|			|			|				|
+> +	|			|			|-----WAKE UP------------------>|
+> +	|			|			|				|
+> +	|			|			|-----HOST READY--------------->|
+> +	|			|			|				|
+> +	|			|			|<----MNG_RESET_NOTIFY_ACK----- |
+> +	|			|			|				|
+> +	|			|<----ISHTP_START------ |				|
+> +	|			|			|				|
+> +	|			|<-----------------HOST_START_RES_CMD-------------------|
+> +	|			|			|				|
+> +	|			|------------------QUERY_SUBSCRIBER-------------------->|
+> +	|			|			|				|
+> +	|			|------------------HOST_ENUM_REQ_CMD------------------->|
+> +	|			|			|				|
+> +	|			|<-----------------HOST_ENUM_RES_CMD--------------------|
+> +	|			|			|				|
+> +	|			|------------------HOST_CLIENT_PROPERTIES_REQ_CMD------>|
+> +	|			|			|				|
+> +	|			|<-----------------HOST_CLIENT_PROPERTIES_RES_CMD-------|
+> +	|	Create new device on in ishtp bus	|				|
+> +	|			|			|				|
+> +	|			|------------------HOST_CLIENT_PROPERTIES_REQ_CMD------>|
+> +	|			|			|				|
+> +	|			|<-----------------HOST_CLIENT_PROPERTIES_RES_CMD-------|
+> +	|	Create new device on in ishtp bus	|				|
+> +	|			|			|				|
+> +	|			|--Repeat HOST_CLIENT_PROPERTIES_REQ_CMD-till last one--|
+> +	|			|			|				|
+> +     probed()
+> +	|----ishtp_cl_connect-->|----------------- CLIENT_CONNECT_REQ_CMD-------------->|
+> +	|			|			|				|
+> +	|			|<----------------CLIENT_CONNECT_RES_CMD----------------|
+> +	|			|			|				|
+> +	|register event callback|			|				|
+> +	|			|			|				|
+> +	|ishtp_cl_send(
+> +	HOSTIF_DM_ENUM_DEVICES) |----------fill ishtp_msg_hdr struct write to HW-----  >|
+> +	|			|			|				|
+> +	|			|			|<-----IRQ(IPC_PROTOCOL_ISHTP---|
+> +	|			|			|				|
+> +	|			|<------------ DMA_XFER---------------------------------|
+> +	|<--ENUM_DEVICE RSP-----|			|				|
+> +	|			|------------ DMA_XFER_ACK----------------------------->|
+> +	|			|			|				|
+> +for each enumerated device
+> +	|ishtp_cl_send(
+> +	HOSTIF_GET_HID_DESCRIPTOR |----------fill ishtp_msg_hdr struct write to HW---  >|
+> +	|			|			|				|
+> +	...Response
+> +	|			|			|				|
+> +for each enumerated device
+> +	|ishtp_cl_send(
+> +	HOSTIF_GET_REPORT_DESCRIPTOR |----------fill ishtp_msg_hdr struct write to HW- >|
+> +	|			|			|				|
+> +	|			|			|				|
+> + hid_allocate_device
+> +	|			|			|				|
+> + hid_add_device			|			|				|
+> +	|			|			|				|
+> +
+> +
+> +========================================================================================
+> +ISH Debugging
+> +
+> +To debug ISH, event tracing mechanism is used. To enable debug logs
+> +echo 1 > /sys/kernel/debug/tracing/events/intel_ish/enable
+> +cat sys/kernel/debug/tracing/trace
+> +
+> +========================================================================================
+> +ISH IIO sysfs Example on Lenovo thinkpad Yoga 260
+> +
+> +root@otcpl-ThinkPad-Yoga-260:~# tree -l /sys/bus/iio/devices/
+> +/sys/bus/iio/devices/
+> +├── iio:device0 -> ../../../devices/0044:8086:22D8.0001/HID-SENSOR-200073.9.auto/iio:device0
+> +│   ├── buffer
+> +│   │   ├── enable
+> +│   │   ├── length
+> +│   │   └── watermark
+> +...
+> +│   ├── in_accel_hysteresis
+> +│   ├── in_accel_offset
+> +│   ├── in_accel_sampling_frequency
+> +│   ├── in_accel_scale
+> +│   ├── in_accel_x_raw
+> +│   ├── in_accel_y_raw
+> +│   ├── in_accel_z_raw
+> +│   ├── name
+> +│   ├── scan_elements
+> +│   │   ├── in_accel_x_en
+> +│   │   ├── in_accel_x_index
+> +│   │   ├── in_accel_x_type
+> +│   │   ├── in_accel_y_en
+> +│   │   ├── in_accel_y_index
+> +│   │   ├── in_accel_y_type
+> +│   │   ├── in_accel_z_en
+> +│   │   ├── in_accel_z_index
+> +│   │   └── in_accel_z_type
+> +...
+> +│   │   ├── devices
+> +│   │   │   │   ├── buffer
+> +│   │   │   │   │   ├── enable
+> +│   │   │   │   │   ├── length
+> +│   │   │   │   │   └── watermark
+> +│   │   │   │   ├── dev
+> +│   │   │   │   ├── in_intensity_both_raw
+> +│   │   │   │   ├── in_intensity_hysteresis
+> +│   │   │   │   ├── in_intensity_offset
+> +│   │   │   │   ├── in_intensity_sampling_frequency
+> +│   │   │   │   ├── in_intensity_scale
+> +│   │   │   │   ├── name
+> +│   │   │   │   ├── scan_elements
+> +│   │   │   │   │   ├── in_intensity_both_en
+> +│   │   │   │   │   ├── in_intensity_both_index
+> +│   │   │   │   │   └── in_intensity_both_type
+> +│   │   │   │   ├── trigger
+> +│   │   │   │   │   └── current_trigger
+> +...
+> +│   │   │   │   ├── buffer
+> +│   │   │   │   │   ├── enable
+> +│   │   │   │   │   ├── length
+> +│   │   │   │   │   └── watermark
+> +│   │   │   │   ├── dev
+> +│   │   │   │   ├── in_magn_hysteresis
+> +│   │   │   │   ├── in_magn_offset
+> +│   │   │   │   ├── in_magn_sampling_frequency
+> +│   │   │   │   ├── in_magn_scale
+> +│   │   │   │   ├── in_magn_x_raw
+> +│   │   │   │   ├── in_magn_y_raw
+> +│   │   │   │   ├── in_magn_z_raw
+> +│   │   │   │   ├── in_rot_from_north_magnetic_tilt_comp_raw
+> +│   │   │   │   ├── in_rot_hysteresis
+> +│   │   │   │   ├── in_rot_offset
+> +│   │   │   │   ├── in_rot_sampling_frequency
+> +│   │   │   │   ├── in_rot_scale
+> +│   │   │   │   ├── name
+> +...
+> +│   │   │   │   ├── scan_elements
+> +│   │   │   │   │   ├── in_magn_x_en
+> +│   │   │   │   │   ├── in_magn_x_index
+> +│   │   │   │   │   ├── in_magn_x_type
+> +│   │   │   │   │   ├── in_magn_y_en
+> +│   │   │   │   │   ├── in_magn_y_index
+> +│   │   │   │   │   ├── in_magn_y_type
+> +│   │   │   │   │   ├── in_magn_z_en
+> +│   │   │   │   │   ├── in_magn_z_index
+> +│   │   │   │   │   ├── in_magn_z_type
+> +│   │   │   │   │   ├── in_rot_from_north_magnetic_tilt_comp_en
+> +│   │   │   │   │   ├── in_rot_from_north_magnetic_tilt_comp_index
+> +│   │   │   │   │   └── in_rot_from_north_magnetic_tilt_comp_type
+> +│   │   │   │   ├── trigger
+> +│   │   │   │   │   └── current_trigger
+> +...
+> +│   │   │   │   ├── buffer
+> +│   │   │   │   │   ├── enable
+> +│   │   │   │   │   ├── length
+> +│   │   │   │   │   └── watermark
+> +│   │   │   │   ├── dev
+> +│   │   │   │   ├── in_anglvel_hysteresis
+> +│   │   │   │   ├── in_anglvel_offset
+> +│   │   │   │   ├── in_anglvel_sampling_frequency
+> +│   │   │   │   ├── in_anglvel_scale
+> +│   │   │   │   ├── in_anglvel_x_raw
+> +│   │   │   │   ├── in_anglvel_y_raw
+> +│   │   │   │   ├── in_anglvel_z_raw
+> +│   │   │   │   ├── name
+> +│   │   │   │   ├── scan_elements
+> +│   │   │   │   │   ├── in_anglvel_x_en
+> +│   │   │   │   │   ├── in_anglvel_x_index
+> +│   │   │   │   │   ├── in_anglvel_x_type
+> +│   │   │   │   │   ├── in_anglvel_y_en
+> +│   │   │   │   │   ├── in_anglvel_y_index
+> +│   │   │   │   │   ├── in_anglvel_y_type
+> +│   │   │   │   │   ├── in_anglvel_z_en
+> +│   │   │   │   │   ├── in_anglvel_z_index
+> +│   │   │   │   │   └── in_anglvel_z_type
+> +│   │   │   │   ├── trigger
+> +│   │   │   │   │   └── current_trigger
+> +...
+> +│   │   │   │   ├── buffer
+> +│   │   │   │   │   ├── enable
+> +│   │   │   │   │   ├── length
+> +│   │   │   │   │   └── watermark
+> +│   │   │   │   ├── dev
+> +│   │   │   │   ├── in_anglvel_hysteresis
+> +│   │   │   │   ├── in_anglvel_offset
+> +│   │   │   │   ├── in_anglvel_sampling_frequency
+> +│   │   │   │   ├── in_anglvel_scale
+> +│   │   │   │   ├── in_anglvel_x_raw
+> +│   │   │   │   ├── in_anglvel_y_raw
+> +│   │   │   │   ├── in_anglvel_z_raw
+> +│   │   │   │   ├── name
+> +│   │   │   │   ├── scan_elements
+> +│   │   │   │   │   ├── in_anglvel_x_en
+> +│   │   │   │   │   ├── in_anglvel_x_index
+> +│   │   │   │   │   ├── in_anglvel_x_type
+> +│   │   │   │   │   ├── in_anglvel_y_en
+> +│   │   │   │   │   ├── in_anglvel_y_index
+> +│   │   │   │   │   ├── in_anglvel_y_type
+> +│   │   │   │   │   ├── in_anglvel_z_en
+> +│   │   │   │   │   ├── in_anglvel_z_index
+> +│   │   │   │   │   └── in_anglvel_z_type
+> +│   │   │   │   ├── trigger
+> +│   │   │   │   │   └── current_trigger
+> +...
 > 
 
