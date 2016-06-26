@@ -1,12 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48089 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48107 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751141AbcFZRef (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 13:34:35 -0400
-Subject: Re: [PATCH v1 4/7] iio:st_pressure: document sampling gains
+	with ESMTP id S1751265AbcFZRgt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 13:36:49 -0400
+Subject: Re: [PATCH v1 5/7] iio:st_pressure: temperature triggered buffering
 To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
 References: <cover.1466687364.git.gregor.boirie@parrot.com>
- <257d42c966ab3aa9c8620d0262dc007d955676b9.1466687364.git.gregor.boirie@parrot.com>
+ <5e9c440148dd4f1e124837f3c3edb13c79f18e21.1466687364.git.gregor.boirie@parrot.com>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -15,161 +15,101 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Giuseppe Barba <giuseppe.barba@st.com>,
 	Crestez Dan Leonard <leonard.crestez@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <2157b1e4-1077-e899-6435-3fc27475e4f9@kernel.org>
-Date: Sun, 26 Jun 2016 18:34:32 +0100
+Message-ID: <2239f836-dcc9-5c06-feec-ef3768fa1b6c@kernel.org>
+Date: Sun, 26 Jun 2016 18:36:47 +0100
 MIME-Version: 1.0
-In-Reply-To: <257d42c966ab3aa9c8620d0262dc007d955676b9.1466687364.git.gregor.boirie@parrot.com>
+In-Reply-To: <5e9c440148dd4f1e124837f3c3edb13c79f18e21.1466687364.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 23/06/16 14:49, Gregor Boirie wrote:
-> Details scaling factors and offsets applied to raw temperature and pressure
-> samples.
+> Enable support for triggered buffering of temperature samples.
 > 
 > Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-Nice docs.  Again, will pick up with the rest.
 > ---
->  drivers/iio/pressure/st_pressure_core.c | 92 +++++++++++++++++++++++++++++++--
->  1 file changed, 88 insertions(+), 4 deletions(-)
+>  drivers/iio/pressure/st_pressure_core.c | 16 +++++++---------
+>  1 file changed, 7 insertions(+), 9 deletions(-)
 > 
 > diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index 31e5e41..737d20a 100644
+> index 737d20a..122d190 100644
 > --- a/drivers/iio/pressure/st_pressure_core.c
 > +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -28,6 +28,72 @@
->  #include <linux/iio/common/st_sensors.h>
->  #include "st_pressure.h"
+> @@ -105,8 +105,6 @@
+>  #define ST_PRESS_LSB_PER_CELSIUS		480UL
+>  #define ST_PRESS_MILLI_CELSIUS_OFFSET		42500UL
 >  
-> +/*
-> + * About determining pressure scaling factors
-> + * ------------------------------------------
-> + *
-> + * Datasheets specify typical pressure sensitivity so that pressure is computed
-> + * according to the following equation :
-> + *     pressure[mBar] = raw / sensitivity
-> + * where :
-> + *     raw          the 24 bits long raw sampled pressure
-> + *     sensitivity  a scaling factor specified by the datasheet in LSB/mBar
-> + *
-> + * IIO ABI expects pressure to be expressed as kPascal, hence pressure should be
-> + * computed according to :
-> + *     pressure[kPascal] = pressure[mBar] / 10
-> + *                       = raw / (sensitivity * 10)                          (1)
-> + *
-> + * Finally, st_press_read_raw() returns pressure scaling factor as an
-> + * IIO_VAL_INT_PLUS_NANO with a zero integral part and "gain" as decimal part.
-> + * Therefore, from (1), "gain" becomes :
-> + *     gain = 10^9 / (sensitivity * 10)
-> + *          = 10^8 / sensitivity
-> + *
-> + * About determining temperature scaling factors and offsets
-> + * ---------------------------------------------------------
-> + *
-> + * Datasheets specify typical temperature sensitivity and offset so that
-> + * temperature is computed according to the following equation :
-> + *     temp[Celsius] = offset[Celsius] + (raw / sensitivity)
-> + * where :
-> + *     raw          the 16 bits long raw sampled temperature
-> + *     offset       a constant specified by the datasheet in degree Celsius
-> + *                  (sometimes zero)
-> + *     sensitivity  a scaling factor specified by the datasheet in LSB/Celsius
-> + *
-> + * IIO ABI expects temperature to be expressed as milli degree Celsius such as
-> + * user space should compute temperature according to :
-> + *     temp[mCelsius] = temp[Celsius] * 10^3
-> + *                    = (offset[Celsius] + (raw / sensitivity)) * 10^3
-> + *                    = ((offset[Celsius] * sensitivity) + raw) *
-> + *                      (10^3 / sensitivity)                                 (2)
-> + *
-> + * IIO ABI expects user space to apply offset and scaling factors to raw samples
-> + * according to :
-> + *     temp[mCelsius] = (OFFSET + raw) * SCALE
-> + * where :
-> + *     OFFSET an arbitrary constant exposed by device
-> + *     SCALE  an arbitrary scaling factor exposed by device
-> + *
-> + * Matching OFFSET and SCALE with members of (2) gives :
-> + *     OFFSET = offset[Celsius] * sensitivity                                (3)
-> + *     SCALE  = 10^3 / sensitivity                                           (4)
-> + *
-> + * st_press_read_raw() returns temperature scaling factor as an
-> + * IIO_VAL_FRACTIONAL with a 10^3 numerator and "gain2" as denominator.
-> + * Therefore, from (3), "gain2" becomes :
-> + *     gain2 = sensitivity
-> + *
-> + * When declared within channel, i.e. for a non zero specified offset,
-> + * st_press_read_raw() will return the latter as an IIO_VAL_FRACTIONAL such as :
-> + *     numerator = OFFSET * 10^3
-> + *     denominator = 10^3
-> + * giving from (4):
-> + *     numerator = offset[Celsius] * 10^3 * sensitivity
-> + *               = offset[mCelsius] * gain2
-> + */
-> +
->  #define MCELSIUS_PER_CELSIUS			1000
+> -#define ST_PRESS_NUMBER_DATA_CHANNELS		1
+> -
+>  /* FULLSCALE */
+>  #define ST_PRESS_FS_AVL_1100MB			1100
+>  #define ST_PRESS_FS_AVL_1260MB			1260
+> @@ -222,7 +220,7 @@ static const struct iio_chan_spec st_press_1_channels[] = {
+>  		.type = IIO_PRESSURE,
+>  		.channel2 = IIO_NO_MOD,
+>  		.address = ST_PRESS_1_OUT_XL_ADDR,
+> -		.scan_index = ST_SENSORS_SCAN_X,
+> +		.scan_index = 0,
+That does indeed make little sense ;)  oops, I missed this in the original
+reviews.
+>  		.scan_type = {
+>  			.sign = 'u',
+>  			.realbits = 24,
+> @@ -237,7 +235,7 @@ static const struct iio_chan_spec st_press_1_channels[] = {
+>  		.type = IIO_TEMP,
+>  		.channel2 = IIO_NO_MOD,
+>  		.address = ST_TEMP_1_OUT_L_ADDR,
+> -		.scan_index = -1,
+> +		.scan_index = 1,
+>  		.scan_type = {
+>  			.sign = 'u',
+>  			.realbits = 16,
+> @@ -250,7 +248,7 @@ static const struct iio_chan_spec st_press_1_channels[] = {
+>  			BIT(IIO_CHAN_INFO_OFFSET),
+>  		.modified = 0,
+>  	},
+> -	IIO_CHAN_SOFT_TIMESTAMP(1)
+> +	IIO_CHAN_SOFT_TIMESTAMP(2)
+>  };
 >  
->  /* Default pressure sensitivity */
-> @@ -48,7 +114,11 @@
->  #define ST_PRESS_1_OUT_XL_ADDR			0x28
->  #define ST_TEMP_1_OUT_L_ADDR			0x2b
+>  static const struct iio_chan_spec st_press_lps001wp_channels[] = {
+> @@ -258,7 +256,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
+>  		.type = IIO_PRESSURE,
+>  		.channel2 = IIO_NO_MOD,
+>  		.address = ST_PRESS_LPS001WP_OUT_L_ADDR,
+> -		.scan_index = ST_SENSORS_SCAN_X,
+> +		.scan_index = 0,
+>  		.scan_type = {
+>  			.sign = 'u',
+>  			.realbits = 16,
+> @@ -274,7 +272,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
+>  		.type = IIO_TEMP,
+>  		.channel2 = IIO_NO_MOD,
+>  		.address = ST_TEMP_LPS001WP_OUT_L_ADDR,
+> -		.scan_index = -1,
+> +		.scan_index = 1,
+>  		.scan_type = {
+>  			.sign = 'u',
+>  			.realbits = 16,
+> @@ -286,7 +284,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
+>  			BIT(IIO_CHAN_INFO_SCALE),
+>  		.modified = 0,
+>  	},
+> -	IIO_CHAN_SOFT_TIMESTAMP(1)
+> +	IIO_CHAN_SOFT_TIMESTAMP(2)
+>  };
 >  
-> -/* CUSTOM VALUES FOR LPS331AP SENSOR */
-> +/*
-> + * CUSTOM VALUES FOR LPS331AP SENSOR
-> + * See LPS331AP datasheet:
-> + * http://www2.st.com/resource/en/datasheet/lps331ap.pdf
-> + */
->  #define ST_PRESS_LPS331AP_WAI_EXP		0xbb
->  #define ST_PRESS_LPS331AP_ODR_ADDR		0x20
->  #define ST_PRESS_LPS331AP_ODR_MASK		0x70
-> @@ -71,7 +141,9 @@
->  #define ST_PRESS_LPS331AP_OD_IRQ_MASK		0x40
->  #define ST_PRESS_LPS331AP_MULTIREAD_BIT		true
+>  static const struct iio_chan_spec st_press_lps22hb_channels[] = {
+> @@ -641,7 +639,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
+>  	if (err < 0)
+>  		goto st_press_power_off;
 >  
-> -/* CUSTOM VALUES FOR LPS001WP SENSOR */
-> +/*
-> + * CUSTOM VALUES FOR THE OBSOLETE LPS001WP SENSOR
-> + */
->  
->  /* LPS001WP pressure resolution */
->  #define ST_PRESS_LPS001WP_LSB_PER_MBAR		16UL
-> @@ -94,7 +166,11 @@
->  #define ST_PRESS_LPS001WP_OUT_L_ADDR		0x28
->  #define ST_TEMP_LPS001WP_OUT_L_ADDR		0x2a
->  
-> -/* CUSTOM VALUES FOR LPS25H SENSOR */
-> +/*
-> + * CUSTOM VALUES FOR LPS25H SENSOR
-> + * See LPS25H datasheet:
-> + * http://www2.st.com/resource/en/datasheet/lps25h.pdf
-> + */
->  #define ST_PRESS_LPS25H_WAI_EXP			0xbd
->  #define ST_PRESS_LPS25H_ODR_ADDR		0x20
->  #define ST_PRESS_LPS25H_ODR_MASK		0x70
-> @@ -117,7 +193,11 @@
->  #define ST_PRESS_LPS25H_OUT_XL_ADDR		0x28
->  #define ST_TEMP_LPS25H_OUT_L_ADDR		0x2b
->  
-> -/* CUSTOM VALUES FOR LPS22HB SENSOR */
-> +/*
-> + * CUSTOM VALUES FOR LPS22HB SENSOR
-> + * See LPS22HB datasheet:
-> + * http://www2.st.com/resource/en/datasheet/lps22hb.pdf
-> + */
->  #define ST_PRESS_LPS22HB_WAI_EXP		0xb1
->  #define ST_PRESS_LPS22HB_ODR_ADDR		0x10
->  #define ST_PRESS_LPS22HB_ODR_MASK		0x70
-> @@ -413,6 +493,10 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
->  		},
->  		.fs = {
->  			.fs_avl = {
-> +				/*
-> +				 * Sensitivity values as defined in table 3 of
-> +				 * LPS22HB datasheet.
-> +				 */
->  				[0] = {
->  					.num = ST_PRESS_FS_AVL_1260MB,
->  					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
+> -	press_data->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
+> +	press_data->num_data_channels = press_data->sensor_settings->num_ch - 1;
+Maybe a quick comment that the last one is the timestamp?  Made me wonder for
+a few seconds.
+>  	press_data->multiread_bit = press_data->sensor_settings->multi_read_bit;
+>  	indio_dev->channels = press_data->sensor_settings->ch;
+>  	indio_dev->num_channels = press_data->sensor_settings->num_ch;
 > 
 
