@@ -1,16 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46186 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46206 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751991AbcFZKSL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 06:18:11 -0400
-Subject: Re: [PATCH 8/9 v2] iio: pressure: bmp280: add support for BMP085 EOC
- interrupt
+	with ESMTP id S1751991AbcFZKVT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 06:21:19 -0400
+Subject: Re: [PATCH 9/9 v2] iio: pressure: bmp280: read calibration data once
 To: Linus Walleij <linus.walleij@linaro.org>,
 	linux-iio@vger.kernel.org, Akinobu Mita <akinobu.mita@gmail.com>,
 	"H. Nikolaus Schaller" <hns@goldelico.com>,
 	Matt Ranostay <mranostay@gmail.com>
 References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
- <1466628819-29784-9-git-send-email-linus.walleij@linaro.org>
+ <1466628819-29784-10-git-send-email-linus.walleij@linaro.org>
 Cc: Christoph Mair <christoph.mair@gmail.com>,
 	Vlad Dogaru <vlad.dogaru@intel.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -18,211 +17,204 @@ Cc: Christoph Mair <christoph.mair@gmail.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d9c280fb-2e57-6da9-45e4-f83754e99231@kernel.org>
-Date: Sun, 26 Jun 2016 11:18:09 +0100
+Message-ID: <e6a52c1b-8863-e977-a256-3be0151c0933@kernel.org>
+Date: Sun, 26 Jun 2016 11:21:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <1466628819-29784-9-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1466628819-29784-10-git-send-email-linus.walleij@linaro.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 22/06/16 21:53, Linus Walleij wrote:
-> The first version of this sensor, BMP085, supports sending an
-> End-of-Conversion (EOC) interrupt. Add code to support this using
-> a completion, in a similar vein as drivers/misc/bmp085.c does.
-> 
-> Make sure to check that we are given a rising edge, because the
-> EOC line goes from low-to-high when the conversion is ready.
+> The calibration data is described as coming from an E2PROM and that
+> means it does not change. Just read it once at probe time and store
+> it in the device state container. Also toss the calibration data
+> into the entropy pool since it is device unique.
 > 
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Rather obvious race condition in probe..
+One nitpick inline, but it's minor enough I'm just being grumpy
+about it so don't bother fixing it unless you want to.
+
+On the adding entropy bit, any idea who to sanity check that with?
+It's not something we've done before, so I just want a bit of
+reassurance ideally;)
+
+Jonathan
 > ---
 > ChangeLog v1->v2:
-> - Fix spelling mistakes
+> - Remove unused dangling "ret" variable.
 > ---
->  drivers/iio/pressure/bmp280-core.c | 83 ++++++++++++++++++++++++++++++++++----
->  drivers/iio/pressure/bmp280-i2c.c  |  3 +-
->  drivers/iio/pressure/bmp280-spi.c  |  3 +-
->  drivers/iio/pressure/bmp280.h      |  3 +-
->  4 files changed, 81 insertions(+), 11 deletions(-)
+>  drivers/iio/pressure/bmp280-core.c | 95 +++++++++++++++++++-------------------
+>  1 file changed, 48 insertions(+), 47 deletions(-)
 > 
 > diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-> index 733ef3c08102..7b2a03d6fd1d 100644
+> index 7b2a03d6fd1d..6559455f0335 100644
 > --- a/drivers/iio/pressure/bmp280-core.c
 > +++ b/drivers/iio/pressure/bmp280-core.c
-> @@ -26,6 +26,9 @@
->  #include <linux/iio/sysfs.h>
->  #include <linux/gpio/consumer.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/irq.h> /* For irq_get_irq_data() */
-> +#include <linux/completion.h>
+> @@ -29,9 +29,30 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/irq.h> /* For irq_get_irq_data() */
+>  #include <linux/completion.h>
+> +#include <linux/random.h>
 >  
 >  #include "bmp280.h"
 >  
-> @@ -33,6 +36,8 @@ struct bmp280_data {
+> +/*
+> + * These enums are used for indexing into the array of calibration
+> + * coefficients for BMP180.
+> + */
+> +enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
+> +
+> +struct bmp180_calib {
+> +	s16 AC1;
+> +	s16 AC2;
+> +	s16 AC3;
+> +	u16 AC4;
+> +	u16 AC5;
+> +	u16 AC6;
+> +	s16 B1;
+> +	s16 B2;
+> +	s16 MB;
+> +	s16 MC;
+> +	s16 MD;
+> +};
+> +
+>  struct bmp280_data {
 >  	struct device *dev;
 >  	struct mutex lock;
->  	struct regmap *regmap;
-> +	struct completion done;
-> +	bool use_eoc;
+> @@ -39,6 +60,7 @@ struct bmp280_data {
+>  	struct completion done;
+>  	bool use_eoc;
 >  	const struct bmp280_chip_info *chip_info;
+> +	struct bmp180_calib calib;
 >  	struct regulator *vddd;
 >  	struct regulator *vdda;
-> @@ -593,16 +598,32 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
->  	unsigned int delay_us;
->  	unsigned int ctrl;
 >  
-> +	if (data->use_eoc)
-> +		init_completion(&data->done);
-> +
->  	ret = regmap_write(data->regmap, BMP280_REG_CTRL_MEAS, ctrl_meas);
->  	if (ret)
->  		return ret;
+> @@ -654,26 +676,6 @@ static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
+>  	return 0;
+>  }
 >  
-> -	if (ctrl_meas == BMP180_MEAS_TEMP)
-> -		delay_us = 4500;
-> -	else
-> -		delay_us = conversion_time_max[data->oversampling_press];
+> -/*
+> - * These enums are used for indexing into the array of calibration
+> - * coefficients for BMP180.
+> - */
+> -enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
 > -
-> -	usleep_range(delay_us, delay_us + 1000);
-> +	if (data->use_eoc) {
-> +		/*
-> +		 * If we have a completion interrupt, use it, wait up to
-> +		 * 100ms. The longest conversion time listed is 76.5 ms for
-> +		 * advanced resolution mode.
-> +		 */
-> +		ret = wait_for_completion_timeout(&data->done,
-> +						  1 + msecs_to_jiffies(100));
-> +		if (!ret)
-> +			dev_err(data->dev, "timeout waiting for completion\n");
-> +	} else {
-> +		if (ctrl_meas == BMP180_MEAS_TEMP)
-> +			delay_us = 4500;
-> +		else
-> +			delay_us =
-> +				conversion_time_max[data->oversampling_press];
-> +
-> +		usleep_range(delay_us, delay_us + 1000);
-> +	}
->  
->  	ret = regmap_read(data->regmap, BMP280_REG_CTRL_MEAS, &ctrl);
->  	if (ret)
-> @@ -844,16 +865,28 @@ static const struct bmp280_chip_info bmp180_chip_info = {
->  	.read_press = bmp180_read_press,
->  };
->  
-> +static irqreturn_t bmp058_eoc_irq(int irq, void *d)
-> +{
-> +	struct bmp280_data *data = d;
-> +
-> +	complete(&data->done);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +
->  int bmp280_common_probe(struct device *dev,
->  			struct regmap *regmap,
->  			unsigned int chip,
-> -			const char *name)
-> +			const char *name,
-> +			int irq)
+> -struct bmp180_calib {
+> -	s16 AC1;
+> -	s16 AC2;
+> -	s16 AC3;
+> -	u16 AC4;
+> -	u16 AC5;
+> -	u16 AC6;
+> -	s16 B1;
+> -	s16 B2;
+> -	s16 MB;
+> -	s16 MC;
+> -	s16 MD;
+> -};
+> -
+>  static int bmp180_read_calib(struct bmp280_data *data,
+>  			     struct bmp180_calib *calib)
 >  {
->  	int ret;
->  	struct iio_dev *indio_dev;
->  	struct bmp280_data *data;
->  	unsigned int chip_id;
->  	struct gpio_desc *gpiod;
-> +	unsigned long irq_trig;
+> @@ -683,7 +685,6 @@ static int bmp180_read_calib(struct bmp280_data *data,
 >  
->  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
->  	if (!indio_dev)
-> @@ -937,5 +970,39 @@ int bmp280_common_probe(struct device *dev,
+>  	ret = regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, buf,
+>  			       sizeof(buf));
+> -
+Good but unrelated change.  Should have been in a different patch...
 >  	if (ret < 0)
 >  		return ret;
 >  
-> -	return devm_iio_device_register(dev, indio_dev);
-> +	ret = devm_iio_device_register(dev, indio_dev);
-You just exposed the userspace interface here.... Yet (see below)
-> +	if (ret) {
-> +		dev_err(dev, "unable to register IIO device\n");
-> +		return ret;
-> +	}
+> @@ -693,6 +694,9 @@ static int bmp180_read_calib(struct bmp280_data *data,
+>  			return -EIO;
+>  	}
+>  
+> +	/* Toss the calibration data into the entropy pool */
+> +	add_device_randomness(buf, sizeof(buf));
 > +
+>  	calib->AC1 = be16_to_cpu(buf[AC1]);
+>  	calib->AC2 = be16_to_cpu(buf[AC2]);
+>  	calib->AC3 = be16_to_cpu(buf[AC3]);
+> @@ -716,19 +720,11 @@ static int bmp180_read_calib(struct bmp280_data *data,
+>   */
+>  static s32 bmp180_compensate_temp(struct bmp280_data *data, s32 adc_temp)
+>  {
+> -	int ret;
+>  	s32 x1, x2;
+> -	struct bmp180_calib calib;
+> +	struct bmp180_calib *calib = &data->calib;
+>  
+> -	ret = bmp180_read_calib(data, &calib);
+> -	if (ret < 0) {
+> -		dev_err(data->dev,
+> -			"failed to read calibration coefficients\n");
+> -		return ret;
+> -	}
+> -
+> -	x1 = ((adc_temp - calib.AC6) * calib.AC5) >> 15;
+> -	x2 = (calib.MC << 11) / (x1 + calib.MD);
+> +	x1 = ((adc_temp - calib->AC6) * calib->AC5) >> 15;
+> +	x2 = (calib->MC << 11) / (x1 + calib->MD);
+>  	data->t_fine = x1 + x2;
+>  
+>  	return (data->t_fine + 8) >> 4;
+> @@ -783,29 +779,21 @@ static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
+>   */
+>  static u32 bmp180_compensate_press(struct bmp280_data *data, s32 adc_press)
+>  {
+> -	int ret;
+>  	s32 x1, x2, x3, p;
+>  	s32 b3, b6;
+>  	u32 b4, b7;
+>  	s32 oss = data->oversampling_press;
+> -	struct bmp180_calib calib;
+> -
+> -	ret = bmp180_read_calib(data, &calib);
+> -	if (ret < 0) {
+> -		dev_err(data->dev,
+> -			"failed to read calibration coefficients\n");
+> -		return ret;
+> -	}
+> +	struct bmp180_calib *calib = &data->calib;
+>  
+>  	b6 = data->t_fine - 4000;
+> -	x1 = (calib.B2 * (b6 * b6 >> 12)) >> 11;
+> -	x2 = calib.AC2 * b6 >> 11;
+> +	x1 = (calib->B2 * (b6 * b6 >> 12)) >> 11;
+> +	x2 = calib->AC2 * b6 >> 11;
+>  	x3 = x1 + x2;
+> -	b3 = ((((s32)calib.AC1 * 4 + x3) << oss) + 2) / 4;
+> -	x1 = calib.AC3 * b6 >> 13;
+> -	x2 = (calib.B1 * ((b6 * b6) >> 12)) >> 16;
+> +	b3 = ((((s32)calib->AC1 * 4 + x3) << oss) + 2) / 4;
+> +	x1 = calib->AC3 * b6 >> 13;
+> +	x2 = (calib->B1 * ((b6 * b6) >> 12)) >> 16;
+>  	x3 = (x1 + x2 + 2) >> 2;
+> -	b4 = calib.AC4 * (u32)(x3 + 32768) >> 15;
+> +	b4 = calib->AC4 * (u32)(x3 + 32768) >> 15;
+>  	b7 = ((u32)adc_press - b3) * (50000 >> oss);
+>  	if (b7 < 0x80000000)
+>  		p = (b7 * 2) / b4;
+> @@ -970,6 +958,19 @@ int bmp280_common_probe(struct device *dev,
+>  	if (ret < 0)
+>  		return ret;
+>  
 > +	/*
-> +	 * Attempt to grab an optional EOC IRQ - only the BMP058 has this
-> +	 * however as it happens, the BMP058 shares the chip ID of BMP180
-> +	 * so we look for an IRQ if we have that.
+> +	 * The BMP058 and BMP180 has calibration in an E2PROM, read it out
+> +	 * at probe time. It will not change.
 > +	 */
-> +	if (irq <= 0 || (chip_id  != BMP180_CHIP_ID))
-> +		return 0;
-> +
-> +	irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
-> +	if (irq_trig != IRQF_TRIGGER_RISING) {
-> +		dev_err(dev, "non-rising trigger given for EOC interrupt, "
-> +			"trying to enforce it\n");
-> +		irq_trig = IRQF_TRIGGER_RISING;
+> +	if (chip_id  == BMP180_CHIP_ID) {
+> +		ret = bmp180_read_calib(data, &data->calib);
+> +		if (ret < 0) {
+> +			dev_err(data->dev,
+> +				"failed to read calibration coefficients\n");
+> +			return ret;
+> +		}
 > +	}
-> +	ret = devm_request_threaded_irq(dev,
-> +			irq,
-> +			bmp058_eoc_irq,
-> +			NULL,
-> +			irq_trig,
-> +			name,
-> +			data);
-> +	if (ret) {
-> +		/* Bail out without IRQ but keep the driver in place */
-> +		dev_err(dev, "unable to request DRDY IRQ\n");
-> +		return 0;
-> +	}
-A necessary interrupt isn't available until here.  Please reorder.
-The register call for userspace (and for that matter inkernel users) must
-be made only one everything else is ready.
-
- 
 > +
-> +	data->use_eoc = true;
-> +	return 0;
->  }
-> diff --git a/drivers/iio/pressure/bmp280-i2c.c b/drivers/iio/pressure/bmp280-i2c.c
-> index a981670e5dc0..b9a2562e8a7e 100644
-> --- a/drivers/iio/pressure/bmp280-i2c.c
-> +++ b/drivers/iio/pressure/bmp280-i2c.c
-> @@ -33,7 +33,8 @@ static int bmp280_i2c_probe(struct i2c_client *client,
->  	return bmp280_common_probe(&client->dev,
->  				   regmap,
->  				   id->driver_data,
-> -				   id->name);
-> +				   id->name,
-> +				   client->irq);
->  }
->  
->  static const struct acpi_device_id bmp280_acpi_i2c_match[] = {
-> diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
-> index 2b9955f48d58..05ddf2ee7519 100644
-> --- a/drivers/iio/pressure/bmp280-spi.c
-> +++ b/drivers/iio/pressure/bmp280-spi.c
-> @@ -81,7 +81,8 @@ static int bmp280_spi_probe(struct spi_device *spi)
->  	return bmp280_common_probe(&spi->dev,
->  				   regmap,
->  				   id->driver_data,
-> -				   id->name);
-> +				   id->name,
-> +				   spi->irq);
->  }
->  
->  static const struct of_device_id bmp280_of_spi_match[] = {
-> diff --git a/drivers/iio/pressure/bmp280.h b/drivers/iio/pressure/bmp280.h
-> index acb40de2f581..9dee048b5a74 100644
-> --- a/drivers/iio/pressure/bmp280.h
-> +++ b/drivers/iio/pressure/bmp280.h
-> @@ -104,4 +104,5 @@ extern const struct regmap_config bmp280_regmap_config;
->  int bmp280_common_probe(struct device *dev,
->  			struct regmap *regmap,
->  			unsigned int chip,
-> -			const char *name);
-> +			const char *name,
-> +			int irq);
+>  	ret = devm_iio_device_register(dev, indio_dev);
+>  	if (ret) {
+>  		dev_err(dev, "unable to register IIO device\n");
 > 
 
