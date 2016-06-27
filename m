@@ -1,92 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f43.google.com ([209.85.218.43]:33401 "EHLO
-	mail-oi0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751601AbcF0L30 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jun 2016 07:29:26 -0400
-Received: by mail-oi0-f43.google.com with SMTP id u201so195985993oie.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jun 2016 04:29:26 -0700 (PDT)
+Received: from www381.your-server.de ([78.46.137.84]:46740 "EHLO
+	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751655AbcF0LbE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jun 2016 07:31:04 -0400
+Subject: Re: [PATCH v3] iio: temperature: add support for Maxim thermocouple
+ chips
+To: Jonathan Cameron <jic23@kernel.org>,
+	Matt Ranostay <mranostay@gmail.com>
+References: <1464572270-29154-1-git-send-email-mranostay@gmail.com>
+ <6e79df7d-4ac1-3a44-e303-af858f30e161@kernel.org>
+ <77a1a974-2636-878b-742c-d624cc5fdc58@kernel.org>
+ <576A45FA.4020708@metafoo.de>
+ <4f1a2f3f-fea0-8d14-dcea-ff2bd51dca63@kernel.org>
+Cc: linux-iio@vger.kernel.org, Marek Vasut <marex@denx.de>,
+	Matt Porter <mporter@konsulko.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <57710E71.3000603@metafoo.de>
+Date: Mon, 27 Jun 2016 13:30:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <e330827a-7178-9e7e-fc28-3eb5b32f20d4@kernel.org>
-References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
- <1466628819-29784-6-git-send-email-linus.walleij@linaro.org> <e330827a-7178-9e7e-fc28-3eb5b32f20d4@kernel.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 27 Jun 2016 13:29:24 +0200
-Message-ID: <CACRpkdadfVGawXB_LfcnjL32k8KAVFOZtvgaxuGNxW89ssNyQg@mail.gmail.com>
-Subject: Re: [PATCH 5/9 v2] iio: pressure: bmp280: split driver in logical parts
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Akinobu Mita <akinobu.mita@gmail.com>,
-	"H. Nikolaus Schaller" <hns@goldelico.com>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Christoph Mair <christoph.mair@gmail.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Eric Andersson <eric.andersson@unixphere.com>,
-	Neil Brown <neilb@suse.de>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <4f1a2f3f-fea0-8d14-dcea-ff2bd51dca63@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jun 26, 2016 at 12:04 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On 22/06/16 21:53, Linus Walleij wrote:
->> This splits the BMP280 driver in three logical parts: the core driver
->> bmp280-core that only operated on a struct device * and a struct regmap *,
->> the regmap driver bmp280-regmap that can be shared between I2C and other
->> transports and the I2C module driver bmp280-i2c.
+On 06/26/2016 05:13 PM, Jonathan Cameron wrote:
+> On 22/06/16 09:02, Lars-Peter Clausen wrote:
+>> On 06/11/2016 06:48 PM, Jonathan Cameron wrote:
+>>> On 03/06/16 13:33, Jonathan Cameron wrote:
+>>>> On 30/05/16 02:37, Matt Ranostay wrote:
+>>>>> Add initial driver support for MAX6675, and MAX31885 thermocouple chips.
+>>>>>
+>>>>> Cc: Marek Vasut <marex@denx.de>
+>>>>> Cc: Matt Porter <mporter@konsulko.com>
+>>>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>>>> I'm going to let this sit for a sort while as I'd like some discussion
+>>>> of the invalidate buffer bit.
+>>>>
+>>>> Cc'd a few more people for views.
+>>> Hmm. Deadly silence.
+>>>
+>>> Daniel, Lars, Peter - this is a fairly fundamental abi question.
+>>>
+>>> What do we do to signify an 'invalid reading' in the buffer.
+>>>
+>>> Here the part is driven by a software trigger - and if we skip
+>>> a reading we are obviously out of sync.
+>>>
+>>> Old and nasty trick we used in some (possibly only one)
+>>> early driver was to set an invalid state for these cases.
+>>>
+>>> Anyone have a better idea?
 >>
->> Cleverly bake all functionality into a single object bmp280.o so that
->> we still get the same module binary built for the device in the end,
->> without any fuzz exporting symbols to the left and right.
->>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->
-> Few trivial bits inline.
->
-> Main thought here is why not roll the regmap bit into the core?  It's hardly
-> a huge addition and that would allow you to also pull all of the header
-> register defines etc into there..
+>> Ideally the driver would leave the data including the status bit intact and
+>> not replace it with a magic constant that way an application that is aware
+>> of the way the chip behaves could handle that.
+> 
+> In response to what I'd misunderstood this as:
+> 
+> It's tricky as the status bit is not in general in the same register as the
+> value.  We would need to add a meta data element to the buffer to handle this.
+> 
+> I'm inclined to go with the magic value as the best 'general purpose' option
+> we have right now...  I don't like it, but adding meta data is also somewhat
+> hideous as most usecases and devices wouldn't use it.
 
-It's a bit of a matter of taste: the I2C portion needs to call
-devm_regmap_init_i2c() supplying the regmap config, so it needs
-access to the regmap config. I can either just keep that in the main
-file and export the symbol or split it off in a separate file and share
-the symbol from there.
+The thing is the application needs to be aware of the magic value and its
+meaning for this particular driver anyway. So we might as well just expose
+the raw value without doing any processing. From an applications point of
+view there is no difference and application that is aware of it can handle
+it, an application that is not can't.
 
-With the addition of SPI it becomes hairer: Akinobu noted that the
-default SPI regmap cannot be used so SPI support needs a more
-complex regmap setup, modifying the configs & such. Then it seems
-more natural to split it into a separate file.
-
-But it's your pick, I'm happy to take it either way.
-
->> +/*
->> + * Returns humidity in percent, resolution is 0.01 percent. Output value of
->> + * "47445" represents 47445/1024 = 46.333 %RH.
->> + *
->> + * Taken from BME280 datasheet, Section 4.2.3, "Compensation formula".
->> + */
->> +
-> Guessing this is from the original cut and paste, but it's inconsistent
-> to have a blank line here!
-
-Hm I think the big issue is me forgetting to pass -M to to
-git format-patch so you have to see all the code already in the
-tree again. (I can make a separate patch for this issue if you
-like, here I worry that it'd just be confusing.)
-
->> +#ifdef CONFIG_OF
->> +static const struct of_device_id bmp280_of_i2c_match[] = {
->> +     { .compatible = "bosch,bme280", .data = (void *)BME280_CHIP_ID },
->> +     { .compatible = "bosch,bmp280", .data = (void *)BMP280_CHIP_ID },
->> +     { .compatible = "bosch,bmp180", .data = (void *)BMP180_CHIP_ID },
->> +     { .compatible = "bosch,bmp085", .data = (void *)BMP180_CHIP_ID },
->
-> Fairly obvious, but carry through the empty field from the issue in the
-> earlier patch...
-
-Yep fixed in my tree.
-
-Yours,
-Linus Walleij
