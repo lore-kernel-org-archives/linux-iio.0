@@ -1,74 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:46740 "EHLO
-	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751655AbcF0LbE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jun 2016 07:31:04 -0400
-Subject: Re: [PATCH v3] iio: temperature: add support for Maxim thermocouple
- chips
-To: Jonathan Cameron <jic23@kernel.org>,
-	Matt Ranostay <mranostay@gmail.com>
-References: <1464572270-29154-1-git-send-email-mranostay@gmail.com>
- <6e79df7d-4ac1-3a44-e303-af858f30e161@kernel.org>
- <77a1a974-2636-878b-742c-d624cc5fdc58@kernel.org>
- <576A45FA.4020708@metafoo.de>
- <4f1a2f3f-fea0-8d14-dcea-ff2bd51dca63@kernel.org>
-Cc: linux-iio@vger.kernel.org, Marek Vasut <marex@denx.de>,
-	Matt Porter <mporter@konsulko.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <57710E71.3000603@metafoo.de>
-Date: Mon, 27 Jun 2016 13:30:57 +0200
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <4f1a2f3f-fea0-8d14-dcea-ff2bd51dca63@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <e6a52c1b-8863-e977-a256-3be0151c0933@kernel.org>
+References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
+ <1466628819-29784-10-git-send-email-linus.walleij@linaro.org> <e6a52c1b-8863-e977-a256-3be0151c0933@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 27 Jun 2016 14:11:23 +0200
+Message-ID: <CACRpkdb_fxLSRJq_8ki7u1i9BwxmTS35XD14HDCe9WXfO+L05g@mail.gmail.com>
+Subject: Re: [PATCH 9/9 v2] iio: pressure: bmp280: read calibration data once
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Akinobu Mita <akinobu.mita@gmail.com>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>, Matt Ranostay <mranostay@gmail.com>,
+	Christoph Mair <christoph.mair@gmail.com>, Vlad Dogaru <vlad.dogaru@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>, Marek Belisko <marek@goldelico.com>,
+	Eric Andersson <eric.andersson@unixphere.com>, Neil Brown <neilb@suse.de>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/26/2016 05:13 PM, Jonathan Cameron wrote:
-> On 22/06/16 09:02, Lars-Peter Clausen wrote:
->> On 06/11/2016 06:48 PM, Jonathan Cameron wrote:
->>> On 03/06/16 13:33, Jonathan Cameron wrote:
->>>> On 30/05/16 02:37, Matt Ranostay wrote:
->>>>> Add initial driver support for MAX6675, and MAX31885 thermocouple chips.
->>>>>
->>>>> Cc: Marek Vasut <marex@denx.de>
->>>>> Cc: Matt Porter <mporter@konsulko.com>
->>>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->>>> I'm going to let this sit for a sort while as I'd like some discussion
->>>> of the invalidate buffer bit.
->>>>
->>>> Cc'd a few more people for views.
->>> Hmm. Deadly silence.
->>>
->>> Daniel, Lars, Peter - this is a fairly fundamental abi question.
->>>
->>> What do we do to signify an 'invalid reading' in the buffer.
->>>
->>> Here the part is driven by a software trigger - and if we skip
->>> a reading we are obviously out of sync.
->>>
->>> Old and nasty trick we used in some (possibly only one)
->>> early driver was to set an invalid state for these cases.
->>>
->>> Anyone have a better idea?
+On Sun, Jun 26, 2016 at 12:21 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 22/06/16 21:53, Linus Walleij wrote:
+>> The calibration data is described as coming from an E2PROM and that
+>> means it does not change. Just read it once at probe time and store
+>> it in the device state container. Also toss the calibration data
+>> into the entropy pool since it is device unique.
 >>
->> Ideally the driver would leave the data including the status bit intact and
->> not replace it with a magic constant that way an application that is aware
->> of the way the chip behaves could handle that.
-> 
-> In response to what I'd misunderstood this as:
-> 
-> It's tricky as the status bit is not in general in the same register as the
-> value.  We would need to add a meta data element to the buffer to handle this.
-> 
-> I'm inclined to go with the magic value as the best 'general purpose' option
-> we have right now...  I don't like it, but adding meta data is also somewhat
-> hideous as most usecases and devices wouldn't use it.
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> One nitpick inline, but it's minor enough I'm just being grumpy
+> about it so don't bother fixing it unless you want to.
+>
+> On the adding entropy bit, any idea who to sanity check that with?
+> It's not something we've done before, so I just want a bit of
+> reassurance ideally;)
 
-The thing is the application needs to be aware of the magic value and its
-meaning for this particular driver anyway. So we might as well just expose
-the raw value without doing any processing. From an applications point of
-view there is no difference and application that is aware of it can handle
-it, an application that is not can't.
+I've done it in a few places whenever I ran into device-unique numbers,
+actually sensors often have device-unique calibration and are thus well
+suited to toss into the entropy pool.
 
+The data from devices isn't really trusted to increase entropy: it may,
+but it's not relied on by the algorithm, just mixed in, see:
+http://lwn.net/Articles/507115/
+
+>>       ret = regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, buf,
+>>                              sizeof(buf));
+>> -
+> Good but unrelated change.  Should have been in a different patch...
+
+Dropped unrelated whitespace fix.
+
+Yours,
+Linus Walleij
