@@ -1,96 +1,90 @@
-Return-Path: <raveendra.padasalagi@broadcom.com>
+Return-Path: <mranostay@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <4c8870ef-8777-7016-465b-9c03463d01fa@kernel.org>
-References: <1466575913-5027-1-git-send-email-raveendra.padasalagi@broadcom.com>
- <1466575913-5027-2-git-send-email-raveendra.padasalagi@broadcom.com>
- <20160624154323.GA6046@rob-hp-laptop> <4c8870ef-8777-7016-465b-9c03463d01fa@kernel.org>
-From: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
-Date: Mon, 27 Jun 2016 11:57:41 +0530
-Message-ID: <CAAFb_vqZoACqO6U=bVn3hDmFLQ0kPmZ4KbEMXTfvRv0mDa4VkQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] Documentation: DT: Add iproc-static-adc binding
+In-Reply-To: <4f1a2f3f-fea0-8d14-dcea-ff2bd51dca63@kernel.org>
+References: <1464572270-29154-1-git-send-email-mranostay@gmail.com>
+ <6e79df7d-4ac1-3a44-e303-af858f30e161@kernel.org> <77a1a974-2636-878b-742c-d624cc5fdc58@kernel.org>
+ <576A45FA.4020708@metafoo.de> <4f1a2f3f-fea0-8d14-dcea-ff2bd51dca63@kernel.org>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Mon, 27 Jun 2016 00:09:30 -0700
+Message-ID: <CAKzfze_FTjQbO9Y5zxaU4pBKpUHL5Dx+=4=Cx=+En0mgT5ac8w@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: temperature: add support for Maxim thermocouple chips
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
-	Jonathan Richardson <jonathar@broadcom.com>, Jon Mason <jonmason@broadcom.com>,
-	Florian Fainelli <f.fainelli@gmail.com>, Anup Patel <anup.patel@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
-	Pramod Kumar <pramod.kumar@broadcom.com>, linux-kernel@vger.kernel.org,
-	bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Marek Vasut <marex@denx.de>,
+	Matt Porter <mporter@konsulko.com>, Daniel Baluta <daniel.baluta@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Jun 26, 2016 at 3:54 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 24/06/16 16:43, Rob Herring wrote:
->> On Wed, Jun 22, 2016 at 11:41:51AM +0530, Raveendra Padasalagi wrote:
->>> The patch adds devicetree binding document for broadcom's
->>> iproc-static-adc controller driver.
+On Sun, Jun 26, 2016 at 8:13 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 22/06/16 09:02, Lars-Peter Clausen wrote:
+>> On 06/11/2016 06:48 PM, Jonathan Cameron wrote:
+>>> On 03/06/16 13:33, Jonathan Cameron wrote:
+>>>> On 30/05/16 02:37, Matt Ranostay wrote:
+>>>>> Add initial driver support for MAX6675, and MAX31885 thermocouple chips.
+>>>>>
+>>>>> Cc: Marek Vasut <marex@denx.de>
+>>>>> Cc: Matt Porter <mporter@konsulko.com>
+>>>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>>>> I'm going to let this sit for a sort while as I'd like some discussion
+>>>> of the invalidate buffer bit.
+>>>>
+>>>> Cc'd a few more people for views.
+>>> Hmm. Deadly silence.
 >>>
->>> Signed-off-by: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
->>> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
->>> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
->>> ---
->>>  .../bindings/iio/adc/brcm,iproc-static-adc.txt     | 38 ++++++++++++++++++++++
->>>  1 file changed, 38 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
+>>> Daniel, Lars, Peter - this is a fairly fundamental abi question.
 >>>
->>> diff --git a/Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt b/Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
->>> new file mode 100644
->>> index 0000000..a82076e
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
->>> @@ -0,0 +1,38 @@
->>> +* Broadcom's IPROC Static ADC controller
->>> +
->>> +Broadcom iProc ADC controller has 8 channels 10bit ADC.
->>> +Allows user to convert analog input voltage values to digital.
->>> +
->>> +Required properties:
->>> +
->>> +- compatible: Must be "brcm,iproc-static-adc"
->>> +
->>> +- adc-syscon: Handler of syscon node defining physical base address of the
->>> +  controller and length of memory mapped region.
->>> +
->>> +- #io-channel-cells = <1>; As ADC has multiple outputs
->>> +  refer to Documentation/devicetree/bindings/iio/iio-bindings.txt for details.
->>> +
->>> +- clocks: Clock used for this block.
->>> +
->>> +- clock-names: Clock name should be given as tsc_clk.
->>> +
->>> +- interrupts: interrupt line number.
->>> +
->>> +For example:
->>> +
->>> +    ts_adc_syscon: ts_adc_syscon@180a6000 {
->>> +            compatible = "brcm,iproc-ts-adc-syscon","syscon";
->>> +            reg = <0x180a6000 0xc30>;
->>> +    };
->>> +
->>> +    adc: adc@180a6000 {
->>> +            compatible = "brcm,iproc-static-adc";
->>> +            adc-syscon = <&ts_adc_syscon>;
->>> +            #io-channel-cells = <1>;
->>> +            io-channel-ranges;
+>>> What do we do to signify an 'invalid reading' in the buffer.
+>>>
+>>> Here the part is driven by a software trigger - and if we skip
+>>> a reading we are obviously out of sync.
+>>>
+>>> Old and nasty trick we used in some (possibly only one)
+>>> early driver was to set an invalid state for these cases.
+>>>
+>>> Anyone have a better idea?
 >>
->> Not documented.
-> Core iio docs, but obviously a cross reference would be good.
+>> Ideally the driver would leave the data including the status bit intact and
+>> not replace it with a magic constant that way an application that is aware
+>> of the way the chip behaves could handle that.
+>
+> In response to what I'd misunderstood this as:
+>
+> It's tricky as the status bit is not in general in the same register as the
+> value.  We would need to add a meta data element to the buffer to handle this.
+>
+> I'm inclined to go with the magic value as the best 'general purpose' option
+> we have right now...  I don't like it, but adding meta data is also somewhat
+> hideous as most usecases and devices wouldn't use it.
+>
+> Lets keep in mind that we might want to 'clean' this up at some point.
+>
+> I'll let this sit a few more days for other inputs.
+>
+> And what is actually going on :
+> Actually reading the datasheets on this I think I'd missunderstood.
+>
+> These are low not if a conversion is in progress, but rather if
+> the thermocouple is physically open (i.e. open circuit).
+> This should be reported out of band to my mind rather than in the buffer at all...
 
-Yes, Will provide the cross reference to core iio docs in the next patch.
-Thanks.
+Could do an event or refuse to allow the buffer to be enabled..
+However the former just defers the reporting from buffer to an iio
+event, and latter only prevents it being enabled if the thermocouple
+is open on starting but not if disconnected during a data capture.
 
+>
+> The buffer can have whatever rubbish in it as long as there is an easy way
+> of detecting the thermocouple is broken...
+>
+> How to report broken hardware is always unclear in kernel, but
+> here I think a simple count of observed instances of it being open
+> would do the job nicely.
+>
+> What do you think?
+>
+> Jonathan
 >>
->>> +            clocks = <&asiu_clks BCM_CYGNUS_ASIU_ADC_CLK>;
->>> +            clock-names = "tsc_clk";
->>> +            interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>;
->>> +            status = "disabled";
->>> +    };
->>> --
->>> 1.9.1
->>>
 >> --
 >> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 >> the body of a message to majordomo@vger.kernel.org
