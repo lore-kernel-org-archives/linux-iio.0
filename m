@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f50.google.com ([209.85.215.50]:35255 "EHLO
-	mail-lf0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751959AbcF0Qay (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jun 2016 12:30:54 -0400
-Received: by mail-lf0-f50.google.com with SMTP id l188so158994806lfe.2
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jun 2016 09:30:48 -0700 (PDT)
+Received: from mail-lf0-f41.google.com ([209.85.215.41]:34813 "EHLO
+	mail-lf0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751973AbcF0Qa4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jun 2016 12:30:56 -0400
+Received: by mail-lf0-f41.google.com with SMTP id h129so160253343lfh.1
+        for <linux-iio@vger.kernel.org>; Mon, 27 Jun 2016 09:30:56 -0700 (PDT)
 From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	Akinobu Mita <akinobu.mita@gmail.com>,
@@ -16,181 +16,244 @@ Cc: Christoph Mair <christoph.mair@gmail.com>,
 	Marek Belisko <marek@goldelico.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Mark Brown <broonie@kernel.org>
-Subject: [PATCH 04/10 v3] iio: pressure: bmp280: support supply regulators
-Date: Mon, 27 Jun 2016 18:30:14 +0200
-Message-Id: <1467045020-2665-5-git-send-email-linus.walleij@linaro.org>
+	Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 07/10 v3] iio: pressure: bmp280: add SPI interface driver
+Date: Mon, 27 Jun 2016 18:30:17 +0200
+Message-Id: <1467045020-2665-8-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1467045020-2665-1-git-send-email-linus.walleij@linaro.org>
 References: <1467045020-2665-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The BMP058/BMP180/BMP280 is supplied with two power sources:
-VDDA (analog power) and VDDD (digital power). As these may come
-from regulators (as on the APQ8060 Dragonboard) we need the driver
-to attempt to fetch and enable these regulators.
+This patch mimics the SPI functionality found in the misc driver in
+drivers/misc/bh085-spi.c to make it possible to reuse the existing
+BMP280/BMP180/BMP085 driver with all clients of the other driver.
+The adoption is straight-forward since like the other driver, it is
+a simple matter of using regmap.
 
-We FAIL if we cannot: boards should either define:
-- Proper regulators if present
-- Define fixed regulators if power is hardwired to the component
-- Rely on dummy regulators (will be present on all DT systems and
-  any boardfile system that calls regulator_has_full_constraints().
+This driver is also so obviously inspired/copied from the old misc
+driver in drivers/misc/bmp085.c that I just took the liberty to
+add in the authors of the other drivers + self in the core driver
+file.
 
-Cc: Mark Brown <broonie@kernel.org>
+The bus mapping code for SPI was written by Akinobu Mita.
+
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+Tested-by: Akinobu Mita <akinobu.mita@gmail.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v2->v3:
-- Encode a start-up time for each sensor type (from the datasheets)
-  this is necessary when coldstarting the sensor with a regulator
-  to be sure it is on before we try to use it.
-- Introduce a try/catch-style set of goto clauses in the probe
-  function to make sure the regulators are properly disabled.
+- Fix up some Kconfig warning mess by moving the deps of not
+  using the old driver up to the main driver part
+- Rebase and call the common remove() function.
 ChangeLog v1->v2:
-- Make the regulators non-optional: an optional supply is one you
-  can choose not to supply ELECTRICALLY as in an internal charge
-  pump taking its place or so.
-- Bail out if not present and add some notices to the commit that
-  boards need to think about their regulator usage.
-- Make sure we disable the regulators, and introduce a .remove()
-  call to do that if/when the module is removed.
+- Fix misnamed device table
+- Added Akinobu's bus mapping code for SPI
+- Add IDs and match strings for the new BME280 sensor too
 ---
- drivers/iio/pressure/bmp280.c | 64 ++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 60 insertions(+), 4 deletions(-)
+ drivers/iio/pressure/Kconfig       |  15 ++++-
+ drivers/iio/pressure/Makefile      |   1 +
+ drivers/iio/pressure/bmp280-core.c |   4 ++
+ drivers/iio/pressure/bmp280-spi.c  | 123 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 140 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/iio/pressure/bmp280-spi.c
 
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index 1618968f8889..d895973a966d 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -24,6 +24,7 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/gpio/consumer.h>
-+#include <linux/regulator/consumer.h>
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index 851c4f5aec41..aa1303ceb6a4 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -7,17 +7,20 @@ menu "Pressure sensors"
  
- /* BMP280 specific registers */
- #define BMP280_REG_HUMIDITY_LSB		0xFE
-@@ -124,6 +125,9 @@ struct bmp280_data {
- 	struct mutex lock;
- 	struct regmap *regmap;
- 	const struct bmp280_chip_info *chip_info;
-+	struct regulator *vddd;
-+	struct regulator *vdda;
-+	unsigned int start_up_time; /* in milliseconds */
+ config BMP280
+ 	tristate "Bosch Sensortec BMP180/BMP280 pressure sensor I2C driver"
+-	depends on I2C
++	depends on (I2C || SPI_MASTER)
+ 	depends on !(BMP085_I2C=y || BMP085_I2C=m)
++	depends on !(BMP085_SPI=y || BMP085_SPI=m)
+ 	select REGMAP
+ 	select BMP280_I2C if (I2C)
++	select BMP280_SPI if (SPI_MASTER)
+ 	help
+ 	  Say yes here to build support for Bosch Sensortec BMP180 and BMP280
+ 	  pressure and temperature sensors. Also supports the BE280 with
+ 	  an additional humidity sensor channel.
  
- 	/* log of base 2 of oversampling rate */
- 	u8 oversampling_press;
-@@ -1047,12 +1051,14 @@ static int bmp280_probe(struct i2c_client *client,
- 		data->chip_info = &bmp180_chip_info;
- 		data->oversampling_press = ilog2(8);
- 		data->oversampling_temp = ilog2(1);
-+		data->start_up_time = 10;
- 		break;
- 	case BMP280_CHIP_ID:
- 		indio_dev->num_channels = 2;
- 		data->chip_info = &bmp280_chip_info;
- 		data->oversampling_press = ilog2(16);
- 		data->oversampling_temp = ilog2(2);
-+		data->start_up_time = 2;
- 		break;
- 	case BME280_CHIP_ID:
- 		indio_dev->num_channels = 3;
-@@ -1060,11 +1066,37 @@ static int bmp280_probe(struct i2c_client *client,
- 		data->oversampling_press = ilog2(16);
- 		data->oversampling_humid = ilog2(16);
- 		data->oversampling_temp = ilog2(2);
-+		data->start_up_time = 2;
- 		break;
- 	default:
- 		return -EINVAL;
- 	}
+-	  To compile this driver as a module, choose M here: the modules
+-	  will be called bmp280-i2c and bmp280.
++	  To compile this driver as a module, choose M here: the core module
++	  will be called bmp280 and you will also get bmp280-i2c for I2C
++	  and/or bmp280-spi for SPI support.
  
-+	/* Bring up regulators */
-+	data->vddd = devm_regulator_get(&client->dev, "vddd");
-+	if (IS_ERR(data->vddd)) {
-+		dev_err(&client->dev, "failed to get VDDD regulator\n");
-+		return PTR_ERR(data->vddd);
-+	}
-+	ret = regulator_enable(data->vddd);
-+	if (ret) {
-+		dev_err(&client->dev, "failed to enable VDDD regulator\n");
-+		return ret;
-+	}
-+	data->vdda = devm_regulator_get(&client->dev, "vdda");
-+	if (IS_ERR(data->vdda)) {
-+		dev_err(&client->dev, "failed to get VDDA regulator\n");
-+		ret = PTR_ERR(data->vddd);
-+		goto out_disable_vddd;
-+	}
-+	ret = regulator_enable(data->vdda);
-+	if (ret) {
-+		dev_err(&client->dev, "failed to enable VDDA\n");
-+		goto out_disable_vddd;
-+	}
-+	/* Wait to make sure we started up properly */
-+	mdelay(data->start_up_time);
+ config BMP280_I2C
+ 	tristate
+@@ -25,6 +28,12 @@ config BMP280_I2C
+ 	depends on I2C
+ 	select REGMAP_I2C
+ 
++config BMP280_SPI
++	tristate
++	depends on BMP280
++	depends on SPI_MASTER
++	select REGMAP
 +
- 	/* Bring chip out of reset if there is an assigned GPIO line */
- 	gpiod = devm_gpiod_get(&client->dev, "reset", GPIOD_OUT_HIGH);
- 	/* Deassert the signal */
-@@ -1077,7 +1109,8 @@ static int bmp280_probe(struct i2c_client *client,
- 					data->chip_info->regmap_config);
- 	if (IS_ERR(data->regmap)) {
- 		dev_err(&client->dev, "failed to allocate register map\n");
--		return PTR_ERR(data->regmap);
-+		ret = PTR_ERR(data->regmap);
-+		goto out_disable_vdda;
- 	}
- 
- 	ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
-@@ -1086,14 +1119,36 @@ static int bmp280_probe(struct i2c_client *client,
- 	if (chip_id != id->driver_data) {
- 		dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
- 			BMP280_CHIP_ID, chip_id);
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto out_disable_vdda;
- 	}
- 
- 	ret = data->chip_info->chip_config(data);
- 	if (ret < 0)
--		return ret;
-+		goto out_disable_vdda;
+ config HID_SENSOR_PRESS
+ 	depends on HID_SENSOR_HUB
+ 	select IIO_BUFFER
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index 736f4305fe46..7f395bed5e88 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -6,6 +6,7 @@
+ obj-$(CONFIG_BMP280) += bmp280.o
+ bmp280-objs := bmp280-core.o bmp280-regmap.o
+ obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
++obj-$(CONFIG_BMP280_SPI) += bmp280-spi.o
+ obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+ obj-$(CONFIG_HP03) += hp03.o
+ obj-$(CONFIG_MPL115) += mpl115.o
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index 5ee957eee0da..09f96aa2da65 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -1,5 +1,9 @@
+ /*
++ * Copyright (c) 2010 Christoph Mair <christoph.mair@gmail.com>
++ * Copyright (c) 2012 Bosch Sensortec GmbH
++ * Copyright (c) 2012 Unixphere AB
+  * Copyright (c) 2014 Intel Corporation
++ * Copyright (c) 2016 Linus Walleij <linus.walleij@linaro.org>
+  *
+  * Driver for Bosch Sensortec BMP180 and BMP280 digital pressure sensor.
+  *
+diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
+new file mode 100644
+index 000000000000..7e6bd495308e
+--- /dev/null
++++ b/drivers/iio/pressure/bmp280-spi.c
+@@ -0,0 +1,123 @@
++/*
++ * SPI interface for the BMP280 driver
++ *
++ * Inspired by the older BMP085 driver drivers/misc/bmp085-spi.c
++ */
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/err.h>
++#include <linux/regmap.h>
 +
-+	i2c_set_clientdata(client, data);
- 
--	return devm_iio_device_register(&client->dev, indio_dev);
-+	ret = devm_iio_device_register(&client->dev, indio_dev);
-+	if (ret)
-+		goto out_disable_vdda;
++#include "bmp280.h"
 +
-+	return 0;
++static int bmp280_regmap_spi_write(void *context, const void *data,
++                                   size_t count)
++{
++	struct device *dev = context;
++	struct spi_device *spi = to_spi_device(dev);
++	u8 buf[2];
 +
-+out_disable_vdda:
-+	regulator_disable(data->vdda);
-+out_disable_vddd:
-+	regulator_disable(data->vddd);
-+	return ret;
++	memcpy(buf, data, 2);
++	/*
++	 * The SPI register address (= full register address without bit 7) and
++	 * the write command (bit7 = RW = '0')
++	 */
++	buf[0] &= ~0x80;
++
++	return spi_write_then_read(spi, buf, 2, NULL, 0);
 +}
 +
-+static int bmp280_remove(struct i2c_client *client)
++static int bmp280_regmap_spi_read(void *context, const void *reg,
++                                  size_t reg_size, void *val, size_t val_size)
 +{
-+	struct bmp280_data *data = i2c_get_clientdata(client);
++	struct device *dev = context;
++	struct spi_device *spi = to_spi_device(dev);
 +
-+	regulator_disable(data->vdda);
-+	regulator_disable(data->vddd);
-+	return 0;
- }
- 
- static const struct acpi_device_id bmp280_acpi_match[] = {
-@@ -1134,6 +1189,7 @@ static struct i2c_driver bmp280_driver = {
- 		.of_match_table = of_match_ptr(bmp280_of_match),
- 	},
- 	.probe		= bmp280_probe,
-+	.remove		= bmp280_remove,
- 	.id_table	= bmp280_id,
- };
- module_i2c_driver(bmp280_driver);
++	return spi_write_then_read(spi, reg, reg_size, val, val_size);
++}
++
++static struct regmap_bus bmp280_regmap_bus = {
++	.write = bmp280_regmap_spi_write,
++	.read = bmp280_regmap_spi_read,
++	.reg_format_endian_default = REGMAP_ENDIAN_BIG,
++	.val_format_endian_default = REGMAP_ENDIAN_BIG,
++};
++
++static int bmp280_spi_probe(struct spi_device *spi)
++{
++	const struct spi_device_id *id = spi_get_device_id(spi);
++	struct regmap *regmap;
++	const struct regmap_config *regmap_config;
++	int ret;
++
++	spi->bits_per_word = 8;
++	ret = spi_setup(spi);
++	if (ret < 0) {
++		dev_err(&spi->dev, "spi_setup failed!\n");
++		return ret;
++	}
++
++	switch (id->driver_data) {
++	case BMP180_CHIP_ID:
++		regmap_config = &bmp180_regmap_config;
++		break;
++	case BMP280_CHIP_ID:
++	case BME280_CHIP_ID:
++		regmap_config = &bmp280_regmap_config;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	regmap = devm_regmap_init(&spi->dev,
++				  &bmp280_regmap_bus,
++				  &spi->dev,
++				  regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&spi->dev, "failed to allocate register map\n");
++		return PTR_ERR(regmap);
++	}
++
++	return bmp280_common_probe(&spi->dev,
++				   regmap,
++				   id->driver_data,
++				   id->name);
++}
++
++static int bmp280_spi_remove(struct spi_device *spi)
++{
++	return bmp280_common_remove(&spi->dev);
++}
++
++static const struct of_device_id bmp280_of_spi_match[] = {
++	{ .compatible = "bosch,bmp085", },
++	{ .compatible = "bosch,bmp180", },
++	{ .compatible = "bosch,bmp181", },
++	{ .compatible = "bosch,bmp280", },
++	{ .compatible = "bosch,bme280", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, bmp280_of_spi_match);
++
++static const struct spi_device_id bmp280_spi_id[] = {
++	{ "bmp180", BMP180_CHIP_ID },
++	{ "bmp181", BMP180_CHIP_ID },
++	{ "bmp280", BMP280_CHIP_ID },
++	{ "bme280", BME280_CHIP_ID },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, bmp280_spi_id);
++
++static struct spi_driver bmp280_spi_driver = {
++	.driver = {
++		.name = "bmp280",
++		.of_match_table = bmp280_of_spi_match
++	},
++	.id_table = bmp280_spi_id,
++	.probe = bmp280_spi_probe,
++	.remove = bmp280_spi_remove,
++};
++module_spi_driver(bmp280_spi_driver);
++
++MODULE_DESCRIPTION("BMP085 SPI bus driver");
++MODULE_LICENSE("GPL");
 -- 
 2.4.11
 
