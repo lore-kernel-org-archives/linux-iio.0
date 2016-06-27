@@ -1,135 +1,236 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53788 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53808 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751644AbcF0Sy0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jun 2016 14:54:26 -0400
-Subject: Re: [RFC PATCH] iio: imu: add driver for Bosch Sensortec BNO055
-To: Vlad Dogaru <vlad.dogaru@intel.com>
-References: <1466766936-20561-1-git-send-email-vlad.dogaru@intel.com>
- <0fb507e2-e936-9c0c-9148-e4e329ba9dcb@kernel.org>
- <bc97ba4f-128a-b220-9f42-87e5a4ee90f3@kernel.org>
- <20160627091420.GC3142@vdogaru>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, andrey_utkin@fastmail.com
+	with ESMTP id S1751644AbcF0S5a (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jun 2016 14:57:30 -0400
+Subject: Re: [PATCH 9/9 v2] iio: pressure: bmp280: read calibration data once
+To: Vlad Dogaru <vlad.dogaru@intel.com>,
+	Linus Walleij <linus.walleij@linaro.org>
+References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
+ <1466628819-29784-10-git-send-email-linus.walleij@linaro.org>
+ <20160627074258.GA3142@vdogaru>
+Cc: linux-iio@vger.kernel.org, Akinobu Mita <akinobu.mita@gmail.com>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Christoph Mair <christoph.mair@gmail.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Eric Andersson <eric.andersson@unixphere.com>,
+	Neil Brown <neilb@suse.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <559ab4c5-e82a-55a7-f4f1-5d4cc2f744c0@kernel.org>
-Date: Mon, 27 Jun 2016 19:53:49 +0100
+Message-ID: <651c3d5b-8199-5819-0a6a-e5aec246fa24@kernel.org>
+Date: Mon, 27 Jun 2016 19:57:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160627091420.GC3142@vdogaru>
+In-Reply-To: <20160627074258.GA3142@vdogaru>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/06/16 10:14, Vlad Dogaru wrote:
-> On Sun, Jun 26, 2016 at 07:03:14PM +0100, Jonathan Cameron wrote:
->> On 26/06/16 18:56, Jonathan Cameron wrote:
->>> On 24/06/16 12:15, Vlad Dogaru wrote:
->>>> Hi everyone,
->>>>
->>>> This is a minimal implementation of a driver for the Bosch Sensortec
->>>> BNO055, a very interesting accel-gyro-magneto combo.  The datasheet is
->>>> available at https://www.bosch-sensortec.com/bst/products/all_products/bno055
->>> 'interesting' device indeed.
->>>>
->>>> The driver in its present state works, but this is a RFC for a few
->>>> reasons detailed below:
->>>>
->>>> (1) The device has a few possible operating modes.  The most simple
->>>> ones employ a single sensor and power down the other two; the most
->>>> complex use all 3 for sensor fusion.  Changing the mode at runtime would
->>>> require changing the channels and I'm not sure IIO allows that.
->>> It allows a much greater set of channels than can run at one time though..
->>> Would that work here?  Lots of fun with available_scan_masks and
->>> friends, but from your description here sounds fine (will look at
->>> the code in a minute).
+On 27/06/16 08:42, Vlad Dogaru wrote:
+> On Wed, Jun 22, 2016 at 10:53:39PM +0200, Linus Walleij wrote:
+>> The calibration data is described as coming from an E2PROM and that
+>> means it does not change. Just read it once at probe time and store
+>> it in the device state container. Also toss the calibration data
+>> into the entropy pool since it is device unique.
 > 
-> Haven't gotten to buffering yet :)
-> 
->>>>  So I've
->>>> opted to choose the mode at probe time, based on a DeviceTree property.
->>>> Hope that's ok.
->>> Would rather it was runtime controllable I think...
->> Hmm. I can see this is complex because obviously the fusion has to start
->> at some point and if we flipped to reading a single axis it would get
->> turned off.
-> 
-> Not sure I've parsed this sentence correctly, but FWIW even in fusion
-> modes, data from the individual sensors is still available.
-Really, I thought for the acceleration at least they had aliased the 
-normal acceleration with 'linear acceleration' e.g. the version with the
-gravity vector removed.  May have misunderstood the datasheet on that
-though as non obvious.
-> 
->> Hideous though it is, perhaps an 'enable_fusion_engine' attribute would
->> be the way to do it with channels returning EBUSY if they are not available
->> in a given mode.
-> 
-> Hideous indeed, and not entirely useful in this case :)  The device
-> supports multiple fusion modes, not just one.  And multiple non-fusion
-> modes, as well.  If we want to switch at runtime, we need a multi value
-> parameter, not just a boolean one, similar to the DT parameter we read
-> at probe.
-Agreed.
-> 
-> Maybe something like "operating_mode" and "operating_mode_available"?
-> These could very well go in the ABI, but simply listing the available
-> operating modes without description would not be very useful.  Perhaps
-> the _available attribute could list modes one per line, with an
-> associated explanation?
-It would be unusual enough that I'd like a view on this from the sysfs
-guys.  Also, not really terribly easy to pass in software and most
-people (other than us driver developers) are never going to directly
-interact with the sysfs attribute.
->  In this case:
-> 
-> 	$ cat operating_mode_available
-> 	acconly - only the accelerator is powered on
-> 	magonly - only the magnetometer is powered on
-> 	[...]
-> 	imu - use the accel and gyro for relative orientation data (high rate)
-> 	compass - use accel and mag to calculate geographic rotation
-> 	[...]
-> 
-> This would also solve the question "is my orientation data relative to
-> initial or magnetic north?"  Users can check the operating_mode.  And to
-> reinitialize the initial position for the imu, one could just
-> reinitialize operating_mode.
-True enough, though it's pretty ugly.  Can we drop a few by powering up
-the magnetometer etc for the simple modes on demand?  If they come up
-reasonably fast, for sysfs reads this is probably a good power saving
-approach anyway.  Easy to pull only the right ones up for buffered modes.
+> I think my initial thought when writing this was that regmap will take
+> care of the caching and not hit the i2c bus each time.  But I don't have
+> an issue with this change.  Other than that, series looks good to me.
+Good point. I must be half asleep.
 
-We do technically have the _enable attribute for channels though it rarely
-makes sense.  We could just have all the channels available and if you
-enable a channel it pulls all the relevant set into working as well?
-
-I'd love to avoid an interface that basically requires some reading of
-the datasheet (or provided help to use it).  Tricky though!
-
-> 
-> Returning -EBUSY if a channel is unavailable sounds like a good plan to
-> me.
-> 
->> There are some precedents for this as there are parts that cannot
->> do both events and raw data reading at the same time. e.g. the Max1363
->> (well technically that part can, but it was so nasty to implement I never
->> did it an no one has ever cared since).
->>
->> We could only enable the fusion engine once the buffer is enabled, but
->> that seems a bit clunky given the fused data is in someways the most
->> useful stuff to get via polled reads.  'What orientation am I at now?'
-> 
-> I think buffer support and fusion mode are unrelated.  For example, the
-> driver as it is now supports fusion, but not buffering.  And one could
-> definitely enhance it to support buffering in both non-fusion and fusion
-> modes.
-Sure.  If fusion data had only made sense in buffered mode then it would
-have been easy ;)  We could just have done it with the available_scan_masks
-stuff.
+Linus, are we missing something? If not, I'd go without this one.
 
 J
 > 
-> Thanks,
-> Vlad
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> 
+> Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
+> 
+>> ---
+>> ChangeLog v1->v2:
+>> - Remove unused dangling "ret" variable.
+>> ---
+>>  drivers/iio/pressure/bmp280-core.c | 95 +++++++++++++++++++-------------------
+>>  1 file changed, 48 insertions(+), 47 deletions(-)
+>>
+>> diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+>> index 7b2a03d6fd1d..6559455f0335 100644
+>> --- a/drivers/iio/pressure/bmp280-core.c
+>> +++ b/drivers/iio/pressure/bmp280-core.c
+>> @@ -29,9 +29,30 @@
+>>  #include <linux/interrupt.h>
+>>  #include <linux/irq.h> /* For irq_get_irq_data() */
+>>  #include <linux/completion.h>
+>> +#include <linux/random.h>
+>>  
+>>  #include "bmp280.h"
+>>  
+>> +/*
+>> + * These enums are used for indexing into the array of calibration
+>> + * coefficients for BMP180.
+>> + */
+>> +enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
+>> +
+>> +struct bmp180_calib {
+>> +	s16 AC1;
+>> +	s16 AC2;
+>> +	s16 AC3;
+>> +	u16 AC4;
+>> +	u16 AC5;
+>> +	u16 AC6;
+>> +	s16 B1;
+>> +	s16 B2;
+>> +	s16 MB;
+>> +	s16 MC;
+>> +	s16 MD;
+>> +};
+>> +
+>>  struct bmp280_data {
+>>  	struct device *dev;
+>>  	struct mutex lock;
+>> @@ -39,6 +60,7 @@ struct bmp280_data {
+>>  	struct completion done;
+>>  	bool use_eoc;
+>>  	const struct bmp280_chip_info *chip_info;
+>> +	struct bmp180_calib calib;
+>>  	struct regulator *vddd;
+>>  	struct regulator *vdda;
+>>  
+>> @@ -654,26 +676,6 @@ static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
+>>  	return 0;
+>>  }
+>>  
+>> -/*
+>> - * These enums are used for indexing into the array of calibration
+>> - * coefficients for BMP180.
+>> - */
+>> -enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
+>> -
+>> -struct bmp180_calib {
+>> -	s16 AC1;
+>> -	s16 AC2;
+>> -	s16 AC3;
+>> -	u16 AC4;
+>> -	u16 AC5;
+>> -	u16 AC6;
+>> -	s16 B1;
+>> -	s16 B2;
+>> -	s16 MB;
+>> -	s16 MC;
+>> -	s16 MD;
+>> -};
+>> -
+>>  static int bmp180_read_calib(struct bmp280_data *data,
+>>  			     struct bmp180_calib *calib)
+>>  {
+>> @@ -683,7 +685,6 @@ static int bmp180_read_calib(struct bmp280_data *data,
+>>  
+>>  	ret = regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, buf,
+>>  			       sizeof(buf));
+>> -
+>>  	if (ret < 0)
+>>  		return ret;
+>>  
+>> @@ -693,6 +694,9 @@ static int bmp180_read_calib(struct bmp280_data *data,
+>>  			return -EIO;
+>>  	}
+>>  
+>> +	/* Toss the calibration data into the entropy pool */
+>> +	add_device_randomness(buf, sizeof(buf));
+>> +
+>>  	calib->AC1 = be16_to_cpu(buf[AC1]);
+>>  	calib->AC2 = be16_to_cpu(buf[AC2]);
+>>  	calib->AC3 = be16_to_cpu(buf[AC3]);
+>> @@ -716,19 +720,11 @@ static int bmp180_read_calib(struct bmp280_data *data,
+>>   */
+>>  static s32 bmp180_compensate_temp(struct bmp280_data *data, s32 adc_temp)
+>>  {
+>> -	int ret;
+>>  	s32 x1, x2;
+>> -	struct bmp180_calib calib;
+>> +	struct bmp180_calib *calib = &data->calib;
+>>  
+>> -	ret = bmp180_read_calib(data, &calib);
+>> -	if (ret < 0) {
+>> -		dev_err(data->dev,
+>> -			"failed to read calibration coefficients\n");
+>> -		return ret;
+>> -	}
+>> -
+>> -	x1 = ((adc_temp - calib.AC6) * calib.AC5) >> 15;
+>> -	x2 = (calib.MC << 11) / (x1 + calib.MD);
+>> +	x1 = ((adc_temp - calib->AC6) * calib->AC5) >> 15;
+>> +	x2 = (calib->MC << 11) / (x1 + calib->MD);
+>>  	data->t_fine = x1 + x2;
+>>  
+>>  	return (data->t_fine + 8) >> 4;
+>> @@ -783,29 +779,21 @@ static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
+>>   */
+>>  static u32 bmp180_compensate_press(struct bmp280_data *data, s32 adc_press)
+>>  {
+>> -	int ret;
+>>  	s32 x1, x2, x3, p;
+>>  	s32 b3, b6;
+>>  	u32 b4, b7;
+>>  	s32 oss = data->oversampling_press;
+>> -	struct bmp180_calib calib;
+>> -
+>> -	ret = bmp180_read_calib(data, &calib);
+>> -	if (ret < 0) {
+>> -		dev_err(data->dev,
+>> -			"failed to read calibration coefficients\n");
+>> -		return ret;
+>> -	}
+>> +	struct bmp180_calib *calib = &data->calib;
+>>  
+>>  	b6 = data->t_fine - 4000;
+>> -	x1 = (calib.B2 * (b6 * b6 >> 12)) >> 11;
+>> -	x2 = calib.AC2 * b6 >> 11;
+>> +	x1 = (calib->B2 * (b6 * b6 >> 12)) >> 11;
+>> +	x2 = calib->AC2 * b6 >> 11;
+>>  	x3 = x1 + x2;
+>> -	b3 = ((((s32)calib.AC1 * 4 + x3) << oss) + 2) / 4;
+>> -	x1 = calib.AC3 * b6 >> 13;
+>> -	x2 = (calib.B1 * ((b6 * b6) >> 12)) >> 16;
+>> +	b3 = ((((s32)calib->AC1 * 4 + x3) << oss) + 2) / 4;
+>> +	x1 = calib->AC3 * b6 >> 13;
+>> +	x2 = (calib->B1 * ((b6 * b6) >> 12)) >> 16;
+>>  	x3 = (x1 + x2 + 2) >> 2;
+>> -	b4 = calib.AC4 * (u32)(x3 + 32768) >> 15;
+>> +	b4 = calib->AC4 * (u32)(x3 + 32768) >> 15;
+>>  	b7 = ((u32)adc_press - b3) * (50000 >> oss);
+>>  	if (b7 < 0x80000000)
+>>  		p = (b7 * 2) / b4;
+>> @@ -970,6 +958,19 @@ int bmp280_common_probe(struct device *dev,
+>>  	if (ret < 0)
+>>  		return ret;
+>>  
+>> +	/*
+>> +	 * The BMP058 and BMP180 has calibration in an E2PROM, read it out
+>> +	 * at probe time. It will not change.
+>> +	 */
+>> +	if (chip_id  == BMP180_CHIP_ID) {
+>> +		ret = bmp180_read_calib(data, &data->calib);
+>> +		if (ret < 0) {
+>> +			dev_err(data->dev,
+>> +				"failed to read calibration coefficients\n");
+>> +			return ret;
+>> +		}
+>> +	}
+>> +
+>>  	ret = devm_iio_device_register(dev, indio_dev);
+>>  	if (ret) {
+>>  		dev_err(dev, "unable to register IIO device\n");
+>> -- 
+>> 2.4.11
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
