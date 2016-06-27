@@ -1,65 +1,144 @@
-Return-Path: <bijosh.t@hotmail.com>
-From: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
-To: "jic23@kernel.org" <jic23@kernel.org>, "knaack.h@gmx.de"
-	<knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net"
-	<pmeerw@pmeerw.net>, "k.kozlowski@samsung.com" <k.kozlowski@samsung.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] drivers:iio:light:isl29125: added macros for sensing range
-Date: Mon, 27 Jun 2016 15:37:41 +0000
-Message-ID: <KL1PR04MB1205FC759593484E11F486A280210@KL1PR04MB1205.apcprd04.prod.outlook.com>
-Content-Type: text/plain; charset="iso-8859-1"
-MIME-Version: 1.0
+Return-Path: <linus.walleij@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>,
+	Matt Ranostay <mranostay@gmail.com>
+Cc: Christoph Mair <christoph.mair@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Eric Andersson <eric.andersson@unixphere.com>,
+	Neil Brown <neilb@suse.de>,
+	Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 06/10 v3] iio: pressure: bmp280: split off an I2C Kconfig entry
+Date: Mon, 27 Jun 2016 18:30:16 +0200
+Message-Id: <1467045020-2665-7-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1467045020-2665-1-git-send-email-linus.walleij@linaro.org>
+References: <1467045020-2665-1-git-send-email-linus.walleij@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Added macros for sensing range as the corresponding magic numbers
-were used at multiple places.
-   - ISL29125_SENSING_RANGE_0 for 375 lux full range
-   - ISL29125_SENSING_RANGE_1 for 10k lux full range
+This creates a separate BMP280_I2C Kconfig entry that gets selected
+by BMP280 for I2C transport. As we currently only support I2C
+transport there is not much practical change other than getting
+a separate object file (or module) for the I2C driver part. The
+old Kconfig symbol BMP280 will still select the stuff we need so
+that oldconfig and old defconfigs works fine.
 
-Signed-off-by: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
+Tested-by: Akinobu Mita <akinobu.mita@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/light/isl29125.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ChangeLog v2->v3:
+- Fix up Kconfig to put the dependencies to not use the old driver
+  directly under the main driver instead of under the I2C part
+- Export the common probe, remove and regmap symbols as the I2C driver part
+  becomes its own module and need to find those symbols from the
+  other parts.
+ChangeLog v1->v2:
+- None
+---
+ drivers/iio/pressure/Kconfig         | 17 ++++++++++++-----
+ drivers/iio/pressure/Makefile        |  3 ++-
+ drivers/iio/pressure/bmp280-core.c   |  3 +++
+ drivers/iio/pressure/bmp280-regmap.c |  3 +++
+ 4 files changed, 20 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/light/isl29125.c b/drivers/iio/light/isl29125.c
-index e2945a2..d0aa802 100644
---- a/drivers/iio/light/isl29125.c
-+++ b/drivers/iio/light/isl29125.c
-@@ -44,6 +44,9 @@
- #define ISL29125_MODE_B 0x3
- #define ISL29125_MODE_RGB 0x5
-=20
-+#define ISL29125_SENSING_RANGE_0 5722   /* 375 lux full range */
-+#define ISL29125_SENSING_RANGE_1 152590 /* 10k lux full range */
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index 9125a9382b3e..851c4f5aec41 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -6,17 +6,24 @@
+ menu "Pressure sensors"
+ 
+ config BMP280
+-	tristate "Bosch Sensortec BMP180 and BMP280 pressure sensor driver"
++	tristate "Bosch Sensortec BMP180/BMP280 pressure sensor I2C driver"
+ 	depends on I2C
+ 	depends on !(BMP085_I2C=y || BMP085_I2C=m)
+-	select REGMAP_I2C
++	select REGMAP
++	select BMP280_I2C if (I2C)
+ 	help
+ 	  Say yes here to build support for Bosch Sensortec BMP180 and BMP280
+ 	  pressure and temperature sensors. Also supports the BE280 with
+-	  an additional humidty sensor channel.
++	  an additional humidity sensor channel.
+ 
+-	  To compile this driver as a module, choose M here: the module
+-	  will be called bmp280.
++	  To compile this driver as a module, choose M here: the modules
++	  will be called bmp280-i2c and bmp280.
 +
- #define ISL29125_MODE_RANGE BIT(3)
-=20
- #define ISL29125_STATUS_CONV BIT(1)
-@@ -140,9 +143,9 @@ static int isl29125_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		*val =3D 0;
- 		if (data->conf1 & ISL29125_MODE_RANGE)
--			*val2 =3D 152590; /* 10k lux full range */
-+			*val2 =3D ISL29125_SENSING_RANGE_1; /*10k lux full range*/
- 		else
--			*val2 =3D 5722; /* 375 lux full range */
-+			*val2 =3D ISL29125_SENSING_RANGE_0; /*375 lux full range*/
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	}
- 	return -EINVAL;
-@@ -158,9 +161,9 @@ static int isl29125_write_raw(struct iio_dev *indio_dev=
-,
- 	case IIO_CHAN_INFO_SCALE:
- 		if (val !=3D 0)
- 			return -EINVAL;
--		if (val2 =3D=3D 152590)
-+		if (val2 =3D=3D ISL29125_SENSING_RANGE_1)
- 			data->conf1 |=3D ISL29125_MODE_RANGE;
--		else if (val2 =3D=3D 5722)
-+		else if (val2 =3D=3D ISL29125_SENSING_RANGE_0)
- 			data->conf1 &=3D ~ISL29125_MODE_RANGE;
- 		else
- 			return -EINVAL;
---=20
-2.1.4
++config BMP280_I2C
++	tristate
++	depends on BMP280
++	depends on I2C
++	select REGMAP_I2C
+ 
+ config HID_SENSOR_PRESS
+ 	depends on HID_SENSOR_HUB
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index 2d98a7ff77a8..736f4305fe46 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -4,7 +4,8 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_BMP280) += bmp280.o
+-bmp280-objs := bmp280-core.o bmp280-regmap.o bmp280-i2c.o
++bmp280-objs := bmp280-core.o bmp280-regmap.o
++obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
+ obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+ obj-$(CONFIG_HP03) += hp03.o
+ obj-$(CONFIG_MPL115) += mpl115.o
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index fedb43082971..5ee957eee0da 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -16,6 +16,7 @@
+ #define pr_fmt(fmt) "bmp280: " fmt
+ 
+ #include <linux/device.h>
++#include <linux/module.h>
+ #include <linux/regmap.h>
+ #include <linux/delay.h>
+ #include <linux/iio/iio.h>
+@@ -955,6 +956,7 @@ out_disable_vddd:
+ 	regulator_disable(data->vddd);
+ 	return ret;
+ }
++EXPORT_SYMBOL(bmp280_common_probe);
+ 
+ int bmp280_common_remove(struct device *dev)
+ {
+@@ -964,3 +966,4 @@ int bmp280_common_remove(struct device *dev)
+ 	regulator_disable(data->vddd);
+ 	return 0;
+ }
++EXPORT_SYMBOL(bmp280_common_remove);
+diff --git a/drivers/iio/pressure/bmp280-regmap.c b/drivers/iio/pressure/bmp280-regmap.c
+index 3341189d0975..6807113ec09f 100644
+--- a/drivers/iio/pressure/bmp280-regmap.c
++++ b/drivers/iio/pressure/bmp280-regmap.c
+@@ -1,4 +1,5 @@
+ #include <linux/device.h>
++#include <linux/module.h>
+ #include <linux/regmap.h>
+ 
+ #include "bmp280.h"
+@@ -37,6 +38,7 @@ const struct regmap_config bmp180_regmap_config = {
+ 	.writeable_reg = bmp180_is_writeable_reg,
+ 	.volatile_reg = bmp180_is_volatile_reg,
+ };
++EXPORT_SYMBOL(bmp180_regmap_config);
+ 
+ static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
+ {
+@@ -79,3 +81,4 @@ const struct regmap_config bmp280_regmap_config = {
+ 	.writeable_reg = bmp280_is_writeable_reg,
+ 	.volatile_reg = bmp280_is_volatile_reg,
+ };
++EXPORT_SYMBOL(bmp280_regmap_config);
+-- 
+2.4.11
