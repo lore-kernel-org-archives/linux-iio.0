@@ -1,49 +1,137 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 203-59-230-133.perm.iinet.net.au ([203.59.230.133]:48482 "EHLO
-	preid-centos7.electromag.com.au" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751601AbcF0D1Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2016 23:27:25 -0400
-From: Phil Reid <preid@electromag.com.au>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Cc: Phil Reid <preid@electromag.com.au>
-Subject: [PATCH 1/1] iio: buffer-dma: Use ARRAY_SIZE in for loop range
-Date: Mon, 27 Jun 2016 11:17:56 +0800
-Message-Id: <1466997476-36746-1-git-send-email-preid@electromag.com.au>
+Received: from mailcl1.heig-vd.ch ([193.134.216.182]:43345 "EHLO heig-vd.ch"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751852AbcF0FwI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 27 Jun 2016 01:52:08 -0400
+From: Florian Vaussard <florian.vaussard@heig-vd.ch>
+Subject: Re: [PATCH v2 2/4] iio: potentiometer: mcp4531: Add device tree
+ binding documentation
+To: Peter Rosin <peda@axentia.se>,
+	Florian Vaussard <florian.vaussard@gmail.com>,
+	<devicetree@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1466972567-9580-1-git-send-email-florian.vaussard@heig-vd.ch>
+ <1466972567-9580-3-git-send-email-florian.vaussard@heig-vd.ch>
+ <32d8162f-bb62-2c90-d194-0023320be392@axentia.se>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Slawomir Stepien <sst@poczta.fm>,
+	Joachim Eastwood <manabian@gmail.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	Vaussard Florian <florian.vaussard@heig-vd.ch>
+Message-ID: <629bcb90-80bd-efad-2efc-fe36bfbb6959@heig-vd.ch>
+Date: Mon, 27 Jun 2016 07:31:27 +0200
+MIME-Version: 1.0
+In-Reply-To: <32d8162f-bb62-2c90-d194-0023320be392@axentia.se>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use the ARRAY_SIZE macro in the for loops that access queue->fileio.blocks.
-Macro is already used in a couple of places where this access occurs,
-but range was hardcoded in these locations.
+Hello Peter,
 
-Signed-off-by: Phil Reid <preid@electromag.com.au>
----
- drivers/iio/buffer/industrialio-buffer-dma.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Le 26. 06. 16 à 23:38, Peter Rosin a écrit :
+> On 2016-06-26 22:22, Florian Vaussard wrote:
+>> Add the device tree documentation for all the supported parts. Apart the
+>> compatible string and standard I2C binding, no other binding is currently
+>> needed.
+>>
+>> Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
+>> ---
+>>  .../devicetree/bindings/i2c/trivial-devices.txt    | 64 ++++++++++++++++++++++
+>>  1 file changed, 64 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> index 53987449..4ffe9a9 100644
+>> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> @@ -56,6 +56,70 @@ maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
+>>  maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
+>>  maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
+>>  mc,rv3029c2		Real Time Clock Module with I2C-Bus
+>> +microchip,mcp4531-502	Microchip 8-bit Single I2C Digital Potentiometer (5k)
+>                                           ^
+> You have mixed up 7/8-bit, here and below.
+> 
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
-index 212cbed..dd99d27 100644
---- a/drivers/iio/buffer/industrialio-buffer-dma.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-@@ -305,7 +305,7 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
- 	queue->fileio.active_block = NULL;
- 
- 	spin_lock_irq(&queue->list_lock);
--	for (i = 0; i < 2; i++) {
-+	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
- 		block = queue->fileio.blocks[i];
- 
- 		/* If we can't re-use it free it */
-@@ -323,7 +323,7 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
- 
- 	INIT_LIST_HEAD(&queue->incoming);
- 
--	for (i = 0; i < 2; i++) {
-+	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
- 		if (queue->fileio.blocks[i]) {
- 			block = queue->fileio.blocks[i];
- 			if (block->state == IIO_BLOCK_STATE_DEAD) {
--- 
-1.8.3.1
+Oh you are right, stupid me. I will fix.
 
+Thanks,
+Florian
+
+> Cheers,
+> Peter
+> 
+>> +microchip,mcp4531-103	Microchip 8-bit Single I2C Digital Potentiometer (10k)
+>> +microchip,mcp4531-503	Microchip 8-bit Single I2C Digital Potentiometer (50k)
+>> +microchip,mcp4531-104	Microchip 8-bit Single I2C Digital Potentiometer (100k)
+>> +microchip,mcp4532-502	Microchip 8-bit Single I2C Digital Potentiometer (5k)
+>> +microchip,mcp4532-103	Microchip 8-bit Single I2C Digital Potentiometer (10k)
+>> +microchip,mcp4532-503	Microchip 8-bit Single I2C Digital Potentiometer (50k)
+>> +microchip,mcp4532-104	Microchip 8-bit Single I2C Digital Potentiometer (100k)
+>> +microchip,mcp4541-502	Microchip 8-bit Single I2C Digital Potentiometer with NV Memory (5k)
+>> +microchip,mcp4541-103	Microchip 8-bit Single I2C Digital Potentiometer with NV Memory (10k)
+>> +microchip,mcp4541-503	Microchip 8-bit Single I2C Digital Potentiometer with NV Memory (50k)
+>> +microchip,mcp4541-104	Microchip 8-bit Single I2C Digital Potentiometer with NV Memory (100k)
+>> +microchip,mcp4542-502	Microchip 8-bit Single I2C Digital Potentiometer with NV Memory (5k)
+>> +microchip,mcp4542-103	Microchip 8-bit Single I2C Digital Potentiometer with NV Memory (10k)
+>> +microchip,mcp4542-503	Microchip 8-bit Single I2C Digital Potentiometer with NV Memory (50k)
+>> +microchip,mcp4542-104	Microchip 8-bit Single I2C Digital Potentiometer with NV Memory (100k)
+>> +microchip,mcp4551-502	Microchip 7-bit Single I2C Digital Potentiometer (5k)
+>> +microchip,mcp4551-103	Microchip 7-bit Single I2C Digital Potentiometer (10k)
+>> +microchip,mcp4551-503	Microchip 7-bit Single I2C Digital Potentiometer (50k)
+>> +microchip,mcp4551-104	Microchip 7-bit Single I2C Digital Potentiometer (100k)
+>> +microchip,mcp4552-502	Microchip 7-bit Single I2C Digital Potentiometer (5k)
+>> +microchip,mcp4552-103	Microchip 7-bit Single I2C Digital Potentiometer (10k)
+>> +microchip,mcp4552-503	Microchip 7-bit Single I2C Digital Potentiometer (50k)
+>> +microchip,mcp4552-104	Microchip 7-bit Single I2C Digital Potentiometer (100k)
+>> +microchip,mcp4561-502	Microchip 7-bit Single I2C Digital Potentiometer with NV Memory (5k)
+>> +microchip,mcp4561-103	Microchip 7-bit Single I2C Digital Potentiometer with NV Memory (10k)
+>> +microchip,mcp4561-503	Microchip 7-bit Single I2C Digital Potentiometer with NV Memory (50k)
+>> +microchip,mcp4561-104	Microchip 7-bit Single I2C Digital Potentiometer with NV Memory (100k)
+>> +microchip,mcp4562-502	Microchip 7-bit Single I2C Digital Potentiometer with NV Memory (5k)
+>> +microchip,mcp4562-103	Microchip 7-bit Single I2C Digital Potentiometer with NV Memory (10k)
+>> +microchip,mcp4562-503	Microchip 7-bit Single I2C Digital Potentiometer with NV Memory (50k)
+>> +microchip,mcp4562-104	Microchip 7-bit Single I2C Digital Potentiometer with NV Memory (100k)
+>> +microchip,mcp4631-502	Microchip 8-bit Dual I2C Digital Potentiometer (5k)
+>> +microchip,mcp4631-103	Microchip 8-bit Dual I2C Digital Potentiometer (10k)
+>> +microchip,mcp4631-503	Microchip 8-bit Dual I2C Digital Potentiometer (50k)
+>> +microchip,mcp4631-104	Microchip 8-bit Dual I2C Digital Potentiometer (100k)
+>> +microchip,mcp4632-502	Microchip 8-bit Dual I2C Digital Potentiometer (5k)
+>> +microchip,mcp4632-103	Microchip 8-bit Dual I2C Digital Potentiometer (10k)
+>> +microchip,mcp4632-503	Microchip 8-bit Dual I2C Digital Potentiometer (50k)
+>> +microchip,mcp4632-104	Microchip 8-bit Dual I2C Digital Potentiometer (100k)
+>> +microchip,mcp4641-502	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (5k)
+>> +microchip,mcp4641-103	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (10k)
+>> +microchip,mcp4641-503	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (50k)
+>> +microchip,mcp4641-104	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (100k)
+>> +microchip,mcp4642-502	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (5k)
+>> +microchip,mcp4642-103	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (10k)
+>> +microchip,mcp4642-503	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (50k)
+>> +microchip,mcp4642-104	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (100k)
+>> +microchip,mcp4651-502	Microchip 7-bit Dual I2C Digital Potentiometer (5k)
+>> +microchip,mcp4651-103	Microchip 7-bit Dual I2C Digital Potentiometer (10k)
+>> +microchip,mcp4651-503	Microchip 7-bit Dual I2C Digital Potentiometer (50k)
+>> +microchip,mcp4651-104	Microchip 7-bit Dual I2C Digital Potentiometer (100k)
+>> +microchip,mcp4652-502	Microchip 7-bit Dual I2C Digital Potentiometer (5k)
+>> +microchip,mcp4652-103	Microchip 7-bit Dual I2C Digital Potentiometer (10k)
+>> +microchip,mcp4652-503	Microchip 7-bit Dual I2C Digital Potentiometer (50k)
+>> +microchip,mcp4652-104	Microchip 7-bit Dual I2C Digital Potentiometer (100k)
+>> +microchip,mcp4661-502	Microchip 7-bit Dual I2C Digital Potentiometer with NV Memory (5k)
+>> +microchip,mcp4661-103	Microchip 7-bit Dual I2C Digital Potentiometer with NV Memory (10k)
+>> +microchip,mcp4661-503	Microchip 7-bit Dual I2C Digital Potentiometer with NV Memory (50k)
+>> +microchip,mcp4661-104	Microchip 7-bit Dual I2C Digital Potentiometer with NV Memory (100k)
+>> +microchip,mcp4662-502	Microchip 7-bit Dual I2C Digital Potentiometer with NV Memory (5k)
+>> +microchip,mcp4662-103	Microchip 7-bit Dual I2C Digital Potentiometer with NV Memory (10k)
+>> +microchip,mcp4662-503	Microchip 7-bit Dual I2C Digital Potentiometer with NV Memory (50k)
+>> +microchip,mcp4662-104	Microchip 7-bit Dual I2C Digital Potentiometer with NV Memory (100k)
+>>  national,lm63		Temperature sensor with integrated fan control
+>>  national,lm75		I2C TEMP SENSOR
+>>  national,lm80		Serial Interface ACPI-Compatible Microprocessor System Hardware Monitor
+>>
+> 
