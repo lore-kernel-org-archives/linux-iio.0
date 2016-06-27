@@ -1,45 +1,78 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([84.19.176.92]:46364 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751879AbcF0Qwc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 27 Jun 2016 12:52:32 -0400
+Date: Mon, 27 Jun 2016 18:52:23 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Linus Walleij <linus.walleij@linaro.org>
+cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 03/10 v3] iio: pressure: bmp280: add reset GPIO line
+ handling
+In-Reply-To: <1467045020-2665-4-git-send-email-linus.walleij@linaro.org>
+Message-ID: <alpine.DEB.2.02.1606271851140.5271@pmeerw.net>
+References: <1467045020-2665-1-git-send-email-linus.walleij@linaro.org> <1467045020-2665-4-git-send-email-linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <fe513b34c179810b42a77e806347088647d17106.1467023672.git.gregor.boirie@parrot.com>
-References: <cover.1467023672.git.gregor.boirie@parrot.com> <fe513b34c179810b42a77e806347088647d17106.1467023672.git.gregor.boirie@parrot.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 27 Jun 2016 18:44:30 +0200
-Message-ID: <CACRpkdaDray8+HF9RcA9Kqm5bfv0yJyNOx2-xg+WT+F9ZoA19w@mail.gmail.com>
-Subject: Re: [PATCH v2 3/7] iio:st_pressure: document sampling gains
-To: Gregor Boirie <gregor.boirie@parrot.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Denis Ciocca <denis.ciocca@st.com>,
-	Giuseppe Barba <giuseppe.barba@st.com>, Crestez Dan Leonard <leonard.crestez@intel.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jun 27, 2016 at 12:38 PM, Gregor Boirie
-<gregor.boirie@parrot.com> wrote:
+On Mon, 27 Jun 2016, Linus Walleij wrote:
 
-> Details scaling factors and offsets applied to raw temperature and pressure
-> samples.
->
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+> On the APQ8060 Dragonboard the reset line to the BMP058 pressure
 
-I try to apply the patches on top of Jonathan's 4.8a branch, but I
-fail when I get to this patch like this:
+BMP085
 
-$ git am 03.patch
-Applying: iio:st_pressure: document sampling gains
-error: patch failed: drivers/iio/pressure/st_pressure_core.c:28
-error: drivers/iio/pressure/st_pressure_core.c: patch does not apply
-Patch failed at 0001 iio:st_pressure: document sampling gains
-The copy of the patch that failed is found in:
-   /home/linus/linux-iio/.git/rebase-apply/patch
-When you have resolved this problem, run "git am --continue".
-If you prefer to skip this patch, run "git am --skip" instead.
-To restore the original branch and stop patching, run "git am --abort".
+> sensor is not deasserted on boot, so the driver needs to handle
+> this. For a simple GPIO line supplied as a descriptor (from a board
+> file, device tree or ACPI) this does the trick.
+> 
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v2->v3:
+> - None, just rebasing/resending
+> ---
+>  drivers/iio/pressure/bmp280.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+> index fa76f5851245..1618968f8889 100644
+> --- a/drivers/iio/pressure/bmp280.c
+> +++ b/drivers/iio/pressure/bmp280.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/delay.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> +#include <linux/gpio/consumer.h>
+>  
+>  /* BMP280 specific registers */
+>  #define BMP280_REG_HUMIDITY_LSB		0xFE
+> @@ -1024,6 +1025,7 @@ static int bmp280_probe(struct i2c_client *client,
+>  	struct iio_dev *indio_dev;
+>  	struct bmp280_data *data;
+>  	unsigned int chip_id;
+> +	struct gpio_desc *gpiod;
+>  
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>  	if (!indio_dev)
+> @@ -1063,6 +1065,14 @@ static int bmp280_probe(struct i2c_client *client,
+>  		return -EINVAL;
+>  	}
+>  
+> +	/* Bring chip out of reset if there is an assigned GPIO line */
+> +	gpiod = devm_gpiod_get(&client->dev, "reset", GPIOD_OUT_HIGH);
+> +	/* Deassert the signal */
+> +	if (!IS_ERR(gpiod)) {
+> +		dev_info(&client->dev, "release reset\n");
+> +		gpiod_set_value(gpiod, 0);
+> +	}
+> +
+>  	data->regmap = devm_regmap_init_i2c(client,
+>  					data->chip_info->regmap_config);
+>  	if (IS_ERR(data->regmap)) {
+> 
 
-Can you rebase/make sure they all apply on the 4.8a or so so that
-I can test them?
+-- 
 
-Or do you have a git branch I can just pull and test?
-
-Yours,
-Linus Walleij
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
