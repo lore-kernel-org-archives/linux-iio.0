@@ -1,97 +1,92 @@
-Return-Path: <vlad.dogaru@intel.com>
-Date: Mon, 27 Jun 2016 16:31:11 +0300
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, andrey_utkin@fastmail.com
-Subject: Re: [RFC PATCH] iio: imu: add driver for Bosch Sensortec BNO055
-Message-ID: <20160627133110.GE3142@vdogaru>
-References: <1466766936-20561-1-git-send-email-vlad.dogaru@intel.com>
- <0fb507e2-e936-9c0c-9148-e4e329ba9dcb@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([84.19.176.92]:41059 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750870AbcF0N4u (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 27 Jun 2016 09:56:50 -0400
+Date: Mon, 27 Jun 2016 15:56:48 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Bijosh Thykkoottathil <bijosh.t@hotmail.com>,
+	Jonathan Cameron <jic23@kernel.org>
+cc: "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"k.kozlowski@samsung.com" <k.kozlowski@samsung.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] drivers:iio:light:isl29125: added macros for sensing
+ range
+In-Reply-To: <cd4fd8f2-a44a-abd5-5d6b-9d8618d435ac@kernel.org>
+Message-ID: <alpine.DEB.2.02.1606271554240.2632@pmeerw.net>
+References: <KL1PR04MB12053135303C2DFF58F70CB2802E0@KL1PR04MB1205.apcprd04.prod.outlook.com> <cd4fd8f2-a44a-abd5-5d6b-9d8618d435ac@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <0fb507e2-e936-9c0c-9148-e4e329ba9dcb@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jun 26, 2016 at 06:56:57PM +0100, Jonathan Cameron wrote:
-> On 24/06/16 12:15, Vlad Dogaru wrote:
-> > Hi everyone,
-> > 
-> > This is a minimal implementation of a driver for the Bosch Sensortec
-> > BNO055, a very interesting accel-gyro-magneto combo.  The datasheet is
-> > available at https://www.bosch-sensortec.com/bst/products/all_products/bno055
-> 'interesting' device indeed.
-> > 
-> > The driver in its present state works, but this is a RFC for a few
-> > reasons detailed below:
-> > 
-> > (1) The device has a few possible operating modes.  The most simple
-> > ones employ a single sensor and power down the other two; the most
-> > complex use all 3 for sensor fusion.  Changing the mode at runtime would
-> > require changing the channels and I'm not sure IIO allows that.
-> It allows a much greater set of channels than can run at one time though..
-> Would that work here?  Lots of fun with available_scan_masks and
-> friends, but from your description here sounds fine (will look at
-> the code in a minute).
-> >  So I've
-> > opted to choose the mode at probe time, based on a DeviceTree property.
-> > Hope that's ok.
-> Would rather it was runtime controllable I think...
-> > 
-> > (2) Fusion modes provide orientation data.  This is either relative to
-> > the initial position of the sensor, or to magnetic North.
-> Something new :)
-> >  There is a
-> > modifier, IIO_MOD_NORTH_MAGN,
-> I'm trying to remember why we have that...  Ah, just checked docs, it
-> was for devices that offered planar rotation angles from north.
-> > but it occupies the same field as
-> > IIO_MOD_QUATERNION 
-> With hindsight we should probably have made that a new channel type
-> rather than trying to mash it into the rotation type.  Perhaps doing
-> that now is the way to go and adding the interface to the hid sensor
-> device driver that is the only user (keeping the old option as well
-> for compatibility reasons).
+
+> On 24/06/16 12:16, Bijosh Thykkoottathil wrote:
+> > Added macros for sensing range as the corresponding magic numbers
+> > were used at multiple places.
+> >    - SENSING_RANGE_0 for 375 lux full range
+> >    - SENSING_RANGE_1 for 10k lux full range
+
+> Macros are great for making cases of 'magic numbers' more readable.
+> However here we are wrapping up 'real' numbers in macros that actually
+> obscure what they are...
 > 
-> > and IIO_MOD_{X,Y,Z}, so we can't use both.
-> This is kind of related to mounting matrix, be it a 'world mounting matrix'.
-> I wonder if we want to support it in a vaguely similar way...
-> 
->   Therefore
-> > there is currently no means of telling from user space whether the
-> > orientation is relative to North or to the initial position;  one could
-> > look at the DeviceTree description to deduce the operating mode, but
-> > that's hardly ideal.
-> Absolutely, this one needs to be exposed in userspace.
-> 
-> Is there a means of resetting the initial position at runtime?
+> Now the fact they are used twice does make it a little more worthwhile.
+> Peter, what do you think?  Your driver so up to you ;)
 
-I think switching the device to config mode (where no sensors are
-available) and then back to a relative-orientation mode would work.
-I've proposed a means to do this in my previous message, but it's just a
-first draft.  Please feel free to poke holes in that approach :)
+I'm fine with the proposed change, but a proper prefix is required, hence
+ISL29125_SENSING_RANGE_0 and _1
 
-> Providing an attribute to do that might be the cleanest option if
-> so. Not sure if there are any benefits to picking the initial value
-> against the north one otherwise...
+regards, p.
+
+> > ---
+> >  drivers/iio/light/isl29125.c | 11 +++++++----
+> >  1 file changed, 7 insertions(+), 4 deletions(-)
 > > 
-> > (3) In fusion modes, the device also exposes linear and gravitational
-> > accelerations, but IIO doesn't seem to support this.  I can add these
-> > channel types if you believe they are useful.
+> > diff --git a/drivers/iio/light/isl29125.c b/drivers/iio/light/isl29125.c
+> > index e2945a2..83a5a7a 100644
+> > --- a/drivers/iio/light/isl29125.c
+> > +++ b/drivers/iio/light/isl29125.c
+> > @@ -44,6 +44,9 @@
+> >  #define ISL29125_MODE_B 0x3
+> >  #define ISL29125_MODE_RGB 0x5
+> >  
+> > +#define SENSING_RANGE_0 5722   /* 375 lux full range */
+> > +#define SENSING_RANGE_1 152590 /* 10k lux full range */
+> > +
+> >  #define ISL29125_MODE_RANGE BIT(3)
+> >  
+> >  #define ISL29125_STATUS_CONV BIT(1)
+> > @@ -140,9 +143,9 @@ static int isl29125_read_raw(struct iio_dev *indio_dev,
+> >  	case IIO_CHAN_INFO_SCALE:
+> >  		*val = 0;
+> >  		if (data->conf1 & ISL29125_MODE_RANGE)
+> > -			*val2 = 152590; /* 10k lux full range */
+> > +			*val2 = SENSING_RANGE_1; /* 10k lux full range */
+> >  		else
+> > -			*val2 = 5722; /* 375 lux full range */
+> > +			*val2 = SENSING_RANGE_0; /* 375 lux full range */
+> >  		return IIO_VAL_INT_PLUS_MICRO;
+> >  	}
+> >  	return -EINVAL;
+> > @@ -158,9 +161,9 @@ static int isl29125_write_raw(struct iio_dev *indio_dev,
+> >  	case IIO_CHAN_INFO_SCALE:
+> >  		if (val != 0)
+> >  			return -EINVAL;
+> > -		if (val2 == 152590)
+> > +		if (val2 == SENSING_RANGE_1)
+> >  			data->conf1 |= ISL29125_MODE_RANGE;
+> > -		else if (val2 == 5722)
+> > +		else if (val2 == SENSING_RANGE_0)
+> >  			data->conf1 &= ~ISL29125_MODE_RANGE;
+> >  		else
+> >  			return -EINVAL;
+> > 
 > 
-> They will indeed have to be new channel types as you suggest, though
-> 'linear' is a rather unclear name to my mind.
 
-Quoting Section 3.3.3 of the datasheet:
+-- 
 
-	In fusion modes it is possible to separate the two acceleration
-	sources, and thus the sensor fusion data provides separately
-	linear acceleration (i.e. acceleration that is applied due to
-	movement) and the gravity vector.
-
-This agrees with Android's definitions:
-https://developer.android.com/guide/topics/sensors/sensors_motion.html#sensors-motion-grav
-https://developer.android.com/guide/topics/sensors/sensors_motion.html#sensors-motion-linear
-
-Thanks,
-Vlad
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
