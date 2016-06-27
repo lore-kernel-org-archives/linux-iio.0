@@ -1,12 +1,7 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f43.google.com ([209.85.215.43]:34753 "EHLO
-	mail-lf0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751721AbcF0Qar (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jun 2016 12:30:47 -0400
-Received: by mail-lf0-f43.google.com with SMTP id h129so160250535lfh.1
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jun 2016 09:30:46 -0700 (PDT)
+Return-Path: <linus.walleij@linaro.org>
 From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
 	Akinobu Mita <akinobu.mita@gmail.com>,
 	"H. Nikolaus Schaller" <hns@goldelico.com>,
 	Matt Ranostay <mranostay@gmail.com>
@@ -17,62 +12,189 @@ Cc: Christoph Mair <christoph.mair@gmail.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>,
 	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 03/10 v3] iio: pressure: bmp280: add reset GPIO line handling
-Date: Mon, 27 Jun 2016 18:30:13 +0200
-Message-Id: <1467045020-2665-4-git-send-email-linus.walleij@linaro.org>
+Subject: [PATCH 09/10 v3] iio: pressure: bmp280: read calibration data once
+Date: Mon, 27 Jun 2016 18:30:19 +0200
+Message-Id: <1467045020-2665-10-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1467045020-2665-1-git-send-email-linus.walleij@linaro.org>
 References: <1467045020-2665-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On the APQ8060 Dragonboard the reset line to the BMP058 pressure
-sensor is not deasserted on boot, so the driver needs to handle
-this. For a simple GPIO line supplied as a descriptor (from a board
-file, device tree or ACPI) this does the trick.
+The calibration data is described as coming from an E2PROM and that
+means it does not change. Just read it once at probe time and store
+it in the device state container. Also toss the calibration data
+into the entropy pool since it is device unique.
 
+Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v2->v3:
-- None, just rebasing/resending
+- Rebase on other changes
+- Drop unrelated whitespace fix
+ChangeLog v1->v2:
+- Remove unused dangling "ret" variable.
 ---
- drivers/iio/pressure/bmp280.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iio/pressure/bmp280-core.c | 94 +++++++++++++++++++-------------------
+ 1 file changed, 48 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index fa76f5851245..1618968f8889 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -23,6 +23,7 @@
- #include <linux/delay.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/gpio/consumer.h>
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index 615def02164a..f7233641c643 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -30,9 +30,30 @@
+ #include <linux/interrupt.h>
+ #include <linux/irq.h> /* For irq_get_irq_data() */
+ #include <linux/completion.h>
++#include <linux/random.h>
  
- /* BMP280 specific registers */
- #define BMP280_REG_HUMIDITY_LSB		0xFE
-@@ -1024,6 +1025,7 @@ static int bmp280_probe(struct i2c_client *client,
- 	struct iio_dev *indio_dev;
- 	struct bmp280_data *data;
- 	unsigned int chip_id;
-+	struct gpio_desc *gpiod;
+ #include "bmp280.h"
  
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -1063,6 +1065,14 @@ static int bmp280_probe(struct i2c_client *client,
- 		return -EINVAL;
++/*
++ * These enums are used for indexing into the array of calibration
++ * coefficients for BMP180.
++ */
++enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
++
++struct bmp180_calib {
++	s16 AC1;
++	s16 AC2;
++	s16 AC3;
++	u16 AC4;
++	u16 AC5;
++	u16 AC6;
++	s16 B1;
++	s16 B2;
++	s16 MB;
++	s16 MC;
++	s16 MD;
++};
++
+ struct bmp280_data {
+ 	struct device *dev;
+ 	struct mutex lock;
+@@ -40,6 +61,7 @@ struct bmp280_data {
+ 	struct completion done;
+ 	bool use_eoc;
+ 	const struct bmp280_chip_info *chip_info;
++	struct bmp180_calib calib;
+ 	struct regulator *vddd;
+ 	struct regulator *vdda;
+ 	unsigned int start_up_time; /* in milliseconds */
+@@ -656,26 +678,6 @@ static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
+ 	return 0;
+ }
+ 
+-/*
+- * These enums are used for indexing into the array of calibration
+- * coefficients for BMP180.
+- */
+-enum { AC1, AC2, AC3, AC4, AC5, AC6, B1, B2, MB, MC, MD };
+-
+-struct bmp180_calib {
+-	s16 AC1;
+-	s16 AC2;
+-	s16 AC3;
+-	u16 AC4;
+-	u16 AC5;
+-	u16 AC6;
+-	s16 B1;
+-	s16 B2;
+-	s16 MB;
+-	s16 MC;
+-	s16 MD;
+-};
+-
+ static int bmp180_read_calib(struct bmp280_data *data,
+ 			     struct bmp180_calib *calib)
+ {
+@@ -695,6 +697,9 @@ static int bmp180_read_calib(struct bmp280_data *data,
+ 			return -EIO;
  	}
  
-+	/* Bring chip out of reset if there is an assigned GPIO line */
-+	gpiod = devm_gpiod_get(&client->dev, "reset", GPIOD_OUT_HIGH);
-+	/* Deassert the signal */
-+	if (!IS_ERR(gpiod)) {
-+		dev_info(&client->dev, "release reset\n");
-+		gpiod_set_value(gpiod, 0);
++	/* Toss the calibration data into the entropy pool */
++	add_device_randomness(buf, sizeof(buf));
++
+ 	calib->AC1 = be16_to_cpu(buf[AC1]);
+ 	calib->AC2 = be16_to_cpu(buf[AC2]);
+ 	calib->AC3 = be16_to_cpu(buf[AC3]);
+@@ -718,19 +723,11 @@ static int bmp180_read_calib(struct bmp280_data *data,
+  */
+ static s32 bmp180_compensate_temp(struct bmp280_data *data, s32 adc_temp)
+ {
+-	int ret;
+ 	s32 x1, x2;
+-	struct bmp180_calib calib;
++	struct bmp180_calib *calib = &data->calib;
+ 
+-	ret = bmp180_read_calib(data, &calib);
+-	if (ret < 0) {
+-		dev_err(data->dev,
+-			"failed to read calibration coefficients\n");
+-		return ret;
+-	}
+-
+-	x1 = ((adc_temp - calib.AC6) * calib.AC5) >> 15;
+-	x2 = (calib.MC << 11) / (x1 + calib.MD);
++	x1 = ((adc_temp - calib->AC6) * calib->AC5) >> 15;
++	x2 = (calib->MC << 11) / (x1 + calib->MD);
+ 	data->t_fine = x1 + x2;
+ 
+ 	return (data->t_fine + 8) >> 4;
+@@ -785,29 +782,21 @@ static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
+  */
+ static u32 bmp180_compensate_press(struct bmp280_data *data, s32 adc_press)
+ {
+-	int ret;
+ 	s32 x1, x2, x3, p;
+ 	s32 b3, b6;
+ 	u32 b4, b7;
+ 	s32 oss = data->oversampling_press;
+-	struct bmp180_calib calib;
+-
+-	ret = bmp180_read_calib(data, &calib);
+-	if (ret < 0) {
+-		dev_err(data->dev,
+-			"failed to read calibration coefficients\n");
+-		return ret;
+-	}
++	struct bmp180_calib *calib = &data->calib;
+ 
+ 	b6 = data->t_fine - 4000;
+-	x1 = (calib.B2 * (b6 * b6 >> 12)) >> 11;
+-	x2 = calib.AC2 * b6 >> 11;
++	x1 = (calib->B2 * (b6 * b6 >> 12)) >> 11;
++	x2 = calib->AC2 * b6 >> 11;
+ 	x3 = x1 + x2;
+-	b3 = ((((s32)calib.AC1 * 4 + x3) << oss) + 2) / 4;
+-	x1 = calib.AC3 * b6 >> 13;
+-	x2 = (calib.B1 * ((b6 * b6) >> 12)) >> 16;
++	b3 = ((((s32)calib->AC1 * 4 + x3) << oss) + 2) / 4;
++	x1 = calib->AC3 * b6 >> 13;
++	x2 = (calib->B1 * ((b6 * b6) >> 12)) >> 16;
+ 	x3 = (x1 + x2 + 2) >> 2;
+-	b4 = calib.AC4 * (u32)(x3 + 32768) >> 15;
++	b4 = calib->AC4 * (u32)(x3 + 32768) >> 15;
+ 	b7 = ((u32)adc_press - b3) * (50000 >> oss);
+ 	if (b7 < 0x80000000)
+ 		p = (b7 * 2) / b4;
+@@ -1011,6 +1000,19 @@ int bmp280_common_probe(struct device *dev,
+ 	dev_set_drvdata(dev, data);
+ 
+ 	/*
++	 * The BMP058 and BMP180 has calibration in an E2PROM, read it out
++	 * at probe time. It will not change.
++	 */
++	if (chip_id  == BMP180_CHIP_ID) {
++		ret = bmp180_read_calib(data, &data->calib);
++		if (ret < 0) {
++			dev_err(data->dev,
++				"failed to read calibration coefficients\n");
++			goto out_disable_vdda;
++		}
 +	}
 +
- 	data->regmap = devm_regmap_init_i2c(client,
- 					data->chip_info->regmap_config);
- 	if (IS_ERR(data->regmap)) {
++	/*
+ 	 * Attempt to grab an optional EOC IRQ - only the BMP058 has this
+ 	 * however as it happens, the BMP058 shares the chip ID of BMP180
+ 	 * so we look for an IRQ if we have that.
 -- 
 2.4.11
-
