@@ -1,51 +1,97 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <e6a52c1b-8863-e977-a256-3be0151c0933@kernel.org>
-References: <1466628819-29784-1-git-send-email-linus.walleij@linaro.org>
- <1466628819-29784-10-git-send-email-linus.walleij@linaro.org> <e6a52c1b-8863-e977-a256-3be0151c0933@kernel.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 27 Jun 2016 14:11:23 +0200
-Message-ID: <CACRpkdb_fxLSRJq_8ki7u1i9BwxmTS35XD14HDCe9WXfO+L05g@mail.gmail.com>
-Subject: Re: [PATCH 9/9 v2] iio: pressure: bmp280: read calibration data once
+Return-Path: <vlad.dogaru@intel.com>
+Date: Mon, 27 Jun 2016 16:31:11 +0300
+From: Vlad Dogaru <vlad.dogaru@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Akinobu Mita <akinobu.mita@gmail.com>,
-	"H. Nikolaus Schaller" <hns@goldelico.com>, Matt Ranostay <mranostay@gmail.com>,
-	Christoph Mair <christoph.mair@gmail.com>, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, Marek Belisko <marek@goldelico.com>,
-	Eric Andersson <eric.andersson@unixphere.com>, Neil Brown <neilb@suse.de>
-Content-Type: text/plain; charset=UTF-8
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, andrey_utkin@fastmail.com
+Subject: Re: [RFC PATCH] iio: imu: add driver for Bosch Sensortec BNO055
+Message-ID: <20160627133110.GE3142@vdogaru>
+References: <1466766936-20561-1-git-send-email-vlad.dogaru@intel.com>
+ <0fb507e2-e936-9c0c-9148-e4e329ba9dcb@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <0fb507e2-e936-9c0c-9148-e4e329ba9dcb@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Jun 26, 2016 at 12:21 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 22/06/16 21:53, Linus Walleij wrote:
->> The calibration data is described as coming from an E2PROM and that
->> means it does not change. Just read it once at probe time and store
->> it in the device state container. Also toss the calibration data
->> into the entropy pool since it is device unique.
->>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->
-> One nitpick inline, but it's minor enough I'm just being grumpy
-> about it so don't bother fixing it unless you want to.
->
-> On the adding entropy bit, any idea who to sanity check that with?
-> It's not something we've done before, so I just want a bit of
-> reassurance ideally;)
+On Sun, Jun 26, 2016 at 06:56:57PM +0100, Jonathan Cameron wrote:
+> On 24/06/16 12:15, Vlad Dogaru wrote:
+> > Hi everyone,
+> > 
+> > This is a minimal implementation of a driver for the Bosch Sensortec
+> > BNO055, a very interesting accel-gyro-magneto combo.  The datasheet is
+> > available at https://www.bosch-sensortec.com/bst/products/all_products/bno055
+> 'interesting' device indeed.
+> > 
+> > The driver in its present state works, but this is a RFC for a few
+> > reasons detailed below:
+> > 
+> > (1) The device has a few possible operating modes.  The most simple
+> > ones employ a single sensor and power down the other two; the most
+> > complex use all 3 for sensor fusion.  Changing the mode at runtime would
+> > require changing the channels and I'm not sure IIO allows that.
+> It allows a much greater set of channels than can run at one time though..
+> Would that work here?  Lots of fun with available_scan_masks and
+> friends, but from your description here sounds fine (will look at
+> the code in a minute).
+> >  So I've
+> > opted to choose the mode at probe time, based on a DeviceTree property.
+> > Hope that's ok.
+> Would rather it was runtime controllable I think...
+> > 
+> > (2) Fusion modes provide orientation data.  This is either relative to
+> > the initial position of the sensor, or to magnetic North.
+> Something new :)
+> >  There is a
+> > modifier, IIO_MOD_NORTH_MAGN,
+> I'm trying to remember why we have that...  Ah, just checked docs, it
+> was for devices that offered planar rotation angles from north.
+> > but it occupies the same field as
+> > IIO_MOD_QUATERNION 
+> With hindsight we should probably have made that a new channel type
+> rather than trying to mash it into the rotation type.  Perhaps doing
+> that now is the way to go and adding the interface to the hid sensor
+> device driver that is the only user (keeping the old option as well
+> for compatibility reasons).
+> 
+> > and IIO_MOD_{X,Y,Z}, so we can't use both.
+> This is kind of related to mounting matrix, be it a 'world mounting matrix'.
+> I wonder if we want to support it in a vaguely similar way...
+> 
+>   Therefore
+> > there is currently no means of telling from user space whether the
+> > orientation is relative to North or to the initial position;  one could
+> > look at the DeviceTree description to deduce the operating mode, but
+> > that's hardly ideal.
+> Absolutely, this one needs to be exposed in userspace.
+> 
+> Is there a means of resetting the initial position at runtime?
 
-I've done it in a few places whenever I ran into device-unique numbers,
-actually sensors often have device-unique calibration and are thus well
-suited to toss into the entropy pool.
+I think switching the device to config mode (where no sensors are
+available) and then back to a relative-orientation mode would work.
+I've proposed a means to do this in my previous message, but it's just a
+first draft.  Please feel free to poke holes in that approach :)
 
-The data from devices isn't really trusted to increase entropy: it may,
-but it's not relied on by the algorithm, just mixed in, see:
-http://lwn.net/Articles/507115/
+> Providing an attribute to do that might be the cleanest option if
+> so. Not sure if there are any benefits to picking the initial value
+> against the north one otherwise...
+> > 
+> > (3) In fusion modes, the device also exposes linear and gravitational
+> > accelerations, but IIO doesn't seem to support this.  I can add these
+> > channel types if you believe they are useful.
+> 
+> They will indeed have to be new channel types as you suggest, though
+> 'linear' is a rather unclear name to my mind.
 
->>       ret = regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, buf,
->>                              sizeof(buf));
->> -
-> Good but unrelated change.  Should have been in a different patch...
+Quoting Section 3.3.3 of the datasheet:
 
-Dropped unrelated whitespace fix.
+	In fusion modes it is possible to separate the two acceleration
+	sources, and thus the sensor fusion data provides separately
+	linear acceleration (i.e. acceleration that is applied due to
+	movement) and the gravity vector.
 
-Yours,
-Linus Walleij
+This agrees with Android's definitions:
+https://developer.android.com/guide/topics/sensors/sensors_motion.html#sensors-motion-grav
+https://developer.android.com/guide/topics/sensors/sensors_motion.html#sensors-motion-linear
+
+Thanks,
+Vlad
