@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:45418 "EHLO
+Received: from down.free-electrons.com ([37.187.137.238]:46105 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752051AbcF1Ic2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 04:32:28 -0400
-Date: Tue, 28 Jun 2016 10:32:26 +0200
+	with ESMTP id S1752062AbcF1Iv4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 04:51:56 -0400
+Date: Tue, 28 Jun 2016 10:51:54 +0200
 From: Antoine Tenart <antoine.tenart@free-electrons.com>
 To: Quentin Schulz <quentin.schulz@free-electrons.com>
 Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
@@ -14,50 +14,67 @@ Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	thomas.petazzoni@free-electrons.com,
 	antoine.tenart@free-electrons.com
-Subject: Re: [PATCH 2/3] iio: adc: add support for Allwinner SoCs ADC
-Message-ID: <20160628083226.GD4472@kwain>
+Subject: Re: [PATCH 1/3] mfd: add support for Allwinner SoCs ADC
+Message-ID: <20160628085154.GE4472@kwain>
 References: <1467101897-15946-1-git-send-email-quentin.schulz@free-electrons.com>
- <1467101897-15946-3-git-send-email-quentin.schulz@free-electrons.com>
+ <1467101897-15946-2-git-send-email-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="+JUInw4efm7IfTNU"
-In-Reply-To: <1467101897-15946-3-git-send-email-quentin.schulz@free-electrons.com>
+	protocol="application/pgp-signature"; boundary="iBwuxWUsK/REspAd"
+In-Reply-To: <1467101897-15946-2-git-send-email-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---+JUInw4efm7IfTNU
+--iBwuxWUsK/REspAd
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hello Quentin!
+Hello,
 
-On Tue, Jun 28, 2016 at 10:18:16AM +0200, Quentin Schulz wrote:
->
-> diff --git a/drivers/iio/adc/sunxi-gpadc-iio.c b/drivers/iio/adc/sunxi-gp=
-adc-iio.c
+On Tue, Jun 28, 2016 at 10:18:15AM +0200, Quentin Schulz wrote:
+> diff --git a/drivers/mfd/sunxi-gpadc-mfd.c b/drivers/mfd/sunxi-gpadc-mfd.c
 > new file mode 100644
-> index 0000000..5840f43
+> index 0000000..710e297
 > --- /dev/null
-> +++ b/drivers/iio/adc/sunxi-gpadc-iio.c
-> @@ -0,0 +1,371 @@
+> +++ b/drivers/mfd/sunxi-gpadc-mfd.c
+> @@ -0,0 +1,188 @@
 
-Same here, you can add a license statement :-)
+[...]
 
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/io.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/clk.h>
-> +#include <linux/completion.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/iio/driver.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/mfd/sunxi-gpadc-mfd.h>
-> +#include <linux/regmap.h>
+> +	if (of_device_is_compatible(pdev->dev.of_node,
+> +				    "allwinner,sun4i-a10-ts"))
+> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
+> +				      sun4i_gpadc_mfd_cells,
+> +				      ARRAY_SIZE(sun4i_gpadc_mfd_cells), NULL,
+> +				      0, NULL);
+> +	else if (of_device_is_compatible(pdev->dev.of_node,
+> +					 "allwinner,sun5i-a13-ts"))
+> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
+> +				      sun5i_gpadc_mfd_cells,
+> +				      ARRAY_SIZE(sun5i_gpadc_mfd_cells), NULL,
+> +				      0, NULL);
+> +	else if (of_device_is_compatible(pdev->dev.of_node,
+> +					 "allwinner,sun6i-a31-ts"))
+> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
+> +				      sun6i_gpadc_mfd_cells,
+> +				      ARRAY_SIZE(sun6i_gpadc_mfd_cells), NULL,
+> +				      0, NULL);
+> +
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to add MFD devices: %d\n", ret);
+> +		regmap_del_irq_chip(irq, sunxi_gpadc_mfd_dev->regmap_irqc);
+> +		mfd_remove_devices(&pdev->dev);
+
+You don't need to explicitly call mfd_remove_devices() when
+mfd_add_devices() fails. See:
+http://lxr.free-electrons.com/source/drivers/mfd/mfd-core.c#L298
+
+> +		return ret;
+> +	}
+
+Thanks,
 
 Antoine
 
@@ -66,25 +83,25 @@ Antoine T=E9nart, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---+JUInw4efm7IfTNU
+--iBwuxWUsK/REspAd
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBCgAGBQJXcjYZAAoJEFxNi8it27zYt98P/1c/XBHeDLNzZGGa4LbIxoqx
-WtsC1ZgOrJVf+t772Qnw2htZ78CWB5R1xpO2sLUjkyY09WoMhskDifz+PiDfym2L
-qz0DaL1kq+zK3uOr4Z6WXKEdeqfTDB/7KLq0ZpbASq3YmGSe8IBxLc0vU5Rhr6/U
-DtfChTGGUfiCusotBJrWvgm4Sq+UlwYLSD463BuKGEwLe29rQCaWgtIxk/fpe1wL
-Cy7NeBe5aPuTmm290liwqXmQX5R/w/VDhh7MqzXS19dJmkMg/P7SdPYFyI20HnsF
-YvoFYD4OYtFSRK/4LJl51E61OXh03LiN5NfaSV1+0G8waDtPNWYHzA7QurH4iYGO
-rvuhioNzoqOj0W2oDF85KZR4bKuw5FcVUoF8UTXsaFs3klV1LOABfAU18JpTce3K
-Tr9WkGd4jY+P24majtrKOrdtG9JrzCQxjIuksTQR+UIADZ1CmsnG0DYmx9MZbW24
-nKaNPeqfJjiycgPBxMWJEB1oX2XAsCC7S3g4AKqustK6H7sG5z5+xBN6n7XMpzr6
-lGjXtynYvwGdcmflGWuci8akUrHRSnHLmmmy1w+58n7lg5gMahveWlRtnq9BbRUj
-HyvOdIJ2mWT6+84ppQ2RgxHB3fg37welwNkmDtWMH3GKEL/9+7cU/rD48LdPNRQ6
-MgO2rIre73/WqiopOfCq
-=vZD8
+iQIcBAEBCgAGBQJXcjqpAAoJEFxNi8it27zYyEQP/Rl2UMqt5jb23K8aVacQnYCv
+VqeD6Ylky2+e/dBhf4+qWLHqG3nw1V3qVF0XlpzrDh/xLtYgmFq9Ox47b2JRN9It
+MBb3GgmlYG2US5sYhhDiNQLnRmEwpuEZpI2nJpnQONGHVoq/2IkdrZy3o0WX1TiF
+SVQlc2AssU9fxFnd0APhUMI5AJf0n75B7qPX110pyc/fAFVGJzRFESu2TRgn+C0i
+hmudf86EN44zkI6K+CuydOUCCg1EQTRmuFMbdrfpxfnDopNQwatayylOKxagqTl0
+Al/N3zyeEHZdQdgLEaRKTAk2DTthYF4HeL9wnTQxPKPbtq0athZKQBa8mu1CUH2O
+xjXQ8Vj0zLPr/1iT9gOwMHkIhPqS3+lSufVDeRsQ1wrBpvKcn0HTbLMIIg6JEm0g
+Dfw3OHvJ1nQNwoPo/Yw4CRKZuso5oExDQm8Fz0de67J6Exh6LjObdCeqdsFQD4AE
+k4e2vnGR6zNFEXfeCycs6TZ4vTIRZMLLhr01hqGt2WZVyKru8MPDixNYEKJ8rqr0
+VP5D6O9ETW2Z4kmrOlPb/KvmrOFhbBzBgdq4w1Vbp0RBevZrViqMaN97M+7aAE8G
+q/1TtdJm02fEM8TxgC4zDpSl44hOHp3RF7BZylnJTs2nV7EjS/TS5YTKShCV7uA8
+jZWe6G6i9Mtkff6S+hJr
+=5x0R
 -----END PGP SIGNATURE-----
 
---+JUInw4efm7IfTNU--
+--iBwuxWUsK/REspAd--
