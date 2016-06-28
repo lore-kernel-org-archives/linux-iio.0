@@ -1,79 +1,84 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <55aace217d3212cc2662d5dd010c7e5c8c0e357d.1467123107.git.leonard.crestez@intel.com>
-References: <55aace217d3212cc2662d5dd010c7e5c8c0e357d.1467123107.git.leonard.crestez@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58838 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752380AbcF1QZw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 12:25:52 -0400
+In-Reply-To: <alpine.DEB.2.02.1606281617430.21474@pmeerw.net>
+References: <1467101897-15946-1-git-send-email-quentin.schulz@free-electrons.com> <1467101897-15946-3-git-send-email-quentin.schulz@free-electrons.com> <alpine.DEB.2.02.1606281106040.17230@pmeerw.net> <57727DF5.1090702@free-electrons.com> <alpine.DEB.2.02.1606281617430.21474@pmeerw.net>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="----QZSN4RLU888ABDT16H1K9T50TUHLT3"
-Subject: Re: [PATCH] iio: Fix missing unlock on duplicate trigger
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Tue, 28 Jun 2016 17:20:03 +0100
-To: Crestez Dan Leonard <leonard.crestez@intel.com>,Jonathan Cameron <jic23@kernel.org>,linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org,Hartmut Knaack <knaack.h@gmx.de>,Lars-Peter Clausen <lars@metafoo.de>,Peter Meerwald-Stadler <pmeerw@pmeerw.net>,Daniel Baluta <daniel.baluta@intel.com>
-Message-ID: <960A05A3-9B6C-497D-A306-7961C7B5A04E@jic23.retrosnub.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
-
-------QZSN4RLU888ABDT16H1K9T50TUHLT3
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain;
  charset=UTF-8
+Subject: Re: [PATCH 2/3] iio: adc: add support for Allwinner SoCs ADC
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Tue, 28 Jun 2016 17:25:33 +0100
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Quentin Schulz <quentin.schulz@free-electrons.com>
+CC: jic23@kernel.org, maxime.ripard@free-electrons.com,
+	linux-iio@vger.kernel.org, thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
+Message-ID: <389DB893-13F0-4F59-B20A-2174636D4C0D@jic23.retrosnub.co.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-I applied a fix doing it after the gone to label in the error path last night. Either is fine
- but as I want to get a pull request post auto builds out today will leave as is.
 
-Thanks though!
 
-J
-
-On 28 June 2016 15:12:01 BST, Crestez Dan Leonard <leonard.crestez@intel.com> wrote:
->Since duplicate trigger names are supposed to cause errors at probe
->time
->anyway this issue is unlikely to affect anyone.
+On 28 June 2016 15:18:56 BST, Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
 >
->Fixes commit 2e2b6a13f5f5119c36551c1ab99b85e0ad1a2105:
->iio: Refuse to register triggers with duplicate names
+>> >> +struct sunxi_gpadc_dev {
+>> >> +	void __iomem			*regs;
+>> >> +	struct completion		completion;
+>> >> +	int				temp_data;
+>> > 
+>> > s32 maybe? what is the datatype and unit of temp_data? IIO wants 
+>> > milliCelsius
+>> > 
+>> 
+>> temp_data has no real datatype as it is the raw value given by the
+>ADC
+>> before conversion (with an offset and scale different for each SoC).
+>The
+>> temperature after conversion is given in milliCelsius as expected.
 >
->Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
->---
-> drivers/iio/industrialio-trigger.c | 1 +
-> 1 file changed, 1 insertion(+)
+>great!
+> 
+>> >> +	u32				adc_data;
+>> >> +	struct regmap			*regmap;
+>> >> +	unsigned int			fifo_data_irq;
+>> >> +	unsigned int			temp_data_irq;
+>> >> +	unsigned int			flags;
+>> >> +};
+>> >> +
+>> >> +#define ADC_CHANNEL(_channel, _name) {				\
+>> > 
+>> > prefix needed
+>> > 
+>> >> +	.type = IIO_VOLTAGE,					\
+>> >> +	.indexed = 1,						\
+>> >> +	.channel = _channel,					\
+>> >> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>> >> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+>> >> +	.datasheet_name = _name,				\
+>> >> +}
+>> >> +
+>> >> +static struct iio_map sunxi_gpadc_hwmon_maps[] = {
+>> > 
+>> > const possible?
+>> > 
+>> 
+>> The compiler complains with the following error:
+>> warning: passing argument 2 of ‘iio_map_array_register’ discards
+>‘const’
+>> qualifier from pointer target type [-Wdiscarded-qualifiers]
+>> ret = iio_map_array_register(indio_dev, sunxi_gpadc_hwmon_maps);
+>> 
+>> Is there a point to leave const even if it is discarded by the only
+>> function using it?
 >
->diff --git a/drivers/iio/industrialio-trigger.c
->b/drivers/iio/industrialio-trigger.c
->index 0f03523..68466be 100644
->--- a/drivers/iio/industrialio-trigger.c
->+++ b/drivers/iio/industrialio-trigger.c
->@@ -89,6 +89,7 @@ int iio_trigger_register(struct iio_trigger
->*trig_info)
-> 	/* Add to list of available triggers held by the IIO core */
-> 	mutex_lock(&iio_trigger_list_lock);
-> 	if (__iio_trigger_find_by_name(trig_info->name)) {
->+		mutex_unlock(&iio_trigger_list_lock);
-> 		pr_err("Duplicate trigger name '%s'\n", trig_info->name);
-> 		ret = -EEXIST;
-> 		goto error_device_del;
->-- 
->2.7.4
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>my bad, leave as is
+> 
+Surprised me as well. That function should probably be taking it as const.
+Can't immediately see a reason not to!
+>regards, p.
 
 -- 
 Sent from my Android device with K-9 Mail. Please excuse my brevity.
-------QZSN4RLU888ABDT16H1K9T50TUHLT3
-Content-Type: text/html;
- charset=utf-8
-Content-Transfer-Encoding: 8bit
-
-<html><head></head><body>I applied a fix doing it after the gone to label in the error path last night. Either is fine<br>
- but as I want to get a pull request post auto builds out today will leave as is.<br>
-<br>
-Thanks though!<br>
-<br>
-J<br><br><div class="gmail_quote">On 28 June 2016 15:12:01 BST, Crestez Dan Leonard &lt;leonard.crestez@intel.com&gt; wrote:<blockquote class="gmail_quote" style="margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-<pre class="k9mail">Since duplicate trigger names are supposed to cause errors at probe time<br />anyway this issue is unlikely to affect anyone.<br /><br />Fixes commit 2e2b6a13f5f5119c36551c1ab99b85e0ad1a2105:<br />iio: Refuse to register triggers with duplicate names<br /><br />Signed-off-by: Crestez Dan Leonard &lt;leonard.crestez@intel.com&gt;<br />---<br /> drivers/iio/industrialio-trigger.c | 1 +<br /> 1 file changed, 1 insertion(+)<br /><br />diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c<br />index 0f03523..68466be 100644<br />--- a/drivers/iio/industrialio-trigger.c<br />+++ b/drivers/iio/industrialio-trigger.c<br />@@ -89,6 +89,7 @@ int iio_trigger_register(struct iio_trigger *trig_info)<br />  /* Add to list of available triggers held by the IIO core */<br />  mutex_lock(&amp;iio_trigger_list_lock);<br />  if (__iio_trigger_find_by_name(trig_info-&gt;name)) {<br />+  mutex_unlock(&amp;iio_trigger_list_lock);<br />   pr_err("Du
- plicate
-trigger name '%s'\n", trig_info-&gt;name);<br />   ret = -EEXIST;<br />   goto error_device_del;</pre></blockquote></div><br>
--- <br>
-Sent from my Android device with K-9 Mail. Please excuse my brevity.</body></html>
-------QZSN4RLU888ABDT16H1K9T50TUHLT3--
