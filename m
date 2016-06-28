@@ -1,67 +1,148 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:45916 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752020AbcF1IqL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 04:46:11 -0400
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	maxime.ripard@free-electrons.com, wens@csie.org,
-	lee.jones@linaro.org
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com
-Subject: [PATCH 0/3] add support for Allwinner SoCs ADC
-Date: Tue, 28 Jun 2016 10:45:37 +0200
-Message-Id: <1467101897-15946-1-git-send-email-quentin.schulz@free-electrons.com>
+Received: from anchovy2.45ru.net.au ([203.30.46.146]:55841 "EHLO
+	anchovy.45ru.net.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752157AbcF1JCO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 05:02:14 -0400
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Phil Reid <preid@electromag.com.au>
+Subject: Question on shared attributes
+Message-ID: <e87b35bc-36e9-dc1a-a87e-4e1c20db8d2e@electromag.com.au>
+Date: Tue, 28 Jun 2016 16:55:28 +0800
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Allwinner SoCs all have an ADC that can also act as a touchscreen controller
-and a thermal sensor. The first four channels can be used either for the ADC or
-the touchscreen and the fifth channel is used for the thermal sensor. We
-currently have a driver for the two latter functions in
-drivers/input/touchscreen/sun4i-ts.c but we don't have access to the ADC feature
-at all.
+G'day All,
 
-This adds initial support for Allwinner SoCs ADC with all features. Yet, the
-touchscreen is not implemented but will be added later. To switch between
-touchscreen and ADC modes, you need to poke few bits in registers and
-(de)activate an interrupt (pen-up).
-A MFD is provided to let the input driver activate the pen-up interrupt through
-virtual interrupt, poke few bits via regmap and read data from the ADC driver
-while both (and iio_hwmon) are probed by the MFD.
+Found something interesting.
+For a new iio driver I have a shared attribute on direction.
 
-There exists slight modifications between the different SoCs ADC like the
-address of some registers and the scale and offset to apply to thermal sensor
-raw values. These modifications are done by drivers on different
-platform_device_id passed by the MFD when probing subdrivers.
+.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ)
 
-This also modifies iio-hwmon to allow probe deferring when no iio channel is
-found. Currently when no iio channel is found, the probing of iio-hwmon fails.
-This is problematic when iio-hwmon probes before the iio driver could register
-iio channels to share.
+Which results in sysfs attribute name of:
+in_sampling_frequency
 
-Quentin Schulz (3):
-  mfd: add support for Allwinner SoCs ADC
-  iio: adc: add support for Allwinner SoCs ADC
-  hwmon: iio_hwmon: defer probe when no channel is found
+Which results in iio_info giving the following output:
+iio:device3: module0
+         7 channels found:
+                 voltage0:  (input)
+                 6 channel-specific attributes found:
+                         attr 0: scale value: 0.000149011
+                         attr 1: raw value: 0
+                         attr 2: hardwaregain value: 1
+                         attr 3: index value: 0
+                         attr 4: en value: 0
+                         attr 5: type value: le:s24/32>>0
+                 voltage1:  (input)
+                 6 channel-specific attributes found:
+                         attr 0: raw value: 0
+                         attr 1: scale value: 0.000149011
+                         attr 2: hardwaregain value: 1
+                         attr 3: en value: 0
+                         attr 4: index value: 1
+                         attr 5: type value: le:s24/32>>0
+                 voltage2:  (input)
+                 6 channel-specific attributes found:
+                         attr 0: raw value: 0
+                         attr 1: scale value: 0.000149011
+                         attr 2: hardwaregain value: 1
+                         attr 3: en value: 0
+                         attr 4: index value: 2
+                         attr 5: type value: le:s24/32>>0
+                 voltage3:  (input)
+                 6 channel-specific attributes found:
+                         attr 0: hardwaregain value: 1
+                         attr 1: raw value: 0
+                         attr 2: scale value: 0.000149011
+                         attr 3: en value: 0
+                         attr 4: type value: le:s24/32>>0
+                         attr 5: index value: 3
+                 voltage4:  (output)
+                 2 channel-specific attributes found:
+                         attr 0: raw value: 32768
+                         attr 1: scale value: 2500000.000000000
+                 voltage5:  (output)
+                 2 channel-specific attributes found:
+                         attr 0: raw value: 32768
+                         attr 1: scale value: 2500000.000000000
+                 sampling:  (input)
+                 1 channel-specific attributes found:
+                         attr 0: frequency value: 24000
+         2 device-specific attributes found:
+                         attr 0: freq value: 6144000
+                         attr 1: out_en value: 0
 
- drivers/hwmon/iio_hwmon.c           |   5 +-
- drivers/iio/adc/Kconfig             |  12 ++
- drivers/iio/adc/Makefile            |   1 +
- drivers/iio/adc/sunxi-gpadc-iio.c   | 371 ++++++++++++++++++++++++++++++++++++
- drivers/mfd/Kconfig                 |  14 ++
- drivers/mfd/Makefile                |   2 +
- drivers/mfd/sunxi-gpadc-mfd.c       | 188 ++++++++++++++++++
- include/linux/mfd/sunxi-gpadc-mfd.h |  14 ++
- 8 files changed, 606 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iio/adc/sunxi-gpadc-iio.c
- create mode 100644 drivers/mfd/sunxi-gpadc-mfd.c
- create mode 100644 include/linux/mfd/sunxi-gpadc-mfd.h
+
+Note that the sampling_frequency attr has been converted into an input channel.
+
+Modify the definition in industrialio-core.c
+	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
+to
+	[IIO_CHAN_INFO_SAMP_FREQ] = "samplingfrequency",
+
+Results in the following output:
+iio:device4: module0
+         6 channels found:
+                 voltage0:  (input)
+                 6 channel-specific attributes found:
+                         attr 0: scale value: 0.000149011
+                         attr 1: raw value: 0
+                         attr 2: hardwaregain value: 1
+                         attr 3: index value: 0
+                         attr 4: en value: 0
+                         attr 5: type value: le:s24/32>>0
+                 voltage1:  (input)
+                 6 channel-specific attributes found:
+                         attr 0: raw value: 0
+                         attr 1: scale value: 0.000149011
+                         attr 2: hardwaregain value: 1
+                         attr 3: en value: 0
+                         attr 4: index value: 1
+                         attr 5: type value: le:s24/32>>0
+                 voltage2:  (input)
+                 6 channel-specific attributes found:
+                         attr 0: raw value: 0
+                         attr 1: scale value: 0.000149011
+                         attr 2: hardwaregain value: 1
+                         attr 3: en value: 0
+                         attr 4: index value: 2
+                         attr 5: type value: le:s24/32>>0
+                 voltage3:  (input)
+                 6 channel-specific attributes found:
+                         attr 0: hardwaregain value: 1
+                         attr 1: raw value: 0
+                         attr 2: scale value: 0.000149011
+                         attr 3: en value: 0
+                         attr 4: type value: le:s24/32>>0
+                         attr 5: index value: 3
+                 voltage4:  (output)
+                 2 channel-specific attributes found:
+                         attr 0: raw value: 32768
+                         attr 1: scale value: 2500000.000000000
+                 voltage5:  (output)
+                 2 channel-specific attributes found:
+                         attr 0: raw value: 32768
+                         attr 1: scale value: 2500000.000000000
+         3 device-specific attributes found:
+                         attr 0: freq value: 6144000
+                         attr 1: in_samplingfrequency value: 24000
+                         attr 2: out_en value: 0
+
+Which makes more sense. So libiio is treating the name sampling as a channel name
+in 'in_sampling_frequency' assuming that attributes never have an underscore in there name.
+
+I'm guessing the same would be the case for out attributes as well.
+
+A quick search of the drivers in the kernel to date indicate that IIO_CHAN_INFO_SAMP_FREQ is generally
+shared by type or all. shared by dir occurs with the iio_simple_dummy, but can't see anything with a real device.
+I'm using libiio from git://github.com/analogdevicesinc/libiio.git
+
+So is this intended, or does libiio need to be smarter on identifying channels and shared attributes?
+I'm guessing we cant change the kernel interface, which would be the easiest fix. :/
+
 
 -- 
-2.5.0
+Regards
+Phil Reid
 
