@@ -1,84 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58838 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752380AbcF1QZw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 12:25:52 -0400
-In-Reply-To: <alpine.DEB.2.02.1606281617430.21474@pmeerw.net>
-References: <1467101897-15946-1-git-send-email-quentin.schulz@free-electrons.com> <1467101897-15946-3-git-send-email-quentin.schulz@free-electrons.com> <alpine.DEB.2.02.1606281106040.17230@pmeerw.net> <57727DF5.1090702@free-electrons.com> <alpine.DEB.2.02.1606281617430.21474@pmeerw.net>
+Received: from mail-qk0-f194.google.com ([209.85.220.194]:35923 "EHLO
+	mail-qk0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752799AbcF1VGb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 17:06:31 -0400
+Date: Tue, 28 Jun 2016 16:06:22 -0500
+From: Rob Herring <robh@kernel.org>
+To: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Russell King <linux@arm.linux.org.uk>,
+	Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Jonathan Richardson <jonathar@broadcom.com>,
+	Jon Mason <jonmason@broadcom.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Anup Patel <anup.patel@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Pramod Kumar <pramod.kumar@broadcom.com>,
+	linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+Subject: Re: [PATCH v4 1/3] Documentation: DT: Add iproc-static-adc binding
+Message-ID: <20160628210622.GA10297@rob-hp-laptop>
+References: <1467099636-31855-1-git-send-email-raveendra.padasalagi@broadcom.com>
+ <1467099636-31855-2-git-send-email-raveendra.padasalagi@broadcom.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 2/3] iio: adc: add support for Allwinner SoCs ADC
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Tue, 28 Jun 2016 17:25:33 +0100
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Quentin Schulz <quentin.schulz@free-electrons.com>
-CC: jic23@kernel.org, maxime.ripard@free-electrons.com,
-	linux-iio@vger.kernel.org, thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com
-Message-ID: <389DB893-13F0-4F59-B20A-2174636D4C0D@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1467099636-31855-2-git-send-email-raveendra.padasalagi@broadcom.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-
-On 28 June 2016 15:18:56 BST, Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
->
->> >> +struct sunxi_gpadc_dev {
->> >> +	void __iomem			*regs;
->> >> +	struct completion		completion;
->> >> +	int				temp_data;
->> > 
->> > s32 maybe? what is the datatype and unit of temp_data? IIO wants 
->> > milliCelsius
->> > 
->> 
->> temp_data has no real datatype as it is the raw value given by the
->ADC
->> before conversion (with an offset and scale different for each SoC).
->The
->> temperature after conversion is given in milliCelsius as expected.
->
->great!
+On Tue, Jun 28, 2016 at 01:10:34PM +0530, Raveendra Padasalagi wrote:
+> The patch adds devicetree binding document for broadcom's
+> iproc-static-adc controller driver.
 > 
->> >> +	u32				adc_data;
->> >> +	struct regmap			*regmap;
->> >> +	unsigned int			fifo_data_irq;
->> >> +	unsigned int			temp_data_irq;
->> >> +	unsigned int			flags;
->> >> +};
->> >> +
->> >> +#define ADC_CHANNEL(_channel, _name) {				\
->> > 
->> > prefix needed
->> > 
->> >> +	.type = IIO_VOLTAGE,					\
->> >> +	.indexed = 1,						\
->> >> +	.channel = _channel,					\
->> >> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
->> >> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
->> >> +	.datasheet_name = _name,				\
->> >> +}
->> >> +
->> >> +static struct iio_map sunxi_gpadc_hwmon_maps[] = {
->> > 
->> > const possible?
->> > 
->> 
->> The compiler complains with the following error:
->> warning: passing argument 2 of ‘iio_map_array_register’ discards
->‘const’
->> qualifier from pointer target type [-Wdiscarded-qualifiers]
->> ret = iio_map_array_register(indio_dev, sunxi_gpadc_hwmon_maps);
->> 
->> Is there a point to leave const even if it is discarded by the only
->> function using it?
->
->my bad, leave as is
-> 
-Surprised me as well. That function should probably be taking it as const.
-Can't immediately see a reason not to!
->regards, p.
+> Signed-off-by: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+> ---
+>  .../bindings/iio/adc/brcm,iproc-static-adc.txt     | 41 ++++++++++++++++++++++
+>  1 file changed, 41 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+Acked-by: Rob Herring <robh@kernel.org>
