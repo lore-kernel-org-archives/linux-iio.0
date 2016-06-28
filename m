@@ -1,107 +1,527 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:46105 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752062AbcF1Iv4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 04:51:56 -0400
-Date: Tue, 28 Jun 2016 10:51:54 +0200
-From: Antoine Tenart <antoine.tenart@free-electrons.com>
+Received: from ns.pmeerw.net ([84.19.176.92]:54459 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752510AbcF1JYH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 28 Jun 2016 05:24:07 -0400
+Date: Tue, 28 Jun 2016 11:24:04 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	maxime.ripard@free-electrons.com, wens@csie.org,
-	lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	thomas.petazzoni@free-electrons.com,
+cc: jic23@kernel.org, maxime.ripard@free-electrons.com,
+	linux-iio@vger.kernel.org, thomas.petazzoni@free-electrons.com,
 	antoine.tenart@free-electrons.com
-Subject: Re: [PATCH 1/3] mfd: add support for Allwinner SoCs ADC
-Message-ID: <20160628085154.GE4472@kwain>
-References: <1467101897-15946-1-git-send-email-quentin.schulz@free-electrons.com>
- <1467101897-15946-2-git-send-email-quentin.schulz@free-electrons.com>
+Subject: Re: [PATCH 2/3] iio: adc: add support for Allwinner SoCs ADC
+In-Reply-To: <1467101897-15946-3-git-send-email-quentin.schulz@free-electrons.com>
+Message-ID: <alpine.DEB.2.02.1606281106040.17230@pmeerw.net>
+References: <1467101897-15946-1-git-send-email-quentin.schulz@free-electrons.com> <1467101897-15946-3-git-send-email-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="iBwuxWUsK/REspAd"
-In-Reply-To: <1467101897-15946-2-git-send-email-quentin.schulz@free-electrons.com>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Tue, 28 Jun 2016, Quentin Schulz wrote:
 
---iBwuxWUsK/REspAd
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> The Allwinner SoCs all have an ADC that can also act as a touchscreen
+> controller and a thermal sensor. This patch adds the ADC driver which is
+> based on the MFD for the same SoCs ADC.
+> 
+> This also registers the thermal adc channel in the iio map array so
+> iio_hwmon could use it without modifying the Device Tree.
 
-Hello,
+comments inline
+ 
+> This driver probes on three different platform_device_id to take into
+> account slight differences between Allwinner SoCs ADCs.
+> 
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+> ---
+>  drivers/iio/adc/Kconfig           |  12 ++
+>  drivers/iio/adc/Makefile          |   1 +
+>  drivers/iio/adc/sunxi-gpadc-iio.c | 371 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 384 insertions(+)
+>  create mode 100644 drivers/iio/adc/sunxi-gpadc-iio.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 82c718c..b7b566a 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -328,6 +328,18 @@ config NAU7802
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called nau7802.
+>  
+> +config SUNXI_ADC
+> +	tristate "ADC driver for sunxi platforms"
+> +	depends on IIO
+> +	depends on MFD_SUNXI_ADC
+> +	help
+> +	  Say yes here to build support for Allwinner SoCs (A10, A13 and A31)
+> +	  SoCs ADC. This ADC provides 4 channels which can be used as an ADC or
 
-On Tue, Jun 28, 2016 at 10:18:15AM +0200, Quentin Schulz wrote:
-> diff --git a/drivers/mfd/sunxi-gpadc-mfd.c b/drivers/mfd/sunxi-gpadc-mfd.c
-> new file mode 100644
-> index 0000000..710e297
-> --- /dev/null
-> +++ b/drivers/mfd/sunxi-gpadc-mfd.c
-> @@ -0,0 +1,188 @@
+remove first 'SoCs '
 
-[...]
-
-> +	if (of_device_is_compatible(pdev->dev.of_node,
-> +				    "allwinner,sun4i-a10-ts"))
-> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +				      sun4i_gpadc_mfd_cells,
-> +				      ARRAY_SIZE(sun4i_gpadc_mfd_cells), NULL,
-> +				      0, NULL);
-> +	else if (of_device_is_compatible(pdev->dev.of_node,
-> +					 "allwinner,sun5i-a13-ts"))
-> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +				      sun5i_gpadc_mfd_cells,
-> +				      ARRAY_SIZE(sun5i_gpadc_mfd_cells), NULL,
-> +				      0, NULL);
-> +	else if (of_device_is_compatible(pdev->dev.of_node,
-> +					 "allwinner,sun6i-a31-ts"))
-> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +				      sun6i_gpadc_mfd_cells,
-> +				      ARRAY_SIZE(sun6i_gpadc_mfd_cells), NULL,
-> +				      0, NULL);
+> +	  as a touchscreen input and one channel for thermal sensor.
 > +
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to add MFD devices: %d\n", ret);
-> +		regmap_del_irq_chip(irq, sunxi_gpadc_mfd_dev->regmap_irqc);
-> +		mfd_remove_devices(&pdev->dev);
+> +          To compile this driver as a module, choose M here: the
+> +          module will be called sunxi-gpadc-iio.
+> +
+>  config PALMAS_GPADC
+>  	tristate "TI Palmas General Purpose ADC"
+>  	depends on MFD_PALMAS
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 0cb7921..2996a5b 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -32,6 +32,7 @@ obj-$(CONFIG_MCP3422) += mcp3422.o
+>  obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+>  obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
+>  obj-$(CONFIG_NAU7802) += nau7802.o
+> +obj-$(CONFIG_SUNXI_ADC) += sunxi-gpadc-iio.o
 
-You don't need to explicitly call mfd_remove_devices() when
-mfd_add_devices() fails. See:
-http://lxr.free-electrons.com/source/drivers/mfd/mfd-core.c#L298
+alphabetic order please
 
+>  obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
+>  obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
+>  obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+> diff --git a/drivers/iio/adc/sunxi-gpadc-iio.c b/drivers/iio/adc/sunxi-gpadc-iio.c
+> new file mode 100644
+> index 0000000..5840f43
+> --- /dev/null
+> +++ b/drivers/iio/adc/sunxi-gpadc-iio.c
+> @@ -0,0 +1,371 @@
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/io.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/clk.h>
+> +#include <linux/completion.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/iio/driver.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/mfd/sunxi-gpadc-mfd.h>
+> +#include <linux/regmap.h>
+> +
+> +#define TP_CTRL0			0x00
+
+in IIO we want a prefix for all #defines, e.g. SUNXI_GPADC_
+
+> +#define TP_CTRL1			0x04
+> +#define TP_CTRL2			0x08
+> +#define TP_CTRL3			0x0c
+> +#define TP_TPR				0x18
+> +#define TP_CDAT				0x1c
+> +#define TEMP_DATA			0x20
+> +#define TP_DATA				0x24
+> +
+> +/* TP_CTRL0 bits */
+> +#define ADC_FIRST_DLY(x)		((x) << 24) /* 8 bits */
+> +#define ADC_FIRST_DLY_MODE		BIT(23)
+> +#define ADC_CLK_SELECT			BIT(22)
+> +#define ADC_CLK_DIVIDER(x)		((x) << 20) /* 2 bits */
+> +#define FS_DIV(x)			((x) << 16) /* 4 bits */
+> +#define T_ACQ(x)			((x) << 0)  /* 16 bits*/
+
+space after bits
+
+> +
+> +/* TP_CTRL1 bits */
+> +#define STYLUS_UP_DEBOUNCE(x)		((x) << 12) /* 8 bits */
+> +#define STYLUS_UP_DEBOUNCE_EN		BIT(9)
+> +#define TOUCH_PAN_CALI_EN		BIT(6)
+> +#define TP_DUAL_EN			BIT(5)
+> +#define TP_MODE_EN			BIT(4)
+> +#define TP_ADC_SELECT			BIT(3)
+> +#define ADC_CHAN_SELECT(x)		((x) << 0)  /* 3 bits */
+> +
+> +/* TP_CTRL1 bits for sun6i SOCs */
+> +#define SUN6I_TOUCH_PAN_CALI_EN		BIT(7)
+> +#define SUN6I_TP_DUAL_EN		BIT(6)
+> +#define SUN6I_TP_MODE_EN		BIT(5)
+> +#define SUN6I_TP_ADC_SELECT		BIT(4)
+> +#define SUN6I_ADC_CHAN_SELECT(x)	BIT(x)  /* 4 bits */
+> +
+> +/* TP_CTRL2 bits */
+> +#define TP_SENSITIVE_ADJUST(x)		((x) << 28) /* 4 bits */
+> +#define TP_MODE_SELECT(x)		((x) << 26) /* 2 bits */
+> +#define PRE_MEA_EN			BIT(24)
+> +#define PRE_MEA_THRE_CNT(x)		((x) << 0)  /* 24 bits*/
+> +
+> +/* TP_CTRL3 bits */
+> +#define FILTER_EN			BIT(2)
+> +#define FILTER_TYPE(x)			((x) << 0)  /* 2 bits */
+> +
+> +/* TP_INT_FIFOC irq and fifo mask / control bits */
+> +#define TEMP_IRQ_EN			BIT(18)
+> +#define TP_OVERRUN_IRQ_EN		BIT(17)
+> +#define TP_DATA_IRQ_EN			BIT(16)
+> +#define TP_DATA_XY_CHANGE		BIT(13)
+> +#define TP_FIFO_TRIG_LEVEL(x)		((x) << 8)  /* 5 bits */
+> +#define TP_DATA_DRQ_EN			BIT(7)
+> +#define TP_FIFO_FLUSH			BIT(4)
+> +#define TP_UP_IRQ_EN			BIT(1)
+> +#define TP_DOWN_IRQ_EN			BIT(0)
+> +
+> +/* TP_INT_FIFOS irq and fifo status bits */
+> +#define TEMP_DATA_PENDING		BIT(18)
+> +#define FIFO_OVERRUN_PENDING		BIT(17)
+> +#define FIFO_DATA_PENDING		BIT(16)
+> +#define TP_IDLE_FLG			BIT(2)
+> +#define TP_UP_PENDING			BIT(1)
+> +#define TP_DOWN_PENDING			BIT(0)
+> +
+> +/* TP_TPR bits */
+> +#define TEMP_ENABLE(x)			((x) << 16)
+> +#define TEMP_PERIOD(x)			((x) << 0)  /*t = x * 256 * 16 / clkin*/
+> +
+> +#define ARCH_SUN4I			BIT(0)
+> +#define ARCH_SUN5I			BIT(1)
+> +#define ARCH_SUN6I			BIT(2)
+> +
+> +struct sunxi_gpadc_dev {
+> +	void __iomem			*regs;
+> +	struct completion		completion;
+> +	int				temp_data;
+
+s32 maybe? what is the datatype and unit of temp_data? IIO wants 
+milliCelsius
+
+> +	u32				adc_data;
+> +	struct regmap			*regmap;
+> +	unsigned int			fifo_data_irq;
+> +	unsigned int			temp_data_irq;
+> +	unsigned int			flags;
+> +};
+> +
+> +#define ADC_CHANNEL(_channel, _name) {				\
+
+prefix needed
+
+> +	.type = IIO_VOLTAGE,					\
+> +	.indexed = 1,						\
+> +	.channel = _channel,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	.datasheet_name = _name,				\
+> +}
+> +
+> +static struct iio_map sunxi_gpadc_hwmon_maps[] = {
+
+const possible?
+
+> +	{
+> +		.adc_channel_label = "temp_adc",
+> +		.consumer_dev_name = "iio_hwmon.0",
+> +	},
+> +	{},
+> +};
+> +
+> +static const struct iio_chan_spec sunxi_gpadc_channels[] = {
+> +	ADC_CHANNEL(0, "adc_chan0"),
+> +	ADC_CHANNEL(1, "adc_chan1"),
+> +	ADC_CHANNEL(2, "adc_chan2"),
+> +	ADC_CHANNEL(3, "adc_chan3"),
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.datasheet_name = "temp_adc",
+> +	},
+> +};
+> +
+> +static int sunxi_gpadc_adc_read(struct iio_dev *indio_dev, int channel)
+> +{
+> +	struct sunxi_gpadc_dev *info = iio_priv(indio_dev);
+> +	int val = 0;
+
+initialization not needed
+
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	reinit_completion(&info->completion);
+> +	regmap_write(info->regmap, TP_CTRL1, SUN6I_TP_MODE_EN |
+> +					     SUN6I_TP_ADC_SELECT |
+> +					     SUN6I_ADC_CHAN_SELECT(channel));
+> +	regmap_write(info->regmap, TP_INT_FIFOC, TP_FIFO_TRIG_LEVEL(1) |
+> +						 TP_FIFO_FLUSH);
+> +	enable_irq(info->fifo_data_irq);
+> +
+> +	if (!wait_for_completion_timeout(&info->completion,
+> +					 msecs_to_jiffies(100))) {
+> +		disable_irq(info->fifo_data_irq);
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return -ETIMEDOUT;
+> +	}
+> +
+> +	val = info->adc_data;
+> +	disable_irq(info->fifo_data_irq);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return val;
+> +}
+> +
+> +static int sunxi_gpadc_temp_read(struct iio_dev *indio_dev)
+> +{
+> +	struct sunxi_gpadc_dev *info = iio_priv(indio_dev);
+> +	int val = 0;
+
+initialization not needed
+
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	reinit_completion(&info->completion);
+> +
+> +	regmap_write(info->regmap, TP_INT_FIFOC, TP_FIFO_TRIG_LEVEL(1) |
+> +						 TP_FIFO_FLUSH);
+> +	regmap_write(info->regmap, TP_CTRL1, SUN6I_TP_MODE_EN);
+> +	enable_irq(info->temp_data_irq);
+> +
+> +	if (!wait_for_completion_timeout(&info->completion,
+> +					 msecs_to_jiffies(100))) {
+> +		disable_irq(info->temp_data_irq);
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return -ETIMEDOUT;
+> +	}
+> +
+> +	if (info->flags & ARCH_SUN4I)
+> +		val = info->temp_data * 133 - 257000;
+> +	else if (info->flags & ARCH_SUN5I)
+> +		val = info->temp_data * 100 - 144700;
+> +	else if (info->flags & ARCH_SUN6I)
+> +		val = info->temp_data * 167 - 271000;
+> +
+> +	disable_irq(info->temp_data_irq);
+> +	mutex_unlock(&indio_dev->mlock);
+
+newline please
+
+> +	return val;
+> +}
+> +
+> +static int sunxi_gpadc_read_raw(struct iio_dev *indio_dev,
+> +				struct iio_chan_spec const *chan,
+> +				int *val, int *val2, long mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		*val = sunxi_gpadc_temp_read(indio_dev);
+> +		if (*val < 0)
+
+what if the temperature is negative?
+
+> +			return *val;
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_RAW:
+> +		*val = sunxi_gpadc_adc_read(indio_dev, chan->channel);
+> +		if (*val < 0)
+> +			return *val;
+> +
+> +		return IIO_VAL_INT;
+> +	default:
+> +		break;
+
+just return -EINVAL here
+
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info sunxi_gpadc_iio_info = {
+> +	.read_raw = sunxi_gpadc_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static irqreturn_t sunxi_gpadc_temp_data_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct sunxi_gpadc_dev *info = dev_id;
+> +	int ret;
+> +
+> +	ret = regmap_read(info->regmap, TEMP_DATA, &info->temp_data);
+> +	if (ret == 0)
+> +		complete(&info->completion);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t sunxi_gpadc_fifo_data_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct sunxi_gpadc_dev *info = dev_id;
+> +	int ret;
+> +
+> +	ret = regmap_read(info->regmap, TP_DATA, &info->adc_data);
+> +	if (ret == 0)
+> +		complete(&info->completion);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int sunxi_gpadc_probe(struct platform_device *pdev)
+> +{
+> +	struct sunxi_gpadc_dev *info = NULL;
+
+initialization not needed
+
+> +	struct iio_dev *indio_dev = NULL;
+
+initialization not needed
+
+> +	int ret = 0;
+
+initialization not needed
+
+> +	unsigned int irq;
+> +	struct sunxi_gpadc_mfd_dev *sunxi_gpadc_mfd_dev;
+> +
+> +	sunxi_gpadc_mfd_dev = dev_get_drvdata(pdev->dev.parent);
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "failed to allocate iio device.\n");
+
+error msg needed?
+
+> +		return -ENOMEM;
+> +	}
+> +	info = iio_priv(indio_dev);
+> +
+> +	info->regmap = sunxi_gpadc_mfd_dev->regmap;
+> +	init_completion(&info->completion);
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->info = &sunxi_gpadc_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->num_channels = ARRAY_SIZE(sunxi_gpadc_channels);
+> +	indio_dev->channels = sunxi_gpadc_channels;
+> +
+> +	info->flags = platform_get_device_id(pdev)->driver_data;
+> +
+> +	regmap_write(info->regmap, TP_CTRL0, ADC_CLK_DIVIDER(2) |
+> +					     FS_DIV(7) |
+> +					     T_ACQ(63));
+> +	regmap_write(info->regmap, TP_CTRL1, SUN6I_TP_MODE_EN);
+> +	regmap_write(info->regmap, TP_CTRL3, FILTER_EN | FILTER_TYPE(1));
+> +	regmap_write(info->regmap, TP_TPR, TEMP_ENABLE(1) | TEMP_PERIOD(1953));
+> +
+> +	irq = platform_get_irq_byname(pdev, "TEMP_DATA_PENDING");
+> +	if (irq < 0) {
+
+no, irq is declared unsigned int above!
+
+> +		dev_err(&pdev->dev,
+> +			"no TEMP_DATA_PENDING interrupt registered\n");
+
+
+probably the device needs to be disabled again on error (reverse action of 
+SUN6I_TP_MODE_EN, TEMP_ENABLE(1), etc.) here and in other error cases 
+below
+
+> +		return irq;
+> +	}
+> +
+> +	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
+> +	ret = devm_request_any_context_irq(&pdev->dev, irq,
+> +					   sunxi_gpadc_temp_data_irq_handler,
+> +					   0, "temp_data", info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev,
+> +			"could not request TEMP_DATA_PENDING interrupt: %d\n",
+> +			ret);
 > +		return ret;
 > +	}
+> +
+> +	info->temp_data_irq = irq;
+> +	disable_irq(irq);
+> +
+> +	irq = platform_get_irq_byname(pdev, "FIFO_DATA_PENDING");
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev,
+> +			"no FIFO_DATA_PENDING interrupt registered\n");
+> +		return irq;
+> +	}
+> +
+> +	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
+> +	ret = devm_request_any_context_irq(&pdev->dev, irq,
+> +					   sunxi_gpadc_fifo_data_irq_handler,
+> +					   0, "fifo_data", info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev,
+> +			"could not request FIFO_DATA_PENDING interrupt: %d\n",
+> +			ret);
+> +		return ret;
+> +	}
+> +
+> +	info->fifo_data_irq = irq;
+> +	disable_irq(irq);
+> +
+> +	ret = iio_map_array_register(indio_dev, sunxi_gpadc_hwmon_maps);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed to register iio map array\n");
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "could not register the device\n");
+> +		iio_map_array_unregister(indio_dev);
+> +		return ret;
+> +	}
+> +
+> +	dev_info(&pdev->dev, "successfully loaded\n");
 
-Thanks,
+unnecesary output, please remove
 
-Antoine
+> +
+> +	return ret;
+> +}
+> +
+> +static int sunxi_gpadc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = NULL;
+> +	struct sunxi_gpadc_dev *info = NULL;
+> +
+> +	iio_device_unregister(indio_dev);
 
---=20
-Antoine T=E9nart, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+indio_dev is NULL, how can this work?
 
---iBwuxWUsK/REspAd
-Content-Type: application/pgp-signature; name="signature.asc"
+> +	iio_map_array_unregister(indio_dev);
+> +	info = iio_priv(indio_dev);
+> +	regmap_write(info->regmap, TP_INT_FIFOC, 0);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct platform_device_id sunxi_gpadc_id[] = {
+> +	{ "sun4i-a10-gpadc-iio", ARCH_SUN4I },
+> +	{ "sun5i-a13-gpadc-iio", ARCH_SUN5I },
+> +	{ "sun6i-a31-gpadc-iio", ARCH_SUN6I },
+> +	{ /*sentinel*/ },
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+whitespace around sentinel please
 
-iQIcBAEBCgAGBQJXcjqpAAoJEFxNi8it27zYyEQP/Rl2UMqt5jb23K8aVacQnYCv
-VqeD6Ylky2+e/dBhf4+qWLHqG3nw1V3qVF0XlpzrDh/xLtYgmFq9Ox47b2JRN9It
-MBb3GgmlYG2US5sYhhDiNQLnRmEwpuEZpI2nJpnQONGHVoq/2IkdrZy3o0WX1TiF
-SVQlc2AssU9fxFnd0APhUMI5AJf0n75B7qPX110pyc/fAFVGJzRFESu2TRgn+C0i
-hmudf86EN44zkI6K+CuydOUCCg1EQTRmuFMbdrfpxfnDopNQwatayylOKxagqTl0
-Al/N3zyeEHZdQdgLEaRKTAk2DTthYF4HeL9wnTQxPKPbtq0athZKQBa8mu1CUH2O
-xjXQ8Vj0zLPr/1iT9gOwMHkIhPqS3+lSufVDeRsQ1wrBpvKcn0HTbLMIIg6JEm0g
-Dfw3OHvJ1nQNwoPo/Yw4CRKZuso5oExDQm8Fz0de67J6Exh6LjObdCeqdsFQD4AE
-k4e2vnGR6zNFEXfeCycs6TZ4vTIRZMLLhr01hqGt2WZVyKru8MPDixNYEKJ8rqr0
-VP5D6O9ETW2Z4kmrOlPb/KvmrOFhbBzBgdq4w1Vbp0RBevZrViqMaN97M+7aAE8G
-q/1TtdJm02fEM8TxgC4zDpSl44hOHp3RF7BZylnJTs2nV7EjS/TS5YTKShCV7uA8
-jZWe6G6i9Mtkff6S+hJr
-=5x0R
------END PGP SIGNATURE-----
+> +};
+> +
+> +static struct platform_driver sunxi_gpadc_driver = {
+> +	.driver = {
+> +		.name = "sunxi-gpadc-iio",
+> +	},
+> +	.id_table = sunxi_gpadc_id,
+> +	.probe = sunxi_gpadc_probe,
+> +	.remove = sunxi_gpadc_remove,
+> +};
+> +
+> +module_platform_driver(sunxi_gpadc_driver);
+> +
+> +MODULE_DESCRIPTION("ADC driver for sunxi platforms");
+> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
+> +MODULE_LICENSE("GPL v2");
+> 
 
---iBwuxWUsK/REspAd--
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
