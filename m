@@ -1,79 +1,56 @@
-Return-Path: <raveendra.padasalagi@broadcom.com>
-From: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>,
-	Russell King <linux@arm.linux.org.uk>,
-	Arnd Bergmann <arnd@arndb.de>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Cc: Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Jonathan Richardson <jonathar@broadcom.com>,
-	Jon Mason <jonmason@broadcom.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Anup Patel <anup.patel@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	Pramod Kumar <pramod.kumar@broadcom.com>,
-	linux-kernel@vger.kernel.org,
-	bcm-kernel-feedback-list@broadcom.com,
-	Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
-Subject: [PATCH v4 0/3] Add Broadcom iproc-static-adc controller driver
-Date: Tue, 28 Jun 2016 13:10:33 +0530
-Message-Id: <1467099636-31855-1-git-send-email-raveendra.padasalagi@broadcom.com>
+Return-Path: <gregor.boirie@parrot.com>
+Message-ID: <57723851.2070403@parrot.com>
+Date: Tue, 28 Jun 2016 10:41:53 +0200
+From: Gregor Boirie <gregor.boirie@parrot.com>
+MIME-Version: 1.0
+To: Linus Walleij <linus.walleij@linaro.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron
+	<jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen
+	<lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Denis Ciocca
+	<denis.ciocca@st.com>, Giuseppe Barba <giuseppe.barba@st.com>, Crestez Dan
+ Leonard <leonard.crestez@intel.com>
+Subject: Re: [PATCH v2 3/7] iio:st_pressure: document sampling gains
+References: <cover.1467023672.git.gregor.boirie@parrot.com> <fe513b34c179810b42a77e806347088647d17106.1467023672.git.gregor.boirie@parrot.com> <CACRpkdaDray8+HF9RcA9Kqm5bfv0yJyNOx2-xg+WT+F9ZoA19w@mail.gmail.com>
+In-Reply-To: <CACRpkdaDray8+HF9RcA9Kqm5bfv0yJyNOx2-xg+WT+F9ZoA19w@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-This patchset contains initial driver for Broadcom's
-iproc static adc controller. The patchset is based on v4.7-rc1
-tag and its tested on Broadcom Cygnus SoC.
+Linus,
 
-The patches can be fetched from iproc-adc-v4 branch of
-https://github.com/Broadcom/arm64-linux.git
+On 06/27/2016 06:44 PM, Linus Walleij wrote:
+> On Mon, Jun 27, 2016 at 12:38 PM, Gregor Boirie
+> <gregor.boirie@parrot.com> wrote:
+>
+>> Details scaling factors and offsets applied to raw temperature and pressure
+>> samples.
+>>
+>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+> I try to apply the patches on top of Jonathan's 4.8a branch, but I
+> fail when I get to this patch like this:
+>
+> $ git am 03.patch
+> Applying: iio:st_pressure: document sampling gains
+> error: patch failed: drivers/iio/pressure/st_pressure_core.c:28
+> error: drivers/iio/pressure/st_pressure_core.c: patch does not apply
+> Patch failed at 0001 iio:st_pressure: document sampling gains
+> The copy of the patch that failed is found in:
+>     /home/linus/linux-iio/.git/rebase-apply/patch
+> When you have resolved this problem, run "git am --continue".
+> If you prefer to skip this patch, run "git am --skip" instead.
+> To restore the original branch and stop patching, run "git am --abort".
+yep. it seems the patch "iio:st_pressure: fix sampling gains (bring 
+inline with ABI)"
+is not applied onto togreg branch.
 
-
-Changes since v3:
- - Assigned indio_dev->name to be iproc-static-adc.
- - Modified Module Author to include the name and email address.
- - Modified DT binding document to include reference to IIO core
-   docs for property io-channel-ranges.
-
-Changes since v2:
- - Addressed various comments given by Jonathan Cameron and
-   Peter Meerwald-Stadler on driver source code related to linux
-   coding style and clean-up of code. Lot of source code change
-   happened especially due to redefining the #defines.
- - Added code to support IIO_CHAN_INFO_SCALE mask to return
-   scale value in iproc_adc_read_raw().
- - Removed #address-cells, #size-cells properties in DT binding
-   document and dts file as adc will not have any child nodes as
-   noticed by Rob Herring.
-
-Changes since v1:
- - Modified Kconfig file to add more informative information
-   in Broadcom Adc driver configuration menu.
- - Added Broadcom Adc driver menu config in the alphabetical
-   order in Kconfig
- - Addressed various comments given by Peter Meerwald-Stadler
-   on driver source code, Including issues related to linux
-   coding style and race conditions.
-
-Raveendra Padasalagi (3):
-  Documentation: DT: Add iproc-static-adc binding
-  iio: Add driver for Broadcom iproc-static-adc
-  ARM:dts-Add dt node for Broadcom iproc-static-adc
-
- .../bindings/iio/adc/brcm,iproc-static-adc.txt     |  41 ++
- arch/arm/boot/dts/bcm-cygnus.dtsi                  |  11 +
- drivers/iio/adc/Kconfig                            |  12 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/bcm_iproc_adc.c                    | 644 +++++++++++++++++++++
- 5 files changed, 709 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
- create mode 100644 drivers/iio/adc/bcm_iproc_adc.c
-
--- 
-1.9.1
+>
+> Can you rebase/make sure they all apply on the 4.8a or so so that
+> I can test them?
+>
+> Or do you have a git branch I can just pull and test?
+Please, find a rebase onto togreg branch with current interrupts related 
+patches
+applied (without the "harden interrupt handling" stuff) here :
+https://github.com/grgbr/linux-iio/tree/iio-togreg-lps22hb
+>
+> Yours,
+> Linus Walleij
