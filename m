@@ -1,25 +1,29 @@
 Return-Path: <gregkh@linuxfoundation.org>
-Date: Wed, 29 Jun 2016 13:54:10 -0700
+Date: Wed, 29 Jun 2016 15:35:40 -0700
 From: Greg KH <gregkh@linuxfoundation.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] Third set of fixes for IIO in the 4.7 cycle.
-Message-ID: <20160629205410.GA7965@kroah.com>
-References: <1cb5bed4-54ab-9683-c33e-447f402d86e9@kernel.org>
+Subject: Re: [PULL] Second set of new device, new features and cleanups for
+ IIO in the 4.8 cycle
+Message-ID: <20160629223540.GA20281@kroah.com>
+References: <37ca1a90-006f-8a58-e28d-401a3e13562f@kernel.org>
+ <071b2c5d-5de4-48cf-81a8-b943084dce09@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1cb5bed4-54ab-9683-c33e-447f402d86e9@kernel.org>
+In-Reply-To: <071b2c5d-5de4-48cf-81a8-b943084dce09@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Jun 29, 2016 at 06:41:00PM +0100, Jonathan Cameron wrote:
-> The following changes since commit df013212a1b6557f071609983cab0612f71fd99b:
+On Wed, Jun 29, 2016 at 07:54:54PM +0100, Jonathan Cameron wrote:
+> Hi Greg,
 > 
->   Merge tag 'iio-fixes-for-4.7b' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2016-06-22 09:57:28 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.7c
+> A few merge conflicts on this.  Two are the obvious choice.
+> The third is in industrialio-trigger.c and you want the version that
+> doesn't check for trig->ops (as it is no longer considered optional so
+> must exist by that point).
 
-Pulled and pushed out, thanks.
+Odd, I only had a conflict in a Kconfig and the .mailmap file.  Can you
+check that I got this all right?
+
+thanks,
 
 greg k-h
