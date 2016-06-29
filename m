@@ -8,41 +8,75 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
 	Gwendal Grignou <gwendal@chromium.org>,
 	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 4/6 v3] iio: magn: ak8975: allow a delay after enabling regulators
-Date: Wed, 29 Jun 2016 14:08:36 +0200
-Message-Id: <1467202118-10386-5-git-send-email-linus.walleij@linaro.org>
+Subject: [PATCH 2/6 v3] iio: magn: ak8975: add Vid regulator
+Date: Wed, 29 Jun 2016 14:08:34 +0200
+Message-Id: <1467202118-10386-3-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1467202118-10386-1-git-send-email-linus.walleij@linaro.org>
 References: <1467202118-10386-1-git-send-email-linus.walleij@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-The datasheet actually specifies that we need to wait atleast
-500us after powering on the device before trying to set mode.
+The AK8975 has two power sources: Vdd (analog voltage supply)
+and Vid (digital voltage supply). Optionally also obtain the Vid
+supply regulator and enable it.
 
+If an error occurs when enabling one of the regulators: bail out.
+
+Cc: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: Richard Leitner <dev@g0hl1n.net>
+Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v2->v3:
-- Rebase
+- No changes. Numbered v2 to be part of the patch set.
+- Rebase.
 ChangeLog v1->v2:
-- No changes.
+- Just obtain the other regulator exactly like the first without
+  trying to be fancy.
+- Rebase and rewrite on top of the patch fixing up the regulator
+  usage.
 ---
- drivers/iio/magnetometer/ak8975.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iio/magnetometer/ak8975.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index f72f51d1f3f5..c67cf3a6128d 100644
+index 7f51adba7bad..af3395a0fb16 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -399,6 +399,12 @@ static int ak8975_power_on(const struct ak8975_data *data)
- 			 "Failed to enable specified Vid supply\n");
+@@ -379,6 +379,7 @@ struct ak8975_data {
+ 	u8			cntl_cache;
+ 	struct iio_mount_matrix orientation;
+ 	struct regulator	*vdd;
++	struct regulator	*vid;
+ };
+ 
+ /* Enable attached power regulator if any. */
+@@ -399,6 +400,19 @@ static int ak8975_power_on(struct i2c_client *client)
+ 			 "Failed to enable specified Vdd supply\n");
  		return ret;
  	}
-+	/*
-+	 * According to the datasheet the power supply rise time i 200us
-+	 * and the minimum wait time before mode setting is 100us, in
-+	 * total 300 us. Add some margin and say minimum 500us here.
-+	 */
-+	usleep_range(500, 1000);
- 	return 0;
++
++	data->vid = devm_regulator_get(&client->dev, "vid");
++	if (IS_ERR(data->vid)) {
++		ret = PTR_ERR(data->vid);
++	} else {
++		ret = regulator_enable(data->vid);
++	}
++	if (ret) {
++		dev_warn(&client->dev,
++			 "Failed to enable specified Vid supply\n");
++		return ret;
++	}
++	return 0;
+ }
+ 
+ /* Disable attached power regulator if any. */
+@@ -407,6 +421,7 @@ static void ak8975_power_off(const struct i2c_client *client)
+ 	const struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 	const struct ak8975_data *data = iio_priv(indio_dev);
+ 
++	regulator_disable(data->vid);
+ 	regulator_disable(data->vdd);
  }
  
 -- 
