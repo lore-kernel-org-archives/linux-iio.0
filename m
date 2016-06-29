@@ -1,48 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f194.google.com ([209.85.220.194]:35923 "EHLO
-	mail-qk0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752799AbcF1VGb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 17:06:31 -0400
-Date: Tue, 28 Jun 2016 16:06:22 -0500
-From: Rob Herring <robh@kernel.org>
-To: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Russell King <linux@arm.linux.org.uk>,
-	Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Jonathan Richardson <jonathar@broadcom.com>,
-	Jon Mason <jonmason@broadcom.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Anup Patel <anup.patel@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	Pramod Kumar <pramod.kumar@broadcom.com>,
-	linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
-Subject: Re: [PATCH v4 1/3] Documentation: DT: Add iproc-static-adc binding
-Message-ID: <20160628210622.GA10297@rob-hp-laptop>
-References: <1467099636-31855-1-git-send-email-raveendra.padasalagi@broadcom.com>
- <1467099636-31855-2-git-send-email-raveendra.padasalagi@broadcom.com>
+Received: from anchovy3.45ru.net.au ([203.30.46.155]:40021 "EHLO
+	anchovy.45ru.net.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752449AbcF2DYw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 23:24:52 -0400
+Subject: Re: Question on shared attributes
+To: "Cercueil, Paul" <Paul.Cercueil@analog.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <e87b35bc-36e9-dc1a-a87e-4e1c20db8d2e@electromag.com.au>
+ <1467110288.2364.11.camel@analog.com>
+From: Phil Reid <preid@electromag.com.au>
+Message-ID: <8387fdf7-dc3a-fc06-9dc5-6c73995ad366@electromag.com.au>
+Date: Wed, 29 Jun 2016 11:24:46 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1467099636-31855-2-git-send-email-raveendra.padasalagi@broadcom.com>
+In-Reply-To: <1467110288.2364.11.camel@analog.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jun 28, 2016 at 01:10:34PM +0530, Raveendra Padasalagi wrote:
-> The patch adds devicetree binding document for broadcom's
-> iproc-static-adc controller driver.
-> 
-> Signed-off-by: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
-> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
-> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-> ---
->  .../bindings/iio/adc/brcm,iproc-static-adc.txt     | 41 ++++++++++++++++++++++
->  1 file changed, 41 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/brcm,iproc-static-adc.txt
+On 28/06/2016 18:38, Cercueil, Paul wrote:
+> Hi Phil,
+>
+> I think right now libiio doesn't handle shared-by-dir attributes yet,
+> only shared-by-type. Ideally, 'in_sampling_frequency' should appear as
+> a 'sampling_frequency' attribute on all input channels of your module0
+> device.
+>
+> Regards,
+> Paul Cercueil
+>
+> Le mardi 28 juin 2016 à 16:55 +0800, Phil Reid a écrit :
+>> G'day All,
+>>
+>> Found something interesting.
+>> For a new iio driver I have a shared attribute on direction.
+>>
+>> .info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ)
+>>
+>> Which results in sysfs attribute name of:
+>> in_sampling_frequency
+>>
+>> Which results in iio_info giving the following output:
+>> iio:device3: module0
+>>          7 channels found:
+*snip*
+>>                  sampling:  (input)
+>>                  1 channel-specific attributes found:
+>>                          attr 0: frequency value: 24000
+>>          2 device-specific attributes found:
+>>                          attr 0: freq value: 6144000
+>>                          attr 1: out_en value: 0
+>>
+>>
+>> Note that the sampling_frequency attr has been converted into an
+>> input channel.
+>>
+>> Modify the definition in industrialio-core.c
+>> 	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
+>> to
+>> 	[IIO_CHAN_INFO_SAMP_FREQ] = "samplingfrequency",
+>>
+>> Results in the following output:
+>> iio:device4: module0
+>>          6 channels found:
+*snip*
+>>          3 device-specific attributes found:
+>>                          attr 0: freq value: 6144000
+>>                          attr 1: in_samplingfrequency value: 24000
+>>                          attr 2: out_en value: 0
+>>
+>> Which makes more sense. So libiio is treating the name sampling as a
+>> channel name
+>> in 'in_sampling_frequency' assuming that attributes never have an
+>> underscore in there name.
+>>
+>> I'm guessing the same would be the case for out attributes as well.
+>>
+>> A quick search of the drivers in the kernel to date indicate that
+>> IIO_CHAN_INFO_SAMP_FREQ is generally
+>> shared by type or all. shared by dir occurs with the
+>> iio_simple_dummy, but can't see anything with a real device.
+>> I'm using libiio from git://github.com/analogdevicesinc/libiio.git
+>>
+>> So is this intended, or does libiio need to be smarter on identifying
+>> channels and shared attributes?
+>> I'm guessing we cant change the kernel interface, which would be the
+>> easiest fix. :/
+>>
 
-Acked-by: Rob Herring <robh@kernel.org>
+I found making it a info_mask_shared_by_type resulted in the sampling_freq
+becoming an attribute of all the input channels. I find it a little conintutive
+that a shared attribute is populated into all the channels. libiio doesn't
+seem to provide an interface I can find to indicate if a parameter is shared or not.
+I guess with the current method of multiplexing the data streams it doesn't make
+sense to have anything other than the same value for sample rate.
+I just assumed that the sample_frequency would have been a device specific value.
+
+
+-- 
+Regards
+Phil Reid
+
+
