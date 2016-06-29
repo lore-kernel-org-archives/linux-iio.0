@@ -1,146 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:56392 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932116AbcF2PkI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 29 Jun 2016 11:40:08 -0400
-Message-ID: <1467214869.8970.122.camel@linux.intel.com>
-Subject: Re: [PATCH] iio: bmg160: add callbacks for the filter frequency
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-wm0-f47.google.com ([74.125.82.47]:36910 "EHLO
+	mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750921AbcF2Qdy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jun 2016 12:33:54 -0400
+Received: by mail-wm0-f47.google.com with SMTP id a66so81905016wme.0
+        for <linux-iio@vger.kernel.org>; Wed, 29 Jun 2016 09:33:53 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1467202118-10386-6-git-send-email-linus.walleij@linaro.org>
+References: <1467202118-10386-1-git-send-email-linus.walleij@linaro.org> <1467202118-10386-6-git-send-email-linus.walleij@linaro.org>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Wed, 29 Jun 2016 18:33:51 +0200
+Message-ID: <CAPDyKFpLqdQkNZjzV7nDNF-FTHkDbMDczHnFn=BOWdKx1oVxGw@mail.gmail.com>
+Subject: Re: [PATCH 5/6 v3] iio: magn: ak8975: make sure to power down at remove()
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	kernel@pengutronix.de
-Date: Wed, 29 Jun 2016 08:41:09 -0700
-In-Reply-To: <20160629151329.GA28114@pengutronix.de>
-References: <1461235740-18710-1-git-send-email-s.trumtrar@pengutronix.de>
-	 <59d35d82-8ca8-646b-8629-c2bba666286b@kernel.org>
-	 <1461702322.14657.15.camel@linux.intel.com>
-	 <8AAC9055-0140-4975-AF49-A3553B81D23B@jic23.retrosnub.co.uk>
-	 <1461706611.14657.66.camel@linux.intel.com>
-	 <b13f368d-8080-6b76-a0f9-14a5cf9812dc@kernel.org>
-	 <a78e04db-502d-a915-1667-5bee4af15392@kernel.org>
-	 <20160629151329.GA28114@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	Richard Leitner <dev@g0hl1n.net>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Gwendal Grignou <gwendal@chromium.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 2016-06-29 at 17:13 +0200, Steffen Trumtrar wrote:
-> On Wed, May 04, 2016 at 10:55:56AM +0100, Jonathan Cameron wrote:
-> > 
-> > On 01/05/16 21:02, Jonathan Cameron wrote:
-> > > 
-> > > On 26/04/16 22:36, Srinivas Pandruvada wrote:
-> > > > 
-> > > > On Tue, 2016-04-26 at 22:15 +0100, Jonathan Cameron wrote:
-> > > > > 
-> > > > > 
-> > > > > On 26 April 2016 21:25:22 BST, Srinivas Pandruvada
-> > > > > <srinivas.pandruva
-> > > > > da@linux.intel.com> wrote:
-> > > > > > 
-> > > > > > 
-> > > > > > On Mon, 2016-04-25 at 20:31 +0100, Jonathan Cameron wrote:
-> > > > > > > 
-> > > > > > > 
-> > > > > > > On 21/04/16 11:49, Steffen Trumtrar wrote:
-> > > > > > > > 
-> > > > > > > > 
-> > > > > > > > 
-> > > > > > > > The filter frequency and sample rate have a fixed
-> > > > > > > > relationship.
-> > > > > > > > Only the filter frequency is unique, however.
-> > > > > > > > Currently the driver ignores the filter settings for 32
-> > > > > > > > Hz and
-> > > > > > > > 64 Hz.
-> > > > > > > > 
-> > > > > > > > This patch adds the necessary callbacks to be able to
-> > > > > > > > configure
-> > > > > > > > and read the filter setting from sysfs.
-> > > > > > > > 
-> > > > > > > > Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix
-> > > > > > > > .de>
-> > > > > > > cc'd Srinivas as it's his driver...  Looks superficially
-> > > > > > > fine to
-> > > > > > > me.
-> > > > > > > 
-> > > > > > > Jonathan
-> > > > > > > > 
-> > > > > > > > 
-> > > > > > > > 
-> > > > > > > > ---
-> > > > > > > > 
-> > > > > > > > Changing the sample rate will result in using the first
-> > > > > > > > match
-> > > > > > > > and therefore selecting the filter accordingly. Is this
-> > > > > > > > a
-> > > > > > > > misuse
-> > > > > > > > of the ABI and should be handled differently or is this
-> > > > > > > > okay?
-> > > > > > > > 
-> > > > > > This is the reason they were omitted. Now you can't
-> > > > > > uniquely set
-> > > > > > 100Hz
-> > > > > > sampling frequency. Depending on filter it will have
-> > > > > > different
-> > > > > > results.
-> > > > > > 
-> > > > > > I think this needs some ABI level changes, where you
-> > > > > > display
-> > > > > > available
-> > > > > > and allow to specify both ODR and Filter to uniquely
-> > > > > > select.
-> > > > > Unfortunately the moment the ABI allows for combined elements
-> > > > > it
-> > > > > becomes a
-> > > > >  nightmare for complexity. In some devices a single parameter
-> > > > > change
-> > > > > can
-> > > > >  change everything else. There are no simple rules
-> > > > > unfortunately. 
-> > > > > 
-> > > > > The way we avoid this being a problem is that we very
-> > > > > deliberately
-> > > > > allow any ABI element
-> > > > > to be able to result in a change in any other.  This includes
-> > > > > changing the
-> > > > >  available values list as here. It might be slightly nicer to
-> > > > > jump to
-> > > > > the nearest
-> > > > >  available option though.
-> > > > > 
-> > > > > An alternative would be to have an interface to fake such
-> > > > > changes
-> > > > > then
-> > > > > apply them atomically if possible. 
-> > > > > That level of complexity just does seem warranted here and
-> > > > > would
-> > > > > still need userspace to check valid ranges as it
-> > > > >  pretends to change the state. Hence no real gain....
-> > > > > 
-> > > > I think we should add some documentation for this driver about
-> > > > this.
-> > > > They should rather change filer rather than sampling freq to
-> > > > have
-> > > > unique setting.
-> > > whilst that would get around the problem, people are going to be
-> > > expecting
-> > > to have explicit control of sampling frequency if they see it is
-> > > variable for
-> > > the part...
-> > > 
-> > > Tricky unfortunately.
-> > So Srinivas, I'm in favour of the patch as it stands.  Have I
-> > convinced you?
-> So, any conclusion ? :-)
-Sorry, I missed this. I am fine with this change.
+On 29 June 2016 at 14:08, Linus Walleij <linus.walleij@linaro.org> wrote:
+> The code was not powering the magnetometer down properly at
+> remove(): just cutting the regulators without first setting the
+> device in power off mode. Fix this.
+>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-Thanks,
-Srinivas
-> 
-> Best regards,
-> Steffen
-> 
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+
+Kind regards
+Uffe
+
+> ---
+> ChangeLog v2->v3:
+> - Rebase
+> ChangeLog v1->v2:
+> - New patch in the series after Ulf's review comment that this
+>   should be separate.
+> ---
+>  drivers/iio/magnetometer/ak8975.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index c67cf3a6128d..43dc1c74be9e 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -990,6 +990,7 @@ static int ak8975_remove(struct i2c_client *client)
+>
+>         iio_device_unregister(indio_dev);
+>         iio_triggered_buffer_cleanup(indio_dev);
+> +       ak8975_set_mode(data, POWER_DOWN);
+>         ak8975_power_off(data);
+>
+>         return 0;
+> --
+> 2.4.11
+>
