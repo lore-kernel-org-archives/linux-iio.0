@@ -1,180 +1,31 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36911 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752230AbcF2Sy5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jun 2016 14:54:57 -0400
-Subject: Re: [PULL] Second set of new device, new features and cleanups for
- IIO in the 4.8 cycle
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <37ca1a90-006f-8a58-e28d-401a3e13562f@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <071b2c5d-5de4-48cf-81a8-b943084dce09@kernel.org>
-Date: Wed, 29 Jun 2016 19:54:54 +0100
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <37ca1a90-006f-8a58-e28d-401a3e13562f@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <2e49a47a-3132-3d24-ea53-7cdd8eb48d90@kernel.org>
+References: <1467045020-2665-1-git-send-email-linus.walleij@linaro.org>
+ <1467045020-2665-4-git-send-email-linus.walleij@linaro.org>
+ <alpine.DEB.2.02.1606271851140.5271@pmeerw.net> <CACRpkdYCzAWQ0WrD9k1TZ0AYeX8D+cHyf9rr952nDcJJvWkoUg@mail.gmail.com>
+ <2e49a47a-3132-3d24-ea53-7cdd8eb48d90@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Wed, 29 Jun 2016 21:00:01 +0200
+Message-ID: <CACRpkdas5uWsXw7Jcp2ra5sNHuj0L1WhmFzzuoEKMOe0ma8dfg@mail.gmail.com>
+Subject: Re: [PATCH 03/10 v3] iio: pressure: bmp280: add reset GPIO line handling
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Greg,
+On Wed, Jun 29, 2016 at 7:45 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 27/06/16 18:05, Linus Walleij wrote:
 
-A few merge conflicts on this.  Two are the obvious choice.
-The third is in industrialio-trigger.c and you want the version that
-doesn't check for trig->ops (as it is no longer considered optional so
-must exist by that point).
+>> I hope this can be fixed while applying in case this happens to
+>> be the only problem so far in the series.
+>
+> It could, but there's enough here that I'll let you do it ;)
+> (+ you hinted that you've already been preparing another version)
 
-Thanks
+Yeah I've done a v4 don't worry, sending it soon! I'm just testing
+in in a few different ways to make sure it works perfectly.
 
-Jonathan
-
-On 29/06/16 18:32, Jonathan Cameron wrote:
-> The following changes since commit bc2e1126eccb47517b9d1c685020c38600f99a3d:
-> 
->   iio:trigger: Experimental kthread tight loop trigger (thread only) (2016-06-03 13:18:44 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.8b
-> 
-> for you to fetch changes up to 67626cc1a0f7bd6700b6f2f547244382247f5bb3:
-> 
->   iio: ad5755: Add DT binding documentation (2016-06-27 21:09:08 +0100)
-> 
-> ----------------------------------------------------------------
-> Second round of new iio device support, features and cleanups in the 4.8 cycle
-> 
-> Firstly some contact detail updates:
-> * NXP took over freescale. Update the mma8452 header to reflect this.
-> * Martin Kepplinger email address change in mma8452 header.
-> * Adriana Reus has changed email address. Update .mailmap.
-> * Matt Ranostay has changed email address. Update .mailmap.
-> 
-> New Device Support
-> * max1363
->   - add the missing i2c_device_ids for a couple of parts so they can actually
->     be used.
-> * ms5867
->   - add device ids for ms5805 and ms5837 parts.
-> 
-> New Features
-> * ad5755
->   - DT support.  This one was a bit controversial and under review for a long
->     time.  Still no one could come up with a better solution.
-> * stx104
->   - add gpio support
-> * ti-adc081c
->   - Add ACPI device ID matching.
-> 
-> Core changes
-> * Refuse to register triggers with duplicate names.  There is no way to
->   distinguish between them so this makes no sense.  A few drivers do not
->   generate unique names for each instance of the device present.  We can't
->   fix this without changing ABI so leave them and wait for someone to
->   actually take the rare step of two identical accelerometers on the same
->   board.
-> * buffer-dma
->   - use ARRAY_SIZE in a few appropriate locations.
-> 
-> Tools
-> * Fix the fact that the --trigger-num option in generic_buffer didn't allow
->   0 which is perfectly valid in the ABI.
-> 
-> Cleanups
-> * as3935
->   - improve error reporting.
->   - remove redundant zeroing of a field in iio_priv.
-> * gp2ap020a00f
->   - use the iio_device_claim_*_mode helpers rather than open coding locking
->   around mode changes.
-> * isl29125
->   - use the iio_device_claim_*_mode helpers rather than open coding locking.
-> * lidar
->   - use the iio_device_claim_*_mode helpers rather than open coding locking.
-> * mma8452
->   - more detail in devices supported description in comments (addresses and
->   similar)
-> * sca3000
->   - add a missing error check.
-> * tcs3414
->   - use the iio_device_claim_*_mode helpers rather than open coding locking.
-> * tcs3472
->   - use the iio_device_claim_*_mode helpers rather than open coding locking.
-> 
-> ----------------------------------------------------------------
-> Adriana Reus (1):
->       mailmap: update Adriana Reus email address
-> 
-> Alison Schofield (4):
->       iio: light: tcs3414: use iio helper function to guarantee direct mode
->       iio: light: tcs3472: use iio helper function to guarantee direct mode
->       iio: light: isl29125: use iio helper function to guarantee direct mode
->       iio: light: gp2ap020a00f: use iio helper function to lock direct mode
-> 
-> Arnd Bergmann (1):
->       iio: as3935: improve error reporting in as3935_event_work
-> 
-> Crestez Dan Leonard (2):
->       iio: generic_buffer: Fix --trigger-num option
->       iio: Refuse to register triggers with duplicate names
-> 
-> Dan O'Donovan (1):
->       iio: adc: ti-adc081c: add ACPI device ID matching
-> 
-> Florian Vaussard (1):
->       iio: adc: max1363: Fix missing i2c_device_id for MAX1164x parts
-> 
-> Luis de Bethencourt (1):
->       staging: iio: accel: add error check
-> 
-> Markezana, William (1):
->       iio: ms5637 Add Measurement Specialties explicit MS5805 and MS5837 support
-> 
-> Martin Kepplinger (3):
->       iio: mma8452: update contact information for Martin Kepplinger
->       iio: mma8452: update device description in header comments
->       iio: mma8452: update Freescale company information
-> 
-> Matt Ranostay (3):
->       iio: proximity: lidar: switch to iio_device_claim_*_mode helpers
->       mailmap: update Matt Ranostay email address
->       iio: proximity: as3935: remove redundant zeroing of tune_cap
-> 
-> Phil Reid (1):
->       iio: buffer-dma: Use ARRAY_SIZE in for loop range
-> 
-> Sean Nyekjaer (2):
->       iio: ad5755: add support for dt bindings
->       iio: ad5755: Add DT binding documentation
-> 
-> William Breathitt Gray (1):
->       iio: stx104: Add GPIO support for the Apex Embedded Systems STX104
-> 
->  .mailmap                                           |   3 +
->  .../devicetree/bindings/iio/dac/ad5755.txt         | 124 ++++++++++++++
->  drivers/iio/accel/Kconfig                          |   4 +-
->  drivers/iio/accel/mma8452.c                        |  24 +--
->  drivers/iio/adc/max1363.c                          |   4 +
->  drivers/iio/adc/ti-adc081c.c                       |  26 ++-
->  drivers/iio/buffer/industrialio-buffer-dma.c       |   4 +-
->  drivers/iio/dac/Kconfig                            |  11 +-
->  drivers/iio/dac/ad5755.c                           | 188 ++++++++++++++++++++-
->  drivers/iio/dac/stx104.c                           | 125 +++++++++++++-
->  drivers/iio/industrialio-trigger.c                 |  22 +++
->  drivers/iio/light/gp2ap020a00f.c                   |  18 +-
->  drivers/iio/light/isl29125.c                       |  10 +-
->  drivers/iio/light/tcs3414.c                        |  12 +-
->  drivers/iio/light/tcs3472.c                        |  13 +-
->  drivers/iio/pressure/ms5637.c                      |  12 +-
->  drivers/iio/proximity/as3935.c                     |  11 +-
->  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c  |  14 +-
->  drivers/staging/iio/accel/sca3000_core.c           |   2 +
->  tools/iio/iio_generic_buffer.c                     |   4 +-
->  20 files changed, 554 insertions(+), 77 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5755.txt
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+Yours,
+Linus Walleij
