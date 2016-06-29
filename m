@@ -1,103 +1,80 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from anchovy3.45ru.net.au ([203.30.46.155]:40021 "EHLO
-	anchovy.45ru.net.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752449AbcF2DYw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2016 23:24:52 -0400
-Subject: Re: Question on shared attributes
-To: "Cercueil, Paul" <Paul.Cercueil@analog.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <e87b35bc-36e9-dc1a-a87e-4e1c20db8d2e@electromag.com.au>
- <1467110288.2364.11.camel@analog.com>
-From: Phil Reid <preid@electromag.com.au>
-Message-ID: <8387fdf7-dc3a-fc06-9dc5-6c73995ad366@electromag.com.au>
-Date: Wed, 29 Jun 2016 11:24:46 +0800
+Return-Path: <wens@csie.org>
 MIME-Version: 1.0
-In-Reply-To: <1467110288.2364.11.camel@analog.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1467101897-15946-1-git-send-email-quentin.schulz@free-electrons.com>
+References: <1467101897-15946-1-git-send-email-quentin.schulz@free-electrons.com>
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Wed, 29 Jun 2016 11:28:03 +0800
+Message-ID: <CAGb2v67pK1Gkqxy2LJ0MMVry4P5C0RTqVGPHhqq+4jOFvvEA7g@mail.gmail.com>
+Subject: Re: [PATCH 0/3] add support for Allwinner SoCs ADC
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jdelvare@suse.com, Guenter Roeck <linux@roeck-us.net>, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>,
+	Lee Jones <lee.jones@linaro.org>, linux-kernel <linux-kernel@vger.kernel.org>,
+	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
+	=?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@free-electrons.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 28/06/2016 18:38, Cercueil, Paul wrote:
-> Hi Phil,
+Hi,
+
+On Tue, Jun 28, 2016 at 4:45 PM, Quentin Schulz
+<quentin.schulz@free-electrons.com> wrote:
+> The Allwinner SoCs all have an ADC that can also act as a touchscreen controller
+> and a thermal sensor. The first four channels can be used either for the ADC or
+> the touchscreen and the fifth channel is used for the thermal sensor. We
+> currently have a driver for the two latter functions in
+> drivers/input/touchscreen/sun4i-ts.c but we don't have access to the ADC feature
+> at all.
 >
-> I think right now libiio doesn't handle shared-by-dir attributes yet,
-> only shared-by-type. Ideally, 'in_sampling_frequency' should appear as
-> a 'sampling_frequency' attribute on all input channels of your module0
-> device.
+> This adds initial support for Allwinner SoCs ADC with all features. Yet, the
+> touchscreen is not implemented but will be added later. To switch between
+> touchscreen and ADC modes, you need to poke few bits in registers and
+> (de)activate an interrupt (pen-up).
+> A MFD is provided to let the input driver activate the pen-up interrupt through
+> virtual interrupt, poke few bits via regmap and read data from the ADC driver
+> while both (and iio_hwmon) are probed by the MFD.
+
+I take it that we are going to replace the original sun4i-ts driver
+with this new mfd one, and various sub device drivers?
+
+> There exists slight modifications between the different SoCs ADC like the
+> address of some registers and the scale and offset to apply to thermal sensor
+> raw values. These modifications are done by drivers on different
+> platform_device_id passed by the MFD when probing subdrivers.
 >
-> Regards,
-> Paul Cercueil
+> This also modifies iio-hwmon to allow probe deferring when no iio channel is
+> found. Currently when no iio channel is found, the probing of iio-hwmon fails.
+> This is problematic when iio-hwmon probes before the iio driver could register
+> iio channels to share.
+
+One thing about iio-hwmon is that it doesn't support hwmon labels.
+Any chance you could improve this, so we see the same names in userspace?
+
+Thanks
+ChenYu
+
 >
-> Le mardi 28 juin 2016 à 16:55 +0800, Phil Reid a écrit :
->> G'day All,
->>
->> Found something interesting.
->> For a new iio driver I have a shared attribute on direction.
->>
->> .info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ)
->>
->> Which results in sysfs attribute name of:
->> in_sampling_frequency
->>
->> Which results in iio_info giving the following output:
->> iio:device3: module0
->>          7 channels found:
-*snip*
->>                  sampling:  (input)
->>                  1 channel-specific attributes found:
->>                          attr 0: frequency value: 24000
->>          2 device-specific attributes found:
->>                          attr 0: freq value: 6144000
->>                          attr 1: out_en value: 0
->>
->>
->> Note that the sampling_frequency attr has been converted into an
->> input channel.
->>
->> Modify the definition in industrialio-core.c
->> 	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
->> to
->> 	[IIO_CHAN_INFO_SAMP_FREQ] = "samplingfrequency",
->>
->> Results in the following output:
->> iio:device4: module0
->>          6 channels found:
-*snip*
->>          3 device-specific attributes found:
->>                          attr 0: freq value: 6144000
->>                          attr 1: in_samplingfrequency value: 24000
->>                          attr 2: out_en value: 0
->>
->> Which makes more sense. So libiio is treating the name sampling as a
->> channel name
->> in 'in_sampling_frequency' assuming that attributes never have an
->> underscore in there name.
->>
->> I'm guessing the same would be the case for out attributes as well.
->>
->> A quick search of the drivers in the kernel to date indicate that
->> IIO_CHAN_INFO_SAMP_FREQ is generally
->> shared by type or all. shared by dir occurs with the
->> iio_simple_dummy, but can't see anything with a real device.
->> I'm using libiio from git://github.com/analogdevicesinc/libiio.git
->>
->> So is this intended, or does libiio need to be smarter on identifying
->> channels and shared attributes?
->> I'm guessing we cant change the kernel interface, which would be the
->> easiest fix. :/
->>
-
-I found making it a info_mask_shared_by_type resulted in the sampling_freq
-becoming an attribute of all the input channels. I find it a little conintutive
-that a shared attribute is populated into all the channels. libiio doesn't
-seem to provide an interface I can find to indicate if a parameter is shared or not.
-I guess with the current method of multiplexing the data streams it doesn't make
-sense to have anything other than the same value for sample rate.
-I just assumed that the sample_frequency would have been a device specific value.
-
-
--- 
-Regards
-Phil Reid
-
-
+> Quentin Schulz (3):
+>   mfd: add support for Allwinner SoCs ADC
+>   iio: adc: add support for Allwinner SoCs ADC
+>   hwmon: iio_hwmon: defer probe when no channel is found
+>
+>  drivers/hwmon/iio_hwmon.c           |   5 +-
+>  drivers/iio/adc/Kconfig             |  12 ++
+>  drivers/iio/adc/Makefile            |   1 +
+>  drivers/iio/adc/sunxi-gpadc-iio.c   | 371 ++++++++++++++++++++++++++++++++++++
+>  drivers/mfd/Kconfig                 |  14 ++
+>  drivers/mfd/Makefile                |   2 +
+>  drivers/mfd/sunxi-gpadc-mfd.c       | 188 ++++++++++++++++++
+>  include/linux/mfd/sunxi-gpadc-mfd.h |  14 ++
+>  8 files changed, 606 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iio/adc/sunxi-gpadc-iio.c
+>  create mode 100644 drivers/mfd/sunxi-gpadc-mfd.c
+>  create mode 100644 include/linux/mfd/sunxi-gpadc-mfd.h
+>
+> --
+> 2.5.0
+>
