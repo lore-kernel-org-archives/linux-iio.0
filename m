@@ -1,55 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailcl2.heig-vd.ch ([193.134.216.183]:41692 "EHLO heig-vd.ch"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751182AbcF3IJm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 30 Jun 2016 04:09:42 -0400
-Subject: Re: [PATCH v3 3/4] iio: potentiometer: mcp4531: Add device tree
- binding
-To: Peter Rosin <peda@axentia.se>,
-	Florian Vaussard <florian.vaussard@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1467272091-28087-1-git-send-email-florian.vaussard@heig-vd.ch>
- <1467272091-28087-4-git-send-email-florian.vaussard@heig-vd.ch>
- <65595556-53E0-4105-892F-A766EDBA2198@axentia.se>
-CC: <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Slawomir Stepien <sst@poczta.fm>,
-	Joachim Eastwood <manabian@gmail.com>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	Vaussard Florian <florian.vaussard@heig-vd.ch>
-From: Florian Vaussard <florian.vaussard@heig-vd.ch>
-Message-ID: <a93171d3-d333-0e04-5288-eb15048a1efa@heig-vd.ch>
-Date: Thu, 30 Jun 2016 10:09:29 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41521 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751906AbcF3N7P (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2016 09:59:15 -0400
+In-Reply-To: <20160630034725.GA26484@roeck-us.net>
+References: <1467101897-15946-4-git-send-email-quentin.schulz@free-electrons.com> <20160630034725.GA26484@roeck-us.net>
 MIME-Version: 1.0
-In-Reply-To: <65595556-53E0-4105-892F-A766EDBA2198@axentia.se>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [3/3] hwmon: iio_hwmon: defer probe when no channel is found
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Thu, 30 Jun 2016 14:59:06 +0100
+To: Guenter Roeck <linux@roeck-us.net>,
+	Quentin Schulz <quentin.schulz@free-electrons.com>
+CC: jdelvare@suse.com, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
+	maxime.ripard@free-electrons.com, wens@csie.org,
+	lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
+Message-ID: <6FBFD60A-4D68-4B60-AB34-5077BE6BD586@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-Le 30. 06. 16 à 09:46, Peter Rosin a écrit :
-> 
-> 
-> On June 30, 2016 9:34:50 AM GMT+02:00, Florian Vaussard <florian.vaussard@gmail.com> wrote:
->> This patch adds the necessary device tree binding to allow DT probing
->> of
->> currently supported parts.
->>
->> Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
-> 
-> Acked-by: Peter Rosin <peda@axentia.se>
-> 
+On 30 June 2016 04:47:25 BST, Guenter Roeck <linux@roeck-us.net> wrote:
+>On Tue, Jun 28, 2016 at 10:18:17AM +0200, Quentin Schulz wrote:
+>> iio_channel_get_all returns -ENODEV when it cannot find either
+>phandles and
+>> properties in the Device Tree or channels whose consumer_dev_name
+>matches
+>> iio_hwmon in iio_map_list. The iio_map_list is filled in by iio
+>drivers
+>> which might be probed after iio_hwmon.
+>> 
+>> It is better to defer the probe of iio_hwmon if such error is
+>returned by
+>> iio_channel_get_all in order to let a chance to iio drivers to expose
+>> channels in iio_map_list.
+>> 
+>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+>> ---
+>>  drivers/hwmon/iio_hwmon.c | 5 ++++-
+>>  1 file changed, 4 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
+>> index b550ba5..c0da4d9 100644
+>> --- a/drivers/hwmon/iio_hwmon.c
+>> +++ b/drivers/hwmon/iio_hwmon.c
+>> @@ -73,8 +73,11 @@ static int iio_hwmon_probe(struct platform_device
+>*pdev)
+>>  		name = dev->of_node->name;
+>>  
+>>  	channels = iio_channel_get_all(dev);
+>> -	if (IS_ERR(channels))
+>> +	if (IS_ERR(channels)) {
+>> +		if (PTR_ERR(channels) == -ENODEV)
+>> +			return -EPROBE_DEFER;
+>
+>The problem, as I see it, is with iio, which should return
+>-EPROBE_DEFER
+>in this situation.
+Agreed. New fangled stuff this deferred probing :) 
+>
+>We can not convert -ENODEV to -EPROBE_DEFER without risking that the
+>channels are _really_ not there, which would result in endless
+>"deferred"
+>messages.
+Hmm not entirely sure how we prevent that happening wherever it is done..
 
-Thanks for your reviews Peter,
+>
+>Guenter
+>
+>>  		return PTR_ERR(channels);
+>> +	}
+>>  
+>>  	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+>>  	if (st == NULL) {
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-Best,
-Florian
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
