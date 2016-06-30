@@ -1,31 +1,66 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <2e49a47a-3132-3d24-ea53-7cdd8eb48d90@kernel.org>
-References: <1467045020-2665-1-git-send-email-linus.walleij@linaro.org>
- <1467045020-2665-4-git-send-email-linus.walleij@linaro.org>
- <alpine.DEB.2.02.1606271851140.5271@pmeerw.net> <CACRpkdYCzAWQ0WrD9k1TZ0AYeX8D+cHyf9rr952nDcJJvWkoUg@mail.gmail.com>
- <2e49a47a-3132-3d24-ea53-7cdd8eb48d90@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f41.google.com ([209.85.215.41]:34439 "EHLO
+	mail-lf0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751376AbcF3BtC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jun 2016 21:49:02 -0400
+Received: by mail-lf0-f41.google.com with SMTP id h129so45218436lfh.1
+        for <linux-iio@vger.kernel.org>; Wed, 29 Jun 2016 18:49:01 -0700 (PDT)
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Wed, 29 Jun 2016 21:00:01 +0200
-Message-ID: <CACRpkdas5uWsXw7Jcp2ra5sNHuj0L1WhmFzzuoEKMOe0ma8dfg@mail.gmail.com>
-Subject: Re: [PATCH 03/10 v3] iio: pressure: bmp280: add reset GPIO line handling
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Christoph Mair <christoph.mair@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Eric Andersson <eric.andersson@unixphere.com>,
+	Neil Brown <neilb@suse.de>,
+	Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 00/10] Improve the BMP280 driver v4
+Date: Thu, 30 Jun 2016 03:48:44 +0200
+Message-Id: <1467251334-30594-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Jun 29, 2016 at 7:45 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 27/06/16 18:05, Linus Walleij wrote:
+This version should finally deal with all complaints from
+build robots and the last round of review comments.
 
->> I hope this can be fixed while applying in case this happens to
->> be the only problem so far in the series.
->
-> It could, but there's enough here that I'll let you do it ;)
-> (+ you hinted that you've already been preparing another version)
+Since reading calibration once seems to be most controversial
+I moved it to the end of the series, so it can be applied up
+to that point.
 
-Yeah I've done a v4 don't worry, sending it soon! I'm just testing
-in in a few different ways to make sure it works perfectly.
+The first patch with the DT bindings can also be dropped if
+the old one is already applied, just minor things anyway.
 
-Yours,
-Linus Walleij
+Linus Walleij (10):
+  iio: pressure: bmp280: augment DT bindings
+  iio: pressure: bmp280: support device tree initialization
+  iio: pressure: bmp280: add reset GPIO line handling
+  iio: pressure: bmp280: support supply regulators
+  iio: pressure: bmp280: split driver in logical parts
+  iio: pressure: bmp280: split off an I2C Kconfig entry
+  iio: pressure: bmp280: add SPI interface driver
+  iio: pressure: bmp280: add support for BMP085 EOC interrupt
+  iio: pressure: bmp280: add power management
+  iio: pressure: bmp280: read calibration data once
+
+ .../devicetree/bindings/iio/pressure/bmp085.txt    |  15 +-
+ drivers/iio/pressure/Kconfig                       |  28 +-
+ drivers/iio/pressure/Makefile                      |   3 +
+ drivers/iio/pressure/{bmp280.c => bmp280-core.c}   | 567 ++++++++++-----------
+ drivers/iio/pressure/bmp280-i2c.c                  |  91 ++++
+ drivers/iio/pressure/bmp280-regmap.c               |  84 +++
+ drivers/iio/pressure/bmp280-spi.c                  | 125 +++++
+ drivers/iio/pressure/bmp280.h                      | 112 ++++
+ 8 files changed, 730 insertions(+), 295 deletions(-)
+ rename drivers/iio/pressure/{bmp280.c => bmp280-core.c} (73%)
+ create mode 100644 drivers/iio/pressure/bmp280-i2c.c
+ create mode 100644 drivers/iio/pressure/bmp280-regmap.c
+ create mode 100644 drivers/iio/pressure/bmp280-spi.c
+ create mode 100644 drivers/iio/pressure/bmp280.h
+
+-- 
+2.4.11
+
