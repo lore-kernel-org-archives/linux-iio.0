@@ -1,12 +1,7 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f46.google.com ([209.85.215.46]:34466 "EHLO
-	mail-lf0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751376AbcF3BtK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jun 2016 21:49:10 -0400
-Received: by mail-lf0-f46.google.com with SMTP id h129so45219794lfh.1
-        for <linux-iio@vger.kernel.org>; Wed, 29 Jun 2016 18:49:09 -0700 (PDT)
+Return-Path: <linus.walleij@linaro.org>
 From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
 	Akinobu Mita <akinobu.mita@gmail.com>,
 	"H. Nikolaus Schaller" <hns@goldelico.com>,
 	Matt Ranostay <mranostay@gmail.com>,
@@ -17,65 +12,182 @@ Cc: Christoph Mair <christoph.mair@gmail.com>,
 	Marek Belisko <marek@goldelico.com>,
 	Eric Andersson <eric.andersson@unixphere.com>,
 	Neil Brown <neilb@suse.de>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 03/10 v4] iio: pressure: bmp280: add reset GPIO line handling
-Date: Thu, 30 Jun 2016 03:48:47 +0200
-Message-Id: <1467251334-30594-4-git-send-email-linus.walleij@linaro.org>
+	Linus Walleij <linus.walleij@linaro.org>,
+	Mark Brown <broonie@kernel.org>
+Subject: [PATCH 04/10 v4] iio: pressure: bmp280: support supply regulators
+Date: Thu, 30 Jun 2016 03:48:48 +0200
+Message-Id: <1467251334-30594-5-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1467251334-30594-1-git-send-email-linus.walleij@linaro.org>
 References: <1467251334-30594-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On the APQ8060 Dragonboard the reset line to the BMP085 pressure
-sensor is not deasserted on boot, so the driver needs to handle
-this. For a simple GPIO line supplied as a descriptor (from a board
-file, device tree or ACPI) this does the trick.
+The BMP085/BMP180/BMP280 is supplied with two power sources:
+VDDA (analog power) and VDDD (digital power). As these may come
+from regulators (as on the APQ8060 Dragonboard) we need the driver
+to attempt to fetch and enable these regulators.
 
+We FAIL if we cannot: boards should either define:
+- Proper regulators if present
+- Define fixed regulators if power is hardwired to the component
+- Rely on dummy regulators (will be present on all DT systems and
+  any boardfile system that calls regulator_has_full_constraints().
+
+Cc: Mark Brown <broonie@kernel.org>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v3->v4:
+- Fix missing "regulator" string in enablement message.
 - Fix BMP058->BMP085 in commit message
 ChangeLog v2->v3:
-- None, just rebasing/resending
+- Encode a start-up time for each sensor type (from the datasheets)
+  this is necessary when coldstarting the sensor with a regulator
+  to be sure it is on before we try to use it.
+- Introduce a try/catch-style set of goto clauses in the probe
+  function to make sure the regulators are properly disabled.
+ChangeLog v1->v2:
+- Make the regulators non-optional: an optional supply is one you
+  can choose not to supply ELECTRICALLY as in an internal charge
+  pump taking its place or so.
+- Bail out if not present and add some notices to the commit that
+  boards need to think about their regulator usage.
+- Make sure we disable the regulators, and introduce a .remove()
+  call to do that if/when the module is removed.
 ---
- drivers/iio/pressure/bmp280.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iio/pressure/bmp280.c | 64 ++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 60 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index fa76f5851245..1618968f8889 100644
+index 1618968f8889..5245bc598187 100644
 --- a/drivers/iio/pressure/bmp280.c
 +++ b/drivers/iio/pressure/bmp280.c
-@@ -23,6 +23,7 @@
- #include <linux/delay.h>
+@@ -24,6 +24,7 @@
  #include <linux/iio/iio.h>
  #include <linux/iio/sysfs.h>
-+#include <linux/gpio/consumer.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/regulator/consumer.h>
  
  /* BMP280 specific registers */
  #define BMP280_REG_HUMIDITY_LSB		0xFE
-@@ -1024,6 +1025,7 @@ static int bmp280_probe(struct i2c_client *client,
- 	struct iio_dev *indio_dev;
- 	struct bmp280_data *data;
- 	unsigned int chip_id;
-+	struct gpio_desc *gpiod;
+@@ -124,6 +125,9 @@ struct bmp280_data {
+ 	struct mutex lock;
+ 	struct regmap *regmap;
+ 	const struct bmp280_chip_info *chip_info;
++	struct regulator *vddd;
++	struct regulator *vdda;
++	unsigned int start_up_time; /* in milliseconds */
  
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -1063,6 +1065,14 @@ static int bmp280_probe(struct i2c_client *client,
+ 	/* log of base 2 of oversampling rate */
+ 	u8 oversampling_press;
+@@ -1047,12 +1051,14 @@ static int bmp280_probe(struct i2c_client *client,
+ 		data->chip_info = &bmp180_chip_info;
+ 		data->oversampling_press = ilog2(8);
+ 		data->oversampling_temp = ilog2(1);
++		data->start_up_time = 10;
+ 		break;
+ 	case BMP280_CHIP_ID:
+ 		indio_dev->num_channels = 2;
+ 		data->chip_info = &bmp280_chip_info;
+ 		data->oversampling_press = ilog2(16);
+ 		data->oversampling_temp = ilog2(2);
++		data->start_up_time = 2;
+ 		break;
+ 	case BME280_CHIP_ID:
+ 		indio_dev->num_channels = 3;
+@@ -1060,11 +1066,37 @@ static int bmp280_probe(struct i2c_client *client,
+ 		data->oversampling_press = ilog2(16);
+ 		data->oversampling_humid = ilog2(16);
+ 		data->oversampling_temp = ilog2(2);
++		data->start_up_time = 2;
+ 		break;
+ 	default:
  		return -EINVAL;
  	}
  
-+	/* Bring chip out of reset if there is an assigned GPIO line */
-+	gpiod = devm_gpiod_get(&client->dev, "reset", GPIOD_OUT_HIGH);
-+	/* Deassert the signal */
-+	if (!IS_ERR(gpiod)) {
-+		dev_info(&client->dev, "release reset\n");
-+		gpiod_set_value(gpiod, 0);
++	/* Bring up regulators */
++	data->vddd = devm_regulator_get(&client->dev, "vddd");
++	if (IS_ERR(data->vddd)) {
++		dev_err(&client->dev, "failed to get VDDD regulator\n");
++		return PTR_ERR(data->vddd);
 +	}
++	ret = regulator_enable(data->vddd);
++	if (ret) {
++		dev_err(&client->dev, "failed to enable VDDD regulator\n");
++		return ret;
++	}
++	data->vdda = devm_regulator_get(&client->dev, "vdda");
++	if (IS_ERR(data->vdda)) {
++		dev_err(&client->dev, "failed to get VDDA regulator\n");
++		ret = PTR_ERR(data->vddd);
++		goto out_disable_vddd;
++	}
++	ret = regulator_enable(data->vdda);
++	if (ret) {
++		dev_err(&client->dev, "failed to enable VDDA regulator\n");
++		goto out_disable_vddd;
++	}
++	/* Wait to make sure we started up properly */
++	mdelay(data->start_up_time);
 +
- 	data->regmap = devm_regmap_init_i2c(client,
+ 	/* Bring chip out of reset if there is an assigned GPIO line */
+ 	gpiod = devm_gpiod_get(&client->dev, "reset", GPIOD_OUT_HIGH);
+ 	/* Deassert the signal */
+@@ -1077,7 +1109,8 @@ static int bmp280_probe(struct i2c_client *client,
  					data->chip_info->regmap_config);
  	if (IS_ERR(data->regmap)) {
+ 		dev_err(&client->dev, "failed to allocate register map\n");
+-		return PTR_ERR(data->regmap);
++		ret = PTR_ERR(data->regmap);
++		goto out_disable_vdda;
+ 	}
+ 
+ 	ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
+@@ -1086,14 +1119,36 @@ static int bmp280_probe(struct i2c_client *client,
+ 	if (chip_id != id->driver_data) {
+ 		dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
+ 			BMP280_CHIP_ID, chip_id);
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto out_disable_vdda;
+ 	}
+ 
+ 	ret = data->chip_info->chip_config(data);
+ 	if (ret < 0)
+-		return ret;
++		goto out_disable_vdda;
++
++	i2c_set_clientdata(client, data);
+ 
+-	return devm_iio_device_register(&client->dev, indio_dev);
++	ret = devm_iio_device_register(&client->dev, indio_dev);
++	if (ret)
++		goto out_disable_vdda;
++
++	return 0;
++
++out_disable_vdda:
++	regulator_disable(data->vdda);
++out_disable_vddd:
++	regulator_disable(data->vddd);
++	return ret;
++}
++
++static int bmp280_remove(struct i2c_client *client)
++{
++	struct bmp280_data *data = i2c_get_clientdata(client);
++
++	regulator_disable(data->vdda);
++	regulator_disable(data->vddd);
++	return 0;
+ }
+ 
+ static const struct acpi_device_id bmp280_acpi_match[] = {
+@@ -1134,6 +1189,7 @@ static struct i2c_driver bmp280_driver = {
+ 		.of_match_table = of_match_ptr(bmp280_of_match),
+ 	},
+ 	.probe		= bmp280_probe,
++	.remove		= bmp280_remove,
+ 	.id_table	= bmp280_id,
+ };
+ module_i2c_driver(bmp280_driver);
 -- 
 2.4.11
-
