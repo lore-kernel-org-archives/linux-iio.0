@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f65.google.com ([74.125.82.65]:35725 "EHLO
-	mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751547AbcF3HnX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2016 03:43:23 -0400
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:33545 "EHLO
+	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751908AbcF3HnY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2016 03:43:24 -0400
 From: Florian Vaussard <florian.vaussard@gmail.com>
 To: devicetree@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -15,96 +15,122 @@ Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	Martin Kepplinger <martink@posteo.de>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Florian Vaussard <florian.vaussard@heig-vd.ch>
-Subject: [PATCH v3 1/2] iio: adc: max1363: Add device tree binding documentation
-Date: Thu, 30 Jun 2016 09:43:05 +0200
-Message-Id: <1467272586-28761-2-git-send-email-florian.vaussard@heig-vd.ch>
+Subject: [PATCH v3 2/2] iio: adc: max1363: Add device tree binding
+Date: Thu, 30 Jun 2016 09:43:06 +0200
+Message-Id: <1467272586-28761-3-git-send-email-florian.vaussard@heig-vd.ch>
 In-Reply-To: <1467272586-28761-1-git-send-email-florian.vaussard@heig-vd.ch>
 References: <1467272586-28761-1-git-send-email-florian.vaussard@heig-vd.ch>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add the device tree documentation for all the supported parts. Mandatory
-binding is the compatible string and the slave I2C address.
+This patch adds the necessary device tree binding to allow DT probing of
+currently supported parts.
 
-Optional properties can be used to specify the Vcc / Vref regulators, as
-well as the IRQ line if available.
-
-Acked-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
 ---
- .../devicetree/bindings/iio/adc/max1363.txt        | 63 ++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/max1363.txt
+ drivers/iio/adc/max1363.c | 61 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 60 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/max1363.txt b/Documentation/devicetree/bindings/iio/adc/max1363.txt
-new file mode 100644
-index 0000000..94a9011
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/max1363.txt
-@@ -0,0 +1,63 @@
-+* Maxim 1x3x/136x/116xx Analog to Digital Converter (ADC)
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index b5d28c0..c3e4c3c 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -25,6 +25,8 @@
+ #include <linux/slab.h>
+ #include <linux/err.h>
+ #include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -1516,6 +1518,56 @@ done:
+ 	return IRQ_HANDLED;
+ }
+ 
++#ifdef CONFIG_OF
 +
-+The node for this driver must be a child node of a I2C controller, hence
-+all mandatory properties for your controller must be specified. See directory:
++#define MAX1363_COMPATIBLE(of_compatible, cfg) {		\
++			.compatible = of_compatible,		\
++			.data = &max1363_chip_info_tbl[cfg],	\
++}
 +
-+        Documentation/devicetree/bindings/i2c
-+
-+for more details.
-+
-+Required properties:
-+  - compatible: Should be one of
-+		"maxim,max1361"
-+		"maxim,max1362"
-+		"maxim,max1363"
-+		"maxim,max1364"
-+		"maxim,max1036"
-+		"maxim,max1037"
-+		"maxim,max1038"
-+		"maxim,max1039"
-+		"maxim,max1136"
-+		"maxim,max1137"
-+		"maxim,max1138"
-+		"maxim,max1139"
-+		"maxim,max1236"
-+		"maxim,max1237"
-+		"maxim,max1238"
-+		"maxim,max1239"
-+		"maxim,max11600"
-+		"maxim,max11601"
-+		"maxim,max11602"
-+		"maxim,max11603"
-+		"maxim,max11604"
-+		"maxim,max11605"
-+		"maxim,max11606"
-+		"maxim,max11607"
-+		"maxim,max11608"
-+		"maxim,max11609"
-+		"maxim,max11610"
-+		"maxim,max11611"
-+		"maxim,max11612"
-+		"maxim,max11613"
-+		"maxim,max11614"
-+		"maxim,max11615"
-+		"maxim,max11616"
-+		"maxim,max11617"
-+		"maxim,max11644"
-+		"maxim,max11645"
-+		"maxim,max11646"
-+		"maxim,max11647"
-+  - reg: Should contain the ADC I2C address
-+
-+Optional properties:
-+  - vcc-supply: phandle to the regulator that provides power to the ADC.
-+  - vref-supply: phandle to the regulator for ADC reference voltage.
-+  - interrupts: IRQ line for the ADC. If not used the driver will use
-+    polling.
-+
-+Example:
-+adc: max11644@36 {
-+	compatible = "maxim,max11644";
-+	reg = <0x36>;
-+	vref-supply = <&adc_vref>;
++static const struct of_device_id max1363_of_match[] = {
++	MAX1363_COMPATIBLE("maxim,max1361", max1361),
++	MAX1363_COMPATIBLE("maxim,max1362", max1362),
++	MAX1363_COMPATIBLE("maxim,max1363", max1363),
++	MAX1363_COMPATIBLE("maxim,max1364", max1364),
++	MAX1363_COMPATIBLE("maxim,max1036", max1036),
++	MAX1363_COMPATIBLE("maxim,max1037", max1037),
++	MAX1363_COMPATIBLE("maxim,max1038", max1038),
++	MAX1363_COMPATIBLE("maxim,max1039", max1039),
++	MAX1363_COMPATIBLE("maxim,max1136", max1136),
++	MAX1363_COMPATIBLE("maxim,max1137", max1137),
++	MAX1363_COMPATIBLE("maxim,max1138", max1138),
++	MAX1363_COMPATIBLE("maxim,max1139", max1139),
++	MAX1363_COMPATIBLE("maxim,max1236", max1236),
++	MAX1363_COMPATIBLE("maxim,max1237", max1237),
++	MAX1363_COMPATIBLE("maxim,max1238", max1238),
++	MAX1363_COMPATIBLE("maxim,max1239", max1239),
++	MAX1363_COMPATIBLE("maxim,max11600", max11600),
++	MAX1363_COMPATIBLE("maxim,max11601", max11601),
++	MAX1363_COMPATIBLE("maxim,max11602", max11602),
++	MAX1363_COMPATIBLE("maxim,max11603", max11603),
++	MAX1363_COMPATIBLE("maxim,max11604", max11604),
++	MAX1363_COMPATIBLE("maxim,max11605", max11605),
++	MAX1363_COMPATIBLE("maxim,max11606", max11606),
++	MAX1363_COMPATIBLE("maxim,max11607", max11607),
++	MAX1363_COMPATIBLE("maxim,max11608", max11608),
++	MAX1363_COMPATIBLE("maxim,max11609", max11609),
++	MAX1363_COMPATIBLE("maxim,max11610", max11610),
++	MAX1363_COMPATIBLE("maxim,max11611", max11611),
++	MAX1363_COMPATIBLE("maxim,max11612", max11612),
++	MAX1363_COMPATIBLE("maxim,max11613", max11613),
++	MAX1363_COMPATIBLE("maxim,max11614", max11614),
++	MAX1363_COMPATIBLE("maxim,max11615", max11615),
++	MAX1363_COMPATIBLE("maxim,max11616", max11616),
++	MAX1363_COMPATIBLE("maxim,max11617", max11617),
++	MAX1363_COMPATIBLE("maxim,max11644", max11644),
++	MAX1363_COMPATIBLE("maxim,max11645", max11645),
++	MAX1363_COMPATIBLE("maxim,max11646", max11646),
++	MAX1363_COMPATIBLE("maxim,max11647", max11647),
++	{ /* sentinel */ }
 +};
++#endif
++
+ static int max1363_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+@@ -1523,6 +1575,7 @@ static int max1363_probe(struct i2c_client *client,
+ 	struct max1363_state *st;
+ 	struct iio_dev *indio_dev;
+ 	struct regulator *vref;
++	const struct of_device_id *match;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev,
+ 					  sizeof(struct max1363_state));
+@@ -1549,7 +1602,12 @@ static int max1363_probe(struct i2c_client *client,
+ 	/* this is only used for device removal purposes */
+ 	i2c_set_clientdata(client, indio_dev);
+ 
+-	st->chip_info = &max1363_chip_info_tbl[id->driver_data];
++	match = of_match_device(of_match_ptr(max1363_of_match),
++				&client->dev);
++	if (match)
++		st->chip_info = of_device_get_match_data(&client->dev);
++	else
++		st->chip_info = &max1363_chip_info_tbl[id->driver_data];
+ 	st->client = client;
+ 
+ 	st->vref_uv = st->chip_info->int_vref_mv * 1000;
+@@ -1692,6 +1750,7 @@ MODULE_DEVICE_TABLE(i2c, max1363_id);
+ static struct i2c_driver max1363_driver = {
+ 	.driver = {
+ 		.name = "max1363",
++		.of_match_table = of_match_ptr(max1363_of_match),
+ 	},
+ 	.probe = max1363_probe,
+ 	.remove = max1363_remove,
 -- 
 2.5.5
 
