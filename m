@@ -1,88 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43355 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751704AbcF3Ty2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2016 15:54:28 -0400
-Subject: Re: [PATCH v3] iio: temperature: add support for Maxim thermocouple
- chips
-To: Matt Ranostay <mranostay@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-References: <1464572270-29154-1-git-send-email-mranostay@gmail.com>
- <6e79df7d-4ac1-3a44-e303-af858f30e161@kernel.org>
- <77a1a974-2636-878b-742c-d624cc5fdc58@kernel.org>
- <576A45FA.4020708@metafoo.de>
- <4f1a2f3f-fea0-8d14-dcea-ff2bd51dca63@kernel.org>
- <57710E71.3000603@metafoo.de>
- <CAKzfze_GR0dt160ODkBm_ALQnTgnJj-sF7=2wZTzZiU1n85DTw@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Marek Vasut <marex@denx.de>,
-	Matt Porter <mporter@konsulko.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1fa544f4-1635-25fc-6a79-09af4313acbd@kernel.org>
-Date: Thu, 30 Jun 2016 20:45:37 +0100
+Received: from mail-qk0-f194.google.com ([209.85.220.194]:34676 "EHLO
+	mail-qk0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751722AbcGACUA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2016 22:20:00 -0400
+Date: Thu, 30 Jun 2016 21:19:57 -0500
+From: Rob Herring <robh@kernel.org>
+To: Florian Vaussard <florian.vaussard@gmail.com>
+Cc: devicetree@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Peter Rosin <peda@axentia.se>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Slawomir Stepien <sst@poczta.fm>,
+	Joachim Eastwood <manabian@gmail.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Florian Vaussard <florian.vaussard@heig-vd.ch>
+Subject: Re: [PATCH v3 2/4] iio: potentiometer: mcp4531: Add device tree
+ binding documentation
+Message-ID: <20160701021957.GA17269@rob-hp-laptop>
+References: <1467272091-28087-1-git-send-email-florian.vaussard@heig-vd.ch>
+ <1467272091-28087-3-git-send-email-florian.vaussard@heig-vd.ch>
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze_GR0dt160ODkBm_ALQnTgnJj-sF7=2wZTzZiU1n85DTw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1467272091-28087-3-git-send-email-florian.vaussard@heig-vd.ch>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/06/16 00:42, Matt Ranostay wrote:
-> On Mon, Jun 27, 2016 at 4:30 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 06/26/2016 05:13 PM, Jonathan Cameron wrote:
->>> On 22/06/16 09:02, Lars-Peter Clausen wrote:
->>>> On 06/11/2016 06:48 PM, Jonathan Cameron wrote:
->>>>> On 03/06/16 13:33, Jonathan Cameron wrote:
->>>>>> On 30/05/16 02:37, Matt Ranostay wrote:
->>>>>>> Add initial driver support for MAX6675, and MAX31885 thermocouple chips.
->>>>>>>
->>>>>>> Cc: Marek Vasut <marex@denx.de>
->>>>>>> Cc: Matt Porter <mporter@konsulko.com>
->>>>>>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->>>>>> I'm going to let this sit for a sort while as I'd like some discussion
->>>>>> of the invalidate buffer bit.
->>>>>>
->>>>>> Cc'd a few more people for views.
->>>>> Hmm. Deadly silence.
->>>>>
->>>>> Daniel, Lars, Peter - this is a fairly fundamental abi question.
->>>>>
->>>>> What do we do to signify an 'invalid reading' in the buffer.
->>>>>
->>>>> Here the part is driven by a software trigger - and if we skip
->>>>> a reading we are obviously out of sync.
->>>>>
->>>>> Old and nasty trick we used in some (possibly only one)
->>>>> early driver was to set an invalid state for these cases.
->>>>>
->>>>> Anyone have a better idea?
->>>>
->>>> Ideally the driver would leave the data including the status bit intact and
->>>> not replace it with a magic constant that way an application that is aware
->>>> of the way the chip behaves could handle that.
->>>
->>> In response to what I'd misunderstood this as:
->>>
->>> It's tricky as the status bit is not in general in the same register as the
->>> value.  We would need to add a meta data element to the buffer to handle this.
->>>
->>> I'm inclined to go with the magic value as the best 'general purpose' option
->>> we have right now...  I don't like it, but adding meta data is also somewhat
->>> hideous as most usecases and devices wouldn't use it.
->>
->> The thing is the application needs to be aware of the magic value and its
->> meaning for this particular driver anyway. So we might as well just expose
->> the raw value without doing any processing. From an applications point of
->> view there is no difference and application that is aware of it can handle
->> it, an application that is not can't.
+On Thu, Jun 30, 2016 at 09:34:49AM +0200, Florian Vaussard wrote:
+> Add the device tree documentation for all the supported parts. Apart the
+> compatible string and standard I2C binding, no other binding is currently
+> needed.
 > 
-> So Jonathan should I resubmit with the original functionality of
-> passing the raw buffer, and along with the bugfixes?
-Hmm. Yes. Probably the best we can do until we figure out what the
-generic solution to this sort of thing is...
+> Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
+> ---
+>  .../devicetree/bindings/i2c/trivial-devices.txt    | 64 ++++++++++++++++++++++
+>  1 file changed, 64 insertions(+)
 
-Jonathan
-> 
->>
-
+Acked-by: Rob Herring <robh@kernel.org>
