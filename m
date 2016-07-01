@@ -1,44 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f194.google.com ([209.85.220.194]:34676 "EHLO
-	mail-qk0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751722AbcGACUA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2016 22:20:00 -0400
-Date: Thu, 30 Jun 2016 21:19:57 -0500
-From: Rob Herring <robh@kernel.org>
-To: Florian Vaussard <florian.vaussard@gmail.com>
-Cc: devicetree@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Peter Rosin <peda@axentia.se>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Slawomir Stepien <sst@poczta.fm>,
-	Joachim Eastwood <manabian@gmail.com>,
+Return-Path: <mranostay@gmail.com>
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
 	Matt Ranostay <mranostay@gmail.com>,
-	Cristina Moraru <cristina.moraru09@gmail.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Florian Vaussard <florian.vaussard@heig-vd.ch>
-Subject: Re: [PATCH v3 2/4] iio: potentiometer: mcp4531: Add device tree
- binding documentation
-Message-ID: <20160701021957.GA17269@rob-hp-laptop>
-References: <1467272091-28087-1-git-send-email-florian.vaussard@heig-vd.ch>
- <1467272091-28087-3-git-send-email-florian.vaussard@heig-vd.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1467272091-28087-3-git-send-email-florian.vaussard@heig-vd.ch>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Daniel Baluta <daniel.baluta@intel.com>
+Subject: [PATCH] iio: adc: ti-ads1015: add indio_dev->dev.of_node reference
+Date: Thu, 30 Jun 2016 19:33:50 -0700
+Message-Id: <1467340430-15184-1-git-send-email-mranostay@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Jun 30, 2016 at 09:34:49AM +0200, Florian Vaussard wrote:
-> Add the device tree documentation for all the supported parts. Apart the
-> compatible string and standard I2C binding, no other binding is currently
-> needed.
-> 
-> Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
-> ---
->  .../devicetree/bindings/i2c/trivial-devices.txt    | 64 ++++++++++++++++++++++
->  1 file changed, 64 insertions(+)
+Add the pointer to the device tree node of the ADC so that iio
+consumers can reference the respective channels.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/adc/ti-ads1015.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 8be192a84893..6f75a4aa67c1 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -585,6 +585,7 @@ static int ads1015_probe(struct i2c_client *client,
+ 	mutex_init(&data->lock);
+ 
+ 	indio_dev->dev.parent = &client->dev;
++	indio_dev->dev.of_node = client->dev.of_node;
+ 	indio_dev->name = ADS1015_DRV_NAME;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-- 
+2.7.4
