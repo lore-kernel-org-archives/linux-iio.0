@@ -1,61 +1,118 @@
-Return-Path: <quentin.schulz@free-electrons.com>
-Subject: Re: [PATCH 0/3] add support for Allwinner SoCs ADC
-To: Chen-Yu Tsai <wens@csie.org>
-References: <1467101897-15946-1-git-send-email-quentin.schulz@free-electrons.com>
- <CAGb2v67pK1Gkqxy2LJ0MMVry4P5C0RTqVGPHhqq+4jOFvvEA7g@mail.gmail.com>
-Cc: jdelvare@suse.com, Guenter Roeck <linux@roeck-us.net>, jic23@kernel.org,
- knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
- Maxime Ripard <maxime.ripard@free-electrons.com>,
- Lee Jones <lee.jones@linaro.org>, linux-kernel
- <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org,
- linux-iio@vger.kernel.org,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
- Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
- =?UTF-8?Q?Antoine_T=c3=a9nart?= <antoine.tenart@free-electrons.com>
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-Message-ID: <57763BB3.20706@free-electrons.com>
-Date: Fri, 1 Jul 2016 11:45:23 +0200
+Return-Path: <marex@denx.de>
+Message-ID: <57764C0A.20607@denx.de>
+Date: Fri, 01 Jul 2016 12:55:06 +0200
+From: Marek Vasut <marex@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <CAGb2v67pK1Gkqxy2LJ0MMVry4P5C0RTqVGPHhqq+4jOFvvEA7g@mail.gmail.com>
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+CC: jic23@kernel.org, Matt Porter <mporter@konsulko.com>
+Subject: Re: [PATCH v5] iio: temperature: add support for Maxim thermocouple
+ chips
+References: <1467341579-31471-1-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1467341579-31471-1-git-send-email-mranostay@gmail.com>
 Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 29/06/2016 05:28, Chen-Yu Tsai wrote:
-> Hi,
+On 07/01/2016 04:52 AM, Matt Ranostay wrote:
+> Add initial driver support for MAX6675, and MAX31855 thermocouple chips.
 > 
-> On Tue, Jun 28, 2016 at 4:45 PM, Quentin Schulz
-> <quentin.schulz@free-electrons.com> wrote:
->> The Allwinner SoCs all have an ADC that can also act as a touchscreen controller
->> and a thermal sensor. The first four channels can be used either for the ADC or
->> the touchscreen and the fifth channel is used for the thermal sensor. We
->> currently have a driver for the two latter functions in
->> drivers/input/touchscreen/sun4i-ts.c but we don't have access to the ADC feature
->> at all.
->>
->> This adds initial support for Allwinner SoCs ADC with all features. Yet, the
->> touchscreen is not implemented but will be added later. To switch between
->> touchscreen and ADC modes, you need to poke few bits in registers and
->> (de)activate an interrupt (pen-up).
->> A MFD is provided to let the input driver activate the pen-up interrupt through
->> virtual interrupt, poke few bits via regmap and read data from the ADC driver
->> while both (and iio_hwmon) are probed by the MFD.
+> Cc: Marek Vasut <marex@denx.de>
+> Cc: Matt Porter <mporter@konsulko.com>
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> ---
 > 
-> I take it that we are going to replace the original sun4i-ts driver
-> with this new mfd one, and various sub device drivers?
+> Changes from v1:
+> * switch to iio_device_*_direct_mode wrappers
+> * add const to structs
+> * removed useless cast
 > 
-
-Yes, that's the spirit.
+> Changes from v2:
+> * mark buffer data invalid on disconnected thermocouple
+> * add .address = 0 to be consistent
+> * add missing scan_mask for the max31855 part
+> 
+> Changes from v3:
+> * fixed several typos of max31855 part number
+> 
+> Changes from v4:
+> * drop maxim_thermocouple_validate_buffer() due to peer review saying
+>   this is an incorrect way to signal an invalid reading
 
 [...]
 
-> One thing about iio-hwmon is that it doesn't support hwmon labels.
-> Any chance you could improve this, so we see the same names in userspace?
+> +const struct iio_chan_spec max31855_channels[] = {
+> +	{	/* thermocouple temperature */
+> +		.type = IIO_TEMP,
+> +		.address = 2,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 's',
+> +			.realbits = 14,
+> +			.storagebits = 16,
+> +			.shift = 2,
+> +			.endianness = IIO_BE,
+> +		},
+> +	},
+> +	{	/* cold junction temperature */
+> +		.type = IIO_TEMP,
+> +		.address = 0,
+> +		.channel2 = IIO_MOD_TEMP_AMBIENT,
+> +		.modified = 1,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 1,
+> +		.scan_type = {
+> +			.sign = 's',
+> +			.realbits = 12,
+> +			.storagebits = 16,
+> +			.shift = 4,
+> +			.endianness = IIO_BE,
+> +		},
+> +	},
+> +	IIO_CHAN_SOFT_TIMESTAMP(2),
+> +};
+> +
+> +static const unsigned long max31855_scan_masks[] = {0x3, 0};
+> +
+> +struct maxim_thermocouple_chip {
+> +	const struct iio_chan_spec *channels;
+> +	const unsigned long *scan_masks;
+> +	int num_channels;
 
-Should be an easy patch: reading datasheet_name from iio_chan_spec of
-the iio_channel in iio_hwmon_probe, if none then fall back to current
-naming convention.
+const u8 or u32 ?
 
-I don't think it is linked to this serie of patches so I prefer to look
-at it later.
+> +	int read_size;
 
-Thanks!
+const u8
+
+> +	/* bit-check for valid input */
+> +	int status_bit;
+
+const bool ?
+
+You can save some slop in here, see also:
+http://www.catb.org/esr/structure-packing/
+
+> +};
+> +
+> +const struct maxim_thermocouple_chip maxim_thermocouple_chips[] = {
+> +	[MAX6675] = {
+> +			.channels = max6675_channels,
+> +			.num_channels = ARRAY_SIZE(max6675_channels),
+> +			.read_size = 2,
+> +			.status_bit = BIT(2),
+> +		},
+> +	[MAX31855] = {
+> +			.channels = max31855_channels,
+> +			.num_channels = ARRAY_SIZE(max31855_channels),
+> +			.read_size = 4,
+> +			.scan_masks = max31855_scan_masks,
+> +			.status_bit = BIT(16),
+> +		},
+> +};
+[...]
+
+-- 
+Best regards,
+Marek Vasut
