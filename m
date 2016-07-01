@@ -1,63 +1,54 @@
-Return-Path: <afd@ti.com>
-Subject: Re: [PATCH] iio: dac: mcp4725: Remove unneeded conversions to bool
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20160701143352.17224-1-afd@ti.com>
- <alpine.DEB.2.02.1607011700150.7271@pmeerw.net>
-CC: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <577689C4.6090803@ti.com>
-Date: Fri, 1 Jul 2016 10:18:28 -0500
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1607011700150.7271@pmeerw.net>
-Content-Type: text/plain; charset="windows-1252"
+Return-Path: <alexandre.belloni@free-electrons.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Chen-Yu Tsai <wens@csie.org>,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	devicetree@vger.kernel.org
+Subject: [PATCH 1/2] iio: sun4i-lradc: Add binding documentation
+Date: Fri,  1 Jul 2016 23:00:54 +0200
+Message-Id: <1467406855-9677-1-git-send-email-alexandre.belloni@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/01/2016 10:03 AM, Peter Meerwald-Stadler wrote:
-> 
->> Found with scripts/coccinelle/misc/boolconv.cocci.
-> 
-> I'd argue that
-> 
->         pd = (inbuf[0] >> 1) & 0x3;
->         if (pd) {
->                 data->powerdown = true;
->                 data->powerdown_mode = pd - 1;
->         } else {
->                 data->powerdown = false;
->                 data->powerdown_mode = 2; /* largest register to gnd */
->         }
-> 
-> is less compact but probably easier to read/understand;
-> 
+Document the bindings for the Allwinner LRADC.
 
-I agree, this is a much better fix. Would you like to submit this
-version as a patch?
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
 
-Andrew
+ .../devicetree/bindings/iio/adc/sun4i-lradc.txt       | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/sun4i-lradc.txt
 
->> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> 
-> but I'm fine with the proposed patch as well to make cocci happy
-> 
-> regards, p.
-> 
->> ---
->>  drivers/iio/dac/mcp4725.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
->> index cca935c..c3bb3fd 100644
->> --- a/drivers/iio/dac/mcp4725.c
->> +++ b/drivers/iio/dac/mcp4725.c
->> @@ -361,7 +361,7 @@ static int mcp4725_probe(struct i2c_client *client,
->>  		return err;
->>  	}
->>  	pd = (inbuf[0] >> 1) & 0x3;
->> -	data->powerdown = pd > 0 ? true : false;
->> +	data->powerdown = pd > 0;
->>  	data->powerdown_mode = pd ? pd - 1 : 2; /* largest register to gnd */
->>  	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
->>  
->>
-> 
+diff --git a/Documentation/devicetree/bindings/iio/adc/sun4i-lradc.txt b/Documentation/devicetree/bindings/iio/adc/sun4i-lradc.txt
+new file mode 100644
+index 000000000000..c75a6067b8a5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/sun4i-lradc.txt
+@@ -0,0 +1,19 @@
++Allwinner sun4i Low Resolution ADC
++----------------------------------
++
++Required properties:
++ - compatible: "allwinner,sun4i-a10-lradc"
++ - reg: mmio address range of the chip
++ - interrupts: interrupt to which the chip is connected
++ - vref-supply: powersupply for the lradc reference voltage
++ - #io-channel-cells = <1>; As ADC has multiple outputs
++
++Example:
++
++	lradc: lradc@01c22800 {
++		compatible = "allwinner,sun4i-a10-lradc";
++		reg = <0x01c22800 0x100>;
++		interrupts = <31>;
++		vref-supply = <&reg_vcc3v0>;
++		#io-channel-cells = <1>;
++	};
+-- 
+2.8.1
