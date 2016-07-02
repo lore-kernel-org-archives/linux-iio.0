@@ -1,102 +1,143 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:33824 "EHLO
-	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751469AbcGBWFf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Jul 2016 18:05:35 -0400
-Received: by mail-pf0-f194.google.com with SMTP id 66so12978317pfy.1
-        for <linux-iio@vger.kernel.org>; Sat, 02 Jul 2016 15:05:34 -0700 (PDT)
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:33830 "EHLO
+	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752633AbcGBWFh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Jul 2016 18:05:37 -0400
+Received: by mail-pf0-f193.google.com with SMTP id 66so12978368pfy.1
+        for <linux-iio@vger.kernel.org>; Sat, 02 Jul 2016 15:05:36 -0700 (PDT)
 From: Matt Ranostay <mranostay@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [RFC 1/2] iio: adc: ti-adc1x1s: add support for TI 1-channel differential ADCs
-Date: Sat,  2 Jul 2016 15:05:26 -0700
-Message-Id: <1467497127-32431-2-git-send-email-mranostay@gmail.com>
+Subject: [RFC 2/2] iio: potentiostat: add LMP91000 support
+Date: Sat,  2 Jul 2016 15:05:27 -0700
+Message-Id: <1467497127-32431-3-git-send-email-mranostay@gmail.com>
 In-Reply-To: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
 References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add support for Texas Instruments ADC141S626, and ADC161S626 chips.
+Add support for the LMP91000 potentiostat which is used for chemical
+sensing applications.
 
 Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
- .../devicetree/bindings/iio/adc/ti-adc1x1s.txt     |  16 ++
- drivers/iio/adc/Kconfig                            |  12 ++
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/ti-adc1x1s.c                       | 233 +++++++++++++++++++++
- 4 files changed, 262 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
- create mode 100644 drivers/iio/adc/ti-adc1x1s.c
+ .../bindings/iio/potentiostat/lmp91000.txt         |  28 ++
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/potentiostat/Kconfig                   |  21 ++
+ drivers/iio/potentiostat/Makefile                  |   6 +
+ drivers/iio/potentiostat/lmp91000.c                | 303 +++++++++++++++++++++
+ 6 files changed, 360 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+ create mode 100644 drivers/iio/potentiostat/Kconfig
+ create mode 100644 drivers/iio/potentiostat/Makefile
+ create mode 100644 drivers/iio/potentiostat/lmp91000.c
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
+diff --git a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
 new file mode 100644
-index 000000000000..9cf7db434aee
+index 000000000000..636c548cedee
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
-@@ -0,0 +1,16 @@
-+* Texas Instruments' ADC141S626, and ADC161S626 chip
++++ b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+@@ -0,0 +1,28 @@
++* Texas Instruments LMP91000 potentiostat
++
++http://www.ti.com/lit/ds/symlink/lmp91000.pdf
 +
 +Required properties:
-+ - compatible: Should be "ti,adc141s626" or "ti,ac161s626"
-+ - reg: spi chip select number for the device
 +
-+Recommended properties:
-+ - spi-max-frequency: Definition as per
-+		Documentation/devicetree/bindings/spi/spi-bus.txt
++  - compatible: should be "ti,lmp91000"
++  - reg: the I2C address of the device
++  - io-channels: the phandle and channel of the iio provider
++
++Optional properties:
++
++  - ti,tia-gain-ohm: ohm value on the feedback loop for the transimpedance
++    amplifier. Must be 0 (external resistor, default), 2750, 3500, 7000, 14000,
++    35000, 120000, or 350000 ohms.
++
++  - ti,rload-ohm: ohm value of the internal resistor load applied to the gas
++    sensor. Must be 10, 33, 50, or 100 (default) ohms.
 +
 +Example:
-+adc@0 {
-+	compatible = "ti,adc161s626";
-+	reg = <0>;
-+	spi-max-frequency = <4300000>;
++
++lmp91000@48 {
++	compatible = "ti,lmp91000";
++	reg = <0x48>;
++	ti,tia-gain-ohm = <7500>;
++	ti,rload = <100>;
++	io-channels = <&adc1x1s 0>;
 +};
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 25378c5882e2..cb5e4ae3279d 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -414,6 +414,18 @@ config TI_ADC128S052
- 	  This driver can also be built as a module. If so, the module will be
- 	  called ti-adc128s052.
- 
-+config TI_ADC1X1S
-+	tristate "Texas Instruments ADC1X1S 1-channel differential ADCs"
-+	depends on SPI
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 6743b18194fb..a31a8cf2c330 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -87,6 +87,7 @@ if IIO_TRIGGER
+    source "drivers/iio/trigger/Kconfig"
+ endif #IIO_TRIGGER
+ source "drivers/iio/potentiometer/Kconfig"
++source "drivers/iio/potentiostat/Kconfig"
+ source "drivers/iio/pressure/Kconfig"
+ source "drivers/iio/proximity/Kconfig"
+ source "drivers/iio/temperature/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 87e4c4369e2f..2b6e2762a886 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -29,6 +29,7 @@ obj-y += light/
+ obj-y += magnetometer/
+ obj-y += orientation/
+ obj-y += potentiometer/
++obj-y += potentiostat/
+ obj-y += pressure/
+ obj-y += proximity/
+ obj-y += temperature/
+diff --git a/drivers/iio/potentiostat/Kconfig b/drivers/iio/potentiostat/Kconfig
+new file mode 100644
+index 000000000000..591682c05ae9
+--- /dev/null
++++ b/drivers/iio/potentiostat/Kconfig
+@@ -0,0 +1,21 @@
++#
++# Potentiostat drivers
++#
++# When adding new entries keep the list in alphabetical order
++
++menu "Digital potentiostats"
++
++config LMP91000
++	tristate "Texas Instruments LMP91000 potentiostat driver"
++	depends on I2C
++	select REGMAP_I2C
 +	select IIO_BUFFER
 +	select IIO_TRIGGERED_BUFFER
 +	help
-+	  If you say yes here you get support for Texas Instruments ADC141S626,
-+	  and ADC161S626 chips.
++	  Say yes here to build support for the Texas Instruments
++	  LMP91000 digital potentiostat chip.
 +
-+	  This driver can also be build as a module. If so, the module will be
-+	  called ti-adc1x1s.
++	  To compile this driver as a module, choose M here: the
++	  module will be called lmp91000
 +
- config TI_ADS1015
- 	tristate "Texas Instruments ADS1015 ADC"
- 	depends on I2C && !SENSORS_ADS1015
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 38638d46f972..855ff407fd0d 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -40,6 +40,7 @@ obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
- obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
-+obj-$(CONFIG_TI_ADC1X1S) += ti-adc1x1s.o
- obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
- obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
-diff --git a/drivers/iio/adc/ti-adc1x1s.c b/drivers/iio/adc/ti-adc1x1s.c
++endmenu
+diff --git a/drivers/iio/potentiostat/Makefile b/drivers/iio/potentiostat/Makefile
 new file mode 100644
-index 000000000000..889399968694
+index 000000000000..64d315ef4449
 --- /dev/null
-+++ b/drivers/iio/adc/ti-adc1x1s.c
-@@ -0,0 +1,233 @@
++++ b/drivers/iio/potentiostat/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for industrial I/O potentiostat drivers
++#
++
++# When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_LMP91000) += lmp91000.o
+diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
+new file mode 100644
+index 000000000000..fe90172eac28
+--- /dev/null
++++ b/drivers/iio/potentiostat/lmp91000.c
+@@ -0,0 +1,303 @@
 +/*
-+ * ti-adc1x1s.c - Support for the Texas Instruments 1-channel differential ADCs
-+ *
-+ * ADC Devices Supported:
-+ *  adc141s626 - 14-bit ADC
-+ *  adc161s626 - 16-bit ADC
++ * lmp91000.c - Support for Texas Instruments digital potentiostats
 + *
 + * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
 + *
@@ -109,111 +150,125 @@ index 000000000000..889399968694
 + * but WITHOUT ANY WARRANTY; without even the implied warranty of
 + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 + * GNU General Public License for more details.
++ *
++ * TODO: bias voltage + polarity control, and multiple chip support
 + */
 +
 +#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/err.h>
-+#include <linux/spi/spi.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
++#include <linux/of.h>
++#include <linux/regmap.h>
 +#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
 +#include <linux/iio/buffer.h>
++#include <linux/iio/consumer.h>
 +#include <linux/iio/trigger_consumer.h>
 +#include <linux/iio/triggered_buffer.h>
 +
-+#define TI_ADC_DRV_NAME	"adc1x1s"
++#define LMP91000_REG_LOCK		0x01
++#define LMP91000_REG_TIACN		0x10
++#define LMP91000_REG_TIACN_GAIN_SHIFT	2
 +
-+enum {
-+	TI_ADC141S626,
-+	TI_ADC161S626,
++#define LMP91000_REG_REFCN		0x11
++#define LMP91000_REG_REFCN_EXT_REF	0x20
++#define LMP91000_REG_REFCN_50_ZERO	0x80
++
++#define LMP91000_REG_MODECN		0x12
++#define LMP91000_REG_MODECN_3LEAD	0x03
++#define LMP91000_REG_MODECN_TEMP	0x07
++
++#define LMP91000_DRV_NAME	"lmp91000"
++
++static const int lmp91000_tia_gain[] = { 0, 2750, 3500, 7000, 14000, 35000,
++					 120000, 350000 };
++
++static const int lmp91000_rload[] = { 10, 33, 50, 100 };
++
++static const struct regmap_config lmp91000_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
 +};
 +
-+static const struct iio_chan_spec ti_adc141s626_channels[] = {
-+	{
++struct lmp91000_data {
++	struct regmap *regmap;
++	struct device *dev;
++	struct iio_channel *vout_chan;
++
++	u8 buffer[16]; /* 32-bit data + 32-bit padding + 64-bit timestamp */
++};
++
++static const struct iio_chan_spec lmp91000_channels[] = {
++	{ /* chemical channel mV */
 +		.type = IIO_VOLTAGE,
 +		.channel = 0,
++		.indexed = 1,
++		.address = LMP91000_REG_MODECN_3LEAD,
 +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
 +		.scan_index = 0,
 +		.scan_type = {
 +			.sign = 's',
-+			.realbits = 14,
-+			.storagebits = 16,
++			.realbits = 32,
++			.storagebits = 32,
 +		},
 +	},
 +	IIO_CHAN_SOFT_TIMESTAMP(1),
-+};
-+
-+static const struct iio_chan_spec ti_adc161s626_channels[] = {
-+	{
++	{ /* temperature channel mV */
 +		.type = IIO_VOLTAGE,
-+		.channel = 0,
++		.channel = 1,
++		.indexed = 1,
++		.address = LMP91000_REG_MODECN_TEMP,
 +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 24,
-+			.shift = 6,
-+		},
++		.scan_index = -1,
 +	},
-+	IIO_CHAN_SOFT_TIMESTAMP(1),
 +};
 +
-+struct ti_adc_data {
-+	struct iio_dev *indio_dev;
-+	struct spi_device *spi;
-+	int read_size;
++static int lmp91000_read(struct lmp91000_data *data, int channel, int *val)
++{
++	int state, ret;
 +
-+	u8 buffer[16]; /* 3 byte data + 5 byte pad + 8 byte timestamp */
-+};
++	ret = regmap_read(data->regmap, LMP91000_REG_MODECN, &state);
++	if (ret)
++		return -EINVAL;
 +
-+static irqreturn_t ti_adc_trigger_handler(int irq, void *private)
++	ret = regmap_write(data->regmap, LMP91000_REG_MODECN, channel);
++	if (ret)
++		return -EINVAL;
++
++	/* delay till first temperature reading is complete */
++	if ((state != channel) && (channel == LMP91000_REG_MODECN_TEMP))
++		usleep_range(3000, 4000);
++
++	ret = iio_read_channel_raw(data->vout_chan, val);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static irqreturn_t lmp91000_trigger_handler(int irq, void *private)
 +{
 +	struct iio_poll_func *pf = private;
 +	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct ti_adc_data *data = iio_priv(indio_dev);
-+	int ret;
++	struct lmp91000_data *data = iio_priv(indio_dev);
++	int ret, val;
 +
-+	ret = spi_read(data->spi, &data->buffer, data->read_size);
-+	if (!ret)
++	ret = lmp91000_read(data, LMP91000_REG_MODECN_3LEAD, &val);
++	if (!ret) {
++		*((int *) data->buffer) = val;
 +		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
 +						   iio_get_time_ns());
++	}
 +
 +	iio_trigger_notify_done(indio_dev->trig);
 +
 +	return IRQ_HANDLED;
 +}
 +
-+static int ti_adc_read_measurement(struct ti_adc_data *data,
-+				   struct iio_chan_spec const *chan, int *val)
++static int lmp91000_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val, int *val2, long mask)
 +{
-+	__be32 buf;
-+	int ret;
-+
-+	ret = spi_read(data->spi, (void *) &buf, data->read_size);
-+	if (ret)
-+		return ret;
-+
-+	switch (data->read_size) {
-+	case 2:
-+		*val = be16_to_cpu(buf);
-+		break;
-+	case 3:
-+		*val = be32_to_cpu(buf) >> 8;
-+		break;
-+	}
-+
-+	*val = sign_extend32(*val >> chan->scan_type.shift,
-+			     chan->scan_type.realbits - 1);
-+
-+	return 0;
-+}
-+
-+static int ti_adc_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	struct ti_adc_data *data = iio_priv(indio_dev);
++	struct lmp91000_data *data = iio_priv(indio_dev);
 +	int ret;
 +
 +	if (mask != IIO_CHAN_INFO_RAW)
@@ -222,7 +277,7 @@ index 000000000000..889399968694
 +	if (iio_device_claim_direct_mode(indio_dev))
 +		return -EBUSY;
 +
-+	ret = ti_adc_read_measurement(data, chan, val);
++	ret = lmp91000_read(data, chan->address, val);
 +	if (!ret)
 +		ret = IIO_VAL_INT;
 +
@@ -231,46 +286,106 @@ index 000000000000..889399968694
 +	return ret;
 +}
 +
-+static const struct iio_info ti_adc_info = {
++static const struct iio_info lmp91000_info = {
 +	.driver_module = THIS_MODULE,
-+	.read_raw = ti_adc_read_raw,
++	.read_raw = lmp91000_read_raw,
 +};
 +
-+static int ti_adc_probe(struct spi_device *spi)
++static int lmp91000_read_config(struct lmp91000_data *data)
 +{
++	struct device *dev = data->dev;
++	struct device_node *np = dev->of_node;
++	int i, val1, val2, ret;
++
++	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val1);
++	if (ret) {
++		val1 = 0;
++		dev_info(dev, "no ti,tia-gain-ohm defined, default to external\n");
++	}
++
++	ret = of_property_read_u32(np, "ti,rload-ohm", &val2);
++	if (ret) {
++		val2 = 100;
++		dev_info(dev, "no ti,rload-ohm defined, default to %d\n", val2);
++	}
++
++	ret = -EINVAL;
++	for (i = 0; i < ARRAY_SIZE(lmp91000_tia_gain); i++) {
++		if (lmp91000_tia_gain[i] == val1) {
++			val1 = i;
++			ret = 0;
++			break;
++		}
++	}
++
++	if (ret) {
++		dev_err(dev, "invalid ti,tia-gain-ohm %d", val1);
++		return ret;
++	}
++
++	ret = -EINVAL;
++	for (i = 0; i < ARRAY_SIZE(lmp91000_rload); i++) {
++		if (lmp91000_rload[i] == val2) {
++			val2 = i;
++			ret = 0;
++			break;
++		}
++	}
++
++	if (ret) {
++		dev_err(dev, "invalid ti,rload-ohm %d", val2);
++		return ret;
++	}
++
++	regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
++	regmap_write(data->regmap, LMP91000_REG_TIACN,
++				(val1 << LMP91000_REG_TIACN_GAIN_SHIFT) | val2);
++	regmap_write(data->regmap, LMP91000_REG_REFCN, LMP91000_REG_REFCN_EXT_REF
++					| LMP91000_REG_REFCN_50_ZERO);
++	regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
++
++	return 0;
++}
++
++static int lmp91000_probe(struct i2c_client *client,
++			  const struct i2c_device_id *id)
++{
++	struct device *dev = &client->dev;
++	struct lmp91000_data *data;
 +	struct iio_dev *indio_dev;
-+	struct ti_adc_data *data;
++	struct iio_channel *vout_chan;
 +	int ret;
 +
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
++	vout_chan = iio_channel_get(dev, NULL);
++	if (IS_ERR(vout_chan))
++		return -EPROBE_DEFER;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
 +	if (!indio_dev)
 +		return -ENOMEM;
 +
-+	indio_dev->info = &ti_adc_info;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->dev.of_node = spi->dev.of_node;
-+	indio_dev->name = TI_ADC_DRV_NAME;
++	indio_dev->info = &lmp91000_info;
++	indio_dev->channels = lmp91000_channels;
++	indio_dev->num_channels = ARRAY_SIZE(lmp91000_channels);
++	indio_dev->name = LMP91000_DRV_NAME;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
-+	spi_set_drvdata(spi, indio_dev);
++	i2c_set_clientdata(client, indio_dev);
 +
 +	data = iio_priv(indio_dev);
-+	data->spi = spi;
-+
-+	switch (spi_get_device_id(spi)->driver_data) {
-+	case TI_ADC141S626:
-+		indio_dev->channels = ti_adc141s626_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(ti_adc141s626_channels);
-+		data->read_size = 2;
-+		break;
-+	case TI_ADC161S626:
-+		indio_dev->channels = ti_adc161s626_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(ti_adc161s626_channels);
-+		data->read_size = 3;
-+		break;
++	data->dev = dev;
++	data->vout_chan = vout_chan;
++	data->regmap = devm_regmap_init_i2c(client, &lmp91000_regmap_config);
++	if (IS_ERR(data->regmap)) {
++		dev_err(dev, "regmap initialization failed.\n");
++		return PTR_ERR(data->regmap);
 +	}
 +
++	ret = lmp91000_read_config(data);
++	if (ret)
++		return ret;
++
 +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 ti_adc_trigger_handler, NULL);
++					 lmp91000_trigger_handler, NULL);
 +	if (ret)
 +		return ret;
 +
@@ -286,43 +401,43 @@ index 000000000000..889399968694
 +	return ret;
 +}
 +
-+static int ti_adc_remove(struct spi_device *spi)
++static int lmp91000_remove(struct i2c_client *client)
 +{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct lmp91000_data *data = iio_priv(indio_dev);
 +
 +	iio_device_unregister(indio_dev);
 +	iio_triggered_buffer_cleanup(indio_dev);
++	iio_channel_release(data->vout_chan);
 +
 +	return 0;
 +}
 +
-+static const struct of_device_id ti_adc_dt_ids[] = {
-+	{ .compatible = "ti,adc141s626", },
-+	{ .compatible = "ti,adc161s626", },
++static const struct of_device_id lmp91000_of_match[] = {
++	{ .compatible = "ti,lmp91000", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, lmp91000_of_match);
++
++static const struct i2c_device_id lmp91000_id[] = {
++	{ "lmp91000", 0 },
 +	{}
 +};
-+MODULE_DEVICE_TABLE(of, ti_adc_dt_ids);
++MODULE_DEVICE_TABLE(i2c, lmp91000_id);
 +
-+static const struct spi_device_id ti_adc_id[] = {
-+	{"adc141s626", TI_ADC141S626},
-+	{"adc161s626", TI_ADC161S626},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, ti_adc_id);
-+
-+static struct spi_driver ti_adc_driver = {
++static struct i2c_driver lmp91000_driver = {
 +	.driver = {
-+		.name	= TI_ADC_DRV_NAME,
-+		.of_match_table = of_match_ptr(ti_adc_dt_ids),
++		.name = LMP91000_DRV_NAME,
++		.of_match_table = of_match_ptr(lmp91000_of_match),
 +	},
-+	.probe		= ti_adc_probe,
-+	.remove		= ti_adc_remove,
-+	.id_table	= ti_adc_id,
++	.probe = lmp91000_probe,
++	.remove = lmp91000_remove,
++	.id_table = lmp91000_id,
 +};
-+module_spi_driver(ti_adc_driver);
++module_i2c_driver(lmp91000_driver);
 +
 +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-+MODULE_DESCRIPTION("Texas Instruments ADC1x1S 1-channel differential ADC");
++MODULE_DESCRIPTION("LMP91000 digital potentiostat");
 +MODULE_LICENSE("GPL");
 -- 
 2.7.4
