@@ -1,344 +1,370 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f196.google.com ([209.85.161.196]:35218 "EHLO
-	mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932147AbcGCVFC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2016 17:05:02 -0400
-Date: Sun, 3 Jul 2016 14:04:56 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: temperature: mcp9808: add Microchip MCP9808 temperature
- sensor
-Message-ID: <20160703210448.GA14874@d830.WORKGROUP>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:36409 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932156AbcGCVfH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2016 17:35:07 -0400
+Received: by mail-wm0-f66.google.com with SMTP id c82so17572080wme.3
+        for <linux-iio@vger.kernel.org>; Sun, 03 Jul 2016 14:35:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <83382690-9dbf-5678-6598-d32a25fb803c@kernel.org>
+References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
+ <1467497127-32431-2-git-send-email-mranostay@gmail.com> <83382690-9dbf-5678-6598-d32a25fb803c@kernel.org>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Sun, 3 Jul 2016 14:34:25 -0700
+Message-ID: <CAKzfze-Wpbii==qKbKgJjor4j6Hvj2JXCbDWcB0QqbKYFmRttw@mail.gmail.com>
+Subject: Re: [RFC 1/2] iio: adc: ti-adc1x1s: add support for TI 1-channel
+ differential ADCs
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-IIO driver, perhaps a reference driver, since this sensor is already
-supported in hwmon/jc42 driver.
+On Sun, Jul 3, 2016 at 6:04 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 02/07/16 23:05, Matt Ranostay wrote:
+>> Add support for Texas Instruments ADC141S626, and ADC161S626 chips.
+>>
+>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> Few little points inline and: No wild cards in driver names!
+> (though I'm occasionally half asleep and let one in).
+>
+> Storage bits should always be a power of 2.  (I let some
+> of those slip in as well in the past... oops).
+>
+> Otherwise a few tiny corners where things could, I think,
+> be a little more readable at the cost of slightly more code.
+>
+> Basically a nice little driver.
+>
+> Jonathan
+>> ---
+>>  .../devicetree/bindings/iio/adc/ti-adc1x1s.txt     |  16 ++
+>>  drivers/iio/adc/Kconfig                            |  12 ++
+>>  drivers/iio/adc/Makefile                           |   1 +
+>>  drivers/iio/adc/ti-adc1x1s.c                       | 233 +++++++++++++++++++++
+>>  4 files changed, 262 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
+>>  create mode 100644 drivers/iio/adc/ti-adc1x1s.c
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
+>> new file mode 100644
+>> index 000000000000..9cf7db434aee
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
+> Arguably could go in spi trivial devices binding file (unless you are going
+> to suplement this soon anyway in which case it may be less churn to keep it
+> here).
+>> @@ -0,0 +1,16 @@
+>> +* Texas Instruments' ADC141S626, and ADC161S626 chip
+>> +
+>> +Required properties:
+>> + - compatible: Should be "ti,adc141s626" or "ti,ac161s626"
+>> + - reg: spi chip select number for the device
+>> +
+>> +Recommended properties:
+>> + - spi-max-frequency: Definition as per
+>> +             Documentation/devicetree/bindings/spi/spi-bus.txt
+>> +
+>> +Example:
+>> +adc@0 {
+>> +     compatible = "ti,adc161s626";
+>> +     reg = <0>;
+>> +     spi-max-frequency = <4300000>;
+>> +};
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 25378c5882e2..cb5e4ae3279d 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -414,6 +414,18 @@ config TI_ADC128S052
+>>         This driver can also be built as a module. If so, the module will be
+>>         called ti-adc128s052.
+>>
+>> +config TI_ADC1X1S
+>> +     tristate "Texas Instruments ADC1X1S 1-channel differential ADCs"
+>> +     depends on SPI
+>> +     select IIO_BUFFER
+>> +     select IIO_TRIGGERED_BUFFER
+>> +     help
+>> +       If you say yes here you get support for Texas Instruments ADC141S626,
+>> +       and ADC161S626 chips.
+>> +
+>> +       This driver can also be build as a module. If so, the module will be
+>> +       called ti-adc1x1s.
+>> +
+>>  config TI_ADS1015
+>>       tristate "Texas Instruments ADS1015 ADC"
+>>       depends on I2C && !SENSORS_ADS1015
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index 38638d46f972..855ff407fd0d 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -40,6 +40,7 @@ obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>>  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+>>  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+>> +obj-$(CONFIG_TI_ADC1X1S) += ti-adc1x1s.o
+>>  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+>>  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+>>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>> diff --git a/drivers/iio/adc/ti-adc1x1s.c b/drivers/iio/adc/ti-adc1x1s.c
+>> new file mode 100644
+>> index 000000000000..889399968694
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/ti-adc1x1s.c
+>> @@ -0,0 +1,233 @@
+>> +/*
+>> + * ti-adc1x1s.c - Support for the Texas Instruments 1-channel differential ADCs
+>> + *
+>> + * ADC Devices Supported:
+>> + *  adc141s626 - 14-bit ADC
+>> + *  adc161s626 - 16-bit ADC
+>> + *
+>> + * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License as published by
+>> + * the Free Software Foundation; either version 2 of the License, or
+>> + * (at your option) any later version.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+>> + * GNU General Public License for more details.
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/init.h>
+>> +#include <linux/err.h>
+>> +#include <linux/spi/spi.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/trigger.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>> +#include <linux/iio/triggered_buffer.h>
+>> +
+>> +#define TI_ADC_DRV_NAME      "adc1x1s"
+> I really dislike wild cards.... Just pick a part and name it after that.
+>
+>> +
+>> +enum {
+>> +     TI_ADC141S626,
+>> +     TI_ADC161S626,
+>> +};
+>> +
+>> +static const struct iio_chan_spec ti_adc141s626_channels[] = {
+>> +     {
+>> +             .type = IIO_VOLTAGE,
+>> +             .channel = 0,
+>> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> +             .scan_index = 0,
+>> +             .scan_type = {
+>> +                     .sign = 's',
+>> +                     .realbits = 14,
+>> +                     .storagebits = 16,
+>> +             },
+>> +     },
+>> +     IIO_CHAN_SOFT_TIMESTAMP(1),
+>> +};
+>> +
+>> +static const struct iio_chan_spec ti_adc161s626_channels[] = {
+>> +     {
+>> +             .type = IIO_VOLTAGE,
+>> +             .channel = 0,
+>> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> +             .scan_index = 0,
+>> +             .scan_type = {
+>> +                     .sign = 's',
+>> +                     .realbits = 16,
+>> +                     .storagebits = 24,
+> Storage bits should be a power of 2.
+>> +                     .shift = 6,
+>> +             },
+>> +     },
+>> +     IIO_CHAN_SOFT_TIMESTAMP(1),
+>> +};
+>> +
+>> +struct ti_adc_data {
+>> +     struct iio_dev *indio_dev;
+>> +     struct spi_device *spi;
+>> +     int read_size;
+>> +
+> enforce cacheline alignment or this is going to cause possible fun on
+> dma using spi devices.
+>> +     u8 buffer[16]; /* 3 byte data + 5 byte pad + 8 byte timestamp */
 
-Driver supports continuous conversion, resolution changes and
-suspend/resume power ops.
+Thought only tx buffers need to cache aligned?
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Cc: Daniel Baluta <daniel.baluta@gmail.com>
----
- drivers/iio/temperature/Kconfig   |  10 ++
- drivers/iio/temperature/Makefile  |   1 +
- drivers/iio/temperature/mcp9808.c | 269 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 280 insertions(+)
- create mode 100644 drivers/iio/temperature/mcp9808.c
+>> +};
+>> +
+>> +static irqreturn_t ti_adc_trigger_handler(int irq, void *private)
+>> +{
+>> +     struct iio_poll_func *pf = private;
+>> +     struct iio_dev *indio_dev = pf->indio_dev;
+>> +     struct ti_adc_data *data = iio_priv(indio_dev);
+>> +     int ret;
+>> +
+>> +     ret = spi_read(data->spi, &data->buffer, data->read_size);
+>> +     if (!ret)
+>> +             iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+>> +                                                iio_get_time_ns());
+>> +
+>> +     iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +     return IRQ_HANDLED;
+>> +}
+>> +
+>> +static int ti_adc_read_measurement(struct ti_adc_data *data,
+>> +                                struct iio_chan_spec const *chan, int *val)
+>> +{
+>> +     __be32 buf;
+>> +     int ret;
+>> +
+>> +     ret = spi_read(data->spi, (void *) &buf, data->read_size);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     switch (data->read_size) {
+>> +     case 2:
+>> +             *val = be16_to_cpu(buf);
+> Inelegant as buf is clearly marked as 32 bit by it's type. I'd move the
+> read into the switch statement then read into the appropriate sized
+> local variable.  More code but easier to read (slightly)
 
-diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-index c4664e5..25915d2 100644
---- a/drivers/iio/temperature/Kconfig
-+++ b/drivers/iio/temperature/Kconfig
-@@ -3,6 +3,16 @@
- #
- menu "Temperature sensors"
- 
-+config MCP9808
-+	tristate "MCP9808 temperature sensor"
-+	depends on I2C
-+	help
-+	  If you say yes here you get support for the Microchip
-+	  MCP9808 temperature sensor connected with I2C.
-+
-+	  This driver can also be built as a module. If so, the module will
-+	  be called mcp9808.
-+
- config MLX90614
- 	tristate "MLX90614 contact-less infrared sensor"
- 	depends on I2C
-diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-index 02bc79d..92cd1e6 100644
---- a/drivers/iio/temperature/Makefile
-+++ b/drivers/iio/temperature/Makefile
-@@ -2,6 +2,7 @@
- # Makefile for industrial I/O temperature drivers
- #
- 
-+obj-$(CONFIG_MCP9808) += mcp9808.o
- obj-$(CONFIG_MLX90614) += mlx90614.o
- obj-$(CONFIG_TMP006) += tmp006.o
- obj-$(CONFIG_TSYS01) += tsys01.o
-diff --git a/drivers/iio/temperature/mcp9808.c b/drivers/iio/temperature/mcp9808.c
-new file mode 100644
-index 0000000..adab708
---- /dev/null
-+++ b/drivers/iio/temperature/mcp9808.c
-@@ -0,0 +1,269 @@
-+/*
-+ * mcp9808.c - Support for Microchip MCP9808 Digital Temperature Sensor
-+ *
-+ * Copyright (C) 2016 Alison Schofield <amsfield22@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * Datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/25095A.pdf
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#define MCP9808_REG_CONFIG		0x01
-+#define MCP9808_REG_TAMBIENT		0x05
-+#define MCP9808_REG_MANUF_ID		0x06
-+#define MCP9808_REG_DEVICE_ID		0x07
-+#define MCP9808_REG_RESOLUTION		0x08
-+
-+#define MCP9808_CONFIG_DEFAULT		0x00
-+#define MCP9808_CONFIG_SHUTDOWN		0x0100
-+
-+#define MCP9808_RES_DEFAULT		62500
-+
-+#define MCP9808_MANUF_ID		0x54
-+#define MCP9808_DEVICE_ID		0x0400
-+#define MCP9808_DEVICE_ID_MASK		0xff00
-+
-+struct mcp9808_data {
-+	struct i2c_client *client;
-+	struct mutex	   lock;	/* protect resolution changes  */
-+	int		   res_index;	/* current resolution index    */
-+};
-+
-+/* Resolution, MCP9808_REG_RESOLUTION bits, Conversion Time ms  */
-+static const int mcp9808_res[][3] = {
-+	{500000, 0,  30},
-+	{250000, 1,  65},
-+	{125000, 2, 130},
-+	{ 62500, 3, 250},
-+};
-+
-+static IIO_CONST_ATTR(temp_integration_time_available,
-+	"0.5 0.25 0.125 0.0625");
-+
-+static struct attribute *mcp9808_attributes[] = {
-+	&iio_const_attr_temp_integration_time_available.dev_attr.attr,
-+	NULL
-+};
-+
-+static struct attribute_group mcp9808_attribute_group = {
-+	.attrs = mcp9808_attributes,
-+};
-+
-+static int mcp9808_set_resolution(struct mcp9808_data *data, int val2)
-+{
-+	int i;
-+	int ret = -EINVAL;
-+	int conv_t = mcp9808_res[data->res_index][2];
-+
-+	for (i = 0; i < ARRAY_SIZE(mcp9808_res); i++) {
-+		if (val2 == mcp9808_res[i][0]) {
-+			mutex_lock(&data->lock);
-+			ret = i2c_smbus_write_byte_data(data->client,
-+							MCP9808_REG_RESOLUTION,
-+							mcp9808_res[i][1]);
-+			data->res_index = i;
-+			mutex_unlock(&data->lock);
-+
-+			/* delay old + new conversion time */
-+			msleep(conv_t + mcp9808_res[i][2]);
-+			break;
-+		}
-+	}
-+	return ret;
-+}
-+
-+static int mcp9808_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *channel,
-+			    int *val, int *val2, long mask)
-+
-+{
-+	struct mcp9808_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = i2c_smbus_read_word_swapped(data->client,
-+						  MCP9808_REG_TAMBIENT);
-+		if (ret < 0)
-+			return ret;
-+		*val = sign_extend32(ret, 12);
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		*val2 = 62500;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	case IIO_CHAN_INFO_INT_TIME:
-+		*val = 0;
-+		*val2 = mcp9808_res[data->res_index][0];
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	default:
-+		break;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int mcp9808_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *channel,
-+			     int val, int val2, long mask)
-+{
-+	struct mcp9808_data *data = iio_priv(indio_dev);
-+	int ret = -EINVAL;
-+
-+	if (mask == IIO_CHAN_INFO_INT_TIME) {
-+		if (!val)
-+			ret = mcp9808_set_resolution(data, val2);
-+	}
-+	return ret;
-+}
-+
-+static const struct iio_chan_spec mcp9808_channels[] = {
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_INT_TIME)
-+	}
-+};
-+
-+static const struct iio_info mcp9808_info = {
-+	.read_raw = mcp9808_read_raw,
-+	.write_raw = mcp9808_write_raw,
-+	.attrs = &mcp9808_attribute_group,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static bool mcp9808_check_id(struct i2c_client *client)
-+{
-+	int mid, did;
-+
-+	mid = i2c_smbus_read_word_swapped(client, MCP9808_REG_MANUF_ID);
-+	if (mid < 0)
-+		return false;
-+
-+	did = i2c_smbus_read_word_swapped(client, MCP9808_REG_DEVICE_ID);
-+	if (did < 0)
-+		return false;
-+
-+	return ((mid == MCP9808_MANUF_ID) &&
-+		((did & MCP9808_DEVICE_ID_MASK) == MCP9808_DEVICE_ID));
-+}
-+
-+static int mcp9808_probe(struct i2c_client *client,
-+			 const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct mcp9808_data *data;
-+	int ret;
-+
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA
-+				     | I2C_FUNC_SMBUS_WRITE_BYTE_DATA))
-+		return -EOPNOTSUPP;
-+
-+	if (!mcp9808_check_id(client)) {
-+		dev_err(&client->dev, "no MCP9808 sensor\n");
-+		return -ENODEV;
-+	}
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+	mutex_init(&data->lock);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = id->name;
-+	indio_dev->info = &mcp9808_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = mcp9808_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(mcp9808_channels);
-+
-+	/* set config register to power-on default */
-+	ret = i2c_smbus_write_word_swapped(data->client, MCP9808_REG_CONFIG,
-+					   MCP9808_CONFIG_DEFAULT);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* set resolution register to power-on default */
-+	ret = mcp9808_set_resolution(data, MCP9808_RES_DEFAULT);
-+	if (ret < 0)
-+		return ret;
-+
-+	return iio_device_register(indio_dev);
-+}
-+
-+static int mcp9808_shutdown(struct mcp9808_data *data)
-+{
-+	return i2c_smbus_write_word_swapped(data->client, MCP9808_REG_CONFIG,
-+					    MCP9808_CONFIG_SHUTDOWN);
-+}
-+
-+static int mcp9808_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	return mcp9808_shutdown(iio_priv(indio_dev));
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int mcp9808_suspend(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+
-+	return mcp9808_shutdown(iio_priv(indio_dev));
-+}
-+
-+static int mcp9808_resume(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct mcp9808_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = mcp9808_set_resolution(data, mcp9808_res[data->res_index][0]);
-+	if (ret < 0)
-+		return ret;
-+
-+	return i2c_smbus_write_word_swapped(data->client, MCP9808_REG_CONFIG,
-+					    MCP9808_CONFIG_DEFAULT);
-+}
-+#endif
-+
-+static SIMPLE_DEV_PM_OPS(mcp9808_pm_ops, mcp9808_suspend, mcp9808_resume);
-+
-+static const struct i2c_device_id mcp9808_id[] = {
-+	{ "mcp9808", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, mcp9808_id);
-+
-+static struct i2c_driver mcp9808_driver = {
-+	.driver = {
-+		.name	= "mcp9808",
-+		.pm	= &mcp9808_pm_ops,
-+	},
-+	.probe = mcp9808_probe,
-+	.remove = mcp9808_remove,
-+	.id_table = mcp9808_id,
-+};
-+module_i2c_driver(mcp9808_driver);
-+
-+MODULE_AUTHOR("Alison Schofield <amsfield22@gmail.com>");
-+MODULE_DESCRIPTION("MCP9808 Temperature Sensor Driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.1.4
+Okay.
 
+>> +             break;
+>> +     case 3:
+>> +             *val = be32_to_cpu(buf) >> 8;
+>> +             break;
+>> +     }
+>> +
+>> +     *val = sign_extend32(*val >> chan->scan_type.shift,
+>> +                          chan->scan_type.realbits - 1);
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static int ti_adc_read_raw(struct iio_dev *indio_dev,
+>> +                        struct iio_chan_spec const *chan,
+>> +                        int *val, int *val2, long mask)
+>> +{
+>> +     struct ti_adc_data *data = iio_priv(indio_dev);
+>> +     int ret;
+>> +
+>> +     if (mask != IIO_CHAN_INFO_RAW)
+>> +             return -EINVAL;
+>> +
+>> +     if (iio_device_claim_direct_mode(indio_dev))
+>> +             return -EBUSY;
+> Should technically store and return the result of iio_device_claim_direct_mode.
+> It could in future return something else..
+>> +
+>> +     ret = ti_adc_read_measurement(data, chan, val);
+>> +     if (!ret)
+>> +             ret = IIO_VAL_INT;
+> I'd make ti_adc_read_measurement return IIO_VAL_INT if successful. Then
+> the slightly odd good path handling goes away.
+
+Okay.
+
+>> +
+>> +     iio_device_release_direct_mode(indio_dev);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static const struct iio_info ti_adc_info = {
+>> +     .driver_module = THIS_MODULE,
+>> +     .read_raw = ti_adc_read_raw,
+>> +};
+>> +
+>> +static int ti_adc_probe(struct spi_device *spi)
+>> +{
+>> +     struct iio_dev *indio_dev;
+>> +     struct ti_adc_data *data;
+>> +     int ret;
+>> +
+>> +     indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
+>> +     if (!indio_dev)
+>> +             return -ENOMEM;
+>> +
+>> +     indio_dev->info = &ti_adc_info;
+>> +     indio_dev->dev.parent = &spi->dev;
+>> +     indio_dev->dev.of_node = spi->dev.of_node;
+>> +     indio_dev->name = TI_ADC_DRV_NAME;
+>> +     indio_dev->modes = INDIO_DIRECT_MODE;
+>> +     spi_set_drvdata(spi, indio_dev);
+>> +
+>> +     data = iio_priv(indio_dev);
+>> +     data->spi = spi;
+>> +
+>> +     switch (spi_get_device_id(spi)->driver_data) {
+>> +     case TI_ADC141S626:
+>> +             indio_dev->channels = ti_adc141s626_channels;
+>> +             indio_dev->num_channels = ARRAY_SIZE(ti_adc141s626_channels);
+>> +             data->read_size = 2;
+>> +             break;
+>> +     case TI_ADC161S626:
+>> +             indio_dev->channels = ti_adc161s626_channels;
+>> +             indio_dev->num_channels = ARRAY_SIZE(ti_adc161s626_channels);
+>> +             data->read_size = 3;
+>> +             break;
+>> +     }
+>> +
+>> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>> +                                      ti_adc_trigger_handler, NULL);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     ret = iio_device_register(indio_dev);
+>> +     if (ret)
+>> +             goto error_unreg_buffer;
+>> +
+>> +     return 0;
+>> +
+>> +error_unreg_buffer:
+>> +     iio_triggered_buffer_cleanup(indio_dev);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static int ti_adc_remove(struct spi_device *spi)
+>> +{
+>> +     struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>> +
+>> +     iio_device_unregister(indio_dev);
+>> +     iio_triggered_buffer_cleanup(indio_dev);
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static const struct of_device_id ti_adc_dt_ids[] = {
+>> +     { .compatible = "ti,adc141s626", },
+>> +     { .compatible = "ti,adc161s626", },
+>> +     {}
+>> +};
+>> +MODULE_DEVICE_TABLE(of, ti_adc_dt_ids);
+>> +
+>> +static const struct spi_device_id ti_adc_id[] = {
+>> +     {"adc141s626", TI_ADC141S626},
+>> +     {"adc161s626", TI_ADC161S626},
+>> +     {},
+>> +};
+>> +MODULE_DEVICE_TABLE(spi, ti_adc_id);
+>> +
+>> +static struct spi_driver ti_adc_driver = {
+>> +     .driver = {
+>> +             .name   = TI_ADC_DRV_NAME,
+>> +             .of_match_table = of_match_ptr(ti_adc_dt_ids),
+>> +     },
+>> +     .probe          = ti_adc_probe,
+>> +     .remove         = ti_adc_remove,
+>> +     .id_table       = ti_adc_id,
+>> +};
+>> +module_spi_driver(ti_adc_driver);
+>> +
+>> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+>> +MODULE_DESCRIPTION("Texas Instruments ADC1x1S 1-channel differential ADC");
+>> +MODULE_LICENSE("GPL");
+>>
+>
